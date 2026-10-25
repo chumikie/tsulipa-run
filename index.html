@@ -397,6 +397,39 @@ function showLb(el){
   });
 }
 
+// --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---
+try {
+  var savedChar = localStorage.getItem('brs48cr_char');
+  if (savedChar !== null) {
+    sel = +savedChar;
+    if (sel < 0 || sel > 3) sel = 0;
+  }
+} catch(e) {}
+
+try {
+  var sv = JSON.parse(localStorage.getItem('brs48cr_cu2') || 'null');
+  if (sv) {
+    for (var k in sv) {
+      if (sv.hasOwnProperty(k)) CU[k] = sv[k];
+    }
+  }
+  CU.img = CU.hair;
+} catch(e) {}
+
+try {
+  var sh = JSON.parse(localStorage.getItem('brs48cr_ch2') || 'null');
+  if (sh && Array.isArray(sh)) {
+    sh.forEach(function(item, idx) {
+      if (item && CH[idx]) {
+        if (item.out) CH[idx].out = item.out;
+        if (item.outcol) CH[idx].outcol = item.outcol;
+        if (item.hat) CH[idx].hat = item.hat;
+        if (item.gl) CH[idx].gl = item.gl;
+      }
+    });
+  }
+} catch(e) {}
+	
 function saveCu(){
   try{
     localStorage.setItem('brs48cr_cu2', JSON.stringify(CU));

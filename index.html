@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
-<link rel="icon" href="/favicon-32.png?v=2" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=2" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="TsuLiPa: Center Run!">
 <meta property="og:title" content="TsuLiPa: Center Run!">
 <meta property="og:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center. Um jogo de passar o tempo do BRS48.">
-<meta property="og:url" content="https://tsulipa-run.netlify.app/">
-<meta property="og:image" content="https://tsulipa-run.netlify.app/og.png">
+<meta property="og:url" content="https://chumikie.github.io/tsulipa-run/">
+<meta property="og:image" content="https://chumikie.github.io/tsulipa-run/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa: Center Run!">
 <meta name="twitter:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center.">
-<meta name="twitter:image" content="https://tsulipa-run.netlify.app/og.png">
-<link rel="manifest" href="/manifest.json">
+<meta name="twitter:image" content="https://chumikie.github.io/tsulipa-run/og.png">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -241,7 +241,7 @@ canvas{width:100%;height:100%;display:block}
   <button type="button" data-oshi="pati" aria-pressed="false" title="Pati">👑</button>
 </div>
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
-<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
+<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
 <script>
 	
 	const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
@@ -530,7 +530,7 @@ Object.keys(CF).forEach(function(id){
 	
 $('cstk').checked=!!CU.streak;$('cstk').onchange=function(){CU.streak=this.checked;saveCu()};
 cw.children[3].firstChild.style.background=CU.hair;
-refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
+refreshAcc();pick(sel);$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
 $('acc').onfocus=function(){seen=ACC.filter(function(a){return best>=a[2]}).length;try{localStorage.setItem('brs48cr_seen',seen)}catch(e){}$('newb').hidden=true};
 var nick=''; try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
 var nickIn = $('nick');
@@ -793,11 +793,14 @@ function end(){
     try{localStorage.setItem('brs48cr_lb',JSON.stringify(local));localStorage.setItem('brs48cr_lw',JSON.stringify(lw))}catch(e){}
   }
   
-  var t=tok;tok=null;
   var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
 
-  if(t && !isTesting && !isAdmin){
-    fetch(API+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t,did:did,name:row.name,score:s,stars:stars,char:row.char})}).catch(function(){}).then(refresh);
+  if(!isTesting && !isAdmin){
+    _supabase
+      .from('leaderboard')
+      .insert([{ name: row.name, score: s, stars: stars, char: row.char }])
+      .then(function(){ refresh(); })
+      .catch(function(){ refresh(); });
   } else {
     refresh();
   }
@@ -861,38 +864,45 @@ function update(dt){
   if(window.activePetFly){
     window.activePetFly.x -= (sp * 1.35) * dt; // Voa um pouco mais rápido que a pista
     
-    // Ponto onde ele larga os presentes
-      if(!window.activePetFly.dropped && window.activePetFly.x <= W / 2){
+    // Ponto onde ele larga os presentes (um pouco antes do meio da tela)
+    if(!window.activePetFly.dropped && window.activePetFly.x <= W * 0.65){
       window.activePetFly.dropped = true;
       var dropX = window.activePetFly.x;
+      var dropY = window.activePetFly.y;
+      sfx.card();
+      toast = 'Presente do Pet! 🎁';
+      toastT = 75;
       
-      // 5% de chance de Item Especial (Card ou Morango simples)
-      if(Math.random() < 0.05){
+      // 15% de chance de Item Especial (Card com efeito ou Sorvete)
+      if(Math.random() < 0.15){
         var isCard = Math.random() < 0.5;
         items.push({
           k: isCard ? 'card' : 'morango',
           x: dropX,
-          y: GY - 75,
+          y: dropY,
           w: isCard ? 18 : 22,
           h: isCard ? 18 : 22,
           got: false,
-          ct: 'plain'
+          ct: isCard ? (Math.random() < 0.5 ? 'fever' : 'ima') : 'plain',
+          petDrop: true
         });
       } else {
-        // 95% de chance: sequência de 6 estrelas alinhadas em arco fácil de pegar
-        for(var si = 0; si < 3; si++){
+        // 85% de chance: 5 estrelas saindo direto do pet em arco
+        for(var si = 0; si < 5; si++){
           items.push({
             k: 'star',
-            x: dropX + (si * 42),
-            y: GY - 40 - Math.sin((si / 5) * Math.PI) * 45,
+            x: dropX + (si * 28),
+            y: dropY - Math.sin((si / 4) * Math.PI) * 25,
             w: 18,
             h: 18,
             got: false,
-            ct: 'plain'
+            ct: 'plain',
+            petDrop: true
           });
         }
       }
     }
+	  
     
     // Saiu da tela pela esquerda
     if(window.activePetFly.x < -60){
@@ -930,6 +940,12 @@ var curMorango = Math.floor(score/3500); // Surge a cada 3500 pontos
   }
 
   obs.forEach(function(o){o.x-=sp*dt});items.forEach(function(o){o.x-=sp*dt});nextX-=sp*dt;
+	items.forEach(function(it){
+    if(it.petDrop || it.ct==='ima'){
+      var dx=(P.x+15)-it.x, dy=(P.y+22)-it.y, d=Math.hypot(dx,dy)||1;
+      if(d<260){ it.x += (dx/d)*9*dt; it.y += (dy/d)*9*dt; }
+    }
+  });
   obs=obs.filter(function(o){return o.x>-90});items=items.filter(function(o){return o.x>-40&&!o.got});
   if(nextX<W+40)spawn();
   

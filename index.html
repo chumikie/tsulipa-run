@@ -9,8 +9,8 @@
 <meta name="description" content="Jogo de corrida do TsuLiPa (BRS48): pule os obstáculos, pegue estrelas e suba no ranking até o Center!">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="TsuLiPa Center Run!">
-<meta property="og:title" content="TsuLiPa Center Run!">
+<meta property="og:site_name" content="TsuLiPa: Center Run!">
+<meta property="og:title" content="TsuLiPa: Center Run!">
 <meta property="og:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center. Um jogo de passar o tempo do BRS48.">
 <meta property="og:url" content="https://tsulipa-run.netlify.app/">
 <meta property="og:image" content="https://tsulipa-run.netlify.app/og.png">
@@ -18,14 +18,14 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TsuLiPa Center Run!">
+<meta name="twitter:title" content="TsuLiPa: Center Run!">
 <meta name="twitter:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center.">
 <meta name="twitter:image" content="https://tsulipa-run.netlify.app/og.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<title>TsuLiPa Center Run!</title>
+<title>TsuLiPa: Center Run!</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 
@@ -145,7 +145,7 @@ canvas{width:100%;height:100%;display:block}
         <path d="M5 12.5v3M3.5 14h3" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
       </svg>
     </i>
-    <div><b>TsuLiPa Center Run!</b><small>センターラン</small></div>
+    <div><b> Center Run!</b><small>センターラン</small></div>
   </a>
   <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
     <div class="pill" id="best">Recorde: 0</div>
@@ -159,7 +159,7 @@ canvas{width:100%;height:100%;display:block}
   <button class="mute" id="mute" aria-label="Ligar ou desligar o som">🔊</button>
   <div class="ov" id="menu">
     <div class="panel">
-      <h1 id="menu-title">TsuLiPa Center Run! 🌷<small>センターラン</small></h1>
+      <h1 id="menu-title"> Center Run! 🌷<small>センターラン</small></h1>
       <p>Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.</p>
       
       <div class="lang" role="group" aria-label="Idioma">
@@ -240,7 +240,7 @@ canvas{width:100%;height:100%;display:block}
   <button type="button" data-oshi="pati" aria-pressed="false" title="Pati">👑</button>
 </div>
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
-<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
+<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
 <script>
 (function(){
 var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
@@ -1406,7 +1406,7 @@ drawChar(CH[sel],0,0,1,finalExpr);g.restore();g.restore();g=og;
   
   var t = typeof tr === 'function' ? tr : function(w){return w;};
   x2.textAlign='center';x2.shadowColor='rgba(0,0,0,.5)';x2.shadowBlur=12;x2.fillStyle='#fff';
-  x2.font='800 40px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa Center Run!',300,64);x2.font='400 18px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,92);
+  x2.font='800 40px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa: Center Run!',300,64);x2.font='400 18px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,92);
   x2.fillStyle='#fff';x2.font='700 44px "M PLUS Rounded 1c",sans-serif';x2.fillText(nick||t('Anônimo'),300,160);
   x2.font='800 110px "M PLUS Rounded 1c",sans-serif';x2.fillText(String(lastS),300,255);
   x2.font='700 30px "M PLUS Rounded 1c",sans-serif';x2.fillText(t('pontos'),300,295);
@@ -1674,7 +1674,7 @@ var fotoPet = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI ||
   x2.fillText(t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', 200, 470);
   
   x2.fillStyle='#5b7fa6'; x2.font='400 13px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText('TsuLiPa Center Run! Photocard', 200, 510);
+  x2.fillText('TsuLiPa: Center Run! Photocard', 200, 510);
   
   return c2.toDataURL('image/png');
 }

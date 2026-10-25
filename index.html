@@ -735,15 +735,23 @@ function spawn(){
 
   var gap = sp * 40 + rnd(110, 340);
   if(Math.random()<0.25) gap += rnd(200, 500); 
-	// --- GERADOR DE PLATEIA ---
-  if (score >= 5000 && Math.random() < 0.6) {
-    var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; // Cores dos lightsticks do trio!
-    fans.push({
-      x: nextX + rnd(10, 150), // Nasce perto do obstáculo
-      y: GY - 15 - rnd(0, 5),  // Altura do chão, variando um pouquinho
-      color: lsColors[Math.floor(Math.random() * 3)],
-      offset: Math.random() * 10 // Um número aleatório para não pularem todos iguais
-    });
+	
+	// --- GERADOR DE PLATEIA DINÂMICO ---
+  if (score >= 450) { // A partir do Team (450 pontos)
+    // Calcula a chance do fã aparecer: começa em 15% e vai até 100% aos 15k
+    var fanChance = score < 5000 ? 0.15 + ((score - 450) / 4550) * 0.35 : 0.5 + Math.min(0.5, ((score - 5000) / 10000) * 0.5);
+    
+    if (Math.random() < fanChance) {
+      var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; // Tsu, Lirika, Pati
+      if (sel === 3) lsColors.push(CU.hair); // Adiciona a cor de cabelo da "Você"
+      
+      fans.push({
+        x: nextX + rnd(10, 150),
+        y: GY - 15 - rnd(0, 5),
+        color: lsColors[Math.floor(Math.random() * lsColors.length)],
+        offset: Math.random() * 10
+      });
+    }
   }
 	
   nextX += gap;
@@ -926,6 +934,7 @@ function update(dt){
     // Ponto onde ele larga os presentes (um pouco antes do meio da tela)
     if(!window.activePetFly.dropped && window.activePetFly.x <= W * 0.65){
       window.activePetFly.dropped = true;
+	  beep(1200, .08, 'sine', .05); beep(1600, .12, 'triangle', .05, .08); // "Mew!" fofinho
       var dropX = window.activePetFly.x;
       var dropY = window.activePetFly.y;
       sfx.card();
@@ -1321,8 +1330,16 @@ function drawChar(c,x,y,run,expr){
   if(A==='mic'){g.strokeStyle='#222';g.lineWidth=1.2;g.beginPath();g.moveTo(x+4,y+11);g.quadraticCurveTo(x+1,y+16,x+4,y+20);g.lineTo(x+6,y+25);g.lineTo(x+12,y+26);g.stroke();g.fillStyle='#ff4f9a';E(x+13,y+26,2.2,2.2)}
   if(A==='hibisco')FL(x+6,y+3,3.2,'#ff3d5e','#ffd23f');
   if(A==='sakura')FL(x+6,y+3,3,'#ffc4d8','#e85a8a');
-  if(A==='tiaraS'||A==='tiaraO'){var go=A==='tiaraO';g.fillStyle=go?'#ffd23f':'#cfd8e8';T([x+7,y+4,x+9,y-3,x+12,y+2,x+15,y-5,x+18,y+2,x+21,y-3,x+23,y+4]);g.fillStyle='#3b82f6';E(x+9,y-1,1.5,1.5);g.fillStyle='#ffd23f';if(!go)E(x+15,y-2,1.8,1.8);else{g.fillStyle='#fff7c2';E(x+15,y-2,1.8,1.8)}g.fillStyle='#34d399';E(x+21,y-1,1.5,1.5);if(go){g.fillStyle='rgba(255,255,255,'+(.4+.4*Math.sin(frame*.25))+')';g.fillRect(x+12,y-6,2,2)}}
-  g.restore();
+  if (AL) {
+    var ab = Math.sin(frame*.15)*2;
+    g.strokeStyle = '#e8ffd0'; g.lineWidth = 1.4; g.beginPath();
+    g.moveTo(x+10, y-3); g.lineTo(x+5, y-16+ab); 
+    g.moveTo(x+20, y-3); g.lineTo(x+25, y-16-ab); 
+    g.stroke();
+    g.fillStyle = '#b6ff3b'; g.shadowColor = '#b6ff3b'; g.shadowBlur = 8;
+    E(x+5, y-17+ab, 2.4, 2.4); E(x+25, y-17-ab, 2.4, 2.4); g.shadowBlur = 0;
+  }
+	g.restore();
   if(AL){var ab=Math.sin(frame*.15)*2;g.strokeStyle='#e8ffd0';g.lineWidth=1.4;g.beginPath();g.moveTo(x+10,y-5);g.lineTo(x+5,y-16+ab);g.moveTo(x+20,y-5);g.lineTo(x+25,y-16-ab);g.stroke();g.fillStyle='#b6ff3b';g.shadowColor='#b6ff3b';g.shadowBlur=8;E(x+5,y-17+ab,2.4,2.4);E(x+25,y-17-ab,2.4,2.4);g.shadowBlur=0}
   if(OF===5){g.strokeStyle='#ffe98a';g.lineWidth=2;g.shadowColor='#ffe98a';g.shadowBlur=8;g.beginPath();g.ellipse(x+15,y-11,10,3.2,0,0,7);g.stroke();g.shadowBlur=0}
   if(sash&&state!=='menu'){g.fillStyle='#ffe14d';for(var i=0;i<3;i++){var t=frame*.1+i*2.1;g.globalAlpha=.5+.5*Math.sin(t*2);g.fillRect(x-6+i*20,y+4+Math.sin(t)*12+i*10,3,3)}g.globalAlpha=1}
@@ -1589,6 +1606,20 @@ function draw(){
     else{var c=o.pal;for(var i=0;i<3;i++){var lx=o.x+i*9+2;g.fillStyle='#ddd';g.fillRect(lx,o.y+16,5,o.h-16);g.fillStyle=c[i];g.shadowColor=c[i];g.shadowBlur=10;g.fillRect(lx-1,o.y+(i%2)*4,7,18);g.shadowBlur=0}}
   });
   items.forEach(function(it){var bob=Math.sin(frame*.12+it.x*.05)*3,cx=it.x+9,cy=it.y+9+bob;
+	
+		if (it.petDrop) {
+      g.save(); g.translate(cx, cy);
+      // Halo dourado suave no fundo
+      var petHalo = g.createRadialGradient(0, 0, 2, 0, 0, 20);
+      petHalo.addColorStop(0, 'rgba(255, 225, 77, 0.6)'); petHalo.addColorStop(1, 'rgba(255, 225, 77, 0)');
+      g.fillStyle = petHalo; g.beginPath(); g.arc(0, 0, 20, 0, 7); g.fill();
+      // Brilhinhos flutuantes
+      g.fillStyle = '#fff';
+      g.fillRect(Math.sin(frame * 0.1 + it.x) * 12, -10 + Math.cos(frame * 0.15) * 5, 2, 2);
+      g.fillRect(-10 + Math.cos(frame * 0.12) * 5, Math.sin(frame * 0.08) * 10, 2, 2);
+      g.restore();
+    }
+							 
     if(it.k==='card'){g.save();g.translate(cx,cy);g.rotate(Math.sin(frame*.08)*.2);g.fillStyle='#fff';g.fillRect(-9,-13,18,26);g.fillStyle={fever:'#ff8466',ima:'#c8a2f5'}[it.ct]||'#0a84ff';g.fillRect(-7,-11,14,16);if(it.ct==='ima'){g.fillStyle='rgba(255,255,255,'+(.4+.4*Math.sin(frame*.3))+')';g.fillRect(-4,-8,3,3);g.fillRect(2,-3,2,2)}g.fillStyle='#ff6fb5';g.fillRect(-7,7,14,4);g.restore()}
   
   
@@ -1685,20 +1716,23 @@ if (pw && pw.k === 'unit') {
   if(shield&&state==='play'){g.strokeStyle='rgba(120,220,255,'+(.6+.3*Math.sin(frame*.2))+')';g.lineWidth=3;g.shadowColor='#4dd8ff';g.shadowBlur=14;g.beginPath();g.arc(P.x+15,P.y+22,32,0,7);g.stroke();if(shield>1){g.beginPath();g.arc(P.x+15,P.y+22,39,0,7);g.stroke()}g.shadowBlur=0}
   g.restore();
 	
-	// --- EFEITO VISUAL DO FLASH E PAPARAZZI ---
-if (window.flashAlpha > 0.01) {
-  var papX = P.x + 180 + (1 - window.flashAlpha) * 40; // Dá um pulinho para a esquerda
-  var papY = GY - 16;
-  
-  // Silhueta do fotógrafo (mesmo estilo da plateia)
-  g.fillStyle = '#1e293b';
-  g.fillRect(papX, papY, 14, 16); // Corpo
-  g.beginPath(); g.arc(papX + 7, papY - 4, 7, 0, 7); g.fill(); // Cabeça
-  
-  // Câmera fotográfica apontada pra idol
-  g.fillStyle = '#111'; g.fillRect(papX - 6, papY - 2, 12, 8); 
-  g.fillStyle = 'rgba(255, 255, 255, ' + window.flashAlpha + ')'; 
-  g.beginPath(); g.arc(papX - 6, papY + 2, 4, 0, 7); g.fill(); // Lente gigante piscando
+// --- EFEITO VISUAL DO FLASH E PAPARAZZI ---
+  if (window.flashAlpha > 0.01) {
+    // 1. O clarão pinta a tela de branco PRIMEIRO
+    g.fillStyle = 'rgba(255, 255, 255, ' + (window.flashAlpha * 0.85) + ')';
+    g.fillRect(0, 0, W, H);
+    
+    // 2. O paparazzi é desenhado POR CIMA, como uma silhueta escura contra a luz
+    var papX = P.x + 180 + (1 - window.flashAlpha) * 40; 
+    var papY = GY - 16;
+    g.fillStyle = '#0f172a'; // Tom ultra escuro
+    g.fillRect(papX, papY, 14, 16); 
+    g.beginPath(); g.arc(papX + 7, papY - 4, 7, 0, 7); g.fill(); 
+    
+    // Câmera fotográfica
+    g.fillStyle = '#000'; g.fillRect(papX - 6, papY - 2, 12, 8); 
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(papX - 6, papY + 2, 4, 0, 7); g.fill();
+  }
   
   // O clarão branco que cobre a tela (limitado a 85% para não machucar os olhos)
   g.fillStyle = 'rgba(255, 255, 255, ' + (window.flashAlpha * 0.85) + ')';
@@ -1850,7 +1884,20 @@ function makeCard(){
   
   // Captura o balanço da perna e pulo do exato milissegundo do jogo
   var runAnim = state==='play' ? (!P.air ? Math.sin(frame*.5) : (isAlien ? Math.sin(frame*.25) : 0)) : 0;
-  
+
+// Captura os halos e a dupla (Unit) na polaroid
+  if (pw && pw.k === 'fever') {
+    var fH = g.createRadialGradient(15, 22, 5, 15, 22, 55);
+    fH.addColorStop(0, 'rgba(255, 132, 102, 0.4)'); fH.addColorStop(1, 'rgba(255, 132, 102, 0)');
+    g.fillStyle = fH; g.beginPath(); g.arc(15, 22, 55, 0, 7); g.fill();
+  } else if (pw && pw.k === 'ima') {
+    var iH = g.createRadialGradient(15, 22, 5, 15, 22, 55);
+    iH.addColorStop(0, 'rgba(200, 162, 245, 0.4)'); iH.addColorStop(1, 'rgba(200, 162, 245, 0)');
+    g.fillStyle = iH; g.beginPath(); g.arc(15, 22, 55, 0, 7); g.fill();
+  } else if (pw && pw.k === 'unit') {
+    drawChar(CH[pw.partner], -35, 0, runAnim, 2); // Parceira sai na foto!
+  }
+	
   drawChar(CH[sel], 0, 0, runAnim, exprFoto); 
   g.restore(); g=og;
 
@@ -1868,7 +1915,14 @@ var fotoPet = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI ||
   
   x2.fillStyle='#5b7fa6'; x2.font='400 13px "M PLUS Rounded 1c",sans-serif';
   x2.fillText('TsuLiPa: Center Run! Photocard', 200, 510);
-  
+
+// Adesivinhos de brilho na moldura da polaroid
+  x2.fillStyle = '#ff6fb5';
+  x2.font = '24px sans-serif';
+  x2.fillText('✨', 45, 45); 
+  x2.fillText('💕', 355, 55); 
+  x2.fillText('✨', 345, 395);
+	
   return c2.toDataURL('image/png');
 }
 

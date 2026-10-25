@@ -1525,7 +1525,7 @@ g = og;
   x2.fillStyle=Q[6];x2.fillRect(0,H2-60,W2,60);x2.fillStyle=Q[7];x2.fillRect(0,H2-60,W2,4);
   
   if(wasAbducted){
-     g=x2; g.save(); g.translate(300, 280); g.scale(2.6, 2.6);
+     g=x2; g.save(); g.translate(520, 270); g.scale(2.6, 2.6);
      var ufoG = g.createRadialGradient(0, 0, 2, 0, 0, 26);
      ufoG.addColorStop(0, 'rgba(182, 255, 59, 0.85)'); ufoG.addColorStop(0.5, 'rgba(182, 255, 59, 0.3)'); ufoG.addColorStop(1, 'rgba(182, 255, 59, 0)');
      g.fillStyle = ufoG; g.beginPath(); g.arc(0, 0, 26, 0, 7); g.fill();
@@ -1543,7 +1543,7 @@ if (window.wasGiant) {
     g.fillStyle = '#fff'; g.fillRect(-4, -1, 2, 2); g.fillRect(2, 1, 2, 2); g.fillRect(-1, 4, 2, 2);
     g.fillStyle = '#22c55e'; g.beginPath(); g.moveTo(-7, -6); g.lineTo(0, -12); g.lineTo(7, -6); g.lineTo(0, -4); g.fill();
     g.restore(); g = og;
-  }
+}
 
   
   var cn=x2.createLinearGradient(0,0,0,H2-60);cn.addColorStop(0,'rgba(255,255,255,.4)');cn.addColorStop(1,'rgba(255,255,255,0)');x2.fillStyle=cn;x2.beginPath();x2.moveTo(255,0);x2.lineTo(345,0);x2.lineTo(500,H2-60);x2.lineTo(100,H2-60);x2.fill();
@@ -1551,13 +1551,22 @@ if (window.wasGiant) {
   for(i=0;i<16;i++){var px=300+Math.cos(i*1.7)*(130+i%4*22),py=560+Math.sin(i*2.3)*(110+i%3*20),sz=4+i%3*3;x2.fillStyle=i%2?'#ffe14d':'#ff9ccd';x2.fillRect(px-sz,py-1,sz*2,2);x2.fillRect(px-1,py-sz,2,sz*2)}
   
 g=x2;g.save();
-if (window.wasGiant) {
-  g.translate(300, H2-240); // Move direto pro centro da foto
-  g.scale(1.4, 1.4); 
-  g.translate(-300, -(H2-240)); 
-  g.shadowColor = '#ff6fb5'; g.shadowBlur = 25;
-}
-g.translate(222,H2-60-229);g.scale(5.2,5.2);
+    if (window.wasGiant) {
+      g.translate(300, H2-240);
+      g.scale(1.15, 1.15); // <-- Reduzimos a escala para não engolir o texto
+      g.translate(-300, -(H2-240)); 
+      
+      // Halo radial limpo e brilhante desenhado ATRÁS da Idol
+      var hg = g.createRadialGradient(300, H2-160, 20, 300, H2-160, 160);
+      hg.addColorStop(0, 'rgba(255,111,181,0.6)'); 
+      hg.addColorStop(1, 'rgba(255,111,181,0)');
+      g.fillStyle = hg; 
+      g.beginPath(); 
+      g.arc(300, H2-160, 160, 0, 7); 
+      g.fill();
+    }
+    g.translate(222,H2-60-229);g.scale(5.2,5.2);
+	
 drawChar(CH[sel],0,0,1,finalExpr);g.restore();g.restore();g=og;
   
   var t = typeof tr === 'function' ? tr : function(w){return w;};

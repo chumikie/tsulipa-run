@@ -333,7 +333,7 @@ function upd(arr,row){
   var a=(arr||[]).slice();
   a.push(row);
   a.sort(function(x,y){return (y.score||0)-(x.score||0) || (x.t||0)-(y.t||0)});
-  return a.slice(0,10);
+  return a.slice(0,15);
 }
 
 function escHtml(s){
@@ -388,7 +388,7 @@ function showLb(el){
       var k = (r.name||'').trim().toLowerCase();
       if(!unq[k] || unq[k].score < r.score) unq[k] = r;
     });
-    var top10 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,10);
+    var top15 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,15);
     // ----------------------------------------------
     showLbLocal(el,top10.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
   }).catch(function(){

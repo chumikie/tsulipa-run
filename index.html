@@ -674,9 +674,13 @@ function end(){
   lw.rows=upd(lw.rows,row);
   try{localStorage.setItem('brs48cr_lb',JSON.stringify(local));localStorage.setItem('brs48cr_lw',JSON.stringify(lw))}catch(e){}
   
-  var t=tok;tok=null;
-  var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
-if(!isTestGame && t){
+var t=tok;tok=null;
+var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
+
+// Verifica se a barra de teste está visível E se algum nível alto foi escolhido
+var isTesting = (!$('tstw').hidden && $('tst') && +$('tst').value > 0);
+
+if(t && !isTesting){
   fetch(API+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t,did:did,name:row.name,score:s,stars:stars,char:row.char})}).catch(function(){}).then(refresh);
 } else {
   refresh();

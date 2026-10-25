@@ -29,6 +29,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 
+@keyframes inputGlow {
+  0% { border-color: var(--pink); box-shadow: 0 0 5px rgba(255,111,181,0.4); transform: scale(1); }
+  50% { border-color: var(--b1); box-shadow: 0 0 16px rgba(123,63,240,0.8); transform: scale(1.02); }
+  100% { border-color: var(--pink); box-shadow: 0 0 5px rgba(255,111,181,0.4); transform: scale(1); }
+}
+
+.nick.chamativo {
+  border: 2.5px solid var(--pink) !important;
+  background: var(--card) !important;
+  font-weight: 800 !important;
+  color: var(--b1) !important;
+  animation: inputGlow 2s infinite ease-in-out;
+}
+
+
 #menu-title, .logo b {
   font-family: "Kosugi Maru", "M PLUS Rounded 1c", sans-serif !important;
   letter-spacing: 0.5px;
@@ -157,7 +172,7 @@ canvas{width:100%;height:100%;display:block}
 
 
       <canvas id="prev" width="140" height="120" style="display:block;margin:0 auto 12px;width:140px;height:120px" aria-hidden="true"></canvas>
-      <input class="nick" id="nick" maxlength="12" placeholder="Seu nome no ranking" aria-label="Seu nome no ranking" autocomplete="off">
+      <input class="nick" id="nick" maxlength="12" placeholder="✨ Digite seu nome de Idol! ✨" aria-label="✨ Digite seu nome de Idol! ✨" autocomplete="off">
       <div class="chars" id="chars"></div>
       
       <div class="cust" id="cust" hidden>
@@ -232,19 +247,19 @@ var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
 var DICT={
   "en": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Jump over the stage obstacles, collect stars and climb the ranks up to Center.",
-    "Cabelo": "Hair", "Mecha": "Streak", "Olhos": "Eyes", "Corte": "Cut", "Curto": "Short", "Chanel": "Bob", "Longo": "Long", "Marias-chiquinhas": "Pigtails", "Rabo de cavalo": "Ponytail", "Cacheado": "Curly", "Franja": "Bangs", "Bagunçada": "Messy", "Reta": "Straight", "Lateral": "Side-swept", "Espetada": "Spiky", "Arco-íris": "Rainbow", "Detalhe": "Detail", "Nenhum": "None", "Coques": "Buns", "Orelhas de gato": "Cat ears", "Orelhas élficas": "Elf ears", "Chifres": "Horns", "Roupa": "Outfit", "Básica": "Basic", "Uniforme (Team)": "Uniform (Team)", "Moda 2000 (Quad Center)": "Y2K Fashion (Quad Center)", "Blazer 80s (Center)": "80s Blazer (Center)", "Acessório": "Accessory", "Presilhas (Kenkyuusei)": "Hair clips (Kenkyuusei)", "Boina (Senbatsu)": "Beret (Senbatsu)", "Band-aid (tCenter)": "Bandage (tCenter)", "Fones (wCenter)": "Headphones (wCenter)", "Óculos": "Glasses", "Sem": "None", "Redondo": "Round", "Quadrado": "Square", "Item": "Item", "✨ NOVO!": "✨ NEW!", "JOGAR": "PLAY", "Ver ranking": "View ranking", "Semana": "Week", "Geral": "All-time", "Fim do show": "Show's over", "おつかれさま": "Good work!", "DE NOVO": "AGAIN", "SALVAR IMAGEM": "SAVE IMAGE", "BAIXAR": "DOWNLOAD", "FECHAR": "CLOSE", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Quick tap = short jump; hold = high jump. \"Effort will surely be rewarded!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "If the download doesn't start, press and hold (phone) or right-click (computer) the image and choose save.", "Ligar ou desligar o som": "Turn sound on or off", "Seu nome no ranking": "Your name on the ranking", "Imagem do seu resultado": "Your result image", "Você": "You", "Audição": "Audition", "Laço azul": "Blue bow", "Microfone de palco": "Stage mic", "Hibisco": "Hibiscus", "Flor de cerejeira": "Cherry blossom", "Tiara de prata": "Silver tiara", "Tiara dourada": "Golden tiara", "Item novo": "New item", "pontos": "points", "estrelas": "stars", "Posição": "Rank", "novo recorde!": "new record!", "Escudo usado!": "Shield used!", "Fever! Estrelas em dobro": "Fever! Double stars", "Ímã de estrelas!": "Star magnet!", "Subiu para ": "Promoted to ", " Escudo e look!": " Shield and new look!", "Abdução ": "Abduction ", "Ímã ": "Magnet ", "Recorde": "Record", "Ranking Local (Salvo neste aparelho)": "Local Ranking (Saved on this device)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nobody on the ranking yet. Be the first!", "Jogue também e entre no ranking!": "Play too and join the ranking!", "Pausado": "Paused", "CONTINUAR": "RESUME", "Pular": "Jump", "Pausar": "Pause", "Idioma": "Language", "Fever ": "Fever ", "Anônimo": "Anonymous", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Online ranking unavailable. Showing local device only.", "Zipper (tCenter)": "Zipper (tCenter)"
+    "Cabelo": "Hair", "Mecha": "Streak", "Olhos": "Eyes", "Corte": "Cut", "Curto": "Short", "Chanel": "Bob", "Longo": "Long", "Marias-chiquinhas": "Pigtails", "Rabo de cavalo": "Ponytail", "Cacheado": "Curly", "Franja": "Bangs", "Bagunçada": "Messy", "Reta": "Straight", "Lateral": "Side-swept", "Espetada": "Spiky", "Arco-íris": "Rainbow", "Detalhe": "Detail", "Nenhum": "None", "Coques": "Buns", "Orelhas de gato": "Cat ears", "Orelhas élficas": "Elf ears", "Chifres": "Horns", "Roupa": "Outfit", "Básica": "Basic", "Uniforme (Team)": "Uniform (Team)", "Moda 2000 (Quad Center)": "Y2K Fashion (Quad Center)", "Blazer 80s (Center)": "80s Blazer (Center)", "Acessório": "Accessory", "Presilhas (Kenkyuusei)": "Hair clips (Kenkyuusei)", "Boina (Senbatsu)": "Beret (Senbatsu)", "Band-aid (tCenter)": "Bandage (tCenter)", "Fones (wCenter)": "Headphones (wCenter)", "Óculos": "Glasses", "Sem": "None", "Redondo": "Round", "Quadrado": "Square", "Item": "Item", "✨ NOVO!": "✨ NEW!", "JOGAR": "PLAY", "Ver ranking": "View ranking", "Semana": "Week", "Geral": "All-time", "Fim do show": "Show's over", "おつかれさま": "Good work!", "DE NOVO": "AGAIN", "SALVAR IMAGEM": "SAVE IMAGE", "BAIXAR": "DOWNLOAD", "FECHAR": "CLOSE", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Quick tap = short jump; hold = high jump. \"Effort will surely be rewarded!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "If the download doesn't start, press and hold (phone) or right-click (computer) the image and choose save.", "Ligar ou desligar o som": "Turn sound on or off", "Seu nome no ranking": "Your name on the ranking", "Imagem do seu resultado": "Your result image", "Você": "You", "Audição": "Audition", "Laço azul": "Blue bow", "Microfone de palco": "Stage mic", "Hibisco": "Hibiscus", "Flor de cerejeira": "Cherry blossom", "Tiara de prata": "Silver tiara", "Tiara dourada": "Golden tiara", "Item novo": "New item", "pontos": "points", "estrelas": "stars", "Posição": "Rank", "novo recorde!": "new record!", "Escudo usado!": "Shield used!", "Fever! Estrelas em dobro": "Fever! Double stars", "Ímã de estrelas!": "Star magnet!", "Subiu para ": "Promoted to ", " Escudo e look!": " Shield and new look!", "Abdução ": "Abduction ", "Ímã ": "Magnet ", "Recorde": "Record", "Ranking Local (Salvo neste aparelho)": "Local Ranking (Saved on this device)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nobody on the ranking yet. Be the first!", "Jogue também e entre no ranking!": "Play too and join the ranking!", "Pausado": "Paused", "CONTINUAR": "RESUME", "Pular": "Jump", "Pausar": "Pause", "Idioma": "Language", "Fever ": "Fever ", "Anônimo": "Anonymous", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Online ranking unavailable. Showing local device only.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ Enter your Idol name! ✨",
   },
   "es": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Salta los obstáculos del escenario, junta estrellas y sube en el ranking hasta ser Center.",
-    "Cabelo": "Cabello", "Mecha": "Mechón", "Olhos": "Ojos", "Corte": "Corte", "Curto": "Corto", "Chanel": "Bob", "Longo": "Largo", "Marias-chiquinhas": "Coletas", "Rabo de cavalo": "Cola de caballo", "Cacheado": "Rizado", "Franja": "Flequillo", "Bagunçada": "Despeinado", "Reta": "Recto", "Lateral": "De lado", "Espetada": "Puntiagudo", "Arco-íris": "Arcoíris", "Detalhe": "Detalle", "Nenhum": "Ninguno", "Coques": "Moños", "Orelhas de gato": "Orejas de gato", "Orelhas élficas": "Orejas élficas", "Chifres": "Cuernos", "Roupa": "Ropa", "Básica": "Básica", "Uniforme (Team)": "Uniforme (Team)", "Moda 2000 (Quad Center)": "Moda 2000 (Quad Center)", "Blazer 80s (Center)": "Blazer 80s (Center)", "Acessório": "Accesorio", "Presilhas (Kenkyuusei)": "Horquillas (Kenkyuusei)", "Boina (Senbatsu)": "Boina (Senbatsu)", "Band-aid (tCenter)": "Curita (tCenter)", "Fones (wCenter)": "Auriculares (wCenter)", "Óculos": "Lentes", "Sem": "Sin", "Redondo": "Redondos", "Quadrado": "Cuadrados", "Item": "Objeto", "✨ NOVO!": "✨ ¡NUEVO!", "JOGAR": "JUGAR", "Ver ranking": "Ver ranking", "Semana": "Semana", "Geral": "General", "Fim do show": "Fin del show", "おつかれさま": "¡Buen trabajo!", "DE NOVO": "OTRA VEZ", "SALVAR IMAGEM": "GUARDAR IMAGEN", "BAIXAR": "DESCARGAR", "FECHAR": "CERRAR", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Toque rápido = salto corto; mantener = salto alto. \"¡El esfuerzo seguro será recompensado!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "Si la descarga no inicia, mantén presionada la imagen (móvil) o haz clic derecho (PC) para guardar.", "Ligar ou desligar o som": "Activar o desactivar sonido", "Seu nome no ranking": "Tu nombre en el ranking", "Imagem do seu resultado": "Imagen de tu resultado", "Você": "Tú", "Audição": "Audición", "Laço azul": "Lazo azul", "Microfone de palco": "Micrófono de escenario", "Hibisco": "Hibisco", "Flor de cerejeira": "Flor de cerezo", "Tiara de prata": "Tiara de plata", "Tiara dourada": "Tiara dorada", "Item novo": "Nuevo objeto", "pontos": "puntos", "estrelas": "estrellas", "Posição": "Posición", "novo recorde!": "¡nuevo récord!", "Escudo usado!": "¡Escudo usado!", "Fever! Estrelas em dobro": "¡Fever! Estrellas dobles", "Ímã de estrelas!": "¡Imán de estrellas!", "Subiu para ": "Ascendió a ", " Escudo e look!": " ¡Escudo y nuevo look!", "Abdução ": "Abducción ", "Ímã ": "Imán ", "Recorde": "Récord", "Ranking Local (Salvo neste aparelho)": "Ranking Local (Guardado en este dispositivo)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nadie en el ranking todavía. ¡Sé la primera persona!", "Jogue também e entre no ranking!": "¡Juega tú también y entra al ranking!", "Pausado": "Pausado", "CONTINUAR": "CONTINUAR", "Pular": "Saltar", "Pausar": "Pausar", "Idioma": "Idioma", "Fever ": "Fever ", "Anônimo": "Anónimo", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Ranking online no disponible. Mostrando solo este dispositivo.", "Zipper (tCenter)": "Zipper (tCenter)"
+    "Cabelo": "Cabello", "Mecha": "Mechón", "Olhos": "Ojos", "Corte": "Corte", "Curto": "Corto", "Chanel": "Bob", "Longo": "Largo", "Marias-chiquinhas": "Coletas", "Rabo de cavalo": "Cola de caballo", "Cacheado": "Rizado", "Franja": "Flequillo", "Bagunçada": "Despeinado", "Reta": "Recto", "Lateral": "De lado", "Espetada": "Puntiagudo", "Arco-íris": "Arcoíris", "Detalhe": "Detalle", "Nenhum": "Ninguno", "Coques": "Moños", "Orelhas de gato": "Orejas de gato", "Orelhas élficas": "Orejas élficas", "Chifres": "Cuernos", "Roupa": "Ropa", "Básica": "Básica", "Uniforme (Team)": "Uniforme (Team)", "Moda 2000 (Quad Center)": "Moda 2000 (Quad Center)", "Blazer 80s (Center)": "Blazer 80s (Center)", "Acessório": "Accesorio", "Presilhas (Kenkyuusei)": "Horquillas (Kenkyuusei)", "Boina (Senbatsu)": "Boina (Senbatsu)", "Band-aid (tCenter)": "Curita (tCenter)", "Fones (wCenter)": "Auriculares (wCenter)", "Óculos": "Lentes", "Sem": "Sin", "Redondo": "Redondos", "Quadrado": "Cuadrados", "Item": "Objeto", "✨ NOVO!": "✨ ¡NUEVO!", "JOGAR": "JUGAR", "Ver ranking": "Ver ranking", "Semana": "Semana", "Geral": "General", "Fim do show": "Fin del show", "おつかれさま": "¡Buen trabajo!", "DE NOVO": "OTRA VEZ", "SALVAR IMAGEM": "GUARDAR IMAGEN", "BAIXAR": "DESCARGAR", "FECHAR": "CERRAR", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Toque rápido = salto corto; mantener = salto alto. \"¡El esfuerzo seguro será recompensado!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "Si la descarga no inicia, mantén presionada la imagen (móvil) o haz clic derecho (PC) para guardar.", "Ligar ou desligar o som": "Activar o desactivar sonido", "Seu nome no ranking": "Tu nombre en el ranking", "Imagem do seu resultado": "Imagen de tu resultado", "Você": "Tú", "Audição": "Audición", "Laço azul": "Lazo azul", "Microfone de palco": "Micrófono de escenario", "Hibisco": "Hibisco", "Flor de cerejeira": "Flor de cerezo", "Tiara de prata": "Tiara de plata", "Tiara dourada": "Tiara dorada", "Item novo": "Nuevo objeto", "pontos": "puntos", "estrelas": "estrellas", "Posição": "Posición", "novo recorde!": "¡nuevo récord!", "Escudo usado!": "¡Escudo usado!", "Fever! Estrelas em dobro": "¡Fever! Estrellas dobles", "Ímã de estrelas!": "¡Imán de estrellas!", "Subiu para ": "Ascendió a ", " Escudo e look!": " ¡Escudo y nuevo look!", "Abdução ": "Abducción ", "Ímã ": "Imán ", "Recorde": "Récord", "Ranking Local (Salvo neste aparelho)": "Ranking Local (Guardado en este dispositivo)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nadie en el ranking todavía. ¡Sé la primera persona!", "Jogue também e entre no ranking!": "¡Juega tú también y entra al ranking!", "Pausado": "Pausado", "CONTINUAR": "CONTINUAR", "Pular": "Saltar", "Pausar": "Pausar", "Idioma": "Idioma", "Fever ": "Fever ", "Anônimo": "Anónimo", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Ranking online no disponible. Mostrando solo este dispositivo.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ¡Escribe tu nombre de Idol! ✨"
   },
 "th": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "กระโดดข้ามสิ่งกีดขวางบนเวที เก็บดาว และไต่อันดับไปที่เซ็นเตอร์",
-    "Cabelo": "ผม", "Mecha": "ไฮไลท์", "Olhos": "ตา", "Corte": "ทรงผม", "Curto": "สั้น", "Chanel": "บ๊อบ", "Longo": "ยาว", "Marias-chiquinhas": "ทวินเทล", "Rabo de cavalo": "หางม้า", "Cacheado": "หยิก", "Franja": "หน้าม้า", "Bagunçada": "ยุ่ง", "Reta": "ตรง", "Lateral": "ปัดข้าง", "Espetada": "ตั้ง", "Arco-íris": "สีรุ้ง", "Detalhe": "รายละเอียด", "Nenhum": "ไม่มี", "Olheiras suaves": "รอยคล้ำใต้ตา", "Coques": "มวยผม", "Orelhas de gato": "หูแมว", "Orelhas élficas": "หูเอลฟ์", "Chifres": "เขา", "Roupa": "ชุด", "Básica": "พื้นฐาน", "Uniforme (Team)": "เครื่องแบบ (ทีม)", "Moda 2000 (Quad Center)": "แฟชั่น Y2K", "Blazer 80s (Center)": "เสื้อเบลเซอร์ยุค 80", "Acessório": "เครื่องประดับ", "Presilhas (Kenkyuusei)": "กิ๊บติดผม", "Boina (Senbatsu)": "หมวกเบเร่ต์", "Band-aid (tCenter)": "พลาสเตอร์", "Fones (wCenter)": "หูฟัง", "Óculos": "แว่นตา", "Sem": "ไม่มี", "Redondo": "กลม", "Quadrado": "เหลี่ยม", "Item": "ไอเทม", "✨ NOVO!": "✨ ใหม่!", "JOGAR": "เล่น", "Ver ranking": "ดูอันดับ", "Semana": "สัปดาห์", "Geral": "ทั้งหมด", "Fim do show": "จบการแสดง", "おつかれさま": "ทำงานหนักมาก!", "DE NOVO": "เล่นอีกครั้ง", "SALVAR IMAGEM": "บันทึกภาพ", "BAIXAR": "ดาวน์โหลด", "FECHAR": "ปิด", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "แตะสั้น = กระโดดต่ำ ค้างไว้ = กระโดดสูง \"ความพยายามจะได้รับผลตอบแทนแน่นอน!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "หากไม่เริ่มดาวน์โหลด ให้กดค้าง (มือถือ) หรือคลิกขวา (คอมฯ) เพื่อบันทึก", "Ligar ou desligar o som": "เปิด/ปิดเสียง", "Seu nome no ranking": "ชื่อของคุณ", "Imagem do seu resultado": "ผลลัพธ์ของคุณ", "Você": "คุณ", "Audição": "ออดิชั่น", "Laço azul": "โบว์สีน้ำเงิน", "Microfone de palco": "ไมค์เวที", "Hibisco": "ชบา", "Flor de cerejeira": "ซากุระ", "Tiara de prata": "มงกุฎเงิน", "Tiara dourada": "มงกุฎทอง", "Item novo": "ไอเทมใหม่", "pontos": "คะแนน", "estrelas": "ดาว", "Posição": "อันดับ", "novo recorde!": "สถิติใหม่!", "Escudo usado!": "ใช้โล่แล้ว!", "Fever! Estrelas em dobro": "ฟีเวอร์! ดาวคูณสอง", "Ímã de estrelas!": "แม่เหล็กดูดดาว!", "Subiu para ": "เลื่อนขั้นเป็น ", " Escudo e look!": " ได้โล่และชุดใหม่!", "Abdução ": "ลักพาตัว ", "Ímã ": "แม่เหล็ก ", "Recorde": "สถิติ", "Ranking Local (Salvo neste aparelho)": "อันดับในเครื่อง", "Ninguém no ranking ainda. Seja a primeira pessoa!": "ยังไม่มีใครในอันดับ เป็นคนแรกเลย!", "Jogue também e entre no ranking!": "มาเล่นและเข้าสู่อันดับด้วยกันเถอะ!", "Pausado": "หยุดชั่วคราว", "CONTINUAR": "เล่นต่อ", "Pular": "กระโดด", "Pausar": "หยุด", "Idioma": "ภาษา", "Fever ": "ฟีเวอร์ ", "Anônimo": "นิรนาม", "Mega ": "เมก้า ", "Ranking online indisponível. Mostrando só este aparelho.": "อันดับออนไลน์ไม่พร้อมใช้งาน แสดงเฉพาะเครื่องนี้", "Zipper (tCenter)": "Zipper (tCenter)"
+    "Cabelo": "ผม", "Mecha": "ไฮไลท์", "Olhos": "ตา", "Corte": "ทรงผม", "Curto": "สั้น", "Chanel": "บ๊อบ", "Longo": "ยาว", "Marias-chiquinhas": "ทวินเทล", "Rabo de cavalo": "หางม้า", "Cacheado": "หยิก", "Franja": "หน้าม้า", "Bagunçada": "ยุ่ง", "Reta": "ตรง", "Lateral": "ปัดข้าง", "Espetada": "ตั้ง", "Arco-íris": "สีรุ้ง", "Detalhe": "รายละเอียด", "Nenhum": "ไม่มี", "Olheiras suaves": "รอยคล้ำใต้ตา", "Coques": "มวยผม", "Orelhas de gato": "หูแมว", "Orelhas élficas": "หูเอลฟ์", "Chifres": "เขา", "Roupa": "ชุด", "Básica": "พื้นฐาน", "Uniforme (Team)": "เครื่องแบบ (ทีม)", "Moda 2000 (Quad Center)": "แฟชั่น Y2K", "Blazer 80s (Center)": "เสื้อเบลเซอร์ยุค 80", "Acessório": "เครื่องประดับ", "Presilhas (Kenkyuusei)": "กิ๊บติดผม", "Boina (Senbatsu)": "หมวกเบเร่ต์", "Band-aid (tCenter)": "พลาสเตอร์", "Fones (wCenter)": "หูฟัง", "Óculos": "แว่นตา", "Sem": "ไม่มี", "Redondo": "กลม", "Quadrado": "เหลี่ยม", "Item": "ไอเทม", "✨ NOVO!": "✨ ใหม่!", "JOGAR": "เล่น", "Ver ranking": "ดูอันดับ", "Semana": "สัปดาห์", "Geral": "ทั้งหมด", "Fim do show": "จบการแสดง", "おつかれさま": "ทำงานหนักมาก!", "DE NOVO": "เล่นอีกครั้ง", "SALVAR IMAGEM": "บันทึกภาพ", "BAIXAR": "ดาวน์โหลด", "FECHAR": "ปิด", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "แตะสั้น = กระโดดต่ำ ค้างไว้ = กระโดดสูง \"ความพยายามจะได้รับผลตอบแทนแน่นอน!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "หากไม่เริ่มดาวน์โหลด ให้กดค้าง (มือถือ) หรือคลิกขวา (คอมฯ) เพื่อบันทึก", "Ligar ou desligar o som": "เปิด/ปิดเสียง", "Seu nome no ranking": "ชื่อของคุณ", "Imagem do seu resultado": "ผลลัพธ์ของคุณ", "Você": "คุณ", "Audição": "ออดิชั่น", "Laço azul": "โบว์สีน้ำเงิน", "Microfone de palco": "ไมค์เวที", "Hibisco": "ชบา", "Flor de cerejeira": "ซากุระ", "Tiara de prata": "มงกุฎเงิน", "Tiara dourada": "มงกุฎทอง", "Item novo": "ไอเทมใหม่", "pontos": "คะแนน", "estrelas": "ดาว", "Posição": "อันดับ", "novo recorde!": "สถิติใหม่!", "Escudo usado!": "ใช้โล่แล้ว!", "Fever! Estrelas em dobro": "ฟีเวอร์! ดาวคูณสอง", "Ímã de estrelas!": "แม่เหล็กดูดดาว!", "Subiu para ": "เลื่อนขั้นเป็น ", " Escudo e look!": " ได้โล่และชุดใหม่!", "Abdução ": "ลักพาตัว ", "Ímã ": "แม่เหล็ก ", "Recorde": "สถิติ", "Ranking Local (Salvo neste aparelho)": "อันดับในเครื่อง", "Ninguém no ranking ainda. Seja a primeira pessoa!": "ยังไม่มีใครในอันดับ เป็นคนแรกเลย!", "Jogue também e entre no ranking!": "มาเล่นและเข้าสู่อันดับด้วยกันเถอะ!", "Pausado": "หยุดชั่วคราว", "CONTINUAR": "เล่นต่อ", "Pular": "กระโดด", "Pausar": "หยุด", "Idioma": "ภาษา", "Fever ": "ฟีเวอร์ ", "Anônimo": "นิรนาม", "Mega ": "เมก้า ", "Ranking online indisponível. Mostrando só este aparelho.": "อันดับออนไลน์ไม่พร้อมใช้งาน แสดงเฉพาะเครื่องนี้", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ใส่ชื่อไอดอลของคุณ! ✨"
   },
   "ja": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "ステージの障害物をジャンプして、星を集めて、センターを目指してランクを上げよう。",
-    "Cabelo": "髪色", "Mecha": "メッシュ", "Olhos": "瞳", "Corte": "髪型", "Curto": "ショート", "Chanel": "ボブ", "Longo": "ロング", "Marias-chiquinhas": "ツインテール", "Rabo de cavalo": "ポニーテール", "Cacheado": "くせ毛", "Franja": "前髪", "Bagunçada": "ラフ", "Reta": "ぱっつん", "Lateral": "流し前髪", "Espetada": "ツンツン", "Arco-íris": "レインボー", "Detalhe": "パーツ", "Nenhum": "なし", "Coques": "お団子", "Orelhas de gato": "猫耳", "Orelhas élficas": "エルフ耳", "Chifres": "つの", "Roupa": "衣装", "Básica": "基本", "Uniforme (Team)": "制服（チーム）", "Moda 2000 (Quad Center)": "Y2Kファッション（クアッドセンター）", "Blazer 80s (Center)": "80sブレザー（センター）", "Acessório": "アクセサリー", "Presilhas (Kenkyuusei)": "ヘアピン（研究生）", "Boina (Senbatsu)": "ベレー帽（選抜）", "Band-aid (tCenter)": "絆創膏（tセンター）", "Fones (wCenter)": "ヘッドホン（wセンター）", "Óculos": "メガネ", "Sem": "なし", "Redondo": "丸", "Quadrado": "四角", "Item": "アイテム", "✨ NOVO!": "✨ NEW!", "JOGAR": "スタート", "Ver ranking": "ランキングを見る", "Semana": "今週", "Geral": "総合", "Fim do show": "ライブ終了", "DE NOVO": "もう一度", "SALVAR IMAGEM": "画像を保存", "BAIXAR": "ダウンロード", "FECHAR": "閉じる","Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "タップ＝低いジャンプ／長押し＝高いジャンプ。「努力は必ず報われる！」✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "保存できない場合は、画像を長押し（スマホ）または右クリック（パソコン）して保存してください。", "Ligar ou desligar o som": "サウンドのオン/オフ", "Seu nome no ranking": "ランキング用の名前", "Imagem do seu resultado": "あなたの結果画像", "Você": "あなた", "Audição": "オーディション", "Laço azul": "青いリボン", "Microfone de palco": "ステージマイク", "Hibisco": "ハイビスカス", "Flor de cerejeira": "桜の花", "Tiara de prata": "シルバーのティアラ", "Tiara dourada": "ゴールドのティアラ", "Item novo": "新アイテム", "pontos": "点", "estrelas": "星", "Posição": "ランク", "novo recorde!": "自己ベスト更新！", "Escudo usado!": "シールド使用！", "Fever! Estrelas em dobro": "フィーバー！星が2倍", "Ímã de estrelas!": "星マグネット！", "Subiu para ": "昇格：", " Escudo e look!": " シールドと新衣装！", "Abdução ": "アブダクション ", "Ímã ": "マグネット ", "Fever ": "フィーバー ", "Recorde": "ベスト", "Ranking Local (Salvo neste aparelho)": "ローカルランキング（この端末に保存）", "Ninguém no ranking ainda. Seja a primeira pessoa!": "最初のランクインを目指そう！", "Jogue também e entre no ranking!": "あなたもプレイしてランキングに参加！", "Pausado": "一時停止", "CONTINUAR": "つづける", "Pular": "ジャンプ", "Pausar": "一時停止", "Idioma": "言語", "Anônimo": "ゲスト", "Mega ": "メガ ", "Ranking online indisponível. Mostrando só este aparelho.": "オンラインランキングは現在利用できません（端末内のみ表示）", "Zipper (tCenter)": "ジッパー (tCenter)"
+    "Cabelo": "髪色", "Mecha": "メッシュ", "Olhos": "瞳", "Corte": "髪型", "Curto": "ショート", "Chanel": "ボブ", "Longo": "ロング", "Marias-chiquinhas": "ツインテール", "Rabo de cavalo": "ポニーテール", "Cacheado": "くせ毛", "Franja": "前髪", "Bagunçada": "ラフ", "Reta": "ぱっつん", "Lateral": "流し前髪", "Espetada": "ツンツン", "Arco-íris": "レインボー", "Detalhe": "パーツ", "Nenhum": "なし", "Coques": "お団子", "Orelhas de gato": "猫耳", "Orelhas élficas": "エルフ耳", "Chifres": "つの", "Roupa": "衣装", "Básica": "基本", "Uniforme (Team)": "制服（チーム）", "Moda 2000 (Quad Center)": "Y2Kファッション（クアッドセンター）", "Blazer 80s (Center)": "80sブレザー（センター）", "Acessório": "アクセサリー", "Presilhas (Kenkyuusei)": "ヘアピン（研究生）", "Boina (Senbatsu)": "ベレー帽（選抜）", "Band-aid (tCenter)": "絆創膏（tセンター）", "Fones (wCenter)": "ヘッドホン（wセンター）", "Óculos": "メガネ", "Sem": "なし", "Redondo": "丸", "Quadrado": "四角", "Item": "アイテム", "✨ NOVO!": "✨ NEW!", "JOGAR": "スタート", "Ver ranking": "ランキングを見る", "Semana": "今週", "Geral": "総合", "Fim do show": "ライブ終了", "DE NOVO": "もう一度", "SALVAR IMAGEM": "画像を保存", "BAIXAR": "ダウンロード", "FECHAR": "閉じる","Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "タップ＝低いジャンプ／長押し＝高いジャンプ。「努力は必ず報われる！」✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "保存できない場合は、画像を長押し（スマホ）または右クリック（パソコン）して保存してください。", "Ligar ou desligar o som": "サウンドのオン/オフ", "Seu nome no ranking": "ランキング用の名前", "Imagem do seu resultado": "あなたの結果画像", "Você": "あなた", "Audição": "オーディション", "Laço azul": "青いリボン", "Microfone de palco": "ステージマイク", "Hibisco": "ハイビスカス", "Flor de cerejeira": "桜の花", "Tiara de prata": "シルバーのティアラ", "Tiara dourada": "ゴールドのティアラ", "Item novo": "新アイテム", "pontos": "点", "estrelas": "星", "Posição": "ランク", "novo recorde!": "自己ベスト更新！", "Escudo usado!": "シールド使用！", "Fever! Estrelas em dobro": "フィーバー！星が2倍", "Ímã de estrelas!": "星マグネット！", "Subiu para ": "昇格：", " Escudo e look!": " シールドと新衣装！", "Abdução ": "アブダクション ", "Ímã ": "マグネット ", "Fever ": "フィーバー ", "Recorde": "ベスト", "Ranking Local (Salvo neste aparelho)": "ローカルランキング（この端末に保存）", "Ninguém no ranking ainda. Seja a primeira pessoa!": "最初のランクインを目指そう！", "Jogue também e entre no ranking!": "あなたもプレイしてランキングに参加！", "Pausado": "一時停止", "CONTINUAR": "つづける", "Pular": "ジャンプ", "Pausar": "一時停止", "Idioma": "言語", "Anônimo": "ゲスト", "Mega ": "メガ ", "Ranking online indisponível. Mostrando só este aparelho.": "オンラインランキングは現在利用できません（端末内のみ表示）", "Zipper (tCenter)": "ジッパー (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ アイドル名を入力してね！ ✨"
   }
 };
 
@@ -360,26 +375,28 @@ function showLbLocal(el,rowsOverride){
 var did='',tok=null,API='/api';
 try{did=localStorage.getItem('brs48cr_did')||'';if(!did){did=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('d'+Date.now()+Math.random().toString(36).slice(2));localStorage.setItem('brs48cr_did',did)}}catch(e){did='d'+Date.now()+Math.random().toString(36).slice(2)}
 function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.json()}).then(function(j){tok=j.token}).catch(function(){})}catch(e){}}
+
+
 function showLb(el){
   if(!el)return;
   var tb=tab;
   fetch(API+'/leaderboard?tab='+tb).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
     if(tb!==tab)return;
-    showLbLocal(el,j.rows.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
+    // --- FILTRO DE NOME ÚNICO (Maior pontuação) ---
+    var unq = {};
+    j.rows.forEach(function(r){
+      var k = (r.name||'').trim().toLowerCase();
+      if(!unq[k] || unq[k].score < r.score) unq[k] = r;
+    });
+    var top10 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,10);
+    // ----------------------------------------------
+    showLbLocal(el,top10.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
   }).catch(function(){
     showLbLocal(el);
     var n=document.createElement('li');n.style.cssText='font-size:11px;color:var(--sub);background:none;justify-content:center';
     n.textContent=tr('Ranking online indisponível. Mostrando só este aparelho.');el.appendChild(n);
   });
 }
-try{
-  var sv=JSON.parse(localStorage.getItem('brs48cr_cu2')||'null');
-  if(sv)for(var k in sv)CU[k]=sv[k];
-  CU.img=CU.hair;
-  accSel=localStorage.getItem('brs48cr_acc')||'';
-  var sh=JSON.parse(localStorage.getItem('brs48cr_ch2')||'null');
- if(sh)CH.forEach(function(c,i){if(sh[i]){c.out=sh[i].out; c.outcol=sh[i].outcol; c.hat=sh[i].hat; c.gl=sh[i].gl}});
-}catch(e){}
 
 function saveCu(){
   try{
@@ -635,6 +652,8 @@ function jump(){
 
 function start(e){
   if(e && e.preventDefault) e.preventDefault();
+
+
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   clearTimeout(overTimer);
   ac();
@@ -655,6 +674,12 @@ var isTesting = (!$('tstw').hidden && $('tst') && +$('tst').value > 0);
       got: false,
       ct: 'ima' // Força o efeito magnético para atrair obrigatoriamente até você!
     });
+window.activePetFly = {
+      type: ['tsu', 'lirika', 'pati'][Math.floor(Math.random() * 3)],
+      x: W + 70,
+      y: GY - 80, // Voando baixinho para entregar o presente
+      dropped: false
+    };
   }
 
 
@@ -692,7 +717,8 @@ function end(){
   $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s);
   
  var isTesting = (!$('tstw').hidden && $('tst') && +$('tst').value > 0);
-  var isAdmin = (nick || '').trim().toLowerCase() === 'tsuadmin';
+  var nomeDigitado = (nick || '').trim().toLowerCase();
+  var isAdmin = (nomeDigitado === 'tsuadmin' || nomeDigitado === 'macchannegra');
   var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
 
   if(!isTesting && !isAdmin){
@@ -761,7 +787,7 @@ function update(dt){
     window.activePetFly = {
       type: chosenPet,
       x: W + 70,
-      y: GY - 165,
+      y: GY - 80,
       dropped: false
     };
   }
@@ -771,7 +797,7 @@ function update(dt){
     window.activePetFly.x -= (sp * 1.35) * dt; // Voa um pouco mais rápido que a pista
     
     // Ponto onde ele larga os presentes
-    if(!window.activePetFly.dropped && window.activePetFly.x < W - 80){
+      if(!window.activePetFly.dropped && window.activePetFly.x < P.x + 220){
       window.activePetFly.dropped = true;
       var dropX = window.activePetFly.x;
       
@@ -789,7 +815,7 @@ function update(dt){
         });
       } else {
         // 95% de chance: sequência de 6 estrelas alinhadas em arco fácil de pegar
-        for(var si = 0; si < 6; si++){
+        for(var si = 0; si < 3; si++){
           items.push({
             k: 'star',
             x: dropX + (si * 42),
@@ -844,15 +870,13 @@ var curMorango = Math.floor(score/3500); // Surge a cada 3500 pontos
   
   if(pw){
     if(pw.k==='ima')items.forEach(function(it){var dx=P.x+15-it.x,dy=P.y+22-it.y,d=Math.hypot(dx,dy)||1;if(d<170&&it.k==='star'){it.x+=dx/d*7*dt;it.y+=dy/d*7*dt}});
-    if((pw.t-=dt)<=0){
-  if(pw.k==='alien'){
-      inv=150; // 
-      P.air=true;
-      P.vy=0; 
-      abducted=false;
+ if((pw.t-=dt)<=0){
+  if(pw.k==='alien' || pw.k==='gigante'){
+      inv=150; // Garante escudo temporário de 2,5s ao sair do disco ou desinchar
+      if(pw.k==='alien'){ P.air=true; P.vy=0; abducted=false; }
   }
-      pw=null;
-    }
+  pw=null;
+}
   }
   
   var pb={x:P.x,y:P.y,w:P.w,h:P.h};
@@ -1154,6 +1178,7 @@ function drawPet(ctx, type, x, y, sc, tFrame){
 
   if(type === 'tsu'){
     ctx.shadowColor = '#d8b4fe'; ctx.shadowBlur = 12;
+    ctx.fillStyle = '#7e22ce'; E(-6, 10, 3, 2.5); E(6, 10, 3, 2.5);
     
     // Rabinho
     ctx.strokeStyle = '#7e22ce'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
@@ -1280,7 +1305,8 @@ var petKey = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : ['tsu','l
 drawPet(pc, petKey, 112, 38, 1.15, pt);g=og}requestAnimationFrame(prevLoop)}
 prevLoop();
 var cc=$('cel').getContext('2d'),ct=0;
-function celeb(){if(state!=='over')return;ct++;var og=g,ch=CH[sel],pu=.5+.5*Math.sin(ct*.05);g=cc;g.clearRect(0,0,200,150);var Q=curPal(),sg=g.createLinearGradient(0,0,0,140);sg.addColorStop(0,Q[0]);sg.addColorStop(1,Q[1]);g.fillStyle=sg;g.fillRect(0,0,200,150);for(var b=0;b<9;b++){ var bh=30+(b*37%40), bx=b*24-6; g.fillStyle=b%2?Q[2]:Q[3]; g.fillRect(bx,140-bh,20,bh); g.fillStyle='rgba(255,235,150,0.3)'; if(b%3!==0){ for(var wy=140-bh+8; wy<130; wy+=12){ g.fillRect(bx+4,wy,4,4); g.fillRect(bx+12,wy,4,4); } } }g.fillStyle=Q[6];g.fillRect(0,140,200,10);g.fillStyle=Q[7];g.fillRect(0,140,200,2);if(wasAbducted)ufoDraw(100,40,.85);if(window.wasGiant){g.save();g.translate(32,42);g.scale(1.1,1.1);g.rotate(-0.2);g.shadowColor='#ff6fb5';g.shadowBlur=8;g.fillStyle='#f43f5e';g.beginPath();g.arc(0,2,10,0,7);g.fill();g.fillStyle='#fff';g.fillRect(-4,-1,2,2);g.fillRect(2,1,2,2);g.fillRect(-1,4,2,2);g.fillStyle='#22c55e';g.beginPath();g.moveTo(-7,-6);g.lineTo(0,-12);g.lineTo(7,-6);g.lineTo(0,-4);g.fill();g.restore();}
+
+function celeb(){if(state!=='over')return;ct++;var og=g,ch=CH[sel],pu=.5+.5*Math.sin(ct*.05);g=cc;g.clearRect(0,0,200,150);var Q=curPal(),sg=g.createLinearGradient(0,0,0,140);sg.addColorStop(0,Q[0]);sg.addColorStop(1,Q[1]);g.fillStyle=sg;g.fillRect(0,0,200,150);for(var b=0;b<9;b++){ var bh=30+(b*37%40), bx=b*24-6; g.fillStyle=b%2?Q[2]:Q[3]; g.fillRect(bx,140-bh,20,bh); g.fillStyle='rgba(255,235,150,0.3)'; if(b%3!==0){ for(var wy=140-bh+8; wy<130; wy+=12){ g.fillRect(bx+4,wy,4,4); g.fillRect(bx+12,wy,4,4); } } }g.fillStyle=Q[6];g.fillRect(0,140,200,10);g.fillStyle=Q[7];g.fillRect(0,140,200,2);if(wasAbducted)ufoDraw(165,40,.85);if(window.wasGiant){g.save();g.translate(32,42);g.scale(1.1,1.1);g.rotate(-0.2);g.shadowColor='#ff6fb5';g.shadowBlur=8;g.fillStyle='#f43f5e';g.beginPath();g.arc(0,2,10,0,7);g.fill();g.fillStyle='#fff';g.fillRect(-4,-1,2,2);g.fillRect(2,1,2,2);g.fillRect(-1,4,2,2);g.fillStyle='#22c55e';g.beginPath();g.moveTo(-7,-6);g.lineTo(0,-12);g.lineTo(7,-6);g.lineTo(0,-4);g.fill();g.restore();}
 
  var cn=g.createLinearGradient(0,0,0,140);cn.addColorStop(0,'rgba(255,255,255,.5)');cn.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=cn;g.beginPath();g.moveTo(88,0);g.lineTo(112,0);g.lineTo(165,140);g.lineTo(35,140);g.fill();
  var rg=g.createRadialGradient(100,85,4,100,85,75);rg.addColorStop(0,'rgba('+GLc()+','+(.5+.25*pu)+')');rg.addColorStop(1,'rgba(255,160,220,0)');g.fillStyle=rg;g.fillRect(0,0,200,150);
@@ -1387,11 +1413,16 @@ function draw(){
   
 else if(it.k==='morango'){
       g.save(); g.translate(cx+7, cy+7); g.rotate(Math.sin(frame*0.1)*0.2);
-      g.fillStyle='#f43f5e'; g.beginPath(); g.arc(0,2,10,0,7); g.fill(); 
-      g.fillStyle='#fff'; g.fillRect(-4,-1,2,2); g.fillRect(2,1,2,2); g.fillRect(-1,4,2,2);
-      g.fillStyle='#22c55e'; g.beginPath(); g.moveTo(-7,-6); g.lineTo(0,-12); g.lineTo(7,-6); g.lineTo(0,-4); g.fill();
+      // Cone
+      g.fillStyle='#d97706'; g.beginPath(); g.moveTo(-6,2); g.lineTo(6,2); g.lineTo(0,14); g.fill(); 
+      // Sorvete rosa em 3 bolas
+      g.fillStyle='#ff6fb5'; g.beginPath(); g.arc(0,-1,7,0,7); g.fill(); 
+      g.beginPath(); g.arc(-4,2,4,0,7); g.fill(); g.beginPath(); g.arc(4,2,4,0,7); g.fill(); 
+      // Granulados branco e azul
+      g.fillStyle='#fff'; g.fillRect(-2,-3,2,2); g.fillRect(2,-1,2,2); g.fillStyle='#4dd8ff'; g.fillRect(-1,-6,2,2);
       g.restore();
     }
+
     else if(it.k==='ufo'){
       g.save(); g.translate(cx+7, cy); g.rotate(Math.sin(frame*0.1)*0.2);
       var ufoG = g.createRadialGradient(0, 0, 2, 0, 0, 26);
@@ -1410,7 +1441,7 @@ else if(it.k==='morango'){
     else{var fv=pw&&pw.k==='fever';if(fv){g.fillStyle='rgba(255,140,100,.3)';g.beginPath();g.arc(cx,cy,15,0,7);g.fill()}g.fillStyle='#ffe14d';g.shadowColor=fv?'#ff8466':'#ffe14d';g.shadowBlur=fv?18:8;g.beginPath();for(var i=0;i<10;i++){var r=i%2?4:10,a=-Math.PI/2+i*Math.PI/5;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}g.fill();g.shadowBlur=0}});
 
 if(window.activePetFly){
-    drawPet(g, window.activePetFly.type, window.activePetFly.x, window.activePetFly.y, 2.2, frame);
+    drawPet(g, window.activePetFly.type, window.activePetFly.x, window.activePetFly.y, 1.2, frame);
   }
 
   if(rankI>=10&&state==='play'){var ag=g.createRadialGradient(P.x+15,P.y+22,4,P.x+15,P.y+22,52);var hc=rankI>=11?'hsla('+((frame*3)%360|0)+',90%,70%,':'rgba(255,225,120,';ag.addColorStop(0,hc+'.55)');ag.addColorStop(1,hc+'0)');g.fillStyle=ag;g.fillRect(P.x-40,P.y-30,110,110);g.fillStyle='#ffe14d';for(var ei=0;ei<4;ei++)g.fillRect(P.x-8-ei*14,P.y+10+Math.sin(frame*.2+ei)*14,3,3)}
@@ -1439,10 +1470,10 @@ if(window.activePetFly){
 g.save();
   var isGiant = (pw && pw.k === 'gigante');
   if (isGiant) {
-    g.translate(P.x + P.w/2, P.y + P.h); // Desce a âncora pros pés
-    g.scale(1.5, 1.5); // Aumenta 50%
-    g.translate(-(P.x + P.w/2), -(P.y + P.h)); // Sobe de volta
-    g.shadowColor = '#ff6fb5'; g.shadowBlur = 25; // Halo Rosa Kawaii
+    g.translate(P.x + P.w/2, P.y + P.h); g.scale(1.5, 1.5); g.translate(-(P.x + P.w/2), -(P.y + P.h));
+    var hg = g.createRadialGradient(P.x+15, P.y+22, 10, P.x+15, P.y+22, 35);
+    hg.addColorStop(0, 'rgba(255,111,181,0.6)'); hg.addColorStop(1, 'rgba(255,111,181,0)');
+    g.fillStyle = hg; g.beginPath(); g.arc(P.x+15, P.y+22, 35, 0, 7); g.fill();
   }
   // Se for gigante, NÃO pisca. Fica invencível e destrói tudo no caminho!
   var blink = (inv > 0 && !abducted && !isGiant && ((frame/4|0)%2)); 
@@ -1581,7 +1612,9 @@ function makeCard(){
   
   if(isGiant) {
     g.translate(133, 102); g.scale(4.5, 4.5); 
-    g.shadowColor = '#ff6fb5'; g.shadowBlur = 20;
+    var hg = g.createRadialGradient(15, 22, 10, 15, 22, 35);
+    hg.addColorStop(0, 'rgba(255,111,181,0.6)'); hg.addColorStop(1, 'rgba(255,111,181,0)');
+    g.fillStyle = hg; g.beginPath(); g.arc(15, 22, 35, 0, 7); g.fill();
   } else if(isAlien) {
     g.translate(148, 80); g.scale(3.5, 3.5); 
   } else {

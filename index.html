@@ -176,6 +176,9 @@ canvas{width:100%;height:100%;display:block}
   <div class="ov" id="menu">
     <div class="panel">
       <h1 id="menu-title" translate="no">TsuLiPa: Center Run! 🌷<small>センターラン</small></h1>
+		<div class="kaomoji-deco" aria-hidden="true" style="font-size: 13px; color: var(--pink); font-weight: 700; margin: 2px 0 8px 0; text-align: center; user-select: none;">
+  ✨ <span id="kaomoji-visual">(*^▽^*)</span> ✨
+</div>
       <p>Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.</p>
       
       <div class="lang" role="group" aria-label="Idioma">
@@ -189,13 +192,6 @@ canvas{width:100%;height:100%;display:block}
 
       <canvas id="prev" width="140" height="120" style="display:block;margin:0 auto 12px;width:140px;height:120px" aria-hidden="true"></canvas>
       <input class="nick" id="nick" maxlength="12" placeholder="✨ Digite seu nome de Idol! ✨" aria-label="✨ Digite seu nome de Idol! ✨" autocomplete="off">
-
-		<!-- Gerador de Kaomoji Dinâmico -->
-<div class="kaomoji-box" style="text-align: center; margin: 10px 0 14px 0; background: var(--chip); padding: 8px 12px; border-radius: 12px; border: 1.5px dashed var(--sub);">
-  <span style="font-size: 11px; font-weight: 700; color: var(--sub); display: block; margin-bottom: 4px;">✨ Gerador de Kaomoji ✨</span>
-  <div id="kaomoji-display" style="font-size: 20px; font-weight: 800; color: var(--b1); margin-bottom: 6px; cursor: pointer;" title="Clique para copiar!">(*^▽^*)</div>
-  <button type="button" class="btn alt" id="btn-gerar-kaomoji" style="padding: 4px 14px; font-size: 11px;">Gerar Outro</button>
-</div>
 		
       <div class="chars" id="chars"></div>
       
@@ -2024,31 +2020,18 @@ applyOshi(OSHI);
   b.onclick = function(){ applyOshi(b.dataset.oshi); };
 });
 
-	// --- LÓGICA DO GERADOR DE KAOMOJI ---
-var kaomojisList = [
+// --- DETALHE VISUAL DE KAOMOJI DINÂMICO ---
+var kaomojisDecorativos = [
   "(๑>◡<๑)", "(✧ω✧)", "(｡♥‿♥｡)", "(*^▽^*)", 
-  "(≧◡≦)", "(o˘◡˘o)", "(=^･ω･^=)", "✨(๑˃̵ᴗ˂̵)و✨", 
-  "(っ˘ω˘ς)", "( ´ ▽ ` )ﾉ", "(◍•ω•◍)", "(*¯︶¯*)"
+  "(≧◡≦)", "(o˘◡˘o)", "(=^･ω･^=)", "(っ˘ω˘ς)", "( ´ ▽ ` )ﾉ", "(◍•ω•◍)"
 ];
+var visualKaoEl = document.getElementById('kaomoji-visual');
 
-var kaoDisplay = document.getElementById('kaomoji-display');
-var kaoBtn = document.getElementById('btn-gerar-kaomoji');
-
-if(kaoBtn && kaoDisplay) {
-  kaoBtn.onclick = function() {
-    var randomKao = kaomojisList[Math.floor(Math.random() * kaomojisList.length)];
-    kaoDisplay.textContent = randomKao;
-  };
-
-  kaoDisplay.onclick = function() {
-    navigator.clipboard.writeText(kaoDisplay.textContent).then(function() {
-      var originalText = kaoDisplay.textContent;
-      kaoDisplay.textContent = "Copiado! 🎉";
-      setTimeout(function() {
-        kaoDisplay.textContent = originalText;
-      }, 1000);
-    });
-  };
+if(visualKaoEl) {
+  setInterval(function() {
+    var randomKao = kaomojisDecorativos[Math.floor(Math.random() * kaomojisDecorativos.length)];
+    visualKaoEl.textContent = randomKao;
+  }, 4000); // Troca de carinha a cada 4 segundos de forma suave
 }
 	
 applyLang();

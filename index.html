@@ -672,14 +672,24 @@ function music(on){
 function sync(){var k=state!=='play'?'menu':(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT){curT=k;music(true)}}
 var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊'};
 
-var P,obs,items,sp,score,dist,frame,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0;
+var P,obs,items,sp,score,fans,dist,frame,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0;
 var paused=false,abducted=false,wasAbducted=false;
 var isTestGame = false;
 var CFG={STAR:15,STAR_FEVER:30,CARD:100,UFO_EVERY:2500,UFO_BONUS:100,UFO_FRAMES:480,UFO_STAR_MULT:.5,DIST_RATE:.015};
 
+function getPartner(currentSel) {
+  var options;
+  if (currentSel === 0) options = [1, 2]; // Tsu -> Lirika ou Pati
+  else if (currentSel === 1) options = [0, 2]; // Lirika -> Tsu ou Pati
+  else if (currentSel === 2) options = [0, 1]; // Pati -> Tsu ou Lirika
+  else options = [0, 1, 2]; // Você -> Tsu, Lirika ou Pati
+  
+  return options[Math.floor(Math.random() * options.length)];
+}
+	
 function reset(){
   P={x:80,y:GY-44,vy:0,w:30,h:44,air:false};
-  obs=[];items=[];sp=5.5;
+  obs=[]; items=[]; fans=[]; sp=5.5;
   var tstVal = (!$('tstw').hidden && $('tst')) ? (+$('tst').value||0) : 0;
   isTestGame = (tstVal > 0 || !$('tstw').hidden);
   score=tstVal; dist=0; frame=0; toast=''; toastT=0;
@@ -693,6 +703,9 @@ function reset(){
   window.activePetFly = null;
   window.petBag = [];
   window.lastPetKey = '';
+  window.flashAlpha = 0;
+  window.lastPaparazzi = Math.floor(score / 2500);
+  window.fans = [];
 }
 
 function spawn(){
@@ -723,6 +736,17 @@ function spawn(){
 
   var gap = sp * 40 + rnd(110, 340);
   if(Math.random()<0.25) gap += rnd(200, 500); 
+	// --- GERADOR DE PLATEIA ---
+  if (score >= 5000 && Math.random() < 0.6) {
+    var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; // Cores dos lightsticks do trio!
+    fans.push({
+      x: nextX + rnd(10, 150), // Nasce perto do obstáculo
+      y: GY - 15 - rnd(0, 5),  // Altura do chão, variando um pouquinho
+      color: lsColors[Math.floor(Math.random() * 3)],
+      offset: Math.random() * 10 // Um número aleatório para não pularem todos iguais
+    });
+  }
+	
   nextX += gap;
 }
 
@@ -857,6 +881,20 @@ function hit(a,b){
 function update(dt){
   frame+=dt;var s0=Math.min(5.5+frame*.0011,12)+Math.min(3,Math.max(0,score-5000)*.0003);sp=s0*SC;dist+=sp*dt;score+=s0*CFG.DIST_RATE*dt;
 
+	// --- LÓGICA DO PAPARAZZI ---
+  var curPapa = Math.floor(score / 2500); // Dispara a cada 2500 pontos exatos
+  if(curPapa > window.lastPaparazzi && score > 0 && state === 'play') {
+    window.lastPaparazzi = curPapa;
+    window.flashAlpha = 1; // Ativa a cegueira branca no máximo (100%)
+    if (sfx.photo) sfx.photo(); // Toca o sonzinho de foto!
+  }
+
+  // Faz a tela branca sumir gradativamente
+  if (window.flashAlpha > 0) {
+    window.flashAlpha -= dt * 0.035; // Velocidade em que o clarão apaga
+    if (window.flashAlpha < 0) window.flashAlpha = 0;
+  }
+
 // Disparo a cada 1500 pontos
   var curPetMilestone = Math.floor(score / 1500);
   if(curPetMilestone > (window.lastPetMilestone || 0) && score > 0 && state === 'play'){
@@ -961,6 +999,8 @@ var curMorango = Math.floor(score/3500); // Surge a cada 3500 pontos
   }
 
   obs.forEach(function(o){o.x-=sp*dt});items.forEach(function(o){o.x-=sp*dt});nextX-=sp*dt;
+	fans.forEach(function(f){ f.x -= sp*dt });
+    fans = fans.filter(function(f){ return f.x > -40 });
 	items.forEach(function(it){
     if(it.petDrop || it.ct==='ima'){
       var dx=(P.x+15)-it.x, dy=(P.y+22)-it.y, d=Math.hypot(dx,dy)||1;
@@ -1237,31 +1277,25 @@ function drawChar(c,x,y,run,expr){
 
 	if (c.gl) {
     if (c.gl === 'coala') {
-      // 1. Elásticos prendendo na orelha
-      g.strokeStyle = '#cbd5e1'; g.lineWidth = 1.2;
-      g.beginPath(); g.moveTo(x+7, y+23); g.lineTo(x+3, y+21); g.moveTo(x+23, y+23); g.lineTo(x+27, y+21); g.stroke();
+      // 1. Orelhinhas de coala (posicionadas nas laterais superiores)
+      g.fillStyle = '#94a3b8'; // Cinza coala
+      g.beginPath(); g.arc(x+4, y+14, 3.5, 0, 7); g.arc(x+26, y+14, 3.5, 0, 7); g.fill();
+      g.fillStyle = '#fbcfe8'; // Rosa do ouvidinho
+      g.beginPath(); g.arc(x+4, y+14, 1.5, 0, 7); g.arc(x+26, y+14, 1.5, 0, 7); g.fill();
 
-      // 2. Orelhinhas de coala (cinza com pelinho rosa no centro)
-      g.fillStyle = '#94a3b8';
-      g.beginPath(); g.arc(x+6, y+20, 3, 0, 7); g.arc(x+24, y+20, 3, 0, 7); g.fill();
-      g.fillStyle = '#fbcfe8';
-      g.beginPath(); g.arc(x+6, y+20, 1.5, 0, 7); g.arc(x+24, y+20, 1.5, 0, 7); g.fill();
-
-      // 3. Base da máscara (branca arredondada cobrindo a boca)
+      // 2. Faixa da viseira/tiara (descansa na testa, acima dos olhos)
       g.fillStyle = '#f8fafc';
-      g.beginPath(); g.ellipse(x+15, y+24, 10, 6, 0, 0, 7); g.fill();
-      
-      // Sombreado de volume embaixo da máscara
-      g.fillStyle = '#e2e8f0';
-      g.beginPath(); g.ellipse(x+15, y+25.5, 9, 4, 0, 0, Math.PI); g.fill();
+      g.fillRect(x+6, y+13, 18, 4);
+      g.fillStyle = '#cbd5e1'; // Sombreado sutil na base da faixa
+      g.fillRect(x+6, y+16, 18, 1);
 
-      // 4. Narigão de coala (oval escuro no topo da máscara)
+      // 3. Focinho de coala cravado no centro da viseira
       g.fillStyle = '#334155';
-      g.beginPath(); g.ellipse(x+15, y+22, 3, 2, 0, 0, 7); g.fill();
-
-      // 5. Bochechinhas coradas na própria máscara
-      g.fillStyle = 'rgba(244,114,182,0.7)';
-      g.beginPath(); g.arc(x+9, y+24, 1.5, 0, 7); g.arc(x+21, y+24, 1.5, 0, 7); g.fill();
+      g.beginPath(); g.ellipse(x+15, y+14.5, 2.5, 1.8, 0, 0, 7); g.fill();
+      
+      // Brilho minúsculo no focinho
+      g.fillStyle = 'rgba(255,255,255,0.5)';
+      g.fillRect(x+14.5, y+13.5, 1, 1);
     } else {
       // Óculos clássicos
       g.strokeStyle = '#222'; g.lineWidth = 1.2; g.beginPath();
@@ -1516,6 +1550,26 @@ function draw(){
   drawCity(near,nearW,dist*.35,GY,P2[3],P2[5].replace('rgb(','rgba(').replace(')',',.48)'));
   g.fillStyle=P2[3];g.fillRect(0,GY-8,W,8);
   drawBushes(dist*.62);
+	
+	// --- DESENHANDO A PLATEIA ---
+  fans.forEach(function(f){
+    // O pulinho é feito com a função seno, baseado no tempo (frame)
+    var jump = Math.abs(Math.sin(frame * 0.1 + f.offset)) * 6;
+    var fy = f.y - jump;
+    
+    // Corpo do fã (Silhueta escura)
+    g.fillStyle = '#1e293b'; 
+    g.fillRect(f.x, fy, 12, 16); 
+    g.beginPath(); g.arc(f.x + 6, fy - 5, 6, 0, 7); g.fill(); // Cabeça
+    
+    // Lightstick neon brilhando
+    g.fillStyle = f.color;
+    g.shadowColor = f.color;
+    g.shadowBlur = 8;
+    g.fillRect(f.x + 10, fy - 12, 3, 14); // O bastão de luz na mãozinha
+    g.shadowBlur = 0;
+  });
+	
   drawProps(props,propsW,dist*.5,GY);
   
   g.fillStyle=P2[6];g.fillRect(0,GY,W,H-GY);
@@ -1542,6 +1596,21 @@ else if(it.k==='morango'){
       g.restore();
     }
 
+	else if (it.k === 'mic_unit') {
+  g.save(); g.translate(cx, cy); g.rotate(Math.sin(frame*0.1)*0.2);
+  // Halo lilás/roxo cintilante
+  var halo = g.createRadialGradient(0, 0, 2, 0, 0, 24);
+  halo.addColorStop(0, 'rgba(155, 48, 217, ' + (0.6 + 0.4*Math.sin(frame*0.2)) + ')');
+  halo.addColorStop(1, 'rgba(155, 48, 217, 0)');
+  g.fillStyle = halo; g.beginPath(); g.arc(0, 0, 24, 0, 7); g.fill();
+  
+  // Corpo do microfone preto
+  g.fillStyle = '#111'; g.beginPath(); g.arc(0, -6, 6, 0, 7); g.fill(); // Globo
+  g.fillRect(-2, -3, 4, 14); // Cabo
+  g.fillStyle = '#444'; g.beginPath(); g.arc(0, -6, 6, Math.PI, 0); g.fill(); // Detalhe prata
+  g.restore();
+}
+		
     else if(it.k==='ufo'){
       g.save(); g.translate(cx+7, cy); g.rotate(Math.sin(frame*0.1)*0.2);
       var ufoG = g.createRadialGradient(0, 0, 2, 0, 0, 26);
@@ -1601,6 +1670,13 @@ g.save();
   
   if(shield&&state==='play'){g.strokeStyle='rgba(120,220,255,'+(.6+.3*Math.sin(frame*.2))+')';g.lineWidth=3;g.shadowColor='#4dd8ff';g.shadowBlur=14;g.beginPath();g.arc(P.x+15,P.y+22,32,0,7);g.stroke();if(shield>1){g.beginPath();g.arc(P.x+15,P.y+22,39,0,7);g.stroke()}g.shadowBlur=0}
   g.restore();
+	
+	// --- EFEITO VISUAL DO FLASH ---
+  if (window.flashAlpha > 0.01) {
+    g.fillStyle = 'rgba(255, 255, 255, ' + window.flashAlpha + ')';
+    g.fillRect(0, 0, W, H);
+  }
+	
   g.textAlign='center';g.font='800 15px "M PLUS Rounded 1c",sans-serif';pops.forEach(function(p){g.globalAlpha=Math.max(0,1-p.t/40);g.fillStyle='#ffe14d';g.fillText(p.s,p.x+9,p.y-p.t*.9)});g.globalAlpha=1;
   g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';
   g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);

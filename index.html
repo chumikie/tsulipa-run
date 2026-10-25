@@ -210,13 +210,14 @@ canvas{width:100%;height:100%;display:block}
           <option value="bandaid" data-r="2800">Band-aid (tCenter)</option>
           <option value="fones" data-r="3900">Fones (wCenter)</option>
         </select></label>
-<label>Óculos <select id="cgl">
-  <option value="" data-r="0">Sem</option>
-  <option value="redonda" data-r="0">Redondo</option>
-  <option value="quadrada" data-r="0">Quadrado</option>
-  <option value="coala" data-r="3900">Máscara Coala (wCenter)</option>
-</select></label>
-		</div>
+        <label>Óculos <select id="cgl">
+          <option value="" data-r="0">Sem</option>
+          <option value="redonda" data-r="0">Redondo</option>
+          <option value="quadrada" data-r="0">Quadrado</option>
+          <option value="coala" data-r="3900">Koala (wCenter)</option>
+        </select></label>
+        <label>Item <select id="acc"></select><b id="newb" class="nb" hidden>✨ NOVO!</b></label>
+      </div>
 
       <div class="cust" id="accw"><label>Item <select id="acc"></select><b id="newb" class="nb" hidden>✨ NOVO!</b></label></div>
       
@@ -1221,28 +1222,31 @@ function drawChar(c,x,y,run,expr){
 
 	if (c.gl) {
     if (c.gl === 'coala') {
-      // 1. Alças (elásticos) indo para as orelhas
-      g.strokeStyle = '#cbd5e1'; g.lineWidth = 1.2;
-      g.beginPath(); g.moveTo(x+8, y+24); g.lineTo(x+3, y+21); g.moveTo(x+22, y+24); g.lineTo(x+27, y+21); g.stroke();
-      
-      // 2. Base da máscara
-      g.fillStyle = '#f8fafc';
-      g.beginPath(); g.arc(x+10, y+25, 4, 0, 7); g.arc(x+20, y+25, 4, 0, 7); g.fill();
-      g.fillRect(x+10, y+21, 10, 8);
-      
-      // 3. Sombra de profundidade (abaixo da máscara)
-      g.fillStyle = '#cbd5e1';
-      g.beginPath(); g.arc(x+10, y+27, 2, 0, 7); g.arc(x+20, y+27, 2, 0, 7); g.fill();
-      g.fillRect(x+10, y+27, 10, 2);
-      
-      // 4. Nariz fofo do Coala (Lirika Emoji)
-      g.fillStyle = '#334155';
-      g.beginPath(); g.ellipse(x+15, y+24.5, 2.5, 1.8, 0, 0, 7); g.fill();
-      
-      // 5. Bochechinhas rosadas estampadas na máscara
-      g.fillStyle = '#f472b6';
-      g.beginPath(); g.ellipse(x+11, y+25, 1.5, 1, 0, 0, 7); g.fill();
-      g.beginPath(); g.ellipse(x+19, y+25, 1.5, 1, 0, 0, 7); g.fill();
+      // 1. Elásticos laterais discretos
+      g.strokeStyle = '#94a3b8'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(x+7, y+24); g.lineTo(x+3, y+22); g.moveTo(x+23, y+24); g.lineTo(x+27, y+22); g.stroke();
+
+      // 2. Orelhinhas redondas de coala saindo nas laterais da máscara
+      g.fillStyle = '#94a3b8';
+      g.beginPath(); g.arc(x+5, y+22, 2.5, 0, 7); g.arc(x+25, y+22, 2.5, 0, 7); g.fill();
+      g.fillStyle = '#fbcfe8'; // Interior rosinha felpudo
+      g.beginPath(); g.arc(x+5, y+22, 1.2, 0, 7); g.arc(x+25, y+22, 1.2, 0, 7); g.fill();
+
+      // 3. Tecido da máscara (cinza coala suave com sombra sutil)
+      g.fillStyle = '#64748b'; // borda/sombra inferior
+      g.beginPath(); g.roundRect ? g.roundRect(x+7, y+21, 16, 8, 3) : g.rect(x+7, y+21, 16, 8); g.fill();
+      g.fillStyle = '#cbd5e1'; // corpo da máscara
+      g.beginPath(); g.roundRect ? g.roundRect(x+7, y+20.5, 16, 7.5, 3) : g.rect(x+7, y+20.5, 16, 7.5); g.fill();
+
+      // 4. Nariz oval clássico de coala
+      g.fillStyle = '#1e293b';
+      g.beginPath(); g.ellipse(x+15, y+23.5, 2.2, 1.6, 0, 0, 7); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.4)'; // Brilho no topo do nariz
+      g.fillRect(x+14.5, y+22.6, 1, 1);
+
+      // 5. Blush idol coradinho na máscara
+      g.fillStyle = 'rgba(244,114,182,0.85)';
+      g.beginPath(); g.arc(x+9.5, y+25, 1.2, 0, 7); g.arc(x+20.5, y+25, 1.2, 0, 7); g.fill();
     } else {
       // Óculos clássicos
       g.strokeStyle = '#222'; g.lineWidth = 1.2; g.beginPath();

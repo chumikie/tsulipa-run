@@ -408,13 +408,20 @@ function pick(i){
   sel=i;
   [].forEach.call(cw.children,function(x,j){x.setAttribute('aria-pressed',j===i)});
   $('cust').hidden = i!==3;
-  $('cout').value = CH[i].out||'';
-  $('coutcol').value = CH[i].outcol||'#ffffff';
-  $('chat').value = CH[i].hat||'';
-  $('cgl').value = CH[i].gl||'';
+  
+  // Atualiza os seletores com os valores da personagem escolhida (ou da customizada se for o 3)
+  var source = (i === 3) ? CU : CH[i];
+  if($('cout')) $('cout').value = source.out || '';
+  if($('coutcol')) $('coutcol').value = source.outcol || '#ffffff';
+  if($('chat')) $('chat').value = source.hat || '';
+  if($('cgl')) $('cgl').value = source.gl || '';
+  if($('chair')) $('chair').value = source.hair || '#ff7eb6';
+  if($('ceye')) $('ceye').value = source.eye || '#5a3b2e';
+  
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
 }
 
+	
 var seen=1;try{seen=+localStorage.getItem('brs48cr_seen')||1}catch(e){}
 
 function refreshAcc(){
@@ -457,26 +464,37 @@ SK.forEach(function(sk){
 
 Object.keys(CF).forEach(function(id){
   var e=$(id), f=CF[id]; if(!e)return;
-  if(f==='out'||f==='outcol'||f==='hat'||f==='gl') e.value = CH[sel][f]||'#ffffff';
-  else e.value = CU[f]||'#ffffff';
-  if(!e.value&&e.options)e.selectedIndex=0;
+  if(e.type === 'color' || e.tagName === 'SELECT'){
+    if(sel === 3) e.value = CU[f] || (e.type==='color'?'#ffffff':'');
+    else e.value = CH[sel][f] || (e.type==='color'?'#ffffff':'');
+  }
   e.oninput=e.onchange=function(){
-    if(f==='out'||f==='outcol'||f==='hat'||f==='gl') CH[sel][f]=this.value;
-    else {
-      CU[f]=this.value;
-      if(f==='hair'){CU.img=this.value;cw.children[3].firstChild.style.background=this.value;}
+    if(sel === 3){
+      CU[f] = this.value;
+      if(f === 'hair'){ CU.img = this.value; cw.children[3].firstChild.style.background = this.value; }
+    } else {
+      CH[sel][f] = this.value;
     }
     saveCu();
   };
 });
+
+	
 $('cstk').checked=!!CU.streak;$('cstk').onchange=function(){CU.streak=this.checked;saveCu()};
 cw.children[3].firstChild.style.background=CU.hair;
 refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
 $('acc').onfocus=function(){seen=ACC.filter(function(a){return best>=a[2]}).length;try{localStorage.setItem('brs48cr_seen',seen)}catch(e){}$('newb').hidden=true};
 var nick=''; try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
-$('nick').value=nick;$('nick').value=nick;$('nick').oninput=function(){nick=this.value.trim().slice(0,12);try{localStorage.setItem('brs48cr_nick',nick)}catch(e){}};
-pick(sel>3?0:sel);
+var nickIn = $('nick');
+if(nickIn){
+  nickIn.value = nick;
+  nickIn.oninput = function(){
+    nick = this.value.trim().slice(0, 12);
+    try{ localStorage.setItem('brs48cr_nick', nick); }catch(e){}
+  };
+}
 
+	
 function rnd(a,b){return a+Math.random()*(b-a)}
 var far,near,props,farW,nearW,propsW;
 

@@ -1027,30 +1027,6 @@ function drawChar(c,x,y,run,expr){
     g.fillStyle=corDaRoupa; g.fillRect(x+2, y+22, 6, 12); g.fillRect(x+22, y+22, 6, 12); g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Pinta o paletó da cor escolhida
     g.fillStyle='#34d399'; g.fillRect(x+11, y+22, 8, 5);
     g.fillStyle='#fbbf24'; g.fillRect(x+17, y+28, 2, 2);
-}else if(roupa==='zipper'){
-    // Shortinhos brancos bufantes por baixo
-    g.fillStyle='#fff'; g.fillRect(x+6, y+31, 18, 7);
-    
-    // Top branco
-    g.fillStyle='#fff'; g.fillRect(x+5, y+22, 20, 10);
-    
-    // Mangas bufantes (com a cor escolhida pelo jogador)
-    g.fillStyle=corDaRoupa; E(x+3, y+24, 3, 4); E(x+27, y+24, 3, 4);
-    
-    // Cadarço do corset (Laces) preto no peito
-    g.strokeStyle='#222'; g.lineWidth=1;
-    g.beginPath(); 
-    g.moveTo(x+12, y+23); g.lineTo(x+18, y+26); g.moveTo(x+18, y+23); g.lineTo(x+12, y+26); // X de cima
-    g.moveTo(x+12, y+27); g.lineTo(x+18, y+30); g.moveTo(x+18, y+27); g.lineTo(x+12, y+30); // X de baixo
-    g.stroke();
-    
-    // Saia aberta na frente (duas abas laterais)
-    g.fillStyle=corDaRoupa;
-    T([x+4, y+30, x+12, y+30, x+2, y+42]); // Aba caindo para a esquerda
-    T([x+26, y+30, x+18, y+30, x+28, y+42]); // Aba caindo para a direita
-    
-    // Cintura alta / Cinto
-    g.fillRect(x+5, y+29, 20, 3);
 
 }else if(roupa==='zipper'){
     // Shortinhos brancos bufantes por baixo
@@ -1076,6 +1052,8 @@ function drawChar(c,x,y,run,expr){
     
     // Cintura alta / Cinto
     g.fillRect(x+5, y+29, 20, 3);
+
+
 
   }else{
     // Roupa Básica

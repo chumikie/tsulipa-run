@@ -399,8 +399,10 @@ function showLb(el){
 
 function saveCu(){
   try{
-    localStorage.setItem('brs48cr_cu2',JSON.stringify(CU));
-    localStorage.setItem('brs48cr_ch2',JSON.stringify(CH.map(function(c){return{out:c.out||'',outcol:c.outcol||'',hat:c.hat||'',gl:c.gl||''}})));
+    localStorage.setItem('brs48cr_cu2', JSON.stringify(CU));
+    localStorage.setItem('brs48cr_ch2', JSON.stringify(CH.map(function(c){
+      return {out: c.out||'', outcol: c.outcol||'', hat: c.hat||'', gl: c.gl||''};
+    })));
   }catch(e){}
 }
 	
@@ -814,7 +816,7 @@ function update(dt){
     window.activePetFly.x -= (sp * 1.35) * dt; // Voa um pouco mais rápido que a pista
     
     // Ponto onde ele larga os presentes
-      if(!window.activePetFly.dropped && window.activePetFly.x < P.x + 220){
+      if(!window.activePetFly.dropped && window.activePetFly.x <= W / 2){
       window.activePetFly.dropped = true;
       var dropX = window.activePetFly.x;
       

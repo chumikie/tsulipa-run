@@ -4,6 +4,7 @@
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png?v=2" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Jogo de corrida do TsuLiPa (BRS48): pule os obstáculos, pegue estrelas e suba no ranking até o Center!">
@@ -242,6 +243,11 @@ canvas{width:100%;height:100%;display:block}
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
 <div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
 <script>
+	
+	const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+	
 (function(){
 var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
 var DICT={
@@ -379,22 +385,29 @@ function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.jso
 function showLb(el){
   if(!el)return;
   var tb=tab;
-  fetch(API+'/leaderboard?tab='+tb).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
-    if(tb!==tab)return;
-    // --- FILTRO DE NOME ÚNICO (Maior pontuação) ---
-    var unq = {};
-    j.rows.forEach(function(r){
-      var k = (r.name||'').trim().toLowerCase();
-      if(!unq[k] || unq[k].score < r.score) unq[k] = r;
+  
+  _supabase
+    .from('leaderboard')
+    .select('*')
+    .order('score', { ascending: false })
+    .then(function(response){
+      var j = response.data || [];
+      if(response.error) throw response.error;
+      
+      var unq = {};
+      j.forEach(function(r){
+        var k = (r.name||'').trim().toLowerCase();
+        if(!unq[k] || unq[k].score < r.score) unq[k] = r;
+      });
+      var top15 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,15);
+      
+      showLbLocal(el, top15.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
+    })
+    .catch(function(){
+      showLbLocal(el);
+      var n=document.createElement('li');n.style.cssText='font-size:11px;color:var(--sub);background:none;justify-content:center';
+      n.textContent=tr('Ranking online indisponível. Mostrando só este aparelho.');el.appendChild(n);
     });
-    var top15 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,15);
-    // ----------------------------------------------
-    showLbLocal(el,top10.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
-  }).catch(function(){
-    showLbLocal(el);
-    var n=document.createElement('li');n.style.cssText='font-size:11px;color:var(--sub);background:none;justify-content:center';
-    n.textContent=tr('Ranking online indisponível. Mostrando só este aparelho.');el.appendChild(n);
-  });
 }
 
 // --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---

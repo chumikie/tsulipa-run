@@ -704,6 +704,7 @@ function reset(){
   window.flashAlpha = 0;
   window.lastPaparazzi = Math.floor(score / 2500);
   window.fans = [];
+  window.lastMic = Math.floor(score/4000);
 }
 
 function spawn(){
@@ -790,7 +791,8 @@ window.activePetFly = {
     };
   }
 
-
+nextX = W + 600;
+	
   getTok();
   paused=false;
   $('pz').hidden=true;
@@ -980,13 +982,18 @@ var curMorango = Math.floor(score/3500); // Surge a cada 3500 pontos
     items.push({k:'morango', x: nextX + 250, y: GY - 30, w: 22, h: 22, got: false});
   }
 
+	var curMic = Math.floor(score/4000); // Surge a cada 4000 pontos
+if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
+  window.lastMic = curMic;
+  items.push({k:'mic_unit', x: nextX + 300, y: GY - 40, w: 20, h: 20, got: false});
+}
 
   if (pw && pw.k === 'alien') {
     var targetY = (GY - 115) + Math.sin(frame * 0.12) * 14;
     P.y += (targetY - P.y) * 0.12 * dt;
     P.vy = 0; P.air = true;
   } else {
-    if(!held && P.vy < -3.5) P.vy = -3.5;
+    if(!held && P.vy < -1.5) P.vy *= 0.82;
     P.vy += ((held && P.vy < 0) ? .5 : .85) * dt;
     P.y += P.vy * dt;
     if(P.y >= GY - P.h){
@@ -1045,8 +1052,13 @@ items.forEach(function(it){
       } else if(it.k==='morango'){
         score+=200; pops.push({x:it.x,y:it.y,t:0,s:'+200'});
         pw={k:'gigante',t:400}; inv=400; window.wasGiant=true; toast='Mega TsuLiPa!'; toastT=110; sfx.card();
+      } else if (it.k === 'mic_unit') {
+  score += 300; pops.push({x:it.x, y:it.y, t:0, s:'+300'});
+  pw = {k: 'unit', partner: getPartner(sel), t: 900}; // 15 segundos de dupla!
+  toast = 'Unit Mode! Sinergia ✨'; toastT = 110; sfx.card();
       } else {
         var v=pw&&pw.k==='fever'?CFG.STAR_FEVER:CFG.STAR;
+		if (pw && pw.k === 'unit') v *= 2; // Dobra as estrelas com a parceira junta!
         if(pw&&pw.k==='alien') v=Math.round(v*CFG.UFO_STAR_MULT);
         score+=v;pops.push({x:it.x,y:it.y,t:0,s:'+'+v});stars++;sfx.star();
       }
@@ -1661,17 +1673,37 @@ g.save();
   }
   // Se for gigante, NÃO pisca. Fica invencível e destrói tudo no caminho!
   var blink = (inv > 0 && !abducted && !isGiant && ((frame/4|0)%2)); 
+	
+	// Desenha a parceira da Unit acompanhando você!
+if (pw && pw.k === 'unit') {
+  drawChar(CH[pw.partner], P.x - 38, P.y, runAnim, 2); // O 2 deixa ela sempre com sorrisinho fofo
+}
+	
   if (!blink) drawChar(CH[sel], P.x, P.y, runAnim, playExpr);
   g.restore();
   
   if(shield&&state==='play'){g.strokeStyle='rgba(120,220,255,'+(.6+.3*Math.sin(frame*.2))+')';g.lineWidth=3;g.shadowColor='#4dd8ff';g.shadowBlur=14;g.beginPath();g.arc(P.x+15,P.y+22,32,0,7);g.stroke();if(shield>1){g.beginPath();g.arc(P.x+15,P.y+22,39,0,7);g.stroke()}g.shadowBlur=0}
   g.restore();
 	
-	// --- EFEITO VISUAL DO FLASH ---
-  if (window.flashAlpha > 0.01) {
-    g.fillStyle = 'rgba(255, 255, 255, ' + window.flashAlpha + ')';
-    g.fillRect(0, 0, W, H);
-  }
+	// --- EFEITO VISUAL DO FLASH E PAPARAZZI ---
+if (window.flashAlpha > 0.01) {
+  var papX = P.x + 180 + (1 - window.flashAlpha) * 40; // Dá um pulinho para a esquerda
+  var papY = GY - 16;
+  
+  // Silhueta do fotógrafo (mesmo estilo da plateia)
+  g.fillStyle = '#1e293b';
+  g.fillRect(papX, papY, 14, 16); // Corpo
+  g.beginPath(); g.arc(papX + 7, papY - 4, 7, 0, 7); g.fill(); // Cabeça
+  
+  // Câmera fotográfica apontada pra idol
+  g.fillStyle = '#111'; g.fillRect(papX - 6, papY - 2, 12, 8); 
+  g.fillStyle = 'rgba(255, 255, 255, ' + window.flashAlpha + ')'; 
+  g.beginPath(); g.arc(papX - 6, papY + 2, 4, 0, 7); g.fill(); // Lente gigante piscando
+  
+  // O clarão branco que cobre a tela (limitado a 85% para não machucar os olhos)
+  g.fillStyle = 'rgba(255, 255, 255, ' + (window.flashAlpha * 0.85) + ')';
+  g.fillRect(0, 0, W, H);
+}
 	
   g.textAlign='center';g.font='800 15px "M PLUS Rounded 1c",sans-serif';pops.forEach(function(p){g.globalAlpha=Math.max(0,1-p.t/40);g.fillStyle='#ffe14d';g.fillText(p.s,p.x+9,p.y-p.t*.9)});g.globalAlpha=1;
   g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';

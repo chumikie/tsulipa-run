@@ -319,7 +319,6 @@ var SK=['#fbe5d8','#f1c9a5','#d9a074','#b97a50','#8d5a3b','#5e3b27'],CU=CH[3],ac
 var ACC=[['','Nenhum',0,0],['laco','Laço azul',RANKS[2][0],2],['mic','Microfone de palco',RANKS[3][0],3],['hibisco','Hibisco',RANKS[4][0],4],['sakura','Flor de cerejeira',RANKS[5][0],5],['tiaraS','Tiara de prata',RANKS[6][0],6],['tiaraO','Tiara dourada',RANKS[7][0],7]];
 var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
 
-
 // --- SISTEMA DE RANKING LOCAL ---
 function wk(){
   var d=new Date(); d.setHours(0,0,0,0);
@@ -404,13 +403,13 @@ function saveCu(){
     localStorage.setItem('brs48cr_ch2',JSON.stringify(CH.map(function(c){return{out:c.out||'',outcol:c.outcol||'',hat:c.hat||'',gl:c.gl||''}})));
   }catch(e){}
 }
-
+	
 function pick(i){
   sel=i;
   [].forEach.call(cw.children,function(x,j){x.setAttribute('aria-pressed',j===i)});
   $('cust').hidden = i!==3;
   $('cout').value = CH[i].out||'';
-  $('coutcol').value = CH[i].outcol||'#ffffff'; // Define a cor atual no color picker
+  $('coutcol').value = CH[i].outcol||'#ffffff';
   $('chat').value = CH[i].hat||'';
   $('cgl').value = CH[i].gl||'';
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
@@ -474,8 +473,8 @@ $('cstk').checked=!!CU.streak;$('cstk').onchange=function(){CU.streak=this.check
 cw.children[3].firstChild.style.background=CU.hair;
 refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
 $('acc').onfocus=function(){seen=ACC.filter(function(a){return best>=a[2]}).length;try{localStorage.setItem('brs48cr_seen',seen)}catch(e){}$('newb').hidden=true};
-var nick='';try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
-$('nick').value=nick;$('nick').oninput=function(){nick=this.value.trim().slice(0,12);try{localStorage.setItem('brs48cr_nick',nick)}catch(e){}};
+var nick=''; try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
+$('nick').value=nick;$('nick').value=nick;$('nick').oninput=function(){nick=this.value.trim().slice(0,12);try{localStorage.setItem('brs48cr_nick',nick)}catch(e){}};
 pick(sel>3?0:sel);
 
 function rnd(a,b){return a+Math.random()*(b-a)}

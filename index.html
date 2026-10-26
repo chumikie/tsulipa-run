@@ -422,7 +422,7 @@ try{did=localStorage.getItem('brs48cr_did')||'';if(!did){did=(window.crypto&&cry
 function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.json()}).then(function(j){tok=j.token}).catch(function(){})}catch(e){}}
 
 
-function function showLb(el){
+function showLb(el){
   if(!el)return;
   var tb = tab; // 'day', 'week', ou 'all'
   

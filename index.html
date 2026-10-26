@@ -30,12 +30,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 
-@keyframes inputGlow {
-  0% { border-color: var(--pink); box-shadow: 0 0 5px rgba(255,111,181,0.4); transform: scale(1); }
-  50% { border-color: var(--b1); box-shadow: 0 0 16px rgba(123,63,240,0.8); transform: scale(1.02); }
-  100% { border-color: var(--pink); box-shadow: 0 0 5px rgba(255,111,181,0.4); transform: scale(1); }
-}
-
 .nick.chamativo {
   border: 2.5px solid var(--pink) !important;
   background: var(--card) !important;
@@ -44,6 +38,17 @@
   animation: inputGlow 2s infinite ease-in-out;
 }
 
+@keyframes erroInput {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.nick.aviso-erro {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.7) !important;
+  animation: erroInput 0.4s ease-in-out !important;
+}
 
 #menu-title, .logo b {
   font-family: "Kosugi Maru", "M PLUS Rounded 1c", sans-serif !important;
@@ -80,7 +85,27 @@ canvas{width:100%;height:100%;display:block}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--edge)}
 .res{font-size:14px;margin:4px 0 10px}
 .res strong{font-size:22px;color:var(--b1)}
-.mute{position:absolute;top:8px;right:8px;border:0;border-radius:99px;background:rgba(255,255,255,.85);width:34px;height:34px;font-size:16px;cursor:pointer;z-index:10;}
+.mute {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(220, 235, 255, 0.85));
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(10, 30, 70, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+.mute:active {
+  transform: scale(0.92);
+}
+
 .hint{margin-top:12px;font-size:12px;color:var(--sub);text-align:center;max-width:520px}
 .ov{position:fixed;z-index:5;overflow:auto;padding:16px}.panel{margin:auto}
 .nick{width:100%;border:2px solid var(--chip);background:var(--chip);color:var(--ink);border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;margin-bottom:10px;text-align:center}
@@ -175,23 +200,29 @@ canvas{width:100%;height:100%;display:block}
   <button class="mute" id="mute" aria-label="Ligar ou desligar o som">🔊</button>
   <div class="ov" id="menu">
     <div class="panel">
-      <h1 id="menu-title" translate="no">TsuLiPa: Center Run! 🌷<small>センターラン</small></h1>
+      <h1 id="menu-title" translate="no">TsuLiPa: Center Run! <a href="https://www.youtube.com/watch?v=v97xp_Ny4P8" target="_blank" rel="noopener noreferrer" id="tulipa-link" style="text-decoration:none; cursor:pointer;" title="✨ Surpresa! ✨">🌷</a><small>センターラン</small></h1>
 		<div class="kaomoji-deco" aria-hidden="true" style="font-size: 13px; color: var(--pink); font-weight: 700; margin: 2px 0 8px 0; text-align: center; user-select: none;">
   ✨ <span id="kaomoji-visual">(*^▽^*)</span> ✨
 </div>
       <p>Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.</p>
       
       <div class="lang" role="group" aria-label="Idioma">
-        <button data-l="pt" aria-pressed="true">PT</button>
-        <button data-l="es">ES</button>
-        <button data-l="en">EN</button>
-	<button data-l="th">TH</button>
-        <button data-l="ja">日本語</button>
+       <button data-l="pt" aria-pressed="true">PT</button>
+       <button data-l="es">ES</button>
+       <button data-l="en">EN</button>
+       <button data-l="th">TH</button>
+       <button data-l="ja">日本語</button>
+     </div>
+
+
+      <!-- Container da Prévia com Botão de Foto -->
+      <div style="position:relative; width:140px; margin:0 auto 12px; display:flex; justify-content:center;">
+        <canvas id="prev" width="140" height="120" style="display:block;width:140px;height:120px" aria-hidden="true"></canvas>
+        <button id="dlAvatar" style="position:absolute; bottom:10px; right:-25px; background:var(--b1); color:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.3); font-size:16px; display:flex; align-items:center; justify-content:center; transition:transform 0.1s;" title="Baixar Render em PNG" aria-label="Baixar Render do Avatar" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">📸</button>
       </div>
 
-
-      <canvas id="prev" width="140" height="120" style="display:block;margin:0 auto 12px;width:140px;height:120px" aria-hidden="true"></canvas>
       <input class="nick" id="nick" maxlength="12" placeholder="✨ Digite seu nome de Idol! ✨" aria-label="✨ Digite seu nome de Idol! ✨" autocomplete="off">
+
 		
       <div class="chars" id="chars"></div>
       
@@ -218,6 +249,7 @@ canvas{width:100%;height:100%;display:block}
           <option value="seifuku" data-r="450">Uniforme (Team)</option>
           <option value="y2k" data-r="1800">Moda 2000 (Quad Center)</option>
           <option value="zipper" data-r="2800">Zipper (tCenter)</option>
+          <option value="sweet" data-r="3900">Valentine (wCenter)</option>
           <option value="citypop" data-r="5000">Blazer 80s (Center)</option>
         </select>
         <input type="color" id="coutcol" value="#ffffff" title="Cor da Roupa">
@@ -242,10 +274,19 @@ canvas{width:100%;height:100%;display:block}
 
       <button class="btn" id="play">JOGAR</button>
       <div><button class="sec" id="seelb">Ver ranking</button></div>
-      <div id="lbmw" hidden><div class="tabs"><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbm"></ol></div>
+
+<div id="lbmw" hidden>
+        <div class="tabs">
+          <button data-t="day" aria-pressed="true">Hoje</button>
+          <button data-t="week">Semana</button>
+          <button data-t="all">Geral</button>
+        </div>
+        <ol class="lb" id="lbm"></ol>
+      </div>
     </div>
   </div>
   <div class="ov" id="over" hidden>
+
     <div class="panel">
       <h1>Fim do show<small>おつかれさま</small></h1>
       <canvas id="cel" width="200" height="150" style="width:200px;height:150px;display:block;margin:0 auto 12px;border-radius:14px" aria-hidden="true"></canvas>
@@ -267,7 +308,7 @@ canvas{width:100%;height:100%;display:block}
 <div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
 <script>
 	
-	const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
+const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 	
@@ -276,19 +317,19 @@ var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
 var DICT={
   "en": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Jump over the stage obstacles, collect stars and climb the ranks up to Center.",
-    "Cabelo": "Hair", "Mecha": "Streak", "Olhos": "Eyes", "Corte": "Cut", "Curto": "Short", "Chanel": "Bob", "Longo": "Long", "Marias-chiquinhas": "Pigtails", "Rabo de cavalo": "Ponytail", "Cacheado": "Curly", "Franja": "Bangs", "Bagunçada": "Messy", "Reta": "Straight", "Lateral": "Side-swept", "Espetada": "Spiky", "Arco-íris": "Rainbow", "Detalhe": "Detail", "Nenhum": "None", "Coques": "Buns", "Orelhas de gato": "Cat ears", "Orelhas élficas": "Elf ears", "Chifres": "Horns", "Roupa": "Outfit", "Básica": "Basic", "Uniforme (Team)": "Uniform (Team)", "Moda 2000 (Quad Center)": "Y2K Fashion (Quad Center)", "Blazer 80s (Center)": "80s Blazer (Center)", "Acessório": "Accessory", "Presilhas (Kenkyuusei)": "Hair clips (Kenkyuusei)", "Boina (Senbatsu)": "Beret (Senbatsu)", "Band-aid (tCenter)": "Bandage (tCenter)", "Fones (Team)": "Headphones (Team)", "Óculos": "Glasses", "Sem": "None", "Redondo": "Round", "Quadrado": "Square", "Item": "Item", "✨ NOVO!": "✨ NEW!", "JOGAR": "PLAY", "Ver ranking": "View ranking", "Semana": "Week", "Geral": "All-time", "Fim do show": "Show's over", "おつかれさま": "Good work!", "DE NOVO": "AGAIN", "SALVAR IMAGEM": "SAVE IMAGE", "BAIXAR": "DOWNLOAD", "FECHAR": "CLOSE", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Quick tap = short jump; hold = high jump. \"Effort will surely be rewarded!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "If the download doesn't start, press and hold (phone) or right-click (computer) the image and choose save.", "Ligar ou desligar o som": "Turn sound on or off", "Seu nome no ranking": "Your name on the ranking", "Imagem do seu resultado": "Your result image", "Você": "You", "Audição": "Audition", "Laço azul": "Blue bow", "Microfone de palco": "Stage mic", "Hibisco": "Hibiscus", "Flor de cerejeira": "Cherry blossom", "Tiara de prata": "Silver tiara", "Tiara dourada": "Golden tiara", "Item novo": "New item", "pontos": "points", "estrelas": "stars", "Posição": "Rank", "novo recorde!": "new record!", "Escudo usado!": "Shield used!", "Fever! Estrelas em dobro": "Fever! Double stars", "Ímã de estrelas!": "Star magnet!", "Subiu para ": "Promoted to ", " Escudo e look!": " Shield and new look!", "Abdução ": "Abduction ", "Ímã ": "Magnet ", "Recorde": "Record", "Ranking Local (Salvo neste aparelho)": "Local Ranking (Saved on this device)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nobody on the ranking yet. Be the first!", "Jogue também e entre no ranking!": "Play too and join the ranking!", "Pausado": "Paused", "CONTINUAR": "RESUME", "Pular": "Jump", "Pausar": "Pause", "Idioma": "Language", "Fever ": "Fever ", "Anônimo": "Anonymous", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Online ranking unavailable. Showing local device only.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ Enter your Idol name! ✨", "Tiara (wCenter)": "Tiara (wCenter)"
+    "Cabelo": "Hair", "Valentine (wCenter)": "Valentine (wCenter)", "Hoje": "Today", "Mecha": "Streak", "Olhos": "Eyes", "Corte": "Cut", "Curto": "Short", "Chanel": "Bob", "Longo": "Long", "Marias-chiquinhas": "Pigtails", "Rabo de cavalo": "Ponytail", "Cacheado": "Curly", "Franja": "Bangs", "Bagunçada": "Messy", "Reta": "Straight", "Lateral": "Side-swept", "Espetada": "Spiky", "Arco-íris": "Rainbow", "Detalhe": "Detail", "Nenhum": "None", "Coques": "Buns", "Orelhas de gato": "Cat ears", "Olheiras suaves": "Soft eye bags", "Orelhas élficas": "Elf ears", "Chifres": "Horns", "Roupa": "Outfit", "Básica": "Basic", "Uniforme (Team)": "Uniform (Team)", "Moda 2000 (Quad Center)": "Y2K Fashion (Quad Center)", "Blazer 80s (Center)": "80s Blazer (Center)", "Acessório": "Accessory", "Presilhas (Kenkyuusei)": "Hair clips (Kenkyuusei)", "Boina (Senbatsu)": "Beret (Senbatsu)", "Band-aid (tCenter)": "Bandage (tCenter)", "Fones (Team)": "Headphones (Team)", "Óculos": "Glasses", "Sem": "None", "Redondo": "Round", "Quadrado": "Square", "Item": "Item", "✨ NOVO!": "✨ NEW!", "JOGAR": "PLAY", "Ver ranking": "View ranking", "Semana": "Week", "Geral": "All-time", "Fim do show": "Show's over", "おつかれさま": "Good work!", "DE NOVO": "AGAIN", "SALVAR IMAGEM": "SAVE IMAGE", "BAIXAR": "DOWNLOAD", "FECHAR": "CLOSE", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Quick tap = short jump; hold = high jump. \"Effort will surely be rewarded!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "If the download doesn't start, press and hold (phone) or right-click (computer) the image and choose save.", "Ligar ou desligar o som": "Turn sound on or off", "Seu nome no ranking": "Your name on the ranking", "Imagem do seu resultado": "Your result image", "Você": "You", "Audição": "Audition", "Laço azul": "Blue bow", "Microfone de palco": "Stage mic", "Hibisco": "Hibiscus", "Flor de cerejeira": "Cherry blossom", "Tiara de prata": "Silver tiara", "Tiara dourada": "Golden tiara", "Item novo": "New item", "pontos": "points", "estrelas": "stars", "Posição": "Rank", "novo recorde!": "new record!", "Escudo usado!": "Shield used!", "Fever! Estrelas em dobro": "Fever! Double stars", "Ímã de estrelas!": "Star magnet!", "Subiu para ": "Promoted to ", " Escudo e look!": " Shield and new look!", "Abdução ": "Abduction ", "Ímã ": "Magnet ", "Recorde": "Record", "Ranking Local (Salvo neste aparelho)": "Local Ranking (Saved on this device)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nobody on the ranking yet. Be the first!", "Jogue também e entre no ranking!": "Play too and join the ranking!", "Pausado": "Paused", "CONTINUAR": "RESUME", "Pular": "Jump", "Pausar": "Pause", "Idioma": "Language", "Fever ": "Fever ", "Anônimo": "Anonymous", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Online ranking unavailable. Showing local device only.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ Enter your Idol name! ✨", "Tiara (wCenter)": "Tiara (wCenter)"
   },
   "es": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Salta los obstáculos del escenario, junta estrellas y sube en el ranking hasta ser Center.",
-    "Cabelo": "Cabello", "Mecha": "Mechón", "Olhos": "Ojos", "Corte": "Corte", "Curto": "Corto", "Chanel": "Bob", "Longo": "Largo", "Marias-chiquinhas": "Coletas", "Rabo de cavalo": "Cola de caballo", "Cacheado": "Rizado", "Franja": "Flequillo", "Bagunçada": "Despeinado", "Reta": "Recto", "Lateral": "De lado", "Espetada": "Puntiagudo", "Arco-íris": "Arcoíris", "Detalhe": "Detalle", "Nenhum": "Ninguno", "Coques": "Moños", "Orelhas de gato": "Orejas de gato", "Orelhas élficas": "Orejas élficas", "Chifres": "Cuernos", "Roupa": "Ropa", "Básica": "Básica", "Uniforme (Team)": "Uniforme (Team)", "Moda 2000 (Quad Center)": "Moda 2000 (Quad Center)", "Blazer 80s (Center)": "Blazer 80s (Center)", "Acessório": "Accesorio", "Presilhas (Kenkyuusei)": "Horquillas (Kenkyuusei)", "Boina (Senbatsu)": "Boina (Senbatsu)", "Band-aid (tCenter)": "Curita (tCenter)", "Fones (Team)": "Auriculares (Team)", "Óculos": "Lentes", "Sem": "Sin", "Redondo": "Redondos", "Quadrado": "Cuadrados", "Item": "Objeto", "✨ NOVO!": "✨ ¡NUEVO!", "JOGAR": "JUGAR", "Ver ranking": "Ver ranking", "Semana": "Semana", "Geral": "General", "Fim do show": "Fin del show", "おつかれさま": "¡Buen trabajo!", "DE NOVO": "OTRA VEZ", "SALVAR IMAGEM": "GUARDAR IMAGEN", "BAIXAR": "DESCARGAR", "FECHAR": "CERRAR", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Toque rápido = salto corto; mantener = salto alto. \"¡El esfuerzo seguro será recompensado!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "Si la descarga no inicia, mantén presionada la imagen (móvil) o haz clic derecho (PC) para guardar.", "Ligar ou desligar o som": "Activar o desactivar sonido", "Seu nome no ranking": "Tu nombre en el ranking", "Imagem do seu resultado": "Imagen de tu resultado", "Você": "Tú", "Audição": "Audición", "Laço azul": "Lazo azul", "Microfone de palco": "Micrófono de escenario", "Hibisco": "Hibisco", "Flor de cerejeira": "Flor de cerezo", "Tiara de prata": "Tiara de plata", "Tiara dourada": "Tiara dorada", "Item novo": "Nuevo objeto", "pontos": "puntos", "estrelas": "estrellas", "Posição": "Posición", "novo recorde!": "¡nuevo récord!", "Escudo usado!": "¡Escudo usado!", "Fever! Estrelas em dobro": "¡Fever! Estrellas dobles", "Ímã de estrelas!": "¡Imán de estrellas!", "Subiu para ": "Ascendió a ", " Escudo e look!": " ¡Escudo y nuevo look!", "Abdução ": "Abducción ", "Ímã ": "Imán ", "Recorde": "Récord", "Ranking Local (Salvo neste aparelho)": "Ranking Local (Guardado en este dispositivo)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nadie en el ranking todavía. ¡Sé la primera persona!", "Jogue também e entre no ranking!": "¡Juega tú también y entra al ranking!", "Pausado": "Pausado", "CONTINUAR": "CONTINUAR", "Pular": "Saltar", "Pausar": "Pausar", "Idioma": "Idioma", "Fever ": "Fever ", "Anônimo": "Anónimo", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Ranking online no disponible. Mostrando solo este dispositivo.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ¡Escribe tu nombre de Idol! ✨", "Tiara (wCenter)": "Tiara (wCenter)"
+    "Cabelo": "Cabello", "Valentine (wCenter)": "Valentine (wCenter)", "Hoje": "Hoy", "Mecha": "Mechón", "Olhos": "Ojos", "Corte": "Corte", "Curto": "Corto", "Chanel": "Bob", "Longo": "Largo", "Marias-chiquinhas": "Coletas", "Rabo de cavalo": "Cola de caballo", "Cacheado": "Rizado", "Franja": "Flequillo", "Bagunçada": "Despeinado", "Reta": "Recto", "Lateral": "De lado", "Espetada": "Puntiagudo", "Arco-íris": "Arcoíris", "Detalhe": "Detalle", "Nenhum": "Ninguno", "Coques": "Moños", "Olheiras suaves": "Ojeras suaves", "Orelhas de gato": "Orejas de gato", "Orelhas élficas": "Orejas élficas", "Chifres": "Cuernos", "Roupa": "Ropa", "Básica": "Básica", "Uniforme (Team)": "Uniforme (Team)", "Moda 2000 (Quad Center)": "Moda 2000 (Quad Center)", "Blazer 80s (Center)": "Blazer 80s (Center)", "Acessório": "Accesorio", "Presilhas (Kenkyuusei)": "Horquillas (Kenkyuusei)", "Boina (Senbatsu)": "Boina (Senbatsu)", "Band-aid (tCenter)": "Curita (tCenter)", "Fones (Team)": "Auriculares (Team)", "Óculos": "Lentes", "Sem": "Sin", "Redondo": "Redondos", "Quadrado": "Cuadrados", "Item": "Objeto", "✨ NOVO!": "✨ ¡NUEVO!", "JOGAR": "JUGAR", "Ver ranking": "Ver ranking", "Semana": "Semana", "Geral": "General", "Fim do show": "Fin del show", "おつかれさま": "¡Buen trabajo!", "DE NOVO": "OTRA VEZ", "SALVAR IMAGEM": "GUARDAR IMAGEN", "BAIXAR": "DESCARGAR", "FECHAR": "CERRAR", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "Toque rápido = salto corto; mantener = salto alto. \"¡El esfuerzo seguro será recompensado!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "Si la descarga no inicia, mantén presionada la imagen (móvil) o haz clic derecho (PC) para guardar.", "Ligar ou desligar o som": "Activar o desactivar sonido", "Seu nome no ranking": "Tu nombre en el ranking", "Imagem do seu resultado": "Imagen de tu resultado", "Você": "Tú", "Audição": "Audición", "Laço azul": "Lazo azul", "Microfone de palco": "Micrófono de escenario", "Hibisco": "Hibisco", "Flor de cerejeira": "Flor de cerezo", "Tiara de prata": "Tiara de plata", "Tiara dourada": "Tiara dorada", "Item novo": "Nuevo objeto", "pontos": "puntos", "estrelas": "estrellas", "Posição": "Posición", "novo recorde!": "¡nuevo récord!", "Escudo usado!": "¡Escudo usado!", "Fever! Estrelas em dobro": "¡Fever! Estrellas dobles", "Ímã de estrelas!": "¡Imán de estrellas!", "Subiu para ": "Ascendió a ", " Escudo e look!": " ¡Escudo y nuevo look!", "Abdução ": "Abducción ", "Ímã ": "Imán ", "Recorde": "Récord", "Ranking Local (Salvo neste aparelho)": "Ranking Local (Guardado en este dispositivo)", "Ninguém no ranking ainda. Seja a primeira pessoa!": "Nadie en el ranking todavía. ¡Sé la primera persona!", "Jogue também e entre no ranking!": "¡Juega tú también y entra al ranking!", "Pausado": "Pausado", "CONTINUAR": "CONTINUAR", "Pular": "Saltar", "Pausar": "Pausar", "Idioma": "Idioma", "Fever ": "Fever ", "Anônimo": "Anónimo", "Mega ": "Mega ", "Ranking online indisponível. Mostrando só este aparelho.": "Ranking online no disponible. Mostrando solo este dispositivo.", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ¡Escribe tu nombre de Idol! ✨", "Tiara (wCenter)": "Tiara (wCenter)"
   },
 	"th": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "กระโดดข้ามสิ่งกีดขวางบนเวที เก็บดาว และไต่อันดับไปที่เซ็นเตอร์",
-    "Cabelo": "ผม", "Mecha": "ไฮไลท์", "Olhos": "ตา", "Corte": "ทรงผม", "Curto": "สั้น", "Chanel": "บ๊อบ", "Longo": "ยาว", "Marias-chiquinhas": "ทวินเทล", "Rabo de cavalo": "หางม้า", "Cacheado": "หยิก", "Franja": "หน้าม้า", "Bagunçada": "ยุ่ง", "Reta": "ตรง", "Lateral": "ปัดข้าง", "Espetada": "ตั้ง", "Arco-íris": "สีรุ้ง", "Detalhe": "รายละเอียด", "Nenhum": "ไม่มี", "Olheiras suaves": "รอยคล้ำใต้ตา", "Coques": "มวยผม", "Orelhas de gato": "หูแมว", "Orelhas élficas": "หูเอลฟ์", "Chifres": "เขา", "Roupa": "ชุด", "Básica": "พื้นฐาน", "Uniforme (Team)": "เครื่องแบบ (ทีม)", "Moda 2000 (Quad Center)": "แฟชั่น Y2K", "Blazer 80s (Center)": "เสื้อเบลเซอร์ยุค 80", "Acessório": "เครื่องประดับ", "Presilhas (Kenkyuusei)": "กิ๊บติดผม", "Boina (Senbatsu)": "หมวกเบเร่ต์", "Band-aid (tCenter)": "พลาสเตอร์", "Fones (Team)": "หูฟัง (ทีม)", "Óculos": "แว่นตา", "Sem": "ไม่มี", "Redondo": "กลม", "Quadrado": "เหลี่ยม", "Item": "ไอเทม", "✨ NOVO!": "✨ ใหม่!", "JOGAR": "เล่น", "Ver ranking": "ดูอันดับ", "Semana": "สัปดาห์", "Geral": "ทั้งหมด", "Fim do show": "จบการแสดง", "おつかれさま": "ทำงานหนักมาก!", "DE NOVO": "เล่นอีกครั้ง", "SALVAR IMAGEM": "บันทึกภาพ", "BAIXAR": "ดาวน์โหลด", "FECHAR": "ปิด", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "แตะสั้น = กระโดดต่ำ ค้างไว้ = กระโดดสูง \"ความพยายามจะได้รับผลตอบแทนแน่นอน!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "หากไม่เริ่มดาวน์โหลด ให้กดค้าง (มือถือ) หรือคลิกขวา (คอมฯ) เพื่อบันทึก", "Ligar ou desligar o som": "เปิด/ปิดเสียง", "Seu nome no ranking": "ชื่อของคุณ", "Imagem do seu resultado": "ผลลัพธ์ของคุณ", "Você": "คุณ", "Audição": "ออดิชั่น", "Laço azul": "โบว์สีน้ำเงิน", "Microfone de palco": "ไมค์เวที", "Hibisco": "ชบา", "Flor de cerejeira": "ซากุระ", "Tiara de prata": "มงกุฎเงิน", "Tiara dourada": "มงกุฎทอง", "Item novo": "ไอเทมใหม่", "pontos": "คะแนน", "estrelas": "ดาว", "Posição": "อันดับ", "novo recorde!": "สถิติใหม่!", "Escudo usado!": "ใช้โล่แล้ว!", "Fever! Estrelas em dobro": "ฟีเวอร์! ดาวคูณสอง", "Ímã de estrelas!": "แม่เหล็กดูดดาว!", "Subiu para ": "เลื่อนขั้นเป็น ", " Escudo e look!": " ได้โล่และชุดใหม่!", "Abdução ": "ลักพาตัว ", "Ímã ": "แม่เหล็ก ", "Recorde": "สถิติ", "Ranking Local (Salvo neste aparelho)": "อันดับในเครื่อง", "Ninguém no ranking ainda. Seja a primeira pessoa!": "ยังไม่มีใครในอันดับ เป็นคนแรกเลย!", "Jogue também e entre no ranking!": "มาเล่นและเข้าสู่อันดับด้วยกันเถอะ!", "Pausado": "หยุดชั่วคราว", "CONTINUAR": "เล่นต่อ", "Pular": "กระโดด", "Pausar": "หยุด", "Idioma": "ภาษา", "Fever ": "ฟีเวอร์ ", "Anônimo": "นิรนาม", "Mega ": "เมก้า ", "Ranking online indisponível. Mostrando só este aparelho.": "อันดับออนไลน์ไม่พร้อมใช้งาน แสดงเฉพาะเครื่องนี้", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ใส่ชื่อไอดอลของคุณ! ✨", "Tiara (wCenter)": "เทียร่า (wCenter)"
+    "Cabelo": "ผม", "Valentine (wCenter)": "Valentine (wCenter)", "Hoje": "วันนี้", "Mecha": "ไฮไลท์", "Olhos": "ตา", "Corte": "ทรงผม", "Curto": "สั้น", "Chanel": "บ๊อบ", "Longo": "ยาว", "Marias-chiquinhas": "ทวินเทล", "Rabo de cavalo": "หางม้า", "Cacheado": "หยิก", "Franja": "หน้าม้า", "Bagunçada": "ยุ่ง", "Reta": "ตรง", "Lateral": "ปัดข้าง", "Espetada": "ตั้ง", "Arco-íris": "สีรุ้ง", "Detalhe": "รายละเอียด", "Nenhum": "ไม่มี", "Olheiras suaves": "รอยคล้ำใต้ตา", "Coques": "มวยผม", "Orelhas de gato": "หูแมว", "Orelhas élficas": "หูเอลฟ์", "Chifres": "เขา", "Roupa": "ชุด", "Básica": "พื้นฐาน", "Uniforme (Team)": "เครื่องแบบ (ทีม)", "Moda 2000 (Quad Center)": "แฟชั่น Y2K", "Blazer 80s (Center)": "เสื้อเบลเซอร์ยุค 80", "Acessório": "เครื่องประดับ", "Presilhas (Kenkyuusei)": "กิ๊บติดผม", "Boina (Senbatsu)": "หมวกเบเร่ต์", "Band-aid (tCenter)": "พลาสเตอร์", "Fones (Team)": "หูฟัง (ทีม)", "Óculos": "แว่นตา", "Sem": "ไม่มี", "Redondo": "กลม", "Quadrado": "เหลี่ยม", "Item": "ไอเทม", "✨ NOVO!": "✨ ใหม่!", "JOGAR": "เล่น", "Ver ranking": "ดูอันดับ", "Semana": "สัปดาห์", "Geral": "ทั้งหมด", "Fim do show": "จบการแสดง", "おつかれさま": "ทำงานหนักมาก!", "DE NOVO": "เล่นอีกครั้ง", "SALVAR IMAGEM": "บันทึกภาพ", "BAIXAR": "ดาวน์โหลด", "FECHAR": "ปิด", "Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "แตะสั้น = กระโดดต่ำ ค้างไว้ = กระโดดสูง \"ความพยายามจะได้รับผลตอบแทนแน่นอน!\" ✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "หากไม่เริ่มดาวน์โหลด ให้กดค้าง (มือถือ) หรือคลิกขวา (คอมฯ) เพื่อบันทึก", "Ligar ou desligar o som": "เปิด/ปิดเสียง", "Seu nome no ranking": "ชื่อของคุณ", "Imagem do seu resultado": "ผลลัพธ์ของคุณ", "Você": "คุณ", "Audição": "ออดิชั่น", "Laço azul": "โบว์สีน้ำเงิน", "Microfone de palco": "ไมค์เวที", "Hibisco": "ชบา", "Flor de cerejeira": "ซากุระ", "Tiara de prata": "มงกุฎเงิน", "Tiara dourada": "มงกุฎทอง", "Item novo": "ไอเทมใหม่", "pontos": "คะแนน", "estrelas": "ดาว", "Posição": "อันดับ", "novo recorde!": "สถิติใหม่!", "Escudo usado!": "ใช้โล่แล้ว!", "Fever! Estrelas em dobro": "ฟีเวอร์! ดาวคูณสอง", "Ímã de estrelas!": "แม่เหล็กดูดดาว!", "Subiu para ": "เลื่อนขั้นเป็น ", " Escudo e look!": " ได้โล่และชุดใหม่!", "Abdução ": "ลักพาตัว ", "Ímã ": "แม่เหล็ก ", "Recorde": "สถิติ", "Ranking Local (Salvo neste aparelho)": "อันดับในเครื่อง", "Ninguém no ranking ainda. Seja a primeira pessoa!": "ยังไม่มีใครในอันดับ เป็นคนแรกเลย!", "Jogue também e entre no ranking!": "มาเล่นและเข้าสู่อันดับด้วยกันเถอะ!", "Pausado": "หยุดชั่วคราว", "CONTINUAR": "เล่นต่อ", "Pular": "กระโดด", "Pausar": "หยุด", "Idioma": "ภาษา", "Fever ": "ฟีเวอร์ ", "Anônimo": "นิรนาม", "Mega ": "เมก้า ", "Ranking online indisponível. Mostrando só este aparelho.": "อันดับออนไลน์ไม่พร้อมใช้งาน แสดงเฉพาะเครื่องนี้", "Zipper (tCenter)": "Zipper (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ ใส่ชื่อไอดอลของคุณ! ✨", "Tiara (wCenter)": "เทียร่า (wCenter)"
   },
   "ja": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "ステージの障害物をジャンプして、星を集めて、センターを目指してランクを上げよう。",
-    "Cabelo": "髪色", "Mecha": "メッシュ", "Olhos": "瞳", "Corte": "髪型", "Curto": "ショート", "Chanel": "ボブ", "Longo": "ロング", "Marias-chiquinhas": "ツインテール", "Rabo de cavalo": "ポニーテール", "Cacheado": "くせ毛", "Franja": "前髪", "Bagunçada": "ラフ", "Reta": "ぱっつん", "Lateral": "流し前髪", "Espetada": "ツンツン", "Arco-íris": "レインボー", "Detalhe": "パーツ", "Nenhum": "なし", "Coques": "お団子", "Orelhas de gato": "猫耳", "Orelhas élficas": "エルフ耳", "Chifres": "つの", "Roupa": "衣装", "Básica": "基本", "Uniforme (Team)": "制服（チーム）", "Moda 2000 (Quad Center)": "Y2Kファッション（クアッドセンター）", "Blazer 80s (Center)": "80sブレザー（センター）", "Acessório": "アクセサリー", "Presilhas (Kenkyuusei)": "ヘアピン（研究生）", "Boina (Senbatsu)": "ベレー帽（選抜）", "Band-aid (tCenter)": "絆創膏（tセンター）", "Fones (Team)": "ヘッドホン（チーム）", "Óculos": "メガネ", "Sem": "なし", "Redondo": "丸", "Quadrado": "四角", "Item": "アイテム", "✨ NOVO!": "✨ NEW!", "JOGAR": "スタート", "Ver ranking": "ランキングを見る", "Semana": "今週", "Geral": "総合", "Fim do show": "ライブ終了", "DE NOVO": "もう一度", "SALVAR IMAGEM": "画像を保存", "BAIXAR": "ダウンロード", "FECHAR": "閉じる","Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "タップ＝低いジャンプ／長押し＝高いジャンプ。「努力は必ず報われる！」✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "保存できない場合は、画像を長押し（スマホ）または右クリック（パソコン）して保存してください。", "Ligar ou desligar o som": "サウンドのオン/オフ", "Seu nome no ranking": "ランキング用の名前", "Imagem do seu resultado": "あなたの結果画像", "Você": "あなた", "Audição": "オーディション", "Laço azul": "青いリボン", "Microfone de palco": "ステージマイク", "Hibisco": "ハイビスカス", "Flor de cerejeira": "桜の花", "Tiara de prata": "シルバーのティアラ", "Tiara dourada": "ゴールドのティアラ", "Item novo": "新アイテム", "pontos": "点", "estrelas": "星", "Posição": "ランク", "novo recorde!": "自己ベスト更新！", "Escudo usado!": "シールド使用！", "Fever! Estrelas em dobro": "フィーバー！星が2倍", "Ímã de estrelas!": "星マグネット！", "Subiu para ": "昇格：", " Escudo e look!": " シールドと新衣装！", "Abdução ": "アブダクション ", "Ímã ": "マグネット ", "Fever ": "フィーバー ", "Recorde": "ベスト", "Ranking Local (Salvo neste aparelho)": "ローカルランキング（この端末に保存）", "Ninguém no ranking ainda. Seja a primeira pessoa!": "最初のランクインを目指そう！", "Jogue também e entre no ranking!": "あなたもプレイしてランキングに参加！", "Pausado": "一時停止", "CONTINUAR": "つづける", "Pular": "ジャンプ", "Pausar": "一時停止", "Idioma": "言語", "Anônimo": "ゲスト", "Mega ": "メガ ", "Ranking online indisponível. Mostrando só este aparelho.": "オンラインランキングは現在利用できません（端末内のみ表示）", "Zipper (tCenter)": "ジッパー (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ アイドル名を入力してね！ ✨", "Tiara (wCenter)": "ティアラ (wCenter)"
+   "Cabelo": "髪色", "Valentine (wCenter)": "バレンタイン (wCenter)", "Hoje": "今日", "Mecha": "メッシュ", "Olhos": "瞳", "Corte": "髪型", "Curto": "ショート", "Chanel": "ボブ", "Longo": "ロング", "Marias-chiquinhas": "ツインテール", "Rabo de cavalo": "ポニーテール", "Cacheado": "くせ毛", "Franja": "前髪", "Bagunçada": "ラフ", "Reta": "ぱっつん", "Lateral": "流し前髪", "Espetada": "ツンツン", "Arco-íris": "レインボー", "Detalhe": "パーツ", "Nenhum": "なし", "Coques": "お団子", "Orelhas de gato": "猫耳", "Olheiras suaves": "うすいくま", "Orelhas élficas": "エルフ耳", "Chifres": "つの", "Roupa": "衣装", "Básica": "基本", "Uniforme (Team)": "制服（チーム）", "Moda 2000 (Quad Center)": "Y2Kファッション（クアッドセンター）", "Blazer 80s (Center)": "80sブレザー（センター）", "Acessório": "アクセサリー", "Presilhas (Kenkyuusei)": "ヘアピン（研究生）", "Boina (Senbatsu)": "ベレー帽（選抜）", "Band-aid (tCenter)": "絆創膏（tセンター）", "Fones (Team)": "ヘッドホン（チーム）", "Óculos": "メガネ", "Sem": "なし", "Redondo": "丸", "Quadrado": "四角", "Item": "アイテム", "✨ NOVO!": "✨ NEW!", "JOGAR": "スタート", "Ver ranking": "ランキングを見る", "Semana": "今週", "Geral": "総合", "Fim do show": "ライブ終了", "DE NOVO": "もう一度", "SALVAR IMAGEM": "画像を保存", "BAIXAR": "ダウンロード", "FECHAR": "閉じる","Toque rápido = pulo curto; segure = pulo alto. \"O esforço com certeza será recompensado!\" ✨": "タップ＝低いジャンプ／長押し＝高いジャンプ。「努力は必ず報われる！」✨", "Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.": "保存できない場合は、画像を長押し（スマホ）または右クリック（パソコン）して保存してください。", "Ligar ou desligar o som": "サウンドのオン/オフ", "Seu nome no ranking": "ランキング用の名前", "Imagem do seu resultado": "あなたの結果画像", "Você": "あなた", "Audição": "オーディション", "Laço azul": "青いリボン", "Microfone de palco": "ステージマイク", "Hibisco": "ハイビスカス", "Flor de cerejeira": "桜の花", "Tiara de prata": "シルバーのティアラ", "Tiara dourada": "ゴールドのティアラ", "Item novo": "新アイテム", "pontos": "点", "estrelas": "星", "Posição": "ランク", "novo recorde!": "自己ベスト更新！", "Escudo usado!": "シールド使用！", "Fever! Estrelas em dobro": "フィーバー！星が2倍", "Ímã de estrelas!": "星マグネット！", "Subiu para ": "昇格：", " Escudo e look!": " シールドと新衣装！", "Abdução ": "アブダクション ", "Ímã ": "マグネット ", "Fever ": "フィーバー ", "Recorde": "ベスト", "Ranking Local (Salvo neste aparelho)": "ローカルランキング（この端末に保存）", "Ninguém no ranking ainda. Seja a primeira pessoa!": "最初のランクインを目指そう！", "Jogue também e entre no ranking!": "あなたもプレイしてランキングに参加！", "Pausado": "一時停止", "CONTINUAR": "つづける", "Pular": "ジャンプ", "Pausar": "一時停止", "Idioma": "言語", "Anônimo": "ゲスト", "Mega ": "メガ ", "Ranking online indisponível. Mostrando só este aparelho.": "オンラインランキングは現在利用できません（端末内のみ表示）", "Zipper (tCenter)": "ジッパー (tCenter)", "✨ Digite seu nome de Idol! ✨": "✨ アイドル名を入力してね！ ✨", "Tiara (wCenter)": "ティアラ (wCenter)"
   }
 };
 
@@ -304,7 +345,7 @@ function applyLang(){
   L.forEach(function(node){
     var raw=node.__pt!==undefined?node.__pt:node.nodeValue, k=raw.trim();
     if(node.__pt===undefined){
-      if(DICT.en[k]||DICT.es[k]||DICT.ja[k])node.__pt=raw;
+      if(DICT.en[k]||DICT.es[k]||DICT.th[k]||DICT.ja[k])node.__pt=raw;
       else return;
     }
     var d=DICT[LANG], v=d&&d[k];
@@ -332,10 +373,10 @@ function applyLang(){
 
 var cv=document.getElementById('c'),g=cv.getContext('2d'),W=720,H=380,GY=300,SC=1,K=1;
 var CH=[
-  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'',front:'bagunca',det:'gato',gl:'',out:'',hat:''},
-  {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',hat:''},
-  {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',hat:''},
-  {n:'Você',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',hat:''}
+  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
+  {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:''},
+  {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',outcol:'#ffffff',hat:''},
+  {n:'Você',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',outcol:'#ffffff',hat:''}
 ];
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
@@ -351,28 +392,26 @@ var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cback:'
 
 // --- SISTEMA DE RANKING LOCAL ---
 
-	function dk(){
-  var d = new Date();
-  var year = d.getFullYear();
-  var month = String(d.getMonth() + 1).padStart(2, '0');
-  var day = String(d.getDate()).padStart(2, '0');
-  return year + '-' + month + '-' + day;
+function dk(){
+  return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 }
+
 function wk(){
   var d=new Date(); d.setHours(0,0,0,0);
   d.setDate(d.getDate()+3-(d.getDay()+6)%7);
   var w1=new Date(d.getFullYear(),0,4);
   return d.getFullYear()+'-W'+(1+Math.round(((d-w1)/864e5-3+(w1.getDay()+6)%7)/7));
 }
-var local=[], lw={w:wk(),rows:[]}, tab='week';
-	
-	var ld = {d: dk(), rows: []};
+
+var local=[], lw={w:wk(),rows:[]}, ld={d:dk(),rows:[]}, tab='day';
+
 try {
   var savedLd = JSON.parse(localStorage.getItem('brs48cr_ld') || 'null');
-  if(savedLd && savedLw.d === dk() && Array.isArray(savedLd.rows)){
+  if(savedLd && savedLd.d === dk() && Array.isArray(savedLd.rows)){
     ld = savedLd;
   }
 } catch(e) {}
+
 
 function upd(arr,row){
   var a=(arr||[]).slice();
@@ -424,50 +463,24 @@ function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.jso
 
 function showLb(el){
   if(!el)return;
-  var tb = tab; // 'day', 'week', ou 'all'
-  
-  var query = _supabase
-    .from('leaderboard')
-    .select('*');
-
-  // Se o jogador estiver na aba "Hoje", filtramos pela data atual
-  if(tb === 'day'){
-    query = query.eq('created_date', dk());
-  }
-
-  query
-    .order('score', { ascending: false })
-    .then(function(response){
-      var j = response.data || [];
-      if(response.error) throw response.error;
-      
-      var unq = {};
-      j.forEach(function(r){
-        var k = (r.name||'').trim().toLowerCase();
-        if(!unq[k] || unq[k].score < r.score) unq[k] = r;
-      });
-      var top15 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,15);
-      
-      // Mapeia para o formato que a função de exibição local compreende
-      var formattedRows = top15.map(function(r){
-        return {name: r.name, score: r.score, rankId: rankOf(r.score), char: r.char||''};
-      });
-
-      // Exibe usando a aba correta (passando as linhas filtradas do dia ou deixando o local lidar)
-      if(tb === 'day'){
-        showLbLocal(el, formattedRows);
-      } else {
-        showLbLocal(el, formattedRows); // Ou mantenha a lógica geral se preferir separar
-      }
-    })
-    .catch(function(){
-      showLbLocal(el);
-      var n = document.createElement('li');
-      n.style.cssText = 'font-size:11px;color:var(--sub);background:none;justify-content:center';
-      n.textContent = tr('Ranking online indisponível. Mostrando só este aparelho.');
-      el.appendChild(n);
+  var tb=tab;
+  Promise.resolve(_supabase.rpc('top_scores',{periodo:tb})).then(function(resp){
+    if(resp.error)throw resp.error;
+    var rows=(resp.data||[]).map(function(r){
+      return {name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''};
     });
+    if(tb!==tab)return;
+    showLbLocal(el,rows);
+  }).catch(function(err){
+    console.error('Ranking:',err);
+    showLbLocal(el);
+    var n=document.createElement('li');
+    n.style.cssText='font-size:11px;color:var(--sub);background:none;justify-content:center';
+    n.textContent=tr('Ranking online indisponível. Mostrando só este aparelho.');
+    el.appendChild(n);
+  });
 }
+
 
 // --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---
 try {
@@ -589,7 +602,8 @@ Object.keys(CF).forEach(function(id){
 	
 $('cstk').checked=!!CU.streak;$('cstk').onchange=function(){CU.streak=this.checked;saveCu()};
 cw.children[3].firstChild.style.background=CU.hair;
-refreshAcc();pick(sel);$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
+	try{accSel=localStorage.getItem('brs48cr_acc')||''}catch(e){}
+pick(sel);refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
 $('acc').onfocus=function(){seen=ACC.filter(function(a){return best>=a[2]}).length;try{localStorage.setItem('brs48cr_seen',seen)}catch(e){}$('newb').hidden=true};
 var nick=''; try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
 var nickIn = $('nick');
@@ -599,6 +613,7 @@ if(nickIn){
   nickIn.oninput = function(){
     nick = this.value.trim().slice(0, 12);
     this.classList.toggle('chamativo', !nick);
+    this.classList.remove('aviso-erro'); // Limpa o estado de erro
     try{ localStorage.setItem('brs48cr_nick', nick); }catch(e){}
   };
 }
@@ -711,19 +726,39 @@ function music(on){
 function sync(){var k=state!=='play'?'menu':(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':pw&&pw.k==='unit'?'unit':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT){curT=k;music(true)}}
 var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊'};
 
-var P,obs,items,sp,score,fans,dist,frame,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0;
+var P,obs,items,sp,score,fans,dist,frame=0,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0;
+var ct = 0; 
+var cc = document.getElementById('cel').getContext('2d');
 var paused=false,abducted=false,wasAbducted=false;
 var isTestGame = false;
 var CFG={STAR:15,STAR_FEVER:30,CARD:100,UFO_EVERY:2500,UFO_BONUS:100,UFO_FRAMES:480,UFO_STAR_MULT:.5,DIST_RATE:.015};
 
 function getPartner(currentSel) {
-  var options;
-  if (currentSel === 0) options = [1, 2]; // Tsu -> Lirika ou Pati
-  else if (currentSel === 1) options = [0, 2]; // Lirika -> Tsu ou Pati
-  else if (currentSel === 2) options = [0, 1]; // Pati -> Tsu ou Lirika
-  else options = [0, 1, 2]; // Você -> Tsu, Lirika ou Pati
+  var options = (currentSel === 0) ? [1, 2] : (currentSel === 1) ? [0, 2] : (currentSel === 2) ? [0, 1] : [0, 1, 2];
   
-  return options[Math.floor(Math.random() * options.length)];
+  // Remove qualquer chance de o próprio personagem estar na bolsa se trocou de Oshi
+  if (window.partnerBag && window.partnerBag.length > 0) {
+    window.partnerBag = window.partnerBag.filter(function(id) { return id !== currentSel; });
+  }
+
+  if (!window.partnerBag || window.partnerBag.length === 0) {
+    var pool = options.slice();
+    // Embaralha a ordem do trio/dupla
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = pool[i]; pool[i] = pool[j]; pool[j] = temp;
+    }
+    // Evita que o primeiro da nova rodada seja igual ao último da rodada anterior
+    if (pool.length > 1 && pool[0] === window.lastPartnerPicked) {
+      var first = pool.shift();
+      pool.push(first);
+    }
+    window.partnerBag = pool;
+  }
+  
+  var chosen = window.partnerBag.shift();
+  window.lastPartnerPicked = chosen;
+  return chosen;
 }
 	
 function reset(){
@@ -739,13 +774,18 @@ function reset(){
   window.lastMorango=Math.floor(score/3500);
   finalExpr=0;
   window.lastPetMilestone = Math.floor(score / 1500);
-  window.activePetFly = null;
-  window.petBag = [];
-  window.lastPetKey = '';
-  window.flashAlpha = 0;
-  window.lastPaparazzi = Math.floor(score / 2500);
-  window.lastMic = Math.floor(score/4000);
-  window.wasUnit = null;
+  window.wasGiant = false;
+window.activePetFly = null;
+window.petBag = [];
+window.lastPetKey = '';
+window.flashAlpha = 0;
+window.lastPaparazzi = Math.floor(score / 2500);
+window.lastMorango = 0;
+window.lastMic = 0;
+window.wasUnit = null;
+window.collectedPartners = [];
+window.partnerBag = [];
+window.lastPartnerPicked = null;
 }
 
 function spawn(){
@@ -816,6 +856,22 @@ function jump(){
 function start(e){
   if(e && e.preventDefault) e.preventDefault();
 
+// Validação: Exige o preenchimento do nome
+  var inputNick = $('nick');
+  var nomeLimpo = (inputNick ? inputNick.value : '').trim();
+
+  if(!nomeLimpo){
+    if(inputNick){
+      inputNick.classList.remove('aviso-erro');
+      void inputNick.offsetWidth; // Força o reflow para reiniciar a animação
+      inputNick.classList.add('aviso-erro');
+      inputNick.focus();
+    }
+    // Efeito sonoro de erro/aviso
+    if(sfx && sfx.hit) sfx.hit();
+    alert('✨ Digite seu nome de Idol para poder jogar e entrar no ranking! ✨');
+    return; // Interrompe o início do jogo
+  }
 
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   clearTimeout(overTimer);
@@ -865,6 +921,156 @@ nextX = W + 600;
   last=performance.now();
 }
 
+
+function celeb(){
+  if(state !== 'over') return;
+  ct++;
+  var og = g, ch = CH[sel], pu = .5 + .5 * Math.sin(ct * .05);
+  g = cc;
+  g.clearRect(0, 0, 200, 150);
+  
+  var Q = curPal(), sg = g.createLinearGradient(0, 0, 0, 140);
+  sg.addColorStop(0, Q[0]);
+  sg.addColorStop(1, Q[1]);
+  g.fillStyle = sg;
+  g.fillRect(0, 0, 200, 150);
+  
+  for(var b = 0; b < 9; b++){ 
+    var bh = 30 + (b * 37 % 40), bx = b * 24 - 6; 
+    g.fillStyle = b % 2 ? Q[2] : Q[3]; 
+    g.fillRect(bx, 140 - bh, 20, bh); 
+    g.fillStyle = 'rgba(255,235,150,0.3)'; 
+    if(b % 3 !== 0){ 
+      for(var wy = 140 - bh + 8; wy < 130; wy += 12){ 
+        g.fillRect(bx + 4, wy, 4, 4); 
+        g.fillRect(bx + 12, wy, 4, 4); 
+      } 
+    } 
+  }
+  
+  g.fillStyle = Q[6];
+  g.fillRect(0, 140, 200, 10);
+  g.fillStyle = Q[7];
+  g.fillRect(0, 140, 200, 2);
+  
+  if(wasAbducted) ufoDraw(165, 40, .85);
+  
+  if(window.wasGiant){
+    g.save();
+    g.translate(32, 42);
+    g.scale(1.2, 1.2);
+    g.rotate(-0.2);
+    g.shadowColor = '#ff6fb5';
+    g.shadowBlur = 8;
+    g.fillStyle = '#d97706';
+    g.beginPath();
+    g.moveTo(-6, 2);
+    g.lineTo(6, 2);
+    g.lineTo(0, 14);
+    g.fill();
+    g.fillStyle = '#ff6fb5';
+    g.beginPath();
+    g.arc(0, -1, 7, 0, 7);
+    g.fill();
+    g.beginPath();
+    g.arc(-4, 2, 4, 0, 7);
+    g.fill();
+    g.beginPath();
+    g.arc(4, 2, 4, 0, 7);
+    g.fill();
+    g.fillStyle = '#fff';
+    g.fillRect(-2, -3, 2, 2);
+    g.fillRect(2, -1, 2, 2);
+    g.fillStyle = '#4dd8ff';
+    g.fillRect(-1, -6, 2, 2);
+    g.restore();
+  }
+
+  var cn = g.createLinearGradient(0, 0, 0, 140);
+  cn.addColorStop(0, 'rgba(255,255,255,.5)');
+  cn.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = cn;
+  g.beginPath();
+  g.moveTo(88, 0);
+  g.lineTo(112, 0);
+  g.lineTo(165, 140);
+  g.lineTo(35, 140);
+  g.fill();
+
+  var rg = g.createRadialGradient(100, 85, 4, 100, 85, 75);
+  rg.addColorStop(0, 'rgba(' + GLc() + ',' + (.5 + .25 * pu) + ')');
+  rg.addColorStop(1, 'rgba(255,160,220,0)');
+  g.fillStyle = rg;
+  g.fillRect(0, 0, 200, 150);
+
+  g.fillStyle = 'rgba(255,255,255,.28)';
+  g.beginPath();
+  g.ellipse(100, 140, 48, 7, 0, 0, 7);
+  g.fill();
+
+  g.save();
+  g.scale(2, 2);
+  for(var i = 0; i < 9; i++){
+    var a = ct * .02 + i * .7, px = 50 + Math.cos(a) * (28 + i % 3 * 5), py = 38 + Math.sin(a * 1.3) * (24 + i % 2 * 6), sz = 1 + 2 * Math.abs(Math.sin(ct * .07 + i * 1.9));
+    g.fillStyle = i % 2 ? '#ffe14d' : '#ff9ccd';
+    g.fillRect(px - sz, py - .5, sz * 2, 1);
+    g.fillRect(px - .5, py - sz, 1, sz * 2);
+  }
+  
+  var jumpY = 27 - (1 - Math.cos(ct * .05)) / 2 * 8;
+  // Filtra para garantir que nenhum parceiro seja igual ao personagem principal (sel)
+  var pList = (window.collectedPartners || []).filter(function(id) { return id !== sel; });
+  
+  if (sel === 3 && pList.length >= 3) {
+    // --- QUARTETO: Formação de Palco (Simetria Perfeita e Centralizada) ---
+    
+    // 1. Linha de Trás (Mais altos, nas bordas simétricas)
+    drawChar(CH[pList[0]], 5,  jumpY - 5, 1, 2); // Fundo Esquerda (Tsu)
+    drawChar(CH[pList[2]], 65, jumpY - 5, 1, 2); // Fundo Direita (Pati)
+    
+    // 2. Linha da Frente (Mais baixos, centralizados juntos)
+    drawChar(CH[pList[1]], 25, jumpY + 2, 1, 2); // Frente Esquerda (Lirika)
+    drawChar(ch,           45, jumpY + 2, 1, finalExpr); // Frente Direita (Você)
+
+    // Emojis recalculados milimetricamente para o topo de cada cabeça (X + 15)
+    g.font = '7px sans-serif';
+    g.textAlign = 'center';
+    
+    // Corações de trás (mais altos)
+    g.fillText('💜', 20, jumpY - 12 + Math.sin(ct * 0.12) * 2.5);
+    g.fillText('💙', 80, jumpY - 12 + Math.cos(ct * 0.15) * 2.5);
+    
+    // Corações da frente (mais baixos)
+    g.fillText('💚', 40, jumpY - 5  + Math.cos(ct * 0.12) * 2.5);
+    g.fillText('💖', 60, jumpY - 5  + Math.sin(ct * 0.15) * 2.5);
+
+  } else if (pList.length >= 2) {
+    // Trio na tela de Fim do Show (Oshi no centro exato)
+    drawChar(CH[pList[0]], 11, jumpY + 2, 1, 2);
+    drawChar(ch,           35, jumpY,     1, finalExpr);
+    drawChar(CH[pList[1]], 59, jumpY + 2, 1, 2);
+    
+    // Corações animados e dinâmicos pulando individualmente para o Trio!
+    g.font = '7px sans-serif';
+    g.textAlign = 'center';
+    var hMap = ['💜', '💚', '💙', '💖'];
+    g.fillText(hMap[pList[0]], 18, jumpY - 6 + Math.sin(ct * 0.12) * 2.5);
+    g.fillText(hMap[sel],      35, jumpY - 8 + Math.cos(ct * 0.12) * 2.5);
+    g.fillText(hMap[pList[1]], 52, jumpY - 6 + Math.sin(ct * 0.15) * 2.5);
+  } else if (pList.length === 1) {
+    // Dupla na tela de Fim do Show
+    drawChar(CH[pList[0]], 20, jumpY + 1, 1, 2);
+    drawChar(ch,           50, jumpY,     1, finalExpr);
+  } else {
+    // Solo
+    drawChar(ch, 35, jumpY, 1, finalExpr);
+  }
+  g.restore();
+  
+  g = og;
+  requestAnimationFrame(celeb);
+}
+
 function end(){
   if(state==='over')return;
   state='over';sfx.over();sync();shake=14;
@@ -902,31 +1108,25 @@ function end(){
   
   var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
 
-if(!isTesting && !isAdmin){
-    _supabase
-      .from('leaderboard')
-      .insert([{ 
-        name: row.name, 
-        score: s, 
-        stars: stars, 
-        char: row.char,
-        created_date: dk() // Envia a data de hoje no formato YYYY-MM-DD
-      }])
-      .then(function(){ refresh(); })
-      .catch(function(){ refresh(); });
+if(!isTesting && !isAdmin && row.name && row.name !== 'Anônimo'){
+    _supabase.from('leaderboard')
+      .insert([{ name: row.name, score: s, stars: stars, char: row.char, device_id: did }])
+      .then(function(resp){
+        if(resp && resp.error) console.error('Ranking (envio):', resp.error);
+        refresh();
+      }, function(){
+        refresh();
+      });
   } else {
     refresh();
   }
   
-  clearTimeout(overTimer);
-  overTimer=setTimeout(function(){
-    if(state==='over'){
-      $('over').hidden=false;
-      celeb();
-    }
-  },650);
+clearTimeout(overTimer);
+  overTimer = setTimeout(function(){
+    $('over').hidden = false;
+    celeb();
+  }, 300); // 300ms para abrir rápido e responsivo
 }
-
 
 function hit(a,b){
   if(b.k==='cable'){
@@ -1075,7 +1275,7 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
 	fans.forEach(function(f){ f.x -= sp*dt });
     fans = fans.filter(function(f){ return f.x > -40 });
 	items.forEach(function(it){
-    if(it.petDrop || it.ct==='ima'){
+    if(it.petDrop){
       var dx=(P.x+15)-it.x, dy=(P.y+22)-it.y, d=Math.hypot(dx,dy)||1;
       if(d<260){ it.x += (dx/d)*9*dt; it.y += (dy/d)*9*dt; }
     }
@@ -1108,26 +1308,38 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
 
 items.forEach(function(it){
     var margemItem = it.k === 'ufo' ? 0 : -4;
-    if(!it.got && !(it.k==='card'&&pw&&pw.k==='alien') && pb.x + margemItem < it.x + it.w && pb.x + pb.w - margemItem > it.x && pb.y + margemItem < it.y + it.h && pb.y + pb.h - margemItem > it.y){
+    // Removida a trava de Alien, agora coleta suavemente sem bugar o loop!
+    if(!it.got && pb.x + margemItem < it.x + it.w && pb.x + pb.w - margemItem > it.x && pb.y + margemItem < it.y + it.h && pb.y + pb.h - margemItem > it.y){
       it.got=true;
       if(it.k==='ufo'){
         score+=CFG.UFO_BONUS; pops.push({x:it.x,y:it.y,t:0,s:'+'+CFG.UFO_BONUS});
         pw={k:'alien',t:CFG.UFO_FRAMES};abducted=true;wasAbducted=true; toast='Kimi wa Alien!'; toastT=110;
       } else if(it.k==='card'){
         score+=100;pops.push({x:it.x,y:it.y,t:0,s:'+100'});sfx.card();
-        if(it.ct==='plain'){toast='Card! +100'}else{pw={k:it.ct,t:480};toast=pw.k==='fever'?tr('Fever! Estrelas em dobro'):tr('Ímã de estrelas!')}
-        toastT=110;
+        if(!pw || (pw.k!=='alien' && pw.k!=='gigante')){
+            if(it.ct==='plain'){toast='Card! +100'}else{pw={k:it.ct,t:480};toast=pw.k==='fever'?tr('Fever! Estrelas em dobro'):tr('Ímã de estrelas!')}
+            toastT=110;
+        }
       } else if(it.k==='morango'){
         score+=200; pops.push({x:it.x,y:it.y,t:0,s:'+200'});
         pw={k:'gigante',t:400}; inv=400; window.wasGiant=true; toast='Mega TsuLiPa!'; toastT=110; sfx.card();
       } else if (it.k === 'mic_unit') {
-  window.wasUnit = pw.partner;
-  score += 300; pops.push({x:it.x, y:it.y, t:0, s:'+300'});
-  pw = {k: 'unit', partner: getPartner(sel), t: 900}; // 15 segundos de dupla!
-  toast = 'Unit Mode! Sinergia ✨'; toastT = 110; sfx.card();
+        score += 300; pops.push({x:it.x, y:it.y, t:0, s:'+300'});
+        if (!pw || (pw.k !== 'alien' && pw.k !== 'gigante')) {
+          var novoParceiro = getPartner(sel);
+          pw = {k: 'unit', partner: novoParceiro, t: 900}; 
+          window.wasUnit = novoParceiro;
+          
+          if(!window.collectedPartners) window.collectedPartners = [];
+          if(window.collectedPartners.indexOf(novoParceiro) === -1) {
+            window.collectedPartners.push(novoParceiro);
+          }
+
+          toast = 'Unit Mode! Sinergia ✨'; toastT = 110; sfx.card();
+        }
       } else {
         var v=pw&&pw.k==='fever'?CFG.STAR_FEVER:CFG.STAR;
-		if (pw && pw.k === 'unit') v *= 2; // Dobra as estrelas com a parceira junta!
+        if (pw && pw.k === 'unit') v *= 2; 
         if(pw&&pw.k==='alien') v=Math.round(v*CFG.UFO_STAR_MULT);
         score+=v;pops.push({x:it.x,y:it.y,t:0,s:'+'+v});stars++;sfx.star();
       }
@@ -1135,7 +1347,7 @@ items.forEach(function(it){
   });
   
   var r=rankOf(score);if(r>rankI){rankI=r;toast=tr('Subiu para ')+tr(RANKS[r][1])+'!';toastT=110;sfx.rank();if(r>=7){sash=true;shield=Math.min(2,shield+1);toast+=tr(' Escudo e look!')}}
-  pops.forEach(function(p){p.t+=dt});pops=pops.filter(function(p){return p.t<40});if(toastT>0)toastT-=dt;sync();
+  pops.forEach(function(p){p.t+=dt});pops=pops.filter(function(p){return p.t<40});if(toastT>0)toastT-=dt;abducted=!!(pw&&pw.k==='alien');sync();
 }
 
 function drawCity(arr,w,off,base,col,win,widthLimit){
@@ -1213,7 +1425,8 @@ function drawProps(arr,w,off,base,widthLimit){
 }
 
 function drawChar(c,x,y,run,expr){
-  var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&PX.k!=='alien')?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
+  var corDaRoupa = c.outcol || '#ffffff';
+  var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
   var sl=(b==='longo'||b==='chanel'||f==='reta'||f==='arcoiris')?14:6;
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
@@ -1229,8 +1442,8 @@ function drawChar(c,x,y,run,expr){
   g.fillStyle='#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));
   g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);
   
-  var roupa=OF>0?'':(c.out||'');var AL=PX&&PX.k==='alien';
-  var corDaRoupa = c.outcol || OUT[0]; // Pega a cor customizada, ou usa a padrão (Branco/Fever)
+  var AL = (PX && PX.k === 'alien');
+  var roupa = AL ? 'espacial' : (OF > 0 ? '' : (c.out || ''));
 
   if(roupa==='seifuku'){
     g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12); 
@@ -1274,16 +1487,51 @@ function drawChar(c,x,y,run,expr){
     // Cintura alta / Cinto
     g.fillRect(x+5, y+29, 20, 3);
 
+} else if(roupa==='sweet'){
+    // --- INÍCIO DO LOOK VALENTINE (SWEET) ---
+    g.fillStyle = corDaRoupa; 
+    g.fillRect(x + 4, y + 22, 22, 12); // Base do vestido
 
+    g.fillStyle = '#ffffff'; 
+    g.fillRect(x + 8, y + 23, 14, 11); // Avental Branco
 
+    g.fillStyle = corDaRoupa;
+    g.fillRect(x + 8, y + 23, 2, 5);
+    g.fillRect(x + 20, y + 23, 2, 5); // Alças
+
+    g.fillStyle = '#ff2a4d'; // Coração Vermelho
+    g.fillRect(x + 13, y + 26, 2, 2);
+    g.fillRect(x + 16, y + 26, 2, 2);
+    g.fillRect(x + 12, y + 28, 7, 2);
+    g.fillRect(x + 13, y + 30, 5, 2);
+    g.fillRect(x + 14, y + 32, 3, 1);
+
+    g.fillStyle = corDaRoupa;
+    T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada
+    
+    g.fillStyle = '#ffffff';
+    g.fillRect(x - 2, y + 41.5, 34, 2); // Babado
+    // --- FIM DO LOOK VALENTINE ---
+
+  }else if(roupa==='espacial'){
+    // [código do espacial...]
+    
   }else{
     // Roupa Básica
     g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
   }
 
-  if(PX&&PX.k!=='alien'){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
+  // Efeitos de Fever/Ímã e Pele
+  if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9);
+
+  // Mangas bufantes por cima dos braços
+  if(roupa === 'sweet' || roupa === 'zipper'){
+    g.fillStyle = (roupa === 'sweet') ? '#ffffff' : corDaRoupa; 
+    E(x + 1.5, y + 24.5, 4, 4);  
+    E(x + 28.5, y + 24.5, 4, 4); 
+  }
 
   if(OF===1){g.fillStyle=PX?OUT[0]:'#2a3f8a';g.fillRect(x+5,y+22,20,10);g.fillStyle=PX?OUT[1]:'#2a3f8a';T([x+6,y+31,x+24,y+31,x+27,y+39,x+3,y+39]);g.fillStyle='#fff';T([x+8,y+22,x+22,y+22,x+15,y+31]);g.fillStyle=PX?OUT[0]:'#2a3f8a';T([x+11,y+22,x+19,y+22,x+15,y+27]);g.fillStyle='#e02a4a';E(x+15,y+28,2.4,2.4);T([x+15,y+28,x+11,y+32,x+13,y+33]);T([x+15,y+28,x+19,y+32,x+17,y+33]);g.fillStyle='#fff';g.fillRect(x+3,y+38,24,1.2)}
   if(OF===2){g.fillStyle=PX?OUT[0]:'#fff0f7';T([x+5,y+22,x+25,y+22,x+29,y+40,x+1,y+40]);g.fillStyle='#ffd23f';g.fillRect(x+4,y+31,22,2);g.fillRect(x+5,y+22,20,1.5);g.fillStyle='#ff4f9a';T([x+15,y+26,x+9,y+22,x+9,y+30]);T([x+15,y+26,x+21,y+22,x+21,y+30]);E(x+15,y+26,2,2);g.fillStyle='rgba(255,230,120,'+(.4+.5*Math.sin(frame*.2))+')';g.fillRect(x+6,y+37,2,2);g.fillRect(x+22,y+35,2,2);g.fillRect(x+14,y+38,2,2)}
@@ -1399,10 +1647,40 @@ if(hacc==='coala'){
   if(A==='hibisco')FL(x+6,y+3,3.2,'#ff3d5e','#ffd23f');
   if(A==='sakura')FL(x+6,y+3,3,'#ffc4d8','#e85a8a');
   if(A==='tiaraS'||A==='tiaraO'){
-    g.strokeStyle=A==='tiaraO'?'#ffd23f':'#e2e8f0'; g.lineWidth=1.8;
-    g.beginPath(); g.moveTo(x+6,y+5); g.lineTo(x+11,y+1); g.lineTo(x+15,y-3); g.lineTo(x+19,y+1); g.lineTo(x+24,y+5); g.stroke();
-    g.fillStyle=A==='tiaraO'?'#ff3d5e':'#38bdf8'; E(x+15,y-1,1.6,1.6);
+    var isGold = (A === 'tiaraO');
+    var cBase = isGold ? '#ffd23f' : '#e2e8f0';
+    var cDark = isGold ? '#b45309' : '#94a3b8';
+    
+    // Base da coroa mais delicada e fina
+    g.fillStyle = cBase;
+    g.fillRect(x+7, y+4, 16, 2);
+    g.strokeStyle = cDark;
+    g.lineWidth = 0.6; // Traço bem fininho e delicado
+    g.strokeRect(x+7, y+4, 16, 2);
+
+    // Três pontas da coroa com proporções mais fofas e suaves
+    T([x+7,y+4, x+7,y-1, x+10.5,y+4]);   // Ponta esquerda
+    T([x+10.5,y+4, x+15,y-5, x+19.5,y+4]); // Ponta central mais arredondada
+    T([x+19.5,y+4, x+23,y-1, x+23,y+4]); // Ponta direita
+
+    // Contorno leve nas pontas
+    g.beginPath();
+    g.moveTo(x+7, y+4); g.lineTo(x+7, y-1); g.lineTo(x+10.5, y+4);
+    g.lineTo(x+15, y-5); g.lineTo(x+19.5, y+4);
+    g.lineTo(x+23, y-1); g.lineTo(x+23, y+4);
+    g.stroke();
+
+    // Joias BRS48 - Base metálica (cBase) seguida pelo centro colorido
+    g.fillStyle = cBase; E(x+7, y-0.5, 1.4, 1.4); 
+    g.fillStyle = '#3b82f6'; E(x+7, y-0.5, 0.9, 0.9);   // Joia Azul (Esquerda)
+
+    g.fillStyle = cBase; E(x+15, y-4.5, 1.6, 1.6); 
+    g.fillStyle = '#fde047'; E(x+15, y-4.5, 1.1, 1.1); // Joia Amarela (Centro)
+
+    g.fillStyle = cBase; E(x+23, y-0.5, 1.4, 1.4); 
+    g.fillStyle = '#22c55e'; E(x+23, y-0.5, 0.9, 0.9); // Joia Verde (Direita)
   }
+
   if (AL) {
     var ab = Math.sin(frame*.15)*2;
     g.strokeStyle = '#e8ffd0'; g.lineWidth = 1.4; g.beginPath();
@@ -1414,9 +1692,16 @@ if(hacc==='coala'){
   }
 
   if(OF===5){g.strokeStyle='#ffe98a';g.lineWidth=2;g.shadowColor='#ffe98a';g.shadowBlur=8;g.beginPath();g.ellipse(x+15,y-11,10,3.2,0,0,7);g.stroke();g.shadowBlur=0}
-  if(sash&&state!=='menu'){g.fillStyle='#ffe14d';for(var i=0;i<3;i++){var t=frame*.1+i*2.1;g.globalAlpha=.5+.5*Math.sin(t*2);g.fillRect(x-6+i*20,y+4+Math.sin(t)*12+i*10,3,3)}g.globalAlpha=1}
-	
-	g.restore();
+  if(sash&&state!=='menu'){
+    g.fillStyle='#ffe14d';
+    for(var i=0;i<3;i++){
+      var t=frame*.1+i*2.1;
+      g.globalAlpha=.5+.5*Math.sin(t*2);
+      g.fillRect(x-6+i*20,y+4+Math.sin(t)*12+i*10,3,3);
+    }
+    g.globalAlpha=1;
+  }
+  g.restore();
 }
 
 
@@ -1540,32 +1825,49 @@ function hx(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),par
 var PALR=PAL.map(function(p){return p.map(hx)});
 function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];return a.map(function(v,k){return 'rgb('+v.map(function(n,m){return Math.round(n+(c[k][m]-n)*b)}).join(',')+')'})}
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
-var pc=$('prev').getContext('2d'),pt=0;
-function prevLoop(){if(state==='menu'){pt++;var og=g;g=pc;g.clearRect(0,0,140,120);var rg=g.createRadialGradient(70,62,4,70,62,52);rg.addColorStop(0,'rgba(255,200,235,.7)');rg.addColorStop(1,'rgba(255,200,235,0)');g.fillStyle=rg;g.fillRect(0,0,140,120);
+var pc = $('prev').getContext('2d'), pt = 0;
 
-// Chãozinho iluminado
-g.fillStyle='rgba(255,255,255,0.15)'; g.fillRect(0,95,140,25);
-g.fillStyle='rgba(255,255,255,0.4)'; g.fillRect(0,95,140,2);
-// Estrelas piscando com base no tempo (pt)
-g.fillStyle='#ffe14d';
-g.globalAlpha = 0.4 + 0.4 * Math.sin(pt * 0.1); g.fillRect(30, 35, 2, 2);
-g.globalAlpha = 0.4 + 0.4 * Math.sin(pt * 0.15 + 2); g.fillRect(110, 50, 2, 2);
-g.globalAlpha = 1; // Reseta a opacidade para o personagem
+function prevLoop() {
+  if (state === 'menu') {
+    pt++;
+    var og = g;
+    g = pc;
+    g.clearRect(0, 0, 140, 120);
+    
+    var rg = g.createRadialGradient(70, 62, 4, 70, 62, 52);
+    rg.addColorStop(0, 'rgba(255,200,235,.7)');
+    rg.addColorStop(1, 'rgba(255,200,235,0)');
+    g.fillStyle = rg;
+    g.fillRect(0, 0, 140, 120);
 
-g.save();g.scale(2,2);drawChar(CH[sel],20,15+Math.sin(pt*.06)*1.5,1,0);g.restore();// Escolhe o pet do Oshi selecionado (ou alterna a cada 3 segundos se estiver na personagem "Você")
-var petKey = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : ['tsu','lirika','pati'][Math.floor(pt/180)%3];
-drawPet(pc, petKey, 112, 38, 1.15, pt);g=og}requestAnimationFrame(prevLoop)}
+    // Chãozinho iluminado
+    g.fillStyle = 'rgba(255,255,255,0.15)'; 
+    g.fillRect(0, 95, 140, 25);
+    g.fillStyle = 'rgba(255,255,255,0.4)'; 
+    g.fillRect(0, 95, 140, 2);
+
+    // Estrelas piscando
+    g.fillStyle = '#ffe14d';
+    g.globalAlpha = 0.4 + 0.4 * Math.sin(pt * 0.1); g.fillRect(30, 35, 2, 2);
+    g.globalAlpha = 0.4 + 0.4 * Math.sin(pt * 0.15 + 2); g.fillRect(110, 50, 2, 2);
+    g.globalAlpha = 1; 
+
+    // Desenho seguro do personagem na prévia
+    g.save(); 
+    g.scale(2, 2); 
+    drawChar(CH[sel], 20, 15 + Math.sin(pt * .06) * 1.5, 1, 0); 
+    g.restore();
+
+    // Desenho do pet
+    var petKey = sel === 0 ? 'tsu' : sel === 1 ? 'lirika' : sel === 2 ? 'pati' : ['tsu', 'lirika', 'pati'][Math.floor(pt / 180) % 3];
+    drawPet(pc, petKey, 112, 38, 1.15, pt);
+    
+    g = og;
+  }
+  requestAnimationFrame(prevLoop); // Mantém o loop contínuo por quadros
+}
+
 prevLoop();
-var cc=$('cel').getContext('2d'),ct=0;
-
-function celeb(){if(state!=='over')return;ct++;var og=g,ch=CH[sel],pu=.5+.5*Math.sin(ct*.05);g=cc;g.clearRect(0,0,200,150);var Q=curPal(),sg=g.createLinearGradient(0,0,0,140);sg.addColorStop(0,Q[0]);sg.addColorStop(1,Q[1]);g.fillStyle=sg;g.fillRect(0,0,200,150);for(var b=0;b<9;b++){ var bh=30+(b*37%40), bx=b*24-6; g.fillStyle=b%2?Q[2]:Q[3]; g.fillRect(bx,140-bh,20,bh); g.fillStyle='rgba(255,235,150,0.3)'; if(b%3!==0){ for(var wy=140-bh+8; wy<130; wy+=12){ g.fillRect(bx+4,wy,4,4); g.fillRect(bx+12,wy,4,4); } } }g.fillStyle=Q[6];g.fillRect(0,140,200,10);g.fillStyle=Q[7];g.fillRect(0,140,200,2);if(wasAbducted)ufoDraw(165,40,.85);if(window.wasGiant){g.save();g.translate(32,42);g.scale(1.2,1.2);g.rotate(-0.2);g.shadowColor='#ff6fb5';g.shadowBlur=8;g.fillStyle='#d97706';g.beginPath();g.moveTo(-6,2);g.lineTo(6,2);g.lineTo(0,14);g.fill();g.fillStyle='#ff6fb5';g.beginPath();g.arc(0,-1,7,0,7);g.fill();g.beginPath();g.arc(-4,2,4,0,7);g.fill();g.beginPath();g.arc(4,2,4,0,7);g.fill();g.fillStyle='#fff';g.fillRect(-2,-3,2,2);g.fillRect(2,-1,2,2);g.fillStyle='#4dd8ff';g.fillRect(-1,-6,2,2);g.restore();}
-
- var cn=g.createLinearGradient(0,0,0,140);cn.addColorStop(0,'rgba(255,255,255,.5)');cn.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=cn;g.beginPath();g.moveTo(88,0);g.lineTo(112,0);g.lineTo(165,140);g.lineTo(35,140);g.fill();
- var rg=g.createRadialGradient(100,85,4,100,85,75);rg.addColorStop(0,'rgba('+GLc()+','+(.5+.25*pu)+')');rg.addColorStop(1,'rgba(255,160,220,0)');g.fillStyle=rg;g.fillRect(0,0,200,150);
- g.fillStyle='rgba(255,255,255,.28)';g.beginPath();g.ellipse(100,140,48,7,0,0,7);g.fill();
- g.save();g.scale(2,2);
- for(var i=0;i<9;i++){var a=ct*.02+i*.7,px=50+Math.cos(a)*(28+i%3*5),py=38+Math.sin(a*1.3)*(24+i%2*6),sz=1+2*Math.abs(Math.sin(ct*.07+i*1.9));g.fillStyle=i%2?'#ffe14d':'#ff9ccd';g.fillRect(px-sz,py-.5,sz*2,1);g.fillRect(px-.5,py-sz,1,sz*2)}
- drawChar(ch,35,27-(1-Math.cos(ct*.05))/2*10,1,finalExpr);g.restore();g=og;requestAnimationFrame(celeb)}
 
 function makeShare(){
   var W2=600,H2=760,c2=document.createElement('canvas');c2.width=W2;c2.height=H2;var x2=c2.getContext('2d'),og=g,Q=curPal(),i;
@@ -1619,10 +1921,9 @@ if (window.wasGiant) {
 g=x2;g.save();
     if (window.wasGiant) {
       g.translate(300, H2-240);
-      g.scale(1.15, 1.15); // <-- Reduzimos a escala para não engolir o texto
+      g.scale(1.15, 1.15); 
       g.translate(-300, -(H2-240)); 
       
-      // Halo radial limpo e brilhante desenhado ATRÁS da Idol
       var hg = g.createRadialGradient(300, H2-160, 20, 300, H2-160, 160);
       hg.addColorStop(0, 'rgba(255,111,181,0.6)'); 
       hg.addColorStop(1, 'rgba(255,111,181,0)');
@@ -1631,24 +1932,137 @@ g=x2;g.save();
       g.arc(300, H2-160, 160, 0, 7); 
       g.fill();
     }
-    g.translate(222,H2-60-229);g.scale(5.2,5.2);
+    
+   // Fecha o save aberto antes do wasGiant para não acumular transformações
+    g.restore();
 
-	if (window.wasUnit !== null && window.wasUnit !== undefined) {
-  drawChar(CH[window.wasUnit], -26, 4, 1, 2); // Desenha a parceira sorrindo ao seu lado no card!
-}
-	
-drawChar(CH[sel],0,0,1,finalExpr);g.restore();g=og;
+    var chaoY = H2 - 60; // Linha exata do chão do palco (700)
+    var centroPalcoX = 300;
+    // Filtra para garantir que o Oshi principal nunca se repita na lista de parceiros
+    var partners = (window.collectedPartners || []).filter(function(id) { return id !== sel; });
+
+    // Helper para desenhar qualquer idol com os pés cravados no chão e centralizado no X desejado
+    function drawOnStage(charObj, centerX, sc, yOffset, expr) {
+      g = x2;
+      g.save();
+      var drawX = centerX - (15 * sc);
+      var drawY = chaoY - (44 * sc) + (yOffset || 0);
+      g.translate(drawX, drawY);
+      g.scale(sc, sc);
+      drawChar(charObj, 0, 0, 1, expr);
+      g.restore();
+      g = og;
+    }
+
+    if (sel === 3 && partners.length >= 3) {
+      // --- CASO 1: QUARTETO SHINY (Você + Tsu, Lirika e Pati grandes e alinhados!) ---
+      var scQ = 3.5; // Bonecos grandes (154px de altura) e sem colidir!
+
+      // Aura Shiny Mágica atrás do Quarteto no palco
+      var shinyG = x2.createRadialGradient(centroPalcoX, chaoY - 90, 20, centroPalcoX, chaoY - 90, 220);
+      shinyG.addColorStop(0, 'rgba(182, 255, 59, 0.55)');
+      shinyG.addColorStop(0.5, 'rgba(155, 48, 217, 0.40)');
+      shinyG.addColorStop(1, 'rgba(65, 105, 225, 0)');
+      x2.fillStyle = shinyG;
+      x2.fillRect(40, chaoY - 260, 520, 260);
+
+      // Desenha os 4 membros bem distribuídos no palco (distância de 118px entre cada centro)
+      drawOnStage(CH[partners[0]], centroPalcoX - 177, scQ, 0, 2);
+      drawOnStage(CH[partners[1]], centroPalcoX - 59,  scQ, -4, 2);
+      drawOnStage(CH[partners[2]], centroPalcoX + 177, scQ, 0, 2);
+      // Você com destaque no centro-direita
+      drawOnStage(CH[sel],         centroPalcoX + 59,  scQ, -6, finalExpr);
+
+      // Chuva de Emojis de Amor, Brilho, Música e Idol mais altos, grandes e inclinados (efeito voando!)
+      x2.save();
+      x2.textAlign = 'center';
+      x2.shadowColor = 'rgba(255, 111, 181, 0.85)';
+      x2.shadowBlur = 14;
+      x2.font = '30px sans-serif';
+      x2.fillText('✨', 120, 125); x2.fillText('💖', 145, 170); x2.fillText('🎶', 95, 215); x2.fillText('🎤', 155, 250);
+      x2.fillText('✨', 480, 125); x2.fillText('⭐', 455, 170); x2.fillText('💖', 505, 215); x2.fillText('🎵', 445, 250);
+
+      // Corações e brilhos levitando em arco bem ACIMA das coroas/cabeças de cada membro!
+      var topY = chaoY - (44 * scQ) - 55;
+      var heartMap = ['💜', '💚', '💙', '💖'];
+      x2.font = '28px sans-serif';
+      x2.fillText(heartMap[partners[0]], centroPalcoX - 177, topY + 6);
+      x2.fillText(heartMap[partners[1]], centroPalcoX - 59,  topY - 8);
+      x2.fillText('💖',                  centroPalcoX + 59,  topY - 12);
+      x2.fillText(heartMap[partners[2]], centroPalcoX + 177, topY + 6);
+      
+      x2.font = '20px sans-serif';
+      x2.fillText('✨', centroPalcoX - 118, topY - 22);
+      x2.fillText('👑', centroPalcoX,       topY - 30);
+      x2.fillText('✨', centroPalcoX + 118, topY - 22);
+      x2.restore();
+
+    } else if (partners.length >= 2) {
+      // --- CASO 2: TRIO PERFEITAMENTE ESPALHADO E ANIMADO ---
+      var centroPalcoX = 300;
+      var trioScale = 2.0; 
+
+      g = x2; g.save(); g.translate(centroPalcoX - 95, basePalcoY); g.scale(trioScale, trioScale); drawChar(CH[partners[0]], 0, 0, 1, 2); g.restore(); g = og;
+      g = x2; g.save(); g.translate(centroPalcoX, basePalcoY - 2); g.scale(trioScale, trioScale); drawChar(CH[sel], 0, -2, 1, finalExpr); g.restore(); g = og;
+      g = x2; g.save(); g.translate(centroPalcoX + 95, basePalcoY); g.scale(trioScale, trioScale); drawChar(CH[partners[1]], 0, 0, 1, 2); g.restore(); g = og;
+
+      // ✨ Corações dinâmicos flutuando em arco acima do Trio!
+      x2.save();
+      x2.textAlign = 'center';
+      x2.shadowColor = 'rgba(255, 111, 181, 0.85)';
+      x2.shadowBlur = 14;
+      x2.font = '28px sans-serif'; // Corações bem visíveis!
+      
+      var topY = basePalcoY - 45; 
+      var heartMap = ['💜', '💚', '💙', '💖']; // Tsu: 0, Lirika: 1, Pati: 2, Você: 3
+
+      // Coração Esquerdo (Parceiro 0)
+      x2.fillText(heartMap[partners[0]], centroPalcoX - 95, topY + 5);
+      // Coração Central (Seu Oshi, fica mais alto formando o arco)
+      x2.fillText(heartMap[sel],         centroPalcoX,      topY - 10); 
+      // Coração Direito (Parceiro 1)
+      x2.fillText(heartMap[partners[1]], centroPalcoX + 95, topY + 5);
+      
+      // Brilhos extras preenchendo os espaços entre os corações
+      x2.font = '20px sans-serif';
+      x2.fillText('✨', centroPalcoX - 47, topY - 15);
+      x2.fillText('✨', centroPalcoX + 47, topY - 15);
+      x2.restore();
+
+    } else if (partners.length === 1) {
+      // --- CASO 3: DUPLA (Oshi + 1 parceiro) ---
+      var scD = 4.7;
+      drawOnStage(CH[partners[0]], centroPalcoX - 85, scD, 0, 2);
+      drawOnStage(CH[sel],         centroPalcoX + 85, scD, -4, finalExpr);
+
+      x2.fillStyle = '#fff';
+      x2.font = '22px sans-serif';
+      x2.textAlign = 'center';
+      x2.fillText('🎶 ✨ 🎶', centroPalcoX, chaoY - (44 * scD) - 25);
+
+    } else {
+      // --- CASO 4: SOLO ---
+      drawOnStage(CH[sel], centroPalcoX, 5.2, 0, finalExpr);
+    }
+    g = og;
   
-  var t = typeof tr === 'function' ? tr : function(w){return w;};
-  x2.textAlign='center';x2.shadowColor='rgba(0,0,0,.5)';x2.shadowBlur=12;x2.fillStyle='#fff';
-  x2.font='800 40px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa: Center Run!',300,64);x2.font='400 18px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,92);
-  x2.fillStyle='#fff';x2.font='700 44px "M PLUS Rounded 1c",sans-serif';x2.fillText(nick||t('Anônimo'),300,160);
-  x2.font='800 110px "M PLUS Rounded 1c",sans-serif';x2.fillText(String(lastS),300,255);
-  x2.font='700 30px "M PLUS Rounded 1c",sans-serif';x2.fillText(t('pontos'),300,295);
-  x2.fillStyle='#ffe14d';x2.fillText('★ '+stars+' '+t('estrelas'),300,335);
-  x2.fillStyle='#ffe14d';x2.font='800 38px "M PLUS Rounded 1c",sans-serif';
-  var currentRankId=rankOf(lastS);x2.fillText(t(RANKS[currentRankId][1]),300,385);
-  x2.shadowBlur=0;x2.fillStyle='rgba(255,255,255,.85)';x2.font='700 18px "M PLUS Rounded 1c",sans-serif';x2.fillText(t('Jogue também e entre no ranking!'),300,H2-22);
+    // Textos informativos do Pôster de Fim de Jogo
+    var t = typeof tr === 'function' ? tr : function(w){return w;};
+    x2.textAlign='center';x2.shadowColor='rgba(0,0,0,.5)';x2.shadowBlur=12;x2.fillStyle='#fff';
+    x2.font='800 36px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa: Center Run!',300,55);
+    x2.font='400 16px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,95);
+    
+    x2.fillStyle='#fff';x2.font='700 38px "M PLUS Rounded 1c",sans-serif';x2.fillText(nick||t('Anônimo'),300,130);
+    x2.font='800 95px "M PLUS Rounded 1c",sans-serif';x2.fillText(String(lastS),300,225);
+    x2.font='700 26px "M PLUS Rounded 1c",sans-serif';x2.fillText(t('pontos'),300,265);
+    x2.fillStyle='#ffe14d';x2.fillText('★ '+stars+' '+t('estrelas'),300,300);
+    
+    x2.fillStyle='#ffe14d';x2.font='800 34px "M PLUS Rounded 1c",sans-serif';
+    var currentRankId=rankOf(lastS);x2.fillText(t(RANKS[currentRankId][1]),300,345);
+    
+    // Texto de rodapé seguro dentro da margem inferior da imagem
+    x2.shadowBlur=0;x2.fillStyle='rgba(255,255,255,.9)';x2.font='700 16px "M PLUS Rounded 1c",sans-serif';
+    x2.fillText(t('Jogue também e entre no ranking!'),300,H2-35);
   
   return c2.toDataURL('image/png');
 }
@@ -1793,10 +2207,14 @@ g.save();
   // Se for gigante, NÃO pisca. Fica invencível e destrói tudo no caminho!
   var blink = (inv > 0 && !abducted && !isGiant && ((frame/4|0)%2)); 
 	
-	// Desenha a parceira da Unit acompanhando você!
-if (pw && pw.k === 'unit') {
-  drawChar(CH[pw.partner], P.x - 38, P.y, runAnim, 2); // O 2 deixa ela sempre com sorrisinho fofo
-}
+// Desenha APENAS o parceiro sorteado no microfone atual acompanhando você!
+  if (pw && pw.k === 'unit' && pw.partner !== undefined) {
+    drawChar(CH[pw.partner], P.x - 34, P.y, runAnim, 2);
+    var heartColors = ['💜', '💚', '💙'];
+    g.font = '9px sans-serif';
+    g.fillText(heartColors[pw.partner] || '✨', P.x - 19, P.y - 8);
+  }
+
 	
   if (!blink) drawChar(CH[sel], P.x, P.y, runAnim, playExpr);
   g.restore();
@@ -1861,10 +2279,24 @@ requestAnimationFrame(loop);
 
 
 var titleClicks = 0;
-document.getElementById('menu-title').onclick = function(e){
-  e.preventDefault();
-  if(++titleClicks >= 10) $('tstw').hidden = false;
-};
+var menuTitleEl = document.getElementById('menu-title');
+var tulipaLinkEl = document.getElementById('tulipa-link');
+
+if(menuTitleEl) {
+  menuTitleEl.onclick = function(e){
+    // Se o usuário clicou especificamente na tulipa, deixa o link do YouTube agir livremente
+    if(e.target && e.target.id === 'tulipa-link') {
+      return; // Não interfere no link do vídeo
+    }
+    
+    // Caso contrário, continua contando os cliques para abrir o modo teste oculto
+    e.preventDefault();
+    if(++titleClicks >= 10) {
+      var tstwEl = $('tstw');
+      if(tstwEl) tstwEl.hidden = false;
+    }
+  };
+}
 
 document.addEventListener('keydown',function(e){
   if(e.code==='Space'||e.code==='ArrowUp'){
@@ -1978,15 +2410,27 @@ function makeCard(){
     var iH = g.createRadialGradient(15, 22, 5, 15, 22, 55);
     iH.addColorStop(0, 'rgba(200, 162, 245, 0.4)'); iH.addColorStop(1, 'rgba(200, 162, 245, 0)');
     g.fillStyle = iH; g.beginPath(); g.arc(15, 22, 55, 0, 7); g.fill();
-  } else if (pw && pw.k === 'unit') {
-    drawChar(CH[pw.partner], -35, 0, runAnim, 2); // Parceira sai na foto!
+  } else if (pw && pw.k === 'unit' && pw.partner !== undefined) {
+    drawChar(CH[pw.partner], -18, 0, runAnim, 2);
+    var hCols = ['💜', '💚', '💙'];
+    g.font = '8px sans-serif';
+    g.fillText(hCols[pw.partner] || '✨', 0, -10);
   }
 	
-  drawChar(CH[sel], 0, 0, runAnim, exprFoto); 
+  // Desenho do jogador principal na Polaroid
+  var xOffsetPrincipal = (pw && pw.k === 'unit' && pw.partner !== undefined) ? 18 : 0;
+  drawChar(CH[sel], xOffsetPrincipal, 0, runAnim, exprFoto);
   g.restore(); g=og;
 
-var fotoPet = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI || ['tsu','lirika','pati'][Math.floor(Math.random()*3)]);
-  drawPet(x2, fotoPet, 265, 210, 2.0, frame);
+// Sorteia ou define o pet principal e os coadjuvantes para enfeitar embaixo
+  var listaPets = ['tsu', 'lirika', 'pati'];
+  var mainPetKey = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI || listaPets[Math.floor(Math.random()*3)]);
+  
+// Desenha o pet principal bem grande e imponente no céu da foto (escala 2.0)
+  drawPet(x2, mainPetKey, 325, 75, 2.0, frame);
+
+  // Descobre quais são os outros 2 pets (coadjuvantes)
+  var petsCoadjuvantes = listaPets.filter(function(p) { return p !== mainPetKey; });
 
   // 4. Textos do Photocard
   var t = typeof tr === 'function' ? tr : function(w){return w;};
@@ -1997,15 +2441,26 @@ var fotoPet = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI ||
   x2.fillStyle='#ff6fb5'; x2.font='700 20px "M PLUS Rounded 1c",sans-serif';
   x2.fillText(t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', 200, 470);
   
-  x2.fillStyle='#5b7fa6'; x2.font='400 13px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText('TsuLiPa: Center Run! Photocard', 200, 510);
+  // Desenha os dois outros pets em tamanho de destaque (escala 1.15) nas laterais do texto
+  drawPet(x2, petsCoadjuvantes[0], 85, 455, 1.15, frame);
+  drawPet(x2, petsCoadjuvantes[1], 315, 455, 1.15, frame);
 
-// Adesivinhos de brilho na moldura da polaroid
+  // Adesivinhos de brilho, corações e os símbolos das integrantes sementes na Polaroid!
   x2.fillStyle = '#ff6fb5';
-  x2.font = '24px sans-serif';
-  x2.fillText('✨', 45, 45); 
-  x2.fillText('💕', 355, 55); 
-  x2.fillText('✨', 345, 395);
+  x2.font = '22px sans-serif';
+  x2.textAlign = 'left';
+  x2.fillText('✨', 35, 415);   // Brilho na margem inferior esquerda
+  x2.fillText('💕', 35, 60);   // No topo esquerdo da moldura
+  
+  x2.textAlign = 'right';
+  x2.fillText('💕', 370, 415);  // Corações na margem inferior direita
+  //x2.fillText('✨', 365, 60);   // No topo direito da moldura
+  x2.fillText('🫰', 365, 415);   // Brilho extra
+
+  // Marca d'água oficial sutil no rodapé da Polaroid
+  x2.textAlign = 'center';
+  x2.fillStyle='#94a3b8'; x2.font='500 11px "M PLUS Rounded 1c",sans-serif';
+  x2.fillText('🌷 TsuLiPa: Center Run! · BRS48 Official Photocard', 200, 522);
 	
   return c2.toDataURL('image/png');
 }
@@ -2030,9 +2485,51 @@ $('cam').onclick = function(e){
   $('shr').hidden = false;
 };
 
+// --- SISTEMA DE RENDERIZAÇÃO DO AVATAR EM PNG TRANSPARENTE (ALTA QUALIDADE 1000x1000) ---
+$('dlAvatar').onclick = function(e) {
+  e.preventDefault();
+  if(sfx.photo) sfx.photo(); // Toca o som do flash da câmera!
+  
+  // Cria um canvas virtual de altíssima resolução (1000x1000)
+  var cRender = document.createElement('canvas');
+  cRender.width = 1000; 
+  cRender.height = 1000;
+  var xRender = cRender.getContext('2d');
+  
+  var og = g; 
+  g = xRender; // Redireciona os desenhos para o canvas virtual
+  
+  g.save();
+  var sc = 18.75; // Escala proporcional para 1000x1000
+  
+  // Posicionamento matemático (Centralizado no X=500, com pés tocando o fundo Y=1000)
+  var drawX = 500 - (15 * sc); 
+  var drawY = 1000 - (44 * sc); 
+  
+  g.translate(drawX, drawY);
+  g.scale(sc, sc);
+  
+  // Sorteia a expressão de forma equilibrada para não esconder sempre os olhos!
+  // Opções: 0 (Olhar normal mostrando a cor dos olhos), 1 (Sério/Focado), 2 (Sorrindo)
+  var expressoesPossiveis = [0, 0, 1, 2]; // Dá mais peso ao '0' para destacar a cor dos olhos
+  var expressaoSorteada = expressoesPossiveis[Math.floor(Math.random() * expressoesPossiveis.length)];
+  
+  // Desenha o personagem parado (run=0) com a expressão aleatória
+  drawChar(CH[sel], 0, 0, 0, expressaoSorteada);
+  g.restore();
+  
+  
+  g = og; // Devolve o controle para o jogo principal
+  
+  // Força o download do PNG cristalino com fundo transparente e marca d'água
+  var link = document.createElement('a');
+  link.href = cRender.toDataURL('image/png');
+  var nomeChar = CH[sel].n.replace(/[^a-z0-9]/gi, '').toLowerCase() || 'avatar';
+  link.download = 'tsulipa-render-hq-' + nomeChar + '.png';
+  link.click();
+};
 
-$('shbtn').onclick=function(){var u=makeShare();$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false};
-$('shx').onclick=function(){$('shr').hidden=true};
+$('shbtn').onclick=function(){var u=makeShare();$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false};$('shx').onclick=function(){$('shr').hidden=true};
 document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
 ['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(){held=false})});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();

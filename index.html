@@ -1,34 +1,45 @@
 <!DOCTYPE html>
+<!--
+  ⚠️⚠️⚠️ ATENÇÃO: CHAVES DE SAVE E DO BANCO — NUNCA RENOMEAR ⚠️⚠️⚠️
+  O jogo pode mudar de nome (TsuLiPa⭐World), mas ESTES nomes ficam para sempre.
+  Se algum mudar, todos os jogadores perdem recorde, estrelas, visual, ranking local e pet.
+  localStorage: brs48cr_best · brs48cr_st · brs48cr_char · brs48cr_cu2 · brs48cr_ch2 · brs48cr_acc
+                brs48cr_seen · brs48cr_nick · brs48cr_lang · brs48cr_oshi · brs48cr_did
+                brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet
+  Supabase:     tabela "leaderboard" · função "top_scores"
+  A lista comentada (o que cada chave guarda) fica no início do <script>.
+-->
 <html lang="pt-BR">
 <head>
-<link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png?v=2" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=3" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Jogo de corrida do TsuLiPa (BRS48): pule os obstáculos, pegue estrelas e suba no ranking até o Center!">
+<meta name="description" content="TsuLiPa⭐World: corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="TsuLiPa: Center Run!">
-<meta property="og:title" content="TsuLiPa: Center Run!">
-<meta property="og:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center. Um jogo de passar o tempo do BRS48.">
+<meta property="og:site_name" content="TsuLiPa⭐World">
+<meta property="og:title" content="TsuLiPa⭐World">
+<meta property="og:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet! Um jogo do TsuLiPa (BRS48).">
 <meta property="og:url" content="https://chumikie.github.io/tsulipa-run/">
-<meta property="og:image" content="https://chumikie.github.io/tsulipa-run/og.png">
+<meta property="og:image" content="https://chumikie.github.io/tsulipa-run/og.png?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TsuLiPa: Center Run!">
-<meta name="twitter:description" content="Pule os obstáculos, pegue estrelas e suba no ranking até o Center.">
-<meta name="twitter:image" content="https://chumikie.github.io/tsulipa-run/og.png">
+<meta name="twitter:title" content="TsuLiPa⭐World">
+<meta name="twitter:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet!">
+<meta name="twitter:image" content="https://chumikie.github.io/tsulipa-run/og.png?v=3">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<title>TsuLiPa: Center Run!</title>
+<title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
+
+@keyframes inputGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 111, 181, 0.3); }
+  50% { box-shadow: 0 0 14px rgba(255, 111, 181, 0.75); }
+}
 
 .nick.chamativo {
   border: 2.5px solid var(--pink) !important;
@@ -64,8 +75,12 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;min-height:100vh;font-family:"M PLUS Rounded 1c",system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2));background-color:var(--bg2);display:flex;flex-direction:column;align-items:center;padding:14px 12px 24px}
 header{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer;user-select:none;-webkit-user-select:none;}
-.logo i{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#9b30d9,#4169e1 62%,#b6ff3b);display:grid;place-items:center;color:#fff;font-style:normal;font-size:20px}
-.logo b{display:block;font-size:18px;line-height:1.1;background:linear-gradient(90deg,var(--b1),#6f95ff,var(--lime));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo i{width:38px;height:38px;border-radius:10px;background:transparent;display:grid;place-items:center;color:#fff;font-style:normal;font-size:20px}
+.tw-ico{width:38px;height:38px;display:block;filter:drop-shadow(0 2px 4px rgba(80,40,140,.25))}
+.tw-ico .ico-dk{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tw-ico .ico-lt{display:none}:root:not([data-theme="light"]) .tw-ico .ico-dk{display:inline}}
+:root[data-theme="dark"] .tw-ico .ico-lt{display:none}:root[data-theme="dark"] .tw-ico .ico-dk{display:inline}
+.logo b{display:block;font-size:18px;line-height:1.1;background:linear-gradient(90deg,#b04fe6,#4ade80 50%,#4a74ee);-webkit-background-clip:text;background-clip:text;color:transparent}
 .logo small{font-size:11px;color:var(--pink)}
 .pill{border:1.5px solid var(--lime);background:var(--card);border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;box-shadow:0 1px 6px rgba(10,80,160,.15)}
 .stage{position:relative;width:100%;max-width:760px;aspect-ratio:720/380;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(10,60,130,.3),0 0 0 2px rgba(155,48,217,.6);touch-action:manipulation;user-select:none;background:#0a1830}
@@ -163,30 +178,115 @@ canvas{width:100%;height:100%;display:block}
 .oshi-sel button:active { transform:scale(0.9); }
 .oshi-sel button[aria-pressed="true"] { border-color:var(--b1); box-shadow:0 0 0 2px var(--card) inset, 0 0 0 3px var(--b1) inset; }
 
+/* --- MINI JOGO DE PETS: CAMARIM --- */
+.petp{width:min(94%,440px)}
+#petc{width:100%;height:auto;aspect-ratio:360/220;display:block;margin:8px 0 6px;border-radius:14px;cursor:pointer;touch-action:manipulation;box-shadow:0 0 0 2px rgba(155,48,217,.45);-webkit-tap-highlight-color:transparent}
+.petinfo{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--sub);font-weight:700}
+.petinfo b{font-size:17px;color:var(--b1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.petstar{color:#d4a017;white-space:nowrap}
+.petbars{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:8px 0 0;text-align:left;font-size:12px}
+.petbar span{display:flex;justify-content:space-between;color:var(--sub);font-weight:700;margin-bottom:2px}
+.petbar i{display:block;height:9px;border-radius:99px;background:var(--chip);overflow:hidden}
+.petbar i b{display:block;height:100%;border-radius:99px;transition:width .4s}
+.pethint{font-size:12px!important;margin:8px 0 0!important}
+.petpick{display:flex;gap:8px;justify-content:center;margin:6px 0 10px}
+.petpick button{border:2px solid transparent;background:var(--chip);color:var(--ink);border-radius:14px;padding:4px 6px 6px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.petpick button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petpick button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petpick canvas{width:72px;height:60px;display:block}
+/* --- MINI JOGO DE PETS: AÇÕES --- */
+.petacts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 0}
+.petacts button{border:0;border-radius:12px;padding:7px 2px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;background:var(--chip);color:var(--b1);box-shadow:0 3px 0 rgba(123,63,240,.25);line-height:1.2}
+.petacts button[aria-pressed="true"]{background:var(--b1);color:#fff}
+.petacts button:disabled{opacity:.45;cursor:default}
+.petacts small{display:block;font-size:10px;color:var(--sub);font-weight:700}
+.petmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.petmenu[hidden]{display:none}
+.petmenu button{border:2px solid transparent;border-radius:12px;padding:4px 2px 6px;background:var(--chip);color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.petmenu button:disabled{opacity:.45;cursor:default}
+.petmenu canvas{width:36px;height:30px;display:block}
+.petmenu b{font-size:11px;line-height:1.15}
+.petmenu small{font-size:10px;color:var(--sub)}
+.petmenu em{font-style:normal;font-size:11px;font-weight:800;color:#d4a017}
+.petacts button:focus-visible,.petmenu button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+/* --- MINI JOGO DE PETS: CÂMERA DO CAMARIM --- */
+#petRoom{position:relative}
+#petCam{position:absolute;top:16px;right:8px;z-index:1;width:38px;height:38px;border:none;border-radius:50%;background:var(--pink);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;transition:transform .1s}
+#petCam:active{transform:scale(.9)}
+#petCam:focus-visible{outline:3px solid var(--b1);outline-offset:2px}
+/* --- PAINEL DE TESTE DO PET --- */
+.petdev{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;padding:6px;border:2px dashed var(--pink);border-radius:12px}
+.petdev[hidden]{display:none}
+.petdev button{border:0;border-radius:99px;padding:4px 10px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;background:var(--pink);color:#fff}
+/* --- BACKSTAGE⭐PET! V2: COLEÇÃO, CRIADOR E DECORAÇÃO --- */
+.petpick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.petpick button{min-width:0;padding:4px 3px 6px;gap:1px}
+.petpick canvas{width:100%;max-width:72px;height:auto;aspect-ratio:144/120}
+.petpick b{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.petpick small{font-size:10px;color:var(--sub);font-weight:800}
+.petpick button.on small{color:var(--b1)}
+.petpick button.lock{opacity:.8}
+.pickmsg{color:var(--pink)!important;font-weight:700}
+.btn:disabled{opacity:.5;cursor:default}
+#petColBtn{position:absolute;top:16px;left:8px;z-index:1;width:38px;height:38px;border:none;border-radius:50%;background:var(--b1);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;transition:transform .1s}
+#petColBtn:active{transform:scale(.9)}
+#petColBtn:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+#petMkCv{width:150px;height:100px;display:block;margin:0 auto 6px}
+.petmk{display:flex;flex-direction:column;gap:7px;margin:2px 0 10px;text-align:left}
+.petmk .grp{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.petmk .grp>span{font-size:12px;font-weight:800;color:var(--sub);width:100%}
+.petmk button{border:2px solid transparent;border-radius:99px;background:var(--chip);color:var(--ink);font:inherit;font-size:11px;font-weight:700;padding:3px 8px;cursor:pointer}
+.petmk button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petmk button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petmk .sw2{width:24px;height:24px;padding:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.petacts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.petacts button{font-size:11px;padding:7px 1px}
+.petmenu img{width:44px;height:34px;object-fit:cover;border-radius:4px;display:block;margin-bottom:2px}
+.petmenu button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.bp-title,.bp-title small{font-family:"Kosugi Maru","M PLUS Rounded 1c",sans-serif}
+.st{font-size:.82em;margin:0 .03em;vertical-align:.06em}
+.logo b .st{-webkit-text-fill-color:#f5b400;color:#f5b400;-webkit-background-clip:border-box;background-clip:border-box;background:none}
+/* Modo teste aberto (10 cliques no título): contorno rosa no palco do jogo */
+body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 </head>
 <body>
 <header>
   <a href="javascript:location.reload()" class="logo" title="Recarregar página">
     <i>
-      <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
-        <defs>
-          <linearGradient id="tpa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6bbff"/><stop offset="1" stop-color="#a23de0"/></linearGradient>
-          <linearGradient id="tpb" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4c8ff"/><stop offset="1" stop-color="#4a74ee"/></linearGradient>
-          <linearGradient id="tpc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ffbde8"/></linearGradient>
-        </defs>
-        <path d="M16 29V18" stroke="#c6ff5a" stroke-width="2" stroke-linecap="round"/>
-        <path d="M16 27c-6 0-9-3.4-9-8 4.5 0 8 3 9 8z" fill="#b6ff3b"/>
-        <path d="M16 27c6 0 9-3.4 9-8-4.5 0-8 3-9 8z" fill="#7ed321"/>
-        <path d="M6.5 5.5C5.6 12.5 8 18.5 16 19.5V9.5L11.5 12.5z" fill="url(#tpa)"/>
-        <path d="M25.5 5.5C26.4 12.5 24 18.5 16 19.5V9.5l4.5 3z" fill="url(#tpb)"/>
-        <path d="M16 3.5C11.4 8 11 14.5 16 19.5 21 14.5 20.6 8 16 3.5z" fill="url(#tpc)" stroke="#fff" stroke-opacity=".8" stroke-width=".8"/>
-        <ellipse cx="14.6" cy="10.5" rx="1.1" ry="3" fill="#fff" fill-opacity=".85" transform="rotate(14 14.6 10.5)"/>
-        <path d="M26 2v4.4M23.8 4.2h4.4" stroke="#eaff9a" stroke-width="1.4" stroke-linecap="round"/>
-        <path d="M5 12.5v3M3.5 14h3" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
-      </svg>
+      <svg class="tw-ico" viewBox="0 0 64 64" width="38" height="38" aria-hidden="true"><g class="ico-lt"><defs><linearGradient id="hlbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7e9ff"/><stop offset=".5" stop-color="#fdeef8"/><stop offset="1" stop-color="#e2f1ff"/></linearGradient>
+<radialGradient id="hlsp" cx=".5" cy=".42" r=".55"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="15" fill="url(#hlbg)"/><rect width="64" height="64" rx="15" fill="url(#hlsp)"/><g fill="#c9a8ff"><circle cx="9" cy="12" r="1.1"/><circle cx="56" cy="44" r="1.1"/></g><g fill="#ffa8d9"><circle cx="14" cy="50" r="1"/><circle cx="49" cy="56" r=".9"/></g>
+<g transform="translate(9.60 8.10) scale(0.7)"><defs>
+<linearGradient id="hltP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d4ff"/><stop offset=".55" stop-color="#b04fe6"/><stop offset="1" stop-color="#7e22ce"/></linearGradient>
+<linearGradient id="hltG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9ffd2"/><stop offset=".5" stop-color="#5ee07a"/><stop offset="1" stop-color="#16a34a"/></linearGradient>
+<linearGradient id="hltB" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6e2ff"/><stop offset=".55" stop-color="#5b84f0"/><stop offset="1" stop-color="#2f4fd0"/></linearGradient>
+</defs>
+<path d="M32 62V40" stroke="#7ed321" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M32 58c-11 0-17-6.5-17-15 8.5 0 15 6 17 15z" fill="#b6ff3b"/>
+<path d="M32 58c11 0 17-6.5 17-15-8.5 0-15 6-17 15z" fill="#7ed321"/>
+<path d="M11 10c-2 15 3 28 21 30V20l-9 6z" fill="url(#hltP)"/>
+<path d="M53 10c2 15-3 28-21 30V20l9 6z" fill="url(#hltB)"/>
+<path d="M32 5c-10 9-11 23 0 35 11-12 10-26 0-35z" fill="url(#hltG)" stroke="#fff" stroke-opacity=".9" stroke-width="1.3"/>
+<ellipse cx="28.5" cy="17" rx="2.2" ry="6" fill="#fff" fill-opacity=".8" transform="rotate(14 28.5 17)"/>
+<path d="M16.5 17c.3 6 2.4 11 6.5 14.5M47.5 17c-.3 6-2.4 11-6.5 14.5" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
+<path d="M51.00,6.50L52.65,10.73L57.18,10.99L53.66,13.87L54.82,18.26L51.00,15.80L47.18,18.26L48.34,13.87L44.82,10.99L49.35,10.73Z" fill="#ffe14d" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><rect x=".75" y=".75" width="62.5" height="62.5" rx="14.5" fill="none" stroke="#d9c2ff" stroke-opacity="1" stroke-width="1.5"/></g><g class="ico-dk"><defs><linearGradient id="hdbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b1670"/><stop offset=".55" stop-color="#2a1a5e"/><stop offset="1" stop-color="#16306e"/></linearGradient>
+<radialGradient id="hdsp" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffd6f0" stop-opacity=".55"/><stop offset="1" stop-color="#ffd6f0" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="15" fill="url(#hdbg)"/><rect width="64" height="64" rx="15" fill="url(#hdsp)"/><g fill="#fff"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="49" r=".8"/><circle cx="56" cy="44" r="1"/><circle cx="48" cy="56" r=".7"/></g>
+<g transform="translate(9.60 8.10) scale(0.7)"><defs>
+<linearGradient id="hdtP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d4ff"/><stop offset=".55" stop-color="#b04fe6"/><stop offset="1" stop-color="#7e22ce"/></linearGradient>
+<linearGradient id="hdtG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9ffd2"/><stop offset=".5" stop-color="#5ee07a"/><stop offset="1" stop-color="#16a34a"/></linearGradient>
+<linearGradient id="hdtB" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6e2ff"/><stop offset=".55" stop-color="#5b84f0"/><stop offset="1" stop-color="#2f4fd0"/></linearGradient>
+</defs>
+<path d="M32 62V40" stroke="#7ed321" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M32 58c-11 0-17-6.5-17-15 8.5 0 15 6 17 15z" fill="#b6ff3b"/>
+<path d="M32 58c11 0 17-6.5 17-15-8.5 0-15 6-17 15z" fill="#7ed321"/>
+<path d="M11 10c-2 15 3 28 21 30V20l-9 6z" fill="url(#hdtP)"/>
+<path d="M53 10c2 15-3 28-21 30V20l9 6z" fill="url(#hdtB)"/>
+<path d="M32 5c-10 9-11 23 0 35 11-12 10-26 0-35z" fill="url(#hdtG)" stroke="#fff" stroke-opacity=".9" stroke-width="1.3"/>
+<ellipse cx="28.5" cy="17" rx="2.2" ry="6" fill="#fff" fill-opacity=".8" transform="rotate(14 28.5 17)"/>
+<path d="M16.5 17c.3 6 2.4 11 6.5 14.5M47.5 17c-.3 6-2.4 11-6.5 14.5" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
+<path d="M51.00,6.50L52.65,10.73L57.18,10.99L53.66,13.87L54.82,18.26L51.00,15.80L47.18,18.26L48.34,13.87L44.82,10.99L49.35,10.73Z" fill="#ffe14d" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><rect x=".75" y=".75" width="62.5" height="62.5" rx="14.5" fill="none" stroke="#ffffff" stroke-opacity=".25" stroke-width="1.5"/></g></svg>
     </i>
-    <div><b translate="no">TsuLiPa: Center Run!</b><small>センターラン</small></div>
+    <div><b translate="no">TsuLiPa<span class="st">⭐</span>World</b><small>ツリパ⭐ワールド</small></div>
   </a>
   <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
     <div class="pill" id="best">Recorde: 0</div>
@@ -200,7 +300,7 @@ canvas{width:100%;height:100%;display:block}
   <button class="mute" id="mute" aria-label="Ligar ou desligar o som">🔊</button>
   <div class="ov" id="menu">
     <div class="panel">
-      <h1 id="menu-title" translate="no">TsuLiPa: Center Run! <a href="https://www.youtube.com/watch?v=v97xp_Ny4P8" target="_blank" rel="noopener noreferrer" id="tulipa-link" style="text-decoration:none; cursor:pointer;" title="✨ Surpresa! ✨">🌷</a><small>センターラン</small></h1>
+      <h1 id="menu-title" translate="no">Center<span class="st">⭐</span>Run! <a href="https://www.youtube.com/watch?v=v97xp_Ny4P8" target="_blank" rel="noopener noreferrer" id="tulipa-link" style="text-decoration:none; cursor:pointer;" title="✨ Surpresa! ✨">🌷</a><small>センターラン</small></h1>
 		<div class="kaomoji-deco" aria-hidden="true" style="font-size: 13px; color: var(--pink); font-weight: 700; margin: 2px 0 8px 0; text-align: center; user-select: none;">
   ✨ <span id="kaomoji-visual">(*^▽^*)</span> ✨
 </div>
@@ -219,9 +319,11 @@ canvas{width:100%;height:100%;display:block}
       <div style="position:relative; width:140px; margin:0 auto 12px; display:flex; justify-content:center;">
         <canvas id="prev" width="140" height="120" style="display:block;width:140px;height:120px" aria-hidden="true"></canvas>
         <button id="dlAvatar" style="position:absolute; bottom:10px; right:-25px; background:var(--b1); color:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.3); font-size:16px; display:flex; align-items:center; justify-content:center; transition:transform 0.1s;" title="Baixar Render em PNG" aria-label="Baixar Render do Avatar" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">📸</button>
+        <button id="petBtn" style="position:absolute; top:6px; right:-25px; background:var(--pink); color:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.3); font-size:17px; display:flex; align-items:center; justify-content:center; transition:transform 0.1s;" title="Abrir o camarim do pet" aria-label="Abrir o camarim do pet" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">🐾</button>
       </div>
 
       <input class="nick" id="nick" maxlength="12" placeholder="✨ Digite seu nome de Idol! ✨" aria-label="✨ Digite seu nome de Idol! ✨" autocomplete="off">
+      <p id="nickMsg" hidden style="margin:-4px 0 10px;color:var(--pink);font-weight:800;font-size:12px">✨ Digite seu nome de Idol! ✨</p>
 
 		
       <div class="chars" id="chars"></div>
@@ -231,7 +333,7 @@ canvas{width:100%;height:100%;display:block}
         <label><input type="checkbox" id="cstk">Mecha <input type="color" id="cstr" value="#4dd8ff"></label>
         <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
         <span id="skins"></span>
-        <label>Corte <select id="cback"><option value="">Curto</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias-chiquinhas</option><option value="rabo">Rabo de cavalo</option><option value="cacheado">Cacheado</option></select></label>
+        <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias-chiquinhas</option><option value="rabo">Rabo de cavalo</option><option value="cacheado">Cacheado</option></select></label>
         <label>Franja <select id="cfront"><option value="bagunca">Bagunçada</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option></select></label>
         <label>Detalhe <select id="cdet">
           <option value="" data-r="0">Nenhum</option>
@@ -306,11 +408,65 @@ canvas{width:100%;height:100%;display:block}
 </div>
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
 <div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
+<div class="ov" id="petov" hidden style="z-index:8"><div class="panel petp">
+  <h1 class="bp-title" translate="no">Backstage<span class="st">⭐</span>Pet!<small>バックステージ・ペット</small></h1>
+  <div id="petAdopt" hidden>
+    <p id="petPickTxt">Escolha seu primeiro pet. O primeiro é presente!</p>
+    <div class="petpick" id="petPick"></div>
+    <p class="pickmsg" id="petPickMsg" hidden></p>
+    <div id="petPickForm">
+      <input class="nick" id="petName" maxlength="12" placeholder="Nome do pet" aria-label="Nome do pet" autocomplete="off">
+      <div class="btns"><button class="btn" id="petGo">ADOTAR</button></div>
+    </div>
+    <button class="sec" id="petMkEdit" hidden>✏️ Editar Meu Pet</button>
+    <div><button class="sec" id="petBack" hidden>↩ Backstage</button></div>
+  </div>
+  <div id="petMake" hidden>
+    <p>Crie seu pet</p>
+    <canvas id="petMkCv" width="300" height="200" aria-hidden="true"></canvas>
+    <input class="nick" id="petMkName" maxlength="12" placeholder="Nome do pet" aria-label="Nome do pet" autocomplete="off">
+    <div class="petmk" id="petMkOpts"></div>
+    <div class="btns"><button class="btn" id="petMkSave">CRIAR</button></div>
+    <button class="sec" id="petMkCancel">Cancelar</button>
+  </div>
+  <div id="petRoom" hidden>
+    <canvas id="petc" width="360" height="220" aria-hidden="true"></canvas>
+    <button type="button" id="petCam" title="Tirar foto com o pet" aria-label="Tirar foto com o pet">📸</button>
+    <button type="button" id="petColBtn" title="Meus pets" aria-label="Meus pets">🐾</button>
+    <div class="petinfo"><b id="petNm"></b><span id="petSt"></span><span class="petstar" id="petStars"></span></div>
+    <div class="petbars" id="petBars"></div>
+    <div class="petacts" id="petActs"></div>
+    <div class="petmenu" id="petMenu" hidden></div>
+    <p class="pethint">Toque no pet ou no seu personagem 💕</p>
+    <div class="petdev" id="petDev" hidden></div>
+  </div>
+  <div class="btns" style="margin-top:10px"><button class="btn alt" id="petX">VOLTAR</button></div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
+/* ================================================================
+   ⚠️⚠️⚠️ CHAVES DE SAVE E DO BANCO — NUNCA RENOMEAR ⚠️⚠️⚠️
+   O nome do jogo pode mudar; estas chaves NÃO. Renomear = apagar o
+   progresso de todo mundo. Para algo novo, crie uma chave NOVA.
+   brs48cr_best  → recorde            brs48cr_st   → saldo de estrelas ★
+   brs48cr_char  → personagem ativo   brs48cr_cu2  → visual do "Você"
+   brs48cr_ch2   → roupas de Tsu/Lirika/Pati      brs48cr_acc → item
+   brs48cr_seen  → itens já vistos    brs48cr_nick → nome de Idol
+   brs48cr_lang  → idioma             brs48cr_oshi → tema do Oshi
+   brs48cr_did   → id do aparelho (ranking)
+   brs48cr_lb / brs48cr_lw / brs48cr_ld → ranking local geral/semana/dia
+   brs48cr_pet   → mini jogo de pets (camarim)
+   Supabase: tabela "leaderboard" e função "top_scores"
+   ================================================================ */
 	
 const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let _supabase = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) { console.warn('Supabase indisponível:', e); }
 	
 (function(){
 var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
@@ -373,7 +529,7 @@ function applyLang(){
 
 var cv=document.getElementById('c'),g=cv.getContext('2d'),W=720,H=380,GY=300,SC=1,K=1;
 var CH=[
-  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
+  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Você',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',outcol:'#ffffff',hat:''}
@@ -458,13 +614,13 @@ function showLbLocal(el,rowsOverride){
 
 var did='',tok=null,API='/api';
 try{did=localStorage.getItem('brs48cr_did')||'';if(!did){did=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('d'+Date.now()+Math.random().toString(36).slice(2));localStorage.setItem('brs48cr_did',did)}}catch(e){did='d'+Date.now()+Math.random().toString(36).slice(2)}
-function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.json()}).then(function(j){tok=j.token}).catch(function(){})}catch(e){}}
+function getTok() { tok = null; }
 
 
 function showLb(el){
   if(!el)return;
   var tb=tab;
-  Promise.resolve(_supabase.rpc('top_scores',{periodo:tb})).then(function(resp){
+    Promise.resolve(_supabase ? _supabase.rpc('top_scores',{periodo:tb}) : Promise.reject(new Error('sem supabase'))).then(function(resp){
     if(resp.error)throw resp.error;
     var rows=(resp.data||[]).map(function(r){
       return {name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''};
@@ -531,12 +687,17 @@ function pick(i){
   
   // Atualiza os seletores com os valores da personagem escolhida (ou da customizada se for o 3)
   var source = (i === 3) ? CU : CH[i];
-  if($('cout')) $('cout').value = source.out || '';
-  if($('coutcol')) $('coutcol').value = source.outcol || '#ffffff';
-  if($('chat')) $('chat').value = source.hat || '';
-  if($('cgl')) $('cgl').value = source.gl || '';
-  if($('chair')) $('chair').value = source.hair || '#ff7eb6';
-  if($('ceye')) $('ceye').value = source.eye || '#5a3b2e';
+  if ($('cout')) $('cout').value = source.out || '';
+  if ($('coutcol')) $('coutcol').value = source.outcol || '#ffffff';
+  if ($('chat')) $('chat').value = source.hat || '';
+  if ($('cgl')) $('cgl').value = source.gl || '';
+  if ($('chair')) $('chair').value = source.hair || '#ff7eb6';
+  if ($('cstr')) $('cstr').value = source.hair2 || '#4dd8ff';
+  if ($('cstk')) $('cstk').checked = !!source.streak;
+  if ($('ceye')) $('ceye').value = source.eye || '#5a3b2e';
+  if ($('cback')) $('cback').value = source.back || '';
+  if ($('cfront')) $('cfront').value = source.front || 'bagunca';
+  if ($('cdet')) $('cdet').value = source.det || '';
   
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
 }
@@ -675,6 +836,10 @@ function beep(f,d,t,v,when){
 
 var sfx={
   jump:function(){beep(380,.12);beep(560,.1,'square',.04,.06)},
+  ufo:function(){
+    [523,698,880,1175,1568,2093,1568,1175,1568,2093].forEach(function(f,i){beep(f,.09,'sine',.045,i*.055)});
+    beep(110,.7,'triangle',.03);
+  },
   photo:function(){beep(1200,.03,'square',.05); beep(800,.05,'sawtooth',.03,.04)},
 
  star: function() {
@@ -770,18 +935,17 @@ function reset(){
   rankI=rankOf(score); shake=0;
   nextX=W+160; pw=null; shield=rankI>=7?1:0; inv=0; held=false; sash=rankI>=7;
   lastCard=-600; dpw=null; pops=[]; stars=0;
-  lastUfo=Math.floor(score/CFG.UFO_EVERY);
-  window.lastMorango=Math.floor(score/3500);
-  finalExpr=0;
+  lastUfo = Math.floor(score / CFG.UFO_EVERY);
+  window.lastMorango = Math.floor(score / 3500);
+  window.lastMic = Math.floor(score / 4000);
   window.lastPetMilestone = Math.floor(score / 1500);
+  window.lastPaparazzi = Math.floor(score / 2500);
+  finalExpr = 0;
   window.wasGiant = false;
-window.activePetFly = null;
-window.petBag = [];
-window.lastPetKey = '';
-window.flashAlpha = 0;
-window.lastPaparazzi = Math.floor(score / 2500);
-window.lastMorango = 0;
-window.lastMic = 0;
+  window.activePetFly = null;
+  window.petBag = [];
+  window.lastPetKey = '';
+  window.flashAlpha = 0;
 window.wasUnit = null;
 window.collectedPartners = [];
 window.partnerBag = [];
@@ -818,24 +982,31 @@ function spawn(){
   if(Math.random()<0.25) gap += rnd(200, 500); 
 	
 	// --- GERADOR DE PLATEIA DINÂMICO ---
-  if (score >= 450) { 
-    // Aumentamos bem a chance: 20% no início, e estabiliza numa chance altíssima (80%) depois de Center!
-    var fanChance = score < 5000 ? 0.20 + ((score - 450) / 4550) * 0.40 : 0.80;
+    if (score >= 450) { 
+    // Plateia que vai se formando: poucos fãs no começo, multidão em Center (5000) e grande multidão a partir de 10000
+    var fanChance = score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90;
     
     if (Math.random() < fanChance) {
       var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; 
       if (sel === 3) lsColors.push(CU.hair); 
       
-      // O segredo do hype: a partir de Center (5000), os fãs começam a vir em grupos de até 3 pessoas!
-      var numFans = score >= 5000 ? Math.floor(Math.random() * 3) + 1 : 1;
+      // quantos grupinhos por intervalo, mínimo/máximo de fãs por grupo e distância entre eles
+      var fanGroups = score >= 10000 ? 3 : score >= 5000 ? 2 : 1;
+      var fanMin    = score >= 10000 ? 3 : 1;
+      var fanMax    = score >= 10000 ? 8 : score >= 5000 ? 5 : score >= 2500 ? 3 : 2;
+      var fanSpace  = score >= 10000 ? 20 : score >= 5000 ? 26 : 34;
       
-      for (var fi = 0; fi < numFans; fi++) {
-        fans.push({
-          x: nextX + rnd(10, 100) + (fi * 35), // Espalha o grupinho para não ficarem grudados
-          y: GY - 15 - rnd(0, 5),
-          color: lsColors[Math.floor(Math.random() * lsColors.length)],
-          offset: Math.random() * 10
-        });
+      for (var fg = 0; fg < fanGroups; fg++) {
+        var numFans = fanMin + Math.floor(Math.random() * (fanMax - fanMin + 1));
+        var gx = nextX + rnd(10, Math.max(110, gap - 120));   // cada grupo começa num ponto do intervalo
+        for (var fi = 0; fi < numFans; fi++) {
+          fans.push({
+            x: gx + (fi * fanSpace) + rnd(-4, 4),
+            y: GY - 15 - rnd(0, 7),
+            color: lsColors[Math.floor(Math.random() * lsColors.length)],
+            offset: Math.random() * 10
+          });
+        }
       }
     }
   }
@@ -869,7 +1040,7 @@ function start(e){
     }
     // Efeito sonoro de erro/aviso
     if(sfx && sfx.hit) sfx.hit();
-    alert('✨ Digite seu nome de Idol para poder jogar e entrar no ranking! ✨');
+    var nm = $('nickMsg'); if(nm){ nm.hidden = false; clearTimeout(nm._t); nm._t = setTimeout(function(){ nm.hidden = true; }, 3500); }   // aviso na tela (sem alert)
     return; // Interrompe o início do jogo
   }
 
@@ -922,7 +1093,7 @@ nextX = W + 600;
 }
 
 
-function celeb(){
+function celebDraw(){
   if(state !== 'over') return;
   ct++;
   var og = g, ch = CH[sel], pu = .5 + .5 * Math.sin(ct * .05);
@@ -1025,11 +1196,11 @@ function celeb(){
     // --- QUARTETO: Formação de Palco (Simetria Perfeita e Centralizada) ---
     
     // 1. Linha de Trás (Mais altos, nas bordas simétricas)
-    drawChar(CH[pList[0]], 5,  jumpY - 5, 1, 2); // Fundo Esquerda (Tsu)
-    drawChar(CH[pList[2]], 65, jumpY - 5, 1, 2); // Fundo Direita (Pati)
+    drawChar(CH[pList[0]], 5,  jumpY - 5, 1, 2, true); // Fundo Esquerda (Tsu)
+    drawChar(CH[pList[2]], 65, jumpY - 5, 1, 2, true); // Fundo Direita (Pati)
     
     // 2. Linha da Frente (Mais baixos, centralizados juntos)
-    drawChar(CH[pList[1]], 25, jumpY + 2, 1, 2); // Frente Esquerda (Lirika)
+    drawChar(CH[pList[1]], 25, jumpY + 2, 1, 2, true); // Frente Esquerda (Lirika)
     drawChar(ch,           45, jumpY + 2, 1, finalExpr); // Frente Direita (Você)
 
     // Emojis recalculados milimetricamente para o topo de cada cabeça (X + 15)
@@ -1046,20 +1217,20 @@ function celeb(){
 
   } else if (pList.length >= 2) {
     // Trio na tela de Fim do Show (Oshi no centro exato)
-    drawChar(CH[pList[0]], 11, jumpY + 2, 1, 2);
+    drawChar(CH[pList[0]], 11, jumpY + 2, 1, 2, true);
     drawChar(ch,           35, jumpY,     1, finalExpr);
-    drawChar(CH[pList[1]], 59, jumpY + 2, 1, 2);
+    drawChar(CH[pList[1]], 59, jumpY + 2, 1, 2, true);
     
     // Corações animados e dinâmicos pulando individualmente para o Trio!
     g.font = '7px sans-serif';
     g.textAlign = 'center';
     var hMap = ['💜', '💚', '💙', '💖'];
-    g.fillText(hMap[pList[0]], 18, jumpY - 6 + Math.sin(ct * 0.12) * 2.5);
-    g.fillText(hMap[sel],      35, jumpY - 8 + Math.cos(ct * 0.12) * 2.5);
-    g.fillText(hMap[pList[1]], 52, jumpY - 6 + Math.sin(ct * 0.15) * 2.5);
+    g.fillText(hMap[pList[0]], 26, jumpY - 6 + Math.sin(ct * 0.12) * 2.5);
+    g.fillText(hMap[sel],      50, jumpY - 8 + Math.cos(ct * 0.12) * 2.5);
+    g.fillText(hMap[pList[1]], 74, jumpY - 6 + Math.sin(ct * 0.15) * 2.5);
   } else if (pList.length === 1) {
     // Dupla na tela de Fim do Show
-    drawChar(CH[pList[0]], 20, jumpY + 1, 1, 2);
+    drawChar(CH[pList[0]], 20, jumpY + 1, 1, 2, true);
     drawChar(ch,           50, jumpY,     1, finalExpr);
   } else {
     // Solo
@@ -1068,7 +1239,17 @@ function celeb(){
   g.restore();
   
   g = og;
-  requestAnimationFrame(celeb);
+}
+
+var celebRaf = 0;
+function celeb(){
+  cancelAnimationFrame(celebRaf);
+  if(state !== 'over') return;
+  var og = g;
+  try { celebDraw(); }
+  catch(err){ console.error('celeb:', err); }
+  finally { g = og; }
+  celebRaf = requestAnimationFrame(celeb);
 }
 
 function end(){
@@ -1077,7 +1258,7 @@ function end(){
   $('jb').style.display='none';
   $('pause').style.display='none';
   $('cam').style.display='none';
-  var s=Math.floor(score),nb=s>best,ob=best;lastS=s;dpw=pw;starT+=stars;
+  var s=Math.floor(score),nb=!isTestGame&&s>best,ob=best;lastS=s;dpw=pw;if(!isTestGame)starT+=stars;
   try{localStorage.setItem('brs48cr_st',starT)}catch(e){}
   if(nb){best=s;try{localStorage.setItem('brs48cr_best',s)}catch(e){}}
   setBest();
@@ -1086,7 +1267,7 @@ function end(){
   var rId = rankOf(s);
   $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s);
   
- var isTesting = (!$('tstw').hidden && $('tst') && +$('tst').value > 0);
+ var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
   var isAdmin = (nomeDigitado === 'tsuadmin' || nomeDigitado === 'macchannegra');
   var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
@@ -1108,7 +1289,7 @@ function end(){
   
   var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
 
-if(!isTesting && !isAdmin && row.name && row.name !== 'Anônimo'){
+if(_supabase && !isTesting && !isAdmin && row.name && row.name !== 'Anônimo'){
     _supabase.from('leaderboard')
       .insert([{ name: row.name, score: s, stars: stars, char: row.char, device_id: did }])
       .then(function(resp){
@@ -1197,7 +1378,7 @@ function update(dt){
       var dropX = window.activePetFly.x;
       var dropY = window.activePetFly.y;
       sfx.card();
-      toast = 'Presente do Pet! 🎁';
+      toast = tr('Presente do Pet!') + ' 🎁';
       toastT = 75;
       
       // 15% de chance de Item Especial (Card com efeito ou Sorvete)
@@ -1296,7 +1477,7 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
   
   var pb={x:P.x,y:P.y,w:P.w,h:P.h};
   if(inv>0) inv-=dt;
-  else {
+  if(inv<=0 && !(pw && (pw.k==='alien' || pw.k==='gigante'))) {
     for(var i=0;i<obs.length;i++){
       if(hit(pb,obs[i])){
         if(shield){shield--;inv=90;sfx.hit();shake=8;toast=tr('Escudo usado!');toastT=80;break}
@@ -1313,16 +1494,19 @@ items.forEach(function(it){
       it.got=true;
       if(it.k==='ufo'){
         score+=CFG.UFO_BONUS; pops.push({x:it.x,y:it.y,t:0,s:'+'+CFG.UFO_BONUS});
-        pw={k:'alien',t:CFG.UFO_FRAMES};abducted=true;wasAbducted=true; toast='Kimi wa Alien!'; toastT=110;
+        pw={k:'alien',t:CFG.UFO_FRAMES};abducted=true;wasAbducted=true; toast=tr('Kimi wa Alien!'); toastT=110; sfx.ufo();
       } else if(it.k==='card'){
         score+=100;pops.push({x:it.x,y:it.y,t:0,s:'+100'});sfx.card();
         if(!pw || (pw.k!=='alien' && pw.k!=='gigante')){
-            if(it.ct==='plain'){toast='Card! +100'}else{pw={k:it.ct,t:480};toast=pw.k==='fever'?tr('Fever! Estrelas em dobro'):tr('Ímã de estrelas!')}
+            if(it.ct==='plain'){toast=tr('Card! +100')}else{pw={k:it.ct,t:480};toast=pw.k==='fever'?tr('Fever! Estrelas em dobro'):tr('Ímã de estrelas!')}
             toastT=110;
         }
       } else if(it.k==='morango'){
-        score+=200; pops.push({x:it.x,y:it.y,t:0,s:'+200'});
-        pw={k:'gigante',t:400}; inv=400; window.wasGiant=true; toast='Mega TsuLiPa!'; toastT=110; sfx.card();
+        score+=200; pops.push({x:it.x,y:it.y,t:0,s:'+200'}); sfx.card();
+        window.wasGiant=true;
+        if(!pw || pw.k!=='alien'){
+          pw={k:'gigante',t:400}; inv=400; toast=tr('Mega TsuLiPa!'); toastT=110;
+        }
       } else if (it.k === 'mic_unit') {
         score += 300; pops.push({x:it.x, y:it.y, t:0, s:'+300'});
         if (!pw || (pw.k !== 'alien' && pw.k !== 'gigante')) {
@@ -1335,7 +1519,7 @@ items.forEach(function(it){
             window.collectedPartners.push(novoParceiro);
           }
 
-          toast = 'Unit Mode! Sinergia ✨'; toastT = 110; sfx.card();
+          toast = tr('Unit Mode! Sinergia ✨'); toastT = 110; sfx.card();
         }
       } else {
         var v=pw&&pw.k==='fever'?CFG.STAR_FEVER:CFG.STAR;
@@ -1424,10 +1608,12 @@ function drawProps(arr,w,off,base,widthLimit){
   }
 }
 
-function drawChar(c,x,y,run,expr){
+function drawChar(c,x,y,run,expr,isPartner){
   var corDaRoupa = c.outcol || '#ffffff';
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
-  var sl=(b==='longo'||b==='chanel'||f==='reta'||f==='arcoiris')?14:6;
+  if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
+    if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
+  var sl=(b==='longo'||b==='chanel'||((b===''||b==='pixie')?false:(f==='reta'||f==='arcoiris')))?14:(b==='pixie'?5:(b===''&&(f==='reta'||f==='arcoiris'))?10:6);
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
   var HD='#'+H.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
@@ -1436,6 +1622,8 @@ function drawChar(c,x,y,run,expr){
   else if(b==='longo'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-4,y+34,x+3,y+41);g.lineTo(x+27,y+41);g.quadraticCurveTo(x+34,y+34,x+28,y+13);g.fill()}
   else if(b==='marias'){E(x-3,y+25,5,13,.15+sw*.03); E(x-1,y+29,3.5,10,.2+sw*.03); E(x+33,y+25,5,13,-.15-sw*.03); E(x+31,y+29,3.5,10,-.2-sw*.03)}
   else if(b==='rabo'){E(x+29,y+20+sw,6,14,.3); E(x+31,y+24+sw,4,10,.4)}
+    else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
+  else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas  
   else if(b==='cacheado'){[[15,3],[4,8],[26,8],[1,17],[29,17],[3,26],[27,26]].forEach(function(p){E(x+p[0],y+p[1]+6,8,8)})}
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
@@ -1509,14 +1697,24 @@ function drawChar(c,x,y,run,expr){
     g.fillStyle = corDaRoupa;
     T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada
     
+        // Babado de chantilly: faixa que acompanha a borda da saia + ondinhas pendendo
     g.fillStyle = '#ffffff';
-    g.fillRect(x - 2, y + 41.5, 34, 2); // Babado
+    T([x - 1.2, y + 41, x + 31.2, y + 41, x + 34, y + 43, x - 2, y + 43]);
+    for (var cq = 0; cq < 9; cq++) { g.beginPath(); g.arc(x - 0.4 + cq * 4, y + 43, 2, 0, Math.PI); g.fill(); }
+
     // --- FIM DO LOOK VALENTINE ---
 
-  }else if(roupa==='espacial'){
-    // [código do espacial...]
-    
+     }else if(roupa==='espacial'){
+    var AC1=c.img||H;   // Tsu roxo, Lirika verde, Pati azul, Você = cor do cabelo
+    var AC2='#'+AC1.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-70).toString(16)).substr(-2)});
+    g.fillStyle='#e8f0ff'; g.fillRect(x+4,y+22,22,12);                       // macacão
+    g.fillStyle=AC2; g.fillRect(x+4,y+22,3,12); g.fillRect(x+23,y+22,3,12); // laterais (tom escuro)
+    g.fillStyle=AC1; g.fillRect(x+9,y+21,12,2);                              // gola
+    g.fillRect(x+7,y+30,16,2);                                               // cinto
+    g.fillRect(x+12,y+24,6,4);                                               // painel
+    g.fillStyle='#fff'; g.fillRect(x+14,y+25,2,2);
   }else{
+
     // Roupa Básica
     g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
@@ -1539,7 +1737,7 @@ function drawChar(c,x,y,run,expr){
   if(OF===4){g.fillStyle=PX?OUT[0]:'#1a1426';g.fillRect(x+5,y+22,20,10);g.fillStyle=PX?OUT[1]:'#1a1426';T([x+6,y+31,x+24,y+31,x+28,y+39,x+2,y+39]);g.fillStyle='#ffd23f';g.fillRect(x+2,y+38,26,1.6);g.fillRect(x+13,y+22,4,10);g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+27]);g.fillStyle='#ff3d5e';E(x+15,y+29,1.8,1.8);g.fillStyle='#ffd23f';g.fillRect(x+4,y+22,5,2);g.fillRect(x+21,y+22,5,2)}
   if(OF===5){g.fillStyle=PX?OUT[0]:'#fffdf2';T([x+4,y+22,x+26,y+22,x+30,y+42,x,y+42]);g.fillStyle='#ffd23f';g.fillRect(x+13,y+22,4,20);g.fillRect(x,y+40,30,2);g.fillStyle='rgba(255,226,140,'+(.5+.4*Math.sin(frame*.2))+')';g.fillRect(x+7,y+29,2,2);g.fillRect(x+22,y+34,2,2);g.fillRect(x+10,y+38,2,2)}
   
-  if(sash&&state!=='menu'){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
+  if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
   g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
   
   if(d==='gato'){g.fillStyle=H;T([x+3,y+9,x+6,y-4,x+13,y+4]);T([x+27,y+9,x+24,y-4,x+17,y+4]);g.fillStyle='rgba(255,150,190,.8)';T([x+6,y+6,x+7,y,x+10,y+4]);T([x+24,y+6,x+23,y,x+20,y+4])}
@@ -1552,11 +1750,20 @@ function drawChar(c,x,y,run,expr){
   if(hacc==='bandaid'){g.fillStyle='#d97706'; g.fillRect(x+6, y+21, 7, 4); g.fillStyle='#fcd34d'; g.fillRect(x+6.5, y+21.5, 6, 3); g.fillStyle='#fff'; g.fillRect(x+8, y+22, 3, 2);}
 
   var hg=g.createLinearGradient(0,y+5,0,y+24);hg.addColorStop(0,H);hg.addColorStop(1,HD);g.fillStyle=hg;
-  g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();g.fillRect(x+3,y+12,4,sl);g.fillRect(x+23,y+12,4,sl);
+  g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();
+  g.fillRect(x+3,y+11.5,4,sl+0.5);g.fillRect(x+23,y+11.5,4,sl+0.5); // +0.5 elimina qualquer fresta entre o topo e as costeletas
   
-  if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+4,x+3,y+4]);
-  else if(f==='reta')g.fillRect(x+3,y+6,24,8);
-  else if(f==='lateral')T([x+3,y+12,x+7,y+5,x+27,y+7,x+27,y+19,x+17,y+11]);
+  if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
+    g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
+  }
+
+  g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
+  if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
+
+  g.fillStyle=hg;
+  if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
+  else if(f==='reta')g.fillRect(x+3,y+8,24,6);
+  else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
   else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
   else if(f==='arcoiris'){
     g.fillRect(x+3,y+6,24,8);
@@ -1567,6 +1774,8 @@ function drawChar(c,x,y,run,expr){
     }
   }
 
+  g.restore();
+  
   if(c.streak){
     var shd2='#'+c.hair2.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
     var sg2 = g.createLinearGradient(0,y+5,0,y+15);
@@ -1574,6 +1783,9 @@ function drawChar(c,x,y,run,expr){
     g.fillStyle=sg2;
     g.fillRect(x+10,y+5,3,10);
   }
+
+ // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
+  g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
   
   if(hacc==='boina'){g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+15,y+2,11,4,-0.15,0,7);g.fill();g.fillStyle='#111';g.fillRect(x+14,y-4,2,2);}
   if(hacc==='presilhas'){g.strokeStyle='#ff3d5e';g.lineWidth=1.5;g.beginPath();g.moveTo(x+7,y+7);g.lineTo(x+11,y+11);g.moveTo(x+11,y+7);g.lineTo(x+7,y+11);g.stroke();g.strokeStyle='#4dd8ff';g.beginPath();g.moveTo(x+9,y+5);g.lineTo(x+13,y+9);g.moveTo(x+13,y+5);g.lineTo(x+9,y+9);g.stroke();}
@@ -1684,15 +1896,15 @@ if(hacc==='coala'){
   if (AL) {
     var ab = Math.sin(frame*.15)*2;
     g.strokeStyle = '#e8ffd0'; g.lineWidth = 1.4; g.beginPath();
-    g.moveTo(x+10, y-3); g.lineTo(x+5, y-16+ab); 
-    g.moveTo(x+20, y-3); g.lineTo(x+25, y-16-ab); 
+    g.moveTo(x+10, y+5); g.lineTo(x+6, y-4+ab);
+    g.moveTo(x+20, y+5); g.lineTo(x+24, y-4-ab);
     g.stroke();
     g.fillStyle = '#b6ff3b'; g.shadowColor = '#b6ff3b'; g.shadowBlur = 8;
-    E(x+5, y-17+ab, 2.4, 2.4); E(x+25, y-17-ab, 2.4, 2.4); g.shadowBlur = 0;
+    E(x+6, y-5+ab, 2.2, 2.2); E(x+24, y-5-ab, 2.2, 2.2); g.shadowBlur = 0;
   }
 
   if(OF===5){g.strokeStyle='#ffe98a';g.lineWidth=2;g.shadowColor='#ffe98a';g.shadowBlur=8;g.beginPath();g.ellipse(x+15,y-11,10,3.2,0,0,7);g.stroke();g.shadowBlur=0}
-  if(sash&&state!=='menu'){
+  if(sash&&state!=='menu'&&!isPartner){
     g.fillStyle='#ffe14d';
     for(var i=0;i<3;i++){
       var t=frame*.1+i*2.1;
@@ -1705,13 +1917,15 @@ if(hacc==='coala'){
 }
 
 
-function drawPet(ctx, type, x, y, sc, tFrame){
+function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressão do Backstage⭐Pet!
   ctx.save();
   ctx.translate(x, y + Math.sin(tFrame * 0.08) * 3.5);
   ctx.scale(sc, sc);
   
   function E(cx,cy,rx,ry,r){ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,r||0,0,7);ctx.fill()}
   function T(a){ctx.beginPath();ctx.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)ctx.lineTo(a[i],a[i+1]);ctx.closePath();ctx.fill()}
+
+  if(type && typeof type === 'object'){ petDrawCustom(ctx, type, tFrame, ex); ctx.restore(); return; }   // Meu Pet (montável)
 
   if(type === 'tsu'){
     ctx.shadowColor = '#d8b4fe'; ctx.shadowBlur = 12;
@@ -1740,6 +1954,7 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     // Brilho
     ctx.fillStyle = 'rgba(255,255,255,0.45)'; E(-4, -6, 3.5, 1.8, -0.3);
     
+    if(ex){ petFace(ctx, ex, { x:4.5, y:-1, m:2.4, c:'#2e1065' }, tFrame); } else {
     // Olhos
     ctx.fillStyle = '#2e1065'; E(-4.5, -1, 2.2, 2.8); E(4.5, -1, 2.2, 2.8);
     ctx.fillStyle = '#fff'; E(-5, -2, 0.9, 1.1); E(4, -2, 0.9, 1.1);
@@ -1748,6 +1963,7 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     ctx.fillStyle = '#be185d';
     ctx.beginPath(); ctx.arc(0, 2, 3, 0, Math.PI); ctx.fill();
     ctx.fillStyle = '#f472b6'; E(0, 3.5, 1.8, 1);
+    }
 
   } else if(type === 'pati'){
     ctx.shadowColor = '#93c5fd'; ctx.shadowBlur = 12;
@@ -1774,6 +1990,10 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     ctx.strokeStyle = '#92400e'; ctx.lineWidth = 0.8; ctx.stroke();
     ctx.restore();
     
+    if(ex){   // expressão + as sobrancelhas marrentas que são a cara do Pucchi
+      petFace(ctx, ex, { x:4.5, y:0.5, m:4.6, c:'#0f172a' }, tFrame);
+      if(ex !== 'sono'){ ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-7.5, -3.5); ctx.lineTo(-2.5, -2); ctx.moveTo(7.5, -3.5); ctx.lineTo(2.5, -2); ctx.stroke(); }
+    } else {
     // Olhos e Sobrancelhas Zangadas
     ctx.fillStyle = '#0f172a'; E(-4.5, 0, 2.2, 2.2); E(4.5, 0, 2.2, 2.2);
     ctx.fillStyle = '#fff'; E(-4.5, 0.5, 0.8, 0.8); E(4.5, 0.5, 0.8, 0.8);
@@ -1781,6 +2001,7 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.4;
     ctx.beginPath(); ctx.moveTo(-7, -2.5); ctx.lineTo(-2, -0.5); ctx.moveTo(7, -2.5); ctx.lineTo(2, -0.5); ctx.stroke();
     ctx.beginPath(); ctx.arc(0, 5.5, 2.8, Math.PI*1.15, Math.PI*1.85); ctx.stroke();
+    }
 
   } else if(type === 'lirika'){
     ctx.shadowColor = '#86efac'; ctx.shadowBlur = 12;
@@ -1790,7 +2011,13 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     // Pezinhos
     ctx.fillStyle = '#15803d'; E(-6, 10, 2.8, 2); E(6, 10, 2.8, 2);
     
-    // Corpo com degradê
+    // Anel Planetário (Metade de TRÁS — desenhada antes do corpo para ficar atrás de verdade!)
+    ctx.save(); ctx.rotate(-0.22);
+    ctx.strokeStyle = 'rgba(134, 239, 172, 0.45)'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, Math.PI, Math.PI*2); ctx.stroke();
+    ctx.restore();
+
+    // Corpo com degradê (cobre o meio do anel de trás naturalmente!)
     var bgLir = ctx.createLinearGradient(0, -11, 0, 11);
     bgLir.addColorStop(0, '#4ade80');
     bgLir.addColorStop(0.6, '#16a34a');
@@ -1798,23 +2025,40 @@ function drawPet(ctx, type, x, y, sc, tFrame){
     ctx.fillStyle = bgLir; E(0, 0, 12, 11);
     ctx.shadowBlur = 0;
     
-    // Anel Planetário
+    // Anel Planetário (Metade da FRENTE — passa brilhando pela frente da barriga!)
     ctx.save(); ctx.rotate(-0.22);
-    ctx.strokeStyle = 'rgba(187, 247, 208, 0.9)'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(187, 247, 208, 0.92)'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, -0.15, Math.PI + 0.15); ctx.stroke();
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.9;
-    ctx.beginPath(); ctx.ellipse(0, 2, 18.5, 3.5, 0, 0, Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 2, 18.5, 3.5, 0, 0.05, Math.PI - 0.05); ctx.stroke();
     ctx.restore();
     
+    if(ex){ petFace(ctx, ex, { x:5, y:-0.5, m:6, c:'#052e16' }, tFrame); } else {
     // Olhos
     ctx.fillStyle = '#052e16'; E(-5, -0.5, 2.3, 2.6); E(5, -0.5, 2.3, 2.6);
     ctx.fillStyle = '#fff'; E(-5.5, -1.5, 1.1, 1.1); E(4.5, -1.5, 1.1, 1.1);
+    }
     // Nariz
     ctx.fillStyle = '#052e16'; E(0, 0.5, 2.2, 3.2);
     // Sobrancelhas e boquinha
     ctx.strokeStyle = '#052e16'; ctx.lineWidth = 1.1;
     ctx.beginPath(); ctx.moveTo(-7, -4); ctx.lineTo(-3, -5.5); ctx.moveTo(7, -4); ctx.lineTo(3, -5.5); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, 6.5, 1.8, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+    if(!ex){ ctx.beginPath(); ctx.arc(0, 6.5, 1.8, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); }
+  }
+  // Se este pet tiver acessórios ou bochechas vestidos no camarim, desenha por cima!
+  if(typeof petData !== 'undefined' && petData && petData.pets && petData.pets[type]){
+    var pObj = petData.pets[type];
+    if(pObj.bochecha){ ctx.fillStyle = 'rgba(255,111,181,.55)'; E(-7.6, 2.9, 2.2, 1.2); E(7.6, 2.9, 2.2, 1.2); }
+    var a = pObj.acc || '';
+    if(a === 'laco'){ ctx.fillStyle = '#ff4f9a'; T([-7, -10, -12, -13, -12, -7]); T([-7, -10, -2, -13, -2, -7]); ctx.fillStyle = '#be185d'; E(-7, -10, 1.4, 1.4); }
+    else if(a === 'estrela'){ ctx.fillStyle = '#ffe14d'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = .6; ctx.beginPath();
+      for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.2, an = q * Math.PI / 5 - Math.PI / 2; ctx[q ? 'lineTo' : 'moveTo'](8 + Math.cos(an) * rr, -10 + Math.sin(an) * rr); }
+      ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    else if(a === 'anel'){ ctx.save(); ctx.rotate(-.22); ctx.lineCap = 'round';
+      ctx.strokeStyle = 'rgba(255,255,255,.88)'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, -0.35, Math.PI + 0.35); ctx.stroke();
+      ctx.strokeStyle = '#fde047'; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(0, 2, 18.5, 3.5, 0, 0.05, Math.PI - 0.05); ctx.stroke(); ctx.restore(); }
+    else if(a === 'oculos'){ ctx.strokeStyle = '#1f2937'; ctx.lineWidth = .9; ctx.beginPath(); ctx.arc(-4.5, -1, 3.4, 0, 7); ctx.moveTo(7.9, -1); ctx.arc(4.5, -1, 3.4, 0, 7); ctx.moveTo(-1.1, -1.5); ctx.lineTo(1.1, -1.5); ctx.stroke(); }
+    else if(a === 'flor'){ ctx.fillStyle = '#ffc4d8'; for(var k = 0; k < 5; k++){ var an2 = k * 1.2566 - 1.57; E(-8 + Math.cos(an2) * 2.4, -9 + Math.sin(an2) * 2.4, 2, 2); } ctx.fillStyle = '#e85a8a'; E(-8, -9, 1.3, 1.3); }
   }
   ctx.restore();
 }
@@ -1831,6 +2075,7 @@ function prevLoop() {
   if (state === 'menu') {
     pt++;
     var og = g;
+    try {
     g = pc;
     g.clearRect(0, 0, 140, 120);
     
@@ -1862,12 +2107,28 @@ function prevLoop() {
     var petKey = sel === 0 ? 'tsu' : sel === 1 ? 'lirika' : sel === 2 ? 'pati' : ['tsu', 'lirika', 'pati'][Math.floor(pt / 180) % 3];
     drawPet(pc, petKey, 112, 38, 1.15, pt);
     
-    g = og;
+    } finally { g = og; }
   }
   requestAnimationFrame(prevLoop); // Mantém o loop contínuo por quadros
 }
 
 prevLoop();
+
+function safeCall(fn){
+  var og = g;
+  try { return fn(); }
+  finally { g = og; }
+}
+
+
+function drawSafe(ctx, fn) {
+  ctx.save();
+  try {
+    fn();
+  } finally {
+    ctx.restore();
+  }
+}
 
 function makeShare(){
   var W2=600,H2=760,c2=document.createElement('canvas');c2.width=W2;c2.height=H2;var x2=c2.getContext('2d'),og=g,Q=curPal(),i;
@@ -1949,7 +2210,7 @@ g=x2;g.save();
       var drawY = chaoY - (44 * sc) + (yOffset || 0);
       g.translate(drawX, drawY);
       g.scale(sc, sc);
-      drawChar(charObj, 0, 0, 1, expr);
+      drawChar(charObj, 0, 0, 1, expr, charObj !== CH[sel]);
       g.restore();
       g = og;
     }
@@ -1997,36 +2258,30 @@ g=x2;g.save();
       x2.fillText('✨', centroPalcoX + 118, topY - 22);
       x2.restore();
 
-    } else if (partners.length >= 2) {
-      // --- CASO 2: TRIO PERFEITAMENTE ESPALHADO E ANIMADO ---
-      var centroPalcoX = 300;
-      var trioScale = 2.0; 
+          } else if (partners.length >= 2) {
+      // --- CASO 2: TRIO ---
+      var scT = 4.2;
+      var esp = 145;   // distância entre os centros
+      drawOnStage(CH[partners[0]], centroPalcoX - esp, scT, 0, 2);
+      drawOnStage(CH[sel],         centroPalcoX,       scT, -4, finalExpr);
+      drawOnStage(CH[partners[1]], centroPalcoX + esp, scT, 0, 2);
 
-      g = x2; g.save(); g.translate(centroPalcoX - 95, basePalcoY); g.scale(trioScale, trioScale); drawChar(CH[partners[0]], 0, 0, 1, 2); g.restore(); g = og;
-      g = x2; g.save(); g.translate(centroPalcoX, basePalcoY - 2); g.scale(trioScale, trioScale); drawChar(CH[sel], 0, -2, 1, finalExpr); g.restore(); g = og;
-      g = x2; g.save(); g.translate(centroPalcoX + 95, basePalcoY); g.scale(trioScale, trioScale); drawChar(CH[partners[1]], 0, 0, 1, 2); g.restore(); g = og;
-
-      // ✨ Corações dinâmicos flutuando em arco acima do Trio!
       x2.save();
       x2.textAlign = 'center';
+      x2.textBaseline = 'alphabetic';
       x2.shadowColor = 'rgba(255, 111, 181, 0.85)';
       x2.shadowBlur = 14;
-      x2.font = '28px sans-serif'; // Corações bem visíveis!
-      
-      var topY = basePalcoY - 45; 
-      var heartMap = ['💜', '💚', '💙', '💖']; // Tsu: 0, Lirika: 1, Pati: 2, Você: 3
+      x2.font = '30px sans-serif';
+      var topY = chaoY - (44 * scT) - 45;
+      var heartMap = ['💜', '💚', '💙', '💖']; // Tsu, Lirika, Pati, Você
 
-      // Coração Esquerdo (Parceiro 0)
-      x2.fillText(heartMap[partners[0]], centroPalcoX - 95, topY + 5);
-      // Coração Central (Seu Oshi, fica mais alto formando o arco)
-      x2.fillText(heartMap[sel],         centroPalcoX,      topY - 10); 
-      // Coração Direito (Parceiro 1)
-      x2.fillText(heartMap[partners[1]], centroPalcoX + 95, topY + 5);
-      
-      // Brilhos extras preenchendo os espaços entre os corações
+      x2.fillText(heartMap[partners[0]], centroPalcoX - esp, topY + 8);
+      x2.fillText(heartMap[sel],         centroPalcoX,       topY - 6);
+      x2.fillText(heartMap[partners[1]], centroPalcoX + esp, topY + 8);
+
       x2.font = '20px sans-serif';
-      x2.fillText('✨', centroPalcoX - 47, topY - 15);
-      x2.fillText('✨', centroPalcoX + 47, topY - 15);
+      x2.fillText('✨', centroPalcoX - esp / 2, topY - 18);
+      x2.fillText('✨', centroPalcoX + esp / 2, topY - 18);
       x2.restore();
 
     } else if (partners.length === 1) {
@@ -2049,7 +2304,7 @@ g=x2;g.save();
     // Textos informativos do Pôster de Fim de Jogo
     var t = typeof tr === 'function' ? tr : function(w){return w;};
     x2.textAlign='center';x2.shadowColor='rgba(0,0,0,.5)';x2.shadowBlur=12;x2.fillStyle='#fff';
-    x2.font='800 36px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa: Center Run!',300,55);
+    x2.font='800 36px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa⭐World · Center⭐Run!',300,55);
     x2.font='400 16px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,95);
     
     x2.fillStyle='#fff';x2.font='700 38px "M PLUS Rounded 1c",sans-serif';x2.fillText(nick||t('Anônimo'),300,130);
@@ -2109,12 +2364,35 @@ function draw(){
   });
   items.forEach(function(it){var bob=Math.sin(frame*.12+it.x*.05)*3,cx=it.x+9,cy=it.y+9+bob;
 	
-		if (it.petDrop) {
-      g.save(); g.translate(cx, cy);
+    // --- AURA DE DESTAQUE (morango e microfone): anel pulsante + brilho + estrelinhas girando ---
+    if (it.k === 'morango' || it.k === 'mic_unit') {
+      var auM = it.k === 'morango', auC = auM ? '255,111,181' : '155,48,217';
+      g.save(); g.translate(auM ? cx + 7 : cx, auM ? cy + 7 : cy);
+      var auG = g.createRadialGradient(0, 0, 3, 0, 0, 34);
+      auG.addColorStop(0, 'rgba(' + auC + ',' + (0.35 + 0.15 * Math.sin(frame * 0.15)) + ')'); auG.addColorStop(1, 'rgba(' + auC + ',0)');
+      g.fillStyle = auG; g.beginPath(); g.arc(0, 0, 34, 0, 7); g.fill();
+      for (var ar = 0; ar < 2; ar++) {
+        var auP = (frame * 0.025 + ar * 0.5) % 1;
+        g.strokeStyle = 'rgba(' + auC + ',' + (0.85 * (1 - auP)) + ')'; g.lineWidth = 2;
+        g.beginPath(); g.arc(0, 0, 10 + auP * 26, 0, 7); g.stroke();
+      }
+      g.fillStyle = '#fff';
+      for (var as = 0; as < 4; as++) {
+        var aa = frame * 0.05 + as * Math.PI / 2, ar2 = 22 + Math.sin(frame * 0.1 + as) * 3;
+        g.fillRect(Math.cos(aa) * ar2 - 1, Math.sin(aa) * ar2 - 1, 3, 3);
+      }
+      g.restore();
+    }
+
+     if (it.petDrop) {
+      g.save();
+      g.translate(cx, cy);
       // Halo dourado suave no fundo
       var petHalo = g.createRadialGradient(0, 0, 2, 0, 0, 20);
-      petHalo.addColorStop(0, 'rgba(255, 225, 77, 0.6)'); petHalo.addColorStop(1, 'rgba(255, 225, 77, 0)');
-      g.fillStyle = petHalo; g.beginPath(); g.arc(0, 0, 20, 0, 7); g.fill();
+      petHalo.addColorStop(0, 'rgba(255, 225, 77, 0.6)');
+      petHalo.addColorStop(1, 'rgba(255, 225, 77, 0)');
+      g.fillStyle = petHalo;
+      g.beginPath(); g.arc(0, 0, 20, 0, 7); g.fill();
       // Brilhinhos flutuantes
       g.fillStyle = '#fff';
       g.fillRect(Math.sin(frame * 0.1 + it.x) * 12, -10 + Math.cos(frame * 0.15) * 5, 2, 2);
@@ -2209,10 +2487,14 @@ g.save();
 	
 // Desenha APENAS o parceiro sorteado no microfone atual acompanhando você!
   if (pw && pw.k === 'unit' && pw.partner !== undefined) {
-    drawChar(CH[pw.partner], P.x - 34, P.y, runAnim, 2);
-    var heartColors = ['💜', '💚', '💙'];
+    drawChar(CH[pw.partner], P.x - 34, P.y, runAnim, 2, true);
+        var heartColors = ['💜', '💚', '💙'];
+    g.save();
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
     g.font = '9px sans-serif';
-    g.fillText(heartColors[pw.partner] || '✨', P.x - 19, P.y - 8);
+    g.fillText(heartColors[pw.partner] || '✨', P.x - 19, P.y - 10 + Math.sin(frame * 0.12) * 1.5);
+    g.restore();
   }
 
 	
@@ -2245,7 +2527,7 @@ g.save();
   g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';
   g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
   g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
-  if(pw&&state==='play'){g.textAlign='right';g.fillStyle='#ffe14d';g.fillText((pw.k==='fever'?tr('Fever '):pw.k==='alien'?tr('Abdução '):pw.k==='gigante'?tr('Mega '):pw.k==='unit'?'Unit ✨ ':tr('Ímã '))+Math.ceil(pw.t/60)+'s',W-16,72)}
+  if(pw&&state==='play'){g.textAlign='right';g.fillStyle='#ffe14d';g.fillText((pw.k==='fever'?tr('Fever '):pw.k==='alien'?tr('Abdução '):pw.k==='gigante'?tr('Mega '):pw.k==='unit'?tr('Unit ✨ '):tr('Ímã '))+Math.ceil(pw.t/60)+'s',W-16,72)}
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,86);g.shadowBlur=0;g.globalAlpha=1}
 }
 
@@ -2294,6 +2576,7 @@ if(menuTitleEl) {
     if(++titleClicks >= 10) {
       var tstwEl = $('tstw');
       if(tstwEl) tstwEl.hidden = false;
+      document.body.classList.add('modo-teste');   // contorno rosa: modo teste ativo
     }
   };
 }
@@ -2312,7 +2595,11 @@ document.getElementById('play').onclick=start;
 document.getElementById('again').onclick=start;
 $('pause').onclick=function(e){e.stopPropagation();setPause(!paused)};
 $('resume').onclick=function(){setPause(false)};
-document.addEventListener('keydown',function(e){if(e.code==='KeyP'||e.code==='Escape')setPause(!paused)});
+document.addEventListener('keydown', function(e) {
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) return;
+  if (!$('shr').hidden && e.code === 'Escape') { $('shr').hidden = true; return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') setPause(!paused);
+});
 document.addEventListener('visibilitychange',function(){if(document.hidden)setPause(true)});
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
@@ -2333,9 +2620,19 @@ $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.prevent
 function makeCard(){
   var W2=400, H2=540, c2=document.createElement('canvas');
   c2.width=W2; c2.height=H2; var x2=c2.getContext('2d'), og=g, Q=curPal();
+  var charCor = (sel === 3 ? CU.hair : CH[sel].img) || '#ff6fb5';
   
-  // 1. O Papel da Polaroid (Branco gelo)
-  x2.fillStyle='#fdfdfd'; x2.fillRect(0,0,W2,H2);
+  // 1. O Papel da Polaroid com bolinhas suaves na cor da personagem
+  x2.fillStyle='#fffafd'; x2.fillRect(0,0,W2,H2);
+  x2.save();
+  x2.fillStyle = charCor;
+  x2.globalAlpha = 0.08;
+  for(var dy = 12; dy < H2; dy += 18){
+    for(var dx = (dy / 18 % 2) * 9 + 6; dx < W2; dx += 18){
+      x2.beginPath(); x2.arc(dx, dy, 1.6, 0, 7); x2.fill();
+    }
+  }
+  x2.restore();
   
   // 2. Fundo da Foto (Céu dinâmico da paleta atual)
   var sk=x2.createLinearGradient(0,20,0,380);
@@ -2411,10 +2708,13 @@ function makeCard(){
     iH.addColorStop(0, 'rgba(200, 162, 245, 0.4)'); iH.addColorStop(1, 'rgba(200, 162, 245, 0)');
     g.fillStyle = iH; g.beginPath(); g.arc(15, 22, 55, 0, 7); g.fill();
   } else if (pw && pw.k === 'unit' && pw.partner !== undefined) {
-    drawChar(CH[pw.partner], -18, 0, runAnim, 2);
+    drawChar(CH[pw.partner], -18, 0, runAnim, 2, true);
     var hCols = ['💜', '💚', '💙'];
+    g.save();
+    g.textAlign = 'center';
     g.font = '8px sans-serif';
-    g.fillText(hCols[pw.partner] || '✨', 0, -10);
+    g.fillText(hCols[pw.partner] || '✨', -3, -10);
+    g.restore();
   }
 	
   // Desenho do jogador principal na Polaroid
@@ -2429,6 +2729,26 @@ function makeCard(){
 // Desenha o pet principal bem grande e imponente no céu da foto (escala 2.0)
   drawPet(x2, mainPetKey, 325, 75, 2.0, frame);
 
+  // Vinheta suave de flash e borda interna da foto
+  var vg = x2.createRadialGradient(200, 200, 90, 200, 200, 260);
+  vg.addColorStop(0, 'rgba(255,255,255,0)');
+  vg.addColorStop(1, 'rgba(255,190,225,0.22)');
+  x2.fillStyle = vg; x2.fillRect(20, 20, 360, 360);
+  x2.strokeStyle = 'rgba(18,54,94,0.08)'; x2.lineWidth = 1; x2.strokeRect(20.5, 20.5, 359, 359);
+
+  // Fita adesiva (washi tape) colada no topo da foto, na cor da personagem!
+  x2.save();
+  x2.translate(200, 18);
+  x2.rotate(-0.05);
+  x2.globalAlpha = 0.65;
+  x2.fillStyle = charCor;
+  x2.fillRect(-58, -11, 116, 22);
+  x2.globalAlpha = 0.35;
+  x2.fillStyle = '#ffffff';
+  for(var tp = -50; tp < 58; tp += 14) x2.fillRect(tp, -11, 6, 22);
+  x2.restore();
+  x2.globalAlpha = 1;
+
   // Descobre quais são os outros 2 pets (coadjuvantes)
   var petsCoadjuvantes = listaPets.filter(function(p) { return p !== mainPetKey; });
 
@@ -2436,31 +2756,34 @@ function makeCard(){
   var t = typeof tr === 'function' ? tr : function(w){return w;};
   x2.fillStyle='#12365e'; x2.textAlign='center';
   x2.font='800 28px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText(nick || t('Anônimo'), 200, 435);
+  x2.fillText(nick || t('Anônimo'), 200, 432);
   
   x2.fillStyle='#ff6fb5'; x2.font='700 20px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText(t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', 200, 470);
+  x2.fillText(t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', 200, 464);
   
   // Desenha os dois outros pets em tamanho de destaque (escala 1.15) nas laterais do texto
-  drawPet(x2, petsCoadjuvantes[0], 85, 455, 1.15, frame);
-  drawPet(x2, petsCoadjuvantes[1], 315, 455, 1.15, frame);
+  drawPet(x2, petsCoadjuvantes[0], 85, 452, 1.15, frame);
+  drawPet(x2, petsCoadjuvantes[1], 315, 452, 1.15, frame);
 
-  // Adesivinhos de brilho, corações e os símbolos das integrantes sementes na Polaroid!
+  // Adesivinhos de brilho e corações na Polaroid
   x2.fillStyle = '#ff6fb5';
   x2.font = '22px sans-serif';
   x2.textAlign = 'left';
   x2.fillText('✨', 35, 415);   // Brilho na margem inferior esquerda
-  x2.fillText('💕', 35, 60);   // No topo esquerdo da moldura
+  x2.fillText('💕', 35, 60);    // No topo esquerdo da moldura
   
   x2.textAlign = 'right';
   x2.fillText('💕', 370, 415);  // Corações na margem inferior direita
-  //x2.fillText('✨', 365, 60);   // No topo direito da moldura
-  x2.fillText('🫰', 365, 415);   // Brilho extra
+  x2.fillText('🫰', 365, 495);  // Mãozinha de coração no canto inferior direito
 
-  // Marca d'água oficial sutil no rodapé da Polaroid
+  // Data formatada conforme o idioma + Marca d'água oficial no rodapé
+  var loc = { pt:'pt-BR', en:'en-US', es:'es-ES', th:'th-TH', ja:'ja-JP' }[LANG] || 'pt-BR';
   x2.textAlign = 'center';
-  x2.fillStyle='#94a3b8'; x2.font='500 11px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText('🌷 TsuLiPa: Center Run! · BRS48 Official Photocard', 200, 522);
+  x2.fillStyle = '#94a3b8';
+  x2.font = '600 12px "M PLUS Rounded 1c",sans-serif';
+  x2.fillText(new Date().toLocaleDateString(loc, { day:'2-digit', month:'2-digit', year:'numeric' }), 200, 498);
+  x2.font='500 11px "M PLUS Rounded 1c",sans-serif';
+  x2.fillText('🌷 TsuLiPa⭐World · Center⭐Run! · BRS48 Official Photocard', 200, 524);
 	
   return c2.toDataURL('image/png');
 }
@@ -2478,7 +2801,7 @@ $('cam').onclick = function(e){
   setTimeout(function(){ fl.remove(); }, 400);
 
   setPause(true); 
-  var u = makeCard();
+  var u = safeCall(makeCard);
   $('shimg').src = u;
   $('shdl').href = u;
   $('shdl').download = 'tsulipa-photocard.png';
@@ -2497,6 +2820,7 @@ $('dlAvatar').onclick = function(e) {
   var xRender = cRender.getContext('2d');
   
   var og = g; 
+  try {
   g = xRender; // Redireciona os desenhos para o canvas virtual
   
   g.save();
@@ -2519,7 +2843,7 @@ $('dlAvatar').onclick = function(e) {
   g.restore();
   
   
-  g = og; // Devolve o controle para o jogo principal
+  } finally { g = og; }
   
   // Força o download do PNG cristalino com fundo transparente e marca d'água
   var link = document.createElement('a');
@@ -2529,7 +2853,7 @@ $('dlAvatar').onclick = function(e) {
   link.click();
 };
 
-$('shbtn').onclick=function(){var u=makeShare();$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false};$('shx').onclick=function(){$('shr').hidden=true};
+$('shbtn').onclick=function(){var u=safeCall(makeShare);$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false};$('shx').onclick=function(){$('shr').hidden=true};
 document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
 ['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(){held=false})});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();
@@ -2538,6 +2862,7 @@ $('tomenu').onclick=function(){
   $('over').hidden=true;
   $('menu').hidden=false;
   $('pause').style.display='none';
+  $('cam').style.display='none';
   $('jb').style.display='none';
   state='menu';
   sync();
@@ -2580,6 +2905,1268 @@ if(visualKaoEl) {
   }, 4000); // Troca de carinha a cada 4 segundos de forma suave
 }
 	
+// ================================================================
+// --- MINI JOGO DE PETS: CAMARIM (V1 · etapa 1) ---
+// Entrada pela patinha, adoção do primeiro pet, camarim com o
+// personagem ativo, 4 necessidades em tempo real e carinho.
+// Salvo em localStorage na chave brs48cr_pet.
+// ================================================================
+var PET_KEY = 'brs48cr_pet';
+var PET_SP = {   // chaves internas iguais às do drawPet; nomes de exibição
+  tsu:    { n:'Chu',    cor:'#9b30d9', emo:'💜' },
+  lirika: { n:'Koali',  cor:'#16a34a', emo:'💚' },
+  pati:   { n:'Pucchi', cor:'#4169e1', emo:'💙' },
+  meu:    { n:'Meu Pet', cor:'#ff6fb5', emo:'💖' }   // pet montável (V2): a cor real vem da montagem
+};
+var PET_NEEDS = [['fome','🍙','Fome','#ff6fb5'],['energia','⚡','Energia','#4169e1'],['humor','💖','Humor','#9b30d9'],['higiene','🫧','Higiene','#7ed321']];
+var PET_RATE = { fome:3.5, energia:2.5, humor:3, higiene:2 };   // pontos perdidos por hora
+var PET_CAP = 48 * 36e5;                                         // queda máxima contada: 48h fora
+var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
+
+var PET_DICT = {
+  en: {"Camarim":"Dressing room","VOLTAR":"BACK","ADOTAR":"ADOPT","Escolha seu primeiro pet. O primeiro é presente!":"Choose your first pet. The first one is a gift!","Nome do pet":"Pet name","Toque no pet para fazer carinho 💕":"Tap the pet to cuddle it 💕","Fome":"Hunger","Energia":"Energy","Humor":"Mood","Higiene":"Hygiene","Feliz!":"Happy!","Com sono...":"Sleepy...","Com fome...":"Hungry...","Precisa de banho...":"Needs a bath...","Com saudade...":"Missing you...","Tranquilo":"Calm","Abrir o camarim do pet":"Open the pet dressing room"},
+  es: {"Camarim":"Camerino","VOLTAR":"VOLVER","ADOTAR":"ADOPTAR","Escolha seu primeiro pet. O primeiro é presente!":"Elige tu primera mascota. ¡La primera es un regalo!","Nome do pet":"Nombre de la mascota","Toque no pet para fazer carinho 💕":"Toca a la mascota para hacerle mimos 💕","Fome":"Hambre","Energia":"Energía","Humor":"Ánimo","Higiene":"Higiene","Feliz!":"¡Feliz!","Com sono...":"Con sueño...","Com fome...":"Con hambre...","Precisa de banho...":"Necesita un baño...","Com saudade...":"Te extraña...","Tranquilo":"Tranquilo","Abrir o camarim do pet":"Abrir el camerino de la mascota"},
+  th: {"Camarim":"ห้องแต่งตัว","VOLTAR":"กลับ","ADOTAR":"รับเลี้ยง","Escolha seu primeiro pet. O primeiro é presente!":"เลือกสัตว์เลี้ยงตัวแรก ตัวแรกฟรี!","Nome do pet":"ชื่อสัตว์เลี้ยง","Toque no pet para fazer carinho 💕":"แตะสัตว์เลี้ยงเพื่อลูบหัว 💕","Fome":"ความหิว","Energia":"พลังงาน","Humor":"อารมณ์","Higiene":"ความสะอาด","Feliz!":"มีความสุข!","Com sono...":"ง่วงนอน...","Com fome...":"หิวแล้ว...","Precisa de banho...":"อยากอาบน้ำ...","Com saudade...":"คิดถึงจัง...","Tranquilo":"สบายดี","Abrir o camarim do pet":"เปิดห้องแต่งตัวของสัตว์เลี้ยง"},
+  ja: {"Camarim":"楽屋","VOLTAR":"もどる","ADOTAR":"おむかえ","Escolha seu primeiro pet. O primeiro é presente!":"最初のペットを選んでね。最初の子はプレゼント！","Nome do pet":"ペットの名前","Toque no pet para fazer carinho 💕":"ペットをタップしてなでなで 💕","Fome":"おなか","Energia":"げんき","Humor":"きぶん","Higiene":"せいけつ","Feliz!":"ごきげん！","Com sono...":"ねむい…","Com fome...":"おなかすいた…","Precisa de banho...":"おふろに入りたい…","Com saudade...":"さみしい…","Tranquilo":"おだやか","Abrir o camarim do pet":"ペットの楽屋を開く"}
+};
+Object.keys(PET_DICT).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT[l]).forEach(function(k){ DICT[l][k] = PET_DICT[l][k]; }); });
+
+var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
+var petHop = 0, petSmile = 0, petLastPat = 0, petBg = null, petBgOshi = null, petDpr = 1;
+var petCv = $('petc'), petCtx = petCv.getContext('2d');
+
+// ---------- Dados ----------
+function petLoad(){
+  try{
+    var d = JSON.parse(localStorage.getItem(PET_KEY) || 'null');
+    petData = (d && d.v === 1 && d.pets && d.pets[d.ativo]) ? d : null;
+    if(petData) petNormalize();   // completa saves antigos com os campos da V2
+  }catch(e){ petData = null; }
+}
+function petSave(){ if(!petData) return; try{ localStorage.setItem(PET_KEY, JSON.stringify(petData)); }catch(e){} }
+function petAtivo(){ return petData ? petData.pets[petData.ativo] : null; }
+function petClamp(v){ return Math.max(0, Math.min(100, Math.round(v * 100) / 100)); }
+
+// Queda pelo relógio real: calcula o tempo desde a última visita (com teto e
+// proteção contra relógio voltando). Só o pet ativo perde pontos.
+function petTick(){
+  var p = petAtivo(); if(!p) return;
+  var now = Date.now(), el = now - (p.t || now);
+  if(el < 0) el = 0;
+  if(el > PET_CAP) el = PET_CAP;
+  var h = el / 36e5;
+  Object.keys(PET_RATE).forEach(function(k){
+    if(p.dorme && k === 'energia') p[k] = petClamp(p[k] + PET_SLEEP_RATE * h);   // dormindo: recupera energia
+    else p[k] = petClamp(p[k] - PET_RATE[k] * h * (p.dorme ? .5 : 1));          // dormindo: o resto cai pela metade
+  });
+  if(p.dorme && p.energia >= 100){ p.dorme = false; petSay(tr('Bom dia!') + ' ☀️'); }   // acorda sozinho quando descansou
+  p.t = now;
+}
+
+function petMood(p){
+  if(p.dorme) return ['💤', 'Dormindo...'];
+  var m = Math.min(p.fome, p.energia, p.humor, p.higiene);
+  if(m >= 60) return ['✨💖', 'Feliz!'];
+  if(p.energia < 25) return ['💤', 'Com sono...'];
+  if(p.fome < 25) return ['🍙', 'Com fome...'];
+  if(p.higiene < 25) return ['🫧', 'Precisa de banho...'];
+  if(p.humor < 25) return ['💭', 'Com saudade...'];
+  return ['🎵', 'Tranquilo'];
+}
+
+// ---------- Interface (HTML) ----------
+function petUI(){
+  var p = petAtivo(); if(!p) return;
+  $('petNm').textContent = petEmo(petData.ativo) + ' ' + p.nome;
+  $('petSt').textContent = tr(petMood(p)[1]);
+  $('petStars').textContent = '★ ' + starT;
+  $('petBars').innerHTML = PET_NEEDS.map(function(n){
+    var v = Math.round(p[n[0]]);
+    return '<div class="petbar"><span><em style="font-style:normal">' + n[1] + ' ' + tr(n[2]) + '</em><em style="font-style:normal">' + v + '</em></span>' +
+           '<i><b style="width:' + v + '%;background:' + n[3] + '"></b></i></div>';
+  }).join('');
+  petActUI();
+  petDevUI();
+}
+
+// (Telas, coleção e adoção: ver o módulo BACKSTAGE⭐PET! V2 mais abaixo)
+
+// ---------- Canvas do camarim ----------
+function petFitCanvas(){
+  var d = Math.min(2, window.devicePixelRatio || 1);
+  if(d !== petDpr || petCv.width !== 360 * d){ petDpr = d; petCv.width = 360 * d; petCv.height = 220 * d; petBg = null; }
+}
+
+// Fundo fixo desenhado uma vez num canvas fora da tela (refeito ao trocar o Oshi)
+function petMakeBg(){
+  var c = document.createElement('canvas'); c.width = 360 * petDpr; c.height = 220 * petDpr;
+  var x = c.getContext('2d'); x.scale(petDpr, petDpr);
+  var ac = { tsu:'#9b30d9', lirika:'#22c55e', pati:'#4169e1' }[OSHI] || '#ff6fb5';
+  function RR(px, py, w, h, r){ x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+
+  // Parede com listras na cor do Oshi
+  var wg = x.createLinearGradient(0, 0, 0, 170); wg.addColorStop(0, '#fff0f8'); wg.addColorStop(1, '#ecdcff');
+  x.fillStyle = wg; x.fillRect(0, 0, 360, 170);
+  x.globalAlpha = .07; x.fillStyle = ac; for(var s = 0; s < 360; s += 24) x.fillRect(s, 0, 12, 170); x.globalAlpha = 1;
+
+  // Varal de bandeirinhas
+  x.strokeStyle = 'rgba(123,63,240,.35)'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 14); x.quadraticCurveTo(180, 34, 360, 14); x.stroke();
+  var fc = ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5'];
+  for(var f = 0; f < 12; f++){ var fx = 15 + f * 30, fy = 14 + Math.sin(f / 11 * Math.PI) * 9.5; x.fillStyle = fc[f % 4]; x.beginPath(); x.moveTo(fx - 6, fy); x.lineTo(fx + 6, fy); x.lineTo(fx, fy + 11); x.closePath(); x.fill(); }
+
+  petDrawDecor(x);   // mural com pôsteres e quadros (V2)
+
+  // Penteadeira + espelho de camarim (moldura e vidro; as lâmpadas piscam no loop)
+  x.fillStyle = '#f7d9ea'; RR(18, 140, 132, 30, 6); x.fill();
+  x.fillStyle = '#e9b8d3'; x.fillRect(18, 152, 132, 3);
+  x.fillStyle = '#ffe9a8'; RR(30, 40, 108, 96, 10); x.fill();
+  var mg = x.createLinearGradient(40, 50, 128, 126); mg.addColorStop(0, '#dff3ff'); mg.addColorStop(.55, '#bfe3ff'); mg.addColorStop(1, '#e9dcff');
+  x.fillStyle = mg; RR(40, 50, 88, 76, 6); x.fill();
+  x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.moveTo(52, 56); x.lineTo(66, 56); x.lineTo(48, 92); x.lineTo(46, 80); x.closePath(); x.fill();
+  // Itens na penteadeira: batom, perfume, foto do TsuLiPa
+  x.fillStyle = '#ff6fb5'; x.fillRect(118, 130, 6, 10); x.fillStyle = '#c0265f'; x.fillRect(118, 127, 6, 4);
+  x.fillStyle = 'rgba(180,220,255,.9)'; RR(130, 126, 12, 14, 3); x.fill(); x.fillStyle = '#4169e1'; x.fillRect(134, 122, 4, 5);
+
+  // Arara de roupas com os figurinos nas cores do TsuLiPa
+  x.strokeStyle = '#b9a3d6'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(292, 58); x.lineTo(292, 170); x.moveTo(350, 58); x.lineTo(350, 170); x.moveTo(288, 60); x.lineTo(354, 60); x.stroke();
+  [['#9b30d9', 300], ['#b6ff3b', 316], ['#4169e1', 332], ['#ff6fb5', 344]].forEach(function(r){
+    x.strokeStyle = '#8f7bb0'; x.lineWidth = 1; x.beginPath(); x.arc(r[1], 64, 3, Math.PI, 0); x.stroke();
+    x.fillStyle = r[0]; x.beginPath(); x.moveTo(r[1] - 7, 67); x.lineTo(r[1] + 7, 67); x.lineTo(r[1] + 10, 112); x.lineTo(r[1] - 10, 112); x.closePath(); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(r[1] - 1, 68, 2, 40);
+  });
+
+  // Piso de madeira rosada
+  var fg = x.createLinearGradient(0, 170, 0, 220); fg.addColorStop(0, '#f5c9dd'); fg.addColorStop(1, '#e4a9c6');
+  x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
+  x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
+  for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
+  x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
+  // Tapetinho redondo embaixo do pet
+  x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 4, 46, 9, 0, 0, 7); x.fill();
+  x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
+  petBg = c; petBgOshi = OSHI;
+}
+
+function petDrawRoom(){
+  var p = petAtivo(); if(!p) return;
+  if(!petBg || petBgOshi !== OSHI) petMakeBg();
+  var x = petCtx;
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, petCv.width, petCv.height);
+  x.drawImage(petBg, 0, 0);
+  x.setTransform(petDpr, 0, 0, petDpr, 0, 0);
+
+  // Lâmpadas do espelho piscando
+  for(var i = 0; i < 12; i++){
+    var bx = i < 4 ? 40 + i * 29.3 : i < 8 ? 34 : 134, by = i < 4 ? 45 : 58 + ((i - 4) % 4) * 22;
+    x.globalAlpha = .6 + .4 * Math.sin(petT * .06 + i * 1.7);
+    x.fillStyle = '#fff7c2'; x.beginPath(); x.arc(bx, by, 3.2, 0, 7); x.fill();
+  }
+  x.globalAlpha = 1;
+
+  var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
+
+  // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
+  var expr = (petSmile > 0 || petCharT > 0 || happy) ? 2 : 0;
+  var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
+  var og = g;
+  try{
+    g = x; g.save();
+    g.translate(78, PET_FLOOR - 44 * 2.4 + Math.sin(petT * .05) * 1.5 - chop);
+    g.scale(2.4, 2.4);
+    drawChar(CH[sel], 0, 0, 0, expr);
+    g.restore();
+  } finally { g = og; }
+
+  // Sombra + pet (pula no carinho, balança devagar quando está com sono)
+  var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC, sleepy ? petT * .35 : petT, petEx(p));
+  petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
+
+  petDrawExtras(x, p);
+  // Balão de humor acima do pet
+  x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
+  x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 + Math.sin(petT * .07) * 3);
+
+  // Efeitos (corações do carinho etc.)
+  for(var k = petFx.length - 1; k >= 0; k--){
+    var e = petFx[k]; e.t++;
+    x.globalAlpha = Math.max(0, 1 - e.t / 50);
+    x.font = '16px sans-serif'; x.fillText(e.s, e.x + Math.sin(e.t * .2 + k) * 6, e.y - e.t * .8);
+    if(e.t > 50) petFx.splice(k, 1);
+  }
+  x.globalAlpha = 1;
+  petDrawEmote(x);   // balão do personagem quando é tocado
+  if(petHop > 0) petHop--;
+  if(petSmile > 0) petSmile--;
+  if(petCharT > 0) petCharT--;
+  if(petLove > 0) petLove--;
+}
+
+function petLoop(){
+  if(!petOpen) return;
+  petT++;
+  try{
+    if(petView === 'room' && petData) petDrawRoom(); else if(petView === 'make') petDrawMake(); else petDrawPick();
+    if(petData && petT % 300 === 0){ petTick(); petSave(); petUI(); }   // atualiza as barras a cada ~5 s
+  }catch(err){ console.error('pet:', err); }
+  requestAnimationFrame(petLoop);
+}
+
+// ---------- Carinho (tocar no pet) ----------
+petCv.addEventListener('pointerdown', function(e){
+  var p = petAtivo(); if(!p) return;
+  var r = petCv.getBoundingClientRect();
+  var lx = (e.clientX - r.left) * 360 / r.width, ly = (e.clientY - r.top) * 220 / r.height;
+  if(lx > 70 && lx < 158 && ly > PET_FLOOR - 112 && ly < PET_FLOOR + 4){ petCharTap(); return; }   // tocou no personagem
+  var cy = PET_FLOOR - 12 * PET_SC;
+  if(Math.abs(lx - PET_X) > 40 || Math.abs(ly - cy) > 42) return;
+  var now = Date.now();
+  if(now - petLastPat < 600) return;    // evita spam de toques
+  petLastPat = now;
+  if(p.dorme){ petFx.push({ x:PET_X, y:cy - 30, t:0, s:'💤' }); return; }
+  petTick();
+  p.humor = petClamp(p.humor + 4);
+  petHop = 20; petSmile = 70; petLove = 50;
+  petFx.push({ x:PET_X + (Math.random() * 30 - 15), y:cy - 30, t:0, s:['💕','💖','✨','💗'][Math.floor(Math.random() * 4)] });
+  beep(1046, .07, 'triangle', .05); beep(1568, .09, 'triangle', .04, .06);
+  petSave(); petUI();
+});
+
+// ---------- Abrir / fechar ----------
+function petOpenUI(){
+  if(state !== 'menu') return;
+
+  // Exige o preenchimento do nome de Idol igual ao botão JOGAR
+  var inputNick = $('nick');
+  var nomeLimpo = (inputNick ? inputNick.value : '').trim();
+  if(!nomeLimpo){
+    if(inputNick){
+      inputNick.classList.remove('aviso-erro');
+      void inputNick.offsetWidth; // Reinicia a animação de tremor
+      inputNick.classList.add('aviso-erro');
+      inputNick.focus();
+    }
+    if(sfx && sfx.hit) sfx.hit();
+    var nm = $('nickMsg');
+    if(nm){
+      nm.hidden = false;
+      clearTimeout(nm._t);
+      nm._t = setTimeout(function(){ nm.hidden = true; }, 3500);
+    }
+    return; // Bloqueia a entrada no camarim até digitar o nome!
+  }
+
+  petLoad();
+  if(petData){ petTick(); petSave(); }
+  petDaily();
+  $('petov').hidden = false;
+  petView = petData ? 'room' : 'col';
+  petShow();
+  if(!petOpen){ petOpen = true; requestAnimationFrame(petLoop); }
+}
+function petClose(){
+  if(petData){ petTick(); petSave(); }
+  petOpen = false;
+  $('petov').hidden = true;
+}
+
+$('petBtn').onclick = function(e){ e.preventDefault(); ac(); petOpenUI(); };
+$('petX').onclick = petClose;
+$('petGo').onclick = petAdopt;
+document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape') petClose(); });
+document.addEventListener('visibilitychange', function(){ if(document.hidden && petData){ petTick(); petSave(); } });
+window.addEventListener('pagehide', function(){ if(petData){ petTick(); petSave(); } });
+petLoad();
+// --- FIM DO MINI JOGO DE PETS ---
+// ================================================================
+// --- MINI JOGO DE PETS: AÇÕES (V1 · etapa 2) ---
+// Comer, banho, dormir/acordar, brincar e presente diário.
+// Gasta estrelas do mesmo saldo da corrida (starT / brs48cr_st).
+// ================================================================
+var PET_FOOD = [   // [chave, nome, preço ★, recarga (min), +fome, +humor, +energia]
+  ['onigiri',   'Onigiri',         0, 60, 20,  2,  0],
+  ['agua',      'Água',            0, 60, 10,  2,  0],
+  ['gyoza',     'Gyoza',           4,  0, 30,  4,  0],
+  ['dango',     'Dango',           8,  0, 35, 10,  0],
+  ['redvelvet', 'Bolo red velvet', 12, 0, 50, 15,  0],
+  ['tiramisu',  'Tiramisu',        15, 0, 60, 20, 10]
+];
+var PET_BATH = [   // [chave, nome, preço ★, recarga (min), +higiene, +humor]
+  ['banho',  'Banho simples',   0, 60,  35,  0],
+  ['espuma', 'Banho de espuma', 12, 0, 100, 10]
+];
+var PET_GIFTS = ['gyoza', 'gyoza', 'dango', 'dango', 'redvelvet', 'tiramisu'];   // sorteio do presente diário
+var PET_SLEEP_RATE = 15;   // energia recuperada por hora dormindo
+var PET_PLAY_CD = 5;       // minutos entre uma brincadeira e outra
+var petMenuK = '', petAnim = null, petMsg = null;
+
+var PET_DICT2 = {
+  en: {"Comer":"Eat","Banho":"Bath","Dormir":"Sleep","Acordar":"Wake up","Brincar":"Play","Água":"Water","Bolo red velvet":"Red velvet cake","Banho simples":"Quick bath","Banho de espuma":"Bubble bath","Grátis":"Free","Já está satisfeito!":"Already full!","Já está limpinho!":"Already squeaky clean!","Estrelas insuficientes":"Not enough stars","Boa noite!":"Good night!","Bom dia!":"Good morning!","Ainda não está com sono!":"Not sleepy yet!","Está cansado demais...":"Too tired to play...","Presente do dia":"Daily gift","Dormindo...":"Sleeping...","Que delícia!":"Yummy!"},
+  es: {"Comer":"Comer","Banho":"Baño","Dormir":"Dormir","Acordar":"Despertar","Brincar":"Jugar","Água":"Agua","Bolo red velvet":"Pastel red velvet","Banho simples":"Baño rápido","Banho de espuma":"Baño de espuma","Grátis":"Gratis","Já está satisfeito!":"¡Ya está lleno!","Já está limpinho!":"¡Ya está limpito!","Estrelas insuficientes":"Estrellas insuficientes","Boa noite!":"¡Buenas noches!","Bom dia!":"¡Buenos días!","Ainda não está com sono!":"¡Todavía no tiene sueño!","Está cansado demais...":"Está muy cansado...","Presente do dia":"Regalo del día","Dormindo...":"Durmiendo...","Que delícia!":"¡Qué rico!"},
+  th: {"Comer":"กิน","Banho":"อาบน้ำ","Dormir":"นอน","Acordar":"ตื่น","Brincar":"เล่น","Água":"น้ำ","Bolo red velvet":"เค้กเรดเวลเวท","Banho simples":"อาบน้ำเร็ว","Banho de espuma":"อาบน้ำฟองสบู่","Grátis":"ฟรี","Já está satisfeito!":"อิ่มแล้ว!","Já está limpinho!":"สะอาดแล้ว!","Estrelas insuficientes":"ดาวไม่พอ","Boa noite!":"ราตรีสวัสดิ์!","Bom dia!":"อรุณสวัสดิ์!","Ainda não está com sono!":"ยังไม่ง่วงเลย!","Está cansado demais...":"เหนื่อยเกินไปแล้ว...","Presente do dia":"ของขวัญประจำวัน","Dormindo...":"กำลังหลับ...","Que delícia!":"อร่อยจัง!"},
+  ja: {"Comer":"ごはん","Banho":"おふろ","Dormir":"ねる","Acordar":"おきる","Brincar":"あそぶ","Água":"おみず","Gyoza":"ぎょうざ","Dango":"だんご","Onigiri":"おにぎり","Bolo red velvet":"レッドベルベットケーキ","Tiramisu":"ティラミス","Banho simples":"さっとおふろ","Banho de espuma":"あわあわバス","Grátis":"無料","Já está satisfeito!":"もうおなかいっぱい！","Já está limpinho!":"もうピカピカ！","Estrelas insuficientes":"星が足りないよ","Boa noite!":"おやすみ！","Bom dia!":"おはよう！","Ainda não está com sono!":"まだねむくないよ！","Está cansado demais...":"つかれちゃった…","Presente do dia":"今日のプレゼント","Dormindo...":"おやすみ中…","Que delícia!":"おいしい！"}
+};
+Object.keys(PET_DICT2).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT2[l]).forEach(function(k){ DICT[l][k] = PET_DICT2[l][k]; }); });
+
+// ---------- Utilidades ----------
+function petSay(s){ petMsg = { s:s, t:0 }; }
+function petRecLeft(k, min){ var r = (petData && petData.rec && petData.rec[k]) || 0; return Math.max(0, r + min * 6e4 - Date.now()); }
+function petPay(price){
+  if(price <= 0) return true;
+  if(starT < price) return false;
+  starT -= price;
+  try{ localStorage.setItem('brs48cr_st', starT); }catch(e){}
+  setBest();
+  return true;
+}
+function petFind(list, k){ for(var i = 0; i < list.length; i++) if(list[i][0] === k) return list[i]; return null; }
+
+// ---------- Presente diário (um item, nunca estrelas) ----------
+function petDaily(){
+  if(!petData) return;
+  var d = dk();
+  if(petData.dia === d) return;
+  petData.dia = d;
+  var k = PET_GIFTS[Math.floor(Math.random() * PET_GIFTS.length)];
+  petData.inv = petData.inv || {};
+  petData.inv[k] = (petData.inv[k] || 0) + 1;
+  petSave();
+  petSay('🎁 ' + tr('Presente do dia') + ': ' + tr(petFind(PET_FOOD, k)[1]));
+}
+
+// ---------- Ações ----------
+function petUseItem(list, k){
+  var p = petAtivo(), it = petFind(list, k), food = list === PET_FOOD;
+  if(!p || !it || p.dorme || petAnim) return;
+  petTick();
+  if(food ? p.fome >= 95 : p.higiene >= 95){ petSay(tr(food ? 'Já está satisfeito!' : 'Já está limpinho!')); return; }
+  petData.inv = petData.inv || {}; petData.rec = petData.rec || {};
+  if(it[3] && petRecLeft(k, it[3]) > 0) return;
+  if(petData.inv[k] > 0) petData.inv[k]--;                  // presente guardado: usa sem gastar estrelas
+  else if(!petPay(it[2])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
+  if(it[3]) petData.rec[k] = Date.now();
+  if(food){
+    p.fome = petClamp(p.fome + it[4]); p.humor = petClamp(p.humor + it[5]); p.energia = petClamp(p.energia + it[6]);
+    petAnim = { k:'comer', item:k, t:0 };
+    [660, 880, 660, 990].forEach(function(f, i){ beep(f, .06, 'triangle', .04, i * .18); });
+  } else {
+    p.higiene = petClamp(p.higiene + it[4]); p.humor = petClamp(p.humor + it[5]);
+    petAnim = { k:'banho', espuma:k === 'espuma', t:0 };
+    [1318, 1568, 1760, 2093].forEach(function(f, i){ beep(f, .05, 'sine', .035, i * .09); });
+  }
+  petMenuK = '';
+  petSave(); petUI();
+}
+
+function petToggleSleep(){
+  var p = petAtivo(); if(!p || petAnim) return;
+  petTick();
+  if(!p.dorme && p.energia >= 90){ petSay(tr('Ainda não está com sono!')); return; }
+  p.dorme = !p.dorme; petMenuK = '';
+  if(p.dorme){ petSay(tr('Boa noite!') + ' 🌙'); beep(523, .2, 'sine', .04); beep(392, .3, 'sine', .04, .18); }
+  else { petSay(tr('Bom dia!') + ' ☀️'); beep(784, .1, 'triangle', .05); beep(1046, .15, 'triangle', .05, .1); }
+  petSave(); petUI();
+}
+
+function petPlay(){
+  var p = petAtivo(); if(!p || p.dorme || petAnim) return;
+  petTick();
+  if(petRecLeft('brincar', PET_PLAY_CD) > 0) return;
+  if(p.energia < 15){ petSay(tr('Está cansado demais...')); return; }
+  petData.rec = petData.rec || {};
+  p.humor = petClamp(p.humor + 15); p.energia = petClamp(p.energia - 8); p.fome = petClamp(p.fome - 3);
+  petData.rec.brincar = Date.now();
+  petAnim = { k:'brincar', t:0 }; petMenuK = '';
+  [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .07, 'square', .03, i * .1); });
+  petSave(); petUI();
+}
+
+// ---------- Botões de ação e menu de itens ----------
+function petActUI(){
+  var p = petAtivo(); if(!p) return;
+  var playLeft = petRecLeft('brincar', PET_PLAY_CD);
+  var acts = [['comer','🍙','Comer'], ['banho','🫧','Banho'], p.dorme ? ['dormir','☀️','Acordar'] : ['dormir','🌙','Dormir'], ['brincar','⭐','Brincar'], ['visual','🎀','Acessório'], ['decorar','🖼️','Decorar']];
+  $('petActs').innerHTML = acts.map(function(a){
+    var off = (p.dorme && a[0] !== 'dormir' && a[0] !== 'decorar' && a[0] !== 'visual') || (a[0] === 'brincar' && playLeft > 0);
+    var cd = (a[0] === 'brincar' && playLeft > 0 && !p.dorme) ? '<small>⏳ ' + Math.ceil(playLeft / 6e4) + ' min</small>' : '';
+    return '<button type="button" data-a="' + a[0] + '"' + (off ? ' disabled' : '') + ' aria-pressed="' + (petMenuK === a[0]) + '">' + a[1] + ' ' + escHtml(tr(a[2])) + cd + '</button>';
+  }).join('');
+  petMenuUI();
+}
+
+function petMenuUI(){
+  var m = $('petMenu'), p = petAtivo();
+  if(petMenuK === 'decorar' && p){ petDecorMenuUI(m); return; }   // mural (V2)
+  if(petMenuK === 'visual' && p){ petDressMenuUI(m, p); return; } // vestir itens no pet
+  if(!petMenuK || !p || p.dorme){ m.hidden = true; m.innerHTML = ''; return; }
+  var list = petMenuK === 'comer' ? PET_FOOD : PET_BATH, inv = petData.inv || {}, food = list === PET_FOOD;
+  m.hidden = false;
+  m.innerHTML = list.map(function(it){
+    var left = it[3] ? petRecLeft(it[0], it[3]) : 0, n = inv[it[0]] || 0;
+    var tag = n > 0 ? '🎁 x' + n : left > 0 ? '⏳ ' + Math.ceil(left / 6e4) + ' min' : it[2] ? '★ ' + it[2] : tr('Grátis');
+    var off = n <= 0 && (left > 0 || starT < it[2]);
+    var fx = food ? '+' + it[4] + '🍙' + (it[5] ? ' +' + it[5] + '💖' : '') + (it[6] ? ' +' + it[6] + '⚡' : '')
+                  : (it[4] >= 100 ? '100' : '+' + it[4]) + '🫧' + (it[5] ? ' +' + it[5] + '💖' : '');
+    return '<button type="button" data-k="' + it[0] + '"' + (off ? ' disabled' : '') + '><canvas width="72" height="60" data-f="' + it[0] + '"></canvas>' +
+           '<b>' + escHtml(tr(it[1])) + '</b><small>' + fx + '</small><em>' + tag + '</em></button>';
+  }).join('');
+  [].forEach.call(m.querySelectorAll('canvas'), function(c){
+    var x = c.getContext('2d'); x.scale(2, 2); petDrawItem(x, c.dataset.f, 18, 16, 1);
+  });
+}
+
+$('petActs').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b || b.disabled) return;
+  var a = b.dataset.a;
+  if(a === 'comer' || a === 'banho' || a === 'decorar' || a === 'visual'){ petMenuK = petMenuK === a ? '' : a; petActUI(); beep(880, .05, 'triangle', .04); }
+  else if(a === 'dormir') petToggleSleep();
+  else if(a === 'brincar') petPlay();
+});
+$('petMenu').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b || b.disabled) return;
+  if(petMenuK === 'decorar'){ petDecorClick(b.dataset.k); return; }
+  if(petMenuK === 'visual'){ petDressClick(b.dataset.k); return; }
+  petUseItem(petMenuK === 'comer' ? PET_FOOD : PET_BATH, b.dataset.k);
+});
+
+// ---------- Desenho das comidas e itens (procedural, cores pastel) ----------
+function petDrawItem(x, k, cx, cy, s){
+  x.save(); x.translate(cx, cy); x.scale(s, s);
+  function E(ex, ey, rx, ry, r){ x.beginPath(); x.ellipse(ex, ey, rx, ry, r || 0, 0, 7); x.fill(); }
+  function RR(px, py, w, h, r){ x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+  function face(fy){ x.fillStyle = '#3b2a3a'; E(-3.5, fy, 1, 1.2); E(3.5, fy, 1, 1.2); x.fillStyle = '#ff9ccd'; E(-6, fy + 2.5, 1.8, 1); E(6, fy + 2.5, 1.8, 1); }
+  if(k === 'onigiri'){
+    x.fillStyle = '#ffffff'; x.strokeStyle = '#e6dfe8'; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(0, -12); x.quadraticCurveTo(13, 8, 11, 11); x.lineTo(-11, 11); x.quadraticCurveTo(-13, 8, 0, -12); x.closePath(); x.fill(); x.stroke();
+    x.fillStyle = '#1f3a2e'; RR(-6, 4, 12, 7, 1.5); x.fill();
+    face(0);
+  } else if(k === 'agua'){
+    x.fillStyle = 'rgba(200,235,255,.75)'; x.strokeStyle = '#9fd3f5'; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(-8, -9); x.lineTo(8, -9); x.lineTo(6, 12); x.lineTo(-6, 12); x.closePath(); x.fill(); x.stroke();
+    x.fillStyle = '#7cc8f7'; x.beginPath(); x.moveTo(-7.3, -2); x.lineTo(7.3, -2); x.lineTo(6, 12); x.lineTo(-6, 12); x.closePath(); x.fill();
+    x.strokeStyle = '#ff6fb5'; x.lineWidth = 2; x.beginPath(); x.moveTo(2, 6); x.lineTo(5, -14); x.lineTo(9, -15); x.stroke();
+    x.fillStyle = 'rgba(255,255,255,.7)'; x.fillRect(-5, -6, 2, 14);
+  } else if(k === 'gyoza'){
+    x.fillStyle = '#f5d9a8'; x.beginPath(); x.moveTo(-13, 6); x.quadraticCurveTo(0, -16, 13, 6); x.closePath(); x.fill();
+    x.fillStyle = '#d99a4e'; x.beginPath(); x.moveTo(-13, 6); x.quadraticCurveTo(0, 11, 13, 6); x.closePath(); x.fill();
+    x.strokeStyle = '#e2b877'; x.lineWidth = 1;
+    for(var i = -2; i <= 2; i++){ x.beginPath(); x.moveTo(i * 4, -4 + Math.abs(i)); x.lineTo(i * 4 + 1.5, -9 + Math.abs(i) * 1.6); x.stroke(); }
+    x.fillStyle = '#3b2a3a'; E(-3, 2, .9, 1.1); E(3, 2, .9, 1.1);
+  } else if(k === 'dango'){
+    x.strokeStyle = '#c9a16b'; x.lineWidth = 1.6; x.beginPath(); x.moveTo(-12, 13); x.lineTo(11, -13); x.stroke();
+    [['#ffc4d8', -6, 6], ['#fff7fb', 0, -1], ['#c8efb4', 6, -8]].forEach(function(b){
+      x.fillStyle = b[0]; E(b[1], b[2], 5.6, 5.6);
+      x.fillStyle = 'rgba(255,255,255,.7)'; E(b[1] - 2, b[2] - 2, 1.6, 1.1);
+    });
+    x.fillStyle = '#3b2a3a'; E(-1.8, -1, .7, .9); E(1.8, -1, .7, .9);
+  } else if(k === 'redvelvet'){
+    x.fillStyle = '#fff4ea'; x.beginPath(); x.moveTo(-13, 11); x.lineTo(13, 11); x.lineTo(13, -3); x.lineTo(-13, 5); x.closePath(); x.fill();
+    x.fillStyle = '#b5223b'; x.beginPath(); x.moveTo(-13, 11); x.lineTo(13, 11); x.lineTo(13, 6); x.lineTo(-13, 9.5); x.closePath(); x.fill();
+    x.beginPath(); x.moveTo(-13, 7.5); x.lineTo(13, 2); x.lineTo(13, -1); x.lineTo(-13, 5.5); x.closePath(); x.fill();
+    x.fillStyle = '#fffaf5'; x.beginPath(); x.moveTo(-13, 5); x.lineTo(13, -3); x.lineTo(13, -6); x.lineTo(-13, 2); x.closePath(); x.fill();
+    x.fillStyle = '#e8364f'; E(6, -9, 3.5, 3.2); x.fillStyle = '#4fa34a'; E(6, -12.3, 2, 1);
+    x.fillStyle = '#c0265f'; E(-4, -1.2, .8, .8); E(1, -2.6, .8, .8);
+  } else if(k === 'tiramisu'){
+    x.fillStyle = '#f6e7cf'; RR(-12, -7, 24, 18, 2); x.fill();
+    x.fillStyle = '#8a5a3b'; x.fillRect(-12, -1, 24, 3.5); x.fillRect(-12, 6, 24, 3.5);
+    x.fillStyle = '#5b3a29'; RR(-12, -9, 24, 4.5, 2); x.fill();
+    x.fillStyle = '#7a4e35'; for(var d = 0; d < 7; d++) E(-10 + d * 3.4, -10.5 + (d % 2), .7, .7);
+    x.fillStyle = '#3b2a1e'; x.save(); x.rotate(-.5); x.fillRect(2, -16, 2.2, 10); x.restore();
+    x.fillStyle = '#6fcf7a'; E(-6, -11, 2.2, 1.1, -.4);
+  } else if(k === 'banho'){
+    x.fillStyle = '#ffd84d'; E(1, 4, 10, 7); E(-5, -4, 6, 6);
+    x.fillStyle = '#ff9a3c'; x.beginPath(); x.moveTo(-10, -4); x.lineTo(-16, -3); x.lineTo(-10, -1); x.closePath(); x.fill();
+    x.fillStyle = '#3b2a3a'; E(-6, -6, 1, 1.2);
+    x.fillStyle = 'rgba(255,255,255,.6)'; E(4, 1, 4, 2);
+  } else if(k === 'espuma'){
+    [['#ffffff', -6, 4, 7], ['#ffd6ec', 5, 5, 6], ['#d6ecff', 0, -4, 7], ['#ffffff', 8, -6, 4], ['#eafff0', -9, -6, 4]].forEach(function(b){
+      x.fillStyle = b[0]; E(b[1], b[2], b[3], b[3]);
+      x.strokeStyle = 'rgba(155,48,217,.25)'; x.lineWidth = .8; x.stroke();
+      x.fillStyle = 'rgba(255,255,255,.9)'; E(b[1] - b[3] * .35, b[2] - b[3] * .35, b[3] * .25, b[3] * .18);
+    });
+  }
+  x.restore();
+}
+
+// ---------- Animações no camarim (chamada dentro do petDrawRoom) ----------
+function petDrawExtras(x, p){
+  // Noite: quarto escurece enquanto o pet dorme
+  if(p.dorme){
+    x.fillStyle = 'rgba(28,14,72,.55)'; x.fillRect(0, 0, 360, 220);
+    x.font = '22px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000'; x.fillText('🌙', 322, 40);
+    x.fillStyle = '#fff7c2';
+    for(var s = 0; s < 6; s++){ x.globalAlpha = .4 + .6 * Math.abs(Math.sin(petT * .03 + s * 2)); x.fillRect(180 + s * 22, 20 + (s * 37 % 30), 2, 2); }
+    x.globalAlpha = 1;
+    x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillStyle = '#e9dcff';
+    for(var z = 0; z < 3; z++){ var zt = (petT * .5 + z * 40) % 120; x.globalAlpha = Math.max(0, 1 - zt / 120); x.fillText('Z', PET_X + 22 + zt * .25, PET_FLOOR - 50 - zt * .4); }
+    x.globalAlpha = 1;
+  }
+
+  if(petAnim){
+    var a = petAnim; a.t++;
+    if(a.k === 'comer'){
+      var bite = Math.min(1, a.t / 90);
+      if(a.t % 22 === 1) petHop = 20;
+      petSmile = 40;
+      if(bite < 1) petDrawItem(x, a.item, PET_X - 42, PET_FLOOR - 30, 1.9 * (1 - bite * .6));
+      x.fillStyle = '#f5d9a8';
+      for(var c = 0; c < 4; c++) if((a.t + c * 7) % 28 < 14) x.fillRect(PET_X - 30 + c * 5, PET_FLOOR - 12 + ((a.t + c * 7) % 14), 2, 2);
+      if(a.t >= 95){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'😋' }); petSay(tr('Que delícia!')); }
+    } else if(a.k === 'banho'){
+      for(var i = 0; i < 16; i++){
+        var bx = PET_X + Math.sin(i * 2.1 + a.t * .05) * 32, by = PET_FLOOR - 8 - ((a.t * 1.2 + i * 17) % 75), r = 2.5 + (i % 3) * 1.8;
+        x.fillStyle = a.espuma ? ['rgba(255,214,236,.75)', 'rgba(214,236,255,.75)', 'rgba(255,255,255,.85)'][i % 3] : 'rgba(255,255,255,.7)';
+        x.beginPath(); x.arc(bx, by, r, 0, 7); x.fill();
+        x.strokeStyle = 'rgba(123,63,240,.25)'; x.lineWidth = .8; x.stroke();
+      }
+      if(a.espuma){
+        x.fillStyle = 'rgba(255,255,255,.92)';
+        [[-12, 0, 8], [0, -4, 10], [12, 0, 8], [-5, -10, 6], [7, -9, 6]].forEach(function(f){ x.beginPath(); x.arc(PET_X + f[0], PET_FLOOR - 52 + f[1], f[2], 0, 7); x.fill(); });
+      }
+      if(a.t % 40 === 1) petHop = 20;
+      if(a.t >= 150){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'✨' }); }
+    } else if(a.k === 'brincar'){
+      var u = .5 - .5 * Math.cos(a.t * .045);
+      var sx = 120 + (PET_X - 150) * u, sy = PET_FLOOR - 28 - Math.abs(Math.sin(a.t * .09)) * 55;
+      x.save(); x.translate(sx, sy); x.rotate(a.t * .15);
+      x.fillStyle = '#ffe14d'; x.strokeStyle = '#f59e0b'; x.lineWidth = 1;
+      x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? 4 : 9, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, Math.sin(an) * rr); } x.closePath(); x.fill(); x.stroke();
+      x.restore();
+      if(u > .9 && petHop === 0) petHop = 20;
+      petSmile = 40;
+      if(a.t >= 210){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }
+    }
+  }
+
+  // Mensagem curta no topo do camarim
+  if(petMsg){
+    petMsg.t++;
+    var al = petMsg.t < 150 ? 1 : Math.max(0, 1 - (petMsg.t - 150) / 30);
+    x.globalAlpha = al;
+    x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center';
+    var w = x.measureText(petMsg.s).width + 22;
+    x.fillStyle = 'rgba(255,255,255,.94)'; x.beginPath(); x.moveTo(180 - w / 2 + 11, 36); x.arcTo(180 + w / 2, 36, 180 + w / 2, 60, 11); x.arcTo(180 + w / 2, 60, 180 - w / 2, 60, 11); x.arcTo(180 - w / 2, 60, 180 - w / 2, 36, 11); x.arcTo(180 - w / 2, 36, 180 + w / 2, 36, 11); x.closePath(); x.fill();
+    x.fillStyle = '#7b3ff0'; x.fillText(petMsg.s, 180, 52);
+    x.globalAlpha = 1;
+    if(petMsg.t > 180) petMsg = null;
+  }
+}
+// --- FIM DAS AÇÕES DO PET ---
+// ================================================================
+// --- MINI JOGO DE PETS: CÂMERA DO CAMARIM (V1 · etapa 3) ---
+// Polaroid do personagem ativo com o pet, no humor do momento.
+// Mesmo esquema do makeCard: canvas → toDataURL → tela #shr.
+// ================================================================
+var PET_STICK = {   // adesivos da foto, de acordo com o humor
+  'Feliz!':              ['💖', '✨', '🌸', '💕', '⭐'],
+  'Dormindo...':         ['💤', '🌙', '⭐', '✨', '💜'],
+  'Com sono...':         ['💤', '🌙', '🥱', '⭐', '💜'],
+  'Com fome...':         ['🍙', '🍡', '💭', '🥺', '✨'],
+  'Precisa de banho...': ['🫧', '🧼', '💦', '🫧', '✨'],
+  'Com saudade...':      ['💭', '🥺', '💌', '💗', '✨'],
+  'Tranquilo':           ['🎵', '🌷', '✨', '💗', '🎶']
+};
+
+var PET_DICT3 = {
+  en: {"Tirar foto com o pet":"Take a photo with your pet","Camarim do Pet":"Pet Dressing Room"},
+  es: {"Tirar foto com o pet":"Tomar una foto con la mascota","Camarim do Pet":"Camerino de la Mascota"},
+  th: {"Tirar foto com o pet":"ถ่ายรูปกับสัตว์เลี้ยง","Camarim do Pet":"ห้องแต่งตัวสัตว์เลี้ยง"},
+  ja: {"Tirar foto com o pet":"ペットと写真を撮る","Camarim do Pet":"ペットの楽屋"}
+};
+Object.keys(PET_DICT3).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT3[l]).forEach(function(k){ DICT[l][k] = PET_DICT3[l][k]; }); });
+
+function petMakePhoto(){
+  var p = petAtivo(); if(!p) return null;
+  petTick();
+  var S = 2, W2 = 400, H2 = 430, c2 = document.createElement('canvas');
+  c2.width = W2 * S; c2.height = H2 * S;
+  var x = c2.getContext('2d'); x.scale(S, S);
+  var mood = petMood(p), stick = PET_STICK[mood[1]] || PET_STICK['Tranquilo'], ac = petColor(petData.ativo);
+  function fit(text, maxW, size, weight){ do { x.font = weight + ' ' + size + 'px "M PLUS Rounded 1c",sans-serif'; size--; } while(x.measureText(text).width > maxW && size > 11); }
+
+  // 1. Papel da polaroid com bolinhas bem suaves
+  x.fillStyle = '#fffafd'; x.fillRect(0, 0, W2, H2);
+  x.fillStyle = 'rgba(255,111,181,.07)';
+  for(var dy = 12; dy < H2; dy += 18) for(var dx = (dy / 18 % 2) * 9 + 6; dx < W2; dx += 18){ x.beginPath(); x.arc(dx, dy, 1.6, 0, 7); x.fill(); }
+
+  // 2. Foto: o camarim em alta resolução (redesenha o fundo em 2x e devolve o normal)
+  var od = petDpr; petDpr = 2; petMakeBg(); var bg = petBg; petDpr = od; petBg = null;
+  x.save();
+  x.beginPath(); x.rect(20, 20, 360, 220); x.clip();
+  x.drawImage(bg, 20, 20, 360, 220);
+  x.translate(20, 20);
+
+  // Personagem ativo (sorrindo, ou tranquilo se o pet estiver dormindo)
+  var og = g;
+  try{
+    g = x; g.save();
+    g.translate(78, PET_FLOOR - 44 * 2.4); g.scale(2.4, 2.4);
+    drawChar(CH[sel], 0, 0, 0, p.dorme ? 0 : 2);
+    g.restore();
+  } finally { g = og; }
+
+  // Pet com sombra
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 2, 26, 5, 0, 0, 7); x.fill();
+  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC, PET_SC, 0, petEx(p, true));
+  petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC);
+
+  // Noite, se estiver dormindo
+  if(p.dorme){
+    x.fillStyle = 'rgba(28,14,72,.5)'; x.fillRect(0, 0, 360, 220);
+    x.font = '22px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000'; x.fillText('🌙', 322, 40);
+    x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#e9dcff';
+    x.fillText('Z', PET_X + 24, PET_FLOOR - 52); x.fillText('Z', PET_X + 33, PET_FLOOR - 66);
+  }
+
+  // Balão de humor e adesivos espalhados
+  x.textAlign = 'center'; x.fillStyle = '#000';
+  x.font = '22px sans-serif'; x.fillText(mood[0], PET_X + 4, PET_FLOOR - 68);
+  [[28, 42, -.25, 0], [196, 38, .18, 1], [338, 196, .22, 2], [168, 204, -.12, 3]].forEach(function(s){
+    x.save(); x.translate(s[0], s[1]); x.rotate(s[2]); x.font = '20px sans-serif'; x.fillText(stick[s[3]], 0, 0); x.restore();
+  });
+
+  // Vinheta rosada de "flash"
+  var vg = x.createRadialGradient(180, 110, 70, 180, 110, 240);
+  vg.addColorStop(0, 'rgba(255,255,255,0)'); vg.addColorStop(1, 'rgba(255,190,225,.32)');
+  x.fillStyle = vg; x.fillRect(0, 0, 360, 220);
+  x.restore();
+  x.strokeStyle = 'rgba(18,54,94,.08)'; x.lineWidth = 1; x.strokeRect(20.5, 20.5, 359, 219);
+
+  // 3. Fita adesiva (washi tape) na cor do pet
+  x.save(); x.translate(200, 16); x.rotate(-.05);
+  x.globalAlpha = .6; x.fillStyle = ac; x.fillRect(-58, -11, 116, 22);
+  x.globalAlpha = .35; x.fillStyle = '#fff'; for(var tp = -50; tp < 58; tp += 14) x.fillRect(tp, -11, 6, 22);
+  x.restore(); x.globalAlpha = 1;
+
+  // 4. Textos (Nome do Pet + Nome de Idol digitado pelo jogador)
+  var nomeJogador = ($('nick') && $('nick').value.trim()) || nick || (sel === 3 ? tr('Você') : CH[sel].n);
+  var title = petEmo(petData.ativo) + ' ' + p.nome + ' & ' + nomeJogador;
+  x.textAlign = 'center'; x.fillStyle = '#12365e';
+  fit(title, 340, 26, 800); x.fillText(title, 200, 280);
+  x.fillStyle = '#ff6fb5'; x.font = '700 17px "M PLUS Rounded 1c",sans-serif';
+  x.fillText(mood[0] + ' ' + tr(mood[1]), 200, 307);
+
+  // Mini barras das necessidades
+  PET_NEEDS.forEach(function(n, i){
+    var bx = 40 + i * 82, v = Math.round(p[n[0]]);
+    x.font = '13px sans-serif'; x.textAlign = 'left'; x.fillText(n[1], bx, 337);
+    x.fillStyle = '#eef0f6'; x.beginPath(); x.roundRect ? x.roundRect(bx + 19, 328, 52, 8, 4) : x.rect(bx + 19, 328, 52, 8); x.fill();
+    x.fillStyle = n[3]; x.beginPath(); x.roundRect ? x.roundRect(bx + 19, 328, Math.max(4, 52 * v / 100), 8, 4) : x.rect(bx + 19, 328, 52 * v / 100, 8); x.fill();
+  });
+
+  // Data e adesivos na margem
+  var loc = { pt:'pt-BR', en:'en-US', es:'es-ES', th:'th-TH', ja:'ja-JP' }[LANG] || 'pt-BR';
+  x.textAlign = 'center'; x.fillStyle = '#94a3b8'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif';
+  x.fillText(new Date().toLocaleDateString(loc, { day:'2-digit', month:'2-digit', year:'numeric' }), 200, 368);
+  x.font = '22px sans-serif';
+  x.textAlign = 'left'; x.fillText(stick[4], 26, 392); x.fillText('🐾', 26, 300);
+  x.textAlign = 'right'; x.fillText('🫰', 374, 392); x.fillText('🐾', 374, 300);
+
+  // Marca d'água
+  x.textAlign = 'center'; x.fillStyle = '#94a3b8'; x.font = '500 11px "M PLUS Rounded 1c",sans-serif';
+  x.fillText('🌷 TsuLiPa⭐World · Backstage⭐Pet!', 200, 414);
+
+  return c2.toDataURL('image/png');
+}
+
+$('petCam').onclick = function(e){
+  e.stopPropagation();
+  var p = petAtivo(); if(!p) return;
+  if(sfx.photo) sfx.photo();
+  var fl = document.createElement('div');
+  fl.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:9999;pointer-events:none;transition:opacity 0.4s ease-out;opacity:1';
+  document.body.appendChild(fl);
+  fl.getBoundingClientRect();
+  fl.style.opacity = '0';
+  setTimeout(function(){ fl.remove(); }, 400);
+  var u = petMakePhoto(); if(!u) return;
+  $('shimg').src = u;
+  $('shdl').href = u;
+  $('shdl').download = 'tsulipa-camarim-' + ((p.nome || 'pet').replace(/[^a-z0-9]/gi, '').toLowerCase() || 'pet') + '.png';
+  $('shr').hidden = false;
+};
+// --- FIM DA CÂMERA DO CAMARIM ---
+// --- PAINEL DE TESTE DO PET (só aparece com o modo teste aberto: 10 cliques no título) ---
+function petDevUI(){
+  var box = $('petDev'); if(!box) return;
+  var on = !$('tstw').hidden && !!petData;
+  box.hidden = !on;
+  if(!on || box.children.length) return;
+  [['st', '+100 ★'], ['h6', '⏩ +6h'], ['gift', '🎁 Presente'], ['meu', '🔓 Center'], ['reset', '🔄 Recomeçar']].forEach(function(b){
+    var e = document.createElement('button'); e.type = 'button'; e.dataset.d = b[0]; e.textContent = b[1]; box.appendChild(e);
+  });
+}
+$('petDev').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b || !petData) return;
+  var p = petAtivo(), d = b.dataset.d;
+  if(d === 'st'){ starT += 100; try{ localStorage.setItem('brs48cr_st', starT); }catch(x){} setBest(); petSay('+100 ★'); }
+  else if(d === 'h6'){   // simula 6 horas fora: o pet e as recargas "envelhecem"
+    var dt = 6 * 36e5; p.t -= dt;
+    if(petData.rec) Object.keys(petData.rec).forEach(function(k){ petData.rec[k] -= dt; });
+    petTick(); petSay('⏩ +6h');
+  }
+  else if(d === 'gift'){ petData.dia = ''; petDaily(); }
+  else if(d === 'meu'){ petDevUnlock = true; petSay('🔓 Meu Pet liberado (teste)'); }   // não mexe no recorde de verdade
+  else if(d === 'reset'){
+    try{ localStorage.removeItem(PET_KEY); }catch(x){}
+    petData = null; petAnim = null; petMenuK = ''; petMsg = null;
+    $('petDev').hidden = true; petShow(); return;
+  }
+  petSave(); petUI();
+});
+// --- FIM DO PAINEL DE TESTE DO PET ---
+
+// ================================================================
+// --- BACKSTAGE⭐PET! V2: COLEÇÃO, MEU PET, EXPRESSÕES E DECORAÇÃO ---
+// ================================================================
+var PET_OFF = ['tsu', 'lirika', 'pati'];   // pets oficiais do TsuLiPa (cores oficiais fixas)
+var PET_PRICE = 400;                       // ★ para adotar o 2º e o 3º pet oficial
+var PET_MEU_RANK = 5000;                   // Meu Pet: liberado ao alcançar o Center
+var petView = 'room', petCharT = 0, petLove = 0, petEmote = null, petDevUnlock = false, petMk = null;
+var PET_MK_DEF = { orelha:'gato', cor:'#ff6fb5', olhos:'brilho', bochecha:true, acc:'laco' };
+var PET_MK = {   // peças do Meu Pet, baseadas nos três pets do TsuLiPa
+  orelha: [['gato','🐱','Gato'], ['coala','🐨','Coala'], ['coroa','👑','Coroa'], ['coelho','🐰','Coelho'], ['nenhuma','⚪','Nenhuma']],
+  olhos:  [['redondo','●','Redondos'], ['brilho','✦','Brilhantes'], ['feliz','^^','Felizes'], ['sono','︶','Sonolentos']],
+  acc:    [['','✖','Nenhum'], ['laco','🎀','Laço'], ['estrela','⭐','Estrela'], ['anel','🪐','Anel'], ['oculos','👓','Óculos'], ['flor','🌸','Flor']],
+  cor:    ['#ff6fb5', '#f9a8d4', '#c084fc', '#a5b4fc', '#7dd3fc', '#5eead4', '#86efac', '#fde047', '#fdba74', '#fca5a5', '#e2e8f0', '#94a3b8']
+};
+var PET_EMOTES = ['💕', '✌️', '(≧◡≦)', '✨', 'ファイト!', '🎤', '(｡♥‿♥｡)', '💜💚💙', 'がんばろう!', '(๑>◡<๑)', 'Otsukare~!', '🫶'];
+
+// Mural do camarim: [chave, nome, preço ★, x, y, largura, altura, estilo, inclinação]
+var PET_DECOR = [
+  ['zipper',  'Pôster ジッパー',      0, 150, 36, 40, 50,   'poster',   -.03],
+  ['nebyura', 'Quadro NeByura',      80, 197, 38, 32, 32,   'quadro',    0],
+  ['banner',  'Quadro ツリパ ZIPPER', 60, 236, 39, 47, 30,   'quadro',    0],
+  ['brs48',   'Foto BRS48',         100, 196, 81, 40, 22.5, 'polaroid', -.06],
+  ['campo',   'Foto no campo',      100, 243, 79, 40, 20,   'polaroid',  .05]
+];
+var PET_DECOR_IMG = {
+  zipper: 'data:image/webp;base64,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',
+  banner: 'data:image/webp;base64,UklGRkQXAABXRUJQVlA4IDgXAACwUACdASqcAGMAPmkoj0WkIqEZLWYgQAaEtgBUlsDq7yK/i/2P0O+U+tT5t9y85XPDFot1/8D1Xf3b1Dv7f0M/MR+3Pq4/9D1a/3z1AP7R/sPW2/2/snf4T/v+wt5d3s1f3b/0+lReAP6TwR8bfvf92/cj1x8UfYxqL/M/wh/G/wvod+vXjj8pv9D1BfaHgo7Um3noHe8H2n/p+Hj/r+j36L/hfYC/nP9g/5Xrd/o/FB+9f8b2Af5v/cP/P/ivdk/v//d/tvRD9Vf+//U/AV+u3/f/w3bO9In9xVQgJCsZl1pFeKoJucUWjmzV52+v8SNpJ2iixL1M9LrjEvOil67GFrzTvk1MkVVjGgdRGOIvTogMV1oiEYGHzGB/l4gFYDkwXGR+ME9yU/LfX0bIMpqXv7DkOyGn2PeXGLA53d+AAQfbx955KEBL/mSlPK2f09pR1GX6d0P1YgbVupptYfONBGV90vfooRS4Ss45P8dR/dhlN/BoZHbsZDuEnFbPfdSVTls1vmoY2uIyr/XsZmb1gBiS4wPC9TnJKSbA9MEvk1gscq+wFQRnHGHbPz0u0ZVLBxj3l/sc52tThAryIZrf/5jsKe+1PsIjPfNVgWhmOuSy0S+Z0PEnMsh8CirCqwO6bdJk8I4MLnNCWB4os4KoZ1B+QyWJhzxj9CdrL8UrAQ+xEVhSYNvAFXehm17tPhDCu2DFVFFCTV+WZaws9dorU17npclP5nqVAlx1+qJ06nM0X7zkklGdS0PRnbYXxLVJapBmq39xy+ESo9BoTv521VmGSzl4xU85ElSs/GdagRXTL7TkDjm3VgdnZ8W1s+eVESMxoVX2uNqdvsH3xrb+E0ZOIS/JTfjhGneypAAA/v8yZmLF5/1WET/imCoNhFQM47TRWcOs+PNZtRSV/ghWt6Mlk4tgpVOAWMkD9jw3yOCK5TtxPmKHZ5Wac48xa89FzTRnlVnwOzjpFKYc4LlMwn8ignD5OqYq9FFbAvGLImTWs8S0U7V3pdp3Xdb+UiOyQzXG5JzebdTEk5iaFhjz9zqmIG0MPpuy8hG36C6kWka5IwPgMD0GRXmediN3MgkgTQPYFRzmhbnwyMPMYk/cudvNaCJdGHODbWPR2uuGRI/JIjlc/OUaI/qoyQwIuh3EE3rjHj7D3q69v92Xx4RBFIJtrjtpACUwIfVCKZH/BMRu88sbUVpwhrr/J0rFL1Kj0jwfco/KzpNNfaQWlrcsr2zesr6C/e9Os8cocB/3IeSAeuWNlNvhwVq5Y6PSscG+r+TR6tQdnqTYeadnNOpQLLgh7lUu17NCxpvtVgVKAfOZ09mpReHRw+3HJLnyvtoBQBH93daEhWePZJT/uNxGYnqCXdRrz+msHGK5ApI8OGGIgJ0+Q+o/0QRTDnEbHiPDt3Yyyswx7oICHxelsWS5L5v9qadVphnTnEVK784SfVozCgMqqaEKhb8Nxw0FFYNKI8MXsXCEUNypCQnGRkPFycq9YuMvglTQOxCjvTba3KU6/VG8197sQeJTdh40NWBkEst1WeGeB+ZCmUGRm8LC7MCFveZKnZxgZJ0x7doMWcd7UmbZWrXesH5Eakxb1lvzc21XOQpv62OUf2gHzSjro0h3zeDQsqg9jOcpcbl6efWipETmgU3AjDuYjc/8UY4oGA5oINqBqlCWURLGwQxZgaGaEuERq+zZwTJdebGdo+2fE02KAf9YfR5OKO4nTDnkidWpwbitJymt5gTUcPGVJ7JN0zSzHizSax043dh//Cy0xZwagwM5aV1nUrRMKS1APYcNwccDxp82JQFg5pBX5ZhLZWwvgHHpUBdLEbANvnYa3EAwpeMW/QYiuSNw8xcXiyb+7ti+IreeJasOqjM2Nvrcc3UJQTUFqT1rxUXyPGuJhTujftj7BO8U9oQxzd9ap/i5KjlDO/gFYSoQfxxfUkwNsS5rfM3fNoel4yteT4a5oRQEXy9L8fHfiSoq6wbc7pSiw788HlEQuFZ0k2ViToK63pBPFWQd1ihfnGy3CLWExMHCFktVZUWKsdLQWLzsRpWspIR8/9k4FEmDK34io9IO4+labN7fTt3yJ0MTmrW7QrWso6b0vLUvoFDZuViTfhnfs2yrgg0af/RmkPChhqIFgToBoBPrpU9aQUB+pBbSF0mFXivG6vU962idsr6K0ckwPCqBd0B85zry/FgqS8moaYmE7E1bTterczrPbMgOXVCIpNhR/698/K6WERh3y1E2cDqE/Ay9MNsL7/azojhuJOReg6bpFsUSQzF9kzeqDo39mbOsey6lz5tpywA3v1AoKbrnIuiaxk7+3yHy7GbDEgOHark8rBWYOlOZp1qTRbvh+Qr8zfDFmVwWt6JSszmCTvgyV2XJUIZR+dv6gjYK1pFVQb6PrkOI3XG7oI8PfPVuSuExK3oqprIanfAIV4k0kVIgraxyg/HYkIgeMyoVwLF+sclu7LM3UswSN97/QYFp2aI7Wyyoa9hPVnzrqHe+gsK5wENB2dLdE9Gvc3gQs733JRh4mwUxpKaMojJ9MOpU+NvAaP8FMQb9rG4NUZYYLqz1ghgVtA2IZwLKvvb+8V1B0zMKbSEd68TBBJU63RCvEgy5BpKKywJ5j9URI22RynKbtg1Sg1iJCfWHwngRZQSQVYmBN7j1zO2NsMxIPK4Ry21LCarLWdMQjK+FpIJg3eDnIiGb3fL80LrQw+QFeq54EBSdNyw+O9XeeGD3Ne+yGP1THOomcflHZ8hHeEFxIIMy7Oz7fjc4V4t1eKVjGTvC7S0qjs4pYelrq03F8OqkcHHLN08HBOgBuZiFr/1QcVTPnt2wAC/gbgXoYgt2p9SBKz0svVh55qhqu/yh/Q6AZIkQICeeAP2jlL98xzoVqFZ7ahrULHmxCPcNfYyVgVRG8cHqJM0gtGtGNgKxNFj0AbbliEpklXqZtPZuIpUa9Qp8ff7RZUTZ9Gx3+pEDWE4V2ft2eocbePXMgInu7GvB2JM/J4YAnsaLokTW1sXVbpGBFcFZ3EL15m1ci2wS5xTeUAGzLW/2RkdJbRPBwRkaOd8sd3ggZskqyDzBERzP/K0c+XBhObJDICjP9pTskLkcMKWfHYp87U7qJclMv9q2s23wpJ7FWGT3nOsfwDdLW3ELei6Km5ZHnDeFlV/xhBlyEQjQI/vqL11SipaooAlNWq7109iU2TkgnRnXXaaweG/ynBZKSWartwddyrBSxFK+8OkjatGCFspPJ+A9dwTOt336JVnFHVGIudIQ3P1i99vUkr9rC6ZS015PVEz0I2DvD6Hd41fxYjjR+YXXXrimwUgQr6IwzDafrvaexpjAj/cHzrNVvbhZyYmUNnWC8Pa8cigm1E5NxVrFavt2b1hpTEyMtuKWNG5czxBVP7Ld2MN88RXOVUa1RSnCZ7dKtj/UB3YMjJR5izyQ9VGX/JgrTDrtqi7MF5xBa7+5FItFobaLZ7aNHMIKobbceSgk9bMRm3vY/VYcil0mq+PFltLB+J4aCQCHeyiFOF6idgG/2W2/2ASB7yWgSYm4Nn58JHKigi5JLsoC29ALtfJmJ1SleHgB2fxZ4LyJd23COqtw8PdZ5BS+qJ+86t3Zn9AGU9vxWGkkmfAuTwevjvn6Xx1fqCtp0RXE1E+vEC/hj4+K2P5d6z4RSmnhbdgxuRDR/qv0G147iAc+s2TxqbGmPH3T09zqGu7wgb+fwzuoZeGCwzFlWQ3/HG11K0B2KSFFSNnwPP27EytnSuV0rAbUfrQxalANh6o0heY8QNTCYxSmS9kWBQopwkRfarviQYqnzVKR1ZYneBimyXFvQK/EvglMC/X3iRqol3to9udVRWpSfdo9RJCHjPfFqOa8vlw0mxt26KGrHsepN8l/tvUgDa8TFbDlMUJWWcicSeQECuHjElOsMoCoc0PrMKS3idPvDWj5NFwIvY47foN9i26Vk2AEA1OKq01Y4mP9fOadcl+w3TsSPAjSGda6fnpWdCBCj7ZVnHMqbZ2xkxkti0pUlF/g2N3cSVUqrYd2FG3m8rBHQfyu5bk18/++Atn6TLZ5T0bzXwES060R3AB+bQXhaK0pokvkdzuCusfHfg5GST74J1rQyunhDhnB7+ROwuidTuQP95Kdzo5xQsq7XLTDFikoTv7pNROhFIhPXASCkNVWZDC/gZ6k7mN5xOLoUJgJpjI6O/Op8P+U9DoDGBiafCwfPVbw1bt1813MBFDe3g1UU4cuXA880qR0x364r8njpvdjKfcH14Pe9VAAE4efPHgNJzhc4Tq2w7ZpB6H4P8K4hMD/Ce7oLEr3nGP4Wy06nEbqP5l1y7zP6VNZ5xImQgFIwd+QE/GOmstGsXBpNm8vX/UiFnKaR32cT/jSBSs36sviTX3Na7DCu3xUnc0PD5clh2uExdJH28oLgQPS98VB2qqiGsFgt3rn4YEW1x5NRDsPWE/yEvYpeA9e6e48t16vvb6x1WGEHzqtY7Oe6PoB7E+AN/Ikuiv+IEx67VnrpvvghNSFobOsD37FfRMEA16V61SaDk/40h1Gy0qYh5+1AwcX0lymBmp5EWvCCb5dzfNBnwmygKnGoZuwWRnVF1hPuoCAKvLb7/BGG4aZGY5ATN1fOGyQXyfAD9BPdAAN4RmZVK5+Wy91Fu7mp6AhrxMCEcY6iQki6LC9d8TBWPlxJRm0kcuI2e4zDsp3cLU9O0nlFX2D7FuVqfjIJoeU43ZPj8RP1yUO/5NJ6ua6s1Lzz3HSJY1Sl084o1NoBsG7ZT2M+UBBYTnasWaTZyUTN+m0pKYiPYPj0jTKhCh58LtweQUsAA/I8hK26lbaNgurWbK7GZ98lNWBL9QYDeZmQZyKpXHdxt5Ng8nix3196xDKJdhHNWQhr+gVAc9zbS5q4O01gKkmiEaYWfge76+TrOfwW1ViWDR8AYUCZDujwfds2Txw3LYzNroX3G321FRIbiGpQjSpr37PNrT8AdB+pnnYaT4zuGGVrVuPp+FJHjc6elBseO8Iyav+7z4mupHj6xq/+hEXQiwq9EwJ2bOeQHG/YD7UHDM6XsPH3GfKfDZ3wyBybbz9ao8UKdhGz64TN3VZf//TH+iZiCyimPp/JSPqQj4k1hpnUfhgDPwV/ZoHRY06dnHE1yB3+Zz1qQmxaQTS+9l5aP7XDrksNjsw9Jd2PVyeOeFeC5/j4NLjkUA/dNh6jxpq+BDKsNoHD4IvzUJyEsVjzhtfXSNMQaCRlJk56r9sC7HUTywzaIPsQobf+F9yfdc/Q+hjXh8SfmcTNLb5489Hesj2UgA8B7MLOWSm27ZjlORkClE6oia422JEdJbSHk59DqXB12zNXkvxffwSnwTOKyE6TF9VwEoFYd1HqeJzL67K+KWeBTAZHeGsr0zSNSnPO2ylOJu+1h84r7rwqYa5KCtTQSTTzgJC0lgy/8EeKQmYnefx3Yi7K83N9NQV+BU2QYKcyb1WxU+dtNXKHw5xJbeU2WtFeciNzLQQxRq2gJD9GVwQB87xbMe06YG/4nJYvBYjUu7T/9LwiigS+uXjXe1hkvz+PJEqib+804p694CbyDMb6KWsvlMosSbcKqsdNC+MSY5lPYsvOLkRGu4AaBwDQmfD3m8KNqvKGh0WgW1IVf81F0lOJnG/dxiT5nU5/Kt0MyiWP6Mync3PpyRblXkEeS+oqSxwD/sIXabXxPbSZq58wwj2F+1yuGr+2B9KlNocYbD0uSc2QifM380sNkE2OhpCk12LyMKjHZGL0IVOOr0iyF04LdS8EmGWDIuWm31WhXzFQ1YwYxJcjcmBILAEBzIN56V1H+iYGXJKvHyNwGDrL45T9pTuP6AIqmpICxNtuc/2ISqsqtdkmROaAocWkArE9HB56cOcZPm7a8zg+eYMzHD6h+Se/AlfXKyprBVUzjs4BwsSbcIvrGQWAz7bHeUX1mVooc0VNT7/Y2NU/xzxarYMPPpONihLBtE/b3BEdX7xF3JS6o+SkkuBbR75tYIcLYa0aSJIxMExoCt29ajNcacsiLLOBdbuWb8QlHlFIJAaXctRRXrpthcQFP8mD7mFSZLdrh977CVUZO/8hNO/fL0JRy4M80LvPYNex6eEX80kLaUqJcWbeyFP2dKGFRaUaTfXDuVcMITyb4qlsDiPkGw7pDXqXBnnF3iYUgFJrKfJFHBIU+CyFCs93vsxReg6uQ254dS2S1F+8q4NKel40O1Ek8UXj+slNGFg1ZTfhnMzjmIIbDEuHxHfbBQcwKFdB3Z95A1kmhapdzX5YHPxCn6pXmZ03zkEp1s9ttUcgv0PJencF5K92kteZrJFzUGtGuK3ZsNO/c29wrZ2kiiBNseOyLIhw+bCjnDC94JBQ3P7tebmWa+iVqfskoSal4oZS+T3VI65prJKmexYyp3KHHzuTY+Bg26mVIwCQMz9r+jiNXlJ5pi5GKnb0Fski8Xs8Xlej/g7r5TYYujzq/Nk0+7fPLaRlR/UhnuxzPyOjSlvP0RjJPc+fdSbpqMbB+PQCba8AXRCNjS+epJNxda6coF+Sqsrr9CN/ms3ddcSS99cFrgsOwUf0Or4C0lJud/czOt0Y4Q1paWF9ro8gHzwugIQO5vcCQZ9AAkfRpCQVZGSFDGoR3+2Sb4z3U5NcMdxKKNxc2p72NUbJnl1I3zw1r87Ooi7ZzMueb0luyonh6bCuuWQ9fRv4vzRPw3lBNM1Y9GD536uzpybCWD1hFtXhgtdJLvSevPBE1M83fDfUHyXrVedcqUWufXMsNEcsgaMNdXzyeZ/9lXHVhuVir9AcxXBeTSHTrZFIMnV9PrUlpuuhQ2WRaNnze9sD9CDiWlU4YV+onknJVzmBy2tCGLdS8vJaSiQsZcK14q7Ej6AD099y9iU1EXWIXm9GiL73bbPUZpmtFoMXLH6JXRi9a3YzqdkbOJyGIobqPJ6kcKHGYAvmRXbaIjBTH4eN+y148UGafmVy9edLQg3K7drZaXklGZ2F5UXmb0fNbctJ+up++0kbtMJ+KI76pRv42K9OdBWBz4jcueOuEK/+HC9HNNtEYuaO/qJWcZSDtifJtRUo0yF+F/fELX9AiQMccIiNW4cXTNiGA9isggxu5M4pxfRCHm2NtZlxMNsYqf1Khu0EoTc8vbBPusr+wz17HEewlb8nM2utW6RLaz9ePsC/v+H+NGkeYQAAh2hQfuFi3DdRVLSMVRlc0GQU92NxCGMCb8wwsKgxbAVoVdiDANNyr/k+BMoMewHfke9Ww8K/8PQTi2B0RIYNh6bOrnEa3fso9LFblQPe9MpqtWi8JECw3pv9STkc+8rsN8VPietsoH9r43r3/ZKoDbrqnciusmjj2CEe0NfI1i8rS4mBD3Rxw5mAUOOrCOreE63Ncto6TDmdL/cH4gB1MmgM/InN33AsQAJmQQ29G8f3UMfPsZgMr3tqZFTqmINk2GDop48nl4d6cJoZSC4F8+/AvqTbqEEjF3ySwJRLcldPM0Ji4uY8uJkG235axIMYeru3Cprs43FO1KjeNmbnImSixzK2SjTVS8SO6AB36Gn6NdFi+TivXGbFS9nw1vg37fPfgNM2W8KtxaYrVOL1ZsciqEQNU/CJvjmKXushcULkg2sycTZtgo8jtdBBP/khSCyEAlWjOrxIqYTA7CgVjpNWgCZY31GdoCBPeruC2gAuSj2S54fN1PCi+v4r23fFvUGW/vQfcd4GrkLV8WzjqAV1F3N8CN08q5f8WNAA9Ia7RDlDjlTbmWlMCOeSXccs5MJ87eNDgjyqwZBYEINV9IoALOhOyMTLJtbJ5yyn+DOvnFcSZHnjMbSOtVeBC8gCWGlRngcVPbMameyebVc9/Lp+NI+xSRhNlRsDJji4PYi46TQjcTMvWBXAaktGg/T0QzsYV+6uAWGMxLEiW5evOraDDMAEeNeiLXRmcZ/ucXfAAAA',
+  nebyura: 'data:image/webp;base64,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',
+  brs48: 'data:image/webp;base64,UklGRkYQAABXRUJQVlA4IDoQAABQOgCdASqEAEoAPmkmj0WkIaEZPiVEQAaEtgBYj6Oon+o84HlPtE3j4YgzFuf0g7cvzAfjN7K/pF8o7rdPQe6XS0U9+X3Hwr/Evmv8H+V/JT6G8y/5B9p/yf9r/dX+0e63fT6uPUC/LP5r/pPR/gBaQegF7VfY/+D/fPGC/yfQ76l/7j3AP5R/NP9X+cPwT/k/D0+3f7P2Av5P/aP+n/lfy9+l/+0/93mD/O/8d/6/9J8BX81/s//L/xHa4/c72hf3AO/jnwaunurXNpYYli/iPwUEMJDLkO46sPJlZtuAyAokr6VRw3psJLOSo5qpN9tAlk05QeiTW4kMPlcSDBCFMrUvyw5wItXXh/XNm6qpQVKHyDCv/VyW1DfePe5AxQ5LtC4CWJGakCPg2wdbuf51I0oldTgSwmkaDFivzYpHxWYs7su0V1HUsxA9Pevb+2X2hj+eEhzQgpHj9lFtVYXUyk7DUPUVL8FSaUbhTrT8NTdeM0M1uxwnyyi0vwlcTVqDshwFjNKWKPPuk1iPx29MdWW6O608gZQNKIIJBpH0VIEb0IeYkYzxWij383JWkEYAGhRVEXD+2fC3C1cFjjEoF3vGiunuRmZz+Aa81L5DiECWaDPsOxBFrqoAAP7/El628lOXUjMsW6itgZ1k/EY2MwxDIjIVS098g63hW0vwr7cKeSMJj+UmUthKAbXOMfB2n63yZo1757Gg+2xCNCpt8dsAcHHNo+P/n3HpPmXC7EPOtK2ORu0JFXIe61u+vSiIfLqY/lAe9yocDuRnC3xJfvy/y8nrkRSj7/xzXR5iv3vTCm9aF5Gfr3qISUPgtjGbHch22ZXT25P0amh7hMWlzneapbODzKDqF8hGEP/kVhIr0h4fZjb9wn3s+cedKgtV6jRRZq4Zt18XzW5OxLgtIKnFy8YxN3calOcgCqO3IOL5MUFNlN8fZfAjmoyaw9kscAD9v3fE2YvDvTiVxBLADv0ea8/h9jlPSXb76RUln1eXR8O5HX+fX1zUX4leNnikfDFcNOhHDCO4SxqJ9aeQzG3gvKW6wBd80dwJhppVbIpDN/nWt3loa9/AyeY5kWeeh5rrQ6kt+IYKgwsqxN6rTmxpIEIRPxNH//PXb+fEInk51VB/IvWuMfi+lntsmTpuP0pDfDcP2QWK+4wloW5Ki8WBfTxP1BB7LnUsyDdHc9+qP+LGO3GhaaznaVS4uH55bYTwgVsYkJaiNeT4kv9ETWCZIXwo01GOFdGQCUac+OEZ/rtID6YBAJMuAvLAq/bJN5zox/SlDt6iALCj52uMsd3kE1SXq+U2bWLrHH29F1UHxb/jqls4Pl/OKnVTWk22nhRfkI2svBzH4qJ3caR459IL0Nnq2dXalcaJSp6hPBgCk5SsZQ9IYscFGczdbMI9reN9pgbZ+kzNVrLL1iI9g4ccW8CFmpg2iZIESj1YFlXPn7lYoGgP8DkKHQuvvAFSFduJRzHPI9WFXS8bDwgKUq/6p0qgHk7qRLLTbiLsPPZNhYs2oiH4T6zGQXcvBGeQ1VYwYDu/jAxTE5xxXNgaTjBZmzUHBGZfvlg9/tdaBH7992viceW0Xz502YNBQ21vq+ZGLWm2uiqeL8Lkh6zobXAktS3Ot7lHG+yCiOJL8ZIr9D0Sq+l9JN8gBSt5/0Wp3AjUZTC2Rmgsz7sOp58mYrxdaW0+bX4nX6nDyUmZYWW2YUN2jz79GnLcGCT+v5Mlacq5+TgYQ+h7rTo3CiertaJMUkQAmccJtTRev0ozftPSCY81MiD6nK3m9s/RIp8J93nY2h7GRSUhFCU0k0a5SvLD5bQkwwV7ORn4b9LLv/13h+Ts1hbCUu9x/tk7POrk+4AD7SmOjvnOSt0L+O7C+1pqgcv0bsrXdLi7Dty6tATlieyzultq71gOIr0LkcAS5c/IpScT/mqq5rGotocezhdJooXCmidwdN580s3LBA+emu/Ua7xN9Bl65KQkd4E7UAhBph6jcJfDiCZgJI948WxSDiYe6BAkCdbFTg983gDph2u8JdTlymhgtk5tJMdYWxjX+Fab52tFXpyULrJ7KuBchFUoY3vYCrFCVegNh/ViVSDOJfIsjq3xV6y0yjsq7wzFu/DJH/zocT/Syv9A7WBUD2O/PTaeKmqDXy6UbpwNTaCQJXdfoV+CGrMPuoRZxCM4Qz6G+0qksBYUrUEqWbytSmvjadrxm2dIU3tWsXMbL7PxkjjMutkDfyns71tc/3iZ07KPpSsRZLR87yMM2Tm3GMEF0mor8HPuND2X1mVly6p7HDjapcCkL92C60zqrLocfFGosQjKHOLgLUHF3Dtg+aH1LwzvflJLfUq2ZIcBd1ASJdTDtCuEs1JvjL38f8rvx+AslTMa91Bl6b5jtNATRV37NaJGXGDSgGjaE9q1X3DQ3d8BuzIk8iodoix5NpcrOGeEehZ1nEu8vvPvM5JbNTZMxcJglYYrP2NAITef70Dg+oV6QhmOVr9w1dirVYkNfaVbPy9l5rQplpDPyf+m38fR2jbtI5yS8GLlSa5LzwJP1Z0tdSTmSzt2oJYqGZorBFBwH3q9oXXvvPGGPSD6HnhmEkwXbw5bGIbIshCfUE32d9p5rWsmGrQs1QEszZsNnuvjMUBfZCYHJQJV/tLsiML0vFADrXrWbf7XLL1bAinTvv1/f9KeasbV6rv+cryPeZrJlIX4YWi7s/2b8E7Wfx8sZk/79DE3G08OE0HfL8JCiUNCW44PCQNbsT60tid/6UKzdJZrZ9Ddf+HGLIpVUKztGKfASlU1Is9P2xx7fYOu9O9zypd7WXx9OpSCRsmjbkA+Zwj+aDgRW0tlCSSZ8Y9eiL9Ohy2390F3UUpyCcBD+FiCNnLS+PY33r8rxDnNr0OWni5aLNUNb2c9Qv12iFfGJaPnd+skcqKQIuZ5OSD1B/0Ipi8gHeXzr3KcWGeclrGvetx+6FoYRp6/g7XgQxTYWNEmStNrE2Rzj5E5dQyuFdUi35x+b/RKCR50qdYYIQVY3f1DFHjE9J1Ld9z8xmcOXzWOtvmr+ORVP3KYdi8D5/CDQOqs0bgytyn9Me9wkVhv9UrhHBYV00rwfFi6wOyDN8KBVpljRceGXXw0tB2WrWMa2Kipc0GOJJ+gHg0LMxjaGTq07Qms/osCt1vRymspEoNHcnkAuYlZ9mS+XB0IjERwZoj+bb4Rk+dhM7tmnoOru5BSuO+1lLOSEgLoF1P2Kl2SYHeEgfjh2ecIJgKXKjIR9y1C8iItj0XSMh2UYI/05h08H1Nic9FZFE0OQ309oyxPVa0mWjIHktC+aLrehG9+HXoVhxHoe1fh2+U5A5w4BNawKlDr39VHygow3CpmDgkNVrPhbW0pGSesbagtgVmn4dJQeellfzuv6AJ6IWS1mINtKU3mdfb4SDGsxiKvh7y6K7lPT3O4nqQWsWFiM97pETNRxKmnCW7PwT/mDK6Qv87BP55q/Mq40rLn42CL84z44ArPfmd0nvF7Fk+0H9NmbZWj0yMA2iETM7RPnSMhJeskV0XqT/Njx9T22aF6ug8Qyh1GhCzHOq8i3zxXVWIg9Lg5RNi2YaY+jLd79PnBpULiPwd5HozwziLUlnTOUHYi67JymwTNxfY+kvibrLgr9jWJSpfy3RX4XZlUtcrm6PnP0AjLbe1W2EKC834A9BJ5gNHwA/rVXxaATXc/Rf1wSxCpSdwT0ErIVQryNz/y0ajxBGcwdndJCkKlLnoS+OdBuC1AZpAvXs/dJzlGnszlCx2F3wyXNKccMscabkWiGIybzZ+8oTYLfgWLrEscPeg7AiJPG9WYsc4/43L9HvT9j1njOydNRVhZLRuGc/mC8D7upFltv8oE5fhfxNt8y1/xWHqXxpOQyrIiCazBBhG3V1GgcTO5XwR+oSPyNnsEi/+DT8NNXe/4YgJHMiMYRp4/eNYLsO9LyNSQ2vGqXJncnErfQ0ngbYoJaWf32GguGLPKv9HeBVmUMe06EcEFsBdjX2n4A2EN8QTGfAq7xz5jKOUK4SVoILnQ77pxoFie8/7nI35WpyV1ebY3SBwT1D/KbS+TDSUUnwW+/iZ35jdksjs1Ijip6eVE5eOXpYSeW5z5zhRktsOjvbRAdxvlfgeJq2ufSN2dGF4hWkd7gkPbzxvl7rogi2Vh8+159endyzLr6K+PFmvFc8ngrBIC31ioNpXcFChClJQxlMW1TNd+ZxGuSvls+Nd6zC1q14Oif4fJ7tdsMG9m3ALxdFOTCdxTnC6sDRMChDt3f5pMImNZFvYmaUAAHvcdI+Wiapn35HGXHeDsg7q0HlgsogX/J4iBKU2eg2G7GvoWRTD4dv/nTI3D9xea6fK1Xej7S6BqCw4/nx6zEC4LLIvAsB3sc6cl3HPRYLgTZM7iTpmHgNf4KnseN+lKxc+sP6t5s9g+CkaDO7+F+3xB/0JC3R24RCjKKAzxFQRIo4WvgZa24W08yapMSaV+hBo1sSx7Bg5AhGri8yjXwxffGFSAZizU1vbjPAU8jMsAXaw0l6APAVlEzd5fn+gAtds+UN6LI+fgxA7cs+9UP3SRMmtHnXsHknbm13qBkr/9BuXGICLvASBZZQEzhskedrbhtfmm+JUR+6BKoe3TCBU6YBkywPlcMAnbcvPt3F+JTvfgal6htBeTkMBhA3eWAR48n6YXhLxDJbbEf6zZf5klvPkJeyJfuiD+zHDG96xm7S5N/oBS8s9T/8cCcree/BtHuJzuigQJZRmvJn497BcezYtglhZtkYnVrYh3s39bmjSxILaz+50GXHXjzKFopELOBWoWK/KoXAgzV3+M0TFYeGs62f7otyz7PKXA9CtK6/fjlHEDT38D9Ndel4PQhW1flWgjqCRa+W5b3qzMSUgUD/XBybL2ZigFTA5xa7fBYT6SjkVjHbTnq37kTKEmAWR41EGNnippeIQwAVqVEy+ZaoX3+pCpz3y9Gsx5cE/PzyL/FI3xgT/3rhZlXIHgjVXwp1C+sjKKbXzGDmTLSXZsmDrLfmnAHyVPyNzdrUz5fAW8daiXs3FxwE9v20afuuvkHvRPX6oyHfz5mjTPs0srKYg3MsszFY1DQdm9z1wAgxj9iXHtuN5k9MfSf3gLiTPNMK53/nxY1TbYNTpU6kmB54RdbauV95iO6GQ6fi1emq9JPgxCV4046CephKDEn4IMPCNXkvVvRWSNhxlk8HLgpNQmf9ZWoK+j2d2fAvHm1Vkxesu1PqoJ9oWeHANEMPkPPlJQGZP8LvShuth/8T74OEpdUfNkNQHE3aYxGzrG/N9D3WeLmXS35cSYXH/BU1tCajijntc1WiYHILXbYRqxDWR6fzm8V9f0C8YBqwrL9ULl2IkqhLwkqYSN5lBibpPYd0EKsL4IeNKbaOtUUqFQva2lUiDgj6HO+VumdhBuYUkn+Fqm9NCsca4tJAyvKQuImtf9PPGLowKLGInZfXTABGcMv3ap8Wj3mCCDZJHvaoGl4LJLDsrk0epVjVpiMBojzGy828q8vIhtg6c2iPaE/bKCsYyHsaZgAA==',
+  campo: 'data:image/webp;base64,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'
+};
+var petDecorImgs = {};
+Object.keys(PET_DECOR_IMG).forEach(function(k){
+  var im = new Image();
+  im.onload = function(){ petBg = null; };   // redesenha o fundo quando a imagem carrega
+  im.src = PET_DECOR_IMG[k];
+  petDecorImgs[k] = im;
+});
+
+var PET_DICT4 = {
+  en: {"Seus pets: toque para trocar ou adotar outro.":"Your pets: tap to switch or adopt another.","Meu Pet":"My Pet","Ativo":"Active","Usar":"Use","Criar":"Create","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"My Pet unlocks when you reach Center (5000 points) in the run!","Meus pets":"My pets","↩ Backstage":"↩ Backstage","Crie seu pet":"Create your pet","Orelhas":"Ears","Cor":"Color","Bochechas":"Cheeks","Gato":"Cat","Coala":"Koala","Coroa":"Crown","Coelho":"Bunny","Nenhuma":"None","Redondos":"Round","Brilhantes":"Sparkly","Felizes":"Happy","Sonolentos":"Sleepy","Laço":"Bow","Estrela":"Star","Anel":"Ring","Flor":"Flower","CRIAR":"CREATE","SALVAR":"SAVE","Cancelar":"Cancel","✏️ Editar Meu Pet":"✏️ Edit My Pet","Decorar":"Decorate","Na parede":"On the wall","Guardado":"Stored","Foto no campo":"Field photo","Toque no pet ou no seu personagem 💕":"Tap your pet or your character 💕","Sim":"Yes","Não":"No"},
+  es: {"Seus pets: toque para trocar ou adotar outro.":"Tus mascotas: toca para cambiar o adoptar otra.","Meu Pet":"Mi Mascota","Ativo":"Activa","Usar":"Usar","Criar":"Crear","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"¡Mi Mascota se desbloquea al llegar a Center (5000 puntos) en la carrera!","Meus pets":"Mis mascotas","↩ Backstage":"↩ Backstage","Crie seu pet":"Crea tu mascota","Orelhas":"Orejas","Cor":"Color","Bochechas":"Mejillas","Gato":"Gato","Coala":"Koala","Coroa":"Corona","Coelho":"Conejo","Nenhuma":"Ninguna","Redondos":"Redondos","Brilhantes":"Brillantes","Felizes":"Felices","Sonolentos":"Dormilones","Laço":"Lazo","Estrela":"Estrella","Anel":"Anillo","Flor":"Flor","CRIAR":"CREAR","SALVAR":"GUARDAR","Cancelar":"Cancelar","✏️ Editar Meu Pet":"✏️ Editar Mi Mascota","Decorar":"Decorar","Na parede":"En la pared","Guardado":"Guardado","Foto no campo":"Foto en el campo","Toque no pet ou no seu personagem 💕":"Toca a tu mascota o a tu personaje 💕","Sim":"Sí","Não":"No"},
+  th: {"Seus pets: toque para trocar ou adotar outro.":"สัตว์เลี้ยงของคุณ: แตะเพื่อสลับหรือรับเลี้ยงเพิ่ม","Meu Pet":"สัตว์เลี้ยงของฉัน","Ativo":"กำลังใช้","Usar":"ใช้","Criar":"สร้าง","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"ปลดล็อกสัตว์เลี้ยงของฉันเมื่อถึงเซ็นเตอร์ (5000 คะแนน)!","Meus pets":"สัตว์เลี้ยงของฉัน","↩ Backstage":"↩ หลังเวที","Crie seu pet":"สร้างสัตว์เลี้ยงของคุณ","Orelhas":"หู","Cor":"สี","Bochechas":"แก้ม","Gato":"แมว","Coala":"โคอาลา","Coroa":"มงกุฎ","Coelho":"กระต่าย","Nenhuma":"ไม่มี","Redondos":"กลม","Brilhantes":"เป็นประกาย","Felizes":"ยิ้ม","Sonolentos":"ง่วง","Laço":"โบว์","Estrela":"ดาว","Anel":"วงแหวน","Flor":"ดอกไม้","CRIAR":"สร้าง","SALVAR":"บันทึก","Cancelar":"ยกเลิก","✏️ Editar Meu Pet":"✏️ แก้ไขสัตว์เลี้ยง","Decorar":"ตกแต่ง","Na parede":"บนผนัง","Guardado":"เก็บไว้","Foto no campo":"รูปในทุ่ง","Toque no pet ou no seu personagem 💕":"แตะสัตว์เลี้ยงหรือตัวละครของคุณ 💕","Sim":"ใช่","Não":"ไม่"},
+  ja: {"Seus pets: toque para trocar ou adotar outro.":"あなたのペット：タップで切り替え・おむかえ","Meu Pet":"マイペット","Ativo":"いっしょ","Usar":"えらぶ","Criar":"つくる","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"ランでセンター（5000点）になるとマイペットが解放されるよ！","Meus pets":"マイペット一覧","↩ Backstage":"↩ バックステージ","Crie seu pet":"ペットをつくろう","Orelhas":"みみ","Cor":"いろ","Bochechas":"ほっぺ","Gato":"ねこ","Coala":"コアラ","Coroa":"おうかん","Coelho":"うさぎ","Nenhuma":"なし","Redondos":"まる","Brilhantes":"キラキラ","Felizes":"にこにこ","Sonolentos":"ねむねむ","Laço":"リボン","Estrela":"ほし","Anel":"わっか","Flor":"はな","CRIAR":"つくる","SALVAR":"ほぞん","Cancelar":"キャンセル","✏️ Editar Meu Pet":"✏️ マイペットを編集","Decorar":"かざる","Na parede":"かざってる","Guardado":"しまってる","Foto no campo":"草原の写真","Toque no pet ou no seu personagem 💕":"ペットかキャラをタップしてね 💕","Sim":"あり","Não":"なし"}
+};
+Object.keys(PET_DICT4).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT4[l]).forEach(function(k){ DICT[l][k] = PET_DICT4[l][k]; }); });
+
+// ---------- Ajudantes ----------
+function petNormalize(){   // completa saves antigos (só adiciona campos, nunca apaga nada)
+  if(!petData.donos) petData.donos = Object.keys(petData.pets);
+  if(!petData.decor) petData.decor = { zipper: 1 };   // pôster de presente na parede
+}
+function petType(k){ return k === 'meu' ? ((petData && petData.pets.meu && petData.pets.meu.cfg) || PET_MK_DEF) : k; }
+function petColor(k){ return k === 'meu' ? petType('meu').cor : PET_SP[k].cor; }
+function petEmo(k){ return PET_SP[k] ? PET_SP[k].emo : '💖'; }
+function petMeuLiberado(){ return best >= PET_MEU_RANK || petDevUnlock; }
+function petMix(h, alvo, a){   // mistura uma cor com branco (alvo 1) ou preto (alvo 0)
+  var c = parseInt(String(h).replace('#', ''), 16), r = c >> 16, gg = (c >> 8) & 255, b = c & 255, w = alvo ? 255 : 0;
+  return 'rgb(' + Math.round(r + (w - r) * a) + ',' + Math.round(gg + (w - gg) * a) + ',' + Math.round(b + (w - b) * a) + ')';
+}
+
+// ---------- Telas: backstage, coleção e criador ----------
+function petShow(){
+  if(!petData && petView === 'room') petView = 'col';
+  $('petAdopt').hidden = petView !== 'col';
+  $('petMake').hidden = petView !== 'make';
+  $('petRoom').hidden = petView !== 'room';
+  if(petView === 'col') petBuildPick();
+  else if(petView === 'make') petMakeUI();
+  else { petFitCanvas(); petUI(); }
+}
+
+function petBuildPick(){
+  var box = $('petPick'), first = !petData;
+  box.innerHTML = '';
+  $('petPickTxt').textContent = tr(first ? 'Escolha seu primeiro pet. O primeiro é presente!' : 'Seus pets: toque para trocar ou adotar outro.');
+  $('petBack').hidden = first;
+  $('petMkEdit').hidden = !(petData && petData.pets.meu);
+  $('petPickMsg').hidden = true;
+  PET_OFF.concat('meu').forEach(function(k){
+    var own = !!(petData && petData.pets[k]);
+    var b = document.createElement('button'); b.type = 'button'; b.dataset.k = k;
+    var c = document.createElement('canvas'); c.width = 144; c.height = 120; b.appendChild(c);
+    var nm = document.createElement('b'), st = document.createElement('small');
+    nm.textContent = own ? petData.pets[k].nome : (k === 'meu' ? tr('Meu Pet') : PET_SP[k].n);
+    if(k === 'meu' && !own && !petMeuLiberado()){ st.textContent = '🔒 Center'; b.classList.add('lock'); }
+    else if(own) st.textContent = petData.ativo === k ? '✓ ' + tr('Ativo') : tr('Usar');
+    else if(k === 'meu') st.textContent = '✨ ' + tr('Criar');
+    else st.textContent = first ? tr('Grátis') : '★ ' + PET_PRICE;
+    if(own && petData.ativo === k) b.classList.add('on');
+    b.appendChild(nm); b.appendChild(st); box.appendChild(b);
+  });
+  if(first){ if(PET_OFF.indexOf(petEsc) < 0) petEsc = 'tsu'; }
+  else petEsc = '';   // na coleção, nada vem pré-selecionado para compra
+  petMarkPick();
+}
+function petMarkPick(){
+  var first = !petData;
+  [].forEach.call($('petPick').children, function(b){ b.setAttribute('aria-pressed', b.dataset.k === petEsc); });
+  $('petPickForm').hidden = !petEsc;
+  $('petGo').textContent = tr('ADOTAR') + (first ? '' : ' ★' + PET_PRICE);
+  $('petGo').disabled = !first && starT < PET_PRICE;
+}
+function petPickMsg(s){ var m = $('petPickMsg'); m.textContent = s; m.hidden = false; }
+
+$('petPick').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  var k = b.dataset.k, own = !!(petData && petData.pets[k]);
+  beep(880, .06, 'triangle', .05);
+  if(k === 'meu' && !own){
+    if(!petMeuLiberado()){ petEsc = ''; petMarkPick(); petPickMsg('🔒 ' + tr('O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!')); return; }
+    petMkOpen(); return;
+  }
+  if(own){ petSwitch(k); return; }
+  petEsc = k; $('petPickMsg').hidden = true; petMarkPick();
+  if(petData && starT < PET_PRICE) petPickMsg(tr('Estrelas insuficientes') + ' (★ ' + starT + ' / ' + PET_PRICE + ')');
+});
+
+function petAdopt(){
+  var k = petEsc, first = !petData;
+  if(PET_OFF.indexOf(k) < 0 || (!first && petData.pets[k])) return;
+  if(!first && !petPay(PET_PRICE)){ petPickMsg(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
+  var nm = ($('petName').value || '').trim().slice(0, 12) || PET_SP[k].n, now = Date.now();
+  if(first){ petData = { v:1, ativo:k, donos:[], pets:{} }; petNormalize(); }
+  else petTick();   // fecha a conta do pet que estava ativo antes de trocar
+  petData.pets[k] = { nome:nm, fome:80, energia:80, humor:90, higiene:85, t:now, nasc:now };
+  petData.donos.push(k); petData.ativo = k;
+  $('petName').value = ''; petEsc = '';
+  petSave();
+  if(sfx.card) sfx.card();
+  petView = 'room'; petShow();
+  petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎉' });
+}
+
+function petSwitch(k){   // os pets que não estão ativos "descansam" e não perdem pontos
+  if(!petData || !petData.pets[k]) return;
+  if(petData.ativo !== k){
+    petTick();
+    petData.ativo = k; petData.pets[k].t = Date.now();
+    petAnim = null; petMenuK = ''; petEmote = null;
+    petSave();
+    petSay(petEmo(k) + ' ' + petData.pets[k].nome + '!');
+  }
+  petView = 'room'; petShow();
+}
+
+$('petColBtn').onclick = function(){ beep(880, .05, 'triangle', .04); petMenuK = ''; petView = 'col'; petShow(); };
+$('petBack').onclick = function(){ petView = 'room'; petShow(); };
+$('petMkEdit').onclick = function(){ petMkOpen(); };
+
+function petDrawPick(){
+  [].forEach.call($('petPick').children, function(b){
+    var c = b.firstChild, x = c.getContext('2d'), k = b.dataset.k;
+    x.clearRect(0, 0, 144, 120);
+    if(k === 'meu' && !(petData && petData.pets.meu)){
+      if(!petMeuLiberado()){   // silhueta misteriosa
+        x.save(); x.translate(72, 62 + Math.sin(petT * .08) * 3.5); x.scale(2.6, 2.6);
+        x.fillStyle = 'rgba(123,63,240,.28)';
+        x.beginPath(); x.moveTo(-11, -4); x.lineTo(-10, -16); x.lineTo(-2, -9); x.fill();
+        x.beginPath(); x.moveTo(11, -4); x.lineTo(10, -16); x.lineTo(2, -9); x.fill();
+        x.beginPath(); x.ellipse(0, 0, 12, 11, 0, 0, 7); x.fill();
+        x.fillStyle = '#fff'; x.font = '800 12px sans-serif'; x.textAlign = 'center'; x.fillText('?', 0, 4.5);
+        x.restore(); return;
+      }
+      drawPet(x, PET_MK_DEF, 72, 62, 2.6, petT + 60); return;
+    }
+    drawPet(x, petType(k), 72, 62, 2.6, petT + (k === 'lirika' ? 20 : k === 'pati' ? 40 : 0));
+  });
+}
+
+// ---------- Criador do Meu Pet ----------
+function petMkOpen(){
+  var cur = petData && petData.pets.meu;
+  petMk = JSON.parse(JSON.stringify((cur && cur.cfg) || PET_MK_DEF));
+  $('petMkName').value = cur ? cur.nome : '';
+  $('petMkSave').textContent = tr(cur ? 'SALVAR' : 'CRIAR');
+  petView = 'make'; petShow();
+}
+// Lista de itens do guarda-roupa do pet no camarim: [chave, emoji, nome, preço em ★]
+var PET_WARDROBE = [
+  ['',         '✖',  'Nenhum',    0],
+  ['laco',     '🎀', 'Laço',     15],
+  ['flor',     '🌸', 'Flor',     20],
+  ['oculos',   '👓', 'Óculos',   25],
+  ['estrela',  '⭐', 'Estrela',  30],
+  ['anel',     '🪐', 'Anel',     40],
+  ['bochecha', '😊', 'Bochechas', 10]
+];
+
+function petDressMenuUI(m, p){
+  petData.roupas = petData.roupas || { '': 1 };
+  var isMeu = (petData.ativo === 'meu' && p.cfg);
+  var curAcc = isMeu ? (p.cfg.acc || '') : (p.acc || '');
+  var curBoch = isMeu ? !!p.cfg.bochecha : !!p.bochecha;
+  m.hidden = false;
+  m.innerHTML = PET_WARDROBE.map(function(it){
+    var k = it[0], own = (k === '' || !!petData.roupas[k]);
+    var eq = (k === 'bochecha') ? curBoch : (curAcc === k);
+    var tag = own ? (eq ? '✓ ' + tr('Ativo') : tr('Usar')) : ('★ ' + it[3]);
+    var off = !own && starT < it[3];
+    return '<button type="button" data-k="' + k + '"' + (off ? ' disabled' : '') + ' aria-pressed="' + eq + '">' +
+           '<span style="font-size:20px;line-height:1.2">' + it[1] + '</span>' +
+           '<b>' + escHtml(tr(it[2])) + '</b><em>' + tag + '</em></button>';
+  }).join('');
+}
+
+function petDressClick(k){
+  var p = petAtivo(); if(!p || !petData) return;
+  var it = petFind(PET_WARDROBE, k); if(!it) return;
+  petData.roupas = petData.roupas || { '': 1 };
+  if(k !== '' && !petData.roupas[k]){
+    if(!petPay(it[3])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
+    petData.roupas[k] = 1;
+    if(sfx.card) sfx.card();
+  } else {
+    beep(988, .05, 'triangle', .04);
+  }
+  var isMeu = (petData.ativo === 'meu' && p.cfg);
+  if(k === 'bochecha'){
+    if(isMeu) p.cfg.bochecha = !p.cfg.bochecha;
+    else p.bochecha = !p.bochecha;
+  } else {
+    if(isMeu) p.cfg.acc = (p.cfg.acc === k ? '' : k);
+    else p.acc = (p.acc === k ? '' : k);
+  }
+  petHop = 16; petSmile = 45;
+  petSave(); petUI();
+}
+
+function petMakeUI(){
+  var box = $('petMkOpts'); box.innerHTML = '';
+  var jaAdotado = !!(petData && petData.pets && petData.pets.meu);
+  function grp(label, html){ var d = document.createElement('div'); d.className = 'grp'; d.innerHTML = '<span>' + escHtml(tr(label)) + '</span>' + html; box.appendChild(d); }
+  function chips(campo, lista){ return lista.map(function(o){ return '<button type="button" data-f="' + campo + '" data-v="' + o[0] + '" aria-pressed="' + (petMk[campo] === o[0]) + '">' + o[1] + ' ' + escHtml(tr(o[2])) + '</button>'; }).join(''); }
+  // Só deixa escolher Orelhas e Cor ANTES de adotar; depois de adotado, a cor e espécie são fixas!
+  if(!jaAdotado){
+    grp('Orelhas', chips('orelha', PET_MK.orelha));
+    grp('Cor', PET_MK.cor.map(function(c){ return '<button type="button" class="sw2" data-f="cor" data-v="' + c + '" aria-pressed="' + (petMk.cor === c) + '" style="background:' + c + '" aria-label="' + c + '"></button>'; }).join(''));
+  }
+  grp('Olhos', chips('olhos', PET_MK.olhos));
+  grp('Bochechas', '<button type="button" data-f="bochecha" data-v="1" aria-pressed="' + !!petMk.bochecha + '">🌸 ' + escHtml(tr('Sim')) + '</button><button type="button" data-f="bochecha" data-v="0" aria-pressed="' + !petMk.bochecha + '">' + escHtml(tr('Não')) + '</button>');
+  grp('Acessório', chips('acc', PET_MK.acc));
+}
+
+$('petMkOpts').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b || !petMk) return;
+  var f = b.dataset.f, v = b.dataset.v;
+  petMk[f] = f === 'bochecha' ? v === '1' : v;
+  beep(988, .04, 'triangle', .04);
+  petMakeUI();
+});
+function petDrawMake(){
+  var c = $('petMkCv'), x = c.getContext('2d');
+  x.clearRect(0, 0, 300, 200);
+  var gr = x.createRadialGradient(150, 100, 10, 150, 100, 110);
+  gr.addColorStop(0, 'rgba(255,200,235,.7)'); gr.addColorStop(1, 'rgba(255,200,235,0)');
+  x.fillStyle = gr; x.fillRect(0, 0, 300, 200);
+  x.fillStyle = 'rgba(123,63,240,.15)'; x.beginPath(); x.ellipse(150, 168, 56, 10, 0, 0, 7); x.fill();
+  if(petMk) drawPet(x, petMk, 150, 100, 4.2, petT);
+}
+$('petMkSave').onclick = function(){
+  var cur = petData && petData.pets.meu;
+  if(!petMk || (!cur && !petMeuLiberado())) return;
+  var nm = ($('petMkName').value || '').trim().slice(0, 12) || tr('Meu Pet'), now = Date.now(), first = !petData;
+  if(first){ petData = { v:1, ativo:'meu', donos:[], pets:{} }; petNormalize(); }
+  else if(petData.ativo !== 'meu') petTick();
+  var p = petData.pets.meu;
+  if(!p){ p = petData.pets.meu = { fome:80, energia:80, humor:90, higiene:85, t:now, nasc:now }; petData.donos.push('meu'); }
+  p.nome = nm; p.cfg = JSON.parse(JSON.stringify(petMk));
+  if(petData.ativo !== 'meu'){ petData.ativo = 'meu'; p.t = now; }
+  petSave();
+  if(sfx.card) sfx.card();
+  petView = 'room'; petShow();
+  petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'✨' });
+};
+$('petMkCancel').onclick = function(){ petView = petData ? 'col' : 'col'; petShow(); };
+
+// ---------- Rostos: expressões dos pets ----------
+// ex: 'amor' (carinho), 'feliz' (brincar/banho), 'nhac' (comendo), 'sono', 'choro' (fome ou saudade)
+function petEx(p, foto){
+  if(!foto){
+    if(petAnim) return petAnim.k === 'comer' ? 'nhac' : 'feliz';
+    if(petLove > 0) return 'amor';
+  }
+  if(p.dorme || p.energia < 25) return 'sono';
+  if(p.fome < 25 || p.humor < 25) return 'choro';
+  if(!foto && petCharT > 0) return 'feliz';
+  return null;
+}
+function petFace(ctx, ex, o, t){   // desenha olhos e boca de expressão (o: posição dos olhos e da boca)
+  function E(cx, cy, rx, ry){ ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 7); ctx.fill(); }
+  var ox = o.x, ey = o.y, my = o.m, c = o.c || '#2b1b3a';
+  ctx.lineCap = 'round';
+  if(ex === 'amor'){
+    ctx.fillStyle = '#ff4f9a';
+    [-1, 1].forEach(function(s){ var hx = s * ox, hy = ey;
+      ctx.beginPath(); ctx.moveTo(hx, hy + 2.3);
+      ctx.bezierCurveTo(hx - 3.3, hy - .1, hx - 1.9, hy - 3.1, hx, hy - 1.2);
+      ctx.bezierCurveTo(hx + 1.9, hy - 3.1, hx + 3.3, hy - .1, hx, hy + 2.3); ctx.fill(); });
+    ctx.fillStyle = '#be185d'; ctx.beginPath(); ctx.arc(0, my, 2.4, 0, Math.PI); ctx.fill();
+  } else if(ex === 'feliz' || ex === 'nhac'){
+    ctx.strokeStyle = c; ctx.lineWidth = 1.3;
+    [-1, 1].forEach(function(s){ ctx.beginPath(); ctx.arc(s * ox, ey + .9, 2, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); });
+    ctx.fillStyle = '#be185d';
+    if(ex === 'nhac'){ E(0, my + .3, 2, .5 + 1.6 * Math.abs(Math.sin(t * .35))); }
+    else { ctx.beginPath(); ctx.arc(0, my - .4, 2.6, 0, Math.PI); ctx.fill(); ctx.fillStyle = '#f9a8d4'; E(0, my + 1.2, 1.4, .7); }
+  } else if(ex === 'sono'){
+    ctx.strokeStyle = c; ctx.lineWidth = 1.2;
+    [-1, 1].forEach(function(s){ ctx.beginPath(); ctx.arc(s * ox, ey - .6, 2, Math.PI * .15, Math.PI * .85); ctx.stroke(); });
+    ctx.fillStyle = c; E(0, my + .4, 1, 1.2);
+  } else if(ex === 'choro'){
+    ctx.fillStyle = c; E(-ox, ey, 2.4, 2.9); E(ox, ey, 2.4, 2.9);
+    ctx.fillStyle = '#fff'; E(-ox - .8, ey - 1, 1, 1.2); E(ox - .8, ey - 1, 1, 1.2); E(-ox + .7, ey + .9, .5, .5); E(ox + .7, ey + .9, .5, .5);
+    var td = (t * .03) % 1;
+    ctx.fillStyle = 'rgba(125,211,252,.95)'; E(-ox - .4, ey + 3.2 + td * 4, 1, 1.5); E(ox + .4, ey + 3.2 + ((td + .5) % 1) * 4, 1, 1.5);
+    ctx.strokeStyle = c; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(-2, my + 1); ctx.quadraticCurveTo(-1, my - .6, 0, my + .6); ctx.quadraticCurveTo(1, my - .6, 2, my + 1); ctx.stroke();
+  }
+}
+function petDrawDirt(x, p, cx, cy){   // sujeirinha e "cheirinho" quando a higiene está baixa
+  if(!p || p.higiene >= 25) return;
+  x.save(); x.translate(cx, cy); x.scale(PET_SC, PET_SC);
+  x.fillStyle = 'rgba(120,80,40,.55)';
+  [[-6, 4, 1.6], [5, 6, 1.3], [-1, 8, 1.1], [8, -3, 1.2], [-8, -2, .9]].forEach(function(d){ x.beginPath(); x.arc(d[0], d[1], d[2], 0, 7); x.fill(); });
+  x.strokeStyle = 'rgba(132,204,22,.6)'; x.lineWidth = .8; x.lineCap = 'round';
+  [-14, 14].forEach(function(sx, i){ var o = Math.sin(petT * .08 + i) * 1.5;
+    x.beginPath(); x.moveTo(sx, -2); x.quadraticCurveTo(sx + 2, -6 + o, sx, -9); x.quadraticCurveTo(sx - 2, -12 + o, sx, -15); x.stroke(); });
+  x.restore();
+}
+
+// ---------- Meu Pet: desenho por partes ----------
+function petDrawCustom(ctx, cfg, t, ex){
+  function E(cx, cy, rx, ry, r){ ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, r || 0, 0, 7); ctx.fill(); }
+  function T(a){ ctx.beginPath(); ctx.moveTo(a[0], a[1]); for(var i = 2; i < a.length; i += 2) ctx.lineTo(a[i], a[i + 1]); ctx.closePath(); ctx.fill(); }
+  var cor = cfg.cor || '#ff6fb5', lt = petMix(cor, 1, .45), dk = petMix(cor, 0, .3), dk2 = petMix(cor, 0, .6);
+  ctx.shadowColor = lt; ctx.shadowBlur = 12;
+  ctx.fillStyle = dk; E(-6, 10, 3, 2.5); E(6, 10, 3, 2.5);
+  if(cfg.orelha === 'gato'){ ctx.fillStyle = dk; T([-11, -4, -10, -16, -2, -9]); T([11, -4, 10, -16, 2, -9]); ctx.fillStyle = '#f9a8d4'; T([-9, -5, -8.5, -13, -4, -8.5]); T([9, -5, 8.5, -13, 4, -8.5]); }
+  else if(cfg.orelha === 'coala'){ ctx.fillStyle = dk; E(-10, -7, 5, 5); E(10, -7, 5, 5); ctx.fillStyle = lt; E(-10, -7, 2.8, 2.8); E(10, -7, 2.8, 2.8); }
+  else if(cfg.orelha === 'coelho'){ ctx.fillStyle = dk; E(-5, -14, 2.8, 7, -.15); E(5, -14, 2.8, 7, .15); ctx.fillStyle = '#f9a8d4'; E(-5, -14, 1.3, 5, -.15); E(5, -14, 1.3, 5, .15); }
+  var bg = ctx.createLinearGradient(0, -11, 0, 11);
+  bg.addColorStop(0, lt); bg.addColorStop(.6, cor); bg.addColorStop(1, dk);
+  ctx.fillStyle = bg; E(0, 0, 12, 11);
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'; E(-4, -6, 3.5, 1.8, -.3);
+  if(cfg.orelha === 'coroa'){
+    ctx.save(); ctx.translate(4, -11); ctx.rotate(.22);
+    var cg = ctx.createLinearGradient(0, -6, 0, 2); cg.addColorStop(0, '#fde047'); cg.addColorStop(1, '#d97706');
+    ctx.fillStyle = cg; T([-6, 2, -6, -5, -2, -1, 0, -6, 2, -1, 6, -5, 6, 2]);
+    ctx.strokeStyle = '#92400e'; ctx.lineWidth = .8; ctx.stroke(); ctx.restore();
+  }
+  var o = { x:4.5, y:-1, m:2.6, c:dk2 };
+  if(ex) petFace(ctx, ex, o, t);
+  else if(cfg.olhos === 'feliz') petFace(ctx, 'feliz', o, t);
+  else if(cfg.olhos === 'sono') petFace(ctx, 'sono', o, t);
+  else {
+    var big = cfg.olhos === 'brilho';
+    ctx.fillStyle = dk2; E(-4.5, -1, big ? 2.6 : 2.2, big ? 3.1 : 2.6); E(4.5, -1, big ? 2.6 : 2.2, big ? 3.1 : 2.6);
+    ctx.fillStyle = '#fff'; E(-5.2, -2.2, big ? 1.1 : .9, big ? 1.3 : 1.1); E(3.8, -2.2, big ? 1.1 : .9, big ? 1.3 : 1.1);
+    if(big){ E(-3.8, .5, .55, .55); E(5.2, .5, .55, .55); }
+    ctx.strokeStyle = dk2; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, 2.4, 1.8, Math.PI * .15, Math.PI * .85); ctx.stroke();
+  }
+  if(cfg.bochecha){ ctx.fillStyle = 'rgba(255,111,181,.55)'; E(-7.6, 2.9, 2.2, 1.2); E(7.6, 2.9, 2.2, 1.2); }
+  var a = cfg.acc;
+  if(a === 'laco'){ ctx.fillStyle = '#ff4f9a'; T([-7, -10, -12, -13, -12, -7]); T([-7, -10, -2, -13, -2, -7]); ctx.fillStyle = '#be185d'; E(-7, -10, 1.4, 1.4); }
+  else if(a === 'estrela'){ ctx.fillStyle = '#ffe14d'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = .6; ctx.beginPath();
+    for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.2, an = q * Math.PI / 5 - Math.PI / 2; ctx[q ? 'lineTo' : 'moveTo'](8 + Math.cos(an) * rr, -10 + Math.sin(an) * rr); }
+    ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  else if(a === 'anel'){ ctx.save(); ctx.rotate(-.22); ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(255,255,255,.88)'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, -0.35, Math.PI + 0.35); ctx.stroke();
+    ctx.strokeStyle = lt; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(0, 2, 18.5, 3.5, 0, 0.05, Math.PI - 0.05); ctx.stroke(); ctx.restore(); }
+  else if(a === 'oculos'){ ctx.strokeStyle = '#1f2937'; ctx.lineWidth = .9; ctx.beginPath(); ctx.arc(-4.5, -1, 3.4, 0, 7); ctx.moveTo(7.9, -1); ctx.arc(4.5, -1, 3.4, 0, 7); ctx.moveTo(-1.1, -1.5); ctx.lineTo(1.1, -1.5); ctx.stroke(); }
+  else if(a === 'flor'){ ctx.fillStyle = '#ffc4d8'; for(var k = 0; k < 5; k++){ var an2 = k * 1.2566 - 1.57; E(-8 + Math.cos(an2) * 2.4, -9 + Math.sin(an2) * 2.4, 2, 2); } ctx.fillStyle = '#e85a8a'; E(-8, -9, 1.3, 1.3); }
+}
+
+// ---------- Reações do personagem ----------
+function petCharTap(){
+  if(petCharT > 0) return;
+  petCharT = 24; petSmile = 50;
+  petEmote = { s:PET_EMOTES[Math.floor(Math.random() * PET_EMOTES.length)], t:0 };
+  var p = petAtivo(); if(p && !p.dorme) petHop = 20;   // o pet pula junto
+  beep(784, .06, 'triangle', .05); beep(1175, .08, 'triangle', .04, .06);
+}
+function petDrawEmote(x){
+  if(!petEmote) return;
+  var e = petEmote; e.t++;
+  x.globalAlpha = e.t < 70 ? 1 : Math.max(0, 1 - (e.t - 70) / 20);
+  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center';
+  var w = x.measureText(e.s).width + 18, bx = 114, by = PET_FLOOR - 124 - Math.min(6, e.t * .4);
+  x.fillStyle = 'rgba(255,255,255,.95)';
+  x.beginPath(); x.moveTo(bx - w / 2 + 9, by - 11); x.arcTo(bx + w / 2, by - 11, bx + w / 2, by + 9, 9); x.arcTo(bx + w / 2, by + 9, bx - w / 2, by + 9, 9);
+  x.lineTo(bx + 4, by + 9); x.lineTo(bx, by + 15); x.lineTo(bx - 4, by + 9);
+  x.arcTo(bx - w / 2, by + 9, bx - w / 2, by - 11, 9); x.arcTo(bx - w / 2, by - 11, bx + w / 2, by - 11, 9); x.closePath(); x.fill();
+  x.strokeStyle = 'rgba(255,111,181,.6)'; x.lineWidth = 1.2; x.stroke();
+  x.fillStyle = '#7b3ff0'; x.fillText(e.s, bx, by + 3.5);
+  x.globalAlpha = 1;
+  if(e.t > 90) petEmote = null;
+}
+
+// ---------- Decoração: mural de pôsteres e quadros ----------
+function petDrawDecor(x){
+  if(!petData || !petData.decor) return;
+  PET_DECOR.forEach(function(it){
+    var k = it[0], im = petDecorImgs[k];
+    if(!petData.decor[k] || !im || !im.complete || !im.naturalWidth) return;
+    var px = it[3], py = it[4], w = it[5], h = it[6], st = it[7];
+    x.save(); x.translate(px + w / 2, py + h / 2); x.rotate(it[8]);
+    x.shadowColor = 'rgba(80,30,120,.28)'; x.shadowBlur = 4; x.shadowOffsetY = 2;
+    if(st === 'polaroid'){ x.fillStyle = '#fff'; x.fillRect(-w / 2 - 2.5, -h / 2 - 2.5, w + 5, h + 9); }
+    else if(st === 'quadro'){ x.fillStyle = '#f4c96b'; x.fillRect(-w / 2 - 3, -h / 2 - 3, w + 6, h + 6); }
+    else { x.fillStyle = '#fff'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
+    x.shadowColor = 'transparent';
+    if(st === 'quadro'){ x.fillStyle = '#c8963e'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
+    x.drawImage(im, -w / 2, -h / 2, w, h);
+    if(st === 'poster'){   // fitas nos cantos
+      x.fillStyle = 'rgba(255,111,181,.55)';
+      x.save(); x.translate(-w / 2 + 2, -h / 2 + 1); x.rotate(-.6); x.fillRect(-5, -2, 10, 4); x.restore();
+      x.save(); x.translate(w / 2 - 2, -h / 2 + 1); x.rotate(.6); x.fillRect(-5, -2, 10, 4); x.restore();
+    } else if(st === 'polaroid'){   // alfinete
+      x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(0, -h / 2 - 1, 1.8, 0, 7); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.7)'; x.beginPath(); x.arc(-.5, -h / 2 - 1.6, .6, 0, 7); x.fill();
+    }
+    x.restore();
+  });
+}
+function petDecorMenuUI(m){
+  var d = petData.decor || {};
+  m.hidden = false;
+  m.innerHTML = PET_DECOR.map(function(it){
+    var k = it[0], own = k in d;
+    var tag = own ? (d[k] ? '🖼️ ' + tr('Na parede') : tr('Guardado')) : (it[2] ? '★ ' + it[2] : tr('Grátis'));
+    var off = !own && starT < it[2];
+    return '<button type="button" data-k="' + k + '"' + (off ? ' disabled' : '') + ' aria-pressed="' + !!(own && d[k]) + '"><img src="' + PET_DECOR_IMG[k] + '" alt="">' +
+           '<b>' + escHtml(tr(it[1])) + '</b><em>' + tag + '</em></button>';
+  }).join('');
+}
+function petDecorClick(k){
+  var it = petFind(PET_DECOR, k); if(!it || !petData) return;
+  var d = petData.decor;
+  if(!(k in d)){
+    if(!petPay(it[2])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
+    d[k] = 1; petSay('🖼️ ' + tr(it[1]) + '!'); if(sfx.card) sfx.card();
+  } else { d[k] = d[k] ? 0 : 1; beep(d[k] ? 988 : 660, .06, 'triangle', .04); }
+  petBg = null; petSave(); petUI();
+}
+// --- FIM DO BACKSTAGE⭐PET! V2 ---
+
+var EXTRA_DICT = {
+  en: {
+    "Pixie": "Pixie",
+    "MENU": "MENU",
+    "Tirar Foto": "Take Photo",
+    "Baixar Render do Avatar": "Download Avatar PNG",
+    "Tom de pele": "Skin tone",
+    "Presente do Pet! 🎁": "Pet Gift! 🎁",
+    "Unit Mode! Sinergia ✨": "Unit Mode! Synergy ✨",
+    "Unit ✨ ": "Unit ✨ ",
+    "Kimi wa Alien!": "Kimi wa Alien!",
+    "Mega TsuLiPa!": "Mega TsuLiPa!",
+    "Card! +100": "Card! +100",
+    "Onigiri": "Onigiri",
+    "Gyoza": "Gyoza",
+    "Dango": "Dango",
+    "Tiramisu": "Tiramisu",
+    "Pôster ジッパー": "Poster ジッパー",
+    "Quadro NeByura": "NeByura Frame",
+    "Quadro ツリパ ZIPPER": "Frame ツリパ ZIPPER",
+    "Foto BRS48": "BRS48 Photo",
+    "Solo Center": "Solo Center",
+    "Capitão": "Captain",
+    "Eternal Ace": "Eternal Ace",
+    "Kami-Oshi": "Kami-Oshi"
+  },
+  es: {
+    "Pixie": "Pixie",
+    "MENU": "MENÚ",
+    "Tirar Foto": "Tomar Foto",
+    "Baixar Render do Avatar": "Descargar Avatar en PNG",
+    "Tom de pele": "Tono de piel",
+    "Presente do Pet! 🎁": "¡Regalo de la Mascota! 🎁",
+    "Unit Mode! Sinergia ✨": "¡Modo Unit! Sinergia ✨",
+    "Unit ✨ ": "Unit ✨ ",
+    "Kimi wa Alien!": "¡Kimi wa Alien!",
+    "Mega TsuLiPa!": "¡Mega TsuLiPa!",
+    "Card! +100": "¡Card! +100",
+    "Onigiri": "Onigiri",
+    "Gyoza": "Gyoza",
+    "Dango": "Dango",
+    "Tiramisu": "Tiramisú",
+    "Pôster ジッパー": "Póster ジッパー",
+    "Quadro NeByura": "Cuadro NeByura",
+    "Quadro ツリパ ZIPPER": "Cuadro ツリパ ZIPPER",
+    "Foto BRS48": "Foto BRS48",
+    "Solo Center": "Solo Center",
+    "Capitão": "Capitán",
+    "Eternal Ace": "Eternal Ace",
+    "Kami-Oshi": "Kami-Oshi"
+  },
+  th: {
+    "Pixie": "พิกซี่",
+    "MENU": "เมนู",
+    "Tirar Foto": "ถ่ายรูป",
+    "Baixar Render do Avatar": "ดาวน์โหลดอวาตาร์ PNG",
+    "Tom de pele": "สีผิว",
+    "Presente do Pet! 🎁": "ของขวัญจากสัตว์เลี้ยง! 🎁",
+    "Unit Mode! Sinergia ✨": "โหมดยูนิต! ซินเนอร์จี้ ✨",
+    "Unit ✨ ": "ยูนิต ✨ ",
+    "Kimi wa Alien!": "Kimi wa Alien!",
+    "Mega TsuLiPa!": "เมก้า TsuLiPa!",
+    "Card! +100": "การ์ด! +100",
+    "Onigiri": "โอนิกิริ",
+    "Gyoza": "เกี๊ยวซ่า",
+    "Dango": "ดังโงะ",
+    "Tiramisu": "ทิรามิสุ",
+    "Pôster ジッパー": "โปสเตอร์ ジッパー",
+    "Quadro NeByura": "กรอบรูป NeByura",
+    "Quadro ツリパ ZIPPER": "กรอบรูป ツリパ ZIPPER",
+    "Foto BRS48": "รูปถ่าย BRS48",
+    "Solo Center": "โซโล่เซ็นเตอร์",
+    "Capitão": "กัปตัน",
+    "Eternal Ace": "เอซตลอดกาล",
+    "Kami-Oshi": "คามิโอชิ"
+  },
+  ja: {
+    "Pixie": "ピクシー",
+    "MENU": "メニュー",
+    "Tirar Foto": "写真を撮る",
+    "Baixar Render do Avatar": "アバターPNGを保存",
+    "Tom de pele": "肌の色",
+    "Presente do Pet! 🎁": "ペットからのプレゼント！ 🎁",
+    "Unit Mode! Sinergia ✨": "ユニットモード！シナジー ✨",
+    "Unit ✨ ": "ユニット ✨ ",
+    "Kimi wa Alien!": "キミはエイリアン！",
+    "Mega TsuLiPa!": "メガ・ツリパ！",
+    "Card! +100": "カード！ +100",
+    "Pôster ジッパー": "ポスター「ジッパー」",
+    "Quadro NeByura": "フレーム「NeByura」",
+    "Quadro ツリパ ZIPPER": "フレーム「ツリパ ZIPPER」",
+    "Foto BRS48": "BRS48フォト",
+    "Solo Center": "ソロセンター",
+    "Capitão": "キャプテン",
+    "Eternal Ace": "エターナルエース",
+    "Kami-Oshi": "神推し"
+  }
+};
+Object.keys(EXTRA_DICT).forEach(function(l){
+  if(DICT[l]) Object.keys(EXTRA_DICT[l]).forEach(function(k){ DICT[l][k] = EXTRA_DICT[l][k]; });
+});
+
 applyLang();
 })();
 </script>

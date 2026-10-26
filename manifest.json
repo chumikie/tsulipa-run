@@ -1,6 +1,7 @@
 {
-  "name": "TsuLiPa Center Run!",
-  "short_name": "Center Run!",
+  "name": "TsuLiPa⭐World",
+  "short_name": "TsuLiPa⭐World",
+  "description": "Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1b3a",
@@ -17,7 +18,7 @@
       "type": "image/png"
     },
     {
-      "src": "/og.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

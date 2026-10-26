@@ -251,7 +251,7 @@ canvas{width:100%;height:100%;display:block}
       <canvas id="cel" width="200" height="150" style="width:200px;height:150px;display:block;margin:0 auto 12px;border-radius:14px" aria-hidden="true"></canvas>
       <div class="res" id="res"></div>
       <div class="btns"><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
-      <div class="tabs"><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbo"></ol>
+      <div class="tabs"><button data-t="day">Hoje</button><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbo"></ol>
     </div>
   </div>
 </div>
@@ -348,7 +348,16 @@ var SK=['#fbe5d8','#f1c9a5','#d9a074','#b97a50','#8d5a3b','#5e3b27'],CU=CH[3],ac
 var ACC=[['','Nenhum',0,0],['laco','Laço azul',RANKS[2][0],2],['mic','Microfone de palco',RANKS[3][0],3],['hibisco','Hibisco',RANKS[4][0],4],['sakura','Flor de cerejeira',RANKS[5][0],5],['tiaraS','Tiara de prata',RANKS[6][0],6],['tiaraO','Tiara dourada',RANKS[7][0],7]];
 var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
 
+
 // --- SISTEMA DE RANKING LOCAL ---
+
+	function dk(){
+  var d = new Date();
+  var year = d.getFullYear();
+  var month = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
 function wk(){
   var d=new Date(); d.setHours(0,0,0,0);
   d.setDate(d.getDate()+3-(d.getDay()+6)%7);
@@ -356,6 +365,14 @@ function wk(){
   return d.getFullYear()+'-W'+(1+Math.round(((d-w1)/864e5-3+(w1.getDay()+6)%7)/7));
 }
 var local=[], lw={w:wk(),rows:[]}, tab='week';
+	
+	var ld = {d: dk(), rows: []};
+try {
+  var savedLd = JSON.parse(localStorage.getItem('brs48cr_ld') || 'null');
+  if(savedLd && savedLw.d === dk() && Array.isArray(savedLd.rows)){
+    ld = savedLd;
+  }
+} catch(e) {}
 
 function upd(arr,row){
   var a=(arr||[]).slice();
@@ -376,8 +393,8 @@ function showLbLocal(el,rowsOverride){
       b.setAttribute('aria-pressed',b.dataset.t===tab);
     });
   }
-  if(lw.w!==wk()) lw={w:wk(),rows:[]};
-  var rows = rowsOverride || (tab==='week' ? (lw.rows||[]) : (local||[]));
+ if(ld.d !== dk()) ld = {d: dk(), rows: []};
+  var rows = rowsOverride || (tab === 'day' ? (ld.rows || []) : tab === 'week' ? (lw.rows || []) : (local || []));
   el.innerHTML='';
   if(!rows.length){
     var emptyLi=document.createElement('li');
@@ -405,13 +422,20 @@ try{did=localStorage.getItem('brs48cr_did')||'';if(!did){did=(window.crypto&&cry
 function getTok(){tok=null;try{fetch(API+'/start').then(function(r){return r.json()}).then(function(j){tok=j.token}).catch(function(){})}catch(e){}}
 
 
-function showLb(el){
+function function showLb(el){
   if(!el)return;
-  var tb=tab;
+  var tb = tab; // 'day', 'week', ou 'all'
   
-  _supabase
+  var query = _supabase
     .from('leaderboard')
-    .select('*')
+    .select('*');
+
+  // Se o jogador estiver na aba "Hoje", filtramos pela data atual
+  if(tb === 'day'){
+    query = query.eq('created_date', dk());
+  }
+
+  query
     .order('score', { ascending: false })
     .then(function(response){
       var j = response.data || [];
@@ -424,12 +448,24 @@ function showLb(el){
       });
       var top15 = Object.values(unq).sort(function(a,b){return b.score-a.score}).slice(0,15);
       
-      showLbLocal(el, top15.map(function(r){return{name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''}}));
+      // Mapeia para o formato que a função de exibição local compreende
+      var formattedRows = top15.map(function(r){
+        return {name: r.name, score: r.score, rankId: rankOf(r.score), char: r.char||''};
+      });
+
+      // Exibe usando a aba correta (passando as linhas filtradas do dia ou deixando o local lidar)
+      if(tb === 'day'){
+        showLbLocal(el, formattedRows);
+      } else {
+        showLbLocal(el, formattedRows); // Ou mantenha a lógica geral se preferir separar
+      }
     })
     .catch(function(){
       showLbLocal(el);
-      var n=document.createElement('li');n.style.cssText='font-size:11px;color:var(--sub);background:none;justify-content:center';
-      n.textContent=tr('Ranking online indisponível. Mostrando só este aparelho.');el.appendChild(n);
+      var n = document.createElement('li');
+      n.style.cssText = 'font-size:11px;color:var(--sub);background:none;justify-content:center';
+      n.textContent = tr('Ranking online indisponível. Mostrando só este aparelho.');
+      el.appendChild(n);
     });
 }
 
@@ -849,25 +885,38 @@ function end(){
   var isAdmin = (nomeDigitado === 'tsuadmin' || nomeDigitado === 'macchannegra');
   var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
 
-  if(!isTesting && !isAdmin){
-    local=upd(local,row);
-    if(lw.w!==wk())lw={w:wk(),rows:[]};
-    lw.rows=upd(lw.rows,row);
-    try{localStorage.setItem('brs48cr_lb',JSON.stringify(local));localStorage.setItem('brs48cr_lw',JSON.stringify(lw))}catch(e){}
+ if(!isTesting && !isAdmin){
+    local = upd(local, row);
+    if(lw.w !== wk()) lw = {w: wk(), rows: []};
+    lw.rows = upd(lw.rows, row);
+    
+    if(ld.d !== dk()) ld = {d: dk(), rows: []};
+    ld.rows = upd(ld.rows, row);
+    
+    try{
+      localStorage.setItem('brs48cr_lb', JSON.stringify(local));
+      localStorage.setItem('brs48cr_lw', JSON.stringify(lw));
+      localStorage.setItem('brs48cr_ld', JSON.stringify(ld));
+    }catch(e){}
   }
   
   var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
 
-  if(!isTesting && !isAdmin){
+if(!isTesting && !isAdmin){
     _supabase
       .from('leaderboard')
-      .insert([{ name: row.name, score: s, stars: stars, char: row.char }])
+      .insert([{ 
+        name: row.name, 
+        score: s, 
+        stars: stars, 
+        char: row.char,
+        created_date: dk() // Envia a data de hoje no formato YYYY-MM-DD
+      }])
       .then(function(){ refresh(); })
       .catch(function(){ refresh(); });
   } else {
     refresh();
   }
-
   
   clearTimeout(overTimer);
   overTimer=setTimeout(function(){

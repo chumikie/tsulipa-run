@@ -7558,6 +7558,8 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
   return '<div class="admbarra"><b>🛡️ ' + escHtml(tr('Moderação')) + (d.bloqueado ? ' · ⛔ ' + escHtml(tr('Conta bloqueada')) : '') + '</b>' +
     '<button type="button" data-adm="limpar_frase">🧹 ' + escHtml(tr('Limpar frase')) + '</button>' +
     '<button type="button" data-adm="renomear">✏️ ' + escHtml(tr('Renomear')) + '</button>' +
+    '<button type="button" data-adm="limpar_foto">🖼️ ' + escHtml(tr('Limpar foto')) + '</button>' +
+    '<button type="button" data-adm="duo_on" data-v="' + (d.duo_on === false ? 'true' : 'false') + '">🌙 ' + escHtml(tr(d.duo_on === false ? 'Devolver ao Moon⭐Duo!/outdoors' : 'Tirar do Moon⭐Duo!/outdoors')) + '</button>' +
     '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button>' +
     '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button><button type="button" data-adm2="presente">🎁 Presente</button><button type="button" data-adm2="aviso">📣 Aviso</button>' +
     '<div class="admform" id="admForm" hidden></div></div>';
@@ -7625,7 +7627,7 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
 perfOv.addEventListener('click', function(e){
   var b = e.target.closest('.admbarra button[data-adm]'); if(!b || !perfAtual) return;
   var acao = b.dataset.adm, nick = perfAtual.nick;
-  if((acao === 'renomear' || acao === 'bloquear') && !confirm(tr('Tem certeza?'))) return;
+  if((acao === 'renomear' || acao === 'bloquear' || acao === 'limpar_foto') && !confirm(tr('Tem certeza?'))) return;
   b.disabled = true;
   admAcao(acao, nick, b.dataset.v).then(function(r){
     b.disabled = false;
@@ -7639,6 +7641,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
     if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
+    h += '<div id="admResumo"></div>';
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
       return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.de) + '">' + escHtml(r.de) + '</button> → <button type="button" class="lbn" data-nick="' + escHtml(r.para) + '">' + escHtml(r.para) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
@@ -7651,7 +7654,17 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
-    admExtra();
+    admExtra(); admResumo();
+  }).catch(function(){});
+}
+function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐Duo!, missões e aniversários)
+  contaRpc('admin_resumo').then(function(d){
+    var box = $('admResumo'); if(!box || !d || !d.ok) return;
+    function n(e, t, v){ return '<span>' + e + ' ' + escHtml(tr(t)) + ': <b>' + (+v || 0) + '</b></span>'; }
+    box.innerHTML = '<h3>📊 ' + escHtml(tr('Hoje no jogo')) + '</h3><div class="admnums">' + n('🏁', 'Corridas', d.corridas) + n('👥', 'Jogadores', d.jogadores) + n('🎰', 'Giros no Star⭐Gacha!', d.gacha) +
+      n('🌙', 'Cenas no Moon⭐Duo!', d.duo) + n('🎁', 'Presentes do Moon⭐Duo!', d.duo_pres) + n('🎯', 'Missões feitas', d.missoes) + n('⭐', 'Estrelas ganhas', d.estrelas) + n('🙈', 'Fora do Moon⭐Duo!', d.fora_duo) + '</div>' +
+      '<p class="perfdica">🎂 ' + escHtml(tr('Aniversariantes de hoje')) + ': ' + (d.aniver.length ? d.aniver.map(function(k){ return '<button type="button" class="lbn" data-nick="' + escHtml(k) + '">' + escHtml(k) + '</button>'; }).join(', ') : '—') + '</p>' +
+      '<p class="perfdica">🌙 ' + escHtml(tr('Mais escolhidos no Moon⭐Duo! (7 dias)')) + ': ' + (d.duo_top.length ? d.duo_top.map(function(t){ return '<button type="button" class="lbn" data-nick="' + escHtml(t.nick) + '">' + escHtml(t.nick) + '</button> (' + t.n + ')'; }).join(', ') : '—') + '</p>';
   }).catch(function(){});
 }
 function admCamarimOpts(){   // itens do camarim para o presente: comida e banho, acessórios do pet e quadros do mural
@@ -9565,7 +9578,13 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Todos os direitos reservados.', 'All rights reserved.', 'Todos los derechos reservados.', 'สงวนลิขสิทธิ์', 'All rights reserved.'],
  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
- ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ']
+ ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+ ['Limpar foto', 'Clear photo', 'Borrar foto', 'ล้างรูป', '写真をリセット'], ['Tirar do Moon⭐Duo!/outdoors', 'Remove from Moon⭐Duo!/billboards', 'Quitar de Moon⭐Duo!/carteles', 'เอาออกจาก Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板から外す'],
+ ['Devolver ao Moon⭐Duo!/outdoors', 'Return to Moon⭐Duo!/billboards', 'Devolver a Moon⭐Duo!/carteles', 'คืนสู่ Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板に戻す'], ['Hoje no jogo', 'Today in the game', 'Hoy en el juego', 'วันนี้ในเกม', '今日のゲーム'],
+ ['Corridas', 'Runs', 'Carreras', 'รอบวิ่ง', 'ラン'], ['Jogadores', 'Players', 'Jugadores', 'ผู้เล่น', 'プレイヤー'], ['Giros no Star⭐Gacha!', 'Star⭐Gacha! spins', 'Giros en Star⭐Gacha!', 'หมุน Star⭐Gacha!', 'Star⭐Gacha!の回数'],
+ ['Cenas no Moon⭐Duo!', 'Moon⭐Duo! scenes', 'Escenas en Moon⭐Duo!', 'ฉาก Moon⭐Duo!', 'Moon⭐Duo!のシーン'], ['Presentes do Moon⭐Duo!', 'Moon⭐Duo! gifts', 'Regalos de Moon⭐Duo!', 'ของขวัญ Moon⭐Duo!', 'Moon⭐Duo!のプレゼント'],
+ ['Missões feitas', 'Missions done', 'Misiones hechas', 'ภารกิจที่ทำ', '達成ミッション'], ['Estrelas ganhas', 'Stars earned', 'Estrellas ganadas', 'ดาวที่ได้', '獲得スター'], ['Fora do Moon⭐Duo!', 'Out of Moon⭐Duo!', 'Fuera de Moon⭐Duo!', 'ไม่อยู่ใน Moon⭐Duo!', 'Moon⭐Duo!不参加'],
+ ['Aniversariantes de hoje', "Today's birthdays", 'Cumpleaños de hoy', 'วันเกิดวันนี้', '今日の誕生日'], ['Mais escolhidos no Moon⭐Duo! (7 dias)', 'Most picked in Moon⭐Duo! (7 days)', 'Más elegidos en Moon⭐Duo! (7 días)', 'ถูกเลือกมากที่สุดใน Moon⭐Duo! (7 วัน)', 'Moon⭐Duo!人気（7日間）']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();

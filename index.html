@@ -5,7 +5,7 @@
   Se algum mudar, todos os jogadores perdem recorde, estrelas, visual, ranking local e pet.
   localStorage: brs48cr_best · brs48cr_st · brs48cr_char · brs48cr_cu2 · brs48cr_ch2 · brs48cr_acc
                 brs48cr_seen · brs48cr_nick · brs48cr_lang · brs48cr_oshi · brs48cr_did
-                brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet · brs48cr_sync (V2.1.3)
+                brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet · brs48cr_sync · brs48cr_tut (V2.1.3)
   Supabase:     tabela "leaderboard" · função "top_scores" · tabela "players" (contas, V2.1.2)
   A lista comentada (o que cada chave guarda) fica no início do <script>.
 -->
@@ -347,6 +347,75 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfdica{text-align:center;font-size:13px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .admbarra button,:root:not([data-theme="light"]) .admdesb,:root:not([data-theme="light"]) .admtools select{background:var(--chip);color:var(--ink)}}
 :root[data-theme="dark"] .admbarra button,:root[data-theme="dark"] .admdesb,:root[data-theme="dark"] .admtools select{background:var(--chip);color:var(--ink)}
+/* V2.1.3 · tela de início (hub), tutorial, insígnia nova e roupas da temporada */
+.hub[hidden],.hubtut[hidden],.hubtema[hidden],#hubMenu[hidden],.hubtoque[hidden]{display:none}
+.hub{position:fixed;inset:0;z-index:9;overflow:auto;display:flex;justify-content:center;padding:18px 16px 28px;background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2))}
+body.hubon{overflow:hidden}
+body.hubon #mute{visibility:hidden}
+.hubpart{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.hubpart i{position:absolute;top:-30px;font-style:normal;opacity:.55;animation:hubcai linear infinite}
+@keyframes hubcai{0%{transform:translateY(-30px) rotate(0)}100%{transform:translateY(110vh) rotate(300deg)}}
+.hub[data-tema="valentine"] .hubpart i{animation-name:hubsobe}
+@keyframes hubsobe{0%{transform:translateY(110vh)}100%{transform:translateY(-40px)}}
+.hubin{position:relative;width:100%;max-width:560px;margin:auto 0;text-align:center}
+.hublogo{margin:4px 0 0;font-size:clamp(34px,10vw,56px);font-weight:900;line-height:1.05;letter-spacing:-.01em;filter:drop-shadow(0 3px 0 rgba(255,255,255,.85)) drop-shadow(0 6px 14px rgba(123,63,240,.3))}
+.hublogo span{display:inline-block;animation:hubpula 2.4s ease-in-out infinite;color:#4a74ee}
+.hublogo .c1{color:#b04fe6}.hublogo .c2{color:#4ade80}.hublogo .c3{color:#4a74ee}.hublogo .st{color:#f5b400;margin:0 .04em}
+@keyframes hubpula{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px) rotate(-3deg)}}
+.hubsub{margin:2px 0 6px;font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.12em}
+.hubtema{display:inline-block;margin:2px 0 10px;padding:5px 14px;border-radius:99px;font-size:13px;font-weight:800;background:var(--card);color:var(--b1);box-shadow:0 3px 0 rgba(123,63,240,.18)}
+#hubCv{display:block;width:100%;height:auto;aspect-ratio:640/340;border-radius:26px;background:var(--chip);box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(255,111,181,.5),0 12px 30px rgba(60,20,120,.25)}
+.hubtoque{margin:22px auto 6px;display:block;border:0;border-radius:99px;padding:15px 34px;font:inherit;font-size:clamp(16px,4.6vw,20px);font-weight:900;letter-spacing:.06em;color:#fff;cursor:pointer;background:linear-gradient(90deg,#7b3ff0,#ff6fb5,#4169e1);background-size:200% 100%;box-shadow:0 5px 0 rgba(44,26,143,.45),0 10px 24px rgba(255,111,181,.35);animation:hubpisca 1.6s ease-in-out infinite,hubbrilho 4s linear infinite}
+@keyframes hubpisca{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes hubbrilho{to{background-position:200% 0}}
+.hubcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.hubcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:20px;padding:12px 8px 12px;font:inherit;color:var(--ink);cursor:pointer;background:var(--card);background-clip:padding-box;box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(60,20,120,.12);transition:transform .12s}
+.hubcard:hover{transform:translateY(-2px)}.hubcard:active{transform:translateY(2px)}
+.hubcard i{font-style:normal;font-size:30px;line-height:1.1}
+.hubcard b{font-size:14px;font-weight:900}
+.hubcard small{font-size:11.5px;color:var(--sub);font-weight:700;line-height:1.25}
+.hubcard canvas{width:44px;height:44px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 0 0 4px #ff6fb5}
+.hubrun{background:linear-gradient(160deg,#7b3ff0,#9b30d9);color:#fff}.hubrun small{color:#f1e3ff}
+.hubgo{margin-top:3px;padding:3px 12px;border-radius:99px;background:#b6ff3b;color:#2c1a5e;font-size:12px;font-weight:900}
+.hubalerta{position:absolute;top:-6px;right:-4px;width:24px;height:24px;border-radius:50%;background:#ff4f6d;color:#fff;font-style:normal;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--card);animation:hubpisca 1s ease-in-out infinite}
+.hubpainel{margin-top:12px;padding:12px 14px;border-radius:20px;background:var(--card);text-align:left;box-shadow:0 4px 14px rgba(60,20,120,.1)}
+.hubpainel h2,.hubpainel summary{margin:0 0 6px;font-size:15px;font-weight:900;color:var(--b1);cursor:pointer}
+.hubnov summary{margin:0}.hubnov[open] summary{margin-bottom:6px}
+.hubnov ul{margin:0;padding-left:4px;list-style:none;font-size:13px;line-height:1.7}
+.hubdica{margin:0;font-size:13px;color:var(--sub)}
+.hubmis{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hubmis li{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;background:var(--chip)}
+.hubmis li>span{font-size:20px}
+.hubmis li>div{flex:1;min-width:0}
+.hubmis b{display:block;font-size:12.5px;line-height:1.25}
+.hubmis i{display:block;height:6px;margin-top:5px;border-radius:99px;background:rgba(123,63,240,.15);overflow:hidden;position:relative}
+.hubmis i::after{content:"";position:absolute;inset:0;width:var(--p);border-radius:99px;background:linear-gradient(90deg,#9b30d9,#ff6fb5)}
+.hubmis em{font-style:normal;font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
+.hubmis em.ok{color:#16a34a}
+.hubmis li.pronta{box-shadow:0 0 0 2px #ff6fb5}
+.hubmis li.feita{opacity:.7}
+.hubmis .btn{padding:6px 12px;font-size:12px;margin:0;white-space:nowrap}
+.hubrodape{margin:12px 0 0;font-size:12px;color:var(--sub)}
+.hubrodape a{color:var(--b1)}
+.hubvolta{display:block;margin:-4px 0 4px;border:0;background:var(--chip);color:var(--b1);border-radius:99px;padding:4px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.hubtut{position:fixed;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,10,50,.5)}
+.hubtutc{width:min(100%,360px);background:var(--card);border-radius:24px;padding:20px 18px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.35);animation:inspop .35s ease-out}
+.hubtutc i{display:block;font-style:normal;font-size:46px}
+.hubtutc b{display:block;margin:4px 0;font-size:20px;font-weight:900;color:var(--b1)}
+.hubtutc p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink)}
+.hubdots{display:flex;gap:6px;justify-content:center;margin:6px 0 12px}
+.hubdots span{width:8px;height:8px;border-radius:50%;background:var(--chip)}.hubdots span.on{background:#ff6fb5;width:20px;border-radius:99px}
+.insov{z-index:25}
+.insp{max-width:320px}
+.insnova{margin:0;font-weight:900;color:var(--pink);letter-spacing:.06em}
+.insemo{font-size:64px;line-height:1.2;margin:6px auto;width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#fff7c2,#ffe14d);box-shadow:0 0 0 5px #fff,0 0 0 9px rgba(245,180,0,.5),0 0 30px rgba(255,225,77,.8);animation:inspop .5s cubic-bezier(.2,1.6,.4,1)}
+.insp b{display:block;font-size:18px;color:var(--b1)}
+@keyframes inspop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.perftemp{display:inline-block;font-size:10.5px;font-weight:800;color:#d6336c;background:rgba(255,111,181,.14);border-radius:99px;padding:1px 8px}
+.perfroupa.temp{box-shadow:0 0 0 2px rgba(255,111,181,.55)}
+.admtema select{margin-left:4px}
+@media (max-width:420px){.hubcards{grid-template-columns:1fr 1fr}.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
+@media (prefers-reduced-motion:reduce){.hublogo span,.hubtoque,.hubpart i,.hubalerta{animation:none}}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -624,6 +693,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
    brs48cr_lb / brs48cr_lw / brs48cr_ld → ranking local geral/semana/dia
    brs48cr_pet   → mini jogo de pets (camarim)
    brs48cr_sync  → hora da última mudança do save deste aparelho (nuvem, V2.1.3)
+   brs48cr_tut   → tutorial da tela de início já visto (V2.1.3)
    Supabase: tabela "leaderboard" e função "top_scores"; tabela "players" (contas)
    ================================================================ */
 	
@@ -3046,7 +3116,7 @@ $('dlAvatar').onclick = function(e) {
   link.click();
 };
 
-$('shbtn').onclick=function(){var u=safeCall(makeShare);$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false;petPhShow(true,'share')};$('shx').onclick=function(){$('shr').hidden=true};
+$('shbtn').onclick=function(){quartetoFoto();var u=safeCall(makeShare);$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false;petPhShow(true,'share')};$('shx').onclick=function(){$('shr').hidden=true};
 document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
 ['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(){held=false})});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();
@@ -5324,6 +5394,7 @@ var PET_TEMAS = [   // [chave, início MM-DD, fim MM-DD] — para um tema novo, 
 ];
 var petTemaOn = '';
 function petTemaAtual(){
+  if(typeof temaAtual === 'function') return temaAtual();   // V2.1.3: calendário completo (módulo de temas)
   var md = dk().slice(5);
   for(var i = 0; i < PET_TEMAS.length; i++){
     var a = PET_TEMAS[i][1], b = PET_TEMAS[i][2];
@@ -5404,6 +5475,7 @@ function petDrawChapeu(x, py, tf){
 function petRoomBack(x, p){
   if(petTemaOn === 'halloween') petDrawHalloween(x, false);
   else if(petTemaOn === 'natal') petDrawNatal(x, false);
+  else if(petTemaOn && typeof temaCamarim === 'function') temaCamarim(x, false, petT);   // V2.1.3: temas novos
   var s = petStage(p);
   if(s >= 5){   // Kami-Oshi: brilho dourado atrás do pet
     var gl = x.createRadialGradient(PET_X, PET_FLOOR - 30, 6, PET_X, PET_FLOOR - 30, 52);
@@ -5415,6 +5487,7 @@ function petRoomBack(x, p){
     if(!petTemaOn){ x.save(); x.globalAlpha = .35 + .3 * Math.sin(petT * .08); x.fillStyle = tema === 'natal' ? '#d9fbe0' : '#ffd27a'; x.beginPath(); x.ellipse(PET_ABOBORA.x, PET_ABOBORA.y - 10, 18, 18, 0, 0, 7); x.fill(); x.restore(); }
     if(tema === 'halloween') petDrawAbobora(x, PET_ABOBORA.x, PET_ABOBORA.y, 1.05, true);
     else if(tema === 'natal') petDrawArvore(x, PET_ABOBORA.x, PET_ABOBORA.y, 1, false);
+    else if(typeof temaItemChao === 'function') temaItemChao(x, PET_ABOBORA.x, PET_ABOBORA.y, tema, petT);   // V2.1.3
   }
 }
 function petRoomFront(x, p, hop){
@@ -5433,6 +5506,7 @@ function petRoomTap(lx, ly){
   if(!tema || Math.abs(lx - PET_ABOBORA.x) > 18 || ly < PET_ABOBORA.y - 42 || ly > PET_ABOBORA.y + 8) return false;
   petTemaOn = petTemaOn ? '' : tema;
   if(petTemaOn === 'natal'){ [1047, 1319, 1568, 2093, 1568, 2637].forEach(function(f, i){ beep(f, .35, 'sine', .03, i * .09); beep(f * 2, .12, 'sine', .006, i * .09); }); petSay('🎄 ' + tr('Tema de Natal!')); }
+  else if(petTemaOn && petTemaOn !== 'halloween' && typeof TEMA_INFO !== 'undefined' && TEMA_INFO[petTemaOn]){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .2, 'triangle', .035, i * .09); }); petSay(TEMA_INFO[petTemaOn][0] + ' ' + tr('Tema de') + ' ' + tr(TEMA_INFO[petTemaOn][1]) + '!'); }   // V2.1.3
   else if(petTemaOn){ [440, 523, 415, 349, 330].forEach(function(f, i){ beep(f, .16, 'square', .025, i * .11); beep(f / 2, .2, 'triangle', .03, i * .11); }); petSay('🎃 ' + tr('Tema de Halloween!')); }
   else { beep(330, .1, 'triangle', .04); beep(262, .14, 'triangle', .035, .08); petSay(tr('Tema desligado')); }
   return true;
@@ -5447,6 +5521,8 @@ function petTemaFoto(x){   // tema na foto (se estiver ligado)
     petDrawNatal(x, true);
     petDrawArvore(x, PET_ABOBORA.x, PET_ABOBORA.y, 1, true);
     if(p) petDrawGorro(x, PET_FLOOR - 12 * PET_SC, 0);
+  } else if(petTemaOn && typeof temaCamarim === 'function'){   // V2.1.3: temas novos
+    temaCamarim(x, true, 0); temaItemChao(x, PET_ABOBORA.x, PET_ABOBORA.y, petTemaOn, 0);
   }
 }
 
@@ -5927,12 +6003,15 @@ function contaInicioCorrida(){
 }
 function contaFimCorrida(score, est, ch, refresh){
   if(!contaJ || !contaRun){ refresh(); return; }
-  var run = contaRun; contaRun = null;
+  var run = contaRun; contaRun = null; contaUltimaRun = null;
   run.then(function(id){
     if(!id) throw 0;
+    contaUltimaRun = { id:id, ok:false };   // V2.1.3: para a insígnia do Quarteto
     return contaRpc('terminar_corrida', { p_run:id, p_score:score, p_stars:est, p_char:ch, p_device:did });
   }).then(function(r){
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+    if(contaUltimaRun){ contaUltimaRun.ok = true; quartetoTalvez(); }   // V2.1.3
+    hubAposCorrida();   // V2.1.3: missões do dia e insígnias novas
     refresh();
   }).catch(function(){ refresh(); });
 }
@@ -6022,7 +6101,8 @@ var PERF_FUNDOS = [   // chave no servidor: fundo_...
   ['oshi',      '💖', 'Cor do cabelo',  60],
   ['ceu',       '☁️', 'Céu',            60],
   ['noite',     '🌙', 'Noite',          80],
-  ['halloween', '🎃', 'Halloween',     150]
+  ['halloween', '🎃', 'Halloween',     150],
+  ['temporada', '🗓️', 'Da temporada',    0]    // grátis: muda com o tema do momento (só aparece no período)
 ];
 var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: roupa_...); o valor vai em "out" do personagem
   ['brasil',    '🇧🇷', 'Brasil',            150],
@@ -6034,7 +6114,18 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
   ['disco',     '🥠', 'Fortune Disco',     360],   // inspirada em "Koisuru Fortune Cookie" (AKB48)
   ['technopop', '🤖', 'Techno Pop',        400],   // inspirada no techno-pop de "Polyrhythm" (Perfume)
   ['decora',    '🍬', 'Decora kei',        450],
-  ['alienfan',  '👽', 'Fantasia de alien', 500]
+  ['alienfan',  '👽', 'Fantasia de alien', 500],
+  // Roupas da temporada: [chave, emoji, nome, preço, tema] — só se compram no período do tema; depois de comprada, é para sempre
+  ['vampiro',   '🧛', 'Halloween Night',   320, 'halloween'],
+  ['rena',      '🦌', 'Suéter de rena',    300, 'natal'],
+  ['reveillon', '🥂', 'Réveillon',         300, 'anonovo'],
+  ['floral',    '🌺', 'Verão floral',      280, 'verao'],
+  ['coracao',   '💝', 'Suéter de coração', 300, 'valentine'],
+  ['outono',    '🍁', 'Sobretudo de outono', 320, 'outono'],
+  ['sakura',    '🌸', 'Haori de sakura',   340, 'sakura'],
+  ['puffer',    '❄️', 'Puffer de inverno', 340, 'inverno'],
+  ['yukata',    '🎋', 'Yukata de Tanabata', 300, 'tanabata'],
+  ['cardiga',   '🌼', 'Cardigã florido',   280, 'primavera']
 ];
 var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, como conquistar]
   ['estreia',  '🎤', 'Estreia',          'Primeira corrida no ranking online'],
@@ -6048,7 +6139,23 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['top1mini', '🥇', 'Top 1 do camarim', '1º lugar em um minijogo do camarim'],
   ['fashion',  '🛍️', 'Fashionista',      '5 compras no estúdio e na lojinha'],
   ['estilista','🎨', 'Estilista',        'Escolheu a própria foto do perfil'],
-  ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações']
+  ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações'],
+  ['quarteto', '🎤', 'Quarteto TsuLiPa', 'Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto'],
+  ['carteiro', '💌', 'Carteiro',         'Deixou 10 recados'],
+  ['amizade',  '🤝', 'Amizade',          'Deu 10 corações'],
+  ['guarda',   '👗', 'Guarda-roupa completo', 'Comprou todas as roupas fixas da lojinha'],
+  ['centersemana', '🏅', 'Center da semana', 'Ficou em 1º lugar no ranking de uma semana'],
+  // da temporada: ganha quem joga uma corrida no período do tema
+  ['tema_halloween', '🎃', 'Halloween',   'Correu no Halloween'],
+  ['tema_natal',     '🎄', 'Natal',       'Correu no Natal'],
+  ['tema_anonovo',   '🥂', 'Ano Novo',    'Correu na virada do Ano Novo'],
+  ['tema_verao',     '🌞', 'Verão',       'Correu no começo do verão'],
+  ['tema_valentine', '💝', 'Valentine',   'Correu no Valentine ou no Dia dos Namorados'],
+  ['tema_outono',    '🍁', 'Outono',      'Correu no começo do outono'],
+  ['tema_sakura',    '🌸', 'Sakura',      'Correu na época das sakuras'],
+  ['tema_inverno',   '❄️', 'Inverno',     'Correu no começo do inverno'],
+  ['tema_tanabata',  '🎋', 'Tanabata',    'Correu no Tanabata'],
+  ['tema_primavera', '🌼', 'Primavera',   'Correu no começo da primavera']
 ];
 // Oshi: membros atuais do BRS48, com a cor e o emoji de cada um (lista do Blog de Membros do BRS48, out/2026).
 // Para atualizar, é só mexer nesta lista: [apelido, emoji, cor].
@@ -6227,7 +6334,7 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle = '#ff6fb5'; g.fillRect(x + 22, y + 23.5, 2, 2);
     g.fillStyle = '#111827'; g.fillRect(x + 7, y + 33, 16, 8);
     g.fillStyle = nc; g.fillRect(x + 7, y + 33.5, 1, 7.5); g.fillRect(x + 22, y + 33.5, 1, 7.5);
-  }
+  } else if(typeof temaRoupa === 'function') temaRoupa(roupa, c, x, y, cor, E, T, branco);   // roupas da temporada (módulo de temas)
   return true;
 }
 function perfLojaDono(){   // roupas da lojinha que você comprou (guardadas também no visual do Idol para o menu)
@@ -6365,6 +6472,11 @@ function perfFundo(x, W2, H2, f, cor, t){
     for(i = 0; i < 9; i++){ var px = i * W2 / 8; x.fillRect(px - 2 * u, H2 * .8, 4 * u, H2 * .1); x.beginPath(); x.moveTo(px - 3 * u, H2 * .8); x.lineTo(px, H2 * .77); x.lineTo(px + 3 * u, H2 * .8); x.fill(); }
     x.fillRect(0, H2 * .83, W2, 2.5 * u);
     petDrawAbobora(x, W2 * .1, H2 * .95, 2.1 * u, true); petDrawAbobora(x, W2 * .9, H2 * .95, 1.7 * u, true);
+  } else if(f === 'temporada'){   // muda com o tema do momento; fora de temporada vira o Básico
+    var tk = typeof temaAtual === 'function' ? temaAtual() : '';
+    if(tk === 'halloween') perfFundo(x, W2, H2, 'halloween', cor, t);
+    else if(tk && typeof temaFundo === 'function') temaFundo(x, W2, H2, tk, t);
+    else perfFundo(x, W2, H2, 'basico', cor, t);
   }
 }
 
@@ -6526,6 +6638,7 @@ function perfPoseFrente(c, x, y){
     g.fillStyle = '#b6ff3b'; g.beginPath(); g.arc(x + 7, y - 12, 2.2, 0, 7); g.arc(x + 23, y - 12, 2.2, 0, 7); g.fill();
     g.fillStyle = 'rgba(255,255,255,.8)'; g.fillRect(x + 6.2, y - 13, .9, .9); g.fillRect(x + 22.2, y - 13, .9, .9);
   }
+  if(ant && typeof temaAntena === 'function') temaAntena(ant, c, x, y);   // gorro, chifres de rena, flores... (módulo de temas)
   g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(p === 'mic'){
     g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 22.5, y + 23.2); g.stroke();
@@ -6676,7 +6789,8 @@ function perfUltimas(L){
 
 // ---------- Insígnias ----------
 function perfInsHtml(tem, meu){
-  var lista = PERF_INS.filter(function(i){ return meu || tem.indexOf(i[0]) >= 0; });
+  var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
+  var lista = PERF_INS.filter(function(i){ return tem.indexOf(i[0]) >= 0 || (meu && (!/^tema_/.test(i[0]) || i[0] === 'tema_' + tmA)); });
   if(!lista.length) return '<p class="perfcarr">✧</p>';
   return '<div class="perfins" id="perfIns">' + lista.map(function(i){
     var ok = tem.indexOf(i[0]) >= 0;
@@ -6706,6 +6820,7 @@ function perfDarCoracao(){
     b.innerHTML = '💖 <b>' + (+d.coracoes || 0) + '</b>'; b.setAttribute('aria-pressed', 'true');
     perfChuvaCoracoes(b);
     perfTopoMsg('💖 ' + tr('Você deu um coração hoje!'));
+    if(typeof insConferir === 'function') insConferir();
     [1047, 1319, 1568].forEach(function(f, i){ beep(f, .12, 'sine', .04, i * .07); });
   }).catch(function(){ b.disabled = false; perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
@@ -6742,7 +6857,7 @@ perfOv.addEventListener('click', function(e){
     b.disabled = true;
     contaRpc('deixar_recado', { p_nick: perfAtual.nick, p_texto: tx }).then(function(r){
       b.disabled = false;
-      if(r && r.ok){ if(sfx.card) sfx.card(); perfAbrir(perfAtual.nick, true); setTimeout(function(){ perfTopoMsg('💌 ' + tr('Recado enviado!')); }, 400); return; }
+      if(r && r.ok){ if(sfx.card) sfx.card(); perfAbrir(perfAtual.nick, true); setTimeout(function(){ perfTopoMsg('💌 ' + tr('Recado enviado!')); }, 400); if(typeof insConferir === 'function') insConferir(); return; }
       var m = $('perfRecMsg'); m.textContent = tr(PERF_REC_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; if(sfx.hit) sfx.hit();
     }).catch(function(){ b.disabled = false; });
     return;
@@ -6885,11 +7000,15 @@ function perfLojaSincronizar(){   // as compras do servidor valem também para a
 }
 function perfLojaUI(){
   var box = $('perfLoja'); if(!box) return;
-  box.innerHTML = PERF_LOJA.map(function(it){
+  var tmL = typeof temaAtual === 'function' ? temaAtual() : '';
+  var lojaL = PERF_LOJA.filter(function(it){ return !it[4] || it[4] === tmL || perfLojaDono().indexOf(it[0]) >= 0; });
+  lojaL.sort(function(a, b){ return (b[4] === tmL && !!tmL) - (a[4] === tmL && !!tmL); });   // a da temporada vem primeiro
+  box.innerHTML = lojaL.map(function(it){
     var dono = perfLojaDono().indexOf(it[0]) >= 0, veste = CU.out === it[0], prov = perfProva === it[0];
     var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
       : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>';
-    return '<div class="perfroupa' + (prov ? ' on' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + acao + '</div>';
+    var tag = it[4] && !dono && typeof temaAteTxt === 'function' ? '<small class="perftemp">🗓️ ' + escHtml(tr('Só até')) + ' ' + temaAteTxt() + '</small>' : it[4] ? '<small class="perftemp">🗓️ ' + escHtml(tr('Da temporada')) + '</small>' : '';
+    return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + acao + '</div>';
   }).join('');
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
     var av = perfAvAtual({ pose:'v', fundo:'basico' }); av.c.out = cv.dataset.roupa;
@@ -6905,13 +7024,14 @@ perfOv.addEventListener('click', function(e){
     contaRpc('comprar_visual', { p_key: b.dataset.comprar }).then(function(r){
       if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e2){} setBest(); }
       var m = $('perfLojaMsg');
-      if(!r || !r.ok){ m.textContent = tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; b.disabled = false; if(sfx.hit) sfx.hit(); return; }
+      if(!r || !r.ok){ m.textContent = tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : r && r.erro === 'temporada' ? 'Essa roupa só se compra no período do tema.' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; b.disabled = false; if(sfx.hit) sfx.hit(); return; }
       perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono;
       perfLojaSincronizar();
       var k = b.dataset.comprar.slice(6);
       perfMontMudou('out', k); perfMontUI();
       m.textContent = '✨ ' + tr('Comprado!'); m.hidden = false;
       if(sfx.rank) sfx.rank();
+      if(typeof insConferir === 'function') insConferir();   // pode ter liberado o Guarda-roupa completo
     }).catch(function(){ b.disabled = false; });
     return;
   }
@@ -6922,7 +7042,7 @@ perfOv.addEventListener('click', function(e){
 // ---------- Estúdio de foto (só no seu perfil) ----------
 function perfTem(tipo, k){
   if(tipo === 'visual') return !k || perfDono.indexOf(k) >= 0;
-  if(tipo === 'fundo') return !k || k === 'basico' || perfDono.indexOf('fundo_' + k) >= 0;
+  if(tipo === 'fundo') return !k || k === 'basico' || k === 'temporada' || perfDono.indexOf('fundo_' + k) >= 0;
   if(tipo === 'pose'){ var p = perfPoseInfo(k); return !p || !p[3] || perfDono.indexOf('pose_' + k) >= 0; }
   return true;
 }
@@ -6954,7 +7074,7 @@ function perfGenUI(){
   var pets = [['', '🚫', 'Sem pet']].concat(perfPetsDono().map(function(k){ var p = petData.pets[k]; return [k, PET_SP[k].emo, p.nome || PET_SP[k].n]; }));
   if(av.pet && perfPetsDono().indexOf(av.pet.k) < 0) av.pet = null;
   $('perfGenOpts').innerHTML = grp('Visual', 'visual', vis, av.visual) + grp('Pose', 'pose', PERF_POSES, av.pose) + grp('Expressão', 'expr', exprs, String(av.expr)) +
-    grp('Fundo', 'fundo', PERF_FUNDOS, av.fundo) + (pets.length > 1 ? grp('Pet na foto', 'pet', pets, av.pet ? av.pet.k : '') : '');
+    grp('Fundo', 'fundo', PERF_FUNDOS.filter(function(o){ return o[0] !== 'temporada' || (typeof temaAtual === 'function' && temaAtual()); }), av.fundo) + (pets.length > 1 ? grp('Pet na foto', 'pet', pets, av.pet ? av.pet.k : '') : '');
   var b = $('perfGenBtns'), m = $('perfGenMsg'), falta = perfFaltando();
   if(!falta.length){
     b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png" href="#">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
@@ -7148,6 +7268,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     }
     perfAvatarAuto();
     perfPresente();
+    if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
   }).catch(function(){ perfEntrou = false; });
 }
 function perfSair(){ perfSyncOn = false; perfEntrou = false; perfMeuAv = null; perfGenAv = null; clearTimeout(perfSyncT); if(!perfOv.hidden) perfFechar(); }
@@ -7309,6 +7430,493 @@ perfOv.addEventListener('click', function(e){
   }).catch(function(){ b.disabled = false; });
 });
 // --- FIM DO PERFIL (V2.1.3) ---
+// ================================================================
+// --- V2.1.3 · TEMAS DA TEMPORADA, TELA DE INÍCIO, MISSÕES E INSÍGNIAS NOVAS ---
+// O calendário dos temas é o MESMO da função tema_do_dia do Supabase:
+// se mudar uma data aqui, mude lá também (senão a roupa da temporada não se compra).
+// Chave nova de save: brs48cr_tut (tutorial já visto) — nunca renomear.
+// ================================================================
+var TEMAS = [   // [chave, início MM-DD, fim MM-DD] — horário de Brasília
+  ['natal', '12-01', '12-26'], ['anonovo', '12-27', '01-02'], ['verao', '01-03', '01-16'], ['valentine', '02-01', '02-15'],
+  ['outono', '03-20', '03-31'], ['sakura', '04-01', '04-14'], ['valentine', '06-05', '06-13'], ['inverno', '06-21', '07-05'],
+  ['tanabata', '07-06', '07-08'], ['primavera', '09-22', '10-06'], ['halloween', '10-24', '11-02']
+];
+var TEMA_INFO = {   // [emoji, nome, céu de cima, céu de baixo, chão, partícula, cores das bandeirinhas, item do camarim]
+  natal:     ['🎄', 'Natal',     '#0f3b2e', '#2e7d5b', '#f4f8ff', 'neve',    ['#e0303a', '#ffffff', '#16a34a'], '🎄'],
+  anonovo:   ['🥂', 'Ano Novo',  '#0b1030', '#3a2a7a', '#1a1640', 'fogos',   ['#ffe14d', '#ffffff', '#c4a5ff'], '🥂'],
+  verao:     ['🌞', 'Verão',     '#3cc8f5', '#c8f6ff', '#ffe2a8', 'sol',     ['#ff6fb5', '#ffe14d', '#4dd8ff'], '🍉'],
+  valentine: ['💝', 'Valentine', '#ffb3d6', '#fff0f7', '#ffc4dd', 'coracao', ['#ff4f9a', '#ffffff', '#ff9ccd'], '💝'],
+  outono:    ['🍁', 'Outono',    '#ffbf7a', '#fff1dc', '#c98b55', 'folha',   ['#e8650c', '#f5b400', '#a0522d'], '🍁'],
+  sakura:    ['🌸', 'Sakura',    '#ffcfe6', '#fff7fb', '#c9e8b5', 'petala',  ['#ff9ccd', '#ffffff', '#ffc4dd'], '🌸'],
+  inverno:   ['❄️', 'Inverno',   '#7fb1f0', '#e8f2ff', '#ffffff', 'neve',    ['#4169e1', '#ffffff', '#a8d8ff'], '☃️'],
+  tanabata:  ['🎋', 'Tanabata',  '#10194a', '#3b2f8a', '#244f34', 'estrela', ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b'], '🎋'],
+  primavera: ['🌼', 'Primavera', '#b8ecff', '#f2ffe8', '#a8e07a', 'flor',    ['#ffe14d', '#ff9ccd', '#b6ff3b'], '🌼'],
+  halloween: ['🎃', 'Halloween', '#2b0f45', '#ff8a3d', '#2a1238', 'morcego', ['#ff8a1f', '#9b30d9', '#2a1640'], '🎃']
+};
+var TEMA_TESTE = 'tsl_tema_teste';   // sessionStorage: tema forçado pela moderação (só nesta aba, não é save)
+function temaForcado(){ try{ var f = sessionStorage.getItem(TEMA_TESTE); if(f === 'nenhum' || TEMA_INFO[f]) return f; }catch(e){} return ''; }
+function temaLinha(){   // linha do calendário de hoje (ou null)
+  var md = dk().slice(5);
+  for(var i = 0; i < TEMAS.length; i++){ var a = TEMAS[i][1], b = TEMAS[i][2]; if(a <= b ? (md >= a && md <= b) : (md >= a || md <= b)) return TEMAS[i]; }
+  return null;
+}
+function temaAtual(){
+  var f = temaForcado(); if(f) return f === 'nenhum' ? '' : f;
+  var l = temaLinha(); return l ? l[0] : '';
+}
+function temaAteTxt(){   // "02/11"
+  var f = temaForcado(), l = temaLinha();
+  if(f && (!l || l[0] !== f)){ for(var i = 0; i < TEMAS.length; i++) if(TEMAS[i][0] === f){ l = TEMAS[i]; break; } }
+  if(!l) return ''; var b = l[2]; return b.slice(3) + '/' + b.slice(0, 2);
+}
+function temaAdminHtml(){   // "Forçar tema" na aba de Moderação (só para testar)
+  var f = temaForcado();
+  return '<label class="admtema">🗓️ ' + escHtml(tr('Forçar tema')) + ' <select id="admTema"><option value="">' + escHtml(tr('Tema da data')) + '</option><option value="nenhum"' + (f === 'nenhum' ? ' selected' : '') + '>🚫 ' + escHtml(tr('Sem tema')) + '</option>' +
+    Object.keys(TEMA_INFO).map(function(k){ return '<option value="' + k + '"' + (f === k ? ' selected' : '') + '>' + TEMA_INFO[k][0] + ' ' + escHtml(tr(TEMA_INFO[k][1])) + '</option>'; }).join('') + '</select></label>';
+}
+perfOv.addEventListener('change', function(e){
+  if(e.target.id !== 'admTema') return;
+  try{ if(e.target.value) sessionStorage.setItem(TEMA_TESTE, e.target.value); else sessionStorage.removeItem(TEMA_TESTE); }catch(e2){}
+  petTemaOn = ''; hubTemaUI(); perfTopoMsg('🗓️ ' + tr('Feito!'));
+});
+
+// ---------- Desenho dos temas: partículas, bandeirinhas, fundo do estúdio e decoração do camarim ----------
+function temaHash(i){ var s = Math.sin(i * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function temaCoracao(x, cx, cy, s){ x.beginPath(); x.moveTo(cx, cy + s * .9); x.bezierCurveTo(cx - s * 1.6, cy - s * .2, cx - s * .7, cy - s * 1.3, cx, cy - s * .45); x.bezierCurveTo(cx + s * .7, cy - s * 1.3, cx + s * 1.6, cy - s * .2, cx, cy + s * .9); x.fill(); }
+function temaFlor(x, cx, cy, r, cor, miolo){ x.fillStyle = cor; for(var i = 0; i < 5; i++){ x.beginPath(); x.arc(cx + Math.cos(i * 1.2566) * r, cy + Math.sin(i * 1.2566) * r, r * .8, 0, 7); x.fill(); } x.fillStyle = miolo || '#ffe14d'; x.beginPath(); x.arc(cx, cy, r * .6, 0, 7); x.fill(); }
+function temaParticulas(x, W2, H2, k, n, t, u){   // caem (ou sobem) devagar; t = quadro da animação
+  var tipo = TEMA_INFO[k] ? TEMA_INFO[k][5] : '', i;
+  x.save();
+  for(i = 0; i < n; i++){
+    var px = temaHash(i * 3 + 1) * W2, vel = (.25 + temaHash(i * 7) * .45) * u, s = (2 + temaHash(i * 11) * 2.6) * u, py;
+    if(tipo === 'coracao'){   // corações sobem
+      py = H2 - ((temaHash(i * 5) * H2 + t * vel) % (H2 + 20 * u)) + 10 * u;
+      x.globalAlpha = .55 + .35 * temaHash(i); x.fillStyle = ['#ff4f9a', '#ff9ccd', '#ffffff'][i % 3]; temaCoracao(x, px + Math.sin(t * .03 + i) * 6 * u, py, s * 1.3);
+      continue;
+    }
+    py = ((temaHash(i * 5) * H2) + t * vel) % (H2 + 20 * u) - 10 * u;
+    var dx = Math.sin(t * .02 + i * 1.7) * 8 * u;
+    x.globalAlpha = .7 + .3 * temaHash(i * 13);
+    if(tipo === 'neve'){ x.fillStyle = '#ffffff'; x.beginPath(); x.arc(px + dx, py, s * .8, 0, 7); x.fill(); }
+    else if(tipo === 'petala'){ x.save(); x.translate(px + dx, py); x.rotate(t * .02 + i); x.fillStyle = i % 2 ? '#ffb7d5' : '#ffd6e8'; x.beginPath(); x.ellipse(0, 0, s * 1.2, s * .7, 0, 0, 7); x.fill(); x.restore(); }
+    else if(tipo === 'folha'){ x.save(); x.translate(px + dx, py); x.rotate(t * .025 + i); x.fillStyle = ['#e8650c', '#f5b400', '#c2410c', '#a0522d'][i % 4]; x.beginPath(); x.moveTo(0, -s * 1.4); x.quadraticCurveTo(s * 1.2, 0, 0, s * 1.4); x.quadraticCurveTo(-s * 1.2, 0, 0, -s * 1.4); x.fill(); x.restore(); }
+    else if(tipo === 'flor'){ x.globalAlpha = .8; temaFlor(x, px + dx, py, s * .55, ['#ff9ccd', '#ffffff', '#c4a5ff', '#ffe14d'][i % 4], i % 4 === 3 ? '#ff6fb5' : '#ffe14d'); }
+    else if(tipo === 'sol' || tipo === 'estrela' || tipo === 'fogos' || tipo === 'morcego'){   // brilhinhos piscando (não caem)
+      var bx = temaHash(i * 17 + 3) * W2, by = temaHash(i * 19 + 5) * H2 * .7;
+      x.globalAlpha = Math.max(0, .3 + .7 * Math.sin(t * .05 + i * 2.3));
+      x.fillStyle = tipo === 'sol' ? '#ffffff' : tipo === 'morcego' ? '#ffd27a' : ['#ffe14d', '#ffffff', '#c4a5ff', '#4dd8ff'][i % 4];
+      x.font = '900 ' + Math.round(s * 3.2) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('✦', bx, by);
+    }
+  }
+  x.restore();
+}
+function temaBandeirinhas(x, W2, cores, y0, u, t){   // varal de bandeirinhas no alto
+  var n = Math.max(6, Math.round(W2 / (28 * u))), i;
+  x.save(); x.strokeStyle = 'rgba(255,255,255,.7)'; x.lineWidth = 1 * u;
+  x.beginPath(); x.moveTo(0, y0); x.quadraticCurveTo(W2 / 2, y0 + 16 * u, W2, y0); x.stroke();
+  for(i = 0; i < n; i++){
+    var fx = (i + .5) * W2 / n, uu = fx / W2, fy = y0 + 2 * uu * (1 - uu) * 16 * u + 1, sw = Math.sin((t || 0) * .04 + i) * 1.2 * u;
+    x.fillStyle = cores[i % cores.length]; x.beginPath(); x.moveTo(fx - 7 * u, fy); x.lineTo(fx + 7 * u, fy); x.lineTo(fx + sw, fy + 13 * u); x.closePath(); x.fill();
+  }
+  x.restore();
+}
+function temaFundo(x, W2, H2, k, t){   // fundo do Estúdio / da tela de início para o tema do momento
+  var inf = TEMA_INFO[k]; if(!inf){ perfFundo(x, W2, H2, 'basico', '', t); return; }
+  if(k === 'halloween'){ perfFundo(x, W2, H2, 'halloween', '', t); return; }
+  var u = W2 / 320, i; t = t || 0;
+  var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, inf[2]); gr.addColorStop(1, inf[3]);
+  x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+  if(k === 'verao'){   // sol, mar e areia
+    var sg = x.createRadialGradient(W2 * .8, H2 * .2, 4 * u, W2 * .8, H2 * .2, 60 * u); sg.addColorStop(0, 'rgba(255,240,150,.9)'); sg.addColorStop(1, 'rgba(255,240,150,0)');
+    x.fillStyle = sg; x.fillRect(0, 0, W2, H2); x.fillStyle = '#ffe14d'; x.beginPath(); x.arc(W2 * .8, H2 * .2, 18 * u, 0, 7); x.fill();
+    x.fillStyle = '#29b6e8'; x.fillRect(0, H2 * .62, W2, H2 * .2);
+    x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 1.5 * u; for(i = 0; i < 6; i++){ var wx = ((i * W2 / 5) + t * .4 * u) % (W2 + 30 * u) - 15 * u; x.beginPath(); x.arc(wx, H2 * .7, 6 * u, Math.PI, 0); x.stroke(); }
+  } else if(k === 'natal' || k === 'inverno'){   // montanhas de neve (e pinheirinhos no Natal)
+    x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.moveTo(0, H2 * .75); x.quadraticCurveTo(W2 * .25, H2 * .5, W2 * .5, H2 * .72); x.quadraticCurveTo(W2 * .75, H2 * .52, W2, H2 * .74); x.lineTo(W2, H2); x.lineTo(0, H2); x.fill();
+    if(k === 'natal') [.12, .3, .72, .9].forEach(function(px, j){ var s = (j % 2 ? 16 : 22) * u, bx = W2 * px, by = H2 * .9; x.fillStyle = '#15803d'; for(var q = 0; q < 3; q++){ x.beginPath(); x.moveTo(bx, by - s * 2 + q * s * .5); x.lineTo(bx + s * (.5 + q * .2), by - s * .9 + q * s * .4); x.lineTo(bx - s * (.5 + q * .2), by - s * .9 + q * s * .4); x.fill(); } x.fillStyle = ['#ffe14d', '#ff6fb5', '#4dd8ff'][j % 3]; x.beginPath(); x.arc(bx, by - s * 2, 2 * u, 0, 7); x.fill(); });
+    else { x.fillStyle = '#fff'; x.beginPath(); x.arc(W2 * .14, H2 * .82, 11 * u, 0, 7); x.arc(W2 * .14, H2 * .82 - 16 * u, 7.5 * u, 0, 7); x.fill(); var bnY = H2 * .82 - 16 * u; x.fillStyle = '#ff8a1f'; x.beginPath(); x.moveTo(W2 * .14, bnY); x.lineTo(W2 * .14 + 7 * u, bnY + 1 * u); x.lineTo(W2 * .14, bnY + 2 * u); x.fill(); x.fillStyle = '#2c1a5e'; x.fillRect(W2 * .14 - 3 * u, bnY - 2.5 * u, 1.6 * u, 1.6 * u); x.fillRect(W2 * .14 + 1.5 * u, bnY - 2.5 * u, 1.6 * u, 1.6 * u); }
+  } else if(k === 'anonovo' || k === 'tanabata'){   // céu de noite com estrelas (fogos no Ano Novo, via láctea no Tanabata)
+    perfBrilhos(x, W2, H2 * .75, '#fff', 30, 7, t);
+    if(k === 'tanabata'){ x.save(); x.globalAlpha = .35; var vl = x.createLinearGradient(0, H2 * .55, W2, 0); vl.addColorStop(0, 'rgba(196,165,255,0)'); vl.addColorStop(.5, 'rgba(225,215,255,.9)'); vl.addColorStop(1, 'rgba(196,165,255,0)'); x.strokeStyle = vl; x.lineWidth = 40 * u; x.beginPath(); x.moveTo(-10, H2 * .6); x.lineTo(W2 + 10, H2 * .05); x.stroke(); x.restore();
+      x.strokeStyle = '#4d9a3a'; x.lineWidth = 3 * u; x.beginPath(); x.moveTo(W2 * .1, H2); x.quadraticCurveTo(W2 * .12, H2 * .5, W2 * .2, H2 * .2); x.stroke();
+      ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#c4a5ff'].forEach(function(cc, j){ var tx = W2 * (.13 + j * .02), ty = H2 * (.35 + j * .08); x.fillStyle = cc; x.save(); x.translate(tx, ty); x.rotate(Math.sin(t * .03 + j) * .15); x.fillRect(-2.5 * u, 0, 5 * u, 13 * u); x.restore(); }); }
+    else for(i = 0; i < 3; i++){ var ft = (t * 1.2 + i * 70) % 210, fr = Math.min(ft, 60) * .55 * u, fx = W2 * (.2 + i * .3), fy = H2 * (.22 + (i % 2) * .12);
+      if(ft < 110){ x.save(); x.globalAlpha = Math.max(0, 1 - ft / 110); x.strokeStyle = ['#ffe14d', '#ff6fb5', '#4dd8ff'][i]; x.lineWidth = 1.6 * u; for(var q2 = 0; q2 < 12; q2++){ var an = q2 * Math.PI / 6; x.beginPath(); x.moveTo(fx + Math.cos(an) * fr * .5, fy + Math.sin(an) * fr * .5); x.lineTo(fx + Math.cos(an) * fr, fy + Math.sin(an) * fr); x.stroke(); } x.restore(); } }
+  } else if(k === 'sakura'){   // galho florido no canto
+    x.strokeStyle = '#7a4a2a'; x.lineWidth = 4 * u; x.lineCap = 'round'; x.beginPath(); x.moveTo(-5, H2 * .1); x.quadraticCurveTo(W2 * .2, H2 * .12, W2 * .38, H2 * .04); x.stroke();
+    for(i = 0; i < 9; i++) temaFlor(x, W2 * (.04 + i * .04), H2 * (.1 + Math.sin(i) * .04), 3.2 * u, i % 2 ? '#ffc4dd' : '#ffffff', '#ff6fb5');
+  } else if(k === 'outono'){   // arvorezinhas laranja
+    [.12, .86].forEach(function(px){ x.fillStyle = '#8b5a2b'; x.fillRect(W2 * px - 3 * u, H2 * .62, 6 * u, H2 * .28); ['#e8650c', '#f5b400', '#c2410c'].forEach(function(cc, j){ x.fillStyle = cc; x.beginPath(); x.arc(W2 * px + (j - 1) * 12 * u, H2 * .58 - (j % 2) * 8 * u, 16 * u, 0, 7); x.fill(); }); });
+  } else if(k === 'primavera' || k === 'valentine'){ perfEnfeites(x, W2, H2, inf[6], 8, 4, t, .55); }
+  temaBandeirinhas(x, W2, inf[6], 4 * u, u, t);
+  temaParticulas(x, W2, H2 * .9, k, 22, t, u);
+  x.fillStyle = inf[4]; x.fillRect(0, H2 * .9, W2, H2 * .1);
+  if(k === 'primavera' || k === 'verao' || k === 'sakura') for(i = 0; i < 9; i++) temaFlor(x, (i + .5) * W2 / 9, H2 * .93, 2.6 * u, ['#ff9ccd', '#ffe14d', '#ffffff'][i % 3]);
+}
+function temaCamarim(x, foto, t){   // decoração do camarim (360 x 220) para os temas sem desenho próprio
+  var k = petTemaOn, inf = TEMA_INFO[k]; if(!inf) return;
+  t = foto ? 0 : t;
+  x.save(); x.globalAlpha = .16; var gr = x.createLinearGradient(0, 0, 0, 220); gr.addColorStop(0, inf[2]); gr.addColorStop(1, inf[3]); x.fillStyle = gr; x.fillRect(0, 0, 360, 220); x.restore();
+  temaBandeirinhas(x, 360, inf[6], 2, 1, t);
+  temaParticulas(x, 360, PET_FLOOR + 4, k, 16, t, 1);
+}
+function temaItemChao(x, cx, by, k, t){   // item da temporada no chão (tocar liga e desliga o tema)
+  var inf = TEMA_INFO[k]; if(!inf) return;
+  x.save(); x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.font = '26px sans-serif';
+  x.translate(cx, by + Math.sin((t || 0) * .06) * 1.5); x.fillText(inf[7], 0, 0); x.restore();
+}
+
+// ---------- Roupas da temporada (chamadas pelo perfRoupaLoja) ----------
+function temaRoupa(roupa, c, x, y, cor, E, T, branco){
+  var i;
+  function calca(cc){ g.fillStyle = cc; g.fillRect(x + 7, y + 32, 7.5, 9.5); g.fillRect(x + 15.5, y + 32, 7.5, 9.5); g.fillRect(x + 7, y + 32, 16, 3); }
+  if(roupa === 'vampiro'){   // Halloween Night: capa de vampiro (forro na cor escolhida), camisa com babado e colete
+    var fr = branco ? '#c81d3a' : cor;
+    g.fillStyle = '#16121f'; T([x + 4, y + 22, x - 4, y + 43, x + 7, y + 40]); T([x + 26, y + 22, x + 34, y + 43, x + 23, y + 40]);
+    g.fillStyle = fr; T([x + 4.5, y + 24, x - 1.5, y + 41, x + 5.5, y + 39]); T([x + 25.5, y + 24, x + 31.5, y + 41, x + 24.5, y + 39]);
+    calca('#1b1a24');
+    g.fillStyle = '#16121f'; g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = '#f8f4ff'; g.fillRect(x + 10, y + 22, 10, 11);
+    g.fillStyle = '#7a1230'; g.fillRect(x + 8, y + 24, 3, 9); g.fillRect(x + 19, y + 24, 3, 9);
+    g.fillStyle = '#fff'; for(i = 0; i < 4; i++) E(x + 15, y + 23.5 + i * 2.2, 2.4 - i * .3, 1.1);
+    g.fillStyle = '#ffe14d'; E(x + 15, y + 30.5, .9, .9);
+    g.fillStyle = fr; T([x + 4, y + 23, x + 1, y + 16, x + 9, y + 22]); T([x + 26, y + 23, x + 29, y + 16, x + 21, y + 22]);   // gola alta
+  } else if(roupa === 'rena'){   // Natal: suéter (na cor escolhida) com faixa de zigue-zague e rena no peito
+    var sw = branco ? '#c81d25' : cor;
+    calca('#2a3f8a');
+    g.fillStyle = sw; g.fillRect(x + 4, y + 22, 22, 12);
+    g.fillStyle = '#fff'; g.fillRect(x + 4, y + 23.5, 22, 2.2); g.fillRect(x + 4, y + 31.5, 22, 1.4);
+    g.fillStyle = '#16a34a'; for(i = 0; i < 6; i++) T([x + 4 + i * 3.7, y + 25.7, x + 5.8 + i * 3.7, y + 23.5, x + 7.6 + i * 3.7, y + 25.7]);
+    g.fillStyle = '#8b5a2b'; E(x + 15, y + 29, 3, 2.4); g.fillRect(x + 11, y + 26.5, 1, 2); g.fillRect(x + 18, y + 26.5, 1, 2); g.fillRect(x + 10, y + 26.5, 2.5, .8); g.fillRect(x + 17.5, y + 26.5, 2.5, .8);
+    g.fillStyle = '#ff2a4d'; E(x + 15, y + 30.4, 1.1, 1); g.fillStyle = '#1b1a24'; g.fillRect(x + 13.6, y + 28.2, .8, .8); g.fillRect(x + 15.6, y + 28.2, .8, .8);
+    perfAntena = 'rena';
+  } else if(roupa === 'reveillon'){   // Ano Novo: tudo branco com brilho dourado (a tradição da virada no Brasil)
+    calca('#f8fafc'); g.fillStyle = '#e2e8f0'; g.fillRect(x + 14.6, y + 34, .8, 7.5);
+    g.fillStyle = '#ffffff'; g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = '#e8eef7'; T([x + 10, y + 22, x + 20, y + 22, x + 15, y + 27]);
+    g.fillStyle = branco ? '#f5b400' : cor; g.fillRect(x + 4, y + 31, 22, 1.8);
+    g.fillStyle = '#ffd84d'; [[7, 24], [22, 25], [9, 29], [20, 29.5], [12, 26], [17, 23.5], [24, 28]].forEach(function(p, j){ g.globalAlpha = .6 + .4 * Math.sin((frame || 0) * .15 + j); g.fillRect(x + p[0], y + p[1], 1, 1); });
+    g.globalAlpha = 1;
+    perfAntena = 'estrelas';
+  } else if(roupa === 'floral'){   // Verão: camisa floral aberta (na cor escolhida), regata branca e bermuda
+    var fl = branco ? '#29b6e8' : cor;
+    g.fillStyle = '#d9b77e'; g.fillRect(x + 6, y + 32, 18, 6); g.fillStyle = '#c4a067'; g.fillRect(x + 14.6, y + 33.5, .8, 4.5);
+    g.fillStyle = '#ffffff'; g.fillRect(x + 9, y + 22, 12, 11);
+    g.fillStyle = fl; g.fillRect(x + 4, y + 22, 7, 11); g.fillRect(x + 19, y + 22, 7, 11);
+    T([x + 9, y + 22, x + 12, y + 22, x + 10, y + 26]); T([x + 21, y + 22, x + 18, y + 22, x + 20, y + 26]);
+    temaFlorG(x + 6.5, y + 25, 1.1, '#ff6fb5'); temaFlorG(x + 23, y + 29, 1.1, '#ffe14d'); temaFlorG(x + 7, y + 30.5, .9, '#fff'); temaFlorG(x + 22.5, y + 24, .9, '#ff6fb5');
+    g.fillStyle = '#16a34a'; E(x + 9, y + 27.5, 1.6, .7, .6); E(x + 21, y + 26.6, 1.6, .7, -.6);
+    perfAntena = 'flor';
+  } else if(roupa === 'coracao'){   // Valentine: suéter (na cor escolhida) com coraçõezinhos e um coração grande
+    var sc = branco ? '#ff9ccd' : cor;
+    calca('#2a3f8a');
+    g.fillStyle = sc; g.fillRect(x + 4, y + 22, 22, 12);
+    g.fillStyle = '#fff'; g.fillRect(x + 9, y + 22, 12, 1.6); g.fillRect(x + 4, y + 32.4, 22, 1.6);
+    g.fillStyle = 'rgba(255,255,255,.7)'; [[7, 25], [23, 26], [8, 30], [22, 30.5]].forEach(function(p){ temaCoracaoG(x + p[0], y + p[1], .9); });
+    g.fillStyle = '#ff2a4d'; temaCoracaoG(x + 15, y + 27.6, 2.8);
+    g.fillStyle = 'rgba(255,255,255,.6)'; E(x + 13.6, y + 26.4, .7, .5);
+  } else if(roupa === 'outono'){   // sobretudo caramelo com cinto e cachecol (na cor escolhida)
+    var ca = branco ? '#e8650c' : cor;
+    calca('#5a3a24');
+    g.fillStyle = '#c08a52'; g.fillRect(x + 4, y + 22, 22, 15);
+    g.fillStyle = '#a8743f'; T([x + 9, y + 22, x + 15, y + 30, x + 12, y + 22]); T([x + 21, y + 22, x + 15, y + 30, x + 18, y + 22]); g.fillRect(x + 14.6, y + 30, .8, 7);
+    g.fillStyle = '#7a4f28'; g.fillRect(x + 4, y + 30, 22, 2); g.fillStyle = '#ffd27a'; g.fillRect(x + 13.5, y + 29.8, 3, 2.4); g.fillStyle = '#7a4f28'; g.fillRect(x + 14.4, y + 30.6, 1.2, .8);
+    g.fillStyle = ca; g.fillRect(x + 7, y + 21.5, 16, 3.4); g.fillRect(x + 17, y + 23, 3.4, 9);
+    g.fillStyle = 'rgba(255,255,255,.35)'; for(i = 0; i < 3; i++) g.fillRect(x + 17, y + 25 + i * 2.4, 3.4, .7);
+    g.fillStyle = ca; for(i = 0; i < 3; i++) g.fillRect(x + 17.2 + i * 1.1, y + 32, .6, 1.6);
+  } else if(roupa === 'sakura'){   // haori com pétalas (na cor escolhida) e calça larga azul-marinho
+    var hk = branco ? '#ffb7d5' : cor;
+    g.fillStyle = '#1e2a5a'; T([x + 6, y + 32, x + 24, y + 32, x + 26, y + 42, x + 4, y + 42]); g.fillStyle = '#2c3d7a'; g.fillRect(x + 14.6, y + 33, .8, 9);
+    g.fillStyle = '#fff'; g.fillRect(x + 8, y + 22, 14, 11);
+    g.fillStyle = '#1e2a5a'; g.fillRect(x + 8, y + 30, 14, 2.6);
+    g.fillStyle = hk; g.fillRect(x + 3, y + 22, 8, 13); g.fillRect(x + 19, y + 22, 8, 13);
+    g.fillStyle = 'rgba(255,255,255,.85)'; T([x + 10, y + 22, x + 12, y + 22, x + 11, y + 35]); T([x + 20, y + 22, x + 18, y + 22, x + 19, y + 35]);
+    [[5, 25], [7, 30], [23, 27], [24.5, 32], [5.5, 33]].forEach(function(p){ temaFlorG(x + p[0], y + p[1], .75, '#fff', '#ff6fb5'); });
+    perfAntena = 'sakura';
+  } else if(roupa === 'puffer'){   // jaqueta puffer (na cor escolhida), cachecol e gorro
+    var pf = branco ? '#4169e1' : cor;
+    calca('#1b2a5e');
+    g.fillStyle = pf; g.beginPath(); g.moveTo(x + 3, y + 23); g.quadraticCurveTo(x + 15, y + 19.5, x + 27, y + 23); g.lineTo(x + 27.5, y + 35); g.quadraticCurveTo(x + 15, y + 37, x + 2.5, y + 35); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = .8; for(i = 0; i < 3; i++){ g.beginPath(); g.moveTo(x + 3, y + 26.5 + i * 3.2); g.quadraticCurveTo(x + 15, y + 28 + i * 3.2, x + 27, y + 26.5 + i * 3.2); g.stroke(); }
+    g.fillStyle = 'rgba(255,255,255,.3)'; for(i = 0; i < 3; i++) E(x + 9, y + 25 + i * 3.2, 3.2, .8);
+    g.fillStyle = '#e2e8f0'; g.fillRect(x + 14.5, y + 23, 1, 13);
+    g.fillStyle = '#fff'; g.fillRect(x + 7, y + 21.5, 16, 3.2); g.fillStyle = '#ff6fb5'; g.fillRect(x + 8, y + 22.3, 14, .8); g.fillRect(x + 8.5, y + 23, 3.2, 7); g.fillStyle = '#fff'; g.fillRect(x + 8.5, y + 25, 3.2, .8); g.fillRect(x + 8.5, y + 27.5, 3.2, .8);
+    perfAntena = 'gorro';
+  } else if(roupa === 'yukata'){   // yukata de Tanabata (na cor escolhida) com estrelinhas e obi amarelo
+    var yk = branco ? '#1e3a8a' : cor;
+    g.fillStyle = yk; T([x + 4, y + 22, x + 26, y + 22, x + 25, y + 42, x + 5, y + 42]);
+    g.fillStyle = '#fff'; T([x + 10, y + 22, x + 13, y + 22, x + 18, y + 30, x + 15.5, y + 30]); T([x + 20, y + 22, x + 17, y + 22, x + 15, y + 26]);
+    g.fillStyle = 'rgba(0,0,0,.15)'; T([x + 15, y + 30, x + 25.5, y + 33, x + 25, y + 42, x + 15, y + 42]);
+    g.fillStyle = '#ffe14d'; g.fillRect(x + 4, y + 29.5, 22, 3.6); g.fillStyle = '#ff6fb5'; g.fillRect(x + 4, y + 30.9, 22, .8);
+    g.fillStyle = '#ffe14d'; [[7, 25], [22, 26], [8, 36], [20, 38], [12, 39]].forEach(function(p){ g.font = '900 3px sans-serif'; g.textAlign = 'center'; g.fillText('★', x + p[0], y + p[1]); });
+    perfAntena = 'estrelas';
+  } else if(roupa === 'cardiga'){   // cardigã florido (na cor escolhida), blusa de golinha e calça azul-clara
+    var cd = branco ? '#b6ff3b' : cor;
+    calca('#86a6dd');
+    g.fillStyle = '#fff'; g.fillRect(x + 9, y + 22, 12, 11);
+    g.fillStyle = '#fff'; T([x + 10, y + 22, x + 15, y + 22, x + 12, y + 25]); T([x + 20, y + 22, x + 15, y + 22, x + 18, y + 25]);
+    g.fillStyle = cd; g.fillRect(x + 4, y + 22, 7, 12); g.fillRect(x + 19, y + 22, 7, 12);
+    g.fillStyle = 'rgba(255,255,255,.4)'; for(i = 0; i < 5; i++){ g.fillRect(x + 4, y + 23 + i * 2.2, 7, .5); g.fillRect(x + 19, y + 23 + i * 2.2, 7, .5); }
+    [[25, '#ff9ccd'], [28.4, '#ffe14d'], [31.6, '#c4a5ff']].forEach(function(b){ temaFlorG(x + 10.6, y + b[0], .65, b[1]); });
+    temaFlorG(x + 22.5, y + 27, .9, '#ff9ccd'); temaFlorG(x + 7, y + 31, .8, '#fff');
+    perfAntena = 'flor';
+  } else return false;
+  return true;
+}
+function temaFlorG(cx, cy, r, cor, miolo){ g.fillStyle = cor; for(var i = 0; i < 5; i++){ g.beginPath(); g.arc(cx + Math.cos(i * 1.2566) * r, cy + Math.sin(i * 1.2566) * r, r * .85, 0, 7); g.fill(); } g.fillStyle = miolo || '#ffe14d'; g.beginPath(); g.arc(cx, cy, r * .6, 0, 7); g.fill(); }
+function temaCoracaoG(cx, cy, s){ g.beginPath(); g.moveTo(cx, cy + s * .9); g.bezierCurveTo(cx - s * 1.6, cy - s * .2, cx - s * .7, cy - s * 1.3, cx, cy - s * .45); g.bezierCurveTo(cx + s * .7, cy - s * 1.3, cx + s * 1.6, cy - s * .2, cx, cy + s * .9); g.fill(); }
+// Acessórios de cabeça (chamados pelo perfPoseFrente, depois do rosto)
+function temaAntena(ant, c, x, y){
+  if(ant === 'rena'){   // tiara de chifres de rena
+    g.strokeStyle = '#8b5a2b'; g.lineWidth = 1.4; g.lineCap = 'round';
+    [[9, -1], [21, 1]].forEach(function(p){ var d = p[1] || -1; g.beginPath(); g.moveTo(x + p[0], y); g.lineTo(x + p[0] + d * 2, y - 9); g.moveTo(x + p[0] + d * 1, y - 4); g.lineTo(x + p[0] + d * 4.5, y - 6); g.moveTo(x + p[0] + d * 1.7, y - 7); g.lineTo(x + p[0] - d * 1, y - 10); g.stroke(); });
+    g.fillStyle = '#c81d25'; g.fillRect(x + 4, y + 1, 22, 1.6);
+  } else if(ant === 'gorro'){   // gorro de inverno com pompom
+    g.fillStyle = '#ff6fb5'; g.beginPath(); g.arc(x + 15, y + 4, 12.5, Math.PI, 0); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.35)'; for(var i = 0; i < 4; i++) g.fillRect(x + 7 + i * 4.5, y - 6, 1, 9);
+    g.fillStyle = '#fff'; g.fillRect(x + 2, y + 2, 26, 3.6); g.beginPath(); g.arc(x + 15, y - 9, 3.2, 0, 7); g.fill();
+  } else if(ant === 'flor'){   // hibisco atrás da orelha
+    temaFlorG(x + 25.5, y + 4, 1.8, '#ff6fb5', '#ffe14d'); g.fillStyle = '#16a34a'; g.beginPath(); g.ellipse(x + 28.5, y + 6.5, 2, .9, .6, 0, 7); g.fill();
+  } else if(ant === 'sakura'){   // grampo de sakura
+    temaFlorG(x + 6.5, y + 3.5, 1.5, '#ffc4dd', '#ff6fb5'); temaFlorG(x + 9.5, y + 1.5, 1.1, '#fff', '#ff9ccd');
+  } else if(ant === 'estrelas'){   // tiara de estrelinhas douradas
+    g.fillStyle = '#f5b400'; g.fillRect(x + 4, y + 1.5, 22, 1.2);
+    g.font = '900 5px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffe14d';
+    [[8, 1.5], [15, -.5], [22, 1.5]].forEach(function(p){ g.fillText('★', x + p[0], y + p[1]); });
+  }
+}
+
+// ---------- Tela de início (hub) ----------
+var HUB_DICT = {
+  en: {"TOQUE PARA COMEÇAR":"TAP TO START","Início":"Home","Recorde":"Record","Jogar":"Play","Meu Perfil":"My Profile","Entrar com Google":"Sign in with Google","Adote um pet!":"Adopt a pet!","precisa de você!":"needs you!","está bem!":"is doing great!","Tema do momento":"Current theme","até":"until","Missões do dia":"Daily missions","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Sign in with Google to do the daily missions (up to ★45 a day).","Resgatar":"Claim","Novidades":"What's new","Privacidade e segurança":"Privacy and security","Carregando...":"Loading...",
+    "Corra {n} vezes no Center⭐Run!":"Run {n} times in Center⭐Run!","Dê 1 coração em um perfil":"Give 1 heart on a profile","Deixe 1 recado em um perfil":"Leave 1 message on a profile","Ganhe estrelas em um minijogo do camarim":"Win stars in a dressing room minigame","Compre algo para o seu pet":"Buy something for your pet","Pegue {n} estrelas nas corridas":"Collect {n} stars in runs","Faça {n} pontos em uma corrida":"Score {n} points in one run","Corra com Tsu, Lirika e Pati":"Run with Tsu, Lirika and Pati",
+    "Insígnia nova!":"New badge!","Oba!":"Yay!","Ver no perfil":"See on profile","Próximo":"Next","Vamos lá!":"Let's go!","Pular":"Skip",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Jump over the stage obstacles, grab stars and your partners' microphones. Reach Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Take care of your pet in the dressing room: food, baths, outfits and minigames worth stars.","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Sign in with Google to save in the cloud, build your Idol, earn badges, hearts and messages.",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Profile with Studio, Build Idol and the outfit shop","Corações, recados e insígnias":"Hearts, messages and badges","Temas da temporada com roupa e insígnia especiais":"Seasonal themes with special outfit and badge","Missões do dia valendo estrelas":"Daily missions worth stars","Insígnia secreta do Quarteto TsuLiPa":"Secret TsuLiPa Quartet badge","Forçar tema":"Force theme","Tema da data":"Today's theme","Sem tema":"No theme","Só até":"Only until","Da temporada":"Seasonal","Essa roupa só se compra no período do tema.":"This outfit can only be bought during its theme.",
+    "Natal":"Christmas","Ano Novo":"New Year","Verão":"Summer","Outono":"Autumn","Inverno":"Winter","Primavera":"Spring","Tema de":"Theme:"},
+  es: {"TOQUE PARA COMEÇAR":"TOCA PARA EMPEZAR","Início":"Inicio","Recorde":"Récord","Jogar":"Jugar","Meu Perfil":"Mi Perfil","Entrar com Google":"Entrar con Google","Adote um pet!":"¡Adopta una mascota!","precisa de você!":"¡te necesita!","está bem!":"¡está bien!","Tema do momento":"Tema del momento","até":"hasta","Missões do dia":"Misiones del día","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Entra con Google para hacer las misiones del día (hasta ★45 por día).","Resgatar":"Cobrar","Novidades":"Novedades","Privacidade e segurança":"Privacidad y seguridad","Carregando...":"Cargando...",
+    "Corra {n} vezes no Center⭐Run!":"Corre {n} veces en Center⭐Run!","Dê 1 coração em um perfil":"Da 1 corazón en un perfil","Deixe 1 recado em um perfil":"Deja 1 mensaje en un perfil","Ganhe estrelas em um minijogo do camarim":"Gana estrellas en un minijuego del camerino","Compre algo para o seu pet":"Compra algo para tu mascota","Pegue {n} estrelas nas corridas":"Atrapa {n} estrellas en las carreras","Faça {n} pontos em uma corrida":"Haz {n} puntos en una carrera","Corra com Tsu, Lirika e Pati":"Corre con Tsu, Lirika y Pati",
+    "Insígnia nova!":"¡Insignia nueva!","Oba!":"¡Bien!","Ver no perfil":"Ver en el perfil","Próximo":"Siguiente","Vamos lá!":"¡Vamos!","Pular":"Saltar",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Salta los obstáculos del escenario, atrapa estrellas y los micrófonos de tus compañeras. ¡Llega al Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Cuida de tu mascota en el camerino: comida, baño, ropita y minijuegos que dan estrellas.","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Entra con Google para guardar en la nube, armar tu Idol, ganar insignias, corazones y mensajes.",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Perfil con Estudio, Armar Idol y tienda de ropa","Corações, recados e insígnias":"Corazones, mensajes e insignias","Temas da temporada com roupa e insígnia especiais":"Temas de temporada con ropa e insignia especiales","Missões do dia valendo estrelas":"Misiones del día que dan estrellas","Insígnia secreta do Quarteto TsuLiPa":"Insignia secreta del Cuarteto TsuLiPa","Forçar tema":"Forzar tema","Tema da data":"Tema de la fecha","Sem tema":"Sin tema","Só até":"Solo hasta","Da temporada":"De temporada","Essa roupa só se compra no período do tema.":"Esta ropa solo se compra durante su tema.",
+    "Natal":"Navidad","Ano Novo":"Año Nuevo","Verão":"Verano","Outono":"Otoño","Inverno":"Invierno","Primavera":"Primavera","Tema de":"Tema:"},
+  th: {"TOQUE PARA COMEÇAR":"แตะเพื่อเริ่ม","Início":"หน้าแรก","Recorde":"สถิติ","Jogar":"เล่น","Meu Perfil":"โปรไฟล์ของฉัน","Entrar com Google":"เข้าสู่ระบบด้วย Google","Adote um pet!":"รับเลี้ยงสัตว์เลี้ยง!","precisa de você!":"ต้องการคุณ!","está bem!":"สบายดี!","Tema do momento":"ธีมตอนนี้","até":"ถึง","Missões do dia":"ภารกิจประจำวัน","Entre com Google para fazer as missões do dia (até ★45 por dia).":"เข้าสู่ระบบด้วย Google เพื่อทำภารกิจประจำวัน (สูงสุด ★45 ต่อวัน)","Resgatar":"รับรางวัล","Novidades":"มีอะไรใหม่","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Carregando...":"กำลังโหลด...",
+    "Corra {n} vezes no Center⭐Run!":"วิ่ง {n} รอบใน Center⭐Run!","Dê 1 coração em um perfil":"ให้หัวใจ 1 ดวงในโปรไฟล์","Deixe 1 recado em um perfil":"ฝากข้อความ 1 ข้อความ","Ganhe estrelas em um minijogo do camarim":"ได้ดาวจากมินิเกมในห้องแต่งตัว","Compre algo para o seu pet":"ซื้อของให้สัตว์เลี้ยง","Pegue {n} estrelas nas corridas":"เก็บดาว {n} ดวงจากการวิ่ง","Faça {n} pontos em uma corrida":"ทำ {n} คะแนนในรอบเดียว","Corra com Tsu, Lirika e Pati":"วิ่งด้วย Tsu, Lirika และ Pati",
+    "Insígnia nova!":"เหรียญใหม่!","Oba!":"เย้!","Ver no perfil":"ดูในโปรไฟล์","Próximo":"ถัดไป","Vamos lá!":"ไปกันเลย!","Pular":"ข้าม",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"กระโดดข้ามสิ่งกีดขวาง เก็บดาวและไมค์ของเพื่อน ๆ ไปให้ถึง Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"ดูแลสัตว์เลี้ยงในห้องแต่งตัว: อาหาร อาบน้ำ ชุด และมินิเกมที่ได้ดาว","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"เข้าสู่ระบบด้วย Google เพื่อเซฟบนคลาวด์ แต่งไอดอล รับเหรียญ หัวใจ และข้อความ",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"โปรไฟล์พร้อมสตูดิโอ แต่งไอดอล และร้านชุด","Corações, recados e insígnias":"หัวใจ ข้อความ และเหรียญ","Temas da temporada com roupa e insígnia especiais":"ธีมตามฤดูกาลพร้อมชุดและเหรียญพิเศษ","Missões do dia valendo estrelas":"ภารกิจประจำวันที่ได้ดาว","Insígnia secreta do Quarteto TsuLiPa":"เหรียญลับ TsuLiPa ควอเต็ต","Forçar tema":"บังคับธีม","Tema da data":"ธีมตามวันที่","Sem tema":"ไม่มีธีม","Só até":"ถึงวันที่","Da temporada":"ตามฤดูกาล","Essa roupa só se compra no período do tema.":"ชุดนี้ซื้อได้เฉพาะช่วงธีมเท่านั้น",
+    "Natal":"คริสต์มาส","Ano Novo":"ปีใหม่","Verão":"ฤดูร้อน","Outono":"ฤดูใบไม้ร่วง","Inverno":"ฤดูหนาว","Primavera":"ฤดูใบไม้ผลิ","Tema de":"ธีม:"},
+  ja: {"TOQUE PARA COMEÇAR":"タップしてスタート","Início":"ホーム","Recorde":"ベスト","Jogar":"プレイ","Meu Perfil":"マイプロフィール","Entrar com Google":"Googleでログイン","Adote um pet!":"ペットを迎えよう！","precisa de você!":"があなたを待ってるよ！","está bem!":"は元気！","Tema do momento":"いまのテーマ","até":"まで","Missões do dia":"きょうのミッション","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Googleでログインしてきょうのミッションに挑戦（1日最大★45）。","Resgatar":"受け取る","Novidades":"おしらせ","Privacidade e segurança":"プライバシーと安全","Carregando...":"読み込み中...",
+    "Corra {n} vezes no Center⭐Run!":"Center⭐Run!を{n}回走る","Dê 1 coração em um perfil":"プロフィールにハートを1つ","Deixe 1 recado em um perfil":"プロフィールにメッセージを1つ","Ganhe estrelas em um minijogo do camarim":"楽屋のミニゲームでスターをゲット","Compre algo para o seu pet":"ペットに何か買う","Pegue {n} estrelas nas corridas":"ランでスターを{n}個集める","Faça {n} pontos em uma corrida":"1回のランで{n}点","Corra com Tsu, Lirika e Pati":"Tsu・Lirika・Patiで走る",
+    "Insígnia nova!":"新しいバッジ！","Oba!":"やった！","Ver no perfil":"プロフィールで見る","Próximo":"つぎへ","Vamos lá!":"はじめよう！","Pular":"スキップ",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"ステージの障害物をジャンプ、スターと仲間のマイクを集めてCenterを目指そう！","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"楽屋でペットのお世話：ごはん、おふろ、おきがえ、スターがもらえるミニゲーム。","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Googleでログインするとクラウド保存、アイドルメイク、バッジ・ハート・メッセージが使えるよ。",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"スタジオ・アイドルメイク・洋服ショップつきプロフィール","Corações, recados e insígnias":"ハート・メッセージ・バッジ","Temas da temporada com roupa e insígnia especiais":"季節のテーマと限定の服・バッジ","Missões do dia valendo estrelas":"スターがもらえるきょうのミッション","Insígnia secreta do Quarteto TsuLiPa":"TsuLiPaカルテットのひみつバッジ","Forçar tema":"テーマを固定","Tema da data":"日付のテーマ","Sem tema":"テーマなし","Só até":"期間：","Da temporada":"季節限定","Essa roupa só se compra no período do tema.":"この服はテーマの期間中だけ買えます。",
+    "Natal":"クリスマス","Ano Novo":"お正月","Verão":"夏","Outono":"秋","Inverno":"冬","Primavera":"春","Tema de":"テーマ："}
+};
+Object.keys(HUB_DICT).forEach(function(l){ if(DICT[l]) Object.keys(HUB_DICT[l]).forEach(function(k){ DICT[l][k] = HUB_DICT[l][k]; }); });
+
+var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_lista)
+  corra2:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra3:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra5:['🏃', 'Corra {n} vezes no Center⭐Run!'],
+  coracao:['💖', 'Dê 1 coração em um perfil'], recado:['💌', 'Deixe 1 recado em um perfil'], mini:['🎮', 'Ganhe estrelas em um minijogo do camarim'], pet:['🛍️', 'Compre algo para o seu pet'],
+  estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
+  pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
+};
+var HUB_NOVIDADES = [['🌸', 'Perfil com Estúdio, Montar Idol e lojinha de roupas'], ['💖', 'Corações, recados e insígnias'], ['🗓️', 'Temas da temporada com roupa e insígnia especiais'], ['🎯', 'Missões do dia valendo estrelas'], ['🎤', 'Insígnia secreta do Quarteto TsuLiPa']];
+var HUB_TUT = [['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
+               ['🐾', 'Backstage⭐Pet!', 'Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.'],
+               ['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.']];
+
+var hubOv = document.createElement('div');
+hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
+hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><div class="hubin">' +
+  '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : '') + '>' + ch + '</span>'; }).join('') + '</h1>' +
+  '<p class="hubsub">ツリパ⭐ワールド</p><p class="hubtema" id="hubTema" hidden></p>' +
+  '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
+  '<button type="button" class="hubtoque" id="hubToque"></button>' +
+  '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
+  '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
+  '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
+  '<p class="hubrodape"><a href="privacidade.html" target="_blank" rel="noopener" id="hubPriv"></a> · <span translate="no">v2.1.3</span></p></div>' +
+  '<div class="hubtut" id="hubTut" hidden></div></div>';
+document.body.appendChild(hubOv);
+var hubT = 0, hubAnim = 0, hubComecou = false, hubTutI = 0, hubMisDados = null;
+
+function hubTemaUI(){   // chip do tema, partículas da tela e cor do fundo
+  var k = temaAtual(), inf = TEMA_INFO[k], el = $('hubTema');
+  if(inf){ el.textContent = inf[0] + ' ' + tr('Tema do momento') + ': ' + tr(inf[1]) + ' · ' + tr('até') + ' ' + temaAteTxt(); el.hidden = false; }
+  else el.hidden = true;
+  var emo = inf ? { neve:'❄', petala:'🌸', folha:'🍁', coracao:'💖', flor:'🌼', sol:'✦', estrela:'★', fogos:'✨', morcego:'🦇' }[inf[5]] : '';
+  $('hubPart').innerHTML = Array.apply(null, Array(14)).map(function(_, i){
+    var s = emo || ['✦', '♡', '★'][i % 3], cor = emo ? '' : ';color:' + ['#9b30d9', '#ff6fb5', '#4169e1', '#5cc72c'][i % 4];
+    return '<i style="left:' + (temaHash(i * 3) * 100).toFixed(1) + '%;animation-delay:-' + (temaHash(i * 7) * 14).toFixed(1) + 's;animation-duration:' + (10 + temaHash(i) * 8).toFixed(1) + 's;font-size:' + (12 + temaHash(i * 5) * 14).toFixed(0) + 'px' + cor + '">' + s + '</i>';
+  }).join('');
+  hubOv.setAttribute('data-tema', k || '');
+}
+function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o pet ativo, no fundo da temporada
+  var av = perfMeuAv && typeof perfMeuAv === 'object' ? JSON.parse(JSON.stringify(perfMeuAv)) : perfAvAtual({ pose:'v' });
+  av.c = perfAvAtual().c; av.fundo = 'temporada';
+  if(!av.pose) av.pose = 'v';
+  var p = petAtivo && petAtivo();
+  av.pet = p && petData && PET_SP[petData.ativo] ? { k:petData.ativo, acc:p.acc || '', cfg: petData.ativo === 'meu' ? p.cfg : null } : null;
+  return av;
+}
+function hubDesenhar(){
+  var cv = $('hubCv'); if(!cv) return;
+  var x = cv.getContext('2d');
+  try{ x.clearRect(0, 0, cv.width, cv.height); perfDesenharIdol(x, cv.width, cv.height, hubAv(), true, false, hubT || 1); }catch(e){}
+}
+function hubLoop(){
+  hubAnim = 0; if(hubOv.hidden) return;
+  hubT++; if(hubT % 2 === 0) hubDesenhar();
+  hubAnim = requestAnimationFrame(hubLoop);
+}
+function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
+  var p = petData && petAtivo && petAtivo(); if(!p) return [tr('Adote um pet!'), false];
+  var h = Math.min(Math.max(0, Date.now() - (p.t || Date.now())), PET_CAP) / 36e5, menor = 100;
+  Object.keys(PET_RATE).forEach(function(k){ var v = (p[k] || 0) - PET_RATE[k] * h * (p.dorme ? .5 : 1); if(!(p.dorme && k === 'energia')) menor = Math.min(menor, v); });
+  var nome = p.nome || (PET_SP[petData.ativo] ? PET_SP[petData.ativo].n : 'Pet');
+  return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true] : [nome + ' ' + tr('está bem!'), false];
+}
+function hubCardsUI(){
+  var pi = hubPetInfo();
+  $('hubCards').innerHTML =
+    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
+    '<button type="button" class="hubcard hubpet" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>';
+  try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
+}
+function hubMisUI(){
+  $('hubMisT').textContent = '🎯 ' + tr('Missões do dia');
+  var box = $('hubMis');
+  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★45 por dia).')) + '</p>'; return; }
+  if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
+  box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
+    var t = HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
+    var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
+    return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
+  }).join('') + '</ul>';
+}
+function hubMisCarregar(){
+  if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
+  contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
+}
+function hubMontar(){
+  $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
+  $('hubNovT').textContent = '✨ ' + tr('Novidades');
+  $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
+  $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
+  hubTemaUI(); hubCardsUI(); hubMisUI();
+}
+function hubMostrar(){
+  hubMontar();
+  hubOv.hidden = false; document.body.classList.add('hubon');
+  $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
+  if(hubComecou) hubMisCarregar();
+  if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
+}
+function hubFechar(){
+  hubOv.hidden = true; document.body.classList.remove('hubon');
+  var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
+}
+function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
+  [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });
+  beep(523, .9, 'sine', .03, .8);
+}
+function hubComecar(){
+  ac(); hubJingle();
+  hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  hubMisCarregar();
+  var visto = null; try{ visto = localStorage.getItem('brs48cr_tut'); }catch(e){}
+  if(!visto){ hubTutI = 0; hubTutUI(); }
+}
+function hubTutUI(){   // tutorial de 3 cartões (só na primeira visita)
+  var el = $('hubTut'), it = HUB_TUT[hubTutI];
+  el.innerHTML = '<div class="hubtutc" role="dialog" aria-modal="true"><i>' + it[0] + '</i><b translate="no">' + escHtml(tr(it[1])) + '</b><p>' + escHtml(tr(it[2])) + '</p>' +
+    '<div class="hubdots">' + HUB_TUT.map(function(_, i){ return '<span' + (i === hubTutI ? ' class="on"' : '') + '></span>'; }).join('') + '</div>' +
+    '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">' + escHtml(tr('Pular')) + '</button><button type="button" class="btn" id="hubTutOk">' + escHtml(tr(hubTutI < HUB_TUT.length - 1 ? 'Próximo' : 'Vamos lá!')) + '</button></div></div>';
+  el.hidden = false;
+}
+function hubTutFim(){ $('hubTut').hidden = true; try{ localStorage.setItem('brs48cr_tut', '1'); }catch(e){} }
+hubOv.addEventListener('click', function(e){
+  var t = e.target, b;
+  if(t.id === 'hubToque'){ hubComecar(); return; }
+  if(t.id === 'hubTutOk'){ beep(1175, .06, 'triangle', .04); if(++hubTutI >= HUB_TUT.length) hubTutFim(); else hubTutUI(); return; }
+  if(t.id === 'hubTutPular'){ hubTutFim(); return; }
+  if((b = t.closest('[data-resg]'))){
+    b.disabled = true;
+    contaRpc('resgatar_missao', { p_k: b.dataset.resg }).then(function(r){
+      if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e2){} setBest(); }
+      if(r && r.ok){ if(sfx.rank) sfx.rank(); perfChuvaCoracoes(b); }
+      hubMisCarregar();
+    }).catch(function(){ b.disabled = false; });
+    return;
+  }
+  if((b = t.closest('.hubcard'))){
+    var ir = b.dataset.ir; if(sfx.card) sfx.card();
+    if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
+    else if(ir === 'pet'){ hubFechar(); var pb = $('petBtn'); if(pb) pb.click(); }
+    else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
+  }
+});
+// botão "← Início" no menu do Center Run
+(function(){
+  var h = $('menu-title'); if(!h || $('hubVolta')) return;
+  var v = document.createElement('button'); v.type = 'button'; v.className = 'hubvolta'; v.id = 'hubVolta'; v.textContent = '← ' + tr('Início');
+  v.onclick = function(e){ e.stopPropagation(); if(state === 'menu') hubMostrar(); };
+  h.parentNode.insertBefore(v, h);
+})();
+document.addEventListener('keydown', function(e){
+  if(hubOv.hidden || hubComecou) return;
+  if(e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); e.stopImmediatePropagation(); hubComecar(); }
+}, true);
+
+// ---------- Pop-up de insígnia nova ----------
+var insFila = [], insAberto = false, insEsperar = 0;
+var insOv = document.createElement('div');
+insOv.className = 'ov insov'; insOv.id = 'insOv'; insOv.hidden = true;
+document.body.appendChild(insOv);
+function insConferir(){
+  if(!contaJ) return;
+  clearTimeout(insEsperar);
+  insEsperar = setTimeout(function(){
+    contaRpc('insignias_novas').then(function(r){ if(Array.isArray(r) && r.length){ insFila = insFila.concat(r); insMostrar(); } }).catch(function(){});
+  }, 900);
+}
+function insMostrar(){
+  if(insAberto || !insFila.length) return;
+  var k = insFila.shift(), it = null;
+  for(var i = 0; i < PERF_INS.length; i++) if(PERF_INS[i][0] === k){ it = PERF_INS[i]; break; }
+  if(!it){ insMostrar(); return; }
+  insAberto = true;
+  insOv.innerHTML = '<div class="panel insp" role="dialog" aria-modal="true"><p class="insnova">✨ ' + escHtml(tr('Insígnia nova!')) + ' ✨</p><div class="insemo">' + it[1] + '</div><b>' + escHtml(tr(it[2])) + '</b><p>' + escHtml(tr(it[3])) + '</p>' +
+    '<div class="btns"><button type="button" class="btn alt" id="insVer">' + escHtml(tr('Ver no perfil')) + '</button><button type="button" class="btn" id="insOk">' + escHtml(tr('Oba!')) + '</button></div></div>';
+  insOv.hidden = false;
+  [1047, 1319, 1568, 2093].forEach(function(f, j){ beep(f, .16, 'triangle', .04, j * .09); });
+}
+insOv.addEventListener('click', function(e){
+  if(e.target.id !== 'insOk' && e.target.id !== 'insVer') return;
+  insOv.hidden = true; insAberto = false;
+  if(e.target.id === 'insVer'){ insFila = []; perfAbrir(); return; }
+  setTimeout(insMostrar, 250);
+});
+
+// ---------- Ganchos chamados pelo resto do jogo ----------
+var contaUltimaRun = null, quartetoPend = false;
+function hubAoEntrar(){ hubCardsUI(); hubMisCarregar(); setTimeout(insConferir, 2500); }
+function hubAposCorrida(){ hubMisDados = null; insConferir(); }
+function quartetoFoto(){   // SALVAR IMAGEM no fim do show: o Idol com Tsu, Lirika e Pati no palco
+  if(!contaJ || sel !== 3) return;
+  var pl = (window.collectedPartners || []).filter(function(id, i, a){ return id !== 3 && a.indexOf(id) === i; });
+  if(pl.length < 3) return;
+  quartetoPend = true; quartetoTalvez();
+}
+function quartetoTalvez(){
+  if(!quartetoPend || !contaUltimaRun || !contaUltimaRun.ok) return;
+  quartetoPend = false;
+  contaRpc('marcar_quarteto', { p_run: contaUltimaRun.id }).then(function(r){ if(r && r.ok) insConferir(); }).catch(function(){});
+}
+hubMostrar();
+// --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---
 
 var EXTRA_DICT = {
   en: {

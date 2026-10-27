@@ -590,6 +590,11 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .gisov{z-index:29}.gisp{width:min(100%,360px);text-align:center;position:relative}#gisBtn{display:flex;justify-content:center;margin:10px 0}
 .hubonline{margin:14px auto 12px}.gacharesp,#gachaTxt{margin:12px 0 12px!important;line-height:1.45}
 .perfsub{margin:10px 0 4px;font-size:13px;color:var(--b1)}
+.gisalt{margin:8px 0 0;font-size:12.5px}
+.admbusca{width:100%;box-sizing:border-box;margin:4px 0 8px}
+.admcontas{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow:auto;padding-right:4px}
+.admconta{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:8px 12px!important;border-radius:12px;background:var(--chip)!important;text-decoration:none!important}
+.admconta small{font-size:11.5px;color:var(--sub);font-weight:600}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -7694,6 +7699,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
     if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
     h += '<div id="admResumo"></div>';
+    h += '<h3>👥 ' + escHtml(tr('Todas as contas')) + ' <span id="admContasN"></span></h3><input class="nick admbusca" id="admBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '"><div class="admcontas" id="admContas"><p class="perfcarr">…</p></div>';
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
       return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.de) + '">' + escHtml(r.de) + '</button> → <button type="button" class="lbn" data-nick="' + escHtml(r.para) + '">' + escHtml(r.para) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
@@ -7706,7 +7712,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
-    admExtra(); admResumo();
+    admExtra(); admResumo(); admContas();
   }).catch(function(){});
 }
 function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐Duo!, missões e aniversários)
@@ -7719,6 +7725,19 @@ function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐
       '<p class="perfdica">🌙 ' + escHtml(tr('Mais escolhidos no Moon⭐Duo! (7 dias)')) + ': ' + (d.duo_top.length ? d.duo_top.map(function(t){ return '<button type="button" class="lbn" data-nick="' + escHtml(t.nick) + '">' + escHtml(t.nick) + '</button> (' + t.n + ')'; }).join(', ') : '—') + '</p>';
   }).catch(function(){});
 }
+var admContasL = [];
+function admContasUI(){   // lista de todas as contas (só a moderação vê), com busca
+  var box = $('admContas'); if(!box) return;
+  var q = ($('admBusca') && $('admBusca').value || '').trim().toLowerCase();
+  var L = admContasL.filter(function(c){ return !q || c.nick.toLowerCase().indexOf(q) >= 0; });
+  $('admContasN').textContent = '(' + admContasL.length + ')';
+  box.innerHTML = L.length ? L.map(function(c){
+    return '<button type="button" class="lbn admconta" data-nick="' + escHtml(c.nick) + '">' + (c.bloqueado ? '⛔ ' : '') + '<b>' + escHtml(c.nick) + '</b><small>🏆 ' + (+c.best || 0) + ' · ★' + (+c.stars || 0) + ' · ' + (+c.corridas || 0) + ' ' + escHtml(tr('corridas')) + ' · ' + escHtml(tr('desde')) + ' ' + escHtml(perfData(c.desde)) + '</small></button>';
+  }).join('') : '<p class="perfcarr">' + escHtml(tr('Ninguém com esse nome.')) + '</p>';
+}
+function admContas(){ contaRpc('admin_contas').then(function(L){ admContasL = Array.isArray(L) ? L : []; admContasUI(); }).catch(function(){}); }
+perfOv.addEventListener('input', function(e){ if(e.target.id === 'admBusca') admContasUI(); });
+perfOv.addEventListener('keydown', function(e){ if(e.target.id === 'admBusca') e.stopPropagation(); });
 function admCamarimOpts(){   // itens do camarim para o presente: comida e banho, acessórios do pet e quadros do mural
   var L = [['', '— nada do camarim —']];
   (PET_FOOD || []).concat(PET_BATH || []).forEach(function(it){ L.push(['food:' + it[0], '🍰 ' + tr(it[1])]); });
@@ -9687,6 +9706,8 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+ ['Todas as contas', 'All accounts', 'Todas las cuentas', 'บัญชีทั้งหมด', 'すべてのアカウント'], ['desde', 'since', 'desde', 'ตั้งแต่', 'から'],
+ ['Não funcionou? Entrar de outro jeito', "Didn't work? Sign in another way", '¿No funcionó? Entrar de otra forma', 'ไม่ได้ผล? เข้าสู่ระบบอีกวิธี', 'うまくいかない？別の方法でログイン'],
  ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'], ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'],
  ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'], ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'], ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
  ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'], ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'], ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの'], ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
@@ -9753,9 +9774,9 @@ if(typeof temaAdminHtml === 'function'){ var temaAdmOrig = temaAdminHtml; temaAd
 // Para ligar: coloque aqui o Client ID PÚBLICO do Google (termina em .apps.googleusercontent.com). Vazio = login antigo.
 var GOOGLE_CLIENT_ID = '781179638857-k6qcb45jh2q627gqr0qsqu57uaotmcp7.apps.googleusercontent.com';
 var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
-gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p></div>';
+gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
 document.body.appendChild(gisOv);
-gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; });
+gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; if(e.target.id === 'gisAntigo'){ gisOv.hidden = true; _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); } });
 function gisHex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join(''); }
 function gisEntrar(){
   var raw = gisHex(crypto.getRandomValues(new Uint8Array(16)).buffer);
@@ -9770,7 +9791,7 @@ function gisEntrar(){
             gisOv.hidden = true;
           });
         } });
-      $('gisTit').textContent = tr('Entrar com Google'); $('gisMsg').hidden = true; $('gisBtn').innerHTML = '';
+      $('gisTit').textContent = tr('Entrar com Google'); $('gisMsg').hidden = true; $('gisBtn').innerHTML = ''; $('gisAntigo').textContent = tr('Não funcionou? Entrar de outro jeito');
       google.accounts.id.renderButton($('gisBtn'), { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left' });
       gisOv.hidden = false;
     }

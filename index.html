@@ -588,6 +588,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .hubonline[hidden]{display:none}.hubonline i{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e}
 .onlineov{z-index:24}.onlinep{width:min(100%,420px);text-align:center;position:relative}
 .gisov{z-index:29}.gisp{width:min(100%,360px);text-align:center;position:relative}#gisBtn{display:flex;justify-content:center;margin:10px 0}
+.hubonline{margin:14px auto 12px}.gacharesp,#gachaTxt{margin:12px 0 12px!important;line-height:1.45}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -9778,7 +9779,7 @@ onlineOv.addEventListener('click', function(e){
 
 // ---------- Login com Google direto no site (mostra "TsuLiPa⭐World" em vez do endereço do Supabase) ----------
 // Para ligar: coloque aqui o Client ID PÚBLICO do Google (termina em .apps.googleusercontent.com). Vazio = login antigo.
-var GOOGLE_CLIENT_ID = '';
+var GOOGLE_CLIENT_ID = '781179638857-k6qcb45jh2q627gqr0qsqu57uaotmcp7.apps.googleusercontent.com';
 var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
 gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p></div>';
 document.body.appendChild(gisOv);

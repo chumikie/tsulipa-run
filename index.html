@@ -370,6 +370,7 @@ body.hubon #mute{visibility:hidden}
 @keyframes hubpisca{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 @keyframes hubbrilho{to{background-position:200% 0}}
 .hubcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}
 .hubcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:20px;padding:12px 8px 12px;font:inherit;color:var(--ink);cursor:pointer;background:var(--card);background-clip:padding-box;box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(60,20,120,.12);transition:transform .12s}
 .hubcard:hover{transform:translateY(-2px)}.hubcard:active{transform:translateY(2px)}
 .hubcard i{font-style:normal;font-size:30px;line-height:1.1}
@@ -434,6 +435,29 @@ body.hubon #mute{visibility:hidden}
 .hubcfg span{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--card);box-shadow:0 3px 0 rgba(123,63,240,.15)}
 .hubcfg button{border:0;border-radius:99px;padding:5px 10px;font:inherit;font-size:12px;font-weight:800;color:var(--sub);background:transparent;cursor:pointer}
 .hubcfg button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
+
+/* V2.1.3 · busca de perfil, links do BRS48, Gachapon e fundo fofo no site todo */
+.hubbusca input,.lbbusca input{width:100%;font:inherit;font-size:14px;padding:9px 14px;border-radius:99px;border:2px solid rgba(255,111,181,.45);background:var(--card);color:var(--ink);box-sizing:border-box}
+.lbbusca{margin:4px 0 10px}
+.buscares{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.buscares:empty{display:none}
+.buscares .lbn{border:0;border-radius:99px;padding:5px 12px;background:var(--chip);color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.buscares em{font-size:12px;color:var(--sub)}
+.hublinks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.hublinks a{padding:8px 14px;border-radius:99px;background:var(--card);color:var(--b1);font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 3px 0 rgba(123,63,240,.18)}
+.hubgacha{background:linear-gradient(160deg,#ff6fb5,#ffb3d6);color:#fff}.hubgacha small{color:#fff}
+.gachaov{z-index:21}
+.gachap{max-width:520px;position:relative}
+.gachap h2{margin:4px 0 8px;color:var(--b1)}
+#gachaCv{width:100%;height:auto;aspect-ratio:640/420;border-radius:20px;box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(255,111,181,.5)}
+.gacharesp{min-height:22px;font-weight:800;font-size:15px;color:var(--ink);margin:10px 0 4px}
+body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
+.sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.sitepart i{position:absolute;top:-30px;font-style:normal;opacity:.45;animation:hubcai linear infinite}
+#menu .panel,#petov .panel{box-shadow:0 0 0 4px rgba(255,255,255,.75),0 0 0 7px rgba(255,111,181,.35),0 14px 34px rgba(60,20,120,.3)}
+@media (prefers-reduced-motion:reduce){.sitepart i{animation:none}}
+.gachap h2{padding:0 44px}
+#gachaCardCv{display:block;width:min(100%,300px);height:auto;margin:6px auto 0;border-radius:18px;box-shadow:0 10px 26px rgba(60,20,120,.3)}
+#gachaCardCv[hidden]{display:none}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -602,6 +626,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         <label>Roupa <select id="cout">
           <option value="" data-r="0">Básica</option>
           <option value="seifuku" data-r="450">Uniforme (Team)</option>
+          <option value="estrelado" data-r="1000">Céu Estrelado (Senbatsu)</option>
           <option value="y2k" data-r="1800">Moda 2000 (Quad Center)</option>
           <option value="zipper" data-r="2800">Zipper (tCenter)</option>
           <option value="sweet" data-r="3900">Valentine (wCenter)</option>
@@ -652,7 +677,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   </div>
 </div>
 <p class="hint">Toque rápido = pulo curto; segure = pulo alto. "O esforço com certeza será recompensado!" ✨</p>
-<div class="links"><a class="btn alt lk" href="https://brs48-collect.vercel.app/" target="_blank" rel="noopener noreferrer">BRS48 Collect ↗</a><a class="btn alt lk" href="https://brs48.blogspot.com/" target="_blank" rel="noopener noreferrer">Blog do BRS48 ↗</a></div>
+<div class="links"><a class="btn alt lk" href="https://brs48-collect.vercel.app/" target="_blank" rel="noopener noreferrer">BRS48 Collect ↗</a><a class="btn alt lk" href="https://www.youtube.com/@BRS48" target="_blank" rel="noopener noreferrer">YouTube do BRS48 ↗</a><a class="btn alt lk" href="https://brs48.blogspot.com/" target="_blank" rel="noopener noreferrer">Blog do BRS48 ↗</a></div>
 <div class="oshi-sel" role="group" aria-label="Tema do Oshi">
   <button type="button" data-oshi="" aria-pressed="true" title="Padrão">☀️</button>
   <button type="button" data-oshi="tsu" aria-pressed="false" title="Tsu">🎤</button>
@@ -958,13 +983,14 @@ function pick(i){
   if ($('cdet')) $('cdet').value = source.det || '';
   
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
+  refreshAcc();   // V2.1.3: itens por personagem
 }
 
 	
 var seen=1;try{seen=+localStorage.getItem('brs48cr_seen')||1}catch(e){}
 
 function refreshAcc(){
-  var e=$('acc'),ok=false,lim=best;
+  var e=$('acc'),ok=false,lim=(typeof bestDe==='function'?bestDe(sel):best);   // V2.1.3: recompensas por personagem
   e.innerHTML='';
   ACC.forEach(function(a){
     var o=document.createElement('option'),u=lim>=a[2];
@@ -1533,6 +1559,7 @@ function end(){
   var nomeDigitado = (nick || '').trim().toLowerCase();
   var isAdmin = (nomeDigitado === 'tsuadmin' || nomeDigitado === 'macchannegra');
   var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
+  if(!isTestGame && typeof bestcSalvar==='function'){ bestcSalvar(sel, s); refreshAcc(); }   // V2.1.3: recorde por personagem
 
  if(!isTesting && !isAdmin){
     local = upd(local, row);
@@ -1968,6 +1995,7 @@ function drawChar(c,x,y,run,expr,isPartner){
 
     // --- FIM DO LOOK VALENTINE ---
 
+     }else if(roupa==='estrelado' && typeof roupaEstrelado==='function'){ roupaEstrelado(c, x, y, corDaRoupa, E, T);   // V2.1.3
      }else if(roupa==='espacial'){
     var AC1=c.img||H;   // Tsu roxo, Lirika verde, Pati azul, Você = cor do cabelo
     var AC2='#'+AC1.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-70).toString(16)).substr(-2)});
@@ -2202,6 +2230,7 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
   function E(cx,cy,rx,ry,r){ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,r||0,0,7);ctx.fill()}
   function T(a){ctx.beginPath();ctx.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)ctx.lineTo(a[i],a[i+1]);ctx.closePath();ctx.fill()}
 
+  if(typeof petAnelAtras === 'function') petAnelAtras(ctx, type);   // V2.1.3: metade de trás do anel
   if(type && typeof type === 'object'){ petDrawCustom(ctx, type, tFrame, ex); ctx.restore(); return; }   // Meu Pet (montável)
 
   if(type === 'tsu'){
@@ -4985,6 +5014,7 @@ function petTalk(){
     else if(r < .45 && h >= 5 && h < 12) pool = F.dia;
     else if(r < .45 && (h >= 19 || h < 5)) pool = F.noite;
   }
+  if(typeof temaFalas === 'function' && temaFalas() && Math.random() < .4) pool = temaFalas();   // V2.1.3: frases da temporada
   var opts = pool.filter(function(s){ return s !== petTalkLast; });
   var s = (opts.length ? opts : pool)[Math.floor(Math.random() * (opts.length || pool.length))];
   petTalkLast = s;
@@ -6023,6 +6053,7 @@ function contaInicioCorrida(){
   contaRun = null;
   if(!contaJ || isTestGame) return;
   contaRun = contaRpc('iniciar_corrida').catch(function(){ return null; });
+  if(typeof gachaBonus === 'function') gachaBonus();   // V2.1.3
 }
 function contaFimCorrida(score, est, ch, refresh){
   if(!contaJ || !contaRun){ refresh(); return; }
@@ -7194,7 +7225,7 @@ function perfUsarFoto(){
     btn.disabled = false;
     var m = $('perfGenMsg'); m.hidden = false;
     if(r && r.ok){ perfAtual.avatar = av; perfMeuAv = av; perfFotoAtual(); m.textContent = '🖼️ ' + tr('Foto do perfil atualizada!'); if(sfx.card) sfx.card(); }
-    else m.textContent = tr('Não deu para falar com o servidor. Tente de novo.');
+    else m.textContent = tr({ visual_nao_comprado:'Esse visual ainda não foi comprado.', fundo_nao_comprado:'Esse fundo ainda não foi comprado.', pose_nao_comprada:'Essa pose ainda não foi comprada.', roupa_nao_comprada:'Essa roupa ainda não foi comprada.', pet:'Esse pet ainda não chegou na nuvem. Tente de novo em alguns segundos.' }[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.');
   }).catch(function(){ btn.disabled = false; });
 }
 
@@ -7321,6 +7352,7 @@ function perfAvatarAuto(){
     if(!d) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
     perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin;
+    if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
     return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
   }).catch(function(){});
@@ -7338,7 +7370,7 @@ function perfSortear(s1, s2){
   var aces = PET_WARDROBE.filter(function(it){ return it[0] && it[3] > 0 && !it[4] && !roupas[it[0]]; });
   var quad = PET_DECOR.filter(function(it){ return it[2] > 0 && !(it[0] in decor); });
   var pega = function(L){ return L[Math.min(L.length - 1, Math.floor((+s2 || 0) * L.length))]; };
-  if(s1 >= .55 && s1 < .8 && aces.length) return { t:'acc', it:pega(aces) };
+  // V2.1.3: roupinhas de pet não saem mais no presente diário (só comida, banho e, mais raro, quadros)
   if(s1 >= .8 && quad.length) return { t:'decor', it:pega(quad) };
   var k = pega(comida);
   return { t:'food', it: petFind(PET_FOOD, k) || petFind(PET_BATH, k) };
@@ -7391,7 +7423,7 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
     '<button type="button" data-adm="limpar_frase">🧹 ' + escHtml(tr('Limpar frase')) + '</button>' +
     '<button type="button" data-adm="renomear">✏️ ' + escHtml(tr('Renomear')) + '</button>' +
     '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button>' +
-    '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button>' +
+    '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button><button type="button" data-adm2="presente">🎁 Presente</button><button type="button" data-adm2="aviso">📣 Aviso</button>' +
     '<div class="admform" id="admForm" hidden></div></div>';
 }
 function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
@@ -7414,6 +7446,11 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
       }).catch(function(){});
       return;
     }
+    if(t === 'presente' || t === 'aviso'){
+      f.innerHTML = (t === 'presente' ? '<input type="number" id="pp_est" min="0" max="2000" step="10" value="50"> ★ <select id="pp_item"><option value="">— sem item da loja —</option>' + admOpts(admItens()) + '</select><select id="pp_cam">' + admOpts(admCamarimOpts()) + '</select>' : '') +
+        '<input id="pp_msg" maxlength="140" placeholder="' + (t === 'aviso' ? 'Mensagem para ' : 'Mensagem do presente para ') + escHtml(perfAtual.nick) + '"><button type="button" class="btn" id="ppEnviar" data-t="' + t + '">Enviar</button><p class="perfmsg" id="admMsg" hidden></p>';
+      return;
+    }
     var campo = t === 'estrelas' ? '<input type="number" id="admValor" min="-2000" max="2000" step="10" value="100"> <small>(−2000 a 2000)</small>'
       : t === 'item' ? '<select id="admValor">' + admOpts(admItens()) + '</select>'
       : '<select id="admValor">' + admOpts(PERF_INS.filter(function(i){ return /^esp_/.test(i[0]); }).map(function(i){ return [i[0], i[1] + ' ' + tr(i[2]) + ((perfAtual.insignias || []).indexOf(i[0]) >= 0 ? ' (tirar)' : '')]; })) + '</select>';
@@ -7430,6 +7467,15 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
       msg.hidden = false;
       if(r && r.ok && bt.dataset.t === 'insignia') perfAbrir(perfAtual.nick, true);
     }).catch(function(){ bt.disabled = false; });
+    return;
+  }
+  if(e.target.id === 'ppEnviar' && perfAtual){
+    var pb = e.target, pres = pb.dataset.t === 'presente', pm = $('admMsg');
+    if(!confirm(tr('Tem certeza?'))) return;
+    pb.disabled = true;
+    contaRpc('admin_presente', { p_acao:'criar', p_nick: perfAtual.nick, p_estrelas: pres ? (+$('pp_est').value || 0) : 0, p_item: pres ? ($('pp_item').value || null) : null, p_camarim: pres ? ($('pp_cam').value || null) : null, p_msg: $('pp_msg').value.trim(), p_dias: 30 })
+      .then(function(r){ pb.disabled = false; pm.textContent = r && r.ok ? '🛡️ ' + tr('Feito!') + ' (chega quando ' + perfAtual.nick + ' entrar no jogo)' : r && r.erro === 'vazio' ? 'Escreva a mensagem ou escolha algo.' : tr('Não deu para falar com o servidor. Tente de novo.'); pm.hidden = false; })
+      .catch(function(){ pb.disabled = false; });
     return;
   }
   var cb = e.target.closest('.admcorr');
@@ -7804,6 +7850,10 @@ function temaAntena(ant, c, x, y){
     temaFlorG(x + 25.5, y + 4, 1.8, '#ff6fb5', '#ffe14d'); g.fillStyle = '#16a34a'; g.beginPath(); g.ellipse(x + 28.5, y + 6.5, 2, .9, .6, 0, 7); g.fill();
   } else if(ant === 'sakura'){   // grampo de sakura
     temaFlorG(x + 6.5, y + 3.5, 1.5, '#ffc4dd', '#ff6fb5'); temaFlorG(x + 9.5, y + 1.5, 1.1, '#fff', '#ff9ccd');
+  } else if(ant === 'estrelinha'){   // presilha de estrela com fitinhas (Céu Estrelado)
+    g.fillStyle = '#ff6fb5'; g.fillRect(x + 5, y + 1.6, 20, 1.3);
+    g.font = '900 7px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffe14d'; g.fillText('★', x + 23, y + 3.5);
+    g.fillStyle = '#4dd8ff'; g.fillRect(x + 23.5, y + 3.6, .9, 5); g.fillStyle = '#ff6fb5'; g.fillRect(x + 22, y + 3.6, .9, 4);
   } else if(ant === 'estrelas'){   // tiara de estrelinhas douradas
     g.fillStyle = '#f5b400'; g.fillRect(x + 4, y + 1.5, 22, 1.2);
     g.font = '900 5px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffe14d';
@@ -7840,7 +7890,10 @@ var HUB_DICT = {
 };
 Object.keys(HUB_DICT).forEach(function(l){ if(DICT[l]) Object.keys(HUB_DICT[l]).forEach(function(k){ DICT[l][k] = HUB_DICT[l][k]; }); });
 
+var HUB_COLLECT = 'https://brs48-collect.vercel.app/', HUB_BLOG = 'https://brs48.blogspot.com/';
+var HUB_YOUTUBE = 'https://www.youtube.com/@BRS48';   // canal oficial do BRS48
 var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_lista)
+  collect:['🎴', 'Visite o BRS48 Collect!'],
   corra2:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra3:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra5:['🏃', 'Corra {n} vezes no Center⭐Run!'],
   coracao:['💖', 'Dê 1 coração em um perfil'], recado:['💌', 'Deixe 1 recado em um perfil'], mini:['🎮', 'Ganhe estrelas em um minijogo do camarim'], pet:['🛍️', 'Compre algo para o seu pet'],
   estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
@@ -7860,7 +7913,9 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
+  '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
+  '<div class="hublinks" id="hubLinks"></div>' +
   '<p class="hubrodape"><a href="privacidade.html" target="_blank" rel="noopener" id="hubPriv"></a> · <span translate="no">v2.1.3</span></p></div>' +
   '<div class="hubtut" id="hubTut" hidden></div></div>';
 document.body.appendChild(hubOv);
@@ -7903,8 +7958,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 14 * sc, 2.4 * sc, 0, 0, 7); x.fill();
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = m[1]; drawChar(c, 0, 0, 0, ex, false); });
       if(PET_SP[m[3]]){   // o pet de cada um, flutuando ao lado
-        var ps = sc * .46, px = cx + 24 * sc, py = chao - 12 * sc + Math.sin(t * .08 + i) * 1.5 * sc;
-        x.fillStyle = 'rgba(30,10,60,.18)'; x.beginPath(); x.ellipse(px, chao, 7 * sc, 1.4 * sc, 0, 0, 7); x.fill();
+        var ps = sc * .46, px = cx + 24 * sc, py = chao - 22 * sc + Math.sin(t * .08 + i) * 1.5 * sc;   // flutuando, sem sombra (não cobre as abóboras)
         perfDesenharPetEm(x, { k:m[3], acc:'' }, px, py, ps, t + i * 40);
       }
     });
@@ -7928,7 +7982,8 @@ function hubCardsUI(){
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubpet" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>';
+    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
+    '<button type="button" class="hubcard hubgacha" data-ir="gacha"><i>🎰</i><b>' + escHtml(tr('Star⭐Gacha')) + '</b><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>';
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
@@ -7938,7 +7993,7 @@ function hubMisUI(){
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
-    var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
+    var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : (m.k === 'collect' && !pronto) ? '<button type="button" class="btn alt" data-collect="1">' + escHtml(tr('Abrir')) + ' ↗</button>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
     return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';
 }
@@ -7951,6 +8006,8 @@ function hubMontar(){
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
+  $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
+  $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ YouTube do BRS48</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
@@ -7986,26 +8043,26 @@ function presentesConferir(){   // presentes para todos criados pela moderação
         }
       }
     }); }); }, Promise.resolve()).then(function(){
-      if(!est && !partes.length) return;
-      $('perfPresTit').textContent = '🎁 ' + tr('Presente da TsuLiPa!');
+      if(!est && !partes.length && !msg) return;
+      $('perfPresTit').textContent = (!est && !partes.length) ? '📣 ' + tr('Mensagem da moderação') : '🎁 ' + tr('Presente da TsuLiPa!');
       $('perfPresNome').textContent = msg || '';
       $('perfPresTxt').textContent = (est ? '★' + est + (partes.length ? ' · ' : '') : '') + partes.join(' · ');
       $('perfPresOk').textContent = tr('OBA!');
-      $('perfPresArte').innerHTML = '<span class="perfpres-emo">🎁</span>';
+      $('perfPresArte').innerHTML = '<span class="perfpres-emo">' + ((!est && !partes.length) ? '📣' : '🎁') + '</span>';
       perfPres.hidden = false; if(sfx.rank) sfx.rank();
       hubCardsUI();
     });
   }).catch(function(){});
 }
 function hubMostrar(){
-  hubMontar(); hubAvisoCarregar();
+  hubMontar(); hubAvisoCarregar(); if(hubComecou) hubMusicaTocar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
   if(hubComecou) hubMisCarregar();
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubFechar(){
-  hubOv.hidden = true; document.body.classList.remove('hubon');
+  hubOv.hidden = true; document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
@@ -8013,7 +8070,7 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
   beep(523, .9, 'sine', .03, .8);
 }
 function hubComecar(){
-  ac(); hubJingle();
+  ac(); hubJingle(); setTimeout(hubMusicaTocar, 1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
   hubMisCarregar();
   var visto = null; try{ visto = localStorage.getItem('brs48cr_tut'); }catch(e){}
@@ -8037,6 +8094,12 @@ hubOv.addEventListener('click', function(e){
   if(t.dataset && t.dataset.ho !== undefined){ applyOshi(t.dataset.ho); hubCfgUI(); beep(1175, .05, 'triangle', .04); return; }
   if(t.id === 'hubTutOk'){ beep(1175, .06, 'triangle', .04); if(++hubTutI >= HUB_TUT.length) hubTutFim(); else hubTutUI(); return; }
   if(t.id === 'hubTutPular'){ hubTutFim(); return; }
+  if((b = t.closest('[data-collect]'))){   // missão do dia: abre o jogo irmão e marca a visita
+    window.open(HUB_COLLECT, '_blank', 'noopener');
+    contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(hubMisCarregar, 600); }).catch(function(){});
+    return;
+  }
+  if((b = t.closest('[data-hlink]'))){ if(b.dataset.hlink === 'collect' && contaJ) contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(hubMisCarregar, 600); }).catch(function(){}); return; }
   if((b = t.closest('[data-resg]'))){
     b.disabled = true;
     contaRpc('resgatar_missao', { p_k: b.dataset.resg }).then(function(r){
@@ -8051,6 +8114,7 @@ hubOv.addEventListener('click', function(e){
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
     else if(ir === 'pet'){ hubFechar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
+    else if(ir === 'gacha') gachaAbrir();
   }
 });
 // botão "← Início" no menu do Center Run
@@ -8110,6 +8174,334 @@ function quartetoTalvez(){
   quartetoPend = false;
   contaRpc('marcar_quarteto', { p_run: contaUltimaRun.id }).then(function(r){ if(r && r.ok) insConferir(); }).catch(function(){});
 }
+// ---------- Recorde por personagem: as recompensas do Center Run liberam só no personagem que chegou lá ----------
+// Chave NOVA brs48cr_bestc (nunca renomear): {"0": Tsu, "1": Lirika, "2": Pati, "3": Idol}
+function bestcLer(){ try{ var o = JSON.parse(localStorage.getItem('brs48cr_bestc') || 'null'); if(o && typeof o === 'object') return o; }catch(e){} return null; }
+function bestcGravar(o){ try{ localStorage.setItem('brs48cr_bestc', JSON.stringify(o)); }catch(e){} }
+function bestcIdx(nome){ nome = nome === 'Você' ? 'Idol' : nome; for(var i = 0; i < CH.length; i++) if(CH[i].n === nome) return i; return -1; }
+function bestcIniciar(){   // primeira vez: monta pelo histórico real do aparelho (rankings local, da semana e do dia)
+  var o = { 0:0, 1:0, 2:0, 3:0 };
+  ['brs48cr_lb', 'brs48cr_lw', 'brs48cr_ld'].forEach(function(k){
+    var v = null; try{ v = JSON.parse(localStorage.getItem(k) || 'null'); }catch(e){}
+    var L = Array.isArray(v) ? v : (v && Array.isArray(v.rows) ? v.rows : []);
+    L.forEach(function(r){ var i = bestcIdx(r && r.char); if(i >= 0) o[i] = Math.max(o[i], +r.score || 0); });
+  });
+  bestcGravar(o); return o;
+}
+function bestDe(i){ var o = bestcLer() || bestcIniciar(); return +o[i] || 0; }
+function bestcSalvar(i, s){ var o = bestcLer() || bestcIniciar(); if(s > (+o[i] || 0)){ o[i] = s; bestcGravar(o); } }
+function bestcNuvem(pp){   // por_personagem do servidor ({"Idol": 12000, "Tsu": 6400}): fica o maior
+  if(!pp || typeof pp !== 'object') return;
+  var o = bestcLer() || bestcIniciar(), mudou = false;
+  Object.keys(pp).forEach(function(n){ var i = bestcIdx(n); if(i >= 0 && (+pp[n] || 0) > (+o[i] || 0)){ o[i] = +pp[n]; mudou = true; } });
+  if(mudou){ bestcGravar(o); if(typeof refreshAcc === 'function') refreshAcc(); }
+}
+
+// ---------- Frases da temporada dos pets ----------
+var TEMA_FALAS = {
+  halloween: ['Doces ou travessuras? 🍬', 'Hoje eu vou de fantasminha! 👻', 'Ouvi um morcego cantando no camarim 🦇'],
+  natal:     ['Será que o Papai Noel traz estrelas? 🎅', 'Pendurei minha meia no camarim! 🧦', 'Cheirinho de panetone no ar 🎄'],
+  anonovo:   ['Feliz Ano Novo, {n}! 🥂', 'Vou pular sete ondinhas no camarim! 🌊', 'Este ano a gente chega no Center! ✨'],
+  verao:     ['Que calor! Bora tomar sorvete? 🍦', 'Passei protetor solar nas bochechas ☀️', 'Cheiro de praia no camarim 🏖️'],
+  valentine: ['Você é meu Oshi favorito, {n}! 💝', 'Fiz chocolate pra você 🍫', 'Tem coraçãozinho voando por aqui 💕'],
+  outono:    ['As folhas estão dançando lá fora 🍁', 'Tempo bom pra um chocolate quente ☕', 'Achei uma folha laranjinha! 🍂'],
+  sakura:    ['Hanami no camarim! 🌸', 'Uma pétala caiu na minha cabeça 🌸', 'As sakuras são lindas, né, {n}? 🌸'],
+  inverno:   ['Brrr! Me empresta um cachecol? 🧣', 'Vamos fazer um bonequinho de neve ☃️', 'Hora do cobertor quentinho ❄️'],
+  tanabata:  ['Escrevi um desejo pro Tanabata 🎋', 'Hoje as estrelas se encontram ✨', 'Meu desejo: ver você no Center! 🌟'],
+  primavera: ['As flores voltaram! 🌼', 'Tem borboleta no camarim 🦋', 'Cheirinho de flor no ar 🌷']
+};
+function temaFalas(){ var k = temaAtual(); return TEMA_FALAS[k] || null; }
+
+// ---------- Procurar Idol pelo nome (tela de início e ranking) ----------
+var buscaT = 0;
+function buscaLigar(inp, res){
+  if(!inp || inp._ok) return; inp._ok = true;
+  inp.addEventListener('keydown', function(e){ e.stopPropagation(); });
+  inp.addEventListener('input', function(){
+    clearTimeout(buscaT);
+    var q = inp.value.trim();
+    if(q.length < 2){ res.innerHTML = ''; return; }
+    buscaT = setTimeout(function(){
+      contaRpc('buscar_perfis', { p_q: q }).then(function(L){
+        L = Array.isArray(L) ? L : [];
+        res.innerHTML = L.length ? L.map(function(p){ return '<button type="button" class="lbn" data-nick="' + escHtml(p.nick) + '">' + escHtml(p.nick) + ' <small>🏆 ' + (+p.best || 0) + '</small></button>'; }).join('') : '<em>' + escHtml(tr('Nenhuma.')) + '</em>';
+      }).catch(function(){ res.innerHTML = ''; });
+    }, 350);
+  });
+}
+(function(){
+  buscaLigar($('hubBusca'), $('hubBuscaRes'));
+  var lw = $('lbmw'); if(!lw) return;
+  var d = document.createElement('div'); d.className = 'lbbusca';
+  d.innerHTML = '<input id="lbBusca" maxlength="12" autocomplete="off"><div id="lbBuscaRes" class="buscares"></div>';
+  lw.insertBefore(d, lw.firstChild);
+  $('lbBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
+  buscaLigar($('lbBusca'), $('lbBuscaRes'));
+})();
+hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBuscaRes .lbn'); if(b){ hubFechar(); } }, true);
+
+// ---------- Star⭐Gacha (1 giro por dia, sorteio no servidor) ----------
+var GACHA_SORTE = ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Cápsula vazia! Pelo menos você treinou o giro 💪', 'Nada hoje. A Tsu disse que dá sorte tentar amanhã 🎤',
+  'Só confete! 🎊 Volte amanhã', 'A Lirika guardou o prêmio pra amanhã 🐨', 'O Pati disse: amanhã é dia de coroa! 👑', 'Sorte pequena: um sorriso 😊', 'Hoje não... mas o Center te espera! ⭐'];
+var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever' };
+var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1;
+var gachaOv = document.createElement('div');
+gachaOv.className = 'ov gachaov'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
+gachaOv.innerHTML = '<div class="panel gachap" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gachaX">✕</button><h2 id="gachaTit"></h2>' +
+  '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
+  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div></div>';
+document.body.appendChild(gachaOv);
+function gachaConferir(){
+  if(!contaJ){ gachaFeito = false; return; }
+  contaRpc('gacha_hoje').then(function(r){ gachaFeito = !!(r && r.tipo); gachaRes = gachaFeito ? r : null; if(!hubOv.hidden) hubCardsUI(); if(!gachaOv.hidden){ gachaUI(); gachaCardUI(); } }).catch(function(){});
+}
+function gachaTexto(r){
+  if(!r) return '';
+  if(r.tipo === 'estrelas') return '⭐ ' + tr('Você ganhou') + ' ★' + r.valor + '!';
+  if(r.tipo === 'bonus') return '✨ ' + tr('Bônus na próxima corrida') + ': ' + (GACHA_BONUS[r.valor] || r.valor) + '!';
+  if(r.tipo === 'card') return '🃏 ' + tr('Você tirou o card de') + ' ' + (r.card ? r.card.nick : r.valor) + '!';
+  return tr(GACHA_SORTE[(+r.valor || 0) % GACHA_SORTE.length]);
+}
+function gachaUI(){
+  $('gachaTit').textContent = '🎰 ' + tr('Star⭐Gacha');
+  var b = $('gachaGirar'), t = $('gachaTxt');
+  if(!contaJ){ b.textContent = tr('Entrar com Google'); b.disabled = false; t.textContent = tr('Entre com Google para girar (1 vez por dia).'); return; }
+  if(gachaFeito){ b.textContent = tr('Volte amanhã') + ' 🌙'; b.disabled = true; t.textContent = gachaTexto(gachaRes); return; }
+  b.textContent = '🎰 ' + tr('Girar!'); b.disabled = gachaGiro >= 0; t.textContent = tr('Gire a manivela e veja o que sai da cápsula!');
+}
+function gachaCardUI(){   // o card do Idol que saiu (estilo dos cards do BRS48 Collect)
+  var cv = $('gachaCardCv'), dl = $('gachaCardDl'), d = gachaRes && gachaRes.tipo === 'card' && gachaRes.card;
+  cv.hidden = !d; dl.hidden = !d; if(!d) return;
+  gachaCardDesenhar(cv, d);
+  dl.textContent = '⬇️ ' + tr('Baixar card');
+  dl.onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'star-gacha-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+}
+function gachaCardDesenhar(cv, d){
+  var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i, h = 0;
+  for(i = 0; i < d.nick.length; i++) h = (h * 31 + d.nick.charCodeAt(i)) % 997;
+  var oshi = d.oshi && PERF_OSHI[d.oshi], cor = oshi ? oshi[2] : ['#b48cff', '#ffb36b', '#6bc8ff', '#ff8fc7'][h % 4];
+  var best = +d.best || 0, rk = rankOf(best), rar = rk >= 9 ? 'SSR' : rk >= 6 ? 'SR' : rk >= 3 ? 'R' : 'N';   // raridade pelo rank do Center Run: N até Team · R Senbatsu–tCenter · SR wCenter–Solo Center · SSR Capitão+
+  function rr(x0, y0, w, hh, r0){ x.beginPath(); x.moveTo(x0 + r0, y0); x.arcTo(x0 + w, y0, x0 + w, y0 + hh, r0); x.arcTo(x0 + w, y0 + hh, x0, y0 + hh, r0); x.arcTo(x0, y0 + hh, x0, y0, r0); x.arcTo(x0, y0, x0 + w, y0, r0); x.closePath(); }
+  x.clearRect(0, 0, W2, H2);
+  rr(0, 0, W2, H2, 22); x.save(); x.clip();
+  var gr = x.createLinearGradient(0, 0, W2, H2); gr.addColorStop(0, petMix(cor, 1, .82)); gr.addColorStop(.5, petMix(cor, 1, .55)); gr.addColorStop(1, petMix(cor, 1, .75));
+  x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+  x.globalAlpha = .35; x.fillStyle = '#fff';   // faixas de luz em diagonal
+  for(i = -2; i < 8; i++){ x.beginPath(); x.moveTo(i * 70, 0); x.lineTo(i * 70 + 26, 0); x.lineTo(i * 70 - 174, H2); x.lineTo(i * 70 - 200, H2); x.fill(); }
+  x.globalAlpha = 1;
+  perfEnfeites(x, W2, H2 * 1.3, ['#fff', petMix(cor, 0, .1), '#ffe14d'], 14, h, 0, .75);
+  for(i = 0; i < 26; i++){ x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.arc(W2 - 70 + (i % 6) * 10, 300 + Math.floor(i / 6) * 10, 2, 0, 7); x.fill(); }   // bolinhas no canto, como nos cards do Collect
+  // o Idol (sem fundo próprio, por cima do card)
+  var av = d.avatar && typeof d.avatar === 'object' ? JSON.parse(JSON.stringify(d.avatar)) : {}; av.pet = null;
+  var tmp = document.createElement('canvas'); tmp.width = W2; tmp.height = 380;
+  try{ perfDesenharIdol(tmp.getContext('2d'), W2, 380, av, false, false, 0); }catch(e){}
+  x.drawImage(tmp, 0, 18);
+  // pet ativo no canto
+  if(d.pet && PET_SP[d.pet.k]){
+    x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.arc(W2 - 52, 330, 34, 0, 7); x.fill();
+    x.strokeStyle = cor; x.lineWidth = 3; x.stroke();
+    perfDesenharPetEm(x, { k:d.pet.k, acc:d.pet.acc || '' }, W2 - 52, 332, 1.7, 0);
+  }
+  // selo de raridade
+  var rg = x.createLinearGradient(14, 14, 84, 44), RC = { SSR:['#ffe14d', '#f59e0b'], SR:['#ff9ccd', '#ff4f9a'], R:['#9ec8ff', '#4169e1'], N:['#d8cdea', '#9a8bb8'] }[rar]; rg.addColorStop(0, RC[0]); rg.addColorStop(1, RC[1]);
+  x.fillStyle = rg; rr(14, 14, rar === 'SSR' ? 70 : rar === 'SR' ? 54 : 40, 30, 8); x.fill();
+  x.fillStyle = '#fff'; x.font = '900 20px sans-serif'; x.textAlign = 'left'; x.fillText(rar, 24, 37);
+  // placa do nome
+  x.fillStyle = 'rgba(255,255,255,.92)'; rr(14, H2 - 132, W2 - 28, 118, 16); x.fill();
+  x.fillStyle = cor; x.fillRect(14, H2 - 132, 8, 118);
+  x.fillStyle = '#2c1a5e'; x.font = '900 26px sans-serif'; x.fillText(String(d.nick).slice(0, 14), 32, H2 - 98);
+  x.fillStyle = '#9b30d9'; x.font = '800 15px sans-serif'; x.fillText(tr(RANKS[rankOf(best)][1]) + ' · 🏆 ' + best, 32, H2 - 74);
+  if(oshi){ x.fillStyle = '#6b5a8e'; x.font = '700 14px sans-serif'; x.fillText('推し ' + oshi[0] + ' ' + oshi[1], 32, H2 - 52); }
+  if(d.frase){ x.fillStyle = '#6b5a8e'; x.font = 'italic 13px sans-serif'; x.fillText('“' + String(d.frase).slice(0, 34) + '”', 32, H2 - 30); }
+  x.fillStyle = 'rgba(44,26,94,.55)'; x.font = '800 11px sans-serif'; x.textAlign = 'right'; x.fillText('TsuLiPa⭐World · STAR⭐GACHA', W2 - 24, H2 - 18);
+  x.restore();
+  x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 6; rr(3, 3, W2 - 6, H2 - 6, 20); x.stroke();
+}
+function gachaAbrir(){ hubFechar(); gachaOv.hidden = false; gachaT = 0; gachaGiro = -1; gachaUI(); gachaCardUI(); if(!gachaAnim) gachaAnim = requestAnimationFrame(gachaLoop); gachaConferir(); }
+function gachaFechar(){ gachaOv.hidden = true; hubMostrar(); }
+$('gachaX').onclick = gachaFechar;
+$('gachaGirar').onclick = function(){
+  if(!contaJ){ contaEntrar(); return; }
+  if(gachaFeito || gachaGiro >= 0) return;
+  ac(); gachaGiro = 0; gachaUI();
+  [523, 587, 659, 698, 784].forEach(function(f, i){ beep(f, .08, 'square', .03, i * .12); });
+  contaRpc('gacha_girar').then(function(r){
+    setTimeout(function(){
+      gachaGiro = -1;
+      if(r && r.ok){
+        gachaFeito = true; gachaRes = r;
+        if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+        if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
+        else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
+      } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
+      gachaUI(); gachaCardUI(); hubCardsUI();
+    }, 1600);
+  }).catch(function(){ gachaGiro = -1; gachaUI(); });
+};
+function gachaDesenhar(){
+  var cv = $('gachaCv'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;
+  x.clearRect(0, 0, W2, H2);
+  perfFundo(x, W2, H2, 'temporada', '#ff6fb5', t);
+  var bx = W2 * .62, chao = H2 * .9;
+  // barraquinha: toldo listrado nas cores do TsuLiPa
+  x.fillStyle = '#7a4a2a'; x.fillRect(bx - 150, 70, 12, chao - 70); x.fillRect(bx + 138, 70, 12, chao - 70);
+  for(i = 0; i < 8; i++){ x.fillStyle = ['#9b30d9', '#ffffff', '#5cc72c', '#ffffff', '#4169e1', '#ffffff', '#ff6fb5', '#ffffff'][i]; x.beginPath(); x.moveTo(bx - 160 + i * 40, 60); x.lineTo(bx - 120 + i * 40, 60); x.lineTo(bx - 120 + i * 40, 96); x.quadraticCurveTo(bx - 140 + i * 40, 112, bx - 160 + i * 40, 96); x.fill(); }
+  x.fillStyle = '#ff6fb5'; x.fillRect(bx - 165, 48, 330, 14);
+  x.fillStyle = '#fff'; x.font = '900 13px sans-serif'; x.textAlign = 'center'; x.fillText('STAR ⭐ GACHA', bx, 59);
+  x.fillStyle = '#c98b55'; x.fillRect(bx - 150, chao - 70, 300, 70); x.fillStyle = '#a0673a'; x.fillRect(bx - 150, chao - 70, 300, 8);
+  // máquina de cápsulas
+  var mx = bx, my = chao - 70, giro = gachaGiro >= 0 ? gachaGiro : 0;
+  x.fillStyle = '#e0303a'; x.fillRect(mx - 46, my - 70, 92, 70); x.fillStyle = '#b91c1c'; x.fillRect(mx - 46, my - 10, 92, 10);
+  x.fillStyle = 'rgba(220,240,255,.75)'; x.beginPath(); x.arc(mx, my - 110, 52, 0, 7); x.fill();
+  for(i = 0; i < 11; i++){   // cápsulas com luz, sombra e brilho
+    var a = i * 2.4 + (gachaGiro >= 0 ? t * .25 : 0), rr = 14 + (i % 3) * 11, kx = mx + Math.cos(a) * rr, ky = my - 104 + Math.sin(a) * rr * .7, kc = ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#9b30d9'][i % 5];
+    var kg = x.createRadialGradient(kx - 3, ky - 3, 1, kx, ky, 10); kg.addColorStop(0, petMix(kc, 1, .6)); kg.addColorStop(.6, kc); kg.addColorStop(1, petMix(kc, 0, .35));
+    x.fillStyle = kg; x.beginPath(); x.arc(kx, ky, 9, 0, 7); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.arc(kx, ky + 1, 9, 0, Math.PI); x.fill();   // metade de baixo branca, como as cápsulas de verdade
+    x.strokeStyle = 'rgba(0,0,0,.12)'; x.lineWidth = 1; x.beginPath(); x.moveTo(kx - 9, ky + 1); x.lineTo(kx + 9, ky + 1); x.stroke();
+    x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); x.ellipse(kx - 3.5, ky - 4, 2.6, 1.6, -.6, 0, 7); x.fill();
+  }
+  var vg = x.createRadialGradient(mx - 18, my - 128, 4, mx, my - 110, 52); vg.addColorStop(0, 'rgba(255,255,255,.55)'); vg.addColorStop(.35, 'rgba(255,255,255,0)'); vg.addColorStop(1, 'rgba(120,160,220,.25)');
+  x.fillStyle = vg; x.beginPath(); x.arc(mx, my - 110, 52, 0, 7); x.fill();   // reflexo do vidro
+  x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); x.arc(mx, my - 110, 52, 0, 7); x.stroke();
+  x.save(); x.translate(mx + 18, my - 40); x.rotate(gachaGiro >= 0 ? t * .3 : 0); x.fillStyle = '#ffe14d'; x.fillRect(-14, -3, 28, 6); x.beginPath(); x.arc(0, 0, 8, 0, 7); x.fill(); x.restore();
+  x.fillStyle = '#2b1b4a'; x.fillRect(mx - 26, my - 28, 22, 14);
+  if(gachaGiro >= 0 && t % 90 > 45 || (gachaFeito && gachaRes)){   // a cápsula sai
+    var aberta = gachaFeito && gachaRes;
+    x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(mx - 15, my - 6 - (aberta ? 4 : 0), 10, Math.PI, 0); x.fill();
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(mx - 15, my - 6 + (aberta ? 6 : 0), 10, 0, Math.PI); x.fill();
+    if(aberta){ x.font = '28px sans-serif'; x.fillText(gachaRes.tipo === 'estrelas' ? '⭐' : gachaRes.tipo === 'bonus' ? '✨' : '🍀', mx - 15, my - 26 - Math.abs(Math.sin(t * .08)) * 8); }
+  }
+  // o seu personagem vai até a barraquinha
+  var c = sel === 3 ? CU : CH[sel], sc = 3.2, alvo = bx - 120, px = Math.min(alvo, 40 + t * 3), anda = px < alvo;
+  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oF = frame;
+  try{
+    state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; frame = t;
+    x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(px, chao, 14 * sc, 2.4 * sc, 0, 0, 7); x.fill();
+    perfCharContorno(x, px - 15 * sc, chao - 44 * sc - (anda ? Math.abs(Math.sin(t * .3)) * 4 : 0), sc, function(){ charPose = anda ? '' : 'v'; drawChar(c, 0, 0, anda ? 1 : 0, gachaFeito ? 3 : 2, false); });
+  }catch(e){}
+  finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; frame = oF; charPose = ''; perfAntena = ''; }
+}
+function gachaLoop(){
+  gachaAnim = 0; if(gachaOv.hidden) return;
+  gachaT++; if(gachaGiro >= 0) gachaGiro++;
+  if(gachaT % 2 === 0) gachaDesenhar();
+  gachaAnim = requestAnimationFrame(gachaLoop);
+}
+function gachaBonus(){   // bônus do Gachapon: começa a próxima corrida com o poder
+  contaRpc('usar_bonus').then(function(b){
+    if(!b || state !== 'play') return;
+    if(b === 'escudo') shield = 1;
+    else pw = { k:b, t:480 };
+    toast = '🎰 ' + tr('Bônus do Star⭐Gacha') + ': ' + (GACHA_BONUS[b] || b); toastT = 140;
+    if(sfx.card) sfx.card();
+  }).catch(function(){});
+}
+
+// ---------- Música da tela de início (chiptune leve, em loop, muda com o tema) ----------
+var hubMus = null;
+function hubMusicaTocar(){
+  if(hubMus || muted || hubOv.hidden) return;
+  var a = ac(); if(!a) return;
+  var k = temaAtual(), tom = { halloween:-3, natal:2, anonovo:5, inverno:2, sakura:0, tanabata:-5 }[k] || 0;
+  var menor = k === 'halloween', suave = k === 'sakura' || k === 'primavera' || k === 'tanabata';
+  var esc = menor ? [0, 2, 3, 5, 7, 8, 10, 12, 14, 15] : [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];   // escala menor ou pentatônica
+  var acordes = menor ? [[0, 3, 7], [-4, 0, 3], [-2, 2, 5], [-5, -1, 2]] : [[0, 4, 7], [-5, -1, 2], [-3, 0, 4], [-7, -3, 0]];   // I–V–vi–IV
+  var mel = [4, 5, 6, 5, 4, 3, 4, -1, 3, 4, 5, 4, 3, 2, 3, -1, 2, 3, 4, 3, 2, 1, 2, -1, 1, 2, 3, 4, 5, 4, 5, -1];
+  var f0 = 523.25 * Math.pow(2, tom / 12), passo = 60 / 116 / 2, n = 0, prox = a.currentTime + .05;
+  function hz(st){ return f0 * Math.pow(2, st / 12); }
+  function nota(f, ini, dur, tipo, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, ini); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + dur); o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + dur + .02); }
+  var ruido = a.createBuffer(1, a.sampleRate * .05, a.sampleRate), dd = ruido.getChannelData(0);
+  for(var i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * (1 - i / dd.length);
+  function chimbal(ini, vol){ var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = 'highpass'; fl.frequency.value = 6000; s.buffer = ruido; gn.gain.value = vol; s.connect(fl); fl.connect(gn); gn.connect(a.destination); s.start(ini); }
+  hubMus = setInterval(function(){
+    if(muted || hubOv.hidden){ hubMusicaParar(); return; }
+    while(prox < a.currentTime + .3){
+      var c = acordes[Math.floor(n / 8) % 4], m = mel[n % 32];
+      if(m >= 0) nota(hz(esc[m]), prox, passo * 1.6, suave ? 'sine' : 'square', suave ? .022 : .014);
+      nota(hz(c[n % 3] + 12), prox, passo * .9, 'triangle', .012);                          // arpejo
+      if(n % 4 === 0) nota(hz(c[0] - 24), prox, passo * 3.5, 'triangle', .03);                  // baixo
+      if(k === 'natal' && n % 8 === 4) nota(hz(c[2] + 24), prox, .5, 'sine', .012);              // sininho
+      if(n % 2 === 1) chimbal(prox, .025);
+      n++; prox += passo;
+    }
+  }, 60);
+}
+function hubMusicaParar(){ if(hubMus){ clearInterval(hubMus); hubMus = null; } }
+document.addEventListener('click', function(e){ if(e.target && e.target.id === 'mute') setTimeout(function(){ if(muted) hubMusicaParar(); else if(!hubOv.hidden && hubComecou) hubMusicaTocar(); }, 50); });
+
+// ---------- Fundo fofo também no Center Run e no camarim (mesmas partículas da tela de início) ----------
+var sitePart = document.createElement('div'); sitePart.className = 'sitepart'; sitePart.setAttribute('aria-hidden', 'true');
+document.body.insertBefore(sitePart, document.body.firstChild);
+function sitePartUI(){ sitePart.innerHTML = $('hubPart').innerHTML; }
+
+// ---------- Anel dos pets: a parte de trás, atrás do corpo (o Koali já tem o anel no desenho) ----------
+function petAnelAtras(ctx, type){
+  var acc = type && typeof type === 'object' ? type.acc : (typeof petData !== 'undefined' && petData && petData.pets && petData.pets[type] ? petData.pets[type].acc : '');
+  if(acc !== 'anel' || type === 'lirika') return;
+  ctx.save(); ctx.rotate(-.22); ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, Math.PI + .35, Math.PI * 2 - .35); ctx.stroke();
+  ctx.strokeStyle = 'rgba(253,224,71,.7)'; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(0, 2, 18.5, 3.5, 0, Math.PI + .2, Math.PI * 2 - .2); ctx.stroke();
+  ctx.restore();
+}
+
+// ---------- Roupa de rank "Céu Estrelado" (Senbatsu): jaqueta azul com faixa arco-íris, laço, estrela e bermuda de nuvens ----------
+function roupaEstrelado(c, x, y, cor, E, T){
+  var az = (!cor || /^#?f{6}$/i.test(cor)) ? '#3b5bdb' : cor, i;
+  g.fillStyle = '#ff9ccd'; g.fillRect(x + 9, y + 38, 5, 5.5); g.fillRect(x + 17, y + 38, 5, 5.5);   // polainas listradas
+  g.fillStyle = '#ffe14d'; g.fillRect(x + 9, y + 39.6, 5, 1); g.fillRect(x + 17, y + 39.6, 5, 1);
+  g.fillStyle = '#4dd8ff'; g.fillRect(x + 9, y + 41.4, 5, .9); g.fillRect(x + 17, y + 41.4, 5, .9);
+  g.fillStyle = az; T([x + 5, y + 31, x + 25, y + 31, x + 27, y + 38, x + 3, y + 38]);                  // bermuda balonê
+  g.fillStyle = '#a5d8ff'; g.fillRect(x + 3, y + 37.4, 24, 1.2);
+  g.fillStyle = '#fff'; for(i = 0; i < 5; i++){ E(x + 6 + i * 4.6, y + 35.4, 1.7, 1.1); E(x + 7.3 + i * 4.6, y + 34.9, 1.3, 1); }   // nuvenzinhas na barra
+  g.fillStyle = az; g.fillRect(x + 4, y + 22, 22, 10);                                                      // jaqueta
+  ['#ff6fb5', '#ffe14d', '#4dd8ff'].forEach(function(cc, j){ g.fillStyle = cc; T([x + 4, y + 27.4 + j * 1.5, x + 26, y + 24.4 + j * 1.5, x + 26, y + 25.8 + j * 1.5, x + 4, y + 28.8 + j * 1.5]); });   // faixa arco-íris
+  g.fillStyle = '#fff'; T([x + 10, y + 22, x + 15, y + 22, x + 12.5, y + 24.6]); T([x + 20, y + 22, x + 15, y + 22, x + 17.5, y + 24.6]);   // gola
+  g.fillStyle = '#ff4f9a'; T([x + 15, y + 23.4, x + 10.5, y + 21.2, x + 10.5, y + 25.6]); T([x + 15, y + 23.4, x + 19.5, y + 21.2, x + 19.5, y + 25.6]); g.fillStyle = '#ffd0e6'; E(x + 15, y + 23.4, 1.3, 1.3);   // laço
+  g.fillStyle = '#ffe14d'; g.beginPath(); for(i = 0; i < 10; i++){ var rr = i % 2 ? 1 : 2.4, an = i * Math.PI / 5 - Math.PI / 2; g[i ? 'lineTo' : 'moveTo'](x + 21 + Math.cos(an) * rr, y + 29.6 + Math.sin(an) * rr); } g.closePath(); g.fill();   // estrela no peito
+  perfAntena = 'estrelinha';
+}
+var EXTRA_DICT = {
+  en: {"Céu Estrelado (Senbatsu)":"Starry Sky (Senbatsu)","Star⭐Gacha":"TsuLiPa Gachapon","1 giro por dia":"1 spin a day","Girar!":"Spin!","Volte amanhã":"Come back tomorrow","Você ganhou":"You won","Bônus na próxima corrida":"Bonus on your next run","Bônus do Star⭐Gacha":"Gachapon bonus","Entre com Google para girar (1 vez por dia).":"Sign in with Google to spin (once a day).","Gire a manivela e veja o que sai da cápsula!":"Turn the crank and see what's in the capsule!","Procurar Idol pelo nome":"Search an Idol by name","Visite o BRS48 Collect!":"Visit BRS48 Collect!","Abrir":"Open","Blog do BRS48":"BRS48 Blog","Mensagem da moderação":"Message from the moderators","Esse visual ainda não foi comprado.":"This look hasn't been bought yet.","Esse fundo ainda não foi comprado.":"This background hasn't been bought yet.","Essa pose ainda não foi comprada.":"This pose hasn't been bought yet.","Essa roupa ainda não foi comprada.":"This outfit hasn't been bought yet.","Esse pet ainda não chegou na nuvem. Tente de novo em alguns segundos.":"This pet isn't in the cloud yet. Try again in a few seconds."},
+  es: {"Céu Estrelado (Senbatsu)":"Cielo Estrellado (Senbatsu)","Star⭐Gacha":"Gachapon de TsuLiPa","1 giro por dia":"1 giro al día","Girar!":"¡Girar!","Volte amanhã":"Vuelve mañana","Você ganhou":"Ganaste","Bônus na próxima corrida":"Bonus en tu próxima carrera","Bônus do Star⭐Gacha":"Bonus del Gachapon","Entre com Google para girar (1 vez por dia).":"Entra con Google para girar (1 vez al día).","Gire a manivela e veja o que sai da cápsula!":"¡Gira la manivela y mira qué sale de la cápsula!","Procurar Idol pelo nome":"Buscar Idol por nombre","Visite o BRS48 Collect!":"¡Visita BRS48 Collect!","Abrir":"Abrir","Blog do BRS48":"Blog de BRS48","Mensagem da moderação":"Mensaje de la moderación"},
+  th: {"Céu Estrelado (Senbatsu)":"ท้องฟ้าดาว (Senbatsu)","Star⭐Gacha":"กาชาปอง TsuLiPa","1 giro por dia":"หมุนได้วันละ 1 ครั้ง","Girar!":"หมุน!","Volte amanhã":"กลับมาพรุ่งนี้นะ","Você ganhou":"คุณได้รับ","Bônus na próxima corrida":"โบนัสในรอบถัดไป","Bônus do Star⭐Gacha":"โบนัสกาชาปอง","Entre com Google para girar (1 vez por dia).":"เข้าสู่ระบบด้วย Google เพื่อหมุน (วันละครั้ง)","Gire a manivela e veja o que sai da cápsula!":"หมุนคันโยกแล้วดูว่าในแคปซูลมีอะไร!","Procurar Idol pelo nome":"ค้นหาไอดอลด้วยชื่อ","Visite o BRS48 Collect!":"ไปที่ BRS48 Collect!","Abrir":"เปิด","Blog do BRS48":"บล็อก BRS48","Mensagem da moderação":"ข้อความจากผู้ดูแล"},
+  ja: {"Céu Estrelado (Senbatsu)":"星空コーデ (Senbatsu)","Star⭐Gacha":"TsuLiPaガチャポン","1 giro por dia":"1日1回","Girar!":"まわす！","Volte amanhã":"また明日ね","Você ganhou":"ゲット","Bônus na próxima corrida":"次のランのボーナス","Bônus do Star⭐Gacha":"ガチャポンボーナス","Entre com Google para girar (1 vez por dia).":"Googleでログインしてまわそう（1日1回）。","Gire a manivela e veja o que sai da cápsula!":"ハンドルをまわしてカプセルの中身を見よう！","Procurar Idol pelo nome":"名前でアイドルをさがす","Visite o BRS48 Collect!":"BRS48 Collect!に行こう","Abrir":"ひらく","Blog do BRS48":"BRS48ブログ","Mensagem da moderação":"モデレーションからのメッセージ"}
+};
+Object.keys(EXTRA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(EXTRA_DICT[l]).forEach(function(k){ DICT[l][k] = EXTRA_DICT[l][k]; }); });
+// ---------- Traduções que faltavam (insígnias, roupas, frases da temporada, Star⭐Gacha) — [pt, en, es, th, ja] ----------
+[
+ ['Quarteto TsuLiPa', 'TsuLiPa Quartet', 'Cuarteto TsuLiPa', 'ควอเต็ต TsuLiPa', 'TsuLiPaカルテット'],
+ ['Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto', 'As the Idol, got all 3 mics in one run and saved the quartet photo', 'Con el Idol, atrapó los 3 micrófonos en una carrera y guardó la foto del cuarteto', 'เล่นเป็นไอดอล เก็บไมค์ครบ 3 อันในรอบเดียวและเซฟรูปควอเต็ต', 'アイドルで1回のランにマイク3本を集めてカルテット写真を保存'],
+ ['Carteiro', 'Mail carrier', 'Cartero', 'บุรุษไปรษณีย์', 'メッセンジャー'], ['Deixou 10 recados', 'Left 10 messages', 'Dejó 10 mensajes', 'ฝากข้อความ 10 ครั้ง', 'メッセージを10回送った'],
+ ['Amizade', 'Friendship', 'Amistad', 'มิตรภาพ', 'なかよし'], ['Deu 10 corações', 'Gave 10 hearts', 'Dio 10 corazones', 'ให้หัวใจ 10 ดวง', 'ハートを10回あげた'],
+ ['Guarda-roupa completo', 'Full wardrobe', 'Armario completo', 'ตู้เสื้อผ้าครบ', 'クローゼットコンプリート'], ['Comprou todas as roupas fixas da lojinha', 'Bought every regular outfit in the shop', 'Compró toda la ropa fija de la tienda', 'ซื้อชุดประจำร้านครบทุกชุด', 'ショップの定番服をすべて購入'],
+ ['Center da semana', 'Center of the week', 'Center de la semana', 'Center ประจำสัปดาห์', '週間Center'], ['Ficou em 1º lugar no ranking de uma semana', 'Finished 1st in a weekly ranking', 'Quedó 1.º en el ranking de una semana', 'ได้อันดับ 1 ประจำสัปดาห์', '週間ランキングで1位'],
+ ['Correu no Halloween', 'Ran on Halloween', 'Corrió en Halloween', 'วิ่งช่วงฮาโลวีน', 'ハロウィンに走った'], ['Correu no Natal', 'Ran at Christmas', 'Corrió en Navidad', 'วิ่งช่วงคริสต์มาส', 'クリスマスに走った'],
+ ['Correu na virada do Ano Novo', 'Ran at New Year', 'Corrió en Año Nuevo', 'วิ่งช่วงปีใหม่', 'お正月に走った'], ['Correu no começo do verão', 'Ran at the start of summer', 'Corrió al inicio del verano', 'วิ่งช่วงต้นฤดูร้อน', '夏のはじめに走った'],
+ ['Correu no Valentine ou no Dia dos Namorados', 'Ran on Valentine\'s or Brazilian Lovers\' Day', 'Corrió en San Valentín o en el Día de los Enamorados', 'วิ่งช่วงวาเลนไทน์', 'バレンタインに走った'], ['Correu no começo do outono', 'Ran at the start of autumn', 'Corrió al inicio del otoño', 'วิ่งช่วงต้นฤดูใบไม้ร่วง', '秋のはじめに走った'],
+ ['Correu na época das sakuras', 'Ran in sakura season', 'Corrió en temporada de sakura', 'วิ่งช่วงซากุระบาน', '桜の季節に走った'], ['Correu no começo do inverno', 'Ran at the start of winter', 'Corrió al inicio del invierno', 'วิ่งช่วงต้นฤดูหนาว', '冬のはじめに走った'],
+ ['Correu no Tanabata', 'Ran on Tanabata', 'Corrió en Tanabata', 'วิ่งช่วงทานาบาตะ', '七夕に走った'], ['Correu no começo da primavera', 'Ran at the start of spring', 'Corrió al inicio de la primavera', 'วิ่งช่วงต้นฤดูใบไม้ผลิ', '春のはじめに走った'],
+ ['Pódio do evento', 'Event podium', 'Podio del evento', 'โพเดียมอีเวนต์', 'イベント表彰台'], ['Ganhou um evento do TsuLiPa World', 'Won a TsuLiPa World event', 'Ganó un evento de TsuLiPa World', 'ชนะอีเวนต์ของ TsuLiPa World', 'TsuLiPa Worldのイベントで優勝'],
+ ['Destaque da semana', 'Highlight of the week', 'Destacado de la semana', 'ไฮไลต์ประจำสัปดาห์', '今週のピックアップ'], ['Escolha da moderação como destaque da semana', 'Chosen by the moderators as highlight of the week', 'Elegido por la moderación como destacado de la semana', 'ผู้ดูแลเลือกเป็นไฮไลต์ประจำสัปดาห์', 'モデレーターが今週のピックアップに選出'],
+ ['Fundadores', 'Founders', 'Fundadores', 'ผู้บุกเบิก', 'ファウンダー'], ['Jogou desde o lançamento do TsuLiPa World', 'Played since TsuLiPa World launched', 'Juega desde el lanzamiento de TsuLiPa World', 'เล่นตั้งแต่ TsuLiPa World เปิดตัว', 'TsuLiPa Worldのリリースから遊んでいる'],
+ ['Suéter de rena', 'Reindeer sweater', 'Suéter de reno', 'สเวตเตอร์เรนเดียร์', 'トナカイセーター'], ['Réveillon', 'New Year\'s Eve', 'Nochevieja', 'คืนข้ามปี', '大みそか'], ['Verão floral', 'Floral summer', 'Verano floral', 'ซัมเมอร์ลายดอก', 'フローラルサマー'],
+ ['Suéter de coração', 'Heart sweater', 'Suéter de corazón', 'สเวตเตอร์หัวใจ', 'ハートセーター'], ['Sobretudo de outono', 'Autumn coat', 'Abrigo de otoño', 'โค้ทฤดูใบไม้ร่วง', '秋のコート'], ['Haori de sakura', 'Sakura haori', 'Haori de sakura', 'ฮาโอริซากุระ', '桜の羽織'],
+ ['Puffer de inverno', 'Winter puffer', 'Plumífero de invierno', 'พัฟเฟอร์ฤดูหนาว', '冬のダウン'], ['Yukata de Tanabata', 'Tanabata yukata', 'Yukata de Tanabata', 'ยูกาตะทานาบาตะ', '七夕の浴衣'], ['Cardigã florido', 'Flower cardigan', 'Cárdigan floral', 'คาร์ดิแกนลายดอก', '花柄カーディガン'],
+ ['Doces ou travessuras? 🍬', 'Trick or treat? 🍬', '¿Dulce o truco? 🍬', 'หลอกหรือเลี้ยง? 🍬', 'トリック・オア・トリート？🍬'], ['Hoje eu vou de fantasminha! 👻', 'Today I\'m dressing as a little ghost! 👻', '¡Hoy me disfrazo de fantasmita! 👻', 'วันนี้ขอเป็นผีน้อยนะ! 👻', '今日はおばけになるよ！👻'], ['Ouvi um morcego cantando no camarim 🦇', 'I heard a bat singing in the dressing room 🦇', 'Escuché un murciélago cantando en el camerino 🦇', 'ได้ยินค้างคาวร้องเพลงในห้องแต่งตัว 🦇', '楽屋でコウモリが歌ってた 🦇'],
+ ['Será que o Papai Noel traz estrelas? 🎅', 'Will Santa bring stars? 🎅', '¿Papá Noel traerá estrellas? 🎅', 'ซานต้าจะเอาดาวมาให้ไหมนะ? 🎅', 'サンタさんスターくれるかな？🎅'], ['Pendurei minha meia no camarim! 🧦', 'I hung my stocking in the dressing room! 🧦', '¡Colgué mi calcetín en el camerino! 🧦', 'แขวนถุงเท้าไว้ในห้องแต่งตัวแล้ว! 🧦', '楽屋にくつしたを飾ったよ！🧦'], ['Cheirinho de panetone no ar 🎄', 'Smells like Christmas cake 🎄', 'Huele a panetón 🎄', 'กลิ่นเค้กคริสต์มาสลอยมา 🎄', 'パネトーネのいいにおい 🎄'],
+ ['Feliz Ano Novo, {n}! 🥂', 'Happy New Year, {n}! 🥂', '¡Feliz Año Nuevo, {n}! 🥂', 'สวัสดีปีใหม่นะ {n}! 🥂', 'あけましておめでとう、{n}！🥂'], ['Vou pular sete ondinhas no camarim! 🌊', 'I\'ll jump seven little waves in the dressing room! 🌊', '¡Voy a saltar siete olitas en el camerino! 🌊', 'จะกระโดดคลื่นเจ็ดลูกในห้องแต่งตัว! 🌊', '楽屋で7つの波をとびこえるよ！🌊'], ['Este ano a gente chega no Center! ✨', 'This year we reach Center! ✨', '¡Este año llegamos al Center! ✨', 'ปีนี้เราไปถึง Center แน่! ✨', '今年こそCenterへ！✨'],
+ ['Que calor! Bora tomar sorvete? 🍦', 'So hot! Ice cream time? 🍦', '¡Qué calor! ¿Vamos por helado? 🍦', 'ร้อนจัง! ไปกินไอติมกันไหม? 🍦', 'あついね！アイス食べよう？🍦'], ['Passei protetor solar nas bochechas ☀️', 'I put sunscreen on my cheeks ☀️', 'Me puse protector en las mejillas ☀️', 'ทากันแดดที่แก้มแล้ว ☀️', 'ほっぺに日焼け止めぬったよ ☀️'], ['Cheiro de praia no camarim 🏖️', 'The dressing room smells like the beach 🏖️', 'Huele a playa en el camerino 🏖️', 'ห้องแต่งตัวมีกลิ่นทะเล 🏖️', '楽屋が海のにおい 🏖️'],
+ ['Você é meu Oshi favorito, {n}! 💝', 'You\'re my favorite Oshi, {n}! 💝', '¡Eres mi Oshi favorito, {n}! 💝', 'เธอคือโอชิคนโปรดของฉันนะ {n}! 💝', '{n}がいちばんの推しだよ！💝'], ['Fiz chocolate pra você 🍫', 'I made chocolate for you 🍫', 'Hice chocolate para ti 🍫', 'ทำช็อกโกแลตให้นะ 🍫', 'チョコ作ったよ 🍫'], ['Tem coraçãozinho voando por aqui 💕', 'Little hearts are flying around 💕', 'Hay corazoncitos volando por aquí 💕', 'มีหัวใจน้อยๆ ลอยอยู่แถวนี้ 💕', 'ハートがふわふわ飛んでる 💕'],
+ ['As folhas estão dançando lá fora 🍁', 'The leaves are dancing outside 🍁', 'Las hojas bailan afuera 🍁', 'ใบไม้ข้างนอกกำลังเต้นรำ 🍁', '外で葉っぱがおどってる 🍁'], ['Tempo bom pra um chocolate quente ☕', 'Perfect weather for hot chocolate ☕', 'Buen clima para un chocolate caliente ☕', 'อากาศแบบนี้เหมาะกับโกโก้ร้อน ☕', 'ホットココア日和 ☕'], ['Achei uma folha laranjinha! 🍂', 'I found an orange leaf! 🍂', '¡Encontré una hojita naranja! 🍂', 'เจอใบไม้สีส้มด้วย! 🍂', 'オレンジの葉っぱ見つけた！🍂'],
+ ['Hanami no camarim! 🌸', 'Hanami in the dressing room! 🌸', '¡Hanami en el camerino! 🌸', 'ฮานามิในห้องแต่งตัว! 🌸', '楽屋でお花見！🌸'], ['Uma pétala caiu na minha cabeça 🌸', 'A petal fell on my head 🌸', 'Un pétalo cayó en mi cabeza 🌸', 'กลีบซากุระตกใส่หัว 🌸', '頭に花びらがのった 🌸'], ['As sakuras são lindas, né, {n}? 🌸', 'The sakuras are beautiful, right, {n}? 🌸', 'Las sakuras son lindas, ¿verdad, {n}? 🌸', 'ซากุระสวยใช่ไหม {n}? 🌸', '桜きれいだね、{n}？🌸'],
+ ['Brrr! Me empresta um cachecol? 🧣', 'Brrr! Can I borrow a scarf? 🧣', '¡Brrr! ¿Me prestas una bufanda? 🧣', 'บรื๋อ! ขอยืมผ้าพันคอหน่อย 🧣', 'さむい！マフラー貸して？🧣'], ['Vamos fazer um bonequinho de neve ☃️', 'Let\'s build a little snowman ☃️', 'Hagamos un muñequito de nieve ☃️', 'มาปั้นตุ๊กตาหิมะกัน ☃️', '雪だるま作ろう ☃️'], ['Hora do cobertor quentinho ❄️', 'Cozy blanket time ❄️', 'Hora de la mantita calentita ❄️', 'ถึงเวลาห่มผ้าห่มอุ่นๆ ❄️', 'ぬくぬく毛布タイム ❄️'],
+ ['Escrevi um desejo pro Tanabata 🎋', 'I wrote a Tanabata wish 🎋', 'Escribí un deseo para Tanabata 🎋', 'เขียนคำอธิษฐานทานาบาตะแล้ว 🎋', '七夕のお願いを書いたよ 🎋'], ['Hoje as estrelas se encontram ✨', 'Tonight the stars meet ✨', 'Hoy las estrellas se encuentran ✨', 'คืนนี้ดวงดาวได้พบกัน ✨', '今夜は星が出会う日 ✨'], ['Meu desejo: ver você no Center! 🌟', 'My wish: to see you at Center! 🌟', 'Mi deseo: ¡verte en el Center! 🌟', 'คำอธิษฐาน: อยากเห็นเธอที่ Center! 🌟', 'お願い：Centerに立つきみを見たい！🌟'],
+ ['As flores voltaram! 🌼', 'The flowers are back! 🌼', '¡Volvieron las flores! 🌼', 'ดอกไม้กลับมาแล้ว! 🌼', 'お花がもどってきた！🌼'], ['Tem borboleta no camarim 🦋', 'There\'s a butterfly in the dressing room 🦋', 'Hay una mariposa en el camerino 🦋', 'มีผีเสื้อในห้องแต่งตัว 🦋', '楽屋にちょうちょがいる 🦋'], ['Cheirinho de flor no ar 🌷', 'Smells like flowers 🌷', 'Huele a flores 🌷', 'มีกลิ่นดอกไม้ลอยมา 🌷', 'お花のいいにおい 🌷'],
+ ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Nothing today... but luck spins tomorrow! 🍀', 'Hoy nada... ¡pero mañana gira la suerte! 🍀', 'วันนี้ไม่ได้อะไร... พรุ่งนี้โชคหมุนใหม่! 🍀', '今日はハズレ…明日はきっと当たる！🍀'], ['Cápsula vazia! Pelo menos você treinou o giro 💪', 'Empty capsule! At least you practiced spinning 💪', '¡Cápsula vacía! Al menos practicaste el giro 💪', 'แคปซูลว่าง! อย่างน้อยก็ได้ฝึกหมุน 💪', 'からっぽ！でも回す練習になったね 💪'], ['Nada hoje. A Tsu disse que dá sorte tentar amanhã 🎤', 'Nothing today. Tsu says tomorrow is lucky 🎤', 'Nada hoy. Tsu dice que mañana trae suerte 🎤', 'วันนี้ไม่มี Tsu บอกว่าพรุ่งนี้โชคดี 🎤', '今日はなし。Tsuが明日はラッキーだって 🎤'],
+ ['Só confete! 🎊 Volte amanhã', 'Just confetti! 🎊 Come back tomorrow', '¡Solo confeti! 🎊 Vuelve mañana', 'มีแต่กระดาษสี! 🎊 พรุ่งนี้มาใหม่นะ', '紙ふぶきだけ！🎊 また明日'], ['A Lirika guardou o prêmio pra amanhã 🐨', 'Lirika saved the prize for tomorrow 🐨', 'Lirika guardó el premio para mañana 🐨', 'Lirika เก็บรางวัลไว้ให้พรุ่งนี้ 🐨', 'Lirikaが賞品を明日にとっておいたよ 🐨'], ['O Pati disse: amanhã é dia de coroa! 👑', 'Pati says: tomorrow is crown day! 👑', 'Pati dice: ¡mañana es día de corona! 👑', 'Pati บอกว่าพรุ่งนี้วันมงกุฎ! 👑', 'Pati「明日はクラウンの日！」👑'], ['Sorte pequena: um sorriso 😊', 'Small luck: a smile 😊', 'Suerte pequeña: una sonrisa 😊', 'โชคเล็กๆ: รอยยิ้ม 😊', '小吉：えがお 😊'], ['Hoje não... mas o Center te espera! ⭐', 'Not today... but Center awaits! ⭐', 'Hoy no... ¡pero el Center te espera! ⭐', 'วันนี้ไม่ได้... แต่ Center รออยู่นะ! ⭐', '今日はダメ…でもCenterが待ってる！⭐'],
+ ['Você tirou o card de', 'You got the card of', 'Te salió la carta de', 'คุณได้การ์ดของ', 'カードをゲット：'], ['Baixar card', 'Download card', 'Descargar carta', 'ดาวน์โหลดการ์ด', 'カードを保存'],
+ ['Bônus do Star⭐Gacha', 'Star⭐Gacha bonus', 'Bonus de Star⭐Gacha', 'โบนัส Star⭐Gacha', 'Star⭐Gachaボーナス']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---
 

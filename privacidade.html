@@ -1,20 +1,104 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacidade · TsuLiPa⭐World</title>
-<style>body{margin:0;background:#fff0f8;color:#12365e;font:16px/1.6 system-ui,sans-serif}main{max-width:720px;margin:0 auto;padding:28px 16px}h1{color:#7b3ff0}h2{color:#ff6fb5;font-size:1.1em;margin-top:1.6em}a{color:#4169e1}</style>
+<title>Privacidade e Segurança · TsuLiPa⭐World</title>
+<meta name="description" content="Como o TsuLiPa⭐World cuida da sua conta, dos seus dados e da sua segurança.">
+<link rel="icon" href="favicon.svg">
+<style>
+:root{--bg1:#fff0f8;--bg2:#efe4ff;--card:#fff;--ink:#2c1a5e;--sub:#6b5a8e;--b1:#7b3ff0;--pink:#ff6fb5;--blue:#4169e1;--chip:#f6f0ff}
+@media (prefers-color-scheme:dark){:root{--bg1:#140c2a;--bg2:#1b1440;--card:#21184a;--ink:#f1eaff;--sub:#b9a8e0;--b1:#b48cff;--chip:#2a2058}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 40%),radial-gradient(circle at 100% 20%,rgba(123,63,240,.18),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2))}
+main{max-width:760px;margin:0 auto;padding:28px 16px 48px}
+.topo{text-align:center;margin-bottom:18px}
+.logo{font-size:clamp(26px,6vw,38px);font-weight:900;background:linear-gradient(90deg,#b04fe6,#4ade80 50%,#4a74ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo i{font-style:normal;-webkit-text-fill-color:#f5b400;color:#f5b400}
+.topo p{margin:4px 0 0;color:var(--sub);font-size:14px}
+.cartao{background:var(--card);border-radius:20px;padding:18px 20px;margin:14px 0;box-shadow:0 6px 20px rgba(60,20,120,.12)}
+h1{font-size:22px;color:var(--b1);margin:0 0 6px}
+h2{font-size:17px;color:var(--pink);margin:0 0 8px}
+h2::after{content:" ✧"}
+ul{padding-left:20px;margin:6px 0}li{margin:4px 0}
+.selos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.selos span{background:var(--chip);border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700}
+.dica{background:linear-gradient(120deg,rgba(255,111,181,.14),rgba(123,63,240,.12));border:2px dashed rgba(255,111,181,.6);border-radius:16px;padding:12px 14px}
+a{color:var(--blue);font-weight:700}
+.voltar{display:inline-block;margin-top:10px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;text-decoration:none;border-radius:99px;padding:10px 24px;font-weight:800}
+small{color:var(--sub)}
+</style>
 </head><body><main>
-<h1>Política de Privacidade · TsuLiPa⭐World</h1>
-<p>Última atualização: 27/10/2026. O TsuLiPa⭐World (Center⭐Run! e Backstage⭐Pet!) é um jogo de fã, gratuito e sem anúncios.</p>
-<h2>O que coletamos</h2>
-<ul><li><b>Login com Google (opcional):</b> nome, e-mail e foto da sua conta Google, só para identificar a sua conta no jogo.</li>
-<li><b>Dados do jogo:</b> nome de Idol, pontuações, estrelas, itens e pets.</li>
-<li><b>Ranking:</b> nome de Idol, pontuação, personagem e um identificador do aparelho, para evitar envios repetidos.</li></ul>
-<p>Sem login, o progresso fica salvo só no seu aparelho (armazenamento local do navegador).</p>
-<h2>Como usamos</h2>
-<p>Apenas para o funcionamento do jogo: salvar o seu progresso, mostrar o ranking e proteger contra trapaças. Não vendemos nem compartilhamos seus dados com terceiros e não usamos publicidade.</p>
-<h2>Onde ficam guardados</h2>
-<p>No Supabase, o serviço de banco de dados do jogo. O login é feito pelo Google, que só confirma a sua identidade.</p>
-<h2>Seus direitos</h2>
-<p>Você pode pedir a exclusão da sua conta e dos seus dados a qualquer momento, pelo e-mail de suporte que aparece na tela de login do Google.</p>
-<p><a href="./">← Voltar ao jogo</a></p>
+<div class="topo"><div class="logo" translate="no">TsuLiPa<i>⭐</i>World</div><p>ツリパ⭐ワールド · Center⭐Run! · Backstage⭐Pet!</p></div>
+
+<div class="cartao">
+<h1>Privacidade e Segurança</h1>
+<p>Última atualização: 27/10/2026. O TsuLiPa⭐World é um jogo de fã do BRS48, <b>gratuito, sem anúncios e sem venda de nada</b>. Aqui explicamos, sem complicação, o que o jogo guarda, o que aparece para outras pessoas e como a sua conta fica protegida.</p>
+<div class="selos"><span>🔐 Senha só no Google</span><span>🙈 E-mail nunca aparece</span><span>🛡️ Tudo conferido no servidor</span><span>🗑️ Você pode apagar tudo</span></div>
+</div>
+
+<div class="cartao">
+<h2>O login com Google é seguro?</h2>
+<p>Sim. E, na prática, é mais seguro do que criar uma senha nova num site pequeno:</p>
+<ul>
+<li><b>A sua senha é digitada só no site do próprio Google.</b> O jogo nunca vê, nunca recebe e nunca guarda a sua senha.</li>
+<li>O Google entrega ao jogo apenas uma <b>chave temporária</b> que diz "esta pessoa é ela mesma", junto com o seu nome e e-mail.</li>
+<li>O jogo <b>não tem acesso</b> ao seu Gmail, Drive, fotos, contatos, YouTube ou qualquer outra coisa da sua conta Google.</li>
+<li>Entrar no jogo <b>não deixa a sua conta Google mais fácil de invadir</b>: a proteção continua sendo a do Google. Se alguém quisesse invadir, teria que passar pelo Google, não pelo jogo.</li>
+<li>Você pode tirar o acesso do jogo quando quiser em <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>.</li>
+</ul>
+<p class="dica">💡 Dica de ouro: ative a <b>verificação em duas etapas</b> na sua conta Google. Ela protege o jogo e tudo o mais que você usa com o Google.</p>
+<p>O login é <b>opcional</b>. Sem login, dá para jogar normalmente; o progresso fica salvo só no seu aparelho.</p>
+</div>
+
+<div class="cartao">
+<h2>O que aparece para outras pessoas (perfil público)</h2>
+<ul>
+<li>Nome de Idol, a foto do seu Idol (o boneco montado no jogo), recorde, rank e posição no ranking.</li>
+<li>Oshi e frase do perfil (se você escolher), insígnias, pets (nome e estágio), últimas corridas e recordes dos minijogos.</li>
+<li>Recados que você recebe (com o nome de quem mandou) e o total de corações.</li>
+</ul>
+</div>
+
+<div class="cartao">
+<h2>O que é privado</h2>
+<ul>
+<li><b>O seu e-mail</b> — não aparece em lugar nenhum do jogo, nem no ranking.</li>
+<li>O seu saldo de estrelas, compras, o save completo do camarim e de quem foi cada coração.</li>
+<li>O identificador do aparelho usado no ranking (serve só para evitar trapaças).</li>
+</ul>
+</div>
+
+<div class="cartao">
+<h2>Como o banco de dados protege tudo</h2>
+<ul>
+<li>Os dados ficam no <b>Supabase</b>, um serviço de banco de dados com conexão criptografada (HTTPS).</li>
+<li><b>Cada pessoa só consegue mudar a própria conta.</b> As regras ficam no servidor, não no navegador.</li>
+<li><b>Estrelas, compras, pontos e ranking são conferidos no servidor</b>: o tempo real da partida, os limites por dia e o saldo. Mexer no navegador não aumenta estrelas nem coloca pontos falsos no ranking.</li>
+<li>A chave que fica no site é uma chave pública limitada: ela não dá acesso aos dados privados de ninguém.</li>
+<li>Recados e frases passam por um <b>filtro de palavras</b> (palavrões, ofensas, links e números de telefone são bloqueados) e têm limite de 60 letras e 1 recado por dia para cada perfil.</li>
+<li>A moderação do jogo pode apagar recados e frases, trocar nomes ofensivos e bloquear contas que desrespeitem as pessoas.</li>
+<li>Quem recebe um recado pode apagá-lo e também pode desligar os recados no próprio perfil.</li>
+</ul>
+</div>
+
+<div class="cartao">
+<h2>O que guardamos e por quê</h2>
+<ul>
+<li><b>Conta (com login):</b> nome e e-mail do Google, só para reconhecer você.</li>
+<li><b>Jogo:</b> nome de Idol, pontuações, estrelas, itens, roupas, pets, recordes dos minijogos, oshi, frase, recados e corações.</li>
+<li><b>Save na nuvem:</b> uma cópia do seu camarim e do visual dos personagens, para você continuar em outro aparelho.</li>
+</ul>
+<p>Usamos esses dados <b>só para o jogo funcionar</b>. Não vendemos, não compartilhamos com ninguém e não usamos publicidade nem rastreadores.</p>
+</div>
+
+<div class="cartao">
+<h2>Seus direitos (LGPD)</h2>
+<ul>
+<li><b>Apagar tudo:</b> no jogo, abra <b>Meu Perfil → Apagar minha conta</b>. A conta, o save na nuvem, as corridas do ranking, os recados e os corações são apagados de verdade, na hora.</li>
+<li><b>Sair:</b> o botão "Sair" desconecta a conta deste aparelho. O progresso continua guardado na nuvem.</li>
+<li>Dúvidas ou pedidos sobre seus dados: fale com a moderação do jogo (Tsu) pelo grupo do BRS48.</li>
+</ul>
+<small>O jogo é feito por fãs, para fãs. Obrigado por cuidar do TsuLiPa⭐World com a gente! 💜💚💙</small>
+</div>
+
+<p style="text-align:center"><a class="voltar" href="./">← Voltar ao jogo</a></p>
 </main></body></html>

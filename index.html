@@ -595,6 +595,12 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .admcontas{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow:auto;padding-right:4px}
 .admconta{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:8px 12px!important;border-radius:12px;background:var(--chip)!important;text-decoration:none!important}
 .admconta small{font-size:11.5px;color:var(--sub);font-weight:600}
+.hubenc{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;margin:12px 0 4px;border:0;border-radius:18px;padding:12px 16px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6fb5,#9b30d9);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(255,111,181,.3)}
+.hubenc small{opacity:.9;font-weight:600}.hubenc.feito{background:var(--card);color:var(--ink)}.hubenc.feito small{color:var(--sub)}
+.encov{z-index:24}.encp{width:min(100%,400px);text-align:center;position:relative}
+#encCv{width:100%;height:auto;border-radius:18px;box-shadow:0 6px 18px rgba(60,20,120,.25)}
+.panel p.enctopo{margin:0 0 8px;font-weight:800;color:var(--b1);font-size:14px}.encnick{margin:10px 0 2px;font-size:22px;color:var(--ink)}
+.panel p.encfala{margin:4px 0 12px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.45}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -9805,6 +9811,69 @@ if(typeof contaEntrar === 'function'){ var contaEntrarOrig = contaEntrar; contaE
   if(GOOGLE_CLIENT_ID && typeof _supabase !== 'undefined' && _supabase && _supabase.auth && _supabase.auth.signInWithIdToken && window.crypto && crypto.subtle && contaSiteOk()) return gisEntrar();
   return contaEntrarOrig.apply(this, arguments);
 }; }
+
+// ---------- 🌟 Encontro do dia: 1 vez por dia, um membro aparece dançando com uma mensagem de força ----------
+var ENC_KEY = 'brs48cr_enc';   // chave nova (não renomeia nenhuma antiga): { dia, nick, avatar, fala }
+var encOv = document.createElement('div'); encOv.className = 'ov encov'; encOv.hidden = true;
+encOv.innerHTML = '<div class="panel encp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="encX">✕</button><p class="enctopo" id="encTopo"></p>' +
+  '<canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><h2 class="encnick" id="encNick"></h2><p class="encfala" id="encFala"></p>' +
+  '<div class="btns"><button type="button" class="btn" id="encDuo"></button><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
+document.body.appendChild(encOv);
+var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
+(function(){ var c = $('hubCards'); if(c && c.parentNode) c.parentNode.insertBefore(encBtn, c.nextSibling); })();
+var encDados = null, encAnim = 0, encT = 0;
+function encHoje(){ var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() ? j : null; }catch(e){ return null; } }
+function encBtnUI(){
+  var feito = encLer();
+  encBtn.innerHTML = feito ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b> <small>' + escHtml(tr('ver de novo')) + '</small>' : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b> <small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
+  encBtn.classList.toggle('feito', !!feito);
+}
+function encMostrar(d){
+  encDados = d; encT = 0;
+  $('encTopo').textContent = '🌟 ' + tr('Encontro do dia');
+  $('encNick').textContent = d.nick;
+  $('encFala').textContent = '“' + tr(d.fala) + '”';
+  $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
+  $('encPerfil').textContent = tr('Ver perfil');
+  encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
+  [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); });
+}
+function encLoop(){
+  encAnim = 0; if(encOv.hidden || !encDados) return; encT++;
+  if(encT % 2 === 0){
+    var cv = $('encCv'), x = cv.getContext('2d'), poses = ['v', 'tchau', 'banzai', 'coracao', 'luz', 'mic'];
+    var av = JSON.parse(JSON.stringify(encDados.avatar || {})); av.pet = null; av.pose = poses[Math.floor(encT / 50) % poses.length]; av.expr = Math.floor(encT / 50) % 2 ? 3 : 2;
+    if(typeof av.visual === 'string' && PERF_RANKVIS[av.visual]) av.visual = '';
+    try{ x.clearRect(0, 0, cv.width, cv.height); perfFundo(x, cv.width, cv.height, 'palco', perfChar(av).hair, encT);
+      x.save(); x.translate(0, -Math.abs(Math.sin(encT * .12)) * 10); perfDesenharIdol(x, cv.width, cv.height, av, false, false, encT); x.restore();
+      for(var i = 0; i < 6; i++){ var hy = (encT * 1.4 + i * 60) % 360; x.globalAlpha = Math.max(0, 1 - hy / 360); duoCoracao(x, 60 + i * 60 + Math.sin(encT * .05 + i) * 12, 360 - hy, 9 + (i % 3) * 3, ['#ff6fb5', '#ffe14d', '#4dd8ff'][i % 3]); } x.globalAlpha = 1;
+    }catch(e){}
+  }
+  encAnim = requestAnimationFrame(encLoop);
+}
+encBtn.onclick = function(){
+  var feito = encLer(); if(feito){ encMostrar(feito); return; }
+  encBtn.disabled = true;
+  contaRpc('outdoor_jogadores').then(function(L){
+    encBtn.disabled = false;
+    L = (Array.isArray(L) ? L : []).filter(function(p){ return p && p.nick && p.avatar && (!contaJ || p.nick.toLowerCase() !== contaJ.nick.toLowerCase()); });
+    if(!L.length) return;
+    var p = L[Math.floor(Math.random() * L.length)], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
+    try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}
+    encBtnUI(); encMostrar(d);
+  }).catch(function(){ encBtn.disabled = false; });
+};
+encOv.addEventListener('click', function(e){
+  if(e.target.id === 'encX' || e.target === encOv){ encOv.hidden = true; return; }
+  if(e.target.id === 'encPerfil' && encDados){ encOv.hidden = true; perfAbrir(encDados.nick); }
+  if(e.target.id === 'encDuo' && encDados){ encOv.hidden = true; duoAbrir(encDados.nick); }
+});
+encBtnUI(); setInterval(encBtnUI, 60000);
+if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = function(){ var r = encHubOrig.apply(this, arguments); encBtnUI(); return r; }; }
+[['Encontro do dia', 'Meeting of the day', 'Encuentro del día', 'การพบกันประจำวัน', '今日の出会い'], ['Encontro de hoje', "Today's meeting", 'Encuentro de hoy', 'การพบกันวันนี้', '今日の出会い'],
+ ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---

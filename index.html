@@ -430,6 +430,10 @@ body.hubon #mute{visibility:hidden}
 .admtemas{text-align:left;font-size:13px;font-weight:700;margin:6px 0 10px}
 .hubaviso{margin:12px 0 0;padding:10px 14px;border-radius:16px;background:linear-gradient(120deg,rgba(255,111,181,.18),rgba(123,63,240,.16));font-weight:800;font-size:14px;color:var(--ink);text-align:left}
 .hubaviso[hidden],.admform[hidden]{display:none}
+.hubcfg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 8px}
+.hubcfg span{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--card);box-shadow:0 3px 0 rgba(123,63,240,.15)}
+.hubcfg button{border:0;border-radius:99px;padding:5px 10px;font:inherit;font-size:12px;font-weight:800;color:var(--sub);background:transparent;cursor:pointer}
+.hubcfg button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -7851,7 +7855,7 @@ var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
 hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><div class="hubin">' +
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : '') + '>' + ch + '</span>'; }).join('') + '</h1>' +
-  '<p class="hubsub">ツリパ⭐ワールド</p><p class="hubtema" id="hubTema" hidden></p>' +
+  '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
@@ -7947,7 +7951,12 @@ function hubMontar(){
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
-  hubTemaUI(); hubCardsUI(); hubMisUI();
+  hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
+}
+function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
+  var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
+  $('hubCfg').innerHTML = '<span role="group" aria-label="Idioma">' + L.map(function(l){ return '<button type="button" data-hl="' + l[0] + '" aria-pressed="' + (LANG === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</span>' +
+    '<span role="group" aria-label="Tema do Oshi">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + o[2] + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
 }
 function hubAvisoCarregar(){   // aviso da moderação no topo das Novidades
   contaRpc('aviso_inicio').then(function(t){
@@ -8021,6 +8030,11 @@ function hubTutFim(){ $('hubTut').hidden = true; try{ localStorage.setItem('brs4
 hubOv.addEventListener('click', function(e){
   var t = e.target, b;
   if(t.id === 'hubToque'){ hubComecar(); return; }
+  if(t.dataset && t.dataset.hl){   // idioma: usa o mesmo botão do menu (salva em brs48cr_lang e traduz o jogo todo)
+    var lb = document.querySelector('.lang button[data-l="' + t.dataset.hl + '"]'); if(lb) lb.click();
+    hubMontar(); beep(988, .05, 'triangle', .04); return;
+  }
+  if(t.dataset && t.dataset.ho !== undefined){ applyOshi(t.dataset.ho); hubCfgUI(); beep(1175, .05, 'triangle', .04); return; }
   if(t.id === 'hubTutOk'){ beep(1175, .06, 'triangle', .04); if(++hubTutI >= HUB_TUT.length) hubTutFim(); else hubTutUI(); return; }
   if(t.id === 'hubTutPular'){ hubTutFim(); return; }
   if((b = t.closest('[data-resg]'))){

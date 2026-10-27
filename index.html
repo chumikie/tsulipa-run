@@ -11,9 +11,9 @@
 -->
 <html lang="pt-BR">
 <head>
-<link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png?v=4" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
+<link rel="icon" href="favicon.svg?v=5" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=5" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="TsuLiPa⭐World: corra até o Center no Center⭐Run!, cuide do seu pet no Backstage⭐Pet!, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
@@ -23,14 +23,14 @@
 <meta property="og:title" content="TsuLiPa⭐World">
 <meta property="og:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta property="og:url" content="https://tsulipa-world.vercel.app/">
-<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=11">
+<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=12">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
 <meta name="twitter:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo!">
-<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=11">
+<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=12">
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
@@ -8299,8 +8299,8 @@ function hubMontar(){
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
-  $('hubCfg').innerHTML = '<span role="group" aria-label="Idioma">' + L.map(function(l){ return '<button type="button" data-hl="' + l[0] + '" aria-pressed="' + (LANG === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</span>' +
-    '<span role="group" aria-label="Tema do Oshi">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + escHtml(tr(o[2])) + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
+  $('hubCfg').innerHTML = '<span role="group" aria-label="' + escHtml(tr('Idioma')) + '">' + L.map(function(l){ return '<button type="button" data-hl="' + l[0] + '" aria-pressed="' + (LANG === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</span>' +
+    '<span role="group" aria-label="' + escHtml(tr('Tema do Oshi')) + '">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + escHtml(tr(o[2])) + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
 }
 function hubAvisoCarregar(){   // aviso da moderação no topo das Novidades
   contaRpc('aviso_inicio').then(function(t){
@@ -9337,7 +9337,7 @@ function duoMsgTxt(m){   // presentes do Moon⭐Duo! chegam como "duo:🧸:Nick"
  ['{nick} te mandou um presente pelo Moon⭐Duo!', '{nick} sent you a gift through Moon⭐Duo!', '¡{nick} te envió un regalo por Moon⭐Duo!', '{nick} ส่งของขวัญให้คุณผ่าน Moon⭐Duo!', '{nick}がMoon⭐Duo!でプレゼントをくれたよ！'],
  ['Faça um Moon⭐Duo!', 'Make a Moon⭐Duo!', '¡Haz un Moon⭐Duo!', 'ทำ Moon⭐Duo!', 'Moon⭐Duo!をつくろう'], ['Fez 5 cenas no Moon⭐Duo!', 'Made 5 Moon⭐Duo! scenes', 'Hizo 5 escenas en Moon⭐Duo!', 'สร้างฉาก Moon⭐Duo! 5 ฉาก', 'Moon⭐Duo!のシーンを5回つくった'], ['cenas', 'scenes', 'escenas', 'ฉาก', 'シーン'],
  ['Aparecer no Moon⭐Duo! de outras pessoas', "Appear in other people's Moon⭐Duo!", 'Aparecer en el Moon⭐Duo! de otras personas', 'ให้คนอื่นเลือกฉันใน Moon⭐Duo!', 'ほかの人のMoon⭐Duo!に出る'],
- ['Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.', 'Two friends, a thousand scenes! Make poses, dances and snacks with another Idol.', '¡Dos amistades, mil escenas! Poses, bailes y meriendas con otro Idol.', 'เพื่อนสองคน พันฉาก! โพส เต้น และกินขนมกับไอดอลคนอื่น', 'ふたりで無限のシーン！ほかのアイドルとポーズやダンスやおやつ'],
+ ['Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.', 'Two friends, a thousand scenes! Strike poses, dance and share snacks with another Idol.', '¡Dos amistades, mil escenas! Poses, bailes y meriendas con otro Idol.', 'เพื่อนสองคน พันฉาก! โพส เต้น และกินขนมกับไอดอลคนอื่น', 'ふたりで無限のシーン！ほかのアイドルとポーズ・ダンス・おやつを楽しもう'],
  ['Você brilha muito no palco! ✨', 'You really shine on stage! ✨', '¡Brillas mucho en el escenario! ✨', 'คุณเปล่งประกายบนเวทีมาก! ✨', 'ステージでキラキラだね！✨'],
  ['Força! Eu acredito em você 💪', 'You got this! I believe in you 💪', '¡Ánimo! Creo en ti 💪', 'สู้ๆ! ฉันเชื่อในตัวคุณ 💪', 'ファイト！信じてるよ💪'],
  ['Obrigado por ser meu duo! 🌙', 'Thanks for being my duo! 🌙', '¡Gracias por ser mi dúo! 🌙', 'ขอบคุณที่เป็นคู่ของฉัน! 🌙', 'ペアになってくれてありがとう！🌙'],

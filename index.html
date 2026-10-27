@@ -23,14 +23,14 @@
 <meta property="og:title" content="TsuLiPa⭐World">
 <meta property="og:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta property="og:url" content="https://tsulipa-world.vercel.app/">
-<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=8">
+<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=9">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
 <meta name="twitter:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo!">
-<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=8">
+<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=9">
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
@@ -616,6 +616,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 @keyframes encflash{from{opacity:.9}to{opacity:0}}
 #petov{z-index:23!important}
 #shr{z-index:30!important}
+
+.hubadmmis{display:block;margin:8px auto 0;font-size:13px}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -10056,6 +10058,60 @@ function encEmojis(x, W2, H2, t){   // emojis fofos levitando
   ['Som desligado', 'Sound off', 'Sonido desactivado', 'ปิดเสียง', 'サウンドオフ']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 if(typeof applyLang === 'function'){ try{ applyLang(); ovSomUI(); }catch(e){} }
+
+// --- MODERAÇÃO: completar as missões do dia e "Liberar tudo" (só para a conta de moderação) ---
+// O servidor confere eh_admin() em admin_missoes_completar e libera o salvar_avatar só para a moderação.
+var ADM_LIVRE_KEY = 'brs48cr_admlivre';
+function admLivre(){ var v = false; try{ v = localStorage.getItem(ADM_LIVRE_KEY) === '1'; }catch(e){} return v && typeof contaAdmin === 'function' && contaAdmin(); }
+(function(){   // com "Liberar tudo" ligado, todo item pago conta como seu
+  var pt = perfTem; perfTem = function(){ return admLivre() || pt.apply(this, arguments); };
+  var lt = lojaTem; lojaTem = function(){ return admLivre() || lt.apply(this, arguments); };
+  var ld = perfLojaDono; perfLojaDono = function(){ return admLivre() ? PERF_LOJA.map(function(o){ return o[0]; }) : ld.apply(this, arguments); };
+})();
+function admLivreBtn(){ var on = admLivre();
+  return '<button type="button" class="btn' + (on ? '' : ' alt') + '" id="admLivre" aria-pressed="' + on + '">' + (on ? '🔓 ' : '🔒 ') + escHtml(tr(on ? 'Liberar tudo: ligado' : 'Liberar tudo: desligado')) + '</button>'; }
+if(typeof temaAdminHtml === 'function'){ var admToolsOrig = temaAdminHtml; temaAdminHtml = function(){
+  return admToolsOrig() + '<button type="button" class="btn alt" data-admmis="1">🎯 ' + escHtml(tr('Completar missões do dia')) + '</button>' + admLivreBtn() +
+    '<small class="admnota">🔓 ' + escHtml(tr('Liberar tudo: todas as roupas, poses, fundos, expressões e itens do Moon⭐Duo! ficam livres para você testar. Desligado, volta a valer só o que você comprou.')) + '</small>'; }; }
+var hubMisUIOrig = hubMisUI;
+hubMisUI = function(){ hubMisUIOrig.apply(this, arguments);
+  if(!contaJ || !hubMisDados || !contaAdmin() || !hubMisDados.some(function(m){ return !m.feito; })) return;
+  var box = $('hubMis'); if(box) box.insertAdjacentHTML('beforeend', '<button type="button" class="btn alt hubadmmis" data-admmis="1">🛡️ ' + escHtml(tr('Completar missões do dia')) + '</button>');
+};
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('[data-admmis]');
+  if(b){ if(!contaAdmin()) return; b.disabled = true;
+    contaRpc('admin_missoes_completar').then(function(r){
+      b.disabled = false;
+      if(r && r.ok){
+        if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e2){} setBest(); }
+        var msg = '🎯 ' + tr('Missões completas!') + (r.premio ? ' +★' + r.premio : '');
+        if(typeof perfTopoMsg === 'function') perfTopoMsg(msg); b.textContent = msg; if(sfx.rank) sfx.rank();
+        hubMisCarregar();
+      }
+    }).catch(function(){ b.disabled = false; });
+    return;
+  }
+  if(e.target.closest && e.target.closest('#admLivre')){
+    if(!contaAdmin()) return;
+    var on = !admLivre(); try{ localStorage.setItem(ADM_LIVRE_KEY, on ? '1' : '0'); }catch(e3){}
+    var lb = $('admLivre'); if(lb) lb.outerHTML = admLivreBtn();
+    try{ perfLojaOpcoes(); }catch(e4){}
+    if(typeof perfTopoMsg === 'function') perfTopoMsg(on ? '🔓 ' + tr('Liberar tudo: ligado') : '🔒 ' + tr('Liberar tudo: desligado'));
+    beep(on ? 1175 : 660, .06, 'triangle', .04);
+  }
+});
+[
+  ['Completar missões do dia', 'Complete daily missions', 'Completar misiones del día', 'ทำภารกิจประจำวันให้ครบ', 'きょうのミッションを完了'],
+  ['Missões completas!', 'Missions complete!', '¡Misiones completas!', 'ทำภารกิจครบแล้ว!', 'ミッション完了！'],
+  ['Liberar tudo: ligado', 'Unlock all: on', 'Liberar todo: activado', 'ปลดล็อกทั้งหมด: เปิด', 'すべて解放：オン'],
+  ['Liberar tudo: desligado', 'Unlock all: off', 'Liberar todo: desactivado', 'ปลดล็อกทั้งหมด: ปิด', 'すべて解放：オフ'],
+  ['Liberar tudo: todas as roupas, poses, fundos, expressões e itens do Moon⭐Duo! ficam livres para você testar. Desligado, volta a valer só o que você comprou.',
+   'Unlock all: every outfit, pose, background, expression and Moon⭐Duo! item is free for you to test. When off, only what you bought counts again.',
+   'Liberar todo: toda la ropa, poses, fondos, expresiones y objetos de Moon⭐Duo! quedan libres para probar. Desactivado, vuelve a contar solo lo que compraste.',
+   'ปลดล็อกทั้งหมด: ชุด ท่าโพส ฉาก สีหน้า และไอเทม Moon⭐Duo! ใช้ทดสอบได้ทั้งหมด เมื่อปิด จะใช้ได้เฉพาะที่ซื้อแล้ว',
+   'すべて解放：服・ポーズ・背景・表情・Moon⭐Duo!のアイテムをすべてテストに使えます。オフにすると、買ったものだけに戻ります。']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---

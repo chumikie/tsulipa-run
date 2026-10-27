@@ -22,15 +22,15 @@
 <meta property="og:site_name" content="TsuLiPa⭐World">
 <meta property="og:title" content="TsuLiPa⭐World">
 <meta property="og:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet! Um jogo do TsuLiPa (BRS48).">
-<meta property="og:url" content="https://chumikie.github.io/tsulipa-run/">
-<meta property="og:image" content="https://chumikie.github.io/tsulipa-run/og.jpg?v=5">
+<meta property="og:url" content="https://tsulipa-world.vercel.app/">
+<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=6">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
 <meta name="twitter:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet!">
-<meta name="twitter:image" content="https://chumikie.github.io/tsulipa-run/og.jpg?v=5">
+<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=6">
 <link rel="manifest" href="manifest.json">
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
@@ -329,6 +329,24 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfcampo{border:2px solid rgba(255,111,181,.75)!important;background:var(--card)!important;box-shadow:0 0 0 3px rgba(255,111,181,.12)}
 .perfcampo:focus{border-color:var(--b1)!important;box-shadow:0 0 0 4px rgba(123,63,240,.2);outline:none}
 .perfcampo::placeholder{color:var(--sub);opacity:.8}
+/* V2.1.3 · moderação (só aparece para a conta admin) e "Apagar minha conta" */
+.admbarra{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:8px 0;padding:8px 10px;border-radius:14px;background:repeating-linear-gradient(135deg,rgba(255,79,154,.10) 0 10px,rgba(123,63,240,.10) 10px 20px);border:2px dashed #ff6fb5}
+.admbarra b{width:100%;text-align:center;font-size:13px;color:#9b30d9}
+.admbarra button,.admdesb,.admtools select{font:inherit;font-size:12px;font-weight:800;border:0;border-radius:99px;padding:5px 12px;background:#fff;color:#2c1a8f;box-shadow:0 2px 0 rgba(44,26,143,.25);cursor:pointer}
+.admbarra button:disabled{opacity:.5}
+.admnums{display:flex;gap:10px;justify-content:center;font-size:14px;margin:4px 0 8px}
+.admon{display:flex;gap:8px;align-items:center;justify-content:center;font-weight:800;margin:6px 0 10px}
+.admtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.admaviso{background:rgba(255,79,154,.14);border-radius:12px;padding:6px 10px}
+.perfapagar{margin:16px 0 4px;padding:10px 12px;border-radius:14px;border:2px dashed rgba(255,79,154,.45);background:rgba(255,79,154,.06);text-align:left}
+.perfapagar summary{cursor:pointer;font-weight:800;color:#d6336c;text-align:center}
+.perfapagar p{font-size:13px;margin:8px 0}
+.perfapagar label{display:block;font-size:13px;font-weight:700}
+.perfapagar input{width:100%;margin-top:4px}
+.perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
+.perfdica{text-align:center;font-size:13px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .admbarra button,:root:not([data-theme="light"]) .admdesb,:root:not([data-theme="light"]) .admtools select{background:var(--chip);color:var(--ink)}}
+:root[data-theme="dark"] .admbarra button,:root[data-theme="dark"] .admdesb,:root[data-theme="dark"] .admtools select{background:var(--chip);color:var(--ink)}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -1806,6 +1824,11 @@ function drawChar(c,x,y,run,expr,isPartner){
     // Shortinhos brancos bufantes por baixo
     g.fillStyle='#fff'; g.fillRect(x+6, y+31, 18, 7);
     
+    // Saia aberta na frente (duas abas laterais) — por baixo do top (V2.1.3)
+    g.fillStyle=corDaRoupa;
+    T([x+4, y+30, x+12, y+30, x+2, y+42]); // Aba caindo para a esquerda
+    T([x+26, y+30, x+18, y+30, x+28, y+42]); // Aba caindo para a direita
+    
     // Top branco
     g.fillStyle='#fff'; g.fillRect(x+5, y+22, 20, 10);
     
@@ -1819,16 +1842,18 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.moveTo(x+12, y+27); g.lineTo(x+18, y+30); g.moveTo(x+18, y+27); g.lineTo(x+12, y+30); // X de baixo
     g.stroke();
     
-    // Saia aberta na frente (duas abas laterais)
-    g.fillStyle=corDaRoupa;
-    T([x+4, y+30, x+12, y+30, x+2, y+42]); // Aba caindo para a esquerda
-    T([x+26, y+30, x+18, y+30, x+28, y+42]); // Aba caindo para a direita
-    
     // Cintura alta / Cinto
+    g.fillStyle=corDaRoupa;
     g.fillRect(x+5, y+29, 20, 3);
 
 } else if(roupa==='sweet'){
     // --- INÍCIO DO LOOK VALENTINE (SWEET) ---
+    g.fillStyle = corDaRoupa;
+    T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada (por baixo do vestido, V2.1.3)
+    g.fillStyle = '#ffffff';   // Babado de chantilly
+    T([x - 1.2, y + 41, x + 31.2, y + 41, x + 34, y + 43, x - 2, y + 43]);
+    for (var cq = 0; cq < 9; cq++) { g.beginPath(); g.arc(x - 0.4 + cq * 4, y + 43, 2, 0, Math.PI); g.fill(); }
+
     g.fillStyle = corDaRoupa; 
     g.fillRect(x + 4, y + 22, 22, 12); // Base do vestido
 
@@ -1846,13 +1871,7 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillRect(x + 13, y + 30, 5, 2);
     g.fillRect(x + 14, y + 32, 3, 1);
 
-    g.fillStyle = corDaRoupa;
-    T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada
-    
-        // Babado de chantilly: faixa que acompanha a borda da saia + ondinhas pendendo
-    g.fillStyle = '#ffffff';
-    T([x - 1.2, y + 41, x + 31.2, y + 41, x + 34, y + 43, x - 2, y + 43]);
-    for (var cq = 0; cq < 9; cq++) { g.beginPath(); g.arc(x - 0.4 + cq * 4, y + 43, 2, 0, Math.PI); g.fill(); }
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 4, y + 33.4, 22, .8);   // cós da saia
 
     // --- FIM DO LOOK VALENTINE ---
 
@@ -1886,12 +1905,13 @@ function drawChar(c,x,y,run,expr,isPartner){
     E(x + 28.5, y + 24.5, 4, 4); 
   }
 
-  if(OF===1){g.fillStyle=PX?OUT[0]:'#2a3f8a';g.fillRect(x+5,y+22,20,10);g.fillStyle=PX?OUT[1]:'#2a3f8a';T([x+6,y+31,x+24,y+31,x+27,y+39,x+3,y+39]);g.fillStyle='#fff';T([x+8,y+22,x+22,y+22,x+15,y+31]);g.fillStyle=PX?OUT[0]:'#2a3f8a';T([x+11,y+22,x+19,y+22,x+15,y+27]);g.fillStyle='#e02a4a';E(x+15,y+28,2.4,2.4);T([x+15,y+28,x+11,y+32,x+13,y+33]);T([x+15,y+28,x+19,y+32,x+17,y+33]);g.fillStyle='#fff';g.fillRect(x+3,y+38,24,1.2)}
+  if(OF===1){g.fillStyle=PX?OUT[1]:'#2a3f8a';T([x+6,y+31,x+24,y+31,x+27,y+39,x+3,y+39]);g.fillStyle=PX?OUT[0]:'#2a3f8a';g.fillRect(x+5,y+22,20,10);g.fillStyle='#fff';T([x+8,y+22,x+22,y+22,x+15,y+31]);g.fillStyle=PX?OUT[0]:'#2a3f8a';T([x+11,y+22,x+19,y+22,x+15,y+27]);g.fillStyle='#e02a4a';E(x+15,y+28,2.4,2.4);T([x+15,y+28,x+11,y+32,x+13,y+33]);T([x+15,y+28,x+19,y+32,x+17,y+33]);g.fillStyle='#fff';g.fillRect(x+3,y+38,24,1.2)}
   if(OF===2){g.fillStyle=PX?OUT[0]:'#fff0f7';T([x+5,y+22,x+25,y+22,x+29,y+40,x+1,y+40]);g.fillStyle='#ffd23f';g.fillRect(x+4,y+31,22,2);g.fillRect(x+5,y+22,20,1.5);g.fillStyle='#ff4f9a';T([x+15,y+26,x+9,y+22,x+9,y+30]);T([x+15,y+26,x+21,y+22,x+21,y+30]);E(x+15,y+26,2,2);g.fillStyle='rgba(255,230,120,'+(.4+.5*Math.sin(frame*.2))+')';g.fillRect(x+6,y+37,2,2);g.fillRect(x+22,y+35,2,2);g.fillRect(x+14,y+38,2,2)}
   if(OF===3){g.fillStyle=PX?OUT[0]:'#1b2a5e';g.fillRect(x+4,y+22,22,12);g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+28]);g.fillStyle='#ffd23f';g.fillRect(x+2,y+22,7,3);g.fillRect(x+21,y+22,7,3);E(x+15,y+30,1,1);E(x+11,y+31,1,1);E(x+19,y+31,1,1);g.fillStyle=PX?OUT[1]:'#1b2a5e';g.fillRect(x+7,y+32,16,6);g.fillStyle='#ffd23f';g.fillRect(x+7,y+37,16,1.4)}
-  if(OF===4){g.fillStyle=PX?OUT[0]:'#1a1426';g.fillRect(x+5,y+22,20,10);g.fillStyle=PX?OUT[1]:'#1a1426';T([x+6,y+31,x+24,y+31,x+28,y+39,x+2,y+39]);g.fillStyle='#ffd23f';g.fillRect(x+2,y+38,26,1.6);g.fillRect(x+13,y+22,4,10);g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+27]);g.fillStyle='#ff3d5e';E(x+15,y+29,1.8,1.8);g.fillStyle='#ffd23f';g.fillRect(x+4,y+22,5,2);g.fillRect(x+21,y+22,5,2)}
+  if(OF===4){g.fillStyle=PX?OUT[1]:'#1a1426';T([x+6,y+31,x+24,y+31,x+28,y+39,x+2,y+39]);g.fillStyle=PX?OUT[0]:'#1a1426';g.fillRect(x+5,y+22,20,10);g.fillStyle='#ffd23f';g.fillRect(x+2,y+38,26,1.6);g.fillRect(x+13,y+22,4,10);g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+27]);g.fillStyle='#ff3d5e';E(x+15,y+29,1.8,1.8);g.fillStyle='#ffd23f';g.fillRect(x+4,y+22,5,2);g.fillRect(x+21,y+22,5,2)}
   if(OF===5){g.fillStyle=PX?OUT[0]:'#fffdf2';T([x+4,y+22,x+26,y+22,x+30,y+42,x,y+42]);g.fillStyle='#ffd23f';g.fillRect(x+13,y+22,4,20);g.fillRect(x,y+40,30,2);g.fillStyle='rgba(255,226,140,'+(.5+.4*Math.sin(frame*.2))+')';g.fillRect(x+7,y+29,2,2);g.fillRect(x+22,y+34,2,2);g.fillRect(x+10,y+38,2,2)}
   
+  roupaSombra(x, y);   // V2.1.3: luz e sombra nas roupas (igual ao degradê do cabelo)
   if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
   if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); }   // pose da Foto 2.0 por cima da roupa e da faixa
   g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
@@ -2742,7 +2762,7 @@ if(menuTitleEl) {
     
     // Caso contrário, continua contando os cliques para abrir o modo teste oculto
     e.preventDefault();
-    if(++titleClicks >= 10) {
+    if(++titleClicks >= 10 && typeof contaAdmin === 'function' && contaAdmin()) {   // V2.1.3: só a moderação
       var tstwEl = $('tstw');
       if(tstwEl) tstwEl.hidden = false;
       document.body.classList.add('modo-teste');   // contorno rosa: modo teste ativo
@@ -5826,7 +5846,7 @@ function contaUI(){
   } else {
     box.innerHTML = '<button type="button" class="conta-google" id="contaEntrar">' +
       '<svg viewBox="0 0 48 48" width="16" height="16" aria-hidden="true"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.6v5.5h7.1c4.2-3.9 6.5-9.6 6.5-16.1z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.2c-.4-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.7H4.5C3 17.1 2 20.4 2 24s1 6.9 2.5 9.9l7.3-5.7z"/><path fill="#EA4335" d="M24 10.8c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.2 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14.1l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>' +
-      '<span>' + escHtml(tr('Entrar com Google')) + '</span></button><small class="conta-dica">' + escHtml(tr('Opcional: guarda suas estrelas na nuvem e libera o ranking online.')) + '</small>';
+      '<span>' + escHtml(tr('Entrar com Google')) + '</span></button><small class="conta-dica">' + escHtml(tr('Opcional: guarda suas estrelas na nuvem e libera o ranking online.')) + ' <a href="privacidade.html" target="_blank" rel="noopener">🔐 ' + escHtml(tr('Privacidade e segurança')) + '</a></small>';
     if(nIn) nIn.disabled = false;
     $('contaEntrar').onclick = function(e){ e.stopPropagation(); contaEntrar(); };
   }
@@ -6005,15 +6025,16 @@ var PERF_FUNDOS = [   // chave no servidor: fundo_...
   ['halloween', '🎃', 'Halloween',     150]
 ];
 var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: roupa_...); o valor vai em "out" do personagem
-  ['brasil',   '🇧🇷', 'Brasil',            150],
-  ['hipster',  '☕', 'Hipster',           250],
-  ['rock',     '🎸', 'Rockstar',          300],
-  ['decora',   '🍬', 'Decora kei',        350],
-  ['alienfan', '👽', 'Fantasia de alien', 400],
-  ['happi',     '🏮', 'Happi de Matsuri', 220],   // festival de verão japonês (happi + hachimaki)
-  ['gingham',   '🧺', 'Gingham Check',    260],   // inspirada em "Gingham Check" (AKB48)
-  ['disco',     '🥠', 'Fortune Disco',    320],   // inspirada em "Koisuru Fortune Cookie" (AKB48)
-  ['technopop', '🤖', 'Techno Pop',       380]    // inspirada no techno-pop de "Polyrhythm" (Perfume)
+  ['brasil',    '🇧🇷', 'Brasil',            150],
+  ['pijama',    '😴', 'Pajama Drive',      180],   // inspirada no stage "Pajama Drive" (AKB48)
+  ['happi',     '🏮', 'Happi de Matsuri',  200],   // festival de verão japonês (happi + hachimaki)
+  ['gingham',   '🧺', 'Gingham Check',     250],   // inspirada em "Gingham Check" (AKB48)
+  ['hipster',   '🌼', 'Hippie',            280],   // chave antiga "hipster" mantida (agora é a roupa Hippie)
+  ['rock',      '🎸', 'Rockstar',          320],
+  ['disco',     '🥠', 'Fortune Disco',     360],   // inspirada em "Koisuru Fortune Cookie" (AKB48)
+  ['technopop', '🤖', 'Techno Pop',        400],   // inspirada no techno-pop de "Polyrhythm" (Perfume)
+  ['decora',    '🍬', 'Decora kei',        450],
+  ['alienfan',  '👽', 'Fantasia de alien', 500]
 ];
 var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, como conquistar]
   ['estreia',  '🎤', 'Estreia',          'Primeira corrida no ranking online'],
@@ -6112,7 +6133,7 @@ function perfAvAtual(extra){   // o seu Idol de agora (personagem 3, com o Item 
 }
 
 // ---------- Lojinha: as roupas exclusivas (desenhadas pelo drawChar) ----------
-var perfAntena = '';   // roupa que desenha algo depois do rosto: 'alien' (anteninhas) ou 'hachi' (faixa do happi)
+var perfAntena = '';   // roupa que desenha algo depois do rosto: 'alien' (anteninhas), 'hachi' (faixa do happi), 'boho' (faixa Hippie) ou 'touca' (Pajama Drive)
 function perfLojaInfo(k){ if(!PERF_LOJA || !k) return null;   // o drawChar pode rodar antes deste módulo carregar
   for(var i = 0; i < PERF_LOJA.length; i++) if(PERF_LOJA[i][0] === k) return PERF_LOJA[i]; return null; }
 // Chamada dentro do drawChar, na lista das roupas. Devolve true se a roupa é da lojinha (e desenha).
@@ -6126,26 +6147,33 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle = '#002776'; E(x + 20, y + 26.5, 1.8, 1.8); g.fillStyle = '#fff'; g.fillRect(x + 19.6, y + 26, .9, .9);
     g.fillStyle = '#009c3b'; g.fillRect(x + 4, y + 31, 22, 1.4);
     g.fillStyle = '#002776'; g.fillRect(x + 6, y + 32, 18, 5.5); g.fillStyle = '#fff'; g.fillRect(x + 6, y + 32, 1.4, 5.5); g.fillRect(x + 22.6, y + 32, 1.4, 5.5);
-  } else if(roupa === 'hipster'){   // camiseta listrada, cardigã (na cor escolhida) e bermuda jeans dobrada
-    g.fillStyle = '#fff'; g.fillRect(x + 8, y + 22, 14, 10);
-    g.fillStyle = '#1e3a5f'; for(i = 0; i < 5; i++) g.fillRect(x + 8, y + 23 + i * 2, 14, 1);
-    g.fillStyle = branco ? '#d4a24c' : cor; g.fillRect(x + 4, y + 22, 6, 12); g.fillRect(x + 20, y + 22, 6, 12);
-    g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x + 9, y + 25, 1, 1); g.fillRect(x + 9, y + 28, 1, 1); g.fillRect(x + 9, y + 31, 1, 1);
-    g.fillStyle = '#4a6fa5'; g.fillRect(x + 7, y + 32, 16, 5); g.fillStyle = '#8fb0dd'; g.fillRect(x + 7, y + 36, 16, 1.4);
-    g.fillStyle = '#7a4a2a'; g.fillRect(x + 7, y + 31.6, 16, 1);
-  } else if(roupa === 'rock'){   // camiseta com raio (na cor escolhida), jaqueta de couro com tachinhas e saia xadrez
+  } else if(roupa === 'hipster'){   // Hippie: camiseta tie-dye (na cor escolhida), colete de franjas, calça jeans com florzinha e faixa na testa
+    var td = branco ? '#ff9ccd' : cor;
+    g.fillStyle = '#4f74b8'; g.fillRect(x + 7, y + 32, 7.5, 9.5); g.fillRect(x + 15.5, y + 32, 7.5, 9.5); g.fillRect(x + 7, y + 32, 16, 3);
+    g.fillStyle = '#86a6dd'; g.fillRect(x + 14.5, y + 34, 1, 7.5);
+    g.fillStyle = '#ffe14d'; for(i = 0; i < 5; i++) E(x + 19 + Math.cos(i * 1.2566) * 1.2, y + 37.5 + Math.sin(i * 1.2566) * 1.2, .9, .9); g.fillStyle = '#ff6fb5'; E(x + 19, y + 37.5, .7, .7);
+    g.fillStyle = td; g.fillRect(x + 7, y + 22, 16, 11);
+    [['#ffe14d', 11, 25, 3], ['#4dd8ff', 18, 27, 2.6], ['#b6ff3b', 13, 30, 2.4], ['#fff', 16, 24, 1.4]].forEach(function(b2){ g.fillStyle = b2[0]; g.globalAlpha = .75; E(x + b2[1], y + b2[2], b2[3], b2[3] * .8); });
+    g.globalAlpha = 1;
+    g.fillStyle = '#a0673a'; g.fillRect(x + 4, y + 22, 6, 10); g.fillRect(x + 20, y + 22, 6, 10);
+    g.fillStyle = '#c98b55'; for(i = 0; i < 4; i++){ g.fillRect(x + 4.3 + i * 1.5, y + 32, .7, 3); g.fillRect(x + 20.3 + i * 1.5, y + 32, .7, 3); }
+    g.fillStyle = '#7a4a2a'; g.fillRect(x + 9.4, y + 22, .8, 10); g.fillRect(x + 19.8, y + 22, .8, 10);
+    perfAntena = 'boho';
+  } else if(roupa === 'rock'){   // camiseta com raio (na cor escolhida), jaqueta de couro com tachinhas e calça preta rasgada com corrente
+    g.fillStyle = '#1b1a24'; g.fillRect(x + 7, y + 32, 7.5, 9.5); g.fillRect(x + 15.5, y + 32, 7.5, 9.5); g.fillRect(x + 7, y + 32, 16, 3);
+    g.fillStyle = c.skin; g.fillRect(x + 9, y + 37, 3, 1); g.fillRect(x + 18, y + 38, 3, 1);
+    g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x + 9, y + 36.4, 3, .5); g.fillRect(x + 18, y + 37.4, 3, .5);
     g.fillStyle = branco ? '#ff3d7f' : cor; g.fillRect(x + 8, y + 22, 14, 10);
     g.fillStyle = '#ffe14d'; T([x + 16, y + 23, x + 12, y + 28, x + 15, y + 28, x + 13, y + 32, x + 18, y + 26, x + 15, y + 26]);
     g.fillStyle = '#1f1d2b'; g.fillRect(x + 4, y + 22, 6, 12); g.fillRect(x + 20, y + 22, 6, 12);
     g.fillStyle = '#3a3650'; T([x + 8, y + 22, x + 11, y + 22, x + 9, y + 27]); T([x + 22, y + 22, x + 19, y + 22, x + 21, y + 27]);
-    g.fillStyle = '#d7dbe4'; [[5, 23], [7, 23], [23, 23], [25, 23], [5, 26], [25, 26]].forEach(function(s){ g.fillRect(x + s[0] - .5, y + s[1] - .5, 1, 1); });
-    g.fillStyle = '#c81e3a'; T([x + 6, y + 32, x + 24, y + 32, x + 26, y + 38, x + 4, y + 38]);
-    g.fillStyle = 'rgba(20,10,20,.55)'; for(i = 0; i < 6; i++) g.fillRect(x + 6 + i * 3.4, y + 32, .8, 6); g.fillRect(x + 5, y + 35, 20, .8);
-    g.strokeStyle = '#d7dbe4'; g.lineWidth = .7; g.beginPath(); g.moveTo(x + 8, y + 33); g.quadraticCurveTo(x + 15, y + 37, x + 22, y + 33); g.stroke();
+    g.fillStyle = '#d7dbe4'; [[5, 23], [7, 23], [23, 23], [25, 23], [5, 26], [25, 26]].forEach(function(s2){ g.fillRect(x + s2[0] - .5, y + s2[1] - .5, 1, 1); });
+    g.strokeStyle = '#d7dbe4'; g.lineWidth = .7; g.beginPath(); g.moveTo(x + 9, y + 33); g.quadraticCurveTo(x + 13, y + 37, x + 20, y + 34); g.stroke();
   } else if(roupa === 'decora'){   // vestido-moletom (na cor escolhida), saia de camadas arco-íris e adesivos
+    var cam = ['#4dd8ff', '#b6ff3b', '#ffe14d'];   // saia de camadas por baixo do vestido (de baixo para cima)
+    cam.forEach(function(cc, j){ var k = 2 - j; g.fillStyle = cc; T([x + 5 - k, y + 31 + k * 2, x + 25 + k, y + 31 + k * 2, x + 26 + k, y + 34.5 + k * 2, x + 4 - k, y + 34.5 + k * 2]); });
     g.fillStyle = branco ? '#ff9ccd' : cor; g.fillRect(x + 4, y + 22, 22, 11);
-    var cam = ['#ffe14d', '#b6ff3b', '#4dd8ff'];
-    cam.forEach(function(cc, j){ g.fillStyle = cc; T([x + 5 - j, y + 32 + j * 2, x + 25 + j, y + 32 + j * 2, x + 26 + j, y + 34.5 + j * 2, x + 4 - j, y + 34.5 + j * 2]); });
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 4, y + 32.2, 22, .8);
     g.fillStyle = '#ff4f9a'; T([x + 15, y + 23.5, x + 11, y + 21.5, x + 11, y + 25.5]); T([x + 15, y + 23.5, x + 19, y + 21.5, x + 19, y + 25.5]); E(x + 15, y + 23.5, 1.2, 1.2);
     [['#ffe14d', 7, 27], ['#4dd8ff', 21, 28], ['#b6ff3b', 12, 30], ['#9b30d9', 18, 30], ['#fff', 23, 25]].forEach(function(s){ g.fillStyle = s[0]; g.fillRect(x + s[1], y + s[2], 2, 2); });
     g.fillStyle = '#fff'; g.fillRect(x + 7.5, y + 27.5, 1, 1);
@@ -6181,6 +6209,15 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle = branco ? '#ff6fb5' : cor;
     T([x + 6, y + 32, x + 15, y + 32, x + 14.5, y + 42, x + 3.5, y + 42]); T([x + 15, y + 32, x + 24, y + 32, x + 26.5, y + 42, x + 15.5, y + 42]);
     g.fillStyle = '#ffe14d'; g.fillRect(x + 6, y + 31.6, 18, 1.4);
+  } else if(roupa === 'pijama'){   // Pajama Drive: pijama listrado (na cor escolhida), botões e touca de dormir
+    var pj = branco ? '#a8d8ff' : cor;
+    g.fillStyle = pj; g.fillRect(x + 7, y + 32, 7.5, 9.5); g.fillRect(x + 15.5, y + 32, 7.5, 9.5); g.fillRect(x + 7, y + 32, 16, 3); g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = 'rgba(255,255,255,.7)'; for(i = 0; i < 6; i++){ g.fillRect(x + 5 + i * 4, y + 22, 1.2, 11); }
+    for(i = 0; i < 4; i++){ g.fillRect(x + 8.5 + i * 4, y + 33, 1.2, 8.5); }
+    g.fillStyle = '#fff'; T([x + 10, y + 22, x + 15, y + 22, x + 12, y + 25.5]); T([x + 20, y + 22, x + 15, y + 22, x + 18, y + 25.5]);
+    g.fillStyle = '#ffe14d'; [26, 28.5, 31].forEach(function(by){ E(x + 15, y + by, .8, .8); });
+    g.fillStyle = perfRgba('#1b2a5e', .5); g.fillRect(x + 14.5, y + 25, 1, 8);
+    perfAntena = 'touca';
   } else if(roupa === 'technopop'){   // jaqueta prateada com linhas de neon (na cor escolhida) e calça preta
     var nc = branco ? '#4dd8ff' : cor;
     var mg = g.createLinearGradient(0, y + 22, 0, y + 34); mg.addColorStop(0, '#f1f5f9'); mg.addColorStop(1, '#94a3b8');
@@ -6206,6 +6243,17 @@ function perfLojaOpcoes(){   // coloca as roupas compradas na lista "Roupa" do m
   s.value = (sel === 3 ? CU.out : CH[sel].out) || '';
 }
 perfLojaOpcoes();
+
+// Sombreamento das roupas (chamado pelo drawChar depois de todas as roupas): luz à esquerda, sombra à direita,
+// sombrinha embaixo da gola e na cintura — a mesma lógica de degradê do cabelo, para nada ficar "chapado".
+function roupaSombra(x, y){
+  var lg = g.createLinearGradient(x + 5, 0, x + 25, 0);
+  lg.addColorStop(0, 'rgba(255,255,255,.2)'); lg.addColorStop(.32, 'rgba(255,255,255,0)'); lg.addColorStop(.6, 'rgba(40,10,70,0)'); lg.addColorStop(1, 'rgba(40,10,70,.24)');
+  g.fillStyle = lg; g.fillRect(x + 5, y + 22, 20, 11);
+  g.fillStyle = 'rgba(40,10,70,.18)'; g.fillRect(x + 10, y + 22, 10, 1.3);
+  var lv = g.createLinearGradient(0, y + 29, 0, y + 33); lv.addColorStop(0, 'rgba(40,10,70,0)'); lv.addColorStop(1, 'rgba(40,10,70,.16)');
+  g.fillStyle = lv; g.fillRect(x + 5, y + 29, 20, 4);
+}
 
 // ---------- Fundos do estúdio (t = quadro da animação) ----------
 function perfBrilhos(x, W2, H2, cor, n, seed, t){
@@ -6461,6 +6509,17 @@ function perfPoseFrente(c, x, y){
     g.fillStyle = '#e0303a'; g.beginPath(); g.arc(x + 15, y + 4.3, 1.4, 0, 7); g.fill();
     g.fillStyle = '#fff'; perfTri(x + 27, y + 3.4, x + 31, y + 1.5, x + 30.5, y + 4.5); perfTri(x + 27, y + 4.6, x + 31, y + 6.5, x + 29.5, y + 3.8);
   }
+  if(ant === 'boho'){   // faixa trançada com florzinha
+    g.fillStyle = '#a0673a'; g.fillRect(x + 3, y + 3, 24, 2);
+    g.fillStyle = '#c98b55'; for(var bi = 0; bi < 8; bi++) g.fillRect(x + 3.5 + bi * 3, y + 3.4, 1.5, 1.2);
+    g.fillStyle = '#ff9ccd'; for(var fi = 0; fi < 5; fi++){ g.beginPath(); g.arc(x + 6 + Math.cos(fi * 1.2566) * 1.6, y + 3.5 + Math.sin(fi * 1.2566) * 1.6, 1.2, 0, 7); g.fill(); }
+    g.fillStyle = '#ffe14d'; g.beginPath(); g.arc(x + 6, y + 3.5, .9, 0, 7); g.fill();
+  }
+  if(ant === 'touca'){   // touca de dormir caída para o lado, com pompom
+    g.fillStyle = '#7dc4ff'; g.beginPath(); g.moveTo(x + 3, y + 4); g.quadraticCurveTo(x + 15, y - 12, x + 31, y - 4); g.lineTo(x + 27, y + 4); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.moveTo(x + 9, y - 1); g.quadraticCurveTo(x + 16, y - 7, x + 24, y - 4); g.lineTo(x + 23, y - 2.5); g.quadraticCurveTo(x + 16, y - 5, x + 10, y + .5); g.closePath(); g.fill();
+    g.fillStyle = '#fff'; g.fillRect(x + 2.5, y + 2.5, 25, 3); g.beginPath(); g.arc(x + 31.5, y - 3.5, 2.6, 0, 7); g.fill();
+  }
   if(ant === 'alien'){   // tiara de anteninhas
     g.strokeStyle = '#3f6212'; g.lineWidth = 1.3; g.lineCap = 'round';
     g.beginPath(); g.moveTo(x + 10, y - 2); g.lineTo(x + 7, y - 11); g.moveTo(x + 20, y - 2); g.lineTo(x + 23, y - 11); g.stroke();
@@ -6545,8 +6604,10 @@ function perfMontar(){
        (os ? '<span class="perfoshi" style="background:' + os[2] + ';color:' + perfCorTexto(os[2]) + '">推し ' + os[0] + ' ' + escHtml(tr(os[1])) + '</span>' : '') +
        '<small>' + escHtml(tr('Recorde')) + ': <b>' + (+d.best || 0) + '</b></small>' + (desde ? '<small>' + desde + '</small>' : '') +
        (d.frase ? '<q class="perffrase">' + escHtml(d.frase) + '</q>' : '<em class="perfkao">' + escHtml(PERF_KAO[Math.floor(Math.random() * PERF_KAO.length)]) + '</em>') + '</div></div>';
-  if(meu) h += '<div class="perftabs" role="tablist">' + [['perfil', '💖', 'Perfil'], ['montar', '✏️', 'Montar Idol'], ['estudio', '📸', 'Estúdio']].map(function(t){
+  if(meu) h += '<div class="perftabs" role="tablist">' + [['perfil', '💖', 'Perfil'], ['montar', '✏️', 'Montar Idol'], ['estudio', '📸', 'Estúdio']].concat(d.admin ? [['moderacao', '🛡️', 'Moderação']] : []).map(function(t){
     return '<button type="button" role="tab" data-aba="' + t[0] + '" aria-pressed="' + (perfAba === t[0]) + '">' + t[1] + ' ' + escHtml(tr(t[2])) + '</button>'; }).join('') + '</div>';
+  if(!meu && d.admin_ver) h += admBarraHtml(d);   // só a moderação vê
+  if(meu && d.bloqueado) h += '<p class="perfmsg admaviso">⛔ ' + escHtml(tr('Sua conta está bloqueada pela moderação.')) + '</p>';
   h += '<p class="perfmsg" id="perfTopoMsg" hidden></p><div id="perfAbaCorpo"></div>';
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
@@ -6566,6 +6627,7 @@ function perfTopoMsg(t){ var m = $('perfTopoMsg'); if(!m) return; m.textContent 
 function perfAbaMostrar(){
   var box = $('perfAbaCorpo'), d = perfAtual, meu = perfMeu, h = '';
   [].forEach.call(document.querySelectorAll('#perfCorpo .perftabs button'), function(b){ b.setAttribute('aria-pressed', b.dataset.aba === perfAba); });
+  if(meu && perfAba === 'moderacao'){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; admPainel(); return; }
   if(!meu || perfAba === 'perfil'){
     if(meu){
       h += '<div class="perfnums"><div class="n1"><b>★ ' + starT + '</b><small>' + escHtml(tr('Estrelas')) + '</small></div>' +
@@ -6586,7 +6648,7 @@ function perfAbaMostrar(){
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
-    if(meu) h += perfBioHtml(d);
+    if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -6639,6 +6701,7 @@ function perfDarCoracao(){
   b.disabled = true;
   contaRpc('dar_coracao', { p_nick: d.nick }).then(function(r){
     b.disabled = false;
+    if(r && r.ok === false && PERF_REC_ERRO[r.erro]){ perfTopoMsg(tr(PERF_REC_ERRO[r.erro])); return; }   // bloqueado pela moderação
     d.dei_coracao = true; if(r && typeof r.total === 'number') d.coracoes = r.total;
     b.innerHTML = '💖 <b>' + (+d.coracoes || 0) + '</b>'; b.setAttribute('aria-pressed', 'true');
     perfChuvaCoracoes(b);
@@ -6668,7 +6731,7 @@ function perfRecadosHtml(d, meu){
   h += '<p class="perfmsg" id="perfRecMsg" hidden></p>';
   h += L.length ? '<ul class="perfrecs">' + L.map(function(r){
     return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
-           (r.pode_apagar ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '" aria-label="✕">✕</button>' : '') + '</li>';
+           (r.pode_apagar || d.admin_ver ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '"' + (!r.pode_apagar ? ' data-adm="1"' : '') + ' aria-label="✕">✕</button>' : '') + '</li>';
   }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>';
   if(meu) h += '<label class="perfrecon"><input type="checkbox" id="perfRecOn"' + (d.recados_on !== false ? ' checked' : '') + '> ' + escHtml(tr('Aceitar recados')) + '</label>';
   return h;
@@ -6684,9 +6747,9 @@ perfOv.addEventListener('click', function(e){
     }).catch(function(){ b.disabled = false; });
     return;
   }
-  var x = e.target.closest('.perfrecx'); if(!x) return;
+  var x = e.target.closest('.perfrecx[data-id]'); if(!x) return;
   x.disabled = true;
-  contaRpc('apagar_recado', { p_id: +x.dataset.id }).then(function(r){
+  (x.dataset.adm ? contaRpc('admin_acao', { p_acao:'apagar_recado', p_alvo:String(x.dataset.id) }) : contaRpc('apagar_recado', { p_id: +x.dataset.id })).then(function(r){
     if(r && r.ok){ var li = x.closest('li'); if(li) li.parentNode.removeChild(li); if(perfAtual && Array.isArray(perfAtual.recados)) perfAtual.recados = perfAtual.recados.filter(function(q){ return +q.id !== +x.dataset.id; }); }
     else x.disabled = false;
   }).catch(function(){ x.disabled = false; });
@@ -7109,7 +7172,7 @@ function perfAvatarAuto(){
   contaRpc('meu_perfil').then(function(d){
     if(!d) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
-    perfMeuAv = d.avatar || null; perfIconeConta();
+    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin;
     if(d.avatar && !d.avatar.auto) return;
     return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
   }).catch(function(){});
@@ -7155,6 +7218,96 @@ function perfPresente(){
     if(sfx.rank) sfx.rank();
   }).catch(function(){});
 }
+// ================================================================
+// --- MODO ADMIN (moderação) — só para contas marcadas como admin no servidor ---
+// O servidor confere em toda ação (eh_admin); aqui só mostramos os botões.
+// ================================================================
+var perfAdmin = false;
+function contaAdmin(){ return !!(contaJ && perfAdmin); }
+var ADM_DICT = {
+  en: {"Moderação":"Moderation","Limpar frase":"Clear phrase","Renomear":"Rename","Bloquear":"Block","Desbloquear":"Unblock","Conta bloqueada":"Blocked account","Feito!":"Done!","Recados no jogo todo":"Messages in the whole game","Últimos recados":"Latest messages","Frases dos perfis":"Profile phrases","Contas bloqueadas":"Blocked accounts","Nenhuma.":"None.","Contas":"Accounts","Ferramentas de teste":"Test tools","Ativar modo teste":"Turn on test mode","Forçar tema":"Force theme","Tema da data":"Today's theme","Tem certeza?":"Are you sure?","Os recados estão pausados pela moderação.":"Messages are paused by the moderation.","Sua conta está bloqueada pela moderação.":"Your account is blocked by the moderation.",
+       "Apagar minha conta":"Delete my account","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"This really deletes your account, cloud save, ranking runs, messages and hearts. This device's progress stays here.","Para confirmar, digite o seu nome de Idol:":"To confirm, type your Idol name:","APAGAR PARA SEMPRE":"DELETE FOREVER","O nome não confere.":"The name doesn't match.","Conta apagada. Até a próxima! 💜":"Account deleted. See you! 💜","Privacidade e segurança":"Privacy and security"},
+  es: {"Moderação":"Moderación","Limpar frase":"Borrar frase","Renomear":"Renombrar","Bloquear":"Bloquear","Desbloquear":"Desbloquear","Conta bloqueada":"Cuenta bloqueada","Feito!":"¡Hecho!","Recados no jogo todo":"Mensajes en todo el juego","Últimos recados":"Últimos mensajes","Frases dos perfis":"Frases de los perfiles","Contas bloqueadas":"Cuentas bloqueadas","Nenhuma.":"Ninguna.","Contas":"Cuentas","Ferramentas de teste":"Herramientas de prueba","Ativar modo teste":"Activar modo prueba","Forçar tema":"Forzar tema","Tema da data":"Tema de la fecha","Tem certeza?":"¿Seguro?","Os recados estão pausados pela moderação.":"Los mensajes están pausados por la moderación.","Sua conta está bloqueada pela moderação.":"Tu cuenta está bloqueada por la moderación.",
+       "Apagar minha conta":"Borrar mi cuenta","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"Esto borra de verdad tu cuenta, la partida en la nube, las carreras del ranking, los mensajes y los corazones. El progreso de este dispositivo se queda aquí.","Para confirmar, digite o seu nome de Idol:":"Para confirmar, escribe tu nombre de Idol:","APAGAR PARA SEMPRE":"BORRAR PARA SIEMPRE","O nome não confere.":"El nombre no coincide.","Conta apagada. Até a próxima! 💜":"Cuenta borrada. ¡Hasta pronto! 💜","Privacidade e segurança":"Privacidad y seguridad"},
+  th: {"Moderação":"ดูแลชุมชน","Limpar frase":"ลบคำแนะนำตัว","Renomear":"เปลี่ยนชื่อ","Bloquear":"บล็อก","Desbloquear":"ปลดบล็อก","Conta bloqueada":"บัญชีถูกบล็อก","Feito!":"เรียบร้อย!","Recados no jogo todo":"ข้อความทั้งเกม","Últimos recados":"ข้อความล่าสุด","Frases dos perfis":"คำแนะนำตัวในโปรไฟล์","Contas bloqueadas":"บัญชีที่ถูกบล็อก","Nenhuma.":"ไม่มี","Contas":"บัญชี","Ferramentas de teste":"เครื่องมือทดสอบ","Ativar modo teste":"เปิดโหมดทดสอบ","Forçar tema":"บังคับธีม","Tema da data":"ธีมตามวันที่","Tem certeza?":"แน่ใจไหม?","Os recados estão pausados pela moderação.":"ข้อความถูกพักไว้โดยผู้ดูแล","Sua conta está bloqueada pela moderação.":"บัญชีของคุณถูกบล็อกโดยผู้ดูแล",
+       "Apagar minha conta":"ลบบัญชีของฉัน","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"จะลบบัญชี เซฟบนคลาวด์ รอบในอันดับ ข้อความ และหัวใจจริง ๆ ความคืบหน้าในเครื่องนี้ยังอยู่","Para confirmar, digite o seu nome de Idol:":"พิมพ์ชื่อไอดอลของคุณเพื่อยืนยัน:","APAGAR PARA SEMPRE":"ลบถาวร","O nome não confere.":"ชื่อไม่ตรงกัน","Conta apagada. Até a próxima! 💜":"ลบบัญชีแล้ว แล้วพบกันใหม่! 💜","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย"},
+  ja: {"Moderação":"モデレーション","Limpar frase":"ひとことを消す","Renomear":"名前を変える","Bloquear":"ブロック","Desbloquear":"ブロック解除","Conta bloqueada":"ブロック中のアカウント","Feito!":"完了！","Recados no jogo todo":"ゲーム全体のメッセージ","Últimos recados":"さいきんのメッセージ","Frases dos perfis":"プロフィールのひとこと","Contas bloqueadas":"ブロック中のアカウント","Nenhuma.":"なし","Contas":"アカウント","Ferramentas de teste":"テストツール","Ativar modo teste":"テストモードをオン","Forçar tema":"テーマを固定","Tema da data":"日付のテーマ","Tem certeza?":"本当にいい？","Os recados estão pausados pela moderação.":"メッセージはモデレーションで一時停止中です。","Sua conta está bloqueada pela moderação.":"あなたのアカウントはモデレーションでブロックされています。",
+       "Apagar minha conta":"アカウントを削除","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"アカウント・クラウドのセーブ・ランキングの記録・メッセージ・ハートが本当に消えます。この端末の進行はそのまま残ります。","Para confirmar, digite o seu nome de Idol:":"確認のため、アイドル名を入力してね：","APAGAR PARA SEMPRE":"完全に削除","O nome não confere.":"名前が一致しません。","Conta apagada. Até a próxima! 💜":"アカウントを削除しました。またね！💜","Privacidade e segurança":"プライバシーと安全"}
+};
+Object.keys(ADM_DICT).forEach(function(l){ if(DICT[l]) Object.keys(ADM_DICT[l]).forEach(function(k){ DICT[l][k] = ADM_DICT[l][k]; }); });
+PERF_REC_ERRO.pausado = 'Os recados estão pausados pela moderação.';
+PERF_REC_ERRO.bloqueado = 'Sua conta está bloqueada pela moderação.';
+
+function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
+  return '<div class="admbarra"><b>🛡️ ' + escHtml(tr('Moderação')) + (d.bloqueado ? ' · ⛔ ' + escHtml(tr('Conta bloqueada')) : '') + '</b>' +
+    '<button type="button" data-adm="limpar_frase">🧹 ' + escHtml(tr('Limpar frase')) + '</button>' +
+    '<button type="button" data-adm="renomear">✏️ ' + escHtml(tr('Renomear')) + '</button>' +
+    '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button></div>';
+}
+function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
+perfOv.addEventListener('click', function(e){
+  var b = e.target.closest('.admbarra button[data-adm]'); if(!b || !perfAtual) return;
+  var acao = b.dataset.adm, nick = perfAtual.nick;
+  if((acao === 'renomear' || acao === 'bloquear') && !confirm(tr('Tem certeza?'))) return;
+  b.disabled = true;
+  admAcao(acao, nick, b.dataset.v).then(function(r){
+    b.disabled = false;
+    if(r && r.ok){ perfTopoMsg('🛡️ ' + tr('Feito!')); perfAbrir(acao === 'renomear' && r.nick ? r.nick : nick, true); }
+    else perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.'));
+  }).catch(function(){ b.disabled = false; });
+});
+function admPainel(){   // aba 🛡️ Moderação do perfil da admin
+  contaRpc('admin_painel').then(function(d){
+    var box = $('perfAbaCorpo'); if(!box || perfAba !== 'moderacao') return;
+    if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
+    var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
+    h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
+    h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
+      return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.de) + '">' + escHtml(r.de) + '</button> → <button type="button" class="lbn" data-nick="' + escHtml(r.para) + '">' + escHtml(r.para) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
+             '<button type="button" class="perfrecx" data-admrec="' + (+r.id) + '" aria-label="✕">✕</button></li>'; }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhuma.')) + '</p>');
+    h += '<h3>💬 ' + escHtml(tr('Frases dos perfis')) + '</h3>' + (d.frases.length ? '<ul class="perfrecs">' + d.frases.map(function(f){
+      return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(f.nick) + '">' + escHtml(f.nick) + '</button></div><p>' + escHtml(f.frase) + '</p><button type="button" class="perfrecx" data-admfrase="' + escHtml(f.nick) + '" aria-label="🧹">🧹</button></li>'; }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhuma.')) + '</p>');
+    h += '<h3>⛔ ' + escHtml(tr('Contas bloqueadas')) + '</h3>' + (d.bloqueados.length ? '<div class="perfchips">' + d.bloqueados.map(function(n){
+      return '<span>' + escHtml(n) + ' <button type="button" class="admdesb" data-nick="' + escHtml(n) + '">✅</button></span>'; }).join('') + '</div>' : '<p class="perfcarr">' + escHtml(tr('Nenhuma.')) + '</p>');
+    h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
+         '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
+    box.innerHTML = h;
+  }).catch(function(){});
+}
+perfOv.addEventListener('click', function(e){
+  var t = e.target, b;
+  if((b = t.closest('[data-admrec]'))){ b.disabled = true; admAcao('apagar_recado', b.dataset.admrec).then(function(r){ if(r && r.ok){ var li = b.closest('li'); li.parentNode.removeChild(li); } else b.disabled = false; }); return; }
+  if((b = t.closest('[data-admfrase]'))){ b.disabled = true; admAcao('limpar_frase', b.dataset.admfrase).then(function(r){ if(r && r.ok){ var li = b.closest('li'); li.parentNode.removeChild(li); } else b.disabled = false; }); return; }
+  if((b = t.closest('.admdesb'))){ e.stopPropagation(); b.disabled = true; admAcao('bloquear', b.dataset.nick, false).then(function(){ admPainel(); }); return; }
+  if(t.id === 'admTeste'){ var tw = $('tstw'); if(tw) tw.hidden = false; document.body.classList.add('modo-teste'); perfFechar(); if(typeof hubFechar === 'function') hubFechar(); }
+});
+perfOv.addEventListener('change', function(e){
+  if(e.target.id !== 'admRecOn') return;
+  var on = e.target.checked;
+  admAcao('recados_on', '', on).catch(function(){ e.target.checked = !on; });
+});
+
+// ---------- Apagar minha conta (LGPD) ----------
+function perfApagarHtml(){
+  return '<details class="perfapagar"><summary>⚠️ ' + escHtml(tr('Apagar minha conta')) + '</summary>' +
+    '<p>' + escHtml(tr('Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.')) + '</p>' +
+    '<label>' + escHtml(tr('Para confirmar, digite o seu nome de Idol:')) + ' <input class="nick perfcampo" id="perfApagarNome" maxlength="24" autocomplete="off"></label>' +
+    '<p class="perfmsg" id="perfApagarMsg" hidden></p><div class="btns"><button type="button" class="btn perfperigo" id="perfApagarOk">🗑️ ' + escHtml(tr('APAGAR PARA SEMPRE')) + '</button></div>' +
+    '<p class="perfdica"><a href="privacidade.html" target="_blank" rel="noopener">🔐 ' + escHtml(tr('Privacidade e segurança')) + '</a></p></details>';
+}
+perfOv.addEventListener('keydown', function(e){ if(e.target.id === 'perfApagarNome') e.stopPropagation(); });
+perfOv.addEventListener('click', function(e){
+  if(e.target.id !== 'perfApagarOk') return;
+  var b = e.target, nome = $('perfApagarNome').value.trim(), m = $('perfApagarMsg');
+  if(!contaJ || nome.toLowerCase() !== String(contaJ.nick).toLowerCase()){ m.textContent = tr('O nome não confere.'); m.hidden = false; return; }
+  b.disabled = true;
+  contaRpc('apagar_conta', { p_confirma: nome }).then(function(r){
+    if(!r || !r.ok){ b.disabled = false; m.textContent = tr(r && r.erro === 'confirma' ? 'O nome não confere.' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; return; }
+    try{ localStorage.removeItem(PERF_SYNC); }catch(e2){}
+    perfFechar(); contaSair();
+    contaAviso('🗑️ ' + tr('Conta apagada. Até a próxima! 💜'));
+  }).catch(function(){ b.disabled = false; });
+});
 // --- FIM DO PERFIL (V2.1.3) ---
 
 var EXTRA_DICT = {

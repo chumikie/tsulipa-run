@@ -9766,7 +9766,7 @@ setInterval(coelhoSync, 3000); coelhoSync();
 
 // ---------- Botão de som dentro do gacha e do Moon⭐Duo! ----------
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
-function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', muted ? 'Som desligado' : 'Som ligado'); }); }
+function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
 document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){ ovSomUI(); if(!muted && hubComecou) hubMusicaTocar(); }, 60); });
 setInterval(ovSomUI, 1000); ovSomUI();
 
@@ -10043,6 +10043,19 @@ function encEmojis(x, W2, H2, t){   // emojis fofos levitando
   }
   x.restore();
 }
+
+// --- Traduções de dicas (title/aria-label) que faltavam ---
+[
+  ['Recarregar página', 'Reload page', 'Recargar página', 'โหลดหน้าใหม่', 'ページを再読み込み'],
+  ['✨ Surpresa! ✨', '✨ Surprise! ✨', '✨ ¡Sorpresa! ✨', '✨ เซอร์ไพรส์! ✨', '✨ サプライズ！ ✨'],
+  ['Baixar Render em PNG', 'Download render as PNG', 'Descargar render en PNG', 'ดาวน์โหลดภาพ PNG', 'PNGで保存'],
+  ['Baixar Render do Avatar', 'Download avatar render', 'Descargar render del avatar', 'ดาวน์โหลดภาพอวตาร', 'アバター画像を保存'],
+  ['Cor da Roupa', 'Outfit color', 'Color de la ropa', 'สีชุด', '衣装の色'],
+  ['Tema do Oshi', 'Oshi theme', 'Tema del Oshi', 'ธีมโอชิ', '推しテーマ'],
+  ['Som ligado', 'Sound on', 'Sonido activado', 'เปิดเสียง', 'サウンドオン'],
+  ['Som desligado', 'Sound off', 'Sonido desactivado', 'ปิดเสียง', 'サウンドオフ']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+if(typeof applyLang === 'function'){ try{ applyLang(); ovSomUI(); }catch(e){} }
 
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---

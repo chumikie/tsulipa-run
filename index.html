@@ -588,6 +588,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .hubonline[hidden]{display:none}.hubonline i{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e}
 .onlineov{z-index:24}.onlinep{width:min(100%,420px);text-align:center;position:relative}
 .gisov{z-index:29}.gisp{width:min(100%,360px);text-align:center;position:relative}#gisBtn{display:flex;justify-content:center;margin:10px 0}
+.hubonline{margin:14px auto 12px}.gacharesp,#gachaTxt{margin:12px 0 12px!important;line-height:1.45}
+.perfsub{margin:10px 0 4px;font-size:13px;color:var(--b1)}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -6976,7 +6978,8 @@ function perfAbaMostrar(){
       ks = Object.keys(pp);
       if(ks.length) h += '<div class="perfchips">' + ks.map(function(k){ return '<span>' + escHtml(k) + ' · <b>' + pp[k] + '</b></span>'; }).join('') + '</div>';
     }
-    h += '<ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
+    h += '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
+    if(d.melhores && d.melhores.length) h += '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.melhores, d.admin_ver) + '</ol>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
@@ -9684,6 +9687,7 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+ ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'], ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'],
  ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'], ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'], ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
  ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'], ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'], ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの'], ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
  ['Limpar foto', 'Clear photo', 'Borrar foto', 'ล้างรูป', '写真をリセット'], ['Tirar do Moon⭐Duo!/outdoors', 'Remove from Moon⭐Duo!/billboards', 'Quitar de Moon⭐Duo!/carteles', 'เอาออกจาก Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板から外す'],
@@ -9734,39 +9738,8 @@ setInterval(ovSomUI, 1000); ovSomUI();
 // ---------- Forçar tema: deixar claro que é só para você ----------
 if(typeof temaAdminHtml === 'function'){ var temaAdmOrig = temaAdminHtml; temaAdminHtml = function(){ return temaAdmOrig() + '<small class="admnota">👁️ ' + escHtml(tr('Só você vê, e só nesta aba. Para todo mundo continua o tema da data. Volte em “Tema da data” para sair.')) + '</small>'; }; }
 
-// ---------- Quem está online agora (só para ver o perfil) ----------
-var onlineCh = null, onlineLista = [], onlineTentou = false;
-var onlineBtn = document.createElement('button'); onlineBtn.type = 'button'; onlineBtn.className = 'hubonline'; onlineBtn.hidden = true;
-(function(){ var hm = $('hubMenu'); if(hm) hm.insertBefore(onlineBtn, hm.firstChild); })();
-var onlineOv = document.createElement('div'); onlineOv.className = 'ov onlineov'; onlineOv.hidden = true;
-onlineOv.innerHTML = '<div class="panel onlinep" role="dialog" aria-modal="true"><button type="button" class="perfx" id="onlineX">✕</button><h2 id="onlineTit"></h2><div class="duosug" id="onlineLista"></div></div>';
-document.body.appendChild(onlineOv);
-function onlineUI(){
-  onlineBtn.hidden = !contaJ || !onlineCh;
-  onlineBtn.innerHTML = '<i></i> ' + escHtml(tr('Online agora')) + ': <b>' + onlineLista.length + '</b>';
-  if(!onlineOv.hidden){
-    $('onlineTit').textContent = '🟢 ' + tr('Online agora');
-    $('onlineLista').innerHTML = onlineLista.length ? onlineLista.map(function(n){ return '<button type="button" class="duochip" data-onick="' + escHtml(n) + '">🟢 ' + escHtml(n) + '</button>'; }).join('') : '<p class="perfcarr">✧</p>';
-  }
-}
-function onlineLigar(){
-  if(onlineCh || onlineTentou || !contaJ || typeof _supabase === 'undefined' || !_supabase || !_supabase.channel) return;
-  onlineTentou = true;
-  contaRpc('meu_perfil').then(function(d){
-    if(!d || d.duo_on === false || !contaJ) return;   // quem saiu do Moon⭐Duo!/outdoors também não aparece online
-    try{
-      onlineCh = _supabase.channel('tsl-online', { config: { presence: { key: contaJ.nick } } });
-      onlineCh.on('presence', { event: 'sync' }, function(){ var st = onlineCh.presenceState() || {}; onlineLista = Object.keys(st).sort(function(a, b){ return a.localeCompare(b); }); onlineUI(); })
-        .subscribe(function(status){ if(status === 'SUBSCRIBED') onlineCh.track({ t: Date.now() }); onlineUI(); });
-    }catch(e){ onlineCh = null; }
-  }).catch(function(){ onlineTentou = false; });
-}
-setInterval(function(){ if(contaJ) onlineLigar(); else if(onlineCh){ try{ _supabase.removeChannel(onlineCh); }catch(e){} onlineCh = null; onlineTentou = false; onlineLista = []; onlineUI(); } }, 4000);
-onlineBtn.onclick = function(){ onlineOv.hidden = false; onlineUI(); if(sfx.card) sfx.card(); };
-onlineOv.addEventListener('click', function(e){
-  if(e.target.id === 'onlineX' || e.target === onlineOv){ onlineOv.hidden = true; return; }
-  var b = e.target.closest('[data-onick]'); if(b){ onlineOv.hidden = true; perfAbrir(b.dataset.onick); }
-});
+// (Lista "Online agora" removida: na próxima evolução ela volta só dentro da Karaoke⭐Day!, com a fila e a sala)
+
 
 [['Salvar look', 'Save look', 'Guardar look', 'บันทึกลุค', 'ルックを保存'], ['Look salvo! É assim que você aparece no Moon⭐Duo!', "Look saved! This is how you'll appear in Moon⭐Duo!", '¡Look guardado! Así apareces en Moon⭐Duo!', 'บันทึกลุคแล้ว! คุณจะปรากฏแบบนี้ใน Moon⭐Duo!', 'ルックを保存！Moon⭐Duo!ではこの姿で登場します'],
  ['Orelhas de coelho', 'Bunny ears', 'Orejas de conejo', 'หูกระต่าย', 'うさみみ'], ['Acessório', 'Accessory', 'Accesorio', 'เครื่องประดับ', 'アクセサリー'],
@@ -9778,7 +9751,7 @@ onlineOv.addEventListener('click', function(e){
 
 // ---------- Login com Google direto no site (mostra "TsuLiPa⭐World" em vez do endereço do Supabase) ----------
 // Para ligar: coloque aqui o Client ID PÚBLICO do Google (termina em .apps.googleusercontent.com). Vazio = login antigo.
-var GOOGLE_CLIENT_ID = '';
+var GOOGLE_CLIENT_ID = '781179638857-k6qcb45jh2q627gqr0qsqu57uaotmcp7.apps.googleusercontent.com';
 var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
 gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p></div>';
 document.body.appendChild(gisOv);

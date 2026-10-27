@@ -8280,7 +8280,7 @@ function gachaCardDesenhar(cv, d){
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i, h = 0;
   for(i = 0; i < d.nick.length; i++) h = (h * 31 + d.nick.charCodeAt(i)) % 997;
   var oshi = d.oshi && PERF_OSHI[d.oshi], cor = oshi ? oshi[2] : ['#b48cff', '#ffb36b', '#6bc8ff', '#ff8fc7'][h % 4];
-  var best = +d.best || 0, rar = best >= 30000 ? 'SSR' : best >= 5000 ? 'SR' : 'R';
+  var best = +d.best || 0, rk = rankOf(best), rar = rk >= 9 ? 'SSR' : rk >= 6 ? 'SR' : rk >= 3 ? 'R' : 'N';   // raridade pelo rank do Center Run: N até Team · R Senbatsu–tCenter · SR wCenter–Solo Center · SSR Capitão+
   function rr(x0, y0, w, hh, r0){ x.beginPath(); x.moveTo(x0 + r0, y0); x.arcTo(x0 + w, y0, x0 + w, y0 + hh, r0); x.arcTo(x0 + w, y0 + hh, x0, y0 + hh, r0); x.arcTo(x0, y0 + hh, x0, y0, r0); x.arcTo(x0, y0, x0 + w, y0, r0); x.closePath(); }
   x.clearRect(0, 0, W2, H2);
   rr(0, 0, W2, H2, 22); x.save(); x.clip();
@@ -8303,8 +8303,8 @@ function gachaCardDesenhar(cv, d){
     perfDesenharPetEm(x, { k:d.pet.k, acc:d.pet.acc || '' }, W2 - 52, 332, 1.7, 0);
   }
   // selo de raridade
-  var rg = x.createLinearGradient(14, 14, 84, 44); rg.addColorStop(0, rar === 'SSR' ? '#ffe14d' : rar === 'SR' ? '#ff9ccd' : '#9ec8ff'); rg.addColorStop(1, rar === 'SSR' ? '#f59e0b' : rar === 'SR' ? '#ff4f9a' : '#4169e1');
-  x.fillStyle = rg; rr(14, 14, rar === 'SSR' ? 70 : 54, 30, 8); x.fill();
+  var rg = x.createLinearGradient(14, 14, 84, 44), RC = { SSR:['#ffe14d', '#f59e0b'], SR:['#ff9ccd', '#ff4f9a'], R:['#9ec8ff', '#4169e1'], N:['#d8cdea', '#9a8bb8'] }[rar]; rg.addColorStop(0, RC[0]); rg.addColorStop(1, RC[1]);
+  x.fillStyle = rg; rr(14, 14, rar === 'SSR' ? 70 : rar === 'SR' ? 54 : 40, 30, 8); x.fill();
   x.fillStyle = '#fff'; x.font = '900 20px sans-serif'; x.textAlign = 'left'; x.fillText(rar, 24, 37);
   // placa do nome
   x.fillStyle = 'rgba(255,255,255,.92)'; rr(14, H2 - 132, W2 - 28, 118, 16); x.fill();

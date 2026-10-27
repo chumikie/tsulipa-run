@@ -9853,8 +9853,9 @@ function encBtnUI(){
 }
 function encMostrar(d){
   encDados = d; encT = 0;
-  $('encTopo').textContent = '🌟 ' + tr('Encontro do dia');
-  $('encNick').textContent = d.nick;
+  var ex = Array.isArray(d.extras) ? d.extras : [];
+  $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
+  $('encNick').textContent = [d.nick].concat(ex.map(function(o){ return o.nick; })).join(' & ');
   $('encFala').textContent = tr(d.fala);
   var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
   $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
@@ -9869,12 +9870,16 @@ function encLoop(){
   encAnim = 0; if(encOv.hidden || !encDados) return; encT++;
   if(encT % 2 === 0){
     var cv = $('encCv'), x = cv.getContext('2d'), poses = ['v', 'tchau', 'banzai', 'coracao', 'luz', 'mic'];
-    var av = JSON.parse(JSON.stringify(encDados.avatar || {})); av.pet = null; av.pose = poses[Math.floor(encT / 70) % poses.length]; av.expr = Math.floor(encT / 70) % 2 ? 3 : 2;
-    if(typeof av.visual === 'string' && PERF_RANKVIS[av.visual]) av.visual = '';
+    var grupo = [encDados].concat(Array.isArray(encDados.extras) ? encDados.extras : []).map(function(o, i){
+      var a = JSON.parse(JSON.stringify(o.avatar || {})); a.pet = null; a.pose = poses[(Math.floor(encT / 70) + i * 2) % poses.length]; a.expr = Math.floor(encT / 70 + i) % 2 ? 3 : 2;
+      if(typeof a.visual === 'string' && PERF_RANKVIS[a.visual]) a.visual = ''; return a; });
     try{ x.clearRect(0, 0, cv.width, cv.height); encCena(x, cv.width, cv.height, encT);
       var pulo = Math.abs(Math.sin(encT * .12)) * 10;
       encHalo(x, cv.width / 2, cv.height * .56 - pulo, encT);
-      x.save(); x.translate(0, -pulo); perfDesenharIdol(x, cv.width, cv.height, av, false, false, encT); x.restore();
+      var W2 = cv.width, H2 = cv.height, n = grupo.length, esc = n === 3 ? .58 : n === 2 ? .7 : 1, pos = n === 3 ? [.5, .2, .8] : n === 2 ? [.3, .7] : [.5];
+      grupo.map(function(a, i){ return i; }).sort(function(a, b){ return (a === 0) - (b === 0); }).forEach(function(i){   // quem é do centro fica na frente
+        var pj = n > 1 ? Math.abs(Math.sin(encT * .12 + i * 1.3)) * 8 : pulo;
+        x.save(); x.translate(W2 * pos[i] - W2 * esc / 2, H2 * (1 - esc) - pj); x.scale(esc, esc); perfDesenharIdol(x, W2, H2, grupo[i], false, false, encT + i * 30); x.restore(); });
       encEmojis(x, cv.width, cv.height, encT);
     }catch(e){}
   }
@@ -9887,8 +9892,11 @@ encBtn.onclick = function(){
     encBtn.disabled = false;
     L = (Array.isArray(L) ? L : []).filter(function(p){ return p && p.nick && p.avatar && (!contaJ || p.nick.toLowerCase() !== contaJ.nick.toLowerCase()); });
     if(!L.length) return;
-    var p = L[Math.floor(Math.random() * L.length)], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
+    L = L.slice().sort(function(){ return Math.random() - .5; });
+    var p = L[0], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
     d.best = p.best; d.oshi = p.oshi;
+    var dsem = new Date().getDay(), nx = dsem === 2 ? 1 : dsem === 5 ? 2 : 0;   // terça: dupla do dia · sexta: trio do dia
+    d.extras = L.slice(1, 1 + nx).map(function(o){ return { nick: o.nick, avatar: o.avatar }; });
     try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}
     encBtnUI(); encMostrar(d);
     $('encPremio').hidden = true;
@@ -10111,6 +10119,11 @@ document.addEventListener('click', function(e){
    'Liberar todo: toda la ropa, poses, fondos, expresiones y objetos de Moon⭐Duo! quedan libres para probar. Desactivado, vuelve a contar solo lo que compraste.',
    'ปลดล็อกทั้งหมด: ชุด ท่าโพส ฉาก สีหน้า และไอเทม Moon⭐Duo! ใช้ทดสอบได้ทั้งหมด เมื่อปิด จะใช้ได้เฉพาะที่ซื้อแล้ว',
    'すべて解放：服・ポーズ・背景・表情・Moon⭐Duo!のアイテムをすべてテストに使えます。オフにすると、買ったものだけに戻ります。']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+
+[
+  ['Dupla do dia!', 'Duo of the day!', '¡Dúo del día!', 'คู่ประจำวัน!', '今日のデュオ！'],
+  ['Trio do dia!', 'Trio of the day!', '¡Trío del día!', 'ทริโอประจำวัน!', '今日のトリオ！']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();

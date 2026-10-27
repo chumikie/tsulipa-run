@@ -458,6 +458,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .gachap h2{padding:0 44px}
 #gachaCardCv{display:block;width:min(100%,300px);height:auto;margin:6px auto 0;border-radius:18px;box-shadow:0 10px 26px rgba(60,20,120,.3)}
 #gachaCardCv[hidden]{display:none}
+.perfin{position:relative}.perfnv{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#f5b400;letter-spacing:-1px;text-shadow:0 1px 0 #fff}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -624,13 +625,13 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
         <div class="cust" id="cust_roupa">
         <label>Roupa <select id="cout">
-          <option value="" data-r="0">Básica</option>
-          <option value="seifuku" data-r="450">Uniforme (Team)</option>
-          <option value="estrelado" data-r="1000">Céu Estrelado (Senbatsu)</option>
-          <option value="y2k" data-r="1800">Moda 2000 (Quad Center)</option>
-          <option value="zipper" data-r="2800">Zipper (tCenter)</option>
+          <option value="" data-r="0">Trainee</option>
+          <option value="seifuku" data-r="450">Debut (Team)</option>
+          <option value="estrelado" data-r="1000">Nagareboshi (Senbatsu)</option>
+          <option value="y2k" data-r="1800">Cheeky (Quad Center)</option>
+          <option value="zipper" data-r="2800">ZIPPER (tCenter)</option>
           <option value="sweet" data-r="3900">Valentine (wCenter)</option>
-          <option value="citypop" data-r="5000">Blazer 80s (Center)</option>
+          <option value="citypop" data-r="5000">Mayonaka (Center)</option>
         </select>
         <input type="color" id="coutcol" value="#ffffff" title="Cor da Roupa">
         </label>
@@ -788,8 +789,8 @@ function applyLang(){
     var d=DICT[LANG], v=d&&d[k];
     node.nodeValue=v?raw.replace(k,function(){return v}):raw;
   });
-  [].forEach.call(document.querySelectorAll('[placeholder],[aria-label]'),function(e){
-    ['placeholder','aria-label'].forEach(function(a){
+  [].forEach.call(document.querySelectorAll('[placeholder],[aria-label],[title]'),function(e){
+    ['placeholder','aria-label','title'].forEach(function(a){
       if(!e.hasAttribute(a))return;
       var key='data-pt-'+a;
       if(!e.hasAttribute(key)){
@@ -1549,7 +1550,7 @@ function end(){
   try{localStorage.setItem('brs48cr_st',starT)}catch(e){}
   if(nb){best=s;try{localStorage.setItem('brs48cr_best',s)}catch(e){}}
   setBest();
-  finalExpr = s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2);
+  finalExpr = typeof exprFinal === 'function' ? exprFinal(s, nb) : (s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2));   // V2.1.3
   
   var rId = rankOf(s);
   $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
@@ -2129,6 +2130,7 @@ if(hacc==='coala'){
     g.moveTo(x+18,y+20); g.quadraticCurveTo(x+20,y+17, x+22,y+20);
     g.stroke();
     g.fillStyle='#223'; g.beginPath(); g.arc(x+15, y+23, 2.5, 0, Math.PI); g.fill();
+  } else if(expr>=4 && typeof exprNova==='function' && exprNova(c, x, y, expr)){   // V2.1.3: surpresa, chorinho, apaixonado
   } else if(expr===3){   // piscadinha (Foto 2.0): olho esquerdo aberto, direito fechado, sorriso
     g.fillStyle='#223';g.fillRect(x+10,y+17,3,1);
     g.fillStyle=c.eye;g.fillRect(x+10,y+18,3,4);
@@ -2665,6 +2667,7 @@ function draw(){
 
 	
   cenaGrilo(P2);   // grilo "cri cri" de noite (V2.2)
+  if(typeof cenaPinguim === 'function') cenaPinguim();   // V2.1.3: pinguim correndo
   g.fillStyle=P2[6];g.fillRect(0,GY,W,H-GY);
   g.fillStyle=P2[7];g.shadowColor=P2[7];g.shadowBlur=14;g.fillRect(0,GY,W,3);g.shadowBlur=0;
   g.fillStyle='rgba(255,255,255,.12)';for(var x=-(dist%60);x<W;x+=60)g.fillRect(x,GY+22,30,3);
@@ -2783,6 +2786,7 @@ if(window.activePetFly){
   }
 
   var playExpr = (shake > 0 || (inv > 0 && !abducted)) ? 1 : 0; 
+  if(typeof exprCorrida === 'function') playExpr = exprCorrida(playExpr);   // V2.1.3
   var runAnim = state==='play' ? (!P.air ? Math.sin(frame*.5) : (pw && pw.k==='alien' ? Math.sin(frame*.25) : 0)) : 0;
 
 g.save();
@@ -5648,7 +5652,7 @@ function petDrawGorro(x, py, tf){
 var petPhFrame = 'polaroid', petPhPose = '', petPhExpr = '', petPhMode = 'pet';   // petPhMode: 'pet' (camarim) ou 'run' (📸 da corrida)
 var PET_PH_FRAMES = [['polaroid', '📷', 'Polaroid'], ['oshi', '💜', 'Oshi'], ['estagio', '🏅', 'Estágio']];
 var PET_PH_POSES = [['', '🙂', 'Normal'], ['v', '✌️', 'V'], ['coracao', '🫰', 'Coração'], ['tchau', '👋', 'Tchau']];
-var PET_PH_EXPRS = [['', '✨', 'Auto'], ['2', '😊', 'Sorriso'], ['0', '👀', 'Olhar'], ['3', '😉', 'Piscadinha'], ['1', '😲', 'Surpresa']];   // números = expr do drawChar
+var PET_PH_EXPRS = [['', '✨', 'Auto'], ['2', '😊', 'Sorriso'], ['0', '👀', 'Olhar'], ['3', '😉', 'Piscadinha'], ['1', '😣', 'Ai!'], ['4', '😮', 'Surpresa'], ['5', '🥺', 'Chorinho'], ['6', '😍', 'Apaixonado']];   // números = expr do drawChar   // números = expr do drawChar
 
 var PET_DICT10 = {
   en: {"Expressão":"Expression","Auto":"Auto","Sorriso":"Smile","Olhar":"Gaze","Piscadinha":"Wink","Surpresa":"Surprise","Rank":"Rank","{p} trouxe um presente!":"{p} brought you a gift!"},
@@ -5902,6 +5906,7 @@ function cenaGrilo(P2){
   var G = cenaGrl, x = W + 20 - (dist - G.d0) * .62, t = frame - G.f0;
   if(x < -30){ cenaGrl = null; cenaProxGrilo = frame + 2400 + Math.random() * 1800; return; }
   var hop = (t % 160) < 14 ? Math.sin((t % 160) / 14 * Math.PI) * 6 : 0, y = GY - 4 - hop;
+  if(typeof griloAmor === 'function') griloAmor(G, x);   // V2.1.3
   g.save(); g.translate(x, y);
   g.strokeStyle = '#3f6212'; g.lineWidth = 1;
   g.beginPath(); g.moveTo(-3, 1); g.lineTo(-7, 4); g.moveTo(1, 1); g.lineTo(-1, 4); g.moveTo(3, 1); g.lineTo(6, 4); g.stroke();   // perninhas
@@ -6144,7 +6149,7 @@ var PERF_POSES = [   // as 4 primeiras são as da Foto 2.0 (grátis); as outras 
   ['coracao','🫰', 'Coração',    0],
   ['tchau',  '👋', 'Tchau',      0],
   ['mic',    '🎤', 'Microfone', 120],
-  ['banzai', '🙌', 'Banzai',    100],
+  ['banzai', '🙌', 'Banzai Venus', 100],
   ['nyan',   '🐱', 'Nyan',      150],
   ['luz',    '💜', 'Lightstick', 150]
 ];
@@ -6160,13 +6165,13 @@ var PERF_FUNDOS = [   // chave no servidor: fundo_...
 ];
 var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: roupa_...); o valor vai em "out" do personagem
   ['brasil',    '🇧🇷', 'Brasil',            150],
-  ['pijama',    '😴', 'Pajama Drive',      180],   // inspirada no stage "Pajama Drive" (AKB48)
+  ['pijama',    '😴', 'Yume',              180],   // pijama ("Yume wa Nigenai", estreia do Draft) — chave antiga mantida
   ['happi',     '🏮', 'Happi de Matsuri',  200],   // festival de verão japonês (happi + hachimaki)
-  ['gingham',   '🧺', 'Gingham Check',     250],   // inspirada em "Gingham Check" (AKB48)
+  ['gingham',   '🧺', 'Teacher Teacher',   250],   // camisa xadrez de colégio — chave antiga mantida
   ['hipster',   '🌼', 'Hippie',            280],   // chave antiga "hipster" mantida (agora é a roupa Hippie)
   ['rock',      '🎸', 'Rockstar',          320],
-  ['disco',     '🥠', 'Fortune Disco',     360],   // inspirada em "Koisuru Fortune Cookie" (AKB48)
-  ['technopop', '🤖', 'Techno Pop',        400],   // inspirada no techno-pop de "Polyrhythm" (Perfume)
+  ['disco',     '🪩', 'Dancing High',      360],   // disco dourado — chave antiga mantida
+  ['technopop', '⚡', 'Electric Party',    400],   // prata e neon (Unit Festival 2026) — chave antiga mantida
   ['decora',    '🍬', 'Decora kei',        450],
   ['alienfan',  '👽', 'Fantasia de alien', 500],
   // Roupas da temporada: [chave, emoji, nome, preço, tema] — só se compram no período do tema; depois de comprada, é para sempre
@@ -6179,7 +6184,9 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
   ['sakura',    '🌸', 'Haori de sakura',   340, 'sakura'],
   ['puffer',    '❄️', 'Puffer de inverno', 340, 'inverno'],
   ['yukata',    '🎋', 'Yukata de Tanabata', 300, 'tanabata'],
-  ['cardiga',   '🌼', 'Cardigã florido',   280, 'primavera']
+  ['cardiga',   '🌼', 'Cardigã florido',   280, 'primavera'],
+  ['jardineira', '🎈', 'Jardineira colorida', 260, 'criancas'],
+  ['festa48',   '🎂', 'Festa 48',          348, 'aniversario']
 ];
 var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, como conquistar]
   ['estreia',  '🎤', 'Estreia',          'Primeira corrida no ranking online'],
@@ -6210,6 +6217,8 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['tema_inverno',   '❄️', 'Inverno',     'Correu no começo do inverno'],
   ['tema_tanabata',  '🎋', 'Tanabata',    'Correu no Tanabata'],
   ['tema_primavera', '🌼', 'Primavera',   'Correu no começo da primavera'],
+  ['tema_criancas',  '🎈', 'Dia das Crianças', 'Correu na semana do Dia das Crianças'],
+  ['tema_aniversario', '🎂', 'Aniversário do BRS48', 'Correu na semana do aniversário do BRS48'],
   // especiais: dadas à mão pela moderação (só aparecem em quem ganhou)
   ['esp_evento',     '🏆', 'Pódio do evento',    'Ganhou um evento do TsuLiPa World'],
   ['esp_destaque',   '🌟', 'Destaque da semana', 'Escolha da moderação como destaque da semana'],
@@ -6619,7 +6628,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
     state = 'play'; dpw = null; if(t) frame = t;
     pw = vis === 'mega' ? { k:'gigante', t:300 } : (vis === 'fever' || vis === 'ima' || vis === 'alien') ? { k:vis, t:300 } : null;
     rankI = rk; sash = rk >= 7; accSel = typeof av.a === 'string' ? av.a : '';
-    var ex = [0, 1, 2, 3].indexOf(+av.expr) >= 0 ? +av.expr : 2;
+    var ex = [0, 1, 2, 3, 4, 5, 6].indexOf(+av.expr) >= 0 ? +av.expr : 2;
     if(t && ex !== 2 && (t % 200) < 7) ex = 2;   // piscadinha de vez em quando (na animação)
     var pose = perfPoseInfo(av.pose) ? av.pose : '';
     perfCharContorno(x, tx, ty + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
@@ -6846,13 +6855,18 @@ function perfUltimas(L, adm){
 }
 
 // ---------- Insígnias ----------
+// Insígnias que evoluem: [nível 1, nível 2, nível 3, o que conta]. A chave do servidor vira "presenca:2" no nível 2.
+var PERF_TIERS = { presenca:[7, 30, 100, 'dias diferentes'], maratona:[100, 500, 1000, 'corridas'], amada:[10, 50, 200, 'corações recebidos'], carteiro:[10, 50, 200, 'recados'], amizade:[10, 50, 200, 'corações dados'], fashion:[5, 15, 30, 'compras'] };
+var perfInsTem = [];
+function perfInsNv(tem, k){ var n = 0; (tem || []).forEach(function(x){ var p = String(x).split(':'); if(p[0] === k) n = Math.max(n, +p[1] || 1); }); return n; }
 function perfInsHtml(tem, meu){
+  perfInsTem = tem || [];
   var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
-  var lista = PERF_INS.filter(function(i){ return tem.indexOf(i[0]) >= 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
+  var lista = PERF_INS.filter(function(i){ return perfInsNv(tem, i[0]) > 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
   if(!lista.length) return '<p class="perfcarr">✧</p>';
   return '<div class="perfins" id="perfIns">' + lista.map(function(i){
-    var ok = tem.indexOf(i[0]) >= 0;
-    return '<button type="button" class="perfin' + (ok ? ' ok' : '') + '" data-ins="' + i[0] + '" aria-pressed="' + (perfInsSel === i[0]) + '" title="' + escHtml(tr(i[2])) + '"><span>' + (ok ? i[1] : '🔒') + '</span></button>';
+    var nv = perfInsNv(tem, i[0]), ok = nv > 0;
+    return '<button type="button" class="perfin' + (ok ? ' ok' : '') + '" data-ins="' + i[0] + '" aria-pressed="' + (perfInsSel === i[0]) + '" title="' + escHtml(tr(i[2])) + '"><span>' + (ok ? i[1] : '🔒') + '</span>' + (nv > 1 ? '<i class="perfnv">' + '★★★'.slice(0, nv) + '</i>' : '') + '</button>';
   }).join('') + '</div><p class="perfinsdesc" id="perfInsDesc"' + (perfInsSel ? '' : ' hidden') + '></p>';
 }
 perfOv.addEventListener('click', function(e){
@@ -6861,7 +6875,8 @@ perfOv.addEventListener('click', function(e){
   var i = PERF_INS.filter(function(x){ return x[0] === perfInsSel; })[0], ok = b.classList.contains('ok');
   [].forEach.call(document.querySelectorAll('#perfIns .perfin'), function(x){ x.setAttribute('aria-pressed', x === b); });
   var dsc = $('perfInsDesc'); dsc.hidden = false;
-  dsc.innerHTML = '<b>' + i[1] + ' ' + escHtml(tr(i[2])) + '</b> · ' + escHtml(tr(i[3])) + ' <em class="' + (ok ? 'ok' : '') + '">' + escHtml(tr(ok ? 'Conquistada!' : 'Bloqueada')) + '</em>';
+  var nvS = perfInsNv(perfInsTem, i[0]), TI = PERF_TIERS[i[0]];
+  dsc.innerHTML = '<b>' + i[1] + ' ' + escHtml(tr(i[2])) + (TI && nvS ? ' · ' + tr('Nível') + ' ' + nvS + '/3' : '') + '</b> · ' + escHtml(tr(i[3])) + (TI && nvS && nvS < 3 ? ' · ' + tr('Próximo nível') + ': ' + TI[nvS] + ' ' + tr(TI[3]) : '') + ' <em class="' + (ok ? 'ok' : '') + '">' + escHtml(tr(ok ? 'Conquistada!' : 'Bloqueada')) + '</em>';
   beep(ok ? 1175 : 523, .05, 'triangle', .04);
 });
 
@@ -7596,7 +7611,8 @@ perfOv.addEventListener('click', function(e){
 var TEMAS = [   // [chave, início MM-DD, fim MM-DD] — horário de Brasília
   ['natal', '12-01', '12-26'], ['anonovo', '12-27', '01-02'], ['verao', '01-03', '01-16'], ['valentine', '02-01', '02-15'],
   ['outono', '03-20', '03-31'], ['sakura', '04-01', '04-14'], ['valentine', '06-05', '06-13'], ['inverno', '06-21', '07-05'],
-  ['tanabata', '07-06', '07-08'], ['primavera', '09-22', '10-06'], ['halloween', '10-24', '11-02']
+  ['tanabata', '07-06', '07-08'], ['primavera', '09-22', '10-06'], ['criancas', '10-08', '10-14'], ['halloween', '10-24', '11-02'],
+  ['aniversario', '11-10', '11-16']   // o BRS48 nasceu em 13/11/2015
 ];
 var TEMA_INFO = {   // [emoji, nome, céu de cima, céu de baixo, chão, partícula, cores das bandeirinhas, item do camarim]
   natal:     ['🎄', 'Natal',     '#0f3b2e', '#2e7d5b', '#f4f8ff', 'neve',    ['#e0303a', '#ffffff', '#16a34a'], '🎄'],
@@ -7608,8 +7624,12 @@ var TEMA_INFO = {   // [emoji, nome, céu de cima, céu de baixo, chão, partíc
   inverno:   ['❄️', 'Inverno',   '#7fb1f0', '#e8f2ff', '#ffffff', 'neve',    ['#4169e1', '#ffffff', '#a8d8ff'], '☃️'],
   tanabata:  ['🎋', 'Tanabata',  '#10194a', '#3b2f8a', '#244f34', 'estrela', ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b'], '🎋'],
   primavera: ['🌼', 'Primavera', '#b8ecff', '#f2ffe8', '#a8e07a', 'flor',    ['#ffe14d', '#ff9ccd', '#b6ff3b'], '🌼'],
-  halloween: ['🎃', 'Halloween', '#2b0f45', '#ff8a3d', '#2a1238', 'morcego', ['#ff8a1f', '#9b30d9', '#2a1640'], '🎃']
+  halloween: ['🎃', 'Halloween', '#2b0f45', '#ff8a3d', '#2a1238', 'morcego', ['#ff8a1f', '#9b30d9', '#2a1640'], '🎃'],
+  criancas:  ['🎈', 'Dia das Crianças', '#7fd0ff', '#fff6c7', '#b6ff3b', 'balao', ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b'], '🎈'],
+  aniversario: ['🎂', 'Aniversário do BRS48', '#7b3ff0', '#ffb3d6', '#ffd1e8', 'confete', ['#9b30d9', '#5cc72c', '#4169e1', '#ff6fb5'], '🎂']
 };
+// Música de cada tema (das Units Especiais do BRS48) — aparece no chip do tema na tela de início
+var TEMA_MUSICA = { halloween:'Bad∞End∞Night', natal:'Manatsu no Christmas Rose', anonovo:'Wish You Happiness!!', valentine:'Valentine Kiss', verao:'Gomen ne, SUMMER', outono:'Sugaring Off Party!', inverno:'Teion Yakedo', primavera:'Blooming♡Blooming', sakura:'Nagori Zakura', tanabata:'Hello, Hoshi o Kazoete', criancas:'Visionary', aniversario:'26 Estados e 1 Distrito' };
 var TEMA_TESTE = 'tsl_tema_teste';   // sessionStorage: tema forçado pela moderação (só nesta aba, não é save)
 function temaForcado(){ try{ var f = sessionStorage.getItem(TEMA_TESTE); if(f === 'nenhum' || TEMA_INFO[f]) return f; }catch(e){} return ''; }
 function temaLinha(){   // linha do calendário de hoje (ou null)
@@ -7660,6 +7680,14 @@ function temaParticulas(x, W2, H2, k, n, t, u){   // caem (ou sobem) devagar; t 
   x.save();
   for(i = 0; i < n; i++){
     var px = temaHash(i * 3 + 1) * W2, vel = (.25 + temaHash(i * 7) * .45) * u, s = (2 + temaHash(i * 11) * 2.6) * u, py;
+    if(tipo === 'balao'){   // balões sobem
+      py = H2 - ((temaHash(i * 5) * H2 + t * vel) % (H2 + 30 * u)) + 20 * u;
+      var bx2 = px + Math.sin(t * .02 + i) * 6 * u, bc = ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#c4a5ff'][i % 5];
+      x.globalAlpha = .85; x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = .8 * u; x.beginPath(); x.moveTo(bx2, py + s * 1.6); x.quadraticCurveTo(bx2 + 3 * u, py + s * 3, bx2, py + s * 4.4); x.stroke();
+      x.fillStyle = bc; x.beginPath(); x.ellipse(bx2, py, s * 1.2, s * 1.55, 0, 0, 7); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx2 - s * .4, py - s * .5, s * .3, s * .45, -.4, 0, 7); x.fill();
+      continue;
+    }
     if(tipo === 'coracao'){   // corações sobem
       py = H2 - ((temaHash(i * 5) * H2 + t * vel) % (H2 + 20 * u)) + 10 * u;
       x.globalAlpha = .55 + .35 * temaHash(i); x.fillStyle = ['#ff4f9a', '#ff9ccd', '#ffffff'][i % 3]; temaCoracao(x, px + Math.sin(t * .03 + i) * 6 * u, py, s * 1.3);
@@ -7671,6 +7699,7 @@ function temaParticulas(x, W2, H2, k, n, t, u){   // caem (ou sobem) devagar; t 
     if(tipo === 'neve'){ x.fillStyle = '#ffffff'; x.beginPath(); x.arc(px + dx, py, s * .8, 0, 7); x.fill(); }
     else if(tipo === 'petala'){ x.save(); x.translate(px + dx, py); x.rotate(t * .02 + i); x.fillStyle = i % 2 ? '#ffb7d5' : '#ffd6e8'; x.beginPath(); x.ellipse(0, 0, s * 1.2, s * .7, 0, 0, 7); x.fill(); x.restore(); }
     else if(tipo === 'folha'){ x.save(); x.translate(px + dx, py); x.rotate(t * .025 + i); x.fillStyle = ['#e8650c', '#f5b400', '#c2410c', '#a0522d'][i % 4]; x.beginPath(); x.moveTo(0, -s * 1.4); x.quadraticCurveTo(s * 1.2, 0, 0, s * 1.4); x.quadraticCurveTo(-s * 1.2, 0, 0, -s * 1.4); x.fill(); x.restore(); }
+    else if(tipo === 'confete'){ x.save(); x.translate(px + dx, py); x.rotate(t * .05 + i); x.fillStyle = ['#9b30d9', '#5cc72c', '#4169e1', '#ff6fb5', '#ffe14d'][i % 5]; x.fillRect(-s, -s * .45, s * 2, s * .9); x.restore(); }
     else if(tipo === 'flor'){ x.globalAlpha = .8; temaFlor(x, px + dx, py, s * .55, ['#ff9ccd', '#ffffff', '#c4a5ff', '#ffe14d'][i % 4], i % 4 === 3 ? '#ff6fb5' : '#ffe14d'); }
     else if(tipo === 'sol' || tipo === 'estrela' || tipo === 'fogos' || tipo === 'morcego'){   // brilhinhos piscando (não caem)
       var bx = temaHash(i * 17 + 3) * W2, by = temaHash(i * 19 + 5) * H2 * .7;
@@ -7831,6 +7860,22 @@ function temaRoupa(roupa, c, x, y, cor, E, T, branco){
     [[25, '#ff9ccd'], [28.4, '#ffe14d'], [31.6, '#c4a5ff']].forEach(function(b){ temaFlorG(x + 10.6, y + b[0], .65, b[1]); });
     temaFlorG(x + 22.5, y + 27, .9, '#ff9ccd'); temaFlorG(x + 7, y + 31, .8, '#fff');
     perfAntena = 'flor';
+  } else if(roupa === 'jardineira'){   // Dia das Crianças: jardineira (na cor escolhida), camiseta listrada arco-íris e boné de hélice
+    var jd = branco ? '#4169e1' : cor;
+    ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b'].forEach(function(cc, j){ g.fillStyle = cc; g.fillRect(x + 4, y + 22 + j * 2.6, 22, 2.6); });
+    g.fillStyle = jd; g.fillRect(x + 8, y + 25, 14, 8); g.fillRect(x + 8, y + 22, 2.4, 4); g.fillRect(x + 19.6, y + 22, 2.4, 4);
+    calca(jd); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x + 11, y + 27, 8, 4);
+    g.fillStyle = '#ffe14d'; E(x + 9.2, y + 25.4, 1.3, 1.3); E(x + 20.8, y + 25.4, 1.3, 1.3);
+    g.fillStyle = '#ff6fb5'; temaCoracaoG(x + 15, y + 29, 1.4);
+    perfAntena = 'helice';
+  } else if(roupa === 'festa48'){   // Aniversário do BRS48: jaqueta de festa com brilho, faixa nas cores do TsuLiPa e o 48 dourado
+    var fj = branco ? '#7b3ff0' : cor;
+    calca('#2c1a5e');
+    g.fillStyle = fj; g.fillRect(x + 4, y + 22, 22, 12);
+    ['#9b30d9', '#5cc72c', '#4169e1'].forEach(function(cc, j){ g.fillStyle = cc; T([x + 4, y + 23 + j * 1.6, x + 26, y + 30 + j * 1.6, x + 26, y + 31.6 + j * 1.6, x + 4, y + 24.6 + j * 1.6]); });
+    g.fillStyle = '#ffe14d'; g.font = '900 6px sans-serif'; g.textAlign = 'center'; g.fillText('48', x + 20, y + 27);
+    g.fillStyle = '#fff'; [[7, 31], [12, 23.5], [23, 32], [9, 27]].forEach(function(p2){ g.fillRect(x + p2[0], y + p2[1], 1, 1); });
+    perfAntena = 'chapeu';
   } else return false;
   return true;
 }
@@ -7850,6 +7895,13 @@ function temaAntena(ant, c, x, y){
     temaFlorG(x + 25.5, y + 4, 1.8, '#ff6fb5', '#ffe14d'); g.fillStyle = '#16a34a'; g.beginPath(); g.ellipse(x + 28.5, y + 6.5, 2, .9, .6, 0, 7); g.fill();
   } else if(ant === 'sakura'){   // grampo de sakura
     temaFlorG(x + 6.5, y + 3.5, 1.5, '#ffc4dd', '#ff6fb5'); temaFlorG(x + 9.5, y + 1.5, 1.1, '#fff', '#ff9ccd');
+  } else if(ant === 'helice'){   // boné de hélice
+    g.fillStyle = '#4169e1'; g.beginPath(); g.arc(x + 15, y + 4, 12, Math.PI, 0); g.fill(); g.fillRect(x + 15, y + 2.5, 15, 2.2);
+    g.fillStyle = '#ffe14d'; g.fillRect(x + 14.3, y - 11, 1.4, 4);
+    g.fillStyle = '#ff6fb5'; g.beginPath(); g.ellipse(x + 11.5, y - 11, 3.6, 1.1, 0, 0, 7); g.fill(); g.fillStyle = '#4dd8ff'; g.beginPath(); g.ellipse(x + 18.5, y - 11, 3.6, 1.1, 0, 0, 7); g.fill();
+  } else if(ant === 'chapeu'){   // chapéu de festa
+    g.fillStyle = '#ff6fb5'; g.beginPath(); g.moveTo(x + 9, y + 1); g.lineTo(x + 21, y + 1); g.lineTo(x + 16, y - 15); g.closePath(); g.fill();
+    g.fillStyle = '#ffe14d'; g.fillRect(x + 11, y - 4, 8, 1.5); g.fillRect(x + 13, y - 9, 5, 1.3); g.beginPath(); g.arc(x + 16, y - 15, 2.2, 0, 7); g.fill();
   } else if(ant === 'estrelinha'){   // presilha de estrela com fitinhas (Céu Estrelado)
     g.fillStyle = '#ff6fb5'; g.fillRect(x + 5, y + 1.6, 20, 1.3);
     g.font = '900 7px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffe14d'; g.fillText('★', x + 23, y + 3.5);
@@ -7923,9 +7975,9 @@ var hubT = 0, hubAnim = 0, hubComecou = false, hubTutI = 0, hubMisDados = null;
 
 function hubTemaUI(){   // chip do tema, partículas da tela e cor do fundo
   var k = temaAtual(), inf = TEMA_INFO[k], el = $('hubTema');
-  if(inf){ el.textContent = inf[0] + ' ' + tr('Tema do momento') + ': ' + tr(inf[1]) + ' · ' + tr('até') + ' ' + temaAteTxt(); el.hidden = false; }
+  if(inf){ el.textContent = inf[0] + ' ' + tr('Tema do momento') + ': ' + tr(inf[1]) + (TEMA_MUSICA[k] ? ' · ♪ ' + TEMA_MUSICA[k] : '') + ' · ' + tr('até') + ' ' + temaAteTxt(); el.hidden = false; }
   else el.hidden = true;
-  var emo = inf ? { neve:'❄', petala:'🌸', folha:'🍁', coracao:'💖', flor:'🌼', sol:'✦', estrela:'★', fogos:'✨', morcego:'🦇' }[inf[5]] : '';
+  var emo = inf ? { neve:'❄', petala:'🌸', folha:'🍁', coracao:'💖', flor:'🌼', sol:'✦', estrela:'★', fogos:'✨', morcego:'🦇', balao:'🎈', confete:'🎉' }[inf[5]] : '';
   $('hubPart').innerHTML = Array.apply(null, Array(14)).map(function(_, i){
     var s = emo || ['✦', '♡', '★'][i % 3], cor = emo ? '' : ';color:' + ['#9b30d9', '#ff6fb5', '#4169e1', '#5cc72c'][i % 4];
     return '<i style="left:' + (temaHash(i * 3) * 100).toFixed(1) + '%;animation-delay:-' + (temaHash(i * 7) * 14).toFixed(1) + 's;animation-duration:' + (10 + temaHash(i) * 8).toFixed(1) + 's;font-size:' + (12 + temaHash(i * 5) * 14).toFixed(0) + 'px' + cor + '">' + s + '</i>';
@@ -7940,7 +7992,7 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
   av.pet = p && petData && PET_SP[petData.ativo] ? { k:petData.ativo, acc:p.acc || '', cfg: petData.ativo === 'meu' ? p.cfg : null } : null;
   return av;
 }
-var HUB_ROUPA_TEMA = { halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
+var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'mic', .16, 'tsu'], [1, 'v', .46, 'lirika'], [2, 'coracao', .76, 'pati']];   // [personagem, pose, posição, pet]
 function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do momento (e com a roupa do tema)
   var cv = $('hubCv'); if(!cv) return;
@@ -8007,13 +8059,13 @@ function hubMontar(){
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
-  $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ YouTube do BRS48</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
+  $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
   $('hubCfg').innerHTML = '<span role="group" aria-label="Idioma">' + L.map(function(l){ return '<button type="button" data-hl="' + l[0] + '" aria-pressed="' + (LANG === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</span>' +
-    '<span role="group" aria-label="Tema do Oshi">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + o[2] + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
+    '<span role="group" aria-label="Tema do Oshi">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + escHtml(tr(o[2])) + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
 }
 function hubAvisoCarregar(){   // aviso da moderação no topo das Novidades
   contaRpc('aviso_inicio').then(function(t){
@@ -8144,10 +8196,10 @@ function insConferir(){
 function insMostrar(){
   if(insAberto || !insFila.length) return;
   var k = insFila.shift(), it = null;
-  for(var i = 0; i < PERF_INS.length; i++) if(PERF_INS[i][0] === k){ it = PERF_INS[i]; break; }
+  for(var i = 0; i < PERF_INS.length; i++) if(PERF_INS[i][0] === String(k).split(':')[0]){ it = PERF_INS[i]; break; }
   if(!it){ insMostrar(); return; }
   insAberto = true;
-  insOv.innerHTML = '<div class="panel insp" role="dialog" aria-modal="true"><p class="insnova">✨ ' + escHtml(tr('Insígnia nova!')) + ' ✨</p><div class="insemo">' + it[1] + '</div><b>' + escHtml(tr(it[2])) + '</b><p>' + escHtml(tr(it[3])) + '</p>' +
+  insOv.innerHTML = '<div class="panel insp" role="dialog" aria-modal="true"><p class="insnova">✨ ' + escHtml(tr('Insígnia nova!')) + ' ✨</p><div class="insemo">' + it[1] + '</div><b>' + escHtml(tr(it[2])) + insNivelTxt(k) + '</b><p>' + escHtml(tr(it[3])) + '</p>' +
     '<div class="btns"><button type="button" class="btn alt" id="insVer">' + escHtml(tr('Ver no perfil')) + '</button><button type="button" class="btn" id="insOk">' + escHtml(tr('Oba!')) + '</button></div></div>';
   insOv.hidden = false;
   [1047, 1319, 1568, 2093].forEach(function(f, j){ beep(f, .16, 'triangle', .04, j * .09); });
@@ -8208,7 +8260,9 @@ var TEMA_FALAS = {
   sakura:    ['Hanami no camarim! 🌸', 'Uma pétala caiu na minha cabeça 🌸', 'As sakuras são lindas, né, {n}? 🌸'],
   inverno:   ['Brrr! Me empresta um cachecol? 🧣', 'Vamos fazer um bonequinho de neve ☃️', 'Hora do cobertor quentinho ❄️'],
   tanabata:  ['Escrevi um desejo pro Tanabata 🎋', 'Hoje as estrelas se encontram ✨', 'Meu desejo: ver você no Center! 🌟'],
-  primavera: ['As flores voltaram! 🌼', 'Tem borboleta no camarim 🦋', 'Cheirinho de flor no ar 🌷']
+  primavera: ['As flores voltaram! 🌼', 'Tem borboleta no camarim 🦋', 'Cheirinho de flor no ar 🌷'],
+  criancas:  ['Bora brincar de pega-pega? 🎈', 'Hoje eu ganho doce, né? 🍭', 'Feliz Dia das Crianças, {n}! 🧸'],
+  aniversario: ['Parabéns, BRS48! 🎂', 'Desde 13/11/2015 brilhando ✨', 'Vamos cantar parabéns no palco! 🎤']
 };
 function temaFalas(){ var k = temaAtual(); return TEMA_FALAS[k] || null; }
 
@@ -8502,6 +8556,86 @@ Object.keys(EXTRA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(EXTRA_DICT[
  ['Você tirou o card de', 'You got the card of', 'Te salió la carta de', 'คุณได้การ์ดของ', 'カードをゲット：'], ['Baixar card', 'Download card', 'Descargar carta', 'ดาวน์โหลดการ์ด', 'カードを保存'],
  ['Bônus do Star⭐Gacha', 'Star⭐Gacha bonus', 'Bonus de Star⭐Gacha', 'โบนัส Star⭐Gacha', 'Star⭐Gachaボーナス']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+// ---------- Easter eggs do Center Run ----------
+function griloAmor(G, x){   // encostar no grilo da noite: ★1 e "Amor Grilado" (uma vez por grilo)
+  if(G.pego || state !== 'play' || !P || P.air) return;
+  if(Math.abs(x - (P.x + 15)) < 14){ G.pego = true; stars += 1; toast = '🦗 ' + tr('Amor Grilado!') + ' +★1'; toastT = 110; beep(1568, .08, 'triangle', .04); beep(2093, .1, 'triangle', .04, .08); }
+}
+var cenaPg = null, cenaPgFeito = false;
+function cenaPinguim(){   // de vez em quando, um pinguim passa correndo no fundo
+  if(state !== 'play') return;
+  if(frame < 5){ cenaPg = null; cenaPgFeito = false; }
+  if(!cenaPg && !cenaPgFeito && score > 1500 && Math.random() < .002){ cenaPg = { x: W + 30, f: 0 }; cenaPgFeito = true; toast = '🐧 ' + tr('Hashire! Penguin!'); toastT = 100; }
+  if(!cenaPg) return;
+  var p = cenaPg; p.f++; p.x -= 5.5;
+  if(p.x < -40){ cenaPg = null; return; }
+  var y = GY - 6 - Math.abs(Math.sin(p.f * .4)) * 4, w = Math.sin(p.f * .5) * .25;
+  g.save(); g.translate(p.x, y); g.rotate(w * .3);
+  g.fillStyle = '#1f2937'; g.beginPath(); g.ellipse(0, -10, 7, 10, 0, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.beginPath(); g.ellipse(1.5, -8, 4.5, 7, 0, 0, 7); g.fill();
+  g.fillStyle = '#1f2937'; g.beginPath(); g.ellipse(-6, -9, 2, 5, w + .4, 0, 7); g.fill();
+  g.fillStyle = '#f59e0b'; g.beginPath(); g.moveTo(-6, -15); g.lineTo(-11, -14); g.lineTo(-6, -13); g.fill(); g.fillRect(-4, 0, 3, 1.5); g.fillRect(1, 0, 3, 1.5);
+  g.fillStyle = '#fff'; g.fillRect(-4, -17, 2, 2); g.fillStyle = '#111'; g.fillRect(-4, -16.5, 1, 1);
+  g.fillStyle = '#ff6fb5'; g.fillRect(-2, -20, 6, 2);   // faixinha de idol
+  g.restore();
+}
+
+// ---------- Expressões novas do personagem: 4 = surpresa, 5 = chorinho, 6 = apaixonado ----------
+function exprNova(c, x, y, expr){
+  if(expr === 4){   // surpresa: olhos redondos e boquinha "o"
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(x + 11.5, y + 19.5, 2.6, 0, 7); g.arc(x + 19.5, y + 19.5, 2.6, 0, 7); g.fill();
+    g.fillStyle = c.eye; g.beginPath(); g.arc(x + 11.5, y + 19.5, 1.6, 0, 7); g.arc(x + 19.5, y + 19.5, 1.6, 0, 7); g.fill();
+    g.fillStyle = '#fff'; g.fillRect(x + 11, y + 18.4, .9, .9); g.fillRect(x + 19, y + 18.4, .9, .9);
+    g.fillStyle = '#223'; g.beginPath(); g.ellipse(x + 15.5, y + 24.5, 1.4, 1.8, 0, 0, 7); g.fill();
+    return true;
+  }
+  if(expr === 5){   // chorinho: olhos fechados para baixo e lagriminhas
+    g.strokeStyle = '#223'; g.lineWidth = 1.4; g.beginPath();
+    g.moveTo(x + 9.5, y + 19); g.quadraticCurveTo(x + 11.5, y + 21.5, x + 13.5, y + 19); g.moveTo(x + 17.5, y + 19); g.quadraticCurveTo(x + 19.5, y + 21.5, x + 21.5, y + 19); g.stroke();
+    g.fillStyle = '#7dd3fc'; g.beginPath(); g.ellipse(x + 10, y + 23, .9, 1.6, 0, 0, 7); g.ellipse(x + 21, y + 23, .9, 1.6, 0, 0, 7); g.fill();
+    g.strokeStyle = '#223'; g.lineWidth = 1.1; g.beginPath(); g.arc(x + 15.5, y + 26, 1.8, Math.PI * 1.15, Math.PI * 1.85); g.stroke();
+    return true;
+  }
+  if(expr === 6){   // apaixonado: olhos de coração e sorrisão
+    g.fillStyle = '#ff4f9a'; [11.5, 19.5].forEach(function(cx){ g.beginPath(); g.moveTo(x + cx, y + 21.6); g.bezierCurveTo(x + cx - 3.4, y + 19.4, x + cx - 1.6, y + 16.6, x + cx, y + 18.6); g.bezierCurveTo(x + cx + 1.6, y + 16.6, x + cx + 3.4, y + 19.4, x + cx, y + 21.6); g.fill(); });
+    g.fillStyle = '#223'; g.beginPath(); g.arc(x + 15.5, y + 23, 2.5, 0, Math.PI); g.fill();
+    return true;
+  }
+  return false;
+}
+function exprCorrida(base){   // reação do personagem durante a corrida
+  if(base === 1) return 1;                                   // bateu: "ai!"
+  if(pw && pw.k === 'alien') return 4;                        // abduzido: surpresa
+  if(pw && pw.k === 'unit' && pw.t > 780) return 6;           // a parceira acabou de chegar: apaixonado
+  if(pw && (pw.k === 'fever' || pw.k === 'gigante')) return 2; // Fever e Mega: sorrisão
+  return base;
+}
+function exprFinal(s, recorde){   // expressão no fim do show
+  if(recorde) return 6;
+  if(s < 450) return 5;
+  return Math.random() < .5 ? 2 : 3;
+}
+function insNivelTxt(k){ var p = String(k).split(':'); return +p[1] > 1 ? ' · ' + tr('Nível') + ' ' + p[1] : ''; }
+
+// ---------- Traduções novas ----------
+[
+ ['YouTube do BRS48', 'BRS48 on YouTube', 'YouTube de BRS48', 'BRS48 บน YouTube', 'BRS48のYouTube'],
+ ['YouTube do BRS48 ↗', 'BRS48 on YouTube ↗', 'YouTube de BRS48 ↗', 'BRS48 บน YouTube ↗', 'BRS48のYouTube ↗'],
+ ['Blog do BRS48 ↗', 'BRS48 Blog ↗', 'Blog de BRS48 ↗', 'บล็อก BRS48 ↗', 'BRS48ブログ ↗'],
+ ['Abrir o camarim do pet', 'Open the pet\'s dressing room', 'Abrir el camerino de la mascota', 'เปิดห้องแต่งตัวสัตว์เลี้ยง', 'ペットの楽屋をひらく'],
+ ['Tirar foto com o pet', 'Take a photo with the pet', 'Tomar foto con la mascota', 'ถ่ายรูปกับสัตว์เลี้ยง', 'ペットと写真をとる'],
+ ['Padrão', 'Default', 'Estándar', 'ค่าเริ่มต้น', 'デフォルト'],
+ ['Dia das Crianças', 'Children\'s Day', 'Día del Niño', 'วันเด็ก', 'こどもの日'], ['Aniversário do BRS48', 'BRS48 Anniversary', 'Aniversario de BRS48', 'วันครบรอบ BRS48', 'BRS48周年'],
+ ['Correu na semana do Dia das Crianças', 'Ran in Children\'s Day week', 'Corrió en la semana del Día del Niño', 'วิ่งในสัปดาห์วันเด็ก', 'こどもの日の週に走った'], ['Correu na semana do aniversário do BRS48', 'Ran in BRS48\'s anniversary week', 'Corrió en la semana del aniversario de BRS48', 'วิ่งในสัปดาห์ครบรอบ BRS48', 'BRS48周年の週に走った'],
+ ['Jardineira colorida', 'Colorful overalls', 'Peto de colores', 'เอี๊ยมสีสดใส', 'カラフルサロペット'], ['Festa 48', 'Party 48', 'Fiesta 48', 'ปาร์ตี้ 48', 'パーティー48'],
+ ['Bora brincar de pega-pega? 🎈', 'Wanna play tag? 🎈', '¿Jugamos a la mancha? 🎈', 'มาเล่นไล่จับกันไหม? 🎈', 'おにごっこしよう？🎈'], ['Hoje eu ganho doce, né? 🍭', 'I get candy today, right? 🍭', 'Hoy me dan dulces, ¿no? 🍭', 'วันนี้ได้ขนมใช่ไหม? 🍭', '今日はおかしもらえるよね？🍭'], ['Feliz Dia das Crianças, {n}! 🧸', 'Happy Children\'s Day, {n}! 🧸', '¡Feliz Día del Niño, {n}! 🧸', 'สุขสันต์วันเด็กนะ {n}! 🧸', 'こどもの日おめでとう、{n}！🧸'],
+ ['Parabéns, BRS48! 🎂', 'Happy birthday, BRS48! 🎂', '¡Feliz aniversario, BRS48! 🎂', 'สุขสันต์วันเกิด BRS48! 🎂', 'BRS48おめでとう！🎂'], ['Desde 13/11/2015 brilhando ✨', 'Shining since 11/13/2015 ✨', 'Brillando desde el 13/11/2015 ✨', 'เปล่งประกายตั้งแต่ 13/11/2015 ✨', '2015/11/13からキラキラ ✨'], ['Vamos cantar parabéns no palco! 🎤', 'Let\'s sing happy birthday on stage! 🎤', '¡Cantemos feliz cumpleaños en el escenario! 🎤', 'มาร้องเพลงวันเกิดบนเวทีกัน! 🎤', 'ステージでハッピーバースデーを歌おう！🎤'],
+ ['Amor Grilado!', 'Cricket Love!', '¡Amor Grillado!', 'รักจิ้งหรีด!', 'コオロギの恋！'], ['Hashire! Penguin!', 'Hashire! Penguin!', '¡Hashire! Penguin!', 'Hashire! Penguin!', '走れ！ペンギン！'],
+ ['Nível', 'Level', 'Nivel', 'เลเวล', 'レベル'], ['Próximo nível', 'Next level', 'Siguiente nivel', 'เลเวลถัดไป', '次のレベル'],
+ ['dias diferentes', 'different days', 'días distintos', 'วันที่ต่างกัน', '日'], ['corridas', 'runs', 'carreras', 'รอบ', 'ラン'], ['corações recebidos', 'hearts received', 'corazones recibidos', 'หัวใจที่ได้รับ', 'もらったハート'], ['recados', 'messages', 'mensajes', 'ข้อความ', 'メッセージ'], ['corações dados', 'hearts given', 'corazones dados', 'หัวใจที่ให้', 'あげたハート'], ['compras', 'purchases', 'compras', 'การซื้อ', '購入'],
+ ['Ai!', 'Ouch!', '¡Ay!', 'โอ๊ย!', 'いたっ！'], ['Chorinho', 'Teary', 'Lagrimita', 'น้ำตาซึม', 'うるうる'], ['Apaixonado', 'In love', 'Enamorado', 'ตกหลุมรัก', 'ラブラブ'], ['Surpresa', 'Surprise', 'Sorpresa', 'ประหลาดใจ', 'びっくり']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+if(typeof applyLang === 'function') applyLang();
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---
 

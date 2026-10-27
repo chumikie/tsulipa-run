@@ -310,8 +310,8 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfrecx{position:absolute;top:6px;right:6px;border:0;background:none;color:var(--sub);font:inherit;font-size:12px;cursor:pointer;width:22px;height:22px;border-radius:50%}
 .perfrecx:hover{background:var(--card)}
 .perfrecon{display:flex;gap:6px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--sub);font-weight:700;margin-top:8px}
-.perfbio{margin-top:16px;background:var(--chip);border-radius:14px;padding:8px 12px}
-.perfbio summary{cursor:pointer;font-weight:800;color:var(--b1);font-size:13px}
+.perfbio{margin-top:18px;background:linear-gradient(135deg,rgba(255,111,181,.1),rgba(123,63,240,.08)),var(--chip);border:2px dashed rgba(255,111,181,.7);border-radius:16px;padding:10px 12px 12px}
+.perfbio h3{margin:0 0 2px}
 .perfbio label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub);margin-top:8px}
 .perfbio select{font:inherit;font-size:13px;border-radius:8px;border:1px solid var(--sub);background:var(--card);color:var(--ink);padding:4px 6px}
 .perfbio .nick{margin:0}
@@ -326,6 +326,9 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfp .btn.alt{border-color:transparent;box-shadow:0 3px 0 rgba(91,127,166,.4)}
 .perftabs button,.petph.perfopts button,.perfroupa{background-clip:padding-box}
 .perftabs button{border:0;padding:8px 16px}
+.perfcampo{border:2px solid rgba(255,111,181,.75)!important;background:var(--card)!important;box-shadow:0 0 0 3px rgba(255,111,181,.12)}
+.perfcampo:focus{border-color:var(--b1)!important;box-shadow:0 0 0 4px rgba(123,63,240,.2);outline:none}
+.perfcampo::placeholder{color:var(--sub);opacity:.8}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -6006,7 +6009,11 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
   ['hipster',  '☕', 'Hipster',           250],
   ['rock',     '🎸', 'Rockstar',          300],
   ['decora',   '🍬', 'Decora kei',        350],
-  ['alienfan', '👽', 'Fantasia de alien', 400]
+  ['alienfan', '👽', 'Fantasia de alien', 400],
+  ['happi',     '🏮', 'Happi de Matsuri', 220],   // festival de verão japonês (happi + hachimaki)
+  ['gingham',   '🧺', 'Gingham Check',    260],   // inspirada em "Gingham Check" (AKB48)
+  ['disco',     '🥠', 'Fortune Disco',    320],   // inspirada em "Koisuru Fortune Cookie" (AKB48)
+  ['technopop', '🤖', 'Techno Pop',       380]    // inspirada no techno-pop de "Polyrhythm" (Perfume)
 ];
 var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, como conquistar]
   ['estreia',  '🎤', 'Estreia',          'Primeira corrida no ranking online'],
@@ -6022,7 +6029,18 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['estilista','🎨', 'Estilista',        'Escolheu a própria foto do perfil'],
   ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações']
 ];
-var PERF_OSHI = { tsu:['💜', 'Tsu', '#9b30d9'], lirika:['💚', 'Lirika', '#5cc72c'], pati:['💙', 'Pati', '#4169e1'], tsulipa:['💜💚💙', 'Trio TsuLiPa', '#ff6fb5'] };
+// Oshi: membros atuais do BRS48 (lista da página "Membros do BRS48" no blog, out/2026). Para atualizar, é só mexer nas listas.
+var PERF_OSHI_TIMES = [   // [nome do grupo, emoji, cor, membros]
+  ['TsuLiPa',  '💜💚💙', '#ff6fb5', ['Trio TsuLiPa']],
+  ['Team S',   '💙', '#4169e1', ['Tsu', 'Lirika', 'Pati', 'Yami', 'Miyachan', 'Hiruru', 'Bloom', 'Meichan', 'Theo', 'Fuji', 'Meru', 'Mimimila']],
+  ['Team B',   '💗', '#ff6fb5', ['Acádia', 'Yun', 'Macchan', 'Mahou', 'Natsurin', 'Yuto', 'Aki', 'Lady Nanachi', 'Corbeau', 'Maduppi', 'Maruru', 'Pudim', 'Gita', 'Yoggy']],
+  ['Team R',   '❤️', '#e0303a', ['Guies', 'Deki', 'Yukittan', 'Apollo', 'Gararingo', 'Kurara', 'Nanamaru', 'Sora', 'Kazuki', 'Toji', 'Gusy', 'Miihina', 'Z']],
+  ['Kenkyuusei e outros', '🌱', '#5cc72c', ['Henri', 'Kagami', 'Naki', 'Decchan', 'JJ', 'Maimai', 'Moerin', 'Ruo', 'Shiro', 'Stella', 'Tata', 'Thronato', 'Zoey']]
+];
+function perfSlug(n){ return String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '').slice(0, 20); }
+var PERF_OSHI = {};   // apelido sem acento → [emoji, nome, cor]
+PERF_OSHI_TIMES.forEach(function(t){ t[3].forEach(function(n){ PERF_OSHI[n === 'Trio TsuLiPa' ? 'tsulipa' : perfSlug(n)] = [t[1], n, t[2]]; }); });
+PERF_OSHI.tsu = ['💜', 'Tsu', '#9b30d9']; PERF_OSHI.lirika = ['💚', 'Lirika', '#5cc72c']; PERF_OSHI.pati = ['💙', 'Pati', '#4169e1'];   // cores oficiais do TsuLiPa
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_RANK_EMO = ['🎤', '📒', '👯', '🌟', '✨', '💎', '💖', '👑', '💫', '🎖️', '🏆', '😇'];
 var PERF_KAO = ['(｡•̀ᴗ-)✧', '(≧◡≦) ♡', 'ヽ(・∀・)ﾉ', '(◕‿◕✿)', '٩(◕‿◕｡)۶', '(๑˃ᴗ˂)ﻭ', '(*˘︶˘*).｡*♡', '☆*:.｡.o(≧▽≦)o.｡.:*☆'];
@@ -6046,13 +6064,13 @@ var PERF_DICT = {
        "Esta conta já tem um save na nuvem":"このアカウントにはクラウドのセーブがあります","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"ログインすると、この端末のセーブはクラウドのセーブに置きかわります（ペット・かべ・ルック・ミニゲームの記録）。この端末のセーブはクラウドに送られません。","USAR O SAVE DA NUVEM":"クラウドのセーブを使う","Cancelar e sair da conta":"やめてログアウト"}
 };
 var PERF_DICT2 = {   // lojinha, insígnias, oshi e frase, corações e recados
-  en: {"Brasil":"Brazil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Alien costume","Lojinha de roupas":"Outfit shop","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Outfits you can only get here. After buying, they show up under Outfit (for every character).","Vestir":"Wear","Vestindo":"Wearing","Insígnias":"Badges","Conquistada!":"Unlocked!","Bloqueada":"Locked","Center Run":"Center Run","no ranking geral":"in the overall ranking","Recados":"Messages","Deixe um recado (até 60 letras)":"Leave a message (up to 60 letters)","Enviar":"Send","Nenhum recado ainda.":"No messages yet.","Recado enviado!":"Message sent!","Essa mensagem tem palavras que não são permitidas.":"This message has words that aren't allowed.","Você já deixou um recado hoje para essa pessoa.":"You already left a message for this person today.","Essa pessoa não está recebendo recados.":"This person isn't receiving messages.","Você chegou ao limite de recados de hoje.":"You've reached today's message limit.","Entre com Google para dar coração e deixar recados.":"Sign in with Google to give hearts and leave messages.","Aceitar recados":"Accept messages","Dar coração":"Give a heart","corações":"hearts","Você deu um coração hoje!":"You gave a heart today!","Oshi":"Oshi","Sem oshi":"No oshi","Trio TsuLiPa":"TsuLiPa trio","Frase do perfil":"Profile phrase","Salvar":"Save","Salvo!":"Saved!","Editar oshi e frase":"Edit oshi and phrase","Essa frase tem palavras que não são permitidas.":"This phrase has words that aren't allowed.",
+  en: {"Happi de Matsuri":"Matsuri Happi","Gingham Check":"Gingham Check","Fortune Disco":"Fortune Disco","Techno Pop":"Techno Pop","Kenkyuusei e outros":"Kenkyuusei and others","Escreva uma frase fofa (até 60 letras)":"Write a cute phrase (up to 60 letters)","Brasil":"Brazil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Alien costume","Lojinha de roupas":"Outfit shop","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Outfits you can only get here. After buying, they show up under Outfit (for every character).","Vestir":"Wear","Vestindo":"Wearing","Insígnias":"Badges","Conquistada!":"Unlocked!","Bloqueada":"Locked","Center Run":"Center Run","no ranking geral":"in the overall ranking","Recados":"Messages","Deixe um recado (até 60 letras)":"Leave a message (up to 60 letters)","Enviar":"Send","Nenhum recado ainda.":"No messages yet.","Recado enviado!":"Message sent!","Essa mensagem tem palavras que não são permitidas.":"This message has words that aren't allowed.","Você já deixou um recado hoje para essa pessoa.":"You already left a message for this person today.","Essa pessoa não está recebendo recados.":"This person isn't receiving messages.","Você chegou ao limite de recados de hoje.":"You've reached today's message limit.","Entre com Google para dar coração e deixar recados.":"Sign in with Google to give hearts and leave messages.","Aceitar recados":"Accept messages","Dar coração":"Give a heart","corações":"hearts","Você deu um coração hoje!":"You gave a heart today!","Oshi":"Oshi","Sem oshi":"No oshi","Trio TsuLiPa":"TsuLiPa trio","Frase do perfil":"Profile phrase","Salvar":"Save","Salvo!":"Saved!","Editar oshi e frase":"Edit oshi and phrase","Essa frase tem palavras que não são permitidas.":"This phrase has words that aren't allowed.",
        "Estreia":"Debut","Maratona":"Marathon","Presença VIP":"VIP attendance","Família completa":"Full family","Pet lendário":"Legendary pet","Top 1 do camarim":"Dressing room #1","Fashionista":"Fashionista","Estilista":"Stylist","Coração de ouro":"Heart of gold","Primeira corrida no ranking online":"First run on the online ranking","100 corridas no ranking online":"100 runs on the online ranking","Correu em 7 dias diferentes":"Ran on 7 different days","Chegou a 5000 pontos":"Reached 5000 points","Chegou a 30000 pontos":"Reached 30000 points","Chegou a 50000 pontos":"Reached 50000 points","Tem Chu, Koali, Pucchi e o Meu Pet":"Has Chu, Koali, Pucchi and My Pet","Um pet chegou ao estágio Kami-Oshi":"A pet reached the Kami-Oshi stage","1º lugar em um minijogo do camarim":"1st place in a dressing room minigame","5 compras no estúdio e na lojinha":"5 purchases in the studio and shop","Escolheu a própria foto do perfil":"Picked their own profile photo","Recebeu 10 corações":"Received 10 hearts"},
-  es: {"Brasil":"Brasil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Disfraz de alien","Lojinha de roupas":"Tiendita de ropa","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Ropa que solo existe aquí. Después de comprarla, aparece en Ropa (para todos los personajes).","Vestir":"Vestir","Vestindo":"Puesto","Insígnias":"Insignias","Conquistada!":"¡Conseguida!","Bloqueada":"Bloqueada","Center Run":"Center Run","no ranking geral":"en el ranking general","Recados":"Mensajes","Deixe um recado (até 60 letras)":"Deja un mensaje (hasta 60 letras)","Enviar":"Enviar","Nenhum recado ainda.":"Aún no hay mensajes.","Recado enviado!":"¡Mensaje enviado!","Essa mensagem tem palavras que não são permitidas.":"Este mensaje tiene palabras no permitidas.","Você já deixou um recado hoje para essa pessoa.":"Ya le dejaste un mensaje hoy a esta persona.","Essa pessoa não está recebendo recados.":"Esta persona no está recibiendo mensajes.","Você chegou ao limite de recados de hoje.":"Llegaste al límite de mensajes de hoy.","Entre com Google para dar coração e deixar recados.":"Entra con Google para dar corazones y dejar mensajes.","Aceitar recados":"Aceptar mensajes","Dar coração":"Dar corazón","corações":"corazones","Você deu um coração hoje!":"¡Diste un corazón hoy!","Oshi":"Oshi","Sem oshi":"Sin oshi","Trio TsuLiPa":"Trío TsuLiPa","Frase do perfil":"Frase del perfil","Salvar":"Guardar","Salvo!":"¡Guardado!","Editar oshi e frase":"Editar oshi y frase","Essa frase tem palavras que não são permitidas.":"Esta frase tiene palabras no permitidas.",
+  es: {"Happi de Matsuri":"Happi de Matsuri","Gingham Check":"Gingham Check","Fortune Disco":"Fortune Disco","Techno Pop":"Techno Pop","Kenkyuusei e outros":"Kenkyuusei y otros","Escreva uma frase fofa (até 60 letras)":"Escribe una frase linda (hasta 60 letras)","Brasil":"Brasil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Disfraz de alien","Lojinha de roupas":"Tiendita de ropa","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Ropa que solo existe aquí. Después de comprarla, aparece en Ropa (para todos los personajes).","Vestir":"Vestir","Vestindo":"Puesto","Insígnias":"Insignias","Conquistada!":"¡Conseguida!","Bloqueada":"Bloqueada","Center Run":"Center Run","no ranking geral":"en el ranking general","Recados":"Mensajes","Deixe um recado (até 60 letras)":"Deja un mensaje (hasta 60 letras)","Enviar":"Enviar","Nenhum recado ainda.":"Aún no hay mensajes.","Recado enviado!":"¡Mensaje enviado!","Essa mensagem tem palavras que não são permitidas.":"Este mensaje tiene palabras no permitidas.","Você já deixou um recado hoje para essa pessoa.":"Ya le dejaste un mensaje hoy a esta persona.","Essa pessoa não está recebendo recados.":"Esta persona no está recibiendo mensajes.","Você chegou ao limite de recados de hoje.":"Llegaste al límite de mensajes de hoy.","Entre com Google para dar coração e deixar recados.":"Entra con Google para dar corazones y dejar mensajes.","Aceitar recados":"Aceptar mensajes","Dar coração":"Dar corazón","corações":"corazones","Você deu um coração hoje!":"¡Diste un corazón hoy!","Oshi":"Oshi","Sem oshi":"Sin oshi","Trio TsuLiPa":"Trío TsuLiPa","Frase do perfil":"Frase del perfil","Salvar":"Guardar","Salvo!":"¡Guardado!","Editar oshi e frase":"Editar oshi y frase","Essa frase tem palavras que não são permitidas.":"Esta frase tiene palabras no permitidas.",
        "Estreia":"Debut","Maratona":"Maratón","Presença VIP":"Presencia VIP","Família completa":"Familia completa","Pet lendário":"Mascota legendaria","Top 1 do camarim":"Top 1 del camerino","Fashionista":"Fashionista","Estilista":"Estilista","Coração de ouro":"Corazón de oro","Primeira corrida no ranking online":"Primera carrera en el ranking en línea","100 corridas no ranking online":"100 carreras en el ranking en línea","Correu em 7 dias diferentes":"Corrió en 7 días distintos","Chegou a 5000 pontos":"Llegó a 5000 puntos","Chegou a 30000 pontos":"Llegó a 30000 puntos","Chegou a 50000 pontos":"Llegó a 50000 puntos","Tem Chu, Koali, Pucchi e o Meu Pet":"Tiene a Chu, Koali, Pucchi y Mi Mascota","Um pet chegou ao estágio Kami-Oshi":"Una mascota llegó a la etapa Kami-Oshi","1º lugar em um minijogo do camarim":"1.er lugar en un minijuego del camerino","5 compras no estúdio e na lojinha":"5 compras en el estudio y la tiendita","Escolheu a própria foto do perfil":"Eligió su propia foto de perfil","Recebeu 10 corações":"Recibió 10 corazones"},
-  th: {"Brasil":"บราซิล","Hipster":"ฮิปสเตอร์","Rockstar":"ร็อกสตาร์","Decora kei":"เดโคระ","Fantasia de alien":"ชุดเอเลี่ยน","Lojinha de roupas":"ร้านเสื้อผ้า","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ชุดที่มีเฉพาะที่นี่ ซื้อแล้วจะอยู่ในเมนูชุด (ใช้ได้กับทุกตัวละคร)","Vestir":"สวม","Vestindo":"สวมอยู่","Insígnias":"เหรียญตรา","Conquistada!":"ปลดล็อกแล้ว!","Bloqueada":"ยังล็อกอยู่","Center Run":"Center Run","no ranking geral":"ในอันดับรวม","Recados":"ข้อความ","Deixe um recado (até 60 letras)":"ฝากข้อความ (ไม่เกิน 60 ตัวอักษร)","Enviar":"ส่ง","Nenhum recado ainda.":"ยังไม่มีข้อความ","Recado enviado!":"ส่งข้อความแล้ว!","Essa mensagem tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต","Você já deixou um recado hoje para essa pessoa.":"วันนี้คุณฝากข้อความถึงคนนี้แล้ว","Essa pessoa não está recebendo recados.":"คนนี้ปิดรับข้อความอยู่","Você chegou ao limite de recados de hoje.":"ครบจำนวนข้อความของวันนี้แล้ว","Entre com Google para dar coração e deixar recados.":"เข้าสู่ระบบด้วย Google เพื่อให้หัวใจและฝากข้อความ","Aceitar recados":"รับข้อความ","Dar coração":"ให้หัวใจ","corações":"หัวใจ","Você deu um coração hoje!":"วันนี้คุณให้หัวใจแล้ว!","Oshi":"โอชิ","Sem oshi":"ไม่มีโอชิ","Trio TsuLiPa":"ทริโอ TsuLiPa","Frase do perfil":"คำแนะนำตัว","Salvar":"บันทึก","Salvo!":"บันทึกแล้ว!","Editar oshi e frase":"แก้ไขโอชิและคำแนะนำตัว","Essa frase tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต",
+  th: {"Happi de Matsuri":"ชุดฮัปปิเทศกาล","Gingham Check":"กิงแฮมเช็ก","Fortune Disco":"ฟอร์จูนดิสโก้","Techno Pop":"เทคโนป๊อป","Kenkyuusei e outros":"เคนคิวเซย์และอื่น ๆ","Escreva uma frase fofa (até 60 letras)":"เขียนคำน่ารัก ๆ (ไม่เกิน 60 ตัวอักษร)","Brasil":"บราซิล","Hipster":"ฮิปสเตอร์","Rockstar":"ร็อกสตาร์","Decora kei":"เดโคระ","Fantasia de alien":"ชุดเอเลี่ยน","Lojinha de roupas":"ร้านเสื้อผ้า","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ชุดที่มีเฉพาะที่นี่ ซื้อแล้วจะอยู่ในเมนูชุด (ใช้ได้กับทุกตัวละคร)","Vestir":"สวม","Vestindo":"สวมอยู่","Insígnias":"เหรียญตรา","Conquistada!":"ปลดล็อกแล้ว!","Bloqueada":"ยังล็อกอยู่","Center Run":"Center Run","no ranking geral":"ในอันดับรวม","Recados":"ข้อความ","Deixe um recado (até 60 letras)":"ฝากข้อความ (ไม่เกิน 60 ตัวอักษร)","Enviar":"ส่ง","Nenhum recado ainda.":"ยังไม่มีข้อความ","Recado enviado!":"ส่งข้อความแล้ว!","Essa mensagem tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต","Você já deixou um recado hoje para essa pessoa.":"วันนี้คุณฝากข้อความถึงคนนี้แล้ว","Essa pessoa não está recebendo recados.":"คนนี้ปิดรับข้อความอยู่","Você chegou ao limite de recados de hoje.":"ครบจำนวนข้อความของวันนี้แล้ว","Entre com Google para dar coração e deixar recados.":"เข้าสู่ระบบด้วย Google เพื่อให้หัวใจและฝากข้อความ","Aceitar recados":"รับข้อความ","Dar coração":"ให้หัวใจ","corações":"หัวใจ","Você deu um coração hoje!":"วันนี้คุณให้หัวใจแล้ว!","Oshi":"โอชิ","Sem oshi":"ไม่มีโอชิ","Trio TsuLiPa":"ทริโอ TsuLiPa","Frase do perfil":"คำแนะนำตัว","Salvar":"บันทึก","Salvo!":"บันทึกแล้ว!","Editar oshi e frase":"แก้ไขโอชิและคำแนะนำตัว","Essa frase tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต",
        "Estreia":"เดบิวต์","Maratona":"มาราธอน","Presença VIP":"แขก VIP","Família completa":"ครอบครัวครบ","Pet lendário":"สัตว์เลี้ยงในตำนาน","Top 1 do camarim":"ที่ 1 ห้องแต่งตัว","Fashionista":"แฟชั่นนิสต้า","Estilista":"สไตลิสต์","Coração de ouro":"หัวใจทองคำ","Primeira corrida no ranking online":"วิ่งรอบแรกในอันดับออนไลน์","100 corridas no ranking online":"วิ่ง 100 รอบในอันดับออนไลน์","Correu em 7 dias diferentes":"วิ่งใน 7 วันที่ต่างกัน","Chegou a 5000 pontos":"ทำได้ 5000 คะแนน","Chegou a 30000 pontos":"ทำได้ 30000 คะแนน","Chegou a 50000 pontos":"ทำได้ 50000 คะแนน","Tem Chu, Koali, Pucchi e o Meu Pet":"มี Chu, Koali, Pucchi และสัตว์เลี้ยงของฉัน","Um pet chegou ao estágio Kami-Oshi":"สัตว์เลี้ยงถึงขั้นคามิโอชิ","1º lugar em um minijogo do camarim":"ที่ 1 ในมินิเกมห้องแต่งตัว","5 compras no estúdio e na lojinha":"ซื้อของ 5 ครั้งในสตูดิโอและร้าน","Escolheu a própria foto do perfil":"เลือกรูปโปรไฟล์เอง","Recebeu 10 corações":"ได้รับ 10 หัวใจ"},
-  ja: {"Brasil":"ブラジル","Hipster":"ヒップスター","Rockstar":"ロックスター","Decora kei":"デコラ系","Fantasia de alien":"エイリアンの着ぐるみ","Lojinha de roupas":"衣装ショップ","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ここだけの衣装。買うと「衣装」に追加されるよ（全キャラOK）。","Vestir":"着る","Vestindo":"着用中","Insígnias":"バッジ","Conquistada!":"ゲット！","Bloqueada":"まだロック中","Center Run":"Center Run","no ranking geral":"総合ランキング","Recados":"メッセージ","Deixe um recado (até 60 letras)":"メッセージを書く（60文字まで）","Enviar":"送る","Nenhum recado ainda.":"まだメッセージはありません。","Recado enviado!":"メッセージを送ったよ！","Essa mensagem tem palavras que não são permitidas.":"使えない言葉が入っています。","Você já deixou um recado hoje para essa pessoa.":"今日はもうこの人にメッセージを送ったよ。","Essa pessoa não está recebendo recados.":"この人はメッセージを受け付けていません。","Você chegou ao limite de recados de hoje.":"今日のメッセージ上限に達しました。","Entre com Google para dar coração e deixar recados.":"Googleでログインするとハートとメッセージを送れるよ。","Aceitar recados":"メッセージを受け付ける","Dar coração":"ハートを送る","corações":"ハート","Você deu um coração hoje!":"今日はハートを送ったよ！","Oshi":"推し","Sem oshi":"推しなし","Trio TsuLiPa":"TsuLiPa箱推し","Frase do perfil":"ひとこと","Salvar":"保存","Salvo!":"保存したよ！","Editar oshi e frase":"推しとひとことを編集","Essa frase tem palavras que não são permitidas.":"使えない言葉が入っています。",
+  ja: {"Happi de Matsuri":"お祭りはっぴ","Gingham Check":"ギンガムチェック","Fortune Disco":"フォーチュンディスコ","Techno Pop":"テクノポップ","Kenkyuusei e outros":"研究生ほか","Escreva uma frase fofa (até 60 letras)":"かわいいひとことを書いてね（60文字まで）","Brasil":"ブラジル","Hipster":"ヒップスター","Rockstar":"ロックスター","Decora kei":"デコラ系","Fantasia de alien":"エイリアンの着ぐるみ","Lojinha de roupas":"衣装ショップ","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ここだけの衣装。買うと「衣装」に追加されるよ（全キャラOK）。","Vestir":"着る","Vestindo":"着用中","Insígnias":"バッジ","Conquistada!":"ゲット！","Bloqueada":"まだロック中","Center Run":"Center Run","no ranking geral":"総合ランキング","Recados":"メッセージ","Deixe um recado (até 60 letras)":"メッセージを書く（60文字まで）","Enviar":"送る","Nenhum recado ainda.":"まだメッセージはありません。","Recado enviado!":"メッセージを送ったよ！","Essa mensagem tem palavras que não são permitidas.":"使えない言葉が入っています。","Você já deixou um recado hoje para essa pessoa.":"今日はもうこの人にメッセージを送ったよ。","Essa pessoa não está recebendo recados.":"この人はメッセージを受け付けていません。","Você chegou ao limite de recados de hoje.":"今日のメッセージ上限に達しました。","Entre com Google para dar coração e deixar recados.":"Googleでログインするとハートとメッセージを送れるよ。","Aceitar recados":"メッセージを受け付ける","Dar coração":"ハートを送る","corações":"ハート","Você deu um coração hoje!":"今日はハートを送ったよ！","Oshi":"推し","Sem oshi":"推しなし","Trio TsuLiPa":"TsuLiPa箱推し","Frase do perfil":"ひとこと","Salvar":"保存","Salvo!":"保存したよ！","Editar oshi e frase":"推しとひとことを編集","Essa frase tem palavras que não são permitidas.":"使えない言葉が入っています。",
        "Estreia":"デビュー","Maratona":"マラソン","Presença VIP":"VIP皆勤","Família completa":"ペット大家族","Pet lendário":"伝説のペット","Top 1 do camarim":"楽屋No.1","Fashionista":"ファッショニスタ","Estilista":"スタイリスト","Coração de ouro":"黄金のハート","Primeira corrida no ranking online":"オンラインランキングで初ラン","100 corridas no ranking online":"オンラインランキングで100ラン","Correu em 7 dias diferentes":"7日間ちがう日にラン","Chegou a 5000 pontos":"5000点に到達","Chegou a 30000 pontos":"30000点に到達","Chegou a 50000 pontos":"50000点に到達","Tem Chu, Koali, Pucchi e o Meu Pet":"Chu・Koali・Pucchi・マイペットがそろった","Um pet chegou ao estágio Kami-Oshi":"ペットが神推しステージに到達","1º lugar em um minijogo do camarim":"楽屋ミニゲームで1位","5 compras no estúdio e na lojinha":"スタジオとショップで5回お買いもの","Escolheu a própria foto do perfil":"プロフィール写真を自分で選んだ","Recebeu 10 corações":"ハートを10個もらった"}
 };
 [PERF_DICT, PERF_DICT2].forEach(function(D){ Object.keys(D).forEach(function(l){ if(DICT[l]) Object.keys(D[l]).forEach(function(k){ DICT[l][k] = D[l][k]; }); }); });
@@ -6088,7 +6106,7 @@ function perfAvAtual(extra){   // o seu Idol de agora (personagem 3, com o Item 
 }
 
 // ---------- Lojinha: as roupas exclusivas (desenhadas pelo drawChar) ----------
-var perfAntena = false;   // a fantasia de alien desenha as anteninhas depois do rosto
+var perfAntena = '';   // roupa que desenha algo depois do rosto: 'alien' (anteninhas) ou 'hachi' (faixa do happi)
 function perfLojaInfo(k){ if(!PERF_LOJA || !k) return null;   // o drawChar pode rodar antes deste módulo carregar
   for(var i = 0; i < PERF_LOJA.length; i++) if(PERF_LOJA[i][0] === k) return PERF_LOJA[i]; return null; }
 // Chamada dentro do drawChar, na lista das roupas. Devolve true se a roupa é da lojinha (e desenha).
@@ -6131,7 +6149,41 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle = '#d7dbe4'; g.fillRect(x + 9, y + 22, 12, 1.6);
     g.fillStyle = '#7dd3fc'; E(x + 15, y + 28.4, 2.2, 1.6); g.fillStyle = '#9ca3af'; E(x + 15, y + 29.6, 4.4, 1.3);
     g.fillStyle = '#ffe14d'; g.fillRect(x + 12.4, y + 29.3, .8, .8); g.fillRect(x + 16.8, y + 29.3, .8, .8);
-    perfAntena = true;
+    perfAntena = 'alien';
+  } else if(roupa === 'happi'){   // happi azul-índigo com gola branca, faixa (na cor escolhida) e ondinhas na barra
+    g.fillStyle = '#1e3a8a'; g.fillRect(x + 4, y + 22, 22, 14);
+    g.fillStyle = '#fff'; T([x + 8, y + 22, x + 11, y + 22, x + 15, y + 30, x + 13, y + 30]); T([x + 22, y + 22, x + 19, y + 22, x + 15, y + 30, x + 17, y + 30]);
+    g.fillStyle = branco ? '#e0303a' : cor; g.fillRect(x + 4, y + 29.5, 22, 2.4);
+    g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = .7;
+    for(i = 0; i < 4; i++){ g.beginPath(); g.arc(x + 7 + i * 5.3, y + 35.5, 2.2, Math.PI, 0); g.stroke(); }
+    g.fillStyle = '#f8fafc'; g.fillRect(x + 7, y + 36, 16, 2);
+    perfAntena = 'hachi';
+  } else if(roupa === 'gingham'){   // camisa xadrez vichy (na cor escolhida), gravatinha, suspensórios e bermuda
+    var gc = branco ? '#e0303a' : cor;
+    g.fillStyle = '#fff'; g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = perfRgba(gc, .45); for(i = 0; i < 6; i++){ g.fillRect(x + 4 + i * 4, y + 22, 2, 11); g.fillRect(x + 4, y + 22.5 + i * 2, 22, 1); }
+    g.fillStyle = '#fff'; T([x + 10, y + 22, x + 15, y + 22, x + 12.5, y + 25]); T([x + 20, y + 22, x + 15, y + 22, x + 17.5, y + 25]);
+    g.fillStyle = '#1b2a5e'; g.fillRect(x + 8, y + 22, 1.6, 11); g.fillRect(x + 20.4, y + 22, 1.6, 11);
+    T([x + 15, y + 24, x + 12.5, y + 22.8, x + 12.5, y + 25.2]); T([x + 15, y + 24, x + 17.5, y + 22.8, x + 17.5, y + 25.2]);
+    g.fillRect(x + 6, y + 32, 18, 5.5); g.fillStyle = '#2a3f8a'; g.fillRect(x + 6, y + 36.3, 18, 1.2);
+  } else if(roupa === 'disco'){   // colete dourado de lantejoulas, golão branco e calça boca de sino (na cor escolhida)
+    g.fillStyle = '#fff'; g.fillRect(x + 8, y + 22, 14, 10);
+    g.fillStyle = '#f5b400'; g.fillRect(x + 4, y + 22, 6, 11); g.fillRect(x + 20, y + 22, 6, 11);
+    g.fillStyle = '#fff3a8'; for(i = 0; i < 4; i++){ g.fillRect(x + 5 + (i % 2) * 2, y + 23.5 + i * 2.4, 1, 1); g.fillRect(x + 22 + (i % 2) * 2, y + 24.5 + i * 2.4, 1, 1); }
+    g.fillStyle = '#fff'; T([x + 9, y + 22, x + 15, y + 23, x + 9, y + 27]); T([x + 21, y + 22, x + 15, y + 23, x + 21, y + 27]);
+    g.fillStyle = '#ff6fb5'; E(x + 15, y + 26, 1.4, 1.4); g.fillStyle = '#4dd8ff'; E(x + 15, y + 29, 1.2, 1.2);
+    g.fillStyle = branco ? '#ff6fb5' : cor;
+    T([x + 6, y + 32, x + 15, y + 32, x + 14.5, y + 42, x + 3.5, y + 42]); T([x + 15, y + 32, x + 24, y + 32, x + 26.5, y + 42, x + 15.5, y + 42]);
+    g.fillStyle = '#ffe14d'; g.fillRect(x + 6, y + 31.6, 18, 1.4);
+  } else if(roupa === 'technopop'){   // jaqueta prateada com linhas de neon (na cor escolhida) e calça preta
+    var nc = branco ? '#4dd8ff' : cor;
+    var mg = g.createLinearGradient(0, y + 22, 0, y + 34); mg.addColorStop(0, '#f1f5f9'); mg.addColorStop(1, '#94a3b8');
+    g.fillStyle = mg; g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = '#1f2937'; T([x + 11, y + 22, x + 19, y + 22, x + 15, y + 29]);
+    g.strokeStyle = nc; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 5, y + 31); g.lineTo(x + 11, y + 25); g.moveTo(x + 25, y + 31); g.lineTo(x + 19, y + 25); g.moveTo(x + 4, y + 33); g.lineTo(x + 26, y + 33); g.stroke();
+    g.fillStyle = '#ff6fb5'; g.fillRect(x + 22, y + 23.5, 2, 2);
+    g.fillStyle = '#111827'; g.fillRect(x + 7, y + 33, 16, 8);
+    g.fillStyle = nc; g.fillRect(x + 7, y + 33.5, 1, 7.5); g.fillRect(x + 22, y + 33.5, 1, 7.5);
   }
   return true;
 }
@@ -6272,7 +6324,7 @@ function perfCharContorno(x, tx, ty, sc, desenha){
   var og = g, cx2 = cv.getContext('2d');
   cx2.setTransform(1, 0, 0, 1, 0, 0); cx2.clearRect(0, 0, w, h);
   try{ g = cx2; g.save(); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); g.restore(); }
-  finally{ g = og; charPose = ''; perfAntena = false; }
+  finally{ g = og; charPose = ''; perfAntena = ''; }
   x.save();
   x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
@@ -6348,7 +6400,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
     var pose = perfPoseInfo(av.pose) ? av.pose : '';
     perfCharContorno(x, tx, ty + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
   } finally {
-    state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = false;
+    state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = '';
   }
   if(pet){   // o pet ao lado, flutuando
     var ps = sc * .62, px = cx + 30 * sc, py = chao - 20 * sc;
@@ -6393,11 +6445,17 @@ function perfPoseAtras(c, x, y){
   return true;
 }
 // Parte da frente (depois do rosto): chamada no fim do drawChar (poses e anteninhas da fantasia de alien)
+function perfTri(a, b, c2, d, e, f){ g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.lineTo(e, f); g.closePath(); g.fill(); }
 function perfPoseFrente(c, x, y){
   var p = charPose, ant = perfAntena; perfAntena = false;
   if(p !== 'mic' && p !== 'nyan' && !ant) return;
   g.save(); g.translate(0, 4);   // o rosto do drawChar fica 4 px acima; aqui volta para a mesma régua dos braços
-  if(ant){   // tiara de anteninhas
+  if(ant === 'hachi'){   // hachimaki (faixa de festival) na testa
+    g.fillStyle = '#fff'; g.fillRect(x + 3, y + 3, 24, 2.6);
+    g.fillStyle = '#e0303a'; g.beginPath(); g.arc(x + 15, y + 4.3, 1.4, 0, 7); g.fill();
+    g.fillStyle = '#fff'; perfTri(x + 27, y + 3.4, x + 31, y + 1.5, x + 30.5, y + 4.5); perfTri(x + 27, y + 4.6, x + 31, y + 6.5, x + 29.5, y + 3.8);
+  }
+  if(ant === 'alien'){   // tiara de anteninhas
     g.strokeStyle = '#3f6212'; g.lineWidth = 1.3; g.lineCap = 'round';
     g.beginPath(); g.moveTo(x + 10, y - 2); g.lineTo(x + 7, y - 11); g.moveTo(x + 20, y - 2); g.lineTo(x + 23, y - 11); g.stroke();
     g.fillStyle = '#b6ff3b'; g.beginPath(); g.arc(x + 7, y - 12, 2.2, 0, 7); g.arc(x + 23, y - 12, 2.2, 0, 7); g.fill();
@@ -6599,7 +6657,7 @@ function perfRecadosHtml(d, meu){
     if(!d.recados_on) h += '<p class="perfcarr">' + escHtml(tr('Essa pessoa não está recebendo recados.')) + '</p>';
     else if(!contaJ) h += '<p class="perfcarr">' + escHtml(tr('Entre com Google para dar coração e deixar recados.')) + '</p>';
     else if(d.recado_hoje) h += '<p class="perfcarr">💌 ' + escHtml(tr('Você já deixou um recado hoje para essa pessoa.')) + '</p>';
-    else h += '<div class="perfrecform"><input class="nick" id="perfRecTxt" maxlength="60" autocomplete="off" placeholder="' + escHtml(tr('Deixe um recado (até 60 letras)')) + '"><button type="button" class="btn" id="perfRecOk">💌 ' + escHtml(tr('Enviar')) + '</button></div>';
+    else h += '<div class="perfrecform"><input class="nick perfcampo" id="perfRecTxt" maxlength="60" autocomplete="off" placeholder="' + escHtml(tr('Deixe um recado (até 60 letras)')) + '"><button type="button" class="btn" id="perfRecOk">💌 ' + escHtml(tr('Enviar')) + '</button></div>';
   }
   h += '<p class="perfmsg" id="perfRecMsg" hidden></p>';
   h += L.length ? '<ul class="perfrecs">' + L.map(function(r){
@@ -6636,11 +6694,16 @@ perfOv.addEventListener('change', function(e){
 
 // ---------- Oshi e frase do perfil ----------
 function perfBioHtml(d){
-  var op = [['', 'Sem oshi']].concat(Object.keys(PERF_OSHI).map(function(k){ return [k, PERF_OSHI[k][0] + ' ' + tr(PERF_OSHI[k][1])]; }));
-  return '<details class="perfbio"' + (d.frase || d.oshi ? '' : ' open') + '><summary>✏️ ' + escHtml(tr('Editar oshi e frase')) + '</summary>' +
-    '<label>' + escHtml(tr('Oshi')) + ' <select id="perfBioOshi">' + op.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === (d.oshi || '') ? ' selected' : '') + '>' + escHtml(o[0] ? o[1] : tr(o[1])) + '</option>'; }).join('') + '</select></label>' +
-    '<label>' + escHtml(tr('Frase do perfil')) + ' <input class="nick" id="perfBioFrase" maxlength="60" autocomplete="off" value="' + escHtml(d.frase || '') + '"></label>' +
-    '<p class="perfmsg" id="perfBioMsg" hidden></p><div class="btns"><button type="button" class="btn" id="perfBioOk">' + escHtml(tr('Salvar')) + '</button></div></details>';
+  var cur = d.oshi || '';
+  var sel2 = '<option value=""' + (cur ? '' : ' selected') + '>' + escHtml(tr('Sem oshi')) + '</option>' + PERF_OSHI_TIMES.map(function(t){
+    return '<optgroup label="' + escHtml(t[1] + ' ' + tr(t[0])) + '">' + t[3].map(function(n){
+      var k = n === 'Trio TsuLiPa' ? 'tsulipa' : perfSlug(n), o = PERF_OSHI[k];
+      return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + o[0] + ' ' + escHtml(tr(n)) + '</option>'; }).join('') + '</optgroup>';
+  }).join('');
+  return '<div class="perfbio"><h3>✏️ ' + escHtml(tr('Editar oshi e frase')) + '</h3>' +
+    '<label>' + escHtml(tr('Oshi')) + ' <select id="perfBioOshi">' + sel2 + '</select></label>' +
+    '<label>' + escHtml(tr('Frase do perfil')) + ' <input class="nick perfcampo" id="perfBioFrase" maxlength="60" autocomplete="off" placeholder="✨ ' + escHtml(tr('Escreva uma frase fofa (até 60 letras)')) + '" value="' + escHtml(d.frase || '') + '"></label>' +
+    '<p class="perfmsg" id="perfBioMsg" hidden></p><div class="btns"><button type="button" class="btn" id="perfBioOk">' + escHtml(tr('Salvar')) + '</button></div></div>';
 }
 perfOv.addEventListener('click', function(e){
   if(e.target.id !== 'perfBioOk') return;

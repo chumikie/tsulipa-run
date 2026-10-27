@@ -541,6 +541,35 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .duoavisoov .panel.duoavisop{background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5)!important;color:#fff}
 .duoavisoov .duoavisop .btn.alt{color:#4b2a9a}
 .hublogo span{text-shadow:none}.hublogo{filter:drop-shadow(0 3px 6px rgba(44,26,143,.35))}
+/* Moon⭐Duo! organizado em abas */
+.duoacoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.duoacoes .btn{margin:0;text-align:center;text-decoration:none;padding:10px 8px;font-size:14px}
+.duotabs{position:sticky;top:-16px;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:12px 0 10px;padding:4px;border-radius:16px;background:var(--chip);box-shadow:0 2px 0 rgba(44,26,143,.12)}
+.duotabs button{border:0;border-radius:12px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer;white-space:nowrap}
+.duotabs button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;box-shadow:0 3px 8px rgba(123,63,240,.3)}
+.duotabc h4{margin:12px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.duogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.duogrid.thumbs{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.duocard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:76px;padding:8px 6px;border:2px solid transparent;border-radius:16px;font:inherit;color:var(--ink);background:var(--chip);cursor:pointer;transition:transform .12s}
+.duocard i{font-style:normal;font-size:26px;line-height:1}
+.duocard span{font-size:12px;font-weight:800;line-height:1.2;text-align:center}
+.duocard canvas{width:100%;height:auto;border-radius:10px;display:block}
+.duocard:hover{transform:translateY(-2px)}
+.duocard[aria-pressed="true"]{border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.25)}
+.duocard.trava{opacity:.55}.duocard.trava:hover{opacity:.85}
+.duopreco{position:absolute;top:4px;right:4px;font-style:normal;font-size:10px;font-weight:900;padding:2px 6px;border-radius:99px;background:rgba(123,63,240,.9);color:#fff}
+.duoexrow{margin:6px 0 12px}.duoexrow b{display:block;font-size:13px;color:var(--b1);margin-bottom:6px}.duoexrow small{display:block;margin-top:4px;font-size:12px;color:var(--sub)}
+.duoexbtns,.duopresemo{display:flex;flex-wrap:wrap;gap:8px}
+.duoexb{position:relative;width:46px;height:46px;border:2px solid transparent;border-radius:50%;font-size:24px;line-height:1;background:var(--chip);cursor:pointer;padding:0}
+.duoexb[aria-pressed="true"]{border-color:#ff6fb5;background:linear-gradient(135deg,rgba(123,63,240,.25),rgba(255,111,181,.25))}
+.duoexb.trava{opacity:.5}.duoexb em{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:12px}
+.duoseg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;border-radius:14px;background:var(--chip)}
+.duoseg button{border:0;border-radius:10px;padding:8px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer}
+.duoseg button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
+.duotabc .duopres,.duotabc>b{display:block}
+.duoresumo{margin:2px 0;font-size:13px;color:var(--ink)}
+#duoTabC>b{margin-bottom:8px;color:var(--b1)}
+.duotrava{margin-bottom:8px}
+.duotrava[hidden],#duoPresBox[hidden]{display:none!important}.duotabc{text-align:left}.duotabc .duoexrow small{text-align:left}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -8847,11 +8876,9 @@ duoOv.innerHTML = '<div class="panel duop" role="dialog" aria-modal="true" aria-
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
     '<canvas id="duoCv" width="960" height="600"></canvas><p class="duodica" id="duoDica"></p>' +
-    '<div class="duogrp"><b id="duoCenaT"></b><div class="duochips" id="duoCenas"></div></div>' +
-    '<div class="duogrp"><b id="duoFundoT"></b><div class="duochips" id="duoFundos"></div></div>' +
-    '<div class="duogrp duoex"><div><b id="duoExEuT"></b><div class="duochips" id="duoExEu"></div></div><div><b id="duoExGuT"></b><div class="duochips" id="duoExGu"></div></div></div>' +
-    '<div class="btns duobtns"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button type="button" class="btn alt" id="duoPres"></button></div>' +
-    '<div class="duopres" id="duoPresBox" hidden></div><p class="perfmsg" id="duoMsg" hidden></p>' +
+    '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a></div>' +
+    '<p class="perfmsg" id="duoMsg" hidden></p>' +
+    '<div class="duotabs" role="tablist" id="duoTabs"></div><div class="duopres duotrava" id="duoPresBox" hidden></div><div class="duotabc" id="duoTabC"></div>' +
   '</div></div>';
 document.body.appendChild(duoOv);
 
@@ -9030,9 +9057,7 @@ function duoLoop(){
 function duoTexto(){
   $('duoSub').textContent = tr('Monte cenas fofas com outro Idol do TsuLiPa⭐World!');
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
-  $('duoCenaT').textContent = '🎬 ' + tr('Cena'); $('duoFundoT').textContent = '🏞️ ' + tr('Cenário');
-  $('duoExEuT').textContent = '😊 ' + tr('Minha expressão');
-  $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo'); $('duoPres').textContent = '🎁 ' + tr('Enviar presente');
+  $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
 }
 function duoTrava(attr, o){   // chave da lojinha que falta para usar este chip ('' = liberado)
   var k = attr === 'data-dcena' ? (o[7] || '') : attr === 'data-dfundo' ? (o[0] === 'cafe' ? 'duo_cafe' : lojaItem('fundo_' + o[0]) ? 'fundo_' + o[0] : '') : (attr === 'data-dexeu' || attr === 'data-dexgu') && lojaItem('expr_' + o[0]) ? 'expr_' + o[0] : '';
@@ -9049,12 +9074,7 @@ function duoPalcoUI(){
   $('duoEscolha').hidden = true; $('duoPalco').hidden = false; duoTexto();
   $('duoNomes').innerHTML = '🌙 <b>' + escHtml(contaJ ? contaJ.nick : tr('Você')) + '</b> × <b>' + escHtml(duoGu.nick) + '</b>';
   $('duoDica').textContent = '👆 ' + tr('Toque em {nick} para ouvir uma mensagem!').replace('{nick}', duoGu.nick);
-  $('duoExGuT').textContent = '😊 ' + tr('Expressão de {nick}').replace('{nick}', duoGu.nick);
-  $('duoCenas').innerHTML = duoChips(DUO_CENAS, duoCena, 'data-dcena');
-  $('duoFundos').innerHTML = duoChips(duoFundos(), duoFundo, 'data-dfundo');
-  $('duoExEu').innerHTML = duoChips(PET_PH_EXPRS, duoExEu, 'data-dexeu');
-  $('duoExGu').innerHTML = duoChips(PET_PH_EXPRS, duoExGu, 'data-dexgu');
-  $('duoPresBox').hidden = true;
+  duoTabUI();
   if(!duoAnim) duoAnim = requestAnimationFrame(duoLoop);
 }
 function duoEscolhaUI(msg){
@@ -9107,11 +9127,47 @@ $('duoCv').addEventListener('click', function(e){
   if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
   else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
 });
+// ---------- Painel organizado em abas: Cena · Cenário · Expressões · Presente ----------
+var duoTab = 'cena';
+function duoCard(o, sel, attr, thumb){
+  var tv = duoTrava(attr, o), it = tv && lojaItem(tv);
+  return '<button type="button" class="duocard' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + escHtml(o[0]) + '"') + ' aria-pressed="' + (!tv && o[0] === sel) + '">' +
+    (thumb ? '<canvas width="160" height="100" data-dthumb="' + escHtml(o[0]) + '" aria-hidden="true"></canvas>' : '<i aria-hidden="true">' + o[1] + '</i>') +
+    '<span>' + (thumb ? o[1] + ' ' : '') + escHtml(tr(o[2])) + '</span>' + (tv ? '<em class="duopreco">🔒 ★' + it[3] + '</em>' : '') + '</button>';
+}
+function duoCards(lista, sel, attr, thumb){
+  var livres = lista.filter(function(o){ return !duoTrava(attr, o); }), travados = lista.filter(function(o){ return duoTrava(attr, o); });   // travados vão para o fim
+  return '<div class="duogrid' + (thumb ? ' thumbs' : '') + '">' + livres.concat(travados).map(function(o){ return duoCard(o, sel, attr, thumb); }).join('') + '</div>';
+}
+function duoExRow(nome, sel, attr){
+  return '<div class="duoexrow"><b>' + escHtml(nome) + '</b><div class="duoexbtns">' + PET_PH_EXPRS.map(function(o){
+    var tv = duoTrava(attr, o), it = tv && lojaItem(tv);
+    return '<button type="button" class="duoexb' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + o[0] + '"') + ' aria-pressed="' + (!tv && o[0] === sel) + '" title="' + escHtml(tr(o[2]) + (tv ? ' · ★' + it[3] : '')) + '" aria-label="' + escHtml(tr(o[2])) + '">' + o[1] + (tv ? '<em>🔒</em>' : '') + '</button>';
+  }).join('') + '</div><small>' + escHtml(tr((PET_PH_EXPRS.filter(function(o){ return o[0] === sel; })[0] || PET_PH_EXPRS[0])[2])) + '</small></div>';
+}
+function duoTabUI(){
+  var tabs = [['cena', '🎬', 'Cena'], ['fundo', '🏞️', 'Cenário'], ['expr', '😊', 'Expressões'], ['pres', '🎁', 'Presente']];
+  $('duoTabs').innerHTML = tabs.map(function(t){ return '<button type="button" role="tab" data-dtab="' + t[0] + '" aria-pressed="' + (duoTab === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span> ' + escHtml(tr(t[2])) + '</button>'; }).join('');
+  var c = $('duoTabC'), h = '';
+  if(duoTab === 'cena') h = duoCards(DUO_CENAS, duoCena, 'data-dcena');
+  else if(duoTab === 'fundo'){
+    var perf = PERF_FUNDOS.filter(function(o){ return o[0] && o[0] !== 'temporada'; }), temas = [];
+    Object.keys(TEMA_INFO).forEach(function(k){ if(k !== 'halloween') temas.push([k, TEMA_INFO[k][0], TEMA_INFO[k][1]]); });
+    h = '<h4>' + escHtml(tr('Do perfil')) + '</h4>' + duoCards(perf, duoFundo, 'data-dfundo', true) +
+        '<h4>' + escHtml(tr('Temas')) + '</h4>' + duoCards(temas, duoFundo, 'data-dfundo', true) +
+        '<h4>' + escHtml(tr('Especiais')) + '</h4>' + duoCards(DUO_FUNDO_EXTRA, duoFundo, 'data-dfundo', true);
+  }
+  else if(duoTab === 'expr') h = duoExRow(contaJ ? contaJ.nick : tr('Você'), duoExEu, 'data-dexeu') + duoExRow(duoGu.nick, duoExGu, 'data-dexgu');
+  c.innerHTML = h;
+  if(duoTab === 'pres') duoPresUI();
+  if(duoTab === 'fundo'){ var cor = perfChar(duoMeuAv()).hair; [].forEach.call(c.querySelectorAll('canvas[data-dthumb]'), function(cv){ try{ duoFundoDesenhar(cv.getContext('2d'), 160, 100, cv.dataset.dthumb, 40, cor); }catch(e){} }); }
+}
 function duoPresUI(){
-  var box = $('duoPresBox');
+  var box = $('duoTabC'); if(duoTab !== 'pres') return;
   box.innerHTML = '<b>🎁 ' + escHtml(tr('Presente para {nick}').replace('{nick}', duoGu.nick)) + '</b>' +
-    '<div class="duochips">' + DUO_PRES_EMO.map(function(m){ return '<button type="button" class="duochip" data-demo="' + m + '" aria-pressed="' + (m === duoPresEmo) + '"><span>' + m + '</span></button>'; }).join('') + '</div>' +
-    '<div class="duochips">' + [0, 10, 30, 50].map(function(n){ return '<button type="button" class="duochip" data-dqt="' + n + '" aria-pressed="' + (n === duoPresQt) + '">' + (n ? '★' + n : escHtml(tr('Só carinho'))) + '</button>'; }).join('') + '</div>' +
+    '<div class="duopresemo">' + DUO_PRES_EMO.map(function(m){ return '<button type="button" class="duoexb" data-demo="' + m + '" aria-pressed="' + (m === duoPresEmo) + '">' + m + '</button>'; }).join('') + '</div>' +
+    '<div class="duoseg">' + [0, 10, 30, 50].map(function(n){ return '<button type="button" data-dqt="' + n + '" aria-pressed="' + (n === duoPresQt) + '">' + (n ? '★' + n : escHtml(tr('Só carinho'))) + '</button>'; }).join('') + '</div>' +
+    '<p class="duoresumo">' + escHtml(tr('Você vai enviar')) + ' <b>' + duoPresEmo + (duoPresQt ? ' + ★' + duoPresQt : '') + '</b> · ' + escHtml(tr('seu saldo')) + ' ★' + starT + '</p>' +
     '<small>' + escHtml(tr('As estrelas saem do seu saldo. 1 presente por pessoa por dia.')) + '</small>' +
     '<div class="btns"><button type="button" class="btn" id="duoPresOk">' + escHtml(tr('Enviar')) + ' ' + duoPresEmo + '</button></div>';
 }
@@ -9129,7 +9185,7 @@ duoOv.addEventListener('click', function(e){
   if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; duoPalcoUI(); beep(988, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dexeu]'))){ duoExEu = b.dataset.dexeu; duoPalcoUI(); return; }
   if((b = t.closest('[data-dexgu]'))){ duoExGu = b.dataset.dexgu; duoPalcoUI(); return; }
-  if(t.id === 'duoPres'){ var bx = $('duoPresBox'); bx.hidden = !bx.hidden; if(!bx.hidden) duoPresUI(); return; }
+  if((b = t.closest('[data-dtab]'))){ duoTab = b.dataset.dtab; $('duoPresBox').hidden = true; duoTabUI(); beep(880, .04, 'triangle', .04); return; }
   if((b = t.closest('[data-demo]'))){ duoPresEmo = b.dataset.demo; duoPresUI(); return; }
   if((b = t.closest('[data-dqt]'))){ duoPresQt = +b.dataset.dqt; duoPresUI(); return; }
   if(t.id === 'duoPresOk'){
@@ -9138,7 +9194,7 @@ duoOv.addEventListener('click', function(e){
       t.disabled = false;
       if(r && r.ok){
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(er){} setBest(); }
-        $('duoPresBox').hidden = true; duoMsg(duoPresEmo + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', duoGu.nick));
+        duoTab = 'cena'; duoTabUI(); duoMsg(duoPresEmo + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', duoGu.nick));
         duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', duoPresEmo), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
         [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .14, 'triangle', .04, i * .08); });
       } else duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
@@ -9580,6 +9636,8 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+ ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'], ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'], ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
+ ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'], ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'], ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの'], ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
  ['Limpar foto', 'Clear photo', 'Borrar foto', 'ล้างรูป', '写真をリセット'], ['Tirar do Moon⭐Duo!/outdoors', 'Remove from Moon⭐Duo!/billboards', 'Quitar de Moon⭐Duo!/carteles', 'เอาออกจาก Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板から外す'],
  ['Devolver ao Moon⭐Duo!/outdoors', 'Return to Moon⭐Duo!/billboards', 'Devolver a Moon⭐Duo!/carteles', 'คืนสู่ Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板に戻す'], ['Hoje no jogo', 'Today in the game', 'Hoy en el juego', 'วันนี้ในเกม', '今日のゲーム'],
  ['Corridas', 'Runs', 'Carreras', 'รอบวิ่ง', 'ラン'], ['Jogadores', 'Players', 'Jugadores', 'ผู้เล่น', 'プレイヤー'], ['Giros no Star⭐Gacha!', 'Star⭐Gacha! spins', 'Giros en Star⭐Gacha!', 'หมุน Star⭐Gacha!', 'Star⭐Gacha!の回数'],

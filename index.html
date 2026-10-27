@@ -550,7 +550,7 @@ var CH=[
   {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',outcol:'#ffffff',hat:''},
-  {n:'Você',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',outcol:'#ffffff',hat:''}
+  {n:'Idol',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',outcol:'#ffffff',hat:''}
 ];
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
@@ -674,6 +674,7 @@ try {
   }
   CU.img = CU.hair;
 } catch(e) {}
+CU.n = 'Idol';   // personagem 3: "Idol" (antes "Você")
 
 try {
   var sh = JSON.parse(localStorage.getItem('brs48cr_ch2') || 'null');
@@ -1740,7 +1741,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(charPose) petPoseArms(c, x, y); else { g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }
+  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }   // com pose, os braços vêm depois das roupas (V2.1.2)
 
   // Mangas bufantes por cima dos braços
   if(roupa === 'sweet' || roupa === 'zipper'){
@@ -1756,6 +1757,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(OF===5){g.fillStyle=PX?OUT[0]:'#fffdf2';T([x+4,y+22,x+26,y+22,x+30,y+42,x,y+42]);g.fillStyle='#ffd23f';g.fillRect(x+13,y+22,4,20);g.fillRect(x,y+40,30,2);g.fillStyle='rgba(255,226,140,'+(.5+.4*Math.sin(frame*.2))+')';g.fillRect(x+7,y+29,2,2);g.fillRect(x+22,y+34,2,2);g.fillRect(x+10,y+38,2,2)}
   
   if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
+  if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); }   // pose da Foto 2.0 por cima da roupa e da faixa
   g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
   
   if(d==='gato'){g.fillStyle=H;T([x+3,y+9,x+6,y-4,x+13,y+4]);T([x+27,y+9,x+24,y-4,x+17,y+4]);g.fillStyle='rgba(255,150,190,.8)';T([x+6,y+6,x+7,y,x+10,y+4]);T([x+24,y+6,x+23,y,x+20,y+4])}
@@ -2330,7 +2332,7 @@ g=x2;g.save();
     // Textos informativos do Pôster de Fim de Jogo
     var t = typeof tr === 'function' ? tr : function(w){return w;};
     x2.textAlign='center';x2.shadowColor='rgba(0,0,0,.5)';x2.shadowBlur=12;x2.fillStyle='#fff';
-    x2.font='800 36px "M PLUS Rounded 1c",sans-serif';x2.fillText('TsuLiPa⭐World · Center⭐Run!',300,55);
+    var ttl='TsuLiPa⭐World · Center⭐Run!',tfs=36;do{x2.font='800 '+tfs+'px "M PLUS Rounded 1c",sans-serif';tfs--}while(x2.measureText(ttl).width>500&&tfs>20);x2.fillText(ttl,300,64);
     x2.font='400 16px "M PLUS Rounded 1c",sans-serif';x2.fillStyle='#ff9ccd';x2.fillText('センターラン',300,95);
     
     x2.fillStyle='#fff';x2.font='700 38px "M PLUS Rounded 1c",sans-serif';x2.fillText(nick||t('Anônimo'),300,130);
@@ -2343,7 +2345,7 @@ g=x2;g.save();
     
     // Texto de rodapé seguro dentro da margem inferior da imagem
     x2.shadowBlur=0;x2.fillStyle='rgba(255,255,255,.9)';x2.font='700 16px "M PLUS Rounded 1c",sans-serif';
-    x2.fillText(t('Jogue também e entre no ranking!'),300,H2-35);
+    x2.fillText(t('Jogue também e entre no ranking!'),300,H2-44);
     petShareMoldura(x2, W2, H2);   // moldura na cor do Oshi + data (V2.1.2)
   
   return c2.toDataURL('image/png');
@@ -3601,7 +3603,7 @@ function petMakePhoto(){
   petPhFrameDraw(x, W2, H2, 'topo');   // selo de estágio / etiqueta do Oshi (Foto 2.0)
 
   // 4. Textos (Nome do Pet + Nome de Idol digitado pelo jogador)
-  var nomeJogador = ($('nick') && $('nick').value.trim()) || nick || (sel === 3 ? tr('Você') : CH[sel].n);
+  var nomeJogador = ($('nick') && $('nick').value.trim()) || nick || CH[sel].n;
   var title = petEmo(petData.ativo) + ' ' + p.nome + ' & ' + nomeJogador;
   x.textAlign = 'center'; x.fillStyle = '#12365e';
   fit(title, 340, 26, 800); x.fillText(title, 200, 280);
@@ -4737,7 +4739,7 @@ function petTalk(){
   var s = (opts.length ? opts : pool)[Math.floor(Math.random() * (opts.length || pool.length))];
   petTalkLast = s;
   if(petData.ativo === 'meu' && PET_NEUTRO[s]) s = PET_NEUTRO[s];   // Meu Pet fala sem gênero
-  s = tr(s).split('{n}').join(nick || tr('Você')).split('{p}').join(p.nome);
+  s = tr(s).split('{n}').join(nick || CH[sel].n).split('{p}').join(p.nome);
   petTalkB = { s:s, t:0, dur:Math.min(320, 110 + s.length * 3) };
   petBabble(petPers(), Math.min(9, 3 + Math.round(s.length / 12)), p.dorme);
   if(!p.dorme){
@@ -5376,7 +5378,7 @@ function petPhFrameDraw(x, W2, H2, fase, fy, selo){
       x.fillText(nmS, 0, 13);
       x.restore();
     } else if(f === 'oshi'){   // etiqueta "推し" com o nome do personagem
-      var nm = '推し · ' + (sel === 3 ? tr('Você') : CH[sel].n);
+      var nm = '推し · ' + CH[sel].n;
       x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; var w = x.measureText(nm).width + 22;
       x.save(); x.translate(34, fy - 4); x.rotate(-.06);
       x.fillStyle = oc; x.beginPath(); x.roundRect ? x.roundRect(0, -12, w, 24, 12) : x.rect(0, -12, w, 24); x.fill();
@@ -5726,7 +5728,7 @@ function petShareMoldura(x, W2, H2){
   x.globalAlpha = 1; x.fillStyle = '#fff'; x.font = '900 20px sans-serif'; x.textAlign = 'center';
   [[28, 36], [W2 - 28, 36], [28, H2 - 22], [W2 - 28, H2 - 22]].forEach(function(p){ x.fillText('★', p[0], p[1]); });
   x.fillStyle = 'rgba(255,255,255,.75)'; x.font = '700 13px "M PLUS Rounded 1c",sans-serif';
-  x.fillText(new Date().toLocaleDateString(loc, { day:'2-digit', month:'2-digit', year:'numeric' }), W2 / 2, H2 - 14);
+  x.fillText(new Date().toLocaleDateString(loc, { day:'2-digit', month:'2-digit', year:'numeric' }), W2 / 2, H2 - 25);
   x.restore();
 }
 // --- FIM DA CONTA ---

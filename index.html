@@ -838,7 +838,7 @@ function layout(){
   var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'760px';
   mk();
 }
-layout();window.addEventListener('resize',function(){if(state==='menu'){layout();reset()}else if(state==='play'&&!paused&&window.matchMedia){var pt2=matchMedia('(max-width:700px) and (orientation:portrait)').matches;if((pt2?380:720)!==W)setPause(true)}});
+layout();window.addEventListener('resize',function(){if(state==='menu'){layout();reset()}else if(state==='play'&&window.matchMedia){cenaGirarTela()}});
 
 var AC=null;
 function ac(){
@@ -911,7 +911,7 @@ function music(on){
 function sync(){var k=state!=='play'?(typeof petMusicK==='function'?petMusicK():'menu'):(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':pw&&pw.k==='unit'?'unit':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT){curT=k;music(true)}}
 var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊'};
 
-var P,obs,items,sp,score,fans,dist,frame=0,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0;
+var P,obs,items,sp,score,fans,dist,frame=0,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0,nextX=0;
 var ct = 0; 
 var cc = document.getElementById('cel').getContext('2d');
 var paused=false,abducted=false,wasAbducted=false;
@@ -1287,7 +1287,8 @@ function end(){
   finalExpr = s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2);
   
   var rId = rankOf(s);
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s);
+  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
+    +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
   
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
@@ -5246,6 +5247,7 @@ function petDrawChapeu(x, py, tf){
 // ---------- Ganchos do camarim (chamados pelo petDrawRoom e pela foto) ----------
 function petRoomBack(x, p){
   if(petTemaOn === 'halloween') petDrawHalloween(x, false);
+  else if(petTemaOn === 'natal') petDrawNatal(x, false);
   var s = petStage(p);
   if(s >= 5){   // Kami-Oshi: brilho dourado atrás do pet
     var gl = x.createRadialGradient(PET_X, PET_FLOOR - 30, 6, PET_X, PET_FLOOR - 30, 52);
@@ -5253,13 +5255,16 @@ function petRoomBack(x, p){
     x.fillStyle = gl; x.beginPath(); x.arc(PET_X, PET_FLOOR - 30, 52, 0, 7); x.fill();
   }
   var tema = petTemaAtual();
-  if(tema === 'halloween'){   // a abóbora acesa fica no chão; pulsa para chamar atenção quando o tema está desligado
-    if(!petTemaOn){ x.save(); x.globalAlpha = .35 + .3 * Math.sin(petT * .08); x.fillStyle = '#ffd27a'; x.beginPath(); x.ellipse(PET_ABOBORA.x, PET_ABOBORA.y - 8, 17, 15, 0, 0, 7); x.fill(); x.restore(); }
-    petDrawAbobora(x, PET_ABOBORA.x, PET_ABOBORA.y, 1.05, true);
+  if(tema){   // o item da temporada fica no chão; pulsa para chamar atenção quando o tema está desligado
+    if(!petTemaOn){ x.save(); x.globalAlpha = .35 + .3 * Math.sin(petT * .08); x.fillStyle = tema === 'natal' ? '#d9fbe0' : '#ffd27a'; x.beginPath(); x.ellipse(PET_ABOBORA.x, PET_ABOBORA.y - 10, 18, 18, 0, 0, 7); x.fill(); x.restore(); }
+    if(tema === 'halloween') petDrawAbobora(x, PET_ABOBORA.x, PET_ABOBORA.y, 1.05, true);
+    else if(tema === 'natal') petDrawArvore(x, PET_ABOBORA.x, PET_ABOBORA.y, 1, false);
   }
 }
 function petRoomFront(x, p, hop){
-  if(petTemaOn === 'halloween'){ var sl = p.dorme || p.energia < 25; petDrawChapeu(x, PET_FLOOR - 12 * PET_SC - hop, sl ? petT * .35 : petT); }
+  var sl = p.dorme || p.energia < 25;
+  if(petTemaOn === 'halloween') petDrawChapeu(x, PET_FLOOR - 12 * PET_SC - hop, sl ? petT * .35 : petT);
+  else if(petTemaOn === 'natal') petDrawGorro(x, PET_FLOOR - 12 * PET_SC - hop, sl ? petT * .35 : petT);
   if(petStage(p) >= 4){   // Center ou mais: estrelinhas girando em volta
     x.fillStyle = '#f5b400'; x.textAlign = 'center'; x.font = '900 11px sans-serif';
     for(var i = 0; i < 3; i++){ var an = petT * .03 + i * 2.09; x.globalAlpha = .6 + .4 * Math.sin(petT * .1 + i); x.fillText('✦', PET_X + Math.cos(an) * 38, PET_FLOOR - 26 + Math.sin(an) * 13); }
@@ -5269,18 +5274,87 @@ function petRoomFront(x, p, hop){
 }
 function petRoomTap(lx, ly){
   var tema = petTemaAtual();
-  if(!tema || Math.abs(lx - PET_ABOBORA.x) > 17 || ly < PET_ABOBORA.y - 30 || ly > PET_ABOBORA.y + 8) return false;
+  if(!tema || Math.abs(lx - PET_ABOBORA.x) > 18 || ly < PET_ABOBORA.y - 42 || ly > PET_ABOBORA.y + 8) return false;
   petTemaOn = petTemaOn ? '' : tema;
-  if(petTemaOn){ [440, 523, 415, 349, 330].forEach(function(f, i){ beep(f, .16, 'square', .025, i * .11); beep(f / 2, .2, 'triangle', .03, i * .11); }); petSay('🎃 ' + tr('Tema de Halloween!')); }
+  if(petTemaOn === 'natal'){ [1047, 1319, 1568, 2093, 1568, 2637].forEach(function(f, i){ beep(f, .35, 'sine', .03, i * .09); beep(f * 2, .12, 'sine', .006, i * .09); }); petSay('🎄 ' + tr('Tema de Natal!')); }
+  else if(petTemaOn){ [440, 523, 415, 349, 330].forEach(function(f, i){ beep(f, .16, 'square', .025, i * .11); beep(f / 2, .2, 'triangle', .03, i * .11); }); petSay('🎃 ' + tr('Tema de Halloween!')); }
   else { beep(330, .1, 'triangle', .04); beep(262, .14, 'triangle', .035, .08); petSay(tr('Tema desligado')); }
   return true;
 }
 function petTemaFoto(x){   // tema na foto (se estiver ligado)
-  if(petTemaOn !== 'halloween') return;
   var p = petAtivo();
-  petDrawHalloween(x, true);
-  petDrawAbobora(x, PET_ABOBORA.x, PET_ABOBORA.y, 1.05, true);
-  if(p) petDrawChapeu(x, PET_FLOOR - 12 * PET_SC, 0);
+  if(petTemaOn === 'halloween'){
+    petDrawHalloween(x, true);
+    petDrawAbobora(x, PET_ABOBORA.x, PET_ABOBORA.y, 1.05, true);
+    if(p) petDrawChapeu(x, PET_FLOOR - 12 * PET_SC, 0);
+  } else if(petTemaOn === 'natal'){
+    petDrawNatal(x, true);
+    petDrawArvore(x, PET_ABOBORA.x, PET_ABOBORA.y, 1, true);
+    if(p) petDrawGorro(x, PET_FLOOR - 12 * PET_SC, 0);
+  }
+}
+
+// ---------- 🎄 Tema de Natal (01/12 a 26/12) ----------
+PET_TEMAS.push(['natal', '12-01', '12-26']);
+[['en', 'Christmas theme!'], ['es', '¡Tema de Navidad!'], ['th', 'ธีมคริสต์มาส!'], ['ja', 'クリスマステーマ！']].forEach(function(t){ if(DICT[t[0]]) DICT[t[0]]['Tema de Natal!'] = t[1]; });
+function petDrawArvore(x, cx, by, s, foto){
+  var t = foto ? 0 : petT;
+  x.save(); x.translate(cx, by); x.scale(s, s);
+  x.fillStyle = '#8b5a2b'; x.fillRect(-2.5, -6, 5, 6);
+  [['#15803d', -6, 15, 13], ['#16a34a', -16, 12, 11], ['#22c55e', -25, 9, 10]].forEach(function(c){
+    x.fillStyle = c[0]; x.beginPath(); x.moveTo(-c[2], c[1]); x.lineTo(c[2], c[1]); x.lineTo(0, c[1] - c[3] - 4); x.closePath(); x.fill();
+  });
+  var cores = ['#ff4f6d', '#ffe14d', '#60a5fa', '#ff6fb5', '#b6ff3b'];
+  [[-8, -9], [6, -11], [-3, -16], [7, -19], [-5, -24], [3, -29], [-10, -7], [10, -7]].forEach(function(b, i){
+    x.globalAlpha = (Math.sin(t * .12 + i * 1.7) > -.3) ? 1 : .35;
+    x.fillStyle = cores[i % cores.length]; x.beginPath(); x.arc(b[0], b[1], 1.6, 0, 7); x.fill();
+  });
+  x.globalAlpha = 1;
+  x.fillStyle = '#ffd23f'; x.beginPath();
+  for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.4, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, -38 + Math.sin(an) * rr); }
+  x.closePath(); x.fill();
+  x.restore();
+}
+function petDrawPresente(x, cx, by, c1, c2){
+  x.fillStyle = c1; x.fillRect(cx - 8, by - 13, 16, 13);
+  x.fillStyle = c2; x.fillRect(cx - 1.5, by - 13, 3, 13); x.fillRect(cx - 8, by - 8, 16, 3);
+  x.beginPath(); x.ellipse(cx - 3.5, by - 15, 3.5, 2, -.4, 0, 7); x.fill(); x.beginPath(); x.ellipse(cx + 3.5, by - 15, 3.5, 2, .4, 0, 7); x.fill();
+}
+function petDrawNatal(x, foto){
+  var t = foto ? 0 : petT;
+  x.fillStyle = 'rgba(40,70,150,.1)'; x.fillRect(0, 0, 360, 220);
+  // Pisca-pisca no varal
+  var cores = ['#ff4f6d', '#ffe14d', '#22c55e', '#60a5fa', '#ff6fb5'];
+  for(var i = 0; i < 17; i++){
+    var bx = 10 + i * 21, u = bx / 360, vy = (1 - u) * (1 - u) * 14 + 2 * u * (1 - u) * 34 + u * u * 14;
+    var on = Math.sin(t * .1 + i * 1.3) > -.2;
+    x.globalAlpha = on ? 1 : .35; x.fillStyle = cores[i % 5];
+    x.beginPath(); x.ellipse(bx, vy + 3.5, 1.8, 2.6, 0, 0, 7); x.fill();
+    if(on && !foto){ x.globalAlpha = .25; x.beginPath(); x.arc(bx, vy + 3.5, 5, 0, 7); x.fill(); }
+  }
+  x.globalAlpha = 1;
+  // Guirlanda no espelho
+  x.strokeStyle = '#15803d'; x.lineWidth = 4; x.beginPath(); x.arc(84, 46, 9, 0, 7); x.stroke();
+  x.fillStyle = '#ef4444'; x.beginPath(); x.ellipse(80.5, 54, 3, 1.8, -.5, 0, 7); x.fill(); x.beginPath(); x.ellipse(87.5, 54, 3, 1.8, .5, 0, 7); x.fill();
+  [[78, 40], [90, 42], [84, 37]].forEach(function(b){ x.fillStyle = '#ffe14d'; x.beginPath(); x.arc(b[0], b[1], 1.2, 0, 7); x.fill(); });
+  // Presentes nos cantos
+  petDrawPresente(x, 18, PET_FLOOR + 14, '#ef4444', '#22c55e');
+  petDrawPresente(x, 342, PET_FLOOR + 14, '#60a5fa', '#ff6fb5');
+  // Neve caindo
+  x.fillStyle = 'rgba(255,255,255,.9)';
+  for(var n = 0; n < 42; n++){
+    var sx = (n * 83.3 + Math.sin(t * .02 + n) * 8) % 360, sy = (n * 47.9 + t * (.35 + (n % 4) * .12)) % 225 - 5, r = 1 + (n % 3) * .6;
+    x.beginPath(); x.arc(sx, sy, r, 0, 7); x.fill();
+  }
+}
+// Gorro de Natal no pet (só enquanto o tema está ligado)
+function petDrawGorro(x, py, tf){
+  x.save(); x.translate(PET_X, py + Math.sin(tf * .08) * 3.5); x.scale(PET_SC, PET_SC);
+  x.translate(1, -9.5); x.rotate(-.12);
+  x.fillStyle = '#ef4444'; x.beginPath(); x.moveTo(-7.5, 0); x.quadraticCurveTo(-1, -12, 9, -9); x.lineTo(7.5, 0); x.closePath(); x.fill();
+  x.fillStyle = '#fff'; x.beginPath(); x.roundRect ? x.roundRect(-8.5, -1.5, 17, 3.6, 1.8) : x.rect(-8.5, -1.5, 17, 3.6); x.fill();
+  x.beginPath(); x.arc(9.5, -9, 2.3, 0, 7); x.fill();
+  x.restore();
 }
 
 // ================================================================
@@ -5567,6 +5641,16 @@ function petMoodLift(p){
   var a = petData && petData.ativo === 'meu' ? (p.cfg && p.cfg.acc) : p.acc;
   return (a === 'aureola' || a === 'tiara') ? 12 : 0;
 }
+// Girar o celular no meio da corrida: refaz a tela no formato novo e move tudo junto com o chão
+function cenaGirarTela(){
+  var pt2 = matchMedia('(max-width:700px) and (orientation:portrait)').matches;
+  if((pt2 ? 380 : 720) === W) return;
+  var oG = GY; layout(); var dy = GY - oG;
+  if(P) P.y += dy;
+  [obs, items, fans].forEach(function(L){ (L || []).forEach(function(o){ if(typeof o.y === 'number') o.y += dy; }); });
+  if(window.activePetFly) window.activePetFly.y += dy;
+  if(!paused) setPause(true);
+}
 // --- FIM DO CENÁRIO VIVO ---
 // ================================================================
 // --- V2.1.2 · CONTA COM GOOGLE, ESTRELAS NO SERVIDOR E RANKING PROTEGIDO ---
@@ -5579,10 +5663,10 @@ function petMoodLift(p){
 var contaJ = null, contaRun = null, contaPronta = false;
 
 var CONTA_DICT = {
-  en: {"Entrar com Google":"Sign in with Google","Sair":"Sign out","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Escolha seu nome de Idol":"Choose your Idol name","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","CONFIRMAR":"CONFIRM","Esse nome já está em uso.":"That name is already taken.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","Esse nome é reservado.":"That name is reserved.","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","Conta pronta!":"Account ready!","estrelas importadas":"stars imported","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off."},
-  es: {"Entrar com Google":"Entrar con Google","Sair":"Salir","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Opcional: guarda tus estrellas en la nube y activa el ranking en línea.","Escolha seu nome de Idol":"Elige tu nombre de Idol","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"Aparece en el ranking y no puede ser igual al de otra persona.","CONFIRMAR":"CONFIRMAR","Esse nome já está em uso.":"Ese nombre ya está en uso.","Use de 2 a 12 caracteres.":"Usa de 2 a 12 caracteres.","Esse nome tem caracteres não permitidos.":"Ese nombre tiene caracteres no permitidos.","Esse nome é reservado.":"Ese nombre está reservado.","Não deu para falar com o servidor. Tente de novo.":"No se pudo conectar con el servidor. Inténtalo de nuevo.","Conta pronta!":"¡Cuenta lista!","estrelas importadas":"estrellas importadas","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"El inicio de sesión funciona en el sitio del juego (GitHub o Netlify), no en este archivo.","Sem login, o ranking online fica desligado.":"Sin iniciar sesión, el ranking en línea está apagado."},
-  th: {"Entrar com Google":"เข้าสู่ระบบด้วย Google","Sair":"ออกจากระบบ","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"ไม่บังคับ: เก็บดาวไว้บนคลาวด์และเปิดอันดับออนไลน์","Escolha seu nome de Idol":"ตั้งชื่อไอดอลของคุณ","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ชื่อนี้จะแสดงในอันดับ และห้ามซ้ำกับคนอื่น","CONFIRMAR":"ยืนยัน","Esse nome já está em uso.":"ชื่อนี้มีคนใช้แล้ว","Use de 2 a 12 caracteres.":"ใช้ 2 ถึง 12 ตัวอักษร","Esse nome tem caracteres não permitidos.":"ชื่อนี้มีตัวอักษรที่ใช้ไม่ได้","Esse nome é reservado.":"ชื่อนี้ถูกสงวนไว้","Não deu para falar com o servidor. Tente de novo.":"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองอีกครั้ง","Conta pronta!":"บัญชีพร้อมแล้ว!","estrelas importadas":"ดาวที่นำเข้า","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"เข้าสู่ระบบได้บนเว็บไซต์ของเกม (GitHub หรือ Netlify) ไม่ใช่ในไฟล์นี้","Sem login, o ranking online fica desligado.":"ถ้าไม่เข้าสู่ระบบ อันดับออนไลน์จะปิดอยู่"},
-  ja: {"Entrar com Google":"Googleでログイン","Sair":"ログアウト","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"任意：スターをクラウドに保存して、オンラインランキングに参加できます。","Escolha seu nome de Idol":"アイドル名を決めてね","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ランキングに表示され、ほかの人と同じ名前は使えません。","CONFIRMAR":"けってい","Esse nome já está em uso.":"その名前はもう使われています。","Use de 2 a 12 caracteres.":"2〜12文字にしてね。","Esse nome tem caracteres não permitidos.":"使えない文字が入っています。","Esse nome é reservado.":"その名前は予約されています。","Não deu para falar com o servidor. Tente de novo.":"サーバーにつながりませんでした。もう一度ためしてね。","Conta pronta!":"アカウント準備OK！","estrelas importadas":"スターを引きつぎ","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"ログインはゲームのサイト（GitHub か Netlify）で使えます。このファイルでは使えません。","Sem login, o ranking online fica desligado.":"ログインしないと、オンラインランキングはオフです。"}
+  en: {"Entre com Google para aparecer no ranking online":"Sign in with Google to appear on the online ranking","Entrar com Google":"Sign in with Google","Sair":"Sign out","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Escolha seu nome de Idol":"Choose your Idol name","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","CONFIRMAR":"CONFIRM","Esse nome já está em uso.":"That name is already taken.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","Esse nome é reservado.":"That name is reserved.","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","Conta pronta!":"Account ready!","estrelas importadas":"stars imported","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off."},
+  es: {"Entre com Google para aparecer no ranking online":"Entra con Google para aparecer en el ranking en línea","Entrar com Google":"Entrar con Google","Sair":"Salir","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Opcional: guarda tus estrellas en la nube y activa el ranking en línea.","Escolha seu nome de Idol":"Elige tu nombre de Idol","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"Aparece en el ranking y no puede ser igual al de otra persona.","CONFIRMAR":"CONFIRMAR","Esse nome já está em uso.":"Ese nombre ya está en uso.","Use de 2 a 12 caracteres.":"Usa de 2 a 12 caracteres.","Esse nome tem caracteres não permitidos.":"Ese nombre tiene caracteres no permitidos.","Esse nome é reservado.":"Ese nombre está reservado.","Não deu para falar com o servidor. Tente de novo.":"No se pudo conectar con el servidor. Inténtalo de nuevo.","Conta pronta!":"¡Cuenta lista!","estrelas importadas":"estrellas importadas","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"El inicio de sesión funciona en el sitio del juego (GitHub o Netlify), no en este archivo.","Sem login, o ranking online fica desligado.":"Sin iniciar sesión, el ranking en línea está apagado."},
+  th: {"Entre com Google para aparecer no ranking online":"เข้าสู่ระบบด้วย Google เพื่อขึ้นอันดับออนไลน์","Entrar com Google":"เข้าสู่ระบบด้วย Google","Sair":"ออกจากระบบ","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"ไม่บังคับ: เก็บดาวไว้บนคลาวด์และเปิดอันดับออนไลน์","Escolha seu nome de Idol":"ตั้งชื่อไอดอลของคุณ","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ชื่อนี้จะแสดงในอันดับ และห้ามซ้ำกับคนอื่น","CONFIRMAR":"ยืนยัน","Esse nome já está em uso.":"ชื่อนี้มีคนใช้แล้ว","Use de 2 a 12 caracteres.":"ใช้ 2 ถึง 12 ตัวอักษร","Esse nome tem caracteres não permitidos.":"ชื่อนี้มีตัวอักษรที่ใช้ไม่ได้","Esse nome é reservado.":"ชื่อนี้ถูกสงวนไว้","Não deu para falar com o servidor. Tente de novo.":"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองอีกครั้ง","Conta pronta!":"บัญชีพร้อมแล้ว!","estrelas importadas":"ดาวที่นำเข้า","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"เข้าสู่ระบบได้บนเว็บไซต์ของเกม (GitHub หรือ Netlify) ไม่ใช่ในไฟล์นี้","Sem login, o ranking online fica desligado.":"ถ้าไม่เข้าสู่ระบบ อันดับออนไลน์จะปิดอยู่"},
+  ja: {"Entre com Google para aparecer no ranking online":"Googleでログインするとオンラインランキングにのれるよ","Entrar com Google":"Googleでログイン","Sair":"ログアウト","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"任意：スターをクラウドに保存して、オンラインランキングに参加できます。","Escolha seu nome de Idol":"アイドル名を決めてね","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ランキングに表示され、ほかの人と同じ名前は使えません。","CONFIRMAR":"けってい","Esse nome já está em uso.":"その名前はもう使われています。","Use de 2 a 12 caracteres.":"2〜12文字にしてね。","Esse nome tem caracteres não permitidos.":"使えない文字が入っています。","Esse nome é reservado.":"その名前は予約されています。","Não deu para falar com o servidor. Tente de novo.":"サーバーにつながりませんでした。もう一度ためしてね。","Conta pronta!":"アカウント準備OK！","estrelas importadas":"スターを引きつぎ","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"ログインはゲームのサイト（GitHub か Netlify）で使えます。このファイルでは使えません。","Sem login, o ranking online fica desligado.":"ログインしないと、オンラインランキングはオフです。"}
 };
 Object.keys(CONTA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(CONTA_DICT[l]).forEach(function(k){ DICT[l][k] = CONTA_DICT[l][k]; }); });
 

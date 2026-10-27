@@ -16,21 +16,21 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="TsuLiPa⭐World: corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet! Um jogo do TsuLiPa (BRS48).">
+<meta name="description" content="TsuLiPa⭐World: corra até o Center no Center⭐Run!, cuide do seu pet no Backstage⭐Pet!, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TsuLiPa⭐World">
 <meta property="og:title" content="TsuLiPa⭐World">
-<meta property="og:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet! Um jogo do TsuLiPa (BRS48).">
+<meta property="og:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta property="og:url" content="https://tsulipa-world.vercel.app/">
-<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=6">
+<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=7">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
-<meta name="twitter:description" content="Corra até o Center no Center⭐Run! e cuide do seu pet no Backstage⭐Pet!">
-<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=6">
+<meta name="twitter:description" content="Corra até o Center, cuide do seu pet, gire o Star⭐Gacha! e monte cenas com amigos no Moon⭐Duo!">
+<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=7">
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
@@ -524,6 +524,22 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .panel p.aniverbolo{margin:0;font-size:58px;line-height:1.1}
 .panel p.anivertxt{font-size:15px;color:#4b2a7a}
 .aniverp a.btn,.duop a.btn,.cardzp a.btn,.gachap a.btn{text-decoration:none}
+.duochip.trava{opacity:.82;background:repeating-linear-gradient(135deg,var(--chip) 0 8px,rgba(155,48,217,.08) 8px 16px)}
+.duochip.trava small{color:#9b30d9;font-weight:800;opacity:1}
+.petph button.phtrava{opacity:.75}
+.lojaemo{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1;font-style:normal;font-size:54px;border-radius:14px;background:linear-gradient(135deg,#2b1a6b,#7b3ff0 60%,#ff6fb5)}
+.duoavisoov{z-index:26}.duoavisop{width:min(100%,380px);text-align:center;background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5);color:#fff}
+.duoavisop .duotit{background:none;color:#fff;-webkit-text-fill-color:#fff}
+.panel p.duoavisolua{margin:0;font-size:52px}.panel p.duoavisotxt{color:#fff;font-size:16px;font-weight:700;line-height:1.45}
+.petren{border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px;vertical-align:middle}
+.petrenbox{display:inline-flex;gap:4px;align-items:center;margin-left:4px}.petrenbox[hidden]{display:none}.petrenbox .nick{width:120px;padding:4px 8px;font-size:14px}.petrenbox .btn{padding:4px 10px}
+.siterodape{display:flex;flex-direction:column;align-items:center;gap:6px;margin:18px auto 8px;max-width:640px;padding:0 16px;text-align:center}
+.sitedir{margin:0;font-size:11.5px;line-height:1.5;color:var(--sub);opacity:.9}
+.sitedir2{margin:0;font-size:12px}.sitedir2 a{color:var(--b1);text-decoration:none;font-weight:700}
+.footlogo{height:46px;width:auto;filter:drop-shadow(0 2px 6px rgba(123,63,240,.35))}
+.sitefoot{padding-bottom:18px}
+.duoavisoov .panel.duoavisop{background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5)!important;color:#fff}
+.duoavisoov .duoavisop .btn.alt{color:#4b2a9a}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -628,7 +644,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <path d="M16.5 17c.3 6 2.4 11 6.5 14.5M47.5 17c-.3 6-2.4 11-6.5 14.5" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
 <path d="M51.00,6.50L52.65,10.73L57.18,10.99L53.66,13.87L54.82,18.26L51.00,15.80L47.18,18.26L48.34,13.87L44.82,10.99L49.35,10.73Z" fill="#ffe14d" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><rect x=".75" y=".75" width="62.5" height="62.5" rx="14.5" fill="none" stroke="#ffffff" stroke-opacity=".25" stroke-width="1.5"/></g></svg>
     </i>
-    <div><b translate="no">TsuLiPa<span class="st">⭐</span>World</b><small><img class="logotsl" alt="ツリパ">⭐ワールド</small></div>
+    <div><b translate="no">TsuLiPa<span class="st">⭐</span>World</b><small>ツリパ⭐ワールド</small></div>
   </a>
   <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
     <div class="pill" id="best">Recorde: 0</div>
@@ -2739,6 +2755,7 @@ function draw(){
   g.fillStyle=P2[7];g.shadowColor=P2[7];g.shadowBlur=14;g.fillRect(0,GY,W,3);g.shadowBlur=0;
   g.fillStyle='rgba(255,255,255,.12)';for(var x=-(dist%60);x<W;x+=60)g.fillRect(x,GY+22,30,3);
   obs.forEach(function(o){
+    if(typeof obsDesenhar==='function'){obsDesenhar(o);return;}
     if(o.k==='cable'){g.fillStyle='#222';g.fillRect(o.x,o.y+4,o.w,6);g.fillStyle='#ffd23f';g.fillRect(o.x+6,o.y+2,10,10);g.fillRect(o.x+o.w-16,o.y+2,10,10)}
     else if(o.k==='speaker'){g.fillStyle='#111827';g.fillRect(o.x,o.y,o.w,o.h);g.strokeStyle='#5a6b9a';g.lineWidth=2;g.strokeRect(o.x+1,o.y+1,o.w-2,o.h-2);g.fillStyle='#3a4a7a';g.beginPath();g.arc(o.x+o.w/2,o.y+17,9,0,7);g.fill();g.beginPath();g.arc(o.x+o.w/2,o.y+36,5,0,7);g.fill()}
     else{var c=o.pal;for(var i=0;i<3;i++){var lx=o.x+i*9+2;g.fillStyle='#ddd';g.fillRect(lx,o.y+16,5,o.h-16);g.fillStyle=c[i];g.shadowColor=c[i];g.shadowBlur=10;g.fillRect(lx-1,o.y+(i%2)*4,7,18);g.shadowBlur=0}}
@@ -3141,14 +3158,16 @@ function makeCard(){
   var t = typeof tr === 'function' ? tr : function(w){return w;};
   x2.fillStyle='#12365e'; x2.textAlign='center';
   x2.font='800 28px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText(nick || t('Anônimo'), 200, 432);
+  x2.fillText(nick || t('Anônimo'), 200, 432, 290);
   
-  x2.fillStyle='#ff6fb5'; x2.font='700 20px "M PLUS Rounded 1c",sans-serif';
-  x2.fillText(t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', 200, 464);
+  x2.fillStyle='#ff6fb5'; var rkTxt = t(RANKS[rankI][1]) + ' ✧ ' + Math.floor(score) + ' pts', rkF = 20; x2.font='700 20px "M PLUS Rounded 1c",sans-serif';
+  while(rkF > 13 && x2.measureText(rkTxt).width > 190){ rkF--; x2.font='700 ' + rkF + 'px "M PLUS Rounded 1c",sans-serif'; }
+  var rkW = Math.min(190, x2.measureText(rkTxt).width);
+  x2.fillText(rkTxt, 200, 464, 190);
   
-  // Desenha os dois outros pets em tamanho de destaque (escala 1.15) nas laterais do texto
-  drawPet(x2, petsCoadjuvantes[0], 85, 452, 1.15, frame);
-  drawPet(x2, petsCoadjuvantes[1], 315, 452, 1.15, frame);
+  // Os dois outros pets nas laterais, sempre fora do texto (V2.1.3)
+  drawPet(x2, petsCoadjuvantes[0], Math.max(42, Math.min(85, 200 - rkW / 2 - 34)), 452, 1.15, frame);
+  drawPet(x2, petsCoadjuvantes[1], Math.min(358, Math.max(315, 200 + rkW / 2 + 34)), 452, 1.15, frame);
 
   // Adesivinhos de brilho e corações na Polaroid
   x2.fillStyle = '#ff6fb5';
@@ -6599,7 +6618,7 @@ function perfFundo(x, W2, H2, f, cor, t){
     x.fillStyle = lu; x.beginPath(); x.arc(W2 * .78, H2 * .2, 46 * u, 0, 7); x.fill();
     x.fillStyle = '#ffd27a'; x.beginPath(); x.arc(W2 * .78, H2 * .2, 22 * u, 0, 7); x.fill();
     petDrawMorcego(x, W2 * .7 + Math.sin(t * .03) * 10 * u, H2 * .22 + Math.cos(t * .04) * 5 * u, 1.7 * u, 1 + t * .3); petDrawMorcego(x, W2 * .2 + Math.cos(t * .025) * 8 * u, H2 * .14, 1.3 * u, 2.4 + t * .32); petDrawMorcego(x, W2 * .32, H2 * .3 + Math.sin(t * .03) * 6 * u, 1.1 * u, .4 + t * .35);
-    x.save(); x.translate(W2 * .14, H2 * .5 + Math.sin(t * .05) * 5 * u); x.scale(u, u);   // fantasminha fofo
+    x.save(); x.translate(W2 * .07, H2 * .22 + Math.sin(t * .05) * 5 * u); x.scale(u, u);   // fantasminha fofo (no alto, nunca atrás de quem está na foto)
     x.fillStyle = 'rgba(255,255,255,.88)'; x.beginPath(); x.arc(0, 0, 11, Math.PI, 0); x.lineTo(11, 12); for(i = 0; i < 4; i++) x.quadraticCurveTo(8.25 - i * 5.5, 16, 5.5 - i * 5.5, 12); x.lineTo(-11, 0); x.fill();
     x.fillStyle = '#2b0f45'; x.beginPath(); x.arc(-3.5, 0, 1.6, 0, 7); x.arc(3.5, 0, 1.6, 0, 7); x.fill(); x.fillStyle = '#ff9ccd'; x.beginPath(); x.arc(-6, 3, 1.6, 0, 7); x.arc(6, 3, 1.6, 0, 7); x.fill();
     x.restore();
@@ -6920,10 +6939,11 @@ function perfAbaMostrar(){
   } else {
     h += '<canvas id="perfGenCv" width="560" height="560" aria-hidden="true"></canvas>';
     if(perfAba === 'montar') h += '<p class="perfdica">' + escHtml(tr('Tudo o que você muda aqui vale para o Idol do jogo.')) + '</p><div class="cust perfmont" id="perfMont"></div>' +
-      '<h3>🛍️ ' + escHtml(tr('Lojinha de roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).')) + '</p><p class="perfmsg" id="perfLojaMsg" hidden></p><div class="perfloja" id="perfLoja"></div>';
+      '<h3>🛍️ ' + escHtml(tr('Lojinha de roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).')) + '</p><p class="perfmsg" id="perfLojaMsg" hidden></p><div class="perfloja" id="perfLoja"></div>' +
+      '<h3>🛍️ ' + escHtml(tr('Lojinha de poses e extras')) + '</h3><p class="perfdica">' + escHtml(tr('Poses e expressões valem para o Estúdio e para a câmera do jogo. Os extras do Moon⭐Duo! liberam cenas e cenários.')) + '</p><p class="perfmsg" id="perfLoja2Msg" hidden></p><div class="perfloja" id="perfLoja2"></div>';
     else h += '<p class="perfmsg" id="perfGenMsg" hidden></p><div class="btns perfbtns" id="perfGenBtns"></div><div class="petph perfopts" id="perfGenOpts"></div>';
     box.innerHTML = h;
-    if(perfAba === 'montar'){ perfMontUI(); perfLojaUI(); } else perfGenUI();
+    if(perfAba === 'montar'){ perfMontUI(); perfLojaUI(); if(typeof perfLoja2UI === 'function') perfLoja2UI(); } else perfGenUI();
     perfAnimLigar();
   }
 }
@@ -7007,7 +7027,7 @@ function perfRecadosHtml(d, meu){
            (r.pode_apagar || d.admin_ver ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '"' + (!r.pode_apagar ? ' data-adm="1"' : '') + ' aria-label="✕">✕</button>' : '') + '</li>';
   }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>';
   if(meu) h += '<label class="perfrecon"><input type="checkbox" id="perfRecOn"' + (d.recados_on !== false ? ' checked' : '') + '> ' + escHtml(tr('Aceitar recados')) + '</label>' +
-    '<label class="perfrecon"><input type="checkbox" id="perfDuoOn"' + (d.duo_on !== false ? ' checked' : '') + '> 🌙 ' + escHtml(tr('Aparecer no Moon⭐Duo! de outras pessoas')) + '</label>';
+    '<label class="perfrecon"><input type="checkbox" id="perfDuoOn"' + (d.duo_on !== false ? ' checked' : '') + '> 🌙 ' + escHtml(tr('Aparecer no Moon⭐Duo! e nos outdoors do Center Run')) + '</label>';
   return h;
 }
 perfOv.addEventListener('click', function(e){
@@ -7212,6 +7232,7 @@ function perfTem(tipo, k){
   if(tipo === 'visual') return !k || perfDono.indexOf(k) >= 0;
   if(tipo === 'fundo') return !k || k === 'basico' || k === 'temporada' || perfDono.indexOf('fundo_' + k) >= 0;
   if(tipo === 'pose'){ var p = perfPoseInfo(k); return !p || !p[3] || perfDono.indexOf('pose_' + k) >= 0; }
+  if(tipo === 'expr') return typeof lojaTem === 'function' ? lojaTem('expr_' + k) : true;
   return true;
 }
 function perfVisInfo(k){ for(var i = 0; i < PERF_VIS.length; i++) if(PERF_VIS[i][0] === k) return PERF_VIS[i]; return PERF_VIS[0]; }
@@ -7221,6 +7242,7 @@ function perfFaltando(){   // o que está escolhido e ainda não foi comprado: [
   if(!perfTem('visual', av.visual)){ var v = perfVisInfo(av.visual); L.push([v[0], perfRot(v), v[3]]); }
   if(!perfTem('pose', av.pose)){ var p = perfPoseInfo(av.pose); L.push(['pose_' + p[0], perfRot(p), p[3]]); }
   if(!perfTem('fundo', av.fundo)){ var f = perfFundoInfo(av.fundo); L.push(['fundo_' + f[0], perfRot(f), f[3]]); }
+  if(!perfTem('expr', av.expr) && typeof lojaItem === 'function'){ var ei = lojaItem('expr_' + av.expr); if(ei) L.push([ei[0], ei[1] + ' ' + tr(ei[2]), ei[3]]); }
   return L;
 }
 function perfPetsDono(){   // pets que você tem (para aparecer na foto)
@@ -7231,7 +7253,7 @@ function perfGenUI(){
   var av = perfGenAv;
   function grp(label, campo, lista, cur){
     return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
-      var extra = '', preco = campo === 'visual' || campo === 'pose' || campo === 'fundo' ? o[3] : 0;
+      var extra = '', preco = campo === 'visual' || campo === 'pose' || campo === 'fundo' ? o[3] : (campo === 'expr' && typeof lojaItem === 'function' && lojaItem('expr_' + o[0])) ? lojaItem('expr_' + o[0])[3] : 0;
       if(preco && !perfTem(campo, o[0])) extra = ' <em>★' + preco + '</em>';
       else if(preco) extra = ' ✓';
       return '<button type="button" data-f="' + campo + '" data-v="' + escHtml(o[0]) + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + escHtml(perfRot(o)) + extra + '</button>';
@@ -7248,7 +7270,9 @@ function perfGenUI(){
     b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png" href="#">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
     m.hidden = true;
   } else {
-    b.innerHTML = falta.map(function(f){ return '<button type="button" class="btn perfcompra" data-k="' + escHtml(f[0]) + '"' + (starT < f[2] ? ' disabled' : '') + '>' + escHtml(tr('Comprar')) + ' ' + escHtml(f[1]) + ' ★' + f[2] + '</button>'; }).join('');
+    b.innerHTML = falta.map(function(f){
+      if(/^(pose|expr)_/.test(f[0])) return '<button type="button" class="btn alt" data-irloja="1">🛍️ ' + escHtml(tr('Na lojinha')) + ': ' + escHtml(f[1]) + ' ★' + f[2] + '</button>';   // poses e expressões só se compram na lojinha
+      return '<button type="button" class="btn perfcompra" data-k="' + escHtml(f[0]) + '"' + (starT < f[2] ? ' disabled' : '') + '>' + escHtml(tr('Comprar')) + ' ' + escHtml(f[1]) + ' ★' + f[2] + '</button>'; }).join('');
     var soma = falta.reduce(function(s, f){ return s + f[2]; }, 0);
     m.textContent = tr('Prévia: compre o que está marcado com ★ para baixar e usar.') + (starT < soma ? ' (★ ' + starT + ')' : '');
     m.hidden = false;
@@ -7310,6 +7334,7 @@ perfOv.addEventListener('click', function(e){
     perfGenUI(); return;
   }
   var c = e.target.closest('.perfcompra'); if(c) perfComprar(c.dataset.k, c);
+  if(e.target.closest('[data-irloja]')){ perfAba = 'montar'; perfAbaMostrar(); setTimeout(function(){ var l = $('perfLoja2'); if(l && l.scrollIntoView) l.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); }
 });
 function perfComprar(k, btn){
   btn.disabled = true;
@@ -7541,6 +7566,7 @@ function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao
 function admItens(){   // tudo o que se compra no servidor: visuais, poses, fundos e roupas
   return PERF_VIS.filter(function(o){ return o[0]; }).map(function(o){ return [o[0], perfRot(o)]; })
     .concat(PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], '🧍 ' + perfRot(o)]; }))
+    .concat(typeof LOJA_EXTRA !== 'undefined' ? LOJA_EXTRA.map(function(o){ return [o[0], o[1] + ' ' + tr(o[2])]; }) : [])
     .concat(PERF_FUNDOS.filter(function(o){ return o[3]; }).map(function(o){ return ['fundo_' + o[0], '🖼️ ' + perfRot(o)]; }))
     .concat(PERF_LOJA.map(function(o){ return ['roupa_' + o[0], '👗 ' + perfRot(o)]; }));
 }
@@ -8057,7 +8083,7 @@ var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
 hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><div class="hubin">' +
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : '') + '>' + ch + '</span>'; }).join('') + '</h1>' +
-  '<p class="hubsub"><img class="logotsl" alt="ツリパ">⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
+  '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
@@ -8065,6 +8091,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
   '<div class="hublinks" id="hubLinks"></div>' +
+  '<div class="siterodape"><p class="sitedir" data-dir="1"></p><img class="logotsl footlogo" alt="TsuLiPa"></div>' +
   '<p class="hubrodape"><a href="privacidade.html" target="_blank" rel="noopener" id="hubPriv"></a> · <span translate="no">v2.1.3</span></p></div>' +
   '<div class="hubtut" id="hubTut" hidden></div></div>';
 document.body.appendChild(hubOv);
@@ -8764,63 +8791,20 @@ if(typeof applyLang === 'function') applyLang();
 var LOGO_TSL = 'data:image/webp;base64,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';
 var logoTslImg = new Image(); logoTslImg.src = LOGO_TSL;
 [].forEach.call(document.querySelectorAll('.logotsl'), function(im){ im.src = LOGO_TSL; });
-function cenaCartazes(P2){   // outdoors de idol na rua: BRS48 (azul) e, a cada 3, o do TsuLiPa — com moldura, lâmpadas e luz à noite
-  var esp = 720, off = dist * .35, i0 = Math.floor(off / esp), noite = typeof cenaNoite === 'function' && cenaNoite(P2);
-  function rr(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
-  for(var i = i0; i <= i0 + 2; i++){
-    var w = 72, h = 88, x = Math.round(i * esp - off + 250), y0 = GY - 136, tsl = i % 3 === 2, k;
-    if(x < -90 || x > W + 20) continue;
-    // postes com base
-    g.fillStyle = noite ? '#2c2640' : '#5b5375'; g.fillRect(x + 14, y0 + h, 4, GY - y0 - h); g.fillRect(x + w - 18, y0 + h, 4, GY - y0 - h);
-    g.fillRect(x + 10, GY - 10, 12, 4); g.fillRect(x + w - 22, GY - 10, 12, 4);
-    if(noite){   // luz do outdoor
-      var lg = g.createRadialGradient(x + w / 2, y0 + h / 2, 8, x + w / 2, y0 + h / 2, 78);
-      lg.addColorStop(0, tsl ? 'rgba(255,170,230,.38)' : 'rgba(110,130,255,.42)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = lg; g.fillRect(x - 50, y0 - 50, w + 100, h + 100);
-    }
-    // moldura
-    g.fillStyle = 'rgba(20,10,40,.25)'; rr(x - 2, y0 + 2, w + 8, h + 6, 8); g.fill();
-    var mg = g.createLinearGradient(x, y0, x, y0 + h); mg.addColorStop(0, '#f3eaff'); mg.addColorStop(1, '#b9a6dd');
-    g.fillStyle = mg; rr(x - 4, y0 - 4, w + 8, h + 8, 8); g.fill();
-    g.save(); rr(x, y0, w, h, 5); g.clip();
-    if(tsl){
-      var tg = g.createLinearGradient(x, y0, x + w, y0 + h); tg.addColorStop(0, '#fff3fb'); tg.addColorStop(.5, '#f1e9ff'); tg.addColorStop(1, '#e6f7ff');
-      g.fillStyle = tg; g.fillRect(x, y0, w, h);
-      g.fillStyle = 'rgba(255,156,205,.35)'; for(k = 0; k < 5; k++){ var hx = x + 8 + k * 15, hy = y0 + 10 + (k % 2) * 6; g.beginPath(); g.arc(hx - 2, hy, 2.4, 0, 7); g.arc(hx + 2, hy, 2.4, 0, 7); g.moveTo(hx - 4.3, hy + .8); g.lineTo(hx, hy + 5.5); g.lineTo(hx + 4.3, hy + .8); g.fill(); }
-      if(logoTslImg.complete && logoTslImg.naturalWidth){ var lw = w - 8, lh = lw * logoTslImg.naturalHeight / logoTslImg.naturalWidth; g.drawImage(logoTslImg, x + 4, y0 + h / 2 - lh / 2 - 4, lw, lh); }
-      g.fillStyle = '#9b30d9'; g.font = '800 8px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center'; g.fillText('TsuLiPa⭐World', x + w / 2, y0 + h - 9);
-    } else {
-      var bg = g.createLinearGradient(x, y0, x + w, y0 + h); bg.addColorStop(0, '#4651d8'); bg.addColorStop(1, '#3039b4');
-      g.fillStyle = bg; g.fillRect(x, y0, w, h);
-      g.fillStyle = 'rgba(255,255,255,.07)'; g.beginPath(); g.moveTo(x + w * .55, y0); g.lineTo(x + w, y0); g.lineTo(x + w, y0 + h * .55); g.closePath(); g.fill();
-      g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '200 27px "Josefin Sans","Futura","Century Gothic","Avenir",sans-serif';
-      g.fillText('BRS', x + 9, y0 + 38); g.fillText('48', x + 9, y0 + 72);
-      g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); var sx = x + w - 13, sy = y0 + 14, sr = 4 + Math.sin(frame * .1 + i) * 1; for(k = 0; k < 8; k++){ var an = k * Math.PI / 4, rr2 = k % 2 ? sr * .35 : sr; g[k ? 'lineTo' : 'moveTo'](sx + Math.cos(an) * rr2, sy + Math.sin(an) * rr2); } g.closePath(); g.fill();
-    }
-    g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(x, y0, w, 7);   // reflexo
-    g.restore();
-    // lâmpadas de marquise no alto (piscam em sequência)
-    for(k = 0; k < 7; k++){
-      var on = Math.floor(frame / 12 + k) % 3 === 0, bx = x + 4 + k * (w - 8) / 6, by = y0 - 4;
-      g.fillStyle = on ? (tsl ? '#ff9ccd' : '#ffe14d') : 'rgba(255,240,200,.55)';
-      if(on && noite){ g.save(); g.shadowColor = g.fillStyle; g.shadowBlur = 8; g.beginPath(); g.arc(bx, by, 2.3, 0, 7); g.fill(); g.restore(); }
-      else { g.beginPath(); g.arc(bx, by, 2.1, 0, 7); g.fill(); }
-    }
-  }
-}
 // ---------- Moon⭐Duo! (V2.1.3): cenas de dupla com outro Idol registrado, no estilo BuddyPoke ----------
 // A roupa de cada um vem do banco (foto do perfil); aqui só se monta a cena: pose, cenário, expressão e falas.
-var DUO_CENAS = [   // [chave, emoji, nome, minha pose, pose do convidado, distância entre os dois (em unidades do personagem), expressão padrão]
+var DUO_CENAS = [   // [chave, emoji, nome, minha pose, pose do convidado, distância entre os dois (em unidades do personagem), expressão padrão, item da lojinha]
   ['dueto',     '🎤', 'Dueto',            'mic',     'mic',     52, 2],
   ['vv',        '✌️', 'Pose dupla',       'v',       'v',       48, 2],
   ['coracao',   '🫶', 'Coração juntos',   'coracao', 'coracao', 50, 2],
   ['maos',      '🤝', 'Mãos dadas',       'dmao',    'dmao',    44, 2],
-  ['hightouch', '🙌', 'High-touch',       'dhigh',   'dhigh',   42, 4],
-  ['guarda',    '☂️', 'Guarda-chuva',     'dguarda', '',        40, 2],
+  ['hightouch', '🙌', 'High-touch',       'dhigh',   'dhigh',   42, 2],
+  ['guarda',    '☂️', 'Guarda-chuva',     'dguarda', '',        40, 2, 'duo_guarda'],
   ['comida',    '🍓', 'Comidinha',        'dsegura', 'dsegura', 46, 2],
   ['danca',     '💃', 'Dança',            '*',       '*',       52, 2],
-  ['selfie',    '🤳', 'Selfie',           'dselfie', 'v',       38, 3],
-  ['seis',      '6️⃣', 'Six Seven',        'dseis',   'dseis',   50, 4],
-  ['neon',      '✨', 'Pose Neon',        'dneon',   'dneon',   50, 3],
+  ['selfie',    '🤳', 'Selfie',           'dselfie', 'v',       38, 3, 'duo_selfie'],
+  ['seis',      '6️⃣', 'Six Seven',        'dseis',   'dseis',   50, 3, 'duo_seis'],
+  ['neon',      '✨', 'Pose Neon',        'dneon',   'dneon',   50, 3, 'duo_neon'],
   ['luzes',     '💜', 'Lightsticks',      'luz',     'luz',     50, 2],
   ['pets',      '🐾', 'Com os pets',      'tchau',   'tchau',   62, 2]
 ];
@@ -8857,7 +8841,7 @@ duoOv.innerHTML = '<div class="panel duop" role="dialog" aria-modal="true" aria-
   '</div></div>';
 document.body.appendChild(duoOv);
 
-var duoGu = null, duoCena = 'dueto', duoFundo = 'palco', duoExEu = '', duoExGu = '', duoT = 0, duoAnim = 0, duoVeioHub = false;
+var duoGu = null, duoCena = 'dueto', duoFundo = 'basico', duoExEu = '', duoExGu = '', duoT = 0, duoAnim = 0, duoVeioHub = false;
 var duoBalao = null, duoPulo = null, duoRegistrados = {}, duoPresEmo = '🧸', duoPresQt = 0, duoOff = null, duoPoseForce = '';
 var DUO_OW = 680, DUO_OH = 560;   // largo para o brilho dos visuais não ficar cortado
 
@@ -9036,7 +9020,12 @@ function duoTexto(){
   $('duoExEuT').textContent = '😊 ' + tr('Minha expressão');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo'); $('duoPres').textContent = '🎁 ' + tr('Enviar presente');
 }
-function duoChips(lista, sel, attr){ return lista.map(function(o){ return '<button type="button" class="duochip" ' + attr + '="' + escHtml(o[0]) + '" aria-pressed="' + (o[0] === sel) + '"><span>' + o[1] + '</span> ' + escHtml(tr(o[2])) + '</button>'; }).join(''); }
+function duoTrava(attr, o){   // chave da lojinha que falta para usar este chip ('' = liberado)
+  var k = attr === 'data-dcena' ? (o[7] || '') : attr === 'data-dfundo' ? (o[0] === 'cafe' ? 'duo_cafe' : lojaItem('fundo_' + o[0]) ? 'fundo_' + o[0] : '') : (attr === 'data-dexeu' || attr === 'data-dexgu') && lojaItem('expr_' + o[0]) ? 'expr_' + o[0] : '';
+  return k && !lojaTem(k) ? k : '';
+}
+function duoChips(lista, sel, attr){ return lista.map(function(o){ var tv = duoTrava(attr, o), it = tv && lojaItem(tv);
+  return '<button type="button" class="duochip' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + escHtml(o[0]) + '"') + ' aria-pressed="' + (o[0] === sel) + '"><span>' + o[1] + '</span> ' + escHtml(tr(o[2])) + (tv ? ' <small>🔒★' + it[3] + '</small>' : '') + '</button>'; }).join(''); }
 function duoFundos(){
   var L = PERF_FUNDOS.filter(function(o){ return o[0] && o[0] !== 'temporada'; }).concat(DUO_FUNDO_EXTRA);
   Object.keys(TEMA_INFO).forEach(function(k){ if(k !== 'halloween') L.push([k, TEMA_INFO[k][0], TEMA_INFO[k][1]]); });
@@ -9117,6 +9106,8 @@ function duoMsg(t){ var m = $('duoMsg'); m.textContent = t; m.hidden = !t; clear
 duoOv.addEventListener('click', function(e){
   var t = e.target, b;
   if(t.id === 'duoX'){ duoFechar(); return; }
+  if((b = t.closest('[data-dtrava]'))){ duoTravaUI(b.dataset.dtrava); return; }
+  if((b = t.closest('[data-dcomprar]'))){ duoComprar(b.dataset.dcomprar, b); return; }
   if(t.id === 'duoEntrar'){ contaEntrar(); return; }
   if(t.id === 'duoTrocar'){ duoGu = null; duoEscolhaUI(); return; }
   if((b = t.closest('[data-dnick]'))){ duoCarregar(b.dataset.dnick); return; }
@@ -9151,6 +9142,9 @@ function duoAbrir(nick){
   duoVeioHub = !hubOv.hidden; if(duoVeioHub) hubFechar();
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
   duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
+  if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
+  if(duoTrava('data-dcena', duoInfo())) duoCena = 'dueto';
+  if(duoExEu !== '' && duoTrava('data-dexeu', [duoExEu])) duoExEu = ''; if(duoExGu !== '' && duoTrava('data-dexgu', [duoExGu])) duoExGu = '';
   if(nick && contaJ) duoCarregar(nick);
   else { duoGu = null; duoEscolhaUI(); }
   if(sfx.card) sfx.card();
@@ -9316,6 +9310,262 @@ aniverOv.addEventListener('click', function(e){ if(e.target.id === 'aniverOk'){ 
  ['Hoje o TsuLiPa⭐World inteiro está em festa por você! Que o seu novo ciclo seja cheio de brilho, música, amizades e muitos Centers! ✨🎤💖', 'Today the whole TsuLiPa⭐World is celebrating you! May your new year be full of sparkle, music, friendships and lots of Centers! ✨🎤💖', '¡Hoy todo TsuLiPa⭐World está de fiesta por ti! ¡Que tu nuevo ciclo esté lleno de brillo, música, amistades y muchos Centers! ✨🎤💖', 'วันนี้ทั้ง TsuLiPa⭐World ฉลองให้คุณ! ขอให้ปีใหม่ของคุณเต็มไปด้วยประกาย เพลง มิตรภาพ และเซ็นเตอร์มากมาย! ✨🎤💖', '今日はTsuLiPa⭐World全体であなたをお祝い！新しい一年がキラキラと音楽と友だちとたくさんのセンターでいっぱいになりますように！✨🎤💖'],
  ['estrelinhas', 'stars', 'estrellitas', 'ดาว', 'スター'], ['Card especial de aniversário', 'Special birthday card', 'Carta especial de cumpleaños', 'การ์ดวันเกิดพิเศษ', '誕生日スペシャルカード'], ['Obrigado! 💖', 'Thank you! 💖', '¡Gracias! 💖', 'ขอบคุณ! 💖', 'ありがとう！💖'],
  ['Que o seu novo ciclo seja cheio de brilho, música e muitos Centers! ✨', 'May your new year be full of sparkle, music and lots of Centers! ✨', '¡Que tu nuevo ciclo esté lleno de brillo, música y muchos Centers! ✨', 'ขอให้ปีใหม่ของคุณเต็มไปด้วยประกาย เพลง และเซ็นเตอร์มากมาย! ✨', '新しい一年がキラキラと音楽とたくさんのセンターでいっぱいになりますように！✨']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+
+// ---------- Lojinha de poses, expressões e extras do Moon⭐Duo! (as poses e expressões só se compram aqui) ----------
+var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
+  ['expr_4', '😮', 'Surpresa', 60, 'expr'], ['expr_5', '🥺', 'Chorinho', 60, 'expr'], ['expr_6', '😍', 'Apaixonado', 80, 'expr'],
+  ['duo_selfie', '🤳', 'Selfie', 80, 'duo'], ['duo_guarda', '☂️', 'Guarda-chuva', 100, 'duo'], ['duo_seis', '6️⃣', 'Six Seven', 120, 'duo'],
+  ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo']
+];
+function lojaItem(k){
+  k = String(k); var i;
+  for(i = 0; i < LOJA_EXTRA.length; i++) if(LOJA_EXTRA[i][0] === k) return LOJA_EXTRA[i];
+  if(/^pose_/.test(k)){ var p = perfPoseInfo(k.slice(5)); if(p && p[3]) return [k, p[1], p[2], p[3], 'pose']; }
+  if(/^fundo_/.test(k)){ for(i = 0; i < PERF_FUNDOS.length; i++) if(PERF_FUNDOS[i][0] === k.slice(6) && PERF_FUNDOS[i][3]) return [k, PERF_FUNDOS[i][1], PERF_FUNDOS[i][2], PERF_FUNDOS[i][3], 'fundo']; }
+  return null;
+}
+function lojaTem(k){ return !lojaItem(k) || (Array.isArray(perfDono) && perfDono.indexOf(String(k)) >= 0); }
+function perfLoja2UI(){
+  var box = $('perfLoja2'); if(!box) return;
+  var L = PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], o[1], o[2], o[3], 'pose']; }).concat(LOJA_EXTRA);
+  box.innerHTML = L.map(function(it){
+    var dono = lojaTem(it[0]);
+    var prev = it[4] === 'duo' ? '<i class="lojaemo" aria-hidden="true">' + it[1] + '</i>' : '<canvas width="160" height="160" data-l2="' + it[0] + '"></canvas>';
+    var tipo = it[4] === 'pose' ? tr('Pose') : it[4] === 'expr' ? tr('Expressão') : 'Moon⭐Duo!';
+    return '<div class="perfroupa">' + prev + '<b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small class="perftemp" translate="no">' + escHtml(tipo) + '</small>' +
+      (dono ? '<em class="ok">✓ ' + escHtml(tr('Seu')) + '</em>' : '<button type="button" class="btn" data-comprar2="' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>') + '</div>';
+  }).join('');
+  [].forEach.call(box.querySelectorAll('canvas[data-l2]'), function(cv){
+    var k = cv.dataset.l2, av = perfAvAtual({ pose: /^pose_/.test(k) ? k.slice(5) : '', expr: /^expr_/.test(k) ? +k.slice(5) : 2, fundo: 'basico' });
+    av.pose = /^pose_/.test(k) ? k.slice(5) : ''; av.expr = /^expr_/.test(k) ? +k.slice(5) : 2;
+    try{ perfDesenharIdol(cv.getContext('2d'), 160, 160, av, true, /^expr_/.test(k), 0); }catch(e){}
+  });
+}
+function lojaComprar(k, btn, depois){
+  btn.disabled = true;
+  return contaRpc('comprar_visual', { p_key: k }).then(function(r){
+    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+    if(!r || !r.ok){ btn.disabled = false; if(sfx.hit) sfx.hit(); depois(false, tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : 'Não deu para falar com o servidor. Tente de novo.')); return; }
+    perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono.concat(k);
+    if(sfx.rank) sfx.rank(); if(typeof insConferir === 'function') insConferir();
+    depois(true, '✨ ' + tr('Comprado!'));
+  }).catch(function(){ btn.disabled = false; depois(false, tr('Não deu para falar com o servidor. Tente de novo.')); });
+}
+perfOv.addEventListener('click', function(e){
+  var b = e.target.closest('#perfLoja2 [data-comprar2]'); if(!b) return;
+  lojaComprar(b.dataset.comprar2, b, function(ok, msg){ if(ok) perfLoja2UI(); var m = $('perfLoja2Msg'); if(m){ m.textContent = msg; m.hidden = false; } });
+});
+
+// ---------- Câmera do jogo: as mesmas poses do perfil, expressões novas da lojinha e "Auto" sorteando ----------
+PET_PH_POSES = PERF_POSES.map(function(o){ return [o[0], o[1], o[2], o[3]]; });
+var phAutoT = 0, phAutoV = 2;
+petPhExprVal = function(padrao){   // "Auto": sorteia uma expressão por foto (as compradas entram no sorteio)
+  if(petPhExpr !== '') return +petPhExpr;
+  var agora = Date.now();
+  if(agora - phAutoT > 400){ var pool = [2, 3, 0, 2, 3, 2, 3, 1].concat([4, 5, 6].filter(function(n){ return lojaTem('expr_' + n); })); phAutoV = pool[Math.floor(Math.random() * pool.length)]; }
+  phAutoT = agora; return phAutoV;
+};
+petPhUI = function(){
+  function grp(label, campo, lista, cur){
+    return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
+      var nome = (campo === 'frame' && o[0] === 'estagio' && petPhMode === 'run') ? '🏆 ' + escHtml(tr('Rank')) : o[1] + ' ' + escHtml(tr(o[2]));
+      var key = campo === 'pose' && o[3] ? 'pose_' + o[0] : (campo === 'expr' && lojaItem('expr_' + o[0])) ? 'expr_' + o[0] : '', trava = key && !lojaTem(key);
+      return '<button type="button" data-f="' + campo + '" data-v="' + o[0] + '"' + (trava ? ' data-trava="' + key + '" class="phtrava"' : '') + ' aria-pressed="' + (cur === o[0]) + '">' + nome + (trava ? ' 🔒★' + lojaItem(key)[3] : '') + '</button>';
+    }).join('') + '</div>';
+  }
+  petPhBox.innerHTML = (petPhMode === 'share' ? '' : grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame)) + grp('Pose', 'pose', PET_PH_POSES, petPhPose) + grp('Expressão', 'expr', PET_PH_EXPRS, petPhExpr) + '<p class="perfmsg" id="phLojaMsg" hidden></p>';
+};
+petPhBox.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('[data-trava]'); if(!b) return;
+  e.stopPropagation(); e.preventDefault();
+  var it = lojaItem(b.dataset.trava), m = $('phLojaMsg');
+  if(m && it){ m.textContent = '🔒 ' + tr('{item} está na lojinha do perfil (Montar Idol) por ★{n}.').replace('{item}', it[1] + ' ' + tr(it[2])).replace('{n}', it[3]); m.hidden = false; }
+  beep(330, .08, 'triangle', .04);
+}, true);
+
+// ---------- Moon⭐Duo!: itens travados ----------
+function duoTravaUI(k){
+  var it = lojaItem(k), box = $('duoPresBox'); if(!it) return;
+  box.hidden = false;
+  if(it[4] === 'expr' || it[4] === 'pose'){ box.innerHTML = '<b>🔒 ' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small>' + escHtml(tr('{item} está na lojinha do perfil (Montar Idol) por ★{n}.').replace('{item}', it[1] + ' ' + tr(it[2])).replace('{n}', it[3])) + '</small>'; return; }
+  box.innerHTML = '<b>🔒 ' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small>' + escHtml(tr('Desbloqueie com estrelas para usar no Moon⭐Duo!')) + ' (★ ' + starT + ')</small>' +
+    '<div class="btns"><button type="button" class="btn" data-dcomprar="' + k + '"' + (starT < it[3] ? ' disabled' : '') + '>' + escHtml(tr('Desbloquear')) + ' ★' + it[3] + '</button></div>';
+  beep(660, .05, 'triangle', .04);
+}
+function duoComprar(k, b){
+  lojaComprar(k, b, function(ok, msg){
+    duoMsg(msg);
+    if(ok){ var it = lojaItem(k); if(it && it[4] === 'duo' && k !== 'duo_cafe'){ DUO_CENAS.forEach(function(c){ if(c[7] === k) duoCena = c[0]; }); duoRegistrar(); } else if(k === 'duo_cafe') duoFundo = 'cafe'; else if(/^fundo_/.test(k)) duoFundo = k.slice(6); duoPalcoUI(); }
+  });
+}
+
+// ---------- Moon⭐Duo!: aviso para quem foi escolhido (1 por dia de cada jogador) ----------
+var duoAvisoOv = document.createElement('div');
+duoAvisoOv.className = 'ov duoavisoov'; duoAvisoOv.hidden = true;
+duoAvisoOv.innerHTML = '<div class="panel duoavisop" role="dialog" aria-modal="true"><p class="duoavisolua" aria-hidden="true">🌙</p><h2 class="duotit" translate="no">Moon⭐Duo!</h2><p class="duoavisotxt" id="duoAvisoTxt"></p><div class="btns"><button type="button" class="btn" id="duoAvisoIr"></button><button type="button" class="btn alt" id="duoAvisoOk"></button></div></div>';
+document.body.appendChild(duoAvisoOv);
+var duoAvisoNick = '', duoAvisoFeito = false;
+function duoAvisosConferir(){
+  if(!contaJ) return;
+  contaRpc('duo_avisos_pendentes').then(function(L){
+    if(!Array.isArray(L) || !L.length) return;
+    duoAvisoNick = L[0].nick;
+    var txt = tr('{nick} encontrou você no Moon⭐Duo! e fez uma cena com você 🌙').replace('{nick}', L[0].nick);
+    if(L.length === 2) txt += ' ' + tr('(e mais 1 pessoa!)'); else if(L.length > 2) txt += ' ' + tr('(e mais {n} pessoas!)').replace('{n}', L.length - 1);
+    $('duoAvisoTxt').textContent = txt;
+    $('duoAvisoIr').textContent = '🌙 ' + tr('Fazer um Moon⭐Duo! com {nick}').replace('{nick}', L[0].nick);
+    $('duoAvisoOk').textContent = tr('Fechar');
+    duoAvisoOv.hidden = false; [784, 1047, 1319].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .1); });
+  }).catch(function(){});
+}
+duoAvisoOv.addEventListener('click', function(e){
+  if(e.target.id === 'duoAvisoOk' || e.target === duoAvisoOv){ duoAvisoOv.hidden = true; return; }
+  if(e.target.id === 'duoAvisoIr'){ duoAvisoOv.hidden = true; duoAbrir(duoAvisoNick); }
+});
+setInterval(function(){ if(!duoAvisoFeito && contaJ){ duoAvisoFeito = true; setTimeout(duoAvisosConferir, 3000); } }, 1500);
+
+// ---------- Outdoors do Center Run: BRS48 e fotos dos jogadores registrados ----------
+var outdoorJog = [], outdoorFoto = {}, outdoorPedido = false;
+function outdoorCarregar(){
+  if(outdoorPedido || typeof contaRpc !== 'function') return; outdoorPedido = true;
+  contaRpc('outdoor_jogadores').then(function(L){ outdoorJog = Array.isArray(L) ? L.filter(function(p){ return p && p.nick && p.avatar && typeof p.avatar === 'object'; }) : []; }).catch(function(){ outdoorPedido = false; });
+}
+setTimeout(outdoorCarregar, 2500);
+function outdoorFotoDe(p){   // foto quadrada do perfil (feita uma vez e guardada)
+  if(outdoorFoto[p.nick]) return outdoorFoto[p.nick];
+  var c = document.createElement('canvas'); c.width = 112; c.height = 112;
+  try{ perfDesenharIdol(c.getContext('2d'), 112, 112, p.avatar, true, true, 0); }catch(e){}
+  return (outdoorFoto[p.nick] = c);
+}
+function cenaCartazes(P2){
+  var esp = 640, off = dist * .35, i0 = Math.floor(off / esp), noite = typeof cenaNoite === 'function' && cenaNoite(P2);
+  function rr(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
+  for(var i = i0; i <= i0 + 2; i++){
+    var jog = outdoorJog.length && (i % 3 !== 0) ? outdoorJog[((i % outdoorJog.length) + outdoorJog.length) % outdoorJog.length] : null;
+    var w = jog ? 58 : 54, h = jog ? 74 : 66, x = Math.round(i * esp - off + 260), y0 = GY - (jog ? 118 : 110), k;
+    if(x < -80 || x > W + 20) continue;
+    var neon = jog ? '#ff6fb5' : '#4dd8ff';
+    g.save(); g.globalAlpha = noite ? .95 : .88;
+    // poste único, discreto
+    g.fillStyle = noite ? '#231d38' : '#4a4266'; g.fillRect(x + w / 2 - 2, y0 + h, 4, GY - y0 - h);
+    if(noite){ var lg = g.createRadialGradient(x + w / 2, y0 + h / 2, 6, x + w / 2, y0 + h / 2, 60); lg.addColorStop(0, jog ? 'rgba(255,111,181,.22)' : 'rgba(77,216,255,.22)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = lg; g.fillRect(x - 40, y0 - 40, w + 80, h + 80); }
+    // moldura escura com contorno neon
+    g.fillStyle = '#1d1730'; rr(x - 3, y0 - 3, w + 6, h + 6, 7); g.fill();
+    g.strokeStyle = neon; g.lineWidth = 1.6; if(noite){ g.shadowColor = neon; g.shadowBlur = 8; } rr(x - 3, y0 - 3, w + 6, h + 6, 7); g.stroke(); g.shadowBlur = 0;
+    g.save(); rr(x, y0, w, h, 5); g.clip();
+    if(jog){
+      g.drawImage(outdoorFotoDe(jog), x, y0, w, w);
+      g.fillStyle = 'rgba(29,23,48,.92)'; g.fillRect(x, y0 + w, w, h - w);
+      g.fillStyle = '#ffe9f5'; g.font = '800 8px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
+      g.fillText('⭐ ' + String(jog.nick).slice(0, 10), x + w / 2, y0 + w + 11, w - 4);
+    } else {
+      var bg = g.createLinearGradient(x, y0, x + w, y0 + h); bg.addColorStop(0, '#3c46ca'); bg.addColorStop(1, '#262d8f');
+      g.fillStyle = bg; g.fillRect(x, y0, w, h);
+      g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '200 21px "Josefin Sans","Futura","Century Gothic","Avenir",sans-serif';
+      g.fillText('BRS', x + 7, y0 + 30); g.fillText('48', x + 7, y0 + 56);
+    }
+    g.fillStyle = 'rgba(255,255,255,.08)'; g.beginPath(); g.moveTo(x, y0); g.lineTo(x + w * .6, y0); g.lineTo(x, y0 + h * .5); g.closePath(); g.fill();   // reflexo
+    g.restore();
+    // luzinhas no alto
+    for(k = 0; k < 4; k++){ var on = Math.floor(frame / 14 + k) % 2 === 0; g.fillStyle = on ? neon : 'rgba(255,255,255,.25)'; g.beginPath(); g.arc(x + 6 + k * (w - 12) / 3, y0 - 6, 1.6, 0, 7); g.fill(); }
+    g.restore();
+  }
+}
+
+// ---------- Obstáculos da pista com visual novo (mesma caixa de colisão de antes) ----------
+function obsRR(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
+function obsDesenhar(o){
+  var x = o.x, y = o.y, w = o.w, h = o.h, i;
+  g.save();
+  g.fillStyle = 'rgba(10,5,30,.3)'; g.beginPath(); g.ellipse(x + w / 2, y + h + 1, w * .55, 3, 0, 0, 7); g.fill();
+  if(o.k === 'cable'){   // cabo de palco preso com fita rosa e conectores
+    g.lineCap = 'round'; g.strokeStyle = '#1c1830'; g.lineWidth = 7; g.beginPath(); g.moveTo(x + 5, y + 8); g.bezierCurveTo(x + w * .3, y + 2, x + w * .62, y + 13, x + w - 5, y + 7); g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.2)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x + 7, y + 6.3); g.bezierCurveTo(x + w * .3, y + .4, x + w * .62, y + 11.4, x + w - 7, y + 5.4); g.stroke();
+    g.save(); g.translate(x + w / 2, y + 7.5); g.rotate(-.12); g.fillStyle = '#ff6fb5'; g.fillRect(-7, -6, 14, 12); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(-7, -6, 14, 2.5);
+    g.fillStyle = '#fff'; g.font = '900 6px sans-serif'; g.textAlign = 'center'; g.fillText('48', 0, 3); g.restore();
+    [[x + 1, y + 8, 1], [x + w - 1, y + 7, -1]].forEach(function(c){
+      var cg = g.createLinearGradient(c[0], c[1] - 4, c[0], c[1] + 4); cg.addColorStop(0, '#f2f4ff'); cg.addColorStop(1, '#8a90b5');
+      g.fillStyle = cg; obsRR(c[2] > 0 ? c[0] : c[0] - 10, c[1] - 4, 10, 8, 2.5); g.fill();
+      g.fillStyle = '#ffd23f'; g.fillRect(c[2] > 0 ? c[0] + 7 : c[0] - 9.5, c[1] - 2.5, 2.5, 5);
+    });
+  } else if(o.k === 'speaker'){   // caixa de retorno do palco, pulsando na batida
+    var cg2 = g.createLinearGradient(x, y, x + w, y + h); cg2.addColorStop(0, '#3a3156'); cg2.addColorStop(1, '#16122a');
+    g.fillStyle = cg2; obsRR(x, y, w, h, 5); g.fill();
+    g.strokeStyle = '#5c4f8a'; g.lineWidth = 1.5; obsRR(x + .75, y + .75, w - 1.5, h - 1.5, 4.5); g.stroke();
+    g.fillStyle = '#b9b3d6'; [[x, y], [x + w - 5, y], [x, y + h - 5], [x + w - 5, y + h - 5]].forEach(function(c){ obsRR(c[0], c[1], 5, 5, 1.5); g.fill(); });
+    var pul = 1 + (Math.floor(frame / 8) % 2 ? .07 : 0), cx = x + w / 2, cy = y + h * .62;
+    var wg = g.createRadialGradient(cx - 2, cy - 2, 1, cx, cy, 11 * pul); wg.addColorStop(0, '#6b5fa0'); wg.addColorStop(.6, '#2a2340'); wg.addColorStop(1, '#120f20');
+    g.fillStyle = wg; g.beginPath(); g.arc(cx, cy, 11 * pul, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,111,181,.6)'; g.lineWidth = 1.4; g.beginPath(); g.arc(cx, cy, 12.5 * pul, 0, 7); g.stroke();
+    g.fillStyle = '#9a8fd0'; g.beginPath(); g.arc(cx, cy, 3, 0, 7); g.fill();
+    g.fillStyle = '#211b36'; g.beginPath(); g.arc(cx, y + h * .22, 4.5, 0, 7); g.fill(); g.fillStyle = '#8d84c2'; g.beginPath(); g.arc(cx, y + h * .22, 1.8, 0, 7); g.fill();
+    g.fillStyle = Math.floor(frame / 10) % 2 ? '#b6ff3b' : '#4dd8ff'; g.shadowColor = g.fillStyle; g.shadowBlur = 6; g.fillRect(x + 7, y + h - 6, w - 14, 1.8); g.shadowBlur = 0;
+  } else {   // lightsticks de verdade: cabo, tubo de luz e estrelinha no topo
+    var c = o.pal;
+    for(i = 0; i < 3; i++){
+      var lx = x + i * 8 + 1, top = y + (i % 2) * 4, sw = Math.sin(frame * .15 + i) * .04;
+      g.save(); g.translate(lx + 3, y + h); g.rotate(sw); g.translate(-(lx + 3), -(y + h));
+      var hg = g.createLinearGradient(lx, 0, lx + 6, 0); hg.addColorStop(0, '#f6f3ff'); hg.addColorStop(1, '#b8b0d8');
+      g.fillStyle = hg; obsRR(lx + .5, top + 19, 5, y + h - top - 19, 2); g.fill();
+      g.fillStyle = '#2a2440'; g.fillRect(lx + .5, top + 23, 5, 2);
+      g.shadowColor = c[i]; g.shadowBlur = 12;
+      var tg = g.createLinearGradient(lx, 0, lx + 7, 0); tg.addColorStop(0, c[i]); tg.addColorStop(.5, '#ffffff'); tg.addColorStop(1, c[i]);
+      g.fillStyle = tg; obsRR(lx - .5, top, 7, 20, 3.5); g.fill(); g.shadowBlur = 0;
+      g.fillStyle = '#fff'; g.beginPath(); for(var q = 0; q < 10; q++){ var r2 = q % 2 ? 1.2 : 2.8, an = q * Math.PI / 5 - Math.PI / 2; g[q ? 'lineTo' : 'moveTo'](lx + 3 + Math.cos(an) * r2, top - 1.5 + Math.sin(an) * r2); } g.closePath(); g.fill();
+      g.restore();
+    }
+  }
+  g.restore();
+}
+
+// ---------- Renomear o pet (no camarim) ----------
+(function(){
+  var nm = $('petNm'); if(!nm || !nm.parentNode) return;
+  var b = document.createElement('button'); b.type = 'button'; b.className = 'petren'; b.id = 'petRen'; b.textContent = '✏️';
+  var box = document.createElement('span'); box.className = 'petrenbox'; box.hidden = true;
+  box.innerHTML = '<input class="nick" id="petRenNome" maxlength="12" autocomplete="off"><button type="button" class="btn" id="petRenOk">✓</button>';
+  nm.parentNode.insertBefore(b, nm.nextSibling); nm.parentNode.insertBefore(box, b.nextSibling);
+  b.onclick = function(){ var p = petAtivo && petAtivo(); if(!p) return; b.title = tr('Renomear pet'); box.hidden = !box.hidden; if(!box.hidden){ var i = $('petRenNome'); i.value = p.nome || ''; i.placeholder = tr('Nome do pet'); i.focus(); i.select(); } };
+  function salvar(){
+    var p = petAtivo && petAtivo(), v = ($('petRenNome').value || '').replace(/\s+/g, ' ').trim().slice(0, 12); if(!p || !v) return;
+    p.nome = v; petSave(); box.hidden = true; petUI(); if(sfx.card) sfx.card();
+    if(contaJ && typeof perfEnviar === 'function') try{ perfEnviar(); }catch(e){}
+  }
+  $('petRenOk').onclick = salvar;
+  $('petRenNome').addEventListener('keydown', function(e){ e.stopPropagation(); if(e.key === 'Enter') salvar(); if(e.key === 'Escape') box.hidden = true; });
+})();
+
+// ---------- Rodapé do site: aviso de direitos + logo do TsuLiPa ----------
+(function(){
+  var f = document.createElement('footer'); f.className = 'siterodape sitefoot';
+  f.innerHTML = '<p class="sitedir" data-dir="1"></p><img class="logotsl footlogo" alt="TsuLiPa"><p class="sitedir2"><a href="privacidade.html" target="_blank" rel="noopener" data-dirpriv="1"></a></p>';
+  document.body.appendChild(f);
+})();
+function sitedirUI(){
+  var ano = Math.max(2026, new Date().getFullYear());
+  [].forEach.call(document.querySelectorAll('[data-dir]'), function(p){ p.textContent = '© ' + ano + ' TsuLiPa⭐World · ' + tr('Todos os direitos reservados.') + ' ' + tr('Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.'); });
+  [].forEach.call(document.querySelectorAll('[data-dirpriv]'), function(a){ a.textContent = '🔐 ' + tr('Privacidade e segurança'); });
+  [].forEach.call(document.querySelectorAll('.logotsl'), function(im){ if(!im.src) im.src = LOGO_TSL; });
+}
+sitedirUI();
+if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang = function(){ var r = duoApplyLangOrig.apply(this, arguments); try{ sitedirUI(); }catch(e){} return r; }; }
+
+[['Lojinha de poses e extras', 'Poses & extras shop', 'Tiendita de poses y extras', 'ร้านโพสและของพิเศษ', 'ポーズとおまけのショップ'],
+ ['Poses e expressões valem para o Estúdio e para a câmera do jogo. Os extras do Moon⭐Duo! liberam cenas e cenários.', 'Poses and expressions work in the Studio and in the game camera. Moon⭐Duo! extras unlock scenes and backgrounds.', 'Las poses y expresiones sirven en el Estudio y en la cámara del juego. Los extras de Moon⭐Duo! desbloquean escenas y escenarios.', 'โพสและสีหน้าใช้ได้ในสตูดิโอและกล้องในเกม ของพิเศษ Moon⭐Duo! ปลดล็อกฉากและฉากหลัง', 'ポーズと表情はスタジオとゲームのカメラで使えます。Moon⭐Duo!のおまけはシーンと背景が解放されます。'],
+ ['Seu', 'Yours', 'Tuyo', 'ของคุณ', 'ゲット済み'], ['Na lojinha', 'In the shop', 'En la tiendita', 'ในร้าน', 'ショップで'],
+ ['{item} está na lojinha do perfil (Montar Idol) por ★{n}.', '{item} is in the profile shop (Build Idol) for ★{n}.', '{item} está en la tiendita del perfil (Armar Idol) por ★{n}.', '{item} มีขายในร้านของโปรไฟล์ (สร้างไอดอล) ราคา ★{n}', '{item}はプロフィールのショップ（アイドルをつくる）で★{n}。'],
+ ['Desbloqueie com estrelas para usar no Moon⭐Duo!', 'Unlock with stars to use in Moon⭐Duo!', '¡Desbloquéalo con estrellas para usarlo en Moon⭐Duo!', 'ปลดล็อกด้วยดาวเพื่อใช้ใน Moon⭐Duo!', 'スターで解放するとMoon⭐Duo!で使えます'],
+ ['Desbloquear', 'Unlock', 'Desbloquear', 'ปลดล็อก', '解放する'],
+ ['{nick} encontrou você no Moon⭐Duo! e fez uma cena com você 🌙', '{nick} found you on Moon⭐Duo! and made a scene with you 🌙', '¡{nick} te encontró en Moon⭐Duo! e hizo una escena contigo 🌙', '{nick} เจอคุณใน Moon⭐Duo! และทำฉากกับคุณ 🌙', '{nick}がMoon⭐Duo!であなたを見つけて、いっしょにシーンを作ったよ🌙'],
+ ['(e mais 1 pessoa!)', '(and 1 more person!)', '(¡y 1 persona más!)', '(และอีก 1 คน!)', '（ほかに1人も！）'],
+ ['(e mais {n} pessoas!)', '(and {n} more people!)', '(¡y {n} personas más!)', '(และอีก {n} คน!)', '（ほかに{n}人も！）'],
+ ['Fazer um Moon⭐Duo! com {nick}', 'Make a Moon⭐Duo! with {nick}', 'Hacer un Moon⭐Duo! con {nick}', 'ทำ Moon⭐Duo! กับ {nick}', '{nick}とMoon⭐Duo!をつくる'],
+ ['Renomear pet', 'Rename pet', 'Renombrar mascota', 'เปลี่ยนชื่อสัตว์เลี้ยง', 'ペットの名前をかえる'],
+ ['Todos os direitos reservados.', 'All rights reserved.', 'Todos los derechos reservados.', 'สงวนลิขสิทธิ์', 'All rights reserved.'],
+ ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
+ ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
+ ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();

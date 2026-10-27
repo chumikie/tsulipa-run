@@ -205,6 +205,7 @@ canvas{width:100%;height:100%;display:block}
 .petrank i{flex:1;height:7px;border-radius:9px;background:var(--chip);overflow:hidden;display:block}
 .petrank u{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#9b30d9,#b6ff3b,#4169e1)}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
 .petph span{width:100%;text-align:center;font-size:12px;font-weight:800;color:var(--sub)}
 .petph button{border:2px solid transparent;border-radius:99px;background:var(--chip);color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:4px 10px;cursor:pointer}
@@ -830,7 +831,7 @@ function layout(){
   var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'760px';
   mk();
 }
-layout();window.addEventListener('resize',function(){if(state==='menu'){layout();reset()}});
+layout();window.addEventListener('resize',function(){if(state==='menu'){layout();reset()}else if(state==='play'&&!paused&&window.matchMedia){var pt2=matchMedia('(max-width:700px) and (orientation:portrait)').matches;if((pt2?380:720)!==W)setPause(true)}});
 
 var AC=null;
 function ac(){
@@ -940,7 +941,7 @@ function getPartner(currentSel) {
 	
 function reset(){
   P={x:80,y:GY-44,vy:0,w:30,h:44,air:false};
-  obs=[]; items=[]; fans=[]; sp=5.5;
+  obs=[]; items=[]; fans=[]; sp=5.5; if(typeof cenaReset==='function') cenaReset();
   var tstVal = (!$('tstw').hidden && $('tst')) ? (+$('tst').value||0) : 0;
   isTestGame = (tstVal > 0 || !$('tstw').hidden);
   score=tstVal; dist=0; frame=0; toast=''; toastT=0;
@@ -1248,6 +1249,7 @@ function celebDraw(){
     // Solo
     drawChar(ch, 35, jumpY, 1, finalExpr);
   }
+  petPalco(g, 88, 72, .55, ct);   // seu pet comemorando no palco (Backstage⭐Pet!)
   g.restore();
   
   g = og;
@@ -1386,11 +1388,11 @@ function update(dt){
     // Ponto onde ele larga os presentes (um pouco antes do meio da tela)
     if(!window.activePetFly.dropped && window.activePetFly.x <= W * 0.65){
       window.activePetFly.dropped = true;
-	  beep(1200, .08, 'sine', .05); beep(1600, .12, 'triangle', .05, .08); // "Mew!" fofinho
+	  petPresenteVoz(); // vozinha do seu pet ("nya~", "kyu~", "hmph!"); sem pet adotado continua o "Mew!" de antes
       var dropX = window.activePetFly.x;
       var dropY = window.activePetFly.y;
       sfx.card();
-      toast = tr('Presente do Pet!') + ' 🎁';
+      toast = petPresenteMsg();   // "🎁 Mochi trouxe um presente!" (sem pet adotado: "Presente do Pet! 🎁")
       toastT = 75;
       
       // 15% de chance de Item Especial (Card com efeito ou Sorvete)
@@ -1846,6 +1848,13 @@ if(hacc==='coala'){
     g.moveTo(x+18,y+20); g.quadraticCurveTo(x+20,y+17, x+22,y+20);
     g.stroke();
     g.fillStyle='#223'; g.beginPath(); g.arc(x+15, y+23, 2.5, 0, Math.PI); g.fill();
+  } else if(expr===3){   // piscadinha (Foto 2.0): olho esquerdo aberto, direito fechado, sorriso
+    g.fillStyle='#223';g.fillRect(x+10,y+17,3,1);
+    g.fillStyle=c.eye;g.fillRect(x+10,y+18,3,4);
+    g.fillStyle='#112';g.fillRect(x+11,y+19,2,2);
+    g.fillStyle='#fff';g.fillRect(x+10,y+18,1,2);g.fillRect(x+12,y+21,1,1);
+    g.strokeStyle='#223'; g.lineWidth=1.5; g.beginPath(); g.moveTo(x+18,y+20); g.quadraticCurveTo(x+20,y+17, x+22,y+20); g.stroke();
+    g.fillStyle='#223'; g.beginPath(); g.arc(x+15, y+23, 2.5, 0, Math.PI); g.fill();
   } else {
     g.fillStyle='#223';g.fillRect(x+10,y+17,3,1);g.fillRect(x+18,y+17,3,1);
     g.fillStyle=c.eye;g.fillRect(x+10,y+18,3,4);g.fillRect(x+18,y+18,3,4);
@@ -2119,7 +2128,7 @@ function prevLoop() {
     g.restore();
 
     // Desenho do pet
-    var petKey = sel === 0 ? 'tsu' : sel === 1 ? 'lirika' : sel === 2 ? 'pati' : ['tsu', 'lirika', 'pati'][Math.floor(pt / 180) % 3];
+    var petKey = petCorridaTipo(sel === 0 ? 'tsu' : sel === 1 ? 'lirika' : sel === 2 ? 'pati' : ['tsu', 'lirika', 'pati'][Math.floor(pt / 180) % 3]);   // seu pet adotado (sem pet: igual a antes)
     drawPet(pc, petKey, 112, 38, 1.15, pt);
     
     } finally { g = og; }
@@ -2315,6 +2324,7 @@ g=x2;g.save();
       drawOnStage(CH[sel], centroPalcoX, 5.2, 0, finalExpr);
     }
     g = og;
+    petPalco(x2, 540, chaoY + 2, 2.6, frame);   // seu pet comemorando no palco (Backstage⭐Pet!)
   
     // Textos informativos do Pôster de Fim de Jogo
     var t = typeof tr === 'function' ? tr : function(w){return w;};
@@ -2339,6 +2349,7 @@ g=x2;g.save();
 
 function draw(){
   var P2=curPal(),sk=g.createLinearGradient(0,0,0,GY);sk.addColorStop(0,P2[0]);sk.addColorStop(1,P2[1]);g.fillStyle=sk;g.fillRect(0,0,W,H);for(var si=0;si<36;si++){g.globalAlpha=.25+.25*Math.sin(frame*.04+si*1.7);g.fillStyle='#fff';g.fillRect((si*97)%W,(si*53)%Math.max(40,GY-170)+8,2,2)}g.globalAlpha=1;
+  cenaNuvens(P2); cenaPassaros(P2);   // cenário vivo (V2.2)
   g.save();if(shake>0){g.translate(rnd(-shake,shake)/2,rnd(-shake,shake)/2);shake-=1}
   
   g.fillStyle=P2[2];g.fillRect(0,GY-16,W,16);
@@ -2348,6 +2359,7 @@ function draw(){
   drawBushes(dist*.62);
 
   drawProps(props,propsW,dist*.5,GY);
+  cenaMultidao(P2);   // multidão que cresce com a pontuação (V2.2)
 	
 	// --- DESENHANDO A PLATEIA ---
   fans.forEach(function(f){
@@ -2369,6 +2381,7 @@ function draw(){
   });
 
 	
+  cenaGrilo(P2);   // grilo "cri cri" de noite (V2.2)
   g.fillStyle=P2[6];g.fillRect(0,GY,W,H-GY);
   g.fillStyle=P2[7];g.shadowColor=P2[7];g.shadowBlur=14;g.fillRect(0,GY,W,3);g.shadowBlur=0;
   g.fillStyle='rgba(255,255,255,.12)';for(var x=-(dist%60);x<W;x+=60)g.fillRect(x,GY+22,30,3);
@@ -2648,6 +2661,7 @@ function makeCard(){
     }
   }
   x2.restore();
+  petPhFrameDraw(x2, W2, H2, 'papel');   // molduras Oshi e Rank (Foto 2.0)
   
   // 2. Fundo da Foto (Céu dinâmico da paleta atual)
   var sk=x2.createLinearGradient(0,20,0,380);
@@ -2691,29 +2705,25 @@ function makeCard(){
   x2.fillRect(20, 375, 360, 5);
 
   // 3. Capturando o Personagem
-  g=x2; g.save(); 
   var isGiant = (pw && pw.k === 'gigante');
   var isAlien = (pw && pw.k === 'alien');
-  
+  var cT = isGiant ? [133, 102, 4.5] : isAlien ? [148, 80, 3.5] : [148, 146, 3.5];   // posição e escala de cada caso (iguais às de antes)
+  g=x2; g.save(); 
+  g.translate(cT[0], cT[1]); g.scale(cT[2], cT[2]);
   if(isGiant) {
-    g.translate(133, 102); g.scale(4.5, 4.5); 
     var hg = g.createRadialGradient(15, 22, 10, 15, 22, 35);
     hg.addColorStop(0, 'rgba(255,111,181,0.6)'); hg.addColorStop(1, 'rgba(255,111,181,0)');
     g.fillStyle = hg; g.beginPath(); g.arc(15, 22, 35, 0, 7); g.fill();
-  } else if(isAlien) {
-    g.translate(148, 80); g.scale(3.5, 3.5); 
-  } else {
-    g.translate(148, 146); g.scale(3.5, 3.5); 
   }
   
   // O Pulo do Gato: Expressão e Animação
-  // Expressão: Dano = 1 (susto). Se não for dano, Expressão = 2 (Sorrindo super fofa!)
-  var exprFoto = (inv>0 && !isGiant && !isAlien) ? 1 : 2;
+  // Expressão: Dano = 1 (susto). Se não for dano, Expressão = 2 (Sorrindo super fofa!) — a Foto 2.0 pode trocar
+  var exprFoto = petPhExprVal((inv>0 && !isGiant && !isAlien) ? 1 : 2);
   
   // Captura o balanço da perna e pulo do exato milissegundo do jogo
   var runAnim = state==='play' ? (!P.air ? Math.sin(frame*.5) : (isAlien ? Math.sin(frame*.25) : 0)) : 0;
 
-// Captura os halos e a dupla (Unit) na polaroid
+// Captura os halos na polaroid
   if (pw && pw.k === 'fever') {
     var fH = g.createRadialGradient(15, 22, 5, 15, 22, 55);
     fH.addColorStop(0, 'rgba(255, 132, 102, 0.4)'); fH.addColorStop(1, 'rgba(255, 132, 102, 0)');
@@ -2722,27 +2732,32 @@ function makeCard(){
     var iH = g.createRadialGradient(15, 22, 5, 15, 22, 55);
     iH.addColorStop(0, 'rgba(200, 162, 245, 0.4)'); iH.addColorStop(1, 'rgba(200, 162, 245, 0)');
     g.fillStyle = iH; g.beginPath(); g.arc(15, 22, 55, 0, 7); g.fill();
-  } else if (pw && pw.k === 'unit' && pw.partner !== undefined) {
-    drawChar(CH[pw.partner], -18, 0, runAnim, 2, true);
-    var hCols = ['💜', '💚', '💙'];
-    g.save();
-    g.textAlign = 'center';
-    g.font = '8px sans-serif';
-    g.fillText(hCols[pw.partner] || '✨', -3, -10);
-    g.restore();
   }
-	
-  // Desenho do jogador principal na Polaroid
-  var xOffsetPrincipal = (pw && pw.k === 'unit' && pw.partner !== undefined) ? 18 : 0;
-  drawChar(CH[sel], xOffsetPrincipal, 0, runAnim, exprFoto);
   g.restore(); g=og;
+
+  // Dupla (Unit) e jogador principal, com contorno suave para não sumirem no fundo (Foto 2.0)
+  var unitFoto = (pw && pw.k === 'unit' && pw.partner !== undefined);
+  var xOffsetPrincipal = unitFoto ? 18 : 0;
+  petCharFoto(x2, cT[0], cT[1], cT[2], function(){
+    if (unitFoto) {
+      drawChar(CH[pw.partner], -18, 0, runAnim, 2, true);
+      var hCols = ['💜', '💚', '💙'];
+      g.save(); g.textAlign = 'center'; g.font = '8px sans-serif'; g.fillStyle = '#000';
+      g.fillText(hCols[pw.partner] || '✨', -3, -10);
+      g.restore();
+    }
+    charPose = petPhPose;   // pose escolhida (Foto 2.0)
+    drawChar(CH[sel], xOffsetPrincipal, 0, runAnim, exprFoto);
+  });
 
 // Sorteia ou define o pet principal e os coadjuvantes para enfeitar embaixo
   var listaPets = ['tsu', 'lirika', 'pati'];
   var mainPetKey = sel===0 ? 'tsu' : sel===1 ? 'lirika' : sel===2 ? 'pati' : (OSHI || listaPets[Math.floor(Math.random()*3)]);
+  var cartaoPets = petCartaoPets(mainPetKey, listaPets);   // [seu pet ativo, outros da coleção] (sem pet adotado: igual a antes)
   
 // Desenha o pet principal bem grande e imponente no céu da foto (escala 2.0)
-  drawPet(x2, mainPetKey, 325, 75, 2.0, frame);
+  petBrilhoEstagio(x2, 325, 75, 44);
+  drawPet(x2, cartaoPets[0], 325, 75, 2.0, frame);
 
   // Vinheta suave de flash e borda interna da foto
   var vg = x2.createRadialGradient(200, 200, 90, 200, 200, 260);
@@ -2763,9 +2778,10 @@ function makeCard(){
   for(var tp = -50; tp < 58; tp += 14) x2.fillRect(tp, -11, 6, 22);
   x2.restore();
   x2.globalAlpha = 1;
+  petPhFrameDraw(x2, W2, H2, 'topo', 380, ['🏆', RANKS[rankI][1]]);   // Foto 2.0: selo com o rank da corrida
 
   // Descobre quais são os outros 2 pets (coadjuvantes)
-  var petsCoadjuvantes = listaPets.filter(function(p) { return p !== mainPetKey; });
+  var petsCoadjuvantes = cartaoPets.slice(1);
 
   // 4. Textos do Photocard
   var t = typeof tr === 'function' ? tr : function(w){return w;};
@@ -2821,6 +2837,7 @@ $('cam').onclick = function(e){
   $('shdl').href = u;
   $('shdl').download = 'tsulipa-photocard.png';
   $('shr').hidden = false;
+  petPhShow(true, 'run');   // Foto 2.0 também na corrida
 };
 
 // --- SISTEMA DE RENDERIZAÇÃO DO AVATAR EM PNG TRANSPARENTE (ALTA QUALIDADE 1000x1000) ---
@@ -3106,7 +3123,7 @@ function petDrawRoom(){
   petDrawExtras(x, p);
   // Balão de humor acima do pet
   x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
-  x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 + Math.sin(petT * .07) * 3);
+  x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 - petMoodLift(p) + Math.sin(petT * .07) * 3);
 
   // Efeitos (corações do carinho etc.)
   for(var k = petFx.length - 1; k >= 0; k--){
@@ -3540,14 +3557,10 @@ function petMakePhoto(){
   x.translate(20, 20);
 
   // Personagem ativo (sorrindo, ou tranquilo se o pet estiver dormindo)
-  var og = g;
-  try{
-    g = x; g.save();
-    g.translate(78, PET_FLOOR - 44 * 2.4); g.scale(2.4, 2.4);
-    charPose = petPhPose;   // pose escolhida (Foto 2.0)
-    drawChar(CH[sel], 0, 0, 0, p.dorme ? 0 : 2);
-    g.restore();
-  } finally { g = og; charPose = ''; }
+  petCharFoto(x, 78, PET_FLOOR - 44 * 2.4, 2.4, function(){   // contorno suave + pose e expressão (Foto 2.0)
+    charPose = petPhPose;
+    drawChar(CH[sel], 0, 0, 0, petPhExprVal(p.dorme ? 0 : 2));
+  });
 
   // Pet com sombra
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 2, 26, 5, 0, 0, 7); x.fill();
@@ -4791,6 +4804,8 @@ var PET_DICT8 = {
   ja: {"Pegar estrela":"スターキャッチ","Ritmo":"リズム","Pular corda":"なわとび","hoje":"きょう","Perfeito!":"パーフェクト！","Bom!":"グッド！","Errou":"ミス","Fim!":"おしまい！","Novo recorde!":"新記録！","pontos":"てん","Pulos":"とんだ回数","Limite de estrelas de hoje atingido":"きょうのスター上限に到達","Toque nas faixas no ritmo!":"リズムに合わせてタップ！","Toque quando a corda passar no chão!":"なわが床に来たらタップ！","Toque para voltar":"タップでもどる","Sorvete de morango":"いちごアイス","Promoção!":"昇格！","Novo acessório":"新しいアクセサリー","Faixa de treino":"はちまき","Headset":"ヘッドセット","Tiara de estrelas":"星のティアラ","Faixa de Center":"センターのたすき","Auréola":"天使の輪","Moldura":"フレーム","Pose":"ポーズ","Estágio":"ステージ","Normal":"ふつう","Coração":"ハート","Tchau":"バイバイ","Tema de Halloween!":"ハロウィンテーマ！","Tema desligado":"テーマオフ"}
 };
 Object.keys(PET_DICT8).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT8[l]).forEach(function(k){ DICT[l][k] = PET_DICT8[l][k]; }); });
+// A corrida usa tr('Presente do Pet!'), mas o DICT só tinha "Presente do Pet! 🎁" (com o emoji): sem isso o aviso ficava em português
+[['en', 'Pet Gift!'], ['es', '¡Regalo de la Mascota!'], ['th', 'ของขวัญจากสัตว์เลี้ยง!'], ['ja', 'ペットからのプレゼント！']].forEach(function(t){ if(DICT[t[0]]) DICT[t[0]]['Presente do Pet!'] = t[1]; });
 
 function petNowS(){ return performance.now() / 1000; }
 function petG(fn){ var og = g; try{ fn(); } finally { g = og; } }   // troca o g com segurança (padrão do jogo)
@@ -4942,6 +4957,7 @@ function petGameStart(k){
   ac();
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();   // o Espaço não "clica" de novo no botão
   petMenuK = ''; petSinging = true; petTalkB = null;
+  petGameBtns(false);   // 📷 e 🐾 somem durante o minijogo
   var now = petNowS(), t0 = now + 2;
   petGame = { k:k, t0:t0, last:now, fim:null, fx:[] };
   [0, .5, 1].forEach(function(w){ beep(660, .1, 'square', .03, .5 + w); });
@@ -5034,11 +5050,12 @@ function petGameEnd(){
   petUI();
 }
 function petGameClose(){
-  petGame = null; petSinging = false;
+  petGame = null; petSinging = false; petGameBtns(true);
   var p = petAtivo(); if(p){ petHop = 20; petSmile = 60; }
   petUI();
 }
-function petGameAbort(){ if(petGame){ petGame = null; petSinging = false; } }
+function petGameAbort(){ if(petGame){ petGame = null; petSinging = false; } petGameBtns(true); }
+function petGameBtns(on){ ['petCam', 'petColBtn'].forEach(function(id){ var b = $(id); if(b) b.style.visibility = on ? '' : 'hidden'; }); }
 
 // Desenho do minijogo (substitui a cena do camarim enquanto joga)
 function petGameDraw(x, p){
@@ -5260,15 +5277,27 @@ function petTemaFoto(x){   // tema na foto (se estiver ligado)
 }
 
 // ================================================================
-// 4. FOTO 2.0: MOLDURAS E POSES
+// 4. FOTO 2.0: MOLDURAS, POSES E EXPRESSÕES (camarim e corrida)
 // ================================================================
-var petPhFrame = 'polaroid', petPhPose = '';
+var petPhFrame = 'polaroid', petPhPose = '', petPhExpr = '', petPhMode = 'pet';   // petPhMode: 'pet' (camarim) ou 'run' (📸 da corrida)
 var PET_PH_FRAMES = [['polaroid', '📷', 'Polaroid'], ['oshi', '💜', 'Oshi'], ['estagio', '🏅', 'Estágio']];
 var PET_PH_POSES = [['', '🙂', 'Normal'], ['v', '✌️', 'V'], ['coracao', '🫰', 'Coração'], ['tchau', '👋', 'Tchau']];
+var PET_PH_EXPRS = [['', '✨', 'Auto'], ['2', '😊', 'Sorriso'], ['0', '👀', 'Olhar'], ['3', '😉', 'Piscadinha'], ['1', '😲', 'Surpresa']];   // números = expr do drawChar
 
-// Braços das poses (chamado pelo drawChar quando charPose está ligado; só na foto do camarim)
+var PET_DICT10 = {
+  en: {"Expressão":"Expression","Auto":"Auto","Sorriso":"Smile","Olhar":"Gaze","Piscadinha":"Wink","Surpresa":"Surprise","Rank":"Rank","{p} trouxe um presente!":"{p} brought you a gift!"},
+  es: {"Expressão":"Expresión","Auto":"Auto","Sorriso":"Sonrisa","Olhar":"Mirada","Piscadinha":"Guiño","Surpresa":"Sorpresa","Rank":"Rango","{p} trouxe um presente!":"¡{p} te trajo un regalo!"},
+  th: {"Expressão":"สีหน้า","Auto":"อัตโนมัติ","Sorriso":"ยิ้ม","Olhar":"มอง","Piscadinha":"ขยิบตา","Surpresa":"ตกใจ","Rank":"แรงก์","{p} trouxe um presente!":"{p} นำของขวัญมาให้!"},
+  ja: {"Expressão":"表情","Auto":"おまかせ","Sorriso":"にっこり","Olhar":"みつめる","Piscadinha":"ウインク","Surpresa":"びっくり","Rank":"ランク","{p} trouxe um presente!":"{p}がプレゼントを持ってきたよ！"}
+};
+Object.keys(PET_DICT10).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT10[l]).forEach(function(k){ DICT[l][k] = PET_DICT10[l][k]; }); });
+
+function petPhExprVal(padrao){ return petPhExpr === '' ? padrao : +petPhExpr; }
+function petPhCor(){ return (sel === 3 ? (CU && CU.hair) : (CH[sel] && CH[sel].img)) || '#ff6fb5'; }
+
+// Braços das poses (chamado pelo drawChar quando charPose está ligado; só nas fotos)
 function petPoseArms(c, x, y){
-  g.fillRect(x + 1, y + 24, 4, 9);   // braço esquerdo normal
+  if(charPose !== 'coracao') g.fillRect(x + 1, y + 24, 4, 9);   // braço esquerdo normal (no coração os dois braços vão ao peito)
   g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(charPose === 'coracao'){
     g.fillStyle = c.skin; g.fillRect(x + 1, y + 24, 4, 3);
@@ -5286,10 +5315,31 @@ function petPoseArms(c, x, y){
   g.restore();
   g.fillStyle = c.skin;
 }
-// Papel e enfeites das molduras (fase 'papel' antes da foto, fase 'topo' depois da fita)
-function petPhFrameDraw(x, W2, H2, fase){
+
+// Desenha o(s) personagem(ns) da foto num canvas à parte e cola com um contorno suave,
+// para personagens claros (pele clara, roupa branca) não sumirem no fundo claro.
+// desenha(): chamadas de drawChar em unidades do personagem (o g já aponta para o canvas certo).
+function petCharFoto(x, tx, ty, sc, desenha){
+  var m = x.getTransform ? x.getTransform() : null, S = m ? Math.max(1, Math.sqrt(m.a * m.a + m.b * m.b)) : 1;
+  var ux = -42, uy = -18, uw = 130, uh = 70, k = sc * S;   // área que cobre parceira do Unit, asas e braço levantado
+  var cv = document.createElement('canvas'); cv.width = Math.ceil(uw * k); cv.height = Math.ceil(uh * k);
+  var og = g;
+  try{ g = cv.getContext('2d'); g.scale(k, k); g.translate(-ux, -uy); desenha(); }
+  finally{ g = og; charPose = ''; }
+  x.save();
+  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * S;    // halo macio
+  x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * S;  // contorno fininho
+  x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.restore();
+}
+
+// Papel e enfeites das molduras: fase 'papel' (antes da foto) e 'topo' (depois da fita)
+// fy = onde termina a foto (camarim 240, corrida 380); selo = [emoji, nome] (corrida: rank da partida)
+function petPhFrameDraw(x, W2, H2, fase, fy, selo){
   var f = petPhFrame; if(f === 'polaroid') return;
-  var oc = (CH[sel] && CH[sel].img) || '#ff6fb5';
+  fy = fy || 240;
+  var oc = petPhCor();
   if(fase === 'papel'){
     if(f === 'oshi'){
       var pg = x.createLinearGradient(0, 0, 0, H2); pg.addColorStop(0, petMix(oc, 1, .84)); pg.addColorStop(1, petMix(oc, 1, .94));
@@ -5309,46 +5359,84 @@ function petPhFrameDraw(x, W2, H2, fase){
     }
   } else {
     var p = petAtivo();
-    if(f === 'estagio' && p){   // selo do estágio do pet no canto da foto
-      var st = PET_STAGES[petStage(p)];
-      x.save(); x.translate(338, 226);
+    if(f === 'estagio' && (selo || p)){   // selo do estágio do pet (ou do rank da corrida) no canto da foto
+      var st = selo || [PET_STAGES[petStage(p)][2], PET_STAGES[petStage(p)][1]];
+      x.save(); x.translate(W2 - 62, fy - 14);
       x.fillStyle = '#ff6fb5'; x.beginPath(); x.moveTo(-12, 10); x.lineTo(-18, 30); x.lineTo(-8, 25); x.lineTo(-4, 34); x.lineTo(0, 12); x.fill();
       x.fillStyle = '#9b30d9'; x.beginPath(); x.moveTo(12, 10); x.lineTo(18, 30); x.lineTo(8, 25); x.lineTo(4, 34); x.lineTo(0, 12); x.fill();
       x.fillStyle = '#f4c95d'; x.beginPath(); x.arc(0, 0, 25, 0, 7); x.fill();
       x.fillStyle = '#fff7df'; x.beginPath(); x.arc(0, 0, 20, 0, 7); x.fill();
-      x.fillStyle = '#000'; x.textAlign = 'center'; x.font = '18px sans-serif'; x.fillText(st[2], 0, 1);
-      x.fillStyle = '#9a6b12'; x.font = '800 8px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(st[1]), 0, 13);
+      x.fillStyle = '#000'; x.textAlign = 'center'; x.font = '18px sans-serif'; x.fillText(st[0], 0, 1);
+      x.fillStyle = '#9a6b12'; var nmS = tr(st[1]), fs = 8; do { x.font = '800 ' + fs + 'px "M PLUS Rounded 1c",sans-serif'; fs -= .5; } while(x.measureText(nmS).width > 36 && fs > 5);
+      x.fillText(nmS, 0, 13);
       x.restore();
     } else if(f === 'oshi'){   // etiqueta "推し" com o nome do personagem
       var nm = '推し · ' + (sel === 3 ? tr('Você') : CH[sel].n);
       x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; var w = x.measureText(nm).width + 22;
-      x.save(); x.translate(34, 236); x.rotate(-.06);
+      x.save(); x.translate(34, fy - 4); x.rotate(-.06);
       x.fillStyle = oc; x.beginPath(); x.roundRect ? x.roundRect(0, -12, w, 24, 12) : x.rect(0, -12, w, 24); x.fill();
       x.fillStyle = '#fff'; x.textAlign = 'left'; x.fillText(nm, 11, 5);
       x.restore();
     }
   }
 }
-// Escolha de moldura e pose na tela da foto (só aparece na foto do camarim)
+// Escolha de moldura, pose e expressão na tela da foto (camarim e 📸 da corrida)
 var petPhBox = document.createElement('div');
 petPhBox.className = 'petph'; petPhBox.id = 'petPhOpts'; petPhBox.hidden = true;
 (function(){ var pn = $('shr').querySelector('.panel'); if(pn) pn.insertBefore(petPhBox, pn.querySelector('.btns')); })();
 function petPhUI(){
   function grp(label, campo, lista, cur){
     return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
-      return '<button type="button" data-f="' + campo + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '">' + o[1] + ' ' + escHtml(tr(o[2])) + '</button>';
+      var nome = (campo === 'frame' && o[0] === 'estagio' && petPhMode === 'run') ? '🏆 ' + escHtml(tr('Rank')) : o[1] + ' ' + escHtml(tr(o[2]));
+      return '<button type="button" data-f="' + campo + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '">' + nome + '</button>';
     }).join('') + '</div>';
   }
-  petPhBox.innerHTML = grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame) + grp('Pose', 'pose', PET_PH_POSES, petPhPose);
+  petPhBox.innerHTML = grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame) + grp('Pose', 'pose', PET_PH_POSES, petPhPose) + grp('Expressão', 'expr', PET_PH_EXPRS, petPhExpr);
 }
-function petPhShow(on){ petPhBox.hidden = !on; if(on) petPhUI(); }
+function petPhShow(on, modo){ if(on) petPhMode = modo || 'pet'; petPhBox.hidden = !on; if(on) petPhUI(); }
 petPhBox.addEventListener('click', function(e){
   var b = e.target.closest('button'); if(!b) return;
-  if(b.dataset.f === 'frame') petPhFrame = b.dataset.v; else petPhPose = b.dataset.v;
+  var f = b.dataset.f, v = b.dataset.v;
+  if(f === 'frame') petPhFrame = v; else if(f === 'pose') petPhPose = v; else petPhExpr = v;
   beep(988, .04, 'triangle', .04);
-  var u = petMakePhoto(); if(u){ $('shimg').src = u; $('shdl').href = u; }
+  var u = petPhMode === 'run' ? safeCall(makeCard) : petMakePhoto();
+  if(u){ $('shimg').src = u; $('shdl').href = u; }
   petPhUI();
 });
+// Some sozinha quando a tela da foto fecha (✕, Esc ou qualquer outro caminho)
+if(window.MutationObserver) new MutationObserver(function(){ if($('shr').hidden) petPhShow(false); }).observe($('shr'), { attributes:true, attributeFilter:['hidden'] });
+
+// ---------- O pet nas fotos e no palco da corrida ----------
+// [principal, lado 1, lado 2]: o seu pet ativo em destaque e os outros da sua coleção (completa com os oficiais)
+function petCartaoPets(padrao, oficiais){
+  if(!petData || !petData.pets[petData.ativo]) return [padrao].concat(oficiais.filter(function(k){ return k !== padrao; }));
+  var lista = [petData.ativo].concat((petData.donos || []).filter(function(k){ return k !== petData.ativo && petData.pets[k]; }));
+  oficiais.forEach(function(k){ if(lista.indexOf(k) < 0) lista.push(k); });
+  return lista.slice(0, 3).map(petType);
+}
+function petBrilhoEstagio(x, cx, cy, r){   // brilho de estágio atrás do pet ativo (Center ou mais)
+  var p = petAtivo(); if(!p || petStage(p) < 4) return;
+  var gl = x.createRadialGradient(cx, cy, 2, cx, cy, r);
+  gl.addColorStop(0, petStage(p) >= 5 ? 'rgba(255,210,63,.6)' : 'rgba(255,225,120,.42)'); gl.addColorStop(1, 'rgba(255,210,63,0)');
+  x.fillStyle = gl; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
+}
+// Pet ativo comemorando no palco (Fim do show e SALVAR IMAGEM); t = contador da animação
+function petPalco(x, cx, chao, sc, t){
+  if(!petData || !petData.pets[petData.ativo]) return;
+  var hop = Math.abs(Math.sin(t * .09)) * 3 * sc / 2.6;
+  x.fillStyle = 'rgba(40,10,70,.22)'; x.beginPath(); x.ellipse(cx, chao, 11 * sc, 2.4 * sc, 0, 0, 7); x.fill();
+  petBrilhoEstagio(x, cx, chao - 12 * sc, 22 * sc);
+  drawPet(x, petType(petData.ativo), cx, chao - 12 * sc - hop, sc, t, 'feliz');
+}
+// Aviso e vozinha quando o pet entrega o presente na corrida
+function petPresenteMsg(){
+  var p = petAtivo();
+  return p ? '🎁 ' + tr('{p} trouxe um presente!').split('{p}').join(p.nome) : tr('Presente do Pet!') + ' 🎁';
+}
+function petPresenteVoz(){
+  if(petData && petData.pets[petData.ativo]){ petVoice(null); return; }
+  beep(1200, .08, 'sine', .05); beep(1600, .12, 'triangle', .05, .08);   // "Mew!" de antes (sem pet adotado)
+}
 
 // ================================================================
 // 5. BÔNUS NA CORRIDA: quem voa e entrega presentes é o seu pet ativo
@@ -5364,6 +5452,115 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
   return c;
 }
 // --- FIM DO BACKSTAGE⭐PET! V2.1 ---
+// ================================================================
+// --- CENTER⭐RUN!: O CENÁRIO GANHA VIDA (V2.2) ---
+// Nuvens lentas sombreadas pela paleta do momento, bando de pássaros em silhueta,
+// grilo "cri cri" nas fases de noite e multidão de fãs que cresce com a pontuação.
+// Tudo é desenhado a partir de dist/frame (sem listas novas): não mexe na jogabilidade.
+// ================================================================
+function cenaRGB(s){ var m = String(s).match(/\d+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2]]; }
+function cenaMix(a, b, t, al){ return 'rgba(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' + Math.round(a[1] + (b[1] - a[1]) * t) + ',' + Math.round(a[2] + (b[2] - a[2]) * t) + ',' + (al === undefined ? 1 : al) + ')'; }
+function cenaHash(n){ var x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function cenaNoite(P2){ var c = cenaRGB(P2[0]); return (c[0] * .3 + c[1] * .59 + c[2] * .11) < 80; }
+
+// ---------- Nuvens (duas camadas, a de trás mais lenta e transparente) ----------
+function cenaNuvens(P2){
+  var top = cenaRGB(P2[0]), bot = cenaRGB(P2[1]), cid = cenaRGB(P2[2]), wh = [255, 255, 255];
+  var noite = cenaNoite(P2), yMax = Math.max(60, GY - 190);
+  [[.03, .04, .62, .55, 300], [.07, .09, .95, .78, 240]].forEach(function(L, li){
+    var off = dist * L[0] + frame * L[1], esp = L[4], i0 = Math.floor(off / esp);
+    for(var i = i0; i < i0 + Math.ceil(W / esp) + 2; i++){
+      var h = cenaHash(i * 3 + li * 101); if(h < .3) continue;   // alguns espaços ficam sem nuvem
+      var cx = (i - i0) * esp - (off % esp) + h * 90 - 40, cy = 26 + cenaHash(i * 7 + li) * (yMax - 26), s = L[2] * (.75 + cenaHash(i * 11 + li) * .5);
+      cenaNuvem(cx, cy, s, L[3] * (noite ? .7 : 1), top, bot, cid, wh, noite);
+    }
+  });
+}
+function cenaNuvem(cx, cy, s, al, top, bot, cid, wh, noite){
+  var B = [[-22, 4, 12], [-7, -4, 16], [12, -2, 14], [27, 5, 10], [2, 7, 13]];
+  g.save(); g.translate(cx, cy); g.scale(s, s);
+  g.fillStyle = cenaMix(bot, cid, .45, al * .9);                       // sombra embaixo, na cor do cenário
+  B.forEach(function(b){ g.beginPath(); g.arc(b[0], b[1] + 4, b[2], 0, 7); g.fill(); });
+  g.fillStyle = cenaMix(cenaRGB(cenaMix(top, bot, .5)), wh, noite ? .25 : .55, al);   // corpo
+  B.forEach(function(b){ g.beginPath(); g.arc(b[0], b[1], b[2], 0, 7); g.fill(); });
+  g.fillStyle = cenaMix(top, wh, noite ? .45 : .82, al * .75);          // luz em cima
+  [[-9, -8, 9], [10, -6, 8]].forEach(function(b){ g.beginPath(); g.arc(b[0], b[1], b[2], 0, 7); g.fill(); });
+  g.restore();
+}
+
+// ---------- Pássaros em silhueta (um bando de vez em quando) ----------
+var cenaAves = null, cenaProxAves = 900;
+function cenaPassaros(P2){
+  if(!cenaAves && frame > cenaProxAves && state === 'play'){
+    var dir = Math.random() < .5 ? 1 : -1;
+    cenaAves = { f0:frame, dir:dir, y:30 + Math.random() * Math.max(30, GY - 220), n:3 + Math.floor(Math.random() * 3) };
+  }
+  if(!cenaAves) return;
+  var A = cenaAves, t = frame - A.f0, x0 = A.dir > 0 ? -40 + t * 1.7 : W + 40 - t * 1.7;
+  if(x0 < -160 || x0 > W + 160){ cenaAves = null; cenaProxAves = frame + 1500 + Math.random() * 1500; return; }   // 25 a 50 s até o próximo
+  g.save(); g.strokeStyle = cenaMix(cenaRGB(P2[1]), [20, 10, 40], .65, .85); g.lineWidth = 1.6; g.lineCap = 'round';
+  for(var j = 0; j < A.n; j++){
+    var bx = x0 - A.dir * j * 13, by = A.y + (j % 2 ? 1 : -1) * Math.ceil(j / 2) * 7 + Math.sin(t * .05 + j) * 2, fl = Math.sin(t * .25 + j * 1.3) * 3;
+    g.beginPath(); g.moveTo(bx - 6, by - fl); g.quadraticCurveTo(bx - 3, by - 1, bx, by); g.quadraticCurveTo(bx + 3, by - 1, bx + 6, by - fl); g.stroke();
+  }
+  g.restore();
+}
+
+// ---------- Multidão de fãs ao fundo (cresce: 2500, Center 5000 e 10000 pontos) ----------
+function cenaMultidao(P2){
+  var dens = score >= 10000 ? .95 : score >= 5000 ? .7 : score >= 2500 ? .32 : 0;
+  if(!dens) return;
+  var cores = ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5', '#ffe14d'], esp = 11, off = dist * .45, i0 = Math.floor(off / esp);
+  var silh = cenaMix(cenaRGB(P2[3]), [10, 8, 30], .45);
+  for(var fila = 0; fila < (score >= 10000 ? 2 : 1); fila++){
+    var base = GY - 8 - fila * 7;
+    for(var i = i0; i < i0 + Math.ceil(W / esp) + 2; i++){
+      var h = cenaHash(i * 13 + fila * 977); if(h > dens) continue;
+      var x = (i - i0) * esp - (off % esp), pulo = Math.abs(Math.sin(frame * .1 + i * .7)) * (score >= 5000 ? 4 : 2.5), y = base - pulo - cenaHash(i * 5) * 3;
+      g.fillStyle = silh; g.fillRect(x, y - 9, 8, 10); g.beginPath(); g.arc(x + 4, y - 12, 4, 0, 7); g.fill();
+      var c = cores[Math.floor(cenaHash(i * 17 + fila) * cores.length)], bal = Math.sin(frame * .1 + i) * 2;
+      g.fillStyle = c; g.globalAlpha = .9; g.fillRect(x + 6 + bal * .3, y - 21, 2, 9); g.globalAlpha = .28; g.fillRect(x + 4 + bal * .3, y - 23, 6, 13); g.globalAlpha = 1;
+    }
+  }
+}
+
+// ---------- Grilo "cri cri" (só nas fases de noite, de vez em quando) ----------
+var cenaGrl = null, cenaProxGrilo = 600;
+function cenaGrilo(P2){
+  if(!cenaGrl && state === 'play' && frame > cenaProxGrilo){
+    if(cenaNoite(P2) && Math.random() < .5) cenaGrl = { d0:dist, f0:frame, ult:0 };
+    else cenaProxGrilo = frame + 600;
+  }
+  if(!cenaGrl) return;
+  var G = cenaGrl, x = W + 20 - (dist - G.d0) * .62, t = frame - G.f0;
+  if(x < -30){ cenaGrl = null; cenaProxGrilo = frame + 2400 + Math.random() * 1800; return; }
+  var hop = (t % 160) < 14 ? Math.sin((t % 160) / 14 * Math.PI) * 6 : 0, y = GY - 4 - hop;
+  g.save(); g.translate(x, y);
+  g.strokeStyle = '#3f6212'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(-3, 1); g.lineTo(-7, 4); g.moveTo(1, 1); g.lineTo(-1, 4); g.moveTo(3, 1); g.lineTo(6, 4); g.stroke();   // perninhas
+  g.beginPath(); g.moveTo(5, -2); g.quadraticCurveTo(10, -10, 14, -9); g.moveTo(5, -2); g.quadraticCurveTo(9, -12, 11, -13); g.stroke();   // antenas
+  g.fillStyle = '#65a30d'; g.beginPath(); g.ellipse(0, -1, 6, 2.8, -.1, 0, 7); g.fill();
+  g.fillStyle = '#4d7c0f'; g.beginPath(); g.arc(5, -2, 2.4, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.fillRect(5.5, -3, 1, 1);
+  g.restore();
+  if(x > 20 && x < W - 20 && t - G.ult > 70){   // canta enquanto está na tela
+    G.ult = t;
+    for(var k = 0; k < 3; k++){ beep(4400, .035, 'sine', .018, k * .06); beep(4700, .03, 'sine', .01, k * .06 + .02); }
+  }
+  if(t - G.ult < 40){
+    g.save(); g.globalAlpha = 1 - (t - G.ult) / 40; g.fillStyle = '#d9f99d'; g.font = '800 10px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
+    g.fillText('cri cri ♪', x + 4, y - 16 - (t - G.ult) * .2); g.restore();
+  }
+}
+function cenaReset(){ cenaAves = null; cenaGrl = null; cenaProxAves = 900; cenaProxGrilo = 600; }
+
+// ---------- Polimento da V2 ----------
+// Pet com auréola/tiara: o balão de humor sobe um pouco para não esconder o acessório
+function petMoodLift(p){
+  var a = petData && petData.ativo === 'meu' ? (p.cfg && p.cfg.acc) : p.acc;
+  return (a === 'aureola' || a === 'tiara') ? 12 : 0;
+}
+// --- FIM DO CENÁRIO VIVO ---
 
 var EXTRA_DICT = {
   en: {

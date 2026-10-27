@@ -212,8 +212,8 @@ canvas{width:100%;height:100%;display:block}
 /* --- V2.1.3: PERFIL, ESTÚDIO DE FOTO, MONTAR IDOL E PRESENTE DA CONTA --- */
 .perfov{position:fixed;z-index:20;overflow:auto;align-items:flex-start;padding:16px 10px}
 .perfp{position:relative;width:min(94%,440px);margin:auto;text-align:left;background:radial-gradient(circle at 0 0,rgba(255,111,181,.16),transparent 38%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.13),transparent 42%),radial-gradient(circle at 20% 100%,rgba(65,105,225,.1),transparent 40%),var(--card)}
-.perfx{position:absolute;top:10px;right:10px;z-index:2;border:0;background:var(--chip);color:var(--sub);width:32px;height:32px;border-radius:50%;font:inherit;font-weight:800;cursor:pointer}
-.perfhero{position:relative;display:flex;align-items:center;gap:16px;margin:2px 0 16px;padding:14px 40px 14px 12px;border-radius:18px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.16) 45%,rgba(77,216,255,.14));overflow:hidden}
+.perfx{position:absolute;top:26px;right:28px;z-index:3;border:0;background:var(--chip);color:var(--sub);width:32px;height:32px;border-radius:50%;font:inherit;font-weight:800;cursor:pointer}
+.perfhero{position:relative;display:flex;align-items:center;gap:16px;margin:2px 0 16px;padding:16px 44px 14px 14px;border-radius:18px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.16) 45%,rgba(77,216,255,.14));overflow:hidden}
 .perfbr{position:absolute;font-style:normal;color:#ff6fb5;font-size:14px;opacity:.8;animation:perfpisca 2.4s ease-in-out infinite;pointer-events:none}
 .perfbr.b1{top:6px;left:48%}.perfbr.b2{bottom:8px;right:16px;color:#9b30d9;animation-delay:.6s}.perfbr.b3{top:12px;right:44px;color:#4169e1;font-size:11px;animation-delay:1.2s}.perfbr.b4{bottom:6px;left:120px;color:#f5b400;font-size:10px;animation-delay:1.8s}
 @keyframes perfpisca{0%,100%{opacity:.25;transform:scale(.7) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
@@ -284,6 +284,44 @@ canvas{width:100%;height:100%;display:block}
 .conta-perfil{display:inline-flex;align-items:center;gap:6px;border:0;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;border-radius:99px;padding:3px 12px 3px 3px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(123,63,240,.35)}
 .conta-perfil canvas{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px #fff}
 @media (prefers-reduced-motion:reduce){.perfbr,.perffotow::before,.perfnm,.perfpet canvas{animation:none}}
+.perffotocol{display:flex;flex-direction:column;align-items:center;gap:10px;flex:none}
+.perfcora{display:inline-flex;align-items:center;gap:4px;border:0;border-radius:99px;padding:3px 12px;font:inherit;font-size:13px;font-weight:800;background:var(--card);color:var(--pink);box-shadow:0 2px 8px rgba(123,63,240,.25)}
+button.perfcora{cursor:pointer;transition:transform .12s}button.perfcora:active{transform:scale(.92)}
+button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out infinite}
+@keyframes perfbate{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.perfsobe{position:fixed;z-index:30;font-style:normal;font-size:18px;pointer-events:none;animation:perfsobe 1.4s ease-out forwards}
+@keyframes perfsobe{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-90px) scale(1.2)}}
+.perfoshi{align-self:flex-start;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,#9b30d9,#ff6fb5);border-radius:99px;padding:1px 10px;margin:2px 0}
+.perffrase{display:block;font-size:13px;font-style:italic;color:var(--ink);margin-top:4px;overflow-wrap:anywhere}
+.perffrase::before{content:"“";color:var(--pink)}.perffrase::after{content:"”";color:var(--pink)}
+.perfins{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.perfin{aspect-ratio:1;border:0;border-radius:50%;padding:0;cursor:pointer;display:grid;place-items:center;background:var(--chip);font-size:20px;filter:grayscale(1);opacity:.55;transition:transform .12s}
+.perfin.ok{filter:none;opacity:1;background:radial-gradient(circle at 30% 30%,#fff 0,#ffe0f0 45%,#e9e0ff 100%);box-shadow:0 0 0 2px #ffd23f inset,0 3px 10px rgba(245,180,0,.35)}
+.perfin[aria-pressed="true"]{transform:scale(1.12);outline:3px solid var(--pink);outline-offset:2px}
+.perfinsdesc{text-align:center;font-size:12px;color:var(--sub);margin:8px 0 0}.perfinsdesc[hidden]{display:none}
+.perfinsdesc b{color:var(--b1)}.perfinsdesc em{font-style:normal;font-weight:800;color:var(--sub)}.perfinsdesc em.ok{color:#d4a017}
+.perfpos-geral{margin:0 0 8px;font-size:13px;color:var(--sub);font-weight:700}.perfpos-geral b{color:var(--ink)}
+.perfrecform{display:flex;gap:6px;align-items:center}.perfrecform .nick{margin:0;flex:1;min-width:0}
+.perfrecform .btn{font-size:13px;padding:7px 14px;white-space:nowrap}
+.perfrecs{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.perfrecs li{position:relative;background:var(--chip);border-radius:14px 14px 14px 4px;padding:6px 34px 7px 10px;font-size:13px}
+.perfrecs li:nth-child(3n+1){background:linear-gradient(120deg,rgba(155,48,217,.13),var(--chip))}.perfrecs li:nth-child(3n+2){background:linear-gradient(120deg,rgba(92,199,44,.14),var(--chip))}.perfrecs li:nth-child(3n){background:linear-gradient(120deg,rgba(65,105,225,.14),var(--chip))}
+.perfrecs li small{color:var(--sub);font-size:10px}.perfrecs li p{margin:2px 0 0;overflow-wrap:anywhere}
+.perfrecx{position:absolute;top:6px;right:6px;border:0;background:none;color:var(--sub);font:inherit;font-size:12px;cursor:pointer;width:22px;height:22px;border-radius:50%}
+.perfrecx:hover{background:var(--card)}
+.perfrecon{display:flex;gap:6px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--sub);font-weight:700;margin-top:8px}
+.perfbio{margin-top:16px;background:var(--chip);border-radius:14px;padding:8px 12px}
+.perfbio summary{cursor:pointer;font-weight:800;color:var(--b1);font-size:13px}
+.perfbio label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub);margin-top:8px}
+.perfbio select{font:inherit;font-size:13px;border-radius:8px;border:1px solid var(--sub);background:var(--card);color:var(--ink);padding:4px 6px}
+.perfbio .nick{margin:0}
+.perfloja{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.perfroupa{background:var(--chip);border:2px solid transparent;border-radius:14px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer}
+.perfroupa.on{border-color:var(--pink);box-shadow:0 0 12px rgba(255,111,181,.35)}
+.perfroupa canvas{width:88px;height:88px;border-radius:12px}
+.perfroupa b{font-size:12px;line-height:1.2}
+.perfroupa .btn{font-size:12px;padding:5px 14px;box-shadow:0 3px 0 var(--edge)}
+.perfroupa em.ok{font-style:normal;font-size:12px;font-weight:800;color:var(--b1)}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -339,6 +377,17 @@ canvas{width:100%;height:100%;display:block}
 .logo b .st{-webkit-text-fill-color:#f5b400;color:#f5b400;-webkit-background-clip:border-box;background-clip:border-box;background:none}
 /* Modo teste aberto (10 cliques no título): contorno rosa no palco do jogo */
 body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
+/* --- V2.1.3: o visual fofo do perfil no resto do site --- */
+.panel{background:radial-gradient(circle at 0 0,rgba(255,111,181,.14),transparent 36%),radial-gradient(circle at 100% 18%,rgba(123,63,240,.12),transparent 40%),radial-gradient(circle at 15% 100%,rgba(65,105,225,.1),transparent 40%),var(--card)}
+.tabs button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);box-shadow:0 3px 10px rgba(123,63,240,.3)}
+.lb li{border-radius:10px}
+.lb li:nth-child(1){background:linear-gradient(90deg,rgba(255,210,63,.32),rgba(255,210,63,.06))}
+.lb li:nth-child(2){background:linear-gradient(90deg,rgba(190,200,220,.4),rgba(190,200,220,.06))}
+.lb li:nth-child(3){background:linear-gradient(90deg,rgba(225,150,90,.3),rgba(225,150,90,.06))}
+.chip[aria-pressed="true"]{box-shadow:0 0 0 2px rgba(255,111,181,.25),0 4px 12px rgba(123,63,240,.25)}
+.conta-ok b{background:linear-gradient(90deg,#9b30d9,#ff6fb5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.petinfo b{background:linear-gradient(90deg,#9b30d9,#ff6fb5,#4169e1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.petpick button[aria-pressed="true"],.petmenu button[aria-pressed="true"]{box-shadow:0 0 12px rgba(155,48,217,.3)}
 </style>
 </head>
 <body>
@@ -1809,6 +1858,8 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillRect(x+7,y+30,16,2);                                               // cinto
     g.fillRect(x+12,y+24,6,4);                                               // painel
     g.fillStyle='#fff'; g.fillRect(x+14,y+25,2,2);
+  }else if(perfRoupaLoja(roupa, c, x, y, corDaRoupa, E, T)){
+    // V2.1.3: roupa da lojinha (desenhada no módulo do perfil)
   }else{
 
     // Roupa Básica
@@ -2018,7 +2069,7 @@ if(hacc==='coala'){
     }
     g.globalAlpha=1;
   }
-  if(charPose) perfPoseFrente(c, x, y);   // V2.1.3: mãos e microfone por cima do rosto
+  if(charPose || perfAntena) perfPoseFrente(c, x, y);   // V2.1.3: mãos, microfone e anteninhas por cima do rosto
   g.restore();
 }
 
@@ -5900,14 +5951,15 @@ function petShareMoldura(x, W2, H2){
 }
 // --- FIM DA CONTA ---
 // ================================================================
-// --- V2.1.3 · PERFIL, ESTÚDIO DE FOTO, MONTAR IDOL, NUVEM E PRESENTE DA CONTA ---
-// Perfil público (toque no nome do ranking online): foto, nome, recorde, rank,
-// pets e últimas corridas — sem estrelas.
+// --- V2.1.3 · PERFIL, ESTÚDIO, MONTAR IDOL, LOJINHA, NUVEM E PRESENTE DA CONTA ---
+// Perfil público (toque no nome do ranking online): foto, nome, oshi, frase, rank,
+// corações, insígnias, Center Run, minijogos, pets e recados — sem estrelas.
 // Perfil pessoal (botão com o rostinho, com login), em 3 abas:
-//   Perfil       → o mesmo + estrelas, estatísticas e ranking dos minijogos do camarim
-//   Montar Idol  → o mesmo montador do menu (cabelo, olhos, pele, roupa, acessórios)
-//   Estúdio      → gerador de PNG: visuais do jogo, poses, fundos (à venda por ★,
-//                  conferidos no servidor), expressão e o pet junto na foto.
+//   Perfil       → o mesmo + estrelas, estatísticas, editar oshi/frase e recados
+//   Montar Idol  → o montador do menu (ao vivo) + lojinha de roupas exclusivas
+//   Estúdio      → Idol animado com visuais do jogo, poses, fundos e pet; o PNG
+//                  só é gerado ao tocar em "Baixar PNG".
+// Tudo que se compra é conferido no servidor (comprar_visual / salvar_avatar).
 // Nuvem: pets, mural, guarda-roupa e recordes dos minijogos (brs48cr_pet) e o visual
 // (brs48cr_cu2, brs48cr_ch2, brs48cr_acc, brs48cr_char). Vale o save mais recente;
 // no 1º login num aparelho que já tem save, pergunta antes de trocar pelo da nuvem.
@@ -5945,9 +5997,32 @@ var PERF_FUNDOS = [   // chave no servidor: fundo_...
   ['noite',     '🌙', 'Noite',          80],
   ['halloween', '🎃', 'Halloween',     150]
 ];
+var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: roupa_...); o valor vai em "out" do personagem
+  ['brasil',   '🇧🇷', 'Brasil',            150],
+  ['hipster',  '☕', 'Hipster',           250],
+  ['rock',     '🎸', 'Rockstar',          300],
+  ['decora',   '🍬', 'Decora kei',        350],
+  ['alienfan', '👽', 'Fantasia de alien', 400]
+];
+var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, como conquistar]
+  ['estreia',  '🎤', 'Estreia',          'Primeira corrida no ranking online'],
+  ['maratona', '🏃', 'Maratona',         '100 corridas no ranking online'],
+  ['presenca', '📅', 'Presença VIP',     'Correu em 7 dias diferentes'],
+  ['center',   '👑', 'Center',           'Chegou a 5000 pontos'],
+  ['ace',      '🏆', 'Eternal Ace',      'Chegou a 30000 pontos'],
+  ['kami',     '😇', 'Kami-Oshi',        'Chegou a 50000 pontos'],
+  ['familia',  '🐾', 'Família completa', 'Tem Chu, Koali, Pucchi e o Meu Pet'],
+  ['petkami',  '🌟', 'Pet lendário',     'Um pet chegou ao estágio Kami-Oshi'],
+  ['top1mini', '🥇', 'Top 1 do camarim', '1º lugar em um minijogo do camarim'],
+  ['fashion',  '🛍️', 'Fashionista',      '5 compras no estúdio e na lojinha'],
+  ['estilista','🎨', 'Estilista',        'Escolheu a própria foto do perfil'],
+  ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações']
+];
+var PERF_OSHI = { tsu:['💜', 'Tsu', '#9b30d9'], lirika:['💚', 'Lirika', '#5cc72c'], pati:['💙', 'Pati', '#4169e1'], tsulipa:['💜💚💙', 'Trio TsuLiPa', '#ff6fb5'] };
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_RANK_EMO = ['🎤', '📒', '👯', '🌟', '✨', '💎', '💖', '👑', '💫', '🎖️', '🏆', '😇'];
 var PERF_KAO = ['(｡•̀ᴗ-)✧', '(≧◡≦) ♡', 'ヽ(・∀・)ﾉ', '(◕‿◕✿)', '٩(◕‿◕｡)۶', '(๑˃ᴗ˂)ﻭ', '(*˘︶˘*).｡*♡', '☆*:.｡.o(≧▽≦)o.｡.:*☆'];
+var PERF_TSL = ['#9b30d9', '#5cc72c', '#4169e1'];   // roxo Tsu, verde Lirika, azul Pati
 var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', hat:'' };
 var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'hat'];
 var PERF_SYNC = 'brs48cr_sync';   // chave NOVA da V2.1.3 (nunca renomear)
@@ -5966,7 +6041,17 @@ var PERF_DICT = {
        "Montar Idol":"アイドルメイク","Estúdio":"スタジオ","Básico":"ベーシック","Microfone":"マイク","Banzai":"バンザイ","Nyan":"にゃん","Lightstick":"ペンライト","Halloween":"ハロウィン","Pet na foto":"写真にペット","Sem pet":"ペットなし","Prévia: compre o que está marcado com ★ para baixar e usar.":"プレビュー：★のついたものを買うと保存・使用できます。","Minijogos do camarim":"楽屋のミニゲーム","Ritmo":"リズム","Pular corda":"なわとび","Seu recorde":"自己ベスト","de":"/","Ninguém jogou ainda.":"まだだれも遊んでいません。","Toque na foto para ver inteira":"写真をタップすると全身が見られるよ","Tudo o que você muda aqui vale para o Idol do jogo.":"ここで変えたものはゲームのアイドルにも反映されるよ。",
        "Esta conta já tem um save na nuvem":"このアカウントにはクラウドのセーブがあります","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"ログインすると、この端末のセーブはクラウドのセーブに置きかわります（ペット・かべ・ルック・ミニゲームの記録）。この端末のセーブはクラウドに送られません。","USAR O SAVE DA NUVEM":"クラウドのセーブを使う","Cancelar e sair da conta":"やめてログアウト"}
 };
-Object.keys(PERF_DICT).forEach(function(l){ if(DICT[l]) Object.keys(PERF_DICT[l]).forEach(function(k){ DICT[l][k] = PERF_DICT[l][k]; }); });
+var PERF_DICT2 = {   // lojinha, insígnias, oshi e frase, corações e recados
+  en: {"Brasil":"Brazil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Alien costume","Lojinha de roupas":"Outfit shop","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Outfits you can only get here. After buying, they show up under Outfit (for every character).","Vestir":"Wear","Vestindo":"Wearing","Insígnias":"Badges","Conquistada!":"Unlocked!","Bloqueada":"Locked","Center Run":"Center Run","no ranking geral":"in the overall ranking","Recados":"Messages","Deixe um recado (até 60 letras)":"Leave a message (up to 60 letters)","Enviar":"Send","Nenhum recado ainda.":"No messages yet.","Recado enviado!":"Message sent!","Essa mensagem tem palavras que não são permitidas.":"This message has words that aren't allowed.","Você já deixou um recado hoje para essa pessoa.":"You already left a message for this person today.","Essa pessoa não está recebendo recados.":"This person isn't receiving messages.","Você chegou ao limite de recados de hoje.":"You've reached today's message limit.","Entre com Google para dar coração e deixar recados.":"Sign in with Google to give hearts and leave messages.","Aceitar recados":"Accept messages","Dar coração":"Give a heart","corações":"hearts","Você deu um coração hoje!":"You gave a heart today!","Oshi":"Oshi","Sem oshi":"No oshi","Trio TsuLiPa":"TsuLiPa trio","Frase do perfil":"Profile phrase","Salvar":"Save","Salvo!":"Saved!","Editar oshi e frase":"Edit oshi and phrase","Essa frase tem palavras que não são permitidas.":"This phrase has words that aren't allowed.",
+       "Estreia":"Debut","Maratona":"Marathon","Presença VIP":"VIP attendance","Família completa":"Full family","Pet lendário":"Legendary pet","Top 1 do camarim":"Dressing room #1","Fashionista":"Fashionista","Estilista":"Stylist","Coração de ouro":"Heart of gold","Primeira corrida no ranking online":"First run on the online ranking","100 corridas no ranking online":"100 runs on the online ranking","Correu em 7 dias diferentes":"Ran on 7 different days","Chegou a 5000 pontos":"Reached 5000 points","Chegou a 30000 pontos":"Reached 30000 points","Chegou a 50000 pontos":"Reached 50000 points","Tem Chu, Koali, Pucchi e o Meu Pet":"Has Chu, Koali, Pucchi and My Pet","Um pet chegou ao estágio Kami-Oshi":"A pet reached the Kami-Oshi stage","1º lugar em um minijogo do camarim":"1st place in a dressing room minigame","5 compras no estúdio e na lojinha":"5 purchases in the studio and shop","Escolheu a própria foto do perfil":"Picked their own profile photo","Recebeu 10 corações":"Received 10 hearts"},
+  es: {"Brasil":"Brasil","Hipster":"Hipster","Rockstar":"Rockstar","Decora kei":"Decora kei","Fantasia de alien":"Disfraz de alien","Lojinha de roupas":"Tiendita de ropa","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Ropa que solo existe aquí. Después de comprarla, aparece en Ropa (para todos los personajes).","Vestir":"Vestir","Vestindo":"Puesto","Insígnias":"Insignias","Conquistada!":"¡Conseguida!","Bloqueada":"Bloqueada","Center Run":"Center Run","no ranking geral":"en el ranking general","Recados":"Mensajes","Deixe um recado (até 60 letras)":"Deja un mensaje (hasta 60 letras)","Enviar":"Enviar","Nenhum recado ainda.":"Aún no hay mensajes.","Recado enviado!":"¡Mensaje enviado!","Essa mensagem tem palavras que não são permitidas.":"Este mensaje tiene palabras no permitidas.","Você já deixou um recado hoje para essa pessoa.":"Ya le dejaste un mensaje hoy a esta persona.","Essa pessoa não está recebendo recados.":"Esta persona no está recibiendo mensajes.","Você chegou ao limite de recados de hoje.":"Llegaste al límite de mensajes de hoy.","Entre com Google para dar coração e deixar recados.":"Entra con Google para dar corazones y dejar mensajes.","Aceitar recados":"Aceptar mensajes","Dar coração":"Dar corazón","corações":"corazones","Você deu um coração hoje!":"¡Diste un corazón hoy!","Oshi":"Oshi","Sem oshi":"Sin oshi","Trio TsuLiPa":"Trío TsuLiPa","Frase do perfil":"Frase del perfil","Salvar":"Guardar","Salvo!":"¡Guardado!","Editar oshi e frase":"Editar oshi y frase","Essa frase tem palavras que não são permitidas.":"Esta frase tiene palabras no permitidas.",
+       "Estreia":"Debut","Maratona":"Maratón","Presença VIP":"Presencia VIP","Família completa":"Familia completa","Pet lendário":"Mascota legendaria","Top 1 do camarim":"Top 1 del camerino","Fashionista":"Fashionista","Estilista":"Estilista","Coração de ouro":"Corazón de oro","Primeira corrida no ranking online":"Primera carrera en el ranking en línea","100 corridas no ranking online":"100 carreras en el ranking en línea","Correu em 7 dias diferentes":"Corrió en 7 días distintos","Chegou a 5000 pontos":"Llegó a 5000 puntos","Chegou a 30000 pontos":"Llegó a 30000 puntos","Chegou a 50000 pontos":"Llegó a 50000 puntos","Tem Chu, Koali, Pucchi e o Meu Pet":"Tiene a Chu, Koali, Pucchi y Mi Mascota","Um pet chegou ao estágio Kami-Oshi":"Una mascota llegó a la etapa Kami-Oshi","1º lugar em um minijogo do camarim":"1.er lugar en un minijuego del camerino","5 compras no estúdio e na lojinha":"5 compras en el estudio y la tiendita","Escolheu a própria foto do perfil":"Eligió su propia foto de perfil","Recebeu 10 corações":"Recibió 10 corazones"},
+  th: {"Brasil":"บราซิล","Hipster":"ฮิปสเตอร์","Rockstar":"ร็อกสตาร์","Decora kei":"เดโคระ","Fantasia de alien":"ชุดเอเลี่ยน","Lojinha de roupas":"ร้านเสื้อผ้า","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ชุดที่มีเฉพาะที่นี่ ซื้อแล้วจะอยู่ในเมนูชุด (ใช้ได้กับทุกตัวละคร)","Vestir":"สวม","Vestindo":"สวมอยู่","Insígnias":"เหรียญตรา","Conquistada!":"ปลดล็อกแล้ว!","Bloqueada":"ยังล็อกอยู่","Center Run":"Center Run","no ranking geral":"ในอันดับรวม","Recados":"ข้อความ","Deixe um recado (até 60 letras)":"ฝากข้อความ (ไม่เกิน 60 ตัวอักษร)","Enviar":"ส่ง","Nenhum recado ainda.":"ยังไม่มีข้อความ","Recado enviado!":"ส่งข้อความแล้ว!","Essa mensagem tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต","Você já deixou um recado hoje para essa pessoa.":"วันนี้คุณฝากข้อความถึงคนนี้แล้ว","Essa pessoa não está recebendo recados.":"คนนี้ปิดรับข้อความอยู่","Você chegou ao limite de recados de hoje.":"ครบจำนวนข้อความของวันนี้แล้ว","Entre com Google para dar coração e deixar recados.":"เข้าสู่ระบบด้วย Google เพื่อให้หัวใจและฝากข้อความ","Aceitar recados":"รับข้อความ","Dar coração":"ให้หัวใจ","corações":"หัวใจ","Você deu um coração hoje!":"วันนี้คุณให้หัวใจแล้ว!","Oshi":"โอชิ","Sem oshi":"ไม่มีโอชิ","Trio TsuLiPa":"ทริโอ TsuLiPa","Frase do perfil":"คำแนะนำตัว","Salvar":"บันทึก","Salvo!":"บันทึกแล้ว!","Editar oshi e frase":"แก้ไขโอชิและคำแนะนำตัว","Essa frase tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต",
+       "Estreia":"เดบิวต์","Maratona":"มาราธอน","Presença VIP":"แขก VIP","Família completa":"ครอบครัวครบ","Pet lendário":"สัตว์เลี้ยงในตำนาน","Top 1 do camarim":"ที่ 1 ห้องแต่งตัว","Fashionista":"แฟชั่นนิสต้า","Estilista":"สไตลิสต์","Coração de ouro":"หัวใจทองคำ","Primeira corrida no ranking online":"วิ่งรอบแรกในอันดับออนไลน์","100 corridas no ranking online":"วิ่ง 100 รอบในอันดับออนไลน์","Correu em 7 dias diferentes":"วิ่งใน 7 วันที่ต่างกัน","Chegou a 5000 pontos":"ทำได้ 5000 คะแนน","Chegou a 30000 pontos":"ทำได้ 30000 คะแนน","Chegou a 50000 pontos":"ทำได้ 50000 คะแนน","Tem Chu, Koali, Pucchi e o Meu Pet":"มี Chu, Koali, Pucchi และสัตว์เลี้ยงของฉัน","Um pet chegou ao estágio Kami-Oshi":"สัตว์เลี้ยงถึงขั้นคามิโอชิ","1º lugar em um minijogo do camarim":"ที่ 1 ในมินิเกมห้องแต่งตัว","5 compras no estúdio e na lojinha":"ซื้อของ 5 ครั้งในสตูดิโอและร้าน","Escolheu a própria foto do perfil":"เลือกรูปโปรไฟล์เอง","Recebeu 10 corações":"ได้รับ 10 หัวใจ"},
+  ja: {"Brasil":"ブラジル","Hipster":"ヒップスター","Rockstar":"ロックスター","Decora kei":"デコラ系","Fantasia de alien":"エイリアンの着ぐるみ","Lojinha de roupas":"衣装ショップ","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ここだけの衣装。買うと「衣装」に追加されるよ（全キャラOK）。","Vestir":"着る","Vestindo":"着用中","Insígnias":"バッジ","Conquistada!":"ゲット！","Bloqueada":"まだロック中","Center Run":"Center Run","no ranking geral":"総合ランキング","Recados":"メッセージ","Deixe um recado (até 60 letras)":"メッセージを書く（60文字まで）","Enviar":"送る","Nenhum recado ainda.":"まだメッセージはありません。","Recado enviado!":"メッセージを送ったよ！","Essa mensagem tem palavras que não são permitidas.":"使えない言葉が入っています。","Você já deixou um recado hoje para essa pessoa.":"今日はもうこの人にメッセージを送ったよ。","Essa pessoa não está recebendo recados.":"この人はメッセージを受け付けていません。","Você chegou ao limite de recados de hoje.":"今日のメッセージ上限に達しました。","Entre com Google para dar coração e deixar recados.":"Googleでログインするとハートとメッセージを送れるよ。","Aceitar recados":"メッセージを受け付ける","Dar coração":"ハートを送る","corações":"ハート","Você deu um coração hoje!":"今日はハートを送ったよ！","Oshi":"推し","Sem oshi":"推しなし","Trio TsuLiPa":"TsuLiPa箱推し","Frase do perfil":"ひとこと","Salvar":"保存","Salvo!":"保存したよ！","Editar oshi e frase":"推しとひとことを編集","Essa frase tem palavras que não são permitidas.":"使えない言葉が入っています。",
+       "Estreia":"デビュー","Maratona":"マラソン","Presença VIP":"VIP皆勤","Família completa":"ペット大家族","Pet lendário":"伝説のペット","Top 1 do camarim":"楽屋No.1","Fashionista":"ファッショニスタ","Estilista":"スタイリスト","Coração de ouro":"黄金のハート","Primeira corrida no ranking online":"オンラインランキングで初ラン","100 corridas no ranking online":"オンラインランキングで100ラン","Correu em 7 dias diferentes":"7日間ちがう日にラン","Chegou a 5000 pontos":"5000点に到達","Chegou a 30000 pontos":"30000点に到達","Chegou a 50000 pontos":"50000点に到達","Tem Chu, Koali, Pucchi e o Meu Pet":"Chu・Koali・Pucchi・マイペットがそろった","Um pet chegou ao estágio Kami-Oshi":"ペットが神推しステージに到達","1º lugar em um minijogo do camarim":"楽屋ミニゲームで1位","5 compras no estúdio e na lojinha":"スタジオとショップで5回お買いもの","Escolheu a própria foto do perfil":"プロフィール写真を自分で選んだ","Recebeu 10 corações":"ハートを10個もらった"}
+};
+[PERF_DICT, PERF_DICT2].forEach(function(D){ Object.keys(D).forEach(function(l){ if(DICT[l]) Object.keys(D[l]).forEach(function(k){ DICT[l][k] = D[l][k]; }); }); });
 
 function perfLer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function perfJSON(s){ try{ return JSON.parse(s || 'null'); }catch(e){ return null; } }
@@ -5976,6 +6061,7 @@ function perfData(iso){
 }
 function perfRot(o){ return o[1] + ' ' + tr(o[2]); }
 function perfLogo(){ return '<span class="perflogo" translate="no">TsuLiPa<i>⭐</i>World</span>'; }
+function perfRgba(hex, a){ var c = parseInt(String(hex).replace('#', ''), 16) || 0; return 'rgba(' + (c >> 16) + ',' + ((c >> 8) & 255) + ',' + (c & 255) + ',' + a + ')'; }
 
 // ---------- O boneco do avatar (sempre o Idol, com os campos conferidos) ----------
 function perfChar(av){
@@ -5997,38 +6083,121 @@ function perfAvAtual(extra){   // o seu Idol de agora (personagem 3, com o Item 
   return av;
 }
 
-// ---------- Fundos do estúdio ----------
-function perfBrilhos(x, W2, H2, cor, n, seed){
+// ---------- Lojinha: as roupas exclusivas (desenhadas pelo drawChar) ----------
+var perfAntena = false;   // a fantasia de alien desenha as anteninhas depois do rosto
+function perfLojaInfo(k){ if(!PERF_LOJA || !k) return null;   // o drawChar pode rodar antes deste módulo carregar
+  for(var i = 0; i < PERF_LOJA.length; i++) if(PERF_LOJA[i][0] === k) return PERF_LOJA[i]; return null; }
+// Chamada dentro do drawChar, na lista das roupas. Devolve true se a roupa é da lojinha (e desenha).
+function perfRoupaLoja(roupa, c, x, y, cor, E, T){
+  if(!perfLojaInfo(roupa)) return false;
+  var branco = !cor || /^#?f{6}$/i.test(cor), i;
+  if(roupa === 'brasil'){   // camisa canarinho, gola verde, short azul
+    g.fillStyle = '#ffdf00'; g.fillRect(x + 4, y + 22, 22, 11);
+    g.fillStyle = '#009c3b'; T([x + 10, y + 22, x + 20, y + 22, x + 15, y + 27]); g.fillRect(x + 4, y + 22, 3, 3); g.fillRect(x + 23, y + 22, 3, 3);
+    g.fillStyle = '#ffdf00'; T([x + 12, y + 22, x + 18, y + 22, x + 15, y + 25]);
+    g.fillStyle = '#002776'; E(x + 20, y + 26.5, 1.8, 1.8); g.fillStyle = '#fff'; g.fillRect(x + 19.6, y + 26, .9, .9);
+    g.fillStyle = '#009c3b'; g.fillRect(x + 4, y + 31, 22, 1.4);
+    g.fillStyle = '#002776'; g.fillRect(x + 6, y + 32, 18, 5.5); g.fillStyle = '#fff'; g.fillRect(x + 6, y + 32, 1.4, 5.5); g.fillRect(x + 22.6, y + 32, 1.4, 5.5);
+  } else if(roupa === 'hipster'){   // camiseta listrada, cardigã (na cor escolhida) e bermuda jeans dobrada
+    g.fillStyle = '#fff'; g.fillRect(x + 8, y + 22, 14, 10);
+    g.fillStyle = '#1e3a5f'; for(i = 0; i < 5; i++) g.fillRect(x + 8, y + 23 + i * 2, 14, 1);
+    g.fillStyle = branco ? '#d4a24c' : cor; g.fillRect(x + 4, y + 22, 6, 12); g.fillRect(x + 20, y + 22, 6, 12);
+    g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x + 9, y + 25, 1, 1); g.fillRect(x + 9, y + 28, 1, 1); g.fillRect(x + 9, y + 31, 1, 1);
+    g.fillStyle = '#4a6fa5'; g.fillRect(x + 7, y + 32, 16, 5); g.fillStyle = '#8fb0dd'; g.fillRect(x + 7, y + 36, 16, 1.4);
+    g.fillStyle = '#7a4a2a'; g.fillRect(x + 7, y + 31.6, 16, 1);
+  } else if(roupa === 'rock'){   // camiseta com raio (na cor escolhida), jaqueta de couro com tachinhas e saia xadrez
+    g.fillStyle = branco ? '#ff3d7f' : cor; g.fillRect(x + 8, y + 22, 14, 10);
+    g.fillStyle = '#ffe14d'; T([x + 16, y + 23, x + 12, y + 28, x + 15, y + 28, x + 13, y + 32, x + 18, y + 26, x + 15, y + 26]);
+    g.fillStyle = '#1f1d2b'; g.fillRect(x + 4, y + 22, 6, 12); g.fillRect(x + 20, y + 22, 6, 12);
+    g.fillStyle = '#3a3650'; T([x + 8, y + 22, x + 11, y + 22, x + 9, y + 27]); T([x + 22, y + 22, x + 19, y + 22, x + 21, y + 27]);
+    g.fillStyle = '#d7dbe4'; [[5, 23], [7, 23], [23, 23], [25, 23], [5, 26], [25, 26]].forEach(function(s){ g.fillRect(x + s[0] - .5, y + s[1] - .5, 1, 1); });
+    g.fillStyle = '#c81e3a'; T([x + 6, y + 32, x + 24, y + 32, x + 26, y + 38, x + 4, y + 38]);
+    g.fillStyle = 'rgba(20,10,20,.55)'; for(i = 0; i < 6; i++) g.fillRect(x + 6 + i * 3.4, y + 32, .8, 6); g.fillRect(x + 5, y + 35, 20, .8);
+    g.strokeStyle = '#d7dbe4'; g.lineWidth = .7; g.beginPath(); g.moveTo(x + 8, y + 33); g.quadraticCurveTo(x + 15, y + 37, x + 22, y + 33); g.stroke();
+  } else if(roupa === 'decora'){   // vestido-moletom (na cor escolhida), saia de camadas arco-íris e adesivos
+    g.fillStyle = branco ? '#ff9ccd' : cor; g.fillRect(x + 4, y + 22, 22, 11);
+    var cam = ['#ffe14d', '#b6ff3b', '#4dd8ff'];
+    cam.forEach(function(cc, j){ g.fillStyle = cc; T([x + 5 - j, y + 32 + j * 2, x + 25 + j, y + 32 + j * 2, x + 26 + j, y + 34.5 + j * 2, x + 4 - j, y + 34.5 + j * 2]); });
+    g.fillStyle = '#ff4f9a'; T([x + 15, y + 23.5, x + 11, y + 21.5, x + 11, y + 25.5]); T([x + 15, y + 23.5, x + 19, y + 21.5, x + 19, y + 25.5]); E(x + 15, y + 23.5, 1.2, 1.2);
+    [['#ffe14d', 7, 27], ['#4dd8ff', 21, 28], ['#b6ff3b', 12, 30], ['#9b30d9', 18, 30], ['#fff', 23, 25]].forEach(function(s){ g.fillStyle = s[0]; g.fillRect(x + s[1], y + s[2], 2, 2); });
+    g.fillStyle = '#fff'; g.fillRect(x + 7.5, y + 27.5, 1, 1);
+  } else if(roupa === 'alienfan'){   // macacão verde com manchinhas, gola prateada e um disquinho na barriga
+    g.fillStyle = '#86e04a'; g.fillRect(x + 4, y + 22, 22, 15);
+    g.fillStyle = '#5fb534'; E(x + 7, y + 26, 1.6, 1.2); E(x + 23, y + 30, 1.8, 1.3); E(x + 9, y + 34, 1.4, 1); E(x + 21, y + 24.5, 1.2, 1);
+    g.fillStyle = '#d7dbe4'; g.fillRect(x + 9, y + 22, 12, 1.6);
+    g.fillStyle = '#7dd3fc'; E(x + 15, y + 28.4, 2.2, 1.6); g.fillStyle = '#9ca3af'; E(x + 15, y + 29.6, 4.4, 1.3);
+    g.fillStyle = '#ffe14d'; g.fillRect(x + 12.4, y + 29.3, .8, .8); g.fillRect(x + 16.8, y + 29.3, .8, .8);
+    perfAntena = true;
+  }
+  return true;
+}
+function perfLojaDono(){   // roupas da lojinha que você comprou (guardadas também no visual do Idol para o menu)
+  return (Array.isArray(CU.loja) ? CU.loja : []).filter(function(k){ return !!perfLojaInfo(k); });
+}
+function perfLojaOpcoes(){   // coloca as roupas compradas na lista "Roupa" do menu (vale para todas as personagens)
+  var s = $('cout'); if(!s) return;
+  [].slice.call(s.querySelectorAll('option[data-loja]')).forEach(function(o){ s.removeChild(o); });
+  perfLojaDono().forEach(function(k){
+    var it = perfLojaInfo(k), o = document.createElement('option');
+    o.value = k; o.setAttribute('data-r', '0'); o.setAttribute('data-loja', '1'); o.textContent = '🛍️ ' + tr(it[2]); s.appendChild(o);
+  });
+  s.value = (sel === 3 ? CU.out : CH[sel].out) || '';
+}
+perfLojaOpcoes();
+
+// ---------- Fundos do estúdio (t = quadro da animação) ----------
+function perfBrilhos(x, W2, H2, cor, n, seed, t){
   x.save(); x.fillStyle = cor;
   for(var i = 0; i < n; i++){
     var sx = cenaHash(i * 7 + (seed || 0)) * W2, sy = cenaHash(i * 13 + 5 + (seed || 0)) * H2, r = (1 + cenaHash(i * 3) * 1.6) * W2 / 320;
-    x.globalAlpha = .45 + cenaHash(i * 17) * .5; x.beginPath(); x.arc(sx, sy, r, 0, 7); x.fill();
+    x.globalAlpha = Math.max(.1, .45 + cenaHash(i * 17) * .5 + (t ? Math.sin(t * .05 + i * 1.7) * .35 : 0)); x.beginPath(); x.arc(sx, sy, r, 0, 7); x.fill();
   }
   x.restore();
 }
-function perfFundo(x, W2, H2, f, cor){
+function perfEnfeites(x, W2, H2, cores, n, seed, t, alfa){   // ✦ e ♡ espalhados, piscando
+  var u = W2 / 320;
+  x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
+  for(var i = 0; i < n; i++){
+    var sx = (.06 + cenaHash(i * 5 + seed) * .88) * W2, sy = (.06 + cenaHash(i * 11 + seed + 3) * .62) * H2, s = (9 + cenaHash(i * 19 + seed) * 8) * u;
+    x.globalAlpha = (alfa || .55) * (t ? .55 + .45 * Math.sin(t * .045 + i * 2.1) : 1);
+    x.fillStyle = cores[i % cores.length]; x.font = '900 ' + Math.round(s) + 'px sans-serif';
+    x.fillText(i % 3 === 1 ? '♡' : i % 3 === 2 ? '★' : '✦', sx, sy);
+  }
+  x.restore();
+}
+function perfFundo(x, W2, H2, f, cor, t){
   if(!f) return;
   var u = W2 / 320, gr, i;
-  if(f === 'basico'){
-    gr = x.createLinearGradient(0, 0, W2, H2); gr.addColorStop(0, '#ffe3f1'); gr.addColorStop(.55, '#efe4ff'); gr.addColorStop(1, '#dff1ff');
+  t = t || 0;
+  if(f === 'basico'){   // pastel nas cores do TsuLiPa (roxo → verde → azul), com bolinhas
+    gr = x.createLinearGradient(0, 0, W2, H2); gr.addColorStop(0, '#f1e3ff'); gr.addColorStop(.5, '#e9fbe0'); gr.addColorStop(1, '#e1ecff');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
-    x.fillStyle = 'rgba(255,255,255,.55)';
-    for(i = 0; i < 36; i++){ x.beginPath(); x.arc((i % 6) * W2 / 6 + (Math.floor(i / 6) % 2) * W2 / 12 + W2 / 24, Math.floor(i / 6) * H2 / 6 + H2 / 12, 5 * u, 0, 7); x.fill(); }
-    x.save(); x.fillStyle = 'rgba(255,111,181,.35)'; x.font = '900 ' + Math.round(14 * u) + 'px sans-serif'; x.textAlign = 'center';
-    [[.12, .2], [.86, .14], [.9, .62], [.1, .7]].forEach(function(s, j){ x.fillText(j % 2 ? '♡' : '✦', W2 * s[0], H2 * s[1]); });
-    x.restore();
-    x.fillStyle = 'rgba(155,48,217,.08)'; x.fillRect(0, H2 * .9, W2, H2 * .1);
+    for(i = 0; i < 42; i++){
+      var col = i % 7, lin = Math.floor(i / 7);
+      x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], .16);
+      x.beginPath(); x.arc(col * W2 / 7 + (lin % 2) * W2 / 14 + W2 / 28, lin * H2 / 6 + H2 / 12, 6 * u, 0, 7); x.fill();
+    }
+    perfEnfeites(x, W2, H2, PERF_TSL.concat('#ff6fb5'), 7, 2, t, .5);
+    var ch = x.createLinearGradient(0, H2 * .86, 0, H2); ch.addColorStop(0, 'rgba(155,48,217,.12)'); ch.addColorStop(1, 'rgba(65,105,225,.2)');
+    x.fillStyle = ch; x.fillRect(0, H2 * .88, W2, H2 * .12);
+    var fx0 = x.createLinearGradient(0, 0, W2, 0); fx0.addColorStop(0, '#9b30d9'); fx0.addColorStop(.5, '#5cc72c'); fx0.addColorStop(1, '#4169e1');
+    x.fillStyle = fx0; x.globalAlpha = .55; x.fillRect(0, H2 * .88, W2, 2.5 * u); x.globalAlpha = 1;
   } else if(f === 'palco'){
     gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#1a0933'); gr.addColorStop(.62, '#4a1f8a'); gr.addColorStop(1, '#7b3ff0');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
-    perfBrilhos(x, W2, H2 * .55, '#fff', 18, 3);
+    perfBrilhos(x, W2, H2 * .55, '#fff', 18, 3, t);
     x.save(); x.globalCompositeOperation = 'lighter';
-    [[.18, 'rgba(255,111,181,.26)'], [.5, 'rgba(255,255,255,.2)'], [.82, 'rgba(77,216,255,.24)']].forEach(function(h){
+    [[.18, 'rgba(255,111,181,.26)'], [.5, 'rgba(255,255,255,.2)'], [.82, 'rgba(77,216,255,.24)']].forEach(function(h, j){
       var lg = x.createLinearGradient(0, 0, 0, H2 * .9); lg.addColorStop(0, h[1]); lg.addColorStop(1, 'rgba(0,0,0,0)');
-      var bx = W2 * (.5 + (h[0] - .5) * .35);
+      var bx = W2 * (.5 + (h[0] - .5) * .35) + Math.sin(t * .02 + j * 2) * 18 * u;
       x.fillStyle = lg; x.beginPath(); x.moveTo(W2 * h[0] - 8 * u, 0); x.lineTo(W2 * h[0] + 8 * u, 0); x.lineTo(bx + 52 * u, H2 * .9); x.lineTo(bx - 52 * u, H2 * .9); x.closePath(); x.fill();
     });
     x.restore();
+    var conf = ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5', '#ffe14d'];   // confete caindo
+    for(i = 0; i < 16; i++){
+      var cy = ((cenaHash(i * 3 + 1) * H2 * .9) + t * (.6 + cenaHash(i) * .6) * u) % (H2 * .88);
+      x.save(); x.translate(cenaHash(i * 7 + 2) * W2, cy); x.rotate(t * .03 + i); x.fillStyle = conf[i % 5]; x.globalAlpha = .8; x.fillRect(-2.5 * u, -1.2 * u, 5 * u, 2.4 * u); x.restore();
+    }
     x.fillStyle = '#2c1a5e'; x.fillRect(0, H2 * .88, W2, H2 * .12);
     var fx = x.createLinearGradient(0, 0, W2, 0); fx.addColorStop(0, '#9b30d9'); fx.addColorStop(.5, '#4169e1'); fx.addColorStop(1, '#b6ff3b');
     x.fillStyle = fx; x.fillRect(0, H2 * .88, W2, 3 * u);
@@ -6038,34 +6207,50 @@ function perfFundo(x, W2, H2, f, cor){
     x.save(); x.globalAlpha = .12; x.strokeStyle = '#fff'; x.lineWidth = 14 * u;
     for(var d = -H2; d < W2; d += 40 * u){ x.beginPath(); x.moveTo(d, H2); x.lineTo(d + H2, 0); x.stroke(); }
     x.restore();
-    x.save(); x.fillStyle = 'rgba(255,255,255,.7)'; x.font = '900 ' + Math.round(16 * u) + 'px sans-serif'; x.textAlign = 'center';
-    [[.12, .16], [.88, .2], [.1, .7], [.9, .66], [.5, .1]].forEach(function(s, j){ x.fillText(j % 2 ? '♥' : '★', W2 * s[0], H2 * s[1]); });
-    x.restore();
+    for(i = 0; i < 9; i++){   // bolhas de luz (bokeh)
+      var bxx = cenaHash(i * 13 + 4) * W2, byy = cenaHash(i * 17 + 1) * H2 * .8 + Math.sin(t * .02 + i) * 6 * u, br = (10 + cenaHash(i * 3) * 18) * u;
+      x.fillStyle = 'rgba(255,255,255,' + (.18 + cenaHash(i) * .15) + ')'; x.beginPath(); x.arc(bxx, byy, br, 0, 7); x.fill();
+    }
+    perfEnfeites(x, W2, H2, ['#fff', petMix(cor, 0, .2)], 7, 5, t, .7);
     x.fillStyle = petMix(cor, 0, .15); x.globalAlpha = .25; x.fillRect(0, H2 * .9, W2, H2 * .1); x.globalAlpha = 1;
   } else if(f === 'ceu'){
     gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#8fd0f5'); gr.addColorStop(1, '#e8f7ff');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
-    x.fillStyle = 'rgba(255,255,255,.92)';
-    [[.2, .22, 1], [.78, .14, .8], [.62, .42, .65]].forEach(function(n){
-      var cx = W2 * n[0], cy = H2 * n[1], s = n[2] * u;
+    x.save(); x.globalAlpha = .4; x.lineWidth = 7 * u;   // arco-íris pastel
+    ['#ff9ccd', '#ffe14d', '#b6ff3b', '#7dd3fc', '#c4a5ff'].forEach(function(cc, j){ x.strokeStyle = cc; x.beginPath(); x.arc(W2 * .5, H2 * .95, (150 - j * 7) * u, Math.PI * 1.05, Math.PI * 1.95); x.stroke(); });
+    x.restore();
+    x.fillStyle = 'rgba(255,255,255,.95)';
+    [[.2, .22, 1], [.78, .14, .8], [.62, .42, .65]].forEach(function(n, j){
+      var cx = ((W2 * n[0] + t * .25 * u * (j + 1)) % (W2 + 80 * u)) - 20 * u, cy = H2 * n[1], s = n[2] * u;
       [[-22, 4, 12], [-7, -4, 16], [12, -2, 14], [27, 5, 10], [2, 7, 13]].forEach(function(b){ x.beginPath(); x.arc(cx + b[0] * s, cy + b[1] * s, b[2] * s, 0, 7); x.fill(); });
     });
+    perfEnfeites(x, W2, H2, ['#fff'], 5, 8, t, .8);
     x.fillStyle = '#9ed36a'; x.fillRect(0, H2 * .9, W2, H2 * .1);
+    x.fillStyle = '#b8e986'; x.fillRect(0, H2 * .9, W2, 2.5 * u);
   } else if(f === 'noite'){
     gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#071327'); gr.addColorStop(1, '#2a3f78');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
-    perfBrilhos(x, W2, H2 * .8, '#fff', 34, 9);
+    var neb = x.createRadialGradient(W2 * .25, H2 * .35, 4 * u, W2 * .25, H2 * .35, 110 * u); neb.addColorStop(0, 'rgba(155,48,217,.32)'); neb.addColorStop(1, 'rgba(155,48,217,0)');
+    x.fillStyle = neb; x.fillRect(0, 0, W2, H2);
+    perfBrilhos(x, W2, H2 * .8, '#fff', 34, 9, t);
+    var es = (t * 2.2) % 900;   // estrela cadente de vez em quando
+    if(es < 90){ var ex0 = W2 * .1 + es * 2.2 * u, ey0 = H2 * .08 + es * .9 * u; var sg = x.createLinearGradient(ex0 - 30 * u, ey0 - 12 * u, ex0, ey0); sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(255,255,255,.9)'); x.strokeStyle = sg; x.lineWidth = 2 * u; x.beginPath(); x.moveTo(ex0 - 30 * u, ey0 - 12 * u); x.lineTo(ex0, ey0); x.stroke(); }
     x.fillStyle = '#fff4c2'; x.beginPath(); x.arc(W2 * .8, H2 * .18, 20 * u, 0, 7); x.fill();
     x.fillStyle = '#132552'; x.beginPath(); x.arc(W2 * .8 + 8 * u, H2 * .18 - 5 * u, 17 * u, 0, 7); x.fill();
+    perfEnfeites(x, W2, H2, ['#ffe14d', '#c4a5ff', '#7dd3fc'], 5, 12, t, .6);
     x.fillStyle = '#1a2a55'; x.fillRect(0, H2 * .9, W2, H2 * .1);
   } else if(f === 'halloween'){
     gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#2b0f45'); gr.addColorStop(.6, '#7a2f7a'); gr.addColorStop(1, '#ff8a3d');
     x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
-    perfBrilhos(x, W2, H2 * .45, '#ffe9b0', 16, 21);
+    perfBrilhos(x, W2, H2 * .45, '#ffe9b0', 16, 21, t);
     var lu = x.createRadialGradient(W2 * .78, H2 * .2, 4 * u, W2 * .78, H2 * .2, 46 * u); lu.addColorStop(0, 'rgba(255,214,120,.55)'); lu.addColorStop(1, 'rgba(255,214,120,0)');
     x.fillStyle = lu; x.beginPath(); x.arc(W2 * .78, H2 * .2, 46 * u, 0, 7); x.fill();
     x.fillStyle = '#ffd27a'; x.beginPath(); x.arc(W2 * .78, H2 * .2, 22 * u, 0, 7); x.fill();
-    petDrawMorcego(x, W2 * .7, H2 * .22, 1.7 * u, 1); petDrawMorcego(x, W2 * .2, H2 * .14, 1.3 * u, 2.4); petDrawMorcego(x, W2 * .32, H2 * .3, 1.1 * u, .4);
+    petDrawMorcego(x, W2 * .7 + Math.sin(t * .03) * 10 * u, H2 * .22 + Math.cos(t * .04) * 5 * u, 1.7 * u, 1 + t * .3); petDrawMorcego(x, W2 * .2 + Math.cos(t * .025) * 8 * u, H2 * .14, 1.3 * u, 2.4 + t * .32); petDrawMorcego(x, W2 * .32, H2 * .3 + Math.sin(t * .03) * 6 * u, 1.1 * u, .4 + t * .35);
+    x.save(); x.translate(W2 * .14, H2 * .5 + Math.sin(t * .05) * 5 * u); x.scale(u, u);   // fantasminha fofo
+    x.fillStyle = 'rgba(255,255,255,.88)'; x.beginPath(); x.arc(0, 0, 11, Math.PI, 0); x.lineTo(11, 12); for(i = 0; i < 4; i++) x.quadraticCurveTo(8.25 - i * 5.5, 16, 5.5 - i * 5.5, 12); x.lineTo(-11, 0); x.fill();
+    x.fillStyle = '#2b0f45'; x.beginPath(); x.arc(-3.5, 0, 1.6, 0, 7); x.arc(3.5, 0, 1.6, 0, 7); x.fill(); x.fillStyle = '#ff9ccd'; x.beginPath(); x.arc(-6, 3, 1.6, 0, 7); x.arc(6, 3, 1.6, 0, 7); x.fill();
+    x.restore();
     x.fillStyle = '#2a1238'; x.fillRect(0, H2 * .9, W2, H2 * .1);
     for(i = 0; i < 9; i++){ var px = i * W2 / 8; x.fillRect(px - 2 * u, H2 * .8, 4 * u, H2 * .1); x.beginPath(); x.moveTo(px - 3 * u, H2 * .8); x.lineTo(px, H2 * .77); x.lineTo(px + 3 * u, H2 * .8); x.fill(); }
     x.fillRect(0, H2 * .83, W2, 2.5 * u);
@@ -6074,12 +6259,16 @@ function perfFundo(x, W2, H2, f, cor){
 }
 
 // Personagem com contorno suave (igual ao das fotos, com mais espaço em cima para auréola e antenas)
+var perfCvC = null;
 function perfCharContorno(x, tx, ty, sc, desenha){
-  var ux = -42, uy = -28, uw = 130, uh = 80;
-  var cv = document.createElement('canvas'); cv.width = Math.ceil(uw * sc); cv.height = Math.ceil(uh * sc);
-  var og = g;
-  try{ g = cv.getContext('2d'); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); }
-  finally{ g = og; charPose = ''; }
+  var ux = -42, uy = -28, uw = 130, uh = 80, w = Math.ceil(uw * sc), h = Math.ceil(uh * sc);
+  if(!perfCvC) perfCvC = document.createElement('canvas');
+  var cv = perfCvC;
+  if(cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+  var og = g, cx2 = cv.getContext('2d');
+  cx2.setTransform(1, 0, 0, 1, 0, 0); cx2.clearRect(0, 0, w, h);
+  try{ g = cx2; g.save(); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); g.restore(); }
+  finally{ g = og; charPose = ''; perfAntena = false; }
   x.save();
   x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
@@ -6089,76 +6278,78 @@ function perfPetDoAvatar(av){   // pet guardado no avatar (só chaves conhecidas
   var p = av && av.pet; if(!p || typeof p !== 'object' || !PET_SP[p.k]) return null;
   return { k:p.k, acc: typeof p.acc === 'string' ? p.acc : '', bochecha: !!p.bochecha, cfg: (p.cfg && typeof p.cfg === 'object') ? p.cfg : null };
 }
-function perfDesenharPetEm(x, p, px, py, s){   // desenha um pet com o acessório dele (sem mexer no save de verdade)
+function perfDesenharPetEm(x, p, px, py, s, t){   // desenha um pet com o acessório dele (sem mexer no save de verdade)
   var oP = petData;
   try{
     var pets = {}; pets[p.k] = { acc:p.acc || '', bochecha:!!p.bochecha }; petData = { pets: pets };
-    drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, px, py, s, 0, 'feliz');
+    drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, px, py, s, t || 0, 'feliz');
   }catch(e){}
   finally{ petData = oP; }
 }
 
 // ---------- Desenha o Idol do avatar (fundo + efeito do visual + personagem + pet) ----------
-// zoom = true: só o rostinho (foto redonda do perfil)
-function perfDesenharIdol(x, W2, H2, av, comFundo, zoom){
-  av = av || {};
+// zoom = true: só o rostinho (foto redonda do perfil) · t = quadro da animação (0 = parado)
+function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
+  av = av || {}; t = t || 0;
   var vis = typeof av.visual === 'string' ? av.visual : '', rk = PERF_RANKVIS[vis] || 0, c = perfChar(av), pet = zoom ? null : perfPetDoAvatar(av);
-  if(comFundo !== false) perfFundo(x, W2, H2, typeof av.fundo === 'string' ? av.fundo : 'basico', c.hair);
+  if(comFundo !== false) perfFundo(x, W2, H2, typeof av.fundo === 'string' ? av.fundo : 'basico', c.hair, t);
   var big = vis === 'mega' && !zoom, sc, chao, tx, ty;
   if(zoom){ sc = H2 / 46; tx = W2 / 2 - 15 * sc; ty = H2 * .5 - 10 * sc; chao = ty + 44 * sc; }   // rostinho: da coroa até os ombros
   else { sc = H2 / (big ? 68 : 82); chao = H2 * (big ? .95 : .9); tx = W2 / 2 - 15 * sc - (pet ? 10 * sc : 0); ty = chao - 44 * sc; }
-  var cx = tx + 15 * sc, cy = ty + 22 * sc, i;
+  var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;
+  var cx = tx + 15 * sc, cy = ty + 22 * sc + bob, i, gira = t * .012, pulso = t ? 1 + .05 * Math.sin(t * .08) : 1;
   // sombra no chão
-  x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc, 2.6 * sc, 0, 0, 7); x.fill();
+  x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc * (1 - bob / sc * .04), 2.6 * sc, 0, 0, 7); x.fill();
   // efeito do visual (atrás do personagem)
-  function halo(r, cor){ var h = x.createRadialGradient(cx, cy, 2, cx, cy, r); h.addColorStop(0, cor); h.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = h; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); }
-  function estrela(sx, sy, r, cor){ x.fillStyle = cor; x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? r * .42 : r, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](sx + Math.cos(an) * rr, sy + Math.sin(an) * rr); } x.closePath(); x.fill(); }
+  function halo(r, cor){ r *= pulso; var h = x.createRadialGradient(cx, cy, 2, cx, cy, r); h.addColorStop(0, cor); h.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = h; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); }
+  function estrela(sx, sy, r, cor){ x.fillStyle = cor; x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? r * .42 : r, an = q * Math.PI / 5 - Math.PI / 2 + gira; x[q ? 'lineTo' : 'moveTo'](sx + Math.cos(an) * rr, sy + Math.sin(an) * rr); } x.closePath(); x.fill(); }
   if(vis === 'fever'){
     halo(40 * sc, 'rgba(255,132,102,.55)');
-    [-2.7, -2, -1.15, -.45, .35, 2.75].forEach(function(an, j){ estrela(cx + Math.cos(an) * 27 * sc, cy + Math.sin(an) * 20 * sc, (2.2 + (j % 2)) * sc, j % 2 ? '#ffe14d' : '#ff8fb8'); });
+    [-2.7, -2, -1.15, -.45, .35, 2.75].forEach(function(an, j){ an += Math.sin(t * .02) * .12; estrela(cx + Math.cos(an) * 27 * sc, cy + Math.sin(an) * 20 * sc, (2.2 + (j % 2)) * sc, j % 2 ? '#ffe14d' : '#ff8fb8'); });
   } else if(vis === 'ima'){
     halo(40 * sc, 'rgba(200,162,245,.55)');
     x.save(); x.strokeStyle = 'rgba(155,48,217,.45)'; x.lineWidth = 1.2 * sc;
-    for(i = 1; i <= 3; i++){ x.beginPath(); x.arc(cx, cy, (12 + i * 7) * sc, -2.6, -.55); x.stroke(); }
+    for(i = 1; i <= 3; i++){ x.beginPath(); x.arc(cx, cy, (12 + ((i * 7 + t * .15) % 21)) * sc, -2.6, -.55); x.stroke(); }
     x.restore();
-    for(i = 0; i < 5; i++) estrela(cx + (i - 2) * 13 * sc, cy - (25 + (i % 2) * 6) * sc, 2.4 * sc, '#ffe14d');
+    for(i = 0; i < 5; i++) estrela(cx + (i - 2) * 13 * sc, cy - (25 + (i % 2) * 6 + Math.sin(t * .07 + i) * 2) * sc, 2.4 * sc, '#ffe14d');
   } else if(vis === 'mega'){
     halo(36 * sc, 'rgba(255,111,181,.6)');
   } else if(vis === 'alien'){
     var bl = x.createLinearGradient(0, 0, 0, chao); bl.addColorStop(0, 'rgba(182,255,59,.7)'); bl.addColorStop(1, 'rgba(182,255,59,.05)');
     x.fillStyle = bl; x.beginPath(); x.moveTo(cx - 14 * sc, 8 * sc); x.lineTo(cx + 14 * sc, 8 * sc); x.lineTo(cx + 24 * sc, chao); x.lineTo(cx - 24 * sc, chao); x.closePath(); x.fill();
-    x.fillStyle = '#b6ff3b'; for(i = 0; i < 7; i++) x.fillRect(cx + (cenaHash(i) - .5) * 30 * sc, chao - cenaHash(i + 9) * (chao - 14 * sc), 1.4 * sc, 1.4 * sc);
+    x.fillStyle = '#b6ff3b'; for(i = 0; i < 7; i++) x.fillRect(cx + (cenaHash(i) - .5) * 30 * sc, chao - ((cenaHash(i + 9) * (chao - 14 * sc) + t * 1.5 * sc / 3) % (chao - 14 * sc)), 1.4 * sc, 1.4 * sc);
     if(!zoom){
-      x.save(); x.translate(cx, 6 * sc);   // disco voador
+      x.save(); x.translate(cx + Math.sin(t * .03) * 2 * sc, 6 * sc);   // disco voador
       x.fillStyle = '#7dd3fc'; x.beginPath(); x.ellipse(0, -2 * sc, 7 * sc, 5 * sc, 0, Math.PI, 0); x.fill();
       var dg = x.createLinearGradient(0, -2 * sc, 0, 4 * sc); dg.addColorStop(0, '#e5e7eb'); dg.addColorStop(1, '#6b7280');
       x.fillStyle = dg; x.beginPath(); x.ellipse(0, 1 * sc, 17 * sc, 4.2 * sc, 0, 0, 7); x.fill();
-      ['#ff6fb5', '#ffe14d', '#b6ff3b', '#4dd8ff'].forEach(function(cc, j){ x.fillStyle = cc; x.beginPath(); x.arc((j - 1.5) * 8 * sc, 1.6 * sc, 1.2 * sc, 0, 7); x.fill(); });
-      x.restore();
+      ['#ff6fb5', '#ffe14d', '#b6ff3b', '#4dd8ff'].forEach(function(cc, j){ x.fillStyle = cc; x.globalAlpha = t ? (Math.floor(t / 12 + j) % 2 ? 1 : .45) : 1; x.beginPath(); x.arc((j - 1.5) * 8 * sc, 1.6 * sc, 1.2 * sc, 0, 7); x.fill(); });
+      x.globalAlpha = 1; x.restore();
     }
   } else if(rk >= 10){
     halo(52 * sc, rk >= 11 ? 'rgba(255,170,230,.55)' : 'rgba(255,225,120,.6)');
     if(rk >= 11){ x.save(); x.globalAlpha = .35; ['#ff6fb5', '#ffe14d', '#b6ff3b', '#4dd8ff', '#9b30d9'].forEach(function(cc, j){ x.strokeStyle = cc; x.lineWidth = 2 * sc; x.beginPath(); x.arc(cx, cy, (30 + j * 3) * sc, Math.PI * 1.08, Math.PI * 1.92); x.stroke(); }); x.restore(); }
-    for(i = 0; i < 4; i++) estrela(cx - 26 * sc + i * 17 * sc, cy + Math.sin(i * 2) * 14 * sc - 4 * sc, 1.8 * sc, '#ffe14d');
+    for(i = 0; i < 4; i++) estrela(cx - 26 * sc + i * 17 * sc, cy + Math.sin(i * 2 + t * .05) * 14 * sc - 4 * sc, 1.8 * sc, '#ffe14d');
   } else if(rk >= 7){
-    for(i = 0; i < 5; i++) estrela(cx + Math.cos(i * 1.26 - .4) * 26 * sc, cy + Math.sin(i * 1.26 - .4) * 22 * sc, 1.7 * sc, '#ffe14d');
+    for(i = 0; i < 5; i++) estrela(cx + Math.cos(i * 1.26 - .4 + gira) * 26 * sc, cy + Math.sin(i * 1.26 - .4 + gira) * 22 * sc, 1.7 * sc, '#ffe14d');
   }
   // personagem: usa o mesmo drawChar da corrida, com o visual ligado só durante o desenho
-  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel;
+  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame;
   try{
-    state = 'play'; dpw = null;
+    state = 'play'; dpw = null; if(t) frame = t;
     pw = vis === 'mega' ? { k:'gigante', t:300 } : (vis === 'fever' || vis === 'ima' || vis === 'alien') ? { k:vis, t:300 } : null;
     rankI = rk; sash = rk >= 7; accSel = typeof av.a === 'string' ? av.a : '';
     var ex = [0, 1, 2, 3].indexOf(+av.expr) >= 0 ? +av.expr : 2;
+    if(t && ex !== 2 && (t % 200) < 7) ex = 2;   // piscadinha de vez em quando (na animação)
     var pose = perfPoseInfo(av.pose) ? av.pose : '';
-    perfCharContorno(x, tx, ty, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+    perfCharContorno(x, tx, ty + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
   } finally {
-    state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; charPose = '';
+    state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = false;
   }
   if(pet){   // o pet ao lado, flutuando
     var ps = sc * .62, px = cx + 30 * sc, py = chao - 20 * sc;
     x.fillStyle = 'rgba(30,10,60,.2)'; x.beginPath(); x.ellipse(px, chao, 9 * sc, 1.8 * sc, 0, 0, 7); x.fill();
-    perfDesenharPetEm(x, pet, px, py, ps);
+    perfDesenharPetEm(x, pet, px, py, ps, t);
   }
 }
 function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado em círculo (zoom = rostinho)
@@ -6197,10 +6388,17 @@ function perfPoseAtras(c, x, y){
   g.fillStyle = c.skin;
   return true;
 }
-// Parte da frente (depois do rosto): chamada no fim do drawChar
+// Parte da frente (depois do rosto): chamada no fim do drawChar (poses e anteninhas da fantasia de alien)
 function perfPoseFrente(c, x, y){
-  var p = charPose; if(p !== 'mic' && p !== 'nyan') return;
+  var p = charPose, ant = perfAntena; perfAntena = false;
+  if(p !== 'mic' && p !== 'nyan' && !ant) return;
   g.save(); g.translate(0, 4);   // o rosto do drawChar fica 4 px acima; aqui volta para a mesma régua dos braços
+  if(ant){   // tiara de anteninhas
+    g.strokeStyle = '#3f6212'; g.lineWidth = 1.3; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(x + 10, y - 2); g.lineTo(x + 7, y - 11); g.moveTo(x + 20, y - 2); g.lineTo(x + 23, y - 11); g.stroke();
+    g.fillStyle = '#b6ff3b'; g.beginPath(); g.arc(x + 7, y - 12, 2.2, 0, 7); g.arc(x + 23, y - 12, 2.2, 0, 7); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.8)'; g.fillRect(x + 6.2, y - 13, .9, .9); g.fillRect(x + 22.2, y - 13, .9, .9);
+  }
   g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(p === 'mic'){
     g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 22.5, y + 23.2); g.stroke();
@@ -6209,7 +6407,7 @@ function perfPoseFrente(c, x, y){
     g.strokeStyle = '#ff6fb5'; g.lineWidth = .8; g.beginPath(); g.arc(x + 19, y + 19.4, 2.4, 0, 7); g.stroke();
     g.fillStyle = c.skin; g.beginPath(); g.arc(x + 22.4, y + 23.3, 2.3, 0, 7); g.fill();
     g.fillStyle = '#ff6fb5'; g.font = '7px sans-serif'; g.textAlign = 'left'; g.fillText('♪', x + 25, y + 14); g.fillText('♫', x + 30, y + 9);
-  } else {
+  } else if(p === 'nyan'){
     [[3, 6.5], [27, 23.5]].forEach(function(b){
       g.strokeStyle = c.skin; g.lineWidth = 4; g.beginPath(); g.moveTo(x + b[0], y + 26); g.lineTo(x + b[1], y + 21.5); g.stroke();
       g.fillStyle = c.skin; g.beginPath(); g.arc(x + b[1], y + 20, 2.8, 0, 7); g.fill();
@@ -6221,22 +6419,24 @@ function perfPoseFrente(c, x, y){
 }
 
 // ---------- Tela do perfil ----------
-var perfMontou = false, perfAtual = null, perfMeu = false, perfGenAv = null, perfDono = [], perfBestConta = 0, perfAba = 'perfil', perfZoom = true, perfMeuAv = null;
+var perfMontou = false, perfAtual = null, perfMeu = false, perfNickVis = '', perfGenAv = null, perfDono = [], perfBestConta = 0, perfAba = 'perfil', perfZoom = true, perfMeuAv = null;
+var perfProva = '', perfT = 0, perfAnimId = 0, perfInsSel = '';
 var perfOv = document.createElement('div');
 perfOv.className = 'ov perfov'; perfOv.id = 'perfOv'; perfOv.hidden = true;
 perfOv.innerHTML = '<div class="panel perfp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="perfX">✕</button><div id="perfCorpo"></div></div>';
 document.body.appendChild(perfOv);
 
-function perfAbrir(nick){
-  perfMeu = !nick; perfAtual = null; perfAba = 'perfil'; perfZoom = true;
+function perfAbrir(nick, manterAba){
+  perfMeu = !nick; perfNickVis = nick || ''; perfAtual = null; perfProva = ''; perfInsSel = '';
+  if(!manterAba){ perfAba = 'perfil'; perfZoom = true; }
   $('perfX').setAttribute('aria-label', tr('Fechar'));
-  $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
-  perfOv.hidden = false; perfOv.scrollTop = 0;
-  if(sfx.card) sfx.card();
+  if(!manterAba) $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
+  if(perfOv.hidden){ perfOv.hidden = false; perfOv.scrollTop = 0; if(sfx.card) sfx.card(); }
   var pr = perfMeu ? contaRpc('meu_perfil') : contaRpc('perfil_publico', { p_nick: String(nick).slice(0, 24) });
   pr.then(function(d){
     if(perfOv.hidden) return;
     if(!d){ $('perfCorpo').innerHTML = '<h2 class="perfnm">' + escHtml(nick || '') + '</h2><p class="perfcarr">' + escHtml(tr('Esse nome ainda não tem perfil (jogou sem conta).')) + '</p>'; return; }
+    if(d.eu && !perfMeu){ perfAbrir(); return; }   // tocou no próprio nome: abre o perfil pessoal
     perfAtual = d; perfMontar();
   }).catch(function(){
     $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Não deu para falar com o servidor. Tente de novo.')) + '</p>';
@@ -6244,7 +6444,7 @@ function perfAbrir(nick){
 }
 function perfFechar(){
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
-  perfMontou = false;
+  perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfIconeConta();
 }
 $('perfX').onclick = perfFechar;
@@ -6258,27 +6458,33 @@ document.addEventListener('keydown', function(e){
 function perfMontar(){
   var d = perfAtual, meu = perfMeu, h = '';
   perfBestConta = Math.max(+d.best || 0, meu ? best : 0);
-  var ri = rankOf(perfBestConta), rk = RANKS[ri];
+  var ri = rankOf(perfBestConta), rk = RANKS[ri], os = PERF_OSHI[d.oshi];
   if(meu){
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : [];
+    perfLojaSincronizar();
     if(!perfGenAv){
       var a = d.avatar && !d.avatar.auto ? d.avatar : {};
       perfGenAv = perfAvAtual({ visual: typeof a.visual === 'string' ? a.visual : '', pose: typeof a.pose === 'string' ? a.pose : 'v', expr: a.expr === undefined ? 2 : +a.expr, fundo: typeof a.fundo === 'string' ? a.fundo : 'basico', pet: perfPetDoAvatar(a) });
     }
   }
   var desde = d.desde ? escHtml(tr('No {logo} desde {data}')).replace('{logo}', perfLogo()).replace('{data}', escHtml(perfData(d.desde))) : '';
-  h += '<div class="perfhero"><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
-       '<button type="button" class="perffotow" id="perfFotoBtn" title="' + escHtml(tr('Toque na foto para ver inteira')) + '" aria-label="' + escHtml(tr('Toque na foto para ver inteira')) + '"><canvas id="perfFoto" width="240" height="240"></canvas><span class="perfselo">' + PERF_RANK_EMO[ri] + '</span></button>' +
+  var cora = '<span class="perfcora" id="perfCora">💖 <b>' + (+d.coracoes || 0) + '</b></span>';
+  if(!meu) cora = '<button type="button" class="perfcora" id="perfCora"' + (d.dei_coracao ? ' aria-pressed="true"' : '') + ' title="' + escHtml(tr(d.dei_coracao ? 'Você deu um coração hoje!' : 'Dar coração')) + '">' + (d.dei_coracao ? '💖' : '🤍') + ' <b>' + (+d.coracoes || 0) + '</b></button>';
+  var heroBg = os ? ' style="background:linear-gradient(120deg,' + perfRgba(os[2], .26) + ',rgba(255,111,181,.14) 55%,' + perfRgba(os[2], .14) + ')"' : '';
+  h += '<div class="perfhero"' + heroBg + '><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
+       '<div class="perffotocol"><button type="button" class="perffotow" id="perfFotoBtn" title="' + escHtml(tr('Toque na foto para ver inteira')) + '" aria-label="' + escHtml(tr('Toque na foto para ver inteira')) + '"><canvas id="perfFoto" width="240" height="240"></canvas><span class="perfselo">' + PERF_RANK_EMO[ri] + '</span></button>' + cora + '</div>' +
        '<div class="perfid"><b class="perfnm">' + escHtml(d.nick) + '</b><span class="perfrk">' + escHtml(tr(rk[1])) + '</span>' +
+       (os ? '<span class="perfoshi">推し ' + os[0] + ' ' + escHtml(tr(os[1])) + '</span>' : '') +
        '<small>' + escHtml(tr('Recorde')) + ': <b>' + (+d.best || 0) + '</b></small>' + (desde ? '<small>' + desde + '</small>' : '') +
-       '<em class="perfkao">' + escHtml(PERF_KAO[Math.floor(Math.random() * PERF_KAO.length)]) + '</em></div></div>';
+       (d.frase ? '<q class="perffrase">' + escHtml(d.frase) + '</q>' : '<em class="perfkao">' + escHtml(PERF_KAO[Math.floor(Math.random() * PERF_KAO.length)]) + '</em>') + '</div></div>';
   if(meu) h += '<div class="perftabs" role="tablist">' + [['perfil', '💖', 'Perfil'], ['montar', '✏️', 'Montar Idol'], ['estudio', '📸', 'Estúdio']].map(function(t){
     return '<button type="button" role="tab" data-aba="' + t[0] + '" aria-pressed="' + (perfAba === t[0]) + '">' + t[1] + ' ' + escHtml(tr(t[2])) + '</button>'; }).join('') + '</div>';
-  h += '<div id="perfAbaCorpo"></div>';
+  h += '<p class="perfmsg" id="perfTopoMsg" hidden></p><div id="perfAbaCorpo"></div>';
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
   $('perfVoltar').onclick = perfFechar;
   $('perfFotoBtn').onclick = function(){ perfZoom = !perfZoom; perfFotoAtual(); beep(perfZoom ? 784 : 988, .05, 'triangle', .04); };
+  if(!meu) $('perfCora').onclick = perfDarCoracao;
   perfFotoAtual();
   perfAbaMostrar();
 }
@@ -6288,6 +6494,7 @@ function perfFotoAtual(){
   if(perfMeu && (!av || av.auto)) av = perfAvAtual();   // sem foto escolhida: acompanha o Idol de agora
   perfFotoRedonda($('perfFoto'), av || { c:{}, pose:'v', expr:2, fundo:'basico' }, perfZoom);
 }
+function perfTopoMsg(t){ var m = $('perfTopoMsg'); if(!m) return; m.textContent = t; m.hidden = !t; clearTimeout(m._t); if(t) m._t = setTimeout(function(){ m.hidden = true; }, 4000); }
 function perfAbaMostrar(){
   var box = $('perfAbaCorpo'), d = perfAtual, meu = perfMeu, h = '';
   [].forEach.call(document.querySelectorAll('#perfCorpo .perftabs button'), function(b){ b.setAttribute('aria-pressed', b.dataset.aba === perfAba); });
@@ -6296,28 +6503,38 @@ function perfAbaMostrar(){
       h += '<div class="perfnums"><div class="n1"><b>★ ' + starT + '</b><small>' + escHtml(tr('Estrelas')) + '</small></div>' +
            '<div class="n2"><b>' + (+d.corridas || 0) + '</b><small>' + escHtml(tr('Corridas')) + '</small></div>' +
            '<div class="n3"><b>' + (+d.centers || 0) + '</b><small>' + escHtml(tr('Centers')) + '</small></div></div>';
+    }
+    h += '<h3>🏅 ' + escHtml(tr('Insígnias')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
+    // Center Run: posição geral, recorde por personagem e últimas corridas
+    h += '<h3>🏁 ' + escHtml(tr('Center Run')) + '</h3>';
+    if(d.pos_geral) h += '<p class="perfpos-geral"><span class="perfpos">#' + d.pos_geral + '</span> ' + escHtml(tr('no ranking geral')) + ' · ' + escHtml(tr('Recorde')) + ' <b>' + (+d.best || 0) + '</b></p>';
+    if(meu){
       var pp = {}, ks;
       Object.keys(d.por_personagem || {}).forEach(function(k){ var n = k === 'Você' ? 'Idol' : k; pp[n] = Math.max(pp[n] || 0, +d.por_personagem[k] || 0); });   // "Você" = nome antigo do Idol
       ks = Object.keys(pp);
-      if(ks.length) h += '<h3>' + escHtml(tr('Melhor por personagem')) + '</h3><div class="perfchips">' + ks.map(function(k){ return '<span>' + escHtml(k) + ' · <b>' + pp[k] + '</b></span>'; }).join('') + '</div>';
+      if(ks.length) h += '<div class="perfchips">' + ks.map(function(k){ return '<span>' + escHtml(k) + ' · <b>' + pp[k] + '</b></span>'; }).join('') + '</div>';
     }
+    h += '<ol class="lb perfult">' + perfUltimas(d.ultimas || []) + '</ol>';
+    h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
-    if(meu) h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
-    h += '<h3>🎤 ' + escHtml(tr('Últimas corridas')) + '</h3><ol class="lb perfult">' + perfUltimas(d.ultimas || []) + '</ol>';
+    h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
+    if(meu) h += perfBioHtml(d);
     box.innerHTML = h;
     perfPets(d, meu);
-    if(meu) perfMiniCarregar();
+    if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
   } else {
     h += '<canvas id="perfGenCv" width="560" height="560" aria-hidden="true"></canvas>';
-    if(perfAba === 'montar') h += '<p class="perfdica">' + escHtml(tr('Tudo o que você muda aqui vale para o Idol do jogo.')) + '</p><div class="cust perfmont" id="perfMont"></div>';
+    if(perfAba === 'montar') h += '<p class="perfdica">' + escHtml(tr('Tudo o que você muda aqui vale para o Idol do jogo.')) + '</p><div class="cust perfmont" id="perfMont"></div>' +
+      '<h3>🛍️ ' + escHtml(tr('Lojinha de roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).')) + '</p><p class="perfmsg" id="perfLojaMsg" hidden></p><div class="perfloja" id="perfLoja"></div>';
     else h += '<p class="perfmsg" id="perfGenMsg" hidden></p><div class="btns perfbtns" id="perfGenBtns"></div><div class="petph perfopts" id="perfGenOpts"></div>';
     box.innerHTML = h;
-    if(perfAba === 'montar'){ perfMontUI(); perfGenDesenhar(); } else perfGenUI();
+    if(perfAba === 'montar'){ perfMontUI(); perfLojaUI(); } else perfGenUI();
+    perfAnimLigar();
   }
 }
 perfOv.addEventListener('click', function(e){
   var t = e.target.closest('.perftabs button'); if(!t) return;
-  perfAba = t.dataset.aba; beep(880, .04, 'triangle', .04); perfAbaMostrar();
+  perfAba = t.dataset.aba; perfProva = ''; beep(880, .04, 'triangle', .04); perfAbaMostrar();
 });
 function perfUltimas(L){
   if(!L.length) return '<li style="justify-content:center"><em>' + escHtml(tr('Nenhuma corrida online ainda.')) + '</em></li>';
@@ -6326,6 +6543,112 @@ function perfUltimas(L){
     return '<li><span>' + escHtml(ch) + ' · <em>' + escHtml(tr(RANKS[rankOf(+r.score || 0)][1])) + '</em> · <small>' + escHtml(perfData(r.created_at)) + '</small></span><strong>' + (+r.score || 0) + '</strong></li>';
   }).join('');
 }
+
+// ---------- Insígnias ----------
+function perfInsHtml(tem, meu){
+  var lista = PERF_INS.filter(function(i){ return meu || tem.indexOf(i[0]) >= 0; });
+  if(!lista.length) return '<p class="perfcarr">✧</p>';
+  return '<div class="perfins" id="perfIns">' + lista.map(function(i){
+    var ok = tem.indexOf(i[0]) >= 0;
+    return '<button type="button" class="perfin' + (ok ? ' ok' : '') + '" data-ins="' + i[0] + '" aria-pressed="' + (perfInsSel === i[0]) + '" title="' + escHtml(tr(i[2])) + '"><span>' + (ok ? i[1] : '🔒') + '</span></button>';
+  }).join('') + '</div><p class="perfinsdesc" id="perfInsDesc"' + (perfInsSel ? '' : ' hidden') + '></p>';
+}
+perfOv.addEventListener('click', function(e){
+  var b = e.target.closest('.perfin'); if(!b) return;
+  perfInsSel = b.dataset.ins;
+  var i = PERF_INS.filter(function(x){ return x[0] === perfInsSel; })[0], ok = b.classList.contains('ok');
+  [].forEach.call(document.querySelectorAll('#perfIns .perfin'), function(x){ x.setAttribute('aria-pressed', x === b); });
+  var dsc = $('perfInsDesc'); dsc.hidden = false;
+  dsc.innerHTML = '<b>' + i[1] + ' ' + escHtml(tr(i[2])) + '</b> · ' + escHtml(tr(i[3])) + ' <em class="' + (ok ? 'ok' : '') + '">' + escHtml(tr(ok ? 'Conquistada!' : 'Bloqueada')) + '</em>';
+  beep(ok ? 1175 : 523, .05, 'triangle', .04);
+});
+
+// ---------- Corações ----------
+function perfDarCoracao(){
+  var b = $('perfCora'), d = perfAtual;
+  if(!contaJ){ perfTopoMsg(tr('Entre com Google para dar coração e deixar recados.')); return; }
+  if(d.dei_coracao){ perfTopoMsg('💖 ' + tr('Você deu um coração hoje!')); return; }
+  b.disabled = true;
+  contaRpc('dar_coracao', { p_nick: d.nick }).then(function(r){
+    b.disabled = false;
+    d.dei_coracao = true; if(r && typeof r.total === 'number') d.coracoes = r.total;
+    b.innerHTML = '💖 <b>' + (+d.coracoes || 0) + '</b>'; b.setAttribute('aria-pressed', 'true');
+    perfChuvaCoracoes(b);
+    perfTopoMsg('💖 ' + tr('Você deu um coração hoje!'));
+    [1047, 1319, 1568].forEach(function(f, i){ beep(f, .12, 'sine', .04, i * .07); });
+  }).catch(function(){ b.disabled = false; perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
+}
+function perfChuvaCoracoes(el){   // coraçõezinhos subindo do botão
+  var r = el.getBoundingClientRect();
+  for(var i = 0; i < 8; i++){
+    var s = document.createElement('i'); s.className = 'perfsobe'; s.textContent = ['💖', '💜', '💚', '💙'][i % 4];
+    s.style.left = (r.left + r.width / 2 + (Math.random() - .5) * 40) + 'px'; s.style.top = (r.top) + 'px'; s.style.animationDelay = (i * .07) + 's';
+    document.body.appendChild(s); setTimeout(function(n){ return function(){ if(n.parentNode) n.parentNode.removeChild(n); }; }(s), 1600);
+  }
+}
+
+// ---------- Recados ----------
+var PERF_REC_ERRO = { palavras:'Essa mensagem tem palavras que não são permitidas.', hoje:'Você já deixou um recado hoje para essa pessoa.', fechado:'Essa pessoa não está recebendo recados.', limite:'Você chegou ao limite de recados de hoje.', login:'Entre com Google para dar coração e deixar recados.', sem_conta:'Entre com Google para dar coração e deixar recados.', tamanho:'Deixe um recado (até 60 letras)' };
+function perfRecadosHtml(d, meu){
+  var L = Array.isArray(d.recados) ? d.recados : [], h = '';
+  if(!meu){
+    if(!d.recados_on) h += '<p class="perfcarr">' + escHtml(tr('Essa pessoa não está recebendo recados.')) + '</p>';
+    else if(!contaJ) h += '<p class="perfcarr">' + escHtml(tr('Entre com Google para dar coração e deixar recados.')) + '</p>';
+    else if(d.recado_hoje) h += '<p class="perfcarr">💌 ' + escHtml(tr('Você já deixou um recado hoje para essa pessoa.')) + '</p>';
+    else h += '<div class="perfrecform"><input class="nick" id="perfRecTxt" maxlength="60" autocomplete="off" placeholder="' + escHtml(tr('Deixe um recado (até 60 letras)')) + '"><button type="button" class="btn" id="perfRecOk">💌 ' + escHtml(tr('Enviar')) + '</button></div>';
+  }
+  h += '<p class="perfmsg" id="perfRecMsg" hidden></p>';
+  h += L.length ? '<ul class="perfrecs">' + L.map(function(r){
+    return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
+           (r.pode_apagar ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '" aria-label="✕">✕</button>' : '') + '</li>';
+  }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>';
+  if(meu) h += '<label class="perfrecon"><input type="checkbox" id="perfRecOn"' + (d.recados_on !== false ? ' checked' : '') + '> ' + escHtml(tr('Aceitar recados')) + '</label>';
+  return h;
+}
+perfOv.addEventListener('click', function(e){
+  if(e.target.id === 'perfRecOk'){
+    var inp = $('perfRecTxt'), tx = inp.value.trim(), b = e.target; if(!tx) return;
+    b.disabled = true;
+    contaRpc('deixar_recado', { p_nick: perfAtual.nick, p_texto: tx }).then(function(r){
+      b.disabled = false;
+      if(r && r.ok){ if(sfx.card) sfx.card(); perfAbrir(perfAtual.nick, true); setTimeout(function(){ perfTopoMsg('💌 ' + tr('Recado enviado!')); }, 400); return; }
+      var m = $('perfRecMsg'); m.textContent = tr(PERF_REC_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; if(sfx.hit) sfx.hit();
+    }).catch(function(){ b.disabled = false; });
+    return;
+  }
+  var x = e.target.closest('.perfrecx'); if(!x) return;
+  x.disabled = true;
+  contaRpc('apagar_recado', { p_id: +x.dataset.id }).then(function(r){
+    if(r && r.ok){ var li = x.closest('li'); if(li) li.parentNode.removeChild(li); if(perfAtual && Array.isArray(perfAtual.recados)) perfAtual.recados = perfAtual.recados.filter(function(q){ return +q.id !== +x.dataset.id; }); }
+    else x.disabled = false;
+  }).catch(function(){ x.disabled = false; });
+});
+perfOv.addEventListener('keydown', function(e){ if(e.target.id === 'perfRecTxt'){ e.stopPropagation(); if(e.key === 'Enter') $('perfRecOk').click(); } if(e.target.id === 'perfBioFrase') e.stopPropagation(); });
+perfOv.addEventListener('change', function(e){
+  if(e.target.id !== 'perfRecOn') return;
+  var on = e.target.checked;
+  contaRpc('recados_ligados', { p_on: on }).then(function(){ if(perfAtual) perfAtual.recados_on = on; }).catch(function(){ e.target.checked = !on; });
+});
+
+// ---------- Oshi e frase do perfil ----------
+function perfBioHtml(d){
+  var op = [['', 'Sem oshi']].concat(Object.keys(PERF_OSHI).map(function(k){ return [k, PERF_OSHI[k][0] + ' ' + tr(PERF_OSHI[k][1])]; }));
+  return '<details class="perfbio"' + (d.frase || d.oshi ? '' : ' open') + '><summary>✏️ ' + escHtml(tr('Editar oshi e frase')) + '</summary>' +
+    '<label>' + escHtml(tr('Oshi')) + ' <select id="perfBioOshi">' + op.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === (d.oshi || '') ? ' selected' : '') + '>' + escHtml(o[0] ? o[1] : tr(o[1])) + '</option>'; }).join('') + '</select></label>' +
+    '<label>' + escHtml(tr('Frase do perfil')) + ' <input class="nick" id="perfBioFrase" maxlength="60" autocomplete="off" value="' + escHtml(d.frase || '') + '"></label>' +
+    '<p class="perfmsg" id="perfBioMsg" hidden></p><div class="btns"><button type="button" class="btn" id="perfBioOk">' + escHtml(tr('Salvar')) + '</button></div></details>';
+}
+perfOv.addEventListener('click', function(e){
+  if(e.target.id !== 'perfBioOk') return;
+  var b = e.target, os = $('perfBioOshi').value, fr = $('perfBioFrase').value;
+  b.disabled = true;
+  contaRpc('salvar_bio', { p_oshi: os, p_frase: fr }).then(function(r){
+    b.disabled = false;
+    var m = $('perfBioMsg'); m.hidden = false;
+    if(r && r.ok){ perfAtual.oshi = os; perfAtual.frase = r.frase || ''; m.textContent = '✨ ' + tr('Salvo!'); if(sfx.card) sfx.card(); setTimeout(perfMontar, 700); }
+    else m.textContent = tr(r && r.erro === 'palavras' ? 'Essa frase tem palavras que não são permitidas.' : 'Não deu para falar com o servidor. Tente de novo.');
+  }).catch(function(){ b.disabled = false; });
+});
 
 // Pets: os seus (do aparelho, os mais atuais) ou os da pessoa (resumo vindo do servidor)
 function perfPets(d, meu){
@@ -6357,28 +6680,25 @@ function perfPets(d, meu){
 function perfMiniCarregar(){
   var box = $('perfMini');
   perfConferir(); var envio = perfSyncT ? perfEnviar() : Promise.resolve();   // manda o recorde mais novo antes de perguntar o ranking
-  envio.then(function(){ return contaRpc('ranking_minijogos'); }).then(function(r){ if(box.isConnected) perfMiniUI(r || {}); })
-       .catch(function(){ if(box.isConnected) perfMiniUI({}); });
+  envio.then(function(){ return contaRpc('ranking_minijogos'); }).then(function(r){ if(box.isConnected) perfMiniUI(r || {}, (perfAtual && perfAtual.mini) || {}); })
+       .catch(function(){ if(box.isConnected) perfMiniUI({}, (perfAtual && perfAtual.mini) || {}); });
 }
-function perfMiniUI(r){
-  var loc = (petData && petData.mini && petData.mini.rec) || {};
+function perfMiniUI(r, resumo){   // r: ranking completo (seu perfil) · resumo: pontos e posição (perfil de outra pessoa)
+  var loc = perfMeu ? ((petData && petData.mini && petData.mini.rec) || {}) : {};
   $('perfMini').innerHTML = [['ritmo', '🎵', 'Ritmo'], ['corda', '🪢', 'Pular corda']].map(function(j){
-    var R = r[j[0]] || {}, meu = Math.max(+loc[j[0]] || 0, +R.meu || 0), top = Array.isArray(R.top) ? R.top : [];
-    var pos = R.pos ? '<span class="perfpos">#' + R.pos + ' <small>' + escHtml(tr('de')) + ' ' + (+R.total || 0) + '</small></span>' : '';
-    var lista = top.length ? '<ol>' + top.map(function(t, i){
+    var R = (r && r[j[0]]) || {}, S = (resumo && resumo[j[0]]) || {};
+    var pts = Math.max(+loc[j[0]] || 0, +R.meu || 0, +S.pts || 0), posN = R.pos || S.pos, tot = R.total || S.total || 0, top = Array.isArray(R.top) ? R.top : [];
+    var pos = posN ? '<span class="perfpos">#' + posN + ' <small>' + escHtml(tr('de')) + ' ' + tot + '</small></span>' : '';
+    var lista = !r ? '' : top.length ? '<ol>' + top.map(function(t, i){
       var eu = contaJ && String(t.nick).toLowerCase() === String(contaJ.nick).toLowerCase();
       return '<li' + (eu ? ' class="eu"' : '') + '><span>' + (['🥇', '🥈', '🥉'][i] || (i + 1) + '.') + ' ' + escHtml(t.nick) + '</span><b>' + (+t.pts || 0) + '</b></li>'; }).join('') + '</ol>'
       : '<p class="perfcarr">' + escHtml(tr('Ninguém jogou ainda.')) + '</p>';
     return '<div class="perfjogo"><div class="perfjtop"><b>' + j[1] + ' ' + escHtml(tr(j[2])) + '</b>' + pos + '</div>' +
-           '<small>' + escHtml(tr('Seu recorde')) + ': <b>🏆 ' + meu + '</b></small>' + lista + '</div>';
+           '<small>' + escHtml(tr(perfMeu ? 'Seu recorde' : 'Recorde')) + ': <b>🏆 ' + pts + '</b></small>' + lista + '</div>';
   }).join('');
 }
 
 // ---------- Montar Idol (o mesmo montador do menu, gravando no Idol) ----------
-var PERF_MONT = [   // [id do controle no menu, campo do Idol]
-  ['chair', 'hair'], ['cstk', 'streak'], ['cstr', 'hair2'], ['ceye', 'eye'], ['skins', 'skin'], ['cback', 'back'], ['cfront', 'front'], ['cdet', 'det'],
-  ['cout', 'out'], ['coutcol', 'outcol'], ['chat', 'hat'], ['cgl', 'gl'], ['acc', '']
-];
 function perfMontUI(){
   var box = $('perfMont'), h = '';
   function rotulo(id){ var el = $(id), lb = el && el.closest('label'); if(!lb) return ''; var t = ''; [].forEach.call(lb.childNodes, function(n){ if(n.nodeType === 3) t += n.nodeValue; }); return t.trim(); }
@@ -6404,8 +6724,9 @@ function perfMontMudou(campo, v){
     saveCu();
     if(sel === 3) pick(3);   // o montador do menu mostra os mesmos valores
   }
-  perfMontou = true;
-  perfGenDesenhar(); perfFotoAtual();
+  perfMontou = true; perfProva = '';
+  perfFotoAtual();
+  if(campo === 'out') perfLojaUI();
 }
 perfOv.addEventListener('input', function(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color') perfMontMudou(el.dataset.m, el.value); });
 perfOv.addEventListener('change', function(e){
@@ -6416,6 +6737,50 @@ perfOv.addEventListener('click', function(e){
   var b = e.target.closest('#perfMont .sw'); if(!b) return;
   [].forEach.call(b.parentNode.children, function(x){ x.setAttribute('aria-pressed', x === b); });
   perfMontMudou('skin', b.dataset.v);
+});
+
+// ---------- Lojinha de roupas (dentro do Montar Idol) ----------
+function perfLojaSincronizar(){   // as compras do servidor valem também para a lista "Roupa" do menu
+  var compradas = perfDono.filter(function(k){ return /^roupa_/.test(k); }).map(function(k){ return k.slice(6); }).filter(function(k){ return !!perfLojaInfo(k); });
+  var antes = JSON.stringify(perfLojaDono());
+  CU.loja = compradas;
+  if(JSON.stringify(compradas) !== antes){ saveCu(); }
+  perfLojaOpcoes();
+}
+function perfLojaUI(){
+  var box = $('perfLoja'); if(!box) return;
+  box.innerHTML = PERF_LOJA.map(function(it){
+    var dono = perfLojaDono().indexOf(it[0]) >= 0, veste = CU.out === it[0], prov = perfProva === it[0];
+    var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
+      : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>';
+    return '<div class="perfroupa' + (prov ? ' on' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + acao + '</div>';
+  }).join('');
+  [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
+    var av = perfAvAtual({ pose:'v', fundo:'basico' }); av.c.out = cv.dataset.roupa;
+    perfDesenharIdol(cv.getContext('2d'), 160, 160, av, true, false, 0);
+  });
+}
+perfOv.addEventListener('click', function(e){
+  var b = e.target.closest('#perfLoja [data-vestir]');
+  if(b){ perfMontMudou('out', b.dataset.vestir); perfMontUI(); if(sfx.card) sfx.card(); return; }
+  b = e.target.closest('#perfLoja [data-comprar]');
+  if(b){
+    b.disabled = true;
+    contaRpc('comprar_visual', { p_key: b.dataset.comprar }).then(function(r){
+      if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e2){} setBest(); }
+      var m = $('perfLojaMsg');
+      if(!r || !r.ok){ m.textContent = tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; b.disabled = false; if(sfx.hit) sfx.hit(); return; }
+      perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono;
+      perfLojaSincronizar();
+      var k = b.dataset.comprar.slice(6);
+      perfMontMudou('out', k); perfMontUI();
+      m.textContent = '✨ ' + tr('Comprado!'); m.hidden = false;
+      if(sfx.rank) sfx.rank();
+    }).catch(function(){ b.disabled = false; });
+    return;
+  }
+  var c = e.target.closest('#perfLoja [data-provar]');
+  if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); }
 });
 
 // ---------- Estúdio de foto (só no seu perfil) ----------
@@ -6440,7 +6805,6 @@ function perfPetsDono(){   // pets que você tem (para aparecer na foto)
 }
 function perfGenUI(){
   var av = perfGenAv;
-  av.c = perfAvAtual().c; av.a = accSel || '';
   function grp(label, campo, lista, cur){
     return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
       var extra = '', preco = campo === 'visual' || campo === 'pose' || campo === 'fundo' ? o[3] : 0;
@@ -6457,36 +6821,51 @@ function perfGenUI(){
     grp('Fundo', 'fundo', PERF_FUNDOS, av.fundo) + (pets.length > 1 ? grp('Pet na foto', 'pet', pets, av.pet ? av.pet.k : '') : '');
   var b = $('perfGenBtns'), m = $('perfGenMsg'), falta = perfFaltando();
   if(!falta.length){
-    b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
+    b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png" href="#">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
     m.hidden = true;
   } else {
     b.innerHTML = falta.map(function(f){ return '<button type="button" class="btn perfcompra" data-k="' + escHtml(f[0]) + '"' + (starT < f[2] ? ' disabled' : '') + '>' + escHtml(tr('Comprar')) + ' ' + escHtml(f[1]) + ' ★' + f[2] + '</button>'; }).join('');
     var soma = falta.reduce(function(s, f){ return s + f[2]; }, 0);
-    m.textContent = starT < soma ? tr('Prévia: compre o que está marcado com ★ para baixar e usar.') + ' (★ ' + starT + ')' : tr('Prévia: compre o que está marcado com ★ para baixar e usar.');
+    m.textContent = tr('Prévia: compre o que está marcado com ★ para baixar e usar.') + (starT < soma ? ' (★ ' + starT + ')' : '');
     m.hidden = false;
   }
   perfGenDesenhar();
   if(!falta.length){
-    $('perfPng').onclick = function(){ this.href = perfPng(); this.download = 'tsulipa-idol-' + String(perfAtual.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('perfPng').onclick = function(){ this.href = perfPng(); this.download = 'tsulipa-idol-' + String(perfAtual.nick).replace(/[^\w-]+/g, '') + '.png'; };   // a foto só é gerada aqui
     $('perfUsar').onclick = perfUsarFoto;
   }
 }
+// O estúdio e o montador são uma cena animada (como o menu e o camarim), redesenhada a cada 2 quadros
+function perfAnimar(){
+  perfAnimId = 0;
+  if(perfOv.hidden || !perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !$('perfGenCv')) return;
+  perfT++;
+  if(perfT % 2 === 0) perfGenDesenhar();
+  perfAnimId = requestAnimationFrame(perfAnimar);
+}
+function perfAnimLigar(){ if(!perfAnimId) perfAnimId = requestAnimationFrame(perfAnimar); }
 function perfGenDesenhar(){
-  var cv = $('perfGenCv'); if(!cv) return;
-  perfGenAv.c = perfAvAtual().c; perfGenAv.a = accSel || '';
+  var cv = $('perfGenCv'); if(!cv || !perfGenAv) return;
+  var av = perfGenAv, prev = false;
+  av.c = perfAvAtual().c; av.a = accSel || '';
+  if(perfAba === 'montar'){   // no montador: o Idol de agora (ou provando uma roupa da lojinha), sem efeitos de foto
+    av = { c: av.c, a: av.a, visual:'', pose:'v', expr:2, fundo:'basico' };
+    if(perfProva){ av.c = JSON.parse(JSON.stringify(av.c)); av.c.out = perfProva; prev = perfLojaDono().indexOf(perfProva) < 0; }
+  } else prev = perfFaltando().length > 0;
   var x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height);
-  perfDesenharIdol(x, cv.width, cv.height, perfGenAv, true);
-  if(perfAba === 'estudio' && perfFaltando().length){   // marca d'água de prévia
-    x.save(); x.translate(cv.width / 2, cv.height / 2); x.rotate(-.35);
-    x.font = '900 ' + Math.round(cv.width / 9) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.lineWidth = cv.width / 80; x.strokeStyle = 'rgba(123,63,240,.55)'; x.strokeText(tr('PRÉVIA'), 0, 0);
-    x.fillStyle = 'rgba(255,255,255,.6)'; x.fillText(tr('PRÉVIA'), 0, 0);
-    x.restore();
+  perfDesenharIdol(x, cv.width, cv.height, av, true, false, perfT + 1);
+  if(prev){   // etiqueta de prévia no canto
+    var u = cv.width / 320;
+    x.save(); x.translate(14 * u, 14 * u);
+    x.fillStyle = 'rgba(123,63,240,.85)'; x.beginPath(); x.roundRect ? x.roundRect(0, 0, 92 * u, 24 * u, 12 * u) : x.rect(0, 0, 92 * u, 24 * u); x.fill();
+    x.fillStyle = '#fff'; x.font = '900 ' + Math.round(12 * u) + 'px "M PLUS Rounded 1c",sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center';
+    x.fillText('★ ' + tr('PRÉVIA'), 46 * u, 12.5 * u); x.restore();
   }
 }
 function perfPng(){
   var cv = document.createElement('canvas'); cv.width = 1024; cv.height = 1024;
   var x = cv.getContext('2d');
+  perfGenAv.c = perfAvAtual().c; perfGenAv.a = accSel || '';
   perfDesenharIdol(x, 1024, 1024, perfGenAv, true);
   if(perfGenAv.fundo){   // assinatura discreta (só com fundo)
     x.font = '800 26px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.85)';
@@ -6542,7 +6921,7 @@ function perfIconeConta(){
   perfFotoRedonda(cv, perfMeuAv && !perfMeuAv.auto ? perfMeuAv : perfAvAtual(), true);
 }
 
-// ---------- Nome do ranking online → perfil público ----------
+// ---------- Nome do ranking online (ou de um recado) → perfil público ----------
 document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('.lbn'); if(!b) return;
   e.preventDefault(); e.stopPropagation();
@@ -6611,6 +6990,7 @@ function perfPerguntar(n, j){
   $('perfConfTxt').textContent = tr('Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.');
   $('perfConfSim').textContent = tr('USAR O SAVE DA NUVEM');
   $('perfConfNao').textContent = tr('Cancelar e sair da conta');
+  $('perfConfSim').disabled = false;
   $('perfConfSim').onclick = function(){ this.disabled = true; if(!perfAplicarNuvem(n, j.nick)){ perfConf.hidden = true; contaAplicar(j); } };
   $('perfConfNao').onclick = function(){ perfConf.hidden = true; contaSair(); };
   perfConf.hidden = false;
@@ -6650,10 +7030,12 @@ function perfAplicarNuvem(n, nick){
   location.reload();
   return true;
 }
-// Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual
+// Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual.
+// Aproveita para trazer as roupas compradas na lojinha para a lista "Roupa" do menu.
 function perfAvatarAuto(){
   contaRpc('meu_perfil').then(function(d){
     if(!d) return;
+    perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
     perfMeuAv = d.avatar || null; perfIconeConta();
     if(d.avatar && !d.avatar.auto) return;
     return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });

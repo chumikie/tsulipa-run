@@ -614,6 +614,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .encbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.encbtns #encDuo{grid-column:1/-1}.encbtns .btn{margin:0;text-decoration:none;text-align:center}
 .encflash{position:absolute;inset:4px;border-radius:17px;background:#fff;animation:encflash .4s ease-out forwards;pointer-events:none}
 @keyframes encflash{from{opacity:.9}to{opacity:0}}
+#petov{z-index:23!important}
+#shr{z-index:30!important}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -8397,7 +8399,7 @@ hubOv.addEventListener('click', function(e){
   if((b = t.closest('.hubcard'))){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
-    else if(ir === 'pet'){ hubFechar(); var pb = $('petBtn'); if(pb) pb.click(); }
+    else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
     else if(ir === 'gacha') gachaAbrir();
     else if(ir === 'duo') duoAbrir();
@@ -8613,7 +8615,8 @@ function gachaCardDesenhar(cv, d){
   x.restore();
   x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 6; rr(3, 3, W2 - 6, H2 - 6, 20); x.stroke();
 }
-function gachaAbrir(){ gachaAgora = false; hubFechar(); if(typeof gachaCardsCarregar === 'function') gachaCardsCarregar(); gachaOv.hidden = false; gachaT = 0; gachaGiro = -1; gachaUI(); gachaCardUI(); if(!gachaAnim) gachaAnim = requestAnimationFrame(gachaLoop); gachaConferir(); if(hubComecou) hubMusicaTocar(); }
+function gachaAbrir(){ gachaAgora = false;   // abre por cima da tela de início (sem o Center Run no fundo)
+  if(typeof gachaCardsCarregar === 'function') gachaCardsCarregar(); gachaOv.hidden = false; gachaT = 0; gachaGiro = -1; gachaUI(); gachaCardUI(); if(!gachaAnim) gachaAnim = requestAnimationFrame(gachaLoop); gachaConferir(); if(hubComecou) hubMusicaTocar(); }
 function gachaFechar(){ gachaOv.hidden = true; hubMostrar(); }
 $('gachaX').onclick = gachaFechar;
 $('gachaGirar').onclick = function(){
@@ -8724,7 +8727,8 @@ function hubMusicaTocar(){
     }
   }, 60);
 }
-function hubTelaAberta(){ return !hubOv.hidden || (typeof gachaOv !== 'undefined' && !gachaOv.hidden) || (typeof duoOv !== 'undefined' && !duoOv.hidden); }   // gacha e Moon⭐Duo! usam a música da tela de início
+var petVeioHub = false;
+function hubTelaAberta(){ return (!hubOv.hidden && !(typeof petOpen !== 'undefined' && petOpen)) || (typeof gachaOv !== 'undefined' && !gachaOv.hidden) || (typeof duoOv !== 'undefined' && !duoOv.hidden); }   // gacha e Moon⭐Duo! usam a música da tela de início
 function hubMusicaParar(){ if(hubMus){ clearInterval(hubMus); hubMus = null; } }
 document.addEventListener('click', function(e){ if(e.target && e.target.id === 'mute') setTimeout(function(){ if(muted) hubMusicaParar(); else if(hubTelaAberta() && hubComecou) hubMusicaTocar(); }, 50); });
 
@@ -9287,7 +9291,7 @@ duoOv.addEventListener('click', function(e){
   }
 });
 function duoAbrir(nick){
-  duoVeioHub = !hubOv.hidden; if(duoVeioHub) hubFechar(); lookSalvar();
+  duoVeioHub = !hubOv.hidden; lookSalvar();   // abre por cima da tela de início
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
   duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
   if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
@@ -9915,6 +9919,9 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
  ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['Foto', 'Photo', 'Foto', 'รูป', '写真'], ['estrelinhas pelo encontro!', 'stars for the meeting!', '¡estrellitas por el encuentro!', 'ดาวจากการพบกัน!', 'スターをゲット！'],
  ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
+
+// ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------
+if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose; }
 
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---

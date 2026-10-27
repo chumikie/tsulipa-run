@@ -9923,6 +9923,88 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
 // ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------
 if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose; }
 
+// ---------- Músicas próprias: Star⭐Gacha! (suspense de sorte + triunfo) e Moon⭐Duo! (lofi de jardim de fadas) ----------
+var ovMus = null, ovMusK = '';
+function ovMusicaParar(){ if(ovMus){ clearInterval(ovMus); ovMus = null; } ovMusK = ''; }
+function ovMusicaTocar(k){
+  if(muted){ ovMusicaParar(); return; }
+  if(ovMus && ovMusK === k) return;
+  ovMusicaParar(); hubMusicaParar();
+  var a = ac(); if(!a) return;
+  ovMusK = k;
+  var bpm = k === 'gacha' ? 124 : 70, passo = 60 / bpm / 2, n = 0, prox = a.currentTime + .08;
+  function hz(m){ return 440 * Math.pow(2, (m - 69) / 12); }   // nota MIDI → Hz
+  function nota(f, ini, dur, tipo, vol, ataque){
+    var o = a.createOscillator(), gn = a.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, ini);
+    gn.gain.setValueAtTime(.0001, ini); gn.gain.linearRampToValueAtTime(vol, ini + (ataque || .01)); gn.gain.exponentialRampToValueAtTime(.0004, ini + dur);
+    o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + dur + .05);
+  }
+  var rb = a.createBuffer(1, a.sampleRate * .25, a.sampleRate), rd = rb.getChannelData(0);
+  for(var i = 0; i < rd.length; i++) rd[i] = Math.random() * 2 - 1;
+  function ruido(ini, dur, vol, corte, tipoF){
+    var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = tipoF || 'highpass'; fl.frequency.value = corte;
+    s.buffer = rb; gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0003, ini + dur); s.connect(fl); fl.connect(gn); gn.connect(a.destination); s.start(ini); s.stop(ini + dur + .02);
+  }
+  function bumbo(ini, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(140, ini); o.frequency.exponentialRampToValueAtTime(45, ini + .18); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + .22); o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + .25); }
+
+  // Star⭐Gacha!: 4 compassos de suspense (Lá menor, tique-taque da roleta, rufar que cresce) + 4 de triunfo (fanfarra em Dó maior)
+  var G_SUS = [[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], G_TRI = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]];
+  var G_MEL_SUS = [76, -1, 72, -1, 69, -1, 72, 76, 77, -1, 76, -1, 72, -1, 69, -1, 74, -1, 72, -1, 69, -1, 65, 69, 68, 69, 71, 72, 74, 75, 76, 80];
+  var G_MEL_TRI = [84, -1, 79, 84, 88, -1, 86, 84, 83, -1, 79, -1, 86, 84, 83, 79, 81, -1, 84, 88, 91, -1, 88, 84, 89, 88, 86, 84, 86, 88, 91, -1];
+  // Moon⭐Duo!: Fmaj7 – Em7 – Dm7 – Cmaj7, caixinha de música com eco, chiado de vinil e sininhos de fada
+  var D_ACO = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]];
+  var D_MEL = [81, -1, -1, 79, 76, -1, 79, -1, 76, -1, 74, -1, 72, -1, -1, -1, 77, -1, 76, 74, 72, -1, 74, -1, 76, -1, -1, 72, 71, -1, 72, -1];
+
+  ovMus = setInterval(function(){
+    var aberta = ovMusK === 'gacha' ? !gachaOv.hidden : !duoOv.hidden;
+    if(muted || !aberta){ ovMusicaParar(); if(!muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return; }
+    while(prox < a.currentTime + .3){
+      var st = n % 8, bar = Math.floor(n / 8);
+      if(ovMusK === 'gacha'){
+        var sec = Math.floor(bar / 4) % 2, b4 = bar % 4, ch = (sec ? G_TRI : G_SUS)[b4], m = (sec ? G_MEL_TRI : G_MEL_SUS)[(b4 * 8 + st) % 32];
+        if(!sec){
+          nota(hz(ch[st % 3] + 12), prox, passo * .9, 'triangle', .016);                      // arpejo tenso
+          if(st % 4 === 0) nota(hz(ch[0] - 12), prox, passo * 3.5, 'triangle', .034);          // baixo
+          ruido(prox, .03, st % 2 ? .012 : .02, 7000);                                       // tique-taque da roleta
+          if(m >= 0) nota(hz(m), prox, passo * 1.4, 'square', .011);
+          if(b4 === 3) ruido(prox + passo / 2, .06, .008 + st * .004, 2500, 'bandpass');      // rufar que cresce
+          if(b4 === 3 && st === 7) nota(hz(83), prox + passo / 2, .25, 'square', .02);       // "vai sair..."
+        } else {
+          if(st === 0) ch.forEach(function(x2, j){ nota(hz(x2 + 12), prox, passo * 6, 'square', .009, .02); });   // acorde de fanfarra
+          if(st % 2 === 0) nota(hz(ch[0] - 12), prox, passo * 1.8, 'triangle', .04);
+          if(m >= 0) nota(hz(m), prox, passo * 1.5, 'square', .016);
+          if(m >= 0) nota(hz(m - 12), prox, passo * 1.5, 'triangle', .012);
+          if(st === 0 || st === 4) bumbo(prox, .09);
+          if(st === 2 || st === 6) ruido(prox, .12, .03, 1800, 'bandpass');                  // caixa
+          if(st === 0 && b4 === 0) ruido(prox, .7, .03, 6000);                               // prato do triunfo
+          ruido(prox, .02, .01, 8000);
+        }
+      } else {
+        var sw = st % 2 ? passo * .18 : 0, acd = D_ACO[bar % 4], md = D_MEL[(bar % 4) * 8 + st];
+        if(st === 0) acd.forEach(function(x2, j){ nota(hz(x2), prox + j * .03, passo * 7.5, 'sine', .014, .12); });   // acorde macio, dedilhado
+        if(st === 0) nota(hz(acd[0] - 12), prox, passo * 3, 'triangle', .03, .04);
+        if(st === 5) nota(hz(acd[0] - 12), prox + sw, passo * 2, 'triangle', .02, .04);
+        if(st === 0 || st === 4) bumbo(prox, st === 0 ? .05 : .035);
+        if(st === 4) ruido(prox, .09, .012, 1400, 'bandpass');                                // caixa abafada
+        if(st % 2 === 1) ruido(prox + sw, .025, .004, 6000);                                  // chimbal leve
+        if(md >= 0){ nota(hz(md), prox + sw, passo * 2.2, 'sine', .018, .015); nota(hz(md + 12), prox + sw + passo * .75, passo * 1.5, 'sine', .006, .015); }   // caixinha de música + eco
+        if(Math.random() < .12) nota(hz(96 + [0, 4, 7, 11][Math.floor(Math.random() * 4)]), prox + Math.random() * passo, .6, 'sine', .004, .005);   // sininhos de fada
+        if(Math.random() < .5) ruido(prox + Math.random() * passo, .01, .0025, 3000);       // chiado de vinil
+      }
+      n++; prox += passo;
+    }
+  }, 60);
+}
+// o gacha e o Moon⭐Duo! tocam a música deles no lugar da música da tela de início
+var ovHubTocarOrig = hubMusicaTocar;
+hubMusicaTocar = function(){
+  if(typeof gachaOv !== 'undefined' && !gachaOv.hidden) return ovMusicaTocar('gacha');
+  if(typeof duoOv !== 'undefined' && !duoOv.hidden) return ovMusicaTocar('duo');
+  ovMusicaParar(); return ovHubTocarOrig.apply(this, arguments);
+};
+var ovGachaFecharOrig = gachaFechar; gachaFechar = function(){ ovMusicaParar(); return ovGachaFecharOrig.apply(this, arguments); }; $('gachaX').onclick = gachaFechar;
+var ovDuoFecharOrig = duoFechar; duoFechar = function(){ ovMusicaParar(); var r = ovDuoFecharOrig.apply(this, arguments); if(!duoVeioHub && !muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return r; };
+
 hubMostrar();
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---
 

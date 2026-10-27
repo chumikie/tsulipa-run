@@ -601,6 +601,19 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 #encCv{width:100%;height:auto;border-radius:18px;box-shadow:0 6px 18px rgba(60,20,120,.25)}
 .panel p.enctopo{margin:0 0 8px;font-weight:800;color:var(--b1);font-size:14px}.encnick{margin:10px 0 2px;font-size:22px;color:var(--ink)}
 .panel p.encfala{margin:4px 0 12px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.45}
+.encp{background:linear-gradient(170deg,var(--card),var(--card))}
+.encpalco{position:relative;border-radius:20px;padding:4px;background:linear-gradient(135deg,#7b3ff0,#ff6fb5,#4169e1)}
+.encpalco #encCv{display:block;border-radius:17px;box-shadow:none}
+.encselo{position:absolute;right:14px;bottom:14px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(60,20,120,.3)}
+.enchero{position:relative;margin:12px 0 8px;padding:14px 16px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.14) 55%,rgba(65,105,225,.14))}
+.enchero .encnick{margin:0;font-size:24px;font-weight:900;color:#ff6fb5}
+.encchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.enchero .perffrase{margin:2px 0 0;font-size:15px;font-weight:700;color:var(--ink)}
+.encpremio{margin:0 0 8px;padding:6px 12px;border-radius:99px;display:inline-block;font-weight:800;font-size:13px;color:#fff;background:linear-gradient(90deg,#ffb347,#ff6fb5)}
+.panel p.encpremio{color:#fff}
+.encbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.encbtns #encDuo{grid-column:1/-1}.encbtns .btn{margin:0;text-decoration:none;text-align:center}
+.encflash{position:absolute;inset:4px;border-radius:17px;background:#fff;animation:encflash .4s ease-out forwards;pointer-events:none}
+@keyframes encflash{from{opacity:.9}to{opacity:0}}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -9816,8 +9829,11 @@ if(typeof contaEntrar === 'function'){ var contaEntrarOrig = contaEntrar; contaE
 var ENC_KEY = 'brs48cr_enc';   // chave nova (não renomeia nenhuma antiga): { dia, nick, avatar, fala }
 var encOv = document.createElement('div'); encOv.className = 'ov encov'; encOv.hidden = true;
 encOv.innerHTML = '<div class="panel encp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="encX">✕</button><p class="enctopo" id="encTopo"></p>' +
-  '<canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><h2 class="encnick" id="encNick"></h2><p class="encfala" id="encFala"></p>' +
-  '<div class="btns"><button type="button" class="btn" id="encDuo"></button><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
+  '<div class="encpalco"><canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><span class="encselo" id="encSelo"></span></div>' +
+  '<div class="enchero"><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
+    '<b class="encnick" id="encNick"></b><span class="encchips"><span class="perfrk" id="encRk"></span><span class="perfoshi" id="encOshi" hidden></span></span><q class="perffrase encfala" id="encFala"></q></div>' +
+  '<p class="encpremio" id="encPremio" hidden></p>' +
+  '<div class="encbtns"><button type="button" class="btn" id="encDuo"></button><a class="btn alt" id="encFoto" href="#" download="encontro-do-dia.png"></a><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
 document.body.appendChild(encOv);
 var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
 (function(){ var c = $('hubCards'); if(c && c.parentNode) c.parentNode.insertBefore(encBtn, c.nextSibling); })();
@@ -9833,7 +9849,11 @@ function encMostrar(d){
   encDados = d; encT = 0;
   $('encTopo').textContent = '🌟 ' + tr('Encontro do dia');
   $('encNick').textContent = d.nick;
-  $('encFala').textContent = '“' + tr(d.fala) + '”';
+  $('encFala').textContent = tr(d.fala);
+  var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
+  $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
+  var oe = $('encOshi'); oe.hidden = !os; if(os){ oe.textContent = '推し ' + os[0] + ' ' + tr(os[1]); oe.style.background = os[2]; oe.style.color = perfCorTexto(os[2]); }
+  $('encFoto').textContent = '📸 ' + tr('Foto');
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');
   encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
@@ -9843,7 +9863,7 @@ function encLoop(){
   encAnim = 0; if(encOv.hidden || !encDados) return; encT++;
   if(encT % 2 === 0){
     var cv = $('encCv'), x = cv.getContext('2d'), poses = ['v', 'tchau', 'banzai', 'coracao', 'luz', 'mic'];
-    var av = JSON.parse(JSON.stringify(encDados.avatar || {})); av.pet = null; av.pose = poses[Math.floor(encT / 50) % poses.length]; av.expr = Math.floor(encT / 50) % 2 ? 3 : 2;
+    var av = JSON.parse(JSON.stringify(encDados.avatar || {})); av.pet = null; av.pose = poses[Math.floor(encT / 70) % poses.length]; av.expr = Math.floor(encT / 70) % 2 ? 3 : 2;
     if(typeof av.visual === 'string' && PERF_RANKVIS[av.visual]) av.visual = '';
     try{ x.clearRect(0, 0, cv.width, cv.height); perfFundo(x, cv.width, cv.height, 'palco', perfChar(av).hair, encT);
       x.save(); x.translate(0, -Math.abs(Math.sin(encT * .12)) * 10); perfDesenharIdol(x, cv.width, cv.height, av, false, false, encT); x.restore();
@@ -9860,19 +9880,40 @@ encBtn.onclick = function(){
     L = (Array.isArray(L) ? L : []).filter(function(p){ return p && p.nick && p.avatar && (!contaJ || p.nick.toLowerCase() !== contaJ.nick.toLowerCase()); });
     if(!L.length) return;
     var p = L[Math.floor(Math.random() * L.length)], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
+    d.best = p.best; d.oshi = p.oshi;
     try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}
     encBtnUI(); encMostrar(d);
+    $('encPremio').hidden = true;
+    if(contaJ) contaRpc('encontro_premio', { p_nick: d.nick }).then(function(r){   // ★3 pelo encontro, 1 vez por dia (conferido no servidor)
+      if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+      if(r && r.ok){ var pm = $('encPremio'); pm.textContent = '⭐ +' + r.ganho + ' ' + tr('estrelinhas pelo encontro!'); pm.hidden = false; if(sfx.card) sfx.card(); }
+    }).catch(function(){});
   }).catch(function(){ encBtn.disabled = false; });
 };
 encOv.addEventListener('click', function(e){
   if(e.target.id === 'encX' || e.target === encOv){ encOv.hidden = true; return; }
   if(e.target.id === 'encPerfil' && encDados){ encOv.hidden = true; perfAbrir(encDados.nick); }
   if(e.target.id === 'encDuo' && encDados){ encOv.hidden = true; duoAbrir(encDados.nick); }
+  if(e.target.id === 'encFoto' && encDados){   // foto do momento exato da dança, em moldura de polaroid
+    var src = $('encCv'), c = document.createElement('canvas'); c.width = 460; c.height = 560; var x = c.getContext('2d');
+    x.fillStyle = '#fff7fc'; x.fillRect(0, 0, 460, 560);
+    x.fillStyle = 'rgba(255,111,181,.10)'; for(var yy = 12; yy < 560; yy += 18) for(var xx = (yy / 18 % 2) * 9 + 6; xx < 460; xx += 18){ x.beginPath(); x.arc(xx, yy, 1.6, 0, 7); x.fill(); }
+    x.drawImage(src, 20, 20, 420, 380);
+    x.fillStyle = 'rgba(255,111,181,.55)'; x.save(); x.translate(230, 14); x.rotate(-.04); x.fillRect(-60, -10, 120, 24); x.restore();
+    x.textAlign = 'center'; x.fillStyle = '#12365e'; x.font = '800 28px "M PLUS Rounded 1c",sans-serif'; x.fillText(encDados.nick, 230, 446, 400);
+    x.fillStyle = '#ff6fb5'; x.font = '700 15px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(encDados.fala), 230, 478, 410);
+    x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(new Date().toLocaleDateString(), 230, 506);
+    x.font = '500 11px "M PLUS Rounded 1c",sans-serif'; x.fillText('🌟 ' + tr('Encontro do dia') + ' · TsuLiPa⭐World', 230, 532);
+    e.target.href = c.toDataURL('image/png'); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
+    var fl = document.createElement('div'); fl.className = 'encflash'; $('encCv').parentNode.appendChild(fl); setTimeout(function(){ fl.remove(); }, 400);
+    beep(1568, .05, 'square', .03); beep(2093, .08, 'triangle', .03, .05);
+  }
 });
 encBtnUI(); setInterval(encBtnUI, 60000);
 if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = function(){ var r = encHubOrig.apply(this, arguments); encBtnUI(); return r; }; }
 [['Encontro do dia', 'Meeting of the day', 'Encuentro del día', 'การพบกันประจำวัน', '今日の出会い'], ['Encontro de hoje', "Today's meeting", 'Encuentro de hoy', 'การพบกันวันนี้', '今日の出会い'],
- ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
+ ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['Foto', 'Photo', 'Foto', 'รูป', '写真'], ['estrelinhas pelo encontro!', 'stars for the meeting!', '¡estrellitas por el encuentro!', 'ดาวจากการพบกัน!', 'スターをゲット！'],
+ ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();

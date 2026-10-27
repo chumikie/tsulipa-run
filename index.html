@@ -416,6 +416,19 @@ body.hubon #mute{visibility:hidden}
 .admtema select{margin-left:4px}
 @media (max-width:420px){.hubcards{grid-template-columns:1fr 1fr}.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
 @media (prefers-reduced-motion:reduce){.hublogo span,.hubtoque,.hubpart i,.hubalerta{animation:none}}
+
+/* V2.1.3 · ferramentas novas da moderação e aviso da tela de início */
+.admform{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:6px 0;width:100%}
+.admform input,.admform select{font:inherit;font-size:13px;padding:6px 8px;border-radius:10px;border:2px solid rgba(255,111,181,.45);background:var(--card);color:var(--ink);max-width:100%}
+.admform #admMotivo,.admform #presMsg,.admform #avisoTxt{flex:1 1 180px}
+.admform .btn{margin:0;padding:7px 14px;font-size:13px}
+.admlog{list-style:none;margin:6px 0;padding:0;font-size:12px;text-align:left;max-height:220px;overflow:auto}
+.admlog li{padding:4px 6px;border-bottom:1px dashed rgba(123,63,240,.2)}
+.admlog .pos{color:#16a34a}.admlog .neg{color:#d6336c}
+.admcorr{margin-left:6px;border:0;background:rgba(255,79,109,.15);color:#d6336c;border-radius:50%;width:22px;height:22px;font-weight:900;cursor:pointer}
+.admtemas{text-align:left;font-size:13px;font-weight:700;margin:6px 0 10px}
+.hubaviso{margin:12px 0 0;padding:10px 14px;border-radius:16px;background:linear-gradient(120deg,rgba(255,111,181,.18),rgba(123,63,240,.16));font-weight:800;font-size:14px;color:var(--ink);text-align:left}
+.hubaviso[hidden],.admform[hidden]{display:none}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -1178,7 +1191,7 @@ function reset(){
   lastCard=-600; dpw=null; pops=[]; stars=0;
   lastUfo = Math.floor(score / CFG.UFO_EVERY);
   window.lastMorango = Math.floor(score / 3500);
-  window.lastMic = Math.floor(score / 4000);
+  window.lastMic = Math.floor(score / 3000);   // V2.1.3: igual ao intervalo do microfone
   window.lastPetMilestone = Math.floor(score / 1500);
   window.lastPaparazzi = Math.floor(score / 2500);
   finalExpr = 0;
@@ -1670,7 +1683,7 @@ var curMorango = Math.floor(score/3500); // Surge a cada 3500 pontos
     items.push({k:'morango', x: nextX + 250, y: GY - 30, w: 22, h: 22, got: false});
   }
 
-	var curMic = Math.floor(score/4000); // Surge a cada 4000 pontos
+	var curMic = Math.floor(score/3000); // Surge a cada 3000 pontos (V2.1.3; antes 4000)
 if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
   window.lastMic = curMic;
   items.push({k:'mic_unit', x: nextX + 300, y: GY - 55, w: 20, h: 20, got: false});
@@ -1759,6 +1772,11 @@ items.forEach(function(it){
           }
 
           toast = tr('Unit Mode! Sinergia ✨'); toastT = 110; sfx.card();
+        } else {   // V2.1.3: abduzido ou gigante — o poder continua, mas a parceira entra no palco do fim do show
+          var parcX = getPartner(sel);
+          if(!window.collectedPartners) window.collectedPartners = [];
+          if(window.collectedPartners.indexOf(parcX) === -1) window.collectedPartners.push(parcX);
+          sfx.card();
         }
       } else {
         var v=pw&&pw.k==='fever'?CFG.STAR_FEVER:CFG.STAR;
@@ -6155,7 +6173,11 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['tema_sakura',    '🌸', 'Sakura',      'Correu na época das sakuras'],
   ['tema_inverno',   '❄️', 'Inverno',     'Correu no começo do inverno'],
   ['tema_tanabata',  '🎋', 'Tanabata',    'Correu no Tanabata'],
-  ['tema_primavera', '🌼', 'Primavera',   'Correu no começo da primavera']
+  ['tema_primavera', '🌼', 'Primavera',   'Correu no começo da primavera'],
+  // especiais: dadas à mão pela moderação (só aparecem em quem ganhou)
+  ['esp_evento',     '🏆', 'Pódio do evento',    'Ganhou um evento do TsuLiPa World'],
+  ['esp_destaque',   '🌟', 'Destaque da semana', 'Escolha da moderação como destaque da semana'],
+  ['esp_fundador',   '💎', 'Fundadores',         'Jogou desde o lançamento do TsuLiPa World']
 ];
 // Oshi: membros atuais do BRS48, com a cor e o emoji de cada um (lista do Blog de Membros do BRS48, out/2026).
 // Para atualizar, é só mexer nesta lista: [apelido, emoji, cor].
@@ -6757,7 +6779,7 @@ function perfAbaMostrar(){
       ks = Object.keys(pp);
       if(ks.length) h += '<div class="perfchips">' + ks.map(function(k){ return '<span>' + escHtml(k) + ' · <b>' + pp[k] + '</b></span>'; }).join('') + '</div>';
     }
-    h += '<ol class="lb perfult">' + perfUltimas(d.ultimas || []) + '</ol>';
+    h += '<ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
@@ -6779,18 +6801,18 @@ perfOv.addEventListener('click', function(e){
   var t = e.target.closest('.perftabs button'); if(!t) return;
   perfAba = t.dataset.aba; perfProva = ''; beep(880, .04, 'triangle', .04); perfAbaMostrar();
 });
-function perfUltimas(L){
+function perfUltimas(L, adm){
   if(!L.length) return '<li style="justify-content:center"><em>' + escHtml(tr('Nenhuma corrida online ainda.')) + '</em></li>';
   return L.map(function(r){
     var ch = r.char === 'Você' ? 'Idol' : (r.char || 'Tsu');
-    return '<li><span>' + escHtml(ch) + ' · <em>' + escHtml(tr(RANKS[rankOf(+r.score || 0)][1])) + '</em> · <small>' + escHtml(perfData(r.created_at)) + '</small></span><strong>' + (+r.score || 0) + '</strong></li>';
+    return '<li><span>' + escHtml(ch) + ' · <em>' + escHtml(tr(RANKS[rankOf(+r.score || 0)][1])) + '</em> · <small>' + escHtml(perfData(r.created_at)) + '</small></span><strong>' + (+r.score || 0) + '</strong>' + (adm && r.id ? '<button type="button" class="admcorr" data-corr="' + (+r.id) + '" title="Tirar do ranking">✕</button>' : '') + '</li>';
   }).join('');
 }
 
 // ---------- Insígnias ----------
 function perfInsHtml(tem, meu){
   var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
-  var lista = PERF_INS.filter(function(i){ return tem.indexOf(i[0]) >= 0 || (meu && (!/^tema_/.test(i[0]) || i[0] === 'tema_' + tmA)); });
+  var lista = PERF_INS.filter(function(i){ return tem.indexOf(i[0]) >= 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
   if(!lista.length) return '<p class="perfcarr">✧</p>';
   return '<div class="perfins" id="perfIns">' + lista.map(function(i){
     var ok = tem.indexOf(i[0]) >= 0;
@@ -7363,9 +7385,55 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
   return '<div class="admbarra"><b>🛡️ ' + escHtml(tr('Moderação')) + (d.bloqueado ? ' · ⛔ ' + escHtml(tr('Conta bloqueada')) : '') + '</b>' +
     '<button type="button" data-adm="limpar_frase">🧹 ' + escHtml(tr('Limpar frase')) + '</button>' +
     '<button type="button" data-adm="renomear">✏️ ' + escHtml(tr('Renomear')) + '</button>' +
-    '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button></div>';
+    '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button>' +
+    '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button>' +
+    '<div class="admform" id="admForm" hidden></div></div>';
 }
 function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
+function admItens(){   // tudo o que se compra no servidor: visuais, poses, fundos e roupas
+  return PERF_VIS.filter(function(o){ return o[0]; }).map(function(o){ return [o[0], perfRot(o)]; })
+    .concat(PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], '🧍 ' + perfRot(o)]; }))
+    .concat(PERF_FUNDOS.filter(function(o){ return o[3]; }).map(function(o){ return ['fundo_' + o[0], '🖼️ ' + perfRot(o)]; }))
+    .concat(PERF_LOJA.map(function(o){ return ['roupa_' + o[0], '👗 ' + perfRot(o)]; }));
+}
+function admOpts(L){ return L.map(function(o){ return '<option value="' + escHtml(o[0]) + '">' + escHtml(o[1]) + '</option>'; }).join(''); }
+perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia especial e ver o extrato (perfil de outra pessoa)
+  var b = e.target.closest('[data-adm2]'), f = $('admForm'), t;
+  if(b && f && perfAtual){
+    t = b.dataset.adm2; f.hidden = false;
+    if(t === 'extrato'){
+      f.innerHTML = '<p class="perfcarr">…</p>';
+      contaRpc('admin_extrato', { p_nick: perfAtual.nick }).then(function(r){
+        if(!r || !r.ok){ f.innerHTML = '—'; return; }
+        f.innerHTML = '<b>★ ' + (+r.stars || 0) + '</b><ul class="admlog">' + (r.lista || []).map(function(x){ return '<li><b class="' + (x.delta < 0 ? 'neg' : 'pos') + '">' + (x.delta > 0 ? '+' : '') + x.delta + '</b> ' + escHtml(x.reason) + ' <small>' + escHtml(perfData(x.created_at)) + '</small></li>'; }).join('') + '</ul>';
+      }).catch(function(){});
+      return;
+    }
+    var campo = t === 'estrelas' ? '<input type="number" id="admValor" min="-2000" max="2000" step="10" value="100"> <small>(−2000 a 2000)</small>'
+      : t === 'item' ? '<select id="admValor">' + admOpts(admItens()) + '</select>'
+      : '<select id="admValor">' + admOpts(PERF_INS.filter(function(i){ return /^esp_/.test(i[0]); }).map(function(i){ return [i[0], i[1] + ' ' + tr(i[2]) + ((perfAtual.insignias || []).indexOf(i[0]) >= 0 ? ' (tirar)' : '')]; })) + '</select>';
+    f.innerHTML = campo + '<input id="admMotivo" maxlength="60" placeholder="Motivo (aparece no extrato)"><button type="button" class="btn" id="admEnviar" data-t="' + t + '">Enviar</button><p class="perfmsg" id="admMsg" hidden></p>';
+    return;
+  }
+  if(e.target.id === 'admEnviar' && perfAtual){
+    var bt = e.target, val = $('admValor').value, mot = $('admMotivo').value.trim(), msg = $('admMsg');
+    if(!confirm(tr('Tem certeza?'))) return;
+    bt.disabled = true;
+    contaRpc('admin_dar', { p_nick: perfAtual.nick, p_tipo: bt.dataset.t, p_valor: String(val), p_motivo: mot }).then(function(r){
+      bt.disabled = false;
+      msg.textContent = r && r.ok ? '🛡️ ' + tr('Feito!') + (typeof r.stars === 'number' ? ' (★ ' + r.stars + ')' : '') : r && r.erro === 'teto' ? 'Teto do dia: ★10.000 (já usados ★' + r.usado + ')' : r && r.erro === 'valor' ? 'Valor entre −2000 e 2000' : tr('Não deu para falar com o servidor. Tente de novo.');
+      msg.hidden = false;
+      if(r && r.ok && bt.dataset.t === 'insignia') perfAbrir(perfAtual.nick, true);
+    }).catch(function(){ bt.disabled = false; });
+    return;
+  }
+  var cb = e.target.closest('.admcorr');
+  if(cb){
+    if(!confirm('Tirar esta corrida do ranking?')) return;
+    cb.disabled = true;
+    contaRpc('admin_corrida', { p_id: +cb.dataset.corr }).then(function(r){ if(r && r.ok && perfAtual) perfAbrir(perfAtual.nick, true); else cb.disabled = false; }).catch(function(){ cb.disabled = false; });
+  }
+});
 perfOv.addEventListener('click', function(e){
   var b = e.target.closest('.admbarra button[data-adm]'); if(!b || !perfAtual) return;
   var acao = b.dataset.adm, nick = perfAtual.nick;
@@ -7382,6 +7450,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     var box = $('perfAbaCorpo'); if(!box || perfAba !== 'moderacao') return;
     if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
+    if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
       return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.de) + '">' + escHtml(r.de) + '</button> → <button type="button" class="lbn" data-nick="' + escHtml(r.para) + '">' + escHtml(r.para) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
@@ -7390,11 +7459,48 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
       return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(f.nick) + '">' + escHtml(f.nick) + '</button></div><p>' + escHtml(f.frase) + '</p><button type="button" class="perfrecx" data-admfrase="' + escHtml(f.nick) + '" aria-label="🧹">🧹</button></li>'; }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhuma.')) + '</p>');
     h += '<h3>⛔ ' + escHtml(tr('Contas bloqueadas')) + '</h3>' + (d.bloqueados.length ? '<div class="perfchips">' + d.bloqueados.map(function(n){
       return '<span>' + escHtml(n) + ' <button type="button" class="admdesb" data-nick="' + escHtml(n) + '">✅</button></span>'; }).join('') + '</div>' : '<p class="perfcarr">' + escHtml(tr('Nenhuma.')) + '</p>');
+    h += '<div id="admExtra"><p class="perfcarr">…</p></div>';
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
+    admExtra();
   }).catch(function(){});
 }
+function admCamarimOpts(){   // itens do camarim para o presente: comida e banho, acessórios do pet e quadros do mural
+  var L = [['', '— nada do camarim —']];
+  (PET_FOOD || []).concat(PET_BATH || []).forEach(function(it){ L.push(['food:' + it[0], '🍰 ' + tr(it[1])]); });
+  (PET_WARDROBE || []).forEach(function(it){ if(it[0]) L.push(['acc:' + it[0], it[1] + ' ' + tr(it[2])]); });
+  (PET_DECOR || []).forEach(function(it){ L.push(['decor:' + it[0], '🖼️ ' + tr(it[1])]); });
+  return L;
+}
+function admExtra(){   // presente para todos, aviso da tela de início e histórico da moderação
+  contaRpc('admin_extra').then(function(d){
+    var box = $('admExtra'); if(!box || !d || !d.ok) return;
+    var h = '<h3>🎁 Presente para todos</h3><div class="admform"><input type="number" id="presEst" min="0" max="2000" step="10" value="100"> ★ ' +
+      '<select id="presItem"><option value="">— sem item da loja —</option>' + admOpts(admItens()) + '</select><select id="presCam">' + admOpts(admCamarimOpts()) + '</select>' +
+      '<input id="presMsg" maxlength="80" placeholder="Mensagem (ex.: Feliz Halloween!)"><label>Dias <input type="number" id="presDias" min="1" max="30" value="7"></label><button type="button" class="btn" id="presCriar">Criar presente</button></div>';
+    h += (d.presentes.length ? '<ul class="admlog">' + d.presentes.map(function(p){ return '<li>🎁 <b>' + escHtml(p.mensagem || '—') + '</b> · ★' + p.estrelas + (p.item ? ' · ' + escHtml(p.item) : '') + (p.camarim ? ' · ' + escHtml(p.camarim) : '') + ' · ' + p.resgates + ' resgates · até ' + escHtml(perfData(p.expira)) + ' <button type="button" class="admdesb" data-presfim="' + p.id + '">Encerrar</button></li>'; }).join('') + '</ul>' : '');
+    h += '<h3>📣 Aviso na tela de início</h3><div class="admform"><input id="avisoTxt" maxlength="140" value="' + escHtml(d.aviso || '') + '" placeholder="Vazio = sem aviso"><button type="button" class="btn" id="avisoOk">Salvar aviso</button></div>';
+    h += '<h3>📜 Histórico da moderação</h3><ul class="admlog">' + (d.log.length ? d.log.map(function(l){ return '<li><b>' + escHtml(l.acao) + '</b> ' + escHtml(l.alvo || '') + ' ' + escHtml(l.valor || '') + ' <i>' + escHtml(l.motivo || '') + '</i> <small>' + escHtml(perfData(l.created_at)) + '</small></li>'; }).join('') : '<li>' + escHtml(tr('Nenhuma.')) + '</li>') + '</ul>';
+    box.innerHTML = h;
+  }).catch(function(){});
+}
+perfOv.addEventListener('click', function(e){
+  var t = e.target;
+  if(t.id === 'presCriar'){
+    if(!confirm(tr('Tem certeza?'))) return;
+    t.disabled = true;
+    contaRpc('admin_presente', { p_acao:'criar', p_estrelas: +$('presEst').value || 0, p_item: $('presItem').value || null, p_camarim: $('presCam').value || null, p_msg: $('presMsg').value.trim(), p_dias: +$('presDias').value || 7 })
+      .then(function(r){ t.disabled = false; if(r && r.ok){ perfTopoMsg('🎁 ' + tr('Feito!')); admExtra(); } else perfTopoMsg(r && r.erro === 'vazio' ? 'Escolha estrelas ou um item.' : tr('Não deu para falar com o servidor. Tente de novo.')); }).catch(function(){ t.disabled = false; });
+  } else if(t.dataset && t.dataset.presfim){
+    if(!confirm(tr('Tem certeza?'))) return;
+    contaRpc('admin_presente', { p_acao:'encerrar', p_id: +t.dataset.presfim }).then(function(){ admExtra(); });
+  } else if(t.id === 'avisoOk'){
+    t.disabled = true;
+    contaRpc('admin_aviso', { p_texto: $('avisoTxt').value }).then(function(r){ t.disabled = false; if(r && r.ok){ perfTopoMsg('📣 ' + tr('Feito!')); admExtra(); } }).catch(function(){ t.disabled = false; });
+  }
+});
+perfOv.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('.admform')) e.stopPropagation(); });
 perfOv.addEventListener('click', function(e){
   var t = e.target, b;
   if((b = t.closest('[data-admrec]'))){ b.disabled = true; admAcao('apagar_recado', b.dataset.admrec).then(function(r){ if(r && r.ok){ var li = b.closest('li'); li.parentNode.removeChild(li); } else b.disabled = false; }); return; }
@@ -7473,6 +7579,20 @@ function temaAdminHtml(){   // "Forçar tema" na aba de Moderação (só para te
   var f = temaForcado();
   return '<label class="admtema">🗓️ ' + escHtml(tr('Forçar tema')) + ' <select id="admTema"><option value="">' + escHtml(tr('Tema da data')) + '</option><option value="nenhum"' + (f === 'nenhum' ? ' selected' : '') + '>🚫 ' + escHtml(tr('Sem tema')) + '</option>' +
     Object.keys(TEMA_INFO).map(function(k){ return '<option value="' + k + '"' + (f === k ? ' selected' : '') + '>' + TEMA_INFO[k][0] + ' ' + escHtml(tr(TEMA_INFO[k][1])) + '</option>'; }).join('') + '</select></label>';
+}
+function temaAvisoAdmin(){   // Moderação: o tema que está acabando (até 3 dias) e o próximo que começa (até 7 dias)
+  var hoje = Date.parse(dk() + 'T12:00:00Z'), ano = +dk().slice(0, 4), L = [], i, a, b, ini, fim;
+  function dt(md, y){ return Date.parse(y + '-' + md + 'T12:00:00Z'); }
+  for(i = 0; i < TEMAS.length; i++){
+    for(var y = ano - 1; y <= ano + 1; y++){
+      ini = dt(TEMAS[i][1], y); fim = dt(TEMAS[i][2], TEMAS[i][1] <= TEMAS[i][2] ? y : y + 1);
+      a = Math.round((ini - hoje) / 864e5); b = Math.round((fim - hoje) / 864e5);
+      var inf = TEMA_INFO[TEMAS[i][0]];
+      if(a <= 0 && b >= 0 && b <= 3) L.push(inf[0] + ' ' + tr(inf[1]) + ': ' + (b === 0 ? 'acaba hoje' : 'acaba em ' + b + (b === 1 ? ' dia' : ' dias')) + ' (' + TEMAS[i][2].slice(3) + '/' + TEMAS[i][2].slice(0, 2) + ')');
+      if(a > 0 && a <= 7) L.push(inf[0] + ' ' + tr(inf[1]) + ': começa em ' + a + (a === 1 ? ' dia' : ' dias') + ' (' + TEMAS[i][1].slice(3) + '/' + TEMAS[i][1].slice(0, 2) + ') — roupa e insígnia novas');
+    }
+  }
+  return L.length ? '<div class="admaviso admtemas">🗓️ ' + L.map(escHtml).join('<br>🗓️ ') + '</div>' : '';
 }
 perfOv.addEventListener('change', function(e){
   if(e.target.id !== 'admTema') return;
@@ -7693,25 +7813,25 @@ var HUB_DICT = {
     "Insígnia nova!":"New badge!","Oba!":"Yay!","Ver no perfil":"See on profile","Próximo":"Next","Vamos lá!":"Let's go!","Pular":"Skip",
     "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Jump over the stage obstacles, grab stars and your partners' microphones. Reach Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Take care of your pet in the dressing room: food, baths, outfits and minigames worth stars.","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Sign in with Google to save in the cloud, build your Idol, earn badges, hearts and messages.",
     "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Profile with Studio, Build Idol and the outfit shop","Corações, recados e insígnias":"Hearts, messages and badges","Temas da temporada com roupa e insígnia especiais":"Seasonal themes with special outfit and badge","Missões do dia valendo estrelas":"Daily missions worth stars","Insígnia secreta do Quarteto TsuLiPa":"Secret TsuLiPa Quartet badge","Forçar tema":"Force theme","Tema da data":"Today's theme","Sem tema":"No theme","Só até":"Only until","Da temporada":"Seasonal","Essa roupa só se compra no período do tema.":"This outfit can only be bought during its theme.",
-    "Natal":"Christmas","Ano Novo":"New Year","Verão":"Summer","Outono":"Autumn","Inverno":"Winter","Primavera":"Spring","Tema de":"Theme:"},
+    "Presente da TsuLiPa!":"A gift from TsuLiPa!","Natal":"Christmas","Ano Novo":"New Year","Verão":"Summer","Outono":"Autumn","Inverno":"Winter","Primavera":"Spring","Tema de":"Theme:"},
   es: {"TOQUE PARA COMEÇAR":"TOCA PARA EMPEZAR","Início":"Inicio","Recorde":"Récord","Jogar":"Jugar","Meu Perfil":"Mi Perfil","Entrar com Google":"Entrar con Google","Adote um pet!":"¡Adopta una mascota!","precisa de você!":"¡te necesita!","está bem!":"¡está bien!","Tema do momento":"Tema del momento","até":"hasta","Missões do dia":"Misiones del día","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Entra con Google para hacer las misiones del día (hasta ★45 por día).","Resgatar":"Cobrar","Novidades":"Novedades","Privacidade e segurança":"Privacidad y seguridad","Carregando...":"Cargando...",
     "Corra {n} vezes no Center⭐Run!":"Corre {n} veces en Center⭐Run!","Dê 1 coração em um perfil":"Da 1 corazón en un perfil","Deixe 1 recado em um perfil":"Deja 1 mensaje en un perfil","Ganhe estrelas em um minijogo do camarim":"Gana estrellas en un minijuego del camerino","Compre algo para o seu pet":"Compra algo para tu mascota","Pegue {n} estrelas nas corridas":"Atrapa {n} estrellas en las carreras","Faça {n} pontos em uma corrida":"Haz {n} puntos en una carrera","Corra com Tsu, Lirika e Pati":"Corre con Tsu, Lirika y Pati",
     "Insígnia nova!":"¡Insignia nueva!","Oba!":"¡Bien!","Ver no perfil":"Ver en el perfil","Próximo":"Siguiente","Vamos lá!":"¡Vamos!","Pular":"Saltar",
     "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Salta los obstáculos del escenario, atrapa estrellas y los micrófonos de tus compañeras. ¡Llega al Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Cuida de tu mascota en el camerino: comida, baño, ropita y minijuegos que dan estrellas.","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Entra con Google para guardar en la nube, armar tu Idol, ganar insignias, corazones y mensajes.",
     "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Perfil con Estudio, Armar Idol y tienda de ropa","Corações, recados e insígnias":"Corazones, mensajes e insignias","Temas da temporada com roupa e insígnia especiais":"Temas de temporada con ropa e insignia especiales","Missões do dia valendo estrelas":"Misiones del día que dan estrellas","Insígnia secreta do Quarteto TsuLiPa":"Insignia secreta del Cuarteto TsuLiPa","Forçar tema":"Forzar tema","Tema da data":"Tema de la fecha","Sem tema":"Sin tema","Só até":"Solo hasta","Da temporada":"De temporada","Essa roupa só se compra no período do tema.":"Esta ropa solo se compra durante su tema.",
-    "Natal":"Navidad","Ano Novo":"Año Nuevo","Verão":"Verano","Outono":"Otoño","Inverno":"Invierno","Primavera":"Primavera","Tema de":"Tema:"},
+    "Presente da TsuLiPa!":"¡Regalo de TsuLiPa!","Natal":"Navidad","Ano Novo":"Año Nuevo","Verão":"Verano","Outono":"Otoño","Inverno":"Invierno","Primavera":"Primavera","Tema de":"Tema:"},
   th: {"TOQUE PARA COMEÇAR":"แตะเพื่อเริ่ม","Início":"หน้าแรก","Recorde":"สถิติ","Jogar":"เล่น","Meu Perfil":"โปรไฟล์ของฉัน","Entrar com Google":"เข้าสู่ระบบด้วย Google","Adote um pet!":"รับเลี้ยงสัตว์เลี้ยง!","precisa de você!":"ต้องการคุณ!","está bem!":"สบายดี!","Tema do momento":"ธีมตอนนี้","até":"ถึง","Missões do dia":"ภารกิจประจำวัน","Entre com Google para fazer as missões do dia (até ★45 por dia).":"เข้าสู่ระบบด้วย Google เพื่อทำภารกิจประจำวัน (สูงสุด ★45 ต่อวัน)","Resgatar":"รับรางวัล","Novidades":"มีอะไรใหม่","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Carregando...":"กำลังโหลด...",
     "Corra {n} vezes no Center⭐Run!":"วิ่ง {n} รอบใน Center⭐Run!","Dê 1 coração em um perfil":"ให้หัวใจ 1 ดวงในโปรไฟล์","Deixe 1 recado em um perfil":"ฝากข้อความ 1 ข้อความ","Ganhe estrelas em um minijogo do camarim":"ได้ดาวจากมินิเกมในห้องแต่งตัว","Compre algo para o seu pet":"ซื้อของให้สัตว์เลี้ยง","Pegue {n} estrelas nas corridas":"เก็บดาว {n} ดวงจากการวิ่ง","Faça {n} pontos em uma corrida":"ทำ {n} คะแนนในรอบเดียว","Corra com Tsu, Lirika e Pati":"วิ่งด้วย Tsu, Lirika และ Pati",
     "Insígnia nova!":"เหรียญใหม่!","Oba!":"เย้!","Ver no perfil":"ดูในโปรไฟล์","Próximo":"ถัดไป","Vamos lá!":"ไปกันเลย!","Pular":"ข้าม",
     "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"กระโดดข้ามสิ่งกีดขวาง เก็บดาวและไมค์ของเพื่อน ๆ ไปให้ถึง Center!","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"ดูแลสัตว์เลี้ยงในห้องแต่งตัว: อาหาร อาบน้ำ ชุด และมินิเกมที่ได้ดาว","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"เข้าสู่ระบบด้วย Google เพื่อเซฟบนคลาวด์ แต่งไอดอล รับเหรียญ หัวใจ และข้อความ",
     "Perfil com Estúdio, Montar Idol e lojinha de roupas":"โปรไฟล์พร้อมสตูดิโอ แต่งไอดอล และร้านชุด","Corações, recados e insígnias":"หัวใจ ข้อความ และเหรียญ","Temas da temporada com roupa e insígnia especiais":"ธีมตามฤดูกาลพร้อมชุดและเหรียญพิเศษ","Missões do dia valendo estrelas":"ภารกิจประจำวันที่ได้ดาว","Insígnia secreta do Quarteto TsuLiPa":"เหรียญลับ TsuLiPa ควอเต็ต","Forçar tema":"บังคับธีม","Tema da data":"ธีมตามวันที่","Sem tema":"ไม่มีธีม","Só até":"ถึงวันที่","Da temporada":"ตามฤดูกาล","Essa roupa só se compra no período do tema.":"ชุดนี้ซื้อได้เฉพาะช่วงธีมเท่านั้น",
-    "Natal":"คริสต์มาส","Ano Novo":"ปีใหม่","Verão":"ฤดูร้อน","Outono":"ฤดูใบไม้ร่วง","Inverno":"ฤดูหนาว","Primavera":"ฤดูใบไม้ผลิ","Tema de":"ธีม:"},
+    "Presente da TsuLiPa!":"ของขวัญจาก TsuLiPa!","Natal":"คริสต์มาส","Ano Novo":"ปีใหม่","Verão":"ฤดูร้อน","Outono":"ฤดูใบไม้ร่วง","Inverno":"ฤดูหนาว","Primavera":"ฤดูใบไม้ผลิ","Tema de":"ธีม:"},
   ja: {"TOQUE PARA COMEÇAR":"タップしてスタート","Início":"ホーム","Recorde":"ベスト","Jogar":"プレイ","Meu Perfil":"マイプロフィール","Entrar com Google":"Googleでログイン","Adote um pet!":"ペットを迎えよう！","precisa de você!":"があなたを待ってるよ！","está bem!":"は元気！","Tema do momento":"いまのテーマ","até":"まで","Missões do dia":"きょうのミッション","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Googleでログインしてきょうのミッションに挑戦（1日最大★45）。","Resgatar":"受け取る","Novidades":"おしらせ","Privacidade e segurança":"プライバシーと安全","Carregando...":"読み込み中...",
     "Corra {n} vezes no Center⭐Run!":"Center⭐Run!を{n}回走る","Dê 1 coração em um perfil":"プロフィールにハートを1つ","Deixe 1 recado em um perfil":"プロフィールにメッセージを1つ","Ganhe estrelas em um minijogo do camarim":"楽屋のミニゲームでスターをゲット","Compre algo para o seu pet":"ペットに何か買う","Pegue {n} estrelas nas corridas":"ランでスターを{n}個集める","Faça {n} pontos em uma corrida":"1回のランで{n}点","Corra com Tsu, Lirika e Pati":"Tsu・Lirika・Patiで走る",
     "Insígnia nova!":"新しいバッジ！","Oba!":"やった！","Ver no perfil":"プロフィールで見る","Próximo":"つぎへ","Vamos lá!":"はじめよう！","Pular":"スキップ",
     "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"ステージの障害物をジャンプ、スターと仲間のマイクを集めてCenterを目指そう！","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"楽屋でペットのお世話：ごはん、おふろ、おきがえ、スターがもらえるミニゲーム。","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Googleでログインするとクラウド保存、アイドルメイク、バッジ・ハート・メッセージが使えるよ。",
     "Perfil com Estúdio, Montar Idol e lojinha de roupas":"スタジオ・アイドルメイク・洋服ショップつきプロフィール","Corações, recados e insígnias":"ハート・メッセージ・バッジ","Temas da temporada com roupa e insígnia especiais":"季節のテーマと限定の服・バッジ","Missões do dia valendo estrelas":"スターがもらえるきょうのミッション","Insígnia secreta do Quarteto TsuLiPa":"TsuLiPaカルテットのひみつバッジ","Forçar tema":"テーマを固定","Tema da data":"日付のテーマ","Sem tema":"テーマなし","Só até":"期間：","Da temporada":"季節限定","Essa roupa só se compra no período do tema.":"この服はテーマの期間中だけ買えます。",
-    "Natal":"クリスマス","Ano Novo":"お正月","Verão":"夏","Outono":"秋","Inverno":"冬","Primavera":"春","Tema de":"テーマ："}
+    "Presente da TsuLiPa!":"TsuLiPaからのプレゼント！","Natal":"クリスマス","Ano Novo":"お正月","Verão":"夏","Outono":"秋","Inverno":"冬","Primavera":"春","Tema de":"テーマ："}
 };
 Object.keys(HUB_DICT).forEach(function(l){ if(DICT[l]) Object.keys(HUB_DICT[l]).forEach(function(k){ DICT[l][k] = HUB_DICT[l][k]; }); });
 
@@ -7828,8 +7948,47 @@ function hubMontar(){
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   hubTemaUI(); hubCardsUI(); hubMisUI();
 }
+function hubAvisoCarregar(){   // aviso da moderação no topo das Novidades
+  contaRpc('aviso_inicio').then(function(t){
+    var el = $('hubAviso');
+    if(!el){ el = document.createElement('p'); el.id = 'hubAviso'; el.className = 'hubaviso'; var nv = hubOv.querySelector('.hubnov'); nv.parentNode.insertBefore(el, nv); }
+    el.textContent = t ? '📣 ' + t : ''; el.hidden = !t;
+  }).catch(function(){});
+}
+function presentesConferir(){   // presentes para todos criados pela moderação: resgata e mostra num pop-up só
+  if(!contaJ) return;
+  contaRpc('presentes_pendentes').then(function(L){
+    if(!Array.isArray(L) || !L.length) return;
+    var partes = [], msg = '', est = 0;
+    return L.reduce(function(pr, pz){ return pr.then(function(){ return contaRpc('resgatar_presente', { p_id: pz.id }).then(function(r){
+      if(!r || !r.ok) return;
+      if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+      est += +r.estrelas || 0; msg = r.mensagem || msg;
+      if(r.item){ if(Array.isArray(r.visuais)){ perfDono = r.visuais; perfLojaSincronizar(); } var vi = admItens().filter(function(o){ return o[0] === r.item; })[0]; partes.push(vi ? vi[1] : r.item); }
+      if(r.camarim){
+        if(!petData) petLoad();
+        var tp = r.camarim.split(':')[0], k = r.camarim.slice(tp.length + 1), it;
+        if(petData && k){
+          if(tp === 'acc' && (it = petFind(PET_WARDROBE, k))){ petData.roupas = petData.roupas || { '': 1 }; petData.roupas[k] = 1; partes.push(it[1] + ' ' + tr(it[2])); }
+          else if(tp === 'decor' && (it = petFind(PET_DECOR, k))){ petData.decor = petData.decor || {}; petData.decor[k] = 1; petBg = null; partes.push('🖼️ ' + tr(it[1])); }
+          else if(tp === 'food' && (it = petFind(PET_FOOD, k) || petFind(PET_BATH, k))){ petData.inv = petData.inv || {}; petData.inv[k] = (petData.inv[k] || 0) + 1; partes.push('🍰 ' + tr(it[1])); }
+          petSave(); perfConferir(); if(petOpen) petUI();
+        }
+      }
+    }); }); }, Promise.resolve()).then(function(){
+      if(!est && !partes.length) return;
+      $('perfPresTit').textContent = '🎁 ' + tr('Presente da TsuLiPa!');
+      $('perfPresNome').textContent = msg || '';
+      $('perfPresTxt').textContent = (est ? '★' + est + (partes.length ? ' · ' : '') : '') + partes.join(' · ');
+      $('perfPresOk').textContent = tr('OBA!');
+      $('perfPresArte').innerHTML = '<span class="perfpres-emo">🎁</span>';
+      perfPres.hidden = false; if(sfx.rank) sfx.rank();
+      hubCardsUI();
+    });
+  }).catch(function(){});
+}
 function hubMostrar(){
-  hubMontar();
+  hubMontar(); hubAvisoCarregar();
   hubOv.hidden = false; document.body.classList.add('hubon');
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
   if(hubComecou) hubMisCarregar();
@@ -7923,7 +8082,7 @@ insOv.addEventListener('click', function(e){
 
 // ---------- Ganchos chamados pelo resto do jogo ----------
 var contaUltimaRun = null, quartetoPend = false;
-function hubAoEntrar(){ hubCardsUI(); hubMisCarregar(); setTimeout(insConferir, 2500); }
+function hubAoEntrar(){ hubCardsUI(); hubMisCarregar(); setTimeout(insConferir, 2500); setTimeout(presentesConferir, 5000); }
 function hubAposCorrida(){ hubMisDados = null; insConferir(); }
 function quartetoFoto(){   // SALVAR IMAGEM no fim do show: o Idol com Tsu, Lirika e Pati no palco
   if(!contaJ || sel !== 3) return;

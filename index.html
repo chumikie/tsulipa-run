@@ -590,6 +590,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .gisov{z-index:29}.gisp{width:min(100%,360px);text-align:center;position:relative}#gisBtn{display:flex;justify-content:center;margin:10px 0}
 .hubonline{margin:14px auto 12px}.gacharesp,#gachaTxt{margin:12px 0 12px!important;line-height:1.45}
 .perfsub{margin:10px 0 4px;font-size:13px;color:var(--b1)}
+.gisalt{margin:8px 0 0;font-size:12.5px}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -9687,6 +9688,7 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+ ['Não funcionou? Entrar de outro jeito', "Didn't work? Sign in another way", '¿No funcionó? Entrar de otra forma', 'ไม่ได้ผล? เข้าสู่ระบบอีกวิธี', 'うまくいかない？別の方法でログイン'],
  ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'], ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'],
  ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'], ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'], ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
  ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'], ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'], ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの'], ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
@@ -9753,9 +9755,9 @@ if(typeof temaAdminHtml === 'function'){ var temaAdmOrig = temaAdminHtml; temaAd
 // Para ligar: coloque aqui o Client ID PÚBLICO do Google (termina em .apps.googleusercontent.com). Vazio = login antigo.
 var GOOGLE_CLIENT_ID = '781179638857-k6qcb45jh2q627gqr0qsqu57uaotmcp7.apps.googleusercontent.com';
 var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
-gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p></div>';
+gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
 document.body.appendChild(gisOv);
-gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; });
+gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; if(e.target.id === 'gisAntigo'){ gisOv.hidden = true; _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); } });
 function gisHex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join(''); }
 function gisEntrar(){
   var raw = gisHex(crypto.getRandomValues(new Uint8Array(16)).buffer);
@@ -9770,7 +9772,7 @@ function gisEntrar(){
             gisOv.hidden = true;
           });
         } });
-      $('gisTit').textContent = tr('Entrar com Google'); $('gisMsg').hidden = true; $('gisBtn').innerHTML = '';
+      $('gisTit').textContent = tr('Entrar com Google'); $('gisMsg').hidden = true; $('gisBtn').innerHTML = ''; $('gisAntigo').textContent = tr('Não funcionou? Entrar de outro jeito');
       google.accounts.id.renderButton($('gisBtn'), { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left' });
       gisOv.hidden = false;
     }

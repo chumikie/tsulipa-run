@@ -5,8 +5,8 @@
   Se algum mudar, todos os jogadores perdem recorde, estrelas, visual, ranking local e pet.
   localStorage: brs48cr_best · brs48cr_st · brs48cr_char · brs48cr_cu2 · brs48cr_ch2 · brs48cr_acc
                 brs48cr_seen · brs48cr_nick · brs48cr_lang · brs48cr_oshi · brs48cr_did
-                brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet
-  Supabase:     tabela "leaderboard" · função "top_scores"
+                brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet · brs48cr_sync (V2.1.3)
+  Supabase:     tabela "leaderboard" · função "top_scores" · tabela "players" (contas, V2.1.2)
   A lista comentada (o que cada chave guarda) fica no início do <script>.
 -->
 <html lang="pt-BR">
@@ -209,6 +209,44 @@ canvas{width:100%;height:100%;display:block}
 .petrank b{white-space:nowrap}.petrank small{font-size:10px;color:var(--sub);white-space:nowrap}
 .petrank i{flex:1;height:7px;border-radius:9px;background:var(--chip);overflow:hidden;display:block}
 .petrank u{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#9b30d9,#b6ff3b,#4169e1)}
+/* --- V2.1.3: PERFIL, GERADOR DE FOTO E PRESENTE DA CONTA --- */
+.perfov{position:fixed;z-index:20;overflow:auto;align-items:flex-start;padding:16px 10px}
+.perfp{position:relative;width:min(94%,440px);margin:auto;text-align:left}
+.perfx{position:absolute;top:10px;right:10px;border:0;background:var(--chip);color:var(--sub);width:32px;height:32px;border-radius:50%;font:inherit;font-weight:800;cursor:pointer}
+.perfhead{display:flex;align-items:center;gap:14px;margin:4px 34px 8px 0}
+#perfFoto{width:104px;height:104px;flex:none;border-radius:50%;box-shadow:0 0 0 3px var(--card),0 0 0 6px var(--b1),0 6px 16px rgba(60,20,120,.3)}
+.perfid{display:flex;flex-direction:column;gap:2px;min-width:0}
+.perfnm{font-size:22px;color:var(--b1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}
+.perfid span{font-weight:800;color:var(--pink);font-size:14px}
+.perfid small{color:var(--sub);font-size:12px}.perfid small b{color:var(--ink)}
+.perfp h3{margin:14px 0 6px;font-size:14px;color:var(--b1)}
+.perfnums{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 0}
+.perfnums div{background:var(--chip);border-radius:12px;padding:6px 4px;text-align:center}
+.perfnums b{display:block;font-size:17px;color:var(--ink)}.perfnums small{font-size:11px;color:var(--sub);font-weight:700}
+.perfchips{display:flex;flex-wrap:wrap;gap:5px;font-size:12px}
+.perfchips span{background:var(--chip);border-radius:99px;padding:3px 10px;font-weight:700}
+.perfpets{display:flex;flex-wrap:wrap;gap:6px}
+.perfpet{flex:1 1 84px;max-width:130px;background:var(--chip);border:2px solid transparent;border-radius:12px;padding:4px 4px 6px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.perfpet.on{border-color:var(--b1)}
+.perfpet canvas{width:72px;height:60px;display:block}
+.perfpet b{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perfpet small{font-size:10px;color:var(--sub);font-weight:700}
+.perfult{max-height:none}.perfult small{color:var(--sub)}
+.perfcarr{text-align:center;color:var(--sub);font-size:13px;margin:10px 0}
+#perfGenCv{width:min(100%,280px);height:auto;aspect-ratio:1;display:block;margin:4px auto 8px;border-radius:16px;background:repeating-conic-gradient(#e9e2f7 0 25%,#fff 0 50%) 0 0/16px 16px;box-shadow:0 0 0 2px rgba(155,48,217,.45)}
+.perfgen .btn{font-size:14px;padding:8px 18px;text-decoration:none}
+.perfgen .btn:disabled{opacity:.5;cursor:default}
+.perfgen .petph em{font-style:normal;color:#d4a017;font-weight:800}
+.perfmsg{text-align:center;font-size:12px;font-weight:800;color:var(--pink);margin:0 0 8px}
+.perfmsg[hidden]{display:none}
+.perfpres{text-align:center;width:min(86%,320px)}.perfpres h2{font-size:18px;margin:4px 0}
+#perfPresArte{display:flex;justify-content:center;align-items:center;min-height:90px;margin:6px 0}
+#perfPresArte canvas{width:80px;height:70px}#perfPresArte img{max-height:90px;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.perfpres-emo{font-size:54px;line-height:1}
+#perfPresNome{display:block;font-size:18px;color:var(--b1)}
+.lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.lbn:hover,.lbn:focus-visible{color:var(--b1)}
+.conta-perfil{border:0;background:var(--b1);color:#fff;border-radius:99px;padding:3px 11px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -474,7 +512,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
    brs48cr_did   → id do aparelho (ranking)
    brs48cr_lb / brs48cr_lw / brs48cr_ld → ranking local geral/semana/dia
    brs48cr_pet   → mini jogo de pets (camarim)
-   Supabase: tabela "leaderboard" e função "top_scores"
+   brs48cr_sync  → hora da última mudança do save deste aparelho (nuvem, V2.1.3)
+   Supabase: tabela "leaderboard" e função "top_scores"; tabela "players" (contas)
    ================================================================ */
 	
 const SUPABASE_URL = 'https://fsggtvgbyhchblyazgmt.supabase.co';
@@ -623,7 +662,8 @@ function showLbLocal(el,rowsOverride){
     var chName = r.char==='Você' ? tr('Você') : (r.char||'Tsu');
     var pName = (!r.name || r.name==='Anônimo') ? tr('Anônimo') : r.name;
     var medal = idx===0?'🥇 ':idx===1?'🥈 ':idx===2?'🥉 ':(idx+1)+'. ';
-    li.innerHTML='<span>'+medal+'<strong>'+escHtml(pName)+'</strong> <em>('+escHtml(chName)+' · '+escHtml(rName)+')</em></span><strong>'+(r.score||0)+'</strong>';
+    var nmHtml=(r.on&&r.name&&r.name!=='Anônimo')?'<button type="button" class="lbn" data-nick="'+escHtml(r.name)+'">'+escHtml(pName)+'</button>':'<strong>'+escHtml(pName)+'</strong>';   // V2.1.3: perfil público
+    li.innerHTML='<span>'+medal+nmHtml+' <em>('+escHtml(chName)+' · '+escHtml(rName)+')</em></span><strong>'+(r.score||0)+'</strong>';
     el.appendChild(li);
   });
 }
@@ -641,7 +681,7 @@ function showLb(el){
     Promise.resolve(_supabase ? _supabase.rpc('top_scores',{periodo:tb}) : Promise.reject(new Error('sem supabase'))).then(function(resp){
     if(resp.error)throw resp.error;
     var rows=(resp.data||[]).map(function(r){
-      return {name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||''};
+      return {name:r.name,score:r.score,rankId:rankOf(r.score),char:r.char||'',on:1};   // on: veio do ranking online (nome abre o perfil, V2.1.3)
     });
     if(tb!==tab)return;
     showLbLocal(el,rows);
@@ -5681,7 +5721,8 @@ function contaUI(){
   var box = $('contaBox'); if(!box) return;
   var nIn = $('nick');
   if(contaJ){
-    box.innerHTML = '<span class="conta-ok">☁️ <b>' + escHtml(contaJ.nick) + '</b></span><button type="button" class="conta-sair" id="contaSair">' + escHtml(tr('Sair')) + '</button>';
+    box.innerHTML = '<span class="conta-ok">☁️ <b>' + escHtml(contaJ.nick) + '</b></span><button type="button" class="conta-perfil" id="contaPerfil">👤 ' + escHtml(tr('Perfil')) + '</button><button type="button" class="conta-sair" id="contaSair">' + escHtml(tr('Sair')) + '</button>';
+    $('contaPerfil').onclick = function(e){ e.stopPropagation(); perfAbrir(); };   // V2.1.3
     if(nIn){ nIn.value = contaJ.nick; nIn.disabled = true; nIn.classList.remove('chamativo'); }
     $('contaSair').onclick = function(e){ e.stopPropagation(); contaSair(); };
   } else {
@@ -5699,6 +5740,7 @@ function contaEntrar(){
 function contaSair(){
   if(_supabase) _supabase.auth.signOut();
   contaJ = null; contaRun = null; contaUI();
+  perfSair();   // V2.1.3
 }
 function contaAviso(t){
   var nm = $('nickMsg'); if(!nm) return;
@@ -5722,6 +5764,7 @@ function contaAplicar(j){
   try{ localStorage.setItem('brs48cr_st', starT); localStorage.setItem('brs48cr_nick', nick); }catch(e){}
   setBest(); contaUI();
   if(typeof petUI === 'function' && petOpen) petUI();
+  perfAoEntrar();   // V2.1.3: nuvem + presente da conta
 }
 var contaOv = document.createElement('div');
 contaOv.className = 'ov'; contaOv.id = 'contaOv'; contaOv.hidden = true; contaOv.style.zIndex = 10;
@@ -5816,6 +5859,506 @@ function petShareMoldura(x, W2, H2){
   x.restore();
 }
 // --- FIM DA CONTA ---
+// ================================================================
+// --- V2.1.3 · PERFIL, GERADOR DE FOTO, SAVE NA NUVEM E PRESENTE DA CONTA ---
+// Perfil público (toque no nome do ranking online): foto, nome, recorde, rank,
+// pets e últimas corridas — sem estrelas.
+// Perfil pessoal (👤 Perfil, com login): o mesmo + estrelas, estatísticas e o
+// gerador de PNG do Idol com os visuais do jogo (Fever, Ímã, Mega, Abduzido e os
+// looks de rank), comprados com estrelas e conferidos no servidor.
+// Nuvem: pets, mural, guarda-roupa e recordes dos minijogos (brs48cr_pet) e o visual
+// (brs48cr_cu2, brs48cr_ch2, brs48cr_acc, brs48cr_char). Vale o save mais recente.
+// ⚠️ Chave NOVA: brs48cr_sync (quando o save deste aparelho mudou). Nunca renomear.
+//    Nenhuma chave antiga muda de nome.
+// ================================================================
+var PERF_VIS = [   // [chave (igual à do servidor), emoji, nome, preço ★, recorde para aparecer]
+  ['',             '🙂', 'Normal',        0,     0],
+  ['fever',        '🔥', 'Fever',       120,     0],
+  ['ima',          '🧲', 'Ímã',         120,     0],
+  ['mega',         '💗', 'Mega',        180,     0],
+  ['alien',        '🛸', 'Abduzido',    250,     0],
+  ['rank_center',  '🎀', 'Center',      300,  5000],
+  ['rank_solo',    '💫', 'Solo Center', 400, 10000],
+  ['rank_capitao', '🎖️', 'Capitão',     500, 15000],
+  ['rank_ace',     '🏆', 'Eternal Ace', 650, 30000],
+  ['rank_kami',    '😇', 'Kami-Oshi',   800, 50000]
+];
+var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
+var PERF_FUNDOS = [['palco', '🎤', 'Palco'], ['oshi', '💖', 'Cor do cabelo'], ['ceu', '☁️', 'Céu'], ['noite', '🌙', 'Noite'], ['', '🔲', 'Sem fundo']];
+var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', hat:'' };
+var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'hat'];
+var PERF_SYNC = 'brs48cr_sync';   // chave NOVA da V2.1.3 (nunca renomear)
+
+var PERF_DICT = {
+  en: {"Acessório novo para o seu pet!":"New accessory for your pet!","Quadro novo no mural do camarim!":"New frame on the dressing room wall!","Guardado no camarim do seu pet!":"Saved in your pet's dressing room!","Perfil":"Profile","Carregando...":"Loading...","Esse nome ainda não tem perfil (jogou sem conta).":"This name has no profile yet (played without an account).","No TsuLiPa desde":"In TsuLiPa since","Estrelas":"Stars","Corridas":"Runs","Centers":"Centers","Melhor por personagem":"Best per character","Pets":"Pets","Nenhum pet ainda.":"No pets yet.","Últimas corridas":"Latest runs","Nenhuma corrida online ainda.":"No online runs yet.","Gerador de foto":"Photo maker","Visual":"Look","Fundo":"Background","Fever":"Fever","Ímã":"Magnet","Mega":"Mega","Abduzido":"Abducted","Palco":"Stage","Cor do cabelo":"Hair color","Céu":"Sky","Noite":"Night","Sem fundo":"No background","PRÉVIA":"PREVIEW","Prévia: compre este visual para baixar e usar.":"Preview: buy this look to download and use it.","Comprar":"Buy","Baixar PNG":"Download PNG","Usar como foto do perfil":"Use as profile photo","Foto do perfil atualizada!":"Profile photo updated!","Visual comprado!":"Look purchased!","Alcance esse rank para comprar.":"Reach this rank to buy it.","Presente do dia da conta":"Account daily gift","OBA!":"YAY!","Seu save da nuvem foi carregado!":"Your cloud save was loaded!","Fechar":"Close","Toque num nome do ranking online para ver o perfil.":"Tap a name on the online ranking to see the profile."},
+  es: {"Acessório novo para o seu pet!":"¡Accesorio nuevo para tu mascota!","Quadro novo no mural do camarim!":"¡Cuadro nuevo en el mural del camerino!","Guardado no camarim do seu pet!":"¡Guardado en el camerino de tu mascota!","Perfil":"Perfil","Carregando...":"Cargando...","Esse nome ainda não tem perfil (jogou sem conta).":"Este nombre aún no tiene perfil (jugó sin cuenta).","No TsuLiPa desde":"En TsuLiPa desde","Estrelas":"Estrellas","Corridas":"Carreras","Centers":"Centers","Melhor por personagem":"Mejor por personaje","Pets":"Mascotas","Nenhum pet ainda.":"Aún no hay mascotas.","Últimas corridas":"Últimas carreras","Nenhuma corrida online ainda.":"Aún no hay carreras en línea.","Gerador de foto":"Creador de fotos","Visual":"Look","Fundo":"Fondo","Fever":"Fever","Ímã":"Imán","Mega":"Mega","Abduzido":"Abducido","Palco":"Escenario","Cor do cabelo":"Color del cabello","Céu":"Cielo","Noite":"Noche","Sem fundo":"Sin fondo","PRÉVIA":"VISTA PREVIA","Prévia: compre este visual para baixar e usar.":"Vista previa: compra este look para descargarlo y usarlo.","Comprar":"Comprar","Baixar PNG":"Descargar PNG","Usar como foto do perfil":"Usar como foto de perfil","Foto do perfil atualizada!":"¡Foto de perfil actualizada!","Visual comprado!":"¡Look comprado!","Alcance esse rank para comprar.":"Alcanza este rango para comprarlo.","Presente do dia da conta":"Regalo diario de la cuenta","OBA!":"¡YUPI!","Seu save da nuvem foi carregado!":"¡Se cargó tu partida de la nube!","Fechar":"Cerrar","Toque num nome do ranking online para ver o perfil.":"Toca un nombre del ranking en línea para ver el perfil."},
+  th: {"Acessório novo para o seu pet!":"เครื่องประดับใหม่สำหรับสัตว์เลี้ยง!","Quadro novo no mural do camarim!":"รูปใหม่บนผนังห้องแต่งตัว!","Guardado no camarim do seu pet!":"เก็บไว้ในห้องแต่งตัวของสัตว์เลี้ยงแล้ว!","Perfil":"โปรไฟล์","Carregando...":"กำลังโหลด...","Esse nome ainda não tem perfil (jogou sem conta).":"ชื่อนี้ยังไม่มีโปรไฟล์ (เล่นโดยไม่มีบัญชี)","No TsuLiPa desde":"อยู่ใน TsuLiPa ตั้งแต่","Estrelas":"ดาว","Corridas":"รอบที่วิ่ง","Centers":"เซ็นเตอร์","Melhor por personagem":"สถิติของแต่ละตัวละคร","Pets":"สัตว์เลี้ยง","Nenhum pet ainda.":"ยังไม่มีสัตว์เลี้ยง","Últimas corridas":"รอบล่าสุด","Nenhuma corrida online ainda.":"ยังไม่มีรอบออนไลน์","Gerador de foto":"สร้างรูป","Visual":"ลุค","Fundo":"พื้นหลัง","Fever":"ฟีเวอร์","Ímã":"แม่เหล็ก","Mega":"เมก้า","Abduzido":"ถูกลักพาตัว","Palco":"เวที","Cor do cabelo":"สีผม","Céu":"ท้องฟ้า","Noite":"กลางคืน","Sem fundo":"ไม่มีพื้นหลัง","PRÉVIA":"ตัวอย่าง","Prévia: compre este visual para baixar e usar.":"ตัวอย่าง: ซื้อลุคนี้เพื่อดาวน์โหลดและใช้งาน","Comprar":"ซื้อ","Baixar PNG":"ดาวน์โหลด PNG","Usar como foto do perfil":"ใช้เป็นรูปโปรไฟล์","Foto do perfil atualizada!":"อัปเดตรูปโปรไฟล์แล้ว!","Visual comprado!":"ซื้อลุคแล้ว!","Alcance esse rank para comprar.":"ไปให้ถึงแรงก์นี้ก่อนจึงจะซื้อได้","Presente do dia da conta":"ของขวัญประจำวันของบัญชี","OBA!":"เย้!","Seu save da nuvem foi carregado!":"โหลดเซฟจากคลาวด์แล้ว!","Fechar":"ปิด","Toque num nome do ranking online para ver o perfil.":"แตะชื่อในอันดับออนไลน์เพื่อดูโปรไฟล์"},
+  ja: {"Acessório novo para o seu pet!":"ペットの新しいアクセサリー！","Quadro novo no mural do camarim!":"楽屋のかべに新しい絵！","Guardado no camarim do seu pet!":"ペットの楽屋にしまったよ！","Perfil":"プロフィール","Carregando...":"読みこみ中...","Esse nome ainda não tem perfil (jogou sem conta).":"この名前のプロフィールはまだありません（アカウントなしでプレイ）。","No TsuLiPa desde":"TsuLiPa歴：","Estrelas":"スター","Corridas":"ラン回数","Centers":"センター回数","Melhor por personagem":"キャラ別ベスト","Pets":"ペット","Nenhum pet ainda.":"まだペットがいません。","Últimas corridas":"さいきんのラン","Nenhuma corrida online ainda.":"オンラインのランはまだありません。","Gerador de foto":"フォトメーカー","Visual":"ルック","Fundo":"背景","Fever":"フィーバー","Ímã":"マグネット","Mega":"メガ","Abduzido":"アブダクション","Palco":"ステージ","Cor do cabelo":"髪の色","Céu":"空","Noite":"夜","Sem fundo":"背景なし","PRÉVIA":"プレビュー","Prévia: compre este visual para baixar e usar.":"プレビュー：このルックを買うと保存・使用できます。","Comprar":"買う","Baixar PNG":"PNGを保存","Usar como foto do perfil":"プロフィール写真にする","Foto do perfil atualizada!":"プロフィール写真を更新したよ！","Visual comprado!":"ルックを買ったよ！","Alcance esse rank para comprar.":"このランクに届くと買えるよ。","Presente do dia da conta":"今日のプレゼント","OBA!":"やった！","Seu save da nuvem foi carregado!":"クラウドのセーブを読みこんだよ！","Fechar":"閉じる","Toque num nome do ranking online para ver o perfil.":"オンラインランキングの名前をタップするとプロフィールが見られるよ。"}
+};
+Object.keys(PERF_DICT).forEach(function(l){ if(DICT[l]) Object.keys(PERF_DICT[l]).forEach(function(k){ DICT[l][k] = PERF_DICT[l][k]; }); });
+
+function perfLer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function perfJSON(s){ try{ return JSON.parse(s || 'null'); }catch(e){ return null; } }
+function perfData(iso){
+  var loc = { pt:'pt-BR', en:'en-US', es:'es-ES', th:'th-TH', ja:'ja-JP' }[LANG] || 'pt-BR', d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString(loc, { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+function perfRot(o){ return o[1] + ' ' + tr(o[2]); }
+
+// ---------- O boneco do avatar (sempre o Idol, com os campos conferidos) ----------
+function perfChar(av){
+  var c = {}, src = (av && av.c && typeof av.c === 'object') ? av.c : {}, k;
+  for(k in PERF_BASE) c[k] = PERF_BASE[k];
+  PERF_CAMPOS.forEach(function(f){
+    var v = src[f];
+    if(f === 'streak') c.streak = !!v;
+    else if(/^(hair|hair2|skin|eye|outcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(typeof v === 'string' && v.length <= 16) c[f] = v;
+  });
+  c.img = c.hair;
+  return c;
+}
+function perfAvAtual(extra){   // o seu Idol de agora (personagem 3, com o Item escolhido)
+  var c = {}; PERF_CAMPOS.forEach(function(f){ c[f] = CU[f]; });
+  var av = { v:1, c:c, a:accSel || '', visual:'', pose:'v', expr:2, fundo:'palco' };
+  for(var k in (extra || {})) av[k] = extra[k];
+  return av;
+}
+
+// ---------- Fundos do gerador ----------
+function perfBrilhos(x, W2, H2, cor, n, seed){
+  x.save(); x.fillStyle = cor;
+  for(var i = 0; i < n; i++){
+    var sx = cenaHash(i * 7 + (seed || 0)) * W2, sy = cenaHash(i * 13 + 5 + (seed || 0)) * H2, r = (1 + cenaHash(i * 3) * 1.6) * W2 / 320;
+    x.globalAlpha = .45 + cenaHash(i * 17) * .5; x.beginPath(); x.arc(sx, sy, r, 0, 7); x.fill();
+  }
+  x.restore();
+}
+function perfFundo(x, W2, H2, f, cor){
+  if(!f) return;
+  var u = W2 / 320, gr;
+  if(f === 'palco'){
+    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#1a0933'); gr.addColorStop(.62, '#4a1f8a'); gr.addColorStop(1, '#7b3ff0');
+    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfBrilhos(x, W2, H2 * .55, '#fff', 18, 3);
+    x.save(); x.globalCompositeOperation = 'lighter';
+    [[.18, 'rgba(255,111,181,.26)'], [.5, 'rgba(255,255,255,.2)'], [.82, 'rgba(77,216,255,.24)']].forEach(function(h){
+      var lg = x.createLinearGradient(0, 0, 0, H2 * .9); lg.addColorStop(0, h[1]); lg.addColorStop(1, 'rgba(0,0,0,0)');
+      var bx = W2 * (.5 + (h[0] - .5) * .35);
+      x.fillStyle = lg; x.beginPath(); x.moveTo(W2 * h[0] - 8 * u, 0); x.lineTo(W2 * h[0] + 8 * u, 0); x.lineTo(bx + 52 * u, H2 * .9); x.lineTo(bx - 52 * u, H2 * .9); x.closePath(); x.fill();
+    });
+    x.restore();
+    x.fillStyle = '#2c1a5e'; x.fillRect(0, H2 * .88, W2, H2 * .12);
+    var fx = x.createLinearGradient(0, 0, W2, 0); fx.addColorStop(0, '#9b30d9'); fx.addColorStop(.5, '#4169e1'); fx.addColorStop(1, '#b6ff3b');
+    x.fillStyle = fx; x.fillRect(0, H2 * .88, W2, 3 * u);
+  } else if(f === 'oshi'){
+    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, petMix(cor, 1, .82)); gr.addColorStop(1, petMix(cor, 1, .55));
+    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    x.save(); x.globalAlpha = .12; x.strokeStyle = '#fff'; x.lineWidth = 14 * u;
+    for(var d = -H2; d < W2; d += 40 * u){ x.beginPath(); x.moveTo(d, H2); x.lineTo(d + H2, 0); x.stroke(); }
+    x.restore();
+    x.save(); x.fillStyle = 'rgba(255,255,255,.7)'; x.font = '900 ' + Math.round(16 * u) + 'px sans-serif'; x.textAlign = 'center';
+    [[.12, .16], [.88, .2], [.1, .7], [.9, .66], [.5, .1]].forEach(function(s, i){ x.fillText(i % 2 ? '♥' : '★', W2 * s[0], H2 * s[1]); });
+    x.restore();
+    x.fillStyle = petMix(cor, 0, .15); x.globalAlpha = .25; x.fillRect(0, H2 * .9, W2, H2 * .1); x.globalAlpha = 1;
+  } else if(f === 'ceu'){
+    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#8fd0f5'); gr.addColorStop(1, '#e8f7ff');
+    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    x.fillStyle = 'rgba(255,255,255,.92)';
+    [[.2, .22, 1], [.78, .14, .8], [.62, .42, .65]].forEach(function(n){
+      var cx = W2 * n[0], cy = H2 * n[1], s = n[2] * u;
+      [[-22, 4, 12], [-7, -4, 16], [12, -2, 14], [27, 5, 10], [2, 7, 13]].forEach(function(b){ x.beginPath(); x.arc(cx + b[0] * s, cy + b[1] * s, b[2] * s, 0, 7); x.fill(); });
+    });
+    x.fillStyle = '#9ed36a'; x.fillRect(0, H2 * .9, W2, H2 * .1);
+  } else if(f === 'noite'){
+    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#071327'); gr.addColorStop(1, '#2a3f78');
+    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfBrilhos(x, W2, H2 * .8, '#fff', 34, 9);
+    x.fillStyle = '#fff4c2'; x.beginPath(); x.arc(W2 * .8, H2 * .18, 20 * u, 0, 7); x.fill();
+    x.fillStyle = '#132552'; x.beginPath(); x.arc(W2 * .8 + 8 * u, H2 * .18 - 5 * u, 17 * u, 0, 7); x.fill();
+    x.fillStyle = '#1a2a55'; x.fillRect(0, H2 * .9, W2, H2 * .1);
+  }
+}
+
+// Personagem com contorno suave (igual ao das fotos, com mais espaço em cima para auréola e antenas)
+function perfCharContorno(x, tx, ty, sc, desenha){
+  var ux = -42, uy = -28, uw = 130, uh = 80;
+  var cv = document.createElement('canvas'); cv.width = Math.ceil(uw * sc); cv.height = Math.ceil(uh * sc);
+  var og = g;
+  try{ g = cv.getContext('2d'); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); }
+  finally{ g = og; charPose = ''; }
+  x.save();
+  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.restore();
+}
+
+// ---------- Desenha o Idol do avatar (fundo + efeito do visual + personagem) ----------
+function perfDesenharIdol(x, W2, H2, av, comFundo){
+  av = av || {};
+  var vis = typeof av.visual === 'string' ? av.visual : '', rk = PERF_RANKVIS[vis] || 0, c = perfChar(av);
+  if(comFundo !== false) perfFundo(x, W2, H2, typeof av.fundo === 'string' ? av.fundo : 'palco', c.hair);
+  var big = vis === 'mega', sc = H2 / (big ? 68 : 82), chao = H2 * (big ? .95 : .9);
+  var tx = W2 / 2 - 15 * sc, ty = chao - 44 * sc, cx = W2 / 2, cy = ty + 22 * sc, i;
+  // sombra no chão
+  x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc, 2.6 * sc, 0, 0, 7); x.fill();
+  // efeito do visual (atrás do personagem)
+  function halo(r, cor){ var h = x.createRadialGradient(cx, cy, 2, cx, cy, r); h.addColorStop(0, cor); h.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = h; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); }
+  function estrela(sx, sy, r, cor){ x.fillStyle = cor; x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? r * .42 : r, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](sx + Math.cos(an) * rr, sy + Math.sin(an) * rr); } x.closePath(); x.fill(); }
+  if(vis === 'fever'){
+    halo(40 * sc, 'rgba(255,132,102,.55)');
+    [-2.7, -2, -1.15, -.45, .35, 2.75].forEach(function(an, j){ estrela(cx + Math.cos(an) * 27 * sc, cy + Math.sin(an) * 20 * sc, (2.2 + (j % 2)) * sc, j % 2 ? '#ffe14d' : '#ff8fb8'); });
+  } else if(vis === 'ima'){
+    halo(40 * sc, 'rgba(200,162,245,.55)');
+    x.save(); x.strokeStyle = 'rgba(155,48,217,.45)'; x.lineWidth = 1.2 * sc;
+    for(i = 1; i <= 3; i++){ x.beginPath(); x.arc(cx, cy, (12 + i * 7) * sc, -2.6, -.55); x.stroke(); }
+    x.restore();
+    for(i = 0; i < 5; i++) estrela(cx + (i - 2) * 13 * sc, cy - (25 + (i % 2) * 6) * sc, 2.4 * sc, '#ffe14d');
+  } else if(vis === 'mega'){
+    halo(36 * sc, 'rgba(255,111,181,.6)');
+  } else if(vis === 'alien'){
+    var bl = x.createLinearGradient(0, 0, 0, chao); bl.addColorStop(0, 'rgba(182,255,59,.7)'); bl.addColorStop(1, 'rgba(182,255,59,.05)');
+    x.fillStyle = bl; x.beginPath(); x.moveTo(cx - 14 * sc, 8 * sc); x.lineTo(cx + 14 * sc, 8 * sc); x.lineTo(cx + 24 * sc, chao); x.lineTo(cx - 24 * sc, chao); x.closePath(); x.fill();
+    x.fillStyle = '#b6ff3b'; for(i = 0; i < 7; i++) x.fillRect(cx + (cenaHash(i) - .5) * 30 * sc, chao - cenaHash(i + 9) * (chao - 14 * sc), 1.4 * sc, 1.4 * sc);
+    x.save(); x.translate(cx, 6 * sc);   // disco voador
+    x.fillStyle = '#7dd3fc'; x.beginPath(); x.ellipse(0, -2 * sc, 7 * sc, 5 * sc, 0, Math.PI, 0); x.fill();
+    var dg = x.createLinearGradient(0, -2 * sc, 0, 4 * sc); dg.addColorStop(0, '#e5e7eb'); dg.addColorStop(1, '#6b7280');
+    x.fillStyle = dg; x.beginPath(); x.ellipse(0, 1 * sc, 17 * sc, 4.2 * sc, 0, 0, 7); x.fill();
+    ['#ff6fb5', '#ffe14d', '#b6ff3b', '#4dd8ff'].forEach(function(cc, j){ x.fillStyle = cc; x.beginPath(); x.arc((j - 1.5) * 8 * sc, 1.6 * sc, 1.2 * sc, 0, 7); x.fill(); });
+    x.restore();
+  } else if(rk >= 10){
+    halo(52 * sc, rk >= 11 ? 'rgba(255,170,230,.55)' : 'rgba(255,225,120,.6)');
+    if(rk >= 11){ x.save(); x.globalAlpha = .35; ['#ff6fb5', '#ffe14d', '#b6ff3b', '#4dd8ff', '#9b30d9'].forEach(function(cc, j){ x.strokeStyle = cc; x.lineWidth = 2 * sc; x.beginPath(); x.arc(cx, cy, (30 + j * 3) * sc, Math.PI * 1.08, Math.PI * 1.92); x.stroke(); }); x.restore(); }
+    for(i = 0; i < 4; i++) estrela(cx - 26 * sc + i * 17 * sc, cy + Math.sin(i * 2) * 14 * sc - 4 * sc, 1.8 * sc, '#ffe14d');
+  } else if(rk >= 7){
+    for(i = 0; i < 5; i++) estrela(cx + Math.cos(i * 1.26 - .4) * 26 * sc, cy + Math.sin(i * 1.26 - .4) * 22 * sc, 1.7 * sc, '#ffe14d');
+  }
+  // personagem: usa o mesmo drawChar da corrida, com o visual ligado só durante o desenho
+  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel;
+  try{
+    state = 'play'; dpw = null;
+    pw = vis === 'mega' ? { k:'gigante', t:300 } : (vis === 'fever' || vis === 'ima' || vis === 'alien') ? { k:vis, t:300 } : null;
+    rankI = rk; sash = rk >= 7; accSel = typeof av.a === 'string' ? av.a : '';
+    var ex = [0, 1, 2, 3].indexOf(+av.expr) >= 0 ? +av.expr : 2;
+    var pose = ['', 'v', 'coracao', 'tchau'].indexOf(av.pose) >= 0 ? av.pose : '';
+    perfCharContorno(x, tx, ty, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+  } finally {
+    state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; charPose = '';
+  }
+}
+function perfFotoRedonda(cv, av){   // foto do perfil: o avatar recortado em círculo
+  var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;
+  var tmp = document.createElement('canvas'); tmp.width = W2; tmp.height = H2;
+  var t = tmp.getContext('2d');
+  if(av && !av.fundo){ av = JSON.parse(JSON.stringify(av)); av.fundo = 'palco'; }   // na foto redonda sempre tem fundo
+  perfDesenharIdol(t, W2, H2, av, true);
+  x.clearRect(0, 0, W2, H2);
+  x.save(); x.beginPath(); x.arc(W2 / 2, H2 / 2, W2 / 2, 0, 7); x.clip(); x.drawImage(tmp, 0, 0); x.restore();
+}
+
+// ---------- Tela do perfil ----------
+var perfAtual = null, perfMeu = false, perfGenAv = null, perfDono = [], perfBestConta = 0;
+var perfOv = document.createElement('div');
+perfOv.className = 'ov perfov'; perfOv.id = 'perfOv'; perfOv.hidden = true;
+perfOv.innerHTML = '<div class="panel perfp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="perfX">✕</button><div id="perfCorpo"></div></div>';
+document.body.appendChild(perfOv);
+
+function perfAbrir(nick){
+  perfMeu = !nick; perfAtual = null;
+  $('perfX').setAttribute('aria-label', tr('Fechar'));
+  $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
+  perfOv.hidden = false;
+  if(sfx.card) sfx.card();
+  var pr = perfMeu ? contaRpc('meu_perfil') : contaRpc('perfil_publico', { p_nick: String(nick).slice(0, 24) });
+  pr.then(function(d){
+    if(perfOv.hidden) return;
+    if(!d){ $('perfCorpo').innerHTML = '<h2 class="perfnm">' + escHtml(nick || '') + '</h2><p class="perfcarr">' + escHtml(tr('Esse nome ainda não tem perfil (jogou sem conta).')) + '</p>'; return; }
+    perfAtual = d; perfMontar();
+  }).catch(function(){
+    $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Não deu para falar com o servidor. Tente de novo.')) + '</p>';
+  });
+}
+function perfFechar(){ perfOv.hidden = true; perfAtual = null; }
+$('perfX').onclick = perfFechar;
+perfOv.addEventListener('click', function(e){ if(e.target === perfOv) perfFechar(); });
+document.addEventListener('keydown', function(e){ if(!perfOv.hidden && e.code === 'Escape'){ e.stopImmediatePropagation(); perfFechar(); } }, true);
+
+function perfMontar(){
+  var d = perfAtual, meu = perfMeu, h = '';
+  perfBestConta = Math.max(+d.best || 0, meu ? best : 0);
+  var rk = RANKS[rankOf(perfBestConta)];
+  h += '<div class="perfhead"><canvas id="perfFoto" width="240" height="240" aria-hidden="true"></canvas><div class="perfid">' +
+       '<b class="perfnm">' + escHtml(d.nick) + '</b><span>' + escHtml(tr(rk[1])) + '</span>' +
+       '<small>' + escHtml(tr('Recorde')) + ': <b>' + (+d.best || 0) + '</b></small>' +
+       (d.desde ? '<small>' + escHtml(tr('No TsuLiPa desde')) + ' ' + escHtml(perfData(d.desde)) + '</small>' : '') + '</div></div>';
+  if(meu){
+    h += '<div class="perfnums"><div><b>★ ' + starT + '</b><small>' + escHtml(tr('Estrelas')) + '</small></div>' +
+         '<div><b>' + (+d.corridas || 0) + '</b><small>' + escHtml(tr('Corridas')) + '</small></div>' +
+         '<div><b>' + (+d.centers || 0) + '</b><small>' + escHtml(tr('Centers')) + '</small></div></div>';
+    var pp = {}, ks;
+    Object.keys(d.por_personagem || {}).forEach(function(k){ var n = k === 'Você' ? 'Idol' : k; pp[n] = Math.max(pp[n] || 0, +d.por_personagem[k] || 0); });   // "Você" = nome antigo do Idol
+    ks = Object.keys(pp);
+    if(ks.length) h += '<h3>' + escHtml(tr('Melhor por personagem')) + '</h3><div class="perfchips">' + ks.map(function(k){
+      return '<span>' + escHtml(k) + ' · <b>' + pp[k] + '</b></span>'; }).join('') + '</div>';
+  }
+  h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
+  h += '<h3>🎤 ' + escHtml(tr('Últimas corridas')) + '</h3><ol class="lb perfult">' + perfUltimas(d.ultimas || []) + '</ol>';
+  if(meu) h += '<div class="perfgen"><h3>🎨 ' + escHtml(tr('Gerador de foto')) + '</h3><canvas id="perfGenCv" width="560" height="560" aria-hidden="true"></canvas>' +
+               '<p class="perfmsg" id="perfGenMsg" hidden></p><div class="btns" id="perfGenBtns"></div><div class="petph" id="perfGenOpts"></div></div>';
+  h += '<div class="btns" style="margin-top:12px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
+  $('perfCorpo').innerHTML = h;
+  $('perfVoltar').onclick = perfFechar;
+  perfFotoRedonda($('perfFoto'), d.avatar || (meu ? perfAvAtual() : { c:{}, pose:'v', expr:2, fundo:'palco' }));
+  perfPets(d, meu);
+  if(meu){
+    perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : [];
+    var a = d.avatar && !d.avatar.auto ? d.avatar : {};
+    perfGenAv = perfAvAtual({ visual: perfTem(a.visual) ? a.visual : '', pose: typeof a.pose === 'string' ? a.pose : 'v', expr: a.expr === undefined ? 2 : +a.expr, fundo: typeof a.fundo === 'string' ? a.fundo : 'palco' });
+    perfGenUI();
+  }
+}
+function perfUltimas(L){
+  if(!L.length) return '<li style="justify-content:center"><em>' + escHtml(tr('Nenhuma corrida online ainda.')) + '</em></li>';
+  return L.map(function(r){
+    var ch = r.char === 'Você' ? 'Idol' : (r.char || 'Tsu');
+    return '<li><span>' + escHtml(ch) + ' · <em>' + escHtml(tr(RANKS[rankOf(+r.score || 0)][1])) + '</em> · <small>' + escHtml(perfData(r.created_at)) + '</small></span><strong>' + (+r.score || 0) + '</strong></li>';
+  }).join('');
+}
+
+// Pets: os seus (do aparelho, os mais atuais) ou os da pessoa (resumo vindo do servidor)
+function perfPets(d, meu){
+  var box = $('perfPets'), lista = [], ativo = '';
+  if(meu && petData && petData.pets){
+    ativo = petData.ativo;
+    (petData.donos || Object.keys(petData.pets)).forEach(function(k){ var p = petData.pets[k]; if(p) lista.push({ k:k, nome:p.nome, xp:p.xp, cfg:p.cfg, local:true }); });
+  } else if(meu && d.pets && d.pets.pets){
+    ativo = d.pets.ativo || '';
+    Object.keys(d.pets.pets).forEach(function(k){ var p = d.pets.pets[k] || {}; lista.push({ k:k, nome:p.nome, xp:p.xp, acc:p.acc, cfg:p.cfg }); });
+  } else if(!meu && Array.isArray(d.pets)){
+    ativo = d.ativo || '';
+    lista = d.pets.map(function(p){ return { k:p.k, nome:p.nome, xp:p.xp, acc:p.acc, cfg:p.cfg }; });
+  }
+  lista = lista.filter(function(p){ return PET_SP[p.k]; });
+  if(!lista.length){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Nenhum pet ainda.')) + '</p>'; return; }
+  box.innerHTML = '';
+  lista.forEach(function(p){
+    var st = PET_STAGES[petStage({ xp: +p.xp || 0 })];
+    var el = document.createElement('div'); el.className = 'perfpet' + (p.k === ativo ? ' on' : '');
+    var cv = document.createElement('canvas'); cv.width = 144; cv.height = 120; el.appendChild(cv);
+    el.insertAdjacentHTML('beforeend', '<b>' + escHtml(p.nome || PET_SP[p.k].n) + '</b><small>' + st[2] + ' ' + escHtml(tr(st[1])) + (p.k === ativo ? ' · ⭐' : '') + '</small>');
+    box.appendChild(el);
+    perfDesenharPet(cv, p);
+  });
+}
+function perfDesenharPet(cv, p){
+  var x = cv.getContext('2d'), oP = petData;
+  try{
+    if(!p.local){ var pets = {}; pets[p.k] = { acc: typeof p.acc === 'string' ? p.acc : '' }; petData = { pets: pets }; }   // acessório do pet da pessoa, só durante o desenho
+    var tipo = p.k === 'meu' ? ((p.cfg && typeof p.cfg === 'object') ? p.cfg : PET_MK_DEF) : p.k;
+    drawPet(x, tipo, 72, 64, 2.6, 0);
+  }catch(e){}
+  finally{ petData = oP; }
+}
+
+// ---------- Gerador de foto (só no seu perfil) ----------
+function perfTem(k){ return !k || perfDono.indexOf(k) >= 0; }
+function perfVisInfo(k){ for(var i = 0; i < PERF_VIS.length; i++) if(PERF_VIS[i][0] === k) return PERF_VIS[i]; return PERF_VIS[0]; }
+function perfGenUI(){
+  var av = perfGenAv, it = perfVisInfo(av.visual), dono = perfTem(av.visual);
+  function grp(label, campo, lista, cur){
+    return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
+      var extra = '';
+      if(campo === 'visual'){ if(!perfTem(o[0])) extra = ' <em>★' + o[3] + '</em>'; else if(o[0]) extra = ' ✓'; }
+      return '<button type="button" data-f="' + campo + '" data-v="' + o[0] + '" aria-pressed="' + (String(cur) === String(o[0])) + '">' + escHtml(perfRot(o)) + extra + '</button>';
+    }).join('') + '</div>';
+  }
+  var vis = PERF_VIS.filter(function(o){ return perfBestConta >= o[4]; });
+  var exprs = PET_PH_EXPRS.filter(function(o){ return o[0] !== ''; });
+  $('perfGenOpts').innerHTML = grp('Visual', 'visual', vis, av.visual) + grp('Pose', 'pose', PET_PH_POSES, av.pose) + grp('Expressão', 'expr', exprs, String(av.expr)) + grp('Fundo', 'fundo', PERF_FUNDOS, av.fundo);
+  var b = $('perfGenBtns'), m = $('perfGenMsg');
+  if(dono){
+    b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
+    m.hidden = true;
+  } else {
+    var falta = starT < it[3];
+    b.innerHTML = '<button type="button" class="btn" id="perfComprar"' + (falta ? ' disabled' : '') + '>' + escHtml(tr('Comprar')) + ' ★' + it[3] + '</button>';
+    m.textContent = falta ? tr('Estrelas insuficientes') + ' (★ ' + starT + ')' : tr('Prévia: compre este visual para baixar e usar.');
+    m.hidden = false;
+  }
+  perfGenDesenhar();
+  if(dono){
+    $('perfPng').onclick = function(){ this.href = perfPng(); this.download = 'tsulipa-idol-' + String(perfAtual.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('perfUsar').onclick = perfUsarFoto;
+  } else $('perfComprar').onclick = perfComprar;
+}
+function perfGenDesenhar(){
+  var cv = $('perfGenCv'); if(!cv) return;
+  var x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height);
+  perfDesenharIdol(x, cv.width, cv.height, perfGenAv, true);
+  if(!perfTem(perfGenAv.visual)){   // marca d'água de prévia
+    x.save(); x.translate(cv.width / 2, cv.height / 2); x.rotate(-.35);
+    x.font = '900 ' + Math.round(cv.width / 9) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.lineWidth = cv.width / 80; x.strokeStyle = 'rgba(123,63,240,.55)'; x.strokeText(tr('PRÉVIA'), 0, 0);
+    x.fillStyle = 'rgba(255,255,255,.6)'; x.fillText(tr('PRÉVIA'), 0, 0);
+    x.restore();
+  }
+}
+function perfPng(){
+  var cv = document.createElement('canvas'); cv.width = 1024; cv.height = 1024;
+  var x = cv.getContext('2d');
+  perfDesenharIdol(x, 1024, 1024, perfGenAv, true);
+  if(perfGenAv.fundo){   // assinatura discreta (só com fundo)
+    x.font = '800 26px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.8)';
+    x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 6;
+    x.fillText(perfAtual.nick + ' · TsuLiPa⭐World', 1000, 1004);
+  }
+  return cv.toDataURL('image/png');
+}
+$('perfOv').addEventListener('click', function(e){
+  var b = e.target.closest('#perfGenOpts button'); if(!b) return;
+  var f = b.dataset.f, v = b.dataset.v;
+  perfGenAv[f] = f === 'expr' ? +v : v;
+  beep(988, .04, 'triangle', .04);
+  perfGenUI();
+});
+function perfComprar(){
+  var k = perfGenAv.visual, it = perfVisInfo(k), btn = $('perfComprar');
+  btn.disabled = true;
+  contaRpc('comprar_visual', { p_key:k }).then(function(r){
+    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+    if(!r || !r.ok){
+      var m = $('perfGenMsg'); m.hidden = false;
+      m.textContent = r && r.erro === 'rank' ? tr('Alcance esse rank para comprar.') : r && r.erro === 'saldo' ? tr('Estrelas insuficientes') : tr('Não deu para falar com o servidor. Tente de novo.');
+      btn.disabled = false; if(sfx.hit) sfx.hit(); return;
+    }
+    perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono.concat(k);
+    if(sfx.rank) sfx.rank();
+    perfGenUI();
+    var m2 = $('perfGenMsg'); m2.textContent = '✨ ' + tr('Visual comprado!') + ' ' + it[1]; m2.hidden = false;
+  }).catch(function(){ btn.disabled = false; var m = $('perfGenMsg'); m.textContent = tr('Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; });
+}
+function perfUsarFoto(){
+  var av = perfAvAtual({ visual: perfGenAv.visual, pose: perfGenAv.pose, expr: perfGenAv.expr, fundo: perfGenAv.fundo || 'palco' });
+  var btn = $('perfUsar'); btn.disabled = true;
+  contaRpc('salvar_avatar', { p_avatar: av }).then(function(r){
+    btn.disabled = false;
+    var m = $('perfGenMsg'); m.hidden = false;
+    if(r && r.ok){ perfAtual.avatar = av; perfFotoRedonda($('perfFoto'), av); m.textContent = '🖼️ ' + tr('Foto do perfil atualizada!'); if(sfx.card) sfx.card(); }
+    else m.textContent = tr('Não deu para falar com o servidor. Tente de novo.');
+  }).catch(function(){ btn.disabled = false; });
+}
+
+// ---------- Nome do ranking online → perfil público ----------
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('.lbn'); if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  perfAbrir(b.dataset.nick);
+});
+
+// ---------- Save na nuvem (pets, mural, guarda-roupa, minijogos e visual) ----------
+var perfEntrou = false, perfSyncOn = false, perfSnap = '', perfSyncT = null, perfUltEnvio = 0;
+function perfVisualLocal(){
+  return { cu2: perfJSON(perfLer('brs48cr_cu2')), ch2: perfJSON(perfLer('brs48cr_ch2')), acc: perfLer('brs48cr_acc') || '', char: perfLer('brs48cr_char') || '' };
+}
+function perfSnapAgora(){ return (perfLer('brs48cr_pet') || '') + '|' + JSON.stringify(perfVisualLocal()); }
+function perfEnviar(){
+  clearTimeout(perfSyncT); perfSyncT = null;
+  if(!contaJ || !perfSyncOn) return;
+  perfUltEnvio = Date.now();
+  var ms = +perfLer(PERF_SYNC) || Date.now();
+  contaRpc('salvar_nuvem', { p_pet: perfJSON(perfLer('brs48cr_pet')), p_visual: perfVisualLocal(), p_ms: ms }).catch(function(){});
+}
+function perfConferir(){   // mudou alguma coisa no save? marca a hora e envia (com uma pausa para juntar as mudanças)
+  if(!perfSyncOn || !contaJ) return false;
+  var s = perfSnapAgora(); if(s === perfSnap) return false;
+  perfSnap = s;
+  try{ localStorage.setItem(PERF_SYNC, String(Date.now())); }catch(e){}
+  if(Date.now() - perfUltEnvio > 30000) perfEnviar();
+  else { clearTimeout(perfSyncT); perfSyncT = setTimeout(perfEnviar, 8000); }
+  return true;
+}
+setInterval(perfConferir, 4000);
+document.addEventListener('visibilitychange', function(){ if(document.hidden && perfSyncOn){ perfConferir(); if(perfSyncT) perfEnviar(); } });
+
+function perfAoEntrar(){   // chamado quando a conta carrega (uma vez por página)
+  if(perfEntrou) return; perfEntrou = true;
+  var avisou = null; try{ avisou = sessionStorage.getItem('tsl_nuvem_ok'); sessionStorage.removeItem('tsl_nuvem_ok'); }catch(e){}
+  if(avisou) contaAviso('☁️ ' + tr('Seu save da nuvem foi carregado!'));
+  contaRpc('carregar_nuvem').then(function(n){
+    var loc = +perfLer(PERF_SYNC) || 0, temPet = !!perfLer('brs48cr_pet');
+    var nuvem = n && (n.pet || n.visual) && +n.ms > 0;
+    if(nuvem && (+n.ms > loc || (!temPet && n.pet)) && perfAplicarNuvem(n)) return;   // a nuvem é mais nova: aplica e recarrega
+    perfSyncOn = true; perfSnap = perfSnapAgora();
+    if(!nuvem || loc > +n.ms){ if(!loc) try{ localStorage.setItem(PERF_SYNC, String(Date.now())); }catch(e){} perfEnviar(); }
+    perfAvatarAuto();
+    perfPresente();
+  }).catch(function(){ perfEntrou = false; });
+}
+function perfSair(){ perfSyncOn = false; perfEntrou = false; clearTimeout(perfSyncT); if(!perfOv.hidden) perfFechar(); }
+function perfAplicarNuvem(n){
+  try{
+    if(n.pet) localStorage.setItem('brs48cr_pet', JSON.stringify(n.pet));
+    var v = n.visual || {};
+    if(v.cu2) localStorage.setItem('brs48cr_cu2', JSON.stringify(v.cu2));
+    if(v.ch2) localStorage.setItem('brs48cr_ch2', JSON.stringify(v.ch2));
+    if(typeof v.acc === 'string') localStorage.setItem('brs48cr_acc', v.acc);
+    if(v.char !== undefined && v.char !== null && v.char !== '') localStorage.setItem('brs48cr_char', String(v.char));
+    localStorage.setItem(PERF_SYNC, String(n.ms));
+    try{ sessionStorage.setItem('tsl_nuvem_ok', '1'); }catch(e){}
+  }catch(e){ return false; }
+  petData = null;   // assim o pagehide não regrava o pet antigo por cima do da nuvem
+  location.reload();
+  return true;
+}
+// Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual
+function perfAvatarAuto(){
+  contaRpc('meu_perfil').then(function(d){
+    if(!d || (d.avatar && !d.avatar.auto)) return;
+    return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
+  }).catch(function(){});
+}
+
+// ---------- Presente diário da conta (um item por dia, nunca estrelas) ----------
+var perfPres = document.createElement('div');
+perfPres.className = 'ov perfov'; perfPres.id = 'perfPres'; perfPres.hidden = true; perfPres.style.zIndex = 21;
+perfPres.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfPresTit"></h2><div id="perfPresArte"></div><b id="perfPresNome"></b><p id="perfPresTxt"></p><div class="btns"><button type="button" class="btn" id="perfPresOk"></button></div></div>';
+document.body.appendChild(perfPres);
+$('perfPresOk').onclick = function(){ perfPres.hidden = true; };
+function perfSortear(s1, s2){
+  var roupas = (petData.roupas || {}), decor = (petData.decor || {});
+  var comida = ['gyoza', 'gyoza', 'dango', 'dango', 'redvelvet', 'tiramisu', 'espuma'];
+  var aces = PET_WARDROBE.filter(function(it){ return it[0] && it[3] > 0 && !it[4] && !roupas[it[0]]; });
+  var quad = PET_DECOR.filter(function(it){ return it[2] > 0 && !(it[0] in decor); });
+  var pega = function(L){ return L[Math.min(L.length - 1, Math.floor((+s2 || 0) * L.length))]; };
+  if(s1 >= .55 && s1 < .8 && aces.length) return { t:'acc', it:pega(aces) };
+  if(s1 >= .8 && quad.length) return { t:'decor', it:pega(quad) };
+  var k = pega(comida);
+  return { t:'food', it: petFind(PET_FOOD, k) || petFind(PET_BATH, k) };
+}
+function perfPresente(){
+  if(!petData) petLoad();
+  if(!petData) return;   // sem pet ainda: o presente espera o dia em que tiver
+  contaRpc('presente_diario').then(function(r){
+    if(!r || !r.ok || !petData) return;
+    var g2 = perfSortear(+r.sorteio || 0, +r.sorteio2 || 0), k = g2.it[0], nome;
+    if(g2.t === 'acc'){ petData.roupas = petData.roupas || { '': 1 }; petData.roupas[k] = 1; nome = tr(g2.it[2]); }
+    else if(g2.t === 'decor'){ petData.decor = petData.decor || {}; petData.decor[k] = 1; petBg = null; nome = tr(g2.it[1]); }
+    else { petData.inv = petData.inv || {}; petData.inv[k] = (petData.inv[k] || 0) + 1; nome = tr(g2.it[1]); }
+    petSave(); perfConferir();
+    if(petOpen) petUI();
+    $('perfPresTit').textContent = '🎁 ' + tr('Presente do dia da conta');
+    $('perfPresNome').textContent = nome;
+    $('perfPresTxt').textContent = tr(g2.t === 'acc' ? 'Acessório novo para o seu pet!' : g2.t === 'decor' ? 'Quadro novo no mural do camarim!' : 'Guardado no camarim do seu pet!');
+    $('perfPresOk').textContent = tr('OBA!');
+    var arte = $('perfPresArte'); arte.innerHTML = '';
+    if(g2.t === 'decor'){ var im = document.createElement('img'); im.src = PET_DECOR_IMG[k]; im.alt = ''; arte.appendChild(im); }
+    else if(g2.t === 'acc'){ arte.innerHTML = '<span class="perfpres-emo">' + g2.it[1] + '</span>'; }
+    else { var c = document.createElement('canvas'); c.width = 160; c.height = 140; arte.appendChild(c); petDrawItem(c.getContext('2d'), k, 80, 74, 3.6); }
+    perfPres.hidden = false;
+    if(sfx.rank) sfx.rank();
+  }).catch(function(){});
+}
+// --- FIM DO PERFIL (V2.1.3) ---
 
 var EXTRA_DICT = {
   en: {

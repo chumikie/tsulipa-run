@@ -9858,8 +9858,9 @@ document.body.appendChild(encOv);
 var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
 (function(){ var c = $('hubCards'); if(c && c.parentNode) c.parentNode.insertBefore(encBtn, c.nextSibling); })();
 var encDados = null, encAnim = 0, encT = 0;
-function encHoje(){ var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
-function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() ? j : null; }catch(e){ return null; } }
+function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AAAA-MM-DD)
+function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
+function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
 function encBtnUI(){
   var feito = encLer();
   encBtn.innerHTML = feito ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b> <small>' + escHtml(tr('ver de novo')) + '</small>' : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b> <small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
@@ -9899,25 +9900,38 @@ function encLoop(){
   }
   encAnim = requestAnimationFrame(encLoop);
 }
+function encAbrirNovo(d){   // mostra o encontro e entrega as ★3 (1 vez por dia, conferido no servidor)
+  d.dono = encDono();
+  try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}
+  encBtnUI(); encMostrar(d);
+  $('encPremio').hidden = true;
+  if(contaJ && !d.premiado) contaRpc('encontro_premio', { p_nick: d.nick }).then(function(r){
+    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+    if(r && r.ok){ var pm = $('encPremio'); pm.textContent = '⭐ +' + r.ganho + ' ' + tr('estrelinhas pelo encontro!'); pm.hidden = false; if(sfx.card) sfx.card(); }
+  }).catch(function(){});
+}
 encBtn.onclick = function(){
   var feito = encLer(); if(feito){ encMostrar(feito); return; }
   encBtn.disabled = true;
-  contaRpc('outdoor_jogadores').then(function(L){
+  if(contaJ){   // com conta: o servidor sorteia 1 vez por dia e guarda — o mesmo encontro em qualquer aparelho
+    contaRpc('encontro_hoje', { p_falas: DUO_FALAS.length }).then(function(r){
+      encBtn.disabled = false;
+      if(!r || !r.nick || !r.avatar) return;
+      encAbrirNovo({ dia: encHoje(), nick: r.nick, avatar: r.avatar, best: r.best, oshi: r.oshi, fala: DUO_FALAS[(+r.fala || 0) % DUO_FALAS.length],
+        extras: (Array.isArray(r.extras) ? r.extras : []).map(function(o){ return { nick: o.nick, avatar: o.avatar }; }), premiado: !!r.premiado });
+    }).catch(function(){ encBtn.disabled = false; });
+    return;
+  }
+  contaRpc('outdoor_jogadores').then(function(L){   // sem conta: sorteio guardado só neste aparelho
     encBtn.disabled = false;
     L = (Array.isArray(L) ? L : []).filter(function(p){ return p && p.nick && p.avatar && (!contaJ || p.nick.toLowerCase() !== contaJ.nick.toLowerCase()); });
     if(!L.length) return;
     L = L.slice().sort(function(){ return Math.random() - .5; });
     var p = L[0], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
     d.best = p.best; d.oshi = p.oshi;
-    var dsem = new Date().getDay(), nx = dsem === 2 ? 1 : dsem === 5 ? 2 : 0;   // terça: dupla do dia · sexta: trio do dia
+    var dsem = new Date(encHoje() + 'T12:00:00Z').getUTCDay(), nx = dsem === 2 ? 1 : dsem === 5 ? 2 : 0;   // terça: dupla do dia · sexta: trio do dia (Brasília)
     d.extras = L.slice(1, 1 + nx).map(function(o){ return { nick: o.nick, avatar: o.avatar }; });
-    try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}
-    encBtnUI(); encMostrar(d);
-    $('encPremio').hidden = true;
-    if(contaJ) contaRpc('encontro_premio', { p_nick: d.nick }).then(function(r){   // ★3 pelo encontro, 1 vez por dia (conferido no servidor)
-      if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
-      if(r && r.ok){ var pm = $('encPremio'); pm.textContent = '⭐ +' + r.ganho + ' ' + tr('estrelinhas pelo encontro!'); pm.hidden = false; if(sfx.card) sfx.card(); }
-    }).catch(function(){});
+    encAbrirNovo(d);
   }).catch(function(){ encBtn.disabled = false; });
 };
 encOv.addEventListener('click', function(e){
@@ -9932,7 +9946,7 @@ encOv.addEventListener('click', function(e){
     x.fillStyle = 'rgba(255,111,181,.55)'; x.save(); x.translate(230, 14); x.rotate(-.04); x.fillRect(-60, -10, 120, 24); x.restore();
     x.textAlign = 'center'; x.fillStyle = '#12365e'; x.font = '800 28px "M PLUS Rounded 1c",sans-serif'; x.fillText(encDados.nick, 230, 446, 400);
     x.fillStyle = '#ff6fb5'; x.font = '700 15px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(encDados.fala), 230, 478, 410);
-    x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(new Date().toLocaleDateString(), 230, 506);
+    x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(encHoje().split('-').reverse().join('/'), 230, 506);
     x.font = '500 11px "M PLUS Rounded 1c",sans-serif'; x.fillText('🌟 ' + tr('Encontro do dia') + ' · TsuLiPa⭐World', 230, 532);
     e.target.href = c.toDataURL('image/png'); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
     var fl = document.createElement('div'); fl.className = 'encflash'; $('encCv').parentNode.appendChild(fl); setTimeout(function(){ fl.remove(); }, 400);

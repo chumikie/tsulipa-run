@@ -161,7 +161,11 @@ canvas{width:100%;height:100%;display:block}
 .tabs{display:flex;gap:6px;justify-content:center;margin-top:10px}.tabs button{border:0;border-radius:99px;padding:4px 14px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;background:var(--chip);color:var(--sub)}.tabs button[aria-pressed="true"]{background:#7b3ff0;color:#fff}.tabs button:focus-visible{outline:3px solid var(--pink)}
 .nb{background:var(--pink);color:#fff;border-radius:99px;padding:2px 8px;font-size:11px;animation:pl .9s infinite alternate}@keyframes pl{to{transform:scale(1.12)}}
 .lang{display:flex;gap:4px;justify-content:center;margin-bottom:12px}.lang button{border:0;border-radius:99px;padding:4px 9px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;background:var(--chip);color:var(--sub)}.lang button[aria-pressed="true"]{background:#7b3ff0;color:#fff}.lang button:focus-visible{outline:3px solid var(--pink)}
-.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}.lk{text-decoration:none;font-size:14px;padding:8px 20px}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+/* O Center Run virou uma janela da tela de início, que já tem os links e o tema do Oshi: some com os repetidos.
+   Durante a corrida some também a dica e o rodapé (tela limpa, sem toques sem querer) */
+body .links,body .oshi-sel{display:none}
+body.jogando .hint,body.jogando .sitefoot{display:none}.lk{text-decoration:none;font-size:14px;padding:8px 20px}
 .stage,.stage *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.stage input,.stage select{-webkit-user-select:text;user-select:text}
 .jb{display:none;position:absolute;right:12px;bottom:12px;width:64px;height:64px;border-radius:50%;border:0;background:rgba(123,63,240,.88);color:#fff;font-size:28px;box-shadow:0 4px 0 #2c1a8f;touch-action:manipulation;z-index:3;cursor:pointer}
 @media (pointer:coarse){.jb{display:block}}
@@ -418,6 +422,22 @@ body.hubon #mute{visibility:hidden}
 .admtema select{margin-left:4px}
 @media (max-width:420px){.hubcards{grid-template-columns:1fr 1fr}.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
 @media (prefers-reduced-motion:reduce){.hublogo span,.hubtoque,.hubpart i,.hubalerta{animation:none}}
+/* Depois da v2.1.3 · vitrine dos Idols com conta (faixa que desliza embaixo do trio) */
+.hubidols[hidden]{display:none}
+.hubidols{margin:16px 0 0;padding:10px 0 8px;border-radius:22px;overflow:hidden;position:relative;background:radial-gradient(circle at 15% 0,rgba(255,111,181,.35),transparent 45%),radial-gradient(circle at 90% 10%,rgba(77,216,255,.25),transparent 40%),linear-gradient(180deg,#24135e,#4a238f 70%,#6a2fb0);box-shadow:0 0 0 3px #fff,0 0 0 6px rgba(123,63,240,.4),0 10px 24px rgba(60,20,120,.22)}
+.hubidols h2{margin:0 0 4px;padding:0 14px;font-size:13px;font-weight:900;letter-spacing:.04em;color:#fff;text-align:left;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.hubidols h2 em{font-style:normal;margin-left:6px;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.18);font-size:11px}
+.hubidolsjan{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.hubidolsjan::after{content:"";display:block;height:3px;margin:-6px 10px 0;border-radius:3px;background:linear-gradient(90deg,#ff6fb5,#ffe14d,#4dd8ff,#b6ff3b,#ff6fb5);opacity:.8}
+.hubidolstrilho{display:flex;width:max-content;animation:hubidolsanda var(--dur,40s) linear infinite}
+.hubidols:hover .hubidolstrilho,.hubidols:focus-within .hubidolstrilho{animation-play-state:paused}
+@keyframes hubidolsanda{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.hubidol.lbn{display:flex;flex-direction:column;align-items:center;gap:0;width:92px;flex:none;margin:0;padding:0 0 4px;border:0;border-radius:14px;background:none;color:#fff;font:inherit;cursor:pointer}
+.hubidol canvas{width:84px;height:96px;display:block}
+.hubidol b{max-width:86px;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#5b2bb5;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1}
+.hubidol small{font-size:10px;font-weight:800;color:#ffe14d;margin-top:1px}
+.hubidol:focus-visible{outline:3px solid #ffe14d;outline-offset:-3px}
+@media (prefers-reduced-motion:reduce){.hubidolstrilho{animation:none}.hubidolsjan{overflow-x:auto}}
 
 /* V2.1.3 · ferramentas novas da moderação e aviso da tela de início */
 .admform{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:6px 0;width:100%}
@@ -557,6 +577,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .duocard[aria-pressed="true"]{border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.25)}
 .duocard.trava{opacity:.55}.duocard.trava:hover{opacity:.85}
 .duopreco{position:absolute;top:4px;right:4px;font-style:normal;font-size:10px;font-weight:900;padding:2px 6px;border-radius:99px;background:rgba(123,63,240,.9);color:#fff}
+.duopreco.duogratis{background:linear-gradient(90deg,#ff6fb5,#ff9a3c)}
 .duoexrow{margin:6px 0 12px}.duoexrow b{display:block;font-size:13px;color:var(--b1);margin-bottom:6px}.duoexrow small{display:block;margin-top:4px;font-size:12px;color:var(--sub)}
 .duoexbtns,.duopresemo{display:flex;flex-wrap:wrap;gap:8px}
 .duoexb{position:relative;width:46px;height:46px;border:2px solid transparent;border-radius:50%;font-size:24px;line-height:1;background:var(--chip);cursor:pointer;padding:0}
@@ -668,7 +689,9 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .petacts button{font-size:11px;padding:7px 1px}
 .petmenu img{width:44px;height:34px;object-fit:cover;border-radius:4px;display:block;margin-bottom:2px}
 .petmenu button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
-.bp-title,.bp-title small{font-family:"Kosugi Maru","M PLUS Rounded 1c",sans-serif}
+/* Mesma fonte de título no site todo (Center Run, Backstage Pet e painéis) */
+#menu-title,.bp-title,.panel h1{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;font-weight:400!important;letter-spacing:.01em}
+#menu-title small,.bp-title small,.panel h1 small{font-family:"M PLUS Rounded 1c",sans-serif!important}
 .st{font-size:.82em;margin:0 .03em;vertical-align:.06em}
 .logo b .st{-webkit-text-fill-color:#f5b400;color:#f5b400;-webkit-background-clip:border-box;background-clip:border-box;background:none}
 /* Modo teste aberto (10 cliques no título): contorno rosa no palco do jogo */
@@ -1501,6 +1524,7 @@ nextX = W + 600;
   abducted=false;wasAbducted=false;
   window.wasGiant=false;
   state='play';
+  document.body.classList.add('jogando');   // esconde a dica e o rodapé durante a corrida
   $('menu').hidden=true;
   $('over').hidden=true;
   curT='';
@@ -1673,6 +1697,7 @@ function celeb(){
 function end(){
   if(state==='over')return;
   state='over';sfx.over();sync();shake=14;
+  document.body.classList.remove('jogando');
   $('jb').style.display='none';
   $('pause').style.display='none';
   $('cam').style.display='none';
@@ -3319,6 +3344,7 @@ $('tomenu').onclick=function(){
   $('cam').style.display='none';
   $('jb').style.display='none';
   state='menu';
+  document.body.classList.remove('jogando');
   sync();
 };
 $('seelb').onclick=function(){var w=$('lbmw');w.hidden=!w.hidden;if(!w.hidden)showLb($('lbm'))};
@@ -8162,6 +8188,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : i < 10 ? ' class="c1"' : i < 11 ? ' class="c2"' : ' class="c3"') + '>' + ch + '</span>'; }).join('') + '</h1>' +
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
+  '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><div class="hubidolsjan"><div class="hubidolstrilho" id="hubIdolsTrilho"></div></div></section>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
@@ -8500,7 +8527,7 @@ function buscaLigar(inp, res){
   $('lbBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   buscaLigar($('lbBusca'), $('lbBuscaRes'));
 })();
-hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBuscaRes .lbn'); if(b){ hubFechar(); } }, true);
+hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBuscaRes .lbn, #hubIdols .lbn'); if(b){ hubFechar(); } }, true);
 
 // ---------- Star⭐Gacha! (1 giro por dia, sorteio no servidor) ----------
 var GACHA_SORTE = ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Cápsula vazia! Pelo menos você treinou o giro 💪', 'Nada hoje. A Tsu disse que dá sorte tentar amanhã 🎤',
@@ -9114,6 +9141,7 @@ function duoTexto(){
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
 }
 function duoTrava(attr, o){   // chave da lojinha que falta para usar este chip ('' = liberado)
+  if(attr === 'data-dfundo' && duoTemaK(o[0])) return duoTemaGratis(o[0]) || lojaTem('tema_' + o[0]) ? '' : 'tema_' + o[0];   // tema: grátis na temporada ou se guardou
   var k = attr === 'data-dcena' ? (o[7] || '') : attr === 'data-dfundo' ? (o[0] === 'cafe' ? 'duo_cafe' : lojaItem('fundo_' + o[0]) ? 'fundo_' + o[0] : '') : (attr === 'data-dexeu' || attr === 'data-dexgu') && lojaItem('expr_' + o[0]) ? 'expr_' + o[0] : '';
   return k && !lojaTem(k) ? k : '';
 }
@@ -9187,7 +9215,7 @@ function duoCard(o, sel, attr, thumb){
   var tv = duoTrava(attr, o), it = tv && lojaItem(tv);
   return '<button type="button" class="duocard' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + escHtml(o[0]) + '"') + ' aria-pressed="' + (!tv && o[0] === sel) + '">' +
     (thumb ? '<canvas width="160" height="100" data-dthumb="' + escHtml(o[0]) + '" aria-hidden="true"></canvas>' : '<i aria-hidden="true">' + o[1] + '</i>') +
-    '<span>' + (thumb ? o[1] + ' ' : '') + escHtml(tr(o[2])) + '</span>' + (tv ? '<em class="duopreco">🔒 ★' + it[3] + '</em>' : '') + '</button>';
+    '<span>' + (thumb ? o[1] + ' ' : '') + escHtml(tr(o[2])) + '</span>' + (tv ? '<em class="duopreco">🔒 ' + (it[4] === 'tema' ? '🗓️ ' + temaProxTxt(o[0]) : '★' + it[3]) + '</em>' : attr === 'data-dfundo' && duoTemaGratis(o[0]) && !lojaTem('tema_' + o[0]) ? '<em class="duopreco duogratis">' + escHtml(tr('Grátis até')) + ' ' + temaAteTxt() + '</em>' : '') + '</button>';
 }
 function duoCards(lista, sel, attr, thumb){
   var livres = lista.filter(function(o){ return !duoTrava(attr, o); }), travados = lista.filter(function(o){ return duoTrava(attr, o); });   // travados vão para o fim
@@ -9236,7 +9264,7 @@ duoOv.addEventListener('click', function(e){
   if(t.id === 'duoTrocar'){ duoGu = null; duoEscolhaUI(); return; }
   if((b = t.closest('[data-dnick]'))){ duoCarregar(b.dataset.dnick); return; }
   if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
-  if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; duoPalcoUI(); beep(988, .05, 'triangle', .04); return; }
+  if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; $('duoPresBox').hidden = true; duoPalcoUI(); duoTemaGuardarUI(duoFundo); beep(988, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dexeu]'))){ duoExEu = b.dataset.dexeu; duoPalcoUI(); return; }
   if((b = t.closest('[data-dexgu]'))){ duoExGu = b.dataset.dexgu; duoPalcoUI(); return; }
   if((b = t.closest('[data-dtab]'))){ duoTab = b.dataset.dtab; $('duoPresBox').hidden = true; duoTabUI(); beep(880, .04, 'triangle', .04); return; }
@@ -9451,9 +9479,20 @@ var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
   ['duo_selfie', '🤳', 'Selfie', 80, 'duo'], ['duo_guarda', '☂️', 'Guarda-chuva', 100, 'duo'], ['duo_seis', '6️⃣', 'Six Seven', 120, 'duo'],
   ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo'], ['det_coelho', '🐰', 'Orelhas de coelho', 50, 'acc']
 ];
+// Cenários de tema no Moon⭐Duo!: o tema da vez é grátis durante a temporada; quem quiser guarda para sempre com estrelas
+// (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
+var DUO_TEMA_PRECO = 60;
+function duoTemaK(k){ return TEMA_INFO[k] && k !== 'halloween' ? k : ''; }   // o Halloween tem o fundo próprio da lojinha
+function duoTemaGratis(k){ return !!duoTemaK(k) && temaAtual() === k; }
+function temaProxTxt(k){   // quando o tema volta ("01/12")
+  var md = dk().slice(5), prox = '', menor = '';
+  TEMAS.forEach(function(l){ if(l[0] !== k) return; if(!menor || l[1] < menor) menor = l[1]; if(l[1] > md && (!prox || l[1] < prox)) prox = l[1]; });
+  var a = prox || menor; return a ? a.slice(3) + '/' + a.slice(0, 2) : '';
+}
 function lojaItem(k){
   k = String(k); var i;
   for(i = 0; i < LOJA_EXTRA.length; i++) if(LOJA_EXTRA[i][0] === k) return LOJA_EXTRA[i];
+  if(/^tema_/.test(k) && duoTemaK(k.slice(5))){ var ti = TEMA_INFO[k.slice(5)]; return [k, ti[0], ti[1], DUO_TEMA_PRECO, 'tema']; }
   if(/^pose_/.test(k)){ var p = perfPoseInfo(k.slice(5)); if(p && p[3]) return [k, p[1], p[2], p[3], 'pose']; }
   if(/^fundo_/.test(k)){ for(i = 0; i < PERF_FUNDOS.length; i++) if(PERF_FUNDOS[i][0] === k.slice(6) && PERF_FUNDOS[i][3]) return [k, PERF_FUNDOS[i][1], PERF_FUNDOS[i][2], PERF_FUNDOS[i][3], 'fundo']; }
   return null;
@@ -9481,7 +9520,7 @@ function lojaComprar(k, btn, depois){
   btn.disabled = true;
   return contaRpc('comprar_visual', { p_key: k }).then(function(r){
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
-    if(!r || !r.ok){ btn.disabled = false; if(sfx.hit) sfx.hit(); depois(false, tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : 'Não deu para falar com o servidor. Tente de novo.')); return; }
+    if(!r || !r.ok){ btn.disabled = false; if(sfx.hit) sfx.hit(); depois(false, tr(r && r.erro === 'saldo' ? 'Estrelas insuficientes' : r && r.erro === 'temporada' ? 'Só dá para guardar durante a temporada do tema.' : 'Não deu para falar com o servidor. Tente de novo.')); return; }
     perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono.concat(k);
     if(sfx.rank) sfx.rank(); if(typeof insConferir === 'function') insConferir();
     depois(true, '✨ ' + tr('Comprado!'));
@@ -9523,15 +9562,23 @@ petPhBox.addEventListener('click', function(e){
 function duoTravaUI(k){
   var it = lojaItem(k), box = $('duoPresBox'); if(!it) return;
   box.hidden = false;
+  if(it[4] === 'tema'){ box.innerHTML = '<b>🔒 ' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small>' + escHtml(tr('Esse cenário volta na temporada do tema ({data}). Quem guardar durante o tema usa o ano todo.').replace('{data}', temaProxTxt(k.slice(5)))) + '</small>'; beep(330, .08, 'triangle', .04); return; }
   if(it[4] === 'expr' || it[4] === 'pose'){ box.innerHTML = '<b>🔒 ' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small>' + escHtml(tr('{item} está na lojinha do perfil (Montar Idol) por ★{n}.').replace('{item}', it[1] + ' ' + tr(it[2])).replace('{n}', it[3])) + '</small>'; return; }
   box.innerHTML = '<b>🔒 ' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small>' + escHtml(tr('Desbloqueie com estrelas para usar no Moon⭐Duo!')) + ' (★ ' + starT + ')</small>' +
     '<div class="btns"><button type="button" class="btn" data-dcomprar="' + k + '"' + (starT < it[3] ? ' disabled' : '') + '>' + escHtml(tr('Desbloquear')) + ' ★' + it[3] + '</button></div>';
   beep(660, .05, 'triangle', .04);
 }
+function duoTemaGuardarUI(f){   // tema da vez, ainda não guardado: oferece guardar para sempre
+  var k = 'tema_' + f, it = lojaItem(k), box = $('duoPresBox');
+  if(!it || !contaJ || !duoTemaGratis(f) || lojaTem(k)) return;
+  box.hidden = false;
+  box.innerHTML = '<b>🗓️ ' + it[1] + ' ' + escHtml(tr(it[2])) + ' · ' + escHtml(tr('Grátis até')) + ' ' + temaAteTxt() + '</b><small>' + escHtml(tr('Guarde para usar o ano todo, mesmo depois da temporada.')) + ' (★ ' + starT + ')</small>' +
+    '<div class="btns"><button type="button" class="btn" data-dcomprar="' + k + '"' + (starT < it[3] ? ' disabled' : '') + '>' + escHtml(tr('Guardar para sempre')) + ' ★' + it[3] + '</button></div>';
+}
 function duoComprar(k, b){
   lojaComprar(k, b, function(ok, msg){
     duoMsg(msg);
-    if(ok){ var it = lojaItem(k); if(it && it[4] === 'duo' && k !== 'duo_cafe'){ DUO_CENAS.forEach(function(c){ if(c[7] === k) duoCena = c[0]; }); duoRegistrar(); } else if(k === 'duo_cafe') duoFundo = 'cafe'; else if(/^fundo_/.test(k)) duoFundo = k.slice(6); duoPalcoUI(); }
+    if(ok){ var it = lojaItem(k); if(it && it[4] === 'duo' && k !== 'duo_cafe'){ DUO_CENAS.forEach(function(c){ if(c[7] === k) duoCena = c[0]; }); duoRegistrar(); } else if(k === 'duo_cafe') duoFundo = 'cafe'; else if(/^fundo_/.test(k)) duoFundo = k.slice(6); else if(/^tema_/.test(k)) duoFundo = k.slice(5); $('duoPresBox').hidden = true; duoPalcoUI(); }
   });
 }
 
@@ -10097,6 +10144,42 @@ document.addEventListener('click', function(e){
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 hubMostrar();
+// --- VITRINE DOS IDOLS (depois da v2.1.3): quem já tem conta passa deslizando embaixo do trio da tela de início ---
+var hubIdolsDados = null, hubIdolsEm = 0;
+function hubIdolsCarregar(){
+  if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
+  hubIdolsEm = Date.now();
+  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); })
+    .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
+}
+function hubIdolsUI(){
+  var box = $('hubIdols'), tri = $('hubIdolsTrilho'); if(!box || !tri) return;
+  var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
+  if(!L.length){ box.hidden = true; return; }
+  var tot = +hubIdolsDados.total || L.length;
+  $('hubIdolsT').innerHTML = '✨ ' + escHtml(tr('Idols do TsuLiPa⭐World')) + '<em>' + escHtml(tr('{n} no jogo').replace('{n}', tot)) + '</em>';
+  var uma = L.slice(); while(uma.length * 92 < 760) uma = uma.concat(L);   // a faixa precisa ser maior que a tela para emendar sem buraco
+  var item = function(p, i){ return '<button type="button" class="lbn hubidol" data-nick="' + escHtml(p.nick) + '"' + (i >= L.length ? ' tabindex="-1" aria-hidden="true"' : '') + '><canvas width="168" height="192" data-hidol="' + (i % L.length) + '"></canvas><b translate="no">' + escHtml(p.nick) + '</b><small>★ ' + (+p.best || 0) + '</small></button>'; };
+  tri.innerHTML = uma.concat(uma).map(item).join('');   // duas cópias: a animação anda meia faixa e recomeça
+  tri.style.setProperty('--dur', Math.max(18, uma.length * 3.2) + 's');
+  [].forEach.call(tri.querySelectorAll('canvas[data-hidol]'), function(cv){
+    try{ perfDesenharIdol(cv.getContext('2d'), cv.width, cv.height, L[+cv.dataset.hidol].avatar, false, false); }catch(e){}
+  });
+  box.hidden = false;
+}
+(function(){   // carrega junto com a tela de início
+  var hm = hubMostrar;
+  hubMostrar = function(){ hm.apply(this, arguments); hubIdolsCarregar(); };
+  if(!hubOv.hidden) hubIdolsCarregar();
+})();
+[['Idols do TsuLiPa⭐World', 'TsuLiPa⭐World Idols', 'Idols de TsuLiPa⭐World', 'ไอดอลของ TsuLiPa⭐World', 'TsuLiPa⭐Worldのアイドル'],
+ ['{n} no jogo', '{n} in the game', '{n} en el juego', '{n} คนในเกม', '{n}人参加中'],
+ ['Grátis até', 'Free until', 'Gratis hasta', 'ฟรีถึง', '無料〜'],
+ ['Guardar para sempre', 'Keep forever', 'Guardar para siempre', 'เก็บไว้ตลอดไป', 'ずっと保存'],
+ ['Guarde para usar o ano todo, mesmo depois da temporada.', 'Keep it to use all year, even after the season.', 'Guárdalo para usarlo todo el año, incluso después de la temporada.', 'เก็บไว้ใช้ได้ทั้งปี แม้หมดฤดูกาลแล้ว', '保存すれば、シーズンが終わっても一年中使えるよ。'],
+ ['Esse cenário volta na temporada do tema ({data}). Quem guardar durante o tema usa o ano todo.', 'This background comes back in its theme season ({data}). Keep it during the season to use it all year.', 'Este escenario vuelve en la temporada del tema ({data}). Si lo guardas durante el tema, lo usas todo el año.', 'ฉากนี้จะกลับมาในช่วงธีม ({data}) เก็บไว้ระหว่างช่วงธีมแล้วใช้ได้ทั้งปี', 'この背景はテーマの季節（{data}）に戻ってくるよ。期間中に保存すれば一年中使えるよ。'],
+ ['Só dá para guardar durante a temporada do tema.', 'You can only keep it during the theme season.', 'Solo se puede guardar durante la temporada del tema.', 'เก็บได้เฉพาะช่วงธีมเท่านั้น', 'テーマの期間中だけ保存できるよ。']
+].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 // --- FIM DA TELA DE INÍCIO E DOS TEMAS (V2.1.3) ---
 
 var EXTRA_DICT = {

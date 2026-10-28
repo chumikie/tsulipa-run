@@ -422,22 +422,14 @@ body.hubon #mute{visibility:hidden}
 .admtema select{margin-left:4px}
 @media (max-width:420px){.hubcards{grid-template-columns:1fr 1fr}.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
 @media (prefers-reduced-motion:reduce){.hublogo span,.hubtoque,.hubpart i,.hubalerta{animation:none}}
-/* Depois da v2.1.3 · vitrine dos Idols com conta (faixa que desliza embaixo do trio) */
+/* Depois da v2.1.3 · vitrine dos Idols: palco animado embaixo do trio (os Idols cantam, dançam e pulam) */
 .hubidols[hidden]{display:none}
-.hubidols{margin:16px 0 0;padding:10px 0 8px;border-radius:22px;overflow:hidden;position:relative;background:radial-gradient(circle at 15% 0,rgba(255,111,181,.35),transparent 45%),radial-gradient(circle at 90% 10%,rgba(77,216,255,.25),transparent 40%),linear-gradient(180deg,#24135e,#4a238f 70%,#6a2fb0);box-shadow:0 0 0 3px #fff,0 0 0 6px rgba(123,63,240,.4),0 10px 24px rgba(60,20,120,.22)}
-.hubidols h2{margin:0 0 4px;padding:0 14px;font-size:13px;font-weight:900;letter-spacing:.04em;color:#fff;text-align:left;text-shadow:0 1px 0 rgba(0,0,0,.25)}
-.hubidols h2 em{font-style:normal;margin-left:6px;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.18);font-size:11px}
-.hubidolsjan{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-.hubidolsjan::after{content:"";display:block;height:3px;margin:-6px 10px 0;border-radius:3px;background:linear-gradient(90deg,#ff6fb5,#ffe14d,#4dd8ff,#b6ff3b,#ff6fb5);opacity:.8}
-.hubidolstrilho{display:flex;width:max-content;animation:hubidolsanda var(--dur,40s) linear infinite}
-.hubidols:hover .hubidolstrilho,.hubidols:focus-within .hubidolstrilho{animation-play-state:paused}
-@keyframes hubidolsanda{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.hubidol.lbn{display:flex;flex-direction:column;align-items:center;gap:0;width:92px;flex:none;margin:0;padding:0 0 4px;border:0;border-radius:14px;background:none;color:#fff;font:inherit;cursor:pointer}
-.hubidol canvas{width:84px;height:96px;display:block}
-.hubidol b{max-width:86px;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#5b2bb5;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1}
-.hubidol small{font-size:10px;font-weight:800;color:#ffe14d;margin-top:1px}
-.hubidol:focus-visible{outline:3px solid #ffe14d;outline-offset:-3px}
-@media (prefers-reduced-motion:reduce){.hubidolstrilho{animation:none}.hubidolsjan{overflow-x:auto}}
+.hubidols{position:relative;margin:16px 0 0;border-radius:24px;overflow:hidden;background:#2a0f63;box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(123,63,240,.45),0 12px 30px rgba(60,20,120,.25)}
+#hubIdolsCv{display:block;width:100%;height:192px;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+.hubidols h2{position:absolute;top:9px;left:10px;z-index:1;margin:0;padding:4px 11px;border-radius:99px;background:rgba(20,6,60,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;font-size:12px;font-weight:900;letter-spacing:.03em;text-align:left;pointer-events:none;box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
+.hubidols h2 em{font-style:normal;margin-left:6px;padding:0 7px;border-radius:99px;background:linear-gradient(90deg,#ff6fb5,#9b30d9);font-size:11px}
+.hubidolslista{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hubidolslista .lbn:focus{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:auto;height:auto;clip:auto;z-index:30;padding:6px 14px;border-radius:99px;background:#fff;color:#5b2bb5}
 
 /* V2.1.3 · ferramentas novas da moderação e aviso da tela de início */
 .admform{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:6px 0;width:100%}
@@ -563,8 +555,9 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .hublogo span{text-shadow:none}.hublogo{filter:drop-shadow(0 3px 6px rgba(44,26,143,.35))}
 /* Moon⭐Duo! organizado em abas */
 .duoacoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.duoacoes .btn{margin:0;text-align:center;text-decoration:none;padding:10px 8px;font-size:14px}
-.duotabs{position:sticky;top:-16px;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:12px 0 10px;padding:4px;border-radius:16px;background:var(--chip);box-shadow:0 2px 0 rgba(44,26,143,.12)}
-.duotabs button{border:0;border-radius:12px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer;white-space:nowrap}
+.duotabs{position:sticky;top:-16px;z-index:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:12px 0 10px;padding:4px;border-radius:16px;background:var(--chip);box-shadow:0 2px 0 rgba(44,26,143,.12)}
+.duotabs button{min-width:0;border:0;border-radius:12px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:560px){.duotabs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;font-size:11.5px;line-height:1.15}.duotabs button span{font-size:18px}}
 .duotabs button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;box-shadow:0 3px 8px rgba(123,63,240,.3)}
 .duotabc h4{margin:12px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
 .duogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
@@ -8188,7 +8181,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : i < 10 ? ' class="c1"' : i < 11 ? ' class="c2"' : ' class="c3"') + '>' + ch + '</span>'; }).join('') + '</h1>' +
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
-  '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><div class="hubidolsjan"><div class="hubidolstrilho" id="hubIdolsTrilho"></div></div></section>' +
+  '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
@@ -10153,20 +10146,133 @@ function hubIdolsCarregar(){
     .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsUI(){
-  var box = $('hubIdols'), tri = $('hubIdolsTrilho'); if(!box || !tri) return;
+  var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
-  if(!L.length){ box.hidden = true; return; }
+  if(!L.length){ box.hidden = true; hubIdolsParar(); return; }
   var tot = +hubIdolsDados.total || L.length;
   $('hubIdolsT').innerHTML = '✨ ' + escHtml(tr('Idols do TsuLiPa⭐World')) + '<em>' + escHtml(tr('{n} no jogo').replace('{n}', tot)) + '</em>';
-  var uma = L.slice(); while(uma.length * 92 < 760) uma = uma.concat(L);   // a faixa precisa ser maior que a tela para emendar sem buraco
-  var item = function(p, i){ return '<button type="button" class="lbn hubidol" data-nick="' + escHtml(p.nick) + '"' + (i >= L.length ? ' tabindex="-1" aria-hidden="true"' : '') + '><canvas width="168" height="192" data-hidol="' + (i % L.length) + '"></canvas><b translate="no">' + escHtml(p.nick) + '</b><small>★ ' + (+p.best || 0) + '</small></button>'; };
-  tri.innerHTML = uma.concat(uma).map(item).join('');   // duas cópias: a animação anda meia faixa e recomeça
-  tri.style.setProperty('--dur', Math.max(18, uma.length * 3.2) + 's');
-  [].forEach.call(tri.querySelectorAll('canvas[data-hidol]'), function(cv){
-    try{ perfDesenharIdol(cv.getContext('2d'), cv.width, cv.height, L[+cv.dataset.hidol].avatar, false, false); }catch(e){}
-  });
-  box.hidden = false;
+  // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
+  $('hubIdolsLista').innerHTML = L.map(function(p){ return '<button type="button" class="lbn" data-nick="' + escHtml(p.nick) + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
+  hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr }; });
+  box.hidden = false; hubIdolsTam(); hubIdolsLigar();
 }
+// ---- Palco animado da vitrine ----
+var hubIV = { L:[], x:0, t0:0, ult:0, raf:0, w:0, h:0, dpr:1, conf:[], par:false, vis:true };
+var HUB_IV_CEL = 104, HUB_IV_ACOES = ['cantar', 'dancar', 'pular', 'coracao', 'luz'];
+function hubIdolsTam(){
+  var cv = $('hubIdolsCv'); if(!cv) return;
+  var w = cv.clientWidth || 560, h = cv.clientHeight || 192, d = Math.min(2, window.devicePixelRatio || 1);
+  if(w === hubIV.w && h === hubIV.h && d === hubIV.dpr) return;
+  hubIV.w = w; hubIV.h = h; hubIV.dpr = d; cv.width = Math.round(w * d); cv.height = Math.round(h * d);
+  hubIV.conf = []; for(var i = 0; i < 26; i++) hubIV.conf.push({ x:Math.random() * w, y:Math.random() * h, v:12 + Math.random() * 22, r:Math.random() * 6, c:['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#c4a5ff'][i % 5] });
+}
+function hubIdolsLigar(){ if(!hubIV.raf) hubIV.raf = requestAnimationFrame(hubIdolsLoop); }
+function hubIdolsParar(){ if(hubIV.raf){ cancelAnimationFrame(hubIV.raf); hubIV.raf = 0; } }
+function hubIdolsLoop(ms){
+  hubIV.raf = 0;
+  var box = $('hubIdols'); if(!box || box.hidden || hubOv.hidden) return;   // a tela de início fechou: para
+  hubIV.raf = requestAnimationFrame(hubIdolsLoop);
+  if(!hubIV.vis || ms - hubIV.ult < 32) return;   // ~30 quadros por segundo, e só quando aparece na tela
+  var dt = hubIV.ult ? Math.min(.1, (ms - hubIV.ult) / 1000) : 0; hubIV.ult = ms;
+  var calmo = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(!hubIV.par && !calmo) hubIV.x += dt * 34;
+  try{ hubIdolsDesenhar(ms / 1000, dt, calmo); }catch(e){ hubIdolsParar(); }
+}
+function hubIdolsFundo(x, W, H, s, dt){
+  var chao = H - 60;
+  // céu do palco: roxo Tsu → magenta → azul Pati, respirando devagar
+  var gr = x.createLinearGradient(0, 0, W, H), k = (Math.sin(s * .4) + 1) / 2;
+  gr.addColorStop(0, '#2a0f63'); gr.addColorStop(.45 + k * .15, '#6a1f9e'); gr.addColorStop(1, '#183a9e');
+  x.fillStyle = gr; x.fillRect(0, 0, W, H);
+  // telão de LED quadriculado ao fundo
+  x.save(); x.globalAlpha = .12; x.fillStyle = '#ffffff';
+  for(var gx = (-(hubIV.x * .3) % 14); gx < W; gx += 14) for(var gy = 6; gy < chao - 20; gy += 14) if(((gx + gy) | 0) % 3) x.fillRect(gx, gy, 2, 2);
+  x.restore();
+  // canhões de luz nas cores de Tsu, Lirika e Pati
+  [['155,48,217', .12], ['182,255,59', .5], ['65,105,225', .88]].forEach(function(l, i){
+    var bx = W * l[1], ang = Math.sin(s * .8 + i * 2.1) * .5;
+    x.save(); x.translate(bx, -6); x.rotate(ang);
+    var lg = x.createLinearGradient(0, 0, 0, chao + 10); lg.addColorStop(0, 'rgba(' + l[0] + ',.55)'); lg.addColorStop(1, 'rgba(' + l[0] + ',0)');
+    x.fillStyle = lg; x.beginPath(); x.moveTo(-7, 0); x.lineTo(7, 0); x.lineTo(46, chao + 10); x.lineTo(-46, chao + 10); x.closePath(); x.fill();
+    x.restore();
+  });
+  // bandeirinhas
+  var cores = ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#c4a5ff'];
+  x.strokeStyle = 'rgba(255,255,255,.55)'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 4); x.quadraticCurveTo(W / 2, 16, W, 4); x.stroke();
+  for(var i = 0, n = Math.ceil(W / 22); i < n; i++){ var fx = i * 22 + 6, fy = 4 + Math.sin(i / n * Math.PI) * 6 + Math.sin(s * 3 + i) * .8;
+    x.fillStyle = cores[i % 5]; x.beginPath(); x.moveTo(fx, fy); x.lineTo(fx + 12, fy); x.lineTo(fx + 6, fy + 10); x.closePath(); x.fill(); }
+  // confete caindo
+  hubIV.conf.forEach(function(c){ c.y += c.v * dt; c.r += dt * 4; if(c.y > chao){ c.y = -6; c.x = Math.random() * W; }
+    x.save(); x.translate(c.x, c.y); x.rotate(c.r); x.fillStyle = c.c; x.fillRect(-2, -1, 4, 2.4); x.restore(); });
+  // palco: chão brilhante com o neon do arco-íris do jogo
+  var pg = x.createLinearGradient(0, chao, 0, H); pg.addColorStop(0, '#3b1a86'); pg.addColorStop(1, '#14063d');
+  x.fillStyle = pg; x.fillRect(0, chao, W, H - chao);
+  var ng = x.createLinearGradient(-(hubIV.x % W), 0, W * 2 - (hubIV.x % W), 0);
+  ['#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#ff6fb5', '#ffe14d', '#4dd8ff', '#b6ff3b', '#ff6fb5'].forEach(function(c, j, a){ ng.addColorStop(j / (a.length - 1), c); });
+  x.fillStyle = ng; x.fillRect(0, chao, W, 3);
+  x.save(); x.globalAlpha = .18; x.fillRect(0, chao + 3, W, 8); x.restore();
+  // plateia: lightsticks balançando na beira do palco
+  for(var j = 0, m = Math.ceil(W / 26) + 1; j < m; j++){
+    var lx = j * 26 + 8 - (hubIV.x * .5) % 26, a2 = Math.sin(s * 4 + j * .9) * .45, cc = cores[j % 5];
+    x.save(); x.translate(lx, H + 6); x.rotate(a2);
+    x.fillStyle = 'rgba(10,4,30,.85)'; x.fillRect(-1.5, -6, 3, 8);
+    x.shadowColor = cc; x.shadowBlur = 8; x.fillStyle = cc; x.fillRect(-2, -16, 4, 10); x.restore();
+  }
+  return chao;
+}
+function hubIdolsDesenhar(s, dt, calmo){
+  var cv = $('hubIdolsCv'); if(!cv) return; hubIdolsTam();
+  var x = cv.getContext('2d'), W = hubIV.w, H = hubIV.h, L = hubIV.L, n = L.length; if(!n) return;
+  x.setTransform(hubIV.dpr, 0, 0, hubIV.dpr, 0, 0);
+  var chao = hubIdolsFundo(x, W, H, calmo ? 0 : s, calmo ? 0 : dt);
+  var anel = Math.max(n, Math.ceil((W + HUB_IV_CEL) / HUB_IV_CEL)) * HUB_IV_CEL, ini = Math.floor(hubIV.x / HUB_IV_CEL);
+  var fr = s * 60;   // o desenho do Idol conta o tempo em quadros (60 por segundo)
+  for(var k = ini - 1; k * HUB_IV_CEL - hubIV.x < W + HUB_IV_CEL; k++){
+    var i = ((k % n) + n) % n, p = L[i], px = k * HUB_IV_CEL - hubIV.x;
+    if(px < -HUB_IV_CEL) continue;
+    var acao = HUB_IV_ACOES[Math.floor((calmo ? 0 : s / 4) + p.fase) % HUB_IV_ACOES.length];
+    var av = {}; for(var q in p.av) av[q] = p.av[q];
+    var dy = 0, rot = 0, dx = 0, ff = s * 2 + i;
+    if(acao === 'cantar'){ av.pose = 'mic'; av.expr = 3; }
+    else if(acao === 'dancar'){ av.pose = ['v', 'banzai', 'nyan', 'tchau'][Math.floor(s * 2.2 + i) % 4]; rot = Math.sin(s * 5 + i) * .1; dx = Math.sin(s * 2.5 + i) * 4; }
+    else if(acao === 'pular'){ var ph = (s * 1.6 + i * .3) % 1; dy = -Math.sin(ph * Math.PI) * 22; av.pose = dy < -10 ? 'banzai' : 'v'; }
+    else if(acao === 'coracao'){ av.pose = 'coracao'; av.expr = 3; }
+    else { av.pose = 'luz'; rot = Math.sin(s * 3 + i) * .06; }
+    if(calmo){ dy = 0; rot = 0; dx = 0; }
+    var cw = HUB_IV_CEL, ch = 112, cx = px + dx, top = chao - ch + 10;
+    // sombra no chão (diminui no pulo)
+    x.fillStyle = 'rgba(0,0,0,' + (.3 + dy / 120) + ')'; x.beginPath(); x.ellipse(px + cw / 2 + dx, chao + 2, 18 + dy / 3, 3.2, 0, 0, 7); x.fill();
+    x.save(); x.translate(cx + cw / 2, top + ch + dy); x.rotate(rot); x.translate(-cw / 2, -ch);
+    perfDesenharIdol(x, cw, ch, av, false, false, fr + i * 37);
+    x.restore();
+    // efeitos de cada ação
+    var ex2 = px + cw / 2 + dx, ey = top + 20 + dy;
+    x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center';
+    if(acao === 'cantar' || acao === 'luz') for(var u = 0; u < 2; u++){ var ph2 = (s * .7 + u * .5 + i * .13) % 1; x.globalAlpha = 1 - ph2; x.fillStyle = u ? '#ffe14d' : '#ff9ccd'; x.fillText(u ? '♫' : '♪', ex2 + 22 + Math.sin(ph2 * 6) * 5, ey + 10 - ph2 * 34); }
+    if(acao === 'coracao') for(var v = 0; v < 2; v++){ var ph3 = (s * .6 + v * .5 + i * .2) % 1; x.globalAlpha = 1 - ph3; x.fillStyle = '#ff6fb5'; x.fillText('♥', ex2 - 18 + v * 36 + Math.sin(ph3 * 5) * 4, ey + 6 - ph3 * 30); }
+    if(acao === 'pular' && dy > -3){ x.globalAlpha = .7; x.fillStyle = '#fff'; x.fillText('✦', ex2 - 24, chao - 4); x.fillText('✦', ex2 + 24, chao - 6); }
+    x.globalAlpha = 1;
+    // nome e recorde
+    x.font = '900 11px "M PLUS Rounded 1c",sans-serif';
+    var nm = p.nick.length > 11 ? p.nick.slice(0, 10) + '…' : p.nick, tw = x.measureText(nm).width + 16, nx = px + cw / 2;
+    x.fillStyle = 'rgba(255,255,255,.95)'; hubIdolsPilula(x, nx - tw / 2, chao + 9, tw, 16, 8); x.fill();
+    x.fillStyle = '#5b2bb5'; x.fillText(nm, nx, chao + 21);
+    x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe14d'; x.fillText('★ ' + p.best, nx, chao + 36);
+  }
+}
+function hubIdolsPilula(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+(function(){   // tocar num Idol do palco abre o perfil; passar o mouse pausa
+  var cv = $('hubIdolsCv'); if(!cv) return;
+  cv.addEventListener('click', function(e){
+    var n = hubIV.L.length; if(!n) return;
+    var r = cv.getBoundingClientRect(), k = Math.floor((e.clientX - r.left + hubIV.x) / HUB_IV_CEL), p = hubIV.L[((k % n) + n) % n];
+    if(!p) return; beep(1047, .05, 'triangle', .04); hubFechar(); perfAbrir(p.nick);
+  });
+  cv.addEventListener('mouseenter', function(){ hubIV.par = true; });
+  cv.addEventListener('mouseleave', function(){ hubIV.par = false; });
+  window.addEventListener('resize', function(){ hubIV.w = 0; });
+  if('IntersectionObserver' in window) new IntersectionObserver(function(es){ hubIV.vis = es[0].isIntersecting; }).observe(cv);
+})();
 (function(){   // carrega junto com a tela de início
   var hm = hubMostrar;
   hubMostrar = function(){ hm.apply(this, arguments); hubIdolsCarregar(); };

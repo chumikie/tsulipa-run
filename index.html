@@ -3671,7 +3671,7 @@ setInterval(function(){
   var p = typeof petAtivo === 'function' ? petAtivo() : null;
   if(!p){ el.hidden = true; return; }
   petTick();
-  el.hidden = !(p.fome < 25 || p.energia < 25 || p.humor < 25 || p.higiene < 25);
+  el.hidden = !(p.fome < 40 || p.energia < 40 || p.humor < 40 || p.higiene < 40);
 }, 2000);
 // --- FIM DO MINI JOGO DE PETS ---
 // ================================================================

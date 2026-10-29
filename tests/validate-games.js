@@ -82,6 +82,30 @@ assert(lab.includes('twPreviewVoltarTxt')&&lab.includes('twPreviewAtualizarIdiom
   "Index 2 lost translated preview UX or Japanese game subtitles");
 assert(lab.includes("card.focus({preventScroll:true})"),
   "Index 2 must restore focus to the game launcher on return");
+// INDEX2-only welcome: ordered slides and isolated completion flag, preserving original saves.
+const tutorialStart=lab.indexOf("var HUB_TUT = [");
+const tutorialEnd=lab.indexOf("var TW_INDEX2_TUT_KEY",tutorialStart);
+const tutorialText=lab.slice(tutorialStart,tutorialEnd);
+const welcomeOrder=["Meu Perfil","Center⭐Run!","Backstage⭐Pet!","Sora⭐Jump!"];
+let lastAt=-1;
+for(const label of welcomeOrder){
+  const at=tutorialText.indexOf(label);
+  assert(at>lastAt,"Index 2 welcome missing or out of order: "+label);
+  lastAt=at;
+}
+assert(lab.includes("var TW_INDEX2_TUT_KEY='tw_index2_tut_v2'")&&
+       lab.includes("localStorage.getItem(TW_INDEX2_TUT_KEY)")&&
+       lab.includes("localStorage.setItem(TW_INDEX2_TUT_KEY,'1')"),
+  "Index 2 welcome should not overwrite brs48cr_tut");
+assert(lab.includes("TW_INDEX2_TUT_I18N")&&
+       lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
+       lab.includes("Karaoke⭐Day! · Em breve"),
+  "Index 2 missing Sora intro or Karaoke coming-soon teaser");
+assert(lab.includes("function twPreviewEstiloSora()")&&
+       lab.includes("addEventListener('load',twPreviewEstiloSora)")&&
+       lab.includes("twIndex2SoraEmbed"),
+  "Index 2 missing the embedded Sora adaptation");
+
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
@@ -118,6 +142,23 @@ try{
   sandbox.twPreviewAbrirJogo("sora");
   assert(iframe.src==="./sora-jump.html"&&!overlay.hidden&&fakeHub.hidden,
     "Sora launcher must show the iframe and hide the hub");
+  // Verify embed CSS is created only for the Sora iframe, without a network call.
+  let installedCSS=null;
+  iframe.contentDocument={
+    head:{appendChild:el=>{installedCSS=el;}},
+    body:{classList:{contains:name=>name==="tw-game-sora"}},
+    getElementById:id=>installedCSS&&installedCSS.id===id?installedCSS:null,
+    createElement:tag=>({tagName:tag})
+  };
+  sandbox.twPreviewEstiloSora();
+  assert(installedCSS&&installedCSS.id==="twIndex2SoraEmbed"&&
+         installedCSS.textContent.includes("#soraOv .sora-topbar{display:none")&&
+         installedCSS.textContent.includes("aspect-ratio:360/520"),
+    "Sora embedded layout should hide its redundant back bar and retain the canvas aspect ratio");
+  sandbox.twPreviewEstiloSora();
+  assert(installedCSS&&installedCSS.id==="twIndex2SoraEmbed",
+    "Applying the embed mode twice must be harmless");
+
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(iframe.src==="./sora-jump.html"&&musicStops===1,

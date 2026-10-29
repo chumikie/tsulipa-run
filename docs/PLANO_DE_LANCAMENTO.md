@@ -86,3 +86,10 @@ Somente no projeto de homologação, depois de revisar as configurações Auth e
 ## Critério de conclusão
 
 A liberação só está pronta quando os testes automatizados estão verdes **e** a experiência visual, Auth/CAPTCHA, permissões, fila, microfone, retorno móvel e carga real tiverem sido verificados. Até lá, a página experimental pode continuar evoluindo, mas o portão online permanece fechado.
+
+## Registro de publicação da prévia — 29/10/2026
+
+- O PR #33 estava com a marca `[skip netlify]` no título, o que impede a criação/atualização do Deploy Preview no Netlify.
+- A marca foi removida do título; foi enviado um novo commit nesta branch experimental sem a marca de bloqueio para solicitar uma nova publicação da prévia.
+- **Estado de validação:** não considerar a prévia pronta até o Netlify indicar o Deploy Preview como publicado e até confirmar que os arquivos servidos correspondem ao HEAD atual da branch. Não retomar o teste de autenticação antes dessa confirmação.
+- A branch continua em rascunho e separada de `main`; este registro não autoriza merge, lançamento público ou alterações no Supabase de produção.

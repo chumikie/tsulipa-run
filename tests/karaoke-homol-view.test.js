@@ -8,7 +8,7 @@ assert.equal(all.filter(x=>x.singing).length,1);
 assert.deepEqual(all.filter(x=>!x.singing).map(x=>x.seatIndex),[0,1,2,3,4,5,6,7]);
 assert.equal(all[2].label,'Idol 03');
 assert.equal(all[2].seatIndex,1);
-assert.equal(view.stageLayout(data.map(x=>({...x,singing:false})).length,9);
+assert.equal(view.stageLayout(data.map(x=>({...x,singing:false}))).length,9);
 assert.equal(view.stageLayout(data.map(x=>({...x,singing:false})))[8].seatIndex,8);
 assert.equal(view.stageLayout([{slot:1,label:'<script>',self:1},{slot:1},{slot:-2}]).length,1);
 assert.equal(view.stageLayout([{slot:1,label:'<script>'}])[0].label,'Idol 01');

@@ -11,6 +11,14 @@
 - A implementação demonstrativa atual de `karaoke-day.html` (7 bots, "Simulador", contador de teste) **NÃO** representa multiplayer. Preservar arte/canvas como componente visual; esconder simulador para público depois que o servidor estiver pronto.
 - Começar com uma sala de 9, não reservar artificialmente múltiplas salas vazias. Não vender acesso ou dar vantagens a quem paga; fila justa.
 
+## Incremento 3A.1b — minijogo no Karaoke existente (testado no código, não online)
+- A **cena original** de `karaoke-day.html` usa 9 como capacidade de demonstração, com 8 posições para plateia; 7 personagens de exemplo continuam simulados (incluindo o jogador local). A tela mostra explicitamente "Sala demonstrativa".
+- **`karaoke-rhythm.js`** criou uma chart rítmica **original** de 40 notas, com início +5s e fim aos +50s. `karaoke-rhythm.css` dá interface para toque e teclado. `karaoke-day.html` agora conecta "Pegar microfone" a esta rodada local de 60s.
+- Pontos, combo e contagem de `PERFECT` são **somente locais e não verificados**, não gravados, sem estrelas/insígnias.
+- CI: `tests/karaoke-rhythm.test.js` testa tempos, julgamento de notas, duplicatas e resultado não persistido. `tests/validate-games.js` verifica integração estática. Ainda **não há sessões online nem autenticação**.
+- A página do laboratório separado `karaoke-online-lab.html` continua útil para validar fila e lotação antes do backend. O jogo de ritmo está na **cena principal do Karaoke**, não apenas naquele laboratório.
+- **Homologação inexistente**: único Supabase conectado é o projeto de produção e não foi alterado. Próximo incremento depende de configurar um projeto separado para testar RPC e concorrência real.
+
 ## Experiência detalhada
 1. Login Google e status não bloqueado. Ao tocar no card, o frontend consulta **`karaoke_status()`**. Se fechado, mostra cronômetro e opções Fechar / Convidar (convites só quando backend estiver implantado).
 2. Dentro da janela, `karaoke_entrar()` tenta adquirir uma das 9 vagas de forma **atômica**. `Presence` exibe pessoas conectadas, mas **não decide vagas**. Uma segunda aba da mesma pessoa não consome vaga adicional e não pode duplicar a atuação.

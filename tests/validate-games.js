@@ -310,25 +310,30 @@ try{
 
 // Sunday 12:00–13:10 in Brasília must be consistent even on devices in other zones.
 try{
-  const a=lab.indexOf("function twKaraokeHorario(){"),b=lab.indexOf("function twKaraokeAtualizarCard(){",a);
-  if(a<0||b<a)throw Error("Karaoke clock function not found");
-  const fn=lab.slice(a,b);
-  for(const [iso,open] of [
-    ["2026-10-29T12:00:00Z",false],
-    ["2026-11-01T14:59:00Z",false],
-    ["2026-11-01T15:30:00Z",true],
-    ["2026-11-01T16:11:00Z",false]
+  const a=lab.indexOf("var TW_KARAOKE_PRIMEIRA_DATA="),
+        fnStart=lab.indexOf("function twKaraokeHorario(){",a),
+        end=lab.indexOf("function twKaraokeAtualizarCard(){",fnStart);
+  if(a<0||fnStart<a||end<fnStart)throw Error("Karaoke premiere/clock function not found");
+  const fn=lab.slice(a,end);
+  for(const [iso,open,premiere] of [
+    ["2026-10-29T12:00:00Z",false,true],
+    ["2026-11-01T15:30:00Z",false,true],
+    ["2026-11-08T14:59:00Z",false,true],
+    ["2026-11-08T15:00:00Z",true,false],
+    ["2026-11-08T16:09:00Z",true,false],
+    ["2026-11-08T16:11:00Z",false,false]
   ]){
     const ClockDate=class extends Date {
       constructor(...args){super(...(args.length?args:[iso]));}
+      static now(){return Date.parse(iso);}
     };
     const scope={Date:ClockDate,Intl};
     vm.runInNewContext(fn,scope);
     const result=scope.twKaraokeHorario();
-    assert(result.aberto===open&&Number.isFinite(result.faltam),
-      "Karaoke Brasília opening window wrong at "+iso);
+    assert(result.aberto===open&&!!result.estreia===premiere&&Number.isFinite(result.faltam),
+      "Karaoke premiere schedule incorrect at "+iso);
   }
-  console.log("✓ Karaoke preview timer: Brasília Sunday window");
+  console.log("✓ Karaoke preview timer: Nov 1 closed, Nov 8 open 12:00–13:10 BRT");
 }catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
 
 // Standalone mode must not load INDEX2 styles. Embed mode adds exactly one stylesheet.

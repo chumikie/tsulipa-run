@@ -110,92 +110,52 @@
  .tw-modal :is(button,a){transition:none!important}
 }
 
-/* INDEX 2 · Center Run-inspired portal chrome around embedded special games.
-   Background particles are reused from the existing seasonal hub, not recreated by JS loops. */
-.tw-preview-game .tw-preview-bar{
-  display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto auto;
-  align-items:center;
-  gap:clamp(8px,1.6vw,18px);
-  padding:8px clamp(12px,2vw,26px);
-  padding-top:max(8px,env(safe-area-inset-top));
-  padding-left:max(12px,env(safe-area-inset-left));
-  padding-right:max(12px,env(safe-area-inset-right));
-  min-height:66px;
-  background:linear-gradient(110deg,#142849,#172f57 60%,#202451);
-  border-bottom:2px solid rgba(178,111,255,.35);
-  color:#edf5ff;
-  box-shadow:0 4px 18px rgba(16,13,48,.22);
-  z-index:2;
+/* INDEX 2 · reuse the OFFICIAL Center Run header instead of another bar.
+   The existing DOM header is moved here while a special game is open.
+   No duplicate logo, #best element or independent scoreboard. */
+.tw-preview-game{background:var(--bg1,#c9ecfc)}
+.tw-preview-header-slot{
+  position:relative;z-index:3;
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-height:72px;
+  padding:12px max(12px,env(safe-area-inset-right))
+          6px max(12px,env(safe-area-inset-left));
+  background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),
+             radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),
+             radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),
+             linear-gradient(160deg,var(--bg1),var(--bg2));
 }
-.tw-preview-brand{
-  display:flex;align-items:center;gap:9px;min-width:0;
-  font-family:var(--tw-modal-font);color:#dbeaff;
+.tw-preview-header-slot>header{
+  margin:0;max-width:760px;min-width:0;flex:1 1 760px;
+  /* Every other visual rule remains the official body > header rule. */
 }
-.tw-preview-brand img{
-  width:35px;height:35px;object-fit:cover;border-radius:10px;
-  flex:none;filter:drop-shadow(0 2px 3px rgba(80,40,140,.3));
+.tw-preview-header-slot .tw-preview-voltar{
+  flex:none;position:static;
+  font:800 12px "M PLUS Rounded 1c",sans-serif;
+  padding:7px 12px;
+  color:var(--b1);background:var(--chip);
+  border:0;border-radius:99px;box-shadow:0 2px 0 rgba(44,26,143,.2);
 }
-.tw-preview-brand span{min-width:0}
-.tw-preview-bar .tw-preview-brand b{
-  display:block;font-size:clamp(14px,1.7vw,21px);
-  line-height:1.15;overflow:visible;text-overflow:clip;
-  color:#b894ff;
-  white-space:nowrap;
-}
-.tw-preview-brand .tw-preview-star{color:#f5b400}
-.tw-preview-brand small{
-  display:block;font:700 10px/1.25 var(--tw-modal-body);
-  letter-spacing:.03em;color:#ff82c3;
-}
-.tw-preview-bar .tw-preview-current{
-  text-align:center;
-  white-space:nowrap;
-  font-family:var(--tw-modal-font);
-  font-size:clamp(11px,1.6vw,15px);
-  color:#f7e7ff;
-}
-.tw-preview-meta{display:flex;gap:6px;align-items:center;justify-self:end}
-.tw-preview-score{
-  display:flex;flex-direction:column;align-items:center;
-  padding:5px 12px;border:1.5px solid #9edd30;
-  border-radius:999px;background:rgba(9,24,49,.8);
-  color:#eef8ff;white-space:nowrap;
-  font-family:var(--tw-modal-body);
-}
-.tw-preview-score-label{font-size:9px;line-height:1.3;opacity:.85}
-.tw-preview-score strong{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
-.tw-preview-game .tw-preview-tag{font-size:9px;color:#ffa1d2}
 .tw-preview-stage{
   position:relative;isolation:isolate;flex:1 1 0;min-height:0;
   width:100%;display:flex;align-items:stretch;justify-content:center;
-  padding:0 clamp(0px,1.6vw,24px);
-  overflow:hidden;
-  background:
-    radial-gradient(ellipse at 12% 18%,rgba(180,122,250,.16),transparent 45%),
-    radial-gradient(ellipse at 87% 85%,rgba(255,142,194,.13),transparent 50%),
-    linear-gradient(150deg,var(--tw-preview-sky-top,#17274f),var(--tw-preview-sky-end,#32204d));
+  padding:0 clamp(0px,1.6vw,24px);overflow:hidden;
+  /* Identical to the original .hub background, not per-theme sky colors. */
+  background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),
+             radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),
+             radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),
+             linear-gradient(160deg,var(--bg1),var(--bg2));
 }
-.tw-preview-part{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.tw-preview-part i{
-  position:absolute;top:-30px;opacity:.55;font-style:normal;
-  animation:hubcai linear infinite;
-  will-change:transform;
+/* Source is #hubPart; same markup, .hubpart styles, keyframes and duration. */
+.tw-preview-stage .hubpart{
+  position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
 }
-.tw-preview-game[data-tema="valentine"] .tw-preview-part i{animation-name:hubsobe}
-.tw-preview-season{
-  position:absolute;z-index:1;top:16px;left:max(14px,2vw);
-  padding:6px 12px;border:1px solid rgba(240,205,255,.3);
-  border-radius:999px;background:rgba(11,21,57,.48);
-  font:800 11px/1.3 var(--tw-modal-body);color:#f3e7ff;
-  pointer-events:none;
-}
-.tw-preview-season[hidden]{display:none!important}
+.tw-preview-game[data-tema="valentine"] .hubpart i{animation-name:hubsobe}
 .tw-preview-stage #twPreviewIframe{
   position:relative;z-index:1;flex:0 1 auto;
-  width:100%;max-width:1480px;height:100%;
-  min-height:0;border:0;display:block;
-  background:#121c3f;
+  width:100%;max-width:1480px;height:100%;min-height:0;
+  display:block;border:0;background:transparent;
 }
 .tw-preview-game[data-jogo="sora"] #twPreviewIframe{
   max-width:590px;
@@ -204,30 +164,22 @@
   box-shadow:0 14px 45px rgba(11,8,39,.28);
 }
 @media(max-width:760px){
-  .tw-preview-game .tw-preview-bar{
-    grid-template-columns:auto minmax(0,1fr) auto;
-    gap:7px;min-height:53px;padding:6px 10px;
-    padding-top:max(6px,env(safe-area-inset-top));
-  }
-  .tw-preview-bar .tw-preview-current,
-  .tw-preview-game .tw-preview-tag{display:none!important}
-  .tw-preview-brand img{width:27px;height:27px;border-radius:8px}
-  .tw-preview-brand{gap:5px}
-  .tw-preview-bar .tw-preview-brand b{display:block!important;font-size:clamp(11px,3.1vw,15px)}
-  .tw-preview-brand small{font-size:8px}
-  .tw-preview-score{padding:5px 8px}
-  .tw-preview-score-label{display:none}
-  .tw-preview-score strong{font-size:10px}
-  .tw-preview-season{display:none}
+  .tw-preview-header-slot{gap:5px;padding:7px 8px;min-height:58px}
+  .tw-preview-header-slot>header{min-width:0}
+  .tw-preview-header-slot header .logo{min-width:0}
+  .tw-preview-header-slot header .logo b{font-size:clamp(11px,3.7vw,17px)}
+  .tw-preview-header-slot header .logo small{font-size:9px}
+  .tw-preview-header-slot header .logo i,
+  .tw-preview-header-slot header .tw-ico{width:28px;height:28px}
+  .tw-preview-header-slot .tw-preview-voltar{font-size:11px;padding:7px 8px}
+  .tw-preview-header-slot .pill{font-size:11px;padding:5px 8px}
   .tw-preview-stage{padding:0}
-  .tw-preview-part i:nth-child(n+7){display:none}
+  .tw-preview-stage .hubpart i:nth-child(n+8){display:none}
   .tw-preview-game[data-jogo="sora"] #twPreviewIframe{border:0;box-shadow:none}
 }
-@media(max-width:360px){
-  .tw-preview-brand img{display:none}
-  .tw-preview-voltar{padding:7px 8px}
-  .tw-preview-score{padding:4px 6px}
+@media(max-width:385px){
+  .tw-preview-header-slot header .logo i{display:none}
 }
 @media(prefers-reduced-motion:reduce){
-  .tw-preview-part i{animation:none!important}
+  .tw-preview-stage .hubpart i{animation:none!important}
 }

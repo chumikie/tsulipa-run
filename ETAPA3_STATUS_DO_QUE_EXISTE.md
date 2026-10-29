@@ -87,3 +87,5 @@
 > **Prévia controlada — visual 3A.5c–e (29/10/2026):** somente Netlify PR #33 para avaliar paridade do sprite, posições de itens nas mãos e decoração whimsical. A versão de produção na Vercel permanece pausada, `index.html` e Supabase de produção inalterados; sem desbloqueio de contas ou estrelas.
 
 > **Prévia controlada 3A.6 — 29/10/2026:** uma publicação Netlify para demonstrar o painel de entrada fechada e os testes de segurança. A sala visual original permanece intacta; login anônimo, CAPTCHA e portão online continuam desativados. Vercel não reativada.
+
+> **Prévia controlada 3A.6b — 29/10/2026:** novo widget Turnstile de teste sem cadastro; sitekey pública já no código, portão fechado. Uma publicação Netlify, depois restaurar skip. Vercel continua pausada.

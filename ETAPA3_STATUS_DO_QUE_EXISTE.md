@@ -63,3 +63,5 @@
 3. Renderizar 1 roupa + 1 cenário Sora Idol e Karaoke Idol como preview, antes de disponibilizar preços/catálogo na loja.
 4. Conferir os vídeos individuais e participação TsuLiPa antes de adicionar links aos temas.
 5. Integrar áudios apenas se fornecidos e consentidos.
+
+> **Publicação de prévia controlada (29/10/2026):** disparo de apenas um build da PR #33 para avaliação visual da Etapa 3A.5; não altera lógica, páginas de produção, Auth ou recompensas. A homologação ainda depende de CAPTCHA/login para testar jogadores conectados.

@@ -22,6 +22,20 @@ header{width:100%;max-width:920px;display:flex;align-items:center;justify-conten
 .krpop .krb{flex:1 1 135px;min-width:0;white-space:normal;line-height:1.2}
 </style>
 <link rel="stylesheet" href="./games-theme.css?v=2">
+<script id="twKaraokeEmbedBoot">
+(function(){
+  try{
+    var query=new URLSearchParams(location.search);
+    if(query.get('embed')!=='index2')return;
+    document.documentElement.classList.add('tw-karaoke-embed');
+    var o=query.get('oshi');
+    if(['tsu','lirika','pati'].indexOf(o)>=0)document.documentElement.setAttribute('data-oshi',o);
+    else document.documentElement.removeAttribute('data-oshi');
+    var sheet=document.createElement('link');sheet.rel='stylesheet';
+    sheet.href='./karaoke-embed.css?v=1';document.head.appendChild(sheet);
+  }catch(e){/* Standalone page remains usable without the embed skin. */}
+})();
+</script>
 </head>
 <body class="tw-game-karaoke">
 <header>

@@ -101,10 +101,22 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Day! · Em breve"),
   "Index 2 missing Sora intro or Karaoke coming-soon teaser");
-assert(lab.includes("function twPreviewEstiloSora()")&&
-       lab.includes("addEventListener('load',twPreviewEstiloSora)")&&
-       lab.includes("twIndex2SoraEmbed"),
-  "Index 2 missing the embedded Sora adaptation");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css");
+assert(lab.includes('href="./index2-skin.css?v=1"')&&
+       previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
+       lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
+  "Index 2 lost unified Gacha / Moon Duo modal design");
+assert(lab.includes("./sora-jump.html?embed=index2")&&
+       !lab.includes("twPreviewEstiloSora"),
+  "Index 2 should launch Sora in native embed mode, without parent CSS injection");
+assert(sora.includes("twSoraEmbedBoot")&&
+       sora.includes("get('embed')!=='index2'")&&sora.includes("tw-sora-embed")&&
+       sora.includes("./sora-embed.css?v=1")&&
+       soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
+       soraEmbedSkin.includes("aspect-ratio:360/520"),
+  "Sora should have an opt-in, independently scoped embed shell");
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000,
+  "New preview stylesheets exceed 10 KB budget");
 
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
@@ -140,28 +152,11 @@ try{
   };
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
-  assert(iframe.src==="./sora-jump.html"&&!overlay.hidden&&fakeHub.hidden,
+  assert(iframe.src==="./sora-jump.html?embed=index2"&&!overlay.hidden&&fakeHub.hidden,
     "Sora launcher must show the iframe and hide the hub");
-  // Verify embed CSS is created only for the Sora iframe, without a network call.
-  let installedCSS=null;
-  iframe.contentDocument={
-    head:{appendChild:el=>{installedCSS=el;}},
-    body:{classList:{contains:name=>name==="tw-game-sora"}},
-    getElementById:id=>installedCSS&&installedCSS.id===id?installedCSS:null,
-    createElement:tag=>({tagName:tag})
-  };
-  sandbox.twPreviewEstiloSora();
-  assert(installedCSS&&installedCSS.id==="twIndex2SoraEmbed"&&
-         installedCSS.textContent.includes("#soraOv .sora-topbar{display:none")&&
-         installedCSS.textContent.includes("aspect-ratio:360/520"),
-    "Sora embedded layout should hide its redundant back bar and retain the canvas aspect ratio");
-  sandbox.twPreviewEstiloSora();
-  assert(installedCSS&&installedCSS.id==="twIndex2SoraEmbed",
-    "Applying the embed mode twice must be harmless");
-
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./sora-jump.html"&&musicStops===1,
+  assert(iframe.src==="./sora-jump.html?embed=index2"&&musicStops===1,
     "A duplicate launch must not replace an active game");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
@@ -178,6 +173,29 @@ try{
     "Preview text should update when the hub language changes");
   console.log("✓ Preview controller smoke test: Sora, Karaoke, back, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
+
+
+// Standalone mode must not load INDEX2 styles. Embed mode adds exactly one stylesheet.
+try{
+  const boot=sora.match(/<script id="twSoraEmbedBoot">([\s\S]*?)<\/script>/);
+  if(!boot)throw Error("Sora embed boot script missing");
+  for(const [query,expected] of [["",false],["?embed=index2",true]]){
+    const installed=[],classes=[];
+    const fake={
+      location:{search:query}, URLSearchParams,
+      document:{
+        documentElement:{classList:{add:name=>classes.push(name)}},
+        head:{appendChild:node=>installed.push(node)},
+        createElement:tag=>({tagName:tag})
+      }
+    };
+    vm.runInNewContext(boot[1],fake,{filename:"sora-embed-boot.js"});
+    assert((installed.length===1)===expected&&
+           (classes.includes("tw-sora-embed"))===expected,
+      "Sora embed flag must change presentation only for ?embed=index2");
+  }
+  console.log("✓ Sora opt-in embed flag: standalone / index2");
+}catch(e){errors.push("Sora embed boot test failed: "+e.message);}
 
 if(errors.length){
   errors.forEach(err=>console.error("✗",err));

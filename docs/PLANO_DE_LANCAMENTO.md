@@ -2,7 +2,7 @@
 
 **Objetivo:** transformar a versão experimental em uma liberação segura para membros reais sem perder o jogo existente, sobrecarregar Supabase/Realtime ou gastar deploys desnecessários na Vercel.
 
-**Última verificação da base de código:** 29/10/2026. O checkpoint visual/estático `9fc66153` está verde no GitHub Actions; ainda falta revisão visual real de viewport e os demais portões. Este checklist é o portão de liberação; documentos de etapa e auditorias são evidências auxiliares, não autorização automática para publicar.
+**Última verificação da base de código:** 29/10/2026. O checkpoint de desempenho e regressão [`fef6870d`](https://github.com/chumikie/tsulipa-run/commit/fef6870d9dea142935b5a7f8e2a5a3cc44400775) passou no GitHub Actions [run #154](https://github.com/chumikie/tsulipa-run/actions/runs/40959784396). A auditoria de Portão 5 está registrada; medições de navegador/CDN ainda estão pendentes. Este checklist é o portão de liberação; documentos de etapa e auditorias são evidências auxiliares, não autorização automática para publicar.
 
 ## Diagnóstico atual — fatos verificados
 
@@ -37,7 +37,7 @@ Executar a suíte na branch atual; nenhum desses testes exige criar contas reais
 - [x] `node tests/sora-stability.test.js`
 - [x] `node tests/tw-weekly-podium.test.js`
 
-- [x] GitHub Actions `Check TsuLiPa special games` — run [#149](https://github.com/chumikie/tsulipa-run/actions/runs/40958413961) terminou em `success` para o checkpoint de código [`9fc6615`](https://github.com/chumikie/tsulipa-run/commit/9fc66153ba4ea24cdab50845c8f0d5a2e4b9ab82); os oito passos de validação foram concluídos.
+- [x] GitHub Actions `Check TsuLiPa special games` — run [#154](https://github.com/chumikie/tsulipa-run/actions/runs/40959784396) terminou em `success` para o checkpoint [`fef6870d`](https://github.com/chumikie/tsulipa-run/commit/fef6870d9dea142935b5a7f8e2a5a3cc44400775); os oito passos de validação foram concluídos.
 - [ ] Testar todos os retornos e os casos de erro no navegador/homologação; um teste estático verde não prova que o navegador chamou a RPC correta nem que as permissões Auth estão certas.
 
 ## Portão 3 — homologação de membros reais
@@ -62,13 +62,17 @@ Somente no projeto de homologação, depois de revisar as configurações Auth e
 
 ## Portão 5 — custo e desempenho
 
-A separação de arquivos foi intencional e deve ser mantida:
+**Resultado desta auditoria:** parte do portão foi comprovada por código, logs agregados e consultas somente de leitura; a transferência real, o cache dos arquivos e o FPS continuam pendentes porque não foi criado um preview atual nem houve inspeção de navegador.
 
-- Sora e Karaoke são carregados por iframe **apenas quando a pessoa escolhe o jogo**, e o áudio/animação devem pausar quando a aba fica oculta.
-- Não gravar estado no banco por frame. Usar RPCs controladas, atualizações agrupadas e fallback limitado; não introduzir Realtime para dados que não precisam de tempo real.
-- Medir tamanho transferido com compressão e cache, FPS em desktop/celular, consultas por visita, mensagens Realtime, tamanho do banco, logs e limite de deploy/transferência da Vercel.
-- Agrupar mudanças antes de pedir um novo preview. A branch está com deploy desativado para poupar a cota; reativar somente para uma rodada de testes planejada.
-- Organizar Markdown em docs/ não aumenta o trabalho do navegador: o jogo não importa esses arquivos. Isso melhora a manutenção, mas não é, por si só, uma otimização de runtime ou garantia de menor fatura.
+- [x] Confirmado no código: \`index2.html\` só define o \`src\` do iframe quando o jogo é escolhido e descarrega-o para \`about:blank\` ao retornar. Sora e Karaoke param seus loops/áudio em segundo plano e restauram o ciclo de vida ao voltar.
+- [x] Aplicada uma otimização localizada em \`index2.html\`: os loops \`requestAnimationFrame\` do Center⭐Run de base e da prévia do avatar agora são acompanhados, cancelados quando o hub/iframe cobre a tela ou a aba fica oculta, e retomados ao voltar. O teste automatizado cobre os quatro estados. A física, a resolução lógica, os saves e \`index.html\` oficial não foram alterados.
+- [x] Conferido o padrão de chamadas: não há gravação por frame. O \`perfConferir\` compara snapshots locais a cada 4 s e só envia \`salvar_nuvem\` quando há mudanças; o envio é agrupado/limitado. A homologação Karaoke usa heartbeat de 30 s e atualizações de estado coalescidas com mínimo aproximado de 2 s entre refreshes; o ritmo autenticado de homologação chama a RPC \`karaoke_ensaio_toque\` por toque (não por frame). Esse tráfego de homologação exige futura medição de carga antes de abrir a jogadores reais.
+- [x] Medido com consulta SQL somente de leitura: \`pg_database_size(current_database())\` retornou **13.579.955 bytes (~13,58 MB)** em produção e **11.572.915 bytes (~11,57 MB)** em homologação. É o tamanho reportado pelo Postgres naquele momento, não uma medição de transferência nem a fatura completa de armazenamento.
+- [x] Inspecionados logs agregados para **28/10/2026 20:00 UTC a 29/10/2026 20:00 UTC**. Produção: 2.568 \`edge_logs\`, 201 \`postgres_logs\`, 72 \`pgbouncer_logs\`, 52 \`auth_logs\`, 48 \`auth_audit_logs\` e 21 \`postgrest_logs\`. Rotas com mais eventos incluíram \`aviso_inicio\` (302 POSTs), \`vitrine_idols\` (238), \`jogador\` (233), \`carregar_nuvem\` (230) e \`salvar_nuvem\` (194). São contagens do projeto de produção inteiro — não usuários únicos, nem chamadas atribuídas a esta branch, nem RPCs normalizadas por visita. Em homologação houve 10 registros em \`realtime_logs\`, o que **não** equivale ao número de mensagens Realtime faturáveis.
+- [x] Confirmado que \`vercel.json\` mantém \`git.deploymentEnabled=false\` para a branch. Não foi criado nenhum deployment nesta auditoria. O histórico consultado contém pelo menos 30 deployments READY antigos da branch em aproximadamente 53 minutos (29/10, 13:53–14:46 UTC), reforçando a decisão de agrupar ajustes antes de um preview.
+- [ ] Medir bytes realmente transferidos com gzip/Brotli, cabeçalhos de cache/hit ratio e FPS em desktop/celular. O código estático não fornece esses números: a branch não tem preview atual e as consultas de métricas/cobrança tentadas nesta sessão não retornaram dados utilizáveis.
+- [ ] Medir RPCs e mensagens Realtime por visita/sessão e associar o consumo à funcionalidade experimental. Logs agregados não incluem denominador de visitas; a contagem de \`realtime_logs\` não substitui métricas de mensagens.
+- [x] Organizar Markdown em \`docs/\` não acrescenta trabalho ao navegador, pois os HTML/JS do jogo não importam esses arquivos. É manutenção, não uma otimização de runtime por si só.
 
 ## Portão 6 — estratégia real de lançamento
 

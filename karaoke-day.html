@@ -135,7 +135,7 @@ $('krBar').addEventListener('click',function(e){var t=e.target,b;if((b=t.closest
 function krMandarEmoji(emo){var agora=Date.now();if(agora-krEu.emojiT<1000)return;krEu.emojiT=agora;krBolhas.push({emo:emo,x:krEu.x,y:krEu.y-75,t:0});beep(1319,.05,'triangle',.03);}
 $('krCv').addEventListener('pointerdown',function(e){
   if(!krSt.aberta||krEu.fila>0||krEu.vagaPronta)return;
-  var cv=this,r=cv.getBoundingClientRect(),logicalW=cv.width/2,logicalH=cv.height/2;
+  var cv=this,r=cv.getBoundingClientRect(),logicalW=960,logicalH=540;
   var px=(e.clientX-r.left)*logicalW/r.width,py=(e.clientY-r.top)*logicalH/r.height,clicado=null;
   krBots.forEach(function(b){if(Math.abs(px-b.x)<34&&py>b.y-100&&py<b.y+12)clicado=b;});
   var pop=$('krPop');
@@ -144,7 +144,7 @@ $('krCv').addEventListener('pointerdown',function(e){
     pop.innerHTML='<b>'+escHtml(clicado.nick)+'</b><button type="button" class="krb" data-pop="perfil">👤 '+escHtml(tr('Ver perfil'))+'</button><button type="button" class="krb" data-pop="duo">🌙 Moon⭐Duo!</button><button type="button" class="krb" data-pop="cora">💖 '+escHtml(tr('Dar coração'))+'</button><button type="button" class="krb" data-pop="expulsar">🛡️ '+escHtml(tr('Tirar da sala'))+'</button>';
     pop.hidden=false;
     var palco=$('krPalco'),pr=palco.getBoundingClientRect(),popW=pop.offsetWidth,popH=pop.offsetHeight;
-    // As posições do avatar estão no espaço lógico de 960×540; o canvas é desenhado a 2×.
+    // As posições do avatar estão sempre no espaço lógico de 960×540, mesmo quando o canvas usa 1× no celular.
     // O menu é posicionado em pixels CSS do palco e limitado às margens para não sair cortado.
     var anchorX=(clicado.x/logicalW)*pr.width;
     var anchorY=(Math.max(90,clicado.y-95)/logicalH)*pr.height;

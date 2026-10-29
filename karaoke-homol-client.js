@@ -12,7 +12,8 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // PUBLIC site key only; the Turnstile SECRET must remain in Supabase Auth settings.
 // Leave empty until the homologation widget and server-side CAPTCHA are configured.
 var TURNSTILE_SITE_KEY='';
-var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false;
+var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false;
+var turnClock=null,turnClockTimer=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
 var panel=document.createElement('section');
@@ -30,12 +31,15 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<button type="button" class="krb" id="krHomolLeave" disabled>Sair da sala</button>'
   +'<button type="button" class="krb" id="krHomolRefresh" disabled>Atualizar</button></div>'
   +'<p id="krHomolCount">👥 —/9 · 🎤 —/3</p>'
-  +'<ol id="krHomolPeople" aria-label="Participantes do ensaio"></ol>'
+  +'<p id="krHomolTurn" role="status" aria-live="polite">🎤 Microfone aguardando a primeira cantora</p>'
+  +'<ol id="krHomolPeople" aria-label="Idols presentes no palco"></ol>'
+  +'<strong>💌 Próximos 3 Idols</strong>'
+  +'<ol id="krHomolQueueSlots" aria-label="Fila de três lugares"></ol>'
   +'<p id="krHomolQueueText" style="font-size:12px">Fila: —</p>'
   +'<small>Somente homologação. Os avatares são modelos visuais; os lugares e a fila vêm do servidor. Atualização leve a cada 30 segundos enquanto você estiver na sala.</small>';
 host.appendChild(panel);
 var style=document.createElement('style');
-style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li{padding:5px 9px;border-radius:99px;background:var(--chip,#f7eafb);font-size:12px}';
+style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}';
 document.head.appendChild(style);
 var localQueue=document.getElementById('krMicQueue');
 if(localQueue){localQueue.hidden=true;localQueue.style.display='none';}
@@ -47,7 +51,7 @@ if(!TURNSTILE_SITE_KEY) say('Etapa 3A.4: cadastro desativado até configurar Tur
 function enable(auth,seat,queued){
  buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY;
  buttons.Enter.disabled=!auth||seat;
- buttons.Queue.disabled=!auth||!seat||queued;
+ buttons.Queue.disabled=!auth||!seat||queued||isSinging;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
  buttons.Leave.disabled=!auth||!seat;
  buttons.Refresh.disabled=!auth;
@@ -110,6 +114,20 @@ async function captchaForSignup(){
 }
 function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k].disabled=true;});return true;}
 function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
+function showTurnClock(){
+ var out=document.getElementById('krHomolTurn'),badge=document.getElementById('krRelogio');
+ if(!turnClock||!Number.isFinite(turnClock.ends)){
+   out.textContent='🎤 Microfone aguardando a próxima cantora';
+   badge.textContent='🎤 Homologação · sem pontos';
+   return;
+ }
+ var now=turnClock.serverNow+(performance.now()-turnClock.clientNow);
+ var phase=window.TsuKaraokeHomolView.turnPhase(turnClock.starts,turnClock.ends,now);
+ var texto=phase.phase==='intro'?'Preparando o palco':phase.phase==='rhythm'?'Cantando!':
+   phase.phase==='outro'?'Aplausos!':'Aguardando a troca';
+ out.textContent=(isSinging?'🌟 Sua vez! ':'🎤 '+turnClock.label+' · ')+texto+' · '+phase.remaining+'s';
+ badge.textContent='🎤 '+turnClock.label+' · '+phase.remaining+'s (estimativa)';
+}
 async function rpc(action){
  var result=await client.rpc('karaoke_ensaio',{p_action:action,p_token:token||null});
  if(result.error)throw result.error;
@@ -132,17 +150,31 @@ async function refresh(doHeartbeat){
  }
  var count=document.getElementById('krHomolCount');
  count.textContent='👥 '+data.occupied+'/9 · 🎤 '+data.queueCount+'/3';
+ var view=window.TsuKaraokeHomolView;
+ var people=view.stageLayout(list.slots),queue=view.queueSlots(list.queue);
  var names=document.getElementById('krHomolPeople');names.replaceChildren();
- list.slots.forEach(function(p){
+ people.forEach(function(p){
    var li=document.createElement('li');li.textContent=p.label+(p.self?' (você)':'')+(p.singing?' 🎤':'');names.appendChild(li);
  });
- document.getElementById('krHomolQueueText').textContent=
-  'Fila: '+(list.queue.length?list.queue.map(function(p){return p.label;}).join(' → '):'vazia');
- if(window.twKaraokeHomolBridge)window.twKaraokeHomolBridge.show(list);
- enable(true,seat,queued);
+ var ol=document.getElementById('krHomolQueueSlots');ol.replaceChildren();
+ queue.forEach(function(p,i){
+   var li=document.createElement('li'),my=people.some(function(a){return a.self&&p&&a.slot===p.slot;});
+   li.textContent=p?p.label+(my?' · sua posição 💜':''):'Livre';
+   li.setAttribute('aria-label','Fila '+(i+1)+': '+li.textContent);ol.appendChild(li);
+ });
+ document.getElementById('krHomolQueueText').textContent=queued?
+  '💌 Você está na posição '+data.queuePosition+' de 3':'Fila por ordem de chegada.';
+ var mic=people.find(function(p){return p.singing;}),previous=isSinging;
+ isSinging=!!(seat&&data.amISinging&&mic&&mic.self);
+ turnClock=(seat&&mic&&data.turnStarts&&data.turnEnds&&data.serverNow)?{
+   starts:Date.parse(data.turnStarts),ends:Date.parse(data.turnEnds),
+   serverNow:Date.parse(data.serverNow),clientNow:performance.now(),label:mic.label}:null;
+ if(window.twKaraokeHomolBridge)window.twKaraokeHomolBridge.show({slots:people,queue:queue.filter(Boolean)});
+ showTurnClock();enable(true,seat,queued);
+ if(isSinging&&!previous)say('🎤 Sua vez! No microfone por até 60 segundos, sem estrelas ou prêmios.');
  if(data.status==='full')say('💖 Palco lotado por enquanto. Tente novamente depois.');
  else if(data.status==='already_inside'&&!token)say('Outra aba já ocupa sua vaga. Não há duplicação de assentos.');
- else if(seat)say('Conectado ao ensaio · '+data.occupied+'/9 · sem pontos ou prêmios.');
+ else if(seat&&!isSinging)say('Conectado ao ensaio · '+data.occupied+'/9 · sem pontos ou prêmios.');
  else say('Identidade de ensaio pronta. Toque em Entrar na sala.');
  return data;
 }
@@ -175,6 +207,7 @@ buttons.Auth.addEventListener('click',async function(){
      if(r.error)throw r.error;
    }
    ready=true;await refresh(false);
+   if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,1000); // visual: zero RPC
    if(!timer)timer=setInterval(function(){
      if(document.hidden||!ready||!token||busy)return;
      refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
@@ -191,5 +224,5 @@ buttons.Refresh.addEventListener('click',function(){if(ready&&!busy)refresh(fals
 document.addEventListener('visibilitychange',function(){
  if(!document.hidden&&ready&&!busy)refresh(false).catch(function(){});
 });
-window.addEventListener('pagehide',function(){if(timer)clearInterval(timer);});
+window.addEventListener('pagehide',function(){if(timer)clearInterval(timer);if(turnClockTimer)clearInterval(turnClockTimer);});
 })();

@@ -8,6 +8,9 @@ on:
       - 'sora-jump.html'
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'
+      - 'karaoke-homol-view.js'
+      - 'karaoke-homol-client.js'
+      - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'sora-embed.css'
@@ -27,6 +30,9 @@ on:
       - 'sora-jump.html'
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'
+      - 'karaoke-homol-view.js'
+      - 'karaoke-homol-client.js'
+      - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'sora-embed.css'
@@ -54,3 +60,5 @@ jobs:
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame
         run: node tests/karaoke-rhythm.test.js
+      - name: Validate Karaoke homol stage, queue and safety
+        run: node tests/karaoke-homol-view.test.js

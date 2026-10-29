@@ -19,7 +19,7 @@ var PRACTICE_PREVIEW=new URLSearchParams(location.search).get('practice_preview'
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null,sync=null;
 var practice=null,tapPending=false,moderationLocked=false;
-var currentRefresh=null;
+var currentRefresh=null,pendingHeartbeat=false;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
 var panel=document.createElement('section');
@@ -202,6 +202,15 @@ function showTurnClock(){
  out.textContent=(isSinging?'🌟 Sua vez! ':'🎤 '+turnClock.label+' · ')+texto+' · '+phase.remaining+'s';
  badge.textContent='🎤 '+turnClock.label+' · '+phase.remaining+'s (estimativa)';
 }
+// The browser may preserve this page in bfcache: both timers must resume once.
+function startHomolTimers(){
+ if(!ready)return;
+ if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,125); // visual only, no RPC
+ if(!timer)timer=setInterval(function(){
+   if(document.hidden||!ready||!token||!labOpen||busy)return;
+   refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
+ },30000);
+}
 async function rpc(action){
  var result=await client.rpc('karaoke_ensaio',{p_action:action,p_token:token||null});
  if(result.error)throw result.error;
@@ -209,9 +218,26 @@ async function rpc(action){
 }
 async function refresh(doHeartbeat){
  if(!client)return;
+ // A status/Realtime query already in flight must not discard seat lease renewal.
+ if(doHeartbeat&&token&&labOpen)pendingHeartbeat=true;
  if(currentRefresh)return currentRefresh;
- currentRefresh=refreshData(doHeartbeat);
- try{return await currentRefresh;}finally{currentRefresh=null;}
+ var run=(async function(){
+   var result;
+   do{
+     var beat=pendingHeartbeat;
+     pendingHeartbeat=false;
+     result=await refreshData(beat);
+   }while(pendingHeartbeat&&token&&labOpen);
+   return result;
+ })();
+ currentRefresh=run;
+ try{return await run;}
+ finally{
+   if(currentRefresh===run)currentRefresh=null;
+   if(!token||!labOpen)pendingHeartbeat=false; // do not carry a stale lease into a new session
+   // Resolve the narrow microtask race after the final loop condition.
+   if(pendingHeartbeat&&token&&labOpen)refresh(true).catch(function(e){say(String(e.message||e));});
+ }
 }
 async function refreshData(doHeartbeat){
  var data=await rpc(doHeartbeat&&token&&labOpen?'heartbeat':'status');
@@ -310,11 +336,7 @@ buttons.Auth.addEventListener('click',async function(){
      if(r.error)throw r.error;
    }
    ready=true;await refresh(false);
-   if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,125); // only visual, zero RPC
-   if(!timer)timer=setInterval(function(){
-     if(document.hidden||!ready||!token||!labOpen||busy)return;
-     refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
-   },30000);
+   startHomolTimers();
  }catch(e){
    say('Login de teste não concluído. Confirme Turnstile e Anonymous Sign-ins somente no Supabase de homologação. '+String(e.message||e));
  }finally{unlock();}
@@ -347,5 +369,14 @@ document.addEventListener('visibilitychange',function(){
  if(document.hidden&&sync)sync.stop();
  if(!document.hidden&&ready&&!busy)refresh(false).catch(function(){});
 });
-window.addEventListener('pagehide',function(){if(sync)sync.stop();if(timer)clearInterval(timer);if(turnClockTimer)clearInterval(turnClockTimer);});
+window.addEventListener('pagehide',function(){
+ if(sync)sync.stop();
+ if(timer){clearInterval(timer);timer=null;}
+ if(turnClockTimer){clearInterval(turnClockTimer);turnClockTimer=null;}
+});
+window.addEventListener('pageshow',function(){
+ if(!ready)return;
+ startHomolTimers();
+ if(!document.hidden&&!busy)refresh(false).catch(function(){});
+});
 })();

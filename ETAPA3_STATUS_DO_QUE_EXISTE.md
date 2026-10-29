@@ -136,3 +136,5 @@
 > **Prévia controlada 3A.9 (29/10/2026):** uma única prévia na Netlify para mostrar o painel de ritmo de ensaio sem autenticação em `?homol=1&practice_preview=1`. Nenhuma pontuação, conta ou vaga é criada nesse modo. Vercel pausada, branch isolada, PR rascunho.
 
 > **Prévia controlada 3A.10 (29/10/2026):** um único build Netlify para exibir horário dominical e o painel seguro de homologação. Cadastro de Idols permanece desabilitado, portão fechado, Vercel pausada. Sem alterar o HTML principal ou o Supabase oficial.
+
+> **3A.11 — estabilidade cliente (29/10/2026):** correção do heartbeat pendente que poderia ser perdido dentro de uma consulta de status Realtime, restauração dos temporizadores após o navegador voltar do bfcache, e revisão das correções técnicas de Sora vindas do Gemini. Testes Node isolados adicionados ao CI; sem contas liberadas, sem mudança de banco, sem merge ou produção, sem ativar Vercel. Teste real de 9 navegadores ainda é pendência. Consultar ETAPA3A11_VIDA_UTIL_E_ESTABILIDADE.md.

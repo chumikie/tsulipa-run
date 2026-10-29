@@ -26,6 +26,8 @@ on:
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
+      - 'tests/sora-stability.test.js'
+      - 'tests/karaoke-homol-refresh.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -52,6 +54,8 @@ on:
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
+      - 'tests/sora-stability.test.js'
+      - 'tests/karaoke-homol-refresh.test.js'
       - '.github/workflows/validate-games.yml'
 
 jobs:
@@ -73,3 +77,7 @@ jobs:
         run: node tests/karaoke-homol-view.test.js
       - name: Validate Karaoke realtime lifecycle and recovery
         run: node tests/karaoke-homol-sync.test.js
+      - name: Validate Karaoke 3A.11 lease renewal and browser restore
+        run: node tests/karaoke-homol-refresh.test.js
+      - name: Validate Sora mobile and iframe stability
+        run: node tests/sora-stability.test.js

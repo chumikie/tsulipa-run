@@ -612,6 +612,7 @@ function beep(f,d,t,v,when){
   var a=ac();if(!a||muted)return;
   var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);
   o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.05,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.onended=function(){try{o.disconnect();gn.disconnect();}catch(e){}};
   o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);
 }
 var sfx={
@@ -1137,6 +1138,14 @@ var PET_SP = {   // chaves internas iguais às do drawPet; nomes de exibição
 var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
 var petView = 'room', petCharT = 0, petLove = 0, petEmote = null, petDevUnlock = false, petMk = null;
 var PET_MK_DEF = { orelha:'gato', cor:'#ff6fb5', olhos:'brilho', bochecha:true, acc:'laco' };
+// Restore isolated profile only after pet state has been declared.
+function soraRestoreSavedLook(){
+ try{var v=window.__TW_TEST_STORAGE.getItem('brs48cr_acc');if(v!==null)accSel=String(v);}catch(e){}
+ try{var p=JSON.parse(window.__TW_TEST_STORAGE.getItem('brs48cr_pet')||'null');
+  if(p&&typeof p==='object'&&!Array.isArray(p)){petData=p;petMk=p.pets&&p.pets.meu?p.pets.meu:null;}
+ }catch(e){}
+}
+soraRestoreSavedLook();
 function petFace(ctx, type, ex, E){
   if(ex === 'dorme' || ex === 'sono'){
     ctx.strokeStyle = '#2e1065'; ctx.lineWidth = 1.3;
@@ -1529,6 +1538,7 @@ function soraBurst(px, py, color, count, power){
     var v = (.55 + Math.random() * .75) * power;
     soraParticles.push({x:px, y:py, vx:Math.cos(a)*v, vy:Math.sin(a)*v, c:color || '#fff1a8', t:0, life:24 + Math.random()*12, size:1.5 + Math.random()*2.2, sparkle:true});
   }
+  if(soraParticles.length>120)soraParticles.splice(0,soraParticles.length-120);
 }
 function soraMakePlat(y, forceNormal){
   var m = Math.max(0, Math.floor(-y / 10));
@@ -2012,6 +2022,20 @@ function soraTryRescueWithShield(){
   }
   return false;
 }
+// Preserve filtering semantics without 4 fresh arrays per animation frame.
+function soraCompactAlive(list,bottom,mode){
+ var write=0;
+ for(var read=0;read<list.length;read++){
+  var item=list[read],keep;
+  if(mode===0)keep=item.t<(item.life||30);
+  else if(mode===1)keep=item.y<bottom&&!item.used;
+  else if(mode===2)keep=item.y<bottom&&!item.got;
+  else keep=item.y<bottom&&(!item.done||item.k==='vento');
+  if(keep)list[write++]=item;
+ }
+ list.length=write;
+ return list;
+}
 function soraUpdate(dt){
   soraFrame += dt;
   soraVisitorElapsed += dt;
@@ -2026,7 +2050,8 @@ function soraUpdate(dt){
     soraFlashAlpha = Math.max(0, soraFlashAlpha - 0.033 * dt);
   }
   soraParticles.forEach(function(pt){ pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.vy += .035 * dt; pt.t += dt; });
-  soraParticles = soraParticles.filter(function(pt){ return pt.t < (pt.life || 30); });
+  soraCompactAlive(soraParticles,0,0);
+  if(soraParticles.length>120)soraParticles.splice(0,soraParticles.length-120);
 
   // Controles horizontais: Teclado, Toque nas metades da tela ou Inclinação do celular
   var moveInput = 0;
@@ -2282,9 +2307,10 @@ function soraUpdate(dt){
   }
 
   // Limpa objetos que ficaram muito abaixo da tela
-  soraPlats = soraPlats.filter(function(p){ return p.y < soraCamY + SH + 80 && !p.used; });
-  soraItems = soraItems.filter(function(it){ return it.y < soraCamY + SH + 80 && !it.got; });
-  soraHazards = soraHazards.filter(function(h){ return h.y < soraCamY + SH + 80 && (!h.done || h.k === 'vento'); });
+  var bottom=soraCamY+SH+80;
+  soraCompactAlive(soraPlats,bottom,1);
+  soraCompactAlive(soraItems,bottom,2);
+  soraCompactAlive(soraHazards,bottom,3);
 
   // Verifica se o Idol caiu abaixo da tela
   if(soraP.y > soraCamY + SH + 24){
@@ -3298,10 +3324,10 @@ function soraDraw(){
     x.save(); x.globalAlpha = alpha; x.fillStyle = pt.c || '#fff';
     x.shadowColor = pt.c || '#fff'; x.shadowBlur = 5;
     if(pt.sparkle){
-      var ps = pt.size || 2, py = pt.y - soraCamY;
+      var ps = pt.size || 2, py = pt.y; // canvas already translated by -soraCamY
       x.beginPath(); x.moveTo(pt.x, py-ps*1.8); x.quadraticCurveTo(pt.x+ps*.22, py-ps*.22, pt.x+ps*1.8, py); x.quadraticCurveTo(pt.x+ps*.22, py+ps*.22, pt.x, py+ps*1.8); x.quadraticCurveTo(pt.x-ps*.22, py+ps*.22, pt.x-ps*1.8, py); x.quadraticCurveTo(pt.x-ps*.22, py-ps*.22, pt.x, py-ps*1.8); x.fill();
     } else {
-      x.beginPath(); x.arc(pt.x, pt.y - soraCamY, pt.size || 2, 0, Math.PI*2); x.fill();
+      x.beginPath(); x.arc(pt.x, pt.y, pt.size || 2, 0, Math.PI*2); x.fill();
     }
     x.restore();
   });
@@ -3877,6 +3903,7 @@ function soraSetupUI(){
     if(e.code === 'Escape'){
       e.preventDefault();
       soraCloseUI();
+      try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);}catch(_){}
       return;
     }
     if(soraState !== 'play') return;
@@ -4029,10 +4056,21 @@ function soraOpenUI(){
   $('soraOv').hidden = false;
   soraLastT = performance.now(); cancelAnimationFrame(soraRaf); soraRaf = requestAnimationFrame(soraLoop);
 }
+// A background-cached iframe must resume RAF/audio on pageshow.
+function soraSuspendForNavigation(){
+ soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;
+ if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
+}
+window.addEventListener('pagehide',soraSuspendForNavigation);
+window.addEventListener('pageshow',function(){
+ if(!soraOpen||soraRaf)return;
+ soraLastT=performance.now();soraRaf=requestAnimationFrame(soraLoop);
+ if(soraState==='play'&&!document.hidden&&soraSoundOn&&!muted)soraMusicStart();
+});
 function soraCloseUI(){
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
-  cancelAnimationFrame(soraRaf); if($('soraOv')) $('soraOv').hidden = true;
+  cancelAnimationFrame(soraRaf); soraRaf=0; if($('soraOv')) $('soraOv').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = '';
   if(soraSavedMutedBeforeOpen !== null){ muted = soraSavedMutedBeforeOpen; soraSavedMutedBeforeOpen = null; }
 }
@@ -4042,12 +4080,19 @@ function soraCloseUI(){
 (function(){
   document.addEventListener('click',function(e){
     var b=e.target&&e.target.closest?e.target.closest('#soraBackTopBtn,#soraCloseBtn'):null;
-    if(b){e.preventDefault();e.stopImmediatePropagation();try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);else location.href='./sora-jump-karaoke.html';}catch(_){location.href='./sora-jump-karaoke.html';}}
+    if(b){
+      e.preventDefault();
+      // Capture otherwise blocks onclick, so run the game's cleanup first.
+      if(typeof b.onclick==='function')b.onclick.call(b,e);
+      e.stopImmediatePropagation();
+      try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);else location.href='./sora-jump-karaoke.html';}
+      catch(_){location.href='./sora-jump-karaoke.html';}
+    }
   },true);
   document.addEventListener('DOMContentLoaded',function(){
     var input=document.getElementById('nick');
     if(input&&!String(input.value||'').trim()){
-      var saved='';try{saved=localStorage.getItem('brs48cr_nick')||'';}catch(_){}
+      var saved='';try{saved=window.__TW_TEST_STORAGE?(window.__TW_TEST_STORAGE.getItem('brs48cr_nick')||''):(localStorage.getItem('brs48cr_nick')||'');}catch(_){}
       input.value=String(saved).trim()||'Tsu';
     }
     var launcher=document.getElementById('openSoraBtn');

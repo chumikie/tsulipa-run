@@ -8340,9 +8340,10 @@ function twKaraokeAtualizarCard(){
   var fmt={pt:['🔒 Abre em ','🟢 Aberto até 13h10'],en:['🔒 Opens in ','🟢 Open until 13:10'],
     es:['🔒 Abre en ','🟢 Abierto hasta 13:10'],ja:['🔒 開始まで ','🟢 13:10までオープン'],
     th:['🔒 เปิดในอีก ','🟢 เปิดถึง 13:10']}[LANG]||['🔒 Abre em ','🟢 Aberto até 13h10'];
-  card.classList.toggle('tw-karaoke-locked',!estado.aberto);
-  card.setAttribute('aria-disabled',String(!estado.aberto));
-  if(txt)txt.textContent=estado.aberto?fmt[1]:fmt[0]+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
+  var adm=typeof contaAdmin==='function'&&contaAdmin();
+  card.classList.toggle('tw-karaoke-locked',!estado.aberto&&!adm);
+  card.setAttribute('aria-disabled',String(!estado.aberto&&!adm));
+  if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':fmt[0]+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
   card.title=estado.aberto?'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)':'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)';
 }
 function hubCardsUI(){
@@ -8517,12 +8518,28 @@ function twPreviewMontarFundo(){
   var fundo=$('twPreviewPart'),origem=$('hubPart');
   if(fundo&&origem)fundo.innerHTML=origem.innerHTML;
 }
- // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
+ // Closed-room interface prototype. Invitations will be delivered only after
+// a separate authenticated, rate-limited server RPC is reviewed and deployed.
+function twKaraokeMostrarFechado(){
+  twKaraokeAtualizarCard();
+  var modal=$('twKaraokeFechado');if(!modal)return;
+  var t=twKaraokeHorario(),txt=$('twKaraokeFechadoTxt');
+  var dias=Math.floor(t.faltam/86400),horas=Math.floor(t.faltam%86400/3600),
+      minutos=Math.ceil(t.faltam%3600/60);
+  if(txt)txt.textContent='🎤 Domingo, 12h–13h10 (Brasília). Abre em '+
+    (dias?dias+'d ':'')+horas+'h '+String(minutos).padStart(2,'0')+'min.';
+  modal.hidden=false;
+  var botao=$('twKaraokeConviteRascunho');if(botao)botao.hidden=false;
+  var aviso=$('twKaraokeConviteInfo');if(aviso)aviso.hidden=true;
+  $('twKaraokeFecharAviso').focus({preventScroll:true});
+}
+// Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
 function twPreviewAbrirJogo(tipo){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   // Stage 1: refuse to open Karaoke from INDEX2 outside the published weekly window.
   // Real authorization (including the Tsu exception) requires a trusted server check.
-  if(tipo==='karaoke'&&!twKaraokeHorario().aberto){twKaraokeAtualizarCard();return;}
+  if(tipo==='karaoke'&&!twKaraokeHorario().aberto&&
+     !(typeof contaAdmin==='function'&&contaAdmin())){twKaraokeMostrarFechado();return;}
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
   twPreviewJogoAnterior=tipo;
@@ -8535,7 +8552,10 @@ function twPreviewAbrirJogo(tipo){
   twPreviewMontarFundo();
   twPreviewCabecalhoOficial(true);
   wrap.hidden=false;
-  frame.src=tipo==='sora'?'./sora-jump.html?embed=index2':'./karaoke-day.html';
+  // The selected Oshi and language accompany the iframe; no new storage or RPC call.
+  var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
+  var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);
+  frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context;
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
@@ -8559,6 +8579,18 @@ function twPreviewFecharJogo(){
     '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
     '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
+  // Prototype: a working modal, no fake invite delivery or account writes.
+  var aviso='<section id="twKaraokeFechado" class="tw-karaoke-closed-ov" hidden role="dialog" aria-modal="true" aria-labelledby="twKaraokeFechadoTit">'+
+    '<div class="tw-karaoke-closed-panel"><h2 id="twKaraokeFechadoTit">🎤 Karaoke⭐Day!</h2>'+
+    '<p>💗 O palco está descansando para o próximo show!</p>'+
+    '<p id="twKaraokeFechadoTxt"></p>'+
+    '<p id="twKaraokeConviteInfo" hidden>💌 Convites persistentes estão em desenvolvimento. Nenhuma mensagem foi enviada nesta prévia.</p>'+
+    '<div class="btns"><button type="button" class="btn alt" id="twKaraokeFecharAviso">Fechar</button>'+
+    '<button type="button" class="btn" id="twKaraokeConviteRascunho">💌 Convidar (prévia)</button></div></div></section>';
+  document.body.insertAdjacentHTML('beforeend',aviso);
+  $('twKaraokeFecharAviso').onclick=function(){$('twKaraokeFechado').hidden=true;var card=$('hubCards').querySelector('[data-ir="karaoke"]');if(card)card.focus({preventScroll:true});};
+  $('twKaraokeConviteRascunho').onclick=function(){$('twKaraokeConviteInfo').hidden=false;this.hidden=true;};
+  $('twKaraokeFechado').addEventListener('click',function(e){if(e.target===this)$('twKaraokeFecharAviso').click();});
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
   window.addEventListener('message',function(e){
     var frame=$('twPreviewIframe');

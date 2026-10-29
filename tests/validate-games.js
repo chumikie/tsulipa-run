@@ -89,6 +89,55 @@ for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaR
 }
 
 
+
+// Behavioral smoke test: execute ONLY the isolated INDEX2 preview controller
+// against a fake DOM. Never load the live site or call Supabase.
+try{
+  const from=lab.indexOf("var twPreviewJogoAnterior = null;");
+  const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
+  if(from<0||to<=from)throw Error("Preview controller not found");
+  const iframe={src:"",title:""},overlay={hidden:true};
+  const gameTitle={textContent:""},backText={textContent:""};
+  const noticeParts={strong:{textContent:""},span:{textContent:""}};
+  const notice={querySelector:s=>noticeParts[s]};
+  let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0;
+  const card={focus:()=>{launchesFocused++;}};
+  const nodes={
+    twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
+    twPreviewVoltar:{focus:()=>{backFocused++;}},
+    twPreviewVoltarTxt:backText,twPreviewAviso:notice
+  };
+  const fakeHub={hidden:false,querySelector:sel=>sel.includes("data-ir=")?card:null};
+  const sandbox={
+    LANG:"pt",$:id=>nodes[id]||null,hubOv:fakeHub,
+    hubMusicaParar:()=>{musicStops++;},
+    hubMostrar:()=>{hubReturns++;fakeHub.hidden=false;},
+    document:{body:{classList:{remove:()=>{}}}}
+  };
+  vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
+  sandbox.twPreviewAbrirJogo("sora");
+  assert(iframe.src==="./sora-jump.html"&&!overlay.hidden&&fakeHub.hidden,
+    "Sora launcher must show the iframe and hide the hub");
+  assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
+  sandbox.twPreviewAbrirJogo("karaoke");
+  assert(iframe.src==="./sora-jump.html"&&musicStops===1,
+    "A duplicate launch must not replace an active game");
+  sandbox.twPreviewFecharJogo();
+  assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
+         hubReturns===1&&launchesFocused===1,"Sora return must unload iframe and restore launcher focus");
+  sandbox.twPreviewAbrirJogo("karaoke");
+  assert(iframe.src==="./karaoke-day.html"&&gameTitle.textContent.includes("Karaoke"),
+    "Karaoke launcher must open the correct iframe");
+  sandbox.twPreviewFecharJogo();
+  assert(iframe.src==="about:blank"&&hubReturns===2&&launchesFocused===2,
+    "Karaoke return must unload iframe and restore hub focus");
+  sandbox.LANG="ja";
+  sandbox.twPreviewAtualizarIdioma();
+  assert(backText.textContent==="ホーム"&&noticeParts.strong.textContent.includes("テスト版"),
+    "Preview text should update when the hub language changes");
+  console.log("✓ Preview controller smoke test: Sora, Karaoke, back, focus, locale");
+}catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
+
 if(errors.length){
   errors.forEach(err=>console.error("✗",err));
   process.exitCode=1;

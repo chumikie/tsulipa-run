@@ -13605,66 +13605,170 @@ function soraCloseUI(){
     <p class="tw-hub-note">${t('hubNote')}</p>
    </main>`;
   document.body.appendChild(hub);
-
-  // Substitui SOMENTE a sala de karaoke antiga, mantendo o seletor e o Sora Jump.
-  var room=document.createElement('section');
-  room.id='twKaraokeMode';
-  room.setAttribute('aria-label','Karaoke⭐Day');
-  room.innerHTML='<iframe id="twKaraokeFrame" title="Karaoke⭐Day" allow="autoplay" style="display:block;border:0;width:100%;height:100%;background:#d0f0ff"></iframe>';
+  var room=document.createElement('section');room.id='twKaraokeMode';room.setAttribute('aria-label','Karaoke⭐Day');room.innerHTML=`
+   <div class="tw-karaoke-shell">
+    <header class="tw-karaoke-head"><div><h2>🎤 ${t('roomTitle')}</h2><p>${t('roomSub')}</p></div><button type="button" class="tw-quiet-button" id="twKaraokeBack">${t('backHub')}</button></header>
+    <canvas id="twKaraokeCanvas" width="1920" height="1080" aria-label="Karaoke⭐Day 1920 por 1080"></canvas>
+    <div class="tw-screen-group" id="twScreenGroupStatus" aria-live="polite">${t('group')} · troca a cada 10 minutos</div>
+    <div class="tw-room-controls">
+     <section class="tw-room-picker">
+      <h3>${t('snacks')}</h3><div class="tw-items" id="twSnackOptions">
+       <button type="button" class="tw-item-btn" data-snack="fries" aria-pressed="false">🍟 ${t('fries')}</button>
+       <button type="button" class="tw-item-btn" data-snack="takoyaki" aria-pressed="false">🐙 ${t('takoyaki')}</button>
+       <button type="button" class="tw-item-btn" data-snack="dango" aria-pressed="false">🍡 ${t('dango')}</button>
+       <button type="button" class="tw-item-btn" data-snack="taiyaki" aria-pressed="false">🐟 ${t('taiyaki')}</button>
+       <button type="button" class="tw-item-btn" data-snack="none" aria-pressed="true">${t('noneSnack')}</button>
+      </div>
+      <p class="tw-room-hint">Sem pipoca. Takoyaki, dango e taiyaki são snacks japoneses. Quando a personagem segura comida ou bebida, os braços ficam em pose fixa e ela não dança.</p>
+      <h3 style="margin-top:13px">${t('drinks')}</h3><div class="tw-items" id="twDrinkOptions"><button type="button" class="tw-item-btn" data-drink="strawberry" aria-pressed="false">🍓 Refri de morango</button><button type="button" class="tw-item-btn" data-drink="melon" aria-pressed="false">🍈 Soda de melão</button><button type="button" class="tw-item-btn" data-drink="none" aria-pressed="true">${t('noneDrink')}</button></div>
+      <h3 style="margin-top:13px">${t('accessories')}</h3><p class="tw-room-hint">${t('scarf')}</p><div class="tw-items" id="twScarfOptions">
+       <button type="button" class="tw-item-btn" data-scarf="none" aria-pressed="true">${t('noScarf')}</button><button type="button" class="tw-item-btn" data-scarf="pink" aria-pressed="false">🧣 ${t('pink')}</button><button type="button" class="tw-item-btn" data-scarf="green" aria-pressed="false">🧣 ${t('green')}</button><button type="button" class="tw-item-btn" data-scarf="purple" aria-pressed="false">🧣 ${t('purple')}</button><button type="button" class="tw-item-btn" data-scarf="blue" aria-pressed="false">🧣 ${t('blue')}</button><button type="button" class="tw-item-btn" data-scarf="yellow" aria-pressed="false">🧣 ${t('yellow')}</button>
+      </div>
+      <p class="tw-room-hint" style="margin-top:10px">${t('antenna')}</p><div class="tw-items" id="twAntennaOptions"><button type="button" class="tw-item-btn" data-antenna="on" aria-pressed="false">${t('antennaOn')}</button><button type="button" class="tw-item-btn" data-antenna="off" aria-pressed="true">${t('antennaOff')}</button></div>
+     </section>
+     <aside class="tw-camera-area">
+      <button type="button" class="tw-mic-button" id="twMicBtn">${t('mic')}</button>
+      <section class="tw-rhythm-game" id="twRhythmGame" hidden><b>🎵 Rhythm Challenge · 30 s</b><div class="tw-beat-icon" id="twBeatIcon">✦</div><div class="tw-rhythm-meter"><span id="twRhythmProgress"></span></div><div id="twRhythmText" class="tw-room-hint">${t('rhythmReady')}</div><button type="button" class="tw-camera-btn" id="twHitBeat" style="width:100%;margin-top:8px">${t('hit')}</button></section>
+      <button type="button" class="tw-camera-btn" id="twSaveKaraokePhoto">${t('camera')}</button><div class="tw-hd-label">${t('hd')}</div><p class="tw-room-hint" id="twKaraokeStatus" aria-live="polite">${t('startHint')}</p>
+     </aside>
+    </div>
+   </div>`;
   document.body.appendChild(room);
-  var frame=$('twKaraokeFrame');
-  var fix=document.createElement('style');
-  fix.textContent='#twKaraokeMode{position:fixed!important;inset:0!important;z-index:999990!important;padding:0!important;margin:0!important;overflow:hidden!important;background:var(--bg1,#d0f0ff)!important;}#twCombinedHome{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;padding-top:max(16px,env(safe-area-inset-top))!important;padding-bottom:max(16px,env(safe-area-inset-bottom))!important;}#twCombinedHome .tw-hub-card{max-width:940px!important;box-sizing:border-box}#twCombinedHome .tw-mode-grid{min-width:0}@media(max-width:620px){#twCombinedHome .tw-mode-grid{grid-template-columns:1fr!important}#twCombinedHome .tw-hub-card{width:100%!important}}';
-  document.head.appendChild(fix);
-  var hubNick=$('twHubNick'),origNick=$('nick'),error=$('twHubNickMsg');
-  if(origNick)hubNick.value=origNick.value||'';
-  function requireNick(){
-    var v=hubNick.value.trim();
-    if(!v){error.hidden=false;hubNick.focus();return false;}
-    error.hidden=true;
-    if(origNick){origNick.value=v;origNick.dispatchEvent(new Event('input',{bubbles:true}));}
-    try{if(window.__TW_SORA_STORAGE)window.__TW_SORA_STORAGE.setItem('brs48cr_nick',v);}catch(_){}
-    return true;
-  }
-  function backFromKaraoke(){
-    frame.src='about:blank'; // descarrega áudio, animação e timers ao sair
-    room.style.display='none';hub.style.display='flex';
-  }
+  document.title='TsuLiPa⭐World — Sora⭐Jump! + Karaoke⭐Day';
+  var desc=document.querySelector('meta[name="description"]');if(desc)desc.content='Página especial TsuLiPa⭐World: Sora⭐Jump! e Karaoke⭐Day.';
+  var ogUrl=document.querySelector('meta[property="og:url"]');if(ogUrl)ogUrl.content='https://tsulipa-world.vercel.app/sora-jump-karaoke.html';
   var openSoraOriginal=typeof soraOpenUI==='function'?soraOpenUI:null;
   var closeSoraOriginal=typeof soraCloseUI==='function'?soraCloseUI:null;
-  if(openSoraOriginal){soraOpenUI=function(){
-    if(!requireNick())return;
-    openSoraOriginal();
-    if(typeof soraOpen!=='undefined'&&soraOpen){hub.style.display='none';room.style.display='none';}
-  };}
-  if(closeSoraOriginal){soraCloseUI=function(){
-    closeSoraOriginal();room.style.display='none';hub.style.display='flex';
-  };
-    if($('soraCloseBtn'))$('soraCloseBtn').onclick=soraCloseUI;
-    if($('soraBackTopBtn'))$('soraBackTopBtn').onclick=soraCloseUI;
-  }
+  function syncNick(){var h=$('twHubNick'),n=$('nick');var val=((h&&h.value)||(n&&n.value)||'').trim().slice(0,12);if(h&&val)h.value=val;if(n&&val){n.value=val;n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));}return val;}
+  function requireNick(){var val=syncNick(),h=$('twHubNick'),notice=$('twHubNickMsg');if(!val){if(notice){notice.hidden=false;notice.textContent=t('nickRequired');}if(h){h.focus();h.placeholder=t('nickRequired');}return false;}if(notice)notice.hidden=true;return true;}
+  var origNick=$('nick'),hubNick=$('twHubNick');if(origNick&&hubNick)hubNick.value=origNick.value||'';
+  hubNick.addEventListener('input',function(){if(hubNick.value.trim()&&$('twHubNickMsg'))$('twHubNickMsg').hidden=true;});
+  hub.querySelectorAll('[data-tw-lang]').forEach(function(btn){btn.setAttribute('aria-pressed',String(btn.dataset.twLang===uiLang));btn.addEventListener('click',function(){try{window.localStorage.setItem('brs48cr_lang',btn.dataset.twLang);}catch(e){}location.reload();});});
+  if(openSoraOriginal){soraOpenUI=function(){if(!requireNick())return;hub.style.display='none';room.style.display='none';var launcher=$('openSoraBtn');if(launcher)launcher.style.display='none';openSoraOriginal();if(typeof soraOpen!=='undefined'&&!soraOpen)hub.style.display='flex';};}
+  if(closeSoraOriginal){soraCloseUI=function(){closeSoraOriginal();hub.style.display='flex';room.style.display='none';var launcher=$('openSoraBtn');if(launcher)launcher.style.display='none';stopMusic();};}
+  // Handlers were assigned before the close function was wrapped; rebind them so Back always returns to the hub.
+  if($('soraCloseBtn')) $('soraCloseBtn').onclick=function(){if(closeSoraOriginal)soraCloseUI();};
+  if($('soraBackTopBtn')) $('soraBackTopBtn').onclick=function(){if(closeSoraOriginal)soraCloseUI();};
   var launcher=$('openSoraBtn');if(launcher)launcher.style.display='none';
-  var soraHome=$('soraHomeBtn');if(soraHome)soraHome.hidden=true;
-  var soraOverlay=$('soraOv');if(soraOverlay)soraOverlay.style.zIndex='1000001';
+  var soraHomeBtn=$('soraHomeBtn');if(soraHomeBtn)soraHomeBtn.hidden=true;
   $('twOpenSora').addEventListener('click',function(){if(openSoraOriginal)soraOpenUI();});
-  $('twOpenKaraoke').addEventListener('click',function(){
-    if(!requireNick())return;
-    hub.style.display='none';room.style.display='block';
-    frame.src='./karaoke-day.html';
-  });
-  hubNick.addEventListener('input',function(){if(hubNick.value.trim())error.hidden=true;});
-  hubNick.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('twOpenSora').focus();}});
-  hub.querySelectorAll('[data-tw-lang]').forEach(function(btn){btn.setAttribute('aria-pressed',String(btn.dataset.twLang===uiLang));btn.addEventListener('click',function(){try{localStorage.setItem('brs48cr_lang',btn.dataset.twLang);}catch(_){}location.reload();});});
-  window.addEventListener('message',function(e){
-    if(e.source!==frame.contentWindow)return;
-    if(location.protocol!=='file:'&&e.origin!==location.origin)return;
-    if(e.data&&(e.data.type==='TW_USER_KARAOKE_BACK'||e.data.type==='tsulipa-games-hub'))backFromKaraoke();
-  });
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&room.style.display==='block'){e.preventDefault();backFromKaraoke();}
-  });
+  // Enter inside the nickname field must not silently choose one of the two modes.
+  $('twHubNick').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('twOpenSora').focus();}});
+  $('twOpenKaraoke').addEventListener('click',function(){if(!requireNick())return;hub.style.display='none';room.style.display='block';cancelAnimationFrame(raf);startTime=performance.now();lastGroup=-1;startMusic('lounge');raf=requestAnimationFrame(drawKaraoke);});
+  $('twKaraokeBack').addEventListener('click',function(){room.style.display='none';hub.style.display='flex';cancelAnimationFrame(raf);stopMusic(true);heldMic=false;rhythmActive=false;heldDrink='none';$('twRhythmGame').hidden=true;$('twHitBeat').disabled=true;$('twMicBtn').disabled=false;$('twMicBtn').textContent=t('mic');});
+  document.addEventListener('keydown',function(e){if(room.style.display==='block'&&e.key==='Escape'){e.preventDefault();$('twKaraokeBack').click();}else if(room.style.display==='block'&&e.code==='Space'&&rhythmActive){e.preventDefault();hitBeat();}else if(typeof soraOpen!=='undefined'&&soraOpen&&e.key==='Escape'){e.preventDefault();if($('soraBackTopBtn'))$('soraBackTopBtn').click();}});
+
+  var cvs=$('twKaraokeCanvas'),ctx=cvs.getContext('2d');
+  var heldSnack='none',heldDrink='none',heldMic=false,heldScarf='none',heldAntenna=false,raf=0,startTime=performance.now();
+  var micUntil=0,rhythmUntil=0,rhythmStart=0,beatInterval=850,lastBeatHit=-1,rhythmActive=false,rhythmHits=0,rhythmMisses=0,rhythmScore=0,beatFlashUntil=0,lastGroup=-1;
+  var snackNames={fries:t('fries'),takoyaki:t('takoyaki'),dango:t('dango'),taiyaki:t('taiyaki')};
+  var snackEmoji={fries:'🍟',takoyaki:'🐙',dango:'🍡',taiyaki:'🐟'};
+  var drinkEmoji={strawberry:'🥤',melon:'🥤'};
+  var scarfPalette={pink:'#ff6fb5',green:'#44c79a',purple:'#a57bea',blue:'#55a8f1',yellow:'#ffd34d'};
+  var groups=[
+   {name:'Sakura Sparkle',members:['Tsu','Lirika','Pati','Guest'],colors:['#f3a6d1','#8edbd2','#f4d27e','#a6c5ff']},
+   {name:'Prism Pop',members:['Miihina','Nanamaru','Yukittan','Guest'],colors:['#80d3ee','#c9a6fa','#ff9acb','#f5d278']},
+   {name:'Moonlight Stars',members:['Lirika','Friend','Friend','Guest'],colors:['#a8b9ff','#f6a6ca','#83dfce','#e7c1ff']},
+   {name:'Candy Chorus',members:['Tsu','Pati','Friend','Guest'],colors:['#ff9fc9','#97d8ff','#f9d66d','#b7a1fa']},
+   {name:'Rainbow Stage',members:['Friend','Friend','Friend','Guest'],colors:['#70d6c0','#f6a6cf','#9eb5ff','#ffd46d']},
+   {name:'Starlight Club',members:['Lirika','Tsu','Pati','Guest'],colors:['#c5a4f5','#f5c86c','#8cdccf','#ffadd3']}
+  ];
+  function currentGroup(){var idx=Math.floor(Date.now()/600000)%groups.length;var g=groups[idx];if(new Date().getDay()===0){g={name:g.name,members:g.members.slice(),colors:g.colors.slice()};g.members[2]='TsuLiPa⭐ guest';g.colors[2]='#8edbd2';}if(idx!==lastGroup){lastGroup=idx;$('twScreenGroupStatus').textContent=t('group')+' '+(idx+1)+'/'+groups.length+' · '+g.name+' · '+(new Date().getDay()===0?'TsuLiPa⭐ guest no 3º lugar · ':'')+'troca a cada 10 minutos';}return g;}
+  function rr(c,x,y,w,h,r){c.beginPath();if(typeof c.roundRect==='function')c.roundRect(x,y,w,h,r);else{var q=Math.min(r,w/2,h/2);c.moveTo(x+q,y);c.arcTo(x+w,y,x+w,y+h,q);c.arcTo(x+w,y+h,x,y+h,q);c.arcTo(x,y+h,x,y,q);c.arcTo(x,y,x+w,y,q);c.closePath();}}
+  function blob(c,x,y,rx,ry,color){c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();}
+  function drawStar(c,x,y,outer,inner,color){c.fillStyle=color;c.beginPath();for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,r=i%2?inner:outer,px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;if(!i)c.moveTo(px,py);else c.lineTo(px,py);}c.closePath();c.fill();c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=.7;c.stroke();}
+  function drawAccessory(c,scarf,antenna){if(scarf&&scarf!=='none'&&scarfPalette[scarf]){var sc=scarfPalette[scarf];c.save();c.lineCap='round';c.strokeStyle=sc;c.lineWidth=8;c.beginPath();c.moveTo(-13,-57);c.quadraticCurveTo(0,-48,13,-57);c.stroke();for(var i=0;i<7;i++){var xx=-12+i*4;c.fillStyle=i%2?'rgba(255,255,255,.42)':sc;blob(c,xx,-56+(i%2?1:-1),3.5,3.4,c.fillStyle);}blob(c,-13,-51,4.8,4.8,sc);blob(c,13,-51,4.8,4.8,sc);c.fillStyle='rgba(255,255,255,.85)';blob(c,-14,-52,1.5,1.5,'rgba(255,255,255,.85)');blob(c,12,-52,1.5,1.5,'rgba(255,255,255,.85)');c.restore();}if(antenna){c.save();c.strokeStyle='#9e73d5';c.lineWidth=2.4;c.lineCap='round';c.beginPath();c.moveTo(-7,-91);c.quadraticCurveTo(-13,-104,-16,-112);c.moveTo(6,-91);c.quadraticCurveTo(13,-103,16,-112);c.stroke();drawStar(c,-17,-114,6,2.7,'#ff6fb5');drawStar(c,17,-114,6,2.7,'#ffd34d');c.restore();}}
+  function character(c,x,baseY,scale,color,hair,heldS,heldD,phase,isPlayer,scarf,antenna,heldM){
+    c.save();c.translate(x,baseY);c.scale(scale,scale);
+    var busy=heldS!=='none'||heldD!=='none'||heldM;var bounce=(!isPlayer&&!busy)?Math.sin(phase)*2.6:0;c.translate(0,-bounce);
+    c.strokeStyle='#55446f';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(-8,-28);c.lineTo(-10,-7);c.moveTo(8,-28);c.lineTo(10,-7);c.stroke();
+    blob(c,-13,-5,8,4,'#fff');blob(c,12,-5,8,4,'#fff');
+    c.fillStyle=color;rr(c,-16,-58,32,34,11);c.fill();c.strokeStyle='rgba(255,255,255,.92)';c.lineWidth=2;c.stroke();
+    // Short fluffy party scarf; the hand props never add a limb.
+    drawAccessory(c,scarf,antenna);
+    c.fillStyle='#fff';c.beginPath();c.moveTo(-5,-54);c.lineTo(0,-47);c.lineTo(5,-54);c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
+    blob(c,0,-76,17,19,'#ffe0cd');c.fillStyle=hair;c.beginPath();c.arc(0,-81,18,Math.PI,Math.PI*2);c.lineTo(17,-73);c.quadraticCurveTo(9,-83,3,-81);c.lineTo(-2,-68);c.lineTo(-16,-72);c.closePath();c.fill();
+    c.strokeStyle='#ffe0cd';c.lineWidth=5;c.lineCap='round';var leftHand,rightHand;
+    if(heldS!=='none'){c.beginPath();c.moveTo(-13,-53);c.lineTo(-22,-46);c.lineTo(-19,-40);c.stroke();leftHand={x:-19,y:-40};}
+    else{var lift=busy?0:Math.sin(phase*1.5)*6;c.beginPath();c.moveTo(-13,-53);c.lineTo(-23,-42+lift);c.stroke();leftHand={x:-23,y:-42+lift};}
+    if(heldD!=='none'||heldM){c.beginPath();c.moveTo(13,-53);c.lineTo(22,-47);c.lineTo(21,-40);c.stroke();rightHand={x:21,y:-40};}
+    else{var lift2=busy?0:Math.sin(phase*1.5+1)*6;c.beginPath();c.moveTo(13,-53);c.lineTo(23,-42+lift2);c.stroke();rightHand={x:23,y:-42+lift2};}
+    if(heldS!=='none'){c.font='17px "Apple Color Emoji","Segoe UI Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(snackEmoji[heldS]||'🍟',leftHand.x-3,leftHand.y-9);}
+    if(heldD!=='none'){c.font='17px "Apple Color Emoji","Segoe UI Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(drinkEmoji[heldD]||'🥤',rightHand.x+3,rightHand.y-9);}
+    if(heldM){c.save();c.translate(rightHand.x+3,rightHand.y-11);c.rotate(-.36);c.strokeStyle='#53426f';c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(0,1);c.lineTo(0,13);c.stroke();c.fillStyle='#8edff2';rr(c,-4,-6,8,8,3);c.fill();c.strokeStyle='#fff';c.lineWidth=1.4;c.beginPath();c.moveTo(-3,-3);c.lineTo(3,-3);c.stroke();c.restore();}
+    if(isPlayer){c.font='bold 10px sans-serif';c.textAlign='center';c.fillStyle='#fff';rr(c,-27,-106,54,14,7);c.fill();c.fillStyle='#70549b';c.fillText('VOCÊ',0,-96.4);}
+    c.restore();
+  }
+  function drawDisco(t){
+    ctx.save();ctx.strokeStyle='#9879c1';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(480,0);ctx.lineTo(480,25);ctx.stroke();
+    var grad=ctx.createRadialGradient(470,36,3,480,47,22);grad.addColorStop(0,'#fff');grad.addColorStop(.3,'#d9faff');grad.addColorStop(.62,'#b3a8ec');grad.addColorStop(1,'#7862b2');blob(ctx,480,47,21,21,grad);
+    ctx.save();ctx.beginPath();ctx.arc(480,47,20,0,Math.PI*2);ctx.clip();
+    for(var row=0;row<6;row++){for(var col=0;col<7;col++){var xx=462+col*5.8,yy=29+row*6.6;ctx.fillStyle=['#fff','#b9f1f2','#eec8f2','#c3b9ff','#fbe9a8'][(row*3+col+Math.floor(t*2))%5];ctx.globalAlpha=.46+((row+col)%3)*.12;ctx.fillRect(xx,yy,5.2,5.8);}}
+    ctx.globalAlpha=1;ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(480,47,20,6.8,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(480,47,7,21,0,0,Math.PI*2);ctx.stroke();ctx.restore();ctx.restore();
+    for(var f=0;f<22;f++){var ax=(f*83+t*19)%930+15,ay=95+(f*47%230);ctx.fillStyle=['#fff','#ffd9ef','#befff0','#fff0a8'][f%4];blob(ctx,ax,ay,1.5+(f%3),1.5+(f%3),ctx.fillStyle);}
+  }
+  function plant(px,py,tone){
+    // Ceramic pot with glazed rim, small floral motif, leaf veins and layered foliage.
+    var pot=ctx.createLinearGradient(px-20,py-22,px+20,py);pot.addColorStop(0,'#a97ac6');pot.addColorStop(.5,'#e2b9e7');pot.addColorStop(1,'#9a6dbb');ctx.fillStyle=pot;rr(ctx,px-17,py-27,34,27,7);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#ffe8f6';rr(ctx,px-20,py-31,40,8,3);ctx.fill();ctx.strokeStyle='#b782cf';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px-17,py-27);ctx.lineTo(px+17,py-27);ctx.stroke();
+    for(var q=0;q<9;q++){var ang=-Math.PI/2+(q-4)*.29,side=q%2?1:-1;var lx=px+Math.cos(ang)*(18+(q%3)*3),ly=py-43-Math.abs(q-4)*3;ctx.strokeStyle='#438f78';ctx.lineWidth=2.6;ctx.beginPath();ctx.moveTo(px,py-28);ctx.quadraticCurveTo(px+side*5,py-43,lx,ly);ctx.stroke();ctx.fillStyle=['#3ea780','#61c397','#8bd8aa','#51b88f'][q%4];ctx.beginPath();ctx.ellipse(lx,ly,5.5,13,ang,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.58)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(lx,ly+7);ctx.lineTo(lx+Math.cos(ang)*4,ly-7);ctx.stroke();}
+    for(var fl=0;fl<3;fl++){var fx=px+(fl-1)*8,fy=py-42-(fl%2)*6;for(var pet=0;pet<5;pet++){var a=pet*Math.PI*2/5;blob(ctx,fx+Math.cos(a)*3,fy+Math.sin(a)*3,2.2,2.2,fl%2?'#ffc5e5':'#ffdf8a');}blob(ctx,fx,fy,1.5,1.5,'#fff');}
+  }
+  var lyrics=['♪ Fly high, shine bright! ♪','♪ Kira kira, sing tonight! ♪','♪ Stars are dancing in the sky! ♪','♪ Smile together, you and I! ♪'];
+  function drawKaraoke(){
+    if(room.style.display!=='block')return;
+    var W=960,H=540,t=(performance.now()-startTime)/1000,group=currentGroup();
+    if(heldMic&&performance.now()>=micUntil){heldMic=false;startMusic('lounge');$('twMicBtn').disabled=false;$('twMicBtn').textContent=tL('mic');$('twKaraokeStatus').textContent='Microfone guardado · música lounge de volta.';}
+    if(rhythmActive&&performance.now()>=rhythmUntil){rhythmActive=false;$('twRhythmText').textContent='Desafio concluído · '+rhythmHits+' acertos, '+rhythmScore+' pontos. Bônus de estrelas concedido nos acertos.';$('twHitBeat').disabled=true;}
+    if(rhythmActive){var phase=(performance.now()-rhythmStart)%beatInterval;var icon=$('twBeatIcon');icon.classList.toggle('ready',phase<160||phase>beatInterval-160);$('twRhythmProgress').style.width=Math.min(100,((performance.now()-rhythmStart)/30000)*100)+'%';$('twRhythmText').textContent='Tempo restante: '+Math.max(0,Math.ceil((rhythmUntil-performance.now())/1000))+' s · Acertos: '+rhythmHits+' · '+rhythmScore+' pts';}
+    ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,W,H);
+    var bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#f9d8f2');bg.addColorStop(.52,'#d2c8fa');bg.addColorStop(1,'#91dceb');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#fff0fa';ctx.fillRect(0,0,W,385);
+    for(var p=0;p<8;p++){ctx.fillStyle=p%2?'rgba(187,158,225,.08)':'rgba(255,255,255,.18)';ctx.fillRect(p*120,0,60,385);}
+    var curtain=ctx.createLinearGradient(0,0,960,0);curtain.addColorStop(0,'#b55da5');curtain.addColorStop(.14,'#f7a6d3');curtain.addColorStop(.5,'#e8a4db');curtain.addColorStop(.86,'#f7a6d3');curtain.addColorStop(1,'#b55da5');ctx.fillStyle=curtain;ctx.fillRect(0,35,92,353);ctx.fillRect(868,35,92,353);
+    for(var side=0;side<2;side++){var sx=side?869:8;for(var fold=0;fold<7;fold++){ctx.fillStyle='rgba(255,255,255,.21)';ctx.fillRect(sx+fold*12,37,5,349);}for(var orb=0;orb<4;orb++){drawStar(ctx,(side?890:70)+orb*17,54+orb%2*5,5,2.2,['#ffe879','#9debe0','#ff9dcc','#c0b1ff'][orb]);}}
+    var floor=ctx.createLinearGradient(0,365,0,H);floor.addColorStop(0,'#b7a9e9');floor.addColorStop(1,'#7ebfd6');ctx.fillStyle=floor;ctx.fillRect(0,365,W,175);
+    for(var fl=0;fl<9;fl++){ctx.strokeStyle='rgba(255,255,255,.2)';ctx.beginPath();ctx.moveTo(fl*120-100,540);ctx.lineTo(430+(fl-4)*15,365);ctx.stroke();}
+    // Raised stage and screen with a changing group plus moving lyric line.
+    ctx.fillStyle='#d88ac7';rr(ctx,165,87,630,290,24);ctx.fill();ctx.fillStyle='#f7c6e8';rr(ctx,181,101,598,252,18);ctx.fill();
+    var scr=ctx.createLinearGradient(320,110,650,230);scr.addColorStop(0,'#7167c8');scr.addColorStop(.5,'#63cbdc');scr.addColorStop(1,'#e98cc7');ctx.fillStyle=scr;rr(ctx,310,110,340,130,19);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=3;ctx.stroke();
+    ctx.save();rr(ctx,320,116,320,116,12);ctx.clip();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.shadowColor='rgba(70,38,120,.5)';ctx.shadowBlur=6;ctx.font='1000 17px sans-serif';ctx.fillText(group.name.toUpperCase(),480,137);ctx.shadowBlur=0;ctx.font='bold 9px sans-serif';ctx.fillText(group.members.slice(0,4).join(' · '),480,157);ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(327,174,306,39);var lyric=lyrics[Math.floor(t/6)%lyrics.length],x=650-((t%6)/6)*350;ctx.fillStyle='#60428f';ctx.font='bold 11px sans-serif';ctx.textAlign='left';ctx.fillText(lyric,x,194);ctx.fillText(lyric,x+360,194);ctx.restore();
+    for(var b=0;b<26;b++){ctx.fillStyle=['#fff5a5','#fbaad8','#9cf0e1','#bfb0ff'][b%4];blob(ctx,198+b*22,96+Math.sin(t*2+b)*1.8,3.5,3.5,ctx.fillStyle);blob(ctx,198+b*22,357,3.5,3.5,ctx.fillStyle);}
+    drawDisco(t);plant(116,379);plant(845,379);
+    for(var ph=0;ph<4;ph++){var px=226+ph*168,py=55+Math.sin(ph*2)*2;ctx.save();ctx.translate(px,py);ctx.rotate(ph%2?.045:-.04);ctx.fillStyle='#fff';rr(ctx,-22,-18,44,36,4);ctx.fill();ctx.fillStyle=['#f6acd6','#9bdcde','#c6b4f2','#f8cf88'][ph];ctx.fillRect(-17,-13,34,26);blob(ctx,-6,-3,5,5,'#ffe4ce');blob(ctx,8,-3,5,5,'#ffe4ce');drawStar(ctx,0,4,3,1.2,'#fff');ctx.fillStyle='#fff';ctx.fillRect(-15,8,30,3);ctx.restore();}
+    for(var sof=0;sof<2;sof++){var sx2=sof?710:135;ctx.fillStyle='#ac8fd0';rr(ctx,sx2,390,116,48,15);ctx.fill();ctx.fillStyle='#e7c4f0';rr(ctx,sx2+8,384,100,31,12);ctx.fill();ctx.fillStyle='#fff4fb';rr(ctx,sx2+12,388,24,22,8);ctx.fill();rr(ctx,sx2+80,388,24,22,8);ctx.fill();}
+    character(ctx,306,425,.86,group.colors[0],'#8a5ac7','none','none',t+1,false,['pink','green','purple','blue','yellow'][0],true,false);
+    character(ctx,404,418,.92,group.colors[1],'#6544a1','none','none',t+2,false,['green','blue','pink','yellow','purple'][1],false,false);
+    character(ctx,561,418,.92,group.colors[2],'#b45d9b','none','none',t+3,false,['yellow','purple','green','pink','blue'][2],true,false);
+    character(ctx,657,425,.86,group.colors[3],'#6c61bd','none','none',t+4,false,['blue','pink','yellow','green','purple'][3],false,false);
+    character(ctx,480,500,1.12,'#f3a6d1','#7f51af',heldSnack,heldDrink,t,true,heldScarf,heldAntenna,heldMic);
+    ctx.fillStyle='rgba(255,255,255,.9)';rr(ctx,350,510,260,22,11);ctx.fill();ctx.fillStyle='#75569c';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText((hubNick.value||'Idol')+' · Karaoke⭐Day',480,521);
+    ctx.setTransform(1,0,0,1,0,0);raf=requestAnimationFrame(drawKaraoke);
+  }
+  function tL(key){return t(key);}
+  function startMusic(mode){
+    stopMusic(false);audioMode=mode;
+    try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=audioCtx||new AC();var resume=audioCtx.resume();if(resume&&resume.catch)resume.catch(function(){});var step=0;
+      function note(){if(!audioCtx||audioMode!==mode||document.hidden||room.style.display!=='block')return;var lounge=[261.63,329.63,392,329.63,293.66,349.23,440,349.23],idol=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46],seq=mode==='idol'?idol:lounge,now=audioCtx.currentTime;try{var osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=mode==='idol'?'triangle':'sine';osc.frequency.setValueAtTime(seq[step%seq.length],now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(mode==='idol'?.045:.018,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+(mode==='idol'?.19:.38));osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+(mode==='idol'?.21:.4));}catch(e){}step++;audioTimer=setTimeout(note,mode==='idol'?245:590);}
+      note();
+    }catch(e){audioMode='off';}
+  }
+  var audioCtx=null,audioTimer=0,audioMode='off';
+  function stopMusic(close){if(audioTimer)clearTimeout(audioTimer);audioTimer=0;audioMode='off';if(audioCtx){try{audioCtx.suspend();if(close){audioCtx.close();audioCtx=null;}}catch(e){}}}
+  function hitBeat(){if(!rhythmActive)return;var now=performance.now(),beat=Math.round((now-rhythmStart)/beatInterval),target=rhythmStart+beat*beatInterval,delta=Math.abs(now-target);if(beat===lastBeatHit){$('twRhythmText').textContent='Essa batida já foi marcada. Aguarde a próxima ✨';return;}lastBeatHit=beat;if(delta<=220){rhythmHits++;rhythmScore+=100;beatFlashUntil=now+180;try{if(typeof starT==='number'){starT+=3;window.__TW_SORA_STORAGE.setItem('brs48cr_st',starT);}}catch(e){}$('twKaraokeStatus').textContent='Boa! +3 ★ · '+rhythmHits+' acertos de ritmo.';}else{rhythmMisses++;$('twKaraokeStatus').textContent='Quase! Tente acertar perto do brilho ✨';} }
+  $('twMicBtn').addEventListener('click',function(){if(!requireNick())return;var now=performance.now();heldMic=true;if(heldDrink!=='none'){heldDrink='none';$('twDrinkOptions').querySelectorAll('[data-drink]').forEach(function(n){n.setAttribute('aria-pressed',String(n.dataset.drink==='none'));});}micUntil=now+45000;rhythmStart=now+350;rhythmUntil=now+30000;lastBeatHit=-1;rhythmHits=0;rhythmMisses=0;rhythmScore=0;rhythmActive=true;$('twRhythmGame').hidden=false;$('twHitBeat').disabled=false;$('twMicBtn').disabled=true;$('twMicBtn').textContent='🎙️ Microfone ativo · 45 s';$('twRhythmText').textContent=t('rhythmReady');startMusic('idol');$('twKaraokeStatus').textContent='Microfone na mão! Desafio de ritmo por 30 segundos; microfone por 45 segundos.';});
+  $('twHitBeat').addEventListener('click',hitBeat);
+  $('twSnackOptions').addEventListener('click',function(e){var b=e.target.closest('[data-snack]');if(!b)return;heldSnack=b.dataset.snack;this.querySelectorAll('[data-snack]').forEach(function(n){n.setAttribute('aria-pressed',String(n===b));});$('twKaraokeStatus').textContent=heldSnack==='none'?'Snack guardado.':t('startHint')+' · '+snackNames[heldSnack]+'.';});
+  $('twDrinkOptions').addEventListener('click',function(e){var b=e.target.closest('[data-drink]');if(!b)return;heldDrink=b.dataset.drink;if(heldDrink!=='none'&&heldMic){heldMic=false;rhythmActive=false;$('twRhythmGame').hidden=true;$('twHitBeat').disabled=true;$('twMicBtn').disabled=false;$('twMicBtn').textContent=t('mic');startMusic('lounge');}$('twKaraokeStatus').textContent=heldDrink==='none'?'Bebida guardada.':(rhythmActive?'Bebida equipada. A personagem fica parada enquanto segura itens.':'Bebida equipada. O microfone e o desafio de ritmo foram encerrados; a personagem fica parada com itens.');this.querySelectorAll('[data-drink]').forEach(function(n){n.setAttribute('aria-pressed',String(n===b));});});
+  $('twScarfOptions').addEventListener('click',function(e){var b=e.target.closest('[data-scarf]');if(!b)return;heldScarf=b.dataset.scarf;this.querySelectorAll('[data-scarf]').forEach(function(n){n.setAttribute('aria-pressed',String(n===b));});$('twKaraokeStatus').textContent=heldScarf==='none'?'Cachecol guardado.':'Cachecol pompom '+t(heldScarf)+'.';});
+  $('twAntennaOptions').addEventListener('click',function(e){var b=e.target.closest('[data-antenna]');if(!b)return;heldAntenna=b.dataset.antenna==='on';this.querySelectorAll('[data-antenna]').forEach(function(n){n.setAttribute('aria-pressed',String(n===b));});$('twKaraokeStatus').textContent=heldAntenna?'Antenas de estrela equipadas!':'Antenas guardadas.';});
+  $('twSaveKaraokePhoto').addEventListener('click',function(){try{cvs.toBlob(function(blob){if(!blob){saveFallback();return;}var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='KaraokeDay_Foto_HD_1920x1080.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1200);$('twKaraokeStatus').textContent='Foto salva em PNG 1920 × 1080.';},'image/png');}catch(err){saveFallback();}});
+  function saveFallback(){try{var a=document.createElement('a');a.href=cvs.toDataURL('image/png');a.download='KaraokeDay_Foto_HD_1920x1080.png';a.click();$('twKaraokeStatus').textContent='Foto PNG 1920 × 1080 pronta para salvar.';}catch(e){$('twKaraokeStatus').textContent='Não foi possível salvar a foto neste navegador.';}}
+  document.addEventListener('visibilitychange',function(){if(document.hidden){stopMusic(false);cancelAnimationFrame(raf);}else if(room.style.display==='block'){startMusic(heldMic?'idol':'lounge');raf=requestAnimationFrame(drawKaraoke);}});
+  window.addEventListener('pagehide',function(){cancelAnimationFrame(raf);stopMusic(true);});
   hub.style.display='flex';room.style.display='none';
+  var origSoraOv=$('soraOv');if(origSoraOv){origSoraOv.style.zIndex='1000001';origSoraOv.style.background='linear-gradient(135deg,#a9e8ff,#d9ceff 55%,#ffd7e9)';}
 })();
+
 
 })();
 </script>

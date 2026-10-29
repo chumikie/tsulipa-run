@@ -1,3 +1,24 @@
+/* The shell follows the Oshi palette selected on INDEX 2.
+   Game art, canvas, scores and physics remain unchanged. */
+html.tw-sora-embed{
+  --tw-sora-outer1:#101b3d;--tw-sora-outer2:#211747;--tw-sora-outer3:#341c57;
+  --tw-sora-panel1:#282751;--tw-sora-panel2:#182747;
+  --tw-sora-accent:#ff87c4;--tw-sora-edge:rgba(232,195,255,.55);
+}
+html.tw-sora-embed[data-oshi="tsu"]{
+  --tw-sora-outer1:#251047;--tw-sora-outer2:#421a68;--tw-sora-outer3:#692d8a;
+  --tw-sora-panel1:#3c2069;--tw-sora-panel2:#23154b;--tw-sora-accent:#e4b6ff;
+}
+html.tw-sora-embed[data-oshi="lirika"]{
+  --tw-sora-outer1:#0b302c;--tw-sora-outer2:#124b3c;--tw-sora-outer3:#236947;
+  --tw-sora-panel1:#195044;--tw-sora-panel2:#173a39;--tw-sora-accent:#b6ffcf;
+  --tw-sora-edge:rgba(182,255,207,.58);
+}
+html.tw-sora-embed[data-oshi="pati"]{
+  --tw-sora-outer1:#102444;--tw-sora-outer2:#203f7c;--tw-sora-outer3:#3856ad;
+  --tw-sora-panel1:#294679;--tw-sora-panel2:#192e61;--tw-sora-accent:#b8d6ff;
+  --tw-sora-edge:rgba(184,214,255,.6);
+}
 /* TsuLiPa⭐World · Sora⭐Jump! embedded in INDEX 2 (Stage 2B).
    Activated only by ?embed=index2; standalone Sora keeps its own presentation.
    This file changes CSS only: no game physics, scoring, saves or database API. */
@@ -10,7 +31,7 @@ html.tw-sora-embed body.tw-game-sora{
   min-height:100%!important;
   overflow:hidden;
   background:radial-gradient(circle at 80% 85%,rgba(190,75,228,.22),transparent 40%),
-             linear-gradient(150deg,#101b3d,#211747 58%,#341c57)!important;
+             linear-gradient(150deg,var(--tw-sora-outer1),var(--tw-sora-outer2) 58%,var(--tw-sora-outer3))!important;
 }
 html.tw-sora-embed #soraOv.ov{
   position:fixed;
@@ -33,11 +54,11 @@ html.tw-sora-embed #soraOv>.panel.sora-panel{
   min-height:0!important;
   margin:auto!important;
   padding:12px 14px 14px!important;
-  border:2px solid rgba(232,195,255,.55)!important;
+  border:2px solid var(--tw-sora-edge)!important;
   border-radius:24px!important;
   background:radial-gradient(circle at 5% 0%,rgba(168,85,247,.24),transparent 43%),
              radial-gradient(circle at 100% 12%,rgba(255,111,181,.2),transparent 40%),
-             linear-gradient(155deg,#282751,#182747)!important;
+             linear-gradient(155deg,var(--tw-sora-panel1),var(--tw-sora-panel2))!important;
   box-shadow:0 16px 45px rgba(11,14,55,.28),0 4px 0 rgba(100,55,160,.28)!important;
   overflow-y:auto!important;
   overflow-x:hidden!important;
@@ -110,3 +131,8 @@ html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid #ff87c4;outlin
 @media(prefers-reduced-motion:reduce){
   html.tw-sora-embed #soraOv .sora-over-icon{animation:none!important}
 }
+
+/* A developer-only JSON importer does not belong in the public embedded UI.
+   It remains accessible when opening Sora as a separate test page. */
+html.tw-sora-embed #soraImportProfileBtn,
+html.tw-sora-embed #soraImportProfileBox{display:none!important}

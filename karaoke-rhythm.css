@@ -15,3 +15,18 @@
 .kr-rhythm-play:focus-visible{outline:3px solid var(--b1);outline-offset:2px}
 .kr-rhythm-feedback{font-size:13px;min-height:20px;font-weight:900;text-align:center;color:var(--b1);padding:8px 0 0}
 @media(prefers-reduced-motion:reduce){.kr-rhythm-note{will-change:auto}.kr-rhythm-play{animation:none!important}}
+
+/* Three reserved next-microphone places — local rehearsal, not online seat. */
+.kr-mic-queue{margin:12px auto;padding:14px;max-width:900px;background:var(--card);color:var(--ink);border:2px solid var(--b1);border-radius:18px;box-shadow:0 5px 20px rgba(20,8,65,.08)}
+.kr-mic-queue-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;color:var(--b1)}
+.kr-mic-queue-head strong{font-weight:900;font-size:15px}
+.kr-mic-queue-head small,.kr-mic-queue-help{font-size:11px;color:var(--sub);line-height:1.5}
+.kr-mic-queue-list{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0;margin:10px 0;gap:7px}
+.kr-mic-queue-list li{padding:10px 5px;background:var(--chip);border:1px solid var(--b1);border-radius:12px;text-align:center;font-size:12px;font-weight:750;overflow-wrap:anywhere}
+.kr-mic-queue-list li span:first-child{color:var(--b1);font-weight:900}
+.kr-mic-queue-list li.myturn{border-color:var(--pink);box-shadow:inset 0 0 0 1px var(--pink)}
+.kr-mic-queue-list .muted{opacity:.65}
+.kr-mic-queue-controls{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}
+.kr-mic-queue-controls button{font:inherit;font-weight:800;cursor:pointer;min-height:40px;flex:1 1 150px;touch-action:manipulation}
+.kr-mic-queue-help{display:block}
+@media(max-width:470px){.kr-mic-queue-list{gap:4px}.kr-mic-queue-list li{font-size:11px;padding:7px 2px}}

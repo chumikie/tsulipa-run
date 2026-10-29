@@ -63,7 +63,14 @@
            status('🌸 Consulta periódica ativa');
          }
        });
-     }catch(e){connecting=false;retryAfter=now()+60000;status('🌸 Consulta periódica ativa');}
+     }catch(e){
+       // If subscribe() fails after channel creation, release the orphan channel.
+       // Otherwise start() sees channel!==null and never reconnects.
+       if(generation!==serial)return;
+       stop();
+       retryAfter=now()+60000;
+       status('🌸 Consulta periódica ativa');
+     }
    }
    return Object.freeze({start:start,stop:stop,mark:mark,notice:notice});
  }

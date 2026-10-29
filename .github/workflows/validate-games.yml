@@ -10,6 +10,10 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
+      - 'karaoke-homol-sync.js'
+      - 'tests/karaoke-homol-sync.test.js'
+      - 'supabase/sql/karaoke_lab_*.sql'
+      - 'supabase/tests/karaoke_lab_*.sql'
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
@@ -32,6 +36,10 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
+      - 'karaoke-homol-sync.js'
+      - 'tests/karaoke-homol-sync.test.js'
+      - 'supabase/sql/karaoke_lab_*.sql'
+      - 'supabase/tests/karaoke_lab_*.sql'
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
@@ -44,6 +52,7 @@ on:
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
+      - '.github/workflows/validate-games.yml'
 
 jobs:
   static-validation:
@@ -62,3 +71,5 @@ jobs:
         run: node tests/karaoke-rhythm.test.js
       - name: Validate Karaoke homol stage, queue and safety
         run: node tests/karaoke-homol-view.test.js
+      - name: Validate Karaoke realtime lifecycle and recovery
+        run: node tests/karaoke-homol-sync.test.js

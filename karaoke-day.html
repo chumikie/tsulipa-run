@@ -67,13 +67,16 @@ function krHandBusy(person){
 // Public ranking nicknames (top_scores) are used ONLY as labels; all portraits are illustrated.
 // A server-side weekly snapshot would be needed for strictly identical selections on all devices.
 var krPosterPool=[],krPosterCache={week:'',cast:[],live:false},krPosterSyncing=false;
+var krWeekMemo={timestamp:0,key:''};
 function krWeekKey(){
-  // Sunday 12:00 in Sao Paulo is the start of the next rotation; the entire week shares its seed.
-  var stamp=new Date(),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(stamp),p={};
+  var now=Date.now();
+  if(krWeekMemo.key&&now-krWeekMemo.timestamp<60000)return krWeekMemo.key;
+  var stamp=new Date(now),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(stamp),p={};
   parts.forEach(function(a){p[a.type]=a.value;});
   var d=Date.UTC(+p.year,+p.month-1,+p.day),dow=new Date(d).getUTCDay();
   if(dow===0&&(+p.hour)<12)d-=7*86400000;else d-=dow*86400000;
-  return new Date(d).toISOString().slice(0,10);
+  krWeekMemo.key=new Date(d).toISOString().slice(0,10);krWeekMemo.timestamp=now;
+  return krWeekMemo.key;
 }
 function krSeededRandom(seed){var h=2166136261>>>0;for(var i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619);}return function(){h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return ((h>>>0)%100000)/100000;};}
 function krValidPublicNick(s){

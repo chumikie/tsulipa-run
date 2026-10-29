@@ -12,6 +12,7 @@
 | Teste como admin no Karaoke fechado | Implementado no frontend da INDEX 2 com flag de admin do perfil; backend do multiplayer ainda não existe | `index2.html` |
 | Nome de bebida **Melon Juice!** | Rótulo corrigido **no jogo experimental**, identificador interno preservado | `karaoke-day.html` |
 | Karaoke online de **9 participantes** | **MODELO LOCAL IMPLEMENTADO**, com fila/vagas/microfone e testes; **ainda NÃO é multiplayer**, sem tabelas/RPCs reais | `karaoke-room-model.js`, `tests/karaoke-room-model.test.js`, `karaoke-online-lab.html` |
+| Homologação **Etapa 3A.2–3A.3** | Servidor de 9 vagas + fila de 3 instalado apenas no segundo Supabase; retrato sanitizado dos participantes e cliente opcional `?homol=1` no Karaoke original. **Ainda sem nove sessões reais testadas**: não há contas de teste, autenticação anônima precisa ser habilitada, Realtime e autorização de horário não foram implementados. | `supabase/sql/karaoke_lab_3a2_room_queue.sql`, `supabase/sql/karaoke_lab_3a3_sanitized_elenco.sql`, `karaoke-homol-client.js`, `karaoke-day.html` |
 | Ritmo 45s / turno 60s **no Karaoke original** | **JOGÁVEL na INDEX 2 como ENSAIO LOCAL**: notas, PERFECT/GOOD, combo e placar; **sem multiplayer/sem salvar score** | `karaoke-day.html`, `karaoke-rhythm.js`, `karaoke-rhythm.css`, `tests/karaoke-rhythm.test.js` |
 | Convites persistentes | **SOMENTE PLANO**; prévia visual não envia mensagens | `PLANO_KARAOKE_MODERACAO.md` |
 | Insígnia Nota Perfeita | **SOMENTE PLANO**, não concedida | `ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md` |

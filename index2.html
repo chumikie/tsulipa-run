@@ -708,13 +708,16 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <style id="tw-index2-preview-css">
 /* INDEX 2: extensões limitadas ao novo portal de prévia, sem alterar os módulos legados. */
 #hub .tw-hubgame{min-width:0;isolation:isolate;border:2px solid rgba(255,255,255,.72);background:linear-gradient(150deg,var(--card),var(--chip));}
-#hub .tw-hubgame-sora{box-shadow:0 4px 0 rgba(65,105,225,.34),0 8px 18px rgba(60,20,120,.12);}
+#hub .tw-hubgame-sora{border:0;box-shadow:0 4px 0 rgba(65,105,225,.34),0 8px 18px rgba(60,20,120,.12);}
 #hub .tw-hubgame-karaoke{box-shadow:0 4px 0 rgba(255,111,181,.36),0 8px 18px rgba(60,20,120,.12);}
 #hub .tw-hubgame b{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif;font-weight:400;font-size:clamp(12px,1.5vw,16px);line-height:1.4;overflow-wrap:anywhere;text-align:center;}
 #hub .tw-hubgame i{filter:drop-shadow(0 3px 3px rgba(60,20,120,.18));}
 #hub .tw-hubgame .tw-star{color:#f5b400;white-space:nowrap}
 #hub .tw-hubgame small{line-height:1.4;display:block}
-#hub .tw-hubgame .tw-hubgame-jp{font:700 10px/1.3 "M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:var(--pink,#ff6fb5);letter-spacing:.045em;margin:1px 0 3px}
+#hub .hubcard .tw-hubgame-jp,#hub .hubenc .tw-hubgame-jp{font:700 10px/1.3 "M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:var(--pink,#ff6fb5);letter-spacing:.045em;margin:1px 0 3px}
+#hub .hubduo .tw-hubgame-jp,#hub .hubenc .tw-hubgame-jp{flex-basis:100%;text-align:center}
+#hub .hubenc .tw-hubgame-jp{color:#fff}
+#hub .hubenc.feito .tw-hubgame-jp{color:var(--pink,#ff6fb5)}
 #hub .tw-hubgame:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){#hub .tw-hubgame{transition:none}}
 #hub .tw-preview-notice{margin:4px auto 12px;padding:8px 12px;max-width:650px;color:var(--sub);border:1px dashed rgba(155,48,217,.3);border-radius:14px;background:var(--card);text-align:center;font-size:11px;line-height:1.45}
@@ -8350,26 +8353,37 @@ function twKaraokeAtualizarCard(){
   card.setAttribute('aria-disabled',String(!estado.aberto&&!adm));
   var lead=estado.estreia?({pt:'🎤 Estreia 08/11 · ',en:'🎤 Premiere Nov 8 · ',es:'🎤 Estreno 08/11 · ',ja:'🎤 初公開11/8 · ',th:'🎤 เปิดตัว 8/11 · '}[LANG]||'🎤 Estreia 08/11 · '):fmt[0];
   if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
-  card.title='Karaoke⭐Day! · estreia planejada 08/11/2026, domingo 12h–13h10 (Brasília) · multiplayer em desenvolvimento';
+  card.title='Karaoke⭐Day! · estreia planejada 08/11/2026, domingo 12h–13h10 (Brasília)';
+}
+// Consulta somente local: acompanha a missão diária do Sora em seu armazenamento isolado.
+// Preserva as chaves originais e nunca faz chamadas à API de contas ou do Supabase.
+function twSoraMissaoPendente(){
+  try{
+    var key='brs48cr_mis_sora', isolated='__tsulipa_sorajump_test_v1__::'+key;
+    var dia=localStorage.getItem(isolated);
+    if(dia==='__TW_TEST_DELETED__')return true;
+    if(dia===null)dia=localStorage.getItem(key);
+    return dia!==dk();
+  }catch(e){return true;}
 }
 function hubCardsUI(){
   var pi = hubPetInfo();
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
-    '<button type="button" class="hubcard hubpet" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha"><i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
+    '<button type="button" class="hubcard hubpet" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha"><i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = {
-    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','🧪 Já dá para ensaiar ritmo e dança! Multiplayer em desenvolvimento.'],
-    en:['Jump through clouds, unlock scenes and collect stars.','🧪 Rhythm and dancing rehearsal ready! Multiplayer in development.'],
-    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','🧪 ¡Ensaya ritmo y baile! Multijugador en desarrollo.'],
-    ja:['雲の上をジャンプして、星を集めよう！','🧪 リズムとダンスの練習ができます！オンライン対戦は開発中。'],
-    th:['กระโดดบนก้อนเมฆและเก็บดาว','🧪 ซ้อมจังหวะและเต้นได้แล้ว! ระบบหลายผู้เล่นกำลังพัฒนา']
-  }[LANG]||['Pule entre nuvens e colete estrelas.','🧪 Ensaio de ritmo disponível; multiplayer em desenvolvimento.'];
+    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','Cante, dance e brilhe no palco!'],
+    en:['Jump through clouds, unlock scenes and collect stars.','Sing, dance and shine on stage!'],
+    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','¡Canta, baila y brilla en el escenario!'],
+    ja:['雲の上をジャンプして、星を集めよう！','歌って、踊って、ステージで輝こう！'],
+    th:['กระโดดบนก้อนเมฆและเก็บดาว','ร้องเพลง เต้น และเปล่งประกายบนเวที!']
+  }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small></button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(twSoraMissaoPendente()?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
   );
   twKaraokeAtualizarCard();
@@ -10126,7 +10140,9 @@ function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCa
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
 function encBtnUI(){
   var feito = encLer();
-  encBtn.innerHTML = feito ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b> <small>' + escHtml(tr('ver de novo')) + '</small>' : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b> <small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
+  encBtn.innerHTML = feito
+    ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('ver de novo')) + '</small>'
+    : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
   encBtn.classList.toggle('feito', !!feito);
 }
 function encMostrar(d){

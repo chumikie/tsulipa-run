@@ -12,6 +12,9 @@ on:
       - 'index2-skin.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
+      - 'karaoke-rhythm.js'
+      - 'karaoke-rhythm.css'
+      - 'tests/karaoke-rhythm.test.js'
       - 'karaoke-online-lab.html'
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
@@ -28,6 +31,9 @@ on:
       - 'index2-skin.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
+      - 'karaoke-rhythm.js'
+      - 'karaoke-rhythm.css'
+      - 'tests/karaoke-rhythm.test.js'
       - 'karaoke-online-lab.html'
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
@@ -46,3 +52,5 @@ jobs:
         run: node tests/validate-games.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
+      - name: Validate original rhythm minigame
+        run: node tests/karaoke-rhythm.test.js

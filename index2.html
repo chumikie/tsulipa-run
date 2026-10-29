@@ -719,6 +719,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 @media(prefers-reduced-motion:reduce){#hub .tw-hubgame{transition:none}}
 #hub .tw-preview-notice{margin:4px auto 12px;padding:8px 12px;max-width:650px;color:var(--sub);border:1px dashed rgba(155,48,217,.3);border-radius:14px;background:var(--card);text-align:center;font-size:11px;line-height:1.45}
 #hub .tw-preview-notice strong{color:var(--b1);letter-spacing:.07em}
+#hub .hubtutc .tw-hubtut-soon{margin:9px auto 12px;padding:7px 12px;width:fit-content;max-width:100%;border-radius:999px;background:rgba(255,111,181,.17);color:var(--ink);font-weight:800;font-size:clamp(11px,2.8vw,13px);line-height:1.4}
 .tw-preview-game[hidden]{display:none!important}
 .tw-preview-game{position:fixed;z-index:200000;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg1,#c9ecfc);}
 .tw-preview-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:55px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));color:var(--ink);background:var(--card);box-shadow:0 3px 16px rgba(30,10,80,.14);font-family:"M PLUS Rounded 1c",sans-serif;}
@@ -8222,9 +8223,19 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
 };
 var HUB_NOVIDADES = [['🏁', 'Center⭐Run!: corra pelo palco, pegue estrelas e microfones e suba de Audição até Kami-Oshi'], ['🎴', 'Cartas de poder: Fever, Ímã, Abdução por UFO, Mega e Unit Mode'], ['📸', 'Câmera com photocard, molduras, poses e expressões'], ['🐾', 'Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet (Ritmo e Pular corda)'], ['🎰', 'Star⭐Gacha!: 1 giro por dia com estrelas, bônus e cards de outros jogadores'], ['🌙', 'Moon⭐Duo!: monte cenas fofas com outro Idol e mande presentes'], ['💖', 'Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias com níveis'], ['🎯', 'Missões do dia, ranking online e recorde de cada personagem'], ['🗓️', 'Temas da temporada com música, roupa e insígnia especiais'], ['🎂', 'Aniversário no perfil: ★50 e card especial no seu dia'], ['🌏', 'Jogo em português, inglês, espanhol, tailandês e japonês']];
-var HUB_TUT = [['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
+// Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
+var HUB_TUT = [['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.'],
+               ['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
                ['🐾', 'Backstage⭐Pet!', 'Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.'],
-               ['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.']];
+               ['☁️', 'Sora⭐Jump!', 'Suba entre nuvens, colete estrelas e descubra paisagens inesperadas.']];
+var TW_INDEX2_TUT_KEY='tw_index2_tut_v2';
+var TW_INDEX2_TUT_I18N={
+  pt:['Suba entre nuvens, colete estrelas e descubra paisagens inesperadas.','🎤 Karaoke⭐Day! · Em breve…'],
+  en:['Jump between clouds, collect stars and discover unexpected landscapes.','🎤 Karaoke⭐Day! · Coming soon…'],
+  es:['Salta entre nubes, reúne estrellas y descubre paisajes inesperados.','🎤 Karaoke⭐Day! · Próximamente…'],
+  ja:['雲から雲へジャンプして、星を集め、思いがけない景色を見つけよう！','🎤 Karaoke⭐Day! · 近日公開…'],
+  th:['กระโดดผ่านก้อนเมฆ เก็บดวงดาว และค้นพบวิวแสนพิเศษ','🎤 Karaoke⭐Day! · เร็ว ๆ นี้…']
+};
 
 var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
@@ -8416,17 +8427,21 @@ function hubComecar(){
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();
-  var visto = null; try{ visto = localStorage.getItem('brs48cr_tut'); }catch(e){}
-  if(!visto){ hubTutI = 0; hubTutUI(); }
+  // The INDEX2 welcome has its own marker, without changing original brs48cr_* saves.
+  var visto=null;try{visto=localStorage.getItem(TW_INDEX2_TUT_KEY);}catch(e){}
+  var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
+  if(!visto||rever){hubTutI=0;hubTutUI();}
 }
-function hubTutUI(){   // tutorial de 3 cartões (só na primeira visita)
-  var el = $('hubTut'), it = HUB_TUT[hubTutI];
-  el.innerHTML = '<div class="hubtutc" role="dialog" aria-modal="true"><i>' + it[0] + '</i><b translate="no">' + escHtml(tr(it[1])) + '</b><p>' + escHtml(tr(it[2])) + '</p>' +
-    '<div class="hubdots">' + HUB_TUT.map(function(_, i){ return '<span' + (i === hubTutI ? ' class="on"' : '') + '></span>'; }).join('') + '</div>' +
-    '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">' + escHtml(tr('Pular')) + '</button><button type="button" class="btn" id="hubTutOk">' + escHtml(tr(hubTutI < HUB_TUT.length - 1 ? 'Próximo' : 'Vamos lá!')) + '</button></div></div>';
-  el.hidden = false;
+function hubTutUI(){   // Quatro slides, somente no laboratório INDEX2.
+  var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
+  var descricao=hubTutI===3?texto[0]:tr(it[2]);
+  var chamada=hubTutI===3?'<p class="tw-hubtut-soon">'+escHtml(texto[1])+'</p>':'';
+  el.innerHTML='<div class="hubtutc" role="dialog" aria-modal="true"><i>'+it[0]+'</i><b translate="no">'+escHtml(tr(it[1]))+'</b><p>'+escHtml(descricao)+'</p>'+chamada+
+    '<div class="hubdots">'+HUB_TUT.map(function(_,i){return '<span'+(i===hubTutI?' class="on"':'')+'></span>';}).join('')+'</div>'+
+    '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">'+escHtml(tr('Pular'))+'</button><button type="button" class="btn" id="hubTutOk">'+escHtml(tr(hubTutI<HUB_TUT.length-1?'Próximo':'Vamos lá!'))+'</button></div></div>';
+  el.hidden=false;
 }
-function hubTutFim(){ $('hubTut').hidden = true; try{ localStorage.setItem('brs48cr_tut', '1'); }catch(e){} }
+function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
 // Jogos especiais na index2: o iframe só carrega após clicar no card.
 // Integração isolada nesta cópia; o index.html publicado permanece intacto.
 var twPreviewJogoAnterior = null;

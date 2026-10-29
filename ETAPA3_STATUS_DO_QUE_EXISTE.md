@@ -124,3 +124,5 @@
 > **Prévia controlada 3A.6b — 29/10/2026:** novo widget Turnstile de teste sem cadastro; sitekey pública já no código, portão fechado. Uma publicação Netlify, depois restaurar skip. Vercel continua pausada.
 
 > **Prévia controlada 3A.8 (29/10/2026):** uma única publicação na Netlify para mostrar o estado de sincronização e preservar o visual whimsical. Sincronização real depende de teste com usuários anônimos de homologação; portão e cadastros continuam fechados. Vercel continua pausada e `index.html` intocado.
+
+> **Prévia controlada 3A.9 (29/10/2026):** uma única prévia na Netlify para mostrar o painel de ritmo de ensaio sem autenticação em `?homol=1&practice_preview=1`. Nenhuma pontuação, conta ou vaga é criada nesse modo. Vercel pausada, branch isolada, PR rascunho.

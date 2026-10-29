@@ -8458,41 +8458,7 @@ function twPreviewAtualizarIdioma(){
   if(voltar)voltar.textContent=t[0];
   if(aviso){aviso.querySelector('strong').textContent=t[1];aviso.querySelector('span').textContent=' · '+t[2];}
 }
-// INDEX2 only: compact Sora when embedded. No game, save or database changes.
-function twPreviewEstiloSora(){
-  var frame=$('twPreviewIframe'),wrap=$('twPreviewJogo');
-  if(!frame||!wrap||wrap.hidden||twPreviewJogoAnterior!=='sora')return;
-  try{
-    var doc=frame.contentDocument;
-    if(!doc||!doc.head||!doc.body||!doc.body.classList.contains('tw-game-sora'))return;
-    if(doc.getElementById('twIndex2SoraEmbed'))return;
-    var css=doc.createElement('style');
-    css.id='twIndex2SoraEmbed';
-    css.textContent=[
-      'body.tw-game-sora{padding:0!important;background:#101333!important}',
-      '#soraOv .sora-topbar{display:none!important}',
-      '#soraOv>.panel{max-height:calc(100dvh - 12px)!important}',
-      '#soraOv .bp-title{margin-top:3px!important}',
-      '@media(max-width:620px){',
-      'html,body.tw-game-sora{min-height:100%!important;height:100%!important;overflow:hidden!important}',
-      '#soraOv.ov{inset:0!important;padding:4px 5px!important;align-items:flex-start!important;overflow-y:auto!important}',
-      '#soraOv>.panel{width:100%!important;max-width:420px!important;max-height:calc(100dvh - 8px)!important;min-height:0!important;margin:0 auto!important;padding:7px 9px 10px!important;border-radius:16px!important;overflow-y:auto!important}',
-      '#soraOv .bp-title{font-size:clamp(21px,5.8vw,28px)!important;line-height:1.22!important;margin:1px 0!important}',
-      '#soraOv .bp-title small{font-size:10px!important;margin-top:1px!important}',
-      '#soraOv>.panel>p{font-size:11px!important;line-height:1.25!important;margin:2px 0 5px!important}',
-      '#soraStage{width:min(100%,calc((100dvh - 145px)*360/520),350px)!important;height:auto!important;aspect-ratio:360/520!important;max-height:none!important}',
-      '#soraCv{max-height:none!important}',
-      '.sora-menu-content{gap:5px!important}',
-      '}',
-      '@media(max-width:620px) and (max-height:650px){',
-      '#soraOv>.panel{padding:5px 7px!important}',
-      '#soraOv .bp-title{font-size:21px!important}',
-      '#soraStage{width:min(100%,calc((100dvh - 128px)*360/520),350px)!important}',
-      '}'
-    ].join(' ');
-    doc.head.appendChild(css);
-  }catch(err){console.warn('INDEX2 Sora embed style unavailable',err);}
-}
+// Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
 function twPreviewAbrirJogo(tipo){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
@@ -8504,7 +8470,7 @@ function twPreviewAbrirJogo(tipo){
   text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':'🎤 Karaoke⭐Day!';
   frame.title=text.textContent;
   wrap.hidden=false;
-  frame.src=tipo==='sora'?'./sora-jump.html':'./karaoke-day.html';
+  frame.src=tipo==='sora'?'./sora-jump.html?embed=index2':'./karaoke-day.html';
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
@@ -8525,7 +8491,6 @@ function twPreviewFecharJogo(){
     '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></section>';
   document.body.insertAdjacentHTML('beforeend',html);
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
-  $('twPreviewIframe').addEventListener('load',twPreviewEstiloSora);
   window.addEventListener('message',function(e){
     var frame=$('twPreviewIframe');
     if(!frame||e.source!==frame.contentWindow)return;

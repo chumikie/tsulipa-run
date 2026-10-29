@@ -426,6 +426,9 @@ html,body{min-height:100%;}
   try{
     if(new URLSearchParams(location.search).get('embed')!=='index2')return;
     document.documentElement.classList.add('tw-sora-embed');
+    var o=new URLSearchParams(location.search).get('oshi');
+    if(['tsu','lirika','pati'].indexOf(o)>=0)document.documentElement.setAttribute('data-oshi',o);
+    else document.documentElement.removeAttribute('data-oshi');
     var style=document.createElement('link');
     style.rel='stylesheet';style.href='./sora-embed.css?v=1';
     document.head.appendChild(style);

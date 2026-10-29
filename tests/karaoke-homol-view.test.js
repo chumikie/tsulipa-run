@@ -23,7 +23,7 @@ const client=fs.readFileSync(path.join(__dirname,'../karaoke-homol-client.js'),'
 assert(game.includes("window.TsuKaraokeHomolView.stageLayout(snapshot.slots)"));
 assert(game.includes("if(krHomolAtivo)return; // no production player data in staging"));
 assert(game.includes('krHomolMeuChar')&&game.includes('krHomolMeuNick'));
-assert(client.includes("var TURNSTILE_SITE_KEY='';"));
+assert(/var TURNSTILE_SITE_KEY='0x[A-Za-z0-9_-]+';/.test(client));
 assert(client.includes("signInAnonymously({options:{captchaToken:captchaToken}})"));
 assert(!client.includes('https://fsggtvgbyhchblyazgmt.supabase.co'));
 // Protege contra a regressão que esvaziava a sala de demonstração.
@@ -68,7 +68,7 @@ assert(gateSql.includes("'labOpen'"));
 assert(gateSql.includes('revoke all on function public.karaoke_ensaio(text,uuid) from public, anon, authenticated;'));
 assert(gateSql.includes('revoke all on function public.karaoke_ensaio_elenco() from public, anon, authenticated;'));
 assert(gateTest.trimEnd().endsWith('rollback;'));
-assert(client.includes("var TURNSTILE_SITE_KEY='';"));
+assert(/var TURNSTILE_SITE_KEY='0x[A-Za-z0-9_-]+';/.test(client));
 assert(client.includes('labOpen=data.labOpen===true;'));
 assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen;'));
 assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;'));

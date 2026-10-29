@@ -704,6 +704,38 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 .petinfo b{background:linear-gradient(90deg,#9b30d9,#ff6fb5,#4169e1);-webkit-background-clip:text;background-clip:text;color:transparent}
 .petpick button[aria-pressed="true"],.petmenu button[aria-pressed="true"]{box-shadow:0 0 12px rgba(155,48,217,.3)}
 </style>
+<style id="tw-index2-preview-css">
+/* INDEX 2: extensões limitadas ao novo portal de prévia, sem alterar os módulos legados. */
+#hub .tw-hubgame{min-width:0;isolation:isolate;border:2px solid rgba(255,255,255,.72);background:linear-gradient(150deg,var(--card),var(--chip));}
+#hub .tw-hubgame-sora{border:0;box-shadow:0 4px 0 rgba(65,105,225,.34),0 8px 18px rgba(60,20,120,.12);}
+#hub #hubCards .hubcard.tw-alert-pink{background:linear-gradient(160deg,#ff6fb5,#ffb3d6);color:#fff;box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(60,20,120,.12)}
+#hub #hubCards .hubcard.tw-alert-pink small,#hub #hubCards .hubcard.tw-alert-pink .tw-hubgame-jp{color:#fff}
+#hub .tw-hubgame-karaoke{box-shadow:0 4px 0 rgba(255,111,181,.36),0 8px 18px rgba(60,20,120,.12);}
+#hub .tw-hubgame b{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif;font-weight:400;font-size:clamp(12px,1.5vw,16px);line-height:1.4;overflow-wrap:anywhere;text-align:center;}
+#hub .tw-hubgame i{filter:drop-shadow(0 3px 3px rgba(60,20,120,.18));}
+#hub .tw-hubgame .tw-star{color:#f5b400;white-space:nowrap}
+#hub .tw-hubgame small{line-height:1.4;display:block}
+#hub .hubcard .tw-hubgame-jp,#hub .hubenc .tw-hubgame-jp{font:700 10px/1.3 "M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:var(--pink,#ff6fb5);letter-spacing:.045em;margin:1px 0 3px}
+#hub .hubduo .tw-hubgame-jp,#hub .hubenc .tw-hubgame-jp{flex-basis:100%;text-align:center}
+#hub .hubenc .tw-hubgame-jp{color:#fff}
+#hub .hubenc.feito .tw-hubgame-jp{color:var(--pink,#ff6fb5)}
+#hub .tw-hubgame:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#hub .tw-hubgame{transition:none}}
+#hub .tw-preview-notice{margin:4px auto 12px;padding:8px 12px;max-width:650px;color:var(--sub);border:1px dashed rgba(155,48,217,.3);border-radius:14px;background:var(--card);text-align:center;font-size:11px;line-height:1.45}
+#hub .tw-preview-notice strong{color:var(--b1);letter-spacing:.07em}
+#hub .hubtutc .tw-hubtut-soon{margin:9px auto 12px;padding:7px 12px;width:fit-content;max-width:100%;border-radius:999px;background:rgba(255,111,181,.17);color:var(--ink);font-weight:800;font-size:clamp(11px,2.8vw,13px);line-height:1.4}
+.tw-preview-game[hidden]{display:none!important}
+.tw-preview-game{position:fixed;z-index:200000;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg1,#c9ecfc);}
+.tw-preview-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:55px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));color:var(--ink);background:var(--card);box-shadow:0 3px 16px rgba(30,10,80,.14);font-family:"M PLUS Rounded 1c",sans-serif;}
+.tw-preview-bar b{font-family:"Mochiy Pop One","Kosugi Maru",sans-serif;font-weight:400;font-size:clamp(13px,2.4vw,17px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tw-preview-voltar{border:0;border-radius:99px;color:#fff;background:linear-gradient(90deg,#7b3ff0,#4169e1);box-shadow:0 3px 0 var(--edge,#2c1a8f);padding:9px 13px;font:800 12px "M PLUS Rounded 1c",sans-serif;cursor:pointer;white-space:nowrap}
+.tw-preview-voltar:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+.tw-preview-tag{font-size:10px;font-weight:800;color:var(--pink,#ff6fb5);white-space:nowrap}
+#twPreviewIframe{flex:1 1 0;min-height:0;width:100%;display:block;border:0;background:#c9ecfc;}
+@media(max-width:600px){.tw-preview-tag{display:none}.tw-preview-bar{min-height:42px;padding:6px 10px}.tw-preview-voltar{padding:7px 10px}.tw-preview-bar b{font-size:12px}.tw-preview-game:has(#twPreviewIframe[src*='sora-jump.html']) #twPreviewTitulo{display:none}}
+</style>
+<link rel="stylesheet" href="./index2-skin.css?v=1">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=2">
 </head>
 <body>
 <header>
@@ -2531,9 +2563,11 @@ function hx(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),par
 var PALR=PAL.map(function(p){return p.map(hx)});
 function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];return a.map(function(v,k){return 'rgb('+v.map(function(n,m){return Math.round(n+(c[k][m]-n)*b)}).join(',')+')'})}
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
-var pc = $('prev').getContext('2d'), pt = 0;
+var pc = $('prev').getContext('2d'), pt = 0, twIndex2AvatarRaf = 0;
 
 function prevLoop() {
+  twIndex2AvatarRaf = 0;
+  if (twIndex2BaseFramesPaused()) return;
   if (state === 'menu') {
     pt++;
     var og = g;
@@ -2571,7 +2605,7 @@ function prevLoop() {
     
     } finally { g = og; }
   }
-  requestAnimationFrame(prevLoop); // Mantém o loop contínuo por quadros
+  twIndex2AvatarRaf = requestAnimationFrame(prevLoop); // Tracks this RAF so hidden screens can pause it.
 }
 
 prevLoop();
@@ -3001,14 +3035,39 @@ g.save();
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,86);g.shadowBlur=0;g.globalAlpha=1}
 }
 
+var twIndex2BaseRaf = 0;
+function twIndex2BaseFramesPaused(){
+  if(document.hidden)return true;
+  if(typeof hubOv!=='undefined'&&hubOv&&!hubOv.hidden)return true;
+  var preview=document.getElementById('twPreviewJogo');
+  return !!(preview&&!preview.hidden);
+}
+function twIndex2PauseBaseFrames(){
+  if(twIndex2BaseRaf){cancelAnimationFrame(twIndex2BaseRaf);twIndex2BaseRaf=0;}
+  if(twIndex2AvatarRaf){cancelAnimationFrame(twIndex2AvatarRaf);twIndex2AvatarRaf=0;}
+  last=0;
+}
+function twIndex2StartBaseLoop(){
+  if(twIndex2BaseRaf||twIndex2BaseFramesPaused())return;
+  last=0;twIndex2BaseRaf=requestAnimationFrame(loop);
+}
+function twIndex2StartAvatarLoop(){
+  if(!twIndex2AvatarRaf&&!twIndex2BaseFramesPaused())twIndex2AvatarRaf=requestAnimationFrame(prevLoop);
+}
+function twIndex2ResumeBaseFrames(){
+  if(twIndex2BaseFramesPaused())return;
+  twIndex2StartBaseLoop();twIndex2StartAvatarLoop();
+}
 function loop(t){
+  twIndex2BaseRaf=0;
+  if(twIndex2BaseFramesPaused()){last=0;return;}
   var rawDt = last ? (t - last) / 16.667 : 1;
   var dt = Math.max(0.1, Math.min(rawDt, 2.5));
   last=t;
   if(state==='play'&&!paused)update(dt);
   else if(state==='over'&&shake>0)frame+=dt;
   draw();
-  requestAnimationFrame(loop);
+  twIndex2BaseRaf=requestAnimationFrame(loop);
 }
 
 // Carregamento e compatibilidade de cache antigo de ranks
@@ -3027,7 +3086,7 @@ try {
 
 reset();
 state='menu';
-requestAnimationFrame(loop);
+twIndex2StartBaseLoop();
 
 
 var titleClicks = 0;
@@ -3070,7 +3129,12 @@ document.addEventListener('keydown', function(e) {
   if (!$('shr').hidden && e.code === 'Escape') { $('shr').hidden = true; return; }
   if (e.code === 'KeyP' || e.code === 'Escape') setPause(!paused);
 });
-document.addEventListener('visibilitychange',function(){if(document.hidden)setPause(true)});
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){setPause(true);twIndex2PauseBaseFrames();}
+  else twIndex2ResumeBaseFrames();
+});
+window.addEventListener('pagehide',twIndex2PauseBaseFrames);
+window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
 [].forEach.call(document.querySelectorAll('.lang button'),function(b){
@@ -7010,11 +7074,13 @@ function perfAbaMostrar(){
     }
     h += '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
     if(d.melhores && d.melhores.length) h += '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.melhores, d.admin_ver) + '</ol>';
+    if(meu) h += '<section class="tw-rank-profile" id="twSoraWeekProfile"><h3>☁️ Sora⭐Jump! <small lang="ja">今週の最高記録</small></h3><p id="twSoraWeekScore"></p></section>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    if(meu) twRankRenderProfile();
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -8184,9 +8250,19 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
 };
 var HUB_NOVIDADES = [['🏁', 'Center⭐Run!: corra pelo palco, pegue estrelas e microfones e suba de Audição até Kami-Oshi'], ['🎴', 'Cartas de poder: Fever, Ímã, Abdução por UFO, Mega e Unit Mode'], ['📸', 'Câmera com photocard, molduras, poses e expressões'], ['🐾', 'Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet (Ritmo e Pular corda)'], ['🎰', 'Star⭐Gacha!: 1 giro por dia com estrelas, bônus e cards de outros jogadores'], ['🌙', 'Moon⭐Duo!: monte cenas fofas com outro Idol e mande presentes'], ['💖', 'Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias com níveis'], ['🎯', 'Missões do dia, ranking online e recorde de cada personagem'], ['🗓️', 'Temas da temporada com música, roupa e insígnia especiais'], ['🎂', 'Aniversário no perfil: ★50 e card especial no seu dia'], ['🌏', 'Jogo em português, inglês, espanhol, tailandês e japonês']];
-var HUB_TUT = [['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
+// Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
+var HUB_TUT = [['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.'],
+               ['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
                ['🐾', 'Backstage⭐Pet!', 'Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.'],
-               ['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.']];
+               ['☁️', 'Sora⭐Jump!', 'Suba entre nuvens, colete estrelas e descubra paisagens inesperadas.']];
+var TW_INDEX2_TUT_KEY='tw_index2_tut_v2';
+var TW_INDEX2_TUT_I18N={
+  pt:['Suba entre nuvens, colete estrelas e descubra paisagens inesperadas.','🎤 Karaoke⭐Day! · Em breve…'],
+  en:['Jump between clouds, collect stars and discover unexpected landscapes.','🎤 Karaoke⭐Day! · Coming soon…'],
+  es:['Salta entre nubes, reúne estrellas y descubre paisajes inesperados.','🎤 Karaoke⭐Day! · Próximamente…'],
+  ja:['雲から雲へジャンプして、星を集め、思いがけない景色を見つけよう！','🎤 Karaoke⭐Day! · 近日公開…'],
+  th:['กระโดดผ่านก้อนเมฆ เก็บดวงดาว และค้นพบวิวแสนพิเศษ','🎤 Karaoke⭐Day! · เร็ว ๆ นี้…']
+};
 
 var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
@@ -8195,8 +8271,16 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
+  '<section class="tw-rank-tv" id="twRankTv" aria-label="TV dos rankings semanais">'+
+  '<div class="tw-rank-tv-head"><b>📺 TsuLiPa TV</b><small lang="ja">今週のランキング</small></div>'+
+  '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
+  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
+  '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
+  '<h2>🏆 Top Idols <small lang="ja">今週のトップアイドル</small></h2>'+
+  '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
+  '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
@@ -8260,20 +8344,80 @@ function hubLoop(){
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
-  var p = petData && petAtivo && petAtivo(); if(!p) return [tr('Adote um pet!'), false];
-  var h = Math.min(Math.max(0, Date.now() - (p.t || Date.now())), PET_CAP) / 36e5, menor = 100;
-  Object.keys(PET_RATE).forEach(function(k){ var v = (p[k] || 0) - PET_RATE[k] * h * (p.dorme ? .5 : 1); if(!(p.dorme && k === 'energia')) menor = Math.min(menor, v); });
+  var p = petData && petAtivo && petAtivo(); if(!p) return [tr('Adote um pet!'), false, false];
+  var h = Math.min(Math.max(0, Date.now() - (p.t || Date.now())), PET_CAP) / 36e5, menor = 100, comFome = false;
+  Object.keys(PET_RATE).forEach(function(k){ var v = (p[k] || 0) - PET_RATE[k] * h * (p.dorme ? .5 : 1); if(k === 'fome') comFome = v < 40; if(!(p.dorme && k === 'energia')) menor = Math.min(menor, v); });
   var nome = p.nome || (PET_SP[petData.ativo] ? PET_SP[petData.ativo].n : 'Pet');
-  return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true] : [nome + ' ' + tr('está bem!'), false];
+  return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true, comFome] : [nome + ' ' + tr('está bem!'), false, comFome];
+}
+// Karaoke preview schedule (Sunday 12:00–13:10 America/Sao_Paulo).
+// UI-only lock for INDEX2; the standalone page and server must enforce access later.
+var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
+var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT
+function twKaraokeHorario(){
+  // INDEX2 preview-only schedule: server authorization must be separate.
+  var ateEstreia=Math.ceil((TW_KARAOKE_PRIMEIRA_ABERTURA-Date.now())/1000);
+  if(ateEstreia>0)return {aberto:false,faltam:ateEstreia,estreia:true};
+  var p={},parts=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'
+  }).formatToParts(new Date());
+  parts.forEach(function(x){if(x.type!=='literal')p[x.type]=+x.value;});
+  var dia=new Date(Date.UTC(p.year,p.month-1,p.day)).getUTCDay();
+  var seg=p.hour*3600+p.minute*60+p.second,abre=12*3600,fecha=13*3600+10*60;
+  if(dia===0&&seg>=abre&&seg<fecha)return {aberto:true,faltam:0};
+  var faltam=((7-dia)%7)*86400+abre-seg;
+  if(faltam<=0)faltam+=7*86400;
+  return {aberto:false,faltam:faltam};
+}
+function twKaraokeAtualizarCard(){
+  var cards=$('hubCards'),card=cards&&cards.querySelector('[data-ir="karaoke"]');
+  if(!card)return;
+  var estado=twKaraokeHorario(),txt=card.querySelector('.tw-karaoke-timer');
+  var s=estado.faltam,d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.ceil(s%3600/60);
+  if(m===60){m=0;h++;}if(h===24){h=0;d++;}
+  var fmt={pt:['🔒 Abre em ','🟢 Aberto até 13h10'],en:['🔒 Opens in ','🟢 Open until 13:10'],
+    es:['🔒 Abre en ','🟢 Abierto hasta 13:10'],ja:['🔒 開始まで ','🟢 13:10までオープン'],
+    th:['🔒 เปิดในอีก ','🟢 เปิดถึง 13:10']}[LANG]||['🔒 Abre em ','🟢 Aberto até 13h10'];
+  var adm=typeof contaAdmin==='function'&&contaAdmin();
+  card.classList.toggle('tw-karaoke-locked',!estado.aberto&&!adm);
+  card.setAttribute('aria-disabled',String(!estado.aberto&&!adm));
+  var lead=estado.estreia?({pt:'🎤 Estreia 08/11 · ',en:'🎤 Premiere Nov 8 · ',es:'🎤 Estreno 08/11 · ',ja:'🎤 初公開11/8 · ',th:'🎤 เปิดตัว 8/11 · '}[LANG]||'🎤 Estreia 08/11 · '):fmt[0];
+  if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
+  card.title='Karaoke⭐Day! · estreia planejada 08/11/2026, domingo 12h–13h10 (Brasília)';
+}
+// Consulta somente local: acompanha a missão diária do Sora em seu armazenamento isolado.
+// Preserva as chaves originais e nunca faz chamadas à API de contas ou do Supabase.
+function twSoraMissaoPendente(){
+  try{
+    var key='brs48cr_mis_sora', isolated='__tsulipa_sorajump_test_v1__::'+key;
+    var dia=localStorage.getItem(isolated);
+    if(dia==='__TW_TEST_DELETED__')return true;
+    if(dia===null)dia=localStorage.getItem(key);
+    return dia!==dk();
+  }catch(e){return true;}
 }
 function hubCardsUI(){
-  var pi = hubPetInfo();
+  var pi = hubPetInfo(), soraPendente = twSoraMissaoPendente();
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
-    '<button type="button" class="hubcard hubpet" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha"><i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
+    '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha"><i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
+  // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
+  var twGamesTxt = {
+    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','Cante, dance e brilhe no palco!'],
+    en:['Jump through clouds, unlock scenes and collect stars.','Sing, dance and shine on stage!'],
+    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','¡Canta, baila y brilla en el escenario!'],
+    ja:['雲の上をジャンプして、星を集めよう！','歌って、踊って、ステージで輝こう！'],
+    th:['กระโดดบนก้อนเมฆและเก็บดาว','ร้องเพลง เต้น และเปล่งประกายบนเวที!']
+  }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
+  $('hubCards').insertAdjacentHTML('beforeend',
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
+  );
+  twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
@@ -8291,6 +8435,159 @@ function hubMisCarregar(){
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
+// INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
+// The future RPC is off until the competition backend has been reviewed.
+var TW_RANK_ONLINE_READY=false, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
+var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
+var twRankTimer=null,twRankPending=null;
+var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
+var TW_RANK_WORDS={
+ pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Center: ranking oficial · Sora/Karaoke: estreia online em preparação','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana'],
+ en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Center: official ranking · Sora/Karaoke: online launch in preparation','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions'],
+ es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana','Center: ranking oficial · Sora/Karaoke: estreno online en preparación','Canales del ranking semanal','TV de los rankings semanales','Mejores Idols de la semana','Campeones de la semana'],
+ ja:['まだ記録はありません','オンラインランキング準備中','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし','Centerは公式ランキング、Sora/Karaokeは準備中','週間ランキングのチャンネル','週間ランキングTV','今週のトップアイドル','今週のチャンピオン'],
+ th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน','Center: อันดับทางการ · Sora/Karaoke: กำลังเตรียมเปิดออนไลน์','ช่องอันดับประจำสัปดาห์','ทีวีอันดับประจำสัปดาห์','ไอดอลยอดเยี่ยมประจำสัปดาห์','แชมป์ประจำสัปดาห์']
+};
+function twRankWord(i){return (TW_RANK_WORDS[LANG]||TW_RANK_WORDS.pt)[i];}
+function twRankSundayKey(timestamp){
+ var parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(timestamp===undefined?Date.now():timestamp));
+ var o={};parts.forEach(function(p){o[p.type]=p.value;});
+ var d=new Date(Date.UTC(+o.year,+o.month-1,+o.day));d.setUTCDate(d.getUTCDate()-d.getUTCDay());
+ return d.toISOString().slice(0,10);
+}
+function twRankLocal(){
+ var week=twRankSundayKey();
+ try{
+  var v=JSON.parse(localStorage.getItem(TW_SORA_WEEK_STORAGE)||'null');
+  if(v&&v.week!==week){localStorage.removeItem(TW_SORA_WEEK_STORAGE);return null;}
+  if(v&&v.week===week&&contaJ&&v.nick===contaJ.nick&&Number.isSafeInteger(v.score)&&v.score>0)return v;
+ }catch(e){}
+ return null;
+}
+function twRankRecordLocal(value){
+ var score=Number(value);
+ if(!contaJ||!contaJ.nick||!Number.isSafeInteger(score)||score<1||score>200000)return;
+ var old=twRankLocal();
+ try{localStorage.setItem(TW_SORA_WEEK_STORAGE,JSON.stringify({week:twRankSundayKey(),nick:contaJ.nick,score:Math.max(score,old?old.score:0)}));}catch(e){}
+ twRankRenderProfile();
+}
+function twRankCheckWeek(){
+ var now=twRankSundayKey();
+ if(now===twRankData.week)return;
+ twRankData.week=now;twRankData.center=[];twRankData.sora=[];twRankData.karaoke=[];
+ twRankData.centerOK=false;twRankData.online=false;twRankData.mine=null;twRankData.readAt=0;
+}
+function twRankClean(list){
+ if(!Array.isArray(list))return [];
+ var best=Object.create(null);
+ list.slice(0,30).forEach(function(p){
+  if(!p||typeof p!=='object')return;
+  var nick=String(p.nick||p.name||'').trim().slice(0,24);
+  var score=Math.floor(Number(p.score===0?0:(p.score||p.pts||0)));
+  if(!nick||!Number.isSafeInteger(score)||score<=0)return;
+  var key=nick.toLocaleLowerCase('pt-BR');
+  if(!best[key]||score>best[key].score)best[key]={nick:nick,score:score};
+ });
+ return Object.keys(best).map(function(k){return best[k];})
+  .sort(function(a,b){return b.score-a.score||a.nick.localeCompare(b.nick);}).slice(0,3);
+}
+function twRankStatus(id){
+ if(id==='center'&&!twRankData.centerOK)return twRankWord(2);
+ if(id!=='center'&&!twRankData.online)return twRankWord(1);
+ return twRankWord(0);
+}
+function twRankRow(row,i,unit,game){
+ var face={center:'🏁',sora:'☁️',karaoke:'🎤'}[game]||'⭐';
+ return '<li><span class="tw-rank-medal" aria-hidden="true">'+['🥇','🥈','🥉'][i]+'</span>'+
+  '<span class="tw-rank-avatar-wrap"><span class="tw-rank-avatar-fallback" aria-hidden="true">'+face+'</span>'+
+  '<canvas class="tw-rank-avatar" width="48" height="48" data-nick="'+escHtml(row.nick)+'" aria-hidden="true" style="display:none"></canvas></span>'+
+  '<button type="button" class="lbn tw-rank-nick" data-nick="'+escHtml(row.nick)+'">'+escHtml(row.nick)+'</button>'+
+  '<strong>'+row.score.toLocaleString()+' '+unit+'</strong></li>';
+}
+function twRankDrawAvatars(){
+ var people=typeof hubIdolsDados!=='undefined'&&hubIdolsDados&&Array.isArray(hubIdolsDados.idols)?hubIdolsDados.idols:[];
+ [].forEach.call(document.querySelectorAll('#hub .tw-rank-avatar'),function(cv){
+  var key=String(cv.getAttribute('data-nick')||'').trim().toLocaleLowerCase('pt-BR'),person=null;
+  for(var i=0;i<people.length;i++){
+   var p=people[i];if(p&&p.nick&&p.avatar&&String(p.nick).trim().toLocaleLowerCase('pt-BR')===key){person=p;break;}
+  }
+  if(!person||typeof perfDesenharIdol!=='function'){cv.style.display='none';return;}
+  try{var ctx=cv.getContext('2d');if(!ctx){cv.style.display='none';return;}
+   ctx.clearRect(0,0,cv.width,cv.height);perfDesenharIdol(ctx,cv.width,cv.height,person.avatar,true,true,0);cv.style.display='block';
+  }catch(e){cv.style.display='none';}
+ });
+}
+function twRankRender(){
+ twRankCheckWeek();
+ var tv=$('twRankTv'),screen=$('twRankTvScreen'),buttons=$('twRankTvButtons'),hall=$('twRankColumns'),hallWrap=$('twRankHall');
+ if(!screen||!buttons||!hall)return;
+ if(tv){tv.setAttribute('aria-label',twRankWord(12));var cap=tv.querySelector('.tw-rank-tv-head small');if(cap)cap.textContent=twRankWord(14);}
+ buttons.setAttribute('aria-label',twRankWord(11));
+ if(hallWrap){hallWrap.setAttribute('aria-label',twRankWord(13));var cap2=hallWrap.querySelector('h2 small');if(cap2)cap2.textContent=twRankWord(13);}
+ var g=twRankGames[twRankData.active],top=twRankData[g[0]][0];
+ screen.innerHTML='<b>'+g[1]+' '+g[2]+'</b>'+(top?
+  '<p>'+escHtml(twRankWord(twRankData.active+3)+top.nick)+'?</p><strong>🏆 '+top.score.toLocaleString()+' '+g[3]+'</strong>':
+  '<p class="tw-rank-wait">'+escHtml(twRankStatus(g[0]))+'</p>');
+ buttons.innerHTML=twRankGames.map(function(k,i){
+  return '<button type="button" data-tw-rank="'+i+'" aria-pressed="'+(twRankData.active===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
+ }).join('');
+ var note=$('twRankWeekNote');if(note)note.textContent=twRankData.online?twRankWord(6):twRankWord(10);
+ hall.innerHTML=twRankGames.map(function(k){
+  var list=twRankData[k[0]];
+  return '<div class="tw-rank-game"><h3>'+k[1]+' '+k[2]+'</h3>'+
+   (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3],k[0]);}).join('')+'</ol>':
+    '<p>'+escHtml(twRankStatus(k[0]))+'</p>')+'</div>';
+ }).join('');
+ twRankDrawAvatars();
+}
+function twRankRenderProfile(){
+ var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
+ twRankCheckWeek();
+ var score=twRankData.mine,local=twRankLocal();
+ box.textContent=score!==null?
+  twRankWord(7)+': '+score.toLocaleString()+' m':
+  local?twRankWord(7)+': '+local.score.toLocaleString()+' m · '+twRankWord(8):
+   twRankWord(9)+' · '+twRankWord(1);
+}
+function twRankLoad(){
+ twRankCheckWeek();
+ if(twRankPending)return twRankPending;
+ if(Date.now()-twRankData.readAt<180000)return Promise.resolve();
+ twRankData.readAt=Date.now();
+ if(!_supabase){twRankRender();return Promise.resolve();}
+ var week=twRankData.week;
+ var center=_supabase.rpc('top_scores',{periodo:'week'}).then(function(res){
+  if(res.error)throw res.error;
+  if(week===twRankData.week){twRankData.center=twRankClean(res.data);twRankData.centerOK=true;}
+ }).catch(function(){if(week===twRankData.week)twRankData.centerOK=false;});
+ var online=TW_RANK_ONLINE_READY?contaRpc('tw_podio_semana').then(function(data){
+  if(!data||data.semana!==week||twRankData.week!==week)return;
+  twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
+  twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
+  twRankData.mine=Number.isSafeInteger(+data.meu_sora)&&+data.meu_sora>0?+data.meu_sora:null;
+ }).catch(function(){twRankData.online=false;}):Promise.resolve();
+ twRankPending=Promise.all([center,online]).then(function(){
+  twRankPending=null;twRankRender();twRankRenderProfile();
+ });
+ return twRankPending;
+}
+function twRankStop(){if(twRankTimer!==null){clearInterval(twRankTimer);twRankTimer=null;}}
+function twRankVisibility(){
+ var tv=$('twRankTv');if(!tv)return;
+ tv.hidden=hubComecou;twRankStop();
+ var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ if(!hubComecou&&!hubOv.hidden&&!calm)twRankTimer=setInterval(function(){
+  if(hubOv.hidden||document.hidden)return;
+  var was=twRankData.week;twRankCheckWeek();if(was!==twRankData.week)twRankLoad();
+  twRankData.active=(twRankData.active+1)%3;twRankRender();
+ },9000);
+}
+hubOv.addEventListener('click',function(e){
+ var b=e.target.closest&&e.target.closest('[data-tw-rank]');if(!b)return;
+ var i=+b.dataset.twRank;if(!Number.isInteger(i)||i<0||i>2)return;
+ twRankData.active=i;twRankRender();
+});
+
 function hubMontar(){
   $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
@@ -8298,7 +8595,8 @@ function hubMontar(){
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
-  hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
+  hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
+  if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
@@ -8347,13 +8645,16 @@ function presentesConferir(){   // presentes para todos criados pela moderação
 function hubMostrar(){
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
+  twIndex2PauseBaseFrames();
   if(hubComecou){ hubMusicaParar(); hubMusicaTocar(); }   // V2.1.3: só toca depois de aparecer (antes ficava em silêncio ao voltar do gacha)
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
+  twRankVisibility();twRankLoad();
   if(hubComecou) hubMisCarregar();
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubFechar(){
-  hubOv.hidden = true; document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
+  hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
+  twIndex2ResumeBaseFrames();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
@@ -8363,19 +8664,167 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
 function hubComecar(){
   ac(); hubJingle(); setTimeout(hubMusicaTocar, 1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();
-  var visto = null; try{ visto = localStorage.getItem('brs48cr_tut'); }catch(e){}
-  if(!visto){ hubTutI = 0; hubTutUI(); }
+  // The INDEX2 welcome has its own marker, without changing original brs48cr_* saves.
+  var visto=null;try{visto=localStorage.getItem(TW_INDEX2_TUT_KEY);}catch(e){}
+  var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
+  if(!visto||rever){hubTutI=0;hubTutUI();}
 }
-function hubTutUI(){   // tutorial de 3 cartões (só na primeira visita)
-  var el = $('hubTut'), it = HUB_TUT[hubTutI];
-  el.innerHTML = '<div class="hubtutc" role="dialog" aria-modal="true"><i>' + it[0] + '</i><b translate="no">' + escHtml(tr(it[1])) + '</b><p>' + escHtml(tr(it[2])) + '</p>' +
-    '<div class="hubdots">' + HUB_TUT.map(function(_, i){ return '<span' + (i === hubTutI ? ' class="on"' : '') + '></span>'; }).join('') + '</div>' +
-    '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">' + escHtml(tr('Pular')) + '</button><button type="button" class="btn" id="hubTutOk">' + escHtml(tr(hubTutI < HUB_TUT.length - 1 ? 'Próximo' : 'Vamos lá!')) + '</button></div></div>';
-  el.hidden = false;
+function hubTutUI(){   // Quatro slides de boas-vindas.
+  var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
+  var descricao=hubTutI===3?texto[0]:tr(it[2]);
+  var chamada=hubTutI===3?'<p class="tw-hubtut-soon">'+escHtml(texto[1])+'</p>':'';
+  el.innerHTML='<div class="hubtutc" role="dialog" aria-modal="true"><i>'+it[0]+'</i><b translate="no">'+escHtml(tr(it[1]))+'</b><p>'+escHtml(descricao)+'</p>'+chamada+
+    '<div class="hubdots">'+HUB_TUT.map(function(_,i){return '<span'+(i===hubTutI?' class="on"':'')+'></span>';}).join('')+'</div>'+
+    '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">'+escHtml(tr('Pular'))+'</button><button type="button" class="btn" id="hubTutOk">'+escHtml(tr(hubTutI<HUB_TUT.length-1?'Próximo':'Vamos lá!'))+'</button></div></div>';
+  el.hidden=false;
 }
-function hubTutFim(){ $('hubTut').hidden = true; try{ localStorage.setItem('brs48cr_tut', '1'); }catch(e){} }
+function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
+// Refresh only while the hub is actually visible; no database traffic.
+setInterval(function(){
+  if(hubComecou&&!hubOv.hidden&&!document.hidden)twKaraokeAtualizarCard();
+},60000);
+// Jogos especiais: o iframe só carrega após clicar no card.
+var twPreviewJogoAnterior = null;
+var twPreviewTextos = {pt:'Início',en:'Home',es:'Inicio',ja:'ホーム',th:'หน้าหลัก'};
+function twPreviewAtualizarIdioma(){
+  var voltar=$('twPreviewVoltarTxt');
+  if(voltar)voltar.textContent=twPreviewTextos[LANG]||twPreviewTextos.pt;
+}
+var TW_KARAOKE_FECHADO_TEXTOS = {
+  pt:['💗 O palco está descansando para o próximo show!','🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam ','🎤 Domingo, 12h–13h10 (Brasília). Abre em ','💜 Multiplayer ainda em preparação.','Fechar','🧪 Ensaiar agora',['d','h','min']],
+  en:['💗 The stage is resting until the next show!','🎤 Planned premiere: Sunday, November 8, 2026, 12:00–13:10 (Brasília). Time remaining: ','🎤 Sunday, 12:00–13:10 (Brasília). Opens in ','💜 Multiplayer is still being prepared.','Close','🧪 Play rehearsal',['d','h','min']],
+  es:['💗 ¡El escenario descansa hasta el próximo show!','🎤 Estreno previsto: domingo, 08/11/2026, 12:00–13:10 (Brasília). Faltan ','🎤 Domingo, 12:00–13:10 (Brasília). Abre en ','💜 El modo multijugador sigue en preparación.','Cerrar','🧪 Ensayar ahora',['d','h','min']],
+  th:['💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!','🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 8 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก ','🎤 วันอาทิตย์ เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เปิดในอีก ','💜 โหมดผู้เล่นหลายคนยังอยู่ระหว่างการเตรียมการ','ปิด','🧪 ทดลองซ้อมตอนนี้',['วัน','ชม.','นาที']],
+  ja:['💗 次のショーまでステージはお休み中！','🎤 初回開催予定：2026年11月8日（日）12:00〜13:10（ブラジリア時間）。あと ','🎤 日曜日12:00〜13:10（ブラジリア時間）。開始まであと ','💜 マルチプレイは準備中です。','閉じる','🧪 今すぐ練習',['日','時間','分']]
+};
+// Original header node, including #best: move rather than create another design.
+var twPreviewHeaderPrincipal=document.querySelector('body > header');
+var twPreviewHeaderMarcador=null;
+function twPreviewCabecalhoOficial(abrir){
+  var slot=$('twPreviewHeaderSlot'),cab=twPreviewHeaderPrincipal;
+  if(!slot||!cab)return;
+  if(abrir&&!twPreviewHeaderMarcador){
+    twPreviewHeaderMarcador=document.createComment('TsuLiPa official header original position');
+    cab.parentNode.insertBefore(twPreviewHeaderMarcador,cab);
+    slot.appendChild(cab);
+  }else if(!abrir&&twPreviewHeaderMarcador){
+    twPreviewHeaderMarcador.parentNode.insertBefore(cab,twPreviewHeaderMarcador);
+    twPreviewHeaderMarcador.remove();
+    twPreviewHeaderMarcador=null;
+  }
+}
+// Same hub calendar and particle markup as the published home screen.
+// Never invent a second particle generator, colors, counters or background loop.
+function twPreviewMontarFundo(){
+  var wrap=$('twPreviewJogo');if(!wrap)return;
+  var k=typeof temaAtual==='function'?temaAtual():'';
+  wrap.setAttribute('data-tema',TEMA_INFO[k]?k:'');
+  var fundo=$('twPreviewPart'),origem=$('hubPart');
+  if(fundo&&origem)fundo.innerHTML=origem.innerHTML;
+}
+// Presentation only: the online room remains controlled by the server.
+function twKaraokeMostrarFechado(){
+  twKaraokeAtualizarCard();
+  var modal=$('twKaraokeFechado');if(!modal)return;
+  var t=twKaraokeHorario(),txt=$('twKaraokeFechadoTxt');
+  var textos=TW_KARAOKE_FECHADO_TEXTOS[LANG]||TW_KARAOKE_FECHADO_TEXTOS.pt;
+  var dias=Math.floor(t.faltam/86400),horas=Math.floor(t.faltam%86400/3600),
+      minutos=Math.ceil(t.faltam%3600/60),unidades=textos[6];
+  if(txt)txt.textContent=(t.estreia?textos[1]:textos[2])+
+    (dias?dias+unidades[0]+' ':'')+horas+unidades[1]+' '+String(minutos).padStart(2,'0')+unidades[2]+'. '+textos[3];
+  $('twKaraokeDescanso').textContent=textos[0];
+  $('twKaraokeFecharAviso').textContent=textos[4];
+  $('twKaraokeEnsaiar').textContent=textos[5];
+  modal.hidden=false;
+  $('twKaraokeFecharAviso').focus({preventScroll:true});
+}
+// Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
+function twPreviewAbrirJogo(tipo,ensaiarLocal){
+  if(tipo !== 'sora' && tipo !== 'karaoke')return;
+  // Only a deliberate click on the INDEX2's "local rehearsal" button bypasses
+  // the PREVIEW CARD's Sunday gate. This never creates an online seat/session.
+  var ensaio=tipo==='karaoke'&&ensaiarLocal===true;
+  // A real multiplayer room will still require authorization on the server.
+  if(tipo==='karaoke'&&!ensaio&&!twKaraokeHorario().aberto&&
+     !(typeof contaAdmin==='function'&&contaAdmin())){twKaraokeMostrarFechado();return;}
+  var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
+  if(!wrap||!frame||!wrap.hidden)return;
+  twPreviewJogoAnterior=tipo;
+  if(typeof hubMusicaParar==='function')hubMusicaParar();
+  hubOv.hidden=true;
+  document.body.classList.remove('hubon');
+  if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
+  frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
+  wrap.setAttribute('data-jogo',tipo);
+  twPreviewMontarFundo();
+  twPreviewCabecalhoOficial(true);
+  wrap.hidden=false;
+  twIndex2PauseBaseFrames();
+  // The selected Oshi and language accompany the iframe; no new storage or RPC call.
+  var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
+  var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);
+  frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
+  if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
+}
+function twPreviewFecharJogo(){
+  var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe');
+  if(!wrap||wrap.hidden)return;
+  var ultimo=twPreviewJogoAnterior;
+  frame.src='about:blank';
+  wrap.hidden=true;twPreviewJogoAnterior=null;
+  wrap.removeAttribute('data-jogo');
+  var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
+  twPreviewCabecalhoOficial(false);
+  hubMostrar();
+  // hubMostrar re-creates cards; return focus to the fresh game launcher.
+  var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
+  if(card)card.focus({preventScroll:true});
+}
+(function twPreviewPrepararJanelas(){
+  var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
+    '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
+    '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button></div>'+
+    '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
+    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
+  document.body.insertAdjacentHTML('beforeend',html);
+  // Closed-room notice; no invitation controls or online-room changes.
+  var textos=TW_KARAOKE_FECHADO_TEXTOS[LANG]||TW_KARAOKE_FECHADO_TEXTOS.pt;
+  var aviso='<section id="twKaraokeFechado" class="tw-karaoke-closed-ov" hidden role="dialog" aria-modal="true" aria-labelledby="twKaraokeFechadoTit">'+
+    '<div class="tw-karaoke-closed-panel"><h2 id="twKaraokeFechadoTit">🎤 Karaoke⭐Day!</h2>'+
+    '<p id="twKaraokeDescanso">'+escHtml(textos[0])+'</p>'+
+    '<p id="twKaraokeFechadoTxt"></p>'+
+    '<div class="btns"><button type="button" class="btn alt" id="twKaraokeFecharAviso">'+escHtml(textos[4])+'</button>'+
+    '<button type="button" class="btn" id="twKaraokeEnsaiar">'+escHtml(textos[5])+'</button></div></div></section>';
+  document.body.insertAdjacentHTML('beforeend',aviso);
+  $('twKaraokeFecharAviso').onclick=function(){$('twKaraokeFechado').hidden=true;var card=$('hubCards').querySelector('[data-ir="karaoke"]');if(card)card.focus({preventScroll:true});};
+  $('twKaraokeEnsaiar').onclick=function(){
+    $('twKaraokeFechado').hidden=true;
+    twPreviewAbrirJogo('karaoke',true);
+  };
+  $('twKaraokeFechado').addEventListener('click',function(e){if(e.target===this)$('twKaraokeFecharAviso').click();});
+  $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
+  window.addEventListener('message',function(e){
+    var frame=$('twPreviewIframe');
+    if(!frame||e.source!==frame.contentWindow)return;
+    if(location.protocol!=='file:' && e.origin!==location.origin)return;
+    // A completed run can update ONLY a local preview score, never the server.
+    if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
+      if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);
+      return;
+    }
+    if(e.data&&(e.data.type==='tsulipa-games-hub'||e.data.type==='TW_USER_KARAOKE_BACK'))twPreviewFecharJogo();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&$('twPreviewJogo')&&!$('twPreviewJogo').hidden){
+      e.preventDefault();twPreviewFecharJogo();
+    }
+  },true);
+  twPreviewAtualizarIdioma();
+})();
+
 hubOv.addEventListener('click', function(e){
   var t = e.target, b;
   if(t.id === 'hubToque'){ hubComecar(); return; }
@@ -8409,6 +8858,7 @@ hubOv.addEventListener('click', function(e){
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
     else if(ir === 'gacha') gachaAbrir();
     else if(ir === 'duo') duoAbrir();
+    else if(ir === 'sora' || ir === 'karaoke') twPreviewAbrirJogo(ir);
   }
 });
 // botão "← Início" no menu do Center Run
@@ -8543,7 +8993,7 @@ var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever
 var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1, gachaAgora = false;
 var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
-gachaOv.innerHTML = '<div class="panel gachap" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gachaX">✕</button><button type="button" class="ovsom" data-som="1" aria-label="🔊"></button><h2 id="gachaTit"></h2>' +
+gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx" id="gachaX">✕</button><button type="button" class="ovsom" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div></div></div>';
 document.body.appendChild(gachaOv);
@@ -8559,7 +9009,8 @@ function gachaTexto(r){
   return tr(GACHA_SORTE[(+r.valor || 0) % GACHA_SORTE.length]);
 }
 function gachaUI(){
-  $('gachaTit').textContent = '🎰 ' + 'Star⭐Gacha!';
+  $('gachaTit').innerHTML = '🎰 Star<span class="tw-modal-star">⭐</span>Gacha!';
+  $('twGachaLede').textContent = tr('1 giro por dia');
   var b = $('gachaGirar'), t = $('gachaTxt');
   if(!contaJ){ b.textContent = tr('Entrar com Google'); b.disabled = false; t.textContent = tr('Entre com Google para girar (1 vez por dia).'); return; }
   if(gachaFeito){ b.textContent = tr('Volte amanhã') + ' 🌙'; b.disabled = false; t.textContent = (gachaAgora ? '' : '✅ ' + tr('Você já girou hoje!') + ' ') + gachaTexto(gachaRes); return; }
@@ -8955,8 +9406,8 @@ var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
 
 var duoOv = document.createElement('div');
 duoOv.className = 'ov duoov'; duoOv.id = 'duoOv'; duoOv.hidden = true;
-duoOv.innerHTML = '<div class="panel duop" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx" id="duoX" aria-label="✕">✕</button>' +
-  '<h2 class="duotit" id="duoTit" translate="no">🌙 Moon⭐Duo!</h2><p class="duosub" id="duoSub"></p>' +
+duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx" id="duoX" aria-label="✕">✕</button>' +
+  '<h2 class="duotit tw-modal-title" id="duoTit" translate="no">🌙 Moon<span class="tw-modal-star">⭐</span>Duo!</h2><small class="tw-modal-jp" lang="ja">ムーン・デュオ</small><p class="duosub" id="duoSub"></p>' +
   '<div id="duoEscolha"></div>' +
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
@@ -9873,7 +10324,9 @@ function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCa
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
 function encBtnUI(){
   var feito = encLer();
-  encBtn.innerHTML = feito ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b> <small>' + escHtml(tr('ver de novo')) + '</small>' : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b> <small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
+  encBtn.innerHTML = feito
+    ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('ver de novo')) + '</small>'
+    : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
   encBtn.classList.toggle('feito', !!feito);
 }
 function encMostrar(d){
@@ -10181,7 +10634,7 @@ function hubIdolsUI(){
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
   $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
   hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });
-  box.hidden = false; hubIdolsTam(); hubIdolsLigar();
+  box.hidden = false; hubIdolsTam(); hubIdolsLigar(); if(typeof twRankRender==='function')twRankRender();
 }
 function hubIdolsLugar(){
   var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), cv = $('hubCv'); if(!box || !busca || !cv) return;

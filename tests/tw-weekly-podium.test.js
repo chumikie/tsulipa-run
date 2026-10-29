@@ -3,9 +3,8 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index2.html'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
-const official=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/tw_weekly_podium_proposal.sql'),'utf8');
 function get(a,b){
@@ -41,7 +40,6 @@ assert.ok(html.includes('twRankRow(r,i,k[3],k[0])'),'rank rows keep the right ga
 assert.ok(html.includes('TW_RANK_ONLINE_READY=false'),'unreviewed weekly online podium remains disabled');
 assert.ok(html.includes('id="twSoraWeekScore"'));
 assert.ok(html.includes('hubCv')&&html.includes('HUB_TRIO')&&html.includes('hubCardsUI'));
-assert.ok(!official.includes('twRankSundayKey'));
 assert.ok(html.includes("if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score)"));
 assert.ok(html.includes('e.source!==frame.contentWindow'));
 assert.ok(html.includes('e.origin!==location.origin'));

@@ -1,0 +1,39 @@
+=== tests/validate-games.js: exit 0 ===
+✓ index.html 961354 bytes 1 inline scripts
+✓ index2.html 346 bytes 1 inline scripts
+✓ sora-jump-karaoke.html 10432 bytes 1 inline scripts
+✓ sora-jump.html 261562 bytes 4 inline scripts
+✓ karaoke-day.html 125451 bytes 3 inline scripts
+✓ karaoke-online-lab.html 11399 bytes 1 inline scripts
+✓ INDEX2 pauses covered background canvas loops without changing gameplay state
+✓ Preview controller smoke test: Sora, Karaoke, mod preview, focus, locale
+✓ Karaoke preview timer: Nov 1 closed, Nov 8 open 12:00–13:10 BRT
+✓ Closed Karaoke notice: premiere and weekly copy in PT/EN/ES/TH/JA
+✓ Sora opt-in embed flag: standalone / index2
+✓ All static validation checks passed. Browser and gameplay QA still required.
+
+=== tests/karaoke-room-model.test.js: exit 0 ===
+✓ Karaoke online room model: 60 offline assertions passed
+
+=== tests/karaoke-rhythm.test.js: exit 0 ===
+✓ Karaoke 45s rhythm: 20 offline assertions passed
+
+=== tests/karaoke-homol-view.test.js: exit 0 ===
+✓ Karaoke homol: portão, Turnstile isolado e visual preservado
+✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto
+✓ Karaoke 3A.8: sinal de revisão privado e atualização agrupada
+✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia
+✓ Karaoke 3A.9: prévia visual isolada e toque online protegido
+✓ Karaoke 3A.10: Sunday schedule and private moderation
+
+=== tests/karaoke-homol-sync.test.js: exit 0 ===
+✓ Karaoke sync lifecycle: recover failures, coalesce, disconnect and cancel Auth
+
+=== tests/karaoke-homol-refresh.test.js: exit 0 ===
+✓ Karaoke 3A.11: lease priority and bfcache cleanup/recovery
+
+=== tests/sora-stability.test.js: exit 0 ===
+✓ Sora stability: save, mobile audio, compaction, camera, iframe and bfcache
+
+=== tests/tw-weekly-podium.test.js: exit 0 ===
+✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge

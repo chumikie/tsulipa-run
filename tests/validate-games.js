@@ -8,7 +8,8 @@ const vm=require("node:vm");
 
 const root=path.resolve(__dirname,"..");
 const games=[
-  {file:"index2.html",max:1050000},
+  {file:"index.html",max:1050000},
+  {file:"index2.html",max:1000},
   {file:"sora-jump-karaoke.html",max:40000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
@@ -38,7 +39,7 @@ for(const game of games){
 let hub="",karaoke="",sora="",preview="";
 try{
   hub=read("sora-jump-karaoke.html");
-  preview=read("index2.html");
+  preview=read("index.html");
   karaoke=read("karaoke-day.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
@@ -49,8 +50,9 @@ for(const ref of ["sora-jump.html","karaoke-day.html"]){
 assert(hub.includes("games-theme.css"),"Hub missing shared theme");
 assert(preview.includes('class="hubcard tw-hubgame')&&preview.includes("twPreviewAbrirJogo"),
   "index2 missing integrated game cards or launchers");
-assert(preview.includes('name="robots" content="noindex,nofollow,noarchive"'),"index2 must be noindex");
-assert(!read("index.html").includes("twPreviewAbrirJogo"),"Production index.html must not contain preview-specific code");
+assert(!preview.includes('name="robots" content="noindex'),"Canonical home must be indexable");
+const redirect=read("index2.html");
+assert(redirect.includes("location.replace('/')")&&redirect.includes('content="0; url=/"')&&!redirect.includes('contaRpc'),"index2 must redirect to canonical home, including without JS");
 assert(sora.includes("games-theme.css"),"Sora missing shared theme");
 assert(karaoke.includes("games-theme.css"),"Karaoke missing shared theme");
 const rhythm=read("karaoke-rhythm.js"),rhythmStyle=read("karaoke-rhythm.css");
@@ -64,7 +66,7 @@ assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
        karaoke.includes("krRhythmStop('abandoned')"),
   "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
 assert(karaoke.includes("KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]]")&&
-       karaoke.includes("'🧪 Sala demonstrativa · 👥 '+krSt.ocupadas+'/9'")&&
+       karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/9'")&&
        !karaoke.includes("Aberta · {n}/12")&&
        !karaoke.includes("micT=30*60")&&
        !karaoke.includes("uma das 12 vagas"),
@@ -105,15 +107,15 @@ assert(karaoke.includes("krHandBusy")&&karaoke.includes("krClearHandheld"),
   "Karaoke handheld exclusivity missing");
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
-const lab=read("index2.html");
+const lab=read("index.html");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
 assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),
   "Index V2 missing in-page game overlay");
-assert(lab.includes("TW_INDEX2_READ_RPC")&&lab.includes("index2_somente_leitura"),
-  "Index 2 missing read-only database guards");
-// Preview safety: direct RPC calls must remain limited to the reviewed ranking query.
-// Dynamic account calls are separately restricted by the TW_INDEX2_READ_RPC allowlist.
+assert(!lab.includes("TW_INDEX2_READ_RPC")&&!lab.includes("INDEX2_PREVIEW_GUARD")&&!lab.includes("index2_somente_leitura"),
+  "Release must not block account/economy RPCs with the preview guard");
+assert(!lab.includes("twPreviewAviso")&&!lab.includes("INDEX 2 —"),"Release must not show test-preview notice");
+// Direct ranking calls remain reviewed; account RPCs use the existing server authorization.
 const directRpcCalls=[...lab.matchAll(/_supabase\.rpc\(\s*(['"])([^'"]+)\1/g)].map(m=>m[2]);
 assert(directRpcCalls.every(name=>name==="top_scores"),
   "Index 2 contains a direct Supabase RPC beyond top_scores: "+directRpcCalls.join(", "));
@@ -155,7 +157,7 @@ assert(lab.includes("./sora-jump.html'+context")&&
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
 assert(sora.includes("twSoraEmbedBoot")&&
        sora.includes("get('embed')!=='index2'")&&sora.includes("tw-sora-embed")&&
-       sora.includes("./sora-embed.css?v=2")&&
+       sora.includes("./sora-embed.css?v=3")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
@@ -214,15 +216,15 @@ assert(lab.includes("function twKaraokeHorario()")&&
 assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
        lab.includes("encodeURIComponent(tema)")&&lab.includes("encodeURIComponent(LANG)")&&
        soraEmbedSkin.includes('[data-oshi="lirika"]')&&karaokeEmbedSkin.includes('[data-oshi="pati"]')&&
-       karaoke.includes("twKaraokeEmbedBoot")&&karaoke.includes("./karaoke-embed.css?v=1")&&
+       karaoke.includes("twKaraokeEmbedBoot")&&karaoke.includes("./karaoke-embed.css?v=2")&&
        soraEmbedSkin.includes("#soraImportProfileBtn"),
   "Index 2 embed games must inherit selected Oshi and hide Sora test import");
 assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
        lab.includes("twKaraokeMostrarFechado")&&
        lab.includes('id="twKaraokeEnsaiar"')&&
        lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
-       lab.includes("Nenhuma mensagem foi enviada nesta prévia"),
-  "Admin preview needs permission and invitations must be clearly not sent");
+       !lab.includes("twKaraokeConviteRascunho"),
+  "Admin preview needs permission and unfinished invitations must be absent");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
 assert(karaoke.includes("'Melon Juice!'")&&!karaoke.includes("'Melon Soda'"),
@@ -324,7 +326,7 @@ try{
     "Karaoke return must unload iframe and restore hub focus");
   sandbox.LANG="ja";
   sandbox.twPreviewAtualizarIdioma();
-  assert(backText.textContent==="ホーム"&&noticeParts.strong.textContent.includes("テスト版"),
+  assert(backText.textContent==="ホーム",
     "Preview text should update when the hub language changes");
   sandbox.contaAdmin=()=>true;
   sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
@@ -363,6 +365,26 @@ try{
   }
   console.log("✓ Karaoke preview timer: Nov 1 closed, Nov 8 open 12:00–13:10 BRT");
 }catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
+
+// Closed-room copy is refreshed at every opening in each supported language.
+try{
+  const dictionary=lab.slice(lab.indexOf('var TW_KARAOKE_FECHADO_TEXTOS ='),lab.indexOf('// Original header node'));
+  const noticeFn=lab.slice(lab.indexOf('function twKaraokeMostrarFechado(){'),lab.indexOf('// Visual mode now belongs'));
+  for(const lang of ['pt','en','es','th','ja']){
+    const nodes={};
+    for(const id of ['twKaraokeFechado','twKaraokeFechadoTxt','twKaraokeDescanso','twKaraokeFecharAviso','twKaraokeEnsaiar'])nodes[id]={hidden:true,textContent:'',focus(){}};
+    const env={LANG:lang,$:id=>nodes[id]||null,twKaraokeAtualizarCard(){},twKaraokeHorario:()=>({estreia:true,faltam:90000})};
+    vm.runInNewContext(dictionary+noticeFn,env);
+    for(const premiere of [true,false]){
+      env.twKaraokeHorario=()=>({estreia:premiere,faltam:90000});
+      env.twKaraokeMostrarFechado();
+      const copy=env.TW_KARAOKE_FECHADO_TEXTOS[lang];
+      assert(nodes.twKaraokeFechado.hidden===false&&nodes.twKaraokeFechadoTxt.textContent.startsWith(copy[premiere?1:2])&&nodes.twKaraokeFechadoTxt.textContent.endsWith(copy[3]),'Closed schedule/status in '+lang);
+      assert(nodes.twKaraokeDescanso.textContent===copy[0]&&nodes.twKaraokeFecharAviso.textContent===copy[4]&&nodes.twKaraokeEnsaiar.textContent===copy[5],'Closed actions in '+lang);
+    }
+  }
+  console.log('✓ Closed Karaoke notice: premiere and weekly copy in PT/EN/ES/TH/JA');
+}catch(e){errors.push('Closed Karaoke locale test: '+e.message);}
 
 // Standalone mode must not load INDEX2 styles. Embed mode adds exactly one stylesheet.
 try{

@@ -11,8 +11,7 @@ URL de testes: `/index2.html` em uma implantação Preview da branch `feature/so
 
 ## Segurança da prévia
 A URL da branch e a produção **não são a mesma página**. O `index.html` na branch `main` permanece intacto.
-**Entretanto, ambas usam o MESMO projeto Supabase.** A prévia não é um banco sandbox. Login, compras, estrelas, ranking, moderação, missões, gifts, mensagens e Gacha podem afetar dados reais.
-Use a página para comparar visual e navegação. Para testes que alteram saldos ou contas, criar futuramente um segundo projeto de homologação/ambiente isolado; não simular compras reais apenas por estar na `index2`.
+**Entretanto, ambas usam o MESMO projeto Supabase**, sem sandbox do banco. A `index2` inclui proteção de leitura: somente RPCs de consulta revisadas são permitidas pelo helper `contaRpc`; operações de compras, Gacha, resgates, moderação e outros writes são bloqueadas. `duo_avisos_pendentes` foi removida da lista de leitura após confirmar que executa UPDATE. O leitor público de ranking é um RPC direto e somente consulta dados. Não executar testes de transações reais na prévia; criar futuramente um projeto separado de homologação para testar operações de escrita.
 
 ## Auditoria da lógica atual de ranking
 - `top_scores(periodo)` consulta `public.leaderboard`, retorna até 15 posições e remove entradas associadas a perfis bloqueados.

@@ -101,12 +101,12 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Day! · Em breve"),
   "Index 2 missing Sora intro or Karaoke coming-soon teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
-assert(lab.includes("./sora-jump.html?embed=index2")&&
+assert(lab.includes("./sora-jump.html'+context")&&
        !lab.includes("twPreviewEstiloSora"),
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
 assert(sora.includes("twSoraEmbedBoot")&&
@@ -115,7 +115,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -141,6 +141,16 @@ assert(lab.includes("function twKaraokeHorario()")&&
        previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
   "INDEX2 should display Sunday countdown and guard preview card outside the time window");
 
+assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
+       lab.includes("encodeURIComponent(tema)")&&lab.includes("encodeURIComponent(LANG)")&&
+       soraEmbedSkin.includes('[data-oshi="lirika"]')&&karaokeEmbedSkin.includes('[data-oshi="pati"]')&&
+       karaoke.includes("twKaraokeEmbedBoot")&&karaoke.includes("./karaoke-embed.css?v=1")&&
+       soraEmbedSkin.includes("#soraImportProfileBtn"),
+  "Index 2 embed games must inherit selected Oshi and hide Sora test import");
+assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
+       lab.includes("twKaraokeMostrarFechado")&&
+       lab.includes("Nenhuma mensagem foi enviada nesta prévia"),
+  "Admin preview needs permission and invitations must be clearly not sent");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
@@ -186,7 +196,8 @@ try{
   };
   const fakeHub={hidden:false,querySelector:sel=>sel.includes("data-ir=")?card:null};
   const sandbox={
-    LANG:"pt",$:id=>nodes[id]||null,hubOv:fakeHub,
+    LANG:"pt",OSHI:"lirika",$:id=>nodes[id]||null,hubOv:fakeHub,
+    contaAdmin:()=>false,
     tr:s=>s,
     twKaraokeHorario:()=>({aberto:true,faltam:0}),
     twKaraokeAtualizarCard:()=>{blockedKaraoke++;},
@@ -201,7 +212,7 @@ try{
   };
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
-  assert(iframe.src==="./sora-jump.html?embed=index2"&&!overlay.hidden&&fakeHub.hidden,
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&fakeHub.hidden,
     "Sora launcher must show the iframe and hide the hub");
   assert(attrs["data-jogo"]==="sora"&&attrs["data-tema"]==="halloween"&&
          previewPart.innerHTML===sourcePart.innerHTML&&
@@ -209,7 +220,7 @@ try{
     "Preview should move the official header once and reuse the hub seasonal particles");
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./sora-jump.html?embed=index2"&&musicStops===1,
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&musicStops===1,
     "A duplicate launch must not replace an active game");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
@@ -222,7 +233,7 @@ try{
     "Karaoke preview should refuse to open outside Sunday window");
   sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./karaoke-day.html"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
+  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
     "Karaoke preview should open during scheduled window");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&hubReturns===2&&launchesFocused===2,
@@ -231,7 +242,13 @@ try{
   sandbox.twPreviewAtualizarIdioma();
   assert(backText.textContent==="ホーム"&&noticeParts.strong.textContent.includes("テスト版"),
     "Preview text should update when the hub language changes");
-  console.log("✓ Preview controller smoke test: Sora, Karaoke, back, focus, locale");
+  sandbox.contaAdmin=()=>true;
+  sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
+  sandbox.twPreviewAbrirJogo("karaoke");
+  assert(!overlay.hidden&&iframe.src.includes("karaoke-day.html?embed=index2"),
+    "Server-verified moderator should enter the TEST preview while closed");
+  sandbox.twPreviewFecharJogo();
+  console.log("✓ Preview controller smoke test: Sora, Karaoke, mod preview, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
 
@@ -267,7 +284,7 @@ try{
     const fake={
       location:{search:query}, URLSearchParams,
       document:{
-        documentElement:{classList:{add:name=>classes.push(name)}},
+        documentElement:{classList:{add:name=>classes.push(name)},setAttribute:()=>{},removeAttribute:()=>{}},
         head:{appendChild:node=>installed.push(node)},
         createElement:tag=>({tagName:tag})
       }

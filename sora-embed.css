@@ -92,7 +92,7 @@ html.tw-sora-embed #soraOv .bp-title small{
 html.tw-sora-embed #soraOv>.panel>p{font-size:12px!important;line-height:1.45!important;margin:2px 0 7px!important}
 html.tw-sora-embed #soraStage{
   box-sizing:border-box;
-  width:min(100%,360px,calc((100dvh - 176px)*360/520))!important;
+  width:min(100%,360px,calc((100dvh - 128px)*360/520))!important;
   height:auto!important;
   max-height:none!important;
   aspect-ratio:360/520!important;
@@ -120,12 +120,12 @@ html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-
   html.tw-sora-embed #soraOv .bp-title{font-size:clamp(21px,6vw,28px)!important}
   html.tw-sora-embed #soraOv>.panel>p{font-size:11px!important;margin:2px 0 5px!important}
   html.tw-sora-embed #soraStage{
-    width:min(100%,350px,calc((100dvh - 170px)*360/520))!important;
+    width:min(100%,350px,calc((100dvh - 108px)*360/520))!important;
   }
   html.tw-sora-embed #soraOv .sora-menu-content{gap:5px!important}
 }
 @media(max-height:600px) and (min-width:621px){
-  html.tw-sora-embed #soraStage{width:min(100%,360px,calc((100dvh - 180px)*360/520))!important}
+  html.tw-sora-embed #soraStage{width:min(100%,360px,calc((100dvh - 112px)*360/520))!important}
   html.tw-sora-embed #soraOv>.panel.sora-panel{padding:6px 10px 8px!important}
 }
 @media(prefers-reduced-motion:reduce){

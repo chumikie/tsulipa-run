@@ -58,4 +58,19 @@ assert(game.includes("prefers-reduced-motion: reduce"),'whimsical motion reducti
 assert(game.indexOf('krDesenharWhimsical(x,t)')<game.indexOf('desenharIdol(x,j.char,j.x,baseY,'),'whimsical behind characters');
 assert(game.includes("get('homol')==='1'?null:JSON.parse(localStorage.getItem('brs48cr_cu2')"),'lab must not reuse saved real avatar');
 
-console.log('✓ Karaoke homol: nove avatares, fila de três, roupas, mãos corrigidas e cenário whimsical');
+// 3A.6: só Idols anônimos podem receber um assento; portão do banco manda na interface.
+const gateSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a6_entry_gate.sql'),'utf8');
+const gateTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a6_entry_gate_rollback.sql'),'utf8');
+assert(gateSql.includes('joins_enabled boolean not null default false'));
+assert(gateSql.includes("coalesce(auth.jwt()->>'is_anonymous','false') <> 'true'"));
+assert(gateSql.includes("and p_action in ('enter','queue','heartbeat')"));
+assert(gateSql.includes("'labOpen'"));
+assert(gateSql.includes('revoke all on function public.karaoke_ensaio(text,uuid) from public, anon, authenticated;'));
+assert(gateSql.includes('revoke all on function public.karaoke_ensaio_elenco() from public, anon, authenticated;'));
+assert(gateTest.trimEnd().endsWith('rollback;'));
+assert(client.includes("var TURNSTILE_SITE_KEY='';"));
+assert(client.includes('labOpen=data.labOpen===true;'));
+assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen;'));
+assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;'));
+assert(client.includes('r.data.session.user.is_anonymous!==true'));
+console.log('✓ Karaoke homol: portão 3A.6 e visual preservado');

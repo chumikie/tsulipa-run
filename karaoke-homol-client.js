@@ -12,7 +12,7 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // PUBLIC site key only; the Turnstile SECRET must remain in Supabase Auth settings.
 // Leave empty until the homologation widget and server-side CAPTCHA are configured.
 var TURNSTILE_SITE_KEY='';
-var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false;
+var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
@@ -22,6 +22,7 @@ panel.id='krHomolPanel';
 panel.setAttribute('aria-label','Homologação do Karaoke');
 panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte um Idol fictício para testar a sala. Nenhuma conta ou estrela do jogo oficial será usada.</p>'
+  +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. A sala cheia acima é uma demonstração.</p>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
   +'<button type="button" class="krb" id="krHomolAuth">Criar/continuar Idol de teste</button>'
@@ -46,11 +47,11 @@ var ids=['Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');
 function say(text){msg.textContent=String(text);}
-if(!TURNSTILE_SITE_KEY) say('Etapa 3A.4: cadastro desativado até configurar Turnstile no Supabase de homologação. Nenhuma conta está sendo criada.');
+if(!TURNSTILE_SITE_KEY) say('Etapa 3A.6: cadastro desativado até configurar Turnstile e CAPTCHA no Supabase de homologação. Nenhuma conta está sendo criada.');
 function enable(auth,seat,queued){
  buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY;
- buttons.Enter.disabled=!auth||seat;
- buttons.Queue.disabled=!auth||!seat||queued||isSinging;
+ buttons.Enter.disabled=!auth||seat||!labOpen;
+ buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
  buttons.Leave.disabled=!auth||!seat;
  buttons.Refresh.disabled=!auth;
@@ -115,6 +116,7 @@ function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k
 function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
 function showTurnClock(){
  var out=document.getElementById('krHomolTurn'),badge=document.getElementById('krRelogio');
+ if(!lastSeat){out.textContent=labOpen?'🎤 Ensaio aberto para Idols autorizados':'🔒 Ensaio online fechado · sala de demonstração ativa';return;}
  if(!turnClock||!Number.isFinite(turnClock.ends)){
    out.textContent='🎤 Microfone aguardando a próxima cantora';
    badge.textContent='🎤 Homologação · sem pontos';
@@ -134,7 +136,10 @@ async function rpc(action){
 }
 async function refresh(doHeartbeat){
  if(!client)return;
- var data=await rpc(doHeartbeat&&token?'heartbeat':'status');
+ var data=await rpc(doHeartbeat&&token&&labOpen?'heartbeat':'status');
+ labOpen=data.labOpen===true;
+ document.getElementById('krHomolGate').textContent=labOpen?
+  '🟢 Ensaio online liberado somente para Idols fictícios autorizados.':'🔒 Entrada online fechada no servidor. A demonstração continua disponível.';
  if(data.status==='not_owner'||data.status==='not_inside'){
    token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
  }
@@ -171,7 +176,8 @@ async function refresh(doHeartbeat){
  if(window.twKaraokeHomolBridge)window.twKaraokeHomolBridge.show({slots:people,queue:queue.filter(Boolean)});
  showTurnClock();enable(true,seat,queued);
  if(isSinging&&!previous)say('🎤 Sua vez! No microfone por até 60 segundos, sem estrelas ou prêmios.');
- if(data.status==='full')say('💖 Palco lotado por enquanto. Tente novamente depois.');
+ if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. Você pode explorar a demonstração completa.');
+ else if(data.status==='full')say('💖 Palco lotado por enquanto. Tente novamente depois.');
  else if(data.status==='already_inside'&&!token)say('Outra aba já ocupa sua vaga. Não há duplicação de assentos.');
  else if(seat&&!isSinging)say('Conectado ao ensaio · '+data.occupied+'/9 · sem pontos ou prêmios.');
  else say('Identidade de ensaio pronta. Toque em Entrar na sala.');
@@ -192,6 +198,7 @@ async function run(action){
   if(data.status==='queue_full')say('🎤 Fila cheia! Somente três pessoas aguardam.');
   if(data.status==='already_queued')say('Você já está na fila.');
   if(data.status==='not_owner')say('Este assento pertence a outra aba.');
+  if(data.status==='lab_closed')say('🔒 Entrada fechada pelo servidor. Nenhuma vaga foi ocupada.');
  }catch(e){say('Não foi possível atualizar o ensaio: '+String(e.message||e));}
  finally{unlock();}
 }
@@ -200,6 +207,8 @@ buttons.Auth.addEventListener('click',async function(){
  try{
    await init();
    var r=await client.auth.getSession();
+   if(r.data.session&&r.data.session.user&&r.data.session.user.is_anonymous!==true)
+     throw new Error('Use somente um Idol anônimo de homologação; não uma conta permanente.');
    if(!r.data.session){
      var captchaToken=await captchaForSignup();
      r=await client.auth.signInAnonymously({options:{captchaToken:captchaToken}});
@@ -208,7 +217,7 @@ buttons.Auth.addEventListener('click',async function(){
    ready=true;await refresh(false);
    if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,1000); // visual: zero RPC
    if(!timer)timer=setInterval(function(){
-     if(document.hidden||!ready||!token||busy)return;
+     if(document.hidden||!ready||!token||!labOpen||busy)return;
      refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
    },30000);
  }catch(e){

@@ -1,3 +1,11 @@
+## Etapa 3A.6 — Segurança e entrada dos Idols (29/10/2026)
+- **Aplicado em homologação:** a sala possui portão controlado pelo servidor e começa FECHADA. Ele bloqueia entrada, pedido de microfone e manutenção de vaga quando desativado; mantém saída e consulta de estado.
+- **Proteção de identidade:** as funções exigem JWT com is_anonymous=true, não dados de perfil nem login Google/permanente. Sem acesso direto às tabelas privadas e sem divulgação dos UUIDs de outros Idols.
+- **Testes SQL:** portão fechado, recusa de identidade permanente, entrada temporária com abertura simulada, segunda aba sem token, fila, elenco e saída. Testes sempre revertidos. Não são testes reais do Auth ou navegador.
+- **Visual:** painel de homologação indica porta fechada, sem apagar a sala demonstrativa aprovada.
+- **Ainda NÃO liberado:** sitekey pública Turnstile vazia, segredo e proteção antirobô devem ser configurados no Auth de homologação, Anonymous Sign-ins desabilitados, portão fechado; zero contas cadastradas.
+- **Pendente:** revisão dos avisos SECURITY DEFINER, testes de Auth no navegador, limite/horário de domingo no servidor e Realtime. Vercel pausada. Nenhum deploy em main ou modificação do Supabase de produção.
+
 # ETAPA 3 — O que EXISTE e o que é APENAS PROPOSTA
 
 **Atualizado: 2026-10-29.** Este quadro evita confundir **documento** com **funcionalidade no jogo**. Os planos são guardados em arquivos Markdown, não significam implementação.

@@ -73,4 +73,16 @@ assert(client.includes('labOpen=data.labOpen===true;'));
 assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen;'));
 assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;'));
 assert(client.includes('r.data.session.user.is_anonymous!==true'));
-console.log('✓ Karaoke homol: portão 3A.6 e visual preservado');
+// 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
+assert(client.includes('var SIGNUP_ENABLED=false;'),'cadastro permanece fechado');
+assert(client.includes("buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;"));
+assert(client.includes('buttons.Check.addEventListener('));
+const checkStart=client.indexOf('buttons.Check.addEventListener(');
+const authStart=client.indexOf('buttons.Auth.addEventListener(');
+assert(checkStart>=0&&authStart>checkStart,'botão de teste isolado do cadastro');
+const checkHandler=client.slice(checkStart,authStart);
+assert(!checkHandler.includes('signInAnonymously'),'teste não cadastra ninguém');
+assert(!checkHandler.includes("client.rpc("),'teste não ocupa vagas');
+assert(client.includes("if(!SIGNUP_ENABLED)return;"),'bloqueio explícito de cadastro');
+assert(client.includes("Tempo de verificação esgotado"),'widget não pode travar botões indefinidamente');
+console.log('✓ Karaoke homol: portão, Turnstile isolado e visual preservado');

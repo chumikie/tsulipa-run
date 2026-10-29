@@ -11,6 +11,8 @@ var KEY='sb_publishable_eWhnlZJSyDsJ3N8poUStGw_3XsEFO_T';
 var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // PUBLIC site key only; the Turnstile SECRET must remain in Supabase Auth settings.
 // Leave empty until the homologation widget and server-side CAPTCHA are configured.
+// Site Key é pública; segredo fica somente no Supabase Auth.
+// A integração abaixo ainda NÃO autoriza a criação de contas de ensaio.
 var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
 var SIGNUP_ENABLED=false;
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
@@ -104,15 +106,23 @@ async function captchaForSignup(){
  area.replaceChildren();
  say('Confirme a verificação antirobô. Este teste não cria contas.');
  return new Promise(function(resolve,reject){
-   var finished=false;
+   var finished=false,timeout=null;
+   function complete(err,result){
+     if(finished)return;
+     finished=true;
+     if(timeout!==null)clearTimeout(timeout);
+     if(err)reject(err);else resolve(result);
+   }
+   // Evita deixar todos os botões bloqueados se o widget não responder.
+   timeout=setTimeout(function(){complete(new Error('Tempo de verificação esgotado. Tente de novo.'));},90000);
    try{
      turnstileWidget=api.render(area,{
        sitekey:TURNSTILE_SITE_KEY,
-       callback:function(token){if(!finished){finished=true;resolve(token);}},
-       'error-callback':function(){if(!finished){finished=true;reject(new Error('Falha na verificação antirobô'));}},
-       'expired-callback':function(){if(!finished){finished=true;reject(new Error('Verificação expirada. Tente novamente.'));}}
+       callback:function(result){complete(null,result);},
+       'error-callback':function(){complete(new Error('Falha na verificação antirobô'));},
+       'expired-callback':function(){complete(new Error('Verificação expirada. Tente novamente.'));}
      });
-   }catch(e){reject(e);}
+   }catch(e){complete(e);}
  });
 }
 function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k].disabled=true;});return true;}

@@ -1,3 +1,9 @@
+## Etapa 3A.6b — Preparação do Turnstile (29/10/2026)
+- Site Key pública aplicada na branch experimental; segredo **não** incluído.
+- Botão `Testar Turnstile (sem cadastro)` testa exclusivamente o widget; timeout de 90s e bloqueio de cadastro (`SIGNUP_ENABLED=false`).
+- Testes automatizados verificam que o botão não cria contas, não usa RPC e não ocupa vagas. Ainda precisa confirmar hostname permitido e CAPTCHA no Auth antes de liberar testes reais.
+- Portão SQL de homologação continua fechado; Vercel pausada, PR #33 rascunho, `main` intacta.
+
 ## Etapa 3A.6 — Segurança e entrada dos Idols (29/10/2026)
 - **Aplicado em homologação:** a sala possui portão controlado pelo servidor e começa FECHADA. Ele bloqueia entrada, pedido de microfone e manutenção de vaga quando desativado; mantém saída e consulta de estado.
 - **Proteção de identidade:** as funções exigem JWT com is_anonymous=true, não dados de perfil nem login Google/permanente. Sem acesso direto às tabelas privadas e sem divulgação dos UUIDs de outros Idols.

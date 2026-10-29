@@ -1,3 +1,11 @@
+## Etapa 3A.10 — Horário, limites e moderação (29/10/2026)
+- Servidor somente em homologação: domingo 12:00–13:10, fuso `America/Sao_Paulo`. O portão manual é obrigatório e nunca abre automaticamente; fora da janela, RPCs de estado e pontuação o fecham e limpam as vagas, o microfone e a fila.
+- O elenco e o sinal de sincronização também recusam leitura fora do horário. Com o portão fechado, o visual demonstrativo permanece intacto.
+- Limites por identidade fictícia: 6 segundos entre entradas, 2 segundos entre pedidos de fila e 2 segundos entre saídas da fila. Nenhuma gravação por frame; continuam 9 vagas, fila 3, turnos 60s.
+- Moderação privada por UUID e código pré-definido, sem chat ou texto livre; bloqueio expulsa o Idol, invalida sua vaga e impede novas ações, pontuação e leitura do elenco. Nenhum acesso direto do navegador às tabelas de moderação/limite.
+- Testes com rollback: bordas do domingo, throttling, suspensão e bloqueio fora do horário. **Não substituem testes de carga, Auth/CAPTCHA e dois navegadores.** A proteção de abuso por identidade não substitui limites de IP/Auth.
+- Sem abertura pública: `SIGNUP_ENABLED=false`, portão experimental fechado, Vercel pausada, PR #33 rascunho, produção intacta.
+
 ### 3A.9b — Prévia visual sem contas (29/10/2026)
 - `karaoke-day.html?homol=1&practice_preview=1` mostra o novo painel de ritmo, em estado de inspeção apenas. Exibe traços em vez de uma pontuação inventada, com botão desativado.
 - Não chama Auth nem a função de pontuação; não ocupa vagas, não concede prêmios e não altera o visual da demonstração sem esse parâmetro.

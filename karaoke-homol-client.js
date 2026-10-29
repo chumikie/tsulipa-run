@@ -18,7 +18,7 @@ var SIGNUP_ENABLED=false;
 var PRACTICE_PREVIEW=new URLSearchParams(location.search).get('practice_preview')==='1';
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null,sync=null;
-var practice=null,tapPending=false;
+var practice=null,tapPending=false,moderationLocked=false;
 var currentRefresh=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
@@ -28,6 +28,7 @@ panel.id='krHomolPanel';
 panel.setAttribute('aria-label','Homologação do Karaoke');
 panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte um Idol fictício para testar a sala. Nenhuma conta ou estrela do jogo oficial será usada.</p>'
+  +'<p id="krHomolSchedule">🕛 Domingo, 12h–13h10 (Brasília). Mesmo no horário, somente ensaios autorizados.</p>'
   +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. A sala cheia acima é uma demonstração.</p>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
@@ -67,11 +68,11 @@ say('🛡️ Teste o Turnstile sem cadastro. A entrada online continua fechada.'
 function enable(auth,seat,queued){
  buttons.Check.disabled=!TURNSTILE_SITE_KEY;
  buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;
- buttons.Enter.disabled=!auth||seat||!labOpen;
- buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;
+ buttons.Enter.disabled=!auth||seat||!labOpen||moderationLocked;
+ buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen||moderationLocked;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
  buttons.Leave.disabled=!auth||!seat;
- buttons.Refresh.disabled=!auth;
+ buttons.Refresh.disabled=!auth||moderationLocked;
 }
 enable(false,false,false);
 drawSharedRhythm();
@@ -214,10 +215,13 @@ async function refresh(doHeartbeat){
 }
 async function refreshData(doHeartbeat){
  var data=await rpc(doHeartbeat&&token&&labOpen?'heartbeat':'status');
- labOpen=data.labOpen===true;
+ labOpen=data.labOpen===true&&data.scheduleOpen===true;
+ moderationLocked=data.status==='moderated';
  document.getElementById('krHomolGate').textContent=labOpen?
-  '🟢 Ensaio online liberado somente para Idols fictícios autorizados.':'🔒 Entrada online fechada no servidor. A demonstração continua disponível.';
- if(data.status==='not_owner'||data.status==='not_inside'||(token&&data.mySeat!==true)){
+  '🟢 Ensaio online liberado somente para Idols fictícios autorizados.':
+  data.scheduleOpen===false?'🕛 Fora do horário de domingo · a demonstração continua disponível.':
+  '🔒 Entrada online fechada pelo servidor. A demonstração continua disponível.';
+ if(data.status==='not_owner'||data.status==='not_inside'||data.status==='moderated'||(token&&data.mySeat!==true)){
    token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
  }
  var seat=!!token&&!!data.mySeat;
@@ -255,7 +259,8 @@ async function refreshData(doHeartbeat){
  if(sync){sync.mark(Number(data.revision));if(seat&&labOpen)sync.start();else sync.stop();}
  showTurnClock();enable(true,seat,queued);
  if(isSinging&&!previous)say('🎤 Sua vez! No microfone por até 60 segundos, sem estrelas ou prêmios.');
- if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. Você pode explorar a demonstração completa.');
+ if(moderationLocked)say('🛡️ Este Idol não pode participar do ensaio. A demonstração permanece disponível.');
+ else if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. Você pode explorar a demonstração completa.');
  else if(data.status==='full')say('💖 Palco lotado por enquanto. Tente novamente depois.');
  else if(data.status==='already_inside'&&!token)say('Outra aba já ocupa sua vaga. Não há duplicação de assentos.');
  else if(seat&&!isSinging)say('Conectado ao ensaio · '+data.occupied+'/9 · sem pontos ou prêmios.');
@@ -274,6 +279,8 @@ async function run(action){
     token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
   }
   await refresh(false);
+  if(data.status==='rate_limited')say('🌸 Muitas tentativas em seguida. Aguarde alguns segundos.');
+  if(data.status==='moderated')say('🛡️ Participação do Idol suspensa nesta homologação.');
   if(data.status==='queue_full')say('🎤 Fila cheia! Somente três pessoas aguardam.');
   if(data.status==='already_queued')say('Você já está na fila.');
   if(data.status==='not_owner')say('Este assento pertence a outra aba.');

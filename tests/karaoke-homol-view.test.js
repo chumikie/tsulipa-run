@@ -175,3 +175,21 @@ assert(client.includes('tap.disabled=true;note.hidden=true;'));
 assert(client.includes('drawSharedRhythm();'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 console.log('✓ Karaoke 3A.9: prévia visual isolada e toque online protegido');
+
+// 3A.10: Sunday schedule, anti-spam limits and private moderation.
+const rulesSQL=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a10_sunday_rules.sql'),'utf8');
+const rulesTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a10_rules_rollback.sql'),'utf8');
+assert(rulesSQL.includes("America/Sao_Paulo"));
+assert(rulesSQL.includes("time '12:00'"));
+assert(rulesSQL.includes("time '13:10'"));
+assert(rulesSQL.includes("create table if not exists karaoke_lab.moderation_blocks"));
+assert(rulesSQL.includes("create table if not exists karaoke_lab.action_limits"));
+assert(rulesSQL.includes("karaoke_lab.enforce_schedule(v_now)"));
+assert(rulesSQL.includes("karaoke_lab.enforce_schedule(now_at)"));
+assert(rulesSQL.includes("delete from karaoke_lab.action_limits;"));
+assert(rulesTest.trimEnd().endsWith('rollback;'));
+assert(client.includes("data.scheduleOpen===true"));
+assert(client.includes("var SIGNUP_ENABLED=false;"));
+assert(client.includes("moderationLocked"));
+assert(client.includes("Domingo, 12h–13h10 (Brasília)"));
+console.log('✓ Karaoke 3A.10: Sunday schedule and private moderation');

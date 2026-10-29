@@ -1,0 +1,37 @@
+/* TsuLiPa⭐World / Karaoke⭐Day! — INDEX 2 visual integration only.
+   Never changes canvas, rhythm state, presence or the standalone version. */
+html.tw-karaoke-embed{
+ --tw-kr-shell1:#132748;--tw-kr-shell2:#222048;--tw-kr-panel:#202e52;
+ --tw-kr-accent:#ff87c4;--tw-kr-edge:rgba(232,195,255,.55);
+}
+html.tw-karaoke-embed[data-oshi="tsu"]{
+ --tw-kr-shell1:#301355;--tw-kr-shell2:#4a206e;--tw-kr-panel:#3b205f;
+ --tw-kr-accent:#e5b5ff;
+}
+html.tw-karaoke-embed[data-oshi="lirika"]{
+ --tw-kr-shell1:#113a34;--tw-kr-shell2:#1b604a;--tw-kr-panel:#1c4e46;
+ --tw-kr-accent:#b9ffd1;--tw-kr-edge:rgba(185,255,209,.57);
+}
+html.tw-karaoke-embed[data-oshi="pati"]{
+ --tw-kr-shell1:#162c55;--tw-kr-shell2:#29569a;--tw-kr-panel:#203d75;
+ --tw-kr-accent:#c1dbff;--tw-kr-edge:rgba(193,219,255,.6);
+}
+html.tw-karaoke-embed body.tw-game-karaoke{
+ background:radial-gradient(circle at 14% 8%,rgba(255,255,255,.06),transparent 40%),
+   linear-gradient(155deg,var(--tw-kr-shell1),var(--tw-kr-shell2)) fixed!important;
+}
+html.tw-karaoke-embed .krwrap{
+ background:radial-gradient(circle at 10% 0%,rgba(255,255,255,.09),transparent 40%),
+   linear-gradient(155deg,var(--tw-kr-panel),var(--tw-kr-shell1))!important;
+ border:2px solid var(--tw-kr-edge)!important;
+ box-shadow:0 15px 40px rgba(7,12,35,.25)!important;
+}
+html.tw-karaoke-embed .krwrap .krtit{
+ color:#f2f6ff!important;background:none!important;
+ -webkit-text-fill-color:#f2f6ff!important;
+ text-shadow:0 3px 12px rgba(255,111,181,.28);
+}
+html.tw-karaoke-embed .krsub{color:var(--tw-kr-accent)!important}
+@media(prefers-reduced-motion:reduce){
+ html.tw-karaoke-embed .krwrap{scroll-behavior:auto!important}
+}

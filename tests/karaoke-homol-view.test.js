@@ -26,4 +26,11 @@ assert(game.includes('krHomolMeuChar')&&game.includes('krHomolMeuNick'));
 assert(client.includes("var TURNSTILE_SITE_KEY='';"));
 assert(client.includes("signInAnonymously({options:{captchaToken:captchaToken}})"));
 assert(!client.includes('https://fsggtvgbyhchblyazgmt.supabase.co'));
+// Protege contra a regressão que esvaziava a sala de demonstração.
+assert(game.includes('var krHomolConectado=false;'));
+assert(game.includes('if(!me){'));
+assert(!game.includes('krBots=[];krSt.ocupadas=0;krEu.plateia=true;'));
+assert(game.includes("if(krHomolConectado){e.preventDefault();return;}"));
+assert(client.includes('a sala cheia é uma demonstração local'));
+assert(!client.includes("localQueue.hidden=true;localQueue.style.display='none';"));
 console.log('✓ Karaoke homol: nove avatares, fila de três, fases, identidade fictícia e isolamento');

@@ -36,13 +36,12 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<strong>💌 Próximos 3 Idols</strong>'
   +'<ol id="krHomolQueueSlots" aria-label="Fila de três lugares"></ol>'
   +'<p id="krHomolQueueText" style="font-size:12px">Fila: —</p>'
-  +'<small>Somente homologação. Os avatares são modelos visuais; os lugares e a fila vêm do servidor. Atualização leve a cada 30 segundos enquanto você estiver na sala.</small>';
+  +'<small>Sem entrar: a sala cheia é uma demonstração local. Ao ocupar vaga, a fila e os participantes vêm do servidor. Sem estrelas e ranking; atualização leve a cada 30 segundos.</small>';
 host.appendChild(panel);
 var style=document.createElement('style');
 style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}';
 document.head.appendChild(style);
-var localQueue=document.getElementById('krMicQueue');
-if(localQueue){localQueue.hidden=true;localQueue.style.display='none';}
+// A fila de demonstração continua até um participante ocupar vaga online.
 var ids=['Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');

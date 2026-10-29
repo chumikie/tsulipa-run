@@ -174,7 +174,6 @@
   .tw-preview-header-slot .tw-preview-voltar{font-size:11px;padding:7px 8px}
   .tw-preview-header-slot .pill{font-size:11px;padding:5px 8px}
   .tw-preview-stage{padding:0}
-  .tw-preview-stage .hubpart i:nth-child(n+8){display:none}
   .tw-preview-game[data-jogo="sora"] #twPreviewIframe{border:0;box-shadow:none}
 }
 @media(max-width:385px){

@@ -1,6 +1,8 @@
 # TsuLiPa⭐World — Karaoke online e moderação (plano técnico por etapas)
 Atualizado: 2026-10-29. Branch: feature/sora-karaoke-v2-2026-10-29. PR #33 (rascunho).
 
+**DECISÃO MAIS RECENTE (fonte autoritativa de design):** [ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md](./ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md) — capacidade inicial **9 participantes** (1 canta e 8 assistem); turno de 60 s, 45 s de ritmo, atualização parcial do placar a cada 2 s. As demais especificações: [catálogo](./ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md), [temporadas/covers](./ETAPA3C_TEMAS_E_COVERS.md), [vozes e animações](./ETAPA3D_TRIO_VOZ_E_ANIMACAO.md). Nenhuma das estruturas propostas foi ativada em produção.
+
 ## Estado verificado
 - INDEX 2 usa Supabase real e deliberadamente bloqueia RPCs de escrita em `contaRpc`; não remover essa guarda enquanto a branch for laboratório.
 - `public.eh_admin()` consulta `public.admins.user_id=auth.uid()`. Há uma conta administradora configurada. O perfil de quem está autenticado recebe `admin` via `meu_perfil()` (o frontend mantém `perfAdmin`); nunca liberar poderes usando nick = "Tsu" ou valores manipuláveis do navegador.
@@ -36,12 +38,12 @@ Regras:
 5. Ativar somente após teste com duas contas reais em ambiente de homologação.
 
 ## Etapa C — Jogo de ritmo online (BACKEND ainda não aplicado)
-- Palco aberto domingo 12:00–13:10 em America/Sao_Paulo; até 12 presentes, fila.
+- Palco aberto domingo 12:00–13:10 em America/Sao_Paulo; até **9 presentes (1 no microfone e 8 na plateia)**, fila.
 - Uma RPC autenticada toma o microfone em transação, cria token de sessão e expiração de 60 segundos. 45 segundos de notas no cliente, ~15 segundos de introdução/encerramento. Lease expira automaticamente ao desconectar; o servidor escolhe o próximo da fila.
 - Supabase Realtime Presence para participantes e Broadcast em canal privado da sala. Broadcast só para começo, troca de cantor e placar (no máximo 1 atualização/s), sem gravar acertos de notas individualmente em Postgres.
 - Servidor salva UMA linha final de apresentação por cantor/sessão (pontuação, música original/autorizada, métricas não sensíveis), com validação de limites, tempo, membro e sessão; não vincular recompensa de estrelas/ranking enquanto não houver antitrapaça.
 - Manter tudo dentro do jogo: score ao vivo, corações, aplausos fofos e mensagens de incentivo predefinidas, sem texto livre. Pausar Broadcast/Presence ao sair da sala.
-- Medir consumo real em Realtime: transmissão conta 1 envio + destinatários. Uma apresentação de 45 s com 1 placar/s e 12 conexões => ordem de grandeza de 540 mensagens, mais presença e transições. Não prometer custo zero; monitorar cotas e comportamento em desconexões.
+- Medir consumo real em Realtime: transmissão conta 1 envio + destinatários. Uma apresentação de 45 s com placar a cada 2s e 9 conexões pode representar da ordem de 23 × (1 envio + 8 destinatários) ≈ 207 mensagens Broadcast, mais presença e transições. Não prometer custo zero; monitorar cotas e comportamento em desconexões.
 
 ## Etapa D — Moderação do Karaoke e roupas alheias (BACKEND ainda não aplicado)
 - Novo RPC `karaoke_autorizacao()` calcula no servidor a janela semanal e `eh_admin()`; impede participação normal fora da janela mesmo com URL direta.

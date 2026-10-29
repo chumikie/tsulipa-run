@@ -35,6 +35,8 @@ do $v$ declare r jsonb;v jsonb;tok uuid;begin
  if (v->'practice'->>'score')::int<>1010 then raise exception 'shared score missing %',v;end if;
 end $v$;
 reset role;
+-- O tempo da música foi avançado artificialmente; simule também o intervalo real entre toques.
+update karaoke_lab.practice set last_hit_at=clock_timestamp()-interval '1 second' where room_id=1;
 update karaoke_lab.room set started_at=clock_timestamp()-interval '7.35 seconds',
  ends_at=clock_timestamp()+interval '52.65 seconds' where id=1;
 set local role authenticated;

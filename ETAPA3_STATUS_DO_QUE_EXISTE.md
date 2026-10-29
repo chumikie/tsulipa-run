@@ -1,3 +1,9 @@
+## Etapa 3A.9 — Pontuação do ensaio (preparação, 29/10/2026)
+- **Servidor na homologação somente:** um banco de testes controla os 40 toques, a cantora e o turno de 60 segundos; cálculo com janela de 95ms para PERFECT e 200ms para GOOD baseado no relógio do servidor, evitando envio de pontuação arbitrária pelo cliente.
+- Somente a cantora com seu token de vaga pode registrar toques; score duplicado, fora da janela ou de outra cantora é recusado. Pontuação é **de ensaio**, sem estrelas, moedas, insígnias e ranking. O tempo da rede pode afetar os acertos e ainda não serve para classificação competitiva.
+- A função de estado expõe **apenas números** (`practice`) aos participantes; nunca singer UUID ou tokens alheios. Limpeza ao fechar sala. Uma única linha guarda placar provisório da cantora atual, não histórico de jogador.
+- **Não abrir o portão ou liberar sign-ups**. Testes SQL de validação e integração de navegador devem preceder publicação.
+
 ## Etapa 3A.8 — Sincronização online leve (29/10/2026)
 - Foi adotado **Postgres Changes** da Supabase em vez de `realtime.send`, porque a homologação está sem partição interna de `realtime.messages`. Nenhuma tabela interna gerenciada foi alterada.
 - Uma tabela pública de sinal em `public` contém somente `room_key` e `revision`. A política RLS autoriza consulta apenas a Idols anônimos com vaga válida, enquanto a sala está aberta. Nenhum token, UUID ou pontuação é transmitido.

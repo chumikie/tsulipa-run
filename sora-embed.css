@@ -136,3 +136,6 @@ html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-
    It remains accessible when opening Sora as a separate test page. */
 html.tw-sora-embed #soraImportProfileBtn,
 html.tw-sora-embed #soraImportProfileBox{display:none!important}
+
+/* Lançamento: no jogo dentro da página inicial, esconder ferramentas da cópia de teste */
+html.tw-sora-embed #soraTestProfileSource,html.tw-sora-embed #soraImportProfileBtn,html.tw-sora-embed #soraImportProfileBox,html.tw-sora-embed #soraSecretTestBox{display:none!important}

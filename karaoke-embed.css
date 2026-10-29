@@ -35,3 +35,6 @@ html.tw-karaoke-embed .krsub{color:var(--tw-kr-accent)!important}
 @media(prefers-reduced-motion:reduce){
  html.tw-karaoke-embed .krwrap{scroll-behavior:auto!important}
 }
+
+/* Lançamento: dentro da página inicial, a barra de cima já tem Início e idioma */
+html.tw-karaoke-embed #krVolta,html.tw-karaoke-embed #krHubBtn,html.tw-karaoke-embed #krDevToggle,html.tw-karaoke-embed #krLangs,html.tw-karaoke-embed #krSaldo,html.tw-karaoke-embed #krDev,html.tw-karaoke-embed #hubPrev{display:none!important}

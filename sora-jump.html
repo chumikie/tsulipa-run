@@ -430,7 +430,7 @@ html,body{min-height:100%;}
     if(['tsu','lirika','pati'].indexOf(o)>=0)document.documentElement.setAttribute('data-oshi',o);
     else document.documentElement.removeAttribute('data-oshi');
     var style=document.createElement('link');
-    style.rel='stylesheet';style.href='./sora-embed.css?v=2';
+    style.rel='stylesheet';style.href='./sora-embed.css?v=3';
     document.head.appendChild(style);
   }catch(e){/* standalone fallback */ }
 })();
@@ -1364,6 +1364,18 @@ var SORA_DICT = {
     "Histórico & Insígnias": "履歴＆バッジ"
   }
 };
+
+// Lançamento: textos do menu traduzidos
+Object.assign(SORA_DICT.en,{"MISSÃO DO DIA": "DAILY MISSION", "Recompensa:": "Reward:", "Sua idol": "Your idol", "Companheiro": "Buddy", "Recorde:": "Record:", "estrelas": "stars", "JOGAR": "PLAY", "Começar uma partida de Sora Jump": "Start a Sora Jump game", "Toque nos lados da tela para se mover": "Tap the sides of the screen to move", "Computador: ← → ou A / D": "Computer: ← → or A / D"});
+Object.assign(SORA_DICT.es,{"MISSÃO DO DIA": "MISIÓN DEL DÍA", "Recompensa:": "Recompensa:", "Sua idol": "Tu idol", "Companheiro": "Compañero", "Recorde:": "Récord:", "estrelas": "estrellas", "JOGAR": "JUGAR", "Começar uma partida de Sora Jump": "Empezar una partida de Sora Jump", "Toque nos lados da tela para se mover": "Toca los lados de la pantalla para moverte", "Computador: ← → ou A / D": "Computadora: ← → o A / D"});
+Object.assign(SORA_DICT.th,{"MISSÃO DO DIA": "ภารกิจประจำวัน", "Recompensa:": "รางวัล:", "Sua idol": "ไอดอลของคุณ", "Companheiro": "เพื่อนคู่หู", "Recorde:": "สถิติ:", "estrelas": "ดาว", "JOGAR": "เล่น", "Começar uma partida de Sora Jump": "เริ่มเล่น Sora Jump", "Toque nos lados da tela para se mover": "แตะด้านข้างของจอเพื่อเคลื่อนที่", "Computador: ← → ou A / D": "คอมพิวเตอร์: ← → หรือ A / D"});
+Object.assign(SORA_DICT.ja,{"MISSÃO DO DIA": "今日のミッション", "Recompensa:": "ごほうび:", "Sua idol": "あなたのアイドル", "Companheiro": "パートナー", "Recorde:": "記録:", "estrelas": "スター", "JOGAR": "プレイ", "Começar uma partida de Sora Jump": "Sora Jumpをはじめる", "Toque nos lados da tela para se mover": "画面の左右をタップして移動", "Computador: ← → ou A / D": "パソコン: ← → または A / D"});
+
+// Lançamento: fim de partida, som e voltar traduzidos
+Object.assign(SORA_DICT.en,{"🔊 Som": "🔊 Sound", "🔇 Som": "🔇 Sound", "Desativar som": "Turn sound off", "Ativar som": "Turn sound on", "VOLTAR": "BACK", "✨ JOGAR NOVAMENTE": "✨ PLAY AGAIN", "☁️ VOLTAR AO MENU": "☁️ BACK TO MENU", "Fim da subida!": "Climb over!", "Cada pulo é mais uma estrelinha na sua história ✨": "Every jump is one more little star in your story ✨", "NOVO RECORDE!": "NEW RECORD!", "Mais alto a cada tentativa! 💖": "Higher with every try! 💖", "TESTE DE CENÁRIO CONCLUÍDO!": "SCENE TEST COMPLETE!", "Esta sessão não altera seus recordes, histórico ou estrelas permanentes.": "This session doesn't change your records, history or permanent stars.", "🏆 TOP DA SUBIDA": "🏆 TOP CLIMBS", "✨ NOVO RECORDE": "✨ NEW RECORD", "SUA SUBIDA": "YOUR CLIMB", "METROS DE ALTURA": "METERS HIGH", "🏆 NOVA MELHOR MARCA!": "🏆 NEW PERSONAL BEST!", "⭐ ESTRELAS DA RODADA": "⭐ STARS THIS ROUND", "🏅 SUA INSÍGNIA": "🏅 YOUR BADGE", "🌙 Show na Lua (Nv.3)": "🌙 Moon Show (Lv.3)", "🌌 Voo Estrelado (Nv.2)": "🌌 Starry Flight (Lv.2)", "☁️ Pulo nas Nuvens (Nv.1)": "☁️ Cloud Jump (Lv.1)", "Rumo aos 500m!": "On the way to 500m!"});
+Object.assign(SORA_DICT.es,{"🔊 Som": "🔊 Sonido", "🔇 Som": "🔇 Sonido", "Desativar som": "Desactivar sonido", "Ativar som": "Activar sonido", "VOLTAR": "VOLVER", "✨ JOGAR NOVAMENTE": "✨ JUGAR DE NUEVO", "☁️ VOLTAR AO MENU": "☁️ VOLVER AL MENÚ", "Fim da subida!": "¡Fin de la subida!", "Cada pulo é mais uma estrelinha na sua história ✨": "Cada salto es una estrellita más en tu historia ✨", "NOVO RECORDE!": "¡NUEVO RÉCORD!", "Mais alto a cada tentativa! 💖": "¡Más alto en cada intento! 💖", "TESTE DE CENÁRIO CONCLUÍDO!": "¡PRUEBA DE ESCENARIO COMPLETADA!", "Esta sessão não altera seus recordes, histórico ou estrelas permanentes.": "Esta sesión no cambia tus récords, historial ni estrellas permanentes.", "🏆 TOP DA SUBIDA": "🏆 TOP DE LA SUBIDA", "✨ NOVO RECORDE": "✨ NUEVO RÉCORD", "SUA SUBIDA": "TU SUBIDA", "METROS DE ALTURA": "METROS DE ALTURA", "🏆 NOVA MELHOR MARCA!": "🏆 ¡NUEVA MEJOR MARCA!", "⭐ ESTRELAS DA RODADA": "⭐ ESTRELLAS DE LA RONDA", "🏅 SUA INSÍGNIA": "🏅 TU INSIGNIA", "🌙 Show na Lua (Nv.3)": "🌙 Show en la Luna (Nv.3)", "🌌 Voo Estrelado (Nv.2)": "🌌 Vuelo Estrellado (Nv.2)", "☁️ Pulo nas Nuvens (Nv.1)": "☁️ Salto en las Nubes (Nv.1)", "Rumo aos 500m!": "¡Rumbo a los 500m!"});
+Object.assign(SORA_DICT.th,{"🔊 Som": "🔊 เสียง", "🔇 Som": "🔇 เสียง", "Desativar som": "ปิดเสียง", "Ativar som": "เปิดเสียง", "VOLTAR": "กลับ", "✨ JOGAR NOVAMENTE": "✨ เล่นอีกครั้ง", "☁️ VOLTAR AO MENU": "☁️ กลับไปเมนู", "Fim da subida!": "จบการปีนแล้ว!", "Cada pulo é mais uma estrelinha na sua história ✨": "ทุกการกระโดดคือดาวดวงน้อยในเรื่องราวของคุณ ✨", "NOVO RECORDE!": "สถิติใหม่!", "Mais alto a cada tentativa! 💖": "สูงขึ้นทุกครั้งที่ลอง! 💖", "TESTE DE CENÁRIO CONCLUÍDO!": "ทดสอบฉากเสร็จแล้ว!", "Esta sessão não altera seus recordes, histórico ou estrelas permanentes.": "รอบนี้ไม่เปลี่ยนสถิติ ประวัติ หรือดาวถาวรของคุณ", "🏆 TOP DA SUBIDA": "🏆 อันดับการปีน", "✨ NOVO RECORDE": "✨ สถิติใหม่", "SUA SUBIDA": "การปีนของคุณ", "METROS DE ALTURA": "เมตรความสูง", "🏆 NOVA MELHOR MARCA!": "🏆 สถิติส่วนตัวใหม่!", "⭐ ESTRELAS DA RODADA": "⭐ ดาวในรอบนี้", "🏅 SUA INSÍGNIA": "🏅 เหรียญของคุณ", "🌙 Show na Lua (Nv.3)": "🌙 โชว์บนดวงจันทร์ (Lv.3)", "🌌 Voo Estrelado (Nv.2)": "🌌 บินท่ามกลางดวงดาว (Lv.2)", "☁️ Pulo nas Nuvens (Nv.1)": "☁️ กระโดดบนเมฆ (Lv.1)", "Rumo aos 500m!": "มุ่งสู่ 500 เมตร!"});
+Object.assign(SORA_DICT.ja,{"🔊 Som": "🔊 サウンド", "🔇 Som": "🔇 サウンド", "Desativar som": "サウンドをオフ", "Ativar som": "サウンドをオン", "VOLTAR": "もどる", "✨ JOGAR NOVAMENTE": "✨ もう一度", "☁️ VOLTAR AO MENU": "☁️ メニューへ", "Fim da subida!": "クライム終了！", "Cada pulo é mais uma estrelinha na sua história ✨": "ジャンプのたびに、あなたの物語に小さな星がひとつ ✨", "NOVO RECORDE!": "新記録！", "Mais alto a cada tentativa! 💖": "挑戦するたびに高く！💖", "TESTE DE CENÁRIO CONCLUÍDO!": "ステージテスト完了！", "Esta sessão não altera seus recordes, histórico ou estrelas permanentes.": "このセッションは記録・履歴・スターに影響しません。", "🏆 TOP DA SUBIDA": "🏆 トップクライム", "✨ NOVO RECORDE": "✨ 新記録", "SUA SUBIDA": "あなたのクライム", "METROS DE ALTURA": "メートル", "🏆 NOVA MELHOR MARCA!": "🏆 自己ベスト更新！", "⭐ ESTRELAS DA RODADA": "⭐ 今回のスター", "🏅 SUA INSÍGNIA": "🏅 あなたのバッジ", "🌙 Show na Lua (Nv.3)": "🌙 月のステージ (Lv.3)", "🌌 Voo Estrelado (Nv.2)": "🌌 星空フライト (Lv.2)", "☁️ Pulo nas Nuvens (Nv.1)": "☁️ 雲ジャンプ (Lv.1)", "Rumo aos 500m!": "500mをめざそう！"});
 Object.keys(SORA_DICT).forEach(function(l){
   if(DICT[l]) Object.keys(SORA_DICT[l]).forEach(function(k){ DICT[l][k] = SORA_DICT[l][k]; });
 });
@@ -3680,24 +3692,24 @@ function soraEndGame(){
   }
 
   var tier = soraBadgeTier();
-  var tierTxt = tier === 3 ? '🌙 Show na Lua (Nv.3)' : tier === 2 ? '🌌 Voo Estrelado (Nv.2)' : tier === 1 ? '☁️ Pulo nas Nuvens (Nv.1)' : 'Rumo aos 500m!';
+  var tierTxt = tr(tier === 3 ? '🌙 Show na Lua (Nv.3)' : tier === 2 ? '🌌 Voo Estrelado (Nv.2)' : tier === 1 ? '☁️ Pulo nas Nuvens (Nv.1)' : 'Rumo aos 500m!');
   if($('soraResTxt')){
     $('soraResTxt').innerHTML =
       '<div class="sora-score-hero' + (isNew ? ' is-record' : '') + '">' +
-        '<span class="sora-score-label">' + (isNew ? '✨ NOVO RECORDE' : 'SUA SUBIDA') + '</span>' +
+        '<span class="sora-score-label">' + escHtml(tr(isNew ? '✨ NOVO RECORDE' : 'SUA SUBIDA')) + '</span>' +
         '<strong class="sora-result-number">' + h + '</strong>' +
-        '<span class="sora-result-unit">METROS DE ALTURA</span>' +
-        (isNew ? '<div class="sora-record-tag">🏆 NOVA MELHOR MARCA!</div>' : '') +
+        '<span class="sora-result-unit">' + escHtml(tr('METROS DE ALTURA')) + '</span>' +
+        (isNew ? '<div class="sora-record-tag">' + escHtml(tr('🏆 NOVA MELHOR MARCA!')) + '</div>' : '') +
       '</div>' +
       '<div class="sora-result-grid" style="margin-top:6px">' +
-        '<div class="sora-result-stat"><span class="stat-label">⭐ ESTRELAS DA RODADA</span><strong class="stat-value">+' + soraStarsRun + ' estrelas</strong></div>' +
-        '<div class="sora-result-stat"><span class="stat-label">🏅 SUA INSÍGNIA</span><strong class="stat-value">' + tierTxt + '</strong></div>' +
+        '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
+        '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
       (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';
-  if($('soraOverTitle')) $('soraOverTitle').textContent = isTestScene ? 'TESTE DE CENÁRIO CONCLUÍDO!' : isNew ? 'NOVO RECORDE!' : 'Fim da subida!';
-  if($('soraOverSubtitle')) $('soraOverSubtitle').textContent = isTestScene ? 'Esta sessão não altera seus recordes, histórico ou estrelas permanentes.' : isNew ? 'Mais alto a cada tentativa! 💖' : 'Cada pulo é mais uma estrelinha na sua história ✨';
+  if($('soraOverTitle')) $('soraOverTitle').textContent = tr(isTestScene ? 'TESTE DE CENÁRIO CONCLUÍDO!' : isNew ? 'NOVO RECORDE!' : 'Fim da subida!');
+  if($('soraOverSubtitle')) $('soraOverSubtitle').textContent = tr(isTestScene ? 'Esta sessão não altera seus recordes, histórico ou estrelas permanentes.' : isNew ? 'Mais alto a cada tentativa! 💖' : 'Cada pulo é mais uma estrelinha na sua história ✨');
   soraRenderLb();
   if($('soraOverBox')) $('soraOverBox').hidden = false;
 }
@@ -3797,17 +3809,17 @@ function soraSetupUI(){
       '<p style="margin:4px 0 8px;font-size:12px">' + escHtml(tr('Suba mais alto e descubra paisagens inesperadas!')) + '</p>' +
       '<div id="soraStage">' +
         '<canvas id="soraCv" width="360" height="520" style="width:100%;height:100%;display:block"></canvas>' +
-        '<button type="button" id="soraSoundBtn" aria-pressed="true" aria-label="Desativar som" title="Desativar som" style="position:absolute;z-index:4;top:8px;right:8px;min-width:42px;min-height:40px;padding:7px 10px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(36,25,67,.88);color:#fff;font:800 15px system-ui;box-shadow:0 3px 12px rgba(0,0,0,.25);cursor:pointer;touch-action:manipulation">🔊 Som</button>' +
+        '<button type="button" id="soraSoundBtn" aria-pressed="true" aria-label="' + escHtml(tr('Desativar som')) + '" title="' + escHtml(tr('Desativar som')) + '" style="position:absolute;z-index:4;top:8px;right:8px;min-width:42px;min-height:40px;padding:7px 10px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(36,25,67,.88);color:#fff;font:800 15px system-ui;box-shadow:0 3px 12px rgba(0,0,0,.25);cursor:pointer;touch-action:manipulation">' + escHtml(tr('🔊 Som')) + '</button>' +
         '<button type="button" id="soraHomeBtn" hidden aria-label="Voltar ao início do Sora Jump" title="Voltar ao início do Sora Jump">⌂ Início</button>' +
         '<div id="soraMenuBox" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:12px;color:#fff">' +
           '<div class="sora-menu-content">' +
             '<div class="sora-eyebrow">✦ Kawaii sky adventure ✦</div>' +
             '<div style="font-size:27px;line-height:1.1;filter:drop-shadow(0 0 12px rgba(255,160,220,.38))">☁️ 🌸 ⭐</div>' +
             '<p class="sora-menu-copy">' + escHtml(tr('Pule de nuvem em nuvem, reúna estrelas e deixe o céu surpreender você!')) + '</p>' +
-            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 MISSÃO DO DIA</div><div class="sora-mission-copy">' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">Recompensa: <b style="color:#ffe66d">+25 ★</b></div></div>' +
+            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
             '<div class="sora-test-profile" id="soraTestProfileCard">' +
-              '<div class="sora-test-profile-side"><canvas id="soraTestCharPreview" width=48 height=60></canvas><div><b id="soraTestCharName">Personagem</b><small>Sua idol</small></div></div>' +
-              '<div class="sora-test-profile-side pet-side"><canvas id="soraTestPetPreview" width=60 height=58></canvas><div><b id="soraTestPetName">Pet</b><small>Companheiro</small></div></div>' +
+              '<div class="sora-test-profile-side"><canvas id="soraTestCharPreview" width=48 height=60></canvas><div><b id="soraTestCharName">Personagem</b><small>' + escHtml(tr('Sua idol')) + '</small></div></div>' +
+              '<div class="sora-test-profile-side pet-side"><canvas id="soraTestPetPreview" width=60 height=58></canvas><div><b id="soraTestPetName">Pet</b><small>' + escHtml(tr('Companheiro')) + '</small></div></div>' +
             '</div>' +
             '<div id="soraTestProfileSource" style="font-size:8px;line-height:1.25;opacity:.8;margin-top:-4px">Perfil de teste</div>' +
             '<button type="button" id="soraImportProfileBtn" class="sec sora-test-import">Importar perfil do jogo original ▾</button>' +
@@ -3817,8 +3829,8 @@ function soraSetupUI(){
               '<button type="button" id="soraApplyProfileBtn" class="btn sora-test-import" style="margin-top:4px">Carregar perfil nesta cópia</button>' +
               '<div id="soraImportProfileMsg" style="font-size:9px;margin-top:3px"></div>' +
             '</div>' +
-            '<div class="sora-quick-stats"><span class="sora-mini-chip">🏆 Recorde: <b id="soraMenuBest">0 m</b></span><span class="sora-mini-chip">⭐ <b id="soraMenuStars">0</b> estrelas</span></div>' +
-            '<button type="button" class="btn sora-play-primary" id="soraPlayBtn" aria-label="Começar uma partida de Sora Jump">☁️ JOGAR</button>' +
+            '<div class="sora-quick-stats"><span class="sora-mini-chip">🏆 ' + escHtml(tr('Recorde:')) + ' <b id="soraMenuBest">0 m</b></span><span class="sora-mini-chip">⭐ <b id="soraMenuStars">0</b> ' + escHtml(tr('estrelas')) + '</span></div>' +
+            '<button type="button" class="btn sora-play-primary" id="soraPlayBtn" aria-label="' + escHtml(tr('Começar uma partida de Sora Jump')) + '">☁️ ' + escHtml(tr('JOGAR')) + '</button>' +
             '<div id="soraSecretTestBox" hidden style="width:100%;box-sizing:border-box;margin-top:8px;padding:9px;border:1px solid rgba(255,255,255,.58);border-radius:14px;background:linear-gradient(135deg,rgba(30,41,90,.92),rgba(126,45,135,.88));box-shadow:0 0 18px rgba(255,164,220,.18)">' +
               '<div style="font-size:12px;font-weight:900;color:#ffe66d;text-align:center">🔓 MODO DE TESTE SECRETO</div>' +
               '<p style="font-size:10px;line-height:1.35;margin:4px 0 7px;text-align:center;color:#fff">Teste as quatro paisagens sem precisar subir até 2.000 m, 3.200 m, 4.500 m ou 6.000 m.</p>' +
@@ -3831,23 +3843,23 @@ function soraSetupUI(){
               '<div style="font-size:9px;opacity:.86;text-align:center;margin-top:6px;color:#fff">Sessões de teste não salvam recordes, histórico nem estrelas.</div>' +
             '</div>' +
             '<div class="sora-menu-actions"><button type="button" class="sec" id="soraTiltBtn">' + escHtml(tr('📱 Inclinar')) + '</button><button type="button" class="sec" id="soraHistBtn" style="color:#ffb8e0">📊 ' + escHtml(tr('Histórico & Insígnias')) + '</button></div>' +
-            '<p class="sora-controls-hint">◀ ▶ Toque nos lados da tela para se mover<br>Computador: ← → ou A / D</p>' +
+            '<p class="sora-controls-hint">◀ ▶ ' + escHtml(tr('Toque nos lados da tela para se mover')) + '<br>' + escHtml(tr('Computador: ← → ou A / D')) + '</p>' +
             '<div id="soraHistBox" hidden style="width:100%;max-height:115px;overflow:auto;background:var(--card);color:var(--ink);border-radius:12px;padding:8px;margin-top:2px"><div id="soraHistContent"></div></div>' +
           '</div>' +
         '</div>' +
         '<div id="soraOverBox" hidden style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;overscroll-behavior:contain;padding:10px 12px;color:#fff">' +
           '<div class="sora-over-content">' +
             '<div class="sora-over-icon" id="soraOverIcon">🌸</div>' +
-            '<h2 class="sora-over-title" id="soraOverTitle">Fim da subida!</h2>' +
-            '<p class="sora-over-subtitle" id="soraOverSubtitle">Cada pulo é mais uma estrelinha na sua história ✨</p>' +
+            '<h2 class="sora-over-title" id="soraOverTitle">' + escHtml(tr('Fim da subida!')) + '</h2>' +
+            '<p class="sora-over-subtitle" id="soraOverSubtitle">' + escHtml(tr('Cada pulo é mais uma estrelinha na sua história ✨')) + '</p>' +
             '<div id="soraResTxt" class="res" style="width:100%;color:#fff"></div>' +
-            '<div class="sora-ranking-wrap"><div class="sora-ranking-head"><span>🏆 TOP DA SUBIDA</span><span style="color:#c4b5fd;font-size:9px">TOP 5</span></div>' +
+            '<div class="sora-ranking-wrap"><div class="sora-ranking-head"><span>' + escHtml(tr('🏆 TOP DA SUBIDA')) + '</span><span style="color:#c4b5fd;font-size:9px">TOP 5</span></div>' +
               '<ol class="lb" id="soraLbList" style="width:100%;max-height:85px;overflow:auto;background:var(--card);color:var(--ink);border-radius:8px;padding:4px 8px;margin:0"></ol></div>' +
-            '<div class="sora-over-actions"><button type="button" class="btn" id="soraAgainBtn">✨ JOGAR NOVAMENTE</button><button type="button" class="sec" id="soraMenuBtn">☁️ VOLTAR AO MENU</button></div>' +
+            '<div class="sora-over-actions"><button type="button" class="btn" id="soraAgainBtn">' + escHtml(tr('✨ JOGAR NOVAMENTE')) + '</button><button type="button" class="sec" id="soraMenuBtn">' + escHtml(tr('☁️ VOLTAR AO MENU')) + '</button></div>' +
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="btns sora-bottom-actions"><button type="button" class="btn alt" id="soraCloseBtn">VOLTAR</button></div>' +
+      '<div class="btns sora-bottom-actions"><button type="button" class="btn alt" id="soraCloseBtn">' + escHtml(tr('VOLTAR')) + '</button></div>' +
     '</div>';
   document.body.appendChild(ov);
 
@@ -3935,16 +3947,16 @@ function soraSetupUI(){
   $('soraTestThailandBtn').onclick = function(){ soraTestSceneId = 'thailand'; soraStartGame(); };
   $('soraMenuBtn').onclick = soraReturnToMenu;
   $('soraSoundBtn').setAttribute('aria-pressed', 'true');
-  $('soraSoundBtn').setAttribute('aria-label', 'Desativar som');
-  $('soraSoundBtn').title = 'Desativar som';
+  $('soraSoundBtn').setAttribute('aria-label', tr('Desativar som'));
+  $('soraSoundBtn').title = tr('Desativar som');
   $('soraSoundBtn').onclick = function(){
     soraSoundOn = !soraSoundOn;
     muted = !soraSoundOn;
     var sb = $('soraSoundBtn');
-    sb.textContent = soraSoundOn ? '🔊 Som' : '🔇 Som';
+    sb.textContent = soraSoundOn ? tr('🔊 Som') : tr('🔇 Som');
     sb.setAttribute('aria-pressed', soraSoundOn ? 'true' : 'false');
-    sb.setAttribute('aria-label', soraSoundOn ? 'Desativar som' : 'Ativar som');
-    sb.title = soraSoundOn ? 'Desativar som' : 'Ativar som';
+    sb.setAttribute('aria-label', soraSoundOn ? tr('Desativar som') : tr('Ativar som'));
+    sb.title = soraSoundOn ? tr('Desativar som') : tr('Ativar som');
     if(!soraSoundOn) soraMusicStop();
     else {
       var audioReady = ac();

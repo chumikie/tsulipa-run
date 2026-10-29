@@ -12,7 +12,7 @@
 | Teste como admin no Karaoke fechado | Implementado no frontend da INDEX 2 com flag de admin do perfil; backend do multiplayer ainda não existe | `index2.html` |
 | Nome de bebida **Melon Juice!** | Rótulo corrigido **no jogo experimental**, identificador interno preservado | `karaoke-day.html` |
 | Karaoke online de **9 participantes** | **MODELO LOCAL IMPLEMENTADO**, com fila/vagas/microfone e testes; **ainda NÃO é multiplayer**, sem tabelas/RPCs reais | `karaoke-room-model.js`, `tests/karaoke-room-model.test.js`, `karaoke-online-lab.html` |
-| Ritmo 45 s e resultado do microfone | **SOMENTE PLANO** | `ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md` |
+| Ritmo 45s / turno 60s **no Karaoke original** | **JOGÁVEL na INDEX 2 como ENSAIO LOCAL**: notas, PERFECT/GOOD, combo e placar; **sem multiplayer/sem salvar score** | `karaoke-day.html`, `karaoke-rhythm.js`, `karaoke-rhythm.css`, `tests/karaoke-rhythm.test.js` |
 | Convites persistentes | **SOMENTE PLANO**; prévia visual não envia mensagens | `PLANO_KARAOKE_MODERACAO.md` |
 | Insígnia Nota Perfeita | **SOMENTE PLANO**, não concedida | `ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md` |
 | Coleções **Karaoke Idol** e **Sora Idol** | **CATÁLOGO ESCRITO**, não desenhado, não disponível na loja, não comprado | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
@@ -30,6 +30,13 @@
 - Não autentica, não sincroniza navegadores, não tem chamadas Supabase e não cria registros ou moedas. Os resultados ficam assinalados como `demo_unverified`.
 - **Próxima implementação real:** montar projeto Supabase de homologação isolado, aplicar regras atômicas de vagas/filas no servidor, conectar os nove usuários de teste à sala visual existente, verificar moderação no backend. Só então criar pontuação Realtime e jogo de ritmo.
 
+
+## Incremento jogável concluído
+- A cena original `karaoke-day.html` apresenta **7/9 Idols de demonstração** (6 avatares simulados + um personagem local), com 8 posições de plateia, não 12.
+- O botão **Pegar microfone** inicia uma rodada local de **60s**: 5s de introdução, 45s de estrelas para acertar com toque/teclado e 10s de aplausos. Conta `PERFECT`, `GOOD`, combo e placar, sem gravar nada.
+- Ao terminar, o resultado indica **ensaio** e não gera moedas ou insígnias. Sair do microfone interrompe a rodada; o tempo independe do FPS; reentrada na aba recalcula.
+- **Nenhum Supabase de homologação foi criado**: o único projeto Supabase atualmente conectado é produção. Falta a implementação da **autoridade do servidor, 9 pessoas de verdade, chat/emojis sincronizados e placar compartilhado**.
+- Testes de sintaxe, contratos estáticos e unidade automatizados em GitHub Actions; **não houve teste de navegador visual automatizado**.
 
 ## Decisões finais do criador
 - Coleção oficial proposta: **Sora Idol**, nunca Sky Idol.

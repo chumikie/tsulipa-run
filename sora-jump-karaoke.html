@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Página especial TsuLiPa⭐World: escolha Sora⭐Jump! ou Karaoke⭐Day. O estilo usa a identidade visual e as preferências de idioma do site.">
+<meta name="description" content="Página especial TsuLiPa⭐World: escolha Sora⭐Jump! ou Karaoke⭐Day.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TsuLiPa⭐World">
@@ -1006,7 +1006,6 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <div class="cust" id="tstw" hidden><label>Modo teste <select id="tst"><option value="0">Audição (0)</option><option value="150">Kenkyuusei (150)</option><option value="450">Team (450)</option><option value="1000">Senbatsu (1000)</option><option value="1800">Quad Center (1800)</option><option value="2800">tCenter (2800)</option><option value="3900">wCenter (3900)</option><option value="5000">Center (5000)</option><option value="10000">Solo Center (10000)</option><option value="15000">Capitão (15000)</option><option value="30000">Eternal Ace (30000)</option><option value="50000">Kami-Oshi (50000)</option></select></label> <label>Parceiras <select id="tstP"><option value="0">0</option><option value="1">1 (dupla)</option><option value="2">2 (trio)</option><option value="3">3 (quarteto, só com Você)</option></select></label></div>
 
       <button class="btn" id="play">JOGAR</button>
-      <p style="margin:11px 0 0;text-align:center"><a class="btn alt lk" id="soraKaraokeHubLink" href="/sora-jump-karaoke.html" aria-label="Abrir a página especial Sora Jump e Karaoke" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;white-space:normal;max-width:100%">☁️ Sora⭐Jump! + 🎤 Karaoke⭐Day ↗</a></p>
       <div><button class="sec" id="seelb">Ver ranking</button></div>
 
 <div id="lbmw" hidden>
@@ -10643,18 +10642,7 @@ Object.keys(EXTRA_DICT).forEach(function(l){
 
 applyLang();
 
-/* Adaptador da página especial: usa o armazenamento real do site e mantém os recordes Sora separados. */
-window.__TW_SORA_STORAGE = {
-  getItem:function(k){try{return window.localStorage.getItem(String(k));}catch(e){return null;}},
-  setItem:function(k,v){try{window.localStorage.setItem(String(k),String(v));}catch(e){}},
-  removeItem:function(k){try{window.localStorage.removeItem(String(k));}catch(e){}},
-  key:function(i){try{return window.localStorage.key(i);}catch(e){return null;}},
-  get length(){try{return window.localStorage.length;}catch(e){return 0;}},
-  clear:function(){['brs48cr_sora_lb','brs48cr_hist','brs48cr_mis_sora','__tw_profile_imported'].forEach(function(k){try{window.localStorage.removeItem(k);}catch(e){}});},
-  hasOriginalProfile:function(){return true;},
-  hasImportedProfile:function(){return false;}
-};
-
+window.__TW_SORA_STORAGE={getItem:function(k){try{return localStorage.getItem(String(k))}catch(e){return null}},setItem:function(k,v){try{localStorage.setItem(String(k),String(v))}catch(e){}},removeItem:function(k){try{localStorage.removeItem(String(k))}catch(e){}},key:function(i){try{return localStorage.key(i)}catch(e){return null}},get length(){try{return localStorage.length}catch(e){return 0}},clear:function(){['brs48cr_sora_lb','brs48cr_hist','brs48cr_mis_sora'].forEach(function(k){try{localStorage.removeItem(k)}catch(e){}})},hasOriginalProfile:function(){return true},hasImportedProfile:function(){return false}};
 // --- SORA⭐JUMP! (ソラ・ジャンプ) & HISTÓRICO ENXUTO (V2.4) ---
 // Minijogo vertical onde o Idol sobe pulando de plataforma em plataforma
 // até o palco flutuante na Lua, + sistema de histórico enxuto (5 melhores

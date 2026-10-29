@@ -1,3 +1,15 @@
+## Atualização atual — visual da INDEX 2 e estabilidade do Sora (29/10/2026)
+
+- **Top Idols/TV:** ajustado em `tw-weekly-podium.css` para uma TV kawaii na tela de entrada e um pódio lateral no hub desktop. A vitrine antiga `hubIdols` permanece separada e não foi removida.
+- **Fotos do pódio:** a interface reutiliza somente avatares reais vindos da lista já existente `vitrine_idols` quando o apelido coincide; se não houver avatar disponível, usa o ícone do jogo. Não faz requisições extras para inventar imagens.
+- **Estado real do ranking:** Center⭐Run continua usando a leitura semanal oficial existente. O ranking online de Sora⭐Jump!/Karaoke⭐Day! continua **desativado** por `TW_RANK_ONLINE_READY=false`; não há campeões desses jogos para publicar até a autoridade de pontuação ser revisada e homologada.
+- **Tamanho do Sora:** ajustadas apenas as regras de CSS do embed para reaproveitar melhor a altura do iframe em desktop, celular e paisagem curta; a referência lógica permanece 360×520. Não houve alteração de física, progressão ou áudio do jogo.
+- **Testes:** GitHub Actions [run #149](https://github.com/chumikie/tsulipa-run/actions/runs/40958413961), checkpoint de código [`9fc6615`](https://github.com/chumikie/tsulipa-run/commit/9fc66153ba4ea24cdab50845c8f0d5a2e4b9ab82), terminou em `success` com todos os oito passos de validação.
+- **Ainda pendente:** revisar visualmente em navegador real os vários tamanhos de tela e confirmar traduções completas, Oshi/tema, retorno, áudio e ausência de tela branca/flash. Testes estáticos não verificam o layout renderizado nem a disponibilidade de RPC/Auth no navegador.
+- `index.html` oficial e Supabase de produção não foram alterados; `vercel.json` continua desativando deploys automáticos para esta branch. PR #33 permanece experimental/rascunho.
+
+---
+
 ## Etapa 3A.10 — Horário, limites e moderação (29/10/2026)
 - Servidor somente em homologação: domingo 12:00–13:10, fuso `America/Sao_Paulo`. O portão manual é obrigatório e nunca abre automaticamente; fora da janela, RPCs de estado e pontuação o fecham e limpam as vagas, o microfone e a fila.
 - O elenco e o sinal de sincronização também recusam leitura fora do horário. Com o portão fechado, o visual demonstrativo permanece intacto.

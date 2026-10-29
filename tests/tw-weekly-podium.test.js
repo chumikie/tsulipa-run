@@ -6,6 +6,7 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index2.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const official=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/tw_weekly_podium_proposal.sql'),'utf8');
 function get(a,b){
  const start=html.indexOf(a),end=html.indexOf(b,start+a.length);
@@ -31,6 +32,8 @@ assert.equal(ctx.twRankClean([]).length,0);
 assert.equal(ctx.twRankClean(null).length,0);
 assert.ok(html.includes('id="twRankTv"'));
 assert.ok(html.includes('id="twRankHall"'));
+assert.ok(html.includes('href="./tw-weekly-podium.css?v=1"'));
+assert.ok(Buffer.byteLength(style,'utf8')<10000,'Weekly CSS under 10KB budget');
 assert.ok(html.includes('id="twSoraWeekScore"'));
 assert.ok(html.includes('hubCv')&&html.includes('HUB_TRIO')&&html.includes('hubCardsUI'));
 assert.ok(!official.includes('twRankSundayKey'));

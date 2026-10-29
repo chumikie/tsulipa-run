@@ -14,10 +14,11 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // Site Key é pública; segredo fica somente no Supabase Auth.
 // A integração abaixo ainda NÃO autoriza a criação de contas de ensaio.
 var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
-var AUTH_TEST_ONLY=new URLSearchParams(location.search).get('auth_test')==='1';
+var REUSE_SESSION_ONLY=new URLSearchParams(location.search).get('reuse_session')==='1';
+var AUTH_TEST_ONLY=!REUSE_SESSION_ONLY&&new URLSearchParams(location.search).get('auth_test')==='1';
 var SIGNUP_ENABLED=false;
-// Temporary Auth-only smoke test. The query flag is NOT a security boundary.
-// Keep Supabase Anonymous Sign-ins enabled only during the supervised test.
+// New anonymous identities stay blocked by default. auth_test=1 is an explicit,
+// single-use setup step; reuse_session=1 only reconnects an existing anonymous session.
 if(AUTH_TEST_ONLY)SIGNUP_ENABLED=true;
 var PRACTICE_PREVIEW=new URLSearchParams(location.search).get('practice_preview')==='1';
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
@@ -37,7 +38,7 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
   +'<button type="button" class="krb" id="krHomolCheck">🛡️ Testar Turnstile (sem cadastro)</button>'
-  +'<button type="button" class="krb" id="krHomolAuth">'+(AUTH_TEST_ONLY?'🧪 Testar autenticação (1 conta temporária)':'Criar/continuar Idol de teste')+'</button>'
+  +'<button type="button" class="krb" id="krHomolAuth">'+(REUSE_SESSION_ONLY?'🔒 Novas contas bloqueadas neste modo':AUTH_TEST_ONLY?'🧪 Testar autenticação (1 conta temporária)':'Criar/continuar Idol de teste')+'</button>'
   +'<button type="button" class="krb" id="krHomolEnter" disabled>Entrar na sala</button>'
   +'<button type="button" class="krb" id="krHomolQueue" disabled>🎤 Entrar na fila</button>'
   +'<button type="button" class="krb" id="krHomolUnqueue" disabled>Sair da fila</button>'
@@ -402,4 +403,35 @@ window.addEventListener('pageshow',function(){
  startHomolTimers();
  if(!document.hidden&&!busy)refresh(false).catch(function(){});
 });
+
+// Reuse mode only reconnects an already stored, verified anonymous identity.
+// It never calls signInAnonymously; account creation remains an explicit setup step.
+if(REUSE_SESSION_ONLY){
+ (async function(){
+  if(!lock())return;
+  try{
+   await init();
+   var sessionResult=await client.auth.getSession();
+   if(sessionResult.error)throw sessionResult.error;
+   var session=sessionResult.data&&sessionResult.data.session;
+   if(!session||!session.user||session.user.is_anonymous!==true){
+    say('🔒 Nenhuma sessão anônima existente neste perfil. Nenhuma conta foi criada. Para preparar outro perfil, use o teste de autenticação supervisionado uma única vez e depois volte a este modo.');
+    return;
+   }
+   var verified=await client.auth.getUser();
+   if(verified.error)throw verified.error;
+   if(!verified.data.user||verified.data.user.id!==session.user.id||verified.data.user.is_anonymous!==true)
+    throw new Error('O servidor não confirmou a identidade anônima já existente.');
+   ready=true;
+   await refresh(false);
+   startHomolTimers();
+   if(labOpen)say('✅ Sessão anônima existente reutilizada. Nenhuma conta nova foi criada; a sala de homologação está pronta.');
+   else say('✅ Sessão anônima existente reutilizada. Nenhuma conta nova foi criada. A entrada na sala depende da liberação do servidor.');
+  }catch(e){
+   say('Não foi possível reutilizar a sessão anônima existente: '+String(e.message||e));
+  }finally{
+   unlock();
+  }
+ })();
+}
 })();

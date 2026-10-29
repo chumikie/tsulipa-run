@@ -66,3 +66,5 @@
 5. Integrar áudios apenas se fornecidos e consentidos.
 
 > **Publicação de prévia controlada (29/10/2026):** disparo de apenas um build da PR #33 para avaliação visual da Etapa 3A.5; não altera lógica, páginas de produção, Auth ou recompensas. A homologação ainda depende de CAPTCHA/login para testar jogadores conectados.
+
+> **Prévia visual controlada — Etapa 3A.5b:** reconstruída para confirmar que a sala demonstrativa não fica vazia antes de entrar no ensaio. Somente Netlify PR #33. Vercel permanece pausada. Sem alteração do `index.html`, sem recompensas e sem migração de banco.

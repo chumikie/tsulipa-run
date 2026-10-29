@@ -19,7 +19,7 @@
 | Cenários e poses Moon⭐Duo adicionais | **CATÁLOGO ESCRITO**, não renderizados | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
 | Novas danças idol | **SOMENTE CONCEITO**, sem novas animações implementadas | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
 | Temas sazonais originais (12) | **JÁ EXISTEM, NÃO RENOMEAR** | `TEMA_INFO` do `index2.html` |
-| Links de vídeos dos covers | **PESQUISA TEXTUAL**, sem URLs individuais confirmadas | `ETAPA3C_TEMAS_E_COVERS.md` |
+| Lista de músicas/covers da playlist TsuLiPa (151 vídeos) | **TEXTOS CONFERIDOS em duas mensagens**, incluindo `Nagori Zakura` e `Gosenfu no Tasuki`; **URLs individuais ainda não confirmadas** | `ETAPA3C_TEMAS_E_COVERS.md` |
 | Dia da Paz / Gosenfu no Tasuki | **PROPOSTA**, não ativada | `ETAPA3C_TEMAS_E_COVERS.md` |
 | Vozes reais / reações do trio | **ESPECIFICAÇÃO**, áudios não recebidos nem aplicados | `ETAPA3D_TRIO_VOZ_E_ANIMACAO.md` |
 | Admin vestir outra pessoa | **PROPOSTA**, nenhuma RPC criada | `PLANO_KARAOKE_MODERACAO.md` |

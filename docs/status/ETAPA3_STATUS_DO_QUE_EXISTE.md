@@ -74,16 +74,16 @@
 | Preparação **Etapa 3A.4** | Login anônimo de teste com suporte a Cloudflare Turnstile preparado somente no cliente experimental. **Cadastro permanece bloqueado** enquanto a sitekey pública estiver vazia; proteção antiabuso precisa ser habilitada no Supabase de homologação ANTES de habilitar Anonymous Sign-ins. Nenhuma configuração de Auth foi ativada automaticamente; sem contas novas. | `karaoke-homol-client.js` |
 | Homologação **Etapa 3A.2–3A.3** | Servidor de 9 vagas + fila de 3 instalado apenas no segundo Supabase; retrato sanitizado dos participantes e cliente opcional `?homol=1` no Karaoke original. **Ainda sem nove sessões reais testadas**: não há contas de teste, autenticação anônima precisa ser habilitada, Realtime e autorização de horário não foram implementados. | `supabase/sql/karaoke_lab_3a2_room_queue.sql`, `supabase/sql/karaoke_lab_3a3_sanitized_elenco.sql`, `karaoke-homol-client.js`, `karaoke-day.html` |
 | Ritmo 45s / turno 60s **no Karaoke original** | **JOGÁVEL na INDEX 2 como ENSAIO LOCAL**: notas, PERFECT/GOOD, combo e placar; **sem multiplayer/sem salvar score** | `karaoke-day.html`, `karaoke-rhythm.js`, `karaoke-rhythm.css`, `tests/karaoke-rhythm.test.js` |
-| Convites persistentes | **SOMENTE PLANO**; prévia visual não envia mensagens | `PLANO_KARAOKE_MODERACAO.md` |
-| Insígnia Nota Perfeita | **SOMENTE PLANO**, não concedida | `ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md` |
-| Coleções **Karaoke Idol** e **Sora Idol** | **CATÁLOGO ESCRITO**, não desenhado, não disponível na loja, não comprado | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
-| Cenários e poses Moon⭐Duo adicionais | **CATÁLOGO ESCRITO**, não renderizados | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
-| Novas danças idol | **SOMENTE CONCEITO**, sem novas animações implementadas | `ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md` |
+| Convites persistentes | **SOMENTE PLANO**; prévia visual não envia mensagens | [PLANO_KARAOKE_MODERACAO.md](../operacao/PLANO_KARAOKE_MODERACAO.md) |
+| Insígnia Nota Perfeita | **SOMENTE PLANO**, não concedida | [ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md](../etapas/ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md) |
+| Coleções **Karaoke Idol** e **Sora Idol** | **CATÁLOGO ESCRITO**, não desenhado, não disponível na loja, não comprado | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
+| Cenários e poses Moon⭐Duo adicionais | **CATÁLOGO ESCRITO**, não renderizados | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
+| Novas danças idol | **SOMENTE CONCEITO**, sem novas animações implementadas | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
 | Temas sazonais originais (12) | **JÁ EXISTEM, NÃO RENOMEAR** | `TEMA_INFO` do `index2.html` |
-| Lista de músicas/covers da playlist TsuLiPa (151 vídeos) | **TEXTOS CONFERIDOS em duas mensagens**, incluindo `Nagori Zakura` e `Gosenfu no Tasuki`; **URLs individuais ainda não confirmadas** | `ETAPA3C_TEMAS_E_COVERS.md` |
-| Dia da Paz / Gosenfu no Tasuki | **PROPOSTA**, não ativada | `ETAPA3C_TEMAS_E_COVERS.md` |
-| Vozes reais / reações do trio | **ESPECIFICAÇÃO**, áudios não recebidos nem aplicados | `ETAPA3D_TRIO_VOZ_E_ANIMACAO.md` |
-| Admin vestir outra pessoa | **PROPOSTA**, nenhuma RPC criada | `PLANO_KARAOKE_MODERACAO.md` |
+| Lista de músicas/covers da playlist TsuLiPa (151 vídeos) | **TEXTOS CONFERIDOS em duas mensagens**, incluindo `Nagori Zakura` e `Gosenfu no Tasuki`; **URLs individuais ainda não confirmadas** | [ETAPA3C_TEMAS_E_COVERS.md](../etapas/ETAPA3C_TEMAS_E_COVERS.md) |
+| Dia da Paz / Gosenfu no Tasuki | **PROPOSTA**, não ativada | [ETAPA3C_TEMAS_E_COVERS.md](../etapas/ETAPA3C_TEMAS_E_COVERS.md) |
+| Vozes reais / reações do trio | **ESPECIFICAÇÃO**, áudios não recebidos nem aplicados | [ETAPA3D_TRIO_VOZ_E_ANIMACAO.md](../etapas/ETAPA3D_TRIO_VOZ_E_ANIMACAO.md) |
+| Admin vestir outra pessoa | **PROPOSTA**, nenhuma RPC criada | [PLANO_KARAOKE_MODERACAO.md](../operacao/PLANO_KARAOKE_MODERACAO.md) |
 
 ## Prévia funcional da etapa 3A.1 (não online)
 - [Abrir laboratório local das 9 vagas](./karaoke-online-lab.html) — ensaio de fila, microfone e contagem de tempo, com Idols fictícios.

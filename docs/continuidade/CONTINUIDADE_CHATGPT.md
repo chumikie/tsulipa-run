@@ -1,5 +1,7 @@
 # TsuLiPa⭐World — documento de continuidade para uma nova conversa
 
+> **Nota de atualidade:** este arquivo contém snapshots históricos. O índice documental e o plano de lançamento estão em [índice de docs](../README.md) e [Plano de lançamento](../PLANO_DE_LANCAMENTO.md). Antes de agir, confirme sempre o head do PR e o estado real dos bancos.
+
 **Atualizado em 29 de outubro de 2026.** Este documento consolida o estado conhecido ao final da conversa. Para continuar, confira o GitHub antes de presumir que algum commit ou preview permaneceu igual.
 
 ## 1. Identidade do projeto e objetivos do usuário
@@ -9,7 +11,7 @@
 - Repositório privado conectado pelo GitHub: https://github.com/chumikie/tsulipa-run
 - Branch de trabalho: `feature/sora-karaoke-v2-2026-10-29`.
 - Pull Request **#33**, **rascunho**, aberto e não incorporado a `main`: https://github.com/chumikie/tsulipa-run/pull/33
-- Preview de branch Vercel informado como disponível: https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/
+- URL histórica de preview Vercel (a branch tem o deploy desativado em `vercel.json`; confirme a disponibilidade antes de usar): https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/
 - **Preview da página inicial experimental:** https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/index2.html
 - Preview do seletor de jogos: https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/sora-jump-karaoke.html
 - Também houve preview do Netlify do PR: https://deploy-preview-33--tsulipa-run.netlify.app/
@@ -40,11 +42,11 @@ Arquivos relevantes:
 - `games-theme.css`: estilos compartilhados dos minijogos (fonte, subtítulos JP, bordas, sombras, botões).
 - `supabase/sql/karaoke_posteres_semana.sql`: SQL versionado da tabela privada e função RPC para elenco fixo.
 - `.github/workflows/validate-games.yml` e `tests/validate-games.js`: validação automatizada de sintaxe, rotas e limites de tamanho. Últimas execuções passaram.
-- `AUDITORIA_V3.md`, `AUDITORIA_RANKING_LOJA_INDEX2.md`, `README.md`: documentos de auditoria com detalhes técnicos e riscos.
+- `docs/auditorias/AUDITORIA_V3.md`, `docs/auditorias/AUDITORIA_RANKING_LOJA_INDEX2.md`, `README.md`: documentos de auditoria com detalhes técnicos e riscos.
 
 Documentos do GitHub:
-- https://github.com/chumikie/tsulipa-run/blob/feature/sora-karaoke-v2-2026-10-29/AUDITORIA_V3.md
-- https://github.com/chumikie/tsulipa-run/blob/feature/sora-karaoke-v2-2026-10-29/AUDITORIA_RANKING_LOJA_INDEX2.md
+- https://github.com/chumikie/tsulipa-run/blob/feature/sora-karaoke-v2-2026-10-29/docs/auditorias/AUDITORIA_V3.md
+- https://github.com/chumikie/tsulipa-run/blob/feature/sora-karaoke-v2-2026-10-29/docs/auditorias/AUDITORIA_RANKING_LOJA_INDEX2.md
 - https://github.com/chumikie/tsulipa-run/blob/feature/sora-karaoke-v2-2026-10-29/README.md
 
 ## 3. Funcionalidades que já existiam e foram preservadas no projeto principal
@@ -61,7 +63,7 @@ Documentos do GitHub:
 
 ## 4. Resultado da auditoria de ranking, loja, estrelas e moderação
 
-Conforme `AUDITORIA_RANKING_LOJA_INDEX2.md` na branch:
+Conforme `docs/auditorias/AUDITORIA_RANKING_LOJA_INDEX2.md` na branch:
 
 - Ranking Center Run usa `top_scores(periodo)`, retorna até 15 posições e exclui perfis bloqueados.
 - Ranking diário adota dia civil de São Paulo; semanal começa segunda-feira; trigger `lb_set_date` preenche datas.

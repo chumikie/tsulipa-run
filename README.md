@@ -1,43 +1,40 @@
 # TsuLiPa⭐World
 
-Jogo de fã do TsuLiPa (BRS48): **Center⭐Run!** (corrida até o Center), **Backstage⭐Pet!** (camarim com pets) e **Meu Perfil** (Idol, insígnias, corações e recados).
+Jogo de fã do TsuLiPa (BRS48): **Center⭐Run!**, **Backstage⭐Pet!**, perfil e jogos especiais.
 
-Site: https://tsulipa-world.vercel.app/
+Site publicado: https://tsulipa-world.vercel.app/
 
-## Arquivos
-- `index.html` — jogo principal em produção (Center⭐Run, perfil, pet e demais módulos)
-- `index2.html` — cópia de testes da página inicial, com os novos botões Sora⭐Jump! e Karaoke⭐Day! integrados no mesmo hub; **não é produção**
-- `sora-jump-karaoke.html` — seletor leve de jogos especiais, compatível com a identidade visual do site
-- `sora-jump.html` — Sora⭐Jump! independente, com CSS/DOM e JS herdados não utilizados removidos nesta branch
-- `karaoke-day.html` — Karaoke⭐Day! independente, com itens, lanches japoneses e pôsteres de avatares
-- `games-theme.css` — tipografia, subtítulos japoneses, botões, sombras e cores compartilhados pelos minijogos
-- `privacidade.html` — privacidade e segurança
-- `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-512.png`, `manifest.json` — ícones e app
-- `og.jpg`, `og.png` — imagem da prévia do link
+## Estado atual
 
-Contas, ranking e nuvem ficam no Supabase. As chaves de save (`brs48cr_…`) e os nomes do banco nunca podem ser renomeados — veja o alerta no topo do `index.html`.
+- **index.html** é a página principal atual. Ela não deve ser substituída automaticamente.
+- **index2.html** é o laboratório visual que integra Sora⭐Jump! e Karaoke⭐Day! ao hub. **Não é a página principal de produção.**
+- O PR [#33](https://github.com/chumikie/tsulipa-run/pull/33) continua em rascunho. A branch experimental tem o deploy da Vercel explicitamente desativado em **vercel.json**.
+- A prévia usa o mesmo projeto Supabase de produção para algumas leituras. A proteção de leitura da index2 não transforma esse projeto num banco sandbox.
 
-## Jogos especiais — V2 (branch de revisão)
+## Mapa do código
 
-Os novos jogos podem ser testados separados da página inicial: abra `sora-jump-karaoke.html` em uma prévia do mesmo domínio. O seletor carrega o jogo escolhido no iframe. **Não alterar as chaves `brs48cr_...` nem as tabelas/RPCs do Supabase sem migração.**
+- **index.html** — site principal.
+- **index2.html** — página inicial experimental para revisão.
+- **sora-jump.html** — Sora⭐Jump! isolado.
+- **karaoke-day.html** — Karaoke⭐Day! isolado.
+- **sora-jump-karaoke.html** — seletor independente dos jogos.
+- **games-theme.css**, **sora-embed.css**, **karaoke-embed.css**, **index2-skin.css**, **tw-weekly-podium.css** — estilos.
+- **tests/** — verificações automatizadas, predominantemente offline.
+- **supabase/sql/** e **supabase/tests/** — scripts SQL e testes reversíveis; um arquivo SQL versionado não significa que tenha sido aplicado.
+- **docs/** — instruções, auditorias, status, especificações e plano de lançamento.
 
-- **Karaoke:** apenas um item de mão por vez (microfone, pandeiro, snack ou bebida). Antenas e óculos são acessórios independentes.
-- **Pôsteres:** buscam somente `{nick, avatar}` pela função pública `karaoke_posteres_semana` (já usada pelo Center Run), e desenham **miniaturas vetoriais das configurações visuais públicas**. Avatares reais do jogo, não fotos de pessoas. Os efeitos avançados da foto de perfil são simplificados pela escala. Quando indisponível, mostram personagens demonstrativos. A seleção agora vem da RPC pública `karaoke_posteres_semana()`, com elenco fixo no Supabase, iniciando cada domingo às 12h no horário de São Paulo. Jogadores bloqueados deixam de aparecer. A função pública retorna somente nick e configurações vetoriais do avatar, sem UUID, login ou save.
-- **Sora:** aberto automaticamente na página dedicada; removidos vários módulos e telas herdados do Center Run/pet que não são necessários para abrir e jogar Sora. O HTML caiu de cerca de 525 mil para 245 mil caracteres. A lógica importante das fases, física, insígnias e pontuação permanece. Ainda deve receber regressão completa antes do merge.
-- **Publicação:** não atualizar `index.html` até testar os jogos na prévia, especialmente navegação de volta, som, iOS/Android e controles por toque.
+## Por onde começar
 
-## Responsividade
+1. [Índice da documentação](docs/README.md) — encontra cada documento sem ter de ler tudo.
+2. [Plano de lançamento](docs/PLANO_DE_LANCAMENTO.md) — checklist central para corrigir, testar e liberar com segurança.
+3. [Estado do que existe](docs/status/ETAPA3_STATUS_DO_QUE_EXISTE.md) — distingue funcionalidades implementadas, experimentais e propostas.
+4. [Auditoria da prévia INDEX 2](docs/auditorias/AUDITORIA_RANKING_LOJA_INDEX2.md) e [auditoria técnica V3](docs/auditorias/AUDITORIA_V3.md).
 
-O Karaoke abre no celular. O 'Modo plateia' é uma opção do simulador e não é aplicado automaticamente a visitantes móveis. As ações de toque e os controles precisam de teste real em aparelhos. O simulador de desenvolvimento inicia recolhido. O palco usa 960×540 internamente no celular e 1920×1080 no desktop; fotos exportadas no celular são ampliadas para 1920×1080.
+## Regras que não podem ser quebradas
 
-## Próxima auditoria
+- Não renomear chaves de save brs48cr_* nem tabelas, funções RPC ou contratos usados pelo jogo sem uma migração e testes.
+- Não fazer merge nem atualizar a página principal até passar pelas verificações do plano de lançamento e obter aprovação explícita.
+- Não testar compras, Gacha, resgates, moderação ou outras escritas da prévia contra contas reais.
+- O pódio semanal de Sora/Karaoke é uma proposta: seu SQL não deve ser aplicado à produção até existir validação no servidor e aprovação específica.
 
-Ver `AUDITORIA_V3.md` para recomendações de carregamento sob demanda do `index.html`, cache de avatares e auditoria do quadro semanal compartilhado e revisões de segurança/performance do Supabase. No Supabase foi criada **somente** a tabela privada `private.karaoke_poster_elencos` e a função pública `karaoke_posteres_semana()`, documentadas em `supabase/sql/karaoke_posteres_semana.sql`. Nenhum registro de contas/saves foi alterado, nem as funções já existentes.
-
-## INDEX 2 — antevisão da integração
-
-Acesse `/index2.html` na prévia Vercel ou Netlify da branch/PR #33. É uma cópia completa do `index.html` com dois novos cards no menu inicial. Ambos os jogos só são carregados em iframe quando clicados. O `index.html` da branch `main` não é alterado.
-
-**Segurança:** a prévia lê alguns dados públicos/de conta do Supabase real, mas `contaRpc` tem uma lista revisada de operações somente leitura; operações de compra, Gacha, resgate, ranking gravável e administração são bloqueadas na `index2`. A `index2` não é um banco sandbox: o login pode compartilhar o provedor real, e os minijogos ainda podem consultar dados públicos. Os saves de navegador ficam no domínio de preview, separado do site publicado. Para testes completos de economia, criar um ambiente Supabase de homologação.
-
-Auditoria técnica de ranking, moderação, preços e moedas: `AUDITORIA_RANKING_LOJA_INDEX2.md`. Os 22 preços de roupas de `PERF_LOJA` conferem com os 22 preços do servidor `visual_preco` (29/10/2026).
+A documentação é para pessoas que desenvolvem e mantêm o projeto; os arquivos Markdown não são importados pelo jogo no navegador.

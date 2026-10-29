@@ -1,7 +1,7 @@
 # TsuLiPa⭐World — Karaoke online e moderação (plano técnico por etapas)
 Atualizado: 2026-10-29. Branch: feature/sora-karaoke-v2-2026-10-29. PR #33 (rascunho).
 
-**DECISÃO MAIS RECENTE (fonte autoritativa de design):** [ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md](./ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md) — capacidade inicial **9 participantes** (1 canta e 8 assistem); turno de 60 s, 45 s de ritmo, atualização parcial do placar a cada 2 s. As demais especificações: [catálogo](./ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md), [temporadas/covers](./ETAPA3C_TEMAS_E_COVERS.md), [vozes e animações](./ETAPA3D_TRIO_VOZ_E_ANIMACAO.md). Nenhuma das estruturas propostas foi ativada em produção.
+**DECISÃO MAIS RECENTE (fonte autoritativa de design):** [ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md](../etapas/ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md) — capacidade inicial **9 participantes** (1 canta e 8 assistem); turno de 60 s, 45 s de ritmo, atualização parcial do placar a cada 2 s. As demais especificações: [catálogo](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md), [temporadas/covers](../etapas/ETAPA3C_TEMAS_E_COVERS.md), [vozes e animações](../etapas/ETAPA3D_TRIO_VOZ_E_ANIMACAO.md). Nenhuma das estruturas propostas foi ativada em produção.
 
 ## Estado verificado
 - INDEX 2 usa Supabase real e deliberadamente bloqueia RPCs de escrita em `contaRpc`; não remover essa guarda enquanto a branch for laboratório.

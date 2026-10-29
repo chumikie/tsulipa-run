@@ -155,7 +155,7 @@ assert(lab.includes("./sora-jump.html'+context")&&
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
 assert(sora.includes("twSoraEmbedBoot")&&
        sora.includes("get('embed')!=='index2'")&&sora.includes("tw-sora-embed")&&
-       sora.includes("./sora-embed.css?v=1")&&
+       sora.includes("./sora-embed.css?v=2")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");

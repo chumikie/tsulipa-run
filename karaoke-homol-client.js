@@ -129,7 +129,7 @@ function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k
 function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
 function showTurnClock(){
  var out=document.getElementById('krHomolTurn'),badge=document.getElementById('krRelogio');
- if(!lastSeat){out.textContent=labOpen?'🎤 Ensaio aberto para Idols autorizados':'🔒 Ensaio online fechado · sala de demonstração ativa';return;}
+ if(!lastSeat){out.textContent=labOpen?'🎤 Ensaio aberto para Idols autorizados':'🔒 Ensaio online fechado · sala de demonstração ativa';badge.textContent='🎤 Homologação · sem pontos';return;}
  if(!turnClock||!Number.isFinite(turnClock.ends)){
    out.textContent='🎤 Microfone aguardando a próxima cantora';
    badge.textContent='🎤 Homologação · sem pontos';
@@ -153,7 +153,7 @@ async function refresh(doHeartbeat){
  labOpen=data.labOpen===true;
  document.getElementById('krHomolGate').textContent=labOpen?
   '🟢 Ensaio online liberado somente para Idols fictícios autorizados.':'🔒 Entrada online fechada no servidor. A demonstração continua disponível.';
- if(data.status==='not_owner'||data.status==='not_inside'){
+ if(data.status==='not_owner'||data.status==='not_inside'||(token&&data.mySeat!==true)){
    token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
  }
  var seat=!!token&&!!data.mySeat;

@@ -1,3 +1,11 @@
+## Etapa 3A.7 — Fechamento seguro do ensaio (29/10/2026)
+- Ao fechar o portão no banco **apenas de homologação**, trigger privado apaga fila e vagas e encerra microfone/crônometro na mesma transação.
+- RPC de status não avança cantora com o portão fechado, nem expõe elenco antes de reabrir. Nenhum prêmio ou perfil real envolvido.
+- Client limpa token de vaga expirada/fechada e atualiza rótulo do relógio; cache da homologação versão 3.
+- Teste SQL com rollback simula 2 Idols, cantora/fila, fechamento e checagem de acesso; não substitui teste real de navegador.
+- Portão permanece fechado e `SIGNUP_ENABLED=false`; CAPTCHA/Auth ainda requer verificação. A sala demonstrativa e a INDEX oficial não mudam.
+- Publicação Netlify somente consolidada depois de teste automatizado verde; Vercel sem reativação.
+
 ## Etapa 3A.6b — Preparação do Turnstile (29/10/2026)
 - Site Key pública aplicada na branch experimental; segredo **não** incluído.
 - Botão `Testar Turnstile (sem cadastro)` testa exclusivamente o widget; timeout de 90s e bloqueio de cadastro (`SIGNUP_ENABLED=false`).

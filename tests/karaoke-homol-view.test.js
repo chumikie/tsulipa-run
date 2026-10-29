@@ -86,3 +86,19 @@ assert(!checkHandler.includes("client.rpc("),'teste não ocupa vagas');
 assert(client.includes("if(!SIGNUP_ENABLED)return;"),'bloqueio explícito de cadastro');
 assert(client.includes("Tempo de verificação esgotado"),'widget não pode travar botões indefinidamente');
 console.log('✓ Karaoke homol: portão, Turnstile isolado e visual preservado');
+
+// Etapa 3A.7: portão fechado precisa apagar assentos, cantor e fila sem dados reais.
+const closeSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a7_closed_room_reset.sql'),'utf8');
+const closeTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a7_close_reset_rollback.sql'),'utf8');
+assert(closeSql.includes('old.joins_enabled and not new.joins_enabled'));
+assert(closeSql.includes('delete from karaoke_lab.queue;'));
+assert(closeSql.includes('delete from karaoke_lab.seats;'));
+assert(closeSql.includes('new.singer_id:=null;'));
+assert(closeSql.includes('new.ends_at:=null;'));
+assert(closeSql.includes("return jsonb_build_object('status','lab_closed'"));
+assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where id=1) then'));
+assert(closeTest.trim().endsWith('rollback;'));
+assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
+assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
+assert(game.includes("karaoke-homol-client.js?v=3"),'updated script should bypass stale CDN');
+console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');

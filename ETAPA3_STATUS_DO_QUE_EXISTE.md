@@ -79,3 +79,5 @@
 > **Prévia visual controlada — Etapa 3A.5b:** reconstruída para confirmar que a sala demonstrativa não fica vazia antes de entrar no ensaio. Somente Netlify PR #33. Vercel permanece pausada. Sem alteração do `index.html`, sem recompensas e sem migração de banco.
 
 > **Prévia controlada — visual 3A.5c–e (29/10/2026):** somente Netlify PR #33 para avaliar paridade do sprite, posições de itens nas mãos e decoração whimsical. A versão de produção na Vercel permanece pausada, `index.html` e Supabase de produção inalterados; sem desbloqueio de contas ou estrelas.
+
+> **Prévia controlada 3A.6 — 29/10/2026:** uma publicação Netlify para demonstrar o painel de entrada fechada e os testes de segurança. A sala visual original permanece intacta; login anônimo, CAPTCHA e portão online continuam desativados. Vercel não reativada.

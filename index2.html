@@ -728,7 +728,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 .tw-preview-voltar:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
 .tw-preview-tag{font-size:10px;font-weight:800;color:var(--pink,#ff6fb5);white-space:nowrap}
 #twPreviewIframe{flex:1 1 0;min-height:0;width:100%;display:block;border:0;background:#c9ecfc;}
-@media(max-width:600px){.tw-preview-tag{display:none}.tw-preview-bar{min-height:42px;padding:6px 10px}.tw-preview-voltar{padding:7px 10px}.tw-preview-bar b{font-size:12px}.tw-preview-game:has(#twPreviewIframe[src*='sora-jump.html']) .tw-preview-bar b{display:none}}
+@media(max-width:600px){.tw-preview-tag{display:none}.tw-preview-bar{min-height:42px;padding:6px 10px}.tw-preview-voltar{padding:7px 10px}.tw-preview-bar b{font-size:12px}.tw-preview-game:has(#twPreviewIframe[src*='sora-jump.html']) #twPreviewTitulo{display:none}}
 </style>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 </head>
@@ -8457,8 +8457,27 @@ function twPreviewAtualizarIdioma(){
   var t=twPreviewTextos[LANG]||twPreviewTextos.pt,voltar=$('twPreviewVoltarTxt'),aviso=$('twPreviewAviso');
   if(voltar)voltar.textContent=t[0];
   if(aviso){aviso.querySelector('strong').textContent=t[1];aviso.querySelector('span').textContent=' · '+t[2];}
+  twPreviewAtualizarIndicadores();
 }
-// Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
+// Reuse existing Center Run counters + seasonal theme. Read-only DOM presentation:
+ // no new Supabase RPCs, storage writes, animation loops or game-state imports.
+function twPreviewAtualizarIndicadores(){
+  var el=$('twPreviewSaldo');
+  if(el)el.textContent=tr('Recorde')+': '+(best||0)+' · ★ '+(starT||0);
+}
+function twPreviewMontarFundo(){
+  var wrap=$('twPreviewJogo');if(!wrap)return;
+  var k=typeof temaAtual==='function'?temaAtual():'',inf=TEMA_INFO[k];
+  wrap.setAttribute('data-tema',inf?k:'');
+  wrap.style.setProperty('--tw-preview-sky-top',inf?inf[2]:'#17274f');
+  wrap.style.setProperty('--tw-preview-sky-end',inf?inf[3]:'#32204d');
+  var selo=$('twPreviewSeason');
+  if(selo){selo.hidden=!inf;if(inf)selo.textContent=inf[0]+' '+tr(inf[1]);}
+  // Hub particles already use the calendar and deterministic CSS-only animation.
+  var fundo=$('twPreviewPart'),origem=$('hubPart');
+  if(fundo&&origem)fundo.innerHTML=origem.innerHTML;
+}
+ // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
 function twPreviewAbrirJogo(tipo){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
@@ -8469,6 +8488,9 @@ function twPreviewAbrirJogo(tipo){
   document.body.classList.remove('hubon');
   text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':'🎤 Karaoke⭐Day!';
   frame.title=text.textContent;
+  wrap.setAttribute('data-jogo',tipo);
+  twPreviewAtualizarIndicadores();
+  twPreviewMontarFundo();
   wrap.hidden=false;
   frame.src=tipo==='sora'?'./sora-jump.html?embed=index2':'./karaoke-day.html';
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
@@ -8479,6 +8501,8 @@ function twPreviewFecharJogo(){
   var ultimo=twPreviewJogoAnterior;
   frame.src='about:blank';
   wrap.hidden=true;twPreviewJogoAnterior=null;
+  wrap.removeAttribute('data-jogo');
+  var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
   hubMostrar();
   // hubMostrar re-creates cards; return focus to the fresh game launcher.
   var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
@@ -8487,8 +8511,11 @@ function twPreviewFecharJogo(){
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial"><div class="tw-preview-bar">'+
     '<button type="button" class="tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
-    '<b id="twPreviewTitulo">⭐</b><span class="tw-preview-tag">INDEX 2 · TESTE</span></div>'+
-    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></section>';
+    '<div class="tw-preview-brand" translate="no"><img src="icon-192.png?v=5" width="35" height="35" alt="" aria-hidden="true"><span><b>TsuLiPa<span class="tw-preview-star">⭐</span>World</b><small>ツリパ⭐ワールド</small></span></div>'+
+    '<b id="twPreviewTitulo" class="tw-preview-current">⭐</b>'+
+    '<div class="tw-preview-meta"><div class="tw-preview-score" title="Recorde e estrelas locais do Center Run"><span class="tw-preview-score-label">🏁 Center⭐Run!</span><strong id="twPreviewSaldo"></strong></div><span class="tw-preview-tag">INDEX 2 · TESTE</span></div></div>'+
+    '<div class="tw-preview-stage"><div class="tw-preview-part" id="twPreviewPart" aria-hidden="true"></div><span id="twPreviewSeason" class="tw-preview-season" hidden></span>'+
+    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
   window.addEventListener('message',function(e){

@@ -184,6 +184,8 @@ assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
   "Index 2 embed games must inherit selected Oshi and hide Sora test import");
 assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
        lab.includes("twKaraokeMostrarFechado")&&
+       lab.includes('id="twKaraokeEnsaiar"')&&
+       lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
        lab.includes("Nenhuma mensagem foi enviada nesta prévia"),
   "Admin preview needs permission and invitations must be clearly not sent");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
@@ -269,12 +271,19 @@ try{
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(overlay.hidden&&iframe.src==="about:blank"&&blockedKaraoke===1,
     "Karaoke preview should refuse to open outside Sunday window");
+  // A conscious rehearsal click can open the disconnected demo even on a weekday.
+  // This is NOT the same as granting online seats or privileges.
+  sandbox.twPreviewAbrirJogo("karaoke",true);
+  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&rehearsal=1"&&
+         gameTitle.textContent.includes("Ensaio"),
+    "INDEX2 rehearsal must work outside Sunday and be clearly identified as local only");
+  sandbox.twPreviewFecharJogo();
   sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
     "Karaoke preview should open during scheduled window");
   sandbox.twPreviewFecharJogo();
-  assert(iframe.src==="about:blank"&&hubReturns===2&&launchesFocused===2,
+  assert(iframe.src==="about:blank"&&hubReturns===3&&launchesFocused===3,
     "Karaoke return must unload iframe and restore hub focus");
   sandbox.LANG="ja";
   sandbox.twPreviewAtualizarIdioma();

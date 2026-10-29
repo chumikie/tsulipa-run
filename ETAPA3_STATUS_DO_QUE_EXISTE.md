@@ -69,3 +69,5 @@
 > **Publicação de prévia controlada (29/10/2026):** disparo de apenas um build da PR #33 para avaliação visual da Etapa 3A.5; não altera lógica, páginas de produção, Auth ou recompensas. A homologação ainda depende de CAPTCHA/login para testar jogadores conectados.
 
 > **Prévia visual controlada — Etapa 3A.5b:** reconstruída para confirmar que a sala demonstrativa não fica vazia antes de entrar no ensaio. Somente Netlify PR #33. Vercel permanece pausada. Sem alteração do `index.html`, sem recompensas e sem migração de banco.
+
+> **Prévia controlada — visual 3A.5c–e (29/10/2026):** somente Netlify PR #33 para avaliar paridade do sprite, posições de itens nas mãos e decoração whimsical. A versão de produção na Vercel permanece pausada, `index.html` e Supabase de produção inalterados; sem desbloqueio de contas ou estrelas.

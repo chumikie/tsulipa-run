@@ -998,7 +998,8 @@ html,body{min-height:100%;}
           <option value="presilhas" data-r="150">Presilhas (Kenkyuusei)</option>
 		  <option value="fones" data-r="450">Fones (Team)</option>
           <option value="boina" data-r="1000">Boina (Senbatsu)</option>
-          <option value="bandaid" data-r="2800">Band-aid (tCenter)</option>		  <option value="coala" data-r="3900">Tiara (wCenter)</option>
+          <option value="bandaid" data-r="2800">Band-aid (tCenter)</option>
+		  <option value="coala" data-r="3900">Tiara (wCenter)</option>
         </select></label>
         <label>Óculos <select id="cgl">
           <option value="" data-r="0">Sem</option>
@@ -1997,6 +1998,7 @@ function end(){
   var rId = rankOf(s);
   $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
+
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
   var isAdmin = (nomeDigitado === 'tsuadmin');
@@ -2996,7 +2998,8 @@ g=x2;g.save();
       x2.save();
       x2.textAlign = 'center';
       x2.shadowColor = 'rgba(255, 111, 181, 0.85)';
-      x2.shadowBlur = 14;      x2.font = '30px sans-serif';
+      x2.shadowBlur = 14;
+      x2.font = '30px sans-serif';
       x2.fillText('✨', 120, 125); x2.fillText('💖', 145, 170); x2.fillText('🎶', 95, 215); x2.fillText('🎤', 155, 250);
       x2.fillText('✨', 480, 125); x2.fillText('⭐', 455, 170); x2.fillText('💖', 505, 215); x2.fillText('🎵', 445, 250);
 
@@ -3995,7 +3998,8 @@ var petMenuK = '', petAnim = null, petMsg = null;
 
 var PET_DICT2 = {
   en: {"Comer":"Eat","Banho":"Bath","Dormir":"Sleep","Acordar":"Wake up","Brincar":"Play","Água":"Water","Bolo red velvet":"Red velvet cake","Banho simples":"Quick bath","Banho de espuma":"Bubble bath","Grátis":"Free","Já está satisfeito!":"Already full!","Já está limpinho!":"Already squeaky clean!","Estrelas insuficientes":"Not enough stars","Boa noite!":"Good night!","Bom dia!":"Good morning!","Ainda não está com sono!":"Not sleepy yet!","Está cansado demais...":"Too tired to play...","Presente do dia":"Daily gift","Dormindo...":"Sleeping...","Que delícia!":"Yummy!"},
-  es: {"Comer":"Comer","Banho":"Baño","Dormir":"Dormir","Acordar":"Despertar","Brincar":"Jugar","Água":"Agua","Bolo red velvet":"Pastel red velvet","Banho simples":"Baño rápido","Banho de espuma":"Baño de espuma","Grátis":"Gratis","Já está satisfeito!":"¡Ya está lleno!","Já está limpinho!":"¡Ya está limpito!","Estrelas insuficientes":"Estrellas insuficientes","Boa noite!":"¡Buenas noches!","Bom dia!":"¡Buenos días!","Ainda não está com sono!":"¡Todavía no tiene sueño!","Está cansado demais...":"Está muy cansado...","Presente do dia":"Regalo del día","Dormindo...":"Durmiendo...","Que delícia!":"¡Qué rico!"},  th: {"Comer":"กิน","Banho":"อาบน้ำ","Dormir":"นอน","Acordar":"ตื่น","Brincar":"เล่น","Água":"น้ำ","Bolo red velvet":"เค้กเรดเวลเวท","Banho simples":"อาบน้ำเร็ว","Banho de espuma":"อาบน้ำฟองสบู่","Grátis":"ฟรี","Já está satisfeito!":"อิ่มแล้ว!","Já está limpinho!":"สะอาดแล้ว!","Estrelas insuficientes":"ดาวไม่พอ","Boa noite!":"ราตรีสวัสดิ์!","Bom dia!":"อรุณสวัสดิ์!","Ainda não está com sono!":"ยังไม่ง่วงเลย!","Está cansado demais...":"เหนื่อยเกินไปแล้ว...","Presente do dia":"ของขวัญประจำวัน","Dormindo...":"กำลังหลับ...","Que delícia!":"อร่อยจัง!"},
+  es: {"Comer":"Comer","Banho":"Baño","Dormir":"Dormir","Acordar":"Despertar","Brincar":"Jugar","Água":"Agua","Bolo red velvet":"Pastel red velvet","Banho simples":"Baño rápido","Banho de espuma":"Baño de espuma","Grátis":"Gratis","Já está satisfeito!":"¡Ya está lleno!","Já está limpinho!":"¡Ya está limpito!","Estrelas insuficientes":"Estrellas insuficientes","Boa noite!":"¡Buenas noches!","Bom dia!":"¡Buenos días!","Ainda não está com sono!":"¡Todavía no tiene sueño!","Está cansado demais...":"Está muy cansado...","Presente do dia":"Regalo del día","Dormindo...":"Durmiendo...","Que delícia!":"¡Qué rico!"},
+  th: {"Comer":"กิน","Banho":"อาบน้ำ","Dormir":"นอน","Acordar":"ตื่น","Brincar":"เล่น","Água":"น้ำ","Bolo red velvet":"เค้กเรดเวลเวท","Banho simples":"อาบน้ำเร็ว","Banho de espuma":"อาบน้ำฟองสบู่","Grátis":"ฟรี","Já está satisfeito!":"อิ่มแล้ว!","Já está limpinho!":"สะอาดแล้ว!","Estrelas insuficientes":"ดาวไม่พอ","Boa noite!":"ราตรีสวัสดิ์!","Bom dia!":"อรุณสวัสดิ์!","Ainda não está com sono!":"ยังไม่ง่วงเลย!","Está cansado demais...":"เหนื่อยเกินไปแล้ว...","Presente do dia":"ของขวัญประจำวัน","Dormindo...":"กำลังหลับ...","Que delícia!":"อร่อยจัง!"},
   ja: {"Comer":"ごはん","Banho":"おふろ","Dormir":"ねる","Acordar":"おきる","Brincar":"あそぶ","Água":"おみず","Gyoza":"ぎょうざ","Dango":"だんご","Onigiri":"おにぎり","Bolo red velvet":"レッドベルベットケーキ","Tiramisu":"ティラミス","Banho simples":"さっとおふろ","Banho de espuma":"あわあわバス","Grátis":"無料","Já está satisfeito!":"もうおなかいっぱい！","Já está limpinho!":"もうピカピカ！","Estrelas insuficientes":"星が足りないよ","Boa noite!":"おやすみ！","Bom dia!":"おはよう！","Ainda não está com sono!":"まだねむくないよ！","Está cansado demais...":"つかれちゃった…","Presente do dia":"今日のプレゼント","Dormindo...":"おやすみ中…","Que delícia!":"おいしい！"}
 };
 Object.keys(PET_DICT2).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT2[l]).forEach(function(k){ DICT[l][k] = PET_DICT2[l][k]; }); });
@@ -4994,7 +4998,8 @@ function cenaMultidao(P2){
     var mx = ((i * 37 - dist * 0.42) % (W + 40) + (W + 40)) % (W + 40) - 20;
     var bob = Math.abs(Math.sin(frame * 0.09 + i * 1.3)) * 4;
     var my = GY - 12 - bob;
-    g.fillStyle = 'rgba(15,23,42,.55)';    g.beginPath(); g.arc(mx, my - 4, 4.5, 0, 7); g.fill();
+    g.fillStyle = 'rgba(15,23,42,.55)';
+    g.beginPath(); g.arc(mx, my - 4, 4.5, 0, 7); g.fill();
     g.fillRect(mx - 4, my, 8, 10);
   }
   g.restore();
@@ -5993,7 +5998,8 @@ function s2DrawSceneryBg(){
     g.fillStyle = '#ff6fb5'; g.fillRect(0, GY, W, 3);
   } else if(id === 'estudio'){
     // Estúdio de TV: Placa NO AR piscando, refletores no teto e câmeras ao fundo
-    var tvG = g.createLinearGradient(0, 0, 0, GY);    tvG.addColorStop(0, '#090d16'); tvG.addColorStop(1, '#1e293b');
+    var tvG = g.createLinearGradient(0, 0, 0, GY);
+    tvG.addColorStop(0, '#090d16'); tvG.addColorStop(1, '#1e293b');
     g.fillStyle = tvG; g.fillRect(0, 0, W, GY);
 
     var sStep = 220, sOff = (dist * 0.35) % sStep;
@@ -6992,7 +6998,8 @@ var soraSoundOn = true;
 var soraSavedMutedBeforeOpen = null;
 var soraMusicTimer = null;
 var soraMusicStep = 0;
-var soraMusicTempo = 205; // subdivisão em colcheias: andamento saltitante, sem ficar frenéticovar soraMusicMelody = [
+var soraMusicTempo = 205; // subdivisão em colcheias: andamento saltitante, sem ficar frenético
+var soraMusicMelody = [
   659,784,880,1047,988,880,784,659, 784,880,988,1175,1047,988,880,784,
   784,988,1175,1319,1175,1047,988,784, 880,1047,1319,1568,1319,1175,1047,988,
   880,988,1047,1319,1568,1319,1175,1047, 988,1047,1175,1319,1568,1760,1568,1319,
@@ -7991,7 +7998,8 @@ function soraDrawRioScene(ctx){
   f.lineTo(cx+5.6,base-91); f.quadraticCurveTo(cx+3,base-89,cx+1,base-90);
   f.lineTo(cx,base-93); f.lineTo(cx-2,base-90);
   f.quadraticCurveTo(cx-5,base-91,cx-5,base-94); f.closePath(); f.fill();
-  f.strokeStyle='rgba(139,157,148,.75)'; f.lineWidth=.65; f.stroke();  // Traços faciais quase imperceptíveis, apenas para dar leitura ao rosto em escala pequena.
+  f.strokeStyle='rgba(139,157,148,.75)'; f.lineWidth=.65; f.stroke();
+  // Traços faciais quase imperceptíveis, apenas para dar leitura ao rosto em escala pequena.
   f.strokeStyle='rgba(128,145,136,.9)'; f.lineWidth=.7; f.lineCap='round';
   f.beginPath(); f.moveTo(cx-2.4,base-97); f.lineTo(cx-1.3,base-97); f.moveTo(cx+1.3,base-97); f.lineTo(cx+2.4,base-97);
   f.moveTo(cx,base-96); f.lineTo(cx-.5,base-94); f.stroke();
@@ -8990,7 +8998,8 @@ function soraEndGame(){
   if(!isTestScene){
     var row = { name: ($('nick') && $('nick').value.trim()) || nick || 'Idol', score: h, char: CH[sel].n, d: dk(), t: Date.now() };
     try{
-      var lb = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]');      if(!Array.isArray(lb)) lb = [];
+      var lb = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]');
+      if(!Array.isArray(lb)) lb = [];
       lb = upd(lb, row);
       window.__TW_TEST_STORAGE.setItem(SORA_LB_KEY, JSON.stringify(lb));
     }catch(e){}

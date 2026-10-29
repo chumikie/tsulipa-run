@@ -12,6 +12,8 @@ on:
       - 'index2-skin.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
+      - 'karaoke-room-model.js'
+      - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
       - '.github/workflows/validate-games.yml'
   push:
@@ -25,6 +27,8 @@ on:
       - 'index2-skin.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
+      - 'karaoke-room-model.js'
+      - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
 
 jobs:
@@ -38,3 +42,5 @@ jobs:
           node-version: '22'
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Validate nine-player room state machine
+        run: node tests/karaoke-room-model.test.js

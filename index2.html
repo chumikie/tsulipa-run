@@ -6150,7 +6150,20 @@ var CONTA_DICT = {
 };
 Object.keys(CONTA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(CONTA_DICT[l]).forEach(function(k){ DICT[l][k] = CONTA_DICT[l][k]; }); });
 
+// INDEX2_PREVIEW_GUARD: no account/economy/moderation writes in the visual preview.
+// Direct top_scores calls elsewhere are read-only; mini-games use their own local state.
+var TW_INDEX2_READ_RPC = Object.freeze({
+  jogador:1,meu_perfil:1,perfil_publico:1,ranking_minijogos:1,carregar_nuvem:1,
+  admin_extrato:1,admin_painel:1,admin_resumo:1,admin_contas:1,admin_extra:1,
+  missoes:1,aviso_inicio:1,presentes_pendentes:1,buscar_perfis:1,gacha_hoje:1,
+  duo_sugestoes:1,duo_convidado:1,meus_cards:1,duo_avisos_pendentes:1,
+  outdoor_jogadores:1,vitrine_idols:1
+});
 function contaRpc(nome, args){
+  if(!TW_INDEX2_READ_RPC[nome]){
+    // Do not call live Supabase functions with side effects from this preview.
+    return Promise.reject(new Error('index2_somente_leitura: '+nome));
+  }
   if(!_supabase) return Promise.reject(new Error('sem_supabase'));
   return _supabase.rpc(nome, args || {}).then(function(r){ if(r.error) throw r.error; return r.data; });
 }
@@ -8454,7 +8467,7 @@ function twPreviewFecharJogo(){
   // Notice is inserted into the EXISTING home, not a duplicated home.
   var notice=document.createElement('p');
   notice.className='tw-preview-notice';
-  notice.innerHTML='<strong>🧪 INDEX 2 — PRÉVIA</strong> · Novo visual em testes. Contas, compras, ranking e estrelas continuam ligados ao Supabase real; ações nessas áreas podem alterar dados de verdade.';
+  notice.innerHTML='<strong>🧪 INDEX 2 — PRÉVIA SEGURA</strong> · Ranking e perfis em modo leitura. Compras, moedas, giros, resgates e moderação que alteram dados estão bloqueados aqui. Para jogar com conta e recompensas reais, use o site principal.';
   var menu=$('hubMenu'),cards=$('hubCards');
   if(menu&&cards)menu.insertBefore(notice,cards);
 })();

@@ -23,11 +23,11 @@ for(const game of games){
   assert(bytes<game.max,game.file+": over HTML size budget ("+bytes+" bytes)");
   assert(content.includes("</body>")&&content.includes("</html>"),game.file+": missing closing HTML tags");
   let count=0;
-  for(const match of content.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
+  for(const match of content.replace(/<!--[\s\S]*?-->/g,"").matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
     if(/\bsrc\s*=/i.test(match[1]))continue;
     count++;
     try{new vm.Script(match[2],{filename:game.file+":inline-"+count});}
-    catch(e){errors.push(game.file+": invalid JavaScript: "+e.message);}
+    catch(e){errors.push(game.file+": invalid JavaScript (script "+count+"): "+e.message);}
   }
   assert(count>0,game.file+": no inline game JavaScript found");
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");

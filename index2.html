@@ -730,6 +730,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 #twPreviewIframe{flex:1 1 0;min-height:0;width:100%;display:block;border:0;background:#c9ecfc;}
 @media(max-width:600px){.tw-preview-tag{display:none}.tw-preview-bar{min-height:42px;padding:6px 10px}.tw-preview-voltar{padding:7px 10px}.tw-preview-bar b{font-size:12px}.tw-preview-game:has(#twPreviewIframe[src*='sora-jump.html']) .tw-preview-bar b{display:none}}
 </style>
+<link rel="stylesheet" href="./index2-skin.css?v=1">
 </head>
 <body>
 <header>
@@ -8713,7 +8714,7 @@ var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever
 var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1, gachaAgora = false;
 var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
-gachaOv.innerHTML = '<div class="panel gachap" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gachaX">✕</button><button type="button" class="ovsom" data-som="1" aria-label="🔊"></button><h2 id="gachaTit"></h2>' +
+gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx" id="gachaX">✕</button><button type="button" class="ovsom" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div></div></div>';
 document.body.appendChild(gachaOv);
@@ -8729,7 +8730,8 @@ function gachaTexto(r){
   return tr(GACHA_SORTE[(+r.valor || 0) % GACHA_SORTE.length]);
 }
 function gachaUI(){
-  $('gachaTit').textContent = '🎰 ' + 'Star⭐Gacha!';
+  $('gachaTit').innerHTML = '🎰 Star<span class="tw-modal-star">⭐</span>Gacha!';
+  $('twGachaLede').textContent = tr('1 giro por dia');
   var b = $('gachaGirar'), t = $('gachaTxt');
   if(!contaJ){ b.textContent = tr('Entrar com Google'); b.disabled = false; t.textContent = tr('Entre com Google para girar (1 vez por dia).'); return; }
   if(gachaFeito){ b.textContent = tr('Volte amanhã') + ' 🌙'; b.disabled = false; t.textContent = (gachaAgora ? '' : '✅ ' + tr('Você já girou hoje!') + ' ') + gachaTexto(gachaRes); return; }
@@ -9125,8 +9127,8 @@ var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
 
 var duoOv = document.createElement('div');
 duoOv.className = 'ov duoov'; duoOv.id = 'duoOv'; duoOv.hidden = true;
-duoOv.innerHTML = '<div class="panel duop" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx" id="duoX" aria-label="✕">✕</button>' +
-  '<h2 class="duotit" id="duoTit" translate="no">🌙 Moon⭐Duo!</h2><p class="duosub" id="duoSub"></p>' +
+duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx" id="duoX" aria-label="✕">✕</button>' +
+  '<h2 class="duotit tw-modal-title" id="duoTit" translate="no">🌙 Moon<span class="tw-modal-star">⭐</span>Duo!</h2><small class="tw-modal-jp" lang="ja">ムーン・デュオ</small><p class="duosub" id="duoSub"></p>' +
   '<div id="duoEscolha"></div>' +
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +

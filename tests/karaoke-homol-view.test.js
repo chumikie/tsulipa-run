@@ -69,9 +69,9 @@ assert(gateSql.includes('revoke all on function public.karaoke_ensaio(text,uuid)
 assert(gateSql.includes('revoke all on function public.karaoke_ensaio_elenco() from public, anon, authenticated;'));
 assert(gateTest.trimEnd().endsWith('rollback;'));
 assert(/var TURNSTILE_SITE_KEY='0x[A-Za-z0-9_-]+';/.test(client));
-assert(client.includes('labOpen=data.labOpen===true;'));
-assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen;'));
-assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;'));
+assert(client.includes('labOpen=data.labOpen===true&&data.scheduleOpen===true;'));
+assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen||moderationLocked;'));
+assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen||moderationLocked;'));
 assert(client.includes('r.data.session.user.is_anonymous!==true'));
 // 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
 assert(client.includes('var SIGNUP_ENABLED=false;'),'cadastro permanece fechado');

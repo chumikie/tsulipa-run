@@ -8316,6 +8316,35 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
   var nome = p.nome || (PET_SP[petData.ativo] ? PET_SP[petData.ativo].n : 'Pet');
   return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true] : [nome + ' ' + tr('está bem!'), false];
 }
+// Karaoke preview schedule (Sunday 12:00–13:10 America/Sao_Paulo).
+// UI-only lock for INDEX2; the standalone page and server must enforce access later.
+function twKaraokeHorario(){
+  var p={},parts=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'
+  }).formatToParts(new Date());
+  parts.forEach(function(x){if(x.type!=='literal')p[x.type]=+x.value;});
+  var dia=new Date(Date.UTC(p.year,p.month-1,p.day)).getUTCDay();
+  var seg=p.hour*3600+p.minute*60+p.second,abre=12*3600,fecha=13*3600+10*60;
+  if(dia===0&&seg>=abre&&seg<fecha)return {aberto:true,faltam:0};
+  var faltam=((7-dia)%7)*86400+abre-seg;
+  if(faltam<=0)faltam+=7*86400;
+  return {aberto:false,faltam:faltam};
+}
+function twKaraokeAtualizarCard(){
+  var cards=$('hubCards'),card=cards&&cards.querySelector('[data-ir="karaoke"]');
+  if(!card)return;
+  var estado=twKaraokeHorario(),txt=card.querySelector('.tw-karaoke-timer');
+  var s=estado.faltam,d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.ceil(s%3600/60);
+  if(m===60){m=0;h++;}if(h===24){h=0;d++;}
+  var fmt={pt:['🔒 Abre em ','🟢 Aberto até 13h10'],en:['🔒 Opens in ','🟢 Open until 13:10'],
+    es:['🔒 Abre en ','🟢 Abierto hasta 13:10'],ja:['🔒 開始まで ','🟢 13:10までオープン'],
+    th:['🔒 เปิดในอีก ','🟢 เปิดถึง 13:10']}[LANG]||['🔒 Abre em ','🟢 Aberto até 13h10'];
+  card.classList.toggle('tw-karaoke-locked',!estado.aberto);
+  card.setAttribute('aria-disabled',String(!estado.aberto));
+  if(txt)txt.textContent=estado.aberto?fmt[1]:fmt[0]+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
+  card.title=estado.aberto?'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)':'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)';
+}
 function hubCardsUI(){
   var pi = hubPetInfo();
   $('hubCards').innerHTML =
@@ -8334,8 +8363,9 @@ function hubCardsUI(){
   }[LANG]||['Pule entre nuvens e colete estrelas.','Entre na sala musical e encontre Idols.'];
   $('hubCards').insertAdjacentHTML('beforeend',
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small></button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Abrir Karaoke Day"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
   );
+  twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
@@ -8443,6 +8473,10 @@ function hubTutUI(){   // Quatro slides, somente no laboratório INDEX2.
   el.hidden=false;
 }
 function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
+// Refresh only while the hub is actually visible; no database traffic.
+setInterval(function(){
+  if(hubComecou&&!hubOv.hidden&&!document.hidden)twKaraokeAtualizarCard();
+},60000);
 // Jogos especiais na index2: o iframe só carrega após clicar no card.
 // Integração isolada nesta cópia; o index.html publicado permanece intacto.
 var twPreviewJogoAnterior = null;
@@ -8486,6 +8520,9 @@ function twPreviewMontarFundo(){
  // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
 function twPreviewAbrirJogo(tipo){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
+  // Stage 1: refuse to open Karaoke from INDEX2 outside the published weekly window.
+  // Real authorization (including the Tsu exception) requires a trusted server check.
+  if(tipo==='karaoke'&&!twKaraokeHorario().aberto){twKaraokeAtualizarCard();return;}
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
   twPreviewJogoAnterior=tipo;

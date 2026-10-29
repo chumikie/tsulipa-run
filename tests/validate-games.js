@@ -136,7 +136,7 @@ assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gach
 assert(lab.includes("function twKaraokeHorario()")&&
        lab.includes("timeZone:'America/Sao_Paulo'")&&
        lab.includes("function twKaraokeAtualizarCard()")&&
-       lab.includes("if(tipo==='karaoke'&&!twKaraokeHorario().aberto)")&&
+       lab.includes("if(tipo==='karaoke'&&!twKaraokeHorario().aberto&&")&&
        lab.includes('class="tw-karaoke-timer"')&&
        previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
   "INDEX2 should display Sunday countdown and guard preview card outside the time window");

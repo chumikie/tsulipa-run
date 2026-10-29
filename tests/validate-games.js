@@ -133,6 +133,13 @@ assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
 assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke"')&&
        previewSkin.includes("@media(min-width:700px)"),
   "INDEX2 desktop must have Moon Duo between Sora and Karaoke without changing mobile grid");
+assert(lab.includes("function twKaraokeHorario()")&&
+       lab.includes("timeZone:'America/Sao_Paulo'")&&
+       lab.includes("function twKaraokeAtualizarCard()")&&
+       lab.includes("if(tipo==='karaoke'&&!twKaraokeHorario().aberto)")&&
+       lab.includes('class="tw-karaoke-timer"')&&
+       previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
+  "INDEX2 should display Sunday countdown and guard preview card outside the time window");
 
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
@@ -168,7 +175,7 @@ try{
     nextSibling:null
   };
   const slot={appendChild:()=>{headersMoved++;}};
-  let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0;
+  let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0,blockedKaraoke=0;
   const card={focus:()=>{launchesFocused++;}};
   const nodes={
     twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
@@ -181,6 +188,8 @@ try{
   const sandbox={
     LANG:"pt",$:id=>nodes[id]||null,hubOv:fakeHub,
     tr:s=>s,
+    twKaraokeHorario:()=>({aberto:true,faltam:0}),
+    twKaraokeAtualizarCard:()=>{blockedKaraoke++;},
     temaAtual:()=>"halloween",TEMA_INFO:{halloween:["🎃","Halloween","#2b0f45","#ff8a3d"]},
     hubMusicaParar:()=>{musicStops++;},
     hubMostrar:()=>{hubReturns++;fakeHub.hidden=false;},
@@ -207,9 +216,14 @@ try{
          hubReturns===1&&launchesFocused===1&&
          !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===1,
     "Sora return must unload iframe, restore official header, clear effects and focus");
+  sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./karaoke-day.html"&&gameTitle.textContent.includes("Karaoke"),
-    "Karaoke launcher must open the correct iframe");
+  assert(overlay.hidden&&iframe.src==="about:blank"&&blockedKaraoke===1,
+    "Karaoke preview should refuse to open outside Sunday window");
+  sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
+  sandbox.twPreviewAbrirJogo("karaoke");
+  assert(iframe.src==="./karaoke-day.html"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
+    "Karaoke preview should open during scheduled window");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&hubReturns===2&&launchesFocused===2,
     "Karaoke return must unload iframe and restore hub focus");
@@ -220,6 +234,29 @@ try{
   console.log("✓ Preview controller smoke test: Sora, Karaoke, back, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
+
+// Sunday 12:00–13:10 in Brasília must be consistent even on devices in other zones.
+try{
+  const a=lab.indexOf("function twKaraokeHorario(){"),b=lab.indexOf("function twKaraokeAtualizarCard(){",a);
+  if(a<0||b<a)throw Error("Karaoke clock function not found");
+  const fn=lab.slice(a,b);
+  for(const [iso,open] of [
+    ["2026-10-29T12:00:00Z",false],
+    ["2026-11-01T14:59:00Z",false],
+    ["2026-11-01T15:30:00Z",true],
+    ["2026-11-01T16:11:00Z",false]
+  ]){
+    const ClockDate=class extends Date {
+      constructor(...args){super(...(args.length?args:[iso]));}
+    };
+    const scope={Date:ClockDate,Intl};
+    vm.runInNewContext(fn,scope);
+    const result=scope.twKaraokeHorario();
+    assert(result.aberto===open&&Number.isFinite(result.faltam),
+      "Karaoke Brasília opening window wrong at "+iso);
+  }
+  console.log("✓ Karaoke preview timer: Brasília Sunday window");
+}catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
 
 // Standalone mode must not load INDEX2 styles. Embed mode adds exactly one stylesheet.
 try{

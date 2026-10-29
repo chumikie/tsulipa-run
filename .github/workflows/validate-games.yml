@@ -1,0 +1,32 @@
+name: Check TsuLiPa special games
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'sora-jump.html'
+      - 'sora-jump-karaoke.html'
+      - 'karaoke-day.html'
+      - 'games-theme.css'
+      - 'tests/validate-games.js'
+      - '.github/workflows/validate-games.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sora-jump.html'
+      - 'sora-jump-karaoke.html'
+      - 'karaoke-day.html'
+      - 'games-theme.css'
+      - 'tests/validate-games.js'
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate game HTML and routes
+        run: node tests/validate-games.js

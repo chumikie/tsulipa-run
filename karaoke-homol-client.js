@@ -11,7 +11,8 @@ var KEY='sb_publishable_eWhnlZJSyDsJ3N8poUStGw_3XsEFO_T';
 var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // PUBLIC site key only; the Turnstile SECRET must remain in Supabase Auth settings.
 // Leave empty until the homologation widget and server-side CAPTCHA are configured.
-var TURNSTILE_SITE_KEY='';
+var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
+var SIGNUP_ENABLED=false;
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
@@ -25,6 +26,7 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. A sala cheia acima é uma demonstração.</p>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
+  +'<button type="button" class="krb" id="krHomolCheck">🛡️ Testar Turnstile (sem cadastro)</button>'
   +'<button type="button" class="krb" id="krHomolAuth">Criar/continuar Idol de teste</button>'
   +'<button type="button" class="krb" id="krHomolEnter" disabled>Entrar na sala</button>'
   +'<button type="button" class="krb" id="krHomolQueue" disabled>🎤 Entrar na fila</button>'
@@ -43,13 +45,14 @@ var style=document.createElement('style');
 style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}';
 document.head.appendChild(style);
 // A fila de demonstração continua até um participante ocupar vaga online.
-var ids=['Auth','Enter','Queue','Unqueue','Leave','Refresh'];
+var ids=['Check','Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');
 function say(text){msg.textContent=String(text);}
-if(!TURNSTILE_SITE_KEY) say('Etapa 3A.6: cadastro desativado até configurar Turnstile e CAPTCHA no Supabase de homologação. Nenhuma conta está sendo criada.');
+say('🛡️ Teste o Turnstile sem cadastro. A entrada online continua fechada.');
 function enable(auth,seat,queued){
- buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY;
+ buttons.Check.disabled=!TURNSTILE_SITE_KEY;
+ buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;
  buttons.Enter.disabled=!auth||seat||!labOpen;
  buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
@@ -99,7 +102,7 @@ async function captchaForSignup(){
  var api=await turnstileReady(),area=document.getElementById('krHomolCaptcha');
  if(turnstileWidget!==null){try{api.remove(turnstileWidget);}catch(e){}turnstileWidget=null;}
  area.replaceChildren();
- say('Confirme a verificação antirobô para criar o Idol de teste.');
+ say('Confirme a verificação antirobô. Este teste não cria contas.');
  return new Promise(function(resolve,reject){
    var finished=false;
    try{
@@ -202,7 +205,16 @@ async function run(action){
  }catch(e){say('Não foi possível atualizar o ensaio: '+String(e.message||e));}
  finally{unlock();}
 }
+buttons.Check.addEventListener('click',async function(){
+ if(!lock())return;
+ try{
+   await captchaForSignup();
+   say('✅ Desafio do navegador concluído. Nenhuma conta criada; a validação no servidor continua pendente.');
+ }catch(e){say('Turnstile não foi concluído: '+String(e.message||e));}
+ finally{unlock();}
+});
 buttons.Auth.addEventListener('click',async function(){
+ if(!SIGNUP_ENABLED)return;
  if(!lock())return;
  try{
    await init();

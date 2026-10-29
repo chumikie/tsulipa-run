@@ -9,6 +9,7 @@ const vm=require("node:vm");
 const root=path.resolve(__dirname,"..");
 const games=[
   {file:"sora-jump-karaoke.html",max:40000},
+  {file:"index2.html",max:1050000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000}
 ];
@@ -33,9 +34,10 @@ for(const game of games){
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");
 }
 
-let hub="",karaoke="",sora="";
+let hub="",karaoke="",sora="",preview="";
 try{
   hub=read("sora-jump-karaoke.html");
+  preview=read("index2.html");
   karaoke=read("karaoke-day.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
@@ -44,6 +46,10 @@ for(const ref of ["sora-jump.html","karaoke-day.html"]){
   assert(hub.includes('data-open="'+ref+'"'),"Hub missing launcher for "+ref);
 }
 assert(hub.includes("games-theme.css"),"Hub missing shared theme");
+assert(preview.includes('class="hubcard tw-hubgame')&&preview.includes("twPreviewAbrirJogo"),
+  "index2 missing integrated game cards or launchers");
+assert(preview.includes('name="robots" content="noindex,nofollow,noarchive"'),"index2 must be noindex");
+assert(!read("index.html").includes("twPreviewAbrirJogo"),"Production index.html must not contain preview-specific code");
 assert(sora.includes("games-theme.css"),"Sora missing shared theme");
 assert(karaoke.includes("games-theme.css"),"Karaoke missing shared theme");
 assert(sora.includes("soraSetupUI")&&sora.includes("soraOpenUI"),"Sora core integration missing");

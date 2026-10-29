@@ -1,7 +1,7 @@
 # ETAPA 3A — Karaoke⭐Day! Online · especificação beta de 9 vagas
 
 **Status: design aprovado para desenvolvimento; backend NÃO implementado / NÃO ativado.**
-**Incremento 3A.1 codificado (2026-10-29):** modelo local de 9 vagas e fila justa em [`karaoke-room-model.js`](./karaoke-room-model.js), testes [`tests/karaoke-room-model.test.js`](./tests/karaoke-room-model.test.js) e [página de ensaio](./karaoke-online-lab.html). **Não há multiplayer, autenticação, locks SQL, presença Realtime ou persistência reais**; demonstrar regras não equivale a sala online. Resultados sempre `demo_unverified`. Data: 2026-10-29. PR #33 permanece rascunho. Projeto privado `chumikie/tsulipa-run`.
+**Incremento 3A.1 codificado (2026-10-29):** modelo local de 9 vagas e fila justa em [`karaoke-room-model.js`](../../karaoke-room-model.js), testes [`tests/karaoke-room-model.test.js`](../../tests/karaoke-room-model.test.js) e [página de ensaio](../../karaoke-online-lab.html). **Não há multiplayer, autenticação, locks SQL, presença Realtime ou persistência reais**; demonstrar regras não equivale a sala online. Resultados sempre `demo_unverified`. Data: 2026-10-29. PR #33 permanece rascunho. Projeto privado `chumikie/tsulipa-run`.
 
 ## Decisões de produto
 - Sala principal: **9 Idols simultâneos** — 1 no microfone e 8 na plateia. Ocupação calculada pelo servidor: no máximo 9 identidades distintas, independentemente de abas/dispositivos.

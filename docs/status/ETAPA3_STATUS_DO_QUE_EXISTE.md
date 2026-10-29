@@ -86,7 +86,7 @@
 | Admin vestir outra pessoa | **PROPOSTA**, nenhuma RPC criada | [PLANO_KARAOKE_MODERACAO.md](../operacao/PLANO_KARAOKE_MODERACAO.md) |
 
 ## Prévia funcional da etapa 3A.1 (não online)
-- [Abrir laboratório local das 9 vagas](./karaoke-online-lab.html) — ensaio de fila, microfone e contagem de tempo, com Idols fictícios.
+- [Abrir laboratório local das 9 vagas](../../karaoke-online-lab.html) — ensaio de fila, microfone e contagem de tempo, com Idols fictícios.
 - Lógica pura: `karaoke-room-model.js`; testes automatizados: `tests/karaoke-room-model.test.js`.
 - Não autentica, não sincroniza navegadores, não tem chamadas Supabase e não cria registros ou moedas. Os resultados ficam assinalados como `demo_unverified`.
 - **Próxima implementação real:** montar projeto Supabase de homologação isolado, aplicar regras atômicas de vagas/filas no servidor, conectar os nove usuários de teste à sala visual existente, verificar moderação no backend. Só então criar pontuação Realtime e jogo de ritmo.

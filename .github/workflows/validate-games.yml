@@ -28,6 +28,8 @@ on:
       - 'tests/validate-games.js'
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
+      - 'tests/tw-weekly-podium.test.js'
+      - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -56,6 +58,8 @@ on:
       - 'tests/validate-games.js'
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
+      - 'tests/tw-weekly-podium.test.js'
+      - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - '.github/workflows/validate-games.yml'
 
 jobs:
@@ -81,3 +85,5 @@ jobs:
         run: node tests/karaoke-homol-refresh.test.js
       - name: Validate Sora mobile and iframe stability
         run: node tests/sora-stability.test.js
+      - name: Validate actual INDEX 2 weekly podium integration
+        run: node tests/tw-weekly-podium.test.js

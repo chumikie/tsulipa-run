@@ -3655,6 +3655,13 @@ function soraEndGame(){
       window.__TW_TEST_STORAGE.setItem(SORA_LB_KEY, JSON.stringify(lb));
     }catch(e){}
     histRegistrarRodada('sora_jump', h);
+    // Only a completed ordinary run; no score from secret test scenes.
+    // Parent INDEX 2 saves a local weekly preview. No server writes.
+    try{
+      if(parent!==window && new URLSearchParams(location.search).get('embed')==='index2' && Number.isSafeInteger(h) && h>0){
+        parent.postMessage({type:'TW_SORA_WEEKLY_SCORE',score:h},location.origin);
+      }
+    }catch(e){}
   }
 
   // Missão diária: "Suba 500 metros no Sora⭐Jump!"

@@ -6167,7 +6167,7 @@ var TW_INDEX2_READ_RPC = Object.freeze({
   admin_extrato:1,admin_painel:1,admin_resumo:1,admin_contas:1,admin_extra:1,
   missoes:1,aviso_inicio:1,presentes_pendentes:1,buscar_perfis:1,gacha_hoje:1,
   duo_sugestoes:1,duo_convidado:1,meus_cards:1,
-  outdoor_jogadores:1,vitrine_idols:1
+  outdoor_jogadores:1,vitrine_idols:1,tw_podio_semana:1
 });
 function contaRpc(nome, args){
   if(!TW_INDEX2_READ_RPC[nome]){
@@ -7055,11 +7055,13 @@ function perfAbaMostrar(){
     }
     h += '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
     if(d.melhores && d.melhores.length) h += '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.melhores, d.admin_ver) + '</ol>';
+    if(meu) h += '<section class="tw-rank-profile" id="twSoraWeekProfile"><h3>☁️ Sora⭐Jump! <small lang="ja">今週の最高記録</small></h3><p id="twSoraWeekScore"></p></section>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    if(meu) twRankRenderProfile();
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -8250,8 +8252,16 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
+  '<section class="tw-rank-tv" id="twRankTv" aria-label="TV dos rankings semanais">'+
+  '<div class="tw-rank-tv-head"><b>📺 TsuLiPa TV</b><small lang="ja">今週のランキング</small></div>'+
+  '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
+  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
+  '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
+  '<h2>🏆 Top Idols <small lang="ja">今週のトップアイドル</small></h2>'+
+  '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
+  '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
@@ -8406,6 +8416,139 @@ function hubMisCarregar(){
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
+// INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
+// The future RPC is off until the competition backend has been reviewed.
+var TW_RANK_ONLINE_READY=false, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
+var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
+var twRankTimer=null,twRankPending=null;
+var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
+var TW_RANK_WORDS={
+ pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana'],
+ en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week'],
+ es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana'],
+ ja:['まだ記録はありません','オンラインランキング準備中','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし'],
+ th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน']
+};
+function twRankWord(i){return (TW_RANK_WORDS[LANG]||TW_RANK_WORDS.pt)[i];}
+function twRankSundayKey(timestamp){
+ var parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(timestamp===undefined?Date.now():timestamp));
+ var o={};parts.forEach(function(p){o[p.type]=p.value;});
+ var d=new Date(Date.UTC(+o.year,+o.month-1,+o.day));d.setUTCDate(d.getUTCDate()-d.getUTCDay());
+ return d.toISOString().slice(0,10);
+}
+function twRankLocal(){
+ var week=twRankSundayKey();
+ try{
+  var v=JSON.parse(localStorage.getItem(TW_SORA_WEEK_STORAGE)||'null');
+  if(v&&v.week!==week){localStorage.removeItem(TW_SORA_WEEK_STORAGE);return null;}
+  if(v&&v.week===week&&contaJ&&v.nick===contaJ.nick&&Number.isSafeInteger(v.score)&&v.score>0)return v;
+ }catch(e){}
+ return null;
+}
+function twRankRecordLocal(value){
+ var score=Number(value);
+ if(!contaJ||!contaJ.nick||!Number.isSafeInteger(score)||score<1||score>200000)return;
+ var old=twRankLocal();
+ try{localStorage.setItem(TW_SORA_WEEK_STORAGE,JSON.stringify({week:twRankSundayKey(),nick:contaJ.nick,score:Math.max(score,old?old.score:0)}));}catch(e){}
+ twRankRenderProfile();
+}
+function twRankCheckWeek(){
+ var now=twRankSundayKey();
+ if(now===twRankData.week)return;
+ twRankData.week=now;twRankData.center=[];twRankData.sora=[];twRankData.karaoke=[];
+ twRankData.centerOK=false;twRankData.online=false;twRankData.mine=null;twRankData.readAt=0;
+}
+function twRankClean(list){
+ if(!Array.isArray(list))return [];
+ var best=Object.create(null);
+ list.slice(0,30).forEach(function(p){
+  if(!p||typeof p!=='object')return;
+  var nick=String(p.nick||p.name||'').trim().slice(0,24);
+  var score=Math.floor(Number(p.score===0?0:(p.score||p.pts||0)));
+  if(!nick||!Number.isSafeInteger(score)||score<=0)return;
+  var key=nick.toLocaleLowerCase('pt-BR');
+  if(!best[key]||score>best[key].score)best[key]={nick:nick,score:score};
+ });
+ return Object.keys(best).map(function(k){return best[k];})
+  .sort(function(a,b){return b.score-a.score||a.nick.localeCompare(b.nick);}).slice(0,3);
+}
+function twRankStatus(id){
+ if(id==='center'&&!twRankData.centerOK)return twRankWord(2);
+ if(id!=='center'&&!twRankData.online)return twRankWord(1);
+ return twRankWord(0);
+}
+function twRankRow(row,i,unit){
+ return '<li><span class="tw-rank-medal">'+['🥇','🥈','🥉'][i]+'</span>'+
+  '<button type="button" class="lbn tw-rank-nick" data-nick="'+escHtml(row.nick)+'">'+escHtml(row.nick)+'</button>'+
+  '<strong>'+row.score.toLocaleString()+' '+unit+'</strong></li>';
+}
+function twRankRender(){
+ twRankCheckWeek();
+ var screen=$('twRankTvScreen'),buttons=$('twRankTvButtons'),hall=$('twRankColumns');
+ if(!screen||!buttons||!hall)return;
+ var g=twRankGames[twRankData.active],top=twRankData[g[0]][0];
+ screen.innerHTML='<b>'+g[1]+' '+g[2]+'</b>'+(top?
+  '<p>'+escHtml(twRankWord(twRankData.active+3)+top.nick)+'?</p><strong>🏆 '+top.score.toLocaleString()+' '+g[3]+'</strong>':
+  '<p class="tw-rank-wait">'+escHtml(twRankStatus(g[0]))+'</p>');
+ buttons.innerHTML=twRankGames.map(function(k,i){
+  return '<button type="button" data-tw-rank="'+i+'" aria-pressed="'+(twRankData.active===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
+ }).join('');
+ var note=$('twRankWeekNote');if(note)note.textContent=twRankData.online?twRankWord(6):'Center: ranking oficial atual · Sora/Karaoke: renovação no domingo (em preparação)';
+ hall.innerHTML=twRankGames.map(function(k){
+  var list=twRankData[k[0]];
+  return '<div class="tw-rank-game"><h3>'+k[1]+' '+k[2]+'</h3>'+
+   (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3]);}).join('')+'</ol>':
+    '<p>'+escHtml(twRankStatus(k[0]))+'</p>')+'</div>';
+ }).join('');
+}
+function twRankRenderProfile(){
+ var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
+ twRankCheckWeek();
+ var score=twRankData.mine,local=twRankLocal();
+ box.textContent=score!==null?
+  twRankWord(7)+': '+score.toLocaleString()+' m':
+  local?twRankWord(7)+': '+local.score.toLocaleString()+' m · '+twRankWord(8):
+   twRankWord(9)+' · '+twRankWord(1);
+}
+function twRankLoad(){
+ twRankCheckWeek();
+ if(twRankPending)return twRankPending;
+ if(Date.now()-twRankData.readAt<180000)return Promise.resolve();
+ twRankData.readAt=Date.now();
+ if(!_supabase){twRankRender();return Promise.resolve();}
+ var week=twRankData.week;
+ var center=_supabase.rpc('top_scores',{periodo:'week'}).then(function(res){
+  if(res.error)throw res.error;
+  if(week===twRankData.week){twRankData.center=twRankClean(res.data);twRankData.centerOK=true;}
+ }).catch(function(){if(week===twRankData.week)twRankData.centerOK=false;});
+ var online=TW_RANK_ONLINE_READY?contaRpc('tw_podio_semana').then(function(data){
+  if(!data||data.semana!==week||twRankData.week!==week)return;
+  twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
+  twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
+  twRankData.mine=Number.isSafeInteger(+data.meu_sora)&&+data.meu_sora>0?+data.meu_sora:null;
+ }).catch(function(){twRankData.online=false;}):Promise.resolve();
+ twRankPending=Promise.all([center,online]).then(function(){
+  twRankPending=null;twRankRender();twRankRenderProfile();
+ });
+ return twRankPending;
+}
+function twRankStop(){if(twRankTimer!==null){clearInterval(twRankTimer);twRankTimer=null;}}
+function twRankVisibility(){
+ var tv=$('twRankTv');if(!tv)return;
+ tv.hidden=hubComecou;twRankStop();
+ var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ if(!hubComecou&&!hubOv.hidden&&!calm)twRankTimer=setInterval(function(){
+  if(hubOv.hidden||document.hidden)return;
+  var was=twRankData.week;twRankCheckWeek();if(was!==twRankData.week)twRankLoad();
+  twRankData.active=(twRankData.active+1)%3;twRankRender();
+ },9000);
+}
+hubOv.addEventListener('click',function(e){
+ var b=e.target.closest&&e.target.closest('[data-tw-rank]');if(!b)return;
+ var i=+b.dataset.twRank;if(!Number.isInteger(i)||i<0||i>2)return;
+ twRankData.active=i;twRankRender();
+});
+
 function hubMontar(){
   $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
@@ -8413,7 +8556,7 @@ function hubMontar(){
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
-  hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
+  hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
   if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
@@ -8465,11 +8608,12 @@ function hubMostrar(){
   hubOv.hidden = false; document.body.classList.add('hubon');
   if(hubComecou){ hubMusicaParar(); hubMusicaTocar(); }   // V2.1.3: só toca depois de aparecer (antes ficava em silêncio ao voltar do gacha)
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
+  twRankVisibility();twRankLoad();
   if(hubComecou) hubMisCarregar();
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubFechar(){
-  hubOv.hidden = true; document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
+  hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
@@ -8479,6 +8623,7 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
 function hubComecar(){
   ac(); hubJingle(); setTimeout(hubMusicaTocar, 1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();
   // The INDEX2 welcome has its own marker, without changing original brs48cr_* saves.
@@ -8627,6 +8772,11 @@ function twPreviewFecharJogo(){
     var frame=$('twPreviewIframe');
     if(!frame||e.source!==frame.contentWindow)return;
     if(location.protocol!=='file:' && e.origin!==location.origin)return;
+    // A completed run can update ONLY a local preview score, never the server.
+    if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
+      if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);
+      return;
+    }
     if(e.data&&(e.data.type==='tsulipa-games-hub'||e.data.type==='TW_USER_KARAOKE_BACK'))twPreviewFecharJogo();
   });
   document.addEventListener('keydown',function(e){

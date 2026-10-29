@@ -8318,7 +8318,12 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
 }
 // Karaoke preview schedule (Sunday 12:00–13:10 America/Sao_Paulo).
 // UI-only lock for INDEX2; the standalone page and server must enforce access later.
+var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
+var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT
 function twKaraokeHorario(){
+  // INDEX2 preview-only schedule: server authorization must be separate.
+  var ateEstreia=Math.ceil((TW_KARAOKE_PRIMEIRA_ABERTURA-Date.now())/1000);
+  if(ateEstreia>0)return {aberto:false,faltam:ateEstreia,estreia:true};
   var p={},parts=new Intl.DateTimeFormat('en-GB',{
     timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',
     hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'
@@ -8343,8 +8348,9 @@ function twKaraokeAtualizarCard(){
   var adm=typeof contaAdmin==='function'&&contaAdmin();
   card.classList.toggle('tw-karaoke-locked',!estado.aberto&&!adm);
   card.setAttribute('aria-disabled',String(!estado.aberto&&!adm));
-  if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':fmt[0]+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
-  card.title=estado.aberto?'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)':'Karaoke⭐Day! · Domingo 12h–13h10 (Brasília)';
+  var lead=estado.estreia?({pt:'🎤 Estreia 08/11 · ',en:'🎤 Premiere Nov 8 · ',es:'🎤 Estreno 08/11 · ',ja:'🎤 初公開11/8 · ',th:'🎤 เปิดตัว 8/11 · '}[LANG]||'🎤 Estreia 08/11 · '):fmt[0];
+  if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
+  card.title='Karaoke⭐Day! · estreia planejada 08/11/2026, domingo 12h–13h10 (Brasília) · multiplayer em desenvolvimento';
 }
 function hubCardsUI(){
   var pi = hubPetInfo();
@@ -8526,8 +8532,8 @@ function twKaraokeMostrarFechado(){
   var t=twKaraokeHorario(),txt=$('twKaraokeFechadoTxt');
   var dias=Math.floor(t.faltam/86400),horas=Math.floor(t.faltam%86400/3600),
       minutos=Math.ceil(t.faltam%3600/60);
-  if(txt)txt.textContent='🎤 Domingo, 12h–13h10 (Brasília). Abre em '+
-    (dias?dias+'d ':'')+horas+'h '+String(minutos).padStart(2,'0')+'min.';
+  if(txt)txt.textContent=(t.estreia?'🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam ':'🎤 Domingo, 12h–13h10 (Brasília). Abre em ')+
+    (dias?dias+'d ':'')+horas+'h '+String(minutos).padStart(2,'0')+'min. 💜 Multiplayer ainda em preparação.';
   modal.hidden=false;
   var ensaiar=$('twKaraokeEnsaiar');
   if(ensaiar)ensaiar.textContent=({pt:'🧪 Ensaiar agora',en:'🧪 Play rehearsal',es:'🧪 Ensayar ahora',th:'🧪 ทดลองซ้อมตอนนี้',ja:'🧪 今すぐ練習'}[LANG]||'🧪 Ensaiar agora');

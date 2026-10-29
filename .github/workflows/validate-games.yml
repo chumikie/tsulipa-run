@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'index2.html'
       - 'sora-jump.html'
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'
@@ -13,6 +14,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'index2.html'
       - 'sora-jump.html'
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'

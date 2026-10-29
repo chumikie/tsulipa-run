@@ -420,6 +420,18 @@ html,body{min-height:100%;}
 </style>
 
 <style id="twSoraStandAlonePreload">body{visibility:hidden}</style><link rel="stylesheet" href="./games-theme.css?v=2">
+<script id="twSoraEmbedBoot">
+// Explicitly opt in to the INDEX 2 visual shell. The standalone game is unchanged.
+(function(){
+  try{
+    if(new URLSearchParams(location.search).get('embed')!=='index2')return;
+    document.documentElement.classList.add('tw-sora-embed');
+    var style=document.createElement('link');
+    style.rel='stylesheet';style.href='./sora-embed.css?v=1';
+    document.head.appendChild(style);
+  }catch(e){/* standalone fallback */ }
+})();
+</script>
 </head>
 <body class="tw-game-sora">
 <div id="soraLegacyHooks" hidden aria-hidden="true"><canvas id="c" width="720" height="300"></canvas><canvas id="cel" width="200" height="150"></canvas><canvas id="prev" width="150" height="150"></canvas><span id="best"></span><div id="chars"></div><input id="nick" maxlength="12"></div>

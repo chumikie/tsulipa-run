@@ -10,7 +10,6 @@ const root=path.resolve(__dirname,"..");
 const games=[
   {file:"index2.html",max:1050000},
   {file:"sora-jump-karaoke.html",max:40000},
-  {file:"index2.html",max:1050000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000}
 ];
@@ -69,6 +68,22 @@ assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPr
   "Index V2 missing in-page game overlay");
 assert(lab.includes("TW_INDEX2_READ_RPC")&&lab.includes("index2_somente_leitura"),
   "Index 2 missing read-only database guards");
+// Preview safety: direct RPC calls must remain limited to the reviewed ranking query.
+// Dynamic account calls are separately restricted by the TW_INDEX2_READ_RPC allowlist.
+const directRpcCalls=[...lab.matchAll(/_supabase\.rpc\(\s*(['"])([^'"]+)\1/g)].map(m=>m[2]);
+assert(directRpcCalls.every(name=>name==="top_scores"),
+  "Index 2 contains a direct Supabase RPC beyond top_scores: "+directRpcCalls.join(", "));
+assert(lab.includes("e.source!==frame.contentWindow")&&lab.includes("e.origin!==location.origin"),
+  "Index 2 must validate iframe message sender and origin");
+assert(lab.includes("frame.src='about:blank'")&&lab.includes("if(!wrap||!frame||!wrap.hidden)return"),
+  "Index 2 lost iframe teardown or duplicate-launch guard");
+assert(lab.includes('twPreviewVoltarTxt')&&lab.includes('twPreviewAtualizarIdioma')&&
+       lab.includes('tw-hubgame-jp')&&lab.includes('ソラ・ジャンプ')&&lab.includes('カラオケ・デー'),
+  "Index 2 lost translated preview UX or Japanese game subtitles");
+assert(lab.includes("card.focus({preventScroll:true})"),
+  "Index 2 must restore focus to the game launcher on return");
+assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
+  "Integrated games must request return to the parent hub");
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
   assert(lab.includes(fn),"Index V2 lost existing game system: "+fn);
 }

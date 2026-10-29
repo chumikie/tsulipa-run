@@ -6,6 +6,7 @@ Site: https://tsulipa-world.vercel.app/
 
 ## Arquivos
 - `index.html` — jogo principal em produção (Center⭐Run, perfil, pet e demais módulos)
+- `index2.html` — cópia de testes da página inicial, com os novos botões Sora⭐Jump! e Karaoke⭐Day! integrados no mesmo hub; **não é produção**
 - `sora-jump-karaoke.html` — seletor leve de jogos especiais, compatível com a identidade visual do site
 - `sora-jump.html` — Sora⭐Jump! independente, com CSS/DOM e JS herdados não utilizados removidos nesta branch
 - `karaoke-day.html` — Karaoke⭐Day! independente, com itens, lanches japoneses e pôsteres de avatares
@@ -32,3 +33,11 @@ O Karaoke abre no celular. O 'Modo plateia' é uma opção do simulador e não �
 ## Próxima auditoria
 
 Ver `AUDITORIA_V3.md` para recomendações de carregamento sob demanda do `index.html`, cache de avatares e auditoria do quadro semanal compartilhado e revisões de segurança/performance do Supabase. No Supabase foi criada **somente** a tabela privada `private.karaoke_poster_elencos` e a função pública `karaoke_posteres_semana()`, documentadas em `supabase/sql/karaoke_posteres_semana.sql`. Nenhum registro de contas/saves foi alterado, nem as funções já existentes.
+
+## INDEX 2 — antevisão da integração
+
+Acesse `/index2.html` na prévia Vercel ou Netlify da branch/PR #33. É uma cópia completa do `index.html` com dois novos cards no menu inicial. Ambos os jogos só são carregados em iframe quando clicados. O `index.html` da branch `main` não é alterado.
+
+**Atenção:** a prévia compartilha o projeto Supabase real com o site publicado. Não testar compras, Gacha, resgates ou ações administrativas sem intenção de alterar dados reais. O preview é uma separação de interface/código, não um ambiente de homologação do banco.
+
+Auditoria técnica de ranking, moderação, preços e moedas: `AUDITORIA_RANKING_LOJA_INDEX2.md`. Os 22 preços de roupas de `PERF_LOJA` conferem com os 22 preços do servidor `visual_preco` (29/10/2026).

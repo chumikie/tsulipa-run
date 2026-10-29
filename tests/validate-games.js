@@ -11,7 +11,8 @@ const games=[
   {file:"index2.html",max:1050000},
   {file:"sora-jump-karaoke.html",max:40000},
   {file:"sora-jump.html",max:400000},
-  {file:"karaoke-day.html",max:150000}
+  {file:"karaoke-day.html",max:150000},
+  {file:"karaoke-online-lab.html",max:30000}
 ];
 let errors=[];
 const read=name=>fs.readFileSync(path.join(root,name),"utf8");
@@ -52,6 +53,18 @@ assert(preview.includes('name="robots" content="noindex,nofollow,noarchive"'),"i
 assert(!read("index.html").includes("twPreviewAbrirJogo"),"Production index.html must not contain preview-specific code");
 assert(sora.includes("games-theme.css"),"Sora missing shared theme");
 assert(karaoke.includes("games-theme.css"),"Karaoke missing shared theme");
+const rehearsal=read("karaoke-online-lab.html"),model=read("karaoke-room-model.js");
+assert(rehearsal.includes('name="robots" content="noindex,nofollow,noarchive"')&&
+       rehearsal.includes("SIMULAÇÃO LOCAL")&&
+       rehearsal.includes('src="./karaoke-room-model.js"')&&
+       rehearsal.includes("9 vagas")&&
+       rehearsal.includes("Não conta para o ranking"),
+  "Offline rehearsal must be transparent about fake users and scores");
+assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
+       model.includes("RHYTHM_MS=45000")&&model.includes('verification:"demo_unverified"')&&
+       !model.includes("_supabase")&&!model.includes(".rpc("),
+  "Offline room model must never connect to the live database");
+
 assert(sora.includes("soraSetupUI")&&sora.includes("soraOpenUI"),"Sora core integration missing");
 assert(karaoke.includes("rpc/karaoke_posteres_semana"),"Karaoke missing shared weekly avatar RPC");
 assert(karaoke.includes("krAgendarLoop")&&karaoke.includes("logicalW=960,logicalH=540"),

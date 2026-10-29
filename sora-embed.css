@@ -86,7 +86,7 @@ html.tw-sora-embed #soraOv .bp-title small{
   margin-top:2px!important;
   font:800 11px/1.45 "M PLUS Rounded 1c","Kosugi Maru",sans-serif!important;
   letter-spacing:.08em!important;
-  color:#ff87c4!important;
+  color:var(--tw-sora-accent)!important;
   text-shadow:none!important;
 }
 html.tw-sora-embed #soraOv>.panel>p{font-size:12px!important;line-height:1.45!important;margin:2px 0 7px!important}
@@ -108,7 +108,7 @@ html.tw-sora-embed #soraMenuBox{
 }
 html.tw-sora-embed #soraOv .sora-menu-content{gap:6px!important}
 html.tw-sora-embed #soraOv .sora-menu-copy{line-height:1.4!important}
-html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid #ff87c4;outline-offset:2px}
+html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-accent);outline-offset:2px}
 @media(max-width:620px){
   html.tw-sora-embed #soraOv.ov{padding:5px!important;align-items:flex-start!important}
   html.tw-sora-embed #soraOv>.panel.sora-panel{

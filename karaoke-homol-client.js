@@ -14,7 +14,11 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // Site Key é pública; segredo fica somente no Supabase Auth.
 // A integração abaixo ainda NÃO autoriza a criação de contas de ensaio.
 var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
+var AUTH_TEST_ONLY=new URLSearchParams(location.search).get('auth_test')==='1';
 var SIGNUP_ENABLED=false;
+// Temporary Auth-only smoke test. The query flag is NOT a security boundary.
+// Keep Supabase Anonymous Sign-ins enabled only during the supervised test.
+if(AUTH_TEST_ONLY)SIGNUP_ENABLED=true;
 var PRACTICE_PREVIEW=new URLSearchParams(location.search).get('practice_preview')==='1';
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null,sync=null;
@@ -33,7 +37,7 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
   +'<button type="button" class="krb" id="krHomolCheck">🛡️ Testar Turnstile (sem cadastro)</button>'
-  +'<button type="button" class="krb" id="krHomolAuth">Criar/continuar Idol de teste</button>'
+  +'<button type="button" class="krb" id="krHomolAuth">'+(AUTH_TEST_ONLY?'🧪 Testar autenticação (1 conta temporária)':'Criar/continuar Idol de teste')+'</button>'
   +'<button type="button" class="krb" id="krHomolEnter" disabled>Entrar na sala</button>'
   +'<button type="button" class="krb" id="krHomolQueue" disabled>🎤 Entrar na fila</button>'
   +'<button type="button" class="krb" id="krHomolUnqueue" disabled>Sair da fila</button>'
@@ -66,8 +70,9 @@ var msg=document.getElementById('krHomolMsg');
 function say(text){msg.textContent=String(text);}
 say('🛡️ Teste o Turnstile sem cadastro. A entrada online continua fechada.');
 function enable(auth,seat,queued){
- buttons.Check.disabled=!TURNSTILE_SITE_KEY;
+ buttons.Check.disabled=!TURNSTILE_SITE_KEY||(AUTH_TEST_ONLY&&auth);
  buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;
+ if(AUTH_TEST_ONLY){buttons.Enter.disabled=true;buttons.Queue.disabled=true;buttons.Unqueue.disabled=true;buttons.Leave.disabled=true;buttons.Refresh.disabled=true;return;}
  buttons.Enter.disabled=!auth||seat||!labOpen||moderationLocked;
  buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen||moderationLocked;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
@@ -328,6 +333,24 @@ buttons.Auth.addEventListener('click',async function(){
  try{
    await init();
    var r=await client.auth.getSession();
+   if(AUTH_TEST_ONLY){
+     // Reuse prevention: never create a second test identity in a tab with an existing session.
+     if(r.data.session){
+       if(r.data.session.user&&r.data.session.user.is_anonymous!==true)
+         throw new Error('Esta aba já contém uma sessão permanente. Use uma janela privada sem sessão do TsuLiPa.');
+       throw new Error('Esta aba já contém uma sessão anônima. Para evitar contas extras, não tente novamente; avise o responsável pelo teste.');
+     }
+     var captchaToken=await captchaForSignup();
+     r=await client.auth.signInAnonymously({options:{captchaToken:captchaToken}});
+     if(r.error)throw r.error;
+     var verify=await client.auth.getUser();
+     if(verify.error)throw verify.error;
+     if(!verify.data.user||verify.data.user.is_anonymous!==true)
+       throw new Error('O servidor não confirmou a identidade anônima de teste.');
+     ready=true;
+     say('✅ Supabase Auth aceitou o CAPTCHA e confirmou um Idol anônimo. Teste isolado: nenhuma RPC da sala foi chamada, nenhuma vaga foi ocupada e nenhuma pontuação foi criada. Avise agora para fecharmos o cadastro.');
+     return;
+   }
    if(r.data.session&&r.data.session.user&&r.data.session.user.is_anonymous!==true)
      throw new Error('Use somente um Idol anônimo de homologação; não uma conta permanente.');
    if(!r.data.session){

@@ -73,6 +73,18 @@ assert(client.includes('labOpen=data.labOpen===true&&data.scheduleOpen===true;')
 assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen||moderationLocked;'));
 assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen||moderationLocked;'));
 assert(client.includes('r.data.session.user.is_anonymous!==true'));
+// Temporary supervised test: default remains OFF; explicit auth_test mode is Auth-only.
+assert(client.includes("var AUTH_TEST_ONLY=new URLSearchParams(location.search).get('auth_test')==='1';"));
+assert(client.includes('var SIGNUP_ENABLED=false;'));
+assert(client.includes('if(AUTH_TEST_ONLY)SIGNUP_ENABLED=true;'));
+assert(client.includes('if(AUTH_TEST_ONLY){buttons.Enter.disabled=true;buttons.Queue.disabled=true;buttons.Unqueue.disabled=true;buttons.Leave.disabled=true;buttons.Refresh.disabled=true;return;}'));
+const authOnlyStart=client.indexOf("if(AUTH_TEST_ONLY){\n     // Reuse prevention");
+const authOnlyEnd=client.indexOf("\n   if(r.data.session&&r.data.session.user&&r.data.session.user.is_anonymous!==true)",authOnlyStart);
+assert(authOnlyStart>=0&&authOnlyEnd>authOnlyStart,'temporary auth-only branch must be isolated');
+const authOnlyBranch=client.slice(authOnlyStart,authOnlyEnd);
+assert(authOnlyBranch.includes('client.auth.signInAnonymously')&&authOnlyBranch.includes('client.auth.getUser()'));
+assert(!authOnlyBranch.includes('client.rpc(')&&!authOnlyBranch.includes('refresh('),'auth-only test must not call room RPCs or refresh room state');
+
 // 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
 assert(client.includes('var SIGNUP_ENABLED=false;'),'cadastro permanece fechado');
 assert(client.includes("buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;"));
@@ -100,7 +112,7 @@ assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where i
 assert(closeTest.trim().endsWith('rollback;'));
 assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
-assert(game.includes("karaoke-homol-client.js?v=5"),'updated script should bypass stale CDN');
+assert(game.includes("karaoke-homol-client.js?v=6"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
 
 // 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
@@ -111,7 +123,7 @@ assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
 assert(!signalSql.includes('seat_token'));
 assert(signalSQLTest.trimEnd().endsWith('rollback;'));
 assert(game.includes('karaoke-homol-sync.js?v=1'));
-assert(game.includes('karaoke-homol-client.js?v=5'));
+assert(game.includes('karaoke-homol-client.js?v=6'));
 assert(client.includes('if(currentRefresh)return currentRefresh;'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 const syncAPI=require('../karaoke-homol-sync.js');
@@ -165,7 +177,7 @@ assert(client.includes("client.rpc('karaoke_ensaio_toque',{p_token:token})"));
 assert(client.includes("function drawSharedRhythm(){"));
 assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("setInterval(showTurnClock,125)"));
-assert(game.includes("karaoke-homol-client.js?v=5"));
+assert(game.includes("karaoke-homol-client.js?v=6"));
 console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');
 
 // Visual-only mode: neither an anonymous identity nor a score is created.

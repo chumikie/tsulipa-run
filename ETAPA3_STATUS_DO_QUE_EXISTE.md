@@ -104,3 +104,5 @@
 > **Prévia controlada 3A.6 — 29/10/2026:** uma publicação Netlify para demonstrar o painel de entrada fechada e os testes de segurança. A sala visual original permanece intacta; login anônimo, CAPTCHA e portão online continuam desativados. Vercel não reativada.
 
 > **Prévia controlada 3A.6b — 29/10/2026:** novo widget Turnstile de teste sem cadastro; sitekey pública já no código, portão fechado. Uma publicação Netlify, depois restaurar skip. Vercel continua pausada.
+
+> **Prévia controlada 3A.8 (29/10/2026):** uma única publicação na Netlify para mostrar o estado de sincronização e preservar o visual whimsical. Sincronização real depende de teste com usuários anônimos de homologação; portão e cadastros continuam fechados. Vercel continua pausada e `index.html` intocado.

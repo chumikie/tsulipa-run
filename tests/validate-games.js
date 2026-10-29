@@ -167,6 +167,32 @@ assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        lab.includes('id="twPreviewHeaderSlot"')&&lab.includes('class="hubpart" id="twPreviewPart"')&&
        !lab.includes('tw-preview-brand')&&!lab.includes('twPreviewSaldo'),
   "INDEX2 must use the official Center Run header and hub seasonal particle classes");
+// Hidden overlays should stop background canvas RAFs; this never mutates saves or game state.
+assert(lab.includes("function twIndex2BaseFramesPaused()")&&
+       lab.includes("twIndex2BaseRaf=requestAnimationFrame(loop)")&&
+       lab.includes("twIndex2AvatarRaf = requestAnimationFrame(prevLoop)")&&
+       lab.includes("twIndex2PauseBaseFrames();")&&
+       lab.includes("twIndex2ResumeBaseFrames();"),
+  "INDEX2 should track and pause covered canvas animation frames");
+try{
+  const guardStart=lab.indexOf("function twIndex2BaseFramesPaused()");
+  const guardEnd=lab.indexOf("function twIndex2PauseBaseFrames()",guardStart);
+  if(guardStart<0||guardEnd<=guardStart)throw Error("Base-frame pause guard missing");
+  const guardSource=lab.slice(guardStart,guardEnd);
+  function pausedFor({hidden=false,hubHidden=true,previewHidden=true}){
+    const env={
+      document:{hidden,getElementById:id=>id==="twPreviewJogo"?{hidden:previewHidden}:null},
+      hubOv:{hidden:hubHidden}
+    };
+    vm.runInNewContext(guardSource,env);
+    return env.twIndex2BaseFramesPaused();
+  }
+  assert(!pausedFor({}),"Visible base game should keep its canvas loop");
+  assert(pausedFor({hidden:true}),"Background tab should pause its canvas loops");
+  assert(pausedFor({hubHidden:false}),"Hub overlay should pause its covered canvas loops");
+  assert(pausedFor({previewHidden:false}),"Sora/Karaoke iframe should pause base canvas loops");
+  console.log("✓ INDEX2 pauses covered background canvas loops without changing gameplay state");
+}catch(e){errors.push("INDEX2 canvas lifecycle check failed: "+e.message);}
 assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
        lab.includes("slot.appendChild(cab)")&&
        lab.includes("twPreviewCabecalhoOficial(false)")&&

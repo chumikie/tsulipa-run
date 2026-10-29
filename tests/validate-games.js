@@ -82,6 +82,15 @@ assert(rehearsal.includes('name="robots" content="noindex,nofollow,noarchive"')&
        rehearsal.includes("9 vagas")&&
        rehearsal.includes("Não conta para o ranking"),
   "Offline rehearsal must be transparent about fake users and scores");
+assert(model.includes("QUEUE_CAPACITY=3")&&
+       rehearsal.includes('id="queue4"')&&
+       karaoke.includes('id="krMicQueueList"')&&
+       karaoke.includes('id="krMicQueueBot"')&&
+       karaoke.includes('var KR_DEMO_QUEUE_LIMIT=3')&&
+       karaoke.includes("krDemoStartNext()")&&
+       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-08'")&&
+       preview.includes("Date.UTC(2026,10,8,15,0,0)"),
+  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 8 preview schedule");
 assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
        model.includes("RHYTHM_MS=45000")&&model.includes('verification:"demo_unverified"')&&
        !model.includes("_supabase")&&!model.includes(".rpc("),

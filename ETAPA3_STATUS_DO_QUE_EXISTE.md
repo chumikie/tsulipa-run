@@ -1,3 +1,10 @@
+## Etapa 3A.9 — Painel de ritmo online (29/10/2026)
+- UI experimental com painel de 40 notas que usa o gráfico original local, mas envia o toque da cantora à RPC de validação do servidor.
+- O servidor valida dono da vaga, cantora atual, turno de 60s, janela de 5+45s, uma única pontuação por nota e limite de spam; o score numérico chega aos espectadores por revisão da sala.
+- O score continua `verified:false` e `persisted:false`, não participa do ranking e não concede dinheiro, moedas, estrelas, insígnias ou conquistas.
+- Somente na homologação; a sala demonstrativa e a versão oficial não mudam. Portão SQL e cadastro continuam fechados. Ainda **não testado em navegador real**.
+- Necessário avaliar lag da rede, segurança e abusos antes de permitir pontuação pública.
+
 ## Etapa 3A.9 — Pontuação do ensaio (preparação, 29/10/2026)
 - **Servidor na homologação somente:** um banco de testes controla os 40 toques, a cantora e o turno de 60 segundos; cálculo com janela de 95ms para PERFECT e 200ms para GOOD baseado no relógio do servidor, evitando envio de pontuação arbitrária pelo cliente.
 - Somente a cantora com seu token de vaga pode registrar toques; score duplicado, fora da janela ou de outra cantora é recusado. Pontuação é **de ensaio**, sem estrelas, moedas, insígnias e ranking. O tempo da rede pode afetar os acertos e ainda não serve para classificação competitiva.

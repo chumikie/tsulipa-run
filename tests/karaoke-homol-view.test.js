@@ -100,7 +100,7 @@ assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where i
 assert(closeTest.trim().endsWith('rollback;'));
 assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
-assert(game.includes("karaoke-homol-client.js?v=4"),'updated script should bypass stale CDN');
+assert(game.includes("karaoke-homol-client.js?v=5"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
 
 // 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
@@ -111,7 +111,7 @@ assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
 assert(!signalSql.includes('seat_token'));
 assert(signalSQLTest.trimEnd().endsWith('rollback;'));
 assert(game.includes('karaoke-homol-sync.js?v=1'));
-assert(game.includes('karaoke-homol-client.js?v=4'));
+assert(game.includes('karaoke-homol-client.js?v=5'));
 assert(client.includes('if(currentRefresh)return currentRefresh;'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 const syncAPI=require('../karaoke-homol-sync.js');
@@ -145,3 +145,25 @@ const watcher=syncAPI.create(Object.assign({},fakeClock,{
  await watcher.start();assert.equal(removed,1,'nonmember cannot resubscribe');
 })().catch(err=>process.nextTick(()=>{throw err;}));
 console.log('✓ Karaoke 3A.8: sinal de revisão privado e atualização agrupada');
+
+// 3A.9: online rehearsal calls only the protected scoring RPC; rewards stay absent.
+const practiceSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a9_practice_score.sql'),'utf8');
+const practiceTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a9_practice_rollback.sql'),'utf8');
+assert(practiceSql.includes('create or replace function public.karaoke_ensaio_toque(p_token uuid)'));
+assert(practiceSql.includes("'is_anonymous'"));
+assert(practiceSql.includes("not_singer"));
+assert(practiceSql.includes("already_judged"));
+assert(practiceSql.includes("interval '250 milliseconds'"));
+assert(practiceSql.includes("hit_mask & (1::bigint << (idx-1))"));
+assert(practiceSql.includes("r.started_at+interval '50 seconds'"));
+assert(practiceSql.includes("delete from karaoke_lab.practice;"));
+assert(practiceSql.includes("'verified',false,'persisted',false"));
+assert(!practiceSql.includes('brs48cr_st'));
+assert(!practiceSql.includes('stars_balance'));
+assert(practiceTest.trimEnd().endsWith('rollback;'));
+assert(client.includes("client.rpc('karaoke_ensaio_toque',{p_token:token})"));
+assert(client.includes("function drawSharedRhythm(){"));
+assert(client.includes("var SIGNUP_ENABLED=false;"));
+assert(client.includes("setInterval(showTurnClock,125)"));
+assert(game.includes("karaoke-homol-client.js?v=5"));
+console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');

@@ -17,6 +17,7 @@ var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
 var SIGNUP_ENABLED=false;
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null,sync=null;
+var practice=null,tapPending=false;
 var currentRefresh=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
@@ -43,10 +44,18 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<strong>💌 Próximos 3 Idols</strong>'
   +'<ol id="krHomolQueueSlots" aria-label="Fila de três lugares"></ol>'
   +'<p id="krHomolQueueText" style="font-size:12px">Fila: —</p>'
+  +'<section id="krHomolPractice" class="kr-homol-practice" hidden aria-label="Ritmo online de ensaio">'
+  +'<strong>🎶 Palco compartilhado · 40 notas</strong>'
+  +'<p id="krHomolPracticeStats">⭐ Ensaio: 0 · 💖 PERFECT: 0 · ✨ GOOD: 0</p>'
+  +'<div class="kr-homol-rail" aria-hidden="true"><span id="krHomolBeat" hidden>⭐</span></div>'
+  +'<button type="button" class="krb" id="krHomolTap" disabled>🎶 Tocar no ritmo!</button>'
+  +'<p id="krHomolTapMsg" role="status" aria-live="polite">Aguarde a sua vez no palco.</p>'
+  +'<small>Placar do ensaio, calculado no servidor. Sem estrelas, moedas ou ranking oficial. A latência pode afetar os acertos.</small>'
+  +'</section>'
   +'<small>Sem entrar: a sala cheia é uma demonstração local. Ao ocupar vaga, a fila e os participantes vêm do servidor. Sem estrelas e ranking; atualização leve a cada 30 segundos.</small>';
 host.appendChild(panel);
 var style=document.createElement('style');
-style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}';
+style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}#krHomolPractice{margin:12px 0;padding:13px;border:1px solid rgba(230,168,251,.55);border-radius:17px;background:linear-gradient(115deg,rgba(250,221,255,.18),rgba(191,255,246,.12))}#krHomolPractice p{font-size:12px}#krHomolPracticeStats{font-weight:800}#krHomolTap{font-family:"Mochiy Pop One",sans-serif}#krHomolTap:disabled{opacity:.5}.kr-homol-rail{height:22px;border-radius:14px;background:linear-gradient(90deg,rgba(241,180,255,.4),rgba(181,245,222,.5));margin:10px 0;position:relative;overflow:hidden}.kr-homol-rail:before{content:"";position:absolute;left:20%;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 5px #fff}#krHomolBeat{position:absolute;top:-3px;font-size:18px;transition:left .12s linear}'
 document.head.appendChild(style);
 // A fila de demonstração continua até um participante ocupar vaga online.
 var ids=['Check','Auth','Enter','Queue','Unqueue','Leave','Refresh'];
@@ -139,8 +148,34 @@ async function captchaForSignup(){
 }
 function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k].disabled=true;});return true;}
 function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
+function drawSharedRhythm(){
+ var panel=document.getElementById('krHomolPractice'),
+   tap=document.getElementById('krHomolTap'),
+   note=document.getElementById('krHomolBeat');
+ if(!lastSeat){panel.hidden=true;tap.disabled=true;note.hidden=true;return;}
+ panel.hidden=false;
+ var score=practice&&Number.isSafeInteger(practice.score)?practice.score:0;
+ var perfect=practice&&Number.isSafeInteger(practice.perfect)?practice.perfect:0;
+ var good=practice&&Number.isSafeInteger(practice.good)?practice.good:0;
+ document.getElementById('krHomolPracticeStats').textContent=
+  '⭐ Ensaio: '+score.toLocaleString()+' · 💖 PERFECT: '+perfect+' · ✨ GOOD: '+good;
+ var now=turnClock?turnClock.serverNow+performance.now()-turnClock.clientNow:0;
+ var start=turnClock?turnClock.starts:0;
+ var rhythm=isSinging&&labOpen&&start&&now>=start+5000&&now<start+50000;
+ tap.disabled=!rhythm||busy||tapPending;
+ note.hidden=!rhythm||!window.TsuKaraokeRhythm;
+ if(!note.hidden){
+   var chart=window.TsuKaraokeRhythm.makeChart(),relative=now-start-5000,upcoming=null;
+   for(var i=0;i<chart.length;i++){
+     if(chart[i]>=relative-200){upcoming=chart[i];break;}
+   }
+   if(upcoming===null)note.hidden=true;
+   else note.style.left=Math.max(4,Math.min(95,20+(upcoming-relative)/1200*75))+'%';
+ }
+}
 function showTurnClock(){
  var out=document.getElementById('krHomolTurn'),badge=document.getElementById('krRelogio');
+ drawSharedRhythm();
  if(!lastSeat){out.textContent=labOpen?'🎤 Ensaio aberto para Idols autorizados':'🔒 Ensaio online fechado · sala de demonstração ativa';badge.textContent='🎤 Homologação · sem pontos';return;}
  if(!turnClock||!Number.isFinite(turnClock.ends)){
    out.textContent='🎤 Microfone aguardando a próxima cantora';
@@ -200,6 +235,7 @@ async function refreshData(doHeartbeat){
   '💌 Você está na posição '+data.queuePosition+' de 3':'Fila por ordem de chegada.';
  var mic=people.find(function(p){return p.singing;}),previous=isSinging;
  isSinging=!!(seat&&data.amISinging&&mic&&mic.self);
+ practice=seat&&data.practice&&typeof data.practice==='object'?data.practice:null;
  turnClock=(seat&&mic&&data.turnStarts&&data.turnEnds&&data.serverNow)?{
    starts:Date.parse(data.turnStarts),ends:Date.parse(data.turnEnds),
    serverNow:Date.parse(data.serverNow),clientNow:performance.now(),label:mic.label}:null;
@@ -255,7 +291,7 @@ buttons.Auth.addEventListener('click',async function(){
      if(r.error)throw r.error;
    }
    ready=true;await refresh(false);
-   if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,1000); // visual: zero RPC
+   if(!turnClockTimer)turnClockTimer=setInterval(showTurnClock,125); // only visual, zero RPC
    if(!timer)timer=setInterval(function(){
      if(document.hidden||!ready||!token||!labOpen||busy)return;
      refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
@@ -263,6 +299,25 @@ buttons.Auth.addEventListener('click',async function(){
  }catch(e){
    say('Login de teste não concluído. Confirme Turnstile e Anonymous Sign-ins somente no Supabase de homologação. '+String(e.message||e));
  }finally{unlock();}
+});
+document.getElementById('krHomolTap').addEventListener('click',async function(){
+ if(!client||!token||!ready||!isSinging||!labOpen||busy||tapPending)return;
+ var btn=this;tapPending=true;btn.disabled=true;
+ var output=document.getElementById('krHomolTapMsg');
+ try{
+   var result=await client.rpc('karaoke_ensaio_toque',{p_token:token});
+   if(result.error)throw result.error;
+   var data=result.data||{};
+   if(data.status==='PERFECT'||data.status==='GOOD'){
+     practice={score:data.score,perfect:data.perfect,good:data.good,bestCombo:data.bestCombo};
+     output.textContent=(data.status==='PERFECT'?'💖 PERFECT!':'✨ GOOD!')+
+       ' · combo '+data.combo+' · '+Number(data.score).toLocaleString()+' pontos de ensaio';
+   }else if(data.status==='not_owner'||data.status==='not_singer'||data.status==='lab_closed'){
+     output.textContent='🌸 O microfone mudou de Idol. Atualizando o ensaio…';
+     refresh(false).catch(function(){});
+   }else output.textContent='💌 Espere a estrela passar pela linha! ('+String(data.status||'sem nota')+')';
+ }catch(e){output.textContent='Conexão do ritmo: '+String(e.message||e);}
+ finally{tapPending=false;drawSharedRhythm();}
 });
 buttons.Enter.addEventListener('click',function(){run('enter');});
 buttons.Queue.addEventListener('click',function(){run('queue');});

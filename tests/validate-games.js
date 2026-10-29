@@ -260,7 +260,7 @@ try{
     nextSibling:null
   };
   const slot={appendChild:()=>{headersMoved++;}};
-  let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0,blockedKaraoke=0;
+  let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0,blockedKaraoke=0,baseCanvasPauses=0;
   const card={focus:()=>{launchesFocused++;}};
   const nodes={
     twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
@@ -276,6 +276,7 @@ try{
     tr:s=>s,
     twKaraokeHorario:()=>({aberto:true,faltam:0}),
     twKaraokeAtualizarCard:()=>{blockedKaraoke++;},
+    twIndex2PauseBaseFrames:()=>{baseCanvasPauses++;},
     temaAtual:()=>"halloween",TEMA_INFO:{halloween:["🎃","Halloween","#2b0f45","#ff8a3d"]},
     hubMusicaParar:()=>{musicStops++;},
     hubMostrar:()=>{hubReturns++;fakeHub.hidden=false;},
@@ -294,6 +295,7 @@ try{
          markerCreated===1&&headersMoved===1,
     "Preview should move the official header once and reuse the hub seasonal particles");
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
+  assert(baseCanvasPauses===1,"Opening Sora must pause covered Center Run canvas loops");
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&musicStops===1,
     "A duplicate launch must not replace an active game");

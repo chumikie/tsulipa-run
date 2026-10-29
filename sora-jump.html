@@ -503,6 +503,7 @@ try {
 (function(){
 var LANG='pt';
 try{LANG=window.__TW_TEST_STORAGE.getItem('brs48cr_lang')||'pt'}catch(e){}
+try{if(new URLSearchParams(location.search).get('embed')==='index2'){var l=new URLSearchParams(location.search).get('lang');if(['pt','es','en','th','ja'].indexOf(l)>=0)LANG=l;}}catch(e){}
 var DICT={
   "en": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Jump over the stage obstacles, collect stars and climb the ranks up to Center.",

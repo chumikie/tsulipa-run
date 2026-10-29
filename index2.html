@@ -8356,12 +8356,12 @@ function hubCardsUI(){
     '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = {
-    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','Entre na sala musical, dance e encontre outros Idols.'],
-    en:['Jump through clouds, unlock scenes and collect stars.','Enter the music room, dance and meet other Idols.'],
-    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','Entra a la sala musical, baila y conoce otros Idols.'],
-    ja:['雲の上をジャンプして、星を集めよう！','カラオケルームで歌って踊って、仲間と会おう！'],
-    th:['กระโดดบนก้อนเมฆและเก็บดาว','เข้าห้องคาราโอเกะ เต้นรำและพบเพื่อน']
-  }[LANG]||['Pule entre nuvens e colete estrelas.','Entre na sala musical e encontre Idols.'];
+    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','🧪 Já dá para ensaiar ritmo e dança! Multiplayer em desenvolvimento.'],
+    en:['Jump through clouds, unlock scenes and collect stars.','🧪 Rhythm and dancing rehearsal ready! Multiplayer in development.'],
+    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','🧪 ¡Ensaya ritmo y baile! Multijugador en desarrollo.'],
+    ja:['雲の上をジャンプして、星を集めよう！','🧪 リズムとダンスの練習ができます！オンライン対戦は開発中。'],
+    th:['กระโดดบนก้อนเมฆและเก็บดาว','🧪 ซ้อมจังหวะและเต้นได้แล้ว! ระบบหลายผู้เล่นกำลังพัฒนา']
+  }[LANG]||['Pule entre nuvens e colete estrelas.','🧪 Ensaio de ritmo disponível; multiplayer em desenvolvimento.'];
   $('hubCards').insertAdjacentHTML('beforeend',
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small></button>'+
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'

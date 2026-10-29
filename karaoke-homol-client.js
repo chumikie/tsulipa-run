@@ -1,7 +1,7 @@
-/* TsuLiPa⭐World — 3A.3, optional rehearsal client.
+/* TsuLiPa⭐World — 3A.8, optional rehearsal client.
  * Only loads with karaoke-day.html?homol=1. Never references production Supabase,
  * original accounts, scores or rewards. Anonymous sign-in is by explicit click.
- * No Realtime, no frame-rate requests: seats refresh at most once per 30 seconds.
+ * Realtime only signals new revision; authoritative state comes from RPC. 30s lease fallback.
  */
 (function(){
 'use strict';
@@ -16,7 +16,8 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
 var SIGNUP_ENABLED=false;
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
-var turnClock=null,turnClockTimer=null;
+var turnClock=null,turnClockTimer=null,sync=null;
+var currentRefresh=null;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
 var panel=document.createElement('section');
@@ -35,6 +36,7 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<button type="button" class="krb" id="krHomolUnqueue" disabled>Sair da fila</button>'
   +'<button type="button" class="krb" id="krHomolLeave" disabled>Sair da sala</button>'
   +'<button type="button" class="krb" id="krHomolRefresh" disabled>Atualizar</button></div>'
+  +'<p id="krHomolSync" role="status" style="font-size:12px">🌸 Sincronização aguardando entrada</p>'
   +'<p id="krHomolCount">👥 —/9 · 🎤 —/3</p>'
   +'<p id="krHomolTurn" role="status" aria-live="polite">🎤 Microfone aguardando a primeira cantora</p>'
   +'<ol id="krHomolPeople" aria-label="Idols presentes no palco"></ol>'
@@ -78,6 +80,16 @@ async function init(){
  await sdk();
  client=window.supabase.createClient(URL,KEY,{auth:{storageKey:'tsulipa-homol-auth-only-v1',
    persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+ if(!sync&&window.TsuKaraokeHomolSync){
+   sync=window.TsuKaraokeHomolSync.create({
+     client:client,
+     canListen:function(){return ready&&labOpen&&lastSeat&&!!token;},
+     hidden:function(){return document.hidden;},
+     busy:function(){return busy||!!currentRefresh;},
+     refresh:function(){return refresh(false);},
+     onStatus:function(label){document.getElementById('krHomolSync').textContent=label;}
+   });
+ }
  return client;
 }
 // Captcha is a prerequisite for new identities. The client gate is NOT a
@@ -149,6 +161,11 @@ async function rpc(action){
 }
 async function refresh(doHeartbeat){
  if(!client)return;
+ if(currentRefresh)return currentRefresh;
+ currentRefresh=refreshData(doHeartbeat);
+ try{return await currentRefresh;}finally{currentRefresh=null;}
+}
+async function refreshData(doHeartbeat){
  var data=await rpc(doHeartbeat&&token&&labOpen?'heartbeat':'status');
  labOpen=data.labOpen===true;
  document.getElementById('krHomolGate').textContent=labOpen?
@@ -187,6 +204,7 @@ async function refresh(doHeartbeat){
    starts:Date.parse(data.turnStarts),ends:Date.parse(data.turnEnds),
    serverNow:Date.parse(data.serverNow),clientNow:performance.now(),label:mic.label}:null;
  if(window.twKaraokeHomolBridge)window.twKaraokeHomolBridge.show({slots:people,queue:queue.filter(Boolean)});
+ if(sync){sync.mark(Number(data.revision));if(seat&&labOpen)sync.start();else sync.stop();}
  showTurnClock();enable(true,seat,queued);
  if(isSinging&&!previous)say('🎤 Sua vez! No microfone por até 60 segundos, sem estrelas ou prêmios.');
  if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. Você pode explorar a demonstração completa.');
@@ -252,7 +270,8 @@ buttons.Unqueue.addEventListener('click',function(){run('unqueue');});
 buttons.Leave.addEventListener('click',function(){run('leave');});
 buttons.Refresh.addEventListener('click',function(){if(ready&&!busy)refresh(false).catch(function(e){say(String(e.message||e));});});
 document.addEventListener('visibilitychange',function(){
+ if(document.hidden&&sync)sync.stop();
  if(!document.hidden&&ready&&!busy)refresh(false).catch(function(){});
 });
-window.addEventListener('pagehide',function(){if(timer)clearInterval(timer);if(turnClockTimer)clearInterval(turnClockTimer);});
+window.addEventListener('pagehide',function(){if(sync)sync.stop();if(timer)clearInterval(timer);if(turnClockTimer)clearInterval(turnClockTimer);});
 })();

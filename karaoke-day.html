@@ -636,8 +636,15 @@ if(krHomolAtivo){
   var helper=document.createElement('script');
   helper.src='./karaoke-homol-view.js?v=1';
   helper.onload=function(){
+    var syncScript=document.createElement('script');
+    syncScript.src='./karaoke-homol-sync.js?v=1';
+    syncScript.onload=function(){loadClient();};
+    syncScript.onerror=function(){loadClient();}; // fallback 30s
+    document.body.appendChild(syncScript);
+  };
+  function loadClient(){
     var client=document.createElement('script');
-    client.src='./karaoke-homol-client.js?v=3';
+    client.src='./karaoke-homol-client.js?v=4';
     document.body.appendChild(client);
   };
   helper.onerror=function(){console.warn('Karaoke: homologação indisponível');};

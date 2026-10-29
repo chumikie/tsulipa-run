@@ -1,3 +1,10 @@
+## Etapa 3A.8 — Sincronização online leve (29/10/2026)
+- Foi adotado **Postgres Changes** da Supabase em vez de `realtime.send`, porque a homologação está sem partição interna de `realtime.messages`. Nenhuma tabela interna gerenciada foi alterada.
+- Uma tabela pública de sinal em `public` contém somente `room_key` e `revision`. A política RLS autoriza consulta apenas a Idols anônimos com vaga válida, enquanto a sala está aberta. Nenhum token, UUID ou pontuação é transmitido.
+- Um gatilho envia alterações da revisão para a publicação `supabase_realtime`; o navegador só usa o aviso para consultar a RPC protegida, agrupa eventos e limita consultas de atualização a aproximadamente duas segundos entre disparos.
+- Desconexão ao sair/ocultar aba, fallback 30s para heartbeat. Sem testes reais em 2 navegadores: **a experiência ponta a ponta ainda não está validada**.
+- Cadastro permanece desligado e portão do servidor permanece fechado. PR #33 em rascunho e Vercel pausada. Nenhuma mudança na INDEX oficial.
+
 ## Etapa 3A.7 — Fechamento seguro do ensaio (29/10/2026)
 - Ao fechar o portão no banco **apenas de homologação**, trigger privado apaga fila e vagas e encerra microfone/crônometro na mesma transação.
 - RPC de status não avança cantora com o portão fechado, nem expõe elenco antes de reabrir. Nenhum prêmio ou perfil real envolvido.

@@ -102,3 +102,46 @@ assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token 
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
 assert(game.includes("karaoke-homol-client.js?v=3"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
+
+// 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
+const signalSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a8_revision_signal.sql'),'utf8');
+const signalSQLTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a8_signal_rollback.sql'),'utf8');
+assert(signalSql.includes('public.tsulipa_karaoke_lab_signal'));
+assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
+assert(!signalSql.includes('seat_token'));
+assert(signalSQLTest.trimEnd().endsWith('rollback;'));
+assert(game.includes('karaoke-homol-sync.js?v=1'));
+assert(game.includes('karaoke-homol-client.js?v=4'));
+assert(client.includes('if(currentRefresh)return currentRefresh;'));
+assert(client.includes('var SIGNUP_ENABLED=false;'));
+const syncAPI=require('../karaoke-homol-sync.js');
+let pending=[],seenMessage=null,removed=0,reads=0,connected=false,inside=true,clock=10000;
+const fakeClock={now:()=>clock,setTimeout:(fn)=>{pending.push(fn);return pending.length;},clearTimeout:()=>{pending=[];}};
+const fakeClient={
+ auth:{getSession:async()=>({data:{session:{access_token:'FAKE'}}})},
+ realtime:{setAuth:async()=>{}},
+ channel:()=>({on:function(type,filter,fn){
+   assert.equal(type,'postgres_changes');assert.equal(filter.table,'tsulipa_karaoke_lab_signal');
+   seenMessage=fn;return this;},
+   subscribe:function(fn){connected=true;fn('SUBSCRIBED');return this;}}),
+ removeChannel:async()=>{removed++;}
+};
+const watcher=syncAPI.create(Object.assign({},fakeClock,{
+ client:fakeClient,canListen:()=>inside,hidden:()=>false,busy:()=>false,
+ refresh:async()=>{reads++;watcher.mark(6);},
+ onStatus:()=>{}
+}));
+(async()=>{
+ await watcher.start();assert(connected&&typeof seenMessage==='function');
+ watcher.mark(5);
+ seenMessage({new:{revision:6,seat_token:'IGNORED'}});
+ seenMessage({new:{revision:6}});
+ assert.equal(pending.length,1,'notification burst must be debounced');
+ await pending.shift()();
+ assert.equal(reads,1,'one authenticated read only');
+ seenMessage({new:{revision:6}});
+ assert.equal(pending.length,0,'old revision ignored');
+ inside=false;watcher.stop();assert.equal(removed,1);
+ await watcher.start();assert.equal(removed,1,'nonmember cannot resubscribe');
+})().catch(err=>process.nextTick(()=>{throw err;}));
+console.log('✓ Karaoke 3A.8: sinal de revisão privado e atualização agrupada');

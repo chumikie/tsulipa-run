@@ -9,7 +9,7 @@ if(new URLSearchParams(location.search).get('homol')!=='1')return;
 var URL='https://hfzjoefnousiouiuchys.supabase.co';
 var KEY='sb_publishable_eWhnlZJSyDsJ3N8poUStGw_3XsEFO_T';
 var TOKEN_KEY='tsulipa_homol_seat_token_v1';
-var client=null,token=null,busy=false,timer=null,ready=false;
+var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
 var panel=document.createElement('section');
@@ -34,7 +34,7 @@ var style=document.createElement('style');
 style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li{padding:5px 9px;border-radius:99px;background:var(--chip,#f7eafb);font-size:12px}';
 document.head.appendChild(style);
 var localQueue=document.getElementById('krMicQueue');
-if(localQueue)localQueue.hidden=true;
+if(localQueue){localQueue.hidden=true;localQueue.style.display='none';}
 var ids=['Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');
@@ -67,7 +67,7 @@ async function init(){
  return client;
 }
 function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k].disabled=true;});return true;}
-function unlock(){busy=false;enable(ready,!!token,false);}
+function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
 async function rpc(action){
  var result=await client.rpc('karaoke_ensaio',{p_action:action,p_token:token||null});
  if(result.error)throw result.error;
@@ -81,6 +81,7 @@ async function refresh(doHeartbeat){
  }
  var seat=!!token&&!!data.mySeat;
  var queued=!!data.queuePosition;
+ lastSeat=seat;lastQueued=queued;
  var list={slots:[],queue:[]};
  if(seat){
    var result=await client.rpc('karaoke_ensaio_elenco',{});
@@ -119,7 +120,7 @@ async function run(action){
   if(data.status==='already_queued')say('Você já está na fila.');
   if(data.status==='not_owner')say('Este assento pertence a outra aba.');
  }catch(e){say('Não foi possível atualizar o ensaio: '+String(e.message||e));}
- finally{unlock();if(ready){try{await refresh(false);}catch(e){}}}
+ finally{unlock();}
 }
 buttons.Auth.addEventListener('click',async function(){
  if(!lock())return;

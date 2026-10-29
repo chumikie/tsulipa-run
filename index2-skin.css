@@ -183,3 +183,23 @@
 @media(prefers-reduced-motion:reduce){
   .tw-preview-stage .hubpart i{animation:none!important}
 }
+
+/* INDEX 2 desktop only: Center Run / 3 original cards / 3 special cards.
+   Mobile retains the original two-column layout. */
+@media(min-width:700px){
+ #hub #hubCards{
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke";
+   align-items:stretch;
+ }
+ #hub #hubCards .hubrun{grid-area:run}
+ #hub #hubCards .hubpet{grid-area:pet}
+ #hub #hubCards .hubperf{grid-area:profile}
+ #hub #hubCards .hubgacha{grid-area:gacha}
+ #hub #hubCards .tw-hubgame-sora{grid-area:sora}
+ #hub #hubCards .hubduo{
+   grid-area:duo;grid-column:auto;
+   flex-direction:column;justify-content:center;gap:3px;flex-wrap:nowrap;
+ }
+ #hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
+}

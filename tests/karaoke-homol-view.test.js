@@ -97,6 +97,7 @@ assert(reuseBoot.includes('session.user.is_anonymous!==true'));
 assert(reuseBoot.includes('await refresh(false)'));
 assert(!reuseBoot.includes('signInAnonymously'),'reuse mode never creates an identity');
 assert(reuseBoot.includes('Nenhuma conta nova foi criada'));
+const html=fs.readFileSync(path.join(__dirname,'..','karaoke-day.html'),'utf8');
 assert(html.includes('karaoke-homol-client.js?v=7'),'homologation client cache version bumped');
 
 
@@ -127,7 +128,7 @@ assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where i
 assert(closeTest.trim().endsWith('rollback;'));
 assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
-assert(game.includes("karaoke-homol-client.js?v=6"),'updated script should bypass stale CDN');
+assert(game.includes("karaoke-homol-client.js?v=7"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
 
 // 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
@@ -138,7 +139,7 @@ assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
 assert(!signalSql.includes('seat_token'));
 assert(signalSQLTest.trimEnd().endsWith('rollback;'));
 assert(game.includes('karaoke-homol-sync.js?v=1'));
-assert(game.includes('karaoke-homol-client.js?v=6'));
+assert(game.includes('karaoke-homol-client.js?v=7'));
 assert(client.includes('if(currentRefresh)return currentRefresh;'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 const syncAPI=require('../karaoke-homol-sync.js');
@@ -192,7 +193,7 @@ assert(client.includes("client.rpc('karaoke_ensaio_toque',{p_token:token})"));
 assert(client.includes("function drawSharedRhythm(){"));
 assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("setInterval(showTurnClock,125)"));
-assert(game.includes("karaoke-homol-client.js?v=6"));
+assert(game.includes("karaoke-homol-client.js?v=7"));
 console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');
 
 // Visual-only mode: neither an anonymous identity nor a score is created.

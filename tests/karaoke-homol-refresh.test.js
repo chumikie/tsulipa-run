@@ -57,7 +57,7 @@ async function main(){
  const handlers={};
  let started=0,cleared=0;
  const env=vm.createContext({
-   ready:true,token:'TEST_SEAT',labOpen:true,busy:false,
+   REUSE_SESSION_ONLY:false,AUTH_TEST_ONLY:false,ready:true,token:'TEST_SEAT',labOpen:true,busy:false,
    timer:null,turnClockTimer:null,sync:{stop(){}},
    document:{hidden:false},window:{addEventListener:(event,fn)=>{handlers[event]=fn;}},
    setInterval:()=>++started,clearInterval:()=>{cleared++;},

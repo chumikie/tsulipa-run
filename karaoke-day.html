@@ -93,6 +93,87 @@ function krClearHandheld(except){
 function krHandBusy(person){
   return !!(person.no_mic||person.drink||person.snackSala||person.itemSala);
 }
+/* INDEX 2: rhythm rehearsal on the ACTUAL Karaoke scene, not a second demo.
+   All scores are local. No Realtime, server authority or currency writes. */
+var krRhythmRun=null,krRhythmLastSecond=-1;
+var KR_RHYTHM_LANG={
+ pt:['Preparando o palco','Toque quando a estrela cruzar a linha!','Aplausos!','Ensaio encerrado','TOCAR NA BATIDA!','🧪 Ensaio local: sem jogadores online, moedas ou insígnias.','Resultado do ensaio','Ensaio interrompido','Espere a estrela!'],
+ en:['Preparing the stage','Tap when the star crosses the line!','Applause!','Rehearsal finished','TAP ON THE BEAT!','🧪 Local rehearsal: no online players, currency or badges.','Practice result','Rehearsal stopped','Wait for the star!'],
+ es:['Preparando el escenario','¡Toca cuando la estrella cruce la línea!','¡Aplausos!','Ensayo terminado','¡TOCA AL RITMO!','🧪 Ensayo local: sin jugadores en línea, monedas ni insignias.','Resultado del ensayo','Ensayo interrumpido','¡Espera la estrella!'],
+ th:['เตรียมเวที','แตะเมื่อดาวผ่านเส้น!','เสียงปรบมือ!','จบการซ้อม','แตะตามจังหวะ!','🧪 ซ้อมในเครื่อง: ไม่มีผู้เล่นออนไลน์ เหรียญ หรือรางวัล','ผลการซ้อม','หยุดการซ้อม','รอดาวก่อน!'],
+ ja:['ステージ準備中','星がラインを通る時にタップ！','拍手！','練習終了','リズムでタップ！','🧪 ローカル練習：オンライン参加・通貨・バッジなし','練習結果','練習中止','星を待って！']
+};
+function krRhythmLabels(){return KR_RHYTHM_LANG[LANG]||KR_RHYTHM_LANG.pt;}
+function krRhythmRender(){
+  var g=window.TsuKaraokeRhythm,L=krRhythmLabels();
+  if(!g)return;
+  $('krRhythmNotice').textContent=L[5];
+  $('krRhythmHit').textContent='🎶 '+L[4];
+  if(!krRhythmRun)return;
+  var v=g.tick(krRhythmRun,performance.now());
+  $('krRhythmPhase').textContent=(v.phase==='intro'?L[0]:v.phase==='rhythm'?L[1]:L[2])+' · '+v.secondsLeft+'s';
+  $('krRhythmScore').textContent=v.score.toLocaleString();
+  $('krRhythmCombo').textContent=v.combo;
+  $('krRhythmPerfect').textContent=v.perfectCount;
+  $('krRhythmHit').disabled=v.phase!=='rhythm';
+  var note=$('krRhythmNote');
+  note.hidden=v.phase!=='rhythm'||v.nextNoteMs===null;
+  if(!note.hidden)note.style.left=Math.max(5,Math.min(95,20+(v.nextNoteMs/1200)*75))+'%';
+}
+function krRhythmStart(){
+  if(!window.TsuKaraokeRhythm||!krSt.aberta||krRhythmRun)return;
+  krClearHandheld('stage');
+  krRhythmRun=window.TsuKaraokeRhythm.start(performance.now());
+  krRhythmLastSecond=-1;
+  krEu.no_mic=true;krEu.micT=60*60;
+  krEu.tx=480;krEu.ty=286;krEu.x=480;krEu.y=286;
+  $('krRhythm').hidden=false;
+  $('krRhythmFeedback').textContent='💜💚💙 Ganbatte!';
+  krRhythmRender();
+  [523,659,784,1047].forEach(function(f,i){beep(f,.1,'triangle',.035,i*.07);});
+}
+function krRhythmStop(reason){
+  if(!krRhythmRun)return;
+  var report=window.TsuKaraokeRhythm.result(krRhythmRun,performance.now()),
+      L=krRhythmLabels();
+  krRhythmRun=null;krRhythmLastSecond=-1;krEu.no_mic=false;krEu.micT=0;
+  $('krRhythmHit').disabled=true;$('krRhythmNote').hidden=true;
+  $('krRhythmScore').textContent=report.score.toLocaleString();
+  $('krRhythmCombo').textContent=report.bestCombo;
+  $('krRhythmPerfect').textContent=report.perfectCount;
+  $('krRhythmPhase').textContent=reason==='completed'?L[6]:L[7];
+  $('krRhythmFeedback').textContent=reason==='completed'?
+    '🎉 '+L[6]+': '+report.score.toLocaleString()+' · PERFECT '+report.perfectCount+' · GOOD '+report.goodCount:
+    '💌 '+L[7];
+  krMusicaMudarModo();krUI();
+}
+function krRhythmTick(){
+  if(!krRhythmRun)return;
+  var t=window.TsuKaraokeRhythm.tick(krRhythmRun,performance.now());
+  if(t.phase==='finished'){krRhythmStop('completed');return;}
+  krEu.micT=t.secondsLeft*60;
+  if(t.secondsLeft!==krRhythmLastSecond){
+    krRhythmLastSecond=t.secondsLeft;krUI();
+  }
+  krRhythmRender();
+}
+function krRhythmHit(){
+  if(!krRhythmRun)return;
+  var v=window.TsuKaraokeRhythm.hit(krRhythmRun,performance.now()),msg='';
+  if(v.judgement==='PERFECT'){msg='💖 PERFECT!';beep(880,.065,'sine',.025);}
+  else if(v.judgement==='GOOD'){msg='✨ GOOD!';beep(660,.045,'sine',.018);}
+  else if(v.judgement==='early')msg='🌟 '+krRhythmLabels()[8];
+  if(msg)$('krRhythmFeedback').textContent=msg;
+  krRhythmRender();
+}
+$('krRhythmHit').addEventListener('click',krRhythmHit);
+document.addEventListener('keydown',function(e){
+  if(!krRhythmRun||e.repeat||(e.key!==' '&&e.key!=='Enter'))return;
+  var tag=e.target&&e.target.tagName;
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON'||tag==='A')return;
+  e.preventDefault();krRhythmHit();
+});
+
 // Weekly poster cast uses the shared public RPC. Only public avatar configuration leaves the server.
 var krPosterPool=[],krPosterCache={week:'',cast:[],live:false},krPosterSyncing=false;
 var krWeekMemo={timestamp:0,key:''};

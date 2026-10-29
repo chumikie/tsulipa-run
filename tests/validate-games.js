@@ -65,6 +65,7 @@ assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
   "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
 assert(karaoke.includes("KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]]")&&
        karaoke.includes("'🧪 Sala demonstrativa · 👥 '+krSt.ocupadas+'/9'")&&
+       !karaoke.includes("Aberta · {n}/12")&&
        !karaoke.includes("micT=30*60")&&
        !karaoke.includes("uma das 12 vagas"),
   "Karaoke must show truthful nine-seat demo and remove legacy frame-based mic");

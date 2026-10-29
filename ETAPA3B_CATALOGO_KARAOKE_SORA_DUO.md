@@ -1,6 +1,8 @@
 # ETAPA 3B — Catálogo conceitual de loja, cenários e danças idol
 
-**Status: catálogo proposto para aprovação visual; nenhum item foi cadastrado no banco e nenhum preço foi cobrado.** Revisado contra `index2.html` em 2026-10-29.
+**Status: catálogo proposto para aprovação visual; nenhum item foi cadastrado no banco e nenhum preço foi cobrado.**
+> **Decisão de nomenclatura do criador:** a coleção se chama **Sora Idol**, não "Sky Idol". Nomes dos itens específicos como `Sky Balcony` e `Sky Soda` são apenas títulos propostos e não exigem alterar chaves, saves ou compras.
+ Revisado contra `index2.html` em 2026-10-29.
 
 ## Regras de integração
 - Preços sugeridos em ★ seguem aproximadamente a loja atual (fundos 60–150, roupas 150–500, extras 50–150), sem economia/pay-to-win no Karaoke.
@@ -37,7 +39,7 @@
 
 **Visuais/auras Karaoke** (IDs `visual_kr_*`; 100–240 ★): Aura de Aplausos (140), Brilho de Palco (130), Corações em Eco (150), Notas Musicais Flutuantes (120), Luz de Holofote (170), Confete Pastel (110), Fever Vocal (220), Encore Star (240). Apenas Cosméticos: não alterar nota, hitbox, fila ou tempo.
 
-## Sky Idol / Sora — 8 cenários de perfil e Duo
+## Sora Idol / Sora — 8 cenários de perfil e Duo
 | ID sugerido | Nome | Visual | ★ |
 |---|---|---|---:|
 | `fundo_sky_balcony` | Sky Balcony | Sacada acima das nuvens e estrelas | 110 |
@@ -49,7 +51,7 @@
 | `fundo_sky_aurora` | Aurora Bubble Sky | Aurora pastel e bolhas suaves | 150 |
 | `fundo_sky_peace` | Peace Sky | Azul/branco, pombas e fitas | 0 ★ durante Paz; 90 ★ depois |
 
-## Sky Idol — 8 roupas
+## Sora Idol — 8 roupas
 | ID sugerido | Nome | Design | ★ |
 |---|---|---|---:|
 | `roupa_sky_cloud` | Cloud Trainee | Branco-neve, mangas nuvem | 200 |

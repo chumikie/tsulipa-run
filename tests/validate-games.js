@@ -117,6 +117,17 @@ assert(sora.includes("twSoraEmbedBoot")&&
   "Sora should have an opt-in, independently scoped embed shell");
 assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000,
   "New preview stylesheets exceed 10 KB budget");
+assert(previewSkin.includes(".tw-preview-stage")&&previewSkin.includes(".tw-preview-part i")&&
+       previewSkin.includes("prefers-reduced-motion:reduce")&&
+       previewSkin.includes('data-jogo="sora"')&&
+       lab.includes('id="twPreviewSaldo"')&&lab.includes('id="twPreviewPart"')&&
+       lab.includes('id="twPreviewSeason"')&&lab.includes('class="tw-preview-brand"'),
+  "INDEX2 missing Center Run header or seasonal frame");
+assert(lab.includes("function twPreviewMontarFundo()")&&
+       lab.includes("function twPreviewAtualizarIndicadores()")&&
+       lab.includes("origem.innerHTML")&&
+       lab.includes("wrap.removeAttribute('data-jogo')"),
+  "INDEX2 must reuse existing seasonal particles and clean them up");
 
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
@@ -132,20 +143,35 @@ try{
   const from=lab.indexOf("var twPreviewJogoAnterior = null;");
   const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
   if(from<0||to<=from)throw Error("Preview controller not found");
-  const iframe={src:"",title:""},overlay={hidden:true};
+  const iframe={src:"",title:""},styles={},attrs={};
+  const overlay={
+    hidden:true,
+    setAttribute:(name,value)=>{attrs[name]=String(value);},
+    removeAttribute:name=>{delete attrs[name];},
+    style:{setProperty:(name,value)=>{styles[name]=value;}}
+  };
   const gameTitle={textContent:""},backText={textContent:""};
   const noticeParts={strong:{textContent:""},span:{textContent:""}};
   const notice={querySelector:s=>noticeParts[s]};
+  const previewPart={innerHTML:"",textContent:"not cleared yet"};
+  const sourcePart={innerHTML:'<i style="left:5%">🎃</i>'};
+  const previewSeason={hidden:true,textContent:""};
+  const previewBalance={textContent:""};
   let launchesFocused=0,backFocused=0,musicStops=0,hubReturns=0;
   const card={focus:()=>{launchesFocused++;}};
   const nodes={
     twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
     twPreviewVoltar:{focus:()=>{backFocused++;}},
-    twPreviewVoltarTxt:backText,twPreviewAviso:notice
+    twPreviewVoltarTxt:backText,twPreviewAviso:notice,
+    twPreviewPart:previewPart,hubPart:sourcePart,
+    twPreviewSeason:previewSeason,twPreviewSaldo:previewBalance
   };
   const fakeHub={hidden:false,querySelector:sel=>sel.includes("data-ir=")?card:null};
   const sandbox={
     LANG:"pt",$:id=>nodes[id]||null,hubOv:fakeHub,
+    best:18,starT:7,tr:s=>s,
+    temaAtual:()=>"halloween",
+    TEMA_INFO:{halloween:["🎃","Halloween","#2b0f45","#ff8a3d"]},
     hubMusicaParar:()=>{musicStops++;},
     hubMostrar:()=>{hubReturns++;fakeHub.hidden=false;},
     document:{body:{classList:{remove:()=>{}}}}
@@ -154,13 +180,21 @@ try{
   sandbox.twPreviewAbrirJogo("sora");
   assert(iframe.src==="./sora-jump.html?embed=index2"&&!overlay.hidden&&fakeHub.hidden,
     "Sora launcher must show the iframe and hide the hub");
+  assert(attrs["data-jogo"]==="sora"&&attrs["data-tema"]==="halloween"&&
+         styles["--tw-preview-sky-top"]==="#2b0f45"&&
+         previewPart.innerHTML===sourcePart.innerHTML&&
+         !previewSeason.hidden&&previewSeason.textContent.includes("Halloween")&&
+         previewBalance.textContent==="Recorde: 18 · ★ 7",
+    "Preview should reuse themed hub particles and original Center Run record without a backend call");
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(iframe.src==="./sora-jump.html?embed=index2"&&musicStops===1,
     "A duplicate launch must not replace an active game");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
-         hubReturns===1&&launchesFocused===1,"Sora return must unload iframe and restore launcher focus");
+         hubReturns===1&&launchesFocused===1&&
+         !("data-jogo" in attrs)&&previewPart.textContent==="",
+    "Sora return must unload iframe, clear seasonal decoration and restore focus");
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(iframe.src==="./karaoke-day.html"&&gameTitle.textContent.includes("Karaoke"),
     "Karaoke launcher must open the correct iframe");

@@ -5,6 +5,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'../sora-jump.html'),'utf8');
+const embedCss=fs.readFileSync(path.join(__dirname,'../sora-embed.css'),'utf8');
 function between(a,b){
   const i=html.indexOf(a),j=html.indexOf(b,i+a.length);
   assert.ok(i>=0&&j>i,'Missing source boundaries: '+a+' -> '+b);
@@ -101,5 +102,13 @@ function evaluate(script,context){
   assert.ok(html.includes("if(typeof b.onclick==='function')b.onclick.call(b,e);"));
   assert.ok(html.includes("parent.postMessage({type:'tsulipa-games-hub'},location.origin)"));
 }
+// Embedded stage geometry follows the iframe's available height on short and narrow screens.
+// This is CSS-only: the 360x520 game world and gameplay loop remain untouched.
+assert.ok(html.includes("style.href='./sora-embed.css?v=2'"),'embedded sizing CSS cache version');
+assert.ok(embedCss.includes('width:min(100%,360px,calc((100dvh - 176px)*360/520))!important;'),'desktop iframe height allowance');
+assert.ok(embedCss.includes('width:min(100%,350px,calc((100dvh - 170px)*360/520))!important;'),'mobile portrait height allowance');
+assert.ok(embedCss.includes('#soraStage{width:min(100%,360px,calc((100dvh - 180px)*360/520))!important}'),'short landscape height allowance');
+assert.ok(embedCss.includes('aspect-ratio:360/520!important;'),'keep original game stage aspect ratio');
+assert.ok(html.includes('var SW = 360, SH = 520;'),'original Sora logical resolution is unchanged');
 // Gameplay physics/economy unchanged: tested by the existing validate-games suite.
 console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe and bfcache');

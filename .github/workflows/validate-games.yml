@@ -11,6 +11,7 @@ on:
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'sora-embed.css'
+      - 'karaoke-embed.css'
       - 'tests/validate-games.js'
       - '.github/workflows/validate-games.yml'
   push:
@@ -23,6 +24,7 @@ on:
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'sora-embed.css'
+      - 'karaoke-embed.css'
       - 'tests/validate-games.js'
 
 jobs:

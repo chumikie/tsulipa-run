@@ -38,6 +38,6 @@ Ver `AUDITORIA_V3.md` para recomendações de carregamento sob demanda do `index
 
 Acesse `/index2.html` na prévia Vercel ou Netlify da branch/PR #33. É uma cópia completa do `index.html` com dois novos cards no menu inicial. Ambos os jogos só são carregados em iframe quando clicados. O `index.html` da branch `main` não é alterado.
 
-**Atenção:** a prévia compartilha o projeto Supabase real com o site publicado. Não testar compras, Gacha, resgates ou ações administrativas sem intenção de alterar dados reais. O preview é uma separação de interface/código, não um ambiente de homologação do banco.
+**Segurança:** a prévia lê alguns dados públicos/de conta do Supabase real, mas `contaRpc` tem uma lista revisada de operações somente leitura; operações de compra, Gacha, resgate, ranking gravável e administração são bloqueadas na `index2`. A `index2` não é um banco sandbox: o login pode compartilhar o provedor real, e os minijogos ainda podem consultar dados públicos. Os saves de navegador ficam no domínio de preview, separado do site publicado. Para testes completos de economia, criar um ambiente Supabase de homologação.
 
 Auditoria técnica de ranking, moderação, preços e moedas: `AUDITORIA_RANKING_LOJA_INDEX2.md`. Os 22 preços de roupas de `PERF_LOJA` conferem com os 22 preços do servidor `visual_preco` (29/10/2026).

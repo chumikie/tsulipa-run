@@ -736,7 +736,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 @media(max-width:600px){.tw-preview-tag{display:none}.tw-preview-bar{min-height:42px;padding:6px 10px}.tw-preview-voltar{padding:7px 10px}.tw-preview-bar b{font-size:12px}.tw-preview-game:has(#twPreviewIframe[src*='sora-jump.html']) #twPreviewTitulo{display:none}}
 </style>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=1">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=2">
 </head>
 <body>
 <header>
@@ -8424,11 +8424,11 @@ var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
 var TW_RANK_WORDS={
- pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana'],
- en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week'],
- es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana'],
- ja:['まだ記録はありません','オンラインランキング準備中','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし'],
- th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน']
+ pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Center: ranking oficial · Sora/Karaoke: estreia online em preparação','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana'],
+ en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Center: official ranking · Sora/Karaoke: online launch in preparation','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions'],
+ es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana','Center: ranking oficial · Sora/Karaoke: estreno online en preparación','Canales del ranking semanal','TV de los rankings semanales','Mejores Idols de la semana','Campeones de la semana'],
+ ja:['まだ記録はありません','オンラインランキング準備中','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし','Centerは公式ランキング、Sora/Karaokeは準備中','週間ランキングのチャンネル','週間ランキングTV','今週のトップアイドル','今週のチャンピオン'],
+ th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน','Center: อันดับทางการ · Sora/Karaoke: กำลังเตรียมเปิดออนไลน์','ช่องอันดับประจำสัปดาห์','ทีวีอันดับประจำสัปดาห์','ไอดอลยอดเยี่ยมประจำสัปดาห์','แชมป์ประจำสัปดาห์']
 };
 function twRankWord(i){return (TW_RANK_WORDS[LANG]||TW_RANK_WORDS.pt)[i];}
 function twRankSundayKey(timestamp){
@@ -8478,15 +8478,34 @@ function twRankStatus(id){
  if(id!=='center'&&!twRankData.online)return twRankWord(1);
  return twRankWord(0);
 }
-function twRankRow(row,i,unit){
- return '<li><span class="tw-rank-medal">'+['🥇','🥈','🥉'][i]+'</span>'+
+function twRankRow(row,i,unit,game){
+ var face={center:'🏁',sora:'☁️',karaoke:'🎤'}[game]||'⭐';
+ return '<li><span class="tw-rank-medal" aria-hidden="true">'+['🥇','🥈','🥉'][i]+'</span>'+
+  '<span class="tw-rank-avatar-wrap"><span class="tw-rank-avatar-fallback" aria-hidden="true">'+face+'</span>'+
+  '<canvas class="tw-rank-avatar" width="48" height="48" data-nick="'+escHtml(row.nick)+'" aria-hidden="true" style="display:none"></canvas></span>'+
   '<button type="button" class="lbn tw-rank-nick" data-nick="'+escHtml(row.nick)+'">'+escHtml(row.nick)+'</button>'+
   '<strong>'+row.score.toLocaleString()+' '+unit+'</strong></li>';
 }
+function twRankDrawAvatars(){
+ var people=typeof hubIdolsDados!=='undefined'&&hubIdolsDados&&Array.isArray(hubIdolsDados.idols)?hubIdolsDados.idols:[];
+ [].forEach.call(document.querySelectorAll('#hub .tw-rank-avatar'),function(cv){
+  var key=String(cv.getAttribute('data-nick')||'').trim().toLocaleLowerCase('pt-BR'),person=null;
+  for(var i=0;i<people.length;i++){
+   var p=people[i];if(p&&p.nick&&p.avatar&&String(p.nick).trim().toLocaleLowerCase('pt-BR')===key){person=p;break;}
+  }
+  if(!person||typeof perfDesenharIdol!=='function'){cv.style.display='none';return;}
+  try{var ctx=cv.getContext('2d');if(!ctx){cv.style.display='none';return;}
+   ctx.clearRect(0,0,cv.width,cv.height);perfDesenharIdol(ctx,cv.width,cv.height,person.avatar,true,true,0);cv.style.display='block';
+  }catch(e){cv.style.display='none';}
+ });
+}
 function twRankRender(){
  twRankCheckWeek();
- var screen=$('twRankTvScreen'),buttons=$('twRankTvButtons'),hall=$('twRankColumns');
+ var tv=$('twRankTv'),screen=$('twRankTvScreen'),buttons=$('twRankTvButtons'),hall=$('twRankColumns'),hallWrap=$('twRankHall');
  if(!screen||!buttons||!hall)return;
+ if(tv){tv.setAttribute('aria-label',twRankWord(12));var cap=tv.querySelector('.tw-rank-tv-head small');if(cap)cap.textContent=twRankWord(14);}
+ buttons.setAttribute('aria-label',twRankWord(11));
+ if(hallWrap){hallWrap.setAttribute('aria-label',twRankWord(13));var cap2=hallWrap.querySelector('h2 small');if(cap2)cap2.textContent=twRankWord(13);}
  var g=twRankGames[twRankData.active],top=twRankData[g[0]][0];
  screen.innerHTML='<b>'+g[1]+' '+g[2]+'</b>'+(top?
   '<p>'+escHtml(twRankWord(twRankData.active+3)+top.nick)+'?</p><strong>🏆 '+top.score.toLocaleString()+' '+g[3]+'</strong>':
@@ -8494,13 +8513,14 @@ function twRankRender(){
  buttons.innerHTML=twRankGames.map(function(k,i){
   return '<button type="button" data-tw-rank="'+i+'" aria-pressed="'+(twRankData.active===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
  }).join('');
- var note=$('twRankWeekNote');if(note)note.textContent=twRankData.online?twRankWord(6):'Center: ranking oficial atual · Sora/Karaoke: renovação no domingo (em preparação)';
+ var note=$('twRankWeekNote');if(note)note.textContent=twRankData.online?twRankWord(6):twRankWord(10);
  hall.innerHTML=twRankGames.map(function(k){
   var list=twRankData[k[0]];
   return '<div class="tw-rank-game"><h3>'+k[1]+' '+k[2]+'</h3>'+
-   (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3]);}).join('')+'</ol>':
+   (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3],k[0]);}).join('')+'</ol>':
     '<p>'+escHtml(twRankStatus(k[0]))+'</p>')+'</div>';
  }).join('');
+ twRankDrawAvatars();
 }
 function twRankRenderProfile(){
  var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
@@ -10603,7 +10623,7 @@ function hubIdolsUI(){
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
   $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
   hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });
-  box.hidden = false; hubIdolsTam(); hubIdolsLigar();
+  box.hidden = false; hubIdolsTam(); hubIdolsLigar(); if(typeof twRankRender==='function')twRankRender();
 }
 function hubIdolsLugar(){
   var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), cv = $('hubCv'); if(!box || !busca || !cv) return;

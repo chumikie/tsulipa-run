@@ -714,6 +714,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 #hub .tw-hubgame i{filter:drop-shadow(0 3px 3px rgba(60,20,120,.18));}
 #hub .tw-hubgame .tw-star{color:#f5b400;white-space:nowrap}
 #hub .tw-hubgame small{line-height:1.4;display:block}
+#hub .tw-hubgame .tw-hubgame-jp{font:700 10px/1.3 "M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:var(--pink,#ff6fb5);letter-spacing:.045em;margin:1px 0 3px}
+#hub .tw-hubgame:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#hub .tw-hubgame{transition:none}}
 #hub .tw-preview-notice{margin:4px auto 12px;padding:8px 12px;max-width:650px;color:var(--sub);border:1px dashed rgba(155,48,217,.3);border-radius:14px;background:var(--card);text-align:center;font-size:11px;line-height:1.45}
 #hub .tw-preview-notice strong{color:var(--b1);letter-spacing:.07em}
 .tw-preview-game[hidden]{display:none!important}
@@ -8318,8 +8321,8 @@ function hubCardsUI(){
     th:['กระโดดบนก้อนเมฆและเก็บดาว','เข้าห้องคาราโอเกะ เต้นรำและพบเพื่อน']
   }[LANG]||['Pule entre nuvens e colete estrelas.','Entre na sala musical e encontre Idols.'];
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small>'+escHtml(twGamesTxt[0])+'</small></button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Abrir Karaoke Day"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small>'+escHtml(twGamesTxt[1])+'</small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small></button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Abrir Karaoke Day"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small></button>'
   );
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
@@ -8346,6 +8349,7 @@ function hubMontar(){
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI();
+  if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
@@ -8426,15 +8430,28 @@ function hubTutFim(){ $('hubTut').hidden = true; try{ localStorage.setItem('brs4
 // Jogos especiais na index2: o iframe só carrega após clicar no card.
 // Integração isolada nesta cópia; o index.html publicado permanece intacto.
 var twPreviewJogoAnterior = null;
+var twPreviewTextos = {
+  pt:['Início','🧪 INDEX 2 — PRÉVIA DE TESTES','Ranking e perfis em modo leitura. Compras, moedas, giros, resgates e ações de moderação que alteram dados estão bloqueados nesta página. O banco ainda é o de produção.'],
+  en:['Home','🧪 INDEX 2 — TEST PREVIEW','Rankings and profiles are read-only. Purchases, coins, spins, rewards and moderation writes are blocked on this page. The database is still the live one.'],
+  es:['Inicio','🧪 INDEX 2 — VISTA DE PRUEBA','Rankings y perfiles en modo lectura. Compras, monedas, giros, premios y cambios de moderación están bloqueados aquí. La base de datos sigue siendo la real.'],
+  ja:['ホーム','🧪 INDEX 2 — テスト版','ランキングとプロフィールは閲覧のみ。購入、スター、ガチャ、報酬、管理操作によるデータ更新はこのページで無効です。データベースは本番環境と共通です。'],
+  th:['หน้าหลัก','🧪 INDEX 2 — หน้าทดลอง','อันดับและโปรไฟล์ดูได้อย่างเดียว การซื้อ เหรียญ กาชา รางวัล และการแก้ไขข้อมูลถูกปิดไว้ ฐานข้อมูลยังเป็นระบบจริง']
+};
+function twPreviewAtualizarIdioma(){
+  var t=twPreviewTextos[LANG]||twPreviewTextos.pt,voltar=$('twPreviewVoltarTxt'),aviso=$('twPreviewAviso');
+  if(voltar)voltar.textContent=t[0];
+  if(aviso){aviso.querySelector('strong').textContent=t[1];aviso.querySelector('span').textContent=' · '+t[2];}
+}
 function twPreviewAbrirJogo(tipo){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
-  if(!wrap||!frame)return;
+  if(!wrap||!frame||!wrap.hidden)return;
   twPreviewJogoAnterior=tipo;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   hubOv.hidden=true;
   document.body.classList.remove('hubon');
   text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':'🎤 Karaoke⭐Day!';
+  frame.title=text.textContent;
   wrap.hidden=false;
   frame.src=tipo==='sora'?'./sora-jump.html':'./karaoke-day.html';
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
@@ -8442,9 +8459,13 @@ function twPreviewAbrirJogo(tipo){
 function twPreviewFecharJogo(){
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe');
   if(!wrap||wrap.hidden)return;
+  var ultimo=twPreviewJogoAnterior;
   frame.src='about:blank';
   wrap.hidden=true;twPreviewJogoAnterior=null;
   hubMostrar();
+  // hubMostrar re-creates cards; return focus to the fresh game launcher.
+  var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
+  if(card)card.focus({preventScroll:true});
 }
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial"><div class="tw-preview-bar">'+
@@ -8466,10 +8487,11 @@ function twPreviewFecharJogo(){
   },true);
   // Notice is inserted into the EXISTING home, not a duplicated home.
   var notice=document.createElement('p');
-  notice.className='tw-preview-notice';
-  notice.innerHTML='<strong>🧪 INDEX 2 — PRÉVIA SEGURA</strong> · Ranking e perfis em modo leitura. Compras, moedas, giros, resgates e moderação que alteram dados estão bloqueados aqui. Para jogar com conta e recompensas reais, use o site principal.';
+  notice.className='tw-preview-notice';notice.id='twPreviewAviso';
+  notice.innerHTML='<strong></strong><span></span>';
   var menu=$('hubMenu'),cards=$('hubCards');
   if(menu&&cards)menu.insertBefore(notice,cards);
+  twPreviewAtualizarIdioma();
 })();
 
 hubOv.addEventListener('click', function(e){

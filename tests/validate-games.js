@@ -53,6 +53,27 @@ assert(preview.includes('name="robots" content="noindex,nofollow,noarchive"'),"i
 assert(!read("index.html").includes("twPreviewAbrirJogo"),"Production index.html must not contain preview-specific code");
 assert(sora.includes("games-theme.css"),"Sora missing shared theme");
 assert(karaoke.includes("games-theme.css"),"Karaoke missing shared theme");
+const rhythm=read("karaoke-rhythm.js"),rhythmStyle=read("karaoke-rhythm.css");
+assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
+       karaoke.includes('href="./karaoke-rhythm.css?v=1"')&&
+       karaoke.includes('id="krRhythmHit"')&&
+       karaoke.includes('id="krRhythmScore"')&&
+       karaoke.includes('id="krRhythmNote"')&&
+       karaoke.includes("krRhythmStart()")&&
+       karaoke.includes("krRhythmTick()")&&
+       karaoke.includes("krRhythmStop('abandoned')"),
+  "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
+assert(karaoke.includes("KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]]")&&
+       karaoke.includes("'🧪 Sala demonstrativa · 👥 '+krSt.ocupadas+'/9'")&&
+       !karaoke.includes("micT=30*60")&&
+       !karaoke.includes("uma das 12 vagas"),
+  "Karaoke must show truthful nine-seat demo and remove legacy frame-based mic");
+assert(rhythm.includes("RHYTHM_MS=45000")&&
+       rhythm.includes("TOTAL_MS=INTRO_MS+RHYTHM_MS+OUTRO_MS")&&
+       !rhythm.includes(".rpc(")&&!rhythm.includes("supabase")&&
+       rhythmStyle.length<5500,
+  "Rhythm engine must have exact duration, no database calls and lightweight CSS");
+
 const rehearsal=read("karaoke-online-lab.html"),model=read("karaoke-room-model.js");
 assert(rehearsal.includes('name="robots" content="noindex,nofollow,noarchive"')&&
        rehearsal.includes("SIMULAÇÃO LOCAL")&&

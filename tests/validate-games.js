@@ -8,7 +8,7 @@ const vm=require("node:vm");
 
 const root=path.resolve(__dirname,"..");
 const games=[
-  {file:"index-v2.html",max:1050000},
+  {file:"index2.html",max:1050000},
   {file:"sora-jump-karaoke.html",max:40000},
   {file:"index2.html",max:1050000},
   {file:"sora-jump.html",max:400000},
@@ -62,11 +62,13 @@ assert(karaoke.includes("krHandBusy")&&karaoke.includes("krClearHandheld"),
   "Karaoke handheld exclusivity missing");
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
-const lab=read("index-v2.html");
+const lab=read("index2.html");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
-  "Index V2 missing new game cards");
-assert(lab.includes("function twLabAbrir(")&&lab.includes("function twLabFechar("),
+  "Index 2 missing new game cards");
+assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),
   "Index V2 missing in-page game overlay");
+assert(lab.includes("TW_INDEX2_READ_RPC")&&lab.includes("index2_somente_leitura"),
+  "Index 2 missing read-only database guards");
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
   assert(lab.includes(fn),"Index V2 lost existing game system: "+fn);
 }

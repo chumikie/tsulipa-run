@@ -153,6 +153,9 @@ assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
   "Admin preview needs permission and invitations must be clearly not sent");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
+assert(karaoke.includes("'Melon Juice!'")&&!karaoke.includes("'Melon Soda'"),
+  "Karaoke drink must be called Melon Juice! without changing its internal Lirika key");
+
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
   assert(lab.includes(fn),"Index V2 lost existing game system: "+fn);
 }

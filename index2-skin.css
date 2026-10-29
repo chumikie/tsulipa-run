@@ -219,3 +219,12 @@
 #hub #hubCards .tw-hubgame-karaoke[aria-disabled="true"]{
   cursor:not-allowed;
 }
+
+/* Closed Karaoke stage: same panel/button language as the hub, no writes. */
+.tw-karaoke-closed-ov[hidden]{display:none!important}
+.tw-karaoke-closed-ov{position:fixed;inset:0;z-index:200010;display:grid;place-items:center;padding:18px;background:rgba(7,16,42,.64)}
+.tw-karaoke-closed-panel{width:min(100%,390px);padding:22px 18px;border:2px solid rgba(232,195,255,.65);border-radius:24px;background:var(--card);color:var(--ink);text-align:center;box-shadow:0 16px 45px rgba(11,14,55,.35)}
+.tw-karaoke-closed-panel h2{font:400 clamp(19px,5vw,26px)/1.4 var(--tw-modal-font);color:var(--b1);margin:2px 0 10px}
+.tw-karaoke-closed-panel p{font:700 13px/1.55 var(--tw-modal-body);margin:8px 0;color:var(--sub)}
+.tw-karaoke-closed-panel .btns{justify-content:center;flex-wrap:wrap;margin-top:15px}
+.tw-karaoke-closed-panel button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}

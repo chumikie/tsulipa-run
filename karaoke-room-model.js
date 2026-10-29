@@ -10,14 +10,14 @@
   else root.TsuKaraokeRoomModel=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   "use strict";
-  var CAPACITY=9,SEAT_TTL_MS=45000,TURN_MS=60000;
+  var CAPACITY=9,QUEUE_CAPACITY=3,SEAT_TTL_MS=45000,TURN_MS=60000;
   var INTRO_MS=5000,RHYTHM_MS=45000,OUTRO_MS=10000;
   var MAX_RESULT_SCORE=1000000,MAX_NOTES=200;
   function validTime(t){return Number.isSafeInteger(t)&&t>=0;}
   function validId(id){return typeof id==="string"&&/^[a-zA-Z0-9_-]{1,96}$/.test(id);}
   function clone(r){
     return {sessionId:r.sessionId,createdAt:r.createdAt,revision:r.revision,
-      capacity:CAPACITY,nextTurn:r.nextTurn,
+      capacity:CAPACITY,queueCapacity:QUEUE_CAPACITY,nextTurn:r.nextTurn,
       seats:r.seats.map(function(s){return {userId:s.userId,leaseUntil:s.leaseUntil};}),
       queue:r.queue.slice(),
       current:r.current?Object.assign({},r.current,{provisional:r.current.provisional?
@@ -26,7 +26,7 @@
   }
   function createRoom(sessionId,now){
     if(!validId(sessionId)||!validTime(now))throw new Error("invalid_room");
-    return {sessionId:sessionId,createdAt:now,revision:0,capacity:CAPACITY,nextTurn:1,
+    return {sessionId:sessionId,createdAt:now,revision:0,capacity:CAPACITY,queueCapacity:QUEUE_CAPACITY,nextTurn:1,
       seats:[],queue:[],current:null,results:[]};
   }
   function hasSeat(r,id){return r.seats.some(function(s){return s.userId===id;});}
@@ -104,6 +104,7 @@
     if(!hasSeat(n,id))return {room:n,status:"not_inside"};
     if(n.current&&n.current.userId===id)return {room:n,status:"already_singing"};
     if(n.queue.indexOf(id)>=0)return {room:n,status:"already_queued"};
+    if(n.current&&n.queue.length>=QUEUE_CAPACITY)return {room:n,status:"queue_full"};
     n.queue.push(id);startNext(n,now);n.revision++;
     return {room:n,status:n.current&&n.current.userId===id?"microphone":"queued"};
   }
@@ -132,13 +133,13 @@
   }
   function view(r,now){
     var n=update(r,now);
-    return {capacity:CAPACITY,occupied:n.seats.length,available:CAPACITY-n.seats.length,
+    return {capacity:CAPACITY,queueCapacity:QUEUE_CAPACITY,occupied:n.seats.length,available:CAPACITY-n.seats.length,
       queue:n.queue.slice(),current:n.current?{
         id:n.current.id,userId:n.current.userId,stage:stage(n.current,now),
         secondsLeft:Math.max(0,Math.ceil((n.current.endsAt-now)/1000))
       }:null,recentResults:n.results.slice(-9),revision:n.revision};
   }
-  return Object.freeze({CAPACITY:CAPACITY,SEAT_TTL_MS:SEAT_TTL_MS,TURN_MS:TURN_MS,
+  return Object.freeze({CAPACITY:CAPACITY,QUEUE_CAPACITY:QUEUE_CAPACITY,SEAT_TTL_MS:SEAT_TTL_MS,TURN_MS:TURN_MS,
     INTRO_MS:INTRO_MS,RHYTHM_MS:RHYTHM_MS,OUTRO_MS:OUTRO_MS,
     createRoom:createRoom,update:update,join:join,heartbeat:heartbeat,leave:leave,
     enqueue:enqueue,dequeue:dequeue,submitDemoResult:submitDemoResult,view:view});

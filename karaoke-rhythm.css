@@ -1,0 +1,17 @@
+/* Local-only 45-second rhythm stage; inherits the four official Oshi palettes. */
+.kr-rhythm[hidden]{display:none!important}
+.kr-rhythm{margin:12px auto 0;padding:14px;border:2px solid var(--b1);border-radius:18px;background:linear-gradient(125deg,var(--card),var(--chip));color:var(--ink);max-width:900px;box-shadow:0 6px 22px rgba(20,8,65,.11)}
+.kr-rhythm-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.kr-rhythm h2{font-size:15px;margin:0;color:var(--b1);font-weight:900}
+.kr-rhythm .kr-rhythm-notice{display:block;font-size:11px;line-height:1.5;color:var(--sub);margin:7px 0 10px}
+.kr-rhythm-stats{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;font-size:13px;font-weight:850}
+.kr-rhythm-stats strong{color:var(--b1);font-variant-numeric:tabular-nums}
+.kr-rhythm-rail{height:52px;position:relative;overflow:hidden;border-radius:14px;border:2px solid var(--b1);background:linear-gradient(90deg,rgba(116,76,199,.1),rgba(255,111,181,.11),rgba(65,105,225,.10));margin:12px 0}
+.kr-rhythm-rail::before{content:"";position:absolute;left:20%;top:4px;bottom:4px;border-left:3px solid var(--pink);opacity:.9;z-index:2}
+.kr-rhythm-note{position:absolute;top:7px;left:85%;font-size:30px;line-height:34px;transform:translateX(-50%);text-shadow:0 2px 9px rgba(255,111,181,.5);will-change:left;pointer-events:none}
+.kr-rhythm-note[hidden]{display:none!important}
+.kr-rhythm-play{width:min(100%,360px);display:block;margin:0 auto;padding:13px;font-size:17px;font-family:inherit;font-weight:900;background:linear-gradient(95deg,#7b3ff0,#ff6fb5,#4169e1);color:#fff;border:2px solid rgba(255,255,255,.7);border-radius:999px;cursor:pointer;touch-action:manipulation}
+.kr-rhythm-play:disabled{opacity:.48;cursor:not-allowed}
+.kr-rhythm-play:focus-visible{outline:3px solid var(--b1);outline-offset:2px}
+.kr-rhythm-feedback{font-size:13px;min-height:20px;font-weight:900;text-align:center;color:var(--b1);padding:8px 0 0}
+@media(prefers-reduced-motion:reduce){.kr-rhythm-note{will-change:auto}.kr-rhythm-play{animation:none!important}}

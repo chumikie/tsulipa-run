@@ -31,8 +31,11 @@ function joinAll(state,count=9,now=0){
   let s=joinAll(room.createRoom("concert-1",0));
   s=room.enqueue(s,"idol1",0).room;
   ok(s.current.userId==="idol1"&&s.queue.length===0,"first Idol takes microphone");
-  for(let i=2;i<=9;i++)s=room.enqueue(s,"idol"+i,0).room;
-  ok(s.queue.join(",")==="idol2,idol3,idol4,idol5,idol6,idol7,idol8,idol9","FIFO queue");
+  for(let i=2;i<=4;i++)s=room.enqueue(s,"idol"+i,0).room;
+  ok(s.queue.join(",")==="idol2,idol3,idol4","only three waiting places, FIFO");
+  ok(room.QUEUE_CAPACITY===3&&room.view(s,0).queueCapacity===3,"queue size exposed");
+  let overflow=room.enqueue(s,"idol5",1);
+  ok(overflow.status==="queue_full"&&overflow.room.queue.length===3,"fourth waiter cannot reserve a place");
   ok(room.enqueue(s,"idol2",1).status==="already_queued","duplicate queue blocked");
   ok(room.enqueue(s,"idol1",1).status==="already_singing","one microphone per user");
   ok(room.enqueue(s,"outsider",1).status==="not_inside","outsider cannot queue");
@@ -64,6 +67,9 @@ function joinAll(state,count=9,now=0){
   s=room.update(s,60000);
   ok(s.results.length===1,"idempotent finalization");
   ok(s.queue[0]==="idol3","queue continues in proper order");
+  let newWaiter=room.enqueue(s,"idol5",60001);
+  ok(newWaiter.status==="queued"&&newWaiter.room.queue.length===3,
+    "finished turn releases one waiting-list position");
 }
 
 // Removing someone from the queue doesn't remove their spectator place.
@@ -74,6 +80,7 @@ function joinAll(state,count=9,now=0){
   s=room.enqueue(s,"idol3",0).room;
   s=room.dequeue(s,"idol2",100).room;
   ok(s.queue.join(",")==="idol3","cancel queue only");
+  ok(room.enqueue(s,"idol2",101).status==="queued","Idol can rejoin at queue tail if a slot is free");
   ok(s.seats.length===3,"spectator remains seated");
   s=room.leave(s,"idol1",100).room;
   ok(s.current.userId==="idol3","departing singer releases microphone");

@@ -65,8 +65,7 @@ function krClearHandheld(except){
 function krHandBusy(person){
   return !!(person.no_mic||person.drink||person.snackSala||person.itemSala);
 }
-// Public ranking nicknames (top_scores) are used ONLY as labels; all portraits are illustrated.
-// A server-side weekly snapshot would be needed for strictly identical selections on all devices.
+// Weekly poster cast uses the shared public RPC. Only public avatar configuration leaves the server.
 var krPosterPool=[],krPosterCache={week:'',cast:[],live:false},krPosterSyncing=false;
 var krWeekMemo={timestamp:0,key:''};
 function krWeekKey(){
@@ -89,11 +88,11 @@ function krValidPublicNick(s){
 function krWeeklyPosterCast(){
   var week=krWeekKey();
   if(krPosterCache.week===week&&krPosterCache.cast.length)return krPosterCache.cast;
+  // Offline fallback: deterministic weekly cast, no server dependency.
   var fallback=['Lirika','Pati','Nanamaru','Hiruru','Fuji','Acádia','Mika','Ayu','Rin','Momo','Yumi','Sae'].map(function(n,i){return {nick:n,avatar:{c:CH[i%CH.length]},demo:true};});
-  var pool=krPosterPool.length>=4?krPosterPool:fallback;
-  var rng=krSeededRandom('tw-karaoke-'+week),arr=pool.slice();
-  for(var i=arr.length-1;i>0;i--){var j=Math.floor(rng()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
-  krPosterCache={week:week,cast:arr.slice(0,4),live:krPosterPool.length>=4};
+  var rng=krSeededRandom('tw-karaoke-'+week);
+  for(var i=fallback.length-1;i>0;i--){var j=Math.floor(rng()*(i+1)),tmp=fallback[i];fallback[i]=fallback[j];fallback[j]=tmp;}
+  krPosterCache={week:week,cast:fallback.slice(0,4),live:false};
   return krPosterCache.cast;
 }
 function krPublicAvatarPlayer(row){
@@ -107,19 +106,20 @@ function krLoadPublicPosterNicknames(){
   if(krPosterSyncing)return;krPosterSyncing=true;
   var ctrl=typeof AbortController==='function'?new AbortController():null;
   var timeout=setTimeout(function(){if(ctrl)ctrl.abort();},4500);
-  // Public RPC already used by Center Run outdoor posters. No account, email, or save data.
-  fetch('https://fsggtvgbyhchblyazgmt.supabase.co'+'/rest/v1/rpc/outdoor_jogadores',{method:'POST',mode:'cors',
-    headers:{'Content-Type':'application/json','apikey':'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT','Authorization':'Bearer '+'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT'},
+  // Server pins four eligible player IDs for the week; responses contain ONLY public avatar appearance.
+  fetch('https://fsggtvgbyhchblyazgmt.supabase.co'+'/rest/v1/rpc/karaoke_posteres_semana',{method:'POST',mode:'cors',
+    headers:{'Content-Type':'application/json','apikey':'sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT'},
     body:'{}',signal:ctrl?ctrl.signal:undefined
-  }).then(function(resp){if(!resp.ok)throw Error('public avatars unavailable');return resp.json();}).then(function(rows){
-    if(!Array.isArray(rows))return;
-    var unique={},publicAvatars=[];
-    rows.slice(0,100).forEach(function(row){var player=krPublicAvatarPlayer(row);if(!player)return;var id=player.nick.toLocaleLowerCase();if(!unique[id]){unique[id]=true;publicAvatars.push(player);}});
-    if(publicAvatars.length>=4){
-      krPosterPool=publicAvatars.sort(function(a,b){return a.nick.localeCompare(b.nick,'pt-BR');});
-      krPosterCache.week='';
+  }).then(function(resp){if(!resp.ok)throw Error('weekly avatar RPC unavailable');return resp.json();}).then(function(payload){
+    var rows=payload&&Array.isArray(payload.idols)?payload.idols:[];
+    var seen={},cast=[];
+    rows.slice(0,4).forEach(function(row){var player=krPublicAvatarPlayer(row);if(!player)return;var id=player.nick.toLocaleLowerCase();if(!seen[id]){seen[id]=true;cast.push(player);}});
+    if(cast.length){
+      // Do not reshuffle on the client. All visitors receive the same server-selected order.
+      krPosterPool=cast;
+      krPosterCache={week:krWeekKey(),cast:cast,live:true};
     }
-  }).catch(function(){/* Network/RPC offline: keep illustrated demo posters */}).finally(function(){clearTimeout(timeout);krPosterSyncing=false;});
+  }).catch(function(){/* Network/RPC unavailable: shared deterministic demo posters */}).finally(function(){clearTimeout(timeout);krPosterSyncing=false;});
 }
 var KR_DANCAS=[['','⏹️','Parar'],['banzai','🙌','Banzai Venus'],['seis','6️⃣','Six Seven'],['neon','✨','Pose Neon'],['nyan','🐱','Nyan'],['giro','💫','Idol Step'],['pulo','⭐','Jump!']],KR_CANTO=[['balanco','🎵','Balanço'],['diva','✨','Diva'],['rock','🎸','Rock'],['fofo','💖','Kawaii']],KR_DRINKS=[['tsu','🍇','Soda de Uva','#9b30d9'],['lirika','🍈','Melon Soda','#4ade80'],['pati','🫐','Blue Hawaii','#4169e1']],KR_EMOJIS=['💖','👏','🎤','🔥','✨','💜','💚','💙','⭐','🥂','😭','🫶'],KR_FALAS_AUTO=['Que voz! ✨','Bis! Bis! 👏','Ganbatte! 💜','Amo essa música! 🎶','Brilha muito! ⭐','Saúde! 🥂','Lindo demais! 💖'],KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[400,475],[560,475],[650,475],[740,465],[795,425],[795,365]];
 var krSt={aberta:true,sabado:false,faltam10:false,vista:'gigoia',ultimos10:false,ocupadas:7,vip:false},krEu={x:480,y:435,tx:480,ty:435,no_mic:false,micT:0,canto:'balanco',danca:'',pose:'v',expr:2,drink:'',plateia:false,fila:0,vagaPronta:false,vagaS:30,emojiT:0,itemSala:'',antenaSala:false,lookSala:false,snackSala:''},krBots=[{nick:'Lirika',x:225,y:460,danca:'banzai',pose:'v',expr:2,drink:'lirika',no_mic:false,char:CH[1]},{nick:'Pati',x:645,y:470,danca:'neon',pose:'v',expr:3,drink:'pati',no_mic:false,char:CH[2]},{nick:'Nanamaru',x:320,y:472,danca:'',pose:'luz',expr:2,drink:'tsu',no_mic:false,char:{n:'Nanamaru',hair:'#dc143c',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'lateral',out:'zipper',outcol:'#dc143c'}},{nick:'Hiruru',x:740,y:460,danca:'',pose:'v',expr:2,drink:'lirika',no_mic:false,char:{n:'Hiruru',hair:'#f2b632',skin:'#fbe5d8',eye:'#5a3b2e',back:'marias',front:'reta',out:'sweet',outcol:'#f2b632'}},{nick:'Fuji',x:165,y:390,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:{n:'Fuji',hair:'#b57edc',skin:'#fbe5d8',eye:'#5a3b2e',back:'chanel',front:'reta',out:'seifuku',outcol:'#b57edc'}},{nick:'Acádia',x:795,y:390,danca:'',pose:'luz',expr:2,drink:'pati',no_mic:false,char:{n:'Acádia',hair:'#ffb38a',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'reta',out:'sweet',outcol:'#ffb38a'}}];krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});

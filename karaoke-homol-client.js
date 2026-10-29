@@ -9,6 +9,9 @@ if(new URLSearchParams(location.search).get('homol')!=='1')return;
 var URL='https://hfzjoefnousiouiuchys.supabase.co';
 var KEY='sb_publishable_eWhnlZJSyDsJ3N8poUStGw_3XsEFO_T';
 var TOKEN_KEY='tsulipa_homol_seat_token_v1';
+// PUBLIC site key only; the Turnstile SECRET must remain in Supabase Auth settings.
+// Leave empty until the homologation widget and server-side CAPTCHA are configured.
+var TURNSTILE_SITE_KEY='';
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 var host=document.querySelector('.krwrap')||document.body;
@@ -18,6 +21,7 @@ panel.id='krHomolPanel';
 panel.setAttribute('aria-label','Homologação do Karaoke');
 panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte um Idol fictício para testar a sala. Nenhuma conta ou estrela do jogo oficial será usada.</p>'
+  +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
   +'<button type="button" class="krb" id="krHomolAuth">Criar/continuar Idol de teste</button>'
   +'<button type="button" class="krb" id="krHomolEnter" disabled>Entrar na sala</button>'
@@ -39,8 +43,9 @@ var ids=['Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');
 function say(text){msg.textContent=String(text);}
+if(!TURNSTILE_SITE_KEY) say('Etapa 3A.4: cadastro desativado até configurar Turnstile no Supabase de homologação. Nenhuma conta está sendo criada.');
 function enable(auth,seat,queued){
- buttons.Auth.disabled=auth;
+ buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY;
  buttons.Enter.disabled=!auth||seat;
  buttons.Queue.disabled=!auth||!seat||queued;
  buttons.Unqueue.disabled=!auth||!seat||!queued;
@@ -65,6 +70,43 @@ async function init(){
  client=window.supabase.createClient(URL,KEY,{auth:{storageKey:'tsulipa-homol-auth-only-v1',
    persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
  return client;
+}
+// Captcha is a prerequisite for new identities. The client gate is NOT a
+// security boundary: server-side CAPTCHA must be enabled in this staging project.
+var turnstileScriptPromise=null,turnstileWidget=null;
+function turnstileReady(){
+ if(window.turnstile&&typeof window.turnstile.render==='function')return Promise.resolve(window.turnstile);
+ if(turnstileScriptPromise)return turnstileScriptPromise;
+ turnstileScriptPromise=new Promise(function(resolve,reject){
+   var s=document.createElement('script');
+   s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+   s.async=true;
+   s.onload=function(){
+     if(window.turnstile&&typeof window.turnstile.render==='function')resolve(window.turnstile);
+     else reject(new Error('Verificação antirobô indisponível'));
+   };
+   s.onerror=function(){turnstileScriptPromise=null;reject(new Error('Falha ao carregar a verificação antirobô'));};
+   document.head.appendChild(s);
+ });
+ return turnstileScriptPromise;
+}
+async function captchaForSignup(){
+ if(!TURNSTILE_SITE_KEY)throw new Error('A proteção antirobô da homologação ainda não está configurada.');
+ var api=await turnstileReady(),area=document.getElementById('krHomolCaptcha');
+ if(turnstileWidget!==null){try{api.remove(turnstileWidget);}catch(e){}turnstileWidget=null;}
+ area.replaceChildren();
+ say('Confirme a verificação antirobô para criar o Idol de teste.');
+ return new Promise(function(resolve,reject){
+   var finished=false;
+   try{
+     turnstileWidget=api.render(area,{
+       sitekey:TURNSTILE_SITE_KEY,
+       callback:function(token){if(!finished){finished=true;resolve(token);}},
+       'error-callback':function(){if(!finished){finished=true;reject(new Error('Falha na verificação antirobô'));}},
+       'expired-callback':function(){if(!finished){finished=true;reject(new Error('Verificação expirada. Tente novamente.'));}}
+     });
+   }catch(e){reject(e);}
+ });
 }
 function lock(){if(busy)return false;busy=true;ids.forEach(function(k){buttons[k].disabled=true;});return true;}
 function unlock(){busy=false;enable(ready,lastSeat,lastQueued);}
@@ -128,7 +170,8 @@ buttons.Auth.addEventListener('click',async function(){
    await init();
    var r=await client.auth.getSession();
    if(!r.data.session){
-     r=await client.auth.signInAnonymously();
+     var captchaToken=await captchaForSignup();
+     r=await client.auth.signInAnonymously({options:{captchaToken:captchaToken}});
      if(r.error)throw r.error;
    }
    ready=true;await refresh(false);
@@ -137,7 +180,7 @@ buttons.Auth.addEventListener('click',async function(){
      refresh(true).catch(function(e){say('Conexão de ensaio: '+String(e.message||e));});
    },30000);
  }catch(e){
-   say('Autenticação indisponível na homologação. Habilite Anonymous Sign-ins em Auth > Providers no projeto de testes. '+String(e.message||e));
+   say('Login de teste não concluído. Confirme Turnstile e Anonymous Sign-ins somente no Supabase de homologação. '+String(e.message||e));
  }finally{unlock();}
 });
 buttons.Enter.addEventListener('click',function(){run('enter');});

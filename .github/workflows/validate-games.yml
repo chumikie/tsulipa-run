@@ -9,6 +9,8 @@ on:
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'
       - 'games-theme.css'
+      - 'index2-skin.css'
+      - 'sora-embed.css'
       - 'tests/validate-games.js'
       - '.github/workflows/validate-games.yml'
   push:
@@ -19,6 +21,8 @@ on:
       - 'sora-jump-karaoke.html'
       - 'karaoke-day.html'
       - 'games-theme.css'
+      - 'index2-skin.css'
+      - 'sora-embed.css'
       - 'tests/validate-games.js'
 
 jobs:

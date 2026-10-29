@@ -1,3 +1,8 @@
+### 3A.9b — Prévia visual sem contas (29/10/2026)
+- `karaoke-day.html?homol=1&practice_preview=1` mostra o novo painel de ritmo, em estado de inspeção apenas. Exibe traços em vez de uma pontuação inventada, com botão desativado.
+- Não chama Auth nem a função de pontuação; não ocupa vagas, não concede prêmios e não altera o visual da demonstração sem esse parâmetro.
+- Cadastro e portão continuam fechados. A interface conectada permanece disponível somente a uma cantora autenticada de homologação após todas as verificações.
+
 ## Etapa 3A.9 — Painel de ritmo online (29/10/2026)
 - UI experimental com painel de 40 notas que usa o gráfico original local, mas envia o toque da cantora à RPC de validação do servidor.
 - O servidor valida dono da vaga, cantora atual, turno de 60s, janela de 5+45s, uma única pontuação por nota e limite de spam; o score numérico chega aos espectadores por revisão da sala.

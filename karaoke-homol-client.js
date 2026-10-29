@@ -15,6 +15,7 @@ var TOKEN_KEY='tsulipa_homol_seat_token_v1';
 // A integração abaixo ainda NÃO autoriza a criação de contas de ensaio.
 var TURNSTILE_SITE_KEY='0x4AAAAAAFrWDInD-RA_Mm02';
 var SIGNUP_ENABLED=false;
+var PRACTICE_PREVIEW=new URLSearchParams(location.search).get('practice_preview')==='1';
 var client=null,token=null,busy=false,timer=null,ready=false,lastSeat=false,lastQueued=false,isSinging=false,labOpen=false;
 var turnClock=null,turnClockTimer=null,sync=null;
 var practice=null,tapPending=false;
@@ -73,6 +74,7 @@ function enable(auth,seat,queued){
  buttons.Refresh.disabled=!auth;
 }
 enable(false,false,false);
+drawSharedRhythm();
 function sdk(){
  return new Promise(function(resolve,reject){
    if(window.supabase&&typeof window.supabase.createClient==='function'){resolve();return;}
@@ -152,7 +154,17 @@ function drawSharedRhythm(){
  var panel=document.getElementById('krHomolPractice'),
    tap=document.getElementById('krHomolTap'),
    note=document.getElementById('krHomolBeat');
- if(!lastSeat){panel.hidden=true;tap.disabled=true;note.hidden=true;return;}
+ if(!lastSeat){
+   panel.hidden=!PRACTICE_PREVIEW;
+   tap.disabled=true;note.hidden=true;
+   if(PRACTICE_PREVIEW){
+     document.getElementById('krHomolPracticeStats').textContent=
+       '⭐ Ensaio: — · 💖 PERFECT: — · ✨ GOOD: —';
+     document.getElementById('krHomolTapMsg').textContent=
+       '🧪 Prévia visual isolada · sem login, notas, resultados ou recompensas.';
+   }
+   return;
+ }
  panel.hidden=false;
  var score=practice&&Number.isSafeInteger(practice.score)?practice.score:0;
  var perfect=practice&&Number.isSafeInteger(practice.perfect)?practice.perfect:0;

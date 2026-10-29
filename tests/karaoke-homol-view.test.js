@@ -167,3 +167,11 @@ assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("setInterval(showTurnClock,125)"));
 assert(game.includes("karaoke-homol-client.js?v=5"));
 console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');
+
+// Visual-only mode: neither an anonymous identity nor a score is created.
+assert(client.includes("get('practice_preview')==='1'"));
+assert(client.includes('panel.hidden=!PRACTICE_PREVIEW;'));
+assert(client.includes('tap.disabled=true;note.hidden=true;'));
+assert(client.includes('drawSharedRhythm();'));
+assert(client.includes('var SIGNUP_ENABLED=false;'));
+console.log('✓ Karaoke 3A.9: prévia visual isolada e toque online protegido');

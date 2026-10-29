@@ -2564,9 +2564,11 @@ function hx(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),par
 var PALR=PAL.map(function(p){return p.map(hx)});
 function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];return a.map(function(v,k){return 'rgb('+v.map(function(n,m){return Math.round(n+(c[k][m]-n)*b)}).join(',')+')'})}
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
-var pc = $('prev').getContext('2d'), pt = 0;
+var pc = $('prev').getContext('2d'), pt = 0, twIndex2AvatarRaf = 0;
 
 function prevLoop() {
+  twIndex2AvatarRaf = 0;
+  if (twIndex2BaseFramesPaused()) return;
   if (state === 'menu') {
     pt++;
     var og = g;
@@ -2604,7 +2606,7 @@ function prevLoop() {
     
     } finally { g = og; }
   }
-  requestAnimationFrame(prevLoop); // Mantém o loop contínuo por quadros
+  twIndex2AvatarRaf = requestAnimationFrame(prevLoop); // Tracks this RAF so hidden screens can pause it.
 }
 
 prevLoop();
@@ -3034,14 +3036,39 @@ g.save();
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,86);g.shadowBlur=0;g.globalAlpha=1}
 }
 
+var twIndex2BaseRaf = 0;
+function twIndex2BaseFramesPaused(){
+  if(document.hidden)return true;
+  if(typeof hubOv!=='undefined'&&hubOv&&!hubOv.hidden)return true;
+  var preview=document.getElementById('twPreviewJogo');
+  return !!(preview&&!preview.hidden);
+}
+function twIndex2PauseBaseFrames(){
+  if(twIndex2BaseRaf){cancelAnimationFrame(twIndex2BaseRaf);twIndex2BaseRaf=0;}
+  if(twIndex2AvatarRaf){cancelAnimationFrame(twIndex2AvatarRaf);twIndex2AvatarRaf=0;}
+  last=0;
+}
+function twIndex2StartBaseLoop(){
+  if(twIndex2BaseRaf||twIndex2BaseFramesPaused())return;
+  last=0;twIndex2BaseRaf=requestAnimationFrame(loop);
+}
+function twIndex2StartAvatarLoop(){
+  if(!twIndex2AvatarRaf&&!twIndex2BaseFramesPaused())twIndex2AvatarRaf=requestAnimationFrame(prevLoop);
+}
+function twIndex2ResumeBaseFrames(){
+  if(twIndex2BaseFramesPaused())return;
+  twIndex2StartBaseLoop();twIndex2StartAvatarLoop();
+}
 function loop(t){
+  twIndex2BaseRaf=0;
+  if(twIndex2BaseFramesPaused()){last=0;return;}
   var rawDt = last ? (t - last) / 16.667 : 1;
   var dt = Math.max(0.1, Math.min(rawDt, 2.5));
   last=t;
   if(state==='play'&&!paused)update(dt);
   else if(state==='over'&&shake>0)frame+=dt;
   draw();
-  requestAnimationFrame(loop);
+  twIndex2BaseRaf=requestAnimationFrame(loop);
 }
 
 // Carregamento e compatibilidade de cache antigo de ranks
@@ -3060,7 +3087,7 @@ try {
 
 reset();
 state='menu';
-requestAnimationFrame(loop);
+twIndex2StartBaseLoop();
 
 
 var titleClicks = 0;
@@ -3103,7 +3130,12 @@ document.addEventListener('keydown', function(e) {
   if (!$('shr').hidden && e.code === 'Escape') { $('shr').hidden = true; return; }
   if (e.code === 'KeyP' || e.code === 'Escape') setPause(!paused);
 });
-document.addEventListener('visibilitychange',function(){if(document.hidden)setPause(true)});
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){setPause(true);twIndex2PauseBaseFrames();}
+  else twIndex2ResumeBaseFrames();
+});
+window.addEventListener('pagehide',twIndex2PauseBaseFrames);
+window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
 [].forEach.call(document.querySelectorAll('.lang button'),function(b){
@@ -8627,6 +8659,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
 function hubMostrar(){
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
+  twIndex2PauseBaseFrames();
   if(hubComecou){ hubMusicaParar(); hubMusicaTocar(); }   // V2.1.3: só toca depois de aparecer (antes ficava em silêncio ao voltar do gacha)
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
   twRankVisibility();twRankLoad();
@@ -8635,6 +8668,7 @@ function hubMostrar(){
 }
 function hubFechar(){
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
+  twIndex2ResumeBaseFrames();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
@@ -8744,6 +8778,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   twPreviewMontarFundo();
   twPreviewCabecalhoOficial(true);
   wrap.hidden=false;
+  twIndex2PauseBaseFrames();
   // The selected Oshi and language accompany the iframe; no new storage or RPC call.
   var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);

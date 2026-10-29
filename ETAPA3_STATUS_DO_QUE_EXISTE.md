@@ -31,6 +31,14 @@
 - **Próxima implementação real:** montar projeto Supabase de homologação isolado, aplicar regras atômicas de vagas/filas no servidor, conectar os nove usuários de teste à sala visual existente, verificar moderação no backend. Só então criar pontuação Realtime e jogo de ritmo.
 
 
+## INDEX 2 — preview do ensaio local
+- **URL para testar:** https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/index2.html
+- Na INDEX 2, abrir o HUB e clicar no card **Karaoke⭐Day!**. Fora do horário de domingo, o modal oferece **🧪 Ensaiar agora**, que abre o mesmo jogo no iframe com `rehearsal=1`, sem autenticação multiplayer ou dados de jogos reais.
+- O card do Karaoke informa em **PT/ES/EN/TH/JA** que o ritmo está pronto para ensaio e o multiplayer ainda está em desenvolvimento.
+- A mudança é restrita à INDEX 2. A regra normal de horário no card continua; a exceção é **apenas visual de ensaio** na branch de testes e não controla uma sala real.
+- Os convites continuam **não enviados**; o botão exibe aviso explícito.
+- Testes de comportamento verificam que acesso normal fora do horário continua bloqueado e o ensaio manual abre o iframe corretamente.
+
 ## Incremento jogável concluído
 - A cena original `karaoke-day.html` apresenta **7/9 Idols de demonstração** (6 avatares simulados + um personagem local), com 8 posições de plateia, não 12.
 - O botão **Pegar microfone** inicia uma rodada local de **60s**: 5s de introdução, 45s de estrelas para acertar com toque/teclado e 10s de aplausos. Conta `PERFECT`, `GOOD`, combo e placar, sem gravar nada.

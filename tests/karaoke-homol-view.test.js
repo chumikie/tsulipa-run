@@ -73,8 +73,9 @@ assert(client.includes('labOpen=data.labOpen===true&&data.scheduleOpen===true;')
 assert(client.includes('buttons.Enter.disabled=!auth||seat||!labOpen||moderationLocked;'));
 assert(client.includes('buttons.Queue.disabled=!auth||!seat||queued||isSinging||!labOpen||moderationLocked;'));
 assert(client.includes('r.data.session.user.is_anonymous!==true'));
-// Temporary supervised test: default remains OFF; explicit auth_test mode is Auth-only.
-assert(client.includes("var AUTH_TEST_ONLY=new URLSearchParams(location.search).get('auth_test')==='1';"));
+// Temporary supervised test: default remains OFF; auth_test mode is Auth-only.
+assert(client.includes("var REUSE_SESSION_ONLY=new URLSearchParams(location.search).get('reuse_session')==='1';"));
+assert(client.includes("var AUTH_TEST_ONLY=!REUSE_SESSION_ONLY&&new URLSearchParams(location.search).get('auth_test')==='1';"));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 assert(client.includes('if(AUTH_TEST_ONLY)SIGNUP_ENABLED=true;'));
 assert(client.includes('if(AUTH_TEST_ONLY){buttons.Enter.disabled=true;buttons.Queue.disabled=true;buttons.Unqueue.disabled=true;buttons.Leave.disabled=true;buttons.Refresh.disabled=true;return;}'));
@@ -84,6 +85,20 @@ assert(authOnlyStart>=0&&authOnlyEnd>authOnlyStart,'temporary auth-only branch m
 const authOnlyBranch=client.slice(authOnlyStart,authOnlyEnd);
 assert(authOnlyBranch.includes('client.auth.signInAnonymously')&&authOnlyBranch.includes('client.auth.getUser()'));
 assert(!authOnlyBranch.includes('client.rpc(')&&!authOnlyBranch.includes('refresh('),'auth-only test must not call room RPCs or refresh room state');
+ 
+// Reuse-session mode reconnects only an existing anonymous identity; it cannot create one.
+const reuseStart=client.lastIndexOf('if(REUSE_SESSION_ONLY){');
+const reuseEnd=client.indexOf('\n})();',reuseStart);
+assert(reuseStart>=0&&reuseEnd>reuseStart,'reuse-session boot exists');
+const reuseBoot=client.slice(reuseStart,reuseEnd);
+assert(reuseBoot.includes('client.auth.getSession()'));
+assert(reuseBoot.includes('client.auth.getUser()'));
+assert(reuseBoot.includes('session.user.is_anonymous!==true'));
+assert(reuseBoot.includes('await refresh(false)'));
+assert(!reuseBoot.includes('signInAnonymously'),'reuse mode never creates an identity');
+assert(reuseBoot.includes('Nenhuma conta nova foi criada'));
+assert(html.includes('karaoke-homol-client.js?v=7'),'homologation client cache version bumped');
+
 
 // 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
 assert(client.includes('var SIGNUP_ENABLED=false;'),'cadastro permanece fechado');

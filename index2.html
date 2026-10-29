@@ -8529,16 +8529,20 @@ function twKaraokeMostrarFechado(){
   if(txt)txt.textContent='🎤 Domingo, 12h–13h10 (Brasília). Abre em '+
     (dias?dias+'d ':'')+horas+'h '+String(minutos).padStart(2,'0')+'min.';
   modal.hidden=false;
+  var ensaiar=$('twKaraokeEnsaiar');
+  if(ensaiar)ensaiar.textContent=({pt:'🧪 Ensaiar agora',en:'🧪 Play rehearsal',es:'🧪 Ensayar ahora',th:'🧪 ทดลองซ้อมตอนนี้',ja:'🧪 今すぐ練習'}[LANG]||'🧪 Ensaiar agora');
   var botao=$('twKaraokeConviteRascunho');if(botao)botao.hidden=false;
   var aviso=$('twKaraokeConviteInfo');if(aviso)aviso.hidden=true;
   $('twKaraokeFecharAviso').focus({preventScroll:true});
 }
 // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
-function twPreviewAbrirJogo(tipo){
+function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
-  // Stage 1: refuse to open Karaoke from INDEX2 outside the published weekly window.
-  // Real authorization (including the Tsu exception) requires a trusted server check.
-  if(tipo==='karaoke'&&!twKaraokeHorario().aberto&&
+  // Only a deliberate click on the INDEX2's "local rehearsal" button bypasses
+  // the PREVIEW CARD's Sunday gate. This never creates an online seat/session.
+  var ensaio=tipo==='karaoke'&&ensaiarLocal===true;
+  // A real multiplayer room will still require authorization on the server.
+  if(tipo==='karaoke'&&!ensaio&&!twKaraokeHorario().aberto&&
      !(typeof contaAdmin==='function'&&contaAdmin())){twKaraokeMostrarFechado();return;}
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
@@ -8546,8 +8550,8 @@ function twPreviewAbrirJogo(tipo){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   hubOv.hidden=true;
   document.body.classList.remove('hubon');
-  if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':'🎤 Karaoke⭐Day!';
-  frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':'🎤 Karaoke⭐Day!';
+  if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
+  frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
   twPreviewMontarFundo();
   twPreviewCabecalhoOficial(true);
@@ -8555,7 +8559,7 @@ function twPreviewAbrirJogo(tipo){
   // The selected Oshi and language accompany the iframe; no new storage or RPC call.
   var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);
-  frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context;
+  frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
@@ -8586,9 +8590,14 @@ function twPreviewFecharJogo(){
     '<p id="twKaraokeFechadoTxt"></p>'+
     '<p id="twKaraokeConviteInfo" hidden>💌 Convites persistentes estão em desenvolvimento. Nenhuma mensagem foi enviada nesta prévia.</p>'+
     '<div class="btns"><button type="button" class="btn alt" id="twKaraokeFecharAviso">Fechar</button>'+
+    '<button type="button" class="btn" id="twKaraokeEnsaiar">🧪 Ensaiar agora</button>'+
     '<button type="button" class="btn" id="twKaraokeConviteRascunho">💌 Convidar (prévia)</button></div></div></section>';
   document.body.insertAdjacentHTML('beforeend',aviso);
   $('twKaraokeFecharAviso').onclick=function(){$('twKaraokeFechado').hidden=true;var card=$('hubCards').querySelector('[data-ir="karaoke"]');if(card)card.focus({preventScroll:true});};
+  $('twKaraokeEnsaiar').onclick=function(){
+    $('twKaraokeFechado').hidden=true;
+    twPreviewAbrirJogo('karaoke',true);
+  };
   $('twKaraokeConviteRascunho').onclick=function(){$('twKaraokeConviteInfo').hidden=false;this.hidden=true;};
   $('twKaraokeFechado').addEventListener('click',function(e){if(e.target===this)$('twKaraokeFecharAviso').click();});
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);

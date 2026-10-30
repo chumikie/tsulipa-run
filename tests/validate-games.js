@@ -65,8 +65,12 @@ assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
        karaoke.includes("krRhythmTick()")&&
        karaoke.includes("krRhythmStop('abandoned')"),
   "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
-assert(karaoke.includes("KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]]")&&
-       karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/9'")&&
+// 8 lugares no sofa + o palco = 9 pessoas, sem ninguem empilhado (x diferente em cada lugar).
+const sofa=JSON.parse((karaoke.match(/KR_SOFA_SLOTS=(\[\[[0-9,\[\]]*\]\])/)||[])[1]||'[]');
+assert(sofa.length===8,'Karaoke: 8 lugares no sofa');
+assert(new Set(sofa.map(s=>s[0])).size===8,'Karaoke: cada lugar num x proprio (ninguem empilhado)');
+assert(sofa.every(s=>s[0]>=120&&s[0]<=840&&s[1]>=330&&s[1]<=500),'Karaoke: lugares dentro da sala');
+assert(karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/9'")&&
        !karaoke.includes("Aberta · {n}/12")&&
        !karaoke.includes("micT=30*60")&&
        !karaoke.includes("uma das 12 vagas"),

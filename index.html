@@ -3026,7 +3026,14 @@ g.save();
   }
 
 	
-  if (!blink) drawChar(CH[sel], P.x, P.y, runAnim, playExpr);
+  if(!blink || (s2HitEmotion>0 && state==='play')){
+    g.save();
+    var reaction=s2HitEmotion>0 && state==='play';
+    if(reaction)g.translate(Math.sin(frame*.8)*(s2HitEmotion>36?2.2:.9),0);
+    s2DrawingRunChar=true;
+    try{drawChar(CH[sel],P.x,P.y,runAnim,reaction?(s2HitEmotion>36?4:5):playExpr);}
+    finally{s2DrawingRunChar=false;g.restore();}
+  }
   g.restore();
   
   if(shield&&state==='play'){g.strokeStyle='rgba(120,220,255,'+(.6+.3*Math.sin(frame*.2))+')';g.lineWidth=3;g.shadowColor='#4dd8ff';g.shadowBlur=14;g.beginPath();g.arc(P.x+15,P.y+22,32,0,7);g.stroke();if(shield>1){g.beginPath();g.arc(P.x+15,P.y+22,39,0,7);g.stroke()}g.shadowBlur=0}
@@ -11381,7 +11388,17 @@ var s2MaxCombo = 0;          // maior combo da partida
 var s2Platforms = [];        // plataformas de 2º andar no Dome
 var s2FanRows = [];          // corredores de fãs para high-five
 var s2NextFanRow = 900;      // próximo ponto para corredor de fãs
-var s2Challenge = null;      // { active:true, left:5, clean:true, nextIdx:number, beatT:0 }
+var s2Challenge = null;      // bônus opcional de 5 notas; não bloqueia a próxima fase
+var s2HitEmotion = 0;        // emoção breve somente na corrida
+var s2DrawingRunChar = false;
+var S2_BONUS_BEAT_FRAMES = 48; // 4 segundos; passagem sempre automática
+var S2_BONUS_LABELS = {
+  pt:{title:'BÔNUS DE PASSAGEM',jump:'▲ PULE!',slide:'▼ DESLIZE!',note:'Cada acerto vale uma ★'},
+  en:{title:'STAGE BONUS',jump:'▲ JUMP!',slide:'▼ SLIDE!',note:'Each correct move earns ★'},
+  es:{title:'BONO DE ESCENARIO',jump:'▲ ¡SALTA!',slide:'▼ ¡DESLIZA!',note:'Cada acierto gana ★'},
+  ja:{title:'ステージボーナス',jump:'▲ ジャンプ！',slide:'▼ スライド！',note:'成功で★をゲット'},
+  th:{title:'โบนัสเปลี่ยนฉาก',jump:'▲ กระโดด!',slide:'▼ สไลด์!',note:'ทำถูกได้ ★'}
+};
 var s2Coro = null;           // { t:480, partners:[...] }
 var s2DailyMode = false;     // se a partida atual é a Corrida do Dia
 var s2DailySeed = 1;         // semente determinística da Corrida do Dia
@@ -11453,6 +11470,8 @@ function s2ResetHook(){
   s2FanRows = [];
   s2NextFanRow = score + 350;
   s2Challenge = null;
+  s2HitEmotion = 0;
+  s2DrawingRunChar = false;
   s2Coro = null;
   s2Confetti = [];
   for(var c = 0; c < 36; c++){
@@ -11470,9 +11489,27 @@ function s2ResetHook(){
   s2UnlockStage(s2StageIdx);
 }
 
+// Cinco oportunidades de ganhar ★; sem penalidade por errar ou não apertar.
+function s2BonusAction(action){
+  if(!s2Challenge || !s2Challenge.active || state !== 'play' || paused || s2Challenge.pressed) return;
+  var expected = s2Challenge.beat % 2 === 0 ? 'jump' : 'slide';
+  if(action !== expected) return;
+  s2Challenge.pressed = true;
+  s2Challenge.hits++;
+  stars++;
+  score += CFG.STAR;
+  pops.push({x:P.x+15,y:P.y-18,t:0,s:'★ +1'});
+  sfx.star();
+}
+var _s2OrigJump = jump;
+jump = function(){
+  if(s2Challenge && s2Challenge.active){s2BonusAction('jump');return;}
+  _s2OrigJump();
+};
 // Controles de Abaixar e Deslizar (PC + Celular)
 function s2StartSlide(fromTap){
   if(state !== 'play' || paused) return;
+  if(s2Challenge && s2Challenge.active){s2BonusAction('slide');return;}
   if(pw && pw.k === 'alien') return;
   s2Sliding = true;
   if(fromTap) s2SlideTimer = Math.max(s2SlideTimer, 34); // ~0.55s por toque rápido
@@ -11759,6 +11796,11 @@ function s2Plateia(x0, gap){
   }
 }
 spawn = function(){
+  // Corredor seguro e cortina: sem obstáculos que impeçam a passagem.
+  if((s2Challenge && s2Challenge.active) || s2Curtain){
+    nextX = Math.max(nextX, W + Math.max(460, sp * 48));
+    return;
+  }
   var st = S2_STAGES[s2StageIdx] || S2_STAGES[0];
   var desafio = s2Challenge && s2Challenge.active && s2Challenge.left > 0;
   if(st.id === 'rua' && !desafio) return _s2OrigSpawn();
@@ -12259,12 +12301,29 @@ function s2DrawForeground(){
       g.fillText('🎶 Coro ' + Math.ceil(s2Coro.t / 60) + 's', W - 16, 48);
     }
 
-    // Indicador do Desafio de Fim de Cenário
+    // Banner kawaii: mostra instruções e ACERTOS, não obstáculos gerados.
     if(s2Challenge && s2Challenge.active){
-      g.textAlign = 'center';
-      g.font = '800 13px "M PLUS Rounded 1c",sans-serif';
-      g.fillStyle = '#ffe14d';
-      g.fillText('🎵 ' + tr('Desafio de fim de cenário!') + ' (' + (5 - s2Challenge.left) + '/5)', W / 2, 26);
+      var words=S2_BONUS_LABELS[LANG]||S2_BONUS_LABELS.pt;
+      var expected=s2Challenge.beat%2===0?words.jump:words.slide;
+      var grad=g.createLinearGradient(W/2-186,42,W/2+186,138);
+      grad.addColorStop(0,'rgba(123,63,240,.93)');
+      grad.addColorStop(.5,'rgba(255,111,181,.94)');
+      grad.addColorStop(1,'rgba(65,105,225,.93)');
+      g.save();g.fillStyle=grad;g.shadowColor='#ffb9ec';g.shadowBlur=12;
+      var bx=W/2-186,by=42,bw=372,bh=96,br=20;
+      g.beginPath();g.moveTo(bx+br,by);g.lineTo(bx+bw-br,by);
+      g.quadraticCurveTo(bx+bw,by,bx+bw,by+br);
+      g.lineTo(bx+bw,by+bh-br);g.quadraticCurveTo(bx+bw,by+bh,bx+bw-br,by+bh);
+      g.lineTo(bx+br,by+bh);g.quadraticCurveTo(bx,by+bh,bx,by+bh-br);
+      g.lineTo(bx,by+br);g.quadraticCurveTo(bx,by,bx+br,by);g.closePath();g.fill();
+      g.shadowBlur=0;g.textAlign='center';g.fillStyle='#fff';
+      g.font='900 14px "M PLUS Rounded 1c",sans-serif';
+      g.fillText('✦ '+words.title+' ✦',W/2,62);
+      g.font='900 23px "M PLUS Rounded 1c",sans-serif';
+      g.fillText(expected,W/2,93);
+      g.font='800 12px "M PLUS Rounded 1c",sans-serif';
+      g.fillText('★ '+s2Challenge.hits+'/5 · '+words.note,W/2,119);
+      g.restore();
     }
     g.restore();
   }
@@ -12276,15 +12335,25 @@ function s2DrawForeground(){
     g.save();
     // Cortina esquerda e direita de veludo vermelho/roxo Idol com franja dourada
     var cgL = g.createLinearGradient(0, 0, halfW, 0);
-    cgL.addColorStop(0, '#581c87'); cgL.addColorStop(0.7, '#9d174d'); cgL.addColorStop(1, '#be123c');
+    cgL.addColorStop(0, '#4c1d95'); cgL.addColorStop(0.7, '#a855f7'); cgL.addColorStop(1, '#ff8ecb');
     g.fillStyle = cgL;
     g.fillRect(0, 0, halfW, H);
 
     var cgR = g.createLinearGradient(W - halfW, 0, W, 0);
-    cgR.addColorStop(0, '#be123c'); cgR.addColorStop(0.3, '#9d174d'); cgR.addColorStop(1, '#581c87');
+    cgR.addColorStop(0, '#ff8ecb'); cgR.addColorStop(0.3, '#52cfba'); cgR.addColorStop(1, '#4169e1');
     g.fillStyle = cgR;
     g.fillRect(W - halfW, 0, halfW, H);
 
+    // Estrelinhas flutuantes suaves enquanto a cortina passa.
+    g.save();g.textAlign='center';g.font='bold 18px sans-serif';
+    var sparkleColors=['#ffe14d','#ffffff','#b6ff3b','#ffb3dd','#a6f4ff'];
+    for(var sc=0;sc<16;sc++){
+      var sx=(sc*61+frame*1.6)%W,sy=32+(sc*47)%Math.max(60,GY-48);
+      g.globalAlpha=.36+.38*Math.abs(Math.sin(frame*.08+sc));
+      g.fillStyle=sparkleColors[sc%sparkleColors.length];
+      g.fillText('✦',sx,sy);
+    }
+    g.restore();
     // Bordas douradas da cortina
     g.fillStyle = '#fde047';
     g.fillRect(halfW - 6, 0, 6, H);
@@ -12340,6 +12409,8 @@ end = function(){
     }
   }
   _origEnd();
+  // A colisão fatal termina com chorinho apenas na tela do jogo.
+  if(state === 'over') finalExpr = 5;
 };
 
 var _origUpdate = update;
@@ -12383,6 +12454,8 @@ update = function(dt){
 
   _origUpdate(dt);
   if(state !== 'play') return;
+  if(shield < prevShield) s2HitEmotion = 72;
+  if(s2HitEmotion > 0) s2HitEmotion = Math.max(0,s2HitEmotion-dt);
 
   // Verifica se perdeu estrela pela esquerda ou tomou dano no escudo → reseta Combo
   if(hadUncollectedStarNearLeft || shield < prevShield){
@@ -12470,26 +12543,28 @@ update = function(dt){
     if(fn.x < -40) s2FanRows.splice(fi, 1);
   }
 
-  // Progressão de Cenário (Regra dos 60 segundos + Desafio de Fim de Cenário + Cortina)
+  // Progressão: exige pontuação E 60 segundos no cenário; nenhum desafio bloqueia.
   if(!s2ForcedStage && !s2Curtain){
-    var eligibleIdx = s2TargetStageByScore(score);
-    if(eligibleIdx > s2StageIdx && s2StageFrames >= S2_MIN_FRAMES){
-      var nextIdx = s2StageIdx + 1;
+    var eligibleIdx=s2TargetStageByScore(score);
+    if(eligibleIdx>s2StageIdx && s2StageFrames>=S2_MIN_FRAMES){
       if(!s2Challenge){
-        s2Challenge = { active:true, left:5, clean:true, nextIdx:nextIdx };
-        toast = '🎵 ' + tr('Desafio de fim de cenário!');
-        toastT = 100;
-      } else if(s2Challenge.active && s2Challenge.left === 0 && nextX - (sp * 40) < W * 0.45){
-        s2Challenge.active = false;
-        if(s2Challenge.clean){
-          score += 500;
-          stars += 5;
-          pops.push({ x:P.x, y:P.y - 18, t:0, s:'🎵+500 ★5' });
-          toast = '✨ ' + tr('Desafio concluído! +500');
-          toastT = 110;
+        s2Challenge={active:true,nextIdx:s2StageIdx+1,elapsed:0,beat:0,hits:0,pressed:false};
+        obs=[]; // corredor de bônus seguro: sem obstáculos obrigatórios
+        s2Sliding=false;s2SlideTimer=0;
+        nextX=Math.max(nextX,W+460);
+        toast='🌈 ✨ Bônus de passagem!';toastT=85;
+      }else if(s2Challenge.active){
+        s2Challenge.elapsed+=dt;
+        var beat=Math.floor(s2Challenge.elapsed/S2_BONUS_BEAT_FRAMES);
+        if(beat>=5){
+          s2Challenge.active=false;
+          s2Curtain={phase:'close',p:0,nextIdx:s2Challenge.nextIdx};
+          toast='✨ '+tr(S2_STAGES[s2Challenge.nextIdx].nome)+'!';toastT=90;
           sfx.rank();
+        }else if(beat!==s2Challenge.beat){
+          s2Challenge.beat=beat;
+          s2Challenge.pressed=false;
         }
-        s2Curtain = { phase:'close', p:0, nextIdx:s2Challenge.nextIdx };
       }
     }
   }
@@ -12520,7 +12595,7 @@ update = function(dt){
 // Empacota drawChar para pose de deslizar e draw() para cenários da Temporada 2
 var _origDrawChar = drawChar;
 drawChar = function(c, x, y, run, expr, isPartner){
-  if(!isPartner && state === 'play' && s2Sliding && !perfCharPortrait){
+  if(!isPartner && state === 'play' && s2Sliding && !perfCharPortrait && !(s2DrawingRunChar && s2HitEmotion>0)){
     g.save();
     g.translate(x + 15, y + 26);
     g.rotate(-0.28);

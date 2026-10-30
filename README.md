@@ -14,7 +14,7 @@ Site publicado: https://tsulipa-world.vercel.app/
 
 ```
 node tests/validate-games.js      # confere os arquivos do site
-for f in tests/*.js; do node $f; done   # as 9 verificações
+for f in tests/*.js; do node $f; done   # as 10 verificações
 ```
 
 As mesmas verificações rodam sozinhas no GitHub a cada envio.

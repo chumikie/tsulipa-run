@@ -4,7 +4,8 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Onde está cada coisa
 - **Site no ar:** https://tsulipa-world.vercel.app
-- **Trabalho atual:** na pasta do computador, offline. Nada vai para o GitHub nem para a Vercel sem a dona pedir.
+- **Fonte única:** a branch `lancamento/30-10` no GitHub (veio da pasta offline). Daqui em diante tudo acontece nela; nada de arquivo baixado nem cópia solta.
+- **Novidades congeladas** até o lançamento fechar. Ideia nova vai para "Ideias aprovadas para depois".
 - **Supabase de produção:** `fsggtvgbyhchblyazgmt`. Homologação (só testes): `hfzjoefnousiouiuchys`.
 
 ## Arquivos do site (raiz)
@@ -18,7 +19,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 | `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
 | `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |
 | `privacidade.html`, ícones, `manifest.json`, `og.jpg`, `googled…html` | Privacidade, ícones, imagem de compartilhamento e verificação do Google. |
-| `tests/` + `.github/workflows/validate-games.yml` | 9 verificações automáticas a cada envio. |
+| `tests/` + `.github/workflows/validate-games.yml` | 10 verificações automáticas a cada envio, incluindo cards com login simulado. |
 | `supabase/` | SQL aplicado e testes de banco. `supabase/sql/README.md` diz o que já está no ar. |
 | `docs/` | Este STATUS e o histórico em `docs/historico/`. |
 
@@ -40,17 +41,18 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Sora⭐Jump!:** abre como pop-up da página, igual ao Star⭐Gacha, no cartão do tema escolhido e sobre a página escurecida. O menu, o fim de jogo e o placar saíram do vidro escuro para o pastel do site. O ⌂ Início saiu de cima do placar.
 - **Som:** com o Sora ou o Karaoke abertos, a página para a própria música (antes a do Center Run voltava por cima).
 - **Voltar:** dentro do pop-up, o voltar só avisa a página de fora e nunca navega o iframe (antes, quando o aviso falhava — ao abrir por `file://`, por exemplo — a página principal abria dentro do próprio pop-up). Fora do pop-up, vai para a raiz. O seletor avulso `sora-jump-karaoke.html` foi removido.
+- **Teste com login simulado** (`tests/login-simulado.test.js`): roda o script do cadeado com e sem conta e falha se o interruptor de teste estiver ligado ou se o `window.contaJ` sumir.
 - **Teste novo:** o `validate-games.js` confere que nenhuma página aponta para arquivo que não existe e que o voltar nunca navega o iframe.
 - **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
 - **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
 
-## Falta
-1. Teste da sala do Karaoke com 2 pessoas, pelo botão "Karaoke: abrir teste (30 min)" da moderação.
-2. Jogo de ritmo do Karaoke: estética e lógica a rever.
-3. No celular: compra, gacha, resgate e corrida salvando.
-4. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
+## Falta (para fechar o lançamento)
+1. Testar a prévia do PR no Netlify, logada, no celular: Pet, Gacha, Moon Duo, Sora, Perfil e uma corrida salvando.
+2. Teste da sala do Karaoke com 2 pessoas, pelo botão "Karaoke: abrir teste (30 min)" da moderação.
+3. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
 
 ## Ideias aprovadas para depois
+- Jogo de ritmo do Karaoke: estética e lógica a rever.
 - Comidas e bebidas do Karaoke custando estrelas que vão para a conta da moderação.
 - Banner que alterna os 3 primeiros da semana (Center Run, Sora, Karaoke).
 - 3 fotinhas no perfil (guardando a receita da foto, não a imagem).

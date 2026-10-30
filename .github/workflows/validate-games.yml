@@ -29,6 +29,7 @@ on:
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
       - 'tests/tw-weekly-podium.test.js'
+      - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - '.github/workflows/validate-games.yml'
   push:
@@ -59,6 +60,7 @@ on:
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
       - 'tests/tw-weekly-podium.test.js'
+      - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - '.github/workflows/validate-games.yml'
 
@@ -89,3 +91,5 @@ jobs:
         run: node tests/tw-weekly-podium.test.js
       - name: Karaoke online (produção)
         run: node tests/karaoke-online.test.js
+      - name: Cards com login simulado (e interruptor de teste desligado)
+        run: node tests/login-simulado.test.js

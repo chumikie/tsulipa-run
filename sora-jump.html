@@ -1550,6 +1550,7 @@ var soraOnlineRunFinishSent = false;
 var soraRankPeriod = 'week';
 var soraRankRequestSerial = 0;
 var soraRankRowsCache = { week:null, all:null };
+var soraRankCacheAt = { week:0, all:0 };
 
 function soraOnlineApplyProfile(profile){
   var data = profile && typeof profile === 'object' ? profile : null;
@@ -1682,6 +1683,12 @@ function soraOnlineFinishRun(score){
     if(result && result.data && result.data.ok === false)
       console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
     soraOnlineRunId = null;
+    soraOnlineRunStartPromise = null;
+    soraRankRowsCache.week = null;
+    soraRankRowsCache.all = null;
+    soraRankCacheAt.week = 0;
+    soraRankCacheAt.all = 0;
+    if(soraState === 'over') soraRenderLb();
   }).catch(function(error){
     console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
   });
@@ -3870,7 +3877,8 @@ function soraEndGame(){
   // Sessões secretas são apenas visuais: não poluem o ranking nem o histórico.
   if(!isTestScene){
     var activeCharacter = soraGetActiveCharacter();
-    var row = { name: ($('nick') && $('nick').value.trim()) || nick || 'Idol', score: h, char: activeCharacter.n || CH[sel].n, d: dk(), t: Date.now() };
+    var localCharLabel = soraOnlineProfile ? 'Meu Idol' : ((CH[sel] && CH[sel].n) || 'Idol');
+    var row = { name: ($('nick') && $('nick').value.trim()) || nick || 'Idol', score: h, char: localCharLabel, d: dk(), t: Date.now() };
     try{
       var lb = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]');
       if(!Array.isArray(lb)) lb = [];
@@ -3956,9 +3964,10 @@ function soraSetRankPeriod(period){
 function soraRenderLb(){
   var serial = ++soraRankRequestSerial;
   soraRenderLocalLb(serial);
-  if(!SORA_ONLINE_RANKING_ENABLED || soraRankRowsCache[soraRankPeriod]){
-    if(SORA_ONLINE_RANKING_ENABLED && soraRankRowsCache[soraRankPeriod])
-      soraRenderLbRows(soraRankRowsCache[soraRankPeriod], true, serial);
+  if(!SORA_ONLINE_RANKING_ENABLED) return;
+  if(soraRankRowsCache[soraRankPeriod] &&
+     Date.now() - soraRankCacheAt[soraRankPeriod] < RANK_CACHE_TTL_MS){
+    soraRenderLbRows(soraRankRowsCache[soraRankPeriod], true, serial);
     return;
   }
   soraEnsureSupabaseClient().then(function(client){
@@ -3967,6 +3976,7 @@ function soraRenderLb(){
     if(result && result.error) throw result.error;
     var rows = Array.isArray(result && result.data) ? result.data : [];
     soraRankRowsCache[soraRankPeriod] = rows;
+    soraRankCacheAt[soraRankPeriod] = Date.now();
     soraRenderLbRows(rows, true, serial);
   }).catch(function(error){
     if(serial === soraRankRequestSerial){
@@ -4317,9 +4327,9 @@ function soraReturnToMenu(){
   soraRefreshTestProfile();
 }
 function soraOpenUI(){
-  if(SORA_ONLINE_PROFILE_ENABLED && !soraOnlineProfileLoaded){
+  if(SORA_ONLINE_PROFILE_ENABLED){
     soraOnlineInitAuth().then(function(){
-      return soraOnlineUserId ? soraOnlineLoadProfile() : null;
+      return soraOnlineUserId ? soraOnlineLoadProfile(true) : null;
     }).then(function(){ soraOpenUIReady(); });
     return;
   }

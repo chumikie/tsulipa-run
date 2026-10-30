@@ -200,6 +200,12 @@ assert(lab.includes("brs48cr_visual_rev")&&lab.includes("admin_visual_rev")&&
        lab.includes("admin_visual_info")&&lab.includes("admin_vestir")&&
        lab.includes("admin_cuidar_pets"),
   "Admin visual/pet corrections must sync with a server revision so stale saves cannot undo them");
+const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);
+const syncSource=lab.slice(syncStart,syncEnd);
+assert(syncSource.includes("r.pet_rebased || r.visual_rebased")&&
+       syncSource.includes("contaRpc('carregar_nuvem')")&&
+       syncSource.includes("perfAplicarNuvem(n, contaJ.nick)"),
+  "When an old local save is rebased by an admin correction, refresh local pet and outfit data from the server");
 assert(lab.includes('data-adm2="pets"')&&lab.includes('data-adm2="visual"')&&
        !lab.includes("data-admkar")&&!lab.includes("karaoke_sala_admin"),
   "Member profile gets pet/visual moderation; obsolete Karaoke Day online controls are removed");

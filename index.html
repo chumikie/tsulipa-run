@@ -7715,7 +7715,17 @@ function perfEnviar(){
   if(!contaJ || !perfSyncOn) return Promise.resolve();
   perfUltEnvio = Date.now();
   var ms = perfCarimbo().ms || Date.now();
-  return contaRpc('salvar_nuvem', { p_pet: perfJSON(perfLer('brs48cr_pet')), p_visual: perfVisualLocal(), p_ms: ms }).catch(function(){});
+  return contaRpc('salvar_nuvem', { p_pet: perfJSON(perfLer('brs48cr_pet')), p_visual: perfVisualLocal(), p_ms: ms }).then(function(r){
+    // Uma correção administrativa pode vencer um save antigo de outra aba/aparelho.
+    // Busca o snapshot rebaseado pelo servidor para alinhar também a tela local.
+    if(r && (r.pet_rebased || r.visual_rebased) && contaJ){
+      return contaRpc('carregar_nuvem').then(function(n){
+        if(n) perfAplicarNuvem(n, contaJ.nick);
+        return r;
+      });
+    }
+    return r;
+  }).catch(function(){});
 }
 function perfConferir(){   // mudou alguma coisa no save? marca a hora e envia (com uma pausa para juntar as mudanças)
   if(!perfSyncOn || !contaJ) return false;

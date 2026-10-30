@@ -11391,7 +11391,7 @@ var s2NextFanRow = 900;      // próximo ponto para corredor de fãs
 var s2Challenge = null;      // bônus opcional de 5 notas; não bloqueia a próxima fase
 var s2HitEmotion = 0;        // emoção breve somente na corrida
 var s2DrawingRunChar = false;
-var S2_BONUS_BEAT_FRAMES = 48; // 4 segundos; passagem sempre automática
+var S2_BONUS_BEAT_FRAMES = 60; // 5 notas com 1 segundo cada, sem bloquear passagem
 var S2_BONUS_LABELS = {
   pt:{title:'BÔNUS DE PASSAGEM',jump:'▲ PULE!',slide:'▼ DESLIZE!',note:'Cada acerto vale uma ★'},
   en:{title:'STAGE BONUS',jump:'▲ JUMP!',slide:'▼ SLIDE!',note:'Each correct move earns ★'},
@@ -11496,6 +11496,8 @@ function s2BonusAction(action){
   if(action !== expected) return;
   s2Challenge.pressed = true;
   s2Challenge.hits++;
+  s2Challenge.hitsMask[s2Challenge.beat] = true;
+  s2Challenge.flash = 18; // pulso visual no acerto, sem alterar pontuações
   stars++;
   score += CFG.STAR;
   pops.push({x:P.x+15,y:P.y-18,t:0,s:'★ +1'});
@@ -11503,13 +11505,15 @@ function s2BonusAction(action){
 }
 var _s2OrigJump = jump;
 jump = function(){
-  if(s2Challenge && s2Challenge.active){s2BonusAction('jump');return;}
+  // Durante o bônus, o comando rende ★ se correto E anima o pulo de verdade.
+  if(s2Challenge && s2Challenge.active) s2BonusAction('jump');
   _s2OrigJump();
 };
 // Controles de Abaixar e Deslizar (PC + Celular)
 function s2StartSlide(fromTap){
   if(state !== 'play' || paused) return;
-  if(s2Challenge && s2Challenge.active){s2BonusAction('slide');return;}
+  // A ação correta rende ★, mas a animação de deslizar continua normalmente.
+  if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
   if(pw && pw.k === 'alien') return;
   s2Sliding = true;
   if(fromTap) s2SlideTimer = Math.max(s2SlideTimer, 34); // ~0.55s por toque rápido
@@ -12301,28 +12305,49 @@ function s2DrawForeground(){
       g.fillText('🎶 Coro ' + Math.ceil(s2Coro.t / 60) + 's', W - 16, 48);
     }
 
-    // Banner kawaii: mostra instruções e ACERTOS, não obstáculos gerados.
+    // Bônus pastel mais legível: ação dominante, 5 notas individuais, pulso ao acertar.
     if(s2Challenge && s2Challenge.active){
-      var words=S2_BONUS_LABELS[LANG]||S2_BONUS_LABELS.pt;
-      var expected=s2Challenge.beat%2===0?words.jump:words.slide;
-      var grad=g.createLinearGradient(W/2-186,42,W/2+186,138);
-      grad.addColorStop(0,'rgba(123,63,240,.93)');
-      grad.addColorStop(.5,'rgba(255,111,181,.94)');
-      grad.addColorStop(1,'rgba(65,105,225,.93)');
-      g.save();g.fillStyle=grad;g.shadowColor='#ffb9ec';g.shadowBlur=12;
-      var bx=W/2-186,by=42,bw=372,bh=96,br=20;
-      g.beginPath();g.moveTo(bx+br,by);g.lineTo(bx+bw-br,by);
-      g.quadraticCurveTo(bx+bw,by,bx+bw,by+br);
-      g.lineTo(bx+bw,by+bh-br);g.quadraticCurveTo(bx+bw,by+bh,bx+bw-br,by+bh);
-      g.lineTo(bx+br,by+bh);g.quadraticCurveTo(bx,by+bh,bx,by+bh-br);
-      g.lineTo(bx,by+br);g.quadraticCurveTo(bx,by,bx+br,by);g.closePath();g.fill();
-      g.shadowBlur=0;g.textAlign='center';g.fillStyle='#fff';
-      g.font='900 14px "M PLUS Rounded 1c",sans-serif';
-      g.fillText('✦ '+words.title+' ✦',W/2,62);
+      var bc=s2Challenge, words=S2_BONUS_LABELS[LANG]||S2_BONUS_LABELS.pt;
+      var expected=bc.beat%2===0?words.jump:words.slide;
+      var w=Math.min(W-24,490), x=(W-w)/2, y=36, h=149, r=22;
+      var grad=g.createLinearGradient(x,y,x+w,y+h);
+      grad.addColorStop(0,'rgba(123,63,240,.96)');
+      grad.addColorStop(.52,'rgba(255,111,181,.97)');
+      grad.addColorStop(1,'rgba(65,105,225,.96)');
+      g.save();
+      g.fillStyle=grad;g.shadowColor='#ffabeb';g.shadowBlur=bc.flash>0?22:11;
+      g.beginPath();g.moveTo(x+r,y);g.lineTo(x+w-r,y);
+      g.quadraticCurveTo(x+w,y,x+w,y+r);
+      g.lineTo(x+w,y+h-r);g.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      g.lineTo(x+r,y+h);g.quadraticCurveTo(x,y+h,x,y+h-r);
+      g.lineTo(x,y+r);g.quadraticCurveTo(x,y,x+r,y);g.closePath();g.fill();
+      g.shadowBlur=0;g.strokeStyle='rgba(255,255,255,.78)';g.lineWidth=2;g.stroke();
+      g.textAlign='center';g.fillStyle='#fff';
       g.font='900 23px "M PLUS Rounded 1c",sans-serif';
-      g.fillText(expected,W/2,93);
-      g.font='800 12px "M PLUS Rounded 1c",sans-serif';
-      g.fillText('★ '+s2Challenge.hits+'/5 · '+words.note,W/2,119);
+      g.fillText('✦ '+words.title+' ✦',W/2,y+29,w-28);
+      // Placa clara de alto contraste: prioridade ao comando no celular.
+      g.fillStyle='rgba(255,255,255,.94)';
+      g.beginPath();g.moveTo(x+24,y+42);g.lineTo(x+w-24,y+42);
+      g.quadraticCurveTo(x+w-12,y+42,x+w-12,y+54);
+      g.lineTo(x+w-12,y+94);g.quadraticCurveTo(x+w-12,y+106,x+w-24,y+106);
+      g.lineTo(x+24,y+106);g.quadraticCurveTo(x+12,y+106,x+12,y+94);
+      g.lineTo(x+12,y+54);g.quadraticCurveTo(x+12,y+42,x+24,y+42);g.closePath();g.fill();
+      g.fillStyle='#532887';g.font='900 41px "M PLUS Rounded 1c",sans-serif';
+      g.fillText(expected,W/2,y+88,w-48);
+      // As cinco estrelas representam notas individuais acertadas, não notas geradas.
+      var baseX=W/2-114;
+      for(var bi=0;bi<5;bi++){
+        var earned=!!bc.hitsMask[bi], current=bc.beat===bi;
+        var py=y+129;
+        if(earned && bc.flash>0 && bi===bc.beat)py-=Math.sin((18-bc.flash)/18*Math.PI)*7;
+        g.save();g.textAlign='center';g.font='900 27px sans-serif';
+        g.fillStyle=earned?'#fff176':current?'#ffffff':'rgba(255,255,255,.60)';
+        if(earned){g.shadowColor='#ffe14d';g.shadowBlur=11;}
+        g.fillText(earned?'★':'☆',baseX+bi*57,py);
+        g.restore();
+      }
+      g.fillStyle='#fff';g.font='800 19px "M PLUS Rounded 1c",sans-serif';
+      g.textAlign='right';g.fillText(bc.hits+'/5',x+w-22,y+134,58);
       g.restore();
     }
     g.restore();
@@ -12548,16 +12573,18 @@ update = function(dt){
     var eligibleIdx=s2TargetStageByScore(score);
     if(eligibleIdx>s2StageIdx && s2StageFrames>=S2_MIN_FRAMES){
       if(!s2Challenge){
-        s2Challenge={active:true,nextIdx:s2StageIdx+1,elapsed:0,beat:0,hits:0,pressed:false};
+        s2Challenge={active:true,nextIdx:s2StageIdx+1,elapsed:0,beat:0,hits:0,pressed:false,hitsMask:[false,false,false,false,false],flash:0};
         obs=[]; // corredor de bônus seguro: sem obstáculos obrigatórios
         s2Sliding=false;s2SlideTimer=0;
         nextX=Math.max(nextX,W+460);
         toast='🌈 ✨ Bônus de passagem!';toastT=85;
       }else if(s2Challenge.active){
         s2Challenge.elapsed+=dt;
+        if(s2Challenge.flash>0)s2Challenge.flash=Math.max(0,s2Challenge.flash-dt);
         var beat=Math.floor(s2Challenge.elapsed/S2_BONUS_BEAT_FRAMES);
         if(beat>=5){
           s2Challenge.active=false;
+          s2Sliding=false; s2SlideTimer=0; // transição não herda pose de slide
           s2Curtain={phase:'close',p:0,nextIdx:s2Challenge.nextIdx};
           toast='✨ '+tr(S2_STAGES[s2Challenge.nextIdx].nome)+'!';toastT=90;
           sfx.rank();

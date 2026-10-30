@@ -65,5 +65,5 @@ assert.ok(sora.includes("parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},
 assert.ok(soraOnlineSql.includes('create or replace function public.tw_podio_semana()'));
 assert.ok(soraOnlineSql.includes('private.sora_scores'));
 assert.ok(soraOnlineSql.includes('auth.uid()'));
-assert.ok(soraOnlineSql.includes('revoke all on function public.tw_podio_semana() from public,anon,authenticated'));
+assert.ok(/revoke all on function public\\.tw_podio_semana\\(\\) from public,\\s*anon,\\s*authenticated/i.test(soraOnlineSql));
 console.log('✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge');

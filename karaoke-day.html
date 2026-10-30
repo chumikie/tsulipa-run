@@ -357,8 +357,9 @@ var krSoHomol=KR_HOMOLOGATION;
 // Sala online real (produção) ou homologação: as duas usam a mesma ponte de palco.
 var krOnlineAtivo=!krSoHomol;
 var krHomolAtivo=krSoHomol||krOnlineAtivo;
-var krHomolConectado=false; // só o servidor, após ocupar vaga, substitui personagens
-var krSt={aberta:true,sabado:false,faltam10:false,vista:(Math.floor((Date.now()-3*3600e3)/604800e3)%2?'liberdade':'gigoia'),ultimos10:false,ocupadas:7,vip:false},krEu={x:480,y:435,tx:480,ty:435,no_mic:false,micT:0,canto:'balanco',danca:'',pose:'v',expr:2,drink:'',plateia:false,fila:0,vagaPronta:false,vagaS:30,emojiT:0,itemSala:'',antenaSala:false,lookSala:false,snackSala:''},krBots=[{nick:'Lirika',x:225,y:460,danca:'banzai',pose:'v',expr:2,drink:'lirika',no_mic:false,char:CH[1]},{nick:'Pati',x:645,y:470,danca:'neon',pose:'v',expr:3,drink:'pati',no_mic:false,char:CH[2]},{nick:'Nanamaru',x:320,y:472,danca:'',pose:'luz',expr:2,drink:'tsu',no_mic:false,char:{n:'Nanamaru',hair:'#dc143c',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'lateral',out:'zipper',outcol:'#dc143c'}},{nick:'Hiruru',x:740,y:460,danca:'',pose:'v',expr:2,drink:'lirika',no_mic:false,char:{n:'Hiruru',hair:'#f2b632',skin:'#fbe5d8',eye:'#5a3b2e',back:'marias',front:'reta',out:'sweet',outcol:'#f2b632'}},{nick:'Fuji',x:165,y:390,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:{n:'Fuji',hair:'#b57edc',skin:'#fbe5d8',eye:'#5a3b2e',back:'chanel',front:'reta',out:'seifuku',outcol:'#b57edc'}},{nick:'Acádia',x:795,y:390,danca:'',pose:'luz',expr:2,drink:'pati',no_mic:false,char:{n:'Acádia',hair:'#ffb38a',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'reta',out:'sweet',outcol:'#ffb38a'}}];krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});
+var krHomolConectado=false; // only server-confirmed participants are shown in rehearsal
+var krSt={aberta:true,sabado:false,faltam10:false,vista:(Math.floor((Date.now()-3*3600e3)/604800e3)%2?'liberdade':'gigoia'),ultimos10:false,ocupadas:7,vip:false},krEu={x:480,y:435,tx:480,ty:435,no_mic:false,micT:0,canto:'balanco',danca:'',pose:'v',expr:2,drink:'',plateia:false,fila:0,vagaPronta:false,vagaS:30,emojiT:0,itemSala:'',antenaSala:false,lookSala:false,snackSala:''},krBots=[{nick:'Lirika',x:225,y:460,danca:'banzai',pose:'v',expr:2,drink:'lirika',no_mic:false,char:CH[1]},{nick:'Pati',x:645,y:470,danca:'neon',pose:'v',expr:3,drink:'pati',no_mic:false,char:CH[2]},{nick:'Nanamaru',x:320,y:472,danca:'',pose:'luz',expr:2,drink:'tsu',no_mic:false,char:{n:'Nanamaru',hair:'#dc143c',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'lateral',out:'zipper',outcol:'#dc143c'}},{nick:'Hiruru',x:740,y:460,danca:'',pose:'v',expr:2,drink:'lirika',no_mic:false,char:{n:'Hiruru',hair:'#f2b632',skin:'#fbe5d8',eye:'#5a3b2e',back:'marias',front:'reta',out:'sweet',outcol:'#f2b632'}},{nick:'Fuji',x:165,y:390,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:{n:'Fuji',hair:'#b57edc',skin:'#fbe5d8',eye:'#5a3b2e',back:'chanel',front:'reta',out:'seifuku',outcol:'#b57edc'}},{nick:'Acádia',x:795,y:390,danca:'',pose:'luz',expr:2,drink:'pati',no_mic:false,char:{n:'Acádia',hair:'#ffb38a',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'reta',out:'sweet',outcol:'#ffb38a'}}];krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});if(krSoHomol){krBots=[];krEu.plateia=true;krSt.ocupadas=0;$('krStatusTxt').textContent='🧪 Homologação · aguardando participantes reais';$('krMicQueue').hidden=true;}
+if(krSoHomol){$('krDevToggle').hidden=true;$('krDev').hidden=true;}
 var krBolhas=[],krBaloes={},krTrilha=[],krT=0,krCortina=0,krAlvo=null;
 function krAviso(msg){var el=$('krAviso');el.textContent=msg||'';el.hidden=!msg;clearTimeout(el._t);if(msg)el._t=setTimeout(function(){el.hidden=true;},5000);}
 function krRenderHubCard(){var slot=$('hubCardSlot');if(!slot)return;var cls='hubcard'+(krSt.aberta?' aberta':krSt.faltam10?' abrindo':'');var ico=krSt.aberta?'🎤':'🔒';var txt=krSt.aberta?'🟢 '+tr('Aberta · {n}/9').replace('{n}',krSt.ocupadas):krSt.faltam10?'✨ '+tr('Abrindo em {t}').replace('{t}','09:59'):tr('Abre em {t}').replace('{t}','3d 04h 12min');var sab=(!krSt.aberta&&krSt.sabado)?'<div class="hubsab">👀 '+escHtml(tr('Amanhã ao meio-dia! O quarteto da semana já foi sorteado 👀'))+'</div>':'';slot.innerHTML='<button type="button" class="'+cls+'" id="hubCardPreviewBtn"><i>'+ico+'</i><b translate="no">Karaoke⭐Day!</b><small>'+escHtml(txt)+'</small>'+sab+'</button>';$('hubCardPreviewBtn').onclick=function(){$('hubPrev').hidden=true;$('krHubBtn').setAttribute('aria-pressed','false');};}
@@ -582,7 +583,7 @@ if(krHomolAtivo){
    if(!window.TsuKaraokeHomolView)return;
    var members=window.TsuKaraokeHomolView.stageLayout(snapshot.slots);
    var me=members.find(function(p){return p.self;}),queueElement=$('krMicQueue');
-   // Quem não está na sala vê a demonstração completa, sem dados de terceiros.
+   // Participantes só aparecem no palco depois de serem retornados pelo servidor.
    if(!me){
      if(krHomolConectado&&krHomolBackup){
        krBots=krHomolBackup.bots;
@@ -644,7 +645,7 @@ if(krHomolAtivo){
    $('krModal').hidden=true;
   }
  };
- // Sem vagas online, não apagar a plateia, a fila nem os itens da demonstração.
+ // Homologação nunca mistura o elenco local de demonstração com o elenco online.
 }
 })();
 </script>
@@ -664,7 +665,7 @@ if(krHomolAtivo){
   };
   function loadClient(){
     var client=document.createElement('script');
-    client.src=KR_HOMOLOGATION?'./karaoke-homol-client.js?v=8':'./karaoke-online.js?v=3';
+    client.src=KR_HOMOLOGATION?'./karaoke-homol-client.js?v=9':'./karaoke-online.js?v=3';
     document.body.appendChild(client);
   };
   helper.onerror=function(){console.warn('Karaoke: homologação indisponível');};

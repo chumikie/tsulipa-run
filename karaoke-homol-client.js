@@ -34,7 +34,7 @@ panel.setAttribute('aria-label','Homologação do Karaoke');
 panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte sua sessão de ensaio. A sala usa o apelido e a aparência do seu perfil; não usa pontos ou dados da conta.</p>'
   +'<p id="krHomolSchedule">🕛 Domingo, 12h–13h10 (Brasília); uma janela temporária também pode ser aberta pelo responsável da homologação.</p>'
-  +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. A sala cheia acima é uma demonstração.</p>'
+  +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. Nesta prévia, só aparecem participantes reais conectados.</p>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
   +'<button type="button" class="krb" id="krHomolCheck">🛡️ Testar Turnstile (sem cadastro)</button>'
@@ -59,7 +59,7 @@ panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
   +'<p id="krHomolTapMsg" role="status" aria-live="polite">Aguarde a sua vez no palco.</p>'
   +'<small>Placar do ensaio, calculado no servidor. Sem estrelas, moedas ou ranking oficial. A latência pode afetar os acertos.</small>'
   +'</section>'
-  +'<small>Sem entrar: a sala cheia é uma demonstração local. Ao ocupar vaga, a fila e os participantes vêm do servidor. Sem estrelas e ranking; atualização leve a cada 30 segundos.</small>';
+  +'<small>O palco da homologação não usa personagens de demonstração. Participantes, fila e movimentos vêm do servidor; sem estrelas ou ranking.</small>';
 host.appendChild(panel);
 var style=document.createElement('style');
 style.textContent='#krHomolPanel{margin-top:12px}#krHomolPanel h3{font-family:"Mochiy Pop One",sans-serif;font-size:17px}#krHomolPanel button:disabled{opacity:.48;cursor:not-allowed}#krHomolPeople{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}#krHomolPeople li,#krHomolQueueSlots li{padding:5px 9px;border-radius:12px;background:rgba(210,178,255,.16);font-size:12px}#krHomolQueueSlots{display:grid;gap:5px;padding-left:23px}#krHomolTurn{font-weight:800;color:var(--pink,#ff6fb5)}#krHomolPractice{margin:12px 0;padding:13px;border:1px solid rgba(230,168,251,.55);border-radius:17px;background:linear-gradient(115deg,rgba(250,221,255,.18),rgba(191,255,246,.12))}#krHomolPractice p{font-size:12px}#krHomolPracticeStats{font-weight:800}#krHomolTap{font-family:"Mochiy Pop One",sans-serif}#krHomolTap:disabled{opacity:.5}.kr-homol-rail{height:22px;border-radius:14px;background:linear-gradient(90deg,rgba(241,180,255,.4),rgba(181,245,222,.5));margin:10px 0;position:relative;overflow:hidden}.kr-homol-rail:before{content:"";position:absolute;left:20%;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 5px #fff}#krHomolBeat{position:absolute;top:-3px;font-size:18px;transition:left .12s linear}'
@@ -69,7 +69,7 @@ var ids=['Check','Auth','Enter','Queue','Unqueue','Leave','Refresh'];
 var buttons={};ids.forEach(function(k){buttons[k]=document.getElementById('krHomol'+k);});
 var msg=document.getElementById('krHomolMsg');
 function say(text){msg.textContent=String(text);}
-say('🛡️ Teste o Turnstile sem cadastro. A entrada online continua fechada.');
+say('🛡️ Homologação isolada: personagens de demonstração desativados. A entrada online depende da configuração do servidor.');
 function enable(auth,seat,queued){
  buttons.Check.disabled=!TURNSTILE_SITE_KEY||(AUTH_TEST_ONLY&&auth);
  buttons.Auth.disabled=auth||!TURNSTILE_SITE_KEY||!SIGNUP_ENABLED;
@@ -271,8 +271,8 @@ async function refreshData(doHeartbeat){
  moderationLocked=data.status==='moderated';
  document.getElementById('krHomolGate').textContent=labOpen?
   '🟢 Ensaio online liberado para participantes da homologação.':
-  data.scheduleOpen===false?'🕛 Fora do horário de domingo · a demonstração continua disponível.':
-  '🔒 Entrada online fechada pelo servidor. A demonstração continua disponível.';
+  data.scheduleOpen===false?'🕛 Fora do horário de domingo · nenhum participante fictício será exibido.':
+  '🔒 Entrada online fechada pelo servidor. Nenhum participante fictício será exibido.';
  if(data.status==='not_owner'||data.status==='not_inside'||data.status==='moderated'||(token&&data.mySeat!==true)){
    token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
  }
@@ -311,8 +311,8 @@ async function refreshData(doHeartbeat){
  if(sync){sync.mark(Number(data.revision));if(seat&&labOpen)sync.start();else sync.stop();}
  showTurnClock();enable(true,seat,queued);
  if(isSinging&&!previous)say('🎤 Sua vez! No microfone por até 60 segundos, sem estrelas ou prêmios.');
- if(moderationLocked)say('🛡️ Este Idol não pode participar do ensaio. A demonstração permanece disponível.');
- else if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. Você pode explorar a demonstração completa.');
+ if(moderationLocked)say('🛡️ Este Idol não pode participar do ensaio. O palco continua sem participantes fictícios.');
+ else if(!labOpen||data.status==='lab_closed')say('🔒 A sala online ainda está fechada. O palco de homologação só mostra participantes reais.');
  else if(data.status==='full')say('💖 Palco lotado por enquanto. Tente novamente depois.');
  else if(data.status==='already_inside'&&!token)say('Outra aba já ocupa sua vaga. Não há duplicação de assentos.');
  else if(seat&&!isSinging)say('Conectado ao ensaio · '+data.occupied+'/9 · sem pontos ou prêmios.');

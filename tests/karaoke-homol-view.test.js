@@ -38,6 +38,12 @@ assert(client.includes("signInAnonymously({options:{captchaToken:captchaToken}})
 assert(!client.includes('https://fsggtvgbyhchblyazgmt.supabase.co'));
 // Protege contra a regressão que esvaziava a sala de demonstração.
 assert(game.includes('var krHomolConectado=false;'));
+assert(game.includes("if(krSoHomol){krBots=[];krEu.plateia=true;krSt.ocupadas=0;"),
+ 'homologation stage starts without simulated players');
+assert(game.includes("$('krMicQueue').hidden=true;"),
+ 'homologation hides the local simulation queue');
+assert(game.includes("if(krSoHomol){$('krDevToggle').hidden=true;$('krDev').hidden=true;}"),
+ 'homologation hides the local simulator');
 assert(game.includes("var KR_HOMOLOGATION=new URLSearchParams(location.search).get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app';"));
 assert(client.includes("get('homol')!=='1'&&location.hostname==='tsulipa-world.vercel.app'"),
  'homologation client refuses implicit execution on the production host');
@@ -48,7 +54,8 @@ assert(online.includes("document.addEventListener('pointerdown'"));
 assert(game.includes("var syncedDance=p.dance||'';"),
  'connected dancers use only the server state');
 assert(game.includes('krOnlineAtivo?Object.assign({n:p.label},p.c||{})'),'live players render their real avatar');
-assert(client.includes('a sala cheia é uma demonstração local'));
+assert(client.includes('O palco da homologação não usa personagens de demonstração.'));
+assert(!client.includes('a sala cheia é uma demonstração local'));
 assert(!client.includes("localQueue.hidden=true;localQueue.style.display='none';"));
 
 const vm=require('node:vm');
@@ -118,7 +125,7 @@ assert(reuseBoot.includes('await refresh(false)'));
 assert(!reuseBoot.includes('signInAnonymously'),'reuse mode never creates an identity');
 assert(reuseBoot.includes('Nenhuma conta nova foi criada'));
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-day.html'),'utf8');
-assert(html.includes('karaoke-homol-client.js?v=8'),'homologation client cache version bumped');
+assert(html.includes('karaoke-homol-client.js?v=9'),'homologation client cache version bumped');
 
 
 // 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
@@ -148,7 +155,7 @@ assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where i
 assert(closeTest.trim().endsWith('rollback;'));
 assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
-assert(game.includes("karaoke-homol-client.js?v=8"),'updated script should bypass stale CDN');
+assert(game.includes("karaoke-homol-client.js?v=9"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
 
 // 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
@@ -159,7 +166,7 @@ assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
 assert(!signalSql.includes('seat_token'));
 assert(signalSQLTest.trimEnd().endsWith('rollback;'));
 assert(game.includes('karaoke-homol-sync.js?v=1'));
-assert(game.includes('karaoke-homol-client.js?v=8'));
+assert(game.includes('karaoke-homol-client.js?v=9'));
 assert(client.includes('if(currentRefresh)return currentRefresh;'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 const syncAPI=require('../karaoke-homol-sync.js');
@@ -213,7 +220,7 @@ assert(client.includes("client.rpc('karaoke_ensaio_toque',{p_token:token})"));
 assert(client.includes("function drawSharedRhythm(){"));
 assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("setInterval(showTurnClock,125)"));
-assert(game.includes("karaoke-homol-client.js?v=8"));
+assert(game.includes("karaoke-homol-client.js?v=9"));
 console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');
 
 // Visual-only mode: neither an anonymous identity nor a score is created.

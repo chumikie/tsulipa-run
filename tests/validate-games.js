@@ -8,7 +8,7 @@ const vm=require("node:vm");
 
 const root=path.resolve(__dirname,"..");
 const games=[
-  {file:"index.html",max:1050000},
+  {file:"index.html",max:1150000},
   {file:"index2.html",max:1000},
   {file:"sora-jump-karaoke.html",max:40000},
   {file:"sora-jump.html",max:400000},

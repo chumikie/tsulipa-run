@@ -59,6 +59,9 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Top Idols:** a coluna do Karaoke mostra a pontuação, e embaixo entra a barra "🎤 Karaoke⭐Time! · ranking da semana" (com subtítulo em japonês) e os três quadros.
 - **Card do Karaoke:** fica rosa de alerta, com o "!", enquanto faltar algum dos 5 shows do dia (o servidor conta), e mostra quantos faltam.
 - **Emojis:** os do banner (Tsu, Lirika e Pati) ganharam brilho branco e um pulinho de entrada, porque no computador o emoji do sistema sai mais claro. Os efeitos da sala do Karaoke agora são emojis do mesmo jeito: estouram, sobem balançando com rastro de brilho, e os corações têm a cor de cada Idol.
+- **Plateia do dia:** dentro do site, as 6 vêm das contas do site com Idol montado (todas, inclusive as que forem criadas depois), menos você; o sorteio fica o mesmo o dia todo naquele aparelho. A foto de 30/10 guardada no arquivo só vale com ele aberto sozinho.
+- **Tema escuro do Karaoke:** a faixa "Sua plateia de hoje" e o quadro do clipe ficavam sem estilo no escuro (o CSS tinha caído dentro do bloco do tema claro). Corrigido.
+- **Outros clipes:** Sakura ganhou galhos com volume e flores com brilho; Ocean Pop, bolhas de verdade; Mirror Disco, globo espelhado com facetas piscando; Ribbon Theatre, cortinas de veludo com dobras e corda dourada com laços.
 - **Clipe Candy Parade:** pirulitos em espiral com brilho e lacinho, algodão-doce fofo ao fundo e balinhas caindo.
 - **Lightstick:** usa a cor escolhida no perfil (chave nova `brs48cr_cor`); sem cor, continua a do cabelo. Vale no menu, na foto do perfil e na sala do Karaoke.
 - **Clipe do dia:** fundos com profundidade (brilho na parede, bokeh, feixes de luz, palco com perspectiva e vinheta); no Diamante ninguém esconde o rosto de ninguém e ninguém fica cortado na borda.

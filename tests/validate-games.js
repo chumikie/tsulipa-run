@@ -284,6 +284,8 @@ assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('
 assert(kTime.includes("window.ktOnline.gate(start)")&&kTime.includes("window.ktOnline.finish(result)")&&
        kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),
   "Karaoke Time: shows passam pelo servidor quando há conta");
+assert(kTime.includes("init:apply,live:live,")&&preview.includes("plateia:function(){return contaRpc('vitrine_idols')"),
+  "Karaoke Time: dentro do site a plateia vem das contas do site, não da foto de 30/10");
 assert(preview.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&kTime.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&
        kTime.includes("read('brs48cr_cor')"),
   "Lightstick: cor do perfil, senão a do cabelo");

@@ -8867,6 +8867,8 @@ window.twKaraokeOnline={
    .then(function(x){twRankRefreshAfterSora();return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
+ // Plateia do dia: contas do site com Idol montado (todas podem ser sorteadas, inclusive as novas).
+ plateia:function(){return contaRpc('vitrine_idols').then(function(d){return d&&Array.isArray(d.idols)?d.idols:[];});},
  cor:function(){return perfMinhaCor;}
 };
 function twRankRefreshAfterSora(){

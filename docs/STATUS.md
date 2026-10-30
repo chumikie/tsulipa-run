@@ -44,7 +44,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Banner: vozes reais do trio (5 falas cada, risada a cada duas falas); balão kawaii (um só contorno com rabinho, fonte Mochiy Pop One, ~3,5 s); pets do banner clicáveis com a vozinha de cada um.
 - Privacidade atualizada (30/10) em 5 idiomas: estilo do perfil, presença no Karaoke e vozes (sem microfone, sem gravação).
 
-- Descrições do link atualizadas com todos os modos (imagem og mantida a anterior, a pedido).
+- Descrições do link atualizadas com todos os modos ; imagem og no estilo anterior (trio no tema ZIPPER) com os 6 modos.
 - Trilha sonora: 31 faixas geradas no código (25 músicas diferentes), gravadas em MP3 fora do repositório.
 
 ## Falta antes do merge

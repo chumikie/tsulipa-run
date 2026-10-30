@@ -154,7 +154,7 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
   "Index 2 lost unified Gacha / Moon Duo modal design");
 assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&
        lab.includes('id="twRankTvFechar"')&&lab.includes("function twRankTvModalFechar")&&
-       tvSkin.includes(".tw-rank-tv-launch")&&tvSkin.includes(".tw-rank-tv-modal[hidden]"),
+       launchSkin.includes(".tw-rank-tv-launch")&&launchSkin.includes(".tw-rank-tv-modal[hidden]"),
   "Welcome screen should use a compact TsuLiPa TV launcher and popup");
 assert(lab.includes('id="twPreviewSom"')&&lab.includes("TW_SORA_SOUND_STATE")&&
        sora.includes("TW_SORA_TOGGLE_SOUND")&&soraEmbedSkin.includes("html.tw-sora-embed #soraSoundBtn{display:none!important}")&&

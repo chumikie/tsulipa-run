@@ -7140,7 +7140,7 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
-    if(meu) twRankRenderProfile();
+    if(meu){ twRankRenderProfile(); twRankLoad(); }
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -8648,8 +8648,8 @@ function hubMisCarregar(){
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
-// The future RPC is off until the competition backend has been reviewed.
-var TW_RANK_ONLINE_READY=false, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
+// Server-side Sora records are live; Karaoke stays empty until its own verified backend exists.
+var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
 var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
@@ -8770,10 +8770,10 @@ function twRankRenderProfile(){
   local?twRankWord(7)+': '+local.score.toLocaleString()+' m · '+twRankWord(8):
    twRankWord(9)+' · '+twRankWord(1);
 }
-function twRankLoad(){
+function twRankLoad(force){
  twRankCheckWeek();
  if(twRankPending)return twRankPending;
- if(Date.now()-twRankData.readAt<180000)return Promise.resolve();
+ if(!force&&Date.now()-twRankData.readAt<180000)return Promise.resolve();
  twRankData.readAt=Date.now();
  if(!_supabase){twRankRender();return Promise.resolve();}
  var week=twRankData.week;
@@ -8791,6 +8791,13 @@ function twRankLoad(){
   twRankPending=null;twRankRender();twRankRenderProfile();
  });
  return twRankPending;
+}
+function twRankRefreshAfterSora(){
+ var pending=twRankPending;
+ Promise.resolve(pending).catch(function(){}).then(function(){
+  twRankData.readAt=0;
+  return twRankLoad(true);
+ }).catch(function(){});
 }
 function twRankStop(){if(twRankTimer!==null){clearInterval(twRankTimer);twRankTimer=null;}}
 function twRankVisibility(){
@@ -9124,7 +9131,11 @@ function twPreviewFecharJogo(){
       if(twPreviewJogoAnterior==='sora')twPreviewSomSincronizar(e.data.enabled===true);
       return;
     }
-    // A completed run can update ONLY a local preview score, never the server.
+    // Keep the device-only score strictly as a fallback; server acknowledgement refreshes the online profile/TV.
+    if(e.data&&e.data.type==='TW_SORA_ONLINE_SCORE_SAVED'){
+      if(twPreviewJogoAnterior==='sora')twRankRefreshAfterSora();
+      return;
+    }
     if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
       if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);
       return;

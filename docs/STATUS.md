@@ -55,6 +55,10 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Karaoke⭐Day!, sala online, homologação e SQL ficaram no repositório, sem mudança, para retomar depois.
 - Textos do Karaoke⭐Time! em PT/EN/ES/TH/JA, no idioma escolhido no menu (página e telão). Nomes de músicas e de Idols não mudam.
 - Voltaram as partes da versão "Clipe do dia": o clipe do dia no telão (conceito e formação mudam a cada dia de Brasília), a faixa "Sua plateia de hoje" com retratos, e os Idols da sala clicáveis (pulinho, brilhos, balão e notinha).
+- **Ranking online do Karaoke⭐Time!** (`supabase/sql/karaoke_time_ranking.sql`, **ainda não aplicado**; testado em transação desfeita): com conta, cada show passa pelo servidor (5 por dia no horário de Brasília, resultado conferido: duração mínima, notas, combo e pontos possíveis). Três quadros por semana (domingo a sábado): Pontuação, Maior combo e Acertos. A semana do Karaoke passou a começar no domingo, como o Top Idols. Sem conta, o jogo segue só no aparelho.
+- **Top Idols:** a coluna do Karaoke mostra a pontuação, e embaixo entra a barra "🎤 Karaoke⭐Time! · ranking da semana" com os três quadros.
+- **Lightstick:** usa a cor escolhida no perfil (chave nova `brs48cr_cor`); sem cor, continua a do cabelo. Vale no menu, na foto do perfil e na sala do Karaoke.
+- **Clipe do dia:** fundos com profundidade (brilho na parede, bokeh, feixes de luz, palco com perspectiva e vinheta); no Diamante ninguém esconde o rosto de ninguém e ninguém fica cortado na borda.
 - **Supabase de produção (30/10):** a sala online foi desligada sem apagar nada (`supabase/sql/karaoke_online_desligado.sql`). Ninguém de fora chama mais `karaoke_sala*` nem `karaoke_posteres_semana`, o esquema `karaoke_lab` ficou fechado e o sinal saiu do tempo real. Para religar: `karaoke_online_religar.sql`. Os botões de teste do Karaoke na moderação somem enquanto `TW_KARAOKE_TIME` estiver ligado.
 
 ## Falta (para fechar o lançamento)

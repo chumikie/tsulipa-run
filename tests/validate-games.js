@@ -276,6 +276,16 @@ assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&
        kTime.includes("read('brs48cr_nick')")&&kTime.includes('id="ktTraducoes"')&&kTime.includes("get('lang')")&&
        preview.includes("(TW_KARAOKE_TIME ? '' :")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
   "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
+// Ranking online do Karaoke⭐Time!: o servidor conta as 5 tentativas e confere o resultado.
+assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('kt_run_finish'")&&preview.includes("contaRpc('kt_ranking')")&&
+       preview.includes('id="twRankKt"')&&preview.includes("data.karaoke_combo")&&preview.includes("data.karaoke_acertos"),
+  "Karaoke Time: ponte do ranking online e barra própria no Top Idols");
+assert(kTime.includes("window.ktOnline.gate(start)")&&kTime.includes("window.ktOnline.finish(result)")&&
+       kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),
+  "Karaoke Time: shows passam pelo servidor quando há conta");
+assert(preview.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&kTime.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&
+       kTime.includes("read('brs48cr_cor')"),
+  "Lightstick: cor do perfil, senão a do cabelo");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
 assert(karaoke.includes("'Melon Juice!'")&&!karaoke.includes("'Melon Soda'"),

@@ -5,6 +5,7 @@ Um arquivo aqui **não** significa que ele está no banco. Esta lista diz onde c
 ## Produção (`fsggtvgbyhchblyazgmt`, aplicados)
 - `karaoke_posteres_semana.sql`: elenco semanal dos pôsteres do Karaoke.
 - `karaoke_sala_online_producao.sql`: sala online do Karaoke (9 vagas, fila de 3, microfone, domingo 12h–13h10, teste da moderação). Usa as contas do site.
+- `karaoke_time_ranking.sql`: ranking online do Karaoke⭐Time! (tentativas e resultados conferidos no servidor, três quadros, Top Idols). **Ainda não aplicado** — testado em produção só dentro de transação desfeita.
 - `karaoke_online_desligado.sql`: **aplicado em produção em 30/10/2026**. Desliga a sala online do Karaoke⭐Day! sem apagar nada (tira o acesso de anon/authenticated e o tempo real). O site usa o Karaoke⭐Time! offline. Para religar: `karaoke_online_religar.sql` (não aplicado).
 - `karaoke_estreia_08_11_2026.sql`: **aplicado em produção em 30/10/2026**. Primeira abertura pública adiada de 01/11 para **08/11/2026** (domingo 12h–13h10, Brasília); ensaio manual da moderação preservado. O script original da sala permanece como base histórica.
 - `perfil_emoji_cor_time_oshi.sql`: emoji, cor e time no perfil; Oshi entre quem joga.

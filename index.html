@@ -6,6 +6,7 @@
   localStorage: brs48cr_best · brs48cr_st · brs48cr_char · brs48cr_cu2 · brs48cr_ch2 · brs48cr_acc
                 brs48cr_seen · brs48cr_nick · brs48cr_lang · brs48cr_oshi · brs48cr_did
                 brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet · brs48cr_sync · brs48cr_tut (V2.1.3)
+                brs48cr_cor (cor do perfil: lightstick)
   Supabase:     tabela "leaderboard" · função "top_scores" · tabela "players" (contas, V2.1.2)
   A lista comentada (o que cada chave guarda) fica no início do <script>.
 -->
@@ -739,7 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=7">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=3">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=4">
 </head>
 <body>
 <header>
@@ -6220,6 +6221,12 @@ function cenaGirarTela(){
 // As chaves brs48cr_* continuam as mesmas.
 // ================================================================
 var contaJ = null, contaRun = null, contaPronta = false;
+// Cor escolhida no perfil (salvar_estilo). O lightstick usa ela; sem cor, usa a do cabelo.
+var perfMinhaCor = ''; try{ perfMinhaCor = /^#[0-9a-f]{6}$/i.test(localStorage.getItem('brs48cr_cor') || '') ? localStorage.getItem('brs48cr_cor') : ''; }catch(e){}
+function perfGuardarCor(c){
+  perfMinhaCor = /^#[0-9a-f]{6}$/i.test(c || '') ? String(c).toLowerCase() : '';
+  try{ if(perfMinhaCor) localStorage.setItem('brs48cr_cor', perfMinhaCor); else localStorage.removeItem('brs48cr_cor'); }catch(e){}
+}
 
 var CONTA_DICT = {
   en: {"Entre com Google para aparecer no ranking online":"Sign in with Google to appear on the online ranking","Entrar com Google":"Sign in with Google","Sair":"Sign out","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Escolha seu nome de Idol":"Choose your Idol name","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","CONFIRMAR":"CONFIRM","Esse nome já está em uso.":"That name is already taken.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","Esse nome é reservado.":"That name is reserved.","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","Conta pronta!":"Account ready!","estrelas importadas":"stars imported","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off."},
@@ -6259,7 +6266,7 @@ function contaEntrar(){
 }
 function contaSair(){
   if(_supabase) _supabase.auth.signOut();
-  contaJ = null; contaRun = null; contaUI();
+  contaJ = null; contaRun = null; perfGuardarCor(''); contaUI();
   perfSair();   // V2.1.3
 }
 function contaAviso(t){
@@ -6872,6 +6879,7 @@ function perfDesenharPetEm(x, p, px, py, s, t){   // desenha um pet com o acess�
 function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
   av = av || {}; t = t || 0;
   var vis = typeof av.visual === 'string' ? av.visual : '', rk = PERF_RANKVIS[vis] || 0, c = perfChar(av), pet = zoom ? null : perfPetDoAvatar(av);
+  if(/^#[0-9a-f]{6}$/i.test(av.cor || '')) c.luz = av.cor;   // lightstick na cor do perfil
   if(comFundo !== false) perfFundo(x, W2, H2, typeof av.fundo === 'string' ? av.fundo : 'basico', c.hair, t);
   var big = vis === 'mega' && !zoom, sc, chao, tx, ty;
   if(zoom){ sc = H2 / 46; tx = W2 / 2 - 15 * sc; ty = H2 * .5 - 10 * sc; chao = ty + 44 * sc; }   // rostinho: da coroa até os ombros
@@ -6956,7 +6964,7 @@ function perfPoseAtras(c, x, y){
       g.beginPath(); g.moveTo(x + b[1] + d * 3, y + 9); g.lineTo(x + b[1] + d * 5.5, y + 6.5); g.moveTo(x + b[1] + d * 4, y + 12); g.lineTo(x + b[1] + d * 7, y + 11.5); g.moveTo(x + b[1], y + 8.5); g.lineTo(x + b[1], y + 5.5); g.stroke();
     });
   } else if(p === 'luz'){
-    var cor = c.hair || '#ff6fb5';
+    var cor = c.luz || c.hair || '#ff6fb5';   // lightstick: cor do perfil, senão a do cabelo
     g.beginPath(); g.moveTo(x + 27, y + 25.5); g.lineTo(x + 33, y + 16.5); g.stroke();
     g.save(); g.shadowColor = cor; g.shadowBlur = 6; g.strokeStyle = cor; g.lineWidth = 2.8;
     g.beginPath(); g.moveTo(x + 34, y + 13.5); g.lineTo(x + 37, y + 2); g.stroke(); g.restore();
@@ -7319,7 +7327,7 @@ perfOv.addEventListener('click', function(e){
     if(ra && ra.ok){ perfAtual.aniver = ra.aniver; perfAtual.aniver_hoje = perfAniverVer = perfMeuAniverHoje = !!ra.hoje; if(ra.hoje && typeof aniverFesta === 'function') setTimeout(aniverFesta, 900); }
     var em = $('perfBioEmoji') ? $('perfBioEmoji').value.trim() : '', co = $('perfBioCor') ? $('perfBioCor').value : '', ti = $('perfBioTime') ? $('perfBioTime').value : '';
     return contaRpc('salvar_estilo', { p_emoji: em, p_cor: co, p_time: ti }).then(function(re){
-      if(re && re.ok){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; }
+      if(re && re.ok){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; perfGuardarCor(re.cor); }
       else if(re && re.erro === 'emoji') throw { estilo: 'emoji' };
     }, function(){ /* servidor ainda sem a coluna: segue salvando oshi e frase */ }).then(function(){ return contaRpc('salvar_bio', { p_oshi: os, p_frase: fr }); });
   }).then(function(r){
@@ -7542,6 +7550,7 @@ function perfGenDesenhar(){
     if(perfProva){ av.c = JSON.parse(JSON.stringify(av.c)); av.c.out = perfProva; prev = perfLojaDono().indexOf(perfProva) < 0; }
   } else prev = perfFaltando().length > 0;
   var x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height);
+  if(perfMinhaCor) av = Object.assign({}, av, { cor: perfMinhaCor });
   perfDesenharIdol(x, cv.width, cv.height, av, true, false, perfT + 1);
   if(prev){   // etiqueta de prévia no canto
     var u = cv.width / 320;
@@ -7727,7 +7736,7 @@ function perfAvatarAuto(){
   contaRpc('meu_perfil').then(function(d){
     if(!d) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
-    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin;
+    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; perfGuardarCor(d.cor);
     if(d.aniver_hoje && typeof aniverFesta === 'function') setTimeout(aniverFesta, 1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
@@ -8377,7 +8386,8 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
-  '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
+  '<div class="tw-rank-columns" id="twRankColumns"></div>'+
+  '<h3 class="tw-rank-kt-title" id="twRankKtTit" hidden></h3><div class="tw-rank-columns tw-rank-kt" id="twRankKt" hidden></div></section>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
@@ -8430,6 +8440,7 @@ function hubTemaUI(){   // chip do tema, partículas da tela e cor do fundo
 function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o pet ativo, no fundo da temporada
   var av = perfMeuAv && typeof perfMeuAv === 'object' ? JSON.parse(JSON.stringify(perfMeuAv)) : perfAvAtual({ pose:'v' });
   av.c = perfAvAtual().c; av.fundo = 'temporada';
+  if(perfMinhaCor) av.cor = perfMinhaCor;
   if(!av.pose) av.pose = 'v';
   var p = petAtivo && petAtivo();
   av.pet = p && petData && PET_SP[petData.ativo] ? { k:petData.ativo, acc:p.acc || '', cfg: petData.ativo === 'meu' ? p.cfg : null } : null;
@@ -8661,7 +8672,15 @@ function hubMisCarregar(){
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
 // Server-side Sora records are live; Karaoke stays empty until its own verified backend exists.
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
-var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
+var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
+// Barra própria do Karaoke⭐Time!: os três quadros da sala (pontuação, maior combo, acertos).
+var TW_KT_WORDS={
+ pt:['🎤 Karaoke⭐Time! · ranking da semana','⭐ Pontuação','✨ Maior combo','💖 Acertos'],
+ en:['🎤 Karaoke⭐Time! · weekly ranking','⭐ Score','✨ Best combo','💖 Accuracy'],
+ es:['🎤 Karaoke⭐Time! · ranking semanal','⭐ Puntuación','✨ Mejor combo','💖 Aciertos'],
+ ja:['🎤 カラオケ⭐タイム！ · 今週のランキング','⭐ スコア','✨ 最大コンボ','💖 正確さ'],
+ th:['🎤 Karaoke⭐Time! · อันดับประจำสัปดาห์','⭐ คะแนน','✨ คอมโบสูงสุด','💖 ความแม่นยำ']
+};
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤',(TW_KARAOKE_TIME?'Karaoke⭐Time!':'Karaoke⭐Day!'),'pts']];
 var TW_RANK_WORDS={
@@ -8697,7 +8716,7 @@ function twRankRecordLocal(value){
 function twRankCheckWeek(){
  var now=twRankSundayKey();
  if(now===twRankData.week)return;
- twRankData.week=now;twRankData.center=[];twRankData.sora=[];twRankData.karaoke=[];
+ twRankData.week=now;twRankData.center=[];twRankData.sora=[];twRankData.karaoke=[];twRankData.kcombo=[];twRankData.kacertos=[];
  twRankData.centerOK=false;twRankData.online=false;twRankData.mine=null;twRankData.readAt=0;
 }
 function twRankClean(list){
@@ -8716,8 +8735,7 @@ function twRankClean(list){
 }
 function twRankStatus(id){
  if(id==='center'&&!twRankData.centerOK)return twRankWord(2);
- if(id==='karaoke')return twRankWord(1);
- if(id==='sora'&&!twRankData.online)return twRankWord(1);
+ if((id==='sora'||id==='karaoke')&&!twRankData.online)return twRankWord(1);
  return twRankWord(0);
 }
 function twRankRow(row,i,unit,game){
@@ -8771,6 +8789,20 @@ function twRankRender(){
    (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3],k[0]);}).join('')+'</ol>':
     '<p>'+escHtml(twRankStatus(k[0]))+'</p>')+'</div>';
  }).join('');
+ var kt=$('twRankKt'),ktTit=$('twRankKtTit');
+ if(kt&&ktTit){
+  var on=typeof TW_KARAOKE_TIME!=='undefined'&&TW_KARAOKE_TIME===true,w=TW_KT_WORDS[LANG]||TW_KT_WORDS.pt;
+  kt.hidden=ktTit.hidden=!on;
+  if(on){
+   ktTit.textContent=w[0];
+   kt.innerHTML=[['karaoke',w[1],'pts'],['kcombo',w[2],'combo'],['kacertos',w[3],'%']].map(function(k){
+    var list=twRankData[k[0]];
+    return '<div class="tw-rank-game"><h3>'+escHtml(k[1])+'</h3>'+
+     (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[2],'karaoke');}).join('')+'</ol>':
+      '<p>'+escHtml(twRankStatus('karaoke'))+'</p>')+'</div>';
+   }).join('');
+  }
+ }
  twRankDrawAvatars();
 }
 function twRankRenderProfile(){
@@ -8797,6 +8829,8 @@ function twRankLoad(force){
   if(!data||data.semana!==week||twRankData.week!==week)return;
   twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
   twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
+  twRankData.kcombo=twRankClean(data.karaoke_combo);
+  twRankData.kacertos=twRankClean((Array.isArray(data.karaoke_acertos)?data.karaoke_acertos:[]).map(function(r){return r&&{nick:r.nick,score:Math.round(Number(r.score)*10)};})).map(function(r){return {nick:r.nick,score:r.score/10};});
   twRankData.mine=Number.isSafeInteger(+data.meu_sora)&&+data.meu_sora>0?+data.meu_sora:null;
  }).catch(function(){twRankData.online=false;}):Promise.resolve();
  twRankPending=Promise.all([center,online]).then(function(){
@@ -8804,6 +8838,18 @@ function twRankLoad(force){
  });
  return twRankPending;
 }
+// Karaoke⭐Time! online: o jogo, aberto no pop-up deste site, usa a conta daqui.
+// Sem conta (ou fora do site), ele continua jogando só no aparelho.
+window.twKaraokeOnline={
+ ativo:function(){return !!contaJ&&!!_supabase;},
+ iniciar:function(resume){return contaRpc('kt_run_start',{p_resume:resume||null});},
+ terminar:function(run,r){
+  return contaRpc('kt_run_finish',{p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null})
+   .then(function(x){if(x&&x.ranked)twRankRefreshAfterSora();return x;});
+ },
+ ranking:function(){return contaRpc('kt_ranking');},
+ cor:function(){return perfMinhaCor;}
+};
 function twRankRefreshAfterSora(){
  var pending=twRankPending;
  Promise.resolve(pending).catch(function(){}).then(function(){

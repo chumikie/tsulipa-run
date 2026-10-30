@@ -32,6 +32,11 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Karaoke: a cortina da direita não fechava (só a esquerda aparecia); agora as duas fecham e o varal de enfeites atravessa o palco inteiro.
 - GitHub: documentos antigos em `docs/historico/`, STATUS único. Branches já mescladas (20) podem ser apagadas pela dona em GitHub → Branches; manter `main`, `release/index2-lancamento` e, até fechar os PRs, `feature/sora-karaoke-v2-2026-10-29` e `test/karaoke-reuse-anonymous-session`.
 
+## Feito em 30/10 (2ª rodada)
+- Center⭐Run! Temporada 2 integrada no `index.html` (veio da v20): 8 cenários, deslizar (seta ↓ / botão ▼), obstáculos que andam, combo, corredor de fãs, desafio, Coro, Corrida do dia e seletor de cenário no Modo Teste. Na Rua da cidade a corrida é a de antes. Placar ganhou fundo translúcido nos cenários novos.
+- Perfil: emoji, cor e time (B, R, S, KKS) e Oshi escolhido entre quem joga. **Falta aplicar** `supabase/sql/perfil_emoji_cor_time_oshi.sql` (precisa do ok da dona); até lá, o perfil usa a lista antiga.
+- Karaoke: telão com o mesmo grupo para todos (grupo 1 às 12h00 … 6 às 12h50, novo sorteio por semana) e vista alternando Gigoia/Liberdade por semana.
+
 ## Falta antes do merge
 1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.
 2. No celular: compra, gacha, resgate, corrida salvando (a trava da prévia saiu).

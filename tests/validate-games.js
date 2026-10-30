@@ -174,7 +174,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePlayerSkin=read("karaoke-player-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
@@ -193,6 +193,14 @@ assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
        lab.includes('id="twMicTela"')&&lab.includes('class="tw-mic-radio-deck"'),
   "Aligned radio deck belongs only to the banner mic modal; ranking content and duo/trio grouping remain intact");
+assert(lab.includes('href="./karaoke-player-popup.css?v=1"')&&
+       karaokePlayerSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
+       karaokePlayerSkin.includes('.tw-preview-panel')&&
+       karaokePlayerSkin.includes('.tw-preview-stage')&&
+       karaokePlayerSkin.includes('#twPreviewIframe')&&
+       karaokePlayerSkin.includes('@media(max-width:720px)')&&
+       !karaokePlayerSkin.includes('#twMicModal'),
+  "Karaoke Time must keep its own responsive in-navigation popup skin, separate from the banner mic radio");
 const encStart=lab.indexOf("function encMostrar(d)"),encEnd=lab.indexOf("function encLoop()",encStart);
 const encUi=lab.slice(encStart,encEnd);
 const encDrawStart=lab.indexOf("function encLoop()"),encDrawEnd=lab.indexOf("function encAbrirNovo(",encDrawStart);
@@ -286,7 +294,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000&&Buffer.byteLength(karaokePlayerSkin,"utf8")<8000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&

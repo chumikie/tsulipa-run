@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'pet-sync.js'
+      - 'tests/pet-sync.test.js'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'
@@ -36,6 +38,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'pet-sync.js'
+      - 'tests/pet-sync.test.js'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'
@@ -75,6 +79,8 @@ jobs:
           node-version: '22'
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Validate Backstage Pet cloud save retries and confirmations
+        run: node tests/pet-sync.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame

@@ -193,6 +193,19 @@ assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
        lab.includes('id="twMicTela"')&&lab.includes('class="tw-mic-radio-deck"'),
   "Aligned radio deck belongs only to the banner mic modal; ranking content and duo/trio grouping remain intact");
+const encStart=lab.indexOf("function encMostrar(d)"),encEnd=lab.indexOf("function encLoop()",encStart);
+const encUi=lab.slice(encStart,encEnd);
+const encDrawStart=lab.indexOf("function encLoop()"),encDrawEnd=lab.indexOf("function encAbrirNovo(",encDrawStart);
+const encDraw=lab.slice(encDrawStart,encDrawEnd);
+assert(encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
+       encUi.includes("oe.hidden = ex.length > 0 || !os")&&
+       encUi.includes("encNomes(d)")&&encUi.includes("tr(d.fala)")&&
+       encDraw.includes("perfDesenharIdol")&&encDraw.includes("Array.isArray(encDados.extras)"),
+  "Duo/trio stays on one stage with its characters and line, while individual Oshi is hidden for collective encounters");
+assert(lab.includes("contaRpc('encontro_hoje'")&&
+       lab.includes("localStorage.setItem(ENC_KEY")&&
+       lab.includes("d.dia === encHoje()"),
+  "Logged-in daily encounter is server-selected and locally cached by Brazil date");
 const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
 const accGuard=lab.slice(accStart,accEnd);
 assert(accStart>=0&&accEnd>accStart&&accGuard.includes("o.disabled=!u")&&

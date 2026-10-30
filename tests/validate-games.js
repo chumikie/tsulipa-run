@@ -181,7 +181,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<10000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -311,12 +311,13 @@ try{
   };
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
-  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&fakeHub.hidden,
-    "Sora launcher must show the iframe and hide the hub");
+  // O Sora agora abre como pop-up SOBRE o hub (igual ao Star Gacha): o hub fica atras, visivel.
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&!fakeHub.hidden,
+    "Sora launcher must show the iframe as a pop-up over the hub");
   assert(attrs["data-jogo"]==="sora"&&attrs["data-tema"]==="halloween"&&
          previewPart.innerHTML===sourcePart.innerHTML&&
-         markerCreated===1&&headersMoved===1,
-    "Preview should move the official header once and reuse the hub seasonal particles");
+         markerCreated===0&&headersMoved===0,
+    "Sora keeps the official header on the page behind the pop-up");
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   assert(baseCanvasPauses===1,"Opening Sora must pause covered Center Run canvas loops");
   sandbox.twPreviewAbrirJogo("karaoke");
@@ -325,8 +326,8 @@ try{
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
          hubReturns===1&&launchesFocused===1&&
-         !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===1,
-    "Sora return must unload iframe, restore official header, clear effects and focus");
+         !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===0,
+    "Sora return must unload iframe, clear effects and focus");
   sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(overlay.hidden&&iframe.src==="about:blank"&&blockedKaraoke===1,

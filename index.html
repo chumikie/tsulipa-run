@@ -725,6 +725,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 #hub .tw-preview-notice strong{color:var(--b1);letter-spacing:.07em}
 #hub .hubtutc .tw-hubtut-soon{margin:9px auto 12px;padding:7px 12px;width:fit-content;max-width:100%;border-radius:999px;background:rgba(255,111,181,.17);color:var(--ink);font-weight:800;font-size:clamp(11px,2.8vw,13px);line-height:1.4}
 .tw-preview-game[hidden]{display:none!important}
+.tw-preview-panel{display:contents}
 .tw-preview-game{position:fixed;z-index:200000;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg1,#c9ecfc);}
 .tw-preview-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:55px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));color:var(--ink);background:var(--card);box-shadow:0 3px 16px rgba(30,10,80,.14);font-family:"M PLUS Rounded 1c",sans-serif;}
 .tw-preview-bar b{font-family:"Mochiy Pop One","Kosugi Maru",sans-serif;font-weight:400;font-size:clamp(13px,2.4vw,17px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -736,7 +737,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=6">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=7">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=3">
 </head>
 <body>
@@ -9007,13 +9008,12 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
-  hubOv.hidden=true;
-  document.body.classList.remove('hubon');
+  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
   twPreviewMontarFundo();
-  twPreviewCabecalhoOficial(true);
+  twPreviewCabecalhoOficial(tipo!=='sora');   // no Sora o cabecalho do site fica na pagina, atras do pop-up
   wrap.hidden=false;
   twIndex2PauseBaseFrames();
   var som=$('twPreviewSom');
@@ -9052,11 +9052,12 @@ function twPreviewFecharJogo(){
 }
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
+    '<div class="tw-preview-panel" id="twPreviewPainel">'+
     '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
     '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
     '<button type="button" class="tw-preview-som" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
     '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
-    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
+    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
   // Closed-room notice; no invitation controls or online-room changes.
   var textos=TW_KARAOKE_FECHADO_TEXTOS[LANG]||TW_KARAOKE_FECHADO_TEXTOS.pt;

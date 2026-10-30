@@ -10806,22 +10806,34 @@ function encPessoasRender(d){
 var encPerfRefreshKey='';
 function encCompletarPerfis(d){
   if(!contaJ)return;
-  var pessoas=encPessoas(d);
-  var completos=pessoas.every(function(p){return Object.prototype.hasOwnProperty.call(p,'best')&&Object.prototype.hasOwnProperty.call(p,'oshi');});
-  if(completos)return;
+  var faltando=encPessoas(d).filter(function(p){
+    return !Object.prototype.hasOwnProperty.call(p,'best')||!Object.prototype.hasOwnProperty.call(p,'oshi');
+  });
+  if(!faltando.length)return;
   var chave=String(d.dia||'')+'|'+String(d.nick||'');
   if(!chave||encPerfRefreshKey===chave)return;
   encPerfRefreshKey=chave;
-  // Atualiza encontros salvos antes desta correção sem sortear outro grupo nem entregar prêmio novamente.
-  contaRpc('encontro_hoje',{p_falas:DUO_FALAS.length}).then(function(r){
-    if(!r||r.nick!==d.nick||!Array.isArray(r.extras))return;
-    var nomesAntes=pessoas.map(function(p){return String(p.nick||'');});
-    var novos=[r].concat(r.extras).filter(function(p){return p&&p.nick;});
-    if(novos.length!==nomesAntes.length||!novos.every(function(p,i){return String(p.nick)===nomesAntes[i];}))return;
-    if(!novos.every(function(p){return Object.prototype.hasOwnProperty.call(p,'best')&&Object.prototype.hasOwnProperty.call(p,'oshi');}))return;
-    var atualizado=Object.assign({},d,{best:r.best,oshi:r.oshi,avatar:r.avatar||d.avatar,
-      extras:r.extras.map(function(p){return {nick:p.nick,avatar:p.avatar,best:p.best,oshi:p.oshi};})});
+  // O RPC encontro_hoje guarda nick/avatar dos extras, mas não os dados individuais.
+  // Reutiliza o perfil público já existente, sem novo sorteio, escrita ou mudança no banco.
+  Promise.all(faltando.map(function(p){
+    return contaRpc('perfil_publico',{p_nick:String(p.nick).slice(0,24)}).then(function(perfil){
+      return {nick:p.nick,perfil:perfil};
+    }).catch(function(){return {nick:p.nick,perfil:null};});
+  })).then(function(resultados){
     if(!encDados||encDados.dia!==d.dia||encDados.nick!==d.nick)return;
+    var perfis={};
+    resultados.forEach(function(r){if(r.perfil)perfis[String(r.nick).toLowerCase()]=r.perfil;});
+    var atualizado=Object.assign({},d);
+    var principal=perfis[String(d.nick).toLowerCase()];
+    if(principal){
+      atualizado.best=principal.best;
+      atualizado.oshi=principal.oshi;
+      atualizado.avatar=principal.avatar||d.avatar;
+    }
+    atualizado.extras=(Array.isArray(d.extras)?d.extras:[]).map(function(p){
+      var perfil=perfis[String(p.nick||'').toLowerCase()];
+      return perfil?Object.assign({},p,{best:perfil.best,oshi:perfil.oshi,avatar:perfil.avatar||p.avatar}):p;
+    });
     encDados=atualizado;
     try{localStorage.setItem(ENC_KEY,JSON.stringify(atualizado));}catch(e){}
     encPessoasRender(atualizado);

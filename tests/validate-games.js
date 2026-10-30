@@ -273,7 +273,8 @@ const kTime=read("karaoke-time.html");
 assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karaoke-time.html'+context"),
   "O card do Karaoke abre o Karaoke⭐Time! (o Day fica guardado, desligado)");
 assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&&
-       kTime.includes("read('brs48cr_nick')")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
+       kTime.includes("read('brs48cr_nick')")&&kTime.includes('id="ktTraducoes"')&&kTime.includes("get('lang')")&&
+       !preview.includes("'Karaoke: abrir teste (30 min)')) + '</button>' +\n    '<button")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
   "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");

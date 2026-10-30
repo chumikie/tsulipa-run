@@ -10929,8 +10929,9 @@ function admLivreBtn(){ var on = admLivre();
   return '<button type="button" class="btn' + (on ? '' : ' alt') + '" id="admLivre" aria-pressed="' + on + '">' + (on ? '🔓 ' : '🔒 ') + escHtml(tr(on ? 'Liberar tudo: ligado' : 'Liberar tudo: desligado')) + '</button>'; }
 if(typeof temaAdminHtml === 'function'){ var admToolsOrig = temaAdminHtml; temaAdminHtml = function(){
   return admToolsOrig() + '<button type="button" class="btn alt" data-admmis="1">🎯 ' + escHtml(tr('Completar missões do dia')) + '</button>' + admLivreBtn() +
+    (TW_KARAOKE_TIME ? '' :   // Karaoke online desligado no banco: botões da sala só voltam com ele
     '<button type="button" class="btn alt" data-admkar="teste">🎤 ' + escHtml(tr('Karaoke: abrir teste (30 min)')) + '</button>' +
-    '<button type="button" class="btn alt" data-admkar="automatico">🕛 ' + escHtml(tr('Karaoke: só aos domingos')) + '</button>' +
+    '<button type="button" class="btn alt" data-admkar="automatico">🕛 ' + escHtml(tr('Karaoke: só aos domingos')) + '</button>') +
     '<small class="admnota">🔓 ' + escHtml(tr('Liberar tudo: todas as roupas, poses, fundos, expressões e itens do Moon⭐Duo! ficam livres para você testar. Desligado, volta a valer só o que você comprou.')) + '</small>'; }; }
 var hubMisUIOrig = hubMisUI;
 hubMisUI = function(){ hubMisUIOrig.apply(this, arguments);
@@ -10939,7 +10940,7 @@ hubMisUI = function(){ hubMisUIOrig.apply(this, arguments);
 };
 document.addEventListener('click', function(e){
   var k = e.target.closest && e.target.closest('[data-admkar]');
-  if(k){ if(!contaAdmin()) return; k.disabled = true;
+  if(k){ if(!contaAdmin() || TW_KARAOKE_TIME) return; k.disabled = true;
     contaRpc('karaoke_sala_admin', { p_acao: k.dataset.admkar, p_minutos: 30 }).then(function(r){
       k.disabled = false;
       var msg = r && r.aberta ? '🟢 ' + tr('Karaoke aberto para teste por 30 min') : '🕛 ' + tr('Karaoke volta a abrir só aos domingos');

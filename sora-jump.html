@@ -4107,9 +4107,12 @@ function soraCloseUI(){
       // Capture otherwise blocks onclick, so run the game's cleanup first.
       if(typeof b.onclick==='function')b.onclick.call(b,e);
       e.stopImmediatePropagation();
-      // Fora do pop-up, voltar leva a pagina principal (e nao ao seletor antigo).
-      try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);else location.href='./';}
-      catch(_){location.href='./';}
+      // Dentro do pop-up: so avisa a pagina de fora. NUNCA navegar o iframe, senao
+      // a pagina principal abre dentro do proprio pop-up. Fora dele, vai para a raiz.
+      if(parent!==window){
+        try{parent.postMessage({type:'tsulipa-games-hub'},location.origin);}
+        catch(_){try{parent.postMessage({type:'tsulipa-games-hub'},'*');}catch(__){}}
+      }else{ location.href='./'; }
     }
   },true);
   document.addEventListener('DOMContentLoaded',function(){

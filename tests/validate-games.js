@@ -45,6 +45,24 @@ try{
 // A pagina principal e a unica porta de entrada dos jogos: nao existe mais um
 // seletor separado (sora-jump-karaoke.html), que era por onde o voltar se perdia.
 assert(!fs.existsSync(path.join(root,"sora-jump-karaoke.html")),"O seletor avulso nao deve voltar ao projeto");
+
+// Nenhuma pagina pode apontar para um arquivo do projeto que nao existe mais,
+// e nenhuma pode navegar o proprio iframe para outra pagina do site.
+for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html","privacidade.html","karaoke-online-lab.html"]){
+  const txt=read(nome);
+  const alvos=new Set();
+  for(const m of txt.matchAll(/(?:href|src)=["']\.?\/?([A-Za-z0-9_.-]+\.(?:html|css|js|json|png|jpg|svg|mp3))(?:\?[^"']*)?["']/g)) alvos.add(m[1]);
+  for(const m of txt.matchAll(/location\.href\s*=\s*['"]\.\/([A-Za-z0-9_.-]+\.html)['"]/g)) alvos.add(m[1]);
+  for(const alvo of alvos){
+    assert(fs.existsSync(path.join(root,alvo))||fs.existsSync(path.join(root,"audio",alvo)),
+      nome+" aponta para um arquivo que nao existe: "+alvo);
+  }
+}
+for(const jogo of ["sora-jump.html","karaoke-day.html"]){
+  const txt=read(jogo);
+  assert(!/catch[^]{0,80}location\.href\s*=\s*['"]\.\/[A-Za-z0-9_.-]+\.html/.test(txt),
+    jogo+": dentro do pop-up o voltar nunca pode navegar o iframe");
+}
 for(const jogo of ["sora","karaoke"]){
   assert(preview.includes('data-ir="'+jogo+'"'),"Falta o card do "+jogo+" na pagina principal");
 }

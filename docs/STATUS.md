@@ -39,7 +39,8 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Karaoke · janela da Liberdade:** a corda das lanternas flutuava sem apoio (agora dois postes na calçada), as lanternas viraram luzes de verdade, os toldos e as placas 茶 (chá) e 麺 (lámen) viraram lojinhas apoiadas no chão.
 - **Sora⭐Jump!:** abre como pop-up da página, igual ao Star⭐Gacha, no cartão do tema escolhido e sobre a página escurecida. O menu, o fim de jogo e o placar saíram do vidro escuro para o pastel do site. O ⌂ Início saiu de cima do placar.
 - **Som:** com o Sora ou o Karaoke abertos, a página para a própria música (antes a do Center Run voltava por cima).
-- **Voltar:** fora do pop-up, voltar leva à página principal. O seletor avulso `sora-jump-karaoke.html` foi removido — era por onde o voltar se perdia.
+- **Voltar:** dentro do pop-up, o voltar só avisa a página de fora e nunca navega o iframe (antes, quando o aviso falhava — ao abrir por `file://`, por exemplo — a página principal abria dentro do próprio pop-up). Fora do pop-up, vai para a raiz. O seletor avulso `sora-jump-karaoke.html` foi removido.
+- **Teste novo:** o `validate-games.js` confere que nenhuma página aponta para arquivo que não existe e que o voltar nunca navega o iframe.
 - **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
 - **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
 

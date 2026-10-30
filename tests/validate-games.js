@@ -172,8 +172,8 @@ assert(lab.includes("var TW_INDEX2_TUT_KEY='tw_index2_tut_v2'")&&
   "Index 2 welcome should not overwrite brs48cr_tut");
 assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
-       lab.includes("Karaoke⭐Day! · Em breve"),
-  "Index 2 missing Sora intro or Karaoke coming-soon teaser");
+       lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
+  "Index 2 missing Sora intro or Karaoke Time teaser");
 const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&

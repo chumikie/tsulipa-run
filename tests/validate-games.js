@@ -175,6 +175,16 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
 const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
+
+assert(launchSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
+       launchSkin.includes("twKaraokeCdSpin")&&
+       launchSkin.includes("grid-template-columns:clamp(150px,18%,220px)")&&
+       launchSkin.includes("@media(max-width:720px)")&&
+       launchSkin.includes("#twPreviewJogo[data-jogo=\"karaoke\"] #twPreviewIframe"),
+  "Karaoke Time popup must use an isolated responsive CD-player shell");
+assert(lab.includes('href="./index2-launch-ui.css?v=9"'),
+  "Karaoke player popup CSS cache key must be refreshed");
+
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),

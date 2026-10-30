@@ -200,7 +200,8 @@ const encDraw=lab.slice(encDrawStart,encDrawEnd);
 assert(encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        encUi.includes("oe.hidden = ex.length > 0 || !os")&&
        encUi.includes("encNomes(d)")&&encUi.includes("tr(d.fala)")&&
-       encDraw.includes("perfDesenharIdol")&&encDraw.includes("Array.isArray(encDados.extras)"),
+       encDraw.includes("perfDesenharIdol")&&encDraw.includes("Array.isArray(encDados.extras)")&&
+       micCdSkin.includes(".encp.enc-grupo #encRk,.encp.enc-grupo #encSelo,.encp.enc-grupo #encOshi"),
   "Duo/trio stays on one stage with its characters and line, while individual Oshi is hidden for collective encounters");
 assert(lab.includes("contaRpc('encontro_hoje'")&&
        lab.includes("localStorage.setItem(ENC_KEY")&&

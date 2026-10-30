@@ -398,6 +398,8 @@ try{
   const iframe={src:"",title:""},attrs={};
   const overlay={
     hidden:true,setAttribute:(name,value)=>{attrs[name]=String(value);},
+    toggleAttribute:(name,on)=>{if(on)attrs[name]="";else delete attrs[name];},
+    hasAttribute:name=>name in attrs,
     removeAttribute:name=>{delete attrs[name];}
   };
   const gameTitle={textContent:""},backText={textContent:""};
@@ -420,6 +422,7 @@ try{
   const nodes={
     twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
     twPreviewVoltar:{focus:()=>{backFocused++;}},
+    twKaraokePopupFechar:{focus:()=>{backFocused++;},setAttribute:()=>{}},
     twPreviewVoltarTxt:backText,twPreviewAviso:notice,
     twPreviewPart:previewPart,hubPart:sourcePart,
     twPreviewHeaderSlot:slot
@@ -495,8 +498,14 @@ try{
   assert(!overlay.hidden&&iframe.src==="./karaoke-time.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&
          gameTitle.textContent==="🎤 Karaoke⭐Time!",
     "Karaoke Time must open any day, in the new file, without rehearsal flag");
+  assert(!fakeHub.hidden&&fakeHub.inert&&("data-karaoke-popup" in attrs)&&attrs.role==="dialog"&&
+         attrs["aria-modal"]==="true"&&markerCreated===3,
+    "Karaoke Time keeps the actual hub visible and inert without moving the site header");
+  const returnsBeforeClose=hubReturns;
   sandbox.twPreviewFecharJogo();
-  assert(iframe.src==="about:blank"&&overlay.hidden,"Karaoke Time return must unload iframe");
+  assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&!fakeHub.inert&&
+         !("data-karaoke-popup" in attrs)&&hubReturns===returnsBeforeClose&&launchesFocused===5,
+    "Karaoke Time close unloads the game and restores focus without rebuilding or scrolling the hub");
   console.log("✓ Preview controller smoke test: Sora, Karaoke Day, Karaoke Time, mod preview, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
@@ -592,3 +601,4 @@ if(errors.length){
 }else{
   console.log("✓ All static validation checks passed. Browser and gameplay QA still required.");
 }
+

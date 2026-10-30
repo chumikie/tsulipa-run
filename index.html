@@ -742,6 +742,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./index2-launch-ui.css?v=8">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
+<link rel="stylesheet" href="./karaoke-popup.css?v=1">
 </head>
 <body>
 <header>
@@ -9229,6 +9230,8 @@ function twPreviewSomSincronizar(ligado){
   botao.disabled=false;botao.setAttribute('aria-pressed',String(ligado));twPreviewSomRotular();
 }
 function twPreviewAtualizarIdioma(){
+  var fechar=$('twKaraokePopupFechar');
+  if(fechar)fechar.setAttribute('aria-label',({pt:'Fechar',en:'Close',es:'Cerrar',ja:'閉じる',th:'ปิด'}[LANG]||'Fechar')+' Karaoke Time');
   var voltar=$('twPreviewVoltarTxt');
   if(voltar)voltar.textContent=twPreviewTextos[LANG]||twPreviewTextos.pt;
   twPreviewSomRotular();
@@ -9317,12 +9320,15 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
-  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}
+  if(tipo!=='sora'&&!kTime){hubOv.hidden=true;document.body.classList.remove('hubon');}
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
+  wrap.toggleAttribute('data-karaoke-popup',kTime);
+  if(kTime){hubOv.inert=true;wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',frame.title);}
+  twPreviewAtualizarIdioma();
   twPreviewMontarFundo();
-  twPreviewCabecalhoOficial(tipo!=='sora');   // no Sora o cabecalho do site fica na pagina, atras do pop-up
+  twPreviewCabecalhoOficial(tipo!=='sora'&&!kTime);   // Sora e Karaoke Time mantêm a página atrás do pop-up
   wrap.hidden=false;
   twIndex2PauseBaseFrames();
   var som=$('twPreviewSom');
@@ -9341,19 +9347,24 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
   frame.src=tipo==='sora'?'./sora-jump.html'+context:kTime?'./karaoke-time.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
-  if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
+  var fechar=kTime?$('twKaraokePopupFechar'):$('twPreviewVoltar');
+  if(fechar)fechar.focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe');
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
+  var eraPopup=wrap.hasAttribute('data-karaoke-popup');
   frame.src='about:blank';
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
+  wrap.removeAttribute('data-karaoke-popup');
+  wrap.removeAttribute('role');wrap.removeAttribute('aria-modal');
+  hubOv.inert=false;
   var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
   twPreviewCabecalhoOficial(false);
-  hubMostrar();
+  if(eraPopup)twKaraokeAtualizarCard();else hubMostrar();
   if(typeof muted!=='undefined'&&!muted&&typeof hubComecou!=='undefined'&&hubComecou&&typeof hubMusicaTocar==='function')hubMusicaTocar();
   // hubMostrar re-creates cards; return focus to the fresh game launcher.
   var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
@@ -9362,6 +9373,7 @@ function twPreviewFecharJogo(){
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
     '<div class="tw-preview-panel" id="twPreviewPainel">'+
+    '<button type="button" id="twKaraokePopupFechar" aria-label="Fechar Karaoke Time">×</button>'+
     '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
     '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
     '<button type="button" class="tw-preview-som" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
@@ -9384,6 +9396,8 @@ function twPreviewFecharJogo(){
   };
   $('twKaraokeFechado').addEventListener('click',function(e){if(e.target===this)$('twKaraokeFecharAviso').click();});
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
+  $('twKaraokePopupFechar').addEventListener('click',twPreviewFecharJogo);
+  $('twPreviewJogo').addEventListener('click',function(e){if(e.target===this&&this.hasAttribute('data-karaoke-popup'))twPreviewFecharJogo();});
   $('twPreviewSom').addEventListener('click',function(){
     if(twPreviewJogoAnterior!=='sora'||this.disabled)return;
     this.disabled=true;
@@ -13075,3 +13089,4 @@ applyLang();
 </script>
 </body>
 </html>
+

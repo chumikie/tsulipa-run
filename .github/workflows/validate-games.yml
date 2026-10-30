@@ -9,6 +9,7 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-popup.css'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -43,6 +44,7 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-popup.css'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -99,3 +101,4 @@ jobs:
         run: node tests/karaoke-online.test.js
       - name: Cards com login simulado (e interruptor de teste desligado)
         run: node tests/login-simulado.test.js
+

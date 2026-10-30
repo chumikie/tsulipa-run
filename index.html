@@ -8445,15 +8445,33 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       }
     });
     var rg2 = hubT - HUB_REAGE.t0;
-    if(HUB_REAGE.i >= 0 && rg2 < 110){   // emojis subindo e o "oi" de quem foi tocada
-      var hx = W2 * HUB_TRIO[HUB_REAGE.i][2], top = chao - 50 * sc, al = rg2 < 90 ? 1 : (110 - rg2) / 20;
-      x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center';
-      x.font = (7 * sc) + 'px sans-serif';
-      HUB_REAGE.emo.forEach(function(e2){ x.fillText(e2.e, hx + e2.dx * sc / 3, top - rg2 * e2.v * sc / 6); });
-      var txt = tr(HUB_REAGE.txt || HUB_TRIO_OI[HUB_REAGE.i]); x.font = '800 ' + (5.2 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
-      var tw = x.measureText(txt).width + 6 * sc, bx = Math.max(tw / 2 + 4, Math.min(W2 - tw / 2 - 4, hx)), by = top - 6 * sc;
-      x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.roundRect ? x.roundRect(bx - tw / 2, by - 6 * sc, tw, 9 * sc, 4 * sc) : x.rect(bx - tw / 2, by - 6 * sc, tw, 9 * sc); x.fill();
-      x.fillStyle = ['#9b30d9', '#3f9c1f', '#4169e1'][HUB_REAGE.i]; x.fillText(txt, bx, by + .8 * sc);
+    if(HUB_REAGE.i >= 0 && rg2 < 110){   // balão kawaii com a fala + emojis saindo pelos lados (nunca embaixo do balão)
+      var hi = HUB_REAGE.i, hx = W2 * HUB_TRIO[hi][2], top = chao - 50 * sc, al = rg2 < 90 ? 1 : (110 - rg2) / 20;
+      var corA = ['#9b30d9', '#3f9c1f', '#4169e1'][hi], corB = ['#ff9ce6', '#b6ff3b', '#7fd4ff'][hi];
+      var pop = rg2 < 8 ? .6 + rg2 / 20 : 1;   // entra com um "pop"
+      x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.textBaseline = 'middle';
+      var txt = tr(HUB_REAGE.txt || HUB_TRIO_OI[hi]); x.font = '800 ' + (5.4 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
+      var tw = x.measureText(txt).width + 9 * sc, th = 10.5 * sc, bx = Math.max(tw / 2 + 6, Math.min(W2 - tw / 2 - 6, hx)), by = top - 9 * sc;
+      x.translate(bx, by); x.scale(pop, pop);
+      var rr = th / 2;
+      function pilula(){ x.beginPath(); x.moveTo(-tw / 2 + rr, -th / 2); x.arcTo(tw / 2, -th / 2, tw / 2, th / 2, rr); x.arcTo(tw / 2, th / 2, -tw / 2, th / 2, rr); x.arcTo(-tw / 2, th / 2, -tw / 2, -th / 2, rr); x.arcTo(-tw / 2, -th / 2, tw / 2, -th / 2, rr); x.closePath(); }
+      x.shadowColor = corA; x.shadowBlur = 4 * sc; x.shadowOffsetY = 1.2 * sc;
+      var gr = x.createLinearGradient(0, -th / 2, 0, th / 2); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#fff3fb');
+      pilula(); x.fillStyle = gr; x.fill(); x.shadowColor = 'transparent';
+      x.lineWidth = .9 * sc; x.strokeStyle = corA; pilula(); x.stroke();
+      x.lineWidth = .45 * sc; x.strokeStyle = corB; x.beginPath(); x.moveTo(-tw / 2 + rr, -th / 2 + .9 * sc); x.lineTo(tw / 2 - rr, -th / 2 + .9 * sc); x.stroke();   // brilhinho no topo
+      var tx = Math.max(-tw / 2 + 4 * sc, Math.min(tw / 2 - 4 * sc, hx - bx));   // rabinho apontando para quem falou
+      x.fillStyle = '#fff3fb'; x.strokeStyle = corA; x.lineWidth = .9 * sc;
+      x.beginPath(); x.moveTo(tx - 2.2 * sc, th / 2 - .3 * sc); x.lineTo(tx, th / 2 + 2.8 * sc); x.lineTo(tx + 2.2 * sc, th / 2 - .3 * sc); x.fill();
+      x.beginPath(); x.moveTo(tx - 2.2 * sc, th / 2); x.lineTo(tx, th / 2 + 2.8 * sc); x.lineTo(tx + 2.2 * sc, th / 2); x.stroke();
+      x.fillStyle = corA; x.fillText(txt, 0, .3 * sc);
+      x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = corB; x.fillText('✦', -tw / 2 - 1.5 * sc, -th / 2); x.fillText('✧', tw / 2 + 1.5 * sc, th / 2 - 1 * sc);
+      x.restore();
+      x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.font = (6.5 * sc) + 'px sans-serif';
+      HUB_REAGE.emo.forEach(function(e2, n){   // sobem dos lados do Idol, abaixo do balão
+        var lado = n % 2 ? 1 : -1, ex2 = hx + lado * (13 + (n % 3) * 4) * sc, ey = chao - 26 * sc - rg2 * e2.v * sc / 7 - n * 2 * sc;
+        x.fillText(e2.e, ex2 + Math.sin(rg2 / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey));
+      });
       x.restore();
     }
     if(temaPerfil() === 'halloween'){   // abóboras na frente: nada fica por cima delas

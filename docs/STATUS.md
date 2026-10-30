@@ -41,6 +41,9 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Banner do TsuLiPa: tocar na Tsu, Lirika ou Pati faz pulinho, emojis e um "oi" escrito (vozes entram quando as gravações chegarem).
 - Música de cada tema agora é cover do TsuLiPa (nomes dos temas iguais): Halloween Love Pulsar, Natal Stay With Me, Ano Novo Wish You Happiness!!, Valentine Valentine Kiss, Verão Hitonatsu no Dekigoto, Outono Samishii Nettaigyo, Inverno Monster, Primavera Cheeky Cheeky, Sakura ZIPPER, Tanabata Wagamama na Nagareboshi, Dia das Crianças Amor Grilado, Aniversário Aitakatta.
 
+- Banner: vozes reais do trio (5 falas cada, efeito kawaii, volume baixo); balão kawaii com contorno e sombra na cor de cada uma, emojis subindo dos lados.
+- Privacidade atualizada (30/10) em 5 idiomas: estilo do perfil, presença no Karaoke e vozes (sem microfone, sem gravação).
+
 ## Falta antes do merge
 1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.
 2. No celular: compra, gacha, resgate, corrida salvando (a trava da prévia saiu).

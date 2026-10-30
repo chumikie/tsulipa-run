@@ -10850,11 +10850,12 @@ function encMostrar(d){
   encDados = d; encT = 0;
   var ex = Array.isArray(d.extras) ? d.extras : [];
   $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
-  $('encNick').textContent = encNomes(d);
+  $('encNick').textContent = ex.length ? tr('Participantes') : d.nick;
   $('encFala').textContent = tr(d.fala);
   var ri = rankOf(+d.best || 0);
   $('encSelo').textContent = ex.length ? '👥' : (PERF_RANK_EMO[ri] || '⭐');
   encPessoasRender(d);
+  encCompletarPerfis(d);
   $('encFoto').textContent = '📸 ' + tr('Foto');
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');

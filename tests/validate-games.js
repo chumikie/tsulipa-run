@@ -173,7 +173,7 @@ assert(lab.includes("./sora-jump.html'+context")&&
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
 assert(sora.includes("twSoraEmbedBoot")&&
        sora.includes("get('embed')!=='index2'")&&sora.includes("tw-sora-embed")&&
-       sora.includes("./sora-embed.css?v=4")&&
+       /\.\/sora-embed\.css\?v=\d+/.test(sora)&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
@@ -307,7 +307,7 @@ try{
   };
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
-  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&fakeHub.hidden,
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&fakeHub.hidden,
     "Sora launcher must show the iframe and hide the hub");
   assert(attrs["data-jogo"]==="sora"&&attrs["data-tema"]==="halloween"&&
          previewPart.innerHTML===sourcePart.innerHTML&&
@@ -316,7 +316,7 @@ try{
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   assert(baseCanvasPauses===1,"Opening Sora must pause covered Center Run canvas loops");
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&musicStops===1,
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&musicStops===1,
     "A duplicate launch must not replace an active game");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
@@ -330,13 +330,13 @@ try{
   // A conscious rehearsal click can open the disconnected demo even on a weekday.
   // This is NOT the same as granting online seats or privileges.
   sandbox.twPreviewAbrirJogo("karaoke",true);
-  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&rehearsal=1"&&
+  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light&rehearsal=1"&&
          gameTitle.textContent.includes("Ensaio"),
     "INDEX2 rehearsal must work outside Sunday and be clearly identified as local only");
   sandbox.twPreviewFecharJogo();
   sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
+  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
     "Karaoke preview should open during scheduled window");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&hubReturns===3&&launchesFocused===3,

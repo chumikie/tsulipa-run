@@ -429,8 +429,12 @@ html,body{min-height:100%;}
     var o=new URLSearchParams(location.search).get('oshi');
     if(['tsu','lirika','pati'].indexOf(o)>=0)document.documentElement.setAttribute('data-oshi',o);
     else document.documentElement.removeAttribute('data-oshi');
+    // O tema (claro/escuro) vem da página inicial para o card e os botões
+    // usarem exatamente as mesmas cores do Center⭐Run!.
+    var t=new URLSearchParams(location.search).get('theme');
+    if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
     var style=document.createElement('link');
-    style.rel='stylesheet';style.href='./sora-embed.css?v=4';
+    style.rel='stylesheet';style.href='./sora-embed.css?v=5';
     document.head.appendChild(style);
   }catch(e){/* standalone fallback */ }
 })();

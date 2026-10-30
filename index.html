@@ -906,6 +906,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   <div class="btns" style="margin-top:10px"><button class="btn alt" id="petX">VOLTAR</button></div>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+<script src="./tw-weekly-podium-model.js?v=1"></script>
 <script>
 /* ================================================================
    ⚠️⚠️⚠️ CHAVES DE SAVE E DO BANCO — NUNCA RENOMEAR ⚠️⚠️⚠️
@@ -8622,14 +8623,8 @@ var TW_RANK_WORDS={
  th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน','Center: อันดับทางการ · Sora/Karaoke: กำลังเตรียมเปิดออนไลน์','ช่องอันดับประจำสัปดาห์','ทีวีอันดับประจำสัปดาห์','ไอดอลยอดเยี่ยมประจำสัปดาห์','แชมป์ประจำสัปดาห์']
 };
 function twRankWord(i){return (TW_RANK_WORDS[LANG]||TW_RANK_WORDS.pt)[i];}
-function twRankSundayKey(timestamp){
- var parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(timestamp===undefined?Date.now():timestamp));
- var o={};parts.forEach(function(p){o[p.type]=p.value;});
- var d=new Date(Date.UTC(+o.year,+o.month-1,+o.day));d.setUTCDate(d.getUTCDate()-d.getUTCDay());
- return d.toISOString().slice(0,10);
-}
 function twRankLocal(){
- var week=twRankSundayKey();
+ var week=TsuWeeklyPodiumModel.sundayKey();
  try{
   var v=JSON.parse(localStorage.getItem(TW_SORA_WEEK_STORAGE)||'null');
   if(v&&v.week!==week){localStorage.removeItem(TW_SORA_WEEK_STORAGE);return null;}
@@ -8641,28 +8636,14 @@ function twRankRecordLocal(value){
  var score=Number(value);
  if(!contaJ||!contaJ.nick||!Number.isSafeInteger(score)||score<1||score>200000)return;
  var old=twRankLocal();
- try{localStorage.setItem(TW_SORA_WEEK_STORAGE,JSON.stringify({week:twRankSundayKey(),nick:contaJ.nick,score:Math.max(score,old?old.score:0)}));}catch(e){}
+ try{localStorage.setItem(TW_SORA_WEEK_STORAGE,JSON.stringify({week:TsuWeeklyPodiumModel.sundayKey(),nick:contaJ.nick,score:Math.max(score,old?old.score:0)}));}catch(e){}
  twRankRenderProfile();
 }
 function twRankCheckWeek(){
- var now=twRankSundayKey();
+ var now=TsuWeeklyPodiumModel.sundayKey();
  if(now===twRankData.week)return;
  twRankData.week=now;twRankData.center=[];twRankData.sora=[];twRankData.karaoke=[];
  twRankData.centerOK=false;twRankData.online=false;twRankData.mine=null;twRankData.readAt=0;
-}
-function twRankClean(list){
- if(!Array.isArray(list))return [];
- var best=Object.create(null);
- list.slice(0,30).forEach(function(p){
-  if(!p||typeof p!=='object')return;
-  var nick=String(p.nick||p.name||'').trim().slice(0,24);
-  var score=Math.floor(Number(p.score===0?0:(p.score||p.pts||0)));
-  if(!nick||!Number.isSafeInteger(score)||score<=0)return;
-  var key=nick.toLocaleLowerCase('pt-BR');
-  if(!best[key]||score>best[key].score)best[key]={nick:nick,score:score};
- });
- return Object.keys(best).map(function(k){return best[k];})
-  .sort(function(a,b){return b.score-a.score||a.nick.localeCompare(b.nick);}).slice(0,3);
 }
 function twRankStatus(id){
  if(id==='center'&&!twRankData.centerOK)return twRankWord(2);
@@ -8740,12 +8721,12 @@ function twRankLoad(){
  var week=twRankData.week;
  var center=_supabase.rpc('top_scores',{periodo:'week'}).then(function(res){
   if(res.error)throw res.error;
-  if(week===twRankData.week){twRankData.center=twRankClean(res.data);twRankData.centerOK=true;}
+  if(week===twRankData.week){twRankData.center=TsuWeeklyPodiumModel.clean(res.data);twRankData.centerOK=true;}
  }).catch(function(){if(week===twRankData.week)twRankData.centerOK=false;});
  var online=TW_RANK_ONLINE_READY?contaRpc('tw_podio_semana').then(function(data){
   if(!data||data.semana!==week||twRankData.week!==week)return;
-  twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
-  twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
+  twRankData.center=TsuWeeklyPodiumModel.clean(data.center);twRankData.sora=TsuWeeklyPodiumModel.clean(data.sora);
+  twRankData.karaoke=TsuWeeklyPodiumModel.clean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
   twRankData.mine=Number.isSafeInteger(+data.meu_sora)&&+data.meu_sora>0?+data.meu_sora:null;
  }).catch(function(){twRankData.online=false;}):Promise.resolve();
  twRankPending=Promise.all([center,online]).then(function(){

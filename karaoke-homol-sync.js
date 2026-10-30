@@ -10,6 +10,7 @@
    var client=opts.client,channel=null,connecting=false,serial=0;
    var timer=null,queuedRevision=-1,seenRevision=-1,lastFetch=0,retryAfter=0;
    var now=opts.now||function(){return Date.now();};
+   var minInterval=Number.isFinite(opts.minInterval)?Math.max(300,opts.minInterval):2000;
    var delay=opts.setTimeout||setTimeout,clear=opts.clearTimeout||clearTimeout;
    function active(){return opts.canListen()&&!opts.hidden();}
    function status(s){if(opts.onStatus)opts.onStatus(s);}
@@ -32,7 +33,7 @@
        queuedRevision=-1;lastFetch=now();
        try{await opts.refresh();}
        catch(e){status('🌸 Conexão intermitente · consulta periódica ativa');}
-     },Math.max(300,2000-(now()-lastFetch)));
+     },Math.max(300,minInterval-(now()-lastFetch)));
    }
    async function start(){
      if(!active()||channel||connecting||now()<retryAfter)return;

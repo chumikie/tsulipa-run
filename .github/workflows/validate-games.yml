@@ -4,64 +4,22 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'index.html'
-      - 'index2.html'
-      - 'sora-jump.html'
-      - 'sora-jump-karaoke.html'
-      - 'karaoke-day.html'
-      - 'karaoke-homol-view.js'
-      - 'karaoke-homol-client.js'
-      - 'karaoke-homol-sync.js'
-      - 'tests/karaoke-homol-sync.test.js'
-      - 'supabase/sql/karaoke_lab_*.sql'
-      - 'supabase/tests/karaoke_lab_*.sql'
-      - 'tests/karaoke-homol-view.test.js'
-      - 'games-theme.css'
-      - 'index2-skin.css'
-      - 'sora-embed.css'
-      - 'karaoke-embed.css'
-      - 'karaoke-rhythm.js'
-      - 'karaoke-rhythm.css'
-      - 'tests/karaoke-rhythm.test.js'
-      - 'karaoke-online-lab.html'
-      - 'karaoke-room-model.js'
-      - 'tests/karaoke-room-model.test.js'
-      - 'tests/validate-games.js'
-      - 'tests/sora-stability.test.js'
-      - 'tests/karaoke-homol-refresh.test.js'
-      - 'tests/tw-weekly-podium.test.js'
-      - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - '**/*.html'
+      - '**/*.js'
+      - '**/*.css'
+      - '**/*.sql'
+      - 'vercel.json'
+      - 'tools/lint/**'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
     paths:
-      - 'index.html'
-      - 'index2.html'
-      - 'sora-jump.html'
-      - 'sora-jump-karaoke.html'
-      - 'karaoke-day.html'
-      - 'karaoke-homol-view.js'
-      - 'karaoke-homol-client.js'
-      - 'karaoke-homol-sync.js'
-      - 'tests/karaoke-homol-sync.test.js'
-      - 'supabase/sql/karaoke_lab_*.sql'
-      - 'supabase/tests/karaoke_lab_*.sql'
-      - 'tests/karaoke-homol-view.test.js'
-      - 'games-theme.css'
-      - 'index2-skin.css'
-      - 'sora-embed.css'
-      - 'karaoke-embed.css'
-      - 'karaoke-rhythm.js'
-      - 'karaoke-rhythm.css'
-      - 'tests/karaoke-rhythm.test.js'
-      - 'karaoke-online-lab.html'
-      - 'karaoke-room-model.js'
-      - 'tests/karaoke-room-model.test.js'
-      - 'tests/validate-games.js'
-      - 'tests/sora-stability.test.js'
-      - 'tests/karaoke-homol-refresh.test.js'
-      - 'tests/tw-weekly-podium.test.js'
-      - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - '**/*.html'
+      - '**/*.js'
+      - '**/*.css'
+      - '**/*.sql'
+      - 'vercel.json'
+      - 'tools/lint/**'
       - '.github/workflows/validate-games.yml'
 
 jobs:
@@ -73,8 +31,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install lint tooling
+        run: npm ci --prefix tools/lint
+      - name: Lint extracted browser modules
+        run: npm --prefix tools/lint run lint
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Smoke test local page and stylesheet resources
+        run: node tests/static-links.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame
@@ -89,5 +53,9 @@ jobs:
         run: node tests/sora-stability.test.js
       - name: Validate actual INDEX 2 weekly podium integration
         run: node tests/tw-weekly-podium.test.js
+      - name: Validate critical account, purchase and save flows
+        run: node tests/index-critical-flows.test.js
+      - name: Validate anonymous session reuse
+        run: node tests/karaoke-reuse-session.test.js
       - name: Karaoke online (produção)
         run: node tests/karaoke-online.test.js

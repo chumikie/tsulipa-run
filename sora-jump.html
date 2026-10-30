@@ -1547,7 +1547,9 @@ function soraOnlineBeginRun(){
   if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId) return Promise.resolve(null);
   soraOnlineRunId = null;
   soraOnlineRunFinishSent = false;
-  soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(userId){
+  soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(){
+    // Leia o estado atual: a promessa inicial pode ter resolvido antes do login.
+    var userId = soraOnlineUserId;
     if(!userId || !_supabase || typeof _supabase.rpc !== 'function') return null;
     return _supabase.rpc('sora_run_start').then(function(result){
       if(result && result.error) throw result.error;

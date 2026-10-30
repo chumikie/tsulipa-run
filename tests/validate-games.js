@@ -182,14 +182,14 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
 assert(lab.includes('href="./tw-mic-cd-popup.css?v=2"'),
   "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
 assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
-       micCdSkin.includes("twMicCdSpin")&&
+       micCdSkin.includes("FM   88.8")&&!micCdSkin.includes("twMicCdSpin")&&
        micCdSkin.includes(".encp.enc-grupo #encRk")&&
        micCdSkin.includes(".encp.enc-grupo #encSelo")&&
        lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        lab.includes("$('encNick').textContent = encNomes(d)")&&
        !lab.includes('id="encPessoas"')&&
        !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
-  "CD belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
+  "Compact radio belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
 const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
 const accGuard=lab.slice(accStart,accEnd);
 assert(accStart>=0&&accEnd>accStart&&accGuard.includes("o.disabled=!u")&&
@@ -203,12 +203,13 @@ assert(lab.includes("brs48cr_visual_rev")&&lab.includes("admin_visual_rev")&&
 assert(lab.includes('data-adm2="pets"')&&lab.includes('data-adm2="visual"')&&
        !lab.includes("data-admkar")&&!lab.includes("karaoke_sala_admin"),
   "Member profile gets pet/visual moderation; obsolete Karaoke Day online controls are removed");
-assert(adminToolsSql.includes("create or replace function public.admin_cuidar_pets")&&
-       adminToolsSql.includes("create or replace function public.admin_visual_info")&&
-       adminToolsSql.includes("create or replace function public.admin_vestir")&&
-       adminToolsSql.includes("public.eh_admin()")&&
-       adminToolsSql.includes("set search_path = ''")&&
-       adminToolsSql.includes("revoke all")&&adminToolsSql.includes("to authenticated"),
+const adminSqlLower=adminToolsSql.toLowerCase();
+assert(adminSqlLower.includes("create or replace function public.admin_cuidar_pets")&&
+       adminSqlLower.includes("create or replace function public.admin_visual_info")&&
+       adminSqlLower.includes("create or replace function public.admin_vestir")&&
+       adminSqlLower.includes("public.eh_admin()")&&
+       adminSqlLower.includes("set search_path = ''")&&
+       adminSqlLower.includes("revoke all")&&adminSqlLower.includes("to authenticated"),
   "Admin pet/visual RPCs must be admin-guarded, search_path-safe and not callable by anon/PUBLIC");
 assert(micCdSkin.includes("width:min(100%,360px)")&&micCdSkin.includes("FM   88.8")&&
        !micCdSkin.includes("twMicCdSpin")&&!micCdSkin.includes("width:min(100%,550px)"),
@@ -308,7 +309,7 @@ assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karao
   "O card do Karaoke abre o Karaoke⭐Time! (o Day fica guardado, desligado)");
 assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&&
        kTime.includes("read('brs48cr_nick')")&&kTime.includes('id="ktTraducoes"')&&kTime.includes("get('lang')")&&
-       preview.includes("(TW_KARAOKE_TIME ? '' :")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
+       !preview.includes("data-admkar")&&!preview.includes("karaoke_sala_admin")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
   "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
 // Ranking online do Karaoke⭐Time!: o servidor conta as 5 tentativas e confere o resultado.
 assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('kt_run_finish'")&&preview.includes("contaRpc('kt_ranking')")&&

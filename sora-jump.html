@@ -1565,14 +1565,15 @@ function soraOnlineApplyProfile(profile){
     if(!/^#?[0-9a-fA-F]{6}$/.test(String(active[key]||''))) active[key] = (CH[sel]||CH[0])[key];
   });
   active.img = active.hair;
-  active.n = String(data && data.nick || nick || 'Idol').slice(0,16);
+  active.n = String(data && data.nick || nick || 'Idol').replace(/[<>]/g,'').trim().slice(0,12);
   soraOnlineProfile = data ? {nick:active.n, character:active} : null;
   if(data && data.nick){
-    nick = String(data.nick).slice(0,16);
+    nick = String(data.nick).replace(/[<>]/g,'').trim().slice(0,12);
     var inputNick = $('nick');
     if(inputNick) inputNick.value = nick;
   }
   soraRefreshTestProfile();
+  soraBindTestProfileTools();
 }
 function soraGetActiveCharacter(){
   return soraOnlineProfile && soraOnlineProfile.character
@@ -1582,9 +1583,11 @@ function soraGetActiveCharacter(){
 function soraOnlineLoadProfile(force){
   if(!SORA_ONLINE_PROFILE_ENABLED || !soraOnlineUserId) return Promise.resolve(null);
   if(soraOnlineProfilePromise && !force) return soraOnlineProfilePromise;
+  var requestedUserId = soraOnlineUserId;
   soraOnlineProfilePromise = soraEnsureSupabaseClient().then(function(client){
     return client.rpc('sora_my_profile');
   }).then(function(result){
+    if(requestedUserId !== soraOnlineUserId) return null;
     if(result && result.error) throw result.error;
     var profile = result && result.data;
     if(!profile || typeof profile !== 'object') throw new Error('Perfil não encontrado para esta conta.');
@@ -1592,6 +1595,7 @@ function soraOnlineLoadProfile(force){
     soraOnlineApplyProfile(profile);
     return profile;
   }).catch(function(error){
+    if(requestedUserId !== soraOnlineUserId) return null;
     soraOnlineProfileLoaded = true;
     soraOnlineProfile = null;
     console.info('Sora⭐Jump: perfil online ainda indisponível; usando aparência local.', error && error.message || error);
@@ -1609,7 +1613,13 @@ function soraOnlineSetSession(session){
   soraOnlineProfileLoaded = false;
   soraOnlineProfilePromise = null;
   if(soraOnlineUserId) soraOnlineLoadProfile();
-  else soraRefreshTestProfile();
+  else {
+    soraOnlineProfile = null;
+    try{ nick = window.__TW_TEST_STORAGE.getItem('brs48cr_nick') || ''; }catch(e){}
+    var localNickInput = $('nick');
+    if(localNickInput) localNickInput.value = nick;
+    soraRefreshTestProfile();
+  }
 }
 function soraOnlineInitAuth(){
   return soraEnsureSupabaseClient().then(function(client){
@@ -4307,8 +4317,10 @@ function soraReturnToMenu(){
   soraRefreshTestProfile();
 }
 function soraOpenUI(){
-  if(SORA_ONLINE_PROFILE_ENABLED && !soraOnlineProfileLoaded && soraOnlineUserId){
-    soraOnlineLoadProfile().then(function(){ soraOpenUIReady(); });
+  if(SORA_ONLINE_PROFILE_ENABLED && !soraOnlineProfileLoaded){
+    soraOnlineInitAuth().then(function(){
+      return soraOnlineUserId ? soraOnlineLoadProfile() : null;
+    }).then(function(){ soraOpenUIReady(); });
     return;
   }
   soraOpenUIReady();

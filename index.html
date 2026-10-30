@@ -4726,8 +4726,8 @@ function petMusicStep(k){
 }
 
 // ---------- Vozinha de cada pet ----------
-function petVoice(p){
-  var k = petData && petData.ativo;
+function petVoice(p, kf){   // kf (opcional): pet específico (ex.: os pets do banner)
+  var k = kf || (petData && petData.ativo);
   if(p && p.dorme){ petGlide(260, 200, .5, 'sine', .03); return; }                                            // ronquinho
   if(k === 'tsu'){ petGlide(620, 1180, .11, 'triangle', .06); petGlide(1180, 880, .14, 'triangle', .05, .11); }  // Chu: "nya~"
   else if(k === 'lirika'){ petGlide(480, 720, .2, 'sine', .07); petGlide(720, 560, .24, 'sine', .055, .2); }      // Koali: "kyu~" macio
@@ -8410,11 +8410,12 @@ var HUB_FALAS = [
   [['lirika-1','Oi, gente linda!','💚'], ['lirika-2','Li - ri - ka!','🐨'], ['lirika-3','ゆめはぜったい','🌈'], ['lirika-4','Tudo bem com vocês?','🌼'], ['lirika-5','hehe~','😆']],
   [['pati-1','Oi gente, meu nome é Pati!','💙'], ['pati-2','Bem gamer, tals...','🎮'], ['pati-3','いっておきたい','🌙'], ['pati-4','Um beijo. Chu!','💋'], ['pati-5','hehe~','😆']]
 ];
-var HUB_FALA_ULT = [-1, -1, -1], HUB_FALA_CONTA = [0, 0, 0], hubVozAtual = null, HUB_VOZ_VOL = .55;
+var HUB_PET_REAGE = { i:-1, t0:-999 }, HUB_FALA_ULT = [-1, -1, -1], HUB_FALA_CONTA = [0, 0, 0], hubVozAtual = null, HUB_VOZ_VOL = .55;
 function hubVozTocar(nome){   // voz suave, só no toque e só com o som ligado
   if(typeof muted !== 'undefined' && muted) return;
   try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
 }
+try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){ }
 function hubTrioReage(i){
   if(i < 0 || i > 2 || (HUB_REAGE.i === i && hubT - HUB_REAGE.t0 < 60)) return;
   var L = HUB_FALAS[i], ri = L.length - 1, k;   // a risada (última) vem a cada duas falas: fala, fala, hehe~
@@ -8443,39 +8444,40 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();   // sombra pequena, só sob os pés
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = m[1]; drawChar(c, 0, 0, 0, ex, false); });
       if(PET_SP[m[3]]){   // o pet de cada um, flutuando ao lado
-        var ps = sc * .46, px = cx + 24 * sc, py = chao - 22 * sc + Math.sin(t * .08 + i) * 1.5 * sc;   // flutuando, sem sombra (não cobre as abóboras)
+        var pg = hubT - HUB_PET_REAGE.t0, pul = HUB_PET_REAGE.i === i && pg < 40 ? Math.abs(Math.sin(pg / 40 * Math.PI * 2)) * 5 * sc : 0;
+        var ps = sc * .46, px = cx + 24 * sc, py = chao - 22 * sc + Math.sin(t * .08 + i) * 1.5 * sc - pul;   // flutuando, sem sombra (não cobre as abóboras)
         perfDesenharPetEm(x, { k:m[3], acc:'' }, px, py, ps, t + i * 40);
+        if(HUB_PET_REAGE.i === i && pg < 70){ x.save(); x.globalAlpha = pg < 50 ? 1 : (70 - pg) / 20; x.textAlign = 'center'; x.font = (5 * sc) + 'px sans-serif'; x.fillStyle = ['#ff6fb5', '#5cc72c', '#4169e1'][i]; x.fillText('♪', px - 5 * sc, py - 9 * sc - pg * sc / 8); x.fillText('♡', px + 5 * sc, py - 12 * sc - pg * sc / 7); x.restore(); }
       }
     });
     var rg2 = hubT - HUB_REAGE.t0;
-    if(HUB_REAGE.i >= 0 && rg2 < 110){   // balão kawaii com a fala + emojis saindo pelos lados (nunca embaixo do balão)
-      var hi = HUB_REAGE.i, hx = W2 * HUB_TRIO[hi][2], top = chao - 50 * sc, al = rg2 < 90 ? 1 : (110 - rg2) / 20;
+    if(HUB_REAGE.i >= 0 && rg2 < 220){   // balão kawaii (balão + rabinho num só contorno) e emojis subindo dos lados
+      var hi = HUB_REAGE.i, hx = W2 * HUB_TRIO[hi][2], top = chao - 50 * sc, al = rg2 < 190 ? 1 : (220 - rg2) / 30;
       var corA = ['#9b30d9', '#3f9c1f', '#4169e1'][hi], corB = ['#ff9ce6', '#b6ff3b', '#7fd4ff'][hi];
-      var pop = rg2 < 8 ? .6 + rg2 / 20 : 1;   // entra com um "pop"
+      var pop = rg2 < 8 ? .6 + rg2 / 20 : 1;
       x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.textBaseline = 'middle';
-      var txt = tr(HUB_REAGE.txt || HUB_TRIO_OI[hi]); x.font = '800 ' + (5.4 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
-      var tw = x.measureText(txt).width + 9 * sc, th = 10.5 * sc, bx = Math.max(tw / 2 + 6, Math.min(W2 - tw / 2 - 6, hx)), by = top - 9 * sc;
+      var txt = tr(HUB_REAGE.txt || HUB_TRIO_OI[hi]); x.font = (5 * sc) + 'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
+      var tw = x.measureText(txt).width + 10 * sc, th = 11 * sc, bx = Math.max(tw / 2 + 6, Math.min(W2 - tw / 2 - 6, hx)), by = top - 9 * sc;
       x.translate(bx, by); x.scale(pop, pop);
-      var rr = th / 2;
-      function pilula(){ x.beginPath(); x.moveTo(-tw / 2 + rr, -th / 2); x.arcTo(tw / 2, -th / 2, tw / 2, th / 2, rr); x.arcTo(tw / 2, th / 2, -tw / 2, th / 2, rr); x.arcTo(-tw / 2, th / 2, -tw / 2, -th / 2, rr); x.arcTo(-tw / 2, -th / 2, tw / 2, -th / 2, rr); x.closePath(); }
-      x.shadowColor = corA; x.shadowBlur = 4 * sc; x.shadowOffsetY = 1.2 * sc;
-      var gr = x.createLinearGradient(0, -th / 2, 0, th / 2); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#fff3fb');
-      pilula(); x.fillStyle = gr; x.fill(); x.shadowColor = 'transparent';
-      x.lineWidth = .9 * sc; x.strokeStyle = corA; pilula(); x.stroke();
-      x.lineWidth = .45 * sc; x.strokeStyle = corB; x.beginPath(); x.moveTo(-tw / 2 + rr, -th / 2 + .9 * sc); x.lineTo(tw / 2 - rr, -th / 2 + .9 * sc); x.stroke();   // brilhinho no topo
-      var tx = Math.max(-tw / 2 + 4 * sc, Math.min(tw / 2 - 4 * sc, hx - bx));   // rabinho apontando para quem falou
-      x.fillStyle = '#fff3fb'; x.strokeStyle = corA; x.lineWidth = .9 * sc;
-      x.beginPath(); x.moveTo(tx - 2.2 * sc, th / 2 - .3 * sc); x.lineTo(tx, th / 2 + 2.8 * sc); x.lineTo(tx + 2.2 * sc, th / 2 - .3 * sc); x.fill();
-      x.beginPath(); x.moveTo(tx - 2.2 * sc, th / 2); x.lineTo(tx, th / 2 + 2.8 * sc); x.lineTo(tx + 2.2 * sc, th / 2); x.stroke();
-      x.fillStyle = corA; x.fillText(txt, 0, .3 * sc);
-      x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = corB; x.fillText('✦', -tw / 2 - 1.5 * sc, -th / 2); x.fillText('✧', tw / 2 + 1.5 * sc, th / 2 - 1 * sc);
+      var rr = th / 2, l = -tw / 2, rt = tw / 2, tp = -th / 2, bt = th / 2;
+      var tx = Math.max(l + rr + 2.5 * sc, Math.min(rt - rr - 2.5 * sc, hx - bx)), tl = 3.2 * sc;
+      x.beginPath(); x.moveTo(l + rr, tp); x.lineTo(rt - rr, tp); x.arc(rt - rr, 0, rr, -Math.PI / 2, Math.PI / 2);
+      x.lineTo(tx + 2.4 * sc, bt); x.quadraticCurveTo(tx + .6 * sc, bt + tl * .5, tx, bt + tl); x.quadraticCurveTo(tx - .6 * sc, bt + tl * .5, tx - 2.4 * sc, bt);
+      x.lineTo(l + rr, bt); x.arc(l + rr, 0, rr, Math.PI / 2, Math.PI * 1.5); x.closePath();
+      var gr = x.createLinearGradient(0, tp, 0, bt + tl); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#fff0fa');
+      x.shadowColor = corA; x.shadowBlur = 5 * sc; x.fillStyle = gr; x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+      x.lineWidth = .9 * sc; x.lineJoin = 'round'; x.strokeStyle = corA; x.stroke();
+      x.fillStyle = corA; x.fillText(txt, 0, .4 * sc);
+      x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = corB; x.fillText('✦', l - 1.6 * sc, tp + .5 * sc); x.fillText('♡', rt + 1.8 * sc, bt - 1.5 * sc);
       x.restore();
-      x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.font = (6.5 * sc) + 'px sans-serif';
-      HUB_REAGE.emo.forEach(function(e2, n){   // sobem dos lados do Idol, abaixo do balão
-        var lado = n % 2 ? 1 : -1, ex2 = hx + lado * (13 + (n % 3) * 4) * sc, ey = chao - 26 * sc - rg2 * e2.v * sc / 7 - n * 2 * sc;
-        x.fillText(e2.e, ex2 + Math.sin(rg2 / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey));
-      });
-      x.restore();
+      if(rg2 < 140){
+        x.save(); x.globalAlpha = rg2 < 110 ? 1 : (140 - rg2) / 30; x.textAlign = 'center'; x.font = (6.5 * sc) + 'px sans-serif';
+        HUB_REAGE.emo.forEach(function(e2, n){   // sobem dos lados do Idol, abaixo do balão
+          var lado = n % 2 ? 1 : -1, ex2 = hx + lado * (13 + (n % 3) * 4) * sc, ey = chao - 26 * sc - rg2 * e2.v * sc / 7 - n * 2 * sc;
+          x.fillText(e2.e, ex2 + Math.sin(rg2 / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey));
+        });
+        x.restore();
+      }
     }
     if(temaPerfil() === 'halloween'){   // abóboras na frente: nada fica por cima delas
       var u = W2 / 320; petDrawAbobora(x, W2 * .1, H2 * .95, 2.1 * u, true); petDrawAbobora(x, W2 * .9, H2 * .95, 1.7 * u, true);
@@ -8487,7 +8489,15 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
   var cv = $('hubCv'); if(!cv) return;
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
   cv.addEventListener('click', function(e){
-    var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, best = -1, d = .14;
+    var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height, best = -1, d = .14;
+    var a = cv.height / cv.width, rx = 9 / 96 * a, pyF = .9 - 22 / 96;   // pets: ao lado de cada uma (mesma conta do desenho)
+    for(var q = 0; q < HUB_TRIO.length; q++){
+      var pxF = HUB_TRIO[q][2] + 24 / 96 * a;
+      if(Math.abs(fx - pxF) < rx && Math.abs(fy - pyF) < .1){
+        if(HUB_PET_REAGE.i === q && hubT - HUB_PET_REAGE.t0 < 30) return;
+        HUB_PET_REAGE = { i:q, t0:hubT }; try{ petVoice(null, HUB_TRIO[q][3]); }catch(_){ } return;
+      }
+    }
     HUB_TRIO.forEach(function(m, i){ if(Math.abs(fx - m[2]) < d){ d = Math.abs(fx - m[2]); best = i; } });
     hubTrioReage(best);
   });

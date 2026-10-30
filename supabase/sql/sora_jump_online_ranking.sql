@@ -303,7 +303,7 @@ grant execute on function public.sora_run_abort(uuid) to authenticated;
 
 -- Ranking público mínimo: nickname e pontuação, sem UUID, email ou aparência.
 create or replace function public.sora_ranking(p_period text default 'all')
-returns table(position bigint, nick text, score integer)
+returns table("position" bigint, nick text, score integer)
 language sql
 stable
 security definer

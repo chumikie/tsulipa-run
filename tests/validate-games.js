@@ -174,15 +174,16 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),playerSkin=read("karaoke-player-popup.css");
 
-assert(launchSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
-       launchSkin.includes("twKaraokeCdSpin")&&
-       launchSkin.includes("grid-template-columns:clamp(150px,18%,220px)")&&
-       launchSkin.includes("@media(max-width:720px)")&&
-       launchSkin.includes("#twPreviewJogo[data-jogo=\"karaoke\"] #twPreviewIframe"),
+assert(playerSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
+       playerSkin.includes("twKaraokeCdSpin")&&
+       playerSkin.includes("grid-template-columns:clamp(150px,18%,220px)")&&
+       playerSkin.includes("@media(max-width:720px)")&&
+       playerSkin.includes("#twPreviewJogo[data-jogo=\"karaoke\"] #twPreviewIframe"),
   "Karaoke Time popup must use an isolated responsive CD-player shell");
-assert(lab.includes('href="./index2-launch-ui.css?v=9"'),
+assert(lab.includes('href="./index2-launch-ui.css?v=10"')&&
+       lab.includes('href="./karaoke-player-popup.css?v=1"'),
   "Karaoke player popup CSS cache key must be refreshed");
 
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
@@ -214,7 +215,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(playerSkin,"utf8")<8000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&

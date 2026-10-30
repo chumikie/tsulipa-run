@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#27155b">
+<title>Laboratório · Karaoke⭐Day! · TsuLiPa⭐World</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#2a2354;background:#f6edff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;background:radial-gradient(circle at 6% 14%,#e2d2ff,transparent 43%),radial-gradient(circle at 100% 20%,#d1f8df,transparent 34%),radial-gradient(circle at 70% 84%,#dce8ff,transparent 36%),#fff5fa}
+main{max-width:1060px;margin:0 auto;padding:22px clamp(12px,3vw,28px) 42px}
+header{text-align:center;margin-bottom:18px}
+h1{font-size:clamp(24px,5vw,37px);line-height:1.25;margin:10px 0 7px;color:#722eca}
+.star{color:#e9a900}.eyebrow{font-weight:800;color:#4169e1;letter-spacing:.07em;text-transform:uppercase;font-size:11px}
+.help{color:#655c80;line-height:1.55;max-width:760px;margin:0 auto 14px}
+.warning{border:2px solid #8265ca;background:#fff9ff;border-radius:17px;padding:10px 14px;color:#473a74;font-weight:750;font-size:13px}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+.panel{background:rgba(255,255,255,.94);border:2px solid rgba(121,61,202,.25);box-shadow:0 8px 26px rgba(42,20,84,.10);border-radius:22px;padding:18px}
+h2{font-size:17px;margin:0 0 14px;color:#6b34bd}
+.panel p{font-size:13px;line-height:1.55}
+.stage{border:3px solid #ccafe9;border-radius:20px;min-height:265px;padding:12px;background:linear-gradient(150deg,#34226d,#392f8f 55%,#185888);color:#fff;overflow:hidden}
+.sign{text-align:center;color:#d2fbcf;font-size:12px;font-weight:800;letter-spacing:.08em}
+.mic{text-align:center;margin:12px auto;min-height:77px}
+.mic-icon{font-size:37px;line-height:1.05}
+.mic strong{display:block;margin-top:3px;font-size:15px;color:#ffcfed}
+.mic small{display:block;font-size:12px;color:#f9e7ff;margin-top:3px}
+.seats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seat{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.24);border-radius:12px;text-align:center;padding:10px 3px;min-height:60px}
+.seat b{display:block;font-size:12px}.seat small{display:block;color:#ded7ff;font-size:10px;margin-top:4px}
+.seat.tsu{border-color:#d3a6ff}.seat.lirika{border-color:#b6ffa2}.seat.pati{border-color:#a7c8ff}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button,a.link{font-family:inherit;font-weight:750;font-size:13px;line-height:1.3;border:1.5px solid #ba9ce6;background:#fff;color:#5830a0;padding:10px 13px;border-radius:999px;cursor:pointer;min-height:41px;touch-action:manipulation}
+button.primary{color:#fff;background:linear-gradient(105deg,#8237df,#ff65b5);border-color:#a75cd8}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:hover:not(:disabled){filter:brightness(.96)}
+button:focus-visible,a:focus-visible{outline:3px solid #4169e1;outline-offset:2px}
+.controls{display:grid;gap:10px}.controls h3{font-size:13px;margin:7px 0 0;color:#55339b}
+.queue{border-radius:14px;background:#f7f1ff;padding:9px 12px;min-height:56px;font-size:13px;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.stat{text-align:center;border-radius:12px;padding:9px 2px;background:#f0e9ff}
+.stat strong{display:block;font-size:21px;color:#7637c9}.stat small{display:block;font-size:10px}
+.message{margin-top:12px;background:#ecfdf2;border:1px solid #9adcaa;border-radius:13px;color:#245c40;padding:10px 12px;font-weight:750;font-size:12px;min-height:41px}
+footer{text-align:center;color:#645d85;font-size:12px;margin-top:20px;line-height:1.65}
+a{color:#6545b7}
+@media(max-width:740px){.grid{grid-template-columns:1fr}.panel{padding:14px}.stage{min-height:265px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head><body>
+<main>
+<header>
+<div class="eyebrow">TsuLiPa⭐World · Laboratório 3A.1</div>
+<h1>🎤 Karaoke<span class="star">⭐</span>Day!</h1>
+<p class="help">💜 Tsu · 💚 Lirika · 💙 Pati — ensaiando o futuro palco online</p>
+<div class="warning">🧪 SIMULAÇÃO LOCAL — não há jogadores conectados, Supabase, pontuações reais nem compras. Os nove Idols abaixo são fictícios.</div>
+</header>
+<div class="grid">
+<section class="panel" aria-label="Visão do palco">
+<h2>✨ Nosso palco de ensaio</h2>
+<div class="stats" aria-live="polite">
+<div class="stat"><strong id="occupied">0</strong><small>de 9 vagas</small></div>
+<div class="stat"><strong id="clock">0s</strong><small>tempo simulado</small></div>
+<div class="stat"><strong id="queueCount">0</strong><small>na fila</small></div>
+</div>
+<div class="stage">
+<div class="sign">✦ IDOL KARAOKE LIVE ✦</div>
+<div class="mic" aria-live="polite"><div class="mic-icon">🎤</div><strong id="singer">Microfone disponível!</strong><small id="phase">Aguardando entrada dos Idols</small></div>
+<div class="seats" id="seats"></div>
+</div>
+<p>Os lugares, o microfone e a fila são apenas um <strong>modelo de regras</strong>. O cenário definitivo será o do Karaoke que já existe no TsuLiPa⭐World.</p>
+</section>
+<section class="panel controls" aria-label="Controles de simulação">
+<h2>🧪 Testar as regras</h2>
+<h3>1. Entrar no palco</h3>
+<div class="btns">
+<button class="primary" id="fill">💖 Colocar 9 Idols</button>
+<button id="join">+ Entrar um Idol</button>
+<button id="tenth">Testar 10º Idol</button>
+</div>
+<h3>2. Fila do microfone</h3>
+<div class="btns">
+<button class="primary" id="queue">🎤 Formar fila (3 lugares)</button>
+<button id="queue4">🧪 Testar 4º pedido</button>
+<button id="leave">🚪 Cantor sai</button>
+</div>
+<div class="queue" id="queueView" aria-live="polite">Ninguém na fila ainda.</div>
+<h3>3. Apresentação de 60 segundos</h3>
+<div class="btns">
+<button id="skip5">+5s · Introdução</button>
+<button id="skip45">+45s · Ritmo</button>
+<button id="result">⭐ Resultado demonstrativo</button>
+<button id="skip10">+10s · Encore</button>
+</div>
+<h3>Recomeçar</h3>
+<div class="btns"><button id="reset">↺ Limpar laboratório</button></div>
+<div class="message" id="message" role="status" aria-live="polite">Vamos encher o palco? 💖</div>
+<p><small>O cronômetro é acelerado manualmente para testar as regras. O resultado é marcado como <strong>não verificado</strong> e nunca gera estrelas ou insígnias.</small></p>
+</section>
+</div>
+<footer>
+<p>Este laboratório é independente do Karaoke demonstrativo e do site publicado.<br>
+<a href="./index2.html">← Voltar à INDEX 2 experimental</a></p>
+</footer>
+</main>
+<script src="./karaoke-room-model.js"></script>
+<script>
+(function(){
+  'use strict';
+  var core=window.TsuKaraokeRoomModel,now=0,r=core.createRoom('rehearsal',0),lastMessage='';
+  var $=function(id){return document.getElementById(id);};
+  function say(s){lastMessage=s;$('message').textContent=s;}
+  function fmt(id){return id.replace('idol','Idol ');}
+  function render(){
+    var v=core.view(r,now);$('occupied').textContent=v.occupied;
+    $('clock').textContent=Math.floor(now/1000)+'s';
+    $('queueCount').textContent=v.queue.length;
+    $('singer').textContent=v.current?fmt(v.current.userId):'Microfone disponível!';
+    var names={intro:'💜 Preparando · 5 segundos',rhythm:'💚 Jogo de ritmo · 45 segundos',
+      encore:'💙 Aplausos · 10 segundos'};
+    $('phase').textContent=v.current?(names[v.current.stage]||v.current.stage)+' · faltam '+v.current.secondsLeft+'s':'Aguardando a fila';
+    var text='',colors=['tsu','lirika','pati'];
+    for(var i=1;i<=9;i++){
+      var id='idol'+i,seated=r.seats.some(function(s){return s.userId===id;});
+      text+='<div class="seat '+colors[(i-1)%3]+'"><b>'+(seated?'⭐ '+fmt(id):'☁️ Vaga '+i)+'</b><small>'+
+        (v.current&&v.current.userId===id?'🎤 Cantando':seated?'💖 Plateia':'Disponível')+'</small></div>';
+    }
+    $('seats').innerHTML=text;
+    $('queueView').textContent=v.queue.length?'Próximos ('+v.queue.length+'/'+core.QUEUE_CAPACITY+'): '+v.queue.map(fmt).join(' → '):'Fila vazia · 3 lugares livres. ✨';
+    $('result').disabled=!(v.current&&v.current.stage==='encore');
+  }
+  function keepAlive(){
+    // A real server would independently receive and validate heartbeats.
+    r.seats.slice().forEach(function(s){r=core.heartbeat(r,s.userId,now).room;});
+  }
+  function advance(seconds){
+    for(var i=0;i<seconds;i++){
+      now+=1000;
+      if(now%15000===0)keepAlive();
+      r=core.update(r,now);
+    }
+    say('⏱️ Avançamos '+seconds+'s no ensaio. '+(r.current?'O palco continua!':'O microfone está livre!'));
+    render();
+  }
+  function joinOne(id){
+    var o=core.join(r,id,now);r=o.room;
+    say(o.status==='joined'?'💖 '+fmt(id)+' entrou no palco!':
+      o.status==='full'?'✨ Sala cheia: nove Idols. O décimo precisa aguardar.':
+      'Esse Idol já está dentro.');
+    render();
+  }
+  $('fill').onclick=function(){for(var i=1;i<=9;i++){
+    if(!r.seats.some(function(s){return s.userId==='idol'+i}))r=core.join(r,'idol'+i,now).room;
+  }say('💜💚💙 Nove Idols no palco! 1 poderá cantar e 8 assistir.');render();};
+  $('join').onclick=function(){for(var i=1;i<=9;i++)if(!r.seats.some(function(s){return s.userId==='idol'+i})){joinOne('idol'+i);return;}
+    say('✨ O palco já está cheio.');};
+  $('tenth').onclick=function(){joinOne('idol10');};
+  $('queue').onclick=function(){
+    var denied=0;
+    r.seats.forEach(function(s){var o=core.enqueue(r,s.userId,now);r=o.room;
+      if(o.status==='queue_full')denied++;});
+    say('🎤 Reservadas até 3 próximas apresentações. '+(denied?denied+' pedidos extras foram recusados.':'A fila está organizada!'));
+    render();};
+  $('queue4').onclick=function(){
+    var s=r.seats.find(function(seat){return (!r.current||r.current.userId!==seat.userId)&&r.queue.indexOf(seat.userId)<0;});
+    if(!s){say('Todas as pessoas disponíveis já estão escaladas.');return;}
+    var o=core.enqueue(r,s.userId,now);r=o.room;
+    say(o.status==='queue_full'?'🎤 '+fmt(s.userId)+' não conseguiu reservar: as 3 posições estão ocupadas.':
+      '💖 '+fmt(s.userId)+' conseguiu entrar na fila ('+o.status+').');
+    render();};
+  $('leave').onclick=function(){if(!r.current){say('Não há cantor no microfone.');return;}
+    var id=r.current.userId;r=core.leave(r,id,now).room;say('💌 '+fmt(id)+' saiu. O microfone passou para o próximo Idol.');render();};
+  $('skip5').onclick=function(){advance(5);};
+  $('skip45').onclick=function(){advance(45);};
+  $('skip10').onclick=function(){advance(10);};
+  $('result').onclick=function(){
+    var v=core.view(r,now);if(!v.current||v.current.stage!=='encore')return;
+    var res=core.submitDemoResult(r,v.current.userId,v.current.id,{
+      score:8450,perfectCount:27,notes:45,chartId:'demo_original'
+    },now);
+    r=res.room;say(res.status==='accepted_demo'?'🌟 Resultado de ensaio: 8.450 pontos, 27 PERFECT! Não conta para o ranking.':
+      'Não foi possível registrar esse resultado demonstrativo: '+res.status);render();
+  };
+  $('reset').onclick=function(){now=0;r=core.createRoom('rehearsal',0);say('Palco limpo. Um novo ensaio começou! 💖');render();};
+  render();
+})();
+</script>
+</body></html>

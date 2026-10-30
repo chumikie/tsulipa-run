@@ -1,0 +1,237 @@
+{
+  "browser": "153.0.8010.0",
+  "results": [
+    {
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "pt",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 O palco está descansando para o próximo show!\n\n🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam 9d 15h 23min. 💜 Multiplayer ainda em preparação.\n\nFechar\n🧪 Ensaiar agora",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "en",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 The stage is resting until the next show!\n\n🎤 Planned premiere: Sunday, November 8, 2026, 12:00–13:10 (Brasília). Time remaining: 9d 15h 23min. 💜 Multiplayer is still being prepared.\n\nClose\n🧪 Play rehearsal",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "es",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 ¡El escenario descansa hasta el próximo show!\n\n🎤 Estreno previsto: domingo, 08/11/2026, 12:00–13:10 (Brasília). Faltan 9d 15h 23min. 💜 El modo multijugador sigue en preparación.\n\nCerrar\n🧪 Ensayar ahora",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "th",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!\n\n🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 8 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก 9วัน 15ชม. 23นาที. 💜 โหมดผู้เล่นหลายคนยังอยู่ระหว่างการเตรียมการ\n\nปิด\n🧪 ทดลองซ้อมตอนนี้",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "lang": "ja",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 次のショーまでステージはお休み中！\n\n🎤 初回開催予定：2026年11月8日（日）12:00〜13:10（ブラジリア時間）。あと 9日 15時間 23分. 💜 マルチプレイは準備中です。\n\n閉じる\n🧪 今すぐ練習",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "lang": "pt",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 O palco está descansando para o próximo show!\n\n🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam 9d 15h 23min. 💜 Multiplayer ainda em preparação.\n\nFechar\n🧪 Ensaiar agora",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "lang": "en",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 The stage is resting until the next show!\n\n🎤 Planned premiere: Sunday, November 8, 2026, 12:00–13:10 (Brasília). Time remaining: 9d 15h 23min. 💜 Multiplayer is still being prepared.\n\nClose\n🧪 Play rehearsal",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "lang": "es",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 ¡El escenario descansa hasta el próximo show!\n\n🎤 Estreno previsto: domingo, 08/11/2026, 12:00–13:10 (Brasília). Faltan 9d 15h 23min. 💜 El modo multijugador sigue en preparación.\n\nCerrar\n🧪 Ensayar ahora",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "lang": "th",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!\n\n🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 8 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก 9วัน 15ชม. 23นาที. 💜 โหมดผู้เล่นหลายคนยังอยู่ระหว่างการเตรียมการ\n\nปิด\n🧪 ทดลองซ้อมตอนนี้",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "lang": "ja",
+      "overflow": false,
+      "errors": [],
+      "closed": "🎤 Karaoke⭐Day!\n\n💗 次のショーまでステージはお休み中！\n\n🎤 初回開催予定：2026年11月8日（日）12:00〜13:10（ブラジリア時間）。あと 9日 15時間 23分. 💜 マルチプレイは準備中です。\n\n閉じる\n🧪 今すぐ練習",
+      "externalHostsBlocked": [
+        "cdn.jsdelivr.net",
+        "fsggtvgbyhchblyazgmt.supabase.co"
+      ],
+      "flows": [
+        "hub",
+        "closed Karaoke",
+        "local rehearsal",
+        "return",
+        "Sora menu",
+        "return"
+      ]
+    }
+  ],
+  "redirect": true,
+  "scope": "Local browser, isolated storage, all external requests blocked. No real devices or live account/economy/room tests."
+}

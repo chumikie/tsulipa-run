@@ -1,0 +1,145 @@
+/* The shell follows the Oshi palette selected on INDEX 2.
+   Game art, canvas, scores and physics remain unchanged. */
+html.tw-sora-embed{
+  --tw-sora-outer1:#fff0f8;--tw-sora-outer2:#e8dfff;--tw-sora-outer3:#ccefff;
+  --tw-sora-panel1:#fffaff;--tw-sora-panel2:#f3efff;
+  --tw-sora-accent:#9438c9;--tw-sora-edge:rgba(255,111,181,.68);
+}
+html.tw-sora-embed[data-oshi="tsu"]{
+  --tw-sora-outer1:#fff0fa;--tw-sora-outer2:#f0dfff;--tw-sora-outer3:#d4edff;
+  --tw-sora-panel1:#fffafd;--tw-sora-panel2:#f5efff;--tw-sora-accent:#983bd2;
+}
+html.tw-sora-embed[data-oshi="lirika"]{
+  --tw-sora-outer1:#eafff1;--tw-sora-outer2:#d8ffec;--tw-sora-outer3:#e1f4ff;
+  --tw-sora-panel1:#f7fff9;--tw-sora-panel2:#eafbf5;--tw-sora-accent:#277e5c;
+  --tw-sora-edge:rgba(92,199,44,.55);
+}
+html.tw-sora-embed[data-oshi="pati"]{
+  --tw-sora-outer1:#f1f7ff;--tw-sora-outer2:#e5ecff;--tw-sora-outer3:#ddf5ff;
+  --tw-sora-panel1:#fbfdff;--tw-sora-panel2:#edf3ff;--tw-sora-accent:#315fb7;
+  --tw-sora-edge:rgba(92,139,255,.55);
+}
+/* TsuLiPa⭐World · Sora⭐Jump! embedded in INDEX 2 (Stage 2B).
+   Activated only by ?embed=index2; standalone Sora keeps its own presentation.
+   This file changes CSS only: no game physics, scoring, saves or database API. */
+html.tw-sora-embed,
+html.tw-sora-embed body.tw-game-sora{
+  margin:0!important;
+  padding:0!important;
+  width:100%;
+  height:100%;
+  min-height:100%!important;
+  overflow:hidden;
+  background:radial-gradient(circle at 12% 8%,rgba(255,111,181,.2),transparent 35%),
+             radial-gradient(circle at 90% 85%,rgba(92,199,255,.25),transparent 42%),
+             linear-gradient(145deg,var(--tw-sora-outer1),var(--tw-sora-outer2) 55%,var(--tw-sora-outer3))!important;
+}
+html.tw-sora-embed #soraOv.ov{
+  position:fixed;
+  inset:0!important;
+  display:flex;
+  align-items:center!important;
+  justify-content:center;
+  padding:10px!important;
+  background:transparent!important;
+  overflow-y:auto!important;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+html.tw-sora-embed #soraOv>.panel.sora-panel{
+  box-sizing:border-box;
+  width:min(100%,680px)!important;
+  max-width:680px!important;
+  max-height:calc(100dvh - 20px)!important;
+  min-height:0!important;
+  margin:auto!important;
+  padding:12px 14px 14px!important;
+  border:2px solid var(--tw-sora-edge)!important;
+  border-radius:24px!important;
+  color:#4b2769!important;
+  background:radial-gradient(circle at 5% 0%,rgba(255,111,181,.18),transparent 43%),
+             radial-gradient(circle at 100% 12%,rgba(92,199,255,.18),transparent 40%),
+             linear-gradient(155deg,var(--tw-sora-panel1),var(--tw-sora-panel2))!important;
+  box-shadow:0 16px 40px rgba(80,50,120,.18),0 4px 0 rgba(255,111,181,.25)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scrollbar-width:none;
+}
+html.tw-sora-embed #soraOv>.panel.sora-panel::-webkit-scrollbar,
+html.tw-sora-embed #soraMenuBox::-webkit-scrollbar{display:none}
+html.tw-sora-embed #soraOv .sora-topbar{display:none!important}
+html.tw-sora-embed #soraSoundBtn{display:none!important}
+html.tw-sora-embed #soraOv>.panel>p{color:#6c5682!important}
+html.tw-sora-embed #soraOv .bp-title{
+  font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;
+  font-weight:400!important;
+  line-height:1.35!important;
+  font-size:clamp(23px,4.3vw,34px)!important;
+  margin:2px auto 1px!important;
+  color:#4b2769!important;
+  text-shadow:0 2px 8px rgba(255,111,181,.2)!important;
+}
+html.tw-sora-embed #soraOv .bp-title .st{
+  color:#f5b400!important;
+  -webkit-text-fill-color:#f5b400!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.55),0 2px 8px rgba(245,180,0,.26)!important;
+}
+html.tw-sora-embed #soraOv .bp-title small{
+  display:block;
+  margin-top:2px!important;
+  font:800 11px/1.45 "M PLUS Rounded 1c","Kosugi Maru",sans-serif!important;
+  letter-spacing:.08em!important;
+  color:var(--tw-sora-accent)!important;
+  text-shadow:none!important;
+}
+html.tw-sora-embed #soraOv>.panel>p{font-size:12px!important;line-height:1.45!important;margin:2px 0 7px!important}
+html.tw-sora-embed #soraStage{
+  box-sizing:border-box;
+  width:min(100%,440px,calc((100dvh - 138px)*360/520))!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:360/520!important;
+  margin:0 auto!important;
+  border-radius:18px!important;
+  border:1px solid rgba(255,255,255,.24);
+  box-shadow:0 6px 20px rgba(10,14,54,.26);
+}
+html.tw-sora-embed #soraOv #soraCv{height:100%!important;max-height:none!important}
+html.tw-sora-embed #soraMenuBox{
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+html.tw-sora-embed #soraOv .sora-menu-content{gap:6px!important}
+html.tw-sora-embed #soraOv .sora-menu-copy{line-height:1.4!important}
+html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-accent);outline-offset:2px}
+@media(max-width:620px){
+  html.tw-sora-embed #soraOv.ov{padding:5px!important;align-items:flex-start!important}
+  html.tw-sora-embed #soraOv>.panel.sora-panel{
+    width:100%!important;
+    max-height:calc(100dvh - 10px)!important;
+    padding:7px 9px 10px!important;
+    border-radius:17px!important;
+  }
+  html.tw-sora-embed #soraOv .bp-title{font-size:clamp(21px,6vw,28px)!important}
+  html.tw-sora-embed #soraOv>.panel>p{font-size:11px!important;margin:2px 0 5px!important}
+  html.tw-sora-embed #soraStage{
+    width:min(100%,350px,calc((100dvh - 108px)*360/520))!important;
+  }
+  html.tw-sora-embed #soraOv .sora-menu-content{gap:5px!important}
+}
+@media(max-height:600px) and (min-width:621px){
+  html.tw-sora-embed #soraStage{width:min(100%,360px,calc((100dvh - 112px)*360/520))!important}
+  html.tw-sora-embed #soraOv>.panel.sora-panel{padding:6px 10px 8px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html.tw-sora-embed #soraOv .sora-over-icon{animation:none!important}
+}
+
+/* A developer-only JSON importer does not belong in the public embedded UI.
+   It remains accessible when opening Sora as a separate test page. */
+html.tw-sora-embed #soraImportProfileBtn,
+html.tw-sora-embed #soraImportProfileBox{display:none!important}
+
+/* Lançamento: no jogo dentro da página inicial, esconder ferramentas da cópia de teste */
+html.tw-sora-embed #soraTestProfileSource,html.tw-sora-embed #soraImportProfileBtn,html.tw-sora-embed #soraImportProfileBox{display:none!important}

@@ -1,0 +1,230 @@
+/* TsuLiPa⭐World · INDEX 2 visual shell (Stage 2A)
+   Scoped to explicit tw-* classes in the canonical homepage.
+   Keep each game's own art, theme colors, mechanics and interactions. */
+:root {
+  --tw-modal-font:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif;
+  --tw-modal-body:"M PLUS Rounded 1c","Kosugi Maru",system-ui,sans-serif;
+  --tw-modal-radius:24px;
+  --tw-modal-edge:rgba(232,195,255,.55);
+  --tw-modal-shadow:0 16px 45px rgba(11,14,55,.28),0 4px 0 rgba(100,55,160,.28);
+}
+.tw-modal.tw-modal-gacha,
+.tw-modal.tw-modal-duo{
+  border:2px solid var(--tw-modal-edge);
+  border-radius:var(--tw-modal-radius);
+  background:
+    radial-gradient(circle at 7% 0%,rgba(180,120,255,.14),transparent 42%),
+    radial-gradient(circle at 100% 14%,rgba(255,111,181,.12),transparent 43%),
+    var(--card);
+  box-shadow:var(--tw-modal-shadow);
+  padding:clamp(14px,2.7vw,24px);
+  width:min(calc(100% - 16px),var(--tw-modal-width,760px));
+  max-height:calc(100dvh - 20px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.tw-modal.tw-modal-gacha{--tw-modal-width:540px;--tw-modal-glow:rgba(255,111,181,.28)}
+.tw-modal.tw-modal-duo{--tw-modal-width:800px;--tw-modal-glow:rgba(123,63,240,.27)}
+.tw-modal .tw-modal-title{
+  display:block;
+  margin:4px auto 2px;
+  padding:0 45px;
+  font-family:var(--tw-modal-font)!important;
+  font-weight:400!important;
+  font-size:clamp(22px,4.5vw,35px);
+  letter-spacing:.005em;
+  line-height:1.32;
+  text-align:center;
+  color:var(--ink);
+  background:none;
+  -webkit-text-fill-color:currentColor;
+  text-shadow:0 3px 14px var(--tw-modal-glow);
+  overflow-wrap:anywhere;
+}
+.tw-modal .tw-modal-title .tw-modal-star{
+  color:#f5b400!important;
+  -webkit-text-fill-color:#f5b400!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.65),0 2px 8px rgba(245,180,0,.25);
+  white-space:nowrap;
+}
+.tw-modal .tw-modal-jp{
+  display:block;
+  margin:0 40px 7px;
+  font:800 clamp(10px,2.5vw,12px)/1.45 var(--tw-modal-body);
+  letter-spacing:.085em;
+  text-align:center;
+  color:var(--pink,#ff6fb5);
+}
+.tw-modal .tw-modal-lede{
+  margin:0 auto 11px;
+  text-align:center;
+  font:700 clamp(11px,2.8vw,13px)/1.5 var(--tw-modal-body);
+  color:var(--sub);
+}
+.tw-modal .duosub{margin:0 auto 10px;line-height:1.5}
+.tw-modal :is(#gachaX,#duoX,.ovsom){
+  position:absolute;
+  top:12px;
+  width:38px;height:38px;
+  display:grid;place-items:center;
+  border:1px solid rgba(155,48,217,.22);
+  border-radius:50%;
+  color:var(--ink);
+  background:var(--chip);
+  box-shadow:0 3px 0 rgba(44,26,143,.16);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.tw-modal :is(#gachaX,#duoX){right:12px;left:auto}
+.tw-modal .ovsom{left:12px;right:auto}
+.tw-modal :is(#gachaX,#duoX,.ovsom):focus-visible,
+.tw-modal :is(button,a):focus-visible{
+  outline:3px solid var(--pink,#ff6fb5);outline-offset:3px;
+}
+.tw-modal .btn:not(.alt) {
+  border-radius:999px;
+  background:linear-gradient(100deg,#7b3ff0,#4169e1);
+  color:#fff;
+  box-shadow:0 5px 0 var(--edge,#2c1a8f);
+  font-family:var(--tw-modal-body);
+}
+.tw-modal .btn.alt{border-radius:999px;font-family:var(--tw-modal-body)}
+/* Header labels in the integrated hub share the same Mochiy type hierarchy.
+   Original card backgrounds, grid placements and mechanics are unchanged. */
+#hub .hubcards .hubcard b {
+  font-family:var(--tw-modal-font)!important;
+  font-weight:400!important;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+@media(max-width:600px){
+ .tw-modal.tw-modal-gacha,.tw-modal.tw-modal-duo{width:min(calc(100% - 8px),var(--tw-modal-width,760px));padding:12px 10px}
+ .tw-modal .tw-modal-title{font-size:clamp(20px,6vw,28px);padding:0 34px;line-height:1.38}
+ .tw-modal .tw-modal-jp{margin:1px 32px 7px}
+ .tw-modal :is(#gachaX,#duoX,.ovsom){width:36px;height:36px;top:10px}
+ .tw-modal :is(#gachaX,#duoX){right:9px}
+ .tw-modal .ovsom{left:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tw-modal :is(button,a){transition:none!important}
+}
+
+/* INDEX 2 · reuse the OFFICIAL Center Run header instead of another bar.
+   The existing DOM header is moved here while a special game is open.
+   No duplicate logo, #best element or independent scoreboard. */
+.tw-preview-game{background:var(--bg1,#c9ecfc)}
+.tw-preview-header-slot{
+  position:relative;z-index:3;
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-height:72px;
+  padding:12px max(12px,env(safe-area-inset-right))
+          6px max(12px,env(safe-area-inset-left));
+  background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),
+             radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),
+             radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),
+             linear-gradient(160deg,var(--bg1),var(--bg2));
+}
+.tw-preview-header-slot>header{
+  margin:0;max-width:760px;min-width:0;flex:1 1 760px;
+  /* Every other visual rule remains the official body > header rule. */
+}
+.tw-preview-header-slot .tw-preview-voltar{
+  flex:none;position:static;
+  font:800 12px "M PLUS Rounded 1c",sans-serif;
+  padding:7px 12px;
+  color:var(--b1);background:var(--chip);
+  border:0;border-radius:99px;box-shadow:0 2px 0 rgba(44,26,143,.2);
+}
+.tw-preview-stage{
+  position:relative;isolation:isolate;flex:1 1 0;min-height:0;
+  width:100%;display:flex;align-items:stretch;justify-content:center;
+  padding:0 clamp(0px,1.6vw,24px);overflow:hidden;
+  /* Identical to the original .hub background, not per-theme sky colors. */
+  background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),
+             radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),
+             radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),
+             linear-gradient(160deg,var(--bg1),var(--bg2));
+}
+/* Source is #hubPart; same markup, .hubpart styles, keyframes and duration. */
+.tw-preview-stage .hubpart{
+  position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.tw-preview-game[data-tema="valentine"] .hubpart i{animation-name:hubsobe}
+.tw-preview-stage #twPreviewIframe{
+  position:relative;z-index:1;flex:0 1 auto;
+  width:100%;max-width:1480px;height:100%;min-height:0;
+  display:block;border:0;background:transparent;
+}
+.tw-preview-game[data-jogo="sora"] #twPreviewIframe{
+  max-width:760px;
+  border-left:1px solid rgba(233,204,255,.23);
+  border-right:1px solid rgba(233,204,255,.23);
+  box-shadow:0 14px 45px rgba(11,8,39,.28);
+}
+@media(max-width:760px){
+  .tw-preview-header-slot{gap:5px;padding:7px 8px;min-height:58px}
+  .tw-preview-header-slot>header{min-width:0}
+  .tw-preview-header-slot header .logo{min-width:0}
+  .tw-preview-header-slot header .logo b{font-size:clamp(11px,3.7vw,17px)}
+  .tw-preview-header-slot header .logo small{font-size:9px}
+  .tw-preview-header-slot header .logo i,
+  .tw-preview-header-slot header .tw-ico{width:28px;height:28px}
+  .tw-preview-header-slot .tw-preview-voltar{font-size:11px;padding:7px 8px}
+  .tw-preview-header-slot .pill{font-size:11px;padding:5px 8px}
+  .tw-preview-stage{padding:0}
+  .tw-preview-game[data-jogo="sora"] #twPreviewIframe{border:0;box-shadow:none}
+}
+@media(max-width:385px){
+  .tw-preview-header-slot header .logo i{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .tw-preview-stage .hubpart i{animation:none!important}
+}
+
+/* INDEX 2 desktop only: Center Run / 3 original cards / 3 special cards.
+   Mobile retains the original two-column layout. */
+@media(min-width:700px){
+ #hub #hubCards{
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke";
+   align-items:stretch;
+ }
+ #hub #hubCards .hubrun{grid-area:run}
+ #hub #hubCards .hubpet{grid-area:pet}
+ #hub #hubCards .hubperf{grid-area:profile}
+ #hub #hubCards .hubgacha{grid-area:gacha}
+ #hub #hubCards .tw-hubgame-sora{grid-area:sora}
+ #hub #hubCards .hubduo{
+   grid-area:duo;grid-column:auto;
+   flex-direction:column;justify-content:center;gap:3px;flex-wrap:nowrap;
+ }
+ #hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
+}
+
+/* Karaoke weekday preview: visually locked until the existing Sunday window.
+   Never treats a CSS lock as server-side authorization. */
+#hub #hubCards .tw-hubgame-karaoke.tw-karaoke-locked{
+  border-style:dashed;
+  border-color:rgba(245,180,0,.62);
+  background:linear-gradient(145deg,var(--card),var(--chip));
+}
+#hub #hubCards .tw-hubgame-karaoke .tw-karaoke-timer{
+  display:block;margin-top:5px;padding:5px 8px;
+  border-radius:999px;background:rgba(245,180,0,.13);
+  color:var(--ink);font:800 11px/1.3 "M PLUS Rounded 1c",sans-serif;
+  font-variant-numeric:tabular-nums;
+}
+#hub #hubCards .tw-hubgame-karaoke[aria-disabled="true"]{
+  cursor:not-allowed;
+}
+
+/* Closed Karaoke stage: same panel/button language as the hub, no writes. */
+.tw-karaoke-closed-ov[hidden]{display:none!important}
+.tw-karaoke-closed-ov{position:fixed;inset:0;z-index:200010;display:grid;place-items:center;padding:18px;background:rgba(7,16,42,.64)}
+.tw-karaoke-closed-panel{width:min(100%,390px);padding:22px 18px;border:2px solid rgba(232,195,255,.65);border-radius:24px;background:var(--card);color:var(--ink);text-align:center;box-shadow:0 16px 45px rgba(11,14,55,.35)}
+.tw-karaoke-closed-panel h2{font:400 clamp(19px,5vw,26px)/1.4 var(--tw-modal-font);color:var(--b1);margin:2px 0 10px}
+.tw-karaoke-closed-panel p{font:700 13px/1.55 var(--tw-modal-body);margin:8px 0;color:var(--sub)}
+.tw-karaoke-closed-panel .btns{justify-content:center;flex-wrap:wrap;margin-top:15px}
+.tw-karaoke-closed-panel button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}

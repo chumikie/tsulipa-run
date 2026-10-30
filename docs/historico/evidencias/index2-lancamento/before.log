@@ -1,0 +1,60 @@
+=== tests/validate-games.js: exit 1 ===
+✓ index2.html 962673 bytes 1 inline scripts
+✓ sora-jump-karaoke.html 10432 bytes 1 inline scripts
+✓ sora-jump.html 261562 bytes 4 inline scripts
+✓ karaoke-day.html 125451 bytes 3 inline scripts
+✓ karaoke-online-lab.html 11399 bytes 1 inline scripts
+✓ INDEX2 pauses covered background canvas loops without changing gameplay state
+✓ Preview controller smoke test: Sora, Karaoke, mod preview, focus, locale
+✓ Karaoke preview timer: Nov 1 closed, Nov 8 open 12:00–13:10 BRT
+✓ Sora opt-in embed flag: standalone / index2
+✗ Karaoke must show truthful nine-seat demo and remove legacy frame-based mic
+✗ Sora should have an opt-in, independently scoped embed shell
+✗ Index 2 embed games must inherit selected Oshi and hide Sora test import
+
+=== tests/karaoke-room-model.test.js: exit 0 ===
+✓ Karaoke online room model: 60 offline assertions passed
+
+=== tests/karaoke-rhythm.test.js: exit 0 ===
+✓ Karaoke 45s rhythm: 20 offline assertions passed
+
+=== tests/karaoke-homol-view.test.js: exit 0 ===
+✓ Karaoke homol: portão, Turnstile isolado e visual preservado
+✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto
+✓ Karaoke 3A.8: sinal de revisão privado e atualização agrupada
+✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia
+✓ Karaoke 3A.9: prévia visual isolada e toque online protegido
+✓ Karaoke 3A.10: Sunday schedule and private moderation
+
+=== tests/karaoke-homol-sync.test.js: exit 0 ===
+✓ Karaoke sync lifecycle: recover failures, coalesce, disconnect and cancel Auth
+
+=== tests/karaoke-homol-refresh.test.js: exit 0 ===
+✓ Karaoke 3A.11: lease priority and bfcache cleanup/recovery
+
+=== tests/sora-stability.test.js: exit 1 ===
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: embedded sizing CSS cache version
+    at Object.<anonymous> (/workspace/scratch/8624bf33d8e7/tsulipa-run/tests/sora-stability.test.js:107:8)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
+
+=== tests/tw-weekly-podium.test.js: exit 0 ===
+✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge

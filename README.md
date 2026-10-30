@@ -1,13 +1,17 @@
 # TsuLiPa⭐World
 
-Jogo de fã do TsuLiPa (BRS48): **Center⭐Run!** (corrida até o Center), **Backstage⭐Pet!** (camarim com pets) e **Meu Perfil** (Idol, insígnias, corações e recados).
+Jogo de fã do TsuLiPa (BRS48): **Center⭐Run!**, **Backstage⭐Pet!**, perfil e jogos especiais.
 
-Site: https://tsulipa-world.vercel.app/
+Site publicado: https://tsulipa-world.vercel.app/
 
-## Arquivos
-- `index.html` — o jogo inteiro (HTML, CSS e JavaScript num arquivo só)
-- `privacidade.html` — privacidade e segurança
-- `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-512.png`, `manifest.json` — ícones e app
-- `og.jpg`, `og.png` — imagem da prévia do link
+## Comece aqui
 
-Contas, ranking e nuvem ficam no Supabase. As chaves de save (`brs48cr_…`) e os nomes do banco nunca podem ser renomeados — veja o alerta no topo do `index.html`.
+- [docs/STATUS.md](docs/STATUS.md): estado de hoje, mapa dos arquivos, o que falta e as regras.
+- [supabase/sql/README.md](supabase/sql/README.md): o que está aplicado no banco.
+- Documentos antigos ficam em [docs/historico/](docs/historico/) só para consulta.
+
+## Regras que não podem ser quebradas
+
+- Não renomear chaves de save `brs48cr_*` nem tabelas e RPCs usadas pelo jogo sem migração e testes.
+- Nada entra na `main` sem PR; o merge é feito pela dona do projeto.
+- Não criar dados falsos nem testar escritas com contas reais sem combinar.

@@ -113,5 +113,5 @@
   #hub #twMicModal .tw-mic-tv::before,#hub #twMicModal .tw-mic-tv::after{animation:none}
 }
 
-/* Encontro do Dia: duo/trio permanece como grupo; só o ranking e seu selo somem. */
-.encp.enc-grupo #encRk,.encp.enc-grupo #encSelo{display:none!important}
+/* Encontro do Dia: duo/trio permanece unido; ranking, selo e Oshi individual ficam ocultos. */
+.encp.enc-grupo #encRk,.encp.enc-grupo #encSelo,.encp.enc-grupo #encOshi{display:none!important}

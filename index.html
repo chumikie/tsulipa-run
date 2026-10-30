@@ -12643,6 +12643,7 @@ showLb = function(el){
 
 
 
+try{ Object.defineProperty(window, 'contaJ', { get:function(){ return contaJ; }, configurable:true }); }catch(e){}   // scripts de fora (cadeado dos cards) leem o login real
 applyLang();
 })();
 </script>

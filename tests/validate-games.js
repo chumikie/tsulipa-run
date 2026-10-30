@@ -112,9 +112,9 @@ assert(model.includes("QUEUE_CAPACITY=3")&&
        karaoke.includes('id="krMicQueueBot"')&&
        karaoke.includes('var KR_DEMO_QUEUE_LIMIT=3')&&
        karaoke.includes("krDemoStartNext()")&&
-       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-01'")&&
-       preview.includes("Date.UTC(2026,10,1,15,0,0)"),
-  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 1 preview schedule");
+       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-08'")&&
+       preview.includes("Date.UTC(2026,10,8,15,0,0)"),
+  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 8 premiere schedule");
 assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
        model.includes("RHYTHM_MS=45000")&&model.includes('verification:"demo_unverified"')&&
        !model.includes("_supabase")&&!model.includes(".rpc("),
@@ -388,10 +388,14 @@ try{
   for(const [iso,open,premiere] of [
     ["2026-10-29T12:00:00Z",false,true],
     ["2026-11-01T14:59:00Z",false,true],
-    ["2026-11-01T15:00:00Z",true,false],
-    ["2026-11-01T16:09:00Z",true,false],
-    ["2026-11-01T16:11:00Z",false,false],
-    ["2026-11-08T15:00:00Z",true,false]
+    ["2026-11-01T15:00:00Z",false,true],
+    ["2026-11-01T16:09:00Z",false,true],
+    ["2026-11-01T16:11:00Z",false,true],
+    ["2026-11-08T14:59:00Z",false,true],
+    ["2026-11-08T15:00:00Z",true,false],
+    ["2026-11-08T16:09:00Z",true,false],
+    ["2026-11-08T16:10:00Z",false,false],
+    ["2026-11-15T15:00:00Z",true,false]
   ]){
     const ClockDate=class extends Date {
       constructor(...args){super(...(args.length?args:[iso]));}
@@ -403,7 +407,7 @@ try{
     assert(result.aberto===open&&!!result.estreia===premiere&&Number.isFinite(result.faltam)&&!result.foraHomologacao,
       "Karaoke preview schedule incorrect at "+iso);
   }
-  const productionIso="2026-11-01T15:30:00Z";
+  const productionIso="2026-11-08T15:30:00Z";
   const ProductionDate=class extends Date {
     constructor(...args){super(...(args.length?args:[productionIso]));}
     static now(){return Date.parse(productionIso);}

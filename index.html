@@ -168,6 +168,7 @@ body .links,body .oshi-sel{display:none}
 body.jogando .hint,body.jogando .sitefoot{display:none}.lk{text-decoration:none;font-size:14px;padding:8px 20px}
 .stage,.stage *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.stage input,.stage select{-webkit-user-select:text;user-select:text}
 .jb{display:none;position:absolute;right:12px;bottom:12px;width:64px;height:64px;border-radius:50%;border:0;background:rgba(123,63,240,.88);color:#fff;font-size:28px;box-shadow:0 4px 0 #2c1a8f;touch-action:manipulation;z-index:3;cursor:pointer}
+body:not(.jogando) #sb{display:none!important}
 @media (pointer:coarse){.jb{display:block}}
 
 /* Cores Base dos Oshis (Modo Claro) */
@@ -1436,24 +1437,24 @@ window.lastPartnerPicked = null;
 }
 
 function spawn(){
-  var t=Math.random(),o;
+  var t=s2Rand(),o;
   if(t<.4) o={k:'cable',w:56,h:12};
   else if(t<.75) o={k:'speaker',w:36,h:48};
   else {
-    var q2=Math.random();
+    var q2=s2Rand();
     o={k:'stick',w:24,h:42,pal:q2<.65?['#9b30d9','#b6ff3b','#4169e1']:q2<.85?['#4169e1','#ffe14d','#34d399']:['#ff6fb5','#4dd8ff','#ffe14d']};
   }
   o.x=nextX; o.y=GY-o.h; obs.push(o);
 
-  if(Math.random()<(frame>5400?Math.min(.3,(frame-5400)/12000):0)){
-    var o2={k:'speaker',w:36,h:48,x:o.x+o.w+rnd(55,95)};
+  if(s2Rand()<(frame>5400?Math.min(.3,(frame-5400)/12000):0)){
+    var o2={k:'speaker',w:36,h:48,x:o.x+o.w+s2Rnd(55,95)};
     o2.y=GY-48; obs.push(o2);
-    nextX+=o2.w+rnd(80,140);
+    nextX+=o2.w+s2Rnd(80,140);
   }
 
-  var r=Math.random();
+  var r=s2Rand();
   if(r<.7){
-    var n=3,cx=o.x+o.w/2,cd=Math.random()<.4&&frame-lastCard>1500,q=Math.random(),cty=q<.4?'plain':q<.7?'fever':'ima';
+    var n=3,cx=o.x+o.w/2,cd=s2Rand()<.4&&frame-lastCard>1500,q=s2Rand(),cty=q<.4?'plain':q<.7?'fever':'ima';
     if(cd)lastCard=frame;
     for(var i=0;i<n;i++){
       var u=(i-1)/1;
@@ -1461,15 +1462,15 @@ function spawn(){
     }
   }
 
-  var gap = sp * 40 + rnd(110, 340);
-  if(Math.random()<0.25) gap += rnd(200, 500); 
+  var gap = sp * 40 + s2Rnd(110, 340);
+  if(s2Rand()<0.25) gap += s2Rnd(200, 500); 
 	
 	// --- GERADOR DE PLATEIA DINÂMICO ---
     if (score >= 450) { 
     // Plateia que vai se formando: poucos fãs no começo, multidão em Center (5000) e grande multidão a partir de 10000
     var fanChance = score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90;
     
-    if (Math.random() < fanChance) {
+    if (s2CosRand() < fanChance) {
       var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; 
       if (sel === 3) lsColors.push(CU.hair); 
       
@@ -1480,14 +1481,14 @@ function spawn(){
       var fanSpace  = score >= 10000 ? 20 : score >= 5000 ? 26 : 34;
       
       for (var fg = 0; fg < fanGroups; fg++) {
-        var numFans = fanMin + Math.floor(Math.random() * (fanMax - fanMin + 1));
-        var gx = nextX + rnd(10, Math.max(110, gap - 120));   // cada grupo começa num ponto do intervalo
+        var numFans = fanMin + Math.floor(s2CosRand() * (fanMax - fanMin + 1));
+        var gx = nextX + s2CosRnd(10, Math.max(110, gap - 120));   // cada grupo começa num ponto do intervalo
         for (var fi = 0; fi < numFans; fi++) {
           fans.push({
-            x: gx + (fi * fanSpace) + rnd(-4, 4),
-            y: GY - 15 - rnd(0, 7),
-            color: lsColors[Math.floor(Math.random() * lsColors.length)],
-            offset: Math.random() * 10
+            x: gx + (fi * fanSpace) + s2CosRnd(-4, 4),
+            y: GY - 15 - s2CosRnd(0, 7),
+            color: lsColors[Math.floor(s2CosRand() * lsColors.length)],
+            offset: s2CosRand() * 10
           });
         }
       }
@@ -1835,8 +1836,12 @@ function update(dt){
     // Algoritmo sem repetição (Shuffle Bag)
     if(!window.petBag || window.petBag.length === 0){
       var candidatos = ['tsu', 'lirika', 'pati'].filter(function(k){ return k !== window.lastPetKey; });
-      candidatos.sort(function(){ return Math.random() - 0.5; });
-      candidatos.push(window.lastPetKey ? window.lastPetKey : (Math.random() < 0.5 ? 'tsu' : 'pati'));
+      if(s2DailyMode){
+         for(var si=candidatos.length-1;si>0;si--){
+           var sj=Math.floor(s2Rand()*(si+1)),tmp=candidatos[si];candidatos[si]=candidatos[sj];candidatos[sj]=tmp;
+         }
+       }else candidatos.sort(function(){ return Math.random() - 0.5; });
+      candidatos.push(window.lastPetKey ? window.lastPetKey : (s2Rand() < 0.5 ? 'tsu' : 'pati'));
       window.petBag = candidatos;
     }
     var chosenPet = window.petBag.shift();
@@ -1866,8 +1871,8 @@ function update(dt){
       toastT = 75;
       
       // 15% de chance de Item Especial (Card com efeito ou Sorvete)
-      if(Math.random() < petCorridaChance()){   // 15% normal · 25% com o pet feliz · +5% no estágio Center
-        var isCard = Math.random() < 0.5;
+      if(s2Rand() < petCorridaChance()){   // 15% normal · 25% com o pet feliz · +5% no estágio Center
+        var isCard = s2Rand() < 0.5;
         items.push({
           k: isCard ? 'card' : 'morango',
           x: dropX,
@@ -1875,7 +1880,7 @@ function update(dt){
           w: isCard ? 18 : 22,
           h: isCard ? 18 : 22,
           got: false,
-          ct: isCard ? (Math.random() < 0.5 ? 'fever' : 'ima') : 'plain',
+          ct: isCard ? (s2Rand() < 0.5 ? 'fever' : 'ima') : 'plain',
           petDrop: true
         });
       } else {
@@ -3025,7 +3030,14 @@ g.save();
   }
 
 	
-  if (!blink) drawChar(CH[sel], P.x, P.y, runAnim, playExpr);
+  if(!blink || (s2HitEmotion>0 && state==='play')){
+    g.save();
+    var reaction=s2HitEmotion>0 && state==='play';
+    if(reaction)g.translate(Math.sin(frame*.8)*(s2HitEmotion>36?2.2:.9),0);
+    s2DrawingRunChar=true;
+    try{drawChar(CH[sel],P.x,P.y,runAnim,reaction?(s2HitEmotion>36?4:5):playExpr);}
+    finally{s2DrawingRunChar=false;g.restore();}
+  }
   g.restore();
   
   if(shield&&state==='play'){g.strokeStyle='rgba(120,220,255,'+(.6+.3*Math.sin(frame*.2))+')';g.lineWidth=3;g.shadowColor='#4dd8ff';g.shadowBlur=14;g.beginPath();g.arc(P.x+15,P.y+22,32,0,7);g.stroke();if(shield>1){g.beginPath();g.arc(P.x+15,P.y+22,39,0,7);g.stroke()}g.shadowBlur=0}
@@ -3136,6 +3148,7 @@ if(menuTitleEl) {
 
 document.addEventListener('keydown',function(e){
   if(e.code==='Space'||e.code==='ArrowUp'){
+    if(e.repeat && s2Challenge && s2Challenge.active) return; // segurar não acerta notas futuras
     if(document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='SELECT'))return;
     if(state==='play'){e.preventDefault();jump();}
   }
@@ -11278,7 +11291,7 @@ var S2_DICT = {
     "Dome do grande show": "Grand Dome show",
     "Corrida do dia": "Daily Run",
     "📅 Corrida do dia": "📅 Daily Run",
-    "Dia Fixo": "Daily Run",
+    "Corrida do Dia": "Daily Run",
     "Abaixar": "Slide",
     "Coro! Parceiras na frente!": "Chorus! Partners ahead!",
     "Desafio de fim de cenário!": "Stage Finale Challenge!",
@@ -11298,7 +11311,7 @@ var S2_DICT = {
     "Dome do grande show": "Dome del gran show",
     "Corrida do dia": "Carrera del día",
     "📅 Corrida do dia": "📅 Carrera del día",
-    "Dia Fixo": "Carrera del día",
+    "Corrida do Dia": "Carrera del día",
     "Abaixar": "Deslizar",
     "Coro! Parceiras na frente!": "¡Coro! ¡Compañeras al frente!",
     "Desafio de fim de cenário!": "¡Desafío final de escenario!",
@@ -11318,7 +11331,7 @@ var S2_DICT = {
     "Dome do grande show": "โดมคอนเสิร์ตใหญ่",
     "Corrida do dia": "วิ่งประจำวัน",
     "📅 Corrida do dia": "📅 วิ่งประจำวัน",
-    "Dia Fixo": "ประจำวัน",
+    "Corrida do Dia": "ประจำวัน",
     "Abaixar": "สไลด์",
     "Coro! Parceiras na frente!": "คอรัส! เพื่อนวิ่งนำหน้า!",
     "Desafio de fim de cenário!": "ภารกิจท้ายฉาก!",
@@ -11338,7 +11351,7 @@ var S2_DICT = {
     "Dome do grande show": "ドーム大公演",
     "Corrida do dia": "今日のラン",
     "📅 Corrida do dia": "📅 今日のラン",
-    "Dia Fixo": "今日のラン",
+    "Corrida do Dia": "今日のラン",
     "Abaixar": "スライディング",
     "Coro! Parceiras na frente!": "コーラス！仲間が前で星を集めるよ！",
     "Desafio de fim de cenário!": "ステージラストチャレンジ！",
@@ -11380,10 +11393,22 @@ var s2MaxCombo = 0;          // maior combo da partida
 var s2Platforms = [];        // plataformas de 2º andar no Dome
 var s2FanRows = [];          // corredores de fãs para high-five
 var s2NextFanRow = 900;      // próximo ponto para corredor de fãs
-var s2Challenge = null;      // { active:true, left:5, clean:true, nextIdx:number, beatT:0 }
+var s2Challenge = null;      // bônus opcional de 5 notas; não bloqueia a próxima fase
+var s2HitEmotion = 0;        // emoção breve somente na corrida
+var s2DrawingRunChar = false;
+var S2_BONUS_BEAT_FRAMES = 60; // 5 notas com 1 segundo cada, sem bloquear passagem
+var S2_BONUS_LABELS = {
+  pt:{title:'BÔNUS DE PASSAGEM',jump:'▲ PULE!',slide:'▼ DESLIZE!',note:'Cada acerto vale uma ★'},
+  en:{title:'STAGE BONUS',jump:'▲ JUMP!',slide:'▼ SLIDE!',note:'Each correct move earns ★'},
+  es:{title:'BONO DE ESCENARIO',jump:'▲ ¡SALTA!',slide:'▼ ¡DESLIZA!',note:'Cada acierto gana ★'},
+  ja:{title:'ステージボーナス',jump:'▲ ジャンプ！',slide:'▼ スライド！',note:'成功で★をゲット'},
+  th:{title:'โบนัสเปลี่ยนฉาก',jump:'▲ กระโดด!',slide:'▼ สไลด์!',note:'ทำถูกได้ ★'}
+};
 var s2Coro = null;           // { t:480, partners:[...] }
 var s2DailyMode = false;     // se a partida atual é a Corrida do Dia
 var s2DailySeed = 1;         // semente determinística da Corrida do Dia
+var s2DailyCosmeticSeed = 1; // separado: animações/fãs não afetam obstáculos
+var s2DailyRunDate = '';      // data congelada ao começar a corrida
 var s2ForcedStage = '';      // cenário fixado no Modo Teste
 var s2Confetti = [];         // chuva de confete no Dome
 
@@ -11404,6 +11429,27 @@ function s2Rand(){
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 function s2Rnd(a, b){ return a + s2Rand() * (b - a); }
+function s2CosRand(){
+  if(!s2DailyMode) return Math.random();
+  var t=(s2DailyCosmeticSeed+=0x6D2B79F5)>>>0;
+  t=Math.imul(t^(t>>>15),t|1);
+  t^=t+Math.imul(t^(t>>>7),t|61);
+  return ((t^(t>>>14))>>>0)/4294967296;
+}
+function s2CosRnd(a,b){return a+s2CosRand()*(b-a);}
+// Ranking LOCAL: um melhor recorde por nickname normalizado neste aparelho.
+function s2DailyBestRows(rows,newRow){
+  var byNick=Object.create(null);
+  (Array.isArray(rows)?rows:[]).concat(newRow?[newRow]:[]).forEach(function(r){
+    if(!r||!Number.isFinite(+r.score))return;
+    var key=String(r.name||'Anônimo').trim().toLocaleLowerCase('pt-BR');
+    if(!key)return;
+    var old=byNick[key];
+    if(!old||+r.score>+old.score||(+r.score===+old.score&&(+r.t||0)<(+old.t||0)))byNick[key]=r;
+  });
+  return Object.keys(byNick).map(function(k){return byNick[k];})
+    .sort(function(a,b){return (+b.score||0)-(+a.score||0)||(+a.t||0)-(+b.t||0);}).slice(0,15);
+}
 
 // Desbloqueia insígnia de cenário e recompensa do Dome
 function s2UnlockStage(idx){
@@ -11452,6 +11498,8 @@ function s2ResetHook(){
   s2FanRows = [];
   s2NextFanRow = score + 350;
   s2Challenge = null;
+  s2HitEmotion = 0;
+  s2DrawingRunChar = false;
   s2Coro = null;
   s2Confetti = [];
   for(var c = 0; c < 36; c++){
@@ -11463,15 +11511,39 @@ function s2ResetHook(){
       s: Math.random() * 6
     });
   }
+  s2DailyRunDate=s2DailyMode?dk():'';
   if(s2DailyMode){
-    s2DailySeed = s2HashDate(dk() + '-tsulipa-s2');
+    s2DailySeed=s2HashDate(s2DailyRunDate+'-tsulipa-s2');
+    s2DailyCosmeticSeed=s2HashDate(s2DailyRunDate+'-tsulipa-s2-fans');
   }
   s2UnlockStage(s2StageIdx);
 }
 
+// Cinco oportunidades de ganhar ★; sem penalidade por errar ou não apertar.
+function s2BonusAction(action){
+  if(!s2Challenge || !s2Challenge.active || state !== 'play' || paused || s2Challenge.pressed) return;
+  var expected = s2Challenge.beat % 2 === 0 ? 'jump' : 'slide';
+  if(action !== expected) return;
+  s2Challenge.pressed = true;
+  s2Challenge.hits++;
+  s2Challenge.hitsMask[s2Challenge.beat] = true;
+  s2Challenge.flash = 18; // pulso visual no acerto, sem alterar pontuações
+  stars++;
+  score += CFG.STAR;
+  pops.push({x:P.x+15,y:P.y-18,t:0,s:'★ +1'});
+  sfx.star();
+}
+var _s2OrigJump = jump;
+jump = function(){
+  // Durante o bônus, o comando rende ★ se correto E anima o pulo de verdade.
+  if(s2Challenge && s2Challenge.active) s2BonusAction('jump');
+  _s2OrigJump();
+};
 // Controles de Abaixar e Deslizar (PC + Celular)
 function s2StartSlide(fromTap){
   if(state !== 'play' || paused) return;
+  // A ação correta rende ★, mas a animação de deslizar continua normalmente.
+  if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
   if(pw && pw.k === 'alien') return;
   s2Sliding = true;
   if(fromTap) s2SlideTimer = Math.max(s2SlideTimer, 34); // ~0.55s por toque rápido
@@ -11492,13 +11564,20 @@ function s2SetupUI(){
     sb.setAttribute('aria-label', tr('Abaixar'));
     sb.style.cssText = 'display:none;left:14px;right:auto;bottom:14px';
     sb.textContent = '▼';
+    sb.style.touchAction = 'none';
     stg.appendChild(sb);
     sb.addEventListener('pointerdown', function(e){
       e.stopPropagation(); e.preventDefault();
       s2SlideTimer = 42;
       s2StartSlide(true);
+      if(sb.setPointerCapture){try{sb.setPointerCapture(e.pointerId);}catch(_){}}
     });
     sb.addEventListener('pointerup', function(e){
+      e.stopPropagation();
+      s2SlideTimer = 0;
+      s2StopSlide();
+    });
+    sb.addEventListener('pointercancel', function(e){
       e.stopPropagation();
       s2SlideTimer = 0;
       s2StopSlide();
@@ -11554,7 +11633,7 @@ function s2SetupUI(){
       var b = document.createElement('button');
       b.type = 'button';
       b.dataset.t = 'daily_run';
-      b.textContent = tr('Dia Fixo');
+      b.textContent = tr('Corrida do Dia');
       tb.appendChild(b);
     }
   });
@@ -11563,6 +11642,7 @@ s2SetupUI();
 
 // Teclado: Seta para baixo / S para abaixar e deslizar
 document.addEventListener('keydown', function(e){
+  if(e.repeat && s2Challenge && s2Challenge.active) return; // a nota exige nova tecla
   if(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) return;
   if(e.code === 'ArrowDown' || e.code === 'KeyS'){
     if(state === 'play'){
@@ -11742,15 +11822,20 @@ function s2SpawnStage(){
 // nos outros cenários, os obstáculos próprios + a mesma plateia que vai se formando.
 var _s2OrigSpawn = spawn;
 function s2Plateia(x0, gap){
-  if(score < 450 || Math.random() >= (score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90)) return;
+  if(score < 450 || s2CosRand() >= (score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90)) return;
   var cores = ['#9b30d9', '#b6ff3b', '#4169e1']; if(typeof sel !== 'undefined' && sel === 3 && typeof CU !== 'undefined') cores.push(CU.hair);
   var grupos = score >= 10000 ? 3 : score >= 5000 ? 2 : 1, mn = score >= 10000 ? 3 : 1, mx = score >= 10000 ? 8 : score >= 5000 ? 5 : score >= 2500 ? 3 : 2, esp = score >= 10000 ? 20 : score >= 5000 ? 26 : 34;
   for(var fg = 0; fg < grupos; fg++){
-    var n = mn + Math.floor(Math.random() * (mx - mn + 1)), gx = x0 + rnd(10, Math.max(110, gap - 120));
-    for(var fi = 0; fi < n; fi++) fans.push({ x: gx + fi * esp + rnd(-4, 4), y: GY - 15 - rnd(0, 7), color: cores[Math.floor(Math.random() * cores.length)], offset: Math.random() * 10 });
+    var n = mn + Math.floor(s2CosRand() * (mx - mn + 1)), gx = x0 + s2CosRnd(10, Math.max(110, gap - 120));
+    for(var fi = 0; fi < n; fi++) fans.push({ x: gx + fi * esp + s2CosRnd(-4, 4), y: GY - 15 - s2CosRnd(0, 7), color: cores[Math.floor(s2CosRand() * cores.length)], offset: s2CosRand() * 10 });
   }
 }
 spawn = function(){
+  // Corredor seguro e cortina: sem obstáculos que impeçam a passagem.
+  if((s2Challenge && s2Challenge.active) || s2Curtain){
+    nextX = Math.max(nextX, W + Math.max(460, sp * 48));
+    return;
+  }
   var st = S2_STAGES[s2StageIdx] || S2_STAGES[0];
   var desafio = s2Challenge && s2Challenge.active && s2Challenge.left > 0;
   if(st.id === 'rua' && !desafio) return _s2OrigSpawn();
@@ -12251,12 +12336,50 @@ function s2DrawForeground(){
       g.fillText('🎶 Coro ' + Math.ceil(s2Coro.t / 60) + 's', W - 16, 48);
     }
 
-    // Indicador do Desafio de Fim de Cenário
+    // Bônus pastel mais legível: ação dominante, 5 notas individuais, pulso ao acertar.
     if(s2Challenge && s2Challenge.active){
-      g.textAlign = 'center';
-      g.font = '800 13px "M PLUS Rounded 1c",sans-serif';
-      g.fillStyle = '#ffe14d';
-      g.fillText('🎵 ' + tr('Desafio de fim de cenário!') + ' (' + (5 - s2Challenge.left) + '/5)', W / 2, 26);
+      var bc=s2Challenge, words=S2_BONUS_LABELS[LANG]||S2_BONUS_LABELS.pt;
+      var expected=bc.beat%2===0?words.jump:words.slide;
+      var w=Math.min(W-24,490), x=(W-w)/2, y=36, h=149, r=22;
+      var grad=g.createLinearGradient(x,y,x+w,y+h);
+      grad.addColorStop(0,'rgba(123,63,240,.96)');
+      grad.addColorStop(.52,'rgba(255,111,181,.97)');
+      grad.addColorStop(1,'rgba(65,105,225,.96)');
+      g.save();
+      g.fillStyle=grad;g.shadowColor='#ffabeb';g.shadowBlur=bc.flash>0?22:11;
+      g.beginPath();g.moveTo(x+r,y);g.lineTo(x+w-r,y);
+      g.quadraticCurveTo(x+w,y,x+w,y+r);
+      g.lineTo(x+w,y+h-r);g.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      g.lineTo(x+r,y+h);g.quadraticCurveTo(x,y+h,x,y+h-r);
+      g.lineTo(x,y+r);g.quadraticCurveTo(x,y,x+r,y);g.closePath();g.fill();
+      g.shadowBlur=0;g.strokeStyle='rgba(255,255,255,.78)';g.lineWidth=2;g.stroke();
+      g.textAlign='center';g.fillStyle='#fff';
+      g.font='900 23px "M PLUS Rounded 1c",sans-serif';
+      g.fillText('✦ '+words.title+' ✦',W/2,y+29,w-28);
+      // Placa clara de alto contraste: prioridade ao comando no celular.
+      g.fillStyle='rgba(255,255,255,.94)';
+      g.beginPath();g.moveTo(x+24,y+42);g.lineTo(x+w-24,y+42);
+      g.quadraticCurveTo(x+w-12,y+42,x+w-12,y+54);
+      g.lineTo(x+w-12,y+94);g.quadraticCurveTo(x+w-12,y+106,x+w-24,y+106);
+      g.lineTo(x+24,y+106);g.quadraticCurveTo(x+12,y+106,x+12,y+94);
+      g.lineTo(x+12,y+54);g.quadraticCurveTo(x+12,y+42,x+24,y+42);g.closePath();g.fill();
+      g.fillStyle='#532887';g.font='900 41px "M PLUS Rounded 1c",sans-serif';
+      g.fillText(expected,W/2,y+88,w-48);
+      // As cinco estrelas representam notas individuais acertadas, não notas geradas.
+      var baseX=W/2-114;
+      for(var bi=0;bi<5;bi++){
+        var earned=!!bc.hitsMask[bi], current=bc.beat===bi;
+        var py=y+129;
+        if(earned && bc.flash>0 && bi===bc.beat)py-=Math.sin((18-bc.flash)/18*Math.PI)*7;
+        g.save();g.textAlign='center';g.font='900 27px sans-serif';
+        g.fillStyle=earned?'#fff176':current?'#ffffff':'rgba(255,255,255,.60)';
+        if(earned){g.shadowColor='#ffe14d';g.shadowBlur=11;}
+        g.fillText(earned?'★':'☆',baseX+bi*57,py);
+        g.restore();
+      }
+      g.fillStyle='#fff';g.font='800 19px "M PLUS Rounded 1c",sans-serif';
+      g.textAlign='right';g.fillText(bc.hits+'/5',x+w-22,y+134,58);
+      g.restore();
     }
     g.restore();
   }
@@ -12268,15 +12391,25 @@ function s2DrawForeground(){
     g.save();
     // Cortina esquerda e direita de veludo vermelho/roxo Idol com franja dourada
     var cgL = g.createLinearGradient(0, 0, halfW, 0);
-    cgL.addColorStop(0, '#581c87'); cgL.addColorStop(0.7, '#9d174d'); cgL.addColorStop(1, '#be123c');
+    cgL.addColorStop(0, '#4c1d95'); cgL.addColorStop(0.7, '#a855f7'); cgL.addColorStop(1, '#ff8ecb');
     g.fillStyle = cgL;
     g.fillRect(0, 0, halfW, H);
 
     var cgR = g.createLinearGradient(W - halfW, 0, W, 0);
-    cgR.addColorStop(0, '#be123c'); cgR.addColorStop(0.3, '#9d174d'); cgR.addColorStop(1, '#581c87');
+    cgR.addColorStop(0, '#ff8ecb'); cgR.addColorStop(0.3, '#52cfba'); cgR.addColorStop(1, '#4169e1');
     g.fillStyle = cgR;
     g.fillRect(W - halfW, 0, halfW, H);
 
+    // Estrelinhas flutuantes suaves enquanto a cortina passa.
+    g.save();g.textAlign='center';g.font='bold 18px sans-serif';
+    var sparkleColors=['#ffe14d','#ffffff','#b6ff3b','#ffb3dd','#a6f4ff'];
+    for(var sc=0;sc<16;sc++){
+      var sx=(sc*61+frame*1.6)%W,sy=32+(sc*47)%Math.max(60,GY-48);
+      g.globalAlpha=.36+.38*Math.abs(Math.sin(frame*.08+sc));
+      g.fillStyle=sparkleColors[sc%sparkleColors.length];
+      g.fillText('✦',sx,sy);
+    }
+    g.restore();
     // Bordas douradas da cortina
     g.fillStyle = '#fde047';
     g.fillRect(halfW - 6, 0, 6, H);
@@ -12300,13 +12433,19 @@ reset = function(){
   s2ResetHook();
 };
 
+function s2ShowSlideButton(){
+  var sb = $('sb'); if(!sb) return;
+  var touch = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+  sb.style.display = state === 'play' && touch ? 'block' : 'none';
+}
 var _origStart = start;
 start = function(e){
   _origStart(e);
-  if(state === 'play' && $('sb') && window.matchMedia && matchMedia('(pointer:coarse)').matches){
-    $('sb').style.display = 'block';
-  }
+  s2ShowSlideButton();
 };
+// Os handlers foram ligados antes do wrapper: devem chamar a versão atualizada.
+$('play').onclick = start;
+$('again').onclick = start;
 
 var _origEnd = end;
 end = function(){
@@ -12319,13 +12458,15 @@ end = function(){
       var row = { name: nick || 'Anônimo', score: s, rankId: rId, char: CH[sel].n, t: Date.now() };
       try{
         var curD = JSON.parse(window.__TW_TEST_STORAGE.getItem(S2_DAILY_LB_KEY) || 'null');
-        if(!curD || curD.d !== dk()) curD = { d: dk(), rows: [] };
-        curD.rows = upd(curD.rows, row);
+        if(!curD || curD.d !== (s2DailyRunDate||dk())) curD = { d: s2DailyRunDate||dk(), rows: [] };
+        curD.rows = s2DailyBestRows(curD.rows, row);
         window.__TW_TEST_STORAGE.setItem(S2_DAILY_LB_KEY, JSON.stringify(curD));
       }catch(e){}
     }
   }
   _origEnd();
+  // A colisão fatal termina com chorinho apenas na tela do jogo.
+  if(state === 'over') finalExpr = 5;
 };
 
 var _origUpdate = update;
@@ -12369,6 +12510,8 @@ update = function(dt){
 
   _origUpdate(dt);
   if(state !== 'play') return;
+  if(shield < prevShield) s2HitEmotion = 72;
+  if(s2HitEmotion > 0) s2HitEmotion = Math.max(0,s2HitEmotion-dt);
 
   // Verifica se perdeu estrela pela esquerda ou tomou dano no escudo → reseta Combo
   if(hadUncollectedStarNearLeft || shield < prevShield){
@@ -12456,26 +12599,30 @@ update = function(dt){
     if(fn.x < -40) s2FanRows.splice(fi, 1);
   }
 
-  // Progressão de Cenário (Regra dos 60 segundos + Desafio de Fim de Cenário + Cortina)
+  // Progressão: exige pontuação E 60 segundos no cenário; nenhum desafio bloqueia.
   if(!s2ForcedStage && !s2Curtain){
-    var eligibleIdx = s2TargetStageByScore(score);
-    if(eligibleIdx > s2StageIdx && s2StageFrames >= S2_MIN_FRAMES){
-      var nextIdx = s2StageIdx + 1;
+    var eligibleIdx=s2TargetStageByScore(score);
+    if(eligibleIdx>s2StageIdx && s2StageFrames>=S2_MIN_FRAMES){
       if(!s2Challenge){
-        s2Challenge = { active:true, left:5, clean:true, nextIdx:nextIdx };
-        toast = '🎵 ' + tr('Desafio de fim de cenário!');
-        toastT = 100;
-      } else if(s2Challenge.active && s2Challenge.left === 0 && nextX - (sp * 40) < W * 0.45){
-        s2Challenge.active = false;
-        if(s2Challenge.clean){
-          score += 500;
-          stars += 5;
-          pops.push({ x:P.x, y:P.y - 18, t:0, s:'🎵+500 ★5' });
-          toast = '✨ ' + tr('Desafio concluído! +500');
-          toastT = 110;
+        s2Challenge={active:true,nextIdx:s2StageIdx+1,elapsed:0,beat:0,hits:0,pressed:false,hitsMask:[false,false,false,false,false],flash:0};
+        obs=[]; // corredor de bônus seguro: sem obstáculos obrigatórios
+        s2Sliding=false;s2SlideTimer=0;
+        nextX=Math.max(nextX,W+460);
+        toast='🌈 ✨ Bônus de passagem!';toastT=85;
+      }else if(s2Challenge.active){
+        s2Challenge.elapsed+=dt;
+        if(s2Challenge.flash>0)s2Challenge.flash=Math.max(0,s2Challenge.flash-dt);
+        var beat=Math.floor(s2Challenge.elapsed/S2_BONUS_BEAT_FRAMES);
+        if(beat>=5){
+          s2Challenge.active=false;
+          s2Sliding=false; s2SlideTimer=0; // transição não herda pose de slide
+          s2Curtain={phase:'close',p:0,nextIdx:s2Challenge.nextIdx};
+          toast='✨ '+tr(S2_STAGES[s2Challenge.nextIdx].nome)+'!';toastT=90;
           sfx.rank();
+        }else if(beat!==s2Challenge.beat){
+          s2Challenge.beat=beat;
+          s2Challenge.pressed=false;
         }
-        s2Curtain = { phase:'close', p:0, nextIdx:s2Challenge.nextIdx };
       }
     }
   }
@@ -12506,7 +12653,7 @@ update = function(dt){
 // Empacota drawChar para pose de deslizar e draw() para cenários da Temporada 2
 var _origDrawChar = drawChar;
 drawChar = function(c, x, y, run, expr, isPartner){
-  if(!isPartner && state === 'play' && s2Sliding && !perfCharPortrait){
+  if(!isPartner && state === 'play' && s2Sliding && !perfCharPortrait && !(s2DrawingRunChar && s2HitEmotion>0)){
     g.save();
     g.translate(x + 15, y + 26);
     g.rotate(-0.28);
@@ -12536,7 +12683,7 @@ showLb = function(el){
     var rows = [];
     try{
       var savedD = JSON.parse(window.__TW_TEST_STORAGE.getItem(S2_DAILY_LB_KEY) || 'null');
-      if(savedD && savedD.d === dk() && Array.isArray(savedD.rows)) rows = savedD.rows;
+      if(savedD && savedD.d === dk() && Array.isArray(savedD.rows)) rows = s2DailyBestRows(savedD.rows);
     }catch(e){}
     if(!rows.length){
       el.innerHTML = '<li class="empty">' + escHtml(tr('Ninguém no ranking ainda. Seja a primeira pessoa!')) + '</li>';

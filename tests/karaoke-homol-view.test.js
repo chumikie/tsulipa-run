@@ -40,10 +40,16 @@ assert(!client.includes('https://fsggtvgbyhchblyazgmt.supabase.co'));
 assert(game.includes('var krHomolConectado=false;'));
 assert(game.includes("if(krSoHomol){krBots=[];krEu.plateia=true;krSt.ocupadas=0;"),
  'homologation stage starts without simulated players');
+assert(game.includes('if(krSoHomol&&!krHomolConectado)return [];'),
+ 'homologation video wall does not show demo Idols');
+assert(/function krDesenharPosterIdol\(x,person,fx,fy,idx,t\)\{\s+if\(krSoHomol\)return;/.test(game),
+ 'homologation wall posters do not show demo Idols');
 assert(game.includes("$('krMicQueue').hidden=true;"),
  'homologation hides the local simulation queue');
 assert(game.includes("if(krSoHomol){$('krDevToggle').hidden=true;$('krDev').hidden=true;}"),
  'homologation hides the local simulator');
+assert(game.includes("$('krRelogio').textContent=krHomolConectado?'🟢 Ensaio online · servidor':'🔒 Aguardando liberação do servidor';"),
+ 'homologation status reflects server entry');
 assert(game.includes("var KR_HOMOLOGATION=new URLSearchParams(location.search).get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app';"));
 assert(client.includes("get('homol')!=='1'&&location.hostname==='tsulipa-world.vercel.app'"),
  'homologation client refuses implicit execution on the production host');

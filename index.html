@@ -3144,6 +3144,7 @@ if(menuTitleEl) {
 
 document.addEventListener('keydown',function(e){
   if(e.code==='Space'||e.code==='ArrowUp'){
+    if(e.repeat && s2Challenge && s2Challenge.active) return; // segurar não acerta notas futuras
     if(document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='SELECT'))return;
     if(state==='play'){e.preventDefault();jump();}
   }
@@ -11612,6 +11613,7 @@ s2SetupUI();
 
 // Teclado: Seta para baixo / S para abaixar e deslizar
 document.addEventListener('keydown', function(e){
+  if(e.repeat && s2Challenge && s2Challenge.active) return; // a nota exige nova tecla
   if(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) return;
   if(e.code === 'ArrowDown' || e.code === 'KeyS'){
     if(state === 'play'){

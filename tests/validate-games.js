@@ -174,12 +174,12 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
-assert(lab.includes('href="./tw-mic-cd-popup.css?v=1"'),
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=2"'),
   "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
 assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        micCdSkin.includes("twMicCdSpin")&&
@@ -190,6 +190,29 @@ assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        !lab.includes('id="encPessoas"')&&
        !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
   "CD belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
+const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
+const accGuard=lab.slice(accStart,accEnd);
+assert(accStart>=0&&accEnd>accStart&&accGuard.includes("o.disabled=!u")&&
+       !accGuard.includes("selE.selectedIndex=0")&&!accGuard.includes("CH[sel][CF[id]]=selE.value")&&
+       !accGuard.includes("saveCu();"),
+  "A saved outfit/accessory must not be erased when rank data is still loading or temporarily lower");
+assert(lab.includes("brs48cr_visual_rev")&&lab.includes("admin_visual_rev")&&
+       lab.includes("admin_visual_info")&&lab.includes("admin_vestir")&&
+       lab.includes("admin_cuidar_pets"),
+  "Admin visual/pet corrections must sync with a server revision so stale saves cannot undo them");
+assert(lab.includes('data-adm2="pets"')&&lab.includes('data-adm2="visual"')&&
+       !lab.includes("data-admkar")&&!lab.includes("karaoke_sala_admin"),
+  "Member profile gets pet/visual moderation; obsolete Karaoke Day online controls are removed");
+assert(adminToolsSql.includes("create or replace function public.admin_cuidar_pets")&&
+       adminToolsSql.includes("create or replace function public.admin_visual_info")&&
+       adminToolsSql.includes("create or replace function public.admin_vestir")&&
+       adminToolsSql.includes("public.eh_admin()")&&
+       adminToolsSql.includes("set search_path = ''")&&
+       adminToolsSql.includes("revoke all")&&adminToolsSql.includes("to authenticated"),
+  "Admin pet/visual RPCs must be admin-guarded, search_path-safe and not callable by anon/PUBLIC");
+assert(micCdSkin.includes("width:min(100%,360px)")&&micCdSkin.includes("FM   88.8")&&
+       !micCdSkin.includes("twMicCdSpin")&&!micCdSkin.includes("width:min(100%,550px)"),
+  "Karaoke weekly mic popup should look like a compact radio, not a large CD hi-fi shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
 const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');
 assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&

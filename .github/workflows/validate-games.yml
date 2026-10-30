@@ -33,6 +33,7 @@ on:
       - 'tests/tw-weekly-podium.test.js'
       - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - 'supabase/sql/admin_pet_visual_tools.sql'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -66,6 +67,7 @@ on:
       - 'tests/tw-weekly-podium.test.js'
       - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - 'supabase/sql/admin_pet_visual_tools.sql'
       - '.github/workflows/validate-games.yml'
 
 jobs:

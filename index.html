@@ -6,7 +6,7 @@
   localStorage: brs48cr_best · brs48cr_st · brs48cr_char · brs48cr_cu2 · brs48cr_ch2 · brs48cr_acc
                 brs48cr_seen · brs48cr_nick · brs48cr_lang · brs48cr_oshi · brs48cr_did
                 brs48cr_lb · brs48cr_lw · brs48cr_ld · brs48cr_pet · brs48cr_sync · brs48cr_tut (V2.1.3)
-                brs48cr_cor (cor do perfil: lightstick)
+                brs48cr_cor (cor do perfil: lightstick) · brs48cr_visual_rev (confirmação de correção administrativa de roupa)
   Supabase:     tabela "leaderboard" · função "top_scores" · tabela "players" (contas, V2.1.2)
   A lista comentada (o que cada chave guarda) fica no início do <script>.
 -->
@@ -741,7 +741,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=8">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
-<link rel="stylesheet" href="./tw-mic-cd-popup.css?v=1">
+<link rel="stylesheet" href="./tw-mic-cd-popup.css?v=2">
 </head>
 <body>
 <header>
@@ -1199,16 +1199,15 @@ function refreshAcc(){
 
   ['cout','chat','cgl'].forEach(function(id){
     var selE=$(id); if(!selE)return;
-    var changed=false;
     [].forEach.call(selE.options,function(o){
       var r=+(o.getAttribute('data-r')||0);
       var u=lim>=r; o.disabled=!u;
       var rawKey=o.__rawLabel||o.textContent.replace(/^🔒\s*/,'');
       o.__rawLabel=rawKey;
       o.textContent=(u?'':'🔒 ')+tr(rawKey);
-      if(o.selected&&!u){selE.selectedIndex=0;changed=true;}
+      // A opção salva pode estar temporariamente bloqueada enquanto o ranking sincroniza.
+      // Mantemos a escolha e o save original; o cadeado só impede uma nova seleção.
     });
-    if(changed){CH[sel][CF[id]]=selE.value;saveCu();}
   });
 }
 function newItems(ob,sc){var a=ACC.filter(function(x){return x[2]>0&&x[2]>ob&&sc>=x[2]});refreshAcc();return a.length?'<br>✨ '+tr('Item novo')+': '+a.map(function(x){return tr(x[1])}).join(', '):''}
@@ -6572,7 +6571,78 @@ var PERF_DICT2 = {   // lojinha, insígnias, oshi e frase, corações e recados
   ja: {"Happi de Matsuri":"お祭りはっぴ","Gingham Check":"ギンガムチェック","Fortune Disco":"フォーチュンディスコ","Techno Pop":"テクノポップ","Escreva uma frase fofa (até 60 letras)":"かわいいひとことを書いてね（60文字まで）","Brasil":"ブラジル","Hipster":"ヒップスター","Rockstar":"ロックスター","Decora kei":"デコラ系","Fantasia de alien":"エイリアンの着ぐるみ","Lojinha de roupas":"衣装ショップ","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ここだけの衣装。買うと「衣装」に追加されるよ（全キャラOK）。","Vestir":"着る","Vestindo":"着用中","Insígnias":"バッジ","Conquistada!":"ゲット！","Bloqueada":"まだロック中","Center Run":"Center Run","no ranking geral":"総合ランキング","Recados":"メッセージ","Deixe um recado (até 60 letras)":"メッセージを書く（60文字まで）","Enviar":"送る","Nenhum recado ainda.":"まだメッセージはありません。","Recado enviado!":"メッセージを送ったよ！","Essa mensagem tem palavras que não são permitidas.":"使えない言葉が入っています。","Você já deixou um recado hoje para essa pessoa.":"今日はもうこの人にメッセージを送ったよ。","Essa pessoa não está recebendo recados.":"この人はメッセージを受け付けていません。","Você chegou ao limite de recados de hoje.":"今日のメッセージ上限に達しました。","Entre com Google para dar coração e deixar recados.":"Googleでログインするとハートとメッセージを送れるよ。","Aceitar recados":"メッセージを受け付ける","Dar coração":"ハートを送る","corações":"ハート","Você deu um coração hoje!":"今日はハートを送ったよ！","Oshi":"推し","Sem oshi":"推しなし","Trio TsuLiPa":"TsuLiPa箱推し","Frase do perfil":"ひとこと","Salvar":"保存","Salvo!":"保存したよ！","Editar oshi e frase":"推しとひとことを編集","Essa frase tem palavras que não são permitidas.":"使えない言葉が入っています。",
        "Estreia":"デビュー","Maratona":"マラソン","Presença VIP":"VIP皆勤","Família completa":"ペット大家族","Pet lendário":"伝説のペット","Top 1 do camarim":"楽屋No.1","Fashionista":"ファッショニスタ","Estilista":"スタイリスト","Coração de ouro":"黄金のハート","Primeira corrida no ranking online":"オンラインランキングで初ラン","100 corridas no ranking online":"オンラインランキングで100ラン","Correu em 7 dias diferentes":"7日間ちがう日にラン","Chegou a 5000 pontos":"5000点に到達","Chegou a 30000 pontos":"30000点に到達","Chegou a 50000 pontos":"50000点に到達","Tem Chu, Koali, Pucchi e o Meu Pet":"Chu・Koali・Pucchi・マイペットがそろった","Um pet chegou ao estágio Kami-Oshi":"ペットが神推しステージに到達","1º lugar em um minijogo do camarim":"楽屋ミニゲームで1位","5 compras no estúdio e na lojinha":"スタジオとショップで5回お買いもの","Escolheu a própria foto do perfil":"プロフィール写真を自分で選んだ","Recebeu 10 corações":"ハートを10個もらった"}
 };
-[PERF_DICT, PERF_DICT2].forEach(function(D){ Object.keys(D).forEach(function(l){ if(DICT[l]) Object.keys(D[l]).forEach(function(k){ DICT[l][k] = D[l][k]; }); }); });
+var PERF_ADMIN_DICT = {
+  en: {
+    'Restaurar todos os pets':'Restore all pets',
+    'Ajustar roupa do Idol':'Adjust Idol outfit',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'Restores hunger, energy, mood and hygiene to 100 for every pet on this account. Names, experience, accessories and collection stay unchanged.',
+    'Restaurar as quatro necessidades de todos os pets de':'Restore all four needs for every pet of',
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'pets restored. The change will sync when the member refreshes or signs in again.',
+    'Esta conta não tem pets para restaurar.':'This account has no pets to restore.',
+    'Não foi possível restaurar os pets. A atualização de moderação do banco ainda precisa ser aplicada.':'Could not restore pets. The moderation database update still needs to be applied.',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'Adjust the Idol outfit shown on the profile. Only unlocked or purchased outfits are listed.',
+    'Roupa do Idol':'Idol outfit',
+    'Cor da roupa':'Outfit color',
+    'Salvar ajuste':'Save adjustment',
+    'Aplicar esta roupa ao Idol de':'Apply this outfit to',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'Profile outfit updated. The member will see it after refreshing the game.',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'This outfit is not unlocked for this Idol yet.',
+    'Esta roupa não consta como comprada para esta conta.':'This outfit is not recorded as purchased for this account.',
+    'Não foi possível salvar o ajuste. Verifique a atualização de moderação do banco.':'Could not save the adjustment. The moderation database update may still be pending.',
+    'Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.':'Could not load this visual. The moderation database update still needs to be applied.',
+    'Não foi possível carregar o visual. Tente novamente.':'Could not load this visual. Try again.'
+  },
+  es: {
+    'Restaurar todos os pets':'Restaurar todas las mascotas',
+    'Ajustar roupa do Idol':'Ajustar atuendo del Idol',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'Restablece hambre, energía, ánimo e higiene al 100 para todas las mascotas de esta cuenta. No cambia nombres, experiencia, accesorios ni colección.',
+    'Restaurar as quatro necessidades de todos os pets de':'Restaurar las cuatro necesidades de todas las mascotas de',
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'mascotas restauradas. El cambio se sincroniza cuando la persona actualice el juego o vuelva a entrar.',
+    'Esta conta não tem pets para restaurar.':'Esta cuenta no tiene mascotas para restaurar.',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'Ajusta el atuendo del Idol que aparece en el perfil. Solo aparecen atuendos desbloqueados o comprados.',
+    'Roupa do Idol':'Atuendo del Idol',
+    'Cor da roupa':'Color del atuendo',
+    'Salvar ajuste':'Guardar ajuste',
+    'Aplicar esta roupa ao Idol de':'Aplicar este atuendo al Idol de',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'Atuendo del perfil actualizado. La persona verá el cambio al actualizar el juego.',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'Este atuendo aún no está desbloqueado para el Idol.',
+    'Esta roupa não consta como comprada para esta conta.':'Este atuendo no figura como comprado en esta cuenta.',
+    'Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.':'No se pudo cargar el aspecto. Falta aplicar la actualización de moderación de la base de datos.'
+  },
+  th: {
+    'Restaurar todos os pets':'ฟื้นฟูสัตว์เลี้ยงทั้งหมด',
+    'Ajustar roupa do Idol':'ปรับชุดไอดอล',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'ฟื้นฟูความหิว พลังงาน อารมณ์ และสุขอนามัยของสัตว์เลี้ยงทุกตัวในบัญชีนี้เป็น 100 โดยไม่เปลี่ยนชื่อ ประสบการณ์ เครื่องประดับ หรือคอลเลกชัน',
+    'Restaurar as quatro necessidades de todos os pets de':'ฟื้นฟูความต้องการทั้งสี่ของสัตว์เลี้ยงทุกตัวของ',
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'ฟื้นฟูสัตว์เลี้ยงแล้ว การเปลี่ยนแปลงจะซิงก์เมื่อสมาชิกรีเฟรชเกมหรือเข้าสู่ระบบอีกครั้ง',
+    'Esta conta não tem pets para restaurar.':'บัญชีนี้ไม่มีสัตว์เลี้ยงให้ฟื้นฟู',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'ปรับชุดไอดอลที่แสดงในโปรไฟล์ จะแสดงเฉพาะชุดที่ปลดล็อกหรือซื้อแล้ว',
+    'Roupa do Idol':'ชุดไอดอล',
+    'Cor da roupa':'สีชุด',
+    'Salvar ajuste':'บันทึกการปรับ',
+    'Aplicar esta roupa ao Idol de':'ใช้ชุดนี้กับไอดอลของ',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'อัปเดตชุดในโปรไฟล์แล้ว สมาชิกจะเห็นเมื่อรีเฟรชเกม',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'ชุดนี้ยังไม่ปลดล็อกสำหรับไอดอลนี้',
+    'Esta roupa não consta como comprada para esta conta.':'ไม่พบว่าบัญชีนี้ซื้อชุดนี้แล้ว'
+  },
+  ja: {
+    'Restaurar todos os pets':'すべてのペットを回復',
+    'Ajustar roupa do Idol':'アイドルの衣装を調整',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'このアカウントのすべてのペットの空腹・エネルギー・気分・清潔度を100にします。名前、経験値、アクセサリー、コレクションは変更しません。',
+    'Restaurar as quatro necessidades de todos os pets de':'次のメンバーの全ペットの4つの状態を回復',
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'匹のペットを回復しました。メンバーがゲームを更新するか再ログインすると同期されます。',
+    'Esta conta não tem pets para restaurar.':'このアカウントには回復するペットがいません。',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'プロフィールに表示されるアイドルの衣装を調整します。解放済みまたは購入済みの衣装のみ表示されます。',
+    'Roupa do Idol':'アイドルの衣装',
+    'Cor da roupa':'衣装の色',
+    'Salvar ajuste':'変更を保存',
+    'Aplicar esta roupa ao Idol de':'次のメンバーのアイドルにこの衣装を適用',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'プロフィールの衣装を更新しました。メンバーがゲームを更新すると反映されます。',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'このアイドルにはまだ解放されていない衣装です。',
+    'Esta roupa não consta como comprada para esta conta.':'このアカウントで購入済みの衣装ではありません。'
+  }
+};
+[PERF_DICT, PERF_DICT2, PERF_ADMIN_DICT].forEach(function(D){ Object.keys(D).forEach(function(l){ if(DICT[l]) Object.keys(D[l]).forEach(function(k){ DICT[l][k] = D[l][k]; }); }); });
 
 function perfLer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function perfJSON(s){ try{ return JSON.parse(s || 'null'); }catch(e){ return null; } }
@@ -6599,7 +6669,7 @@ function perfChar(av){
 }
 function perfAvAtual(extra){   // o seu Idol de agora (personagem 3, com o Item escolhido)
   var c = {}; PERF_CAMPOS.forEach(function(f){ c[f] = CU[f]; });
-  var av = { v:1, c:c, a:accSel || '', visual:'', pose:'v', expr:2, fundo:'basico' };
+  var av = { v:1, c:c, a:accSel || '', visual:'', pose:'v', expr:2, fundo:'basico', admin_visual_rev:+(perfLer('brs48cr_visual_rev')||0) };
   for(var k in (extra || {})) av[k] = extra[k];
   return av;
 }
@@ -7637,7 +7707,7 @@ function perfCarimbo(){   // brs48cr_sync: {"ms": hora da última mudança, "u":
 }
 function perfMarcar(ms, nick){ try{ localStorage.setItem(PERF_SYNC, JSON.stringify({ ms:ms, u:String(nick || '').toLowerCase() })); }catch(e){} }
 function perfVisualLocal(){
-  return { cu2: perfJSON(perfLer('brs48cr_cu2')), ch2: perfJSON(perfLer('brs48cr_ch2')), acc: perfLer('brs48cr_acc') || '', char: perfLer('brs48cr_char') || '' };
+  return { cu2: perfJSON(perfLer('brs48cr_cu2')), ch2: perfJSON(perfLer('brs48cr_ch2')), acc: perfLer('brs48cr_acc') || '', char: perfLer('brs48cr_char') || '', admin_visual_rev:+(perfLer('brs48cr_visual_rev')||0) };
 }
 function perfSnapAgora(){ return (perfLer('brs48cr_pet') || '') + '|' + JSON.stringify(perfVisualLocal()); }
 function perfEnviar(){
@@ -7724,6 +7794,7 @@ function perfAplicarNuvem(n, nick){
     if(v.ch2) localStorage.setItem('brs48cr_ch2', JSON.stringify(v.ch2));
     if(typeof v.acc === 'string') localStorage.setItem('brs48cr_acc', v.acc);
     if(v.char !== undefined && v.char !== null && v.char !== '') localStorage.setItem('brs48cr_char', String(v.char));
+    localStorage.setItem('brs48cr_visual_rev', String(Math.max(0, +v.admin_visual_rev || 0)));
     perfMarcar(+n.ms, nick);
     try{ sessionStorage.setItem('tsl_nuvem_ok', '1'); }catch(e){}
   }catch(e){ return false; }
@@ -7806,6 +7877,7 @@ PERF_REC_ERRO.pausado = 'Os recados estão pausados pela moderação.';
 PERF_REC_ERRO.bloqueado = 'Sua conta está bloqueada pela moderação.';
 
 function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
+  var temPets = Array.isArray(d.pets) && d.pets.length > 0;
   return '<div class="admbarra"><b>🛡️ ' + escHtml(tr('Moderação')) + (d.bloqueado ? ' · ⛔ ' + escHtml(tr('Conta bloqueada')) : '') + '</b>' +
     '<button type="button" data-adm="limpar_frase">🧹 ' + escHtml(tr('Limpar frase')) + '</button>' +
     '<button type="button" data-adm="renomear">✏️ ' + escHtml(tr('Renomear')) + '</button>' +
@@ -7813,6 +7885,8 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
     '<button type="button" data-adm="duo_on" data-v="' + (d.duo_on === false ? 'true' : 'false') + '">🌙 ' + escHtml(tr(d.duo_on === false ? 'Devolver ao Moon⭐Duo!/outdoors' : 'Tirar do Moon⭐Duo!/outdoors')) + '</button>' +
     '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button>' +
     '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button><button type="button" data-adm2="presente">🎁 Presente</button><button type="button" data-adm2="aviso">📣 Aviso</button>' +
+    (temPets ? '<button type="button" data-adm2="pets">💗 ' + escHtml(tr('Restaurar todos os pets')) + '</button>' : '') +
+    '<button type="button" data-adm2="visual">👗 ' + escHtml(tr('Ajustar roupa do Idol')) + '</button>' +
     '<div class="admform" id="admForm" hidden></div></div>';
 }
 function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
@@ -7824,6 +7898,29 @@ function admItens(){   // tudo o que se compra no servidor: visuais, poses, fund
     .concat(PERF_LOJA.map(function(o){ return ['roupa_' + o[0], '👗 ' + perfRot(o)]; }));
 }
 function admOpts(L){ return L.map(function(o){ return '<option value="' + escHtml(o[0]) + '">' + escHtml(o[1]) + '</option>'; }).join(''); }
+function admVisualFormHtml(r){
+  var best=+r.best_idol||0, owned=Array.isArray(r.visuais)?r.visuais:[];
+  var base=[
+    ['','Trainee',0],
+    ['seifuku','Debut (Team)',450],
+    ['estrelado','Nagareboshi (Senbatsu)',1000],
+    ['y2k','Cheeky (Quad Center)',1800],
+    ['zipper','ZIPPER (tCenter)',2800],
+    ['sweet','Valentine (wCenter)',3900],
+    ['citypop','Mayonaka (Center)',5000]
+  ];
+  var choices=base.filter(function(o){return o[2]<=best || o[0]===r.out;}).map(function(o){return [o[0],o[1]];});
+  PERF_LOJA.forEach(function(o){
+    if(owned.indexOf('roupa_'+o[0])>=0 || o[0]===r.out) choices.push([o[0],'🛍️ '+perfRot(o)]);
+  });
+  var color=/^#[0-9a-f]{6}$/i.test(r.outcol||'')?r.outcol:'#ffffff';
+  return '<p>' + escHtml(tr('Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.')) + '</p>' +
+    '<label>' + escHtml(tr('Roupa do Idol')) + ' <select id="admRoupa">' + admOpts(choices) + '</select></label>' +
+    '<label>' + escHtml(tr('Cor da roupa')) + ' <input type="color" id="admRoupaCor" value="' + escHtml(color) + '"></label>' +
+    '<input id="admMotivo" maxlength="60" placeholder="' + escHtml(tr('Motivo (aparece no extrato)')) + '">' +
+    '<button type="button" class="btn" id="admVestirSalvar">👗 ' + escHtml(tr('Salvar ajuste')) + '</button>' +
+    '<p class="perfmsg" id="admMsg" hidden></p>';
+}
 perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia especial e ver o extrato (perfil de outra pessoa)
   var b = e.target.closest('[data-adm2]'), f = $('admForm'), t;
   if(b && f && perfAtual){
@@ -7841,10 +7938,59 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
         '<input id="pp_msg" maxlength="140" placeholder="' + (t === 'aviso' ? 'Mensagem para ' : 'Mensagem do presente para ') + escHtml(perfAtual.nick) + '"><button type="button" class="btn" id="ppEnviar" data-t="' + t + '">Enviar</button><p class="perfmsg" id="admMsg" hidden></p>';
       return;
     }
+    if(t === 'pets'){
+      f.innerHTML = '<p>💗 ' + escHtml(tr('Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.')) + '</p>' +
+        '<button type="button" class="btn" id="admPetsCompletar">' + escHtml(tr('Restaurar todos os pets')) + '</button><p class="perfmsg" id="admMsg" hidden></p>';
+      return;
+    }
+    if(t === 'visual'){
+      var alvoVisual=perfAtual.nick;
+      f.innerHTML='<p class="perfcarr">…</p>';
+      contaRpc('admin_visual_info', { p_nick: alvoVisual }).then(function(r){
+        if(!perfAtual || perfAtual.nick!==alvoVisual) return;
+        if(!r || !r.ok){ f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.')) + '</p>'; return; }
+        f.innerHTML=admVisualFormHtml(r);
+        var seletorRoupa=$('admRoupa'); if(seletorRoupa) seletorRoupa.value=r.out||'';
+      }).catch(function(){
+        if(perfAtual && perfAtual.nick===alvoVisual) f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. Tente novamente.')) + '</p>';
+      });
+      return;
+    }
     var campo = t === 'estrelas' ? '<input type="number" id="admValor" min="-2000" max="2000" step="10" value="100"> <small>(−2000 a 2000)</small>'
       : t === 'item' ? '<select id="admValor">' + admOpts(admItens()) + '</select>'
       : '<select id="admValor">' + admOpts(PERF_INS.filter(function(i){ return /^esp_/.test(i[0]); }).map(function(i){ return [i[0], i[1] + ' ' + tr(i[2]) + ((perfAtual.insignias || []).indexOf(i[0]) >= 0 ? ' (tirar)' : '')]; })) + '</select>';
     f.innerHTML = campo + '<input id="admMotivo" maxlength="60" placeholder="Motivo (aparece no extrato)"><button type="button" class="btn" id="admEnviar" data-t="' + t + '">Enviar</button><p class="perfmsg" id="admMsg" hidden></p>';
+    return;
+  }
+  if(e.target.closest && e.target.closest('#admPetsCompletar') && perfAtual){
+    var petBtn=e.target.closest('#admPetsCompletar'), petNick=perfAtual.nick, petMsg=$('admMsg');
+    if(!confirm(tr('Tem certeza?')+' '+tr('Restaurar as quatro necessidades de todos os pets de')+' '+petNick+'?')) return;
+    petBtn.disabled=true;
+    contaRpc('admin_cuidar_pets', { p_nick:petNick, p_motivo:'Recuperação das necessidades de todos os pets' }).then(function(r){
+      petBtn.disabled=false;
+      petMsg.textContent=r&&r.ok?'💗 '+(+r.pets||0)+' '+tr('pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.') : r&&r.erro==='sem_pets'?tr('Esta conta não tem pets para restaurar.'):tr('Não foi possível restaurar os pets. A atualização de moderação do banco ainda precisa ser aplicada.');
+      petMsg.hidden=false;
+    }).catch(function(){ petBtn.disabled=false; petMsg.textContent=tr('Não foi possível restaurar os pets. Tente novamente.'); petMsg.hidden=false; });
+    return;
+  }
+  if(e.target.closest && e.target.closest('#admVestirSalvar') && perfAtual){
+    var vestirBtn=e.target.closest('#admVestirSalvar'), vestirNick=perfAtual.nick;
+    var vestirMsg=$('admMsg'), roupa=$('admRoupa').value, cor=$('admRoupaCor').value;
+    var motivo=($('admMotivo').value||'').trim();
+    if(!confirm(tr('Tem certeza?')+' '+tr('Aplicar esta roupa ao Idol de')+' '+vestirNick+'?')) return;
+    vestirBtn.disabled=true;
+    contaRpc('admin_vestir', { p_nick:vestirNick, p_roupa:roupa, p_cor:cor, p_motivo:motivo }).then(function(r){
+      vestirBtn.disabled=false;
+      if(r&&r.ok){
+        perfTopoMsg('👗 '+tr('Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.'));
+        perfAbrir(vestirNick,true);
+      } else {
+        vestirMsg.textContent=r&&r.erro==='bloqueada'?tr('Esta roupa ainda não foi desbloqueada para o Idol.'):r&&r.erro==='nao_comprada'?tr('Esta roupa não consta como comprada para esta conta.'):tr('Não foi possível salvar o ajuste. Verifique a atualização de moderação do banco.');
+        vestirMsg.hidden=false;
+      }
+    }).catch(function(){
+      vestirBtn.disabled=false; vestirMsg.textContent=tr('Não foi possível salvar o ajuste. Tente novamente.'); vestirMsg.hidden=false;
+    });
     return;
   }
   if(e.target.id === 'admEnviar' && perfAtual){
@@ -11034,9 +11180,6 @@ function admLivreBtn(){ var on = admLivre();
   return '<button type="button" class="btn' + (on ? '' : ' alt') + '" id="admLivre" aria-pressed="' + on + '">' + (on ? '🔓 ' : '🔒 ') + escHtml(tr(on ? 'Liberar tudo: ligado' : 'Liberar tudo: desligado')) + '</button>'; }
 if(typeof temaAdminHtml === 'function'){ var admToolsOrig = temaAdminHtml; temaAdminHtml = function(){
   return admToolsOrig() + '<button type="button" class="btn alt" data-admmis="1">🎯 ' + escHtml(tr('Completar missões do dia')) + '</button>' + admLivreBtn() +
-    (TW_KARAOKE_TIME ? '' :   // Karaoke online desligado no banco: botões da sala só voltam com ele
-    '<button type="button" class="btn alt" data-admkar="teste">🎤 ' + escHtml(tr('Karaoke: abrir teste (30 min)')) + '</button>' +
-    '<button type="button" class="btn alt" data-admkar="automatico">🕛 ' + escHtml(tr('Karaoke: só aos domingos')) + '</button>') +
     '<small class="admnota">🔓 ' + escHtml(tr('Liberar tudo: todas as roupas, poses, fundos, expressões e itens do Moon⭐Duo! ficam livres para você testar. Desligado, volta a valer só o que você comprou.')) + '</small>'; }; }
 var hubMisUIOrig = hubMisUI;
 hubMisUI = function(){ hubMisUIOrig.apply(this, arguments);
@@ -11044,15 +11187,6 @@ hubMisUI = function(){ hubMisUIOrig.apply(this, arguments);
   var box = $('hubMis'); if(box) box.insertAdjacentHTML('beforeend', '<button type="button" class="btn alt hubadmmis" data-admmis="1">🛡️ ' + escHtml(tr('Completar missões do dia')) + '</button>');
 };
 document.addEventListener('click', function(e){
-  var k = e.target.closest && e.target.closest('[data-admkar]');
-  if(k){ if(!contaAdmin() || TW_KARAOKE_TIME) return; k.disabled = true;
-    contaRpc('karaoke_sala_admin', { p_acao: k.dataset.admkar, p_minutos: 30 }).then(function(r){
-      k.disabled = false;
-      var msg = r && r.aberta ? '🟢 ' + tr('Karaoke aberto para teste por 30 min') : '🕛 ' + tr('Karaoke volta a abrir só aos domingos');
-      if(typeof perfTopoMsg === 'function') perfTopoMsg(msg);
-    }).catch(function(){ k.disabled = false; });
-    return;
-  }
   var b = e.target.closest && e.target.closest('[data-admmis]');
   if(b){ if(!contaAdmin()) return; b.disabled = true;
     contaRpc('admin_missoes_completar').then(function(r){
@@ -11076,10 +11210,6 @@ document.addEventListener('click', function(e){
   }
 });
 [
-  ['Karaoke: abrir teste (30 min)', 'Karaoke: open test (30 min)', 'Karaoke: abrir prueba (30 min)', 'คาราโอเกะ: เปิดทดสอบ (30 นาที)', 'カラオケ：テストを開く（30分）'],
-  ['Karaoke: só aos domingos', 'Karaoke: Sundays only', 'Karaoke: solo los domingos', 'คาราโอเกะ: เฉพาะวันอาทิตย์', 'カラオケ：日曜のみ'],
-  ['Karaoke aberto para teste por 30 min', 'Karaoke open for testing for 30 min', 'Karaoke abierto para prueba por 30 min', 'เปิดคาราโอเกะทดสอบ 30 นาที', 'カラオケを30分テスト公開中'],
-  ['Karaoke volta a abrir só aos domingos', 'Karaoke opens only on Sundays again', 'El karaoke vuelve a abrir solo los domingos', 'คาราโอเกะกลับมาเปิดเฉพาะวันอาทิตย์', 'カラオケは日曜のみに戻りました'],
   ['Completar missões do dia', 'Complete daily missions', 'Completar misiones del día', 'ทำภารกิจประจำวันให้ครบ', 'きょうのミッションを完了'],
   ['Missões completas!', 'Missions complete!', '¡Misiones completas!', 'ทำภารกิจครบแล้ว!', 'ミッション完了！'],
   ['Liberar tudo: ligado', 'Unlock all: on', 'Liberar todo: activado', 'ปลดล็อกทั้งหมด: เปิด', 'すべて解放：オン'],

@@ -9,12 +9,18 @@
   background:linear-gradient(145deg,#c14fd0 0%,#7b3ff0 48%,#4169e1 100%);
   box-shadow:0 0 0 3px rgba(123,63,240,.28),0 5px 0 #40208d,0 12px 24px rgba(60,20,120,.24);
 }
-#hub .tw-rank-tv:before{
-  content:"";position:absolute;z-index:-1;top:-17px;left:calc(50% - 26px);
-  width:52px;height:17px;
-  background:linear-gradient(67deg,transparent 45%,#7b3ff0 46% 51%,transparent 52%),
-             linear-gradient(-67deg,transparent 45%,#ff6fb5 46% 51%,transparent 52%);
+#hub .tw-rank-tv:before{   /* antenas de alien: hastes curvas com bolinhas que brilham */
+  content:"";position:absolute;z-index:-1;top:-31px;left:calc(50% - 36px);width:72px;height:34px;transform-origin:50% 100%;
+  background:radial-gradient(circle at 8px 8px,#fff 0 2px,#b6ff3b 3px 6px,rgba(182,255,59,.35) 7px 9px,transparent 10px),
+    radial-gradient(circle at calc(100% - 8px) 8px,#fff 0 2px,#ff6fb5 3px 6px,rgba(255,111,181,.35) 7px 9px,transparent 10px),
+    radial-gradient(ellipse 30px 34px at 30px 40px,transparent 25px,#7b3ff0 26px 29px,transparent 30px),
+    radial-gradient(ellipse 30px 34px at calc(100% - 30px) 40px,transparent 25px,#7b3ff0 26px 29px,transparent 30px);
+  filter:drop-shadow(0 0 3px rgba(255,255,255,.7));animation:twAntena 1.4s ease-in-out infinite alternate;
 }
+@keyframes twAntena{from{transform:rotate(-3deg)}to{transform:rotate(3deg) scaleY(1.05)}}
+#hub .tw-tv-desliza{animation:twTvDesliza .45s cubic-bezier(.2,.8,.3,1)}
+@keyframes twTvDesliza{from{opacity:0;transform:translateX(38%)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#hub .tw-rank-tv:before,#hub .tw-tv-desliza{animation:none}}
 #hub .tw-rank-tv:after{
   content:"";position:absolute;right:-10px;top:35%;width:5px;height:42px;
   border-radius:0 5px 5px 0;background:linear-gradient(#ffe14d,#ff6fb5);

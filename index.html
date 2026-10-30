@@ -8430,12 +8430,13 @@ function twSoraMissaoPendente(){
 }
 function hubCardsUI(){
   var pi = hubPetInfo(), soraPendente = twSoraMissaoPendente();
+  var lockHtml = !contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '';
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
-    '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubperf" data-ir="perfil">' + (!contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '') + '<canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + (!contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '') + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (!contaJ ? '<small class="tw-profile-hint">🔒 ' + escHtml(tr('Entrar com Google')) + '</small>' : '') + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
+    '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (!contaJ ? '<small class="tw-profile-hint">🔒 ' + escHtml(tr('Entrar com Google')) + '</small>' : '') + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = {
     pt:['Pule entre nuvens, descubra cenários e colete estrelas.','Cante, dance e brilhe no palco!'],
@@ -8445,8 +8446,8 @@ function hubCardsUI(){
     th:['กระโดดบนก้อนเมฆและเก็บดาว','ร้องเพลง เต้น และเปล่งประกายบนเวที!']
   }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump"><i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical"><i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + lockHtml + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical">' + lockHtml + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
   );
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
@@ -8556,8 +8557,17 @@ function twRankRender(){
  buttons.setAttribute('aria-label',twRankWord(11));
  if(hallWrap){hallWrap.setAttribute('aria-label',twRankWord(13));var cap2=hallWrap.querySelector('h2 small');if(cap2)cap2.textContent=twRankWord(13);}
  var g=twRankGames[twRankData.active],top=twRankData[g[0]][0];
+ var tvStageHtml = top ?
+   '<div class="tw-tv-idol-stage">' +
+     '<span class="tw-tv-idol-sparkle" aria-hidden="true">✨</span>' +
+     '<span class="tw-rank-avatar-wrap tw-tv-idol-avatar">' +
+       '<span class="tw-rank-avatar-fallback" aria-hidden="true">👑</span>' +
+       '<canvas class="tw-rank-avatar" width="64" height="64" data-nick="'+escHtml(top.nick)+'" aria-hidden="true" style="display:none"></canvas>' +
+     '</span>' +
+     '<span class="tw-tv-idol-sparkle" aria-hidden="true">💖</span>' +
+   '</div>' : '';
  screen.innerHTML='<b>'+g[1]+' '+g[2]+'</b>'+(top?
-  '<p>'+escHtml(twRankWord(twRankData.active+3)+top.nick)+'?</p><strong>🏆 '+top.score.toLocaleString()+' '+g[3]+'</strong>':
+  tvStageHtml+'<p>'+escHtml(twRankWord(twRankData.active+3)+top.nick)+'?</p><strong>🏆 '+top.score.toLocaleString()+' '+g[3]+'</strong>':
   '<p class="tw-rank-wait">'+escHtml(twRankStatus(g[0]))+'</p>');
  buttons.innerHTML=twRankGames.map(function(k,i){
   return '<button type="button" data-tw-rank="'+i+'" aria-pressed="'+(twRankData.active===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
@@ -8957,8 +8967,9 @@ hubOv.addEventListener('click', function(e){
   if((b = t.closest('.hubcard'))){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
-    else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
+    else if(!contaJ){ contaEntrar(); }
+    else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
     else if(ir === 'duo') duoAbrir();
     else if(ir === 'sora' || ir === 'karaoke') twPreviewAbrirJogo(ir);

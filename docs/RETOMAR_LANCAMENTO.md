@@ -1,6 +1,6 @@
 # Retomar — lançamento da INDEX 2 como página principal
 
-**Atualizado em 29/10/2026, após o ajuste da TsuLiPa TV e da tela inicial.** Este arquivo descreve o estado confirmado da branch de lançamento. Antes de qualquer nova alteração, confira o head do PR e os checks atuais no GitHub.
+**Atualizado em 30/10/2026, após os ajustes autorizados do banner e do Star Gacha.** Este arquivo descreve o estado confirmado da branch de lançamento. Antes de qualquer nova alteração, confira o head do PR e os checks atuais no GitHub.
 
 ## Ponto de parada atual
 
@@ -8,17 +8,25 @@
 - Branch de trabalho: `release/index2-lancamento`.
 - PR #34: [Lançamento da INDEX 2 como página principal](https://github.com/chumikie/tsulipa-run/pull/34).
 - Estado do PR: **aberto, em rascunho e não mesclado**; base `main`.
-- Último commit de código/interface validado: `fd5480a8bddbb3f2cfc5c0a19848c3259004b73f`; esta atualização da branch altera somente documentação. Confira o head atual do PR antes de qualquer nova alteração.
+- Base desta entrega: `6a31065d5128a7492ddab7a130ee18f90279e8aa`, com CI aprovado. Esta entrega ajusta somente o tamanho do banner no hub e remove o aviso extra de login do card Star Gacha, além da validação e documentação correspondentes. Confira o head atual antes de qualquer nova alteração.
 - SHA confirmado de `main`: `47b1b702d68ee205c7a44fb7da13c12165f33db6` — não alterada por esta entrega.
 - PR #33: continua aberto/em rascunho e intocado.
 - Prévia Netlify do PR #34: https://deploy-preview-34--tsulipa-run.netlify.app
 
 ### Checks da revisão de código e da prévia
 
-- GitHub Actions, workflow **Check TsuLiPa special games**, execução [40979830120](https://github.com/chumikie/tsulipa-run/actions/runs/40979830120): **success** no commit de código/interface `fd5480a8...`. A atualização seguinte é somente documental.
+- GitHub Actions, workflow **Check TsuLiPa special games**, execução [40983812523](https://github.com/chumikie/tsulipa-run/actions/runs/40983812523): **success** na base `6a31065d...`. Consultar os checks do novo head após esta entrega.
 - Netlify Deploy Preview: usar a URL acima e conferir o status da implantação mais recente antes de testar; a prévia pode reconstruir após commits na branch.
 - Vercel: status **“Deployment was blocked”**. Isso é intencional e não deve ser corrigido reativando deploy ou alterando configurações de produção.
 - A aprovação do CI e da Netlify não substitui a revisão visual em aparelho físico, que ainda está pendente.
+
+## Revisão visual e ajustes autorizados em 30/10
+
+- A usuária aprovou a tela de abertura e a disposição dos botões nas capturas enviadas. Isso não comprova teste em celular físico.
+- Banner do trio no hub: centralizado, limitado a 560 px, mantendo a proporção e o tamanho da abertura. A largura dos botões e do ranking permanece intacta.
+- Star Gacha: removido somente o aviso extra “🔒 Entrar com Google”; mantidos “1 giro por dia”, cadeado no canto e exigência de login.
+- A tela de abertura e os fluxos de autenticação/jogos não foram alterados.
+- Próximo passo: a usuária revisa esses dois ajustes na prévia atualizada; nenhuma autorização de merge foi dada.
 
 ## O que já foi implementado
 
@@ -62,7 +70,9 @@
 
 ## Validação e limites
 
-O workflow atual passou no head `fd5480a8...`. Entre as verificações automatizadas mantidas na branch estão validação estrutural dos jogos, modelo da sala de Karaoke, ritmo, homologação/fila/segurança, ciclo de vida e recuperação de sincronização, estabilidade do Sora (iframe, áudio móvel e bfcache) e regressões do pódio semanal/tela inicial.
+Nesta entrega, a checagem em navegador local não foi concluída: Chromium indisponível e download do navegador falhou. A dimensão foi conferida no CSS; revisão visual da prévia atualizada permanece pendente.
+
+O workflow passou na base `6a31065d...`. Os oito scripts de validação locais passaram após os ajustes desta entrega. O teste estrutural foi atualizado para aceitar o cadeado sem exigir o aviso extra removido. Entre as verificações automatizadas mantidas na branch estão validação estrutural dos jogos, modelo da sala de Karaoke, ritmo, homologação/fila/segurança, ciclo de vida e recuperação de sincronização, estabilidade do Sora (iframe, áudio móvel e bfcache) e regressões do pódio semanal/tela inicial.
 
 **O que ainda não foi comprovado:** revisão da interface em um celular físico; login, compras, resgates e economia em fluxo real de produção; experiência multiplayer pública. A revisão anterior em Chromium com viewports móveis e desktop é evidência histórica, não substitui o teste do layout mais recente.
 

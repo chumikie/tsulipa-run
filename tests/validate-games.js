@@ -165,7 +165,7 @@ assert(lab.includes('id="twPreviewSom"')&&lab.includes("TW_SORA_SOUND_STATE")&&
        sora.includes("TW_SORA_TOGGLE_SOUND")&&soraEmbedSkin.includes("html.tw-sora-embed #soraSoundBtn{display:none!important}")&&
        launchSkin.includes(".tw-preview-som"),
   "Sora should expose sound in the official header and keep standalone UI intact");
-assert(lab.includes('class="tw-profile-lock"')&&lab.includes('class="tw-profile-hint"')&&
+assert(lab.includes('class="tw-profile-lock"')&&!lab.includes('class="tw-profile-hint"')&&
        lab.includes('data-ir="run"'),
   "Profile-dependent actions should signal sign-in without blocking anonymous Center Run");
 assert(lab.includes("./sora-jump.html'+context")&&

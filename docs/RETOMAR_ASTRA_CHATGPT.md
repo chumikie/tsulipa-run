@@ -1,16 +1,24 @@
 # Instruções de retomada para o Astra (ChatGPT)
 
-**Atualizado em 29/10/2026.** Leia primeiro [`RETOMAR_LANCAMENTO.md`](RETOMAR_LANCAMENTO.md), que contém o estado, os links e os limites confirmados. Não trate documentos de continuidade antigos como estado atual.
+**Atualizado em 30/10/2026.** Leia primeiro [`RETOMAR_LANCAMENTO.md`](RETOMAR_LANCAMENTO.md), que contém o estado, os links e os limites confirmados. Não trate documentos de continuidade antigos como estado atual.
 
 ## Estado atual confirmado
 
 - Repositório: `chumikie/tsulipa-run`.
 - Trabalhar somente na branch `release/index2-lancamento`.
 - PR #34: aberto, em rascunho, base `main`, ainda não mesclado.
-- Último commit de código validado: `fd5480a8bddbb3f2cfc5c0a19848c3259004b73f`; a atualização posterior é somente documental. Sempre consulte o head atual no GitHub antes de mexer.
+- Base desta entrega: `6a31065d5128a7492ddab7a130ee18f90279e8aa`, com CI aprovado. A entrega atual inclui os dois ajustes visuais autorizados descritos abaixo. Sempre consulte o head atual no GitHub antes de mexer.
 - `main` continua em `47b1b702d68ee205c7a44fb7da13c12165f33db6`.
 - Prévia Netlify: https://deploy-preview-34--tsulipa-run.netlify.app
-- GitHub Actions: execução 40979830120 passou no commit de código/interface `fd5480a8...`. Netlify Preview: consulte o último status do deploy. Vercel: `Deployment was blocked`, intencional.
+- GitHub Actions: execução 40983812523 passou na base `6a31065d...`; conferir os checks da entrega atual. Netlify Preview: consulte o último status do deploy. Vercel: `Deployment was blocked`, intencional.
+
+## Revisão visual e ajustes autorizados em 30/10
+
+- A usuária aprovou a tela de abertura e a disposição dos botões nas capturas enviadas. Isso não comprova teste em celular físico.
+- Banner do trio no hub: centralizado, limitado a 560 px, mantendo a proporção e o tamanho da abertura. A largura dos botões e do ranking permanece intacta.
+- Star Gacha: removido somente o aviso extra “🔒 Entrar com Google”; mantidos “1 giro por dia”, cadeado no canto e exigência de login.
+- A tela de abertura e os fluxos de autenticação/jogos não foram alterados.
+- Próximo passo: a usuária revisa esses dois ajustes na prévia atualizada; nenhuma autorização de merge foi dada.
 
 ## O que fazer ao retomar
 

@@ -145,9 +145,11 @@ assert(lab.includes("function encCompletarPerfis(d)")&&
        lab.includes("encPessoasRender(atualizado)")&&
        !lab.includes("contaRpc('encontro_hoje',{p_falas:DUO_FALAS.length}).then(function(r){"),
   "Daily encounter must enrich older saved groups through existing public-profile RPC without re-rolling");
-assert(lab.includes("best: o.best, oshi: o.oshi")&&
-       lab.includes("best: o.best, oshi: o.oshi"),
-  "Guest daily encounter must preserve each participant's own ranking and Oshi fields");
+assert((lab.match(/best: o\\.best, oshi: o\\.oshi/g)||[]).length===2,
+  "Both authenticated and guest daily encounter paths must preserve each extra member's ranking and Oshi");
+assert(lab.includes("encPessoasRender(d);\\n  encCompletarPerfis(d);")&&
+       lab.includes("max-height:calc(100dvh - 24px)"),
+  "Daily encounter group cards must load immediately and remain scrollable on short screens");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
 assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),

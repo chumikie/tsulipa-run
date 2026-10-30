@@ -1,0 +1,166 @@
+## Auditoria Portão 5 — custo e desempenho (29/10/2026)
+
+- **Carregamento e animação:** Sora/Karaoke recebem o URL do iframe apenas após escolha no hub; ao voltar, o iframe é descarregado para `about:blank`. As duas páginas suspendem animação/áudio ao ficar ocultas e tratam `pagehide/pageshow`. Na INDEX 2, os loops de canvas de Center⭐Run e da prévia do avatar agora guardam o ID do `requestAnimationFrame` e param quando o hub/iframe cobre o conteúdo ou a aba fica oculta. A retomada zera o timestamp base para evitar um salto de tempo; nenhuma física, chave de save ou API foi alterada.
+- **Teste de ciclo de vida:** GitHub Actions [run #154](https://github.com/chumikie/tsulipa-run/actions/runs/40959784396) — `success`; passou o validador de rotas, o teste comportamental do carregador de prévia e os outros sete grupos da suíte. O teste novo cobre estado visível, aba oculta, hub aberto e iframe de jogo visível.
+- **Bytes de código-fonte (UTF-8, sem compressão de transporte):** `index2.html` **962.673 B**; `sora-jump.html` **253.173 B**; `karaoke-day.html` **124.981 B**; `sora-jump-karaoke.html` **10.432 B**; `index2-skin.css` **9.628 B**; `tw-weekly-podium.css` **7.996 B**; `sora-embed.css` **5.887 B**; `karaoke-embed.css` **1.653 B**. Esses números são tamanho dos arquivos no repositório, **não** o tamanho baixado com gzip/Brotli.
+- **Tamanho do banco (consulta SQL somente de leitura):** produção `pg_database_size(current_database()) = 13.579.955` bytes (Postgres mostra 13 MB); homologação `11.572.915` bytes (11 MB). É um retrato do tamanho do database no momento da consulta, não uma conta de cobrança completa.
+- **Logs Supabase no período de 24 h de 28/10/2026 20:00 UTC a 29/10/2026 20:00 UTC:** produção: 2.568 eventos `edge_logs`, 201 `postgres_logs`, 72 `pgbouncer_logs`, 52 `auth_logs`, 48 `auth_audit_logs`, 21 `postgrest_logs`. Entre as rotas com maior volume aparecem `aviso_inicio` (302 POSTs), `vitrine_idols` (238), `jogador` (233), `carregar_nuvem` (230), `outdoor_jogadores` (211) e `salvar_nuvem` (194). São eventos de log e pedidos do projeto inteiro; não representam visitantes únicos nem permitem calcular chamadas por visita sem um denominador de sessões. Em homologação foram encontrados 10 registros `realtime_logs`; isso **não** é uma medição de mensagens Realtime faturáveis.
+- **Limites e escritas:** `perfConferir` verifica a mudança do snapshot local em intervalos de 4 s, mas só chama `salvar_nuvem` quando há diferença; agrega mudanças com debounce e limite temporal. O cliente de ensaio usa heartbeat de 30 s, e o sync agrupa alterações e mantém pelo menos cerca de 2 s entre refreshes. O ritmo de homologação chama `karaoke_ensaio_toque` por toque validado (até 40 notas de um turno), não por frame de animação; essa carga por toque ainda precisa de teste antes de qualquer abertura a membros.
+- **Vercel:** o projeto está no plano Hobby; `vercel.json` mantém `git.deploymentEnabled=false` para esta branch. Não foi criado preview/deployment durante a auditoria. O histórico disponível tinha ao menos 30 deployments READY antigos da branch em aproximadamente 53 minutos (29/10, 13:53–14:46 UTC). A consulta de métricas customizada retornou `400 bad_request` e a consulta de cobranças `404 costs_not_found`, então não foi possível confirmar transferência, cache de arquivos, consumo/cota ou custo pela API usada.
+- **Ainda pendente para concluir o Portão 5:** medir a resposta efetivamente comprimida, cabeçalhos/cache hit dos arquivos estáticos e FPS real em desktop/celular; medir RPCs e mensagens Realtime por sessão/visita; conferir uso e limite de transferência/deploy no dashboard da Vercel. Para isso será necessária uma única rodada de preview planejada após fechar o trabalho visual; não reativar deploys para medir antes dessa hora.
+- **Produção preservada:** nenhuma escrita SQL, migração, mudança de Auth ou alteração no Supabase de produção foi feita nessa auditoria. A documentação em `docs/` não é importada pelo jogo e não aumenta sua carga de execução.
+
+---
+
+## Atualização atual — visual da INDEX 2 e estabilidade do Sora (29/10/2026)
+
+- **Top Idols/TV:** ajustado em `tw-weekly-podium.css` para uma TV kawaii na tela de entrada e um pódio lateral no hub desktop. A vitrine antiga `hubIdols` permanece separada e não foi removida.
+- **Fotos do pódio:** a interface reutiliza somente avatares reais vindos da lista já existente `vitrine_idols` quando o apelido coincide; se não houver avatar disponível, usa o ícone do jogo. Não faz requisições extras para inventar imagens.
+- **Estado real do ranking:** Center⭐Run continua usando a leitura semanal oficial existente. O ranking online de Sora⭐Jump!/Karaoke⭐Day! continua **desativado** por `TW_RANK_ONLINE_READY=false`; não há campeões desses jogos para publicar até a autoridade de pontuação ser revisada e homologada.
+- **Tamanho do Sora:** ajustadas apenas as regras de CSS do embed para reaproveitar melhor a altura do iframe em desktop, celular e paisagem curta; a referência lógica permanece 360×520. Não houve alteração de física, progressão ou áudio do jogo.
+- **Testes:** GitHub Actions [run #149](https://github.com/chumikie/tsulipa-run/actions/runs/40958413961), checkpoint de código [`9fc6615`](https://github.com/chumikie/tsulipa-run/commit/9fc66153ba4ea24cdab50845c8f0d5a2e4b9ab82), terminou em `success` com todos os oito passos de validação.
+- **Ainda pendente:** revisar visualmente em navegador real os vários tamanhos de tela e confirmar traduções completas, Oshi/tema, retorno, áudio e ausência de tela branca/flash. Testes estáticos não verificam o layout renderizado nem a disponibilidade de RPC/Auth no navegador.
+- `index.html` oficial e Supabase de produção não foram alterados; `vercel.json` continua desativando deploys automáticos para esta branch. PR #33 permanece experimental/rascunho.
+
+---
+
+## Etapa 3A.10 — Horário, limites e moderação (29/10/2026)
+- Servidor somente em homologação: domingo 12:00–13:10, fuso `America/Sao_Paulo`. O portão manual é obrigatório e nunca abre automaticamente; fora da janela, RPCs de estado e pontuação o fecham e limpam as vagas, o microfone e a fila.
+- O elenco e o sinal de sincronização também recusam leitura fora do horário. Com o portão fechado, o visual demonstrativo permanece intacto.
+- Limites por identidade fictícia: 6 segundos entre entradas, 2 segundos entre pedidos de fila e 2 segundos entre saídas da fila. Nenhuma gravação por frame; continuam 9 vagas, fila 3, turnos 60s.
+- Moderação privada por UUID e código pré-definido, sem chat ou texto livre; bloqueio expulsa o Idol, invalida sua vaga e impede novas ações, pontuação e leitura do elenco. Nenhum acesso direto do navegador às tabelas de moderação/limite.
+- Testes com rollback: bordas do domingo, throttling, suspensão e bloqueio fora do horário. **Não substituem testes de carga, Auth/CAPTCHA e dois navegadores.** A proteção de abuso por identidade não substitui limites de IP/Auth.
+- Sem abertura pública: `SIGNUP_ENABLED=false`, portão experimental fechado, Vercel pausada, PR #33 rascunho, produção intacta.
+
+### 3A.9b — Prévia visual sem contas (29/10/2026)
+- `karaoke-day.html?homol=1&practice_preview=1` mostra o novo painel de ritmo, em estado de inspeção apenas. Exibe traços em vez de uma pontuação inventada, com botão desativado.
+- Não chama Auth nem a função de pontuação; não ocupa vagas, não concede prêmios e não altera o visual da demonstração sem esse parâmetro.
+- Cadastro e portão continuam fechados. A interface conectada permanece disponível somente a uma cantora autenticada de homologação após todas as verificações.
+
+## Etapa 3A.9 — Painel de ritmo online (29/10/2026)
+- UI experimental com painel de 40 notas que usa o gráfico original local, mas envia o toque da cantora à RPC de validação do servidor.
+- O servidor valida dono da vaga, cantora atual, turno de 60s, janela de 5+45s, uma única pontuação por nota e limite de spam; o score numérico chega aos espectadores por revisão da sala.
+- O score continua `verified:false` e `persisted:false`, não participa do ranking e não concede dinheiro, moedas, estrelas, insígnias ou conquistas.
+- Somente na homologação; a sala demonstrativa e a versão oficial não mudam. Portão SQL e cadastro continuam fechados. Ainda **não testado em navegador real**.
+- Necessário avaliar lag da rede, segurança e abusos antes de permitir pontuação pública.
+
+## Etapa 3A.9 — Pontuação do ensaio (preparação, 29/10/2026)
+- **Servidor na homologação somente:** um banco de testes controla os 40 toques, a cantora e o turno de 60 segundos; cálculo com janela de 95ms para PERFECT e 200ms para GOOD baseado no relógio do servidor, evitando envio de pontuação arbitrária pelo cliente.
+- Somente a cantora com seu token de vaga pode registrar toques; score duplicado, fora da janela ou de outra cantora é recusado. Pontuação é **de ensaio**, sem estrelas, moedas, insígnias e ranking. O tempo da rede pode afetar os acertos e ainda não serve para classificação competitiva.
+- A função de estado expõe **apenas números** (`practice`) aos participantes; nunca singer UUID ou tokens alheios. Limpeza ao fechar sala. Uma única linha guarda placar provisório da cantora atual, não histórico de jogador.
+- **Não abrir o portão ou liberar sign-ups**. Testes SQL de validação e integração de navegador devem preceder publicação.
+
+## Etapa 3A.8 — Sincronização online leve (29/10/2026)
+- Foi adotado **Postgres Changes** da Supabase em vez de `realtime.send`, porque a homologação está sem partição interna de `realtime.messages`. Nenhuma tabela interna gerenciada foi alterada.
+- Uma tabela pública de sinal em `public` contém somente `room_key` e `revision`. A política RLS autoriza consulta apenas a Idols anônimos com vaga válida, enquanto a sala está aberta. Nenhum token, UUID ou pontuação é transmitido.
+- Um gatilho envia alterações da revisão para a publicação `supabase_realtime`; o navegador só usa o aviso para consultar a RPC protegida, agrupa eventos e limita consultas de atualização a aproximadamente duas segundos entre disparos.
+- Desconexão ao sair/ocultar aba, fallback 30s para heartbeat. Sem testes reais em 2 navegadores: **a experiência ponta a ponta ainda não está validada**.
+- Cadastro permanece desligado e portão do servidor permanece fechado. PR #33 em rascunho e Vercel pausada. Nenhuma mudança na INDEX oficial.
+
+## Etapa 3A.7 — Fechamento seguro do ensaio (29/10/2026)
+- Ao fechar o portão no banco **apenas de homologação**, trigger privado apaga fila e vagas e encerra microfone/crônometro na mesma transação.
+- RPC de status não avança cantora com o portão fechado, nem expõe elenco antes de reabrir. Nenhum prêmio ou perfil real envolvido.
+- Client limpa token de vaga expirada/fechada e atualiza rótulo do relógio; cache da homologação versão 3.
+- Teste SQL com rollback simula 2 Idols, cantora/fila, fechamento e checagem de acesso; não substitui teste real de navegador.
+- Portão permanece fechado e `SIGNUP_ENABLED=false`; CAPTCHA/Auth ainda requer verificação. A sala demonstrativa e a INDEX oficial não mudam.
+- Publicação Netlify somente consolidada depois de teste automatizado verde; Vercel sem reativação.
+
+## Etapa 3A.6b — Preparação do Turnstile (29/10/2026)
+- Site Key pública aplicada na branch experimental; segredo **não** incluído.
+- Botão `Testar Turnstile (sem cadastro)` testa exclusivamente o widget; timeout de 90s e bloqueio de cadastro (`SIGNUP_ENABLED=false`).
+- Testes automatizados verificam que o botão não cria contas, não usa RPC e não ocupa vagas. Ainda precisa confirmar hostname permitido e CAPTCHA no Auth antes de liberar testes reais.
+- Portão SQL de homologação continua fechado; Vercel pausada, PR #33 rascunho, `main` intacta.
+
+## Etapa 3A.6 — Segurança e entrada dos Idols (29/10/2026)
+- **Aplicado em homologação:** a sala possui portão controlado pelo servidor e começa FECHADA. Ele bloqueia entrada, pedido de microfone e manutenção de vaga quando desativado; mantém saída e consulta de estado.
+- **Proteção de identidade:** as funções exigem JWT com is_anonymous=true, não dados de perfil nem login Google/permanente. Sem acesso direto às tabelas privadas e sem divulgação dos UUIDs de outros Idols.
+- **Testes SQL:** portão fechado, recusa de identidade permanente, entrada temporária com abertura simulada, segunda aba sem token, fila, elenco e saída. Testes sempre revertidos. Não são testes reais do Auth ou navegador.
+- **Visual:** painel de homologação indica porta fechada, sem apagar a sala demonstrativa aprovada.
+- **Ainda NÃO liberado:** sitekey pública Turnstile vazia, segredo e proteção antirobô devem ser configurados no Auth de homologação, Anonymous Sign-ins desabilitados, portão fechado; zero contas cadastradas.
+- **Pendente:** revisão dos avisos SECURITY DEFINER, testes de Auth no navegador, limite/horário de domingo no servidor e Realtime. Vercel pausada. Nenhum deploy em main ou modificação do Supabase de produção.
+
+# ETAPA 3 — O que EXISTE e o que é APENAS PROPOSTA
+
+**Atualizado: 2026-10-29.** Este quadro evita confundir **documento** com **funcionalidade no jogo**. Os planos são guardados em arquivos Markdown, não significam implementação.
+
+| Recurso | Estado | Onde conferir |
+|---|---|---|
+| Center⭐Run, perfil, loja e moderação originais | Já existem, preservar | `index.html`, `index2.html` |
+| Sora⭐Jump! | Implementado em arquivo experimental, com modo embed | `sora-jump.html` |
+| Karaoke⭐Day! | Sala **simulada** e cena visual, não multiplayer | `karaoke-day.html` |
+| INDEX 2 e visual integrado | Implementado na branch de testes | `index2.html`, CSS do embed |
+| Aviso/timer Karaoke | Implementado na INDEX 2; bloqueio de interface não é autenticação do servidor | `index2.html` |
+| Teste como admin no Karaoke fechado | Implementado no frontend da INDEX 2 com flag de admin do perfil; backend do multiplayer ainda não existe | `index2.html` |
+| Nome de bebida **Melon Juice!** | Rótulo corrigido **no jogo experimental**, identificador interno preservado | `karaoke-day.html` |
+| Karaoke online de **9 participantes** | **MODELO LOCAL IMPLEMENTADO**, com fila/vagas/microfone e testes; **ainda NÃO é multiplayer**, sem tabelas/RPCs reais | `karaoke-room-model.js`, `tests/karaoke-room-model.test.js`, `karaoke-online-lab.html` |
+| Visual **3A.5c–e** | **IMPLEMENTADO NA BRANCH:** sprites do Karaoke aproximados de `drawChar` (cortes extras, mecha, boina, presilhas, fones, coala, óculos e roupas citypop/y2k); ancoragem de bebidas, comidas, pandeiro e microfone no ponto final da mão com escala 2.06/2.3 e espelhamento; cortinas, estrelas penduradas e brilhos discretos de baixo custo respeitando `prefers-reduced-motion`. Nada foi alterado na `main`. **Teste visual em navegador ainda necessário** e os itens da loja não estão todos desenhados no Karaoke. | `karaoke-day.html`, `tests/karaoke-homol-view.test.js` |
+| Correção visual **3A.5b** | **CÓDIGO EXPERIMENTAL:** não apagar bots, bebidas, lanches, danças nem opções quando nenhum Idol estiver conectado. Ao entrar na homologação, posições e microfone passam a seguir o servidor; ao sair, a demonstração original volta. Login permanece bloqueado até CAPTCHA, sem recompensas. Revisão visual real ainda necessária. | `karaoke-day.html`, `karaoke-homol-client.js`, `tests/karaoke-homol-view.test.js` |
+| Experiência **Etapa 3A.5** | **NO CÓDIGO EXPERIMENTAL:** até 9 Idols fictícios no canvas original (1 cantora + 8 plateia), fila visível de 3 lugares, turno de 5+45+10s acompanhado por contador visual estimado do relógio servidor. Visual e rótulos de homologação independentes do perfil real; teste automático para layout, tempo e texto sanitizado. **Não publicado nem testado com usuários reais**; cadastro permanece bloqueado até Turnstile + Auth. | `karaoke-day.html`, `karaoke-homol-client.js`, `karaoke-homol-view.js`, `tests/karaoke-homol-view.test.js` |
+| Segurança **Etapa 3A.4** | **Corrigido em homologação:** a RPC `karaoke_ensaio` não devolve mais `singerId` (UUID interno), apenas `amISinging` sobre a pessoa autenticada. Teste SQL com `ROLLBACK` validou confidencialidade de identidade e token. **Ainda não liberado:** revisar funções `SECURITY DEFINER` (avisos do Supabase), horários de domingo, autenticação real e Realtime. | `supabase/sql/karaoke_lab_3a4_remove_singer_uuid_from_status.sql`, `supabase/tests/karaoke_lab_3a4_security_rollback.sql` |
+| Preparação **Etapa 3A.4** | Login anônimo de teste com suporte a Cloudflare Turnstile preparado somente no cliente experimental. **Cadastro permanece bloqueado** enquanto a sitekey pública estiver vazia; proteção antiabuso precisa ser habilitada no Supabase de homologação ANTES de habilitar Anonymous Sign-ins. Nenhuma configuração de Auth foi ativada automaticamente; sem contas novas. | `karaoke-homol-client.js` |
+| Homologação **Etapa 3A.2–3A.3** | Servidor de 9 vagas + fila de 3 instalado apenas no segundo Supabase; retrato sanitizado dos participantes e cliente opcional `?homol=1` no Karaoke original. **Ainda sem nove sessões reais testadas**: não há contas de teste, autenticação anônima precisa ser habilitada, Realtime e autorização de horário não foram implementados. | `supabase/sql/karaoke_lab_3a2_room_queue.sql`, `supabase/sql/karaoke_lab_3a3_sanitized_elenco.sql`, `karaoke-homol-client.js`, `karaoke-day.html` |
+| Ritmo 45s / turno 60s **no Karaoke original** | **JOGÁVEL na INDEX 2 como ENSAIO LOCAL**: notas, PERFECT/GOOD, combo e placar; **sem multiplayer/sem salvar score** | `karaoke-day.html`, `karaoke-rhythm.js`, `karaoke-rhythm.css`, `tests/karaoke-rhythm.test.js` |
+| Convites persistentes | **SOMENTE PLANO**; prévia visual não envia mensagens | [PLANO_KARAOKE_MODERACAO.md](../operacao/PLANO_KARAOKE_MODERACAO.md) |
+| Insígnia Nota Perfeita | **SOMENTE PLANO**, não concedida | [ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md](../etapas/ETAPA3A_KARAOKE_ONLINE_9_IDOLS.md) |
+| Coleções **Karaoke Idol** e **Sora Idol** | **CATÁLOGO ESCRITO**, não desenhado, não disponível na loja, não comprado | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
+| Cenários e poses Moon⭐Duo adicionais | **CATÁLOGO ESCRITO**, não renderizados | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
+| Novas danças idol | **SOMENTE CONCEITO**, sem novas animações implementadas | [ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md](../etapas/ETAPA3B_CATALOGO_KARAOKE_SORA_DUO.md) |
+| Temas sazonais originais (12) | **JÁ EXISTEM, NÃO RENOMEAR** | `TEMA_INFO` do `index2.html` |
+| Lista de músicas/covers da playlist TsuLiPa (151 vídeos) | **TEXTOS CONFERIDOS em duas mensagens**, incluindo `Nagori Zakura` e `Gosenfu no Tasuki`; **URLs individuais ainda não confirmadas** | [ETAPA3C_TEMAS_E_COVERS.md](../etapas/ETAPA3C_TEMAS_E_COVERS.md) |
+| Dia da Paz / Gosenfu no Tasuki | **PROPOSTA**, não ativada | [ETAPA3C_TEMAS_E_COVERS.md](../etapas/ETAPA3C_TEMAS_E_COVERS.md) |
+| Vozes reais / reações do trio | **ESPECIFICAÇÃO**, áudios não recebidos nem aplicados | [ETAPA3D_TRIO_VOZ_E_ANIMACAO.md](../etapas/ETAPA3D_TRIO_VOZ_E_ANIMACAO.md) |
+| Admin vestir outra pessoa | **PROPOSTA**, nenhuma RPC criada | [PLANO_KARAOKE_MODERACAO.md](../operacao/PLANO_KARAOKE_MODERACAO.md) |
+
+## Prévia funcional da etapa 3A.1 (não online)
+- [Abrir laboratório local das 9 vagas](../../karaoke-online-lab.html) — ensaio de fila, microfone e contagem de tempo, com Idols fictícios.
+- Lógica pura: `karaoke-room-model.js`; testes automatizados: `tests/karaoke-room-model.test.js`.
+- Não autentica, não sincroniza navegadores, não tem chamadas Supabase e não cria registros ou moedas. Os resultados ficam assinalados como `demo_unverified`.
+- **Próxima implementação real:** montar projeto Supabase de homologação isolado, aplicar regras atômicas de vagas/filas no servidor, conectar os nove usuários de teste à sala visual existente, verificar moderação no backend. Só então criar pontuação Realtime e jogo de ritmo.
+
+
+## INDEX 2 — preview do ensaio local
+- **URL para testar:** https://tsulipa-world-git-feature-sora-karaoke-v2-2026-10-29-tsu-li-pa.vercel.app/index2.html
+- Na INDEX 2, abrir o HUB e clicar no card **Karaoke⭐Day!**. Fora do horário de domingo, o modal oferece **🧪 Ensaiar agora**, que abre o mesmo jogo no iframe com `rehearsal=1`, sem autenticação multiplayer ou dados de jogos reais.
+- O card do Karaoke informa em **PT/ES/EN/TH/JA** que o ritmo está pronto para ensaio e o multiplayer ainda está em desenvolvimento.
+- A mudança é restrita à INDEX 2. A regra normal de horário no card continua; a exceção é **apenas visual de ensaio** na branch de testes e não controla uma sala real.
+- Os convites continuam **não enviados**; o botão exibe aviso explícito.
+- Testes de comportamento verificam que acesso normal fora do horário continua bloqueado e o ensaio manual abre o iframe corretamente.
+
+## Incremento jogável concluído
+- A cena original `karaoke-day.html` apresenta **7/9 Idols de demonstração** (6 avatares simulados + um personagem local), com 8 posições de plateia, não 12.
+- O botão **Pegar microfone** inicia uma rodada local de **60s**: 5s de introdução, 45s de estrelas para acertar com toque/teclado e 10s de aplausos. Conta `PERFECT`, `GOOD`, combo e placar, sem gravar nada.
+- Ao terminar, o resultado indica **ensaio** e não gera moedas ou insígnias. Sair do microfone interrompe a rodada; o tempo independe do FPS; reentrada na aba recalcula.
+- **Nenhum Supabase de homologação foi criado**: o único projeto Supabase atualmente conectado é produção. Falta a implementação da **autoridade do servidor, 9 pessoas de verdade, chat/emojis sincronizados e placar compartilhado**.
+- Testes de sintaxe, contratos estáticos e unidade automatizados em GitHub Actions; **não houve teste de navegador visual automatizado**.
+
+## Decisões finais do criador
+- Coleção oficial proposta: **Sora Idol**, nunca Sky Idol.
+- **Manter os 12 nomes originais dos temas sazonais.** Curadoria pode propor mudança de **música associada** sem renomear tema; nenhuma modificação automática.
+- Playlist `TsuLiPa - Participações`: 151 vídeos. O criador colou parte de seus títulos; já cruzamos os que batem com os nomes atuais. Não atribuir videos só por serem covers do BRS48.
+- Nenhuma tabela/RPC nova, compra real, score online, voz real ou dança foi ativada nesta etapa.
+- **Nunca modificar `index.html` da `main`, realizar merge ou tocar dados de produção sem autorização.**
+
+## Próxima execução — somente após continuidade técnica
+1. Criar homologação Supabase separada com contas fictícias e 9 vagas reais.
+2. Simular fila/microfone com estado autorizado no servidor antes de ritmo e convites.
+3. Renderizar 1 roupa + 1 cenário Sora Idol e Karaoke Idol como preview, antes de disponibilizar preços/catálogo na loja.
+4. Conferir os vídeos individuais e participação TsuLiPa antes de adicionar links aos temas.
+5. Integrar áudios apenas se fornecidos e consentidos.
+
+> **Publicação de prévia controlada (29/10/2026):** disparo de apenas um build da PR #33 para avaliação visual da Etapa 3A.5; não altera lógica, páginas de produção, Auth ou recompensas. A homologação ainda depende de CAPTCHA/login para testar jogadores conectados.
+
+> **Prévia visual controlada — Etapa 3A.5b:** reconstruída para confirmar que a sala demonstrativa não fica vazia antes de entrar no ensaio. Somente Netlify PR #33. Vercel permanece pausada. Sem alteração do `index.html`, sem recompensas e sem migração de banco.
+
+> **Prévia controlada — visual 3A.5c–e (29/10/2026):** somente Netlify PR #33 para avaliar paridade do sprite, posições de itens nas mãos e decoração whimsical. A versão de produção na Vercel permanece pausada, `index.html` e Supabase de produção inalterados; sem desbloqueio de contas ou estrelas.
+
+> **Prévia controlada 3A.6 — 29/10/2026:** uma publicação Netlify para demonstrar o painel de entrada fechada e os testes de segurança. A sala visual original permanece intacta; login anônimo, CAPTCHA e portão online continuam desativados. Vercel não reativada.
+
+> **Prévia controlada 3A.6b — 29/10/2026:** novo widget Turnstile de teste sem cadastro; sitekey pública já no código, portão fechado. Uma publicação Netlify, depois restaurar skip. Vercel continua pausada.
+
+> **Prévia controlada 3A.8 (29/10/2026):** uma única publicação na Netlify para mostrar o estado de sincronização e preservar o visual whimsical. Sincronização real depende de teste com usuários anônimos de homologação; portão e cadastros continuam fechados. Vercel continua pausada e `index.html` intocado.
+
+> **Prévia controlada 3A.9 (29/10/2026):** uma única prévia na Netlify para mostrar o painel de ritmo de ensaio sem autenticação em `?homol=1&practice_preview=1`. Nenhuma pontuação, conta ou vaga é criada nesse modo. Vercel pausada, branch isolada, PR rascunho.
+
+> **Prévia controlada 3A.10 (29/10/2026):** um único build Netlify para exibir horário dominical e o painel seguro de homologação. Cadastro de Idols permanece desabilitado, portão fechado, Vercel pausada. Sem alterar o HTML principal ou o Supabase oficial.
+
+> **3A.11 — estabilidade cliente (29/10/2026):** correção do heartbeat pendente que poderia ser perdido dentro de uma consulta de status Realtime, restauração dos temporizadores após o navegador voltar do bfcache, e revisão das correções técnicas de Sora vindas do Gemini. Testes Node isolados adicionados ao CI; sem contas liberadas, sem mudança de banco, sem merge ou produção, sem ativar Vercel. Teste real de 9 navegadores ainda é pendência. Consultar ETAPA3A11_VIDA_UTIL_E_ESTABILIDADE.md.

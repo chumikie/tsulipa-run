@@ -1,0 +1,89 @@
+name: Check TsuLiPa special games
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index2.html'
+      - 'sora-jump.html'
+      - 'sora-jump-karaoke.html'
+      - 'karaoke-day.html'
+      - 'karaoke-homol-view.js'
+      - 'karaoke-homol-client.js'
+      - 'karaoke-homol-sync.js'
+      - 'tests/karaoke-homol-sync.test.js'
+      - 'supabase/sql/karaoke_lab_*.sql'
+      - 'supabase/tests/karaoke_lab_*.sql'
+      - 'tests/karaoke-homol-view.test.js'
+      - 'games-theme.css'
+      - 'index2-skin.css'
+      - 'sora-embed.css'
+      - 'karaoke-embed.css'
+      - 'karaoke-rhythm.js'
+      - 'karaoke-rhythm.css'
+      - 'tests/karaoke-rhythm.test.js'
+      - 'karaoke-online-lab.html'
+      - 'karaoke-room-model.js'
+      - 'tests/karaoke-room-model.test.js'
+      - 'tests/validate-games.js'
+      - 'tests/sora-stability.test.js'
+      - 'tests/karaoke-homol-refresh.test.js'
+      - 'tests/tw-weekly-podium.test.js'
+      - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - '.github/workflows/validate-games.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index2.html'
+      - 'sora-jump.html'
+      - 'sora-jump-karaoke.html'
+      - 'karaoke-day.html'
+      - 'karaoke-homol-view.js'
+      - 'karaoke-homol-client.js'
+      - 'karaoke-homol-sync.js'
+      - 'tests/karaoke-homol-sync.test.js'
+      - 'supabase/sql/karaoke_lab_*.sql'
+      - 'supabase/tests/karaoke_lab_*.sql'
+      - 'tests/karaoke-homol-view.test.js'
+      - 'games-theme.css'
+      - 'index2-skin.css'
+      - 'sora-embed.css'
+      - 'karaoke-embed.css'
+      - 'karaoke-rhythm.js'
+      - 'karaoke-rhythm.css'
+      - 'tests/karaoke-rhythm.test.js'
+      - 'karaoke-online-lab.html'
+      - 'karaoke-room-model.js'
+      - 'tests/karaoke-room-model.test.js'
+      - 'tests/validate-games.js'
+      - 'tests/sora-stability.test.js'
+      - 'tests/karaoke-homol-refresh.test.js'
+      - 'tests/tw-weekly-podium.test.js'
+      - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - '.github/workflows/validate-games.yml'
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate game HTML and routes
+        run: node tests/validate-games.js
+      - name: Validate nine-player room state machine
+        run: node tests/karaoke-room-model.test.js
+      - name: Validate original rhythm minigame
+        run: node tests/karaoke-rhythm.test.js
+      - name: Validate Karaoke homol stage, queue and safety
+        run: node tests/karaoke-homol-view.test.js
+      - name: Validate Karaoke realtime lifecycle and recovery
+        run: node tests/karaoke-homol-sync.test.js
+      - name: Validate Karaoke 3A.11 lease renewal and browser restore
+        run: node tests/karaoke-homol-refresh.test.js
+      - name: Validate Sora mobile and iframe stability
+        run: node tests/sora-stability.test.js
+      - name: Validate actual INDEX 2 weekly podium integration
+        run: node tests/tw-weekly-podium.test.js

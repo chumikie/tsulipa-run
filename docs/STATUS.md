@@ -30,7 +30,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Sora: os cenários secretos (10 toques no título) voltaram a aparecer.
 - Visual único: perfil e Center Run usam o mesmo personagem; vitrine e outdoors sem o pet da foto.
 - Karaoke: a cortina da direita não fechava (só a esquerda aparecia); agora as duas fecham e o varal de enfeites atravessa o palco inteiro.
-- GitHub: documentos antigos em `docs/historico/`, STATUS único, branches já mescladas apagadas.
+- GitHub: documentos antigos em `docs/historico/`, STATUS único. Branches já mescladas (20) podem ser apagadas pela dona em GitHub → Branches; manter `main`, `release/index2-lancamento` e, até fechar os PRs, `feature/sora-karaoke-v2-2026-10-29` e `test/karaoke-reuse-anonymous-session`.
 
 ## Falta antes do merge
 1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.

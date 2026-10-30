@@ -168,6 +168,7 @@ body .links,body .oshi-sel{display:none}
 body.jogando .hint,body.jogando .sitefoot{display:none}.lk{text-decoration:none;font-size:14px;padding:8px 20px}
 .stage,.stage *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.stage input,.stage select{-webkit-user-select:text;user-select:text}
 .jb{display:none;position:absolute;right:12px;bottom:12px;width:64px;height:64px;border-radius:50%;border:0;background:rgba(123,63,240,.88);color:#fff;font-size:28px;box-shadow:0 4px 0 #2c1a8f;touch-action:manipulation;z-index:3;cursor:pointer}
+body:not(.jogando) #sb{display:none!important}
 @media (pointer:coarse){.jb{display:block}}
 
 /* Cores Base dos Oshis (Modo Claro) */
@@ -11492,13 +11493,20 @@ function s2SetupUI(){
     sb.setAttribute('aria-label', tr('Abaixar'));
     sb.style.cssText = 'display:none;left:14px;right:auto;bottom:14px';
     sb.textContent = '▼';
+    sb.style.touchAction = 'none';
     stg.appendChild(sb);
     sb.addEventListener('pointerdown', function(e){
       e.stopPropagation(); e.preventDefault();
       s2SlideTimer = 42;
       s2StartSlide(true);
+      if(sb.setPointerCapture){try{sb.setPointerCapture(e.pointerId);}catch(_){}}
     });
     sb.addEventListener('pointerup', function(e){
+      e.stopPropagation();
+      s2SlideTimer = 0;
+      s2StopSlide();
+    });
+    sb.addEventListener('pointercancel', function(e){
       e.stopPropagation();
       s2SlideTimer = 0;
       s2StopSlide();
@@ -12300,13 +12308,19 @@ reset = function(){
   s2ResetHook();
 };
 
+function s2ShowSlideButton(){
+  var sb = $('sb'); if(!sb) return;
+  var touch = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+  sb.style.display = state === 'play' && touch ? 'block' : 'none';
+}
 var _origStart = start;
 start = function(e){
   _origStart(e);
-  if(state === 'play' && $('sb') && window.matchMedia && matchMedia('(pointer:coarse)').matches){
-    $('sb').style.display = 'block';
-  }
+  s2ShowSlideButton();
 };
+// Os handlers foram ligados antes do wrapper: devem chamar a versão atualizada.
+$('play').onclick = start;
+$('again').onclick = start;
 
 var _origEnd = end;
 end = function(){

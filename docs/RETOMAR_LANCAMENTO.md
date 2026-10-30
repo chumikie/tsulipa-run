@@ -1,37 +1,93 @@
-# Retomar: lançamento da INDEX 2 como página principal
+# Retomar — lançamento da INDEX 2 como página principal
 
-Atualizado em 29/10/2026. Branch: `release/index2-lancamento`, criada a partir de `test/karaoke-reuse-anonymous-session`. Lançamento preparado para PR em rascunho; sem merge ou deploy de produção por esta tarefa.
+**Atualizado em 29/10/2026, após o ajuste da TsuLiPa TV e da tela inicial.** Este arquivo descreve o estado confirmado da branch de lançamento. Antes de qualquer nova alteração, confira o head do PR e os checks atuais no GitHub.
 
-## Já feito
-- **Lançamento preparado em 29/10/2026 (Astra/Codex):** `index.html` promovida da INDEX 2; `index2.html` agora redireciona para `/`.
-- Removidos `INDEX2_PREVIEW_GUARD`, `TW_INDEX2_READ_RPC`, bloqueio em `contaRpc`, aviso de prévia, título de testes e `noindex` da página principal. `contaRpc` conferida byte a byte contra a implementação oficial anterior; nomes `brs48cr_*` preservados.
-- Aviso de Karaoke fechado traduzido em PT/EN/ES/TH/JA; convite de rascunho removido. `TW_RANK_ONLINE_READY=false` mantido. Sala, fila, autenticação, SQL e `vercel.json` não alterados.
-- Diagnóstico reproduzido: **6/8** testes passavam inicialmente; falhavam `validate-games.js` (texto de ensaio e versões dos CSS) e `sora-stability.test.js` (versão do CSS). Expectativas alinhadas ao commit `b99110d`, sem reverter suas traduções.
-- **8/8 testes locais passando** após a migração. Testes agora validam a página canônica, redirecionamento e ausência da trava; aviso fechado validado em cinco idiomas. Workflow inclui `index.html` nos filtros de caminhos.
-- Navegador Chromium, 390×844 e 1440×1000, PT/EN/ES/TH/JA: hub, aviso fechado, ensaio local, Sora e retorno; sem exceções JS e sem overflow horizontal no documento principal. Redirecionamento conferido. Evidências e limites em [evidencias/index2-lancamento/README.md](evidencias/index2-lancamento/README.md).
-- **Limite importante:** revisão em navegador com viewports, não em aparelhos físicos; chamadas externas de aplicação bloqueadas. Login, compras, resgates e sala online não exercitados na produção. Há texto preexistente “Som” no Sora fora de PT, registrado para revisão separada; não foi alterado o jogo nesta tarefa.
-- Entrega agrupada em uma única atualização da branch e PR em rascunho, sem merge. O link da Netlify e o resultado do build devem ser conferidos no PR. A integração Vercel do commit anterior foi consultada como `BLOCKED`; nenhuma configuração foi reativada.
+## Ponto de parada atual
 
-### Histórico anterior à migração
-- Suíte de testes da branch de sessão anônima: 8/8 passando, depois de corrigir 2 testes quebrados (commit `de4d726`).
-- Revisão no navegador (Playwright local) da `index2.html`: celular em PT, EN, ES, TH e JA, e computador em PT. Nenhum erro de código e nenhuma rolagem lateral. Sora e Karaoke abrem e voltam ao hub.
-- Sora⭐Jump!: menu, fim de partida, som e botão VOLTAR traduzidos (commit `b99110d`).
-- Karaoke: textos da Sala de ensaio traduzidos. Ferramentas de teste escondidas dentro dos jogos embutidos.
-- Supabase de produção: `karaoke_posteres_semana` registrada no histórico de migrações.
+- Repositório: [chumikie/tsulipa-run](https://github.com/chumikie/tsulipa-run).
+- Branch de trabalho: `release/index2-lancamento`.
+- PR #34: [Lançamento da INDEX 2 como página principal](https://github.com/chumikie/tsulipa-run/pull/34).
+- Estado do PR: **aberto, em rascunho e não mesclado**; base `main`.
+- Último commit de código/interface validado: `fd5480a8bddbb3f2cfc5c0a19848c3259004b73f`; esta atualização da branch altera somente documentação. Confira o head atual do PR antes de qualquer nova alteração.
+- SHA confirmado de `main`: `47b1b702d68ee205c7a44fb7da13c12165f33db6` — não alterada por esta entrega.
+- PR #33: continua aberto/em rascunho e intocado.
+- Prévia Netlify do PR #34: https://deploy-preview-34--tsulipa-run.netlify.app
 
-## Próximo passo
-1. A usuária revisa o PR em rascunho e a prévia da Netlify no celular real.
-2. Conferir as limitações registradas nas evidências. O teste real do Karaoke continua separado, no projeto de homologação; não abrir a sala de produção nesta tarefa.
-3. Somente a usuária faz o merge. Não enviar novas alterações ou reativar deploys automaticamente.
+### Checks da revisão de código e da prévia
 
-## Regras
-- Não fazer merge, não reativar deploys e não mexer na `main` sem o ok da usuária.
-- Karaoke online continua fechado pelo servidor. Testes da sala só no projeto de homologação `hfzjoefnousiouiuchys`. Primeira janela real: domingo, 12h–13h10 (Brasília).
-- Nunca renomear as chaves de save `brs48cr_*`. Não criar dados falsos na produção (`fsggtvgbyhchblyazgmt`).
-- Evitar vários envios seguidos: cada push gera build.
+- GitHub Actions, workflow **Check TsuLiPa special games**, execução [40979830120](https://github.com/chumikie/tsulipa-run/actions/runs/40979830120): **success** no commit de código/interface `fd5480a8...`. A atualização seguinte é somente documental.
+- Netlify Deploy Preview: usar a URL acima e conferir o status da implantação mais recente antes de testar; a prévia pode reconstruir após commits na branch.
+- Vercel: status **“Deployment was blocked”**. Isso é intencional e não deve ser corrigido reativando deploy ou alterando configurações de produção.
+- A aprovação do CI e da Netlify não substitui a revisão visual em aparelho físico, que ainda está pendente.
 
-## Pendências fora do lançamento
-- Apagar cerca de 24 branches já mescladas (precisa do ok da usuária).
-- Organizar a pasta `docs/`: um STATUS único, e documentos antigos em `docs/historico/`.
-- Proteger a `main` (regra de branch, feita pela usuária nas configurações do GitHub).
-- Fechar `gacha_card`, `missoes_progresso` e `recados_globais_on` para chamadas sobre outras contas.
+## O que já foi implementado
+
+### 1. INDEX 2 promovida, sem merge
+
+- `index.html` é a página principal da branch de lançamento; `index2.html` redireciona para `/`.
+- Foram removidos a trava `INDEX2_PREVIEW_GUARD`, `TW_INDEX2_READ_RPC` e o bloqueio de chamadas mutáveis em `contaRpc`. A implementação de `contaRpc` foi conferida contra a versão oficial anterior.
+- Aviso de prévia removido, metadados/título da página principal restaurados.
+- Aviso de Karaoke fechado traduzido em PT/EN/ES/TH/JA; convite de rascunho escondido.
+- `TW_RANK_ONLINE_READY=false` foi mantido. Chaves de save `brs48cr_*` preservadas.
+
+### 2. Tela inicial e TsuLiPa TV
+
+- A tela inicial de “Toque para começar” permanece limpa: os botões do hub e os jogos não aparecem antes de a pessoa iniciar.
+- Depois do toque inicial, o hub apresenta os jogos e o acesso à TV.
+- A TsuLiPa TV é agora **um ícone pequeno de TV**, não um cartão. Ele só aparece dentro do hub.
+- Ao tocar no ícone, a própria TV abre flutuando sobre a tela. Não existe uma segunda janela/cartão envolvendo a TV.
+- O botão de fechar fica integrado ao cabeçalho da TV; fechamento por botão, Escape e clique no fundo, com retorno do foco ao ícone.
+- Testes de regressão verificam a posição do ícone dentro do hub oculto, o estado da tela de início e a TV como o próprio diálogo.
+
+### 3. Sora⭐Jump! e acesso às áreas
+
+- Apresentação do Sora adaptada à identidade kawaii do TsuLiPa, com cabeçalho, retorno e controle de som externos ao jogo.
+- O controle de som se comunica com o jogo incorporado por uma ponte controlada; o jogo e sua lógica não foram substituídos.
+- Center Run continua acessível anonimamente, pedindo apenas apelido.
+- Meu Perfil e áreas que exigem conta indicam discretamente a necessidade de perfil, sem transformar a tela de abertura em uma sequência de bloqueios.
+
+### 4. Karaoke⭐Day! — apenas homologação
+
+- A janela inaugural de homologação está configurada para **domingo, 01/11/2026, das 12h às 13h10 (horário de Brasília)**.
+- A prévia fica limitada a execução local/localhost e ao host de Deploy Preview da Netlify. O host de produção da Vercel é explicitamente bloqueado para essa janela.
+- Isso não abre a sala online para o público nem altera a autenticação, a fila, o SQL, as políticas RLS ou o banco de produção.
+- A sala online permanece fechada pelo servidor. Não remover essa proteção como parte de ajustes visuais.
+
+### 5. Arquitetura e desempenho preservados
+
+- Sora e Karaoke continuam separados e carregados por iframe somente quando a pessoa escolhe o jogo.
+- Áudio e animações devem pausar quando a aba fica oculta.
+- Não gravar estado no banco a cada frame; manter RPCs controladas e atualizações agrupadas.
+- `tw-weekly-podium.css` permanece abaixo do limite de 10 KB; os estilos de lançamento ficam em `index2-launch-ui.css`.
+
+## Validação e limites
+
+O workflow atual passou no head `fd5480a8...`. Entre as verificações automatizadas mantidas na branch estão validação estrutural dos jogos, modelo da sala de Karaoke, ritmo, homologação/fila/segurança, ciclo de vida e recuperação de sincronização, estabilidade do Sora (iframe, áudio móvel e bfcache) e regressões do pódio semanal/tela inicial.
+
+**O que ainda não foi comprovado:** revisão da interface em um celular físico; login, compras, resgates e economia em fluxo real de produção; experiência multiplayer pública. A revisão anterior em Chromium com viewports móveis e desktop é evidência histórica, não substitui o teste do layout mais recente.
+
+## Próximo passo exato
+
+1. A usuária abre a [prévia Netlify do PR #34](https://deploy-preview-34--tsulipa-run.netlify.app), primeiro em um celular real e depois no computador.
+2. Conferir a tela “Toque para começar” sem os botões do hub; tocar para entrar; conferir o pequeno ícone da TV; abrir e fechar a TV sem uma janela externa; abrir Sora e conferir cabeçalho/retorno/som.
+3. A usuária informa o que deseja ajustar. Qualquer correção autorizada deve acontecer somente em `release/index2-lancamento`, com validação e mudanças agrupadas.
+4. **Parar para a aprovação da usuária. Só ela faz o merge do PR #34.**
+
+## Regras obrigatórias para continuar
+
+- Não fazer merge, não alterar `main`, não publicar em produção e não ativar a Vercel.
+- Não alterar `vercel.json`, configurações de projeto ou deploy.
+- Não modificar Supabase, SQL, autenticação, RLS, RPCs, economia, fila ou sala online sem autorização explícita.
+- Testes de sala apenas no projeto de homologação `hfzjoefnousiouiuchys`; produção `fsggtvgbyhchblyazgmt` é somente leitura nesta tarefa.
+- Nunca renomear chaves `brs48cr_*`; não criar contas, pontos, compras ou dados falsos em produção.
+- Não renomear nem apagar branches `brs48cr_*`; não apagar branches antigas sem autorização.
+- Evitar commits/pushes desnecessários. Uma entrega autorizada deve ser agrupada em uma única atualização de branch, pois cada push pode disparar CI e prévias.
+- Não declarar teste visual ou físico sem evidência correspondente.
+
+## Pendências fora do escopo deste lançamento
+
+- Revisar e testar a prévia em aparelho físico.
+- Organizar futuramente a documentação antiga e os documentos históricos sem apagar evidências.
+- Avaliar proteção da `main` nas configurações do GitHub (ação da usuária).
+- Rever separadamente permissões de `gacha_card`, `missoes_progresso` e `recados_globais_on`.
+- Limpeza de branches antigas somente com autorização explícita.

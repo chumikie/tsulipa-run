@@ -6,7 +6,7 @@ const {create} = require('../karaoke-homol-sync.js');
 async function main() {
   let clock=10000, currentHandler, subscriptions=0, removals=0, reads=0;
   let subscribed=true, member=true, busy=false;
-  const timers=[];
+  const timers=[],delays=[];
   const messages=[];
   const client={
     auth:{getSession:async()=>({data:{session:{access_token:'TEST_ONLY'}}})},
@@ -29,10 +29,10 @@ async function main() {
   };
   const watcher=create({client,now:()=>clock,
     canListen:()=>member,hidden:()=>false,busy:()=>busy,
-    setTimeout:(fn)=>{timers.push(fn);return timers.length;},
-    clearTimeout:()=>{timers.length=0;},
+    setTimeout:(fn,ms)=>{timers.push(fn);delays.push(ms);return timers.length;},
+    clearTimeout:()=>{timers.length=0;delays.length=0;},
     refresh:async()=>{reads++;watcher.mark(7);},
-    onStatus:(message)=>messages.push(message)
+    onStatus:(message)=>messages.push(message),minInterval:500
   });
 
   // Failure during subscribe must not strand channel and block future starts.
@@ -49,8 +49,14 @@ async function main() {
   currentHandler({new:{revision:7,seat_token:'NOT_USED'}});
   currentHandler({new:{revision:7}});
   assert.equal(timers.length,1,'revision signals coalesce');
+  assert.equal(delays.shift(),300,'first room notification uses the minimum debounce');
   await timers.shift()();
   assert.equal(reads,1,'one protected RPC refresh per burst');
+  clock+=100;
+  currentHandler({new:{revision:8}});
+  assert.equal(delays.shift(),400,'live stage updates use the configured refresh interval');
+  await timers.shift()();
+  assert.equal(reads,2);
   currentHandler({new:{revision:7}});
   assert.equal(timers.length,0,'already-seen revisions ignored');
 

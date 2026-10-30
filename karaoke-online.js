@@ -7,7 +7,7 @@
 (function(){
 'use strict';
 var q=new URLSearchParams(location.search);
-if(q.get('homol')==='1')return;            // a homologação tem seu próprio cliente
+if(q.get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app')return; // produção somente no domínio publicado
 var URL='https://fsggtvgbyhchblyazgmt.supabase.co';
 var KEY='sb_publishable_2Fh68LqCpGannoF--zq1Ng_13dF9YMT';
 var TOKEN_KEY='tsulipa_karaoke_seat_v1';
@@ -72,7 +72,7 @@ var T={
 function t(k,v){var s=(T[L]||T.pt)[k]||T.pt[k]||k;if(v)Object.keys(v).forEach(function(x){s=s.split('{'+x+'}').join(v[x]);});return s;}
 
 var client=null,token=null,busy=false,timer=null,clockTimer=null,ready=false,sync=null;
-var lastSeat=false,lastQueued=false,isSinging=false,labOpen=false,turnClock=null,practice=null,tapPending=false,locked=false,currentRefresh=null,pendingBeat=false;
+var lastSeat=false,lastQueued=false,isSinging=false,labOpen=false,turnClock=null,practice=null,tapPending=false,locked=false,currentRefresh=null,pendingBeat=false,stagePending=null,stageBusy=false;
 try{token=sessionStorage.getItem(TOKEN_KEY)||null;}catch(e){}
 
 var host=document.querySelector('.krwrap')||document.body;
@@ -131,7 +131,7 @@ async function init(){
   sync=window.TsuKaraokeHomolSync.create({client:client,
    canListen:function(){return ready&&labOpen&&lastSeat&&!!token;},
    hidden:function(){return document.hidden;},busy:function(){return busy||!!currentRefresh;},
-   refresh:function(){return refresh(false);},onStatus:function(){}});
+   refresh:function(){return refresh(false);},onStatus:function(){},minInterval:500});
  }
  return client;
 }
@@ -141,6 +141,44 @@ function cleanAvatar(a){
  ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl'].forEach(function(k){if(typeof c[k]==='string'&&c[k].length<=32)out[k]=c[k];});
  if(typeof c.streak==='boolean')out.streak=c.streak;return out;
 }
+async function drainStageState(){
+ if(stageBusy||!stagePending)return;
+ stageBusy=true;
+ while(stagePending){
+  var state=stagePending;stagePending=null;
+  if(!ready||!token||!lastSeat||!labOpen)break;
+  try{
+   var result=await rpc('karaoke_sala_mover',{p_token:token,p_x:state.x,p_y:state.y,p_dance:state.dance});
+   if(!result||result.status!=='updated'){
+    if(result&&result.status==='not_owner')refresh(false).catch(function(){});
+    else say(t('erro'));
+   }
+  }catch(e){say(t('erro'));}
+ }
+ stageBusy=false;
+}
+window.twKaraokeOnlineMove=function(x,y,dance){
+ if(!Number.isFinite(x)||!Number.isFinite(y))return;
+ stagePending={x:Math.round(x),y:Math.round(y),dance:typeof dance==='string'?dance:''};
+ drainStageState();
+};
+document.addEventListener('pointerdown',function(e){
+ if(!lastSeat||!labOpen||!e.target.closest)return;
+ var canvas=e.target.closest('#krCv');
+ if(!canvas)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ if(window.krEu&&window.krEu.no_mic)return;
+ var rect=canvas.getBoundingClientRect();
+ if(!rect.width||!rect.height)return;
+ window.krPlanearDestino((e.clientX-rect.left)*960/rect.width,(e.clientY-rect.top)*540/rect.height);
+ window.twKaraokeOnlineMove(window.krEu.tx,window.krEu.ty,window.krEu.danca);
+},true);
+document.addEventListener('click',function(e){
+ if(!lastSeat||!labOpen||!e.target.closest)return;
+ var button=e.target.closest('[data-danca]');
+ if(button&&window.krEu&&!(window.krHandBusy&&window.krHandBusy(window.krEu)))
+  window.twKaraokeOnlineMove(window.krEu.tx,window.krEu.ty,button.dataset.danca||'');
+},true);
 function cleanNick(n){return typeof n==='string'?n.replace(/[<>]/g,'').slice(0,16):'';}
 function phaseText(p){return p.phase==='intro'?t('preparando'):p.phase==='rhythm'?t('cantando'):p.phase==='outro'?t('aplausos'):t('troca');}
 function drawRhythm(){

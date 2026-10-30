@@ -17,6 +17,7 @@ function joinAll(state,count=9,now=0){
 {
   let s=joinAll(room.createRoom("sunday-room",0));
   ok(room.view(s,0).available===0,"exactly nine seats");
+  ok(room.update(s,0).revision===s.revision,"no-op update keeps revision stable");
   ok(room.join(s,"idol10",0).status==="full","tenth person gets full");
   let again=room.join(s,"idol1",0);
   ok(again.status==="already_inside"&&again.room.seats.length===9,"same user second tab");
@@ -58,9 +59,14 @@ function joinAll(state,count=9,now=0){
   ok(room.submitDemoResult(s,"idol1",id,
     {score:99999,perfectCount:60,notes:60,chartId:"original1"},56000).status==="duplicate",
     "duplicate result cannot overwrite the first");
+  let noQueueRevision=s.revision;
+  s=room.update(s,56000);
+  ok(s.revision===noQueueRevision,"active turn update does not advance revision");
+  let revision=s.revision;
   s=room.update(s,60000);
   ok(s.results.length===1&&s.results[0].verification==="demo_unverified",
     "one unverified result only; cannot issue official badges yet");
+  ok(s.revision===revision+1,"turn finalization and next singer advance revision once");
   ok(s.current.userId==="idol2","next queued singer at second sixty");
   ok(s.current.rhythmEndsAt-s.current.rhythmStartsAt===45000,"45-second rhythm duration");
   ok(s.current.endsAt-s.current.startsAt===60000,"60-second microphone duration");

@@ -12,7 +12,17 @@ assert.equal(view.stageLayout(data.map(x=>({...x,singing:false}))).length,9);
 assert.equal(view.stageLayout(data.map(x=>({...x,singing:false})))[8].seatIndex,8);
 assert.equal(view.stageLayout([{slot:1,label:'<script>',self:1},{slot:1},{slot:-2}]).length,1);
 assert.equal(view.stageLayout([{slot:1,label:'<script>'}])[0].label,'Idol 01');
-assert.deepEqual(view.queueSlots([{slot:3,label:'<img>'},{slot:5}]).map(x=>x&&x.label),['Idol 03','Idol 05',null]);
+assert.deepEqual(
+ view.stageLayout([{slot:2,x:540,y:420,dance:'neon'}])[0],
+ {slot:2,label:'Idol 02',self:false,singing:false,nick:'Idol 02',avatar:null,x:540,y:420,dance:'neon',seatIndex:0}
+);
+assert.deepEqual(
+ view.stageLayout([{slot:1,x:999,y:290,dance:'__proto__'}])[0],
+ {slot:1,label:'Idol 01',self:false,singing:false,nick:'Idol 01',avatar:null,x:null,y:null,dance:'',seatIndex:0}
+);
+assert.equal(view.stageLayout([{slot:1,nick:'Jogadora real'}])[0].nick,'Jogadora real');
+assert.equal(view.stageLayout([{slot:1,nick:'<script>'}])[0].nick,'script');
+assert.deepEqual(view.queueSlots([{slot:3,label:'<img>',nick:'Teste 03'},{slot:5}]).map(x=>x&&x.nick),['Teste 03','Idol 05',null]);
 assert.deepEqual(view.queueSlots([]),[null,null,null]);
 assert.equal(view.turnPhase(100000,160000,100000).phase,'intro');
 assert.equal(view.turnPhase(100000,160000,105000).phase,'rhythm');
@@ -28,9 +38,16 @@ assert(client.includes("signInAnonymously({options:{captchaToken:captchaToken}})
 assert(!client.includes('https://fsggtvgbyhchblyazgmt.supabase.co'));
 // Protege contra a regressão que esvaziava a sala de demonstração.
 assert(game.includes('var krHomolConectado=false;'));
+assert(game.includes("var KR_HOMOLOGATION=new URLSearchParams(location.search).get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app';"));
+assert(client.includes("get('homol')!=='1'&&location.hostname==='tsulipa-world.vercel.app'"),
+ 'homologation client refuses implicit execution on the production host');
 assert(game.includes('if(!me){'));
 assert(!game.includes('krBots=[];krSt.ocupadas=0;krEu.plateia=true;'));
-assert(game.includes("if(krHomolConectado){e.preventDefault();return;}"));
+const online=fs.readFileSync(path.join(__dirname,'../karaoke-online.js'),'utf8');
+assert(online.includes("document.addEventListener('pointerdown'"));
+assert(game.includes("var syncedDance=p.dance||'';"),
+ 'connected dancers use only the server state');
+assert(game.includes('krOnlineAtivo?Object.assign({n:p.label},p.c||{})'),'live players render their real avatar');
 assert(client.includes('a sala cheia é uma demonstração local'));
 assert(!client.includes("localQueue.hidden=true;localQueue.style.display='none';"));
 
@@ -56,7 +73,8 @@ assert(game.includes("else if(rp==='citypop')"),'preserve Pati citypop outfit');
 assert(game.includes('function krDesenharWhimsical('),'whimsical layer');
 assert(game.includes("prefers-reduced-motion: reduce"),'whimsical motion reduction');
 assert(game.indexOf('krDesenharWhimsical(x,t)')<game.indexOf('desenharIdol(x,j.char,j.x,baseY,'),'whimsical behind characters');
-assert(game.includes("get('homol')==='1'?null:JSON.parse(localStorage.getItem('brs48cr_cu2')"),'lab must not reuse saved real avatar');
+assert(game.includes('var sv=JSON.parse(localStorage.getItem(\'brs48cr_cu2\')'),
+ 'homologation uses the participant-selected local visual profile');
 
 // 3A.6: só Idols anônimos podem receber um assento; portão do banco manda na interface.
 const gateSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a6_entry_gate.sql'),'utf8');
@@ -79,8 +97,10 @@ assert(client.includes("var AUTH_TEST_ONLY=!REUSE_SESSION_ONLY&&new URLSearchPar
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 assert(client.includes('if(AUTH_TEST_ONLY)SIGNUP_ENABLED=true;'));
 assert(client.includes('if(AUTH_TEST_ONLY){buttons.Enter.disabled=true;buttons.Queue.disabled=true;buttons.Unqueue.disabled=true;buttons.Leave.disabled=true;buttons.Refresh.disabled=true;return;}'));
-const authOnlyStart=client.indexOf("if(AUTH_TEST_ONLY){\n     // Reuse prevention");
-const authOnlyEnd=client.indexOf("\n   if(r.data.session&&r.data.session.user&&r.data.session.user.is_anonymous!==true)",authOnlyStart);
+const authHandlerStart=client.indexOf('buttons.Auth.addEventListener(');
+assert(authHandlerStart>=0,'auth test handler exists');
+const authOnlyStart=client.indexOf('if(AUTH_TEST_ONLY){',authHandlerStart);
+const authOnlyEnd=client.indexOf('if(r.data.session&&r.data.session.user&&r.data.session.user.is_anonymous!==true)',authOnlyStart);
 assert(authOnlyStart>=0&&authOnlyEnd>authOnlyStart,'temporary auth-only branch must be isolated');
 const authOnlyBranch=client.slice(authOnlyStart,authOnlyEnd);
 assert(authOnlyBranch.includes('client.auth.signInAnonymously')&&authOnlyBranch.includes('client.auth.getUser()'));
@@ -98,7 +118,7 @@ assert(reuseBoot.includes('await refresh(false)'));
 assert(!reuseBoot.includes('signInAnonymously'),'reuse mode never creates an identity');
 assert(reuseBoot.includes('Nenhuma conta nova foi criada'));
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-day.html'),'utf8');
-assert(html.includes('karaoke-homol-client.js?v=7'),'homologation client cache version bumped');
+assert(html.includes('karaoke-homol-client.js?v=8'),'homologation client cache version bumped');
 
 
 // 3A.6b — abrir o desafio antirobô NÃO deve criar conta nem usar RPC.
@@ -128,7 +148,7 @@ assert(closeSql.includes('if (select joins_enabled from karaoke_lab.room where i
 assert(closeTest.trim().endsWith('rollback;'));
 assert(client.includes("(token&&data.mySeat!==true)"),'remove stale lease token after close');
 assert(client.includes("badge.textContent='🎤 Homologação · sem pontos';return;"));
-assert(game.includes("karaoke-homol-client.js?v=7"),'updated script should bypass stale CDN');
+assert(game.includes("karaoke-homol-client.js?v=8"),'updated script should bypass stale CDN');
 console.log('✓ Karaoke 3A.7: fechamento atomico, reconexao limpa e legado visual intacto');
 
 // 3A.8: Realtime only sends revision. Validate the client signal controller with mocks.
@@ -139,7 +159,7 @@ assert(signalSql.includes('revoke all on all functions in schema karaoke_lab'));
 assert(!signalSql.includes('seat_token'));
 assert(signalSQLTest.trimEnd().endsWith('rollback;'));
 assert(game.includes('karaoke-homol-sync.js?v=1'));
-assert(game.includes('karaoke-homol-client.js?v=7'));
+assert(game.includes('karaoke-homol-client.js?v=8'));
 assert(client.includes('if(currentRefresh)return currentRefresh;'));
 assert(client.includes('var SIGNUP_ENABLED=false;'));
 const syncAPI=require('../karaoke-homol-sync.js');
@@ -193,7 +213,7 @@ assert(client.includes("client.rpc('karaoke_ensaio_toque',{p_token:token})"));
 assert(client.includes("function drawSharedRhythm(){"));
 assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("setInterval(showTurnClock,125)"));
-assert(game.includes("karaoke-homol-client.js?v=7"));
+assert(game.includes("karaoke-homol-client.js?v=8"));
 console.log('✓ Karaoke 3A.9: compartilhamento do placar de ensaio sem economia');
 
 // Visual-only mode: neither an anonymous identity nor a score is created.
@@ -216,6 +236,37 @@ assert(rulesSQL.includes("karaoke_lab.enforce_schedule(v_now)"));
 assert(rulesSQL.includes("karaoke_lab.enforce_schedule(now_at)"));
 assert(rulesSQL.includes("delete from karaoke_lab.action_limits;"));
 assert(rulesTest.trimEnd().endsWith('rollback;'));
+const stageSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a11_stage_sync.sql'),'utf8');
+const stageTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a11_stage_sync_rollback.sql'),'utf8');
+const windowSql=fs.readFileSync(path.join(__dirname,'../supabase/sql/karaoke_lab_3a12_temporary_window.sql'),'utf8');
+const windowTest=fs.readFileSync(path.join(__dirname,'../supabase/tests/karaoke_lab_3a12_temporary_window_rollback.sql'),'utf8');
+assert(stageSql.includes("public.karaoke_ensaio_mover("));
+assert(stageSql.includes("p_nick text"));
+assert(stageSql.includes("p_x not between 120 and 840"));
+assert(stageSql.includes("p_y not between 315 and 500"));
+assert(stageSql.includes("'nick', o.player_nick"));
+assert(stageSql.includes("'x', o.stage_x")&&stageSql.includes("'y', o.stage_y"));
+assert(stageSql.includes("'dance', o.dance"));
+assert(!stageSql.includes('fsggtvgbyhchblyazgmt'));
+assert(!stageSql.includes('public.players'));
+assert(stageTest.trimEnd().endsWith('rollback;'));
+assert(client.includes("rpc('karaoke_ensaio_mover'"));
+assert(game.includes('window.twKaraokeHomolProfile=function(){'));
+assert(client.includes('p_nick:profile.nick,p_avatar:profile.avatar'));
+assert(client.includes('function rehearsalProfile()'));
+assert(!client.includes('Avatar fictício deste navegador'));
+assert(stageSql.includes("p_nick text"));
+assert(stageSql.includes("p_avatar jsonb"));
+assert(stageSql.includes("'nick', o.player_nick"));
+assert(stageSql.includes("'avatar', o.player_avatar"));
+assert(windowSql.includes('test_window_started_at timestamptz'));
+assert(windowSql.includes('test_window_until timestamptz'));
+assert(windowSql.includes("interval '2 hours'"));
+assert(windowSql.includes('r.test_window_until > at_time'));
+assert(windowTest.includes('temporary window did not open'));
+assert(windowTest.includes('temporary window lasted past expiry'));
+assert(windowTest.trimEnd().endsWith('rollback;'));
+assert(client.includes('janela temporária também pode ser aberta'));
 assert(client.includes("data.scheduleOpen===true"));
 assert(client.includes("var SIGNUP_ENABLED=false;"));
 assert(client.includes("moderationLocked"));

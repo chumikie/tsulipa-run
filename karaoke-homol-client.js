@@ -1,11 +1,11 @@
-/* TsuLiPa⭐World — 3A.8, optional rehearsal client.
- * Only loads with karaoke-day.html?homol=1. Never references production Supabase,
+/* TsuLiPa⭐World — isolated rehearsal client.
+ * Loads with ?homol=1 or on any non-production host. Never references production Supabase,
  * original accounts, scores or rewards. Anonymous sign-in is by explicit click.
  * Realtime only signals new revision; authoritative state comes from RPC. 30s lease fallback.
  */
 (function(){
 'use strict';
-if(new URLSearchParams(location.search).get('homol')!=='1')return;
+if(new URLSearchParams(location.search).get('homol')!=='1'&&location.hostname==='tsulipa-world.vercel.app')return;
 var URL='https://hfzjoefnousiouiuchys.supabase.co';
 var KEY='sb_publishable_eWhnlZJSyDsJ3N8poUStGw_3XsEFO_T';
 var TOKEN_KEY='tsulipa_homol_seat_token_v1';
@@ -32,8 +32,8 @@ panel.className='kr-mic-queue';
 panel.id='krHomolPanel';
 panel.setAttribute('aria-label','Homologação do Karaoke');
 panel.innerHTML='<h3>🎤 Ensaio online · 9 Idols</h3>'
-  +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte um Idol fictício para testar a sala. Nenhuma conta ou estrela do jogo oficial será usada.</p>'
-  +'<p id="krHomolSchedule">🕛 Domingo, 12h–13h10 (Brasília). Mesmo no horário, somente ensaios autorizados.</p>'
+  +'<p id="krHomolMsg" role="status" aria-live="polite">Conecte sua sessão de ensaio. A sala usa o apelido e a aparência do seu perfil; não usa pontos ou dados da conta.</p>'
+  +'<p id="krHomolSchedule">🕛 Domingo, 12h–13h10 (Brasília); uma janela temporária também pode ser aberta pelo responsável da homologação.</p>'
   +'<p id="krHomolGate" role="status" aria-live="polite">🔒 Entrada online em preparação. A sala cheia acima é uma demonstração.</p>'
   +'<div id="krHomolCaptcha" aria-label="Verificação antirobô do ensaio" style="margin:8px 0"></div>'
   +'<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:9px 0">'
@@ -222,6 +222,26 @@ async function rpc(action){
  if(result.error)throw result.error;
  return result.data;
 }
+function rehearsalProfile(){
+ var profile=window.twKaraokeHomolProfile?window.twKaraokeHomolProfile():{};
+ var avatar=profile.avatar&&typeof profile.avatar==='object'?profile.avatar:{},clean={};
+ ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl','img'].forEach(function(key){
+   if(typeof avatar[key]==='string'&&avatar[key].length<=32)clean[key]=avatar[key];
+ });
+ if(typeof avatar.streak==='boolean')clean.streak=avatar.streak;
+ return {nick:String(profile.nick||'Idol').replace(/[<>]/g,'').trim().slice(0,16)||'Idol',avatar:clean};
+}
+function publishStage(x,y,dance){
+ if(!client||!token||!ready||!labOpen)return Promise.resolve();
+ var profile=rehearsalProfile();
+ return client.rpc('karaoke_ensaio_mover',{
+   p_token:token,p_x:x,p_y:y,p_dance:dance||'',
+   p_nick:profile.nick,p_avatar:profile.avatar
+ }).then(function(result){
+   if(result.error)throw result.error;
+   return result.data;
+ });
+}
 async function refresh(doHeartbeat){
  if(!client)return;
  // A status/Realtime query already in flight must not discard seat lease renewal.
@@ -250,7 +270,7 @@ async function refreshData(doHeartbeat){
  labOpen=data.labOpen===true&&data.scheduleOpen===true;
  moderationLocked=data.status==='moderated';
  document.getElementById('krHomolGate').textContent=labOpen?
-  '🟢 Ensaio online liberado somente para Idols fictícios autorizados.':
+  '🟢 Ensaio online liberado para participantes da homologação.':
   data.scheduleOpen===false?'🕛 Fora do horário de domingo · a demonstração continua disponível.':
   '🔒 Entrada online fechada pelo servidor. A demonstração continua disponível.';
  if(data.status==='not_owner'||data.status==='not_inside'||data.status==='moderated'||(token&&data.mySeat!==true)){
@@ -271,12 +291,12 @@ async function refreshData(doHeartbeat){
  var people=view.stageLayout(list.slots),queue=view.queueSlots(list.queue);
  var names=document.getElementById('krHomolPeople');names.replaceChildren();
  people.forEach(function(p){
-   var li=document.createElement('li');li.textContent=p.label+(p.self?' (você)':'')+(p.singing?' 🎤':'');names.appendChild(li);
+   var li=document.createElement('li');li.textContent=p.nick+(p.self?' (você)':'')+(p.singing?' 🎤':'');names.appendChild(li);
  });
  var ol=document.getElementById('krHomolQueueSlots');ol.replaceChildren();
  queue.forEach(function(p,i){
    var li=document.createElement('li'),my=people.some(function(a){return a.self&&p&&a.slot===p.slot;});
-   li.textContent=p?p.label+(my?' · sua posição 💜':''):'Livre';
+   li.textContent=p?p.nick+(my?' · sua posição 💜':''):'Livre';
    li.setAttribute('aria-label','Fila '+(i+1)+': '+li.textContent);ol.appendChild(li);
  });
  document.getElementById('krHomolQueueText').textContent=queued?
@@ -306,6 +326,7 @@ async function run(action){
   if(action==='enter'&&(data.status==='joined'||data.status==='resumed')&&data.seatToken){
     token=data.seatToken;
     try{sessionStorage.setItem(TOKEN_KEY,token);}catch(e){}
+    await publishStage(null,null,'');
   }
   if(action==='leave'&&data.status==='left'){
     token=null;try{sessionStorage.removeItem(TOKEN_KEY);}catch(e){}
@@ -365,6 +386,31 @@ buttons.Auth.addEventListener('click',async function(){
    say('Login de teste não concluído. Confirme Turnstile e Anonymous Sign-ins somente no Supabase de homologação. '+String(e.message||e));
  }finally{unlock();}
 });
+window.twKaraokeHomolMove=function(x,y,dance){
+ if(!Number.isFinite(x)||!Number.isFinite(y))return;
+ publishStage(Math.round(x),Math.round(y),dance||'')
+   .then(function(result){
+     if(result&&result.status!=='updated'&&result.status!=='unchanged'&&result.status!=='rate_limited')
+       say('Movimento de ensaio não sincronizado: '+String(result.status));
+   }).catch(function(e){say('Movimento de ensaio não sincronizado: '+String(e.message||e));});
+};
+document.addEventListener('pointerdown',function(e){
+ if(!lastSeat||!labOpen||!e.target.closest)return;
+ var canvas=e.target.closest('#krCv');
+ if(!canvas)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ if(window.krEu&&window.krEu.no_mic)return;
+ var rect=canvas.getBoundingClientRect();
+ if(!rect.width||!rect.height)return;
+ window.krPlanearDestino((e.clientX-rect.left)*960/rect.width,(e.clientY-rect.top)*540/rect.height);
+ window.twKaraokeHomolMove(window.krEu.tx,window.krEu.ty,window.krEu.danca);
+},true);
+document.addEventListener('click',function(e){
+ if(!lastSeat||!labOpen||!e.target.closest)return;
+ var button=e.target.closest('[data-danca]');
+ if(button&&window.krEu&&!(window.krHandBusy&&window.krHandBusy(window.krEu)))
+   window.twKaraokeHomolMove(window.krEu.tx,window.krEu.ty,button.dataset.danca||'');
+},true);
 document.getElementById('krHomolTap').addEventListener('click',async function(){
  if(!client||!token||!ready||!isSinging||!labOpen||busy||tapPending)return;
  var btn=this;tapPending=true;btn.disabled=true;

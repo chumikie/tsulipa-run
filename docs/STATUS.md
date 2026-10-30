@@ -4,8 +4,9 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Onde está cada coisa
 - **Site no ar:** https://tsulipa-world.vercel.app (Vercel pausada pela dona até a nova versão ficar pronta).
-- **Versão nova:** branch `release/index2-lancamento`, PR #34 (rascunho). Prévia: https://deploy-preview-34--tsulipa-run.netlify.app
-- **PR #33:** todo o conteúdo dele já está no #34. Fechar sem merge depois do lançamento.
+- **Versão de lançamento:** PR [#34](https://github.com/chumikie/tsulipa-run/pull/34), branch `release/index2-lancamento`, mesclado em 30/10/2026. Isso não confirma, por si só, um deploy em produção.
+- **PR #33:** aberto como rascunho independente, na branch `feature/sora-karaoke-v2-2026-10-29`; prévia: https://deploy-preview-33--tsulipa-run.netlify.app. Não é o PR #34; revisar o conteúdo antes de fechar ou mesclar.
+- **PR #15:** login com Google + espaçamentos continua aberto; prévia: https://deploy-preview-15--tsulipa-run.netlify.app.
 - **Supabase de produção:** `fsggtvgbyhchblyazgmt`. Homologação (só testes): `hfzjoefnousiouiuchys`.
 
 ## Arquivos do site (raiz)
@@ -46,9 +47,18 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 - Descrições do link atualizadas com todos os modos ; imagem og no estilo anterior (trio no tema ZIPPER) com os 6 modos.
 - Trilha sonora: 31 faixas geradas no código (25 músicas diferentes), gravadas em MP3 fora do repositório.
+- Modelo local da sala: o contador de revisão usa sinalização direta das transições, sem serializar a vez nem comparar comprimentos de arrays em atualizações sem mudanças.
+- CI: testes offline de comportamento cobrem agora a guarda de login, sucesso/falha de compra e formato/chaves dos saves, sem tocar contas reais.
+- CI: smoke test verifica referências locais de páginas e CSS; o workflow acompanha alterações em HTML, JS, CSS e SQL para evitar mudanças relevantes sem validação.
+- Organização: as funções puras de semana/ranking do pódio estão em `tw-weekly-podium-model.js`; IDs, conteúdo exibido e regras do ranking foram mantidos e cobertos pelos mesmos casos de regressão.
+- Lint progressivo: ESLint se aplica apenas aos módulos JS independentes; arquivos HTML legados continuam fora do lint.
+- CI testa sessão de ensaio ausente, permanente e anônima sem criar contas nem acessar o Supabase.
+- Lint segue restrito aos módulos puros: os clientes de sessão online/homologação ainda têm alertas preexistentes de `catch` vazio e variável `captchaToken` redeclarada; evitar mudança funcional incidental antes de incluí-los.
+- Prévia local (30/10): desktop em 1024 px e celular em 390 px abriram sem erro; no breakpoint móvel, a última letra do logotipo quebra para a linha seguinte. Registro para ajuste visual separado; não foi alterado nesta refatoração.
+- Prévia do PR #33 (30/10): páginas Sora e Karaoke abertas em largura estreita, sem login nem ações que gravem dados; não foi possível concluir o teste de dois participantes nem validar em aparelhos físicos.
 
-## Falta antes do merge
-1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.
+## Validações pendentes antes de um novo lançamento
+1. Karaoke online: a prévia seleciona homologação fora do domínio oficial e não consulta RPCs de produção. A migration 3A.11 prepara movimento/dança e usa o apelido e o visual escolhidos por cada participante, sem enviar autenticação, saldo ou pontuação; a 3A.12 permite ao responsável abrir uma janela manual de até 2 horas **somente na homologação**. Ambas ainda precisam ser aplicadas em `hfzjoefnousiouiuchys`, após confirmar CAPTCHA e Anonymous Sign-ins. Para o teste com duas pessoas, cada uma cria uma sessão de ensaio uma vez com `?homol=1&auth_test=1` e depois reutiliza com `?homol=1&reuse_session=1`; o responsável abre a janela pelo SQL Editor conforme `supabase/sql/README.md`. Nenhuma alteração foi aplicada em produção.
 2. No celular: compra, gacha, resgate, corrida salvando (a trava da prévia saiu).
 3. Revisar visual do Karaoke (cortina e itens) e do Sora (moldura igual à do Center Run).
 

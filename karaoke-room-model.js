@@ -38,25 +38,29 @@
     return "ended";
   }
   function startNext(r,now){
-    if(r.current)return;
+    if(r.current)return false;
+    var changed=false;
     while(r.queue.length){
       var id=r.queue.shift();
+      changed=true;
       if(!hasSeat(r,id))continue;
       var start=now,number=r.nextTurn++;
       r.current={id:r.sessionId+"-"+number,userId:id,startsAt:start,
         rhythmStartsAt:start+INTRO_MS,rhythmEndsAt:start+INTRO_MS+RHYTHM_MS,
         endsAt:start+TURN_MS,provisional:null};
-      return;
+      return changed;
     }
+    return changed;
   }
   function update(r,now){
     if(!validTime(now))throw new Error("invalid_clock");
-    var n=clone(r),expired=[];
+    var n=clone(r),expired=[],changed=false;
     n.seats=n.seats.filter(function(s){
       if(s.leaseUntil>now)return true;
       expired.push(s.userId);return false;
     });
     if(expired.length){
+      changed=true;
       n.queue=n.queue.filter(function(id){return expired.indexOf(id)<0;});
       // If a singer disconnects, the turn is not scored or awarded.
       if(n.current&&expired.indexOf(n.current.userId)>=0)n.current=null;
@@ -70,10 +74,10 @@
           verification:"demo_unverified"});
       }
       n.current=null;
+      changed=true;
     }
-    startNext(n,now);
-    if(expired.length||JSON.stringify(n.current)!==JSON.stringify(r.current)||
-        n.results.length!==r.results.length||n.queue.length!==r.queue.length)n.revision++;
+    if(startNext(n,now))changed=true;
+    if(changed)n.revision++;
     return n;
   }
   function join(r,id,now){

@@ -27,8 +27,14 @@ create table if not exists karaoke_lab.seats(
   user_id uuid primary key,
   seat_token uuid not null unique default gen_random_uuid(),
   joined_at timestamptz not null default clock_timestamp(),
-  lease_expires timestamptz not null
+  lease_expires timestamptz not null,
+  stage_x integer,
+  stage_y integer,
+  dance text not null default ''
 );
+alter table karaoke_lab.seats add column if not exists stage_x integer;
+alter table karaoke_lab.seats add column if not exists stage_y integer;
+alter table karaoke_lab.seats add column if not exists dance text not null default '';
 create table if not exists karaoke_lab.queue(
   seq bigint generated always as identity primary key,
   user_id uuid not null unique references karaoke_lab.seats(user_id) on delete cascade,
@@ -362,10 +368,12 @@ begin
       from karaoke_lab.seats s)
   select coalesce(jsonb_agg(jsonb_build_object(
       'slot', o.slot, 'nick', p.nick,
-      'avatar', jsonb_build_object('c', coalesce(p.look,p.avatar)->'c'),
+      'avatar', jsonb_build_object('c', coalesce(p.look->'c',p.avatar->'c')),
+      'x', s.stage_x, 'y', s.stage_y, 'dance', s.dance,
       'self', o.user_id = v_uid, 'singing', o.user_id = r.singer_id) order by o.slot), '[]'::jsonb)
     into v_slots
-    from ordered o join public.players p on p.id = o.user_id cross join karaoke_lab.room r
+    from ordered o join karaoke_lab.seats s using (user_id)
+      join public.players p on p.id = o.user_id cross join karaoke_lab.room r
    where r.id = 1;
 
   with ordered as (
@@ -377,6 +385,44 @@ begin
 
   select r.revision into v_rev from karaoke_lab.room r where r.id = 1;
   return jsonb_build_object('status','ok','slots',v_slots,'queue',v_queue,'revision',v_rev,'verified',false);
+end $$;
+
+create or replace function public.karaoke_sala_mover(
+  p_token uuid, p_x integer, p_y integer, p_dance text
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_uid uuid := auth.uid();
+  v_now timestamptz := clock_timestamp();
+  v_seat karaoke_lab.seats%rowtype;
+begin
+  if v_uid is null then raise exception 'sign_in_required' using errcode = '28000'; end if;
+  if p_x is null or p_y is null or p_x not between 120 and 840 or p_y not between 315 and 500
+     or coalesce(p_dance,'') not in ('','banzai','seis','neon','nyan','giro','pulo') then
+    return jsonb_build_object('status','invalid_state');
+  end if;
+  perform 1 from karaoke_lab.room where id = 1 for update;
+  if not (select joins_enabled from karaoke_lab.room where id = 1)
+     or not karaoke_lab.is_open_window(v_now) then
+    return jsonb_build_object('status','lab_closed');
+  end if;
+  if karaoke_lab.is_blocked(v_uid,v_now) then
+    return jsonb_build_object('status','moderated');
+  end if;
+  select * into v_seat from karaoke_lab.seats
+   where user_id = v_uid and seat_token = p_token and lease_expires > v_now
+   for update;
+  if not found then return jsonb_build_object('status','not_owner'); end if;
+
+  update karaoke_lab.seats
+     set stage_x = p_x, stage_y = p_y, dance = coalesce(p_dance,''),
+         lease_expires = v_now + interval '45 seconds'
+   where user_id = v_uid;
+  if v_seat.stage_x is distinct from p_x or v_seat.stage_y is distinct from p_y
+     or v_seat.dance is distinct from coalesce(p_dance,'') then
+    update karaoke_lab.room set revision = revision + 1 where id = 1;
+  end if;
+  return jsonb_build_object('status','updated','x',p_x,'y',p_y,'dance',coalesce(p_dance,''));
 end $$;
 
 create or replace function public.karaoke_sala_toque(p_token uuid) returns jsonb
@@ -466,9 +512,11 @@ end $$;
 
 revoke all on function public.karaoke_sala(text,uuid) from public, anon;
 revoke all on function public.karaoke_sala_elenco() from public, anon;
+revoke all on function public.karaoke_sala_mover(uuid,integer,integer,text) from public, anon;
 revoke all on function public.karaoke_sala_toque(uuid) from public, anon;
 revoke all on function public.karaoke_sala_admin(text,integer,text) from public, anon;
 grant execute on function public.karaoke_sala(text,uuid) to authenticated;
 grant execute on function public.karaoke_sala_elenco() to authenticated;
+grant execute on function public.karaoke_sala_mover(uuid,integer,integer,text) to authenticated;
 grant execute on function public.karaoke_sala_toque(uuid) to authenticated;
 grant execute on function public.karaoke_sala_admin(text,integer,text) to authenticated;

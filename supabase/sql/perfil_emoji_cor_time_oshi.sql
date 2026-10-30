@@ -1,5 +1,5 @@
 -- Perfil: emoji, cor e time (B, R, S, KKS) + lista de Oshi só com quem joga.
--- AINDA NÃO APLICADO: precisa do ok da dona do projeto. O site funciona sem ele (cai na lista antiga).
+-- APLICADO na produção em 30/10/2026 (migração perfil_emoji_cor_time_oshi_jogadores), com o ok da dona.
 alter table public.players add column if not exists emoji text not null default '',
   add column if not exists cor text not null default '', add column if not exists time text not null default '';
 

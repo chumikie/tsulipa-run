@@ -34,7 +34,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Feito em 30/10 (2ª rodada)
 - Center⭐Run! Temporada 2 integrada no `index.html` (veio da v20): 8 cenários, deslizar (seta ↓ / botão ▼), obstáculos que andam, combo, corredor de fãs, desafio, Coro, Corrida do dia e seletor de cenário no Modo Teste. Na Rua da cidade a corrida é a de antes. Placar ganhou fundo translúcido nos cenários novos.
-- Perfil: emoji, cor e time (B, R, S, KKS) e Oshi escolhido entre quem joga. **Falta aplicar** `supabase/sql/perfil_emoji_cor_time_oshi.sql` (precisa do ok da dona); até lá, o perfil usa a lista antiga.
+- Perfil: emoji, cor e time (B, R, S, KKS) e Oshi escolhido entre quem joga. Banco já atualizado em 30/10 (`supabase/sql/perfil_emoji_cor_time_oshi.sql`).
 - Karaoke: telão com o mesmo grupo para todos (grupo 1 às 12h00 … 6 às 12h50, novo sorteio por semana) e vista alternando Gigoia/Liberdade por semana.
 
 ## Falta antes do merge

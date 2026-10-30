@@ -179,7 +179,7 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
-assert(lab.includes('href="./tw-mic-cd-popup.css?v=2"'),
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"'),
   "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
 assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        micCdSkin.includes(".tw-mic-radio-deck")&&micCdSkin.includes(".tw-mic-speaker")&&
@@ -218,7 +218,7 @@ assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
   "Seasonal presentation must not replace the trio's touch voices, Oshi sound effects or saved outfits");
 assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"')&&
        lab.includes("A antiga sala simultânea de domingo")&&
-       newHtml.includes("o ranking semanal é online"),
+       lab.includes("O ranking semanal é online"),
   "Karaoke Time is the only current karaoke experience; old Sunday room is documented as retired");
 const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);
 const syncSource=lab.slice(syncStart,syncEnd);
@@ -237,7 +237,7 @@ assert(adminSqlLower.includes("create or replace function public.admin_cuidar_pe
        adminSqlLower.includes("set search_path = ''")&&
        adminSqlLower.includes("revoke all")&&adminSqlLower.includes("to authenticated"),
   "Admin pet/visual RPCs must be admin-guarded, search_path-safe and not callable by anon/PUBLIC");
-assert(micCdSkin.includes("width:min(100%,360px)")&&micCdSkin.includes("FM   88.8")&&
+assert(micCdSkin.includes("width:min(100%,360px)")&&micCdSkin.includes(".tw-mic-tuner strong")&&
        !micCdSkin.includes("twMicCdSpin")&&!micCdSkin.includes("width:min(100%,550px)"),
   "Karaoke weekly mic popup should look like a compact radio, not a large CD hi-fi shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');

@@ -10960,7 +10960,7 @@ function encMostrar(d){
   $('encFala').textContent = tr(d.fala);
   var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
   $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
-  var oe = $('encOshi'); oe.hidden = !os; if(os){ oe.textContent = '推し ' + os[0] + ' ' + tr(os[1]); oe.style.background = os[2]; oe.style.color = perfCorTexto(os[2]); }
+  var oe = $('encOshi'); oe.hidden = ex.length > 0 || !os; if(os && ex.length === 0){ oe.textContent = '推し ' + os[0] + ' ' + tr(os[1]); oe.style.background = os[2]; oe.style.color = perfCorTexto(os[2]); }
   $('encFoto').textContent = '📸 ' + tr('Foto');
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');

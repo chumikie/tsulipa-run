@@ -504,6 +504,33 @@ try {
     _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 } catch (e) { console.warn('Supabase indisponível:', e); }
+
+// O Sora⭐Jump é carregado em iframe próprio. Se o SDK não veio no documento,
+// carregamos a mesma versão usada pelo cliente online do Karaoke, sob demanda.
+function soraEnsureSupabaseClient(){
+  if(_supabase) return Promise.resolve(_supabase);
+  return new Promise(function(resolve,reject){
+    function create(){
+      if(!window.supabase || typeof window.supabase.createClient !== 'function'){
+        reject(new Error('SDK Supabase indisponível.'));
+        return;
+      }
+      try{
+        _supabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+        resolve(_supabase);
+      }catch(error){ reject(error); }
+    }
+    if(window.supabase && typeof window.supabase.createClient === 'function'){
+      create();
+      return;
+    }
+    var script=document.createElement('script');
+    script.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js';
+    script.onload=create;
+    script.onerror=function(){reject(new Error('Não foi possível carregar o SDK Supabase.'));};
+    document.head.appendChild(script);
+  });
+}
 (function(){
 var LANG='pt';
 try{LANG=window.__TW_TEST_STORAGE.getItem('brs48cr_lang')||'pt'}catch(e){}
@@ -1519,29 +1546,33 @@ function soraOnlineSetSession(session){
   soraOnlineUserId = user && user.is_anonymous !== true ? user.id : null;
 }
 function soraOnlineInitAuth(){
-  if(!_supabase || !_supabase.auth || typeof _supabase.auth.getSession !== 'function'){
-    return Promise.resolve(null);
-  }
-  if(!soraOnlineAuthSubscription && typeof _supabase.auth.onAuthStateChange === 'function'){
-    try{
-      var authWatch = _supabase.auth.onAuthStateChange(function(_event, session){
-        soraOnlineSetSession(session);
+  return soraEnsureSupabaseClient().then(function(client){
+    if(!client.auth || typeof client.auth.getSession !== 'function') return null;
+    if(!soraOnlineAuthSubscription && typeof client.auth.onAuthStateChange === 'function'){
+      try{
+        var authWatch = client.auth.onAuthStateChange(function(_event, session){
+          soraOnlineSetSession(session);
+        });
+        soraOnlineAuthSubscription = authWatch && authWatch.data && authWatch.data.subscription || null;
+      }catch(e){}
+    }
+    if(!soraOnlineAuthPromise){
+      soraOnlineAuthPromise = client.auth.getSession().then(function(result){
+        if(result && result.error) throw result.error;
+        soraOnlineSetSession(result && result.data && result.data.session);
+        return soraOnlineUserId;
+      }).catch(function(error){
+        soraOnlineUserId = null;
+        console.warn('Sora⭐Jump: sessão da conta indisponível.', error);
+        return null;
       });
-      soraOnlineAuthSubscription = authWatch && authWatch.data && authWatch.data.subscription || null;
-    }catch(e){}
-  }
-  if(!soraOnlineAuthPromise){
-    soraOnlineAuthPromise = _supabase.auth.getSession().then(function(result){
-      if(result && result.error) throw result.error;
-      soraOnlineSetSession(result && result.data && result.data.session);
-      return soraOnlineUserId;
-    }).catch(function(error){
-      soraOnlineUserId = null;
-      console.warn('Sora⭐Jump: sessão da conta indisponível.', error);
-      return null;
-    });
-  }
-  return soraOnlineAuthPromise;
+    }
+    return soraOnlineAuthPromise;
+  }).catch(function(error){
+    soraOnlineUserId = null;
+    console.warn('Sora⭐Jump: cliente de autenticação indisponível.', error);
+    return null;
+  });
 }
 function soraOnlineBeginRun(){
   if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId) return Promise.resolve(null);

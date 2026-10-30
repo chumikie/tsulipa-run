@@ -279,7 +279,7 @@ assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&
 // Ranking online do Karaoke⭐Time!: o servidor conta as 5 tentativas e confere o resultado.
 assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('kt_run_finish'")&&preview.includes("contaRpc('kt_ranking')")&&
        preview.includes('id="twRankKt"')&&preview.includes("data.karaoke_combo")&&preview.includes("data.karaoke_acertos")&&preview.includes("data.meu_kt_usados")&&
-       preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes('今週のランキング'),
+       preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes('コンボと正確さ'),
   "Karaoke Time: ponte do ranking online e barra própria no Top Idols");
 assert(kTime.includes("window.ktOnline.gate(start)")&&kTime.includes("window.ktOnline.finish(result)")&&
        kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),

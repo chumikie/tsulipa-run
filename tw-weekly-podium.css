@@ -167,4 +167,5 @@
   display:block;margin-top:2px;color:var(--pink);
   font:800 10px/1.4 "M PLUS Rounded 1c",sans-serif;
 }
+@media(min-width:621px){#hub .tw-rank-columns.tw-rank-kt{grid-template-columns:repeat(2,minmax(0,1fr));max-width:76%;margin-inline:auto}}
 #hub .tw-rank-kt .tw-rank-game{background:linear-gradient(145deg,var(--card),rgba(255,111,181,.10))}

@@ -740,7 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=7">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=5">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=6">
 </head>
 <body>
 <header>
@@ -8691,13 +8691,13 @@ function hubMisCarregar(){
 // Server-side Sora records are live; Karaoke stays empty until its own verified backend exists.
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
 var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,centerOK:false,online:false,mine:null,readAt:0,active:0};
-// Barra própria do Karaoke⭐Time!: os três quadros da sala (pontuação, maior combo, acertos).
+// Barra própria do Karaoke⭐Time!: os outros dois quadros da sala. A pontuação já está na coluna do Top Idols.
 var TW_KT_WORDS={
- pt:['🎤 Karaoke⭐Time! · ranking da semana','⭐ Pontuação','✨ Maior combo','💖 Acertos'],
- en:['🎤 Karaoke⭐Time! · weekly ranking','⭐ Score','✨ Best combo','💖 Accuracy'],
- es:['🎤 Karaoke⭐Time! · ranking semanal','⭐ Puntuación','✨ Mejor combo','💖 Aciertos'],
- ja:['🎤 カラオケ⭐タイム！ · 今週のランキング','⭐ スコア','✨ 最大コンボ','💖 正確さ'],
- th:['🎤 Karaoke⭐Time! · อันดับประจำสัปดาห์','⭐ คะแนน','✨ คอมโบสูงสุด','💖 ความแม่นยำ']
+ pt:['🎤 Karaoke⭐Time! · combo e acertos','⭐ Pontuação','✨ Maior combo','💖 Acertos'],
+ en:['🎤 Karaoke⭐Time! · combo & accuracy','⭐ Score','✨ Best combo','💖 Accuracy'],
+ es:['🎤 Karaoke⭐Time! · combo y aciertos','⭐ Puntuación','✨ Mejor combo','💖 Aciertos'],
+ ja:['🎤 カラオケ⭐タイム！ · コンボと正確さ','⭐ スコア','✨ 最大コンボ','💖 正確さ'],
+ th:['🎤 Karaoke⭐Time! · คอมโบและความแม่นยำ','⭐ คะแนน','✨ คอมโบสูงสุด','💖 ความแม่นยำ']
 };
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤',(TW_KARAOKE_TIME?'Karaoke⭐Time!':'Karaoke⭐Day!'),'pts']];
@@ -8812,8 +8812,8 @@ function twRankRender(){
   var on=typeof TW_KARAOKE_TIME!=='undefined'&&TW_KARAOKE_TIME===true,w=TW_KT_WORDS[LANG]||TW_KT_WORDS.pt;
   kt.hidden=ktTit.hidden=!on;
   if(on){
-   ktTit.innerHTML=escHtml(w[0])+'<small class="tw-jpsub" lang="ja">カラオケ・タイム · 今週のランキング</small>';
-   kt.innerHTML=[['karaoke',w[1],'pts'],['kcombo',w[2],'combo'],['kacertos',w[3],'%']].map(function(k){
+   ktTit.innerHTML=escHtml(w[0])+'<small class="tw-jpsub" lang="ja">カラオケ・タイム · コンボと正確さ</small>';
+   kt.innerHTML=[['kcombo',w[2],'combo'],['kacertos',w[3],'%']].map(function(k){
     var list=twRankData[k[0]];
     return '<div class="tw-rank-game"><h3>'+escHtml(k[1])+'</h3>'+
      (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[2],'karaoke');}).join('')+'</ol>':

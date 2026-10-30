@@ -740,7 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=8">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
 </head>
 <body>
 <header>
@@ -10792,6 +10792,8 @@ function encBtnUI(){
 function encMostrar(d){
   encDados = d; encT = 0;
   var ex = Array.isArray(d.extras) ? d.extras : [];
+  var encPainel = encOv.querySelector('.encp');
+  if(encPainel) encPainel.classList.toggle('enc-grupo', ex.length > 0);
   $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
   $('encNick').textContent = encNomes(d);
   $('encFala').textContent = tr(d.fala);

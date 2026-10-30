@@ -179,6 +179,15 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
+assert(tvSkin.includes("#hub #twMicModal .tw-mic-tv")&&
+       tvSkin.includes("twMicCdSpin")&&
+       tvSkin.includes(".encp.enc-grupo #encRk")&&
+       tvSkin.includes(".encp.enc-grupo #encSelo")&&
+       lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
+       lab.includes("$('encNick').textContent = encNomes(d)")&&
+       !lab.includes('id="encPessoas"')&&
+       !tvSkin.includes("#twPreviewJogo[data-jogo=\\"karaoke\\"]"),
+  "CD belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
 const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');
 assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&

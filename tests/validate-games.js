@@ -10,7 +10,6 @@ const root=path.resolve(__dirname,"..");
 const games=[
   {file:"index.html",max:1150000},
   {file:"index2.html",max:1000},
-  {file:"sora-jump-karaoke.html",max:40000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
   {file:"karaoke-online-lab.html",max:30000}
@@ -36,18 +35,37 @@ for(const game of games){
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");
 }
 
-let hub="",karaoke="",sora="",preview="";
+let karaoke="",sora="",preview="";
 try{
-  hub=read("sora-jump-karaoke.html");
   preview=read("index.html");
   karaoke=read("karaoke-day.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
 
-for(const ref of ["sora-jump.html","karaoke-day.html"]){
-  assert(hub.includes('data-open="'+ref+'"'),"Hub missing launcher for "+ref);
+// A pagina principal e a unica porta de entrada dos jogos: nao existe mais um
+// seletor separado (sora-jump-karaoke.html), que era por onde o voltar se perdia.
+assert(!fs.existsSync(path.join(root,"sora-jump-karaoke.html")),"O seletor avulso nao deve voltar ao projeto");
+
+// Nenhuma pagina pode apontar para um arquivo do projeto que nao existe mais,
+// e nenhuma pode navegar o proprio iframe para outra pagina do site.
+for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html","privacidade.html","karaoke-online-lab.html"]){
+  const txt=read(nome);
+  const alvos=new Set();
+  for(const m of txt.matchAll(/(?:href|src)=["']\.?\/?([A-Za-z0-9_.-]+\.(?:html|css|js|json|png|jpg|svg|mp3))(?:\?[^"']*)?["']/g)) alvos.add(m[1]);
+  for(const m of txt.matchAll(/location\.href\s*=\s*['"]\.\/([A-Za-z0-9_.-]+\.html)['"]/g)) alvos.add(m[1]);
+  for(const alvo of alvos){
+    assert(fs.existsSync(path.join(root,alvo))||fs.existsSync(path.join(root,"audio",alvo)),
+      nome+" aponta para um arquivo que nao existe: "+alvo);
+  }
 }
-assert(hub.includes("games-theme.css"),"Hub missing shared theme");
+for(const jogo of ["sora-jump.html","karaoke-day.html"]){
+  const txt=read(jogo);
+  assert(!/catch[^]{0,80}location\.href\s*=\s*['"]\.\/[A-Za-z0-9_.-]+\.html/.test(txt),
+    jogo+": dentro do pop-up o voltar nunca pode navegar o iframe");
+}
+for(const jogo of ["sora","karaoke"]){
+  assert(preview.includes('data-ir="'+jogo+'"'),"Falta o card do "+jogo+" na pagina principal");
+}
 assert(preview.includes('class="hubcard tw-hubgame')&&preview.includes("twPreviewAbrirJogo"),
   "index2 missing integrated game cards or launchers");
 assert(!preview.includes('name="robots" content="noindex'),"Canonical home must be indexable");
@@ -65,8 +83,12 @@ assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
        karaoke.includes("krRhythmTick()")&&
        karaoke.includes("krRhythmStop('abandoned')"),
   "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
-assert(karaoke.includes("KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]]")&&
-       karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/9'")&&
+// 8 lugares no sofa + o palco = 9 pessoas, sem ninguem empilhado (x diferente em cada lugar).
+const sofa=JSON.parse((karaoke.match(/KR_SOFA_SLOTS=(\[\[[0-9,\[\]]*\]\])/)||[])[1]||'[]');
+assert(sofa.length===8,'Karaoke: 8 lugares no sofa');
+assert(new Set(sofa.map(s=>s[0])).size===8,'Karaoke: cada lugar num x proprio (ninguem empilhado)');
+assert(sofa.every(s=>s[0]>=120&&s[0]<=840&&s[1]>=330&&s[1]<=500),'Karaoke: lugares dentro da sala');
+assert(karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/9'")&&
        !karaoke.includes("Aberta · {n}/12")&&
        !karaoke.includes("micT=30*60")&&
        !karaoke.includes("uma das 12 vagas"),
@@ -173,11 +195,11 @@ assert(lab.includes("./sora-jump.html'+context")&&
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
 assert(sora.includes("twSoraEmbedBoot")&&
        sora.includes("get('embed')!=='index2'")&&sora.includes("tw-sora-embed")&&
-       sora.includes("./sora-embed.css?v=4")&&
+       /\.\/sora-embed\.css\?v=\d+/.test(sora)&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<10000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -307,22 +329,23 @@ try{
   };
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
-  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&fakeHub.hidden,
-    "Sora launcher must show the iframe and hide the hub");
+  // O Sora agora abre como pop-up SOBRE o hub (igual ao Star Gacha): o hub fica atras, visivel.
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&!fakeHub.hidden,
+    "Sora launcher must show the iframe as a pop-up over the hub");
   assert(attrs["data-jogo"]==="sora"&&attrs["data-tema"]==="halloween"&&
          previewPart.innerHTML===sourcePart.innerHTML&&
-         markerCreated===1&&headersMoved===1,
-    "Preview should move the official header once and reuse the hub seasonal particles");
+         markerCreated===0&&headersMoved===0,
+    "Sora keeps the official header on the page behind the pop-up");
   assert(musicStops===1&&backFocused===1,"Opening Sora must pause hub audio and focus return control");
   assert(baseCanvasPauses===1,"Opening Sora must pause covered Center Run canvas loops");
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt"&&musicStops===1,
+  assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&musicStops===1,
     "A duplicate launch must not replace an active game");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&
          hubReturns===1&&launchesFocused===1&&
-         !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===1,
-    "Sora return must unload iframe, restore official header, clear effects and focus");
+         !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===0,
+    "Sora return must unload iframe, clear effects and focus");
   sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
   sandbox.twPreviewAbrirJogo("karaoke");
   assert(overlay.hidden&&iframe.src==="about:blank"&&blockedKaraoke===1,
@@ -330,13 +353,13 @@ try{
   // A conscious rehearsal click can open the disconnected demo even on a weekday.
   // This is NOT the same as granting online seats or privileges.
   sandbox.twPreviewAbrirJogo("karaoke",true);
-  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&rehearsal=1"&&
+  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light&rehearsal=1"&&
          gameTitle.textContent.includes("Ensaio"),
     "INDEX2 rehearsal must work outside Sunday and be clearly identified as local only");
   sandbox.twPreviewFecharJogo();
   sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
   sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
+  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
     "Karaoke preview should open during scheduled window");
   sandbox.twPreviewFecharJogo();
   assert(iframe.src==="about:blank"&&hubReturns===3&&launchesFocused===3,

@@ -429,8 +429,12 @@ html,body{min-height:100%;}
     var o=new URLSearchParams(location.search).get('oshi');
     if(['tsu','lirika','pati'].indexOf(o)>=0)document.documentElement.setAttribute('data-oshi',o);
     else document.documentElement.removeAttribute('data-oshi');
+    // O tema (claro/escuro) vem da página inicial para o card e os botões
+    // usarem exatamente as mesmas cores do Center⭐Run!.
+    var t=new URLSearchParams(location.search).get('theme');
+    if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
     var style=document.createElement('link');
-    style.rel='stylesheet';style.href='./sora-embed.css?v=4';
+    style.rel='stylesheet';style.href='./sora-embed.css?v=7';
     document.head.appendChild(style);
   }catch(e){/* standalone fallback */ }
 })();
@@ -3578,12 +3582,13 @@ function soraDraw(){
     x.fillRect(0, 0, SW, SH);
   }
 
-  // HUD renovado: painel de vidro lilás com borda neon e hierarquia visual.
+  // HUD: plaquinha pastel sólida, no mesmo visual do resto do jogo.
+  // Antes era vidro lilás translúcido e o texto sumia nos céus claros.
   x.save();
-  x.shadowColor = 'rgba(72,35,135,.24)'; x.shadowBlur = 12;
+  x.shadowColor = 'rgba(72,35,135,.28)'; x.shadowBlur = 10;
   var hud = x.createLinearGradient(8, 8, 170, 68);
-  hud.addColorStop(0, 'rgba(48,27,92,.78)');
-  hud.addColorStop(1, 'rgba(111,48,150,.55)');
+  hud.addColorStop(0, 'rgba(255,253,250,.97)');
+  hud.addColorStop(1, 'rgba(245,236,255,.97)');
   x.fillStyle = hud;
   x.beginPath();
   x.moveTo(17, 7); x.lineTo(155, 7); x.quadraticCurveTo(166, 7, 166, 18);
@@ -3591,18 +3596,16 @@ function soraDraw(){
   x.lineTo(17, 69); x.quadraticCurveTo(7, 69, 7, 59);
   x.lineTo(7, 18); x.quadraticCurveTo(7, 7, 17, 7); x.fill();
   x.shadowBlur = 0;
-  x.strokeStyle = 'rgba(255,255,255,.42)'; x.lineWidth = 1;
+  x.strokeStyle = 'rgba(155,48,217,.5)'; x.lineWidth = 1.6;
   x.stroke();
-  x.fillStyle = '#fff';
+  x.fillStyle = '#5b2b8a';
   x.font = '900 19px "M PLUS Rounded 1c",sans-serif';
   x.textAlign = 'left';
-  x.shadowColor = 'rgba(255,255,255,.45)'; x.shadowBlur = 5;
   x.fillText('↟ ' + soraHeight + ' m', 16, 28);
-  x.shadowBlur = 0;
   x.font = '700 10px "M PLUS Rounded 1c",sans-serif';
-  x.fillStyle = '#ffd3ee';
+  x.fillStyle = '#c0398f';
   x.fillText('☁ paisagem surpresa', 16, 44);
-  x.fillStyle = '#fff0a6';
+  x.fillStyle = '#9a6c06';
   x.fillText('★ +' + soraStarsRun + '  ·  total ' + starT, 16, 59);
   x.restore();
 
@@ -4104,8 +4107,12 @@ function soraCloseUI(){
       // Capture otherwise blocks onclick, so run the game's cleanup first.
       if(typeof b.onclick==='function')b.onclick.call(b,e);
       e.stopImmediatePropagation();
-      try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);else location.href='./sora-jump-karaoke.html';}
-      catch(_){location.href='./sora-jump-karaoke.html';}
+      // Dentro do pop-up: so avisa a pagina de fora. NUNCA navegar o iframe, senao
+      // a pagina principal abre dentro do proprio pop-up. Fora dele, vai para a raiz.
+      if(parent!==window){
+        try{parent.postMessage({type:'tsulipa-games-hub'},location.origin);}
+        catch(_){try{parent.postMessage({type:'tsulipa-games-hub'},'*');}catch(__){}}
+      }else{ location.href='./'; }
     }
   },true);
   document.addEventListener('DOMContentLoaded',function(){

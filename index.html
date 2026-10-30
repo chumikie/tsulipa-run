@@ -725,6 +725,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 #hub .tw-preview-notice strong{color:var(--b1);letter-spacing:.07em}
 #hub .hubtutc .tw-hubtut-soon{margin:9px auto 12px;padding:7px 12px;width:fit-content;max-width:100%;border-radius:999px;background:rgba(255,111,181,.17);color:var(--ink);font-weight:800;font-size:clamp(11px,2.8vw,13px);line-height:1.4}
 .tw-preview-game[hidden]{display:none!important}
+.tw-preview-panel{display:contents}
 .tw-preview-game{position:fixed;z-index:200000;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg1,#c9ecfc);}
 .tw-preview-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:55px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));color:var(--ink);background:var(--card);box-shadow:0 3px 16px rgba(30,10,80,.14);font-family:"M PLUS Rounded 1c",sans-serif;}
 .tw-preview-bar b{font-family:"Mochiy Pop One","Kosugi Maru",sans-serif;font-weight:400;font-size:clamp(13px,2.4vw,17px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -736,7 +737,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=6">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=7">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=3">
 </head>
 <body>
@@ -932,6 +933,14 @@ try {
     _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 } catch (e) { console.warn('Supabase indisponível:', e); }
+	
+/* ================================================================
+   🧪 TEMPORÁRIO (só para teste): libera Sora⭐Jump! e Karaoke⭐Day!
+   na página inicial sem "Entrar com Google". Nada de conta, save ou
+   ranking online muda: só a porta de entrada dos cards.
+   Para voltar ao normal: troque true por false.
+   ================================================================ */
+window.TW_JOGOS_SEM_LOGIN = false;   // true so para teste local; NUNCA true na main
 	
 (function(){
 var LANG='pt';try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
@@ -1341,12 +1350,16 @@ var TR={s0:mel,s1:[659,784,880,784,659,587,523,587,659,784,988,880,784,659,587,6
 var BS={tense:[110,110,110,104,110,110,98,104],hard:[110,104,110,98,110,104,123,104]};
 TR.kawaii = [1046, 1318, 1568, 2093, 1568, 1318, 1046, 1318, 1568, 2093, 1568, 1318, 2093, 2637, 3136, 2637];
 
+function twJogoEmPopup(){   // Sora/Karaoke abertos: so vale a musica do jogo de dentro
+  var pv=document.getElementById('twPreviewJogo');return !!(pv&&!pv.hidden);
+}
 function music(on){
   clearInterval(mt);if(!on)return;
   var k=curT||'menu',ms={menu:260,tense:150,hard:120,alien:130,kawaii:100,unit:130,pet:340,petSono:560}[k]||190;
   mt=setInterval(function(){
     if(muted||paused)return;
     if(typeof hubTelaAberta==='function'&&hubTelaAberta())return;   // V2.1.3: sem duas músicas ao mesmo tempo
+    if(twJogoEmPopup()){ clearInterval(mt); mt=null; curT=''; return; }   // o jogo do pop-up cuida do proprio som
     var N=TR[k]||mel;
     if(k==='menu'){var n=N[bi%16];if(n){beep(n,.3,'sine',.04);beep(n*1.5,.2,'triangle',.015)}if(bi%4===0)beep(bass[(bi/4)%8|0],.5,'sine',.03)}
     else if(k==='pet'||k==='petSono'){petMusicStep(k)}
@@ -2822,6 +2835,13 @@ g=x2;g.save();
 }
 
 function draw(){
+  var P2=curPal();
+  if(s2ArtActive()){
+    g.save();
+    if(shake>0){g.translate(rnd(-shake,shake)/2,rnd(-shake,shake)/2);shake-=1;}
+    s2DrawSceneryBg();
+    s2DrawSceneryFloor();
+  } else {
   var P2=curPal(),sk=g.createLinearGradient(0,0,0,GY);sk.addColorStop(0,P2[0]);sk.addColorStop(1,P2[1]);g.fillStyle=sk;g.fillRect(0,0,W,H);for(var si=0;si<36;si++){g.globalAlpha=.25+.25*Math.sin(frame*.04+si*1.7);g.fillStyle='#fff';g.fillRect((si*97)%W,(si*53)%Math.max(40,GY-170)+8,2,2)}g.globalAlpha=1;
   cenaNuvens(P2); cenaPassaros(P2);   // cenário vivo (V2.2)
   g.save();if(shake>0){g.translate(rnd(-shake,shake)/2,rnd(-shake,shake)/2);shake-=1}
@@ -2861,6 +2881,7 @@ function draw(){
   g.fillStyle=P2[6];g.fillRect(0,GY,W,H-GY);
   g.fillStyle=P2[7];g.shadowColor=P2[7];g.shadowBlur=14;g.fillRect(0,GY,W,3);g.shadowBlur=0;
   g.fillStyle='rgba(255,255,255,.12)';for(var x=-(dist%60);x<W;x+=60)g.fillRect(x,GY+22,30,3);
+  }
   obs.forEach(function(o){
     if(typeof obsDesenhar==='function'){obsDesenhar(o);return;}
     if(o.k==='cable'){g.fillStyle='#222';g.fillRect(o.x,o.y+4,o.w,6);g.fillStyle='#ffd23f';g.fillRect(o.x+6,o.y+2,10,10);g.fillRect(o.x+o.w-16,o.y+2,10,10)}
@@ -3030,6 +3051,7 @@ g.save();
   
 	
   g.textAlign='center';g.font='800 15px "M PLUS Rounded 1c",sans-serif';pops.forEach(function(p){g.globalAlpha=Math.max(0,1-p.t/40);g.fillStyle='#ffe14d';g.fillText(p.s,p.x+9,p.y-p.t*.9)});g.globalAlpha=1;
+  if(s2ArtActive())s2ArtHudBacking();
   g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';
   g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
   g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
@@ -8366,6 +8388,7 @@ function twRankTvModalFechar(){
   hubOv.appendChild(modal);
   trigger.querySelector('span').textContent='🏆';
   trigger.addEventListener('click',function(){
+    if(typeof twTrofeuFanfarra==='function')twTrofeuFanfarra();
     modal.hidden=false;trigger.setAttribute('aria-expanded','true');close.focus({preventScroll:true});
     if(typeof twRankRender==='function')twRankRender();if(typeof twRankVisibility==='function')twRankVisibility();
   });
@@ -8572,6 +8595,8 @@ function twSoraMissaoPendente(){
 function hubCardsUI(){
   var pi = hubPetInfo(), soraPendente = twSoraMissaoPendente();
   var lockHtml = !contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '';
+  // 🧪 Temporário: os cards dos jogos especiais aparecem livres sem login.
+  var gameLock = (!contaJ && !window.TW_JOGOS_SEM_LOGIN) ? lockHtml : '';
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
@@ -8587,8 +8612,8 @@ function hubCardsUI(){
     th:['กระโดดบนก้อนเมฆและเก็บดาว','ร้องเพลง เต้น และเปล่งประกายบนเวที!']
   }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + lockHtml + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical">' + lockHtml + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
   );
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
@@ -8846,6 +8871,16 @@ function hubFechar(){
   twIndex2ResumeBaseFrames();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
+function twTrofeuFanfarra(){   // troféu da TsuLiPa TV: fanfarra curta, kawaii e orgulhosa
+  if(typeof muted !== 'undefined' && muted) return; ac();
+  [[784, 0, .10], [1047, .10, .10], [1319, .20, .13]].forEach(function(n){   // "ta-ra-ráá" subindo
+    beep(n[0], n[2], 'square', .028, n[1]); beep(n[0] * 2, n[2] * .7, 'triangle', .011, n[1]);
+  });
+  [1568, 1976, 2349].forEach(function(f, i){ beep(f, .45, 'triangle', .026 - i * .006, .33); });   // acorde de chegada
+  beep(392, .52, 'sine', .042, .33); beep(523, .5, 'sine', .022, .35);                              // baixo orgulhoso
+  if(typeof petGlide === 'function') petGlide(2093, 3136, .2, 'sine', .014, .42);                   // brilho subindo
+  [2637, 3136, 2093].forEach(function(f, i){ beep(f, .06, 'sine', .011, .58 + i * .07); });         // estrelinhas
+}
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
   [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });
   beep(523, .9, 'sine', .03, .8);
@@ -8982,13 +9017,14 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(!wrap||!frame||!wrap.hidden)return;
   twPreviewJogoAnterior=tipo;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
-  hubOv.hidden=true;
-  document.body.classList.remove('hubon');
+  if(typeof ovMusicaParar==='function')ovMusicaParar();
+  if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
+  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
   twPreviewMontarFundo();
-  twPreviewCabecalhoOficial(true);
+  twPreviewCabecalhoOficial(tipo!=='sora');   // no Sora o cabecalho do site fica na pagina, atras do pop-up
   wrap.hidden=false;
   twIndex2PauseBaseFrames();
   var som=$('twPreviewSom');
@@ -8998,7 +9034,14 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   }
   // The selected Oshi and language accompany the iframe; no new storage or RPC call.
   var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
-  var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);
+  // O jogo aberto aqui usa as MESMAS cores da página: tema claro/escuro atual.
+  var temaCor='light';
+  try{
+    var htmlEl=document.documentElement;
+    temaCor=(htmlEl&&htmlEl.getAttribute&&htmlEl.getAttribute('data-theme'))||
+      ((typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+  }catch(e){}
+  var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
   frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
 }
@@ -9013,17 +9056,19 @@ function twPreviewFecharJogo(){
   var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
   twPreviewCabecalhoOficial(false);
   hubMostrar();
+  if(typeof muted!=='undefined'&&!muted&&typeof hubComecou!=='undefined'&&hubComecou&&typeof hubMusicaTocar==='function')hubMusicaTocar();
   // hubMostrar re-creates cards; return focus to the fresh game launcher.
   var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
   if(card)card.focus({preventScroll:true});
 }
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
+    '<div class="tw-preview-panel" id="twPreviewPainel">'+
     '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
     '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
     '<button type="button" class="tw-preview-som" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
     '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
-    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
+    '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
   // Closed-room notice; no invitation controls or online-room changes.
   var textos=TW_KARAOKE_FECHADO_TEXTOS[LANG]||TW_KARAOKE_FECHADO_TEXTOS.pt;
@@ -9110,7 +9155,7 @@ hubOv.addEventListener('click', function(e){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
-    else if(!contaJ){ contaEntrar(); }
+    else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
     else if(ir === 'duo') duoAbrir();
@@ -9414,7 +9459,7 @@ function gachaBonus(){   // bônus do Gachapon: começa a próxima corrida com o
 // ---------- Música da tela de início (chiptune leve, em loop, muda com o tema) ----------
 var hubMus = null;
 function hubMusicaTocar(){
-  if(hubMus || muted || !hubTelaAberta()) return;
+  if(hubMus || muted || !hubTelaAberta() || twJogoEmPopup()) return;
   var a = ac(); if(!a) return;
   var k = temaAtual(), tom = { halloween:-3, natal:2, anonovo:5, inverno:2, sakura:0, tanabata:-5 }[k] || 0;
   var menor = k === 'halloween', suave = k === 'sakura' || k === 'primavera' || k === 'tanabata';
@@ -11879,353 +11924,243 @@ function s2ObsNovo(o){
   g.restore();
 }
 
-// Desenha os elementos específicos de fundo de cada cenário da Temporada 2 + Tema Sazonal (Halloween/Natal)
-// Camadas de riqueza visual da Temporada 2. Mantém a Rua da cidade (abertura) intocada.
-function s2DrawSceneryDetails(id){
-  if(!id || id === 'rua') return;
-  var off, x, y, i, pulse;
-  g.save();
-  g.lineCap = 'round';
-  g.lineJoin = 'round';
-  g.textAlign = 'left';
-  g.textBaseline = 'alphabetic';
-  pulse = 0.65 + Math.sin(frame * 0.06) * 0.12;
+// Center Run T2: only visual layers. Coordinates and simulation stay in the game.
+function s2ArtActive(){ return s2StageIdx > 0; }
+function s2ArtRect(x,y,w,h,c){g.fillStyle=c;g.fillRect(x,y,w,h);}
+function s2ArtLine(x,y,xx,yy,c,w){g.strokeStyle=c;g.lineWidth=w||1;g.beginPath();g.moveTo(x,y);g.lineTo(xx,yy);g.stroke();}
+function s2ArtOval(x,y,rx,ry,c){g.fillStyle=c;g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fill();}
+function s2ArtPoly(points,c){g.fillStyle=c;g.beginPath();points.forEach(function(p,i){if(i)g.lineTo(p[0],p[1]);else g.moveTo(p[0],p[1]);});g.closePath();g.fill();}
+function s2ArtGradient(y,h,a,b){var v=g.createLinearGradient(0,y,0,y+h);v.addColorStop(0,a);v.addColorStop(1,b);g.fillStyle=v;g.fillRect(0,y,W,h);}
+function s2ArtRepeat(step,speed,fn){var offset=dist*speed;var first=Math.floor(offset/step);for(var n=first;n*step-offset<W+step;n++)fn(n*step-offset,n);}
+function s2ArtBeam(x,y,tx,ty,width,c){s2ArtPoly([[x-4,y],[x+4,y],[tx+width,ty],[tx-width,ty]],c);}
+function s2ArtStar(x,y,r,c){var p=[];for(var i=0;i<10;i++){var a=i*Math.PI/5-Math.PI/2,rr=i%2?r*.45:r;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr]);}s2ArtPoly(p,c);}
+function s2ArtTruss(y,c){s2ArtLine(0,y,W,y,c,2);s2ArtLine(0,y+12,W,y+12,c,2);for(var x=0;x<W;x+=32){s2ArtLine(x,y,x+32,y+12,c);s2ArtLine(x,y+12,x+32,y,c);}}
+// Small material details belong to existing architecture, never the running lane.
+function s2ArtRound(x,y,w,h,r,c){g.fillStyle=c;g.beginPath();g.roundRect(x,y,w,h,r);g.fill();}
+function s2ArtGlow(x,y,r,c){var v=g.createRadialGradient(x,y,0,x,y,r);v.addColorStop(0,c);v.addColorStop(1,'rgba(255,238,213,0)');g.fillStyle=v;g.fillRect(x-r,y-r,r*2,r*2);}
+// Local light/material helpers, with bounded gradients and no canvas filters.
+function s2ArtShade(x,y,w,h,a,b,horizontal,r){
+  if(w<=0||h<=0)return;
+  var v=g.createLinearGradient(x,y,horizontal?x+w:x,horizontal?y:y+h);
+  v.addColorStop(0,a);v.addColorStop(1,b);
+  s2ArtRound(x,y,w,h,r||0,v);
+}
+function s2ArtContact(x,y,rx,ry,alpha){
+  g.save();g.translate(x,y);g.scale(rx,ry);
+  var v=g.createRadialGradient(0,0,0,0,0,1);v.addColorStop(0,'rgba(20,14,36,'+alpha+')');v.addColorStop(1,'rgba(20,14,36,0)');
+  g.fillStyle=v;g.fillRect(-1,-1,2,2);g.restore();
+}
+function s2ArtWallWash(x,y,w,h,c){
+  // Elliptical radial falloff avoids rectangular edges on illuminated walls.
+  g.save();g.translate(x,y+h*.38);g.scale(w*.65,h*.8);
+  var v=g.createRadialGradient(0,0,0,0,0,1);v.addColorStop(0,c);v.addColorStop(1,'rgba(255,238,213,0)');
+  g.fillStyle=v;g.fillRect(-1,-1,2,2);g.restore();
+}
+function s2ArtBow(x,y,r,c){
+  s2ArtPoly([[x,y],[x-r,y-r*.7],[x-r*.9,y+r*.65]],c);
+  s2ArtPoly([[x,y],[x+r,y-r*.7],[x+r*.9,y+r*.65]],c);
+  s2ArtOval(x,y,r*.24,r*.28,'#f6dce7');
+}
+function s2ArtPetal(x,y,r,c){for(var j=0;j<5;j++){var a=j*Math.PI*.4-Math.PI/2;s2ArtOval(x+Math.cos(a)*r*.65,y+Math.sin(a)*r*.65,r*.45,r*.45,c);}s2ArtOval(x,y,r*.2,r*.2,'#f8e9bc');}
 
-  if(id === 'ensaio'){
-    // Teto de estúdio, luminárias, pôsteres e pequenos detalhes de dança.
-    g.fillStyle = 'rgba(126,34,206,.12)'; g.fillRect(0, 0, W, 20);
-    g.fillStyle = '#b794c8'; g.fillRect(0, 18, W, 4);
-    for(x = -((dist*.22)%118); x < W+118; x += 118){
-      g.fillStyle = '#fff7ff'; g.fillRect(x+24, 8, 38, 5);
-      g.fillStyle = 'rgba(255,255,255,.28)'; g.beginPath(); g.moveTo(x+24,13); g.lineTo(x+2, GY-42); g.lineTo(x+88,GY-42); g.lineTo(x+62,13); g.closePath(); g.fill();
-      g.fillStyle = '#f0abfc'; g.fillRect(x+76, 48, 22, 30);
-      g.strokeStyle = '#c084fc'; g.lineWidth = 2; g.strokeRect(x+76,48,22,30);
-      g.fillStyle = '#fff'; g.beginPath(); g.arc(x+87,59,4,0,Math.PI*2); g.fill();
-      g.fillStyle = '#a78bfa'; g.fillRect(x+81,66,12,2);
-    }
-    // Adesivos de estrela nos espelhos e fita de marcação no piso.
-    for(x = -((dist*.16)%76); x < W+76; x += 76){
-      g.fillStyle = 'rgba(236,72,153,.72)'; g.font = '12px sans-serif'; g.fillText('✦',x+10,100+(Math.sin(x)*4));
-      g.fillStyle = 'rgba(255,255,255,.24)'; g.fillRect(x,GY+8,34,3);
-    }
-    g.fillStyle = 'rgba(192,132,252,.5)'; g.fillRect(0,GY-5,W,2);
+// Reconstructed from the owner's visual reference; all actors and gameplay remain original.
+function s2RefPanel(x,y,w,h,a,b,r){s2ArtShade(x,y,w,h,a,b,false,r||0);}
+function s2RefPlane(x,y,scale){
+  g.save();g.translate(x,y);g.scale(scale,scale);
+  s2ArtContact(0,14,91,6,.13);
+  s2ArtPoly([[-9,-4],[-36,-30],[-23,-31],[23,-3]],'#e8edf5');
+  s2ArtPoly([[-62,-3],[-76,-34],[-64,-34],[-43,-4]],'#e7e6ef');
+  s2ArtPoly([[-70,-29],[-76,-34],[-64,-34],[-59,-28]],'#ed8bc3');
+  s2ArtOval(0,0,88,11,'#f8fbff');
+  s2ArtShade(-78,2,155,5,'rgba(145,161,185,0)','rgba(145,161,185,.28)',false,2);
+  s2ArtLine(-65,2,76,2,'#dc80b4',2.5);
+  for(var j=0;j<21;j++)s2ArtRound(-62+j*6,-5,3,3,1,'#8392ad');
+  s2ArtPoly([[0,1],[-26,23],[-7,25],[35,5]],'#e7edf7');
+  s2ArtOval(16,12,9,4,'#c0cbdc');s2ArtOval(20,12,5,3,'#8596b1');
+  s2ArtPoly([[70,-6],[82,-3],[76,-1],[69,-2]],'#8096b4');
+  g.restore();
+}
+function s2RefDisplay(x,y,w,h,dome){
+  var r=dome?9:h*.5;
+  s2ArtContact(x+w*.5,y+h+10,w*.57,14,.23);
+  s2ArtRound(x-3,y-3,w+6,h+6,r+2,dome?'#9db640':'#c9c7f8');
+  s2ArtRound(x-1,y-1,w+2,h+2,r+1,'#24213f');
+  g.save();g.beginPath();g.roundRect(x,y,w,h,r);g.clip();
+  var v=g.createLinearGradient(x,y,x+w,y+h);v.addColorStop(0,dome?'#8129a8':'#6b46c2');v.addColorStop(.48,dome?'#cc359b':'#b74ad9');v.addColorStop(1,'#2499d7');g.fillStyle=v;g.fillRect(x,y,w,h);
+  if(dome){
+    for(var i=0;i<24;i++){var a=i*Math.PI/12+frame*.0006;var rr=w;var da=Math.PI/30;s2ArtPoly([[x+w*.5,y+h*.5],[x+w*.5+Math.cos(a)*rr,y+h*.5+Math.sin(a)*rr],[x+w*.5+Math.cos(a+da)*rr,y+h*.5+Math.sin(a+da)*rr]],i%2?'rgba(255,155,174,.09)':'rgba(114,68,218,.08)');}
+    for(var j=1;j<5;j++){g.strokeStyle='rgba(255,199,229,.13)';g.lineWidth=1;g.beginPath();g.ellipse(x+w*.5,y+h*.5,h*.15+j*h*.19,h*.15+j*h*.19,0,0,Math.PI*2);g.stroke();}
+    s2ArtGlow(x+w*.5,y+h*.5,h*.49,'rgba(255,193,123,.2)');
+    s2ArtStar(x+w*.5,y+h*.48,Math.min(25,h*.19),'#ffe566');
+  }else{
+    for(var k=-2;k<12;k++)s2ArtPoly([[x+k*w/8,y],[x+(k+1)*w/8,y],[x+(k-2)*w/8,y+h],[x+(k-3)*w/8,y+h]],k%2?'rgba(255,201,253,.13)':'rgba(69,48,144,.12)');
+    s2ArtOval(x+w*.5,y+h*.5,h*.28,h*.28,'rgba(240,177,255,.16)');
   }
-  else if(id === 'backstage'){
-    // Arcos do corredor, cabideiros, cases de equipamento e lâmpadas de camarim.
-    for(x = -((dist*.18)%210); x < W+210; x += 210){
-      g.strokeStyle = 'rgba(216,180,254,.42)'; g.lineWidth = 5;
-      g.beginPath(); g.moveTo(x+5,22); g.lineTo(x+5,GY-8); g.lineTo(x+178,GY-8); g.lineTo(x+178,22); g.stroke();
-      g.fillStyle = '#171027'; g.fillRect(x+84,GY-64,54,55);
-      g.strokeStyle = '#8b5cf6'; g.lineWidth = 2; g.strokeRect(x+84,GY-64,54,55);
-      g.fillStyle = '#312044'; g.fillRect(x+90,GY-58,42,43);
-      g.fillStyle = '#ff6fb5'; g.fillRect(x+96,GY-51,8,24); g.fillStyle='#60a5fa'; g.fillRect(x+109,GY-47,8,20); g.fillStyle='#fde047'; g.fillRect(x+122,GY-54,5,27);
-      // Cabideiro com figurinos coloridos.
-      g.strokeStyle = '#d8b4fe'; g.lineWidth = 2; g.beginPath(); g.moveTo(x+18,GY-88); g.lineTo(x+72,GY-88); g.moveTo(x+24,GY-88); g.lineTo(x+24,GY-78); g.lineTo(x+68,GY-78); g.stroke();
-      ['#fb7185','#a78bfa','#38bdf8','#fbbf24'].forEach(function(c,j){g.fillStyle=c;g.beginPath();g.moveTo(x+27+j*10,GY-77);g.lineTo(x+34+j*10,GY-77);g.lineTo(x+37+j*10,GY-48);g.lineTo(x+24+j*10,GY-48);g.closePath();g.fill();});
-      g.fillStyle = '#fef3c7';
-      for(i=0;i<5;i++){g.beginPath();g.arc(x+101+i*9,GY-96,2.5,0,Math.PI*2);g.fill();}
-    }
-    // Rodapé com cabos de áudio e pequenos reflexos de luz.
-    g.strokeStyle='rgba(255,111,181,.38)';g.lineWidth=2;
-    g.beginPath();g.moveTo(0,GY+12);g.bezierCurveTo(W*.25,GY+2,W*.45,GY+24,W*.7,GY+12);g.lineTo(W,GY+16);g.stroke();
-  }
-  else if(id === 'estudio'){
-    // Grid de iluminação, monitores de controle e silhuetas de câmeras de TV.
-    g.strokeStyle='rgba(148,163,184,.45)';g.lineWidth=3;
-    g.beginPath();g.moveTo(0,20);g.lineTo(W,20);g.stroke();
-    for(x=-((dist*.2)%150);x<W+150;x+=150){
-      g.strokeStyle='#64748b';g.lineWidth=2;g.beginPath();g.moveTo(x+20,20);g.lineTo(x+44,40);g.lineTo(x+68,20);g.stroke();
-      g.fillStyle=['#38bdf8','#f472b6','#fbbf24'][Math.abs(Math.floor(x/150))%3];g.fillRect(x+36,17,16,5);
-      g.fillStyle='#0b1220';g.fillRect(x+110,78,32,24);g.fillStyle='#334155';g.fillRect(x+114,82,24,14);
-      g.fillStyle=pulse>.65?'#fb7185':'#7f1d1d';g.fillRect(x+118,86,5,5);g.fillStyle='#93c5fd';g.fillRect(x+126,86,8,2);
-      // Câmera sobre tripé ao fundo.
-      g.fillStyle='#111827';g.fillRect(x+14,GY-43,28,13);g.fillRect(x+36,GY-40,8,7);
-      g.strokeStyle='#64748b';g.lineWidth=2;g.beginPath();g.moveTo(x+28,GY-30);g.lineTo(x+18,GY-5);g.moveTo(x+28,GY-30);g.lineTo(x+39,GY-5);g.moveTo(x+28,GY-30);g.lineTo(x+28,GY-5);g.stroke();
-      g.fillStyle='#f87171';g.fillRect(x+8,GY-51,5,3);
-    }
-    // Marcas de fita no chão e trilho de câmera.
-    g.fillStyle='rgba(248,113,113,.38)';
-    for(x=-((dist*.4)%48);x<W;x+=48){g.beginPath();g.moveTo(x,GY+4);g.lineTo(x+22,GY+4);g.lineTo(x+15,GY+10);g.lineTo(x-7,GY+10);g.closePath();g.fill();}
-    g.strokeStyle='rgba(148,163,184,.5)';g.lineWidth=3;g.beginPath();g.moveTo(0,GY+22);g.lineTo(W,GY+22);g.stroke();
-  }
-  else if(id === 'festival'){
-    // Barracas yatai, faixas de festival e guirlandas entre as lanternas.
-    for(x=-((dist*.24)%205);x<W+205;x+=205){
-      var roofY=GY-91;
-      g.fillStyle='#7f1d1d';g.fillRect(x+12,roofY,112,7);
-      for(i=0;i<7;i++){g.fillStyle=i%2?'#fef3c7':'#ef4444';g.fillRect(x+14+i*16,roofY,8,7);}
-      g.fillStyle='#78350f';g.fillRect(x+20,roofY+7,96,35);
-      g.fillStyle='#fbbf24';g.fillRect(x+25,roofY+12,86,3);
-      g.fillStyle='#fde68a';g.font='bold 9px sans-serif';g.textAlign='center';g.fillText('MATSURI',x+68,roofY+27);
-      g.fillStyle='#451a03';g.fillRect(x+16,roofY+42,104,6);
-      g.fillStyle='#fb7185';g.fillRect(x+30,roofY+34,10,9);g.fillStyle='#60a5fa';g.fillRect(x+52,roofY+34,10,9);g.fillStyle='#a3e635';g.fillRect(x+74,roofY+34,10,9);g.fillStyle='#facc15';g.fillRect(x+96,roofY+34,10,9);
-      // Bandeirolas diagonais.
-      for(i=0;i<5;i++){g.fillStyle=['#fb7185','#fde047','#60a5fa'][i%3];g.beginPath();g.moveTo(x+8+i*27,30);g.lineTo(x+23+i*27,34);g.lineTo(x+15+i*27,49);g.closePath();g.fill();}
-    }
-    g.strokeStyle='rgba(253,224,71,.55)';g.lineWidth=1.5;g.beginPath();g.moveTo(0,16);g.quadraticCurveTo(W*.5,70,W,16);g.stroke();
-    for(x=-((dist*.33)%58);x<W+58;x+=58){g.fillStyle='#fde68a';g.beginPath();g.arc(x,25+Math.sin(x*.02)*8,2.2,0,Math.PI*2);g.fill();}
-    // Brilho quente no chão do festival.
-    g.fillStyle='rgba(251,191,36,.12)';g.fillRect(0,GY+3,W,7);
-  }
-  else if(id === 'aeroporto'){
-    // Pista e paisagem vista pelas janelas, assentos, carrinhos e letreiros de portão.
-    for(x=-((dist*.12)%190);x<W+190;x+=190){
-      // Nuvens e linha distante da pista.
-      g.fillStyle='rgba(255,255,255,.48)';g.beginPath();g.ellipse(x+58,80,25,7,0,0,Math.PI*2);g.ellipse(x+75,77,15,9,0,0,Math.PI*2);g.fill();
-      g.fillStyle='rgba(15,23,42,.18)';g.fillRect(x+16, GY-70, 145, 4);
-      g.fillStyle='#e2e8f0';g.fillRect(x+24,GY-58,120,25);
-      g.fillStyle='#94a3b8';g.fillRect(x+28,GY-54,112,3);
-      for(i=0;i<4;i++){g.fillStyle='#64748b';g.fillRect(x+30+i*27,GY-48,20,11);}
-      // Carrinho de malas.
-      g.strokeStyle='#475569';g.lineWidth=2;g.beginPath();g.moveTo(x+150,GY-29);g.lineTo(x+179,GY-29);g.lineTo(x+176,GY-8);g.stroke();
-      g.fillStyle='#f472b6';g.fillRect(x+153,GY-48,12,18);g.fillStyle='#38bdf8';g.fillRect(x+167,GY-42,10,12);
-      g.fillStyle='#334155';g.beginPath();g.arc(x+156,GY-5,3,0,Math.PI*2);g.arc(x+174,GY-5,3,0,Math.PI*2);g.fill();
-    }
-    // Faixas de pista no piso e indicador luminoso.
-    g.fillStyle='rgba(255,255,255,.7)';for(x=-((dist*.5)%72);x<W;x+=72)g.fillRect(x,GY+12,36,3);
-    g.fillStyle='#0f766e';g.fillRect(W-92,58,76,18);g.fillStyle='#ecfeff';g.font='bold 9px sans-serif';g.textAlign='center';g.fillText('TOUR • GATE',W-54,70);
-  }
-  else if(id === 'geral'){
-    // Estrutura de treliça do Dome, line-array de som, flight cases e marcações de ensaio.
-    g.strokeStyle='rgba(203,213,225,.55)';g.lineWidth=2;
-    g.beginPath();g.moveTo(0,28);g.lineTo(W,28);g.moveTo(0,28);g.lineTo(32,52);g.lineTo(64,28);g.moveTo(W-80,28);g.lineTo(W-48,52);g.lineTo(W-16,28);g.stroke();
-    for(x=-((dist*.16)%180);x<W+180;x+=180){
-      g.fillStyle='#111827';g.fillRect(x+12,GY-53,36,45);g.strokeStyle='#64748b';g.lineWidth=2;g.strokeRect(x+12,GY-53,36,45);
-      for(i=0;i<3;i++){g.fillStyle='#334155';g.beginPath();g.arc(x+30,GY-44+i*12,6,0,Math.PI*2);g.fill();g.strokeStyle='#94a3b8';g.stroke();}
-      g.fillStyle='#374151';g.fillRect(x+65,GY-38,54,30);g.strokeStyle='#9ca3af';g.strokeRect(x+65,GY-38,54,30);
-      g.fillStyle='#fbbf24';g.fillRect(x+71,GY-32,42,3);g.fillStyle='#6b7280';g.fillRect(x+71,GY-24,20,3);
-      g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.moveTo(x+88,30);g.lineTo(x+110,30);g.lineTo(x+153,GY-60);g.lineTo(x+53,GY-60);g.closePath();g.fill();
-    }
-    // X de fita fluorescente no chão, típicos pontos de marcação de palco.
-    for(x=-((dist*.35)%86);x<W;x+=86){g.strokeStyle='rgba(250,204,21,.7)';g.lineWidth=3;g.beginPath();g.moveTo(x,GY+5);g.lineTo(x+12,GY+17);g.moveTo(x+12,GY+5);g.lineTo(x,GY+17);g.stroke();}
-  }
-  else if(id === 'dome'){
-    // Arcos monumentais, lasers e torres de som para dar escala ao grande show.
-    for(i=0;i<4;i++){
-      var ax=(i*W/3 - (dist*.08)%(W/3));
-      g.strokeStyle='rgba(167,139,250,.48)';g.lineWidth=5;
-      g.beginPath();g.moveTo(ax-36,GY-4);g.quadraticCurveTo(ax+W*.12,8,ax+W*.24,GY-4);g.stroke();
-      g.strokeStyle='rgba(182,255,59,.25)';g.lineWidth=1.5;g.beginPath();g.moveTo(ax+W*.12,25);g.lineTo(ax+W*.12,GY-12);g.stroke();
-    }
-    // Lasers cruzando o teto, com opacidade discreta para não atrapalhar a leitura.
-    g.globalAlpha=.24 + Math.abs(Math.sin(frame*.04))*.16;
-    g.strokeStyle='#ff6fb5';g.lineWidth=2;g.beginPath();g.moveTo(18,32);g.lineTo(W*.58,GY-30);g.stroke();
-    g.strokeStyle='#38bdf8';g.beginPath();g.moveTo(W-18,32);g.lineTo(W*.35,GY-24);g.stroke();g.globalAlpha=1;
-    // Torres de caixas acústicas laterais.
-    [[8,GY-82],[W-31,GY-82]].forEach(function(pos){
-      g.fillStyle='#0b0920';g.fillRect(pos[0],pos[1],23,75);g.strokeStyle='#a78bfa';g.lineWidth=1.5;g.strokeRect(pos[0],pos[1],23,75);
-      for(var spk=0;spk<3;spk++){g.fillStyle='#312e81';g.beginPath();g.arc(pos[0]+11.5,pos[1]+13+spk*23,7,0,Math.PI*2);g.fill();g.strokeStyle='#c4b5fd';g.stroke();}
+  s2ArtShade(x,y,w,h,'rgba(255,255,255,.13)','rgba(18,11,49,.1)',false);
+  for(var sy=y+3;sy<y+h;sy+=5)s2ArtLine(x,sy,x+w,sy,'rgba(241,217,255,.035)');
+  g.restore();
+  s2ArtLine(x+r,y-1,x+w-r,y-1,dome?'#dcdf74':'#eee1ff');
+}
+function s2DrawSceneryBg(){
+  var id=S2_STAGES[s2StageIdx].id;if(id==='rua')return;
+  var rear=GY-12,i,x;
+  g.save();g.lineCap='round';g.lineJoin='round';
+  if(id==='ensaio'){
+    s2ArtGradient(0,GY,'#f2e9fc','#d4eaf5');
+    s2RefPanel(0,0,W,20,'#f5e7ff','#d4b3e3');
+    s2ArtLine(0,23,W,23,'#aa7ac7',2);s2ArtLine(0,26,W,26,'#fff2ff',2);
+    s2ArtRepeat(290,.22,function(x){
+      s2ArtRound(x+1,30,286,rear-28,3,'#c4b3dc');
+      s2RefPanel(x+4,33,280,rear-34,'#eefaff','#cce7f2',2);
+      s2ArtLine(x+5,35,x+282,35,'#fff',1);
+      s2ArtPoly([[x+212,33],[x+230,33],[x+172,rear-4],[x+152,rear-4]],'rgba(255,255,255,.35)');
+      s2ArtPoly([[x+241,33],[x+247,33],[x+195,rear-4],[x+189,rear-4]],'rgba(255,255,255,.17)');
+      s2ArtShade(x+4,33,280,10,'rgba(115,113,161,.12)','rgba(115,113,161,0)',false);
+      s2ArtRound(x+62,5,155,4,2,'#fff9ef');
     });
-    // Confetes luminosos maiores perto do teto.
-    for(x=-((dist*.3)%64);x<W;x+=64){g.fillStyle=['#ff6fb5','#b6ff3b','#ffe14d','#60a5fa'][Math.abs(Math.floor(x/64))%4];g.globalAlpha=.45+Math.abs(Math.sin(frame*.07+x))*.4;g.save();g.translate(x+18,36+Math.sin(frame*.05+x)*9);g.rotate(frame*.025+x);g.fillRect(-2,-4,4,8);g.restore();}
-    g.globalAlpha=1;
+    s2ArtLine(0,GY-53,W,GY-53,'rgba(87,61,112,.13)',4);
+    s2ArtRepeat(150,.22,function(x){s2ArtLine(x+70,GY-56,x+70,GY-45,'#ba9d7e',3);s2ArtLine(x+72,GY-56,x+72,GY-47,'#f4d9b2');});
+    s2ArtLine(0,GY-58,W,GY-58,'#b28a60',5);s2ArtLine(0,GY-60,W,GY-60,'#ebce9e',2);
+    s2RefPanel(0,GY-12,W,9,'#675078','#372347');
+  }else if(id==='backstage'){
+    s2ArtGradient(0,GY,'#1a102b','#4d235b');
+    s2ArtRepeat(310,.2,function(x,n){
+      s2ArtRect(x+5,18,6,GY-27,'#251333');s2ArtLine(x+12,18,x+12,GY-17,'rgba(171,94,169,.18)');
+      s2ArtWallWash(x+149,20,230,GY-40,'rgba(249,174,188,.105)');
+      s2ArtGlow(x+149,18,24,'rgba(255,220,166,.2)');s2ArtOval(x+149,18,2.5,2.5,'#ffe7b2');
+      var doorY=GY-124;
+      s2ArtRect(x+28,doorY+3,61,119,'rgba(13,6,23,.4)');
+      s2RefPanel(x+23,doorY,60,122,'#d8a0d6','#a86ba9');
+      s2RefPanel(x+27,doorY+4,52,116,'#63346d','#452455');
+      s2ArtLine(x+30,doorY+7,x+75,doorY+7,'rgba(244,180,229,.45)');
+      s2ArtLine(x+30,doorY+59,x+75,doorY+59,'#875487');
+      s2ArtStar(x+53,doorY+26,7,'#f7d668');s2ArtOval(x+71,doorY+83,2,2,'#eccc88');
+      if(n%2===0){
+        var vx=x+127,vy=GY-106;
+        s2ArtRound(vx-3,vy-3,84,61,4,'rgba(24,11,30,.4)');s2RefPanel(vx,vy,78,55,'#f9dea7','#bb8f70',5);
+        s2RefPanel(vx+6,vy+6,66,43,'#ddf4ff','#a7d6e9',2);
+        s2ArtPoly([[vx+20,vy+6],[vx+32,vy+6],[vx+14,vy+48],[vx+8,vy+48]],'rgba(255,255,255,.5)');
+        for(i=0;i<6;i++){s2ArtOval(vx+7+i*13,vy+3,1.6,1.6,'#fff9d5');s2ArtOval(vx+7+i*13,vy+52,1.6,1.6,'#fff9d5');}
+        s2ArtShade(vx+2,vy+61,75,12,'rgba(10,4,22,.4)','rgba(10,4,22,0)',false);
+        s2ArtRound(vx-3,vy+58,85,5,2,'#c495bd');s2ArtLine(vx+8,vy+64,vx+8,GY-13,'#62336e',3);s2ArtLine(vx+70,vy+64,vx+70,GY-13,'#62336e',3);
+        s2ArtRound(vx+24,GY-24,29,12,5,'#ca73b4');
+      }else{
+        var rx=x+124,ry=GY-99;
+        s2ArtLine(rx,ry,rx+103,ry,'#d7c9e8',3);s2ArtLine(rx+6,ry,rx,GY-12,'#bca8d4',2);s2ArtLine(rx+97,ry,rx+103,GY-12,'#bca8d4',2);
+        ['#ec8fcb','#90caef','#c4aff4','#f7d78d','#acdfbb'].forEach(function(c,j){var cx=rx+14+j*17;s2ArtLine(cx,ry+1,cx,ry+8,'#d8d1e8');s2ArtPoly([[cx-4,ry+7],[cx+4,ry+7],[cx+7,ry+44],[cx-7,ry+44]],c);s2ArtLine(cx+3,ry+10,cx+5,ry+42,'rgba(69,33,88,.19)');});
+      }
+    });
+    s2RefPanel(0,GY-10,W,8,'#572f63','#23142f');s2ArtLine(0,GY-9,W,GY-9,'#b17fbe');
+  }else if(id==='estudio'){
+    s2ArtGradient(0,GY,'#101029','#202d52');
+    s2ArtLine(0,13,W,13,'#6c668d',2);s2ArtLine(0,17,W,17,'#272138');
+    var sw=Math.min(340,W*.66),sh=Math.min(138,sw*.45),sx=(W-sw)*.5,sy=Math.max(W<500?116:77,(GY-70-sh)*.5);
+    for(i=0;i<3;i++){var fx=W*(.13+i*.37);s2ArtLine(fx,17,fx,51,'#45415b');s2ArtRect(fx-7,49,14,8,'#2d2745');s2ArtBeam(fx,57,fx+Math.sin(frame*.005+i)*16,GY-22,44,['rgba(169,135,229,.07)','rgba(132,180,234,.06)','rgba(235,141,209,.06)'][i]);}
+    s2ArtLine(sx+sw*.24,17,sx+sw*.24,sy,'#68607d',1.5);s2ArtLine(sx+sw*.76,17,sx+sw*.76,sy,'#68607d',1.5);
+    s2ArtWallWash(W*.5,sy-5,sw+70,sh+80,'rgba(138,91,231,.12)');s2RefDisplay(sx,sy,sw,sh,false);
+    s2RefPanel(0,GY-8,W,8,'#172440','#11132b');
+  }else if(id==='festival'){
+    s2ArtGradient(0,GY,'#150c2e','#4a1b5a');
+    for(i=0;i<18;i++)s2ArtOval((i*79+31)%W,30+(i*41)%Math.max(40,GY-160),.65,.65,'rgba(255,223,226,.25)');
+    // Far silhouettes and one occasional stall keep the night open and readable.
+    s2ArtRepeat(550,.12,function(x,n){
+      var fy=GY-94;
+      s2ArtPoly([[x-20,fy+10],[x+52,fy-14],[x+131,fy+10]],'#22132f');s2RefPanel(x-3,fy+10,118,84,'#281531','#1e1129');
+      s2ArtRect(x+14,fy+35,13,8,'#786052');s2ArtRect(x+70,fy+40,12,8,'#6c5254');
+    });
+    s2ArtRepeat(620,.22,function(x,n){
+      var bx=x+365,by=GY-103;
+      s2ArtContact(bx+69,GY-10,83,9,.24);
+      s2RefPanel(bx+5,by+8,126,85,'#82414b','#4a273d');s2RefPanel(bx+14,by+27,108,37,'#d79a53','#82523c');
+      s2ArtPoly([[bx-5,by+12],[bx+15,by-3],[bx+122,by-3],[bx+141,by+12]],'#925141');
+      for(i=0;i<7;i++)s2ArtRect(bx+2+i*19,by+12,18,12,i%2?'#f5d78e':'#d8934a');
+      s2ArtShade(bx+14,by+24,108,10,'rgba(50,16,34,.35)','rgba(50,16,34,0)',false);
+      s2ArtLine(bx+15,by+67,bx+123,by+67,'#e6a15e',4);
+      ['#94b8dd','#e38ba3','#c2d58c','#bb8bcf'].forEach(function(c,j){s2ArtOval(bx+29+j*23,by+58,5.5,5.5,c);});
+    });
+    s2ArtRepeat(410,.18,function(x){
+      s2ArtLine(x+20,50,x+20,GY-12,'#4e3540',5);
+      g.strokeStyle='#a37683';g.lineWidth=1;g.beginPath();g.moveTo(x+20,61);g.quadraticCurveTo(x+225,82,x+430,61);g.stroke();
+      for(i=0;i<8;i++){var xx=x+40+i*48,yy=63+Math.sin((20+i*48)/410*Math.PI)*9;s2ArtPoly([[xx,yy],[xx+10,yy+1],[xx+5,yy+11]],['#d4c98c','#d28eaf','#8cb6ca'][i%3]);}
+      g.strokeStyle='#644555';g.beginPath();g.moveTo(x+20,112);g.quadraticCurveTo(x+225,136,x+430,112);g.stroke();
+      for(i=0;i<6;i++){var lx=x+51+i*65,ly=116+Math.sin((31+i*65)/410*Math.PI)*10;s2ArtLine(lx,ly-2,lx,ly+6,'#81616b');s2ArtGlow(lx,ly+15,24,'rgba(255,174,110,.16)');s2ArtOval(lx,ly+15,6,9,i%3===1?'#f8dba6':'#de5e80');s2ArtOval(lx-1,ly+14,3,7,i%3===1?'#fff1c6':'#f58e9e');s2ArtRect(lx-3,ly+6,6,2,'#79504f');s2ArtRect(lx-3,ly+23,6,2,'#79504f');s2ArtLine(lx-5,ly+12,lx+5,ly+12,'rgba(143,66,65,.19)');}
+    });
+    s2RefPanel(0,GY-12,W,12,'#382135','#221628');
+  }else if(id==='aeroporto'){
+    s2ArtGradient(0,GY,'#63c4ef','#c4e8f4');
+    s2ArtRepeat(430,.035,function(x){s2ArtOval(x+76,93,37,8,'rgba(245,252,255,.85)');s2ArtOval(x+99,90,22,9,'rgba(245,252,255,.85)');});
+    var horizon=GY-133;
+    s2RefPanel(0,horizon,W,97,'#a6b2c3','#75859e');s2ArtLine(0,horizon,W,horizon,'#d5e6ed',2);
+    s2ArtRepeat(180,.05,function(x){s2ArtRect(x+15,horizon+51,89,3,'#eff3f5');});
+    var px=W*.46-(dist*.045)%(W+400);if(px < -130)px+=W+400;
+    s2RefPlane(px,horizon+44,.9);
+    s2RefPlane(W+80-(frame*.2)%(W+620),65,.42);
+    s2ArtRepeat(350,.18,function(x){
+      s2ArtLine(x+155,22,x+155,GY-37,'rgba(100,143,173,.42)',2);
+      s2ArtRect(x+310,22,17,GY-59,'rgba(80,127,156,.14)');s2ArtShade(x+300,22,19,GY-59,'#c7dce8','#f7fbfd',true);s2ArtRect(x+319,22,3,GY-59,'#b0c6d6');
+      s2ArtPoly([[x+198,24],[x+224,24],[x+137,GY-39],[x+112,GY-39]],'rgba(255,255,255,.13)');
+    });
+    s2RefPanel(0,0,W,21,'#f4f8ff','#d5e2ed');s2ArtLine(0,23,W,23,'#a8becf',2);
+    s2RefPanel(0,GY-37,W,29,'#edf2f8','#c7d5e3');
+    s2ArtRepeat(500,.24,function(x){
+      var yy=GY-28;
+      s2ArtContact(x+337,GY-8,49,6,.13);
+      for(i=0;i<3;i++){s2ArtRound(x+301+i*24,yy-5,21,14,4,'#efa3ce');s2ArtLine(x+304+i*24,yy-3,x+318+i*24,yy-3,'#ffd7ed');s2ArtRect(x+302+i*24,yy+9,20,3,'#d88db8');s2ArtLine(x+304+i*24,yy+12,x+304+i*24,GY-8,'#a2b4cc',2);}
+      s2ArtLine(x+298,yy+13,x+373,yy+13,'#a8b8cc',2);
+    });
+    s2RefPanel(0,GY-8,W,8,'#1b415a','#11263b');
+  }else if(id==='geral'||id==='dome'){
+    var live=id==='dome';s2ArtGradient(0,GY,live?'#120a28':'#0b1423',live?'#3d1552':'#26394b');
+    s2ArtTruss(19,live?'#51405f':'#626d80');
+    if(live){
+      var dw=Math.min(390,W*.7),dh=Math.min(128,dw*.4),dx=(W-dw)*.5,dy=W<500?112:57;
+      g.strokeStyle='rgba(148,99,188,.24)';g.lineWidth=3;g.beginPath();g.moveTo(-30,GY-20);g.quadraticCurveTo(W*.5,-55,W+30,GY-20);g.stroke();
+      s2ArtWallWash(W*.5,dy,dw+100,dh+85,'rgba(199,50,164,.12)');s2RefDisplay(dx,dy,dw,dh,true);
+      for(var row=0;row<3;row++)s2ArtRepeat(17,.12+row*.025,function(x,n){var yy=GY-64+row*16+Math.sin(frame*.05+n)*2;var pal=['#c76aff','#b9ea55','#7a9df5','#f1b264'];s2ArtOval(x+4,yy+13,4,5,'#251630');s2ArtRect(x+9,yy,2,13,pal[((n+row)%4+4)%4]);});
+    }else{
+      for(var r=0;r<3;r++){
+        var yy=GY-197+r*53;
+        s2RefPanel(0,yy-7,W,45,'#25394d','#18283c');s2ArtLine(0,yy-7,W,yy-7,'#34475a');
+        s2ArtRepeat(20,.06,function(x){s2ArtRound(x+3,yy,9,26,1,'#374b60');s2ArtLine(x+5,yy+2,x+5,yy+23,'#41566a');});
+      }
+      s2RefPanel(W*.12,GY-107,W*.3,89,'#101d2d','#0a1625');
+      s2ArtRepeat(89,.04,function(x){s2ArtRect(x,GY-105,4,82,'#26394d');});
+      s2ArtLine(W*.47,31,W*.47,GY-145,'#354152',5);
+      for(i=0;i<5;i++)s2ArtRound(W*.47-4,42+i*17,9,12,1,'#17212f');
+    }
+    for(i=0;i<3;i++){var xx=W*(.13+i*.37);s2ArtRect(xx-6,31,12,7,'#31213b');s2ArtBeam(xx,38,xx+25*Math.sin(frame*.004+i),GY-18,live?47:32,live?['rgba(219,116,201,.075)','rgba(190,186,85,.065)','rgba(138,149,235,.07)'][i]:'rgba(197,217,241,.055)');}
+    s2RefPanel(0,GY-10,W,10,live?'#352345':'#1c3144',live?'#21112f':'#112335');
   }
   g.restore();
 }
-
-function s2DrawSceneryBg(){
-  var st = S2_STAGES[s2StageIdx] || S2_STAGES[0];
-  var id = st.id;
-
-  if(id === 'ensaio'){
-    // Sala de ensaio: Parede clara, grandes espelhos refletindo silhueta da Idol, barra de balé e piso de madeira
-    var wg = g.createLinearGradient(0, 0, 0, GY);
-    wg.addColorStop(0, '#f5e8f7'); wg.addColorStop(1, '#e9d5ff');
-    g.fillStyle = wg; g.fillRect(0, 0, W, GY);
-
-    // Espelhos de parede com reflexo suave da corredora
-    var mStep = 140, mOff = (dist * 0.35) % mStep;
-    for(var mx = -mOff; mx < W + mStep; mx += mStep){
-      g.fillStyle = 'rgba(224,242,254,.85)';
-      g.fillRect(mx + 10, 34, mStep - 20, GY - 48);
-      g.strokeStyle = '#c084fc'; g.lineWidth = 2;
-      g.strokeRect(mx + 10, 34, mStep - 20, GY - 48);
-      // Brilho diagonal do espelho
-      g.fillStyle = 'rgba(255,255,255,.45)';
-      g.beginPath(); g.moveTo(mx + 24, 40); g.lineTo(mx + 44, 40); g.lineTo(mx + 20, GY - 24); g.lineTo(mx + 14, GY - 24); g.closePath(); g.fill();
-    }
-    // Reflexo da Idol no espelho
-    g.save();
-    g.globalAlpha = 0.22;
-    g.fillStyle = '#7b3ff0';
-    g.beginPath(); g.arc(P.x + 18, P.y + 10, 10, 0, 7); g.fill();
-    g.fillRect(P.x + 10, P.y + 20, 16, 20);
-    g.restore();
-
-    // Barra de balé contínua
-    g.fillStyle = '#b45309'; g.fillRect(0, GY - 34, W, 4);
-    for(var bx = -((dist * 0.5) % 90); bx < W; bx += 90){
-      g.fillStyle = '#92400e'; g.fillRect(bx, GY - 34, 3, 34);
-    }
-    // Piso de madeira de estúdio de dança
-    g.fillStyle = '#d9a066'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#b45309'; g.fillRect(0, GY, W, 3);
-    g.strokeStyle = 'rgba(120,53,15,.22)'; g.lineWidth = 1;
-    for(var py = GY + 14; py < H; py += 14){
-      g.beginPath(); g.moveTo(0, py); g.lineTo(W, py); g.stroke();
-    }
-  } else if(id === 'backstage'){
-    // Backstage do teatro: Corredor com portas de camarim com estrelas e espelhos iluminados
-    var bgG = g.createLinearGradient(0, 0, 0, GY);
-    bgG.addColorStop(0, '#1e1035'); bgG.addColorStop(1, '#3b1d5e');
-    g.fillStyle = bgG; g.fillRect(0, 0, W, GY);
-
-    var dStep = 180, dOff = (dist * 0.4) % dStep;
-    for(var dx = -dOff; dx < W + dStep; dx += dStep){
-      // Porta de camarim com estrela dourada
-      g.fillStyle = '#4c1d95'; g.fillRect(dx + 16, GY - 115, 58, 115);
-      g.strokeStyle = '#ff6fb5'; g.lineWidth = 2; g.strokeRect(dx + 16, GY - 115, 58, 115);
-      g.fillStyle = '#ffe14d'; g.font = '18px sans-serif'; g.textAlign = 'center'; g.fillText('⭐', dx + 45, GY - 65);
-      // Espelho de camarim com lâmpadas
-      g.fillStyle = '#fde68a'; g.fillRect(dx + 96, GY - 95, 62, 52);
-      g.fillStyle = '#bae6fd'; g.fillRect(dx + 102, GY - 89, 50, 40);
-      for(var lb = 0; lb < 5; lb++){
-        g.fillStyle = ((frame / 15 | 0) + lb) % 2 ? '#fffbeb' : '#fde047';
-        g.beginPath(); g.arc(dx + 102 + lb * 12, GY - 92, 2.5, 0, 7); g.fill();
-      }
-    }
-    g.fillStyle = '#2a1842'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#ff6fb5'; g.fillRect(0, GY, W, 3);
-  } else if(id === 'estudio'){
-    // Estúdio de TV: Placa NO AR piscando, refletores no teto e câmeras ao fundo
-    var tvG = g.createLinearGradient(0, 0, 0, GY);
-    tvG.addColorStop(0, '#090d16'); tvG.addColorStop(1, '#1e293b');
-    g.fillStyle = tvG; g.fillRect(0, 0, W, GY);
-
-    var sStep = 220, sOff = (dist * 0.35) % sStep;
-    for(var sx = -sOff; sx < W + sStep; sx += sStep){
-      var onAir = ((frame / 25 | 0) % 2) === 0;
-      g.fillStyle = onAir ? '#ef4444' : '#7f1d1d';
-      g.fillRect(sx + 30, 42, 68, 22);
-      g.fillStyle = '#fff'; g.font = '800 10px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
-      g.fillText('🔴 NO AR', sx + 64, 57);
-    }
-    g.fillStyle = '#1e293b'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#ef4444'; g.fillRect(0, GY, W, 3);
-  } else if(id === 'festival'){
-    // Festival de verão: Lanternas penduradas, barracas de yatai e fogos de artifício no céu
-    var fsG = g.createLinearGradient(0, 0, 0, GY);
-    fsG.addColorStop(0, '#12092b'); fsG.addColorStop(1, '#3b1566');
-    g.fillStyle = fsG; g.fillRect(0, 0, W, GY);
-
-    // Fogos de artifício suaves
-    for(var fw = 0; fw < 3; fw++){
-      var fPhase = ((frame * 0.02 + fw * 0.33) % 1);
-      var fcx = 130 + fw * 220, fcy = 58 + (fw % 2) * 20;
-      g.save(); g.globalAlpha = Math.max(0, 1 - fPhase);
-      g.fillStyle = ['#ff6fb5','#ffe14d','#b6ff3b'][fw];
-      for(var fp = 0; fp < 8; fp++){
-        var ang = fp * Math.PI / 4;
-        g.beginPath(); g.arc(fcx + Math.cos(ang) * fPhase * 36, fcy + Math.sin(ang) * fPhase * 36, 2.2, 0, 7); g.fill();
-      }
-      g.restore();
-    }
-    // Fileira de lanternas no alto
-    for(var lx = -((dist * 0.4) % 48); lx < W + 48; lx += 48){
-      g.fillStyle = '#ef4444'; g.beginPath(); g.ellipse(lx, 30, 7, 9, 0, 0, 7); g.fill();
-      g.fillStyle = '#fde047'; g.fillRect(lx - 4, 21, 8, 2); g.fillRect(lx - 4, 38, 8, 2);
-    }
-    g.fillStyle = '#27173a'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#fbbf24'; g.fillRect(0, GY, W, 3);
-  } else if(id === 'aeroporto'){
-    // Aeroporto da turnê: Janelões panorâmicos com avião decolando e placas GATE
-    var apG = g.createLinearGradient(0, 0, 0, GY);
-    apG.addColorStop(0, '#0284c7'); apG.addColorStop(1, '#bae6fd');
-    g.fillStyle = apG; g.fillRect(0, 0, W, GY);
-
-    // Avião da turnê passando lá fora
-    var plX = ((W - (frame * 0.8) % (W + 160)) + W + 160) % (W + 160) - 80;
-    g.fillStyle = '#fff';
-    g.beginPath(); g.ellipse(plX, 72, 26, 6, 0.08, 0, 7); g.fill();
-    g.fillStyle = '#ff6fb5'; g.beginPath(); g.moveTo(plX + 14, 70); g.lineTo(plX + 24, 58); g.lineTo(plX + 22, 72); g.fill();
-
-    // Pilares do saguão e placa de embarque
-    for(var wx = -((dist * 0.35) % 160); wx < W + 160; wx += 160){
-      g.fillStyle = '#334155'; g.fillRect(wx, 0, 12, GY);
-      g.fillStyle = '#0f172a'; g.fillRect(wx + 32, 28, 86, 20);
-      g.fillStyle = '#38bdf8'; g.font = '800 9px sans-serif'; g.textAlign = 'center';
-      g.fillText('✈️ GATE BRS48', wx + 75, 41);
-    }
-    g.fillStyle = '#cbd5e1'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#0284c7'; g.fillRect(0, GY, W, 3);
-  } else if(id === 'geral'){
-    // Ensaio geral: Dome vazio com treliças metálicas, luzes de serviço brancas e cadeiras vazias
-    var egG = g.createLinearGradient(0, 0, 0, GY);
-    egG.addColorStop(0, '#0f172a'); egG.addColorStop(1, '#1e293b');
-    g.fillStyle = egG; g.fillRect(0, 0, W, GY);
-
-    // Fileiras de cadeiras vazias na arquibancada ao fundo
-    for(var r = 0; r < 4; r++){
-      var ry = GY - 75 + r * 16;
-      g.fillStyle = 'rgba(71,85,105,.55)';
-      for(var cx = -((dist * (0.2 + r * 0.04)) % 18); cx < W; cx += 18){
-        g.fillRect(cx, ry, 12, 10);
-      }
-    }
-    // Luzes de trabalho brancas no teto do Dome
-    for(var tx = -((dist * 0.3) % 140); tx < W + 140; tx += 140){
-      g.fillStyle = 'rgba(255,255,255,.12)';
-      g.beginPath(); g.moveTo(tx + 20, 0); g.lineTo(tx + 40, 0); g.lineTo(tx + 75, GY); g.lineTo(tx - 15, GY); g.closePath(); g.fill();
-    }
-    g.fillStyle = '#1e293b'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#fde047'; g.fillRect(0, GY, W, 3);
-  } else if(id === 'dome'){
-    // Dome do grande show: Mar de lightsticks nas arquibancadas, telões gigantes e chuva de confete!
-    var dmG = g.createLinearGradient(0, 0, 0, GY);
-    dmG.addColorStop(0, '#070312'); dmG.addColorStop(1, '#2e1065');
-    g.fillStyle = dmG; g.fillRect(0, 0, W, GY);
-
-    // Telões gigantes de LED no fundo do Dome
-    var scStep = 240, scOff = (dist * 0.25) % scStep;
-    for(var sx2 = -scOff; sx2 < W + scStep; sx2 += scStep){
-      g.fillStyle = '#1e1b4b'; g.fillRect(sx2 + 30, 26, 130, 74);
-      g.strokeStyle = '#b6ff3b'; g.lineWidth = 2.5; g.strokeRect(sx2 + 30, 26, 130, 74);
-      g.fillStyle = '#ff6fb5'; g.font = '800 13px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
-      g.fillText('TsuLiPa⭐DOME', sx2 + 95, 58);
-      g.fillStyle = '#ffe14d'; g.font = '700 10px "M PLUS Rounded 1c",sans-serif';
-      g.fillText('✨ KAMI-OSHI LIVE ✨', sx2 + 95, 78);
-    }
-
-    // Mar de lightsticks brilhando nas arquibancadas do Dome
-    var lsPal = ['#9b30d9','#b6ff3b','#4169e1','#ff6fb5','#ffe14d'];
-    for(var row = 0; row < 4; row++){
-      var ly = GY - 68 + row * 14;
-      for(var lx2 = -((dist * (0.22 + row * 0.05)) % 16); lx2 < W; lx2 += 16){
-        var cIdx = ((Math.floor((lx2 + dist * 0.2) / 16) + row * 3) % 5 + 5) % 5;
-        var wave = Math.sin(frame * 0.14 + lx2 * 0.05 + row) * 3;
-        g.fillStyle = lsPal[cIdx];
-        g.fillRect(lx2, ly + wave, 3, 9);
-      }
-    }
-
-    // Plataformas de 2 alturas do Dome
-    s2Platforms.forEach(function(pl){
-      var pg = g.createLinearGradient(pl.x, pl.y, pl.x, pl.y + pl.h);
-      pg.addColorStop(0, '#b6ff3b'); pg.addColorStop(1, '#4ade80');
-      g.fillStyle = pg;
-      g.fillRect(pl.x, pl.y, pl.w, pl.h);
-      g.fillStyle = 'rgba(182,255,59,.22)';
-      g.fillRect(pl.x + 6, pl.y + pl.h, pl.w - 12, GY - (pl.y + pl.h));
-    });
-
-    // Chuva de confete no Dome
-    s2Confetti.forEach(function(cf){
-      cf.y += cf.v;
-      cf.x -= 0.6;
-      if(cf.y > GY){ cf.y = -6; cf.x = Math.random() * W; }
-      if(cf.x < 0) cf.x += W;
-      g.fillStyle = cf.c;
-      g.fillRect(cf.x, cf.y, 4, 3);
-    });
-
-    g.fillStyle = '#1e1b4b'; g.fillRect(0, GY, W, H - GY);
-    g.fillStyle = '#b6ff3b'; g.shadowColor = '#b6ff3b'; g.shadowBlur = 12;
-    g.fillRect(0, GY, W, 3); g.shadowBlur = 0;
+function s2DrawSceneryFloor(){
+  var id=S2_STAGES[s2StageIdx].id;
+  var pal={ensaio:['#e6c08b','#c7a06e','#cb91e9'],backstage:['#672c78','#442450','#ff92d2'],estudio:['#10223e','#0b152d','#f1689f'],festival:['#3e2446','#251830','#e2ad55'],aeroporto:['#e7eff7','#c4d6e5','#4fc4ee'],geral:['#152638','#0b1524','#e4ce68'],dome:['#29113e','#130b24','#bde849']}[id];if(!pal)return;
+  g.save();s2ArtGradient(GY,H-GY,pal[0],pal[1]);s2ArtRect(0,GY,W,2,pal[2]);
+  s2ArtShade(0,GY+2,W,7,'rgba(16,9,29,.25)','rgba(16,9,29,0)',false);
+  if(id==='ensaio'){
+    for(var y=GY+18;y<H;y+=18){s2ArtLine(0,y,W,y,'rgba(127,85,43,.2)');s2ArtRepeat(180,1,function(x){s2ArtLine(x+(Math.floor(y/18)%2)*85,y,x+(Math.floor(y/18)%2)*85,y+18,'rgba(127,85,43,.17)');});}
+    s2ArtShade(0,GY+3,W,H-GY-3,'rgba(255,237,197,.12)','rgba(255,237,197,0)',false);
+  }else if(id==='backstage'){
+    s2ArtLine(0,H-23,W,H-23,'#b08b54');s2ArtShade(0,GY+3,W,19,'rgba(248,133,211,.1)','rgba(248,133,211,0)',false);
+  }else if(id==='festival'){
+    for(var row=0;row<2;row++)s2ArtRepeat(70,1,function(x){s2ArtRound(x+row*32,GY+12+row*23,57,12,5,row?'#5a3a5d':'#70516d');s2ArtLine(x+5+row*32,GY+13+row*23,x+48+row*32,GY+13+row*23,'rgba(185,146,167,.15)');});
+  }else if(id==='aeroporto'){
+    s2ArtLine(0,GY+36,W,GY+36,'#88b7d1');s2ArtRepeat(83,.8,function(x){s2ArtLine(x,GY+3,x,H,'#afc8d9');});
+    s2ArtRepeat(350,.18,function(x){s2ArtPoly([[x+198,GY+4],[x+224,GY+4],[x+153,H],[x+125,H]],'rgba(255,255,255,.2)');});
+  }else if(id==='dome'){
+    for(var yy=GY+13;yy<H;yy+=14)s2ArtLine(0,yy,W,yy,'rgba(169,99,205,.25)');
+    s2ArtRepeat(75,1,function(x){s2ArtLine(x,GY+3,x+(x-W*.5)*.1,H,'rgba(159,87,190,.22)');});
+    s2ArtShade(0,GY+3,W,18,'rgba(182,236,71,.1)','rgba(182,236,71,0)',false);
+  }else if(id==='estudio'){
+    s2ArtRepeat(190,.4,function(x){s2ArtPoly([[x+25,GY+31],[x+49,GY+31],[x+42,GY+36],[x+18,GY+36]],'#28628d');});
   }
+  if(id==='dome')s2Platforms.forEach(function(pl){s2RefPanel(pl.x,pl.y,pl.w,pl.h,'#c7ec65','#81b84c');s2ArtRect(pl.x,pl.y,pl.w,2,'#eff6a7');s2ArtRect(pl.x+6,pl.y+pl.h,pl.w-12,Math.max(0,GY-pl.y-pl.h),'rgba(168,213,78,.17)');});
+  g.restore();
+}
+function s2ArtHudBacking(){g.save();s2ArtRound(6,6,188,88,12,'rgba(23,12,37,.73)');g.restore();}
 
-  // Detalhes em camadas para os cenários posteriores; a abertura urbana fica intacta.
-  if(id !== 'rua') s2DrawSceneryDetails(id);
-
+function s2DrawSeasonOverlay(){
   // Tema sazonal (ex.: Halloween) aparece por cima de TODOS os cenários!
   if(typeof temaAtual === 'function' && temaAtual() === 'halloween'){
     g.save();
@@ -12244,13 +12179,6 @@ function s2DrawSceneryBg(){
       g.fillRect(batX - 7, batY - 1, 5, 2); g.fillRect(batX + 2, batY - 1, 5, 2);
     }
     g.restore();
-  }
-  // Placa translúcida atrás do placar (pontos, rank, estrelas e cenário) para ler sobre qualquer cenário
-  if(s2StageIdx > 0){
-    g.save(); g.fillStyle = 'rgba(14,6,36,.55)'; g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 1;
-    var hx = 6, hy = 6, hw = 176, hh = 82, hr = 14;
-    g.beginPath(); g.moveTo(hx + hr, hy); g.arcTo(hx + hw, hy, hx + hw, hy + hh, hr); g.arcTo(hx + hw, hy + hh, hx, hy + hh, hr); g.arcTo(hx, hy + hh, hx, hy, hr); g.arcTo(hx, hy, hx + hw, hy, hr); g.closePath();
-    g.fill(); g.stroke(); g.restore();
   }
 }
 
@@ -12592,26 +12520,8 @@ drawChar = function(c, x, y, run, expr, isPartner){
 
 var _origDraw = draw;
 draw = function(){
-  if(s2StageIdx > 0 || (typeof temaAtual === 'function' && temaAtual() === 'halloween')){
-    var _origDrawCity = drawCity;
-    var _origDrawBushes = drawBushes;
-    var _origDrawProps = drawProps;
-    if(s2StageIdx > 0){
-      drawCity = function(){ s2DrawSceneryBg(); };
-      drawBushes = function(){};
-      drawProps = function(){};
-    }
-    try{
-      _origDraw();
-      if(s2StageIdx === 0) s2DrawSceneryBg();
-    } finally {
-      drawCity = _origDrawCity;
-      drawBushes = _origDrawBushes;
-      drawProps = _origDrawProps;
-    }
-  } else {
-    _origDraw();
-  }
+  _origDraw();
+  if(typeof temaAtual === 'function' && temaAtual() === 'halloween')s2DrawSeasonOverlay();
   s2DrawForeground();
 };
 
@@ -12655,6 +12565,8 @@ applyLang();
     var cards = document.querySelectorAll('#hub #hubCards .hubcard');
     cards.forEach(function(card){
       var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+      // 🧪 Temporário: Sora⭐Jump! e Karaoke⭐Day! ficam abertos sem login.
+      if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) isFree = true;
       var lockEl = card.querySelector('.tw-profile-lock');
       var hintEl = card.querySelector('.tw-profile-hint');
       if(isFree || logado){
@@ -12677,6 +12589,8 @@ applyLang();
   document.addEventListener('click', function(e){
     var card = e.target.closest && e.target.closest('#hub #hubCards .hubcard');
     if(!card || window.contaJ) return;
+    // 🧪 Temporário: sem cadeado nos jogos especiais liberados para teste.
+    if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) return;
     var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
     if(!isFree){
       var perfBtn = document.querySelector('#hub #hubPerf, #hub .hubperf');

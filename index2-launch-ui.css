@@ -43,8 +43,9 @@
   max-width:560px;margin-inline:auto;
 }
 
-/* 3. REMOVE A JANELA BRANCA DE FUNDO DO SORA JUMP (Faz parecer parte da página principal) */
-#twPreviewJogo,
+/* 3. JANELA DO SORA JUMP = MESMA SUPERFÍCIE DA PÁGINA (Center⭐Run!)
+   O palco e o iframe ficam transparentes para o gradiente abaixo aparecer;
+   o fundo opaco é o do próprio hub, então nada da página vaza atrás. */
 #twPreviewJogo .tw-preview-stage,
 #twPreviewIframe{
   background:transparent!important;
@@ -169,3 +170,31 @@
 #hub .tw-jpinline{display:inline;margin:0 0 0 4px;font-size:9px;color:#ffd6f0}
 #hub .tw-rank-hall .tw-rank-sub{margin:2px 0 6px;font-size:11px;font-weight:800;color:var(--pink,#ff6fb5);text-align:center}
 #hub .hubcards .hubrun .tw-hubgame-jp{color:#fff;opacity:.85}
+
+/* 7. SORA⭐JUMP! COMO POP-UP DA PÁGINA (igual ao Star⭐Gacha!)
+   Painel no cartão do tema escolhido, sobre a página escurecida.
+   O Karaoke⭐Day! continua em tela cheia, sem mudança. */
+.tw-preview-game[data-jogo="sora"]{
+  justify-content:center;align-items:center;padding:14px;overflow:auto;
+  background:rgba(6,16,38,.55)!important;
+}
+.tw-preview-game[data-jogo="sora"] .tw-preview-header-slot{
+  flex:0 0 auto;min-height:0;width:100%;padding:0 2px 8px;margin:0;
+  box-sizing:border-box;justify-content:space-between;background:none;
+}
+.tw-preview-game[data-jogo="sora"] .tw-preview-panel{
+  display:flex;flex-direction:column;flex:0 0 auto;box-sizing:border-box;
+  width:min(94%,430px);padding:10px;border-radius:18px;
+  background:var(--card);color:var(--ink);
+  box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 0 2px rgba(155,48,217,.3);
+}
+.tw-preview-game[data-jogo="sora"] .tw-preview-stage{
+  position:relative;flex:0 0 auto;display:block;width:100%;
+  padding:0;overflow:visible;background:none!important;
+}
+.tw-preview-game[data-jogo="sora"] .tw-preview-stage .hubpart{display:none}
+.tw-preview-game[data-jogo="sora"] .tw-preview-stage #twPreviewIframe{
+  position:relative;flex:0 0 auto;width:100%;max-width:none;
+  height:min(70vh,620px);min-height:0;
+  border:0;border-radius:14px;box-shadow:none;background:transparent!important;
+}

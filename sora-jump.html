@@ -1682,6 +1682,10 @@ function soraOnlineFinishRun(score){
     if(result && result.error) throw result.error;
     if(result && result.data && result.data.ok === false)
       console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
+    if(result && result.data && result.data.ok === true && result.data.ranked === true &&
+       parent !== window && new URLSearchParams(location.search).get('embed') === 'index2'){
+      try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
+    }
     soraOnlineRunId = null;
     soraOnlineRunStartPromise = null;
     soraRankRowsCache.week = null;
@@ -3887,7 +3891,7 @@ function soraEndGame(){
     }catch(e){}
     histRegistrarRodada('sora_jump', h);
     // Only a completed ordinary run; no score from secret test scenes.
-    // Parent INDEX 2 saves a local weekly preview. No server writes.
+    // Parent INDEX 2 keeps a local fallback; successful server persistence is acknowledged separately.
     try{
       if(parent!==window && new URLSearchParams(location.search).get('embed')==='index2' && Number.isSafeInteger(h) && h>0){
         parent.postMessage({type:'TW_SORA_WEEKLY_SCORE',score:h},location.origin);

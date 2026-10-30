@@ -142,3 +142,12 @@
   #hub .tw-rank-tv-launch{width:36px;height:32px;min-height:32px;border-radius:11px}
   #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,246px)}
 }
+
+/* 7. COMPUTADOR: Top Idols da mesma altura dos cards + TV no canto do painel */
+@media(min-width:900px){
+  #hub #hubMenu>.tw-rank-hall{align-self:stretch;display:flex;flex-direction:column}
+  #hub #hubMenu>.tw-rank-hall>.tw-rank-columns{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:10px}
+  #hub #hubMenu>.tw-rank-tv-launch-row{grid-column:2;grid-row:2;justify-self:end;align-self:start;
+    position:relative;z-index:3;height:0;min-height:0;margin:12px 12px 0 0;overflow:visible}
+  #hub #hubCards{align-items:stretch}
+}

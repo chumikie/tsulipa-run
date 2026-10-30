@@ -21,7 +21,7 @@ assert.equal(view.turnPhase(100000,160000,160000).phase,'finished');
 const game=fs.readFileSync(path.join(__dirname,'../karaoke-day.html'),'utf8');
 const client=fs.readFileSync(path.join(__dirname,'../karaoke-homol-client.js'),'utf8');
 assert(game.includes("window.TsuKaraokeHomolView.stageLayout(snapshot.slots)"));
-assert(game.includes("if(krHomolAtivo)return; // no production player data in staging"));
+assert(game.includes("if(krSoHomol)return; // no production player data in staging"));
 assert(game.includes('krHomolMeuChar')&&game.includes('krHomolMeuNick'));
 assert(/var TURNSTILE_SITE_KEY='0x[A-Za-z0-9_-]+';/.test(client));
 assert(client.includes("signInAnonymously({options:{captchaToken:captchaToken}})"));

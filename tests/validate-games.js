@@ -388,9 +388,10 @@ try{
   const productionScope={Date:ProductionDate,Intl,location:{protocol:"https:",hostname:"tsulipa-world.vercel.app"}};
   vm.runInNewContext(fn,productionScope);
   const productionState=productionScope.twKaraokeHorario();
-  assert(!productionState.aberto&&productionState.foraHomologacao,
-    "Karaoke must remain closed on the public production host");
-  console.log("✓ Karaoke preview timer: Nov 1 12:00–13:10 BRT; production host remains closed");
+  // Lançamento: a sala online é real; o site oficial abre no mesmo horário que a prévia.
+  assert(productionState.aberto&&!productionState.foraHomologacao,
+    "Karaoke must open on Sunday 12:00–13:10 BRT on the public host");
+  console.log("✓ Karaoke timer: Sundays 12:00–13:10 BRT on preview and public host");
 }catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
 
 // Closed-room copy is refreshed at every opening in each supported language.

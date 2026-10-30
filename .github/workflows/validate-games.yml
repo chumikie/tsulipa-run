@@ -89,3 +89,5 @@ jobs:
         run: node tests/sora-stability.test.js
       - name: Validate actual INDEX 2 weekly podium integration
         run: node tests/tw-weekly-podium.test.js
+      - name: Karaoke online (produção)
+        run: node tests/karaoke-online.test.js

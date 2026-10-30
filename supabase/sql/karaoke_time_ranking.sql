@@ -201,7 +201,10 @@ language sql stable security definer set search_path = '' as $function$
                          from (select * from kt where combo > 0 order by combo desc, combo_at, nick limit 3) t), '[]'::jsonb),
     'karaoke_acertos', coalesce((select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('nick', t.nick, 'score', t.acc) order by t.acc desc, t.acc_hits desc, t.acc_at, t.nick)
                          from (select * from kt where acc > 0 order by acc desc, acc_hits desc, acc_at, nick limit 3) t), '[]'::jsonb),
-    'meu_sora', (select s.score from private.sora_scores s where s.player_id = auth.uid() and s.period_type = 'week' and s.week_start = b.sunday limit 1)
+    'meu_sora', (select s.score from private.sora_scores s where s.player_id = auth.uid() and s.period_type = 'week' and s.week_start = b.sunday limit 1),
+    -- Shows do Karaoke⭐Time! já usados hoje (o card fica rosa enquanto faltar algum).
+    'meu_kt_usados', case when auth.uid() is null then null else
+      (select count(*)::integer from private.kt_runs r where r.player_id = auth.uid() and r.dia = (select today from local_day)) end
   )
   from bounds b;
 $function$;

@@ -160,7 +160,11 @@
 
 /* Karaoke⭐Time!: barra própria com os três quadros da sala */
 #hub .tw-rank-kt-title{
-  margin:14px 0 8px;text-align:center;color:var(--pink);
+  margin:14px 0 8px;text-align:center;color:var(--b1);
   font:400 13px/1.4 "Mochiy Pop One","Kosugi Maru",sans-serif;
+}
+#hub .tw-rank-kt-title small{
+  display:block;margin-top:2px;color:var(--pink);
+  font:800 10px/1.4 "M PLUS Rounded 1c",sans-serif;
 }
 #hub .tw-rank-kt .tw-rank-game{background:linear-gradient(145deg,var(--card),rgba(255,111,181,.10))}

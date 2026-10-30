@@ -740,7 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=7">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=4">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=5">
 </head>
 <body>
 <header>
@@ -8521,10 +8521,17 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = corB; x.fillText('✦', l - 1.6 * sc, tp + .5 * sc); x.fillText('♡', rt + 1.8 * sc, bt - 1.5 * sc);
       x.restore();
       if(rg2 < 140){
-        x.save(); x.globalAlpha = rg2 < 110 ? 1 : (140 - rg2) / 30; x.textAlign = 'center'; x.font = (6.5 * sc) + 'px sans-serif';
+        x.save(); x.globalAlpha = rg2 < 110 ? 1 : (140 - rg2) / 30; x.textAlign = 'center'; x.textBaseline = 'middle';
+        // No computador o emoji do sistema (Segoe UI Emoji) é mais claro e sem contorno; o brilho branco,
+        // o tamanho e o pulinho de entrada deixam ele vivo como no celular.
+        x.font = (6.5 * sc) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+        x.shadowColor = 'rgba(255,255,255,.95)'; x.shadowBlur = 2.4 * sc;
         HUB_REAGE.emo.forEach(function(e2, n){   // sobem dos lados do Idol, abaixo do balão
           var lado = n % 2 ? 1 : -1, ex2 = hx + lado * (13 + (n % 3) * 4) * sc, ey = chao - 26 * sc - rg2 * e2.v * sc / 7 - n * 2 * sc;
-          x.fillText(e2.e, ex2 + Math.sin(rg2 / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey));
+          var nasce = rg2 - n * 3, esc = nasce < 0 ? 0 : nasce < 8 ? .4 + nasce / 8 * .9 : nasce < 13 ? 1.3 - (nasce - 8) / 5 * .3 : 1;
+          if(esc <= 0) return;
+          x.save(); x.translate(ex2 + Math.sin(rg2 / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey)); x.rotate(Math.sin(rg2 / 11 + n * 1.7) * .18); x.scale(esc, esc);
+          x.fillText(e2.e, 0, 0); x.restore();
         });
         x.restore();
       }
@@ -8599,7 +8606,17 @@ function twKaraokeAtualizarCard(){
   if(TW_KARAOKE_TIME){
     var tt=card.querySelector('.tw-karaoke-timer');
     card.classList.remove('tw-karaoke-locked');card.removeAttribute('aria-disabled');
-    if(tt)tt.textContent={pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}[LANG]||'🎤 5 shows por dia';
+    // Rosa de alerta (como Pet, Gacha e Sora) enquanto faltar algum dos 5 shows do dia.
+    var usados=contaJ&&typeof twRankData!=='undefined'?twRankData.ktUsados:null,faltam=usados===null?null:Math.max(0,5-usados);
+    var pendente=!!contaJ&&faltam!==0;
+    card.classList.toggle('tw-alert-pink',pendente);
+    var al=card.querySelector('.hubalerta');
+    if(pendente&&!al)card.insertAdjacentHTML('beforeend','<em class="hubalerta" aria-hidden="true">!</em>');
+    else if(!pendente&&al)al.remove();
+    var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}:
+      faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้'}:
+      {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์'};
+    if(tt)tt.textContent=txtK[LANG]||txtK.pt;
     card.title='Karaoke⭐Time!';
     return;
   }
@@ -8672,7 +8689,7 @@ function hubMisCarregar(){
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
 // Server-side Sora records are live; Karaoke stays empty until its own verified backend exists.
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
-var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
+var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,centerOK:false,online:false,mine:null,readAt:0,active:0};
 // Barra própria do Karaoke⭐Time!: os três quadros da sala (pontuação, maior combo, acertos).
 var TW_KT_WORDS={
  pt:['🎤 Karaoke⭐Time! · ranking da semana','⭐ Pontuação','✨ Maior combo','💖 Acertos'],
@@ -8794,7 +8811,7 @@ function twRankRender(){
   var on=typeof TW_KARAOKE_TIME!=='undefined'&&TW_KARAOKE_TIME===true,w=TW_KT_WORDS[LANG]||TW_KT_WORDS.pt;
   kt.hidden=ktTit.hidden=!on;
   if(on){
-   ktTit.textContent=w[0];
+   ktTit.innerHTML=escHtml(w[0])+'<small class="tw-jpsub" lang="ja">カラオケ・タイム · 今週のランキング</small>';
    kt.innerHTML=[['karaoke',w[1],'pts'],['kcombo',w[2],'combo'],['kacertos',w[3],'%']].map(function(k){
     var list=twRankData[k[0]];
     return '<div class="tw-rank-game"><h3>'+escHtml(k[1])+'</h3>'+
@@ -8830,11 +8847,13 @@ function twRankLoad(force){
   twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
   twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
   twRankData.kcombo=twRankClean(data.karaoke_combo);
+  twRankData.ktUsados=Number.isInteger(data.meu_kt_usados)?data.meu_kt_usados:null;
   twRankData.kacertos=twRankClean((Array.isArray(data.karaoke_acertos)?data.karaoke_acertos:[]).map(function(r){return r&&{nick:r.nick,score:Math.round(Number(r.score)*10)};})).map(function(r){return {nick:r.nick,score:r.score/10};});
   twRankData.mine=Number.isSafeInteger(+data.meu_sora)&&+data.meu_sora>0?+data.meu_sora:null;
  }).catch(function(){twRankData.online=false;}):Promise.resolve();
  twRankPending=Promise.all([center,online]).then(function(){
   twRankPending=null;twRankRender();twRankRenderProfile();
+  if(typeof twKaraokeAtualizarCard==='function')twKaraokeAtualizarCard();
  });
  return twRankPending;
 }
@@ -8842,10 +8861,10 @@ function twRankLoad(force){
 // Sem conta (ou fora do site), ele continua jogando só no aparelho.
 window.twKaraokeOnline={
  ativo:function(){return !!contaJ&&!!_supabase;},
- iniciar:function(resume){return contaRpc('kt_run_start',{p_resume:resume||null});},
+ iniciar:function(resume){return contaRpc('kt_run_start',{p_resume:resume||null}).then(function(x){if(x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=x.used;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
   return contaRpc('kt_run_finish',{p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null})
-   .then(function(x){if(x&&x.ranked)twRankRefreshAfterSora();return x;});
+   .then(function(x){twRankRefreshAfterSora();return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  cor:function(){return perfMinhaCor;}

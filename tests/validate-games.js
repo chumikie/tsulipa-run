@@ -186,7 +186,7 @@ assert(tvSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        lab.includes("$('encNick').textContent = encNomes(d)")&&
        !lab.includes('id="encPessoas"')&&
-       !tvSkin.includes("#twPreviewJogo[data-jogo=\\"karaoke\\"]"),
+       !tvSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
   "CD belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
 const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');

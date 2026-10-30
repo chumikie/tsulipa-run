@@ -8435,6 +8435,7 @@ function twMicRender(){
   var tela = $('twMicTela'); if(!tela) return;
   var w = TW_MIC_WORDS[LANG] || TW_MIC_WORDS.pt, list = twRankData.kacertos || [], top = list[0];
   var tit = $('twMicTit'); if(tit) tit.textContent = '🎤 Karaoke⭐Time!';
+  var sub = $('twMicModal') && $('twMicModal').querySelector('.tw-rank-tv-head small'); if(sub){ sub.textContent = w[5]; sub.lang = LANG; }   // subtítulo no idioma do site, como o da TV
   var fx = $('twMicFechar'); if(fx) fx.setAttribute('aria-label', w[3]);
   tela.innerHTML = '<b>' + escHtml(w[0]) + '</b>' + (top ?
     '<div class="tw-tv-idol-stage"><span class="tw-tv-idol-sparkle" aria-hidden="true">🎶</span>' +
@@ -8457,7 +8458,7 @@ setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME
   lugar.insertAdjacentHTML('beforeend', '<button type="button" class="tw-mic-launch" id="twMicAbrir" aria-haspopup="dialog" aria-controls="twMicModal" aria-expanded="false" aria-label="' + escHtml(w[2]) + '"><span aria-hidden="true">🎤</span></button>');
   hubOv.insertAdjacentHTML('beforeend', '<section class="tw-rank-tv-modal" id="twMicModal" hidden>' +
     '<section class="tw-rank-tv tw-mic-tv" role="dialog" aria-modal="true" aria-labelledby="twMicTit">' +
-    '<div class="tw-rank-tv-head"><b id="twMicTit">🎤 Karaoke⭐Time!</b><small lang="ja">いちばん正確なのは？</small><button type="button" class="tw-rank-tv-close" id="twMicFechar" aria-label="' + escHtml(w[3]) + '">×</button></div>' +
+    '<div class="tw-rank-tv-head"><b id="twMicTit">🎤 Karaoke⭐Time!</b><small>' + escHtml(w[5]) + '</small><button type="button" class="tw-rank-tv-close" id="twMicFechar" aria-label="' + escHtml(w[3]) + '">×</button></div>' +
     '<div class="tw-rank-tv-screen" id="twMicTela" aria-live="polite"></div></section></section>');
   var b = $('twMicAbrir'), m = $('twMicModal');
   b.addEventListener('click', function(){
@@ -8738,11 +8739,11 @@ var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
 var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,centerOK:false,online:false,mine:null,readAt:0,active:0};
 // Microfone voando no banner (como o troféu da TV): abre quem acertou mais no Karaoke⭐Time! na semana.
 var TW_MIC_WORDS={
- pt:['💖 Quem acertou mais','Ninguém cantou ainda nesta semana. A primeira voz pode ser a sua! 🎶','Abrir quem acertou mais no Karaoke','Fechar','Acertos da semana · Karaoke⭐Time!'],
- en:['💖 Most accurate','Nobody has sung this week yet. The first voice could be yours! 🎶','Open the Karaoke accuracy ranking','Close','Weekly accuracy · Karaoke⭐Time!'],
- es:['💖 Quién acertó más','Nadie ha cantado esta semana todavía. ¡La primera voz puede ser la tuya! 🎶','Abrir quién acertó más en el Karaoke','Cerrar','Aciertos de la semana · Karaoke⭐Time!'],
- ja:['💖 いちばん正確','今週はまだ誰も歌っていません。最初の声はあなたかも！🎶','カラオケの正確さランキングを開く','閉じる','今週の正確さ · カラオケ⭐タイム！'],
- th:['💖 ใครแม่นที่สุด','สัปดาห์นี้ยังไม่มีใครร้องเลย เสียงแรกอาจเป็นของคุณ! 🎶','เปิดอันดับความแม่นยำของคาราโอเกะ','ปิด','ความแม่นยำประจำสัปดาห์ · Karaoke⭐Time!']
+ pt:['💖 Quem acertou mais','Ninguém cantou ainda nesta semana. A primeira voz pode ser a sua! 🎶','Abrir quem acertou mais no Karaoke','Fechar','Acertos da semana · Karaoke⭐Time!','Acertos da semana'],
+ en:['💖 Most accurate','Nobody has sung this week yet. The first voice could be yours! 🎶','Open the Karaoke accuracy ranking','Close','Weekly accuracy · Karaoke⭐Time!','Weekly accuracy'],
+ es:['💖 Quién acertó más','Nadie ha cantado esta semana todavía. ¡La primera voz puede ser la tuya! 🎶','Abrir quién acertó más en el Karaoke','Cerrar','Aciertos de la semana · Karaoke⭐Time!','Aciertos de la semana'],
+ ja:['💖 いちばん正確','今週はまだ誰も歌っていません。最初の声はあなたかも！🎶','カラオケの正確さランキングを開く','閉じる','今週の正確さ · カラオケ⭐タイム！','今週の正確さ'],
+ th:['💖 ใครแม่นที่สุด','สัปดาห์นี้ยังไม่มีใครร้องเลย เสียงแรกอาจเป็นของคุณ! 🎶','เปิดอันดับความแม่นยำของคาราโอเกะ','ปิด','ความแม่นยำประจำสัปดาห์ · Karaoke⭐Time!','ความแม่นยำประจำสัปดาห์']
 };
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤',(TW_KARAOKE_TIME?'Karaoke⭐Time!':'Karaoke⭐Day!'),'pts']];

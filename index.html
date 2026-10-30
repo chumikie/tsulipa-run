@@ -8403,12 +8403,24 @@ var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v',
 // Tocar na Tsu, na Lirika ou na Pati: pulinho feliz, emojis e um "oi" escrito (sem voz até as gravações chegarem).
 var HUB_REAGE = { i:-1, t0:0, emo:[] };
 var HUB_TRIO_EMO = [['💜','⭐','🐈'], ['💚','🌼','🐨'], ['💙','🌙','✨']];
-var HUB_TRIO_OI = ['Oi, sou a Tsu!', 'Oi! Lirika!', 'Oi, eu sou a Pati!'];
+var HUB_TRIO_OI = ['Oiê!', 'Oi, gente linda!', 'Oi gente, meu nome é Pati!'];
+// As 5 falinhas de cada uma (voz real, com legenda e emoji da fala). Carregam só no primeiro toque.
+var HUB_FALAS = [
+  [['tsu-1','Oiê!','👋'], ['tsu-2','Eu sou o Tsu!','⭐'], ['tsu-3','にげていかない','🎤'], ['tsu-4','Eu amo comer pudim.','🍮'], ['tsu-5','hehe~','😆']],
+  [['lirika-1','Oi, gente linda!','💚'], ['lirika-2','Li - ri - ka!','🐨'], ['lirika-3','ゆめはぜったい','🌈'], ['lirika-4','Tudo bem com vocês?','🌼'], ['lirika-5','hehe~','😆']],
+  [['pati-1','Oi gente, meu nome é Pati!','💙'], ['pati-2','Bem gamer, tals...','🎮'], ['pati-3','いっておきたい','🌙'], ['pati-4','Um beijo. Chu!','💋'], ['pati-5','hehe~','😆']]
+];
+var HUB_FALA_ULT = [-1, -1, -1], hubVozAtual = null, HUB_VOZ_VOL = .55;
+function hubVozTocar(nome){   // voz suave, só no toque e só com o som ligado
+  if(typeof muted !== 'undefined' && muted) return;
+  try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
+}
 function hubTrioReage(i){
   if(i < 0 || i > 2 || (HUB_REAGE.i === i && hubT - HUB_REAGE.t0 < 60)) return;
-  HUB_REAGE = { i:i, t0:hubT, emo:[0,1,2,3,4].map(function(k){ return { e:HUB_TRIO_EMO[i][k % 3], dx:(k - 2) * 9 + (Math.random() * 6 - 3), v:.5 + Math.random() * .5 }; }) };
-  var base = [659, 784, 880][i];
-  if(typeof beep === 'function') [[1, 0], [1.25, .08], [1.5, .16]].forEach(function(n){ beep(base * n[0], .12, 'triangle', .04, n[1]); });
+  var L = HUB_FALAS[i], k = Math.floor(Math.random() * L.length); if(k === HUB_FALA_ULT[i]) k = (k + 1) % L.length; HUB_FALA_ULT[i] = k;
+  var f = L[k];
+  HUB_REAGE = { i:i, t0:hubT, txt:f[1], emo:[0,1,2,3,4].map(function(n){ return { e:n % 2 ? f[2] : HUB_TRIO_EMO[i][n % 3], dx:(n - 2) * 9 + (Math.random() * 6 - 3), v:.5 + Math.random() * .5 }; }) };
+  hubVozTocar(f[0]);
 }   // [personagem, pose, posição, pet, expressão]
 function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do momento (e com a roupa do tema)
   var cv = $('hubCv'); if(!cv) return;
@@ -8438,7 +8450,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center';
       x.font = (7 * sc) + 'px sans-serif';
       HUB_REAGE.emo.forEach(function(e2){ x.fillText(e2.e, hx + e2.dx * sc / 3, top - rg2 * e2.v * sc / 6); });
-      var txt = tr(HUB_TRIO_OI[HUB_REAGE.i]); x.font = '800 ' + (5.2 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
+      var txt = tr(HUB_REAGE.txt || HUB_TRIO_OI[HUB_REAGE.i]); x.font = '800 ' + (5.2 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
       var tw = x.measureText(txt).width + 6 * sc, bx = Math.max(tw / 2 + 4, Math.min(W2 - tw / 2 - 4, hx)), by = top - 6 * sc;
       x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.roundRect ? x.roundRect(bx - tw / 2, by - 6 * sc, tw, 9 * sc, 4 * sc) : x.rect(bx - tw / 2, by - 6 * sc, tw, 9 * sc); x.fill();
       x.fillStyle = ['#9b30d9', '#3f9c1f', '#4169e1'][HUB_REAGE.i]; x.fillText(txt, bx, by + .8 * sc);
@@ -9479,9 +9491,15 @@ Object.keys(EXTRA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(EXTRA_DICT[
   ['Seu time no BRS48', 'Your BRS48 team', 'Tu equipo en BRS48', 'ทีมของคุณใน BRS48', 'BRS48のチーム'],
   ['Sem time', 'No team', 'Sin equipo', 'ไม่มีทีม', 'チームなし'],
   ['Trio TsuLiPa', 'TsuLiPa trio', 'Trío TsuLiPa', 'ทริโอ TsuLiPa', 'TsuLiPaトリオ'],
-  ['Oi, sou a Tsu!', "Hi, I'm Tsu!", '¡Hola, soy Tsu!', 'สวัสดี ฉันคือ Tsu!', 'やっほー、ツーだよ！'],
-  ['Oi! Lirika!', 'Hi! Lirika here!', '¡Hola! ¡Lirika!', 'สวัสดี! Lirika!', 'やっほー！リリカだよ！'],
-  ['Oi, eu sou a Pati!', "Hi, I'm Pati!", '¡Hola, soy Pati!', 'สวัสดี ฉันคือ Pati!', 'やっほー、パティだよ！'],
+  ['Oiê!', 'Hiii!', '¡Holii!', 'หวัดดี!', 'やっほー！'],
+  ['Eu sou o Tsu!', "I'm Tsu!", '¡Soy Tsu!', 'ฉันคือ Tsu!', 'ツーだよ！'],
+  ['Eu amo comer pudim.', 'I love eating pudding.', 'Me encanta comer flan.', 'ฉันชอบกินพุดดิ้ง', 'プリンを食べるのが大好き。'],
+  ['Oi, gente linda!', 'Hi, lovely people!', '¡Hola, gente linda!', 'สวัสดีทุกคนที่น่ารัก!', 'みんな、やっほー！'],
+  ['Li - ri - ka!', 'Li - ri - ka!', '¡Li - ri - ka!', 'ลิ - ริ - กะ!', 'リ・リ・カ！'],
+  ['Tudo bem com vocês?', 'How are you all?', '¿Cómo están todos?', 'ทุกคนสบายดีไหม?', 'みんな元気？'],
+  ['Oi gente, meu nome é Pati!', "Hi everyone, my name is Pati!", '¡Hola a todos, me llamo Pati!', 'สวัสดีทุกคน ฉันชื่อ Pati!', 'みんな、パティだよ！'],
+  ['Bem gamer, tals...', 'Kinda gamer, you know...', 'Bien gamer, ¿sabes?...', 'สายเกมนิดหน่อยนะ...', 'ゲーマーなんだ〜'],
+  ['Um beijo. Chu!', 'Kisses. Chu!', 'Un beso. ¡Chu!', 'จุ๊บ ๆ Chu!', 'チュッ！'],
   ['Use só emojis (até 8).', 'Use emojis only (up to 8).', 'Usa solo emojis (hasta 8).', 'ใช้อีโมจิเท่านั้น (สูงสุด 8)', '絵文字だけ（8個まで）にしてね。']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 // ---------- Easter eggs do Center Run ----------
@@ -10566,7 +10584,7 @@ function encMostrar(d){
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');
   encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
-  [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); });
+  if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
 function encLoop(){
   encAnim = 0; if(encOv.hidden || !encDados) return; encT++;

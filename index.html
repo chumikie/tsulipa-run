@@ -736,7 +736,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=5">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=6">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=3">
 </head>
 <body>
@@ -7983,7 +7983,8 @@ var TEMA_INFO = {   // [emoji, nome, céu de cima, céu de baixo, chão, partíc
   aniversario: ['🎂', 'Aniversário do BRS48', '#7b3ff0', '#ffb3d6', '#ffd1e8', 'confete', ['#9b30d9', '#5cc72c', '#4169e1', '#ff6fb5'], '🎂']
 };
 // Música de cada tema (das Units Especiais do BRS48) — aparece no chip do tema na tela de início
-var TEMA_MUSICA = { halloween:'Bad∞End∞Night', natal:'Manatsu no Christmas Rose', anonovo:'Wish You Happiness!!', valentine:'Valentine Kiss', verao:'Gomen ne, SUMMER', outono:'Sugaring Off Party!', inverno:'Teion Yakedo', primavera:'Blooming♡Blooming', sakura:'Nagori Zakura', tanabata:'Hello, Hoshi o Kazoete', criancas:'Visionary', aniversario:'26 Estados e 1 Distrito' };
+// Música de cada tema: só covers do TsuLiPa (playlist de participações). Os NOMES dos temas não mudam.
+var TEMA_MUSICA = { halloween:'Love Pulsar', natal:'Stay With Me', anonovo:'Wish You Happiness!!', valentine:'Valentine Kiss', verao:'Hitonatsu no Dekigoto', outono:'Samishii Nettaigyo', inverno:'Monster', primavera:'Cheeky Cheeky', sakura:'ZIPPER', tanabata:'Wagamama na Nagareboshi', criancas:'Amor Grilado', aniversario:'Aitakatta' };
 var TEMA_TESTE = 'tsl_tema_teste';   // sessionStorage: tema forçado pela moderação (só nesta aba, não é save)
 function temaForcado(){ try{ var f = sessionStorage.getItem(TEMA_TESTE); if(f === 'nenhum' || TEMA_INFO[f]) return f; }catch(e){} return ''; }
 function temaLinha(){   // linha do calendário de hoje (ou null)
@@ -8338,7 +8339,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
   '<div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
-  '<h2>🏆 Top Idols <small lang="ja">今週のトップアイドル</small></h2>'+
+  '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
   '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
@@ -8398,7 +8399,17 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
   return av;
 }
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
-var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];   // [personagem, pose, posição, pet, expressão]
+var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];
+// Tocar na Tsu, na Lirika ou na Pati: pulinho feliz, emojis e um "oi" escrito (sem voz até as gravações chegarem).
+var HUB_REAGE = { i:-1, t0:0, emo:[] };
+var HUB_TRIO_EMO = [['💜','⭐','🐈'], ['💚','🌼','🐨'], ['💙','🌙','✨']];
+var HUB_TRIO_OI = ['Oi, sou a Tsu!', 'Oi! Lirika!', 'Oi, eu sou a Pati!'];
+function hubTrioReage(i){
+  if(i < 0 || i > 2 || (HUB_REAGE.i === i && hubT - HUB_REAGE.t0 < 60)) return;
+  HUB_REAGE = { i:i, t0:hubT, emo:[0,1,2,3,4].map(function(k){ return { e:HUB_TRIO_EMO[i][k % 3], dx:(k - 2) * 9 + (Math.random() * 6 - 3), v:.5 + Math.random() * .5 }; }) };
+  var base = [659, 784, 880][i];
+  if(typeof beep === 'function') [[1, 0], [1.25, .08], [1.5, .16]].forEach(function(n){ beep(base * n[0], .12, 'triangle', .04, n[1]); });
+}   // [personagem, pose, posição, pet, expressão]
 function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do momento (e com a roupa do tema)
   var cv = $('hubCv'); if(!cv) return;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = hubT || 1, roupa = HUB_ROUPA_TEMA[temaAtual()] || '';
@@ -8412,6 +8423,8 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       var c = JSON.parse(JSON.stringify(CH[m[0]]));
       if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada na cor de cada um
       var cx = W2 * m[2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc, ex = m[4];
+      var rg = HUB_REAGE.i === i ? hubT - HUB_REAGE.t0 : 999;
+      if(rg < 70){ bob -= Math.abs(Math.sin(rg / 70 * Math.PI * 2)) * 9 * sc * (1 - rg / 90); ex = 3; }
       x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();   // sombra pequena, só sob os pés
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = m[1]; drawChar(c, 0, 0, 0, ex, false); });
       if(PET_SP[m[3]]){   // o pet de cada um, flutuando ao lado
@@ -8419,12 +8432,33 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
         perfDesenharPetEm(x, { k:m[3], acc:'' }, px, py, ps, t + i * 40);
       }
     });
+    var rg2 = hubT - HUB_REAGE.t0;
+    if(HUB_REAGE.i >= 0 && rg2 < 110){   // emojis subindo e o "oi" de quem foi tocada
+      var hx = W2 * HUB_TRIO[HUB_REAGE.i][2], top = chao - 50 * sc, al = rg2 < 90 ? 1 : (110 - rg2) / 20;
+      x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center';
+      x.font = (7 * sc) + 'px sans-serif';
+      HUB_REAGE.emo.forEach(function(e2){ x.fillText(e2.e, hx + e2.dx * sc / 3, top - rg2 * e2.v * sc / 6); });
+      var txt = tr(HUB_TRIO_OI[HUB_REAGE.i]); x.font = '800 ' + (5.2 * sc) + 'px "M PLUS Rounded 1c",sans-serif';
+      var tw = x.measureText(txt).width + 6 * sc, bx = Math.max(tw / 2 + 4, Math.min(W2 - tw / 2 - 4, hx)), by = top - 6 * sc;
+      x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.roundRect ? x.roundRect(bx - tw / 2, by - 6 * sc, tw, 9 * sc, 4 * sc) : x.rect(bx - tw / 2, by - 6 * sc, tw, 9 * sc); x.fill();
+      x.fillStyle = ['#9b30d9', '#3f9c1f', '#4169e1'][HUB_REAGE.i]; x.fillText(txt, bx, by + .8 * sc);
+      x.restore();
+    }
     if(temaPerfil() === 'halloween'){   // abóboras na frente: nada fica por cima delas
       var u = W2 / 320; petDrawAbobora(x, W2 * .1, H2 * .95, 2.1 * u, true); petDrawAbobora(x, W2 * .9, H2 * .95, 1.7 * u, true);
     }
   }catch(e){}
   finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = ''; }
 }
+(function(){
+  var cv = $('hubCv'); if(!cv) return;
+  cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
+  cv.addEventListener('click', function(e){
+    var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, best = -1, d = .14;
+    HUB_TRIO.forEach(function(m, i){ if(Math.abs(fx - m[2]) < d){ d = Math.abs(fx - m[2]); best = i; } });
+    hubTrioReage(best);
+  });
+})();
 function hubLoop(){
   hubAnim = 0; if(hubOv.hidden) return;
   hubT++; if(hubT % 2 === 0) hubDesenhar();
@@ -8494,7 +8528,7 @@ function hubCardsUI(){
   var pi = hubPetInfo(), soraPendente = twSoraMissaoPendente();
   var lockHtml = !contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '';
   $('hubCards').innerHTML =
-    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
+    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
     '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
@@ -8515,7 +8549,7 @@ function hubCardsUI(){
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
-  $('hubMisT').textContent = '🎯 ' + tr('Missões do dia');
+  $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
   if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★45 por dia).')) + '</p>'; return; }
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
@@ -8617,7 +8651,7 @@ function twRankRender(){
  if(!screen||!buttons||!hall)return;
  if(tv){tv.setAttribute('aria-label',twRankWord(12));var cap=tv.querySelector('.tw-rank-tv-head small');if(cap)cap.textContent=twRankWord(14);}
  buttons.setAttribute('aria-label',twRankWord(11));
- if(hallWrap){hallWrap.setAttribute('aria-label',twRankWord(13));var cap2=hallWrap.querySelector('h2 small');if(cap2)cap2.textContent=twRankWord(13);}
+ if(hallWrap){hallWrap.setAttribute('aria-label',twRankWord(13));var cap2=hallWrap.querySelector('.tw-rank-sub');if(cap2)cap2.textContent=twRankWord(13);}
  var g=twRankGames[twRankData.active],top=twRankData[g[0]][0];
  var tvStageHtml = top ?
    '<div class="tw-tv-idol-stage">' +
@@ -9445,6 +9479,9 @@ Object.keys(EXTRA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(EXTRA_DICT[
   ['Seu time no BRS48', 'Your BRS48 team', 'Tu equipo en BRS48', 'ทีมของคุณใน BRS48', 'BRS48のチーム'],
   ['Sem time', 'No team', 'Sin equipo', 'ไม่มีทีม', 'チームなし'],
   ['Trio TsuLiPa', 'TsuLiPa trio', 'Trío TsuLiPa', 'ทริโอ TsuLiPa', 'TsuLiPaトリオ'],
+  ['Oi, sou a Tsu!', "Hi, I'm Tsu!", '¡Hola, soy Tsu!', 'สวัสดี ฉันคือ Tsu!', 'やっほー、ツーだよ！'],
+  ['Oi! Lirika!', 'Hi! Lirika here!', '¡Hola! ¡Lirika!', 'สวัสดี! Lirika!', 'やっほー！リリカだよ！'],
+  ['Oi, eu sou a Pati!', "Hi, I'm Pati!", '¡Hola, soy Pati!', 'สวัสดี ฉันคือ Pati!', 'やっほー、パティだよ！'],
   ['Use só emojis (até 8).', 'Use emojis only (up to 8).', 'Usa solo emojis (hasta 8).', 'ใช้อีโมจิเท่านั้น (สูงสุด 8)', '絵文字だけ（8個まで）にしてね。']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 // ---------- Easter eggs do Center Run ----------
@@ -10834,7 +10871,7 @@ function hubIdolsUI(){
   var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
   if(!L.length){ box.hidden = true; hubIdolsParar(); return; }
-  $('hubIdolsT').textContent = tr('✨ Idols que você pode conhecer! ⭐');
+  $('hubIdolsT').innerHTML = escHtml(tr('✨ Idols que você pode conhecer! ⭐')) + ' <small class="tw-jpsub tw-jpinline" lang="ja">出会えるアイドル</small>';
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
   $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
   hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });

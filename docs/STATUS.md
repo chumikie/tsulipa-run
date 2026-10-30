@@ -37,6 +37,10 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Perfil: emoji, cor e time (B, R, S, KKS) e Oshi escolhido entre quem joga. Banco já atualizado em 30/10 (`supabase/sql/perfil_emoji_cor_time_oshi.sql`).
 - Karaoke: telão com o mesmo grupo para todos (grupo 1 às 12h00 … 6 às 12h50, novo sorteio por semana) e vista alternando Gigoia/Liberdade por semana.
 
+- Subtítulos em japonês no Center⭐Run!, Missões do dia, vitrine de Idols e Top Idols. Traduções do menu e do Center Run conferidas em EN/ES/TH/JA.
+- Banner do TsuLiPa: tocar na Tsu, Lirika ou Pati faz pulinho, emojis e um "oi" escrito (vozes entram quando as gravações chegarem).
+- Música de cada tema agora é cover do TsuLiPa (nomes dos temas iguais): Halloween Love Pulsar, Natal Stay With Me, Ano Novo Wish You Happiness!!, Valentine Valentine Kiss, Verão Hitonatsu no Dekigoto, Outono Samishii Nettaigyo, Inverno Monster, Primavera Cheeky Cheeky, Sakura ZIPPER, Tanabata Wagamama na Nagareboshi, Dia das Crianças Amor Grilado, Aniversário Aitakatta.
+
 ## Falta antes do merge
 1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.
 2. No celular: compra, gacha, resgate, corrida salvando (a trava da prévia saiu).

@@ -152,10 +152,15 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
+const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
+const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');
 assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&
        lab.includes('id="twRankTvFechar"')&&lab.includes("function twRankTvModalFechar")&&
-       launchSkin.includes(".tw-rank-tv-launch")&&launchSkin.includes(".tw-rank-tv-modal[hidden]"),
-  "Welcome screen should use a compact TsuLiPa TV launcher and popup");
+       launchSkin.includes(".tw-rank-tv-launch")&&launchSkin.includes(".tw-rank-tv-modal[hidden]")&&
+       tvMenuAt>=0&&tvTriggerAt>tvMenuAt&&
+       lab.includes('class="tw-rank-tv" id="twRankTv" role="dialog" aria-modal="true"')&&
+       !lab.includes('class="tw-rank-tv-dialog"'),
+  "TV icon must appear only after the start screen and the TV itself must be the popup");
 assert(lab.includes('id="twPreviewSom"')&&lab.includes("TW_SORA_SOUND_STATE")&&
        sora.includes("TW_SORA_TOGGLE_SOUND")&&soraEmbedSkin.includes("html.tw-sora-embed #soraSoundBtn{display:none!important}")&&
        launchSkin.includes(".tw-preview-som"),

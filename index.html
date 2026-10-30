@@ -8272,16 +8272,15 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
-  '<button type="button" class="tw-rank-tv-launch" id="twRankTvAbrir" aria-haspopup="dialog" aria-controls="twRankTvModal" aria-expanded="false" aria-label="Abrir TsuLiPa TV"><span aria-hidden="true">📺</span><b>TsuLiPa TV</b><small id="twRankTvLaunchHint">Rankings da semana</small></button>' +
-  '<section class="tw-rank-tv-modal" id="twRankTvModal" hidden role="dialog" aria-modal="true" aria-labelledby="twRankTvModalTitle">'+
-  '<div class="tw-rank-tv-dialog"><h2 id="twRankTvModalTitle" class="tw-rank-visually-hidden">TsuLiPa TV</h2>'+
-  '<button type="button" class="tw-rank-tv-close" id="twRankTvFechar" aria-label="Fechar TsuLiPa TV">×</button>'+
-  '<section class="tw-rank-tv" id="twRankTv" aria-label="TV dos rankings semanais">'+
-  '<div class="tw-rank-tv-head"><b>📺 TsuLiPa TV</b><small lang="ja">今週のランキング</small></div>'+
-  '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
-  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></div></section>' +
+
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
-  '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
+  '<div id="hubMenu" hidden><div class="tw-rank-tv-launch-row"><button type="button" class="tw-rank-tv-launch" id="twRankTvAbrir" aria-haspopup="dialog" aria-controls="twRankTvModal" aria-expanded="false" aria-label="Abrir TsuLiPa TV"><span aria-hidden="true">📺</span><span class="tw-rank-visually-hidden">Abrir TsuLiPa TV</span></button></div>' +
+  '<section class="tw-rank-tv-modal" id="twRankTvModal" hidden>'+
+  '<section class="tw-rank-tv" id="twRankTv" role="dialog" aria-modal="true" aria-labelledby="twRankTvModalTitle" aria-label="TV dos rankings semanais">'+
+  '<div class="tw-rank-tv-head"><b id="twRankTvModalTitle">📺 TsuLiPa TV</b><small lang="ja">今週のランキング</small><button type="button" class="tw-rank-tv-close" id="twRankTvFechar" aria-label="Fechar TV">×</button></div>'+
+  '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
+  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
+  '<div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small lang="ja">今週のトップアイドル</small></h2>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
@@ -8622,12 +8621,9 @@ hubOv.addEventListener('click',function(e){
 
 function hubMontar(){
   $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
-  var tvHint=$('twRankTvLaunchHint'),tvTitle=$('twRankTvModalTitle'),
-      tvOpen=$('twRankTvAbrir'),tvClose=$('twRankTvFechar');
-  var tvHints={pt:'Rankings da semana',en:'Weekly rankings',es:'Rankings semanales',ja:'週間ランキング',th:'อันดับประจำสัปดาห์'};
+  var tvTitle=$('twRankTvModalTitle'),tvOpen=$('twRankTvAbrir'),tvClose=$('twRankTvFechar');
   var tvOpenLabels={pt:'Abrir TsuLiPa TV',en:'Open TsuLiPa TV',es:'Abrir TsuLiPa TV',ja:'TsuLiPa TVを開く',th:'เปิด TsuLiPa TV'};
-  var tvCloseLabels={pt:'Fechar',en:'Close',es:'Cerrar',ja:'閉じる',th:'ปิด'};
-  if(tvHint)tvHint.textContent=tvHints[LANG]||tvHints.pt;
+  var tvCloseLabels={pt:'Fechar TV',en:'Close TV',es:'Cerrar TV',ja:'テレビを閉じる',th:'ปิดทีวี'};
   if(tvTitle)tvTitle.textContent='📺 TsuLiPa TV';
   if(tvOpen)tvOpen.setAttribute('aria-label',tvOpenLabels[LANG]||tvOpenLabels.pt);
   if(tvClose)tvClose.setAttribute('aria-label',tvCloseLabels[LANG]||tvCloseLabels.pt);

@@ -616,7 +616,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .admconta small{font-size:11.5px;color:var(--sub);font-weight:600}
 .hubenc{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;margin:12px 0 4px;border:0;border-radius:18px;padding:12px 16px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6fb5,#9b30d9);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(255,111,181,.3)}
 .hubenc small{opacity:.9;font-weight:600}.hubenc.feito{background:var(--card);color:var(--ink)}.hubenc.feito small{color:var(--sub)}
-.encov{z-index:24}.encp{width:min(100%,400px);text-align:center;position:relative}
+.encov{z-index:24;position:fixed;inset:0;overflow-y:auto;align-items:center}
+.encp{width:min(100%,400px);text-align:center;position:relative;max-height:calc(100dvh - 24px);overflow-y:auto}
 #encCv{width:100%;height:auto;border-radius:18px;box-shadow:0 6px 18px rgba(60,20,120,.25)}
 .panel p.enctopo{margin:0 0 8px;font-weight:800;color:var(--b1);font-size:14px}.encnick{margin:10px 0 2px;font-size:22px;color:var(--ink)}
 .panel p.encfala{margin:4px 0 12px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.45}
@@ -626,7 +627,12 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .encselo{position:absolute;right:14px;bottom:14px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(60,20,120,.3)}
 .enchero{position:relative;margin:12px 0 8px;padding:14px 16px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.14) 55%,rgba(65,105,225,.14))}
 .enchero .encnick{margin:0;font-size:24px;font-weight:900;color:#ff6fb5}
-.encchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.enc-pessoas{display:grid;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,104px),1fr));gap:7px;margin-top:2px}
+.enc-pessoa{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 6px;border:1px solid rgba(123,63,240,.2);border-radius:13px;background:rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+.enc-pessoa-nome{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:900;color:var(--ink)}
+.enc-pessoa-rank{display:block;font-size:11px;line-height:1.35;font-weight:800;color:var(--pink);text-align:center;overflow-wrap:anywhere}
+.enc-pessoa-oshi{align-self:center!important;margin:0!important;max-width:100%;padding:2px 8px!important;font-size:10px!important;line-height:1.35;white-space:normal;text-align:center;overflow-wrap:anywhere}
+.enc-pessoa-oshi.enc-sem-oshi{color:var(--sub)!important;background:rgba(255,255,255,.72)!important;box-shadow:none;border:1px dashed rgba(123,63,240,.2)}
 .enchero .perffrase{margin:2px 0 0;font-size:15px;font-weight:700;color:var(--ink)}
 .encpremio{margin:0 0 8px;padding:6px 12px;border-radius:99px;display:inline-block;font-weight:800;font-size:13px;color:#fff;background:linear-gradient(90deg,#ffb347,#ff6fb5)}
 .panel p.encpremio{color:#fff}
@@ -10771,7 +10777,7 @@ var encOv = document.createElement('div'); encOv.className = 'ov encov'; encOv.h
 encOv.innerHTML = '<div class="panel encp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="encX">✕</button><p class="enctopo" id="encTopo"></p>' +
   '<div class="encpalco"><canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><span class="encselo" id="encSelo"></span></div>' +
   '<div class="enchero"><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
-    '<b class="encnick" id="encNick"></b><span class="encchips"><span class="perfrk" id="encRk"></span><span class="perfoshi" id="encOshi" hidden></span></span><q class="perffrase encfala" id="encFala"></q></div>' +
+    '<b class="encnick" id="encNick"></b><div class="enc-pessoas" id="encPessoas" aria-label="Dados individuais dos participantes"></div><q class="perffrase encfala" id="encFala"></q></div>' +
   '<p class="encpremio" id="encPremio" hidden></p>' +
   '<div class="encbtns"><button type="button" class="btn" id="encDuo"></button><a class="btn alt" id="encFoto" href="#" download="encontro-do-dia.png"></a><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
 document.body.appendChild(encOv);
@@ -10782,6 +10788,59 @@ function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AA
 function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
 function encNomes(d){ return [d.nick].concat((Array.isArray(d.extras) ? d.extras : []).map(function(o){ return o && o.nick; }).filter(Boolean)).join(' & '); }   // dupla/trio: todos os nomes
+function encPessoas(d){ return [d].concat(Array.isArray(d.extras) ? d.extras : []).filter(function(p){ return p && p.nick; }); }
+function encPessoasRender(d){
+  var box=$('encPessoas'); if(!box)return;
+  var pessoas=encPessoas(d);
+  box.innerHTML=pessoas.map(function(p){
+    var nome=escHtml(p.nick), temBest=p.best!==null&&typeof p.best!=='undefined'&&String(p.best).trim()!==''&&isFinite(Number(p.best));
+    var pontos=temBest?Number(p.best):null;
+    var rank=temBest?tr(RANKS[rankOf(pontos)][1])+' · 🏆 '+pontos.toLocaleString():tr('Ranking indisponível');
+    var os=p.oshi&&PERF_OSHI[p.oshi];
+    var oshi=os
+      ? '<span class="perfoshi enc-pessoa-oshi" style="background:'+os[2]+';color:'+perfCorTexto(os[2])+'">推し '+escHtml(os[0])+' '+escHtml(tr(os[1]))+'</span>'
+      : '<span class="perfoshi enc-pessoa-oshi enc-sem-oshi">'+escHtml(tr('Oshi não informado'))+'</span>';
+    return '<div class="enc-pessoa"><b class="enc-pessoa-nome">'+nome+'</b><span class="enc-pessoa-rank">'+escHtml(rank)+'</span>'+oshi+'</div>';
+  }).join('');
+  box.setAttribute('aria-label',tr('Dados individuais dos participantes'));
+}
+var encPerfRefreshKey='';
+function encCompletarPerfis(d){
+  if(!contaJ)return;
+  var faltando=encPessoas(d).filter(function(p){
+    return !Object.prototype.hasOwnProperty.call(p,'best')||!Object.prototype.hasOwnProperty.call(p,'oshi');
+  });
+  if(!faltando.length)return;
+  var chave=String(d.dia||'')+'|'+String(d.nick||'');
+  if(!chave||encPerfRefreshKey===chave)return;
+  encPerfRefreshKey=chave;
+  // O RPC encontro_hoje guarda nick/avatar dos extras, mas não os dados individuais.
+  // Reutiliza o perfil público já existente, sem novo sorteio, escrita ou mudança no banco.
+  Promise.all(faltando.map(function(p){
+    return contaRpc('perfil_publico',{p_nick:String(p.nick).slice(0,24)}).then(function(perfil){
+      return {nick:p.nick,perfil:perfil};
+    }).catch(function(){return {nick:p.nick,perfil:null};});
+  })).then(function(resultados){
+    if(!encDados||encDados.dia!==d.dia||encDados.nick!==d.nick)return;
+    var perfis={};
+    resultados.forEach(function(r){if(r.perfil)perfis[String(r.nick).toLowerCase()]=r.perfil;});
+    var atualizado=Object.assign({},d);
+    var principal=perfis[String(d.nick).toLowerCase()];
+    if(principal){
+      atualizado.best=principal.best;
+      atualizado.oshi=principal.oshi;
+      atualizado.avatar=principal.avatar||d.avatar;
+    }
+    atualizado.extras=(Array.isArray(d.extras)?d.extras:[]).map(function(p){
+      var perfil=perfis[String(p.nick||'').toLowerCase()];
+      return perfil?Object.assign({},p,{best:perfil.best,oshi:perfil.oshi,avatar:perfil.avatar||p.avatar}):p;
+    });
+    encDados=atualizado;
+    try{localStorage.setItem(ENC_KEY,JSON.stringify(atualizado));}catch(e){}
+    encPessoasRender(atualizado);
+    encPerfRefreshKey='';
+  }).catch(function(){encPerfRefreshKey='';});
+}
 function encBtnUI(){
   var feito = encLer();
   encBtn.innerHTML = feito
@@ -10793,11 +10852,12 @@ function encMostrar(d){
   encDados = d; encT = 0;
   var ex = Array.isArray(d.extras) ? d.extras : [];
   $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
-  $('encNick').textContent = encNomes(d);
+  $('encNick').textContent = ex.length ? tr('Participantes') : d.nick;
   $('encFala').textContent = tr(d.fala);
-  var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
-  $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
-  var oe = $('encOshi'); oe.hidden = !os; if(os){ oe.textContent = '推し ' + os[0] + ' ' + tr(os[1]); oe.style.background = os[2]; oe.style.color = perfCorTexto(os[2]); }
+  var ri = rankOf(+d.best || 0);
+  $('encSelo').textContent = ex.length ? '👥' : (PERF_RANK_EMO[ri] || '⭐');
+  encPessoasRender(d);
+  encCompletarPerfis(d);
   $('encFoto').textContent = '📸 ' + tr('Foto');
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');
@@ -10841,7 +10901,7 @@ encBtn.onclick = function(){
       encBtn.disabled = false;
       if(!r || !r.nick || !r.avatar) return;
       encAbrirNovo({ dia: encHoje(), nick: r.nick, avatar: r.avatar, best: r.best, oshi: r.oshi, fala: DUO_FALAS[(+r.fala || 0) % DUO_FALAS.length],
-        extras: (Array.isArray(r.extras) ? r.extras : []).map(function(o){ return { nick: o.nick, avatar: o.avatar }; }), premiado: !!r.premiado });
+        extras: (Array.isArray(r.extras) ? r.extras : []).map(function(o){ return { nick: o.nick, avatar: o.avatar, best: o.best, oshi: o.oshi }; }), premiado: !!r.premiado });
     }).catch(function(){ encBtn.disabled = false; });
     return;
   }
@@ -10853,7 +10913,7 @@ encBtn.onclick = function(){
     var p = L[0], d = { dia: encHoje(), nick: p.nick, avatar: p.avatar, fala: DUO_FALAS[Math.floor(Math.random() * DUO_FALAS.length)] };
     d.best = p.best; d.oshi = p.oshi;
     var dsem = new Date(encHoje() + 'T12:00:00Z').getUTCDay(), nx = dsem === 2 ? 1 : dsem === 5 ? 2 : 0;   // terça: dupla do dia · sexta: trio do dia (Brasília)
-    d.extras = L.slice(1, 1 + nx).map(function(o){ return { nick: o.nick, avatar: o.avatar }; });
+    d.extras = L.slice(1, 1 + nx).map(function(o){ return { nick: o.nick, avatar: o.avatar, best: o.best, oshi: o.oshi }; });
     encAbrirNovo(d);
   }).catch(function(){ encBtn.disabled = false; });
 };
@@ -10880,7 +10940,7 @@ encBtnUI(); setInterval(encBtnUI, 60000);
 if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = function(){ var r = encHubOrig.apply(this, arguments); encBtnUI(); return r; }; }
 [['Encontro do dia', 'Meeting of the day', 'Encuentro del día', 'การพบกันประจำวัน', '今日の出会い'], ['Encontro de hoje', "Today's meeting", 'Encuentro de hoy', 'การพบกันวันนี้', '今日の出会い'],
  ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['Foto', 'Photo', 'Foto', 'รูป', '写真'], ['estrelinhas pelo encontro!', 'stars for the meeting!', '¡estrellitas por el encuentro!', 'ดาวจากการพบกัน!', 'スターをゲット！'],
- ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
+ ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'], ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る'], ['Ranking indisponível', 'Ranking unavailable', 'Ranking no disponible', 'ไม่มีข้อมูลอันดับ', 'ランキング情報なし'], ['Oshi não informado', 'Oshi not set', 'Oshi no indicado', 'ยังไม่ได้เลือกโอชิ', '推し未設定'], ['Dados individuais dos participantes', 'Individual participant details', 'Datos individuales de los participantes', 'ข้อมูลรายบุคคลของผู้เข้าร่วม', '参加者ごとのプロフィール']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 // ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------

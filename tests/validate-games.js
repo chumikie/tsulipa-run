@@ -135,6 +135,21 @@ assert(karaoke.includes("krHandBusy")&&karaoke.includes("krClearHandheld"),
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
 const lab=read("index.html");
+
+assert(lab.includes('id="encPessoas"')&&lab.includes("function encPessoasRender(d)")&&
+       lab.includes("enc-pessoa-rank")&&lab.includes("enc-pessoa-oshi")&&
+       lab.includes("tr('Participantes')"),
+  "Daily duo/trio encounter must display a separate profile card for every member");
+assert(lab.includes("function encCompletarPerfis(d)")&&
+       lab.includes("contaRpc('perfil_publico',{p_nick:String(p.nick).slice(0,24)})")&&
+       lab.includes("encPessoasRender(atualizado)")&&
+       !lab.includes("contaRpc('encontro_hoje',{p_falas:DUO_FALAS.length}).then(function(r){"),
+  "Daily encounter must enrich older saved groups through existing public-profile RPC without re-rolling");
+assert((lab.match(/best: o\.best, oshi: o\.oshi/g)||[]).length===2,
+  "Both authenticated and guest daily encounter paths must preserve each extra member's ranking and Oshi");
+assert(lab.includes("encPessoasRender(d);\n  encCompletarPerfis(d);")&&
+       lab.includes("max-height:calc(100dvh - 24px)"),
+  "Daily encounter group cards must load immediately and remain scrollable on short screens");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
 assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),

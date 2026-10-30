@@ -736,8 +736,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=3">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=2">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=4">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=3">
 </head>
 <body>
 <header>
@@ -8297,14 +8297,21 @@ document.body.appendChild(hubOv);
 function twRankTvModalFechar(){
   var modal=$('twRankTvModal'),trigger=$('twRankTvAbrir');
   if(!modal||modal.hidden)return;
-  modal.hidden=true;
+  modal.hidden=true;if(typeof twRankStop==='function')twRankStop();
   if(trigger){trigger.setAttribute('aria-expanded','false');trigger.focus({preventScroll:true});}
 }
 (function twRankTvModalPreparar(){
   var trigger=$('twRankTvAbrir'),modal=$('twRankTvModal'),close=$('twRankTvFechar');
   if(!trigger||!modal||!close)return;
+  // A TV vira um troféu voando no canto do banner; o pop-up fica direto no #hub
+  // (fora de caixas com animação) para abrir por cima de tudo.
+  var row=trigger.closest('.tw-rank-tv-launch-row'),cv=$('hubCv');
+  if(row&&cv){row.className='tw-tv-float';cv.parentNode.insertBefore(row,cv);}
+  hubOv.appendChild(modal);
+  trigger.querySelector('span').textContent='🏆';
   trigger.addEventListener('click',function(){
     modal.hidden=false;trigger.setAttribute('aria-expanded','true');close.focus({preventScroll:true});
+    if(typeof twRankRender==='function')twRankRender();if(typeof twRankVisibility==='function')twRankVisibility();
   });
   close.addEventListener('click',twRankTvModalFechar);
   modal.addEventListener('click',function(e){if(e.target===modal)twRankTvModalFechar();});
@@ -8615,9 +8622,10 @@ function twRankLoad(){
 function twRankStop(){if(twRankTimer!==null){clearInterval(twRankTimer);twRankTimer=null;}}
 function twRankVisibility(){
  var tv=$('twRankTv');if(!tv)return;
- tv.hidden=hubComecou;twRankStop();
+ // A TV mora no pop-up do troféu: fica visível dentro dele e só gira com o pop-up aberto.
+ var modalTv=$('twRankTvModal');tv.hidden=false;twRankStop();
  var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
- if(!hubComecou&&!hubOv.hidden&&!calm)twRankTimer=setInterval(function(){
+ if(modalTv&&!modalTv.hidden&&!hubOv.hidden&&!calm)twRankTimer=setInterval(function(){
   if(hubOv.hidden||document.hidden)return;
   var was=twRankData.week;twRankCheckWeek();if(was!==twRankData.week)twRankLoad();
   twRankData.active=(twRankData.active+1)%3;twRankRender();
@@ -10436,10 +10444,11 @@ var encDados = null, encAnim = 0, encT = 0;
 function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AAAA-MM-DD)
 function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
+function encNomes(d){ return [d.nick].concat((Array.isArray(d.extras) ? d.extras : []).map(function(o){ return o && o.nick; }).filter(Boolean)).join(' & '); }   // dupla/trio: todos os nomes
 function encBtnUI(){
   var feito = encLer();
   encBtn.innerHTML = feito
-    ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(feito.nick) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('ver de novo')) + '</small>'
+    ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(encNomes(feito)) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('ver de novo')) + '</small>'
     : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
   encBtn.classList.toggle('feito', !!feito);
 }
@@ -10447,7 +10456,7 @@ function encMostrar(d){
   encDados = d; encT = 0;
   var ex = Array.isArray(d.extras) ? d.extras : [];
   $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
-  $('encNick').textContent = [d.nick].concat(ex.map(function(o){ return o.nick; })).join(' & ');
+  $('encNick').textContent = encNomes(d);
   $('encFala').textContent = tr(d.fala);
   var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
   $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
@@ -10521,7 +10530,7 @@ encOv.addEventListener('click', function(e){
     x.fillStyle = 'rgba(255,111,181,.10)'; for(var yy = 12; yy < 560; yy += 18) for(var xx = (yy / 18 % 2) * 9 + 6; xx < 460; xx += 18){ x.beginPath(); x.arc(xx, yy, 1.6, 0, 7); x.fill(); }
     x.drawImage(src, 20, 20, 420, 380);
     x.fillStyle = 'rgba(255,111,181,.55)'; x.save(); x.translate(230, 14); x.rotate(-.04); x.fillRect(-60, -10, 120, 24); x.restore();
-    x.textAlign = 'center'; x.fillStyle = '#12365e'; x.font = '800 28px "M PLUS Rounded 1c",sans-serif'; x.fillText(encDados.nick, 230, 446, 400);
+    x.textAlign = 'center'; x.fillStyle = '#12365e'; x.font = '800 28px "M PLUS Rounded 1c",sans-serif'; x.fillText(encNomes(encDados), 230, 446, 410);
     x.fillStyle = '#ff6fb5'; x.font = '700 15px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(encDados.fala), 230, 478, 410);
     x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(encHoje().split('-').reverse().join('/'), 230, 506);
     x.font = '500 11px "M PLUS Rounded 1c",sans-serif'; x.fillText('🌟 ' + tr('Encontro do dia') + ' · TsuLiPa⭐World', 230, 532);
@@ -10769,7 +10778,9 @@ function hubIdolsUI(){
 }
 function hubIdolsLugar(){
   var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), cv = $('hubCv'); if(!box || !busca || !cv) return;
-  if(hubComecou){ if(box.previousElementSibling !== busca) busca.parentNode.insertBefore(box, busca.nextSibling); box.classList.remove('mini'); }
+  if(hubComecou){ if(box.previousElementSibling !== busca) busca.parentNode.insertBefore(box, busca.nextSibling); box.classList.remove('mini');
+    // Top Idols logo abaixo da vitrine (site corrido, em coluna única).
+    var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling); }
   else { if(box.previousElementSibling !== cv) cv.parentNode.insertBefore(box, cv.nextSibling); box.classList.add('mini'); }
   hubIV.cw = 0;
 }

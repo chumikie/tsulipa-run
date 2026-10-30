@@ -39,12 +39,12 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 - Subtítulos em japonês no Center⭐Run!, Missões do dia, vitrine de Idols e Top Idols. Traduções do menu e do Center Run conferidas em EN/ES/TH/JA.
 - Banner do TsuLiPa: tocar na Tsu, Lirika ou Pati faz pulinho, emojis e um "oi" escrito (vozes entram quando as gravações chegarem).
-- Música de cada tema agora é cover do TsuLiPa (nomes dos temas iguais): Halloween Love Pulsar, Natal Stay With Me, Ano Novo Wish You Happiness!!, Valentine Valentine Kiss, Verão Hitonatsu no Dekigoto, Outono Samishii Nettaigyo, Inverno Monster, Primavera Cheeky Cheeky, Sakura ZIPPER, Tanabata Wagamama na Nagareboshi, Dia das Crianças Amor Grilado, Aniversário Aitakatta.
+- Música de cada tema agora é cover do TsuLiPa (nomes dos temas iguais): Halloween Love Pulsar, Natal Pittari Shitai X'mas!, Ano Novo Wish You Happiness!!, Valentine Valentine Kiss, Verão Splash Dream, Outono Samishii Nettaigyo, Inverno Monster, Primavera Cheeky Cheeky, Sakura ZIPPER, Tanabata Wagamama na Nagareboshi, Dia das Crianças Amor Grilado, Aniversário Aitakatta.
 
 - Banner: vozes reais do trio (5 falas cada, risada a cada duas falas); balão kawaii (um só contorno com rabinho, fonte Mochiy Pop One, ~3,5 s); pets do banner clicáveis com a vozinha de cada um.
 - Privacidade atualizada (30/10) em 5 idiomas: estilo do perfil, presença no Karaoke e vozes (sem microfone, sem gravação).
 
-- Imagem de compartilhamento (og.jpg/og.png v13) e descrições atualizadas com todos os modos e o elenco atual.
+- Descrições do link atualizadas com todos os modos (imagem og mantida a anterior, a pedido).
 - Trilha sonora: 31 faixas geradas no código (25 músicas diferentes), gravadas em MP3 fora do repositório.
 
 ## Falta antes do merge

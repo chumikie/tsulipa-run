@@ -23,14 +23,14 @@
 <meta property="og:title" content="TsuLiPa⭐World">
 <meta property="og:description" content="Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Day! ao vivo aos domingos, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta property="og:url" content="https://tsulipa-world.vercel.app/">
-<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=13">
+<meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=12">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
 <meta name="twitter:description" content="Corra, pule, cante e cuide do seu pet com o TsuLiPa: Center⭐Run!, Sora⭐Jump!, Karaoke⭐Day!, Backstage⭐Pet!, Star⭐Gacha! e Moon⭐Duo!">
-<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=13">
+<meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=12">
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
@@ -7984,7 +7984,7 @@ var TEMA_INFO = {   // [emoji, nome, céu de cima, céu de baixo, chão, partíc
 };
 // Música de cada tema (das Units Especiais do BRS48) — aparece no chip do tema na tela de início
 // Música de cada tema: só covers do TsuLiPa (playlist de participações). Os NOMES dos temas não mudam.
-var TEMA_MUSICA = { halloween:'Love Pulsar', natal:'Stay With Me', anonovo:'Wish You Happiness!!', valentine:'Valentine Kiss', verao:'Hitonatsu no Dekigoto', outono:'Samishii Nettaigyo', inverno:'Monster', primavera:'Cheeky Cheeky', sakura:'ZIPPER', tanabata:'Wagamama na Nagareboshi', criancas:'Amor Grilado', aniversario:'Aitakatta' };
+var TEMA_MUSICA = { halloween:'Love Pulsar', natal:"Pittari Shitai X'mas!", anonovo:'Wish You Happiness!!', valentine:'Valentine Kiss', verao:'Splash Dream', outono:'Samishii Nettaigyo', inverno:'Monster', primavera:'Cheeky Cheeky', sakura:'ZIPPER', tanabata:'Wagamama na Nagareboshi', criancas:'Amor Grilado', aniversario:'Aitakatta' };
 var TEMA_TESTE = 'tsl_tema_teste';   // sessionStorage: tema forçado pela moderação (só nesta aba, não é save)
 function temaForcado(){ try{ var f = sessionStorage.getItem(TEMA_TESTE); if(f === 'nenhum' || TEMA_INFO[f]) return f; }catch(e){} return ''; }
 function temaLinha(){   // linha do calendário de hoje (ou null)
@@ -8413,7 +8413,7 @@ var HUB_FALAS = [
 var HUB_PET_REAGE = { i:-1, t0:-999 }, HUB_FALA_ULT = [-1, -1, -1], HUB_FALA_CONTA = [0, 0, 0], hubVozAtual = null, HUB_VOZ_VOL = .55;
 function hubVozTocar(nome){   // voz suave, só no toque e só com o som ligado
   if(typeof muted !== 'undefined' && muted) return;
-  try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
+  try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; a.addEventListener('loadedmetadata', function(){ if(hubVozAtual === a && isFinite(a.duration)) HUB_REAGE.dur = Math.max(150, Math.round(a.duration * 60) + 50); }); var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
 }
 try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){ }
 function hubTrioReage(i){
@@ -8440,7 +8440,8 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada na cor de cada um
       var cx = W2 * m[2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc, ex = m[4];
       var rg = HUB_REAGE.i === i ? hubT - HUB_REAGE.t0 : 999;
-      if(rg < 70){ bob -= Math.abs(Math.sin(rg / 70 * Math.PI * 2)) * 9 * sc * (1 - rg / 90); ex = 3; }
+      var rgD = (HUB_REAGE.dur || 220) - 30;   // reage enquanto a voz toca
+      if(rg < rgD){ bob -= Math.abs(Math.sin(rg / 35 * Math.PI)) * (rg < 70 ? 9 : 3) * sc * (rg < 70 ? 1 - rg / 90 : 1); ex = 3; }
       x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();   // sombra pequena, só sob os pés
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = m[1]; drawChar(c, 0, 0, 0, ex, false); });
       if(PET_SP[m[3]]){   // o pet de cada um, flutuando ao lado
@@ -8451,8 +8452,9 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       }
     });
     var rg2 = hubT - HUB_REAGE.t0;
-    if(HUB_REAGE.i >= 0 && rg2 < 220){   // balão kawaii (balão + rabinho num só contorno) e emojis subindo dos lados
-      var hi = HUB_REAGE.i, hx = W2 * HUB_TRIO[hi][2], top = chao - 50 * sc, al = rg2 < 190 ? 1 : (220 - rg2) / 30;
+    var rDur = HUB_REAGE.dur || 220;   // dura o tempo da voz + um pouquinho
+    if(HUB_REAGE.i >= 0 && rg2 < rDur){   // balão kawaii (balão + rabinho num só contorno) e emojis subindo dos lados
+      var hi = HUB_REAGE.i, hx = W2 * HUB_TRIO[hi][2], top = chao - 50 * sc, al = rg2 < rDur - 30 ? 1 : (rDur - rg2) / 30;
       var corA = ['#9b30d9', '#3f9c1f', '#4169e1'][hi], corB = ['#ff9ce6', '#b6ff3b', '#7fd4ff'][hi];
       var pop = rg2 < 8 ? .6 + rg2 / 20 : 1;
       x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.textBaseline = 'middle';

@@ -221,6 +221,13 @@ const privacyPage=read("privacidade.html");
 assert(!privacyPage.includes("Karaoke⭐Day!")&&
        (privacyPage.match(/Karaoke⭐Time!/g)||[]).length>=10,
   "Privacy page must describe only Karaoke Time, not the retired Sunday virtual room, in all five locales");
+assert(lab.includes("Ranking temporariamente indisponível")&&
+       lab.includes("Ranking temporarily unavailable")&&
+       lab.includes("Ranking temporalmente no disponible")&&
+       lab.includes("ランキングは一時的に利用できません")&&
+       lab.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
+       !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
+  "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
 const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));
 const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));

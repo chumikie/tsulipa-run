@@ -8388,6 +8388,7 @@ function twRankTvModalFechar(){
   hubOv.appendChild(modal);
   trigger.querySelector('span').textContent='🏆';
   trigger.addEventListener('click',function(){
+    if(typeof twTrofeuFanfarra==='function')twTrofeuFanfarra();
     modal.hidden=false;trigger.setAttribute('aria-expanded','true');close.focus({preventScroll:true});
     if(typeof twRankRender==='function')twRankRender();if(typeof twRankVisibility==='function')twRankVisibility();
   });
@@ -8869,6 +8870,16 @@ function hubFechar(){
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   twIndex2ResumeBaseFrames();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
+}
+function twTrofeuFanfarra(){   // troféu da TsuLiPa TV: fanfarra curta, kawaii e orgulhosa
+  if(typeof muted !== 'undefined' && muted) return; ac();
+  [[784, 0, .10], [1047, .10, .10], [1319, .20, .13]].forEach(function(n){   // "ta-ra-ráá" subindo
+    beep(n[0], n[2], 'square', .028, n[1]); beep(n[0] * 2, n[2] * .7, 'triangle', .011, n[1]);
+  });
+  [1568, 1976, 2349].forEach(function(f, i){ beep(f, .45, 'triangle', .026 - i * .006, .33); });   // acorde de chegada
+  beep(392, .52, 'sine', .042, .33); beep(523, .5, 'sine', .022, .35);                              // baixo orgulhoso
+  if(typeof petGlide === 'function') petGlide(2093, 3136, .2, 'sine', .014, .42);                   // brilho subindo
+  [2637, 3136, 2093].forEach(function(f, i){ beep(f, .06, 'sine', .011, .58 + i * .07); });         // estrelinhas
 }
 function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros sons do jogo)
   [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });

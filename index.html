@@ -8410,14 +8410,17 @@ var HUB_FALAS = [
   [['lirika-1','Oi, gente linda!','💚'], ['lirika-2','Li - ri - ka!','🐨'], ['lirika-3','ゆめはぜったい','🌈'], ['lirika-4','Tudo bem com vocês?','🌼'], ['lirika-5','hehe~','😆']],
   [['pati-1','Oi gente, meu nome é Pati!','💙'], ['pati-2','Bem gamer, tals...','🎮'], ['pati-3','いっておきたい','🌙'], ['pati-4','Um beijo. Chu!','💋'], ['pati-5','hehe~','😆']]
 ];
-var HUB_FALA_ULT = [-1, -1, -1], hubVozAtual = null, HUB_VOZ_VOL = .55;
+var HUB_FALA_ULT = [-1, -1, -1], HUB_FALA_CONTA = [0, 0, 0], hubVozAtual = null, HUB_VOZ_VOL = .55;
 function hubVozTocar(nome){   // voz suave, só no toque e só com o som ligado
   if(typeof muted !== 'undefined' && muted) return;
   try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
 }
 function hubTrioReage(i){
   if(i < 0 || i > 2 || (HUB_REAGE.i === i && hubT - HUB_REAGE.t0 < 60)) return;
-  var L = HUB_FALAS[i], k = Math.floor(Math.random() * L.length); if(k === HUB_FALA_ULT[i]) k = (k + 1) % L.length; HUB_FALA_ULT[i] = k;
+  var L = HUB_FALAS[i], ri = L.length - 1, k;   // a risada (última) vem a cada duas falas: fala, fala, hehe~
+  if(HUB_FALA_CONTA[i] >= 2){ k = ri; HUB_FALA_CONTA[i] = 0; }
+  else { k = Math.floor(Math.random() * ri); if(k === HUB_FALA_ULT[i]) k = (k + 1) % ri; HUB_FALA_CONTA[i]++; }
+  HUB_FALA_ULT[i] = k;
   var f = L[k];
   HUB_REAGE = { i:i, t0:hubT, txt:f[1], emo:[0,1,2,3,4].map(function(n){ return { e:n % 2 ? f[2] : HUB_TRIO_EMO[i][n % 3], dx:(n - 2) * 9 + (Math.random() * 6 - 3), v:.5 + Math.random() * .5 }; }) };
   hubVozTocar(f[0]);

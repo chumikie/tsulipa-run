@@ -351,7 +351,7 @@ function krLoadPublicPosterNicknames(){
     }
   }).catch(function(){/* Network/RPC unavailable: shared deterministic demo posters */}).finally(function(){clearTimeout(timeout);krPosterSyncing=false;});
 }
-var KR_DANCAS=[['','⏹️','Parar'],['banzai','🙌','Banzai Venus'],['seis','6️⃣','Six Seven'],['neon','✨','Pose Neon'],['nyan','🐱','Nyan'],['giro','💫','Idol Step'],['pulo','⭐','Jump!']],KR_CANTO=[['balanco','🎵','Balanço'],['diva','✨','Diva'],['rock','🎸','Rock'],['fofo','💖','Kawaii']],KR_DRINKS=[['tsu','🍇','Soda de Uva','#9b30d9'],['lirika','🍈','Melon Juice!','#4ade80'],['pati','🫐','Blue Hawaii','#4169e1']],KR_EMOJIS=['💖','👏','🎤','🔥','✨','💜','💚','💙','⭐','🥂','😭','🫶'],KR_FALAS_AUTO=['Que voz! ✨','Bis! Bis! 👏','Ganbatte! 💜','Amo essa música! 🎶','Brilha muito! ⭐','Saúde! 🥂','Lindo demais! 💖'],KR_SOFA_SLOTS=[[165,365],[165,425],[220,465],[310,475],[650,475],[740,465],[795,425],[795,365]];
+var KR_DANCAS=[['','⏹️','Parar'],['banzai','🙌','Banzai Venus'],['seis','6️⃣','Six Seven'],['neon','✨','Pose Neon'],['nyan','🐱','Nyan'],['giro','💫','Idol Step'],['pulo','⭐','Jump!']],KR_CANTO=[['balanco','🎵','Balanço'],['diva','✨','Diva'],['rock','🎸','Rock'],['fofo','💖','Kawaii']],KR_DRINKS=[['tsu','🍇','Soda de Uva','#9b30d9'],['lirika','🍈','Melon Juice!','#4ade80'],['pati','🫐','Blue Hawaii','#4169e1']],KR_EMOJIS=['💖','👏','🎤','🔥','✨','💜','💚','💙','⭐','🥂','😭','🫶'],KR_FALAS_AUTO=['Que voz! ✨','Bis! Bis! 👏','Ganbatte! 💜','Amo essa música! 🎶','Brilha muito! ⭐','Saúde! 🥂','Lindo demais! 💖'],KR_SOFA_SLOTS=[[160,400],[232,470],[332,470],[432,470],[532,470],[632,470],[732,470],[800,400]];
 var krSoHomol=new URLSearchParams(location.search).get('homol')==='1';
 // Sala online real (produção) ou homologação: as duas usam a mesma ponte de palco.
 var krOnlineAtivo=!krSoHomol;
@@ -571,12 +571,18 @@ var krCanvasHD=$('krCv');if(krCanvasHD&&!krCanvasHD.dataset.krTelaPreparada){var
 // Etapa 3A.5b — preservar a sala original até um Idol ocupar sua vaga online.
 var krHomolMeuNick=krOnlineAtivo?nick:'Idol de teste',krHomolMeuChar=null;
 if(krHomolAtivo){
- var krHomolTemplates=krBots.slice(),krHomolSeat9=[480,435],krHomolBackup=null;
+ var krHomolTemplates=krBots.slice(),krHomolSeat9=[480,344],krHomolBackup=null;
  krHomolMeuChar=krOnlineAtivo?meuChar():Object.assign({},krHomolTemplates[0].char);
  window.twKaraokeHomolBridge={
   show:function(snapshot){
    if(!window.TsuKaraokeHomolView)return;
-   var members=window.TsuKaraokeHomolView.stageLayout(snapshot.slots);
+   var brutos=snapshot.slots||[];
+   var members=window.TsuKaraokeHomolView.stageLayout(brutos);
+   // stageLayout cria rotulos genericos ("Idol 01"); devolve o nick e o visual reais de cada vaga
+   var porVaga={};brutos.forEach(function(p){if(p&&p.slot)porVaga[p.slot]=p;});
+   members.forEach(function(m){var s=porVaga[m.slot];if(!s)return;
+     var nome=s.label||s.nick;if(nome)m.label=nome;
+     var visual=s.c||(s.avatar&&s.avatar.c);if(visual)m.c=visual;});
    var me=members.find(function(p){return p.self;}),queueElement=$('krMicQueue');
    // Quem não está na sala vê a demonstração completa, sem dados de terceiros.
    if(!me){
@@ -610,7 +616,7 @@ if(krHomolAtivo){
    krEu.no_mic=!!me.singing;
    krHomolMeuNick=me.label;
    var ownTemplate=krHomolTemplates[(me.slot-1)%krHomolTemplates.length];
-   krHomolMeuChar=krOnlineAtivo?Object.assign(meuChar(),me.c||{},{n:me.label}):Object.assign({},ownTemplate.char,{n:me.label});
+   krHomolMeuChar=krOnlineAtivo?Object.assign(meuChar(),me.c||{},{n:me.label}):Object.assign({},me.c||ownTemplate.char,{n:me.label});
    var loc=me.seatIndex===8?krHomolSeat9:KR_SOFA_SLOTS[me.seatIndex];
    krEu.x=me.singing?480:loc[0];
    krEu.y=me.singing?286:loc[1];
@@ -621,7 +627,7 @@ if(krHomolAtivo){
      var template=krHomolTemplates[(p.slot-1)%krHomolTemplates.length];
      var seat=p.seatIndex===8?krHomolSeat9:KR_SOFA_SLOTS[p.seatIndex];
      var bot=Object.assign({},template,{
-       nick:p.label,char:Object.assign({},template.char,p.c||{},{n:p.label}),
+       nick:p.label,char:Object.assign({},p.c||template.char,{n:p.label}),
        x:p.singing?480:seat[0],y:p.singing?286:seat[1],no_mic:p.singing
      });
      if(p.singing){bot.drink='';bot.snackSala='';bot.itemSala='mic';}

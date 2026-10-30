@@ -20,7 +20,11 @@ assert.equal(view.turnPhase(100000,160000,150000).phase,'outro');
 assert.equal(view.turnPhase(100000,160000,160000).phase,'finished');
 const game=fs.readFileSync(path.join(__dirname,'../karaoke-day.html'),'utf8');
 const client=fs.readFileSync(path.join(__dirname,'../karaoke-homol-client.js'),'utf8');
-assert(game.includes("window.TsuKaraokeHomolView.stageLayout(snapshot.slots)"));
+assert(game.includes("window.TsuKaraokeHomolView.stageLayout(brutos)"));
+// A sala online mostra o nick e o visual reais de quem esta dentro (nada de "Idol 01" nem boneco sorteado).
+assert(game.includes('var nome=s.label||s.nick;if(nome)m.label=nome;'),'nick real na sala');
+assert(game.includes("var visual=s.c||(s.avatar&&s.avatar.c);if(visual)m.c=visual;"),'visual real na sala');
+assert(game.includes("char:Object.assign({},p.c||template.char,{n:p.label})"),'sem restos do boneco de demonstracao');
 assert(game.includes("if(krSoHomol)return; // no production player data in staging"));
 assert(game.includes('krHomolMeuChar')&&game.includes('krHomolMeuNick'));
 assert(/var TURNSTILE_SITE_KEY='0x[A-Za-z0-9_-]+';/.test(client));

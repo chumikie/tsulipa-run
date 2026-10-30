@@ -278,8 +278,8 @@ assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&
   "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
 // Ranking online do Karaoke⭐Time!: o servidor conta as 5 tentativas e confere o resultado.
 assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('kt_run_finish'")&&preview.includes("contaRpc('kt_ranking')")&&
-       preview.includes('id="twRankKt"')&&preview.includes("data.karaoke_combo")&&preview.includes("data.karaoke_acertos")&&preview.includes("data.meu_kt_usados")&&
-       preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes('コンボと正確さ'),
+       preview.includes('id="twMicAbrir"')&&preview.includes("function twMicAcerto()")&&!preview.includes('id="twRankKt"')&&preview.includes("data.karaoke_combo")&&preview.includes("data.karaoke_acertos")&&preview.includes("data.meu_kt_usados")&&
+       preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes('いちばん正確なのは？'),
   "Karaoke Time: ponte do ranking online e barra própria no Top Idols");
 assert(kTime.includes("window.ktOnline.gate(start)")&&kTime.includes("window.ktOnline.finish(result)")&&
        kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),

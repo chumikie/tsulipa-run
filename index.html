@@ -739,8 +739,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=7">
-<link rel="stylesheet" href="./tw-weekly-podium.css?v=6">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=8">
+<link rel="stylesheet" href="./tw-weekly-podium.css?v=7">
 </head>
 <body>
 <header>
@@ -8386,8 +8386,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
-  '<div class="tw-rank-columns" id="twRankColumns"></div>'+
-  '<h3 class="tw-rank-kt-title" id="twRankKtTit" hidden></h3><div class="tw-rank-columns tw-rank-kt" id="twRankKt" hidden></div></section>' +
+  '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
   '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
@@ -8424,6 +8423,52 @@ function twRankTvModalFechar(){
     }
   },true);
 })();
+function twMicAcerto(){   // som de acerto: arpejo brilhante de "nota perfeita" + brilhinhos subindo
+  if(typeof muted !== 'undefined' && muted) return; ac();
+  [[1047, 0], [1319, .07], [1568, .14], [2093, .21]].forEach(function(n){ beep(n[0], .16, 'triangle', .03, n[1]); beep(n[0] * 2, .08, 'sine', .01, n[1] + .02); });
+  [1568, 2093, 2637].forEach(function(f, i){ beep(f, .5, 'sine', .018 - i * .004, .32); });   // acorde de "perfect"
+  beep(523, .45, 'sine', .03, .3);
+  if(typeof petGlide === 'function') petGlide(2349, 3520, .18, 'sine', .012, .36);
+  [3136, 3520, 4186].forEach(function(f, i){ beep(f, .05, 'sine', .009, .55 + i * .06); });
+}
+function twMicRender(){
+  var tela = $('twMicTela'); if(!tela) return;
+  var w = TW_MIC_WORDS[LANG] || TW_MIC_WORDS.pt, list = twRankData.kacertos || [], top = list[0];
+  var tit = $('twMicTit'); if(tit) tit.textContent = '🎤 Karaoke⭐Time!';
+  var fx = $('twMicFechar'); if(fx) fx.setAttribute('aria-label', w[3]);
+  tela.innerHTML = '<b>' + escHtml(w[0]) + '</b>' + (top ?
+    '<div class="tw-tv-idol-stage"><span class="tw-tv-idol-sparkle" aria-hidden="true">🎶</span>' +
+    '<span class="tw-rank-avatar-wrap tw-tv-idol-avatar"><span class="tw-rank-avatar-fallback" aria-hidden="true">🎤</span>' +
+    '<canvas class="tw-rank-avatar" width="64" height="64" data-nick="' + escHtml(top.nick) + '" aria-hidden="true" style="display:none"></canvas></span>' +
+    '<span class="tw-tv-idol-sparkle" aria-hidden="true">💖</span></div>' +
+    '<p>' + escHtml(top.nick) + '</p><strong>💖 ' + top.score.toLocaleString() + '%</strong>' +
+    (list.length > 1 ? '<ol class="tw-mic-lista">' + list.slice(1, 3).map(function(r, i){ return '<li>' + ['🥈', '🥉'][i] + ' ' + escHtml(r.nick) + ' · ' + r.score.toLocaleString() + '%</li>'; }).join('') + '</ol>' : '') +
+    '<small class="tw-mic-sub">' + escHtml(w[4]) + '</small>' :
+    '<p class="tw-rank-wait">' + escHtml(twRankData.online ? w[1] : twRankStatus('karaoke')) + '</p>');
+}
+function twMicFechar(){
+  var m = $('twMicModal'), b = $('twMicAbrir'); if(!m || m.hidden) return;
+  m.hidden = true; if(b){ b.setAttribute('aria-expanded', 'false'); b.focus({ preventScroll:true }); }
+}
+setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME e os textos vêm mais abaixo)
+  if(typeof TW_KARAOKE_TIME === 'undefined' || TW_KARAOKE_TIME !== true) return;
+  var lugar = hubOv.querySelector('.tw-tv-float'); if(!lugar) return;
+  var w = TW_MIC_WORDS[LANG] || TW_MIC_WORDS.pt;
+  lugar.insertAdjacentHTML('beforeend', '<button type="button" class="tw-mic-launch" id="twMicAbrir" aria-haspopup="dialog" aria-controls="twMicModal" aria-expanded="false" aria-label="' + escHtml(w[2]) + '"><span aria-hidden="true">🎤</span></button>');
+  hubOv.insertAdjacentHTML('beforeend', '<section class="tw-rank-tv-modal" id="twMicModal" hidden>' +
+    '<section class="tw-rank-tv tw-mic-tv" role="dialog" aria-modal="true" aria-labelledby="twMicTit">' +
+    '<div class="tw-rank-tv-head"><b id="twMicTit">🎤 Karaoke⭐Time!</b><small lang="ja">いちばん正確なのは？</small><button type="button" class="tw-rank-tv-close" id="twMicFechar" aria-label="' + escHtml(w[3]) + '">×</button></div>' +
+    '<div class="tw-rank-tv-screen" id="twMicTela" aria-live="polite"></div></section></section>');
+  var b = $('twMicAbrir'), m = $('twMicModal');
+  b.addEventListener('click', function(){
+    twMicAcerto(); twMicRender(); m.hidden = false; b.setAttribute('aria-expanded', 'true');
+    $('twMicFechar').focus({ preventScroll:true }); twRankDrawAvatars();
+    if(typeof twRankLoad === 'function') twRankLoad().then(function(){ twMicRender(); twRankDrawAvatars(); }).catch(function(){});
+  });
+  $('twMicFechar').addEventListener('click', twMicFechar);
+  m.addEventListener('click', function(e){ if(e.target === m) twMicFechar(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !m.hidden){ e.preventDefault(); e.stopImmediatePropagation(); twMicFechar(); } }, true);
+}, 0);
 var hubT = 0, hubAnim = 0, hubComecou = false, hubTutI = 0, hubMisDados = null;
 
 function hubTemaUI(){   // chip do tema, partículas da tela e cor do fundo
@@ -8691,13 +8736,13 @@ function hubMisCarregar(){
 // Server-side Sora records are live; Karaoke stays empty until its own verified backend exists.
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
 var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,centerOK:false,online:false,mine:null,readAt:0,active:0};
-// Barra própria do Karaoke⭐Time!: os outros dois quadros da sala. A pontuação já está na coluna do Top Idols.
-var TW_KT_WORDS={
- pt:['🎤 Karaoke⭐Time! · combo e acertos','⭐ Pontuação','✨ Maior combo','💖 Acertos'],
- en:['🎤 Karaoke⭐Time! · combo & accuracy','⭐ Score','✨ Best combo','💖 Accuracy'],
- es:['🎤 Karaoke⭐Time! · combo y aciertos','⭐ Puntuación','✨ Mejor combo','💖 Aciertos'],
- ja:['🎤 カラオケ⭐タイム！ · コンボと正確さ','⭐ スコア','✨ 最大コンボ','💖 正確さ'],
- th:['🎤 Karaoke⭐Time! · คอมโบและความแม่นยำ','⭐ คะแนน','✨ คอมโบสูงสุด','💖 ความแม่นยำ']
+// Microfone voando no banner (como o troféu da TV): abre quem acertou mais no Karaoke⭐Time! na semana.
+var TW_MIC_WORDS={
+ pt:['💖 Quem acertou mais','Ninguém cantou ainda nesta semana. A primeira voz pode ser a sua! 🎶','Abrir quem acertou mais no Karaoke','Fechar','Acertos da semana · Karaoke⭐Time!'],
+ en:['💖 Most accurate','Nobody has sung this week yet. The first voice could be yours! 🎶','Open the Karaoke accuracy ranking','Close','Weekly accuracy · Karaoke⭐Time!'],
+ es:['💖 Quién acertó más','Nadie ha cantado esta semana todavía. ¡La primera voz puede ser la tuya! 🎶','Abrir quién acertó más en el Karaoke','Cerrar','Aciertos de la semana · Karaoke⭐Time!'],
+ ja:['💖 いちばん正確','今週はまだ誰も歌っていません。最初の声はあなたかも！🎶','カラオケの正確さランキングを開く','閉じる','今週の正確さ · カラオケ⭐タイム！'],
+ th:['💖 ใครแม่นที่สุด','สัปดาห์นี้ยังไม่มีใครร้องเลย เสียงแรกอาจเป็นของคุณ! 🎶','เปิดอันดับความแม่นยำของคาราโอเกะ','ปิด','ความแม่นยำประจำสัปดาห์ · Karaoke⭐Time!']
 };
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤',(TW_KARAOKE_TIME?'Karaoke⭐Time!':'Karaoke⭐Day!'),'pts']];
@@ -8807,20 +8852,7 @@ function twRankRender(){
    (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[3],k[0]);}).join('')+'</ol>':
     '<p>'+escHtml(twRankStatus(k[0]))+'</p>')+'</div>';
  }).join('');
- var kt=$('twRankKt'),ktTit=$('twRankKtTit');
- if(kt&&ktTit){
-  var on=typeof TW_KARAOKE_TIME!=='undefined'&&TW_KARAOKE_TIME===true,w=TW_KT_WORDS[LANG]||TW_KT_WORDS.pt;
-  kt.hidden=ktTit.hidden=!on;
-  if(on){
-   ktTit.innerHTML=escHtml(w[0])+'<small class="tw-jpsub" lang="ja">カラオケ・タイム · コンボと正確さ</small>';
-   kt.innerHTML=[['kcombo',w[2],'combo'],['kacertos',w[3],'%']].map(function(k){
-    var list=twRankData[k[0]];
-    return '<div class="tw-rank-game"><h3>'+escHtml(k[1])+'</h3>'+
-     (list.length?'<ol>'+list.map(function(r,i){return twRankRow(r,i,k[2],'karaoke');}).join('')+'</ol>':
-      '<p>'+escHtml(twRankStatus('karaoke'))+'</p>')+'</div>';
-   }).join('');
-  }
- }
+ twMicRender();
  twRankDrawAvatars();
 }
 function twRankRenderProfile(){

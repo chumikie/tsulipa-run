@@ -140,12 +140,14 @@
    The original hubIdols showcase remains in its own location and lifecycle. */
 @media(min-width:900px){
   #hub .hubin:has(#hubMenu:not([hidden])){max-width:1040px}
-  #hub #hubMenu{
+  #hub #hubMenu:not([hidden]){
     display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);
     column-gap:18px;align-items:start;
   }
-  #hub #hubMenu>#hubCards{grid-column:1;grid-row:1}
-  #hub #hubMenu>.tw-rank-hall{grid-column:2;grid-row:1;margin-top:14px}
+  #hub #hubMenu>.tw-rank-tv-launch-row{grid-column:1/-1;grid-row:1}
+  #hub #hubMenu>#hubCards{grid-column:1;grid-row:2}
+  #hub #hubMenu>.hubenc{grid-column:1;grid-row:3}
+  #hub #hubMenu>.tw-rank-hall{grid-column:2;grid-row:2/span 2;margin-top:0}
   #hub #hubMenu>.hubidols,
   #hub #hubMenu>.hubpainel:not(.tw-rank-hall),
   #hub #hubMenu>.hublinks,

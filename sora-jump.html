@@ -1495,6 +1495,89 @@ function soraBadgeTier(){
   return 0;
 }
 var soraOpen = false;
+
+/*
+ * Portão 1 — identidade online do Sora⭐Jump.
+ * Reutiliza a sessão Google já criada em "Meu Perfil" e compartilhada
+ * com o Karaoke: mesmo projeto, mesma chave pública e storageKey padrão
+ * do supabase-js. Não cria login, conta ou sessão paralela.
+ *
+ * As chamadas de partida ficam desligadas até a migração SQL ser aprovada
+ * e aplicada. O jogo local continua funcionando normalmente nesse intervalo.
+ */
+var SORA_ONLINE_RANKING_ENABLED = false;
+var soraOnlineUserId = null;
+var soraOnlineAuthPromise = null;
+var soraOnlineAuthSubscription = null;
+var soraOnlineRunId = null;
+var soraOnlineRunStartPromise = null;
+var soraOnlineRunFinishSent = false;
+
+function soraOnlineSetSession(session){
+  var user = session && session.user;
+  // O ranking aceita contas Google reais, nunca sessões anônimas.
+  soraOnlineUserId = user && user.is_anonymous !== true ? user.id : null;
+}
+function soraOnlineInitAuth(){
+  if(!_supabase || !_supabase.auth || typeof _supabase.auth.getSession !== 'function'){
+    return Promise.resolve(null);
+  }
+  if(!soraOnlineAuthSubscription && typeof _supabase.auth.onAuthStateChange === 'function'){
+    try{
+      var authWatch = _supabase.auth.onAuthStateChange(function(_event, session){
+        soraOnlineSetSession(session);
+      });
+      soraOnlineAuthSubscription = authWatch && authWatch.data && authWatch.data.subscription || null;
+    }catch(e){}
+  }
+  if(!soraOnlineAuthPromise){
+    soraOnlineAuthPromise = _supabase.auth.getSession().then(function(result){
+      if(result && result.error) throw result.error;
+      soraOnlineSetSession(result && result.data && result.data.session);
+      return soraOnlineUserId;
+    }).catch(function(error){
+      soraOnlineUserId = null;
+      console.warn('Sora⭐Jump: sessão da conta indisponível.', error);
+      return null;
+    });
+  }
+  return soraOnlineAuthPromise;
+}
+function soraOnlineBeginRun(){
+  if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId) return Promise.resolve(null);
+  soraOnlineRunId = null;
+  soraOnlineRunFinishSent = false;
+  soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(userId){
+    if(!userId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+    return _supabase.rpc('sora_run_start').then(function(result){
+      if(result && result.error) throw result.error;
+      if(!result || typeof result.data !== 'string') throw new Error('Resposta inválida ao iniciar partida.');
+      soraOnlineRunId = result.data;
+      return soraOnlineRunId;
+    });
+  }).catch(function(error){
+    soraOnlineRunId = null;
+    console.warn('Sora⭐Jump: não foi possível registrar o início da partida.', error);
+    return null;
+  });
+  return soraOnlineRunStartPromise;
+}
+function soraOnlineFinishRun(score){
+  if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId || soraOnlineRunFinishSent ||
+     !Number.isSafeInteger(score) || score <= 0 || !soraOnlineRunStartPromise) return;
+  soraOnlineRunFinishSent = true;
+  Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
+    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+    return _supabase.rpc('sora_run_finish',{p_run_id:runId,p_score:score});
+  }).then(function(result){
+    if(result && result.error) throw result.error;
+    soraOnlineRunId = null;
+  }).catch(function(error){
+    console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
+  });
+}
+soraOnlineInitAuth();
+
 var soraState = 'menu';
 var soraCv = null, soraCtx = null;
 var SW = 360, SH = 520;
@@ -3637,6 +3720,7 @@ function soraLoop(t){
 function soraStartGame(){
   var audioReady = soraSoundOn ? ac() : null;
   soraReset(); soraState = 'play';
+  soraOnlineBeginRun();
   if(soraSoundOn && !muted){
     if(audioReady && audioReady.state === 'suspended' && typeof audioReady.resume === 'function'){
       try{ audioReady.resume().then(function(){ if(soraOpen && soraState === 'play' && soraSoundOn && !muted) soraMusicStart(); }).catch(function(){}); }catch(e){}
@@ -3653,6 +3737,7 @@ function soraEndGame(){
   if(soraSoundOn && sfx && sfx.over) sfx.over();
   var h = Math.floor(soraHeight);
   var isTestScene = !!soraTestSceneId;
+  if(!isTestScene) soraOnlineFinishRun(h);
   var isNew = !isTestScene && h > soraBest;
   if(isNew){
     soraBest = h;

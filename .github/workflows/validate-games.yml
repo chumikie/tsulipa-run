@@ -35,7 +35,7 @@ on:
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - '.github/workflows/validate-games.yml'
   push:
-    branches: [main]
+    branches: [main, lancamento/30-10]
     paths:
       - 'index.html'
       - 'pet-sync.js'

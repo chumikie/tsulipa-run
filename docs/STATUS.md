@@ -3,65 +3,62 @@
 Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
 
 ## Onde está cada coisa
-- **Site no ar:** https://tsulipa-world.vercel.app (Vercel pausada pela dona até a nova versão ficar pronta).
-- **Versão nova:** branch `release/index2-lancamento`, PR #34 (rascunho). Prévia: https://deploy-preview-34--tsulipa-run.netlify.app
-- **PR #33:** todo o conteúdo dele já está no #34. Fechar sem merge depois do lançamento.
+- **Site no ar:** https://tsulipa-world.vercel.app
+- **Trabalho atual:** na pasta do computador, offline. Nada vai para o GitHub nem para a Vercel sem a dona pedir.
 - **Supabase de produção:** `fsggtvgbyhchblyazgmt`. Homologação (só testes): `hfzjoefnousiouiuchys`.
 
 ## Arquivos do site (raiz)
 | Arquivo | O que é |
 |---|---|
-| `index.html` | Página principal: tela de início → menu (Center Run, Pet, Perfil, Gacha, Sora, Moon Duo, Karaoke, Encontro, Missões, vitrine, Top Idols). |
+| `index.html` | Página principal: tela de início → menu (Center Run, Pet, Perfil, Gacha, Sora, Moon Duo, Karaoke, Encontro, Missões, vitrine, Top Idols, TsuLiPa TV). |
 | `index2.html` | Só redireciona para `/` (links antigos). |
-| `sora-jump.html` | Sora⭐Jump! (abre por iframe a partir do menu). |
+| `sora-jump.html` | Sora⭐Jump!, aberto como pop-up da página principal. |
 | `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! e a sala online real. |
 | `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Módulos do Karaoke e o laboratório de homologação (`?homol=1`). |
-| `sora-jump-karaoke.html` | Seletor dos dois jogos quando abertos sozinhos, fora do menu. |
-| `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu e TV), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
-| `privacidade.html`, ícones, `manifest.json`, `og.*`, `googled…html` | Página de privacidade, ícones e verificação do Google. |
+| `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
+| `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |
+| `privacidade.html`, ícones, `manifest.json`, `og.jpg`, `googled…html` | Privacidade, ícones, imagem de compartilhamento e verificação do Google. |
 | `tests/` + `.github/workflows/validate-games.yml` | 9 verificações automáticas a cada envio. |
+| `supabase/` | SQL aplicado e testes de banco. `supabase/sql/README.md` diz o que já está no ar. |
+| `docs/` | Este STATUS e o histórico em `docs/historico/`. |
 
-## Feito nesta etapa (30/10)
+## Feito até o lançamento (30/10)
 - Karaoke online real na produção, com contas do site; abre todo domingo 12h–13h10; moderação abre teste de 30 min.
-- Página sem piscar a versão antiga; menu em coluna única no computador; cards 3×2 (Pet, Perfil, Gacha / Sora, Moon Duo, Karaoke).
-- TsuLiPa TV: troféu voando no canto do banner, abre o pop-up do ranking (antes abria vazio).
-- Top Idols logo abaixo da vitrine.
-- Encontro do dia: nomes de todos na dupla/trio (botão, cartão e foto).
-- Sora: os cenários secretos (10 toques no título) voltaram a aparecer.
-- Visual único: perfil e Center Run usam o mesmo personagem; vitrine e outdoors sem o pet da foto.
-- Karaoke: a cortina da direita não fechava (só a esquerda aparecia); agora as duas fecham e o varal de enfeites atravessa o palco inteiro.
-- GitHub: documentos antigos em `docs/historico/`, STATUS único. Branches já mescladas (20) podem ser apagadas pela dona em GitHub → Branches; manter `main`, `release/index2-lancamento` e, até fechar os PRs, `feature/sora-karaoke-v2-2026-10-29` e `test/karaoke-reuse-anonymous-session`.
+- Página sem piscar a versão antiga; menu em coluna única no computador; cards Pet, Perfil, Gacha / Sora, Moon Duo, Karaoke.
+- TsuLiPa TV: troféu voando no canto do banner abre o pop-up do ranking.
+- Top Idols logo abaixo da vitrine. Encontro do dia com os nomes de todos.
+- Center⭐Run! Temporada 2: 8 cenários, deslizar, obstáculos que andam, combo, corredor de fãs, desafio, Coro, Corrida do dia e seletor de cenário no Modo Teste.
+- Perfil com emoji, cor e time (B, R, S, KKS); Oshi escolhido entre quem joga. Mesmo visual no perfil e no Center Run.
+- Subtítulos em japonês e traduções conferidas em EN/ES/TH/JA.
+- Banner: tocar na Tsu, Lirika ou Pati dá pulinho, emojis, balão kawaii e voz real (5 falas cada, risada a cada duas). Os pets também respondem.
+- Músicas dos temas trocadas por covers do TsuLiPa (os nomes dos temas não mudaram).
+- Privacidade atualizada em 5 idiomas. Imagem de compartilhamento com os 6 modos.
 
-## Feito em 30/10 (2ª rodada)
-- Center⭐Run! Temporada 2 integrada no `index.html` (veio da v20): 8 cenários, deslizar (seta ↓ / botão ▼), obstáculos que andam, combo, corredor de fãs, desafio, Coro, Corrida do dia e seletor de cenário no Modo Teste. Na Rua da cidade a corrida é a de antes. Placar ganhou fundo translúcido nos cenários novos.
-- Perfil: emoji, cor e time (B, R, S, KKS) e Oshi escolhido entre quem joga. Banco já atualizado em 30/10 (`supabase/sql/perfil_emoji_cor_time_oshi.sql`).
-- Karaoke: telão com o mesmo grupo para todos (grupo 1 às 12h00 … 6 às 12h50, novo sorteio por semana) e vista alternando Gigoia/Liberdade por semana.
+## Feito offline, depois do lançamento
+- **Karaoke · sala online:** a ponte do palco refazia o layout e jogava fora o nick e o visual reais, então todo mundo virava "Idol 01" com boneco sorteado. Corrigido. Os 8 lugares do sofá ficavam empilhados dois a dois: agora espalhados.
+- **Karaoke · janela da Liberdade:** a corda das lanternas flutuava sem apoio (agora dois postes na calçada), as lanternas viraram luzes de verdade, os toldos e as placas 茶 (chá) e 麺 (lámen) viraram lojinhas apoiadas no chão.
+- **Sora⭐Jump!:** abre como pop-up da página, igual ao Star⭐Gacha, no cartão do tema escolhido e sobre a página escurecida. O menu, o fim de jogo e o placar saíram do vidro escuro para o pastel do site. O ⌂ Início saiu de cima do placar.
+- **Som:** com o Sora ou o Karaoke abertos, a página para a própria música (antes a do Center Run voltava por cima).
+- **Voltar:** fora do pop-up, voltar leva à página principal. O seletor avulso `sora-jump-karaoke.html` foi removido — era por onde o voltar se perdia.
+- **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
+- **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
 
-- Subtítulos em japonês no Center⭐Run!, Missões do dia, vitrine de Idols e Top Idols. Traduções do menu e do Center Run conferidas em EN/ES/TH/JA.
-- Banner do TsuLiPa: tocar na Tsu, Lirika ou Pati faz pulinho, emojis e um "oi" escrito (vozes entram quando as gravações chegarem).
-- Música de cada tema agora é cover do TsuLiPa (nomes dos temas iguais): Halloween Love Pulsar, Natal Pittari Shitai X'mas!, Ano Novo Wish You Happiness!!, Valentine Valentine Kiss, Verão Splash Dream, Outono Samishii Nettaigyo, Inverno Monster, Primavera Cheeky Cheeky, Sakura ZIPPER, Tanabata Wagamama na Nagareboshi, Dia das Crianças Amor Grilado, Aniversário Aitakatta.
+## Falta
+1. Teste da sala do Karaoke com 2 pessoas, pelo botão "Karaoke: abrir teste (30 min)" da moderação.
+2. Jogo de ritmo do Karaoke: estética e lógica a rever.
+3. No celular: compra, gacha, resgate e corrida salvando.
+4. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
 
-- Banner: vozes reais do trio (5 falas cada, risada a cada duas falas); balão kawaii (um só contorno com rabinho, fonte Mochiy Pop One, ~3,5 s); pets do banner clicáveis com a vozinha de cada um.
-- Privacidade atualizada (30/10) em 5 idiomas: estilo do perfil, presença no Karaoke e vozes (sem microfone, sem gravação).
-
-- Descrições do link atualizadas com todos os modos ; imagem og no estilo anterior (trio no tema ZIPPER) com os 6 modos.
-- Trilha sonora: 31 faixas geradas no código (25 músicas diferentes), gravadas em MP3 fora do repositório.
-
-## Falta antes do merge
-1. Teste com 2 pessoas na prévia: moderação → "Karaoke: abrir teste (30 min)", as duas entram, pedem o microfone, a vez passa.
-2. No celular: compra, gacha, resgate, corrida salvando (a trava da prévia saiu).
-3. Revisar visual do Karaoke (cortina e itens) e do Sora (moldura igual à do Center Run).
-
-## Ideias aprovadas para depois do lançamento
-- Emoji, cor favorita e time (B azul, R amarelo, S verde, KKS ciano) no perfil; lista de Oshi só com quem joga.
+## Ideias aprovadas para depois
 - Comidas e bebidas do Karaoke custando estrelas que vão para a conta da moderação.
 - Banner que alterna os 3 primeiros da semana (Center Run, Sora, Karaoke).
 - 3 fotinhas no perfil (guardando a receita da foto, não a imagem).
 - Nota máxima no Karaoke: a sala comemora com frases, pulinhos e brilhos.
-- TsuLiPa e jogadores da vitrine clicáveis com som (precisa dos áudios curtos).
+- Catálogo Sora Idol / Karaoke Idol (cenários, roupas, acessórios) e o tema Dia da Paz.
 
 ## Regras
 - Nunca renomear chaves `brs48cr_*`. Nunca commit direto na `main`: sempre PR, e quem faz merge é a dona.
-- Juntar mudanças em poucos envios (cada push gera build).
+- Juntar mudanças em poucos envios (cada push gera build na Vercel).
 - Não criar dados falsos na produção. Testes de banco só em transação desfeita ou na homologação.
 - `TW_RANK_ONLINE_READY=false` até existir pontuação conferida no servidor para Sora/Karaoke.
+- Antes de qualquer merge, `TW_JOGOS_SEM_LOGIN` tem que voltar para `false` no `index.html`.

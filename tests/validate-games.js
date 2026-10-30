@@ -10,7 +10,6 @@ const root=path.resolve(__dirname,"..");
 const games=[
   {file:"index.html",max:1150000},
   {file:"index2.html",max:1000},
-  {file:"sora-jump-karaoke.html",max:40000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
   {file:"karaoke-online-lab.html",max:30000}
@@ -36,18 +35,19 @@ for(const game of games){
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");
 }
 
-let hub="",karaoke="",sora="",preview="";
+let karaoke="",sora="",preview="";
 try{
-  hub=read("sora-jump-karaoke.html");
   preview=read("index.html");
   karaoke=read("karaoke-day.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
 
-for(const ref of ["sora-jump.html","karaoke-day.html"]){
-  assert(hub.includes('data-open="'+ref+'"'),"Hub missing launcher for "+ref);
+// A pagina principal e a unica porta de entrada dos jogos: nao existe mais um
+// seletor separado (sora-jump-karaoke.html), que era por onde o voltar se perdia.
+assert(!fs.existsSync(path.join(root,"sora-jump-karaoke.html")),"O seletor avulso nao deve voltar ao projeto");
+for(const jogo of ["sora","karaoke"]){
+  assert(preview.includes('data-ir="'+jogo+'"'),"Falta o card do "+jogo+" na pagina principal");
 }
-assert(hub.includes("games-theme.css"),"Hub missing shared theme");
 assert(preview.includes('class="hubcard tw-hubgame')&&preview.includes("twPreviewAbrirJogo"),
   "index2 missing integrated game cards or launchers");
 assert(!preview.includes('name="robots" content="noindex'),"Canonical home must be indexable");

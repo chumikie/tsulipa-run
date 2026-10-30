@@ -8540,16 +8540,16 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
   var nome = p.nome || (PET_SP[petData.ativo] ? PET_SP[petData.ativo].n : 'Pet');
   return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true, comFome] : [nome + ' ' + tr('está bem!'), false, comFome];
 }
-// Karaoke preview schedule (Sunday 12:00–13:10 America/Sao_Paulo).
-// The inaugural schedule is enabled only on local builds and Netlify deployment previews.
-var TW_KARAOKE_PRIMEIRA_DATA='2026-11-01';
-var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,1,15,0,0); // 1 Nov, 12h BRT
+// Karaoke live schedule (Sunday 12:00–13:10 America/Sao_Paulo).
+// First public show: 08/11/2026. Manual moderation rehearsals remain available.
+var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
+var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT
 function twKaraokeHomologacao(){
   // Lançamento: a sala online é real (servidor decide o horário). Vale em qualquer endereço.
   return true;
 }
 function twKaraokeHorario(){
-  // Public production must never launch the preview event.
+  // The client countdown follows the same first-public-show date as the server.
   if(!twKaraokeHomologacao())return {aberto:false,faltam:0,estreia:false,foraHomologacao:true};
   var ateEstreia=Math.ceil((TW_KARAOKE_PRIMEIRA_ABERTURA-Date.now())/1000);
   if(ateEstreia>0)return {aberto:false,faltam:ateEstreia,estreia:true};
@@ -8578,7 +8578,7 @@ function twKaraokeAtualizarCard(){
   var somentePreview=TW_KARAOKE_HOMOLOGACAO_TEXTOS[LANG]||TW_KARAOKE_HOMOLOGACAO_TEXTOS.pt;
   card.classList.toggle('tw-karaoke-locked',!!estado.foraHomologacao||(!estado.aberto&&!adm));
   card.setAttribute('aria-disabled',String(!!estado.foraHomologacao||(!estado.aberto&&!adm)));
-  var lead=estado.estreia?({pt:'🎤 Estreia 01/11 · ',en:'🎤 Premiere Nov 1 · ',es:'🎤 Estreno 01/11 · ',ja:'🎤 初公開11/1 · ',th:'🎤 เปิดตัว 1/11 · '}[LANG]||'🎤 Estreia 01/11 · '):fmt[0];
+  var lead=estado.estreia?({pt:'🎤 Estreia 08/11 · ',en:'🎤 Premiere Nov 8 · ',es:'🎤 Estreno 08/11 · ',ja:'🎤 初公開11/8 · ',th:'🎤 เปิดตัว 8/11 · '}[LANG]||'🎤 Estreia 08/11 · '):fmt[0];
   if(txt)txt.textContent=estado.foraHomologacao?somentePreview.card:estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
   card.title=estado.foraHomologacao?somentePreview.card:'Karaoke⭐Day! · todo domingo, 12h–13h10 (Brasília)';
 }
@@ -8938,11 +8938,11 @@ function twPreviewAtualizarIdioma(){
   twPreviewSomRotular();
 }
 var TW_KARAOKE_FECHADO_TEXTOS = {
-  pt:['💗 O palco está descansando para o próximo show!','🎤 Estreia planejada: domingo, 01/11/2026, 12h–13h10 (Brasília). Faltam ','🎤 Domingo, 12h–13h10 (Brasília). Abre em ','💜 Sala online com até 9 Idols, fila de 3 e microfone na vez de cada um!','Fechar','🧪 Ensaiar agora',['d','h','min']],
-  en:['💗 The stage is resting until the next show!','🎤 Planned premiere: Sunday, November 1, 2026, 12:00–13:10 (Brasília). Time remaining: ','🎤 Sunday, 12:00–13:10 (Brasília). Opens in ','💜 Online room for up to 9 Idols, a queue of 3 and one mic at a time!','Close','🧪 Play rehearsal',['d','h','min']],
-  es:['💗 ¡El escenario descansa hasta el próximo show!','🎤 Estreno previsto: domingo, 01/11/2026, 12:00–13:10 (Brasília). Faltan ','🎤 Domingo, 12:00–13:10 (Brasília). Abre en ','💜 ¡Sala en línea para hasta 9 Idols, fila de 3 y un micrófono por turno!','Cerrar','🧪 Ensayar ahora',['d','h','min']],
-  th:['💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!','🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 1 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก ','🎤 วันอาทิตย์ เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เปิดในอีก ','💜 ห้องออนไลน์สูงสุด 9 ไอดอล คิว 3 คน และไมค์ทีละคน!','ปิด','🧪 ทดลองซ้อมตอนนี้',['วัน','ชม.','นาที']],
-  ja:['💗 次のショーまでステージはお休み中！','🎤 初回開催予定：2026年11月1日（日）12:00〜13:10（ブラジリア時間）。あと ','🎤 日曜日12:00〜13:10（ブラジリア時間）。開始まであと ','💜 最大9人のオンラインルーム。順番待ち3人、マイクは1人ずつ！','閉じる','🧪 今すぐ練習',['日','時間','分']]
+  pt:['💗 O palco está descansando para o próximo show!','🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam ','🎤 Domingo, 12h–13h10 (Brasília). Abre em ','💜 Sala online com até 9 Idols, fila de 3 e microfone na vez de cada um!','Fechar','🧪 Ensaiar agora',['d','h','min']],
+  en:['💗 The stage is resting until the next show!','🎤 Planned premiere: Sunday, November 8, 2026, 12:00–13:10 (Brasília). Time remaining: ','🎤 Sunday, 12:00–13:10 (Brasília). Opens in ','💜 Online room for up to 9 Idols, a queue of 3 and one mic at a time!','Close','🧪 Play rehearsal',['d','h','min']],
+  es:['💗 ¡El escenario descansa hasta el próximo show!','🎤 Estreno previsto: domingo, 08/11/2026, 12:00–13:10 (Brasília). Faltan ','🎤 Domingo, 12:00–13:10 (Brasília). Abre en ','💜 ¡Sala en línea para hasta 9 Idols, fila de 3 y un micrófono por turno!','Cerrar','🧪 Ensayar ahora',['d','h','min']],
+  th:['💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!','🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 8 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก ','🎤 วันอาทิตย์ เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เปิดในอีก ','💜 ห้องออนไลน์สูงสุด 9 ไอดอล คิว 3 คน และไมค์ทีละคน!','ปิด','🧪 ทดลองซ้อมตอนนี้',['วัน','ชม.','นาที']],
+  ja:['💗 次のショーまでステージはお休み中！','🎤 初回開催予定：2026年11月8日（日）12:00〜13:10（ブラジリア時間）。あと ','🎤 日曜日12:00〜13:10（ブラジリア時間）。開始まであと ','💜 最大9人のオンラインルーム。順番待ち3人、マイクは1人ずつ！','閉じる','🧪 今すぐ練習',['日','時間','分']]
 };
 var TW_KARAOKE_HOMOLOGACAO_TEXTOS = {
   pt:{card:'🔒 Somente na prévia de homologação',intro:'💗 A estreia do Karaoke está em teste e só pode ser aberta nesta prévia de homologação.',detail:'A versão pública continua fechada.'},

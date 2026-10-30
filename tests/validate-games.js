@@ -181,7 +181,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&

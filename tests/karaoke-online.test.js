@@ -11,8 +11,10 @@ assert(js.includes("q.get('homol')==='1'||location.hostname!=='tsulipa-world.ver
  'cliente de produção só roda no domínio publicado');
 assert(js.includes("p_action:'leave'"),'libera a vaga ao fechar');
 ['pt','en','es','th','ja'].forEach(l=>assert(js.includes(l+':{tit:'),'textos em '+l));
-assert(game.includes("client.src=KR_HOMOLOGATION?'./karaoke-homol-client.js?v=9':'./karaoke-online.js?v=3'"),
- 'prévia seleciona homologação automaticamente');
+assert(game.includes("client.src=homologation?'./karaoke-homol-client.js?v=9':'./karaoke-online.js?v=3'"),
+ 'preview client loader selects the correct backend');
+assert(game.includes("var homologation=new URLSearchParams(location.search).get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app';"),
+ 'client loader determines its backend in its own scope');
 assert(game.includes("location.hostname!=='tsulipa-world.vercel.app'"),
  'páginas fora do domínio publicado nunca carregam o backend de produção');
 assert(game.includes("'./karaoke-homol-view.js?v=2'"),'jogo carrega o modelo atualizado de palco');

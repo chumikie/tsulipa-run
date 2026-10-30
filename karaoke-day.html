@@ -654,6 +654,7 @@ if(krHomolAtivo){
 <script>
 (function(){
   // Somente o domínio oficial usa produção; prévias e ?homol=1 usam homologação.
+  var homologation=new URLSearchParams(location.search).get('homol')==='1'||location.hostname!=='tsulipa-world.vercel.app';
   var helper=document.createElement('script');
   helper.src='./karaoke-homol-view.js?v=2';
   helper.onload=function(){
@@ -665,7 +666,7 @@ if(krHomolAtivo){
   };
   function loadClient(){
     var client=document.createElement('script');
-    client.src=KR_HOMOLOGATION?'./karaoke-homol-client.js?v=9':'./karaoke-online.js?v=3';
+    client.src=homologation?'./karaoke-homol-client.js?v=9':'./karaoke-online.js?v=3';
     document.body.appendChild(client);
   };
   helper.onerror=function(){console.warn('Karaoke: homologação indisponível');};

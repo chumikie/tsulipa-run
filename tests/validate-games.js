@@ -147,7 +147,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Day! · Em breve"),
   "Index 2 missing Sora intro or Karaoke coming-soon teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
@@ -158,7 +158,7 @@ assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&
   "Welcome screen should use a compact TsuLiPa TV launcher and popup");
 assert(lab.includes('id="twPreviewSom"')&&lab.includes("TW_SORA_SOUND_STATE")&&
        sora.includes("TW_SORA_TOGGLE_SOUND")&&soraEmbedSkin.includes("html.tw-sora-embed #soraSoundBtn{display:none!important}")&&
-       previewSkin.includes(".tw-preview-som"),
+       launchSkin.includes(".tw-preview-som"),
   "Sora should expose sound in the official header and keep standalone UI intact");
 assert(lab.includes('class="tw-profile-lock"')&&lab.includes('class="tw-profile-hint"')&&
        lab.includes('data-ir="run"'),
@@ -172,7 +172,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<10000&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<10000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -219,7 +219,8 @@ assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gach
 assert(lab.includes("function twKaraokeHorario()")&&
        lab.includes("timeZone:'America/Sao_Paulo'")&&
        lab.includes("function twKaraokeAtualizarCard()")&&
-       lab.includes("if(tipo==='karaoke'&&!ensaio&&!twKaraokeHorario().aberto&&")&&
+       lab.includes("if(tipo==='karaoke'&&!ensaio&&!horarioKaraoke.aberto&&")&&
+       lab.includes("horarioKaraoke.foraHomologacao")&&
        lab.includes('class="tw-karaoke-timer"')&&
        previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
   "INDEX2 should display Sunday countdown and guard preview card outside the time window");

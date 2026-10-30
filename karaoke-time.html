@@ -243,6 +243,19 @@ html.kt-no-site body{padding:0!important;min-height:0}
 html.kt-no-site #ktPopup::backdrop,html.kt-no-site ::backdrop{background:transparent!important;backdrop-filter:none!important}
 html.kt-no-site #ktPopup{background:transparent!important;border:0!important;box-shadow:none!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;padding:4px 8px 16px!important;margin:0 auto!important;overscroll-behavior:contain}
 html.kt-no-site .krwrap{max-width:none;background:transparent!important;border:0!important;box-shadow:none!important}
+
+/* No popup do hub, o som acompanha a câmera no canto da sala. */
+html.kt-no-site #krPalco #krMute{
+  position:absolute!important;z-index:7!important;right:64px!important;bottom:10px!important;
+  display:grid!important;place-items:center!important;
+  width:44px!important;height:44px!important;min-width:44px!important;
+  margin:0!important;padding:0!important;border:2px solid #fff!important;border-radius:50%!important;
+  background:linear-gradient(135deg,#ff6fb5,#7b3ff0)!important;color:#fff!important;
+  font-size:20px!important;line-height:1!important;
+  box-shadow:0 3px 0 rgba(44,26,143,.45),0 6px 14px rgba(20,8,50,.35)!important;
+}
+html.kt-no-site #krPalco #krMute:active{transform:translateY(2px)}
+html.kt-no-site #krPalco #krMute:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 </style>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><b>KARAOKE TIME</b> · jogo solo offline</span><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -1976,5 +1989,12 @@ function iniciar(){
   });}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
 }
 if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',iniciar);
+})();
+</script><script>
+/* No modo incorporado, agrupa som e câmera dentro da própria sala. */
+(function(){
+  if(!document.documentElement.classList.contains('kt-no-site'))return;
+  var som=document.getElementById('krMute'),palco=document.getElementById('krPalco');
+  if(som&&palco)palco.appendChild(som);
 })();
 </script></body></html>

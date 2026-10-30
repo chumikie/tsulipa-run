@@ -105,7 +105,7 @@ function evaluate(script,context){
 // Embedded stage geometry follows the iframe's available height on short and narrow screens.
 // This is CSS-only: the 360x520 game world and gameplay loop remain untouched.
 assert.ok(html.includes("style.href='./sora-embed.css?v=3'"),'embedded sizing CSS cache version');
-assert.ok(embedCss.includes('width:min(100%,360px,calc((100dvh - 128px)*360/520))!important;'),'desktop iframe height allowance');
+assert.ok(embedCss.includes('width:min(100%,440px,calc((100dvh - 138px)*360/520))!important;'),'desktop iframe height allowance');
 assert.ok(embedCss.includes('width:min(100%,350px,calc((100dvh - 108px)*360/520))!important;'),'mobile portrait height allowance');
 assert.ok(embedCss.includes('#soraStage{width:min(100%,360px,calc((100dvh - 112px)*360/520))!important}'),'short landscape height allowance');
 assert.ok(embedCss.includes('aspect-ratio:360/520!important;'),'keep original game stage aspect ratio');

@@ -18,7 +18,7 @@ as $function$
   ),
   week_window as (
     select
-      today - pg_catalog.extract(dow from today)::integer as sunday
+      today - extract(dow from today)::integer as sunday
     from local_day
   ),
   bounds as (

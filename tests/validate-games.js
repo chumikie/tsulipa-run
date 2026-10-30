@@ -205,7 +205,7 @@ assert(encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&
   "Duo/trio stays on one stage with its characters and line, while individual Oshi is hidden for collective encounters");
 assert(lab.includes("contaRpc('encontro_hoje'")&&
        lab.includes("localStorage.setItem(ENC_KEY")&&
-       lab.includes("d.dia === encHoje()"),
+       lab.includes("j.dia === encHoje()"),
   "Logged-in daily encounter is server-selected and locally cached by Brazil date");
 const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
 const accGuard=lab.slice(accStart,accEnd);

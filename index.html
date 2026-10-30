@@ -741,7 +741,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./index2-skin.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=8">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
-<link rel="stylesheet" href="./tw-mic-cd-popup.css?v=2">
+<link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 </head>
 <body>
 <header>
@@ -8616,7 +8616,12 @@ setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME
   hubOv.insertAdjacentHTML('beforeend', '<section class="tw-rank-tv-modal" id="twMicModal" hidden>' +
     '<section class="tw-rank-tv tw-mic-tv" role="dialog" aria-modal="true" aria-labelledby="twMicTit">' +
     '<div class="tw-rank-tv-head"><b id="twMicTit">🎤 Karaoke⭐Time!</b><small>' + escHtml(w[5]) + '</small><button type="button" class="tw-rank-tv-close" id="twMicFechar" aria-label="' + escHtml(w[3]) + '">×</button></div>' +
-    '<div class="tw-rank-tv-screen" id="twMicTela" aria-live="polite"></div></section></section>');
+    '<div class="tw-rank-tv-screen" id="twMicTela" aria-live="polite"></div>' +
+    '<div class="tw-mic-radio-deck" aria-hidden="true">' +
+    '<span class="tw-mic-speaker"><i></i></span>' +
+    '<span class="tw-mic-tuner"><b>FM</b><strong>88.8</strong><i></i></span>' +
+    '<span class="tw-mic-knobs"><i></i><i></i></span>' +
+    '</div></section></section>');
   var b = $('twMicAbrir'), m = $('twMicModal');
   b.addEventListener('click', function(){
     twMicAcerto(); twMicRender(); m.hidden = false; b.setAttribute('aria-expanded', 'true');
@@ -8775,11 +8780,10 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
   var nome = p.nome || (PET_SP[petData.ativo] ? PET_SP[petData.ativo].n : 'Pet');
   return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true, comFome] : [nome + ' ' + tr('está bem!'), false, comFome];
 }
-// Karaoke live schedule (Sunday 12:00–13:10 America/Sao_Paulo).
-// First public show: 08/11/2026. Manual moderation rehearsals remain available.
-// Karaoke⭐Time! (solo, offline, 5 shows por dia) ocupa o card do Karaoke.
-// O Karaoke⭐Day! online (domingos, sala real, homologação) fica guardado para depois:
-// para voltar com ele, basta trocar esta chave para false.
+// Karaoke⭐Day! (antiga sala simultânea de domingo) foi aposentado.
+// A sala virtual, fila e ensaios de sala não fazem parte do jogo atual.
+// Karaoke⭐Time! é o único karaokê ativo: jogo individual de ritmo com plateia visual.
+// O ranking semanal é online; a experiência de jogo continua individual e não usa sala simultânea.
 var TW_KARAOKE_TIME=true;
 var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
 var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT

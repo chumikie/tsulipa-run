@@ -182,14 +182,17 @@ assert(lab.includes('href="./index2-skin.css?v=1"')&&
 assert(lab.includes('href="./tw-mic-cd-popup.css?v=2"'),
   "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
 assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
-       micCdSkin.includes("FM   88.8")&&!micCdSkin.includes("twMicCdSpin")&&
+       micCdSkin.includes(".tw-mic-radio-deck")&&micCdSkin.includes(".tw-mic-speaker")&&
+       micCdSkin.includes(".tw-mic-tuner")&&micCdSkin.includes("margin:0;padding:10px 9px")&&
+       !micCdSkin.includes("twMicCdSpin")&&
        micCdSkin.includes(".encp.enc-grupo #encRk")&&
        micCdSkin.includes(".encp.enc-grupo #encSelo")&&
        lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        lab.includes("$('encNick').textContent = encNomes(d)")&&
        !lab.includes('id="encPessoas"')&&
-       !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
-  "Compact radio belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
+       !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
+       lab.includes('id="twMicTela"')&&lab.includes('class="tw-mic-radio-deck"'),
+  "Aligned radio deck belongs only to the banner mic modal; ranking content and duo/trio grouping remain intact");
 const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
 const accGuard=lab.slice(accStart,accEnd);
 assert(accStart>=0&&accEnd>accStart&&accGuard.includes("o.disabled=!u")&&
@@ -200,6 +203,23 @@ assert(lab.includes("brs48cr_visual_rev")&&lab.includes("admin_visual_rev")&&
        lab.includes("admin_visual_info")&&lab.includes("admin_vestir")&&
        lab.includes("admin_cuidar_pets"),
   "Admin visual/pet corrections must sync with a server revision so stale saves cannot undo them");
+const privacyPage=read("privacidade.html");
+assert(!privacyPage.includes("Karaoke⭐Day!")&&
+       (privacyPage.match(/Karaoke⭐Time!/g)||[]).length>=10,
+  "Privacy page must describe only Karaoke Time, not the retired Sunday virtual room, in all five locales");
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));
+const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
+const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
+assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
+       seasonalDraw.includes("JSON.parse(JSON.stringify(CH[m[0]]))")&&!seasonalDraw.includes("saveCu(")&&
+       lab.includes("hubOv.setAttribute('data-tema', k || '')")&&
+       voiceSource.includes("hubVozTocar(f[0])")&&
+       sfxSource.includes("OSHI === 'tsu'")&&sfxSource.includes("OSHI === 'lirika'")&&sfxSource.includes("OSHI === 'pati'"),
+  "Seasonal presentation must not replace the trio's touch voices, Oshi sound effects or saved outfits");
+assert(newHtml.includes('href="./tw-mic-cd-popup.css?v=3"')&&
+       newHtml.includes("A antiga sala simultânea de domingo")&&
+       newHtml.includes("o ranking semanal é online"),
+  "Karaoke Time is the only current karaoke experience; old Sunday room is documented as retired");
 const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);
 const syncSource=lab.slice(syncStart,syncEnd);
 assert(syncSource.includes("r.pet_rebased || r.visual_rebased")&&

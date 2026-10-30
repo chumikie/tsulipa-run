@@ -8522,10 +8522,11 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
       x.restore();
       if(rg2 < 140){
         x.save(); x.globalAlpha = rg2 < 110 ? 1 : (140 - rg2) / 30; x.textAlign = 'center'; x.textBaseline = 'middle';
-        // No computador o emoji do sistema (Segoe UI Emoji) é mais claro e sem contorno; o brilho branco,
-        // o tamanho e o pulinho de entrada deixam ele vivo como no celular.
+        // No computador os emojis saíam apagados porque herdavam a cor semitransparente usada antes;
+        // agora a cor é opaca, e o brilho branco e o pulinho de entrada deixam eles vivos como no celular.
         x.font = (6.5 * sc) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
         x.shadowColor = 'rgba(255,255,255,.95)'; x.shadowBlur = 2.4 * sc;
+        x.fillStyle = '#000';   // cor opaca: no Chrome do Windows o emoji herda a transparência da cor anterior (a sombra dos pés, 22%)
         HUB_REAGE.emo.forEach(function(e2, n){   // sobem dos lados do Idol, abaixo do balão
           var lado = n % 2 ? 1 : -1, ex2 = hx + lado * (13 + (n % 3) * 4) * sc, ey = chao - 26 * sc - rg2 * e2.v * sc / 7 - n * 2 * sc;
           var nasce = rg2 - n * 3, esc = nasce < 0 ? 0 : nasce < 8 ? .4 + nasce / 8 * .9 : nasce < 13 ? 1.3 - (nasce - 8) / 5 * .3 : 1;

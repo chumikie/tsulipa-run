@@ -4120,5 +4120,29 @@ function soraCloseUI(){
 })();
 </script>
 
+
+<script id="twSoraEmbedSoundBridge">
+(function(){
+  try{if(new URLSearchParams(location.search).get('embed')!=='index2'||parent===window)return;}catch(e){return;}
+  function report(){
+    try{
+      parent.postMessage({type:'TW_SORA_SOUND_STATE',enabled:typeof soraSoundOn==='boolean'?soraSoundOn:true},
+        location.protocol==='file:'?'*':location.origin);
+    }catch(e){}
+  }
+  window.addEventListener('message',function(e){
+    if(e.source!==parent)return;
+    if(location.protocol!=='file:'&&e.origin!==location.origin)return;
+    if(!e.data||(e.data.type!=='TW_SORA_TOGGLE_SOUND'&&e.data.type!=='TW_SORA_GET_SOUND_STATE'))return;
+    if(e.data.type==='TW_SORA_TOGGLE_SOUND'){
+      var b=document.getElementById('soraSoundBtn');
+      if(b&&typeof b.click==='function')b.click();
+    }
+    report();
+  });
+  window.addEventListener('load',report,{once:true});
+})();
+</script>
+
 </body>
 </html>

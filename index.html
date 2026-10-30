@@ -8271,10 +8271,14 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
+  '<button type="button" class="tw-rank-tv-launch" id="twRankTvAbrir" aria-haspopup="dialog" aria-controls="twRankTvModal" aria-expanded="false" aria-label="Abrir TsuLiPa TV"><span aria-hidden="true">📺</span><b>TsuLiPa TV</b><small id="twRankTvLaunchHint">Rankings da semana</small></button>' +
+  '<section class="tw-rank-tv-modal" id="twRankTvModal" hidden role="dialog" aria-modal="true" aria-labelledby="twRankTvModalTitle">'+
+  '<div class="tw-rank-tv-dialog"><h2 id="twRankTvModalTitle" class="tw-rank-visually-hidden">TsuLiPa TV</h2>'+
+  '<button type="button" class="tw-rank-tv-close" id="twRankTvFechar" aria-label="Fechar TsuLiPa TV">×</button>'+
   '<section class="tw-rank-tv" id="twRankTv" aria-label="TV dos rankings semanais">'+
   '<div class="tw-rank-tv-head"><b>📺 TsuLiPa TV</b><small lang="ja">今週のランキング</small></div>'+
   '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
-  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section>' +
+  '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></div></section>' +
   '<button type="button" class="hubtoque" id="hubToque"></button>' +
   '<div id="hubMenu" hidden><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
@@ -8289,6 +8293,26 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="hubrodape"><a href="privacidade.html" target="_blank" rel="noopener" id="hubPriv"></a> · <span translate="no">v2.1.3</span></p></div>' +
   '<div class="hubtut" id="hubTut" hidden></div></div>';
 document.body.appendChild(hubOv);
+function twRankTvModalFechar(){
+  var modal=$('twRankTvModal'),trigger=$('twRankTvAbrir');
+  if(!modal||modal.hidden)return;
+  modal.hidden=true;
+  if(trigger){trigger.setAttribute('aria-expanded','false');trigger.focus({preventScroll:true});}
+}
+(function twRankTvModalPreparar(){
+  var trigger=$('twRankTvAbrir'),modal=$('twRankTvModal'),close=$('twRankTvFechar');
+  if(!trigger||!modal||!close)return;
+  trigger.addEventListener('click',function(){
+    modal.hidden=false;trigger.setAttribute('aria-expanded','true');close.focus({preventScroll:true});
+  });
+  close.addEventListener('click',twRankTvModalFechar);
+  modal.addEventListener('click',function(e){if(e.target===modal)twRankTvModalFechar();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!modal.hidden){
+      e.preventDefault();e.stopImmediatePropagation();twRankTvModalFechar();
+    }
+  },true);
+})();
 var hubT = 0, hubAnim = 0, hubComecou = false, hubTutI = 0, hubMisDados = null;
 
 function hubTemaUI(){   // chip do tema, partículas da tela e cor do fundo
@@ -8351,11 +8375,17 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
   return menor < 40 ? [nome + ' ' + tr('precisa de você!'), true, comFome] : [nome + ' ' + tr('está bem!'), false, comFome];
 }
 // Karaoke preview schedule (Sunday 12:00–13:10 America/Sao_Paulo).
-// UI-only lock for INDEX2; the standalone page and server must enforce access later.
-var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
-var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT
+// The inaugural schedule is enabled only on local builds and Netlify deployment previews.
+var TW_KARAOKE_PRIMEIRA_DATA='2026-11-01';
+var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,1,15,0,0); // 1 Nov, 12h BRT
+function twKaraokeHomologacao(){
+  var host=String(location.hostname||'').toLowerCase();
+  return location.protocol==='file:'||host==='localhost'||host==='127.0.0.1'||
+    /^deploy-preview-\d+--tsulipa-run\.netlify\.app$/.test(host);
+}
 function twKaraokeHorario(){
-  // INDEX2 preview-only schedule: server authorization must be separate.
+  // Public production must never launch the preview event.
+  if(!twKaraokeHomologacao())return {aberto:false,faltam:0,estreia:false,foraHomologacao:true};
   var ateEstreia=Math.ceil((TW_KARAOKE_PRIMEIRA_ABERTURA-Date.now())/1000);
   if(ateEstreia>0)return {aberto:false,faltam:ateEstreia,estreia:true};
   var p={},parts=new Intl.DateTimeFormat('en-GB',{
@@ -8380,11 +8410,12 @@ function twKaraokeAtualizarCard(){
     es:['🔒 Abre en ','🟢 Abierto hasta 13:10'],ja:['🔒 開始まで ','🟢 13:10までオープン'],
     th:['🔒 เปิดในอีก ','🟢 เปิดถึง 13:10']}[LANG]||['🔒 Abre em ','🟢 Aberto até 13h10'];
   var adm=typeof contaAdmin==='function'&&contaAdmin();
-  card.classList.toggle('tw-karaoke-locked',!estado.aberto&&!adm);
-  card.setAttribute('aria-disabled',String(!estado.aberto&&!adm));
-  var lead=estado.estreia?({pt:'🎤 Estreia 08/11 · ',en:'🎤 Premiere Nov 8 · ',es:'🎤 Estreno 08/11 · ',ja:'🎤 初公開11/8 · ',th:'🎤 เปิดตัว 8/11 · '}[LANG]||'🎤 Estreia 08/11 · '):fmt[0];
-  if(txt)txt.textContent=estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
-  card.title='Karaoke⭐Day! · estreia planejada 08/11/2026, domingo 12h–13h10 (Brasília)';
+  var somentePreview=TW_KARAOKE_HOMOLOGACAO_TEXTOS[LANG]||TW_KARAOKE_HOMOLOGACAO_TEXTOS.pt;
+  card.classList.toggle('tw-karaoke-locked',!!estado.foraHomologacao||(!estado.aberto&&!adm));
+  card.setAttribute('aria-disabled',String(!!estado.foraHomologacao||(!estado.aberto&&!adm)));
+  var lead=estado.estreia?({pt:'🎤 Estreia 01/11 · ',en:'🎤 Premiere Nov 1 · ',es:'🎤 Estreno 01/11 · ',ja:'🎤 初公開11/1 · ',th:'🎤 เปิดตัว 1/11 · '}[LANG]||'🎤 Estreia 01/11 · '):fmt[0];
+  if(txt)txt.textContent=estado.foraHomologacao?somentePreview.card:estado.aberto?fmt[1]:adm?'🛡️ Teste de moderação':lead+(d?d+'d ':'')+h+'h '+String(m).padStart(2,'0')+'min';
+  card.title=estado.foraHomologacao?somentePreview.card:'Karaoke⭐Day! · estreia planejada 01/11/2026, domingo 12h–13h10 (Brasília)';
 }
 // Consulta somente local: acompanha a missão diária do Sora em seu armazenamento isolado.
 // Preserva as chaves originais e nunca faz chamadas à API de contas ou do Supabase.
@@ -8402,8 +8433,8 @@ function hubCardsUI(){
   $('hubCards').innerHTML =
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet"><i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha"><i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    '<button type="button" class="hubcard hubperf" data-ir="perfil">' + (!contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '') + '<canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + (!contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '') + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (!contaJ ? '<small class="tw-profile-hint">🔒 ' + escHtml(tr('Entrar com Google')) + '</small>' : '') + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo"><i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = {
@@ -8590,6 +8621,15 @@ hubOv.addEventListener('click',function(e){
 
 function hubMontar(){
   $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
+  var tvHint=$('twRankTvLaunchHint'),tvTitle=$('twRankTvModalTitle'),
+      tvOpen=$('twRankTvAbrir'),tvClose=$('twRankTvFechar');
+  var tvHints={pt:'Rankings da semana',en:'Weekly rankings',es:'Rankings semanales',ja:'週間ランキング',th:'อันดับประจำสัปดาห์'};
+  var tvOpenLabels={pt:'Abrir TsuLiPa TV',en:'Open TsuLiPa TV',es:'Abrir TsuLiPa TV',ja:'TsuLiPa TVを開く',th:'เปิด TsuLiPa TV'};
+  var tvCloseLabels={pt:'Fechar',en:'Close',es:'Cerrar',ja:'閉じる',th:'ปิด'};
+  if(tvHint)tvHint.textContent=tvHints[LANG]||tvHints.pt;
+  if(tvTitle)tvTitle.textContent='📺 TsuLiPa TV';
+  if(tvOpen)tvOpen.setAttribute('aria-label',tvOpenLabels[LANG]||tvOpenLabels.pt);
+  if(tvClose)tvClose.setAttribute('aria-label',tvCloseLabels[LANG]||tvCloseLabels.pt);
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
@@ -8689,16 +8729,42 @@ setInterval(function(){
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
 var twPreviewTextos = {pt:'Início',en:'Home',es:'Inicio',ja:'ホーム',th:'หน้าหลัก'};
+var TW_SORA_SOM_TEXTOS={
+  pt:{off:'Desativar som',on:'Ativar som'},en:{off:'Turn sound off',on:'Turn sound on'},
+  es:{off:'Desactivar sonido',on:'Activar sonido'},ja:{off:'サウンドをオフにする',on:'サウンドをオンにする'},
+  th:{off:'ปิดเสียง',on:'เปิดเสียง'}
+};
+function twPreviewSomRotular(){
+  var botao=$('twPreviewSom');if(!botao)return;
+  var txt=TW_SORA_SOM_TEXTOS[LANG]||TW_SORA_SOM_TEXTOS.pt;
+  var ligado=botao.getAttribute('aria-pressed')==='true';
+  var rotulo=ligado?txt.off:txt.on;
+  botao.textContent=ligado?'🔊':'🔇';
+  botao.setAttribute('aria-label',rotulo);botao.title=rotulo;
+}
+function twPreviewSomSincronizar(ligado){
+  var botao=$('twPreviewSom');if(!botao)return;
+  if(typeof ligado!=='boolean'){botao.disabled=true;twPreviewSomRotular();return;}
+  botao.disabled=false;botao.setAttribute('aria-pressed',String(ligado));twPreviewSomRotular();
+}
 function twPreviewAtualizarIdioma(){
   var voltar=$('twPreviewVoltarTxt');
   if(voltar)voltar.textContent=twPreviewTextos[LANG]||twPreviewTextos.pt;
+  twPreviewSomRotular();
 }
 var TW_KARAOKE_FECHADO_TEXTOS = {
-  pt:['💗 O palco está descansando para o próximo show!','🎤 Estreia planejada: domingo, 08/11/2026, 12h–13h10 (Brasília). Faltam ','🎤 Domingo, 12h–13h10 (Brasília). Abre em ','💜 Multiplayer ainda em preparação.','Fechar','🧪 Ensaiar agora',['d','h','min']],
-  en:['💗 The stage is resting until the next show!','🎤 Planned premiere: Sunday, November 8, 2026, 12:00–13:10 (Brasília). Time remaining: ','🎤 Sunday, 12:00–13:10 (Brasília). Opens in ','💜 Multiplayer is still being prepared.','Close','🧪 Play rehearsal',['d','h','min']],
-  es:['💗 ¡El escenario descansa hasta el próximo show!','🎤 Estreno previsto: domingo, 08/11/2026, 12:00–13:10 (Brasília). Faltan ','🎤 Domingo, 12:00–13:10 (Brasília). Abre en ','💜 El modo multijugador sigue en preparación.','Cerrar','🧪 Ensayar ahora',['d','h','min']],
-  th:['💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!','🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 8 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก ','🎤 วันอาทิตย์ เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เปิดในอีก ','💜 โหมดผู้เล่นหลายคนยังอยู่ระหว่างการเตรียมการ','ปิด','🧪 ทดลองซ้อมตอนนี้',['วัน','ชม.','นาที']],
-  ja:['💗 次のショーまでステージはお休み中！','🎤 初回開催予定：2026年11月8日（日）12:00〜13:10（ブラジリア時間）。あと ','🎤 日曜日12:00〜13:10（ブラジリア時間）。開始まであと ','💜 マルチプレイは準備中です。','閉じる','🧪 今すぐ練習',['日','時間','分']]
+  pt:['💗 O palco está descansando para o próximo show!','🎤 Estreia planejada: domingo, 01/11/2026, 12h–13h10 (Brasília). Faltam ','🎤 Domingo, 12h–13h10 (Brasília). Abre em ','💜 Multiplayer ainda em preparação.','Fechar','🧪 Ensaiar agora',['d','h','min']],
+  en:['💗 The stage is resting until the next show!','🎤 Planned premiere: Sunday, November 1, 2026, 12:00–13:10 (Brasília). Time remaining: ','🎤 Sunday, 12:00–13:10 (Brasília). Opens in ','💜 Multiplayer is still being prepared.','Close','🧪 Play rehearsal',['d','h','min']],
+  es:['💗 ¡El escenario descansa hasta el próximo show!','🎤 Estreno previsto: domingo, 01/11/2026, 12:00–13:10 (Brasília). Faltan ','🎤 Domingo, 12:00–13:10 (Brasília). Abre en ','💜 El modo multijugador sigue en preparación.','Cerrar','🧪 Ensayar ahora',['d','h','min']],
+  th:['💗 เวทีกำลังพักรอการแสดงครั้งต่อไป!','🎤 กำหนดเปิดตัว: วันอาทิตย์ที่ 1 พฤศจิกายน 2026 เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เหลืออีก ','🎤 วันอาทิตย์ เวลา 12:00–13:10 น. (เวลาบราซิเลีย) เปิดในอีก ','💜 โหมดผู้เล่นหลายคนยังอยู่ระหว่างการเตรียมการ','ปิด','🧪 ทดลองซ้อมตอนนี้',['วัน','ชม.','นาที']],
+  ja:['💗 次のショーまでステージはお休み中！','🎤 初回開催予定：2026年11月1日（日）12:00〜13:10（ブラジリア時間）。あと ','🎤 日曜日12:00〜13:10（ブラジリア時間）。開始まであと ','💜 マルチプレイは準備中です。','閉じる','🧪 今すぐ練習',['日','時間','分']]
+};
+var TW_KARAOKE_HOMOLOGACAO_TEXTOS = {
+  pt:{card:'🔒 Somente na prévia de homologação',intro:'💗 A estreia do Karaoke está em teste e só pode ser aberta nesta prévia de homologação.',detail:'A versão pública continua fechada.'},
+  en:{card:'🔒 Homologation preview only',intro:'💗 The Karaoke premiere is being tested only in this deployment preview.',detail:'The public version remains closed.'},
+  es:{card:'🔒 Solo en la vista previa de homologación',intro:'💗 El estreno de Karaoke se prueba únicamente en esta vista previa.',detail:'La versión pública permanece cerrada.'},
+  th:{card:'🔒 เฉพาะตัวอย่างทดสอบ',intro:'💗 กำลังทดสอบการเปิดตัว Karaoke เฉพาะในหน้าตัวอย่างนี้เท่านั้น',detail:'เวอร์ชันสาธารณะยังคงปิดอยู่'},
+  ja:{card:'🔒 検証用プレビュー限定',intro:'💗 Karaokeの初回開催は、この検証用プレビューでのみテストします。',detail:'公開版は引き続き閉鎖されています。'}
 };
 // Original header node, including #best: move rather than create another design.
 var twPreviewHeaderPrincipal=document.querySelector('body > header');
@@ -8710,6 +8776,7 @@ function twPreviewCabecalhoOficial(abrir){
     twPreviewHeaderMarcador=document.createComment('TsuLiPa official header original position');
     cab.parentNode.insertBefore(twPreviewHeaderMarcador,cab);
     slot.appendChild(cab);
+    var som=$('twPreviewSom');if(som)slot.appendChild(som);
   }else if(!abrir&&twPreviewHeaderMarcador){
     twPreviewHeaderMarcador.parentNode.insertBefore(cab,twPreviewHeaderMarcador);
     twPreviewHeaderMarcador.remove();
@@ -8731,13 +8798,22 @@ function twKaraokeMostrarFechado(){
   var modal=$('twKaraokeFechado');if(!modal)return;
   var t=twKaraokeHorario(),txt=$('twKaraokeFechadoTxt');
   var textos=TW_KARAOKE_FECHADO_TEXTOS[LANG]||TW_KARAOKE_FECHADO_TEXTOS.pt;
-  var dias=Math.floor(t.faltam/86400),horas=Math.floor(t.faltam%86400/3600),
-      minutos=Math.ceil(t.faltam%3600/60),unidades=textos[6];
-  if(txt)txt.textContent=(t.estreia?textos[1]:textos[2])+
-    (dias?dias+unidades[0]+' ':'')+horas+unidades[1]+' '+String(minutos).padStart(2,'0')+unidades[2]+'. '+textos[3];
-  $('twKaraokeDescanso').textContent=textos[0];
+  var ensaiar=$('twKaraokeEnsaiar');
+  if(t.foraHomologacao){
+    var restrito=TW_KARAOKE_HOMOLOGACAO_TEXTOS[LANG]||TW_KARAOKE_HOMOLOGACAO_TEXTOS.pt;
+    if(txt)txt.textContent=restrito.detail;
+    $('twKaraokeDescanso').textContent=restrito.intro;
+    if(ensaiar)ensaiar.hidden=true;
+  }else{
+    var dias=Math.floor(t.faltam/86400),horas=Math.floor(t.faltam%86400/3600),
+        minutos=Math.ceil(t.faltam%3600/60),unidades=textos[6];
+    if(txt)txt.textContent=(t.estreia?textos[1]:textos[2])+
+      (dias?dias+unidades[0]+' ':'')+horas+unidades[1]+' '+String(minutos).padStart(2,'0')+unidades[2]+'. '+textos[3];
+    $('twKaraokeDescanso').textContent=textos[0];
+    if(ensaiar)ensaiar.hidden=false;
+  }
   $('twKaraokeFecharAviso').textContent=textos[4];
-  $('twKaraokeEnsaiar').textContent=textos[5];
+  if(ensaiar)ensaiar.textContent=textos[5];
   modal.hidden=false;
   $('twKaraokeFecharAviso').focus({preventScroll:true});
 }
@@ -8747,8 +8823,11 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   // Only a deliberate click on the INDEX2's "local rehearsal" button bypasses
   // the PREVIEW CARD's Sunday gate. This never creates an online seat/session.
   var ensaio=tipo==='karaoke'&&ensaiarLocal===true;
-  // A real multiplayer room will still require authorization on the server.
-  if(tipo==='karaoke'&&!ensaio&&!twKaraokeHorario().aberto&&
+  var horarioKaraoke=tipo==='karaoke'?twKaraokeHorario():null;
+  // Admins cannot bypass the homologation-only restriction.
+  if(tipo==='karaoke'&&horarioKaraoke.foraHomologacao){twKaraokeMostrarFechado();return;}
+  // In homologation, a deliberate local rehearsal can bypass only the Sunday time window.
+  if(tipo==='karaoke'&&!ensaio&&!horarioKaraoke.aberto&&
      !(typeof contaAdmin==='function'&&contaAdmin())){twKaraokeMostrarFechado();return;}
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
@@ -8763,6 +8842,11 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   twPreviewCabecalhoOficial(true);
   wrap.hidden=false;
   twIndex2PauseBaseFrames();
+  var som=$('twPreviewSom');
+  if(som){
+    som.hidden=tipo!=='sora';som.disabled=tipo!=='sora';
+    som.setAttribute('aria-pressed','true');twPreviewSomRotular();
+  }
   // The selected Oshi and language accompany the iframe; no new storage or RPC call.
   var tema=['tsu','lirika','pati'].indexOf(OSHI)>=0?OSHI:'';
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG);
@@ -8774,6 +8858,7 @@ function twPreviewFecharJogo(){
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
   frame.src='about:blank';
+  var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
   var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
@@ -8786,7 +8871,8 @@ function twPreviewFecharJogo(){
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
     '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
-    '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button></div>'+
+    '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
+    '<button type="button" class="tw-preview-som" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
     '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
     '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
@@ -8806,10 +8892,30 @@ function twPreviewFecharJogo(){
   };
   $('twKaraokeFechado').addEventListener('click',function(e){if(e.target===this)$('twKaraokeFecharAviso').click();});
   $('twPreviewVoltar').addEventListener('click',twPreviewFecharJogo);
+  $('twPreviewSom').addEventListener('click',function(){
+    if(twPreviewJogoAnterior!=='sora'||this.disabled)return;
+    this.disabled=true;
+    try{
+      var alvo=location.protocol==='file:'?'*':location.origin;
+      $('twPreviewIframe').contentWindow.postMessage({type:'TW_SORA_TOGGLE_SOUND'},alvo);
+    }catch(e){this.disabled=false;}
+  });
+  var soundFrame=$('twPreviewIframe');
+  soundFrame.addEventListener('load',function(){
+    if(twPreviewJogoAnterior!=='sora')return;
+    try{
+      var alvo=location.protocol==='file:'?'*':location.origin;
+      soundFrame.contentWindow.postMessage({type:'TW_SORA_GET_SOUND_STATE'},alvo);
+    }catch(e){}
+  });
   window.addEventListener('message',function(e){
     var frame=$('twPreviewIframe');
     if(!frame||e.source!==frame.contentWindow)return;
     if(location.protocol!=='file:' && e.origin!==location.origin)return;
+    if(e.data&&e.data.type==='TW_SORA_SOUND_STATE'){
+      if(twPreviewJogoAnterior==='sora')twPreviewSomSincronizar(e.data.enabled===true);
+      return;
+    }
     // A completed run can update ONLY a local preview score, never the server.
     if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
       if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);

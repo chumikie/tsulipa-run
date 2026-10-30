@@ -90,9 +90,9 @@ assert(model.includes("QUEUE_CAPACITY=3")&&
        karaoke.includes('id="krMicQueueBot"')&&
        karaoke.includes('var KR_DEMO_QUEUE_LIMIT=3')&&
        karaoke.includes("krDemoStartNext()")&&
-       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-08'")&&
-       preview.includes("Date.UTC(2026,10,8,15,0,0)"),
-  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 8 preview schedule");
+       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-01'")&&
+       preview.includes("Date.UTC(2026,10,1,15,0,0)"),
+  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 1 preview schedule");
 assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
        model.includes("RHYTHM_MS=45000")&&model.includes('verification:"demo_unverified"')&&
        !model.includes("_supabase")&&!model.includes(".rpc("),
@@ -147,11 +147,22 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Day! · Em breve"),
   "Index 2 missing Sora intro or Karaoke coming-soon teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
+assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&
+       lab.includes('id="twRankTvFechar"')&&lab.includes("function twRankTvModalFechar")&&
+       tvSkin.includes(".tw-rank-tv-launch")&&tvSkin.includes(".tw-rank-tv-modal[hidden]"),
+  "Welcome screen should use a compact TsuLiPa TV launcher and popup");
+assert(lab.includes('id="twPreviewSom"')&&lab.includes("TW_SORA_SOUND_STATE")&&
+       sora.includes("TW_SORA_TOGGLE_SOUND")&&soraEmbedSkin.includes("html.tw-sora-embed #soraSoundBtn{display:none!important}")&&
+       previewSkin.includes(".tw-preview-som"),
+  "Sora should expose sound in the official header and keep standalone UI intact");
+assert(lab.includes('class="tw-profile-lock"')&&lab.includes('class="tw-profile-hint"')&&
+       lab.includes('data-ir="run"'),
+  "Profile-dependent actions should signal sign-in without blocking anonymous Center Run");
 assert(lab.includes("./sora-jump.html'+context")&&
        !lab.includes("twPreviewEstiloSora"),
   "Index 2 should launch Sora in native embed mode, without parent CSS injection");
@@ -347,23 +358,33 @@ try{
   const fn=lab.slice(a,end);
   for(const [iso,open,premiere] of [
     ["2026-10-29T12:00:00Z",false,true],
-    ["2026-11-01T15:30:00Z",false,true],
-    ["2026-11-08T14:59:00Z",false,true],
-    ["2026-11-08T15:00:00Z",true,false],
-    ["2026-11-08T16:09:00Z",true,false],
-    ["2026-11-08T16:11:00Z",false,false]
+    ["2026-11-01T14:59:00Z",false,true],
+    ["2026-11-01T15:00:00Z",true,false],
+    ["2026-11-01T16:09:00Z",true,false],
+    ["2026-11-01T16:11:00Z",false,false],
+    ["2026-11-08T15:00:00Z",true,false]
   ]){
     const ClockDate=class extends Date {
       constructor(...args){super(...(args.length?args:[iso]));}
       static now(){return Date.parse(iso);}
     };
-    const scope={Date:ClockDate,Intl};
+    const scope={Date:ClockDate,Intl,location:{protocol:"https:",hostname:"deploy-preview-34--tsulipa-run.netlify.app"}};
     vm.runInNewContext(fn,scope);
     const result=scope.twKaraokeHorario();
-    assert(result.aberto===open&&!!result.estreia===premiere&&Number.isFinite(result.faltam),
-      "Karaoke premiere schedule incorrect at "+iso);
+    assert(result.aberto===open&&!!result.estreia===premiere&&Number.isFinite(result.faltam)&&!result.foraHomologacao,
+      "Karaoke preview schedule incorrect at "+iso);
   }
-  console.log("✓ Karaoke preview timer: Nov 1 closed, Nov 8 open 12:00–13:10 BRT");
+  const productionIso="2026-11-01T15:30:00Z";
+  const ProductionDate=class extends Date {
+    constructor(...args){super(...(args.length?args:[productionIso]));}
+    static now(){return Date.parse(productionIso);}
+  };
+  const productionScope={Date:ProductionDate,Intl,location:{protocol:"https:",hostname:"tsulipa-world.vercel.app"}};
+  vm.runInNewContext(fn,productionScope);
+  const productionState=productionScope.twKaraokeHorario();
+  assert(!productionState.aberto&&productionState.foraHomologacao,
+    "Karaoke must remain closed on the public production host");
+  console.log("✓ Karaoke preview timer: Nov 1 12:00–13:10 BRT; production host remains closed");
 }catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
 
 // Closed-room copy is refreshed at every opening in each supported language.

@@ -14,7 +14,8 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 | `index.html` | Página principal: tela de início → menu (Center Run, Pet, Perfil, Gacha, Sora, Moon Duo, Karaoke, Encontro, Missões, vitrine, Top Idols, TsuLiPa TV). |
 | `index2.html` | Só redireciona para `/` (links antigos). |
 | `sora-jump.html` | Sora⭐Jump!, aberto como pop-up da página principal. |
-| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! e a sala online real. |
+| `karaoke-time.html` | **Karaoke⭐Time!**: o card 🎤 do menu abre este. Jogo solo offline, 5 shows por dia, 7 músicas, placar da semana, foto da sala. Usa o nick e o visual da conta (`brs48cr_nick`, `brs48cr_char`, `brs48cr_cu2`). |
+| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! online (domingos, sala real). **Guardado, desligado**: para voltar, rodar `karaoke_online_religar.sql` no banco e trocar `TW_KARAOKE_TIME` para `false` no `index.html`. |
 | `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Módulos do Karaoke e o laboratório de homologação (`?homol=1`). |
 | `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
 | `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |
@@ -46,10 +47,33 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
 - **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
 
+## Karaoke⭐Time! no lugar do Karaoke⭐Day! (branch `feature/karaoke-time`)
+- O card 🎤 virou **Karaoke⭐Time!** (カラオケ・タイム), sem contagem de domingo e sem cadeado de horário; mostra "5 shows por dia" nos 5 idiomas.
+- Abre como o Karaoke abria (tela cheia com o cabeçalho do site), com o Oshi e o claro/escuro da página. O menu local e a barra de cima do arquivo somem dentro do site.
+- Voltar (← Jogos e Esc) só avisa a página de fora; nunca navega o iframe.
+- Quem joga aparece com o nick e o visual da conta; os outros 6 do sofá vêm do sorteio diário (foto dos perfis de 30/10 guardada no arquivo).
+- Karaoke⭐Day!, sala online, homologação e SQL ficaram no repositório, sem mudança, para retomar depois.
+- Textos do Karaoke⭐Time! em PT/EN/ES/TH/JA, no idioma escolhido no menu (página e telão). Nomes de músicas e de Idols não mudam.
+- Voltaram as partes da versão "Clipe do dia": o clipe do dia no telão (conceito e formação mudam a cada dia de Brasília), a faixa "Sua plateia de hoje" com retratos, e os Idols da sala clicáveis (pulinho, brilhos, balão e notinha).
+- **Ranking online do Karaoke⭐Time!** (`supabase/sql/karaoke_time_ranking.sql`, **aplicado em produção em 30/10/2026**): com conta, cada show passa pelo servidor (5 por dia no horário de Brasília, resultado conferido: duração mínima, notas, combo e pontos possíveis). Três quadros por semana (domingo a sábado): Pontuação, Maior combo e Acertos. A semana do Karaoke passou a começar no domingo, como o Top Idols. Sem conta, o jogo segue só no aparelho.
+- **Top Idols:** a coluna do Karaoke mostra só a pontuação, igual ao Center e ao Sora (a barra extra de baixo saiu).
+- **Microfone no banner:** no canto esquerdo (o troféu da TV fica no direito), um 🎤 voando abre, com um som de "acerto perfeito", o pop-up de quem acertou mais na semana (top 3 de Acertos). Combo e os três quadros completos ficam dentro da sala.
+- **Viradas de semana (30/10):** todos os rankings semanais viram juntos no domingo 00h de Brasília: Top Idols, Sora, Karaoke e a aba "Semana" do Center⭐Run! (`center_semana_domingo.sql`, aplicado em produção; antes começava na segunda). Ninguém perdeu pontos.
+- **Card do Karaoke:** fica rosa de alerta, com o "!", enquanto faltar algum dos 5 shows do dia (o servidor conta), e mostra quantos faltam.
+- **Emojis:** os do banner (Tsu, Lirika e Pati) saíam apagados porque eram desenhados com a cor da sombra dos pés (22% de opacidade), e o emoji herda essa transparência. Agora a cor é opaca, com brilho branco e pulinho de entrada. Os efeitos da sala do Karaoke agora são emojis do mesmo jeito: estouram, sobem balançando com rastro de brilho, e os corações têm a cor de cada Idol.
+- **Plateia do dia:** dentro do site, as 6 vêm das contas do site com Idol montado (todas, inclusive as que forem criadas depois), menos você; o sorteio fica o mesmo o dia todo naquele aparelho. A foto de 30/10 guardada no arquivo só vale com ele aberto sozinho.
+- **Teste logado na prévia (30/10):** show completo entrou no ranking online (placar da semana na sala). 
+- **Fundo dentro do site:** o Karaoke abria com uma moldura e um fundo escuros em volta; agora usa o fundo da página, no claro e no escuro, igual ao Sora.
+- **Tema escuro do Karaoke:** a faixa "Sua plateia de hoje" e o quadro do clipe ficavam sem estilo no escuro (o CSS tinha caído dentro do bloco do tema claro). Corrigido.
+- **Outros clipes:** Sakura ganhou galhos com volume e flores com brilho; Ocean Pop, bolhas de verdade; Mirror Disco, globo espelhado com facetas piscando; Ribbon Theatre, cortinas de veludo com dobras e corda dourada com laços.
+- **Clipe Candy Parade:** pirulitos em espiral com brilho e lacinho, algodão-doce fofo ao fundo e balinhas caindo.
+- **Lightstick:** usa a cor escolhida no perfil (chave nova `brs48cr_cor`); sem cor, continua a do cabelo. Vale no menu, na foto do perfil e na sala do Karaoke.
+- **Clipe do dia:** fundos com profundidade (brilho na parede, bokeh, feixes de luz, palco com perspectiva e vinheta); no Diamante ninguém esconde o rosto de ninguém e ninguém fica cortado na borda.
+- **Supabase de produção (30/10):** a sala online foi desligada sem apagar nada (`supabase/sql/karaoke_online_desligado.sql`). Ninguém de fora chama mais `karaoke_sala*` nem `karaoke_posteres_semana`, o esquema `karaoke_lab` ficou fechado e o sinal saiu do tempo real. Para religar: `karaoke_online_religar.sql`. Os botões de teste do Karaoke na moderação somem enquanto `TW_KARAOKE_TIME` estiver ligado.
+
 ## Falta (para fechar o lançamento)
 1. Testar a prévia do PR no Netlify, logada, no celular: Pet, Gacha, Moon Duo, Sora, Perfil e uma corrida salvando.
-2. Teste da sala do Karaoke com 2 pessoas, pelo botão "Karaoke: abrir teste (30 min)" da moderação.
-3. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
+2. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
 
 ## Ideias aprovadas para depois
 - Jogo de ritmo do Karaoke: estética e lógica a rever.

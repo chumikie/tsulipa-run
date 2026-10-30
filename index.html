@@ -8654,9 +8654,9 @@ var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false
 var twRankTimer=null,twRankPending=null;
 var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
 var TW_RANK_WORDS={
- pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Center: ranking oficial · Sora/Karaoke: estreia online em preparação','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana'],
- en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Center: official ranking · Sora/Karaoke: online launch in preparation','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions'],
- es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana','Center: ranking oficial · Sora/Karaoke: estreno online en preparación','Canales del ranking semanal','TV de los rankings semanales','Mejores Idols de la semana','Campeones de la semana'],
+ pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Center e Sora: ranking online · Karaoke: em preparação','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana'],
+ en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Center and Sora: online rankings · Karaoke: in preparation','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions'],
+ es:['Sin puntuaciones todavía','Ranking online en preparación','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana','Center y Sora: rankings online · Karaoke: en preparación','Canales del ranking semanal','TV de los rankings semanales','Mejores Idols de la semana','Campeones de la semana'],
  ja:['まだ記録はありません','オンラインランキング準備中','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし','Centerは公式ランキング、Sora/Karaokeは準備中','週間ランキングのチャンネル','週間ランキングTV','今週のトップアイドル','今週のチャンピオン'],
  th:['ยังไม่มีคะแนน','กำลังเตรียมอันดับออนไลน์','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน','Center: อันดับทางการ · Sora/Karaoke: กำลังเตรียมเปิดออนไลน์','ช่องอันดับประจำสัปดาห์','ทีวีอันดับประจำสัปดาห์','ไอดอลยอดเยี่ยมประจำสัปดาห์','แชมป์ประจำสัปดาห์']
 };
@@ -8705,7 +8705,8 @@ function twRankClean(list){
 }
 function twRankStatus(id){
  if(id==='center'&&!twRankData.centerOK)return twRankWord(2);
- if(id!=='center'&&!twRankData.online)return twRankWord(1);
+ if(id==='karaoke')return twRankWord(1);
+ if(id==='sora'&&!twRankData.online)return twRankWord(1);
  return twRankWord(0);
 }
 function twRankRow(row,i,unit,game){

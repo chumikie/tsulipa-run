@@ -1,0 +1,162 @@
+/* 10. KARAOKE⭐TIME! — janela exclusiva em formato de CD player.
+   Escopo restrito ao pop-up do Karaoke; Sora e TsuLiPa⭐TV não são alterados. */
+#twPreviewJogo[data-jogo="karaoke"]{
+  position:fixed;inset:0;z-index:200000;
+  display:grid;place-items:center;
+  box-sizing:border-box;overflow:auto;
+  padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
+          max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  background:
+    radial-gradient(ellipse at 15% 18%,rgba(255,111,181,.22),transparent 38%),
+    radial-gradient(ellipse at 88% 82%,rgba(92,199,255,.2),transparent 42%),
+    linear-gradient(145deg,rgba(10,12,38,.88),rgba(33,17,74,.9));
+  -webkit-backdrop-filter:blur(9px);
+  backdrop-filter:blur(9px);
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-panel{
+  position:relative;isolation:isolate;
+  display:flex;flex-direction:column;
+  box-sizing:border-box;
+  width:min(1320px,100%);
+  height:min(900px,calc(100dvh - 24px));
+  min-height:0;
+  padding:12px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:30px;
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(255,255,255,.22),transparent 34%),
+    linear-gradient(145deg,#f7d9fa 0%,#b8b7f2 24%,#7b67bd 53%,#30345f 100%);
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.5),
+    0 0 0 5px rgba(255,255,255,.08),
+    inset 0 2px 0 rgba(255,255,255,.8),
+    inset 0 -9px 22px rgba(21,14,65,.32);
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot{
+  position:relative;z-index:3;
+  flex:0 0 auto;display:flex;align-items:center;
+  gap:12px;min-height:58px;
+  box-sizing:border-box;
+  padding:6px 10px 10px;
+  border:0;border-bottom:1px solid rgba(255,255,255,.34);
+  border-radius:18px 18px 10px 10px;
+  background:linear-gradient(100deg,rgba(255,255,255,.28),rgba(255,255,255,.08));
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot>header{
+  flex:1 1 auto;min-width:0;max-width:none;
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-voltar{
+  flex:none;
+  border:1px solid rgba(255,255,255,.8);
+  color:#fff;
+  background:linear-gradient(135deg,#7954c9,#4d63ba 58%,#3e96b4);
+  box-shadow:0 3px 0 rgba(35,25,88,.55),inset 0 1px 0 rgba(255,255,255,.4);
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage{
+  position:relative;isolation:isolate;
+  display:grid;flex:1 1 auto;min-height:0;min-width:0;
+  grid-template-columns:clamp(150px,18%,220px) minmax(0,1fr);
+  align-items:stretch;
+  gap:clamp(10px,1.6vw,20px);
+  box-sizing:border-box;
+  margin-top:10px;padding:clamp(10px,1.4vw,18px);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.42);
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 9% 12%,rgba(255,255,255,.16),transparent 32%),
+    linear-gradient(145deg,rgba(37,34,83,.96),rgba(23,29,66,.98));
+  box-shadow:inset 0 2px 12px rgba(12,10,42,.38),0 2px 0 rgba(255,255,255,.18);
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage .hubpart{display:none!important}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage::before{
+  content:"";
+  position:absolute;z-index:1;
+  left:clamp(8px,1.3vw,18px);top:50%;
+  width:clamp(124px,15vw,196px);aspect-ratio:1;
+  box-sizing:border-box;border:7px solid rgba(255,255,255,.78);
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,#252444 0 5.5%,#f9f5ff 6% 8.5%,#9e91cd 9% 10%,transparent 10.5% 16.5%,rgba(255,255,255,.72) 17% 18%,transparent 18.5%),
+    radial-gradient(ellipse at 27% 18%,rgba(255,255,255,.9),transparent 34%),
+    conic-gradient(from 18deg,#fff1fd,#8fe8ff 13%,#fff 22%,#ff85c7 37%,#a391ff 53%,#78e6e4 69%,#fff0b8 84%,#fff1fd);
+  box-shadow:
+    0 0 0 5px rgba(255,255,255,.1),
+    0 12px 34px rgba(0,0,0,.38),
+    inset 0 0 24px rgba(255,255,255,.48),
+    inset 0 0 0 2px rgba(90,58,145,.16);
+  transform:translateY(-50%);
+  animation:twKaraokeCdSpin 18s linear infinite;
+}
+#twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage::after{
+  content:"♪  •  5  •  ♫";
+  position:absolute;z-index:1;
+  left:clamp(8px,1.3vw,18px);bottom:clamp(10px,1.4vw,18px);
+  width:clamp(124px,15vw,196px);height:38px;
+  display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.35);border-radius:12px;
+  color:#f8eaff;
+  background:
+    linear-gradient(90deg,transparent 0 8%,rgba(255,111,181,.35) 8% 10%,transparent 10% 20%,rgba(127,220,255,.42) 20% 22%,transparent 22% 32%,rgba(255,225,77,.38) 32% 34%,transparent 34% 100%),
+    linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 5px 15px rgba(0,0,0,.18);
+  color:#fff;font:900 12px/1 "M PLUS Rounded 1c",sans-serif;letter-spacing:.2em;
+}
+#twPreviewJogo[data-jogo="karaoke"] #twPreviewIframe{
+  position:relative;z-index:2;
+  grid-column:2;grid-row:1;
+  display:block;align-self:stretch;
+  width:100%;height:100%;max-width:none;min-width:0;min-height:0;
+  flex:none;
+  border:1px solid rgba(255,255,255,.7);border-radius:16px;
+  background:#17152f;
+  box-shadow:0 10px 28px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.16);
+}
+@keyframes twKaraokeCdSpin{
+  from{rotate:0deg}
+  to{rotate:360deg}
+}
+@media(max-width:720px){
+  #twPreviewJogo[data-jogo="karaoke"]{
+    padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right))
+            max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-panel{
+    width:100%;height:calc(100dvh - 12px);
+    padding:7px;border-radius:20px;
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot{
+    min-height:48px;gap:7px;padding:4px 5px 8px;border-radius:13px 13px 8px 8px;
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot>header .logo b{
+    font-size:clamp(11px,3.4vw,16px);
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot>header .logo small{display:none}
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-voltar{font-size:11px;padding:7px 9px}
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:78px minmax(0,1fr);
+    gap:8px;margin-top:7px;padding:8px;border-radius:15px;
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage::before{
+    left:10px;top:7px;width:64px;transform:none;border-width:4px;
+  }
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage::after{
+    left:88px;top:24px;bottom:auto;
+    width:min(145px,calc(100% - 108px));height:30px;
+    border-radius:10px;font-size:10px;
+  }
+  #twPreviewJogo[data-jogo="karaoke"] #twPreviewIframe{
+    grid-column:1;grid-row:2;border-radius:11px;
+  }
+}
+@media(max-width:380px){
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot{gap:4px}
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-header-slot>header .logo i{display:none}
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-voltar{padding:6px 7px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  #twPreviewJogo[data-jogo="karaoke"] .tw-preview-stage::before{animation:none}
+}

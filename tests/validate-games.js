@@ -216,8 +216,8 @@ assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
        voiceSource.includes("hubVozTocar(f[0])")&&
        sfxSource.includes("OSHI === 'tsu'")&&sfxSource.includes("OSHI === 'lirika'")&&sfxSource.includes("OSHI === 'pati'"),
   "Seasonal presentation must not replace the trio's touch voices, Oshi sound effects or saved outfits");
-assert(newHtml.includes('href="./tw-mic-cd-popup.css?v=3"')&&
-       newHtml.includes("A antiga sala simultânea de domingo")&&
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"')&&
+       lab.includes("A antiga sala simultânea de domingo")&&
        newHtml.includes("o ranking semanal é online"),
   "Karaoke Time is the only current karaoke experience; old Sunday room is documented as retired");
 const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);

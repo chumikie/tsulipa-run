@@ -6826,15 +6826,16 @@ function perfFundo(x, W2, H2, f, cor, t){
 
 // Personagem com contorno suave (igual ao das fotos, com mais espaço em cima para auréola e antenas)
 var perfCvC = null;
+var perfCharPortrait = false; // foto/estudio: nao aplicar a animacao do Center Run
 function perfCharContorno(x, tx, ty, sc, desenha){
   var ux = -42, uy = -28, uw = 130, uh = 80, w = Math.ceil(uw * sc), h = Math.ceil(uh * sc);
   if(!perfCvC) perfCvC = document.createElement('canvas');
   var cv = perfCvC;
   if(cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
-  var og = g, cx2 = cv.getContext('2d');
+  var og = g, cx2 = cv.getContext('2d'), wasPortrait = perfCharPortrait;
   cx2.setTransform(1, 0, 0, 1, 0, 0); cx2.clearRect(0, 0, w, h);
-  try{ g = cx2; g.save(); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); g.restore(); }
-  finally{ g = og; charPose = ''; perfAntena = ''; }
+  try{ perfCharPortrait = true; g = cx2; g.save(); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); g.restore(); }
+  finally{ perfCharPortrait = wasPortrait; g = og; charPose = ''; perfAntena = ''; }
   x.save();
   x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
@@ -12505,7 +12506,7 @@ update = function(dt){
 // Empacota drawChar para pose de deslizar e draw() para cenários da Temporada 2
 var _origDrawChar = drawChar;
 drawChar = function(c, x, y, run, expr, isPartner){
-  if(!isPartner && state === 'play' && s2Sliding){
+  if(!isPartner && state === 'play' && s2Sliding && !perfCharPortrait){
     g.save();
     g.translate(x + 15, y + 26);
     g.rotate(-0.28);

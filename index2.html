@@ -9036,7 +9036,8 @@ function gachaUI(){
   $('gachaTit').innerHTML = '🎰 Star<span class="tw-modal-star">⭐</span>Gacha!';
   $('twGachaLede').textContent = tr('1 giro por dia');
   var b = $('gachaGirar'), t = $('gachaTxt');
-  if(!contaJ){ b.textContent = tr('Entrar com Google'); b.disabled = false; t.textContent = tr('Entre com Google para girar (1 vez por dia).'); return; }
+  if(!contaJ){ b.textContent = '🔐'; b.setAttribute('aria-label', tr('Entrar com Google')); b.disabled = false; t.textContent = tr('Entre com Google para girar (1 vez por dia).'); return; }
+  b.removeAttribute('aria-label');
   if(gachaFeito){ b.textContent = tr('Volte amanhã') + ' 🌙'; b.disabled = false; t.textContent = (gachaAgora ? '' : '✅ ' + tr('Você já girou hoje!') + ' ') + gachaTexto(gachaRes); return; }
   b.textContent = '🎰 ' + tr('Girar!'); b.disabled = gachaGiro >= 0; t.textContent = tr('Gire a manivela e veja o que sai da cápsula!');
 }

@@ -10996,5 +10996,94 @@ Object.keys(EXTRA_DICT).forEach(function(l){
 applyLang();
 })();
 </script>
+	<script id="tw-index2-ux-fixes">
+(function(){
+  // 1. Remove qualquer cadeado acidental do Meu Perfil e do Center Run
+  function syncLocks(){
+    var logado = !!(window.contaJ);
+    var cards = document.querySelectorAll('#hub #hubCards .hubcard');
+    cards.forEach(function(card){
+      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+      var lockEl = card.querySelector('.tw-profile-lock');
+      var hintEl = card.querySelector('.tw-profile-hint');
+      if(isFree || logado){
+        if(lockEl) lockEl.hidden = true;
+        if(hintEl) hintEl.hidden = true;
+      } else {
+        if(!lockEl){
+          lockEl = document.createElement('span');
+          lockEl.className = 'tw-profile-lock';
+          lockEl.setAttribute('aria-hidden', 'true');
+          lockEl.textContent = '🔒';
+          card.appendChild(lockEl);
+        }
+        lockEl.hidden = false;
+      }
+    });
+  }
+
+  // Se clicar em um card com cadeado estando deslogado, abre o Meu Perfil / Login direto
+  document.addEventListener('click', function(e){
+    var card = e.target.closest && e.target.closest('#hub #hubCards .hubcard');
+    if(!card || window.contaJ) return;
+    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+    if(!isFree){
+      var perfBtn = document.querySelector('#hub #hubPerf, #hub .hubperf');
+      if(perfBtn && perfBtn !== card){
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        perfBtn.click();
+      }
+    }
+  }, true);
+
+  // 2. Renderiza a representação animada do Top 1 Idol dentro da TsuLiPa TV
+  function updateTvTopIdol(){
+    var screen = document.querySelector('#hub .tw-rank-tv-screen');
+    if(!screen) return;
+    var stage = screen.querySelector('.tw-tv-idol-stage');
+    if(!stage){
+      stage = document.createElement('div');
+      stage.className = 'tw-tv-idol-stage';
+      stage.innerHTML = '<span class="tw-tv-idol-Sparkle">✨</span>' +
+                        '<div class="tw-tv-idol-avatar"><span class="tw-rank-avatar-fallback">👑</span></div>' +
+                        '<span class="tw-tv-idol-Sparkle">💖</span>';
+      screen.insertBefore(stage, screen.firstChild);
+    }
+    // Procura o avatar do 1º colocado no painel de Top Idols correspondente ao canal selecionado na TV
+    var activeBtn = document.querySelector('#hub .tw-rank-tv-buttons button[aria-pressed="true"]');
+    var idx = activeBtn ? [].indexOf.call(activeBtn.parentNode.children, activeBtn) : 0;
+    var cols = document.querySelectorAll('#hub .tw-rank-hall .tw-rank-game');
+    var targetCol = cols[idx] || cols[0];
+    if(!targetCol) return;
+    var firstAvatar = targetCol.querySelector('li:first-child .tw-rank-avatar-wrap canvas, li:first-child .tw-rank-avatar-wrap img');
+    var avatarBox = stage.querySelector('.tw-tv-idol-avatar');
+    if(firstAvatar && avatarBox){
+      avatarBox.innerHTML = '';
+      if(firstAvatar.tagName === 'CANVAS'){
+        var cvClone = document.createElement('canvas');
+        cvClone.width = firstAvatar.width;
+        cvClone.height = firstAvatar.height;
+        cvClone.getContext('2d').drawImage(firstAvatar, 0, 0);
+        avatarBox.appendChild(cvClone);
+      } else {
+        avatarBox.appendChild(firstAvatar.cloneNode(true));
+      }
+    }
+  }
+
+  setInterval(function(){
+    syncLocks();
+    var tvModal = document.querySelector('#hub .tw-rank-tv-modal');
+    if(tvModal && !tvModal.hidden) updateTvTopIdol();
+  }, 800);
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && (e.target.closest('.tw-rank-tv-launch') || e.target.closest('.tw-rank-tv-buttons'))){
+      setTimeout(updateTvTopIdol, 60);
+    }
+  });
+})();
+</script>
 </body>
 </html>

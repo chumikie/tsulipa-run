@@ -14,7 +14,8 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 | `index.html` | Página principal: tela de início → menu (Center Run, Pet, Perfil, Gacha, Sora, Moon Duo, Karaoke, Encontro, Missões, vitrine, Top Idols, TsuLiPa TV). |
 | `index2.html` | Só redireciona para `/` (links antigos). |
 | `sora-jump.html` | Sora⭐Jump!, aberto como pop-up da página principal. |
-| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! e a sala online real. |
+| `karaoke-time.html` | **Karaoke⭐Time!**: o card 🎤 do menu abre este. Jogo solo offline, 5 shows por dia, 7 músicas, placar da semana, foto da sala. Usa o nick e o visual da conta (`brs48cr_nick`, `brs48cr_char`, `brs48cr_cu2`). |
+| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! online (domingos, sala real). **Guardado, desligado**: volta trocando `TW_KARAOKE_TIME` para `false` no `index.html`. |
 | `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Módulos do Karaoke e o laboratório de homologação (`?homol=1`). |
 | `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
 | `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |
@@ -45,6 +46,14 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Teste novo:** o `validate-games.js` confere que nenhuma página aponta para arquivo que não existe e que o voltar nunca navega o iframe.
 - **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
 - **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
+
+## Karaoke⭐Time! no lugar do Karaoke⭐Day! (branch `feature/karaoke-time`)
+- O card 🎤 virou **Karaoke⭐Time!** (カラオケ・タイム), sem contagem de domingo e sem cadeado de horário; mostra "5 shows por dia" nos 5 idiomas.
+- Abre como o Karaoke abria (tela cheia com o cabeçalho do site), com o Oshi e o claro/escuro da página. O menu local e a barra de cima do arquivo somem dentro do site.
+- Voltar (← Jogos e Esc) só avisa a página de fora; nunca navega o iframe.
+- Quem joga aparece com o nick e o visual da conta; os outros 6 do sofá vêm do sorteio diário (foto dos perfis de 30/10 guardada no arquivo).
+- Karaoke⭐Day!, sala online, homologação e SQL ficaram no repositório, sem mudança, para retomar depois.
+- Os textos de dentro do Karaoke⭐Time! ainda estão só em português.
 
 ## Falta (para fechar o lançamento)
 1. Testar a prévia do PR no Netlify, logada, no celular: Pet, Gacha, Moon Duo, Sora, Perfil e uma corrida salvando.

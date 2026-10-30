@@ -12,6 +12,7 @@ const games=[
   {file:"index2.html",max:1000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
+  {file:"karaoke-time.html",max:700000},
   {file:"karaoke-online-lab.html",max:30000}
 ];
 let errors=[];
@@ -27,6 +28,10 @@ for(const game of games){
   let count=0;
   for(const match of content.replace(/<!--[\s\S]*?-->/g,"").matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
     if(/\bsrc\s*=/i.test(match[1]))continue;
+    if(/type\s*=\s*["']application\/json["']/i.test(match[1])){
+      try{JSON.parse(match[2]);}catch(e){errors.push(game.file+": invalid JSON block: "+e.message);}
+      continue;
+    }
     count++;
     try{new vm.Script(match[2],{filename:game.file+":inline-"+count});}
     catch(e){errors.push(game.file+": invalid JavaScript (script "+count+"): "+e.message);}
@@ -48,7 +53,7 @@ assert(!fs.existsSync(path.join(root,"sora-jump-karaoke.html")),"O seletor avuls
 
 // Nenhuma pagina pode apontar para um arquivo do projeto que nao existe mais,
 // e nenhuma pode navegar o proprio iframe para outra pagina do site.
-for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html","privacidade.html","karaoke-online-lab.html"]){
+for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html","karaoke-time.html","privacidade.html","karaoke-online-lab.html"]){
   const txt=read(nome);
   const alvos=new Set();
   for(const m of txt.matchAll(/(?:href|src)=["']\.?\/?([A-Za-z0-9_.-]+\.(?:html|css|js|json|png|jpg|svg|mp3))(?:\?[^"']*)?["']/g)) alvos.add(m[1]);
@@ -58,7 +63,7 @@ for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html
       nome+" aponta para um arquivo que nao existe: "+alvo);
   }
 }
-for(const jogo of ["sora-jump.html","karaoke-day.html"]){
+for(const jogo of ["sora-jump.html","karaoke-day.html","karaoke-time.html"]){
   const txt=read(jogo);
   assert(!/catch[^]{0,80}location\.href\s*=\s*['"]\.\/[A-Za-z0-9_.-]+\.html/.test(txt),
     jogo+": dentro do pop-up o voltar nunca pode navegar o iframe");
@@ -246,7 +251,7 @@ assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gach
 assert(lab.includes("function twKaraokeHorario()")&&
        lab.includes("timeZone:'America/Sao_Paulo'")&&
        lab.includes("function twKaraokeAtualizarCard()")&&
-       lab.includes("if(tipo==='karaoke'&&!ensaio&&!horarioKaraoke.aberto&&")&&
+       lab.includes("if(tipo==='karaoke'&&!kTime&&!ensaio&&!horarioKaraoke.aberto&&")&&
        lab.includes("horarioKaraoke.foraHomologacao")&&
        lab.includes('class="tw-karaoke-timer"')&&
        previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
@@ -264,6 +269,12 @@ assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
        lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
        !lab.includes("twKaraokeConviteRascunho"),
   "Admin preview needs permission and unfinished invitations must be absent");
+const kTime=read("karaoke-time.html");
+assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karaoke-time.html'+context"),
+  "O card do Karaoke abre o Karaoke⭐Time! (o Day fica guardado, desligado)");
+assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&&
+       kTime.includes("read('brs48cr_nick')")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
+  "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
 assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
 assert(karaoke.includes("'Melon Juice!'")&&!karaoke.includes("'Melon Soda'"),
@@ -374,7 +385,16 @@ try{
   assert(!overlay.hidden&&iframe.src.includes("karaoke-day.html?embed=index2"),
     "Server-verified moderator should enter the TEST preview while closed");
   sandbox.twPreviewFecharJogo();
-  console.log("✓ Preview controller smoke test: Sora, Karaoke, mod preview, focus, locale");
+  // Karaoke⭐Time! (solo, offline): sem portão de domingo e sem ensaio.
+  sandbox.contaAdmin=()=>false;sandbox.LANG="pt";sandbox.TW_KARAOKE_TIME=true;
+  sandbox.twKaraokeHorario=()=>{throw Error("Karaoke Time nao consulta o horario de domingo");};
+  sandbox.twPreviewAbrirJogo("karaoke",true);
+  assert(!overlay.hidden&&iframe.src==="./karaoke-time.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&
+         gameTitle.textContent==="🎤 Karaoke⭐Time!",
+    "Karaoke Time must open any day, in the new file, without rehearsal flag");
+  sandbox.twPreviewFecharJogo();
+  assert(iframe.src==="about:blank"&&overlay.hidden,"Karaoke Time return must unload iframe");
+  console.log("✓ Preview controller smoke test: Sora, Karaoke Day, Karaoke Time, mod preview, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
 

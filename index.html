@@ -8555,6 +8555,10 @@ function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, 
 }
 // Karaoke live schedule (Sunday 12:00–13:10 America/Sao_Paulo).
 // First public show: 08/11/2026. Manual moderation rehearsals remain available.
+// Karaoke⭐Time! (solo, offline, 5 shows por dia) ocupa o card do Karaoke.
+// O Karaoke⭐Day! online (domingos, sala real, homologação) fica guardado para depois:
+// para voltar com ele, basta trocar esta chave para false.
+var TW_KARAOKE_TIME=true;
 var TW_KARAOKE_PRIMEIRA_DATA='2026-11-08';
 var TW_KARAOKE_PRIMEIRA_ABERTURA=Date.UTC(2026,10,8,15,0,0); // 8 Nov, 12h BRT
 function twKaraokeHomologacao(){
@@ -8581,6 +8585,13 @@ function twKaraokeHorario(){
 function twKaraokeAtualizarCard(){
   var cards=$('hubCards'),card=cards&&cards.querySelector('[data-ir="karaoke"]');
   if(!card)return;
+  if(TW_KARAOKE_TIME){
+    var tt=card.querySelector('.tw-karaoke-timer');
+    card.classList.remove('tw-karaoke-locked');card.removeAttribute('aria-disabled');
+    if(tt)tt.textContent={pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}[LANG]||'🎤 5 shows por dia';
+    card.title='Karaoke⭐Time!';
+    return;
+  }
   var estado=twKaraokeHorario(),txt=card.querySelector('.tw-karaoke-timer');
   var s=estado.faltam,d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.ceil(s%3600/60);
   if(m===60){m=0;h++;}if(h===24){h=0;d++;}
@@ -8627,7 +8638,7 @@ function hubCardsUI(){
   }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
   $('hubCards').insertAdjacentHTML('beforeend',
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Karaoke Day: programação dominical">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>Day!</b><small class="tw-hubgame-jp" lang="ja">カラオケ・デー</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+(TW_KARAOKE_TIME?'Abrir Karaoke Time':'Karaoke Day: programação dominical')+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
   );
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
@@ -8652,7 +8663,7 @@ function hubMisCarregar(){
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
 var twRankData={week:'',center:[],sora:[],karaoke:[],centerOK:false,online:false,mine:null,readAt:0,active:0};
 var twRankTimer=null,twRankPending=null;
-var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤','Karaoke⭐Day!','pts']];
+var twRankGames=[['center','🏁','Center⭐Run!','pts'],['sora','☁️','Sora⭐Jump!','m'],['karaoke','🎤',(TW_KARAOKE_TIME?'Karaoke⭐Time!':'Karaoke⭐Day!'),'pts']];
 var TW_RANK_WORDS={
  pt:['Sem pontuações ainda','Ranking online em preparação','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Center e Sora: ranking online · Karaoke: em preparação','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana'],
  en:['No scores yet','Online ranking in preparation','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Center and Sora: online rankings · Karaoke: in preparation','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions'],
@@ -9028,12 +9039,13 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   // Only a deliberate click on the INDEX2's "local rehearsal" button bypasses
   // the PREVIEW CARD's Sunday gate. This never creates an online seat/session.
-  var ensaio=tipo==='karaoke'&&ensaiarLocal===true;
-  var horarioKaraoke=tipo==='karaoke'?twKaraokeHorario():null;
+  var kTime=tipo==='karaoke'&&typeof TW_KARAOKE_TIME!=='undefined'&&TW_KARAOKE_TIME===true;
+  var ensaio=!kTime&&tipo==='karaoke'&&ensaiarLocal===true;
+  var horarioKaraoke=tipo==='karaoke'&&!kTime?twKaraokeHorario():null;
   // Admins cannot bypass the homologation-only restriction.
-  if(tipo==='karaoke'&&horarioKaraoke.foraHomologacao){twKaraokeMostrarFechado();return;}
+  if(horarioKaraoke&&horarioKaraoke.foraHomologacao){twKaraokeMostrarFechado();return;}
   // In homologation, a deliberate local rehearsal can bypass only the Sunday time window.
-  if(tipo==='karaoke'&&!ensaio&&!horarioKaraoke.aberto&&
+  if(tipo==='karaoke'&&!kTime&&!ensaio&&!horarioKaraoke.aberto&&
      !(typeof contaAdmin==='function'&&contaAdmin())){twKaraokeMostrarFechado();return;}
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
@@ -9042,8 +9054,8 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
   if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}
-  if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
-  frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
+  if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
+  frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
   twPreviewMontarFundo();
   twPreviewCabecalhoOficial(tipo!=='sora');   // no Sora o cabecalho do site fica na pagina, atras do pop-up
@@ -9064,7 +9076,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
       ((typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
-  frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
+  frame.src=tipo==='sora'?'./sora-jump.html'+context:kTime?'./karaoke-time.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
   if($('twPreviewVoltar'))$('twPreviewVoltar').focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){

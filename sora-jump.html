@@ -265,6 +265,10 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 .sora-ranking-wrap{width:100%;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(17,13,43,.37);padding:7px 8px 4px}
 .sora-ranking-head{display:flex;justify-content:space-between;align-items:center;margin:0 1px 3px;font-size:10px;font-weight:900;color:#ffe2f3;letter-spacing:.4px}
 #soraLbList{width:100%;max-height:85px!important;overflow:auto;margin:0!important;padding:2px 5px!important;background:transparent!important;border-radius:8px!important}
+.sora-rank-tabs{display:flex;gap:6px;margin:5px 0 3px}
+.sora-rank-tabs button{flex:1;min-height:27px;border:1px solid rgba(255,255,255,.24);border-radius:9px;background:rgba(255,255,255,.08);color:#f9eaff;font:800 10px inherit;cursor:pointer}
+.sora-rank-tabs button[aria-pressed="true"]{background:linear-gradient(100deg,rgba(155,48,217,.85),rgba(255,111,181,.72));border-color:rgba(255,255,255,.72);color:#fff}
+.sora-rank-source{font-size:8px;opacity:.72;min-height:10px;text-align:center;margin:1px 0 2px}
 #soraLbList li{padding:4px 0;font-size:10px;line-height:1.2;border-bottom-color:rgba(255,255,255,.09)}
 #soraLbList li strong{white-space:nowrap;color:#ffe66d}
 .sora-over-actions{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:1px}
@@ -1532,18 +1536,80 @@ var soraOpen = false;
  * As chamadas de partida ficam desligadas até a migração SQL ser aprovada
  * e aplicada. O jogo local continua funcionando normalmente nesse intervalo.
  */
-var SORA_ONLINE_RANKING_ENABLED = false;
+var SORA_ONLINE_PROFILE_ENABLED = true;
+var SORA_ONLINE_RANKING_ENABLED = false; // ativar somente depois de aplicar a migração aprovada
 var soraOnlineUserId = null;
 var soraOnlineAuthPromise = null;
 var soraOnlineAuthSubscription = null;
+var soraOnlineProfile = null;
+var soraOnlineProfilePromise = null;
+var soraOnlineProfileLoaded = false;
 var soraOnlineRunId = null;
 var soraOnlineRunStartPromise = null;
 var soraOnlineRunFinishSent = false;
+var soraRankPeriod = 'week';
+var soraRankRequestSerial = 0;
+var soraRankRowsCache = { week:null, all:null };
 
+function soraOnlineApplyProfile(profile){
+  var data = profile && typeof profile === 'object' ? profile : null;
+  var visual = data && data.character && typeof data.character === 'object' ? data.character : {};
+  var keys = ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl'];
+  var active = Object.assign({}, CH[sel] || CH[0]);
+  keys.forEach(function(key){
+    var value = visual[key];
+    if(typeof value === 'string' && value.length <= 32) active[key] = value;
+  });
+  if(typeof visual.streak === 'boolean') active.streak = visual.streak;
+  ['hair','hair2','skin','eye'].forEach(function(key){
+    if(!/^#?[0-9a-fA-F]{6}$/.test(String(active[key]||''))) active[key] = (CH[sel]||CH[0])[key];
+  });
+  active.img = active.hair;
+  active.n = String(data && data.nick || nick || 'Idol').slice(0,16);
+  soraOnlineProfile = data ? {nick:active.n, character:active} : null;
+  if(data && data.nick){
+    nick = String(data.nick).slice(0,16);
+    var inputNick = $('nick');
+    if(inputNick) inputNick.value = nick;
+  }
+  soraRefreshTestProfile();
+}
+function soraGetActiveCharacter(){
+  return soraOnlineProfile && soraOnlineProfile.character
+    ? soraOnlineProfile.character
+    : (CH[sel] || CH[0]);
+}
+function soraOnlineLoadProfile(force){
+  if(!SORA_ONLINE_PROFILE_ENABLED || !soraOnlineUserId) return Promise.resolve(null);
+  if(soraOnlineProfilePromise && !force) return soraOnlineProfilePromise;
+  soraOnlineProfilePromise = soraEnsureSupabaseClient().then(function(client){
+    return client.rpc('sora_my_profile');
+  }).then(function(result){
+    if(result && result.error) throw result.error;
+    var profile = result && result.data;
+    if(!profile || typeof profile !== 'object') throw new Error('Perfil não encontrado para esta conta.');
+    soraOnlineProfileLoaded = true;
+    soraOnlineApplyProfile(profile);
+    return profile;
+  }).catch(function(error){
+    soraOnlineProfileLoaded = true;
+    soraOnlineProfile = null;
+    console.info('Sora⭐Jump: perfil online ainda indisponível; usando aparência local.', error && error.message || error);
+    soraRefreshTestProfile();
+    return null;
+  });
+  return soraOnlineProfilePromise;
+}
 function soraOnlineSetSession(session){
   var user = session && session.user;
-  // O ranking aceita contas Google reais, nunca sessões anônimas.
-  soraOnlineUserId = user && user.is_anonymous !== true ? user.id : null;
+  var nextId = user && user.is_anonymous !== true ? user.id : null;
+  if(nextId === soraOnlineUserId) return;
+  soraOnlineUserId = nextId;
+  soraOnlineProfile = null;
+  soraOnlineProfileLoaded = false;
+  soraOnlineProfilePromise = null;
+  if(soraOnlineUserId) soraOnlineLoadProfile();
+  else soraRefreshTestProfile();
 }
 function soraOnlineInitAuth(){
   return soraEnsureSupabaseClient().then(function(client){
@@ -1551,7 +1617,7 @@ function soraOnlineInitAuth(){
     if(!soraOnlineAuthSubscription && typeof client.auth.onAuthStateChange === 'function'){
       try{
         var authWatch = client.auth.onAuthStateChange(function(_event, session){
-          soraOnlineSetSession(session);
+          Promise.resolve().then(function(){ soraOnlineSetSession(session); });
         });
         soraOnlineAuthSubscription = authWatch && authWatch.data && authWatch.data.subscription || null;
       }catch(e){}
@@ -1579,7 +1645,6 @@ function soraOnlineBeginRun(){
   soraOnlineRunId = null;
   soraOnlineRunFinishSent = false;
   soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(){
-    // Leia o estado atual: a promessa inicial pode ter resolvido antes do login.
     var userId = soraOnlineUserId;
     if(!userId || !_supabase || typeof _supabase.rpc !== 'function') return null;
     return _supabase.rpc('sora_run_start').then(function(result){
@@ -1597,17 +1662,31 @@ function soraOnlineBeginRun(){
 }
 function soraOnlineFinishRun(score){
   if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId || soraOnlineRunFinishSent ||
-     !Number.isSafeInteger(score) || score <= 0 || !soraOnlineRunStartPromise) return;
+     !Number.isSafeInteger(score) || score < 0 || !soraOnlineRunStartPromise) return;
   soraOnlineRunFinishSent = true;
   Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
     if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
     return _supabase.rpc('sora_run_finish',{p_run_id:runId,p_score:score});
   }).then(function(result){
     if(result && result.error) throw result.error;
+    if(result && result.data && result.data.ok === false)
+      console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
     soraOnlineRunId = null;
   }).catch(function(error){
     console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
   });
+}
+function soraOnlineAbortRun(){
+  if(!SORA_ONLINE_RANKING_ENABLED || !soraOnlineRunStartPromise) return;
+  Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
+    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+    return _supabase.rpc('sora_run_abort',{p_run_id:runId});
+  }).catch(function(error){
+    console.info('Sora⭐Jump: encerramento da partida pendente.', error && error.message || error);
+  });
+  soraOnlineRunId = null;
+  soraOnlineRunStartPromise = null;
+  soraOnlineRunFinishSent = true;
 }
 soraOnlineInitAuth();
 
@@ -3647,7 +3726,7 @@ function soraDraw(){
       x.restore();
     }
     var expr = soraP.slipping ? 1 : (soraP.vy < -6 ? 2 : 0);
-    drawChar(CH[sel], soraP.x, soraP.y, soraP.vy < 0 ? 1 : 0, expr);
+    drawChar(soraGetActiveCharacter(), soraP.x, soraP.y, soraP.vy < 0 ? 1 : 0, expr);
     // Escudo bolha perolado: envolve a silhueta inteira sem esconder o rosto ou a roupa.
     if(soraP.shield){
       x.save();
@@ -3780,7 +3859,8 @@ function soraEndGame(){
 
   // Sessões secretas são apenas visuais: não poluem o ranking nem o histórico.
   if(!isTestScene){
-    var row = { name: ($('nick') && $('nick').value.trim()) || nick || 'Idol', score: h, char: CH[sel].n, d: dk(), t: Date.now() };
+    var activeCharacter = soraGetActiveCharacter();
+    var row = { name: ($('nick') && $('nick').value.trim()) || nick || 'Idol', score: h, char: activeCharacter.n || CH[sel].n, d: dk(), t: Date.now() };
     try{
       var lb = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]');
       if(!Array.isArray(lb)) lb = [];
@@ -3834,17 +3914,56 @@ function soraEndGame(){
   soraRenderLb();
   if($('soraOverBox')) $('soraOverBox').hidden = false;
 }
-function soraRenderLb(){
-  var el = $('soraLbList'); if(!el) return;
-  var rows = [];
-  try{ rows = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]'); }catch(e){}
-  if(!rows.length){
+function soraRenderLbRows(rows, online, serial){
+  var el = $('soraLbList'), source = $('soraRankSource');
+  if(!el || serial !== soraRankRequestSerial) return;
+  if(source) source.textContent = online ? '🌐 Ranking online' : '📱 Ranking local · salvo neste aparelho';
+  if(!Array.isArray(rows) || !rows.length){
     el.innerHTML = '<li class="empty">' + escHtml(tr('Ninguém no ranking ainda. Seja a primeira pessoa!')) + '</li>';
     return;
   }
-  el.innerHTML = rows.slice(0, 5).map(function(r, i){
-    return '<li><span><b>#' + (i + 1) + '</b> ' + escHtml(r.name) + ' <small>(' + escHtml(r.char || 'Idol') + ')</small></span><strong>' + r.score + ' m</strong></li>';
+  el.innerHTML = rows.slice(0,5).map(function(r,i){
+    var name = r.nick || r.name || 'Idol';
+    var score = Math.max(0,Math.floor(+r.score||0));
+    var extra = online ? '' : ' <small>(' + escHtml(r.char || 'Idol') + ')</small>';
+    return '<li><span><b>#' + (online ? (+r.position||i+1) : i+1) + '</b> ' +
+      escHtml(name) + extra + '</span><strong>' + score + ' m</strong></li>';
   }).join('');
+}
+function soraRenderLocalLb(serial){
+  var rows = [];
+  try{ rows = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]'); }catch(e){}
+  soraRenderLbRows(rows, false, serial);
+}
+function soraSetRankPeriod(period){
+  if(period !== 'week' && period !== 'all') return;
+  soraRankPeriod = period;
+  var week = $('soraRankWeekBtn'), all = $('soraRankAllBtn');
+  if(week) week.setAttribute('aria-pressed', period === 'week' ? 'true' : 'false');
+  if(all) all.setAttribute('aria-pressed', period === 'all' ? 'true' : 'false');
+  soraRenderLb();
+}
+function soraRenderLb(){
+  var serial = ++soraRankRequestSerial;
+  soraRenderLocalLb(serial);
+  if(!SORA_ONLINE_RANKING_ENABLED || soraRankRowsCache[soraRankPeriod]){
+    if(SORA_ONLINE_RANKING_ENABLED && soraRankRowsCache[soraRankPeriod])
+      soraRenderLbRows(soraRankRowsCache[soraRankPeriod], true, serial);
+    return;
+  }
+  soraEnsureSupabaseClient().then(function(client){
+    return client.rpc('sora_ranking',{p_period:soraRankPeriod});
+  }).then(function(result){
+    if(result && result.error) throw result.error;
+    var rows = Array.isArray(result && result.data) ? result.data : [];
+    soraRankRowsCache[soraRankPeriod] = rows;
+    soraRenderLbRows(rows, true, serial);
+  }).catch(function(error){
+    if(serial === soraRankRequestSerial){
+      soraRenderLocalLb(serial);
+      console.info('Sora⭐Jump: ranking online indisponível; mantendo placar local.', error && error.message || error);
+    }
+  });
 }
 function soraRenderHistModal(){
   var box = $('soraHistContent'); if(!box) return;
@@ -3975,6 +4094,8 @@ function soraSetupUI(){
             '<p class="sora-over-subtitle" id="soraOverSubtitle">' + escHtml(tr('Cada pulo é mais uma estrelinha na sua história ✨')) + '</p>' +
             '<div id="soraResTxt" class="res" style="width:100%;color:#fff"></div>' +
             '<div class="sora-ranking-wrap"><div class="sora-ranking-head"><span>' + escHtml(tr('🏆 TOP DA SUBIDA')) + '</span><span style="color:#c4b5fd;font-size:9px">TOP 5</span></div>' +
+              '<div class="sora-rank-tabs"><button type="button" id="soraRankWeekBtn" aria-pressed="true">📅 ' + escHtml(tr('Semana')) + '</button><button type="button" id="soraRankAllBtn" aria-pressed="false">🏆 ' + escHtml(tr('Geral')) + '</button></div>' +
+              '<div id="soraRankSource" class="sora-rank-source">📱 Ranking local</div>' +
               '<ol class="lb" id="soraLbList" style="width:100%;max-height:85px;overflow:auto;background:var(--card);color:var(--ink);border-radius:8px;padding:4px 8px;margin:0"></ol></div>' +
             '<div class="sora-over-actions"><button type="button" class="btn" id="soraAgainBtn">' + escHtml(tr('✨ JOGAR NOVAMENTE')) + '</button><button type="button" class="sec" id="soraMenuBtn">' + escHtml(tr('☁️ VOLTAR AO MENU')) + '</button></div>' +
           '</div>' +
@@ -4060,6 +4181,8 @@ function soraSetupUI(){
   $('soraMenuBtn').setAttribute('aria-label', 'Voltar ao menu do Sora Jump');
   $('soraCloseBtn').setAttribute('aria-label', 'Fechar Sora Jump e voltar ao jogo principal');
   $('soraHomeBtn').onclick = soraReturnToMenu;
+  $('soraRankWeekBtn').onclick = function(){ soraSetRankPeriod('week'); };
+  $('soraRankAllBtn').onclick = function(){ soraSetRankPeriod('all'); };
   $('soraPlayBtn').onclick = function(){ soraTestSceneId = ''; soraStartGame(); };
   $('soraAgainBtn').onclick = soraStartGame;
   $('soraTestFujiBtn').onclick = function(){ soraTestSceneId = 'fuji'; soraStartGame(); };
@@ -4109,7 +4232,8 @@ function soraTestPetType(){
 function soraRefreshTestProfile(){
   var charCv = $('soraTestCharPreview'), petCv2 = $('soraTestPetPreview');
   if(!charCv || !petCv2) return;
-  var charName = (CH && CH[sel] && CH[sel].n) ? CH[sel].n : 'Idol';
+  var activeCharacter = soraGetActiveCharacter();
+  var charName = (soraOnlineProfile && soraOnlineProfile.nick) || (activeCharacter && activeCharacter.n) || 'Idol';
   var pType = soraTestPetType();
   var pObj = (typeof petData !== 'undefined' && petData && petData.pets) ? petData.pets[pType] : null;
   var petName = pObj && pObj.nome ? pObj.nome : ((PET_SP[pType] && PET_SP[pType].n) || pType || 'Pet');
@@ -4119,12 +4243,15 @@ function soraRefreshTestProfile(){
   if(info){
     var imported = window.__TW_TEST_STORAGE && window.__TW_TEST_STORAGE.hasImportedProfile && window.__TW_TEST_STORAGE.hasImportedProfile();
     var original = window.__TW_TEST_STORAGE && window.__TW_TEST_STORAGE.hasOriginalProfile && window.__TW_TEST_STORAGE.hasOriginalProfile();
-    info.textContent = imported ? '✓ Perfil importado · alterações salvas só nesta cópia' : original ? '✓ Perfil salvo detectado · alterações isoladas nesta cópia' : 'Prévia atual: se não for sua seleção, importe o perfil do jogo original';
+    info.textContent = soraOnlineProfile ? '✓ Personagem sincronizado com seu perfil do TsuLiPa' :
+      imported ? '✓ Perfil importado · alterações salvas só nesta cópia' :
+      original ? '✓ Perfil salvo detectado · alterações isoladas nesta cópia' :
+      'Prévia local: entre com Google para carregar seu personagem do perfil';
   }
   var cc2 = charCv.getContext('2d');
   cc2.clearRect(0,0,charCv.width,charCv.height);
   var oldG = g, oldState = state;
-  try { g = cc2; drawChar(CH[sel], 9, 9, 0, 0); }
+  try { g = cc2; drawChar(soraGetActiveCharacter(), 9, 9, 0, 0); }
   catch(err){ console.warn('Prévia da personagem:', err); }
   finally { g = oldG; state = oldState; }
   var pc2 = petCv2.getContext('2d');
@@ -4134,6 +4261,12 @@ function soraRefreshTestProfile(){
 }
 function soraBindTestProfileTools(){
   var toggle = $('soraImportProfileBtn'), box = $('soraImportProfileBox'), apply = $('soraApplyProfileBtn');
+  if(soraOnlineProfile){
+    if(toggle) toggle.hidden = true;
+    if(box) box.hidden = true;
+    return;
+  }
+  if(toggle) toggle.hidden = false;
   if(toggle && !toggle.dataset.bound){
     toggle.dataset.bound='1';
     toggle.onclick=function(){ if(!box) return; box.hidden=!box.hidden; toggle.textContent=box.hidden?'Importar perfil do jogo original ▾':'Ocultar importação ▴'; };
@@ -4164,6 +4297,7 @@ function soraBindTestProfileTools(){
 }
 soraSetupUI();
 function soraReturnToMenu(){
+  if(soraState === 'play') soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m';
@@ -4173,6 +4307,13 @@ function soraReturnToMenu(){
   soraRefreshTestProfile();
 }
 function soraOpenUI(){
+  if(SORA_ONLINE_PROFILE_ENABLED && !soraOnlineProfileLoaded && soraOnlineUserId){
+    soraOnlineLoadProfile().then(function(){ soraOpenUIReady(); });
+    return;
+  }
+  soraOpenUIReady();
+}
+function soraOpenUIReady(){
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   var inputNick = $('nick');
   var nomeLimpo = (inputNick ? inputNick.value : '').trim();
@@ -4208,6 +4349,7 @@ window.addEventListener('pageshow',function(){
  if(soraState==='play'&&!document.hidden&&soraSoundOn&&!muted)soraMusicStart();
 });
 function soraCloseUI(){
+  if(soraState === 'play') soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
   cancelAnimationFrame(soraRaf); soraRaf=0; if($('soraOv')) $('soraOv').hidden = true;

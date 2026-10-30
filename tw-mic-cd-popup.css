@@ -1,0 +1,115 @@
+
+
+/* CD Player: somente o pop-up aberto pelo microfone do banner (#twMicModal).
+   Dados, ranking semanal, avatar e interações continuam sendo renderizados pelo código original. */
+#hub #twMicModal[hidden]{display:none!important}
+#hub #twMicModal{
+  position:fixed;inset:0;z-index:1001;
+  display:grid;place-items:center;
+  box-sizing:border-box;overflow:auto;overscroll-behavior:contain;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+          max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  background:rgba(14,12,47,.74);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+#hub #twMicModal .tw-mic-tv{
+  position:relative;isolation:isolate;display:grid;
+  grid-template-columns:clamp(126px,30%,160px) minmax(0,1fr);
+  align-items:center;gap:12px;box-sizing:border-box;
+  width:min(100%,550px);margin:0;padding:15px;overflow:hidden;
+  border:3px solid rgba(255,255,255,.92);border-radius:29px;color:#fff;
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(255,255,255,.7),transparent 35%),
+    radial-gradient(ellipse at 100% 100%,rgba(132,220,255,.27),transparent 45%),
+    linear-gradient(145deg,#f5d8f6 0%,#b6b6ed 26%,#7774bd 56%,#34365f 100%);
+  box-shadow:0 25px 75px rgba(0,0,0,.48),0 0 0 5px rgba(255,255,255,.09),
+             inset 0 2px 0 rgba(255,255,255,.8),inset 0 -8px 20px rgba(25,18,66,.3);
+}
+#hub #twMicModal .tw-mic-tv::before{
+  content:"";position:absolute;z-index:0;left:20px;top:59%;
+  width:clamp(112px,24vw,142px);aspect-ratio:1;
+  border:6px solid rgba(255,255,255,.83);border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,#242343 0 5.5%,#faf7ff 6% 8.5%,#aaa0d6 9% 10%,transparent 10.5% 17%,rgba(255,255,255,.8) 17.5% 19%,transparent 19.5%),
+    radial-gradient(ellipse at 27% 17%,rgba(255,255,255,.95),transparent 33%),
+    conic-gradient(from 18deg,#fff0fc,#8fe8ff 13%,#fff 22%,#ff88c9 37%,#a393ff 53%,#78e6e4 69%,#fff0b8 84%,#fff0fc);
+  box-shadow:0 10px 28px rgba(20,14,60,.38),inset 0 0 22px rgba(255,255,255,.48);
+  transform:translateY(-50%);animation:twMicCdSpin 18s linear infinite;pointer-events:none;
+}
+#hub #twMicModal .tw-mic-tv::after{
+  content:"◉   ▮ ▮ ▮ ▮   ♪";position:absolute;z-index:0;left:21px;bottom:18px;
+  width:clamp(110px,24vw,142px);height:29px;
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.42);border-radius:10px;color:#fff;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),rgba(255,255,255,.06));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 4px 12px rgba(20,14,60,.18);
+  font:900 10px/1 "M PLUS Rounded 1c",sans-serif;letter-spacing:.13em;pointer-events:none;
+}
+#hub #twMicModal .tw-rank-tv-head{
+  position:relative;z-index:1;grid-column:1/-1;
+  display:flex;align-items:center;gap:8px;box-sizing:border-box;
+  width:100%;min-height:38px;margin:0;padding:7px 9px 9px;
+  border:1px solid rgba(255,255,255,.53);border-radius:15px;
+  background:linear-gradient(100deg,rgba(255,255,255,.32),rgba(255,255,255,.1));
+}
+#hub #twMicModal .tw-rank-tv-head b{
+  flex:none;color:#fff;font:400 13px/1.4 "Mochiy Pop One","Kosugi Maru",sans-serif;
+  text-shadow:0 1px 4px rgba(40,20,85,.32);
+}
+#hub #twMicModal .tw-rank-tv-head small{
+  flex:1;min-width:0;color:#fff;text-align:right;
+  font:800 9px/1.35 "M PLUS Rounded 1c",sans-serif;
+}
+#hub #twMicModal #twMicFechar{
+  flex:none;width:29px;height:29px;min-width:29px;padding:0;
+  border:2px solid rgba(255,255,255,.95);border-radius:50%;color:#fff;
+  background:linear-gradient(135deg,#8b68cb,#4c7cb8);box-shadow:0 2px 0 rgba(35,25,88,.38);
+  font:900 16px/1 sans-serif;
+}
+#hub #twMicModal .tw-mic-tv .tw-rank-tv-screen{
+  position:relative;z-index:1;grid-column:2;grid-row:2;
+  box-sizing:border-box;width:100%;min-width:0;min-height:225px;margin:0;padding:13px 12px;
+  border:2px solid rgba(255,255,255,.82);border-radius:18px;color:#fff;text-align:center;
+  background:
+    radial-gradient(circle at 50% 0,rgba(255,111,181,.3),transparent 58%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px),
+    linear-gradient(145deg,#251047,#160b36);
+  box-shadow:inset 0 0 0 3px rgba(92,199,255,.09),inset 0 0 22px rgba(92,199,255,.12);
+}
+#hub #twMicModal .tw-mic-tv .tw-rank-tv-screen>b{color:#b6ff3b;font-size:11px}
+#hub #twMicModal .tw-mic-tv .tw-rank-tv-screen>p{font-size:12px}
+#hub #twMicModal .tw-mic-tv .tw-rank-tv-screen>strong{font-size:14px}
+#hub #twMicModal .tw-mic-lista{font-size:11px;line-height:1.65}
+#hub #twMicModal .tw-mic-sub{font-size:9px;color:#ffe7f4}
+#hub #twMicModal .tw-tv-idol-avatar{width:39px!important;height:39px!important}
+#hub #twMicModal :is(#twMicFechar,button):focus-visible{outline:3px solid #ffe14d;outline-offset:3px}
+@keyframes twMicCdSpin{from{rotate:0deg}to{rotate:360deg}}
+
+/* Encontro do Dia: duo/trio permanece como grupo; só o ranking e seu selo somem. */
+.encp.enc-grupo #encRk,.encp.enc-grupo #encSelo{display:none!important}
+
+@media(max-width:560px){
+  #hub #twMicModal .tw-mic-tv{
+    grid-template-columns:minmax(0,1fr);grid-template-rows:auto 84px auto;
+    gap:8px;width:min(100%,440px);padding:10px;border-radius:22px;
+  }
+  #hub #twMicModal .tw-mic-tv::before{
+    left:18px;top:104px;width:72px;border-width:4px;transform:translateY(-50%);
+  }
+  #hub #twMicModal .tw-mic-tv::after{
+    left:108px;top:89px;bottom:auto;width:min(150px,calc(100% - 130px));
+    height:30px;font-size:9px;
+  }
+  #hub #twMicModal .tw-rank-tv-head{
+    grid-column:1;grid-row:1;gap:5px;padding:5px 6px 8px;
+  }
+  #hub #twMicModal .tw-rank-tv-head b{font-size:11px}
+  #hub #twMicModal .tw-rank-tv-head small{font-size:8px}
+  #hub #twMicModal #twMicFechar{width:26px;height:26px;min-width:26px}
+  #hub #twMicModal .tw-mic-tv .tw-rank-tv-screen{
+    grid-column:1;grid-row:3;min-height:205px;margin:0;padding:13px 9px;border-radius:14px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #hub #twMicModal .tw-mic-tv::before{animation:none}
+}

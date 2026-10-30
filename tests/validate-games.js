@@ -174,19 +174,21 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
-assert(tvSkin.includes("#hub #twMicModal .tw-mic-tv")&&
-       tvSkin.includes("twMicCdSpin")&&
-       tvSkin.includes(".encp.enc-grupo #encRk")&&
-       tvSkin.includes(".encp.enc-grupo #encSelo")&&
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=1"'),
+  "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
+assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
+       micCdSkin.includes("twMicCdSpin")&&
+       micCdSkin.includes(".encp.enc-grupo #encRk")&&
+       micCdSkin.includes(".encp.enc-grupo #encSelo")&&
        lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        lab.includes("$('encNick').textContent = encNomes(d)")&&
        !lab.includes('id="encPessoas"')&&
-       !tvSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
+       !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]'),
   "CD belongs only to the banner mic modal; duo/trio stays united with no rank; Karaoke Time keeps its original shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
 const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');
@@ -213,7 +215,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&

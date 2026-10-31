@@ -1,7 +1,7 @@
 -- PROPOSTA — Backstage Admin / ficha administrativa de jogador.
 -- NÃO APLICAR DIRETAMENTE EM PRODUÇÃO. Revisar e homologar antes do merge.
 -- Modelo: um único proprietário, validado exclusivamente por public.eh_admin().
--- Retorna somente dados de jogo/perfil necessários à administração; nunca email ou UUID.
+-- Retorna somente dados de jogo/perfil necessários à administração; nunca expõe campos de autenticação ou identificadores internos.
 
 create or replace function public.admin_ficha_jogador(p_nick text)
 returns jsonb

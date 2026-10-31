@@ -1032,10 +1032,11 @@ function dk(){
 }
 
 function wk(){
-  var d=new Date(); d.setHours(0,0,0,0);
-  d.setDate(d.getDate()+3-(d.getDay()+6)%7);
-  var w1=new Date(d.getFullYear(),0,4);
-  return d.getFullYear()+'-W'+(1+Math.round(((d-w1)/864e5-3+(w1.getDay()+6)%7)/7));
+  var parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  var p={};parts.forEach(function(x){p[x.type]=x.value;});
+  var d=new Date(Date.UTC(+p.year,+p.month-1,+p.day));
+  d.setUTCDate(d.getUTCDate()-d.getUTCDay());
+  return d.toISOString().slice(0,10);
 }
 
 var local=[], lw={w:wk(),rows:[]}, ld={d:dk(),rows:[]}, tab='day';
@@ -6293,6 +6294,7 @@ function contaAplicar(j){
   nick = j.nick;
   try{ localStorage.setItem('brs48cr_st', starT); localStorage.setItem('brs48cr_nick', nick); }catch(e){}
   setBest(); contaUI();
+  if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
 }
@@ -6485,6 +6487,16 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['duo',      '🌙', 'Moon⭐Duo!',        'Fez 5 cenas no Moon⭐Duo!'],
   ['guarda',   '👗', 'Guarda-roupa completo', 'Comprou todas as roupas fixas da lojinha'],
   ['centersemana', '🏅', 'Center da semana', 'Ficou em 1º lugar no ranking de uma semana'],
+  ['s2_ensaio', '🩰', 'Primeiro ensaio', 'Concluiu o cenário Sala de ensaio na Temporada 2'],
+  ['s2_backstage', '💄', 'Dona/Dono do backstage', 'Concluiu o cenário Backstage do teatro na Temporada 2'],
+  ['s2_estudio', '🎬', 'Estúdio no ar', 'Concluiu o cenário Estúdio de TV na Temporada 2'],
+  ['s2_festival', '🏮', 'Noite de festival', 'Concluiu o cenário Festival de verão na Temporada 2'],
+  ['s2_aeroporto', '✈️', 'Embarque VIP', 'Concluiu o cenário Aeroporto da turnê na Temporada 2'],
+  ['s2_geral', '🏟️', 'Ensaio geral', 'Concluiu o cenário Ensaio geral na Temporada 2'],
+  ['s2_dome', '🌈', 'Noite no Dome', 'Concluiu o cenário Dome do grande show na Temporada 2'],
+  ['sora_500', '☁️', 'Pulo nas Nuvens', 'Alcançou 500 metros no Sora⭐Jump!'],
+  ['sora_1500', '🌌', 'Voo Estrelado', 'Alcançou 1.500 metros no Sora⭐Jump!'],
+  ['sora_3000', '🌙', 'Show na Lua', 'Alcançou 3.000 metros no Sora⭐Jump!'],
   // da temporada: ganha quem joga uma corrida no período do tema
   ['tema_halloween', '🎃', 'Halloween',   'Correu no Halloween'],
   ['tema_natal',     '🎄', 'Natal',       'Correu no Natal'],
@@ -11702,8 +11714,15 @@ function s2Load(){
     }
   }catch(e){}
 }
+function s2SyncProfile(){
+  if(!contaJ || typeof contaRpc !== 'function') return;
+  var earned = S2_INS.filter(function(x){ return !!s2Save.badges[x[0]]; }).map(function(x){ return x[0]; });
+  if(!earned.length) return;
+  contaRpc('sincronizar_insignias_jogos', { p_insignias: earned }).catch(function(){});
+}
 function s2Persist(){
   try{ window.__TW_TEST_STORAGE.setItem(S2_KEY, JSON.stringify(s2Save)); }catch(e){}
+  s2SyncProfile();
 }
 s2Load();
 

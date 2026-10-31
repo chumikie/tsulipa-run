@@ -29,3 +29,11 @@
 .tw-preview-game[data-karaoke-tela]{overflow-y:auto;overscroll-behavior:contain}
 .tw-preview-game[data-karaoke-tela] .tw-preview-stage{flex:0 0 auto;overflow:visible;min-height:calc(100dvh - 64px)}
 .tw-preview-game[data-karaoke-tela] #twPreviewIframe{flex:0 0 auto;height:calc(100dvh - 64px);max-width:1240px}
+
+/* Tela do Karaoke: uma única superfície, herdada do fundo externo da página. */
+.tw-preview-game[data-karaoke-tela]{background:transparent!important;background-image:none!important}
+.tw-preview-game[data-karaoke-tela] .tw-preview-panel{background:transparent!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.tw-preview-game[data-karaoke-tela] .tw-preview-header-slot,
+.tw-preview-game[data-karaoke-tela] .tw-preview-header-slot>header,
+.tw-preview-game[data-karaoke-tela] .tw-preview-stage{background:transparent!important;background-image:none!important;box-shadow:none!important;border-color:transparent!important}
+.tw-preview-game[data-karaoke-tela] #twPreviewIframe{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}

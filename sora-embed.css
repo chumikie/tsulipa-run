@@ -99,7 +99,7 @@ html.tw-sora-embed #soraMenuBox{
   scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
 }
-html.tw-sora-embed #soraOv .sora-menu-content{gap:6px!important}
+html.tw-sora-embed #soraOv .sora-menu-content{gap:6px!important;margin-top:auto!important;margin-bottom:auto!important}
 html.tw-sora-embed #soraOv .sora-menu-copy{line-height:1.4!important}
 html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-accent);outline-offset:2px}
 @media(max-width:620px){

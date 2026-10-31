@@ -615,9 +615,33 @@ try{
   assert(gameBadgesSql.includes("insignias_jogos")&&gameBadgesSql.includes("sincronizar_insignias_jogos")&&
     gameBadgesSql.includes("extract(dow")&&!gameBadgesSql.includes("date_trunc('week'"),
     "Server badge migration must sync allowlisted game badges and calculate completed weeks from Sunday");
-  assert(karaokeTime.includes("order:5")&&karaokeTime.includes("週間ランキング")&&
-    karaokeTime.includes("今日の観客")&&!karaokeTime.includes("<b>KARAOKE TIME</b> · jogo solo offline"),
-    "Karaoke scoreboard must precede today's audience, use Japanese subtitles and omit the redundant title strip");
+  assert(karaokeTime.includes("週間ランキング")&&karaokeTime.includes("今日の観客")&&
+    karaokeTime.includes("wrap.insertBefore(weekly,audience)")&&
+    karaokeTime.includes(".kt-no-site .krtop")&&karaokeTime.includes(".kt-no-site .kt-foot"),
+    "Karaoke must move the weekly board before the audience in the DOM and hide local-only title/footer in embed mode");
+  const embedBoot=karaokeTime.match(/<script id="ktDentroDoSite">([\\s\\S]*?)<\\/script>/);
+  assert(!!embedBoot,"Karaoke embed bootstrap must exist");
+  if(embedBoot){
+    const classes=[],root={classList:{add:name=>classes.push(name)}},win={};
+    win.parent=win;
+    vm.runInNewContext(embedBoot[1],{location:{search:"?embed=index2"},document:{documentElement:root},window:win,URLSearchParams});
+    assert(classes.includes("kt-no-site"),"Karaoke embed mode must not depend on window.parent identity");
+  }
+  const layoutFn=karaokeTime.match(/function ktOrganizarLayoutIntegrado\\(\\)\\{[\\s\\S]*?\\n\\}\\nktOrganizarLayoutIntegrado\\(\\);/);
+  assert(!!layoutFn,"Karaoke embedded layout organizer must exist");
+  if(layoutFn){
+    const children=["scene","audience","clip","cast","weekly"].map(name=>({name,parentNode:null}));
+    const wrap={children,insertBefore(node,reference){
+      const from=children.indexOf(node),to=children.indexOf(reference);
+      if(from<0||to<0)return;
+      children.splice(from,1);children.splice(children.indexOf(reference),0,node);
+    }};
+    children.forEach(node=>node.parentNode=wrap);
+    const doc={querySelector:()=>wrap,getElementById:id=>id==="ktWeeklyRanks"?children.find(x=>x.name==="weekly"):id==="ktAudience"?children.find(x=>x.name==="audience"):null};
+    vm.runInNewContext(layoutFn[0],{ktNoSite:()=>true,document:doc});
+    assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
+      "Weekly board must be physically moved before audience on desktop and mobile");
+  }
   console.log("✓ Game badges in profile + Sunday weekly boundaries + Karaoke hierarchy");
 }catch(e){errors.push("Profile badges / Sunday / Karaoke polish: "+e.message);}
 

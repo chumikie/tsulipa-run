@@ -258,7 +258,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 .kt-playing #ktAudience{order:6}
 .kt-ja-subtitle{display:block;margin:2px 0 4px;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
 </style>
-<link rel="stylesheet" href="./tw-windows.css?v=2">
+<link rel="stylesheet" href="./tw-windows.css?v=3">
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -1932,6 +1932,11 @@ function ktNeon(x,cx,cy,t){
 /* Mesa da festa do karaokê: toalha rosa com babado, livro de músicas, microfones, pandeiro, petiscos e balões */
 function ktCorMembro(j){var ch=j&&j.char||{},base=/^#[0-9a-f]{6}$/i.test(ch.luz||'')?ch.luz:(/^#[0-9a-f]{6}$/i.test(ch.hair||'')?ch.hair:'#ff9ccf'),n=parseInt(base.slice(1),16),r0=n>>16&255,g0=n>>8&255,b0=n&255,lum=(r0*.3+g0*.59+b0*.11)/255,sat=Math.max(r0,g0,b0)-Math.min(r0,g0,b0);return lum<.35&&sat<60?['#c7a6ff','#9fd8ff','#a6f0c6','#ffb3a7','#ffc2e2'][String(j&&j.nick||'').length%5]:ktCorPastel(base,lum<.35?.55:.3);}
 /* Mesa da festa: mesinha baixa laqueada com toalhinha de renda, 9 copos (um por pessoa da sala, na cor de cada um), petiscos desenhados e itens de karaokê */
+var ktPandeiro={t0:-1e4,x:564,y:360};
+/* Pandeiro: chacoalha, "tcha-tcha" de guizos e notinhas subindo */
+function ktPandeiroToque(px,py){var P=ktPandeiro;if(Math.abs(px-P.x)>17||Math.abs(py-P.y)>11)return false;var now=performance.now();if(now-P.t0<260)return true;P.t0=now;ac();
+ krRuido(.13,.11,6500,0);krRuido(.09,.07,8000,.11);[2637,3136,3520].forEach(function(f,i){beep(f,.05,'triangle',.012,i*.018);beep(f*1.06,.04,'square',.006,.11+i*.015);});beep(196,.06,'sine',.05,0);
+ ['🎵','🎶','♪'].forEach(function(e,i){krBolhas.push({emo:e,x:P.x+(i-1)*12,y:P.y-12-i*3,t:0,_ktUntil:now+1100});});return true;}
 function ktMesaKaraoke(x,t){var cx=480,cy=346,I='rgba(60,30,110,.2)',k;x.save();
  /* balões de coração amarrados na mesa */
  [[382,'#ff9ccf',0],[578,'#c7a6ff',1.7]].forEach(function(b){var bx=b[0]+Math.sin(t*.03+b[2])*3,by=292+Math.sin(t*.04+b[2])*3;x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=1;x.beginPath();x.moveTo(b[0]+(b[0]<cx?8:-8),cy+4);x.bezierCurveTo(b[0]-6,cy-14,bx+6,by+30,bx,by+12);x.stroke();
@@ -1994,7 +1999,7 @@ function ktMesaKaraoke(x,t){var cx=480,cy=346,I='rgba(60,30,110,.2)',k;x.save();
  [[cx-40,cy+16,'#ff6fb5',-.25],[cx+42,cy+16,'#7fd4ff',.25+Math.PI]].forEach(function(m){x.save();x.translate(m[0],m[1]);ktSombra(x,0,3.5,13,2.5,.25);x.rotate(m[3]);var hg=x.createLinearGradient(0,-3,0,3);hg.addColorStop(0,'#5b4a8a');hg.addColorStop(.5,'#2e2350');hg.addColorStop(1,'#1a1233');x.fillStyle=hg;ktRR(x,-13,-2.6,18,5.2,2.6);x.fill();x.strokeStyle=I;x.lineWidth=1;x.stroke();x.fillStyle=m[2];x.fillRect(1,-2.6,2.2,5.2);x.fillStyle='rgba(255,255,255,.4)';x.fillRect(-11,-1.8,10,1);
   var mg=x.createRadialGradient(6.8,-1.6,.5,8,0,5.5);mg.addColorStop(0,'#ffffff');mg.addColorStop(.5,'#cfd3e6');mg.addColorStop(1,'#7f86a8');x.fillStyle=mg;x.beginPath();x.arc(8.5,0,5,0,7);x.fill();x.strokeStyle=I;x.lineWidth=1;x.stroke();x.strokeStyle='rgba(60,60,100,.35)';x.lineWidth=.6;x.beginPath();x.moveTo(5,-2);x.lineTo(12,2);x.moveTo(5,2);x.lineTo(12,-2);x.moveTo(8.5,-5);x.lineTo(8.5,5);x.stroke();x.restore();});
  /* pandeiro com fitinhas */
- x.save();x.translate(cx+84,cy+14);x.rotate(.12);ktSombra(x,0,5,16,3.5,.25);[['#ff6fb5',-1],['#7fd4ff',1]].forEach(function(f,fi){x.strokeStyle=f[0];x.lineWidth=2;x.beginPath();x.moveTo(11,1);x.quadraticCurveTo(17,4+fi*3+Math.sin(t*.12+fi)*2,22,2+fi*4);x.stroke();});
+ var pk=(performance.now()-ktPandeiro.t0)/500,pw=pk>=0&&pk<1?Math.sin(pk*Math.PI*6)*(1-pk)*.35:0;x.save();x.translate(cx+84,cy+14-(pk>=0&&pk<1?Math.sin(pk*Math.PI)*4:0));x.rotate(.12+pw);ktSombra(x,0,5,16,3.5,.25);[['#ff6fb5',-1],['#7fd4ff',1]].forEach(function(f,fi){x.strokeStyle=f[0];x.lineWidth=2;x.beginPath();x.moveTo(11,1);x.quadraticCurveTo(17,4+fi*3+Math.sin(t*.12+fi)*2,22,2+fi*4);x.stroke();});
  var pdg=x.createLinearGradient(0,-6,0,6);pdg.addColorStop(0,'#ffe9a0');pdg.addColorStop(1,'#e8a92e');x.fillStyle=pdg;x.beginPath();x.ellipse(0,0,13,6.5,0,0,Math.PI*2);x.fill();x.strokeStyle=I;x.lineWidth=1.2;x.stroke();x.fillStyle='#fff7df';x.beginPath();x.ellipse(0,-1,10,4.6,0,0,Math.PI*2);x.fill();x.strokeStyle='rgba(42,22,80,.4)';x.lineWidth=.8;x.stroke();x.fillStyle='#ff9ccf';ktEstrelinha(x,0,-1,3,'#ffb3d9');
  for(k=0;k<6;k++){var aj=k/6*Math.PI*2+.3,jx=Math.cos(aj)*12.5,jy=Math.sin(aj)*6.2;var jg=x.createLinearGradient(jx-2,jy-1.4,jx+2,jy+1.4);jg.addColorStop(0,'#ffffff');jg.addColorStop(1,'#9aa3c4');x.fillStyle=jg;x.beginPath();x.ellipse(jx,jy,2.2,1.4,0,0,7);x.fill();}x.restore();
  /* brilhinhos */
@@ -2338,7 +2343,7 @@ var KT_FALAS={hello:['Que bom ter você aqui! ✦','Oiê! 👋','Vim te ver cant
 function react(id,kind){if(!kind||kind==='random')kind=['hello','heart','dance','cheer'][Math.floor(Math.random()*4)];var b=krBots.find(function(v){return v.playerId===id;});if(!b)return false;var now=performance.now();var touchKey=id+'|'+kind;if(now-(lastTouch[touchKey]||-10000)<500)return true;lastTouch[touchKey]=now;selected=id;b._ktTouchAt=now;b._ktTouchKind=kind;var pool=KT_FALAS[kind]||KT_FALAS.hello,messages={},cor=ktCoracaoDe(b.char),symbols=kind==='heart'?[cor,'💖',cor,'✨']:kind==='dance'?['🎵','🎶',cor,'✨']:kind==='cheer'?['🌟',cor,'🎉','✨']:[cor,'⭐',cor,'✨'];krBolhas=krBolhas.filter(function(v){return !v._ktUntil||v._ktUntil>now;});if(krBolhas.length>8)krBolhas.splice(0,krBolhas.length-8);for(var i=0;i<4;i++)krBolhas.push({emo:symbols[i],x:b.x+(i-1.5)*16,y:b.y-65-i%2*15,t:0,_ktUntil:now+1200});messages[kind]=pool[Math.floor(Math.random()*pool.length)];krBaloes[id]={txt:messages[kind],t0:krT};
 if(!kt.active()){ac();var index=krBots.indexOf(b),base=[523,587,659,698,784,880][index%6];[[1,0],[1.25,.07],[1.5,.14],[2,.22]].forEach(function(n){beep(base*n[0],.12,'triangle',.035,n[1]);});}
 [].forEach.call(document.querySelectorAll('[data-kt-idol]'),function(btn){btn.setAttribute('aria-pressed',btn.dataset.ktIdol===id);if(btn.dataset.ktIdol===id){btn.classList.remove('kt-reacting');void btn.offsetWidth;btn.classList.add('kt-reacting');setTimeout(function(){btn.classList.remove('kt-reacting');},900);}});return true;}
-function hit(px,py){if(Math.hypot(px-480,py-25)<=24)return ktGloboToque();if(ktPetToque(px,py))return true;if(kt.active()&&px>=286&&px<=674&&py>=38&&py<=212)return false;
+function hit(px,py){if(Math.hypot(px-480,py-25)<=24)return ktGloboToque();if(ktPetToque(px,py))return true;if(ktPandeiroToque(px,py))return true;if(kt.active()&&px>=286&&px<=674&&py>=38&&py<=212)return false;
 if(px>=286&&px<=358&&py>=284&&py<=334)return caixaToque('left');if(px>=602&&px<=674&&py>=284&&py<=334)return caixaToque('right');
 var match=krBots.slice().sort(function(a,b){return b.y-a.y;}).find(function(b){return Math.abs(px-b.x)<=35&&py>=b.y-108&&py<=b.y+23;});if(match)return react(match.playerId,'random');
 if(Math.abs(px-ktMicArea.x)<=13&&py>=ktMicArea.y-16&&py<=ktMicArea.y+14)return micToque();

@@ -74,7 +74,7 @@
 .tw-window .tw-window-control[hidden]{display:none}
 .tw-preview-game[data-jogo="sora"] #twPreviewVoltar{display:none}
 .tw-preview-header-slot .tw-window-control{position:static}
-.tw-preview-header-slot .tw-window-back{width:auto;padding:0 12px;border-radius:99px;font:800 12px var(--tw-modal-body)}
+.tw-preview-header-slot .tw-window-back{width:auto!important;min-width:max-content!important;padding:0 12px;border-radius:99px;font:800 12px var(--tw-modal-body);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
 .tw-window :is(button,a,select):focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:3px}
 .tw-window .btn:not(.alt):not(.perfperigo){
  border-radius:999px;background:linear-gradient(100deg,#7b3ff0,#4169e1);color:#fff;

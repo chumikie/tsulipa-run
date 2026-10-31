@@ -104,13 +104,13 @@ function evaluate(script,context){
 }
 // Embedded stage geometry follows the iframe's available height on short and narrow screens.
 // This is CSS-only: the 360x520 game world and gameplay loop remain untouched.
-assert.ok(html.includes("style.href='./sora-embed.css?v=7'"),'embedded sizing CSS cache version');
+assert.ok(html.includes("style.href='./sora-embed.css?v=10'"),'embedded sizing CSS cache version');
 // No pop-up o Sora nao desenha um cartao proprio: so o palco fica emoldurado.
 assert.ok(embedCss.includes('background:transparent!important;\n  box-shadow:none!important;'),'painel do Sora sem cartao branco');
 // Menu em cartao pastel do site, sem vidro escuro.
 assert.ok(embedCss.includes('backdrop-filter:none!important'),'menu do Sora sem aero glass');
 assert.ok(/#soraMenuBox\{[^}]*var\(--bg1/.test(embedCss),'menu do Sora usa as cores da pagina');
-assert.ok(embedCss.includes('width:min(100%,420px,calc((100dvh - 210px)*360/520))!important;'),'desktop iframe height allowance');
+assert.ok(embedCss.includes('width:min(100%,440px,calc((100dvh - 250px)*360/520))!important;'),'desktop iframe height allowance');
 assert.ok(embedCss.includes('width:min(100%,350px,calc((100dvh - 170px)*360/520))!important;'),'mobile portrait height allowance');
 assert.ok(embedCss.includes('#soraStage{width:min(100%,360px,calc((100dvh - 175px)*360/520))!important}'),'short landscape height allowance');
 // A janela do Sora usa o tema (claro/escuro) da pagina inicial.
@@ -119,3 +119,64 @@ assert.ok(embedCss.includes('aspect-ratio:360/520!important;'),'keep original ga
 assert.ok(html.includes('var SW = 360, SH = 520;'),'original Sora logical resolution is unchanged');
 // Gameplay physics/economy unchanged: tested by the existing validate-games suite.
 console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe and bfcache');
+
+// The embedded game must appear before auth/network completes; the profile hydrates afterward.
+{
+  const script=between('function soraOpenUI(){','function soraOpenUIReady(){');
+  const calls=[];
+  const pendingAuth=new Promise(()=>{});
+  const hostWindow={};
+  const env=evaluate(script,{
+    SORA_ONLINE_PROFILE_ENABLED:true,
+    soraOpenUIReady:()=>calls.push('open'),
+    soraOnlineInitAuth:()=>{calls.push('auth');return pendingAuth;},
+    soraOnlineUserId:null,
+    soraOnlineLoadProfile:()=>{calls.push('profile');return Promise.resolve(null);},
+    parent:{},window:hostWindow,location:{search:'?embed=index2'},URLSearchParams
+  });
+  assert.equal(typeof hostWindow.__TW_SORA_OPEN_UI,'function',
+    'embedded bootstrap publishes a bridge out of the game IIFE scope');
+  hostWindow.__TW_SORA_OPEN_UI();
+  assert.deepEqual(calls,['open','auth'],'embedded Sora opens synchronously while auth is still pending');
+  const standaloneWindow={};
+  evaluate(script,{
+    SORA_ONLINE_PROFILE_ENABLED:false,
+    soraOpenUIReady:()=>{},soraOnlineInitAuth:()=>Promise.resolve(null),
+    soraOnlineUserId:null,soraOnlineLoadProfile:()=>null,
+    parent:standaloneWindow,window:standaloneWindow,location:{search:''},URLSearchParams
+  });
+  assert.equal(standaloneWindow.__TW_SORA_OPEN_UI,undefined,
+    'the embedded bridge is not installed in the standalone page');
+}
+// A missing session/localStorage nick must not erase the fallback already shown in the game.
+{
+  const script=between('function soraOnlineSetSession(session){','function soraOnlineInitAuth(){');
+  const input={value:'Tsu'};
+  const env=evaluate(script,{
+    soraOnlineUserId:'previous-session',
+    soraOnlineProfile:{nick:'Old'},
+    soraOnlineProfileLoaded:true,
+    soraOnlineProfilePromise:Promise.resolve(null),
+    window:{__TW_TEST_STORAGE:{getItem:()=>null}},
+    $:(id)=>id==='nick'?input:null,
+    nick:'',
+    soraRefreshTestProfile:()=>{}
+  });
+  env.soraOnlineSetSession(null);
+  assert.equal(input.value,'Tsu','signed-out hydration preserves the visible local fallback');
+  assert.equal(env.nick,'Tsu','signed-out hydration preserves a usable game nickname');
+}
+assert.ok(html.includes('soraOpenUIReady();\n  if(SORA_ONLINE_PROFILE_ENABLED)'),
+  'Sora menu opens before the asynchronous profile request');
+assert.ok(html.includes("|| (localNickInput && localNickInput.value) || nick || 'Tsu'"),
+  'empty account storage cannot clear the Sora nickname');
+
+/* Embedded Sora opens directly without creating the obsolete blue launcher. */
+assert.ok(html.includes("if(!soraHubEmbed){"),'legacy launcher is standalone-only');
+assert.ok(html.includes("window.__TW_SORA_OPEN_UI = soraOpenUI;"),'embedded launcher bridge stays inside the Sora IIFE');
+assert.ok(html.includes("var openEmbedded=window.__TW_SORA_OPEN_UI;if(typeof openEmbedded==='function')openEmbedded();"),'outer bootstrap invokes the scoped embedded bridge');
+assert.ok(html.includes("soraPanel.appendChild(histBox);"),'history is relocated into a dedicated full-size screen');
+assert.ok(html.includes("soraHistCloseBtn"),'history screen has an explicit close control');
+assert.ok(embedCss.includes('.sora-history-screen{'),'history uses a dedicated readable surface');
+assert.ok(embedCss.includes('inset:102px 12px 58px!important;'),'history screen uses the full available modal area');
+console.log('✓ Sora embedded launcher flash removed; history has dedicated readable screen');

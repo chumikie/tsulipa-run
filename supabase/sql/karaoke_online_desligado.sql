@@ -1,7 +1,6 @@
--- Karaoke⭐Day! online DESLIGADO (30/10/2026). O site usa o Karaoke⭐Time!, solo e offline.
--- Nada é apagado: funções, tabelas e dados ficam guardados para retomar depois.
--- Só se tira o acesso de quem está de fora (anon/authenticated) e o tempo real da sala.
--- Para religar: rode supabase/sql/karaoke_online_religar.sql.
+-- Karaoke⭐Day! (sala simultânea de domingo) APOSENTADO em 30/10/2026.
+-- O único karaokê atual é o Karaoke⭐Time!, jogo individual com plateia visual e ranking semanal.
+-- Este script desliga a API antiga sem apagar tabelas ou registros. O script de religação fica apenas como arquivo histórico e não deve ser usado para reativar a sala.
 
 revoke execute on function public.karaoke_sala(text, uuid) from public, anon, authenticated;
 revoke execute on function public.karaoke_sala_toque(uuid) from public, anon, authenticated;

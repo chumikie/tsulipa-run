@@ -2,7 +2,30 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "feature/sora-karaoke-v2-2026-10-29": false
+      "main": true,
+      "**": false
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/karaoke-day.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-day",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-online-lab.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-online-lab",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
 }

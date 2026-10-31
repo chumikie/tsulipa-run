@@ -1,0 +1,53 @@
+/* Karaoke Time only: keep the real hub behind a large modal. */
+.tw-preview-game:not([data-karaoke-popup]):not([data-jogo="sora"]) #twKaraokePopupFechar{display:none}
+.tw-preview-game[data-karaoke-popup]{
+  display:grid;place-items:center;padding:20px;
+}
+.tw-preview-game[data-karaoke-popup] .tw-preview-panel{
+  position:relative;display:flex;flex-direction:column;
+  width:min(1240px,100%);height:min(1000px,calc(100dvh - 40px));
+  min-height:0;overflow:hidden;padding:48px 12px 12px;
+}
+.tw-preview-game[data-karaoke-popup] .tw-preview-header-slot,
+.tw-preview-game[data-karaoke-popup] .hubpart{display:none}
+.tw-preview-game[data-karaoke-popup] .tw-preview-stage{
+  flex:1 1 0;min-height:0;padding:0;background:transparent;
+}
+.tw-preview-game[data-karaoke-popup] #twPreviewIframe{
+  max-width:none;background:transparent;border:0;
+}
+@media(max-width:600px){
+  .tw-preview-game[data-karaoke-popup]{padding:8px}
+  .tw-preview-game[data-karaoke-popup] .tw-preview-panel{
+    height:calc(100dvh - 16px);padding:46px 4px 6px;
+  }
+}
+
+
+/* Karaoke⭐Time! como tela da página (igual ao Center⭐Run!): cabeçalho do site no alto,
+   jogo ocupando a largura e uma rolagem só. A altura do iframe vem do próprio jogo. */
+.tw-preview-game[data-karaoke-tela]{overflow-y:auto;overscroll-behavior:contain}
+.tw-preview-game[data-karaoke-tela] .tw-preview-stage{flex:0 0 auto;overflow:visible;min-height:calc(100dvh - 64px)}
+.tw-preview-game[data-karaoke-tela] #twPreviewIframe{flex:0 0 auto;height:calc(100dvh - 64px);max-width:1240px}
+
+/* Tela do Karaoke: uma única superfície, herdada do fundo externo da página. */
+.tw-preview-game[data-karaoke-tela]{background:transparent!important;background-image:none!important}
+.tw-preview-game[data-karaoke-tela] .tw-preview-panel{background:transparent!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.tw-preview-game[data-karaoke-tela] .tw-preview-header-slot,
+.tw-preview-game[data-karaoke-tela] .tw-preview-header-slot>header,
+.tw-preview-game[data-karaoke-tela] .tw-preview-stage{background:transparent!important;background-image:none!important;box-shadow:none!important;border-color:transparent!important}
+.tw-preview-game[data-karaoke-tela] #twPreviewIframe{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}
+
+/* The hub is hidden when Karaoke becomes the page. The original Center Run
+   shell remains in the document; keep its game UI from showing through this
+   transparent, shared-background screen. The body's page background stays visible. */
+body:has(#twPreviewJogo[data-karaoke-tela]) > .stage,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .hint,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .links,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .oshi-sel{
+  display:none!important; /* fora do fluxo: visibility deixava ~470px vazios acima do Karaoke */
+}
+
+/* The shared header keeps its original Center Run score when moved here.
+   Hide it only in Karaoke; returning to Center restores it without changing data. */
+#twPreviewJogo[data-karaoke-tela] .tw-preview-header-slot #best{display:none}

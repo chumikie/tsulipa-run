@@ -12,7 +12,7 @@ const games=[
   {file:"index2.html",max:1000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
-  {file:"karaoke-time.html",max:700000},
+  {file:"karaoke-time.html",max:450000},
   {file:"karaoke-online-lab.html",max:30000}
 ];
 let errors=[];
@@ -174,11 +174,93 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"'),
+  "Mic CD popup stylesheet must be loaded separately from the weekly podium stylesheet");
+assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
+       micCdSkin.includes(".tw-mic-radio-deck")&&micCdSkin.includes(".tw-mic-speaker")&&
+       micCdSkin.includes(".tw-mic-tuner")&&micCdSkin.includes("margin:0;padding:10px 9px")&&
+       !micCdSkin.includes("twMicCdSpin")&&
+       micCdSkin.includes(".encp.enc-grupo #encRk")&&
+       micCdSkin.includes(".encp.enc-grupo #encSelo")&&
+       lab.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
+       lab.includes("$('encNick').textContent = encNomes(d)")&&
+       !lab.includes('id="encPessoas"')&&
+       !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
+       lab.includes('id="twMicTela"')&&lab.includes('class="tw-mic-radio-deck"'),
+  "Aligned radio deck belongs only to the banner mic modal; ranking content and duo/trio grouping remain intact");
+const encStart=lab.indexOf("function encMostrar(d)"),encEnd=lab.indexOf("function encLoop()",encStart);
+const encUi=lab.slice(encStart,encEnd);
+const encDrawStart=lab.indexOf("function encLoop()"),encDrawEnd=lab.indexOf("function encAbrirNovo(",encDrawStart);
+const encDraw=lab.slice(encDrawStart,encDrawEnd);
+assert(encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
+       encUi.includes("oe.hidden = ex.length > 0 || !os")&&
+       encUi.includes("encNomes(d)")&&encUi.includes("tr(d.fala)")&&
+       encDraw.includes("perfDesenharIdol")&&encDraw.includes("Array.isArray(encDados.extras)")&&
+       micCdSkin.includes(".encp.enc-grupo #encRk,.encp.enc-grupo #encSelo,.encp.enc-grupo #encOshi"),
+  "Duo/trio stays on one stage with its characters and line, while individual Oshi is hidden for collective encounters");
+assert(lab.includes("contaRpc('encontro_hoje'")&&
+       lab.includes("localStorage.setItem(ENC_KEY")&&
+       lab.includes("j.dia === encHoje()"),
+  "Logged-in daily encounter is server-selected and locally cached by Brazil date");
+const accStart=lab.indexOf("function refreshAcc(){"),accEnd=lab.indexOf("function newItems(",accStart);
+const accGuard=lab.slice(accStart,accEnd);
+assert(accStart>=0&&accEnd>accStart&&accGuard.includes("o.disabled=!u")&&
+       !accGuard.includes("selE.selectedIndex=0")&&!accGuard.includes("CH[sel][CF[id]]=selE.value")&&
+       !accGuard.includes("saveCu();"),
+  "A saved outfit/accessory must not be erased when rank data is still loading or temporarily lower");
+assert(lab.includes("brs48cr_visual_rev")&&lab.includes("admin_visual_rev")&&
+       lab.includes("admin_visual_info")&&lab.includes("admin_vestir")&&
+       lab.includes("admin_cuidar_pets"),
+  "Admin visual/pet corrections must sync with a server revision so stale saves cannot undo them");
+const privacyPage=read("privacidade.html");
+assert(!privacyPage.includes("Karaoke⭐Day!")&&
+       (privacyPage.match(/Karaoke⭐Time!/g)||[]).length>=10,
+  "Privacy page must describe only Karaoke Time, not the retired Sunday virtual room, in all five locales");
+assert(lab.includes("Ranking temporariamente indisponível")&&
+       lab.includes("Ranking temporarily unavailable")&&
+       lab.includes("Ranking temporalmente no disponible")&&
+       lab.includes("ランキングは一時的に利用できません")&&
+       lab.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
+       !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
+  "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));
+const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
+const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
+assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
+       seasonalDraw.includes("JSON.parse(JSON.stringify(CH[m[0]]))")&&!seasonalDraw.includes("saveCu(")&&
+       lab.includes("hubOv.setAttribute('data-tema', k || '')")&&
+       voiceSource.includes("hubVozTocar(f[0])")&&
+       sfxSource.includes("OSHI === 'tsu'")&&sfxSource.includes("OSHI === 'lirika'")&&sfxSource.includes("OSHI === 'pati'"),
+  "Seasonal presentation must not replace the trio's touch voices, Oshi sound effects or saved outfits");
+assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"')&&
+       lab.includes("antiga sala simultânea de domingo")&&
+       lab.includes("O ranking semanal é online"),
+  "Karaoke Time is the only current karaoke experience; old Sunday room is documented as retired");
+const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);
+const syncSource=lab.slice(syncStart,syncEnd);
+assert(syncSource.includes("r.pet_rebased || r.visual_rebased")&&
+       syncSource.includes("contaRpc('carregar_nuvem')")&&
+       syncSource.includes("perfAplicarNuvem(n, contaJ.nick)"),
+  "When an old local save is rebased by an admin correction, refresh local pet and outfit data from the server");
+assert(lab.includes('data-adm2="pets"')&&lab.includes('data-adm2="visual"')&&
+       !lab.includes("data-admkar")&&!lab.includes("karaoke_sala_admin"),
+  "Member profile gets pet/visual moderation; obsolete Karaoke Day online controls are removed");
+const adminSqlLower=adminToolsSql.toLowerCase();
+assert(adminSqlLower.includes("create or replace function public.admin_cuidar_pets")&&
+       adminSqlLower.includes("create or replace function public.admin_visual_info")&&
+       adminSqlLower.includes("create or replace function public.admin_vestir")&&
+       adminSqlLower.includes("public.eh_admin()")&&
+       adminSqlLower.includes("set search_path = ''")&&
+       adminSqlLower.includes("revoke all")&&adminSqlLower.includes("to authenticated"),
+  "Admin pet/visual RPCs must be admin-guarded, search_path-safe and not callable by anon/PUBLIC");
+assert(micCdSkin.includes("width:min(100%,360px)")&&micCdSkin.includes(".tw-mic-tuner strong")&&
+       !micCdSkin.includes("twMicCdSpin")&&!micCdSkin.includes("width:min(100%,550px)"),
+  "Karaoke weekly mic popup should look like a compact radio, not a large CD hi-fi shell");
 const tvMenuAt=lab.indexOf('<div id="hubMenu" hidden>');
 const tvTriggerAt=lab.indexOf('id="twRankTvAbrir"');
 assert(lab.includes('id="twRankTvAbrir"')&&lab.includes('id="twRankTvModal"')&&
@@ -204,7 +286,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -269,12 +351,24 @@ assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
        lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
        !lab.includes("twKaraokeConviteRascunho"),
   "Admin preview needs permission and unfinished invitations must be absent");
+assert(karaokePopupSkin.includes('body:has(#twPreviewJogo[data-karaoke-tela]) > .stage')&&
+       karaokePopupSkin.includes('> .hint')&&karaokePopupSkin.includes('> .links')&&
+       karaokePopupSkin.includes('> .oshi-sel'),
+  "Karaoke page mode must hide the underlying Center Run UI while preserving the shared page background");
 const kTime=read("karaoke-time.html");
+assert(!lab.includes('href="./karaoke-player-popup.css?v=1"')&&
+       previewSkin.includes(".tw-preview-game{background:var(--bg1,#c9ecfc)}")&&
+       previewSkin.includes(".tw-preview-stage #twPreviewIframe")&&
+       kTime.includes("html.kt-no-site,html.kt-no-site body{background:transparent!important}")&&
+       kTime.includes("html.kt-no-site #ktPopup{position:static!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important")&&
+       kTime.includes("type:'tw-kt-altura'")&&lab.includes("history.pushState({tw:'karaoke'},'','#karaoke')"),
+  "Karaoke Time inside INDEX2 must inherit the homepage CSS with a transparent embedded game, not a separate CD layout");
+
 assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karaoke-time.html'+context"),
   "O card do Karaoke abre o Karaoke⭐Time! (o Day fica guardado, desligado)");
 assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&&
        kTime.includes("read('brs48cr_nick')")&&kTime.includes('id="ktTraducoes"')&&kTime.includes("get('lang')")&&
-       preview.includes("(TW_KARAOKE_TIME ? '' :")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
+       !preview.includes("data-admkar")&&!preview.includes("karaoke_sala_admin")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
   "Karaoke Time: voltar avisa a pagina de fora e quem joga e a conta do site");
 // Ranking online do Karaoke⭐Time!: o servidor conta as 5 tentativas e confere o resultado.
 assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('kt_run_finish'")&&preview.includes("contaRpc('kt_ranking')")&&
@@ -306,9 +400,11 @@ try{
   const from=lab.indexOf("var twPreviewJogoAnterior = null;");
   const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
   if(from<0||to<=from)throw Error("Preview controller not found");
-  const iframe={src:"",title:""},attrs={};
+  const iframe={src:"",title:"",style:{}},attrs={};
   const overlay={
     hidden:true,setAttribute:(name,value)=>{attrs[name]=String(value);},
+    toggleAttribute:(name,on)=>{if(on)attrs[name]="";else delete attrs[name];},
+    hasAttribute:name=>name in attrs,
     removeAttribute:name=>{delete attrs[name];}
   };
   const gameTitle={textContent:""},backText={textContent:""};
@@ -331,12 +427,13 @@ try{
   const nodes={
     twPreviewJogo:overlay,twPreviewIframe:iframe,twPreviewTitulo:gameTitle,
     twPreviewVoltar:{focus:()=>{backFocused++;}},
+    twKaraokePopupFechar:{focus:()=>{backFocused++;},setAttribute:()=>{}},
     twPreviewVoltarTxt:backText,twPreviewAviso:notice,
     twPreviewPart:previewPart,hubPart:sourcePart,
     twPreviewHeaderSlot:slot
   };
   const fakeHub={hidden:false,querySelector:sel=>sel.includes("data-ir=")?card:null};
-  const sandbox={
+  const sandbox={location:{hash:"",pathname:"/",search:""},history:{pushState(a,b,h){sandbox.location.hash=h;},replaceState(){sandbox.location.hash="";}},window:{scrollTo(){}},
     LANG:"pt",OSHI:"lirika",$:id=>nodes[id]||null,hubOv:fakeHub,
     contaAdmin:()=>false,
     tr:s=>s,
@@ -406,8 +503,13 @@ try{
   assert(!overlay.hidden&&iframe.src==="./karaoke-time.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&
          gameTitle.textContent==="🎤 Karaoke⭐Time!",
     "Karaoke Time must open any day, in the new file, without rehearsal flag");
+  assert(fakeHub.hidden&&("data-karaoke-tela" in attrs)&&!("data-karaoke-popup" in attrs)&&sandbox.location.hash==="#karaoke",
+    "Karaoke Time opens as a screen of the page (like Center Run), with #karaoke for the back button");
+  const returnsBeforeClose=hubReturns;
   sandbox.twPreviewFecharJogo();
-  assert(iframe.src==="about:blank"&&overlay.hidden,"Karaoke Time return must unload iframe");
+  assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&!("data-karaoke-tela" in attrs)&&
+         hubReturns===returnsBeforeClose+1&&sandbox.location.hash==="",
+    "Karaoke Time close unloads the game and returns to the hub");
   console.log("✓ Preview controller smoke test: Sora, Karaoke Day, Karaoke Time, mod preview, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
@@ -496,6 +598,73 @@ try{
   }
   console.log("✓ Sora opt-in embed flag: standalone / index2");
 }catch(e){errors.push("Sora embed boot test failed: "+e.message);}
+
+// Profile badge collection and weekly reset policy.
+try{
+  const gameBadgesSql=read("supabase/sql/profile_game_badges_sunday_week.sql");
+  const main=read("index.html"), karaokeTime=read("karaoke-time.html");
+  const localBadges=["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"];
+  const soraBadges=["sora_500","sora_1500","sora_3000"];
+  assert(main.includes("function s2SyncProfile()")&&main.includes("sincronizar_insignias_jogos"),
+    "Center Run local badges must sync to the signed-in profile");
+  localBadges.concat(soraBadges).forEach(id=>assert(main.includes("['"+id+"'")||main.includes("['"+id+"',"),
+    "Profile catalog missing game badge "+id));
+  assert(main.includes("timeZone:'America/Sao_Paulo'")&&main.includes("getUTCDay()")&&
+    sora.includes("timeZone:'America/Sao_Paulo'")&&sora.includes("getUTCDay()"),
+    "Center Run and Sora local weekly rankings must use the Sunday boundary in Brasília time");
+  assert(gameBadgesSql.includes("insignias_jogos")&&gameBadgesSql.includes("sincronizar_insignias_jogos")&&
+    gameBadgesSql.includes("extract(dow")&&!gameBadgesSql.includes("date_trunc('week'"),
+    "Server badge migration must sync allowlisted game badges and calculate completed weeks from Sunday");
+  assert(karaokeTime.includes("週間ランキング")&&karaokeTime.includes("今日の観客")&&
+    karaokeTime.includes("wrap.insertBefore(weekly,audience)")&&
+    karaokeTime.includes(".kt-no-site .krtop")&&karaokeTime.includes(".kt-no-site .kt-foot"),
+    "Karaoke must move the weekly board before the audience in the DOM and hide local-only title/footer in embed mode");
+  const bootStart=karaokeTime.indexOf('<script id="ktDentroDoSite">');
+  const bootEnd=karaokeTime.indexOf('</script>',bootStart);
+  const embedBoot=bootStart>=0&&bootEnd>bootStart?karaokeTime.slice(bootStart+'<script id="ktDentroDoSite">'.length,bootEnd):'';
+  assert(!!embedBoot,"Karaoke embed bootstrap must exist");
+  if(embedBoot){
+    const classes=[],root={classList:{add:name=>classes.push(name)}},win={};
+    win.parent=win;
+    vm.runInNewContext(embedBoot,{location:{search:"?embed=index2"},document:{documentElement:root},window:win,URLSearchParams});
+    assert(classes.includes("kt-no-site"),"Karaoke embed mode must not depend on window.parent identity");
+  }
+  const layoutStart=karaokeTime.indexOf("function ktOrganizarLayoutIntegrado(){");
+  const layoutCall=karaokeTime.indexOf("ktOrganizarLayoutIntegrado();",layoutStart);
+  const layoutEnd=layoutCall>layoutStart?karaokeTime.lastIndexOf("}",layoutCall):-1;
+  const layoutScript=layoutStart>=0&&layoutEnd>layoutStart?karaokeTime.slice(layoutStart,layoutEnd+2):'';
+  assert(!!layoutScript,"Karaoke embedded layout organizer must exist");
+  if(layoutScript){
+    const children=["scene","audience","clip","cast","weekly"].map(name=>({name,parentNode:null}));
+    const wrap={children,insertBefore(node,reference){
+      const from=children.indexOf(node),to=children.indexOf(reference);
+      if(from<0||to<0)return;
+      children.splice(from,1);children.splice(children.indexOf(reference),0,node);
+    }};
+    children.forEach(node=>node.parentNode=wrap);
+    const doc={querySelector:()=>wrap,getElementById:id=>id==="ktWeeklyRanks"?children.find(x=>x.name==="weekly"):id==="ktAudience"?children.find(x=>x.name==="audience"):null};
+    vm.runInNewContext(layoutScript+";ktOrganizarLayoutIntegrado();",{ktNoSite:()=>true,document:doc});
+    assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
+      "Weekly board must be physically moved before audience on desktop and mobile");
+  }
+  const flowStart=previewSkin.indexOf("#twPreviewJogo[data-karaoke-tela]{");
+  const flowEnd=previewSkin.indexOf("/* Source is #hubPart",flowStart);
+  const flowBlock=flowStart>=0&&flowEnd>flowStart?previewSkin.slice(flowStart,flowEnd):"";
+  assert(flowBlock.includes("position:relative!important")&&
+    flowBlock.includes("overflow:visible!important")&&
+    flowBlock.includes("min-height:0")&&flowBlock.includes("height:auto")&&
+    !flowBlock.includes("100dvh"),
+    "Karaoke Time must size to its real iframe content without a viewport-height blank area");
+  assert(karaokeTime.includes("width:min(100%,970px)!important")&&
+    karaokeTime.includes("max-width:920px!important"),
+    "Embedded Karaoke content must retain the original compact 970/920px bounds");
+  const previewBlock=lab.indexOf("var html='<section class=\"tw-preview-game\" id=\"twPreviewJogo\"");
+  const previewInsert=previewBlock>=0?lab.indexOf("document.body.insertAdjacentHTML('beforeend',html);",previewBlock):-1;
+  const siteFooter=lab.indexOf("var f = document.createElement('footer'); f.className = 'siterodape sitefoot';");
+  assert(previewInsert>=0&&siteFooter>previewInsert,
+    "The official copyright/logo/privacy footer must remain after the Karaoke page in document flow");
+  console.log("✓ Game badges in profile + Sunday weekly boundaries + Karaoke hierarchy");
+}catch(e){errors.push("Profile badges / Sunday / Karaoke polish: "+e.message);}
 
 if(errors.length){
   errors.forEach(err=>console.error("✗",err));

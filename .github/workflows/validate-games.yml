@@ -5,10 +5,21 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'privacidade.html'
+      - 'pet-sync.js'
+      - 'tests/pet-sync.test.js'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-popup.css'
+      - 'karaoke-mobile.css'
+      - 'karaoke-mobile.js'
+      - 'karaoke-photo.css'
+      - 'karaoke-photo.js'
+      - 'tests/karaoke-photo-flow.cjs'
+      - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -18,6 +29,11 @@ on:
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
+      - 'tw-windows.css'
+      - 'tw-windows.js'
+      - 'tests/windows-shared.test.js'
+      - 'tests/windows-browser.cjs'
+      - 'tw-mic-cd-popup.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
       - 'karaoke-rhythm.js'
@@ -32,15 +48,30 @@ on:
       - 'tests/tw-weekly-podium.test.js'
       - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - 'supabase/sql/admin_pet_visual_tools.sql'
+      - 'supabase/sql/admin_player_profile_proposal.sql'
+      - 'supabase/sql/sora_weekly_zero_default.sql'
+      - 'tests/admin-player-profile.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
     paths:
       - 'index.html'
+      - 'privacidade.html'
+      - 'pet-sync.js'
+      - 'tests/pet-sync.test.js'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-popup.css'
+      - 'karaoke-mobile.css'
+      - 'karaoke-mobile.js'
+      - 'karaoke-photo.css'
+      - 'karaoke-photo.js'
+      - 'tests/karaoke-photo-flow.cjs'
+      - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -50,6 +81,11 @@ on:
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
+      - 'tw-windows.css'
+      - 'tw-windows.js'
+      - 'tests/windows-shared.test.js'
+      - 'tests/windows-browser.cjs'
+      - 'tw-mic-cd-popup.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
       - 'karaoke-rhythm.js'
@@ -64,6 +100,7 @@ on:
       - 'tests/tw-weekly-podium.test.js'
       - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - 'supabase/sql/admin_pet_visual_tools.sql'
       - '.github/workflows/validate-games.yml'
 
 jobs:
@@ -75,8 +112,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate shared window contracts
+        run: node tests/windows-shared.test.js
+      - name: Validate Karaoke mobile viewport script
+        run: node --check karaoke-mobile.js
+      - name: Validate Karaoke photo preview script
+        run: node --check karaoke-photo.js
+      - name: Validate Karaoke room pet visits and pandeiros
+        run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Validate Backstage Pet cloud save retries and confirmations
+        run: node tests/pet-sync.test.js
+      - name: Privacy page translations compile
+        run: node tests/privacidade-script.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame
@@ -91,7 +140,11 @@ jobs:
         run: node tests/sora-stability.test.js
       - name: Validate actual INDEX 2 weekly podium integration
         run: node tests/tw-weekly-podium.test.js
+      - name: Validate Backstage Admin player profile guards
+        run: node tests/admin-player-profile.test.js
       - name: Karaoke online (produção)
         run: node tests/karaoke-online.test.js
       - name: Cards com login simulado (e interruptor de teste desligado)
         run: node tests/login-simulado.test.js
+
+

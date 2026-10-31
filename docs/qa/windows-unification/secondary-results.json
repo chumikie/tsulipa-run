@@ -1,0 +1,298 @@
+[
+  {
+    "game": "profile",
+    "width": 1440,
+    "theme": "light",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "24px",
+      "align": "left",
+      "color": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 664,
+        "y": 177.703125,
+        "w": 151,
+        "h": 27.59375
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 500,
+        "right": 940,
+        "y": 92.5,
+        "bottom": 907.5,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#fff",
+        "ink": "#12365e"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "encounter",
+    "width": 1440,
+    "theme": "light",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "14px",
+      "align": "center",
+      "color": "rgb(123, 63, 240)",
+      "rect": {
+        "x": 546,
+        "y": 229.6875,
+        "w": 348,
+        "h": 20
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 520,
+        "right": 920,
+        "y": 173.6875,
+        "bottom": 826.296875,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#fff",
+        "ink": "#12365e"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "profile",
+    "width": 1440,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "24px",
+      "align": "left",
+      "color": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 664,
+        "y": 177.703125,
+        "w": 151,
+        "h": 27.59375
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 500,
+        "right": 940,
+        "y": 92.5,
+        "bottom": 907.5,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "encounter",
+    "width": 1440,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "14px",
+      "align": "center",
+      "color": "rgb(166, 120, 255)",
+      "rect": {
+        "x": 546,
+        "y": 229.6875,
+        "w": 348,
+        "h": 20
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 520,
+        "right": 920,
+        "y": 173.6875,
+        "bottom": 826.296875,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "profile",
+    "width": 390,
+    "theme": "light",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "24px",
+      "align": "left",
+      "color": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 164,
+        "y": 105.703125,
+        "w": 151,
+        "h": 27.59375
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 14,
+        "right": 376,
+        "y": 20.5,
+        "bottom": 823.5,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#fff",
+        "ink": "#12365e"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "encounter",
+    "width": 390,
+    "theme": "light",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "14px",
+      "align": "center",
+      "color": "rgb(123, 63, 240)",
+      "rect": {
+        "x": 32,
+        "y": 167.640625,
+        "w": 326,
+        "h": 20
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 20,
+        "right": 370,
+        "y": 111.640625,
+        "bottom": 732.34375,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#fff",
+        "ink": "#12365e"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "profile",
+    "width": 390,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "24px",
+      "align": "left",
+      "color": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 164,
+        "y": 105.703125,
+        "w": 151,
+        "h": 27.59375
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 14,
+        "right": 376,
+        "y": 20.5,
+        "bottom": 823.5,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "encounter",
+    "width": 390,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"M PLUS Rounded 1c\", system-ui, sans-serif",
+      "size": "14px",
+      "align": "center",
+      "color": "rgb(166, 120, 255)",
+      "rect": {
+        "x": 32,
+        "y": 167.640625,
+        "w": 326,
+        "h": 20
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 20,
+        "right": 370,
+        "y": 111.640625,
+        "bottom": 732.34375,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": null,
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  }
+]

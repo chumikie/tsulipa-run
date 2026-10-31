@@ -1,0 +1,93 @@
+/* TsuLiPa World — shared window chrome. Game geometry/art belongs to each game. */
+:root{
+ --tw-modal-font:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif;
+ --tw-modal-body:"M PLUS Rounded 1c","Kosugi Maru",system-ui,sans-serif;
+ --tw-modal-radius:24px;--tw-modal-edge:rgba(232,195,255,.55);
+ --tw-modal-shadow:0 16px 45px rgba(11,14,55,.28),0 4px 0 rgba(100,55,160,.28);
+ --tw-modal-backdrop:rgba(6,16,38,.55);
+ --tw-modal-surface:radial-gradient(circle at 7% 0%,rgba(180,120,255,.14),transparent 42%),radial-gradient(circle at 100% 14%,rgba(255,111,181,.12),transparent 43%),var(--card);
+}
+.tw-window-overlay,
+.tw-preview-game:is([data-jogo="sora"],[data-karaoke-popup]){
+ background:var(--tw-modal-backdrop);
+}
+.tw-preview-game:is([data-jogo="sora"],[data-karaoke-popup]){
+ display:grid;place-items:center;padding:20px;overflow:hidden;
+}
+.tw-preview-game:is([data-jogo="sora"],[data-karaoke-popup]) .tw-preview-panel{
+ display:flex;flex-direction:column;flex:0 0 auto;min-width:0;max-height:calc(100dvh - 40px);overflow:hidden;
+}
+.tw-window.tw-window-surface{
+ position:relative;box-sizing:border-box;border:2px solid var(--tw-modal-edge);
+ border-radius:var(--tw-modal-radius);background:var(--tw-modal-surface);
+ color:var(--ink);box-shadow:var(--tw-modal-shadow);
+}
+.panel.tw-window-surface{
+ width:min(calc(100% - 16px),var(--tw-modal-width,760px));
+ padding:clamp(14px,2.7vw,24px);max-height:calc(100dvh - 20px);
+ overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ /* rola com o dedo/roda do mouse, mas sem a barra cinza do navegador (como era antes) */
+ scrollbar-width:none;-ms-overflow-style:none;
+}
+.panel.tw-window-surface::-webkit-scrollbar{display:none;width:0;height:0}
+.panel.tw-window-surface:has(>.tw-window-control){padding-top:54px}
+.petp.tw-window-surface{--tw-modal-width:440px}
+.perfp.tw-window-surface{--tw-modal-width:440px}
+.encp.tw-window-surface{--tw-modal-width:400px}
+/* One definition for document and iframe titles. ID scope bridges legacy heading selectors. */
+.tw-window .tw-modal-title,
+:is(#petov,#soraOv,#ktPopup) .tw-window-title{
+ display:block;margin:4px auto 2px;padding:0;
+ font-family:var(--tw-modal-font);font-weight:400;font-size:var(--tw-window-title-size,35px);
+ letter-spacing:.005em;line-height:1.32;text-align:center;color:var(--ink);
+ background:none;-webkit-text-fill-color:currentColor;
+ text-shadow:0 3px 14px rgba(255,111,181,.22);overflow-wrap:anywhere;
+}
+.tw-window .tw-modal-star,
+:is(#petov,#soraOv,#ktPopup) .tw-window-title :is(.st,.tw-modal-star){
+ color:#f5b400;-webkit-text-fill-color:#f5b400;
+ text-shadow:0 1px 0 rgba(255,255,255,.65),0 2px 8px rgba(245,180,0,.25);
+}
+.tw-window .tw-modal-jp,
+:is(#petov,#soraOv,#ktPopup) .tw-window-jp{
+ display:block;margin:2px 0 7px;
+ font:800 12px/1.45 var(--tw-modal-body);letter-spacing:.085em;text-align:center;
+ color:var(--pink,#ff6fb5);-webkit-text-fill-color:var(--pink,#ff6fb5);text-shadow:none;
+}
+.tw-window .tw-modal-lede,.tw-window .duosub,
+:is(#soraOv,#ktPopup) .tw-window-lede{
+ margin:0 auto 9px;font:700 12px/1.5 var(--tw-modal-body);text-align:center;
+ color:var(--sub);-webkit-text-fill-color:currentColor;
+}
+.tw-window-scene-control,
+.tw-window .tw-window-control{
+ position:absolute;z-index:3;top:12px;display:grid;place-items:center;
+ width:38px;height:38px;min-width:38px;min-height:38px;padding:0;
+ border:1px solid rgba(155,48,217,.22);border-radius:50%;
+ color:var(--ink);background:var(--chip);box-shadow:0 3px 0 rgba(44,26,143,.16);
+ cursor:pointer;touch-action:manipulation;font:22px/1 var(--tw-modal-body);
+}
+.tw-window-scene-control{position:absolute;top:auto;margin:0;z-index:6;display:grid;place-items:center;width:44px;height:44px;padding:0;font-size:20px}
+.tw-window-scene-control:active{transform:translateY(2px)}
+.tw-window .tw-window-close{right:12px;left:auto;z-index:4}
+.tw-window .tw-window-sound{left:12px;right:auto;font-size:16px}
+.tw-window .tw-window-control[hidden]{display:none}
+.tw-preview-game[data-jogo="sora"] #twPreviewVoltar{display:none}
+.tw-preview-header-slot .tw-window-control{position:static}
+.tw-preview-header-slot .tw-window-back{width:auto!important;min-width:max-content!important;padding:0 12px;border-radius:99px;font:800 12px var(--tw-modal-body);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.tw-window :is(button,a,select):focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:3px}
+.tw-window .btn:not(.alt):not(.perfperigo){
+ border-radius:999px;background:linear-gradient(100deg,#7b3ff0,#4169e1);color:#fff;
+ box-shadow:0 5px 0 var(--edge,#2c1a8f);font-family:var(--tw-modal-body);
+}
+.tw-window .btn.alt{border-radius:999px;font-family:var(--tw-modal-body)}
+@media(max-width:600px){
+ .tw-preview-game:is([data-jogo="sora"],[data-karaoke-popup]){padding:8px}
+ .tw-preview-game:is([data-jogo="sora"],[data-karaoke-popup]) .tw-preview-panel{max-height:calc(100dvh - 16px)}
+ .panel.tw-window-surface{width:min(calc(100% - 8px),var(--tw-modal-width,760px));padding:12px 10px}
+ .tw-window .tw-modal-title,:is(#petov,#soraOv,#ktPopup) .tw-window-title{font-size:var(--tw-window-title-size,24px);padding:0;overflow-wrap:normal}
+ .tw-window .tw-window-control{width:36px;height:36px;min-width:36px;min-height:36px;top:10px}
+ .tw-window .tw-window-close{right:9px}
+ .tw-window .tw-window-sound{left:9px}
+}
+@media(prefers-reduced-motion:reduce){.tw-window :is(button,a){transition:none}}

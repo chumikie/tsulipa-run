@@ -1,0 +1,54 @@
+/* Embedded Karaoke only. Keep the desktop room and its canvas art unchanged. */
+@media(max-width:620px){
+ html.kt-no-site #ktPopup{padding-inline:6px!important}
+ html.kt-no-site .krwrap{padding-inline:4px!important;min-width:0}
+ html.kt-no-site .kt-toolbar{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;gap:6px;padding:2px 0 5px;
+ }
+ html.kt-no-site .kt-song-choice{min-width:0;gap:4px}
+ html.kt-no-site .kt-song-choice select{width:100%;min-width:0;flex:1}
+ html.kt-no-site .kt-toolbar #ktStart{padding:8px 10px;font-size:11px}
+ html.kt-no-site .kt-toolbar #ktSession{
+  grid-column:1/-1;justify-content:center;flex-wrap:wrap;gap:4px;
+ }
+ html.kt-no-site .kt-toolbar .krgrp{gap:4px;padding:4px}
+ html.kt-no-site .kt-toolbar .krb{font-size:10px;padding:5px 7px}
+ html.kt-no-site .kt-toolbar #ktClock{font-size:14px}
+ html.kt-no-site .kt-toolbar #ktScore{font-size:10px}
+ html.kt-no-site #ktHint{margin:3px 0 0}
+ /* On phones the banner is in the page flow, below the scene. Fading it to
+    zero leaves an invisible block before the ranking; keep it readable. */
+ html.kt-no-site #ktAvailability.kt-banner-mobile{
+  margin:8px 0 0;padding:6px 8px;gap:2px 6px;order:4;
+  opacity:1;pointer-events:auto;
+ }
+ html.kt-no-site #ktAvailability.kt-banner-mobile>div{
+  flex:1 1 100%;justify-content:space-between;
+ }
+ html.kt-no-site #ktAvailability.kt-banner-mobile small{flex:1 1 180px}
+ html.kt-no-site .kt-room-closed #ktAvailability.kt-banner-mobile{display:none}
+ html.kt-no-site #ktWeeklyRanks{margin:10px 0;order:5}
+
+ /* A separate clip window crops only 48/960 logical pixels at each side.
+    Keep the full height and scale uniformly: characters retain their proportions. */
+ html.kt-no-site #krPalco.kt-room-mobile{aspect-ratio:auto;height:auto}
+ html.kt-no-site .kt-room-viewport{
+  position:relative;width:100%;aspect-ratio:864/540;overflow:hidden;
+ }
+ html.kt-no-site #krPalco.kt-room-mobile #krCv{
+  position:absolute;top:0;left:50%;width:calc(100% * 10 / 9)!important;
+  height:100%!important;max-width:none;transform:translateX(-50%);
+ }
+ /* The existing overview button still switches back to the uncropped room. */
+ html.kt-no-site .kt-mobile-overview .kt-room-viewport{aspect-ratio:960/540}
+ html.kt-no-site .kt-mobile-overview #krPalco.kt-room-mobile #krCv{width:100%!important}
+ html.kt-no-site .kt-room-tools{
+  position:relative;z-index:10;display:flex;align-items:center;justify-content:flex-end;
+  gap:6px;padding:4px 6px;background:var(--card);border-bottom:1px solid var(--tw-kr-edge);
+ }
+ html.kt-no-site #krPalco .kt-room-tools :is(#krMute,#ktFoto){
+  position:static;inset:auto;transform:none;margin:0;flex:none;
+  width:44px;height:44px;min-width:44px;min-height:44px;
+ }
+}

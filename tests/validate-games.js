@@ -630,7 +630,8 @@ try{
     assert(classes.includes("kt-no-site"),"Karaoke embed mode must not depend on window.parent identity");
   }
   const layoutStart=karaokeTime.indexOf("function ktOrganizarLayoutIntegrado(){");
-  const layoutEnd=karaokeTime.indexOf("\\n}\\nktOrganizarLayoutIntegrado();",layoutStart);
+  const layoutCall=karaokeTime.indexOf("ktOrganizarLayoutIntegrado();",layoutStart);
+  const layoutEnd=layoutCall>layoutStart?karaokeTime.lastIndexOf("}",layoutCall):-1;
   const layoutScript=layoutStart>=0&&layoutEnd>layoutStart?karaokeTime.slice(layoutStart,layoutEnd+2):'';
   assert(!!layoutScript,"Karaoke embedded layout organizer must exist");
   if(layoutScript){

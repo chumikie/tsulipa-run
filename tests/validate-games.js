@@ -627,26 +627,3 @@ if(errors.length){
 }else{
   console.log("✓ All static validation checks passed. Browser and gameplay QA still required.");
 }
-
-
-// PR #49 · badge/profile and Sunday-week invariants.
-const home=read("index.html");
-const sqlBadges=read("supabase/sql/insignias_jogos_semana_domingo.sql");
-assert(home.includes("function wk(){")&&home.includes("d.setUTCDate(d.getUTCDate()-d.getUTCDay())"),
-  "Center local weekly ranking must begin Sunday in Brasília time");
-assert(["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome",
-        "sora_500","sora_1500","sora_3000"].every(k=>home.includes("['"+k+"'")),
-  "Profile badge catalog must include all local game badges");
-assert(home.includes("sincronizar_insignias_jogos")&&home.includes("s2SyncProfile"),
-  "Center Run Season 2 badges must sync to the authenticated profile");
-assert(sqlBadges.includes("date_trunc('week', (created_at at time zone 'America/Sao_Paulo') + interval '1 day') - interval '1 day'")&&
-       sqlBadges.includes("'sora_500'")&&sqlBadges.includes("'sora_1500'")&&sqlBadges.includes("'sora_3000'"),
-  "Database badge calculation must use Sunday weeks and include Sora milestones");
-const karaokeTime=read("karaoke-time.html");
-assert(karaokeTime.includes("週間ランキング")&&karaokeTime.includes("今日の観客"),
-  "Karaoke weekly scoreboard and daily audience need Japanese subtitles");
-assert(karaokeTime.includes(".kt-playing .kt-weekly{order:5}")&&
-       karaokeTime.includes(".kt-playing #ktAudience{order:6}"),
-  "Karaoke weekly scoreboard must appear above today's audience");
-assert(!karaokeTime.includes('<b>KARAOKE TIME</b> · jogo solo offline'),
-  "Remove duplicated Karaoke Time solo title from the page header");

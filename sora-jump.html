@@ -578,10 +578,11 @@ function dk(){
   return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 }
 function wk(){
-  var d=new Date(); d.setHours(0,0,0,0);
-  d.setDate(d.getDate()+3-(d.getDay()+6)%7);
-  var w1=new Date(d.getFullYear(),0,4);
-  return d.getFullYear()+'-W'+(1+Math.round(((d-w1)/864e5-3+(w1.getDay()+6)%7)/7));
+  var parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  var p={};parts.forEach(function(x){p[x.type]=x.value;});
+  var d=new Date(Date.UTC(+p.year,+p.month-1,+p.day));
+  d.setUTCDate(d.getUTCDate()-d.getUTCDay());
+  return d.toISOString().slice(0,10);
 }
 var local=[], lw={w:wk(),rows:[]}, ld={d:dk(),rows:[]}, tab='day';
 try {

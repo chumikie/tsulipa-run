@@ -599,6 +599,27 @@ try{
   console.log("✓ Sora opt-in embed flag: standalone / index2");
 }catch(e){errors.push("Sora embed boot test failed: "+e.message);}
 
+// Profile badge collection and weekly reset policy.
+try{
+  const gameBadgesSql=read("supabase/sql/profile_game_badges_sunday_week.sql");
+  const main=read("index.html"), karaokeTime=read("karaoke-time.html");
+  const localBadges=["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"];
+  const soraBadges=["sora_500","sora_1500","sora_3000"];
+  assert(main.includes("function s2SyncProfile()")&&main.includes("sincronizar_insignias_jogos"),
+    "Center Run local badges must sync to the signed-in profile");
+  localBadges.concat(soraBadges).forEach(id=>assert(main.includes("['"+id+"'")||main.includes("['"+id+"',"),
+    "Profile catalog missing game badge "+id));
+  assert(main.includes("timeZone:'America/Sao_Paulo'")&&main.includes("getUTCDay()"),
+    "Center Run local weekly ranking must use the Sunday boundary in Brasília time");
+  assert(gameBadgesSql.includes("insignias_jogos")&&gameBadgesSql.includes("sincronizar_insignias_jogos")&&
+    gameBadgesSql.includes("extract(dow")&&!gameBadgesSql.includes("date_trunc('week'"),
+    "Server badge migration must sync allowlisted game badges and calculate completed weeks from Sunday");
+  assert(karaokeTime.includes("order:5")&&karaokeTime.includes("週間ランキング")&&
+    karaokeTime.includes("今日の観客")&&!karaokeTime.includes("<b>KARAOKE TIME</b> · jogo solo offline"),
+    "Karaoke scoreboard must precede today's audience, use Japanese subtitles and omit the redundant title strip");
+  console.log("✓ Game badges in profile + Sunday weekly boundaries + Karaoke hierarchy");
+}catch(e){errors.push("Profile badges / Sunday / Karaoke polish: "+e.message);}
+
 if(errors.length){
   errors.forEach(err=>console.error("✗",err));
   process.exitCode=1;

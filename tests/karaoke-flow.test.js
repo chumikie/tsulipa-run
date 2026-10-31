@@ -24,6 +24,7 @@ class Element {
 function get(id){if(!elements.has(id))elements.set(id,new Element(id));return elements.get(id);}
 const values = new Map();
 const calls=[];
+let quotaState={used:2,remaining:3,pending:null,tickets:0};
 const context = vm.createContext({
   LANG:'pt',
   krSt:{aberta:true},
@@ -31,8 +32,8 @@ const context = vm.createContext({
   document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
   localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
   kt:{active:()=>false,start:mode=>calls.push(['start',mode]),adjustOffset:ms=>calls.push(['offset',ms])},
-  ktMeta:{controls:()=>({used:2,remaining:3,pending:null})},
-  window:{ktOnline:{quota:()=>Promise.resolve({used:2}),gate:fn=>{calls.push(['gate']);fn();}}}
+  ktMeta:{controls:()=>quotaState},
+  window:{ktOnline:{quota:()=>Promise.resolve(quotaState),gate:(fn,ticket)=>{calls.push(['gate',!!ticket]);fn({ticket:!!ticket});}}}
 });
 vm.runInContext(diagnostic[0]+'\n'+flow[0],context);
 const ui=context.ktFlow;
@@ -50,7 +51,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   ui.request();await waitForQuota();
   assert.equal(get('ktConfirmCount').textContent.includes('2/5'),true,'contagem visível');
   get('ktConfirmAccept').onclick();
-  assert.deepEqual(calls.slice(0,2),[['gate'],['start','confirmed']],'confirmação antecede admissão');
+  assert.deepEqual(calls.slice(0,2),[['gate',false],['start','confirmed']],'confirmação antecede admissão');
 
   const charged=calls.length;
   context.krSt.aberta=false;
@@ -60,8 +61,21 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(elements.has('ktClosedPractice'),false,'sem botão de ensaio na cortina');
   context.krSt.aberta=true;
 
+  quotaState={used:5,remaining:0,pending:null,tickets:2};
+  ui.request();await waitForQuota();
+  assert.equal(get('ktConfirmTitle').textContent.includes('ticket'),true,'modal pede confirmação de gasto de ticket');
+  assert.equal(get('ktConfirmAccept').disabled,false,'saldo extra permite apresentação');
+  get('ktConfirmCancel').onclick();
+  assert.equal(calls.length,charged,'cancelar ticket não debita nem inicia');
+  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();
+  assert.deepEqual(calls.slice(-2),[['gate',true],['start','confirmed']],'gasto extra somente depois da confirmação');
+  quotaState={used:5,remaining:0,pending:null,tickets:0};
+  ui.request();await waitForQuota();
+  assert.equal(get('ktConfirmAccept').disabled,true,'sem saldo, não apresenta show extra');
+  get('ktConfirmCancel').onclick();
+
   assert.equal(elements.has('ktPractice'),false,'sem ensaio gratuito na barra');
-  assert.equal(calls.length,charged,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
+  assert.equal(calls.length,charged+2,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>S</kbd>'),'atalho das configurações aparece na instrução');
@@ -77,7 +91,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
 
   assert(html.includes('var practice=mode===true'),'apenas o cantor automático interno fica sem quota');
   assert(!html.includes("kt.start('practice')"),'jogadores não iniciam treino gratuito');
-  assert(html.includes("if(q.used>=LIMIT)return"),'limite de cinco tentativas preservado');
+  assert(html.includes("if(q.used>=LIMIT&&!serverTicket)return"),'limite de cinco tentativas preservado sem admissão de ticket');
   assert(!flow[0].includes('contaRpc('),'nenhuma escrita de banco pelo fluxo da UI');
   console.log('Karaoke: cancelamento sem débito, confirmação, atalhos visíveis, sem ensaio gratuito e calibração OK');
 })().catch(error=>{console.error(error);process.exitCode=1;});

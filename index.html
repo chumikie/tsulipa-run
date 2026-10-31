@@ -7237,6 +7237,7 @@ function perfAbaMostrar(){
       h += '<div class="perfnums"><div class="n1"><b>★ ' + starT + '</b><small>' + escHtml(tr('Estrelas')) + '</small></div>' +
            '<div class="n2"><b>' + (+d.corridas || 0) + '</b><small>' + escHtml(tr('Corridas')) + '</small></div>' +
            '<div class="n3"><b>' + (+d.centers || 0) + '</b><small>' + escHtml(tr('Centers')) + '</small></div></div>';
+      h += '<section id="ktTicketInventory" class="tw-rank-profile"><h3>🎟️ Karaoke⭐Time!</h3></section>';
     }
     h += '<h3>🏅 ' + escHtml(tr('Insígnias')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
     if(typeof cardsHtml === 'function') h += '<h3>🃏 ' + escHtml(tr('Últimos cards do Star⭐Gacha!')) + '</h3>' + cardsHtml(d.cards || [], 'perfCards', meu);
@@ -7257,7 +7258,7 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
-    if(meu){ twRankRenderProfile(); twRankLoad(); perfSoraHistNuvem(); }
+    if(meu){ twRankRenderProfile(); twRankLoad(); perfSoraHistNuvem(); if(window.ktTickets){window.ktTickets.renderProfile();window.ktTickets.refresh();} }
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -8245,9 +8246,11 @@ function admExtra(){   // presente para todos, aviso da tela de início e histó
       '<select id="presItem"><option value="">— sem item da loja —</option>' + admOpts(admItens()) + '</select><select id="presCam">' + admOpts(admCamarimOpts()) + '</select>' +
       '<input id="presMsg" maxlength="80" placeholder="Mensagem (ex.: Feliz Halloween!)"><label>Dias <input type="number" id="presDias" min="1" max="30" value="7"></label><button type="button" class="btn" id="presCriar">Criar presente</button></div>';
     h += (d.presentes.length ? '<ul class="admlog">' + d.presentes.map(function(p){ return '<li>🎁 <b>' + escHtml(p.mensagem || '—') + '</b> · ★' + p.estrelas + (p.item ? ' · ' + escHtml(p.item) : '') + (p.camarim ? ' · ' + escHtml(p.camarim) : '') + ' · ' + p.resgates + ' resgates · até ' + escHtml(perfData(p.expira)) + ' <button type="button" class="admdesb" data-presfim="' + p.id + '">Encerrar</button></li>'; }).join('') + '</ul>' : '');
+    h += '<section id="ktTicketAdminSlot"></section>';
     h += '<h3>📣 Aviso na tela de início</h3><div class="admform"><input id="avisoTxt" maxlength="140" value="' + escHtml(d.aviso || '') + '" placeholder="Vazio = sem aviso"><button type="button" class="btn" id="avisoOk">Salvar aviso</button></div>';
     h += '<h3>📜 Histórico da moderação</h3><ul class="admlog">' + (d.log.length ? d.log.map(function(l){ return '<li><b>' + escHtml(l.acao) + '</b> ' + escHtml(l.alvo || '') + ' ' + escHtml(l.valor || '') + ' <i>' + escHtml(l.motivo || '') + '</i> <small>' + escHtml(perfData(l.created_at)) + '</small></li>'; }).join('') : '<li>' + escHtml(tr('Nenhuma.')) + '</li>') + '</ul>';
     box.innerHTML = h;
+    if(window.ktTickets)window.ktTickets.renderAdmin();
   }).catch(function(){});
 }
 perfOv.addEventListener('click', function(e){
@@ -8962,13 +8965,14 @@ function twKaraokeAtualizarCard(){
     var tt=card.querySelector('.tw-karaoke-timer');
     card.classList.remove('tw-karaoke-locked');card.removeAttribute('aria-disabled');
     // Rosa de alerta (como Pet, Gacha e Sora) enquanto faltar algum dos 5 shows do dia.
-    var usados=contaJ&&typeof twRankData!=='undefined'?twRankData.ktUsados:null,faltam=usados===null?null:Math.max(0,5-usados);
-    var pendente=!!contaJ&&faltam!==0;
+    var usados=contaJ&&typeof twRankData!=='undefined'?twRankData.ktUsados:null,faltam=usados===null?null:Math.max(0,5-usados),extras=contaJ&&typeof twRankData!=='undefined'?twRankData.ktTickets||0:0;
+    var pendente=!!contaJ&&(faltam!==0||extras>0);
     card.classList.toggle('tw-alert-pink',pendente);
     var al=card.querySelector('.hubalerta');
     if(pendente&&!al)card.insertAdjacentHTML('beforeend','<em class="hubalerta" aria-hidden="true">!</em>');
     else if(!pendente&&al)al.remove();
     var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}:
+      faltam===0&&extras>0?{pt:'🎟️ '+extras+' ticket(s) extra(s)',en:'🎟️ '+extras+' extra ticket(s)',es:'🎟️ '+extras+' ticket(s) extra',ja:'🎟️ 追加チケット'+extras+'枚',th:'🎟️ ตั๋วพิเศษ '+extras+' ใบ'}:
       faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้'}:
       {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์'};
     // as mesmas estrelinhas da sala: ★ = show que ainda resta hoje, ☆ = show já usado
@@ -9047,7 +9051,7 @@ function hubMisCarregar(){
 // Center, Sora⭐Jump! and Karaoke⭐Time! weekly podiums are served by verified backend RPCs.
 // Karaoke⭐Time! is a solo rhythm game; its visual audience is not a simultaneous room.
 var TW_RANK_ONLINE_READY=true, TW_SORA_WEEK_STORAGE='tw_index2_sora_week';
-var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,centerOK:false,online:false,mine:null,readAt:0,active:0};
+var twRankData={week:'',center:[],sora:[],karaoke:[],kcombo:[],kacertos:[],ktUsados:null,ktTickets:0,centerOK:false,online:false,mine:null,readAt:0,active:0};
 // Microfone voando no banner (como o troféu da TV): abre quem acertou mais no Karaoke⭐Time! na semana.
 var TW_MIC_WORDS={
  pt:['💖 Quem acertou mais','Ninguém cantou ainda nesta semana. A primeira voz pode ser a sua! 🎶','Abrir quem acertou mais no Karaoke','Fechar','Acertos da semana · Karaoke⭐Time!','Acertos da semana'],
@@ -9208,13 +9212,14 @@ function twRankLoad(force){
   twRankData.center=twRankClean(data.center);twRankData.sora=twRankClean(data.sora);
   twRankData.karaoke=twRankClean(data.karaoke);twRankData.online=true;twRankData.centerOK=true;
   twRankData.kcombo=twRankClean(data.karaoke_combo);
-  twRankData.ktUsados=Number.isInteger(data.meu_kt_usados)?data.meu_kt_usados:null;
+  twRankData.ktUsados=Number.isInteger(data.meu_kt_usados)?Math.min(5,data.meu_kt_usados):null;
   twRankData.kacertos=twRankClean((Array.isArray(data.karaoke_acertos)?data.karaoke_acertos:[]).map(function(r){return r&&{nick:r.nick,score:Math.round(Number(r.score)*10)};})).map(function(r){return {nick:r.nick,score:r.score/10};});
   var ownSora=Number(data.meu_sora);twRankData.mine=Number.isSafeInteger(ownSora)&&ownSora>=0?ownSora:0;
  }).catch(function(){twRankData.online=false;}):Promise.resolve();
  twRankPending=Promise.all([center,online]).then(function(){
   twRankPending=null;twRankRender();twRankRenderProfile();
   if(typeof twKaraokeAtualizarCard==='function')twKaraokeAtualizarCard();
+  if(contaJ&&window.ktTickets)window.ktTickets.refresh();
  });
  return twRankPending;
 }
@@ -9222,7 +9227,7 @@ function twRankLoad(force){
 // Sem conta (ou fora do site), ele continua jogando só no aparelho.
 window.twKaraokeOnline={
  ativo:function(){return !!contaJ&&!!_supabase;},
- iniciar:function(resume){return contaRpc('kt_run_start',{p_resume:resume||null}).then(function(x){if(x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=x.used;twKaraokeAtualizarCard();}return x;});},
+ iniciar:function(resume,useTicket){var next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
   return contaRpc('kt_run_finish',{p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null})
    .then(function(x){twRankRefreshAfterSora();return x;});
@@ -9801,6 +9806,7 @@ function gachaConferir(){
 }
 function gachaTexto(r){
   if(!r) return '';
+  if(r.tipo === 'ticket') return ({pt:'🎟️ Você ganhou +1 ticket de Karaoke!',en:'🎟️ You won +1 Karaoke ticket!',es:'🎟️ ¡Ganaste +1 ticket de Karaoke!',th:'🎟️ คุณได้ตั๋วคาราโอเกะ +1 ใบ!',ja:'🎟️ カラオケチケットを1枚獲得！'}[LANG]||'🎟️ Você ganhou +1 ticket de Karaoke!');
   if(r.tipo === 'estrelas') return '⭐ ' + tr('Você ganhou') + ' ★' + r.valor + '!';
   if(r.tipo === 'bonus') return '✨ ' + tr('Bônus na próxima corrida') + ': ' + (GACHA_BONUS[r.valor] || r.valor) + '!';
   if(r.tipo === 'card') return '🃏 ' + tr('Você tirou o card de') + ' ' + (r.card ? r.card.nick : r.valor) + '!';
@@ -9886,6 +9892,7 @@ $('gachaGirar').onclick = function(){
       if(r && r.ok){
         gachaFeito = true; gachaRes = r; gachaAgora = true;
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+        if(r.tipo==='ticket'&&window.ktTickets)window.ktTickets.refresh();
         if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
         else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
       } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
@@ -13312,6 +13319,7 @@ applyLang();
 })();
 </script>
 <script src="./tw-windows.js?v=1"></script>
+<script src="./karaoke-tickets.js?v=1"></script>
 </body>
 </html>
 

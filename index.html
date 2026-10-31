@@ -905,6 +905,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
     <div class="petinfo"><b id="petNm"></b><span id="petSt"></span><span class="petstar" id="petStars"></span></div>
     <div class="petrank" id="petRank"></div>
     <div class="petbars" id="petBars"></div>
+    <p style="text-align:center;font-size:11px;margin:5px;color:var(--b1)" role="status" aria-live="polite" id="petSyncAviso"></p>
+    <div style="text-align:center"><button class="sec" type="button" id="petSyncResolver" hidden></button></div>
     <div class="petacts" id="petActs"></div>
     <div class="petmenu" id="petMenu" hidden></div>
     <p class="pethint">Toque no pet ou no seu personagem 💕</p>
@@ -1752,14 +1754,16 @@ function end(){
   $('jb').style.display='none';
   $('pause').style.display='none';
   $('cam').style.display='none';
-  var s=Math.floor(score),nb=!isTestGame&&s>best,ob=best;lastS=s;dpw=pw;if(!isTestGame)starT+=stars;
+  var s=Math.floor(score),nb=!isTestGame&&s>best,ob=best;lastS=s;dpw=pw;
+  var esperaEstrelas=!!(_supabase&&contaJ&&!isTestGame&&(nick||'').trim().toLowerCase()!=='tsuadmin');
+  if(!isTestGame&&!esperaEstrelas)starT+=stars;
   try{localStorage.setItem('brs48cr_st',starT)}catch(e){}
   if(nb){best=s;try{localStorage.setItem('brs48cr_best',s)}catch(e){}}
   setBest();
   finalExpr = typeof exprFinal === 'function' ? exprFinal(s, nb) : (s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2));   // V2.1.3
   
   var rId = rankOf(s);
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+stars+' '+tr('estrelas')+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
+  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?tr('Aguardando validação do servidor'):stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
   
  var isTesting = isTestGame;
@@ -3527,7 +3531,7 @@ function petLoad(){
     if(petData) petNormalize();   // completa saves antigos com os campos da V2
   }catch(e){ petData = null; }
 }
-function petSave(){ if(!petData) return; try{ localStorage.setItem(PET_KEY, JSON.stringify(petData)); }catch(e){} }
+function petSave(changed){ if(!petData) return; try{ localStorage.setItem(PET_KEY, JSON.stringify(petData)); }catch(e){} if(changed && typeof perfPetMudou === 'function') perfPetMudou(); }
 function petAtivo(){ return petData ? petData.pets[petData.ativo] : null; }
 function petClamp(v){ return Math.max(0, Math.min(100, Math.round(v * 100) / 100)); }
 
@@ -3572,6 +3576,7 @@ function petUI(){
   petActUI();
   petDevUI();
   petRankUI(p);   // estágio do pet (V2.1)
+  if(typeof petSyncEstadoUI==='function')petSyncEstadoUI();
 }
 
 // (Telas, coleção e adoção: ver o módulo BACKSTAGE⭐PET! V2 mais abaixo)
@@ -3722,7 +3727,7 @@ petCv.addEventListener('pointerdown', function(e){
   petHop = 20; petSmile = 70; petLove = 50;
   petFx.push({ x:PET_X + (Math.random() * 30 - 15), y:cy - 30, t:0, s:['💕','💖','✨','💗'][Math.floor(Math.random() * 4)] });
   petVoice(p);   // Chu "nya~", Koali "kyu~", Pucchi "hmph!", Meu Pet "pi-pi!"
-  petSave(); petUI();
+  petSave(true); petUI();
 });
 
 // ---------- Abrir / fechar ----------
@@ -3759,6 +3764,7 @@ function petOpenUI(){
 }
 function petClose(){
   if(petData){ petTick(); petSave(); }
+  if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;
   $('petov').hidden = true;
   petGameAbort(); petPhShow(false);   // V2.1
@@ -3816,14 +3822,22 @@ Object.keys(PET_DICT2).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT2[l]
 // ---------- Utilidades ----------
 function petSay(s){ petMsg = { s:s, t:0 }; }
 function petRecLeft(k, min){ var r = (petData && petData.rec && petData.rec[k]) || 0; return Math.max(0, r + min * 6e4 - Date.now()); }
+var petComprando = false;
 function petPay(price){
-  if(price <= 0) return true;
-  if(starT < price) return false;
-  starT -= price;
-  try{ localStorage.setItem('brs48cr_st', starT); }catch(e){}
-  setBest();
-  contaGasto(price, 'camarim');   // V2.1.2: com login, o servidor confere o saldo
-  return true;
+  if(price<=0) return Promise.resolve(true);
+  if(petComprando || starT<price) return Promise.resolve(false);
+  if(!contaJ){
+    starT-=price;
+    try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
+    setBest();return Promise.resolve(true);
+  }
+  petComprando=true;
+  return contaRpc('gastar_estrelas',{p_qtd:price,p_motivo:'camarim'}).then(function(r){
+    if(r&&typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
+    return !!(r&&r.ok===true);
+  }).catch(function(){
+    petSay(tr('Não deu para falar com o servidor. Tente de novo.'));return false;
+  }).then(function(ok){petComprando=false;if(petOpen)petUI();return ok;});
 }
 function petFind(list, k){ for(var i = 0; i < list.length; i++) if(list[i][0] === k) return list[i]; return null; }
 
@@ -3836,7 +3850,7 @@ function petDaily(){
   var k = PET_GIFTS[Math.floor(Math.random() * PET_GIFTS.length)];
   petData.inv = petData.inv || {};
   petData.inv[k] = (petData.inv[k] || 0) + 1;
-  petSave();
+  petSave(true);
   petSay('🎁 ' + tr('Presente do dia') + ': ' + tr(petFind(PET_FOOD, k)[1]));
 }
 
@@ -3849,9 +3863,11 @@ function petUseItem(list, k){
   if(food ? p.fome >= 95 : p.higiene >= 95){ petSay(tr(food ? 'Já está satisfeito!' : 'Já está limpinho!')); return; }
   petData.inv = petData.inv || {}; petData.rec = petData.rec || {};
   if(it[3] && petRecLeft(k, it[3]) > 0) return;
-  if(petData.inv[k] > 0) petData.inv[k]--;                  // presente guardado: usa sem gastar estrelas
-  else if(!petPay(it[2])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
-  if(it[3]) petData.rec[k] = Date.now();
+  var guardado=(petData.inv[k]||0)>0;
+  return petPay(guardado ? 0 : it[2]).then(function(ok){
+    if(!ok){petSay(tr('Estrelas insuficientes'));beep(220,.15,'square',.04);return;}
+    if(guardado)petData.inv[k]--;
+    if(it[3])petData.rec[k]=Date.now();
   if(food){
     p.fome = petClamp(p.fome + it[4]); p.humor = petClamp(p.humor + it[5]); p.energia = petClamp(p.energia + it[6]);
     petAnim = { k:'comer', item:k, t:0 };
@@ -3863,7 +3879,8 @@ function petUseItem(list, k){
   }
   petMenuK = '';
   petXP(p, k === 'sorvete' ? 8 : 3);   // pontos de cuidado (V2.1)
-  petSave(); petUI();
+  petSave(true); petUI();
+  });
 }
 
 function petToggleSleep(){
@@ -3873,7 +3890,7 @@ function petToggleSleep(){
   p.dorme = !p.dorme; petMenuK = '';
   if(p.dorme){ petSay(tr('Boa noite!') + ' 🌙'); beep(523, .2, 'sine', .04); beep(392, .3, 'sine', .04, .18); }
   else { petSay(tr('Bom dia!') + ' ☀️'); beep(784, .1, 'triangle', .05); beep(1046, .15, 'triangle', .05, .1); }
-  petSave(); petUI();
+  petSave(true); petUI();
 }
 
 function petPlay(){
@@ -3887,7 +3904,7 @@ function petPlay(){
   petAnim = { k:'brincar', t:0 }; petMenuK = '';
   petXP(p, 4);   // pontos de cuidado (V2.1)
   [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .07, 'square', .03, i * .1); });
-  petSave(); petUI();
+  petSave(true); petUI();
 }
 
 // ---------- Botões de ação e menu de itens ----------
@@ -4235,7 +4252,7 @@ $('petDev').addEventListener('click', function(e){
     petData = null; petAnim = null; petMenuK = ''; petMsg = null;
     $('petDev').hidden = true; petShow(); return;
   }
-  petSave(); petUI();
+  petSave(true); petUI();
 });
 // --- FIM DO PAINEL DE TESTE DO PET ---
 
@@ -4369,17 +4386,19 @@ $('petPick').addEventListener('click', function(e){
 function petAdopt(){
   var k = petEsc, first = !petData;
   if(PET_OFF.indexOf(k) < 0 || (!first && petData.pets[k])) return;
-  if(!first && !petPay(PET_PRICE)){ petPickMsg(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
+  return petPay(first ? 0 : PET_PRICE).then(function(ok){
+    if(!ok){petPickMsg(tr('Estrelas insuficientes'));beep(220,.15,'square',.04);return;}
   var nm = ($('petName').value || '').trim().slice(0, 12) || PET_SP[k].n, now = Date.now();
   if(first){ petData = { v:1, ativo:k, donos:[], pets:{} }; petNormalize(); }
   else petTick();   // fecha a conta do pet que estava ativo antes de trocar
   petData.pets[k] = { nome:nm, fome:80, energia:80, humor:90, higiene:85, t:now, nasc:now };
   petData.donos.push(k); petData.ativo = k;
   $('petName').value = ''; petEsc = '';
-  petSave();
+  petSave(true);
   if(sfx.card) sfx.card();
   petView = 'room'; petShow();
   petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎉' });
+  });
 }
 
 function petSwitch(k){   // os pets que não estão ativos "descansam" e não perdem pontos
@@ -4388,7 +4407,7 @@ function petSwitch(k){   // os pets que não estão ativos "descansam" e não pe
     petTick();
     petData.ativo = k; petData.pets[k].t = Date.now();
     petAnim = null; petMenuK = ''; petEmote = null;
-    petSave();
+    petSave(true);
     petSay(petEmo(k) + ' ' + petData.pets[k].nome + '!');
   }
   petView = 'room'; petShow();
@@ -4456,29 +4475,25 @@ function petDressMenuUI(m, p){
 }
 
 function petDressClick(k){
-  var p = petAtivo(); if(!p || !petData) return;
-  var it = petFind(PET_WARDROBE, k); if(!it) return;
-  petData.roupas = petData.roupas || { '': 1 };
-  if(k !== '' && !petData.roupas[k]){
-    if(it[4]) return;   // item de estágio: chega com a promoção (V2.1)
-    if(!petPay(it[3])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
-    petData.roupas[k] = 1;
-    if(sfx.card) sfx.card();
-  } else {
-    beep(988, .05, 'triangle', .04);
-  }
-  var isMeu = (petData.ativo === 'meu' && p.cfg);
-  if(k === 'bochecha'){
-    if(isMeu) p.cfg.bochecha = !p.cfg.bochecha;
-    else p.bochecha = !p.bochecha;
-  } else {
-    if(isMeu) p.cfg.acc = (p.cfg.acc === k ? '' : k);
-    else p.acc = (p.acc === k ? '' : k);
-  }
-  petHop = 16; petSmile = 45;
-  petSave(); petUI();
+  var p=petAtivo();if(!p||!petData)return;
+  var it=petFind(PET_WARDROBE,k);if(!it)return;
+  petData.roupas=petData.roupas||{'':1};
+  var comprar=k!==''&&!petData.roupas[k];if(comprar&&it[4])return;
+  return petPay(comprar ? it[3] : 0).then(function(ok){
+    if(!ok){petSay(tr('Estrelas insuficientes'));beep(220,.15,'square',.04);return;}
+    if(comprar){petData.roupas[k]=1;if(sfx.card)sfx.card();}
+    else beep(988,.05,'triangle',.04);
+    var isMeu=(petData.ativo==='meu'&&p.cfg);
+    if(k==='bochecha'){
+      if(isMeu)p.cfg.bochecha=!p.cfg.bochecha;
+      else p.bochecha=!p.bochecha;
+    }else{
+      if(isMeu)p.cfg.acc=(p.cfg.acc===k?'':k);
+      else p.acc=(p.acc===k?'':k);
+    }
+    petHop=16;petSmile=45;petSave(true);petUI();
+  });
 }
-
 function petMakeUI(){
   var box = $('petMkOpts'); box.innerHTML = '';
   var jaAdotado = !!(petData && petData.pets && petData.pets.meu);
@@ -4521,7 +4536,7 @@ $('petMkSave').onclick = function(){
   if(!p){ p = petData.pets.meu = { fome:80, energia:80, humor:90, higiene:85, t:now, nasc:now }; petData.donos.push('meu'); }
   p.nome = nm; p.cfg = JSON.parse(JSON.stringify(petMk));
   if(petData.ativo !== 'meu'){ petData.ativo = 'meu'; p.t = now; }
-  petSave();
+  petSave(true);
   if(sfx.card) sfx.card();
   petView = 'room'; petShow();
   petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'✨' });
@@ -4689,13 +4704,14 @@ function petDecorMenuUI(m){
   }).join('');
 }
 function petDecorClick(k){
-  var it = petFind(PET_DECOR, k); if(!it || !petData) return;
-  var d = petData.decor;
-  if(!(k in d)){
-    if(!petPay(it[2])){ petSay(tr('Estrelas insuficientes')); beep(220, .15, 'square', .04); return; }
-    d[k] = 1; petSay('🖼️ ' + tr(it[1]) + '!'); if(sfx.card) sfx.card();
-  } else { d[k] = d[k] ? 0 : 1; beep(d[k] ? 988 : 660, .06, 'triangle', .04); }
-  petBg = null; petSave(); petUI();
+  var it=petFind(PET_DECOR,k);if(!it||!petData)return;
+  var d=petData.decor,comprar=!(k in d);
+  return petPay(comprar ? it[2] : 0).then(function(ok){
+    if(!ok){petSay(tr('Estrelas insuficientes'));beep(220,.15,'square',.04);return;}
+    if(comprar){d[k]=1;petSay('🖼️ '+tr(it[1])+'!');if(sfx.card)sfx.card();}
+    else {d[k]=d[k]?0:1;beep(d[k]?988:660,.06,'triangle',.04);}
+    petBg=null;petSave(true);petUI();
+  });
 }
 // --- FIM DO BACKSTAGE⭐PET! V2 ---
 // ================================================================
@@ -4804,7 +4820,7 @@ function petSing(){
     if(i % 2) beep(4200, .02, 'triangle', .006, w);
   });
   petEmote = { s:'♪ ラララ ♪', t:0 };
-  petSave(); petUI();
+  petSave(true); petUI();
 }
 // Animação do show (chamada dentro do petDrawExtras)
 function petSingFrame(x, a){
@@ -5309,7 +5325,7 @@ function petTalk(){
       p.humor = petClamp(p.humor + 5);
       petXP(p, 3);   // pontos de cuidado (V2.1)
       petFx.push({ x:PET_X + 20, y:PET_FLOOR - 60, t:0, s:'💬' });
-      petSave(); petUI();
+      petSave(true); petUI();
     }
   }
 }
@@ -5410,7 +5426,7 @@ function petXP(p, n){
     petPromo = { t:0, s:s1 };
     if(sfx.rank) sfx.rank();
   }
-  petSave();
+  petSave(true);
 }
 function petRankUI(p){
   var el = $('petRank'); if(!el || !p) return;
@@ -5611,7 +5627,7 @@ function petGameEnd(){
   if(p){ petTick(); p.humor = petClamp(p.humor + 10); p.energia = petClamp(p.energia - 6); p.fome = petClamp(p.fome - 4); }
   G.fim = { t:0, pts:pts, est:est, dar:dar, rec:rec };
   if(rec){ if(sfx.rank) sfx.rank(); } else if(sfx.card) sfx.card();
-  petSave();
+  petSave(true);
   if(p) petXP(p, 5 + Math.min(10, Math.floor(k === 'ritmo' ? G.perf / 8 : G.pulos / 3)));
   petUI();
 }
@@ -6350,11 +6366,15 @@ function contaFimCorrida(score, est, ch, refresh){
     contaUltimaRun = { id:id, ok:false };   // V2.1.3: para a insígnia do Quarteto
     return contaRpc('terminar_corrida', { p_run:id, p_score:score, p_stars:est, p_char:ch, p_device:did });
   }).then(function(r){
-    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
-    if(contaUltimaRun){ contaUltimaRun.ok = true; quartetoTalvez(); }   // V2.1.3
-    hubAposCorrida();   // V2.1.3: missões do dia e insígnias novas
+    if(!r||r.ok!==true)throw Error('corrida_nao_confirmada');
+    if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
+    var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),String(r.creditadas||0)+' '+tr('estrelas'));
+    if(contaUltimaRun){contaUltimaRun.ok=true;quartetoTalvez();}
+    hubAposCorrida();refresh();
+  }).catch(function(){
+    var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Recompensa não validada'));
     refresh();
-  }).catch(function(){ refresh(); });
+  });
 }
 function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e confirma no servidor
   if(!contaJ || qtd <= 0) return;
@@ -7753,7 +7773,25 @@ function perfMarcar(ms, nick){
 function perfVisualLocal(){
   return { cu2: perfJSON(perfLer('brs48cr_cu2')), ch2: perfJSON(perfLer('brs48cr_ch2')), acc: perfLer('brs48cr_acc') || '', char: perfLer('brs48cr_char') || '', admin_visual_rev:+(perfLer('brs48cr_visual_rev')||0) };
 }
-function perfSnapAgora(){ return (perfLer('brs48cr_pet') || '') + '|' + JSON.stringify(perfVisualLocal()); }
+function perfSnapAgora(){return JSON.stringify(perfVisualLocal());}
+var perfNuvemLidaMs=0;
+function perfPetMudou(){
+  if(!contaJ){try{localStorage.setItem('brs48cr_pet_guest_dirty','1');}catch(e){}return;}
+  perfSync.markDirty();
+}
+function petSyncEstadoUI(){
+  var el=$('petSyncAviso'),btn=$('petSyncResolver');if(!el||!btn)return;
+  var pendente=!!(perfSync&&perfSync.hasPending(contaJ&&contaJ.nick)),st=perfSyncEstado;
+  el.textContent=!contaJ?tr('Salvo neste aparelho'):
+    st==='syncing'?'☁️ '+tr('Salvando...'):
+    st==='confirmed'&&!pendente?'☁️ '+tr('Salvo na nuvem'):
+    st==='error'?'⚠️ '+tr('Salvamento pendente'):
+    pendente?'☁️ '+tr('Aguardando sincronização'):'☁️ '+tr('Sincronizado');
+  var erro=perfSync&&perfSync.getState().lastError;
+  btn.hidden=!(contaJ&&pendente&&(erro==='conflito_versao'||erro==='save_antigo'));
+  btn.textContent=tr('Resolver conflito de saves');
+}
+
 var perfSync = window.TWPetSync.create({
   rpc: perfSalvarRpc,
 
@@ -7764,7 +7802,10 @@ var perfSync = window.TWPetSync.create({
   setVersion: perfMarcar,
   readState: function(){ try{ return perfJSON(localStorage.getItem(PERF_SYNC_STATE)); }catch(e){ return null; } },
   writeState: function(s){ try{ localStorage.setItem(PERF_SYNC_STATE, JSON.stringify(s)); }catch(e){} },
-  onState: function(status){ perfSyncEstado = status; }
+  ignoreUnmarkedChanges: true,
+  debounceMs:4000,
+  maxWaitMs:25000,
+  onState:function(status){perfSyncEstado=status;petSyncEstadoUI();}
 });
 function perfEnviar(){
   if(!contaJ || !perfSyncOn) return Promise.resolve({ ok:false, skipped:true });
@@ -7772,7 +7813,19 @@ function perfEnviar(){
 }
 /* Uma correção administrativa pode vencer um save antigo de outra aba/aparelho: quando o servidor
    avisa que rebaseou o save, busca o snapshot da nuvem e alinha a tela local. */
-function perfSalvarRpc(nome, args){
+function perfSalvarRpc(nome,args){
+  if(nome==='salvar_nuvem'){
+    return contaRpc('carregar_nuvem').then(function(n){
+      var ms=Math.max(0,Number(n&&n.ms)||0);
+      if(ms>perfNuvemLidaMs)return {ok:false,erro:'conflito_versao'};
+      return contaRpc(nome,args).then(function(r){
+        if(r&&r.ok===true)perfNuvemLidaMs=Math.max(perfNuvemLidaMs,Number(args&&args.p_ms)||0);
+        if(r&&(r.pet_rebased||r.visual_rebased)&&contaJ)
+          return contaRpc('carregar_nuvem').then(function(nn){if(nn)perfAplicarNuvem(nn,contaJ.nick);return r;});
+        return r;
+      });
+    });
+  }
   return contaRpc(nome, args).then(function(r){
     if(nome === 'salvar_nuvem' && r && (r.pet_rebased || r.visual_rebased) && contaJ){
       return contaRpc('carregar_nuvem').then(function(n){ if(n) perfAplicarNuvem(n, contaJ.nick); return r; });
@@ -7794,15 +7847,21 @@ document.addEventListener('visibilitychange', function(){
     if(perfSync.hasPending(contaJ && contaJ.nick)) perfEnviar();
   }
 });
-window.addEventListener('online', function(){
-  if(perfSyncOn && perfSync.hasPending(contaJ && contaJ.nick)) perfEnviar();
+window.addEventListener('online',function(){
+  if(contaJ&&!perfSyncOn){perfEntrou=false;perfAoEntrar();return;}
+  if(perfSyncOn&&perfSync.hasPending(contaJ&&contaJ.nick))perfEnviar();
+});
+window.addEventListener('pageshow',function(){
+  if(contaJ&&perfSyncOn&&perfSync.hasPending(contaJ.nick))perfEnviar();
 });
 // Decide o que fazer com os dois saves: 'aplicar' (a nuvem é mais nova), 'perguntar' (1º login neste
 // aparelho e ele já tem save), 'enviar' (o deste aparelho é mais novo ou a nuvem está vazia) ou 'igual'
 function perfDecidir(n, nick){
   var st = perfCarimbo(), mesma = !st.u || st.u === String(nick || '').toLowerCase(), loc = mesma ? st.ms : 0;
-  var pendente = perfSync.hasPending(nick);
-  var nuvem = n && (n.pet || n.visual) && +n.ms > 0;
+  var pendente=perfSync.hasPending(nick),guestDirty=false;
+  try{guestDirty=localStorage.getItem('brs48cr_pet_guest_dirty')==='1';}catch(e){}
+  var nuvem=n&&(n.pet||n.visual)&&+n.ms>0;
+  if((guestDirty||pendente)&&nuvem)return 'perguntar';
   if(!nuvem) return 'enviar';
   if(+n.ms > loc){
     var temLocal = !!(perfLer('brs48cr_pet') || perfLer('brs48cr_cu2') || pendente);
@@ -7813,7 +7872,8 @@ function perfDecidir(n, nick){
 // Chamado pelo contaSessao antes de carregar a conta (assim, se a pessoa cancelar, nada deste aparelho muda)
 function perfAntesDeEntrar(j){
   contaRpc('carregar_nuvem').then(function(n){
-    var dec = perfDecidir(n, j.nick);
+    perfNuvemLidaMs=Math.max(0,Number(n&&n.ms)||0);
+    var dec=perfDecidir(n,j.nick);
     if(dec === 'aplicar' && perfAplicarNuvem(n, j.nick)) return;
     if(dec === 'perguntar'){ perfPerguntar(n, j); return; }
     perfNuvemPre = { n:n, dec:dec };
@@ -7822,25 +7882,45 @@ function perfAntesDeEntrar(j){
 }
 var perfConf = document.createElement('div');
 perfConf.className = 'ov perfov tw-window-overlay'; perfConf.id = 'perfConf'; perfConf.hidden = true; perfConf.style.zIndex = 22;
-perfConf.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfConfTit"></h2><p id="perfConfTxt"></p><div class="btns"><button type="button" class="btn" id="perfConfSim"></button></div><button type="button" class="sec" id="perfConfNao"></button></div>';
+perfConf.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfConfTit"></h2><p id="perfConfTxt"></p><div class="btns"><button type="button" class="btn" id="perfConfSim"></button><button type="button" class="btn alt" id="perfConfLocal"></button></div><button type="button" class="sec" id="perfConfNao"></button></div>';
 document.body.appendChild(perfConf);
-function perfPerguntar(n, j){
-  $('perfConfTit').textContent = '☁️ ' + tr('Esta conta já tem um save na nuvem');
-  $('perfConfTxt').textContent = tr('Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.');
-  $('perfConfSim').textContent = tr('USAR O SAVE DA NUVEM');
-  $('perfConfNao').textContent = tr('Cancelar e sair da conta');
-  $('perfConfSim').disabled = false;
-  $('perfConfSim').onclick = function(){ this.disabled = true; if(!perfAplicarNuvem(n, j.nick)){ perfConf.hidden = true; contaAplicar(j); } };
-  $('perfConfNao').onclick = function(){ perfConf.hidden = true; contaSair(); };
-  perfConf.hidden = false;
+function perfPerguntar(n,j,conflito){
+  $('perfConfTit').textContent='☁️ '+tr('Esta conta já tem um save na nuvem');
+  $('perfConfTxt').textContent=tr('Existem alterações diferentes neste aparelho e na nuvem. Escolha qual save manter.');
+  $('perfConfSim').textContent=tr('USAR O SAVE DA NUVEM');
+  $('perfConfLocal').textContent=tr('MANTER O DESTE APARELHO');
+  $('perfConfNao').textContent=tr(conflito?'Voltar sem substituir':'Cancelar e sair da conta');
+  $('perfConfSim').disabled=false;$('perfConfLocal').disabled=false;
+  $('perfConfSim').onclick=function(){
+    this.disabled=true;
+    try{localStorage.removeItem('brs48cr_pet_guest_dirty');}catch(e){}
+    if(!perfAplicarNuvem(n,j.nick)){perfConf.hidden=true;if(!contaJ)contaAplicar(j);}
+  };
+  $('perfConfLocal').onclick=function(){
+    this.disabled=true;
+    var ms=Math.max(0,Number(n&&n.ms)||0);
+    perfNuvemLidaMs=ms;perfSync.clearFromCloud(ms,j.nick);perfSync.markDirty();
+    try{localStorage.removeItem('brs48cr_pet_guest_dirty');}catch(e){}
+    perfConf.hidden=true;
+    if(!contaJ){perfNuvemPre={n:n,dec:'enviar'};contaAplicar(j);}
+    else {perfSyncOn=true;perfEnviar();}
+  };
+  $('perfConfNao').onclick=function(){perfConf.hidden=true;if(!conflito)contaSair();};
+  perfConf.hidden=false;
 }
+$('petSyncResolver').onclick=function(){
+  if(!contaJ)return;
+  contaRpc('carregar_nuvem').then(function(n){perfPerguntar(n,contaJ,true);})
+    .catch(function(){petSay(tr('Não deu para falar com o servidor. Tente de novo.'));});
+};
 function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por página)
   if(perfEntrou) return; perfEntrou = true;
   var avisou = null; try{ avisou = sessionStorage.getItem('tsl_nuvem_ok'); sessionStorage.removeItem('tsl_nuvem_ok'); }catch(e){}
   if(avisou) contaAviso('☁️ ' + tr('Seu save da nuvem foi carregado!'));
   var pre = perfNuvemPre; perfNuvemPre = null;
   (pre ? Promise.resolve(pre) : contaRpc('carregar_nuvem').then(function(n){ return { n:n, dec:perfDecidir(n, contaJ.nick) }; })).then(function(r){
-    if(!contaJ) return;
+    if(!contaJ)return;
+    perfNuvemLidaMs=Math.max(perfNuvemLidaMs,Number(r.n&&r.n.ms)||0);
     if(r.dec === 'aplicar' && perfAplicarNuvem(r.n, contaJ.nick)) return;
     if(r.dec === 'perguntar'){ perfEntrou = false; perfPerguntar(r.n, contaJ); return; }
     perfSyncOn = true; perfSnap = perfSnapAgora();
@@ -7849,7 +7929,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     perfAvatarAuto();
     perfPresente();
     if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
-  }).catch(function(){ perfEntrou = false; });
+  }).catch(function(){ perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI(); });
 }
 function perfSair(){ perfSyncOn = false; perfEntrou = false; perfMeuAv = null; perfGenAv = null; perfSync.cancelTimers(); if(!perfOv.hidden) perfFechar(); }
 function perfAplicarNuvem(n, nick){
@@ -7861,8 +7941,10 @@ function perfAplicarNuvem(n, nick){
     if(typeof v.acc === 'string') localStorage.setItem('brs48cr_acc', v.acc);
     if(v.char !== undefined && v.char !== null && v.char !== '') localStorage.setItem('brs48cr_char', String(v.char));
     localStorage.setItem('brs48cr_visual_rev', String(Math.max(0, +v.admin_visual_rev || 0)));
-    perfSync.clearFromCloud(+n.ms, nick);
-    perfMarcar(+n.ms, nick);
+    perfSync.clearFromCloud(+n.ms,nick);
+    perfNuvemLidaMs=Math.max(0,Number(n.ms)||0);
+    try{localStorage.removeItem('brs48cr_pet_guest_dirty');}catch(e){}
+    perfMarcar(+n.ms,nick);
     try{ sessionStorage.setItem('tsl_nuvem_ok', '1'); }catch(e){}
   }catch(e){ return false; }
   petData = null;   // assim o pagehide não regrava o pet antigo por cima do da nuvem
@@ -7909,7 +7991,7 @@ function perfPresente(){
     if(g2.t === 'acc'){ petData.roupas = petData.roupas || { '': 1 }; petData.roupas[k] = 1; nome = tr(g2.it[2]); }
     else if(g2.t === 'decor'){ petData.decor = petData.decor || {}; petData.decor[k] = 1; petBg = null; nome = tr(g2.it[1]); }
     else { petData.inv = petData.inv || {}; petData.inv[k] = (petData.inv[k] || 0) + 1; nome = tr(g2.it[1]); }
-    petSave(); perfConferir();
+    petSave(true); perfConferir();
     if(petOpen) petUI();
     $('perfPresTit').textContent = '🎁 ' + tr('Presente do dia da conta');
     $('perfPresNome').textContent = nome;
@@ -9216,7 +9298,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
           if(tp === 'acc' && (it = petFind(PET_WARDROBE, k))){ petData.roupas = petData.roupas || { '': 1 }; petData.roupas[k] = 1; partes.push(it[1] + ' ' + tr(it[2])); }
           else if(tp === 'decor' && (it = petFind(PET_DECOR, k))){ petData.decor = petData.decor || {}; petData.decor[k] = 1; petBg = null; partes.push('🖼️ ' + tr(it[1])); }
           else if(tp === 'food' && (it = petFind(PET_FOOD, k) || petFind(PET_BATH, k))){ petData.inv = petData.inv || {}; petData.inv[k] = (petData.inv[k] || 0) + 1; partes.push('🍰 ' + tr(it[1])); }
-          petSave(); perfConferir(); if(petOpen) petUI();
+          petSave(true); perfConferir(); if(petOpen) petUI();
         }
       }
     }); }); }, Promise.resolve()).then(function(){
@@ -10899,7 +10981,7 @@ function obsDesenhar(o){
   b.onclick = function(){ var p = petAtivo && petAtivo(); if(!p) return; b.title = tr('Renomear pet'); box.hidden = !box.hidden; if(!box.hidden){ var i = $('petRenNome'); i.value = p.nome || ''; i.placeholder = tr('Nome do pet'); i.focus(); i.select(); } };
   function salvar(){
     var p = petAtivo && petAtivo(), v = ($('petRenNome').value || '').replace(/\s+/g, ' ').trim().slice(0, 12); if(!p || !v) return;
-    p.nome = v; petSave(); box.hidden = true; petUI(); if(sfx.card) sfx.card();
+    p.nome = v; petSave(true); box.hidden = true; petUI(); if(sfx.card) sfx.card();
     if(contaJ && typeof perfEnviar === 'function') try{ perfConferir(); perfEnviar(); }catch(e){}
   }
   $('petRenOk').onclick = salvar;

@@ -33,9 +33,11 @@
     var setTimer = options.setTimeout || setTimeout;
     var clearTimer = options.clearTimeout || clearTimeout;
     var debounceMs = Math.max(0, Number(options.debounceMs === undefined ? 8000 : options.debounceMs));
+    var ignoreUnmarkedChanges = !!options.ignoreUnmarkedChanges;
+    var maxWaitMs = Math.max(debounceMs, Number(options.maxWaitMs === undefined ? 30000 : options.maxWaitMs));
     var retryBaseMs = Math.max(100, Number(options.retryBaseMs === undefined ? 2500 : options.retryBaseMs));
     var retryMaxMs = Math.max(retryBaseMs, Number(options.retryMaxMs === undefined ? 60000 : options.retryMaxMs));
-    var debounceTimer = null, retryTimer = null, inFlight = null, flushAgain = false;
+    var debounceTimer = null, retryTimer = null, inFlight = null, flushAgain = false, firstDirtyAt = null;
 
     function readStored() {
       try { return typeof options.readState === 'function' ? options.readState() : null; }
@@ -101,7 +103,8 @@
       }
     }
     function markDirty() {
-      if (!enabled()) return false;
+      // Registra a pendência mesmo enquanto o carregamento da conta está offline.
+      // O envio continua bloqueado até isEnabled() ficar verdadeiro.
       var nick = currentNick();
       if (!nick) return false;
       var ms = Math.max(Number(now()) || 0, currentVersion() + 1, state.pendingMs + 1);
@@ -109,11 +112,12 @@
       state.pending = true;
       state.pendingMs = ms;
       state.nick = nick;
+      if (firstDirtyAt === null) firstDirtyAt = Number(now()) || 0;
       state.attempts = 0;
       state.lastError = '';
       cancelRetry();
       emit('pending');
-      scheduleFlush(debounceMs, false);
+      scheduleFlush(Math.min(debounceMs, Math.max(0, maxWaitMs - ((Number(now()) || 0) - firstDirtyAt))), false);
       return ms;
     }
     function markPending() {
@@ -132,6 +136,7 @@
       if (version) setVersion(version, owner);
       state.pending = false;
       state.pendingMs = 0;
+      firstDirtyAt = null;
       state.confirmedMs = Math.max(state.confirmedMs, version);
       state.nick = owner;
       state.attempts = 0;
@@ -152,15 +157,16 @@
         return { ok: true, late: true, confirmed: false };
       }
       var latest = currentPayload();
-      if (!same(latest, payload) && (!state.pending || state.pendingMs <= version)) {
+      if (!ignoreUnmarkedChanges && !same(latest, payload) && (!state.pending || state.pendingMs <= version)) {
         markDirty();
       }
       state.confirmedMs = Math.max(state.confirmedMs, Number(serverMs) || version, version);
       state.attempts = 0;
       state.lastError = '';
-      if (same(currentPayload(), payload) && state.pendingMs <= version) {
+      if ((ignoreUnmarkedChanges || same(currentPayload(), payload)) && state.pendingMs <= version) {
         state.pending = false;
         state.pendingMs = 0;
+        firstDirtyAt = null;
         emit('confirmed');
         return { ok: true, confirmed: true, version: state.confirmedMs };
       }
@@ -168,10 +174,10 @@
       emit('pending');
       return { ok: true, confirmed: false, version: state.confirmedMs, newerPending: true };
     }
-    function markConflict() {
+    function markConflict(code) {
       cancelRetry();
       state.pending = true;
-      state.lastError = 'conflito_versao';
+      state.lastError = code && code !== 'save_antigo' ? String(code) : 'conflito_versao';
       emit('error');
       return { ok: false, conflict: true, error: state.lastError };
     }
@@ -212,7 +218,7 @@
               same({ pet: cloud.pet === undefined ? null : cloud.pet, visual: cloud.visual === undefined ? null : cloud.visual }, payload)) {
             return finishConfirmed(version, payload, Number(cloud.ms));
           }
-          return markConflict();
+          return markConflict(result && result.erro);
         });
       }).catch(function(error) {
         return retryAfterFailure(error);

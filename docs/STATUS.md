@@ -4,6 +4,11 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Liberação da PR #49 — estado verificado em 31/10/2026
 
+- **Correções adicionais em revisão:** Backstage⭐Pet! com fila persistente de ações, envio agrupado (4 s, limite 25 s), tentativa ao fechar, recuperação offline, aviso/decisão quando um save local conflita e leitura de versão antes de cada lote (a garantia CAS atômica ainda depende de SQL); compras pagas dependem de débito aprovado. Corrida autenticada aguarda as estrelas realmente creditadas pelo servidor.
+- **Auditoria de economia, sorteios e escala:** [relatório detalhado](qa/release-49-economy-sync-audit.md). Os 49 preços pagos do cliente coincidem com o catálogo SQL; a soma dos saldos coincide com o histórico de estrelas no retrato consultado. Os sorteios usam perfis cadastrados elegíveis, inclusive offline.
+- **Pendências de liberação identificadas:** contadores não recalculados ao excluir corrida pelo Admin, recompensa de minijogo sem comprovação server-side e compra de Pet ainda não transacional com inventário. A RPC legada `encontro_do_dia` já teve execução revogada para jogadores (confirmado por consulta em 31/10), mitigando a recompensa duplicada. Soluções restantes exigem decisões/migrações separadas, **não aplicadas nesta PR**.
+- **Escalabilidade:** não homologada sob carga; antes de muitos membros, testar `top_scores`, `ranking_minijogos`, insígnias e sorteios no ambiente de homologação com dados sintéticos.
+
 - **PR #49:** aberta na branch `fix/mic-cd-popup-and-encounter-no-rank-2026-10-30`, destinada à `main`; sem merge ou publicação em produção.
 - **Login:** a pessoa responsável pelo jogo confirmou o fluxo do site e o acesso na prévia Netlify por **Não funcionou? Entrar de outro jeito → Google**. O aviso de origem do botão Google direto na Netlify é específico da prévia, não falha comprovada de produção.
 - **Foto do Karaoke no iPhone:** funcionamento confirmado pela pessoa responsável após o último ajuste. A moldura kawaii pertence à janela de prévia; o PNG é baixado sem moldura, como aprovado. Os testes automatizados não equivalem à reprodução do compartilhamento nativo no iPhone.

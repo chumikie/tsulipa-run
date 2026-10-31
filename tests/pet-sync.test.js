@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const TWPetSync = require('../pet-sync.js');
 
-function makeHarness(rpc) {
+function makeHarness(rpc, overrides = {}) {
   let clock = 100000;
   let version = 0;
   let nick = 'tester';
@@ -36,7 +36,8 @@ function makeHarness(rpc) {
     clearTimeout: (id) => timers.delete(id),
     debounceMs: 8000,
     retryBaseMs: 2500,
-    retryMaxMs: 10000
+    retryMaxMs: 10000,
+    ...overrides
   });
 
   async function drain() {
@@ -187,12 +188,172 @@ async function testPendentePersistidoEntreReaberturas() {
   assert.equal(second.getState().status, 'confirmed');
 }
 
+async function testFilaEnquantoContaReconecta() {
+  let enabled = false;
+  let saved = null;
+  let version = 0;
+  const calls = [];
+  const sync = TWPetSync.create({
+    rpc: (name) => { calls.push(name); return Promise.resolve({ ok: true }); },
+    isEnabled: () => enabled,
+    getNick: () => 'tester',
+    getPayload: () => ({ pet: { pets: { tsu: { fome: 100 } } }, visual: {} }),
+    getVersion: () => version,
+    setVersion: (ms) => { version = ms; },
+    readState: () => null,
+    writeState: (value) => { saved = value; },
+    now: () => 200000,
+    debounceMs: 4000
+  });
+  assert.ok(sync.markDirty(), 'alimentar durante reconexão ainda deve registrar pendência');
+  assert.equal(sync.hasPending('tester'), true);
+  assert.equal(saved.pending, true, 'a fila offline precisa persistir');
+  assert.equal(calls.length, 0, 'nenhuma requisição enquanto desativado');
+  enabled = true;
+  const result = await sync.flush();
+  assert.equal(result.confirmed, true);
+  assert.deepEqual(calls, ['salvar_nuvem']);
+}
+
+async function testIgnoraMudancaPassivaSemNovaAcao() {
+  let resolver;
+  const h = makeHarness((name) => {
+    if(name !== 'salvar_nuvem') throw new Error('RPC inesperada');
+    return new Promise((resolve) => { resolver = resolve; });
+  }, { ignoreUnmarkedChanges: true });
+  h.sync.markDirty();
+  const request = h.sync.flush();
+  await h.drain();
+  h.setPayload({ pet: { v:1, pets: { tsu: { fome:79.99, t:12345 } } }, visual: { acc:'laco' } });
+  resolver({ ok:true });
+  const result = await request;
+  assert.equal(result.confirmed, true, 'queda natural das barras não cria novo envio');
+  assert.equal(h.sync.hasPending('tester'), false);
+}
+
+async function testCoalescenciaComLimiteDeEspera() {
+  const h = makeHarness((name) => {
+    if(name === 'salvar_nuvem') return Promise.resolve({ ok:true });
+    throw new Error('RPC inesperada: ' + name);
+  }, { debounceMs: 3000, maxWaitMs: 5000 });
+  h.sync.markDirty();
+  await h.advance(2000);
+  h.sync.markDirty();   // segunda ação reagenda, mas sem adiar além de 5 s
+  await h.advance(2999);
+  assert.equal(h.calls.length, 0);
+  await h.advance(1);
+  assert.equal(h.calls.length, 1, 'ações agrupadas em um único RPC mesmo durante atividade');
+  assert.equal(h.sync.hasPending('tester'), false);
+}
+
+async function testLigacaoDoPetNaPagina() {
+  const fs = require('node:fs');
+  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(html, /function petSave\(changed\)/);
+  assert.match(html, /if\(changed && typeof perfPetMudou === 'function'\) perfPetMudou\(\)/);
+  assert.match(html, /function petClose\(\)[\s\S]{0,500}perfEnviar\(\)/);
+  assert.match(html, /if\(petData && petT % 300 === 0\)\{ petTick\(\); petSave\(\);/);
+  assert.match(html, /ignoreUnmarkedChanges: true/);
+  assert.match(html, /function petPay\(price\)[\s\S]{0,1400}contaRpc\('gastar_estrelas'/);
+  assert.match(html, /return petPay\(guardado \? 0 : it\[2\]\)\.then\(function\(ok\)/);
+  assert.match(html, /return petPay\(comprar \? it\[3\] : 0\)\.then\(function\(ok\)/);
+  assert.match(html, /brs48cr_pet_guest_dirty/, 'edicao sem login deve ficar marcada');
+  assert.match(html, /id="perfConfLocal"/, 'login precisa oferecer conservar o save local');
+  assert.match(html, /perfNuvemLidaMs/, 'save deve checar versao remota antes de enviar');
+}
+
+async function testConflitoRemotoAntesDeSalvar() {
+  const fs = require('node:fs');
+  const vm = require('node:vm');
+  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const start = html.indexOf('function perfSalvarRpc(nome, args)');
+  const end = html.indexOf('function perfConferir()', start);
+  assert.ok(start >= 0 && end > start, 'localizar preflight de salvamento');
+  let cloudMs = 140;
+  const calls = [];
+  const ctx = vm.createContext({
+    contaJ: { nick:'tester' },
+    perfSync: { getState: () => ({pending:false}) },
+    perfAplicarNuvem: () => { throw new Error('nao deve aplicar nuvem'); },
+    contaRpc: (name, args) => {
+      calls.push(name);
+      if(name === 'carregar_nuvem') return Promise.resolve({ms:cloudMs, pet:{}, visual:{}});
+      if(name === 'salvar_nuvem') return Promise.resolve({ok:true});
+      throw new Error('RPC inesperada: ' + name);
+    }
+  });
+  vm.runInContext('var perfNuvemLidaMs = 100;\n' + html.slice(start, end), ctx);
+  const conflict = await ctx.perfSalvarRpc('salvar_nuvem', {p_ms:150});
+  assert.equal(conflict.ok, false, 'nuvem alterada precisa bloquear escrita');
+  assert.equal(conflict.erro, 'conflito_versao');
+  assert.deepEqual(calls, ['carregar_nuvem'], 'conflito nao pode chamar salvar_nuvem');
+  cloudMs = 100;
+  calls.length = 0;
+  const saved = await ctx.perfSalvarRpc('salvar_nuvem', {p_ms:150});
+  assert.equal(saved.ok, true);
+  assert.deepEqual(calls, ['carregar_nuvem','salvar_nuvem']);
+  cloudMs = 145;
+  calls.length = 0;
+  const second = await ctx.perfSalvarRpc('salvar_nuvem', {p_ms:160});
+  assert.equal(second.ok, true, 'versao confirmada deve permitir o proximo lote');
+  assert.deepEqual(calls, ['carregar_nuvem','salvar_nuvem']);
+}
+
+async function testPetPagoSoDepoisDoDebito() {
+  const fs = require('node:fs');
+  const vm = require('node:vm');
+  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const start = html.indexOf('var petComprando = false;');
+  const end = html.indexOf('function petFind(list, k)', start);
+  assert.ok(start >= 0 && end > start, 'localizar função de pagamento do pet');
+  let resolveRequest;
+  const requests = [];
+  const ctx = vm.createContext({
+    starT: 90,
+    contaJ: { nick:'tester' },
+    localStorage: { setItem() {} },
+    setBest() {},
+    petOpen: false,
+    petUI() {},
+    petSay() {},
+    tr: (s) => s,
+    beep() {},
+    contaRpc: (name, args) => {
+      requests.push({ name, args });
+      return new Promise((resolve) => { resolveRequest = resolve; });
+    }
+  });
+  vm.runInContext(html.slice(start, end), ctx);
+  const rejected = ctx.petPay(40);
+  assert.equal(ctx.starT, 90, 'não desconta nem libera antes da resposta do servidor');
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].name, 'gastar_estrelas');
+  resolveRequest({ok:false, stars:90, erro:'saldo'});
+  assert.equal(await rejected, false, 'compra negada não pode liberar item');
+  assert.equal(ctx.starT, 90);
+
+  const accepted = ctx.petPay(40);
+  resolveRequest({ok:true, stars:50});
+  assert.equal(await accepted, true, 'compra confirmada concede item');
+  assert.equal(ctx.starT, 50, 'mostra exatamente o saldo do servidor');
+  ctx.contaJ = null;
+  assert.equal(await ctx.petPay(15), true, 'jogo sem login debita saldo local');
+  assert.equal(ctx.starT, 35);
+  assert.equal(requests.length, 2, 'compra local não usa RPC');
+}
+
 (async function run() {
   await testFalhaERepeticao();
   await testConfirmacaoSoAposResposta();
   await testMudancaDuranteEnvioNaoSePerde();
   await testConflitoNaoSobrescreveNuvem();
   await testPendentePersistidoEntreReaberturas();
+  await testFilaEnquantoContaReconecta();
+  await testIgnoraMudancaPassivaSemNovaAcao();
+  await testCoalescenciaComLimiteDeEspera();
+  await testLigacaoDoPetNaPagina();
+  await testPetPagoSoDepoisDoDebito();
+  await testConflitoRemotoAntesDeSalvar();
   console.log('✓ Backstage Pet sync: falha, repetição, confirmação, alteração durante envio, conflito e retomada');
 })().catch((error) => {
   console.error(error);

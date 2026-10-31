@@ -231,6 +231,11 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 @media(max-width:600px){.kt-faixa{height:200px;border-radius:18px}}
 
 .kt-no-site .kt-audience,.kt-no-site .kt-clip-info{display:none!important}
+/* no site a faixa da plateia vem logo depois do ranking, sem título nem nota repetida, e sem sobra embaixo */
+.kt-no-site .kt-cast-heading,.kt-no-site .kt-weekly-note{display:none!important}
+.kt-no-site .kt-cast{border-top:0!important;padding-top:0!important;margin:12px 0 0!important}
+.kt-no-site #ktPopup{padding-bottom:0!important}
+html.kt-no-site,html.kt-no-site body{margin-bottom:0!important;padding-bottom:0!important}
 
 .kt-cast h2,.kt-weekly h2{font:400 17px "Mochiy Pop One";color:var(--pink);margin:0 0 6px}
 @media(max-width:600px){.kt-cast h2,.kt-weekly h2{font-size:16px}}

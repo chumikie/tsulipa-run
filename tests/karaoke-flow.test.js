@@ -6,7 +6,7 @@ const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 const flow = html.match(/var ktFlow=\(function\(\)\{[\s\S]*?\n\}\)\(\);/);
 const diagnostic = html.match(/var KR_RHYTHM_TOUCH_DIAGNOSTIC=\{[\s\S]*?\n\};/);
-assert(flow && diagnostic, 'Fluxo da confirmação, ensaio e diagnóstico presente');
+assert(flow && diagnostic, 'Fluxo da confirmação e diagnóstico presente');
 const elements = new Map();
 class Element {
   constructor(id=''){this.id=id;this.open=false;this.disabled=false;this.textContent='';}
@@ -15,6 +15,8 @@ class Element {
   after(other){if(other.id)elements.set(other.id,other);}
   before(...nodes){for(const node of nodes)if(node.id)elements.set(node.id,node);}
   appendChild(child){if(child.id)elements.set(child.id,child);}
+  addEventListener(){}
+  setAttribute(){}
   querySelector(selector){return get(selector);}
   showModal(){this.open=true;}
   close(){this.open=false;}
@@ -55,13 +57,14 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   ui.request();
   assert.equal(get('ktStartConfirm').open,false,'sala fechada não abre confirmação oficial');
   assert.equal(calls.length,charged,'sala fechada não chama admissão');
-  get('ktClosedPractice').onclick();
-  assert.deepEqual(calls.slice(charged),[['start','practice']],'botão da cortina libera ensaio sem gastar, mesmo com sala oficial fechada');
+  assert.equal(elements.has('ktClosedPractice'),false,'sem botão de ensaio na cortina');
   context.krSt.aberta=true;
 
-  const before=calls.length;
-  get('ktPractice').onclick();
-  assert.deepEqual(calls.slice(before),[['start','practice']],'treino não chama a RPC');
+  assert.equal(elements.has('ktPractice'),false,'sem ensaio gratuito na barra');
+  assert.equal(calls.length,charged,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>S</kbd>'),'atalho das configurações aparece na instrução');
   assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações ficam no palco, não na barra de música');
   assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
   assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
@@ -72,9 +75,9 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');
   assert.deepEqual(calls.at(-1),['offset',10]);
 
-  assert(html.includes("var admission=!practice&&typeof ktMeta"),'ensaio não consome quota local');
-  assert(html.includes("if(!r.practice&&typeof ktMeta"),'ensaio não publica resultado');
+  assert(html.includes('var practice=mode===true'),'apenas o cantor automático interno fica sem quota');
+  assert(!html.includes("kt.start('practice')"),'jogadores não iniciam treino gratuito');
   assert(html.includes("if(q.used>=LIMIT)return"),'limite de cinco tentativas preservado');
   assert(!flow[0].includes('contaRpc('),'nenhuma escrita de banco pelo fluxo da UI');
-  console.log('Karaoke: cancelamento sem débito, confirmação, ensaio e calibração local OK');
+  console.log('Karaoke: cancelamento sem débito, confirmação, atalhos visíveis, sem ensaio gratuito e calibração OK');
 })().catch(error=>{console.error(error);process.exitCode=1;});

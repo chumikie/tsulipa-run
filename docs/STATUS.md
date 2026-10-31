@@ -2,13 +2,24 @@
 
 Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
 
+## Liberação da PR #49 — estado verificado em 31/10/2026
+
+- **PR #49:** aberta na branch `fix/mic-cd-popup-and-encounter-no-rank-2026-10-30`, destinada à `main`; sem merge ou publicação em produção.
+- **Login:** a pessoa responsável pelo jogo confirmou o fluxo do site e o acesso na prévia Netlify por **Não funcionou? Entrar de outro jeito → Google**. O aviso de origem do botão Google direto na Netlify é específico da prévia, não falha comprovada de produção.
+- **Foto do Karaoke no iPhone:** funcionamento confirmado pela pessoa responsável após o último ajuste. A moldura kawaii pertence à janela de prévia; o PNG é baixado sem moldura, como aprovado. Os testes automatizados não equivalem à reprodução do compartilhamento nativo no iPhone.
+- **Supabase:** confirmados os grants e as guardas presentes nas funções administrativas e nas RPCs de save; a antiga API do Karaoke online está inacessível para `anon` e `authenticated`. Isso é verificação estática/de configuração, não teste de execução com duas contas.
+- **Pendente para liberação integral:** prova funcional autorizada do Backstage Pet em dois dispositivos, incluindo falha/reconexão/conflito, e das ações administrativas com uma conta comum e a conta admin; verificar abertura/retorno dos jogos e virada semanal com as contas de teste. Não usar dados de jogadores reais nem alterar produção apenas para realizar a auditoria.
+- **Karaoke online:** **arquivado**. Karaoke⭐Time! solo é a versão atual, com cinco shows por dia e ranking semanal online para contas autenticadas. A antiga sala simultânea não será reativada automaticamente.
+
+
+
 ## Prévia para guardar fotos do Karaoke — PR #49 (31/10)
 
 - A câmera agora congela o canvas no clique e abre uma janela com a foto completa em PNG 1920 × 1080, usando a identidade das janelas do site e moldura de photocard.
 - Ações: compartilhar/salvar quando o navegador aceita arquivos, baixar PNG e voltar à sala. A imagem permite toque longo/clique direito como alternativa. Não há download automático nem confirmação prematura de foto salva.
 - O show em andamento pausa durante a prévia e retoma ao voltar; se já estava pausado, continua assim. Cancelamentos e falhas de compartilhamento mantêm a foto disponível.
 - QA em Chromium local em 320/390/1440 px e na versão avulsa, com comparação dos pixels capturados, PNG baixado, foco, Escape, pausa e liberação dos recursos. Compartilhamento nativo simulado, sem envio real. [Capturas e reprodução](qa/karaoke-photo/README.md).
-- Sem merge, upload de imagens ou alterações no banco. Conferência do menu nativo no iPhone permanece manual.
+- Sem merge, upload de imagens ou alterações no banco nesta entrega. A pessoa responsável confirmou o salvamento no iPhone após o último ajuste, distinguindo a moldura da prévia do PNG limpo; o teste automatizado do menu nativo continua simulado.
 
 ## Interações da sala do Karaoke — PR #49 (31/10)
 
@@ -29,7 +40,7 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Onde está cada coisa
 - **Site no ar:** https://tsulipa-world.vercel.app
-- **Fonte única:** a branch `lancamento/30-10` no GitHub (veio da pasta offline). Daqui em diante tudo acontece nela; nada de arquivo baixado nem cópia solta.
+- **Fonte oficial de produção:** branch `main` no GitHub. A PR #49 reúne as alterações futuras na branch `fix/mic-cd-popup-and-encounter-no-rank-2026-10-30`; `lancamento/30-10` registra uma etapa anterior.
 - **Novidades congeladas** até o lançamento fechar. Ideia nova vai para "Ideias aprovadas para depois".
 - **Supabase de produção:** `fsggtvgbyhchblyazgmt`. Homologação (só testes): `hfzjoefnousiouiuchys`.
 
@@ -39,18 +50,18 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 | `index.html` | Página principal: tela de início → menu (Center Run, Pet, Perfil, Gacha, Sora, Moon Duo, Karaoke, Encontro, Missões, vitrine, Top Idols, TsuLiPa TV). |
 | `index2.html` | Só redireciona para `/` (links antigos). |
 | `sora-jump.html` | Sora⭐Jump!, aberto como pop-up da página principal. |
-| `karaoke-time.html` | **Karaoke⭐Time!**: o card 🎤 do menu abre este. Jogo solo offline, 5 shows por dia, 7 músicas, placar da semana, foto da sala. Usa o nick e o visual da conta (`brs48cr_nick`, `brs48cr_char`, `brs48cr_cu2`). |
-| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! online. **Engavetado em 31/10/2026: não haverá sala online.** Cópia completa guardada na branch `engavetado/karaoke-day`. No site, `/karaoke-day.html` e `/karaoke-online-lab.html` redirecionam para a página inicial (`vercel.json`); as funções da sala online seguem revogadas no banco. Os arquivos continuam no repositório só até uma limpeza depois do lançamento. |
-| `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Módulos do Karaoke e o laboratório de homologação (`?homol=1`). |
+| `karaoke-time.html` | **Karaoke⭐Time!**: jogo solo de ritmo, cinco shows por dia, sete músicas, foto da sala e rankings semanais online para contas autenticadas. O modo avulso sem login usa armazenamento local. Preserva nick e visual da conta (`brs48cr_nick`, `brs48cr_char`, `brs48cr_cu2`). |
+| `karaoke-day.html` + `karaoke-online.js` | **ARQUIVADO — Karaoke⭐Day! (antiga sala online simultânea).** Cópia histórica preservada na branch `engavetado/karaoke-day`; arquivos remanescentes não integram o jogo ativo. As rotas antigas redirecionam para `/` e as RPCs de sala estão revogadas para jogadores. Não reativar nem excluir o arquivo sem nova decisão. |
+| `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Componentes legados do laboratório online arquivado e módulos auxiliares do ritmo. A sala simultânea não faz parte da navegação atual. |
 | `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
 | `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |
 | `privacidade.html`, ícones, `manifest.json`, `og.jpg`, `googled…html` | Privacidade, ícones, imagem de compartilhamento e verificação do Google. |
-| `tests/` + `.github/workflows/validate-games.yml` | 10 verificações automáticas a cada envio, incluindo cards com login simulado. |
+| `tests/` + `.github/workflows/validate-games.yml` | Suítes Node e validação estática no GitHub Actions; QA de navegador separado, com fixtures quando indicado. |
 | `supabase/` | SQL aplicado e testes de banco. `supabase/sql/README.md` diz o que já está no ar. |
 | `docs/` | Este STATUS e o histórico em `docs/historico/`. |
 
-## Feito até o lançamento (30/10)
-- Karaoke online real na produção, com contas do site; abre todo domingo 12h–13h10; moderação abre teste de 30 min.
+## Histórico até 30/10 (antes do arquivamento do Karaoke online)
+- **Histórico, não mais ativo:** a antiga sala simultânea permitia sessões online aos domingos; foi desativada em 30/10 e permanece arquivada.
 - Página sem piscar a versão antiga; menu em coluna única no computador; cards Pet, Perfil, Gacha / Sora, Moon Duo, Karaoke.
 - TsuLiPa TV: troféu voando no canto do banner abre o pop-up do ranking.
 - Top Idols logo abaixo da vitrine. Encontro do dia com os nomes de todos.
@@ -61,7 +72,7 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Músicas dos temas trocadas por covers do TsuLiPa (os nomes dos temas não mudaram).
 - Privacidade atualizada em 5 idiomas. Imagem de compartilhamento com os 6 modos.
 
-## Feito offline, depois do lançamento
+## Histórico de desenvolvimento offline (não implica funções online ativas)
 - **Karaoke · sala online:** a ponte do palco refazia o layout e jogava fora o nick e o visual reais, então todo mundo virava "Idol 01" com boneco sorteado. Corrigido. Os 8 lugares do sofá ficavam empilhados dois a dois: agora espalhados.
 - **Karaoke · janela da Liberdade:** a corda das lanternas flutuava sem apoio (agora dois postes na calçada), as lanternas viraram luzes de verdade, os toldos e as placas 茶 (chá) e 麺 (lámen) viraram lojinhas apoiadas no chão.
 - **Sora⭐Jump!:** abre como pop-up da página, igual ao Star⭐Gacha, no cartão do tema escolhido e sobre a página escurecida. O menu, o fim de jogo e o placar saíram do vidro escuro para o pastel do site. O ⌂ Início saiu de cima do placar.
@@ -78,7 +89,7 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Abre como o Karaoke abria (tela cheia com o cabeçalho do site), com o Oshi e o claro/escuro da página. O menu local e a barra de cima do arquivo somem dentro do site.
 - Voltar (← Jogos e Esc) só avisa a página de fora; nunca navega o iframe.
 - Quem joga aparece com o nick e o visual da conta; os outros 6 do sofá vêm do sorteio diário (foto dos perfis de 30/10 guardada no arquivo).
-- Karaoke⭐Day!, sala online, homologação e SQL ficaram no repositório, sem mudança, para retomar depois.
+- Karaoke⭐Day!, a antiga sala online e seu laboratório permanecem como histórico arquivado. Não há reativação planejada; qualquer retomada exigiria nova aprovação.
 - Textos do Karaoke⭐Time! em PT/EN/ES/TH/JA, no idioma escolhido no menu (página e telão). Nomes de músicas e de Idols não mudam.
 - Voltaram as partes da versão "Clipe do dia": o clipe do dia no telão (conceito e formação mudam a cada dia de Brasília), a faixa "Sua plateia de hoje" com retratos, e os Idols da sala clicáveis (pulinho, brilhos, balão e notinha).
 - **Ranking online do Karaoke⭐Time!** (`supabase/sql/karaoke_time_ranking.sql`, **aplicado em produção em 30/10/2026**): com conta, cada show passa pelo servidor (5 por dia no horário de Brasília, resultado conferido: duração mínima, notas, combo e pontos possíveis). Três quadros por semana (domingo a sábado): Pontuação, Maior combo e Acertos. A semana do Karaoke passou a começar no domingo, como o Top Idols. Sem conta, o jogo segue só no aparelho.
@@ -95,14 +106,16 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Clipe Candy Parade:** pirulitos em espiral com brilho e lacinho, algodão-doce fofo ao fundo e balinhas caindo.
 - **Lightstick:** usa a cor escolhida no perfil (chave nova `brs48cr_cor`); sem cor, continua a do cabelo. Vale no menu, na foto do perfil e na sala do Karaoke.
 - **Clipe do dia:** fundos com profundidade (brilho na parede, bokeh, feixes de luz, palco com perspectiva e vinheta); no Diamante ninguém esconde o rosto de ninguém e ninguém fica cortado na borda.
-- **Supabase de produção (30/10):** a sala online foi desligada sem apagar nada (`supabase/sql/karaoke_online_desligado.sql`). Ninguém de fora chama mais `karaoke_sala*` nem `karaoke_posteres_semana`, o esquema `karaoke_lab` ficou fechado e o sinal saiu do tempo real. Para religar: `karaoke_online_religar.sql`. Os botões de teste do Karaoke na moderação somem enquanto `TW_KARAOKE_TIME` estiver ligado.
+- **Supabase de produção (30/10):** a sala online foi desligada sem apagar registros (`supabase/sql/karaoke_online_desligado.sql`); as RPCs `karaoke_sala*` e `karaoke_posteres_semana` seguem revogadas para `anon`/`authenticated`. O script `karaoke_online_religar.sql` permanece **somente histórico** e não integra o plano de publicação. Os botões de teste da sala antiga não devem ser reintroduzidos.
 
-## Falta (para fechar o lançamento)
-1. Testar a prévia do PR no Netlify, logada, no celular: Pet, Gacha, Moon Duo, Sora, Perfil e uma corrida salvando.
-2. Decidir a estreia do Karaoke e se o ranking semanal (Sora/Karaoke) vai para o banco.
+## Falta (para fechar a PR #49)
+1. Validar com contas de teste autorizadas o Backstage⭐Pet! em dois aparelhos, reconexão após perda de rede, retomada da fila e conflito de saves sem sobrepor dados.
+2. Validar ações administrativas com a conta admin e uma conta comum, confirmando negação para não administrador e preservação dos dados de outros jogadores. Não executar mutações de teste em produção sem aprovação específica.
+3. Fazer checklist curto dos jogos autenticados (Gacha, Pet, Moon Duo, Sora, Perfil, Encontro, Center e Karaoke) e da virada semanal de domingo em horário de Brasília.
+4. Só então decidir o merge na `main`, que pode acionar publicação automática na Vercel. A sala online antiga continua arquivada; não existe decisão de estreia pendente para ela.
 
 ## Ideias aprovadas para depois
-- Jogo de ritmo do Karaoke: estética e lógica a rever.
+- Melhorias futuras do jogo de ritmo do Karaoke⭐Time! somente após nova aprovação; a versão solo atual permanece preservada.
 - Comidas e bebidas do Karaoke custando estrelas que vão para a conta da moderação.
 - Banner que alterna os 3 primeiros da semana (Center Run, Sora, Karaoke).
 - 3 fotinhas no perfil (guardando a receita da foto, não a imagem).
@@ -113,5 +126,5 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - Nunca renomear chaves `brs48cr_*`. Nunca commit direto na `main`: sempre PR, e quem faz merge é a dona.
 - Juntar mudanças em poucos envios (cada push gera build na Vercel).
 - Não criar dados falsos na produção. Testes de banco só em transação desfeita ou na homologação.
-- `TW_RANK_ONLINE_READY=false` até existir pontuação conferida no servidor para Sora/Karaoke.
+- Os rankings semanais de Sora/Karaoke já possuem backend em produção. Antes de publicar, verificar o estado real das flags no código e as RPCs, sem reutilizar os critérios antigos de pré-lançamento.
 - Antes de qualquer merge, `TW_JOGOS_SEM_LOGIN` tem que voltar para `false` no `index.html`.

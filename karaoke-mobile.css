@@ -29,4 +29,26 @@
  html.kt-no-site #ktAvailability.kt-banner-mobile small{flex:1 1 180px}
  html.kt-no-site .kt-room-closed #ktAvailability.kt-banner-mobile{display:none}
  html.kt-no-site #ktWeeklyRanks{margin:10px 0;order:5}
+
+ /* A separate clip window crops only 48/960 logical pixels at each side.
+    Keep the full height and scale uniformly: characters retain their proportions. */
+ html.kt-no-site #krPalco.kt-room-mobile{aspect-ratio:auto;height:auto}
+ html.kt-no-site .kt-room-viewport{
+  position:relative;width:100%;aspect-ratio:864/540;overflow:hidden;
+ }
+ html.kt-no-site #krPalco.kt-room-mobile #krCv{
+  position:absolute;top:0;left:50%;width:calc(100% * 10 / 9)!important;
+  height:100%!important;max-width:none;transform:translateX(-50%);
+ }
+ /* The existing overview button still switches back to the uncropped room. */
+ html.kt-no-site .kt-mobile-overview .kt-room-viewport{aspect-ratio:960/540}
+ html.kt-no-site .kt-mobile-overview #krPalco.kt-room-mobile #krCv{width:100%!important}
+ html.kt-no-site .kt-room-tools{
+  position:relative;z-index:10;display:flex;align-items:center;justify-content:flex-end;
+  gap:6px;padding:4px 6px;background:var(--card);border-bottom:1px solid var(--tw-kr-edge);
+ }
+ html.kt-no-site #krPalco .kt-room-tools :is(#krMute,#ktFoto){
+  position:static;inset:auto;transform:none;margin:0;flex:none;
+  width:44px;height:44px;min-width:44px;min-height:44px;
+ }
 }

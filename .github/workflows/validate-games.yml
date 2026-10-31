@@ -13,6 +13,9 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'karaoke-popup.css'
+      - 'karaoke-mobile.css'
+      - 'karaoke-mobile.js'
+      - 'tests/karaoke-mobile.browser.cjs'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -58,6 +61,9 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'karaoke-popup.css'
+      - 'karaoke-mobile.css'
+      - 'karaoke-mobile.js'
+      - 'tests/karaoke-mobile.browser.cjs'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -100,6 +106,8 @@ jobs:
           node-version: '22'
       - name: Validate shared window contracts
         run: node tests/windows-shared.test.js
+      - name: Validate Karaoke mobile viewport script
+        run: node --check karaoke-mobile.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations

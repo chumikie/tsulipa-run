@@ -4,6 +4,7 @@ Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 
 ## Revisão do Karaoke no celular — PR #49 (31/10)
 
+- Refinamento aprovado: a moldura do jogo no celular recorta 48 unidades de cada lateral do canvas (11,1% de ampliação), preservando a altura e o limite conservador dos sprites, inclusive na caminhada. Som e câmera ficam numa faixa própria no alto à direita. O botão de visão completa permanece funcional. [Comparação e testes do recorte](qa/karaoke-mobile-crop/README.md).
 - O cabeçalho do Karaoke oculta apenas o placar herdado do Center Run; ao voltar, o placar original reaparece. Nenhum recorde ou saldo é alterado.
 - `karaoke-mobile.css` ajusta somente o Karaoke integrado até 620 px: controles em grade, margens menores e ranking abaixo do jogo também durante uma partida.
 - O aviso de tentativas permanece compacto e visível no celular, eliminando o bloco invisível antes do ranking. Quando as tentativas acabam, a mensagem de fechamento da sala assume o aviso.

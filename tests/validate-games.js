@@ -619,17 +619,21 @@ try{
     karaokeTime.includes("wrap.insertBefore(weekly,audience)")&&
     karaokeTime.includes(".kt-no-site .krtop")&&karaokeTime.includes(".kt-no-site .kt-foot"),
     "Karaoke must move the weekly board before the audience in the DOM and hide local-only title/footer in embed mode");
-  const embedBoot=karaokeTime.match(/<script id="ktDentroDoSite">([\\s\\S]*?)<\\/script>/);
+  const bootStart=karaokeTime.indexOf('<script id="ktDentroDoSite">');
+  const bootEnd=karaokeTime.indexOf('</script>',bootStart);
+  const embedBoot=bootStart>=0&&bootEnd>bootStart?karaokeTime.slice(bootStart+'<script id="ktDentroDoSite">'.length,bootEnd):'';
   assert(!!embedBoot,"Karaoke embed bootstrap must exist");
   if(embedBoot){
     const classes=[],root={classList:{add:name=>classes.push(name)}},win={};
     win.parent=win;
-    vm.runInNewContext(embedBoot[1],{location:{search:"?embed=index2"},document:{documentElement:root},window:win,URLSearchParams});
+    vm.runInNewContext(embedBoot,{location:{search:"?embed=index2"},document:{documentElement:root},window:win,URLSearchParams});
     assert(classes.includes("kt-no-site"),"Karaoke embed mode must not depend on window.parent identity");
   }
-  const layoutFn=karaokeTime.match(/function ktOrganizarLayoutIntegrado\\(\\)\\{[\\s\\S]*?\\n\\}\\nktOrganizarLayoutIntegrado\\(\\);/);
-  assert(!!layoutFn,"Karaoke embedded layout organizer must exist");
-  if(layoutFn){
+  const layoutStart=karaokeTime.indexOf("function ktOrganizarLayoutIntegrado(){");
+  const layoutEnd=karaokeTime.indexOf("\\n}\\nktOrganizarLayoutIntegrado();",layoutStart);
+  const layoutScript=layoutStart>=0&&layoutEnd>layoutStart?karaokeTime.slice(layoutStart,layoutEnd+2):'';
+  assert(!!layoutScript,"Karaoke embedded layout organizer must exist");
+  if(layoutScript){
     const children=["scene","audience","clip","cast","weekly"].map(name=>({name,parentNode:null}));
     const wrap={children,insertBefore(node,reference){
       const from=children.indexOf(node),to=children.indexOf(reference);
@@ -638,7 +642,7 @@ try{
     }};
     children.forEach(node=>node.parentNode=wrap);
     const doc={querySelector:()=>wrap,getElementById:id=>id==="ktWeeklyRanks"?children.find(x=>x.name==="weekly"):id==="ktAudience"?children.find(x=>x.name==="audience"):null};
-    vm.runInNewContext(layoutFn[0],{ktNoSite:()=>true,document:doc});
+    vm.runInNewContext(layoutScript,{ktNoSite:()=>true,document:doc});
     assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
       "Weekly board must be physically moved before audience on desktop and mobile");
   }

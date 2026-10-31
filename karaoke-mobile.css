@@ -1,0 +1,32 @@
+/* Embedded Karaoke only. Keep the desktop room and its canvas art unchanged. */
+@media(max-width:620px){
+ html.kt-no-site #ktPopup{padding-inline:6px!important}
+ html.kt-no-site .krwrap{padding-inline:4px!important;min-width:0}
+ html.kt-no-site .kt-toolbar{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;gap:6px;padding:2px 0 5px;
+ }
+ html.kt-no-site .kt-song-choice{min-width:0;gap:4px}
+ html.kt-no-site .kt-song-choice select{width:100%;min-width:0;flex:1}
+ html.kt-no-site .kt-toolbar #ktStart{padding:8px 10px;font-size:11px}
+ html.kt-no-site .kt-toolbar #ktSession{
+  grid-column:1/-1;justify-content:center;flex-wrap:wrap;gap:4px;
+ }
+ html.kt-no-site .kt-toolbar .krgrp{gap:4px;padding:4px}
+ html.kt-no-site .kt-toolbar .krb{font-size:10px;padding:5px 7px}
+ html.kt-no-site .kt-toolbar #ktClock{font-size:14px}
+ html.kt-no-site .kt-toolbar #ktScore{font-size:10px}
+ html.kt-no-site #ktHint{margin:3px 0 0}
+ /* On phones the banner is in the page flow, below the scene. Fading it to
+    zero leaves an invisible block before the ranking; keep it readable. */
+ html.kt-no-site #ktAvailability.kt-banner-mobile{
+  margin:8px 0 0;padding:6px 8px;gap:2px 6px;order:4;
+  opacity:1;pointer-events:auto;
+ }
+ html.kt-no-site #ktAvailability.kt-banner-mobile>div{
+  flex:1 1 100%;justify-content:space-between;
+ }
+ html.kt-no-site #ktAvailability.kt-banner-mobile small{flex:1 1 180px}
+ html.kt-no-site .kt-room-closed #ktAvailability.kt-banner-mobile{display:none}
+ html.kt-no-site #ktWeeklyRanks{margin:10px 0;order:5}
+}

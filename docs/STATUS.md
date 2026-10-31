@@ -1,6 +1,15 @@
 # STATUS — TsuLiPa⭐World
 
-Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
+Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
+
+## Revisão do Karaoke no celular — PR #49 (31/10)
+
+- O cabeçalho do Karaoke oculta apenas o placar herdado do Center Run; ao voltar, o placar original reaparece. Nenhum recorde ou saldo é alterado.
+- `karaoke-mobile.css` ajusta somente o Karaoke integrado até 620 px: controles em grade, margens menores e ranking abaixo do jogo também durante uma partida.
+- O aviso de tentativas permanece compacto e visível no celular, eliminando o bloco invisível antes do ranking. Quando as tentativas acabam, a mensagem de fechamento da sala assume o aviso.
+- A sala mantém a proporção original; o canvas e o desenho dos personagens não foram editados. A geometria no computador e na horizontal foi comparada com a base da PR.
+- Testes e capturas locais em [QA do Karaoke mobile](qa/karaoke-mobile/README.md). Não houve login real, consumo de tentativas online ou alteração no banco. WebKit/iPhone físico ainda precisam de conferência manual.
+- Alterações destinadas à mesma PR #49; sem merge ou publicação em produção.
 
 ## Onde está cada coisa
 - **Site no ar:** https://tsulipa-world.vercel.app

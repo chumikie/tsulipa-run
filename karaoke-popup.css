@@ -47,3 +47,7 @@ body:has(#twPreviewJogo[data-karaoke-tela]) > .links,
 body:has(#twPreviewJogo[data-karaoke-tela]) > .oshi-sel{
   display:none!important; /* fora do fluxo: visibility deixava ~470px vazios acima do Karaoke */
 }
+
+/* The shared header keeps its original Center Run score when moved here.
+   Hide it only in Karaoke; returning to Center restores it without changing data. */
+#twPreviewJogo[data-karaoke-tela] .tw-preview-header-slot #best{display:none}

@@ -125,15 +125,28 @@ console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe 
   const script=between('function soraOpenUI(){','function soraOpenUIReady(){');
   const calls=[];
   const pendingAuth=new Promise(()=>{});
+  const hostWindow={};
   const env=evaluate(script,{
     SORA_ONLINE_PROFILE_ENABLED:true,
     soraOpenUIReady:()=>calls.push('open'),
     soraOnlineInitAuth:()=>{calls.push('auth');return pendingAuth;},
     soraOnlineUserId:null,
-    soraOnlineLoadProfile:()=>{calls.push('profile');return Promise.resolve(null);}
+    soraOnlineLoadProfile:()=>{calls.push('profile');return Promise.resolve(null);},
+    parent:{},window:hostWindow,location:{search:'?embed=index2'},URLSearchParams
   });
-  env.soraOpenUI();
-  assert.deepEqual(calls,['open','auth'],'Sora opens synchronously while auth is still pending');
+  assert.equal(typeof hostWindow.__TW_SORA_OPEN_UI,'function',
+    'embedded bootstrap publishes a bridge out of the game IIFE scope');
+  hostWindow.__TW_SORA_OPEN_UI();
+  assert.deepEqual(calls,['open','auth'],'embedded Sora opens synchronously while auth is still pending');
+  const standaloneWindow={};
+  evaluate(script,{
+    SORA_ONLINE_PROFILE_ENABLED:false,
+    soraOpenUIReady:()=>{},soraOnlineInitAuth:()=>Promise.resolve(null),
+    soraOnlineUserId:null,soraOnlineLoadProfile:()=>null,
+    parent:standaloneWindow,window:standaloneWindow,location:{search:''},URLSearchParams
+  });
+  assert.equal(standaloneWindow.__TW_SORA_OPEN_UI,undefined,
+    'the embedded bridge is not installed in the standalone page');
 }
 // A missing session/localStorage nick must not erase the fallback already shown in the game.
 {
@@ -160,7 +173,8 @@ assert.ok(html.includes("|| (localNickInput && localNickInput.value) || nick || 
 
 /* Embedded Sora opens directly without creating the obsolete blue launcher. */
 assert.ok(html.includes("if(!soraHubEmbed){"),'legacy launcher is standalone-only');
-assert.ok(html.includes("if(embedded)soraOpenUI();else if(launcher)launcher.click();"),'embedded Sora opens directly');
+assert.ok(html.includes("window.__TW_SORA_OPEN_UI = soraOpenUI;"),'embedded launcher bridge stays inside the Sora IIFE');
+assert.ok(html.includes("var openEmbedded=window.__TW_SORA_OPEN_UI;if(typeof openEmbedded==='function')openEmbedded();"),'outer bootstrap invokes the scoped embedded bridge');
 assert.ok(html.includes("soraPanel.appendChild(histBox);"),'history is relocated into a dedicated full-size screen');
 assert.ok(html.includes("soraHistCloseBtn"),'history screen has an explicit close control');
 assert.ok(embedCss.includes('.sora-history-screen{'),'history uses a dedicated readable surface');

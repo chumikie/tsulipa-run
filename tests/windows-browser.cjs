@@ -13,12 +13,22 @@ if(!process.env.WINDOWS_BASELINE){
  if(!process.env.WINDOWS_EXTRA){assert.equal(metrics.align,'center');assert.equal(metrics.size,width===390?'24px':'35px');const jp=await scope.locator(({gacha:'#gachaOv .tw-modal-jp',duo:'#duoOv .tw-modal-jp',pet:'#petov .tw-window-jp',sora:'.tw-window-jp',karaoke:'.tw-window-jp'}[game])).evaluate(el=>({size:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight}));assert.equal(jp.size,'12px');assert.equal(jp.weight,'800');}assert.deepEqual(errors,[]);
  const parentPalette=await p.evaluate(()=>{const s=getComputedStyle(document.documentElement);return{card:s.getPropertyValue('--card').trim(),ink:s.getPropertyValue('--ink').trim()};});
  const windowSelector={gacha:'.gachap',pet:'.petp',duo:'.duop',sora:'#twPreviewPainel',karaoke:'#twPreviewPainel',profile:'#perfOv>.perfp',encounter:'.encp'}[game];
- const surface=await p.locator(windowSelector).evaluate(el=>{let s=getComputedStyle(el),r=el.getBoundingClientRect();return{border:s.borderTopWidth,radius:s.borderRadius,x:r.x,right:r.right,y:r.y,bottom:r.bottom,background:s.backgroundImage};});
- assert.equal(surface.border,'2px');assert.equal(surface.radius,'24px');assert(surface.x>=0&&surface.right<=width+1);assert(surface.y>=0&&surface.bottom<=(width===390?844:1000)+1);
+ const surface=await p.locator(windowSelector).evaluate(el=>{let s=getComputedStyle(el),r=el.getBoundingClientRect();return{border:s.borderTopWidth,radius:s.borderRadius,x:r.x,right:r.right,y:r.y,bottom:r.bottom,background:s.backgroundImage,shadow:s.boxShadow};});
+ if(game==='karaoke'){assert.equal(surface.border,'0px');assert.equal(surface.radius,'0px');assert.equal(surface.background,'none');assert.equal(surface.shadow,'none');}
+ else{assert.equal(surface.border,'2px');assert.equal(surface.radius,'24px');}
+ assert(surface.x>=0&&surface.right<=width+1);assert(surface.y>=0&&surface.bottom<=(width===390?844:1000)+1);
  if(game==='sora'||game==='karaoke'){
   const card=await scope.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--card').trim());assert.equal(card,parentPalette.card);
   assert.equal(await p.locator('#hub').evaluate(el=>el.hidden),false);
-  assert.equal(await p.locator('#twPreviewJogo').evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(6, 16, 38, 0.55)');
+ }
+ if(game==='sora')assert.equal(await p.locator('#twPreviewJogo').evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(6, 16, 38, 0.55)');
+ if(game==='karaoke'){
+  const host=await p.locator('#twPreviewJogo').evaluate(el=>{const read=n=>{const s=getComputedStyle(n);return{color:s.backgroundColor,image:s.backgroundImage,shadow:s.boxShadow};};return{root:read(el),panel:read(el.querySelector('.tw-preview-panel')),slot:read(el.querySelector('.tw-preview-header-slot')),header:read(el.querySelector('.tw-preview-header-slot>header')),stage:read(el.querySelector('.tw-preview-stage')),iframe:read(el.querySelector('#twPreviewIframe'))};});
+  Object.keys(host).forEach(k=>{assert.equal(host[k].color,'rgba(0, 0, 0, 0)',k+' background');assert.equal(host[k].image,'none',k+' background image');});
+  assert.equal(host.panel.shadow,'none');
+  const inner=await scope.locator('body').evaluate(el=>{const read=n=>{const s=getComputedStyle(n);return{color:s.backgroundColor,image:s.backgroundImage};};return{body:read(el),dialog:read(document.querySelector('#ktPopup')),room:read(document.querySelector('.krwrap'))};});
+  Object.keys(inner).forEach(k=>{assert.equal(inner[k].color,'rgba(0, 0, 0, 0)',k+' embedded background');assert.equal(inner[k].image,'none',k+' embedded image');});
+  assert(game==='karaoke');
  }
  if(game==='karaoke'){
   const row=await scope.locator('#ktStart').evaluate(el=>{let row=el.closest('.kt-toolbar');return{wrap:getComputedStyle(row).flexWrap,scroll:row.scrollWidth,client:row.clientWidth};});assert.equal(row.wrap,'nowrap');

@@ -263,6 +263,20 @@ html.kt-no-site .krwrap{padding-top:0!important}
 .kt-closed p{color:#e4ecff;font-size:12px;line-height:1.75;margin:8px auto;max-width:36ch}
 .kt-closed #ktReopens{display:inline-block;margin:7px auto 13px;padding:6px 12px;border:1px solid rgba(178,241,249,.48);border-radius:99px;background:rgba(34,96,135,.43);color:#baf3ff;font-size:11px;font-weight:800}
 .kt-closed #ktViewRanks{min-height:41px;max-width:100%;border:1px solid #ffd3f3;background:linear-gradient(100deg,#ef6ab4,#8e64f2 55%,#4d87e8);box-shadow:0 4px 0 #55288e,0 8px 14px rgba(10,6,41,.45);color:white}
+.kt-closed .krbox{max-height:calc(100% - 10px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#f6c6e8 transparent}
+.kt-closed .kt-dream-goodnight{margin:1px auto 7px;font-size:11px;color:#ffe8b9;font-weight:800;text-shadow:0 0 11px rgba(255,187,229,.55)}
+.kt-closed .kt-closed-practice{display:block;margin:7px auto 10px;max-width:100%;min-height:38px;padding:8px 14px;border:2px solid #fff1ff;border-radius:99px;color:#47276e;background:linear-gradient(115deg,#ffc3e4,#d6b6ff 58%,#adf1e0);box-shadow:0 3px 0 #8551b0,0 0 14px rgba(255,165,231,.47);font:800 11px "M PLUS Rounded 1c",sans-serif;cursor:pointer}
+.kt-closed .kt-closed-practice:hover{filter:brightness(1.07)}.kt-closed .kt-closed-practice:focus-visible{outline:3px solid #ffe49b;outline-offset:2px}
+.kt-closed:not([hidden])~.kt-calibration,.kt-room-closed #ktCalibration{visibility:hidden;pointer-events:none}
+.kt-dream-sparkles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.kt-dream-sparkles span{position:absolute;display:block;font-size:23px;color:#ffe1f8;text-shadow:0 0 5px #fff,0 0 17px rgba(255,173,238,.87);filter:drop-shadow(0 0 7px rgba(191,181,255,.7));animation:kt-dream-float 5.4s ease-in-out infinite alternate}
+.kt-dream-sparkles span:nth-child(3n){color:#b9ffed;animation-duration:7s}.kt-dream-sparkles span:nth-child(4n){color:#ffdc9a;animation-duration:6.2s}
+.kt-dream-sparkles span:nth-child(1){left:6%;top:13%;font-size:30px;animation-delay:-2s}.kt-dream-sparkles span:nth-child(2){left:18%;top:27%;font-size:24px;animation-delay:-.9s}.kt-dream-sparkles span:nth-child(3){left:10%;top:69%;font-size:32px;animation-delay:-4s}.kt-dream-sparkles span:nth-child(4){left:25%;top:86%;font-size:19px;animation-delay:-1.8s}
+.kt-dream-sparkles span:nth-child(5){right:6%;top:11%;font-size:33px;animation-delay:-3.8s}.kt-dream-sparkles span:nth-child(6){right:20%;top:25%;font-size:26px;animation-delay:-1s}.kt-dream-sparkles span:nth-child(7){right:9%;top:58%;font-size:28px;animation-delay:-4.8s}.kt-dream-sparkles span:nth-child(8){right:25%;top:83%;font-size:26px;animation-delay:-.5s}
+.kt-dream-sparkles span:nth-child(9){left:4%;top:45%;font-size:18px;animation-delay:-3s}.kt-dream-sparkles span:nth-child(10){right:4%;top:39%;font-size:22px;animation-delay:-2.5s}.kt-dream-sparkles span:nth-child(11){left:33%;top:5%;font-size:19px;animation-delay:-5s}.kt-dream-sparkles span:nth-child(12){right:35%;top:5%;font-size:24px;animation-delay:-2s}
+.kt-dream-sparkles span:nth-child(13){left:34%;bottom:5%;font-size:25px;animation-delay:-4s}.kt-dream-sparkles span:nth-child(14){right:35%;bottom:7%;font-size:22px;animation-delay:-1s}.kt-dream-sparkles span:nth-child(15){left:14%;bottom:8%;font-size:20px;animation-delay:-5.4s}.kt-dream-sparkles span:nth-child(16){right:14%;bottom:9%;font-size:29px;animation-delay:-.7s}
+@keyframes kt-dream-float{0%{opacity:.42;transform:translateY(6px) rotate(-8deg) scale(.83)}55%{opacity:.95}100%{opacity:.63;transform:translateY(-12px) rotate(8deg) scale(1.12)}}
+@media(prefers-reduced-motion:reduce){.kt-dream-sparkles span{animation:none;opacity:.75}}
 @media(max-width:620px){
  .kt-toolbar{gap:6px}
  .kt-toolbar .kt-song-choice select{width:190px}
@@ -275,6 +289,10 @@ html.kt-no-site .krwrap{padding-top:0!important}
  .kt-closed .krbox::after{font-size:13px;letter-spacing:2px}
  .kt-closed .krbox>div:first-child{width:35px;height:35px;font-size:19px}
  .kt-closed #ktReopens{font-size:9px;padding:4px 8px}
+ .kt-closed .kt-dream-goodnight{font-size:9px;margin:0 auto 4px}
+ .kt-closed .kt-closed-practice{min-height:34px;margin:5px auto 7px;padding:6px 9px;font-size:9px}
+ .kt-closed .krbox{max-height:calc(100% - 4px)}
+ .kt-dream-sparkles span{font-size:15px;opacity:.6}
 }
 
 
@@ -1319,6 +1337,7 @@ var ktFlow=(function(){
   th:['🎤 เริ่มการแสดงไหม?','สิทธิ์เล่นวันนี้','ครั้งที่เหลือ','🎟️ ตั๋วพิเศษ: เร็ว ๆ นี้','ยกเลิกโดยไม่เสียสิทธิ์','ยืนยันการแสดง','▶ เล่นต่อจากที่บันทึก','🧪 ฝึกฟรี','🎚️ ปรับเวลา','ฝึกฟรี ไม่เสียสิทธิ์และไม่จัดอันดับ','โน้ตเร็วขึ้น','โน้ตช้าลง','คืนค่า 0 ms','ฝึกอีกครั้ง','กำลังตรวจสอบสิทธิ์...'],
   ja:['🎤 ショーを始める？','今日の挑戦回数','回残り','🎟️ 追加チケット：準備中','消費せず戻る','ショーを始める','▶ 保存した続きから','🧪 無料練習','🎚️ タイミング調整','無料練習では挑戦回数を使わず、ランキングにも入りません。','ノーツを早く','ノーツを遅く','0 msに戻す','もう一度練習','残り回数を確認中...']
  };
+ var CLOSED_COPY={pt:['☁️ Boa noite, Idol! Sonhe com as estrelas ♡','🧪 Ensaiar sem gastar tentativas'],en:['☁️ Sweet dreams, Idol! Dream of the stars ♡','🧪 Practice without spending attempts'],es:['☁️ ¡Dulces sueños, Idol! Sueña con las estrellas ♡','🧪 Ensayar sin gastar intentos'],th:['☁️ ฝันดีนะ ไอดอล! ฝันถึงดวงดาวด้วย ♡','🧪 ซ้อมโดยไม่เสียสิทธิ์'],ja:['☁️ おやすみ、アイドル！星の夢を見てね ♡','🧪 回数を使わず練習する']};
  function t(i){return (COPY[LANG]||COPY.pt)[i];}
  var KEY='kt_rhythm_offset_ms_v1',offset=0;
  function clamp(n){return Math.round(Math.max(-200,Math.min(200,(Number(n)||0)))/10)*10;}
@@ -1327,6 +1346,13 @@ var ktFlow=(function(){
  dialog.innerHTML='<h2 id="ktConfirmTitle"></h2><p id="ktConfirmCount"></p><div class="kt-confirm-stars" id="ktConfirmStars" aria-hidden="true"></div><p class="kt-confirm-ticket" id="ktConfirmTicket"></p><div class="kt-confirm-actions"><button type="button" class="krb" id="ktConfirmCancel"></button><button type="button" class="btn" id="ktConfirmAccept"></button></div>';
  document.body.appendChild(dialog);
  var practice=document.createElement('button');practice.type='button';practice.id='ktPractice';practice.className='krb kt-practice-button';practice.textContent=t(7);$('ktStart').after(practice);
+ /* A cortina e apenas a pausa dos shows oficiais: ensaio continua disponivel. */
+ var sleep=document.createElement('p');sleep.className='kt-dream-goodnight';sleep.textContent=(CLOSED_COPY[LANG]||CLOSED_COPY.pt)[0];
+ var closedPractice=document.createElement('button');closedPractice.type='button';closedPractice.id='ktClosedPractice';closedPractice.className='krb kt-closed-practice';closedPractice.textContent=(CLOSED_COPY[LANG]||CLOSED_COPY.pt)[1];
+ $('ktViewRanks').before(sleep,closedPractice);
+ var dream=document.createElement('div');dream.className='kt-dream-sparkles';dream.ariaHidden='true';dream.innerHTML='<span>✦</span><span>♡</span><span>✧</span><span>💗</span><span>✦</span><span>☁️</span><span>💜</span><span>✧</span><span>🌷</span><span>♡</span><span>⭐</span><span>💫</span><span>✧</span><span>♡</span><span>🎀</span><span>✦</span>';
+ $('ktClosed').appendChild(dream);
+ closedPractice.onclick=function(){if(!kt.active())practice.onclick();};
  var adjust=document.createElement('details');adjust.id='ktCalibration';adjust.className='kt-calibration';
  adjust.innerHTML='<summary></summary><div class="kt-calibration-panel"><strong id="ktCalibrationTitle"></strong><div class="kt-calibration-body"><button type="button" class="krb" id="ktOffsetMinus">−10 ms</button><output id="ktOffsetValue">0 ms</output><button type="button" class="krb" id="ktOffsetPlus">+10 ms</button><button type="button" class="krb" id="ktOffsetReset"></button></div><p id="ktCalibrationHelp"></p></div>';
  $('krPalco').appendChild(adjust);adjust.querySelector('summary').textContent='⚙️';adjust.querySelector('summary').title=t(8);adjust.querySelector('summary').ariaLabel=t(8);$('ktCalibrationTitle').textContent=t(8);$('ktOffsetReset').textContent=t(12);
@@ -1407,7 +1433,8 @@ var KT_HIT_WINDOWS={perfect:45,good:100},KT_NOTE_PX_PER_MS=.21,KT_NOTE_HALF_HEIG
 function ktNoteY(delta,fall,top,target){var halo=KT_HIT_WINDOWS.good*KT_NOTE_PX_PER_MS;
  if(delta>=-KT_HIT_WINDOWS.good)return target+delta*KT_NOTE_PX_PER_MS;
  var duration=Math.max(1,fall-KT_HIT_WINDOWS.good),travel=Math.max(1,target-halo-top),progress=Math.max(0,Math.min(1,(delta+fall)/duration));
- return top+travel*Math.pow(progress,KT_NOTE_PX_PER_MS*duration/travel);}
+ /* Chegada previsivel: a curva antiga ficava quase parada no alto e disparava no fim. */
+ return top+travel*Math.pow(progress,3);}
 function hz(m){return 440*Math.pow(2,(m-69)/12);}
 function active(){return !!run;}
 function silence(){voices.forEach(function(o){try{o.stop();}catch(e){}});voices.clear();}

@@ -13,6 +13,7 @@ class Element {
   set innerHTML(value){this.html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g))get(match[1]);}
   get innerHTML(){return this.html||'';}
   after(other){if(other.id)elements.set(other.id,other);}
+  before(...nodes){for(const node of nodes)if(node.id)elements.set(node.id,node);}
   appendChild(child){if(child.id)elements.set(child.id,child);}
   querySelector(selector){return get(selector);}
   showModal(){this.open=true;}
@@ -54,6 +55,8 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   ui.request();
   assert.equal(get('ktStartConfirm').open,false,'sala fechada não abre confirmação oficial');
   assert.equal(calls.length,charged,'sala fechada não chama admissão');
+  get('ktClosedPractice').onclick();
+  assert.deepEqual(calls.slice(charged),[['start','practice']],'botão da cortina libera ensaio sem gastar, mesmo com sala oficial fechada');
   context.krSt.aberta=true;
 
   const before=calls.length;
@@ -62,6 +65,8 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações ficam no palco, não na barra de música');
   assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
   assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
+  assert(flow[0].includes('kt-dream-sparkles'),'cortina possui estrelas e corações decorativos');
+  assert(html.includes('.kt-room-closed #ktCalibration{visibility:hidden'),'engrenagem fica atrás da cortina fechada');
   get('ktOffsetPlus').onclick();
   assert.equal(ui.offset(),10,'ajuste local de 10 ms');
   assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');

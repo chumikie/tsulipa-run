@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
-const source = html.match(/var KT_HIT_WINDOWS=\{perfect:45,good:100\},KT_NOTE_PX_PER_MS=\.21,KT_NOTE_HALF_HEIGHT=4;[\s\S]*?\n return top\+travel\*Math\.pow\(progress,KT_NOTE_PX_PER_MS\*duration\/travel\);\}/);
+const source = html.match(/var KT_HIT_WINDOWS=\{perfect:45,good:100\},KT_NOTE_PX_PER_MS=\.21,KT_NOTE_HALF_HEIGHT=4;[\s\S]*?\n return top\+travel\*Math\.pow\(progress,3\);\}/);
 const songs = html.match(/var songs=\{[\s\S]*?\n\};/);
 assert(source && songs, 'Uma única janela de acerto alimenta movimento e julgamento');
 
@@ -30,6 +30,7 @@ for(const [key,song] of Object.entries(ctx.songs)){
   assert.equal(y(0),target,`${key}: centro do botão exatamente no ataque musical`);
   assert(Math.abs(y(45)-(target+perfectPx))<1e-8,`${key}: fim do núcleo PERFECT`);
   assert(Math.abs(y(100)-(target+goodPx))<1e-8,`${key}: fim do halo BOM`);
+  assert(y(-500)-top>25,`${key}: aproximação visível antecipadamente, sem ficar parada no alto`);
   let previous=-Infinity;
   for(let delta=-fall;delta<=140;delta+=10){
     const pos=y(delta);

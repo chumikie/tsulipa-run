@@ -8858,7 +8858,9 @@ function twKaraokeAtualizarCard(){
     var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}:
       faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้'}:
       {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์'};
-    if(tt)tt.textContent=txtK[LANG]||txtK.pt;
+    // as mesmas estrelinhas da sala: ★ = show que ainda resta hoje, ☆ = show já usado
+    var pips=faltam===null?'':'★'.repeat(faltam)+'☆'.repeat(5-faltam)+' · ';
+    if(tt)tt.textContent=pips?pips+(txtK[LANG]||txtK.pt).replace(/^\S+\s/,''):(txtK[LANG]||txtK.pt);
     card.title='Karaoke⭐Time!';
     return;
   }

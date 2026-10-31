@@ -647,11 +647,14 @@ try{
     assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
       "Weekly board must be physically moved before audience on desktop and mobile");
   }
-  assert(previewSkin.includes("#twPreviewJogo[data-karaoke-tela]{")&&
-    previewSkin.includes("position:relative!important")&&
-    previewSkin.includes("overflow:visible!important")&&
-    previewSkin.includes("flex:0 0 auto!important;min-height:100dvh"),
-    "Karaoke Time must be a growing document section, not a fixed layer over the site footer");
+  const flowStart=previewSkin.indexOf("#twPreviewJogo[data-karaoke-tela]{");
+  const flowEnd=previewSkin.indexOf("/* Source is #hubPart",flowStart);
+  const flowBlock=flowStart>=0&&flowEnd>flowStart?previewSkin.slice(flowStart,flowEnd):"";
+  assert(flowBlock.includes("position:relative!important")&&
+    flowBlock.includes("overflow:visible!important")&&
+    flowBlock.includes("min-height:0")&&flowBlock.includes("height:auto")&&
+    !flowBlock.includes("100dvh"),
+    "Karaoke Time must size to its real iframe content without a viewport-height blank area");
   assert(karaokeTime.includes("width:min(100%,970px)!important")&&
     karaokeTime.includes("max-width:920px!important"),
     "Embedded Karaoke content must retain the original compact 970/920px bounds");

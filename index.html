@@ -622,14 +622,15 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .panel p.encfala{margin:4px 0 12px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.45}
 .encp{background:linear-gradient(170deg,var(--card),var(--card))}
 .encpalco{position:relative;border-radius:20px;padding:4px;background:linear-gradient(135deg,#7b3ff0,#ff6fb5,#4169e1)}
-.encpalco #encCv{display:block;border-radius:17px;box-shadow:none}
+.encpalco #encCv{display:block;border-radius:17px;box-shadow:none;cursor:pointer;touch-action:manipulation}
 .encselo{position:absolute;right:14px;bottom:14px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(60,20,120,.3)}
 .enchero{position:relative;margin:12px 0 8px;padding:14px 16px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.14) 55%,rgba(65,105,225,.14))}
 .enchero .encnick{margin:0;font-size:24px;font-weight:900;color:#ff6fb5}
 .encchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .enchero .perffrase{margin:2px 0 0;font-size:15px;font-weight:700;color:var(--ink)}
 .encpremio{margin:0 0 8px;padding:6px 12px;border-radius:99px;display:inline-block;font-weight:800;font-size:13px;color:#fff;background:linear-gradient(90deg,#ffb347,#ff6fb5)}
-.panel p.encpremio{color:#fff}.encpremio[hidden]{display:none!important}
+.panel p.encpremio{color:#fff}.encpremio[hidden],.enccoracoes[hidden]{display:none!important}
+.panel p.enccoracoes{margin:2px 0 8px;font-size:26px;line-height:1;letter-spacing:6px;text-align:center}.enccoracoes span{display:inline-block;animation:encbate 1.2s ease-in-out infinite}.enccoracoes span:nth-child(2){animation-delay:.2s}.enccoracoes span:nth-child(3){animation-delay:.4s}@keyframes encbate{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){.enccoracoes span{animation:none}}
 .encbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.encbtns #encDuo{grid-column:1/-1}.encbtns .btn{margin:0;text-decoration:none;text-align:center}
 .encflash{position:absolute;inset:4px;border-radius:17px;background:#fff;animation:encflash .4s ease-out forwards;pointer-events:none}
 @keyframes encflash{from{opacity:.9}to{opacity:0}}
@@ -11013,7 +11014,7 @@ encOv.innerHTML = '<div class="panel encp tw-window tw-window-surface" role="dia
   '<div class="encpalco"><canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><span class="encselo" id="encSelo"></span></div>' +
   '<div class="enchero"><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
     '<b class="encnick" id="encNick"></b><span class="encchips"><span class="perfrk" id="encRk"></span><span class="perfoshi" id="encOshi" hidden></span></span><q class="perffrase encfala" id="encFala"></q></div>' +
-  '<p class="encpremio" id="encPremio" hidden></p>' +
+  '<p class="enccoracoes" id="encCoracoes" hidden aria-hidden="true"></p><p class="encpremio" id="encPremio" hidden></p>' +
   '<div class="encbtns"><button type="button" class="btn" id="encDuo"></button><a class="btn alt" id="encFoto" href="#" download="encontro-do-dia.png"></a><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
 document.body.appendChild(encOv);
 var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
@@ -11022,7 +11023,21 @@ var encDados = null, encAnim = 0, encT = 0;
 function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AAAA-MM-DD)
 function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
-function encNomes(d){ return [d.nick].concat((Array.isArray(d.extras) ? d.extras : []).map(function(o){ return o && o.nick; }).filter(Boolean)).join(' & '); }   // dupla/trio: todos os nomes
+function encOrdem(d){   // da esquerda para a direita, como aparecem no palco: trio = extra 1, principal, extra 2
+  var ex = (Array.isArray(d.extras) ? d.extras : []).filter(function(o){ return o && o.nick; });
+  return ex.length >= 2 ? [ex[0], d, ex[1]] : [d].concat(ex);
+}
+function encNomes(d){ return encOrdem(d).map(function(o){ return o.nick; }).join(' & '); }   // dupla/trio: todos os nomes, na ordem do palco
+function encCorDe(o){   // cor do perfil (lightstick); sem ela, a do cabelo
+  var a = (o && o.avatar) || {}, c = a.c || {};
+  return [a.cor, c.luz, c.hair].filter(function(v){ return /^#[0-9a-f]{6}$/i.test(v || ''); })[0] || '#ff6fb5';
+}
+function encCoracao(h){   // mesmo coração colorido do Karaoke⭐Time!
+  var n = parseInt(String(h).slice(1), 16), r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dd = mx - mn;
+  if(dd < .12) return l > .75 ? '🤍' : l < .25 ? '🖤' : '💜';
+  var hue = mx === r ? ((g - b) / dd + (g < b ? 6 : 0)) * 60 : mx === g ? ((b - r) / dd + 2) * 60 : ((r - g) / dd + 4) * 60;
+  return hue < 15 || hue >= 345 ? '❤️' : hue < 40 ? '🧡' : hue < 70 ? '💛' : hue < 165 ? '💚' : hue < 250 ? '💙' : hue < 290 ? '💜' : '💗';
+}
 function encBtnUI(){
   var feito = encLer();
   encBtn.innerHTML = feito
@@ -11038,6 +11053,7 @@ function encMostrar(d){
   $('encTopo').textContent = '🌟 ' + tr(ex.length === 2 ? 'Trio do dia!' : ex.length === 1 ? 'Dupla do dia!' : 'Encontro do dia');
   $('encNick').textContent = encNomes(d);
   $('encFala').textContent = tr(d.fala);
+  var cc = $('encCoracoes'); cc.hidden = ex.length === 0; cc.innerHTML = ex.length ? encOrdem(d).map(function(o){ return '<span>' + encCoracao(encCorDe(o)) + '</span>'; }).join('') : '';
   var ri = rankOf(+d.best || 0), os = d.oshi && PERF_OSHI[d.oshi];
   $('encRk').textContent = tr(RANKS[ri][1]) + ' · 🏆 ' + (+d.best || 0); $('encSelo').textContent = PERF_RANK_EMO[ri] || '⭐';
   var oe = $('encOshi'); oe.hidden = ex.length > 0 || !os; if(os && ex.length === 0){ oe.textContent = '推し ' + os[0] + ' ' + tr(os[1]); oe.style.background = os[2]; oe.style.color = perfCorTexto(os[2]); }
@@ -11057,15 +11073,34 @@ function encLoop(){
     try{ x.clearRect(0, 0, cv.width, cv.height); encCena(x, cv.width, cv.height, encT);
       var pulo = Math.abs(Math.sin(encT * .12)) * 10;
       encHalo(x, cv.width / 2, cv.height * .56 - pulo, encT);
+      encEmojis(x, cv.width, cv.height, encT);   // atrás de todo mundo: os emojis não cobrem o rostinho
       var W2 = cv.width, H2 = cv.height, n = grupo.length, esc = n === 3 ? .58 : n === 2 ? .7 : 1, pos = n === 3 ? [.5, .2, .8] : n === 2 ? [.3, .7] : [.5];
+      encPos = pos;
       grupo.map(function(a, i){ return i; }).sort(function(a, b){ return (a === 0) - (b === 0); }).forEach(function(i){   // quem é do centro fica na frente
-        var pj = n > 1 ? Math.abs(Math.sin(encT * .12 + i * 1.3)) * 8 : pulo;
+        var pj = n > 1 ? Math.abs(Math.sin(encT * .12 + i * 1.3)) * 8 : pulo, tq = encT - (encToque[i] || -999);
+        if(tq >= 0 && tq < 46){ pj += Math.sin(tq / 46 * Math.PI) * 34; grupo[i].pose = 'banzai'; grupo[i].expr = 3; }
         x.save(); x.translate(W2 * pos[i] - W2 * esc / 2, H2 * (1 - esc) - pj); x.scale(esc, esc); perfDesenharIdol(x, W2, H2, grupo[i], false, false, encT + i * 30); x.restore(); });
-      encEmojis(x, cv.width, cv.height, encT);
+      encToqueBolhas(x, encT);
     }catch(e){}
   }
   encAnim = requestAnimationFrame(encLoop);
 }
+var encToque = {}, encPos = [.5], encBolhas = [];
+function encToqueBolhas(x, t){   // corações do toque, por cima, mas subindo acima da cabeça
+  encBolhas = encBolhas.filter(function(b){ return t - b.t0 < 50; });
+  x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
+  encBolhas.forEach(function(b){ var k = (t - b.t0) / 50; x.globalAlpha = 1 - k; x.font = (18 + k * 8) + 'px sans-serif'; x.fillText(b.e, b.x + Math.sin(k * 7 + b.x) * 10, b.y - k * 60); });
+  x.restore();
+}
+$('encCv').addEventListener('pointerdown', function(e){
+  if(!encDados) return;
+  var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, i = 0, best = 9;
+  encPos.forEach(function(p, k){ var dd = Math.abs(p - px); if(dd < best){ best = dd; i = k; } });
+  encToque[i] = encT;
+  var pessoa = [encDados].concat(Array.isArray(encDados.extras) ? encDados.extras : [])[i] || encDados, cor = encCoracao(encCorDe(pessoa)), n = encPos.length, esc = n === 3 ? .58 : n === 2 ? .7 : 1;
+  for(var k = 0; k < 3; k++) encBolhas.push({ e: k === 1 ? '✨' : cor, x: cv.width * encPos[i] + (k - 1) * 22, y: cv.height * (1 - esc * .78), t0: encT + k * 4 });
+  var base = [659, 784, 880][i % 3]; [[1, 0], [1.25, .07], [1.5, .14], [2, .22]].forEach(function(m){ beep(base * m[0], .12, 'triangle', .035, m[1]); });
+});
 function encAbrirNovo(d){   // mostra o encontro e entrega as ★3 (1 vez por dia, conferido no servidor)
   d.dono = encDono();
   try{ localStorage.setItem(ENC_KEY, JSON.stringify(d)); }catch(e){}

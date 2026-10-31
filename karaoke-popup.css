@@ -37,3 +37,13 @@
 .tw-preview-game[data-karaoke-tela] .tw-preview-header-slot>header,
 .tw-preview-game[data-karaoke-tela] .tw-preview-stage{background:transparent!important;background-image:none!important;box-shadow:none!important;border-color:transparent!important}
 .tw-preview-game[data-karaoke-tela] #twPreviewIframe{background:transparent!important;background-image:none!important;border:0!important;box-shadow:none!important}
+
+/* The hub is hidden when Karaoke becomes the page. The original Center Run
+   shell remains in the document; keep its game UI from showing through this
+   transparent, shared-background screen. The body's page background stays visible. */
+body:has(#twPreviewJogo[data-karaoke-tela]) > .stage,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .hint,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .links,
+body:has(#twPreviewJogo[data-karaoke-tela]) > .oshi-sel{
+  visibility:hidden!important;
+}

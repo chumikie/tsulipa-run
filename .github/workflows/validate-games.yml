@@ -32,6 +32,8 @@ on:
       - 'tests/tw-weekly-podium.test.js'
       - 'tests/login-simulado.test.js'
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
+      - 'supabase/sql/admin_player_profile_proposal.sql'
+      - 'tests/admin-player-profile.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -91,6 +93,8 @@ jobs:
         run: node tests/sora-stability.test.js
       - name: Validate actual INDEX 2 weekly podium integration
         run: node tests/tw-weekly-podium.test.js
+      - name: Validate Backstage Admin player profile guards
+        run: node tests/admin-player-profile.test.js
       - name: Karaoke online (produção)
         run: node tests/karaoke-online.test.js
       - name: Cards com login simulado (e interruptor de teste desligado)

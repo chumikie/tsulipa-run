@@ -305,9 +305,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 #soraOv.ov{position:fixed;inset:0;z-index:12;display:flex;align-items:center;justify-content:center;overflow:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(9,7,24,.72);overscroll-behavior:contain}
 #soraOv[hidden]{display:none!important}
 #soraOv>.panel{width:min(100%,400px);max-height:calc(100svh - 16px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;text-align:center;background:linear-gradient(155deg,rgba(43,30,78,.98),rgba(18,22,54,.98));border:1px solid rgba(255,255,255,.22);border-radius:24px;padding:10px 12px;box-shadow:0 18px 70px rgba(0,0,0,.5),0 0 30px rgba(236,72,153,.14)}
-#soraOv .bp-title{margin:0;font-size:clamp(25px,7vw,34px);line-height:1.1;font-weight:1000;letter-spacing:-.7px;text-shadow:0 3px 0 #7439a7,0 0 20px #ec4899}
-#soraOv .bp-title .st{color:#ffe66d}
-#soraOv .bp-title small{display:block;margin-top:4px;font-size:10px;letter-spacing:2px;color:#e9d5ff;text-shadow:none}
+html:not(.tw-sora-embed) #soraOv .bp-title{margin:0;font-size:clamp(25px,7vw,34px);line-height:1.1;font-weight:1000;letter-spacing:-.7px;text-shadow:0 3px 0 #7439a7,0 0 20px #ec4899}
+html:not(.tw-sora-embed) #soraOv .bp-title .st{color:#ffe66d}
+html:not(.tw-sora-embed) #soraOv .bp-title small{display:block;margin-top:4px;font-size:10px;letter-spacing:2px;color:#e9d5ff;text-shadow:none}
 #soraOv>.panel>p{margin:4px 0 8px;font-size:12px;color:#f2eaff;line-height:1.4}
 #soraOv .btn,#soraOv .sec{font:800 13px system-ui,sans-serif;border-radius:999px;padding:11px 18px;min-height:42px;cursor:pointer;touch-action:manipulation}
 #soraOv .btn{border:0;background:linear-gradient(105deg,#93c5fd,#c4b5fd,#a7f3d0);color:#fff;box-shadow:0 5px 18px rgba(168,85,247,.3)}
@@ -329,7 +329,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
 #soraSoundBtn:active,#soraOv .btn:active,#soraOv .sec:active{transform:scale(.97)}
 #soraOv button:focus-visible{outline:3px solid #ffe66d;outline-offset:3px}
-@media(max-height:680px){#soraOv>.panel{padding:7px 9px;border-radius:18px}#soraOv .bp-title{font-size:24px}#soraStage{width:min(100%,46svh);height:auto;max-width:100%;aspect-ratio:360/520}#soraSoundBtn{top:6px!important;right:6px!important;min-height:36px!important;padding:5px 8px!important;font-size:13px!important}.sora-menu-content{gap:5px}.sora-eyebrow{font-size:8px}.sora-menu-copy{font-size:11px}.sora-mission-card{padding:6px 8px}.sora-over-content{gap:5px}.sora-over-icon{font-size:20px}.sora-over-title{font-size:18px}.sora-score-hero{padding:6px 8px}.sora-result-number{font-size:36px}.sora-result-stat{padding:5px 7px}.sora-over-actions .btn,.sora-over-actions .sec{min-height:34px}}
+@media(max-height:680px){#soraOv>.panel{padding:7px 9px;border-radius:18px}html:not(.tw-sora-embed) #soraOv .bp-title{font-size:24px}#soraStage{width:min(100%,46svh);height:auto;max-width:100%;aspect-ratio:360/520}#soraSoundBtn{top:6px!important;right:6px!important;min-height:36px!important;padding:5px 8px!important;font-size:13px!important}.sora-menu-content{gap:5px}.sora-eyebrow{font-size:8px}.sora-menu-copy{font-size:11px}.sora-mission-card{padding:6px 8px}.sora-over-content{gap:5px}.sora-over-icon{font-size:20px}.sora-over-title{font-size:18px}.sora-score-hero{padding:6px 8px}.sora-result-number{font-size:36px}.sora-result-stat{padding:5px 7px}.sora-over-actions .btn,.sora-over-actions .sec{min-height:34px}}
 @media(max-width:380px){#soraStage{width:min(100%,44svh)}#soraOv>.panel{padding:8px}}
 @media(prefers-reduced-motion:reduce){.sora-over-icon{animation:none}#soraSoundBtn,#soraOv .btn,#soraOv .sec{transition:none}}
 
@@ -363,7 +363,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 @media(max-height:760px){
   #soraOv > .panel{padding:8px 9px !important;border-radius:18px !important}
   #soraStage{width:min(100%,44dvh) !important;height:auto !important;aspect-ratio:360/520 !important;max-height:none !important}
-  #soraOv .bp-title{font-size:clamp(23px,6vw,29px) !important}
+  html:not(.tw-sora-embed) #soraOv .bp-title{font-size:clamp(23px,6vw,29px) !important}
   #soraOv > .panel > p{margin:3px 0 6px !important;font-size:11px !important}
   #soraMenuBox{padding:8px 8px 12px !important}
   .sora-menu-content{gap:5px !important}
@@ -443,6 +443,7 @@ html,body{min-height:100%;}
   }catch(e){/* standalone fallback */ }
 })();
 </script>
+<link rel="stylesheet" href="./tw-windows.css?v=1">
 </head>
 <body class="tw-game-sora">
 <div id="soraLegacyHooks" hidden aria-hidden="true"><canvas id="c" width="720" height="300"></canvas><canvas id="cel" width="200" height="150"></canvas><canvas id="prev" width="150" height="150"></canvas><span id="best"></span><div id="chars"></div><input id="nick" maxlength="12"></div>
@@ -4067,10 +4068,10 @@ function soraSetupUI(){
   ov.hidden = true;
   ov.style.zIndex = '12';
   ov.innerHTML =
-    '<div class="panel sora-panel" style="max-width:400px;padding:8px 14px 12px;position:relative">' +
+    '<div class="panel sora-panel tw-window-content tw-window" style="max-width:400px;padding:8px 14px 12px;position:relative">' +
       '<div class="sora-topbar"><button type="button" id="soraBackTopBtn" class="sora-back-top" aria-label="Voltar ao jogo principal" title="Voltar ao jogo principal">←</button></div>' +
-      '<h1 class="bp-title" translate="no">Sora<span class="st">⭐</span>Jump!<small>ソラ・ジャンプ</small></h1>' +
-      '<p style="margin:4px 0 8px;font-size:12px">' + escHtml(tr('Suba mais alto e descubra paisagens inesperadas!')) + '</p>' +
+      '<h1 class="bp-title tw-window-title" translate="no">Sora<span class="st">⭐</span>Jump!<small class="tw-window-jp">ソラ・ジャンプ</small></h1>' +
+      '<p class="tw-window-lede" style="margin:4px 0 8px;font-size:12px">' + escHtml(tr('Suba mais alto e descubra paisagens inesperadas!')) + '</p>' +
       '<div id="soraStage">' +
         '<canvas id="soraCv" width="360" height="520" style="width:100%;height:100%;display:block"></canvas>' +
         '<button type="button" id="soraSoundBtn" aria-pressed="true" aria-label="' + escHtml(tr('Desativar som')) + '" title="' + escHtml(tr('Desativar som')) + '" style="position:absolute;z-index:4;top:8px;right:8px;min-width:42px;min-height:40px;padding:7px 10px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(36,25,67,.88);color:#fff;font:800 15px system-ui;box-shadow:0 3px 12px rgba(0,0,0,.25);cursor:pointer;touch-action:manipulation">' + escHtml(tr('🔊 Som')) + '</button>' +
@@ -4437,5 +4438,6 @@ function soraCloseUI(){
 })();
 </script>
 
+<script src="./tw-windows.js?v=1"></script>
 </body>
 </html>

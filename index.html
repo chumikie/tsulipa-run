@@ -470,7 +470,7 @@ body.hubon #mute{visibility:hidden}
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .sitepart i{position:absolute;top:-30px;font-style:normal;opacity:.45;animation:hubcai linear infinite}
-#menu .panel,#petov .panel{box-shadow:0 0 0 4px rgba(255,255,255,.75),0 0 0 7px rgba(255,111,181,.35),0 14px 34px rgba(60,20,120,.3)}
+#menu .panel{box-shadow:0 0 0 4px rgba(255,255,255,.75),0 0 0 7px rgba(255,111,181,.35),0 14px 34px rgba(60,20,120,.3)}
 @media (prefers-reduced-motion:reduce){.sitepart i{animation:none}}
 .gachap h2{padding:0 44px}
 #gachaCardCv{display:block;width:min(100%,300px);height:auto;margin:6px auto 0;border-radius:18px;box-shadow:0 10px 26px rgba(60,20,120,.3)}
@@ -743,6 +743,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 <link rel="stylesheet" href="./karaoke-popup.css?v=1">
+<link rel="stylesheet" href="./tw-windows.css?v=1">
 </head>
 <body>
 <header>
@@ -875,8 +876,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div>
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
 <div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
-<div class="ov" id="petov" hidden style="z-index:8"><div class="panel petp">
-  <h1 class="bp-title" translate="no">Backstage<span class="st">⭐</span>Pet!<small>バックステージ・ペット</small></h1>
+<div class="ov tw-window-overlay" id="petov" hidden style="z-index:8"><div class="panel petp tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="petWindowTitle"><button type="button" class="tw-window-control tw-window-close" id="petWindowClose" aria-label="Fechar">×</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="Som"></button>
+  <h1 class="bp-title tw-window-title" id="petWindowTitle" translate="no">Backstage<span class="st">⭐</span>Pet!<small class="tw-window-jp">バックステージ・ペット</small></h1>
   <div id="petAdopt" hidden>
     <p id="petPickTxt">Escolha seu primeiro pet. O primeiro é presente!</p>
     <div class="petpick" id="petPick"></div>
@@ -3763,6 +3764,7 @@ function petClose(){
 
 $('petBtn').onclick = function(e){ e.preventDefault(); ac(); petOpenUI(); };
 $('petX').onclick = petClose;
+$('petWindowClose').onclick = function(){ $('petX').click(); };
 $('petGo').onclick = petAdopt;
 document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape') petClose(); });
 document.addEventListener('visibilitychange', function(){ if(document.hidden && petData){ petTick(); petSave(); } });
@@ -7100,8 +7102,8 @@ function perfPoseFrente(c, x, y){
 var perfMontou = false, perfAtual = null, perfMeu = false, perfNickVis = '', perfGenAv = null, perfDono = [], perfBestConta = 0, perfAba = 'perfil', perfZoom = true, perfMeuAv = null;
 var perfProva = '', perfT = 0, perfAnimId = 0, perfInsSel = '';
 var perfOv = document.createElement('div');
-perfOv.className = 'ov perfov'; perfOv.id = 'perfOv'; perfOv.hidden = true;
-perfOv.innerHTML = '<div class="panel perfp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="perfX">✕</button><div id="perfCorpo"></div></div>';
+perfOv.className = 'ov perfov tw-window-overlay'; perfOv.id = 'perfOv'; perfOv.hidden = true;
+perfOv.innerHTML = '<div class="panel perfp tw-window tw-window-surface" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="perfX">✕</button><div id="perfCorpo"></div></div>';
 document.body.appendChild(perfOv);
 
 function perfAbrir(nick, manterAba){
@@ -7763,7 +7765,7 @@ function perfAntesDeEntrar(j){
   }).catch(function(){ contaAplicar(j); });
 }
 var perfConf = document.createElement('div');
-perfConf.className = 'ov perfov'; perfConf.id = 'perfConf'; perfConf.hidden = true; perfConf.style.zIndex = 22;
+perfConf.className = 'ov perfov tw-window-overlay'; perfConf.id = 'perfConf'; perfConf.hidden = true; perfConf.style.zIndex = 22;
 perfConf.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfConfTit"></h2><p id="perfConfTxt"></p><div class="btns"><button type="button" class="btn" id="perfConfSim"></button></div><button type="button" class="sec" id="perfConfNao"></button></div>';
 document.body.appendChild(perfConf);
 function perfPerguntar(n, j){
@@ -7829,7 +7831,7 @@ function perfAvatarAuto(){
 
 // ---------- Presente diário da conta (um item por dia, nunca estrelas) ----------
 var perfPres = document.createElement('div');
-perfPres.className = 'ov perfov'; perfPres.id = 'perfPres'; perfPres.hidden = true; perfPres.style.zIndex = 21;
+perfPres.className = 'ov perfov tw-window-overlay'; perfPres.id = 'perfPres'; perfPres.hidden = true; perfPres.style.zIndex = 21;
 perfPres.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfPresTit"></h2><div id="perfPresArte"></div><b id="perfPresNome"></b><p id="perfPresTxt"></p><div class="btns"><button type="button" class="btn" id="perfPresOk"></button></div></div>';
 document.body.appendChild(perfPres);
 $('perfPresOk').onclick = function(){ perfPres.hidden = true; };
@@ -9231,7 +9233,7 @@ function twPreviewSomSincronizar(ligado){
 }
 function twPreviewAtualizarIdioma(){
   var fechar=$('twKaraokePopupFechar');
-  if(fechar)fechar.setAttribute('aria-label',({pt:'Fechar',en:'Close',es:'Cerrar',ja:'閉じる',th:'ปิด'}[LANG]||'Fechar')+' Karaoke Time');
+  if(fechar)fechar.setAttribute('aria-label',({pt:'Fechar',en:'Close',es:'Cerrar',ja:'閉じる',th:'ปิด'}[LANG]||'Fechar')+' '+(twPreviewJogoAnterior==='sora'?'Sora Jump':'Karaoke Time'));
   var voltar=$('twPreviewVoltarTxt');
   if(voltar)voltar.textContent=twPreviewTextos[LANG]||twPreviewTextos.pt;
   twPreviewSomRotular();
@@ -9325,7 +9327,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
   wrap.toggleAttribute('data-karaoke-popup',kTime);
-  if(kTime){hubOv.inert=true;wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',frame.title);}
+  if(kTime||tipo==='sora'){hubOv.inert=true;wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',frame.title);}
   twPreviewAtualizarIdioma();
   twPreviewMontarFundo();
   twPreviewCabecalhoOficial(tipo!=='sora'&&!kTime);   // Sora e Karaoke Time mantêm a página atrás do pop-up
@@ -9347,7 +9349,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
   frame.src=tipo==='sora'?'./sora-jump.html'+context:kTime?'./karaoke-time.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
-  var fechar=kTime?$('twKaraokePopupFechar'):$('twPreviewVoltar');
+  var fechar=(kTime||tipo==='sora')?$('twKaraokePopupFechar'):$('twPreviewVoltar');
   if(fechar)fechar.focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
@@ -9372,11 +9374,11 @@ function twPreviewFecharJogo(){
 }
 (function twPreviewPrepararJanelas(){
   var html='<section class="tw-preview-game" id="twPreviewJogo" hidden aria-label="Jogo especial">'+
-    '<div class="tw-preview-panel" id="twPreviewPainel">'+
-    '<button type="button" id="twKaraokePopupFechar" aria-label="Fechar Karaoke Time">×</button>'+
+    '<div class="tw-preview-panel tw-window tw-window-surface" id="twPreviewPainel">'+
+    '<button type="button" class="tw-window-control tw-window-close" id="twKaraokePopupFechar" aria-label="Fechar Karaoke Time">×</button>'+
     '<div id="twPreviewHeaderSlot" class="tw-preview-header-slot">'+
-    '<button type="button" class="hubvolta tw-preview-voltar" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
-    '<button type="button" class="tw-preview-som" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
+    '<button type="button" class="hubvolta tw-preview-voltar tw-window-control tw-window-back" id="twPreviewVoltar">← <span id="twPreviewVoltarTxt">Início</span></button>'+
+    '<button type="button" class="tw-preview-som tw-window-control tw-window-sound" id="twPreviewSom" hidden disabled aria-pressed="true" aria-label="Desativar som" title="Desativar som">🔊</button></div>'+
     '<div class="tw-preview-stage"><div class="hubpart" id="twPreviewPart" aria-hidden="true"></div>'+
     '<iframe id="twPreviewIframe" title="Jogo especial TsuLiPa World" allow="autoplay" loading="eager"></iframe></div></div></section>';
   document.body.insertAdjacentHTML('beforeend',html);
@@ -9609,8 +9611,8 @@ var GACHA_SORTE = ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Cá
 var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever' };
 var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1, gachaAgora = false;
 var gachaOv = document.createElement('div');
-gachaOv.className = 'ov gachaov'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
-gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx" id="gachaX">✕</button><button type="button" class="ovsom" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
+gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
+gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div></div></div>';
 document.body.appendChild(gachaOv);
@@ -10040,8 +10042,8 @@ var DUO_FALAS_CENA = {
 var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
 
 var duoOv = document.createElement('div');
-duoOv.className = 'ov duoov'; duoOv.id = 'duoOv'; duoOv.hidden = true;
-duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx" id="duoX" aria-label="✕">✕</button>' +
+duoOv.className = 'ov duoov tw-window-overlay'; duoOv.id = 'duoOv'; duoOv.hidden = true;
+duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx tw-window-control tw-window-close" id="duoX" aria-label="✕">✕</button>' +
   '<h2 class="duotit tw-modal-title" id="duoTit" translate="no">🌙 Moon<span class="tw-modal-star">⭐</span>Duo!</h2><small class="tw-modal-jp" lang="ja">ムーン・デュオ</small><p class="duosub" id="duoSub"></p>' +
   '<div id="duoEscolha"></div>' +
   '<div id="duoPalco" hidden>' +
@@ -10490,7 +10492,7 @@ function gachaCardsCarregar(){
 }
 var cardZOv = document.createElement('div');
 cardZOv.className = 'ov cardzov'; cardZOv.hidden = true;
-cardZOv.innerHTML = '<div class="panel cardzp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="cardZX">✕</button><canvas id="cardZCv" width="360" height="504"></canvas>' +
+cardZOv.innerHTML = '<div class="panel cardzp" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="cardZX">✕</button><canvas id="cardZCv" width="360" height="504"></canvas>' +
   '<div class="btns"><a class="btn" id="cardZDl" href="#" download="star-gacha-card.png"></a><button type="button" class="btn alt" id="cardZOk"></button></div></div>';
 document.body.appendChild(cardZOv);
 document.addEventListener('click', function(e){
@@ -10877,7 +10879,7 @@ function coelhoSync(){
 setInterval(coelhoSync, 3000); coelhoSync();
 
 // ---------- Botão de som dentro do gacha e do Moon⭐Duo! ----------
-(function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
+(function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
 function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
 document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){ ovSomUI(); if(!muted && hubComecou) hubMusicaTocar(); }, 60); });
 setInterval(ovSomUI, 1000); ovSomUI();
@@ -10909,7 +10911,7 @@ if(typeof temaAdminHtml === 'function'){ var temaAdmOrig = temaAdminHtml; temaAd
 // Para ligar: coloque aqui o Client ID PÚBLICO do Google (termina em .apps.googleusercontent.com). Vazio = login antigo.
 var GOOGLE_CLIENT_ID = '781179638857-k6qcb45jh2q627gqr0qsqu57uaotmcp7.apps.googleusercontent.com';
 var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
-gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
+gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
 document.body.appendChild(gisOv);
 gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; if(e.target.id === 'gisAntigo'){ gisOv.hidden = true; _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); } });
 function gisHex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join(''); }
@@ -10943,8 +10945,8 @@ if(typeof contaEntrar === 'function'){ var contaEntrarOrig = contaEntrar; contaE
 
 // ---------- 🌟 Encontro do dia: 1 vez por dia, um membro aparece dançando com uma mensagem de força ----------
 var ENC_KEY = 'brs48cr_enc';   // chave nova (não renomeia nenhuma antiga): { dia, nick, avatar, fala }
-var encOv = document.createElement('div'); encOv.className = 'ov encov'; encOv.hidden = true;
-encOv.innerHTML = '<div class="panel encp" role="dialog" aria-modal="true"><button type="button" class="perfx" id="encX">✕</button><p class="enctopo" id="encTopo"></p>' +
+var encOv = document.createElement('div'); encOv.className = 'ov encov tw-window-overlay'; encOv.hidden = true;
+encOv.innerHTML = '<div class="panel encp tw-window tw-window-surface" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="encX">✕</button><p class="enctopo" id="encTopo"></p>' +
   '<div class="encpalco"><canvas id="encCv" width="420" height="380" aria-hidden="true"></canvas><span class="encselo" id="encSelo"></span></div>' +
   '<div class="enchero"><i class="perfbr b1">✦</i><i class="perfbr b2">♡</i><i class="perfbr b3">✧</i><i class="perfbr b4">✦</i>' +
     '<b class="encnick" id="encNick"></b><span class="encchips"><span class="perfrk" id="encRk"></span><span class="perfoshi" id="encOshi" hidden></span></span><q class="perffrase encfala" id="encFala"></q></div>' +
@@ -11062,7 +11064,8 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 // ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------
-if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose; }
+if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose;
+$('petWindowClose').onclick = function(){ $('petX').click(); }; }
 
 // ---------- Músicas próprias: Star⭐Gacha! (suspense de sorte + triunfo) e Moon⭐Duo! (lofi de jardim de fadas) ----------
 var ovMus = null, ovMusK = '';
@@ -13087,6 +13090,8 @@ applyLang();
   });
 })();
 </script>
+<script src="./tw-windows.js?v=1"></script>
 </body>
 </html>
+
 

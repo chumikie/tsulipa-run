@@ -1,16 +1,12 @@
 /* Karaoke Time only: keep the real hub behind a large modal. */
-#twKaraokePopupFechar{display:none}
+.tw-preview-game:not([data-karaoke-popup]):not([data-jogo="sora"]) #twKaraokePopupFechar{display:none}
 .tw-preview-game[data-karaoke-popup]{
   display:grid;place-items:center;padding:20px;
-  background:rgba(6,16,38,.55)!important;
 }
 .tw-preview-game[data-karaoke-popup] .tw-preview-panel{
   position:relative;display:flex;flex-direction:column;
   width:min(1240px,100%);height:min(1000px,calc(100dvh - 40px));
   min-height:0;overflow:hidden;padding:48px 12px 12px;
-  border:2px solid var(--tw-modal-edge);border-radius:var(--tw-modal-radius);
-  background:radial-gradient(circle at 7% 0%,rgba(180,120,255,.14),transparent 42%),var(--card);
-  color:var(--ink);box-shadow:var(--tw-modal-shadow);
 }
 .tw-preview-game[data-karaoke-popup] .tw-preview-header-slot,
 .tw-preview-game[data-karaoke-popup] .hubpart{display:none}
@@ -20,16 +16,10 @@
 .tw-preview-game[data-karaoke-popup] #twPreviewIframe{
   max-width:none;background:transparent;border:0;
 }
-.tw-preview-game[data-karaoke-popup] #twKaraokePopupFechar{
-  position:absolute;z-index:3;top:8px;right:12px;display:grid;place-items:center;
-  width:36px;height:36px;padding:0;border:1px solid rgba(155,48,217,.22);
-  border-radius:50%;background:var(--chip);color:var(--ink);
-  font:26px/1 sans-serif;cursor:pointer;
-}
-#twKaraokePopupFechar:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 @media(max-width:600px){
   .tw-preview-game[data-karaoke-popup]{padding:8px}
   .tw-preview-game[data-karaoke-popup] .tw-preview-panel{
-    height:calc(100dvh - 16px);padding:46px 4px 6px;border-radius:18px;
+    height:calc(100dvh - 16px);padding:46px 4px 6px;
   }
 }
+

@@ -1,0 +1,76 @@
+[
+  {
+    "game": "karaoke",
+    "width": 1440,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"Mochiy Pop One\", \"Kosugi Maru\", \"M PLUS Rounded 1c\", sans-serif",
+      "size": "35px",
+      "align": "center",
+      "color": "rgb(230, 243, 255)",
+      "rect": {
+        "x": 22,
+        "y": 8,
+        "w": 1168,
+        "h": 65.578125
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 100,
+        "right": 1340,
+        "y": 20,
+        "bottom": 980,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": "karaoke",
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  },
+  {
+    "game": "karaoke",
+    "width": 390,
+    "theme": "dark",
+    "oshi": "",
+    "metrics": {
+      "font": "\"Mochiy Pop One\", \"Kosugi Maru\", \"M PLUS Rounded 1c\", sans-serif",
+      "size": "24px",
+      "align": "center",
+      "color": "rgb(230, 243, 255)",
+      "rect": {
+        "x": 16,
+        "y": 8,
+        "w": 330,
+        "h": 51.0625
+      }
+    },
+    "interaction": {
+      "surface": {
+        "border": "2px",
+        "radius": "24px",
+        "x": 8,
+        "right": 382,
+        "y": 8,
+        "bottom": 836,
+        "background": "radial-gradient(circle at 7% 0%, rgba(180, 120, 255, 0.14), rgba(0, 0, 0, 0) 42%), radial-gradient(circle at 100% 14%, rgba(255, 111, 181, 0.12), rgba(0, 0, 0, 0) 43%), none"
+      },
+      "close": true,
+      "escape": true,
+      "focusRestored": "karaoke",
+      "palette": {
+        "card": "#14294a",
+        "ink": "#e6f3ff"
+      }
+    },
+    "errors": []
+  }
+]

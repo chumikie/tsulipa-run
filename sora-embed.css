@@ -59,30 +59,11 @@ html.tw-sora-embed #soraOv>.panel.sora-panel::-webkit-scrollbar,
 html.tw-sora-embed #soraMenuBox::-webkit-scrollbar{display:none}
 html.tw-sora-embed #soraOv .sora-topbar{display:none!important}
 html.tw-sora-embed #soraSoundBtn{display:none!important}
-html.tw-sora-embed #soraOv>.panel>p{color:var(--sub,#5b7fa6)!important}
-html.tw-sora-embed #soraOv .bp-title{
-  font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;
-  font-weight:400!important;
-  line-height:1.35!important;
-  font-size:clamp(23px,4.3vw,34px)!important;
-  margin:2px auto 1px!important;
-  color:var(--ink,#12365e)!important;
-  text-shadow:none!important;
-}
-html.tw-sora-embed #soraOv .bp-title .st{
-  color:#f5b400!important;
-  -webkit-text-fill-color:#f5b400!important;
-  text-shadow:0 1px 0 rgba(255,255,255,.55),0 2px 8px rgba(245,180,0,.26)!important;
-}
-html.tw-sora-embed #soraOv .bp-title small{
-  display:block;
-  margin-top:2px!important;
-  font:800 11px/1.45 "M PLUS Rounded 1c","Kosugi Maru",sans-serif!important;
-  letter-spacing:.08em!important;
-  color:var(--pink,#ff6fb5)!important;
-  text-shadow:none!important;
-}
-html.tw-sora-embed #soraOv>.panel>p{font-size:12px!important;line-height:1.45!important;margin:2px 0 7px!important}
+
+
+
+
+
 html.tw-sora-embed #soraStage{
   box-sizing:border-box;
   /* Reserve room for title, buttons and the VOLTAR pill so nothing is cut. */
@@ -139,8 +120,8 @@ html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-
     padding:7px 9px 10px!important;
     border-radius:17px!important;
   }
-  html.tw-sora-embed #soraOv .bp-title{font-size:clamp(21px,6vw,28px)!important}
-  html.tw-sora-embed #soraOv>.panel>p{font-size:11px!important;margin:2px 0 5px!important}
+  
+  
   html.tw-sora-embed #soraStage{
     width:min(100%,350px,calc((100dvh - 170px)*360/520))!important;
   }
@@ -227,3 +208,4 @@ html.tw-sora-embed #soraHomeBtn{
   font:800 12px "M PLUS Rounded 1c",sans-serif!important;
   box-shadow:0 3px 0 rgba(44,26,143,.18)!important;
 }
+

@@ -19,6 +19,10 @@ on:
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
+      - 'tw-windows.css'
+      - 'tw-windows.js'
+      - 'tests/windows-shared.test.js'
+      - 'tests/windows-browser.cjs'
       - 'tw-mic-cd-popup.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
@@ -54,6 +58,10 @@ on:
       - 'tests/karaoke-homol-view.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
+      - 'tw-windows.css'
+      - 'tw-windows.js'
+      - 'tests/windows-shared.test.js'
+      - 'tests/windows-browser.cjs'
       - 'tw-mic-cd-popup.css'
       - 'sora-embed.css'
       - 'karaoke-embed.css'
@@ -81,6 +89,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate shared window contracts
+        run: node tests/windows-shared.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate nine-player room state machine
@@ -101,4 +111,5 @@ jobs:
         run: node tests/karaoke-online.test.js
       - name: Cards com login simulado (e interruptor de teste desligado)
         run: node tests/login-simulado.test.js
+
 

@@ -3071,7 +3071,7 @@ g.save();
   g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
   g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
   if(pw&&state==='play'){g.textAlign='right';g.fillStyle='#ffe14d';g.fillText((pw.k==='fever'?tr('Fever '):pw.k==='alien'?tr('Abdução '):pw.k==='gigante'?tr('Mega '):pw.k==='unit'?tr('Unit ✨ '):tr('Ímã '))+Math.ceil(pw.t/60)+'s',W-16,72)}
-  if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,86);g.shadowBlur=0;g.globalAlpha=1}
+  if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
 }
 
 var twIndex2BaseRaf = 0;
@@ -12776,8 +12776,8 @@ end = function(){
     }
   }
   _origEnd();
-  // A colisão fatal termina com chorinho apenas na tela do jogo.
-  if(state === 'over') finalExpr = 5;
+  // O chorinho da colisão fica só no jogo (s2HitEmotion); o cartão e o pôster do Fim do show
+  // mantêm a expressão de exprFinal (feliz, piscadinha ou tristinha conforme a pontuação).
 };
 
 var _origUpdate = update;

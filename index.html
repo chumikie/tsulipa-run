@@ -7817,7 +7817,7 @@ function perfSalvarRpc(nome,args){
   if(nome==='salvar_nuvem'){
     return contaRpc('carregar_nuvem').then(function(n){
       var ms=Math.max(0,Number(n&&n.ms)||0);
-      if(ms>perfNuvemLidaMs)return {ok:false,erro:'conflito_versao'};
+      if(ms>Math.max(perfNuvemLidaMs,perfConfirmadoMs()))return {ok:false,erro:'conflito_versao'};   // save de outra aba deste navegador não é conflito
       return contaRpc(nome,args).then(function(r){
         if(r&&r.ok===true)perfNuvemLidaMs=Math.max(perfNuvemLidaMs,Number(args&&args.p_ms)||0);
         if(r&&(r.pet_rebased||r.visual_rebased)&&contaJ)
@@ -7833,6 +7833,8 @@ function perfSalvarRpc(nome,args){
     return r;
   });
 }
+// último save confirmado neste navegador (vale para todas as abas, pois o estado fica no localStorage)
+function perfConfirmadoMs(){ try{ var st=JSON.parse(localStorage.getItem(PERF_SYNC_STATE)||'null'); return Math.max(0,Number(st&&st.confirmedMs)||0); }catch(e){ return 0; } }
 function perfConferir(){   // toda mudança local vira pendência persistente antes de tentar o envio
   if(!perfSyncOn || !contaJ) return false;
   var s = perfSnapAgora(); if(s === perfSnap) return false;
@@ -7861,6 +7863,8 @@ function perfDecidir(n, nick){
   var pendente=perfSync.hasPending(nick),guestDirty=false;
   try{guestDirty=localStorage.getItem('brs48cr_pet_guest_dirty')==='1';}catch(e){}
   var nuvem=n&&(n.pet||n.visual)&&+n.ms>0;
+  // pendência deste navegador (inclusive de outra aba) e a nuvem não mudou desde o último save confirmado aqui: só enviar
+  if(pendente&&!guestDirty&&nuvem&&mesma&&+n.ms<=perfConfirmadoMs())return 'enviar';
   if((guestDirty||pendente)&&nuvem)return 'perguntar';
   if(!nuvem) return 'enviar';
   if(+n.ms > loc){

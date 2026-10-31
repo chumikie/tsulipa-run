@@ -120,6 +120,44 @@ assert.ok(html.includes('var SW = 360, SH = 520;'),'original Sora logical resolu
 // Gameplay physics/economy unchanged: tested by the existing validate-games suite.
 console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe and bfcache');
 
+// The embedded game must appear before auth/network completes; the profile hydrates afterward.
+{
+  const script=between('function soraOpenUI(){','function soraOpenUIReady(){');
+  const calls=[];
+  const pendingAuth=new Promise(()=>{});
+  const env=evaluate(script,{
+    SORA_ONLINE_PROFILE_ENABLED:true,
+    soraOpenUIReady:()=>calls.push('open'),
+    soraOnlineInitAuth:()=>{calls.push('auth');return pendingAuth;},
+    soraOnlineUserId:null,
+    soraOnlineLoadProfile:()=>{calls.push('profile');return Promise.resolve(null);}
+  });
+  env.soraOpenUI();
+  assert.deepEqual(calls,['open','auth'],'Sora opens synchronously while auth is still pending');
+}
+// A missing session/localStorage nick must not erase the fallback already shown in the game.
+{
+  const script=between('function soraOnlineSetSession(session){','function soraOnlineInitAuth(){');
+  const input={value:'Tsu'};
+  const env=evaluate(script,{
+    soraOnlineUserId:'previous-session',
+    soraOnlineProfile:{nick:'Old'},
+    soraOnlineProfileLoaded:true,
+    soraOnlineProfilePromise:Promise.resolve(null),
+    window:{__TW_TEST_STORAGE:{getItem:()=>null}},
+    $:(id)=>id==='nick'?input:null,
+    nick:'',
+    soraRefreshTestProfile:()=>{}
+  });
+  env.soraOnlineSetSession(null);
+  assert.equal(input.value,'Tsu','signed-out hydration preserves the visible local fallback');
+  assert.equal(env.nick,'Tsu','signed-out hydration preserves a usable game nickname');
+}
+assert.ok(html.includes('soraOpenUIReady();\n  if(SORA_ONLINE_PROFILE_ENABLED)'),
+  'Sora menu opens before the asynchronous profile request');
+assert.ok(html.includes("|| (localNickInput && localNickInput.value) || nick || 'Tsu'"),
+  'empty account storage cannot clear the Sora nickname');
+
 /* Embedded Sora opens directly without creating the obsolete blue launcher. */
 assert.ok(html.includes("if(!soraHubEmbed){"),'legacy launcher is standalone-only');
 assert.ok(html.includes("if(embedded)soraOpenUI();else if(launcher)launcher.click();"),'embedded Sora opens directly');

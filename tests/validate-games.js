@@ -174,7 +174,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
@@ -351,6 +351,10 @@ assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
        lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
        !lab.includes("twKaraokeConviteRascunho"),
   "Admin preview needs permission and unfinished invitations must be absent");
+assert(karaokePopupSkin.includes('body:has(#twPreviewJogo[data-karaoke-tela]) > .stage')&&
+       karaokePopupSkin.includes('> .hint')&&karaokePopupSkin.includes('> .links')&&
+       karaokePopupSkin.includes('> .oshi-sel'),
+  "Karaoke page mode must hide the underlying Center Run UI while preserving the shared page background");
 const kTime=read("karaoke-time.html");
 assert(!lab.includes('href="./karaoke-player-popup.css?v=1"')&&
        previewSkin.includes(".tw-preview-game{background:var(--bg1,#c9ecfc)}")&&

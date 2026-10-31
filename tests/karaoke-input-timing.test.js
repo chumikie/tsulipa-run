@@ -35,9 +35,9 @@ hit = ctx.ktTimingProbe(notes, 0, 1050, 0);
 assert.equal(hit.own.at, 1250, 'nota já acertada não pontua de novo');
 assert.equal(hit.closest.at, 1000, 'nota já resolvida ainda explica um toque tardio');
 
-assert(html.includes('Math.abs(delta)<=45'), 'PERFECT continua em ±45 ms');
-assert(html.includes('Math.abs(p.delta)>100'), 'BOM continua em ±100 ms');
-assert(html.includes('if(delta>220)'), 'MISS automático aguarda event loop sem ampliar ±100 ms');
+assert(html.includes('Math.abs(delta)<=KT_HIT_WINDOWS.perfect'), 'PERFECT usa janela compartilhada de ±45 ms');
+assert(html.includes('Math.abs(p.delta)>KT_HIT_WINDOWS.good'), 'BOM usa janela compartilhada de ±100 ms');
+assert(html.includes('if(delta>KT_HIT_WINDOWS.good+120)'), 'MISS automático aguarda event loop sem ampliar ±100 ms');
 assert(html.includes('target=padsY+13'), 'linha alvo passa pelo centro dos botões visuais');
 assert(html.includes('function adjustOffset(ms){if(run)run.offsetMs=ms;}'), 'calibração não mexe no mapa da música');
 assert(!html.includes('n.at+=run.offsetMs'), 'notas não são deslocadas pela calibração');

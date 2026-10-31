@@ -45,6 +45,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 - **Teste com login simulado** (`tests/login-simulado.test.js`): roda o script do cadeado com e sem conta e falha se o interruptor de teste estiver ligado ou se o `window.contaJ` sumir.
 - **Teste novo:** o `validate-games.js` confere que nenhuma página aponta para arquivo que não existe e que o voltar nunca navega o iframe.
 - **Troféu da TsuLiPa TV:** ganhou uma fanfarra curta, kawaii e orgulhosa.
+- **Backstage⭐Pet! · sincronização:** saves serializados, fila pendente persistida, repetição automática com backoff, confirmação somente após `ok: true` da RPC e proteção contra conflito de versão. Testes offline cobrem falha de rede, repetição, confirmação, mudança durante envio, conflito e retomada da fila. Nenhuma gravação foi feita no Supabase de produção.
 - **Limpeza:** saíram `sora-jump-karaoke.html`, `og.png` (ninguém usava) e a pasta `.freebuff/`.
 
 ## Karaoke⭐Time! no lugar do Karaoke⭐Day! (branch `feature/karaoke-time`)

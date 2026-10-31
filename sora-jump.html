@@ -1621,8 +1621,11 @@ function soraOnlineSetSession(session){
   if(soraOnlineUserId) soraOnlineLoadProfile();
   else {
     soraOnlineProfile = null;
-    try{ nick = window.__TW_TEST_STORAGE.getItem('brs48cr_nick') || ''; }catch(e){}
+    var savedNick = '';
+    try{ savedNick = window.__TW_TEST_STORAGE.getItem('brs48cr_nick') || ''; }catch(e){}
     var localNickInput = $('nick');
+    // Auth sem sessão não pode apagar o apelido que já está no campo (ex.: o fallback Tsu).
+    nick = String(savedNick || (localNickInput && localNickInput.value) || nick || 'Tsu').trim().slice(0,12) || 'Tsu';
     if(localNickInput) localNickInput.value = nick;
     soraRefreshTestProfile();
   }
@@ -4354,13 +4357,16 @@ function soraReturnToMenu(){
   soraRefreshTestProfile();
 }
 function soraOpenUI(){
+  // O jogo não pode depender da rede nem da sessão para aparecer no iframe.
+  // Abre com o save local imediatamente; o perfil da conta hidrata em segundo plano.
+  soraOpenUIReady();
   if(SORA_ONLINE_PROFILE_ENABLED){
     soraOnlineInitAuth().then(function(){
-      return soraOnlineUserId ? soraOnlineLoadProfile(true) : null;
-    }).then(function(){ soraOpenUIReady(); });
-    return;
+      return soraOnlineUserId ? soraOnlineLoadProfile() : null;
+    }).catch(function(error){
+      console.info('Sora⭐Jump: perfil online indisponível; mantendo o jogo local.', error && error.message || error);
+    });
   }
-  soraOpenUIReady();
 }
 function soraOpenUIReady(){
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;

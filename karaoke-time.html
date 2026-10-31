@@ -189,8 +189,7 @@ html.tw-karaoke-embed #krVolta,html.tw-karaoke-embed #krHubBtn,html.tw-karaoke-e
 /* Câmera na cena, igual aos outros jogos do TsuLiPa⭐World */
 .kt-foto{right:10px;bottom:10px}
 
-/* Tema claro: a moldura do Karaoke Time era sempre escura (uma cor por Oshi).
-   No claro ela passa a usar as mesmas cores da página principal. A sala (arte) continua noturna. */
+
 html.tw-karaoke-embed[data-theme="light"]{--tw-kr-shell1:var(--bg1)!important;--tw-kr-shell2:var(--card)!important;--tw-kr-panel:var(--card)!important;--tw-kr-edge:rgba(123,63,240,.3)!important}
 html.tw-karaoke-embed[data-theme="light"] #ktPopup{background:radial-gradient(circle at 0 0,rgba(255,111,181,.14),transparent 40%),linear-gradient(160deg,var(--bg1),var(--card))!important;border-color:rgba(123,63,240,.3)!important}
 
@@ -223,23 +222,23 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 })();
 </script>
 <script id="ktDentroDoSite">
-/* Aberto pelo card do TsuLiPa⭐World (?embed=index2): sem menu local nem barra de cima. */
+
 (function(){try{var q=new URLSearchParams(location.search);if(q.get('embed')==='index2')document.documentElement.classList.add('kt-no-site');}catch(e){}})();
 </script>
 <style>#ktCustomize,#ktIdolCard,#ktIdolPrev,#ktIdolNext,#ktIdolStrip{display:none!important}
 .kt-fc{margin:8px auto 0;padding:6px 14px;width:max-content;border-radius:99px;background:linear-gradient(90deg,#ffe14d,#ff6fb5,#7b3ff0);color:#fff;font:400 14px "Mochiy Pop One";letter-spacing:.04em;box-shadow:0 0 14px rgba(255,111,181,.6);animation:ktfc 1s ease-in-out infinite alternate}.kt-fc[hidden]{display:none}@keyframes ktfc{to{transform:scale(1.06)}}@media(prefers-reduced-motion:reduce){.kt-fc{animation:none}}
 .kt-faixa{display:block;width:100%;height:250px;margin-top:6px;border-radius:24px;border:3px solid #fff;box-shadow:0 0 0 3px rgba(123,63,240,.35),0 10px 24px rgba(40,10,90,.25);cursor:pointer;touch-action:pan-y}
 @media(max-width:600px){.kt-faixa{height:200px;border-radius:18px}}
-/* no site: a plateia e o elenco do clipe já aparecem na faixa e no telão; os quadros de texto saem */
+
 .kt-no-site .kt-audience,.kt-no-site .kt-clip-info{display:none!important}
-/* títulos das seções no mesmo estilo */
+
 .kt-cast h2,.kt-weekly h2{font:400 17px "Mochiy Pop One";color:var(--pink);margin:0 0 6px}
 @media(max-width:600px){.kt-cast h2,.kt-weekly h2{font-size:16px}}
 .kt-rank-card li.kt-rank-vaga{opacity:.55}.kt-rank-vaga .kt-rank-face{border:2px dashed rgba(201,184,255,.5);border-radius:50%;box-sizing:border-box;background:transparent}.kt-rank-vaga .kt-rank-name{font-style:italic;color:var(--sub)}
 .kt-no-site .kt-home,.kt-no-site .kt-hosttop,.kt-no-site .kt-daily-test,.kt-no-site .krtop,.kt-no-site .kt-foot{display:none!important}
 html.kt-no-site .kt-weekly{margin:14px auto 10px}
 html.kt-no-site .kt-weekly-note{max-width:70ch;margin:10px auto 2px;padding:0 8px;color:var(--sub);font:600 10px/1.7 var(--tw-modal-body);text-align:center;overflow-wrap:anywhere}
-/* Dentro do TsuLiPa⭐World: sem fundo próprio nem moldura escura; aparece o fundo da página (mesmo do Sora). */
+
 html.kt-no-site,html.kt-no-site body{background:transparent!important}
 html.kt-no-site body{padding:0!important;min-height:0}
 html.tw-karaoke-embed.kt-no-site body.tw-game-karaoke{background:transparent!important}
@@ -247,13 +246,13 @@ html.kt-no-site #ktPopup::backdrop,html.kt-no-site ::backdrop{background:transpa
 html.kt-no-site #ktPopup{position:static!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:4px 8px 16px!important;margin:0 auto!important;overscroll-behavior:contain}
 html.kt-no-site .krwrap{max-width:none;background:transparent!important;border:0!important;box-shadow:none!important}
 
-/* No popup do hub, o som acompanha a câmera no canto da sala. */
+
 html.kt-no-site #krPalco #krMute{right:64px;bottom:10px;z-index:7}
 </style>
 
 
 <style id="ktCompactHeader">
-/* Compact hierarchy: heading, one control row, instruction, room. */
+
 .krwrap .krtop{display:block;margin:0 0 8px}
 
 
@@ -278,7 +277,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
  .kt-playing .kt-rhythm-controls{order:1}
 }
 
-/* The weekly scoreboard is moved before the audience in the DOM for every viewport. */
+
 .kt-playing #ktAudience{order:6}
 .kt-ja-subtitle{display:block;margin:2px 0 4px;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
 </style>
@@ -2266,7 +2265,7 @@ if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',ini
   if(som&&palco){som.classList.add('tw-window-scene-control');palco.appendChild(som);}
 })();
 </script><style id="ktStarsBannerStyle">
-/* Daily stars: glass banner below the TV, with a readable touch fallback. */
+
 #krPalco #ktAvailability{
  position:absolute;z-index:7;left:50%;bottom:12px;transform:translateX(-50%);
  width:58%;max-width:720px;margin:0;padding:8px 12px;gap:3px 12px;

@@ -12,7 +12,7 @@ const games=[
   {file:"index2.html",max:1000},
   {file:"sora-jump.html",max:400000},
   {file:"karaoke-day.html",max:150000},
-  {file:"karaoke-time.html",max:730000},
+  {file:"karaoke-time.html",max:450000},
   {file:"karaoke-online-lab.html",max:30000}
 ];
 let errors=[];

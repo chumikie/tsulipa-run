@@ -25,7 +25,7 @@ const context = vm.createContext({
   LANG:'pt',
   krSt:{aberta:true},
   $:get,
-  document:{createElement:() => new Element(),body:{appendChild:child => elements.set(child.id,child)}},
+  document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
   localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
   kt:{active:()=>false,start:mode=>calls.push(['start',mode]),adjustOffset:ms=>calls.push(['offset',ms])},
   ktMeta:{controls:()=>({used:2,remaining:3,pending:null})},
@@ -59,6 +59,9 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   const before=calls.length;
   get('ktPractice').onclick();
   assert.deepEqual(calls.slice(before),[['start','practice']],'treino não chama a RPC');
+  assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações ficam no palco, não na barra de música');
+  assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
+  assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
   get('ktOffsetPlus').onclick();
   assert.equal(ui.offset(),10,'ajuste local de 10 ms');
   assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');

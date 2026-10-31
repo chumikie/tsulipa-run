@@ -36,6 +36,7 @@
 }
 #hub .tw-rank-tv-head small{
   color:#ffe7f4;font:800 9px/1.3 "M PLUS Rounded 1c",sans-serif;text-align:right;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px;
 }
 #hub .tw-rank-tv-screen{
   position:relative;overflow:hidden;

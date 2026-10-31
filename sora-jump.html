@@ -1569,6 +1569,9 @@ function soraOnlineApplyProfile(profile){
   active.img = active.hair;
   active.n = String(data && data.nick || nick || 'Idol').replace(/[<>]/g,'').trim().slice(0,12);
   soraOnlineProfile = data ? {nick:active.n, character:active} : null;
+  // Recorde da conta (sora_my_profile.best): o mesmo em qualquer aparelho, não só o deste navegador.
+  var srvBest = data && Number.isFinite(+data.best) ? Math.max(0, Math.floor(+data.best)) : 0;
+  if(srvBest > soraBest){ soraBest = srvBest; if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m'; }
   if(data && data.nick){
     nick = String(data.nick).replace(/[<>]/g,'').trim().slice(0,12);
     var inputNick = $('nick');

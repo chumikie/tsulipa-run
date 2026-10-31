@@ -609,8 +609,9 @@ try{
     "Center Run local badges must sync to the signed-in profile");
   localBadges.concat(soraBadges).forEach(id=>assert(main.includes("['"+id+"'")||main.includes("['"+id+"',"),
     "Profile catalog missing game badge "+id));
-  assert(main.includes("timeZone:'America/Sao_Paulo'")&&main.includes("getUTCDay()"),
-    "Center Run local weekly ranking must use the Sunday boundary in Brasília time");
+  assert(main.includes("timeZone:'America/Sao_Paulo'")&&main.includes("getUTCDay()")&&
+    sora.includes("timeZone:'America/Sao_Paulo'")&&sora.includes("getUTCDay()"),
+    "Center Run and Sora local weekly rankings must use the Sunday boundary in Brasília time");
   assert(gameBadgesSql.includes("insignias_jogos")&&gameBadgesSql.includes("sincronizar_insignias_jogos")&&
     gameBadgesSql.includes("extract(dow")&&!gameBadgesSql.includes("date_trunc('week'"),
     "Server badge migration must sync allowlisted game badges and calculate completed weeks from Sunday");

@@ -7237,7 +7237,7 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
-    if(meu){ twRankRenderProfile(); twRankLoad(); }
+    if(meu){ twRankRenderProfile(); twRankLoad(); perfSoraHistNuvem(); }
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);
     if(meu) perfMiniCarregar(); else perfMiniUI(null, d.mini || {});
@@ -7256,7 +7256,13 @@ perfOv.addEventListener('click', function(e){
   var t = e.target.closest('.perftabs button'); if(!t) return;
   perfAba = t.dataset.aba; perfProva = ''; beep(880, .04, 'triangle', .04); perfAbaMostrar();
 });
-// Sora⭐Jump!: 5 últimas e 5 melhores subidas deste aparelho (o jogo guarda no histórico local)
+// Sora⭐Jump!: 5 últimas e 5 melhores subidas da conta (servidor); enquanto carrega, mostra as deste aparelho
+function perfSoraListas(ult, mel){
+  function li(L){ return (L || []).slice(0, 5).map(function(x){ return '<li><span><small>' + escHtml(perfData(x.at || +x.t || x.d)) + '</small></span><strong>' + Math.max(0, Math.floor(+x.score || 0)) + ' m</strong></li>'; }).join(''); }
+  if(!(ult || []).length) return '';
+  return '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 subidas')) + '</h4><ol class="lb perfult">' + li(ult) + '</ol>' +
+         ((mel || []).length ? '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores subidas')) + '</h4><ol class="lb perfult">' + li(mel) + '</ol>' : '');
+}
 function perfSoraHist(){
   var g = null;
   try{
@@ -7264,10 +7270,14 @@ function perfSoraHist(){
     if(!r || r === '__TW_TEST_DELETED__') r = ls.getItem('brs48cr_hist');
     var d = JSON.parse(r || 'null'); g = d && d.games && d.games.sora_jump;
   }catch(e){}
-  if(!g || !((g.last5 || []).length)) return '';
-  function li(L){ return (L || []).slice(0, 5).map(function(x){ return '<li><span><small>' + escHtml(perfData(+x.t || x.d)) + '</small></span><strong>' + Math.max(0, Math.floor(+x.score || 0)) + ' m</strong></li>'; }).join(''); }
-  return '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 subidas')) + '</h4><ol class="lb perfult">' + li(g.last5) + '</ol>' +
-         ((g.best5 || []).length ? '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores subidas')) + '</h4><ol class="lb perfult">' + li(g.best5) + '</ol>' : '');
+  return '<div id="perfSoraHist">' + (g ? perfSoraListas(g.last5, g.best5) : '') + '</div>';
+}
+function perfSoraHistNuvem(){
+  if(!contaJ || typeof contaRpc !== 'function') return;
+  contaRpc('sora_my_profile').then(function(d){
+    var box = $('perfSoraHist');
+    if(box && d && Array.isArray(d.ultimas) && d.ultimas.length) box.innerHTML = perfSoraListas(d.ultimas, d.melhores);
+  }).catch(function(){});
 }
 function perfUltimas(L, adm){
   if(!L.length) return '<li style="justify-content:center"><em>' + escHtml(tr('Nenhuma corrida online ainda.')) + '</em></li>';

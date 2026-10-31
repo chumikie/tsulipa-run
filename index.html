@@ -12627,7 +12627,8 @@ function s2DrawForeground(){
     g.textAlign = 'left';
     g.font = '700 11px "M PLUS Rounded 1c",sans-serif';
     g.fillStyle = '#ffd6f0';
-    g.fillText('📍 ' + tr(st.nome) + (s2DailyMode ? ' · 📅 ' + dk() : ''), 14, 80);
+    // Sem a data aqui (ela vazava do quadro do placar); na Corrida do dia só o selo 📅.
+    g.fillText((s2DailyMode ? '📅 ' : '📍 ') + tr(st.nome), 14, 80, 174);
 
     // Multiplicador de Combo de Estrelas no canto superior
     var mult = s2Combo >= 25 ? 3 : s2Combo >= 10 ? 2 : 1;

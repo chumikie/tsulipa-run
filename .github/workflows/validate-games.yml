@@ -124,6 +124,8 @@ jobs:
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations
         run: node tests/pet-sync.test.js
+      - name: Privacy page translations compile
+        run: node tests/privacidade-script.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame

@@ -1,0 +1,2 @@
+-- Aplicado em 31/10/2026: o Star⭐Gacha! nunca sorteia o card da própria conta.
+-- (mesma função de antes; única mudança: "and id <> auth.uid()" no sorteio do card)

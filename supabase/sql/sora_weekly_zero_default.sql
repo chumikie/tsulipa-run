@@ -1,5 +1,5 @@
 -- PR #49 · Sora⭐Jump!: normaliza a pontuação semanal pessoal sem alterar a regra do ranking.
--- Proposta versionada para revisão; NÃO aplicada em produção.
+-- Aplicada no Supabase de produção em 31/10/2026, após revisão e autorização.
 -- Mantém o pódio semanal já usado pela INDEX 2 e o ranking competitivo próprio do Karaoke⭐Time!.
 begin;
 

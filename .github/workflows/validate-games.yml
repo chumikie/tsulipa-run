@@ -12,6 +12,7 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'tests/karaoke-note-map.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -64,6 +65,7 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'tests/karaoke-note-map.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -130,6 +132,8 @@ jobs:
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame
         run: node tests/karaoke-rhythm.test.js
+      - name: Validate Karaoke Time melody note maps and checkpoint timing
+        run: node tests/karaoke-note-map.test.js
       - name: Validate Karaoke homol stage, queue and safety
         run: node tests/karaoke-homol-view.test.js
       - name: Validate Karaoke realtime lifecycle and recovery

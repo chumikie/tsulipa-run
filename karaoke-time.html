@@ -1936,7 +1936,7 @@ var ktPandeiro={t0:-1e4,x:564,y:360};
 /* Pandeiro: chacoalha, "tcha-tcha" de guizos e notinhas subindo */
 function ktPandeiroToque(px,py){var P=ktPandeiro;if(Math.abs(px-P.x)>17||Math.abs(py-P.y)>11)return false;var now=performance.now();if(now-P.t0<260)return true;P.t0=now;ac();
  krRuido(.13,.11,6500,0);krRuido(.09,.07,8000,.11);[2637,3136,3520].forEach(function(f,i){beep(f,.05,'triangle',.012,i*.018);beep(f*1.06,.04,'square',.006,.11+i*.015);});beep(196,.06,'sine',.05,0);
- ['🎵','🎶','♪'].forEach(function(e,i){krBolhas.push({emo:e,x:P.x+(i-1)*12,y:P.y-12-i*3,t:0,_ktUntil:now+1100});});return true;}
+ ['🎵','🎶','✨'].forEach(function(e,i){krBolhas.push({emo:e,x:P.x+(i-1)*12,y:P.y-12-i*3,t:0,_ktUntil:now+1100});});return true;}
 function ktMesaKaraoke(x,t){var cx=480,cy=346,I='rgba(60,30,110,.2)',k;x.save();
  /* balões de coração amarrados na mesa */
  [[382,'#ff9ccf',0],[578,'#c7a6ff',1.7]].forEach(function(b){var bx=b[0]+Math.sin(t*.03+b[2])*3,by=292+Math.sin(t*.04+b[2])*3;x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=1;x.beginPath();x.moveTo(b[0]+(b[0]<cx?8:-8),cy+4);x.bezierCurveTo(b[0]-6,cy-14,bx+6,by+30,bx,by+12);x.stroke();

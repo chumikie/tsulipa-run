@@ -12,6 +12,16 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-tickets.js'
+      - 'tests/karaoke-tickets.test.js'
+      - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
+      - 'supabase/sql/README-karaoke-tickets.md'
+      - 'tests/karaoke-note-map.test.js'
+      - 'tests/karaoke-flow.test.js'
+      - 'tests/karaoke-input-timing.test.js'
+      - 'tests/karaoke-melody-cues.test.js'
+      - 'tests/karaoke-button-target.test.js'
+      - 'tests/karaoke-shortcuts.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -64,6 +74,16 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-tickets.js'
+      - 'tests/karaoke-tickets.test.js'
+      - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
+      - 'supabase/sql/README-karaoke-tickets.md'
+      - 'tests/karaoke-note-map.test.js'
+      - 'tests/karaoke-flow.test.js'
+      - 'tests/karaoke-input-timing.test.js'
+      - 'tests/karaoke-melody-cues.test.js'
+      - 'tests/karaoke-button-target.test.js'
+      - 'tests/karaoke-shortcuts.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -130,6 +150,20 @@ jobs:
         run: node tests/karaoke-room-model.test.js
       - name: Validate original rhythm minigame
         run: node tests/karaoke-rhythm.test.js
+      - name: Validate Karaoke Time melody note maps and checkpoint timing
+        run: node tests/karaoke-note-map.test.js
+      - name: Validate Karaoke Time confirmation, shortcuts and device offset
+        run: node tests/karaoke-flow.test.js
+      - name: Validate Karaoke ticket review, Gacha, inventory, gifts, moderation and safe admission
+        run: node tests/karaoke-tickets.test.js
+      - name: Validate Karaoke Time input timestamps, visual target and timing feedback
+        run: node tests/karaoke-input-timing.test.js
+      - name: Validate Karaoke Time melodic cues and compact stage settings
+        run: node tests/karaoke-melody-cues.test.js
+      - name: Validate Karaoke Time button-perfect visual zones on all seven tracks
+        run: node tests/karaoke-button-target.test.js
+      - name: Validate Karaoke Time keyboard shortcuts and three-second resume
+        run: node tests/karaoke-shortcuts.test.js
       - name: Validate Karaoke homol stage, queue and safety
         run: node tests/karaoke-homol-view.test.js
       - name: Validate Karaoke realtime lifecycle and recovery

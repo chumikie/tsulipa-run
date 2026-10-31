@@ -1,0 +1,97 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const path = require('node:path');
+
+const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const flow = html.match(/var ktFlow=\(function\(\)\{[\s\S]*?\n\}\)\(\);/);
+const diagnostic = html.match(/var KR_RHYTHM_TOUCH_DIAGNOSTIC=\{[\s\S]*?\n\};/);
+assert(flow && diagnostic, 'Fluxo da confirmação e diagnóstico presente');
+const elements = new Map();
+class Element {
+  constructor(id=''){this.id=id;this.open=false;this.disabled=false;this.textContent='';}
+  set innerHTML(value){this.html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g))get(match[1]);}
+  get innerHTML(){return this.html||'';}
+  after(other){if(other.id)elements.set(other.id,other);}
+  before(...nodes){for(const node of nodes)if(node.id)elements.set(node.id,node);}
+  appendChild(child){if(child.id)elements.set(child.id,child);}
+  addEventListener(){}
+  setAttribute(){}
+  querySelector(selector){return get(selector);}
+  showModal(){this.open=true;}
+  close(){this.open=false;}
+}
+function get(id){if(!elements.has(id))elements.set(id,new Element(id));return elements.get(id);}
+const values = new Map();
+const calls=[];
+let quotaState={used:2,remaining:3,pending:null,tickets:0};
+const context = vm.createContext({
+  LANG:'pt',
+  krSt:{aberta:true},
+  $:get,
+  document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
+  localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
+  kt:{active:()=>false,start:mode=>calls.push(['start',mode]),adjustOffset:ms=>calls.push(['offset',ms])},
+  ktMeta:{controls:()=>quotaState},
+  window:{ktOnline:{quota:()=>Promise.resolve(quotaState),gate:(fn,ticket)=>{calls.push(['gate',!!ticket]);fn({ticket:!!ticket});}}}
+});
+vm.runInContext(diagnostic[0]+'\n'+flow[0],context);
+const ui=context.ktFlow;
+assert.equal(ui.offset(),0,'offset inicial zero');
+
+async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));}
+(async()=>{
+  ui.request();
+  assert.equal(get('ktStartConfirm').open,true,'modal abre antes da RPC');
+  assert.equal(calls.length,0,'a abertura não gasta tentativa');
+  get('ktConfirmCancel').onclick();
+  await waitForQuota();
+  assert.equal(calls.length,0,'cancelar não chama admissão');
+
+  ui.request();await waitForQuota();
+  assert.equal(get('ktConfirmCount').textContent.includes('2/5'),true,'contagem visível');
+  get('ktConfirmAccept').onclick();
+  assert.deepEqual(calls.slice(0,2),[['gate',false],['start','confirmed']],'confirmação antecede admissão');
+
+  const charged=calls.length;
+  context.krSt.aberta=false;
+  ui.request();
+  assert.equal(get('ktStartConfirm').open,false,'sala fechada não abre confirmação oficial');
+  assert.equal(calls.length,charged,'sala fechada não chama admissão');
+  assert.equal(elements.has('ktClosedPractice'),false,'sem botão de ensaio na cortina');
+  context.krSt.aberta=true;
+
+  quotaState={used:5,remaining:0,pending:null,tickets:2};
+  ui.request();await waitForQuota();
+  assert.equal(get('ktConfirmTitle').textContent.includes('ticket'),true,'modal pede confirmação de gasto de ticket');
+  assert.equal(get('ktConfirmAccept').disabled,false,'saldo extra permite apresentação');
+  get('ktConfirmCancel').onclick();
+  assert.equal(calls.length,charged,'cancelar ticket não debita nem inicia');
+  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();
+  assert.deepEqual(calls.slice(-2),[['gate',true],['start','confirmed']],'gasto extra somente depois da confirmação');
+  quotaState={used:5,remaining:0,pending:null,tickets:0};
+  ui.request();await waitForQuota();
+  assert.equal(get('ktConfirmAccept').disabled,true,'sem saldo, não apresenta show extra');
+  get('ktConfirmCancel').onclick();
+
+  assert.equal(elements.has('ktPractice'),false,'sem ensaio gratuito na barra');
+  assert.equal(calls.length,charged+2,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');
+  assert(get('ktShortcuts').innerHTML.includes('<kbd>S</kbd>'),'atalho das configurações aparece na instrução');
+  assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações ficam no palco, não na barra de música');
+  assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
+  assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
+  assert(flow[0].includes('kt-dream-sparkles'),'cortina possui estrelas e corações decorativos');
+  assert(html.includes('.kt-room-closed #ktCalibration{visibility:hidden'),'engrenagem fica atrás da cortina fechada');
+  get('ktOffsetPlus').onclick();
+  assert.equal(ui.offset(),10,'ajuste local de 10 ms');
+  assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');
+  assert.deepEqual(calls.at(-1),['offset',10]);
+
+  assert(html.includes('var practice=mode===true'),'apenas o cantor automático interno fica sem quota');
+  assert(!html.includes("kt.start('practice')"),'jogadores não iniciam treino gratuito');
+  assert(html.includes("if(q.used>=LIMIT&&!serverTicket)return"),'limite de cinco tentativas preservado sem admissão de ticket');
+  assert(!flow[0].includes('contaRpc('),'nenhuma escrita de banco pelo fluxo da UI');
+  console.log('Karaoke: cancelamento sem débito, confirmação, atalhos visíveis, sem ensaio gratuito e calibração OK');
+})().catch(error=>{console.error(error);process.exitCode=1;});

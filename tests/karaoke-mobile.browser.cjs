@@ -5,6 +5,7 @@
 const {chromium,webkit}=require('playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {execFileSync}=require('node:child_process'),assert=require('node:assert/strict');
+const photoQA=process.env.QA_PHOTO||process.env.QA_PHOTO_STANDALONE?require('./karaoke-photo-flow.cjs'):null;
 const root=path.join(__dirname,'..'),out=process.argv[2]||'/tmp/karaoke-mobile-qa';
 const baseline=process.env.QA_BASELINE==='1',baseRef=process.env.QA_BASE_REF||'HEAD';
 fs.mkdirSync(out,{recursive:true});
@@ -21,7 +22,7 @@ const server=http.createServer((req,res)=>{
    assert(data.includes('window.qaKaraoke='),'Local fixture injection point changed');
   }
   if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.qaRoomState=function(){return {
-   members:krBots.map(function(b){return {x:b.x,y:b.y};}),attempts:krRhythmRun?krRhythmRun.attempts:0,flash:krRhythmRun?krRhythmRun.flash:[],
+   members:krBots.map(function(b){return {x:b.x,y:b.y};}),attempts:krRhythmRun?krRhythmRun.attempts:0,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,
    pets:ktPets.map(function(p){return {k:p.k,x:p.x,y:p.y,hitY:p.hitY,ex:p.ex,taps:p.toques||0,visit:p.visita?{phase:p.visita.phase,nome:p.visita.nome}:null};}),
    pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
   };};\nfunction ktNoSite(){`);
@@ -48,8 +49,9 @@ async function metrics(frame){
  const origin='http://127.0.0.1:'+server.address().port;
  for(const engine of (process.env.QA_WEBKIT?['chromium','webkit']:['chromium'])){
   browser=await ({chromium,webkit}[engine]).launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
-  for(const width of (process.env.QA_WIDTHS||'320,390,430,844,1440').split(',').map(Number)){
-   const context=await browser.newContext({viewport:{width,height:width===844?390:900},colorScheme:'dark'});
+  for(const width of (process.env.QA_PHOTO_STANDALONE?[]:(process.env.QA_WIDTHS||'320,390,430,844,1440').split(',').map(Number))){
+   const context=await browser.newContext({viewport:{width,height:width===844?390:900},colorScheme:photoQA&&width===320?'light':'dark'});
+   if(photoQA)await photoQA.install(context);
    await context.addInitScript(()=>{localStorage.setItem('brs48cr_tut','1');localStorage.setItem('brs48cr_nick','QA Idol');});
    const p=await context.newPage(),errors=[];
    p.on('pageerror',e=>errors.push(e.message));
@@ -120,6 +122,7 @@ async function metrics(frame){
    }
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
    await frame.locator('body.kt-playing').waitFor();
+   const photo=photoQA&&!baseline?await photoQA.verify(p,frame,width,out):null;
    const playing=await metrics(frame);
    if(!baseline){
     assert(playing.scroll<=playing.viewport+1,'Playing does not widen the document');
@@ -147,7 +150,11 @@ async function metrics(frame){
      assert.equal(await frame.locator('#krMute').innerText(),soundBefore,'Sound toggles back');
      const photoDownload=p.waitForEvent('download');
      await frame.locator('#ktFoto').click();
+     await frame.locator('#ktPhotoImage').waitFor({state:'visible'});
+     await frame.locator('#ktPhotoDownload').click();
      assert((await photoDownload).suggestedFilename().endsWith('.png'),'Moved camera still exports the photo');
+     await frame.locator('#ktPhotoBack').click();
+     await frame.locator('#ktPhotoDialog').waitFor({state:'hidden'});
     }
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-playing.png'),fullPage:true});
@@ -165,10 +172,11 @@ async function metrics(frame){
    await p.locator('#twPreviewVoltar').click();
    if(!baseline)assert.equal(await p.locator('#best').isVisible(),true,'Returning to Center restores its score');
    assert.deepEqual(errors,[]);
-   results.push({engine,width,idle,playing,reactions});
+   results.push({engine,width,idle,playing,reactions,photo});
    console.log(engine,width,'idle + play + return passed');
    await context.close();
   }
+  if(process.env.QA_PHOTO_STANDALONE){results.push(await photoQA.standalone(browser,origin,fonts,out));console.log(engine,'standalone photo download + return passed');}
   await browser.close();browser=null;
  }
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(results,null,2));

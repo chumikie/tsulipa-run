@@ -2,6 +2,14 @@
 
 Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
 
+## Prévia para guardar fotos do Karaoke — PR #49 (31/10)
+
+- A câmera agora congela o canvas no clique e abre uma janela com a foto completa em PNG 1920 × 1080, usando a identidade das janelas do site e moldura de photocard.
+- Ações: compartilhar/salvar quando o navegador aceita arquivos, baixar PNG e voltar à sala. A imagem permite toque longo/clique direito como alternativa. Não há download automático nem confirmação prematura de foto salva.
+- O show em andamento pausa durante a prévia e retoma ao voltar; se já estava pausado, continua assim. Cancelamentos e falhas de compartilhamento mantêm a foto disponível.
+- QA em Chromium local em 320/390/1440 px e na versão avulsa, com comparação dos pixels capturados, PNG baixado, foco, Escape, pausa e liberação dos recursos. Compartilhamento nativo simulado, sem envio real. [Capturas e reprodução](qa/karaoke-photo/README.md).
+- Sem merge, upload de imagens ou alterações no banco. Conferência do menu nativo no iPhone permanece manual.
+
 ## Interações da sala do Karaoke — PR #49 (31/10)
 
 - Segundo pandeiro pendurado à esquerda, abaixo dos retratos, com o mesmo som do pandeiro da mesa. Cada instrumento tem sua própria animação e intervalo entre toques.

@@ -15,6 +15,9 @@ on:
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
+      - 'karaoke-photo.css'
+      - 'karaoke-photo.js'
+      - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
@@ -64,6 +67,9 @@ on:
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
+      - 'karaoke-photo.css'
+      - 'karaoke-photo.js'
+      - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
@@ -110,6 +116,8 @@ jobs:
         run: node tests/windows-shared.test.js
       - name: Validate Karaoke mobile viewport script
         run: node --check karaoke-mobile.js
+      - name: Validate Karaoke photo preview script
+        run: node --check karaoke-photo.js
       - name: Validate Karaoke room pet visits and pandeiros
         run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes

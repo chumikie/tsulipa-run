@@ -260,6 +260,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 </style>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
+<link rel="stylesheet" href="./karaoke-photo.css?v=1">
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -2296,7 +2297,15 @@ function krMusicaLigar(){if(krRhythmRun||krMus||muted)return;
   if(bar===3&&p>=12){krRuido(.04,.03*k,3000);if(p===15)beep(hz(ac4[3]+24),.15,'sine',.012*k,.03);}
   step++;},100);}
 function krMusicaParar(){if(krMus){clearInterval(krMus);krMus=null;}}document.addEventListener('pointerdown',function(){ac();krMusicaLigar();},{once:true});
-function krSalvarFotoSala(){var cv=$('krCv');if(!cv)return;try{var a=document.createElement('a'),stamp=new Date().toISOString().replace(/[:.]/g,'-'),exportCv=cv;if(cv.width!==1920||cv.height!==1080){exportCv=document.createElement('canvas');exportCv.width=1920;exportCv.height=1080;exportCv.getContext('2d').drawImage(cv,0,0,1920,1080);}a.href=exportCv.toDataURL('image/png');a.download='KaraokeTime_Offline_Sala_HD_1920x1080_'+stamp+'.png';document.body.appendChild(a);a.click();a.remove();krAviso('📸 '+tr('Foto salva!')+' · 1920 × 1080');}catch(e){krAviso('Não consegui salvar a foto neste navegador.');}}
+function krSalvarFotoSala(){var cv=$('krCv');if(!cv)return;
+ var photo=window.KaraokeRoomPhoto,resume=false;
+ if(!photo){krAviso('Não consegui preparar a foto neste navegador.');return;}
+ photo.capture(cv,{opener:$('ktFoto'),
+  onOpen:function(){resume=kt.active()&&!kt.paused();if(resume)kt.pause(true);},
+  onClose:function(){if(resume&&kt.active()&&kt.paused()&&!document.hidden)kt.pause(false);},
+  onError:function(){krAviso('Não consegui preparar a foto neste navegador.');}
+ });
+}
 function krMusicaMudarModo(){if(typeof krMusicaParar==='function')krMusicaParar();if(!muted&&typeof krMusicaLigar==='function')krMusicaLigar();}
 var krCanvasHD=$('krCv');if(krCanvasHD&&!krCanvasHD.dataset.krTelaPreparada){var krScale=window.matchMedia&&window.matchMedia('(max-width:620px)').matches?1:2;krCanvasHD.width=960*krScale;krCanvasHD.height=540*krScale;var krCtxHD=krCanvasHD.getContext('2d');if(krCtxHD)krCtxHD.setTransform(krScale,0,0,krScale,0,0);krCanvasHD.dataset.krTelaPreparada='1';}document.addEventListener('visibilitychange',function(){if(document.hidden){if(krLoopFrame){cancelAnimationFrame(krLoopFrame);krLoopFrame=0;}krMusicaParar();}else{if(krRhythmRun)krRhythmTick();krAgendarLoop();if(!muted)krMusicaLigar();}});window.addEventListener('pagehide',function(){if(krLoopFrame){cancelAnimationFrame(krLoopFrame);krLoopFrame=0;}krMusicaParar();krRhythmRun=null;krEu.no_mic=false;krEu.micT=0;krDemoFila=[];if(krDemoCantor)krDemoBotEnd();if($('krRhythm'))$('krRhythm').hidden=true;});krUI();krLoadPublicPosterNicknames();krAgendarLoop();
 var krHomolMeuNick=nick,krHomolMeuChar=null;
@@ -2596,5 +2605,6 @@ if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',ini
 })();
 </script><script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-mobile.js?v=1"></script>
+<script src="./karaoke-photo.js?v=1"></script>
 </body></html>
 

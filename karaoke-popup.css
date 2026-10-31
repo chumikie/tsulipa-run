@@ -23,3 +23,9 @@
   }
 }
 
+
+/* Karaoke⭐Time! como tela da página (igual ao Center⭐Run!): cabeçalho do site no alto,
+   jogo ocupando a largura e uma rolagem só. A altura do iframe vem do próprio jogo. */
+.tw-preview-game[data-karaoke-tela]{overflow-y:auto;overscroll-behavior:contain}
+.tw-preview-game[data-karaoke-tela] .tw-preview-stage{flex:0 0 auto;overflow:visible;min-height:calc(100dvh - 64px)}
+.tw-preview-game[data-karaoke-tela] #twPreviewIframe{flex:0 0 auto;height:calc(100dvh - 64px);max-width:1240px}

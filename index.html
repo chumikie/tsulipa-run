@@ -742,7 +742,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./index2-launch-ui.css?v=8">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=8">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
-<link rel="stylesheet" href="./karaoke-popup.css?v=1">
+<link rel="stylesheet" href="./karaoke-popup.css?v=2">
 <link rel="stylesheet" href="./tw-windows.css?v=1">
 </head>
 <body>
@@ -9185,6 +9185,17 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
   [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });
   beep(523, .9, 'sine', .03, .8);
 }
+// Voltar do navegador/celular: fecha o Karaoke⭐Time! ou sai do menu do Center⭐Run! de volta ao início.
+window.addEventListener('popstate',function(){
+  var h=location.hash,w=$('twPreviewJogo');
+  if(h!=='#karaoke'&&w&&!w.hidden&&twPreviewJogoAnterior==='karaoke'){twPreviewFecharJogo();return;}
+  if(h!=='#center-run'&&typeof state!=='undefined'&&state==='menu'&&hubComecou&&hubOv.hidden&&(!w||w.hidden))hubMostrar();
+  else if(h!=='#center-run'&&typeof state!=='undefined'&&state!=='menu'&&hubOv.hidden&&(!w||w.hidden)){try{history.pushState({tw:'center-run'},'','#center-run');}catch(e){}}   // no meio da corrida o voltar não derruba o jogo
+});
+function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "Toque para começar"
+  var alvo=location.hash==='#karaoke'?'karaoke':location.hash==='#center-run'?'run':'';
+  if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)setTimeout(function(){c.click();},350);
+}
 function hubComecar(){
   ac(); hubJingle(); setTimeout(hubMusicaTocar, 1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
@@ -9195,6 +9206,7 @@ function hubComecar(){
   var visto=null;try{visto=localStorage.getItem(TW_INDEX2_TUT_KEY);}catch(e){}
   var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
   if(!visto||rever){hubTutI=0;hubTutUI();}
+  else twAbrirPeloEndereco();
 }
 function hubTutUI(){   // Quatro slides de boas-vindas.
   var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
@@ -9322,15 +9334,15 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
-  if(tipo!=='sora'&&!kTime){hubOv.hidden=true;document.body.classList.remove('hubon');}
+  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}   // Karaoke⭐Time! é uma tela da página, como o Center⭐Run!
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
-  wrap.toggleAttribute('data-karaoke-popup',kTime);
-  if(kTime||tipo==='sora'){hubOv.inert=true;wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',frame.title);}
+  wrap.removeAttribute('data-karaoke-popup');wrap.toggleAttribute('data-karaoke-tela',kTime);
+  if(tipo==='sora'){hubOv.inert=true;wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-label',frame.title);}
   twPreviewAtualizarIdioma();
   twPreviewMontarFundo();
-  twPreviewCabecalhoOficial(tipo!=='sora'&&!kTime);   // Sora e Karaoke Time mantêm a página atrás do pop-up
+  twPreviewCabecalhoOficial(tipo!=='sora');   // só o Sora fica como pop-up sobre a página
   wrap.hidden=false;
   twIndex2PauseBaseFrames();
   var som=$('twPreviewSom');
@@ -9349,7 +9361,8 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
   frame.src=tipo==='sora'?'./sora-jump.html'+context:kTime?'./karaoke-time.html'+context:'./karaoke-day.html'+context+(ensaio?'&rehearsal=1':'');
-  var fechar=(kTime||tipo==='sora')?$('twKaraokePopupFechar'):$('twPreviewVoltar');
+  if(kTime){window.scrollTo(0,0);if(location.hash!=='#karaoke'){try{history.pushState({tw:'karaoke'},'','#karaoke');}catch(e){}}}   // voltar do navegador/celular fecha o Karaoke
+  var fechar=tipo==='sora'?$('twKaraokePopupFechar'):$('twPreviewVoltar');
   if(fechar)fechar.focus({preventScroll:true});
 }
 function twPreviewFecharJogo(){
@@ -9361,7 +9374,8 @@ function twPreviewFecharJogo(){
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
-  wrap.removeAttribute('data-karaoke-popup');
+  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');frame.style.height='';
+  if(ultimo==='karaoke'&&location.hash==='#karaoke'){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
   wrap.removeAttribute('role');wrap.removeAttribute('aria-modal');
   hubOv.inert=false;
   var fundo=$('twPreviewPart');if(fundo)fundo.textContent='';
@@ -9420,6 +9434,10 @@ function twPreviewFecharJogo(){
     var frame=$('twPreviewIframe');
     if(!frame||e.source!==frame.contentWindow)return;
     if(location.protocol!=='file:' && e.origin!==location.origin)return;
+    if(e.data&&e.data.type==='tw-kt-altura'){   // Karaoke⭐Time!: o iframe cresce com o conteúdo
+      var hh=Math.round(+e.data.h);if(twPreviewJogoAnterior==='karaoke'&&hh>200&&hh<20000)frame.style.height=hh+'px';
+      return;
+    }
     if(e.data&&e.data.type==='TW_SORA_SOUND_STATE'){
       if(twPreviewJogoAnterior==='sora')twPreviewSomSincronizar(e.data.enabled===true);
       return;
@@ -9471,7 +9489,7 @@ hubOv.addEventListener('click', function(e){
   }
   if((b = t.closest('.hubcard'))){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
-    if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
+    if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); if(location.hash !== '#center-run'){ try{ history.pushState({ tw:'center-run' }, '', '#center-run'); }catch(e){} } var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
     else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
@@ -9484,7 +9502,7 @@ hubOv.addEventListener('click', function(e){
 (function(){
   var h = $('menu-title'); if(!h || $('hubVolta')) return;
   var v = document.createElement('button'); v.type = 'button'; v.className = 'hubvolta'; v.id = 'hubVolta'; v.textContent = '← ' + tr('Início');
-  v.onclick = function(e){ e.stopPropagation(); if(state === 'menu') hubMostrar(); };
+  v.onclick = function(e){ e.stopPropagation(); if(state === 'menu'){ if(location.hash === '#center-run'){ try{ history.replaceState(null, '', location.pathname + location.search); }catch(x){} } hubMostrar(); } };
   h.parentNode.insertBefore(v, h);
 })();
 document.addEventListener('keydown', function(e){

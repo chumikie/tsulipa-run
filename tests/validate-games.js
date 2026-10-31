@@ -356,7 +356,8 @@ assert(!lab.includes('href="./karaoke-player-popup.css?v=1"')&&
        previewSkin.includes(".tw-preview-game{background:var(--bg1,#c9ecfc)}")&&
        previewSkin.includes(".tw-preview-stage #twPreviewIframe")&&
        kTime.includes("html.kt-no-site,html.kt-no-site body{background:transparent!important}")&&
-       kTime.includes("html.kt-no-site #ktPopup{background:transparent!important;border:0!important;box-shadow:none!important"),
+       kTime.includes("html.kt-no-site #ktPopup{position:static!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important")&&
+       kTime.includes("type:'tw-kt-altura'")&&lab.includes("history.pushState({tw:'karaoke'},'','#karaoke')"),
   "Karaoke Time inside INDEX2 must inherit the homepage CSS with a transparent embedded game, not a separate CD layout");
 
 assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karaoke-time.html'+context"),
@@ -395,7 +396,7 @@ try{
   const from=lab.indexOf("var twPreviewJogoAnterior = null;");
   const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
   if(from<0||to<=from)throw Error("Preview controller not found");
-  const iframe={src:"",title:""},attrs={};
+  const iframe={src:"",title:"",style:{}},attrs={};
   const overlay={
     hidden:true,setAttribute:(name,value)=>{attrs[name]=String(value);},
     toggleAttribute:(name,on)=>{if(on)attrs[name]="";else delete attrs[name];},
@@ -428,7 +429,7 @@ try{
     twPreviewHeaderSlot:slot
   };
   const fakeHub={hidden:false,querySelector:sel=>sel.includes("data-ir=")?card:null};
-  const sandbox={
+  const sandbox={location:{hash:"",pathname:"/",search:""},history:{pushState(a,b,h){sandbox.location.hash=h;},replaceState(){sandbox.location.hash="";}},window:{scrollTo(){}},
     LANG:"pt",OSHI:"lirika",$:id=>nodes[id]||null,hubOv:fakeHub,
     contaAdmin:()=>false,
     tr:s=>s,
@@ -498,14 +499,13 @@ try{
   assert(!overlay.hidden&&iframe.src==="./karaoke-time.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&
          gameTitle.textContent==="🎤 Karaoke⭐Time!",
     "Karaoke Time must open any day, in the new file, without rehearsal flag");
-  assert(!fakeHub.hidden&&fakeHub.inert&&("data-karaoke-popup" in attrs)&&attrs.role==="dialog"&&
-         attrs["aria-modal"]==="true"&&markerCreated===3,
-    "Karaoke Time keeps the actual hub visible and inert without moving the site header");
+  assert(fakeHub.hidden&&("data-karaoke-tela" in attrs)&&!("data-karaoke-popup" in attrs)&&sandbox.location.hash==="#karaoke",
+    "Karaoke Time opens as a screen of the page (like Center Run), with #karaoke for the back button");
   const returnsBeforeClose=hubReturns;
   sandbox.twPreviewFecharJogo();
-  assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&!fakeHub.inert&&
-         !("data-karaoke-popup" in attrs)&&hubReturns===returnsBeforeClose&&launchesFocused===5,
-    "Karaoke Time close unloads the game and restores focus without rebuilding or scrolling the hub");
+  assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&!("data-karaoke-tela" in attrs)&&
+         hubReturns===returnsBeforeClose+1&&sandbox.location.hash==="",
+    "Karaoke Time close unloads the game and returns to the hub");
   console.log("✓ Preview controller smoke test: Sora, Karaoke Day, Karaoke Time, mod preview, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 

@@ -69,7 +69,7 @@ as $function$
   ], null) || (select a from tem);
 $function$;
 
-create or replace function public.sincronizar_insignias_jogos(p_insignias text[])
+create or replace function public.sincronizar_insignias_jogos(p_insignias text[], p_sora_max_altura integer default 0)
 returns text[]
 language plpgsql
 security definer
@@ -78,6 +78,7 @@ as $function$
 declare
   v_uid uuid := auth.uid();
   v_validas text[];
+  v_sora text[] := array[]::text[];
 begin
   if v_uid is null
      or coalesce(auth.jwt()->'app_metadata'->>'provider','') <> 'google'
@@ -94,10 +95,14 @@ begin
     ]::text[])
   );
 
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 500 then v_sora := v_sora || 'sora_500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 1500 then v_sora := v_sora || 'sora_1500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 3000 then v_sora := v_sora || 'sora_3000'; end if;
+
   update public.players
      set ins_ganhas = (
        select array_agg(distinct badge)
-       from unnest(coalesce(ins_ganhas,'{}'::text[]) || v_validas) badge
+       from unnest(coalesce(ins_ganhas,'{}'::text[]) || v_validas || v_sora) badge
      )
    where id=v_uid;
 
@@ -105,12 +110,12 @@ begin
 end
 $function$;
 
-revoke all on function public.sincronizar_insignias_jogos(text[]) from public, anon;
+revoke all on function public.sincronizar_insignias_jogos(text[], integer) from public, anon;
 grant execute on function public.sincronizar_insignias_jogos(text[]) to authenticated;
 
 comment on function public.insignias_calc(uuid) is
   'Insígnias do perfil; Center semanal usa semana domingo-sábado em America/Sao_Paulo e inclui marcos do Sora Jump.';
 comment on function public.sincronizar_insignias_jogos(text[]) is
-  'Persiste no perfil as sete insígnias da Temporada 2 do Center Run sincronizadas pelo cliente autenticado Google.';
+  'Persiste no perfil as sete insígnias da Temporada 2 do Center Run e os marcos históricos do Sora⭐Jump informados pelo próprio jogador autenticado Google.';
 
 commit;

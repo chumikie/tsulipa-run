@@ -266,7 +266,8 @@ async function testConflitoRemotoAntesDeSalvar() {
   const fs = require('node:fs');
   const vm = require('node:vm');
   const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
-  const start = html.indexOf('function perfSalvarRpc(nome, args)');
+  const signature = /function perfSalvarRpc\(nome,\s*args\)/.exec(html);
+  const start = signature ? signature.index : -1;
   const end = html.indexOf('function perfConferir()', start);
   assert.ok(start >= 0 && end > start, 'localizar preflight de salvamento');
   let cloudMs = 140;

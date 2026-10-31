@@ -104,7 +104,7 @@ function evaluate(script,context){
 }
 // Embedded stage geometry follows the iframe's available height on short and narrow screens.
 // This is CSS-only: the 360x520 game world and gameplay loop remain untouched.
-assert.ok(html.includes("style.href='./sora-embed.css?v=8'"),'embedded sizing CSS cache version');
+assert.ok(html.includes("style.href='./sora-embed.css?v=9'"),'embedded sizing CSS cache version');
 // No pop-up o Sora nao desenha um cartao proprio: so o palco fica emoldurado.
 assert.ok(embedCss.includes('background:transparent!important;\n  box-shadow:none!important;'),'painel do Sora sem cartao branco');
 // Menu em cartao pastel do site, sem vidro escuro.

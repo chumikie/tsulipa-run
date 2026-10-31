@@ -45,5 +45,5 @@ body:has(#twPreviewJogo[data-karaoke-tela]) > .stage,
 body:has(#twPreviewJogo[data-karaoke-tela]) > .hint,
 body:has(#twPreviewJogo[data-karaoke-tela]) > .links,
 body:has(#twPreviewJogo[data-karaoke-tela]) > .oshi-sel{
-  visibility:hidden!important;
+  display:none!important; /* fora do fluxo: visibility deixava ~470px vazios acima do Karaoke */
 }

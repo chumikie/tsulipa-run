@@ -200,6 +200,8 @@ html.tw-sora-embed #soraMenuBox .sora-controls-hint span{
   background:rgba(155,48,217,.08);border:1px dashed rgba(155,48,217,.28)}
 @media (hover:hover) and (pointer:fine){html.tw-sora-embed #soraMenuBox .sora-hint-touch{display:none!important}}
 @media (hover:none),(pointer:coarse){html.tw-sora-embed #soraMenuBox .sora-hint-keys{display:none!important}}
+/* janela baixa (popup no computador): sem o enfeite e o texto repetido do topo, para o menu caber sem rolar */
+@media (max-height:640px){html.tw-sora-embed #soraMenuBox .sora-eyebrow,html.tw-sora-embed #soraMenuBox .sora-eyebrow+div,html.tw-sora-embed #soraMenuBox .sora-menu-copy{display:none!important}}
 @media (hover:hover) and (pointer:fine){html.tw-sora-embed #soraOv #soraTiltBtn{display:none!important}html.tw-sora-embed #soraOv .sora-menu-actions{grid-template-columns:1fr;max-width:240px}}
 
 html.tw-sora-embed #soraOv .sora-history-screen{

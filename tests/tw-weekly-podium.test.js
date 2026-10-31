@@ -70,7 +70,7 @@ assert.ok(html.includes('class="tw-rank-tv-launch-row"'),'TV launch icon is sepa
 assert.ok(html.includes('id="hubToque"')&&html.includes('id="hubCards"'));
 assert.ok(html.includes('function hubMostrar()')&&html.includes("$('hubMenu').hidden = !hubComecou"));
 assert.ok(html.includes('id="twRankHall"'));
-assert.ok(html.includes('href="./tw-weekly-podium.css?v=8"'));
+assert.ok(html.includes('href="./tw-weekly-podium.css?v=9"'));
 assert.ok(Buffer.byteLength(style,'utf8')<11000,'Weekly CSS under 11KB including fixed empty podium slots');
 assert.ok(style.includes('@media(min-width:900px)'),'Top Idols docks beside the hub cards on desktop');
 assert.ok(style.includes('tw-rank-avatar-wrap'),'podium supports existing Idol avatars with a fallback');

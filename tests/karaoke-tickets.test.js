@@ -15,7 +15,7 @@ assert(karaoke.includes('Deseja gastar 1 ticket de Karaoke?'),'confirmação exp
 assert(karaoke.includes('window.ktOnline.ticketAdmission()'),'admissão de ticket é passada ao contador local');
 assert(karaoke.includes('a.iniciar(guardado(),!!wantsTicket)'),'a admissão decide a moeda no servidor');
 assert(!/\.rpc\(|\.from\(/.test(source),'cliente não edita carteiras diretamente');
-assert(sql.includes('NAO APLICADO AO SUPABASE'),'migração marcada só para revisão');
+assert(sql.includes('APROVADO E APLICADO NO SUPABASE'),'migração marcada como aprovada e aplicada');
 assert(sql.includes("r.payment_kind='free'"),'5 tentativas gratuitas não contam shows extras');
 assert(sql.includes('pg_advisory_xact_lock'),'lançamento serializa chamadas concorrentes');
 assert(sql.includes('ticket_request')&&sql.includes('kt_runs_ticket_request_unique'),'requisições de gasto idempotentes');

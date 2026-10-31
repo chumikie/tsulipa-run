@@ -1,5 +1,6 @@
--- PROPOSTA PARA REVISAO DA PR #52. NAO APLICADO AO SUPABASE.
--- Executar somente depois de aprovacao explicita e testes em ambiente isolado.
+-- HISTORICO DA PROPOSTA REVISADA NA PR #52; APROVADO E APLICADO NO SUPABASE.
+-- Migracao registrada em producao: 20261031151827_karaoke_tickets_extra_shows_inventory_gacha.
+-- Nao executar novamente manualmente; este arquivo preserva o SQL aprovado.
 -- Precondicoes: supabase/sql/karaoke_time_ranking.sql aplicado, tabelas public.players,
 -- public.gacha, public.admins e public.admin_log e RPC public.eh_admin() existentes.
 -- Todo saldo, sorteio, presente e gasto e transacional e pertence ao servidor.

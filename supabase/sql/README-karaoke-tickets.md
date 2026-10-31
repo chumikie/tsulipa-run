@@ -1,11 +1,13 @@
-# Karaoke⭐Time! — proposta de tickets (PR #52)
+# Karaoke⭐Time! — ativação de tickets (PR #52)
 
-**Somente revisão. Não foi aplicado ao Supabase de produção nem ao de homologação.**
-O arquivo `karaoke_tickets_REVIEW_ONLY.sql` é uma proposta transacional para execução
-futura, exclusivamente após autorização explícita do mantenedor. Esta PR não contém
-automação que execute o SQL. **Não fazer merge nem deploy de produção por esta tarefa.**
+**Aprovado pelo mantenedor e aplicado ao Supabase de produção em 31/10/2026.**
+Migração registrada: `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`,
+projeto `fsggtvgbyhchblyazgmt`. O arquivo `karaoke_tickets_REVIEW_ONLY.sql` mantém
+o nome histórico da proposta revisada, mas agora é um **registro do SQL aplicado**:
+não o execute manualmente outra vez. A migração foi executada pelo gerenciador de
+migrações, sem rodar SQL pelo CI. O banco separado de homologação não foi alterado.
 
-## Produto proposto
+## Regras aprovadas
 
 - **5 shows gratuitos por dia** por conta, horário de Brasília. Retomar uma partida
   já iniciada não gasta outra tentativa.
@@ -17,37 +19,34 @@ automação que execute o SQL. **Não fazer merge nem deploy de produção por e
   As duas carteiras são bloqueadas na transação, com trilha de auditoria.
 - **Presentes da moderação**: 1 a 20 unidades por concessão, com motivo e registro
   em `admin_log`. A RPC verifica `eh_admin()` no servidor.
-- **Star⭐Gacha!**: proposta inicial de chance de **5% por giro** para ganhar um ticket.
+- **Star⭐Gacha!**: chance de **5% por giro** para ganhar um ticket.
   A chance dos cards passa de 45% para 40%; as outras probabilidades permanecem
   40% (estrelas pequenas), 12% (estrelas grandes), 3% (bônus). Se a carteira estiver
-  cheia, ganha 5 estrelas em vez de ultrapassar o limite. Esta probabilidade deve
-  ser aprovada junto do SQL.
+  cheia, ganha 5 estrelas em vez de ultrapassar o limite.
 - Os tickets **não podem ser criados/editados por localStorage**, nem alterados pelo
   navegador: Gacha, doações, concessões e gastos só usam RPCs com `auth.uid()`.
 
-## Antes de aplicar a proposta (etapa futura)
+## Verificação e cuidados para operação
 
-1. Revisar o SQL em conjunto com quem administra Supabase. Validar principalmente
-   os `SECURITY DEFINER`, `REVOKE/GRANT`, a ordem de bloqueio das carteiras e o
-   contrato atual do `gacha_girar`. Não usar contas reais para o ensaio.
-2. Testar em **ambiente isolado**, com dados de teste e backup, incluindo:
+1. Foi feito um teste transacional da migração com `ROLLBACK`, confirmando que não
+   persistiu qualquer alteração; depois a migração foi aplicada e registrada.
+2. A verificação posterior confirmou: carteiras e histórico criados vazios; quatro
+   RPCs novas; duas colunas novas em `private.kt_runs`; RLS na carteira;
+   `authenticated` pode iniciar show extra e `anon` não pode gastar/conceder;
+   chamadas sem conta respondem sem alterar dados.
+3. **Ainda precisa de QA funcional com contas de teste** no navegador, incluindo:
    duas abas pedindo o 5º show; 6º show com saldo zero/um; dois presentes cruzados;
    retry do mesmo `p_request`; fim/retomada em dois dispositivos; conta bloqueada;
    moderação autorizada/não autorizada; teto de 99; giro repetido no mesmo dia.
-3. Conferir políticas e privilégios da schema `private` e assinatura das funções
-   antes de executar. As tabelas privadas têm RLS ativo e permissões de acesso
-   direto revogadas para `anon` e `authenticated`.
-4. **Só depois da aprovação**, aplicar a migração e validar o front em preview com
-   contas de teste. Não zerar as cinco tentativas dos jogadores sem autorização
-   específica e procedimento separado.
+4. **Não zeramos as cinco tentativas de ninguém**. Qualquer reposição coletiva ou
+   concessão de tickets exige uma operação separada e explícita da moderação.
 
-## Comportamento do front antes da aprovação
+## Comportamento do front
 
-O módulo `karaoke-tickets.js` tenta consultar `kt_ticket_wallet`. Enquanto a RPC
-não existir, mostra que os tickets aguardam ativação e mantém o saldo em zero.
-O fluxo existente de cinco shows continua chamando `kt_run_start` sem alterações
-no banco. O sexto show não é autorizado; ninguém recebe um ticket fictício.
-As ferramentas de presente/moderação só ficam operacionais após a aplicação.
+O módulo `karaoke-tickets.js` consulta a carteira no servidor. Se a RPC estiver
+indisponível ou o usuário não estiver autenticado, o saldo local fica zerado, sem
+criar tickets fictícios. As cinco apresentações gratuitas ainda usam `kt_run_start`;
+o sexto show exige saldo e confirmação antes de `kt_ticket_run_start`.
 
 Testes locais: `node tests/karaoke-tickets.test.js`, `node tests/karaoke-flow.test.js`
 e `node tests/validate-games.js`. O workflow da PR executa o novo teste.

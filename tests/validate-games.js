@@ -643,7 +643,7 @@ try{
     }};
     children.forEach(node=>node.parentNode=wrap);
     const doc={querySelector:()=>wrap,getElementById:id=>id==="ktWeeklyRanks"?children.find(x=>x.name==="weekly"):id==="ktAudience"?children.find(x=>x.name==="audience"):null};
-    vm.runInNewContext(layoutScript,{ktNoSite:()=>true,document:doc});
+    vm.runInNewContext(layoutScript+";ktOrganizarLayoutIntegrado();",{ktNoSite:()=>true,document:doc});
     assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
       "Weekly board must be physically moved before audience on desktop and mobile");
   }

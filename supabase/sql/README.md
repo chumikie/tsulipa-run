@@ -30,10 +30,16 @@ O projeto foi criado para testar a antiga sala de ensaio do Karaoke⭐Day!. Essa
 
 ## Insígnias locais no perfil e semana de domingo
 
-O arquivo `profile_game_badges_sunday_week.sql` prepara a migração para:
-- adicionar uma coluna própria para as sete insígnias locais da Temporada 2 do Center⭐Run!;
-- importar essas chaves para a conta autenticada por uma RPC allowlisted;
-- calcular as três faixas de conquista do Sora⭐Jump! a partir do recorde geral da conta;
-- alinhar a insígnia `centersemana` à semana de domingo 00:00 até sábado 23:59 em `America/Sao_Paulo`.
+**Aplicadas em produção (fsggtvgbyhchblyazgmt) em 31/10/2026**, após revisão e autorização:
 
-A migração está versionada no repositório, mas **não foi aplicada ao projeto Supabase**. Ela deve ser revisada e aplicada antes de habilitar a sincronização do cliente em produção.
+- profile_game_badges_sunday_week.sql: adiciona players.insignias_jogos, sincroniza as sete insígnias locais da Temporada 2 do Center⭐Run! por RPC autenticada e allowlisted, e inclui as três faixas do Sora⭐Jump! calculadas a partir do recorde geral registrado no servidor.
+- sora_weekly_zero_default.sql: padroniza a janela do pódio de domingo 00:00 até sábado 23:59 em America/Sao_Paulo e devolve meu_sora = 0 quando a conta ainda não pontuou.
+
+A verificação pós-aplicação confirmou:
+- as duas migrações registradas em supabase_migrations;
+- a coluna e a RPC de insígnias presentes;
+- anon sem permissão para executar sincronizar_insignias_jogos(text[]);
+- authenticated com permissão, e a RPC limitada à conta de auth.uid();
+- pódio semanal acessível aos papéis previstos e ciclo vigente iniciado em domingo.
+
+As sete chaves importadas do Center⭐Run! são validadas por allowlist, mas a origem delas é o progresso local do aparelho: são insígnias de coleção, não uma prova antifraude de conclusão. As três insígnias do Sora⭐Jump! são calculadas no servidor.

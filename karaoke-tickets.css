@@ -1,0 +1,43 @@
+/* Karaoke tickets: a small permanent balance next to the official stars.
+   The same original header moves into the game preview, with no duplicate state. */
+.tw-header-balances{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:6px;min-width:0}
+.tw-header-balances #best{padding:6px 10px;font-size:clamp(10px,2.4vw,14px);white-space:nowrap}
+.tw-ticket-counter{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:52px;min-height:32px;padding:5px 9px;border:1.5px solid rgba(255,111,181,.75);border-radius:999px;background:linear-gradient(125deg,var(--card),var(--chip));box-shadow:0 2px 0 rgba(123,63,240,.12),0 2px 12px rgba(255,111,181,.15);color:var(--ink);font:900 12px/1 "M PLUS Rounded 1c",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw-ticket-counter b{font:inherit}
+.tw-ticket-counter.tw-has-ticket{border-color:#f4c05d;box-shadow:0 2px 0 rgba(123,63,240,.14),0 0 15px rgba(255,217,117,.32)}
+@media(max-width:500px){.tw-header-balances{gap:4px;max-width:52vw}.tw-header-balances #best{padding:5px 8px}.tw-ticket-counter{min-height:27px;min-width:45px;padding:4px 7px;font-size:11px}.tw-preview-header-slot .tw-ticket-counter{min-height:25px;padding:4px 6px}.tw-preview-header-slot .tw-header-balances{max-width:48vw}}
+
+/* The karaoke card always shows the server-authorized number of extra tickets. */
+#hub #hubCards .tw-hubgame-karaoke .tw-karaoke-ticket-count{display:inline-flex;justify-content:center;align-items:center;min-width:60px;min-height:25px;margin-top:3px;padding:5px 12px;border-radius:99px;border:1px solid rgba(242,168,226,.8);background:linear-gradient(100deg,var(--card),var(--chip));color:var(--ink);box-shadow:0 2px 7px rgba(123,63,240,.12);font:900 12px/1.2 "M PLUS Rounded 1c",sans-serif;font-variant-numeric:tabular-nums}
+#hub #hubCards .tw-hubgame-karaoke .tw-karaoke-ticket-count.tw-has-ticket{border-color:#f4d17b;box-shadow:0 0 12px rgba(255,213,121,.38)}
+
+/* Yume-kawaii collectible: translucent lilac, pink and gold without hiding text. */
+#ktTicketInventory.tw-rank-profile{position:relative;isolation:isolate;overflow:hidden;margin:12px 0 18px;padding:15px;border:1.5px solid rgba(242,168,226,.74);border-radius:21px;background:radial-gradient(circle at 12% 10%,rgba(255,229,149,.35),transparent 34%),radial-gradient(circle at 93% 12%,rgba(255,144,201,.23),transparent 40%),radial-gradient(circle at 76% 100%,rgba(168,130,255,.28),transparent 52%),var(--card);box-shadow:0 5px 0 rgba(123,63,240,.1),0 12px 26px rgba(97,50,168,.13),inset 0 0 0 1px rgba(255,255,255,.32);color:var(--ink)}
+#ktTicketInventory:before{content:'✦  ♡  ✧';position:absolute;top:3px;right:12px;z-index:-1;pointer-events:none;color:#f1b2db;opacity:.62;font-size:18px;letter-spacing:10px;transform:rotate(-8deg)}
+#ktTicketInventory .tw-ticket-inventory-top{display:grid;grid-template-columns:70px minmax(0,1fr) auto;align-items:center;gap:11px}
+#ktTicketInventory .tw-ticket-inventory-art{position:relative;display:grid;place-items:center;width:68px;height:62px;border:2px solid rgba(255,255,255,.95);border-radius:16px;background:linear-gradient(140deg,#d9b6ff,#ffbce2 57%,#ffe6a0);box-shadow:0 3px 0 rgba(135,77,174,.22),0 0 15px rgba(242,168,226,.4)}
+#ktTicketInventory .tw-ticket-inventory-art:before,#ktTicketInventory .tw-ticket-inventory-art:after{content:'';position:absolute;top:50%;width:11px;height:18px;margin-top:-9px;border-radius:50%;background:var(--card)}
+#ktTicketInventory .tw-ticket-inventory-art:before{left:-7px}
+#ktTicketInventory .tw-ticket-inventory-art:after{right:-7px}
+#ktTicketInventory .tw-ticket-inventory-art span{filter:drop-shadow(0 2px 3px rgba(84,40,120,.24));font-size:31px;line-height:1}
+#ktTicketInventory .tw-ticket-inventory-art i{position:absolute;top:4px;right:7px;color:#fff6af;font:900 17px/1 sans-serif;text-shadow:0 0 5px #fff;animation:twTicketSparkle 3.8s ease-in-out infinite}
+#ktTicketInventory .tw-ticket-inventory-title{min-width:0}
+#ktTicketInventory .tw-ticket-inventory-title>small{display:block;color:var(--pink);font:900 9px/1.5 "M PLUS Rounded 1c",sans-serif;letter-spacing:.11em}
+#ktTicketInventory .tw-ticket-inventory-title h3{margin:2px 0 3px;color:var(--b1);font:400 clamp(14px,3vw,18px)/1.35 "Mochiy Pop One","Kosugi Maru",sans-serif}
+#ktTicketInventory .tw-ticket-inventory-title>span{display:block;color:var(--sub);font:700 9px/1.45 "M PLUS Rounded 1c",sans-serif}
+#ktTicketInventory .tw-ticket-inventory-balance{display:flex;align-items:baseline;justify-content:center;gap:2px;min-width:62px;padding:6px 9px;border:1px solid rgba(255,212,122,.7);border-radius:13px;background:linear-gradient(150deg,rgba(255,226,143,.27),rgba(255,169,208,.14));font-variant-numeric:tabular-nums;color:var(--ink)}
+#ktTicketInventory .tw-ticket-inventory-balance b{font:900 clamp(20px,4vw,27px)/1 "M PLUS Rounded 1c",sans-serif;color:var(--b1)}
+#ktTicketInventory .tw-ticket-inventory-balance small{font-size:10px;color:var(--sub);font-weight:800}
+#ktTicketInventory .tw-ticket-inventory-description{margin:12px 0 8px;font:700 12px/1.6 "M PLUS Rounded 1c",sans-serif;color:var(--ink)}
+#ktTicketInventory .tw-ticket-inventory-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+#ktTicketInventory .tw-ticket-inventory-tags span{padding:4px 9px;border-radius:99px;background:rgba(169,130,255,.14);border:1px solid rgba(169,130,255,.27);color:var(--b1);font:800 10px/1.3 "M PLUS Rounded 1c",sans-serif}
+#ktTicketInventory .tw-ticket-gift-form{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px dashed rgba(178,137,219,.46)}
+#ktTicketInventory .tw-ticket-gift-form label{flex:1 1 150px;min-width:0;display:flex;flex-direction:column;gap:4px;color:var(--sub);font:800 10px/1.4 "M PLUS Rounded 1c",sans-serif}
+#ktTicketInventory .tw-ticket-gift-form input{min-width:0;width:100%;min-height:38px;border:1.5px solid rgba(178,137,219,.48);border-radius:11px;padding:8px 10px;background:var(--card);color:var(--ink);font:700 12px "M PLUS Rounded 1c",sans-serif}
+#ktTicketInventory .tw-ticket-gift-form input:focus-visible,#ktTicketInventory .tw-ticket-gift-form button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+#ktTicketInventory .tw-ticket-gift-form button{min-height:38px;padding:8px 13px;font-size:11px}
+#ktTicketInventory .tw-ticket-gift-form button:disabled{opacity:.54;cursor:not-allowed}
+#ktTicketInventory .tw-ticket-inventory-state{min-height:1.2em;margin:8px 0 0;color:var(--sub);font:800 11px/1.45 "M PLUS Rounded 1c",sans-serif}
+@keyframes twTicketSparkle{0%,100%{opacity:.7;transform:scale(.93)}50%{opacity:1;transform:scale(1.22)}}
+@media(max-width:420px){#ktTicketInventory.tw-rank-profile{padding:11px}#ktTicketInventory .tw-ticket-inventory-top{grid-template-columns:50px minmax(0,1fr) auto;gap:7px}#ktTicketInventory .tw-ticket-inventory-art{width:48px;height:50px;border-radius:12px}#ktTicketInventory .tw-ticket-inventory-art span{font-size:23px}#ktTicketInventory .tw-ticket-inventory-balance{min-width:52px;padding:5px 6px}#ktTicketInventory .tw-ticket-inventory-title h3{font-size:13px}#ktTicketInventory .tw-ticket-inventory-title>span{font-size:8px}#ktTicketInventory .tw-ticket-inventory-description{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#ktTicketInventory .tw-ticket-inventory-art i{animation:none}}

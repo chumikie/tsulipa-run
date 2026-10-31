@@ -655,7 +655,8 @@ try{
   assert(karaokeTime.includes("width:min(100%,970px)!important")&&
     karaokeTime.includes("max-width:920px!important"),
     "Embedded Karaoke content must retain the original compact 970/920px bounds");
-  const previewInsert=lab.indexOf("document.body.insertAdjacentHTML('beforeend',html);");
+  const previewBlock=lab.indexOf("var html='<section class=\"tw-preview-game\" id=\"twPreviewJogo\"");
+  const previewInsert=previewBlock>=0?lab.indexOf("document.body.insertAdjacentHTML('beforeend',html);",previewBlock):-1;
   const siteFooter=lab.indexOf("var f = document.createElement('footer'); f.className = 'siterodape sitefoot';");
   assert(previewInsert>=0&&siteFooter>previewInsert,
     "The official copyright/logo/privacy footer must remain after the Karaoke page in document flow");

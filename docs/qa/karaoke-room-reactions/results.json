@@ -1,0 +1,584 @@
+[
+  {
+    "engine": "chromium",
+    "width": 390,
+    "idle": {
+      "viewport": 366,
+      "scroll": 366,
+      "scene": {
+        "x": 10,
+        "y": 128,
+        "w": 346,
+        "h": 269.25,
+        "right": 356,
+        "bottom": 397.25
+      },
+      "canvas": {
+        "x": -9.21875,
+        "y": 181,
+        "w": 384.4375,
+        "h": 216.25,
+        "right": 375.21875,
+        "bottom": 397.25
+      },
+      "toolbar": {
+        "x": 254,
+        "y": 6,
+        "w": 102,
+        "h": 34,
+        "right": 356,
+        "bottom": 40
+      },
+      "weekly": {
+        "x": 10,
+        "y": 477.25,
+        "w": 346,
+        "h": 387,
+        "right": 356,
+        "bottom": 864.25
+      },
+      "banner": {
+        "x": 10,
+        "y": 405.25,
+        "w": 346,
+        "h": 62,
+        "right": 356,
+        "bottom": 467.25
+      },
+      "bannerOpacity": "1",
+      "roomView": {
+        "x": 10,
+        "y": 181,
+        "w": 346,
+        "h": 216.25,
+        "bottom": 397.25,
+        "right": 356
+      },
+      "crop": {
+        "left": 47.992196390830756,
+        "right": 912.0078036091693
+      },
+      "tools": [
+        {
+          "x": 256,
+          "y": 132,
+          "w": 44,
+          "h": 44,
+          "right": 300,
+          "bottom": 176
+        },
+        {
+          "x": 306,
+          "y": 132,
+          "w": 44,
+          "h": 44,
+          "right": 350,
+          "bottom": 176
+        }
+      ],
+      "toolsParent": "kt-room-tools",
+      "controls": [
+        {
+          "id": "ktSong",
+          "x": 57.03125,
+          "y": 6,
+          "w": 190.96875,
+          "h": 34,
+          "right": 248,
+          "bottom": 40
+        },
+        {
+          "id": "ktStart",
+          "x": 254,
+          "y": 6,
+          "w": 102,
+          "h": 34,
+          "right": 356,
+          "bottom": 40
+        },
+        {
+          "id": "ktSession",
+          "x": 10,
+          "y": 46,
+          "w": 346,
+          "h": 33,
+          "right": 356,
+          "bottom": 79
+        },
+        {
+          "id": "ktPause",
+          "x": 101.5,
+          "y": 50,
+          "w": 63,
+          "h": 25,
+          "right": 164.5,
+          "bottom": 75
+        },
+        {
+          "id": "ktEnd",
+          "x": 168.5,
+          "y": 50,
+          "w": 73,
+          "h": 25,
+          "right": 241.5,
+          "bottom": 75
+        },
+        {
+          "id": "ktScore",
+          "x": 245.5,
+          "y": 55,
+          "w": 73,
+          "h": 15,
+          "right": 318.5,
+          "bottom": 70
+        }
+      ],
+      "playing": false
+    },
+    "playing": {
+      "viewport": 366,
+      "scroll": 366,
+      "scene": {
+        "x": 10,
+        "y": 165,
+        "w": 346,
+        "h": 269.25,
+        "right": 356,
+        "bottom": 434.25
+      },
+      "canvas": {
+        "x": -9.21875,
+        "y": 218,
+        "w": 384.4375,
+        "h": 216.25,
+        "right": 375.21875,
+        "bottom": 434.25
+      },
+      "toolbar": {
+        "x": 209,
+        "y": 6,
+        "w": 147,
+        "h": 34,
+        "right": 356,
+        "bottom": 40
+      },
+      "weekly": {
+        "x": 10,
+        "y": 600.25,
+        "w": 346,
+        "h": 387,
+        "right": 356,
+        "bottom": 987.25
+      },
+      "banner": {
+        "x": 10,
+        "y": 528.25,
+        "w": 346,
+        "h": 62,
+        "right": 356,
+        "bottom": 590.25
+      },
+      "bannerOpacity": "1",
+      "roomView": {
+        "x": 10,
+        "y": 218,
+        "w": 346,
+        "h": 216.25,
+        "bottom": 434.25,
+        "right": 356
+      },
+      "crop": {
+        "left": 47.992196390830756,
+        "right": 912.0078036091693
+      },
+      "tools": [
+        {
+          "x": 256,
+          "y": 169,
+          "w": 44,
+          "h": 44,
+          "right": 300,
+          "bottom": 213
+        },
+        {
+          "x": 306,
+          "y": 169,
+          "w": 44,
+          "h": 44,
+          "right": 350,
+          "bottom": 213
+        }
+      ],
+      "toolsParent": "kt-room-tools",
+      "controls": [
+        {
+          "id": "ktSong",
+          "x": 57.03125,
+          "y": 6,
+          "w": 145.96875,
+          "h": 34,
+          "right": 203,
+          "bottom": 40
+        },
+        {
+          "id": "ktStart",
+          "x": 209,
+          "y": 6,
+          "w": 147,
+          "h": 34,
+          "right": 356,
+          "bottom": 40
+        },
+        {
+          "id": "ktSession",
+          "x": 10,
+          "y": 46,
+          "w": 346,
+          "h": 70,
+          "right": 356,
+          "bottom": 116
+        },
+        {
+          "id": "ktPause",
+          "x": 61.5,
+          "y": 87,
+          "w": 63,
+          "h": 25,
+          "right": 124.5,
+          "bottom": 112
+        },
+        {
+          "id": "ktEnd",
+          "x": 128.5,
+          "y": 87,
+          "w": 73,
+          "h": 25,
+          "right": 201.5,
+          "bottom": 112
+        },
+        {
+          "id": "ktScore",
+          "x": 205.5,
+          "y": 92,
+          "w": 99,
+          "h": 15,
+          "right": 304.5,
+          "bottom": 107
+        }
+      ],
+      "playing": true
+    },
+    "reactions": {
+      "pandeiros": true,
+      "visits": [
+        {
+          "k": "pati",
+          "expression": "feliz",
+          "idol": "Fuji"
+        },
+        {
+          "k": "lirika",
+          "expression": "feliz",
+          "idol": "HiruDeki"
+        },
+        {
+          "k": "tsu",
+          "expression": "feliz",
+          "idol": "Lirika"
+        }
+      ],
+      "returned": true
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "idle": {
+      "viewport": 970,
+      "scroll": 970,
+      "scene": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "right": 931,
+        "bottom": 575.75
+      },
+      "canvas": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "right": 931,
+        "bottom": 575.75
+      },
+      "toolbar": {
+        "x": 394.515625,
+        "y": 6.5,
+        "w": 116,
+        "h": 34,
+        "right": 510.515625,
+        "bottom": 40.5
+      },
+      "weekly": {
+        "x": 39,
+        "y": 589.75,
+        "w": 892,
+        "h": 297,
+        "right": 931,
+        "bottom": 886.75
+      },
+      "banner": {
+        "x": 226.3203125,
+        "y": 504.75,
+        "w": 517.359375,
+        "h": 59,
+        "right": 743.6796875,
+        "bottom": 563.75
+      },
+      "bannerOpacity": "0",
+      "roomView": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "bottom": 575.75,
+        "right": 931
+      },
+      "crop": {
+        "left": 0,
+        "right": 960
+      },
+      "tools": [
+        {
+          "x": 823,
+          "y": 521.75,
+          "w": 44,
+          "h": 44,
+          "right": 867,
+          "bottom": 565.75
+        },
+        {
+          "x": 877,
+          "y": 521.75,
+          "w": 44,
+          "h": 44,
+          "right": 921,
+          "bottom": 565.75
+        }
+      ],
+      "toolsParent": "krpalco",
+      "controls": [
+        {
+          "id": "ktSong",
+          "x": 166.515625,
+          "y": 6.5,
+          "w": 220,
+          "h": 34,
+          "right": 386.515625,
+          "bottom": 40.5
+        },
+        {
+          "id": "ktStart",
+          "x": 394.515625,
+          "y": 6.5,
+          "w": 116,
+          "h": 34,
+          "right": 510.515625,
+          "bottom": 40.5
+        },
+        {
+          "id": "ktSession",
+          "x": 518.515625,
+          "y": 6,
+          "w": 334,
+          "h": 35,
+          "right": 852.515625,
+          "bottom": 41
+        },
+        {
+          "id": "ktPause",
+          "x": 589.515625,
+          "y": 10,
+          "w": 78,
+          "h": 27,
+          "right": 667.515625,
+          "bottom": 37
+        },
+        {
+          "id": "ktEnd",
+          "x": 674.515625,
+          "y": 10,
+          "w": 89,
+          "h": 27,
+          "right": 763.515625,
+          "bottom": 37
+        },
+        {
+          "id": "ktScore",
+          "x": 770.515625,
+          "y": 15,
+          "w": 76,
+          "h": 17,
+          "right": 846.515625,
+          "bottom": 32
+        }
+      ],
+      "playing": false
+    },
+    "playing": {
+      "viewport": 970,
+      "scroll": 970,
+      "scene": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "right": 931,
+        "bottom": 575.75
+      },
+      "canvas": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "right": 931,
+        "bottom": 575.75
+      },
+      "toolbar": {
+        "x": 356.515625,
+        "y": 6.5,
+        "w": 165,
+        "h": 34,
+        "right": 521.515625,
+        "bottom": 40.5
+      },
+      "weekly": {
+        "x": 39,
+        "y": 589.75,
+        "w": 892,
+        "h": 297,
+        "right": 931,
+        "bottom": 886.75
+      },
+      "banner": {
+        "x": 226.3203125,
+        "y": 504.75,
+        "w": 517.359375,
+        "h": 59,
+        "right": 743.6796875,
+        "bottom": 563.75
+      },
+      "bannerOpacity": "0",
+      "roomView": {
+        "x": 39,
+        "y": 74,
+        "w": 892,
+        "h": 501.75,
+        "bottom": 575.75,
+        "right": 931
+      },
+      "crop": {
+        "left": 0,
+        "right": 960
+      },
+      "tools": [
+        {
+          "x": 823,
+          "y": 521.75,
+          "w": 44,
+          "h": 44,
+          "right": 867,
+          "bottom": 565.75
+        },
+        {
+          "x": 877,
+          "y": 521.75,
+          "w": 44,
+          "h": 44,
+          "right": 921,
+          "bottom": 565.75
+        }
+      ],
+      "toolsParent": "krpalco",
+      "controls": [
+        {
+          "id": "ktSong",
+          "x": 128.515625,
+          "y": 6.5,
+          "w": 220,
+          "h": 34,
+          "right": 348.515625,
+          "bottom": 40.5
+        },
+        {
+          "id": "ktStart",
+          "x": 356.515625,
+          "y": 6.5,
+          "w": 165,
+          "h": 34,
+          "right": 521.515625,
+          "bottom": 40.5
+        },
+        {
+          "id": "ktSession",
+          "x": 529.515625,
+          "y": 6,
+          "w": 361,
+          "h": 35,
+          "right": 890.515625,
+          "bottom": 41
+        },
+        {
+          "id": "ktPause",
+          "x": 600.515625,
+          "y": 10,
+          "w": 78,
+          "h": 27,
+          "right": 678.515625,
+          "bottom": 37
+        },
+        {
+          "id": "ktEnd",
+          "x": 685.515625,
+          "y": 10,
+          "w": 89,
+          "h": 27,
+          "right": 774.515625,
+          "bottom": 37
+        },
+        {
+          "id": "ktScore",
+          "x": 781.515625,
+          "y": 15,
+          "w": 103,
+          "h": 17,
+          "right": 884.515625,
+          "bottom": 32
+        }
+      ],
+      "playing": true
+    },
+    "reactions": {
+      "pandeiros": true,
+      "visits": [
+        {
+          "k": "pati",
+          "expression": "feliz",
+          "idol": "Maimai"
+        },
+        {
+          "k": "lirika",
+          "expression": "feliz",
+          "idol": "Fuji"
+        },
+        {
+          "k": "tsu",
+          "expression": "feliz",
+          "idol": "Decchan"
+        }
+      ],
+      "returned": true
+    }
+  }
+]

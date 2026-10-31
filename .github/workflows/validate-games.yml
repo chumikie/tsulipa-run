@@ -16,6 +16,7 @@ on:
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -64,6 +65,7 @@ on:
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
       - 'karaoke-homol-sync.js'
@@ -108,6 +110,8 @@ jobs:
         run: node tests/windows-shared.test.js
       - name: Validate Karaoke mobile viewport script
         run: node --check karaoke-mobile.js
+      - name: Validate Karaoke room pet visits and pandeiros
+        run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations

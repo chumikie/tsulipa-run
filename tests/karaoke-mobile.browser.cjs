@@ -20,7 +20,11 @@ const server=http.createServer((req,res)=>{
    data=data.toString().replace('\nhubMostrar();\n// Só','\n'+fixture);
    assert(data.includes('window.qaKaraoke='),'Local fixture injection point changed');
   }
-  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.qaRoomState=function(){return {members:krBots.map(function(b){return {x:b.x,y:b.y};}),attempts:krRhythmRun?krRhythmRun.attempts:0,flash:krRhythmRun?krRhythmRun.flash:[]};};\nfunction ktNoSite(){`);
+  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.qaRoomState=function(){return {
+   members:krBots.map(function(b){return {x:b.x,y:b.y};}),attempts:krRhythmRun?krRhythmRun.attempts:0,flash:krRhythmRun?krRhythmRun.flash:[],
+   pets:ktPets.map(function(p){return {k:p.k,x:p.x,y:p.y,hitY:p.hitY,ex:p.ex,taps:p.toques||0,visit:p.visita?{phase:p.visita.phase,nome:p.visita.nome}:null};}),
+   pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
+  };};\nfunction ktNoSite(){`);
   res.setHeader('Content-Type',name.endsWith('.css')?'text/css':name.endsWith('.js')?'application/javascript':name.endsWith('.html')?'text/html':'application/octet-stream');
   res.end(data);
  }catch(e){res.writeHead(404).end();}
@@ -81,6 +85,39 @@ async function metrics(frame){
     }
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-idle.png'),fullPage:true});
+   let reactions=null;
+   if(!baseline&&process.env.QA_REACTIONS){
+    const getState=()=>frame.locator('body').evaluate(()=>window.qaRoomState());
+    const touch=async(px,py)=>{const r=await frame.locator('#krCv').boundingBox();await frame.locator('#krCv').click({position:{x:px*r.width/960,y:py*r.height/540}});};
+    let state=await getState();
+    await touch(state.pandeiro.x,state.pandeiro.y);const table=await getState();assert(table.pandeiro.t0>=0,'Original pandeiro still reacts');
+    await touch(state.extra.x,state.extra.y);state=await getState();assert(state.extra.t0>=table.pandeiro.t0,'New pandeiro reacts at its rendered position');
+    assert.equal(state.pandeiro.t0,table.pandeiro.t0,'New instrument has independent shake state');
+    const visits=[];
+    for(const i of [2,1,0]){
+     let before;
+     for(let tries=0;tries<25;tries++){
+      const pets=(await getState()).pets;before=pets[i];
+      if(pets.every((other,j)=>j===i||Math.hypot(other.x-before.x,other.hitY-before.hitY)>54))break;
+      await p.waitForTimeout(100);
+     }
+     await touch(before.x,before.hitY);
+     const after=(await getState()).pets[i];assert(after.taps>before.taps&&after.visit,'Pet '+before.k+' reacts at its current drawn location: '+JSON.stringify({before,after}));
+     assert(['feliz','amor'].includes(after.ex),'Pet uses a visible facial expression');
+     await p.waitForTimeout(400);const moved=(await getState()).pets[i];
+     assert(Math.hypot(moved.x-before.x,moved.y-before.y)>12,'Pet leaves its orbit to visit a nearby Idol');
+     visits.push({k:before.k,expression:after.ex,idol:after.visit.nome});
+    }
+    await frame.locator('#krPalco').screenshot({path:path.join(out,engine+'-'+width+'-visits.png')});
+    let settled=false;
+    for(let tries=0;tries<60;tries++){
+     if((await getState()).pets.every(p=>!p.visit)){settled=true;break;}
+     await p.waitForTimeout(250);
+    }
+    assert(settled,'All three pets return to their idle orbit');
+    reactions={pandeiros:true,visits,returned:true};
+    console.log(engine,width,'both pandeiros + three pet visits/return passed');
+   }
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
    await frame.locator('body.kt-playing').waitFor();
    const playing=await metrics(frame);
@@ -128,7 +165,7 @@ async function metrics(frame){
    await p.locator('#twPreviewVoltar').click();
    if(!baseline)assert.equal(await p.locator('#best').isVisible(),true,'Returning to Center restores its score');
    assert.deepEqual(errors,[]);
-   results.push({engine,width,idle,playing});
+   results.push({engine,width,idle,playing,reactions});
    console.log(engine,width,'idle + play + return passed');
    await context.close();
   }

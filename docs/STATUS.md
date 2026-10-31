@@ -2,6 +2,13 @@
 
 Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
 
+## Interações da sala do Karaoke — PR #49 (31/10)
+
+- Segundo pandeiro pendurado à esquerda, abaixo dos retratos, com o mesmo som do pandeiro da mesa. Cada instrumento tem sua própria animação e intervalo entre toques.
+- Chu, Koali e Pucchi ganham olhos felizes/de coração e passinhos ao toque. Eles visitam um Idol próximo, fazem uma pausa carinhosa e retornam ao passeio original, contornando a mesa.
+- Mantidas as vozinhas e os emojis. Toques em pets próximos escolhem o rostinho mais perto. As visitas são temporárias e decorativas, sem salvar estado de conta ou alterar o ritmo.
+- Validação estática, 13 suítes Node e QA em Chromium local em celular/desktop; [capturas e testes](qa/karaoke-room-reactions/README.md). Sem merge ou operações no banco.
+
 ## Revisão do Karaoke no celular — PR #49 (31/10)
 
 - Refinamento aprovado: a moldura do jogo no celular recorta 48 unidades de cada lateral do canvas (11,1% de ampliação), preservando a altura e o limite conservador dos sprites, inclusive na caminhada. Som e câmera ficam numa faixa própria no alto à direita. O botão de visão completa permanece funcional. [Comparação e testes do recorte](qa/karaoke-mobile-crop/README.md).

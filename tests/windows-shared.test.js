@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const root=path.join(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'utf8'),source=read('tw-windows.js');
 for(const file of ['index.html','sora-jump.html','karaoke-time.html']){
  const s=read(file);
- assert(s.includes('./tw-windows.css?v=1'),file+' must load shared chrome');
+ assert(s.includes('./tw-windows.css?v=2'),file+' must load shared chrome');
  assert(s.includes('./tw-windows.js?v=1'),file+' must load shared focus/viewport adapter');
 }
 assert(!read('karaoke-time.html').includes('ktLaunchLayout'),'Obsolete Karaoke header patch must stay removed');

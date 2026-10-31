@@ -26,7 +26,10 @@
  width:min(calc(100% - 16px),var(--tw-modal-width,760px));
  padding:clamp(14px,2.7vw,24px);max-height:calc(100dvh - 20px);
  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ /* rola com o dedo/roda do mouse, mas sem a barra cinza do navegador (como era antes) */
+ scrollbar-width:none;-ms-overflow-style:none;
 }
+.panel.tw-window-surface::-webkit-scrollbar{display:none;width:0;height:0}
 .panel.tw-window-surface:has(>.tw-window-control){padding-top:54px}
 .petp.tw-window-surface{--tw-modal-width:440px}
 .perfp.tw-window-surface{--tw-modal-width:440px}

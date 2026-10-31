@@ -5,7 +5,8 @@ const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 const flow = html.match(/var ktFlow=\(function\(\)\{[\s\S]*?\n\}\)\(\);/);
-assert(flow, 'Fluxo da confirmação e ensaio presente');
+const diagnostic = html.match(/var KR_RHYTHM_TOUCH_DIAGNOSTIC=\{[\s\S]*?\n\};/);
+assert(flow && diagnostic, 'Fluxo da confirmação, ensaio e diagnóstico presente');
 const elements = new Map();
 class Element {
   constructor(id=''){this.id=id;this.open=false;this.disabled=false;this.textContent='';}
@@ -30,7 +31,7 @@ const context = vm.createContext({
   ktMeta:{controls:()=>({used:2,remaining:3,pending:null})},
   window:{ktOnline:{quota:()=>Promise.resolve({used:2}),gate:fn=>{calls.push(['gate']);fn();}}}
 });
-vm.runInContext(flow[0],context);
+vm.runInContext(diagnostic[0]+'\n'+flow[0],context);
 const ui=context.ktFlow;
 assert.equal(ui.offset(),0,'offset inicial zero');
 

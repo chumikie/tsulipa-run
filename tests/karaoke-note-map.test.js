@@ -8,7 +8,7 @@ const lanesSource = html.match(/Object\.keys\(songs\)\.forEach\(function\(k\)\{[
 const mapSource = html.match(/function makeNoteMap\(song,total,step,start\)\{[\s\S]*?\n \}return notes;\}/);
 const clockSource = html.match(/function kNow\(\)\{[^\n]+/);
 const scheduleSource = html.match(/function schedule\(\)\{[^\n]+/);
-const laneSource = html.match(/function laneAt\(px,py\)\{[^\n]+/);
+const laneSource = html.match(/function laneAt\(px,py,event\)\{[^\n]+/);
 assert(songsSource && lanesSource && mapSource && clockSource && scheduleSource && laneSource, 'Mapa, relógios e controles presentes no Karaoke');
 const context = vm.createContext({});
 vm.runInContext(`${songsSource[0]}\n${lanesSource[0]}\n${mapSource[0]}\n${clockSource[0]}\n${scheduleSource[0]}\n${laneSource[0]}`, context);

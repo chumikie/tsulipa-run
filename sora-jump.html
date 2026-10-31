@@ -4368,6 +4368,14 @@ function soraOpenUI(){
     });
   }
 }
+
+/* O launcher do INDEX 2 chama o jogo de outro bloco de script.
+   Esta ponte mantém soraOpenUI dentro do escopo original do jogo. */
+try{
+  if(parent!==window && new URLSearchParams(location.search).get('embed')==='index2'){
+    window.__TW_SORA_OPEN_UI = soraOpenUI;
+  }
+}catch(_){}
 function soraOpenUIReady(){
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   var inputNick = $('nick');
@@ -4439,7 +4447,7 @@ function soraCloseUI(){
     var launcher=document.getElementById('openSoraBtn');
     var embedded=false;
     try{embedded=parent!==window&&new URLSearchParams(location.search).get('embed')==='index2';}catch(_){}
-    try{if(embedded)soraOpenUI();else if(launcher)launcher.click();}
+    try{if(embedded){var openEmbedded=window.__TW_SORA_OPEN_UI;if(typeof openEmbedded==='function')openEmbedded();else throw new Error('Sora embedded launcher is unavailable');}else if(launcher)launcher.click();}
     finally{var preload=document.getElementById('twSoraStandAlonePreload');if(preload)preload.remove();}
   });
 })();

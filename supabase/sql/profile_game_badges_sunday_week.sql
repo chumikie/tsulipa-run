@@ -107,7 +107,7 @@ as $function$
     case when (select j ? 'tsu' and j ? 'lirika' and j ? 'pati' and j ? 'meu' from pets) then 'familia' end,
     case when exists (
       select 1 from pets, jsonb_each(pets.j) e(k, v)
-      where coalesce(v->>'xp', '') ~ '^\\d+(\\.\\d+)?$'
+      where coalesce(v->>'xp', '') ~ '^[0-9]+([.][0-9]+)?$'
         and (v->>'xp')::numeric >= 800
     ) then 'petkami' end,
     case when (

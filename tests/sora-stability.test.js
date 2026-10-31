@@ -119,3 +119,12 @@ assert.ok(embedCss.includes('aspect-ratio:360/520!important;'),'keep original ga
 assert.ok(html.includes('var SW = 360, SH = 520;'),'original Sora logical resolution is unchanged');
 // Gameplay physics/economy unchanged: tested by the existing validate-games suite.
 console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe and bfcache');
+
+/* Embedded Sora opens directly without creating the obsolete blue launcher. */
+assert.ok(html.includes("if(!soraHubEmbed){"),'legacy launcher is standalone-only');
+assert.ok(html.includes("if(embedded)soraOpenUI();else if(launcher)launcher.click();"),'embedded Sora opens directly');
+assert.ok(html.includes("soraPanel.appendChild(histBox);"),'history is relocated into a dedicated full-size screen');
+assert.ok(html.includes("soraHistCloseBtn"),'history screen has an explicit close control');
+assert.ok(embedCss.includes('.sora-history-screen{'),'history uses a dedicated readable surface');
+assert.ok(embedCss.includes('inset:102px 12px 58px!important;'),'history screen uses the full available modal area');
+console.log('✓ Sora embedded launcher flash removed; history has dedicated readable screen');

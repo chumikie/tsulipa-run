@@ -13,6 +13,7 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'tests/karaoke-note-map.test.js'
+      - 'tests/karaoke-flow.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -66,6 +67,7 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'tests/karaoke-note-map.test.js'
+      - 'tests/karaoke-flow.test.js'
       - 'karaoke-popup.css'
       - 'karaoke-mobile.css'
       - 'karaoke-mobile.js'
@@ -134,6 +136,8 @@ jobs:
         run: node tests/karaoke-rhythm.test.js
       - name: Validate Karaoke Time melody note maps and checkpoint timing
         run: node tests/karaoke-note-map.test.js
+      - name: Validate Karaoke Time confirmation, practice and device offset
+        run: node tests/karaoke-flow.test.js
       - name: Validate Karaoke homol stage, queue and safety
         run: node tests/karaoke-homol-view.test.js
       - name: Validate Karaoke realtime lifecycle and recovery

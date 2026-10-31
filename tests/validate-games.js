@@ -375,7 +375,7 @@ assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('
        preview.includes('id="twMicAbrir"')&&preview.includes("function twMicAcerto()")&&!preview.includes('id="twRankKt"')&&preview.includes("data.karaoke_combo")&&preview.includes("data.karaoke_acertos")&&preview.includes("data.meu_kt_usados")&&
        preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes("sub.textContent = w[5]"),
   "Karaoke Time: ponte do ranking online e barra própria no Top Idols");
-assert(kTime.includes("window.ktOnline.gate(start)")&&kTime.includes("window.ktOnline.finish(result)")&&
+assert(kTime.includes("window.ktOnline.gate(function(){kt.start('confirmed');})")&&kTime.includes("window.ktOnline.finish(result)")&&
        kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),
   "Karaoke Time: shows passam pelo servidor quando há conta");
 assert(kTime.includes("init:apply,live:live,")&&preview.includes("plateia:function(){return contaRpc('vitrine_idols')"),

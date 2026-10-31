@@ -209,3 +209,19 @@ html.tw-sora-embed #soraHomeBtn{
   box-shadow:0 3px 0 rgba(44,26,143,.18)!important;
 }
 
+
+/* Parte de baixo do menu mais enxuta: dois botões lado a lado e só a dica do aparelho em uso. */
+html.tw-sora-embed #soraOv .sora-menu-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important;width:100%;max-width:330px;margin:2px auto 0}
+html.tw-sora-embed #soraOv .sora-menu-actions .sec{
+  margin:0!important;text-decoration:none!important;min-height:38px!important;padding:6px 10px!important;
+  font:800 12px/1.15 "M PLUS Rounded 1c",sans-serif!important;white-space:normal;
+  background:var(--chip,#f3e8ff)!important;color:var(--b1,#7b3ff0)!important;
+  border:1.5px solid rgba(155,48,217,.35)!important;box-shadow:none!important;border-radius:14px!important}
+html.tw-sora-embed #soraOv #soraHistBtn{color:var(--pink,#ff6fb5)!important}
+html.tw-sora-embed #soraMenuBox .sora-controls-hint{display:flex;justify-content:center;margin:2px auto 0!important;max-width:330px}
+html.tw-sora-embed #soraMenuBox .sora-controls-hint span{
+  display:inline-block;padding:4px 12px;border-radius:99px;font-size:10.5px;line-height:1.3;
+  background:rgba(155,48,217,.08);border:1px dashed rgba(155,48,217,.28)}
+@media (hover:hover) and (pointer:fine){html.tw-sora-embed #soraMenuBox .sora-hint-touch{display:none!important}}
+@media (hover:none),(pointer:coarse){html.tw-sora-embed #soraMenuBox .sora-hint-keys{display:none!important}}
+@media (hover:hover) and (pointer:fine){html.tw-sora-embed #soraOv #soraTiltBtn{display:none!important}html.tw-sora-embed #soraOv .sora-menu-actions{grid-template-columns:1fr;max-width:240px}}

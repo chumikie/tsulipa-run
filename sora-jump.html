@@ -438,7 +438,7 @@ html,body{min-height:100%;}
     var t=new URLSearchParams(location.search).get('theme');
     if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
     var style=document.createElement('link');
-    style.rel='stylesheet';style.href='./sora-embed.css?v=7';
+    style.rel='stylesheet';style.href='./sora-embed.css?v=8';
     document.head.appendChild(style);
   }catch(e){/* standalone fallback */ }
 })();
@@ -4111,7 +4111,7 @@ function soraSetupUI(){
               '<div style="font-size:9px;opacity:.86;text-align:center;margin-top:6px;color:#fff">Sessões de teste não salvam recordes, histórico nem estrelas.</div>' +
             '</div>' +
             '<div class="sora-menu-actions"><button type="button" class="sec" id="soraTiltBtn">' + escHtml(tr('📱 Inclinar')) + '</button><button type="button" class="sec" id="soraHistBtn" style="color:#ffb8e0">📊 ' + escHtml(tr('Histórico & Insígnias')) + '</button></div>' +
-            '<p class="sora-controls-hint">◀ ▶ ' + escHtml(tr('Toque nos lados da tela para se mover')) + '<br>' + escHtml(tr('Computador: ← → ou A / D')) + '</p>' +
+            '<p class="sora-controls-hint"><span class="sora-hint-touch">◀ ▶ ' + escHtml(tr('Toque nos lados da tela para se mover')) + '</span><span class="sora-hint-keys">⌨️ ' + escHtml(tr('Computador: ← → ou A / D')) + '</span></p>' +
             '<div id="soraHistBox" hidden style="width:100%;max-height:115px;overflow:auto;background:var(--card);color:var(--ink);border-radius:12px;padding:8px;margin-top:2px"><div id="soraHistContent"></div></div>' +
           '</div>' +
         '</div>' +

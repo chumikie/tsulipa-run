@@ -15,7 +15,7 @@ Atualizado em 30/10/2026. Atualize este arquivo no mesmo envio de qualquer mudan
 | `index2.html` | Só redireciona para `/` (links antigos). |
 | `sora-jump.html` | Sora⭐Jump!, aberto como pop-up da página principal. |
 | `karaoke-time.html` | **Karaoke⭐Time!**: o card 🎤 do menu abre este. Jogo solo offline, 5 shows por dia, 7 músicas, placar da semana, foto da sala. Usa o nick e o visual da conta (`brs48cr_nick`, `brs48cr_char`, `brs48cr_cu2`). |
-| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! online (domingos, sala real). **Guardado, desligado**: para voltar, rodar `karaoke_online_religar.sql` no banco e trocar `TW_KARAOKE_TIME` para `false` no `index.html`. |
+| `karaoke-day.html` + `karaoke-online.js` | Karaoke⭐Day! online. **Engavetado em 31/10/2026: não haverá sala online.** Cópia completa guardada na branch `engavetado/karaoke-day`. No site, `/karaoke-day.html` e `/karaoke-online-lab.html` redirecionam para a página inicial (`vercel.json`); as funções da sala online seguem revogadas no banco. Os arquivos continuam no repositório só até uma limpeza depois do lançamento. |
 | `karaoke-homol-*.js`, `karaoke-online-lab.html`, `karaoke-room-model.js`, `karaoke-rhythm.*` | Módulos do Karaoke e o laboratório de homologação (`?homol=1`). |
 | `*.css` | Estilos: `index2-skin`, `index2-launch-ui` (menu, TV e pop-up do Sora), `tw-weekly-podium` (Top Idols/TV), `games-theme`, `sora-embed`, `karaoke-embed`, `karaoke-rhythm`. |
 | `audio/` | Vozes do trio (5 falas cada) e o som do Encontro do dia. O resto da música é gerado no código. |

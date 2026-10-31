@@ -4,5 +4,27 @@
     "deploymentEnabled": {
       "feature/sora-karaoke-v2-2026-10-29": false
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/karaoke-day.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-day",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-online-lab.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/karaoke-online-lab",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
 }

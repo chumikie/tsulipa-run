@@ -1,5 +1,5 @@
--- PROPOSTA: ferramentas de moderação de pets e visual do perfil.
--- NÃO APLICADO em produção. Homologar antes de executar este arquivo.
+-- Ferramentas de moderação de pets e visual do perfil (aplicado em produção em 31/10/2026 pela PR #49).
+-- Aplicado com autorização da dona do projeto. Inclui as versões novas de salvar_nuvem e salvar_avatar.
 -- Os RPCs são restritos a authenticated e verificam public.eh_admin().
 -- As revisões impedem que saves antigos de outra aba/aparelho desfaçam uma correção.
 BEGIN;

@@ -17,8 +17,10 @@ declare
   v_pet_keys jsonb := '[]'::jsonb;
   v_center_best bigint := 0;
   v_center_rank bigint;
-  v_sora_best integer := 0;
-  v_sora_rank bigint;
+  v_sora_all_best integer := 0;
+  v_sora_all_rank bigint := 0;
+  v_sora_week_best integer := 0;
+  v_sora_week_rank bigint := 0;
   v_kt_score integer := 0;
   v_kt_combo integer := 0;
   v_kt_acc numeric(5,2) := 0;
@@ -60,28 +62,64 @@ begin
     select s.user_id, dense_rank() over (order by s.best desc) as position
       from scores s
   )
-  select r.position into v_center_rank
+  select coalesce(max(r.position), 0) into v_center_rank
     from ranked r
    where r.user_id = v_player.id;
 
+  -- O ranking do Sora tem dois períodos independentes: recorde persistente e semana atual.
   select coalesce(max(s.score), 0)
-    into v_sora_best
+    into v_sora_all_best
     from private.sora_scores s
-   where s.player_id = v_player.id;
+   where s.player_id = v_player.id
+     and s.period_type = 'all';
 
   with scores as (
-    select s.player_id, max(s.score) as best
+    select s.player_id, max(s.score) as best,
+           min(s.achieved_at) as achieved_at,
+           coalesce(nullif(pg_catalog.btrim(p.nick), ''), 'Idol') as display_nick
       from private.sora_scores s
-     group by s.player_id
+      join public.players p on p.id = s.player_id
+     where s.period_type = 'all'
+       and not coalesce(p.bloqueado, false)
+     group by s.player_id, p.nick
   ), ranked as (
-    select s.player_id, dense_rank() over (order by s.best desc) as position
+    select s.player_id,
+           row_number() over (order by s.best desc, s.achieved_at asc,
+                              lower(s.display_nick), s.player_id) as position
       from scores s
   )
-  select r.position into v_sora_rank
+  select coalesce(max(r.position), 0)
+    into v_sora_all_rank
     from ranked r
    where r.player_id = v_player.id;
 
-  select coalesce(s.score, 0), coalesce(s.combo, 0), coalesce(s.acc, 0)
+  select coalesce(max(s.score), 0)
+    into v_sora_week_best
+    from private.sora_scores s
+   where s.player_id = v_player.id
+     and s.period_type = 'week'
+     and s.week_start = v_week;
+
+  with scores as (
+    select s.player_id, s.score, s.achieved_at,
+           coalesce(nullif(pg_catalog.btrim(p.nick), ''), 'Idol') as display_nick
+      from private.sora_scores s
+      join public.players p on p.id = s.player_id
+     where s.period_type = 'week'
+       and s.week_start = v_week
+       and not coalesce(p.bloqueado, false)
+  ), ranked as (
+    select s.player_id,
+           row_number() over (order by s.score desc, s.achieved_at asc,
+                              lower(s.display_nick), s.player_id) as position
+      from scores s
+  )
+  select coalesce(max(r.position), 0)
+    into v_sora_week_rank
+    from ranked r
+   where r.player_id = v_player.id;
+
+  select coalesce(max(s.score), 0), coalesce(max(s.combo), 0), coalesce(max(s.acc), 0)
     into v_kt_score, v_kt_combo, v_kt_acc
     from private.kt_scores s
    where s.player_id = v_player.id
@@ -115,7 +153,11 @@ begin
     ),
     'recordes', jsonb_build_object(
       'center_run', jsonb_build_object('recorde', v_center_best, 'posicao', v_center_rank),
-      'sora_jump', jsonb_build_object('recorde', v_sora_best, 'posicao', v_sora_rank),
+      'sora_jump', jsonb_build_object(
+        'geral', jsonb_build_object('recorde', v_sora_all_best, 'posicao', v_sora_all_rank),
+        'semana', jsonb_build_object('recorde', v_sora_week_best, 'posicao', v_sora_week_rank,
+                                     'semana_inicio', v_week)
+      ),
       'karaoke_time_semana', jsonb_build_object(
         'pontuacao', v_kt_score,
         'combo', v_kt_combo,

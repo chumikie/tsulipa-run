@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'privacidade.html'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'
@@ -40,12 +41,14 @@ on:
       - 'supabase/sql/tw_weekly_podium_proposal.sql'
       - 'supabase/sql/admin_pet_visual_tools.sql'
       - 'supabase/sql/admin_player_profile_proposal.sql'
+      - 'supabase/sql/sora_weekly_zero_default.sql'
       - 'tests/admin-player-profile.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
     paths:
       - 'index.html'
+      - 'privacidade.html'
       - 'index2.html'
       - 'sora-jump.html'
       - 'karaoke-day.html'

@@ -180,3 +180,7 @@
 #hub .tw-mic-tv .tw-mic-sub{display:block;margin-top:5px;font-size:9px;opacity:.8}
 @media(prefers-reduced-motion:reduce){#hub .tw-tv-float .tw-mic-launch,#hub .tw-tv-float .tw-mic-launch::after{animation:none}}
 @media(max-width:620px){#hub .tw-tv-float .tw-mic-launch{left:-4px;top:-14px;width:44px;height:44px;min-height:44px}}
+
+/* Lugares ainda vagos no Top Idols: mantêm a grade das três posições. */
+#hub .tw-rank-game li.tw-rank-empty{opacity:.78}
+#hub .tw-rank-game .tw-rank-empty-name{grid-column:3;grid-row:1;color:var(--sub);font-weight:800}

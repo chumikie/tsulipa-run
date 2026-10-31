@@ -19,6 +19,13 @@ has(/where lower\(p\.nick\) = lower\(btrim\(p_nick\)\)/i,
   'A busca deve ser por nickname exato, normalizado.');
 has(/'historico_admin'/i, 'A ficha precisa incluir histórico administrativo existente.');
 has(/'sora_jump'/i, 'A ficha precisa reunir recordes do Sora.');
+has(/s\.period_type\s*=\s*'all'/i, 'O recorde geral do Sora precisa usar period_type=all.');
+has(/s\.period_type\s*=\s*'week'/i, 'O recorde semanal do Sora precisa usar period_type=week.');
+has(/s\.week_start\s*=\s*v_week/i, 'O recorde semanal precisa respeitar a semana atual de Brasília.');
+has(/coalesce\(max\(r\.position\),\s*0\)/i, 'A posição deve ser zero quando não houver classificação.');
+has(/v_sora_all_best/i, 'A ficha deve separar recorde geral e semanal do Sora.');
+has(/v_sora_week_best/i, 'A ficha deve separar recorde geral e semanal do Sora.');
+
 has(/'karaoke_time_semana'/i, 'A ficha precisa reunir dados semanais do Karaoke⭐Time!.');
 if (/auth\.users|email|service_role/i.test(sql)) {
   throw new Error('A ficha não deve expor dados de autenticação ou credenciais.');

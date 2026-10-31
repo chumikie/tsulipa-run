@@ -25,3 +25,4 @@ O projeto foi criado para testar a antiga sala de ensaio do Karaoke⭐Day!. Essa
 
 - `admin_pet_visual_tools.sql`: ações administrativas por perfil para restaurar as quatro necessidades de todos os pets e ajustar roupa/cor do Idol. Inclui revisão de sincronização para saves antigos não desfazerem a correção. **Não aplicado**; requer homologação antes de produção.
 - `tw_weekly_podium_proposal.sql`: pódio semanal online de Sora/Karaoke. Verificar o estado atual antes de qualquer uso; o ranking do Karaoke⭐Time! já possui o backend específico `kt_ranking`.
+- `admin_player_profile_proposal.sql`: proposta de RPC somente de leitura para a ficha administrativa de jogador do Backstage Admin (busca exata por nickname, recordes, participação, pets e histórico administrativo). **Não aplicada**; revisar compatibilidade do schema e homologar antes de produção.

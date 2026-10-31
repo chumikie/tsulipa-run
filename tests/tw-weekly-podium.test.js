@@ -10,6 +10,7 @@ const sql=fs.readFileSync(path.join(root,'supabase/sql/tw_weekly_podium_proposal
 const soraOnlineSql=fs.readFileSync(path.join(root,'supabase/sql/sora_jump_tv_profile_integration.sql'),'utf8');
 const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/sora_weekly_zero_default.sql'),'utf8');
 const adminProfileSql=fs.readFileSync(path.join(root,'supabase/sql/admin_player_profile_proposal.sql'),'utf8');
+const gameBadgesSql=fs.readFileSync(path.join(root,'supabase/sql/profile_game_badges_sunday_week.sql'),'utf8');
 const privacy=fs.readFileSync(path.join(root,'privacidade.html'),'utf8');
 function get(a,b){
  const start=html.indexOf(a),end=html.indexOf(b,start+a.length);
@@ -95,5 +96,25 @@ assert.ok(soraOnlineSql.includes('create or replace function public.tw_podio_sem
 assert.ok(soraOnlineSql.includes('private.sora_scores'));
 assert.ok(soraOnlineSql.includes('auth.uid()'));
 assert.ok(/revoke all on function public\.tw_podio_semana\(\) from public,\s*anon,\s*authenticated/i.test(soraOnlineSql));
+
+assert.ok(gameBadgesSql.includes("add column if not exists insignias_jogos"));
+assert.ok(gameBadgesSql.includes("sincronizar_insignias_jogos(p_insignias text[])"));
+assert.ok(gameBadgesSql.includes("from unnest(coalesce(p_insignias, '{}'::text[]))"));
+assert.ok(gameBadgesSql.includes("coalesce(insignias_jogos, '{}'::text[]) || v_pedidas"),
+  "Center Run badge import must append without replacing prior profile badges");
+for(const key of ["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"]){
+  assert.ok(gameBadgesSql.includes("'"+key+"'"),"Missing allowlisted Center Run badge: "+key);
+}
+for(const [key,score] of [["sora_500",500],["sora_1500",1500],["sora_3000",3000]]){
+  assert.ok(gameBadgesSql.includes("'"+key+"'")&&gameBadgesSql.includes(">= "+score),
+    "Missing server-calculated Sora milestone: "+key);
+}
+assert.ok(gameBadgesSql.includes("extract(dow from (created_at at time zone 'America/Sao_Paulo'))"));
+assert.ok(gameBadgesSql.includes("extract(dow from (now() at time zone 'America/Sao_Paulo')::date)"));
+assert.ok(!/date_trunc\s*\(\s*'week'/i.test(gameBadgesSql),
+  "Profile badge week must not retain PostgreSQL Monday-based date_trunc('week')");
+assert.ok(/revoke all on function public\.sincronizar_insignias_jogos\(text\[\]\) from public/i.test(gameBadgesSql));
+assert.ok(/grant execute on function public\.sincronizar_insignias_jogos\(text\[\]\) to authenticated/i.test(gameBadgesSql));
+
 console.log('✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge');
 console.log('✓ Top Idols fixed podium, Sora selected period/zero defaults and current privacy');

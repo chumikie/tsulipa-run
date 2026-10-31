@@ -11717,8 +11717,16 @@ function s2Load(){
 function s2SyncProfile(){
   if(!contaJ || typeof contaRpc !== 'function') return;
   var earned = S2_INS.filter(function(x){ return !!s2Save.badges[x[0]]; }).map(function(x){ return x[0]; });
-  if(!earned.length) return;
-  contaRpc('sincronizar_insignias_jogos', { p_insignias: earned }).catch(function(){});
+  var soraMax = 0;
+  try {
+    var hist = JSON.parse(localStorage.getItem('brs48cr_hist') || 'null');
+    soraMax = Math.max(0, Number(hist && hist.counters && hist.counters.sora_max_altura) || 0);
+  } catch(e) {}
+  if(!earned.length && soraMax < 500) return;
+  contaRpc('sincronizar_insignias_jogos', {
+    p_insignias: earned,
+    p_sora_max_altura: soraMax
+  }).catch(function(){});
 }
 function s2Persist(){
   try{ window.__TW_TEST_STORAGE.setItem(S2_KEY, JSON.stringify(s2Save)); }catch(e){}

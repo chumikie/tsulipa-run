@@ -111,6 +111,146 @@ end
 $function$;
 
 revoke all on function public.sincronizar_insignias_jogos(text[], integer) from public, anon;
+grant execute on function public.sincronizar_insignias_jogos(text[], integer) to authenticated;
+
+comment on function public.insignias_calc(uuid) is
+  'Insígnias do perfil; Center semanal usa semana domingo-sábado em America/Sao_Paulo e inclui marcos do Sora Jump.';
+comment on function public.sincronizar_insignias_jogos(text[], integer) is
+  'Persiste no perfil as sete insígnias da Temporada 2 do Center Run e os marcos históricos do Sora⭐Jump informados pelo próprio jogador autenticado Google.';
+
+commit;
+ and (v->>'xp')::numeric >= 800) then 'petkami' end,
+    case when ((select r from mini) > 0 and not exists (
+      select 1 from public.players o where o.id <> p_id and public.mini_pts(o.nuvem_pet,'ritmo') > (select r from mini)))
+      or ((select c from mini) > 0 and not exists (
+      select 1 from public.players o where o.id <> p_id and public.mini_pts(o.nuvem_pet,'corda') > (select c from mini)))
+      then 'top1mini' end,
+    case when coalesce(array_length((select visuais from p),1),0) >= 5 then 'fashion' end,
+    case when (select avatar is not null and not coalesce((avatar->>'auto')::boolean,false) from p) then 'estilista' end,
+    case when (select count(*) from public.coracoes where para=p_id) >= 10 then 'amada' end,
+    case when (select quarteto_em is not null from p) then 'quarteto' end,
+    case when (select count(*) from public.recados where de=p_id) >= 10 then 'carteiro' end,
+    case when (select count(*) from public.coracoes where de=p_id) >= 10 then 'amizade' end,
+    case when array['roupa_brasil','roupa_pijama','roupa_happi','roupa_gingham','roupa_hipster','roupa_rock','roupa_disco','roupa_technopop','roupa_decora','roupa_alienfan'] <@ coalesce((select visuais from p),'{}') then 'guarda' end,
+    case when exists (select 1 from sem where sem.user_id=p_id and sem.rk=1) then 'centersemana' end,
+    case when (select score from sora) >= 500 then 'sora_500' end,
+    case when (select score from sora) >= 1500 then 'sora_1500' end,
+    case when (select score from sora) >= 3000 then 'sora_3000' end
+  ], null) || (select a from tem);
+$function$;
+
+create or replace function public.sincronizar_insignias_jogos(p_insignias text[], p_sora_max_altura integer default 0)
+returns text[]
+language plpgsql
+security definer
+set search_path to 'public'
+as $function$
+declare
+  v_uid uuid := auth.uid();
+  v_validas text[];
+  v_sora text[] := array[]::text[];
+begin
+  if v_uid is null
+     or coalesce(auth.jwt()->'app_metadata'->>'provider','') <> 'google'
+     or coalesce(auth.jwt()->>'is_anonymous','false') = 'true' then
+    raise exception 'google_login_required' using errcode='42501';
+  end if;
+
+  v_validas := array(
+    select distinct x
+    from unnest(coalesce(p_insignias,'{}'::text[])) x
+    where x = any(array[
+      's2_ensaio','s2_backstage','s2_estudio','s2_festival',
+      's2_aeroporto','s2_geral','s2_dome'
+    ]::text[])
+  );
+
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 500 then v_sora := v_sora || 'sora_500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 1500 then v_sora := v_sora || 'sora_1500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 3000 then v_sora := v_sora || 'sora_3000'; end if;
+
+  update public.players
+     set ins_ganhas = (
+       select array_agg(distinct badge)
+       from unnest(coalesce(ins_ganhas,'{}'::text[]) || v_validas || v_sora) badge
+     )
+   where id=v_uid;
+
+  return public.insignias(v_uid);
+end
+$function$;
+
+revoke all on function public.sincronizar_insignias_jogos(text[], integer) from public, anon;
+grant execute on function public.sincronizar_insignias_jogos(text[]) to authenticated;
+
+comment on function public.insignias_calc(uuid) is
+  'Insígnias do perfil; Center semanal usa semana domingo-sábado em America/Sao_Paulo e inclui marcos do Sora Jump.';
+comment on function public.sincronizar_insignias_jogos(text[]) is
+  'Persiste no perfil as sete insígnias da Temporada 2 do Center Run e os marcos históricos do Sora⭐Jump informados pelo próprio jogador autenticado Google.';
+
+commit;
+ and (v->>'xp')::numeric >= 800) then 'petkami' end,
+    case when ((select r from mini) > 0 and not exists (
+      select 1 from public.players o where o.id <> p_id and public.mini_pts(o.nuvem_pet,'ritmo') > (select r from mini)))
+      or ((select c from mini) > 0 and not exists (
+      select 1 from public.players o where o.id <> p_id and public.mini_pts(o.nuvem_pet,'corda') > (select c from mini)))
+      then 'top1mini' end,
+    case when coalesce(array_length((select visuais from p),1),0) >= 5 then 'fashion' end,
+    case when (select avatar is not null and not coalesce((avatar->>'auto')::boolean,false) from p) then 'estilista' end,
+    case when (select count(*) from public.coracoes where para=p_id) >= 10 then 'amada' end,
+    case when (select quarteto_em is not null from p) then 'quarteto' end,
+    case when (select count(*) from public.recados where de=p_id) >= 10 then 'carteiro' end,
+    case when (select count(*) from public.coracoes where de=p_id) >= 10 then 'amizade' end,
+    case when array['roupa_brasil','roupa_pijama','roupa_happi','roupa_gingham','roupa_hipster','roupa_rock','roupa_disco','roupa_technopop','roupa_decora','roupa_alienfan'] <@ coalesce((select visuais from p),'{}') then 'guarda' end,
+    case when exists (select 1 from sem where sem.user_id=p_id and sem.rk=1) then 'centersemana' end,
+    case when (select score from sora) >= 500 then 'sora_500' end,
+    case when (select score from sora) >= 1500 then 'sora_1500' end,
+    case when (select score from sora) >= 3000 then 'sora_3000' end
+  ], null) || (select a from tem);
+$function$;
+
+create or replace function public.sincronizar_insignias_jogos(p_insignias text[], p_sora_max_altura integer default 0)
+returns text[]
+language plpgsql
+security definer
+set search_path to 'public'
+as $function$
+declare
+  v_uid uuid := auth.uid();
+  v_validas text[];
+  v_sora text[] := array[]::text[];
+begin
+  if v_uid is null
+     or coalesce(auth.jwt()->'app_metadata'->>'provider','') <> 'google'
+     or coalesce(auth.jwt()->>'is_anonymous','false') = 'true' then
+    raise exception 'google_login_required' using errcode='42501';
+  end if;
+
+  v_validas := array(
+    select distinct x
+    from unnest(coalesce(p_insignias,'{}'::text[])) x
+    where x = any(array[
+      's2_ensaio','s2_backstage','s2_estudio','s2_festival',
+      's2_aeroporto','s2_geral','s2_dome'
+    ]::text[])
+  );
+
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 500 then v_sora := v_sora || 'sora_500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 1500 then v_sora := v_sora || 'sora_1500'; end if;
+  if greatest(coalesce(p_sora_max_altura,0),0) >= 3000 then v_sora := v_sora || 'sora_3000'; end if;
+
+  update public.players
+     set ins_ganhas = (
+       select array_agg(distinct badge)
+       from unnest(coalesce(ins_ganhas,'{}'::text[]) || v_validas || v_sora) badge
+     )
+   where id=v_uid;
+
+  return public.insignias(v_uid);
+end
+$function$;
+
+revoke all on function public.sincronizar_insignias_jogos(text[], integer) from public, anon;
 grant execute on function public.sincronizar_insignias_jogos(text[]) to authenticated;
 
 comment on function public.insignias_calc(uuid) is

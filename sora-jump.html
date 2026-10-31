@@ -4051,19 +4051,22 @@ window.addEventListener('deviceorientation', function(e){
 function soraSetupUI(){
   if($('soraOv')) return;
 
-  // Botão "☁️ Sora⭐Jump!" no menu principal
-  var dBtn = $('playDaily') || $('play');
-  var sBtn = document.createElement('button');
-  sBtn.type = 'button';
-  sBtn.id = 'openSoraBtn';
-  sBtn.className = 'btn alt';
-  sBtn.textContent = '☁️ Sora⭐Jump!';
-  sBtn.setAttribute('aria-label', 'Abrir minijogo Sora Jump');
-  // Botão fixo evita ficar preso dentro de um menu oculto/rolável no celular.
-  // A posição respeita a área segura do iPhone e tem alvo de toque amplo.
-  sBtn.style.cssText = 'position:fixed;z-index:99999;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:15px;font-weight:900;min-height:48px;padding:12px 22px;border:2px solid rgba(255,255,255,.96);border-radius:999px;background:linear-gradient(105deg,#8e82d8,#7099df,#68bfa5);color:#fff;text-shadow:0 1px 2px rgba(35,25,65,.42);box-shadow:0 8px 28px rgba(72,64,145,.36);white-space:nowrap;touch-action:manipulation;cursor:pointer';
-  document.body.appendChild(sBtn);
-  sBtn.onclick = function(){ soraOpenUI(); };
+  // O launcher azul antigo pertence somente à versão standalone.
+  // No INDEX 2 o iframe abre diretamente, sem inserir um botão transitório.
+  var soraHubEmbed = false;
+  try{soraHubEmbed = parent !== window && new URLSearchParams(location.search).get('embed') === 'index2';}catch(_){}
+  if(!soraHubEmbed){
+    var sBtn = document.createElement('button');
+    sBtn.type = 'button';
+    sBtn.id = 'openSoraBtn';
+    sBtn.className = 'btn alt';
+    sBtn.textContent = '☁️ Sora⭐Jump!';
+    sBtn.setAttribute('aria-label', 'Abrir minijogo Sora Jump');
+    // O botão fixo permanece disponível na versão aberta separadamente.
+    sBtn.style.cssText = 'position:fixed;z-index:99999;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:15px;font-weight:900;min-height:48px;padding:12px 22px;border:2px solid rgba(255,255,255,.96);border-radius:999px;background:linear-gradient(105deg,#8e82d8,#7099df,#68bfa5);color:#fff;text-shadow:0 1px 2px rgba(35,25,65,.42);box-shadow:0 8px 28px rgba(72,64,145,.36);white-space:nowrap;touch-action:manipulation;cursor:pointer';
+    document.body.appendChild(sBtn);
+    sBtn.onclick = function(){ soraOpenUI(); };
+  }
 
   var ov = document.createElement('div');
   ov.className = 'ov';
@@ -4133,6 +4136,16 @@ function soraSetupUI(){
     '</div>';
   document.body.appendChild(ov);
 
+  // O histórico ocupa uma tela própria dentro da janela, não uma caixa
+  // de 115 px espremida dentro do canvas do jogo.
+  var histBox = $('soraHistBox');
+  var soraPanel = ov.querySelector('.sora-panel');
+  if(histBox && soraPanel){
+    soraPanel.appendChild(histBox);
+    histBox.className = 'sora-history-screen';
+    histBox.innerHTML = '<div class="sora-history-head"><strong>📊 Histórico & Insígnias</strong><button type="button" id="soraHistCloseBtn" aria-label="Fechar histórico">×</button></div><div id="soraHistContent"></div>';
+  }
+
   var secretTitle = ov.querySelector('.bp-title');
   if(secretTitle){
     secretTitle.style.userSelect = 'none';
@@ -4190,6 +4203,10 @@ function soraSetupUI(){
   document.addEventListener('keydown', function(e){
     if(!soraOpen) return;
     if(e.code === 'Escape'){
+      var historyScreen = $('soraHistBox');
+      if(historyScreen && !historyScreen.hidden){
+        e.preventDefault();historyScreen.hidden = true;return;
+      }
       e.preventDefault();
       soraCloseUI();
       try{if(parent!==window)parent.postMessage({type:'tsulipa-games-hub'},location.origin);}catch(_){}
@@ -4250,6 +4267,7 @@ function soraSetupUI(){
     hb.hidden = !hb.hidden;
     if(!hb.hidden) soraRenderHistModal();
   };
+  $('soraHistCloseBtn').onclick = function(){$('soraHistBox').hidden = true;};
   $('soraCloseBtn').onclick = soraCloseUI;
   $('soraBackTopBtn').onclick = soraCloseUI;
 }
@@ -4412,7 +4430,10 @@ function soraCloseUI(){
       input.value=String(saved).trim()||'Tsu';
     }
     var launcher=document.getElementById('openSoraBtn');
-    try{if(launcher)launcher.click();}finally{var preload=document.getElementById('twSoraStandAlonePreload');if(preload)preload.remove();}
+    var embedded=false;
+    try{embedded=parent!==window&&new URLSearchParams(location.search).get('embed')==='index2';}catch(_){}
+    try{if(embedded)soraOpenUI();else if(launcher)launcher.click();}
+    finally{var preload=document.getElementById('twSoraStandAlonePreload');if(preload)preload.remove();}
   });
 })();
 </script>

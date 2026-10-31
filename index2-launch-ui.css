@@ -166,8 +166,8 @@
 #hub .hubcards .hubrun .tw-hubgame-jp{color:#fff;opacity:.85}
 
 /* Sora layout only; window chrome lives in tw-windows.css. */
-.tw-preview-game[data-jogo="sora"] .tw-preview-panel{width:min(100%,430px);padding:52px 10px 10px}
+.tw-preview-game[data-jogo="sora"] .tw-preview-panel{width:min(100%,470px);padding:14px 10px 10px}
 .tw-preview-game[data-jogo="sora"] .tw-preview-header-slot{position:absolute;top:12px;left:12px;right:12px;min-height:0;padding:0;background:none;justify-content:space-between}
 .tw-preview-game[data-jogo="sora"] .tw-preview-stage{flex:0 0 auto;display:block;padding:0;background:none}
 .tw-preview-game[data-jogo="sora"] .hubpart{display:none}
-.tw-preview-game[data-jogo="sora"] #twPreviewIframe{height:min(70dvh,620px);max-width:none;border:0;box-shadow:none;background:transparent}
+.tw-preview-game[data-jogo="sora"] #twPreviewIframe{height:min(calc(100dvh - 72px),760px);max-width:none;border:0;box-shadow:none;background:transparent}

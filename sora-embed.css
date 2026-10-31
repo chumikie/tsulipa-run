@@ -50,12 +50,15 @@ html.tw-sora-embed #soraOv>.panel.sora-panel{
 html.tw-sora-embed #soraOv>.panel.sora-panel::-webkit-scrollbar,
 html.tw-sora-embed #soraMenuBox::-webkit-scrollbar{display:none}
 html.tw-sora-embed #soraOv .sora-topbar{display:none!important}
+html.tw-sora-embed #soraOv .tw-window-title{margin-top:0!important;line-height:1.15!important}
+html.tw-sora-embed #soraOv .tw-window-jp{margin-bottom:4px!important}
+#soraOv #soraHistBtn,#soraOv .sora-ranking-wrap{display:none!important}
 html.tw-sora-embed #soraSoundBtn{display:none!important}
 
 html.tw-sora-embed #soraStage{
   box-sizing:border-box;
   
-  width:min(100%,420px,calc((100dvh - 210px)*360/520))!important;
+  width:min(100%,440px,calc((100dvh - 250px)*360/520))!important;
   height:auto!important;
   max-height:none!important;
   aspect-ratio:360/520!important;
@@ -121,9 +124,6 @@ html.tw-sora-embed #soraOv button:focus-visible{outline:3px solid var(--tw-sora-
 @media(prefers-reduced-motion:reduce){
   html.tw-sora-embed #soraOv .sora-over-icon{animation:none!important}
 }
-
-html.tw-sora-embed #soraImportProfileBtn,
-html.tw-sora-embed #soraImportProfileBox{display:none!important}
 
 html.tw-sora-embed #soraTestProfileSource,html.tw-sora-embed #soraImportProfileBtn,html.tw-sora-embed #soraImportProfileBox{display:none!important}
 
@@ -193,7 +193,6 @@ html.tw-sora-embed #soraOv .sora-menu-actions .sec{
   font:800 12px/1.15 "M PLUS Rounded 1c",sans-serif!important;white-space:normal;
   background:var(--chip,#f3e8ff)!important;color:var(--b1,#7b3ff0)!important;
   border:1.5px solid rgba(155,48,217,.35)!important;box-shadow:none!important;border-radius:14px!important}
-html.tw-sora-embed #soraOv #soraHistBtn{color:var(--pink,#ff6fb5)!important}
 html.tw-sora-embed #soraMenuBox .sora-controls-hint{display:flex;justify-content:center;margin:2px auto 0!important;max-width:330px}
 html.tw-sora-embed #soraMenuBox .sora-controls-hint span{
   display:inline-block;padding:4px 12px;border-radius:99px;font-size:10.5px;line-height:1.3;

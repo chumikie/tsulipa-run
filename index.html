@@ -740,7 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=8">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=9">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 <link rel="stylesheet" href="./karaoke-popup.css?v=3">
@@ -7231,7 +7231,7 @@ function perfAbaMostrar(){
     }
     h += '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
     if(d.melhores && d.melhores.length) h += '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.melhores, d.admin_ver) + '</ol>';
-    if(meu) h += '<section class="tw-rank-profile" id="twSoraWeekProfile"><h3>☁️ Sora⭐Jump! <small lang="ja">今週の最高記録</small></h3><p id="twSoraWeekScore"></p></section>';
+    if(meu) h += '<section class="tw-rank-profile" id="twSoraWeekProfile"><h3>☁️ Sora⭐Jump! <small lang="ja">今週の最高記録</small></h3><p id="twSoraWeekScore"></p>' + perfSoraHist() + '</section>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
@@ -7256,6 +7256,19 @@ perfOv.addEventListener('click', function(e){
   var t = e.target.closest('.perftabs button'); if(!t) return;
   perfAba = t.dataset.aba; perfProva = ''; beep(880, .04, 'triangle', .04); perfAbaMostrar();
 });
+// Sora⭐Jump!: 5 últimas e 5 melhores subidas deste aparelho (o jogo guarda no histórico local)
+function perfSoraHist(){
+  var g = null;
+  try{
+    var ls = window.localStorage, r = ls.getItem('__tsulipa_sorajump_test_v1__::brs48cr_hist');
+    if(!r || r === '__TW_TEST_DELETED__') r = ls.getItem('brs48cr_hist');
+    var d = JSON.parse(r || 'null'); g = d && d.games && d.games.sora_jump;
+  }catch(e){}
+  if(!g || !((g.last5 || []).length)) return '';
+  function li(L){ return (L || []).slice(0, 5).map(function(x){ return '<li><span><small>' + escHtml(perfData(+x.t || x.d)) + '</small></span><strong>' + Math.max(0, Math.floor(+x.score || 0)) + ' m</strong></li>'; }).join(''); }
+  return '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 subidas')) + '</h4><ol class="lb perfult">' + li(g.last5) + '</ol>' +
+         ((g.best5 || []).length ? '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores subidas')) + '</h4><ol class="lb perfult">' + li(g.best5) + '</ol>' : '');
+}
 function perfUltimas(L, adm){
   if(!L.length) return '<li style="justify-content:center"><em>' + escHtml(tr('Nenhuma corrida online ainda.')) + '</em></li>';
   return L.map(function(r){
@@ -10915,7 +10928,7 @@ if(typeof applyLang === 'function'){ var duoApplyLangOrig = applyLang; applyLang
  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
  ['Todas as contas', 'All accounts', 'Todas las cuentas', 'บัญชีทั้งหมด', 'すべてのアカウント'], ['desde', 'since', 'desde', 'ตั้งแต่', 'から'],
  ['Não funcionou? Entrar de outro jeito', "Didn't work? Sign in another way", '¿No funcionó? Entrar de otra forma', 'ไม่ได้ผล? เข้าสู่ระบบอีกวิธี', 'うまくいかない？別の方法でログイン'],
- ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'], ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'],
+ ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'], ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'], ['Últimas 5 subidas', 'Last 5 climbs', 'Últimas 5 subidas', '5 รอบล่าสุด', '最近の5回'], ['5 melhores subidas', 'Top 5 climbs', '5 mejores subidas', '5 รอบที่ดีที่สุด', 'ベスト5回'],
  ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'], ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'], ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
  ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'], ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'], ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの'], ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
  ['Limpar foto', 'Clear photo', 'Borrar foto', 'ล้างรูป', '写真をリセット'], ['Tirar do Moon⭐Duo!/outdoors', 'Remove from Moon⭐Duo!/billboards', 'Quitar de Moon⭐Duo!/carteles', 'เอาออกจาก Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板から外す'],

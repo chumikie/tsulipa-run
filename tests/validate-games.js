@@ -647,6 +647,18 @@ try{
     assert(children.findIndex(x=>x.name==="weekly")<children.findIndex(x=>x.name==="audience"),
       "Weekly board must be physically moved before audience on desktop and mobile");
   }
+  assert(previewSkin.includes("#twPreviewJogo[data-karaoke-tela]{")&&
+    previewSkin.includes("position:relative!important")&&
+    previewSkin.includes("overflow:visible!important")&&
+    previewSkin.includes("flex:0 0 auto!important;min-height:100dvh"),
+    "Karaoke Time must be a growing document section, not a fixed layer over the site footer");
+  assert(karaokeTime.includes("width:min(100%,970px)!important")&&
+    karaokeTime.includes("max-width:920px!important"),
+    "Embedded Karaoke content must retain the original compact 970/920px bounds");
+  const previewInsert=lab.indexOf("document.body.insertAdjacentHTML('beforeend',html);");
+  const siteFooter=lab.indexOf("var f = document.createElement('footer'); f.className = 'siterodape sitefoot';");
+  assert(previewInsert>=0&&siteFooter>previewInsert,
+    "The official copyright/logo/privacy footer must remain after the Karaoke page in document flow");
   console.log("✓ Game badges in profile + Sunday weekly boundaries + Karaoke hierarchy");
 }catch(e){errors.push("Profile badges / Sunday / Karaoke polish: "+e.message);}
 

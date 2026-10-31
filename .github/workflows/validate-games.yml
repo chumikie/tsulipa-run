@@ -13,7 +13,9 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'karaoke-tickets.js'
+      - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
       - 'tests/karaoke-note-map.test.js'
@@ -75,7 +77,9 @@ on:
       - 'karaoke-day.html'
       - 'karaoke-time.html'
       - 'karaoke-tickets.js'
+      - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
       - 'tests/karaoke-note-map.test.js'
@@ -156,6 +160,8 @@ jobs:
         run: node tests/karaoke-flow.test.js
       - name: Validate Karaoke ticket review, Gacha, inventory, gifts, moderation and safe admission
         run: node tests/karaoke-tickets.test.js
+      - name: Validate visible Karaoke ticket counters, gift and Gacha balance sync
+        run: node tests/karaoke-ticket-ui.test.js
       - name: Validate Karaoke Time input timestamps, visual target and timing feedback
         run: node tests/karaoke-input-timing.test.js
       - name: Validate Karaoke Time melodic cues and compact stage settings

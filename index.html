@@ -740,6 +740,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
 <link rel="stylesheet" href="./index2-skin.css?v=1">
+<link rel="stylesheet" href="./karaoke-tickets.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=9">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
@@ -754,8 +755,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
     </i>
     <div><b translate="no">TsuLiPa<span class="st">⭐</span>World</b><small>ツリパ⭐ワールド</small></div>
   </a>
-  <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+  <div class="tw-header-balances">
     <div class="pill" id="best">Recorde: 0</div>
+    <span class="tw-ticket-counter" id="ktHeaderTickets" role="status" aria-live="polite" aria-label="Tickets de Karaoke: entre com Google"><span aria-hidden="true">🎟️</span> <b id="ktHeaderTicketNumber">—</b></span>
   </div>
 </header>
 <div class="stage" id="stage">
@@ -1021,7 +1023,7 @@ var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[18
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
 try{best=+localStorage.getItem('brs48cr_best')||0;sel=+localStorage.getItem('brs48cr_char')||0}catch(e){}
 var bestEl=document.getElementById('best'),starT=0;try{starT=+localStorage.getItem('brs48cr_st')||0}catch(e){}
-function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT}setBest();
+function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT;if(window.ktTickets&&window.ktTickets.renderBadge)window.ktTickets.renderBadge();}setBest();
 
 var cw=document.getElementById('chars'),$=function(i){return document.getElementById(i)};
 var SK=['#fbe5d8','#f1c9a5','#d9a074','#b97a50','#8d5a3b','#5e3b27'],CU=CH[3],accSel='';
@@ -6289,6 +6291,7 @@ function contaEntrar(){
 function contaSair(){
   if(_supabase) _supabase.auth.signOut();
   contaJ = null; contaRun = null; perfGuardarCor(''); contaUI();
+  if(window.ktTickets)window.ktTickets.reset();
   perfSair();   // V2.1.3
 }
 function contaAviso(t){
@@ -6299,7 +6302,7 @@ function contaAviso(t){
 
 // ---------- Depois do login: carrega a conta, ou pede o nome e importa o save ----------
 function contaSessao(sess){
-  if(!sess){ if(contaJ){ contaJ = null; contaUI(); } return; }
+  if(!sess){ if(contaJ){ contaJ = null; contaUI(); }if(window.ktTickets)window.ktTickets.reset();return; }
   contaRpc('jogador').then(function(j){
     if(j) perfAntesDeEntrar(j);   // V2.1.3 (ele chama o contaAplicar)
     else contaPedirNome();
@@ -6312,6 +6315,7 @@ function contaAplicar(j){
   nick = j.nick;
   try{ localStorage.setItem('brs48cr_st', starT); localStorage.setItem('brs48cr_nick', nick); }catch(e){}
   setBest(); contaUI();
+  if(window.ktTickets)window.ktTickets.refresh();
   if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
@@ -8962,17 +8966,18 @@ function twKaraokeAtualizarCard(){
   var cards=$('hubCards'),card=cards&&cards.querySelector('[data-ir="karaoke"]');
   if(!card)return;
   if(TW_KARAOKE_TIME){
-    var tt=card.querySelector('.tw-karaoke-timer');
+    var tt=card.querySelector('.tw-karaoke-timer'),tk=card.querySelector('.tw-karaoke-ticket-count');
     card.classList.remove('tw-karaoke-locked');card.removeAttribute('aria-disabled');
     // Rosa de alerta (como Pet, Gacha e Sora) enquanto faltar algum dos 5 shows do dia.
-    var usados=contaJ&&typeof twRankData!=='undefined'?twRankData.ktUsados:null,faltam=usados===null?null:Math.max(0,5-usados),extras=contaJ&&typeof twRankData!=='undefined'?twRankData.ktTickets||0:0;
+    var usados=contaJ&&typeof twRankData!=='undefined'?twRankData.ktUsados:null,faltam=usados===null?null:Math.max(0,5-usados),extras=contaJ&&typeof twRankData!=='undefined'?Math.max(0,twRankData.ktTickets||0):0;
+    if(tk){var labels={pt:'Tickets extras de Karaoke',en:'Extra Karaoke tickets',es:'Tickets extra de Karaoke',th:'ตั๋วคาราโอเกะพิเศษ',ja:'追加カラオケチケット'};tk.textContent='🎟️ '+(contaJ?extras:'—');tk.setAttribute('aria-label',(labels[LANG]||labels.pt)+': '+(contaJ?extras:'—'));tk.classList.toggle('tw-has-ticket',extras>0);}
     var pendente=!!contaJ&&(faltam!==0||extras>0);
     card.classList.toggle('tw-alert-pink',pendente);
     var al=card.querySelector('.hubalerta');
     if(pendente&&!al)card.insertAdjacentHTML('beforeend','<em class="hubalerta" aria-hidden="true">!</em>');
     else if(!pendente&&al)al.remove();
     var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}:
-      faltam===0&&extras>0?{pt:'🎟️ '+extras+' ticket(s) extra(s)',en:'🎟️ '+extras+' extra ticket(s)',es:'🎟️ '+extras+' ticket(s) extra',ja:'🎟️ 追加チケット'+extras+'枚',th:'🎟️ ตั๋วพิเศษ '+extras+' ใบ'}:
+      faltam===0&&extras>0?{pt:'🎤 Gratuitas usadas',en:'🎤 Free shows used',es:'🎤 Gratis agotados',ja:'🎤 無料分終了',th:'🎤 ใช้สิทธิ์ฟรีครบแล้ว'}:
       faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้'}:
       {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์'};
     // as mesmas estrelinhas da sala: ★ = show que ainda resta hoje, ☆ = show já usado
@@ -9027,7 +9032,7 @@ function hubCardsUI(){
   }[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
   $('hubCards').insertAdjacentHTML('beforeend',
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+(TW_KARAOKE_TIME?'Abrir Karaoke Time':'Karaoke Day: programação dominical')+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small></button>'
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+(TW_KARAOKE_TIME?'Abrir Karaoke Time':'Karaoke Day: programação dominical')+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>'
   );
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
@@ -9892,7 +9897,7 @@ $('gachaGirar').onclick = function(){
       if(r && r.ok){
         gachaFeito = true; gachaRes = r; gachaAgora = true;
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
-        if(r.tipo==='ticket'&&window.ktTickets)window.ktTickets.refresh();
+        if(r.tipo==='ticket'&&window.ktTickets)window.ktTickets.acceptBalance(r);
         if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
         else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
       } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
@@ -13319,7 +13324,7 @@ applyLang();
 })();
 </script>
 <script src="./tw-windows.js?v=1"></script>
-<script src="./karaoke-tickets.js?v=1"></script>
+<script src="./karaoke-tickets.js?v=2"></script>
 </body>
 </html>
 

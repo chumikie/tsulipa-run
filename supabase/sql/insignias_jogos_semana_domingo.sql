@@ -49,7 +49,7 @@ as $function$
     case when (select best from p) >= 50000 then 'kami' end,
     case when (select j ? 'tsu' and j ? 'lirika' and j ? 'pati' and j ? 'meu' from pets) then 'familia' end,
     case when exists (select 1 from pets, jsonb_each(pets.j) e(k,v)
-      where coalesce(v->>'xp','') ~ '^[0-9]+([.][0-9]+)?
+      where coalesce(v->>'xp','') ~ '^[0-9]+([.][0-9]+)?$' and (v->>'xp')::numeric >= 800) then 'petkami' end,
     case when ((select r from mini) > 0 and not exists (
       select 1 from public.players o where o.id <> p_id and public.mini_pts(o.nuvem_pet,'ritmo') > (select r from mini)))
       or ((select c from mini) > 0 and not exists (

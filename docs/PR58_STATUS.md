@@ -3,7 +3,7 @@
 Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
 
-Última atualização: 01/11/2026 — HEAD com a correção de visibilidade: `5931104637c019e19b3d893e02a1b2604eb68680` (CI run `41335191648` aprovado).
+Última atualização: 01/11/2026 — HEAD com os cabelos: `ebba3aef02508f299770adb8fee88e4c8cee23f3` (CI run `41336972376` aprovado).
 
 ---
 
@@ -30,7 +30,7 @@ A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Sup
 ## 3. Falta corrigir / investigar
 
 - **Montar Idol e Star⭐Gacha sem animação (relato de 01/11, 15:19).** Causa provável: até `5931104`, o cache da camada do topo (`twOverlayTopo`) só era invalidado pelo script quebrado; ao abrir uma janela, o loop lia o cache antigo, achava que estava oculto e parava no 1º quadro. Na prévia atual o Gacha anima (teste no Chromium). Montar Idol exige login: **confirmar com recarga forçada** (Ctrl+Shift+R) na prévia.
-- **Cortes ondulados — decisão do responsável (01/11):** ajustar, no mesmo estilo de arte dos cabelos do jogo. `onduladom` (ondulado curto) fica e deve ser refinado sem erros; o corte curto bicolor deve ser **metade preta + metade na cor escolhida pelo jogador** (referência: Maruru); `onduladof` deve virar um cabelo **repicado e um pouco volumoso**, médio, com franja entre os olhos (referência: Mimimila). Os 7 cortes e 5 franjas antigos seguem idênticos à `main`.
+- **Cortes extras redesenhados (`ebba3ae`), aguardando aprovação visual do responsável.** No estilo de `drawChar`: *Ondulado curto* (topo e franja mantidos, pontas laterais junto ao rosto no lugar das "bolas"), *Curto bicolor (metade preta)* (risca lateral, metade na cor escolhida e metade preta — ref. Maruru) e *Repicado volumoso* (médio até os ombros, pontas suaves para fora, mecha entre os olhos — ref. Mimimila). Valores salvos inalterados; cortes e franjas antigos idênticos à `main`; `tw-avatar-hair.js?v=2`.
 - **Chapéu de Capitão e estrela — pedidos do responsável:** chapéu com formato mais militar (cor aprovada); estrela um pouco maior, como presilha abaixo do cabelo, ao lado da franja (como hibisco e flor de cerejeira). Não implementado ainda.
 - **Karaoke pausa sozinho em tela de celular.** Numa janela 420×900, o show começa e fica em "Pausado" logo após confirmar; em janela alta (1280×1600) toca normalmente, e a produção toca nos dois casos. Suspeita: a regra nova que pausa o show quando palco/painel de ritmo saem da área visível. Confirmar em celular real antes de corrigir.
 - Custo da faixa de visitantes do Karaoke.
@@ -58,8 +58,8 @@ Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapé
 
 ### Pedidos do responsável (01/11) — fila, um por vez
 
-1. Montar Idol e Gacha: confirmação após recarga (acima).
-2. Cabelos: ajustes descritos acima.
+1. Montar Idol e Gacha: **confirmados pelo responsável** após a correção.
+2. Cabelos: redesenhados em `ebba3ae` — aguardando aprovação.
 3. Chapéu de Capitão mais militar; estrela como presilha maior ao lado da franja.
 4. Karaoke: botão "Ajustar timing" junto de volume e câmera sobre a tela; no celular, todos esses ícones saem de cima da tela do Karaoke e vão para cima.
 5. Karaoke: show não pode pausar sozinho em tela de celular.

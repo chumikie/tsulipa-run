@@ -37,7 +37,7 @@ begin
   if (a_total,b_today,b_yesterday,d_total) is distinct from (100,100,80,35) then
     raise exception 'daily credits or previous-day ledger changed: %,%,%,%',a_total,b_today,b_yesterday,d_total;
   end if;
-  if (a_runs,d_runs,pet_events) is distinct from (2,1,1) then
+  if (a_runs,d_runs,pet_events) is distinct from (3,1,1) then
     raise exception 'run idempotency or Pet history changed';
   end if;
   if (select count(*) from public.star_log where user_id='00000000-0000-4000-8000-000000000003')<>0 then

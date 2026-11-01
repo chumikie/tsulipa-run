@@ -33,7 +33,6 @@ function domVisible(el){
 }
 function unobscured(el){
  if(!el||!d.elementFromPoint)return true;
- if(w.getComputedStyle(el).pointerEvents==='none')return true;
  var r=el.getBoundingClientRect(),xs=[.2,.5,.8],ys=[.2,.5,.8];
  for(var yi=0;yi<ys.length;yi++)for(var xi=0;xi<xs.length;xi++){
   var px=r.left+r.width*xs[xi],py=r.top+r.height*ys[yi];
@@ -41,7 +40,7 @@ function unobscured(el){
   var top=d.elementFromPoint(px,py);if(!top)continue;
   var cover=top.closest&&top.closest('[aria-modal="true"],[role="dialog"],dialog[open],.ov,.tw-modal,.modal,.overlay');
   if(cover&&cover!==el&&!cover.contains(el))continue;
-  if(top===el||el.contains(top))return true;
+  if(top===el||el.contains(top)||top.contains(el))return true;
  }
  return false;
 }

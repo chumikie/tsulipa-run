@@ -3090,16 +3090,22 @@ function twElementoVisivelNaJanela(el){
   var r=el.getBoundingClientRect();
   return r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<window.innerHeight&&r.left<window.innerWidth;
 }
+var twOverlayTopCache=null,twOverlayTopDirty=true;
 function twOverlayTopo(){
-  var L=Array.prototype.slice.call(document.querySelectorAll('.ov:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])')).filter(twElementoVisivelNaJanela);
-  L.sort(function(a,b){
-    var za=parseInt(getComputedStyle(a).zIndex,10)||0,zb=parseInt(getComputedStyle(b).zIndex,10)||0;
-    if(za!==zb)return za-zb;
-    if(a===b)return 0;
-    return (a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING)?-1:1;
-  });
-  return L.length?L[L.length-1]:null;
+  if(!twOverlayTopDirty)return twOverlayTopCache;
+  twOverlayTopDirty=false;
+  var nodes=document.querySelectorAll('.ov:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])'),top=null,topZ=-Infinity;
+  for(var i=0;i<nodes.length;i++){
+    var el=nodes[i];
+    if(!twElementoVisivelNaJanela(el))continue;
+    var z=parseInt(getComputedStyle(el).zIndex,10)||0;
+    // querySelectorAll já retorna ordem documental; em empate, o último continua no topo.
+    if(z>=topZ){top=el;topZ=z;}
+  }
+  twOverlayTopCache=top;
+  return top;
 }
+function twOverlayInvalidar(){twOverlayTopDirty=true;}
 function twAnimacaoVisivel(el){
  if(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return false;
   if(document.hidden||!twElementoVisivelNaJanela(el))return false;
@@ -13428,12 +13434,13 @@ applyLang();
  }
  var scheduled=false;
  function schedule(){
+  twOverlayInvalidar();
   if(scheduled)return;scheduled=true;
   requestAnimationFrame(function(){scheduled=false;sync();});
  }
- new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','class','open']});
+ new MutationObserver(function(){twOverlayInvalidar();sync();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
  document.addEventListener('visibilitychange',sync);
- window.addEventListener('pageshow',sync);
+ window.addEventListener('pageshow',function(){twOverlayInvalidar();sync();});
 window.addEventListener('message',function(e){if(e.source===window.parent&&e.data&&e.data.type==='tsulipa-motion-state')schedule();});
  window.addEventListener('pagehide',function(){
   twIndex2PauseBaseFrames();

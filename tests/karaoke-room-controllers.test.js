@@ -35,7 +35,7 @@ const blocked=[
 ];
 for(const [label,state] of blocked){
  const h=autoHarness(state);h.tick();
- assert.equal(h.state.singer&&h.state.singer.bot,undefined,label+' blocks autonomous mic');
+ assert.equal(h.calls.some(c=>c[0]==='singer'),false,label+' blocks autonomous mic');
  assert.equal(h.calls.some(c=>c[0]==='start'),false,label+' must not start the music engine');
 }
 {

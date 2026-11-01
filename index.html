@@ -1369,9 +1369,8 @@ function music(on){
   clearInterval(mt);if(!on)return;
   var k=curT||'menu',ms={menu:260,tense:150,hard:120,alien:130,kawaii:100,unit:130,pet:340,petSono:560}[k]||190;
   mt=setInterval(function(){
-    if(muted||paused||document.hidden)return;
-    if(typeof hubTelaAberta==='function'&&hubTelaAberta())return;   // V2.1.3: sem duas músicas ao mesmo tempo
-    if(twJogoEmPopup()){ clearInterval(mt); mt=null; curT=''; return; }   // o jogo do pop-up cuida do proprio som
+    if(muted||paused||document.hidden||(typeof hubOv!=='undefined'&&typeof hubTelaAberta==='function'&&hubTelaAberta())){clearInterval(mt);mt=null;return;}
+    if(twJogoEmPopup()){clearInterval(mt);mt=null;curT='';return;}   // o jogo do pop-up cuida do proprio som
     var N=TR[k]||mel;
     if(k==='menu'){var n=N[bi%16];if(n){beep(n,.3,'sine',.04);beep(n*1.5,.2,'triangle',.015)}if(bi%4===0)beep(bass[(bi/4)%8|0],.5,'sine',.03)}
     else if(k==='pet'||k==='petSono'){petMusicStep(k)}
@@ -1383,8 +1382,8 @@ function music(on){
     bi++;
   },ms);
 }
-function sync(){var k=state!=='play'?(typeof petMusicK==='function'?petMusicK():'menu'):(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':pw&&pw.k==='unit'?'unit':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT){curT=k;music(true)}}
-var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊'};
+function sync(){var k=state!=='play'?(typeof petMusicK==='function'?petMusicK():'menu'):(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':pw&&pw.k==='unit'?'unit':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT)curT=k;if(muted||paused||document.hidden||twJogoEmPopup()||(typeof hubOv!=='undefined'&&typeof hubTelaAberta==='function'&&hubTelaAberta())){clearInterval(mt);mt=null;return;}if(!mt)music(true);}
+var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊';sync();};
 
 var P,obs,items,sp,score,fans,dist,frame=0,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0,nextX=0;
 var ct = 0; 
@@ -2073,7 +2072,7 @@ function ufoDraw(x,y,k){
   g.fillStyle='#4169e1';[[-9,0,2.5],[0,1,3],[9,0,2.5]].forEach(function(p){g.beginPath();g.arc(p[0],p[1],p[2],0,7);g.fill()});
   g.restore();
 }
-function setPause(v){if(state!=='play')return;paused=v;$('pz').hidden=!v;$('pause').textContent=v?'▶':'⏸'}
+function setPause(v){if(state!=='play')return;paused=v;$('pz').hidden=!v;$('pause').textContent=v?'▶':'⏸';sync();}
 
 function drawBushes(off, baseY, widthLimit){
   baseY = baseY || GY; widthLimit = widthLimit || W;
@@ -9514,6 +9513,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
 function hubMostrar(){
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
+  sync();
   twIndex2PauseBaseFrames();
   if(hubComecou){ hubMusicaParar(); hubMusicaTocar(); }   // V2.1.3: só toca depois de aparecer (antes ficava em silêncio ao voltar do gacha)
   $('hubToque').hidden = hubComecou; $('hubMenu').hidden = !hubComecou;
@@ -9524,7 +9524,7 @@ function hubMostrar(){
 function hubFechar(){
   buscaCancelarTodas();
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
-  twIndex2ResumeBaseFrames();
+  twIndex2ResumeBaseFrames();sync();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
 }
 function twTrofeuFanfarra(){   // troféu da TsuLiPa TV: fanfarra curta, kawaii e orgulhosa

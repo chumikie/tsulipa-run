@@ -9523,7 +9523,7 @@ window.addEventListener('popstate',function(){
 });
 function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "Toque para começar"
   var alvo=location.hash==='#karaoke'?'karaoke':location.hash==='#center-run'?'run':'';
-  if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)setTimeout(function(){c.click();},350);
+  if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&c.isConnected;},function(){c.click();},350);
 }
 function hubComecar(){
   ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
@@ -10187,7 +10187,7 @@ function hubMusicaTocar(){
 var petVeioHub = false;
 function hubTelaAberta(){ return (!hubOv.hidden && !(typeof petOpen !== 'undefined' && petOpen)) || (typeof gachaOv !== 'undefined' && !gachaOv.hidden) || (typeof duoOv !== 'undefined' && !duoOv.hidden); }   // gacha e Moon⭐Duo! usam a música da tela de início
 function hubMusicaParar(){ if(hubMus){ clearInterval(hubMus); hubMus = null; } }
-document.addEventListener('click', function(e){ if(e.target && e.target.id === 'mute') setTimeout(function(){ if(muted) hubMusicaParar(); else if(hubTelaAberta() && hubComecou) hubMusicaTocar(); }, 50); });
+document.addEventListener('click', function(e){ if(e.target && e.target.id === 'mute') setTimeout(function(){ if(document.hidden||muted) hubMusicaParar(); else if(hubTelaAberta() && hubComecou) hubMusicaTocar(); }, 50); });
 
 // ---------- Fundo fofo também no Center Run e no camarim (mesmas partículas da tela de início) ----------
 var sitePart = document.createElement('div'); sitePart.className = 'sitepart'; sitePart.setAttribute('aria-hidden', 'true');
@@ -10922,7 +10922,7 @@ function aniverFesta(){
     $('aniverDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
     aniverOv.hidden = false; aniverOv.scrollTop = 0; aniverT = 0; if(!aniverAnim) aniverAnim = requestAnimationFrame(aniverLoop);
     aniverMusica();
-    if(typeof perfAtual!=='undefined'&&perfAtual&&perfMeu&&!perfOv.hidden)setTimeout(function(){if(!perfOv.hidden)perfAbrir();},400);   // atualiza os cards no perfil
+    if(typeof perfAtual!=='undefined'&&perfAtual&&perfMeu&&!perfOv.hidden){var perfilOrigem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&perfilOrigem===perfPedido;},function(){perfAbrir();},400);}   // atualiza os cards apenas na mesma sessão do perfil
   }).catch(function(){ aniverFeito = false; });
 }
 function aniverMusica(){   // "Parabéns pra você" (melodia em domínio público) em bipes fofos
@@ -11284,7 +11284,7 @@ var coelhoSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
 function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
 var muteSyncButton=document.getElementById('mute');if(muteSyncButton)muteSyncButton.addEventListener('click',ovSomUI);
-document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){if(!muted&&hubComecou&&hubTelaAberta())hubMusicaTocar();},60); });
+document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){if(!document.hidden&&!muted&&hubComecou&&hubTelaAberta())hubMusicaTocar();},60); });
 ovSomUI();
 
 // ---------- Estrela do título em SVG (no Android o emoji ficava torto) ----------

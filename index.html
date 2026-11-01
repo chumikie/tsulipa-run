@@ -3091,15 +3091,20 @@ function twElementoVisivelNaJanela(el){
   return r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<window.innerHeight&&r.left<window.innerWidth;
 }
 var twOverlayTopCache=null,twOverlayTopDirty=true;
+function twOverlayAtivo(el){
+  if(!el||!el.isConnected||!el.getClientRects().length)return false;
+  var cs=getComputedStyle(el);
+  return cs.display!=='none'&&cs.visibility!=='hidden'&&cs.contentVisibility!=='hidden';
+}
 function twOverlayTopo(){
   if(!twOverlayTopDirty)return twOverlayTopCache;
   twOverlayTopDirty=false;
   var nodes=document.querySelectorAll('.ov:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])'),top=null,topZ=-Infinity;
   for(var i=0;i<nodes.length;i++){
     var el=nodes[i];
-    if(!twElementoVisivelNaJanela(el))continue;
+    if(!twOverlayAtivo(el))continue;
     var z=parseInt(getComputedStyle(el).zIndex,10)||0;
-    // querySelectorAll já retorna ordem documental; em empate, o último continua no topo.
+    // Um painel em transição ainda é dono da cena; opacity 0 pode ser o início de um fade-in.
     if(z>=topZ){top=el;topZ=z;}
   }
   twOverlayTopCache=top;

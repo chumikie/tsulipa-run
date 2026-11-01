@@ -4,9 +4,9 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Snapshot do código auditado:** 01/11/2026, 16h03 (Brasília) — último commit de código confirmado: `76ba9e559cd150a34d37d69fa8b86a1b31a6ad2e`.
-**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 325 commits, 49 arquivos alterados, 4.562 adições e 945 remoções.
-**Importante:** este documento será atualizado por um commit exclusivamente documental na mesma branch. O SHA acima identifica o último HEAD que contém as alterações de código e ao qual o CI abaixo se refere; o commit documental não altera o código do jogo.
+**Snapshot do código auditado:** 01/11/2026, 16h49 (Brasília) — HEAD atual da PR: `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 333 commits, 49 arquivos alterados, 4.734 adições e 975 remoções.
+**CI associado ao HEAD atual:** execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), com os dois jobs aprovados. Atualizações de documentação posteriores continuam sendo commits documentais e não mudam o código do jogo.
 
 ---
 
@@ -22,16 +22,18 @@ Esta seção confirma que a implementação está presente no código da PR. **N
 - Recuperação de tickets do Karaoke: chave idempotente, resposta perdida, recarga, concorrência, retomada e isolamento por conta.
 - Recuperação da confirmação de crédito do Center Run após resposta perdida, sem repetir a finalização da corrida.
 - Correção do cache de paleta do Center Run que podia deixar a corrida em branco.
-- Módulos de cabelo e acessórios: três cortes extras ondulados, três franjas extras, mecha que acompanha a franja, Marias presas, rabo em uma peça, arco-íris em mechas tingidas, quepe militar e presilha de estrela.
+- Karaoke mobile:
 - Karaoke mobile: controles de som/pausa/timing reposicionados; correção da pausa indevida do show quando o palco sai da viewport; rolagem ao palco no início da apresentação.
 - Sala solo do Karaoke: existe passeio autônomo de figurante, interações sociais entre dois figurantes, reações, itens e visitas de pets. A limitação atual — somente um passeio autônomo por vez — está descrita na seção 3.3.
 
 ## 2. Testes automatizados — evidência no GitHub Actions
 
-**Último CI de código consultado:** workflow `Check TsuLiPa special games`, execução [#41339757980](https://github.com/chumikie/tsulipa-run/actions/runs/41339757980), associado ao HEAD de código `76ba9e55`. Os dois jobs terminaram com sucesso:
+**Último CI de código consultado:** workflow `Check TsuLiPa special games`, execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), associado exatamente ao HEAD `6fb427a9`. Os dois jobs terminaram com sucesso:
 
-- `static-validation`: aprovado.
-- `postgres-center-run`: aprovado.
+- `static-validation`: aprovado. Incluiu `tests/avatar-hair.test.js` (módulo compartilhado no Sora e Karaoke Day), `tests/avatar-items.test.js` (chapéu/estrela no Sora e restauração do acessório salvo), além das demais verificações estáticas.
+- `postgres-center-run`: aprovado. Executou as integrações PostgreSQL isoladas do Center Run e dos tickets.
+
+Histórico da correção: as execuções #41343606339 e #41343621330 falharam em `tests/karaoke-homol-view.test.js:58`, pois a substituição do retângulo da mecha deixou de preservar a guarda de cor hexadecimal que o teste protegia. O código manteve a nova mecha compartilhada e restaurou a guarda `c.streak && cor hexadecimal válida`; a execução posterior #41343692142 passou nos dois jobs.
 
 Entre as verificações incluídas no workflow estão testes de cabelos, acessórios, recuperação de crédito, paleta do Center Run, ciclo de visibilidade, regressão de pausa do Karaoke, recuperação de tickets, fluxos de ritmo, sincronização do Pet e estabilidade do Sora.
 
@@ -40,7 +42,7 @@ O job PostgreSQL usa banco temporário/isolado do CI e cobre os fluxos de Center
 Limites desta evidência:
 
 - O resultado verde confirma os comandos automatizados executados pelo workflow naquele HEAD.
-- Os testes de avatar exercitam funções e contratos de desenho; não substituem inspeção visual de todos os personagens, acessórios, tamanhos e renderizadores.
+- Os testes de avatar exercitam contratos de integração e chamadas de desenho: agora cobrem as camadas compartilhadas em Perfil/Center Run, Karaoke Time, Sora (jogador e parceiros) e Karaoke Day. Não substituem inspeção visual de todos os personagens, acessórios, tamanhos e prévias do editor.
 - O teste de pausa do Karaoke protege condições de visibilidade e o comportamento codificado; não comprova funcionamento em todos os celulares físicos.
 - Não encontrei teste específico para três figurantes caminharem simultaneamente, retorno do personagem do jogador ao microfone ou histórico pessoal por música.
 - A execução local antiga de 33/33 testes, registrada no histórico da PR, pertence a um HEAD anterior e não deve ser apresentada como teste local do HEAD `76ba9e55`.
@@ -51,11 +53,12 @@ Limites desta evidência:
 
 ### 3.1. Personagens — implementação presente, homologação visual incompleta
 
-- Os módulos `tw-avatar-hair.js` e `tw-avatar-items.js` estão presentes e são carregados por Center Run/Perfil e Karaoke.
-- Os testes automatizados verificam os três cortes, as franjas e o desenho do quepe/presilha por meio de contratos e chamadas simuladas de Canvas.
-- O relatório visual anterior foi feito em navegador headless, viewport 420×900, sem login, e cobriu apenas parte das telas. O Perfil completo e o Karaoke com o avatar salvo ficaram pendentes de autenticação.
-- **Personagem careca:** não foi encontrada opção careca/calva no menu nem implementação correspondente nos módulos atuais. A branch antiga de recuperação do chapéu/estrela retirou essa opção; portanto, não considerar o pedido concluído.
-- Falta conferir base dos cabelos, camadas traseiras/superiores/franjas, acessórios e preservação de aparência em todos os tipos de personagem, parceiros, Perfil, Estúdio, Hub, Center Run, Karaoke e renderizadores alternativos.
+- Os módulos `tw-avatar-hair.js` e `tw-avatar-items.js` são carregados por `index.html`/Perfil/Center Run e Karaoke Time. Nesta retomada, `sora-jump.html` também passou a carregar ambos: o jogador usa o visual salvo; os parceiros continuam usando o próprio personagem e compartilham as novas camadas de cabelo. O Sora restaura `brs48cr_acc` antes do desenho, e o teste agora protege esse caminho.
+- `karaoke-day.html`, que tem seu próprio `desenharIdol` e é usado pelo controlador de prévias/Hub, também passou a carregar `tw-avatar-hair.js` e usar as camadas compartilhadas de base, topo, franja, bicolor e mecha. As formas antigas permanecem como fallback; a guarda de cor válida da mecha foi preservada.
+- Os testes automatizados verificam contratos de integração e chamadas simuladas de Canvas para esses caminhos. Isso comprova presença/uso das camadas no código, não a aparência final em tela.
+- O relatório visual anterior foi feito em navegador headless, viewport 420×900, sem login, e cobriu apenas parte das telas. Perfil completo e Karaoke autenticado continuam pendentes.
+- **Boneco aparecendo careca:** tratar como investigação de perda/ausência visual da base do cabelo, não como autorização para criar uma opção selecionável chamada `Careca`. A branch histórica `feat/avatar-careca-capitao-estrela` contém um teste que explicitamente mantém essa opção fora do menu; a causa do boneco aparecer sem cabelo ainda precisa ser localizada e corrigida onde ocorrer.
+- Falta inspeção visual das bases traseira/superior, franjas, acessórios e aparência em personagens masculinos/femininos, parceiros, Perfil, Estúdio, Hub, Center Run, Karaoke Time, Sora, Karaoke Day e prévias do editor.
 
 ### 3.2. Experiência musical do Karaoke — pedido não incorporado ao GitHub
 
@@ -95,7 +98,7 @@ Status: **parcial; precisa de implementação**. Manter Karaoke exclusivamente s
 
 ### 3.6. Verificações visuais e de uso real ainda necessárias
 
-O commit `76ba9e55` registra que a correção de pausa do Karaoke foi verificada em Chromium nos tamanhos 390×844 e 1280×900. Isso é uma verificação de navegador relatada no commit, não homologação em celulares físicos.
+O commit `76ba9e55` registra que a correção de pausa do Karaoke foi verificada em Chromium nos tamanhos 390×844 e 1280×900. Isso é uma verificação de navegador relatada no commit, não homologação em celulares físicos. Os commits `9093898`, `d180dbc` e `6fb427a` adicionaram integração compartilhada de cabelo no Sora e no Karaoke Day; os testes e o CI validam os contratos de código. Não foi realizada inspeção visual desses dois renderizadores nesta retomada.
 
 O relatório anterior também registra uma inspeção headless 420×900 sem login. Não há evidência nesta auditoria de:
 
@@ -109,7 +112,7 @@ O relatório anterior também registra uma inspeção headless 420×900 sem logi
 
 Registros antigos que diziam que o quepe/estrela ainda não estavam implementados, que o redesenho dos cabelos aguardava implementação ou que a pausa mobile seguia sem correção estavam desatualizados. O código e os commits posteriores confirmam essas implementações/correções; o que permanece pendente é a homologação visual e em aparelhos, não a ausência dos respectivos módulos.
 
-A fila de retomada é: **(0) manter este mapa atualizado; (1) concluir auditoria visual dos personagens e investigar careca; (2) recuperar o protótipo e concluir a experiência musical; (3) concluir a plateia autônoma e o movimento do jogador; (4) homologar desempenho em aparelhos físicos; (5) fazer revisão integral da PR antes de qualquer decisão de merge.**
+A fila de retomada é: **(0) manter este mapa atualizado; (1) concluir a investigação do boneco que aparece careca e homologar visualmente a base do cabelo nos renderizadores conectados; (2) recuperar o protótipo e concluir a experiência musical; (3) concluir a plateia autônoma e o movimento do jogador; (4) homologar desempenho em aparelhos físicos; (5) fazer revisão integral da PR antes de qualquer decisão de merge.**
 
 ## 4. Branches avaliadas
 
@@ -161,13 +164,13 @@ Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` 
 
 ## 6. Testes e CI — histórico com escopo explícito
 
-- **HEAD de código auditado:** `76ba9e559cd150a34d37d69fa8b86a1b31a6ad2e`.
-- **CI mais recente consultado para esse HEAD:** execução [#41339757980](https://github.com/chumikie/tsulipa-run/actions/runs/41339757980), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
+- **HEAD de código auditado:** `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
+- **CI mais recente consultado para esse HEAD:** execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
 - Jobs: `static-validation` = **success**; `postgres-center-run` = **success**.
-- O job estático inclui testes de avatar/cabelos/acessórios, recuperação de crédito, paleta do Center Run, visibilidade, regressão de pausa do Karaoke, fluxo e ritmo do Karaoke, recuperação de tickets, estabilidade do Sora e demais verificações listadas em `.github/workflows/validate-games.yml`.
+- O job estático inclui testes de avatar/cabelos/acessórios — inclusive os novos contratos Sora/Karaoke Day e restauração do acessório do jogador —, recuperação de crédito, paleta do Center Run, visibilidade, regressão de pausa do Karaoke, fluxo e ritmo do Karaoke, recuperação de tickets, estabilidade do Sora e demais verificações listadas em `.github/workflows/validate-games.yml`.
 - O job PostgreSQL usa serviço temporário no CI e executa integrações isoladas de Center Run e tickets. Não representa acesso ou teste ao Supabase de produção.
-- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `76ba9e55`.
-- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico.
+- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `6fb427a9`.
+- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico. As integrações recentes do Sora e Karaoke Day só têm confirmação automatizada de código neste momento; sem inspeção visual nesta retomada.
 - A revisão visual headless 420×900 sem login, registrada anteriormente, foi parcial e não cobriu Perfil completo nem Karaoke autenticado.
 - **Nesta atualização do mapa não foram executados testes locais, visuais, de navegador ou em aparelhos.** Um commit que altera somente este documento não deve ser apresentado como nova validação do código.
 
@@ -195,9 +198,10 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Recuperar ou documentar a impossibilidade de recuperar os arquivos de biblioteca criados no scratchpad do Claude.
 
 ### Personagens
-- [ ] Investigar e restaurar/implementar a opção careca, preservando compatibilidade dos saves.
-- [ ] Conferir a base dos cabelos e todas as camadas em personagens masculinos/femininos, parceiros e renderizadores alternativos.
-- [ ] Conferir visualmente cortes, franjas, mecha, Marias, rabo, quepe e presilha em Perfil, Estúdio, Hub, Center Run e Karaoke autenticado.
+- [ ] Investigar em que renderizador/personagem o boneco aparece careca e corrigir a perda da base do cabelo; não criar opção de menu `Careca` sem decisão específica.
+- [x] Conectar as camadas compartilhadas de cabelo ao renderizador próprio do Sora Jump (jogador e parceiros) e ao renderizador do Karaoke Day, mantendo os fallbacks antigos.
+- [ ] Conferir visualmente a base dos cabelos e todas as camadas em personagens masculinos/femininos, parceiros e renderizadores alternativos.
+- [ ] Conferir visualmente cortes, franjas, mecha, Marias, rabo, quepe e presilha em Perfil, Estúdio, Hub, Center Run, Karaoke Time, Sora e Karaoke Day.
 
 ### Karaoke — experiência musical
 - [ ] Recuperar o protótipo `library.html`, `library.css`, `library.js` do scratchpad, caso ainda esteja disponível.
@@ -221,7 +225,7 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Distinguir sempre teste estático/unitário, CI PostgreSQL isolado, verificação Chromium/headless e homologação física.
 
 ### Banco, CI e revisão
-- [x] CI do HEAD de código `76ba9e55` aprovado nos dois jobs reportados.
+- [x] CI do HEAD de código `6fb427a9` aprovado nos dois jobs reportados.
 - [ ] Reexecutar/confirmar CI após futuras alterações de código.
 - [ ] Fazer leitura autorizada do Supabase e conferir estado efetivo antes de qualquer proposta de mudança.
 - [ ] Decidir separadamente sobre o teto de 100 estrelas/dia; não aplicar sem autorização específica.

@@ -89,6 +89,7 @@ function evaluate(script,context){
     soraPararLoop:function(){loopStops++;sandbox.soraRaf=0;},
     cancelAnimationFrame(){},
     requestAnimationFrame:()=>{requested++;return 8;},soraLoop:()=>{},
+    soraAgendarLoop:function(){if(!sandbox.soraRaf)sandbox.soraRaf=sandbox.requestAnimationFrame(sandbox.soraLoop);},
     performance:{now:()=>12345},document:{hidden:false},
     window:{addEventListener:(event,cb)=>{handlers[event]=cb;}}
   };

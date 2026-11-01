@@ -4,9 +4,9 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Snapshot do código auditado:** 01/11/2026, 16h49 (Brasília) — último commit com alterações de código verificado: `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
-**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 333 commits, 49 arquivos alterados, 4.734 adições e 975 remoções.
-**CI associado ao HEAD atual:** execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), com os dois jobs aprovados. Atualizações de documentação posteriores continuam sendo commits documentais e não mudam o código do jogo.
+**Snapshot do código auditado:** 01/11/2026, 17h01 (Brasília) — último commit de código verificado: `d88d5b7a52f769a4674d7e7ae37421c5bb5873de`.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 346 commits, 50 arquivos alterados, 4.924 adições e 981 remoções.
+**CI associado ao HEAD de código:** execução [#41344644714](https://github.com/chumikie/tsulipa-run/actions/runs/41344644714), com `static-validation` e `postgres-center-run` aprovados. O documento pode receber commits documentais posteriores sem alterar o código auditado.
 
 ---
 
@@ -60,20 +60,28 @@ Limites desta evidência:
 - **Boneco aparecendo careca:** tratar como investigação de perda/ausência visual da base do cabelo, não como autorização para criar uma opção selecionável chamada `Careca`. A branch histórica `feat/avatar-careca-capitao-estrela` contém um teste que explicitamente mantém essa opção fora do menu; a causa do boneco aparecer sem cabelo ainda precisa ser localizada e corrigida onde ocorrer.
 - Falta inspeção visual das bases traseira/superior, franjas, acessórios e aparência em personagens masculinos/femininos, parceiros, Perfil, Estúdio, Hub, Center Run, Karaoke Time, Sora, Karaoke Day e prévias do editor.
 
-### 3.2. Experiência musical do Karaoke — pedido não incorporado ao GitHub
+### 3.2. Experiência musical do Karaoke — implementação integrada; QA visual pendente
 
 Pedido do responsável: substituir a Vitrine sonora extensa por três controles compactos com as cabeças do Tsu, Lirika e Pati, preservando a reprodução das vozes; reorganizar as faixas do Karaoke em uma biblioteca compacta/selecionável como Novidades; mostrar a melhor nota pessoal por música, sem ranking compartilhado.
 
-Estado encontrado no código remoto:
+**Código presente no HEAD `d88d5b7a`:**
 
-- `karaoke-time.html` ainda contém a seção original `ktAudioLibrary`, com listas longas de vozes, trilhas e áudio especial.
-- Os arquivos MP3 das vozes do Tsu, Lirika e Pati e do Encontro continuam no repositório.
-- Existe um player de áudio único e seleção das sete trilhas existentes; isso não equivale à nova interface solicitada.
-- `KaraokeShowRules` guarda registros locais por jogador e métrica (score, accuracy e combo). O resultado contém a música usada, mas o armazenamento não está organizado como melhor resultado separado por jogador **e por música**. Não foi encontrada a tela de melhores notas por faixa.
-- Não foram encontrados `library.html`, `library.css` ou `library.js` no branch, nem commit que incorpore esses arquivos.
-- O responsável forneceu um trecho da sessão Claude mostrando que esses três arquivos foram criados no scratchpad e que começou um comando para substituir HTML/CSS/JS em `karaoke-time.html`. O trecho termina no meio do comando. **É evidência de protótipo iniciado no ambiente local do Claude, não prova de que o comando terminou nem de que os arquivos foram enviados ao GitHub.** Recuperar esse scratchpad/sessão antes de reescrever a solução.
+- A antiga Vitrine sonora longa foi substituída por uma biblioteca compacta dentro do mesmo `ktAudioLibrary`, com duas abas: **Músicas** e **Vozes**.
+- A aba Músicas apresenta as sete faixas existentes e um espaço para o recorde pessoal de cada faixa. Selecionar uma faixa altera o seletor original `#ktSong`; não inicia show, não consome tentativa e não faz débito.
+- A aba Vozes apresenta três botões com os retratos reais do Tsu, Lirika e Pati, desenhados pelo `KaraokeAvatar.draw`. Tocar numa cabeça reproduz a primeira voz daquele personagem e abre suas outras falas.
+- Os 15 MP3 do trio e o áudio especial do Encontro permanecem no repositório e continuam usando um único player de reprodução, lazy load, respeito ao mute e limpeza ao terminar, esconder a aba ou sair da página.
+- `KaraokeShowRules` agora mantém `personalSongs[accountId][songKey]` no armazenamento local existente `kt_showcase_week_v1`. A melhor pontuação por faixa é separada por conta e música, e persiste além da virada semanal. O ranking semanal compartilhado existente não recebe esses dados.
+- A migração do save v1 acrescenta `personalSongs` quando ausente, preservando ranking semanal antigo, tentativas e partidas pendentes. Não houve alteração de Supabase nem RPC para esses recordes.
+- O histórico pessoal fica **neste aparelho/neste armazenamento local**; não é sincronizado entre dispositivos nem publicado como ranking compartilhado.
+- Foi acrescentado `tests/karaoke-personal-song-records.test.js`, cobrindo isolamento por conta, recorde por faixa, persistência semanal, migração de save antigo e rejeição de resultado inválido. `tests/karaoke-mobile-performance.test.js` também protege a estrutura compacta, as três cabeças, os sete espaços de recorde e o contrato de reprodução existente.
 
-Status: **pendente de integração**. Preservar os MP3 e o player existente; não apagar recursos como substituição simplista. A interface nova e o histórico pessoal por música precisam de implementação e testes próprios.
+**Histórico do protótipo do Claude:** os nomes `library.html`, `library.css` e `library.js` apareceram como arquivos criados no scratchpad local, mas não foram encontrados no GitHub. Não há confirmação de que o comando da sessão tenha terminado. A implementação equivalente foi concluída diretamente em `karaoke-time.html`; não afirmar que os arquivos temporários foram recuperados.
+
+**CI de código:** execução [#41344644714](https://github.com/chumikie/tsulipa-run/actions/runs/41344644714), associada ao HEAD `d88d5b7a`: `static-validation` e `postgres-center-run` aprovados. O novo teste pessoal por música e as asserções da biblioteca compacta passaram no job estático.
+
+**Ainda pendente:** reprodução e navegação visual em navegador com áudio habilitado, conferir o recorte/tamanho das três cabeças no desktop e no celular, confirmar a experiência de trocar música e iniciar show, completar partidas reais e observar o recorde atualizar, além de conferir a persistência após recarregar e trocar de conta. O CI não é prova de reprodução de áudio nem de homologação visual/física.
+
+Status: **implementação e testes automatizados integrados; homologação visual e de áudio pendente**.
 
 ### 3.3. Plateia autônoma e movimento do jogador — implementação parcial
 
@@ -164,15 +172,15 @@ Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` 
 
 ## 6. Testes e CI — histórico com escopo explícito
 
-- **HEAD de código auditado:** `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
-- **CI mais recente consultado para esse HEAD:** execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
+- **HEAD de código auditado:** `d88d5b7a52f769a4674d7e7ae37421c5bb5873de`.
+- **CI mais recente consultado para esse HEAD:** execução [#41344644714](https://github.com/chumikie/tsulipa-run/actions/runs/41344644714), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
 - Jobs: `static-validation` = **success**; `postgres-center-run` = **success**.
-- O job estático inclui testes de avatar/cabelos/acessórios — inclusive os novos contratos Sora/Karaoke Day e restauração do acessório do jogador —, recuperação de crédito, paleta do Center Run, visibilidade, regressão de pausa do Karaoke, fluxo e ritmo do Karaoke, recuperação de tickets, estabilidade do Sora e demais verificações listadas em `.github/workflows/validate-games.yml`.
+- O job estático inclui os testes de integração dos cabelos Sora/Karaoke Day, o novo teste `tests/karaoke-personal-song-records.test.js` e as verificações da nova estrutura da biblioteca compacta em `tests/karaoke-mobile-performance.test.js`, além das demais verificações listadas em `.github/workflows/validate-games.yml`.
 - O job PostgreSQL usa serviço temporário no CI e executa integrações isoladas de Center Run e tickets. Não representa acesso ou teste ao Supabase de produção.
-- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `6fb427a9`.
-- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico. As integrações recentes do Sora e Karaoke Day só têm confirmação automatizada de código neste momento; sem inspeção visual nesta retomada.
+- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `d88d5b7a`.
+- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico. As integrações recentes do Sora/Karaoke Day e a nova biblioteca musical têm confirmação automatizada de código, mas não inspeção visual nesta retomada.
 - A revisão visual headless 420×900 sem login, registrada anteriormente, foi parcial e não cobriu Perfil completo nem Karaoke autenticado.
-- **Nesta atualização do mapa não foram executados testes locais, visuais, de navegador ou em aparelhos.** Um commit que altera somente este documento não deve ser apresentado como nova validação do código.
+- **Nesta atualização do mapa não foram executados testes locais, visuais, de navegador ou em aparelhos.** O commit deste documento não deve ser apresentado como nova validação do código.
 
 ## 7. Supabase — estado registrado e bloqueios
 
@@ -195,7 +203,7 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [x] Reconfirmar PR #58 aberta, Draft, sem merge e branch de trabalho exclusiva.
 - [x] Registrar o HEAD de código e separar o estado do código do commit documental.
 - [x] Corrigir estados antigos contraditórios neste documento.
-- [ ] Recuperar ou documentar a impossibilidade de recuperar os arquivos de biblioteca criados no scratchpad do Claude.
+- [x] Registrar que os arquivos temporários do scratchpad não foram localizados; a funcionalidade equivalente foi implementada diretamente em `karaoke-time.html`.
 
 ### Personagens
 - [ ] Investigar em que renderizador/personagem o boneco aparece careca e corrigir a perda da base do cabelo; não criar opção de menu `Careca` sem decisão específica.
@@ -204,11 +212,13 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Conferir visualmente cortes, franjas, mecha, Marias, rabo, quepe e presilha em Perfil, Estúdio, Hub, Center Run, Karaoke Time, Sora e Karaoke Day.
 
 ### Karaoke — experiência musical
-- [ ] Recuperar o protótipo `library.html`, `library.css`, `library.js` do scratchpad, caso ainda esteja disponível.
-- [ ] Substituir a Vitrine extensa por três controles compactos de voz do Tsu, Lirika e Pati, preservando os áudios existentes.
-- [ ] Criar biblioteca compacta de faixas, selecionável como a seção Novidades.
-- [ ] Implementar e persistir a melhor nota pessoal separada por música, sem ranking compartilhado.
-- [ ] Criar testes específicos de seleção de faixa, player de voz, persistência e isolamento por usuário.
+- [x] Registrar que os arquivos temporários do scratchpad não foram localizados; não afirmar que foram recuperados.
+- [x] Substituir a Vitrine extensa por abas compactas de Músicas e Vozes, mantendo os 15 MP3 do trio e o áudio do Encontro.
+- [x] Criar os três botões com cabeças reais e reprodução das vozes do Tsu, Lirika e Pati.
+- [x] Criar cartões das sete faixas com seleção pelo seletor existente e espaço para o recorde pessoal por música.
+- [x] Implementar recorde pessoal por conta/faixa em armazenamento local, com migração compatível de saves v1 e sem ranking compartilhado.
+- [x] Proteger a lógica e a estrutura da biblioteca com testes automatizados no CI.
+- [ ] Homologar navegação, reprodução de áudio, pontuação e atualização dos recordes visualmente no navegador e em celular físico.
 
 ### Karaoke — plateia e movimento
 - [ ] Permitir pelo menos três figurantes caminhando simultaneamente, com rotas e limites seguros.
@@ -225,7 +235,7 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Distinguir sempre teste estático/unitário, CI PostgreSQL isolado, verificação Chromium/headless e homologação física.
 
 ### Banco, CI e revisão
-- [x] CI do HEAD de código `6fb427a9` aprovado nos dois jobs reportados.
+- [x] CI do HEAD de código `d88d5b7a` aprovado nos dois jobs reportados.
 - [ ] Reexecutar/confirmar CI após futuras alterações de código.
 - [ ] Fazer leitura autorizada do Supabase e conferir estado efetivo antes de qualquer proposta de mudança.
 - [ ] Decidir separadamente sobre o teto de 100 estrelas/dia; não aplicar sem autorização específica.

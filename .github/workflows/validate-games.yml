@@ -40,6 +40,7 @@ on:
       - 'tests/karaoke-note-map.test.js'
       - 'tests/karaoke-flow.test.js'
       - 'tests/karaoke-personal-song-records.test.js'
+      - 'tests/karaoke-music-preview.test.js'
       - 'tests/karaoke-lounge-movement.test.js'
       - 'tests/karaoke-input-timing.test.js'
       - 'tests/karaoke-melody-cues.test.js'
@@ -125,6 +126,7 @@ on:
       - 'tests/karaoke-note-map.test.js'
       - 'tests/karaoke-flow.test.js'
       - 'tests/karaoke-personal-song-records.test.js'
+      - 'tests/karaoke-music-preview.test.js'
       - 'tests/karaoke-lounge-movement.test.js'
       - 'tests/karaoke-input-timing.test.js'
       - 'tests/karaoke-melody-cues.test.js'
@@ -224,6 +226,8 @@ jobs:
         run: node tests/karaoke-ticket-ui.test.js
       - name: Validate Karaoke personal best records by song and account
         run: node tests/karaoke-personal-song-records.test.js
+      - name: Validate Karaoke music preview player
+        run: node tests/karaoke-music-preview.test.js
       - name: Validate Karaoke three-walker lounge and player return to mic
         run: node tests/karaoke-lounge-movement.test.js
       - name: Validate Karaoke Time input timestamps, visual target and timing feedback

@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'tw-avatar-items.js'
+      - 'tests/avatar-items.test.js'
       - 'tw-motion-lifecycle.js'
       - 'tests/karaoke-mobile-performance.test.js'
       - 'privacidade.html'
@@ -79,6 +81,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'tw-avatar-items.js'
+      - 'tests/avatar-items.test.js'
       - 'tw-motion-lifecycle.js'
       - 'tests/karaoke-mobile-performance.test.js'
       - 'privacidade.html'
@@ -156,6 +160,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate original Captain hat and Star across avatar renderers
+        run: node tests/avatar-items.test.js
       - name: Validate Center Run daily cap and server response contract
         run: node tests/center-run-daily-cap.test.js
       - name: Validate shared window contracts

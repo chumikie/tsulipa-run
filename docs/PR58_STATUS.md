@@ -5,8 +5,8 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
 **Último commit de código verificado:** `56c3182ac7811e9d75470f05f48fbce1b3fb0824` (01/11/2026, 17h09, Brasília).
-**HEAD atual da branch ao atualizar este documento:** `38948812b8e5e2d517c8d9e37f9129938ca608b2` — commit exclusivamente documental.
-**Estado da PR:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Na consulta: 357 commits, 51 arquivos alterados, 5.127 adições e 987 remoções.
+**HEAD atual da branch ao atualizar este documento:** `cf5a052f43dc78eb0509db500141accf9b15edaf` — commit exclusivamente documental; o último commit com alterações de código continua sendo `56c3182ac7811e9d75470f05f48fbce1b3fb0824`.
+**Estado da PR:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Na consulta: 358 commits, 51 arquivos alterados, 5.133 adições e 987 remoções.
 **CI do último HEAD de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), com `static-validation` e `postgres-center-run` aprovados.
 **CI posterior do commit documental:** execução [#41345515468](https://github.com/chumikie/tsulipa-run/actions/runs/41345515468), também com os dois jobs aprovados. Esse commit altera somente este documento e não modifica o código do jogo.
 

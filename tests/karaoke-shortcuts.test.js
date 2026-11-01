@@ -40,7 +40,7 @@ ctx.pause(false);ctx.document.hidden=true;clock.ms=10000;ctx.tick();
 assert.equal(run.resumeUntil,0,'aba oculta não retoma por engano');
 
 let listener;const actions=[],shortcutRun={paused:false,resumeUntil:0};
-const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
+const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMute:{disabled:false,click:()=>actions.push('mute')},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
 vm.runInNewContext(keyhandler,{run:shortcutRun,$:id=>elements[id],hit:i=>actions.push('hit'+i),
   pause:flag=>actions.push('pause'+flag),document:{querySelectorAll:()=>[],addEventListener:(event,fn)=>{listener=fn;}}});
 function press(key,other={}){let prevented=false;listener({key,repeat:false,target:{tagName:'BODY'},preventDefault:()=>{prevented=true;},...other});return prevented;}
@@ -48,8 +48,9 @@ assert(press('p'));assert.equal(actions.at(-1),'pausetrue');
 shortcutRun.paused=true;shortcutRun.resumeUntil=9000;
 assert(press('p'));assert.equal(actions.at(-1),'pausetrue','P cancela a contagem ativa');
 shortcutRun.paused=false;shortcutRun.resumeUntil=0;
-assert(press('m'));assert.equal(actions.at(-1),'microphone','M must trigger the existing microphone control');
-const beforeDisabledMic=actions.length;elements.krMicBtn.disabled=true;assert.equal(press('m'),false,'M must not hijack input when microphone is disabled');assert.equal(actions.length,beforeDisabledMic);elements.krMicBtn.disabled=false;
+assert(press('m'));assert.equal(actions.at(-1),'mute','M must trigger the room mute control');
+const beforeDisabledMute=actions.length;elements.krMute.disabled=true;assert.equal(press('m'),false,'M must not hijack input when mute is disabled');assert.equal(actions.length,beforeDisabledMute);elements.krMute.disabled=false;
+assert.equal(actions.includes('microphone'),false,'M never starts or ends a microphone presentation');
 assert(press('c'));assert.equal(actions.at(-1),'camera');
 assert(press('s'));assert.equal(elements.ktCalibration.open,true);
 assert.equal(actions.at(-1),'pausetrue','abrir configurações pausa o show');

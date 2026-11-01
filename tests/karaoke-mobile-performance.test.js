@@ -153,5 +153,6 @@ assert(html.includes('render30Due(cv,performance.now())')&&sora.includes('render
 const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 assert(day.includes('krLoopLastTime=0')&&day.includes('(stamp-krLoopLastTime)/(1000/60)'),'Karaoke Day animation clock should use elapsed time rather than callback count');
 assert(day.includes('Math.min(4.2*dt,d)')&&day.includes('trl.t+=dt')&&day.includes('b.t+=dt')&&day.includes('krCortina+.018*dt'),'Karaoke Day character movement, trails, bubbles and curtain should preserve speed at 30/60 Hz');
+assert(day.includes('Math.floor(krTAnterior/10)<Math.floor(krT/10)')&&day.includes('Math.floor((krTAnterior-30)/160)<Math.floor((krT-30)/160)'),'Karaoke Day periodic trail and speech effects should trigger by elapsed-time threshold crossings, including 30 Hz');
 assert(sora.includes('var soraFrameAnterior=soraFrame;')&&sora.includes('Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)')&&!sora.includes('(soraFrame | 0) % 5 === 0'),'Sora auxiliary wing particles should spawn once per elapsed five-frame interval, independent of 30/60 Hz callback count');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

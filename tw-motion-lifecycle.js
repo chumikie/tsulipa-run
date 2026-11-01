@@ -185,10 +185,19 @@ function render30Due(owner,stamp){
  if(last!==undefined&&now-last<1000/30)return false;
  render30Times.set(owner,now);return true;
 }
+var updateFrameTimes=new WeakMap();
+function frameDelta(owner,stamp){
+ if(!owner||(typeof owner!=='object'&&typeof owner!=='function'))return 1;
+ var now=Number.isFinite(stamp)?stamp:(w.performance&&w.performance.now?w.performance.now():Date.now()),last=updateFrameTimes.get(owner);
+ updateFrameTimes.set(owner,now);
+ if(last===undefined||now<=last||now-last>100)return 1;
+ return Math.max(.25,Math.min(2.5,(now-last)/(1000/60)));
+}
 w.TWMotionLifecycle={
  version:1,
  watchLoop:watchLoop,
  render30Due:render30Due,
+ frameDelta:frameDelta,
  isMobileRender30:function(){return render30Enabled;},
  refresh:refreshAll,
  isPageActive:function(){return pageIsActive();},

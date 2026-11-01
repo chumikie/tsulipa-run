@@ -25,7 +25,22 @@ const server=http.createServer((req,res)=>{
    members:krBots.map(function(b){return {x:b.x,y:b.y};}),attempts:krRhythmRun?krRhythmRun.attempts:0,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,
    pets:ktPets.map(function(p){return {k:p.k,x:p.x,y:p.y,hitY:p.hitY,ex:p.ex,taps:p.toques||0,visit:p.visita?{phase:p.visita.phase,nome:p.visita.nome}:null};}),
    pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
-  };};\nfunction ktNoSite(){`);
+  };};
+  window.qaRoomControllers={
+   openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2;return !!hit(pos[0],pos[1]+bob+10);},
+   startAutomaticMic:function(){
+    if(krRhythmRun)kt.end(false);if(krDemoCantor)krDemoBotEnd();
+    krSt.aberta=true;krEu.no_mic=false;krEu.x=krEu.tx=480;krEu.y=krEu.ty=286;
+    krMeuRetornoAt=0;krMeuVoltandoAoMic=false;krMoveQueue.length=0;krDemoFila.length=0;
+    krLoungeActors.forEach(function(actor){actor._ktLoungeWalking=false;});krLoungeActors.length=0;
+    krAutoMicNextAt=krT-1;var before=ktMeta.controls().used;
+    if(typeof window.krLoungeAutoMicTick!=='function')return {available:false};
+    window.krLoungeAutoMicTick();
+    return {available:true,active:kt.active(),bot:krDemoCantor&&krDemoCantor.bot.nick,automatic:!!(krDemoCantor&&krDemoCantor.automatic),singing:!!(krDemoCantor&&krDemoCantor.bot.no_mic),practice:!!(krRhythmRun&&krRhythmRun.practice),usedBefore:before,usedAfter:ktMeta.controls().used};
+   },
+   stopAutomaticMic:function(){if(krRhythmRun)kt.end(false);if(krDemoCantor)krDemoBotEnd();}
+  };
+\nfunction ktNoSite(){`);
   res.setHeader('Content-Type',name.endsWith('.css')?'text/css':name.endsWith('.js')?'application/javascript':name.endsWith('.html')?'text/html':'application/octet-stream');
   res.end(data);
  }catch(e){res.writeHead(404).end();}
@@ -87,6 +102,22 @@ async function metrics(frame){
     }
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-idle.png'),fullPage:true});
+   if(!baseline){
+    assert.equal(await frame.locator('body').evaluate(()=>window.qaRoomControllers.openPoster(0)),true,'wall Polaroid opens through the injected page-local avatar renderer');
+    const poster=frame.locator('#ktPosterDialog');await poster.waitFor({state:'visible'});
+    const portrait=frame.locator('#ktPosterPortrait');
+    const portraitInfo=await portrait.evaluate(canvas=>{const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(40,40,440,460).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]&&((pixels[i]>90&&pixels[i]<245)||(pixels[i+1]>70&&pixels[i+1]<225)||(pixels[i+2]>70&&pixels[i+2]<245)))ink++;return {width:canvas.width,height:canvas.height,ink};});
+    assert.equal(portraitInfo.width,520);assert.equal(portraitInfo.height,620);assert(portraitInfo.ink>1000,'enlarged portrait canvas contains rendered artwork, not just an empty dialog');
+    await poster.screenshot({path:path.join(out,engine+'-'+width+'-polaroid.png')});
+    await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
+    const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
+    assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state');
+    assert.equal(autoMic.active,true,'autonomous NPC starts the local practice engine');
+    assert(autoMic.bot&&autoMic.automatic&&autoMic.singing&&autoMic.practice,'eligible NPC is singing in an automatic, non-ranked practice turn');
+    assert.equal(autoMic.usedAfter,autoMic.usedBefore,'autonomous NPC show does not spend the player attempt');
+    await frame.locator('body').evaluate(()=>window.qaRoomControllers.stopAutomaticMic());
+    assert.equal(await frame.locator('body').evaluate(()=>window.qaRoomState().active),false,'autonomous mic test cleans up without leaving the game active');
+   }
    let reactions=null;
    if(!baseline&&process.env.QA_REACTIONS){
     const getState=()=>frame.locator('body').evaluate(()=>window.qaRoomState());

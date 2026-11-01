@@ -168,9 +168,28 @@ function watchLoop(el,enabled,onResume,onPause){
  var set=loopGates.get(el);if(!set){set=new Set();loopGates.set(el,set);}set.add(state);
  gates.add(state);reconcile();return gate;
 }
+var render30Times=new WeakMap(),render30Query=null,render30Enabled=(w.innerWidth||0)<=760;
+function render30Atualizar(event){render30Enabled=event?!!event.matches:(w.innerWidth||0)<=760;render30Times=new WeakMap();}
+try{
+ if(w.matchMedia){
+  render30Query=w.matchMedia('(max-width: 760px), (pointer: coarse)');
+  render30Enabled=!!render30Query.matches;
+  if(render30Query.addEventListener)render30Query.addEventListener('change',render30Atualizar);
+  else if(render30Query.addListener)render30Query.addListener(render30Atualizar);
+ }
+}catch(e){render30Query=null;}
+if(!render30Query)w.addEventListener('resize',function(){render30Atualizar();},{passive:true});
+function render30Due(owner,stamp){
+ if(!render30Enabled||!owner||(typeof owner!=='object'&&typeof owner!=='function'))return true;
+ var now=Number.isFinite(stamp)?stamp:(w.performance&&w.performance.now?w.performance.now():Date.now()),last=render30Times.get(owner);
+ if(last!==undefined&&now-last<1000/30)return false;
+ render30Times.set(owner,now);return true;
+}
 w.TWMotionLifecycle={
  version:1,
  watchLoop:watchLoop,
+ render30Due:render30Due,
+ isMobileRender30:function(){return render30Enabled;},
  refresh:refreshAll,
  isPageActive:function(){return pageIsActive();},
  isVisible:function(el){return elementVisible(el,rectVisible(el));}

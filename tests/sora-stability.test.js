@@ -82,15 +82,17 @@ function evaluate(script,context){
   const script=between('function soraSuspendForNavigation(){','function soraCloseUI(){');
   const handlers={};
   let stops=0,resumes=0,requested=0,loopStops=0;
-  const env=evaluate(script,{
+  const sandbox={
     soraRaf:5,soraOpen:true,soraState:'play',soraTouchDir:1,
     soraKeyL:true,soraKeyR:true,soraLastT:0,soraSoundOn:true,muted:false,
-    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},soraPararLoop:()=>{loopStops++;},
+    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},
+    soraPararLoop:function(){loopStops++;sandbox.soraRaf=0;},
     cancelAnimationFrame(){},
     requestAnimationFrame:()=>{requested++;return 8;},soraLoop:()=>{},
     performance:{now:()=>12345},document:{hidden:false},
     window:{addEventListener:(event,cb)=>{handlers[event]=cb;}}
-  });
+  };
+  const env=evaluate(script,sandbox);
   handlers.pagehide();
   assert.equal(env.soraRaf,0);
   assert.equal(stops,1);

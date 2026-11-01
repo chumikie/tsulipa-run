@@ -19,6 +19,7 @@ assert(source.includes('!pendingRequest&&balance<1'),'retomada idempotente conti
 assert(source.includes('completeRun:completeRun'),'a finalização confirmada encerra a chave persistida do ticket');
 assert(karaoke.includes("r.reason==='limit'")&&karaoke.includes('a.iniciar(null,true)')&&karaoke.includes('completeRun(resume)'),'corrida antiga encerrada não bloqueia nova admissão paga');
 assert(karaoke.includes("x.reason==='invalid'||x.reason==='run'")&&karaoke.includes('parent.ktTickets.completeRun(id)'),'o ID e o vínculo do ticket só são limpos após resposta terminal');
+assert(karaoke.includes('if(resume&&r.run!==resume)')&&karaoke.includes('completeRun(resume)'),'vínculo antigo é limpo quando o servidor substitui uma corrida vencida');
 assert(!/\.rpc\(|\.from\(/.test(source),'cliente não edita carteiras diretamente');
 assert(sql.includes('APROVADO E APLICADO NO SUPABASE'),'migração marcada como aprovada e aplicada');
 assert(sql.includes("r.payment_kind='free'"),'5 tentativas gratuitas não contam shows extras');

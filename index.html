@@ -3166,7 +3166,7 @@ var twOverlayTopCache=null,twOverlayTopDirty=true;
 function twOverlayTopo(){
   if(!twOverlayTopDirty)return twOverlayTopCache;
   twOverlayTopDirty=false;
-  var nodes=document.querySelectorAll('.ov:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])'),top=null,topZ=-Infinity;
+  var nodes=document.querySelectorAll('.ov:not([hidden]),.hub:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])'),top=null,topZ=-Infinity;
   for(var i=0;i<nodes.length;i++){
     var el=nodes[i];
     if(!el.isConnected||!el.getClientRects().length)continue;
@@ -3183,13 +3183,14 @@ function twOverlayInvalidar(){twOverlayTopDirty=true;}
 function twAnimacaoVisivel(el){
  if(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return false;
   if(document.hidden||!twElementoVisivelNaJanela(el))return false;
-  var owner=el.closest?el.closest('.ov,.tw-preview-game,.tw-karaoke-closed-ov'):null,top=twOverlayTopo();
+  var owner=el.closest?el.closest('.ov,.hub,.tw-preview-game,.tw-karaoke-closed-ov'):null,top=twOverlayTopo();
   return owner?owner===top:(!top&&twIndex2StageVisible);
 }
 function twIndex2BaseFramesPaused(){
   if(typeof window!=='undefined'&&window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return true;
   if(document.hidden||(typeof twIndex2StageVisible!=='undefined'&&!twIndex2StageVisible))return true;
-  if(typeof twOverlayTopo==='function')return !!twOverlayTopo();
+  // menu, fim do show e pausa são telas do próprio Center⭐Run!, não camadas por cima dele.
+  if(typeof twOverlayTopo==='function'){var topo=twOverlayTopo();return !!topo&&!/^(menu|over|pz)$/.test(topo.id||'');}
   var hub=typeof hubOv!=='undefined'&&hubOv,preview=document.getElementById('twPreviewJogo');
   return !!(hub&&!hub.hidden||preview&&!preview.hidden);
 }
@@ -9616,6 +9617,7 @@ function twTimeoutVisivel(el,enabled,callback,delay){
   else if(el&&el.isConnected&&!document.hidden&&(!enabled||enabled()))start();
   return {cancel:function(){if(done)return;done=true;stop();if(gate)gate.destroy();},refresh:function(){if(gate)gate.refresh();}};
 }
+window.TWVisibilidade={intervalo:twIntervaloVisivel,timeout:twTimeoutVisivel};   // p/ tw-index2-ux-fixes
 var twRankRotationWanted=false,twRankVisibilityGate=null,twRankVisibilityElement=null;
 function twRankTimerStart(){
  if(twRankTimer)return;
@@ -13720,6 +13722,43 @@ showLb = function(el){
 
 try{ Object.defineProperty(window, 'contaJ', { get:function(){ return contaJ; }, configurable:true }); }catch(e){}   // scripts de fora (cadeado dos cards) leem o login real
 applyLang();
+
+// Ciclo de visibilidade: dentro deste escopo para enxergar os loops do jogo.
+(function twAnimationVisibilityLifecycle(){
+ function sl(id,el,on,fn){var v=!!on&&!!el&&twAnimacaoVisivel(el);if(v&&!id)return requestAnimationFrame(fn);if(!v&&id){cancelAnimationFrame(id);return 0;}return id;}
+ function sync(){
+  if(twIndex2BaseFramesPaused())twIndex2PauseBaseFrames();
+  else twIndex2ResumeBaseFrames();
+  hubAnim=sl(hubAnim,hubOv,!hubOv.hidden,hubLoop);
+  gachaAnim=sl(gachaAnim,gachaOv,!gachaOv.hidden,gachaLoop);
+  duoAnim=sl(duoAnim,$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
+  aniverAnim=sl(aniverAnim,$('aniverFx'),!aniverOv.hidden,aniverLoop);
+  encAnim=sl(encAnim,$('encCv'),!!encDados,encLoop);
+  petRaf=sl(petRaf,$('petov'),!!petOpen,petLoop);
+  perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
+  if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
+  twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));
+ }
+ var scheduled=false;
+ function schedule(){
+  twOverlayInvalidar();
+  if(scheduled)return;scheduled=true;
+  requestAnimationFrame(function(){scheduled=false;sync();});
+ }
+ new MutationObserver(function(){twOverlayInvalidar();sync();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
+ document.addEventListener('visibilitychange',sync);
+ window.addEventListener('pageshow',function(){twOverlayInvalidar();sync();});
+ window.addEventListener('message',function(e){if(e.source===window.parent&&e.data&&e.data.type==='tsulipa-motion-state')schedule();});
+ window.addEventListener('pagehide',function(){
+  twIndex2PauseBaseFrames();
+  hubAnim=sl(hubAnim);gachaAnim=sl(gachaAnim);duoAnim=sl(duoAnim);aniverAnim=sl(aniverAnim);encAnim=sl(encAnim);petRaf=sl(petRaf);perfAnimId=sl(perfAnimId);
+  hubIdolsParar();
+  twPreviewEnviarVisibilidadeIframe(false);
+ });
+ window.addEventListener('scroll',schedule,true);
+ window.addEventListener('resize',schedule);
+ sync();
+})();
 })();
 </script>
 	<script id="tw-index2-ux-fixes">
@@ -13807,65 +13846,20 @@ applyLang();
     var tvModal=document.querySelector('#hub .tw-rank-tv-modal');
     if(tvModal&&!tvModal.hidden&&(!window.TWMotionLifecycle||window.TWMotionLifecycle.isVisible(tvModal)))updateTvTopIdol();
   }
-  var hubUXRefreshGate=twIntervaloVisivel(hubOv,function(){return !hubOv.hidden;},hubUXAtualizar,800);
+  var hubOv=document.querySelector('#hub'),TWV=window.TWVisibilidade;
+  var hubUXRefreshGate=hubOv&&TWV?TWV.intervalo(hubOv,function(){return !hubOv.hidden;},hubUXAtualizar,800):setInterval(hubUXAtualizar,800);
 
   document.addEventListener('click', function(e){
     if(e.target.closest && (e.target.closest('.tw-rank-tv-launch') || e.target.closest('.tw-rank-tv-buttons'))){
       var modal=document.querySelector('#hub .tw-rank-tv-modal');
-      if(modal)twTimeoutVisivel(modal,function(){return !modal.hidden&&!hubOv.hidden;},updateTvTopIdol,60);
+      if(modal&&TWV&&hubOv)TWV.timeout(modal,function(){return !modal.hidden&&!hubOv.hidden;},updateTvTopIdol,60);
+      else setTimeout(updateTvTopIdol,60);
     }
   });
 })();
 </script>
 <script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
-
-<script id="twAnimationVisibilityLifecycle">
-(function(){
- 'use strict';
- function cancel(name){
-  var id=window[name]||0;
-  if(id){cancelAnimationFrame(id);window[name]=0;}
- }
- function syncLoop(name,el,active,fn){
-  var visible=!!active&&twAnimacaoVisivel(el),id=window[name]||0;
-  if(visible&&!id)window[name]=requestAnimationFrame(fn);
-  else if(!visible&&id)cancel(name);
- }
- function sync(){
-  if(twIndex2BaseFramesPaused())twIndex2PauseBaseFrames();
-  else twIndex2ResumeBaseFrames();
-  syncLoop('hubAnim',hubOv,!hubOv.hidden,hubLoop);
-  syncLoop('gachaAnim',gachaOv,!gachaOv.hidden,gachaLoop);
-  syncLoop('duoAnim',$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
-  syncLoop('aniverAnim',$('aniverFx'),!aniverOv.hidden,aniverLoop);
-  syncLoop('encAnim',$('encCv'),!!encDados,encLoop);
-  syncLoop('petRaf',$('petov'),!!petOpen,petLoop);
-  syncLoop('perfAnimId',$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
-  if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
-  twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));
- }
- var scheduled=false;
- function schedule(){
-  twOverlayInvalidar();
-  if(scheduled)return;scheduled=true;
-  requestAnimationFrame(function(){scheduled=false;sync();});
- }
- new MutationObserver(function(){twOverlayInvalidar();sync();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
- document.addEventListener('visibilitychange',sync);
- window.addEventListener('pageshow',function(){twOverlayInvalidar();sync();});
-window.addEventListener('message',function(e){if(e.source===window.parent&&e.data&&e.data.type==='tsulipa-motion-state')schedule();});
- window.addEventListener('pagehide',function(){
-  twIndex2PauseBaseFrames();
-  ['hubAnim','gachaAnim','duoAnim','aniverAnim','encAnim','petRaf','perfAnimId'].forEach(cancel);
-  if(hubIdols)hubIdolsParar();
-  twPreviewEnviarVisibilidadeIframe(false);
- });
- window.addEventListener('scroll',schedule,true);
- window.addEventListener('resize',schedule);
- sync();
-})();
-</script>
 </body>
 </html>
 

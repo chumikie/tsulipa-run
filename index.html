@@ -2478,6 +2478,43 @@ if(hacc==='coala'){
 }
 
 
+var PET_DRAW_RAMP_CACHE=new Map();
+var PET_DRAW_RAMP_STOPS={
+ tsuEar:[[0,'#7e22ce'],[1,'#581c87']],
+ tsuBody:[[0,'#c084fc'],[.6,'#9333ea'],[1,'#581c87']],
+ patiBody:[[0,'#60a5fa'],[.6,'#2563eb'],[1,'#1e3a8a']],
+ lirikaBody:[[0,'#4ade80'],[.6,'#16a34a'],[1,'#052e16']],
+ crown:[[0,'#fde047'],[1,'#d97706']]
+};
+function petDrawRampCreate(key,stops){
+  var cached=PET_DRAW_RAMP_CACHE.get(key);if(cached)return cached;
+  var canvas,paint;
+  try{canvas=document.createElement('canvas');canvas.width=2;canvas.height=128;paint=canvas.getContext('2d');if(!paint)return null;
+    var grad=paint.createLinearGradient(0,0,0,128);
+    stops.forEach(function(stop){grad.addColorStop(stop[0],stop[1]);});
+    paint.fillStyle=grad;paint.fillRect(0,0,2,128);
+  }catch(e){return null;}
+  if(PET_DRAW_RAMP_CACHE.size>=64){var first=PET_DRAW_RAMP_CACHE.keys().next();if(!first.done)PET_DRAW_RAMP_CACHE.delete(first.value);}
+  PET_DRAW_RAMP_CACHE.set(key,canvas);return canvas;
+}
+function petDrawRampEllipse(ctx,key,rx,ry,stops){
+  var asset=PET_DRAW_RAMP_CACHE.get(key)||petDrawRampCreate(key,stops);if(!asset)return false;
+  ctx.save();ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,7);ctx.clip();ctx.drawImage(asset,-rx,-ry,rx*2,ry*2);ctx.restore();return true;
+}
+function petDrawRampTsuEars(ctx){
+  var asset=PET_DRAW_RAMP_CACHE.get('tsu-ears')||petDrawRampCreate('tsu-ears',PET_DRAW_RAMP_STOPS.tsuEar);if(!asset)return false;
+  ctx.save();ctx.beginPath();ctx.moveTo(-11,-4);ctx.lineTo(-10,-16);ctx.lineTo(-2,-9);ctx.closePath();ctx.moveTo(11,-4);ctx.lineTo(10,-16);ctx.lineTo(2,-9);ctx.closePath();ctx.clip();ctx.drawImage(asset,-12,-16,24,12);ctx.restore();return true;
+}
+function petDrawRampCrown(ctx){
+  var asset=PET_DRAW_RAMP_CACHE.get('crown')||petDrawRampCreate('crown',PET_DRAW_RAMP_STOPS.crown);if(!asset)return false;
+  ctx.save();ctx.beginPath();ctx.moveTo(-6,2);ctx.lineTo(-6,-5);ctx.lineTo(-2,-1);ctx.lineTo(0,-6);ctx.lineTo(2,-1);ctx.lineTo(6,-5);ctx.lineTo(6,2);ctx.closePath();ctx.clip();ctx.drawImage(asset,-6,-6,12,8);ctx.restore();return true;
+}
+function petDrawRampCustomBody(ctx,cor,lt,dk){
+  var key='custom-body:'+cor,asset=PET_DRAW_RAMP_CACHE.get(key);
+  if(!asset)asset=petDrawRampCreate(key,[[0,lt],[.6,cor],[1,dk]]);
+  if(!asset)return false;
+  ctx.save();ctx.beginPath();ctx.ellipse(0,0,12,11,0,0,7);ctx.clip();ctx.drawImage(asset,-12,-11,24,22);ctx.restore();return true;
+}
 function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressão do Backstage⭐Pet!
   ctx.save();
   ctx.translate(x, y + Math.sin(tFrame * 0.08) * 3.5);
@@ -2497,20 +2534,21 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
     ctx.strokeStyle = '#7e22ce'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(10, 4); ctx.quadraticCurveTo(22, -4, 18, -12); ctx.stroke();
 
-    // Orelhas de gato com degradê
-    var earG = ctx.createLinearGradient(0, -16, 0, -4);
-    earG.addColorStop(0, '#7e22ce'); earG.addColorStop(1, '#581c87');
-    ctx.fillStyle = earG;
-    T([-11,-4, -10,-16, -2,-9]); T([11,-4, 10,-16, 2,-9]);
+    // Orelhas de gato: textura fixa reaproveitada, com o mesmo recorte triangular
+    if(!petDrawRampTsuEars(ctx)){
+      var earG = ctx.createLinearGradient(0, -16, 0, -4);
+      earG.addColorStop(0, '#7e22ce'); earG.addColorStop(1, '#581c87');
+      ctx.fillStyle = earG; T([-11,-4, -10,-16, -2,-9]); T([11,-4, 10,-16, 2,-9]);
+    }
     ctx.fillStyle = '#f472b6';
     T([-9,-5, -8.5,-13, -4,-8.5]); T([9,-5, 8.5,-13, 4,-8.5]);
     
     // Corpo redondinho com degradê de iluminação (topo mais claro, base com sombra escura)
-    var bgTsu = ctx.createLinearGradient(0, -11, 0, 11);
-    bgTsu.addColorStop(0, '#c084fc');
-    bgTsu.addColorStop(0.6, '#9333ea');
-    bgTsu.addColorStop(1, '#581c87');
-    ctx.fillStyle = bgTsu; E(0, 0, 12, 11);
+    if(!petDrawRampEllipse(ctx,'tsu-body',12,11,PET_DRAW_RAMP_STOPS.tsuBody)){
+      var bgTsu = ctx.createLinearGradient(0, -11, 0, 11);
+      bgTsu.addColorStop(0, '#c084fc'); bgTsu.addColorStop(0.6, '#9333ea'); bgTsu.addColorStop(1, '#581c87');
+      ctx.fillStyle = bgTsu; E(0, 0, 12, 11);
+    }
     ctx.shadowBlur = 0;
     
     // Brilho
@@ -2533,11 +2571,11 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
     ctx.fillStyle = '#1d4ed8'; E(-6, 10, 3, 2.5); E(6, 10, 3, 2.5);
     
     // Corpo com degradê
-    var bgPati = ctx.createLinearGradient(0, -11.5, 0, 11.5);
-    bgPati.addColorStop(0, '#60a5fa');
-    bgPati.addColorStop(0.6, '#2563eb');
-    bgPati.addColorStop(1, '#1e3a8a');
-    ctx.fillStyle = bgPati; E(0, 0, 12, 11.5);
+    if(!petDrawRampEllipse(ctx,'pati-body',12,11.5,PET_DRAW_RAMP_STOPS.patiBody)){
+      var bgPati = ctx.createLinearGradient(0, -11.5, 0, 11.5);
+      bgPati.addColorStop(0, '#60a5fa'); bgPati.addColorStop(0.6, '#2563eb'); bgPati.addColorStop(1, '#1e3a8a');
+      ctx.fillStyle = bgPati; E(0, 0, 12, 11.5);
+    }
     ctx.shadowBlur = 0;
     
     // Brilho
@@ -2545,11 +2583,13 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
     
     // Coroa Dourada
     ctx.save(); ctx.translate(4, -11); ctx.rotate(0.22);
-    var crnG = ctx.createLinearGradient(0, -6, 0, 2);
-    crnG.addColorStop(0, '#fde047'); crnG.addColorStop(1, '#d97706');
-    ctx.fillStyle = crnG;
-    T([-6,2, -6,-5, -2,-1, 0,-6, 2,-1, 6,-5, 6,2]);
-    ctx.strokeStyle = '#92400e'; ctx.lineWidth = 0.8; ctx.stroke();
+    if(!petDrawRampCrown(ctx)){
+      var crnG = ctx.createLinearGradient(0, -6, 0, 2);
+      crnG.addColorStop(0, '#fde047'); crnG.addColorStop(1, '#d97706');
+      ctx.fillStyle = crnG; T([-6,2, -6,-5, -2,-1, 0,-6, 2,-1, 6,-5, 6,2]);
+    }
+    ctx.strokeStyle = '#92400e'; ctx.lineWidth = 0.8;
+    ctx.beginPath();ctx.moveTo(-6,2);ctx.lineTo(-6,-5);ctx.lineTo(-2,-1);ctx.lineTo(0,-6);ctx.lineTo(2,-1);ctx.lineTo(6,-5);ctx.lineTo(6,2);ctx.closePath();ctx.stroke();
     ctx.restore();
     
     if(ex){   // expressão + as sobrancelhas marrentas que são a cara do Pucchi
@@ -2580,11 +2620,11 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
     ctx.restore();
 
     // Corpo com degradê (cobre o meio do anel de trás naturalmente!)
-    var bgLir = ctx.createLinearGradient(0, -11, 0, 11);
-    bgLir.addColorStop(0, '#4ade80');
-    bgLir.addColorStop(0.6, '#16a34a');
-    bgLir.addColorStop(1, '#052e16');
-    ctx.fillStyle = bgLir; E(0, 0, 12, 11);
+    if(!petDrawRampEllipse(ctx,'lirika-body',12,11,PET_DRAW_RAMP_STOPS.lirikaBody)){
+      var bgLir = ctx.createLinearGradient(0, -11, 0, 11);
+      bgLir.addColorStop(0, '#4ade80'); bgLir.addColorStop(0.6, '#16a34a'); bgLir.addColorStop(1, '#052e16');
+      ctx.fillStyle = bgLir; E(0, 0, 12, 11);
+    }
     ctx.shadowBlur = 0;
     
     // Anel Planetário (Metade da FRENTE — passa brilhando pela frente da barriga!)
@@ -4743,16 +4783,20 @@ function petDrawCustom(ctx, cfg, t, ex){
   if(cfg.orelha === 'gato'){ ctx.fillStyle = dk; T([-11, -4, -10, -16, -2, -9]); T([11, -4, 10, -16, 2, -9]); ctx.fillStyle = '#f9a8d4'; T([-9, -5, -8.5, -13, -4, -8.5]); T([9, -5, 8.5, -13, 4, -8.5]); }
   else if(cfg.orelha === 'coala'){ ctx.fillStyle = dk; E(-10, -7, 5, 5); E(10, -7, 5, 5); ctx.fillStyle = lt; E(-10, -7, 2.8, 2.8); E(10, -7, 2.8, 2.8); }
   else if(cfg.orelha === 'coelho'){ ctx.fillStyle = dk; E(-5, -14, 2.8, 7, -.15); E(5, -14, 2.8, 7, .15); ctx.fillStyle = '#f9a8d4'; E(-5, -14, 1.3, 5, -.15); E(5, -14, 1.3, 5, .15); }
-  var bg = ctx.createLinearGradient(0, -11, 0, 11);
-  bg.addColorStop(0, lt); bg.addColorStop(.6, cor); bg.addColorStop(1, dk);
-  ctx.fillStyle = bg; E(0, 0, 12, 11);
+  if(!petDrawRampCustomBody(ctx,cor,lt,dk)){
+    var bg = ctx.createLinearGradient(0, -11, 0, 11);
+    bg.addColorStop(0, lt); bg.addColorStop(.6, cor); bg.addColorStop(1, dk);
+    ctx.fillStyle = bg; E(0, 0, 12, 11);
+  }
   ctx.shadowBlur = 0;
   ctx.fillStyle = 'rgba(255,255,255,0.45)'; E(-4, -6, 3.5, 1.8, -.3);
   if(cfg.orelha === 'coroa'){
     ctx.save(); ctx.translate(4, -11); ctx.rotate(.22);
-    var cg = ctx.createLinearGradient(0, -6, 0, 2); cg.addColorStop(0, '#fde047'); cg.addColorStop(1, '#d97706');
-    ctx.fillStyle = cg; T([-6, 2, -6, -5, -2, -1, 0, -6, 2, -1, 6, -5, 6, 2]);
-    ctx.strokeStyle = '#92400e'; ctx.lineWidth = .8; ctx.stroke(); ctx.restore();
+    if(!petDrawRampCrown(ctx)){
+      var cg = ctx.createLinearGradient(0, -6, 0, 2); cg.addColorStop(0, '#fde047'); cg.addColorStop(1, '#d97706');
+      ctx.fillStyle = cg; T([-6, 2, -6, -5, -2, -1, 0, -6, 2, -1, 6, -5, 6, 2]);
+    }
+    ctx.strokeStyle = '#92400e'; ctx.lineWidth = .8; ctx.beginPath();ctx.moveTo(-6,2);ctx.lineTo(-6,-5);ctx.lineTo(-2,-1);ctx.lineTo(0,-6);ctx.lineTo(2,-1);ctx.lineTo(6,-5);ctx.lineTo(6,2);ctx.closePath();ctx.stroke(); ctx.restore();
   }
   var o = { x:4.5, y:-1, m:2.6, c:dk2 };
   if(ex) petFace(ctx, ex, o, t);

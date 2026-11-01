@@ -1,78 +1,115 @@
-# PR #58 — Estado central
+# PR #58 — Estado central e mapa de retomada
 
-Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
-A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
+Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 
-Última atualização: 01/11/2026 — ver HEAD e CI na seção 6.
+**Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
+
+**Snapshot do código auditado:** 01/11/2026, 16h03 (Brasília) — último commit de código confirmado: `76ba9e559cd150a34d37d69fa8b86a1b31a6ad2e`.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 325 commits, 49 arquivos alterados, 4.562 adições e 945 remoções.
+**Importante:** este documento será atualizado por um commit exclusivamente documental na mesma branch. O SHA acima identifica o último HEAD que contém as alterações de código e ao qual o CI abaixo se refere; o commit documental não altera o código do jogo.
 
 ---
 
-## 1. Concluído (código + teste automatizado no CI)
+## 1. Implementado no branch — presença confirmada no código
 
-- Controle compartilhado de ciclo de vida em `tw-motion-lifecycle.js` (pausa de animações, gates de iframe, limpeza de observers/listeners).
-- Renderização móvel limitada a 30 Hz no Center⭐Run!, Karaoke⭐Time!, Sora⭐Jump! e prévias, com a simulação preservada em delta-time.
-- Otimizações de desenho e caches em Canvas (piso 15×6, parede, estante, sprites limitados a 64).
-- Sala solo de Karaoke: plateia autônoma, reações, passeios, conversas, pandeiros e visitas do Pet.
-- Respostas assíncronas vinculadas à conta (perfil, sincronização, microfone, Karaoke, Sora).
-- Limpeza de timers, listeners e recursos de áudio.
-- Recuperação de tickets de Karaoke: chave idempotente, recarga da página, saldo já debitado, corrida substituída, troca de conta (`tests/karaoke-ticket-recovery.test.js` + suíte PostgreSQL descartável).
-- Recuperação da confirmação de crédito do Center⭐Run! após resposta perdida (`tests/center-run-credit-recovery.test.js`).
-- Desenhos 2D originais do chapéu de Capitão e da estrela (`tw-avatar-items.js`, `tests/avatar-items.test.js`).
-- Três cortes de cabelo ondulados originais (`tw-avatar-hair.js`, `tests/avatar-hair.test.js`).
+Esta seção confirma que a implementação está presente no código da PR. **Não significa, por si só, homologação visual ou aprovação em aparelho real.**
 
-## 2. Implementado, aguardando homologação manual
+- Controlador compartilhado de ciclo de vida em `tw-motion-lifecycle.js`: pausa de animações e loops associados a componentes inativos; limpeza de gates, observers e listeners de iframes removidos ou substituídos.
+- Primeira camada de renderização móvel limitada a 30 Hz em jogos e prévias, com simulação baseada em delta-time para preservar movimento e relógio musical.
+- Otimizações de desenho e caches: ocupação do piso em buffer reutilizável, caches de cenário, paletas, sprites e buffers de aparência.
+- Integrações de ciclo de vida, atualização e limpeza em `index.html`, Karaoke Time/Day, Sora Jump, Backstage Pet, Hub, Perfil/Estúdio, Gacha, Moon Duo e Encontro.
+- Proteções contra respostas assíncronas obsoletas após troca de conta em fluxos de perfil, autenticação, jogos e sincronização.
+- Recuperação de tickets do Karaoke: chave idempotente, resposta perdida, recarga, concorrência, retomada e isolamento por conta.
+- Recuperação da confirmação de crédito do Center Run após resposta perdida, sem repetir a finalização da corrida.
+- Correção do cache de paleta do Center Run que podia deixar a corrida em branco.
+- Módulos de cabelo e acessórios: três cortes extras ondulados, três franjas extras, mecha que acompanha a franja, Marias presas, rabo em uma peça, arco-íris em mechas tingidas, quepe militar e presilha de estrela.
+- Karaoke mobile: controles de som/pausa/timing reposicionados; correção da pausa indevida do show quando o palco sai da viewport; rolagem ao palco no início da apresentação.
+- Sala solo do Karaoke: existe passeio autônomo de figurante, interações sociais entre dois figurantes, reações, itens e visitas de pets. A limitação atual — somente um passeio autônomo por vez — está descrita na seção 3.3.
 
-- Conferência visual de cabelos, chapéu de Capitão e estrela no Center⭐Run!, Perfil e Karaoke.
-- Karaoke e tickets em fluxo autenticado real (conta Google).
-- Desempenho em celulares reais (30 Hz, aquecimento, bateria).
-- Migração do Center⭐Run! para 100 estrelas/dia: preparada e testada em PostgreSQL isolado; **não aplicada em produção** (ver seção 7).
+## 2. Testes automatizados — evidência no GitHub Actions
 
-## 3. Falta corrigir / investigar
+**Último CI de código consultado:** workflow `Check TsuLiPa special games`, execução [#41339757980](https://github.com/chumikie/tsulipa-run/actions/runs/41339757980), associado ao HEAD de código `76ba9e55`. Os dois jobs terminaram com sucesso:
 
-- **Montar Idol e Star⭐Gacha sem animação (relato de 01/11, 15:19).** Causa provável: até `5931104`, o cache da camada do topo (`twOverlayTopo`) só era invalidado pelo script quebrado; ao abrir uma janela, o loop lia o cache antigo, achava que estava oculto e parava no 1º quadro. Na prévia atual o Gacha anima (teste no Chromium). Montar Idol exige login: **confirmar com recarga forçada** (Ctrl+Shift+R) na prévia.
-- **Cortes extras redesenhados (`ebba3ae`), aguardando aprovação visual do responsável.** No estilo de `drawChar`: *Ondulado curto* (topo e franja mantidos, pontas laterais junto ao rosto no lugar das "bolas"), *Curto bicolor (metade preta)* (risca lateral, metade na cor escolhida e metade preta — ref. Maruru) e *Repicado volumoso* (médio até os ombros, pontas suaves para fora, mecha entre os olhos — ref. Mimimila). Valores salvos inalterados; cortes e franjas antigos idênticos à `main`; `tw-avatar-hair.js?v=2`.
-- **Chapéu de Capitão e estrela — pedidos do responsável:** chapéu com formato mais militar (cor aprovada); estrela um pouco maior, como presilha abaixo do cabelo, ao lado da franja (como hibisco e flor de cerejeira). Não implementado ainda.
-- **Karaoke pausa sozinho em tela de celular.** Numa janela 420×900, o show começa e fica em "Pausado" logo após confirmar; em janela alta (1280×1600) toca normalmente, e a produção toca nos dois casos. Suspeita: a regra nova que pausa o show quando palco/painel de ritmo saem da área visível. Confirmar em celular real antes de corrigir.
-- Custo da faixa de visitantes do Karaoke.
-- Apresentação dos rankings de Karaoke.
-- Revisão dos loops secundários que já desenham a cada dois frames, em aparelhos cujo `requestAnimationFrame` opera perto de 30 Hz.
+- `static-validation`: aprovado.
+- `postgres-center-run`: aprovado.
 
-### Corrigido nesta revisão
+Entre as verificações incluídas no workflow estão testes de cabelos, acessórios, recuperação de crédito, paleta do Center Run, ciclo de visibilidade, regressão de pausa do Karaoke, recuperação de tickets, fluxos de ritmo, sincronização do Pet e estabilidade do Sora.
 
-- **Scripts de visibilidade fora do escopo do jogo** (`5931104`). Desde `758b8c3`, o ciclo `twAnimationVisibilityLifecycle` e o script `tw-index2-ux-fixes` chamavam funções internas do bloco principal e falhavam com `ReferenceError` a cada mudança do DOM; o hub e a faixa de Idols paravam e não voltavam, e a atualização periódica de cadeados/TV do hub não iniciava. O ciclo passou para dentro do escopo do jogo, controlando os ids reais de animação; o hub passou a contar como camada; menu, fim do show e pausa deixaram de congelar o próprio Center⭐Run!. Teste `tests/visibility-scope.test.js` no CI. Verificado no Chromium (local e prévia): página sem erros; hub pausa sob o login e volta; corrida pausa com a página oculta e volta; prévia do menu e comemoração do fim do show animadas.
-- **Corrida do Center⭐Run! em branco** (`03ec79d`). Desde `0457726`, o cache de `curPal()` calculava só 4 das 8 cores de cada paleta; `P2[4]` ficava indefinido, `draw()` falhava e a corrida não aparecia (reproduzido na prévia e localmente, produção normal; localizado por `git bisect`). Buffer fixo mantido com 8 posições + `tests/center-run-palette.test.js` no CI.
+O job PostgreSQL usa banco temporário/isolado do CI e cobre os fluxos de Center Run e tickets. **Isso não é execução nem homologação no banco de produção.**
 
-### Conferência visual — 01/11/2026 (prévia Netlify, navegador headless 420×900, sem login)
+Limites desta evidência:
 
-Look de teste salvo só no navegador local: Idol, chapéu de Capitão, estrela, cada um dos 3 cortes ondulados.
+- O resultado verde confirma os comandos automatizados executados pelo workflow naquele HEAD.
+- Os testes de avatar exercitam funções e contratos de desenho; não substituem inspeção visual de todos os personagens, acessórios, tamanhos e renderizadores.
+- O teste de pausa do Karaoke protege condições de visibilidade e o comportamento codificado; não comprova funcionamento em todos os celulares físicos.
+- Não encontrei teste específico para três figurantes caminharem simultaneamente, retorno do personagem do jogador ao microfone ou histórico pessoal por música.
+- A execução local antiga de 33/33 testes, registrada no histórico da PR, pertence a um HEAD anterior e não deve ser apresentada como teste local do HEAD `76ba9e55`.
 
-| Tela | Resultado |
-|---|---|
-| Card "Meu Perfil" no hub | Chapéu, estrela e os 3 cortes aparecem. |
-| Prévia do Idol no Center⭐Run! | Chapéu, estrela, `onduladom`, `onduladom2` (bicolor) e `onduladof` desenhados em 2D. |
-| Corrida / Fim do show | Após a correção, avatar com chapéu e estrela na tela de fim de show. |
-| Perfil completo (aba Montar) | Pendente: exige login Google. |
-| Karaoke solo | Pendente: sem login o palco usa a Tsu, não o Idol salvo; conferir no fluxo autenticado. As capturas anteriores da sala pareciam "quebradas" por causa do recorte da captura (a produção sai igual com o mesmo método); a sala em si não está quebrada. |
+**Nesta atualização documental não foram executados testes locais, testes de navegador ou testes em aparelhos.** Como o commit desta atualização altera apenas `docs/PR58_STATUS.md`, o workflow com filtro de caminhos de código não deve ser interpretado como uma nova execução de CI para este commit documental.
 
-Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapéu nem a estrela — são novidades da PR.
+## 3. Homologação, pendências e fila de retomada
 
-### Pedidos do responsável (01/11) — fila, um por vez
+### 3.1. Personagens — implementação presente, homologação visual incompleta
 
-*Análise de braços e pernas (01/11):* não recomendada agora — o estilo chibi de blocos usa poses prontas (aceno, banzai, mãos no peito) e mudar membros afeta todas as telas e renderizadores (Center Run, Perfil, Karaoke, Encontro, Hub). Reavaliar só se surgir uma necessidade concreta (ex.: segurar microfone no Karaoke).
+- Os módulos `tw-avatar-hair.js` e `tw-avatar-items.js` estão presentes e são carregados por Center Run/Perfil e Karaoke.
+- Os testes automatizados verificam os três cortes, as franjas e o desenho do quepe/presilha por meio de contratos e chamadas simuladas de Canvas.
+- O relatório visual anterior foi feito em navegador headless, viewport 420×900, sem login, e cobriu apenas parte das telas. O Perfil completo e o Karaoke com o avatar salvo ficaram pendentes de autenticação.
+- **Personagem careca:** não foi encontrada opção careca/calva no menu nem implementação correspondente nos módulos atuais. A branch antiga de recuperação do chapéu/estrela retirou essa opção; portanto, não considerar o pedido concluído.
+- Falta conferir base dos cabelos, camadas traseiras/superiores/franjas, acessórios e preservação de aparência em todos os tipos de personagem, parceiros, Perfil, Estúdio, Hub, Center Run, Karaoke e renderizadores alternativos.
 
-1. Montar Idol e Gacha: **confirmados pelo responsável** após a correção.
-2. Cabelos — **aprovados**: 3 cortes (Ondulado, Bicolor, Repicado) + 3 franjas (Rebelde, Risca, Repicada), Marias presas com elástico, Rabo em uma peça, Mecha como fio que acompanha a franja. Arco-íris refeita como 6 mechas tingidas com degradê (`0e0dad8`). Revisão das franjas: todas usam o mesmo degradê e contorno da cabeça; só a Arco-íris destoava.
-3. Quepe militar e presilha de estrela — **aprovados** (`3a7e8d3`).
-4. Karaoke: "Ajustar timing" no palco ao lado de som e câmera (desktop) e na fileira de cima no celular — **aprovado** (`b97ef5e`).
-5. Karaoke: show pausava sozinho no celular — **corrigido**. Causas: a regra nova pausava o show quando palco/painel saíam da tela, e durante o show a Vitrine sonora (nova na PR) subia para cima da sala, empurrando o palco ~1.600 px para baixo. Agora show em andamento só pausa com página oculta/troca de aba; a vitrine fica depois da sala durante o show; ao começar, a tela vai até o palco. Teste `tests/karaoke-show-visibility.test.js`.
-6. Sala de Karaoke: pelo menos 3 Idols da plateia andando ao mesmo tempo; o Idol do jogador fica no microfone, anda só quando a pessoa toca no piso e volta ao microfone após 5 s longe; obrigatório estar no microfone ao jogar. O telão continua mostrando só "Maiores combos".
-7. Página do Karaoke: trocar a "Vitrine sonora" longa por botões com a cabeça de Tsu, Lirika e Pati que tocam as vozes; destacar as faixas do Karaoke para ouvir, com nota máxima pessoal por música (sem ranking compartilhado), em seção selecionável como "Novidades".
-9. Sala de Karaoke — ideias de 01/11 (viáveis no 2D atual, sem trocar o estilo):
-   - Lupa: janela semitransparente com zoom do palco/cantor durante o show, útil no celular e no computador (amplia a área do canvas já desenhada, custo baixo; complementa o "Ver sala inteira / Ampliar telão" que já existe no celular).
-   - Itens da mesa clicáveis (microfone, comidinhas, bebidinhas) com efeitos sonoros, como o pandeiro.
-   - Mais glitter no sofá e brilhos pela sala (respeitando o limite de 30 FPS no celular).
-   - Armário do canto da sala abre o menu de músicas (liga com o item 7).
-8. "As estrelas da semana": o 3º quadro vira seletor de música, mostrando o top 3 mensal de cada música. **Depende de dados por música no Supabase (ChatGPT).**
+### 3.2. Experiência musical do Karaoke — pedido não incorporado ao GitHub
+
+Pedido do responsável: substituir a Vitrine sonora extensa por três controles compactos com as cabeças do Tsu, Lirika e Pati, preservando a reprodução das vozes; reorganizar as faixas do Karaoke em uma biblioteca compacta/selecionável como Novidades; mostrar a melhor nota pessoal por música, sem ranking compartilhado.
+
+Estado encontrado no código remoto:
+
+- `karaoke-time.html` ainda contém a seção original `ktAudioLibrary`, com listas longas de vozes, trilhas e áudio especial.
+- Os arquivos MP3 das vozes do Tsu, Lirika e Pati e do Encontro continuam no repositório.
+- Existe um player de áudio único e seleção das sete trilhas existentes; isso não equivale à nova interface solicitada.
+- `KaraokeShowRules` guarda registros locais por jogador e métrica (score, accuracy e combo). O resultado contém a música usada, mas o armazenamento não está organizado como melhor resultado separado por jogador **e por música**. Não foi encontrada a tela de melhores notas por faixa.
+- Não foram encontrados `library.html`, `library.css` ou `library.js` no branch, nem commit que incorpore esses arquivos.
+- O responsável forneceu um trecho da sessão Claude mostrando que esses três arquivos foram criados no scratchpad e que começou um comando para substituir HTML/CSS/JS em `karaoke-time.html`. O trecho termina no meio do comando. **É evidência de protótipo iniciado no ambiente local do Claude, não prova de que o comando terminou nem de que os arquivos foram enviados ao GitHub.** Recuperar esse scratchpad/sessão antes de reescrever a solução.
+
+Status: **pendente de integração**. Preservar os MP3 e o player existente; não apagar recursos como substituição simplista. A interface nova e o histórico pessoal por música precisam de implementação e testes próprios.
+
+### 3.3. Plateia autônoma e movimento do jogador — implementação parcial
+
+- O código usa um controlador singular `krLoungeActor` para o passeio autônomo: há apenas um figurante em passeio independente por vez.
+- Há interação social entre até dois figurantes, mas conversa/olhar/aplauso não equivale a três personagens caminhando simultaneamente.
+- O planejador `krPlanearDestino(px,py)` existe, mas a busca do código não encontrou chamada para ele; portanto, não há evidência de que o toque no piso esteja conectado a esse planejador.
+- No início do show, o personagem do jogador é posicionado no palco/microfone pelo próprio código. Não foi encontrada a regra pedida de retorno automático ao microfone após cinco segundos longe.
+- A exigência de estar no microfone para iniciar/jogar também precisa ser implementada e validada sem prejudicar o fluxo atual de apresentação.
+
+Status: **parcial; precisa de implementação**. Manter Karaoke exclusivamente solo/offline; não criar sala online nem fila de participantes reais.
+
+### 3.4. Desempenho e apresentação
+
+- A camada de 30 Hz e as verificações automatizadas estão no código, mas não há medição de desempenho em celulares físicos nesta auditoria.
+- Permanecem pendentes a inspeção dos loops secundários, a faixa de visitantes/Idols e a apresentação dos rankings de Karaoke.
+- Não remover animações, reações, acessórios, detalhes ou efeitos para reduzir custo. Primeiro identificar o trabalho que pode ser pausado quando não está visível e medir o que realmente consome recursos.
+
+### 3.5. Itens adicionais, separados dos pedidos acima
+
+- A ideia de transformar o terceiro quadro em seletor com top 3 mensal por música é um ranking compartilhado diferente do histórico pessoal solicitado no item 3.2. Depende de desenho de dados e decisão específica no Supabase; não confundir as duas funcionalidades.
+- Lupa de palco, itens clicáveis da mesa e glitter adicional permanecem ideias futuras, não parte da conclusão das frentes principais.
+
+### 3.6. Verificações visuais e de uso real ainda necessárias
+
+O commit `76ba9e55` registra que a correção de pausa do Karaoke foi verificada em Chromium nos tamanhos 390×844 e 1280×900. Isso é uma verificação de navegador relatada no commit, não homologação em celulares físicos.
+
+O relatório anterior também registra uma inspeção headless 420×900 sem login. Não há evidência nesta auditoria de:
+
+- homologação em aparelho Android/iOS físico;
+- fluxo autenticado Google completo no Perfil e no Karaoke;
+- inspeção de todos os renderizadores alternativos, parceiros e prévias do editor;
+- teste visual de todas as animações durante sessões longas;
+- validação da nova biblioteca musical ou das três caminhadas simultâneas, pois ainda não foram implementadas.
+
+### 3.7. Correções de inconsistências deste documento
+
+Registros antigos que diziam que o quepe/estrela ainda não estavam implementados, que o redesenho dos cabelos aguardava implementação ou que a pausa mobile seguia sem correção estavam desatualizados. O código e os commits posteriores confirmam essas implementações/correções; o que permanece pendente é a homologação visual e em aparelhos, não a ausência dos respectivos módulos.
+
+A fila de retomada é: **(0) manter este mapa atualizado; (1) concluir auditoria visual dos personagens e investigar careca; (2) recuperar o protótipo e concluir a experiência musical; (3) concluir a plateia autônoma e o movimento do jogador; (4) homologar desempenho em aparelhos físicos; (5) fazer revisão integral da PR antes de qualquer decisão de merge.**
 
 ## 4. Branches avaliadas
 
@@ -95,7 +132,7 @@ ajustes-v213, ajustes-vitrine, chore/karaoke-estreia-08-11-2026, encontro-cena, 
 | feature/sora-karaoke-v2-2026-10-29 | O texto do Google já saiu do botão do Gacha ("🎰 Girar!"); diferença apenas cosmética. |
 | fix/karaoke-ticket-recovery | Reescrita na PR (`karaoke-tickets.js`, `karaoke-time.html`) com teste próprio. |
 | fix/center-run-credit-recovery | Reescrita na PR com teste próprio. |
-| feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados (criados nesta branch em 01/11, **não** existiam no jogo) trazidos para `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar só depois da conferência visual da seção 2. |
+| feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados (criados nesta branch em 01/11, **não** existiam no jogo) trazidos para `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar somente após a conferência visual dos personagens (seção 3.1). |
 | sem-online-historico | Botão "Não funcionou? Entrar de outro jeito" (`gisAntigo`, login Google por redirecionamento) já está na `main` e na PR; só muda a classe do botão de fechar. |
 | feat/backstage-admin-single-owner | Documentação e testes presentes; a diferença é um bloco Sora⭐Jump na proposta SQL do perfil admin → encaminhado ao Supabase (seção 7). |
 
@@ -122,37 +159,74 @@ Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` 
 - `fix/karaoke-ticket-recovery` → recuperação de tickets (reescrita).
 - `fix/center-run-credit-recovery` → reconciliação de crédito (reescrita).
 
-## 6. Testes e CI
+## 6. Testes e CI — histórico com escopo explícito
 
-- Workflow `Check TsuLiPa special games`, run `41330584112` no HEAD `47b1c8a`: **aprovado** (`static-validation`, `postgres-center-run`).
-- Run `41333644389` no HEAD `03ec79d`: **aprovado**.
-- Run `41335191648` no HEAD `5931104`: **aprovado**.
-- Execução local em 01/11/2026 (Node 22): **33/33** testes Node do workflow aprovados. Suítes PostgreSQL rodam apenas no CI.
+- **HEAD de código auditado:** `76ba9e559cd150a34d37d69fa8b86a1b31a6ad2e`.
+- **CI mais recente consultado para esse HEAD:** execução [#41339757980](https://github.com/chumikie/tsulipa-run/actions/runs/41339757980), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
+- Jobs: `static-validation` = **success**; `postgres-center-run` = **success**.
+- O job estático inclui testes de avatar/cabelos/acessórios, recuperação de crédito, paleta do Center Run, visibilidade, regressão de pausa do Karaoke, fluxo e ritmo do Karaoke, recuperação de tickets, estabilidade do Sora e demais verificações listadas em `.github/workflows/validate-games.yml`.
+- O job PostgreSQL usa serviço temporário no CI e executa integrações isoladas de Center Run e tickets. Não representa acesso ou teste ao Supabase de produção.
+- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `76ba9e55`.
+- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico.
+- A revisão visual headless 420×900 sem login, registrada anteriormente, foi parcial e não cobriu Perfil completo nem Karaoke autenticado.
+- **Nesta atualização do mapa não foram executados testes locais, visuais, de navegador ou em aparelhos.** Um commit que altera somente este documento não deve ser apresentado como nova validação do código.
 
-## 7. Supabase (responsabilidade do ChatGPT)
+## 7. Supabase — estado registrado e bloqueios
 
-Projeto `fsggtvgbyhchblyazgmt`. Nada é executado a partir desta PR.
+Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo reproduzem o estado documentado na investigação de 01/11/2026; não representam uma nova consulta ao banco nesta atualização.
 
-- `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`: consta como aplicada.
-- `public.terminar_corrida` em produção ainda usa teto de 1.500 estrelas/dia.
-- Proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`): `supabase/migrations/20261101161409_center_run_daily_100.sql` + checklist, runbook e rollback em `supabase/sql/`. Homologada em PostgreSQL isolado; **depende de autorização específica**.
-- Limite independente de 50 estrelas/dia dos minijogos do Pet: preservar.
-- Não apagar saldos, históricos ou rankings.
-- Para avaliar: bloco Sora⭐Jump da proposta `admin_player_profile_proposal.sql` (branch `feat/backstage-admin-single-owner`).
-- Relatório final do Supabase: aguardando.
+- Projeto registrado no histórico: `fsggtvgbyhchblyazgmt`.
+- `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`: consta no registro anterior como aplicada.
+- A investigação anterior registrou `public.terminar_corrida` em produção com teto de 1.500 estrelas/dia. Confirmar por leitura no momento de uma futura revisão autorizada antes de tomar decisão.
+- A proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`) está em `supabase/migrations/20261101161409_center_run_daily_100.sql`, com checklist, runbook e SQL de rollback em `supabase/sql/`. Foi homologada em PostgreSQL isolado; **não foi aplicada em produção** e depende de autorização específica.
+- Preservar o limite independente de 50 estrelas/dia dos minijogos do Pet.
+- Não apagar nem resetar saldos, históricos, corridas ou rankings.
+- O bloco Sora⭐Jump da proposta `admin_player_profile_proposal.sql` continua como item separado para avaliação.
+- Relatório de leitura e conferência do Supabase permanece pendente.
+
+**Bloqueio:** não executar `supabase db push`, `supabase migration up`, SQL manual, alteração de função, alteração de saldo ou operação destrutiva sem autorização específica do responsável.
 
 ## 8. Checklist para aprovação final
 
-- [ ] Decisão sobre os 3 cortes ondulados.
-- [ ] Redesenho do chapéu (mais militar) e da estrela (presilha maior ao lado da franja).
-- [ ] Karaoke em tela de celular: show não pode pausar sozinho.
-- [ ] Conferência visual de cabelos, chapéu e estrela.
-- [ ] Karaoke e tickets em fluxo autenticado.
-- [ ] Teste em celulares reais.
-- [ ] Faixa de visitantes do Karaoke investigada.
-- [ ] Rankings de Karaoke revisados.
-- [ ] Suíte completa e CI verdes no HEAD final.
-- [ ] Relatório do Supabase recebido.
-- [ ] Decisão do responsável sobre a migração de 100 estrelas.
-- [ ] Revisão humana da PR e decisão de merge.
-- [ ] Após o merge: arquivar as branches das seções 4-A, 4-B e 4-C com autorização.
+### Mapa e código
+- [x] Reconfirmar PR #58 aberta, Draft, sem merge e branch de trabalho exclusiva.
+- [x] Registrar o HEAD de código e separar o estado do código do commit documental.
+- [x] Corrigir estados antigos contraditórios neste documento.
+- [ ] Recuperar ou documentar a impossibilidade de recuperar os arquivos de biblioteca criados no scratchpad do Claude.
+
+### Personagens
+- [ ] Investigar e restaurar/implementar a opção careca, preservando compatibilidade dos saves.
+- [ ] Conferir a base dos cabelos e todas as camadas em personagens masculinos/femininos, parceiros e renderizadores alternativos.
+- [ ] Conferir visualmente cortes, franjas, mecha, Marias, rabo, quepe e presilha em Perfil, Estúdio, Hub, Center Run e Karaoke autenticado.
+
+### Karaoke — experiência musical
+- [ ] Recuperar o protótipo `library.html`, `library.css`, `library.js` do scratchpad, caso ainda esteja disponível.
+- [ ] Substituir a Vitrine extensa por três controles compactos de voz do Tsu, Lirika e Pati, preservando os áudios existentes.
+- [ ] Criar biblioteca compacta de faixas, selecionável como a seção Novidades.
+- [ ] Implementar e persistir a melhor nota pessoal separada por música, sem ranking compartilhado.
+- [ ] Criar testes específicos de seleção de faixa, player de voz, persistência e isolamento por usuário.
+
+### Karaoke — plateia e movimento
+- [ ] Permitir pelo menos três figurantes caminhando simultaneamente, com rotas e limites seguros.
+- [ ] Conectar o toque no piso ao planejador de movimento do personagem do jogador.
+- [ ] Fazer o jogador retornar ao microfone após cinco segundos longe.
+- [ ] Exigir posição correta no microfone para iniciar/jogar.
+- [ ] Preservar a sala solo/offline e o telão de maiores combos.
+
+### Desempenho e homologação
+- [ ] Investigar faixa de visitantes e apresentação dos rankings de Karaoke.
+- [ ] Revisar loops secundários e cadência em 30/60 Hz sem retirar animações ou detalhes.
+- [ ] Testar em celulares físicos; registrar aparelho, viewport, cenário e resultado.
+- [ ] Fazer homologação autenticada de Perfil, Karaoke, tickets e avatares.
+- [ ] Distinguir sempre teste estático/unitário, CI PostgreSQL isolado, verificação Chromium/headless e homologação física.
+
+### Banco, CI e revisão
+- [x] CI do HEAD de código `76ba9e55` aprovado nos dois jobs reportados.
+- [ ] Reexecutar/confirmar CI após futuras alterações de código.
+- [ ] Fazer leitura autorizada do Supabase e conferir estado efetivo antes de qualquer proposta de mudança.
+- [ ] Decidir separadamente sobre o teto de 100 estrelas/dia; não aplicar sem autorização específica.
+- [ ] Revisar diff completo da PR, possíveis regressões, arquivos SQL, documentação e compatibilidade.
+- [ ] Revisão humana final do responsável.
+- [ ] Merge somente após autorização explícita.
+- [ ] Arquivar branches antigas somente após merge autorizado e autorização específica.
+

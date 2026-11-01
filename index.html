@@ -319,6 +319,10 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfrecx:hover{background:var(--card)}
 .perfrecon{display:flex;gap:6px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--sub);font-weight:700;margin-top:8px}
 .perfbio{margin-top:18px;background:linear-gradient(135deg,rgba(255,111,181,.1),rgba(123,63,240,.08)),var(--chip);border:2px dashed rgba(255,111,181,.7);border-radius:16px;padding:10px 12px 12px}
+.perfprofile-nudge{margin:12px 0;padding:12px 14px;border:1.5px solid rgba(255,111,181,.65);border-radius:15px;background:linear-gradient(120deg,rgba(255,111,181,.12),rgba(123,63,240,.1)),var(--chip);text-align:center}
+.perfprofile-nudge strong{display:block;color:var(--b1);font-size:13px}
+.perfprofile-nudge p{margin:5px 0 10px;color:var(--sub);font-size:12px;line-height:1.5}
+.perfprofile-nudge .btn{min-height:38px;padding:7px 15px}
 .perfbio h3{margin:0 0 2px}
 .perfbio label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub);margin-top:8px}
 .perfbio select{font:inherit;font-size:13px;border-radius:8px;border:1px solid var(--sub);background:var(--card);color:var(--ink);padding:4px 6px}
@@ -975,6 +979,11 @@ var DICT={
   }
 };
 
+[
+ ['Seu perfil pode ficar ainda mais com a sua cara!','Make your profile feel more like you!','¡Haz que tu perfil tenga aún más tu estilo!','ทำให้โปรไฟล์เป็นตัวคุณมากขึ้น!','プロフィールをもっと自分らしくしよう！'],
+ ['Escolha um emoji e uma cor para personalizar sua identidade no TsuLiPa⭐World.','Choose an emoji and a color to personalize your TsuLiPa⭐World identity.','Elige un emoji y un color para personalizar tu identidad en TsuLiPa⭐World.','เลือกอีโมจิและสีเพื่อปรับแต่งตัวตนของคุณใน TsuLiPa⭐World','絵文字と色を選んで、TsuLiPa⭐Worldでの自分らしさを表現しよう。'],
+ ['Preencher agora','Complete now','Completar ahora','กรอกตอนนี้','今すぐ設定']
+].forEach(function(t){ ['en','es','th','ja'].forEach(function(l,i){ if(DICT[l]) DICT[l][t[0]]=t[i+1]; }); });
 function tr(k){var d=DICT[LANG];return (d&&d[k])||k}
 function applyLang(){
   document.documentElement.lang=LANG==='ja'?'ja':LANG==='th'?'th':LANG==='es'?'es':LANG==='en'?'en':'pt-BR';
@@ -7390,6 +7399,11 @@ function perfAbaMostrar(){
            '<div class="n2"><b>' + (+d.corridas || 0) + '</b><small>' + escHtml(tr('Corridas')) + '</small></div>' +
            '<div class="n3"><b>' + (+d.centers || 0) + '</b><small>' + escHtml(tr('Centers')) + '</small></div></div>';
       h += '<section id="ktTicketInventory" class="tw-rank-profile"><h3>🎟️ Karaoke⭐Time!</h3></section>';
+      var perfilTemEmoji = !!String(d.emoji || '').trim();
+      var perfilTemCor = /^#[0-9a-f]{6}$/i.test(d.cor || '');
+      if(!perfilTemEmoji || !perfilTemCor){
+        h += '<aside class="perfprofile-nudge" role="status"><strong>✨ ' + escHtml(tr('Seu perfil pode ficar ainda mais com a sua cara!')) + '</strong><p>' + escHtml(tr('Escolha um emoji e uma cor para personalizar sua identidade no TsuLiPa⭐World.')) + '</p><button type="button" class="btn" id="perfProfileStyleCta">🎨 ' + escHtml(tr('Preencher agora')) + '</button></aside>';
+      }
     }
     h += '<h3>🏅 ' + escHtml(tr('Insígnias')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
     if(typeof cardsHtml === 'function') h += '<h3>🃏 ' + escHtml(tr('Últimos cards do Star⭐Gacha!')) + '</h3>' + cardsHtml(d.cards || [], 'perfCards', meu);
@@ -7410,6 +7424,14 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    var profileStyleCta = $('perfProfileStyleCta');
+    if(profileStyleCta) profileStyleCta.onclick = function(){
+      var target = $('perfBioEmoji') || $('perfBioCor');
+      if(!target) return;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(target.scrollIntoView) target.scrollIntoView({ behavior:reduce?'auto':'smooth', block:'center' });
+      try{ target.focus({ preventScroll:true }); }catch(e){ target.focus(); }
+    };
     if(meu){ twRankRenderProfile(); twRankLoad(); perfSoraHistNuvem(); if(window.ktTickets){window.ktTickets.renderProfile();window.ktTickets.refresh();} }
     if(typeof cardsDesenhar === 'function') cardsDesenhar(d.cards || [], 'perfCards');
     perfPets(d, meu);

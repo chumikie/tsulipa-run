@@ -4,6 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const Preview=require('../karaoke-music-preview.js');
+const moduleCode=fs.readFileSync(path.join(__dirname,'..','karaoke-music-preview.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const start=html.indexOf('var songs={',html.indexOf('var kt=(function(){'));
 const end=html.indexOf('\n};\n/* Cada musica',start);
@@ -24,11 +25,14 @@ for(const key of keys){
 }
 function harness(extra){
  const elements=new Map(),events=[],context={state:'running',currentTime:0};
- const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:0,disabled:false,dataset:{},setAttribute(){},querySelectorAll:()=>[]});return elements.get(id);};
+ const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:id==='ktPreviewVolume'?70:0,disabled:false,dataset:{},handlers:{},setAttribute(){},addEventListener(type,fn){this.handlers[type]=fn;},querySelectorAll:()=>[]});return elements.get(id);};
  const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),currentSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
- return {player,context,events};
+ return {player,context,events,get};
 }
-const player=harness();
+const volumeChanges=[];const player=harness({setVolume:value=>volumeChanges.push(value)});
+assert.equal(volumeChanges[0],.7,'preview volume starts at 70 percent');
+player.get('ktPreviewVolume').value=35;player.get('ktPreviewVolume').handlers.input();
+assert.equal(volumeChanges.at(-1),.35,'volume slider changes only the preview output gain');
 assert.equal(player.player.play('normal'),true,'preview starts');
 assert(player.events.some(e=>e[0]==='normal'&&e[1]===0),'preview schedules original melody');
 assert.equal(player.player.state().songKey,'normal');
@@ -52,6 +56,7 @@ for(const key of keys){
 for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle'])assert(library.includes('id="'+id+'"'),'player includes '+id);
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
+assert(html.includes('id="ktPreviewVolume"')&&moduleCode.includes('addEventListener("input"'),'player includes a working volume slider');
 assert(html.includes("window.addEventListener('pagehide',function(){previewPlayer.stop(false);"),'pagehide stops preview');
 assert(html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);"),'hidden page stops preview');
 console.log('✓ Music preview: seven tracks, separate listen/select, independent player, no game/ticket/ranking admission');

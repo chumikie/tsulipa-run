@@ -7,7 +7,7 @@
  "use strict";
  function create(options){
   options=options||{};
-  var current=null,timer=0,lastUi=0,DURATION=59000;
+  var current=null,timer=0,lastUi=0,DURATION=59000,volume=.7;
   function el(id){return options.getElement?options.getElement(id):document.getElementById(id);}
   function tr(value){return options.translate?options.translate(value):value;}
   function elapsed(){
@@ -27,6 +27,7 @@
    if(toggle){toggle.disabled=!!(options.isBusy&&options.isBusy());toggle.textContent=playing?"⏸ "+tr("Pausar"):current?"▶ "+tr("Retomar"):"▶ "+tr("Ouvir");}
    if(stopButton)stopButton.disabled=!current;
    if(globalStatus&&message)globalStatus.textContent=message;
+   var volumeControl=el("ktPreviewVolume");if(volumeControl&&Number(volumeControl.value)!==Math.round(volume*100))volumeControl.value=Math.round(volume*100);
    var rootElement=el("ktAudioLibrary");
    if(rootElement&&rootElement.querySelectorAll)[].forEach.call(rootElement.querySelectorAll("[data-kt-song-preview]"),function(button){
     var active=button.dataset.ktSongPreview===key;
@@ -96,8 +97,15 @@
    return play(key||(options.currentSong?options.currentSong():"normal"));
   }
   function state(){return current?{songKey:current.songKey,paused:current.paused,elapsed:elapsed()}:null;}
+  var volumeControl=el("ktPreviewVolume");
+  if(options.setVolume)options.setVolume(volume);
+  if(volumeControl)volumeControl.addEventListener("input",function(){
+   volume=Math.max(0,Math.min(1,(Number(volumeControl.value)||0)/100));
+   if(options.setVolume)options.setVolume(volume);
+  });
   render();
   return Object.freeze({play:play,pause:pause,resume:resume,stop:stop,toggle:toggle,state:state});
+
  }
  return Object.freeze({create:create});
 });

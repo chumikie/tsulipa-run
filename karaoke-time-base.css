@@ -215,3 +215,6 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 .kt-preview-progress::-webkit-progress-bar{border-radius:99px;background:rgba(123,63,240,.14)}
 .kt-preview-progress::-webkit-progress-value{border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5)}
 .kt-preview-progress::-moz-progress-bar{border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5)}
+
+.kt-preview-volume{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:9px;font-weight:800;white-space:nowrap}
+.kt-preview-volume input{width:76px;max-width:21vw;accent-color:var(--pink);cursor:pointer}

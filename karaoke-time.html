@@ -2986,7 +2986,8 @@ var ktAudioVitrine=(function(){
     'pati-1':1,'pati-2':1,'pati-3':1,'pati-4':1,'pati-5':1,
     'encontro':1
   };
-  var player=null,playingId='';
+  var voiceIndex={tsu:0,lirika:1,pati:2};
+  var player=null,playingId='',voiceGroup='tsu',libraryView='songs';
   var root=$('ktAudioLibrary'),status=$('ktAudioStatus');
   function updateButtons(){
     if(!root)return;
@@ -3024,7 +3025,56 @@ var ktAudioVitrine=(function(){
       if(promise&&typeof promise.catch==='function')promise.catch(function(){finish(tr('Toque em Ouvir para tentar novamente.'));});
     }catch(e){finish(tr('Não foi possível reproduzir este áudio.'));}
   }
+  function setView(view){
+    if(view!=='songs'&&view!=='voices')return;
+    libraryView=view;
+    [].forEach.call(root.querySelectorAll('[data-kt-library-view]'),function(button){
+      button.setAttribute('aria-selected',button.dataset.ktLibraryView===view?'true':'false');
+    });
+    [].forEach.call(root.querySelectorAll('[data-kt-library-panel]'),function(panel){
+      panel.hidden=panel.dataset.ktLibraryPanel!==view;
+    });
+    if(view==='songs')refresh();
+  }
+  function setVoiceGroup(group,playLead){
+    if(!Object.prototype.hasOwnProperty.call(voiceIndex,group))return;
+    voiceGroup=group;
+    [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
+      button.setAttribute('aria-pressed',button.dataset.ktVoiceGroup===group?'true':'false');
+    });
+    [].forEach.call(root.querySelectorAll('[data-kt-voice-panel]'),function(panel){
+      panel.hidden=panel.dataset.ktVoicePanel!==group;
+    });
+    if(status)status.textContent=tr('Vozes de')+' · '+group.charAt(0).toUpperCase()+group.slice(1);
+    if(playLead)play(group+'-1');
+  }
+  function drawHeads(){
+    if(!root||typeof KaraokeAvatar==='undefined'||typeof CH==='undefined')return;
+    [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
+      var group=button.dataset.ktVoiceGroup,index=voiceIndex[group],canvas=button.querySelector('canvas');
+      if(index===undefined||!canvas||!CH[index])return;
+      var ctx=canvas.getContext('2d');if(!ctx)return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      try{KaraokeAvatar.draw(ctx,CH[index],36,100,2.8,'v',0,0,false);}catch(e){}
+    });
+  }
+  function refresh(){
+    if(!root)return;
+    var personal={};
+    try{if(typeof ktMeta!=='undefined'&&ktMeta&&typeof ktMeta.personalSongs==='function')personal=ktMeta.personalSongs()||{};}catch(e){}
+    [].forEach.call(root.querySelectorAll('[data-kt-song-best]'),function(node){
+      var row=personal[node.dataset.ktSongBest];
+      node.textContent=row&&Number.isFinite(row.score)
+        ?tr('Seu recorde pessoal')+': '+Math.round(row.score).toLocaleString('pt-BR')+' pts'
+        :tr('Sem recorde ainda');
+    });
+    drawHeads();
+  }
   if(root)root.addEventListener('click',function(event){
+    var viewChoice=event.target.closest&&event.target.closest('[data-kt-library-view]');
+    if(viewChoice&&root.contains(viewChoice)){setView(viewChoice.dataset.ktLibraryView);return;}
+    var voiceChoice=event.target.closest&&event.target.closest('[data-kt-voice-group]');
+    if(voiceChoice&&root.contains(voiceChoice)){setVoiceGroup(voiceChoice.dataset.ktVoiceGroup,true);return;}
     var songChoice=event.target.closest&&event.target.closest('[data-kt-song-select]');
     if(songChoice&&root.contains(songChoice)){
       if(player)stop(tr('Prévia interrompida.'));
@@ -3032,8 +3082,6 @@ var ktAudioVitrine=(function(){
       if(!selector||selector.disabled){if(status)status.textContent=tr('A trilha pode ser escolhida quando não houver show em andamento.');return;}
       selector.value=songChoice.dataset.ktSongSelect;
       selector.dispatchEvent(new Event('change',{bubbles:true}));
-      var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(selector.scrollIntoView)selector.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
       if(status)status.textContent=tr('Trilha selecionada')+' · '+(songChoice.dataset.ktSongName||selector.value);
       return;
     }
@@ -3042,9 +3090,10 @@ var ktAudioVitrine=(function(){
   });
   document.addEventListener('visibilitychange',function(){if(document.hidden&&player)stop(tr('Prévia interrompida.'));});
   window.addEventListener('pagehide',function(){stop('');});
-  return {play:play,stop:function(){stop(tr('Prévia interrompida.'));}};
+  setVoiceGroup(voiceGroup,false);
+  refresh();
+  return {play:play,stop:function(){stop(tr('Prévia interrompida.'));},refresh:refresh,setView:setView,setVoiceGroup:setVoiceGroup};
 })();
-
 
 var ktBaseUI=krUI;krUI=function(){ktBaseUI();if(kt.active())[].forEach.call(document.querySelectorAll('[data-drink],[data-snack],[data-sala-item]'),function(b){b.disabled=true;});if(ktMeta)ktMeta.controls();};
 function ktNoSite(){return document.documentElement.classList.contains('kt-no-site');}

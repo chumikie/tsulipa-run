@@ -2557,7 +2557,7 @@ function krRoomObserversConectar(){
   if(visible===krRoomCanvasVisible)return;
   krRoomCanvasVisible=visible;krRoomAtualizar();
  },{threshold:0});
- if(!krRoomObserver.takeRecords().length)krRoomObserver.observe(krCanvasHD);
+ krRoomObserver.observe(krCanvasHD);
  if(krRhythmPanel&&!krRhythmObserver)krRhythmObserver=new IntersectionObserver(function(entries){
   var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
   if(visible===krRhythmPanelVisible)return;
@@ -2645,7 +2645,7 @@ window.ktOnline=(function(){
  function sessionKey(a){try{return a&&typeof a.sessionKey==='function'?String(a.sessionKey()||''):'';}catch(e){return '';}}
  function sameSession(a,key){return !!key&&api()===a&&sessionKey(a)===key;}
  function aviso(m){try{krAviso(m);}catch(e){}var h=$('ktHint');if(h)h.textContent=m;}
- function runMap(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.runs&&typeof v.runs==='object')return v.runs;if(v&&typeof v.run==='string'){var owner=v.owner||sessionKey(api());return owner?Object.fromEntries([[owner,v.run]]):{};}}catch(e){}return {};}
+ function runMap(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.runs&&typeof v.runs==='object')return v.runs;if(v&&typeof v.run==='string'){var owner=v.owner||sessionKey(api()),legacy={};if(owner)legacy[owner]=v.run;return legacy;}}catch(e){}return {};}
  function guardado(owner){var key=owner||sessionKey(api());if(!key)return null;var map=runMap();return typeof map[key]==='string'?map[key]:null;}
  function guardar(id,owner){var key=owner||sessionKey(api());if(!key)return;var map=runMap();if(id)map[key]=id;else delete map[key];try{if(Object.keys(map).length)localStorage.setItem(KEY,JSON.stringify({runs:map}));else localStorage.removeItem(KEY);}catch(e){}}
  function avatar(a,cor){var c=a&&a.c&&typeof a.c==='object'?Object.assign({},a.c):Object.assign({},CH[0]);if(/^#[0-9a-f]{6}$/i.test(cor||''))c.luz=cor;return {c:c,a:a&&typeof a.a==='string'?a.a:'',visual:a&&typeof a.visual==='string'?a.visual:''};}

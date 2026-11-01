@@ -48,8 +48,8 @@
    (!ready?'<p class="tw-ticket-inventory-state" role="status">'+(loading?t(15):t(14))+'</p>':'<div class="tw-ticket-gift-form"><label>'+t(2)+'<input id="ktGiftNick" maxlength="24" placeholder="'+t(3)+'" autocomplete="off"></label><button type="button" class="btn alt" id="ktGiftSend"'+(balance<1?' disabled':'')+'>'+t(4)+' 💖</button></div><p class="tw-ticket-inventory-state" id="ktGiftMsg" role="status">'+profileMessage+'</p>');
   var nick=document.getElementById('ktGiftNick');if(nick&&nickBefore)nick.value=nickBefore;
   var btn=document.getElementById('ktGiftSend');if(btn)btn.addEventListener('click',function(){var nick=document.getElementById('ktGiftNick').value.trim();if(!nick||balance<1)return;
-   var id=currentId();btn.disabled=true;window.contaRpc('kt_ticket_gift',{p_nick:nick}).then(function(r){if(id!==currentId()||!enabled())return;
-    profileMessage=r&&r.ok?t(6):t(7);if(r&&r.ok){acceptBalance(r);}else{showMsg('ktGiftMsg',profileMessage);btn.disabled=false;}
+   var id=currentId(),startedRevision=revision;btn.disabled=true;window.contaRpc('kt_ticket_gift',{p_nick:nick}).then(function(r){if(id!==currentId()||!enabled())return;
+    profileMessage=r&&r.ok?t(6):t(7);if(r&&r.ok){if(startedRevision===revision)acceptBalance(r);else refresh();}else{showMsg('ktGiftMsg',profileMessage);btn.disabled=false;}
    }).catch(function(){if(id!==currentId())return;profileMessage=t(7);showMsg('ktGiftMsg',profileMessage);btn.disabled=false;});
   });
  }

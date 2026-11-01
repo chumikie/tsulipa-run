@@ -30,7 +30,7 @@ const env={
   krLoungeActors:[],
   krLoungeNextAt:0,
   krAutoMicNextAt:0,
-  krEu:{no_mic:false},krRhythmRun:null,krMeuRetornoAt:0,krMeuVoltandoAoMic:false,krMoveQueue:[],
+  krEu:{no_mic:false},krEuNoMicrofone:()=>true,krRhythmRun:null,krMeuRetornoAt:0,krMeuVoltandoAoMic:false,krMoveQueue:[],
   kt:{active:()=>false},
   KR_SOFA_SLOTS:[[160,400],[232,470],[332,470],[432,470],[532,470],[632,470],[732,470],[800,400]],
   KR_LOUNGE_AISLE_Y:520,
@@ -58,6 +58,12 @@ env.krT+=1;env.krLoungeUpdate(8);
 assert(Math.hypot(walker.x-startX,walker.y-startY)>0,'the single route advances by delta time');
 env.krT+=500;env.krLoungeUpdate(1);
 assert(env.krLoungeActors.length<=1,'the lounge never overlaps autonomous walkers');
+env.krEuNoMicrofone=()=>false;env.krT+=1;env.krLoungeUpdate(1);
+assert.equal(env.krLoungeActors.length,0,'autonomous walking pauses while the player is away from the microphone');
+assert(env.krBots.every((b,i)=>b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1]),'the audience remains seated while the player moves through the room');
+env.krEuNoMicrofone=()=>true;env.krLoungeReset();
+for(const time of [env.krT+300,env.krT+345,env.krT+390]){env.krT=time;env.krLoungeUpdate(1);}
+assert.equal(env.krLoungeActors.length,1,'the lounge resumes one safe walker after the player returns to the microphone');
 // A character taking the microphone is immediately removed from the walking set.
 const singer=env.krLoungeActors[0];singer.no_mic=true;
 env.krT+=1;env.krLoungeUpdate(1);

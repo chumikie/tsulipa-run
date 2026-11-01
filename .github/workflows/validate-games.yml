@@ -31,6 +31,8 @@ on:
       - 'tests/center-run-credit-recovery.test.js'
       - 'tests/center-run-palette.test.js'
       - 'tests/visibility-scope.test.js'
+      - 'tests/index-images.test.js'
+      - 'img/**'
       - 'tests/karaoke-show-visibility.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
@@ -122,6 +124,8 @@ on:
       - 'tests/center-run-credit-recovery.test.js'
       - 'tests/center-run-palette.test.js'
       - 'tests/visibility-scope.test.js'
+      - 'tests/index-images.test.js'
+      - 'img/**'
       - 'tests/karaoke-show-visibility.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
@@ -200,6 +204,8 @@ jobs:
         run: node tests/center-run-palette.test.js
       - name: Validate visibility lifecycle runs inside the game scope
         run: node tests/visibility-scope.test.js
+      - name: Validate index images moved to WebP files
+        run: node tests/index-images.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract

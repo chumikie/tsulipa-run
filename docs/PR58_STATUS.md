@@ -19,7 +19,7 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 - PR sem conflitos com a `main` (a `main` não recebeu commits novos); CI verde no HEAD `7744c49`.
 - **Supabase (ChatGPT/responsável):** a PR traz `supabase/migrations/20261101161409_center_run_daily_100.sql` (teto de 100 estrelas/dia). Nada no repositório aplica migrações sozinho (sem workflow `supabase db push` nem `supabase/config.toml`), mas **conferir no painel do Supabase se a integração com o GitHub está desligada** antes do merge. Se estiver ligada e o limite de 100 ainda não estiver autorizado, mover esse arquivo para fora de `supabase/migrations` antes de publicar.
 - **Karaoke:** `karaoke-room-auto-mic.js` e `karaoke-room-polaroid.js` usam variáveis internas da página. O cantor automático da plateia se desliga sozinho (`krLoungeSoloPermitido is not defined`, sem quebrar a sala) e o clique nas Polaroids deve falhar ao abrir o pôster. Corrigir ou desativar antes de publicar.
-- Limites de tamanho quase no máximo: `index.html` ~1.149.700/1.150.000 e `karaoke-time.html` ~449.100/450.000 bytes.
+- Limites de tamanho: `index.html` ~1.089.800/1.150.000 (o logo e as 6 imagens do mural do Pet saíram do HTML para `img/*.webp`, mesmos bytes da imagem; cerca de 60 KB de folga) e `karaoke-time.html` ~449.100/450.000 bytes.
 - **Atualização 01/11/2026, 20:40:**
   - Mechas: o estilo escolhido (Uma, Dupla, Luzes, Escondida) agora vai junto no avatar público. Antes, Perfil, rankings, pôsteres do Karaoke, Karaoke do dia, Karaoke online e Sora mostravam todas como "Uma" (`9f15ed3`).
   - Mecha Luzes refeita: fios que acompanham a curva da cabeça, suaves na raiz e mais claros na ponta. O módulo de cabelo passou para `v=8` (`8c404c1`).

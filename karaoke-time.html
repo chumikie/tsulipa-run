@@ -39,29 +39,6 @@
 .kt-audio-label small{color:var(--sub);font-size:9px;line-height:1.35}
 .kt-audio-label .kt-library-best{color:var(--b1);font-weight:800}
 .kt-audio-action{flex:0 0 auto;color:var(--b1);font-size:9px;font-weight:900;white-space:nowrap}
-.kt-library-heads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 10px}
-.kt-library-head{display:flex;min-width:0;align-items:center;flex-direction:column;gap:3px;padding:8px 5px;border:1px solid rgba(123,63,240,.24);border-radius:14px;background:var(--chip);color:var(--ink);cursor:pointer}
-.kt-library-head[aria-pressed="true"]{border-color:var(--pink);background:linear-gradient(145deg,rgba(255,111,181,.13),rgba(123,63,240,.1));box-shadow:0 0 0 2px rgba(255,111,181,.13)}
-.kt-library-face{width:54px;height:54px;max-width:100%;object-fit:contain}
-.kt-library-head b{font-size:11px}
-.kt-library-head small{font-size:9px;color:var(--sub)}
-.kt-library-voice-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.kt-library-voice{min-height:49px}
-.kt-library-special{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:9px;padding:8px;border-radius:12px;background:var(--chip);color:var(--sub);font-size:10px;font-weight:800}
-.kt-library-special .kt-audio-clip{flex:0 1 220px;min-height:42px}
-.kt-audio-status{min-height:18px;margin:10px 2px 0;color:var(--sub);font-size:11px;font-weight:800;text-align:center}
-@media(max-width:620px){
- .kt-audio-library{padding:10px}
- .kt-audio-heading h2{font-size:15px}
- .kt-library-tracks{grid-template-columns:1fr}
- .kt-library-track{min-height:62px}
- .kt-library-voice-panel{grid-template-columns:1fr}
- .kt-library-head{padding:6px 3px}
- .kt-library-face{width:48px;height:48px}
- .kt-audio-clip{min-height:49px;padding:6px}
- .kt-audio-label b{font-size:10px}
- .kt-audio-action{font-size:8.5px}
-}
 .kt-faixa{display:block;width:100%;height:250px;margin-top:6px;border-radius:24px;border:3px solid #fff;box-shadow:0 0 0 3px rgba(123,63,240,.35),0 10px 24px rgba(40,10,90,.25);cursor:pointer;touch-action:pan-y}
 @media(max-width:600px){.kt-faixa{height:200px;border-radius:18px}}
 
@@ -250,18 +227,14 @@ html.kt-no-site .krwrap{padding-top:0!important}
 </div>
   </section>
   <section class="kt-library-panel" data-kt-library-panel="voices" aria-label="Vozes dos personagens" hidden>
-    <p class="kt-library-note">Toque em uma cabecinha para ouvir sua primeira voz e abrir as outras falas.</p>
-    <div class="kt-library-heads">
-      <button type="button" class="kt-library-head" data-kt-voice-group="tsu" aria-pressed="true"><canvas class="kt-library-face" width="72" height="72" aria-hidden="true"></canvas><b>Tsu</b><small>⭐ Ouvir vozes</small></button>
-      <button type="button" class="kt-library-head" data-kt-voice-group="lirika" aria-pressed="false"><canvas class="kt-library-face" width="72" height="72" aria-hidden="true"></canvas><b>Lirika</b><small>🐨 Ouvir vozes</small></button>
-      <button type="button" class="kt-library-head" data-kt-voice-group="pati" aria-pressed="false"><canvas class="kt-library-face" width="72" height="72" aria-hidden="true"></canvas><b>Pati</b><small>👑 Ouvir vozes</small></button>
+    <p class="kt-library-note">Toque em Tsu, Lirika ou Pati. Cada toque traz uma fala diferente. 💜</p>
+    <div class="kt-library-heads" aria-label="Personagens que falam">
+      <button type="button" class="kt-library-head" data-kt-voice-group="tsu" aria-label="Falar com Tsu" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Tsu</b><small data-kt-voice-caption="tsu">⭐ Toque para falar</small></button>
+      <button type="button" class="kt-library-head" data-kt-voice-group="lirika" aria-label="Falar com Lirika" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Lirika</b><small data-kt-voice-caption="lirika">🐨 Toque para falar</small></button>
+      <button type="button" class="kt-library-head" data-kt-voice-group="pati" aria-label="Falar com Pati" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Pati</b><small data-kt-voice-caption="pati">👑 Toque para falar</small></button>
     </div>
-    <div class="kt-library-voice-panel" data-kt-voice-panel="tsu"><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="tsu-1" aria-pressed="false"><span class="kt-audio-icon">👋</span><span class="kt-audio-label"><b>Oiê!</b><small>Tsu · voz 1</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="tsu-2" aria-pressed="false"><span class="kt-audio-icon">⭐</span><span class="kt-audio-label"><b>Eu sou o Tsu!</b><small>Tsu · voz 2</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="tsu-3" aria-pressed="false"><span class="kt-audio-icon">🎤</span><span class="kt-audio-label"><b>にげていかない</b><small>Tsu · voz 3</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="tsu-4" aria-pressed="false"><span class="kt-audio-icon">🍮</span><span class="kt-audio-label"><b>Eu amo comer pudim.</b><small>Tsu · voz 4</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="tsu-5" aria-pressed="false"><span class="kt-audio-icon">😆</span><span class="kt-audio-label"><b>hehe~</b><small>Tsu · voz 5</small></span><span class="kt-audio-action">▶ Ouvir</span></button></div>
-    <div class="kt-library-voice-panel" data-kt-voice-panel="lirika" hidden><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="lirika-1" aria-pressed="false"><span class="kt-audio-icon">💚</span><span class="kt-audio-label"><b>Oi, gente linda!</b><small>Lirika · voz 1</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="lirika-2" aria-pressed="false"><span class="kt-audio-icon">🐨</span><span class="kt-audio-label"><b>Li - ri - ka!</b><small>Lirika · voz 2</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="lirika-3" aria-pressed="false"><span class="kt-audio-icon">🌈</span><span class="kt-audio-label"><b>ゆめはぜったい</b><small>Lirika · voz 3</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="lirika-4" aria-pressed="false"><span class="kt-audio-icon">🌼</span><span class="kt-audio-label"><b>Tudo bem com vocês?</b><small>Lirika · voz 4</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="lirika-5" aria-pressed="false"><span class="kt-audio-icon">😆</span><span class="kt-audio-label"><b>hehe~</b><small>Lirika · voz 5</small></span><span class="kt-audio-action">▶ Ouvir</span></button></div>
-    <div class="kt-library-voice-panel" data-kt-voice-panel="pati" hidden><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="pati-1" aria-pressed="false"><span class="kt-audio-icon">💙</span><span class="kt-audio-label"><b>Oi gente, meu nome é Pati!</b><small>Pati · voz 1</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="pati-2" aria-pressed="false"><span class="kt-audio-icon">🎮</span><span class="kt-audio-label"><b>Bem gamer, tals...</b><small>Pati · voz 2</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="pati-3" aria-pressed="false"><span class="kt-audio-icon">🌙</span><span class="kt-audio-label"><b>いっておきたい</b><small>Pati · voz 3</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="pati-4" aria-pressed="false"><span class="kt-audio-icon">💋</span><span class="kt-audio-label"><b>Um beijo. Chu!</b><small>Pati · voz 4</small></span><span class="kt-audio-action">▶ Ouvir</span></button><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="pati-5" aria-pressed="false"><span class="kt-audio-icon">😆</span><span class="kt-audio-label"><b>hehe~</b><small>Pati · voz 5</small></span><span class="kt-audio-action">▶ Ouvir</span></button></div>
-    <div class="kt-library-special"><span>🌙 Áudio especial · Encontro</span><button type="button" class="kt-audio-clip kt-library-voice" data-kt-audio="encontro" aria-pressed="false"><span class="kt-audio-icon">💫</span><span class="kt-audio-label"><b>Encontro</b><small>Áudio especial da cena</small></span><span class="kt-audio-action">▶ Ouvir</span></button></div>
-  </section>
-  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música ou uma voz.</p>
+    <div class="kt-library-special"><span>🌙 Áudio especial do Encontro</span><button type="button" class="kt-library-action" data-kt-audio="encontro" aria-pressed="false">▶ Ouvir</button></div>
+  </section>  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música ou uma voz.</p>
 </section>
 <section hidden inert class="kr-mic-queue" id="krMicQueue" aria-label="Fila do microfone em ensaio">
 <div class="kr-mic-queue-head"><strong id="krMicQueueTitle">🎤 Próximas 3 pessoas</strong><small id="krMicQueueState">🧪 Fila de simulação</small></div>
@@ -3092,11 +3065,22 @@ var ktAudioVitrine=(function(){
     'pati-1':1,'pati-2':1,'pati-3':1,'pati-4':1,'pati-5':1,
     'encontro':1
   };
-  var voiceIndex={tsu:0,lirika:1,pati:2};
-  var player=null,playingId='',voiceGroup='tsu',libraryView='songs';
+  var avatarIndex={tsu:0,lirika:1,pati:2},voiceIndex={tsu:0,lirika:0,pati:0};
+  var voiceLines={
+    tsu:['Oiê!','Eu sou o Tsu!','にげていかない','Eu amo comer pudim.','hehe~'],
+    lirika:['Oi, gente linda!','Li - ri - ka!','ゆめはぜったい','Tudo bem com vocês?','hehe~'],
+    pati:['Oi gente, meu nome é Pati!','Bem gamer, tals...','いっておきたい','Um beijo. Chu!','hehe~']
+  };
+  var player=null,playingId='',libraryView='songs';
   var root=$('ktAudioLibrary'),status=$('ktAudioStatus');
   function updateButtons(){
     if(!root)return;
+    var activeVoice=playingId.split('-')[0];
+    [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
+      var active=button.dataset.ktVoiceGroup===activeVoice&&!!player;
+      button.setAttribute('aria-pressed',active?'true':'false');
+      button.classList.toggle('is-speaking',active);
+    });
     [].forEach.call(root.querySelectorAll('[data-kt-audio]'),function(button){
       var active=button.dataset.ktAudio===playingId;
       button.setAttribute('aria-pressed',active?'true':'false');
@@ -3110,11 +3094,11 @@ var ktAudioVitrine=(function(){
     updateButtons();
     if(status&&message)status.textContent=message;
   }
-  function play(id){
+  function play(id,restart){
     if(!allowed[id]||!root)return;
     if(typeof kt!=='undefined'&&kt)kt.stopPreview(false);
     if(muted){if(status)status.textContent=tr('O som está desativado. Ative o botão de som para ouvir.');return;}
-    if(player&&playingId===id){stop(tr('Prévia interrompida.'));return;}
+    if(player&&playingId===id&&!restart){stop(tr('Prévia interrompida.'));return;}
     stop('');
     if(typeof window.Audio!=='function'){if(status)status.textContent=tr('Este navegador não oferece reprodução de áudio.');return;}
     var next;
@@ -3147,26 +3131,29 @@ var ktAudioVitrine=(function(){
     });
     if(view==='songs'){refresh();syncTracks();}
   }
-  function setVoiceGroup(group,playLead){
-    if(!Object.prototype.hasOwnProperty.call(voiceIndex,group))return;
-    voiceGroup=group;
-    [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
-      button.setAttribute('aria-pressed',button.dataset.ktVoiceGroup===group?'true':'false');
-    });
-    [].forEach.call(root.querySelectorAll('[data-kt-voice-panel]'),function(panel){
-      panel.hidden=panel.dataset.ktVoicePanel!==group;
-    });
-    if(status)status.textContent=tr('Vozes de')+' · '+group.charAt(0).toUpperCase()+group.slice(1);
-    if(playLead)play(group+'-1');
+  function speakGroup(group,button){
+    if(!Object.prototype.hasOwnProperty.call(voiceLines,group))return;
+    var list=voiceLines[group],index=voiceIndex[group]||0,id=group+'-'+(index+1);
+    voiceIndex[group]=(index+1)%list.length;
+    var caption=root.querySelector('[data-kt-voice-caption="'+group+'"]');
+    if(caption)caption.textContent=list[index];
+    if(button){
+      button.classList.remove('is-bouncing');
+      button.offsetWidth;
+      button.classList.add('is-bouncing');
+      button.setAttribute('aria-label','Falar com '+group.charAt(0).toUpperCase()+group.slice(1)+', voz '+(index+1)+' de '+list.length);
+    }
+    if(status)status.textContent=group.charAt(0).toUpperCase()+group.slice(1)+' · '+list[index];
+    play(id,true);
   }
   function drawHeads(){
     if(!root||typeof KaraokeAvatar==='undefined'||typeof CH==='undefined')return;
     [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
-      var group=button.dataset.ktVoiceGroup,index=voiceIndex[group],canvas=button.querySelector('canvas');
+      var group=button.dataset.ktVoiceGroup,index=avatarIndex[group],canvas=button.querySelector('canvas');
       if(index===undefined||!canvas||!CH[index])return;
       var ctx=canvas.getContext('2d');if(!ctx)return;
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      try{KaraokeAvatar.draw(ctx,CH[index],36,100,2.8,'v',0,0,false);}catch(e){}
+      try{KaraokeAvatar.draw(ctx,CH[index],32,89,2.45,'v',0,0,false);}catch(e){}
     });
   }
   function refresh(){
@@ -3186,7 +3173,7 @@ var ktAudioVitrine=(function(){
     var viewChoice=event.target.closest&&event.target.closest('[data-kt-library-view]');
     if(viewChoice&&root.contains(viewChoice)){setView(viewChoice.dataset.ktLibraryView);return;}
     var voiceChoice=event.target.closest&&event.target.closest('[data-kt-voice-group]');
-    if(voiceChoice&&root.contains(voiceChoice)){setVoiceGroup(voiceChoice.dataset.ktVoiceGroup,true);return;}
+    if(voiceChoice&&root.contains(voiceChoice)){speakGroup(voiceChoice.dataset.ktVoiceGroup,voiceChoice);return;}
     var songPreview=event.target.closest&&event.target.closest('[data-kt-song-preview]');
     if(songPreview&&root.contains(songPreview)){if(typeof kt!=='undefined'&&kt)kt.togglePreview(songPreview.dataset.ktSongPreview);return;}
     var songChoice=event.target.closest&&event.target.closest('[data-kt-song-select]');
@@ -3205,9 +3192,8 @@ var ktAudioVitrine=(function(){
   });
   document.addEventListener('visibilitychange',function(){if(document.hidden&&player)stop(tr('Prévia interrompida.'));});
   window.addEventListener('pagehide',function(){stop('');});
-  setVoiceGroup(voiceGroup,false);
   refresh();syncTracks();
-  return {play:play,stop:function(){stop(tr('Prévia interrompida.'));},refresh:refresh,setView:setView,setVoiceGroup:setVoiceGroup};
+  return {play:play,stop:function(){stop(tr('Prévia interrompida.'));},refresh:refresh,setView:setView,speakGroup:speakGroup};
 })();
 
 var ktBaseUI=krUI;krUI=function(){ktBaseUI();if(kt.active())[].forEach.call(document.querySelectorAll('[data-drink],[data-snack],[data-sala-item]'),function(b){b.disabled=true;});if(ktMeta)ktMeta.controls();};

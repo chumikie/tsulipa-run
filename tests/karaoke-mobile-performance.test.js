@@ -326,8 +326,11 @@ assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv
 assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
 assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
 assert(html.includes('data-kt-library-view="songs"')&&html.includes('data-kt-library-view="voices"'),'The compact library should switch between music and voices without leaving the Karaoke page');
-assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&html.includes('data-kt-voice-panel="'+key+'"')),'The three real Idol heads should open their own voice groups');
-assert(audienceAudio.includes("if(playLead)play(group+'-1')")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a real Idol head should play its voice and draw the existing Tsu, Lirika or Pati avatar');
+assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&audienceAudio.includes("voiceLines")&&audienceAudio.includes("function speakGroup(group,button)")),'The three official characters are independent voice buttons');
+assert(!html.includes('class="kt-library-voice-panel"')&&!html.includes('data-kt-voice-panel='),'Long per-voice lists are removed from the voice panel');
+assert(html.includes('class="kt-library-special"')&&html.includes('data-kt-audio="encontro"'),'The special Encontro clip remains independently accessible');
+assert(html.includes('ktVoiceHop')&&html.includes('prefers-reduced-motion:reduce')&&html.includes('is-bouncing'),'Voice character buttons bounce once and respect reduced motion');
+assert(audienceAudio.includes("play(id,true)")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a character should cycle an existing voice clip and draw the original Tsu, Lirika or Pati avatar');
 assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');
 assert(['normal','fast','chill','tema','corrida','gacha','duo'].every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');
 assert(audienceAudio.includes('ktMeta.personalSongs()')&&audienceAudio.includes("tr('Seu recorde pessoal')")&&audienceAudio.includes("tr('Sem recorde ainda')"),'The compact track cards should read only the current player personal records');
@@ -338,7 +341,7 @@ assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-select="'+key+'"')
 assert(audienceAudio.includes("selector.dispatchEvent(new Event('change',{bubbles:true}))")&&audienceAudio.includes("if(!selector||selector.disabled)"),'Choosing a rhythm theme from the showcase should update the existing song selector without starting or spending a show');
 
 const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5','encontro'];
-assert(availableVoiceFiles.every(id=>html.includes('data-kt-audio="'+id+'"')&&audienceAudio.includes("'"+id+"':1")),'The audio showcase should list only the 15 existing trio voice clips and the existing Encontro audio');
+assert(availableVoiceFiles.every(id=>audienceAudio.includes("'"+id+"':1")),'All 15 existing voice clips remain available to the character buttons');
 assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');
 assert(audienceAudio.includes("if(muted){if(status)status.textContent=tr('O som está desativado.")&&html.includes("if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}"),'Audio previews should respect the page-wide mute control and stop both standalone music and voice playback');
 assert(audienceAudio.includes("addEventListener('ended'")&&audienceAudio.includes("addEventListener('error'")&&audienceAudio.includes("addEventListener('visibilitychange'")&&audienceAudio.includes("addEventListener('pagehide'"),'The shared audio preview player must release audio on end, error, page hide and visibility loss');

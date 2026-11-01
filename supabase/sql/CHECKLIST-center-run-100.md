@@ -12,7 +12,7 @@
 - Há gatilhos `players_visual_sync`, `lb_contar` e `lb_set_date`: a proposta preserva suas chamadas indiretas. A validação isolada usa schema mínimo e **não reproduz esses gatilhos**; sua compatibilidade foi inspecionada em leitura, não exercitada em produção.
 - ACL anteriormente conferida: execução concedida a `authenticated` e `service_role`, não a `anon`; a função original pertence a `postgres`. Confirmar novamente na janela.
 - Homologação: workflow de PR com PostgreSQL 16 efêmero, contas fictícias, sessões concorrentes, UUID duplicado, dono errado, corrida inválida, separação de dias, ACL e saldos. Não reproduz o relógio real acelerado nem todos os gatilhos/integrações Supabase.
-- **Atenção à semântica da mensagem:** `limite_diario=true` apenas se a conta **já** tinha >=100 créditos de corrida antes da nova chamada. Uma corrida que completa exatamente o teto pode creditar parte da recompensa e retornar `false`; isto não altera o teto, mas exige observar a UX.
+- **Semântica da resposta:** `limite_diario` é calculado por `ganho_hoje + credito >= 100`. Em 90 + pedido de 30, a função credita 10 e retorna `true`. `tests/center-run-daily-cap.test.js` cobre esse caso e exige a mensagem de crédito parcial + limite; falta homologação visual autenticada.
 
 ## Checklist pré-aplicação — sem escrita
 

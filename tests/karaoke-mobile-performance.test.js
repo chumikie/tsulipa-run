@@ -22,7 +22,7 @@ assert(block.includes('krTilesPisados[ix*6+iy]=1'),'Character occupancy should m
 assert(block.includes('var tileIndex=0;for(var gx=100;gx<860;gx+=54)for(var gy=315;gy<515;gy+=36)'),'The existing 15×6 visual tile grid should remain intact');
 assert(block.includes('pisou=krTilesPisados[tileIndex++]===1'),'Tile rendering should read precomputed occupancy');
 assert(!block.includes('lista.some(function(j){return Math.abs(j.x-(gx+25))<38'),'Avoid scanning all characters for every tile');
-assert(html.includes('if(krHandBusy(b))')&&html.includes('krAgendarLoop()'),'Keep the existing room animation and busy-hand flow');
+assert(html.includes('if(krHandBusy(bot))')&&html.includes('krAgendarLoop()'),'Keep the existing room animation and busy-hand flow');
 // Static wall panels and shelf are cached instead of rebuilt on every room frame.
 assert(html.includes('var krDecorWallCache=null;'),'Wall background cache should be persistent');
 assert(html.includes('var wallCanvas=document.createElement(\'canvas\');wallCanvas.width=W;wallCanvas.height=330;'),'Wall cache should match the logical scene size');
@@ -40,9 +40,16 @@ const avatarStart=html.indexOf('var cache=new Map(),charDefaultsCache=new WeakMa
 const avatarEnd=html.indexOf('return {draw:draw,clear:',avatarStart);
 assert(avatarStart>=0&&avatarEnd>avatarStart,'The vector-avatar cache should use reusable character records');
 const avatar=html.slice(avatarStart,avatarEnd);
-assert(avatar.includes('function resolveChar(c)')&&!avatar.includes('JSON.stringify(c)'),'Avatar composition should avoid serializing the entire character on each draw');
+assert(avatar.includes('function resolveChar(c)')&&!avatar.includes('JSON.stringify(c)')&&!avatar.includes('function charSignature(c)'),'Avatar composition should compare cached style fields instead of serializing the entire character on every draw');
 assert(avatar.includes('Object.assign({},CHAR_DEFAULTS,c)'),'Default avatar fields should be normalized only when the character appearance changes');
 assert(avatar.includes('if(cache.size>64)cache.delete(cache.keys().next().value);'),'The existing bounded vector-avatar sprite cache should remain in place');
+const accessoryStart=html.indexOf('function krDesenharAcessorioSala(');
+const accessoryEnd=html.indexOf('\nfunction ',accessoryStart+12);
+assert(accessoryStart>=0&&accessoryEnd>accessoryStart,'Karaoke accessory painter should remain inspectable');
+const accessory=html.slice(accessoryStart,accessoryEnd);
+assert(html.includes('var KR_ACESSORIO_SALA_CORES=')&&html.includes('var KR_PANDEIRO_RISCOS=')&&html.includes('function krSementeAcessorio(nome)'),'Accessory palettes, nick seeds and pandeiro strokes should be shared');
+assert(html.includes('function krLenteCoracaoSala(')&&html.includes('function krLenteEstrelaSala(')&&html.includes('function krDesenharAntenaSala('),'Accessory drawing helpers should be defined once');
+assert(!accessory.includes('var pal=[')&&!accessory.includes('function lenteCoracao(')&&!accessory.includes('[{bx:j.x-5')&&!accessory.includes("[['#ec4899',-6,-8]"),'Accessory rendering should not allocate local palettes, helper functions or arrays per character frame');
 assert(html.includes('var krPosterArtes=Object.create(null);')&&html.includes('x.drawImage(art,-25,-5);'),'Cached miniatures should remain composited instead of redrawn every frame');
 
-console.log('✓ Karaoke room reuses character buffers and precomputed 15×6 tile occupancy');
+console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

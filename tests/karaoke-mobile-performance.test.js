@@ -296,7 +296,12 @@ const profileGradientCache=main.slice(profileGradientCacheStart,profileGradientC
 assert(profileGradientCacheStart>=0&&profileGradientCacheEnd>profileGradientCacheStart&&profileGradientCache.includes('PERF_BG_TEXTURE_CACHE.size >= 32')&&profileGradientCache.includes('drawImage(cv, 0, 0, W2, H2)'),'Profile and Studio base gradients should reuse bounded raster textures keyed by theme and dimensions');
 assert(main.includes("perfFundoGradiente(x, W2, H2, 'perfil:basico'")&&main.includes("'perfil:palco'")&&main.includes("'perfil:oshi:'")&&main.includes("'perfil:noite'")&&main.includes("'perfil:halloween'"),'Fixed Profile background gradients should use the shared bounded texture cache');
 assert(main.includes("'tema:' + k + ':' + inf[2] + ':' + inf[3]")&&main.includes("'camarim:' + k + ':' + inf[2] + ':' + inf[3]"),'Seasonal Studio and dressing-room base gradients should be cached by theme colors and dimensions');
-assert(main.includes('perfBrilhos(x, W2, H2 * .55')&&main.includes('perfEnfeites(x, W2, H2')&&main.includes('temaParticulas(x, W2, H2 * .9, k, 22, t, u)')&&main.includes('r *= pulso; var h = x.createRadialGradient(cx, cy, 2, cx, cy, r)'),'Caching fixed background gradients must preserve animated sparkles, seasonal particles and pulsing character halos');
+assert(main.includes('perfBrilhos(x, W2, H2 * .55')&&main.includes('perfEnfeites(x, W2, H2')&&main.includes('temaParticulas(x, W2, H2 * .9, k, 22, t, u)')&&main.includes('r *= pulso; perfHaloTextura(x, cx, cy, r, cor)'),'Caching fixed background gradients must preserve animated sparkles, seasonal particles and pulsing character halos');
+const avatarHaloStart=main.indexOf('var PERF_HALO_TEXTURE_CACHE = new Map()');
+const avatarHaloEnd=main.indexOf('// ---------- Desenha o Idol',avatarHaloStart);
+const avatarHaloCache=main.slice(avatarHaloStart,avatarHaloEnd);
+assert(avatarHaloStart>=0&&avatarHaloEnd>avatarHaloStart&&avatarHaloCache.includes('PERF_HALO_TEXTURE_CACHE.size >= 24')&&avatarHaloCache.includes('x.drawImage(cv, cx - half, cy - half)')&&avatarHaloCache.includes('x.createRadialGradient(cx, cy, 2, cx, cy, r)'),'Avatar halo gradients should use a bounded reusable texture cache with a CanvasGradient fallback');
+assert(main.includes('function halo(r, cor){ r *= pulso; perfHaloTextura(x, cx, cy, r, cor); }'),'Avatar halo pulse must remain animated while the static radial texture is reused');
 
 const hubBeamStart=main.indexOf('function hubIdolsBeamTexturas(height)');
 const hubBeamEnd=main.indexOf('function hubIdolsTam()',hubBeamStart);

@@ -7045,6 +7045,34 @@ function roupaSombra(x, y){
   g.drawImage(assets.clothVertical,x+5,y+29,20,4);
 }
 
+// Texturas pequenas para os degradês-base do Perfil/Estúdio. Só a camada imóvel é armazenada;
+// brilhos, partículas, luzes, bandeirinhas e movimentos continuam sendo desenhados a cada quadro.
+var PERF_BG_TEXTURE_CACHE = new Map();
+function perfFundoGradiente(x, W2, H2, key, vertical, stops){
+  var id = String(key) + '|' + W2 + 'x' + H2, cv = PERF_BG_TEXTURE_CACHE.get(id);
+  if(!PERF_BG_TEXTURE_CACHE.has(id)){
+    cv = null;
+    try{
+      if(typeof document !== 'undefined' && document.createElement){
+        var tmp = document.createElement('canvas');
+        tmp.width = Math.max(1, Math.ceil(W2)); tmp.height = Math.max(1, Math.ceil(H2));
+        var ctx = tmp.getContext('2d');
+        if(ctx){
+          var grad = vertical ? ctx.createLinearGradient(0, 0, 0, tmp.height) : ctx.createLinearGradient(0, 0, tmp.width, 0);
+          for(var si = 0; si < stops.length; si++) grad.addColorStop(stops[si][0], stops[si][1]);
+          ctx.fillStyle = grad; ctx.fillRect(0, 0, tmp.width, tmp.height); cv = tmp;
+        }
+      }
+    }catch(e){ cv = null; }
+    if(PERF_BG_TEXTURE_CACHE.size >= 32) PERF_BG_TEXTURE_CACHE.delete(PERF_BG_TEXTURE_CACHE.keys().next().value);
+    PERF_BG_TEXTURE_CACHE.set(id, cv);
+  }
+  if(cv){ x.drawImage(cv, 0, 0, W2, H2); return; }
+  var fallback = vertical ? x.createLinearGradient(0, 0, 0, H2) : x.createLinearGradient(0, 0, W2, 0);
+  for(var fi = 0; fi < stops.length; fi++) fallback.addColorStop(stops[fi][0], stops[fi][1]);
+  x.fillStyle = fallback; x.fillRect(0, 0, W2, H2);
+}
+
 // ---------- Fundos do estúdio (t = quadro da animação) ----------
 function perfBrilhos(x, W2, H2, cor, n, seed, t){
   x.save(); x.fillStyle = cor;
@@ -7070,8 +7098,7 @@ function perfFundo(x, W2, H2, f, cor, t){
   var u = W2 / 320, gr, i;
   t = t || 0;
   if(f === 'basico'){   // pastel nas cores do TsuLiPa (roxo → verde → azul), com bolinhas
-    gr = x.createLinearGradient(0, 0, W2, H2); gr.addColorStop(0, '#f1e3ff'); gr.addColorStop(.5, '#e9fbe0'); gr.addColorStop(1, '#e1ecff');
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfFundoGradiente(x, W2, H2, 'perfil:basico', false, [[0, '#f1e3ff'], [.5, '#e9fbe0'], [1, '#e1ecff']]);
     for(i = 0; i < 42; i++){
       var col = i % 7, lin = Math.floor(i / 7);
       x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], .16);
@@ -7083,8 +7110,7 @@ function perfFundo(x, W2, H2, f, cor, t){
     var fx0 = x.createLinearGradient(0, 0, W2, 0); fx0.addColorStop(0, '#9b30d9'); fx0.addColorStop(.5, '#5cc72c'); fx0.addColorStop(1, '#4169e1');
     x.fillStyle = fx0; x.globalAlpha = .55; x.fillRect(0, H2 * .88, W2, 2.5 * u); x.globalAlpha = 1;
   } else if(f === 'palco'){
-    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#1a0933'); gr.addColorStop(.62, '#4a1f8a'); gr.addColorStop(1, '#7b3ff0');
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfFundoGradiente(x, W2, H2, 'perfil:palco', true, [[0, '#1a0933'], [.62, '#4a1f8a'], [1, '#7b3ff0']]);
     perfBrilhos(x, W2, H2 * .55, '#fff', 18, 3, t);
     x.save(); x.globalCompositeOperation = 'lighter';
     [[.18, 'rgba(255,111,181,.26)'], [.5, 'rgba(255,255,255,.2)'], [.82, 'rgba(77,216,255,.24)']].forEach(function(h, j){
@@ -7102,8 +7128,8 @@ function perfFundo(x, W2, H2, f, cor, t){
     var fx = x.createLinearGradient(0, 0, W2, 0); fx.addColorStop(0, '#9b30d9'); fx.addColorStop(.5, '#4169e1'); fx.addColorStop(1, '#b6ff3b');
     x.fillStyle = fx; x.fillRect(0, H2 * .88, W2, 3 * u);
   } else if(f === 'oshi'){
-    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, petMix(cor, 1, .82)); gr.addColorStop(1, petMix(cor, 1, .55));
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    var oshiTop = petMix(cor, 1, .82), oshiBottom = petMix(cor, 1, .55);
+    perfFundoGradiente(x, W2, H2, 'perfil:oshi:' + cor + ':' + oshiTop + ':' + oshiBottom, true, [[0, oshiTop], [1, oshiBottom]]);
     x.save(); x.globalAlpha = .12; x.strokeStyle = '#fff'; x.lineWidth = 14 * u;
     for(var d = -H2; d < W2; d += 40 * u){ x.beginPath(); x.moveTo(d, H2); x.lineTo(d + H2, 0); x.stroke(); }
     x.restore();
@@ -7114,8 +7140,7 @@ function perfFundo(x, W2, H2, f, cor, t){
     perfEnfeites(x, W2, H2, ['#fff', petMix(cor, 0, .2)], 7, 5, t, .7);
     x.fillStyle = petMix(cor, 0, .15); x.globalAlpha = .25; x.fillRect(0, H2 * .9, W2, H2 * .1); x.globalAlpha = 1;
   } else if(f === 'ceu'){
-    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#8fd0f5'); gr.addColorStop(1, '#e8f7ff');
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfFundoGradiente(x, W2, H2, 'perfil:ceu', true, [[0, '#8fd0f5'], [1, '#e8f7ff']]);
     x.save(); x.globalAlpha = .4; x.lineWidth = 7 * u;   // arco-íris pastel
     ['#ff9ccd', '#ffe14d', '#b6ff3b', '#7dd3fc', '#c4a5ff'].forEach(function(cc, j){ x.strokeStyle = cc; x.beginPath(); x.arc(W2 * .5, H2 * .95, (150 - j * 7) * u, Math.PI * 1.05, Math.PI * 1.95); x.stroke(); });
     x.restore();
@@ -7128,8 +7153,7 @@ function perfFundo(x, W2, H2, f, cor, t){
     x.fillStyle = '#9ed36a'; x.fillRect(0, H2 * .9, W2, H2 * .1);
     x.fillStyle = '#b8e986'; x.fillRect(0, H2 * .9, W2, 2.5 * u);
   } else if(f === 'noite'){
-    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#071327'); gr.addColorStop(1, '#2a3f78');
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfFundoGradiente(x, W2, H2, 'perfil:noite', true, [[0, '#071327'], [1, '#2a3f78']]);
     var neb = x.createRadialGradient(W2 * .25, H2 * .35, 4 * u, W2 * .25, H2 * .35, 110 * u); neb.addColorStop(0, 'rgba(155,48,217,.32)'); neb.addColorStop(1, 'rgba(155,48,217,0)');
     x.fillStyle = neb; x.fillRect(0, 0, W2, H2);
     perfBrilhos(x, W2, H2 * .8, '#fff', 34, 9, t);
@@ -7140,8 +7164,7 @@ function perfFundo(x, W2, H2, f, cor, t){
     perfEnfeites(x, W2, H2, ['#ffe14d', '#c4a5ff', '#7dd3fc'], 5, 12, t, .6);
     x.fillStyle = '#1a2a55'; x.fillRect(0, H2 * .9, W2, H2 * .1);
   } else if(f === 'halloween'){
-    gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#2b0f45'); gr.addColorStop(.6, '#7a2f7a'); gr.addColorStop(1, '#ff8a3d');
-    x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+    perfFundoGradiente(x, W2, H2, 'perfil:halloween', true, [[0, '#2b0f45'], [.6, '#7a2f7a'], [1, '#ff8a3d']]);
     perfBrilhos(x, W2, H2 * .45, '#ffe9b0', 16, 21, t);
     var lu = x.createRadialGradient(W2 * .78, H2 * .2, 4 * u, W2 * .78, H2 * .2, 46 * u); lu.addColorStop(0, 'rgba(255,214,120,.55)'); lu.addColorStop(1, 'rgba(255,214,120,0)');
     x.fillStyle = lu; x.beginPath(); x.arc(W2 * .78, H2 * .2, 46 * u, 0, 7); x.fill();
@@ -8701,8 +8724,7 @@ function temaFundo(x, W2, H2, k, t){   // fundo do Estúdio / da tela de início
   var inf = TEMA_INFO[k]; if(!inf){ perfFundo(x, W2, H2, 'basico', '', t); return; }
   if(k === 'halloween'){ perfFundo(x, W2, H2, 'halloween', '', t); return; }
   var u = W2 / 320, i; t = t || 0;
-  var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, inf[2]); gr.addColorStop(1, inf[3]);
-  x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
+  perfFundoGradiente(x, W2, H2, 'tema:' + k + ':' + inf[2] + ':' + inf[3], true, [[0, inf[2]], [1, inf[3]]]);
   if(k === 'verao'){   // sol, mar e areia
     var sg = x.createRadialGradient(W2 * .8, H2 * .2, 4 * u, W2 * .8, H2 * .2, 60 * u); sg.addColorStop(0, 'rgba(255,240,150,.9)'); sg.addColorStop(1, 'rgba(255,240,150,0)');
     x.fillStyle = sg; x.fillRect(0, 0, W2, H2); x.fillStyle = '#ffe14d'; x.beginPath(); x.arc(W2 * .8, H2 * .2, 18 * u, 0, 7); x.fill();
@@ -8733,7 +8755,7 @@ function temaFundo(x, W2, H2, k, t){   // fundo do Estúdio / da tela de início
 function temaCamarim(x, foto, t){   // decoração do camarim (360 x 220) para os temas sem desenho próprio
   var k = petTemaOn, inf = TEMA_INFO[k]; if(!inf) return;
   t = foto ? 0 : t;
-  x.save(); x.globalAlpha = .16; var gr = x.createLinearGradient(0, 0, 0, 220); gr.addColorStop(0, inf[2]); gr.addColorStop(1, inf[3]); x.fillStyle = gr; x.fillRect(0, 0, 360, 220); x.restore();
+  x.save(); x.globalAlpha = .16; perfFundoGradiente(x, 360, 220, 'camarim:' + k + ':' + inf[2] + ':' + inf[3], true, [[0, inf[2]], [1, inf[3]]]); x.restore();
   temaBandeirinhas(x, 360, inf[6], 2, 1, t);
   temaParticulas(x, 360, PET_FLOOR + 4, k, 16, t, 1);
 }

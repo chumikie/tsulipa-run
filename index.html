@@ -6379,9 +6379,9 @@ function contaEntrar(){
   if(!_supabase || !contaSiteOk()){ contaAviso(tr('O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.')); return; }
   _supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: location.origin + location.pathname } });
 }
-var contaSessaoToken=0;
+var contaSessaoToken=0,contaAuthUserId='';
 function contaSair(){
-  contaSessaoToken++;
+  contaSessaoToken++;contaAuthUserId='';
   if(_supabase) _supabase.auth.signOut();
   contaJ = null; contaRun = null; perfGuardarCor(''); contaUI();
   if(window.ktTickets)window.ktTickets.reset();
@@ -6395,8 +6395,11 @@ function contaAviso(t){
 
 // ---------- Depois do login: carrega a conta, ou pede o nome e importa o save ----------
 function contaSessao(sess){
+  var userId=sess&&sess.user&&sess.user.id?String(sess.user.id):'';
+  if(userId===contaAuthUserId)return;
+  contaAuthUserId=userId;
   var token=++contaSessaoToken;
-  perfConf.hidden=true;
+  if(typeof perfConf!=='undefined'&&perfConf)perfConf.hidden=true;
   if(!sess){if(contaJ){contaJ=null;contaUI();perfSair();}if(window.ktTickets)window.ktTickets.reset();return;}
   contaRpc('jogador').then(function(j){
     if(token!==contaSessaoToken)return;

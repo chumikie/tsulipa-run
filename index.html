@@ -2595,7 +2595,8 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
 var PAL=[['#071327','#2a3f78','#0f2347','#0a1830','#9ec8ff','#ff96d2','#1a2a55','#ff6fb5'],['#2b1b4a','#ff8a5c','#4a2a5c','#2a1a3e','#ffd27a','#ffd27a','#3a2450','#ffd23f'],['#12315e','#7fc4ee','#3a6a9c','#244a78','#ffffff','#e6f6ff','#2a4f80','#00c6ff'],['#1a0933','#8a2f9a','#3a1a5e','#240f45','#ff9ccd','#ffb3e0','#2c1650','#4dd8ff']];
 function hx(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]}
 var PALR=PAL.map(function(p){return p.map(hx)});
-function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];return a.map(function(v,k){return 'rgb('+v.map(function(n,m){return Math.round(n+(c[k][m]-n)*b)}).join(',')+')'})}
+var CURPAL_CACHE=['','','',''];
+function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];for(var k=0;k<4;k++){var v=a[k],w=c[k];CURPAL_CACHE[k]='rgb('+Math.round(v[0]+(w[0]-v[0])*b)+','+Math.round(v[1]+(w[1]-v[1])*b)+','+Math.round(v[2]+(w[2]-v[2])*b)+')';}return CURPAL_CACHE;}
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
 var pc = $('prev').getContext('2d'), pt = 0, twIndex2AvatarRaf = 0;
 
@@ -8962,6 +8963,7 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
 }
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];
+var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});
 // Tocar na Tsu, na Lirika ou na Pati: pulinho feliz, emojis e um "oi" escrito (sem voz até as gravações chegarem).
 var HUB_REAGE = { i:-1, t0:0, emo:[] };
 var HUB_TRIO_EMO = [['💜','⭐','🐈'], ['💚','🌼','🐨'], ['💙','🌙','✨']];
@@ -9009,7 +9011,8 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
     perfFundo(x, W2, H2, 'temporada', '#ff6fb5', t);
     state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; accSel = ''; frame = t;
     HUB_TRIO.forEach(function(m, i){
-      var c = JSON.parse(JSON.stringify(CH[m[0]]));
+      var c=HUB_TRIO_DRAW_CHARS[i],base=CH[m[0]];
+      c.out=base.out;c.outcol=base.outcol;
       if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada na cor de cada um
       var cx = W2 * m[2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc, ex = m[4];
       var rg = HUB_REAGE.i === i ? hubT - HUB_REAGE.t0 : 999;

@@ -2825,9 +2825,22 @@ function krRoomFallbackAtualizar(){
  krRhythmPanelVisible=krRoomElementoVisivel(krRhythmPanel);
  krRoomAtualizar();
 }
+var krRoomFallbackListenersAtivos=false;
+function krRoomFallbackListenersConectar(){
+ if(krRoomFallbackListenersAtivos||'IntersectionObserver' in window)return;
+ window.addEventListener('scroll',krRoomFallbackAtualizar,{passive:true,capture:true});
+ window.addEventListener('resize',krRoomFallbackAtualizar);
+ krRoomFallbackListenersAtivos=true;
+}
+function krRoomFallbackListenersDesconectar(){
+ if(!krRoomFallbackListenersAtivos)return;
+ window.removeEventListener('scroll',krRoomFallbackAtualizar,true);
+ window.removeEventListener('resize',krRoomFallbackAtualizar);
+ krRoomFallbackListenersAtivos=false;
+}
 function krRoomObserversConectar(){
  if(!krCanvasHD)return;
- if(!('IntersectionObserver' in window)){krRoomFallbackAtualizar();return;}
+ if(!('IntersectionObserver' in window)){krRoomFallbackAtualizar();krRoomFallbackListenersConectar();return;}
  if(!krRoomObserver)krRoomObserver=new IntersectionObserver(function(entries){
   var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
   if(visible===krRoomCanvasVisible)return;
@@ -2844,10 +2857,10 @@ function krRoomObserversConectar(){
 function krRoomObserversDesconectar(){
  if(krRoomObserver){krRoomObserver.disconnect();krRoomObserver=null;}
  if(krRhythmObserver){krRhythmObserver.disconnect();krRhythmObserver=null;}
+ krRoomFallbackListenersDesconectar();
  krRoomCanvasVisible=false;krRhythmPanelVisible=false;
 }
 krRoomObserversConectar();
-if(!('IntersectionObserver' in window)){window.addEventListener('scroll',krRoomFallbackAtualizar,{passive:true,capture:true});window.addEventListener('resize',krRoomFallbackAtualizar);}
 window.addEventListener('message',function(e){
  if(e.source!==parent||!e.data)return;
  var visible;
@@ -2990,7 +3003,7 @@ ktMeta.refresh();
 /* Faixa da plateia: como a dos Idols da página principal (desliza sozinha), com fundo de sala de karaokê.
    Tocar num Idol: pulão com coraçõezinhos rosa aqui e a mesma reação na sala. */
 var ktFaixa=(function(){
- var CEL=130,BASE=184,st={x:0,s:0,par:false,vis:true,raf:0,ult:0,reage:{},conf:[],w:0,h:0,k:1,dpr:1,cw:0,ch:0},cv=$('ktFaixaCv');
+ var CEL=130,BASE=184,st={x:0,s:0,par:false,vis:true,raf:0,ult:0,reage:{},conf:[],w:0,h:0,k:1,dpr:1,cw:0,ch:0},cv=$('ktFaixaCv'),visibilityObserver=null;
  if(!cv)return {ligar:function(){}};
  var calmo=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
  function tam(){var cw=cv.clientWidth||600,ch=cv.clientHeight||BASE,d=Math.min(2,window.devicePixelRatio||1);if(cw===st.cw&&ch===st.ch&&d===st.dpr)return;st.cw=cw;st.ch=ch;st.dpr=d;cv.width=Math.round(cw*d);cv.height=Math.round(ch*d);st.k=ch/BASE;st.w=cw/st.k;st.h=BASE;st.conf=[];for(var i=0;i<22;i++)st.conf.push({x:Math.random()*st.w,y:Math.random()*BASE,v:10+Math.random()*18,r:Math.random()*6,c:['#ff6fb5','#ffb3d9','#ffe27a','#c7a6ff'][i%4],cor:i%3===0});}
@@ -3036,10 +3049,21 @@ var ktFaixa=(function(){
  if(window.TWMotionLifecycle&&TWMotionLifecycle.watchLoop){
   TWMotionLifecycle.watchLoop(cv,function(){return true;},function(){st.vis=true;ligar();},function(){st.vis=false;parar();});
  }else{
-  document.addEventListener('visibilitychange',function(){if(document.hidden)parar();else ligar();});
-  window.addEventListener('pagehide',parar);window.addEventListener('pageshow',ligar);
-  if('IntersectionObserver' in window)new IntersectionObserver(function(es){st.vis=!!(es[0]&&es[0].isIntersecting);if(st.vis)ligar();else parar();}).observe(cv);
-  ligar();
+  function conectarVisibilidade(){
+   if('IntersectionObserver' in window){
+    st.vis=false;
+    if(!visibilityObserver)visibilityObserver=new IntersectionObserver(function(es){st.vis=!!(es[0]&&es[0].isIntersecting);if(st.vis)ligar();else parar();});
+    visibilityObserver.observe(cv);
+   }else{st.vis=true;ligar();}
+  }
+  function desconectarVisibilidade(){
+   if(visibilityObserver){visibilityObserver.disconnect();visibilityObserver=null;}
+   st.vis=false;parar();
+  }
+  document.addEventListener('visibilitychange',function(){if(document.hidden)parar();else conectarVisibilidade();});
+  window.addEventListener('pagehide',desconectarVisibilidade);
+  window.addEventListener('pageshow',conectarVisibilidade);
+  conectarVisibilidade();
  }
  return {ligar:ligar,parar:parar};
 })();
@@ -3230,7 +3254,11 @@ if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',ini
  banner.addEventListener('pointerdown',function(e){e.stopPropagation();wake();});
  banner.addEventListener('click',function(e){e.stopPropagation();});
  banner.addEventListener('focus',wake);
+ function stop(){clearTimeout(timer);timer=0;}
+ function start(){place();}
  mobile.addEventListener('change',place);
+ window.addEventListener('pagehide',stop);
+ window.addEventListener('pageshow',start);
  place();
 })();
 </script><script src="./tw-windows.js?v=1"></script>

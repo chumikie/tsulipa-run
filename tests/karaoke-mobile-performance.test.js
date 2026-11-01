@@ -169,7 +169,7 @@ assert(html.includes('krLoungeReset();krBaloes={};')&&html.includes('KR_LOUNGE_A
 assert(html.includes('var walking=!!j._ktLoungeWalking')&&html.includes('krEstaNoSofa(j)&&!walking')&&html.includes('walking?j._ktLoungeFacing<0:socialActive?j._ktSocialTargetX<j.x:j.x>480'),'Walking audience members should stand, face their direction and retain existing seat poses when idle');
 assert(html.includes('function krLoungeSocialUpdate()')&&html.includes('krLoungeSocialUpdate();'),'Lounge interactions must reuse the existing room loop');
 const social=html.slice(html.indexOf('function krLoungeSocialUpdate()'),html.indexOf('function krRoomPalcoVisivel()',html.indexOf('function krLoungeSocialUpdate()')));
-assert(social.includes('krLoungeActor||krT<krLoungeSocialNextAt')&&social.includes('krLoungeSocialA=first;krLoungeSocialB=second'),'Only a small, bounded pair may interact, with cooldowns and no new animation loop');
+assert(social.includes('krLoungeActors.length||krT<krLoungeSocialNextAt')&&social.includes('krLoungeSocialA=first;krLoungeSocialB=second'),'Only a small, bounded pair may interact, with cooldowns and no new animation loop');
 assert(!/setTimeout|setInterval|requestAnimationFrame/.test(social),'Audience conversations and applause must not allocate independent timers or loops');
 assert(html.includes('var krRoomPalette=[];')&&html.includes('cols=krRoomPalette;cols.length=0;'),'Room palette should reuse a scratch buffer instead of allocating one on each rendered frame');
 assert(html.includes('var KR_FESTA_RGB=')&&html.includes('KR_FESTA_RGB[i%KR_FESTA_RGB.length]'),'Disco floor should reuse its fixed RGB palette instead of rebuilding a literal array in its particle loop');
@@ -254,8 +254,8 @@ const socialDueEnd=html.indexOf('function krLoungeSocialUpdate()',socialDueStart
 const socialDue=html.slice(socialDueStart,socialDueEnd);
 assert(socialDue.includes('if(!krLoungeSoloPermitido())return false;')&&socialDue.includes('return krT>=dueAt;')&&socialDue.includes('return krT>=krLoungeSocialNextAt;'),'Autonomous social updates should be scheduled at interaction deadlines and remain disabled outside solo behavior');
 assert(html.includes('if(krLoungeSocialDeveAtualizar())krLoungeSocialUpdate();'),'The room loop should not run the audience social updater on every logical frame');
-assert(html.includes('function krLoungeUpdateDeveRodar()')&&html.includes('if(krLoungeUpdateDeveRodar())krLoungeUpdate(krFrameDelta);')&&html.includes('return !!krLoungeActor||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;'),'Autonomous audience movement should sleep between deadlines and update continuously only while a walker is active');
-assert(html.includes('if(krLoungeActor||krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB)')&&html.includes('krLoungeSocialClear();'),'Solo audience state should be cleared once when autonomous behavior becomes unavailable, not on every frame');
+assert(html.includes('function krLoungeUpdateDeveRodar()')&&html.includes('if(krLoungeUpdateDeveRodar())krLoungeUpdate(krFrameDelta);')&&html.includes('return krLoungeActors.length>0||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;'),'Autonomous audience movement should sleep between deadlines and update continuously only while a walker is active');
+assert(html.includes('if(krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB)')&&html.includes('krLoungeSocialClear();'),'Solo audience state should be cleared once when autonomous behavior becomes unavailable, not on every frame');
 const roomLifeStart=html.indexOf('var krRoomObserver=null');
 const roomLifeEnd=html.indexOf("window.addEventListener('message'",roomLifeStart);
 const roomLife=html.slice(roomLifeStart,roomLifeEnd);

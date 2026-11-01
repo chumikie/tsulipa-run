@@ -35,5 +35,7 @@ assert(karaoke.includes("a:read('brs48cr_acc')||''"),'perfil atual da conta leva
 // Perfil/retrato já usam o mesmo campo de corte e o mesmo item do avatar.
 assert(index.includes("var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'hat']"));
 assert(index.includes("accSel = typeof av.a === 'string' ? av.a : ''"));
+assert(index.includes("[['cback', 'back'], ['cfront', 'front'], ['cdet', 'det']]"),'editor do perfil reutiliza as opções de corte');
+assert(index.includes("[['chat', 'hat'], ['cgl', 'gl']]"),'editor do perfil reutiliza as opções de chapéu');
 
 console.log('✓ Avatar: careca, chapéu de capitão, estrela e consistência do elenco');

@@ -21,6 +21,7 @@ assert(karaoke.includes("JSON.parse(read('brs48cr_cu2')"),'Karaoke imports saved
 assert(source.includes("var PRETO_TOPO='#3a3644',PRETO_BASE='#121018'"),'curto bicolor: metade fixa em preto');
 assert(!/onduladom2[\s\S]*hair2/.test(source.split('bicolor:function')[1]||''),'curto bicolor não depende da cor da mecha');
 assert(!source.includes('strokeStyle'),'repicado sem riscos brancos sobre o rosto');
+assert(source.includes('g.arc(x+15,y+12,14,Math.PI,0)')&&source.includes('// laterais curvas'),'ondulado curto arredondado em volta da cabeça');
 for(const label of ['>Ondulado curto<','>Curto bicolor (metade preta)<','>Repicado volumoso<'])assert(index.includes(label),'menu mostra '+label);
 const sandbox={window:{}};vm.runInNewContext(source,sandbox,{timeout:1000});
 const hair=sandbox.window.TWAvatarHair;

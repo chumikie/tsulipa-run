@@ -1,6 +1,6 @@
 /* Cortes extras do Idol, no mesmo vocabulário 2D de drawChar (arco do topo,
    costeletas, sombra HD atrás e franja em polígono com o degradê do cabelo).
-   onduladom  = Ondulado curto
+   onduladom  = Ondulado curto: volume fofo e arredondado ao redor da cabeça
    onduladom2 = Curto bicolor: metade na cor escolhida, metade preta (ref. Maruru)
    onduladof  = Repicado volumoso, médio, pontas para fora (ref. Mimimila)
    Os valores salvos continuam os mesmos para não quebrar saves. */
@@ -8,7 +8,11 @@
 'use strict';
 var PRETO_TOPO='#3a3644',PRETO_BASE='#121018',PRETO_SOMBRA='#0c0a12';
 function cabeca(g,x,y){g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.lineTo(x+27,y+30);g.lineTo(x+3,y+30);g.closePath();}
-function topoOndulado(g,x,y){g.beginPath();g.moveTo(x+3,y+13);g.quadraticCurveTo(x+1,y+9,x+5,y+6);g.quadraticCurveTo(x+8,y+1,x+12,y+5);g.quadraticCurveTo(x+15,y+1,x+18,y+5);g.quadraticCurveTo(x+23,y+1,x+27,y+7);g.quadraticCurveTo(x+30,y+10,x+27,y+14);g.closePath();g.fill();}
+function oval(g,cx,cy,rx,ry){g.beginPath();g.ellipse(cx,cy,rx,ry,0,0,7);g.fill();}
+function topoOndulado(g,x,y){   // topo em ondas redondinhas (cachos macios), sem pontas
+ g.beginPath();g.arc(x+15,y+12,12.5,Math.PI,0);g.lineTo(x+27.5,y+14);g.lineTo(x+2.5,y+14);g.closePath();g.fill();
+ oval(g,x+15,y+2,6,4.4);oval(g,x+8.5,y+3.8,5,4.2);oval(g,x+21.5,y+3.8,5,4.2);oval(g,x+4.5,y+8.5,3.8,4.2);oval(g,x+25.5,y+8.5,3.8,4.2);
+}
 function topoArco(g,x,y){g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();}
 function franjaBicolor(T,x,y){
  T([x+3,y+9,x+12,y+5,x+12,y+11,x+8,y+12,x+4,y+16]);                              // lado curto, penteado para fora
@@ -18,10 +22,11 @@ window.TWAvatarHair={
  isWavy:function(b){return b==='onduladom'||b==='onduladom2'||b==='onduladof';},
  back:function(g,c,x,y,b,E,T){
   if(b==='onduladom'){
-   // volume ondulado colado ao rosto, com pontinhas curvas (sem "bolas" laterais)
-   E(x+3.5,y+15,2.6,4.2,-.12);E(x+26.5,y+15,2.6,4.2,.12);
-   E(x+4.5,y+20,1.9,2.1);E(x+25.5,y+20,1.9,2.1);
-   T([x+4,y+8,x+15,y+3,x+26,y+8,x+27,y+17,x+3,y+17]);
+   // volume fofo e arredondado contornando a cabeça inteira até a altura da orelha
+   g.beginPath();g.arc(x+15,y+12,14,Math.PI,0);g.lineTo(x+29,y+19);g.lineTo(x+1,y+19);g.closePath();g.fill();
+   E(x+15,y+0.5,6.5,4.5);E(x+7,y+2.5,5.5,4.5);E(x+23,y+2.5,5.5,4.5);
+   E(x+2,y+9,4.2,4.6);E(x+28,y+9,4.2,4.6);E(x+1.5,y+15.5,3.8,4.2);E(x+28.5,y+15.5,3.8,4.2);
+   E(x+3.5,y+20,3,2.8);E(x+26.5,y+20,3,2.8);
    return true;
   }
   if(b==='onduladom2'){
@@ -48,6 +53,7 @@ window.TWAvatarHair={
  fringe:function(g,x,y,b,T){
   if(b==='onduladom'){
    T([x+3,y+10,x+8,y+5,x+14,y+7,x+20,y+3,x+27,y+8,x+29,y+13,x+24,y+16,x+20,y+14,x+17,y+21,x+13,y+15,x+9,y+19,x+7,y+13,x+3,y+14]);
+   oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);   // laterais curvas em vez das costeletas retas
   }else if(b==='onduladom2'){
    franjaBicolor(T,x,y);
   }else if(b==='onduladof'){

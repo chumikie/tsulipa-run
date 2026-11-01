@@ -9,7 +9,7 @@ const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const original=fs.readFileSync(path.join(root,'tw-avatar-items.js'),'utf8');
 
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-items.js?v=1"></script>'),name+': carregar os desenhos compartilhados');
+ assert(html.includes('<script src="./tw-avatar-items.js?v=2"></script>'),name+': carregar os desenhos compartilhados');
  assert(html.includes("if(hacc==='capitao') TWAvatarItems.capitao(g,x,y)"),name+': desenhar chapéu somente quando selecionado');
  assert(html.includes("if(A==='estrela') TWAvatarItems.estrela(g,x,y)"),name+': desenhar estrela somente quando selecionada');
  for(const key of ['boina','presilhas','fones','coala','hibisco','sakura']){
@@ -24,7 +24,9 @@ assert(karaoke.includes("a:read('brs48cr_acc')||''"),'elenco do Karaoke lê item
 assert(karaoke.includes("krMeuCharSalaClone._avatarA=localStorage.getItem('brs48cr_acc')"),'Karaoke solo reutiliza o clone e atualiza item');
 assert(karaoke.includes("accSel=c._avatarA||''"),'renderizador do Karaoke recebe o item');
 assert(original.includes("capShade.addColorStop(.48,'#090b12')"),'preservar sombra original do chapéu');
-assert(original.includes("var starGold=g.createRadialGradient(-.8,-1.1,.2,0,0,3.3)"),'preservar brilho original da estrela');
+assert(original.includes("var starGold=g.createRadialGradient(-.8,-1.1,.2,0,0,3.3*1.45)"),'estrela mantém o brilho dourado, maior');
+assert(original.includes("g.translate(x+5.5,y+8)")&&original.includes("// grampo"),'estrela vira presilha ao lado da franja');
+assert(original.includes("// pala")&&original.includes("// cordão")&&original.includes("quadraticCurveTo(x+15,y-11,x+29.5,y-4.5)"),'chapéu de Capitão em formato de quepe militar');
 
 const sandbox={window:{}};
 vm.runInNewContext(original,sandbox,{timeout:1000});
@@ -32,7 +34,7 @@ const calls=[];
 const gradient={addColorStop(...args){calls.push(['stop',...args]);}};
 const context=new Proxy({}, {set(target,key,val){target[key]=val;return true;},get(target,key){
  if(key==='createLinearGradient'||key==='createRadialGradient')return (...args)=>{calls.push([key,...args]);return gradient;};
- if(key==='save'||key==='restore'||key==='beginPath'||key==='closePath'||key==='fill'||key==='stroke'||key==='moveTo'||key==='lineTo'||key==='quadraticCurveTo'||key==='ellipse'||key==='fillRect'||key==='translate'||key==='arc')return (...args)=>calls.push([key,...args]);
+ if(key==='save'||key==='restore'||key==='beginPath'||key==='closePath'||key==='fill'||key==='stroke'||key==='moveTo'||key==='lineTo'||key==='quadraticCurveTo'||key==='ellipse'||key==='fillRect'||key==='translate'||key==='rotate'||key==='arc')return (...args)=>calls.push([key,...args]);
  return target[key];
 }});
 sandbox.window.TWAvatarItems.capitao(context,0,0);

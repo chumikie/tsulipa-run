@@ -1538,6 +1538,11 @@ function start(e){
     return; // Interrompe o início do jogo
   }
 
+  var contaTesteVisivel = $('tstw');
+  if(_supabase && !contaPronta && (!contaTesteVisivel || contaTesteVisivel.hidden)){
+    contaAviso(tr('Aguarde a conta carregar e tente de novo.'));
+    return;
+  }
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   clearTimeout(overTimer);
   ac();
@@ -6253,10 +6258,10 @@ function perfGuardarCor(c){
 }
 
 var CONTA_DICT = {
-  en: {"Entre com Google para aparecer no ranking online":"Sign in with Google to appear on the online ranking","Entrar com Google":"Sign in with Google","Sair":"Sign out","Privacidade e segurança":"Privacy and security","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Escolha seu nome de Idol":"Choose your Idol name","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","CONFIRMAR":"CONFIRM","Esse nome já está em uso.":"That name is already taken.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","Esse nome é reservado.":"That name is reserved.","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","Conta pronta!":"Account ready!","estrelas importadas":"stars imported","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off."},
-  es: {"Entre com Google para aparecer no ranking online":"Entra con Google para aparecer en el ranking en línea","Entrar com Google":"Entrar con Google","Sair":"Salir","Privacidade e segurança":"Privacidad y seguridad","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Opcional: guarda tus estrellas en la nube y activa el ranking en línea.","Escolha seu nome de Idol":"Elige tu nombre de Idol","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"Aparece en el ranking y no puede ser igual al de otra persona.","CONFIRMAR":"CONFIRMAR","Esse nome já está em uso.":"Ese nombre ya está en uso.","Use de 2 a 12 caracteres.":"Usa de 2 a 12 caracteres.","Esse nome tem caracteres não permitidos.":"Ese nombre tiene caracteres no permitidos.","Esse nome é reservado.":"Ese nombre está reservado.","Não deu para falar com o servidor. Tente de novo.":"No se pudo conectar con el servidor. Inténtalo de nuevo.","Conta pronta!":"¡Cuenta lista!","estrelas importadas":"estrellas importadas","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"El inicio de sesión funciona en el sitio del juego (GitHub o Netlify), no en este archivo.","Sem login, o ranking online fica desligado.":"Sin iniciar sesión, el ranking en línea está apagado."},
-  th: {"Entre com Google para aparecer no ranking online":"เข้าสู่ระบบด้วย Google เพื่อขึ้นอันดับออนไลน์","Entrar com Google":"เข้าสู่ระบบด้วย Google","Sair":"ออกจากระบบ","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"ไม่บังคับ: เก็บดาวไว้บนคลาวด์และเปิดอันดับออนไลน์","Escolha seu nome de Idol":"ตั้งชื่อไอดอลของคุณ","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ชื่อนี้จะแสดงในอันดับ และห้ามซ้ำกับคนอื่น","CONFIRMAR":"ยืนยัน","Esse nome já está em uso.":"ชื่อนี้มีคนใช้แล้ว","Use de 2 a 12 caracteres.":"ใช้ 2 ถึง 12 ตัวอักษร","Esse nome tem caracteres não permitidos.":"ชื่อนี้มีตัวอักษรที่ใช้ไม่ได้","Esse nome é reservado.":"ชื่อนี้ถูกสงวนไว้","Não deu para falar com o servidor. Tente de novo.":"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองอีกครั้ง","Conta pronta!":"บัญชีพร้อมแล้ว!","estrelas importadas":"ดาวที่นำเข้า","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"เข้าสู่ระบบได้บนเว็บไซต์ของเกม (GitHub หรือ Netlify) ไม่ใช่ในไฟล์นี้","Sem login, o ranking online fica desligado.":"ถ้าไม่เข้าสู่ระบบ อันดับออนไลน์จะปิดอยู่"},
-  ja: {"Entre com Google para aparecer no ranking online":"Googleでログインするとオンラインランキングにのれるよ","Entrar com Google":"Googleでログイン","Sair":"ログアウト","Privacidade e segurança":"プライバシーと安全","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"任意：スターをクラウドに保存して、オンラインランキングに参加できます。","Escolha seu nome de Idol":"アイドル名を決めてね","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ランキングに表示され、ほかの人と同じ名前は使えません。","CONFIRMAR":"けってい","Esse nome já está em uso.":"その名前はもう使われています。","Use de 2 a 12 caracteres.":"2〜12文字にしてね。","Esse nome tem caracteres não permitidos.":"使えない文字が入っています。","Esse nome é reservado.":"その名前は予約されています。","Não deu para falar com o servidor. Tente de novo.":"サーバーにつながりませんでした。もう一度ためしてね。","Conta pronta!":"アカウント準備OK！","estrelas importadas":"スターを引きつぎ","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"ログインはゲームのサイト（GitHub か Netlify）で使えます。このファイルでは使えません。","Sem login, o ranking online fica desligado.":"ログインしないと、オンラインランキングはオフです。"}
+  en: {"Entre com Google para aparecer no ranking online":"Sign in with Google to appear on the online ranking","Entrar com Google":"Sign in with Google","Sair":"Sign out","Privacidade e segurança":"Privacy and security","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Escolha seu nome de Idol":"Choose your Idol name","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","CONFIRMAR":"CONFIRM","Esse nome já está em uso.":"That name is already taken.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","Esse nome é reservado.":"That name is reserved.","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","Conta pronta!":"Account ready!","estrelas importadas":"stars imported","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off.","Aguarde a conta carregar e tente de novo.":"Wait for your account to finish loading, then try again.","Saldo conferido na nuvem; valor desta corrida não confirmado.":"Cloud balance checked; this race's credit amount could not be confirmed.","Esta corrida não foi registrada no servidor.":"This race was not registered on the server.","Não foi possível confirmar a recompensa.":"The reward could not be confirmed.","Pontuação não validada; saldo oficial atualizado.":"Score not validated; official balance updated."},
+  es: {"Entre com Google para aparecer no ranking online":"Entra con Google para aparecer en el ranking en línea","Entrar com Google":"Entrar con Google","Sair":"Salir","Privacidade e segurança":"Privacidad y seguridad","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Opcional: guarda tus estrellas en la nube y activa el ranking en línea.","Escolha seu nome de Idol":"Elige tu nombre de Idol","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"Aparece en el ranking y no puede ser igual al de otra persona.","CONFIRMAR":"CONFIRMAR","Esse nome já está em uso.":"Ese nombre ya está en uso.","Use de 2 a 12 caracteres.":"Usa de 2 a 12 caracteres.","Esse nome tem caracteres não permitidos.":"Ese nombre tiene caracteres no permitidos.","Esse nome é reservado.":"Ese nombre está reservado.","Não deu para falar com o servidor. Tente de novo.":"No se pudo conectar con el servidor. Inténtalo de nuevo.","Conta pronta!":"¡Cuenta lista!","estrelas importadas":"estrellas importadas","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"El inicio de sesión funciona en el sitio del juego (GitHub o Netlify), no en este archivo.","Sem login, o ranking online fica desligado.":"Sin iniciar sesión, el ranking en línea está apagado.","Aguarde a conta carregar e tente de novo.":"Espera a que tu cuenta termine de cargar y vuelve a intentarlo.","Saldo conferido na nuvem; valor desta corrida não confirmado.":"Saldo de la nube consultado; no se pudo confirmar el crédito de esta carrera.","Esta corrida não foi registrada no servidor.":"Esta carrera no se registró en el servidor.","Não foi possível confirmar a recompensa.":"No se pudo confirmar la recompensa.","Pontuação não validada; saldo oficial atualizado.":"Puntuación no validada; saldo oficial actualizado."},
+  th: {"Entre com Google para aparecer no ranking online":"เข้าสู่ระบบด้วย Google เพื่อขึ้นอันดับออนไลน์","Entrar com Google":"เข้าสู่ระบบด้วย Google","Sair":"ออกจากระบบ","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"ไม่บังคับ: เก็บดาวไว้บนคลาวด์และเปิดอันดับออนไลน์","Escolha seu nome de Idol":"ตั้งชื่อไอดอลของคุณ","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ชื่อนี้จะแสดงในอันดับ และห้ามซ้ำกับคนอื่น","CONFIRMAR":"ยืนยัน","Esse nome já está em uso.":"ชื่อนี้มีคนใช้แล้ว","Use de 2 a 12 caracteres.":"ใช้ 2 ถึง 12 ตัวอักษร","Esse nome tem caracteres não permitidos.":"ชื่อนี้มีตัวอักษรที่ใช้ไม่ได้","Esse nome é reservado.":"ชื่อนี้ถูกสงวนไว้","Não deu para falar com o servidor. Tente de novo.":"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองอีกครั้ง","Conta pronta!":"บัญชีพร้อมแล้ว!","estrelas importadas":"ดาวที่นำเข้า","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"เข้าสู่ระบบได้บนเว็บไซต์ของเกม (GitHub หรือ Netlify) ไม่ใช่ในไฟล์นี้","Sem login, o ranking online fica desligado.":"ถ้าไม่เข้าสู่ระบบ อันดับออนไลน์จะปิดอยู่","Aguarde a conta carregar e tente de novo.":"รอให้บัญชีโหลดเสร็จ แล้วลองอีกครั้ง","Saldo conferido na nuvem; valor desta corrida não confirmado.":"ตรวจสอบยอดดาวบนคลาวด์แล้ว แต่ยืนยันจำนวนดาวจากการแข่งขันนี้ไม่ได้","Esta corrida não foi registrada no servidor.":"การแข่งขันนี้ไม่ได้ถูกบันทึกบนเซิร์ฟเวอร์","Não foi possível confirmar a recompensa.":"ไม่สามารถยืนยันรางวัลได้","Pontuação não validada; saldo oficial atualizado.":"ไม่ผ่านการตรวจสอบคะแนน; อัปเดตยอดดาวอย่างเป็นทางการแล้ว"},
+  ja: {"Entre com Google para aparecer no ranking online":"Googleでログインするとオンラインランキングにのれるよ","Entrar com Google":"Googleでログイン","Sair":"ログアウト","Privacidade e segurança":"プライバシーと安全","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"任意：スターをクラウドに保存して、オンラインランキングに参加できます。","Escolha seu nome de Idol":"アイドル名を決めてね","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ランキングに表示され、ほかの人と同じ名前は使えません。","CONFIRMAR":"けってい","Esse nome já está em uso.":"その名前はもう使われています。","Use de 2 a 12 caracteres.":"2〜12文字にしてね。","Esse nome tem caracteres não permitidos.":"使えない文字が入っています。","Esse nome é reservado.":"その名前は予約されています。","Não deu para falar com o servidor. Tente de novo.":"サーバーにつながりませんでした。もう一度ためしてね。","Conta pronta!":"アカウント準備OK！","estrelas importadas":"スターを引きつぎ","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"ログインはゲームのサイト（GitHub か Netlify）で使えます。このファイルでは使えません。","Sem login, o ranking online fica desligado.":"ログインしないと、オンラインランキングはオフです。","Aguarde a conta carregar e tente de novo.":"アカウントの読み込みが終わってから、もう一度試してね。","Saldo conferido na nuvem; valor desta corrida não confirmado.":"クラウドの残高を確認したよ。このレースの獲得数は確認できませんでした。","Esta corrida não foi registrada no servidor.":"このレースはサーバーに記録されていません。","Não foi possível confirmar a recompensa.":"報酬を確認できませんでした。","Pontuação não validada; saldo oficial atualizado.":"スコアは承認されませんでした。公式残高は更新済みです。"}
 };
 Object.keys(CONTA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(CONTA_DICT[l]).forEach(function(k){ DICT[l][k] = CONTA_DICT[l][k]; }); });
 
@@ -6290,6 +6295,7 @@ function contaEntrar(){
 }
 function contaSair(){
   if(_supabase) _supabase.auth.signOut();
+  contaPronta = true;
   contaJ = null; contaRun = null; perfGuardarCor(''); contaUI();
   if(window.ktTickets)window.ktTickets.reset();
   perfSair();   // V2.1.3
@@ -6302,13 +6308,15 @@ function contaAviso(t){
 
 // ---------- Depois do login: carrega a conta, ou pede o nome e importa o save ----------
 function contaSessao(sess){
-  if(!sess){ if(contaJ){ contaJ = null; contaUI(); }if(window.ktTickets)window.ktTickets.reset();return; }
+  if(!sess){ contaPronta = true; if(contaJ){ contaJ = null; contaUI(); }if(window.ktTickets)window.ktTickets.reset();return; }
+  contaPronta = false;
   contaRpc('jogador').then(function(j){
     if(j) perfAntesDeEntrar(j);   // V2.1.3 (ele chama o contaAplicar)
     else contaPedirNome();
   }).catch(function(){ contaAviso(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 function contaAplicar(j){
+  contaPronta = true;
   contaJ = j;
   starT = j.stars;
   if(j.best > best){ best = j.best; try{ localStorage.setItem('brs48cr_best', best); }catch(e){} }
@@ -6363,21 +6371,46 @@ function contaInicioCorrida(){
   if(typeof gachaBonus === 'function') gachaBonus();   // V2.1.3
 }
 function contaFimCorrida(score, est, ch, refresh){
-  if(!contaJ || !contaRun){ refresh(); return; }
+  if(!contaJ){ refresh(); return; }
+  if(!contaRun){
+    var semRun=$('res');
+    if(semRun) semRun.innerHTML=semRun.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Esta corrida não foi registrada no servidor.'));
+    refresh(); return;
+  }
   var run = contaRun; contaRun = null; contaUltimaRun = null;
   run.then(function(id){
-    if(!id) throw 0;
+    if(!id){ var semRegistro=new Error('corrida_nao_registrada'); semRegistro.code='corrida_nao_registrada'; throw semRegistro; }
     contaUltimaRun = { id:id, ok:false };   // V2.1.3: para a insígnia do Quarteto
     return contaRpc('terminar_corrida', { p_run:id, p_score:score, p_stars:est, p_char:ch, p_device:did });
   }).then(function(r){
-    if(!r||r.ok!==true)throw Error('corrida_nao_confirmada');
+    if(!r) throw Error('resposta_vazia');
+    if(r.ok!==true){
+      if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
+      var rejeitada=$('res');
+      if(rejeitada)rejeitada.innerHTML=rejeitada.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Pontuação não validada; saldo oficial atualizado.'));
+      refresh(); return;
+    }
     if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
     var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),String(r.creditadas||0)+' '+tr('estrelas'));
     if(contaUltimaRun){contaUltimaRun.ok=true;quartetoTalvez();}
     hubAposCorrida();refresh();
-  }).catch(function(){
-    var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Recompensa não validada'));
-    refresh();
+  }).catch(function(err){
+    var rr=$('res');
+    if(err && err.code==='corrida_nao_registrada'){
+      if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Esta corrida não foi registrada no servidor.'));
+      refresh(); return;
+    }
+    // A falha pode ter ocorrido depois de o servidor confirmar o crédito.
+    // Reconsultar o saldo evita mostrar uma recompensa perdida sem reenviar a finalização.
+    contaRpc('jogador').then(function(j){
+      if(!j || typeof j.stars!=='number') throw Error('saldo_nao_confirmado');
+      contaAplicar(j);
+      if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Saldo conferido na nuvem; valor desta corrida não confirmado.'));
+      refresh();
+    }).catch(function(){
+      if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Não foi possível confirmar a recompensa.'));
+      refresh();
+    });
   });
 }
 function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e confirma no servidor

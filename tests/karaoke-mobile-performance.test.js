@@ -8,6 +8,7 @@ assert(lifecycle.includes("if(rec.target.tagName==='IFRAME'&&rec.attributeName==
 const sora=fs.readFileSync(require('node:path').join(__dirname,'..','sora-jump.html'),'utf8');
 const main=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
 const windows=fs.readFileSync(require('node:path').join(__dirname,'..','tw-windows.js'),'utf8');
+const tickets=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-tickets.js'),'utf8');
 assert(main.includes('function twIntervaloVisivel(el,enabled,callback,delay)')&&main.includes('window.TWMotionLifecycle.watchLoop(el,enabled,start,stop)'),'UI-only intervals should use the shared visibility lifecycle');
 assert(main.includes('function twTimeoutVisivel(el,enabled,callback,delay)')&&main.includes('if(gate)gate.destroy();')&&main.includes('if(!el||!el.isConnected||document.hidden||(enabled&&!enabled()))return;'),'Delayed visual tasks must be canceled while their owner is hidden or removed');
 assert(main.includes('function perfTopoMsg(t)')&&main.includes('m._twTimeout=twTimeoutVisivel(m')&&main.includes('function duoMsg(t)')&&main.includes('m._twTimeout=twTimeoutVisivel(m'),'Profile and Moon Duo message timers should be tied to the message element lifecycle');
@@ -134,4 +135,7 @@ assert(html.includes('function krRoomFallbackAtualizar()')&&html.includes("windo
 assert(html.includes('run.paused=true;run.pauseAt=kNow();clearInterval(audioTimer);audioTimer=0;silence();')&&html.includes('if(!audioTimer)audioTimer=setInterval(schedule,25);'),'Paused rhythm shows must release their audio scheduler and recreate it only on resume');
 assert(html.includes('function runMap()')&&html.includes('function guardado(owner)')&&html.includes('function guardar(id,owner)')&&html.includes('if(!sameSession(a,owner)){if(r&&r.ok&&r.run)guardar(r.run,owner);return;}'),'Online Karaoke sessions must remain associated with the account that started them');
 assert(html.includes('if(!sameSession(a,owner)){guardar(id,owner);return;}'),'Karaoke must not finish an old account run under a newly signed-in account');
+assert(tickets.includes('var id=currentId(),request=++revision;btn.disabled=true;')&&tickets.includes('request!==revision||id!==currentId()||!enabled()'),'Ticket administration responses must not update a profile after account switch or refresh');
+assert(main.includes("if(muted||paused||document.hidden||(typeof hubOv!=='undefined'&&typeof hubTelaAberta==='function'&&hubTelaAberta())){clearInterval(mt);mt=null;return;}")&&main.includes('if(!mt)music(true);'),'Center Run music must release its interval while muted, paused or covered by Hub/embedded games');
+assert(main.includes("function setPause(v){if(state!=='play')return;paused=v;$('pz').hidden=!v;$('pause').textContent=v?'▶':'⏸';sync();}")&&main.includes('hubMusicaParar(); sitePartUI();\n  twIndex2ResumeBaseFrames();sync();'),'Pausing/resuming the run and closing the Hub must transfer audio ownership without background polling');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

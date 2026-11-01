@@ -75,6 +75,12 @@ function inspectCss(el){
   el.classList.remove('tw-motion-paused');cssNodes.delete(state);cssMap.delete(el);
  }else if(state)applyCss(state);
 }
+function disconnectFrame(frame){
+ var record=frameGates.get(frame);if(!record)return;
+ record.gate.destroy();
+ frame.removeEventListener('load',record.onLoad);
+ frameGates.delete(frame);framed.delete(frame);
+}
 function connectFrame(frame){
  if(!frame||framed.has(frame))return;
  try{var src=frame.getAttribute('src')||w.location.href;if(new URL(src,d.baseURI).origin!==w.location.origin)return;}catch(e){return;}
@@ -82,14 +88,16 @@ function connectFrame(frame){
  function send(value){try{if(frame.contentWindow)frame.contentWindow.postMessage({type:'tsulipa-motion-state',active:!!value},w.location.origin);}catch(e){}}
  function resume(){active=true;send(true);}
  function pause(){active=false;send(false);}
- var gate=watchLoop(frame,function(){return !frame.hidden;},resume,pause);frameGates.set(frame,gate);
- frame.addEventListener('load',function(){send(active&&pageIsActive()&&domVisible(frame)&&rectVisible(frame));});
+ var gate=watchLoop(frame,function(){return !frame.hidden;},resume,pause);
+ var onLoad=function(){send(active&&pageIsActive()&&domVisible(frame)&&rectVisible(frame));};
+ frameGates.set(frame,{gate:gate,onLoad:onLoad});
+ frame.addEventListener('load',onLoad);
 }
 function cleanup(root){
  if(!root||root.nodeType!==1||root.isConnected)return;
  var loopSet=loopGates.get(root);
  if(loopSet&&loopSet.size)Array.from(loopSet).forEach(function(state){if(state.destroy)state.destroy();});
- var frameGate=frameGates.get(root);if(frameGate){frameGate.destroy();frameGates.delete(root);framed.delete(root);}
+ disconnectFrame(root);
  var state=cssMap.get(root);if(state){if(cssIO)cssIO.unobserve(root);root.classList.remove('tw-motion-paused');cssNodes.delete(state);cssMap.delete(root);}
  if(root.querySelectorAll){var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)cleanup(all[i]);}
 }
@@ -105,7 +113,7 @@ function refreshAll(){
 }
 var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
  records.forEach(function(rec){
-  if(rec.type==='attributes'){inspectCss(rec.target);if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'&&!frameGates.has(rec.target))connectFrame(rec.target);}
+  if(rec.type==='attributes'){inspectCss(rec.target);if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}}
   else{
    for(var i=0;i<rec.removedNodes.length;i++)cleanup(rec.removedNodes[i]);
    for(var j=0;j<rec.addedNodes.length;j++)scan(rec.addedNodes[j]);

@@ -11,6 +11,11 @@ const loungeStart=html.indexOf('function krLoungeSoloPermitido(){');
 const loungeEnd=html.indexOf('var krLoungeSocialA=null',loungeStart);
 assert(loungeStart>=0&&loungeEnd>loungeStart,'Karaoke solo lounge state machine exists');
 const loungeSource=html.slice(loungeStart,loungeEnd);
+assert(loungeSource.includes('function krLoungeAvancarAtores(dt,returnAll)'),'lounge movement advances through a shared route state machine');
+assert(loungeSource.includes('krLoungeAvancarAtores(dt,true)'),'show and return states route walkers home');
+assert(!loungeSource.includes('idol.x=seat[0]'),'blocked show states no longer teleport NPCs to sofa coordinates');
+assert(html.includes('function krDemoBotEnd(){if(window.krLoungeAutoMicController)window.krLoungeAutoMicController.finishSinger();}'),'NPC end-of-show starts a return route');
+assert(html.includes('!krMeuRetornoAt&&!krMeuVoltandoAoMic&&!krMoveQueue.length&&krEuNoMicrofone()'),'queued NPC turns wait until the player returns to the microphone');
 
 const math=Object.create(Math);
 math.random=()=>0;

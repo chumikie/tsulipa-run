@@ -2630,7 +2630,9 @@ function krLoungeUpdate(dt){
   var alternatives=stops.filter(function(x){return Math.abs(x-chosen.x)>=90;});
   if(alternatives.length)stopX=alternatives[Math.floor(Math.random()*alternatives.length)];
  }
- var lane=KR_LOUNGE_LANES[krLoungeActors.length]||KR_LOUNGE_AISLE_Y;
+ var usedLanes=krLoungeActors.map(function(actor){return actor._ktLounge&&actor._ktLounge.laneY;});
+ var freeLanes=KR_LOUNGE_LANES.filter(function(y){return usedLanes.indexOf(y)<0;});if(!freeLanes.length){krLoungeNextAt=krT+90;return;}
+ var lane=freeLanes[0];
  krLoungeCriarPasseio(chosen,stopX,lane);
  chosen._ktLoungeWalking=true;krLoungeActors.push(chosen);
  krLoungeNextAt=krT+45;

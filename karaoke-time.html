@@ -2550,6 +2550,7 @@ window.ktOnline=(function(){
   a.iniciar(resume,!!wantsTicket).then(function(r){
    if(wantsTicket&&resume&&r&&r.reason==='limit'){
     if(guardado()===resume)guardar(null);
+    try{var parent=window.parent;if(parent&&parent.ktTickets&&parent.ktTickets.completeRun)parent.ktTickets.completeRun(resume);}catch(e){}
     return a.iniciar(null,true);
    }
    return r;

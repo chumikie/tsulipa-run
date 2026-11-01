@@ -15,11 +15,12 @@ const loungeSource=html.slice(loungeStart,loungeEnd);
 const math=Object.create(Math);
 math.random=()=>0;
 const bots=Array.from({length:8},(_,i)=>({
-  nick:'Idol '+i,x:[160,232,332,432,532,632,732,800][i],y:470,
+  nick:'Idol '+i,x:[160,232,332,432,532,632,732,800][i],y:[400,470,470,470,470,470,470,400][i],
   no_mic:false,itemSala:'',snackSala:'',danca:'',_ktSocialUntil:0
 }));
 const env={
   Math:math,
+  window:{ktShowAdmissionPending:false},
   krT:0,
   krBots:bots,
   krHomolAtivo:false,
@@ -58,9 +59,10 @@ env.krT+=1;env.krLoungeUpdate(8);
 assert(Math.hypot(walker.x-startX,walker.y-startY)>0,'the single route advances by delta time');
 env.krT+=500;env.krLoungeUpdate(1);
 assert(env.krLoungeActors.length<=1,'the lounge never overlaps autonomous walkers');
-env.krEuNoMicrofone=()=>false;env.krT+=1;env.krLoungeUpdate(1);
-assert.equal(env.krLoungeActors.length,0,'autonomous walking pauses while the player is away from the microphone');
-assert(env.krBots.every((b,i)=>b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1]),'the audience remains seated while the player moves through the room');
+env.krEuNoMicrofone=()=>false;
+for(let i=0;i<12&&env.krLoungeActors.length;i++){env.krT+=1;env.krLoungeUpdate(60);}
+assert.equal(env.krLoungeActors.length,0,'walkers finish their return routes while the player is away from the microphone');
+assert(env.krBots.every((b,i)=>Math.abs(b.x-env.KR_SOFA_SLOTS[i][0])<1.3&&Math.abs(b.y-env.KR_SOFA_SLOTS[i][1])<1.3),'the audience walks back and settles into its original seats');
 env.krEuNoMicrofone=()=>true;env.krLoungeReset();
 for(const time of [env.krT+300,env.krT+345,env.krT+390]){env.krT=time;env.krLoungeUpdate(1);}
 assert.equal(env.krLoungeActors.length,1,'the lounge resumes one safe walker after the player returns to the microphone');
@@ -71,9 +73,9 @@ assert.equal(env.krLoungeActors.indexOf(singer),-1,'a singer takes priority over
 
 // Homologation remains isolated: autonomous movement is cleared and cannot restart.
 env.krHomolAtivo=true;
-env.krT+=1000;env.krLoungeUpdate(1);
-assert.equal(env.krLoungeActors.length,0,'homologation clears autonomous walkers');
-assert(env.krBots.every(b=>!b._ktLoungeWalking),'homologation releases every walker state');
+for(let i=0;i<12&&env.krLoungeActors.length;i++){env.krT+=1;env.krLoungeUpdate(60);}
+assert.equal(env.krLoungeActors.length,0,'homologation finishes existing return routes');
+assert(env.krBots.every(b=>!b._ktLoungeWalking),'homologation releases every walker after reaching a sofa');
 env.krHomolAtivo=false;env.krEu.no_mic=true;env.kt.active=()=>true;env.krDemoCantor=null;env.krLoungeActors.length=0;
 env.krLoungeUpdate(1);
 assert(env.krBots.every((b,i)=>b.no_mic||(b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1])),'every non-singer returns to their sofa during a presentation');
@@ -119,9 +121,10 @@ assert(html.includes('if(krMeuRetornoAt>0&&krT>=krMeuRetornoAt&&!krEu.no_mic)krP
 assert(html.includes('if(krMeuVoltandoAoMic&&!krMoveQueue.length&&Math.hypot(krEu.x-KR_MIC_HOME_X,krEu.y-KR_MIC_HOME_Y)<=3'),'return state clears only after arrival at the microphone');
 assert(html.includes('if(!krEu.plateia&&krEuNoMicrofone())ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y);'),'microphone pedestal stays fixed at the stage while the Idol walks away');
 assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}'),'autonomous lounge remains gated out of homologation');
-assert(autoMic.includes('function create(deps)')&&autoMic.includes('return function tick()')&&html.includes('window.krLoungeAutoMicTick=window.KaraokeRoomAutoMic.create({'),'the page binds the isolated autonomous mic controller to its local room state');
-assert(autoMic.includes('s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic'),'injected NPC mic state protects the player mandatory return/turn window');
-assert(autoMic.includes('deps.startPractice(); // Local NPC practice'),'NPC mic uses the injected local practice action and cannot consume the player attempt');
+assert(autoMic.includes('function create(deps)')&&autoMic.includes('function beginSinger(bot,automatic)')&&html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({'),'the page binds the route controller to its local room state');
+assert(autoMic.includes('s.admissionPending||s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic'),'NPC waits through admission, mandatory return and the player turn');
+assert(html.includes('window.ktShowAdmissionPending=true')&&html.includes('window.ktShowAdmissionPending=false'),'player admission remains pending until confirm, cancel or failed gate');
+assert(autoMic.includes('singer.phase=\'approach\'')&&autoMic.includes('singer.phase=\'return\'')&&autoMic.includes('deps.startPractice();'),'NPC walks to the mic and returns to the sofa before the next turn');
 assert(polaroid.includes('function open(person,index,opener){')&&polaroid.includes('deps.makeCharacter(person,index)'),'wall Polaroids receive a character constructed by the page');
 assert(polaroid.includes('deps.drawIdol(ctx,char,260,405,5.8')&&polaroid.includes('deps.getTime()'),'the enlarged portrait uses the injected existing avatar renderer and room clock');
 assert(polaroid.includes('posterDialog.showModal()'),'the enlarged portrait is presented in an accessible dialog');

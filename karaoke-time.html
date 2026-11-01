@@ -2625,10 +2625,10 @@ var counts={};catalog.forEach(function(p){counts[p.nick]=(counts[p.nick]||0)+1;}
 $('ktDailyProfile').onchange=function(){if(kt.active())return;if(!catalog.some(function(p){return p.id===$('ktDailyProfile').value;}))return;selfId=$('ktDailyProfile').value;write(ownerKey,selfId);apply();};$('ktDailyDate').onchange=function(){if(!kt.active())setDate(this.value);};$('ktDailyNext').onclick=function(){if(!kt.active())setDate(KaraokeDaily.nextDay(day(),1));};$('ktDailyToday').onclick=function(){if(kt.active())return;overrideDay='';apply();};
 $('ktDailySource').textContent=catalog.length+' visuais e apelidos públicos salvos em '+snapshot.snapshotDate.split('-').reverse().join('/')+'. Escolha seu perfil abaixo apenas para testar este arquivo offline.';
 var ktDailyTimer=0,ktDailyGate=null;
-function ktDailyTimerStart(){if(!ktDailyTimer)ktDailyTimer=setInterval(check,30000);}
+function ktDailyTimerStart(){if(!ktDailyTimer){check();ktDailyTimer=setInterval(check,30000);}}
 function ktDailyTimerStop(){if(ktDailyTimer){clearInterval(ktDailyTimer);ktDailyTimer=0;}}
-if(window.TWMotionLifecycle&&document.documentElement)ktDailyGate=TWMotionLifecycle.watchLoop(document.documentElement,null,ktDailyTimerStart,ktDailyTimerStop);
-else{document.addEventListener('visibilitychange',function(){if(document.hidden)ktDailyTimerStop();else{check();ktDailyTimerStart();}});window.addEventListener('pagehide',ktDailyTimerStop);window.addEventListener('pageshow',function(){check();ktDailyTimerStart();});ktDailyTimerStart();}
+if(window.TWMotionLifecycle&&$('ktPopup'))ktDailyGate=TWMotionLifecycle.watchLoop($('ktPopup'),function(){return !!$('ktPopup').open;},ktDailyTimerStart,ktDailyTimerStop);
+else{document.addEventListener('visibilitychange',function(){if(document.hidden||!$('ktPopup').open)ktDailyTimerStop();else ktDailyTimerStart();});window.addEventListener('pagehide',ktDailyTimerStop);window.addEventListener('pageshow',function(){if($('ktPopup').open)ktDailyTimerStart();});if($('ktPopup').open)ktDailyTimerStart();}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});
 return {context:function(){var p=owner();return {id:selfId,nick:p.nick,avatar:p.avatar,day:day(),simulated:!!overrideDay};},init:apply,live:live,currentId:function(){return selfId;},posters:posters,check:check,lock:lock,beforeStart:function(){check();lock(true);},afterEnd:function(){lock(false);},snapshot:function(){return active?{day:active.day,viewerId:selfId,ids:active.members.map(function(p){return p.id;}),names:active.members.map(function(p){return p.nick;})}:null;}};
 })();
@@ -2641,7 +2641,7 @@ krWeeklyPosterCast=function(){return ktDaily.posters();};
    Sem conta, ou com o arquivo aberto sozinho, tudo continua só neste aparelho. */
 window.ktOnline=(function(){
  var KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false,activeOwner='';
- function sessionKey(a){try{return a&&typeof a.sessionKey==='function'?String(a.sessionKey()||''):'';}catch(e){return '';}}
+ function sessionKey(a){try{if(a&&typeof a.sessionKey==='function')return String(a.sessionKey()||'');return a&&a.ativo()?'legacy-session':'';}catch(e){return '';}}
  function api(){try{
   if(!document.documentElement.classList.contains('kt-no-site'))return null;
   var a=window.parent&&window.parent.twKaraokeOnline;

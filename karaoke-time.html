@@ -265,8 +265,7 @@ function nextDay(day,delta){return new Date((dayNumber(day)+delta)*86400000).toI
 function cleanAvatar(avatar){var source=avatar&&avatar.c;if(!source||typeof source!=='object'||Array.isArray(source))return null;var c={};['hair','hair2','skin','eye','outcol','img'].forEach(function(k){if(typeof source[k]==='string'&&/^#(?:[a-f\d]{3}|[a-f\d]{6}|[a-f\d]{8})$/i.test(source[k]))c[k]=source[k];});['back','front','det','out','hat','gl'].forEach(function(k){if(typeof source[k]==='string'&&/^[a-z\d_-]{0,32}$/i.test(source[k]))c[k]=source[k];});c.streak=source.streak===true;if(!c.hair||!c.skin)return null;return {a:typeof avatar.a==='string'&&/^[a-z\d_-]{0,32}$/i.test(avatar.a)?avatar.a:'',visual:typeof avatar.visual==='string'&&/^[a-z\d_-]{0,32}$/i.test(avatar.visual)?avatar.visual:'',c:c,pose:['v','mic','luz','banzai','neon','seis','nyan','giro','pulo'].indexOf(avatar.pose)>=0?avatar.pose:'v',expr:Number.isInteger(avatar.expr)&&avatar.expr>=0&&avatar.expr<=6?avatar.expr:2};}
 function normalize(rows){var byId=new Map();(Array.isArray(rows)?rows:[]).forEach(function(p){if(!p||p.blocked||p.bloqueado||typeof p.id!=='string'||!/^[a-z\d_-]{1,128}$/i.test(p.id))return;var nick=typeof p.nick==='string'?p.nick.trim().slice(0,48):'',avatar=cleanAvatar(p.avatar);if(!nick||!avatar)return;var item={id:p.id,nick:nick,avatar:avatar,source:p.source==='npc'?'npc':'public'},old=byId.get(item.id);if(!old||JSON.stringify(item)<JSON.stringify(old))byId.set(item.id,item);});return Array.from(byId.values()).sort(function(a,b){return a.id<b.id?-1:a.id>b.id?1:0;});}
 function ordered(rows,seed){return rows.slice().sort(function(a,b){var d=hash(seed+'|'+a.id)-hash(seed+'|'+b.id);return d||(a.id<b.id?-1:a.id>b.id?1:0);});}
-/* Plateia ÚNICA do dia para todo mundo: o sorteio não depende de quem abre a sala. Quem foi sorteado
-   não se vê no sofá (está no palco): no lugar dele entra a próxima conta da mesma fila do dia. */
+/* One daily audience roster is shared across players. */
 function select(rows,selfId,day,fallbacks){if(typeof selfId!=='string'||!selfId)throw Error('Identidade do jogador ausente');var nday=dayNumber(day),pool=ordered(normalize(rows),'kt-cast-v2'),n=pool.length,stride=Math.max(1,Math.floor(n/2));while(n>1&&gcd(stride,n)!==1)stride++;var start=n?mod(mod(nday,n)*stride,n):0,members=[];
 for(var i=0;i<n&&members.length<KD_LUGARES;i++){var p=pool[(start+i)%n];if(p.id!==selfId)members.push(p);}
 var used=new Set(members.map(function(p){return p.id;}));ordered(normalize(fallbacks).filter(function(p){return p.id!==selfId&&!used.has(p.id);}),day+'|fallback').forEach(function(p){if(members.length<KD_LUGARES){members.push(p);used.add(p.id);}});
@@ -1036,8 +1035,7 @@ function mod(n,d){return (n%d+d)%d;}
 function make(day,members,selfId){var n=KaraokeDaily.dayNumber(day),concept=concepts.slice().sort(function(a,b){return hash('concept-v1|'+a.name)-hash('concept-v1|'+b.name);})[mod(n+3,concepts.length)],formation=formations.slice().sort(function(a,b){return hash('formation-v1|'+a.name)-hash('formation-v1|'+b.name);})[mod(n+1,formations.length)],seen=new Set(),pool=members.filter(function(p){if(p.id===selfId||seen.has(p.id))return false;seen.add(p.id);return true;}).sort(function(a,b){return hash('clip|'+day+'|'+a.id)-hash('clip|'+day+'|'+b.id)||(a.id<b.id?-1:1);});return {version:1,day:day,concept:concept,formation:formation,members:pool.slice(0,6),lead:hash(day+'|lead')%Math.max(1,Math.min(6,pool.length)),direction:hash(day+'|camera')%2,tempo:hash(day+'|tempo')%3};}
 return {make:make,concepts:concepts,formations:formations};
 })();
-/* Legenda do clipe, como letra de karaokê: a frase do conceito passa nos 5 idiomas (começa pelo do site),
-   cada linha "cantada" da esquerda para a direita. O ​ evita que a camada de tradução troque a linha. */
+/* Clip captions rotate through the five supported languages. */
 /* Letra do clipe: 4 versos por conceito; a cada verso o idioma muda (PT, EN, ES, TH, JA), começando pelo do site */
 function ktLegenda(x,c,w,h){var li=['pt','en','es','th','ja'].indexOf(typeof LANG==='string'?LANG:'pt');if(li<0)li=0;
  var DUR=3400,ag=performance.now(),n=Math.floor(ag/DUR),f=(ag%DUR)/DUR,V=c.letra||[c.tags||[c.tag]],vs=V[n%V.length],txt='​♪ '+(vs[(li+n)%vs.length]||vs[0])+' ♪',prog=Math.min(1,Math.max(0,(f-.08)/.72)),fade=Math.min(1,f/.08,(1-f)/.08);
@@ -1359,13 +1357,9 @@ var songs={
   mel:[81,-1,-1,79,76,-1,79,-1, 76,-1,74,-1,72,-1,-1,-1, 77,-1,76,74,72,-1,74,-1, 76,-1,-1,72,71,-1,72,-1,
        81,-1,84,-1,81,79,-1,-1, 79,-1,76,-1,74,-1,-1,-1, 77,-1,81,79,77,-1,76,-1, 74,-1,72,-1,71,-1,72,-1]}
 };
-/* Cada musica e uma melodia de verdade em colcheias (-1 = pausa). A pista de cada nota sai da altura:
-   as mais graves vao para D e as mais agudas para K (as 4 pistas recebem partes parecidas),
-   entao o ouvido ajuda a achar a pista. */
+/* Each song has a melodic note map; -1 marks rests. */
 Object.keys(songs).forEach(function(k){var c=songs[k],cnt={},tot=0;c.mel.forEach(function(m){if(m>=0){cnt[m]=(cnt[m]||0)+1;tot++;}});var acc=0;c.lanes={};Object.keys(cnt).map(Number).sort(function(a,b){return a-b;}).forEach(function(m){c.lanes[m]=Math.min(3,Math.floor((acc+cnt[m]/2)*4/tot));acc+=cnt[m];});});
-/* Mapa deterministico: pausas da melodia nunca viram notas, mesmo em tempos fortes.
-   A primeira frase e leve; a densidade sobe ate o refrao (volta >= 2).
-   idx guarda o passo musical, inclusive quando ha duas notas no mesmo instante. */
+/* Deterministic note map keeps rests, including on strong beats. */
 function makeNoteMap(song,total,step,start){var notes=[],heard=0,lastLane=-1,streak=0,lastPitch=-1;
  for(var i=0;i<total;i++){var pitch=song.mel[i%song.mel.length];if(pitch<0)continue;
   var volta=Math.floor(i/song.mel.length),progress=i/total;
@@ -2130,9 +2124,7 @@ function krPlanearRetornoMicrofone(){
  var first=krMoveQueue.shift();krEu.tx=first.x;krEu.ty=first.y;krMeuRetornoAt=0;krMeuVoltandoAoMic=true;return true;
 }function krEstaNoSofa(j){return KR_SOFA_SLOTS.some(function(sl){return Math.abs(j.x-sl[0])<38&&Math.abs(j.y-sl[1])<35;});}
 
-/* ===== Sala do Karaoke Time: sofás fofos, almofadas e decoração idol =====
-   Tudo em canvas, no mesmo estilo da janela, do telão e dos personagens:
-   degradê suave, contorno escuro (#2b1b4c) e um brilho. Nada de contorno branco. */
+/* Karaoke room sofas, cushions and idol-style decoration. */
 var KT_OL='rgba(28,14,58,.14)',KT_INK='#33245a';
 function ktRR(x,X,Y,W,H,R){x.beginPath();if(x.roundRect)x.roundRect(X,Y,W,H,R);else x.rect(X,Y,W,H);}
 function ktEsc(c,f){var m=/^#([0-9a-f]{6})$/i.exec(String(c||''));if(!m)return '#5e3d9c';var n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255;
@@ -2501,8 +2493,7 @@ function ktPufe2(x,X,Y,c){
 }
 function ktUrsinho2(x,X,Y,c){x.save();x.translate(X,Y);x.scale(1.15,1.15);ktUrsinho(x,0,0,c);x.restore();}
 
-/* Placar da semana no lugar do cardápio de bebidas e da estante de acessórios (não há mais loja).
-   Mostra o top 3 do ranking local da semana; durante o show, os pontos ao vivo. */
+/* Weekly top-three board replaces the removed room shop. */
 var ktPlacarCache={t:-1e9,b:null};
 var ktPlacarModos=[['score','Maiores pontuações','⭐'],['accuracy','Melhores acertos','💖'],['combo','Maiores combos','✨']];
 function ktPlacarDadosSemana(){var now=performance.now();if(now-ktPlacarCache.t>2000){ktPlacarCache.t=now;try{ktPlacarCache.b=window.ktBoardsAgora?window.ktBoardsAgora():null;}catch(e){ktPlacarCache.b=null;}}return ktPlacarCache.b;}
@@ -2944,8 +2935,7 @@ try{var parsed=JSON.parse(read(cacheKey)||'[]');if(Array.isArray(parsed))cache=p
 selfId=read(ownerKey)||'';if(!catalog.some(function(p){return p.id===selfId;}))selfId=(catalog.find(function(p){return p.nick.toLowerCase()==='tsu';})||catalog[0]||{}).id||'offline-visitor';
 (function(){var n=siteNick().toLowerCase();if(!n)return;var eu=catalog.find(function(p){return p.nick.toLowerCase()===n;});selfId=eu?eu.id:idDe(n);})();
 function day(){return overrideDay||KaraokeDaily.dateKey();}
-/* Dentro do TsuLiPa⭐World a plateia vem das contas do site (todas entram no sorteio, inclusive as novas).
-   A foto de 30/10 guardada no arquivo só vale quando ele é aberto sozinho. */
+/* In-site audience uses public avatars, with a local fallback. */
 var liveOn=false;
 function idDe(n){var h=5381;n=String(n).toLowerCase();for(var i=0;i<n.length;i++)h=((h*33)^n.charCodeAt(i))>>>0;return 'site-'+h.toString(36);}
 function live(list){var perfis=(Array.isArray(list)?list:[]).filter(function(p){return p&&p.nick&&p.avatar&&p.avatar.c;}).map(function(p){return {id:idDe(p.nick),nick:String(p.nick).slice(0,24),avatar:p.avatar};}),norm=KaraokeDaily.normalize(perfis);if(!norm.length)return;catalog=norm;liveOn=true;var n=siteNick().toLowerCase(),eu=catalog.find(function(p){return p.nick.toLowerCase()===n;});selfId=eu?eu.id:idDe(n);if(!kt.active())apply();}
@@ -2979,9 +2969,7 @@ ktDaily.init();
 (function(){try{if(!document.documentElement.classList.contains('kt-no-site'))return;var a=window.parent&&window.parent.twKaraokeOnline;if(!a||!a.plateia)return;a.plateia().then(function(l){ktDaily.live(l);}).catch(function(){});}catch(e){}})();
 
 krWeeklyPosterCast=function(){return ktDaily.posters();};
-/* Ranking online do Karaoke⭐Time!: dentro do TsuLiPa⭐World e com conta, cada show passa pelo
-   servidor (5 por dia, resultado conferido) e os três quadros da semana vêm de lá.
-   Sem conta, ou com o arquivo aberto sozinho, tudo continua só neste aparelho. */
+/* Ranking uses server-confirmed shows and weekly boards. */
 window.ktOnline=(function(){
  var KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false,activeOwner='';
  function sessionKey(a){try{if(a&&typeof a.sessionKey==='function')return String(a.sessionKey()||'');return a&&a.ativo()?'legacy-session':'';}catch(e){return '';}}
@@ -3062,8 +3050,7 @@ return {begin:begin,checkpoint:checkpoint,complete:complete,refresh:refresh,cont
 })();
 ktMeta.refresh();
 /* Interações cenográficas: resposta local, sem visita, mensagem ou presença online. */
-/* Faixa da plateia: como a dos Idols da página principal (desliza sozinha), com fundo de sala de karaokê.
-   Tocar num Idol: pulão com coraçõezinhos rosa aqui e a mesma reação na sala. */
+/* Audience strip mirrors the main-page Idol strip. */
 var ktDecor=(function(){
 var lastTouch={eu:-10000},lastClip='';
 function refresh(){

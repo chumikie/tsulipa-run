@@ -55,6 +55,12 @@ assert(calls.some(c=>c[0]==='createRadialGradient'),'estrela mantém sombreado o
  const soraDraw=sora.slice(soraDrawStart,soraDrawEnd);
  assert(soraDraw.includes("if(hacc==='capitao') TWAvatarItems.capitao(g,x,y)"),'Sora Jump renders the Captain cap');
  assert(soraDraw.includes("if(A==='estrela') TWAvatarItems.estrela(g,x,y)"),'Sora Jump renders the Star hair clip');
+ const soraRestoreStart=sora.indexOf('function soraRestoreSavedLook(){');
+ const soraRestoreEnd=sora.indexOf('\n}',soraRestoreStart);
+ assert(soraRestoreStart>=0&&soraRestoreEnd>soraRestoreStart,'Sora Jump has a saved-look restoration path');
+ const soraRestore=sora.slice(soraRestoreStart,soraRestoreEnd);
+ assert(soraRestore.includes("getItem('brs48cr_acc')")&&soraRestore.includes('accSel=String(v)'),'Sora Jump restores the account saved accessory key');
+ assert(sora.includes('soraRestoreSavedLook();'),'Sora Jump applies the saved accessory before gameplay rendering');
  for(const key of ["hacc==='boina'","hacc==='presilhas'","hacc==='fones'","hacc==='coala'","A==='laco'","A==='hibisco'","A==='sakura'"])
   assert(soraDraw.includes(key),'Sora Jump preserves existing accessory '+key);
 

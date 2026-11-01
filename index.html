@@ -3115,7 +3115,7 @@ function twAnimacaoVisivel(el){
   return owner?owner===top:(!top&&twIndex2StageVisible);
 }
 function twIndex2BaseFramesPaused(){
-  if(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return true;
+  if(typeof window!=='undefined'&&window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return true;
   if(document.hidden||!twIndex2StageVisible)return true;
   return !!twOverlayTopo();
 }

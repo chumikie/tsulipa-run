@@ -3,7 +3,7 @@
 Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
 
-Última atualização: 01/11/2026 — HEAD com a correção da corrida: `03ec79d7426d9d2dbb63ffa92da7dfe4e37220b5` (CI run `41333644389` aprovado).
+Última atualização: 01/11/2026 — HEAD com a correção de visibilidade: `5931104637c019e19b3d893e02a1b2604eb68680` (CI run `41335191648` aprovado).
 
 ---
 
@@ -29,13 +29,16 @@ A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Sup
 
 ## 3. Falta corrigir / investigar
 
-- **Script `twAnimationVisibilityLifecycle` sem acesso às funções do jogo (aberto).** Desde `758b8c3` ("pausar animações fora da camada visível"), os scripts `tw-index2-ux-fixes` e `twAnimationVisibilityLifecycle`, no fim de `index.html`, chamam funções que ficam dentro do bloco `(function(){ … })()` principal (`twIntervaloVisivel`, `twIndex2BaseFramesPaused`, `twOverlayInvalidar`, `hubLoop`, `encDados`…). No navegador isso gera `ReferenceError` a cada mudança no DOM; a sincronização central de pausa/retomada dessas camadas não roda, e o atalho que atualiza o Idol do topo ao abrir a TV não é registrado. A produção (`main`) não tem esses erros. Os testes estáticos passam porque só conferem o texto do código.
+- **Cortes ondulados não são do jogo original.** Os cortes `onduladom`, `onduladom2` (bicolor) e `onduladof` foram criados em 01/11 na branch `feat/avatar-careca-capitao-estrela` e trazidos pela PR como "originais" — eram originais apenas daquela branch. Eles desenham uma franja própria e ignoram a franja escolhida. Os 7 cortes e as 5 franjas existentes no jogo continuam com desenho idêntico ao da `main` (comparação do `drawChar`). **Aguardando decisão do responsável** (manter, ajustar ou retirar).
+- **Chapéu de Capitão e estrela — pedidos do responsável:** chapéu com formato mais militar (cor aprovada); estrela um pouco maior, como presilha abaixo do cabelo, ao lado da franja (como hibisco e flor de cerejeira). Não implementado ainda.
+- **Karaoke pausa sozinho em tela de celular.** Numa janela 420×900, o show começa e fica em "Pausado" logo após confirmar; em janela alta (1280×1600) toca normalmente, e a produção toca nos dois casos. Suspeita: a regra nova que pausa o show quando palco/painel de ritmo saem da área visível. Confirmar em celular real antes de corrigir.
 - Custo da faixa de visitantes do Karaoke.
 - Apresentação dos rankings de Karaoke.
 - Revisão dos loops secundários que já desenham a cada dois frames, em aparelhos cujo `requestAnimationFrame` opera perto de 30 Hz.
 
 ### Corrigido nesta revisão
 
+- **Scripts de visibilidade fora do escopo do jogo** (`5931104`). Desde `758b8c3`, o ciclo `twAnimationVisibilityLifecycle` e o script `tw-index2-ux-fixes` chamavam funções internas do bloco principal e falhavam com `ReferenceError` a cada mudança do DOM; o hub e a faixa de Idols paravam e não voltavam, e a atualização periódica de cadeados/TV do hub não iniciava. O ciclo passou para dentro do escopo do jogo, controlando os ids reais de animação; o hub passou a contar como camada; menu, fim do show e pausa deixaram de congelar o próprio Center⭐Run!. Teste `tests/visibility-scope.test.js` no CI. Verificado no Chromium (local e prévia): página sem erros; hub pausa sob o login e volta; corrida pausa com a página oculta e volta; prévia do menu e comemoração do fim do show animadas.
 - **Corrida do Center⭐Run! em branco** (`03ec79d`). Desde `0457726`, o cache de `curPal()` calculava só 4 das 8 cores de cada paleta; `P2[4]` ficava indefinido, `draw()` falhava e a corrida não aparecia (reproduzido na prévia e localmente, produção normal; localizado por `git bisect`). Buffer fixo mantido com 8 posições + `tests/center-run-palette.test.js` no CI.
 
 ### Conferência visual — 01/11/2026 (prévia Netlify, navegador headless 420×900, sem login)
@@ -48,7 +51,7 @@ Look de teste salvo só no navegador local: Idol, chapéu de Capitão, estrela, 
 | Prévia do Idol no Center⭐Run! | Chapéu, estrela, `onduladom`, `onduladom2` (bicolor) e `onduladof` desenhados em 2D. |
 | Corrida / Fim do show | Após a correção, avatar com chapéu e estrela na tela de fim de show. |
 | Perfil completo (aba Montar) | Pendente: exige login Google. |
-| Karaoke solo | Pendente: sem login o palco usa a Tsu, não o Idol salvo; conferir no fluxo autenticado. |
+| Karaoke solo | Pendente: sem login o palco usa a Tsu, não o Idol salvo; conferir no fluxo autenticado. As capturas anteriores da sala pareciam "quebradas" por causa do recorte da captura (a produção sai igual com o mesmo método); a sala em si não está quebrada. |
 
 Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapéu nem a estrela — são novidades da PR.
 
@@ -73,7 +76,7 @@ ajustes-v213, ajustes-vitrine, chore/karaoke-estreia-08-11-2026, encontro-cena, 
 | feature/sora-karaoke-v2-2026-10-29 | O texto do Google já saiu do botão do Gacha ("🎰 Girar!"); diferença apenas cosmética. |
 | fix/karaoke-ticket-recovery | Reescrita na PR (`karaoke-tickets.js`, `karaoke-time.html`) com teste próprio. |
 | fix/center-run-credit-recovery | Reescrita na PR com teste próprio. |
-| feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados recuperados em `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar só depois da conferência visual da seção 2. |
+| feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados (criados nesta branch em 01/11, **não** existiam no jogo) trazidos para `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar só depois da conferência visual da seção 2. |
 | sem-online-historico | Botão "Não funcionou? Entrar de outro jeito" (`gisAntigo`, login Google por redirecionamento) já está na `main` e na PR; só muda a classe do botão de fechar. |
 | feat/backstage-admin-single-owner | Documentação e testes presentes; a diferença é um bloco Sora⭐Jump na proposta SQL do perfil admin → encaminhado ao Supabase (seção 7). |
 
@@ -104,7 +107,8 @@ Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` 
 
 - Workflow `Check TsuLiPa special games`, run `41330584112` no HEAD `47b1c8a`: **aprovado** (`static-validation`, `postgres-center-run`).
 - Run `41333644389` no HEAD `03ec79d`: **aprovado**.
-- Execução local em 01/11/2026 (Node 22): **32/32** testes Node do workflow aprovados. Suítes PostgreSQL rodam apenas no CI.
+- Run `41335191648` no HEAD `5931104`: **aprovado**.
+- Execução local em 01/11/2026 (Node 22): **33/33** testes Node do workflow aprovados. Suítes PostgreSQL rodam apenas no CI.
 
 ## 7. Supabase (responsabilidade do ChatGPT)
 
@@ -120,6 +124,9 @@ Projeto `fsggtvgbyhchblyazgmt`. Nada é executado a partir desta PR.
 
 ## 8. Checklist para aprovação final
 
+- [ ] Decisão sobre os 3 cortes ondulados.
+- [ ] Redesenho do chapéu (mais militar) e da estrela (presilha maior ao lado da franja).
+- [ ] Karaoke em tela de celular: show não pode pausar sozinho.
 - [ ] Conferência visual de cabelos, chapéu e estrela.
 - [ ] Karaoke e tickets em fluxo autenticado.
 - [ ] Teste em celulares reais.

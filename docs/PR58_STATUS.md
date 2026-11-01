@@ -3,7 +3,7 @@
 Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
 
-Última atualização: 01/11/2026 — HEAD de referência antes deste documento: `47b1c8aef9e7c6abd494b9131415599e803010fa`.
+Última atualização: 01/11/2026 — HEAD com a correção da corrida: `03ec79d7426d9d2dbb63ffa92da7dfe4e37220b5` (CI run `41333644389` aprovado).
 
 ---
 
@@ -29,9 +29,28 @@ A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Sup
 
 ## 3. Falta corrigir / investigar
 
+- **Script `twAnimationVisibilityLifecycle` sem acesso às funções do jogo (aberto).** Desde `758b8c3` ("pausar animações fora da camada visível"), os scripts `tw-index2-ux-fixes` e `twAnimationVisibilityLifecycle`, no fim de `index.html`, chamam funções que ficam dentro do bloco `(function(){ … })()` principal (`twIntervaloVisivel`, `twIndex2BaseFramesPaused`, `twOverlayInvalidar`, `hubLoop`, `encDados`…). No navegador isso gera `ReferenceError` a cada mudança no DOM; a sincronização central de pausa/retomada dessas camadas não roda, e o atalho que atualiza o Idol do topo ao abrir a TV não é registrado. A produção (`main`) não tem esses erros. Os testes estáticos passam porque só conferem o texto do código.
 - Custo da faixa de visitantes do Karaoke.
 - Apresentação dos rankings de Karaoke.
 - Revisão dos loops secundários que já desenham a cada dois frames, em aparelhos cujo `requestAnimationFrame` opera perto de 30 Hz.
+
+### Corrigido nesta revisão
+
+- **Corrida do Center⭐Run! em branco** (`03ec79d`). Desde `0457726`, o cache de `curPal()` calculava só 4 das 8 cores de cada paleta; `P2[4]` ficava indefinido, `draw()` falhava e a corrida não aparecia (reproduzido na prévia e localmente, produção normal; localizado por `git bisect`). Buffer fixo mantido com 8 posições + `tests/center-run-palette.test.js` no CI.
+
+### Conferência visual — 01/11/2026 (prévia Netlify, navegador headless 420×900, sem login)
+
+Look de teste salvo só no navegador local: Idol, chapéu de Capitão, estrela, cada um dos 3 cortes ondulados.
+
+| Tela | Resultado |
+|---|---|
+| Card "Meu Perfil" no hub | Chapéu, estrela e os 3 cortes aparecem. |
+| Prévia do Idol no Center⭐Run! | Chapéu, estrela, `onduladom`, `onduladom2` (bicolor) e `onduladof` desenhados em 2D. |
+| Corrida / Fim do show | Após a correção, avatar com chapéu e estrela na tela de fim de show. |
+| Perfil completo (aba Montar) | Pendente: exige login Google. |
+| Karaoke solo | Pendente: sem login o palco usa a Tsu, não o Idol salvo; conferir no fluxo autenticado. |
+
+Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapéu nem a estrela — são novidades da PR.
 
 ## 4. Branches avaliadas
 
@@ -84,7 +103,8 @@ Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` 
 ## 6. Testes e CI
 
 - Workflow `Check TsuLiPa special games`, run `41330584112` no HEAD `47b1c8a`: **aprovado** (`static-validation`, `postgres-center-run`).
-- Execução local em 01/11/2026 (Node 22): **31/31** testes Node do workflow aprovados. Suítes PostgreSQL rodam apenas no CI.
+- Run `41333644389` no HEAD `03ec79d`: **aprovado**.
+- Execução local em 01/11/2026 (Node 22): **32/32** testes Node do workflow aprovados. Suítes PostgreSQL rodam apenas no CI.
 
 ## 7. Supabase (responsabilidade do ChatGPT)
 

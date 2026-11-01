@@ -27,7 +27,7 @@ function domVisible(el){
  for(var n=el;n&&n.nodeType===1;n=n.parentElement){
   if(n.hidden)return false;
   var cs=w.getComputedStyle(n);
-  if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden'||parseFloat(cs.opacity)===0)return false;
+  if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden')return false; // opacity is intentionally not a visibility gate: fade-ins may begin at 0.
  }
  return rectVisible(el);
 }

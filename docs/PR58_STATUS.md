@@ -4,12 +4,13 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Último commit de código verificado:** `56c3182ac7811e9d75470f05f48fbce1b3fb0824` (01/11/2026, 17h09, Brasília).
-**Último HEAD de branch verificado antes deste commit documental:** `776bc06545962ddfde01e317e766e3deb4077ad3`. O último HEAD que contém alterações funcionais de jogo permanece `56c3182a`; os commits posteriores a ele são testes/workflow já aprovados e documentação/comentários SQL, sem alteração da função SQL de produção.
-**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Snapshot antes deste commit documental: 365 commits, 51 arquivos alterados, 5.158 adições e 987 remoções.
-**CI do último HEAD de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), com `static-validation` e `postgres-center-run` aprovados.
-**CI mais recente consultado:** execução [#41346253203](https://github.com/chumikie/tsulipa-run/actions/runs/41346253203), associada ao HEAD `18e1e71c` da branch, também com os dois jobs aprovados.
+**Último commit de código verificado:** `87b49d743d2548d0d9201966507d51343ab42492` — correção da ligação do slider de volume da prévia ao ganho isolado.
+**Último HEAD da branch:** `843ae49bf6e5af8b6b0f0065c31348512ccf2b1c` — commit de teste/documentação do markup compacto do volume; o código funcional mais recente está em `87b49d74`.
+**Estado da PR:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Snapshot consultado: 379 commits, 53 arquivos alterados, 5.448 adições e 995 remoções.
+**CI mais recente do HEAD atual:** execução [#41348797316](https://github.com/chumikie/tsulipa-run/actions/runs/41348797316), com `static-validation` e `postgres-center-run` aprovados.
+**Escopo desta retomada:** etapa 1 (player musical) implementada no código e aprovada no CI. A reprodução real em navegador com áudio e a homologação em celular ainda não foram executadas. As etapas seguintes permanecem pendentes na ordem combinada.
 
+---
 ---
 
 ## 1. Implementado no branch — presença confirmada no código
@@ -26,31 +27,30 @@ Esta seção confirma que a implementação está presente no código da PR. **N
 - Correção do cache de paleta do Center Run que podia deixar a corrida em branco.
 - Módulos de cabelo e acessórios: três cortes extras ondulados, três franjas extras, mecha que acompanha a franja, Marias presas, rabo em uma peça, arco-íris em mechas tingidas, quepe militar e presilha de estrela. O módulo compartilhado foi conectado também aos renderizadores próprios do Sora Jump (jogador e parceiros) e do Karaoke Day, preservando fallback legado no Karaoke Day.
 - Karaoke mobile: controles de som/pausa/timing reposicionados; correção da pausa indevida do show quando o palco sai da viewport; rolagem ao palco no início da apresentação.
-- Biblioteca compacta do Karaoke: abas Músicas/Vozes, três retratos reais do Tsu/Lirika/Pati, preservação dos áudios e recordes pessoais locais por música.
+- Biblioteca musical compacta do Karaoke: sete faixas, seleção separada da ação Ouvir, prévia procedural sem iniciar partida, player com play/pausa/parar/progresso/tempo e slider de volume ligado a um GainNode isolado. As vozes do trio e os recordes pessoais locais por música foram preservados; a apresentação das vozes ainda aguarda o redesenho da etapa 2.
 - Sala solo do Karaoke: até três figurantes em passeio simultâneo, cada um com faixa/destino próprios; conversas continuam limitadas ao par existente; homologação continua desativando a autonomia.
 - Movimento do jogador no piso do Karaoke: toque inicia rota no chão; retorno automático ao microfone após cinco segundos; tentativa/ticket não é consultado nem admitido enquanto o jogador está longe do microfone.
 
 ## 2. Testes automatizados — evidência no GitHub Actions
 
-**CI mais recente associado ao código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), para o HEAD de código `56c3182a`. Os dois jobs terminaram com sucesso:
+**CI mais recente do HEAD atual:** execução [#41348797316](https://github.com/chumikie/tsulipa-run/actions/runs/41348797316), associada ao HEAD `843ae49b`. Os dois jobs terminaram com sucesso:
 
-- `static-validation`: aprovado. Incluiu contratos de integração dos cabelos Sora/Karaoke Day, biblioteca compacta, recordes pessoais por música, movimento de três caminhantes e bloqueio do Karaoke fora do microfone, além das demais verificações do workflow.
-- `postgres-center-run`: aprovado. Executou as integrações de Center Run e tickets em um serviço PostgreSQL temporário do CI.
+- `static-validation`: aprovado. Incluiu validação do HTML/rotas e do orçamento de tamanho, teste de performance mobile da sala, novo teste do player musical, teste de sincronização das melodias, visibilidade do show, movimento e demais contratos do workflow.
+- `postgres-center-run`: aprovado. Executou as integrações de Center Run e tickets em um PostgreSQL temporário do GitHub Actions.
 
-**Execução posterior:** o commit documental `38948812` também disparou a execução [#41345515468](https://github.com/chumikie/tsulipa-run/actions/runs/41345515468), com ambos os jobs aprovados. O diff desse commit é apenas documental.
+**Evidências específicas da etapa 1 (player musical):**
 
-Limites desta evidência:
+- `tests/karaoke-music-preview.test.js`: verifica as sete composições originais, a chamada do mesmo gerador de beats do jogo com alvo de reprodução independente, botões separados Ouvir/Selecionar, presença do player, play/pausa/retomada/parada, slider ligado ao ganho isolado e bloqueio da prévia quando há uma partida ativa.
+- `tests/karaoke-melody-cues.test.js`: verifica que o relógio e os ataques da partida normal continuam sincronizados com o AudioContext após a extração do player.
+- `tests/karaoke-mobile-performance.test.js`: protege o limite de tamanho do HTML, os contratos de áudio e o ciclo de vida da página.
+- `tests/karaoke-show-visibility.test.js`: verifica a liberação da prévia quando a página é ocultada ou encerrada, preservando a pausa segura de uma partida ativa.
 
-- O CI confirma os comandos automatizados executados naquele commit; não confirma a aparência final do jogo.
-- Os testes de avatar exercitam contratos de integração e chamadas de desenho. Não substituem inspeção visual de todos os personagens, acessórios, tamanhos e prévias do editor.
-- O teste de três caminhantes e retorno ao microfone verifica lógica/estado e contratos; não comprova colisões, composição visual ou experiência de toque em celular.
-- O teste de recordes pessoais valida isolamento por conta, faixa e migração local; não comprova reprodução real de áudio nem sincronização entre dispositivos. O histórico permanece local.
-- O job PostgreSQL usa banco temporário do CI. Não representa acesso ou teste ao Supabase de produção.
-- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `56c3182a`.
-- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. É uma verificação de navegador relatada pelo autor do commit, não teste em celular físico.
-- A revisão visual headless 420×900 sem login, registrada anteriormente, foi parcial e não cobriu Perfil completo nem Karaoke autenticado.
+**Limites desta evidência:**
 
-**Nesta retomada não foram executados testes locais, inspeção visual nova em navegador nem testes em aparelhos físicos.** Não confundir o CI verde com homologação visual ou física.
+- O CI confirma os testes automatizados no ambiente Linux/Node e no PostgreSQL efêmero; não confirma saída audível, qualidade subjetiva, aparência ou interação real do player no navegador.
+- O teste do GainNode usa um mock; não substitui teste auditivo do slider em navegador.
+- O job PostgreSQL não acessa o Supabase de produção.
+- **Nesta retomada não foi feita inspeção visual nova em navegador, reprodução auditiva real nem homologação em celular físico.** Não registrar esses itens como concluídos.
 
 ## 3. Homologação, pendências e fila de retomada
 
@@ -65,28 +65,28 @@ Limites desta evidência:
 
 Status: **integração dos módulos e testes automatizados concluídos; investigação da ausência da base e homologação visual pendentes**.
 
-### 3.2. Experiência musical do Karaoke — implementação integrada; QA visual/áudio pendente
+### 3.2. Experiência musical do Karaoke — player implementado e CI aprovado; homologação de áudio/visual pendente
 
-Pedido do responsável: substituir a Vitrine sonora extensa por três controles compactos com as cabeças do Tsu, Lirika e Pati, preservando a reprodução das vozes; reorganizar as faixas em uma biblioteca compacta/selecionável como Novidades; mostrar a melhor nota pessoal por música, sem ranking compartilhado.
+Pedido do responsável: transformar a seção de músicas em um player utilizável sem jogar; separar ouvir de selecionar; preservar as sete composições; manter recordes pessoais por música. A aba de vozes deverá depois deixar de ser uma lista longa e usar personagens pequenos/animados que falem ao toque (etapa 2).
 
-**Código presente no HEAD de código `56c3182a`:**
+**Código presente no HEAD funcional `87b49d74`:**
 
-- A Vitrine sonora longa foi substituída por uma biblioteca compacta dentro do mesmo `ktAudioLibrary`, com abas **Músicas** e **Vozes**.
-- A aba Músicas apresenta as sete faixas existentes e o recorde pessoal de cada faixa. Selecionar uma faixa altera o seletor original `#ktSong`; não inicia show, não consome tentativa e não faz débito.
-- A aba Vozes apresenta três botões com os retratos reais do Tsu, Lirika e Pati, desenhados por `KaraokeAvatar.draw`. Tocar numa cabeça reproduz a primeira voz daquele personagem e abre as outras falas.
-- Os 15 MP3 do trio e o áudio especial do Encontro permanecem no repositório e continuam usando um único player, lazy load, respeito ao mute e limpeza ao terminar, ocultar a página ou sair.
-- `KaraokeShowRules` mantém `personalSongs[accountId][songKey]` no armazenamento local existente `kt_showcase_week_v1`. A melhor pontuação por faixa é separada por conta e música e persiste além da virada semanal. O ranking semanal compartilhado não recebe esses dados.
-- A migração do save v1 acrescenta `personalSongs` quando ausente, preservando ranking semanal antigo, tentativas e partidas pendentes. Não houve alteração de Supabase nem RPC para esses recordes.
-- O histórico pessoal fica **neste aparelho/neste armazenamento local**; não é sincronizado entre dispositivos nem publicado como ranking compartilhado.
-- Foi acrescentado `tests/karaoke-personal-song-records.test.js`, cobrindo isolamento por conta, recorde por faixa, persistência semanal, migração de save antigo e rejeição de resultado inválido. `tests/karaoke-mobile-performance.test.js` também protege a estrutura compacta, as três cabeças, os sete espaços de recorde e o contrato de reprodução existente.
+- A seção de músicas mantém as sete composições procedurais existentes: `normal`, `fast`, `chill`, `tema`, `corrida`, `gacha` e `duo`.
+- Cada faixa tem duas ações independentes: **Ouvir** inicia a prévia sem jogar; **Selecionar** altera o seletor original `#ktSong` para a próxima partida. Selecionar não inicia show nem consome tentativa/ticket.
+- A prévia reutiliza o sintetizador e o gerador de beats original do Karaoke, com alvo/relógio independentes. Não cria partida, não consulta quota/admissão, não credita estrelas/tickets e não escreve no ranking.
+- O player compartilhado oferece play/pausa/retomada, parar, progresso, tempo e slider de volume. O volume usa um `GainNode` exclusivo da prévia; a música ambiente, as vozes e o áudio de uma partida continuam no caminho original.
+- Há um único fluxo de prévia musical: troca de faixa, reprodução das vozes, mute, início de partida, ocultação/saída da página e encerramento liberam a prévia para evitar sobreposição ou áudio preso.
+- O player foi extraído para `karaoke-music-preview.js`; seus estilos ficam em `karaoke-time-base.css`, mantendo `karaoke-time.html` abaixo do limite de tamanho do validador.
+- O recorde pessoal por conta/faixa continua no armazenamento local existente `kt_showcase_week_v1`, separado do ranking semanal compartilhado e sem RPC/Supabase.
+- `tests/karaoke-music-preview.test.js`, `tests/karaoke-melody-cues.test.js` e `tests/karaoke-mobile-performance.test.js` passaram na execução #41348797316. Os dois jobs completos do CI passaram.
 
-**Histórico do protótipo do Claude:** `library.html`, `library.css` e `library.js` apareceram como arquivos criados no scratchpad local, mas não foram encontrados no GitHub. Não há confirmação de que o comando da sessão tenha terminado. A implementação equivalente foi concluída diretamente em `karaoke-time.html`; não afirmar que os arquivos temporários foram recuperados.
+**Sobre a aba de vozes:** a versão atual ainda tem três retratos/cabeças com grupos de falas em lista. Isso não atende integralmente ao novo pedido de usar personagens animados como botões, com pulinho e fala ao toque, substituindo a lista longa. Esse redesenho é a **etapa 2**, ainda pendente. Os MP3 existentes devem ser preservados.
 
-**CI de código:** execução [#41344644714](https://github.com/chumikie/tsulipa-run/actions/runs/41344644714), associada ao HEAD `d88d5b7a`, aprovou os testes de recordes pessoais e da biblioteca compacta. A execução posterior [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721) também passou com os testes posteriores integrados.
+**Histórico do protótipo do Claude:** `library.html`, `library.css` e `library.js` apareceram como arquivos criados no scratchpad local, mas não foram encontrados no GitHub. A implementação final foi escrita diretamente na página/módulo do repositório; não afirmar que os arquivos temporários foram recuperados.
 
-**Ainda pendente:** reprodução e navegação visual em navegador com áudio habilitado; conferir o recorte/tamanho das três cabeças no desktop e no celular; testar troca de música, iniciar show, completar partida e observar recorde atualizar; conferir persistência após recarregar e trocar de conta. CI não é prova de reprodução de áudio nem homologação visual/física.
+**Ainda pendente (etapa 5 — homologação):** abrir a prévia em navegador com áudio habilitado; ouvir cada uma das sete faixas até o fim; conferir pausa/retomada, slider de volume, troca entre Ouvir e Selecionar, mute e interrupção ao iniciar show; testar desktop e celular físico. A aprovação do CI não substitui essas verificações.
 
-Status: **implementação e testes automatizados integrados; homologação visual e de áudio pendente**.
+Status: **player e lógica de reprodução implementados; testes automatizados e CI aprovados; reprodução auditiva e homologação visual/física pendentes. Redesenho da aba Vozes é a etapa 2.**
 
 ### 3.3. Plateia autônoma e movimento do jogador — implementação integrada; homologação visual pendente
 
@@ -240,11 +240,13 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 
 ### Karaoke — experiência musical
 - [x] Substituir a Vitrine extensa por abas compactas de Músicas e Vozes, mantendo os 15 MP3 do trio e o áudio do Encontro.
-- [x] Criar três botões com cabeças reais e reprodução das vozes do Tsu, Lirika e Pati.
-- [x] Criar cartões das sete faixas e seleção pelo seletor existente.
-- [x] Implementar recorde pessoal por conta/faixa em armazenamento local, com migração compatível de saves v1 e sem ranking compartilhado.
-- [x] Proteger lógica e estrutura da biblioteca com testes automatizados no CI.
-- [ ] Homologar navegação, reprodução de áudio, pontuação e atualização dos recordes visualmente no navegador e em celular físico.
+- [x] Manter três retratos/cabeças existentes para os grupos de vozes; a transformação em bonequinhos animados que falam ao toque e a remoção da lista longa ficam pendentes na etapa 2.
+- [x] Criar cartões das sete faixas e separar Ouvir de Selecionar.
+- [x] Implementar player independente com play/pausa/retomada/parar, progresso, tempo e volume isolado.
+- [x] Preservar os recordes pessoais por conta/faixa em armazenamento local, sem ranking compartilhado.
+- [x] Testar sete composições, sincronização do gerador de beats, volume do GainNode e limpeza do player no CI.
+- [ ] Homologar reprodução audível, troca de faixas, pausa/retomada, volume, mute e início de partida em navegador.
+- [ ] Homologar visualmente a biblioteca e o player em desktop e celular físico.
 
 ### Karaoke — plateia e movimento
 - [x] Permitir até três figurantes caminhando simultaneamente, com lanes/destinos independentes e prioridade de cantor.
@@ -260,11 +262,12 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Revisar loops secundários e cadência em 30/60 Hz sem retirar animações ou detalhes.
 - [ ] Testar em celulares físicos; registrar aparelho, viewport, cenário e resultado.
 - [ ] Fazer homologação autenticada de Perfil, Karaoke, tickets e avatares.
-- [ ] Registrar separadamente teste estático/unitário, CI PostgreSQL isolado, verificação Chromium/headless e homologação física.
+- [x] Registrar separadamente teste estático/unitário e CI PostgreSQL isolado, sem confundir com homologação.
+- [ ] Registrar nova verificação Chromium/headless após as mudanças de UI.
+- [ ] Registrar homologação física em celular.
 
 ### Banco, CI e revisão final
-- [x] CI do HEAD de código `56c3182a` aprovado nos dois jobs reportados.
-- [x] Execução posterior de CI do commit documental `38948812` também aprovada nos dois jobs.
+- [x] CI do HEAD `843ae49b` aprovado na execução [#41348797316](https://github.com/chumikie/tsulipa-run/actions/runs/41348797316): `static-validation` e `postgres-center-run` passaram.
 - [ ] Fazer leitura autorizada do Supabase e conferir estado efetivo antes de qualquer proposta de mudança.
 - [ ] Decidir separadamente sobre o teto de 100 estrelas/dia; não aplicar sem autorização específica.
 - [ ] Revisar diff completo da PR, possíveis regressões, arquivos SQL, redirects, workflows e compatibilidade.

@@ -1677,7 +1677,11 @@ function soraOnlineBeginRun(){
     return _supabase.rpc('sora_run_start').then(function(result){
       if(result&&result.error)throw result.error;
       if(!result||typeof result.data!=='string')throw new Error('Resposta inválida ao iniciar partida.');
-      if(generation!==soraOnlineRunGeneration||userId!==soraOnlineUserId)return null;
+      if(userId!==soraOnlineUserId)return null;
+      if(generation!==soraOnlineRunGeneration){
+        _supabase.rpc('sora_run_abort',{p_run_id:result.data}).catch(function(){});
+        return null;
+      }
       soraOnlineRunId=result.data;
       return soraOnlineRunId;
     });
@@ -1718,14 +1722,12 @@ function soraOnlineFinishRun(score){
 }
 function soraOnlineAbortRun(){
   if(!SORA_ONLINE_RANKING_ENABLED||!soraOnlineRunStartPromise)return;
-  var owner=soraOnlineRunOwnerId,pending=soraOnlineRunStartPromise;
+  var owner=soraOnlineRunOwnerId,runId=soraOnlineRunId;
   soraOnlineRunGeneration++;
-  if(owner&&owner===soraOnlineUserId){
-    Promise.resolve(pending).then(function(runId){
-      if(!runId||owner!==soraOnlineUserId||!_supabase||typeof _supabase.rpc!=='function')return null;
-      return _supabase.rpc('sora_run_abort',{p_run_id:runId});
-    }).catch(function(error){console.info('Sora⭐Jump: encerramento da partida pendente.',error&&error.message||error);});
+  if(owner&&owner===soraOnlineUserId&&runId&&_supabase&&typeof _supabase.rpc==='function'){
+    _supabase.rpc('sora_run_abort',{p_run_id:runId}).catch(function(error){console.info('Sora⭐Jump: encerramento da partida pendente.',error&&error.message||error);});
   }
+  // Se a RPC de início ainda está em voo, seu callback vê a nova geração e aborta o ID recebido.
   soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;
 }
 soraOnlineInitAuth();

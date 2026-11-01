@@ -83,7 +83,7 @@ for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPrevie
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(moduleCode.includes('audioReady:true'),'independent preview marks its target ready for the shared beat renderer');
-assert(html.includes('KaraokeAvatar.draw(ctx,CH[index],44,82,1,'),'voice library renders full-body miniatures using the shared avatar renderer');
+assert(html.includes("out:'zipper',outcol:avatarColors[group]")&&html.includes('KaraokeAvatar.draw(ctx,cached.value,44,91,1.45,pose,expression,'),'voice library renders full-body zipper miniatures in each character color using the shared avatar renderer');
 assert(html.includes('<canvas class="kt-library-face" width="88" height="96"'),'voice miniatures have a full-body canvas');
 assert(!html.includes('data-kt-audio="encontro"'),'Encounter special audio button is absent from this library');
 assert(!html.includes("'encontro':1"),'Encounter audio is not exposed as a voice-library clip');

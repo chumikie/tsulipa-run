@@ -342,8 +342,8 @@ const rhythmTrackKeys=['normal','fast','chill','tema','corrida','gacha','duo'];
 assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-select="'+key+'"')),'The audio showcase should include all seven original rhythm-game themes');
 assert(audienceAudio.includes("selector.dispatchEvent(new Event('change',{bubbles:true}))")&&audienceAudio.includes("if(!selector||selector.disabled)"),'Choosing a rhythm theme from the showcase should update the existing song selector without starting or spending a show');
 
-const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5','encontro'];
-assert(availableVoiceFiles.every(id=>audienceAudio.includes("'"+id+"':1")),'All 15 existing voice clips remain available to the character buttons');
+const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5'];
+assert(availableVoiceFiles.every(id=>audienceAudio.includes("'"+id+"':1")),'All 15 character voice clips remain available; the Encounter clip is intentionally excluded');
 assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');
 assert(audienceAudio.includes("if(muted){if(status)status.textContent=tr('O som está desativado.")&&html.includes("if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}"),'Audio previews should respect the page-wide mute control and stop both standalone music and voice playback');
 assert(audienceAudio.includes("addEventListener('ended'")&&audienceAudio.includes("addEventListener('error'")&&audienceAudio.includes("addEventListener('visibilitychange'")&&audienceAudio.includes("addEventListener('pagehide'"),'The shared audio preview player must release audio on end, error, page hide and visibility loss');

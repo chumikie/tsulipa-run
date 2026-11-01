@@ -12,11 +12,11 @@ assert(resume && tick && keyhandler, 'Contagem, áudio e atalhos existem');
 
 const clock = {ms:2000}, note = {at:3000,done:false};
 const run = {start:0,paused:false,resumeUntil:0,pauseAt:0,audioStep:0,step:250,total:240,
-  notes:[note],auto:true,offsetMs:0,score:0,combo:0,hits:0,attempts:0};
-let audio=0,scheduled=0;
-const stage = {ktCalibration:{open:false}};
+  notes:[note],auto:true,audioReady:true,audioClock:true,offsetMs:0,score:0,combo:0,hits:0,attempts:0};
+let audio=0,scheduled=0,prepared=0;
+const stage = {ktCalibration:{open:false},ktPause:{disabled:false}};
 const ctx=vm.createContext({run,performance:{now:()=>clock.ms},kNow:()=>clock.ms,AC:null,
-  krDemoCantor:null,document:{hidden:false},$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
+  krDemoCantor:null,audioTimer:0,clearInterval:()=>{},document:{hidden:false},ktPrepararRelogioAudio:(target,delay,elapsed,done)=>{prepared++;target.audioReady=true;target.audioClock=true;done(true,0);},$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
   updateUI:()=>{},checkpoint:()=>{},lastCheckpoint:clock.ms,lastUI:clock.ms,KT_HIT_WINDOWS:{good:100},react:()=>{},
   end:()=>{throw Error('Não deve encerrar');}});
 vm.runInContext(resume[0]+'\n'+tick[0].replace(/\nfunction hit\($/,''),ctx);
@@ -31,7 +31,8 @@ assert.equal(run.paused,false,'retomada após os 3 segundos');
 assert.equal(run.start,4000,'relógio compensou toda a pausa');
 assert.equal(note.at,7000,'notas permanecem sincronizadas');
 assert.equal(audio,1);
-assert.equal(scheduled,1);
+assert.equal(scheduled,0,'o scheduler de áudio roda no seu próprio intervalo, não no tick visual');
+assert.equal(prepared,1,'retomada sincroniza o relógio de áudio antes de liberar o show');
 clock.ms=7000;ctx.pause(true);ctx.pause(false);ctx.pause(true);
 assert.equal(run.paused,true);
 assert.equal(run.resumeUntil,0,'P cancela a contagem em andamento');

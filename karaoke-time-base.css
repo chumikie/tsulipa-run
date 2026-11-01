@@ -243,3 +243,14 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
  .kt-library-special .kt-library-action{font-size:8.5px}
 }
 @media(prefers-reduced-motion:reduce){.kt-library-head,.kt-library-face{transition:none!important;animation:none!important}.kt-library-head.is-bouncing .kt-library-face{animation:none!important}}
+
+/* Miniaturas da vitrine: o mesmo salto e os mesmos brilhos usados pelos Idols do Karaoke. */
+.kt-library-head{position:relative;overflow:visible;border-color:var(--kt-avatar-color,rgba(123,63,240,.24))}
+.kt-library-head b{color:var(--kt-avatar-color,var(--ink))}
+.kt-library-head[aria-pressed="true"],.kt-library-head.is-speaking{border-color:var(--kt-avatar-color,var(--pink));box-shadow:0 0 0 2px rgba(255,111,181,.13)}
+.kt-library-head.is-speaking .kt-library-face{animation:ktVoiceSing .58s ease-in-out infinite}
+.kt-library-head.kt-reacting .kt-library-face{animation:kt-idol-jump .85s ease-out}
+.kt-library-head.kt-reacting::before{content:attr(data-kt-reaction);position:absolute;z-index:3;top:17%;right:9%;font-size:20px;line-height:1;text-shadow:0 0 10px rgba(255,255,255,.9),0 0 16px var(--kt-avatar-color,var(--pink));pointer-events:none;animation:kt-idol-hearts .85s ease-out forwards}
+.kt-library-head.kt-reacting::after{content:'♡ ✦ ♡';pointer-events:none;position:absolute;z-index:2;top:28%;left:0;right:0;text-align:center;font-size:21px;color:#ffc1e0;text-shadow:0 0 10px #cf88ee;animation:kt-idol-hearts .85s ease-out forwards}
+@keyframes ktVoiceSing{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.04,1.02)}}
+@media(prefers-reduced-motion:reduce){.kt-library-head .kt-library-face,.kt-library-head.kt-reacting::before,.kt-library-head.kt-reacting::after{animation:none!important}}

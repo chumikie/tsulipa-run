@@ -6379,7 +6379,9 @@ function contaEntrar(){
   if(!_supabase || !contaSiteOk()){ contaAviso(tr('O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.')); return; }
   _supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: location.origin + location.pathname } });
 }
+var contaSessaoToken=0;
 function contaSair(){
+  contaSessaoToken++;
   if(_supabase) _supabase.auth.signOut();
   contaJ = null; contaRun = null; perfGuardarCor(''); contaUI();
   if(window.ktTickets)window.ktTickets.reset();
@@ -6393,13 +6395,17 @@ function contaAviso(t){
 
 // ---------- Depois do login: carrega a conta, ou pede o nome e importa o save ----------
 function contaSessao(sess){
-  if(!sess){ if(contaJ){ contaJ = null; contaUI(); }if(window.ktTickets)window.ktTickets.reset();return; }
+  var token=++contaSessaoToken;
+  perfConf.hidden=true;
+  if(!sess){if(contaJ){contaJ=null;contaUI();perfSair();}if(window.ktTickets)window.ktTickets.reset();return;}
   contaRpc('jogador').then(function(j){
-    if(j) perfAntesDeEntrar(j);   // V2.1.3 (ele chama o contaAplicar)
-    else contaPedirNome();
-  }).catch(function(){ contaAviso(tr('Não deu para falar com o servidor. Tente de novo.')); });
+    if(token!==contaSessaoToken)return;
+    if(j)perfAntesDeEntrar(j,token);
+    else contaPedirNome(token);
+  }).catch(function(){if(token===contaSessaoToken)contaAviso(tr('Não deu para falar com o servidor. Tente de novo.'));});
 }
-function contaAplicar(j){
+function contaAplicar(j, token){
+  if(token!==undefined&&token!==contaSessaoToken)return;
   contaJ = j;
   starT = j.stars;
   if(j.best > best){ best = j.best; try{ localStorage.setItem('brs48cr_best', best); }catch(e){} }
@@ -6418,7 +6424,8 @@ contaOv.innerHTML = '<div class="panel"><h2 id="contaTit"></h2><p id="contaTxt" 
   '<input class="nick" id="contaNome" maxlength="12" autocomplete="off"><p id="contaErro" hidden style="color:var(--pink);font-weight:800;font-size:12px;margin:-4px 0 8px"></p>' +
   '<div class="btns"><button class="btn" id="contaOk"></button></div></div>';
 document.body.appendChild(contaOv);
-function contaPedirNome(){
+function contaPedirNome(token){
+  token=token===undefined?contaSessaoToken:token;
   $('contaTit').textContent = '✨ ' + tr('Escolha seu nome de Idol');
   $('contaTxt').textContent = tr('Ele aparece no ranking e não pode ser igual ao de outra pessoa.');
   $('contaOk').textContent = tr('CONFIRMAR');
@@ -6426,20 +6433,24 @@ function contaPedirNome(){
   contaOv.hidden = false; twTimeoutVisivel(contaOv,function(){return !contaOv.hidden;},function(){var input=$('contaNome');if(input)input.focus();},50);
 }
 $('contaOk').onclick = function(){
-  var v = $('contaNome').value.trim(), btn = this; btn.disabled = true;
+  var token=contaSessaoToken,v = $('contaNome').value.trim(), btn = this; btn.disabled = true;
   var erros = { em_uso:'Esse nome já está em uso.', tamanho:'Use de 2 a 12 caracteres.', caracteres:'Esse nome tem caracteres não permitidos.', reservado:'Esse nome é reservado.' };
   contaRpc('escolher_nome', { p_nick:v }).then(function(r){
+    if(token!==contaSessaoToken)return null;
     if(!r || !r.ok){ throw { msg: tr(erros[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.') }; }
     var save = null; try{ save = JSON.parse(localStorage.getItem('brs48cr_pet') || 'null'); }catch(e){}
     return contaRpc('importar_save', { p_stars: Math.floor(starT) || 0, p_best: Math.floor(best) || 0, p_save: save ? { pet: save } : null });
   }).then(function(imp){
+    if(token!==contaSessaoToken||!imp)return;
     return contaRpc('jogador').then(function(j){
+      if(token!==contaSessaoToken)return;
       contaOv.hidden = true; btn.disabled = false;
-      contaAplicar(j);
+      contaAplicar(j,token);
       contaAviso('☁️ ' + tr('Conta pronta!') + (imp && imp.importadas ? ' ★' + imp.importadas + ' ' + tr('estrelas importadas') : ''));
       if(sfx.rank) sfx.rank();
     });
   }).catch(function(err){
+    if(token!==contaSessaoToken)return;
     btn.disabled = false;
     var e = $('contaErro'); e.textContent = (err && err.msg) || tr('Não deu para falar com o servidor. Tente de novo.'); e.hidden = false;
     if(sfx.hit) sfx.hit();
@@ -7994,21 +8005,24 @@ function perfDecidir(n, nick){
   return (loc > +n.ms || pendente) ? 'enviar' : 'igual';
 }
 // Chamado pelo contaSessao antes de carregar a conta (assim, se a pessoa cancelar, nada deste aparelho muda)
-function perfAntesDeEntrar(j){
+function perfAntesDeEntrar(j, token){
+  token=token===undefined?contaSessaoToken:token;
   contaRpc('carregar_nuvem').then(function(n){
+    if(token!==contaSessaoToken)return;
     perfNuvemLidaMs=Math.max(0,Number(n&&n.ms)||0);
     var dec=perfDecidir(n,j.nick);
     if(dec === 'aplicar' && perfAplicarNuvem(n, j.nick)) return;
-    if(dec === 'perguntar'){ perfPerguntar(n, j); return; }
+    if(dec === 'perguntar'){ perfPerguntar(n,j,false,token); return; }
     perfNuvemPre = { n:n, dec:dec };
-    contaAplicar(j);
-  }).catch(function(){ contaAplicar(j); });
+    contaAplicar(j,token);
+  }).catch(function(){if(token===contaSessaoToken)contaAplicar(j,token);});
 }
 var perfConf = document.createElement('div');
 perfConf.className = 'ov perfov tw-window-overlay'; perfConf.id = 'perfConf'; perfConf.hidden = true; perfConf.style.zIndex = 22;
 perfConf.innerHTML = '<div class="panel perfp perfpres"><h2 id="perfConfTit"></h2><p id="perfConfTxt"></p><div class="btns"><button type="button" class="btn" id="perfConfSim"></button><button type="button" class="btn alt" id="perfConfLocal"></button></div><button type="button" class="sec" id="perfConfNao"></button></div>';
 document.body.appendChild(perfConf);
-function perfPerguntar(n,j,conflito){
+function perfPerguntar(n,j,conflito,token){
+  token=token===undefined?contaSessaoToken:token;
   $('perfConfTit').textContent='☁️ '+tr('Esta conta já tem um save na nuvem');
   $('perfConfTxt').textContent=tr('Existem alterações diferentes neste aparelho e na nuvem. Escolha qual save manter.');
   $('perfConfSim').textContent=tr('USAR O SAVE DA NUVEM');
@@ -8016,34 +8030,36 @@ function perfPerguntar(n,j,conflito){
   $('perfConfNao').textContent=tr(conflito?'Voltar sem substituir':'Cancelar e sair da conta');
   $('perfConfSim').disabled=false;$('perfConfLocal').disabled=false;
   $('perfConfSim').onclick=function(){
+    if(token!==contaSessaoToken){perfConf.hidden=true;return;}
     this.disabled=true;
     try{localStorage.removeItem('brs48cr_pet_guest_dirty');}catch(e){}
-    if(!perfAplicarNuvem(n,j.nick)){perfConf.hidden=true;if(!contaJ)contaAplicar(j);}
+    if(!perfAplicarNuvem(n,j.nick)){perfConf.hidden=true;if(!contaJ)contaAplicar(j,token);}
   };
   $('perfConfLocal').onclick=function(){
+    if(token!==contaSessaoToken){perfConf.hidden=true;return;}
     this.disabled=true;
     var ms=Math.max(0,Number(n&&n.ms)||0);
     perfNuvemLidaMs=ms;perfSync.clearFromCloud(ms,j.nick);perfSync.markDirty();
     try{localStorage.removeItem('brs48cr_pet_guest_dirty');}catch(e){}
     perfConf.hidden=true;
-    if(!contaJ){perfNuvemPre={n:n,dec:'enviar'};contaAplicar(j);}
+    if(!contaJ){perfNuvemPre={n:n,dec:'enviar'};contaAplicar(j,token);}
     else {perfSyncOn=true;perfEnviar();}
   };
-  $('perfConfNao').onclick=function(){perfConf.hidden=true;if(!conflito)contaSair();};
+  $('perfConfNao').onclick=function(){if(token!==contaSessaoToken){perfConf.hidden=true;return;}perfConf.hidden=true;if(!conflito)contaSair();};
   perfConf.hidden=false;
 }
 $('petSyncResolver').onclick=function(){
   if(!contaJ)return;
-  contaRpc('carregar_nuvem').then(function(n){perfPerguntar(n,contaJ,true);})
+  var token=contaSessaoToken,nick=contaJ.nick;contaRpc('carregar_nuvem').then(function(n){if(token===contaSessaoToken&&contaJ&&contaJ.nick===nick)perfPerguntar(n,contaJ,true,token);})
     .catch(function(){petSay(tr('Não deu para falar com o servidor. Tente de novo.'));});
 };
 function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por página)
   if(perfEntrou) return; perfEntrou = true;
   var avisou = null; try{ avisou = sessionStorage.getItem('tsl_nuvem_ok'); sessionStorage.removeItem('tsl_nuvem_ok'); }catch(e){}
   if(avisou) contaAviso('☁️ ' + tr('Seu save da nuvem foi carregado!'));
-  var pre = perfNuvemPre; perfNuvemPre = null;
-  (pre ? Promise.resolve(pre) : contaRpc('carregar_nuvem').then(function(n){ return { n:n, dec:perfDecidir(n, contaJ.nick) }; })).then(function(r){
-    if(!contaJ)return;
+  var dono=contaJ&&contaJ.nick,token=contaSessaoToken,pre=perfNuvemPre;perfNuvemPre=null;
+  (pre?Promise.resolve(pre):contaRpc('carregar_nuvem').then(function(n){return {n:n,dec:perfDecidir(n,dono)};})).then(function(r){
+    if(!contaJ||contaJ.nick!==dono||token!==contaSessaoToken)return;
     perfNuvemLidaMs=Math.max(perfNuvemLidaMs,Number(r.n&&r.n.ms)||0);
     if(r.dec === 'aplicar' && perfAplicarNuvem(r.n, contaJ.nick)) return;
     if(r.dec === 'perguntar'){ perfEntrou = false; perfPerguntar(r.n, contaJ); return; }
@@ -8053,7 +8069,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     perfAvatarAuto();
     perfPresente();
     if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
-  }).catch(function(){ perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI(); });
+  }).catch(function(){if(token!==contaSessaoToken||!contaJ||contaJ.nick!==dono)return;perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI();});
 }
 function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
 function perfAplicarNuvem(n, nick){
@@ -9348,10 +9364,12 @@ function twRankLoad(force){
 // Sem conta (ou fora do site), ele continua jogando só no aparelho.
 window.twKaraokeOnline={
  ativo:function(){return !!contaJ&&!!_supabase;},
- iniciar:function(resume,useTicket){var next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
+ sessionKey:function(){return contaJ?String(contaJ.nick||'').toLowerCase():'';},
+ iniciar:function(resume,useTicket){var owner=contaJ&&String(contaJ.nick||'').toLowerCase(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
+  var owner=contaJ&&String(contaJ.nick||'').toLowerCase();
   return contaRpc('kt_run_finish',{p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null})
-   .then(function(x){twRankRefreshAfterSora();return x;});
+   .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase())twRankRefreshAfterSora();return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  // Plateia do dia: contas do site com Idol montado (todas podem ser sorteadas, inclusive as novas).

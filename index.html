@@ -7212,6 +7212,33 @@ function perfDesenharPetEm(x, p, px, py, s, t){   // desenha um pet com o acess�
   try{drawPet(x,p.k==='meu'?(p.cfg||PET_MK_DEF):p.k,px,py,s,t||0,'feliz',p);}catch(e){}
 }
 
+// Texturas dos halos do avatar: a textura radial é estática; escala/pulsação continuam por quadro.
+var PERF_HALO_TEXTURE_CACHE = new Map();
+function perfHaloTextura(x, cx, cy, r, cor){
+  var raio = Math.max(1, Math.ceil(r)), id = String(cor) + '|' + raio, cv = PERF_HALO_TEXTURE_CACHE.get(id);
+  if(!PERF_HALO_TEXTURE_CACHE.has(id)){
+    cv = null;
+    try{
+      if(typeof document !== 'undefined' && document.createElement){
+        var tmp = document.createElement('canvas'), pad = 2, tam = raio * 2 + pad * 2;
+        tmp.width = tam; tmp.height = tam;
+        var ctx = tmp.getContext('2d');
+        if(ctx){
+          var grad = ctx.createRadialGradient(tam / 2, tam / 2, 2, tam / 2, tam / 2, raio);
+          grad.addColorStop(0, cor); grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad; ctx.fillRect(0, 0, tam, tam); cv = tmp;
+        }
+      }
+    }catch(e){ cv = null; }
+    if(PERF_HALO_TEXTURE_CACHE.size >= 24) PERF_HALO_TEXTURE_CACHE.delete(PERF_HALO_TEXTURE_CACHE.keys().next().value);
+    PERF_HALO_TEXTURE_CACHE.set(id, cv);
+  }
+  if(cv){ var half = raio + 2; x.drawImage(cv, cx - half, cy - half); return; }
+  var fallback = x.createRadialGradient(cx, cy, 2, cx, cy, r);
+  fallback.addColorStop(0, cor); fallback.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = fallback; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
+}
+
 // ---------- Desenha o Idol do avatar (fundo + efeito do visual + personagem + pet) ----------
 // zoom = true: só o rostinho (foto redonda do perfil) · t = quadro da animação (0 = parado)
 function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
@@ -7227,7 +7254,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
   // sombra no chão
   x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc * (1 - bob / sc * .04), 2.6 * sc, 0, 0, 7); x.fill();
   // efeito do visual (atrás do personagem)
-  function halo(r, cor){ r *= pulso; var h = x.createRadialGradient(cx, cy, 2, cx, cy, r); h.addColorStop(0, cor); h.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = h; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); }
+  function halo(r, cor){ r *= pulso; perfHaloTextura(x, cx, cy, r, cor); }
   function estrela(sx, sy, r, cor){ x.fillStyle = cor; x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? r * .42 : r, an = q * Math.PI / 5 - Math.PI / 2 + gira; x[q ? 'lineTo' : 'moveTo'](sx + Math.cos(an) * rr, sy + Math.sin(an) * rr); } x.closePath(); x.fill(); }
   if(vis === 'fever'){
     halo(40 * sc, 'rgba(255,132,102,.55)');

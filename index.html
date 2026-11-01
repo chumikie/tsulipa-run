@@ -7802,8 +7802,8 @@ function perfGenUI(){
 function perfAnimar(){
   perfAnimId = 0;
   if(!perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !twAnimacaoVisivel($('perfGenCv'))) return;
-  perfT++;
-  if(perfT % 2 === 0) perfGenDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('perfGenCv'),ms):1;perfT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('perfGenCv'),ms))||(!mobile30&&perfT%2===0)) perfGenDesenhar();
   perfAnimId = requestAnimationFrame(perfAnimar);
 }
 function perfAnimLigar(){ if(!perfAnimId) perfAnimId = requestAnimationFrame(perfAnimar); }
@@ -9067,7 +9067,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
 })();
 function hubLoop(){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
-  hubT++; if(hubT % 2 === 0) hubDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('hubCv'),ms):1;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&hubT%2===0)) hubDesenhar();
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
@@ -10172,8 +10172,8 @@ function gachaDesenhar(){
 }
 function gachaLoop(){
   gachaAnim = 0; if(!twAnimacaoVisivel(gachaOv)) return;
-  gachaT++; if(gachaGiro >= 0) gachaGiro++;
-  if(gachaT % 2 === 0) gachaDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('gachaCv'),ms):1;gachaT+=delta; if(gachaGiro >= 0) gachaGiro+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('gachaCv'),ms))||(!mobile30&&gachaT%2===0)) gachaDesenhar();
   gachaAnim = requestAnimationFrame(gachaLoop);
 }
 function gachaBonus(){   // bônus do Gachapon: começa a próxima corrida com o poder
@@ -10636,8 +10636,8 @@ function duoComida(x, cx, cy, U, tipo, t){
 }
 function duoLoop(){
   duoAnim = 0; if(!duoGu||!twAnimacaoVisivel($('duoCv'))) return;
-  duoT++;
-  if(duoT % 2 === 0){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('duoCv'),ms):1;duoT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('duoCv'),ms))||(!mobile30&&duoT%2===0)){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
   duoAnim = requestAnimationFrame(duoLoop);
 }
 
@@ -11454,8 +11454,8 @@ function encMostrar(d){
   if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
 function encLoop(){
-  encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; encT++;
-  if(encT % 2 === 0){
+  encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('encCv'),ms):1;encT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('encCv'),ms))||(!mobile30&&encT%2===0)){
     var cv = $('encCv'), x = cv.getContext('2d'), grupo = encRenderGrupo;
     try{ x.clearRect(0, 0, cv.width, cv.height); encCena(x, cv.width, cv.height, encT);
       var pulo = Math.abs(Math.sin(encT * .12)) * 10;

@@ -214,6 +214,7 @@ const whimsical=html.slice(whimsicalStart,whimsicalEnd);
 const decorStart=html.indexOf('function krDesenharDecoracaoSala('),decorEnd=html.indexOf('\n// Telão:',decorStart);
 const decor=html.slice(decorStart,decorEnd);
 assert(html.includes('var KR_WHIMSIDES=')&&html.includes('KR_WHIMSY_STARS=')&&html.includes('KR_WHIMSY_BOKEH=')&&!whimsical.includes('.forEach('),'Whimsical curtain, hanging stars and bokeh must reuse static geometry and avoid per-frame callback allocation');
-assert(html.includes('var KR_ROOM_DECOR_COLS=')&&html.includes('KR_ROOM_RAIL_Y=')&&html.includes('KR_ROOM_POSTER_POS=')&&html.includes('KR_ROOM_LIGHT_POOLS=')&&!decor.includes('var cols=[')&&!decor.includes('var FOTOS=[')&&!decor.includes('.forEach('),'Room decor should reuse fixed palette/geometry arrays and avoid per-frame callback allocations');
+const decorLive=decor.slice(decor.indexOf('x.drawImage(krDecorPlanterCache,0,0)'));
+assert(html.includes('var KR_ROOM_DECOR_COLS=')&&html.includes('KR_ROOM_RAIL_Y=')&&html.includes('KR_ROOM_POSTER_POS=')&&html.includes('KR_ROOM_LIGHT_POOLS=')&&html.includes('var KR_ROOM_POSTER_DRAW=[]')&&!decor.includes('var cols=[')&&!decor.includes('var FOTOS=[')&&!decorLive.includes('.forEach(')&&!decorLive.includes('.slice(')&&!decorLive.includes('.map('),'Room decor should reuse fixed geometry and poster buffers without per-frame list copies or callbacks');
 
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

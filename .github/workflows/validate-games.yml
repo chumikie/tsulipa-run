@@ -55,6 +55,7 @@ on:
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
+      - 'tests/center-run-credit.test.js'
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
       - 'tests/tw-weekly-podium.test.js'
@@ -119,6 +120,7 @@ on:
       - 'karaoke-room-model.js'
       - 'tests/karaoke-room-model.test.js'
       - 'tests/validate-games.js'
+      - 'tests/center-run-credit.test.js'
       - 'tests/sora-stability.test.js'
       - 'tests/karaoke-homol-refresh.test.js'
       - 'tests/tw-weekly-podium.test.js'
@@ -146,6 +148,8 @@ jobs:
         run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Validate Center Run star credit recovery
+        run: node tests/center-run-credit.test.js
       - name: Validate Backstage Pet cloud save retries and confirmations
         run: node tests/pet-sync.test.js
       - name: Privacy page translations compile

@@ -233,4 +233,35 @@ const roomPaintEnd=html.indexOf('lista.forEach(function(j,idx)',start);
 const roomPaint=html.slice(start,roomPaintEnd);
 assert(roomPaintEnd>start&&!roomPaint.includes('lista.sort(krOrdenarPersonagensSala)'),'The drawing section should consume the already ordered audience list without sorting every paint');
 
+
+const posterCacheStart=html.indexOf('function krDesenharPosterIdol(x,person,fx,fy,idx,t)');
+const posterCacheEnd=html.indexOf('// Etapa 3A.5e',posterCacheStart);
+const posterCache=html.slice(posterCacheStart,posterCacheEnd);
+assert(html.includes('var krPosterArtes=new WeakMap();')&&posterCache.includes('krPosterArtes.get(owner)')&&posterCache.includes('krPosterArtes.set(owner')&&!posterCache.includes('JSON.stringify'),'Karaoke poster cache should use weak object identity instead of serializing avatar JSON on every paint');
+assert(posterCache.includes('record.avatarChar===avatarChar')&&posterCache.includes('record.avatarA===avatarA')&&posterCache.includes('record.avatarVisual===avatarVisual')&&posterCache.includes('record.avatarPose===avatarPose')&&posterCache.includes('record.avatarExpr===avatarExpr'),'Poster cache identity must invalidate when avatar references or rendering fields change');
+assert(html.includes('krPosterArtes=new WeakMap();krUI();render();'),'Daily cast changes must reset the weak poster cache');
+const accessoryStart=html.indexOf('function krDescricaoAcessorioSala(nome)');
+const accessoryEnd=html.indexOf('function krLenteCoracaoSala',accessoryStart);
+const accessoryCache=html.slice(accessoryStart,accessoryEnd);
+assert(accessoryCache.includes('krAcessorioVisualCache.get(nome)')&&accessoryCache.includes('krAcessorioVisualCache.set(nome,memo)')&&accessoryCache.includes('size>=64'),'Accessory appearance descriptors should be cached by nickname with a bounded cache');
+assert(html.includes('visual=krDescricaoAcessorioSala(name)')&&html.includes('var shape=visual.shape;'),'Accessory drawing should reuse its cached palette and lens shape descriptor');
+const socialDueStart=html.indexOf('function krLoungeSocialDeveAtualizar()');
+const socialDueEnd=html.indexOf('function krLoungeSocialUpdate()',socialDueStart);
+const socialDue=html.slice(socialDueStart,socialDueEnd);
+assert(socialDue.includes('if(!krLoungeSoloPermitido())return false;')&&socialDue.includes('return krT>=dueAt;')&&socialDue.includes('return krT>=krLoungeSocialNextAt;'),'Autonomous social updates should be scheduled at interaction deadlines and remain disabled outside solo behavior');
+assert(html.includes('if(krLoungeSocialDeveAtualizar())krLoungeSocialUpdate();'),'The room loop should not run the audience social updater on every logical frame');
+assert(html.includes('if(krLoungeActor||krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB)')&&html.includes('krLoungeSocialClear();'),'Solo audience state should be cleared once when autonomous behavior becomes unavailable, not on every frame');
+const roomLifeStart=html.indexOf('var krRoomObserver=null');
+const roomLifeEnd=html.indexOf("window.addEventListener('message'",roomLifeStart);
+const roomLife=html.slice(roomLifeStart,roomLifeEnd);
+assert(roomLife.includes('function krRoomFallbackListenersConectar()')&&roomLife.includes('function krRoomFallbackListenersDesconectar()')&&roomLife.includes("removeEventListener('scroll',krRoomFallbackAtualizar,true)")&&roomLife.includes('krRoomFallbackListenersDesconectar();'),'Room scroll/resize fallback listeners must be removed on page suspension');
+const audienceStripStart=html.indexOf('var ktFaixa=(function(){');
+const audienceStripEnd=html.indexOf('var ktDecor=(function(){',audienceStripStart);
+const audienceStrip=html.slice(audienceStripStart,audienceStripEnd);
+assert(audienceStrip.includes('visibilityObserver.disconnect()')&&audienceStrip.includes('window.addEventListener(\'pagehide\',desconectarVisibilidade)')&&audienceStrip.includes('window.addEventListener(\'pageshow\',conectarVisibilidade)'),'The audience-strip fallback observer must disconnect on pagehide and reconnect on pageshow');
+const bannerStart=html.indexOf('<script id="ktStarsBanner">');
+const bannerEnd=html.indexOf('</script>',bannerStart);
+const banner=html.slice(bannerStart,bannerEnd);
+assert(banner.includes('function stop(){clearTimeout(timer);timer=0;}')&&banner.includes("window.addEventListener('pagehide',stop)")&&banner.includes("window.addEventListener('pageshow',start)"),'The room banner timeout must be canceled on pagehide and restored on pageshow');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

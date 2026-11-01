@@ -7814,23 +7814,49 @@ function perfAnimar(ms){
   perfAnimId = requestAnimationFrame(perfAnimar);
 }
 function perfAnimLigar(){ if(!perfAnimId) perfAnimId = requestAnimationFrame(perfAnimar); }
+var PERF_GEN_DRAW_CHAR={},PERF_GEN_PREVIEW_CHAR={},PERF_GEN_DRAW_AV={c:null,a:'',visual:'',pose:'v',expr:2,fundo:'basico'},PERF_GEN_COLOR_AV={c:null,a:'',visual:'',pose:'v',expr:2,fundo:'basico',pet:null,cor:null};
+function perfGenCharAtual(){
+  var c=PERF_GEN_DRAW_CHAR;
+  for(var i=0;i<PERF_CAMPOS.length;i++){var f=PERF_CAMPOS[i];c[f]=CU[f];}
+  c.img=c.hair;
+  return c;
+}
+function perfLojaTem(k){
+  var lista=Array.isArray(CU.loja)?CU.loja:[];
+  for(var i=0;i<lista.length;i++)if(lista[i]===k&&perfLojaInfo(k))return true;
+  return false;
+}
+function perfGenTemFaltando(){
+  var av=perfGenAv;
+  if(!perfTem('visual',av.visual))return true;
+  if(!perfTem('pose',av.pose))return true;
+  if(!perfTem('fundo',av.fundo))return true;
+  return !perfTem('expr',av.expr)&&typeof lojaItem==='function'&&!!lojaItem('expr_'+av.expr);
+}
 function perfGenDesenhar(){
-  var cv = $('perfGenCv'); if(!cv || !perfGenAv) return;
-  var av = perfGenAv, prev = false;
-  av.c = perfAvAtual().c; av.a = accSel || '';
-  if(perfAba === 'montar'){   // no montador: o Idol de agora (ou provando uma roupa da lojinha), sem efeitos de foto
-    av = { c: av.c, a: av.a, visual:'', pose:'v', expr:2, fundo:'basico' };
-    if(perfProva){ av.c = JSON.parse(JSON.stringify(av.c)); av.c.out = perfProva; prev = perfLojaDono().indexOf(perfProva) < 0; }
-  } else prev = perfFaltando().length > 0;
-  var x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height);
-  if(perfMinhaCor) av = Object.assign({}, av, { cor: perfMinhaCor });
-  perfDesenharIdol(x, cv.width, cv.height, av, true, false, perfT + 1);
-  if(prev){   // etiqueta de prévia no canto
-    var u = cv.width / 320;
-    x.save(); x.translate(14 * u, 14 * u);
-    x.fillStyle = 'rgba(123,63,240,.85)'; x.beginPath(); x.roundRect ? x.roundRect(0, 0, 92 * u, 24 * u, 12 * u) : x.rect(0, 0, 92 * u, 24 * u); x.fill();
-    x.fillStyle = '#fff'; x.font = '900 ' + Math.round(12 * u) + 'px "M PLUS Rounded 1c",sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center';
-    x.fillText('★ ' + tr('PRÉVIA'), 46 * u, 12.5 * u); x.restore();
+  var cv=$('perfGenCv');if(!cv||!perfGenAv)return;
+  var base=perfGenCharAtual(),av=perfGenAv,prev=false;
+  av.c=base;av.a=accSel||'';
+  if(perfAba==='montar'){
+    av=PERF_GEN_DRAW_AV;av.c=base;av.a=accSel||'';av.visual='';av.pose='v';av.expr=2;av.fundo='basico';
+    if(perfProva){
+      var preview=PERF_GEN_PREVIEW_CHAR;
+      for(var i=0;i<PERF_CAMPOS.length;i++){var f=PERF_CAMPOS[i];preview[f]=base[f];}
+      preview.img=base.img;preview.out=perfProva;preview.outcol=base.img;
+      av.c=preview;prev=!perfLojaTem(perfProva);
+    }
+  }else prev=perfGenTemFaltando();
+  var x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
+  if(perfMinhaCor){
+    var colorAv=PERF_GEN_COLOR_AV;colorAv.c=av.c;colorAv.a=av.a;colorAv.visual=av.visual||'';colorAv.pose=av.pose||'v';colorAv.expr=av.expr;colorAv.fundo=av.fundo;colorAv.pet=av.pet||null;colorAv.cor=perfMinhaCor;av=colorAv;
+  }
+  perfDesenharIdol(x,cv.width,cv.height,av,true,false,perfT+1);
+  if(prev){
+    var u=cv.width/320;
+    x.save();x.translate(14*u,14*u);
+    x.fillStyle='rgba(123,63,240,.85)';x.beginPath();x.roundRect?x.roundRect(0,0,92*u,24*u,12*u):x.rect(0,0,92*u,24*u);x.fill();
+    x.fillStyle='#fff';x.font='900 '+Math.round(12*u)+'px "M PLUS Rounded 1c",sans-serif';x.textBaseline='middle';x.textAlign='center';
+    x.fillText('★ '+tr('PRÉVIA'),46*u,12.5*u);x.restore();
   }
 }
 function perfPng(){

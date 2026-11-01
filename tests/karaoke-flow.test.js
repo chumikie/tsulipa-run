@@ -25,12 +25,13 @@ function get(id){if(!elements.has(id))elements.set(id,new Element(id));return el
 const values = new Map();
 const calls=[];
 let quotaState={used:2,remaining:3,pending:null,tickets:0};
-let atMicrophone=true,returnRequests=0;
+let atMicrophone=true,returnRequests=0,notices=[];
 const context = vm.createContext({
   LANG:'pt',
   krSt:{aberta:true},
   krEuNoMicrofone:()=>atMicrophone,
   krPlanearRetornoMicrofone:()=>{returnRequests++;return true;},
+  krAviso:message=>notices.push(message),
   $:get,
   document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
   localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
@@ -46,6 +47,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
 (async()=>{
   atMicrophone=false;ui.request();
   assert.equal(returnRequests,1,'player away from the mic is routed back');
+  assert.equal(notices.length,1,'player away from the mic receives the return-to-mic notice');
   assert.equal(get('ktStartConfirm').open,false,'player away from the mic cannot open the official confirmation');
   assert.equal(calls.length,0,'mic gate runs before admission and quota');
   atMicrophone=true;

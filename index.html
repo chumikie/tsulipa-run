@@ -1369,7 +1369,7 @@ function music(on){
   clearInterval(mt);if(!on)return;
   var k=curT||'menu',ms={menu:260,tense:150,hard:120,alien:130,kawaii:100,unit:130,pet:340,petSono:560}[k]||190;
   mt=setInterval(function(){
-    if(muted||paused)return;
+    if(muted||paused||document.hidden)return;
     if(typeof hubTelaAberta==='function'&&hubTelaAberta())return;   // V2.1.3: sem duas músicas ao mesmo tempo
     if(twJogoEmPopup()){ clearInterval(mt); mt=null; curT=''; return; }   // o jogo do pop-up cuida do proprio som
     var N=TR[k]||mel;
@@ -3872,9 +3872,14 @@ function petAlertAtualizar(){
   petTick();
   el.hidden=!(p.fome<40||p.energia<40||p.humor<40||p.higiene<40);
 }
-var petAlertTimer=0;
-function petAlertLigar(){if(!petAlertTimer&&!document.hidden)petAlertTimer=setInterval(petAlertAtualizar,2000);}
-function petAlertParar(){if(petAlertTimer){clearInterval(petAlertTimer);petAlertTimer=0;}}
+var petAlertGate=null;
+function petAlertLigar(){
+  if(petAlertGate){petAlertGate.refresh();return;}
+  petAlertGate=twIntervaloVisivel($('petBtn'),function(){return true;},petAlertAtualizar,2000);
+}
+function petAlertParar(){
+  if(petAlertGate){petAlertGate.destroy();petAlertGate=null;}
+}
 petAlertLigar();
 // --- FIM DO MINI JOGO DE PETS ---
 // ================================================================
@@ -7942,12 +7947,15 @@ function perfConferir(){   // toda mudança local vira pendência persistente an
   perfSync.markDirty();
   return true;
 }
-setInterval(perfConferir, 4000);
+var perfConferirGate=twIntervaloVisivel(document.documentElement,function(){return true;},perfConferir,4000);
 document.addEventListener('visibilitychange', function(){
   if(document.hidden && perfSyncOn){
     perfConferir();
     if(perfSync.hasPending(contaJ && contaJ.nick)) perfEnviar();
-  }
+  }else if(perfConferirGate){perfConferirGate.refresh();}
+});
+window.addEventListener('pagehide',function(){
+  if(perfSyncOn){perfConferir();if(perfSync.hasPending(contaJ&&contaJ.nick))perfEnviar();}
 });
 window.addEventListener('online',function(){
   if(contaJ&&!perfSyncOn){perfEntrou=false;perfAoEntrar();return;}
@@ -10136,7 +10144,7 @@ function hubMusicaTocar(){
   for(var i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * (1 - i / dd.length);
   function chimbal(ini, vol){ var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = 'highpass'; fl.frequency.value = 6000; s.buffer = ruido; gn.gain.value = vol; s.connect(fl); fl.connect(gn); gn.connect(a.destination); s.start(ini); }
   hubMus = setInterval(function(){
-    if(muted || !hubTelaAberta()){ hubMusicaParar(); return; }
+    if(document.hidden || muted || !hubTelaAberta()){ hubMusicaParar(); return; }
     while(prox < a.currentTime + .3){
       var c = acordes[Math.floor(n / 8) % 4], m = mel[n % 32];
       if(m >= 0) nota(hz(esc[m]), prox, passo * 1.6, suave ? 'sine' : 'square', suave ? .022 : .014);
@@ -11229,7 +11237,7 @@ function lookSalvar(forcar, msgEl){
   if(!forcar && j === lookUlt) return Promise.resolve(true);
   return contaRpc('salvar_look', { p_look: lk }).then(function(r){ if(r && r.ok) lookUlt = j; if(msgEl){ msgEl.textContent = r && r.ok ? '💾 ' + tr('Look salvo! É assim que você aparece no Moon⭐Duo!') : tr('Não deu para falar com o servidor. Tente de novo.'); msgEl.hidden = false; } return !!(r && r.ok); }).catch(function(){ return false; });
 }
-setInterval(function(){ if(contaJ) lookSalvar(); }, 30000);   // salva sozinho quando o look muda
+var lookSaveGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!perfMeu;},function(){if(contaJ)lookSalvar();},30000); // salva look apenas enquanto o perfil próprio está aberto
 perfOv.addEventListener('click', function(e){ if(e.target.id === 'perfLook'){ lookSalvar(true, $('perfLookMsg')); if(sfx.card) sfx.card(); } });
 if(typeof perfFechar === 'function'){ var lookFecharOrig = perfFechar; perfFechar = function(){ var r = lookFecharOrig.apply(this, arguments); lookSalvar(); return r; }; $('perfX').onclick = perfFechar; }
 
@@ -11519,7 +11527,7 @@ function ovMusicaTocar(k){
 
   ovMus = setInterval(function(){
     var aberta = ovMusK === 'gacha' ? !gachaOv.hidden : !duoOv.hidden;
-    if(muted || !aberta){ ovMusicaParar(); if(!muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return; }
+    if(document.hidden || muted || !aberta){ ovMusicaParar(); if(!document.hidden && !muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return; }
     while(prox < a.currentTime + .3){
       var st = n % 8, bar = Math.floor(n / 8);
       if(ovMusK === 'gacha'){
@@ -11566,6 +11574,18 @@ hubMusicaTocar = function(){
 };
 var ovGachaFecharOrig = gachaFechar; gachaFechar = function(){ ovMusicaParar(); return ovGachaFecharOrig.apply(this, arguments); }; $('gachaX').onclick = gachaFechar;
 var ovDuoFecharOrig = duoFechar; duoFechar = function(){ ovMusicaParar(); var r = ovDuoFecharOrig.apply(this, arguments); if(!duoVeioHub && !muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return r; };
+// Áudio procedural também dorme em segundo plano; retoma a música da tela ativa.
+function twMusicaPaginaVisibilidade(){
+  if(document.hidden){music(false);curT='';hubMusicaParar();ovMusicaParar();return;}
+  if(muted)return;
+  if(!gachaOv.hidden){ovMusicaTocar('gacha');return;}
+  if(!duoOv.hidden){ovMusicaTocar('duo');return;}
+  if(hubComecou&&!hubOv.hidden){hubMusicaTocar();return;}
+  curT='';sync();
+}
+document.addEventListener('visibilitychange',twMusicaPaginaVisibilidade);
+window.addEventListener('pagehide',function(){music(false);curT='';hubMusicaParar();ovMusicaParar();});
+window.addEventListener('pageshow',twMusicaPaginaVisibilidade);
 
 // cena suave do Encontro do dia: céu de fim de tarde, cidade em silhueta, moitas e nuvens (no clima do Center⭐Run!)
 function encCena(x, W2, H2, t){

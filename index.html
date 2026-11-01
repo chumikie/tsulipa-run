@@ -8901,9 +8901,11 @@ function twMicRender(){
     '<small class="tw-mic-sub">' + escHtml(w[4]) + '</small>' :
     '<p class="tw-rank-wait">' + escHtml(twRankData.online ? w[1] : twRankStatus('karaoke')) + '</p>');
 }
-function twMicFechar(){
-  var m = $('twMicModal'), b = $('twMicAbrir'); if(!m || m.hidden) return;
-  m.hidden = true; if(b){ b.setAttribute('aria-expanded', 'false'); b.focus({ preventScroll:true }); }
+var twMicSessao=0;
+function twMicFechar(semFoco){
+  twMicSessao++;
+  var m=$('twMicModal'),b=$('twMicAbrir');if(!m||m.hidden)return;
+  m.hidden=true;if(b){b.setAttribute('aria-expanded','false');if(!semFoco&&!hubOv.hidden)b.focus({preventScroll:true});}
 }
 setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME e os textos vêm mais abaixo)
   if(typeof TW_KARAOKE_TIME === 'undefined' || TW_KARAOKE_TIME !== true) return;
@@ -8921,9 +8923,10 @@ setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME
     '</div></section></section>');
   var b = $('twMicAbrir'), m = $('twMicModal');
   b.addEventListener('click', function(){
+    var sessao=++twMicSessao;
     twMicAcerto(); twMicRender(); m.hidden = false; b.setAttribute('aria-expanded', 'true');
     $('twMicFechar').focus({ preventScroll:true }); twRankDrawAvatars();
-    if(typeof twRankLoad === 'function') twRankLoad().then(function(){ twMicRender(); twRankDrawAvatars(); }).catch(function(){});
+    if(typeof twRankLoad === 'function') twRankLoad().then(function(){ if(sessao!==twMicSessao||m.hidden||hubOv.hidden||document.hidden)return;twMicRender();twRankDrawAvatars(); }).catch(function(){});
   });
   $('twMicFechar').addEventListener('click', twMicFechar);
   m.addEventListener('click', function(e){ if(e.target === m) twMicFechar(); });
@@ -8964,9 +8967,20 @@ var HUB_FALAS = [
   [['pati-1','Oi gente, meu nome é Pati!','💙'], ['pati-2','Bem gamer, tals...','🎮'], ['pati-3','いっておきたい','🌙'], ['pati-4','Um beijo. Chu!','💋'], ['pati-5','hehe~','😆']]
 ];
 var HUB_PET_REAGE = { i:-1, t0:-999 }, HUB_FALA_ULT = [-1, -1, -1], HUB_FALA_CONTA = [0, 0, 0], hubVozAtual = null, HUB_VOZ_VOL = .55;
-function hubVozTocar(nome){   // voz suave, só no toque e só com o som ligado
-  if(typeof muted !== 'undefined' && muted) return;
-  try{ if(hubVozAtual){ hubVozAtual.pause(); } var a = new Audio('./audio/' + nome + '.mp3?v=1'); a.volume = HUB_VOZ_VOL; hubVozAtual = a; a.addEventListener('loadedmetadata', function(){ if(hubVozAtual === a && isFinite(a.duration)) HUB_REAGE.dur = Math.max(150, Math.round(a.duration * 60) + 50); }); var pr = a.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){}
+function hubVozParar(){
+  var a=hubVozAtual;if(!a)return;hubVozAtual=null;
+  try{a.pause();a.removeAttribute('src');a.load();}catch(e){}
+}
+function hubVozTocar(nome){   // voz curta: substitui e libera completamente a anterior
+  if(typeof muted !== 'undefined' && muted || document.hidden || hubOv.hidden) return;
+  hubVozParar();
+  try{
+    var a=new Audio('./audio/'+nome+'.mp3?v=1');a.volume=HUB_VOZ_VOL;hubVozAtual=a;
+    a.addEventListener('loadedmetadata',function(){if(hubVozAtual===a&&isFinite(a.duration))HUB_REAGE.dur=Math.max(150,Math.round(a.duration*60)+50);},{once:true});
+    var release=function(){if(hubVozAtual===a)hubVozParar();else{try{a.pause();a.removeAttribute('src');a.load();}catch(e){}}};
+    a.addEventListener('ended',release,{once:true});a.addEventListener('error',release,{once:true});
+    var pr=a.play();if(pr&&pr.catch)pr.catch(release);
+  }catch(e){hubVozParar();}
 }
 try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){ }
 function hubTrioReage(i){
@@ -9527,6 +9541,8 @@ function hubMostrar(){
 }
 function hubFechar(){
   buscaCancelarTodas();
+  var micModal=$('twMicModal');if(micModal&&!micModal.hidden)twMicFechar(true);
+  hubVozParar();
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   twIndex2ResumeBaseFrames();sync();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
@@ -11315,7 +11331,7 @@ var coelhoSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!
 
 // ---------- Botão de som dentro do gacha e do Moon⭐Duo! ----------
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
-function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
+function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); });if(muted&&typeof hubVozParar==='function')hubVozParar(); }
 var muteSyncButton=document.getElementById('mute');if(muteSyncButton)muteSyncButton.addEventListener('click',ovSomUI);
 document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){if(!document.hidden&&!muted&&hubComecou&&hubTelaAberta())hubMusicaTocar();},60); });
 ovSomUI();
@@ -11637,7 +11653,7 @@ var ovGachaFecharOrig = gachaFechar; gachaFechar = function(){ ovMusicaParar(); 
 var ovDuoFecharOrig = duoFechar; duoFechar = function(){ ovMusicaParar(); var r = ovDuoFecharOrig.apply(this, arguments); if(!duoVeioHub && !muted && hubComecou && !hubOv.hidden) hubMusicaTocar(); return r; };
 // Áudio procedural também dorme em segundo plano; retoma a música da tela ativa.
 function twMusicaPaginaVisibilidade(){
-  if(document.hidden){music(false);curT='';hubMusicaParar();ovMusicaParar();return;}
+  if(document.hidden){hubVozParar();music(false);curT='';hubMusicaParar();ovMusicaParar();return;}
   if(muted)return;
   if(!gachaOv.hidden){ovMusicaTocar('gacha');return;}
   if(!duoOv.hidden){ovMusicaTocar('duo');return;}

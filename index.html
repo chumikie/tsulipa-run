@@ -1741,7 +1741,7 @@ var celebRaf = 0;
 function celeb(t){
   cancelAnimationFrame(celebRaf);celebRaf=0;
   if(state !== 'over'||twIndex2BaseFramesPaused()) return;
-  ct++;
+  ct+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta(cc.canvas,t):1;
   if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(cc.canvas,t)){
   var og = g;
   try { celebDraw(); }
@@ -2603,7 +2603,7 @@ function prevLoop(t) {
   twIndex2AvatarRaf = 0;
   if (twIndex2BaseFramesPaused()||state!=='menu'||!twIndex2AvatarVisible) return;
   if (state === 'menu') {
-    pt++;
+    pt+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta(pc.canvas,t):1;
     if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(pc.canvas,t)){
     var og = g;
     try {
@@ -10962,7 +10962,7 @@ function aniverMusica(){   // "Parabéns pra você" (melodia em domínio públic
   N.forEach(function(n){ beep(n[0] * 2, n[2], 'triangle', .035, n[1]); beep(n[0], n[2] + .1, 'sine', .03, n[1]); });
 }
 function aniverLoop(t){
-  aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT++;
+  aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta($('aniverFx'),t):1;
   var cv = $('aniverFx');
   if(window.TWMotionLifecycle&&!TWMotionLifecycle.render30Due(cv,t)){aniverAnim=requestAnimationFrame(aniverLoop);return;}
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i;

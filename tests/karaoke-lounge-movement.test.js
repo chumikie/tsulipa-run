@@ -76,7 +76,7 @@ assert.equal(env.krLoungeActors.length,0,'homologation clears autonomous walkers
 assert(env.krBots.every(b=>!b._ktLoungeWalking),'homologation releases every walker state');
 env.krHomolAtivo=false;env.krEu.no_mic=true;env.kt.active=()=>true;env.krDemoCantor=null;env.krLoungeActors.length=0;
 env.krLoungeUpdate(1);
-assert(env.krBots.every((b,i)=>b.no_mic||(b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1]),'every non-singer returns to their sofa during a presentation');
+assert(env.krBots.every((b,i)=>b.no_mic||(b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1])),'every non-singer returns to their sofa during a presentation');
 env.krEu.no_mic=false;env.kt.active=()=>false;
 
 const moveStart=html.indexOf('var krMoveQueue=[],krMeuRetornoAt=0');

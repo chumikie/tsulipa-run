@@ -325,6 +325,14 @@ const audienceAudio=html.slice(audienceAudioStart,audienceAudioEnd);
 assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv"'),'The duplicate lower audience carousel and its independent animation loop should be removed');
 assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
 assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
+assert(html.includes('data-kt-library-view="songs"')&&html.includes('data-kt-library-view="voices"'),'The compact library should switch between music and voices without leaving the Karaoke page');
+assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&html.includes('data-kt-voice-panel="'+key+'"')),'The three real Idol heads should open their own voice groups');
+assert(audienceAudio.includes("if(playLead)play(group+'-1')")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a real Idol head should play its voice and draw the existing Tsu, Lirika or Pati avatar');
+assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');
+assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');
+assert(audienceAudio.includes('ktMeta.personalSongs()')&&audienceAudio.includes("tr('Seu recorde pessoal')")&&audienceAudio.includes("tr('Sem recorde ainda')"),'The compact track cards should read only the current player personal records');
+assert(html.includes("rules.personalSongs(c.day,c.id)")&&html.includes("songs[active.song]=row"),'Best songs are keyed by player and exact selected song, not a shared leaderboard');
+
 const rhythmTrackKeys=['normal','fast','chill','tema','corrida','gacha','duo'];
 assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-select="'+key+'"')),'The audio showcase should include all seven original rhythm-game themes');
 assert(audienceAudio.includes("selector.dispatchEvent(new Event('change',{bubbles:true}))")&&audienceAudio.includes("if(!selector||selector.disabled)"),'Choosing a rhythm theme from the showcase should update the existing song selector without starting or spending a show');

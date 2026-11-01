@@ -9629,7 +9629,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
-  if(tipo!=='sora'){buscaCancelarTodas();hubOv.hidden=true;document.body.classList.remove('hubon');}   // Karaoke⭐Time! é uma tela da página, como o Center⭐Run!
+  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}   // Karaoke⭐Time! é uma tela da página, como o Center⭐Run!
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);

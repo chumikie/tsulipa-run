@@ -6403,6 +6403,10 @@ function contaSessao(sess){
   if(!sess){if(contaJ){contaJ=null;contaUI();perfSair();}if(window.ktTickets)window.ktTickets.reset();return;}
   contaRpc('jogador').then(function(j){
     if(token!==contaSessaoToken)return;
+    if(contaJ&&(!j||contaJ.nick!==j.nick)){
+      contaJ=null;contaRun=null;nick='';contaUI();perfSair();
+      if(window.ktTickets)window.ktTickets.reset();
+    }
     if(j)perfAntesDeEntrar(j,token);
     else contaPedirNome(token);
   }).catch(function(){if(token===contaSessaoToken)contaAviso(tr('Não deu para falar com o servidor. Tente de novo.'));});

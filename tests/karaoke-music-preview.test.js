@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const Preview=require('../karaoke-music-preview.js');
 const moduleCode=fs.readFileSync(path.join(__dirname,'..','karaoke-music-preview.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+assert(html.includes("♪ Voz de personagem reproduzindo")&&!html.includes("'Tocando')+' · '+id"),'Karaoke voice previews never expose internal track IDs in the visible status');
 const start=html.indexOf('var songs={',html.indexOf('var kt=(function(){'));
 const end=html.indexOf('\n};\n/* Cada musica',start);
 assert(start>=0&&end>start,'all seven original procedural songs are defined');

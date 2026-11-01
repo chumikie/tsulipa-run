@@ -21,6 +21,9 @@ on:
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
+      - 'supabase/tests/karaoke_ticket_pg_setup.sql'
+      - 'supabase/tests/karaoke_ticket_pg_checks.sql'
+      - 'supabase/tests/karaoke_ticket_pg_integration.sh'
       - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
@@ -92,6 +95,9 @@ on:
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
+      - 'supabase/tests/karaoke_ticket_pg_setup.sql'
+      - 'supabase/tests/karaoke_ticket_pg_checks.sql'
+      - 'supabase/tests/karaoke_ticket_pg_integration.sh'
       - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
@@ -209,7 +215,7 @@ jobs:
 
   postgres-center-run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 10
     services:
       postgres:
         image: postgres:16
@@ -226,3 +232,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify Center Run daily cap against isolated PostgreSQL
         run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"

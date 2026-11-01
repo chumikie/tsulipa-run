@@ -1617,7 +1617,8 @@ function soraOnlineSetSession(session){
   var user = session && session.user;
   var nextId = user && user.is_anonymous !== true ? user.id : null;
   if(nextId === soraOnlineUserId) return;
-  soraOnlineRunGeneration++;
+  var previousId=soraOnlineUserId;
+  if(previousId||soraOnlineRunOwnerId)soraOnlineRunGeneration++;
   if(soraOnlineRunOwnerId&&soraOnlineRunOwnerId!==nextId){soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;}
   soraOnlineUserId = nextId;
   soraOnlineProfile = null;

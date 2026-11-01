@@ -16,6 +16,7 @@ assert(sql.includes('400, 100 - ganho_hoje'),'daily cap changes while the existi
 assert(sql.includes('for update')&&sql.includes('finished_at is null'),'player/run locks and repeat-run protection remain');
 assert(sql.indexOf('where id = auth.uid() for update')<sql.indexOf('from public.star_log'),'daily credits are counted under the player lock');
 assert(sql.includes("'limite_diario', limite_diario"),'valid zero-credit cap has a dedicated response');
+assert(sql.includes('ganho_hoje + credito >= 100'),'partial credit reaching the cap must return the cap flag');
 assert(!sql.includes('ganhar_minijogo('),'Pet RPC remains untouched');
 
 const capped=(earned,requested,seconds,valid=true)=>valid?
@@ -48,7 +49,7 @@ function makeLedger(){
       const amount=capped(earned,requested,seconds);
       get(owner).stars+=amount;
       if(amount>0)credits.push({owner,day,reason:'corrida',amount});
-      return {ok:true,creditadas:amount,stars:get(owner).stars,limite_diario:earned>=100&&requested>0};
+      return {ok:true,creditadas:amount,stars:get(owner).stars,limite_diario:earned+amount>=100&&requested>0};
     }finally{release();}
   };
   return {finish,get,credits};
@@ -82,6 +83,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.deepEqual(same.map(r=>r.creditadas),[75,25,0],
     'three concurrent submissions on the same account serialize at the 100-star cap');
   assert.equal(ledger.get('A').stars,400,'concurrent credits never exceed the account cap');
+  assert.equal(same[1].limite_diario,true,'partial second run signals the reached cap');
   const duplicate=await Promise.all([
     ledger.finish('A','run-2',today,75,120),
     ledger.finish('A','run-2',today,75,120)
@@ -106,11 +108,18 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.equal(ctx.starT,120,'confirmed server balance replaces local balance');
 
   res.innerHTML='Aguardando validação do servidor';
-  finishResult=()=>Promise.resolve({ok:true,creditadas:0,limite_diario:true,stars:120,best:500});
+  finishResult=()=>Promise.resolve({ok:true,creditadas:10,limite_diario:true,stars:130,best:500});
+  ctx.contaInicioCorrida();ctx.contaFimCorrida(500,30,'Tsu',()=>refreshes++);
+  await flush();
+  assert(res.innerHTML.includes('10 estrelas')&&res.innerHTML.includes('Limite diário'),'partial credit and reached cap both appear');
+  assert.equal(ctx.starT,130,'partial server credit changes the local balance exactly');
+
+  res.innerHTML='Aguardando validação do servidor';
+  finishResult=()=>Promise.resolve({ok:true,creditadas:0,limite_diario:true,stars:130,best:500});
   ctx.contaInicioCorrida();ctx.contaFimCorrida(500,30,'Tsu',()=>refreshes++);
   await flush();
   assert(res.innerHTML.includes('Limite diário'),'valid cap reached receives clear feedback');
-  assert.equal(ctx.starT,120,'no stars are added after daily cap');
+  assert.equal(ctx.starT,130,'no stars are added after daily cap');
 
   let release;
   startResult=()=>new Promise(resolve=>{release=resolve;});
@@ -119,7 +128,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   ctx.contaJ={id:'B',nick:'Pati'};ctx.contaSessaoToken++;
   release('run-1');await flush();
   assert.equal(ends,2,'delayed start from old account must not finish under new account');
-  assert.equal(ctx.starT,120,'old run must not replace the new account balance');
+  assert.equal(ctx.starT,130,'old run must not replace the new account balance');
   assert(starts>=3&&refreshes>=3);
   console.log('✓ Center Run: daily cap model, midnight, missing token, cap message and account switch');
 })().catch(err=>{console.error(err);process.exitCode=1;});

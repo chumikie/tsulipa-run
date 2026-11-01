@@ -11,13 +11,17 @@ const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=8"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=9"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
 }
 for(const cut of cuts)assert(index.includes('value="'+cut+'"'),'hair menu retains '+cut);
-assert(index.includes("['cback', 'back'], ['cfront', 'front'], ['cdet', 'det']]"),'Profile editor reuses haircut selector');
+assert(index.includes("sel(['cback', 'back']);")&&index.includes("sel(['cfront', 'front']); sel(['cdet', 'det']);"),'Profile editor reuses haircut selector');
+// Ordem pedida: Cabelo+Corte / Mecha+cor / Franja+Detalhe, com nomes curtos no Detalhe
+{const m=index.slice(index.indexOf('id="cust" hidden'),index.indexOf('id="skins"'));const at=k=>m.indexOf(k);
+ assert(at('id="chair"')<at('id="cback"')&&at('id="cback"')<at('id="cstk"')&&at('id="cstk"')<at('id="cfront"')&&at('id="cfront"')<at('id="cdet"'),'menu: cabelo, corte, mecha, franja, detalhe');
+ assert(!/Orelhas de gato|Orelhas élficas|Olheiras suaves/.test(m)&&m.includes('data-twh="Gato"'),'Detalhe com nomes curtos');}
 assert(index.includes("PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back'"),'Profile saves back haircut');
 assert(karaoke.includes("JSON.parse(read('brs48cr_cu2')"),'Karaoke imports saved Idol look');
 assert(source.includes("var PRETO_TOPO='#3a3644',PRETO_BASE='#121018'"),'curto bicolor: metade fixa em preto');
@@ -57,7 +61,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Sora Jump has an independent drawChar renderer. Its player character and
  // partner sprites must use the same shared base/top/fringe layers as Profile
  // and Karaoke, rather than silently falling back to the old duplicated hair.
- assert(sora.includes('<script src="./tw-avatar-hair.js?v=8"></script>'),'Sora Jump loads the shared hair renderer');
+ assert(sora.includes('<script src="./tw-avatar-hair.js?v=9"></script>'),'Sora Jump loads the shared hair renderer');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists');
@@ -78,7 +82,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Karaoke Day is still a reachable preview/controller renderer. Preserve its
  // legacy hair fallback while routing the new base/top/fringe layers through
  // the shared module, just like the main profile, Karaoke Time and Sora.
- assert(day.includes('<script src="./tw-avatar-hair.js?v=8"></script>'),'Karaoke Day loads the shared hair module');
+ assert(day.includes('<script src="./tw-avatar-hair.js?v=9"></script>'),'Karaoke Day loads the shared hair module');
  const dayDrawStart=day.indexOf('function desenharIdol(x,c,px,py,sc,pose,expr,t,espelho,opcoes){');
  const dayDrawEnd=day.indexOf('\nfunction ',dayDrawStart+20);
  assert(dayDrawStart>=0&&dayDrawEnd>dayDrawStart,'Karaoke Day has an independent Idol renderer');

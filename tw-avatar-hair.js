@@ -40,10 +40,10 @@ function franjaOriginal(g,T,x,y,f){   // mesmas formas das franjas de drawChar, 
 function escurecer(h,n){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-n).toString(16)).substr(-2)});}
 function clarear(h,n){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.min(255,parseInt(cc,16)+n).toString(16)).substr(-2)});}
 function T2(g,a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill();}
-var NOMES={en:{Nenhuma:'None',Uma:'One',Dupla:'Double',Luzes:'Highlights',Escondida:'Peekaboo',Antena:'Ahoge',Coração:'Heart bun',Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
- es:{Nenhuma:'Ninguna',Uma:'Una',Dupla:'Doble',Luzes:'Reflejos',Escondida:'Oculta',Antena:'Antena',Coração:'Moño corazón',Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
- th:{Nenhuma:'ไม่มี',Uma:'หนึ่ง',Dupla:'คู่',Luzes:'ไฮไลท์',Escondida:'ซ่อนสี',Antena:'ผมชี้',Coração:'มวยหัวใจ',Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
- ja:{Nenhuma:'なし',Uma:'ワン',Dupla:'ダブル',Luzes:'ハイライト',Escondida:'インナー',Antena:'アホ毛',Coração:'ハートお団子',Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Rebelde:'ふわはね',Risca:'サイド分け',Repicada:'レイヤー'}};
+var NOMES={en:{Nenhuma:'None',Uma:'One',Dupla:'Double',Luzes:'Highlights',Escondida:'Peekaboo',Antena:'Ahoge',Coração:'Heart',Gato:'Cat ears',Elfo:'Elf ears',Olheiras:'Eye bags',Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
+ es:{Nenhuma:'Ninguna',Uma:'Una',Dupla:'Doble',Luzes:'Reflejos',Escondida:'Oculta',Antena:'Antena',Coração:'Corazón',Gato:'Gato',Elfo:'Elfo',Olheiras:'Ojeras',Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
+ th:{Nenhuma:'ไม่มี',Uma:'หนึ่ง',Dupla:'คู่',Luzes:'ไฮไลท์',Escondida:'ซ่อนสี',Antena:'ผมชี้',Coração:'หัวใจ',Gato:'หูแมว',Elfo:'หูเอลฟ์',Olheiras:'ใต้ตา',Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
+ ja:{Nenhuma:'なし',Uma:'ワン',Dupla:'ダブル',Luzes:'ハイライト',Escondida:'インナー',Antena:'アホ毛',Coração:'ハート',Gato:'猫耳',Elfo:'エルフ耳',Olheiras:'くま',Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Rebelde:'ふわはね',Risca:'サイド分け',Repicada:'レイヤー'}};
 function rotular(){   // nomes curtos das opções novas, no idioma atual (o dicionário principal não as conhece)
  var l=(document.documentElement.lang||'').slice(0,2),d=NOMES[l]||{};
  [].forEach.call(document.querySelectorAll('option[data-twh]'),function(o){var k=o.getAttribute('data-twh'),v=d[k]||k;if(o.textContent!==v)o.textContent=v;});

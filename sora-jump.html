@@ -1566,7 +1566,7 @@ var soraRankCacheAt = { week:0, all:0 };
 function soraOnlineApplyProfile(profile){
   var data = profile && typeof profile === 'object' ? profile : null;
   var visual = data && data.character && typeof data.character === 'object' ? data.character : {};
-  var keys = ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl'];
+  var keys = ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl','mecha'];
   var active = Object.assign({}, CH[sel] || CH[0]);
   keys.forEach(function(key){
     var value = visual[key];

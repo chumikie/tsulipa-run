@@ -11246,7 +11246,7 @@ var coelhoSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
 function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
 var muteSyncButton=document.getElementById('mute');if(muteSyncButton)muteSyncButton.addEventListener('click',ovSomUI);
-document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){ if(!muted && hubComecou) hubMusicaTocar(); }, 60); });
+document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){if(!muted&&hubComecou&&hubTelaAberta())hubMusicaTocar();},60); });
 ovSomUI();
 
 // ---------- Estrela do título em SVG (no Android o emoji ficava torto) ----------
@@ -13513,7 +13513,7 @@ applyLang();
 
   document.addEventListener('click', function(e){
     if(e.target.closest && (e.target.closest('.tw-rank-tv-launch') || e.target.closest('.tw-rank-tv-buttons'))){
-      setTimeout(updateTvTopIdol, 60);
+      setTimeout(function(){var modal=document.querySelector('#hub .tw-rank-tv-modal');if(modal&&!modal.hidden)updateTvTopIdol();},60);
     }
   });
 })();

@@ -193,14 +193,18 @@ assert(micCdSkin.includes("#hub #twMicModal .tw-mic-tv")&&
        !micCdSkin.includes('#twPreviewJogo[data-jogo="karaoke"]')&&
        lab.includes('id="twMicTela"')&&lab.includes('class="tw-mic-radio-deck"'),
   "Aligned radio deck belongs only to the banner mic modal; ranking content and duo/trio grouping remain intact");
-const encStart=lab.indexOf("function encMostrar(d)"),encEnd=lab.indexOf("function encLoop()",encStart);
+const encStart=lab.indexOf("function encMostrar(d)"),encEnd=lab.indexOf("function encLoop(",encStart);
 const encUi=lab.slice(encStart,encEnd);
-const encDrawStart=lab.indexOf("function encLoop()"),encDrawEnd=lab.indexOf("function encAbrirNovo(",encDrawStart);
+const encPrepStart=lab.indexOf("function encPrepararRender(d)"),encPrepEnd=lab.indexOf("function encHoje()",encPrepStart);
+const encPrep=lab.slice(encPrepStart,encPrepEnd);
+const encDrawStart=encEnd,encDrawEnd=lab.indexOf("var encToque =",encDrawStart);
 const encDraw=lab.slice(encDrawStart,encDrawEnd);
-assert(encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
+assert(encUi.includes("encPrepararRender(d)")&&
+       encUi.includes("encPainel.classList.toggle('enc-grupo', ex.length > 0)")&&
        encUi.includes("oe.hidden = ex.length > 0 || !os")&&
        encUi.includes("encNomes(d)")&&encUi.includes("tr(d.fala)")&&
-       encDraw.includes("perfDesenharIdol")&&encDraw.includes("Array.isArray(encDados.extras)")&&
+       encPrep.includes("Array.isArray(d.extras)")&&encPrep.includes("encRenderGrupo.push(a)")&&
+       encDraw.includes("perfDesenharIdol")&&encDraw.includes("encRenderGrupo")&&encDraw.includes("encRenderOrdem")&&
        micCdSkin.includes(".encp.enc-grupo #encRk,.encp.enc-grupo #encSelo,.encp.enc-grupo #encOshi"),
   "Duo/trio stays on one stage with its characters and line, while individual Oshi is hidden for collective encounters");
 assert(lab.includes("contaRpc('encontro_hoje'")&&
@@ -232,7 +236,8 @@ const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf(
 const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
 assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
-       seasonalDraw.includes("JSON.parse(JSON.stringify(CH[m[0]]))")&&!seasonalDraw.includes("saveCu(")&&
+       lab.includes("var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});")&&
+       seasonalDraw.includes("var c=HUB_TRIO_DRAW_CHARS[i],base=CH[m[0]];")&&!seasonalDraw.includes("saveCu(")&&
        lab.includes("hubOv.setAttribute('data-tema', k || '')")&&
        voiceSource.includes("hubVozTocar(f[0])")&&
        sfxSource.includes("OSHI === 'tsu'")&&sfxSource.includes("OSHI === 'lirika'")&&sfxSource.includes("OSHI === 'pati'"),

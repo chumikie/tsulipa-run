@@ -64,3 +64,48 @@
 - [ ] Teste em produção **não realizado nem autorizado**. O relógio virtual reproduz a semântica temporal e a espera de lock, mas não altera o relógio real do servidor; testes de dispositivo/uso real continuam pendentes.
 
 **Decisão preservada:** o teto segue o dia do timestamp transacional da finalização. Se a transação aguarda bloqueio durante a virada, permanece no dia em que começou a transação. Confirmar aceitação dessa regra antes de aplicar SQL em produção. Nenhuma função, tabela, saldo, histórico ou ranking de produção foi alterado.
+
+
+## Etapa 2.9 — arquivo versionado preparado, **não executado**
+
+A CLI Supabase v2.122.0 gerou o nome `supabase/migrations/20261101161409_center_run_daily_100.sql` localmente. O conteúdo foi enviado **apenas à branch draft** da PR #58. Um teste automatizado exige igualdade byte a byte entre esta migração e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql`.
+
+**Bloqueio de implantação:** não executar `supabase db push`, `supabase migration up`, nem promover/mesclar uma branch que possa disparar migrações automaticamente antes da autorização específica do responsável. Não há autorização implícita neste arquivo.
+
+### Consultas prévias (somente SELECT, para a futura janela autorizada)
+
+```sql
+select pg_get_functiondef(p.oid) as definition,
+       p.proowner::regrole::text as owner,
+       p.prosecdef as security_definer,
+       p.proconfig as config,
+       p.proacl::text as acl
+from pg_proc p
+where p.oid='public.terminar_corrida(uuid,integer,integer,text,text)'::regprocedure;
+
+select (now() at time zone 'America/Sao_Paulo')::date as dia_brasilia;
+select reason, sum(delta) as creditos
+from public.star_log
+where (created_at at time zone 'America/Sao_Paulo')::date =
+      (now() at time zone 'America/Sao_Paulo')::date
+  and reason in ('corrida','minijogo')
+group by reason;
+```
+
+O segundo SELECT é agregado global; para conferir teto **por conta**, usar agregação por `user_id` apenas em ambiente administrativo autorizado, sem exportar identificadores pessoais para GitHub. Guardar resultado e definição/ACL em registro privado de mudança.
+
+### Execução futura — **somente depois de autorização específica**
+
+1. Capturar a função original de produção no instante da execução, comparar com snapshot desta PR e abortar se houver divergência não explicada.
+2. Confirmar que a versão gerada ainda é a próxima migração pendente e que não há migrations concorrentes. Usar o fluxo aprovado da CLI Supabase após consultar sua ajuda local, com revisão do plano de migrações; não executar comandos de implantação como parte desta PR.
+3. Aplicar **apenas** o `CREATE OR REPLACE FUNCTION` com a mesma assinatura, por fluxo versionado e privilégio autorizado. Não executar DML em `players`, `runs`, `star_log` ou `leaderboard`.
+4. Conferir retorno `limite_diario`, owner `postgres`, `SECURITY DEFINER`, `search_path=public`, ACL (`authenticated` e `service_role` autorizados; `anon` não), e logs de corridas reais. Rechecar Pet `ganhar_minijogo` com limite de 50 e `reason='minijogo'`.
+
+### Reversão — requer outra autorização específica
+
+1. Parar novas mudanças e registrar o motivo; conferir se a definição atual corresponde à migração autorizada.
+2. Restaurar a **função original capturada imediatamente antes da aplicação**, conforme o snapshot de referência `center_run_daily_100_ROLLBACK_REVIEW_ONLY.sql`, usando novo registro versionado para que o histórico de migrações permaneça coerente.
+3. Revalidar owner/ACL, resposta da RPC, histórico, ranking e saldos; **nunca** apagar `star_log` nem decrementar saldos para “desfazer” o teto.
+4. Manter a PR draft e o arquivo de rollback fora de qualquer aplicação automática.
+
+**Restrições da auditoria:** a equivalência de SQL proposta/migração é conferida por teste; a homologação temporal utilizou relógio controlado **no PostgreSQL efêmero**, e não prova a integração de ponta a ponta com usuários reais em produção.

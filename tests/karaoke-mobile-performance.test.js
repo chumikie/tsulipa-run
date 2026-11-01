@@ -195,4 +195,10 @@ assert(main.includes("var petRaf=0,petDrawDelta=1,petDrawDeltaPending=0;")&&main
 assert(main.includes("Math.floor(a.t/22)>Math.floor((a.t-petDrawDelta)/22)")&&main.includes("Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)"),'Pet animation events must not be skipped when a draw advances more than one logical frame');
 assert(main.includes("// Chave de liberação do calendário/estreia; não representa nem ativa uma sala online."),'Karaoke schedule gate must not be described as an online room mode');
 
+
+const curPalStart=main.indexOf('function curPal()'),curPalEnd=main.indexOf('\nfunction GLc()',curPalStart);
+assert(main.includes("var CURPAL_CACHE=['','','',''];")&&curPalStart>=0&&curPalEnd>curPalStart&&!main.slice(curPalStart,curPalEnd).includes('.map('),'Main background palette should reuse a fixed color buffer instead of building nested arrays each frame');
+const hubDrawStart=main.indexOf('function hubDesenhar()'),hubDrawEnd=main.indexOf('\nfunction ',hubDrawStart+16);
+assert(main.includes('var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map')&&hubDrawStart>=0&&hubDrawEnd>hubDrawStart&&!main.slice(hubDrawStart,hubDrawEnd).includes('JSON.parse(JSON.stringify(CH[m[0]]))'),'Hub trio should reuse its three avatar render objects instead of deep-cloning them every frame');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

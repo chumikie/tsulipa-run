@@ -51,3 +51,16 @@
 - [ ] Registrar horário, evidências e aprovação; manter PR draft, sem merge automático.
 
 **Arquivos:** candidato `center_run_daily_100_REVIEW_ONLY.sql`; snapshot de reversão `center_run_daily_100_ROLLBACK_REVIEW_ONLY.sql`; contexto `README-center-run-100.md`.
+
+
+## Etapa 2.7 — homologação temporal isolada (2026-11-01)
+
+- [x] CI PostgreSQL 16 temporário: relógio controlado **apenas na cópia da função** (substituição de `now()` por `public.center_test_now()` no container efêmero); o SQL candidato da PR e o SQL de produção não foram alterados.
+- [x] Duas sessões PostgreSQL reais: uma mantém `players FOR UPDATE`, a outra aguarda ao finalizar com horário lógico `2026-11-01 23:59:59 America/Sao_Paulo`; observador independente avança o relógio externo fictício para `2026-11-02 00:00:01` durante a espera.
+- [x] O crédito da transação bloqueada permanece no dia de seu relógio transacional. Uma corrida iniciada antes da meia-noite e finalizada sob relógio transacional posterior entra no dia seguinte.
+- [x] Conta fictícia E: créditos Center **100 no dia 01 e 100 no dia 02**, incluindo créditos parciais; `minijogo` mantém 50 no histórico independente, sem consumir o teto Center.
+- [x] Saldos finais fictícios, três entradas de ranking, UUID repetido sem duplicação, ACL e testes de concorrência anteriores verificados no CI.
+- [x] CI #659: `static-validation` e `postgres-center-run` aprovados.
+- [ ] Teste em produção **não realizado nem autorizado**. O relógio virtual reproduz a semântica temporal e a espera de lock, mas não altera o relógio real do servidor; testes de dispositivo/uso real continuam pendentes.
+
+**Decisão preservada:** o teto segue o dia do timestamp transacional da finalização. Se a transação aguarda bloqueio durante a virada, permanece no dia em que começou a transação. Confirmar aceitação dessa regra antes de aplicar SQL em produção. Nenhuma função, tabela, saldo, histórico ou ranking de produção foi alterado.

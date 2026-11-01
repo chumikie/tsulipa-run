@@ -39,6 +39,7 @@ on:
       - 'supabase/sql/karaoke_lab_*.sql'
       - 'supabase/tests/karaoke_lab_*.sql'
       - 'tests/karaoke-homol-view.test.js'
+      - 'tests/avatar-consistency.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'tw-windows.css'
@@ -103,6 +104,7 @@ on:
       - 'supabase/sql/karaoke_lab_*.sql'
       - 'supabase/tests/karaoke_lab_*.sql'
       - 'tests/karaoke-homol-view.test.js'
+      - 'tests/avatar-consistency.test.js'
       - 'games-theme.css'
       - 'index2-skin.css'
       - 'tw-windows.css'
@@ -146,6 +148,8 @@ jobs:
         run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
+      - name: Validate avatar consistency across profile and Karaoke
+        run: node tests/avatar-consistency.test.js
       - name: Validate Backstage Pet cloud save retries and confirmations
         run: node tests/pet-sync.test.js
       - name: Privacy page translations compile

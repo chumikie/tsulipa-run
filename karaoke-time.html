@@ -3241,6 +3241,14 @@ ktOrganizarLayoutIntegrado();
 function ktCloseRoom(){if(kt.active()&&kt.paused()&&!window.confirm('Deseja mesmo sair? Vai perder sua vez!'))return;if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();kt.stopPreview(false);kt.allowExit();if(kt.active())kt.pause(true);if(ktNoSite()){try{parent.postMessage({type:'tsulipa-games-hub'},location.origin);}catch(_){try{parent.postMessage({type:'tsulipa-games-hub'},'*');}catch(__){}}return;}$('ktPopup').close();}
 $('ktClose').onclick=ktCloseRoom;$('ktFoto').addEventListener('click',function(e){e.stopPropagation();krSalvarFotoSala();});$('ktPopup').addEventListener('cancel',function(e){e.preventDefault();ktCloseRoom();});$('ktOpen').onclick=function(){$('ktPopup').showModal();};
 window.KaraokeTimeOffline={close:ktCloseRoom,dailyClip:function(){return ktClip.current();},getHomeScoreRanking:function(){return ktMeta.homeScoreRanking();},dailySnapshot:function(){return ktDaily.snapshot();}};
+/* No site o iframe tem a altura da página: as janelas modais abrem na parte que o jogador vê. */
+if(ktNoSite())(function(){var fe;try{fe=window.frameElement;}catch(_){}if(!fe)return;
+ var po=function(){var ds=document.querySelectorAll('dialog[open]');for(var i=0;i<ds.length;i++){var d=ds[i],m;try{m=d.matches(':modal');}catch(_){m=d.id!=='ktPopup';}if(!m)continue;
+  var r=fe.getBoundingClientRect(),a=Math.max(0,-r.top),b=Math.min(innerHeight,parent.innerHeight-r.top);if(b-a<160){a=0;b=Math.min(innerHeight,parent.innerHeight);}
+  d.style.top=a+'px';d.style.bottom=Math.max(0,innerHeight-b)+'px';d.style.maxHeight=Math.max(140,b-a-16)+'px';}};
+ new MutationObserver(po).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+ try{parent.addEventListener('scroll',po,{passive:true});parent.addEventListener('resize',po);}catch(_){}
+})();
 /* O jogo integrado fica no fluxo da página, com uma única rolagem. */
 if(ktNoSite()){
  $('ktPopup').setAttribute('open','');

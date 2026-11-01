@@ -19,7 +19,12 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 - PR sem conflitos com a `main` (a `main` não recebeu commits novos); CI verde no HEAD `7744c49`.
 - **Supabase (ChatGPT/responsável):** a PR traz `supabase/migrations/20261101161409_center_run_daily_100.sql` (teto de 100 estrelas/dia). Nada no repositório aplica migrações sozinho (sem workflow `supabase db push` nem `supabase/config.toml`), mas **conferir no painel do Supabase se a integração com o GitHub está desligada** antes do merge. Se estiver ligada e o limite de 100 ainda não estiver autorizado, mover esse arquivo para fora de `supabase/migrations` antes de publicar.
 - **Karaoke:** `karaoke-room-auto-mic.js` e `karaoke-room-polaroid.js` usam variáveis internas da página. O cantor automático da plateia se desliga sozinho (`krLoungeSoloPermitido is not defined`, sem quebrar a sala) e o clique nas Polaroids deve falhar ao abrir o pôster. Corrigir ou desativar antes de publicar.
-- Limites de tamanho quase no máximo: `index.html` ~1.149.979/1.150.000 e `karaoke-time.html` ~449.700/450.000 bytes.
+- Limites de tamanho quase no máximo: `index.html` ~1.149.700/1.150.000 e `karaoke-time.html` ~449.100/450.000 bytes.
+- **Atualização 01/11/2026, 20:40:**
+  - Mechas: o estilo escolhido (Uma, Dupla, Luzes, Escondida) agora vai junto no avatar público. Antes, Perfil, rankings, pôsteres do Karaoke, Karaoke do dia, Karaoke online e Sora mostravam todas como "Uma" (`9f15ed3`).
+  - Mecha Luzes refeita: fios que acompanham a curva da cabeça, suaves na raiz e mais claros na ponta. O módulo de cabelo passou para `v=8` (`8c404c1`).
+  - Janela "Confirmar show" no celular: dentro do site, as janelas modais do Karaoke (confirmar show, resultado, pôster) abriam centralizadas no iframe alto, cerca de 1.000 px abaixo da tela. Agora abrem na parte que o jogador está vendo. Verificado em Chromium a 320×900, 390×700 e 844×390, com clique real no botão; antes da correção, o clique falhava.
+  - CI: as etapas de cabelos e acessórios passam. O vermelho atual vem dos testes da sala de Karaoke em andamento pelo outro contribuidor (microfone automático, visitas dos pets e pandeiros) e da etapa "shows passam pelo servidor quando há conta" do `validate-games.js`, que já falhava antes destas correções.
 - Testes logados (Perfil, Montar Idol, Gacha, Pet, Moon Duo, Karaoke com tickets) ficam com o responsável.
 
 ## 1. Implementado no branch — presença confirmada no código

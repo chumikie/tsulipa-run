@@ -13,6 +13,7 @@
   grid-column:1/-1;justify-content:center;flex-wrap:wrap;gap:4px;
  }
  html.kt-no-site .kt-toolbar .krgrp{gap:4px;padding:4px}
+ html.kt-no-site .kt-toolbar #ktSession .krgrp:last-child{flex-wrap:wrap;white-space:normal;max-width:100%}
  html.kt-no-site .kt-toolbar .krb{font-size:10px;padding:5px 7px}
  html.kt-no-site .kt-toolbar #ktClock{font-size:14px}
  html.kt-no-site .kt-toolbar #ktScore{font-size:10px}

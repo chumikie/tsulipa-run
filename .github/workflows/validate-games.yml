@@ -18,6 +18,9 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-room-auto-mic.js'
+      - 'karaoke-room-polaroid.js'
+      - 'tests/karaoke-room-controllers.test.js'
       - 'karaoke-time-base.css'
       - 'karaoke-music-preview.js'
       - 'karaoke-tickets.js'
@@ -106,6 +109,9 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-room-auto-mic.js'
+      - 'karaoke-room-polaroid.js'
+      - 'tests/karaoke-room-controllers.test.js'
       - 'karaoke-time-base.css'
       - 'karaoke-music-preview.js'
       - 'karaoke-tickets.js'
@@ -208,6 +214,10 @@ jobs:
         run: node --check karaoke-room-polaroid.js
       - name: Validate Karaoke autonomous mic controller
         run: node --check karaoke-room-auto-mic.js
+      - name: Validate Karaoke Polaroid controller
+        run: node --check karaoke-room-polaroid.js
+      - name: Validate Karaoke room controller dependency injection
+        run: node tests/karaoke-room-controllers.test.js
       - name: Validate Karaoke room pet visits and pandeiros
         run: node tests/karaoke-room-reactions.test.js
       - name: Validate game HTML and routes
@@ -286,3 +296,27 @@ jobs:
         run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
         run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
+  browser-karaoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix /tmp/karaoke-playwright --no-save playwright
+          /tmp/karaoke-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+          QA_WIDTHS: 320,390,430,844,1440
+        run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: karaoke-room-browser-captures
+          path: /tmp/karaoke-room-browser
+          if-no-files-found: warn
+          retention-days: 5

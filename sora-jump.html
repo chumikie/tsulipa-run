@@ -3883,7 +3883,7 @@ function soraLoop(t){
   var dt = soraLastT ? Math.max(0.1, Math.min(2.5, (t - soraLastT) / 16.667)) : 1;
   soraLastT = t;
   if(soraState === 'play') soraUpdate(dt);
-  soraDraw();
+  if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(soraCv,t))soraDraw();
   if(soraPodeAnimar())soraRaf=requestAnimationFrame(soraLoop);
 }
 function soraStartGame(){

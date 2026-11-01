@@ -13,7 +13,11 @@ assert(index.includes('ktTicketInventory')&&index.includes('ktTicketAdminSlot'),
 assert(index.includes("r.tipo === 'ticket'")&&index.includes('window.ktTickets.acceptBalance(r)'),'Gacha mostra ticket e atualiza saldo');
 assert(karaoke.includes('Deseja gastar 1 ticket de Karaoke?'),'confirmação explícita antes de cobrar');
 assert(karaoke.includes('window.ktOnline.ticketAdmission()'),'admissão de ticket é passada ao contador local');
-assert(karaoke.includes('a.iniciar(guardado(),!!wantsTicket)'),'a admissão decide a moeda no servidor');
+assert(karaoke.includes('var resume=guardado();')&&karaoke.includes('a.iniciar(resume,!!wantsTicket)'),'a admissão decide a moeda no servidor');
+assert(source.includes('kt_ticket_request_v1:')&&source.includes('savePending(id,req,r.run)'),'chave idempotente e corrida paga sobrevivem à recarga');
+assert(source.includes('completeRun:completeRun'),'a finalização confirmada encerra a chave persistida do ticket');
+assert(karaoke.includes("r.reason==='limit'")&&karaoke.includes('a.iniciar(null,true)'),'corrida antiga encerrada não bloqueia nova admissão paga');
+assert(karaoke.includes("x.reason==='invalid'||x.reason==='run'")&&karaoke.includes('parent.ktTickets.completeRun(id)'),'o ID e o vínculo do ticket só são limpos após resposta terminal');
 assert(!/\.rpc\(|\.from\(/.test(source),'cliente não edita carteiras diretamente');
 assert(sql.includes('APROVADO E APLICADO NO SUPABASE'),'migração marcada como aprovada e aplicada');
 assert(sql.includes("r.payment_kind='free'"),'5 tentativas gratuitas não contam shows extras');

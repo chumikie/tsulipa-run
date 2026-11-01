@@ -2524,10 +2524,10 @@ function krLoungeReset(){
   b._ktLoungeWalking=false;b._ktLoungeFacing=b.x>480?-1:1;
  }
 }
-function krLoungePodePassear(b){
+function krLoungePodePassear(b,jaAtivo){
  return !!b&&!b.no_mic&&!b.itemSala&&!b.snackSala&&!b.danca&&
   !(b._ktSocialUntil>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&
-  krDemoFila.indexOf(b.nick)<0&&krLoungeActors.indexOf(b)<0;
+  krDemoFila.indexOf(b.nick)<0&&(jaAtivo||krLoungeActors.indexOf(b)<0);
 }
 function krLoungeUpdateDeveRodar(){
  if(krLoungeSoloPermitido())return krLoungeActors.length>0||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;
@@ -2559,7 +2559,7 @@ function krLoungeUpdate(dt){
  // Advance each active walker independently; a singer/item/queue takes priority.
  for(var wi=krLoungeActors.length-1;wi>=0;wi--){
   var b=krLoungeActors[wi],st=b._ktLounge;
-  if(!krLoungePodePassear(b)){
+  if(!krLoungePodePassear(b,true)){
    var singing=!!b.no_mic||(krDemoCantor&&krDemoCantor.bot===b);
    if(singing){
     if(st){st.phase='rest';st.route=null;st.waitUntil=krT+420+Math.random()*360;}

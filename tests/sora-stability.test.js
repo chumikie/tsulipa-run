@@ -83,9 +83,9 @@ function evaluate(script,context){
   const handlers={};
   let stops=0,resumes=0,requested=0,loopStops=0;
   const sandbox={
-    soraRaf:5,soraOpen:true,soraState:'play',soraHostVisible:true,soraTouchDir:1,
+    soraRaf:5,soraOpen:true,soraState:'play',soraHostVisible:true,soraMusicTimer:null,soraTouchDir:1,
     soraKeyL:true,soraKeyR:true,soraLastT:0,soraSoundOn:true,muted:false,
-    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},
+    soraMusicStop:()=>{stops++;sandbox.soraMusicTimer=null;},soraMusicStart:()=>{resumes++;sandbox.soraMusicTimer=1;},
     soraPararLoop:function(){loopStops++;sandbox.soraRaf=0;},
     cancelAnimationFrame(){},
     requestAnimationFrame:()=>{requested++;return 8;},soraLoop:()=>{},

@@ -1723,7 +1723,7 @@ soraOnlineInitAuth();
 var soraState = 'menu';
 var soraCv = null, soraCtx = null;
 var SW = 360, SH = 520;
-var soraRaf = 0, soraLastT = 0, soraFrame = 0;
+var soraRaf = 0, soraLastT = 0, soraFrame = 0, soraHostVisible = true;
 var soraSecretClicks = 0, soraSecretUnlocked = false, soraTestSceneId = '';
 var soraVisitorUfo = null, soraVisitorElapsed = 0, soraVisitorWaitFrames = 0, soraVisitorAttempted = false;
 var soraVisitorRowsCache = null, soraVisitorRowsPromise = null;
@@ -3851,13 +3851,28 @@ function soraDraw(){
     x.restore();
   }
 }
+function soraPodeAnimar(){
+  var overlay=$('soraOv');
+  return !!(soraOpen&&soraHostVisible&&!document.hidden&&overlay&&!overlay.hidden);
+}
+function soraPararLoop(){
+  if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
+  soraLastT=0;
+}
+function soraAgendarLoop(){
+  if(!soraRaf&&soraPodeAnimar()){
+    soraLastT=performance.now();
+    soraRaf=requestAnimationFrame(soraLoop);
+  }
+}
 function soraLoop(t){
-  if(!soraOpen) return;
+  soraRaf=0;
+  if(!soraPodeAnimar()){soraMusicStop();return;}
   var dt = soraLastT ? Math.max(0.1, Math.min(2.5, (t - soraLastT) / 16.667)) : 1;
   soraLastT = t;
   if(soraState === 'play') soraUpdate(dt);
   soraDraw();
-  soraRaf = requestAnimationFrame(soraLoop);
+  if(soraPodeAnimar())soraRaf=requestAnimationFrame(soraLoop);
 }
 function soraStartGame(){
   var audioReady = soraSoundOn ? ac() : null;
@@ -4197,8 +4212,23 @@ function soraSetupUI(){
   window.addEventListener('pointercancel', function(){ soraTouchDir = 0; });
   window.addEventListener('blur', function(){ soraTouchDir = 0; soraKeyL = false; soraKeyR = false; });
   document.addEventListener('visibilitychange', function(){
-    if(document.hidden){ soraTouchDir = 0; soraKeyL = false; soraKeyR = false; soraMusicStop(); }
-    else if(soraOpen && soraState === 'play' && soraSoundOn && !muted) soraMusicStart();
+    if(document.hidden){
+      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+    }else{
+      soraAgendarLoop();
+      if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
+    }
+  });
+  window.addEventListener('message',function(e){
+    if(e.source!==parent||!e.data||e.data.type!=='TW_GAME_VISIBILITY')return;
+    if(location.protocol!=='file:'&&e.origin!==location.origin)return;
+    soraHostVisible=e.data.visible===true;
+    if(!soraHostVisible){
+      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+    }else{
+      soraAgendarLoop();
+      if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
+    }
   });
 
   // Setas / A-D no computador
@@ -4394,24 +4424,23 @@ function soraOpenUIReady(){
   if($('soraOverBox')) $('soraOverBox').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = 'none';
   $('soraOv').hidden = false;
-  soraLastT = performance.now(); cancelAnimationFrame(soraRaf); soraRaf = requestAnimationFrame(soraLoop);
+  soraPararLoop();soraAgendarLoop();
 }
 // A background-cached iframe must resume RAF/audio on pageshow.
 function soraSuspendForNavigation(){
- soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;
- if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
+ soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();
 }
 window.addEventListener('pagehide',soraSuspendForNavigation);
 window.addEventListener('pageshow',function(){
- if(!soraOpen||soraRaf)return;
- soraLastT=performance.now();soraRaf=requestAnimationFrame(soraLoop);
- if(soraState==='play'&&!document.hidden&&soraSoundOn&&!muted)soraMusicStart();
+ if(!soraOpen)return;
+ soraAgendarLoop();
+ if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted)soraMusicStart();
 });
 function soraCloseUI(){
   if(soraState === 'play') soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
-  cancelAnimationFrame(soraRaf); soraRaf=0; if($('soraOv')) $('soraOv').hidden = true;
+  soraPararLoop(); if($('soraOv')) $('soraOv').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = '';
   if(soraSavedMutedBeforeOpen !== null){ muted = soraSavedMutedBeforeOpen; soraSavedMutedBeforeOpen = null; }
 }

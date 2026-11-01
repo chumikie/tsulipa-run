@@ -3101,11 +3101,13 @@ function twOverlayTopo(){
   return L.length?L[L.length-1]:null;
 }
 function twAnimacaoVisivel(el){
+ if(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return false;
   if(document.hidden||!twElementoVisivelNaJanela(el))return false;
   var owner=el.closest?el.closest('.ov,.tw-preview-game,.tw-karaoke-closed-ov'):null,top=twOverlayTopo();
   return owner?owner===top:(!top&&twIndex2StageVisible);
 }
 function twIndex2BaseFramesPaused(){
+  if(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return true;
   if(document.hidden||!twIndex2StageVisible)return true;
   return !!twOverlayTopo();
 }
@@ -13432,6 +13434,7 @@ applyLang();
  new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','class','open']});
  document.addEventListener('visibilitychange',sync);
  window.addEventListener('pageshow',sync);
+window.addEventListener('message',function(e){if(e.source===window.parent&&e.data&&e.data.type==='tsulipa-motion-state')schedule();});
  window.addEventListener('pagehide',function(){
   twIndex2PauseBaseFrames();
   ['hubAnim','gachaAnim','duoAnim','aniverAnim','encAnim','petRaf','perfAnimId'].forEach(cancel);

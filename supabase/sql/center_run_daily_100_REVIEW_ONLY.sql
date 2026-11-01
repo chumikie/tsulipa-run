@@ -50,7 +50,7 @@ begin
 
   credito := greatest(0, least(coalesce(p_stars, 0), floor(seg * 3)::integer + 5, 400, 100 - ganho_hoje));
   if not score_ok then credito := 0; end if;
-  limite_diario := score_ok and coalesce(p_stars, 0) > 0 and ganho_hoje >= 100;
+  limite_diario := score_ok and coalesce(p_stars, 0) > 0 and ganho_hoje + credito >= 100;
 
   update public.players set stars = stars + credito,
     best = case when score_ok then greatest(best, p_score) else best end,

@@ -7470,13 +7470,21 @@ function perfRecadosHtml(d, meu){
 }
 perfOv.addEventListener('click', function(e){
   if(e.target.id === 'perfRecOk'){
-    var inp = $('perfRecTxt'), tx = inp.value.trim(), b = e.target; if(!tx) return;
-    b.disabled = true;
-    contaRpc('deixar_recado', { p_nick: perfAtual.nick, p_texto: tx }).then(function(r){
-      b.disabled = false;
-      if(r && r.ok){ if(sfx.card) sfx.card(); perfAbrir(perfAtual.nick, true); setTimeout(function(){ perfTopoMsg('💌 ' + tr('Recado enviado!')); }, 400); if(typeof insConferir === 'function') insConferir(); return; }
-      var m = $('perfRecMsg'); m.textContent = tr(PERF_REC_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; if(sfx.hit) sfx.hit();
-    }).catch(function(){ b.disabled = false; });
+    var inp=$('perfRecTxt'),tx=inp.value.trim(),b=e.target,alvo=perfAtual&&perfAtual.nick;if(!tx||!alvo)return;
+    b.disabled=true;
+    contaRpc('deixar_recado',{p_nick:alvo,p_texto:tx}).then(function(r){
+      var painelAtual=!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo;
+      if(painelAtual)b.disabled=false;
+      if(r&&r.ok){
+        if(sfx.card)sfx.card();
+        if(painelAtual){
+          perfAbrir(alvo,true);
+          setTimeout(function(){if(!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo)perfTopoMsg('💌 '+tr('Recado enviado!'));},400);
+        }
+        if(typeof insConferir==='function')insConferir();return;
+      }
+      if(painelAtual){var m=$('perfRecMsg');m.textContent=tr(PERF_REC_ERRO[r&&r.erro]||'Não deu para falar com o servidor. Tente de novo.');m.hidden=false;if(sfx.hit)sfx.hit();}
+    }).catch(function(){if(!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo)b.disabled=false;});
     return;
   }
   var x = e.target.closest('.perfrecx[data-id]'); if(!x) return;
@@ -7555,7 +7563,7 @@ perfOv.addEventListener('click', function(e){
   }).then(function(r){
     b.disabled = false;
     var m = $('perfBioMsg'); m.hidden = false;
-    if(r && r.ok){ perfAtual.oshi = os; perfAtual.frase = r.frase || ''; m.textContent = '✨ ' + tr('Salvo!'); if(sfx.card) sfx.card(); setTimeout(perfMontar, 700); }
+    if(r&&r.ok){perfAtual.oshi=os;perfAtual.frase=r.frase||'';m.textContent='✨ '+tr('Salvo!');if(sfx.card)sfx.card();setTimeout(function(){if(!perfOv.hidden&&perfMeu)perfMontar();},700);}
     else m.textContent = tr(r && r.erro === 'palavras' ? 'Essa frase tem palavras que não são permitidas.' : 'Não deu para falar com o servidor. Tente de novo.');
   }).catch(function(e){ b.disabled = false; var m = $('perfBioMsg'); m.hidden = false; m.textContent = tr(e && e.estilo === 'emoji' ? 'Use só emojis (até 8).' : e && e.aniv === 'trava' ? 'O aniversário só pode ser trocado 1 vez por ano.' : e && e.aniv === 'data' ? 'Essa data não existe.' : 'Não deu para falar com o servidor. Tente de novo.'); });
 });
@@ -9482,7 +9490,7 @@ function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "
   if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)setTimeout(function(){c.click();},350);
 }
 function hubComecar(){
-  ac(); hubJingle(); setTimeout(hubMusicaTocar, 1100);
+  ac();hubJingle();setTimeout(function(){if(!hubOv.hidden&&hubComecou)hubMusicaTocar();},1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
   twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
@@ -9764,10 +9772,10 @@ hubOv.addEventListener('click', function(e){
   if((b = t.closest('[data-hduo]'))){ duoAbrir(); return; }
   if((b = t.closest('[data-collect]'))){   // missão do dia: abre o jogo irmão e marca a visita
     window.open(HUB_COLLECT, '_blank', 'noopener');
-    contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(hubMisCarregar, 600); }).catch(function(){});
+    contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(function(){if(!hubOv.hidden)hubMisCarregar();},600); }).catch(function(){});
     return;
   }
-  if((b = t.closest('[data-hlink]'))){ if(b.dataset.hlink === 'collect' && contaJ) contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(hubMisCarregar, 600); }).catch(function(){}); return; }
+  if((b = t.closest('[data-hlink]'))){ if(b.dataset.hlink === 'collect' && contaJ) contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(function(){if(!hubOv.hidden)hubMisCarregar();},600); }).catch(function(){}); return; }
   if((b = t.closest('[data-resg]'))){
     b.disabled = true;
     contaRpc('resgatar_missao', { p_k: b.dataset.resg }).then(function(r){
@@ -10045,7 +10053,7 @@ $('gachaGirar').onclick = function(){
         if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
         else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
       } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
-      gachaUI(); gachaCardUI(); hubCardsUI(); if(typeof gachaCardsCarregar === 'function') setTimeout(gachaCardsCarregar, 600);
+      gachaUI(); gachaCardUI(); hubCardsUI(); if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
     }, 1600);
   }).catch(function(){ gachaGiro = -1; gachaUI(); });
 };
@@ -10876,7 +10884,7 @@ function aniverFesta(){
     $('aniverDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
     aniverOv.hidden = false; aniverOv.scrollTop = 0; aniverT = 0; if(!aniverAnim) aniverAnim = requestAnimationFrame(aniverLoop);
     aniverMusica();
-    if(typeof perfAtual !== 'undefined' && perfAtual && perfMeu && !perfOv.hidden) setTimeout(function(){ perfAbrir(); }, 400);   // atualiza os cards no perfil
+    if(typeof perfAtual!=='undefined'&&perfAtual&&perfMeu&&!perfOv.hidden)setTimeout(function(){if(!perfOv.hidden)perfAbrir();},400);   // atualiza os cards no perfil
   }).catch(function(){ aniverFeito = false; });
 }
 function aniverMusica(){   // "Parabéns pra você" (melodia em domínio público) em bipes fofos

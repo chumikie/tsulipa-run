@@ -35,6 +35,13 @@ exports.verify=async function(p,frame,width,out){
  const session=(await state()).session;
  await open();assert((await state()).paused,'Photo pauses an active show');
  assert.equal((await state()).session,session,'Photo does not start another attempt');
+ const frameDownload=frame.locator('#ktPhotoFrameDownload');
+ await frameDownload.waitFor({state:'visible'});
+ const frameEvent=p.waitForEvent('download');await frameDownload.click();const framedFile=await frameEvent;
+ const framedBytes=fs.readFileSync(await framedFile.path());
+ assert.equal(framedBytes.readUInt32BE(16),1920,'Polaroid export keeps the room width');
+ assert.equal(framedBytes.readUInt32BE(20),1260,'Polaroid export includes the print border and caption area');
+ assert(framedFile.suggestedFilename().includes('_polaroid.png'),'Framed image has a distinct filename');
  const capture=await img.evaluate(i=>{
   const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);
   return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto};
@@ -61,6 +68,7 @@ exports.verify=async function(p,frame,width,out){
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('continua aqui'),'Cancelling sharing keeps the photo');
  assert.equal(downloads,0,'Cancelling does not trigger a download');
  assert.equal(await img.getAttribute('src'),capture.url);
+ assert(await frame.locator('#ktPhotoFrameDownload').isVisible(),'Framed export is offered alongside the clean photo');
  await frame.locator('body').evaluate(()=>{window.__qaPhotoShareMode='error';});
  await frame.locator('#ktPhotoShare').click();
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('Baixar PNG'),'Denied sharing offers a usable fallback');

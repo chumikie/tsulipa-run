@@ -20,7 +20,7 @@
    var bots=deps.getBots(),eligible=[];
    for(var i=0;i<bots.length;i++)if(deps.canWalk(bots[i])&&!bots[i]._ktLoungeWalking)eligible.push(bots[i]);
    if(!eligible.length){deps.setNextAt(s.time+180);return;}
-   var bot=eligible[Math.floor(deps.random())*eligible.length],index=bots.indexOf(bot),seat=deps.getSeat(index);
+   var bot=eligible[Math.floor(deps.random()*eligible.length)],index=bots.indexOf(bot),seat=deps.getSeat(index);
    bot.no_mic=true;bot.danca='';bot._ktLoungeWalking=false;
    deps.setSinger({bot:bot,x:seat?seat[0]:bot.x,y:seat?seat[1]:bot.y,endsAt:deps.nowMs()+65000,automatic:true});
    bot.x=480;bot.y=286;

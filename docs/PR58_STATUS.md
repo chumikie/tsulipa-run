@@ -4,7 +4,7 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Snapshot do código auditado:** 01/11/2026, 16h49 (Brasília) — HEAD atual da PR: `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
+**Snapshot do código auditado:** 01/11/2026, 16h49 (Brasília) — último commit com alterações de código verificado: `6fb427a9869d9426103e66d9c4caef9ab2001ccb`.
 **Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 333 commits, 49 arquivos alterados, 4.734 adições e 975 remoções.
 **CI associado ao HEAD atual:** execução [#41343692142](https://github.com/chumikie/tsulipa-run/actions/runs/41343692142), com os dois jobs aprovados. Atualizações de documentação posteriores continuam sendo commits documentais e não mudam o código do jogo.
 

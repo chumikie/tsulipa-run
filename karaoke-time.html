@@ -2840,15 +2840,26 @@ function varrer(raiz){
   var w=document.createTreeWalker(raiz,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT),n;
   while((n=w.nextNode())){if(n.nodeType===3){var p=n.parentNode&&n.parentNode.nodeName;if(p!=='SCRIPT'&&p!=='STYLE')noTexto(n);}else noEl(n);}
 }
-function iniciar(){
-  document.documentElement.lang={en:'en',es:'es',th:'th',ja:'ja'}[L];
-  varrer(document.body);
-  new MutationObserver(function(ms){ms.forEach(function(m){
+var idiomaObserver=null,idiomaIniciado=false;
+function idiomaObservar(){
+  if(!document.body)return;
+  if(!idiomaObserver)idiomaObserver=new MutationObserver(function(ms){ms.forEach(function(m){
     if(m.type==='characterData')noTexto(m.target);
     else if(m.type==='attributes')noEl(m.target);
     else m.addedNodes.forEach(varrer);
-  });}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
+  });});
+  idiomaObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
 }
+function iniciar(){
+  if(!document.body)return;
+  if(!idiomaIniciado){
+    document.documentElement.lang={en:'en',es:'es',th:'th',ja:'ja'}[L];
+    varrer(document.body);idiomaIniciado=true;
+  }
+  idiomaObservar();
+}
+window.addEventListener('pagehide',function(){if(idiomaObserver)idiomaObserver.disconnect();});
+window.addEventListener('pageshow',iniciar);
 if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',iniciar);
 })();
 </script><script>

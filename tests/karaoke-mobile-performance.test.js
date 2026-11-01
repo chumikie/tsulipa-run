@@ -14,4 +14,14 @@ assert(block.includes('var tileIndex=0;for(var gx=100;gx<860;gx+=54)for(var gy=3
 assert(block.includes('pisou=krTilesPisados[tileIndex++]===1'),'Tile rendering should read precomputed occupancy');
 assert(!block.includes('lista.some(function(j){return Math.abs(j.x-(gx+25))<38'),'Avoid scanning all characters for every tile');
 assert(html.includes('if(krHandBusy(b))')&&html.includes('krAgendarLoop()'),'Keep the existing room animation and busy-hand flow');
+// Static wall panels and shelf are cached instead of rebuilt on every room frame.
+assert(html.includes('var krDecorWallCache=null;'),'Wall background cache should be persistent');
+assert(html.includes('var wallCanvas=document.createElement(\'canvas\');wallCanvas.width=W;wallCanvas.height=330;'),'Wall cache should match the logical scene size');
+assert(html.includes('x.drawImage(krDecorWallCache,0,0);'),'Cached wall should be composited into the scene');
+assert(html.includes('var krEstanteCache=null,krEstanteCacheKey=\'\';'),'Shelf artwork should have a persistent cache');
+assert(html.includes("var key=tr('Acessórios + snacks')+'|'+tr('Escolha abaixo para equipar');"),'Shelf cache should invalidate when language labels change');
+assert(html.includes('function krDesenharEstanteItensDireto('),'The original shelf painter should remain available for cache creation');
+assert(html.includes('x.drawImage(krEstanteCache,696,205);'),'Cached shelf should be composited at its original position');
+assert(html.includes('function krDesenharWhimsical(x,t)')&&html.includes('function krDesenharPosterIdol(x,person,fx,fy,idx,t)'),'Animated curtains and dynamic player posters should remain live');
+
 console.log('✓ Karaoke room tile occupancy uses a precomputed 15×6 grid');

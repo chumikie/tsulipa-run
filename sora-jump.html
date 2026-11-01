@@ -4448,7 +4448,7 @@ window.addEventListener('pagehide',soraSuspendForNavigation);
 window.addEventListener('pageshow',function(){
  if(!soraOpen)return;
  soraAgendarLoop();
- if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted)soraMusicStart();
+ if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted&&soraMusicTimer===null)soraMusicStart();
 });
 function soraCloseUI(){
   if(soraState === 'play') soraOnlineAbortRun();

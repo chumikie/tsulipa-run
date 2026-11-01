@@ -28,6 +28,31 @@ assert.equal(capped(0,400,10),35,'time validation allowance remains active');
 const brDay=iso=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(iso));
 assert.notEqual(brDay('2026-11-02T02:59:59Z'),brDay('2026-11-02T03:00:00Z'),'daily ledger rolls at Sao Paulo midnight');
 
+// Isolated serialized ledger model. It verifies intended concurrency/idempotency
+// behavior; it is NOT a live PostgreSQL execution of the proposed function.
+function makeLedger(){
+  const accounts=new Map(),runs=new Set(),credits=[],locks=new Map();
+  const get=id=>{if(!accounts.has(id))accounts.set(id,{stars:300});return accounts.get(id);};
+  const finish=async (owner,run,day,requested,seconds)=>{
+    const previous=locks.get(owner)||Promise.resolve();
+    let release;
+    const next=new Promise(resolve=>{release=resolve;});
+    locks.set(owner,previous.then(()=>next));
+    await previous;
+    try{
+      const key=owner+'|'+run;
+      if(runs.has(key))return {ok:false,erro:'corrida_invalida',creditadas:0};
+      runs.add(key);
+      const earned=credits.filter(c=>c.owner===owner&&c.day===day&&c.reason==='corrida')
+        .reduce((total,c)=>total+c.amount,0);
+      const amount=capped(earned,requested,seconds);
+      get(owner).stars+=amount;
+      if(amount>0)credits.push({owner,day,reason:'corrida',amount});
+      return {ok:true,creditadas:amount,stars:get(owner).stars,limite_diario:earned>=100&&requested>0};
+    }finally{release();}
+  };
+  return {finish,get,credits};
+}
 const res={innerHTML:'Aguardando validação do servidor'};
 let starts=0,ends=0,refreshes=0;
 let startResult=()=>Promise.resolve('run-1');
@@ -47,6 +72,29 @@ const ctx={
 vm.runInNewContext(page.slice(start,end),ctx);
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
+  const ledger=makeLedger();
+  const today='2026-11-01',tomorrow='2026-11-02';
+  const same=await Promise.all([
+    ledger.finish('A','run-1',today,75,120),
+    ledger.finish('A','run-2',today,75,120),
+    ledger.finish('A','run-3',today,75,120)
+  ]);
+  assert.deepEqual(same.map(r=>r.creditadas),[75,25,0],
+    'three concurrent submissions on the same account serialize at the 100-star cap');
+  assert.equal(ledger.get('A').stars,400,'concurrent credits never exceed the account cap');
+  const duplicate=await Promise.all([
+    ledger.finish('A','run-2',today,75,120),
+    ledger.finish('A','run-2',today,75,120)
+  ]);
+  assert(duplicate.every(r=>r.ok===false),'repeated run UUID is never credited twice');
+  assert.equal(ledger.credits.filter(c=>c.owner==='A').length,2,'only two actual credits were logged');
+  const other=await ledger.finish('B','run-1',today,60,120);
+  assert.equal(other.creditadas,60,'different accounts have independent limits');
+  const rollover=await ledger.finish('A','run-4',tomorrow,100,120);
+  assert.equal(rollover.creditadas,100,'new Sao Paulo day has a fresh allowance');
+  assert.equal(ledger.get('A').stars,500,'old balance and newly earned credits are additive');
+  assert.equal(ledger.credits.every(c=>c.reason==='corrida'),true,'other earning reasons are untouched by the cap');
+
   ctx.contaFimCorrida(500,30,'Tsu',()=>refreshes++);
   assert(res.innerHTML.includes('Corrida sem autorização do servidor'),'missing run is no longer silent');
   assert.equal(ends,0,'missing token cannot start a finish RPC');

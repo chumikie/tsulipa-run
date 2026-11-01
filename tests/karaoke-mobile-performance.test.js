@@ -9,6 +9,7 @@ assert(lifecycle.includes('function disconnectFrame(frame)')&&lifecycle.includes
 assert(lifecycle.includes("if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}"),'Changing an iframe source must replace the previous visibility bridge');
 const sora=fs.readFileSync(require('node:path').join(__dirname,'..','sora-jump.html'),'utf8');
 const main=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
+const vercel=fs.readFileSync(require('node:path').join(__dirname,'..','vercel.json'),'utf8');
 const windows=fs.readFileSync(require('node:path').join(__dirname,'..','tw-windows.js'),'utf8');
 const tickets=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-tickets.js'),'utf8');
 assert(main.includes('function twIntervaloVisivel(el,enabled,callback,delay)')&&main.includes('window.TWMotionLifecycle.watchLoop(el,enabled,start,stop)'),'UI-only intervals should use the shared visibility lifecycle');
@@ -317,5 +318,26 @@ const decorEnd=html.indexOf('krDesenharEstanteItens=ktDecor.shelf',decorStart);
 const decor=html.slice(decorStart,decorEnd);
 assert(decor.includes('function hit(px,py)')&&decor.includes("if(match)return react(match.playerId,'random')")&&decor.includes('return {refresh:refresh,hit:hit,react:react,shelf:shelf};'),'Tapping the actual room characters must still trigger the audience reactions after removing the duplicate strip');
 assert(html.includes('ktDecor.hit(px,py)')&&html.includes('krDesenharEstanteItens=ktDecor.shelf'),'Main-room interactions and the decorative accessory shelf must remain connected');
+
+const profileStart=main.indexOf('function perfAbaMostrar()');
+const profileEnd=main.indexOf('perfOv.addEventListener(\'click\'',profileStart);
+const profileUi=main.slice(profileStart,profileEnd);
+assert(profileUi.includes('!perfilTemEmoji || !perfilTemCor')&&profileUi.includes('id="perfProfileStyleCta"'),'The personal profile should prompt for missing emoji or color without showing the prompt on complete profiles');
+assert(profileUi.includes('target.scrollIntoView')&&profileUi.includes('target.focus({ preventScroll:true })')&&main.includes('.perfprofile-nudge{'),'The profile prompt should guide the player directly to the emoji/color editor');
+assert(main.includes('Make your profile feel more like you!')&&main.includes('TsuLiPa⭐World identity'),'Profile completion prompts should include translations');
+assert(vercel.includes('"source": "/index2.html"')&&vercel.includes('"source": "/index2"')&&vercel.includes('"destination": "/"'),'Legacy homepage aliases should redirect at the server before the intermediate HTML page renders');
+
+const petCacheStart=main.indexOf('var PET_DRAW_RAMP_CACHE=new Map()');
+const petDrawStart=main.indexOf('function drawPet(');
+const petDrawEnd=main.indexOf('\nvar PAL=',petDrawStart);
+const petDraw=main.slice(petDrawStart,petDrawEnd);
+assert(petCacheStart>=0&&main.slice(petCacheStart,petDrawStart).includes('PET_DRAW_RAMP_CACHE.size>=64'),'Shared pet gradient textures should use a bounded cache');
+assert(petDraw.includes('petDrawRampTsuEars(ctx)')&&petDraw.includes("petDrawRampEllipse(ctx,'tsu-body'")&&petDraw.includes("petDrawRampEllipse(ctx,'pati-body'")&&petDraw.includes("petDrawRampEllipse(ctx,'lirika-body'"),'Tsu, Lirika and Pati fixed pet body/ear gradients should reuse shared raster ramps');
+assert(petDraw.includes('petDrawRampCrown(ctx)')&&petDraw.includes('var crnG = ctx.createLinearGradient'),'The Pati crown should use the shared ramp with a CanvasGradient fallback');
+const customPetStart=main.indexOf('function petDrawCustom(');
+const customPetEnd=main.indexOf('// ---------- Reações do personagem ----------',customPetStart);
+const customPet=main.slice(customPetStart,customPetEnd);
+assert(customPet.includes('petDrawRampCustomBody(ctx,cor,lt,dk)')&&customPet.includes('petDrawRampCrown(ctx)'),'Custom pet body colors and crown gradients should share the bounded texture cache');
+assert(customPet.includes('var bg = ctx.createLinearGradient'),'Custom pet gradient rendering should keep a safe fallback when offscreen texture creation is unavailable');
 
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

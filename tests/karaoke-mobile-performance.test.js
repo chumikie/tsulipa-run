@@ -329,7 +329,7 @@ assert(html.includes('data-kt-library-view="songs"')&&html.includes('data-kt-lib
 assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&html.includes('data-kt-voice-panel="'+key+'"')),'The three real Idol heads should open their own voice groups');
 assert(audienceAudio.includes("if(playLead)play(group+'-1')")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a real Idol head should play its voice and draw the existing Tsu, Lirika or Pati avatar');
 assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');
-assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');
+assert(['normal','fast','chill','tema','corrida','gacha','duo'].every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');
 assert(audienceAudio.includes('ktMeta.personalSongs()')&&audienceAudio.includes("tr('Seu recorde pessoal')")&&audienceAudio.includes("tr('Sem recorde ainda')"),'The compact track cards should read only the current player personal records');
 assert(html.includes("rules.personalSongs(c.day,c.id)")&&html.includes("songs[active.song]=row"),'Best songs are keyed by player and exact selected song, not a shared leaderboard');
 

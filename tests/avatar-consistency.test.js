@@ -13,11 +13,14 @@ assert(index.includes("if(b!=='careca')"),'o desenho principal omite as camadas 
 assert(karaoke.includes("if(b!=='careca')"),'a sala de Karaoke usa a mesma distinção visual');
 
 // Dois novos cortes ondulados curtos: masculino mais rente e feminino mais cheio que Pixie, sem chegar ao Chanel.
-assert(index.includes('<option value="onduladom">Ondulado curto (masculino)</option><option value="onduladof">Ondulado curto (feminino)</option>'));
+assert(index.includes('<option value="onduladom">Ondulado curto masculino</option><option value="onduladom2">Ondulado curto masculino bicolor</option><option value="onduladof">Ondulado médio feminino</option>'));
 for(const source of [index,karaoke]){
   assert(source.includes("b==='onduladom'"),'ondulado curto masculino deve ter desenho próprio');
-  assert(source.includes("b==='onduladof'"),'ondulado curto feminino deve ter desenho próprio');
-  assert(source.includes("b==='onduladof'?9"),'ondulado feminino deve ter volume intermediário, abaixo do comprimento Chanel');
+  assert(source.includes("b==='onduladom2'"),'ondulado masculino bicolor deve ter desenho próprio');
+  assert(source.includes("var H2=c.hair2||'#ffffff'"),'a versão bicolor deve usar a segunda cor configurável');
+  assert(source.includes("g.rect(x-3,y-4,18,34)"),'a versão bicolor deve dividir o cabelo em duas metades');
+  assert(source.includes("b==='onduladof'?18"),'ondulado médio feminino deve ter mais comprimento e volume que Pixie e menos que Chanel');
+  assert(source.includes('x+27,y+26'),'ondulado feminino deve ter mechas laterais longas em camadas');
 }
 // Chapéu quase preto e estrela pequena no mesmo ponto lateral das flores existentes.
 assert(index.includes("g.fillStyle='#111521'")&&karaoke.includes("g.fillStyle='#111521'"));

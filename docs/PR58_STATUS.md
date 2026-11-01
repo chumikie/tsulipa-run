@@ -3,7 +3,7 @@
 Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
 
-Última atualização: 01/11/2026 — HEAD com os cabelos: `ebba3aef02508f299770adb8fee88e4c8cee23f3` (CI run `41336972376` aprovado).
+Última atualização: 01/11/2026 — HEAD com quepe, presilha e ondulado: `3a7e8d33e59d0bf348010406e7a8c2b411e81a25` (CI run `41337684199` aprovado).
 
 ---
 
@@ -59,8 +59,8 @@ Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapé
 ### Pedidos do responsável (01/11) — fila, um por vez
 
 1. Montar Idol e Gacha: **confirmados pelo responsável** após a correção.
-2. Cabelos: redesenhados em `ebba3ae` — aguardando aprovação.
-3. Chapéu de Capitão mais militar; estrela como presilha maior ao lado da franja.
+2. Cabelos: *Curto bicolor* e *Repicado volumoso* **aprovados**; *Ondulado curto* refeito mais arredondado em `3a7e8d3` — aguardando aprovação. Em aberto: cortes extras têm franja própria e ignoram o seletor de Franja (decidir se o seletor fica desativado nesses cortes ou se as franjas viram opções separadas).
+3. Chapéu de Capitão como quepe militar e estrela como presilha maior ao lado da franja — feitos em `3a7e8d3`, aguardando aprovação.
 4. Karaoke: botão "Ajustar timing" junto de volume e câmera sobre a tela; no celular, todos esses ícones saem de cima da tela do Karaoke e vão para cima.
 5. Karaoke: show não pode pausar sozinho em tela de celular.
 6. Sala de Karaoke: pelo menos 3 Idols da plateia andando ao mesmo tempo; o Idol do jogador fica no microfone, anda só quando a pessoa toca no piso e volta ao microfone após 5 s longe; obrigatório estar no microfone ao jogar. O telão continua mostrando só "Maiores combos".

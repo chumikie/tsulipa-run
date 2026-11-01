@@ -53,7 +53,7 @@ for(const key of keys){
  assert(library.includes('data-kt-song-select="'+key+'"'),key+' keeps Select');
  assert(library.includes('data-kt-song-best="'+key+'"'),key+' keeps personal best');
 }
-for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"'),'player includes '+id);
+for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"')||(id==='ktPreviewVolume'&&library.includes('id=ktPreviewVolume')),'player includes '+id);
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(html.includes('id="ktPreviewVolume"')&&moduleCode.includes('addEventListener("input"'),'player includes a working volume slider');

@@ -140,7 +140,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
 <link rel="stylesheet" href="./karaoke-photo.css?v=2">
-<script src="./karaoke-room-auto-mic.js?v=1"></script><script src="./karaoke-room-polaroid.js?v=1"></script>
+<script src="./karaoke-room-auto-mic.js?v=2"></script><script src="./karaoke-room-polaroid.js?v=2"></script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -2886,6 +2886,30 @@ function krRoomObserversDesconectar(){
  if(krRhythmObserver){krRhythmObserver.disconnect();krRhythmObserver=null;}
  krRoomFallbackListenersDesconectar();
  krRoomCanvasVisible=false;krRhythmPanelVisible=false;
+}
+/* These controllers are separate files, but every page-private dependency is injected here. */
+if(window.KaraokeRoomAutoMic&&typeof window.KaraokeRoomAutoMic.create==='function'){
+ window.krLoungeAutoMicTick=window.KaraokeRoomAutoMic.create({
+  getState:function(){return {soloAllowed:krLoungeSoloPermitido(),roomOpen:krSt.aberta,nextAt:krAutoMicNextAt,time:krT,singer:krDemoCantor,rhythmRun:krRhythmRun,playerNoMic:krEu.no_mic,returnAt:krMeuRetornoAt,returning:krMeuVoltandoAoMic,moveQueueLength:krMoveQueue.length,playerAtMic:krEuNoMicrofone(),walkerCount:krLoungeActors.length,queueLength:krDemoFila.length,gameActive:!!(kt&&kt.active())};},
+  getBots:function(){return krBots;},
+  canWalk:function(bot){return krLoungePodePassear(bot);},
+  getSeat:function(index){return KR_SOFA_SLOTS[index]||null;},
+  random:function(){return Math.random();},
+  nowMs:function(){return performance.now();},
+  setSinger:function(singer){krDemoCantor=singer;},
+  setNextAt:function(value){krAutoMicNextAt=value;},
+  startPractice:function(){kt.start(true);},
+  switchMusicMode:krMusicaMudarModo,
+  updateUI:krUI
+ });
+}
+if(window.KaraokeRoomPolaroid&&typeof window.KaraokeRoomPolaroid.create==='function'){
+ window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({
+  document:document,
+  makeCharacter:function(person,index){var avatar=person.avatar,char=Object.assign({},CH[index%CH.length]||CH[0],avatar.c||{});char._avatarA=avatar.a||'';char._avatarVisual=avatar.visual||'';char.n=person.nick||char.n||'Idol';return char;},
+  drawIdol:desenharIdol,
+  getTime:function(){return krT;}
+ });
 }
 krRoomObserversConectar();
 window.addEventListener('message',function(e){

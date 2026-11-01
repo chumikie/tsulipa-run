@@ -27,7 +27,7 @@ expect(){
 }
 result="$(rpc "$a" 'public.kt_ticket_wallet()')"
 expect "$result" '"tickets": 0' 'wallet starts empty'
-result="$(rpc "$a" 'public.kt_ticket_run_start('"'$req'"'::uuid)')"
+result="$(rpc "$a" "public.kt_ticket_run_start('$req'::uuid)")"
 expect "$result" '"reason": "free_available"' 'no early ticket debit'
 
 result="$(rpc "$a" 'public.gacha_girar()')"

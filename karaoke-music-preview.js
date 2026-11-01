@@ -29,7 +29,7 @@
    var title=el("ktPreviewTitle"),status=el("ktPreviewStatus"),progress=el("ktPreviewProgress"),time=el("ktPreviewTime"),toggle=el("ktPreviewToggle"),stopButton=el("ktPreviewStop"),globalStatus=el("ktAudioStatus");
    var ms=elapsed(),playing=!!(current&&!current.paused),key=current&&current.songKey;
    if(title)title.textContent=current?current.song.title:tr("Player musical");
-   if(status)status.textContent=message||(playing?tr("Tocando"):current?tr("Prévia pausada."):tr("Escolha uma música para ouvir."));
+   if(status)status.textContent=message||(playing?tr("Tocando"):current?tr("Prévia pausada."):"");
    if(progress)progress.value=ms;
    if(time)time.textContent=String(Math.floor(ms/60000)).padStart(2,"0")+":"+String(Math.floor(ms/1000)%60).padStart(2,"0")+" / 00:59";
    if(toggle){toggle.disabled=!!(options.isBusy&&options.isBusy());toggle.textContent=playing?"⏸ "+tr("Pausar"):current?"▶ "+tr("Retomar"):"▶ "+tr("Ouvir");}
@@ -58,7 +58,7 @@
    var ms=elapsed();
    while(current.audioStep<current.total&&current.audioStep*current.step<ms+220)options.beat(current.audioStep++,current);
    if(performance.now()-lastUi>=100){lastUi=performance.now();render();}
-   if(ms>=DURATION)stop(true,tr("Prévia finalizada."));
+   if(ms>=DURATION)stop(true);
   }
   function arm(target,fromMs){
    if(current!==target)return;
@@ -111,7 +111,7 @@
   });
   var toggleButton=el("ktPreviewToggle"),stopButton=el("ktPreviewStop");
   if(toggleButton)toggleButton.addEventListener("click",function(){if(current)toggle();else play(options.getSelectedSong?options.getSelectedSong():"normal");});
-  if(stopButton)stopButton.addEventListener("click",function(){stop(true,tr("Prévia interrompida."));});
+  if(stopButton)stopButton.addEventListener("click",function(){stop(true);});
   render();
   return Object.freeze({play:play,pause:pause,resume:resume,stop:stop,toggle:toggle,state:state,output:output});
 

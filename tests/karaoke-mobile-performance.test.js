@@ -2,6 +2,8 @@
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const html=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
+const mobile=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.js'),'utf8');
+const mobileCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.css'),'utf8');
 const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-motion-lifecycle.js'),'utf8');
 assert(lifecycle.includes('function disconnectFrame(frame)')&&lifecycle.includes("frame.removeEventListener('load',record.onLoad)")&&lifecycle.includes('frameGates.set(frame,{gate:gate,onLoad:onLoad})'),'Removed iframes must release their load listener and motion gate');
 assert(lifecycle.includes("if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}"),'Changing an iframe source must replace the previous visibility bridge');
@@ -169,11 +171,12 @@ assert(html.includes('var krRoomPalette=[];')&&html.includes('cols=krRoomPalette
 assert(html.includes('var KR_FESTA_RGB=')&&html.includes('KR_FESTA_RGB[i%KR_FESTA_RGB.length]'),'Disco floor should reuse its fixed RGB palette instead of rebuilding a literal array in its particle loop');
 assert(html.includes("j._ktSocialKind==='applause'?'banzai'")&&html.includes("j._ktSocialKind==='talk'?'coracao'")&&html.includes('j._ktSocialTargetX<j.x'),'Audience reactions should reuse existing poses and face their conversation/singing target');
 assert(html.includes("if(st&&st.phase!=='home')krLoungeCriarRetorno(b)")&&html.includes("var singing=!!b.no_mic||(krDemoCantor&&krDemoCantor.bot===b)"),'An interrupted walk must return to its seat unless singer ownership takes control');
-assert(html.includes("function placeCalibration(){var inline=!!(document.documentElement.classList.contains('kt-no-site')&&calibrationViewport&&calibrationViewport.matches)")&&html.includes("controlGroup.insertBefore(adjust,$('ktEnd'))")&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('aria-keyshortcuts="M"'),'Timing control must join pause on embedded mobile, return to the instruction flow on larger pages, and M must invoke the mic control');
+assert(html.includes('shortcuts.after(adjust)')&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('aria-keyshortcuts="M"'),'Timing control keeps its normal instruction-flow anchor and M continues to invoke the mic control');
 assert(html.includes('.kt-calibration{position:relative')&&html.includes('.kt-calibration-panel{position:static')&&!html.includes('.kt-calibration summary::after{content:\'S\''),'Timing settings must not overlay the Karaoke stage or carry letter badges');
-assert(html.includes("document.documentElement.classList.contains('kt-no-site')&&compact&&compact.matches")&&html.includes("group.insertBefore(som,pause)")&&html.includes("compact.addEventListener('change',place)"),'On embedded mobile, volume must join pause and timing controls; desktop keeps scene audio placement');
-assert(css.includes('#ktSession .krgrp:last-child{flex-wrap:wrap;white-space:normal;max-width:100%}')&&css.includes('.kt-calibration[open]{flex:1 0 100%}'),'Mobile control row should keep sound, pause and timing together while allowing secondary controls and the timing panel to wrap');
+assert(mobile.includes('var nodes=[canvas,sound,pause,timing,photo]')&&mobile.includes('tools.appendChild(sound);tools.appendChild(pause);tools.appendChild(timing);tools.appendChild(photo);'),'On embedded mobile, sound, pause and timing must share the dedicated room-tools row without covering the canvas');
+assert(mobileCss.includes('.kt-room-tools .kt-calibration[open]{flex:1 0 100%}')&&mobileCss.includes('.kt-room-tools #ktPause{position:static'),'Timing panel must expand in document flow and the pause button must remain a normal row item');
 assert(!html.includes('ktPause::after')&&!html.includes('krMicBtn::after')&&!html.includes('ktCalibration summary::after'),'P/M/S shortcut letters must not be painted on the buttons');
+assert(html.includes('<kbd>P</kbd>')&&html.includes('<kbd>M</kbd>')&&html.includes('<kbd>S</kbd>'),'P/M/S shortcuts should appear in the page instructions only');
 assert(!html.includes(".kt-foto::after,.kt-calibration summary::after")&&!html.includes("content:'C';position:absolute"),'Keyboard letters belong in the shortcut guide, not floating button badges');
 assert(html.includes("pt:['⏸ Pausar','▶ Retomar (3 s)','⏳ Cancelar contagem'")&&!html.includes("⏸ P · Pausar"),'Pause/resume labels must not repeat shortcut letters');
 assert(html.includes('var KR_DANGO_CORES=')&&html.includes('function krDesenharSnack(')&&html.includes("if(k==='onigiri')")&&!html.includes("KR_DRINKS.filter(function(d){return d[0]===k;})"),'New food/drink illustrations should reuse the room palette without allocating filtered lists per frame');

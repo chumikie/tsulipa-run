@@ -6,13 +6,13 @@
 
 - **Dia:** a combinar explicitamente. **Horário:** **00h10–00h40 de Brasília** (`America/Sao_Paulo`) no dia escolhido, idealmente com atividade baixa e responsável disponível.
 - A virada às 00h00 é evitada para permitir que corridas iniciadas no fim do dia anterior terminem. Não é garantia de ausência de corridas; verificar `runs` abertas e atividade antes de começar.
-- **Critério de iniciar:** autorização escrita específica para aplicar `20261101161409_center_run_daily_100.sql` no projeto `fsggtvgbyhchblyazgmt`, HEAD e SQL aprovados, backup privado preparado, acesso de reversão validado e nenhum deploy/migração paralelo.
+- **Critério de iniciar:** autorização escrita específica para aplicar `20261101234420_center_run_daily_100.sql` no projeto `fsggtvgbyhchblyazgmt`, HEAD e SQL aprovados, backup privado preparado, acesso de reversão validado e nenhum deploy/migração paralelo.
 - **Critério de não iniciar:** falta de aprovação, HEAD alterado, CI vermelho, outra migração pendente, função/ACL divergentes do snapshot, falha na cópia da função, banco sob incidente ou testes visuais/funcionais críticos pendentes.
 
 ## T−30 a T−10 minutos: checagens somente leitura
 
 1. Confirmar [PR #58](https://github.com/chumikie/tsulipa-run/pull/58) draft e SHA autorizado. Confirmar dois jobs verdes no último CI.
-2. Conferir `supabase/migrations/20261101161409_center_run_daily_100.sql` **idêntico byte a byte** a `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql`. Conferir lista real de migrações aplicadas.
+2. Conferir `supabase/migrations/20261101234420_center_run_daily_100.sql` **idêntico byte a byte** a `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql`. Conferir lista real de migrações aplicadas.
 3. Registrar privadamente `pg_get_functiondef`, `proowner`, `proacl`, `prosecdef`, `proconfig` da assinatura `terminar_corrida(uuid,integer,integer,text,text)`; comparar ao backup referência `center_run_daily_100_ROLLBACK_REVIEW_ONLY.sql`. Parar em caso de diferença.
 4. Registrar agregados do dia de São Paulo por `reason='corrida'` e `reason='minijogo'`, sem salvar identificadores pessoais na PR. Conferir `ganhar_minijogo`: 50/dia.
 5. Ler `runs` abertas recentes, erros da RPC e situação da conexão; não iniciar caso haja atividade que impeça uma janela segura.

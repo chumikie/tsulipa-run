@@ -68,7 +68,7 @@
 
 ## Etapa 2.9 — arquivo versionado preparado, **não executado**
 
-A CLI Supabase v2.122.0 gerou o nome `supabase/migrations/20261101161409_center_run_daily_100.sql` localmente. O conteúdo foi enviado **apenas à branch draft** da PR #58. Um teste automatizado exige igualdade byte a byte entre esta migração e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql`.
+A CLI Supabase v2.122.0 gerou o nome `supabase/migrations/20261101234420_center_run_daily_100.sql` localmente. O conteúdo foi enviado **apenas à branch draft** da PR #58. Um teste automatizado exige igualdade byte a byte entre esta migração e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql`.
 
 **Bloqueio de implantação:** não executar `supabase db push`, `supabase migration up`, nem promover/mesclar uma branch que possa disparar migrações automaticamente antes da autorização específica do responsável. Não há autorização implícita neste arquivo.
 

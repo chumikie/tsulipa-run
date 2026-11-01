@@ -17,8 +17,13 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 ## 0. Antes de publicar (01/11/2026, 19:55)
 
 - PR sem conflitos com a `main` (a `main` não recebeu commits novos); CI verde no HEAD `7744c49`.
-- **Decisão do responsável (01/11/2026, 20:41): AUTORIZADO aplicar o limite de 100 estrelas/dia do Center⭐Run!** (`supabase/migrations/20261101161409_center_run_daily_100.sql`). A aplicação no banco e a conferência ficam com o ChatGPT. Nenhum SQL foi executado a partir do GitHub. Status: aguardando confirmação de que foi aplicado.
-- **Supabase (ChatGPT/responsável):** a PR traz `supabase/migrations/20261101161409_center_run_daily_100.sql` (teto de 100 estrelas/dia). Nada no repositório aplica migrações sozinho (sem workflow `supabase db push` nem `supabase/config.toml`), mas **conferir no painel do Supabase se a integração com o GitHub está desligada** antes do merge. Se estiver ligada e o limite de 100 ainda não estiver autorizado, mover esse arquivo para fora de `supabase/migrations` antes de publicar.
+- **Center⭐Run! 100 estrelas/dia — APLICADO no Supabase (01/11/2026, ~20:45)**, com autorização do responsável, pelo ChatGPT. Relato dele:
+  - Função ativa antes era compatível com o arquivo; limite passou de 1.500 para 100 estrelas/dia; permissões da função preservadas.
+  - Migração registrada no Supabase como versão `20261101234420`, nome `center_run_daily_100`. O arquivo do repositório foi renomeado para essa mesma versão (conteúdo idêntico), para o histórico do GitHub bater com o do banco.
+  - Teste: duas finalizações de corrida com conta existente, em transação revertida: total creditado 100. Nada de teste ficou gravado.
+  - Pet: `ganhar_minijogo` sem alteração (até 40 por chamada, teto de 50 por dia).
+  - **Pendente:** confirmar no painel do Supabase (Integrações) que a integração nativa com o GitHub está desligada. Mesmo ligada, a versão agora coincide com a já aplicada.
+- **Supabase (ChatGPT/responsável):** a PR traz `supabase/migrations/20261101234420_center_run_daily_100.sql` (teto de 100 estrelas/dia). Nada no repositório aplica migrações sozinho (sem workflow `supabase db push` nem `supabase/config.toml`), mas **conferir no painel do Supabase se a integração com o GitHub está desligada** antes do merge. Se estiver ligada e o limite de 100 ainda não estiver autorizado, mover esse arquivo para fora de `supabase/migrations` antes de publicar.
 - **Karaoke:** `karaoke-room-auto-mic.js` e `karaoke-room-polaroid.js` usam variáveis internas da página. O cantor automático da plateia se desliga sozinho (`krLoungeSoloPermitido is not defined`, sem quebrar a sala) e o clique nas Polaroids deve falhar ao abrir o pôster. Corrigir ou desativar antes de publicar.
 - Limites de tamanho: `index.html` ~1.089.800/1.150.000 (o logo e as 6 imagens do mural do Pet saíram do HTML para `img/*.webp`, mesmos bytes da imagem; cerca de 60 KB de folga) e `karaoke-time.html` ~449.100/450.000 bytes.
 - **Atualização 01/11/2026, 20:40:**
@@ -234,9 +239,9 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - Projeto registrado no histórico: `fsggtvgbyhchblyazgmt`.
 - `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`: consta no registro anterior como aplicada.
 - A investigação anterior registrou `public.terminar_corrida` em produção com teto de 1.500 estrelas/dia. Confirmar por leitura no momento de uma futura revisão autorizada antes de tomar decisão.
-- A proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`) está em `supabase/migrations/20261101161409_center_run_daily_100.sql`, com checklist, runbook e SQL de rollback em `supabase/sql/`. Foi homologada em PostgreSQL isolado; **não foi aplicada em produção** e depende de autorização específica.
+- A proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`) está em `supabase/migrations/20261101234420_center_run_daily_100.sql`, com checklist, runbook e SQL de rollback em `supabase/sql/`. Foi homologada em PostgreSQL isolado; **não foi aplicada em produção** e depende de autorização específica.
 - A expressão `limite_diario` é `score_ok and p_stars > 0 and ganho_hoje + credito >= 100`. Portanto, no cenário de 90 créditos prévios + pedido de 30, a RPC credita 10 e retorna `limite_diario=true`. O teste `tests/center-run-daily-cap.test.js` protege esse caso e a mensagem combinada de crédito parcial + limite.
-- A cópia `supabase/migrations/20261101161409_center_run_daily_100.sql` e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql` foram mantidas idênticas byte a byte. Um CI intermediário falhou durante a atualização sequencial dos comentários, pois as duas cópias ficaram temporariamente diferentes; após alinhamento, a validação de igualdade e os dois jobs passaram na execução #41346075172.
+- A cópia `supabase/migrations/20261101234420_center_run_daily_100.sql` e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql` foram mantidas idênticas byte a byte. Um CI intermediário falhou durante a atualização sequencial dos comentários, pois as duas cópias ficaram temporariamente diferentes; após alinhamento, a validação de igualdade e os dois jobs passaram na execução #41346075172.
 - A homologação temporal isolada usa relógio controlado apenas no PostgreSQL efêmero. A documentação também registra que a fixture de teste do Pet deve usar o motivo real `minijogo` em vez de motivo fictício antes de tratá-la como espelho exato da regra do Pet.
 - Preservar o limite independente de 50 estrelas/dia dos minijogos do Pet.
 - Não apagar nem resetar saldos, históricos, corridas ou rankings.
@@ -310,7 +315,7 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 
 ### Supabase e banco
 
-- A migração `20261101161409_center_run_daily_100.sql` permanece apenas como proposta na branch. Nenhum SQL foi executado no projeto de produção.
+- A migração `20261101234420_center_run_daily_100.sql` permanece apenas como proposta na branch. Nenhum SQL foi executado no projeto de produção.
 - O workflow usa apenas um serviço PostgreSQL temporário do GitHub Actions, com banco e credenciais de teste descartáveis. Não usa URL, token ou credencial do projeto Supabase de produção.
 - A migração e a cópia `REVIEW_ONLY` foram conferidas iguais byte a byte após a correção dos comentários. O CI mais recente passou pela validação.
 - README e checklist foram corrigidos para refletir a lógica real do flag de teto. O comportamento funcional do SQL não foi alterado nesta revisão; os commits recentes nesse par de arquivos mudam somente comentários.

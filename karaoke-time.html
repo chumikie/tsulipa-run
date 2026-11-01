@@ -2688,6 +2688,7 @@ function krLoungePodeSocializar(b,singer){
   krDemoFila.indexOf(b.nick)<0;
 }
 function krLoungeSocialDeveAtualizar(){
+ if(!krLoungeSoloPermitido())return false;
  if(krLoungeSocialA){
   var dueAt=krLoungeSocialUntil,aUntil=krLoungeSocialA._ktSocialUntil;
   if(typeof aUntil==='number'&&aUntil<dueAt)dueAt=aUntil;

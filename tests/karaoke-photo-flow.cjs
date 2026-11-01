@@ -64,9 +64,10 @@ exports.verify=async function(p,frame,width,out){
   assert(await frame.locator('body').evaluate(()=>document.getElementById('ktPhotoDialog').contains(document.activeElement)),'Tab stays inside the photo dialog');
  }
  await frame.locator('body').evaluate(()=>{window.__qaPhotoShareMode='cancel';});
+ const downloadsBeforeCancel=downloads;
  await frame.locator('#ktPhotoShare').click();
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('continua aqui'),'Cancelling sharing keeps the photo');
- assert.equal(downloads,0,'Cancelling does not trigger a download');
+ assert.equal(downloads,downloadsBeforeCancel,'Cancelling does not trigger another download');
  assert.equal(await img.getAttribute('src'),capture.url);
  assert(await frame.locator('#ktPhotoFrameDownload').isVisible(),'Framed export is offered alongside the clean photo');
  await frame.locator('body').evaluate(()=>{window.__qaPhotoShareMode='error';});

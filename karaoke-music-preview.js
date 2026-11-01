@@ -107,8 +107,7 @@
   function state(){return current?{songKey:current.songKey,paused:current.paused,elapsed:elapsed()}:null;}
   var volumeControl=el("ktPreviewVolume");
   if(volumeControl)volumeControl.addEventListener("input",function(){
-   volume=Math.max(0,Math.min(1,(Number(volumeControl.value)||0)/100));
-   if(options.setVolume)options.setVolume(volume);
+   setVolume(volumeControl.value);
   });
   var toggleButton=el("ktPreviewToggle"),stopButton=el("ktPreviewStop");
   if(toggleButton)toggleButton.addEventListener("click",function(){if(current)toggle();else play(options.getSelectedSong?options.getSelectedSong():"normal");});

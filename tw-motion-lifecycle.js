@@ -39,7 +39,7 @@ function unobscured(el){
   var px=r.left+r.width*xs[xi],py=r.top+r.height*ys[yi];
   if(px<0||py<0||px>=(w.innerWidth||0)||py>=(w.innerHeight||0))continue;
   var top=d.elementFromPoint(px,py);if(!top)continue;
-  var cover=top.closest&&top.closest('[aria-modal="true"],[role="dialog"],dialog[open],.tw-modal,.modal,.overlay');
+  var cover=top.closest&&top.closest('[aria-modal="true"],[role="dialog"],dialog[open],.ov,.tw-modal,.modal,.overlay');
   if(cover&&cover!==el&&!cover.contains(el))continue;
   if(top===el||el.contains(top))return true;
  }
@@ -105,7 +105,7 @@ var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(rec
 }):null;
 function startScan(){
  scan(d.documentElement);
- if(mutationObserver)mutationObserver.observe(d.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden','open']});
+ if(mutationObserver)mutationObserver.observe(d.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','open']});
 }
 function pageState(active){lifecycleActive=active;refreshAll();}
 function parentState(active){parentActive=active;refreshAll();}

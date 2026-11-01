@@ -154,5 +154,7 @@ const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 assert(day.includes('krLoopLastTime=0')&&day.includes('(stamp-krLoopLastTime)/(1000/60)'),'Karaoke Day animation clock should use elapsed time rather than callback count');
 assert(day.includes('Math.min(4.2*dt,d)')&&day.includes('trl.t+=dt')&&day.includes('b.t+=dt')&&day.includes('krCortina+.018*dt'),'Karaoke Day character movement, trails, bubbles and curtain should preserve speed at 30/60 Hz');
 assert(day.includes('Math.floor(krTAnterior/10)<Math.floor(krT/10)')&&day.includes('Math.floor((krTAnterior-30)/160)<Math.floor((krT-30)/160)'),'Karaoke Day periodic trail and speech effects should trigger by elapsed-time threshold crossings, including 30 Hz');
+const partyFront=html.slice(html.indexOf('var ktFestaUltimoT=null;'),html.indexOf('/* Positive pet expressions'));
+assert(partyFront.includes('Math.min(2,t-ktFestaUltimoT)')&&partyFront.includes('p.y-=p.v*dt')&&partyFront.includes('p.f+=.04*dt'),'Karaoke disco foreground particles should advance by elapsed logical frames at 30/60 Hz');
 assert(sora.includes('var soraFrameAnterior=soraFrame;')&&sora.includes('Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)')&&!sora.includes('(soraFrame | 0) % 5 === 0'),'Sora auxiliary wing particles should spawn once per elapsed five-frame interval, independent of 30/60 Hz callback count');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

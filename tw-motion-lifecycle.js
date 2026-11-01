@@ -4,7 +4,7 @@
 (function(w,d){
 'use strict';
 if(w.TWMotionLifecycle)return;
-var lifecycleActive=true,parentActive=true,gates=new Set(),cssNodes=new Set(),cssMap=new WeakMap(),framed=new WeakSet(),frameGates=new WeakMap();
+var lifecycleActive=true,parentActive=true,gates=new Set(),cssNodes=new Set(),cssMap=new WeakMap(),framed=new WeakSet(),frameGates=new WeakMap(),loopGates=new WeakMap();
 var cssIO=('IntersectionObserver' in w)?new IntersectionObserver(function(entries){
  entries.forEach(function(entry){
   var state=cssMap.get(entry.target);if(!state)return;
@@ -87,6 +87,8 @@ function connectFrame(frame){
 }
 function cleanup(root){
  if(!root||root.nodeType!==1)return;
+ var loopSet=loopGates.get(root);
+ if(loopSet&&loopSet.size)Array.from(loopSet).forEach(function(state){if(state.destroy)state.destroy();});
  var frameGate=frameGates.get(root);if(frameGate){frameGate.destroy();frameGates.delete(root);framed.delete(root);}
  var state=cssMap.get(root);if(state){if(cssIO)cssIO.unobserve(root);root.classList.remove('tw-motion-paused');cssNodes.delete(state);cssMap.delete(root);}
  if(root.querySelectorAll){var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)cleanup(all[i]);}
@@ -131,7 +133,7 @@ function watchLoop(el,enabled,onResume,onPause){
  if(typeof el==='string')el=d.querySelector(el);
  if(!el) return {refresh:function(){},destroy:function(){},setEnabled:function(){}};
  var running=null,destroyed=false,observer=null;
- var state={el:el,inView:rectVisible(el),observed:false,refresh:reconcile};
+ var state={el:el,inView:rectVisible(el),observed:false,refresh:reconcile,destroy:null};
  function reconcile(){
   if(destroyed)return;
   var wanted=pageIsActive()&&state.inView&&elementVisible(el,state.inView)&&(!enabled||enabled());
@@ -146,13 +148,16 @@ function watchLoop(el,enabled,onResume,onPause){
   },{threshold:[0,.01]});
   observer.observe(el);state.observed=true;
  }
- var gate={refresh:reconcile,destroy:function(){
-  if(destroyed)return;destroyed=true;if(observer)observer.disconnect();gates.delete(state);
+ var gate={refresh:reconcile,destroyed:false,destroy:function(){
+  if(destroyed)return;destroyed=true;gate.destroyed=true;if(observer)observer.disconnect();gates.delete(state);
+  var set=loopGates.get(el);if(set){set.delete(state);if(!set.size)loopGates.delete(el);}
   if(running&&onPause)onPause();running=false;
  },setEnabled:function(value){
   if(typeof enabled==='function')return;
   enabled=!!value;reconcile();
  }};
+ state.destroy=gate.destroy;
+ var set=loopGates.get(el);if(!set){set=new Set();loopGates.set(el,set);}set.add(state);
  gates.add(state);reconcile();return gate;
 }
 w.TWMotionLifecycle={

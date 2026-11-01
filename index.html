@@ -6399,6 +6399,7 @@ function contaAplicar(j){
   if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
+  if(typeof duoAvisoAgendar==='function')duoAvisoAgendar();
 }
 var contaOv = document.createElement('div');
 contaOv.className = 'ov'; contaOv.id = 'contaOv'; contaOv.hidden = true; contaOv.style.zIndex = 10;
@@ -9329,17 +9330,43 @@ function twRankRefreshAfterSora(){
   return twRankLoad(true);
  }).catch(function(){});
 }
-function twRankStop(){if(twRankTimer!==null){clearInterval(twRankTimer);twRankTimer=null;}}
-function twRankVisibility(){
- var tv=$('twRankTv');if(!tv)return;
- // A TV mora no pop-up do troféu: fica visível dentro dele e só gira com o pop-up aberto.
- var modalTv=$('twRankTvModal');tv.hidden=false;twRankStop();
- var calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
- if(modalTv&&!modalTv.hidden&&!hubOv.hidden&&!calm)twRankTimer=setInterval(function(){
-  if(hubOv.hidden||document.hidden)return;
+function twIntervaloVisivel(el,enabled,callback,delay){
+  var timer=0;
+  function start(){if(!timer)timer=setInterval(callback,delay);}
+  function stop(){if(timer){clearInterval(timer);timer=0;}}
+  if(window.TWMotionLifecycle&&el){
+    return window.TWMotionLifecycle.watchLoop(el,enabled,start,stop);
+  }
+  // Compatibilidade: sem o controlador, mantém o comportamento anterior.
+  start();
+  return {refresh:start,destroy:stop};
+}
+var twRankRotationWanted=false,twRankVisibilityGate=null;
+function twRankTimerStart(){
+ if(twRankTimer)return;
+ twRankTimer=setInterval(function(){
+  var modal=$('twRankTvModal');
+  if(!twRankRotationWanted||hubOv.hidden||document.hidden||!modal||modal.hidden)return;
   var was=twRankData.week;twRankCheckWeek();if(was!==twRankData.week)twRankLoad();
   twRankData.active=(twRankData.active+1)%3;twRankRender();
  },6500);
+}
+function twRankTimerPause(){if(twRankTimer){clearInterval(twRankTimer);twRankTimer=null;}}
+function twRankStop(){
+ twRankRotationWanted=false;
+ if(twRankVisibilityGate)twRankVisibilityGate.refresh();
+ else twRankTimerPause();
+}
+function twRankVisibility(){
+ var tv=$('twRankTv');if(!tv)return;
+ tv.hidden=false;
+ var modalTv=$('twRankTvModal'),calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ twRankRotationWanted=!!(modalTv&&!modalTv.hidden&&!hubOv.hidden&&!calm);
+ if(!twRankVisibilityGate&&modalTv&&window.TWMotionLifecycle){
+  twRankVisibilityGate=window.TWMotionLifecycle.watchLoop(modalTv,function(){return twRankRotationWanted;},twRankTimerStart,twRankTimerPause);
+ }else if(twRankVisibilityGate)twRankVisibilityGate.refresh();
+ else if(twRankRotationWanted)twRankTimerStart();
+ else twRankTimerPause();
 }
 hubOv.addEventListener('click',function(e){
  var b=e.target.closest&&e.target.closest('[data-tw-rank]');if(!b)return;
@@ -9469,10 +9496,8 @@ function hubTutUI(){   // Quatro slides de boas-vindas.
   el.hidden=false;
 }
 function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
-// Refresh only while the hub is actually visible; no database traffic.
-setInterval(function(){
-  if(hubComecou&&!hubOv.hidden&&!document.hidden)twKaraokeAtualizarCard();
-},60000);
+// Atualização do card é visual/informativa: dorme quando o Hub fecha.
+var hubCardRefreshGate=twIntervaloVisivel(hubOv,function(){return !hubOv.hidden;},function(){if(hubComecou)twKaraokeAtualizarCard();},60000);
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
 function twPreviewEnviarVisibilidadeIframe(visible){
@@ -10960,7 +10985,16 @@ var duoAvisoOv = document.createElement('div');
 duoAvisoOv.className = 'ov duoavisoov'; duoAvisoOv.hidden = true;
 duoAvisoOv.innerHTML = '<div class="panel duoavisop" role="dialog" aria-modal="true"><p class="duoavisolua" aria-hidden="true">🌙</p><h2 class="duotit" translate="no">Moon⭐Duo!</h2><p class="duoavisotxt" id="duoAvisoTxt"></p><div class="btns"><button type="button" class="btn" id="duoAvisoIr"></button><button type="button" class="btn alt" id="duoAvisoOk"></button></div></div>';
 document.body.appendChild(duoAvisoOv);
-var duoAvisoNick = '', duoAvisoFeito = false;
+var duoAvisoNick = '', duoAvisoFeito = false, duoAvisoTimer = 0;
+function duoAvisoAgendar(){
+  if(!contaJ||duoAvisoFeito||duoAvisoTimer)return;
+  duoAvisoTimer=setTimeout(function(){
+    duoAvisoTimer=0;
+    if(!contaJ||duoAvisoFeito)return;
+    duoAvisoFeito=true;
+    duoAvisosConferir();
+  },3000);
+}
 function duoAvisosConferir(){
   if(!contaJ) return;
   contaRpc('duo_avisos_pendentes').then(function(L){
@@ -10978,7 +11012,7 @@ duoAvisoOv.addEventListener('click', function(e){
   if(e.target.id === 'duoAvisoOk' || e.target === duoAvisoOv){ duoAvisoOv.hidden = true; return; }
   if(e.target.id === 'duoAvisoIr'){ duoAvisoOv.hidden = true; duoAbrir(duoAvisoNick); }
 });
-setInterval(function(){ if(!duoAvisoFeito && contaJ){ duoAvisoFeito = true; setTimeout(duoAvisosConferir, 3000); } }, 1500);
+
 
 // ---------- Outdoors do Center Run: BRS48 e fotos dos jogadores registrados ----------
 var outdoorJog = [], outdoorFoto = {}, outdoorPedido = false;
@@ -11154,13 +11188,15 @@ function coelhoSync(){
   if(o) o.textContent = tr('Orelhas de coelho');
   if(!tem && o) o.remove();
 }
-setInterval(coelhoSync, 3000); coelhoSync();
+coelhoSync();
+var coelhoSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!perfMeu&&perfAba==='montar';},coelhoSync,3000);
 
 // ---------- Botão de som dentro do gacha e do Moon⭐Duo! ----------
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();
 function ovSomUI(){ [].forEach.call(document.querySelectorAll('[data-som]'), function(b){ b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', tr(muted ? 'Som desligado' : 'Som ligado')); }); }
-document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){ ovSomUI(); if(!muted && hubComecou) hubMusicaTocar(); }, 60); });
-setInterval(ovSomUI, 1000); ovSomUI();
+var muteSyncButton=document.getElementById('mute');if(muteSyncButton)muteSyncButton.addEventListener('click',ovSomUI);
+document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-som]'); if(!b) return; var m = $('mute'); if(m) m.click(); setTimeout(function(){ if(!muted && hubComecou) hubMusicaTocar(); }, 60); });
+ovSomUI();
 
 // ---------- Estrela do título em SVG (no Android o emoji ficava torto) ----------
 (function(){
@@ -11384,7 +11420,8 @@ encOv.addEventListener('click', function(e){
     beep(1568, .05, 'square', .03); beep(2093, .08, 'triangle', .03, .05);
   }
 });
-encBtnUI(); setInterval(encBtnUI, 60000);
+encBtnUI();
+var encBtnRefreshGate=twIntervaloVisivel(hubOv,function(){return !hubOv.hidden;},encBtnUI,60000);
 if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = function(){ var r = encHubOrig.apply(this, arguments); encBtnUI(); return r; }; }
 [['Encontro do dia', 'Meeting of the day', 'Encuentro del día', 'การพบกันประจำวัน', '今日の出会い'], ['Encontro de hoje', "Today's meeting", 'Encuentro de hoy', 'การพบกันวันนี้', '今日の出会い'],
  ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'], ['Foto', 'Photo', 'Foto', 'รูป', '写真'], ['estrelinhas pelo encontro!', 'stars for the meeting!', '¡estrellitas por el encuentro!', 'ดาวจากการพบกัน!', 'スターをゲット！'],
@@ -13416,11 +13453,12 @@ applyLang();
     }
   }
 
-  setInterval(function(){
+  function hubUXAtualizar(){
     syncLocks();
-    var tvModal = document.querySelector('#hub .tw-rank-tv-modal');
-    if(tvModal && !tvModal.hidden) updateTvTopIdol();
-  }, 800);
+    var tvModal=document.querySelector('#hub .tw-rank-tv-modal');
+    if(tvModal&&!tvModal.hidden&&(!window.TWMotionLifecycle||window.TWMotionLifecycle.isVisible(tvModal)))updateTvTopIdol();
+  }
+  var hubUXRefreshGate=twIntervaloVisivel(hubOv,function(){return !hubOv.hidden;},hubUXAtualizar,800);
 
   document.addEventListener('click', function(e){
     if(e.target.closest && (e.target.closest('.tw-rank-tv-launch') || e.target.closest('.tw-rank-tv-buttons'))){

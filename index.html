@@ -3554,13 +3554,20 @@ var kaomojisDecorativos = [
   "(๑>◡<๑)", "(✧ω✧)", "(｡♥‿♥｡)", "(*^▽^*)", 
   "(≧◡≦)", "(o˘◡˘o)", "(=^･ω･^=)", "(っ˘ω˘ς)", "( ´ ▽ ` )ﾉ", "(◍•ω•◍)"
 ];
-var visualKaoEl = document.getElementById('kaomoji-visual');
-
-if(visualKaoEl) {
-  setInterval(function() {
-    var randomKao = kaomojisDecorativos[Math.floor(Math.random() * kaomojisDecorativos.length)];
-    visualKaoEl.textContent = randomKao;
-  }, 4000); // Troca de carinha a cada 4 segundos de forma suave
+var visualKaoEl = document.getElementById('kaomoji-visual'), visualKaoTimer = 0;
+function visualKaoAtualizar(){
+  if(!visualKaoEl)return;
+  var randomKao=kaomojisDecorativos[Math.floor(Math.random()*kaomojisDecorativos.length)];
+  visualKaoEl.textContent=randomKao;
+}
+function visualKaoIniciar(){if(!visualKaoTimer&&visualKaoEl)visualKaoTimer=setInterval(visualKaoAtualizar,4000);}
+function visualKaoParar(){if(visualKaoTimer){clearInterval(visualKaoTimer);visualKaoTimer=0;}}
+if(visualKaoEl&&window.TWMotionLifecycle){
+  TWMotionLifecycle.watchLoop(visualKaoEl,null,visualKaoIniciar,visualKaoParar);
+}else if(visualKaoEl&&!document.hidden){
+  // Fallback para uma falha de carregamento do controlador compartilhado.
+  visualKaoIniciar();
+  document.addEventListener('visibilitychange',function(){if(document.hidden)visualKaoParar();else visualKaoIniciar();});
 }
 	
 // ================================================================

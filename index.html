@@ -9450,6 +9450,7 @@ function hubMostrar(){
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubFechar(){
+  buscaCancelarTodas();
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   twIndex2ResumeBaseFrames();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');
@@ -9884,20 +9885,30 @@ var TEMA_FALAS = {
 function temaFalas(){ var k = temaAtual(); return TEMA_FALAS[k] || null; }
 
 // ---------- Procurar Idol pelo nome (tela de início e ranking) ----------
-var buscaT = 0;
-function buscaLigar(inp, res){
-  if(!inp || inp._ok) return; inp._ok = true;
-  inp.addEventListener('keydown', function(e){ e.stopPropagation(); });
-  inp.addEventListener('input', function(){
-    clearTimeout(buscaT);
-    var q = inp.value.trim();
-    if(q.length < 2){ res.innerHTML = ''; return; }
-    buscaT = setTimeout(function(){
-      contaRpc('buscar_perfis', { p_q: q }).then(function(L){
-        L = Array.isArray(L) ? L : [];
-        res.innerHTML = L.length ? L.map(function(p){ return '<button type="button" class="lbn" data-nick="' + escHtml(p.nick) + '">' + escHtml(p.nick) + ' <small>🏆 ' + (+p.best || 0) + '</small></button>'; }).join('') : '<em>' + escHtml(tr('Nenhuma.')) + '</em>';
-      }).catch(function(){ res.innerHTML = ''; });
-    }, 350);
+var buscaInputs=[];
+function buscaCancelar(inp){
+  if(!inp)return;
+  clearTimeout(inp._twBuscaTimer);inp._twBuscaTimer=0;
+  inp._twBuscaSeq=(inp._twBuscaSeq||0)+1;
+}
+function buscaCancelarTodas(){buscaInputs.forEach(buscaCancelar);}
+function buscaLigar(inp,res){
+  if(!inp||inp._ok)return;
+  inp._ok=true;inp._twBuscaRes=res;buscaInputs.push(inp);
+  inp.addEventListener('keydown',function(e){e.stopPropagation();});
+  inp.addEventListener('input',function(){
+    buscaCancelar(inp);
+    var q=inp.value.trim(),seq=inp._twBuscaSeq;
+    if(q.length<2){res.innerHTML='';return;}
+    inp._twBuscaTimer=setTimeout(function(){
+      inp._twBuscaTimer=0;
+      if(seq!==inp._twBuscaSeq||!inp.isConnected||!res.isConnected||hubOv.hidden||inp.value.trim()!==q)return;
+      contaRpc('buscar_perfis',{p_q:q}).then(function(L){
+        if(seq!==inp._twBuscaSeq||!inp.isConnected||!res.isConnected||hubOv.hidden||inp.value.trim()!==q)return;
+        L=Array.isArray(L)?L:[];
+        res.innerHTML=L.length?L.map(function(p){return '<button type="button" class="lbn" data-nick="'+escHtml(p.nick)+'">'+escHtml(p.nick)+' <small>🏆 '+(+p.best||0)+'</small></button>';}).join(''):'<em>'+escHtml(tr('Nenhuma.'))+'</em>';
+      }).catch(function(){if(seq===inp._twBuscaSeq&&res.isConnected&&!hubOv.hidden)res.innerHTML='';});
+    },350);
   });
 }
 (function(){
@@ -10572,23 +10583,34 @@ function duoEscolhaUI(msg){
   contaRpc('duo_sugestoes').then(function(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = Array.isArray(L) && L.length ? L.map(duoNickBtn).join('') : '<p class="perfcarr">✧</p>'; }).catch(function(){});
 }
 function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick="' + escHtml(p.nick) + '">🌙 ' + escHtml(p.nick) + ' <small>' + (+p.best || 0) + '</small></button>'; }
-var duoBuscaT = 0;
-duoOv.addEventListener('input', function(e){
-  if(e.target.id !== 'duoBusca') return;
-  clearTimeout(duoBuscaT); var q = e.target.value.trim();
-  duoBuscaT = setTimeout(function(){
-    if(q.length < 2){ $('duoRes').innerHTML = ''; return; }
-    contaRpc('buscar_perfis', { p_q: q }).then(function(L){ var b = $('duoRes'); if(b) b.innerHTML = Array.isArray(L) && L.length ? L.filter(function(p){ return !contaJ || p.nick.toLowerCase() !== contaJ.nick.toLowerCase(); }).map(duoNickBtn).join('') : '<p class="perfcarr">' + escHtml(tr('Ninguém com esse nome.')) + '</p>'; }).catch(function(){});
-  }, 280);
+var duoBuscaT=0,duoBuscaSeq=0;
+function duoBuscaCancelar(){clearTimeout(duoBuscaT);duoBuscaT=0;duoBuscaSeq++;}
+duoOv.addEventListener('input',function(e){
+  if(e.target.id!=='duoBusca')return;
+  duoBuscaCancelar();
+  var inp=e.target,q=inp.value.trim(),seq=duoBuscaSeq;
+  if(q.length<2){$('duoRes').innerHTML='';return;}
+  duoBuscaT=setTimeout(function(){
+    duoBuscaT=0;
+    if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q)return;
+    contaRpc('buscar_perfis',{p_q:q}).then(function(L){
+      var box=$('duoRes');
+      if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q||!box||!box.isConnected)return;
+      box.innerHTML=Array.isArray(L)&&L.length?L.filter(function(p){return !contaJ||p.nick.toLowerCase()!==contaJ.nick.toLowerCase();}).map(duoNickBtn).join(''):'<p class="perfcarr">'+escHtml(tr('Ninguém com esse nome.'))+'</p>';
+    }).catch(function(){});
+  },280);
 });
 duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.stopPropagation(); });
+var duoLoadSeq=0;
 function duoCarregar(nick){
+  var seq=++duoLoadSeq;
   $('duoEscolha').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   contaRpc('duo_convidado', { p_nick: String(nick).slice(0, 24) }).then(function(r){
+    if(seq!==duoLoadSeq||duoOv.hidden)return;
     if(!r || r.erro){ duoGu = null; duoEscolhaUI(tr(r && r.erro === 'eu' ? 'Escolha outra pessoa para a dupla 😉' : r && r.erro === 'off' ? 'Essa pessoa não está participando do Moon⭐Duo!' : 'Esse nome ainda não tem perfil (jogou sem conta).')); return; }
     duoGu = r; duoBalao = null; duoPalcoUI(); duoRegistrar();
     beep(1047, .08, 'triangle', .04); beep(1568, .1, 'triangle', .04, .08);
-  }).catch(function(){ duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
+  }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden)duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 function duoRegistrar(){   // conta a cena para a missão do dia e a insígnia (o servidor não deixa contar repetido no mesmo dia)
   if(!duoGu || !contaJ) return;
@@ -10705,7 +10727,7 @@ function duoAbrir(nick){
   if(sfx.card) sfx.card();
   if(typeof hubComecou !== 'undefined' && hubComecou) hubMusicaTocar();
 }
-function duoFechar(){ duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }
+function duoFechar(){ duoBuscaCancelar();duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }
 function duoMsgTxt(m){   // presentes do Moon⭐Duo! chegam como "duo:🧸:Nick"
   var p = /^duo:([^:]+):(.+)$/.exec(String(m || ''));
   return p ? p[1] + ' ' + tr('{nick} te mandou um presente pelo Moon⭐Duo!').replace('{nick}', p[2]) : m;

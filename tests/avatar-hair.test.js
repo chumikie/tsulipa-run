@@ -7,6 +7,7 @@ const root=path.resolve(__dirname,'..');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
+const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
@@ -73,5 +74,26 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  ])assert(soraDraw.includes(hook),'Sora Jump shares hair layer '+hook);
  assert(sora.includes('drawChar(soraGetActiveCharacter(),'),'Sora Jump uses the active saved player character');
  assert(sora.includes('drawChar(CH[u.charIndex] || CH[0],-15,-10,0,0,true)'),'Sora Jump partners use the same shared drawChar path');
+
+
+ // Karaoke Day is still a reachable preview/controller renderer. Preserve its
+ // legacy hair fallback while routing the new base/top/fringe layers through
+ // the shared module, just like the main profile, Karaoke Time and Sora.
+ assert(day.includes('<script src="./tw-avatar-hair.js?v=5"></script>'),'Karaoke Day loads the shared hair module');
+ const dayDrawStart=day.indexOf('function desenharIdol(x,c,px,py,sc,pose,expr,t,espelho,opcoes){');
+ const dayDrawEnd=day.indexOf('\nfunction ',dayDrawStart+20);
+ assert(dayDrawStart>=0&&dayDrawEnd>dayDrawStart,'Karaoke Day has an independent Idol renderer');
+ const dayDraw=day.slice(dayDrawStart,dayDrawEnd);
+ for(const hook of [
+  'TWAvatarHair.back(x,c,0,0,b,E,T)',
+  'TWAvatarHair.isWavy(b)',
+  'TWAvatarHair.top(x,0,0,b)',
+  'TWAvatarHair.fringe(x,0,0,b,f,T)',
+  'TWAvatarHair.bicolor(x,c,0,0,b)',
+  'TWAvatarHair.mecha(x,c,0,0,f)'
+ ])assert(dayDraw.includes(hook),'Karaoke Day shares hair layer '+hook);
+ for(const oldCut of ["b==='chanel'","b==='longo'","b==='marias'","b==='rabo'","b==='pixie'","b==='cacheado'"])
+  assert(dayDraw.includes(oldCut),'Karaoke Day preserves legacy hair fallback '+oldCut);
+ assert(day.includes("localStorage.getItem('brs48cr_cu2')")&&day.includes('function meuChar()'),'Karaoke Day retains the saved custom Idol look path');
 
 console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

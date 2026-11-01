@@ -8078,11 +8078,12 @@ function perfAplicarNuvem(n, nick){
 // Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual.
 // Aproveita para trazer as roupas compradas na lojinha para a lista "Roupa" do menu.
 function perfAvatarAuto(){
+  var dono=contaJ&&contaJ.nick;if(!dono)return;
   contaRpc('meu_perfil').then(function(d){
-    if(!d) return;
+    if(!d||!contaJ||contaJ.nick!==dono) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
     perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; perfGuardarCor(d.cor);
-    if(d.aniver_hoje && typeof aniverFesta === 'function') setTimeout(aniverFesta, 1500);   // 🎂 ★50 + card especial, 1 vez por ano
+    if(d.aniver_hoje && typeof aniverFesta === 'function')twTimeoutVisivel(document.documentElement,function(){return !!contaJ&&contaJ.nick===dono;},aniverFesta,1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
     return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
@@ -13563,7 +13564,8 @@ applyLang();
 
   document.addEventListener('click', function(e){
     if(e.target.closest && (e.target.closest('.tw-rank-tv-launch') || e.target.closest('.tw-rank-tv-buttons'))){
-      setTimeout(function(){var modal=document.querySelector('#hub .tw-rank-tv-modal');if(modal&&!modal.hidden)updateTvTopIdol();},60);
+      var modal=document.querySelector('#hub .tw-rank-tv-modal');
+      if(modal)twTimeoutVisivel(modal,function(){return !modal.hidden&&!hubOv.hidden;},updateTvTopIdol,60);
     }
   });
 })();

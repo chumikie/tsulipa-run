@@ -1357,7 +1357,7 @@ var songs={
   mel:[81,-1,-1,79,76,-1,79,-1, 76,-1,74,-1,72,-1,-1,-1, 77,-1,76,74,72,-1,74,-1, 76,-1,-1,72,71,-1,72,-1,
        81,-1,84,-1,81,79,-1,-1, 79,-1,76,-1,74,-1,-1,-1, 77,-1,81,79,77,-1,76,-1, 74,-1,72,-1,71,-1,72,-1]}
 };
-/* Each song has a melodic note map; -1 marks rests. */
+/* Cada musica e uma melodia; -1 marca pausas. */
 Object.keys(songs).forEach(function(k){var c=songs[k],cnt={},tot=0;c.mel.forEach(function(m){if(m>=0){cnt[m]=(cnt[m]||0)+1;tot++;}});var acc=0;c.lanes={};Object.keys(cnt).map(Number).sort(function(a,b){return a-b;}).forEach(function(m){c.lanes[m]=Math.min(3,Math.floor((acc+cnt[m]/2)*4/tot));acc+=cnt[m];});});
 /* Deterministic note map keeps rests, including on strong beats. */
 function makeNoteMap(song,total,step,start){var notes=[],heard=0,lastLane=-1,streak=0,lastPitch=-1;

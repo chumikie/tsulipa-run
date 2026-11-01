@@ -1723,7 +1723,7 @@ soraOnlineInitAuth();
 var soraState = 'menu';
 var soraCv = null, soraCtx = null;
 var SW = 360, SH = 520;
-var soraRaf = 0, soraLastT = 0, soraFrame = 0, soraHostVisible = true;
+var soraRaf = 0, soraLastT = 0, soraFrame = 0, soraHostVisible = true, soraCanvasVisible = true;
 var soraSecretClicks = 0, soraSecretUnlocked = false, soraTestSceneId = '';
 var soraVisitorUfo = null, soraVisitorElapsed = 0, soraVisitorWaitFrames = 0, soraVisitorAttempted = false;
 var soraVisitorRowsCache = null, soraVisitorRowsPromise = null;
@@ -3852,8 +3852,8 @@ function soraDraw(){
   }
 }
 function soraPodeAnimar(){
-  var overlay=$('soraOv');
-  return !!(soraOpen&&soraHostVisible&&!document.hidden&&overlay&&!overlay.hidden);
+  var overlay=$('soraOv'),motionActive=!window.TWMotionLifecycle||TWMotionLifecycle.isPageActive();
+  return !!(soraOpen&&soraHostVisible&&soraCanvasVisible&&motionActive&&!document.hidden&&overlay&&!overlay.hidden);
 }
 function soraPararLoop(){
   if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
@@ -4372,6 +4372,7 @@ function soraBindTestProfileTools(){
   }
 }
 soraSetupUI();
+var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
 function soraReturnToMenu(){
   if(soraState === 'play') soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';

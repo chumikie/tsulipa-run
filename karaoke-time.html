@@ -2778,28 +2778,40 @@ $('ktClose').onclick=ktCloseRoom;$('ktFoto').addEventListener('click',function(e
 window.KaraokeTimeOffline={close:ktCloseRoom,dailyClip:function(){return ktClip.current();},getHomeScoreRanking:function(){return ktMeta.homeScoreRanking();},dailySnapshot:function(){return ktDaily.snapshot();}};
 /* Dentro do site o jogo é uma tela da página: a sala fica no fluxo normal (sem janela modal)
    e a página de fora recebe a altura, para existir uma rolagem só. */
-if(ktNoSite()){$('ktPopup').setAttribute('open','');
- var ktAlturaUlt=0,ktAlturaObserver=null,ktAlturaFallbackObserver=null;
- function ktAvisaAltura(){var h=Math.ceil(document.documentElement.scrollHeight);if(Math.abs(h-ktAlturaUlt)<4)return;ktAlturaUlt=h;try{parent.postMessage({type:'tw-kt-altura',h:h},location.origin);}catch(_){}}
- function ktAlturaConectar(){
-  if(window.ResizeObserver){
-   if(!ktAlturaObserver){ktAlturaObserver=new ResizeObserver(ktAvisaAltura);ktAlturaObserver.observe(document.documentElement);ktAlturaObserver.observe(document.body);}
-  }else if(window.MutationObserver&&!ktAlturaFallbackObserver){
-   ktAlturaFallbackObserver=new MutationObserver(ktAvisaAltura);
-   ktAlturaFallbackObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
-  }
-  ktAvisaAltura();
- }
- function ktAlturaDesconectar(){
-  if(ktAlturaObserver){ktAlturaObserver.disconnect();ktAlturaObserver=null;}
-  if(ktAlturaFallbackObserver){ktAlturaFallbackObserver.disconnect();ktAlturaFallbackObserver=null;}
- }
- window.addEventListener('load',ktAvisaAltura);
- window.addEventListener('resize',ktAvisaAltura,{passive:true});
- window.addEventListener('pagehide',ktAlturaDesconectar);
- window.addEventListener('pageshow',ktAlturaConectar);
- ktAlturaConectar();}
-else $('ktPopup').showModal();
+if(ktNoSite()){
+ $('ktPopup').setAttribute('open','');
+ (function(){
+  var ktAlturaUlt=0,ktAlturaObserver=null,ktAlturaFallbackObserver=null;
+  var ktAvisaAltura=function(){
+   var h=Math.ceil(document.documentElement.scrollHeight);
+   if(Math.abs(h-ktAlturaUlt)<4)return;
+   ktAlturaUlt=h;
+   try{parent.postMessage({type:'tw-kt-altura',h:h},location.origin);}catch(_){}
+  };
+  var ktAlturaConectar=function(){
+   if(window.ResizeObserver){
+    if(!ktAlturaObserver){
+     ktAlturaObserver=new ResizeObserver(ktAvisaAltura);
+     ktAlturaObserver.observe(document.documentElement);
+     ktAlturaObserver.observe(document.body);
+    }
+   }else if(window.MutationObserver&&!ktAlturaFallbackObserver){
+    ktAlturaFallbackObserver=new MutationObserver(ktAvisaAltura);
+    ktAlturaFallbackObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+   }
+   ktAvisaAltura();
+  };
+  var ktAlturaDesconectar=function(){
+   if(ktAlturaObserver){ktAlturaObserver.disconnect();ktAlturaObserver=null;}
+   if(ktAlturaFallbackObserver){ktAlturaFallbackObserver.disconnect();ktAlturaFallbackObserver=null;}
+  };
+  window.addEventListener('load',ktAvisaAltura);
+  window.addEventListener('resize',ktAvisaAltura,{passive:true});
+  window.addEventListener('pagehide',ktAlturaDesconectar);
+  window.addEventListener('pageshow',ktAlturaConectar);
+  ktAlturaConectar();
+ })();
+}else $('ktPopup').showModal();
 
 })();</script><script id="ktTraducoes">
 /* Traduções PT/EN/ES/TH/JA; idioma vem do menu ou de brs48cr_lang. */

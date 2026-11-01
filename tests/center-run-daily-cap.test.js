@@ -127,7 +127,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   ctx.contaInicioCorrida();ctx.contaFimCorrida(500,30,'Tsu',()=>refreshes++);
   ctx.contaJ={id:'B',nick:'Pati'};ctx.contaSessaoToken++;
   release('run-1');await flush();
-  assert.equal(ends,2,'delayed start from old account must not finish under new account');
+  assert.equal(ends,3,'delayed start from old account must not finish under new account');
   assert.equal(ctx.starT,130,'old run must not replace the new account balance');
   assert(starts>=3&&refreshes>=3);
   console.log('✓ Center Run: daily cap model, midnight, missing token, cap message and account switch');

@@ -3857,19 +3857,23 @@ $('petX').onclick = petClose;
 $('petWindowClose').onclick = function(){ $('petX').click(); };
 $('petGo').onclick = petAdopt;
 document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape') petClose(); });
-document.addEventListener('visibilitychange', function(){ if(document.hidden){petAnimParar();if(petData){petTick();petSave();}}else if(petOpen)petAnimLigar(); });
-window.addEventListener('pagehide', function(){ if(petData){ petTick(); petSave(); } });
+document.addEventListener('visibilitychange',function(){if(document.hidden){petAlertParar();petAnimParar();if(petData){petTick();petSave();}}else{petAlertLigar();if(petOpen)petAnimLigar();}});
+window.addEventListener('pagehide',function(){petAlertParar();if(petData){petTick();petSave();}});
+window.addEventListener('pageshow',petAlertLigar);
 petLoad();
 	// Liga/desliga o aviso (!) na patinha automaticamente a cada 2 segundos
-setInterval(function(){
+function petAlertAtualizar(){
   if(document.hidden)return;
-  var el = $('petAlert');
-  if(!el) return;
-  var p = typeof petAtivo === 'function' ? petAtivo() : null;
-  if(!p){ el.hidden = true; return; }
+  var el=$('petAlert');if(!el)return;
+  var p=typeof petAtivo==='function'?petAtivo():null;
+  if(!p){el.hidden=true;return;}
   petTick();
-  el.hidden = !(p.fome < 40 || p.energia < 40 || p.humor < 40 || p.higiene < 40);
-}, 2000);
+  el.hidden=!(p.fome<40||p.energia<40||p.humor<40||p.higiene<40);
+}
+var petAlertTimer=0;
+function petAlertLigar(){if(!petAlertTimer&&!document.hidden)petAlertTimer=setInterval(petAlertAtualizar,2000);}
+function petAlertParar(){if(petAlertTimer){clearInterval(petAlertTimer);petAlertTimer=0;}}
+petAlertLigar();
 // --- FIM DO MINI JOGO DE PETS ---
 // ================================================================
 // --- MINI JOGO DE PETS: AÇÕES (V1 · etapa 2) ---
@@ -9341,7 +9345,7 @@ function twIntervaloVisivel(el,enabled,callback,delay){
   start();
   return {refresh:start,destroy:stop};
 }
-var twRankRotationWanted=false,twRankVisibilityGate=null;
+var twRankRotationWanted=false,twRankVisibilityGate=null,twRankVisibilityElement=null;
 function twRankTimerStart(){
  if(twRankTimer)return;
  twRankTimer=setInterval(function(){
@@ -9361,6 +9365,7 @@ function twRankVisibility(){
  var tv=$('twRankTv');if(!tv)return;
  tv.hidden=false;
  var modalTv=$('twRankTvModal'),calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ if(twRankVisibilityElement!==modalTv){if(twRankVisibilityGate){twRankVisibilityGate.destroy();twRankVisibilityGate=null;}twRankVisibilityElement=modalTv;}
  twRankRotationWanted=!!(modalTv&&!modalTv.hidden&&!hubOv.hidden&&!calm);
  if(!twRankVisibilityGate&&modalTv&&window.TWMotionLifecycle){
   twRankVisibilityGate=window.TWMotionLifecycle.watchLoop(modalTv,function(){return twRankRotationWanted;},twRankTimerStart,twRankTimerPause);

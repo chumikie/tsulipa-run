@@ -7,9 +7,17 @@
  "use strict";
  function create(options){
   options=options||{};
-  var current=null,timer=0,lastUi=0,DURATION=59000,volume=.7;
+  var current=null,timer=0,lastUi=0,DURATION=59000,volume=.7,outputNode=null,outputContext=null;
   function el(id){return options.getElement?options.getElement(id):document.getElementById(id);}
   function tr(value){return options.translate?options.translate(value):value;}
+  function output(ctx){
+   if(!outputNode||outputContext!==ctx){outputNode=ctx.createGain();outputNode.gain.value=volume;outputNode.connect(ctx.destination);outputContext=ctx;}
+   return outputNode;
+  }
+  function setVolume(value){
+   volume=Math.max(0,Math.min(1,(Number(value)||0)/100));
+   if(outputNode&&outputContext)outputNode.gain.setTargetAtTime(volume,outputContext.currentTime,.02);
+  }
   function elapsed(){
    if(!current)return 0;
    if(current.paused)return current.elapsed||0;
@@ -98,13 +106,15 @@
   }
   function state(){return current?{songKey:current.songKey,paused:current.paused,elapsed:elapsed()}:null;}
   var volumeControl=el("ktPreviewVolume");
-  if(options.setVolume)options.setVolume(volume);
   if(volumeControl)volumeControl.addEventListener("input",function(){
    volume=Math.max(0,Math.min(1,(Number(volumeControl.value)||0)/100));
    if(options.setVolume)options.setVolume(volume);
   });
+  var toggleButton=el("ktPreviewToggle"),stopButton=el("ktPreviewStop");
+  if(toggleButton)toggleButton.addEventListener("click",function(){if(current)toggle();else play(options.getSelectedSong?options.getSelectedSong():"normal");});
+  if(stopButton)stopButton.addEventListener("click",function(){stop(true,tr("Prévia interrompida."));});
   render();
-  return Object.freeze({play:play,pause:pause,resume:resume,stop:stop,toggle:toggle,state:state});
+  return Object.freeze({play:play,pause:pause,resume:resume,stop:stop,toggle:toggle,state:state,output:output});
 
  }
  return Object.freeze({create:create});

@@ -26,13 +26,13 @@ for(const key of keys){
 function harness(extra){
  const elements=new Map(),events=[],context={state:'running',currentTime:0};
  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:id==='ktPreviewVolume'?70:0,disabled:false,dataset:{},handlers:{},setAttribute(){},addEventListener(type,fn){this.handlers[type]=fn;},querySelectorAll:()=>[]});return elements.get(id);};
- const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),currentSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
+ const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),getSelectedSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
  return {player,context,events,get};
 }
-const volumeChanges=[];const player=harness({setVolume:value=>volumeChanges.push(value)});
-assert.equal(volumeChanges[0],.7,'preview volume starts at 70 percent');
+const player=harness();
+const gain=player.player.output(player.context);assert.equal(gain.gain.value,.7,'preview output starts at 70 percent');
 player.get('ktPreviewVolume').value=35;player.get('ktPreviewVolume').handlers.input();
-assert.equal(volumeChanges.at(-1),.35,'volume slider changes only the preview output gain');
+assert.equal(gain.gain.value,.35,'volume slider changes only the preview output gain');
 assert.equal(player.player.play('normal'),true,'preview starts');
 assert(player.events.some(e=>e[0]==='normal'&&e[1]===0),'preview schedules original melody');
 assert.equal(player.player.state().songKey,'normal');
@@ -53,7 +53,7 @@ for(const key of keys){
  assert(library.includes('data-kt-song-select="'+key+'"'),key+' keeps Select');
  assert(library.includes('data-kt-song-best="'+key+'"'),key+' keeps personal best');
 }
-for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle'])assert(library.includes('id="'+id+'"'),'player includes '+id);
+for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"'),'player includes '+id);
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(html.includes('id="ktPreviewVolume"')&&moduleCode.includes('addEventListener("input"'),'player includes a working volume slider');

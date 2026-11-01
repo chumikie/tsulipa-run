@@ -218,3 +218,6 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 
 .kt-preview-volume{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:9px;font-weight:800;white-space:nowrap}
 .kt-preview-volume input{width:76px;max-width:21vw;accent-color:var(--pink);cursor:pointer}
+
+.kt-preview-volume{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:10px;font-weight:900;white-space:nowrap}
+.kt-preview-volume input{width:76px;max-width:21vw;accent-color:var(--pink);cursor:pointer}

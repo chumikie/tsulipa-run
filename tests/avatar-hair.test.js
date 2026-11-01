@@ -6,6 +6,7 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
+const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
@@ -52,4 +53,25 @@ for(const cut of cuts){
 assert.equal(hair.isWavy('chanel'),false);
 assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
 {let o=[];const gg=new Proxy({}, {get(obj,k){if(k==='createLinearGradient')return ()=>({addColorStop(){}});if(k in obj)return obj[k];return (...a)=>o.push(k);},set(obj,k,v){obj[k]=v;return true;}});assert.equal(hair.fringe(gg,0,0,'',"arcoiris",(...a)=>o.push('T')),true);assert(o.filter(k=>k==='T').length>=12,'arco-íris tem 6 mechas e brilhos');}
+
+ // Sora Jump has an independent drawChar renderer. Its player character and
+ // partner sprites must use the same shared base/top/fringe layers as Profile
+ // and Karaoke, rather than silently falling back to the old duplicated hair.
+ assert(sora.includes('<script src="./tw-avatar-hair.js?v=5"></script>'),'Sora Jump loads the shared hair renderer');
+ const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
+ const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
+ assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists');
+ const soraDraw=sora.slice(soraDrawStart,soraDrawEnd);
+ assert(soraDraw.includes("if (isPartner) { OF = 0; A = ''; }"),'Sora partner branch keeps its own character identity');
+ for(const hook of [
+  'TWAvatarHair.back(g,c,x,y,b,E,T)',
+  'TWAvatarHair.isWavy(b)',
+  'TWAvatarHair.top(g,x,y,b)',
+  'TWAvatarHair.fringe(g,x,y,b,f,T)',
+  'TWAvatarHair.bicolor(g,c,x,y,b)',
+  'TWAvatarHair.mecha(g,c,x,y,f)'
+ ])assert(soraDraw.includes(hook),'Sora Jump shares hair layer '+hook);
+ assert(sora.includes('drawChar(soraGetActiveCharacter(),'),'Sora Jump uses the active saved player character');
+ assert(sora.includes('drawChar(CH[u.charIndex] || CH[0],-15,-10,0,0,true)'),'Sora Jump partners use the same shared drawChar path');
+
 console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

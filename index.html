@@ -11861,8 +11861,25 @@ function hubIdolsLugar(){
   hubIV.cw = 0;
 }
 // ---- Palco animado da vitrine ----
-var hubIV = { k:1, cw:0, ch:0, L:[], x:0, t0:0, ult:0, raf:0, w:0, h:0, dpr:1, conf:[], par:false, vis:true };
+var hubIV = { k:1, cw:0, ch:0, L:[], x:0, t0:0, ult:0, raf:0, w:0, h:0, dpr:1, conf:[], par:false, vis:true, beamAssets:null };
 var HUB_IV_CEL = 104, HUB_IV_ACOES = ['cantar', 'dancar', 'pular', 'coracao', 'luz'];
+function hubIdolsBeamTexturas(height){
+  var scale = (hubIV.dpr || 1) * (hubIV.k || 1), cache = hubIV.beamAssets;
+  if(cache && cache.height === height && cache.scale === scale) return cache.items;
+  var colors = ['155,48,217', '182,255,59', '65,105,225'], items = [];
+  for(var i = 0; i < colors.length; i++){
+    var cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.ceil(92 * scale)); cv.height = Math.max(1, Math.ceil(height * scale));
+    var ctx = cv.getContext('2d'); if(!ctx) return null;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    var grad = ctx.createLinearGradient(46, 0, 46, height);
+    grad.addColorStop(0, 'rgba(' + colors[i] + ',.55)'); grad.addColorStop(1, 'rgba(' + colors[i] + ',0)');
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.moveTo(39, 0); ctx.lineTo(53, 0); ctx.lineTo(92, height); ctx.lineTo(0, height); ctx.closePath(); ctx.fill();
+    items.push(cv);
+  }
+  hubIV.beamAssets = { height:height, scale:scale, items:items };
+  return items;
+}
 function hubIdolsTam(){
   var cv = $('hubIdolsCv'); if(!cv) return;
   var cw = cv.clientWidth || 560, ch = cv.clientHeight || 192, d = Math.min(2, window.devicePixelRatio || 1);
@@ -11894,12 +11911,16 @@ function hubIdolsFundo(x, W, H, s, dt){
   x.save(); x.globalAlpha = .12; x.fillStyle = '#ffffff';
   for(var gx = (-(hubIV.x * .3) % 14); gx < W; gx += 14) for(var gy = 6; gy < chao - 20; gy += 14) if(((gx + gy) | 0) % 3) x.fillRect(gx, gy, 2, 2);
   x.restore();
-  // canhões de luz nas cores de Tsu, Lirika e Pati
+  // canhões de luz: a textura é rasterizada uma vez por escala/altura e só gira a cada quadro
+  var beams = hubIdolsBeamTexturas(chao + 10);
   [['155,48,217', .12], ['182,255,59', .5], ['65,105,225', .88]].forEach(function(l, i){
     var bx = W * l[1], ang = Math.sin(s * .8 + i * 2.1) * .5;
     x.save(); x.translate(bx, -6); x.rotate(ang);
-    var lg = x.createLinearGradient(0, 0, 0, chao + 10); lg.addColorStop(0, 'rgba(' + l[0] + ',.55)'); lg.addColorStop(1, 'rgba(' + l[0] + ',0)');
-    x.fillStyle = lg; x.beginPath(); x.moveTo(-7, 0); x.lineTo(7, 0); x.lineTo(46, chao + 10); x.lineTo(-46, chao + 10); x.closePath(); x.fill();
+    if(beams) x.drawImage(beams[i], -46, 0, 92, chao + 10);
+    else {
+      var lg = x.createLinearGradient(0, 0, 0, chao + 10); lg.addColorStop(0, 'rgba(' + l[0] + ',.55)'); lg.addColorStop(1, 'rgba(' + l[0] + ',0)');
+      x.fillStyle = lg; x.beginPath(); x.moveTo(-7, 0); x.lineTo(7, 0); x.lineTo(46, chao + 10); x.lineTo(-46, chao + 10); x.closePath(); x.fill();
+    }
     x.restore();
   });
   // bandeirinhas

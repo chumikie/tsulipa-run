@@ -6576,7 +6576,7 @@ function contaFimCorrida(score, est, ch, refresh){
     if(!r||r.ok!==true)throw Error(r&&r.erro||'corrida_nao_confirmada');
     if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
     if(r.limite_diario===true){
-      aviso(tr('Limite diário do Center⭐Run! atingido (100 estrelas)'));
+      aviso((r.creditadas>0?String(r.creditadas)+' '+tr('estrelas')+' · ':'')+tr('Limite diário do Center⭐Run! atingido (100 estrelas)'));
     }else{
       aviso(String(r.creditadas||0)+' '+tr('estrelas'));
     }

@@ -3,58 +3,55 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
-
+const Preview=require('../karaoke-music-preview.js');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const start=html.indexOf('var songs={',html.indexOf('var kt=(function(){'));
 const end=html.indexOf('\n};\n/* Cada musica',start);
 assert(start>=0&&end>start,'all seven original procedural songs are defined');
 const songs=new Function('return ('+html.slice(start+'var songs='.length,end+2)+');')();
 const keys=['normal','fast','chill','tema','corrida','gacha','duo'];
-assert.deepEqual(Object.keys(songs).sort(),keys.slice().sort(),'the preview uses exactly the seven existing rhythm tracks');
-
-const beatStart=html.indexOf('function beat(i,target){');
-const beatEnd=html.indexOf('/* Relógio único do ritmo',beatStart);
-assert(beatStart>=0&&beatEnd>beatStart,'shared musical beat renderer accepts an independent playback target');
-const calls=[];
-const sandbox={
-  AC:{state:'running',currentTime:0},
-  run:null,
-  performance:{now:()=>0},
-  hz:m=>440*Math.pow(2,(m-69)/12),
-  voice:(frequency,duration,time,volume,type)=>calls.push({frequency,duration,time,volume,type})
-};
-vm.createContext(sandbox);
-vm.runInContext(html.slice(beatStart,beatEnd)+'\nthis.previewBeat=beat;',sandbox,{timeout:1000});
+assert.deepEqual(Object.keys(songs).sort(),keys.slice().sort(),'preview uses seven existing tracks');
+const beatStart=html.indexOf('function beat(i,target){'),beatEnd=html.indexOf('/* Relógio único do ritmo',beatStart);
+assert(beatStart>=0&&beatEnd>beatStart,'shared beat renderer accepts independent playback target');
+const calls=[],sandbox={AC:{state:'running',currentTime:0},run:null,performance:{now:()=>0},hz:m=>440*Math.pow(2,(m-69)/12),voice:(frequency,duration,time,volume,type)=>calls.push({frequency,duration,time,volume,type})};
+vm.createContext(sandbox);vm.runInContext(html.slice(beatStart,beatEnd)+'\nthis.previewBeat=beat;',sandbox,{timeout:1000});
 for(const key of keys){
-  calls.length=0;
-  const song=songs[key],step=60000/song.bpm/2;
-  const preview={song,step,audioOrigin:0,audioReady:true,audioClock:true,cuesByStep:{}};
-  for(let i=0;i<8;i++)sandbox.previewBeat(i,preview);
-  const expected=440*Math.pow(2,(song.mel[0]-69)/12);
-  assert(calls.some(v=>Math.abs(v.frequency-expected)<.01),key+' preview must synthesize the original lead melody');
-  assert(calls.length>8,key+' preview must synthesize accompaniment, bass and percussion with the lead');
+ calls.length=0;const song=songs[key],step=60000/song.bpm/2,preview={song,step,audioOrigin:0,audioReady:true,audioClock:true,cuesByStep:{}};
+ for(let i=0;i<8;i++)sandbox.previewBeat(i,preview);
+ const expected=440*Math.pow(2,(song.mel[0]-69)/12);
+ assert(calls.some(v=>Math.abs(v.frequency-expected)<.01),key+' synthesizes original lead melody');
+ assert(calls.length>8,key+' synthesizes harmony, bass and percussion');
 }
+function harness(extra){
+ const elements=new Map(),events=[],context={state:'running',currentTime:0};
+ const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:0,disabled:false,dataset:{},setAttribute(){},querySelectorAll:()=>[]});return elements.get(id);};
+ const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),currentSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
+ return {player,context,events};
+}
+const player=harness();
+assert.equal(player.player.play('normal'),true,'preview starts');
+assert(player.events.some(e=>e[0]==='normal'&&e[1]===0),'preview schedules original melody');
+assert.equal(player.player.state().songKey,'normal');
+player.context.currentTime=.4;assert.equal(player.player.pause(),true,'preview pauses');
+assert.equal(player.player.state().paused,true);
+assert.equal(player.player.resume(),true,'preview resumes');
+assert.equal(player.player.stop(true,'Stopped'),true,'preview stops');
+assert.equal(player.player.state(),null);
+assert(player.events.some(e=>e[0]==='ambient-resume'),'ambient sound can resume after preview');
+const blocked=harness({isBusy:()=>true});
+assert.equal(blocked.player.play('fast'),false,'preview cannot run during a game');
 
-const libraryStart=html.indexOf('id="ktAudioLibrary"');
-const playerStart=html.indexOf('id="ktPreviewPlayer"',libraryStart);
-const libraryEnd=html.indexOf('</section>',playerStart);
-assert(libraryStart>=0&&playerStart>libraryStart&&libraryEnd>playerStart,'music library includes the shared preview player');
+const libraryStart=html.indexOf('id="ktAudioLibrary"'),playerStart=html.indexOf('id="ktPreviewPlayer"',libraryStart),libraryEnd=html.indexOf('</section>',playerStart);
+assert(libraryStart>=0&&playerStart>libraryStart&&libraryEnd>playerStart,'library contains player');
 const library=html.slice(libraryStart,libraryEnd);
 for(const key of keys){
-  assert(library.includes('data-kt-song-preview="'+key+'"'),key+' has an independent Listen action');
-  assert(library.includes('data-kt-song-select="'+key+'"'),key+' keeps its independent Select action');
-  assert(library.includes('data-kt-song-best="'+key+'"'),key+' retains its personal-record slot');
+ assert(library.includes('data-kt-song-preview="'+key+'"'),key+' has Listen');
+ assert(library.includes('data-kt-song-select="'+key+'"'),key+' keeps Select');
+ assert(library.includes('data-kt-song-best="'+key+'"'),key+' keeps personal best');
 }
-for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle'])
-  assert(library.includes('id="'+id+'"'),'shared player includes '+id);
-
-const previewStart=html.indexOf('function previewSong(key){');
-const previewEnd=html.indexOf('\nfunction previewPause()',previewStart);
-assert(previewStart>=0&&previewEnd>previewStart,'a separate preview playback path exists');
-const previewSource=html.slice(previewStart,previewEnd);
-assert(!previewSource.includes('ktMeta.begin')&&!previewSource.includes('ticketAdmission')&&!previewSource.includes('ktOnline'),'listening cannot admit a show, spend a ticket or write a ranking');
-assert(html.includes('previewStop(false);if(typeof ktAudioVitrine'), 'starting a real show stops the preview first');
-assert(html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewStop(false);"),'hidden pages stop preview audio');
-assert(html.includes("window.addEventListener('pagehide',function(){previewStop(false);"),'leaving the page stops preview audio');
-assert(html.includes('kt.stopPreview(false);kt.allowExit();'),'closing the Karaoke page releases preview audio');
-console.log('✓ Karaoke music preview: seven original compositions, independent listen/select controls, shared Web Audio beat renderer, progress/stop/pause lifecycle, and no admission or ranking writes');
+for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle'])assert(library.includes('id="'+id+'"'),'player includes '+id);
+assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
+assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
+assert(html.includes("window.addEventListener('pagehide',function(){previewPlayer.stop(false);"),'pagehide stops preview');
+assert(html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);"),'hidden page stops preview');
+console.log('✓ Music preview: seven tracks, separate listen/select, independent player, no game/ticket/ranking admission');

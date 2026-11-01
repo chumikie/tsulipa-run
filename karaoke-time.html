@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=1"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=5"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=1"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=1"><script id="ktTemaDaPagina">
 /* Acompanha o tema da página principal: o Oshi escolhido (brs48cr_oshi, o mesmo do menu)
    e o claro/escuro. Dentro do menu chega por ?oshi= e ?theme=; aberto sozinho, segue o aparelho. */
 (function(){
@@ -50,23 +50,6 @@
 .kt-library-special{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:9px;padding:8px;border-radius:12px;background:var(--chip);color:var(--sub);font-size:10px;font-weight:800}
 .kt-library-special .kt-audio-clip{flex:0 1 220px;min-height:42px}
 .kt-audio-status{min-height:18px;margin:10px 2px 0;color:var(--sub);font-size:11px;font-weight:800;text-align:center}
-.kt-library-track{cursor:default}
-.kt-library-track:hover{transform:none;border-color:rgba(123,63,240,.35)}
-.kt-library-actions{display:flex;flex:0 0 auto;flex-direction:column;gap:4px}
-.kt-library-action{min-height:27px;padding:4px 8px;border:1px solid rgba(123,63,240,.24);border-radius:8px;background:var(--chip);color:var(--b1);font:inherit;font-size:9px;font-weight:900;white-space:nowrap;cursor:pointer}
-.kt-library-action:hover{border-color:var(--pink);background:rgba(255,111,181,.10)}
-.kt-library-action:disabled{opacity:.48;cursor:not-allowed}
-.kt-library-action[aria-pressed="true"]{border-color:var(--pink);background:rgba(255,111,181,.12)}
-.kt-preview-player{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border:1px solid rgba(123,63,240,.26);border-radius:13px;background:var(--chip)}
-.kt-preview-info{display:flex;min-width:0;flex-direction:column;gap:3px}
-.kt-preview-info strong{overflow:hidden;color:var(--ink);font-size:11px;text-overflow:ellipsis}
-.kt-preview-info small{color:var(--sub);font-size:9px}
-.kt-preview-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
-.kt-preview-controls time{min-width:76px;color:var(--sub);font-size:9px;font-variant-numeric:tabular-nums;text-align:right}
-.kt-preview-progress{grid-column:1/-1;width:100%;height:6px;overflow:hidden;border:0;border-radius:99px;background:rgba(123,63,240,.14);accent-color:var(--pink)}
-.kt-preview-progress::-webkit-progress-bar{border-radius:99px;background:rgba(123,63,240,.14)}
-.kt-preview-progress::-webkit-progress-value{border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5)}
-.kt-preview-progress::-moz-progress-bar{border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5)}
 @media(max-width:620px){
  .kt-audio-library{padding:10px}
  .kt-audio-heading h2{font-size:15px}
@@ -1492,81 +1475,18 @@ var m=c.mel[i%len];if(m>=0){m+=up;var d=step*(c.mel[(i+1)%len]<0?1.7:.95),cues=p
 /* Relógio único do ritmo: o do áudio (como no jogo dos pets), já descontando a latência de saída do aparelho */
 function kNow(){if(run&&run.audioClock&&AC&&AC.state==='running'&&run.audioOrigin)return run.start+(AC.currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();return performance.now();}
 function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||AC.state!=='running')return;/* Antecedencia no relogio nativo do audio, sem aplicar a latencia outra vez. */var elapsed=(AC.currentTime-run.audioOrigin)*1000;while(run.audioStep<run.total&&run.audioStep*run.step<elapsed+220)beat(run.audioStep++);}
-function start(mode){if(run)return;previewStop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var practice=mode===true;if(!practice&&mode!=='confirmed'){ktFlow.request();return;}if(!practice&&!krSt.aberta)return;var wasClosed=practice&&!krSt.aberta;if(wasClosed)krSt.aberta=true;var admission=!practice&&typeof ktMeta!=='undefined'&&ktMeta?ktMeta.begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)krSt.aberta=false;return;}if(admission){songKey=admission.round.song;$('ktSong').value=songKey;}if(typeof ktDaily!=='undefined'&&ktDaily)ktDaily.beforeStart();var auto=mode===true;krMusicaParar();ac();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:ktFlow.offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
+function start(mode){if(run)return;previewPlayer.stop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var practice=mode===true;if(!practice&&mode!=='confirmed'){ktFlow.request();return;}if(!practice&&!krSt.aberta)return;var wasClosed=practice&&!krSt.aberta;if(wasClosed)krSt.aberta=true;var admission=!practice&&typeof ktMeta!=='undefined'&&ktMeta?ktMeta.begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)krSt.aberta=false;return;}if(admission){songKey=admission.round.song;$('ktSong').value=songKey;}if(typeof ktDaily!=='undefined'&&ktDaily)ktDaily.beforeStart();var auto=mode===true;krMusicaParar();ac();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:ktFlow.offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
 run.total=Math.floor(59000/step);run.notes=makeNoteMap(song,run.total,step,run.start);if(admission){run.session=admission.round;var saved=admission.round.checkpoint;if(saved){resumeElapsed=Math.max(0,Number(saved.elapsed)||0);run.start=now-resumeElapsed;['score','combo','maxCombo','hits','attempts'].forEach(function(k){run[k]=saved[k]||0;});var oldDone={};if(saved.noteMap!==2){var oldPos=0;for(var j=0;j<run.total;j++)if(song.mel[j%song.mel.length]>=0)oldDone[j]=!!saved.done[oldPos++];}run.notes.forEach(function(n,i){n.at=run.start+n.idx*step;n.done=saved.noteMap===2?!!saved.done[i]:!!oldDone[n.idx];});krEu.canto=saved.canto||krEu.canto;run.audioStep=Math.max(0,Math.ceil(resumeElapsed/step));}}/* Sons de destaque seguem o mesmo idx musical, inclusive após retomada. */run.cuesByStep={};run.notes.forEach(function(n){(run.cuesByStep[n.idx]||(run.cuesByStep[n.idx]=[])).push(n);});/* A calibracao e apenas do INPUT: nunca deslocar nota visual ou som. */krRhythmRun=run;
 if(!auto){krClearHandheld('stage');krEu.no_mic=true;krEu.micT=60*60;krEu.x=krEu.tx=480;krEu.y=krEu.ty=286;}else if(krDemoCantor)krDemoCantor.endsAt=now+63000;
 if(!auto)setTimeout(krIrAoPalco,160);$('ktStart').disabled=true;$('ktStart').textContent='🎤 Show em andamento';$('ktSong').disabled=true;$('ktPause').disabled=true;$('ktEnd').disabled=false;$('ktKeys').hidden=!!auto;$('ktSession').hidden=false;timingMessage((KR_RHYTHM_TOUCH_DIAGNOSTIC[LANG]||KR_RHYTHM_TOUCH_DIAGNOSTIC.pt).ready);lastUI=0;krUI();updateUI();var activeRun=run;ktPrepararRelogioAudio(activeRun,resumeElapsed?0:prepareMs,resumeElapsed,function(){if(run!==activeRun)return;if(krDemoCantor&&waitMs>0)krDemoCantor.endsAt+=waitMs;$('ktPause').disabled=false;updateUI();checkpoint();});}
-var preview=null,previewTimer=0,previewLastUi=0,previewDurationMs=59000;
-function previewElapsed(){if(!preview)return 0;if(preview.paused)return preview.elapsed||0;if(!AC||!preview.audioClock)return preview.elapsed||0;return Math.max(0,Math.min(previewDurationMs,(AC.currentTime-preview.audioOrigin)*1000));}
-function previewUi(message){
- var title=$('ktPreviewTitle'),status=$('ktPreviewStatus'),progress=$('ktPreviewProgress'),time=$('ktPreviewTime'),toggle=$('ktPreviewToggle'),stop=$('ktPreviewStop'),globalStatus=$('ktAudioStatus');
- var elapsed=previewElapsed(),playing=!!(preview&&!preview.paused),key=preview&&preview.songKey;
- if(title)title.textContent=preview?preview.song.title:'Player musical';
- if(status)status.textContent=message||(playing?tr('Tocando'):preview?tr('Prévia pausada.'):tr('Escolha uma música para ouvir.'));
- if(progress)progress.value=elapsed;
- if(time)time.textContent=String(Math.floor(elapsed/60000)).padStart(2,'0')+':'+String(Math.floor(elapsed/1000)%60).padStart(2,'0')+' / 00:59';
- if(toggle){toggle.disabled=!!run;toggle.textContent=playing?'⏸ '+tr('Pausar'):preview?'▶ '+tr('Retomar'):'▶ '+tr('Ouvir');}
- if(stop)stop.disabled=!preview;
- if(globalStatus&&message)globalStatus.textContent=message;
- var root=$('ktAudioLibrary');
- if(root)[].forEach.call(root.querySelectorAll('[data-kt-song-preview]'),function(button){var active=button.dataset.ktSongPreview===key;button.textContent=active&&playing?'⏸ '+tr('Pausar'):active&&preview?'▶ '+tr('Retomar'):'▶ '+tr('Ouvir');button.setAttribute('aria-pressed',active&&playing?'true':'false');button.disabled=!!run;});
-}
-function previewStop(restoreAmbient,message){
- if(previewTimer){clearInterval(previewTimer);previewTimer=0;}
- var hadPreview=!!preview;preview=null;
- if(hadPreview)silence();
- previewUi(message||'');
- if(restoreAmbient&&hadPreview&&!run&&!muted&&typeof krMusicaMudarModo==='function')krMusicaMudarModo();
- return hadPreview;
-}
-function previewSchedule(){
- if(!preview||preview.paused||!preview.audioReady||!preview.audioClock||!AC)return;
- if(AC.state!=='running'){previewPause();return;}
- var elapsed=previewElapsed();
- while(preview.audioStep<preview.total&&preview.audioStep*preview.step<elapsed+220)beat(preview.audioStep++,preview);
- if(performance.now()-previewLastUi>=100){previewLastUi=performance.now();previewUi();}
- if(elapsed>=previewDurationMs)previewStop(true,tr('Prévia finalizada.'));
-}
-function previewArm(target,elapsed){
- if(preview!==target)return;
- var ctx=ac();
- function arm(){
-  if(preview!==target)return;
-  if(!ctx||ctx.state!=='running'){previewStop(true,tr('Não foi possível iniciar a prévia musical.'));return;}
-  target.elapsed=Math.max(0,elapsed||0);
-  target.audioOrigin=ctx.currentTime+.06-target.elapsed/1000;
-  target.audioClock=true;target.audioReady=true;target.paused=false;
-  target.audioStep=Math.max(0,Math.ceil(target.elapsed/target.step));
-  if(!previewTimer)previewTimer=setInterval(previewSchedule,25);
-  previewUi();previewSchedule();
- }
- if(ctx&&ctx.state==='running')arm();
- else if(acResumePromise&&typeof acResumePromise.then==='function')acResumePromise.then(arm,arm);
- else arm();
-}
-function previewSong(key){
- if(run){$('ktAudioStatus').textContent=tr('A prévia musical só pode tocar fora de uma partida.');return false;}
- if(!songs[key])return false;
- if(muted){$('ktAudioStatus').textContent=tr('O som está desativado. Ative o botão de som para ouvir.');return false;}
- if(preview&&preview.songKey===key){if(preview.paused){previewArm(preview,preview.elapsed);return true;}previewPause();return true;}
- previewStop(false);
- if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();
- if(typeof krMusicaParar==='function')krMusicaParar();
- var ctx=ac();if(!ctx){$('ktAudioStatus').textContent=tr('Este navegador não oferece reprodução de áudio.');return false;}
- var song=songs[key],step=60000/song.bpm/2,target={songKey:key,song:song,step:step,total:Math.floor(previewDurationMs/step),audioOrigin:0,audioStep:0,audioReady:false,audioClock:false,paused:false,elapsed:0,cuesByStep:{}};
- preview=target;previewLastUi=0;previewUi();previewArm(target,0);return true;
-}
-function previewPause(){
- if(!preview||preview.paused)return false;
- preview.elapsed=previewElapsed();preview.paused=true;
- if(previewTimer){clearInterval(previewTimer);previewTimer=0;}
- silence();previewUi();return true;
-}
-function previewResume(){if(!preview||!preview.paused||run)return false;previewArm(preview,preview.elapsed);return true;}
-function previewToggle(key){
- if(preview&&(!key||preview.songKey===key)){if(preview.paused)return previewResume();return previewPause();}
- return previewSong(key||songKey);
-}
+var previewPlayer=window.KaraokeMusicPreview.create({
+ getSong:function(key){return songs[key];},getContext:ac,
+ getResumePromise:function(){return acResumePromise;},isMuted:function(){return muted;},
+ isBusy:function(){return !!run;},beat:function(i,target){beat(i,target);},silence:silence,
+ stopAmbient:krMusicaParar,restoreAmbient:krMusicaMudarModo,
+ stopVoicePreview:function(){if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();},
+ currentSong:function(){return songKey;},getElement:$,translate:tr
+});
 function checkpoint(){if(run&&!run.practice&&typeof ktMeta!=='undefined'&&ktMeta)ktMeta.checkpoint(run);}
 function adjustOffset(ms){if(run)run.offsetMs=ms;}
 function react(type,message){var now=performance.now();if(now-lastReaction<420)return;lastReaction=now;var b=krBots[Math.floor(Math.random()*krBots.length)];if(!b)return;var emo=type==='MISS'?'💖':type==='FINISH'?'👏':type==='COMBO'?'✨':'🎵';krBolhas=krBolhas.filter(function(v){return !v._ktUntil||v._ktUntil>now;});if(krBolhas.length>9)krBolhas.splice(0,krBolhas.length-9);krBolhas.push({emo:emo,x:b.x-8,y:b.y-80,t:0,_ktUntil:now+950});if(type!=='GOOD')krBolhas.push({emo:ktCoracaoDe(b.char),x:b.x+10,y:b.y-70,t:0,_ktUntil:now+1050});if(message){Object.keys(krBaloes).filter(function(k){return krT-krBaloes[k].t0<150;}).slice(0,-1).forEach(function(k){delete krBaloes[k];});krBaloes[b.playerId||b.nick]={txt:message,t0:krT};}var old=b.danca,token=(b._ktReaction||0)+1;b._ktReaction=token;b.danca=type==='COMBO'?'pulo':'banzai';setTimeout(function(){if(b._ktReaction===token)b.danca=old;},900);}
@@ -1622,9 +1542,9 @@ document.addEventListener('keydown',function(e){
  if(key==='c'&&$('ktClosed').hidden){e.preventDefault();$('ktFoto').click();return;}
  if(key==='s'&&$('ktClosed').hidden){e.preventDefault();var panel=$('ktCalibration');panel.open=!panel.open;if(panel.open&&run)pause(true);}
 });
-window.addEventListener('pagehide',function(){previewStop(false);if(run){pause(true);checkpoint();}});
-document.addEventListener('visibilitychange',function(){if(document.hidden){previewStop(false);if(run)pause(true);}});
-return {start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,previewSong:previewSong,pausePreview:previewPause,resumePreview:previewResume,stopPreview:previewStop,togglePreview:previewToggle,previewState:function(){return preview?{songKey:preview.songKey,paused:preview.paused,elapsed:previewElapsed()}:null;},paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt};
+window.addEventListener('pagehide',function(){previewPlayer.stop(false);if(run){pause(true);checkpoint();}});
+document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);if(run)pause(true);}});
+return {start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,previewSong:previewPlayer.play,pausePreview:previewPlayer.pause,resumePreview:previewPlayer.resume,stopPreview:previewPlayer.stop,togglePreview:previewPlayer.toggle,previewState:previewPlayer.state,paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt};
 })();
 function krRhythmLabels(){return KR_RHYTHM_LANG[LANG]||KR_RHYTHM_LANG.pt;}
 function krRhythmRender(){}

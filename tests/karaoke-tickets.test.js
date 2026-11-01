@@ -15,8 +15,9 @@ assert(karaoke.includes('Deseja gastar 1 ticket de Karaoke?'),'confirmação exp
 assert(karaoke.includes('window.ktOnline.ticketAdmission()'),'admissão de ticket é passada ao contador local');
 assert(karaoke.includes('var resume=guardado();')&&karaoke.includes('a.iniciar(resume,!!wantsTicket)'),'a admissão decide a moeda no servidor');
 assert(source.includes('kt_ticket_request_v1:')&&source.includes('savePending(id,req,r.run)'),'chave idempotente e corrida paga sobrevivem à recarga');
+assert(source.includes('!pendingRequest&&balance<1'),'retomada idempotente continua possível com saldo já debitado');
 assert(source.includes('completeRun:completeRun'),'a finalização confirmada encerra a chave persistida do ticket');
-assert(karaoke.includes("r.reason==='limit'")&&karaoke.includes('a.iniciar(null,true)'),'corrida antiga encerrada não bloqueia nova admissão paga');
+assert(karaoke.includes("r.reason==='limit'")&&karaoke.includes('a.iniciar(null,true)')&&karaoke.includes('completeRun(resume)'),'corrida antiga encerrada não bloqueia nova admissão paga');
 assert(karaoke.includes("x.reason==='invalid'||x.reason==='run'")&&karaoke.includes('parent.ktTickets.completeRun(id)'),'o ID e o vínculo do ticket só são limpos após resposta terminal');
 assert(!/\.rpc\(|\.from\(/.test(source),'cliente não edita carteiras diretamente');
 assert(sql.includes('APROVADO E APLICADO NO SUPABASE'),'migração marcada como aprovada e aplicada');

@@ -20,7 +20,11 @@ rpc(){
 }
 expect(){
   local output="$1" fragment="$2" case_name="$3"
-  if [[ "$output" != *"$fragment"* ]]; then
+  # PostgreSQL json/jsonb printers differ in spaces around the colon.
+  local compact_output compact_fragment
+  compact_output="$(printf '%s' "$output" | tr -d '[:space:]')"
+  compact_fragment="$(printf '%s' "$fragment" | tr -d '[:space:]')"
+  if [[ "$compact_output" != *"$compact_fragment"* ]]; then
     echo "FAIL $case_name: missing $fragment in $output" >&2
     exit 1
   fi

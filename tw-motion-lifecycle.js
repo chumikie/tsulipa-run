@@ -103,7 +103,7 @@ function refreshAll(){
 }
 var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
  records.forEach(function(rec){
-  if(rec.type==='attributes')inspectCss(rec.target);
+  if(rec.type==='attributes'){inspectCss(rec.target);if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'&&!frameGates.has(rec.target))connectFrame(rec.target);}
   else{
    for(var i=0;i<rec.removedNodes.length;i++)cleanup(rec.removedNodes[i]);
    for(var j=0;j<rec.addedNodes.length;j++)scan(rec.addedNodes[j]);
@@ -113,7 +113,7 @@ var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(rec
 }):null;
 function startScan(){
  scan(d.documentElement);
- if(mutationObserver)mutationObserver.observe(d.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','open']});
+ if(mutationObserver)mutationObserver.observe(d.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','open','src']});
 }
 function pageState(active){lifecycleActive=active;refreshAll();}
 function parentState(active){parentActive=active;refreshAll();}

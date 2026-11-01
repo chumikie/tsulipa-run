@@ -2550,8 +2550,15 @@ function krSalvarFotoSala(){var cv=$('krCv');if(!cv)return;
 function krMusicaMudarModo(){if(typeof krMusicaParar==='function')krMusicaParar();if(!muted&&typeof krMusicaLigar==='function')krMusicaLigar();}
 var krCanvasHD=$('krCv');if(krCanvasHD&&!krCanvasHD.dataset.krTelaPreparada){var krScale=window.matchMedia&&window.matchMedia('(max-width:620px)').matches?1:2;krCanvasHD.width=960*krScale;krCanvasHD.height=540*krScale;var krCtxHD=krCanvasHD.getContext('2d');if(krCtxHD)krCtxHD.setTransform(krScale,0,0,krScale,0,0);krCanvasHD.dataset.krTelaPreparada='1';}
 var krRoomObserver=null,krRhythmObserver=null,krRhythmPanel=$('krRhythm');
+function krRoomElementoVisivel(el){if(!el||!el.getBoundingClientRect)return false;var r=el.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<window.innerHeight&&r.left<window.innerWidth&&(!window.TWMotionLifecycle||TWMotionLifecycle.isVisible(el));}
+function krRoomFallbackAtualizar(){
+ krRoomCanvasVisible=krRoomElementoVisivel(krCanvasHD);
+ krRhythmPanelVisible=krRoomElementoVisivel(krRhythmPanel);
+ krRoomAtualizar();
+}
 function krRoomObserversConectar(){
- if(!krCanvasHD||!('IntersectionObserver' in window))return;
+ if(!krCanvasHD)return;
+ if(!('IntersectionObserver' in window)){krRoomFallbackAtualizar();return;}
  if(!krRoomObserver)krRoomObserver=new IntersectionObserver(function(entries){
   var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
   if(visible===krRoomCanvasVisible)return;
@@ -2571,6 +2578,7 @@ function krRoomObserversDesconectar(){
  krRoomCanvasVisible=false;krRhythmPanelVisible=false;
 }
 krRoomObserversConectar();
+if(!('IntersectionObserver' in window)){window.addEventListener('scroll',krRoomFallbackAtualizar,{passive:true,capture:true});window.addEventListener('resize',krRoomFallbackAtualizar);}
 window.addEventListener('message',function(e){
  if(e.source!==parent||!e.data)return;
  var visible;

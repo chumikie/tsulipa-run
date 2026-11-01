@@ -18,6 +18,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=1"></script>
+<script src="./tw-avatar-items.js?v=1"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -807,7 +808,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 		  <option value="fones" data-r="450">Fones (Team)</option>
           <option value="boina" data-r="1000">Boina (Senbatsu)</option>
           <option value="bandaid" data-r="2800">Band-aid (tCenter)</option>
-		  <option value="coala" data-r="3900">Tiara (wCenter)</option>
+		  <option value="coala" data-r="3900">Tiara (wCenter)</option><option value="capitao" data-r="15000">Chapéu de capitão (Capitão)</option>
         </select></label>
         <label>Óculos <select id="cgl">
           <option value="" data-r="0">Sem</option>
@@ -1007,7 +1008,7 @@ function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT;i
 
 var cw=document.getElementById('chars'),$=function(i){return document.getElementById(i)};
 var SK=['#fbe5d8','#f1c9a5','#d9a074','#b97a50','#8d5a3b','#5e3b27'],CU=CH[3],accSel='';
-var ACC=[['','Nenhum',0,0],['laco','Laço azul',RANKS[2][0],2],['mic','Microfone de palco',RANKS[3][0],3],['hibisco','Hibisco',RANKS[4][0],4],['sakura','Flor de cerejeira',RANKS[5][0],5],['tiaraS','Tiara de prata',RANKS[6][0],6],['tiaraO','Tiara dourada',RANKS[7][0],7]];
+var ACC=[['','Nenhum',0,0],['laco','Laço azul',RANKS[2][0],2],['mic','Microfone de palco',RANKS[3][0],3],['hibisco','Hibisco',RANKS[4][0],4],['sakura','Flor de cerejeira',RANKS[5][0],5],['tiaraS','Tiara de prata',RANKS[6][0],6],['tiaraO','Tiara dourada',RANKS[7][0],7],['estrela','Estrela dourada',RANKS[8][0],8]];
 var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
 
 
@@ -1157,7 +1158,6 @@ function pick(i){
   [].forEach.call(cw.children,function(x,j){x.setAttribute('aria-pressed',j===i)});
   $('cust').hidden = i!==3;
   
-  // Atualiza os seletores com os valores da personagem escolhida (ou da customizada se for o 3)
   var source = (i === 3) ? CU : CH[i];
   if ($('cout')) $('cout').value = source.out || '';
   if ($('coutcol')) $('coutcol').value = source.outcol || '#ffffff';
@@ -1198,8 +1198,6 @@ function refreshAcc(){
       var rawKey=o.__rawLabel||o.textContent.replace(/^🔒\s*/,'');
       o.__rawLabel=rawKey;
       o.textContent=(u?'':'🔒 ')+tr(rawKey);
-      // A opção salva pode estar temporariamente bloqueada enquanto o ranking sincroniza.
-      // Mantemos a escolha e o save original; o cadeado só impede uma nova seleção.
     });
   });
 }
@@ -1378,7 +1376,6 @@ var CFG={STAR:15,STAR_FEVER:30,CARD:100,UFO_EVERY:2500,UFO_BONUS:100,UFO_FRAMES:
 function getPartner(currentSel) {
   var options = (currentSel === 0) ? [1, 2] : (currentSel === 1) ? [0, 2] : (currentSel === 2) ? [0, 1] : [0, 1, 2];
   
-  // Remove qualquer chance de o próprio personagem estar na bolsa se trocou de Oshi
   if (window.partnerBag && window.partnerBag.length > 0) {
     window.partnerBag = window.partnerBag.filter(function(id) { return id !== currentSel; });
   }
@@ -1667,7 +1664,6 @@ function celebDraw(){
   }
   
   var jumpY = 27 - (1 - Math.cos(ct * .05)) / 2 * 8;
-  // Filtra para garantir que nenhum parceiro seja igual ao personagem principal (sel)
   var pList = (window.collectedPartners || []).filter(function(id) { return id !== sel; });
   
   if (sel === 3 && pList.length >= 3) {
@@ -2359,6 +2355,7 @@ if(hacc==='coala'){
     g.fillStyle='#0284c7'; g.beginPath(); g.arc(x+15, y-1, 1.8, 0, 7); g.fill(); // Nó central
   }
 	
+  if(hacc==='capitao') TWAvatarItems.capitao(g,x,y);
   if(expr===1){
     g.strokeStyle='#223'; g.lineWidth=1.5; g.beginPath();
     g.moveTo(x+9,y+18); g.lineTo(x+12,y+20); g.lineTo(x+9,y+22);
@@ -2401,6 +2398,7 @@ if(hacc==='coala'){
 }
 	
   if(A==='laco'){g.fillStyle='#2a5bd7';T([x+5,y+3,x+1,y-1,x+1,y+7]);T([x+5,y+3,x+11,y-1,x+11,y+7]);g.fillStyle='#173a9a';E(x+5,y+3,2,2)}
+  if(A==='estrela') TWAvatarItems.estrela(g,x,y);
   function FL(cx,cy,r,pc,cc){g.fillStyle=pc;for(var k=0;k<5;k++){var a=k*1.2566-1.57;E(cx+Math.cos(a)*r,cy+Math.sin(a)*r,r*.8,r*.8)}g.fillStyle=cc;E(cx,cy,r*.55,r*.55)}
   if(A==='mic'){g.strokeStyle='#222';g.lineWidth=1.2;g.beginPath();g.moveTo(x+4,y+11);g.quadraticCurveTo(x+1,y+16,x+4,y+20);g.lineTo(x+6,y+25);g.lineTo(x+12,y+26);g.stroke();g.fillStyle='#ff4f9a';E(x+13,y+26,2.2,2.2)}
   if(A==='hibisco')FL(x+6,y+3,3.2,'#ff3d5e','#ffd23f');

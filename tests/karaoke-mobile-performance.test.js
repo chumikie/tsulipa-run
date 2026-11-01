@@ -347,4 +347,12 @@ const customPet=main.slice(customPetStart,customPetEnd);
 assert(customPet.includes('petDrawRampCustomBody(ctx,cor,lt,dk)')&&customPet.includes('petDrawRampCrown(ctx)'),'Custom pet body colors and crown gradients should share the bounded texture cache');
 assert(customPet.includes('var bg = ctx.createLinearGradient'),'Custom pet gradient rendering should keep a safe fallback when offscreen texture creation is unavailable');
 
+
+const petRenderHelperStart=main.indexOf('function perfDesenharPetEm(x, p, px, py, s, t)');
+const petRenderHelperEnd=main.indexOf('// ---------- Desenha o Idol',petRenderHelperStart);
+const petRenderHelper=main.slice(petRenderHelperStart,petRenderHelperEnd);
+assert(petRenderHelperStart>=0&&petRenderHelperEnd>petRenderHelperStart&&petRenderHelper.includes("drawPet(x,p.k==='meu'?(p.cfg||PET_MK_DEF):p.k,px,py,s,t||0,'feliz',p)")&&!petRenderHelper.includes('petData =')&&!petRenderHelper.includes('var pets = {}'),'Avatar pet previews should pass their own appearance directly instead of replacing global petData or allocating temporary pet maps');
+assert(main.includes('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)')&&main.includes('petAnelAtras(ctx, type, appearanceOverride)')&&main.includes('petDrawCustom(ctx, type, tFrame, ex, appearanceOverride)'),'The shared pet renderer should forward appearance overrides through custom pets and rear-ring accessories');
+assert(main.includes("var pObj = appearanceOverride && typeof appearanceOverride === 'object' ? appearanceOverride :")&&main.includes('var a = hasOverride&&typeof appearanceOverride.acc===\'string\'?appearanceOverride.acc:cfg.acc;'),'The pet renderer should resolve cheek/accessory data from the explicit override while preserving global wardrobe fallback for normal pet scenes');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

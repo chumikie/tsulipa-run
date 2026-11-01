@@ -150,5 +150,8 @@ assert(main.includes("function setPause(v){if(state!=='play')return;paused=v;$('
 assert(lifecycle.includes('function render30Due(owner,stamp)')&&lifecycle.includes('function frameDelta(owner,stamp)')&&lifecycle.includes('render30Due:render30Due')&&lifecycle.includes('frameDelta:frameDelta'),'Shared lifecycle must expose mobile 30fps rendering and real-time frame delta helpers');
 assert(main.includes("render30Due($('stage'),t)")&&main.includes('render30Due(pc.canvas,t)')&&main.includes('render30Due(cc.canvas,t)')&&main.includes('render30Due(cv,t)'),'Center Run, avatar preview, victory and birthday canvases must use the mobile render cap');
 assert(html.includes('render30Due(cv,performance.now())')&&sora.includes('render30Due(soraCv,t)'),'Karaoke room and Sora must cap canvas painting without skipping their per-frame simulation updates');
+const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
+assert(day.includes('krLoopLastTime=0')&&day.includes('(stamp-krLoopLastTime)/(1000/60)'),'Karaoke Day animation clock should use elapsed time rather than callback count');
+assert(day.includes('Math.min(4.2*dt,d)')&&day.includes('trl.t+=dt')&&day.includes('b.t+=dt')&&day.includes('krCortina+.018*dt'),'Karaoke Day character movement, trails, bubbles and curtain should preserve speed at 30/60 Hz');
 assert(sora.includes('var soraFrameAnterior=soraFrame;')&&sora.includes('Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)')&&!sora.includes('(soraFrame | 0) % 5 === 0'),'Sora auxiliary wing particles should spawn once per elapsed five-frame interval, independent of 30/60 Hz callback count');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

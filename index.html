@@ -2515,7 +2515,7 @@ function petDrawRampCustomBody(ctx,cor,lt,dk){
   if(!asset)return false;
   ctx.save();ctx.beginPath();ctx.ellipse(0,0,12,11,0,0,7);ctx.clip();ctx.drawImage(asset,-12,-11,24,22);ctx.restore();return true;
 }
-function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressão do Backstage⭐Pet!
+function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride){   // ex (opcional): expressão do Backstage⭐Pet!
   ctx.save();
   ctx.translate(x, y + Math.sin(tFrame * 0.08) * 3.5);
   ctx.scale(sc, sc);
@@ -2523,8 +2523,8 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
   function E(cx,cy,rx,ry,r){ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,r||0,0,7);ctx.fill()}
   function T(a){ctx.beginPath();ctx.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)ctx.lineTo(a[i],a[i+1]);ctx.closePath();ctx.fill()}
 
-  if(typeof petAnelAtras === 'function') petAnelAtras(ctx, type);   // V2.1.3: metade de trás do anel
-  if(type && typeof type === 'object'){ petDrawCustom(ctx, type, tFrame, ex); ctx.restore(); return; }   // Meu Pet (montável)
+  if(typeof petAnelAtras === 'function') petAnelAtras(ctx, type, appearanceOverride);   // V2.1.3: metade de trás do anel
+  if(type && typeof type === 'object'){ petDrawCustom(ctx, type, tFrame, ex, appearanceOverride); ctx.restore(); return; }   // Meu Pet (montável)
 
   if(type === 'tsu'){
     ctx.shadowColor = '#d8b4fe'; ctx.shadowBlur = 12;
@@ -2648,8 +2648,9 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex){   // ex (opcional): expressã
     if(!ex){ ctx.beginPath(); ctx.arc(0, 6.5, 1.8, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); }
   }
   // Se este pet tiver acessórios ou bochechas vestidos no camarim, desenha por cima!
-  if(typeof petData !== 'undefined' && petData && petData.pets && petData.pets[type]){
-    var pObj = petData.pets[type];
+  var pObj = appearanceOverride && typeof appearanceOverride === 'object' ? appearanceOverride :
+    (typeof petData !== 'undefined' && petData && petData.pets ? petData.pets[type] : null);
+  if(pObj){
     if(pObj.bochecha){ ctx.fillStyle = 'rgba(255,111,181,.55)'; E(-7.6, 2.9, 2.2, 1.2); E(7.6, 2.9, 2.2, 1.2); }
     var a = pObj.acc || '';
     if(a === 'laco'){ ctx.fillStyle = '#ff4f9a'; T([-7, -10, -12, -13, -12, -7]); T([-7, -10, -2, -13, -2, -7]); ctx.fillStyle = '#be185d'; E(-7, -10, 1.4, 1.4); }
@@ -4774,7 +4775,7 @@ function petDrawDirt(x, p, cx, cy){   // sujeirinha e "cheirinho" quando a higie
 }
 
 // ---------- Meu Pet: desenho por partes ----------
-function petDrawCustom(ctx, cfg, t, ex){
+function petDrawCustom(ctx, cfg, t, ex, appearanceOverride){
   function E(cx, cy, rx, ry, r){ ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, r || 0, 0, 7); ctx.fill(); }
   function T(a){ ctx.beginPath(); ctx.moveTo(a[0], a[1]); for(var i = 2; i < a.length; i += 2) ctx.lineTo(a[i], a[i + 1]); ctx.closePath(); ctx.fill(); }
   var cor = cfg.cor || '#ff6fb5', lt = petMix(cor, 1, .45), dk = petMix(cor, 0, .3), dk2 = petMix(cor, 0, .6);
@@ -4810,8 +4811,10 @@ function petDrawCustom(ctx, cfg, t, ex){
     ctx.strokeStyle = dk2; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(0, 2.4, 1.8, Math.PI * .15, Math.PI * .85); ctx.stroke();
   }
-  if(cfg.bochecha){ ctx.fillStyle = 'rgba(255,111,181,.55)'; E(-7.6, 2.9, 2.2, 1.2); E(7.6, 2.9, 2.2, 1.2); }
-  var a = cfg.acc;
+  var hasOverride=appearanceOverride&&typeof appearanceOverride==='object',
+      cheeks=hasOverride&&typeof appearanceOverride.bochecha==='boolean'?appearanceOverride.bochecha:!!cfg.bochecha;
+  if(cheeks){ ctx.fillStyle = 'rgba(255,111,181,.55)'; E(-7.6, 2.9, 2.2, 1.2); E(7.6, 2.9, 2.2, 1.2); }
+  var a = hasOverride&&typeof appearanceOverride.acc==='string'?appearanceOverride.acc:cfg.acc;
   if(a === 'laco'){ ctx.fillStyle = '#ff4f9a'; T([-7, -10, -12, -13, -12, -7]); T([-7, -10, -2, -13, -2, -7]); ctx.fillStyle = '#be185d'; E(-7, -10, 1.4, 1.4); }
   else if(a === 'estrela'){ ctx.fillStyle = '#ffe14d'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = .6; ctx.beginPath();
     for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.2, an = q * Math.PI / 5 - Math.PI / 2; ctx[q ? 'lineTo' : 'moveTo'](8 + Math.cos(an) * rr, -10 + Math.sin(an) * rr); }
@@ -7176,12 +7179,8 @@ function perfPetDoAvatar(av){   // pet guardado no avatar (só chaves conhecidas
   return { k:p.k, acc: typeof p.acc === 'string' ? p.acc : '', bochecha: !!p.bochecha, cfg: (p.cfg && typeof p.cfg === 'object') ? p.cfg : null };
 }
 function perfDesenharPetEm(x, p, px, py, s, t){   // desenha um pet com o acessório dele (sem mexer no save de verdade)
-  var oP = petData;
-  try{
-    var pets = {}; pets[p.k] = { acc:p.acc || '', bochecha:!!p.bochecha }; petData = { pets: pets };
-    drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, px, py, s, t || 0, 'feliz');
-  }catch(e){}
-  finally{ petData = oP; }
+  if(!p)return;
+  try{drawPet(x,p.k==='meu'?(p.cfg||PET_MK_DEF):p.k,px,py,s,t||0,'feliz',p);}catch(e){}
 }
 
 // ---------- Desenha o Idol do avatar (fundo + efeito do visual + personagem + pet) ----------
@@ -10366,8 +10365,8 @@ document.body.insertBefore(sitePart, document.body.firstChild);
 function sitePartUI(){ sitePart.innerHTML = $('hubPart').innerHTML; }
 
 // ---------- Anel dos pets: a parte de trás, atrás do corpo (o Koali já tem o anel no desenho) ----------
-function petAnelAtras(ctx, type){
-  var acc = type && typeof type === 'object' ? type.acc : (typeof petData !== 'undefined' && petData && petData.pets && petData.pets[type] ? petData.pets[type].acc : '');
+function petAnelAtras(ctx, type, appearanceOverride){
+  var acc = appearanceOverride && typeof appearanceOverride.acc === 'string' ? appearanceOverride.acc : (type && typeof type === 'object' ? type.acc : (typeof petData !== 'undefined' && petData && petData.pets && petData.pets[type] ? petData.pets[type].acc : ''));
   if(acc !== 'anel' || type === 'lirika') return;
   ctx.save(); ctx.rotate(-.22); ctx.lineCap = 'round';
   ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, Math.PI + .35, Math.PI * 2 - .35); ctx.stroke();

@@ -3,7 +3,7 @@
 Documento único de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → `main`).
 A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Supabase é feito a partir deste trabalho sem autorização do responsável.
 
-Última atualização: 01/11/2026 — HEAD com cortes e franjas separados: `cf487085b5b418670a4a8813bfaea009ab23b242` (CI run `41338194936` aprovado).
+Última atualização: 01/11/2026 — ver HEAD e CI na seção 6.
 
 ---
 
@@ -61,12 +61,17 @@ Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapé
 *Análise de braços e pernas (01/11):* não recomendada agora — o estilo chibi de blocos usa poses prontas (aceno, banzai, mãos no peito) e mudar membros afeta todas as telas e renderizadores (Center Run, Perfil, Karaoke, Encontro, Hub). Reavaliar só se surgir uma necessidade concreta (ex.: segurar microfone no Karaoke).
 
 1. Montar Idol e Gacha: **confirmados pelo responsável** após a correção.
-2. Cabelos: *Ondulado*, *Bicolor* e *Repicado* aprovados e separados em 3 cortes + 3 franjas (*Rebelde*, *Risca*, *Repicada*). Marias presas no alto com elástico (aprovado); Rabo refeito como uma peça só, preso no alto (`f9353d9`, aguardando aprovação). Mecha agora é um fio que acompanha a franja escolhida até uma das pontas (referência: cards da JJ e da Tata no BRS48) — aguardando aprovação.
+2. Cabelos — **aprovados**: 3 cortes (Ondulado, Bicolor, Repicado) + 3 franjas (Rebelde, Risca, Repicada), Marias presas com elástico, Rabo em uma peça, Mecha como fio que acompanha a franja. Arco-íris refeita como 6 mechas tingidas com degradê (`0e0dad8`). Revisão das franjas: todas usam o mesmo degradê e contorno da cabeça; só a Arco-íris destoava.
 3. Quepe militar e presilha de estrela — **aprovados** (`3a7e8d3`).
-4. Karaoke: "Ajustar timing" virou botão de engrenagem no palco, ao lado de som e câmera (desktop); no celular segue na fileira acima da sala com som, pausar e câmera — feito, aguardando aprovação.
-5. Karaoke: show não pode pausar sozinho em tela de celular.
+4. Karaoke: "Ajustar timing" no palco ao lado de som e câmera (desktop) e na fileira de cima no celular — **aprovado** (`b97ef5e`).
+5. Karaoke: show pausava sozinho no celular — **corrigido**. Causas: a regra nova pausava o show quando palco/painel saíam da tela, e durante o show a Vitrine sonora (nova na PR) subia para cima da sala, empurrando o palco ~1.600 px para baixo. Agora show em andamento só pausa com página oculta/troca de aba; a vitrine fica depois da sala durante o show; ao começar, a tela vai até o palco. Teste `tests/karaoke-show-visibility.test.js`.
 6. Sala de Karaoke: pelo menos 3 Idols da plateia andando ao mesmo tempo; o Idol do jogador fica no microfone, anda só quando a pessoa toca no piso e volta ao microfone após 5 s longe; obrigatório estar no microfone ao jogar. O telão continua mostrando só "Maiores combos".
 7. Página do Karaoke: trocar a "Vitrine sonora" longa por botões com a cabeça de Tsu, Lirika e Pati que tocam as vozes; destacar as faixas do Karaoke para ouvir, com nota máxima pessoal por música (sem ranking compartilhado), em seção selecionável como "Novidades".
+9. Sala de Karaoke — ideias de 01/11 (viáveis no 2D atual, sem trocar o estilo):
+   - Lupa: janela semitransparente com zoom do palco/cantor durante o show, útil no celular e no computador (amplia a área do canvas já desenhada, custo baixo; complementa o "Ver sala inteira / Ampliar telão" que já existe no celular).
+   - Itens da mesa clicáveis (microfone, comidinhas, bebidinhas) com efeitos sonoros, como o pandeiro.
+   - Mais glitter no sofá e brilhos pela sala (respeitando o limite de 30 FPS no celular).
+   - Armário do canto da sala abre o menu de músicas (liga com o item 7).
 8. "As estrelas da semana": o 3º quadro vira seletor de música, mostrando o top 3 mensal de cada música. **Depende de dados por música no Supabase (ChatGPT).**
 
 ## 4. Branches avaliadas

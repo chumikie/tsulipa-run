@@ -1951,7 +1951,7 @@ function krDesenharWhimsical(x,t){
   });
   // Bokeh fixo e brilho suave que respeita a preferência de reduzir movimento.
   [[72,143],[110,231],[243,205],[688,204],[857,208],[903,135],[433,19],[528,19]].forEach(function(p,i){
-    var alpha=krWhimsicalReducedMotion?.45:.34+.13*Math.sin(t*.025+i*1.4);
+    var alpha=krWhimsicalReducedMotion ? 0.45 : 0.34+0.13*Math.sin(t*.025+i*1.4);
     x.globalAlpha=alpha;x.strokeStyle=i%2?'#a7f3d0':'#ffe4fd';x.lineWidth=1.5;
     x.beginPath();x.moveTo(p[0]-4,p[1]);x.lineTo(p[0]+4,p[1]);
     x.moveTo(p[0],p[1]-4);x.lineTo(p[0],p[1]+4);x.stroke();

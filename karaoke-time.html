@@ -3060,7 +3060,7 @@ var ktFaixa=(function(){
    if(visibilityObserver){visibilityObserver.disconnect();visibilityObserver=null;}
    st.vis=false;parar();
   }
-  document.addEventListener('visibilitychange',function(){if(document.hidden)parar();else conectarVisibilidade();});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)parar();else ligar();});
   window.addEventListener('pagehide',desconectarVisibilidade);
   window.addEventListener('pageshow',conectarVisibilidade);
   conectarVisibilidade();

@@ -13,7 +13,7 @@ assert(index.includes('ktTicketInventory')&&index.includes('ktTicketAdminSlot'),
 assert(index.includes("r.tipo === 'ticket'")&&index.includes('window.ktTickets.acceptBalance(r)'),'Gacha mostra ticket e atualiza saldo');
 assert(karaoke.includes('Deseja gastar 1 ticket de Karaoke?'),'confirmação explícita antes de cobrar');
 assert(karaoke.includes('window.ktOnline.ticketAdmission()'),'admissão de ticket é passada ao contador local');
-assert(karaoke.includes('a.iniciar(guardado(),!!wantsTicket)'),'a admissão decide a moeda no servidor');
+assert(karaoke.includes('a.iniciar(guardado(owner),!!wantsTicket)')&&karaoke.includes('if(!sameSession(a,owner))'),'a admissão decide a moeda no servidor');
 assert(!/\.rpc\(|\.from\(/.test(source),'cliente não edita carteiras diretamente');
 assert(sql.includes('APROVADO E APLICADO NO SUPABASE'),'migração marcada como aprovada e aplicada');
 assert(sql.includes("r.payment_kind='free'"),'5 tentativas gratuitas não contam shows extras');

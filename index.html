@@ -3781,15 +3781,19 @@ function petDrawRoom(){
 }
 
 var petRaf=0;
-function petLoop(){
+function petLoop(ms){
   petRaf=0;
   if(!petOpen||!twAnimacaoVisivel($('petov'))) return;
-  petT++;
-  sync();   // troca a música do camarim (lofi / caixinha de música)
-  try{
-    if(petView === 'room' && petData) petDrawRoom(); else if(petView === 'make') petDrawMake(); else petDrawPick();
-    if(petData && petT % 300 === 0){ petTick(); petSave(); petUI(); }   // atualiza as barras a cada ~5 s
-  }catch(err){ console.error('pet:', err); }
+  var cv=$('petCv'),mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30());
+  var antes=petT,delta=mobile30?TWMotionLifecycle.frameDelta(cv,ms):1;
+  petT+=delta;
+  sync();   // a sincronização de áudio/estado continua em todos os quadros lógicos
+  if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(cv,ms)){
+    try{
+      if(petView==='room'&&petData)petDrawRoom();else if(petView==='make')petDrawMake();else petDrawPick();
+    }catch(err){console.error('pet:',err);}
+  }
+  if(petData&&Math.floor(petT/300)>Math.floor(antes/300)){petTick();petSave();petUI();} // relógio lógico preservado (~5 s)
   petRaf=requestAnimationFrame(petLoop);
 }
 function petAnimLigar(){if(!petRaf&&petOpen&&twAnimacaoVisivel($('petov')))petRaf=requestAnimationFrame(petLoop);}

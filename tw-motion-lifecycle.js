@@ -81,8 +81,8 @@ function scan(root){
  if(root.querySelectorAll){var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)inspectCss(all[i]);}
 }
 function refreshAll(){
- cssNodes.forEach(applyCss);
- gates.forEach(function(g){g.refresh();});
+ cssNodes.forEach(function(state){if(!cssIO)state.inView=rectVisible(state.el);applyCss(state);});
+ gates.forEach(function(g){if(!g.observed)g.inView=rectVisible(g.el);g.refresh();});
 }
 var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
  records.forEach(function(rec){
@@ -109,21 +109,21 @@ if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',startScan,{onc
 function watchLoop(el,enabled,onResume,onPause){
  if(typeof el==='string')el=d.querySelector(el);
  if(!el) return {refresh:function(){},destroy:function(){},setEnabled:function(){}};
- var inView=rectVisible(el),running=null,destroyed=false,observer=null;
- var state={el:el,refresh:reconcile};
+ var running=null,destroyed=false,observer=null;
+ var state={el:el,inView:rectVisible(el),observed:false,refresh:reconcile};
  function reconcile(){
   if(destroyed)return;
-  var wanted=pageActive&&!d.hidden&&inView&&elementVisible(el,inView)&&(!enabled||enabled());
+  var wanted=pageActive&&!d.hidden&&state.inView&&elementVisible(el,state.inView)&&(!enabled||enabled());
   if(wanted===running)return;
   running=wanted;
   try{if(wanted){if(onResume)onResume();}else if(onPause)onPause();}catch(e){if(w.console&&console.error)console.error('TWMotionLifecycle:',e);}
  }
  if('IntersectionObserver' in w){
   observer=new IntersectionObserver(function(entries){
-   entries.forEach(function(entry){if(entry.target===el)inView=entry.isIntersecting&&entry.intersectionRatio>0;});
+   entries.forEach(function(entry){if(entry.target===el)state.inView=entry.isIntersecting&&entry.intersectionRatio>0;});
    reconcile();
   },{threshold:[0,.01]});
-  observer.observe(el);
+  observer.observe(el);state.observed=true;
  }
  var gate={refresh:reconcile,destroy:function(){
   if(destroyed)return;destroyed=true;if(observer)observer.disconnect();gates.delete(state);

@@ -38,6 +38,7 @@ const server=http.createServer((req,res)=>{
     window.krLoungeAutoMicTick();
     return {available:true,active:kt.active(),bot:krDemoCantor&&krDemoCantor.bot.nick,automatic:!!(krDemoCantor&&krDemoCantor.automatic),singing:!!(krDemoCantor&&krDemoCantor.bot.no_mic),practice:!!(krRhythmRun&&krRhythmRun.practice),usedBefore:before,usedAfter:ktMeta.controls().used};
    },
+   inspectAdmission:function(){var dialog=document.getElementById('ktStartConfirm'),accept=document.getElementById('ktConfirmAccept');return {roomOpen:krSt.aberta,playerAtMic:krEuNoMicrofone(),playerNoMic:krEu.no_mic,active:kt.active(),paused:kt.paused(),confirmOpen:!!(dialog&&dialog.open),acceptDisabled:!!(accept&&accept.disabled),startDisabled:$('ktStart').disabled,meta:ktMeta.controls(),online:window.ktOnline.online(),queueLength:krDemoFila.length,singer:!!krDemoCantor};},
    stopAutomaticMic:function(){if(krRhythmRun)kt.end(false);if(krDemoCantor)krDemoBotEnd();}
   };
 \nfunction ktNoSite(){`);
@@ -154,6 +155,8 @@ async function metrics(frame){
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
    await frame.locator('#ktStartConfirm').waitFor({state:'visible'});
    await frame.locator('#ktConfirmAccept').click(); // Preserve the game's explicit admission confirmation.
+   await p.waitForTimeout(500);
+   const admission=await frame.locator('body').evaluate(()=>window.qaRoomControllers.inspectAdmission());console.log('Karaoke browser admission:',JSON.stringify(admission));
    await frame.locator('body.kt-playing').waitFor();
    const photo=photoQA&&!baseline?await photoQA.verify(p,frame,width,out):null;
    const playing=await metrics(frame);

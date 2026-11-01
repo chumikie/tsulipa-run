@@ -26,15 +26,53 @@
   return window.contaRpc('kt_ticket_wallet').then(function(r){if(request!==revision||id!==currentId()||!enabled())return balance;
    loading=false;ready=!!(r&&r.ok);balance=ready?Math.max(0,Number(r.tickets)||0):0;updateCards();renderProfile();return balance;
   }).catch(function(){if(request!==revision||id!==currentId()||!enabled())return balance;loading=false;ready=false;balance=0;updateCards();renderProfile();return 0;});}
+ function requestKey(id){return 'kt_ticket_request_v1:'+String(id||'');}
+ function readPending(id){
+  try{
+   var raw=window.localStorage.getItem(requestKey(id));if(!raw)return null;
+   var value=JSON.parse(raw);
+   if(typeof value==='string')return {request:value,run:null};
+   return value&&typeof value.request==='string'?value:null;
+  }catch(e){return null;}
+ }
+ function savePending(id,request,runId){
+  try{window.localStorage.setItem(requestKey(id),JSON.stringify({request:request,run:runId||null}));}catch(e){}
+ }
+ function clearPending(id,request){
+  try{
+   var saved=readPending(id);
+   if(!request||!saved||saved.request===request)window.localStorage.removeItem(requestKey(id));
+  }catch(e){}
+  if(owner===id&&(!request||pendingRequest===request))pendingRequest=null;
+ }
+ function completeRun(runId){
+  var id=currentId();if(!id||!runId)return false;
+  var saved=readPending(id);
+  if(saved&&saved.run===runId){clearPending(id,saved.request);return true;}
+  return false;
+ }
  function get(){return ready?balance:0;}
  function startExtra(){
   if(!enabled()||!ready||balance<1)return Promise.resolve({ok:false,reason:'no_ticket'});
-  if(!pendingRequest){if(!window.crypto||!window.crypto.randomUUID)return Promise.resolve({ok:false,reason:'uuid'});pendingRequest=window.crypto.randomUUID();}
-  var id=currentId(),req=pendingRequest;
+  var id=currentId();
+  if(owner!==id){owner=id;pendingRequest=null;}
+  var saved=readPending(id);
+  if(!pendingRequest&&saved)pendingRequest=saved.request;
+  if(!pendingRequest){
+   if(!window.crypto||!window.crypto.randomUUID)return Promise.resolve({ok:false,reason:'uuid'});
+   pendingRequest=window.crypto.randomUUID();
+  }
+  var req=pendingRequest;
+  savePending(id,req,saved&&saved.request===req?saved.run:null);
   return window.contaRpc('kt_ticket_run_start',{p_request:req}).then(function(r){
    if(id!==currentId()||!enabled())return {ok:false,reason:'account_changed'};
-   if(r&&r.ok){if(pendingRequest===req)pendingRequest=null;acceptBalance(r);}
-   else if(r&&r.reason!=='connection'&&pendingRequest===req)pendingRequest=null;
+   if(r&&r.ok){
+    if(typeof r.run==='string')savePending(id,req,r.run);
+    acceptBalance(r);
+   }else if(r&&r.reason!=='connection'){
+    clearPending(id,req);
+    refresh();
+   }
    return r;
   });
  }
@@ -60,6 +98,6 @@
    btn.disabled=true;window.contaRpc('kt_ticket_admin_grant',{p_nick:nick,p_count:n,p_reason:document.getElementById('ktGrantReason').value.trim()}).then(function(r){showMsg('ktGrantMsg',r&&r.ok?t(12):t(13));if(r&&r.ok)refresh();btn.disabled=false;}).catch(function(){showMsg('ktGrantMsg',t(13));btn.disabled=false;});
   });
  }
- window.ktTickets={refresh:refresh,reset:reset,acceptBalance:acceptBalance,renderBadge:renderBadge,get:get,ready:function(){return ready;},startExtra:startExtra,renderProfile:renderProfile,renderAdmin:renderAdmin};
+ window.ktTickets={refresh:refresh,reset:reset,acceptBalance:acceptBalance,renderBadge:renderBadge,get:get,ready:function(){return ready;},startExtra:startExtra,completeRun:completeRun,renderProfile:renderProfile,renderAdmin:renderAdmin};
  renderBadge();
 })();

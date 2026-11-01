@@ -21,6 +21,7 @@ on:
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
@@ -99,6 +100,7 @@ on:
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
@@ -194,6 +196,8 @@ jobs:
         run: node tests/karaoke-note-map.test.js
       - name: Validate Karaoke Time confirmation, shortcuts and device offset
         run: node tests/karaoke-flow.test.js
+      - name: Validate ticket recovery after lost responses, reload and account switch
+        run: node tests/karaoke-ticket-recovery.test.js
       - name: Validate Karaoke ticket review, Gacha, inventory, gifts, moderation and safe admission
         run: node tests/karaoke-tickets.test.js
       - name: Validate visible Karaoke ticket counters, gift and Gacha balance sync

@@ -180,4 +180,11 @@ assert(html.includes('var KR_DANGO_CORES=')&&html.includes('function krDesenharS
 
 
 assert(sora.includes('var soraFrameAnterior=soraFrame;')&&sora.includes('Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)')&&!sora.includes('(soraFrame | 0) % 5 === 0'),'Sora auxiliary wing particles should spawn once per elapsed five-frame interval, independent of 30/60 Hz callback count');
+
+assert(main.includes("pt+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(pc.canvas,t):1;")&&main.includes("ct+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(cc.canvas,t):1;"),'Avatar preview and victory animations must normalize time across 30/60/high-refresh displays');
+assert(main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(cv,ms):1;")&&main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('perfGenCv'),ms):1")&&main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1")&&main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('gachaCv'),ms):1")&&main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('duoCv'),ms):1"),'Pet, profile, Hub, Gacha and Moon Duo simulation clocks must use real elapsed frame time on every refresh rate');
+assert(main.includes("function encLoop(ms)")&&main.includes("delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('encCv'),ms):1"),'Encontro must receive the RAF timestamp and use its elapsed time');
+assert(main.includes("function aniverLoop(t)")&&main.includes("aniverT+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('aniverFx'),t):1;"),'Birthday animation must use elapsed time on high-refresh displays');
+assert(main.includes("Math.floor((perfT+1e-6)/2)>Math.floor((perfPrevT+1e-6)/2)")&&main.includes("Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2)")&&main.includes("Math.floor((gachaT+1e-6)/2)>Math.floor((gachaPrevT+1e-6)/2)")&&main.includes("Math.floor((duoT+1e-6)/2)>Math.floor((duoPrevT+1e-6)/2)")&&main.includes("Math.floor((encT+1e-6)/2)>Math.floor((encPrevT+1e-6)/2)"),'30 Hz draw scheduling must use elapsed-time threshold crossings, not exact modulo equality');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

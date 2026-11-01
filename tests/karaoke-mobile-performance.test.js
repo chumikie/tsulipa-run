@@ -217,4 +217,20 @@ assert(html.includes('var KR_WHIMSIDES=')&&html.includes('KR_WHIMSY_STARS=')&&ht
 const decorLive=decor.slice(decor.indexOf('x.drawImage(krDecorPlanterCache,0,0)'));
 assert(html.includes('var KR_ROOM_DECOR_COLS=')&&html.includes('KR_ROOM_RAIL_Y=')&&html.includes('KR_ROOM_POSTER_POS=')&&html.includes('KR_ROOM_LIGHT_POOLS=')&&html.includes('var KR_ROOM_POSTER_DRAW=[]')&&!decor.includes('var cols=[')&&!decor.includes('var FOTOS=[')&&!decorLive.includes('.forEach(')&&!decorLive.includes('.slice(')&&!decorLive.includes('.map('),'Room decor should reuse fixed geometry and poster buffers without per-frame list copies or callbacks');
 
+
+const roomGradientStart=html.indexOf('function krRoomGradientesFixos(x,W,H)');
+const roomGradientEnd=html.indexOf('\nvar KR_ROOM_POSTER_DRAW',roomGradientStart);
+const roomGradientCache=html.slice(roomGradientStart,roomGradientEnd);
+assert(roomGradientStart>=0&&roomGradientEnd>roomGradientStart&&roomGradientCache.includes('cache.context===x')&&roomGradientCache.includes('cache.backingWidth===bw')&&roomGradientCache.includes('cache.rails.push(rg)')&&roomGradientCache.includes('cache.lightPools.push(lg)'),'Fixed room gradients should be cached per canvas context/backing size and reused for rails and light pools');
+assert(whimsical.includes('curtainGradients[si]')&&!whimsical.includes('x.createLinearGradient(0,0,61,0)'),'The two fixed lounge curtains should reuse their prebuilt gradients');
+assert(decor.includes('fixedGradients.rails[rail]')&&decorLive.includes('fixedGradients.lightPools[pi]')&&!decor.includes('x.createLinearGradient(0,yy,W,yy)')&&!decorLive.includes('x.createRadialGradient(p[0],330,4'),'Lounge rail and light-pool gradients should not be rebuilt during each room paint');
+assert(block.includes('fixedGradients.wall')&&block.includes('fixedGradients.floor')&&block.includes('fixedGradients.neon')&&block.includes('fixedGradients.syncDance'),'The room background and synchronized-dance glow should use the shared gradient cache');
+const roomListStart=html.indexOf('function krMontarListaRenderSala(andando){');
+const roomListEnd=html.indexOf('\nfunction krLoungeSoloPermitido',roomListStart);
+const roomList=html.slice(roomListStart,roomListEnd);
+assert(roomList.includes('krRoomRenderRoster')&&roomList.includes('listaMudou=elencoMudou||krRoomRenderIncludesPlayer!==incluirJogador')&&roomList.includes('if(listaMudou||ordemMudou)lista.sort(krOrdenarPersonagensSala)'),'Audience ordering should be recalculated only after roster membership or depth order changes');
+const roomPaintEnd=html.indexOf('lista.forEach(function(j,idx)',start);
+const roomPaint=html.slice(start,roomPaintEnd);
+assert(roomPaintEnd>start&&!roomPaint.includes('lista.sort(krOrdenarPersonagensSala)'),'The drawing section should consume the already ordered audience list without sorting every paint');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

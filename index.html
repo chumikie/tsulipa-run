@@ -2117,6 +2117,48 @@ function drawProps(arr,w,off,base,widthLimit){
 }
 
 var charPose = '';   // Foto 2.0 do Backstage⭐Pet!: '' = braços normais (corrida, menu e cartões continuam iguais)
+/* Faixas rasterizadas substituem gradientes idênticos reconstruídos em cada desenho.
+   Os pequenos canvases são independentes do contexto de destino e compartilhados
+   pelo jogo principal, Perfil, Hub, Gacha, Pet e prévias. */
+var CHAR_DRAW_RAMP_CACHE=new Map(),CHAR_DRAW_STATIC_ASSETS=null;
+function charDrawDarkColor(hex,amount){
+ var raw=String(hex||'').replace(/^#/,'');
+ return '#'+raw.replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-amount).toString(16)).substr(-2)});
+}
+function charDrawVerticalRamp(key,height,gradientHeight,top,bottom){
+ var ramp=CHAR_DRAW_RAMP_CACHE.get(key);if(ramp)return ramp;
+ var canvas=document.createElement('canvas');canvas.width=1;canvas.height=height;
+ var ctx=canvas.getContext('2d'),gradient=ctx.createLinearGradient(0,0,0,gradientHeight);
+ gradient.addColorStop(0,top);gradient.addColorStop(1,bottom);ctx.fillStyle=gradient;ctx.fillRect(0,0,1,height);
+ ramp={canvas:canvas,top:top,bottom:bottom};
+ if(CHAR_DRAW_RAMP_CACHE.size>=64)CHAR_DRAW_RAMP_CACHE.delete(CHAR_DRAW_RAMP_CACHE.keys().next().value);
+ CHAR_DRAW_RAMP_CACHE.set(key,ramp);return ramp;
+}
+function charDrawHairRamp(color){
+ var key='hair|'+String(color||''),ramp=CHAR_DRAW_RAMP_CACHE.get(key);
+ if(ramp)return ramp;
+ var dark=charDrawDarkColor(color,60),made=charDrawVerticalRamp(key,25,19,color,dark);
+ made.dark=dark;return made;
+}
+function charDrawStreakRamp(color){
+ var key='streak|'+String(color||''),ramp=CHAR_DRAW_RAMP_CACHE.get(key);
+ if(ramp)return ramp;
+ return charDrawVerticalRamp(key,10,10,color,charDrawDarkColor(color,60));
+}
+function charDrawStaticAssets(){
+ if(CHAR_DRAW_STATIC_ASSETS)return CHAR_DRAW_STATIC_ASSETS;
+ var horizontal=document.createElement('canvas');horizontal.width=20;horizontal.height=1;
+ var hx=horizontal.getContext('2d'),hg=hx.createLinearGradient(0,0,20,0);
+ hg.addColorStop(0,'rgba(255,255,255,.2)');hg.addColorStop(.32,'rgba(255,255,255,0)');hg.addColorStop(.6,'rgba(40,10,70,0)');hg.addColorStop(1,'rgba(40,10,70,.24)');
+ hx.fillStyle=hg;hx.fillRect(0,0,20,1);
+ var vertical=document.createElement('canvas');vertical.width=1;vertical.height=4;
+ var vx=vertical.getContext('2d'),vg=vx.createLinearGradient(0,0,0,4);
+ vg.addColorStop(0,'rgba(40,10,70,0)');vg.addColorStop(1,'rgba(40,10,70,.16)');vx.fillStyle=vg;vx.fillRect(0,0,1,4);
+ CHAR_DRAW_STATIC_ASSETS={clothHorizontal:horizontal,clothVertical:vertical,
+  koalaEar:charDrawVerticalRamp('accessory|koala-ear',12,12,'#94a3b8','#475569'),
+  technopop:charDrawVerticalRamp('outfit|technopop',12,12,'#f1f5f9','#94a3b8')};
+ return CHAR_DRAW_STATIC_ASSETS;
+}
 function drawChar(c,x,y,run,expr,isPartner){
   var corDaRoupa = c.outcol || '#ffffff';
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
@@ -2125,7 +2167,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   var sl=(b==='longo'||b==='chanel'||((b===''||b==='pixie')?false:(f==='reta'||f==='arcoiris')))?14:(b==='pixie'?5:(b===''&&(f==='reta'||f==='arcoiris'))?10:6);
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
-  var HD='#'+H.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
+  var hairRamp=charDrawHairRamp(H),HD=hairRamp.dark;
   g.fillStyle=HD;
   if(b==='chanel'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-2,y+30,x+5,y+31);g.lineTo(x+25,y+31);g.quadraticCurveTo(x+32,y+30,x+28,y+13);g.fill()}
   else if(b==='longo'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-4,y+34,x+3,y+41);g.lineTo(x+27,y+41);g.quadraticCurveTo(x+34,y+34,x+28,y+13);g.fill()}
@@ -2266,40 +2308,27 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(hacc==='bandaid'){g.fillStyle='#d97706'; g.fillRect(x+6, y+21, 7, 4); g.fillStyle='#fcd34d'; g.fillRect(x+6.5, y+21.5, 6, 3); g.fillStyle='#fff'; g.fillRect(x+8, y+22, 3, 2);}
 
-  var hg=g.createLinearGradient(0,y+5,0,y+24);hg.addColorStop(0,H);hg.addColorStop(1,HD);g.fillStyle=hg;
-  g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();
-  g.fillRect(x+3,y+11.5,4,sl+0.5);g.fillRect(x+23,y+11.5,4,sl+0.5); // +0.5 elimina qualquer fresta entre o topo e as costeletas
-  
-  if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
-    g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
-  }
+  g.save();g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.rect(x+3,y+11.5,4,sl+0.5);g.rect(x+23,y+11.5,4,sl+0.5);
+  if(b===''||b==='pixie'){g.ellipse(x+5,y+12+sl,2,2.2,0,0,Math.PI*2);g.ellipse(x+25,y+12+sl,2,2.2,0,0,Math.PI*2);}
+  g.clip();g.drawImage(hairRamp.canvas,x+1,y+5,28,25);g.restore();
 
   g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
-
-  g.fillStyle=hg;
-  if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
-  else if(f==='reta')g.fillRect(x+3,y+8,24,6);
-  else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
-  else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
-  else if(f==='arcoiris'){
-    g.fillRect(x+3,y+6,24,8);
+  if(f==='arcoiris'){
+    g.save();g.beginPath();g.rect(x+3,y+6,24,8);g.clip();g.drawImage(hairRamp.canvas,x+1,y+5,28,25);g.restore();
     var cols = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'];
-    for(var idx=0; idx<6; idx++){
-      g.fillStyle=cols[idx];
-      g.fillRect(x+4 + (idx*3.6), y+6, 3.8, 9 + (idx%3===1?1:0));
-    }
+    for(var idx=0; idx<6; idx++){g.fillStyle=cols[idx];g.fillRect(x+4+(idx*3.6),y+6,3.8,9+(idx%3===1?1:0));}
+  }else{
+    g.beginPath();
+    if(f==='bagunca'){g.moveTo(x+3,y+11);g.lineTo(x+8,y+19);g.lineTo(x+11,y+10);g.lineTo(x+16,y+17);g.lineTo(x+20,y+9);g.lineTo(x+24,y+16);g.lineTo(x+27,y+10);g.lineTo(x+27,y+9);g.lineTo(x+3,y+9);}
+    else if(f==='reta')g.rect(x+3,y+8,24,6);
+    else if(f==='lateral'){g.moveTo(x+3,y+12);g.lineTo(x+7,y+8);g.lineTo(x+27,y+8);g.lineTo(x+27,y+19);g.lineTo(x+17,y+11);}
+    else if(f==='espetada'){g.moveTo(x+3,y+10);g.lineTo(x+3,y+5);g.lineTo(x+7,y-5);g.lineTo(x+11,y+3);g.lineTo(x+15,y-8);g.lineTo(x+19,y+3);g.lineTo(x+24,y-5);g.lineTo(x+27,y+5);g.lineTo(x+27,y+10);}
+    g.closePath();g.clip();g.drawImage(hairRamp.canvas,x+1,y+5,28,25);
   }
-
   g.restore();
   
-  if(c.streak){
-    var shd2='#'+c.hair2.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
-    var sg2 = g.createLinearGradient(0,y+5,0,y+15);
-    sg2.addColorStop(0,c.hair2); sg2.addColorStop(1,shd2);
-    g.fillStyle=sg2;
-    g.fillRect(x+10,y+5,3,10);
-  }
+  if(c.streak){var streakRamp=charDrawStreakRamp(c.hair2);g.drawImage(streakRamp.canvas,x+10,y+5,3,10);}
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
@@ -2314,17 +2343,14 @@ if(hacc==='coala'){
     g.beginPath(); g.arc(x+15, y+10, 11, Math.PI, 0); g.stroke();
 
     // 2. Degradê de sombreamento das orelhas (claro em cima, escuro embaixo)
-    var earG = g.createLinearGradient(0, y-4, 0, y+8);
-    earG.addColorStop(0, '#94a3b8'); 
-    earG.addColorStop(1, '#475569');
+    var earRamp=charDrawStaticAssets().koalaEar;
 
-    // 3. Orelha Esquerda
-    g.fillStyle = earG; g.beginPath(); g.arc(x+5, y+2, 6, 0, 7); g.fill();
+    // 3. Orelhas: o degradê comum é desenhado uma vez em uma faixa reutilizável.
+    g.save();g.beginPath();g.arc(x+5,y+2,6,0,7);g.arc(x+25,y+2,6,0,7);g.clip();g.drawImage(earRamp.canvas,x-1,y-4,32,12);g.restore();
     g.fillStyle = '#fbcfe8'; g.beginPath(); g.arc(x+5, y+2, 3, 0, 7); g.fill(); // Interior rosa
     g.fillStyle = 'rgba(255,255,255,0.5)'; g.beginPath(); g.arc(x+4, y+0.5, 1.5, 0, 7); g.fill(); // Brilho
 
-    // 4. Orelha Direita
-    g.fillStyle = earG; g.beginPath(); g.arc(x+25, y+2, 6, 0, 7); g.fill();
+    // 4. Interior rosa da orelha direita.
     g.fillStyle = '#fbcfe8'; g.beginPath(); g.arc(x+25, y+2, 3, 0, 7); g.fill();
     g.fillStyle = 'rgba(255,255,255,0.5)'; g.beginPath(); g.arc(x+24, y+0.5, 1.5, 0, 7); g.fill();
 
@@ -6925,8 +6951,7 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     perfAntena = 'touca';
   } else if(roupa === 'technopop'){   // jaqueta prateada com linhas de neon (na cor escolhida) e calça preta
     var nc = branco ? '#4dd8ff' : cor;
-    var mg = g.createLinearGradient(0, y + 22, 0, y + 34); mg.addColorStop(0, '#f1f5f9'); mg.addColorStop(1, '#94a3b8');
-    g.fillStyle = mg; g.fillRect(x + 4, y + 22, 22, 11);
+    g.drawImage(charDrawStaticAssets().technopop.canvas,x+4,y+22,22,11);
     g.fillStyle = '#1f2937'; T([x + 11, y + 22, x + 19, y + 22, x + 15, y + 29]);
     g.strokeStyle = nc; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 5, y + 31); g.lineTo(x + 11, y + 25); g.moveTo(x + 25, y + 31); g.lineTo(x + 19, y + 25); g.moveTo(x + 4, y + 33); g.lineTo(x + 26, y + 33); g.stroke();
     g.fillStyle = '#ff6fb5'; g.fillRect(x + 22, y + 23.5, 2, 2);
@@ -6952,12 +6977,10 @@ perfLojaOpcoes();
 // Sombreamento das roupas (chamado pelo drawChar depois de todas as roupas): luz à esquerda, sombra à direita,
 // sombrinha embaixo da gola e na cintura — a mesma lógica de degradê do cabelo, para nada ficar "chapado".
 function roupaSombra(x, y){
-  var lg = g.createLinearGradient(x + 5, 0, x + 25, 0);
-  lg.addColorStop(0, 'rgba(255,255,255,.2)'); lg.addColorStop(.32, 'rgba(255,255,255,0)'); lg.addColorStop(.6, 'rgba(40,10,70,0)'); lg.addColorStop(1, 'rgba(40,10,70,.24)');
-  g.fillStyle = lg; g.fillRect(x + 5, y + 22, 20, 11);
-  g.fillStyle = 'rgba(40,10,70,.18)'; g.fillRect(x + 10, y + 22, 10, 1.3);
-  var lv = g.createLinearGradient(0, y + 29, 0, y + 33); lv.addColorStop(0, 'rgba(40,10,70,0)'); lv.addColorStop(1, 'rgba(40,10,70,.16)');
-  g.fillStyle = lv; g.fillRect(x + 5, y + 29, 20, 4);
+  var assets=charDrawStaticAssets();
+  g.drawImage(assets.clothHorizontal,x+5,y+22,20,11);
+  g.fillStyle='rgba(40,10,70,.18)';g.fillRect(x+10,y+22,10,1.3);
+  g.drawImage(assets.clothVertical,x+5,y+29,20,4);
 }
 
 // ---------- Fundos do estúdio (t = quadro da animação) ----------

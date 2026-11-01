@@ -289,6 +289,15 @@ assert(avatarStart>=0&&avatarEnd>avatarStart&&!/create(?:Linear|Radial)Gradient\
 assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_DRAW_RAMP_CACHE.size>=64')&&main.includes('function charDrawHairRamp(color)')&&main.includes('function charDrawStreakRamp(color)'),'Site-wide hair and two-tone streak ramps must use a bounded shared cache');
 assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
 
+
+const profileGradientCacheStart=main.indexOf('var PERF_BG_TEXTURE_CACHE = new Map()');
+const profileGradientCacheEnd=main.indexOf('// ---------- Fundos do estúdio',profileGradientCacheStart);
+const profileGradientCache=main.slice(profileGradientCacheStart,profileGradientCacheEnd);
+assert(profileGradientCacheStart>=0&&profileGradientCacheEnd>profileGradientCacheStart&&profileGradientCache.includes('PERF_BG_TEXTURE_CACHE.size >= 32')&&profileGradientCache.includes('drawImage(cv, 0, 0, W2, H2)'),'Profile and Studio base gradients should reuse bounded raster textures keyed by theme and dimensions');
+assert(main.includes("perfFundoGradiente(x, W2, H2, 'perfil:basico'")&&main.includes("'perfil:palco'")&&main.includes("'perfil:oshi:'")&&main.includes("'perfil:noite'")&&main.includes("'perfil:halloween'"),'Fixed Profile background gradients should use the shared bounded texture cache');
+assert(main.includes("'tema:' + k + ':' + inf[2] + ':' + inf[3]")&&main.includes("'camarim:' + k + ':' + inf[2] + ':' + inf[3]"),'Seasonal Studio and dressing-room base gradients should be cached by theme colors and dimensions');
+assert(main.includes('perfBrilhos(x, W2, H2 * .55')&&main.includes('perfEnfeites(x, W2, H2')&&main.includes('temaParticulas(x, W2, H2 * .9, k, 22, t, u)')&&main.includes('r *= pulso; var h = x.createRadialGradient(cx, cy, 2, cx, cy, r)'),'Caching fixed background gradients must preserve animated sparkles, seasonal particles and pulsing character halos');
+
 const hubBeamStart=main.indexOf('function hubIdolsBeamTexturas(height)');
 const hubBeamEnd=main.indexOf('function hubIdolsTam()',hubBeamStart);
 const hubBeamCache=main.slice(hubBeamStart,hubBeamEnd);

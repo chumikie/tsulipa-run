@@ -2640,9 +2640,19 @@ krWeeklyPosterCast=function(){return ktDaily.posters();};
    servidor (5 por dia, resultado conferido) e os três quadros da semana vêm de lá.
    Sem conta, ou com o arquivo aberto sozinho, tudo continua só neste aparelho. */
 window.ktOnline=(function(){
- var KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false;
- function api(){try{if(!document.documentElement.classList.contains('kt-no-site'))return null;var a=window.parent&&window.parent.twKaraokeOnline;return a&&a.ativo()?a:null;}catch(e){return null;}}
+ var KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false,activeOwner='';
  function sessionKey(a){try{return a&&typeof a.sessionKey==='function'?String(a.sessionKey()||''):'';}catch(e){return '';}}
+ function api(){try{
+  if(!document.documentElement.classList.contains('kt-no-site'))return null;
+  var a=window.parent&&window.parent.twKaraokeOnline;
+  if(a&&a.ativo()){
+   var key=sessionKey(a);
+   if(key!==activeOwner){activeOwner=key;readAt=0;usados=null;tickets=0;boards=null;}
+   return a;
+  }
+  if(activeOwner){activeOwner='';readAt=0;usados=null;tickets=0;boards=null;}
+  return null;
+ }catch(e){return null;}}
  function sameSession(a,key){return !!key&&api()===a&&sessionKey(a)===key;}
  function aviso(m){try{krAviso(m);}catch(e){}var h=$('ktHint');if(h)h.textContent=m;}
  function runMap(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.runs&&typeof v.runs==='object')return v.runs;if(v&&typeof v.run==='string'){var owner=v.owner||sessionKey(api()),legacy={};if(owner)legacy[owner]=v.run;return legacy;}}catch(e){}return {};}

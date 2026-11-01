@@ -27,7 +27,7 @@ const server=http.createServer((req,res)=>{
    pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
   };};
   window.qaRoomControllers={
-   openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540;canvas.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true}));return !!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open;},
+   openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540,event=new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true});canvas.dispatchEvent(event);return {opened:!!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open,defaultPrevented:event.defaultPrevented,posterCount:KR_ROOM_POSTER_DRAW.length,frame:pos,canvas:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},client:{x:clientX,y:clientY},hasDecorator:!!(ktDecor&&ktDecor.hit)};},
    startAutomaticMic:function(){
     if(krRhythmRun)kt.end(false);if(krDemoCantor)krDemoBotEnd();
     krSt.aberta=true;krEu.no_mic=false;krEu.x=krEu.tx=480;krEu.y=krEu.ty=286;
@@ -103,7 +103,7 @@ async function metrics(frame){
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-idle.png'),fullPage:true});
    if(!baseline){
-    assert.equal(await frame.locator('body').evaluate(()=>window.qaRoomControllers.openPoster(0)),true,'wall Polaroid opens through the injected page-local avatar renderer');
+    const posterClick=await frame.locator('body').evaluate(()=>window.qaRoomControllers.openPoster(0));assert.equal(posterClick.opened,true,'wall Polaroid opens through the real canvas pointer event: '+JSON.stringify(posterClick));
     const poster=frame.locator('#ktPosterDialog');await poster.waitFor({state:'visible'});
     const portrait=frame.locator('#ktPosterPortrait');
     const portraitInfo=await portrait.evaluate(canvas=>{const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(40,40,440,460).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]&&((pixels[i]>90&&pixels[i]<245)||(pixels[i+1]>70&&pixels[i+1]<225)||(pixels[i+2]>70&&pixels[i+2]<245)))ink++;return {width:canvas.width,height:canvas.height,ink};});

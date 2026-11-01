@@ -1,9 +1,11 @@
-/* Cortes extras do Idol, no mesmo vocabulário 2D de drawChar (arco do topo,
-   costeletas, sombra HD atrás e franja em polígono com o degradê do cabelo).
-   onduladom  = Ondulado curto: volume fofo e arredondado ao redor da cabeça
-   onduladom2 = Curto bicolor: metade na cor escolhida, metade preta (ref. Maruru)
-   onduladof  = Repicado volumoso, médio, pontas para fora (ref. Mimimila)
-   Os valores salvos continuam os mesmos para não quebrar saves. */
+/* Cortes e franjas extras do Idol, no mesmo vocabulário 2D de drawChar (arco do
+   topo, costeletas, sombra HD atrás e franja em polígono com o degradê do cabelo).
+   Cortes (combinam com qualquer franja):
+   onduladom  = Ondulado: volume fofo e arredondado ao redor da cabeça
+   onduladom2 = Bicolor: metade na cor escolhida, metade preta (ref. Maruru)
+   onduladof  = Repicado: médio, pontas para fora (ref. Mimimila)
+   Franjas novas: ondulada, risca (lateral longa, ref. Maruru), repicada (ref. Mimimila).
+   Os valores salvos dos cortes continuam os mesmos para não quebrar saves. */
 (function(){
 'use strict';
 var PRETO_TOPO='#3a3644',PRETO_BASE='#121018',PRETO_SOMBRA='#0c0a12';
@@ -17,6 +19,36 @@ function topoArco(g,x,y){g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();}
 function franjaBicolor(T,x,y){
  T([x+3,y+9,x+12,y+5,x+12,y+11,x+8,y+12,x+4,y+16]);                              // lado curto, penteado para fora
  T([x+11,y+5,x+27,y+7,x+27,y+17,x+25,y+14,x+22,y+20,x+19,y+13,x+15,y+19,x+13,y+11]); // mecha longa varrendo sobre o olho
+}
+function franja(T,x,y,f){
+ if(f==='ondulada')T([x+3,y+10,x+8,y+5,x+14,y+7,x+20,y+3,x+27,y+8,x+29,y+13,x+24,y+16,x+20,y+14,x+17,y+21,x+13,y+15,x+9,y+19,x+7,y+13,x+3,y+14]);
+ else if(f==='risca')franjaBicolor(T,x,y);
+ else if(f==='repicada'){   // mecha entre os olhos + mechas laterais emoldurando o rosto
+  T([x+3,y+6,x+27,y+6,x+27,y+10,x+25,y+16,x+22,y+11,x+19.5,y+17,x+17,y+11,x+15,y+20,x+13,y+11,x+10.5,y+17,x+8,y+11,x+5,y+16,x+3,y+10]);
+  T([x+3,y+9,x+8,y+11,x+7,y+19,x+5.5,y+26,x+3,y+23]);
+  T([x+27,y+9,x+22,y+11,x+23,y+19,x+24.5,y+26,x+27,y+23]);
+ }else return false;
+ return true;
+}
+function franjaOriginal(g,T,x,y,f){   // mesmas formas das franjas de drawChar, para pintar a metade preta
+ if(franja(T,x,y,f))return;
+ if(f==='reta')g.fillRect(x+3,y+8,24,6);
+ else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
+ else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
+ else if(f!=='arcoiris')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);   // bagunçada
+}
+var NOMES={en:{Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Ondulada:'Wavy',Risca:'Side part',Repicada:'Layered'},
+ es:{Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Ondulada:'Ondulado',Risca:'De lado',Repicada:'Desfilado'},
+ th:{Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Ondulada:'ลอน',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
+ ja:{Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Ondulada:'ウェーブ',Risca:'サイド分け',Repicada:'レイヤー'}};
+function rotular(){   // nomes curtos das opções novas, no idioma atual (o dicionário principal não as conhece)
+ var l=(document.documentElement.lang||'').slice(0,2),d=NOMES[l]||{};
+ [].forEach.call(document.querySelectorAll('option[data-twh]'),function(o){var k=o.getAttribute('data-twh'),v=d[k]||k;if(o.textContent!==v)o.textContent=v;});
+}
+if(typeof document!=='undefined'&&document.addEventListener){
+ document.addEventListener('DOMContentLoaded',rotular);
+ document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('.lang button'))setTimeout(rotular,0);},true);
+ document.addEventListener('focusin',function(e){if(e.target&&e.target.tagName==='SELECT')rotular();},true);
 }
 window.TWAvatarHair={
  isWavy:function(b){return b==='onduladom'||b==='onduladom2'||b==='onduladof';},
@@ -50,26 +82,18 @@ window.TWAvatarHair={
   else if(b==='onduladom2')topoArco(g,x,y);
   else if(b==='onduladof')topoArco(g,x,y);
  },
- fringe:function(g,x,y,b,T){
-  if(b==='onduladom'){
-   T([x+3,y+10,x+8,y+5,x+14,y+7,x+20,y+3,x+27,y+8,x+29,y+13,x+24,y+16,x+20,y+14,x+17,y+21,x+13,y+15,x+9,y+19,x+7,y+13,x+3,y+14]);
-   oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);   // laterais curvas em vez das costeletas retas
-  }else if(b==='onduladom2'){
-   franjaBicolor(T,x,y);
-  }else if(b==='onduladof'){
-   // franja repicada com uma mecha entre os olhos + mechas laterais emoldurando o rosto
-   T([x+3,y+6,x+27,y+6,x+27,y+10,x+25,y+16,x+22,y+11,x+19.5,y+17,x+17,y+11,x+15,y+20,x+13,y+11,x+10.5,y+17,x+8,y+11,x+5,y+16,x+3,y+10]);
-   T([x+3,y+9,x+8,y+11,x+7,y+19,x+5.5,y+26,x+3,y+23]);
-   T([x+27,y+9,x+22,y+11,x+23,y+19,x+24.5,y+26,x+27,y+23]);
-  }
+ fringe:function(g,x,y,b,f,T){   // devolve true quando a franja é uma das novas
+  if(b==='onduladom'){oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);}   // laterais curvas do Ondulado
+  return franja(T,x,y,f);
  },
  bicolor:function(g,c,x,y,b){
   if(b!=='onduladom2')return;
-  // metade direita (do ponto de vista de quem olha) em preto, cobrindo topo, costeleta e franja
-  var pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,PRETO_TOPO);pg.addColorStop(1,PRETO_BASE);
-  g.save();cabeca(g,x,y);g.clip();g.beginPath();g.rect(x+15,y-4,16,34);g.clip();g.fillStyle=pg;
-  topoArco(g,x,y);g.fillRect(x+23,y+11.5,4,7.5);
-  franjaBicolor(function(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill();},x,y);
+  // metade direita (de quem olha) em preto: topo, costeleta e a franja escolhida
+  var f=c.front||'bagunca',pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,PRETO_TOPO);pg.addColorStop(1,PRETO_BASE);
+  var T=function(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill();};
+  g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.beginPath();if(f==='arcoiris'){g.rect(x+15,y-10,16,16);g.rect(x+15,y+15,16,15);}else g.rect(x+15,y-10,16,40);g.clip();g.fillStyle=pg;   // o arco-íris fica por cima
+ 
+  topoArco(g,x,y);g.fillRect(x+23,y+11.5,4,7.5);franjaOriginal(g,T,x,y,f);
   g.restore();
  }
 };

@@ -22,7 +22,10 @@ assert(source.includes("var PRETO_TOPO='#3a3644',PRETO_BASE='#121018'"),'curto b
 assert(!/onduladom2[\s\S]*hair2/.test(source.split('bicolor:function')[1]||''),'curto bicolor não depende da cor da mecha');
 assert(!source.includes('strokeStyle'),'repicado sem riscos brancos sobre o rosto');
 assert(source.includes('g.arc(x+15,y+12,14,Math.PI,0)')&&source.includes('// laterais curvas'),'ondulado curto arredondado em volta da cabeça');
-for(const label of ['>Ondulado curto<','>Curto bicolor (metade preta)<','>Repicado volumoso<'])assert(index.includes(label),'menu mostra '+label);
+for(const label of ['data-twh="Ondulado">Ondulado<','data-twh="Bicolor">Bicolor<','data-twh="Repicado">Repicado<'])assert(index.includes(label),'menu de corte mostra '+label);
+for(const v of ['ondulada','risca','repicada'])assert(index.includes('<option value="'+v+'" data-twh='),'menu de franja oferece '+v);
+for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]])assert(html.includes('if(TWAvatarHair.fringe(g,x,y,b,f,T)){}'),name+': franja depende da escolha de franja, não do corte');
+assert(source.includes("Risca:'Side part'")&&source.includes("option[data-twh]"),'nomes curtos traduzidos pelo módulo');
 const sandbox={window:{}};vm.runInNewContext(source,sandbox,{timeout:1000});
 const hair=sandbox.window.TWAvatarHair;
 let ops=[];const grad={addColorStop(){}};
@@ -33,9 +36,10 @@ for(const cut of cuts){
  ops=[];const c={hair:'#335577',hair2:'#aabbcc'};
  assert.equal(hair.isWavy(cut),true);
  assert.equal(hair.back(g,c,0,0,cut,E,T),true);
- hair.top(g,0,0,cut);hair.fringe(g,0,0,cut,T);hair.bicolor(g,c,0,0,cut);
+ hair.top(g,0,0,cut);assert.equal(hair.fringe(g,0,0,cut,'bagunca',T),false,cut+' mantém a franja original escolhida');hair.bicolor(g,{hair:'#335577',hair2:'#aabbcc',front:'reta'},0,0,cut);
  assert(ops.length>5,cut+' draws wave details');
  if(cut==='onduladom2'){assert(ops.some(op=>op[0]==='rect'),cut+' recorta a metade preta');assert.equal(ops.filter(op=>op[0]==='clip').length>=2,true,cut+' mantém a metade preta dentro da cabeça');}
+ for(const fr of ['ondulada','risca','repicada']){ops=[];assert.equal(hair.fringe(g,0,0,cut,fr,T),true,fr+' é desenhada pelo módulo');assert(ops.length>0);}
 }
 assert.equal(hair.isWavy('chanel'),false);
 assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);

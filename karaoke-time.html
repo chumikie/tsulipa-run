@@ -419,7 +419,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
 
   g.fillStyle=hg;
-  if(TWAvatarHair.isWavy(b))TWAvatarHair.fringe(g,x,y,b,T);
+  if(TWAvatarHair.fringe(g,x,y,b,f,T)){}
   else if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
   else if(f==='reta')g.fillRect(x+3,y+8,24,6);
   else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);

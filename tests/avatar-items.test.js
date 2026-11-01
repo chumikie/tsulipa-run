@@ -17,7 +17,7 @@ for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
  }
 }
 assert(index.includes('value="capitao" data-r="15000"'),'chapéu liberado no rank Capitão (15.000)');
-assert(index.includes("['estrela','Estrela dourada',RANKS[8][0],8]"),'estrela liberada em Solo Center (10.000)');
+assert(index.includes("['estrela','Estrela',RANKS[8][0],8]"),'estrela liberada em Solo Center (10.000)');
 assert(index.includes("accSel = typeof av.a === 'string' ? av.a : ''"),'Perfil usa acessório salvo do avatar');
 assert(index.includes("'brs48cr_acc'"),'item do jogador persiste no save');
 assert(karaoke.includes("a:read('brs48cr_acc')||''"),'elenco do Karaoke lê item salvo');

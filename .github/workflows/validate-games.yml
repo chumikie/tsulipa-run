@@ -18,6 +18,9 @@ on:
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
       - 'tests/center-run-daily-cap.test.js'
+      - 'supabase/tests/center_run_pg_setup.sql'
+      - 'supabase/tests/center_run_pg_checks.sql'
+      - 'supabase/tests/center_run_pg_integration.sh'
       - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
@@ -86,6 +89,9 @@ on:
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
       - 'tests/center-run-daily-cap.test.js'
+      - 'supabase/tests/center_run_pg_setup.sql'
+      - 'supabase/tests/center_run_pg_checks.sql'
+      - 'supabase/tests/center_run_pg_integration.sh'
       - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
@@ -200,3 +206,23 @@ jobs:
         run: node tests/login-simulado.test.js
 
 
+
+  postgres-center-run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: center_run_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d center_run_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Center Run daily cap against isolated PostgreSQL
+        run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"

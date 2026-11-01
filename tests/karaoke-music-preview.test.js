@@ -83,8 +83,13 @@ for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPrevie
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(moduleCode.includes('audioReady:true'),'independent preview marks its target ready for the shared beat renderer');
-assert(html.includes("out:'zipper',outcol:avatarColors[group]")&&html.includes('KaraokeAvatar.draw(ctx,cached.value,44,91,1.45,pose,expression,'),'voice library renders full-body zipper miniatures in each character color using the shared avatar renderer');
+assert(!moduleCode.includes('Prévia finalizada.')&&!moduleCode.includes('Prévia interrompida.'),'music previews finish and stop without completion/interruption announcements');
+assert(html.includes("out:'zipper',outcol:avatarColors[group],hat:''")&&html.includes('KaraokeAvatar.draw(ctx,cached.value,44,91,1.45,pose,expression,'),'voice library renders full-body zipper miniatures in each character color without the accidental Lirika accessory using the shared avatar renderer');
+assert(html.includes('next.volume=.6'),'character voice playback volume is slightly reduced');
+assert(!html.includes("finish(tr('Prévia finalizada.'))")&&!html.includes("stop(tr('Prévia interrompida.'))"),'voice previews stop and end silently without completion/interruption notices');
 assert(html.includes('<canvas class="kt-library-face" width="88" height="96"'),'voice miniatures have a full-body canvas');
+assert(!html.includes('kt-library-tabs')&&!html.includes('data-kt-library-view=')&&!html.includes('data-kt-library-panel='),'music and voice controls share one continuous library page');
+assert(html.indexOf('Músicas do jogo')<html.indexOf('Músicas novas')&&html.indexOf('Músicas novas')<html.indexOf('Vozes dos personagens'),'library groups four game songs before the three new songs and character voices');
 assert(!html.includes('data-kt-audio="encontro"'),'Encounter special audio button is absent from this library');
 assert(!html.includes("'encontro':1"),'Encounter audio is not exposed as a voice-library clip');
 assert((html.includes('id="ktPreviewVolume"')||html.includes('id=ktPreviewVolume'))&&moduleCode.includes('addEventListener("input"'),'player includes a working volume slider');

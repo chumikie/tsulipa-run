@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script src="./tw-motion-lifecycle.js?v=1"></script>
+<script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=6"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=3"><script id="ktTemaDaPagina">
 /* Acompanha o tema da página principal: o Oshi escolhido (brs48cr_oshi, o mesmo do menu)
@@ -62,7 +62,6 @@ html.kt-no-site .krwrap{width:100%;max-width:920px!important;margin:0 auto;backg
 
 
 #krPalco #krMute{right:64px;bottom:10px;z-index:7}
-/* Ajustar timing: botão redondo na cena (desktop); o painel abre por cima, acima do botão */
 #krPalco>.kt-calibration{position:absolute;right:118px;bottom:10px;z-index:8;width:auto;height:auto;margin:0}
 #krPalco>.kt-calibration summary{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--chip);border:1px solid rgba(155,48,217,.22);box-shadow:0 3px 0 rgba(44,26,143,.16)}
 #krPalco>.kt-calibration[open] summary{background:var(--b1)}
@@ -135,7 +134,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 
 
 .kt-playing #ktAudience{order:6}
-.kt-playing #ktAudioLibrary{order:7}   /* durante o show a vitrine vai para depois da sala, sem empurrar o palco */
+.kt-playing #ktAudioLibrary{order:7}
 .kt-ja-subtitle{display:block;margin:2px 0 4px;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
 </style>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
@@ -1453,7 +1452,7 @@ function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||
 function start(mode){if(run)return;previewPlayer.stop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var practice=mode===true;if(!practice&&mode!=='confirmed'){ktFlow.request();return;}if(!practice&&!krSt.aberta)return;var wasClosed=practice&&!krSt.aberta;if(wasClosed)krSt.aberta=true;var admission=!practice&&typeof ktMeta!=='undefined'&&ktMeta?ktMeta.begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)krSt.aberta=false;return;}if(admission){songKey=admission.round.song;$('ktSong').value=songKey;}if(typeof ktDaily!=='undefined'&&ktDaily)ktDaily.beforeStart();var auto=mode===true;krMusicaParar();ac();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:ktFlow.offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
 run.total=Math.floor(59000/step);run.notes=makeNoteMap(song,run.total,step,run.start);if(admission){run.session=admission.round;var saved=admission.round.checkpoint;if(saved){resumeElapsed=Math.max(0,Number(saved.elapsed)||0);run.start=now-resumeElapsed;['score','combo','maxCombo','hits','attempts'].forEach(function(k){run[k]=saved[k]||0;});var oldDone={};if(saved.noteMap!==2){var oldPos=0;for(var j=0;j<run.total;j++)if(song.mel[j%song.mel.length]>=0)oldDone[j]=!!saved.done[oldPos++];}run.notes.forEach(function(n,i){n.at=run.start+n.idx*step;n.done=saved.noteMap===2?!!saved.done[i]:!!oldDone[n.idx];});krEu.canto=saved.canto||krEu.canto;run.audioStep=Math.max(0,Math.ceil(resumeElapsed/step));}}/* Sons de destaque seguem o mesmo idx musical, inclusive após retomada. */run.cuesByStep={};run.notes.forEach(function(n){(run.cuesByStep[n.idx]||(run.cuesByStep[n.idx]=[])).push(n);});/* A calibracao e apenas do INPUT: nunca deslocar nota visual ou som. */krRhythmRun=run;
 if(!auto){krClearHandheld('stage');krEu.no_mic=true;krEu.micT=60*60;krEu.x=krEu.tx=480;krEu.y=krEu.ty=286;}else if(krDemoCantor)krDemoCantor.endsAt=now+63000;
-setTimeout(function(){if(!auto)krIrAoPalco();krRoomAtualizar();},160);   // religa o loop da sala (pode ter parado com a confirmação aberta)
+setTimeout(function(){if(!auto)krIrAoPalco();krRoomAtualizar();},160);
 $('ktStart').disabled=true;$('ktStart').textContent='🎤 Show em andamento';$('ktSong').disabled=true;$('ktPause').disabled=true;$('ktEnd').disabled=false;$('ktKeys').hidden=!!auto;$('ktSession').hidden=false;timingMessage((KR_RHYTHM_TOUCH_DIAGNOSTIC[LANG]||KR_RHYTHM_TOUCH_DIAGNOSTIC.pt).ready);lastUI=0;krUI();updateUI();var activeRun=run;ktPrepararRelogioAudio(activeRun,resumeElapsed?0:prepareMs,resumeElapsed,function(){if(run!==activeRun)return;if(krDemoCantor&&waitMs>0)krDemoCantor.endsAt+=waitMs;$('ktPause').disabled=false;updateUI();checkpoint();});}
 var previewPlayer=window.KaraokeMusicPreview.create({
  getSong:function(key){return songs[key];},getContext:ac,
@@ -2775,8 +2774,7 @@ function krRoomPainelRitmoVisivel(){
 function krShowAtivo(){return !!(krRhythmRun&&typeof kt!=='undefined'&&kt&&kt.active&&kt.active()&&!kt.paused());}
 function krRoomPodeAnimar(){
  if(document.hidden||!krRoomHostVisible||(window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive()))return false;
- /* Show em andamento nunca pausa só porque o palco saiu da tela (no celular ele começa abaixo do botão);
-    pausa apenas com a página oculta, tela bloqueada ou troca de aba. */
+ /* show ativo só pausa com a página oculta */
  if(krShowAtivo())return true;
  return krRoomPalcoVisivel()||krRoomPainelRitmoVisivel();
 }
@@ -2897,7 +2895,9 @@ window.addEventListener('message',function(e){
  else if(e.data.type==='tsulipa-motion-state')visible=e.data.active===true;
  else return;
  if(location.protocol!=='file:'&&e.origin!==location.origin)return;
- krRoomHostVisible=visible;krRoomAtualizar();
+ krRoomHostVisible=visible;
+ if(visible&&krCanvasHD){krRoomCanvasVisible=krRoomElementoVisivel(krCanvasHD);if(krRhythmPanel)krRhythmPanelVisible=krRoomElementoVisivel(krRhythmPanel);}
+ krRoomAtualizar();
 });
 document.addEventListener('visibilitychange',krRoomAtualizar);
 window.addEventListener('pagehide',function(){

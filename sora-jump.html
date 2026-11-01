@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-motion-lifecycle.js?v=1"></script>
+<script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Day! ao vivo aos domingos, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
@@ -4242,6 +4242,7 @@ function soraSetupUI(){
     if(e.source!==parent||!e.data||e.data.type!=='TW_GAME_VISIBILITY')return;
     if(location.protocol!=='file:'&&e.origin!==location.origin)return;
     soraHostVisible=e.data.visible===true;
+    if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();
     if(!soraHostVisible){
       soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
     }else{
@@ -4436,6 +4437,7 @@ function soraOpenUIReady(){
   soraSoundOn = !muted;
   soraMusicStop();
   soraOpen = true; soraState = 'menu'; soraReset(); soraState = 'menu';
+  if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();   // o vigia foi criado com o Sora fechado; reavalia ao abrir
   if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m';
   if($('soraMenuStars')) $('soraMenuStars').textContent = String(starT);
   soraRefreshTestProfile(); soraBindTestProfileTools();

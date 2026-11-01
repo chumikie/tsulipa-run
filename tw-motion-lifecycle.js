@@ -31,16 +31,18 @@ function domVisible(el){
  }
  return rectVisible(el);
 }
+var COVER_SEL='[aria-modal="true"],[role="dialog"],dialog[open],.ov,.tw-modal,.modal,.overlay';
 function unobscured(el){
  if(!el||!d.elementFromPoint)return true;
- var r=el.getBoundingClientRect(),xs=[.2,.5,.8],ys=[.2,.5,.8];
+ var r=el.getBoundingClientRect(),xs=[.2,.5,.8],ys=[.2,.5,.8],own=el.closest?el.closest(COVER_SEL):null;
  for(var yi=0;yi<ys.length;yi++)for(var xi=0;xi<xs.length;xi++){
   var px=r.left+r.width*xs[xi],py=r.top+r.height*ys[yi];
   if(px<0||py<0||px>=(w.innerWidth||0)||py>=(w.innerHeight||0))continue;
   var top=d.elementFromPoint(px,py);if(!top)continue;
-  var cover=top.closest&&top.closest('[aria-modal="true"],[role="dialog"],dialog[open],.ov,.tw-modal,.modal,.overlay');
-  if(cover&&cover!==el&&!cover.contains(el))continue;
+  var cover=top.closest?top.closest(COVER_SEL):null;
   if(top===el||el.contains(top)||top.contains(el))return true;
+  // Botões, placar e menus da mesma janela por cima do canvas não o escondem; só outra janela/diálogo esconde.
+  if(cover===own)return true;
  }
  return false;
 }

@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-motion-lifecycle.js?v=1"></script>
+<script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
@@ -3166,7 +3166,7 @@ function twOverlayTopo(){
     if(!el.isConnected||!el.getClientRects().length)continue;
     var cs=getComputedStyle(el);
     if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden')continue;
-    var z=parseInt(cs.zIndex,10)||0;
+    var z=(parseInt(cs.zIndex,10)||0)+(/^(menu|over|pz)$/.test(el.id)?-1e4:0);   // telas do Center Run ficam por baixo de qualquer janela aberta
     // Um painel em transição ainda é dono da cena; opacity 0 pode ser o início de um fade-in.
     if(z>=topZ){top=el;topZ=z;}
   }

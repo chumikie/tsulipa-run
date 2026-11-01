@@ -11661,7 +11661,7 @@ function twMusicaPaginaVisibilidade(){
   curT='';sync();
 }
 document.addEventListener('visibilitychange',twMusicaPaginaVisibilidade);
-window.addEventListener('pagehide',function(){music(false);curT='';hubMusicaParar();ovMusicaParar();});
+window.addEventListener('pagehide',function(){hubVozParar();music(false);curT='';hubMusicaParar();ovMusicaParar();});
 window.addEventListener('pageshow',twMusicaPaginaVisibilidade);
 
 // cena suave do Encontro do dia: céu de fim de tarde, cidade em silhueta, moitas e nuvens (no clima do Center⭐Run!)

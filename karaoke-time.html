@@ -2640,28 +2640,32 @@ krWeeklyPosterCast=function(){return ktDaily.posters();};
    servidor (5 por dia, resultado conferido) e os três quadros da semana vêm de lá.
    Sem conta, ou com o arquivo aberto sozinho, tudo continua só neste aparelho. */
 window.ktOnline=(function(){
- var KEY='kt_online_run_v1',run=null,boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false;
+ var KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false;
  function api(){try{if(!document.documentElement.classList.contains('kt-no-site'))return null;var a=window.parent&&window.parent.twKaraokeOnline;return a&&a.ativo()?a:null;}catch(e){return null;}}
+ function sessionKey(a){try{return a&&typeof a.sessionKey==='function'?String(a.sessionKey()||''):'';}catch(e){return '';}}
+ function sameSession(a,key){return !!key&&api()===a&&sessionKey(a)===key;}
  function aviso(m){try{krAviso(m);}catch(e){}var h=$('ktHint');if(h)h.textContent=m;}
- function guardado(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');return v&&typeof v.run==='string'?v.run:null;}catch(e){return null;}}
- function guardar(id){try{if(id)localStorage.setItem(KEY,JSON.stringify({run:id}));else localStorage.removeItem(KEY);}catch(e){}}
+ function runMap(){try{var v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.runs&&typeof v.runs==='object')return v.runs;if(v&&typeof v.run==='string'){var owner=v.owner||sessionKey(api());return owner?Object.fromEntries([[owner,v.run]]):{};}}catch(e){}return {};}
+ function guardado(owner){var key=owner||sessionKey(api());if(!key)return null;var map=runMap();return typeof map[key]==='string'?map[key]:null;}
+ function guardar(id,owner){var key=owner||sessionKey(api());if(!key)return;var map=runMap();if(id)map[key]=id;else delete map[key];try{if(Object.keys(map).length)localStorage.setItem(KEY,JSON.stringify({runs:map}));else localStorage.removeItem(KEY);}catch(e){}}
  function avatar(a,cor){var c=a&&a.c&&typeof a.c==='object'?Object.assign({},a.c):Object.assign({},CH[0]);if(/^#[0-9a-f]{6}$/i.test(cor||''))c.luz=cor;return {c:c,a:a&&typeof a.a==='string'?a.a:'',visual:a&&typeof a.visual==='string'?a.visual:''};}
  function linhas(list){return (Array.isArray(list)?list:[]).slice(0,5).map(function(r,i){return {id:'online-'+i+'-'+String(r.nick||''),nick:String(r.nick||'Idol').slice(0,24),avatar:avatar(r.avatar,r.cor),score:+r.score||0,combo:+r.combo||0,accuracy:+r.accuracy||0,hits:+r.hits||0};});}
- function load(force){var a=api();if(!a||(!force&&Date.now()-readAt<60000))return;readAt=Date.now();
-  a.ranking().then(function(d){if(!d||!d.semana)return;boards={week:d.semana,ends:d.fim,score:linhas(d.score),accuracy:linhas(d.acertos),combo:linhas(d.combo),online:true};if(Number.isFinite(+d.usados))usados=+d.usados;if(Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});}
- function quota(){var a=api();if(!a)return Promise.resolve(null);return a.ranking().then(function(d){if(d&&Number.isFinite(+d.usados))usados=+d.usados;if(d&&Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();return usados;});}
+ function load(force){var a=api(),owner=sessionKey(a);if(!a||!owner||(!force&&Date.now()-readAt<60000))return;readAt=Date.now();
+  a.ranking().then(function(d){if(!sameSession(a,owner)||!d||!d.semana)return;boards={week:d.semana,ends:d.fim,score:linhas(d.score),accuracy:linhas(d.acertos),combo:linhas(d.combo),online:true};if(Number.isFinite(+d.usados))usados=+d.usados;if(Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});}
+ function quota(){var a=api(),owner=sessionKey(a);if(!a||!owner)return Promise.resolve(null);return a.ranking().then(function(d){if(!sameSession(a,owner))return null;if(d&&Number.isFinite(+d.usados))usados=+d.usados;if(d&&Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();return usados;});}
  function launch(fn,ticket){admissionTicket=!!ticket;try{fn({ticket:!!ticket});}finally{admissionTicket=false;}}
- function gate(fn,wantsTicket){var a=api();if(!a){if(!wantsTicket)launch(fn,false);return;}if(busy)return;busy=true;
-  a.iniciar(guardado(),!!wantsTicket).then(function(r){busy=false;
+ function gate(fn,wantsTicket){var a=api(),owner=sessionKey(a);if(!a){if(!wantsTicket)launch(fn,false);return;}if(!owner||busy)return;busy=true;
+  a.iniciar(guardado(owner),!!wantsTicket).then(function(r){busy=false;
+   if(!sameSession(a,owner)){if(r&&r.ok&&r.run)guardar(r.run,owner);return;}
    if(r&&Number.isFinite(+r.used))usados=+r.used;
    if(r&&Number.isFinite(+r.tickets))tickets=+r.tickets;
-   if(r&&r.ok){run=r.run;guardar(run);launch(fn,r.kind==='ticket');return;}
+   if(r&&r.ok){run=r.run;runOwner=owner;guardar(run,owner);launch(fn,r.kind==='ticket');return;}
    if(wantsTicket){aviso('🎟️ Não foi possível usar o ticket. Seu saldo não foi liberado para esta apresentação.');if(window.ktMetaRefresh)window.ktMetaRefresh();return;}
    if(r&&r.reason==='limit'){aviso('Você usou seus cinco shows de hoje. A plateia espera você amanhã!');return;}
    run=null;guardar(null);aviso('Este show fica só neste aparelho (sem ranking online).');launch(fn,false);
-  },function(){busy=false;run=null;if(wantsTicket){aviso('🎟️ Sem conexão: nenhum ticket foi autorizado. Tente novamente.');return;}aviso('Sem conexão com o ranking: este show fica só neste aparelho.');launch(fn,false);});}
- function finish(result){var a=api(),id=run;run=null;guardar(null);if(!a||!id)return;
-  a.terminar(id,result).then(function(x){if(x&&x.ranked)load(true);else if(x&&x.reason==='invalid')aviso('O servidor não aceitou este resultado.');}).catch(function(){});}
+  },function(){busy=false;if(!sameSession(a,owner))return;run=null;runOwner='';if(wantsTicket){aviso('🎟️ Sem conexão: nenhum ticket foi autorizado. Tente novamente.');return;}aviso('Sem conexão com o ranking: este show fica só neste aparelho.');launch(fn,false);});}
+ function finish(result){var a=api(),id=run,owner=runOwner;run=null;runOwner='';if(!id||!owner)return;if(!sameSession(a,owner)){guardar(id,owner);return;}guardar(null,owner);
+  a.terminar(id,result).then(function(x){if(!sameSession(a,owner))return;if(x&&x.ranked)load(true);else if(x&&x.reason==='invalid')aviso('O servidor não aceitou este resultado.');}).catch(function(){});}
  /* Com conta, quem conta os 5 shows é o servidor: a tela mostra o número dele, não o deste aparelho. */
  function ajusta(a){if(!api()||usados===null||a.pending)return Object.assign({},a,{tickets:api()?tickets:0});var u=Math.min(5,Math.max(0,usados));return Object.assign({},a,{used:u,remaining:5-u,tickets:tickets});}
  return {gate:gate,finish:finish,load:load,quota:quota,ajusta:ajusta,ticketAdmission:function(){return admissionTicket;},boards:function(){return api()&&boards?boards:null;},online:function(){return !!api();}};

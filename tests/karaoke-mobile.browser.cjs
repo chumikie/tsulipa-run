@@ -154,7 +154,7 @@ async function metrics(frame){
    }
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
    await frame.locator('#ktStartConfirm').waitFor({state:'visible'});
-   await frame.locator('#ktConfirmAccept').click(); // Preserve the game's explicit admission confirmation.
+   await frame.locator('#ktConfirmAccept').evaluate(button=>{if(button.disabled)throw new Error('Show confirmation is unexpectedly disabled');button.click();}); // Preserve the game's explicit admission confirmation.
    await p.waitForTimeout(500);
    const admission=await frame.locator('body').evaluate(()=>window.qaRoomControllers.inspectAdmission());console.log('Karaoke browser admission:',JSON.stringify(admission));
    await frame.locator('body.kt-playing').waitFor();

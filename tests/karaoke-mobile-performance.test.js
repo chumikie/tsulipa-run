@@ -265,4 +265,27 @@ const bannerEnd=html.indexOf('</script>',bannerStart);
 const banner=html.slice(bannerStart,bannerEnd);
 assert(banner.includes('function stop(){clearTimeout(timer);timer=0;}')&&banner.includes("window.addEventListener('pagehide',stop)")&&banner.includes("window.addEventListener('pageshow',start)"),'The room banner timeout must be canceled on pagehide and restored on pageshow');
 
+
+const rhythmStart=html.indexOf('var kt=(function(){');
+const rhythmEnd=html.indexOf('function krRhythmLabels(){',rhythmStart);
+const rhythm=html.slice(rhythmStart,rhythmEnd);
+assert(rhythmStart>=0&&rhythmEnd>rhythmStart,'Karaoke rhythm engine should remain inspectable');
+assert([108,132,90,116,120,124,84].every(bpm=>rhythm.includes('bpm:'+bpm+',')),'All seven generated rhythm songs should keep their defined BPM values');
+assert(rhythm.includes('step=60000/song.bpm/2')&&rhythm.includes('run.total=Math.floor(59000/step)')&&rhythm.includes('if(now-run.start>=60000)'),'Generated beat subdivisions and the one-minute show duration must remain tied to each song BPM');
+assert(rhythm.includes('function ktPrepararRelogioAudio(')&&rhythm.includes('pending.then(arm,arm)')&&rhythm.includes('target.audioOrigin=audioReady?ctx.currentTime+prepareMs/1000-elapsed/1000:0'),'The song countdown and note/audio timeline must wait for AudioContext resume and share a single origin');
+assert(rhythm.includes('acResumePromise')&&rhythm.includes("if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||AC.state!=='running')return;'),'Audio scheduling must not run against a suspended or unsynchronized AudioContext');
+assert(rhythm.includes('function ktOutputLatencyMs()')&&rhythm.includes('Number.isFinite(AC.outputLatency)')&&rhythm.includes('return run.start+(AC.currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();'),'Rhythm judgement should use the audio clock with one consistent output-latency correction');
+assert(rhythm.includes("run.audioOrigin+i*run.step/1000")&&rhythm.includes('target.notes.forEach(function(n){n.at=target.start+n.idx*target.step;})'),'Synthesized notes and hit windows must be rebased from the same beat timeline after resume');
+assert(rhythm.includes('ktPrepararRelogioAudio(activeRun,resumeElapsed?0:prepareMs,resumeElapsed')&&rhythm.includes('ktPrepararRelogioAudio(target,0,elapsed'),'Initial start and manual resume must both synchronize their audio clock');
+assert(rhythm.includes('if(!run||!run.audioReady)return;if(value)')&&rhythm.includes('ac();run.resumeUntil=performance.now()+3000'),'Audio reactivation must be requested directly from the user's resume gesture');
+const rhythmTickStart=rhythm.indexOf('function tick(){');
+const rhythmTickEnd=rhythm.indexOf('function hit(',rhythmTickStart);
+assert(rhythmTickStart>=0&&rhythmTickEnd>rhythmTickStart&&!rhythm.slice(rhythmTickStart,rhythmTickEnd).includes('schedule();'),'The visual rhythm tick must not duplicate the independent 25 ms audio scheduler');
+const avatarStart=main.indexOf('function drawChar(c,x,y,run,expr,isPartner)');
+const avatarEnd=main.indexOf('\nfunction drawPet(',avatarStart);
+const avatarDraw=main.slice(avatarStart,avatarEnd);
+assert(avatarStart>=0&&avatarEnd>avatarStart&&!/create(?:Linear|Radial)Gradient\s*\(/.test(avatarDraw),'The shared site avatar renderer should not reconstruct its hair/accessory gradients on each character draw');
+assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_DRAW_RAMP_CACHE.size>=64')&&main.includes('function charDrawHairRamp(color)')&&main.includes('function charDrawStreakRamp(color)'),'Site-wide hair and two-tone streak ramps must use a bounded shared cache');
+assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

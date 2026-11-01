@@ -7,6 +7,8 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const page=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'),'utf8');
+const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261101161409_center_run_daily_100.sql'),'utf8');
+assert.equal(migration,sql,'versioned migration must exactly match the tested and reviewed SQL');
 const start=page.indexOf('function contaInicioCorrida(){');
 const end=page.indexOf('function contaGasto(',start);
 assert(start>=0&&end>start,'Center Run start and finish functions are available');

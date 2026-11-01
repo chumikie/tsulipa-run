@@ -21,6 +21,9 @@ assert(html.includes('x.drawImage(krDecorWallCache,0,0);'),'Cached wall should b
 assert(html.includes('var krEstanteCache=null,krEstanteCacheKey=\'\';'),'Shelf artwork should have a persistent cache');
 assert(html.includes("var key=tr('Acessórios + snacks')+'|'+tr('Escolha abaixo para equipar');"),'Shelf cache should invalidate when language labels change');
 assert(html.includes('function krDesenharEstanteItensDireto('),'The original shelf painter should remain available for cache creation');
+assert(html.includes('var krDecorPlanterCache=null;'),'Static planter artwork should have its own cache');
+assert(html.includes('var planterCanvas=document.createElement(\'canvas\');planterCanvas.width=W;planterCanvas.height=330;'),'Planter cache should use the logical scene dimensions');
+assert(html.includes('krDecorPlanterCache=planterCanvas;'),'Planter cache should be retained between frames');
 assert(html.includes('x.drawImage(krEstanteCache,696,205);'),'Cached shelf should be composited at its original position');
 assert(html.includes('function krDesenharWhimsical(x,t)')&&html.includes('function krDesenharPosterIdol(x,person,fx,fy,idx,t)'),'Animated curtains and dynamic player posters should remain live');
 

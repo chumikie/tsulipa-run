@@ -156,10 +156,22 @@ assert(day.includes('Math.min(4.2*dt,d)')&&day.includes('trl.t+=dt')&&day.includ
 assert(day.includes('Math.floor(krTAnterior/10)<Math.floor(krT/10)')&&day.includes('Math.floor((krTAnterior-30)/160)<Math.floor((krT-30)/160)'),'Karaoke Day periodic trail and speech effects should trigger by elapsed-time threshold crossings, including 30 Hz');
 const partyFront=html.slice(html.indexOf('var ktFestaUltimoT=null;'),html.indexOf('/* Positive pet expressions'));
 assert(partyFront.includes('Math.min(2,t-ktFestaUltimoT)')&&partyFront.includes('p.y-=p.v*dt')&&partyFront.includes('p.f+=.04*dt'),'Karaoke disco foreground particles should advance by elapsed logical frames at 30/60 Hz');
-assert(html.includes('function krLoungeSoloPermitido(){return !krOnlineAtivo&&!krHomolAtivo&&!krHomolConectado;}'),'Autonomous lounge movement must stay disabled in online and homologation modes');
+assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}')&&!html.includes('krOnlineAtivo'),'Karaoke Time is a local lounge; autonomous behavior is gated only by homologation state');
 assert(html.includes('function krLoungeUpdate(dt){')&&html.includes('Math.min(1.65*Math.max(0,dt),d)')&&html.includes('krLoungeUpdate(krFrameDelta);'),'Solo audience walks should advance from the shared elapsed-time delta');
 assert(html.includes('krLoungeReset();krBaloes={};')&&html.includes('KR_LOUNGE_AISLE_Y=508'),'The daily cast should reinitialize autonomous audience state and use the safe front aisle');
 assert(html.includes('var walking=!!j._ktLoungeWalking')&&html.includes('krEstaNoSofa(j)&&!walking')&&html.includes('walking?j._ktLoungeFacing<0:j.x>480'),'Walking audience members should stand, face their direction and retain existing seat poses when idle');
+assert(html.includes('function krLoungeSocialUpdate()')&&html.includes('krLoungeSocialUpdate();'),'Lounge interactions must reuse the existing room loop');
+const social=html.slice(html.indexOf('function krLoungeSocialUpdate()'),html.indexOf('function krRoomPalcoVisivel()',html.indexOf('function krLoungeSocialUpdate()')));
+assert(social.includes('krLoungeActor||krT<krLoungeSocialNextAt')&&social.includes('krLoungeSocialA=first;krLoungeSocialB=second'),'Only a small, bounded pair may interact, with cooldowns and no new animation loop');
+assert(!/setTimeout|setInterval|requestAnimationFrame/.test(social),'Audience conversations and applause must not allocate independent timers or loops');
+assert(html.includes("j._ktSocialKind==='applause'?'banzai'")&&html.includes("j._ktSocialKind==='talk'?'coracao'")&&html.includes('j._ktSocialTargetX<j.x'),'Audience reactions should reuse existing poses and face their conversation/singing target');
+assert(html.includes("if(st&&st.phase!=='home')krLoungeCriarRetorno(b)")&&html.includes("var singing=!!b.no_mic||(krDemoCantor&&krDemoCantor.bot===b)"),'An interrupted walk must return to its seat unless singer ownership takes control');
+assert(html.includes("shortcuts.after(adjust)")&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('aria-keyshortcuts="M"'),'Timing settings must stay in document flow and M must invoke the current microphone control');
+assert(html.includes('.kt-calibration{position:relative')&&html.includes('.kt-calibration-panel{position:static')&&!html.includes('.kt-calibration summary::after{content:\'S\''),'Timing settings must not overlay the Karaoke stage or carry letter badges');
+assert(!html.includes(".kt-foto::after,.kt-calibration summary::after")&&!html.includes("content:'C';position:absolute"),'Keyboard letters belong in the shortcut guide, not floating button badges');
+assert(html.includes("pt:['⏸ Pausar','▶ Retomar (3 s)','⏳ Cancelar contagem'")&&!html.includes("⏸ P · Pausar"),'Pause/resume labels must not repeat shortcut letters');
+assert(html.includes('var KR_DANGO_CORES=')&&html.includes('function krDesenharSnack(')&&html.includes("if(k==='onigiri')")&&!html.includes("KR_DRINKS.filter(function(d){return d[0]===k;})"),'New food/drink illustrations should reuse the room palette without allocating filtered lists per frame');
+
 
 assert(sora.includes('var soraFrameAnterior=soraFrame;')&&sora.includes('Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)')&&!sora.includes('(soraFrame | 0) % 5 === 0'),'Sora auxiliary wing particles should spawn once per elapsed five-frame interval, independent of 30/60 Hz callback count');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

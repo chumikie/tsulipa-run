@@ -3,6 +3,7 @@ const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const html=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
 const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-motion-lifecycle.js'),'utf8');
+const sora=fs.readFileSync(require('node:path').join(__dirname,'..','sora-jump.html'),'utf8');
 const main=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
 assert(main.includes('function twIntervaloVisivel(el,enabled,callback,delay)')&&main.includes('window.TWMotionLifecycle.watchLoop(el,enabled,start,stop)'),'UI-only intervals should use the shared visibility lifecycle');
 assert(main.includes('hubCardRefreshGate=twIntervaloVisivel(hubOv')&&main.includes('encBtnRefreshGate=twIntervaloVisivel(hubOv')&&main.includes('hubUXRefreshGate=twIntervaloVisivel(hubOv'),'Hub card, encounter badge and hub UX polling should sleep when the Hub is hidden');
@@ -16,6 +17,9 @@ assert(main.includes('function petAlertLigar()')&&main.includes('function petAle
 assert(main.includes('petTick();')&&main.includes('el.hidden=!(p.fome<40'),'Pet needs and alert calculation must remain intact');
 assert(main.includes('twRankVisibilityElement!==modalTv')&&main.includes('twRankVisibilityGate.destroy()'),'The ranking TV visibility observer should reattach when Hub content is recreated');
 assert(lifecycle.includes('loopGates=new WeakMap()')&&lifecycle.includes('var loopSet=loopGates.get(root)')&&lifecycle.includes('state.destroy=gate.destroy')&&lifecycle.includes('gate.destroyed=true'),'Visibility loop observers must be destroyed when their source element is removed');
+assert(lifecycle.includes('function cleanup(root){\\n if(!root||root.nodeType!==1||root.isConnected)return;'),'Moving a node within the same document must not destroy its visibility gate');
+assert(sora.includes('function soraMusicStop()')&&sora.includes('clearTimeout(soraMusicTimer)')&&sora.includes('soraCanvasMotionGate=window.TWMotionLifecycle.watchLoop('),'Sora music timers must be cleared when the canvas or host page becomes inactive');
+assert(main.includes('hubTelaAberta())hubMusicaTocar()')&&main.includes("if(modal&&!modal.hidden)updateTvTopIdol();"),'Delayed music and TV UI updates must recheck their owner panel before running');
 assert(html.includes('ktAlturaObserver.observe(document.documentElement)')&&html.includes('ktAlturaObserver.observe(document.body)')&&!html.includes('setInterval(ktAvisaAltura,1500)')&&html.includes('window.addEventListener(\'pagehide\',ktAlturaDesconectar)'),'Karaoke iframe height should use a disconnectable ResizeObserver instead of permanent polling');
 assert(html.includes('idiomaObserver.disconnect()')&&html.includes('window.addEventListener(\'pageshow\',iniciar)'),'The page-wide translation observer should disconnect on pagehide and reconnect on pageshow');
 assert(main.includes('function buscaCancelarTodas(){buscaInputs.forEach(buscaCancelar);}')&&main.includes('buscaCancelarTodas();')&&main.includes('!inp.isConnected||!res.isConnected||hubOv.hidden||inp.value.trim()!==q'),'Profile and leaderboard searches should cancel and ignore stale results after the Hub closes');

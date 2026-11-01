@@ -159,6 +159,7 @@ w.TWMotionLifecycle={
  version:1,
  watchLoop:watchLoop,
  refresh:refreshAll,
- isPageActive:function(){return pageIsActive();}
+ isPageActive:function(){return pageIsActive();},
+ isVisible:function(el){return elementVisible(el,rectVisible(el));}
 };
 })(window,document);

@@ -5,6 +5,8 @@ const path=require('node:path');
 const vm=require('node:vm');
 
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const autoMic=fs.readFileSync(path.join(__dirname,'..','karaoke-room-auto-mic.js'),'utf8');
+const polaroid=fs.readFileSync(path.join(__dirname,'..','karaoke-room-polaroid.js'),'utf8');
 const loungeStart=html.indexOf('function krLoungeSoloPermitido(){');
 const loungeEnd=html.indexOf('var krLoungeSocialA=null',loungeStart);
 assert(loungeStart>=0&&loungeEnd>loungeStart,'Karaoke solo lounge state machine exists');
@@ -111,11 +113,11 @@ assert(html.includes('if(krMeuRetornoAt>0&&krT>=krMeuRetornoAt&&!krEu.no_mic)krP
 assert(html.includes('if(krMeuVoltandoAoMic&&!krMoveQueue.length&&Math.hypot(krEu.x-KR_MIC_HOME_X,krEu.y-KR_MIC_HOME_Y)<=3'),'return state clears only after arrival at the microphone');
 assert(html.includes('if(!krEu.plateia&&krEuNoMicrofone())ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y);'),'microphone pedestal stays fixed at the stage while the Idol walks away');
 assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}'),'autonomous lounge remains gated out of homologation');
-assert(html.includes('function krLoungeAutoMicTick(){'),'the room has an autonomous NPC mic turn');
+assert(autoMic.includes('w.krLoungeAutoMicTick=function()'),'the room has an autonomous NPC mic turn');
 assert(html.includes('krMeuRetornoAt>0||krMeuVoltandoAoMic||krMoveQueue.length||!krEuNoMicrofone()'),'NPC mic waits outside the player mandatory return/turn window');
 assert(html.includes('kt.start(true); // NPC presentation is local practice'),'NPC mic uses local practice and cannot consume the player attempt');
-assert(html.includes('function openPoster(index){'),'wall Polaroids open a member portrait');
-assert(html.includes('desenharIdol(ctx,char,260,405,5.8'),'the enlarged portrait uses the member avatar renderer');
-assert(html.includes('posterDialog.showModal()'),'the enlarged portrait is presented in an accessible dialog');
-assert(html.includes('Math.abs(px-frame[0])<=27&&py>=frame[1]+bob-8'),'wall Polaroids have a pointer hit target');
+assert(polaroid.includes('function open(person,index,opener){'),'wall Polaroids open a member portrait');
+assert(polaroid.includes('desenharIdol(ctx,char,260,405,5.8'),'the enlarged portrait uses the member avatar renderer');
+assert(polaroid.includes('posterDialog.showModal()'),'the enlarged portrait is presented in an accessible dialog');
+assert(html.includes('window.KaraokeRoomPolaroid.open(KR_ROOM_POSTER_DRAW[photo],photo,document.activeElement)'),'wall Polaroids have a pointer hit target');
 console.log('✓ Karaoke lounge: single clear-aisle walker, sofa occupancy, random NPC mic guard, interactive Polaroids, homologation and player turn protections');

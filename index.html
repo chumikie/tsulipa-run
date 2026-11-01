@@ -7569,7 +7569,7 @@ perfOv.addEventListener('click', function(e){
     if(ra && ra.ok){ perfAtual.aniver = ra.aniver; perfAtual.aniver_hoje = perfAniverVer = perfMeuAniverHoje = !!ra.hoje; if(ra.hoje && typeof aniverFesta === 'function')twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&pedidoPerfil===perfPedido;},aniverFesta,900); }
     var em = $('perfBioEmoji') ? $('perfBioEmoji').value.trim() : '', co = $('perfBioCor') ? $('perfBioCor').value : '', ti = $('perfBioTime') ? $('perfBioTime').value : '';
     return contaRpc('salvar_estilo', { p_emoji: em, p_cor: co, p_time: ti }).then(function(re){
-      if(re && re.ok){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; perfGuardarCor(re.cor); }
+      if(re && re.ok && !perfOv.hidden && pedidoPerfil===perfPedido){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; perfGuardarCor(re.cor); }
       else if(re && re.erro === 'emoji') throw { estilo: 'emoji' };
     }, function(){ /* servidor ainda sem a coluna: segue salvando oshi e frase */ }).then(function(){ return contaRpc('salvar_bio', { p_oshi: os, p_frase: fr }); });
   }).then(function(r){
@@ -10083,9 +10083,11 @@ $('gachaGirar').onclick = function(){
         if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
         else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
       } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
-      gachaUI(); gachaCardUI(); hubCardsUI(); if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
+      if(!gachaOv.hidden){gachaUI();gachaCardUI();}
+      if(!hubOv.hidden)hubCardsUI();
+      if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
     }, 1600);
-  }).catch(function(){ gachaGiro = -1; gachaUI(); });
+  }).catch(function(){ gachaGiro = -1; if(!gachaOv.hidden)gachaUI(); });
 };
 function gachaDesenhar(){
   var cv = $('gachaCv'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;

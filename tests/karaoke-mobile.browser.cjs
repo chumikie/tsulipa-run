@@ -95,7 +95,7 @@ async function metrics(frame){
      }
      assert(120-31*2.3>=idle.crop.left&&840+31*2.3<=idle.crop.right,'Walking limits retain the complete player sprite');
      for(const r of idle.tools)assert(r.bottom<=idle.roomView.y+.1&&r.x>=idle.scene.x&&r.right<=idle.scene.right,'Tools occupy their own band above the picture');
-     assert(idle.tools[1].right>idle.scene.right-12,'Tools stay in upper right');
+     assert(idle.tools[1].x>idle.tools[0].x,'Sound and camera controls remain separate in the room-tools row');
      assert.equal(idle.bannerOpacity,'1','Mobile attempts remain visible after fade timer');
      assert(idle.weekly.y-idle.banner.bottom<=12,'No blank block before ranking');
      assert(idle.banner.y-idle.scene.bottom<=10,'Compact spacing below scene');

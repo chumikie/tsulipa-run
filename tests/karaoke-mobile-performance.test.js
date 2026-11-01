@@ -7,6 +7,7 @@ assert(lifecycle.includes('function disconnectFrame(frame)')&&lifecycle.includes
 assert(lifecycle.includes("if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}"),'Changing an iframe source must replace the previous visibility bridge');
 const sora=fs.readFileSync(require('node:path').join(__dirname,'..','sora-jump.html'),'utf8');
 const main=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
+const windows=fs.readFileSync(require('node:path').join(__dirname,'..','tw-windows.js'),'utf8');
 assert(main.includes('function twIntervaloVisivel(el,enabled,callback,delay)')&&main.includes('window.TWMotionLifecycle.watchLoop(el,enabled,start,stop)'),'UI-only intervals should use the shared visibility lifecycle');
 assert(main.includes('function twTimeoutVisivel(el,enabled,callback,delay)')&&main.includes('if(gate)gate.destroy();')&&main.includes('if(!el||!el.isConnected||document.hidden||(enabled&&!enabled()))return;'),'Delayed visual tasks must be canceled while their owner is hidden or removed');
 assert(main.includes('function perfTopoMsg(t)')&&main.includes('m._twTimeout=twTimeoutVisivel(m')&&main.includes('function duoMsg(t)')&&main.includes('m._twTimeout=twTimeoutVisivel(m'),'Profile and Moon Duo message timers should be tied to the message element lifecycle');
@@ -119,4 +120,14 @@ assert(html.includes('function krLenteCoracaoSala(')&&html.includes('function kr
 assert(!accessory.includes('var pal=[')&&!accessory.includes('function lenteCoracao(')&&!accessory.includes('[{bx:j.x-5')&&!accessory.includes("[['#ec4899',-6,-8]"),'Accessory rendering should not allocate local palettes, helper functions or arrays per character frame');
 assert(html.includes('var krPosterArtes=Object.create(null);')&&html.includes('x.drawImage(art,-25,-5);'),'Cached miniatures should remain composited instead of redrawn every frame');
 
+assert(main.includes('var contaSessaoToken=0,contaAuthUserId=')&&main.includes('if(userId===contaAuthUserId)return;')&&main.includes('token!==contaSessaoToken'),'Auth callbacks must be invalidated when account identity changes, not on same-user token refreshes');
+assert(main.includes('sessionKey:function(){return contaJ?String(contaJ.nick||\'\').toLowerCase():\'\';}')&&main.includes('owner===String(contaJ.nick||\'\').toLowerCase()'),'Karaoke parent wallet and ranking updates must stay with their originating account');
+assert(windows.includes('function attach()')&&windows.includes('function detach()')&&windows.includes("window.addEventListener('pagehide',detach)")&&windows.includes("window.addEventListener('pageshow',attach)"),'Iframe window media-query listeners must reattach after BFCache without duplicates');
+assert(html.includes('ktDailyGate=TWMotionLifecycle.watchLoop(document.documentElement')&&!html.includes('setInterval(check,30000)'),'Karaoke daily roster checks should pause with the page lifecycle');
+assert(html.includes("ktMetaGate=TWMotionLifecycle.watchLoop($('ktPopup')")&&!html.includes('setInterval(function(){if(!kt.active())refresh();else controls();},1000)'),'Karaoke metadata polling should run only while its dialog is visible');
+assert(!html.includes('setInterval(refresh,1000)'),'Karaoke Idol strip should update from roster changes, not a permanent per-second poll');
+assert(html.includes('function krRoomObserversDesconectar()')&&html.includes('krRoomObserver.disconnect()')&&html.includes('krRhythmObserver.disconnect()')&&html.includes("window.addEventListener('pageshow',function(){krRoomObserversConectar();krRoomAtualizar();})'),'Room and rhythm IntersectionObservers must disconnect on pagehide and reconnect on pageshow');
+assert(html.includes('run.paused=true;run.pauseAt=kNow();clearInterval(audioTimer);audioTimer=0;silence();')&&html.includes('if(!audioTimer)audioTimer=setInterval(schedule,25);'),'Paused rhythm shows must release their audio scheduler and recreate it only on resume');
+assert(html.includes('function runMap()')&&html.includes('function guardado(owner)')&&html.includes('function guardar(id,owner)')&&html.includes('if(!sameSession(a,owner)){if(r&&r.ok&&r.run)guardar(r.run,owner);return;}'),'Online Karaoke sessions must remain associated with the account that started them');
+assert(html.includes('if(!sameSession(a,owner)){guardar(id,owner);return;}'),'Karaoke must not finish an old account run under a newly signed-in account');
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

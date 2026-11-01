@@ -152,6 +152,8 @@ jobs:
         run: node tests/privacidade-script.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
+      - name: Validate Karaoke mobile room tile rendering optimization
+        run: node tests/karaoke-mobile-performance.test.js
       - name: Validate original rhythm minigame
         run: node tests/karaoke-rhythm.test.js
       - name: Validate Karaoke Time melody note maps and checkpoint timing

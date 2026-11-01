@@ -2,6 +2,9 @@
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const html=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
+const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-motion-lifecycle.js'),'utf8');
+assert(lifecycle.includes("if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden')return false;")&&!lifecycle.includes('parseFloat(cs.opacity)===0'),'A zero-opacity starting frame must not freeze a CSS fade-in animation');
+assert(lifecycle.includes('function pageIsActive()')&&lifecycle.includes('function watchLoop('),'Shared animation lifecycle must gate pages and opt-in animation loops');
 const start=html.indexOf('var lista=krMontarListaRenderSala(andando);');
 const end=html.indexOf('for(i=krTrilha.length-1;i>=0;i--)',start);
 assert(start>=0&&end>start,'Karaoke room tile rendering block must exist');

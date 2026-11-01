@@ -11,7 +11,7 @@ const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=7"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
@@ -57,7 +57,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Sora Jump has an independent drawChar renderer. Its player character and
  // partner sprites must use the same shared base/top/fringe layers as Profile
  // and Karaoke, rather than silently falling back to the old duplicated hair.
- assert(sora.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),'Sora Jump loads the shared hair renderer');
+ assert(sora.includes('<script src="./tw-avatar-hair.js?v=7"></script>'),'Sora Jump loads the shared hair renderer');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists');
@@ -78,7 +78,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Karaoke Day is still a reachable preview/controller renderer. Preserve its
  // legacy hair fallback while routing the new base/top/fringe layers through
  // the shared module, just like the main profile, Karaoke Time and Sora.
- assert(day.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),'Karaoke Day loads the shared hair module');
+ assert(day.includes('<script src="./tw-avatar-hair.js?v=7"></script>'),'Karaoke Day loads the shared hair module');
  const dayDrawStart=day.indexOf('function desenharIdol(x,c,px,py,sc,pose,expr,t,espelho,opcoes){');
  const dayDrawEnd=day.indexOf('\nfunction ',dayDrawStart+20);
  assert(dayDrawStart>=0&&dayDrawEnd>dayDrawStart,'Karaoke Day has an independent Idol renderer');
@@ -95,4 +95,10 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
   assert(dayDraw.includes(oldCut),'Karaoke Day preserves legacy hair fallback '+oldCut);
  assert(day.includes("localStorage.getItem('brs48cr_cu2')")&&day.includes('function meuChar()'),'Karaoke Day retains the saved custom Idol look path');
 
+for(const v of ['uma','dupla','luzes','escondida'])assert(index.includes('<option value="'+v+'" data-twh='),'menu de mecha oferece '+v);
+for(const v of ['antena','coracao'])assert(index.includes('<option value="'+v+'" data-r="0" data-twh='),'detalhe '+v+' disponível');
+assert(index.includes("CU.mecha=this.value;CU.streak=!!this.value;")&&index.includes("if(campo === 'mecha')CU.streak = !!v;"),'estilo da mecha salvo sem mudar o campo streak enviado ao servidor');
+assert(index.includes("<select data-m=\"mecha\">"),'Perfil edita o estilo da mecha');
+for(const st of ['uma','dupla','luzes','escondida']){ops=[];hair.mecha(g,{hair2:'#ffffff',mecha:st},0,0,'bagunca');assert(ops.length>2,'mecha '+st+' desenha');}
+for(const d of ['antena','coracao']){ops=[];hair.bicolor(g,{hair:'#335577',det:d},0,0,'');assert(ops.length>2,'detalhe '+d+' desenha');}
 console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

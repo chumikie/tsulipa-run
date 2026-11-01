@@ -37,10 +37,13 @@ function franjaOriginal(g,T,x,y,f){   // mesmas formas das franjas de drawChar, 
  else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
  else if(f!=='arcoiris')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);   // bagunçada
 }
-var NOMES={en:{Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
- es:{Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
- th:{Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
- ja:{Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Rebelde:'ふわはね',Risca:'サイド分け',Repicada:'レイヤー'}};
+function escurecer(h,n){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-n).toString(16)).substr(-2)});}
+function clarear(h,n){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.min(255,parseInt(cc,16)+n).toString(16)).substr(-2)});}
+function T2(g,a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill();}
+var NOMES={en:{Nenhuma:'None',Uma:'One',Dupla:'Double',Luzes:'Highlights',Escondida:'Peekaboo',Antena:'Ahoge',Coração:'Heart bun',Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
+ es:{Nenhuma:'Ninguna',Uma:'Una',Dupla:'Doble',Luzes:'Reflejos',Escondida:'Oculta',Antena:'Antena',Coração:'Moño corazón',Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
+ th:{Nenhuma:'ไม่มี',Uma:'หนึ่ง',Dupla:'คู่',Luzes:'ไฮไลท์',Escondida:'ซ่อนสี',Antena:'ผมชี้',Coração:'มวยหัวใจ',Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
+ ja:{Nenhuma:'なし',Uma:'ワン',Dupla:'ダブル',Luzes:'ハイライト',Escondida:'インナー',Antena:'アホ毛',Coração:'ハートお団子',Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Rebelde:'ふわはね',Risca:'サイド分け',Repicada:'レイヤー'}};
 function rotular(){   // nomes curtos das opções novas, no idioma atual (o dicionário principal não as conhece)
  var l=(document.documentElement.lang||'').slice(0,2),d=NOMES[l]||{};
  [].forEach.call(document.querySelectorAll('option[data-twh]'),function(o){var k=o.getAttribute('data-twh'),v=d[k]||k;if(o.textContent!==v)o.textContent=v;});
@@ -91,15 +94,29 @@ window.TWAvatarHair={
   if(b==='onduladom'){oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);}   // laterais curvas do Ondulado
   return franja(T,x,y,f);
  },
- mecha:function(g,c,x,y,f){   // mecha que acompanha a franja escolhida até uma das pontas
-  var m=MECHA[f]||MECHA.bagunca,H2=c.hair2||'#ffffff',sg=g.createLinearGradient(0,y+1,0,y+18);
-  sg.addColorStop(0,H2);sg.addColorStop(1,'#'+String(H2).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)}));
+ mecha:function(g,c,x,y,f){   // Uma (JJ), Dupla (Meichan/Tata), Luzes (Apollo/Nanamaru), Escondida (Yami)
+  var m=MECHA[f]||MECHA.bagunca,H2=c.hair2||'#ffffff',st=c.mecha||'uma',sg=g.createLinearGradient(0,y+1,0,y+18);
+  sg.addColorStop(0,H2);sg.addColorStop(1,escurecer(H2,60));
   g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.fillStyle=sg;
-  fio(g,x+m[0],y+m[1],x+m[2],y+m[3],x+m[4],y+m[5],3.4,!!m[6]);
-  g.fillStyle='rgba(255,255,255,.28)';fio(g,x+m[0]-.4,y+m[1]+1,x+m[2]-.5,y+m[3],x+(m[0]+m[4])/2-.3,y+(m[1]+m[5])/2,1,0);
+  if(st==='luzes'){
+   for(var i=0;i<5;i++){var sx=x+6+i*4.6,tip=y+12.5+(i%2?2.5:0);g.globalAlpha=i%2?.75:.9;fio(g,sx,y+1.5,sx+(i<2?-.6:.6),y+7,sx+(i<2?-1.2:1.2),tip,1.3,0);}
+   g.globalAlpha=1;
+  }else if(st==='escondida'){   // camada de baixo colorida aparecendo nas laterais, junto ao rosto
+   T2(g,[x+3,y+13,x+6.5,y+15,x+6,y+22,x+4.5,y+26,x+3,y+24]);T2(g,[x+27,y+13,x+23.5,y+15,x+24,y+22,x+25.5,y+26,x+27,y+24]);
+  }else{
+   fio(g,x+m[0],y+m[1],x+m[2],y+m[3],x+m[4],y+m[5],3.4,!!m[6]);
+   if(st==='dupla'){var d2=g.createLinearGradient(0,y+1,0,y+18);d2.addColorStop(0,clarear(H2,70));d2.addColorStop(1,H2);g.fillStyle=d2;fio(g,x+m[0]+3.6,y+m[1]+.5,x+m[2]+3.6,y+m[3],x+m[4]+3.4,y+m[5]-1.2,3,!!m[6]);}
+   g.fillStyle='rgba(255,255,255,.28)';fio(g,x+m[0]-.4,y+m[1]+1,x+m[2]-.5,y+m[3],x+(m[0]+m[4])/2-.3,y+(m[1]+m[5])/2,1,0);
+  }
   g.restore();
  },
+ detalhe:function(g,c,x,y){   // Antena (Decchan) e Coque de coração (Z), na cor do cabelo
+  var d=c.det,H=c.hair||'#ff7eb6',hg=g.createLinearGradient(0,y-9,0,y+3);hg.addColorStop(0,clarear(H,30));hg.addColorStop(1,escurecer(H,50));g.fillStyle=hg;
+  if(d==='antena'){g.beginPath();g.moveTo(x+13,y+1.5);g.quadraticCurveTo(x+13,y-6,x+19,y-8);g.quadraticCurveTo(x+16,y-4.5,x+16.5,y+1.5);g.closePath();g.fill();}
+  else if(d==='coracao'){g.beginPath();g.moveTo(x+15,y+1.5);g.bezierCurveTo(x+8,y-3,x+10,y-9,x+15,y-5.5);g.bezierCurveTo(x+20,y-9,x+22,y-3,x+15,y+1.5);g.closePath();g.fill();g.fillStyle='rgba(255,255,255,.3)';g.beginPath();g.ellipse(x+12.5,y-4.5,1.2,.8,-.5,0,7);g.fill();}
+ },
  bicolor:function(g,c,x,y,b){
+  if(c.det==='antena'||c.det==='coracao')this.detalhe(g,c,x,y);
   if(b!=='onduladom2')return;
   // metade direita (de quem olha) em preto: topo, costeleta e a franja escolhida
   var f=c.front||'bagunca',pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,PRETO_TOPO);pg.addColorStop(1,PRETO_BASE);

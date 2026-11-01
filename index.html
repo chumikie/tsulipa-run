@@ -19,7 +19,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=6"></script>
+<script src="./tw-avatar-hair.js?v=7"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -776,7 +776,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       
       <div class="cust" id="cust" hidden>
         <label>Cabelo <input type="color" id="chair" value="#ff7eb6"></label>
-        <label><input type="checkbox" id="cstk">Mecha <input type="color" id="cstr" value="#4dd8ff"></label>
+        <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
         <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
         <span id="skins"></span>
         <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
@@ -787,7 +787,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="gato" data-r="0">Orelhas de gato</option>
           <option value="elfo" data-r="0">Orelhas élficas</option>
           <option value="olheiras" data-r="0">Olheiras suaves</option>
-          <option value="chifres" data-r="0">Chifres</option>
+          <option value="chifres" data-r="0">Chifres</option><option value="antena" data-r="0" data-twh="Antena">Antena</option><option value="coracao" data-r="0" data-twh="Coração">Coração</option>
         </select></label>
       </div>
 
@@ -1166,7 +1166,7 @@ function pick(i){
   if ($('cgl')) $('cgl').value = source.gl || '';
   if ($('chair')) $('chair').value = source.hair || '#ff7eb6';
   if ($('cstr')) $('cstr').value = source.hair2 || '#4dd8ff';
-  if ($('cstk')) $('cstk').checked = !!source.streak;
+  if ($('cstk')) $('cstk').value = source.mecha||(source.streak?'uma':'');
   if ($('ceye')) $('ceye').value = source.eye || '#5a3b2e';
   if ($('cback')) $('cback').value = source.back || '';
   if ($('cfront')) $('cfront').value = source.front || 'bagunca';
@@ -1232,7 +1232,7 @@ Object.keys(CF).forEach(function(id){
 });
 
 	
-$('cstk').checked=!!CU.streak;$('cstk').onchange=function(){CU.streak=this.checked;saveCu()};
+$('cstk').value=CU.mecha||(CU.streak?'uma':'');$('cstk').onchange=function(){CU.mecha=this.value;CU.streak=!!this.value;saveCu()};
 cw.children[3].firstChild.style.background=CU.hair;
 	try{accSel=localStorage.getItem('brs48cr_acc')||''}catch(e){}
 pick(sel);refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
@@ -3166,7 +3166,7 @@ function twOverlayTopo(){
     if(!el.isConnected||!el.getClientRects().length)continue;
     var cs=getComputedStyle(el);
     if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden')continue;
-    var z=(parseInt(cs.zIndex,10)||0)+(/^(menu|over|pz)$/.test(el.id)?-1e4:0);   // telas do Center Run ficam por baixo de qualquer janela aberta
+    var z=(parseInt(cs.zIndex,10)||0)+(/^(menu|over|pz)$/.test(el.id)?-1e4:0);
     // Um painel em transição ainda é dono da cena; opacity 0 pode ser o início de um fade-in.
     if(z>=topZ){top=el;topZ=z;}
   }
@@ -3183,7 +3183,6 @@ function twAnimacaoVisivel(el){
 function twIndex2BaseFramesPaused(){
   if(typeof window!=='undefined'&&window.TWMotionLifecycle&&!TWMotionLifecycle.isPageActive())return true;
   if(document.hidden||(typeof twIndex2StageVisible!=='undefined'&&!twIndex2StageVisible))return true;
-  // menu, fim do show e pausa são telas do próprio Center⭐Run!, não camadas por cima dele.
   if(typeof twOverlayTopo==='function'){var topo=twOverlayTopo();return !!topo&&!/^(menu|over|pz)$/.test(topo.id||'');}
   var hub=typeof hubOv!=='undefined'&&hubOv,preview=document.getElementById('twPreviewJogo');
   return !!(hub&&!hub.hidden||preview&&!preview.hidden);
@@ -5553,7 +5552,6 @@ var PET_DICT8 = {
   ja: {"Pegar estrela":"スターキャッチ","Ritmo":"リズム","Pular corda":"なわとび","hoje":"きょう","Perfeito!":"パーフェクト！","Bom!":"グッド！","Errou":"ミス","Fim!":"おしまい！","Novo recorde!":"新記録！","pontos":"てん","Pulos":"とんだ回数","Limite de estrelas de hoje atingido":"きょうのスター上限に到達","Toque nas faixas no ritmo!":"リズムに合わせてタップ！","Toque quando a corda passar no chão!":"なわが床に来たらタップ！","Toque para voltar":"タップでもどる","Sorvete de morango":"いちごアイス","Promoção!":"昇格！","Novo acessório":"新しいアクセサリー","Faixa de treino":"はちまき","Headset":"ヘッドセット","Tiara de estrelas":"星のティアラ","Faixa de Center":"センターのたすき","Auréola":"天使の輪","Moldura":"フレーム","Pose":"ポーズ","Estágio":"ステージ","Normal":"ふつう","Coração":"ハート","Tchau":"バイバイ","Tema de Halloween!":"ハロウィンテーマ！","Tema desligado":"テーマオフ"}
 };
 Object.keys(PET_DICT8).forEach(function(l){ if(DICT[l]) Object.keys(PET_DICT8[l]).forEach(function(k){ DICT[l][k] = PET_DICT8[l][k]; }); });
-// A corrida usa tr('Presente do Pet!'), mas o DICT só tinha "Presente do Pet! 🎁" (com o emoji): sem isso o aviso ficava em português
 [['en', 'Pet Gift!'], ['es', '¡Regalo de la Mascota!'], ['th', 'ของขวัญจากสัตว์เลี้ยง!'], ['ja', 'ペットからのプレゼント！']].forEach(function(t){ if(DICT[t[0]]) DICT[t[0]]['Presente do Pet!'] = t[1]; });
 
 function petNowS(){ return performance.now() / 1000; }
@@ -7810,7 +7808,7 @@ function perfMontUI(){
   function rotulo(id){ var el = $(id), lb = el && el.closest('label'); if(!lb) return ''; var t = ''; [].forEach.call(lb.childNodes, function(n){ if(n.nodeType === 3) t += n.nodeValue; }); return t.trim(); }
   function opts(id, cur){ return [].map.call($(id).options, function(o){ return '<option value="' + escHtml(o.value) + '"' + (o.disabled ? ' disabled' : '') + (o.value === cur ? ' selected' : '') + '>' + escHtml(o.textContent) + '</option>'; }).join(''); }
   h += '<label>' + escHtml(rotulo('chair')) + ' <input type="color" data-m="hair" value="' + escHtml(CU.hair) + '"></label>';
-  h += '<label><input type="checkbox" data-m="streak"' + (CU.streak ? ' checked' : '') + '>' + escHtml(rotulo('cstk')) + ' <input type="color" data-m="hair2" value="' + escHtml(CU.hair2) + '"></label>';
+  h += '<label>' + escHtml(rotulo('cstk')) + ' <select data-m="mecha">' + opts('cstk', CU.mecha||(CU.streak?'uma':'')) + '</select> <input type="color" data-m="hair2" value="' + escHtml(CU.hair2) + '"></label>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label>';
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   [['cback', 'back'], ['cfront', 'front'], ['cdet', 'det']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], CU[p[1]] || '') + '</select></label>'; });
@@ -7824,7 +7822,7 @@ function perfMontMudou(campo, v){
     accSel = v; try{ localStorage.setItem('brs48cr_acc', accSel); }catch(e){}
     if($('acc')) $('acc').value = accSel;
   } else {
-    CU[campo] = v;
+    CU[campo] = v;if(campo === 'mecha')CU.streak = !!v;
     if(campo === 'hair'){ CU.img = v; cw.children[3].firstChild.style.background = v; }
     if(campo === 'skin') [].forEach.call($('skins').children, function(b, i){ b.setAttribute('aria-pressed', SK[i] === v); });
     saveCu();
@@ -9611,7 +9609,7 @@ function twTimeoutVisivel(el,enabled,callback,delay){
   else if(el&&el.isConnected&&!document.hidden&&(!enabled||enabled()))start();
   return {cancel:function(){if(done)return;done=true;stop();if(gate)gate.destroy();},refresh:function(){if(gate)gate.refresh();}};
 }
-window.TWVisibilidade={intervalo:twIntervaloVisivel,timeout:twTimeoutVisivel};   // p/ tw-index2-ux-fixes
+window.TWVisibilidade={intervalo:twIntervaloVisivel,timeout:twTimeoutVisivel};
 var twRankRotationWanted=false,twRankVisibilityGate=null,twRankVisibilityElement=null;
 function twRankTimerStart(){
  if(twRankTimer)return;
@@ -10430,7 +10428,6 @@ function petAnelAtras(ctx, type, appearanceOverride){
   ctx.restore();
 }
 
-// ---------- Roupa de rank "Céu Estrelado" (Senbatsu): jaqueta azul com faixa arco-íris, laço, estrela e bermuda de nuvens ----------
 function roupaEstrelado(c, x, y, cor, E, T){
   var az = (!cor || /^#?f{6}$/i.test(cor)) ? '#3b5bdb' : cor, i;
   g.fillStyle = '#ff9ccd'; g.fillRect(x + 9, y + 38, 5, 5.5); g.fillRect(x + 17, y + 38, 5, 5.5);   // polainas listradas
@@ -10453,7 +10450,6 @@ var EXTRA_DICT = {
   ja: {"Céu Estrelado (Senbatsu)":"星空コーデ (Senbatsu)","Star⭐Gacha!":"TsuLiPaガチャポン","1 giro por dia":"1日1回","Girar!":"まわす！","Volte amanhã":"また明日ね","Você ganhou":"ゲット","Bônus na próxima corrida":"次のランのボーナス","Bônus do Star⭐Gacha!":"ガチャポンボーナス","Entre com Google para girar (1 vez por dia).":"Googleでログインしてまわそう（1日1回）。","Gire a manivela e veja o que sai da cápsula!":"ハンドルをまわしてカプセルの中身を見よう！","Procurar Idol pelo nome":"名前でアイドルをさがす","Visite o BRS48 Collect!":"BRS48 Collect!に行こう","Abrir":"ひらく","Blog do BRS48":"BRS48ブログ","Mensagem da moderação":"モデレーションからのメッセージ"}
 };
 Object.keys(EXTRA_DICT).forEach(function(l){ if(DICT[l]) Object.keys(EXTRA_DICT[l]).forEach(function(k){ DICT[l][k] = EXTRA_DICT[l][k]; }); });
-// ---------- Traduções que faltavam (insígnias, roupas, frases da temporada, Star⭐Gacha!) — [pt, en, es, th, ja] ----------
 [
  ['Quarteto TsuLiPa', 'TsuLiPa Quartet', 'Cuarteto TsuLiPa', 'ควอเต็ต TsuLiPa', 'TsuLiPaカルテット'],
  ['Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto', 'As the Idol, got all 3 mics in one run and saved the quartet photo', 'Con el Idol, atrapó los 3 micrófonos en una carrera y guardó la foto del cuarteto', 'เล่นเป็นไอดอล เก็บไมค์ครบ 3 อันในรอบเดียวและเซฟรูปควอเต็ต', 'アイドルで1回のランにマイク3本を集めてカルテット写真を保存'],
@@ -12565,7 +12561,6 @@ function s2StopSlide(){
   if(s2SlideTimer <= 0) s2Sliding = false;
 }
 
-// Injeta elementos de UI da Temporada 2 (botão de deslizar, botão Corrida do Dia, seletor de cenário no Modo Teste, aba no Ranking)
 function s2SetupUI(){
   // 1. Botão de deslizar (▼) no palco para celulares/tablets
   var stg = $('stage');
@@ -13717,7 +13712,6 @@ showLb = function(el){
 try{ Object.defineProperty(window, 'contaJ', { get:function(){ return contaJ; }, configurable:true }); }catch(e){}   // scripts de fora (cadeado dos cards) leem o login real
 applyLang();
 
-// Ciclo de visibilidade: dentro deste escopo para enxergar os loops do jogo.
 (function twAnimationVisibilityLifecycle(){
  function sl(id,el,on,fn){var v=!!on&&!!el&&twAnimacaoVisivel(el);if(v&&!id)return requestAnimationFrame(fn);if(!v&&id){cancelAnimationFrame(id);return 0;}return id;}
  function sync(){

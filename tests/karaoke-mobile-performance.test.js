@@ -288,4 +288,16 @@ assert(avatarStart>=0&&avatarEnd>avatarStart&&!/create(?:Linear|Radial)Gradient\
 assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_DRAW_RAMP_CACHE.size>=64')&&main.includes('function charDrawHairRamp(color)')&&main.includes('function charDrawStreakRamp(color)'),'Site-wide hair and two-tone streak ramps must use a bounded shared cache');
 assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
 
+const hubBeamStart=main.indexOf('function hubIdolsBeamTexturas(height)');
+const hubBeamEnd=main.indexOf('function hubIdolsTam()',hubBeamStart);
+const hubBeamCache=main.slice(hubBeamStart,hubBeamEnd);
+assert(hubBeamStart>=0&&hubBeamEnd>hubBeamStart&&hubBeamCache.includes('hubIV.beamAssets')&&hubBeamCache.includes('cache.height === height && cache.scale === scale'),'Hub spotlight textures should be cached and rebuilt only when their logical height or render scale changes');
+assert(hubBeamCache.includes('ctx.createLinearGradient(46, 0, 46, height)')&&hubBeamCache.includes('ctx.drawImage')===false&&hubBeamCache.includes('items.push(cv)'),'Hub spotlight gradients should be rasterized into reusable offscreen canvases');
+const hubSceneStart=main.indexOf('function hubIdolsFundo(x, W, H, s, dt){');
+const hubSceneEnd=main.indexOf('function hubIdolsDesenhar(s, dt, calmo)',hubSceneStart);
+const hubScene=main.slice(hubSceneStart,hubSceneEnd);
+assert(hubScene.includes('var beams = hubIdolsBeamTexturas(chao + 10)')&&hubScene.includes('x.drawImage(beams[i], -46, 0, 92, chao + 10)'),'The animated Hub scene should draw the reusable spotlight textures rather than rebuild their gradients during normal frames');
+assert(hubScene.includes('Math.sin(s * .8 + i * 2.1) * .5')&&hubScene.includes('x.rotate(ang)'),'Caching Hub spotlight artwork must preserve the per-frame movement of all three beams');
+assert(hubScene.includes('if(beams)')&&hubScene.includes('var lg = x.createLinearGradient(0, 0, 0, chao + 10)'),'Hub spotlights should retain a direct CanvasGradient fallback when an offscreen canvas context is unavailable');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

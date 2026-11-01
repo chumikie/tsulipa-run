@@ -39,7 +39,7 @@ ctx.pause(false);ctx.document.hidden=true;clock.ms=10000;ctx.tick();
 assert.equal(run.resumeUntil,0,'aba oculta não retoma por engano');
 
 let listener;const actions=[],shortcutRun={paused:false,resumeUntil:0};
-const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')}};
+const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
 vm.runInNewContext(keyhandler,{run:shortcutRun,$:id=>elements[id],hit:i=>actions.push('hit'+i),
   pause:flag=>actions.push('pause'+flag),document:{querySelectorAll:()=>[],addEventListener:(event,fn)=>{listener=fn;}}});
 function press(key,other={}){let prevented=false;listener({key,repeat:false,target:{tagName:'BODY'},preventDefault:()=>{prevented=true;},...other});return prevented;}
@@ -47,6 +47,8 @@ assert(press('p'));assert.equal(actions.at(-1),'pausetrue');
 shortcutRun.paused=true;shortcutRun.resumeUntil=9000;
 assert(press('p'));assert.equal(actions.at(-1),'pausetrue','P cancela a contagem ativa');
 shortcutRun.paused=false;shortcutRun.resumeUntil=0;
+assert(press('m'));assert.equal(actions.at(-1),'microphone','M must trigger the existing microphone control');
+const beforeDisabledMic=actions.length;elements.krMicBtn.disabled=true;assert.equal(press('m'),false,'M must not hijack input when microphone is disabled');assert.equal(actions.length,beforeDisabledMic);elements.krMicBtn.disabled=false;
 assert(press('c'));assert.equal(actions.at(-1),'camera');
 assert(press('s'));assert.equal(elements.ktCalibration.open,true);
 assert.equal(actions.at(-1),'pausetrue','abrir configurações pausa o show');
@@ -57,4 +59,4 @@ press('c',{ctrlKey:true});press('p',{target:{tagName:'INPUT'}});
 elements.ktClosed.hidden=false;press('s');press('c');
 assert.equal(actions.length,previous,'atalhos não interferem em formulário, sistema ou cortina');
 assert(!html.includes("kt.start('practice')"),'ensaio livre foi retirado da interface');
-console.log('Karaoke: P/C/S, pausa e retomada de 3 segundos sem desvio musical OK');
+console.log('Karaoke: P/M/C/S, pausa e retomada de 3 segundos sem desvio musical OK');

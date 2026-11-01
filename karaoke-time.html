@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=1"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=2"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=3"><script id="ktTemaDaPagina">
 /* Acompanha o tema da página principal: o Oshi escolhido (brs48cr_oshi, o mesmo do menu)
    e o claro/escuro. Dentro do menu chega por ?oshi= e ?theme=; aberto sozinho, segue o aparelho. */
 (function(){
@@ -23,9 +23,6 @@
 .kt-audio-heading h2{margin:0;color:var(--pink);font:400 17px "Mochiy Pop One",sans-serif}
 .kt-audio-heading p{margin:5px 0 0;color:var(--sub);font-size:11px;line-height:1.5}
 .kt-audio-free{padding:5px 10px;border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;font-size:10px;font-weight:900;white-space:nowrap}
-.kt-library-tabs{display:flex;gap:7px;margin:0 0 11px;padding:4px;border-radius:13px;background:var(--chip);border:1px solid rgba(123,63,240,.18)}
-.kt-library-tab{flex:1;min-height:34px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--sub);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.kt-library-tab[aria-selected="true"]{background:var(--card);border-color:rgba(123,63,240,.28);color:var(--b1);box-shadow:0 2px 8px rgba(40,10,90,.08)}
 .kt-library-note{margin:0 0 9px;color:var(--sub);font-size:10px;line-height:1.5}
 .kt-library-tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
 .kt-library-track{min-height:68px}
@@ -161,15 +158,12 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <main class="krwrap tw-window-content tw-window"><div class="krtop"><div><h1 class="krtit tw-game-title tw-window-title" translate="no">🎤 Karaoke<span class="tw-modal-star">⭐</span>Time! <small class="tw-window-jp" lang="ja">カラオケ・タイム</small></h1><p class="krsub tw-window-lede" id="krStatusTxt">🚤 Ilha da Gigoia · RJ</p></div></div><div class="kt-rhythm-controls"><div class="kt-toolbar"><label class="kt-song-choice" for="ktSong"><span>♪ Trilha</span><select id="ktSong" aria-label="Trilha do show"><optgroup label="Músicas do Karaoke"><option value="normal">⭐ Brilha Comigo · 108 BPM · ★★</option><option value="fast">💗 Love × Debut · 132 BPM · ★★</option><option value="chill">🌙 Doce Melodia · 90 BPM · ★</option></optgroup><optgroup label="Temas do TsuLiPa⭐World"><option value="tema">🌷 TsuLiPa⭐World · 116 BPM · ★★★</option><option value="corrida">🏁 Center⭐Run! · 120 BPM · ★★★</option><option value="gacha">🎰 Star⭐Gacha! · 124 BPM · ★★★</option><option value="duo">🌛 Moon⭐Duo! · 84 BPM · ★</option></optgroup></select></label><button class="btn" id="ktStart">🎤 Jogar ritmo</button><section class="kt-session" id="ktSession"><div class="krgrp"><button class="krb" id="ktViewMobile">↙ Ver sala inteira</button><strong id="ktClock">01:00</strong></div><div class="krgrp"><button class="krb" id="ktPause" disabled>⏸ Pausar</button><button class="krb" id="ktEnd" disabled>⏹ Encerrar</button><span id="ktScore">★ 0 · Combo 0</span></div></section><div class="pill" id="krRelogio">🟢 Domingo · 12h00–13h10</div></div><p id="ktHint" class="kt-hint">Acerte as notas, dance e receba a torcida do elenco! D · F · J · K ou toque no telão.</p></div><div class="krpalco" id="krPalco"><section class="kt-availability" id="ktAvailability" aria-live="polite" tabindex="0"><div><strong id="ktLimitTitle">✦ Seus cinco shows de hoje</strong><span id="ktLimitPips" aria-hidden="true">★★★★★</span></div><b id="ktLimitCount">0/5 usados · 5 disponíveis</b><small id="ktLimitHelp">Iniciar usa uma tentativa. Pausar e retomar não usa outra.</small></section><canvas role="img" aria-label="Sala original de Karaoke com seus avatares, palco, sofás e telão" id="krCv" width="960" height="540"></canvas><button type="button" class="kt-foto tw-window-scene-control" id="ktFoto" title="Tirar foto da cena" aria-label="Tirar foto da cena">📸</button><div class="kt-closed" id="ktClosed" hidden><div class="krbox"><div>🌙</div><h2>Por hoje, as cortinas se fecham</h2><p>Você usou seus cinco shows de hoje. A plateia espera você amanhã!</p><p id="ktReopens"></p><button class="btn" id="ktViewRanks">Ver rankings da semana ↓</button></div></div><div class="krpop" id="krPop" hidden></div><div class="krov" id="krModal" hidden><div class="krbox" id="krModalBox"></div></div></div><section class="kt-audience" id="ktAudience" aria-label="Plateia diária"><strong id="ktAudienceTitle">💜 Plateia de hoje</strong><small class="kt-ja-subtitle" lang="ja">今日の観客</small><p id="ktAudienceNames"></p><small id="ktAudienceNote">Figurantes decorativos</small></section><div class="kt-keys" id="ktKeys" hidden><button class="krb" data-kt-hit="0">💖 D</button><button class="krb" data-kt-hit="1">💎 F</button><button class="krb" data-kt-hit="2">🍀 J</button><button class="krb" data-kt-hit="3">⭐ K</button></div><section class="kt-clip-info" aria-label="Clipe decorativo do dia"><div><strong id="ktClipTitle">✦ Clipe do dia</strong><span id="ktClipDate"></span></div><p id="ktClipConcept"></p><small id="ktClipCast"></small><p class="kt-clip-note">O mesmo clipe acompanha o dia. Ao jogar, o telão se transforma nas pistas de ritmo.</p></section>
 <section class="kt-audio-library" id="ktAudioLibrary" aria-labelledby="ktAudioTitle">
   <div class="kt-audio-heading">
-    <div><h2 id="ktAudioTitle">🎵 Biblioteca musical</h2><p>Suas músicas, suas vozes e suas melhores marcas. Os recordes são pessoais e ficam neste aparelho.</p></div>
+    <div><h2 id="ktAudioTitle">🎵 Biblioteca musical<small class="kt-ja-subtitle" lang="ja">音楽ライブラリ</small></h2><p>Suas músicas, suas vozes e suas melhores marcas. Os recordes são pessoais e ficam neste aparelho.</p></div>
     <span class="kt-audio-free">✦ Jogo solo</span>
   </div>
-  <div class="kt-library-tabs" role="tablist" aria-label="Biblioteca do Karaoke">
-    <button type="button" class="kt-library-tab" data-kt-library-view="songs" role="tab" aria-selected="true">♪ Músicas</button>
-    <button type="button" class="kt-library-tab" data-kt-library-view="voices" role="tab" aria-selected="false">♡ Vozes</button>
-  </div>
-  <section class="kt-library-panel" data-kt-library-panel="songs" aria-label="Músicas do Karaoke">
+  <section class="kt-library-panel" aria-label="Músicas do Karaoke">
     <p class="kt-library-note">Escolha uma faixa para preparar seu próximo show. Sua melhor pontuação em cada música aparece aqui.</p>
+    <h3 class="kt-library-section-title">♪ Músicas do jogo<small class="kt-ja-subtitle" lang="ja">ゲームの楽曲</small></h3>
     <div class="kt-library-tracks"><div class="kt-audio-clip kt-library-track" role="group" aria-label="Brilha Comigo">
   <span class="kt-audio-icon">⭐</span>
   <span class="kt-audio-label"><b>Brilha Comigo</b><small>108 BPM · ★★</small><small class="kt-library-best" data-kt-song-best="normal">Sem recorde ainda</small></span>
@@ -198,7 +192,9 @@ html.kt-no-site .krwrap{padding-top:0!important}
     <button type="button" class="kt-library-action" data-kt-song-preview="tema">▶ Ouvir</button>
     <button type="button" class="kt-library-action" data-kt-song-select="tema" data-kt-song-name="TsuLiPa⭐World · 116 BPM" aria-pressed="false">✓ Selecionar</button>
   </span>
-</div><div class="kt-audio-clip kt-library-track" role="group" aria-label="Center⭐Run!">
+</div></div>
+    <h3 class="kt-library-section-title">✦ Músicas novas<small class="kt-ja-subtitle" lang="ja">新しい楽曲</small></h3>
+    <div class="kt-library-tracks"><div class="kt-audio-clip kt-library-track" role="group" aria-label="Center⭐Run!">
   <span class="kt-audio-icon">🏁</span>
   <span class="kt-audio-label"><b>Center⭐Run!</b><small>120 BPM · ★★★</small><small class="kt-library-best" data-kt-song-best="corrida">Sem recorde ainda</small></span>
   <span class="kt-library-actions">
@@ -226,7 +222,8 @@ html.kt-no-site .krwrap{padding-top:0!important}
   <progress id="ktPreviewProgress" class="kt-preview-progress" max="59000" value="0">0%</progress>
 </div>
   </section>
-  <section class="kt-library-panel" data-kt-library-panel="voices" aria-label="Vozes dos personagens" hidden>
+  <section class="kt-library-panel kt-library-voices" aria-label="Vozes dos personagens">
+    <h3 class="kt-library-section-title">♡ Vozes dos personagens<small class="kt-ja-subtitle" lang="ja">キャラクターの声</small></h3>
     <p class="kt-library-note">Toque em Tsu, Lirika ou Pati. Cada toque traz uma fala diferente. 💜</p>
     <div class="kt-library-heads" aria-label="Personagens que falam">
       <button type="button" class="kt-library-head" data-kt-voice-group="tsu" aria-label="Ouvir Tsu" aria-pressed="false"><canvas class="kt-library-face" width="88" height="96" aria-hidden="true"></canvas><b>Tsu</b><small data-kt-voice-caption="tsu">Toque para falar</small></button>
@@ -3072,7 +3069,7 @@ var ktAudioVitrine=(function(){
     lirika:['Oi, gente linda!','Li - ri - ka!','ゆめはぜったい','Tudo bem com vocês?','hehe~'],
     pati:['Oi gente, meu nome é Pati!','Bem gamer, tals...','いっておきたい','Um beijo. Chu!','hehe~']
   };
-  var player=null,playingId='',libraryView='songs';
+  var player=null,playingId='',headObserver=null,headsVisible=false;
   var root=$('ktAudioLibrary'),status=$('ktAudioStatus');
   function updateButtons(){
     if(!root)return;
@@ -3099,18 +3096,18 @@ var ktAudioVitrine=(function(){
     if(!allowed[id]||!root)return;
     if(typeof kt!=='undefined'&&kt)kt.stopPreview(false);
     if(muted){if(status)status.textContent=tr('O som está desativado. Ative o botão de som para ouvir.');return;}
-    if(player&&playingId===id&&!restart){stop(tr('Prévia interrompida.'));return;}
+    if(player&&playingId===id&&!restart){stop('');return;}
     stop('');
     if(typeof window.Audio!=='function'){if(status)status.textContent=tr('Este navegador não oferece reprodução de áudio.');return;}
     var next;
     try{
       next=new Audio('./audio/'+id+'.mp3?v=1');
-      next.preload='none';next.volume=.7;player=next;playingId=id;
+      next.preload='none';next.volume=.6;player=next;playingId=id;
     }catch(e){if(status)status.textContent=tr('Não foi possível preparar este áudio.');return;}
     updateButtons();
     if(status)status.textContent=tr('Tocando')+' · '+id;
     function finish(message){if(player!==next)return;stop(message);}
-    next.addEventListener('ended',function(){finish(tr('Prévia finalizada.'));},{once:true});
+    next.addEventListener('ended',function(){finish('');},{once:true});
     next.addEventListener('error',function(){finish(tr('Não foi possível reproduzir este áudio.'));},{once:true});
     try{
       var promise=next.play();
@@ -3120,18 +3117,6 @@ var ktAudioVitrine=(function(){
   function syncTracks(){
     if(!root)return;var selector=$('ktSong');if(!selector)return;
     [].forEach.call(root.querySelectorAll('[data-kt-song-select]'),function(button){button.setAttribute('aria-pressed',button.dataset.ktSongSelect===selector.value?'true':'false');});
-  }
-  function setView(view){
-    if(view!=='songs'&&view!=='voices')return;
-    libraryView=view;
-    [].forEach.call(root.querySelectorAll('[data-kt-library-view]'),function(button){
-      button.setAttribute('aria-selected',button.dataset.ktLibraryView===view?'true':'false');
-    });
-    [].forEach.call(root.querySelectorAll('[data-kt-library-panel]'),function(panel){
-      panel.hidden=panel.dataset.ktLibraryPanel!==view;
-    });
-    if(view==='songs'){stopHeadAnimation();refresh();syncTracks();}
-    else{startHeadAnimation();}
   }
   function speakGroup(group,button){
     if(!Object.prototype.hasOwnProperty.call(voiceLines,group))return;
@@ -3167,7 +3152,7 @@ var ktAudioVitrine=(function(){
       /* Cópia visual exclusiva da vitrine: preserva cabelo/rosto e não altera CH. */
       var cached=avatarLooks[group];
       if(!cached||cached.source!==CH[index]){
-        cached={source:CH[index],value:Object.assign({},CH[index],{out:'zipper',outcol:avatarColors[group]})};
+        cached={source:CH[index],value:Object.assign({},CH[index],{out:'zipper',outcol:avatarColors[group],hat:''})};
         avatarLooks[group]=cached;
       }
       var speaking=button.classList.contains('is-speaking');
@@ -3183,12 +3168,12 @@ var ktAudioVitrine=(function(){
   }
   function animateHeads(now){
     animationFrame=0;
-    if(!root||libraryView!=='voices'||document.hidden)return;
+    if(!root||!headsVisible||document.hidden)return;
     if(now-lastAvatarFrame>=80){drawHeads(now);lastAvatarFrame=now;}
     animationFrame=requestAnimationFrame(animateHeads);
   }
   function startHeadAnimation(){
-    if(!root||libraryView!=='voices'||document.hidden)return;
+    if(!root||!headsVisible||document.hidden)return;
     drawHeads(performance.now());
     if(motionReduced()||animationFrame)return;
     animationFrame=requestAnimationFrame(animateHeads);
@@ -3196,6 +3181,17 @@ var ktAudioVitrine=(function(){
   function stopHeadAnimation(){
     if(animationFrame&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(animationFrame);
     animationFrame=0;
+  }
+  function observeHeads(){
+    var heads=root&&root.querySelector('.kt-library-heads');
+    if(!heads)return;
+    if(typeof IntersectionObserver==='function'){
+      headObserver=new IntersectionObserver(function(entries){
+        headsVisible=entries.some(function(entry){return entry.isIntersecting&&entry.intersectionRatio>=.08;});
+        if(headsVisible)startHeadAnimation();else stopHeadAnimation();
+      },{threshold:.08});
+      headObserver.observe(heads);
+    }else{headsVisible=true;startHeadAnimation();}
   }
   function refresh(){
     if(!root)return;
@@ -3213,18 +3209,16 @@ var ktAudioVitrine=(function(){
   window.addEventListener('pagehide',stopHeadAnimation);
   var songSelector=$('ktSong');if(songSelector)songSelector.addEventListener('change',syncTracks);
   if(root)root.addEventListener('click',function(event){
-    var viewChoice=event.target.closest&&event.target.closest('[data-kt-library-view]');
-    if(viewChoice&&root.contains(viewChoice)){setView(viewChoice.dataset.ktLibraryView);return;}
     var voiceChoice=event.target.closest&&event.target.closest('[data-kt-voice-group]');
     if(voiceChoice&&root.contains(voiceChoice)){speakGroup(voiceChoice.dataset.ktVoiceGroup,voiceChoice);return;}
     var songPreview=event.target.closest&&event.target.closest('[data-kt-song-preview]');
     if(songPreview&&root.contains(songPreview)){if(typeof kt!=='undefined'&&kt)kt.togglePreview(songPreview.dataset.ktSongPreview);return;}
     var songChoice=event.target.closest&&event.target.closest('[data-kt-song-select]');
     if(songChoice&&root.contains(songChoice)){
-      if(player)stop(tr('Prévia interrompida.'));
+      if(player)stop('');
       var selector=$('ktSong');
       if(!selector||selector.disabled){if(status)status.textContent=tr('A trilha pode ser escolhida quando não houver show em andamento.');return;}
-      if(typeof kt!=='undefined'&&kt)kt.stopPreview(true,tr('Prévia interrompida.'));
+      if(typeof kt!=='undefined'&&kt)kt.stopPreview(true);
       selector.value=songChoice.dataset.ktSongSelect;
       selector.dispatchEvent(new Event('change',{bubbles:true}));syncTracks();
       if(status)status.textContent=tr('Trilha selecionada')+' · '+(songChoice.dataset.ktSongName||selector.value);
@@ -3233,10 +3227,10 @@ var ktAudioVitrine=(function(){
     var button=event.target.closest&&event.target.closest('[data-kt-audio]');
     if(button&&root.contains(button))play(button.dataset.ktAudio);
   });
-  document.addEventListener('visibilitychange',function(){if(document.hidden&&player)stop(tr('Prévia interrompida.'));});
-  window.addEventListener('pagehide',function(){stop('');});
-  refresh();syncTracks();
-  return {play:play,stop:function(){stop(tr('Prévia interrompida.'));},refresh:refresh,setView:setView,speakGroup:speakGroup};
+  document.addEventListener('visibilitychange',function(){if(document.hidden){if(player)stop('');stopHeadAnimation();}else if(headsVisible)startHeadAnimation();});
+  window.addEventListener('pagehide',function(){stopHeadAnimation();if(headObserver)headObserver.disconnect();stop('');});
+  refresh();syncTracks();observeHeads();
+  return {play:play,stop:function(){stop('');},refresh:refresh,speakGroup:speakGroup};
 })();
 
 var ktBaseUI=krUI;krUI=function(){ktBaseUI();if(kt.active())[].forEach.call(document.querySelectorAll('[data-drink],[data-snack],[data-sala-item]'),function(b){b.disabled=true;});if(ktMeta)ktMeta.controls();};

@@ -1550,6 +1550,8 @@ var soraOnlineProfileLoaded = false;
 var soraOnlineRunId = null;
 var soraOnlineRunStartPromise = null;
 var soraOnlineRunFinishSent = false;
+var soraOnlineRunOwnerId = null;
+var soraOnlineRunGeneration = 0;
 var soraRankPeriod = 'week';
 var soraRankRequestSerial = 0;
 var soraRankRowsCache = { week:null, all:null };
@@ -1615,6 +1617,8 @@ function soraOnlineSetSession(session){
   var user = session && session.user;
   var nextId = user && user.is_anonymous !== true ? user.id : null;
   if(nextId === soraOnlineUserId) return;
+  soraOnlineRunGeneration++;
+  if(soraOnlineRunOwnerId&&soraOnlineRunOwnerId!==nextId){soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;}
   soraOnlineUserId = nextId;
   soraOnlineProfile = null;
   soraOnlineProfileLoaded = false;
@@ -1662,32 +1666,36 @@ function soraOnlineInitAuth(){
 }
 function soraOnlineBeginRun(){
   if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId) return Promise.resolve(null);
-  soraOnlineRunId = null;
-  soraOnlineRunFinishSent = false;
-  soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(){
-    var userId = soraOnlineUserId;
-    if(!userId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+  var generation=++soraOnlineRunGeneration;
+  soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunFinishSent=false;
+  soraOnlineRunStartPromise=soraOnlineInitAuth().then(function(){
+    if(generation!==soraOnlineRunGeneration)return null;
+    var userId=soraOnlineUserId;
+    if(!userId||!_supabase||typeof _supabase.rpc!=='function')return null;
+    soraOnlineRunOwnerId=userId;
     return _supabase.rpc('sora_run_start').then(function(result){
-      if(result && result.error) throw result.error;
-      if(!result || typeof result.data !== 'string') throw new Error('Resposta inválida ao iniciar partida.');
-      soraOnlineRunId = result.data;
+      if(result&&result.error)throw result.error;
+      if(!result||typeof result.data!=='string')throw new Error('Resposta inválida ao iniciar partida.');
+      if(generation!==soraOnlineRunGeneration||userId!==soraOnlineUserId)return null;
+      soraOnlineRunId=result.data;
       return soraOnlineRunId;
     });
   }).catch(function(error){
-    soraOnlineRunId = null;
-    console.warn('Sora⭐Jump: não foi possível registrar o início da partida.', error);
+    if(generation===soraOnlineRunGeneration){soraOnlineRunId=null;soraOnlineRunOwnerId=null;}
+    console.warn('Sora⭐Jump: não foi possível registrar o início da partida.',error);
     return null;
   });
   return soraOnlineRunStartPromise;
 }
 function soraOnlineFinishRun(score){
-  if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId || soraOnlineRunFinishSent ||
-     !Number.isSafeInteger(score) || score < 0 || !soraOnlineRunStartPromise) return;
-  soraOnlineRunFinishSent = true;
+  var owner=soraOnlineRunOwnerId,generation=soraOnlineRunGeneration;
+  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId)return;
+  soraOnlineRunFinishSent=true;
   Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
-    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+    if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId||!runId||!_supabase||typeof _supabase.rpc!=='function')return null;
     return _supabase.rpc('sora_run_finish',{p_run_id:runId,p_score:score});
   }).then(function(result){
+    if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId)return;
     if(result && result.error) throw result.error;
     if(result && result.data && result.data.ok === false)
       console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
@@ -1696,6 +1704,7 @@ function soraOnlineFinishRun(score){
       try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
     }
     soraOnlineRunId = null;
+    soraOnlineRunOwnerId = null;
     soraOnlineRunStartPromise = null;
     soraRankRowsCache.week = null;
     soraRankRowsCache.all = null;
@@ -1707,16 +1716,16 @@ function soraOnlineFinishRun(score){
   });
 }
 function soraOnlineAbortRun(){
-  if(!SORA_ONLINE_RANKING_ENABLED || !soraOnlineRunStartPromise) return;
-  Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
-    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
-    return _supabase.rpc('sora_run_abort',{p_run_id:runId});
-  }).catch(function(error){
-    console.info('Sora⭐Jump: encerramento da partida pendente.', error && error.message || error);
-  });
-  soraOnlineRunId = null;
-  soraOnlineRunStartPromise = null;
-  soraOnlineRunFinishSent = true;
+  if(!SORA_ONLINE_RANKING_ENABLED||!soraOnlineRunStartPromise)return;
+  var owner=soraOnlineRunOwnerId,pending=soraOnlineRunStartPromise;
+  soraOnlineRunGeneration++;
+  if(owner&&owner===soraOnlineUserId){
+    Promise.resolve(pending).then(function(runId){
+      if(!runId||owner!==soraOnlineUserId||!_supabase||typeof _supabase.rpc!=='function')return null;
+      return _supabase.rpc('sora_run_abort',{p_run_id:runId});
+    }).catch(function(error){console.info('Sora⭐Jump: encerramento da partida pendente.',error&&error.message||error);});
+  }
+  soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;
 }
 soraOnlineInitAuth();
 

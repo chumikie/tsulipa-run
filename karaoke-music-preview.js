@@ -89,7 +89,7 @@
    stop(false);
    if(options.stopVoicePreview)options.stopVoicePreview();
    if(options.stopAmbient)options.stopAmbient();
-   var step=60000/song.bpm/2,target={songKey:key,song:song,step:step,total:Math.floor(DURATION/step),audioStep:0,audioOrigin:0,audioClock:false,paused:false,elapsed:0,cuesByStep:{}};
+   var step=60000/song.bpm/2,target={songKey:key,song:song,step:step,total:Math.floor(DURATION/step),audioStep:0,audioOrigin:0,audioClock:false,audioReady:true,paused:false,elapsed:0,cuesByStep:{}};
    current=target;lastUi=0;render();arm(target,0);return true;
   }
   function pause(){

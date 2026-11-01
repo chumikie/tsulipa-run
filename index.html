@@ -7270,6 +7270,7 @@ function perfAniverHtml(d){
 }
 function perfFechar(){
   perfPedido++;
+  var topo=$('perfTopoMsg');if(topo&&topo._twTimeout){topo._twTimeout.cancel();topo._twTimeout=null;}
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
   perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfAniverVer = false; perfIconeConta();
@@ -7326,7 +7327,7 @@ function perfFotoAtual(){
   if(perfMeu && (!av || av.auto)) av = perfAvAtual();   // sem foto escolhida: acompanha o Idol de agora
   perfFotoRedonda($('perfFoto'), av || { c:{}, pose:'v', expr:2, fundo:'basico' }, perfZoom);
 }
-function perfTopoMsg(t){ var m = $('perfTopoMsg'); if(!m) return; m.textContent = t; m.hidden = !t; clearTimeout(m._t); if(t) m._t = setTimeout(function(){ m.hidden = true; }, 4000); }
+function perfTopoMsg(t){ var m=$('perfTopoMsg');if(!m||perfOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !perfOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},4000);}
 function perfAbaMostrar(){
   var box = $('perfAbaCorpo'), d = perfAtual, meu = perfMeu, h = '';
   [].forEach.call(document.querySelectorAll('#perfCorpo .perftabs button'), function(b){ b.setAttribute('aria-pressed', b.dataset.aba === perfAba); });
@@ -7480,16 +7481,16 @@ function perfRecadosHtml(d, meu){
 }
 perfOv.addEventListener('click', function(e){
   if(e.target.id === 'perfRecOk'){
-    var inp=$('perfRecTxt'),tx=inp.value.trim(),b=e.target,alvo=perfAtual&&perfAtual.nick;if(!tx||!alvo)return;
+    var inp=$('perfRecTxt'),tx=inp.value.trim(),b=e.target,alvo=perfAtual&&perfAtual.nick,pedidoRecado=perfPedido;if(!tx||!alvo)return;
     b.disabled=true;
     contaRpc('deixar_recado',{p_nick:alvo,p_texto:tx}).then(function(r){
-      var painelAtual=!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo;
+      var painelAtual=pedidoRecado===perfPedido&&!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo;
       if(painelAtual)b.disabled=false;
       if(r&&r.ok){
         if(sfx.card)sfx.card();
         if(painelAtual){
           perfAbrir(alvo,true);
-          setTimeout(function(){if(!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo)perfTopoMsg('💌 '+tr('Recado enviado!'));},400);
+          var pedidoMensagem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&pedidoMensagem===perfPedido&&perfAtual&&perfAtual.nick===alvo;},function(){perfTopoMsg('💌 '+tr('Recado enviado!'));},400);
         }
         if(typeof insConferir==='function')insConferir();return;
       }
@@ -7830,9 +7831,11 @@ perfOv.addEventListener('click', function(e){
   if(e.target.closest('[data-irloja]')){ perfAba = 'montar'; perfAbaMostrar(); var pedidoLoja=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&perfAba==='montar'&&pedidoLoja===perfPedido;},function(){var l=$('perfLoja2');if(l&&l.scrollIntoView)l.scrollIntoView({behavior:'smooth',block:'center'});},80); }
 });
 function perfComprar(k, btn){
+  var pedido=perfPedido;
   btn.disabled = true;
   contaRpc('comprar_visual', { p_key:k }).then(function(r){
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
+    if(perfOv.hidden||pedido!==perfPedido)return;
     var m = $('perfGenMsg');
     if(!r || !r.ok){
       m.hidden = false;
@@ -7843,18 +7846,21 @@ function perfComprar(k, btn){
     if(sfx.rank) sfx.rank();
     perfGenUI();
     m = $('perfGenMsg'); m.textContent = '✨ ' + tr('Comprado!'); m.hidden = false;
-  }).catch(function(){ btn.disabled = false; var m = $('perfGenMsg'); m.textContent = tr('Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; });
+  }).catch(function(){ if(perfOv.hidden||pedido!==perfPedido)return;btn.disabled = false; var m = $('perfGenMsg'); m.textContent = tr('Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; });
 }
 function perfUsarFoto(){
+  var pedido=perfPedido;
   var g2 = perfGenAv, av = perfAvAtual({ visual: g2.visual, pose: g2.pose, expr: g2.expr, fundo: g2.fundo || 'basico', pet: g2.pet || null });
   var btn = $('perfUsar'); btn.disabled = true;
   perfConferir();
   (av.pet ? perfEnviar() : Promise.resolve()).then(function(){ return contaRpc('salvar_avatar', { p_avatar: av }); }).then(function(r){   // com pet: a nuvem precisa saber que o pet é seu
+    if(r&&r.ok){perfMeuAv=av;perfIconeConta();}
+    if(perfOv.hidden||pedido!==perfPedido)return;
     btn.disabled = false;
     var m = $('perfGenMsg'); m.hidden = false;
-    if(r && r.ok){ perfAtual.avatar = av; perfMeuAv = av; perfFotoAtual(); m.textContent = '🖼️ ' + tr('Foto do perfil atualizada!'); if(sfx.card) sfx.card(); }
+    if(r && r.ok){ perfAtual.avatar = av; perfFotoAtual(); m.textContent = '🖼️ ' + tr('Foto do perfil atualizada!'); if(sfx.card) sfx.card(); }
     else m.textContent = tr({ visual_nao_comprado:'Esse visual ainda não foi comprado.', fundo_nao_comprado:'Esse fundo ainda não foi comprado.', pose_nao_comprada:'Essa pose ainda não foi comprada.', roupa_nao_comprada:'Essa roupa ainda não foi comprada.', pet:'Esse pet ainda não chegou na nuvem. Tente de novo em alguns segundos.' }[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.');
-  }).catch(function(){ btn.disabled = false; });
+  }).catch(function(){ if(!perfOv.hidden&&pedido===perfPedido)btn.disabled = false; });
 }
 
 // ---------- Rostinho no botão do perfil (menu) ----------
@@ -10735,7 +10741,7 @@ function duoPresUI(){
     '<div class="btns"><button type="button" class="btn" id="duoPresOk">' + escHtml(tr('Enviar')) + ' ' + duoPresEmo + '</button></div>';
 }
 var DUO_PRES_ERRO = { hoje:'Você já mandou um presente hoje para essa pessoa.', limite:'Você chegou ao limite de presentes de hoje.', saldo:'Estrelas insuficientes.', alvo:'Essa pessoa não está participando do Moon⭐Duo!', bloqueado:'Sua conta está bloqueada pela moderação.' };
-function duoMsg(t){ var m = $('duoMsg'); m.textContent = t; m.hidden = !t; clearTimeout(m._t); if(t) m._t = setTimeout(function(){ m.hidden = true; }, 5000); }
+function duoMsg(t){var m=$('duoMsg');if(!m||duoOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !duoOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},5000);}
 duoOv.addEventListener('click', function(e){
   var t = e.target, b;
   if(t.id === 'duoX'){ duoFechar(); return; }
@@ -10783,7 +10789,7 @@ function duoAbrir(nick){
   if(sfx.card) sfx.card();
   if(typeof hubComecou !== 'undefined' && hubComecou) hubMusicaTocar();
 }
-function duoFechar(){ duoBuscaCancelar();duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }
+function duoFechar(){ duoBuscaCancelar();var msg=$('duoMsg');if(msg&&msg._twTimeout){msg._twTimeout.cancel();msg._twTimeout=null;}duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }
 function duoMsgTxt(m){   // presentes do Moon⭐Duo! chegam como "duo:🧸:Nick"
   var p = /^duo:([^:]+):(.+)$/.exec(String(m || ''));
   return p ? p[1] + ' ' + tr('{nick} te mandou um presente pelo Moon⭐Duo!').replace('{nick}', p[2]) : m;

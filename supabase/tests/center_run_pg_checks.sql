@@ -30,7 +30,7 @@ begin
     where user_id='00000000-0000-4000-8000-000000000004' and reason='corrida';
   select count(*) into a_runs from public.runs where user_id='00000000-0000-4000-8000-000000000001' and finished_at is not null;
   select count(*) into d_runs from public.runs where user_id='00000000-0000-4000-8000-000000000004' and finished_at is not null;
-  select count(*) into pet_events from public.star_log where reason='pet_minigame';
+  select count(*) into pet_events from public.star_log where reason='minijogo';
   if (sa,sb,sc,sd) is distinct from (1100,110,200,335) then
     raise exception 'unexpected balances: %,%,%,%',sa,sb,sc,sd;
   end if;

@@ -26,7 +26,7 @@ for(const key of keys){
 function harness(extra){
  const elements=new Map(),events=[],context={state:'running',currentTime:0,destination:{},createGain(){return {gain:{value:1,setTargetAtTime(value){this.value=value;}},connect(destination){this.destination=destination;}};}};
  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:id==='ktPreviewVolume'?70:0,disabled:false,dataset:{},handlers:{},setAttribute(){},addEventListener(type,fn){this.handlers[type]=fn;},querySelectorAll:()=>[]});return elements.get(id);};
- const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),getSelectedSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
+ const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>{assert.equal(target.audioReady,true,'preview target is marked ready for the shared synthesizer');events.push([target.songKey,i]);},silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),getSelectedSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
  return {player,context,events,get};
 }
 const player=harness();
@@ -82,6 +82,11 @@ for(const key of keys){
 for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"')||(id==='ktPreviewVolume'&&library.includes('id=ktPreviewVolume')),'player includes '+id);
 assert(html.includes('<script src="./karaoke-music-preview.js?v=1"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
+assert(moduleCode.includes('audioReady:true'),'independent preview marks its target ready for the shared beat renderer');
+assert(html.includes('KaraokeAvatar.draw(ctx,CH[index],44,82,1,'),'voice library renders full-body miniatures using the shared avatar renderer');
+assert(html.includes('<canvas class="kt-library-face" width="88" height="96"'),'voice miniatures have a full-body canvas');
+assert(!html.includes('data-kt-audio="encontro"'),'Encounter special audio button is absent from this library');
+assert(!html.includes("'encontro':1"),'Encounter audio is not exposed as a voice-library clip');
 assert((html.includes('id="ktPreviewVolume"')||html.includes('id=ktPreviewVolume'))&&moduleCode.includes('addEventListener("input"'),'player includes a working volume slider');
 assert(html.includes("window.addEventListener('pagehide',function(){previewPlayer.stop(false);"),'pagehide stops preview');
 assert(html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);"),'hidden page stops preview');

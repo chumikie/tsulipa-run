@@ -12,7 +12,9 @@ assert(!main.includes('setInterval(ovSomUI, 1000)')&&main.includes('muteSyncButt
 assert(!main.includes('setInterval(coelhoSync, 3000)')&&!main.includes('setInterval(encBtnUI, 60000)'),'Profile and encounter UI refreshes should not use unconditional intervals');
 assert(!main.includes('setInterval(function(){ if(!duoAvisoFeito && contaJ)')&&main.includes('function duoAvisoAgendar()')&&main.includes('duoAvisoAgendar();'),'Moon Duo notifications should be scheduled once after account login, not polled every 1.5 seconds');
 assert(main.includes('setInterval(perfConferir, 4000)')&&main.includes('setInterval(function(){ if(contaJ) lookSalvar(); }, 30000)'),'Persistent profile synchronization and look saving must remain active');
-assert(main.includes('petTick();')&&main.includes('el.hidden = !(p.fome < 40'),'Pet needs and alert calculation must remain intact');
+assert(main.includes('function petAlertLigar()')&&main.includes('function petAlertParar()')&&main.includes('petAlertParar();petAnimParar();if(petData){petTick();petSave();}')&&main.includes('window.addEventListener(\'pageshow\',petAlertLigar)'),'Pet alert polling should pause only while the document is hidden and resume with the page');
+assert(main.includes('petTick();')&&main.includes('el.hidden=!(p.fome<40'),'Pet needs and alert calculation must remain intact');
+assert(main.includes('twRankVisibilityElement!==modalTv')&&main.includes('twRankVisibilityGate.destroy()'),'The ranking TV visibility observer should reattach when Hub content is recreated');
 const encounterStart=main.indexOf('function encLoop(){');
 const encounterEnd=main.indexOf('\nfunction encToqueBolhas(',encounterStart);
 assert(encounterStart>=0&&encounterEnd>encounterStart,'The encounter animation loop should remain inspectable');

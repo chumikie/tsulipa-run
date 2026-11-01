@@ -18,7 +18,7 @@ function autoHarness(overrides){
  const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
  const bots=[{nick:'A',x:200,y:400,no_mic:false,_ktLoungeWalking:false},{nick:'B',x:700,y:400,no_mic:false,_ktLoungeWalking:false}];
  const calls=[],deps={
-  getState:()=>state,getBots:()=>bots,canWalk:()=>true,getSeat:i=>i===0?[160,400]:[800,400],
+  getState:()=>state,getBots:()=>bots,canWalk:bot=>!bot.no_mic,getSeat:i=>i===0?[160,400]:[800,400],
   random:()=>0,nowMs:()=>5000,setSinger:v=>{state.singer=v;calls.push(['singer',v]);},
   setNextAt:v=>{state.nextAt=v;calls.push(['next',v]);},startPractice:()=>calls.push(['start']),switchMusicMode:()=>calls.push(['music']),updateUI:()=>calls.push(['ui'])
  };
@@ -75,7 +75,7 @@ function fakeNode(){
  assert.equal(dialog.elements.ktPosterPortrait.attrs['aria-label'],'Retrato ampliado de Idol','portrait canvas has an accessible description');
  assert.equal(drawCalls.length,1,'the injected existing avatar renderer is called exactly once');
  assert.equal(drawCalls[0][1],char,'the renderer receives the character built by the page');
- assert.equal(drawCalls[0][6],1234,'the renderer receives the injected room clock');
+ assert.equal(drawCalls[0][7],1234,'the renderer receives the injected room clock');
  assert.equal(drawCalls[0][2],260);assert.equal(drawCalls[0][3],405);assert.equal(drawCalls[0][4],5.8);
  dialog.close();assert.equal(opener.focused,true,'focus returns to the opener when the portrait closes');
 }

@@ -671,6 +671,33 @@ try{
   console.log("✓ Game badges in profile + Sunday weekly boundaries + Karaoke hierarchy");
 }catch(e){errors.push("Profile badges / Sunday / Karaoke polish: "+e.message);}
 
+// Saved avatar colors are read by the game Canvas and by the Profile preview.
+try{
+  const html=read("index.html");
+  const start=html.indexOf("// --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---");
+  const end=html.indexOf("function saveCu(){",start);
+  assert(start>=0&&end>start,"Avatar save loader must remain available");
+  if(start>=0&&end>start){
+    const loader=html.slice(start,end);
+    const defaults={n:"Idol",hair:"#ff7eb6",hair2:"#4dd8ff",skin:"#f1c9a5",eye:"#5a3b2e",outcol:"#ffffff",front:"lateral",back:"chanel"};
+    for(const saved of [
+      {hair:null,hair2:42,skin:"",eye:"not-a-color",outcol:null,front:"reta"},
+      {hair:"#123456",hair2:"#abcdef",skin:"#aabbcc",eye:"#112233",outcol:"#445566",front:"espetada"}
+    ]){
+      const sandbox={CH:[{},{},{},{...defaults}],sel:3,localStorage:{getItem:k=>k==="brs48cr_cu2"?JSON.stringify(saved):null}};
+      vm.runInNewContext("var CU=CH[3];"+loader,sandbox,{timeout:1000});
+      const cu=sandbox.CU;
+      for(const key of ["hair","hair2","skin","eye","outcol"]){
+        const expected=typeof saved[key]==="string"&&/^#[0-9a-f]{6}$/i.test(saved[key])?saved[key]:defaults[key];
+        assert(cu[key]===expected,"Avatar save must validate "+key+" before game/preview drawing");
+      }
+      assert(cu.front===saved.front,"Avatar save must preserve existing haircut selections");
+      assert(cu.img===cu.hair,"Avatar game and previews must use the same valid hair color");
+    }
+    console.log("✓ Saved avatar colors, game and Profile preview fallback");
+  }
+}catch(e){errors.push("Avatar save / rendering: "+e.message);}
+
 if(errors.length){
   errors.forEach(err=>console.error("✗",err));
   process.exitCode=1;

@@ -32,6 +32,9 @@ on:
       - 'tests/center-run-palette.test.js'
       - 'tests/visibility-scope.test.js'
       - 'tests/index-images.test.js'
+      - 'tests/admin-idol.test.js'
+      - 'supabase/sql/admin_montar_idol.sql'
+      - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
       - 'tests/karaoke-show-visibility.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
@@ -125,6 +128,9 @@ on:
       - 'tests/center-run-palette.test.js'
       - 'tests/visibility-scope.test.js'
       - 'tests/index-images.test.js'
+      - 'tests/admin-idol.test.js'
+      - 'supabase/sql/admin_montar_idol.sql'
+      - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
       - 'tests/karaoke-show-visibility.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
@@ -206,6 +212,8 @@ jobs:
         run: node tests/visibility-scope.test.js
       - name: Validate index images moved to WebP files
         run: node tests/index-images.test.js
+      - name: Validate admin Idol editor (moderation)
+        run: node tests/admin-idol.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract
@@ -302,6 +310,8 @@ jobs:
         run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
         run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify admin Idol editor proposal against isolated PostgreSQL
+        run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

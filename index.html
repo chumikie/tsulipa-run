@@ -457,6 +457,7 @@ body.hubon #mute{visibility:hidden}
 .admtemas{text-align:left;font-size:13px;font-weight:700;margin:6px 0 10px}
 .hubaviso{margin:12px 0 0;padding:10px 14px;border-radius:16px;background:linear-gradient(120deg,rgba(255,111,181,.18),rgba(123,63,240,.16));font-weight:800;font-size:14px;color:var(--ink);text-align:left}
 .hubaviso[hidden],.admform[hidden]{display:none}
+.admform .cust select,.admform .cust input{padding:0 4px;height:26px;border-width:1px;border-radius:6px}.admform .cust input[type=color]{width:40px}
 .hubcfg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 8px}
 .hubcfg span{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--card);box-shadow:0 3px 0 rgba(123,63,240,.15)}
 .hubcfg button{border:0;border-radius:99px;padding:5px 10px;font:inherit;font-size:12px;font-weight:800;color:var(--sub);background:transparent;cursor:pointer}
@@ -8373,7 +8374,7 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
     '<button type="button" data-adm="bloquear" data-v="' + (d.bloqueado ? 'false' : 'true') + '">' + (d.bloqueado ? '✅ ' + escHtml(tr('Desbloquear')) : '⛔ ' + escHtml(tr('Bloquear'))) + '</button>' +
     '<button type="button" data-adm2="estrelas">⭐ Estrelas</button><button type="button" data-adm2="item">🎁 Item</button><button type="button" data-adm2="insignia">🏅 Insígnia</button><button type="button" data-adm2="extrato">📜 Extrato</button><button type="button" data-adm2="presente">🎁 Presente</button><button type="button" data-adm2="aviso">📣 Aviso</button>' +
     (temPets ? '<button type="button" data-adm2="pets">💗 ' + escHtml(tr('Restaurar todos os pets')) + '</button>' : '') +
-    '<button type="button" data-adm2="visual">👗 ' + escHtml(tr('Ajustar roupa do Idol')) + '</button>' +
+    '<button type="button" data-adm2="visual">👗 ' + escHtml(tr('Montar o Idol')) + '</button>' +
     '<div class="admform" id="admForm" hidden></div></div>';
 }
 function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
@@ -8385,6 +8386,45 @@ function admItens(){   // tudo o que se compra no servidor: visuais, poses, fund
     .concat(PERF_LOJA.map(function(o){ return ['roupa_' + o[0], '👗 ' + perfRot(o)]; }));
 }
 function admOpts(L){ return L.map(function(o){ return '<option value="' + escHtml(o[0]) + '">' + escHtml(o[1]) + '</option>'; }).join(''); }
+function admVisualRoupa(f, alvoVisual){   // reserva: só a roupa (funciona antes da função nova do banco)
+  contaRpc('admin_visual_info', { p_nick: alvoVisual }).then(function(r){
+    if(!perfAtual || perfAtual.nick!==alvoVisual) return;
+    if(!r || !r.ok){ f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.')) + '</p>'; return; }
+    f.innerHTML=admVisualFormHtml(r);
+    var seletorRoupa=$('admRoupa'); if(seletorRoupa) seletorRoupa.value=r.out||'';
+  }).catch(function(){
+    if(perfAtual && perfAtual.nick===alvoVisual) f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. Tente novamente.')) + '</p>';
+  });
+}
+// Montar o Idol de um membro (admin): visual completo, com as mesmas regras de liberação da roupa.
+var admIdol=null;
+function admIdolFormHtml(r){
+  var c=r.c||{},best=+r.best_idol||0,owned=Array.isArray(r.visuais)?r.visuais:[],hex=function(v,d){return /^#[0-9a-f]{6}$/i.test(v||'')?v:d;};
+  admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||''}};
+  function lista(id,ok){return [].filter.call($(id).options,function(o){return o.value===admIdol.c[CF[id]||'mecha']||ok(o);}).map(function(o){return [o.value,o.textContent.replace(/^🔒\s*/,'')];});}
+  function sel(id,campo,ok){return '<label>'+escHtml(tr(($(id).closest('label').firstChild.nodeValue||'').trim()))+' <select data-ai="'+campo+'">'+admOpts(lista(id,ok||function(){return true;}))+'</select></label>';}
+  function cor(campo){return ' <input type="color" data-ai="'+campo+'" value="'+escHtml(admIdol.c[campo])+'">';}
+  var roupas=admVisualFormHtml({best_idol:best,visuais:owned,out:admIdol.c.out,outcol:admIdol.c.outcol}).match(/<select id="admRoupa">([\s\S]*?)<\/select>/);
+  return '<p>'+escHtml(tr('Monte o Idol que aparece no perfil e nos jogos. Roupas e acessórios: só os já liberados ou comprados.'))+(r.auto?' <b>'+escHtml(tr('Este membro ainda não montou o próprio Idol.'))+'</b>':'')+'</p>'+
+    '<canvas id="admIdolCv" width="120" height="150" style="display:block;margin:4px auto;width:120px;height:150px"></canvas><div class="cust">'+
+    '<label>'+escHtml(tr('Cabelo'))+cor('hair')+'</label>'+sel('cback','back')+'<i class="cbr"></i>'+
+    sel('cstk','mecha')+cor('hair2')+'<i class="cbr"></i>'+
+    sel('cfront','front')+sel('cdet','det',function(o){return o.value!=='coelho'||owned.indexOf('det_coelho')>=0;})+'<i class="cbr"></i>'+
+    '<span class="perfskins">'+SK.map(function(sk){return '<button type="button" class="sw" data-ai="skin" data-v="'+sk+'" style="background:'+sk+'" aria-pressed="'+(sk===admIdol.c.skin)+'"></button>';}).join('')+'</span>'+
+    '<label>'+escHtml(tr('Olhos'))+cor('eye')+'</label><i class="cbr"></i>'+
+    '<label>'+escHtml(tr('Roupa'))+' <select data-ai="out">'+(roupas?roupas[1]:'')+'</select>'+cor('outcol')+'</label><i class="cbr"></i>'+
+    sel('chat','hat',function(o){return (+o.getAttribute('data-r')||0)<=best;})+sel('cgl','gl')+'</div>'+
+    '<input id="admMotivo" maxlength="60" placeholder="'+escHtml(tr('Motivo (aparece no extrato)'))+'">'+
+    '<button type="button" class="btn" id="admIdolSalvar">👗 '+escHtml(tr('Salvar Idol'))+'</button> <button type="button" class="sec" data-adm2="roupa">'+escHtml(tr('Só a roupa'))+'</button>'+
+    '<p class="perfmsg" id="admMsg" hidden></p>';
+}
+function admIdolPrev(){
+  var cv=$('admIdolCv');if(!cv||!admIdol)return;
+  [].forEach.call($('admForm').querySelectorAll('select[data-ai]'),function(s){s.value=admIdol.c[s.dataset.ai];});
+  var x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
+  var c={};for(var k in PERF_BASE)c[k]=PERF_BASE[k];for(k in admIdol.c)c[k]=admIdol.c[k];c.streak=!!c.mecha;c.img=c.hair;
+  try{perfDesenharIdol(x,cv.width,cv.height,{v:1,c:c,a:'',pose:'v',expr:2},false,false,0);}catch(e){}
+}
 function admVisualFormHtml(r){
   var best=+r.best_idol||0, owned=Array.isArray(r.visuais)?r.visuais:[];
   var base=[
@@ -8433,16 +8473,14 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
     if(t === 'visual'){
       var alvoVisual=perfAtual.nick;
       f.innerHTML='<p class="perfcarr">…</p>';
-      contaRpc('admin_visual_info', { p_nick: alvoVisual }).then(function(r){
+      contaRpc('admin_idol_info', { p_nick: alvoVisual }).then(function(r){
         if(!perfAtual || perfAtual.nick!==alvoVisual) return;
-        if(!r || !r.ok){ f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.')) + '</p>'; return; }
-        f.innerHTML=admVisualFormHtml(r);
-        var seletorRoupa=$('admRoupa'); if(seletorRoupa) seletorRoupa.value=r.out||'';
-      }).catch(function(){
-        if(perfAtual && perfAtual.nick===alvoVisual) f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. Tente novamente.')) + '</p>';
-      });
+        if(!r || !r.ok) throw 0;
+        f.innerHTML=admIdolFormHtml(r); admIdolPrev();
+      }).catch(function(){ if(perfAtual && perfAtual.nick===alvoVisual) admVisualRoupa(f, alvoVisual); });
       return;
     }
+    if(t === 'roupa'){ admVisualRoupa(f, perfAtual.nick); return; }
     var campo = t === 'estrelas' ? '<input type="number" id="admValor" min="-2000" max="2000" step="10" value="100"> <small>(−2000 a 2000)</small>'
       : t === 'item' ? '<select id="admValor">' + admOpts(admItens()) + '</select>'
       : '<select id="admValor">' + admOpts(PERF_INS.filter(function(i){ return /^esp_/.test(i[0]); }).map(function(i){ return [i[0], i[1] + ' ' + tr(i[2]) + ((perfAtual.insignias || []).indexOf(i[0]) >= 0 ? ' (tirar)' : '')]; })) + '</select>';
@@ -8458,6 +8496,19 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
       petMsg.textContent=r&&r.ok?'💗 '+(+r.pets||0)+' '+tr('pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.') : r&&r.erro==='sem_pets'?tr('Esta conta não tem pets para restaurar.'):tr('Não foi possível restaurar os pets. A atualização de moderação do banco ainda precisa ser aplicada.');
       petMsg.hidden=false;
     }).catch(function(){ petBtn.disabled=false; petMsg.textContent=tr('Não foi possível restaurar os pets. Tente novamente.'); petMsg.hidden=false; });
+    return;
+  }
+  var ai=e.target.closest&&e.target.closest('button[data-ai]');
+  if(ai&&admIdol){admIdol.c[ai.dataset.ai]=ai.dataset.v;[].forEach.call(ai.parentNode.children,function(b){b.setAttribute('aria-pressed',b===ai);});admIdolPrev();return;}
+  if(e.target.closest && e.target.closest('#admIdolSalvar') && perfAtual && admIdol && admIdol.nick===perfAtual.nick){
+    var ib=e.target.closest('#admIdolSalvar'),inick=perfAtual.nick,imsg=$('admMsg');
+    if(!confirm(tr('Tem certeza?')+' '+tr('Aplicar este visual ao Idol de')+' '+inick+'?'))return;
+    ib.disabled=true;
+    contaRpc('admin_montar_idol',{p_nick:inick,p_c:admIdol.c,p_motivo:($('admMotivo').value||'').trim()}).then(function(r){
+      ib.disabled=false;
+      if(r&&r.ok){perfTopoMsg('👗 '+tr('Idol atualizado. A pessoa verá a mudança ao atualizar o jogo.'));perfAbrir(inick,true);return;}
+      imsg.textContent=r&&r.erro==='bloqueada'?tr('Esta roupa ainda não foi desbloqueada para o Idol.'):r&&r.erro==='nao_comprada'?tr('Esta roupa não consta como comprada para esta conta.'):tr('Não foi possível salvar o ajuste. Tente novamente.');imsg.hidden=false;
+    }).catch(function(){ib.disabled=false;imsg.textContent=tr('Não foi possível salvar o ajuste. Tente novamente.');imsg.hidden=false;});
     return;
   }
   if(e.target.closest && e.target.closest('#admVestirSalvar') && perfAtual){
@@ -8564,6 +8615,8 @@ function admContasUI(){   // lista de todas as contas (só a moderação vê), c
 }
 function admContas(){ contaRpc('admin_contas').then(function(L){ admContasL = Array.isArray(L) ? L : []; admContasUI(); }).catch(function(){}); }
 perfOv.addEventListener('input', function(e){ if(e.target.id === 'admBusca') admContasUI(); });
+perfOv.addEventListener('input', function(e){ var el=e.target; if(admIdol && el.dataset && el.dataset.ai && el.closest('#admForm')){ admIdol.c[el.dataset.ai]=el.value; admIdolPrev(); } });
+perfOv.addEventListener('change', function(e){ var el=e.target; if(admIdol && el.tagName==='SELECT' && el.dataset.ai && el.closest('#admForm')){ admIdol.c[el.dataset.ai]=el.value; admIdolPrev(); } });
 perfOv.addEventListener('keydown', function(e){ if(e.target.id === 'admBusca') e.stopPropagation(); });
 function admCamarimOpts(){   // itens do camarim para o presente: comida e banho, acessórios do pet e quadros do mural
   var L = [['', '— nada do camarim —']];

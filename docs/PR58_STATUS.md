@@ -32,6 +32,9 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
   - Janela "Confirmar show" no celular: dentro do site, as janelas modais do Karaoke (confirmar show, resultado, pôster) abriam centralizadas no iframe alto, cerca de 1.000 px abaixo da tela. Agora abrem na parte que o jogador está vendo. Verificado em Chromium a 320×900, 390×700 e 844×390, com clique real no botão; antes da correção, o clique falhava.
   - CI: as etapas de cabelos e acessórios passam. O vermelho atual vem dos testes da sala de Karaoke em andamento pelo outro contribuidor (microfone automático, visitas dos pets e pandeiros) e da etapa "shows passam pelo servidor quando há conta" do `validate-games.js`, que já falhava antes destas correções.
 - Testes logados (Perfil, Montar Idol, Gacha, Pet, Moon Duo, Karaoke com tickets) ficam com o responsável.
+- **Moderação "Montar o Idol" (01/11/2026, pedido da dona):** no Perfil de um membro, o botão de admin "👗 Montar o Idol" abre o editor completo (cabelo, corte, mecha, franja, detalhe, pele, olhos, roupa e cor, acessório, óculos), com prévia. Vale para qualquer membro, menos a própria admin e outros admins. Roupas, acessórios e o detalhe Coelho seguem as regras de liberação/compra do membro; o item da mão não muda.
+  - Banco: **proposta** `supabase/sql/admin_montar_idol.sql` (`admin_idol_info` e `admin_montar_idol`), testada em PostgreSQL isolado (`supabase/tests/admin_idol_pg_integration.sh`). **Não aplicada.** Precisa de autorização da dona e aplicação pelo ChatGPT.
+  - Enquanto a função nova não existir no banco, o botão cai automaticamente no ajuste antigo, só de roupa (`admin_vestir`, em produção desde 31/10).
 
 ## 1. Implementado no branch — presença confirmada no código
 

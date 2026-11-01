@@ -187,4 +187,9 @@ assert(main.includes("function encLoop(ms)")&&main.includes("delta=window.TWMoti
 assert(main.includes("function aniverLoop(t)")&&main.includes("aniverT+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('aniverFx'),t):1;"),'Birthday animation must use elapsed time on high-refresh displays');
 assert(main.includes("Math.floor((perfT+1e-6)/2)>Math.floor((perfPrevT+1e-6)/2)")&&main.includes("Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2)")&&main.includes("Math.floor((gachaT+1e-6)/2)>Math.floor((gachaPrevT+1e-6)/2)")&&main.includes("Math.floor((duoT+1e-6)/2)>Math.floor((duoPrevT+1e-6)/2)")&&main.includes("Math.floor((encT+1e-6)/2)>Math.floor((encPrevT+1e-6)/2)"),'30 Hz draw scheduling must use elapsed-time threshold crossings, not exact modulo equality');
 
+
+assert(main.includes("var petRaf=0,petDrawDelta=1,petDrawDeltaPending=0;")&&main.includes("petDrawDelta=Math.max(.1,petDrawDeltaPending||delta)")&&main.includes("e.t+=petDrawDelta")&&main.includes("b.t+=petDrawDelta")&&main.includes("pr.t+=petDrawDelta"),'Pet-room effects, speech bubbles and promotions must advance by elapsed render time when the canvas is capped at 30 Hz');
+assert(main.includes("Math.floor(a.t/22)>Math.floor((a.t-petDrawDelta)/22)")&&main.includes("Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)"),'Pet animation events must not be skipped when a draw advances more than one logical frame');
+assert(main.includes("// Chave de liberação do calendário/estreia; não representa nem ativa uma sala online."),'Karaoke schedule gate must not be described as an online room mode');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

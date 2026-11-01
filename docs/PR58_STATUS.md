@@ -5,10 +5,10 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
 **Último commit de código verificado:** `56c3182ac7811e9d75470f05f48fbce1b3fb0824` (01/11/2026, 17h09, Brasília).
-**HEAD atual da branch ao atualizar este documento:** `cf5a052f43dc78eb0509db500141accf9b15edaf` — commit exclusivamente documental; o último commit com alterações de código continua sendo `56c3182ac7811e9d75470f05f48fbce1b3fb0824`.
-**Estado da PR:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Na consulta: 358 commits, 51 arquivos alterados, 5.133 adições e 987 remoções.
+**Último HEAD de branch consultado antes desta atualização documental:** `4f493b9c6e77805743411488ce66c2b4109df0da` — os commits posteriores a `56c3182a` são documentação/comentários de SQL; o corpo funcional do jogo não mudou.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. No snapshot consultado: 363 commits, 51 arquivos alterados, 5.133 adições e 987 remoções.
 **CI do último HEAD de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), com `static-validation` e `postgres-center-run` aprovados.
-**CI posterior do commit documental:** execução [#41345515468](https://github.com/chumikie/tsulipa-run/actions/runs/41345515468), também com os dois jobs aprovados. Esse commit altera somente este documento e não modifica o código do jogo.
+**CI mais recente consultado:** execução [#41346075172](https://github.com/chumikie/tsulipa-run/actions/runs/41346075172), associada ao HEAD `4f493b9c` da branch, também com os dois jobs aprovados.
 
 ---
 
@@ -213,7 +213,8 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`: consta no registro anterior como aplicada.
 - A investigação anterior registrou `public.terminar_corrida` em produção com teto de 1.500 estrelas/dia. Confirmar por leitura no momento de uma futura revisão autorizada antes de tomar decisão.
 - A proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`) está em `supabase/migrations/20261101161409_center_run_daily_100.sql`, com checklist, runbook e SQL de rollback em `supabase/sql/`. Foi homologada em PostgreSQL isolado; **não foi aplicada em produção** e depende de autorização específica.
-- A documentação da proposta registra um ponto de UX ainda a decidir: em um cenário de crédito parcial (por exemplo, 90 já recebidas e pedido de 30), a função credita apenas 10, mas o campo `limite_diario` pode continuar falso porque o teto foi alcançado durante essa corrida. Não alterar o contrato sem decisão explícita; definir a mensagem para crédito parcial + limite antes de qualquer aplicação.
+- A expressão `limite_diario` é `score_ok and p_stars > 0 and ganho_hoje + credito >= 100`. Portanto, no cenário de 90 créditos prévios + pedido de 30, a RPC credita 10 e retorna `limite_diario=true`. O teste `tests/center-run-daily-cap.test.js` protege esse caso e a mensagem combinada de crédito parcial + limite.
+- A cópia `supabase/migrations/20261101161409_center_run_daily_100.sql` e `supabase/sql/center_run_daily_100_REVIEW_ONLY.sql` foram mantidas idênticas byte a byte. Um CI intermediário falhou durante a atualização sequencial dos comentários, pois as duas cópias ficaram temporariamente diferentes; após alinhamento, a validação de igualdade e os dois jobs passaram na execução #41346075172.
 - A homologação temporal isolada usa relógio controlado apenas no PostgreSQL efêmero. A documentação também registra que a fixture de teste do Pet deve usar o motivo real `minijogo` em vez de motivo fictício antes de tratá-la como espelho exato da regra do Pet.
 - Preservar o limite independente de 50 estrelas/dia dos minijogos do Pet.
 - Não apagar nem resetar saldos, históricos, corridas ou rankings.
@@ -270,3 +271,27 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - [ ] Revisão humana final do responsável.
 - [ ] Merge somente após autorização explícita.
 - [ ] Arquivar branches antigas somente após merge autorizado e autorização específica.
+
+## 9. Revisão preliminar integral do diff — riscos e limites remanescentes
+
+### Automação e deploy
+
+- O workflow versionado é `.github/workflows/validate-games.yml`. Ele executa validação estática e um serviço PostgreSQL 16 efêmero para testes de Center Run e tickets. Não contém `vercel deploy`, `netlify deploy`, `supabase db push` ou `supabase migration up`.
+- `vercel.json` mantém `git.deploymentEnabled.main=true` e `**=false`; portanto, o branch da PR não está habilitado para deploy automático do Vercel por Git.
+- O redirect adicionado para `/index2.html` e `/index2` aponta para `/`. O `index2.html` na própria `main` já é um stub com meta refresh, canonical e `location.replace('/')`; o redirect Vercel é redundante, mas coerente com o comportamento atual do arquivo. Os redirects de Karaoke Day e do laboratório online já existiam na `main`.
+- A integração Netlify pode gerar Deploy Preview automático para a PR; isso é preview isolado, não merge nem deploy de produção. Nenhuma ação manual de deploy foi executada nesta revisão.
+
+### Supabase e banco
+
+- A migração `20261101161409_center_run_daily_100.sql` permanece apenas como proposta na branch. Nenhum SQL foi executado no projeto de produção.
+- O workflow usa apenas um serviço PostgreSQL temporário do GitHub Actions, com banco e credenciais de teste descartáveis. Não usa URL, token ou credencial do projeto Supabase de produção.
+- A migração e a cópia `REVIEW_ONLY` foram conferidas iguais byte a byte após a correção dos comentários. O CI mais recente passou pela validação.
+- README e checklist foram corrigidos para refletir a lógica real do flag de teto. O comportamento funcional do SQL não foi alterado nesta revisão; os commits recentes nesse par de arquivos mudam somente comentários.
+- Antes de qualquer merge futuro, confirmar se existe algum pipeline externo conectado ao repositório que aplique migrações automaticamente. O workflow versionado aqui não faz isso, mas a existência de integrações externas não pode ser inferida apenas pelos arquivos desta PR.
+
+### Limite da revisão manual
+
+- O diff da PR lista 51 arquivos. O endpoint de patch do GitHub não entregou patch completo para `index.html` e `karaoke-time.html`, devido ao tamanho dos arquivos. Os dois foram lidos em trechos direcionados e os contratos automatizados passaram, mas **não considero concluída uma revisão humana linha a linha de todo o diff desses dois arquivos**.
+- Também permanece pendente homologação visual autenticada e em aparelhos físicos nas seções 3.1–3.4.
+- Por esses motivos, a revisão integral ainda está **em andamento**. Não declarar a PR pronta para merge até terminar a leitura manual dos grandes diffs, a homologação visual/física e a revisão dos riscos externos de migração.
+

@@ -254,3 +254,10 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 .kt-library-head.kt-reacting::after{content:'♡ ✦ ♡';pointer-events:none;position:absolute;z-index:2;top:28%;left:0;right:0;text-align:center;font-size:21px;color:#ffc1e0;text-shadow:0 0 10px #cf88ee;animation:kt-idol-hearts .85s ease-out forwards}
 @keyframes ktVoiceSing{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.04,1.02)}}
 @media(prefers-reduced-motion:reduce){.kt-library-head .kt-library-face,.kt-library-head.kt-reacting::before,.kt-library-head.kt-reacting::after{animation:none!important}}
+
+/* Cabeçalhos da biblioteca seguem a hierarquia visual bilíngue das outras páginas. */
+.kt-audio-heading h2 .kt-ja-subtitle{display:block;margin:3px 0 0;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
+.kt-library-section-title{margin:13px 0 7px;color:var(--pink);font:400 13px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif}
+.kt-library-section-title .kt-ja-subtitle{display:block;margin:3px 0 0;color:var(--tw-kr-sub,#b9a8d8);font:700 9px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
+.kt-library-voices{margin-top:15px;padding-top:11px;border-top:1px solid rgba(123,63,240,.18)}
+@media(max-width:620px){.kt-library-section-title{font-size:12px}.kt-audio-heading h2 .kt-ja-subtitle{font-size:9px}}

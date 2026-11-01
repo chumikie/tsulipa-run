@@ -1741,8 +1741,8 @@ function celebDraw(){
 
 var celebRaf = 0;
 function celeb(){
-  cancelAnimationFrame(celebRaf);
-  if(state !== 'over') return;
+  cancelAnimationFrame(celebRaf);celebRaf=0;
+  if(state !== 'over'||twIndex2BaseFramesPaused()) return;
   var og = g;
   try { celebDraw(); }
   catch(err){ console.error('celeb:', err); }
@@ -3084,16 +3084,53 @@ g.save();
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
 }
 
-var twIndex2BaseRaf = 0;
-function twIndex2BaseFramesPaused(){
-  if(document.hidden)return true;
-  if(typeof hubOv!=='undefined'&&hubOv&&!hubOv.hidden)return true;
-  var preview=document.getElementById('twPreviewJogo');
-  return !!(preview&&!preview.hidden);
+var twIndex2BaseRaf = 0, twIndex2StageVisible = true;
+function twElementoVisivelNaJanela(el){
+  if(!el||!el.isConnected||!el.getClientRects().length)return false;
+  var r=el.getBoundingClientRect();
+  return r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<window.innerHeight&&r.left<window.innerWidth;
 }
+function twOverlayTopo(){
+  var L=Array.prototype.slice.call(document.querySelectorAll('.ov:not([hidden]),.tw-preview-game:not([hidden]),.tw-karaoke-closed-ov:not([hidden])')).filter(twElementoVisivelNaJanela);
+  L.sort(function(a,b){
+    var za=parseInt(getComputedStyle(a).zIndex,10)||0,zb=parseInt(getComputedStyle(b).zIndex,10)||0;
+    if(za!==zb)return za-zb;
+    if(a===b)return 0;
+    return (a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING)?-1:1;
+  });
+  return L.length?L[L.length-1]:null;
+}
+function twAnimacaoVisivel(el){
+  if(document.hidden||!twElementoVisivelNaJanela(el))return false;
+  var owner=el.closest?el.closest('.ov,.tw-preview-game,.tw-karaoke-closed-ov'):null,top=twOverlayTopo();
+  return owner?owner===top:(!top&&twIndex2StageVisible);
+}
+function twIndex2BaseFramesPaused(){
+  if(document.hidden||!twIndex2StageVisible)return true;
+  return !!twOverlayTopo();
+}
+(function twIndex2ObservarPalco(){
+  var stage=document.getElementById('stage');if(!stage)return;
+  function setVisible(v){
+    v=!!v;if(v===twIndex2StageVisible)return;
+    twIndex2StageVisible=v;
+    if(v)twIndex2ResumeBaseFrames();else twIndex2PauseBaseFrames();
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      var e=entries[0];setVisible(!!(e&&e.isIntersecting&&e.intersectionRatio>0));
+    },{threshold:0}).observe(stage);
+  }else{
+    function check(){setVisible(twElementoVisivelNaJanela(stage));}
+    window.addEventListener('scroll',check,{passive:true});
+    window.addEventListener('resize',check);
+    check();
+  }
+})();
 function twIndex2PauseBaseFrames(){
   if(twIndex2BaseRaf){cancelAnimationFrame(twIndex2BaseRaf);twIndex2BaseRaf=0;}
   if(twIndex2AvatarRaf){cancelAnimationFrame(twIndex2AvatarRaf);twIndex2AvatarRaf=0;}
+  if(celebRaf){cancelAnimationFrame(celebRaf);celebRaf=0;}
   last=0;
 }
 function twIndex2StartBaseLoop(){
@@ -3106,6 +3143,7 @@ function twIndex2StartAvatarLoop(){
 function twIndex2ResumeBaseFrames(){
   if(twIndex2BaseFramesPaused())return;
   twIndex2StartBaseLoop();twIndex2StartAvatarLoop();
+  if(state==='over'&&!celebRaf)celebRaf=requestAnimationFrame(celeb);
 }
 function loop(t){
   twIndex2BaseRaf=0;
@@ -3701,16 +3739,20 @@ function petDrawRoom(){
   if(petLove > 0) petLove--;
 }
 
+var petRaf=0;
 function petLoop(){
-  if(!petOpen) return;
+  petRaf=0;
+  if(!petOpen||!twAnimacaoVisivel($('petov'))) return;
   petT++;
   sync();   // troca a música do camarim (lofi / caixinha de música)
   try{
     if(petView === 'room' && petData) petDrawRoom(); else if(petView === 'make') petDrawMake(); else petDrawPick();
     if(petData && petT % 300 === 0){ petTick(); petSave(); petUI(); }   // atualiza as barras a cada ~5 s
   }catch(err){ console.error('pet:', err); }
-  requestAnimationFrame(petLoop);
+  petRaf=requestAnimationFrame(petLoop);
 }
+function petAnimLigar(){if(!petRaf&&petOpen&&twAnimacaoVisivel($('petov')))petRaf=requestAnimationFrame(petLoop);}
+function petAnimParar(){if(petRaf){cancelAnimationFrame(petRaf);petRaf=0;}}
 
 // ---------- Carinho (tocar no pet) ----------
 petCv.addEventListener('pointerdown', function(e){
@@ -3763,12 +3805,12 @@ function petOpenUI(){
   $('petov').hidden = false;
   petView = petData ? 'room' : 'col';
   petShow();
-  if(!petOpen){ petOpen = true; requestAnimationFrame(petLoop); }
+  if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
-  petOpen = false;
+  petOpen = false;petAnimParar();
   $('petov').hidden = true;
   petGameAbort(); petPhShow(false);   // V2.1
   sync();   // volta a música do menu
@@ -3779,11 +3821,12 @@ $('petX').onclick = petClose;
 $('petWindowClose').onclick = function(){ $('petX').click(); };
 $('petGo').onclick = petAdopt;
 document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape') petClose(); });
-document.addEventListener('visibilitychange', function(){ if(document.hidden && petData){ petTick(); petSave(); } });
+document.addEventListener('visibilitychange', function(){ if(document.hidden){petAnimParar();if(petData){petTick();petSave();}}else if(petOpen)petAnimLigar(); });
 window.addEventListener('pagehide', function(){ if(petData){ petTick(); petSave(); } });
 petLoad();
 	// Liga/desliga o aviso (!) na patinha automaticamente a cada 2 segundos
 setInterval(function(){
+  if(document.hidden)return;
   var el = $('petAlert');
   if(!el) return;
   var p = typeof petAtivo === 'function' ? petAtivo() : null;
@@ -7673,7 +7716,7 @@ function perfGenUI(){
 // O estúdio e o montador são uma cena animada (como o menu e o camarim), redesenhada a cada 2 quadros
 function perfAnimar(){
   perfAnimId = 0;
-  if(perfOv.hidden || !perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !$('perfGenCv')) return;
+  if(!perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !twAnimacaoVisivel($('perfGenCv'))) return;
   perfT++;
   if(perfT % 2 === 0) perfGenDesenhar();
   perfAnimId = requestAnimationFrame(perfAnimar);
@@ -8924,7 +8967,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
   });
 })();
 function hubLoop(){
-  hubAnim = 0; if(hubOv.hidden) return;
+  hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
   hubT++; if(hubT % 2 === 0) hubDesenhar();
   hubAnim = requestAnimationFrame(hubLoop);
 }
@@ -9396,6 +9439,10 @@ setInterval(function(){
 },60000);
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
+function twPreviewEnviarVisibilidadeIframe(visible){
+  var frame=$('twPreviewIframe');if(!frame||!frame.contentWindow||!twPreviewJogoAnterior)return;
+  try{frame.contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:!!visible},location.protocol==='file:'?'*':location.origin);}catch(e){}
+}
 var twPreviewTextos = {pt:'Início',en:'Home',es:'Inicio',ja:'ホーム',th:'หน้าหลัก'};
 var TW_SORA_SOM_TEXTOS={
   pt:{off:'Desativar som',on:'Ativar som'},en:{off:'Turn sound off',on:'Turn sound on'},
@@ -9542,6 +9589,7 @@ function twPreviewFecharJogo(){
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
   var eraPopup=wrap.hasAttribute('data-karaoke-popup');
+  twPreviewEnviarVisibilidadeIframe(false);
   frame.src='about:blank';
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
@@ -9596,6 +9644,8 @@ function twPreviewFecharJogo(){
   });
   var soundFrame=$('twPreviewIframe');
   soundFrame.addEventListener('load',function(){
+    if(!twPreviewJogoAnterior)return;
+    twPreviewEnviarVisibilidadeIframe(!document.hidden&&twAnimacaoVisivel($('twPreviewJogo')));
     if(twPreviewJogoAnterior!=='sora')return;
     try{
       var alvo=location.protocol==='file:'?'*':location.origin;
@@ -9951,7 +10001,7 @@ function gachaDesenhar(){
   finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; frame = oF; charPose = ''; perfAntena = ''; }
 }
 function gachaLoop(){
-  gachaAnim = 0; if(gachaOv.hidden) return;
+  gachaAnim = 0; if(!twAnimacaoVisivel(gachaOv)) return;
   gachaT++; if(gachaGiro >= 0) gachaGiro++;
   if(gachaT % 2 === 0) gachaDesenhar();
   gachaAnim = requestAnimationFrame(gachaLoop);
@@ -10415,7 +10465,7 @@ function duoComida(x, cx, cy, U, tipo, t){
   }
 }
 function duoLoop(){
-  duoAnim = 0; if(duoOv.hidden || !duoGu) return;
+  duoAnim = 0; if(!duoGu||!twAnimacaoVisivel($('duoCv'))) return;
   duoT++;
   if(duoT % 2 === 0){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
   duoAnim = requestAnimationFrame(duoLoop);
@@ -10731,7 +10781,7 @@ function aniverMusica(){   // "Parabéns pra você" (melodia em domínio públic
   N.forEach(function(n){ beep(n[0] * 2, n[2], 'triangle', .035, n[1]); beep(n[0], n[2] + .1, 'sine', .03, n[1]); });
 }
 function aniverLoop(){
-  aniverAnim = 0; if(aniverOv.hidden) return; aniverT++;
+  aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT++;
   var cv = $('aniverFx'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i;
   x.clearRect(0, 0, W2, H2);
   for(i = 0; i < 70; i++){
@@ -11192,7 +11242,7 @@ function encMostrar(d){
   if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
 function encLoop(){
-  encAnim = 0; if(encOv.hidden || !encDados) return; encT++;
+  encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; encT++;
   if(encT % 2 === 0){
     var cv = $('encCv'), x = cv.getContext('2d'), poses = ['v', 'tchau', 'banzai', 'coracao', 'luz', 'mic'];
     var grupo = [encDados].concat(Array.isArray(encDados.extras) ? encDados.extras : []).map(function(o, i){
@@ -11528,14 +11578,14 @@ function hubIdolsLigar(){ if(!hubIV.raf) hubIV.raf = requestAnimationFrame(hubId
 function hubIdolsParar(){ if(hubIV.raf){ cancelAnimationFrame(hubIV.raf); hubIV.raf = 0; } }
 function hubIdolsLoop(ms){
   hubIV.raf = 0;
-  var box = $('hubIdols'); if(!box || box.hidden || hubOv.hidden) return;   // a tela de início fechou: para
-  hubIV.raf = requestAnimationFrame(hubIdolsLoop);
-  if(!hubIV.vis || ms - hubIV.ult < 32) return;   // ~30 quadros por segundo, e só quando aparece na tela
+  var box = $('hubIdols'); if(!box || box.hidden || !hubIV.vis || !twAnimacaoVisivel(hubOv)) return;
+  if(ms - hubIV.ult < 32){hubIV.raf=requestAnimationFrame(hubIdolsLoop);return;}   // ~30 quadros por segundo, e só quando aparece na tela
   var dt = hubIV.ult ? Math.min(.1, (ms - hubIV.ult) / 1000) : 0; hubIV.ult = ms;
   var calmo = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   if(!hubIV.par && !calmo) hubIV.x += dt * 34;
   hubIV.s = ms / 1000;
-  try{ hubIdolsDesenhar(ms / 1000, dt, calmo); }catch(e){ hubIdolsParar(); }
+  try{ hubIdolsDesenhar(ms / 1000, dt, calmo); }catch(e){ hubIdolsParar();return; }
+  if(hubIV.vis&&twAnimacaoVisivel(hubOv))hubIV.raf=requestAnimationFrame(hubIdolsLoop);
 }
 function hubIdolsFundo(x, W, H, s, dt){
   var chao = H - 60;
@@ -11642,7 +11692,10 @@ function hubIdolsPilula(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.
   cv.addEventListener('mouseenter', function(){ hubIV.par = true; });
   cv.addEventListener('mouseleave', function(){ hubIV.par = false; });
   window.addEventListener('resize', function(){ hubIV.cw = 0; });
-  if('IntersectionObserver' in window) new IntersectionObserver(function(es){ hubIV.vis = es[0].isIntersecting; }).observe(cv);
+  if('IntersectionObserver' in window) new IntersectionObserver(function(es){
+    hubIV.vis=!!(es[0]&&es[0].isIntersecting&&es[0].intersectionRatio>0);
+    if(hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
+  },{threshold:0}).observe(cv);
 })();
 (function(){   // carrega junto com a tela de início
   var hm = hubMostrar;
@@ -13326,6 +13379,51 @@ applyLang();
 </script>
 <script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
+
+<script id="twAnimationVisibilityLifecycle">
+(function(){
+ 'use strict';
+ function cancel(name){
+  var id=window[name]||0;
+  if(id){cancelAnimationFrame(id);window[name]=0;}
+ }
+ function syncLoop(name,el,active,fn){
+  var visible=!!active&&twAnimacaoVisivel(el),id=window[name]||0;
+  if(visible&&!id)window[name]=requestAnimationFrame(fn);
+  else if(!visible&&id)cancel(name);
+ }
+ function sync(){
+  if(twIndex2BaseFramesPaused())twIndex2PauseBaseFrames();
+  else twIndex2ResumeBaseFrames();
+  syncLoop('hubAnim',hubOv,!hubOv.hidden,hubLoop);
+  syncLoop('gachaAnim',gachaOv,!gachaOv.hidden,gachaLoop);
+  syncLoop('duoAnim',$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
+  syncLoop('aniverAnim',$('aniverFx'),!aniverOv.hidden,aniverLoop);
+  syncLoop('encAnim',$('encCv'),!!encDados,encLoop);
+  syncLoop('petRaf',$('petov'),!!petOpen,petLoop);
+  syncLoop('perfAnimId',$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
+  if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
+  twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));
+ }
+ var scheduled=false;
+ function schedule(){
+  if(scheduled)return;scheduled=true;
+  requestAnimationFrame(function(){scheduled=false;sync();});
+ }
+ new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
+ document.addEventListener('visibilitychange',sync);
+ window.addEventListener('pageshow',sync);
+ window.addEventListener('pagehide',function(){
+  twIndex2PauseBaseFrames();
+  ['hubAnim','gachaAnim','duoAnim','aniverAnim','encAnim','petRaf','perfAnimId'].forEach(cancel);
+  if(hubIdols)hubIdolsParar();
+  twPreviewEnviarVisibilidadeIframe(false);
+ });
+ window.addEventListener('scroll',schedule,true);
+ window.addEventListener('resize',schedule);
+ sync();
+})();
+</script>
 </body>
 </html>
 

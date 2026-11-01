@@ -4,9 +4,9 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Snapshot do código auditado:** 01/11/2026, 17h01 (Brasília) — último commit de código verificado: `d88d5b7a52f769a4674d7e7ae37421c5bb5873de`.
-**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 346 commits, 50 arquivos alterados, 4.924 adições e 981 remoções.
-**CI associado ao HEAD de código:** execução [#41344644714](https://github.com/chumikie/tsulipa-run/actions/runs/41344644714), com `static-validation` e `postgres-center-run` aprovados. O documento pode receber commits documentais posteriores sem alterar o código auditado.
+**Snapshot do código auditado:** 01/11/2026, 17h09 (Brasília) — último commit de código verificado: `56c3182ac7811e9d75470f05f48fbce1b3fb0824`.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. A PR tinha 356 commits, 51 arquivos alterados, 5.107 adições e 987 remoções.
+**CI associado ao HEAD de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), com `static-validation` e `postgres-center-run` aprovados. O documento pode receber commits documentais posteriores sem alterar o código auditado.
 
 ---
 
@@ -83,15 +83,36 @@ Pedido do responsável: substituir a Vitrine sonora extensa por três controles 
 
 Status: **implementação e testes automatizados integrados; homologação visual e de áudio pendente**.
 
-### 3.3. Plateia autônoma e movimento do jogador — implementação parcial
+### 3.3. Plateia autônoma e movimento do jogador — implementação integrada; homologação visual pendente
 
-- O código usa um controlador singular `krLoungeActor` para o passeio autônomo: há apenas um figurante em passeio independente por vez.
-- Há interação social entre até dois figurantes, mas conversa/olhar/aplauso não equivale a três personagens caminhando simultaneamente.
-- O planejador `krPlanearDestino(px,py)` existe, mas a busca do código não encontrou chamada para ele; portanto, não há evidência de que o toque no piso esteja conectado a esse planejador.
-- No início do show, o personagem do jogador é posicionado no palco/microfone pelo próprio código. Não foi encontrada a regra pedida de retorno automático ao microfone após cinco segundos longe.
-- A exigência de estar no microfone para iniciar/jogar também precisa ser implementada e validada sem prejudicar o fluxo atual de apresentação.
+**Plateia autônoma:**
 
-Status: **parcial; precisa de implementação**. Manter Karaoke exclusivamente solo/offline; não criar sala online nem fila de participantes reais.
+- O controlador singular `krLoungeActor` foi substituído por `krLoungeActors`, uma lista com limite explícito de três personagens em passeio simultâneo.
+- Cada caminhante tem rota, faixa de piso e destino próprios. As três faixas são escolhidas sem duplicação; os pontos de parada são mantidos separados para reduzir cruzamentos/convergência.
+- A rotina avança todos os caminhantes no mesmo loop já existente e usa o mesmo `krFrameDelta`; não cria RAF, timer ou intervalo independente por Idol.
+- Quem assume o microfone, recebe item/lanche, dança ou entra em estado incompatível deixa de passear e retorna ao assento quando necessário.
+- Conversas/aplausos continuam limitados ao par existente. A existência de até três caminhantes não transforma conversas em grupos maiores.
+- A regra `krLoungeSoloPermitido()` continua desligando o comportamento autônomo na homologação/conexão de homologação. Não foi criado modo online de sala.
+
+**Movimento do jogador:**
+
+- O planejador de piso `krPlanearDestino(px,py)`, que já existia sem chamada, agora é chamado quando o jogador toca uma área livre do chão da sala. Os objetos/interações de cena e as pistas de ritmo continuam tendo prioridade.
+- O movimento permanece no corredor/piso permitido, contorna a área central do palco e é conduzido pelo loop existente com delta-time.
+- Depois de cinco segundos desde o último toque de destino, o relógio lógico da sala programa o retorno pela lateral até o ponto fixo do microfone (`480,286`). O temporizador usa 300 quadros lógicos a 60 Hz; como depende do relógio/loop da sala, fica suspenso quando a página/sala está inativa.
+- O pedestal do microfone fica fixo no palco e deixa de acompanhar o personagem enquanto ele caminha.
+- `ktFlow.request()` verifica a posição do jogador **antes** de consultar tentativas/quota ou iniciar a confirmação do ticket. Se estiver longe, mostra o aviso e manda o personagem retornar; não abre a confirmação nem admite/debita uma partida.
+
+**Proteções automatizadas:**
+
+- Novo `tests/karaoke-lounge-movement.test.js`: exercita três caminhantes simultâneos, lanes e destinos distintos, atualização independente, prioridade de cantor, limpeza ao entrar em homologação, toque no piso, rota de retorno e gate de posição.
+- `tests/karaoke-flow.test.js` foi estendido para confirmar que um jogador longe do microfone recebe aviso/retorno e não chega à consulta de quota/admissão.
+- O workflow agora inclui os novos contratos nos caminhos de pull request/push e no job `static-validation`.
+
+**CI de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), associada ao HEAD `56c3182a`: `static-validation` e `postgres-center-run` aprovados. O log estático mostra explicitamente o novo teste de três caminhantes/retorno e o fluxo de bloqueio do microfone aprovados.
+
+**Ainda pendente:** inspeção visual do movimento de três Idols no palco real, colisões/oclusões em diferentes formações e tamanhos de viewport, toque em celular físico, retorno após uma partida real, e confirmação de que a cena continua visualmente legível sem esconder os detalhes dos personagens. Os testes atuais são de lógica/contratos em CI; não são homologação visual nem teste físico.
+
+Status: **implementação e testes automatizados integrados; homologação visual, de toque e em aparelhos pendente**.
 
 ### 3.4. Desempenho e apresentação
 
@@ -141,27 +162,19 @@ ajustes-v213, ajustes-vitrine, chore/karaoke-estreia-08-11-2026, encontro-cena, 
 | feature/sora-jump-ranking-online | Versão anterior; ranking online ativo, `sora_run_start/finish/abort` e abas Semana/Geral já existem. |
 | fix/sora-online-profile-tv | SQL e `sora-jump.html` idênticos; diferenças em `index.html` são textos antigos substituídos. |
 | feature/sora-karaoke-v2-2026-10-29 | O texto do Google já saiu do botão do Gacha ("🎰 Girar!"); diferença apenas cosmética. |
-| fix/karaoke-ticket-recovery | Reescrita na PR (`karaoke-tickets.js`, `karaoke-time.html`) com teste próprio. |
-| fix/center-run-credit-recovery | Reescrita na PR com teste próprio. |
-| feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados (criados nesta branch em 01/11, **não** existiam no jogo) trazidos para `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar somente após a conferência visual dos personagens (seção 3.1). |
-| sem-online-historico | Botão "Não funcionou? Entrar de outro jeito" (`gisAntigo`, login Google por redirecionamento) já está na `main` e na PR; só muda a classe do botão de fechar. |
-| feat/backstage-admin-single-owner | Documentação e testes presentes; a diferença é um bloco Sora⭐Jump na proposta SQL do perfil admin → encaminhado ao Supabase (seção 7). |
+| fix/karaoke-ticket-recovery | Ree## 6. Testes e CI — histórico com escopo explícito
 
-Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` quando a PR #58 for aprovada. Até lá, a PR é o lugar onde esse trabalho está preservado.
+- **HEAD de código auditado:** `56c3182ac7811e9d75470f05f48fbce1b3fb0824`.
+- **CI mais recente consultado para esse HEAD:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), workflow `Check TsuLiPa special games`, evento `pull_request`, concluída em 01/11/2026.
+- Jobs: `static-validation` = **success**; `postgres-center-run` = **success**.
+- O job estático inclui os testes de integração dos cabelos Sora/Karaoke Day, o teste de recordes pessoais por música, as verificações da biblioteca compacta, `tests/karaoke-lounge-movement.test.js` e o fluxo de bloqueio no microfone em `tests/karaoke-flow.test.js`, além das verificações anteriores listadas em `.github/workflows/validate-games.yml`.
+- O log do job estático registra: biblioteca musical/recordes pessoais aprovados; confirmação do Karaoke com bloqueio por posição aprovada; teste de três caminhantes simultâneos, lanes/destinos distintos, prioridade do cantor, isolamento de homologação, toque no piso, retorno de cinco segundos e início apenas no microfone aprovado.
+- O job PostgreSQL usa serviço temporário no CI e executa integrações isoladas de Center Run e tickets. Não representa acesso ou teste ao Supabase de produção.
+- A execução local histórica de 33/33 testes Node ocorreu em HEAD anterior (`47b1c8a` conforme registro anterior); não atribuir esse resultado ao HEAD `56c3182a`.
+- O commit `76ba9e55` registra verificação em Chromium a 390×844 e 1280×900 para a regressão de pausa mobile. Tratar como validação de navegador relatada pelo autor do commit; não equivale a teste em celular físico. As integrações recentes do Sora/Karaoke Day, a nova biblioteca musical e o movimento da sala têm confirmação automatizada de código, mas não inspeção visual nesta retomada.
+- A revisão visual headless 420×900 sem login, registrada anteriormente, foi parcial e não cobriu Perfil completo nem Karaoke autenticado.
+- **Nesta atualização do mapa não foram executados testes locais, visuais, de navegador ou em aparelhos.** O commit deste documento não deve ser apresentado como nova validação do código.
 
-### C. Descartadas ou adiadas (4)
-
-| Branch | Motivo |
-|---|---|
-| feature/karaoke-cd-player-popup | A moldura de CD foi removida de propósito na `main` (commit `f3db9aa`, "Remove unwanted Karaoke Time CD popup shell"). |
-| recovery/restore-embedded-karaoke | Altera `sora-jump-karaoke.html`, que não existe mais; o Karaoke atual é `karaoke-time.html`. |
-| chumikie-refatoracao-repositorio | Ensaio de Karaoke online/multijogador (SQL lab 3a11/3a12), contrário à regra do Karaoke solo. **Adiado**: lint (`tools/lint`) e testes `static-links` / `index-critical-flows` podem ser reaproveitados depois. |
-| sql/ranking-abertura | Apenas SQL, marcado como já aplicado em produção; responsabilidade do Supabase. |
-
-### D. Funcionalidade ausente avaliada (1)
-
-| Branch | Decisão |
-|---|---|
 | feature/encontro-dia-duo-trio-profiles | **Descartada.** Regra do responsável: no Encontro solo aparecem ranking e Oshi; na Dupla (terça) e no Trio (sexta), não. A PR já faz isso (`index.html` `encMostrar` + `tw-mic-cd-popup.css`: `.encp.enc-grupo #encRk, #encSelo, #encOshi { display:none }`). A branch acrescentaria ranking/Oshi por membro do grupo, o oposto do desejado. |
 
 ## 5. Alterações recuperadas de outras branches
@@ -188,9 +201,16 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 
 - Projeto registrado no histórico: `fsggtvgbyhchblyazgmt`.
 - `20261031151827_karaoke_tickets_extra_shows_inventory_gacha`: consta no registro anterior como aplicada.
-- A investigação anterior registrou `public.terminar_corrida` em produção com teto de 1.500 estrelas/dia. Confirmar por leitura no momento de uma futura revisão autorizada antes de tomar decisão.
-- A proposta de 100 estrelas/dia por conta (`America/Sao_Paulo`) está em `supabase/migrations/20261101161409_center_run_daily_100.sql`, com checklist, runbook e SQL de rollback em `supabase/sql/`. Foi homologada em PostgreSQL isolado; **não foi aplicada em produção** e depende de autorização específica.
-- Preservar o limite independente de 50 estrelas/dia dos minijogos do Pet.
+- A investigação anterior registrou `public.terminar_corrida` em produção com teto de 1.500 estrelas/dia. Confirmar por leitura ### Karaoke — plateia e movimento
+- [x] Permitir até três figurantes caminhando simultaneamente, com lanes/destinos independentes e prioridade de cantor.
+- [x] Conectar o toque no piso ao planejador de movimento do jogador, preservando interações da cena e pistas do ritmo.
+- [x] Fazer o jogador retornar ao microfone após cinco segundos longe, usando o relógio lógico da sala.
+- [x] Exigir posição correta no microfone para iniciar; bloquear antes da consulta de tentativa/ticket quando o jogador está longe.
+- [x] Preservar o gate solo/offline e desligar a autonomia durante homologação.
+- [ ] Homologar visualmente três caminhantes simultâneos, rotas, oclusões e composição da sala.
+- [ ] Testar toque no piso, retorno automático e início pelo microfone em celular físico.
+
+relas/dia dos minijogos do Pet.
 - Não apagar nem resetar saldos, históricos, corridas ou rankings.
 - O bloco Sora⭐Jump da proposta `admin_player_profile_proposal.sql` continua como item separado para avaliação.
 - Relatório de leitura e conferência do Supabase permanece pendente.

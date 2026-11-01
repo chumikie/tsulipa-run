@@ -13414,8 +13414,8 @@ applyLang();
  function sync(){
   if(twIndex2BaseFramesPaused())twIndex2PauseBaseFrames();
   else twIndex2ResumeBaseFrames();
-  syncLoop('hubAnim',$('hubCv'),!hubOv.hidden,hubLoop);
-  syncLoop('gachaAnim',$('gachaCv'),!gachaOv.hidden,gachaLoop);
+  syncLoop('hubAnim',hubOv,!hubOv.hidden,hubLoop);
+  syncLoop('gachaAnim',gachaOv,!gachaOv.hidden,gachaLoop);
   syncLoop('duoAnim',$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
   syncLoop('aniverAnim',$('aniverFx'),!aniverOv.hidden,aniverLoop);
   syncLoop('encAnim',$('encCv'),!!encDados,encLoop);

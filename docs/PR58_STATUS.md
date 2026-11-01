@@ -32,7 +32,6 @@ A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Sup
 - Custo da faixa de visitantes do Karaoke.
 - Apresentação dos rankings de Karaoke.
 - Revisão dos loops secundários que já desenham a cada dois frames, em aparelhos cujo `requestAnimationFrame` opera perto de 30 Hz.
-- Decisão pendente: botão "entrar pelo método antigo" quando o login Google falha (branch `sem-online-historico`, ver seção 5-D).
 
 ## 4. Branches avaliadas
 
@@ -44,7 +43,7 @@ Todos os commits destas branches já estão na `main` de produção (e, portanto
 
 ajustes-v213, ajustes-vitrine, chore/karaoke-estreia-08-11-2026, encontro-cena, encontro-dupla-trio, encontro-por-conta, engavetado/karaoke-day, feat/pet-sync-admin-20261030, feature/karaoke-time, feature/sora-jump-karaoke-hub-v21, fix/backstage-pet-sync-main-2026-10-30, fix/cards-hub, fix/center-run-botao-deslizar-30-10, fix/karaoke-placar-rotativo, fix/kt-ritmo-relogio, fix/mic-cd-popup-and-encounter-no-rank-2026-10-30, fix/perfil-foto-sem-slide-2026-10-30, gacha-cards, icone-topo, janelas-na-inicial, lancamento/30-10, main, moderacao-contas, moderacao-livre, moon-duo-abas, musicas-gacha-duo, musicas-temas, novidades, og-zipper-icone, og/karaoke-time, privacidade-og, release/index2-lancamento, test/karaoke-reuse-anonymous-session, titulo-world, traducoes-dicas, v2-1-2, vitrine-lugar, vitrine-reacao.
 
-### B. Commits exclusivos, funcionalidade já presente na PR (9)
+### B. Commits exclusivos, funcionalidade já presente na PR (10)
 
 | Branch | Onde está na PR |
 |---|---|
@@ -56,9 +55,10 @@ ajustes-v213, ajustes-vitrine, chore/karaoke-estreia-08-11-2026, encontro-cena, 
 | fix/karaoke-ticket-recovery | Reescrita na PR (`karaoke-tickets.js`, `karaoke-time.html`) com teste próprio. |
 | fix/center-run-credit-recovery | Reescrita na PR com teste próprio. |
 | feat/avatar-careca-capitao-estrela | Capitão, estrela e 3 cortes ondulados recuperados em `tw-avatar-items.js` / `tw-avatar-hair.js`. A opção careca foi removida pela própria branch. Arquivar só depois da conferência visual da seção 2. |
+| sem-online-historico | Botão "Não funcionou? Entrar de outro jeito" (`gisAntigo`, login Google por redirecionamento) já está na `main` e na PR; só muda a classe do botão de fechar. |
 | feat/backstage-admin-single-owner | Documentação e testes presentes; a diferença é um bloco Sora⭐Jump na proposta SQL do perfil admin → encaminhado ao Supabase (seção 7). |
 
-Estas 9 só entram na `main` quando a PR #58 for aprovada. Até lá, a PR é o lugar onde esse trabalho está preservado.
+Estas 10 já têm o conteúdo na PR; as que dependem da PR só entram na `main` quando a PR #58 for aprovada. Até lá, a PR é o lugar onde esse trabalho está preservado.
 
 ### C. Descartadas ou adiadas (4)
 
@@ -69,12 +69,11 @@ Estas 9 só entram na `main` quando a PR #58 for aprovada. Até lá, a PR é o l
 | chumikie-refatoracao-repositorio | Ensaio de Karaoke online/multijogador (SQL lab 3a11/3a12), contrário à regra do Karaoke solo. **Adiado**: lint (`tools/lint`) e testes `static-links` / `index-critical-flows` podem ser reaproveitados depois. |
 | sql/ranking-abertura | Apenas SQL, marcado como já aplicado em produção; responsabilidade do Supabase. |
 
-### D. Funcionalidades ausentes avaliadas (2)
+### D. Funcionalidade ausente avaliada (1)
 
 | Branch | Decisão |
 |---|---|
 | feature/encontro-dia-duo-trio-profiles | **Descartada.** Regra do responsável: no Encontro solo aparecem ranking e Oshi; na Dupla (terça) e no Trio (sexta), não. A PR já faz isso (`index.html` `encMostrar` + `tw-mic-cd-popup.css`: `.encp.enc-grupo #encRk, #encSelo, #encOshi { display:none }`). A branch acrescentaria ranking/Oshi por membro do grupo, o oposto do desejado. |
-| sem-online-historico | **Pendente de decisão.** Botão "entrar pelo método antigo" (`gisAntigo`) quando o login Google falha. Ausente da `main` e da PR. |
 
 ## 5. Alterações recuperadas de outras branches
 
@@ -106,7 +105,6 @@ Projeto `fsggtvgbyhchblyazgmt`. Nada é executado a partir desta PR.
 - [ ] Teste em celulares reais.
 - [ ] Faixa de visitantes do Karaoke investigada.
 - [ ] Rankings de Karaoke revisados.
-- [ ] Decisão sobre o botão de login antigo.
 - [ ] Suíte completa e CI verdes no HEAD final.
 - [ ] Relatório do Supabase recebido.
 - [ ] Decisão do responsável sobre a migração de 100 estrelas.

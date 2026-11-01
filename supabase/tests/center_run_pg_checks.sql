@@ -43,6 +43,11 @@ begin
   if (select count(*) from public.star_log where user_id='00000000-0000-4000-8000-000000000003')<>0 then
     raise exception 'invalid or expired C runs earned stars';
   end if;
+  -- PostgreSQL now() remains anchored to the transaction, even while waiting;
+  -- fixed boundary checks below prove which civil day the transaction timestamp selects.
+  if now() is distinct from transaction_timestamp() then
+    raise exception 'now() is not transaction-scoped';
+  end if;
   if ((timestamp with time zone '2026-11-02 02:59:59+00' at time zone 'America/Sao_Paulo')::date =
       (timestamp with time zone '2026-11-02 03:00:00+00' at time zone 'America/Sao_Paulo')::date) then
     raise exception 'Sao Paulo day boundary at 03:00 UTC failed';

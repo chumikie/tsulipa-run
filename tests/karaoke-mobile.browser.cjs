@@ -152,6 +152,8 @@ async function metrics(frame){
     console.log(engine,width,'both pandeiros + three pet visits/return passed');
    }
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
+   await frame.locator('#ktStartConfirm').waitFor({state:'visible'});
+   await frame.locator('#ktConfirmAccept').click(); // Preserve the game's explicit admission confirmation.
    await frame.locator('body.kt-playing').waitFor();
    const photo=photoQA&&!baseline?await photoQA.verify(p,frame,width,out):null;
    const playing=await metrics(frame);

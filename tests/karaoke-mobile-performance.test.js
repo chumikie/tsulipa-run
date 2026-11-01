@@ -328,7 +328,9 @@ assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudi
 assert(html.includes('data-kt-library-view="songs"')&&html.includes('data-kt-library-view="voices"'),'The compact library should switch between music and voices without leaving the Karaoke page');
 assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&audienceAudio.includes("voiceLines")&&audienceAudio.includes("function speakGroup(group,button)")),'The three official characters are independent voice buttons');
 assert(!html.includes('class="kt-library-voice-panel"')&&!html.includes('data-kt-voice-panel='),'Long per-voice lists are removed from the voice panel');
-assert(html.includes('class="kt-library-special"')&&html.includes('data-kt-audio="encontro"'),'The special Encontro clip remains independently accessible');
+assert(!html.includes('class="kt-library-special"')&&!html.includes('data-kt-audio="encontro"'),'The Encontro audio control is intentionally absent from the character voice section');
+assert((html.match(/<canvas class="kt-library-face" width="88" height="96"/g)||[]).length===3&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index],44,82,1,'),'The three voice buttons should show full-body miniatures using the original avatar renderer');
+assert(baseCss.includes('@keyframes ktVoiceIdle'),'Voice miniatures should have a gentle idle animation');
 assert(baseCss.includes('ktVoiceHop')&&baseCss.includes('prefers-reduced-motion:reduce')&&baseCss.includes('is-bouncing'),'Voice character buttons bounce once and respect reduced motion');
 assert(audienceAudio.includes("play(id,true)")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a character should cycle an existing voice clip and draw the original Tsu, Lirika or Pati avatar');
 assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');

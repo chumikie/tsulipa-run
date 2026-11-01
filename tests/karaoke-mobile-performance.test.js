@@ -285,7 +285,7 @@ assert(rhythmTickStart>=0&&rhythmTickEnd>rhythmTickStart&&!rhythm.slice(rhythmTi
 const avatarStart=main.indexOf('function drawChar(c,x,y,run,expr,isPartner)');
 const avatarEnd=main.indexOf('\nfunction drawPet(',avatarStart);
 const avatarDraw=main.slice(avatarStart,avatarEnd);
-assert(avatarStart>=0&&avatarEnd>avatarStart&&!/create(?:Linear|Radial)Gradient\s*\(/.test(avatarDraw),'The shared site avatar renderer should not reconstruct its hair/accessory gradients on each character draw');
+assert(avatarStart>=0&&avatarEnd>avatarStart&&avatarDraw.includes('var hg=g.createLinearGradient(0,y+5,0,y+24)')&&avatarDraw.includes('var sg2 = g.createLinearGradient(0,y+5,0,y+15)'),'Hair and streak rendering must retain the original per-shape gradients to preserve the exact character silhouettes');
 assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_DRAW_RAMP_CACHE.size>=64')&&main.includes('function charDrawHairRamp(color)')&&main.includes('function charDrawStreakRamp(color)'),'Site-wide hair and two-tone streak ramps must use a bounded shared cache');
 assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
 

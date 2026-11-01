@@ -2557,7 +2557,10 @@ window.ktOnline=(function(){
   }).then(function(r){busy=false;
    if(r&&Number.isFinite(+r.used))usados=+r.used;
    if(r&&Number.isFinite(+r.tickets))tickets=+r.tickets;
-   if(r&&r.ok){run=r.run;guardar(run);launch(fn,r.kind==='ticket');return;}
+   if(r&&r.ok){
+    if(resume&&r.run!==resume)try{var parent=window.parent;if(parent&&parent.ktTickets&&parent.ktTickets.completeRun)parent.ktTickets.completeRun(resume);}catch(e){}
+    run=r.run;guardar(run);launch(fn,r.kind==='ticket');return;
+   }
    if(wantsTicket){
     if(r&&r.reason==='used_request')aviso('🎟️ A tentativa anterior já foi encerrada. Saldo conferido; inicie uma nova apresentação.');
     else aviso('🎟️ Não foi possível usar o ticket. Seu saldo não foi liberado para esta apresentação.');

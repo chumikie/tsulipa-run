@@ -308,6 +308,10 @@ const audienceAudio=html.slice(audienceAudioStart,audienceAudioEnd);
 assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv"'),'The duplicate lower audience carousel and its independent animation loop should be removed');
 assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
 assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
+const rhythmTrackKeys=['normal','fast','chill','tema','corrida','gacha','duo'];
+assert(rhythmTrackKeys.every(key=>html.includes('data-kt-song-select="'+key+'"')),'The audio showcase should include all seven original rhythm-game themes');
+assert(audienceAudio.includes("selector.dispatchEvent(new Event('change',{bubbles:true}))")&&audienceAudio.includes("if(!selector||selector.disabled)"),'Choosing a rhythm theme from the showcase should update the existing song selector without starting or spending a show');
+
 const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5','encontro'];
 assert(availableVoiceFiles.every(id=>html.includes('data-kt-audio="'+id+'"')&&audienceAudio.includes("'"+id+"':1")),'The audio showcase should list only the 15 existing trio voice clips and the existing Encontro audio');
 assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');

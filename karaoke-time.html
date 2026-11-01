@@ -2889,18 +2889,27 @@ window.ktOnline=(function(){
   a.ranking().then(function(d){if(!sameSession(a,owner)||!d||!d.semana)return;boards={week:d.semana,ends:d.fim,score:linhas(d.score),accuracy:linhas(d.acertos),combo:linhas(d.combo),online:true};if(Number.isFinite(+d.usados))usados=+d.usados;if(Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});}
  function quota(){var a=api(),owner=sessionKey(a);if(!a||!owner)return Promise.resolve(null);return a.ranking().then(function(d){if(!sameSession(a,owner))return null;if(d&&Number.isFinite(+d.usados))usados=+d.usados;if(d&&Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();return usados;});}
  function launch(fn,ticket){admissionTicket=!!ticket;try{fn({ticket:!!ticket});}finally{admissionTicket=false;}}
+ function ticketConcluir(id){if(!id)return;try{var parent=window.parent;if(parent&&parent.ktTickets&&parent.ktTickets.completeRun)parent.ktTickets.completeRun(id);}catch(e){}}
  function gate(fn,wantsTicket){var a=api(),owner=sessionKey(a);if(!a){if(!wantsTicket)launch(fn,false);return;}if(!owner||busy)return;busy=true;
-  a.iniciar(guardado(owner),!!wantsTicket).then(function(r){busy=false;
+  var resume=guardado(owner);
+  a.iniciar(resume,!!wantsTicket).then(function(r){
+   if(wantsTicket&&resume&&r&&r.reason==='limit'&&sameSession(a,owner)){
+    if(guardado(owner)===resume)guardar(null,owner);
+    ticketConcluir(resume);
+    return a.iniciar(null,true);
+   }
+   return r;
+  }).then(function(r){busy=false;
    if(!sameSession(a,owner)){if(r&&r.ok&&r.run)guardar(r.run,owner);return;}
    if(r&&Number.isFinite(+r.used))usados=+r.used;
    if(r&&Number.isFinite(+r.tickets))tickets=+r.tickets;
-   if(r&&r.ok){run=r.run;runOwner=owner;guardar(run,owner);launch(fn,r.kind==='ticket');return;}
-   if(wantsTicket){aviso('🎟️ Não foi possível usar o ticket. Seu saldo não foi liberado para esta apresentação.');if(window.ktMetaRefresh)window.ktMetaRefresh();return;}
+   if(r&&r.ok){if(resume&&r.run!==resume)ticketConcluir(resume);run=r.run;runOwner=owner;guardar(run,owner);launch(fn,r.kind==='ticket');return;}
+   if(wantsTicket){if(r&&r.reason==='used_request')aviso('🎟️ A tentativa anterior já foi encerrada. Saldo conferido; inicie uma nova apresentação.');else aviso('🎟️ Não foi possível usar o ticket. Seu saldo não foi liberado para esta apresentação.');if(window.ktMetaRefresh)window.ktMetaRefresh();return;}
    if(r&&r.reason==='limit'){aviso('Você usou seus cinco shows de hoje. A plateia espera você amanhã!');return;}
    run=null;guardar(null);aviso('Este show fica só neste aparelho (sem ranking online).');launch(fn,false);
   },function(){busy=false;if(!sameSession(a,owner))return;run=null;runOwner='';if(wantsTicket){aviso('🎟️ Sem conexão: nenhum ticket foi autorizado. Tente novamente.');return;}aviso('Sem conexão com o ranking: este show fica só neste aparelho.');launch(fn,false);});}
  function finish(result){var a=api(),id=run,owner=runOwner;run=null;runOwner='';if(!id||!owner)return;if(!sameSession(a,owner)){guardar(id,owner);return;}guardar(null,owner);
-  a.terminar(id,result).then(function(x){if(!sameSession(a,owner))return;if(x&&x.ranked)load(true);else if(x&&x.reason==='invalid')aviso('O servidor não aceitou este resultado.');}).catch(function(){});}
+  a.terminar(id,result).then(function(x){if(!sameSession(a,owner))return;if(x&&(x.ranked||x.reason==='invalid'))ticketConcluir(id);if(x&&x.ranked)load(true);else if(x&&x.reason==='invalid')aviso('O servidor não aceitou este resultado.');}).catch(function(){});}
  /* Com conta, quem conta os 5 shows é o servidor: a tela mostra o número dele, não o deste aparelho. */
  function ajusta(a){if(!api()||usados===null||a.pending)return Object.assign({},a,{tickets:api()?tickets:0});var u=Math.min(5,Math.max(0,usados));return Object.assign({},a,{used:u,remaining:5-u,tickets:tickets});}
  return {gate:gate,finish:finish,load:load,quota:quota,ajusta:ajusta,ticketAdmission:function(){return admissionTicket;},boards:function(){return api()&&boards?boards:null;},online:function(){return !!api();}};

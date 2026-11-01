@@ -53,3 +53,42 @@ rpc "$user_c" '10000000-0000-4000-8000-000000000004' 100 50
 rpc "$user_c" '10000000-0000-4000-8000-000000000005' 300000 50
 
 db_psql < "$repo_dir/supabase/tests/center_run_pg_checks.sql"
+
+# Second phase: instrument a TEST COPY of the exact review-only SQL function.
+# Replace only clock reads in the disposable container; no production SQL differs.
+db_psql < "$repo_dir/supabase/tests/center_run_pg_midnight_setup.sql"
+sed 's/now()/public.center_test_now()/g' "$repo_dir/supabase/sql/center_run_daily_100_REVIEW_ONLY.sql" | db_psql
+
+rpc_clock(){
+  local owner="$1" run_id="$2" clock="$3" score="$4" stars="$5"
+  db_psql -c "set role authenticated; set request.jwt.claim.sub='$owner'; set center_test.now='$clock'; select public.terminar_corrida('$run_id'::uuid,$score,$stars,'Tsu','device-123456');"
+}
+user_e='00000000-0000-4000-8000-000000000005'
+before_midnight='2026-11-02 02:59:59+00'
+after_midnight='2026-11-02 03:00:01+00'
+
+# Hold the real players row lock while a separate RPC, with a fixed transaction
+# clock before midnight, waits. An independent observer advances the simulated
+# wall clock across midnight; the blocked transaction must retain its original day.
+db_psql -c "begin; select id from public.players where id='$user_e' for update; select pg_sleep(2); commit;" >/dev/null &
+lock_holder=$!
+sleep 0.25
+rpc_clock "$user_e" '10000000-0000-4000-8000-000000000008' "$before_midnight" 100 30 &
+blocked_rpc=$!
+sleep 0.25
+db_psql -c "update public.center_test_wall set ts='$after_midnight';"
+wait "$blocked_rpc"
+wait "$lock_holder"
+
+# These runs START before midnight but finish in the new Sao Paulo day.
+# Their day-2 allowance is fresh; a partially credited run reaches 100.
+rpc_clock "$user_e" '10000000-0000-4000-8000-000000000009' "$after_midnight" 100 70
+partial_next_day="$(rpc_clock "$user_e" '10000000-0000-4000-8000-000000000010' "$after_midnight" 100 40)"
+if [[ "$partial_next_day" != *'"creditadas" : 30'* || "$partial_next_day" != *'"limite_diario" : true'* ]]; then
+  echo 'Expected next-day partial +30 with cap flag true' >&2
+  exit 1
+fi
+# Duplicate finalized UUID cannot earn more nor append a second ranking entry.
+rpc_clock "$user_e" '10000000-0000-4000-8000-000000000010' "$after_midnight" 100 40
+
+db_psql < "$repo_dir/supabase/tests/center_run_pg_midnight_checks.sql"

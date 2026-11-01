@@ -6423,7 +6423,7 @@ function contaPedirNome(){
   $('contaTxt').textContent = tr('Ele aparece no ranking e não pode ser igual ao de outra pessoa.');
   $('contaOk').textContent = tr('CONFIRMAR');
   $('contaNome').value = nick || ''; $('contaErro').hidden = true;
-  contaOv.hidden = false; setTimeout(function(){ $('contaNome').focus(); }, 50);
+  contaOv.hidden = false; twTimeoutVisivel(contaOv,function(){return !contaOv.hidden;},function(){var input=$('contaNome');if(input)input.focus();},50);
 }
 $('contaOk').onclick = function(){
   var v = $('contaNome').value.trim(), btn = this; btn.disabled = true;
@@ -7231,13 +7231,14 @@ function perfPoseFrente(c, x, y){
 
 // ---------- Tela do perfil ----------
 var perfMontou = false, perfAtual = null, perfMeu = false, perfNickVis = '', perfGenAv = null, perfDono = [], perfBestConta = 0, perfAba = 'perfil', perfZoom = true, perfMeuAv = null;
-var perfProva = '', perfT = 0, perfAnimId = 0, perfInsSel = '';
+var perfProva = '', perfT = 0, perfAnimId = 0, perfInsSel = '', perfPedido = 0;
 var perfOv = document.createElement('div');
 perfOv.className = 'ov perfov tw-window-overlay'; perfOv.id = 'perfOv'; perfOv.hidden = true;
 perfOv.innerHTML = '<div class="panel perfp tw-window tw-window-surface" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="perfX">✕</button><div id="perfCorpo"></div></div>';
 document.body.appendChild(perfOv);
 
 function perfAbrir(nick, manterAba){
+  var pedido=++perfPedido;
   perfMeu = !nick; perfNickVis = nick || ''; perfAtual = null; perfProva = ''; perfInsSel = '';
   if(!manterAba){ perfAba = 'perfil'; perfZoom = true; }
   $('perfX').setAttribute('aria-label', tr('Fechar'));
@@ -7246,11 +7247,12 @@ function perfAbrir(nick, manterAba){
   var pr = perfMeu ? contaRpc('meu_perfil') : contaRpc('perfil_publico', { p_nick: String(nick).slice(0, 24) });
   pr = Promise.all([pr, perfOshiJogCarregar()]).then(function(r){ return r[0]; });   // lista de Oshi = quem joga
   pr.then(function(d){
-    if(perfOv.hidden) return;
+    if(perfOv.hidden||pedido!==perfPedido) return;
     if(!d){ $('perfCorpo').innerHTML = '<h2 class="perfnm">' + escHtml(nick || '') + '</h2><p class="perfcarr">' + escHtml(tr('Esse nome ainda não tem perfil (jogou sem conta).')) + '</p>'; return; }
     if(d.eu && !perfMeu){ perfAbrir(); return; }   // tocou no próprio nome: abre o perfil pessoal
     perfAtual = d; perfAniverVer = !!d.aniver_hoje; if(perfMeu) perfMeuAniverHoje = !!d.aniver_hoje; perfMontar();
   }).catch(function(){
+    if(perfOv.hidden||pedido!==perfPedido)return;
     $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Não deu para falar com o servidor. Tente de novo.')) + '</p>';
   });
 }
@@ -7267,6 +7269,7 @@ function perfAniverHtml(d){
     '<small class="perfaniv-nota">' + escHtml(tr(trava ? 'Dá para trocar de novo em {data}.' : 'Só dia e mês, sem o ano. No seu dia, seu perfil vira festa! Dá para trocar 1 vez por ano.')).replace('{data}', escHtml(perfData(d.aniver_livre))) + '</small>';
 }
 function perfFechar(){
+  perfPedido++;
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
   perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfAniverVer = false; perfIconeConta();
@@ -7553,6 +7556,7 @@ perfOv.addEventListener('click', function(e){
 });
 perfOv.addEventListener('click', function(e){
   if(e.target.id !== 'perfBioOk') return;
+  var pedidoPerfil=perfPedido;
   var b = e.target, os = $('perfBioOshi').value, fr = $('perfBioFrase').value;
   var ad = $('perfAnivDia'), am = $('perfAnivMes'), dia = ad && !ad.disabled ? +ad.value : 0, mes = am && !am.disabled ? +am.value : 0;
   var antes = perfAtual && perfAtual.aniver || '', novo = dia && mes ? ('0' + mes).slice(-2) + '-' + ('0' + dia).slice(-2) : '';
@@ -7560,19 +7564,21 @@ perfOv.addEventListener('click', function(e){
   b.disabled = true;
   var pAniv = novo && novo !== antes ? contaRpc('salvar_aniver', { p_dia: dia, p_mes: mes }) : Promise.resolve(null);
   pAniv.then(function(ra){
+    if(perfOv.hidden||pedidoPerfil!==perfPedido)return;
     if(ra && !ra.ok) throw { aniv: ra.erro };
-    if(ra && ra.ok){ perfAtual.aniver = ra.aniver; perfAtual.aniver_hoje = perfAniverVer = perfMeuAniverHoje = !!ra.hoje; if(ra.hoje && typeof aniverFesta === 'function') setTimeout(aniverFesta, 900); }
+    if(ra && ra.ok){ perfAtual.aniver = ra.aniver; perfAtual.aniver_hoje = perfAniverVer = perfMeuAniverHoje = !!ra.hoje; if(ra.hoje && typeof aniverFesta === 'function')twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&pedidoPerfil===perfPedido;},aniverFesta,900); }
     var em = $('perfBioEmoji') ? $('perfBioEmoji').value.trim() : '', co = $('perfBioCor') ? $('perfBioCor').value : '', ti = $('perfBioTime') ? $('perfBioTime').value : '';
     return contaRpc('salvar_estilo', { p_emoji: em, p_cor: co, p_time: ti }).then(function(re){
       if(re && re.ok){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; perfGuardarCor(re.cor); }
       else if(re && re.erro === 'emoji') throw { estilo: 'emoji' };
     }, function(){ /* servidor ainda sem a coluna: segue salvando oshi e frase */ }).then(function(){ return contaRpc('salvar_bio', { p_oshi: os, p_frase: fr }); });
   }).then(function(r){
+    if(perfOv.hidden||pedidoPerfil!==perfPedido)return;
     b.disabled = false;
     var m = $('perfBioMsg'); m.hidden = false;
-    if(r&&r.ok){perfAtual.oshi=os;perfAtual.frase=r.frase||'';m.textContent='✨ '+tr('Salvo!');if(sfx.card)sfx.card();setTimeout(function(){if(!perfOv.hidden&&perfMeu)perfMontar();},700);}
+    if(r&&r.ok){perfAtual.oshi=os;perfAtual.frase=r.frase||'';m.textContent='✨ '+tr('Salvo!');if(sfx.card)sfx.card();twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&pedidoPerfil===perfPedido;},perfMontar,700);}
     else m.textContent = tr(r && r.erro === 'palavras' ? 'Essa frase tem palavras que não são permitidas.' : 'Não deu para falar com o servidor. Tente de novo.');
-  }).catch(function(e){ b.disabled = false; var m = $('perfBioMsg'); m.hidden = false; m.textContent = tr(e && e.estilo === 'emoji' ? 'Use só emojis (até 8).' : e && e.aniv === 'trava' ? 'O aniversário só pode ser trocado 1 vez por ano.' : e && e.aniv === 'data' ? 'Essa data não existe.' : 'Não deu para falar com o servidor. Tente de novo.'); });
+  }).catch(function(e){ if(perfOv.hidden||pedidoPerfil!==perfPedido)return;b.disabled = false; var m = $('perfBioMsg'); m.hidden = false; m.textContent = tr(e && e.estilo === 'emoji' ? 'Use só emojis (até 8).' : e && e.aniv === 'trava' ? 'O aniversário só pode ser trocado 1 vez por ano.' : e && e.aniv === 'data' ? 'Essa data não existe.' : 'Não deu para falar com o servidor. Tente de novo.'); });
 });
 
 // Pets: os seus (do aparelho, os mais atuais) ou os da pessoa (resumo vindo do servidor)
@@ -7821,7 +7827,7 @@ perfOv.addEventListener('click', function(e){
     perfGenUI(); return;
   }
   var c = e.target.closest('.perfcompra'); if(c) perfComprar(c.dataset.k, c);
-  if(e.target.closest('[data-irloja]')){ perfAba = 'montar'; perfAbaMostrar(); setTimeout(function(){ var l = $('perfLoja2'); if(l && l.scrollIntoView) l.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); }
+  if(e.target.closest('[data-irloja]')){ perfAba = 'montar'; perfAbaMostrar(); var pedidoLoja=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&perfAba==='montar'&&pedidoLoja===perfPedido;},function(){var l=$('perfLoja2');if(l&&l.scrollIntoView)l.scrollIntoView({behavior:'smooth',block:'center'});},80); }
 });
 function perfComprar(k, btn){
   btn.disabled = true;
@@ -9363,6 +9369,20 @@ function twIntervaloVisivel(el,enabled,callback,delay){
   start();
   return {refresh:start,destroy:stop};
 }
+function twTimeoutVisivel(el,enabled,callback,delay){
+  var timer=0,done=false,gate=null;
+  function stop(){if(timer){clearTimeout(timer);timer=0;}}
+  function run(){
+    timer=0;if(done)return;done=true;
+    if(gate)gate.destroy();
+    if(!el||!el.isConnected||document.hidden||(enabled&&!enabled()))return;
+    callback();
+  }
+  function start(){if(!done&&!timer)timer=setTimeout(run,Math.max(0,delay||0));}
+  if(window.TWMotionLifecycle&&el)gate=window.TWMotionLifecycle.watchLoop(el,enabled,start,stop);
+  else if(el&&el.isConnected&&!document.hidden&&(!enabled||enabled()))start();
+  return {cancel:function(){if(done)return;done=true;stop();if(gate)gate.destroy();},refresh:function(){if(gate)gate.refresh();}};
+}
 var twRankRotationWanted=false,twRankVisibilityGate=null,twRankVisibilityElement=null;
 function twRankTimerStart(){
  if(twRankTimer)return;
@@ -9500,7 +9520,7 @@ function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "
   if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)setTimeout(function(){c.click();},350);
 }
 function hubComecar(){
-  ac();hubJingle();setTimeout(function(){if(!hubOv.hidden&&hubComecou)hubMusicaTocar();},1100);
+  ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
   twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu

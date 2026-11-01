@@ -76,7 +76,7 @@ assert.equal(rules.snapshot(NEXT_WEEK,playerA.id).used,0,'daily show quota start
 const legacyRecord={id:'legacy-A',nick:'Legacy Idol',avatar:{c:{}},song:'normal',score:321,hits:7,attempts:10,accuracy:70,combo:4,completedAt:1,token:'legacy'};
 const legacyState={
   v:1,
-  week:'2026-10-25',
+  week:'2026-11-01',
   quota:{day:'2026-11-01',owners:{'legacy-A':{used:2}}},
   records:{'legacy-A':{score:legacyRecord}},
   active:{}

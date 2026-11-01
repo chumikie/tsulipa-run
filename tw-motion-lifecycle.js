@@ -4,7 +4,7 @@
 (function(w,d){
 'use strict';
 if(w.TWMotionLifecycle)return;
-var lifecycleActive=true,parentActive=true,gates=new Set(),cssNodes=new Set(),cssMap=new WeakMap(),framed=new WeakSet();
+var lifecycleActive=true,parentActive=true,gates=new Set(),cssNodes=new Set(),cssMap=new WeakMap(),framed=new WeakSet(),frameGates=new WeakMap();
 var cssIO=('IntersectionObserver' in w)?new IntersectionObserver(function(entries){
  entries.forEach(function(entry){
   var state=cssMap.get(entry.target);if(!state)return;
@@ -83,8 +83,14 @@ function connectFrame(frame){
  function send(value){try{if(frame.contentWindow)frame.contentWindow.postMessage({type:'tsulipa-motion-state',active:!!value},w.location.origin);}catch(e){}}
  function resume(){active=true;send(true);}
  function pause(){active=false;send(false);}
- watchLoop(frame,function(){return !frame.hidden;},resume,pause);
+ var gate=watchLoop(frame,function(){return !frame.hidden;},resume,pause);frameGates.set(frame,gate);
  frame.addEventListener('load',function(){send(active&&pageIsActive()&&domVisible(frame)&&rectVisible(frame));});
+}
+function cleanup(root){
+ if(!root||root.nodeType!==1)return;
+ var frameGate=frameGates.get(root);if(frameGate){frameGate.destroy();frameGates.delete(root);framed.delete(root);}
+ var state=cssMap.get(root);if(state){if(cssIO)cssIO.unobserve(root);root.classList.remove('tw-motion-paused');cssNodes.delete(state);cssMap.delete(root);}
+ if(root.querySelectorAll){var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++)cleanup(all[i]);}
 }
 function scan(root){
  if(!root)return;
@@ -99,7 +105,10 @@ function refreshAll(){
 var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
  records.forEach(function(rec){
   if(rec.type==='attributes')inspectCss(rec.target);
-  else for(var i=0;i<rec.addedNodes.length;i++)scan(rec.addedNodes[i]);
+  else{
+   for(var i=0;i<rec.removedNodes.length;i++)cleanup(rec.removedNodes[i]);
+   for(var j=0;j<rec.addedNodes.length;j++)scan(rec.addedNodes[j]);
+  }
  });
  refreshAll();
 }):null;

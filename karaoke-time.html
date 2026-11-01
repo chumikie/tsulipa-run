@@ -1535,7 +1535,7 @@ var krHomolAtivo=krSoHomol;
 var krHomolConectado=false; // a homologação pode assumir o personagem sem disputar o controle da sala.
 var krSt={aberta:true,sabado:false,faltam10:false,vista:(Math.floor((Date.now()-3*3600e3)/604800e3)%2?'liberdade':'gigoia'),ultimos10:false,ocupadas:7,vip:false},krEu={x:480,y:286,tx:480,ty:286,no_mic:false,micT:0,canto:'balanco',danca:'',pose:'v',expr:2,drink:'',plateia:false,fila:0,vagaPronta:false,vagaS:30,emojiT:0,itemSala:'',antenaSala:false,lookSala:false,snackSala:''},krBots=[{nick:'Momo',x:432,y:470,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:CH[0]},{nick:'Nene',x:532,y:470,danca:'',pose:'luz',expr:3,drink:'',no_mic:false,char:CH[2]},{nick:'Lirika',x:225,y:460,danca:'banzai',pose:'v',expr:2,drink:'lirika',no_mic:false,char:CH[1]},{nick:'Pati',x:645,y:470,danca:'neon',pose:'v',expr:3,drink:'pati',no_mic:false,char:CH[2]},{nick:'Nanamaru',x:320,y:472,danca:'',pose:'luz',expr:2,drink:'tsu',no_mic:false,char:{n:'Nanamaru',hair:'#dc143c',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'lateral',out:'zipper',outcol:'#dc143c'}},{nick:'Hiruru',x:740,y:460,danca:'',pose:'v',expr:2,drink:'lirika',no_mic:false,char:{n:'Hiruru',hair:'#f2b632',skin:'#fbe5d8',eye:'#5a3b2e',back:'marias',front:'reta',out:'sweet',outcol:'#f2b632'}},{nick:'Fuji',x:165,y:390,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:{n:'Fuji',hair:'#b57edc',skin:'#fbe5d8',eye:'#5a3b2e',back:'chanel',front:'reta',out:'seifuku',outcol:'#b57edc'}},{nick:'Acádia',x:795,y:390,danca:'',pose:'luz',expr:2,drink:'pati',no_mic:false,char:{n:'Acádia',hair:'#ffb38a',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'reta',out:'sweet',outcol:'#ffb38a'}}];krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});
 var krBolhas=[],krBaloes={},krTrilha=[],krT=0,krCortina=0,krAlvo=null;
-var krLoungeCastRef=null,krLoungeActor=null,krLoungeNextAt=0,KR_LOUNGE_AISLE_Y=508,KR_LOUNGE_STOPS=[230,300,370,590,660,730];
+var krLoungeCastRef=null,krLoungeActors=[],krLoungeNextAt=0,KR_LOUNGE_AISLE_Y=508,KR_LOUNGE_STOPS=[230,300,370,590,660,730],KR_LOUNGE_MAX_WALKERS=3,KR_LOUNGE_LANES=[492,506,520];
 function ktCoracaoDe(c){var h=String(c&&(c.hair||c.img)||'#ff6fb5'),n=parseInt(h.slice(1),16);if(!(n>=0))return '💖';var r=(n>>16&255)/255,g=(n>>8&255)/255,bl=(n&255)/255,mx=Math.max(r,g,bl),mn=Math.min(r,g,bl),l=(mx+mn)/2,d=mx-mn;if(d<.12)return l>.75?'🤍':l<.25?'🖤':'💜';var hue=mx===r?((g-bl)/d+6)%6*60:mx===g?((bl-r)/d+2)*60:((r-g)/d+4)*60;return hue<15||hue>=345?'❤️':hue<40?'🧡':hue<70?'💛':hue<165?'💚':hue<250?'💙':hue<290?'💜':'💗';}
 /* Pedestal de microfone no palco, na frente de quem canta (balança quando tocado) */
 /* Globo: toque liga/desliga o modo festa */
@@ -2515,84 +2515,103 @@ function krMontarListaRenderSala(andando){
 
 function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}
 function krLoungeReset(){
- krLoungeCastRef=krBots;krLoungeActor=null;krLoungeNextAt=krT+300+Math.random()*240;krLoungeSocialReset();
- for(var i=0;i<krBots.length;i++){var b=krBots[i];b._ktLounge={phase:'rest',route:null,routeIndex:0,returnX:b.x,returnY:b.y,waitUntil:krT+180+Math.random()*420};b._ktLoungeWalking=false;b._ktLoungeFacing=b.x>480?-1:1;}
+ krLoungeActors.forEach(function(b){b._ktLoungeWalking=false;});
+ krLoungeActors.length=0;krLoungeCastRef=krBots;
+ krLoungeNextAt=krT+300+Math.random()*240;krLoungeSocialReset();
+ for(var i=0;i<krBots.length;i++){
+  var b=krBots[i];
+  b._ktLounge={phase:'rest',route:null,routeIndex:0,returnX:b.x,returnY:b.y,waitUntil:krT+180+Math.random()*420,laneY:KR_LOUNGE_AISLE_Y,targetX:null};
+  b._ktLoungeWalking=false;b._ktLoungeFacing=b.x>480?-1:1;
+ }
 }
 function krLoungePodePassear(b){
  return !!b&&!b.no_mic&&!b.itemSala&&!b.snackSala&&!b.danca&&
-  !(b._ktSocialUntil>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&krDemoFila.indexOf(b.nick)<0;
+  !(b._ktSocialUntil>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&
+  krDemoFila.indexOf(b.nick)<0&&krLoungeActors.indexOf(b)<0;
 }
 function krLoungeUpdateDeveRodar(){
- if(krLoungeSoloPermitido())return !!krLoungeActor||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;
- return !!krLoungeActor||krLoungeCastRef!==null||!!krLoungeSocialA||!!krLoungeSocialB;
+ if(krLoungeSoloPermitido())return krLoungeActors.length>0||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;
+ return krLoungeActors.length>0||krLoungeCastRef!==null||!!krLoungeSocialA||!!krLoungeSocialB;
 }
-function krLoungeCriarPasseio(b,targetX){
+function krLoungeCriarPasseio(b,targetX,laneY){
  var st=b._ktLounge,x0=b.x,y0=b.y,edge=x0<205?205:x0>755?755:x0;
- st.returnX=x0;st.returnY=y0;st.route=[];
+ st.returnX=x0;st.returnY=y0;st.targetX=targetX;st.laneY=Number.isFinite(laneY)?laneY:KR_LOUNGE_AISLE_Y;st.route=[];
  if(edge!==x0)st.route.push([edge,y0]);
- st.route.push([edge,KR_LOUNGE_AISLE_Y],[targetX,KR_LOUNGE_AISLE_Y]);
+ st.route.push([edge,st.laneY],[targetX,st.laneY]);
  st.routeIndex=0;st.phase='out';
 }
 function krLoungeCriarRetorno(b){
  var st=b._ktLounge,x0=st.returnX,y0=st.returnY,edge=x0<205?205:x0>755?755:x0;
- st.route=[[edge,KR_LOUNGE_AISLE_Y]];
+ st.route=[[edge,st.laneY]];
  if(edge!==x0)st.route.push([edge,y0],[x0,y0]);
  else st.route.push([x0,y0]);
  st.routeIndex=0;st.phase='home';
 }
 function krLoungeUpdate(dt){
  if(!krLoungeSoloPermitido()){
-  if(krLoungeActor)krLoungeActor._ktLoungeWalking=false;
-  if(krLoungeActor||krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB){
-   krLoungeActor=null;krLoungeCastRef=null;krLoungeSocialClear();
-  }
+  krLoungeActors.forEach(function(b){b._ktLoungeWalking=false;});
+  krLoungeActors.length=0;
+  if(krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB){krLoungeCastRef=null;krLoungeSocialClear();}
   return;
  }
  if(krLoungeCastRef!==krBots)krLoungeReset();
- var b=krLoungeActor;
- if(b){
-  var st=b._ktLounge;
+
+ // Advance each active walker independently; a singer/item/queue takes priority.
+ for(var wi=krLoungeActors.length-1;wi>=0;wi--){
+  var b=krLoungeActors[wi],st=b._ktLounge;
   if(!krLoungePodePassear(b)){
    var singing=!!b.no_mic||(krDemoCantor&&krDemoCantor.bot===b);
    if(singing){
     if(st){st.phase='rest';st.route=null;st.waitUntil=krT+420+Math.random()*360;}
-    b._ktLoungeWalking=false;krLoungeActor=null;krLoungeNextAt=krT+180+Math.random()*240;return;
+    b._ktLoungeWalking=false;krLoungeActors.splice(wi,1);continue;
    }
    if(st&&st.phase!=='home')krLoungeCriarRetorno(b);
   }
   if(st.phase==='pause'){
-   b._ktLoungeWalking=false;if(krT<st.waitUntil)return;krLoungeCriarRetorno(b);
+   b._ktLoungeWalking=false;
+   if(krT<st.waitUntil)continue;
+   krLoungeCriarRetorno(b);
   }
   var target=st.route&&st.route[st.routeIndex];
   if(!target){
-   if(st.phase==='out'){st.phase='pause';st.waitUntil=krT+120+Math.random()*180;b._ktLoungeWalking=false;return;}
+   if(st.phase==='out'){
+    st.phase='pause';st.waitUntil=krT+120+Math.random()*180;b._ktLoungeWalking=false;continue;
+   }
    st.phase='rest';st.route=null;st.waitUntil=krT+420+Math.random()*360;
-   b._ktLoungeWalking=false;krLoungeActor=null;krLoungeNextAt=krT+180+Math.random()*300;return;
+   b._ktLoungeWalking=false;krLoungeActors.splice(wi,1);continue;
   }
   var dx=target[0]-b.x,dy=target[1]-b.y,d=Math.hypot(dx,dy);
   if(d<=1.2){b.x=target[0];b.y=target[1];st.routeIndex++;}
   else{
-   var step=Math.min(1.65*Math.max(0,dt),d);b.x+=(dx/d)*step;b.y+=(dy/d)*step;
+   var step=Math.min(1.65*Math.max(0,dt),d);
+   b.x+=(dx/d)*step;b.y+=(dy/d)*step;
    if(Math.abs(dx)>.01)b._ktLoungeFacing=dx<0?-1:1;
    b._ktLoungeWalking=true;
   }
-  return;
  }
- if(krT<krLoungeNextAt)return;
- var eligible=0;
- for(var i=0;i<krBots.length;i++){var candidate=krBots[i],cs=candidate._ktLounge;
-  if(krLoungePodePassear(candidate)&&cs&&cs.phase==='rest'&&krT>=cs.waitUntil)eligible++;
+
+ // Fill the lounge gradually, up to three simultaneous walkers. Stop positions
+ // are kept apart so the three paths do not converge on the same floor point.
+ if(krLoungeActors.length>=KR_LOUNGE_MAX_WALKERS||krT<krLoungeNextAt)return;
+ var eligible=[];
+ for(var i=0;i<krBots.length;i++){
+  var candidate=krBots[i],cs=candidate._ktLounge;
+  if(krLoungePodePassear(candidate)&&cs&&cs.phase==='rest'&&krT>=cs.waitUntil)eligible.push(candidate);
  }
- if(!eligible){krLoungeNextAt=krT+240+Math.random()*240;return;}
- var pick=Math.floor(Math.random()*eligible),chosen=null;
- for(var j=0;j<krBots.length;j++){var option=krBots[j],os=option._ktLounge;
-  if(!krLoungePodePassear(option)||!os||os.phase!=='rest'||krT<os.waitUntil)continue;
-  if(pick--===0){chosen=option;break;}
+ if(!eligible.length){krLoungeNextAt=krT+240+Math.random()*240;return;}
+ var pick=Math.floor(Math.random()*eligible.length),chosen=eligible[pick];
+ var usedStops=krLoungeActors.map(function(actor){return actor._ktLounge&&actor._ktLounge.targetX;}).filter(function(v){return Number.isFinite(v);});
+ var stops=KR_LOUNGE_STOPS.filter(function(x){return usedStops.every(function(used){return Math.abs(used-x)>=90;});});
+ if(!stops.length){krLoungeNextAt=krT+90;return;}
+ var stopIndex=Math.floor(Math.random()*stops.length),stopX=stops[stopIndex];
+ if(Math.abs(stopX-chosen.x)<90){
+  var alternatives=stops.filter(function(x){return Math.abs(x-chosen.x)>=90;});
+  if(alternatives.length)stopX=alternatives[Math.floor(Math.random()*alternatives.length)];
  }
- if(!chosen)return;
- var stopIndex=Math.floor(Math.random()*KR_LOUNGE_STOPS.length),stopX=KR_LOUNGE_STOPS[stopIndex];
- if(Math.abs(stopX-chosen.x)<90)stopX=KR_LOUNGE_STOPS[(stopIndex+3)%KR_LOUNGE_STOPS.length];
- krLoungeActor=chosen;krLoungeCriarPasseio(chosen,stopX);chosen._ktLoungeWalking=true;
+ var lane=KR_LOUNGE_LANES[krLoungeActors.length]||KR_LOUNGE_AISLE_Y;
+ krLoungeCriarPasseio(chosen,stopX,lane);
+ chosen._ktLoungeWalking=true;krLoungeActors.push(chosen);
+ krLoungeNextAt=krT+45;
 }
 var krLoungeSocialA=null,krLoungeSocialB=null,krLoungeSocialUntil=0,krLoungeSocialNextAt=0;
 var KR_LOUNGE_SOCIAL_COPY={
@@ -2613,7 +2632,7 @@ function krLoungeSocialReset(){
 }
 function krLoungePodeSocializar(b,singer){
  return !!b&&b!==singer&&!b.no_mic&&!b.danca&&!b.itemSala&&!b.snackSala&&
-  !(b._ktLoungeWalking)&&!(krLoungeActor===b)&&
+  !(b._ktLoungeWalking)&&!(krLoungeActors.indexOf(b)>=0)&&
   !(b._ktSocialUntil>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&
   krDemoFila.indexOf(b.nick)<0;
 }
@@ -2625,7 +2644,7 @@ function krLoungeSocialDeveAtualizar(){
   if(krLoungeSocialB&&typeof krLoungeSocialB._ktSocialUntil==='number'&&krLoungeSocialB._ktSocialUntil<dueAt)dueAt=krLoungeSocialB._ktSocialUntil;
   return krT>=dueAt;
  }
- if(krLoungeActor)return false;
+ if(krLoungeActors.length)return false;
  return krT>=krLoungeSocialNextAt;
 }
 function krLoungeSocialUpdate(){
@@ -2634,7 +2653,7 @@ function krLoungeSocialUpdate(){
   if(krT<krLoungeSocialUntil&&krLoungeSocialA._ktSocialUntil>krT&&(!krLoungeSocialB||krLoungeSocialB._ktSocialUntil>krT))return;
   krLoungeSocialClear();krLoungeSocialNextAt=krT+360+Math.random()*240;
  }
- if(krLoungeActor||krT<krLoungeSocialNextAt)return;
+ if(krLoungeActors.length||krT<krLoungeSocialNextAt)return;
  var singer=krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null),eligible=0;
  for(var i=0;i<krBots.length;i++)if(krLoungePodeSocializar(krBots[i],singer))eligible++;
  if(singer){

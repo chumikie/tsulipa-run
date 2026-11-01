@@ -35,8 +35,13 @@ if [[ "$cap_result" != *'"creditadas" : 0'* || "$cap_result" != *'"limite_diario
   exit 1
 fi
 
-# Prior-day Center credits are excluded. Today's 90 leave only 10.
-rpc "$user_b" '10000000-0000-4000-8000-000000000003' 100 30
+# Prior-day Center credits are excluded. Today's 90 leave only 10,
+# and a partial credit must announce the reached cap.
+partial_result="$(rpc "$user_b" '10000000-0000-4000-8000-000000000003' 100 30)"
+if [[ "$partial_result" != *'"creditadas" : 10'* || "$partial_result" != *'"limite_diario" : true'* ]]; then
+  echo 'Expected partial +10 credit with limite_diario=true' >&2
+  exit 1
+fi
 
 # Wrong owner cannot consume D's run; its legitimate owner can.
 rpc "$user_b" '10000000-0000-4000-8000-000000000006' 100 35

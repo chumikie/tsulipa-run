@@ -42,6 +42,32 @@ assert.equal(player.player.resume(),true,'preview resumes');
 assert.equal(player.player.stop(true,'Stopped'),true,'preview stops');
 assert.equal(player.player.state(),null);
 assert(player.events.some(e=>e[0]==='ambient-resume'),'ambient sound can resume after preview');
+
+/* Simula o relógio de áudio durante os 59 segundos completos de cada faixa.
+   Isso protege contra prévias que começam corretamente, mas param antes do fim. */
+const originalSetInterval=global.setInterval,originalClearInterval=global.clearInterval;
+let scheduledPreviewTick=null,previewTimerId=0;
+try{
+ global.setInterval=fn=>{scheduledPreviewTick=fn;return ++previewTimerId;};
+ global.clearInterval=()=>{scheduledPreviewTick=null;};
+ for(const key of keys){
+  const full=harness(),step=60000/songs[key].bpm/2,total=Math.floor(59000/step);
+  assert.equal(full.player.play(key),true,key+' full preview starts');
+  for(let ms=25;ms<=59000;ms+=25){
+   full.context.currentTime=.06+ms/1000;
+   if(scheduledPreviewTick)scheduledPreviewTick();
+  }
+  assert.equal(full.player.state(),null,key+' preview finishes after the full 59-second arrangement');
+  const heard=full.events.filter(event=>event[0]===key).map(event=>event[1]);
+  assert.equal(heard.length,total,key+' schedules every musical step through the end');
+  assert.equal(heard[0],0,key+' begins at the first musical step');
+  assert.equal(heard[heard.length-1],total-1,key+' reaches the final musical step');
+ }
+}finally{
+ global.setInterval=originalSetInterval;
+ global.clearInterval=originalClearInterval;
+}
+
 const blocked=harness({isBusy:()=>true});
 assert.equal(blocked.player.play('fast'),false,'preview cannot run during a game');
 

@@ -301,4 +301,21 @@ assert(hubScene.includes('var beams = hubIdolsBeamTexturas(chao + 10)')&&hubScen
 assert(hubScene.includes('Math.sin(s * .8 + i * 2.1) * .5')&&hubScene.includes('x.rotate(ang)'),'Caching Hub spotlight artwork must preserve the per-frame movement of all three beams');
 assert(hubScene.includes('if(beams)')&&hubScene.includes('var lg = x.createLinearGradient(0, 0, 0, chao + 10)'),'Hub spotlights should retain a direct CanvasGradient fallback when an offscreen canvas context is unavailable');
 
+const audienceAudioStart=html.indexOf('var ktAudioVitrine=(function(){');
+const audienceAudioEnd=html.indexOf('var ktBaseUI=krUI;',audienceAudioStart);
+const audienceAudio=html.slice(audienceAudioStart,audienceAudioEnd);
+assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv"'),'The duplicate lower audience carousel and its independent animation loop should be removed');
+assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
+assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
+const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5','encontro'];
+assert(availableVoiceFiles.every(id=>html.includes('data-kt-audio="'+id+'"')&&audienceAudio.includes("'"+id+"':1")),'The audio showcase should list only the 15 existing trio voice clips and the existing Encontro audio');
+assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');
+assert(audienceAudio.includes("addEventListener('ended'")&&audienceAudio.includes("addEventListener('error'")&&audienceAudio.includes("addEventListener('visibilitychange'")&&audienceAudio.includes("addEventListener('pagehide'"),'The shared audio preview player must release audio on end, error, page hide and visibility loss');
+assert(audienceAudio.includes("old.removeAttribute('src');old.load();")&&audienceAudio.includes("if(player&&playingId===id){stop("),'The audio showcase should reuse one player and release the previous audio before switching previews');
+const decorStart=html.indexOf('var ktDecor=(function(){');
+const decorEnd=html.indexOf('krDesenharEstanteItens=ktDecor.shelf',decorStart);
+const decor=html.slice(decorStart,decorEnd);
+assert(decor.includes('function hit(px,py)')&&decor.includes("if(match)return react(match.playerId,'random')")&&decor.includes('return {refresh:refresh,hit:hit,react:react,shelf:shelf};'),'Tapping the actual room characters must still trigger the audience reactions after removing the duplicate strip');
+assert(html.includes('ktDecor.hit(px,py)')&&html.includes('krDesenharEstanteItens=ktDecor.shelf'),'Main-room interactions and the decorative accessory shelf must remain connected');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

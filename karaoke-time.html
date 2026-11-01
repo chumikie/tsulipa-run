@@ -339,7 +339,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 </section>
 <section class="kr-rhythm" id="krRhythm" hidden aria-label="Ensaio de ritmo">
 <div class="kr-rhythm-head"><h2>🎤 Karaoke⭐Time! · Rhythm</h2><span id="krRhythmPhase"></span></div>
-<small class="kr-rhythm-notice" id="krRhythmNotice">🧪 Ensaio local: sem jogadores online, moedas ou insígnias.</small>
+<small class="kr-rhythm-notice" id="krRhythmNotice">🧪 Ensaio local: sem participantes reais, moedas ou insígnias.</small>
 <div class="kr-rhythm-stats"><span>⭐ <strong id="krRhythmScore">0</strong></span><span>✨ Combo <strong id="krRhythmCombo">0</strong></span><span>💖 PERFECT <strong id="krRhythmPerfect">0</strong></span></div>
 <div class="kr-rhythm-rail" aria-hidden="true"><span class="kr-rhythm-note" id="krRhythmNote">⭐</span></div>
 <button type="button" class="kr-rhythm-play" id="krRhythmHit">🎶 TOCAR NA BATIDA!</button>
@@ -1323,8 +1323,8 @@ $('krMicQueueMe').onclick=function(){krDemoRequest('__self');};
 $('krMicQueueBot').onclick=krDemoRequestBot;
 
 var KR_RHYTHM_LANG={
- pt:['Preparando o palco','Toque quando a estrela cruzar a linha!','Aplausos!','Ensaio encerrado','TOCAR NA BATIDA!','🧪 Ensaio local: sem jogadores online, moedas ou insígnias.','Resultado do ensaio','Ensaio interrompido','Espere a estrela!'],
- en:['Preparing the stage','Tap when the star crosses the line!','Applause!','Rehearsal finished','TAP ON THE BEAT!','🧪 Local rehearsal: no online players, currency or badges.','Practice result','Rehearsal stopped','Wait for the star!'],
+ pt:['Preparando o palco','Toque quando a estrela cruzar a linha!','Aplausos!','Ensaio encerrado','TOCAR NA BATIDA!','🧪 Ensaio local: sem participantes reais, moedas ou insígnias.','Resultado do ensaio','Ensaio interrompido','Espere a estrela!'],
+ en:['Preparing the stage','Tap when the star crosses the line!','Applause!','Rehearsal finished','TAP ON THE BEAT!','🧪 Local rehearsal: no real participants, currency or badges.','Practice result','Rehearsal stopped','Wait for the star!'],
  es:['Preparando el escenario','¡Toca cuando la estrella cruce la línea!','¡Aplausos!','Ensayo terminado','¡TOCA AL RITMO!','🧪 Ensayo local: sin jugadores en línea, monedas ni insignias.','Resultado del ensayo','Ensayo interrumpido','¡Espera la estrella!'],
  th:['เตรียมเวที','แตะเมื่อดาวผ่านเส้น!','เสียงปรบมือ!','จบการซ้อม','แตะตามจังหวะ!','🧪 ซ้อมในเครื่อง: ไม่มีผู้เล่นออนไลน์ เหรียญ หรือรางวัล','ผลการซ้อม','หยุดการซ้อม','รอดาวก่อน!'],
  ja:['ステージ準備中','星がラインを通る時にタップ！','拍手！','練習終了','リズムでタップ！','🧪 ローカル練習：オンライン参加・通貨・バッジなし','練習結果','練習中止','星を待って！']
@@ -1604,9 +1604,9 @@ function krPublicAvatarPlayer(row){
 function krLoadPublicPosterNicknames(){}
 var KR_DANCAS=[['','⏹️','Parar'],['banzai','🙌','Banzai Venus'],['seis','6️⃣','Six Seven'],['neon','✨','Pose Neon'],['nyan','🐱','Nyan'],['giro','💫','Idol Step'],['pulo','⭐','Jump!']],KR_CANTO=[['balanco','🎵','Balanço'],['diva','✨','Diva'],['rock','🎸','Rock'],['fofo','💖','Kawaii']],KR_DRINKS=[['tsu','🍇','Soda de Uva','#9b30d9'],['lirika','🍈','Melon Juice!','#4ade80'],['pati','🫐','Blue Hawaii','#4169e1']],KR_EMOJIS=['💖','👏','🎤','🔥','✨','💜','💚','💙','⭐','🥂','😭','🫶'],KR_FALAS_AUTO=['Que voz! ✨','Bis! Bis! 👏','Ganbatte! 💜','Amo essa música! 🎶','Brilha muito! ⭐','Saúde! 🥂','Lindo demais! 💖'],KR_SOFA_SLOTS=[[160,400],[232,470],[332,470],[432,470],[532,470],[632,470],[732,470],[800,400]];
 var krSoHomol=new URLSearchParams(location.search).get('homol')==='1';
-// Sala online real (produção) ou homologação: as duas usam a mesma ponte de palco.
-var krHomolAtivo=false;
-var krHomolConectado=false; // só o servidor, após ocupar vaga, substitui personagens
+// A sala é solo. O sinal ?homol=1 ativa a homologação e suspende a autonomia do elenco.
+var krHomolAtivo=krSoHomol;
+var krHomolConectado=false; // a homologação pode assumir o personagem sem disputar o controle da sala.
 var krSt={aberta:true,sabado:false,faltam10:false,vista:(Math.floor((Date.now()-3*3600e3)/604800e3)%2?'liberdade':'gigoia'),ultimos10:false,ocupadas:7,vip:false},krEu={x:480,y:286,tx:480,ty:286,no_mic:false,micT:0,canto:'balanco',danca:'',pose:'v',expr:2,drink:'',plateia:false,fila:0,vagaPronta:false,vagaS:30,emojiT:0,itemSala:'',antenaSala:false,lookSala:false,snackSala:''},krBots=[{nick:'Momo',x:432,y:470,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:CH[0]},{nick:'Nene',x:532,y:470,danca:'',pose:'luz',expr:3,drink:'',no_mic:false,char:CH[2]},{nick:'Lirika',x:225,y:460,danca:'banzai',pose:'v',expr:2,drink:'lirika',no_mic:false,char:CH[1]},{nick:'Pati',x:645,y:470,danca:'neon',pose:'v',expr:3,drink:'pati',no_mic:false,char:CH[2]},{nick:'Nanamaru',x:320,y:472,danca:'',pose:'luz',expr:2,drink:'tsu',no_mic:false,char:{n:'Nanamaru',hair:'#dc143c',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'lateral',out:'zipper',outcol:'#dc143c'}},{nick:'Hiruru',x:740,y:460,danca:'',pose:'v',expr:2,drink:'lirika',no_mic:false,char:{n:'Hiruru',hair:'#f2b632',skin:'#fbe5d8',eye:'#5a3b2e',back:'marias',front:'reta',out:'sweet',outcol:'#f2b632'}},{nick:'Fuji',x:165,y:390,danca:'',pose:'v',expr:2,drink:'',no_mic:false,char:{n:'Fuji',hair:'#b57edc',skin:'#fbe5d8',eye:'#5a3b2e',back:'chanel',front:'reta',out:'seifuku',outcol:'#b57edc'}},{nick:'Acádia',x:795,y:390,danca:'',pose:'luz',expr:2,drink:'pati',no_mic:false,char:{n:'Acádia',hair:'#ffb38a',skin:'#f1c9a5',eye:'#5a3b2e',back:'longo',front:'reta',out:'sweet',outcol:'#ffb38a'}}];krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});
 var krBolhas=[],krBaloes={},krTrilha=[],krT=0,krCortina=0,krAlvo=null;
 var krLoungeCastRef=null,krLoungeActor=null,krLoungeNextAt=0,KR_LOUNGE_AISLE_Y=508,KR_LOUNGE_STOPS=[230,300,370,590,660,730];
@@ -1618,9 +1618,10 @@ function ktGloboNivel(){var k=Math.min(1,(performance.now()-ktGlobo.t0)/700);ret
 function ktGloboToque(){var a=performance.now();if(a-ktGlobo.t0<350)return true;ktGlobo.festa=!ktGlobo.festa;ktGlobo.t0=a;ac();(ktGlobo.festa?[784,988,1175,1568]:[1175,988,784]).forEach(function(f,i){beep(f,.14,'triangle',.03,i*.07);});
  if(!ktFestaP.length)for(var i=0;i<34;i++)ktFestaP.push({x:Math.random()*960,y:Math.random()*540,v:.25+Math.random()*.6,s:.7+Math.random()*.8,f:Math.random()*7,c:['#ff6fb5','#c7a6ff','#7fd4ff','#b6ff3b','#ffe27a'][i%5],k:i%3});
  krBolhas.push({emo:ktGlobo.festa?'🪩':'💡',x:472,y:52,t:0});return true;}
+var KR_FESTA_RGB=['255,111,181','199,166,255','127,212,255','182,255,59','255,226,122'];
 function ktFestaFundo(x,t,k){x.save();x.fillStyle='rgba(8,3,26,'+(.52*k)+')';x.fillRect(0,0,960,540);
  /* reflexos do globo correndo pelas paredes e pelo chão */
- for(var i=0;i<46;i++){var a=i*2.399+t*.012,r=120+(i*53)%380,px=480+Math.cos(a)*r*1.25,py=200+Math.sin(a)*r*.62;if(py<0||py>540)continue;var c=['255,111,181','199,166,255','127,212,255','182,255,59','255,226,122'][i%5];x.globalAlpha=k*(.35+.45*Math.abs(Math.sin(t*.06+i)));x.fillStyle='rgba('+c+',1)';x.shadowColor='rgba('+c+',1)';x.shadowBlur=8;x.beginPath();x.arc(px,py,1.6+(i%3),0,7);x.fill();}
+ for(var i=0;i<46;i++){var a=i*2.399+t*.012,r=120+(i*53)%380,px=480+Math.cos(a)*r*1.25,py=200+Math.sin(a)*r*.62;if(py<0||py>540)continue;var c=KR_FESTA_RGB[i%KR_FESTA_RGB.length];x.globalAlpha=k*(.35+.45*Math.abs(Math.sin(t*.06+i)));x.fillStyle='rgba('+c+',1)';x.shadowColor='rgba('+c+',1)';x.shadowBlur=8;x.beginPath();x.arc(px,py,1.6+(i%3),0,7);x.fill();}
  x.shadowBlur=0;x.globalAlpha=k*.55;var cone=x.createLinearGradient(480,40,480,330);cone.addColorStop(0,'rgba(255,214,240,.55)');cone.addColorStop(1,'rgba(255,214,240,0)');x.fillStyle=cone;x.beginPath();x.moveTo(468,40);x.lineTo(492,40);x.lineTo(590,330);x.lineTo(370,330);x.closePath();x.fill();
  x.globalAlpha=1;x.restore();}
 var ktFestaUltimoT=null;
@@ -1867,7 +1868,8 @@ $('krDev').addEventListener('click',function(e){if(krHomolConectado)return;var b
 $('krBar').addEventListener('click',function(e){var t=e.target,b;if((b=t.closest('[data-capture]'))){krSalvarFotoSala();return;}if(t.id==='krMicBtn'){if(kt.active())kt.end(false);else kt.start();krMusicaMudarModo();krUI();return;}if((b=t.closest('[data-canto]'))){krEu.canto=b.dataset.canto;krUI();return;}if((b=t.closest('[data-danca]'))){if(!krHandBusy(krEu))krEu.danca=b.dataset.danca;else krAviso('💫 '+tr('Itens de mão são exclusivos: escolha 1 de cada vez.'));krUI();beep(988,.05,'triangle',.04);return;}if((b=t.closest('[data-drink]'))){if(krEu.drink===b.dataset.drink){krEu.drink='';}else{krClearHandheld('drink');krEu.drink=b.dataset.drink;}krUI();beep(1175,.06,'sine',.04);return;}if(t.id==='krBrindarBtn'){krMandarEmoji('🥂');krBaloes[typeof ktDaily!=='undefined'&&ktDaily?ktDaily.currentId():nick]={txt:tr('Saúde! 🥂'),t0:krT};[1047,1319,1568,2093].forEach(function(f,i){beep(f,.09,'sine',.04,i*.06);});return;}if((b=t.closest('[data-sala-item]'))){var item=b.dataset.salaItem;if(item==='antena')krEu.antenaSala=!krEu.antenaSala;else if(item==='look')krEu.lookSala=!krEu.lookSala;else if(krEu.itemSala===item){krEu.itemSala='';}else{krClearHandheld('prop');krEu.itemSala=item;}krUI();beep(1319,.06,'triangle',.025);return;}if((b=t.closest('[data-snack]'))){var snack=b.dataset.snack;if(krEu.snackSala===snack){krEu.snackSala='';}else{krClearHandheld('snack');krEu.snackSala=snack;}krUI();beep(1047,.06,'triangle',.025);return;}if((b=t.closest('[data-expr]'))){krEu.expr=+b.dataset.expr;krUI();return;}if((b=t.closest('[data-emo]'))){krMandarEmoji(b.dataset.emo);return;}});
 function krMandarEmoji(emo){var agora=Date.now();if(agora-krEu.emojiT<1000)return;krEu.emojiT=agora;krBolhas.push({emo:emo,x:krEu.x,y:krEu.y-75,t:0});beep(1319,.05,'triangle',.03);}
 $('krCv').addEventListener('pointerdown',function(e){var r=this.getBoundingClientRect(),px=(e.clientX-r.left)*960/r.width,py=(e.clientY-r.top)*540/r.height;if(kt.laneAt(px,py,e)){e.preventDefault();return;}if(typeof ktDecor!=='undefined'&&ktDecor&&ktDecor.hit(px,py))e.preventDefault();});
-function krCoresDaSala(){var proprio=krHomolAtivo?krHomolMeuChar:meuChar();var cols=[(proprio&&proprio.hair)||'#ff6fb5'];krBots.forEach(function(b){if(b.char&&b.char.hair&&cols.indexOf(b.char.hair)<0)cols.push(b.char.hair);});return cols;}
+var krRoomPalette=[];
+function krCoresDaSala(){var proprio=krHomolAtivo?krHomolMeuChar:meuChar(),cols=krRoomPalette;cols.length=0;cols.push((proprio&&proprio.hair)||'#ff6fb5');for(var i=0;i<krBots.length;i++){var hair=krBots[i].char&&krBots[i].char.hair;if(hair&&cols.indexOf(hair)<0)cols.push(hair);}return cols;}
 function krDesenharDrink(x,px,py,k,skin,side){
  var dr=k==='lirika'?KR_DRINKS[1]:k==='pati'?KR_DRINKS[2]:KR_DRINKS[0];
  if(!dr)return;skin=skin||'#f1c9a5';side=side||1;

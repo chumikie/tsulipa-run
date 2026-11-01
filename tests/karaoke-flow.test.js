@@ -79,7 +79,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>S</kbd>'),'atalho das configurações aparece na instrução');
-  assert(flow[0].includes('shortcuts.after(adjust)'),'configurações seguem o bloco de instruções e podem ser movidas pela barra mobile sem sobrepor o palco');
+  assert(flow[0].includes("($('krPalco')||shortcuts.parentNode).appendChild(adjust)"),'ajustar timing fica no palco, junto de som e câmera, e a barra mobile o leva para cima da tela');
   assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
   assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
   assert(flow[0].includes('kt-dream-sparkles'),'cortina possui estrelas e corações decorativos');

@@ -47,6 +47,6 @@ assert(calls.every(call=>Math.abs(call.time-(t+7*step/1000))<.00001),'ataques ag
 
 assert(html.includes('run.cuesByStep[n.idx]'),'cada ataque usa o idx do mapa de notas');
 assert(html.includes('noteMap:2'),'formato de salvamento de partidas mantido');
-assert(html.includes('shortcuts.after(adjust)'),'configurações ficam junto às instruções, com realocação mobile');
+assert(html.includes("($('krPalco')||shortcuts.parentNode).appendChild(adjust)"),'ajustar timing fica no palco, com realocação mobile');
 assert(html.includes('#krPalco #krMute{right:64px'),'controle de som fica junto à câmera');
 console.log('Karaoke: lead, notas visíveis e duplas no mesmo beat, configurações na cena e salvamento preservado OK');

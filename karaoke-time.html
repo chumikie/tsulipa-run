@@ -64,6 +64,12 @@ html.kt-no-site .krwrap{width:100%;max-width:920px!important;margin:0 auto;backg
 
 
 #krPalco #krMute{right:64px;bottom:10px;z-index:7}
+/* Ajustar timing: botão redondo na cena (desktop); o painel abre por cima, acima do botão */
+#krPalco>.kt-calibration{position:absolute;right:118px;bottom:10px;z-index:8;width:auto;height:auto;margin:0}
+#krPalco>.kt-calibration summary{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--chip);border:1px solid rgba(155,48,217,.22);box-shadow:0 3px 0 rgba(44,26,143,.16)}
+#krPalco>.kt-calibration[open] summary{background:var(--b1)}
+#krPalco>.kt-calibration .kt-cal-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#krPalco>.kt-calibration .kt-calibration-panel{position:absolute;right:-108px;bottom:54px;width:min(340px,86vw);margin:0}
 </style>
 
 
@@ -1277,7 +1283,8 @@ var ktFlow=(function(){
  $('ktClosed').appendChild(dream);
  var adjust=document.createElement('details');adjust.id='ktCalibration';adjust.className='kt-calibration';
  adjust.innerHTML='<summary></summary><div class="kt-calibration-panel"><strong id="ktCalibrationTitle"></strong><div class="kt-calibration-body"><button type="button" class="krb" id="ktOffsetMinus">−10 ms</button><output id="ktOffsetValue">0 ms</output><button type="button" class="krb" id="ktOffsetPlus">+10 ms</button><button type="button" class="krb" id="ktOffsetReset"></button></div><p id="ktCalibrationHelp"></p></div>';
- shortcuts.after(adjust);adjust.querySelector('summary').textContent='⚙️ '+t(8);adjust.querySelector('summary').title=t(8);adjust.querySelector('summary').ariaLabel=t(8);adjust.querySelector('summary').setAttribute('aria-keyshortcuts','S');$('ktCalibrationTitle').textContent=t(8);$('ktOffsetReset').textContent=t(12);
+ ($('krPalco')||shortcuts.parentNode).appendChild(adjust);adjust.querySelector('summary').innerHTML='⚙️<span class="kt-cal-label"> '+t(8)+'</span>';   // no palco, ao lado do som e da câmera; no celular vai para a fileira de cima
+ adjust.querySelector('summary').title=t(8);adjust.querySelector('summary').ariaLabel=t(8);adjust.querySelector('summary').setAttribute('aria-keyshortcuts','S');$('ktCalibrationTitle').textContent=t(8);$('ktOffsetReset').textContent=t(12);
  adjust.addEventListener('toggle',function(){if(adjust.open&&typeof kt!=='undefined'&&kt.active())kt.pause(true);});
  document.addEventListener('pointerdown',function(e){if(adjust.open&&!adjust.contains(e.target))adjust.open=false;});
  $('ktCalibrationHelp').textContent=(KR_RHYTHM_TOUCH_DIAGNOSTIC[LANG]||KR_RHYTHM_TOUCH_DIAGNOSTIC.pt).calibrate;

@@ -61,9 +61,9 @@ Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapé
 *Análise de braços e pernas (01/11):* não recomendada agora — o estilo chibi de blocos usa poses prontas (aceno, banzai, mãos no peito) e mudar membros afeta todas as telas e renderizadores (Center Run, Perfil, Karaoke, Encontro, Hub). Reavaliar só se surgir uma necessidade concreta (ex.: segurar microfone no Karaoke).
 
 1. Montar Idol e Gacha: **confirmados pelo responsável** após a correção.
-2. Cabelos: *Ondulado*, *Bicolor* e *Repicado* **aprovados**; separados em 3 cortes + 3 franjas novas (*Ondulada*, *Risca*, *Repicada*) que combinam livremente (`cf48708`); nomes curtos (Marias, Rabo, Quepe, Estrela). **Proposta pendente:** prender rabo de cavalo e marias-chiquinhas no alto da cabeça com elástico (hoje as mechas ficam soltas ao lado) — só aplicar após aprovação.
+2. Cabelos: *Ondulado*, *Bicolor* e *Repicado* aprovados e separados em 3 cortes + 3 franjas (*Rebelde*, *Risca*, *Repicada*). Marias presas no alto com elástico (aprovado); Rabo refeito como uma peça só, preso no alto (`f9353d9`, aguardando aprovação). Mecha agora é um fio que acompanha a franja escolhida até uma das pontas (referência: cards da JJ e da Tata no BRS48) — aguardando aprovação.
 3. Quepe militar e presilha de estrela — **aprovados** (`3a7e8d3`).
-4. Karaoke: botão "Ajustar timing" junto de volume e câmera sobre a tela; no celular, todos esses ícones saem de cima da tela do Karaoke e vão para cima.
+4. Karaoke: "Ajustar timing" virou botão de engrenagem no palco, ao lado de som e câmera (desktop); no celular segue na fileira acima da sala com som, pausar e câmera — feito, aguardando aprovação.
 5. Karaoke: show não pode pausar sozinho em tela de celular.
 6. Sala de Karaoke: pelo menos 3 Idols da plateia andando ao mesmo tempo; o Idol do jogador fica no microfone, anda só quando a pessoa toca no piso e volta ao microfone após 5 s longe; obrigatório estar no microfone ao jogar. O telão continua mostrando só "Maiores combos".
 7. Página do Karaoke: trocar a "Vitrine sonora" longa por botões com a cabeça de Tsu, Lirika e Pati que tocam as vozes; destacar as faixas do Karaoke para ouvir, com nota máxima pessoal por música (sem ranking compartilhado), em seção selecionável como "Novidades".

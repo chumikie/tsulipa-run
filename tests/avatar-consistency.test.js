@@ -12,6 +12,23 @@ assert(index.includes('<option value="">Curto</option><option value="careca">Car
 assert(index.includes("if(b!=='careca')"),'o desenho principal omite as camadas de cabelo para careca');
 assert(karaoke.includes("if(b!=='careca')"),'a sala de Karaoke usa a mesma distinção visual');
 
+// Dois novos cortes ondulados curtos: masculino mais rente e feminino mais cheio que Pixie, sem chegar ao Chanel.
+assert(index.includes('<option value="onduladom">Ondulado curto (masculino)</option><option value="onduladof">Ondulado curto (feminino)</option>'));
+for(const source of [index,karaoke]){
+  assert(source.includes("b==='onduladom'"),'ondulado curto masculino deve ter desenho próprio');
+  assert(source.includes("b==='onduladof'"),'ondulado curto feminino deve ter desenho próprio');
+  assert(source.includes("b==='onduladof'?9"),'ondulado feminino deve ter volume intermediário, abaixo do comprimento Chanel');
+}
+// Chapéu quase preto e estrela pequena no mesmo ponto lateral das flores existentes.
+assert(index.includes("g.fillStyle='#111521'")&&karaoke.includes("g.fillStyle='#111521'"));
+assert(index.includes("g.fillStyle='#070a12'")&&karaoke.includes("g.fillStyle='#070a12'"));
+assert(index.includes("g.save();g.translate(x+6,y+3);g.fillStyle='#f5b400'"));
+assert(karaoke.includes("g.save();g.translate(x+6,y+3);g.fillStyle='#f5b400'"));
+assert(index.includes("if(A==='hibisco')FL(x+6,y+3"));
+assert(index.includes("if(A==='sakura')FL(x+6,y+3"));
+assert(karaoke.includes("if(A==='hibisco')FL(x+6,y+3"));
+assert(karaoke.includes("if(A==='sakura')FL(x+6,y+3"));
+
 // Chapéu de capitão e estrela são desbloqueios independentes, sem substituir acessórios antigos.
 assert(index.includes('value="capitao" data-r="15000"'),'chapéu liberado no rank Capitão');
 assert(index.includes("if(hacc==='capitao')"),'chapéu desenhado no avatar principal');

@@ -13429,7 +13429,7 @@ applyLang();
   if(scheduled)return;scheduled=true;
   requestAnimationFrame(function(){scheduled=false;sync();});
  }
- new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','class','style','open']});
+ new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','class','open']});
  document.addEventListener('visibilitychange',sync);
  window.addEventListener('pageshow',sync);
  window.addEventListener('pagehide',function(){

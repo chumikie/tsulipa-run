@@ -7803,7 +7803,7 @@ function perfGenUI(){
   }
 }
 // O estúdio e o montador são uma cena animada (como o menu e o camarim), redesenhada a cada 2 quadros
-function perfAnimar(){
+function perfAnimar(ms){
   perfAnimId = 0;
   if(!perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !twAnimacaoVisivel($('perfGenCv'))) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('perfGenCv'),ms):1;perfT+=delta;
@@ -9083,7 +9083,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
     hubTrioReage(best);
   });
 })();
-function hubLoop(){
+function hubLoop(ms){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('hubCv'),ms):1;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&hubT%2===0)) hubDesenhar();
   hubAnim = requestAnimationFrame(hubLoop);
@@ -10190,7 +10190,7 @@ function gachaDesenhar(){
   }catch(e){}
   finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; frame = oF; charPose = ''; perfAntena = ''; }
 }
-function gachaLoop(){
+function gachaLoop(ms){
   gachaAnim = 0; if(!twAnimacaoVisivel(gachaOv)) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('gachaCv'),ms):1;gachaT+=delta; if(gachaGiro >= 0) gachaGiro+=delta;
   if((mobile30&&TWMotionLifecycle.render30Due($('gachaCv'),ms))||(!mobile30&&gachaT%2===0)) gachaDesenhar();
@@ -10654,7 +10654,7 @@ function duoComida(x, cx, cy, U, tipo, t){
     x.fillStyle = '#c98b55'; x.fillRect(cx + 8 * s, cy - 52 * s, 3 * s, 22 * s);
   }
 }
-function duoLoop(){
+function duoLoop(ms){
   duoAnim = 0; if(!duoGu||!twAnimacaoVisivel($('duoCv'))) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('duoCv'),ms):1;duoT+=delta;
   if((mobile30&&TWMotionLifecycle.render30Due($('duoCv'),ms))||(!mobile30&&duoT%2===0)){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }

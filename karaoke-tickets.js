@@ -57,7 +57,7 @@
   box.innerHTML='<h3>'+t(8)+'</h3><div class="admform"><input id="ktGrantNick" maxlength="24" placeholder="'+t(3)+'"><label>'+t(9)+' <input id="ktGrantAmount" type="number" min="1" max="20" value="1"></label><input id="ktGrantReason" maxlength="80" placeholder="'+t(10)+'"><button type="button" class="btn" id="ktGrantSend">'+t(11)+'</button></div><p class="perfdica" id="ktGrantMsg" role="status"></p>';
   document.getElementById('ktGrantSend').addEventListener('click',function(){var btn=this,nick=document.getElementById('ktGrantNick').value.trim(),n=Number(document.getElementById('ktGrantAmount').value);
    if(!nick||!Number.isInteger(n)||n<1||n>20){showMsg('ktGrantMsg',t(13));return;}
-   btn.disabled=true;window.contaRpc('kt_ticket_admin_grant',{p_nick:nick,p_count:n,p_reason:document.getElementById('ktGrantReason').value.trim()}).then(function(r){showMsg('ktGrantMsg',r&&r.ok?t(12):t(13));if(r&&r.ok)refresh();btn.disabled=false;}).catch(function(){showMsg('ktGrantMsg',t(13));btn.disabled=false;});
+   var id=currentId(),request=++revision;btn.disabled=true;window.contaRpc('kt_ticket_admin_grant',{p_nick:nick,p_count:n,p_reason:document.getElementById('ktGrantReason').value.trim()}).then(function(r){if(request!==revision||id!==currentId()||!enabled())return;showMsg('ktGrantMsg',r&&r.ok?t(12):t(13));if(r&&r.ok)refresh();btn.disabled=false;}).catch(function(){if(request!==revision||id!==currentId())return;showMsg('ktGrantMsg',t(13));btn.disabled=false;});
   });
  }
  window.ktTickets={refresh:refresh,reset:reset,acceptBalance:acceptBalance,renderBadge:renderBadge,get:get,ready:function(){return ready;},startExtra:startExtra,renderProfile:renderProfile,renderAdmin:renderAdmin};

@@ -23,6 +23,7 @@ on:
       - 'tests/karaoke-tickets.test.js'
       - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
+      - 'tests/center-run-credit-recovery.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
@@ -102,6 +103,7 @@ on:
       - 'tests/karaoke-tickets.test.js'
       - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
+      - 'tests/center-run-credit-recovery.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
@@ -170,6 +172,8 @@ jobs:
         run: node tests/avatar-hair.test.js
       - name: Validate original Captain hat and Star across avatar renderers
         run: node tests/avatar-items.test.js
+      - name: Validate Center Run auth readiness and credit reconciliation
+        run: node tests/center-run-credit-recovery.test.js
       - name: Validate Center Run daily cap and server response contract
         run: node tests/center-run-daily-cap.test.js
       - name: Validate shared window contracts

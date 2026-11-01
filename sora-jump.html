@@ -1936,7 +1936,7 @@ function soraMusicStop(){
 function soraMusicStart(){
   soraMusicStop();
   soraMusicStep = 0;
-  if(!soraSoundOn || muted) return;
+  if(!soraSoundOn || muted || !soraPodeAnimar()) return;
   var audio = ac();
   if(!audio) return;
   if(audio.state === 'suspended' && typeof audio.resume === 'function'){

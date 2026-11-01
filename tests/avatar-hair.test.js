@@ -9,7 +9,7 @@ const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=3"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=4"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
@@ -26,6 +26,13 @@ for(const label of ['data-twh="Ondulado">Ondulado<','data-twh="Bicolor">Bicolor<
 for(const v of ['ondulada','risca','repicada'])assert(index.includes('<option value="'+v+'" data-twh='),'menu de franja oferece '+v);
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]])assert(html.includes('if(TWAvatarHair.fringe(g,x,y,b,f,T)){}'),name+': franja depende da escolha de franja, não do corte');
 assert(source.includes("Risca:'Side part'")&&source.includes("option[data-twh]"),'nomes curtos traduzidos pelo módulo');
+for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
+ assert(html.includes('if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);')&&!html.includes('g.fillRect(x+10,y+5,3,10)'),name+': mecha acompanha a franja (sem o ladrilho fixo)');
+ assert(html.includes("else if(b==='rabo'){var rs=sw*.5;g.beginPath()"),name+': rabo de cavalo em uma peça, preso no alto');
+ assert(html.includes("else if(b==='marias'){E(x+1,y+8,4,4);E(x+29,y+8,4,4)"),name+': marias presas no alto da cabeça');
+}
+assert(index.includes('data-twh="Rebelde">Rebelde<'),'franja ondulada aparece como Rebelde');
+for(const f of ['bagunca','reta','lateral','espetada','arcoiris','ondulada','risca','repicada'])assert(new RegExp('\\b'+f+':\\[').test(source),'mecha definida para a franja '+f);
 const sandbox={window:{}};vm.runInNewContext(source,sandbox,{timeout:1000});
 const hair=sandbox.window.TWAvatarHair;
 let ops=[];const grad={addColorStop(){}};
@@ -36,7 +43,7 @@ for(const cut of cuts){
  ops=[];const c={hair:'#335577',hair2:'#aabbcc'};
  assert.equal(hair.isWavy(cut),true);
  assert.equal(hair.back(g,c,0,0,cut,E,T),true);
- hair.top(g,0,0,cut);assert.equal(hair.fringe(g,0,0,cut,'bagunca',T),false,cut+' mantém a franja original escolhida');hair.bicolor(g,{hair:'#335577',hair2:'#aabbcc',front:'reta'},0,0,cut);
+ hair.top(g,0,0,cut);{const n=ops.length;hair.mecha(g,{hair2:'#ffffff'},0,0,'risca');assert(ops.length>n,'mecha desenha um fio');}assert.equal(hair.fringe(g,0,0,cut,'bagunca',T),false,cut+' mantém a franja original escolhida');hair.bicolor(g,{hair:'#335577',hair2:'#aabbcc',front:'reta'},0,0,cut);
  assert(ops.length>5,cut+' draws wave details');
  if(cut==='onduladom2'){assert(ops.some(op=>op[0]==='rect'),cut+' recorta a metade preta');assert.equal(ops.filter(op=>op[0]==='clip').length>=2,true,cut+' mantém a metade preta dentro da cabeça');}
  for(const fr of ['ondulada','risca','repicada']){ops=[];assert.equal(hair.fringe(g,0,0,cut,fr,T),true,fr+' é desenhada pelo módulo');assert(ops.length>0);}

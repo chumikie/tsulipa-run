@@ -288,7 +288,7 @@ assert(rhythmTickStart>=0&&rhythmTickEnd>rhythmTickStart&&!rhythm.slice(rhythmTi
 const mainAvatarStart=main.indexOf('function drawChar(c,x,y,run,expr,isPartner)');
 const mainAvatarEnd=main.indexOf('\nfunction drawPet(',mainAvatarStart);
 const avatarDraw=main.slice(mainAvatarStart,mainAvatarEnd);
-assert(avatarStart>=0&&avatarEnd>avatarStart&&avatarDraw.includes('var hg=g.createLinearGradient(0,y+5,0,y+24)')&&avatarDraw.includes('var sg2 = g.createLinearGradient(0,y+5,0,y+15)'),'Hair and streak rendering must retain the original per-shape gradients to preserve the exact character silhouettes');
+assert(avatarStart>=0&&avatarEnd>avatarStart&&avatarDraw.includes('var hg=g.createLinearGradient(0,y+5,0,y+24)')&&avatarDraw.includes('TWAvatarHair.mecha(g,c,x,y,f)')&&require('fs').readFileSync(require('path').join(__dirname,'..','tw-avatar-hair.js'),'utf8').includes('sg=g.createLinearGradient(0,y+1,0,y+18)'),'Hair and streak rendering must retain the original per-shape gradients to preserve the exact character silhouettes');
 assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_DRAW_RAMP_CACHE.size>=64')&&main.includes('function charDrawHairRamp(color)')&&main.includes('function charDrawStreakRamp(color)'),'Site-wide hair and two-tone streak ramps must use a bounded shared cache');
 assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
 

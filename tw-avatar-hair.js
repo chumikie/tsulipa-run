@@ -4,7 +4,7 @@
    onduladom  = Ondulado: volume fofo e arredondado ao redor da cabeça
    onduladom2 = Bicolor: metade na cor escolhida, metade preta (ref. Maruru)
    onduladof  = Repicado: médio, pontas para fora (ref. Mimimila)
-   Franjas novas: ondulada, risca (lateral longa, ref. Maruru), repicada (ref. Mimimila).
+   Franjas novas: ondulada (rótulo "Rebelde"), risca (lateral longa, ref. Maruru), repicada (ref. Mimimila).
    Os valores salvos dos cortes continuam os mesmos para não quebrar saves. */
 (function(){
 'use strict';
@@ -37,10 +37,10 @@ function franjaOriginal(g,T,x,y,f){   // mesmas formas das franjas de drawChar, 
  else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
  else if(f!=='arcoiris')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);   // bagunçada
 }
-var NOMES={en:{Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Ondulada:'Wavy',Risca:'Side part',Repicada:'Layered'},
- es:{Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Ondulada:'Ondulado',Risca:'De lado',Repicada:'Desfilado'},
- th:{Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Ondulada:'ลอน',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
- ja:{Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Ondulada:'ウェーブ',Risca:'サイド分け',Repicada:'レイヤー'}};
+var NOMES={en:{Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
+ es:{Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
+ th:{Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
+ ja:{Ondulado:'ウェーブ',Bicolor:'ツートン',Repicado:'レイヤー',Rebelde:'ふわはね',Risca:'サイド分け',Repicada:'レイヤー'}};
 function rotular(){   // nomes curtos das opções novas, no idioma atual (o dicionário principal não as conhece)
  var l=(document.documentElement.lang||'').slice(0,2),d=NOMES[l]||{};
  [].forEach.call(document.querySelectorAll('option[data-twh]'),function(o){var k=o.getAttribute('data-twh'),v=d[k]||k;if(o.textContent!==v)o.textContent=v;});
@@ -50,6 +50,11 @@ if(typeof document!=='undefined'&&document.addEventListener){
  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('.lang button'))setTimeout(rotular,0);},true);
  document.addEventListener('focusin',function(e){if(e.target&&e.target.tagName==='SELECT')rotular();},true);
 }
+function fio(g,sx,sy,cx,cy,tx,ty,w,reto){   // mecha: larga na raiz e afinando na ponta (ou reta na Reta/Arco-íris)
+ var h=w/2,t=reto?h:0;g.beginPath();g.moveTo(sx-h,sy);g.quadraticCurveTo(cx-h,cy,tx-t,ty);g.lineTo(tx+t,ty);g.quadraticCurveTo(cx+h,cy,sx+h,sy);g.closePath();g.fill();
+}
+var MECHA={bagunca:[12,1,10,8,8,18.5],reta:[11,1,11,8,11,14,1],lateral:[10,1,14,7,25,17],espetada:[13.5,9,14.5,2,15,-7],arcoiris:[11,1,11,8,11,15,1],
+ ondulada:[14,1,15,10,17,20.5],risca:[12,1,15,9,21.5,19.5],repicada:[12,1,11,9,10.5,16.8]};
 window.TWAvatarHair={
  isWavy:function(b){return b==='onduladom'||b==='onduladom2'||b==='onduladof';},
  back:function(g,c,x,y,b,E,T){
@@ -85,6 +90,14 @@ window.TWAvatarHair={
  fringe:function(g,x,y,b,f,T){   // devolve true quando a franja é uma das novas
   if(b==='onduladom'){oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);}   // laterais curvas do Ondulado
   return franja(T,x,y,f);
+ },
+ mecha:function(g,c,x,y,f){   // mecha que acompanha a franja escolhida até uma das pontas
+  var m=MECHA[f]||MECHA.bagunca,H2=c.hair2||'#ffffff',sg=g.createLinearGradient(0,y+1,0,y+18);
+  sg.addColorStop(0,H2);sg.addColorStop(1,'#'+String(H2).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)}));
+  g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.fillStyle=sg;
+  fio(g,x+m[0],y+m[1],x+m[2],y+m[3],x+m[4],y+m[5],3.4,!!m[6]);
+  g.fillStyle='rgba(255,255,255,.28)';fio(g,x+m[0]-.4,y+m[1]+1,x+m[2]-.5,y+m[3],x+(m[0]+m[4])/2-.3,y+(m[1]+m[5])/2,1,0);
+  g.restore();
  },
  bicolor:function(g,c,x,y,b){
   if(b!=='onduladom2')return;

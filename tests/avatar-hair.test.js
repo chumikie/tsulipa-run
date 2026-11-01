@@ -9,7 +9,7 @@ const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=1"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=2"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
@@ -18,8 +18,10 @@ for(const cut of cuts)assert(index.includes('value="'+cut+'"'),'hair menu retain
 assert(index.includes("['cback', 'back'], ['cfront', 'front'], ['cdet', 'det']]"),'Profile editor reuses haircut selector');
 assert(index.includes("PERF_CAMPOS = ['hair', 'hair2', 'streak', 'skin', 'eye', 'back'"),'Profile saves back haircut');
 assert(karaoke.includes("JSON.parse(read('brs48cr_cu2')"),'Karaoke imports saved Idol look');
-assert(source.includes("g.rect(x-3,y-4,18,34)"),'original two-color hair half preserved');
-assert(source.includes("E(x+2,y+20,3.5,6,-.12)"),'original female wave side volume preserved');
+assert(source.includes("var PRETO_TOPO='#3a3644',PRETO_BASE='#121018'"),'curto bicolor: metade fixa em preto');
+assert(!/onduladom2[\s\S]*hair2/.test(source.split('bicolor:function')[1]||''),'curto bicolor não depende da cor da mecha');
+assert(!source.includes('strokeStyle'),'repicado sem riscos brancos sobre o rosto');
+for(const label of ['>Ondulado curto<','>Curto bicolor (metade preta)<','>Repicado volumoso<'])assert(index.includes(label),'menu mostra '+label);
 const sandbox={window:{}};vm.runInNewContext(source,sandbox,{timeout:1000});
 const hair=sandbox.window.TWAvatarHair;
 let ops=[];const grad={addColorStop(){}};
@@ -32,8 +34,8 @@ for(const cut of cuts){
  assert.equal(hair.back(g,c,0,0,cut,E,T),true);
  hair.top(g,0,0,cut);hair.fringe(g,0,0,cut,T);hair.bicolor(g,c,0,0,cut);
  assert(ops.length>5,cut+' draws wave details');
- if(cut==='onduladom2')assert(ops.some(op=>op[0]==='rect'),cut+' clips the secondary hair color');
+ if(cut==='onduladom2'){assert(ops.some(op=>op[0]==='rect'),cut+' recorta a metade preta');assert.equal(ops.filter(op=>op[0]==='clip').length>=2,true,cut+' mantém a metade preta dentro da cabeça');}
 }
 assert.equal(hair.isWavy('chanel'),false);
 assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
-console.log('✓ Original three wavy haircuts: 2D layering, saved values and Karaoke parity');
+console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

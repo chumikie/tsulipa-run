@@ -201,4 +201,11 @@ assert(main.includes("var CURPAL_CACHE=['','','',''];")&&curPalStart>=0&&curPalE
 const hubDrawStart=main.indexOf('function hubDesenhar()'),hubDrawEnd=main.indexOf('\nfunction ',hubDrawStart+16);
 assert(main.includes('var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map')&&hubDrawStart>=0&&hubDrawEnd>hubDrawStart&&!main.slice(hubDrawStart,hubDrawEnd).includes('JSON.parse(JSON.stringify(CH[m[0]]))'),'Hub trio should reuse its three avatar render objects instead of deep-cloning them every frame');
 
+
+const perfDrawStart=main.indexOf('function perfGenDesenhar()'),perfDrawEnd=main.indexOf('\nfunction perfPng()',perfDrawStart);
+const perfDraw=main.slice(perfDrawStart,perfDrawEnd);
+assert(main.includes('var PERF_GEN_DRAW_CHAR={},PERF_GEN_PREVIEW_CHAR={}')&&perfDraw.includes('perfGenCharAtual()')&&!perfDraw.includes('perfAvAtual()'),'Studio avatar preview should reuse its render character rather than rebuild it on every frame');
+assert(perfDraw.includes('perfLojaTem(perfProva)')&&!perfDraw.includes('perfLojaDono().indexOf(perfProva)')&&!perfDraw.includes('JSON.parse(JSON.stringify(av.c))'),'Trying an outfit should reuse the preview character and avoid per-frame deep clones and filtered ownership arrays');
+assert(perfDraw.includes('PERF_GEN_COLOR_AV')&&!perfDraw.includes('Object.assign({}, av, { cor: perfMinhaCor })'),'Studio color preview should reuse its color wrapper object');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

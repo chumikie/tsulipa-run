@@ -30,11 +30,12 @@ function element(id){if(!elements.has(id))elements.set(id,{
 element('ktHeaderTickets');element('ktHeaderTicketNumber');element('ktTicketInventory');
 const calls=[];
 let wallet=()=>Promise.resolve({ok:true,tickets:3});
+let gift=()=>Promise.resolve({ok:true,tickets:2});
 const win={
  LANG:'pt',contaJ:null,crypto:{randomUUID:()=> '11111111-1111-4111-8111-111111111111'},twRankData:{ktTickets:0},
  twKaraokeAtualizarCard:()=>calls.push('card'),
  contaRpc:(name,args)=>{calls.push(name);if(name==='kt_ticket_wallet')return wallet();
-  if(name==='kt_ticket_gift')return Promise.resolve({ok:true,tickets:2});
+  if(name==='kt_ticket_gift')return gift();
   if(name==='kt_ticket_run_start')return Promise.resolve({ok:true,tickets:1,kind:'ticket',run:'test-run'});
   return Promise.resolve({ok:true});}
 };
@@ -53,6 +54,14 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  assert(element('ktTicketInventory').innerHTML.includes('Presente enviado!'),'feedback sobrevive à renderização do novo saldo');
  await win.ktTickets.acceptBalance({tickets:4});
  assert.equal(element('ktHeaderTicketNumber').textContent,'4','Gacha usa saldo da resposta sem aguardar outra consulta');
+ let releaseGift;gift=()=>new Promise(resolve=>{releaseGift=resolve;});
+ element('ktGiftNick').value='Patiliri';element('ktGiftSend').click();
+ await win.ktTickets.acceptBalance({tickets:6});
+ wallet=()=>Promise.resolve({ok:true,tickets:5});
+ releaseGift({ok:true,tickets:2});await tick();await tick();
+ assert.equal(win.ktTickets.get(),5,'resposta atrasada do presente busca saldo autoritativo após Gacha');
+ assert(element('ktTicketInventory').innerHTML.includes('Presente enviado!'),'feedback do presente permanece visível depois da reconciliação');
+ gift=()=>Promise.resolve({ok:true,tickets:2});
  const show=await win.ktTickets.startExtra();
  assert(show.ok&&show.kind==='ticket','show extra segue a autorização do servidor');
  assert.equal(element('ktHeaderTicketNumber').textContent,'1','show pago diminui o contador imediatamente');

@@ -45,3 +45,9 @@ html.kt-no-site #ktPhotoDialog::backdrop{background:var(--tw-modal-backdrop,rgba
  #ktPhotoDialog #ktPhotoShare{grid-column:1/-1}
  #ktPhotoDialog .kt-photo-actions .btn{padding:8px;font-size:11px}
 }
+
+#ktPhotoDialog #ktPhotoFrameDownload{border:1px solid rgba(155,48,217,.3);background:linear-gradient(135deg,#f4eaff,#ffeaf5);color:#593b79}
+#ktPhotoDialog #ktPhotoFrameDownload[hidden]{display:none!important}
+#ktPhotoDialog .kt-photo-actions{align-items:stretch}
+#ktPhotoDialog .kt-photo-actions .btn{flex:0 1 auto}
+@media(max-width:620px){#ktPhotoDialog #ktPhotoFrameDownload{grid-column:1/-1}}

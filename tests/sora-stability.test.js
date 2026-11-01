@@ -81,11 +81,11 @@ function evaluate(script,context){
 {
   const script=between('function soraSuspendForNavigation(){','function soraCloseUI(){');
   const handlers={};
-  let stops=0,resumes=0,requested=0;
+  let stops=0,resumes=0,requested=0,loopStops=0;
   const env=evaluate(script,{
     soraRaf:5,soraOpen:true,soraState:'play',soraTouchDir:1,
     soraKeyL:true,soraKeyR:true,soraLastT:0,soraSoundOn:true,muted:false,
-    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},
+    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},soraPararLoop:()=>{loopStops++;},
     cancelAnimationFrame(){},
     requestAnimationFrame:()=>{requested++;return 8;},soraLoop:()=>{},
     performance:{now:()=>12345},document:{hidden:false},
@@ -94,6 +94,7 @@ function evaluate(script,context){
   handlers.pagehide();
   assert.equal(env.soraRaf,0);
   assert.equal(stops,1);
+  assert.equal(loopStops,1,'pagehide cancels the canvas RAF as well as music');
   handlers.pageshow();
   handlers.pageshow();
   assert.equal(env.soraRaf,8);

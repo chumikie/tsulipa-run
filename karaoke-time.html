@@ -2605,9 +2605,9 @@ function krLoungeCriarRetorno(b){
  st.routeIndex=0;st.phase='home';
 }
 function krLoungeUpdate(dt){
- if(krEu.no_mic||krDemoCantor||(kt&&kt.active())){
+ if(krEu.no_mic||krDemoCantor||(kt&&kt.active())||!krEuNoMicrofone()||krMeuRetornoAt>0||krMeuVoltandoAoMic||krMoveQueue.length){
   krLoungeSocialClear();
-  krLoungeActors.forEach(function(actor){actor._ktLoungeWalking=false;});krLoungeActors.length=0;
+  krLoungeActors.forEach(function(actor){actor._ktLoungeWalking=false;});krLoungeActors.length=0;krLoungeNextAt=krT+90;
   var singer=krDemoCantor&&krDemoCantor.bot;
   for(var seated=0;seated<krBots.length;seated++){
    var idol=krBots[seated];if(idol===singer||idol.no_mic)continue;

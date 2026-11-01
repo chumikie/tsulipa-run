@@ -8025,7 +8025,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
   }).catch(function(){ perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI(); });
 }
-function perfSair(){ perfSyncOn = false; perfEntrou = false; perfMeuAv = null; perfGenAv = null; perfSync.cancelTimers(); if(!perfOv.hidden) perfFechar(); }
+function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
 function perfAplicarNuvem(n, nick){
   try{
     if(n.pet) localStorage.setItem('brs48cr_pet', JSON.stringify(n.pet));
@@ -9365,6 +9365,7 @@ function twRankVisibility(){
  var tv=$('twRankTv');if(!tv)return;
  tv.hidden=false;
  var modalTv=$('twRankTvModal'),calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ if(twRankVisibilityGate&&twRankVisibilityGate.destroyed){twRankVisibilityGate=null;twRankVisibilityElement=null;}
  if(twRankVisibilityElement!==modalTv){if(twRankVisibilityGate){twRankVisibilityGate.destroy();twRankVisibilityGate=null;}twRankVisibilityElement=modalTv;}
  twRankRotationWanted=!!(modalTv&&!modalTv.hidden&&!hubOv.hidden&&!calm);
  if(!twRankVisibilityGate&&modalTv&&window.TWMotionLifecycle){
@@ -9620,7 +9621,7 @@ function twPreviewAbrirJogo(tipo,ensaiarLocal){
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
-  if(tipo!=='sora'){hubOv.hidden=true;document.body.classList.remove('hubon');}   // Karaoke⭐Time! é uma tela da página, como o Center⭐Run!
+  if(tipo!=='sora'){buscaCancelarTodas();hubOv.hidden=true;document.body.classList.remove('hubon');}   // Karaoke⭐Time! é uma tela da página, como o Center⭐Run!
   if(text)text.textContent=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'🎤 Karaoke⭐Day! · 🧪 Ensaio':'🎤 Karaoke⭐Day!';
   frame.title=tipo==='sora'?'☁️ Sora⭐Jump!':kTime?'🎤 Karaoke⭐Time!':ensaio?'Karaoke⭐Day! — ensaio local':'🎤 Karaoke⭐Day!';
   wrap.setAttribute('data-jogo',tipo);
@@ -9800,19 +9801,34 @@ document.addEventListener('keydown', function(e){
 }, true);
 
 // ---------- Pop-up de insígnia nova ----------
-var insFila = [], insAberto = false, insEsperar = 0;
+var insFila=[],insAberto=false,insEsperar=0,insMostrarTimer=0,insConferirToken=0;
 var insOv = document.createElement('div');
 insOv.className = 'ov insov'; insOv.id = 'insOv'; insOv.hidden = true;
 document.body.appendChild(insOv);
 function insConferir(){
-  if(!contaJ) return;
+  if(!contaJ)return;
   clearTimeout(insEsperar);
-  insEsperar = setTimeout(function(){
-    contaRpc('insignias_novas').then(function(r){ if(Array.isArray(r) && r.length){ insFila = insFila.concat(r); insMostrar(); } }).catch(function(){});
-  }, 900);
+  var dono=contaJ.nick,token=++insConferirToken;
+  insEsperar=setTimeout(function(){
+    insEsperar=0;
+    if(!contaJ||contaJ.nick!==dono||token!==insConferirToken)return;
+    contaRpc('insignias_novas').then(function(r){
+      if(!contaJ||contaJ.nick!==dono||token!==insConferirToken)return;
+      if(Array.isArray(r)&&r.length){insFila=insFila.concat(r);insMostrar();}
+    }).catch(function(){});
+  },900);
+}
+function insAgendarMostrar(delay){
+  clearTimeout(insMostrarTimer);
+  insMostrarTimer=setTimeout(function(){insMostrarTimer=0;insMostrar();},delay);
+}
+function insCancelar(){
+  clearTimeout(insEsperar);insEsperar=0;insConferirToken++;
+  clearTimeout(insMostrarTimer);insMostrarTimer=0;
+  insFila=[];insAberto=false;if(insOv)insOv.hidden=true;
 }
 function insMostrar(){
-  if(insAberto || !insFila.length) return;
+  if(!contaJ||insAberto||!insFila.length)return;
   var k = insFila.shift(), it = null;
   for(var i = 0; i < PERF_INS.length; i++) if(PERF_INS[i][0] === String(k).split(':')[0]){ it = PERF_INS[i]; break; }
   if(!it){ insMostrar(); return; }
@@ -9826,7 +9842,7 @@ insOv.addEventListener('click', function(e){
   if(e.target.id !== 'insOk' && e.target.id !== 'insVer') return;
   insOv.hidden = true; insAberto = false;
   if(e.target.id === 'insVer'){ insFila = []; perfAbrir(); return; }
-  setTimeout(insMostrar, 250);
+  insAgendarMostrar(250);
 });
 
 // ---------- Ganchos chamados pelo resto do jogo ----------

@@ -11,7 +11,7 @@ const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=5"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
@@ -34,7 +34,7 @@ for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
  assert(html.includes("else if(b==='marias'){E(x+1,y+8,4,4);E(x+29,y+8,4,4)"),name+': marias presas no alto da cabeça');
 }
 assert(index.includes('data-twh="Rebelde">Rebelde<'),'franja ondulada aparece como Rebelde');
-assert(source.includes("if(f==='arcoiris'){arcoiris(g,x,y,T);return true;}")&&source.includes('function arcoiris(g,x,y,T)'),'arco-íris desenhado como mechas com degradê, não blocos');
+assert(!source.includes('function arcoiris(')&&!/arcoiris\(g,x,y,T\)/.test(source),'arco-íris mantém o desenho original reto do jogo');
 for(const f of ['bagunca','reta','lateral','espetada','arcoiris','ondulada','risca','repicada'])assert(new RegExp('\\b'+f+':\\[').test(source),'mecha definida para a franja '+f);
 const sandbox={window:{}};vm.runInNewContext(source,sandbox,{timeout:1000});
 const hair=sandbox.window.TWAvatarHair;
@@ -53,12 +53,11 @@ for(const cut of cuts){
 }
 assert.equal(hair.isWavy('chanel'),false);
 assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
-{let o=[];const gg=new Proxy({}, {get(obj,k){if(k==='createLinearGradient')return ()=>({addColorStop(){}});if(k in obj)return obj[k];return (...a)=>o.push(k);},set(obj,k,v){obj[k]=v;return true;}});assert.equal(hair.fringe(gg,0,0,'',"arcoiris",(...a)=>o.push('T')),true);assert(o.filter(k=>k==='T').length>=12,'arco-íris tem 6 mechas e brilhos');}
 
  // Sora Jump has an independent drawChar renderer. Its player character and
  // partner sprites must use the same shared base/top/fringe layers as Profile
  // and Karaoke, rather than silently falling back to the old duplicated hair.
- assert(sora.includes('<script src="./tw-avatar-hair.js?v=5"></script>'),'Sora Jump loads the shared hair renderer');
+ assert(sora.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),'Sora Jump loads the shared hair renderer');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists');
@@ -79,7 +78,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Karaoke Day is still a reachable preview/controller renderer. Preserve its
  // legacy hair fallback while routing the new base/top/fringe layers through
  // the shared module, just like the main profile, Karaoke Time and Sora.
- assert(day.includes('<script src="./tw-avatar-hair.js?v=5"></script>'),'Karaoke Day loads the shared hair module');
+ assert(day.includes('<script src="./tw-avatar-hair.js?v=6"></script>'),'Karaoke Day loads the shared hair module');
  const dayDrawStart=day.indexOf('function desenharIdol(x,c,px,py,sc,pose,expr,t,espelho,opcoes){');
  const dayDrawEnd=day.indexOf('\nfunction ',dayDrawStart+20);
  assert(dayDrawStart>=0&&dayDrawEnd>dayDrawStart,'Karaoke Day has an independent Idol renderer');

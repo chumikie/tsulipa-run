@@ -355,4 +355,23 @@ assert(petRenderHelperStart>=0&&petRenderHelperEnd>petRenderHelperStart&&petRend
 assert(main.includes('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)')&&main.includes('petAnelAtras(ctx, type, appearanceOverride)')&&main.includes('petDrawCustom(ctx, type, tFrame, ex, appearanceOverride)'),'The shared pet renderer should forward appearance overrides through custom pets and rear-ring accessories');
 assert(main.includes("var pObj = appearanceOverride && typeof appearanceOverride === 'object' ? appearanceOverride :")&&main.includes('var a = hasOverride&&typeof appearanceOverride.acc===\'string\'?appearanceOverride.acc:cfg.acc;'),'The pet renderer should resolve cheek/accessory data from the explicit override while preserving global wardrobe fallback for normal pet scenes');
 
+
+const petSharedStart=main.indexOf('function petDrawEllipse(ctx,cx,cy,rx,ry,r)');
+const petSharedEnd=main.indexOf('function drawPet(ctx, type',petSharedStart);
+const petShared=main.slice(petSharedStart,petSharedEnd);
+const customPetStart=main.indexOf('function petDrawCustom(ctx, cfg, t, ex, appearanceOverride)');
+const customPetEnd=main.indexOf('// ---------- Reações do personagem',customPetStart);
+const customPet=main.slice(customPetStart,customPetEnd);
+const standardPetStart=main.indexOf('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)');
+const standardPetEnd=main.indexOf('\n\nvar PAL=',standardPetStart);
+const standardPet=main.slice(standardPetStart,standardPetEnd);
+const rankPetStart=main.indexOf('function petDrawRankAcc(ctx, a, tp)');
+const rankPetEnd=main.indexOf('\nfunction petDrawPromo',rankPetStart);
+const rankPet=main.slice(rankPetStart,rankPetEnd);
+assert(petSharedStart>=0&&petSharedEnd>petSharedStart&&petShared.includes('function petDrawEllipse(ctx,')&&petShared.includes('function petDrawPolygon(ctx,'),'Pet renderers should share module-level ellipse and polygon primitives');
+assert(customPetStart>=0&&customPetEnd>customPetStart&&!/function\s+[ET]\s*\(/.test(customPet)&&customPet.includes('petDrawEllipse(ctx,')&&customPet.includes('petDrawPolygon(ctx,'),'Custom pet rendering should not allocate local E/T drawing closures per render');
+assert(standardPetStart>=0&&standardPetEnd>standardPetStart&&!/function\s+[ET]\s*\(/.test(standardPet)&&standardPet.includes('petDrawEllipse(ctx,')&&standardPet.includes('petDrawPolygon(ctx,'),'Standard pet rendering should reuse shared drawing primitives instead of allocating E/T closures per render');
+assert(rankPetStart>=0&&rankPetEnd>rankPetStart&&rankPet.includes('for(var si=0;si<PET_RANK_TIARA_STARS.length;si++)')&&!rankPet.includes('forEach(')&&main.includes('var PET_RANK_TIARA_STARS=[[-6.5,-9.6,1.6],[0,-11.8,2.2],[6.5,-9.6,1.6]];'),'Pet rank accessories should reuse static tiara geometry without allocating a forEach callback on each draw');
+assert(main.includes("petDrawRankAcc(ctx, a, type)")&&customPet.includes('petDrawRankAcc(ctx, a);'),'Built-in and custom pet renderers should keep their existing rank-accessory drawing routes');
+
 console.log('✓ Karaoke room reuses avatar, accessory and tile buffers');

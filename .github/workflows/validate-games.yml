@@ -17,6 +17,8 @@ on:
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/center-run-daily-cap.test.js'
+      - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
@@ -83,6 +85,8 @@ on:
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/center-run-daily-cap.test.js'
+      - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
@@ -140,6 +144,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate Center Run daily cap and server response contract
+        run: node tests/center-run-daily-cap.test.js
       - name: Validate shared window contracts
         run: node tests/windows-shared.test.js
       - name: Validate Karaoke mobile viewport script

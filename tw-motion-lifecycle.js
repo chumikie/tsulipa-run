@@ -86,7 +86,7 @@ function connectFrame(frame){
  frame.addEventListener('load',function(){send(active&&pageIsActive()&&domVisible(frame)&&rectVisible(frame));});
 }
 function cleanup(root){
- if(!root||root.nodeType!==1)return;
+ if(!root||root.nodeType!==1||root.isConnected)return;
  var loopSet=loopGates.get(root);
  if(loopSet&&loopSet.size)Array.from(loopSet).forEach(function(state){if(state.destroy)state.destroy();});
  var frameGate=frameGates.get(root);if(frameGate){frameGate.destroy();frameGates.delete(root);framed.delete(root);}

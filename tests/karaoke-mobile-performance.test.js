@@ -250,6 +250,7 @@ const socialDueEnd=html.indexOf('function krLoungeSocialUpdate()',socialDueStart
 const socialDue=html.slice(socialDueStart,socialDueEnd);
 assert(socialDue.includes('if(!krLoungeSoloPermitido())return false;')&&socialDue.includes('return krT>=dueAt;')&&socialDue.includes('return krT>=krLoungeSocialNextAt;'),'Autonomous social updates should be scheduled at interaction deadlines and remain disabled outside solo behavior');
 assert(html.includes('if(krLoungeSocialDeveAtualizar())krLoungeSocialUpdate();'),'The room loop should not run the audience social updater on every logical frame');
+assert(html.includes('function krLoungeUpdateDeveRodar()')&&html.includes('if(krLoungeUpdateDeveRodar())krLoungeUpdate(krFrameDelta);')&&html.includes('return !!krLoungeActor||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;'),'Autonomous audience movement should sleep between deadlines and update continuously only while a walker is active');
 assert(html.includes('if(krLoungeActor||krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB)')&&html.includes('krLoungeSocialClear();'),'Solo audience state should be cleared once when autonomous behavior becomes unavailable, not on every frame');
 const roomLifeStart=html.indexOf('var krRoomObserver=null');
 const roomLifeEnd=html.indexOf("window.addEventListener('message'",roomLifeStart);

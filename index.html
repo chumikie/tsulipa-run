@@ -11226,7 +11226,25 @@ encOv.innerHTML = '<div class="panel encp tw-window tw-window-surface" role="dia
 document.body.appendChild(encOv);
 var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
 (function(){ var c = $('hubCards'); if(c && c.parentNode) c.parentNode.insertBefore(encBtn, c.nextSibling); })();
-var encDados = null, encAnim = 0, encT = 0;
+var encDados = null, encAnim = 0, encT = 0, encRenderGrupo = [], encRenderOrdem = [];
+var ENC_POSES = ['v','tchau','banzai','coracao','luz','mic'];
+var ENC_POS_SOLO = [.5], ENC_POS_DUPLA = [.3,.7], ENC_POS_TRIO = [.5,.2,.8];
+function encPrepararRender(d){
+  encRenderGrupo.length=0;
+  function adicionar(o){
+    var a=JSON.parse(JSON.stringify(o.avatar||{}));
+    a.pet=null;
+    if(typeof a.visual==='string'&&PERF_RANKVIS[a.visual])a.visual='';
+    encRenderGrupo.push(a);
+  }
+  adicionar(d);
+  var extras=Array.isArray(d.extras)?d.extras:[];
+  for(var i=0;i<extras.length;i++)adicionar(extras[i]);
+  encRenderOrdem.length=0;
+  for(var j=1;j<encRenderGrupo.length;j++)encRenderOrdem.push(j);
+  if(encRenderGrupo.length)encRenderOrdem.push(0);
+  encPos=encRenderGrupo.length===3?ENC_POS_TRIO:encRenderGrupo.length===2?ENC_POS_DUPLA:ENC_POS_SOLO;
+}
 function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AAAA-MM-DD)
 function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
 function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
@@ -11253,7 +11271,7 @@ function encBtnUI(){
   encBtn.classList.toggle('feito', !!feito);
 }
 function encMostrar(d){
-  encDados = d; encT = 0;
+  encDados = d; encT = 0; encPrepararRender(d);
   var ex = Array.isArray(d.extras) ? d.extras : [];
   var encPainel = encOv.querySelector('.encp');
   if(encPainel) encPainel.classList.toggle('enc-grupo', ex.length > 0);
@@ -11273,20 +11291,18 @@ function encMostrar(d){
 function encLoop(){
   encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; encT++;
   if(encT % 2 === 0){
-    var cv = $('encCv'), x = cv.getContext('2d'), poses = ['v', 'tchau', 'banzai', 'coracao', 'luz', 'mic'];
-    var grupo = [encDados].concat(Array.isArray(encDados.extras) ? encDados.extras : []).map(function(o, i){
-      var a = JSON.parse(JSON.stringify(o.avatar || {})); a.pet = null; a.pose = poses[(Math.floor(encT / 70) + i * 2) % poses.length]; a.expr = Math.floor(encT / 70 + i) % 2 ? 3 : 2;
-      if(typeof a.visual === 'string' && PERF_RANKVIS[a.visual]) a.visual = ''; return a; });
+    var cv = $('encCv'), x = cv.getContext('2d'), grupo = encRenderGrupo;
     try{ x.clearRect(0, 0, cv.width, cv.height); encCena(x, cv.width, cv.height, encT);
       var pulo = Math.abs(Math.sin(encT * .12)) * 10;
       encHalo(x, cv.width / 2, cv.height * .56 - pulo, encT);
       encEmojis(x, cv.width, cv.height, encT);   // atrás de todo mundo: os emojis não cobrem o rostinho
-      var W2 = cv.width, H2 = cv.height, n = grupo.length, esc = n === 3 ? .58 : n === 2 ? .7 : 1, pos = n === 3 ? [.5, .2, .8] : n === 2 ? [.3, .7] : [.5];
-      encPos = pos;
-      grupo.map(function(a, i){ return i; }).sort(function(a, b){ return (a === 0) - (b === 0); }).forEach(function(i){   // quem é do centro fica na frente
-        var pj = n > 1 ? Math.abs(Math.sin(encT * .12 + i * 1.3)) * 8 : pulo, tq = encT - (encToque[i] || -999);
-        if(tq >= 0 && tq < 46){ pj += Math.sin(tq / 46 * Math.PI) * 34; grupo[i].pose = 'banzai'; grupo[i].expr = 3; }
-        x.save(); x.translate(W2 * pos[i] - W2 * esc / 2, H2 * (1 - esc) - pj); x.scale(esc, esc); perfDesenharIdol(x, W2, H2, grupo[i], false, false, encT + i * 30); x.restore(); });
+      var W2 = cv.width, H2 = cv.height, n = grupo.length, esc = n === 3 ? .58 : n === 2 ? .7 : 1, pos = encPos, fase = Math.floor(encT / 70);
+      for(var oi=0;oi<encRenderOrdem.length;oi++){
+        var i=encRenderOrdem[oi],a=grupo[i],pj=n>1?Math.abs(Math.sin(encT*.12+i*1.3))*8:pulo,tq=encT-(encToque[i]||-999);
+        a.pose=ENC_POSES[(fase+i*2)%ENC_POSES.length];a.expr=(fase+i)%2?3:2;
+        if(tq>=0&&tq<46){pj+=Math.sin(tq/46*Math.PI)*34;a.pose='banzai';a.expr=3;}
+        x.save();x.translate(W2*pos[i]-W2*esc/2,H2*(1-esc)-pj);x.scale(esc,esc);perfDesenharIdol(x,W2,H2,a,false,false,encT+i*30);x.restore();
+      }
       encToqueBolhas(x, encT);
     }catch(e){}
   }
@@ -11294,9 +11310,9 @@ function encLoop(){
 }
 var encToque = {}, encPos = [.5], encBolhas = [];
 function encToqueBolhas(x, t){   // corações do toque, por cima, mas subindo acima da cabeça
-  encBolhas = encBolhas.filter(function(b){ return t - b.t0 < 50; });
-  x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
-  encBolhas.forEach(function(b){ var k = (t - b.t0) / 50; x.globalAlpha = 1 - k; x.font = (18 + k * 8) + 'px sans-serif'; x.fillText(b.e, b.x + Math.sin(k * 7 + b.x) * 10, b.y - k * 60); });
+  for(var i=encBolhas.length-1;i>=0;i--)if(t-encBolhas[i].t0>=50)encBolhas.splice(i,1);
+  x.save();x.textAlign='center';x.textBaseline='middle';
+  for(var j=0;j<encBolhas.length;j++){var b=encBolhas[j],k=(t-b.t0)/50;x.globalAlpha=1-k;x.font=(18+k*8)+'px sans-serif';x.fillText(b.e,b.x+Math.sin(k*7+b.x)*10,b.y-k*60);}
   x.restore();
 }
 $('encCv').addEventListener('pointerdown', function(e){

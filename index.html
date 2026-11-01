@@ -19,6 +19,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=1"></script>
 <script src="./tw-avatar-items.js?v=1"></script>
+<script src="./tw-avatar-hair.js?v=1"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -778,7 +779,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         <label><input type="checkbox" id="cstk">Mecha <input type="color" id="cstr" value="#4dd8ff"></label>
         <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
         <span id="skins"></span>
-        <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias-chiquinhas</option><option value="rabo">Rabo de cavalo</option><option value="cacheado">Cacheado</option></select></label>
+        <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom">Ondulado curto masculino</option><option value="onduladom2">Ondulado curto masculino bicolor</option><option value="onduladof">Ondulado curto feminino</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias-chiquinhas</option><option value="rabo">Rabo de cavalo</option><option value="cacheado">Cacheado</option></select></label>
         <label>Franja <select id="cfront"><option value="bagunca">Bagunçada</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option></select></label>
         <label>Detalhe <select id="cdet">
           <option value="" data-r="0">Nenhum</option>
@@ -1457,7 +1458,6 @@ function spawn(){
 	
 	// --- GERADOR DE PLATEIA DINÂMICO ---
     if (score >= 450) { 
-    // Plateia que vai se formando: poucos fãs no começo, multidão em Center (5000) e grande multidão a partir de 10000
     var fanChance = score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90;
     
     if (s2CosRand() < fanChance) {
@@ -2143,7 +2143,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
-  var sl=(b==='longo'||b==='chanel'||((b===''||b==='pixie')?false:(f==='reta'||f==='arcoiris')))?14:(b==='pixie'?5:(b===''&&(f==='reta'||f==='arcoiris'))?10:6);
+  var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
   var HD='#'+H.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
@@ -2154,6 +2154,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='rabo'){E(x+29,y+20+sw,6,14,.3); E(x+31,y+24+sw,4,10,.4)}
     else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
   else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas  
+  else if(TWAvatarHair.back(g,c,x,y,b,E,T)){}
   else if(b==='cacheado'){[[15,3],[4,8],[26,8],[1,17],[29,17],[3,26],[27,26]].forEach(function(p){E(x+p[0],y+p[1]+6,8,8)})}
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
@@ -2288,7 +2289,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(hacc==='bandaid'){g.fillStyle='#d97706'; g.fillRect(x+6, y+21, 7, 4); g.fillStyle='#fcd34d'; g.fillRect(x+6.5, y+21.5, 6, 3); g.fillStyle='#fff'; g.fillRect(x+8, y+22, 3, 2);}
 
   var hg=g.createLinearGradient(0,y+5,0,y+24);hg.addColorStop(0,H);hg.addColorStop(1,HD);g.fillStyle=hg;
-  g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();
+  if(TWAvatarHair.isWavy(b))TWAvatarHair.top(g,x,y,b);else{g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();}
   g.fillRect(x+3,y+11.5,4,sl+0.5);g.fillRect(x+23,y+11.5,4,sl+0.5); // +0.5 elimina qualquer fresta entre o topo e as costeletas
   
   if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
@@ -2299,7 +2300,8 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
 
   g.fillStyle=hg;
-  if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
+  if(TWAvatarHair.isWavy(b))TWAvatarHair.fringe(g,x,y,b,T);
+  else if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
   else if(f==='reta')g.fillRect(x+3,y+8,24,6);
   else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
   else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
@@ -2313,6 +2315,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }
 
   g.restore();
+  TWAvatarHair.bicolor(g,c,x,y,b);
   
   if(c.streak){
     var shd2='#'+c.hair2.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
@@ -9133,7 +9136,6 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];
 var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});
-// Tocar na Tsu, na Lirika ou na Pati: pulinho feliz, emojis e um "oi" escrito (sem voz até as gravações chegarem).
 var HUB_REAGE = { i:-1, t0:0, emo:[] };
 var HUB_TRIO_EMO = [['💜','⭐','🐈'], ['💚','🌼','🐨'], ['💙','🌙','✨']];
 var HUB_TRIO_OI = ['Oiê!', 'Oi, gente linda!', 'Oi gente, meu nome é Pati!'];
@@ -11193,7 +11195,6 @@ var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
   ['duo_selfie', '🤳', 'Selfie', 80, 'duo'], ['duo_guarda', '☂️', 'Guarda-chuva', 100, 'duo'], ['duo_seis', '6️⃣', 'Six Seven', 120, 'duo'],
   ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo'], ['det_coelho', '🐰', 'Orelhas de coelho', 50, 'acc']
 ];
-// Cenários de tema no Moon⭐Duo!: o tema da vez é grátis durante a temporada; quem quiser guarda para sempre com estrelas
 // (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
 var DUO_TEMA_PRECO = 60;
 function duoTemaK(k){ return TEMA_INFO[k] && k !== 'halloween' ? k : ''; }   // o Halloween tem o fundo próprio da lojinha
@@ -11772,7 +11773,6 @@ function ovMusicaTocar(k){
   }
   function bumbo(ini, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(140, ini); o.frequency.exponentialRampToValueAtTime(45, ini + .18); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + .22); o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + .25); }
 
-  // Star⭐Gacha!: 4 compassos de suspense (Lá menor, tique-taque da roleta, rufar que cresce) + 4 de triunfo (fanfarra em Dó maior)
   var G_SUS = [[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], G_TRI = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]];
   var G_MEL_SUS = [76, -1, 72, -1, 69, -1, 72, 76, 77, -1, 76, -1, 72, -1, 69, -1, 74, -1, 72, -1, 69, -1, 65, 69, 68, 69, 71, 72, 74, 75, 76, 80];
   var G_MEL_TRI = [84, -1, 79, 84, 88, -1, 86, 84, 83, -1, 79, -1, 86, 84, 83, 79, 81, -1, 84, 88, 91, -1, 88, 84, 89, 88, 86, 84, 86, 88, 91, -1];
@@ -11842,7 +11842,6 @@ document.addEventListener('visibilitychange',twMusicaPaginaVisibilidade);
 window.addEventListener('pagehide',function(){hubVozParar();music(false);curT='';hubMusicaParar();ovMusicaParar();});
 window.addEventListener('pageshow',twMusicaPaginaVisibilidade);
 
-// cena suave do Encontro do dia: céu de fim de tarde, cidade em silhueta, moitas e nuvens (no clima do Center⭐Run!)
 function encCena(x, W2, H2, t){
   var gr = x.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#2b1a6b'); gr.addColorStop(.55, '#7b3ff0'); gr.addColorStop(1, '#ff9ccd');
   x.fillStyle = gr; x.fillRect(0, 0, W2, H2);
@@ -11954,7 +11953,6 @@ document.addEventListener('click', function(e){
 hubMostrar();
 // Só mostra a página depois que a tela de início está pronta (sem piscar a versão antiga).
 (function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();})();
-// --- VITRINE DOS IDOLS (depois da v2.1.3): quem já tem conta passa deslizando embaixo do trio da tela de início ---
 var hubIdolsDados = null, hubIdolsEm = 0;
 function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min

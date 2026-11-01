@@ -12,6 +12,11 @@ assert(main.includes('function encPrepararRender(d)')&&main.includes('encPrepara
 assert(encounter.includes('twAnimacaoVisivel($(\'encCv\'))')&&encounter.includes('encRenderGrupo')&&encounter.includes('encRenderOrdem'),'Encounter loop must stop while hidden and reuse its prepared cast');
 assert(!encounter.includes('JSON.parse(JSON.stringify')&&!encounter.includes('.concat(')&&!encounter.includes('.map(')&&!encounter.includes('.sort(')&&!encounter.includes('.forEach('),'Encounter drawing should not clone avatars or create collection helpers per frame');
 assert(main.includes("syncLoop('perfAnimId',$('perfGenCv')")&&main.includes("syncLoop('duoAnim',$('duoCv')")&&main.includes("syncLoop('aniverAnim',$('aniverFx')")&&main.includes("syncLoop('encAnim',$('encCv')"),'Profile, Moon Duo, birthday and encounter loops must be centrally visibility-gated');
+const kaomojiStart=main.indexOf("var visualKaoEl = document.getElementById('kaomoji-visual')");
+const kaomojiEnd=main.indexOf('// =========================',kaomojiStart);
+assert(kaomojiStart>=0&&kaomojiEnd>kaomojiStart,'The decorative kaomoji timer should remain inspectable');
+const kaomoji=main.slice(kaomojiStart,kaomojiEnd);
+assert(kaomoji.includes('TWMotionLifecycle.watchLoop(visualKaoEl,null,visualKaoIniciar,visualKaoParar)')&&!kaomoji.includes('setInterval(function()'),'Decorative kaomoji updates should run only while the element is visible');
 assert(lifecycle.includes("if(cs.display==='none'||cs.visibility==='hidden'||cs.contentVisibility==='hidden')return false;")&&!lifecycle.includes('parseFloat(cs.opacity)===0'),'A zero-opacity starting frame must not freeze a CSS fade-in animation');
 assert(lifecycle.includes('function pageIsActive()')&&lifecycle.includes('function watchLoop('),'Shared animation lifecycle must gate pages and opt-in animation loops');
 assert(main.includes('var twOverlayTopCache=null,twOverlayTopDirty=true;')&&main.includes('function twOverlayInvalidar(){twOverlayTopDirty=true;}'),'The main page should cache overlay ownership between UI changes');

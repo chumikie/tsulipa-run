@@ -29,7 +29,8 @@ A PR permanece **aberta e em draft**. Nenhum merge, deploy ou alteração no Sup
 
 ## 3. Falta corrigir / investigar
 
-- **Cortes ondulados não são do jogo original.** Os cortes `onduladom`, `onduladom2` (bicolor) e `onduladof` foram criados em 01/11 na branch `feat/avatar-careca-capitao-estrela` e trazidos pela PR como "originais" — eram originais apenas daquela branch. Eles desenham uma franja própria e ignoram a franja escolhida. Os 7 cortes e as 5 franjas existentes no jogo continuam com desenho idêntico ao da `main` (comparação do `drawChar`). **Aguardando decisão do responsável** (manter, ajustar ou retirar).
+- **Montar Idol e Star⭐Gacha sem animação (relato de 01/11, 15:19).** Causa provável: até `5931104`, o cache da camada do topo (`twOverlayTopo`) só era invalidado pelo script quebrado; ao abrir uma janela, o loop lia o cache antigo, achava que estava oculto e parava no 1º quadro. Na prévia atual o Gacha anima (teste no Chromium). Montar Idol exige login: **confirmar com recarga forçada** (Ctrl+Shift+R) na prévia.
+- **Cortes ondulados — decisão do responsável (01/11):** ajustar, no mesmo estilo de arte dos cabelos do jogo. `onduladom` (ondulado curto) fica e deve ser refinado sem erros; o corte curto bicolor deve ser **metade preta + metade na cor escolhida pelo jogador** (referência: Maruru); `onduladof` deve virar um cabelo **repicado e um pouco volumoso**, médio, com franja entre os olhos (referência: Mimimila). Os 7 cortes e 5 franjas antigos seguem idênticos à `main`.
 - **Chapéu de Capitão e estrela — pedidos do responsável:** chapéu com formato mais militar (cor aprovada); estrela um pouco maior, como presilha abaixo do cabelo, ao lado da franja (como hibisco e flor de cerejeira). Não implementado ainda.
 - **Karaoke pausa sozinho em tela de celular.** Numa janela 420×900, o show começa e fica em "Pausado" logo após confirmar; em janela alta (1280×1600) toca normalmente, e a produção toca nos dois casos. Suspeita: a regra nova que pausa o show quando palco/painel de ritmo saem da área visível. Confirmar em celular real antes de corrigir.
 - Custo da faixa de visitantes do Karaoke.
@@ -54,6 +55,17 @@ Look de teste salvo só no navegador local: Idol, chapéu de Capitão, estrela, 
 | Karaoke solo | Pendente: sem login o palco usa a Tsu, não o Idol salvo; conferir no fluxo autenticado. As capturas anteriores da sala pareciam "quebradas" por causa do recorte da captura (a produção sai igual com o mesmo método); a sala em si não está quebrada. |
 
 Produção (`tsulipa-world.vercel.app`) ainda não oferece os 3 cortes, o chapéu nem a estrela — são novidades da PR.
+
+### Pedidos do responsável (01/11) — fila, um por vez
+
+1. Montar Idol e Gacha: confirmação após recarga (acima).
+2. Cabelos: ajustes descritos acima.
+3. Chapéu de Capitão mais militar; estrela como presilha maior ao lado da franja.
+4. Karaoke: botão "Ajustar timing" junto de volume e câmera sobre a tela; no celular, todos esses ícones saem de cima da tela do Karaoke e vão para cima.
+5. Karaoke: show não pode pausar sozinho em tela de celular.
+6. Sala de Karaoke: pelo menos 3 Idols da plateia andando ao mesmo tempo; o Idol do jogador fica no microfone, anda só quando a pessoa toca no piso e volta ao microfone após 5 s longe; obrigatório estar no microfone ao jogar. O telão continua mostrando só "Maiores combos".
+7. Página do Karaoke: trocar a "Vitrine sonora" longa por botões com a cabeça de Tsu, Lirika e Pati que tocam as vozes; destacar as faixas do Karaoke para ouvir, com nota máxima pessoal por música (sem ranking compartilhado), em seção selecionável como "Novidades".
+8. "As estrelas da semana": o 3º quadro vira seletor de música, mostrando o top 3 mensal de cada música. **Depende de dados por música no Supabase (ChatGPT).**
 
 ## 4. Branches avaliadas
 

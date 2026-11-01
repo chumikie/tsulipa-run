@@ -10,41 +10,59 @@ const polaroidSource=fs.readFileSync(path.join(__dirname,'..','karaoke-room-pola
 
 assert(!/\bkrLoungeSoloPermitido\b|\bkrSt\b|\bkrT\b|\bkrEu\b|\bkrDemoCantor\b|\bkrBots\b|\bkrLoungeActors\b|\bkrDemoFila\b/.test(autoSource),'autonomous mic module must not reach into the page IIFE');
 assert(!/\bCH\b|\bdesenharIdol\b|\bkrT\b/.test(polaroidSource),'Polaroid module must not reach into the page IIFE');
-assert(html.includes('window.krLoungeAutoMicTick=window.KaraokeRoomAutoMic.create({'),'page injects room state into the autonomous mic factory');
+assert(html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({')&&html.includes('window.krLoungeAutoMicTick=window.krLoungeAutoMicController.tick'),'page injects room state into the autonomous mic factory');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({'),'page injects avatar renderer dependencies into the Polaroid factory');
-assert(html.includes('karaoke-room-auto-mic.js?v=2')&&html.includes('karaoke-room-polaroid.js?v=2'),'both separated controllers use fresh cache versions');
+assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-room-polaroid.js?v=2'),'both separated controllers use fresh cache versions');
 
 function autoHarness(overrides){
- const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
- const bots=[{nick:'A',x:200,y:400,no_mic:false,_ktLoungeWalking:false},{nick:'B',x:700,y:400,no_mic:false,_ktLoungeWalking:false}];
+ const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,admissionPending:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
+ const bots=[{nick:'A',x:200,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:160,returnY:400}},{nick:'B',x:700,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:800,returnY:400}}];
  const calls=[],deps={
   getState:()=>state,getBots:()=>bots,canWalk:bot=>!bot.no_mic,getSeat:i=>i===0?[160,400]:[800,400],
-  random:()=>0,nowMs:()=>5000,setSinger:v=>{state.singer=v;calls.push(['singer',v]);},
-  setNextAt:v=>{state.nextAt=v;calls.push(['next',v]);},startPractice:()=>calls.push(['start']),switchMusicMode:()=>calls.push(['music']),updateUI:()=>calls.push(['ui'])
+  removeWalker:bot=>{bot._ktLoungeWalking=false;calls.push(['remove',bot.nick]);},
+  random:()=>0,nowMs:()=>5000,getTime:()=>state.time,setSinger:v=>{state.singer=v;calls.push(['singer',v&&v.phase]);},
+  setNextAt:v=>{state.nextAt=v;calls.push(['next',v]);},startPractice:()=>calls.push(['start']),switchMusicMode:()=>calls.push(['music']),updateUI:()=>calls.push(['ui']),onReturnComplete:()=>calls.push(['returned'])
  };
- return {state,bots,calls,tick:AutoMic.create(deps)};
+ const controller=AutoMic.create(deps);
+ return {state,bots,calls,controller,tick:controller.tick};
 }
 const blocked=[
  ['homologation',{soloAllowed:false}],['closed room',{roomOpen:false}],['player show',{playerNoMic:true}],
+ ['pending presentation confirmation',{admissionPending:true}],
  ['required return delay',{returnAt:1}],['return route',{returning:true}],['queued movement',{moveQueueLength:1}],
  ['player away from mic',{playerAtMic:false}],['another walker',{walkerCount:1}],['queued turn',{queueLength:1}],
  ['player rhythm run',{rhythmRun:{}}],['NPC already singing',{singer:{bot:{}}}],['rhythm engine active',{gameActive:true}]
 ];
 for(const [label,state] of blocked){
  const h=autoHarness(state);h.tick();
- assert.equal(h.calls.some(c=>c[0]==='start'),false,label+' blocks autonomous mic');
+ assert.equal(h.state.singer&&h.state.singer.bot,undefined,label+' blocks autonomous mic');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,label+' must not start the music engine');
 }
 {
  const h=autoHarness();h.tick();
- assert.equal(h.state.singer.bot,h.bots[0],'first eligible NPC receives the mic deterministically');
- assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'NPC moves to the fixed mic and enters singing state');
+ assert.equal(h.state.singer.bot,h.bots[0],'first eligible NPC receives the mic route deterministically');
+ assert.equal(h.state.singer.phase,'approach','NPC begins with a walking route rather than a position teleport');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic,h.bots[0]._ktLoungeWalking],[200,400,false,true],'NPC starts from its current seat and walks');
+ assert.deepEqual(h.state.singer.route,[[200,520],[340,520],[340,286],[480,286]],'approach route follows the clear aisle and side passage');
  assert.equal(h.state.singer.automatic,true,'the turn is marked autonomous');
- assert.equal(h.state.singer.endsAt,70000,'NPC show keeps the original 65-second local duration');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,'practice waits until the NPC arrives at the mic');
  assert.equal(h.state.nextAt,1000,'next random mic window is scheduled');
- assert.deepEqual(h.calls.map(c=>c[0]),['singer','next','start','music','ui'],'start, music and room refresh happen in the original order');
+ for(let i=0;i<4;i++)h.controller.updateMovement(500);
+ assert.equal(h.state.singer.phase,'singing','practice begins only after reaching the microphone');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'NPC reaches the mic before singing');
+ assert.equal(h.state.singer.endsAt,70000,'NPC show keeps the original 65-second local duration');
+ assert(h.calls.some(c=>c[0]==='start'),'practice engine starts after the route ends');
+ assert.equal(h.controller.finishSinger(),true,'ending the show starts the return route');
+ assert.equal(h.state.singer.phase,'return','singer keeps a return state instead of teleporting');
+ assert.equal(h.bots[0]._ktLoungeWalking,true,'singer walks back after ending the show');
+ for(let i=0;i<4;i++)h.controller.updateMovement(500);
+ assert.equal(h.state.singer,null,'singer state clears only after reaching the sofa');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[160,400,false],'NPC returns to its original sofa');
+ assert(h.calls.some(c=>c[0]==='returned'),'queue can advance after the NPC finishes returning');
 }
 {
  const h=autoHarness();h.bots.forEach(b=>b.no_mic=true);h.tick();
+ assert.equal(h.state.singer,null,'no eligible NPC means no singer is reserved');
  assert.equal(h.calls.some(c=>c[0]==='start'),false,'no eligible NPC means no show starts');
  assert.equal(h.state.nextAt,280,'empty cast retries after the original 180-frame delay');
 }

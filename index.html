@@ -6400,6 +6400,7 @@ function contaSessao(sess){
   contaAuthUserId=userId;
   var token=++contaSessaoToken;
   if(typeof perfConf!=='undefined'&&perfConf)perfConf.hidden=true;
+  if(contaJ){contaJ=null;contaRun=null;nick='';contaUI();perfSair();if(window.ktTickets)window.ktTickets.reset();}
   if(!sess){if(contaJ){contaJ=null;contaUI();perfSair();}if(window.ktTickets)window.ktTickets.reset();return;}
   contaRpc('jogador').then(function(j){
     if(token!==contaSessaoToken)return;

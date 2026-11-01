@@ -7842,7 +7842,7 @@ function perfGenDesenhar(){
     if(perfProva){
       var preview=PERF_GEN_PREVIEW_CHAR;
       for(var i=0;i<PERF_CAMPOS.length;i++){var f=PERF_CAMPOS[i];preview[f]=base[f];}
-      preview.img=base.img;preview.out=perfProva;preview.outcol=base.img;
+      preview.img=base.img;preview.out=perfProva;
       av.c=preview;prev=!perfLojaTem(perfProva);
     }
   }else prev=perfGenTemFaltando();

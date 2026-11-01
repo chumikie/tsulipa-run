@@ -27,7 +27,7 @@ const server=http.createServer((req,res)=>{
    pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
   };};
   window.qaRoomControllers={
-   openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540;return canvas.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true}));},
+   openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540;canvas.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true}));return !!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open;},
    startAutomaticMic:function(){
     if(krRhythmRun)kt.end(false);if(krDemoCantor)krDemoBotEnd();
     krSt.aberta=true;krEu.no_mic=false;krEu.x=krEu.tx=480;krEu.y=krEu.ty=286;

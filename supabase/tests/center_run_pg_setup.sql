@@ -51,6 +51,6 @@ insert into public.runs(id,user_id,started_at) values
  ('10000000-0000-4000-8000-000000000006','00000000-0000-4000-8000-000000000004',now()-interval '40 seconds');
 
 insert into public.star_log(user_id,delta,reason,created_at) values
- ('00000000-0000-4000-8000-000000000001',50,'pet_minigame',now()),
+ ('00000000-0000-4000-8000-000000000001',50,'minijogo',now()),
  ('00000000-0000-4000-8000-000000000002',90,'corrida',now()),
  ('00000000-0000-4000-8000-000000000002',80,'corrida',now()-interval '1 day');

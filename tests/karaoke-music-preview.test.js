@@ -24,7 +24,7 @@ for(const key of keys){
  assert(calls.length>8,key+' synthesizes harmony, bass and percussion');
 }
 function harness(extra){
- const elements=new Map(),events=[],context={state:'running',currentTime:0};
+ const elements=new Map(),events=[],context={state:'running',currentTime:0,destination:{},createGain(){return {gain:{value:1,setTargetAtTime(value){this.value=value;}},connect(destination){this.destination=destination;}};}};
  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',value:id==='ktPreviewVolume'?70:0,disabled:false,dataset:{},handlers:{},setAttribute(){},addEventListener(type,fn){this.handlers[type]=fn;},querySelectorAll:()=>[]});return elements.get(id);};
  const player=Preview.create(Object.assign({getSong:key=>songs[key],getContext:()=>context,getResumePromise:()=>null,isMuted:()=>false,isBusy:()=>false,beat:(i,target)=>events.push([target.songKey,i]),silence:()=>events.push(['silence']),stopAmbient:()=>events.push(['ambient-stop']),restoreAmbient:()=>events.push(['ambient-resume']),stopVoicePreview:()=>events.push(['voice-stop']),getSelectedSong:()=>'normal',getElement:get,translate:s=>s},extra||{}));
  return {player,context,events,get};

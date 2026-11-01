@@ -34,7 +34,7 @@ for(const game of games){
     }
     count++;
     try{new vm.Script(match[2],{filename:game.file+":inline-"+count});}
-    catch(e){errors.push(game.file+": invalid JavaScript (script "+count+"): "+e.message);}
+    catch(e){errors.push(game.file+": invalid JavaScript (script "+count+"): "+e.message+"\\n"+(e.stack||""));}
   }
   assert(count>0,game.file+": no inline game JavaScript found");
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");

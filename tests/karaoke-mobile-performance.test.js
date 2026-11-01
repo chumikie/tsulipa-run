@@ -329,7 +329,7 @@ assert(html.includes('data-kt-library-view="songs"')&&html.includes('data-kt-lib
 assert(['tsu','lirika','pati'].every(key=>html.includes('data-kt-voice-group="'+key+'"')&&audienceAudio.includes("voiceLines")&&audienceAudio.includes("function speakGroup(group,button)")),'The three official characters are independent voice buttons');
 assert(!html.includes('class="kt-library-voice-panel"')&&!html.includes('data-kt-voice-panel='),'Long per-voice lists are removed from the voice panel');
 assert(html.includes('class="kt-library-special"')&&html.includes('data-kt-audio="encontro"'),'The special Encontro clip remains independently accessible');
-assert(html.includes('ktVoiceHop')&&html.includes('prefers-reduced-motion:reduce')&&html.includes('is-bouncing'),'Voice character buttons bounce once and respect reduced motion');
+assert(baseCss.includes('ktVoiceHop')&&baseCss.includes('prefers-reduced-motion:reduce')&&baseCss.includes('is-bouncing'),'Voice character buttons bounce once and respect reduced motion');
 assert(audienceAudio.includes("play(id,true)")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,CH[index]'),'Tapping a character should cycle an existing voice clip and draw the original Tsu, Lirika or Pati avatar');
 assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');
 assert(['normal','fast','chill','tema','corrida','gacha','duo'].every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');

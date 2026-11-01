@@ -1741,7 +1741,7 @@ var celebRaf = 0;
 function celeb(t){
   cancelAnimationFrame(celebRaf);celebRaf=0;
   if(state !== 'over'||twIndex2BaseFramesPaused()) return;
-  ct+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta(cc.canvas,t):1;
+  ct+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(cc.canvas,t):1;
   if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(cc.canvas,t)){
   var og = g;
   try { celebDraw(); }
@@ -2603,7 +2603,7 @@ function prevLoop(t) {
   twIndex2AvatarRaf = 0;
   if (twIndex2BaseFramesPaused()||state!=='menu'||!twIndex2AvatarVisible) return;
   if (state === 'menu') {
-    pt+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta(pc.canvas,t):1;
+    pt+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(pc.canvas,t):1;
     if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(pc.canvas,t)){
     var og = g;
     try {
@@ -3785,7 +3785,7 @@ function petLoop(ms){
   petRaf=0;
   if(!petOpen||!twAnimacaoVisivel($('petov'))) return;
   var cv=$('petCv'),mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30());
-  var antes=petT,delta=mobile30?TWMotionLifecycle.frameDelta(cv,ms):1;
+  var antes=petT,delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(cv,ms):1;
   petT+=delta;
   sync();   // a sincronização de áudio/estado continua em todos os quadros lógicos
   if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(cv,ms)){
@@ -7806,8 +7806,8 @@ function perfGenUI(){
 function perfAnimar(ms){
   perfAnimId = 0;
   if(!perfMeu || (perfAba !== 'montar' && perfAba !== 'estudio') || !twAnimacaoVisivel($('perfGenCv'))) return;
-  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('perfGenCv'),ms):1;perfT+=delta;
-  if((mobile30&&TWMotionLifecycle.render30Due($('perfGenCv'),ms))||(!mobile30&&perfT%2===0)) perfGenDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('perfGenCv'),ms):1,perfPrevT=perfT;perfT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('perfGenCv'),ms))||(!mobile30&&Math.floor((perfT+1e-6)/2)>Math.floor((perfPrevT+1e-6)/2))) perfGenDesenhar();
   perfAnimId = requestAnimationFrame(perfAnimar);
 }
 function perfAnimLigar(){ if(!perfAnimId) perfAnimId = requestAnimationFrame(perfAnimar); }
@@ -9085,7 +9085,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
 })();
 function hubLoop(ms){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
-  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('hubCv'),ms):1;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&hubT%2===0)) hubDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1,hubPrevT=hubT;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2))) hubDesenhar();
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
@@ -10192,8 +10192,8 @@ function gachaDesenhar(){
 }
 function gachaLoop(ms){
   gachaAnim = 0; if(!twAnimacaoVisivel(gachaOv)) return;
-  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('gachaCv'),ms):1;gachaT+=delta; if(gachaGiro >= 0) gachaGiro+=delta;
-  if((mobile30&&TWMotionLifecycle.render30Due($('gachaCv'),ms))||(!mobile30&&gachaT%2===0)) gachaDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('gachaCv'),ms):1,gachaPrevT=gachaT;gachaT+=delta; if(gachaGiro >= 0) gachaGiro+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('gachaCv'),ms))||(!mobile30&&Math.floor((gachaT+1e-6)/2)>Math.floor((gachaPrevT+1e-6)/2))) gachaDesenhar();
   gachaAnim = requestAnimationFrame(gachaLoop);
 }
 function gachaBonus(){   // bônus do Gachapon: começa a próxima corrida com o poder
@@ -10656,8 +10656,8 @@ function duoComida(x, cx, cy, U, tipo, t){
 }
 function duoLoop(ms){
   duoAnim = 0; if(!duoGu||!twAnimacaoVisivel($('duoCv'))) return;
-  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('duoCv'),ms):1;duoT+=delta;
-  if((mobile30&&TWMotionLifecycle.render30Due($('duoCv'),ms))||(!mobile30&&duoT%2===0)){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('duoCv'),ms):1,duoPrevT=duoT;duoT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('duoCv'),ms))||(!mobile30&&Math.floor((duoT+1e-6)/2)>Math.floor((duoPrevT+1e-6)/2))){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
   duoAnim = requestAnimationFrame(duoLoop);
 }
 
@@ -10982,7 +10982,7 @@ function aniverMusica(){   // "Parabéns pra você" (melodia em domínio públic
   N.forEach(function(n){ beep(n[0] * 2, n[2], 'triangle', .035, n[1]); beep(n[0], n[2] + .1, 'sine', .03, n[1]); });
 }
 function aniverLoop(t){
-  aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT+=(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30())?TWMotionLifecycle.frameDelta($('aniverFx'),t):1;
+  aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT+=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('aniverFx'),t):1;
   var cv = $('aniverFx');
   if(window.TWMotionLifecycle&&!TWMotionLifecycle.render30Due(cv,t)){aniverAnim=requestAnimationFrame(aniverLoop);return;}
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i;
@@ -11473,9 +11473,9 @@ function encMostrar(d){
   encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
   if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
-function encLoop(){
-  encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=mobile30?TWMotionLifecycle.frameDelta($('encCv'),ms):1;encT+=delta;
-  if((mobile30&&TWMotionLifecycle.render30Due($('encCv'),ms))||(!mobile30&&encT%2===0)){
+function encLoop(ms){
+  encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('encCv'),ms):1,encPrevT=encT;encT+=delta;
+  if((mobile30&&TWMotionLifecycle.render30Due($('encCv'),ms))||(!mobile30&&Math.floor((encT+1e-6)/2)>Math.floor((encPrevT+1e-6)/2))){
     var cv = $('encCv'), x = cv.getContext('2d'), grupo = encRenderGrupo;
     try{ x.clearRect(0, 0, cv.width, cv.height); encCena(x, cv.width, cv.height, encT);
       var pulo = Math.abs(Math.sin(encT * .12)) * 10;

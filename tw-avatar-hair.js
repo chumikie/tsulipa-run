@@ -37,6 +37,17 @@ function franjaOriginal(g,T,x,y,f){   // mesmas formas das franjas de drawChar, 
  else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
  else if(f!=='arcoiris')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);   // bagunçada
 }
+var ARCO=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#a855f7'];
+function clarear(h,n){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.min(255,parseInt(cc,16)+n).toString(16)).substr(-2)});}
+function arcoiris(g,x,y,T){   // franja arco-íris: 6 mechas tingidas com degradê e pontas alternadas, nascendo do cabelo
+ for(var i=0;i<6;i++){
+  var x0=x+3+i*4,ponta=y+(i%2?13.6:15.4),dg=g.createLinearGradient(0,y+5,0,ponta);
+  dg.addColorStop(0,clarear(ARCO[i],70));dg.addColorStop(.55,ARCO[i]);dg.addColorStop(1,charDark(ARCO[i]));g.fillStyle=dg;
+  T([x0-.3,y+5,x0+4.3,y+5,x0+4.3,y+11,x0+2+(i%2?.6:-.6),ponta,x0-.3,y+11]);
+ }
+ g.fillStyle='rgba(255,255,255,.32)';for(var k=0;k<6;k++)T([x+4.2+k*4,y+6,x+5.2+k*4,y+6,x+4.9+k*4,y+10]);   // brilho fino em cada mecha
+}
+function charDark(h){return '#'+String(h).replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-55).toString(16)).substr(-2)});}
 var NOMES={en:{Ondulado:'Wavy',Bicolor:'Two-tone',Repicado:'Layered',Rebelde:'Tousled',Risca:'Side part',Repicada:'Layered'},
  es:{Ondulado:'Ondulado',Bicolor:'Bicolor',Repicado:'Desfilado',Rebelde:'Rebelde',Risca:'De lado',Repicada:'Desfilado'},
  th:{Ondulado:'ลอน',Bicolor:'สองสี',Repicado:'ซอยชั้น',Rebelde:'ยุ่งๆ',Risca:'แสกข้าง',Repicada:'ซอยชั้น'},
@@ -53,7 +64,7 @@ if(typeof document!=='undefined'&&document.addEventListener){
 function fio(g,sx,sy,cx,cy,tx,ty,w,reto){   // mecha: larga na raiz e afinando na ponta (ou reta na Reta/Arco-íris)
  var h=w/2,t=reto?h:0;g.beginPath();g.moveTo(sx-h,sy);g.quadraticCurveTo(cx-h,cy,tx-t,ty);g.lineTo(tx+t,ty);g.quadraticCurveTo(cx+h,cy,sx+h,sy);g.closePath();g.fill();
 }
-var MECHA={bagunca:[12,1,10,8,8,18.5],reta:[11,1,11,8,11,14,1],lateral:[10,1,14,7,25,17],espetada:[13.5,9,14.5,2,15,-7],arcoiris:[11,1,11,8,11,15,1],
+var MECHA={bagunca:[12,1,10,8,8,18.5],reta:[11,1,11,8,11,14,1],lateral:[10,1,14,7,25,17],espetada:[13.5,9,14.5,2,15,-7],arcoiris:[13,1,13,8,13,15.4],
  ondulada:[14,1,15,10,17,20.5],risca:[12,1,15,9,21.5,19.5],repicada:[12,1,11,9,10.5,16.8]};
 window.TWAvatarHair={
  isWavy:function(b){return b==='onduladom'||b==='onduladom2'||b==='onduladof';},
@@ -89,6 +100,7 @@ window.TWAvatarHair={
  },
  fringe:function(g,x,y,b,f,T){   // devolve true quando a franja é uma das novas
   if(b==='onduladom'){oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);}   // laterais curvas do Ondulado
+  if(f==='arcoiris'){arcoiris(g,x,y,T);return true;}
   return franja(T,x,y,f);
  },
  mecha:function(g,c,x,y,f){   // mecha que acompanha a franja escolhida até uma das pontas

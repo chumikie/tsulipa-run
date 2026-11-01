@@ -40,7 +40,7 @@ ctx.pause(false);ctx.document.hidden=true;clock.ms=10000;ctx.tick();
 assert.equal(run.resumeUntil,0,'aba oculta não retoma por engano');
 
 let listener;const actions=[],shortcutRun={paused:false,resumeUntil:0};
-const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMute:{disabled:false,click:()=>actions.push('mute')},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
+const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMute:{disabled:false},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
 vm.runInNewContext(keyhandler,{run:shortcutRun,$:id=>elements[id],hit:i=>actions.push('hit'+i),
   pause:flag=>actions.push('pause'+flag),krAlternarSom:()=>actions.push('mute'),document:{querySelectorAll:()=>[],addEventListener:(event,fn)=>{listener=fn;}}});
 function press(key,other={}){let prevented=false;listener({key,repeat:false,target:{tagName:'BODY'},preventDefault:()=>{prevented=true;},...other});return prevented;}

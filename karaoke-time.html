@@ -229,11 +229,11 @@ html.kt-no-site .krwrap{padding-top:0!important}
   <section class="kt-library-panel" data-kt-library-panel="voices" aria-label="Vozes dos personagens" hidden>
     <p class="kt-library-note">Toque em Tsu, Lirika ou Pati. Cada toque traz uma fala diferente. 💜</p>
     <div class="kt-library-heads" aria-label="Personagens que falam">
-      <button type="button" class="kt-library-head" data-kt-voice-group="tsu" aria-label="Ouvir Tsu" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Tsu</b><small data-kt-voice-caption="tsu">Toque para falar</small></button>
-      <button type="button" class="kt-library-head" data-kt-voice-group="lirika" aria-label="Ouvir Lirika" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Lirika</b><small data-kt-voice-caption="lirika">Toque para falar</small></button>
-      <button type="button" class="kt-library-head" data-kt-voice-group="pati" aria-label="Ouvir Pati" aria-pressed="false"><canvas class="kt-library-face" width="64" height="64" aria-hidden="true"></canvas><b>Pati</b><small data-kt-voice-caption="pati">Toque para falar</small></button>
+      <button type="button" class="kt-library-head" data-kt-voice-group="tsu" aria-label="Ouvir Tsu" aria-pressed="false"><canvas class="kt-library-face" width="88" height="96" aria-hidden="true"></canvas><b>Tsu</b><small data-kt-voice-caption="tsu">Toque para falar</small></button>
+      <button type="button" class="kt-library-head" data-kt-voice-group="lirika" aria-label="Ouvir Lirika" aria-pressed="false"><canvas class="kt-library-face" width="88" height="96" aria-hidden="true"></canvas><b>Lirika</b><small data-kt-voice-caption="lirika">Toque para falar</small></button>
+      <button type="button" class="kt-library-head" data-kt-voice-group="pati" aria-label="Ouvir Pati" aria-pressed="false"><canvas class="kt-library-face" width="88" height="96" aria-hidden="true"></canvas><b>Pati</b><small data-kt-voice-caption="pati">Toque para falar</small></button>
     </div>
-    <div class="kt-library-special"><span>Áudio especial do Encontro</span><button type="button" class="kt-library-action" data-kt-audio="encontro" aria-pressed="false">▶ Ouvir</button></div>
+    
   </section>  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música ou uma voz.</p>
 </section>
 <section hidden inert class="kr-mic-queue" id="krMicQueue" aria-label="Fila do microfone em ensaio">
@@ -3062,8 +3062,7 @@ var ktAudioVitrine=(function(){
   var allowed={
     'tsu-1':1,'tsu-2':1,'tsu-3':1,'tsu-4':1,'tsu-5':1,
     'lirika-1':1,'lirika-2':1,'lirika-3':1,'lirika-4':1,'lirika-5':1,
-    'pati-1':1,'pati-2':1,'pati-3':1,'pati-4':1,'pati-5':1,
-    'encontro':1
+    'pati-1':1,'pati-2':1,'pati-3':1,'pati-4':1,'pati-5':1
   };
   var avatarIndex={tsu:0,lirika:1,pati:2},voiceIndex={tsu:0,lirika:0,pati:0};
   var voiceLines={
@@ -3154,7 +3153,7 @@ var ktAudioVitrine=(function(){
       if(index===undefined||!canvas||!CH[index])return;
       var ctx=canvas.getContext('2d');if(!ctx)return;
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      try{KaraokeAvatar.draw(ctx,CH[index],32,89,2.45,'v',0,0,false);}catch(e){}
+      try{KaraokeAvatar.draw(ctx,CH[index],44,82,1,'v',0,performance.now(),false);}catch(e){}
     });
   }
   function refresh(){

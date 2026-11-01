@@ -6,6 +6,7 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
+const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const original=fs.readFileSync(path.join(root,'tw-avatar-items.js'),'utf8');
 
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
@@ -44,4 +45,17 @@ calls.length=0;
 sandbox.window.TWAvatarItems.estrela(context,0,0);
 assert(calls.filter(c=>c[0]==='lineTo').length>=9,'estrela mantém dez pontas internas/externas');
 assert(calls.some(c=>c[0]==='createRadialGradient'),'estrela mantém sombreado original');
+
+ // Sora Jump's independent renderer must also display the shared Captain cap
+ // and Star clip without replacing its existing accessories.
+ assert(sora.includes('<script src="./tw-avatar-items.js?v=2"></script>'),'Sora Jump loads the shared avatar items');
+ const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
+ const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
+ assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists for avatar items');
+ const soraDraw=sora.slice(soraDrawStart,soraDrawEnd);
+ assert(soraDraw.includes("if(hacc==='capitao') TWAvatarItems.capitao(g,x,y)"),'Sora Jump renders the Captain cap');
+ assert(soraDraw.includes("if(A==='estrela') TWAvatarItems.estrela(g,x,y)"),'Sora Jump renders the Star hair clip');
+ for(const key of ["hacc==='boina'","hacc==='presilhas'","hacc==='fones'","hacc==='coala'","A==='laco'","A==='hibisco'","A==='sakura'"])
+  assert(soraDraw.includes(key),'Sora Jump preserves existing accessory '+key);
+
 console.log('✓ Chapéu de Capitão e Estrela originais: desbloqueio, desenho 2D, Perfil e Karaoke solo');

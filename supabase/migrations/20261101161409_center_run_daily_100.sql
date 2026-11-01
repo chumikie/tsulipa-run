@@ -3,7 +3,7 @@
 -- Reflete a assinatura e o corpo ativos consultados em 2026-11-01.
 -- Mantém o histórico, saldos, ranking, ACL da função e o teto independente do Pet.
 -- ALTERAÇÃO FUNCIONAL: somente o teto diário de créditos de reason='corrida' muda de 1500 para 100.
--- O resultado limite_diario distingue corrida válida sem crédito por teto já atingido.
+-- O resultado limite_diario sinaliza quando uma corrida válida alcança ou encontra o teto diário, inclusive ao conceder apenas crédito parcial.
 -- IMPORTANTE: o arquivo é proposta revisável, NÃO registra migração aplicada no Supabase.
 
 create or replace function public.terminar_corrida(

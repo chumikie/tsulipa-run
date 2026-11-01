@@ -6,6 +6,8 @@ on:
     paths:
       - 'index.html'
       - 'tw-avatar-items.js'
+      - 'tw-avatar-hair.js'
+      - 'tests/avatar-hair.test.js'
       - 'tests/avatar-items.test.js'
       - 'tw-motion-lifecycle.js'
       - 'tests/karaoke-mobile-performance.test.js'
@@ -82,6 +84,8 @@ on:
     paths:
       - 'index.html'
       - 'tw-avatar-items.js'
+      - 'tw-avatar-hair.js'
+      - 'tests/avatar-hair.test.js'
       - 'tests/avatar-items.test.js'
       - 'tw-motion-lifecycle.js'
       - 'tests/karaoke-mobile-performance.test.js'
@@ -160,6 +164,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate original three wavy haircuts across avatar renderers
+        run: node tests/avatar-hair.test.js
       - name: Validate original Captain hat and Star across avatar renderers
         run: node tests/avatar-items.test.js
       - name: Validate Center Run daily cap and server response contract

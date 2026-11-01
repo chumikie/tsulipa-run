@@ -112,7 +112,7 @@ assert(html.includes('if(krMeuVoltandoAoMic&&!krMoveQueue.length&&Math.hypot(krE
 assert(html.includes('if(!krEu.plateia&&krEuNoMicrofone())ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y);'),'microphone pedestal stays fixed at the stage while the Idol walks away');
 assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}'),'autonomous lounge remains gated out of homologation');
 assert(html.includes('function krLoungeAutoMicTick(){'),'the room has an autonomous NPC mic turn');
-assert(html.includes('!krEuNoMicrofone()||krMeuRetornoAt>0||krMeuVoltandoAoMic||krMoveQueue.length'),'NPC mic waits outside the player mandatory return/turn window');
+assert(html.includes('krMeuRetornoAt>0||krMeuVoltandoAoMic||krMoveQueue.length||!krEuNoMicrofone()'),'NPC mic waits outside the player mandatory return/turn window');
 assert(html.includes('kt.start(true); // NPC presentation is local practice'),'NPC mic uses local practice and cannot consume the player attempt');
 assert(html.includes('function openPoster(index){'),'wall Polaroids open a member portrait');
 assert(html.includes('desenharIdol(ctx,char,260,405,5.8'),'the enlarged portrait uses the member avatar renderer');

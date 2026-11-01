@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=1"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=1"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=2"><script id="ktTemaDaPagina">
 /* Acompanha o tema da página principal: o Oshi escolhido (brs48cr_oshi, o mesmo do menu)
    e o claro/escuro. Dentro do menu chega por ?oshi= e ?theme=; aberto sozinho, segue o aparelho. */
 (function(){
@@ -3064,7 +3064,9 @@ var ktAudioVitrine=(function(){
     'lirika-1':1,'lirika-2':1,'lirika-3':1,'lirika-4':1,'lirika-5':1,
     'pati-1':1,'pati-2':1,'pati-3':1,'pati-4':1,'pati-5':1
   };
-  var avatarIndex={tsu:0,lirika:1,pati:2},voiceIndex={tsu:0,lirika:0,pati:0};
+  var avatarIndex={tsu:0,lirika:1,pati:2},avatarColors={tsu:'#9b30d9',lirika:'#4ade80',pati:'#4169e1'},avatarLooks={},voiceIndex={tsu:0,lirika:0,pati:0},reactionIndex={tsu:0,lirika:0,pati:0},animationFrame=0,lastAvatarFrame=0;
+  var avatarPoses=['banzai','v','neon','coracao','luz'];
+  var avatarReactions={tsu:['💜','✨','⭐'],lirika:['💚','🌸','✨'],pati:['💙','🎵','⭐']};
   var voiceLines={
     tsu:['Oiê!','Eu sou o Tsu!','にげていかない','Eu amo comer pudim.','hehe~'],
     lirika:['Oi, gente linda!','Li - ri - ka!','ゆめはぜったい','Tudo bem com vocês?','hehe~'],
@@ -3128,7 +3130,8 @@ var ktAudioVitrine=(function(){
     [].forEach.call(root.querySelectorAll('[data-kt-library-panel]'),function(panel){
       panel.hidden=panel.dataset.ktLibraryPanel!==view;
     });
-    if(view==='songs'){refresh();syncTracks();}
+    if(view==='songs'){stopHeadAnimation();refresh();syncTracks();}
+    else{startHeadAnimation();}
   }
   function speakGroup(group,button){
     if(!Object.prototype.hasOwnProperty.call(voiceLines,group))return;
@@ -3137,24 +3140,62 @@ var ktAudioVitrine=(function(){
     var caption=root.querySelector('[data-kt-voice-caption="'+group+'"]');
     if(caption)caption.textContent=list[index];
     if(button){
-      button.classList.remove('is-bouncing');
+      var reactions=avatarReactions[group]||['✨'];
+      button.dataset.ktReaction=reactions[reactionIndex[group]%reactions.length];
+      reactionIndex[group]=(reactionIndex[group]+1)%reactions.length;
+      button.dataset.ktReactionUntil=String(performance.now()+850);
+      button.classList.remove('kt-reacting');
       button.offsetWidth;
-      button.classList.add('is-bouncing');
+      if(!motionReduced())button.classList.add('kt-reacting');
       button.setAttribute('aria-label',tr('Falar com')+' '+group.charAt(0).toUpperCase()+group.slice(1)+', '+tr('voz')+' '+(index+1)+' de '+list.length);
     }
     if(status)status.textContent=group.charAt(0).toUpperCase()+group.slice(1)+' · '+list[index];
     play(id,true);
   }
-  function drawHeads(){
+  function motionReduced(){
+    try{return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){return false;}
+  }
+  function drawHeads(now){
     if(!root||typeof KaraokeAvatar==='undefined'||typeof CH==='undefined')return;
+    now=Number.isFinite(now)?now:performance.now();
+    var frame=Math.floor(now/16.6667);
     [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
       var group=button.dataset.ktVoiceGroup,index=avatarIndex[group],canvas=button.querySelector('canvas');
       button.setAttribute('aria-label',tr('Falar com')+' '+group.charAt(0).toUpperCase()+group.slice(1));
       if(index===undefined||!canvas||!CH[index])return;
       var ctx=canvas.getContext('2d');if(!ctx)return;
+      /* Cópia visual exclusiva da vitrine: preserva cabelo/rosto e não altera CH. */
+      var cached=avatarLooks[group];
+      if(!cached||cached.source!==CH[index]){
+        cached={source:CH[index],value:Object.assign({},CH[index],{out:'zipper',outcol:avatarColors[group]})};
+        avatarLooks[group]=cached;
+      }
+      var speaking=button.classList.contains('is-speaking');
+      var reacting=now<(Number(button.dataset.ktReactionUntil)||0);
+      var phase=Math.floor(frame/32)+index;
+      var pose=reacting?['coracao','banzai','neon'][phase%3]:(speaking?avatarPoses[phase%avatarPoses.length]:'v');
+      var expression=(speaking||reacting)?(phase%2?3:0):2;
+      button.classList.toggle('kt-reacting',reacting&&!motionReduced());
+      button.style.setProperty('--kt-avatar-color',avatarColors[group]);
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      try{KaraokeAvatar.draw(ctx,CH[index],44,82,1,'v',0,performance.now(),false);}catch(e){}
+      try{KaraokeAvatar.draw(ctx,cached.value,44,91,1.45,pose,expression,frame+index*11,false);}catch(e){}
     });
+  }
+  function animateHeads(now){
+    animationFrame=0;
+    if(!root||libraryView!=='voices'||document.hidden)return;
+    if(now-lastAvatarFrame>=80){drawHeads(now);lastAvatarFrame=now;}
+    animationFrame=requestAnimationFrame(animateHeads);
+  }
+  function startHeadAnimation(){
+    if(!root||libraryView!=='voices'||document.hidden)return;
+    drawHeads(performance.now());
+    if(motionReduced()||animationFrame)return;
+    animationFrame=requestAnimationFrame(animateHeads);
+  }
+  function stopHeadAnimation(){
+    if(animationFrame&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(animationFrame);
+    animationFrame=0;
   }
   function refresh(){
     if(!root)return;
@@ -3168,6 +3209,8 @@ var ktAudioVitrine=(function(){
     });
     drawHeads();
   }
+  document.addEventListener('visibilitychange',function(){if(document.hidden)stopHeadAnimation();else startHeadAnimation();});
+  window.addEventListener('pagehide',stopHeadAnimation);
   var songSelector=$('ktSong');if(songSelector)songSelector.addEventListener('change',syncTracks);
   if(root)root.addEventListener('click',function(event){
     var viewChoice=event.target.closest&&event.target.closest('[data-kt-library-view]');

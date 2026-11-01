@@ -24,6 +24,7 @@ on:
       - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
       - 'tests/center-run-credit-recovery.test.js'
+      - 'tests/center-run-palette.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
@@ -104,6 +105,7 @@ on:
       - 'tests/karaoke-ticket-recovery.test.js'
       - 'tests/center-run-daily-cap.test.js'
       - 'tests/center-run-credit-recovery.test.js'
+      - 'tests/center-run-palette.test.js'
       - 'supabase/tests/center_run_pg_setup.sql'
       - 'supabase/tests/center_run_pg_checks.sql'
       - 'supabase/tests/center_run_pg_integration.sh'
@@ -174,6 +176,8 @@ jobs:
         run: node tests/avatar-items.test.js
       - name: Validate Center Run auth readiness and credit reconciliation
         run: node tests/center-run-credit-recovery.test.js
+      - name: Validate Center Run scenery palette renders every color
+        run: node tests/center-run-palette.test.js
       - name: Validate Center Run daily cap and server response contract
         run: node tests/center-run-daily-cap.test.js
       - name: Validate shared window contracts

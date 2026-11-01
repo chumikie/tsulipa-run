@@ -2664,8 +2664,8 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride){   // ex (
 var PAL=[['#071327','#2a3f78','#0f2347','#0a1830','#9ec8ff','#ff96d2','#1a2a55','#ff6fb5'],['#2b1b4a','#ff8a5c','#4a2a5c','#2a1a3e','#ffd27a','#ffd27a','#3a2450','#ffd23f'],['#12315e','#7fc4ee','#3a6a9c','#244a78','#ffffff','#e6f6ff','#2a4f80','#00c6ff'],['#1a0933','#8a2f9a','#3a1a5e','#240f45','#ff9ccd','#ffb3e0','#2c1650','#4dd8ff']];
 function hx(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]}
 var PALR=PAL.map(function(p){return p.map(hx)});
-var CURPAL_CACHE=['','','',''];
-function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];for(var k=0;k<4;k++){var v=a[k],w=c[k];CURPAL_CACHE[k]='rgb('+Math.round(v[0]+(w[0]-v[0])*b)+','+Math.round(v[1]+(w[1]-v[1])*b)+','+Math.round(v[2]+(w[2]-v[2])*b)+')';}return CURPAL_CACHE;}
+var CURPAL_CACHE=['','','','','','','',''];
+function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(f-.75)/.25:0;b=b*b*(3-2*b);var a=PALR[i],c=PALR[(i+1)%4];for(var k=0;k<a.length;k++){var v=a[k],w=c[k];CURPAL_CACHE[k]='rgb('+Math.round(v[0]+(w[0]-v[0])*b)+','+Math.round(v[1]+(w[1]-v[1])*b)+','+Math.round(v[2]+(w[2]-v[2])*b)+')';}return CURPAL_CACHE;}
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
 var pc = $('prev').getContext('2d'), pt = 0, twIndex2AvatarRaf = 0;
 

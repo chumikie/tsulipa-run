@@ -201,7 +201,7 @@ assert(main.includes("// Chave de liberação do calendário/estreia; não repre
 
 
 const curPalStart=main.indexOf('function curPal()'),curPalEnd=main.indexOf('\nfunction GLc()',curPalStart);
-assert(main.includes("var CURPAL_CACHE=['','','',''];")&&curPalStart>=0&&curPalEnd>curPalStart&&!main.slice(curPalStart,curPalEnd).includes('.map('),'Main background palette should reuse a fixed color buffer instead of building nested arrays each frame');
+assert(main.includes("var CURPAL_CACHE=['','','','','','','',''];")&&main.slice(curPalStart,curPalEnd).includes('k<a.length')&&curPalStart>=0&&curPalEnd>curPalStart&&!main.slice(curPalStart,curPalEnd).includes('.map('),'Main background palette should reuse a fixed color buffer instead of building nested arrays each frame');
 const hubDrawStart=main.indexOf('function hubDesenhar()'),hubDrawEnd=main.indexOf('\nfunction ',hubDrawStart+16);
 assert(main.includes('var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map')&&hubDrawStart>=0&&hubDrawEnd>hubDrawStart&&!main.slice(hubDrawStart,hubDrawEnd).includes('JSON.parse(JSON.stringify(CH[m[0]]))'),'Hub trio should reuse its three avatar render objects instead of deep-cloning them every frame');
 

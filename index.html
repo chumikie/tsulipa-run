@@ -1320,12 +1320,10 @@ var sfx={
       beep(1318, .05, 'square', .05, .03); 
       beep(1568, .08, 'square', .05, .06);
     } else if (OSHI === 'lirika') {
-      // Lirika: Calma, alegria, idol clássica. (3 notas lentas e suaves formando um acorde maior)
       beep(523, .1, 'triangle', .08); 
       beep(659, .1, 'triangle', .08, .08); 
       beep(784, .15, 'triangle', .08, .16);
     } else if (OSHI === 'pati') {
-      // Pati: Cool, realeza. (Um salto duplo grave para agudo com som cortante e confiante)
       beep(587, .1, 'sawtooth', .04); 
       beep(880, .15, 'square', .04, .06);
     } else {
@@ -1518,6 +1516,7 @@ function start(e){
     return; // Interrompe o início do jogo
   }
 
+  if(_supabase&&(!contaAuthPronta||(contaAuthUserId&&!contaJ))&&$('tstw').hidden){contaAviso(tr('Aguarde a conta carregar e tente de novo.'));return;}
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   clearTimeout(overTimer);
   ac();
@@ -2608,7 +2607,6 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride){   // ex (
     // Pezinhos
     ctx.fillStyle = '#15803d'; petDrawEllipse(ctx,-6, 10, 2.8, 2); petDrawEllipse(ctx,6, 10, 2.8, 2);
     
-    // Anel Planetário (Metade de TRÁS — desenhada antes do corpo para ficar atrás de verdade!)
     ctx.save(); ctx.rotate(-0.22);
     ctx.strokeStyle = 'rgba(134, 239, 172, 0.45)'; ctx.lineWidth = 2.2;
     ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, Math.PI, Math.PI*2); ctx.stroke();
@@ -2837,7 +2835,6 @@ g=x2;g.save();
       // Você com destaque no centro-direita
       drawOnStage(CH[sel],         centroPalcoX + 59,  scQ, -6, finalExpr);
 
-      // Chuva de Emojis de Amor, Brilho, Música e Idol mais altos, grandes e inclinados (efeito voando!)
       x2.save();
       x2.textAlign = 'center';
       x2.shadowColor = 'rgba(255, 111, 181, 0.85)';
@@ -4954,7 +4951,6 @@ function petMusicStep(k){
     if(n){ beep(n, .3, 'triangle', .02, sw); beep(n * 1.004, .22, 'square', .007, sw); }
     if(st % 2) beep(4200, .015, 'triangle', .004, sw);
   } else {
-    // Caixinha de música sonolenta: mesma melodia uma oitava acima, notas que somem devagar
     if(n){ beep(n * 2, .9, 'sine', .022); beep(n * 4, .2, 'sine', .003); }
     if(st === 0) beep(ch[0] * 2, 1.4, 'sine', .012);
     if(st === 4) beep(ch[2] * 2, 1.2, 'sine', .009);
@@ -6465,7 +6461,7 @@ function contaEntrar(){
   if(!_supabase || !contaSiteOk()){ contaAviso(tr('O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.')); return; }
   _supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: location.origin + location.pathname } });
 }
-var contaSessaoToken=0,contaAuthUserId='';
+var contaSessaoToken=0,contaAuthUserId='',contaAuthPronta=!_supabase;
 function contaSair(){
   contaSessaoToken++;contaAuthUserId='';
   if(_supabase) _supabase.auth.signOut();
@@ -6481,6 +6477,7 @@ function contaAviso(t){
 
 // ---------- Depois do login: carrega a conta, ou pede o nome e importa o save ----------
 function contaSessao(sess){
+  contaAuthPronta=true;
   var userId=sess&&sess.user&&sess.user.id?String(sess.user.id):'';
   if(userId===contaAuthUserId)return;
   contaAuthUserId=userId;
@@ -6587,9 +6584,16 @@ function contaFimCorrida(score, est, ch, refresh){
     }
     if(contaUltimaRun){contaUltimaRun.ok=true;quartetoTalvez();}
     hubAposCorrida();refresh();
-  }).catch(function(){
+  }).catch(function(err){
     if(!mesmaConta())return;
-    aviso(tr('Recompensa não validada'));refresh();
+    if(err&&err.message==='inicio_nao_validado'){aviso(tr('Corrida sem autorização do servidor'));refresh();return;}
+    contaRpc('jogador').then(function(j){
+      if(!mesmaConta())return;
+      if(!j||typeof j.stars!=='number')throw Error('saldo_nao_confirmado');
+      contaAplicar(j,sessao);
+      aviso(tr('Saldo conferido na nuvem; valor desta corrida não confirmado.'));
+      refresh();
+    }).catch(function(){if(!mesmaConta())return;aviso(tr('Recompensa não validada'));refresh();});
   });
 }
 function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e confirma no servidor
@@ -6692,7 +6696,6 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
   ['technopop', '⚡', 'Electric Party',    400],   // prata e neon (Unit Festival 2026) — chave antiga mantida
   ['decora',    '🍬', 'Decora kei',        450],
   ['alienfan',  '👽', 'Fantasia de alien', 500],
-  // Roupas da temporada: [chave, emoji, nome, preço, tema] — só se compram no período do tema; depois de comprada, é para sempre
   ['vampiro',   '🧛', 'Halloween Night',   320, 'halloween'],
   ['rena',      '🦌', 'Suéter de rena',    300, 'natal'],
   ['reveillon', '🥂', 'Réveillon',         300, 'anonovo'],
@@ -11081,7 +11084,6 @@ function duoMsgTxt(m){   // presentes do Moon⭐Duo! chegam como "duo:🧸:Nick"
  ['Bora torcer por {oshi} juntos! 💖', "Let's cheer for {oshi} together! 💖", '¡Animemos a {oshi} juntos! 💖', 'มาเชียร์ {oshi} ด้วยกัน! 💖', 'いっしょに{oshi}を応援しよう！💖']
 ].forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
-// ---------- Últimos 3 cards do Star⭐Gacha! (perfil e embaixo da máquina): o novo sempre empurra o mais antigo ----------
 var cardsMem = {};
 function cardsDia(s){ var p = /^(\d{4})-(\d\d)-(\d\d)/.exec(String(s || '')); return p ? p[3] + '/' + p[2] : ''; }
 function cardsHtml(lista, pre, meu){
@@ -11749,7 +11751,6 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
 if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose;
 $('petWindowClose').onclick = function(){ $('petX').click(); }; }
 
-// ---------- Músicas próprias: Star⭐Gacha! (suspense de sorte + triunfo) e Moon⭐Duo! (lofi de jardim de fadas) ----------
 var ovMus = null, ovMusK = '';
 function ovMusicaParar(){ if(ovMus){ clearInterval(ovMus); ovMus = null; } ovMusK = ''; }
 function ovMusicaTocar(k){

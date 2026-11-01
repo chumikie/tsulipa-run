@@ -5,10 +5,10 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
 **Último commit de código verificado:** `56c3182ac7811e9d75470f05f48fbce1b3fb0824` (01/11/2026, 17h09, Brasília).
-**Último HEAD de branch consultado antes desta atualização documental:** `4f493b9c6e77805743411488ce66c2b4109df0da` — os commits posteriores a `56c3182a` são documentação/comentários de SQL; o corpo funcional do jogo não mudou.
-**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. No snapshot consultado: 363 commits, 51 arquivos alterados, 5.133 adições e 987 remoções.
+**HEAD atual da branch neste snapshot:** `18e1e71c3183810ac71690b6553e6f06a2739a81` — commit exclusivamente documental de revisão. Os últimos commits funcionais permanecem no HEAD de código `56c3182a`; os commits seguintes alteraram apenas testes/workflow já aprovados e documentação/comentários SQL, sem mudanças na função SQL de produção ou no código do jogo depois do HEAD funcional documentado.
+**Estado da PR na consulta:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Snapshot atual: 364 commits, 51 arquivos alterados, 5.158 adições e 987 remoções.
 **CI do último HEAD de código:** execução [#41345386721](https://github.com/chumikie/tsulipa-run/actions/runs/41345386721), com `static-validation` e `postgres-center-run` aprovados.
-**CI mais recente consultado:** execução [#41346075172](https://github.com/chumikie/tsulipa-run/actions/runs/41346075172), associada ao HEAD `4f493b9c` da branch, também com os dois jobs aprovados.
+**CI mais recente consultado:** execução [#41346253203](https://github.com/chumikie/tsulipa-run/actions/runs/41346253203), associada ao HEAD `18e1e71c` da branch, também com os dois jobs aprovados.
 
 ---
 

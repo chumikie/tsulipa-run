@@ -109,7 +109,7 @@ async function metrics(frame){
     const portraitInfo=await portrait.evaluate(canvas=>{const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(40,40,440,460).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]&&((pixels[i]>90&&pixels[i]<245)||(pixels[i+1]>70&&pixels[i+1]<225)||(pixels[i+2]>70&&pixels[i+2]<245)))ink++;return {width:canvas.width,height:canvas.height,ink};});
     assert.equal(portraitInfo.width,520);assert.equal(portraitInfo.height,620);assert(portraitInfo.ink>1000,'enlarged portrait canvas contains rendered artwork, not just an empty dialog');
     await poster.screenshot({path:path.join(out,engine+'-'+width+'-polaroid.png')});
-    await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
+    await poster.evaluate(dialog=>dialog.close());await poster.waitFor({state:'hidden'});
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state');
     assert.equal(autoMic.active,true,'autonomous NPC starts the local practice engine');

@@ -53,11 +53,12 @@
  }
  function get(){return ready?balance:0;}
  function startExtra(){
-  if(!enabled()||!ready||balance<1)return Promise.resolve({ok:false,reason:'no_ticket'});
+  if(!enabled()||!ready)return Promise.resolve({ok:false,reason:'no_ticket'});
   var id=currentId();
   if(owner!==id){owner=id;pendingRequest=null;}
   var saved=readPending(id);
   if(!pendingRequest&&saved)pendingRequest=saved.request;
+  if(!pendingRequest&&balance<1)return Promise.resolve({ok:false,reason:'no_ticket'});
   if(!pendingRequest){
    if(!window.crypto||!window.crypto.randomUUID)return Promise.resolve({ok:false,reason:'uuid'});
    pendingRequest=window.crypto.randomUUID();

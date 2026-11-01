@@ -53,6 +53,7 @@ if(typeof document!=='undefined'&&document.addEventListener){
  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('.lang button'))setTimeout(rotular,0);},true);
  document.addEventListener('focusin',function(e){if(e.target&&e.target.tagName==='SELECT')rotular();},true);
 }
+function rgba(h,a){h=String(h).replace('#','');if(h.length===3)h=h.replace(/./g,'$&$&');var n=parseInt(h.slice(0,6),16)||0;return 'rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+','+a+')';}
 function fio(g,sx,sy,cx,cy,tx,ty,w,reto){   // mecha: larga na raiz e afinando na ponta (ou reta na Reta/Arco-íris)
  var h=w/2,t=reto?h:0;g.beginPath();g.moveTo(sx-h,sy);g.quadraticCurveTo(cx-h,cy,tx-t,ty);g.lineTo(tx+t,ty);g.quadraticCurveTo(cx+h,cy,sx+h,sy);g.closePath();g.fill();
 }
@@ -98,9 +99,12 @@ window.TWAvatarHair={
   var m=MECHA[f]||MECHA.bagunca,H2=c.hair2||'#ffffff',st=c.mecha||'uma',sg=g.createLinearGradient(0,y+1,0,y+18);
   sg.addColorStop(0,H2);sg.addColorStop(1,escurecer(H2,60));
   g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.fillStyle=sg;
-  if(st==='luzes'){
-   for(var i=0;i<5;i++){var sx=x+6+i*4.6,tip=y+12.5+(i%2?2.5:0);g.globalAlpha=i%2?.75:.9;fio(g,sx,y+1.5,sx+(i<2?-.6:.6),y+7,sx+(i<2?-1.2:1.2),tip,1.3,0);}
-   g.globalAlpha=1;
+  if(st==='luzes'){   // fios finos acompanhando a curva da cabeça, suaves na raiz e claros na ponta
+   var L=[[2.6,5.2,10.8,2.2],[6,10.4,12.6,2.2],[9.4,13.6,14.6,1.9]],H3=rgba(H2,1);
+   for(var i=0;i<6;i++){var l=L[i%3],k=i<3?-1:1,sx=x+15+k*l[0],tx=x+15+k*l[1],ty=y+l[2]-(i===4?1:0),lg=g.createLinearGradient(0,y+1,0,ty);
+    lg.addColorStop(0,rgba(H2,0));lg.addColorStop(.3,rgba(H2,.85));lg.addColorStop(1,'rgba('+H3.slice(5,-3).split(',').map(function(v){return Math.min(255,+v+40);}).join(',')+',1)');g.fillStyle=lg;
+    fio(g,sx,y+1.2,sx+k*(l[1]-l[0])*1.05,y+5,tx,ty,l[3],0);}
+   g.fillStyle='rgba(255,255,255,.35)';fio(g,x+15-6.3,y+3.5,x+15-8.6,y+5.5,x+15-9.6,y+8.6,.7,0);fio(g,x+15+6.3,y+3.5,x+15+8.6,y+5.5,x+15+9.6,y+8.6,.7,0);
   }else if(st==='escondida'){   // camada de baixo colorida aparecendo nas laterais, junto ao rosto
    T2(g,[x+3,y+13,x+6.5,y+15,x+6,y+22,x+4.5,y+26,x+3,y+24]);T2(g,[x+27,y+13,x+23.5,y+15,x+24,y+22,x+25.5,y+26,x+27,y+24]);
   }else{

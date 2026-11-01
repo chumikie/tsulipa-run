@@ -42,15 +42,16 @@ assert.equal(run.resumeUntil,0,'aba oculta não retoma por engano');
 let listener;const actions=[],shortcutRun={paused:false,resumeUntil:0};
 const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMute:{disabled:false,click:()=>actions.push('mute')},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};
 vm.runInNewContext(keyhandler,{run:shortcutRun,$:id=>elements[id],hit:i=>actions.push('hit'+i),
-  pause:flag=>actions.push('pause'+flag),document:{querySelectorAll:()=>[],addEventListener:(event,fn)=>{listener=fn;}}});
+  pause:flag=>actions.push('pause'+flag),krAlternarSom:()=>actions.push('mute'),document:{querySelectorAll:()=>[],addEventListener:(event,fn)=>{listener=fn;}}});
 function press(key,other={}){let prevented=false;listener({key,repeat:false,target:{tagName:'BODY'},preventDefault:()=>{prevented=true;},...other});return prevented;}
 assert(press('p'));assert.equal(actions.at(-1),'pausetrue');
 shortcutRun.paused=true;shortcutRun.resumeUntil=9000;
 assert(press('p'));assert.equal(actions.at(-1),'pausetrue','P cancela a contagem ativa');
 shortcutRun.paused=false;shortcutRun.resumeUntil=0;
-assert(press('m'));assert.equal(actions.at(-1),'mute','M must trigger the room mute control');
+assert(press('m'));assert.equal(actions.at(-1),'mute','M must call the room mute function directly, without focusing or clicking the button');
 const beforeDisabledMute=actions.length;elements.krMute.disabled=true;assert.equal(press('m'),false,'M must not hijack input when mute is disabled');assert.equal(actions.length,beforeDisabledMute);elements.krMute.disabled=false;
 assert.equal(actions.includes('microphone'),false,'M never starts or ends a microphone presentation');
+assert.equal(elements.krMute.click,undefined,'M does not synthesize a button click or trigger a focus ring');
 assert(press('c'));assert.equal(actions.at(-1),'camera');
 assert(press('s'));assert.equal(elements.ktCalibration.open,true);
 assert.equal(actions.at(-1),'pausetrue','abrir configurações pausa o show');

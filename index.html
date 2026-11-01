@@ -1591,7 +1591,6 @@ nextX = W + 600;
 
 function celebDraw(){
   if(state !== 'over') return;
-  ct++;
   var og = g, ch = CH[sel], pu = .5 + .5 * Math.sin(ct * .05);
   g = cc;
   g.clearRect(0, 0, 200, 150);
@@ -1739,13 +1738,16 @@ function celebDraw(){
 }
 
 var celebRaf = 0;
-function celeb(){
+function celeb(t){
   cancelAnimationFrame(celebRaf);celebRaf=0;
   if(state !== 'over'||twIndex2BaseFramesPaused()) return;
+  ct++;
+  if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(cc.canvas,t)){
   var og = g;
   try { celebDraw(); }
   catch(err){ console.error('celeb:', err); }
   finally { g = og; }
+  }
   celebRaf = requestAnimationFrame(celeb);
 }
 
@@ -2597,11 +2599,12 @@ function curPal(){var t=frame/3600,i=Math.floor(t)%4,f=t-Math.floor(t),b=f>.75?(
 function GLc(){return lastS>=30000?'255,215,90':'255,225,245'}
 var pc = $('prev').getContext('2d'), pt = 0, twIndex2AvatarRaf = 0;
 
-function prevLoop() {
+function prevLoop(t) {
   twIndex2AvatarRaf = 0;
   if (twIndex2BaseFramesPaused()||state!=='menu'||!twIndex2AvatarVisible) return;
   if (state === 'menu') {
     pt++;
+    if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(pc.canvas,t)){
     var og = g;
     try {
     g = pc;
@@ -2636,6 +2639,7 @@ function prevLoop() {
     drawPet(pc, petKey, 112, 38, 1.15, pt);
     
     } finally { g = og; }
+    }
   }
   if(state==='menu'&&!twIndex2BaseFramesPaused()&&twIndex2AvatarVisible)twIndex2AvatarRaf = requestAnimationFrame(prevLoop); // Tracks this RAF so hidden screens can pause it.
 }
@@ -3183,7 +3187,7 @@ function loop(t){
   last=t;
   if(state==='play'&&!paused)update(dt);
   else if(state==='over'&&shake>0)frame+=dt;
-  draw();
+  if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due($('stage'),t))draw();
   twIndex2BaseRaf=requestAnimationFrame(loop);
 }
 
@@ -10957,9 +10961,11 @@ function aniverMusica(){   // "Parabéns pra você" (melodia em domínio públic
   var N = [[392, 0, .22], [392, .3, .12], [440, .45, .4], [392, .9, .4], [523, 1.35, .4], [494, 1.8, .8], [392, 2.7, .22], [392, 3, .12], [440, 3.15, .4], [392, 3.6, .4], [587, 4.05, .4], [523, 4.5, .8]];
   N.forEach(function(n){ beep(n[0] * 2, n[2], 'triangle', .035, n[1]); beep(n[0], n[2] + .1, 'sine', .03, n[1]); });
 }
-function aniverLoop(){
+function aniverLoop(t){
   aniverAnim = 0; if(!twAnimacaoVisivel($('aniverFx'))) return; aniverT++;
-  var cv = $('aniverFx'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i;
+  var cv = $('aniverFx');
+  if(window.TWMotionLifecycle&&!TWMotionLifecycle.render30Due(cv,t)){aniverAnim=requestAnimationFrame(aniverLoop);return;}
+  var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i;
   x.clearRect(0, 0, W2, H2);
   for(i = 0; i < 70; i++){
     var px = (cenaHash(i * 3) * W2 + Math.sin(aniverT * .02 + i) * 24) % W2, py = (cenaHash(i * 7) * H2 + aniverT * (1.2 + cenaHash(i) * 1.8)) % (H2 + 20) - 10;

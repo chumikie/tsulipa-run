@@ -27,5 +27,7 @@ assert(html.includes('krDecorPlanterCache=planterCanvas;'),'Planter cache should
 assert(html.includes('canvas.width=272;canvas.height=142;')&&html.includes('ctx.translate(-680,-189);'),'Shelf cache should leave room for its original shadow');
 assert(html.includes('x.drawImage(krEstanteCache,680,189);'),'Cached shelf should be composited with the shadow margin preserving its original position');
 assert(html.includes('function krDesenharWhimsical(x,t)')&&html.includes('function krDesenharPosterIdol(x,person,fx,fy,idx,t)'),'Animated curtains and dynamic player posters should remain live');
+assert(html.includes('var cache=new Map(),S=4')&&html.includes('if(cache.size>64)cache.delete(cache.keys().next().value);'),'The existing bounded vector-avatar sprite cache should remain in place');
+assert(html.includes('var krPosterArtes=Object.create(null);')&&html.includes('x.drawImage(art,-25,-5);'),'Cached miniatures should remain composited instead of redrawn every frame');
 
 console.log('✓ Karaoke room tile occupancy uses a precomputed 15×6 grid');

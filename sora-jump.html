@@ -2290,6 +2290,7 @@ function soraCompactAlive(list,bottom,mode){
  return list;
 }
 function soraUpdate(dt){
+  var soraFrameAnterior=soraFrame;
   soraFrame += dt;
   soraVisitorElapsed += dt;
   if(!soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
@@ -2332,7 +2333,7 @@ function soraUpdate(dt){
     soraP.wingsT -= dt;
     soraP.vy = -9.2;
     soraP.slipping = false;
-    if((soraFrame | 0) % 5 === 0){
+    if(Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)){
       soraParticles.push({ x:soraP.x + 15, y:soraP.y + 30, vx:(Math.random()-0.5)*2, vy:1.5, c:'#ff9ccd', t:0 });
     }
   } else {

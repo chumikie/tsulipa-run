@@ -33,7 +33,7 @@ function montar(conta, semLogin) {
     querySelectorAll() { return []; },
     createElement() { return { setAttribute() {}, appendChild() {}, classList: { add() {} }, style: {} }; }
   };
-  const sandbox = { window, document, setInterval() { return 0; }, setTimeout() { return 0; }, console };
+  const sandbox = { window, document, hubOv:{hidden:true}, twIntervaloVisivel:()=>({destroy(){}}), setInterval() { return 0; }, setTimeout() { return 0; }, console };
   vm.runInNewContext(codigo, sandbox, { filename: "tw-index2-ux-fixes.js" });
   function clicar(ir, classe) {
     const card = { dataset: { ir }, id: "", classList: { contains: c => c === classe } };

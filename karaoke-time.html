@@ -385,7 +385,11 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='rabo'){E(x+29,y+20+sw,6,14,.3); E(x+31,y+24+sw,4,10,.4)}
     else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
   else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas
-  else if(b==='onduladom'||b==='onduladom2'){E(x+2,y+14,3.3,4.8,-.16);E(x+3,y+19,2.3,2.6,.12);E(x+28,y+14,3.3,4.8,.16);E(x+27,y+19,2.3,2.6,-.12)}
+  else if(b==='onduladom'||b==='onduladom2'){
+    E(x+2,y+14,3.3,4.8,-.16);E(x+3,y+19,2.3,2.6,.12);E(x+28,y+14,3.3,4.8,.16);E(x+27,y+19,2.3,2.6,-.12);
+    g.beginPath();g.moveTo(x+24,y+15);g.quadraticCurveTo(x+31,y+22,x+28,y+30);g.lineTo(x+25,y+34);g.quadraticCurveTo(x+25,y+27,x+22,y+24);g.closePath();g.fill();
+    if(b==='onduladom2'){var back2=c.hair2||'#fff';g.save();g.beginPath();g.rect(x-4,y+9,19,29);g.clip();g.fillStyle=back2;E(x+2,y+14,3.3,4.8,-.16);E(x+3,y+19,2.3,2.6,.12);g.restore();}
+  }
   else if(b==='onduladof'){
     g.beginPath();g.moveTo(x+3,y+10);g.quadraticCurveTo(x-3,y+17,x+1,y+28);g.quadraticCurveTo(x+2,y+34,x+7,y+35);g.quadraticCurveTo(x+10,y+31,x+11,y+26);g.quadraticCurveTo(x+15,y+31,x+19,y+27);g.quadraticCurveTo(x+21,y+33,x+24,y+35);g.quadraticCurveTo(x+30,y+31,x+29,y+23);g.quadraticCurveTo(x+33,y+13,x+27,y+9);g.closePath();g.fill();
     E(x+2,y+21,4.2,8,-.12);E(x+5,y+28,3.1,5,.2);E(x+28,y+21,4.2,8,.12);E(x+25,y+28,3.1,5,-.2);
@@ -542,7 +546,9 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
 
   g.fillStyle=hg;
-  if(b==='onduladof'){
+  if(b==='onduladom'||b==='onduladom2'){
+    T([x+3,y+10,x+8,y+5,x+14,y+7,x+20,y+3,x+27,y+8,x+29,y+13,x+24,y+16,x+20,y+14,x+17,y+21,x+13,y+15,x+9,y+19,x+7,y+13,x+3,y+14]);
+  }else if(b==='onduladof'){
     T([x+4,y+9,x+9,y+7,x+11,y+18,x+8,y+23]);T([x+9,y+7,x+14,y+6,x+16,y+20,x+13,y+25]);T([x+14,y+6,x+19,y+7,x+21,y+19,x+18,y+24]);T([x+19,y+7,x+25,y+9,x+25,y+20,x+22,y+23]);
   }else if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
   else if(f==='reta')g.fillRect(x+3,y+8,24,6);

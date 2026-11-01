@@ -6555,21 +6555,36 @@ function contaInicioCorrida(){
   if(typeof gachaBonus === 'function') gachaBonus();   // V2.1.3
 }
 function contaFimCorrida(score, est, ch, refresh){
-  if(!contaJ || !contaRun){ refresh(); return; }
-  var run = contaRun; contaRun = null; contaUltimaRun = null;
+  var owner=contaJ&&contaJ.id, sessao=contaSessaoToken;
+  function mesmaConta(){return !!(owner&&contaJ&&contaJ.id===owner&&contaSessaoToken===sessao);}
+  function aviso(msg){
+    var rr=$('res'),aguardando=tr('Aguardando validação do servidor');
+    if(rr&&rr.innerHTML.includes(aguardando))rr.innerHTML=rr.innerHTML.replace(aguardando,msg);
+  }
+  if(!mesmaConta()||!contaRun){
+    aviso(tr('Recompensa não validada')+' · '+tr('Corrida sem autorização do servidor'));
+    refresh();return;
+  }
+  var run=contaRun;contaRun=null;contaUltimaRun=null;
   run.then(function(id){
-    if(!id) throw 0;
-    contaUltimaRun = { id:id, ok:false };   // V2.1.3: para a insígnia do Quarteto
-    return contaRpc('terminar_corrida', { p_run:id, p_score:score, p_stars:est, p_char:ch, p_device:did });
+    if(!mesmaConta())return null;
+    if(!id)throw Error('inicio_nao_validado');
+    contaUltimaRun={id:id,ok:false};
+    return contaRpc('terminar_corrida',{p_run:id,p_score:score,p_stars:est,p_char:ch,p_device:did});
   }).then(function(r){
-    if(!r||r.ok!==true)throw Error('corrida_nao_confirmada');
+    if(!mesmaConta())return;
+    if(!r||r.ok!==true)throw Error(r&&r.erro||'corrida_nao_confirmada');
     if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
-    var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),String(r.creditadas||0)+' '+tr('estrelas'));
+    if(r.limite_diario===true){
+      aviso(tr('Limite diário do Center⭐Run! atingido (100 estrelas)'));
+    }else{
+      aviso(String(r.creditadas||0)+' '+tr('estrelas'));
+    }
     if(contaUltimaRun){contaUltimaRun.ok=true;quartetoTalvez();}
     hubAposCorrida();refresh();
   }).catch(function(){
-    var rr=$('res');if(rr)rr.innerHTML=rr.innerHTML.replace(tr('Aguardando validação do servidor'),tr('Recompensa não validada'));
-    refresh();
+    if(!mesmaConta())return;
+    aviso(tr('Recompensa não validada'));refresh();
   });
 }
 function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e confirma no servidor

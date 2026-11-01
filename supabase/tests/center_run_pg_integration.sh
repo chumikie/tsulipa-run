@@ -28,6 +28,13 @@ second=$!
 wait "$first"
 wait "$second"
 
+# A valid third run after the cap is reached must signal the dedicated reason.
+cap_result="$(rpc "$user_a" '10000000-0000-4000-8000-000000000007' 100 70)"
+if [[ "$cap_result" != *'"creditadas" : 0'* || "$cap_result" != *'"limite_diario" : true'* ]]; then
+  echo 'Expected zero-credit valid run with limite_diario=true' >&2
+  exit 1
+fi
+
 # Prior-day Center credits are excluded. Today's 90 leave only 10.
 rpc "$user_b" '10000000-0000-4000-8000-000000000003' 100 30
 

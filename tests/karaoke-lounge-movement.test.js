@@ -119,7 +119,7 @@ assert(html.includes('if(krMeuRetornoAt>0&&krT>=krMeuRetornoAt&&!krEu.no_mic)krP
 assert(html.includes('if(krMeuVoltandoAoMic&&!krMoveQueue.length&&Math.hypot(krEu.x-KR_MIC_HOME_X,krEu.y-KR_MIC_HOME_Y)<=3'),'return state clears only after arrival at the microphone');
 assert(html.includes('if(!krEu.plateia&&krEuNoMicrofone())ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y);'),'microphone pedestal stays fixed at the stage while the Idol walks away');
 assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}'),'autonomous lounge remains gated out of homologation');
-assert(autoMic.includes('w.krLoungeAutoMicTick=function()'),'the room has an autonomous NPC mic turn');
+assert(autoMic.includes('function create(deps)')&&autoMic.includes('return function tick()')&&html.includes('window.krLoungeAutoMicTick=window.KaraokeRoomAutoMic.create({'),'the page binds the isolated autonomous mic controller to its local room state');
 assert(autoMic.includes('s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic'),'injected NPC mic state protects the player mandatory return/turn window');
 assert(autoMic.includes('deps.startPractice(); // Local NPC practice'),'NPC mic uses the injected local practice action and cannot consume the player attempt');
 assert(polaroid.includes('function open(person,index,opener){')&&polaroid.includes('deps.makeCharacter(person,index)'),'wall Polaroids receive a character constructed by the page');

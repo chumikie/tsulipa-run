@@ -1,5 +1,6 @@
 -- TsuLiPa⭐World / Karaoke⭐Time! — "Música da semana" (PR #58)
 -- PROPOSTA PARA REVISÃO. NÃO APLICAR SEM AUTORIZAÇÃO EXPLÍCITA DA DONA DO PROJETO.
+-- APLICADA no Supabase em 02/11/2026 com autorização da dona (relato do ChatGPT na PR58_STATUS).
 -- Antes de aplicar: conferir que a função ativa public.kt_run_finish é a de supabase/sql/karaoke_time_ranking.sql
 -- (mesmos parâmetros e mesmo corpo). Se for diferente, NÃO aplicar: ajustar esta proposta primeiro.
 --

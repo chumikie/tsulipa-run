@@ -1,5 +1,6 @@
 -- TsuLiPa⭐World / Karaoke⭐Time! — "minha posição" no ranking semanal (PR #58)
 -- PROPOSTA PARA REVISÃO. NÃO APLICAR SEM AUTORIZAÇÃO EXPLÍCITA DA DONA DO PROJETO.
+-- ATIVA no Supabase (confirmado pelo ChatGPT em 02/11/2026, com autorização da dona).
 -- Função nova e só de leitura: não altera kt_ranking, tabelas, estrelas nem tickets.
 -- Devolve a posição de quem está logado em cada quadro da semana atual (mesma ordem do Top 5 de kt_ranking),
 -- para a sala mostrar "Você · 12º" quando a pessoa estiver fora do Top 5. Sem resultado na semana: quadro nulo.

@@ -22,7 +22,7 @@ assert.equal(rules.boards(DAY).score.length,5,'quadro continua mostrando o Top 5
 assert.deepEqual({...rules.mine(DAY,'idol-7').score},{pos:7,valor:650},'7º lugar em pontuação');
 assert.equal(rules.mine(DAY,'idol-1').score.pos,1,'primeiro lugar');
 assert.equal(rules.mine(DAY,'ninguem').score,undefined,'sem resultado, sem posição');
-assert(html.includes("if(me&&+me.pos>5){")&&html.includes("ne.textContent=tr('Você');")&&html.includes("['Você','You','Tú','คุณ','あなた']"),'linha "Você" só fora do Top 5, traduzida');
+assert(html.includes("if(d.me&&+d.me.pos>5){")&&html.includes("eu.querySelector('.kt-rank-name').textContent=tr('Você');")&&html.includes("['Você','You','Tú','คุณ','あなた']"),'linha "Você" só fora do Top 5, traduzida');
 assert(html.includes("if(a.posicao)a.posicao().then(")&&index.includes("posicao:function(){return contaRpc('kt_minha_posicao');},"),'online pede a posição ao servidor (função opcional)');
 assert(!html.includes("tr('Todo domingo, 12h às 13h10')")&&!html.includes('🟢 Domingo · 12h00–13h10'),'textos do antigo evento de domingo saíram da sala');
 assert(html.includes('<small class="kt-song-record" id="ktSongRecord" aria-live="polite"></small>')&&html.includes("function ktSongRecordUI(){")&&html.includes("$('ktSong').addEventListener('change',ktSongRecordUI)"),'recorde pessoal da música escolhida ao lado da Trilha');

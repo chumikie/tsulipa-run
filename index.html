@@ -9723,6 +9723,7 @@ window.twKaraokeOnline={
  ranking:function(){return contaRpc('kt_ranking');},
  posicao:function(){return contaRpc('kt_minha_posicao');},
  musicaSemana:function(){return contaRpc('kt_musica_semana');},
+ quadros:function(){return contaRpc('kt_quadros_semana');},
  // Plateia do dia: contas do site com Idol montado (todas podem ser sorteadas, inclusive as novas).
  plateia:function(){return contaRpc('vitrine_idols').then(function(d){return d&&Array.isArray(d.idols)?d.idols:[];});},
  cor:function(){return perfMinhaCor;}

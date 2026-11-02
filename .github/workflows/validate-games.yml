@@ -37,6 +37,9 @@ on:
       - 'tests/karaoke-room-views.test.js'
       - 'tests/karaoke-my-position.test.js'
       - 'tests/karaoke-song-week.test.js'
+      - 'tests/karaoke-weekly-boards.test.js'
+      - 'supabase/sql/karaoke_quadros_semana.sql'
+      - 'supabase/tests/karaoke_quadros_pg_*'
       - 'supabase/sql/karaoke_musica_da_semana.sql'
       - 'supabase/tests/karaoke_musica_pg_*'
       - 'supabase/sql/karaoke_minha_posicao.sql'
@@ -135,6 +138,9 @@ on:
       - 'tests/karaoke-room-views.test.js'
       - 'tests/karaoke-my-position.test.js'
       - 'tests/karaoke-song-week.test.js'
+      - 'tests/karaoke-weekly-boards.test.js'
+      - 'supabase/sql/karaoke_quadros_semana.sql'
+      - 'supabase/tests/karaoke_quadros_pg_*'
       - 'supabase/sql/karaoke_musica_da_semana.sql'
       - 'supabase/tests/karaoke_musica_pg_*'
       - 'supabase/sql/karaoke_minha_posicao.sql'
@@ -221,6 +227,8 @@ jobs:
         run: node tests/karaoke-my-position.test.js
       - name: Validate Karaoke song of the week
         run: node tests/karaoke-song-week.test.js
+      - name: Validate Karaoke weekly boards (shows, most improved, song medal)
+        run: node tests/karaoke-weekly-boards.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract
@@ -325,6 +333,8 @@ jobs:
         run: bash supabase/tests/karaoke_posicao_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke song of the week proposal against isolated PostgreSQL
         run: bash supabase/tests/karaoke_musica_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke weekly boards proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_quadros_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
         run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:

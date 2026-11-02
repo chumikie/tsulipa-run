@@ -8,8 +8,10 @@ const { execFileSync } = require('node:child_process');
 const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
-const baseSha = process.env.BASE_SHA;
-if (!baseSha) throw new Error('BASE_SHA is required for before/after screenshots');
+// PR #66 inclui outras funcionalidades além da extração i18n. A main antiga não é
+// um baseline visual equivalente; mudanças deliberadas geravam falso positivo.
+// Avançar este marco só após aprovar as novas capturas de referência.
+const baseSha = process.env.VISUAL_BASE_SHA || 'e95e7775849c49fc452c1f107778d5b11a926bc0';
 const output = path.resolve(process.argv[2] || '/tmp/i18n-visual-captures');
 fs.mkdirSync(output, { recursive: true });
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tsulipa-i18n-visual-'));

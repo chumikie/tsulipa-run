@@ -13,7 +13,7 @@ const listenerEnd=html.indexOf("\ndocument.addEventListener('visibilitychange',k
 assert(listenerStart>=0&&listenerEnd>listenerStart,'host visibility message listener exists');
 const listeners={},hostWindow={},sandbox={
  parent:hostWindow,location:{protocol:'https:',origin:'https://room.test'},
- krRoomHostVisible:true,krHostMotionSeen:false,krCanvasHD:null,krRoomMotionGate:null,krRhythmPanel:null,
+ krRoomHostVisible:true,krHostMotionSeen:false,krCanvasHD:null,krRhythmPanel:null,
  krRoomElementoVisivel:function(){return true;},krRoomAtualizar:function(){},
  window:{addEventListener:function(type,fn){listeners[type]=fn;}}
 };
@@ -31,7 +31,7 @@ sendHostState({type:'TW_GAME_VISIBILITY',visible:false});
 assert.equal(sandbox.krRoomHostVisible,true,'legacy pings cannot pause or resume after the modern lifecycle has taken ownership');
 assert(fn.indexOf('if(document.hidden||!krRoomHostVisible')<fn.indexOf('if(krShowAtivo())return true;'),'página oculta continua pausando antes de qualquer exceção');
 assert(fn.includes('if(krShowAtivo())return true;'),'show em andamento não pausa só porque o palco saiu da tela');
-assert(html.includes('TWMotionLifecycle.watchLoop(krCanvasHD,')&&html.includes('krRoomMotionGate.refresh()')&&html.includes('krRoomMotionGate.destroy()'),'the Karaoke room resumes its loop when a modal/overlay stops covering the canvas and releases its lifecycle gate on pagehide');
+assert(html.includes("document.addEventListener('close',krRoomAtualizar,true);")&&html.includes('function krRoomPalcoVisivel()'),'the Karaoke room resumes its loop after a native modal dialog closes');
 assert(html.includes("window.addEventListener('pagehide',function(){previewPlayer.stop(false);if(run){pause(true);checkpoint();}});")&&html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);if(run)pause(true);}});"),'prévia é liberada ao sair/ocultar a página e a pausa da partida continua preservada');
 assert(html.includes('.kt-playing #ktAudioLibrary{order:7}'),'durante o show a vitrine fica depois da sala');
 assert(html.includes('setTimeout(function(){if(!auto)krIrAoPalco();krRoomAtualizar();},160);'),'ao começar o show a tela vai até o palco e o loop da sala é religado');

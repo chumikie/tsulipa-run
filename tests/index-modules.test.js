@@ -22,13 +22,14 @@ const MODULOS = [
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
   { js: "duo.js", css: "duo.css", tem: ["duoAbrir", "duoRender", "duoComprar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] },
   { js: "encontro.js", css: "encontro.css", tem: ["encMostrar", "encCena", "ENC_EMO"], cssTem: [/#encCv\{/, /\.enchero\{/] },
-  { js: "hub.js", css: "hub.css", tem: ["hubMostrar", "hubCardsUI", "twRankRender"], cssTem: [/\.hubidols\{/, /\.hubcfg\{/] }
+  { js: "hub.js", css: "hub.css", tem: ["hubMostrar", "hubCardsUI", "twRankRender"], cssTem: [/\.hubidols\{/, /\.hubcfg\{/] },
+  { js: "conta.js", css: null, tem: ["contaEntrar", "contaUI"], cssTem: [] }
 ];
 let anterior = html.indexOf('<script src="./pet-sync.js?v=');
 const vistos = new Set();
 for (const m of MODULOS) {
   const src = fs.readFileSync(path.join(root, m.js), "utf8");
-  const css = fs.readFileSync(path.join(root, m.css), "utf8");
+  const css = m.css ? fs.readFileSync(path.join(root, m.css), "utf8") : "";
   // 1. Carregar o módulo num contexto que acusa qualquer acesso a nomes de fora.
   const acessos = [];
   const sandbox = new Proxy({}, {
@@ -46,12 +47,12 @@ for (const m of MODULOS) {
   const i = html.indexOf('<script src="./' + m.js + '?v=');
   assert(i > anterior && iMain > i, m.js + " carrega na ordem certa, antes do script principal");
   anterior = i;
-  assert(new RegExp('<link rel="stylesheet" href="\\./' + m.css.replace(".", "\\.") + '\\?v=\\d+">').test(html), "index.html liga o " + m.css);
+  if (m.css) assert(new RegExp('<link rel="stylesheet" href="\\./' + m.css.replace(".", "\\.") + '\\?v=\\d+">').test(html), "index.html liga o " + m.css);
   m.cssTem.forEach((re) => { assert(re.test(css), m.css + " tem " + re); assert(!re.test(html), "estilo " + re + " duplicado no index.html"); });
   // 3. Nenhuma função declarada em dois lugares.
   const dup = declarados.filter((n) => noIndex.has(n) || vistos.has(n));
   assert.deepEqual(dup, [], "declarações duplicadas de " + m.js + ": " + dup.join(", "));
   declarados.forEach((n) => vistos.add(n));
-  console.log("✓ " + m.js + " (" + declarados.length + " declarações, nada executa ao carregar) e " + m.css);
+  console.log("✓ " + m.js + " (" + declarados.length + " declarações, nada executa ao carregar)" + (m.css ? " e " + m.css : ""));
 }
 assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src="./pet.js?v='), "pet-sync.js continua antes (sincronização não foi duplicada)");

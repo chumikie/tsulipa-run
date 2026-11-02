@@ -37,7 +37,8 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
 | 7 | Tela de início (hub) | `hub.js`, `hub.css` | Extraído (02/11/2026). 91 funções + 33 tabelas (cards, missões, Top Idols, TV, insígnia nova, busca, música, vitrine); 103 linhas de CSS. Temas da temporada e desenhos do Center⭐Run ficam para a Etapa 8. |
 | 8 | Center⭐Run! (com temas da temporada e desenhos) | `centerrun.js`, `centerrun.css` | Extraído (02/11/2026). 172 funções + 62 tabelas; `centerrun.css` é o antigo primeiro `<style>` inteiro (base do site + jogo), no mesmo lugar e ordem. |
-| — | Consolidação do index.html e redução controlada de `!important` | — | Depois das etapas |
+| — | Consolidação | `conta.js`, `docs/MAPA_DO_CODIGO.md` | Feita (02/11/2026): conta/login em `conta.js` (19 funções + 3 tabelas); mapa dos módulos e regras para novas mudanças. `index.html` com ~218 KB. |
+| — | Redução controlada de `!important` | — | Pendente |
 
 ### Etapa 1 — o que ficou no index.html
 - Estado do camarim (`petData`, `petOpen`, `petCv`/`petCtx` etc.), listeners e as chamadas de início

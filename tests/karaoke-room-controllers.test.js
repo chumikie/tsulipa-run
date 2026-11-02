@@ -20,8 +20,8 @@ assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-roo
 assert(autoSource.includes("singer.phase='player_to_sofa'")&&autoSource.includes("singer.phase='player_wait_departure'")&&autoSource.includes('deps.movePlayerToSeat')&&autoSource.includes('deps.movePlayerToWait'),'auto-mic choreography protects the sofa handoff');
 assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function krPlanearRotaEspera(x,y)'),'player uses dedicated collision-safe sofa routes');
 assert(/var krVelocidadeAlvo=krMeuVoltandoAoMic\?6\.0/.test(html),'return to microphone uses a faster sprint');
-assert(html.includes('function krLoungeEscolherVariado(candidates)')&&html.includes('krLoungeRecentWalkers.indexOf(candidate)<0'),'lounge walker selection avoids recent repeats when alternatives exist');
-assert(html.includes('krLoungeRecentWalkers.length=0;krLoungeCastRef=krBots;'),'walker rotation resets only when the cast is rebuilt');
+assert(html.includes('window.KaraokeRoomAutoMic.createRotation(3,Math.random)')&&html.includes('krLoungeEscolherVariado.reset();krLoungeCastRef=krBots;'),'lounge walker rotation avoids recent repeats and resets only when the cast is rebuilt');
+assert(autoSource.includes('function createRotation(limit,random)')&&autoSource.includes('recent.length>max'),'shared rotation helper remembers recent cast members');
 assert.equal(AutoMic.pickCandidate(['A','B','C'],['A','B'],()=>0),'C','automatic singer selection excludes the two most recent singers when alternatives exist');
 assert.equal(AutoMic.pickCandidate(['A','B'],['A'],()=>0),'B','the next singer changes even when the injected random value repeats');
 assert.equal(AutoMic.pickCandidate(['A'],['A'],()=>0),'A','the only eligible singer remains selectable');

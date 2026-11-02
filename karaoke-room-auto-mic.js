@@ -45,7 +45,6 @@
    if(!singer)return;
    singer.phase='player_wait_departure';
    singer.playerWaitStarted=!!deps.movePlayerToWait(singer.playerWaitX,singer.playerWaitY);
-   if(!singer.playerWaitStarted&&deps.onError)deps.onError(new Error('Could not route the player from the sofa to the safe aisle'));
    deps.switchMusicMode();deps.updateUI();
   }
   function beginSingerReturn(){
@@ -93,7 +92,8 @@
     return true;
    }
    if(singer.phase==='player_wait_departure'){
-    if(deps.isPlayerAtSingerWait(singer.playerWaitX,singer.playerWaitY))beginSingerReturn();
+    if(!singer.playerWaitStarted)singer.playerWaitStarted=!!deps.movePlayerToWait(singer.playerWaitX,singer.playerWaitY);
+    if(singer.playerWaitStarted&&deps.isPlayerAtSingerWait(singer.playerWaitX,singer.playerWaitY))beginSingerReturn();
     return true;
    }
    if(singer.phase==='player_return'){

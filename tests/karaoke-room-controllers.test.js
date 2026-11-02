@@ -36,7 +36,7 @@ function autoHarness(overrides,randomValue){
   isPlayerAtSingerWait:(x,y)=>state.playerWaited&&Math.hypot(state.playerX-x,state.playerY-y)<=3,
   movePlayerToSeat:(x,y)=>{state.playerSeatTarget=[x,y];state.playerSeated=false;calls.push(['player-seat',x,y]);return true;},
   isPlayerAtSeat:(x,y)=>state.playerSeated&&Math.hypot(state.playerX-x,state.playerY-y)<=3,
-  movePlayerToWait:(x,y)=>{state.playerWaitTarget=[x,y];state.playerWaited=false;calls.push(['player-wait',x,y]);return true;},
+  movePlayerToWait:(x,y)=>{state.playerWaitTarget=[x,y];state.playerWaited=false;state.waitRouteAttempts=(state.waitRouteAttempts||0)+1;calls.push(['player-wait',x,y]);return state.waitRouteAttempts>1;},
   restorePlayerAfterSinger:()=>{state.playerReturning=true;calls.push(['player-return']);return true;},
   isPlayerAtMic:()=>state.playerAtMic,
   random:()=>randomValue===undefined?0:randomValue,nowMs:()=>5000,getTime:()=>state.time,setSinger:v=>{state.singer=v;calls.push(['singer',v&&v.phase]);},
@@ -84,6 +84,9 @@ for(const [label,state] of blocked){
  assert.equal(h.state.singer.endsAt,70000,'NPC show keeps original duration');
  assert.equal(h.controller.finishSinger(),true,'ending show starts player sofa exit');
  assert.equal(h.state.singer.phase,'player_wait_departure','player vacates sofa before singer return');
+ assert.equal(h.calls.filter(x=>x[0]==='player-wait').length,1,'initial exit route is temporarily blocked');
+ h.controller.updateMovement(1);
+ assert.equal(h.calls.filter(x=>x[0]==='player-wait').length,2,'route retries on next movement tick');
  assert.deepEqual(h.state.playerWaitTarget,[620,320],'player receives safe aisle exit target');
  assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'singer remains on mic until player clears the seat');
  h.reachExitWait();h.controller.updateMovement(1);

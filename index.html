@@ -721,6 +721,7 @@ function twIntegrarDicionariosId(){
   });
   return true;
 }
+if(window.TW_ID_PREVIEW_DATA)twIntegrarDicionariosId();
 function twCarregarIdiomaId(){
   if(window.TW_ID_PREVIEW_DATA)return Promise.resolve();
   if(twIdCarregamento)return twIdCarregamento;

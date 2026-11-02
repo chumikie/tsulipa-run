@@ -21,6 +21,7 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
   const hub=read('hub.js');
   assert.ok(hub.indexOf("['id', 'ID']")<hub.indexOf("['th', 'TH']"));
   assert.match(read('index.html'),/twCarregarIdiomaId\(\)\.then/);
+  assert.match(read('index.html'),/if\(window\.TW_ID_PREVIEW_DATA\)twIntegrarDicionariosId\(\);/);
   assert.doesNotMatch(read('index.html'),/location\.reload\(\)/);
   assert.match(hub,/twGamesTxt = twGamesTxt\[LANG\]\|\|twGamesTxt\.pt/);
   assert.match(hub,/hubIdolsTituloUI\(\);/);

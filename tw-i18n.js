@@ -1,5 +1,5 @@
-// Traduções da página inicial (en, es, th, ja), em ordem alfabética da frase em português.
-// Saiu do index.html em 02/11/2026. Outras tabelas (PET_DICT*, CONTA_DICT) continuam junto do código que as usa e se somam a esta.
+// Catálogo central de traduções do TsuLiPa⭐World (português como chave original; EN/ES/TH/JA).
+// As tabelas são mantidas separadas para preservar os pontos e a ordem atuais de mesclagem em DICT.
 window.TW_DICT={
  "en":{
   " Escudo e look!":" Shield and new look!",
@@ -413,3 +413,1213 @@ window.TW_DICT={
   "Zipper (tCenter)":"ジッパー (tCenter)"
  }
 };
+
+
+// ================================================================
+// CATÁLOGOS POR ÁREA — centralizados sem antecipar as mesclagens.
+// As chaves de cada idioma ficam em ordem alfabética pelo texto em português.
+// ================================================================
+window.TW_I18N = window.TW_I18N || {};
+window.TW_I18N.tables = window.TW_I18N.tables || {};
+window.TW_I18N.rows = window.TW_I18N.rows || {};
+window.TW_I18N.locale = window.TW_I18N.locale || {};
+
+// PET_DICT
+window.TW_I18N.tables.PET_DICT = {
+  en: {"Abrir o camarim do pet":"Open the pet dressing room","ADOTAR":"ADOPT","Camarim":"Dressing room","Com fome...":"Hungry...","Com saudade...":"Missing you...","Com sono...":"Sleepy...","Energia":"Energy","Escolha seu primeiro pet. O primeiro é presente!":"Choose your first pet. The first one is a gift!","Feliz!":"Happy!","Fome":"Hunger","Higiene":"Hygiene","Humor":"Mood","Nome do pet":"Pet name","Precisa de banho...":"Needs a bath...","Toque no pet para fazer carinho 💕":"Tap the pet to cuddle it 💕","Tranquilo":"Calm","VOLTAR":"BACK"},
+  es: {"Abrir o camarim do pet":"Abrir el camerino de la mascota","ADOTAR":"ADOPTAR","Camarim":"Camerino","Com fome...":"Con hambre...","Com saudade...":"Te extraña...","Com sono...":"Con sueño...","Energia":"Energía","Escolha seu primeiro pet. O primeiro é presente!":"Elige tu primera mascota. ¡La primera es un regalo!","Feliz!":"¡Feliz!","Fome":"Hambre","Higiene":"Higiene","Humor":"Ánimo","Nome do pet":"Nombre de la mascota","Precisa de banho...":"Necesita un baño...","Toque no pet para fazer carinho 💕":"Toca a la mascota para hacerle mimos 💕","Tranquilo":"Tranquilo","VOLTAR":"VOLVER"},
+  th: {"Abrir o camarim do pet":"เปิดห้องแต่งตัวของสัตว์เลี้ยง","ADOTAR":"รับเลี้ยง","Camarim":"ห้องแต่งตัว","Com fome...":"หิวแล้ว...","Com saudade...":"คิดถึงจัง...","Com sono...":"ง่วงนอน...","Energia":"พลังงาน","Escolha seu primeiro pet. O primeiro é presente!":"เลือกสัตว์เลี้ยงตัวแรก ตัวแรกฟรี!","Feliz!":"มีความสุข!","Fome":"ความหิว","Higiene":"ความสะอาด","Humor":"อารมณ์","Nome do pet":"ชื่อสัตว์เลี้ยง","Precisa de banho...":"อยากอาบน้ำ...","Toque no pet para fazer carinho 💕":"แตะสัตว์เลี้ยงเพื่อลูบหัว 💕","Tranquilo":"สบายดี","VOLTAR":"กลับ"},
+  ja: {"Abrir o camarim do pet":"ペットの楽屋を開く","ADOTAR":"おむかえ","Camarim":"楽屋","Com fome...":"おなかすいた…","Com saudade...":"さみしい…","Com sono...":"ねむい…","Energia":"げんき","Escolha seu primeiro pet. O primeiro é presente!":"最初のペットを選んでね。最初の子はプレゼント！","Feliz!":"ごきげん！","Fome":"おなか","Higiene":"せいけつ","Humor":"きぶん","Nome do pet":"ペットの名前","Precisa de banho...":"おふろに入りたい…","Toque no pet para fazer carinho 💕":"ペットをタップしてなでなで 💕","Tranquilo":"おだやか","VOLTAR":"もどる"}};
+
+// PET_DICT10
+window.TW_I18N.tables.PET_DICT10 = {
+  en: {"{p} trouxe um presente!":"{p} brought you a gift!","Auto":"Auto","Expressão":"Expression","Olhar":"Gaze","Piscadinha":"Wink","Rank":"Rank","Sorriso":"Smile","Surpresa":"Surprise"},
+  es: {"{p} trouxe um presente!":"¡{p} te trajo un regalo!","Auto":"Auto","Expressão":"Expresión","Olhar":"Mirada","Piscadinha":"Guiño","Rank":"Rango","Sorriso":"Sonrisa","Surpresa":"Sorpresa"},
+  th: {"{p} trouxe um presente!":"{p} นำของขวัญมาให้!","Auto":"อัตโนมัติ","Expressão":"สีหน้า","Olhar":"มอง","Piscadinha":"ขยิบตา","Rank":"แรงก์","Sorriso":"ยิ้ม","Surpresa":"ตกใจ"},
+  ja: {"{p} trouxe um presente!":"{p}がプレゼントを持ってきたよ！","Auto":"おまかせ","Expressão":"表情","Olhar":"みつめる","Piscadinha":"ウインク","Rank":"ランク","Sorriso":"にっこり","Surpresa":"びっくり"}};
+
+// PET_DICT2
+window.TW_I18N.tables.PET_DICT2 = {
+  en: {"Acordar":"Wake up","Água":"Water","Ainda não está com sono!":"Not sleepy yet!","Banho":"Bath","Banho de espuma":"Bubble bath","Banho simples":"Quick bath","Boa noite!":"Good night!","Bolo red velvet":"Red velvet cake","Bom dia!":"Good morning!","Brincar":"Play","Comer":"Eat","Dormindo...":"Sleeping...","Dormir":"Sleep","Está cansado demais...":"Too tired to play...","Estrelas insuficientes":"Not enough stars","Grátis":"Free","Já está limpinho!":"Already squeaky clean!","Já está satisfeito!":"Already full!","Presente do dia":"Daily gift","Que delícia!":"Yummy!"},
+  es: {"Acordar":"Despertar","Água":"Agua","Ainda não está com sono!":"¡Todavía no tiene sueño!","Banho":"Baño","Banho de espuma":"Baño de espuma","Banho simples":"Baño rápido","Boa noite!":"¡Buenas noches!","Bolo red velvet":"Pastel red velvet","Bom dia!":"¡Buenos días!","Brincar":"Jugar","Comer":"Comer","Dormindo...":"Durmiendo...","Dormir":"Dormir","Está cansado demais...":"Está muy cansado...","Estrelas insuficientes":"Estrellas insuficientes","Grátis":"Gratis","Já está limpinho!":"¡Ya está limpito!","Já está satisfeito!":"¡Ya está lleno!","Presente do dia":"Regalo del día","Que delícia!":"¡Qué rico!"},
+  th: {"Acordar":"ตื่น","Água":"น้ำ","Ainda não está com sono!":"ยังไม่ง่วงเลย!","Banho":"อาบน้ำ","Banho de espuma":"อาบน้ำฟองสบู่","Banho simples":"อาบน้ำเร็ว","Boa noite!":"ราตรีสวัสดิ์!","Bolo red velvet":"เค้กเรดเวลเวท","Bom dia!":"อรุณสวัสดิ์!","Brincar":"เล่น","Comer":"กิน","Dormindo...":"กำลังหลับ...","Dormir":"นอน","Está cansado demais...":"เหนื่อยเกินไปแล้ว...","Estrelas insuficientes":"ดาวไม่พอ","Grátis":"ฟรี","Já está limpinho!":"สะอาดแล้ว!","Já está satisfeito!":"อิ่มแล้ว!","Presente do dia":"ของขวัญประจำวัน","Que delícia!":"อร่อยจัง!"},
+  ja: {"Acordar":"おきる","Água":"おみず","Ainda não está com sono!":"まだねむくないよ！","Banho":"おふろ","Banho de espuma":"あわあわバス","Banho simples":"さっとおふろ","Boa noite!":"おやすみ！","Bolo red velvet":"レッドベルベットケーキ","Bom dia!":"おはよう！","Brincar":"あそぶ","Comer":"ごはん","Dango":"だんご","Dormindo...":"おやすみ中…","Dormir":"ねる","Está cansado demais...":"つかれちゃった…","Estrelas insuficientes":"星が足りないよ","Grátis":"無料","Gyoza":"ぎょうざ","Já está limpinho!":"もうピカピカ！","Já está satisfeito!":"もうおなかいっぱい！","Onigiri":"おにぎり","Presente do dia":"今日のプレゼント","Que delícia!":"おいしい！","Tiramisu":"ティラミス"}};
+
+// PET_DICT3
+window.TW_I18N.tables.PET_DICT3 = {
+  en: {"Camarim do Pet":"Pet Dressing Room","Tirar foto com o pet":"Take a photo with your pet"},
+  es: {"Camarim do Pet":"Camerino de la Mascota","Tirar foto com o pet":"Tomar una foto con la mascota"},
+  th: {"Camarim do Pet":"ห้องแต่งตัวสัตว์เลี้ยง","Tirar foto com o pet":"ถ่ายรูปกับสัตว์เลี้ยง"},
+  ja: {"Camarim do Pet":"ペットの楽屋","Tirar foto com o pet":"ペットと写真を撮る"}};
+
+// PET_DICT4
+window.TW_I18N.tables.PET_DICT4 = {
+  en: {"↩ Backstage":"↩ Backstage","✏️ Editar Meu Pet":"✏️ Edit My Pet","Anel":"Ring","Ativo":"Active","Bochechas":"Cheeks","Brilhantes":"Sparkly","Cancelar":"Cancel","Coala":"Koala","Coelho":"Bunny","Cor":"Color","Coroa":"Crown","Criar":"Create","CRIAR":"CREATE","Crie seu pet":"Create your pet","Decorar":"Decorate","Estrela":"Star","Felizes":"Happy","Flor":"Flower","Foto no campo":"Field photo","Gato":"Cat","Guardado":"Stored","Laço":"Bow","Meu Pet":"My Pet","Meus pets":"My pets","Na parede":"On the wall","Não":"No","Nenhuma":"None","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"My Pet unlocks when you reach Center (5000 points) in the run!","Orelhas":"Ears","Redondos":"Round","SALVAR":"SAVE","Seus pets: toque para trocar ou adotar outro.":"Your pets: tap to switch or adopt another.","Sim":"Yes","Sonolentos":"Sleepy","Toque no pet ou no seu personagem 💕":"Tap your pet or your character 💕","Usar":"Use"},
+  es: {"↩ Backstage":"↩ Backstage","✏️ Editar Meu Pet":"✏️ Editar Mi Mascota","Anel":"Anillo","Ativo":"Activa","Bochechas":"Mejillas","Brilhantes":"Brillantes","Cancelar":"Cancelar","Coala":"Koala","Coelho":"Conejo","Cor":"Color","Coroa":"Corona","Criar":"Crear","CRIAR":"CREAR","Crie seu pet":"Crea tu mascota","Decorar":"Decorar","Estrela":"Estrella","Felizes":"Felices","Flor":"Flor","Foto no campo":"Foto en el campo","Gato":"Gato","Guardado":"Guardado","Laço":"Lazo","Meu Pet":"Mi Mascota","Meus pets":"Mis mascotas","Na parede":"En la pared","Não":"No","Nenhuma":"Ninguna","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"¡Mi Mascota se desbloquea al llegar a Center (5000 puntos) en la carrera!","Orelhas":"Orejas","Redondos":"Redondos","SALVAR":"GUARDAR","Seus pets: toque para trocar ou adotar outro.":"Tus mascotas: toca para cambiar o adoptar otra.","Sim":"Sí","Sonolentos":"Dormilones","Toque no pet ou no seu personagem 💕":"Toca a tu mascota o a tu personaje 💕","Usar":"Usar"},
+  th: {"↩ Backstage":"↩ หลังเวที","✏️ Editar Meu Pet":"✏️ แก้ไขสัตว์เลี้ยง","Anel":"วงแหวน","Ativo":"กำลังใช้","Bochechas":"แก้ม","Brilhantes":"เป็นประกาย","Cancelar":"ยกเลิก","Coala":"โคอาลา","Coelho":"กระต่าย","Cor":"สี","Coroa":"มงกุฎ","Criar":"สร้าง","CRIAR":"สร้าง","Crie seu pet":"สร้างสัตว์เลี้ยงของคุณ","Decorar":"ตกแต่ง","Estrela":"ดาว","Felizes":"ยิ้ม","Flor":"ดอกไม้","Foto no campo":"รูปในทุ่ง","Gato":"แมว","Guardado":"เก็บไว้","Laço":"โบว์","Meu Pet":"สัตว์เลี้ยงของฉัน","Meus pets":"สัตว์เลี้ยงของฉัน","Na parede":"บนผนัง","Não":"ไม่","Nenhuma":"ไม่มี","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"ปลดล็อกสัตว์เลี้ยงของฉันเมื่อถึงเซ็นเตอร์ (5000 คะแนน)!","Orelhas":"หู","Redondos":"กลม","SALVAR":"บันทึก","Seus pets: toque para trocar ou adotar outro.":"สัตว์เลี้ยงของคุณ: แตะเพื่อสลับหรือรับเลี้ยงเพิ่ม","Sim":"ใช่","Sonolentos":"ง่วง","Toque no pet ou no seu personagem 💕":"แตะสัตว์เลี้ยงหรือตัวละครของคุณ 💕","Usar":"ใช้"},
+  ja: {"↩ Backstage":"↩ バックステージ","✏️ Editar Meu Pet":"✏️ マイペットを編集","Anel":"わっか","Ativo":"いっしょ","Bochechas":"ほっぺ","Brilhantes":"キラキラ","Cancelar":"キャンセル","Coala":"コアラ","Coelho":"うさぎ","Cor":"いろ","Coroa":"おうかん","Criar":"つくる","CRIAR":"つくる","Crie seu pet":"ペットをつくろう","Decorar":"かざる","Estrela":"ほし","Felizes":"にこにこ","Flor":"はな","Foto no campo":"草原の写真","Gato":"ねこ","Guardado":"しまってる","Laço":"リボン","Meu Pet":"マイペット","Meus pets":"マイペット一覧","Na parede":"かざってる","Não":"なし","Nenhuma":"なし","O Meu Pet é liberado quando você alcançar o Center (5000 pontos) na corrida!":"ランでセンター（5000点）になるとマイペットが解放されるよ！","Orelhas":"みみ","Redondos":"まる","SALVAR":"ほぞん","Seus pets: toque para trocar ou adotar outro.":"あなたのペット：タップで切り替え・おむかえ","Sim":"あり","Sonolentos":"ねむねむ","Toque no pet ou no seu personagem 💕":"ペットかキャラをタップしてね 💕","Usar":"えらぶ"}};
+
+// PET_DICT5
+window.TW_I18N.tables.PET_DICT5 = {   // nomes dos itens do mural (nomes de música não se traduzem)
+  en: {"Pôster NeByura":"NeByura Poster","Pôster OUR STORY":"OUR STORY Poster","Pôster SECRET BASE":"SECRET BASE Poster","Pôster ツリパ":"ツリパ Poster","Quadro Valentine":"Valentine Frame","Quadro ポリリズム":"ポリリズム Frame"},
+  es: {"Pôster NeByura":"Póster NeByura","Pôster OUR STORY":"Póster OUR STORY","Pôster SECRET BASE":"Póster SECRET BASE","Pôster ツリパ":"Póster ツリパ","Quadro Valentine":"Cuadro Valentine","Quadro ポリリズム":"Cuadro ポリリズム"},
+  th: {"Pôster NeByura":"โปสเตอร์ NeByura","Pôster OUR STORY":"โปสเตอร์ OUR STORY","Pôster SECRET BASE":"โปสเตอร์ SECRET BASE","Pôster ツリパ":"โปสเตอร์ ツリパ","Quadro Valentine":"กรอบรูป Valentine","Quadro ポリリズム":"กรอบรูป ポリリズム"},
+  ja: {"Pôster NeByura":"NeByuraのポスター","Pôster OUR STORY":"OUR STORYのポスター","Pôster SECRET BASE":"SECRET BASEのポスター","Pôster ツリパ":"ツリパのポスター","Quadro Valentine":"Valentineの額","Quadro ポリリズム":"ポリリズムの額"}};
+
+// PET_DICT6
+window.TW_I18N.tables.PET_DICT6 = {
+  en: {"Cantar":"Sing","Que show!":"What a show!"},
+  es: {"Cantar":"Cantar","Que show!":"¡Qué show!"},
+  th: {"Cantar":"ร้องเพลง","Que show!":"โชว์สุดปัง!"},
+  ja: {"Cantar":"うたう","Que show!":"最高のステージ！"}};
+
+// PET_DICT7
+window.TW_I18N.tables.PET_DICT7 = {
+  en: {"Conversar":"Talk","Dorminhoco":"Sleepyhead","Elétrico":"Hyper","Marrento":"Sassy","Personalidade":"Personality"},
+  es: {"Conversar":"Charlar","Dorminhoco":"Dormilón","Elétrico":"Eléctrico","Marrento":"Creído","Personalidade":"Personalidad"},
+  th: {"Conversar":"คุยกัน","Dorminhoco":"ขี้เซา","Elétrico":"ไฮเปอร์","Marrento":"ขี้เก๊ก","Personalidade":"นิสัย"},
+  ja: {"Conversar":"おしゃべり","Dorminhoco":"ねぼすけ","Elétrico":"げんき","Marrento":"ツンツン","Personalidade":"せいかく"}};
+
+// PET_DICT8
+window.TW_I18N.tables.PET_DICT8 = {
+  en: {"Auréola":"Halo","Bom!":"Good!","Coração":"Heart","Errou":"Miss","Estágio":"Stage","Faixa de Center":"Center sash","Faixa de treino":"Training headband","Fim!":"Finish!","Headset":"Headset","hoje":"today","Limite de estrelas de hoje atingido":"Today's star limit reached","Moldura":"Frame","Normal":"Normal","Novo acessório":"New accessory","Novo recorde!":"New record!","Pegar estrela":"Catch the star","Perfeito!":"Perfect!","pontos":"points","Pose":"Pose","Promoção!":"Promotion!","Pular corda":"Jump rope","Pulos":"Jumps","Ritmo":"Rhythm","Sorvete de morango":"Strawberry ice cream","Tchau":"Wave","Tema de Halloween!":"Halloween theme!","Tema desligado":"Theme off","Tiara de estrelas":"Star tiara","Toque nas faixas no ritmo!":"Tap the lanes to the beat!","Toque para voltar":"Tap to go back","Toque quando a corda passar no chão!":"Tap when the rope hits the floor!"},
+  es: {"Auréola":"Aureola","Bom!":"¡Bien!","Coração":"Corazón","Errou":"Fallo","Estágio":"Etapa","Faixa de Center":"Banda de Center","Faixa de treino":"Cinta de entrenamiento","Fim!":"¡Fin!","Headset":"Diadema con micro","hoje":"hoy","Limite de estrelas de hoje atingido":"Límite de estrellas de hoy alcanzado","Moldura":"Marco","Normal":"Normal","Novo acessório":"Nuevo accesorio","Novo recorde!":"¡Nuevo récord!","Pegar estrela":"Atrapar la estrella","Perfeito!":"¡Perfecto!","pontos":"puntos","Pose":"Pose","Promoção!":"¡Ascenso!","Pular corda":"Saltar la cuerda","Pulos":"Saltos","Ritmo":"Ritmo","Sorvete de morango":"Helado de fresa","Tchau":"Saludo","Tema de Halloween!":"¡Tema de Halloween!","Tema desligado":"Tema apagado","Tiara de estrelas":"Tiara de estrellas","Toque nas faixas no ritmo!":"¡Toca los carriles al ritmo!","Toque para voltar":"Toca para volver","Toque quando a corda passar no chão!":"¡Toca cuando la cuerda pase por el suelo!"},
+  th: {"Auréola":"วงแหวนนางฟ้า","Bom!":"ดี!","Coração":"หัวใจ","Errou":"พลาด","Estágio":"ระดับ","Faixa de Center":"สายสะพาย Center","Faixa de treino":"ผ้าคาดหัวซ้อม","Fim!":"จบ!","Headset":"เฮดเซ็ต","hoje":"วันนี้","Limite de estrelas de hoje atingido":"ครบโควตาดาววันนี้แล้ว","Moldura":"กรอบ","Normal":"ปกติ","Novo acessório":"เครื่องประดับใหม่","Novo recorde!":"สถิติใหม่!","Pegar estrela":"จับดาว","Perfeito!":"เพอร์เฟกต์!","pontos":"แต้ม","Pose":"ท่าทาง","Promoção!":"เลื่อนขั้น!","Pular corda":"กระโดดเชือก","Pulos":"กระโดด","Ritmo":"จังหวะ","Sorvete de morango":"ไอศกรีมสตรอว์เบอร์รี","Tchau":"โบกมือ","Tema de Halloween!":"ธีมฮาโลวีน!","Tema desligado":"ปิดธีมแล้ว","Tiara de estrelas":"มงกุฎดาว","Toque nas faixas no ritmo!":"แตะตามจังหวะ!","Toque para voltar":"แตะเพื่อกลับ","Toque quando a corda passar no chão!":"แตะตอนเชือกแตะพื้น!"},
+  ja: {"Auréola":"天使の輪","Bom!":"グッド！","Coração":"ハート","Errou":"ミス","Estágio":"ステージ","Faixa de Center":"センターのたすき","Faixa de treino":"はちまき","Fim!":"おしまい！","Headset":"ヘッドセット","hoje":"きょう","Limite de estrelas de hoje atingido":"きょうのスター上限に到達","Moldura":"フレーム","Normal":"ふつう","Novo acessório":"新しいアクセサリー","Novo recorde!":"新記録！","Pegar estrela":"スターキャッチ","Perfeito!":"パーフェクト！","pontos":"てん","Pose":"ポーズ","Promoção!":"昇格！","Pular corda":"なわとび","Pulos":"とんだ回数","Ritmo":"リズム","Sorvete de morango":"いちごアイス","Tchau":"バイバイ","Tema de Halloween!":"ハロウィンテーマ！","Tema desligado":"テーマオフ","Tiara de estrelas":"星のティアラ","Toque nas faixas no ritmo!":"リズムに合わせてタップ！","Toque para voltar":"タップでもどる","Toque quando a corda passar no chão!":"なわが床に来たらタップ！"}};
+
+// PET_FALAS_TR
+window.TW_I18N.tables.PET_FALAS_TR = {
+  en: {
+  "…curvem-se… diante de {p}… zzz": "…bow… before {p}… zzz",
+  "…dango… de nuvem… zzz": "…cloud… dango… zzz",
+  "…hmph… meu gyoza… zzz": "…hmph… my gyoza… zzz",
+  "…kyu… tá quentinho… zzz": "…kyu… so warm… zzz",
+  "…mais cinco voltas na lua… zzz": "…five more laps around the moon… zzz",
+  "…nyaa… estrela cadente… minha… zzz": "…nyaa… shooting star… mine… zzz",
+  "{n} é a melhor Idol da galáxia inteira! ★": "{n} is the best Idol in the whole galaxy! ★",
+  "{n}, você canta tão bonito… eu durmo feliz… ♪": "{n}, you sing so beautifully… I sleep happy… ♪",
+  "{n}! {n}! Olha eu aqui! ヾ(≧▽≦*)o": "{n}! {n}! Look, I'm here! ヾ(≧▽≦*)o",
+  "{n}… até que você é uma Idol razoável. Hmph. (¬‿¬)": "{n}… you're a decent Idol, I guess. Hmph. (¬‿¬)",
+  "{n}… gosto de falar seu nome… ele é macio… (◡‿◡)": "{n}… I like saying your name… it's so soft… (◡‿◡)",
+  "A noite é a melhor hora pra ver estrela! ☆ﾟ.*･｡ﾟ": "Night is the best time to see stars! ☆ﾟ.*･｡ﾟ",
+  "A realeza não boceja. Isso foi… um rugido. (－_－)": "Royalty doesn't yawn. That was… a roar. (－_－)",
+  "A realeza não precisa de nada. …talvez de um petisco. (￣～￣)": "Royalty needs nothing. …maybe a snack. (￣～￣)",
+  "Acho que dormi na poeira… ops… (〃▽〃)": "I think I fell asleep in the dust… oops… (〃▽〃)",
+  "Apaga a luz. É uma ordem real. 👑 (－ω－)": "Turn off the light. Royal orders. 👑 (－ω－)",
+  "Banho de espuma! Com bolhas gigantes! Por favor! ✧(◕‿◕✿)": "Bubble bath! With giant bubbles! Pleeease! ✧(◕‿◕✿)",
+  "Banho de espuma. Só aceito o de espuma. 🫧 (￣^￣)": "Bubble bath. I only accept bubble baths. 🫧 (￣^￣)",
+  "Banho quentinho… depois soneca… combinado? (´･ω･`)": "A warm bath… then a nap… deal? (´･ω･`)",
+  "Boa noite. E eu não ronco. Nunca. (－_－)": "Good night. And I don't snore. Ever. (－_－)",
+  "Boa noite… sonha comigo, tá…? 🌙 (˘ω˘)": "Good night… dream of me, okay…? 🌙 (˘ω˘)",
+  "Bom dia. Pode servir meu café da manhã agora. 👑 (￣^￣)": "Good morning. You may serve my breakfast now. 👑 (￣^￣)",
+  "Bom dia… já? …tá bom… (－ω－)☀️": "Good morning… already? …okay… (－ω－)☀️",
+  "Bom diaaa! O sol já subiu no palco! ☀️ ٩(◕‿◕)۶": "Good morniiing! The sun is already on stage! ☀️ ٩(◕‿◕)۶",
+  "Bora fazer um show? Eu já tô aquecido! ٩(^ω^)و": "Wanna do a show? I'm already warmed up! ٩(^ω^)و",
+  "Bora fazer um show? Já tô no aquecimento! ٩(^ω^)و": "Wanna do a show? I'm already warmed up! ٩(^ω^)و",
+  "Brinca comigo? Só um pouquinho? (っ´ω`)っ": "Play with me? Just a little? (っ´ω`)っ",
+  "Cinco minutinhos… ou cinquenta… (－_－) zzZ": "Five more minutes… or fifty… (－_－) zzZ",
+  "Dango! Gyoza! Qualquer coisa! Rápido! ヽ(°〇°)ﾉ": "Dango! Gyoza! Anything! Quick! ヽ(°〇°)ﾉ",
+  "Escutei a música do camarim… ela é fofinha… ♪(´ε`)": "I heard the dressing room music… it's so cute… ♪(´ε`)",
+  "Estou supervisionando o camarim. É um trabalho importante. (￣^￣)ゞ": "I'm supervising the dressing room. It's an important job. (￣^￣)ゞ",
+  "Eu NÃO tô com sono! …tô sim. (￣o￣) zzZ": "I'm NOT sleepy! …okay, I am. (￣o￣) zzZ",
+  "Fica mais um pouquinho…? (｡•́︿•̀｡)": "Stay a little longer…? (｡•́︿•̀｡)",
+  "Fica tudo quentinho quando você vem aqui… (˘ω˘)♡": "Everything gets warm when you come here… (˘ω˘)♡",
+  "Fico quentinha quando você vem aqui… (˘ω˘)♡": "I feel all warm when you come here… (˘ω˘)♡",
+  "Fiquei olhando a porta esperando você… (´；ω；`)": "I kept staring at the door waiting for you… (´；ω；`)",
+  "Guardei um cantinho do sofá pra você… (っ˘ω˘ς)": "I saved you a little spot on the couch… (っ˘ω˘ς)",
+  "Gyoza. Agora. Eu sou da realeza, sabia? (¬_¬)": "Gyoza. Now. I'm royalty, you know? (¬_¬)",
+  "Hmph. Até que esse lugar é aceitável. (¬_¬)": "Hmph. This place is… acceptable. (¬_¬)",
+  "Hmph. Não é como se eu gostasse de carinho… continua. (￣^￣)": "Hmph. It's not like I enjoy cuddles… keep going. (￣^￣)",
+  "Hmph. Nem percebi que você sumiu. …contei cada minuto, mas nem percebi. (｀ε´)": "Hmph. I didn't even notice you were gone. …I counted every minute, but I didn't notice. (｀ε´)",
+  "Hoje tá tudo tão macio… igual nuvem… (◡‿◡✿)": "Everything feels so soft today… like a cloud… (◡‿◡✿)",
+  "Meu coração tá dando loop de montanha-russa! (ﾉ≧∀≦)ﾉ": "My heart is doing roller-coaster loops! (ﾉ≧∀≦)ﾉ",
+  "Meus olhinhos tão pesados… igual cobertor… (˘ω˘)": "My little eyes are so heavy… like a blanket… (˘ω˘)",
+  "Minha barriga tá fazendo barulho de nave espacial… (´・ω・`)": "My tummy is making spaceship noises… (´・ω・`)",
+  "Minha barriguinha fez \"kyu~\"… (´；ω；`)": "My little tummy went \"kyu~\"… (´；ω；`)",
+  "Minha bateria tá piscando no vermelho… (－ω－) zzz": "My battery is blinking red… (－ω－) zzz",
+  "Não é que eu estava te esperando. Eu só estava aqui. Na porta. (¬_¬)": "It's not like I was waiting for you. I was just here. By the door. (¬_¬)",
+  "Não fica se achando só porque eu tô sorrindo. (¬‿¬)": "Don't get cocky just because I'm smiling. (¬‿¬)",
+  "Não tô cansado! Só tô descansando os olhos. (￣ρ￣)..zzZ": "I'm not tired! Just resting my eyes. (￣ρ￣)..zzZ",
+  "Não tô com fome. Minha barriga que tá. Hmph. (｀へ´)": "I'm not hungry. My tummy is. Hmph. (｀へ´)",
+  "Não tô com sono! Só tô descansando os olhos. (￣ρ￣)..zzZ": "I'm not sleepy! Just resting my eyes. (￣ρ￣)..zzZ",
+  "Ninguém viu nada. Me dá logo esse banho. (╬Ò﹏Ó)": "Nobody saw anything. Just give me that bath. (╬Ò﹏Ó)",
+  "Nya~ tô de boa, mas com energia pra aventura! (｀・ω・´)✧": "Nya~ I'm chilling, but full of energy for adventure! (｀・ω・´)✧",
+  "Nya~ tô de boa, mas pronto pra aventura! (｀・ω・´)✧": "Nya~ I'm chilling, but ready for adventure! (｀・ω・´)✧",
+  "Nyaa! Hoje eu brilho mais que estrela! ☆(ゝω・)v": "Nyaa! Today I'm shining brighter than a star! ☆(ゝω・)v",
+  "O serviço deste camarim está péssimo. Cadê meu bolo? (╬Ò﹏Ó)": "The service in this dressing room is terrible. Where's my cake? (╬Ò﹏Ó)",
+  "Obrigada por cuidar de mim… de verdade… (っ´▽`)っ♡": "Thank you for taking care of me… really… (っ´▽`)っ♡",
+  "Posso dormir aqui no seu colo…? (。-ω-)zzz": "Can I sleep here on your lap…? (。-ω-)zzz",
+  "Quero ficar cheirosa… igual flor… 🌸 (◡ω◡)": "I want to smell nice… like a flower… 🌸 (◡ω◡)",
+  "Quero ficar com cheirinho de flor… 🌸 (◡ω◡)": "I want to smell like a flower… 🌸 (◡ω◡)",
+  "Rolei numa nuvem de poeira estelar… acho que preciso de banho! (^▽^;)": "I rolled in a cloud of stardust… I think I need a bath! (^▽^;)",
+  "Sabe o que é bom? Ficar de bobeira… com você… (´ω`)": "You know what's nice? Lazing around… with you… (´ω`)",
+  "Sabe o que é bom? Ficar paradinha… com você… (´ω`)": "You know what's nice? Staying still… with you… (´ω`)",
+  "Sabia que existe planeta feito de diamante? Eu quero um! (・ω・)ノ": "Did you know there's a planet made of diamond? I want one! (・ω・)ノ",
+  "Se eu não comer agora, viro poeira cósmica… (×_×)": "If I don't eat now, I'll turn into cosmic dust… (×_×)",
+  "Se você sumir de novo, eu… vou ficar bravo. Muito. (´；ω；`)": "If you disappear again, I'll… be mad. Very. (´；ω；`)",
+  "Se você sumir de novo, eu… vou ficar de mal. Muito. (´；ω；`)": "If you disappear again, I'll… be mad. Very. (´；ω；`)"
+  ,
+  "Senti sua falta… bem baixinho… (´._.`)": "I missed you… very quietly… (´._.`)",
+  "Será que tem tiramisu… escondido em algum lugar…? (・ω・)": "Is there some tiramisu… hidden somewhere…? (・ω・)",
+  "Só mais um pulinho… e depois dormir… (=^-ω-^=)": "Just one more hop… then sleep… (=^-ω-^=)",
+  "Tá, {n}, você pode ser minha fã número um. Só hoje. (￣ー￣)": "Fine, {n}, you can be my number one fan. Just today. (￣ー￣)",
+  "Tá, admito: hoje foi um dia digno da realeza. 👑 (￣ー￣)": "Fine, I admit it: today was a day worthy of royalty. 👑 (￣ー￣)",
+  "Tô aqui… só existindo… devagarinho… (￣ー￣)": "I'm just here… existing… slowly… (￣ー￣)",
+  "Tô cheirando a corrida de 5000 pontos… (；￣Д￣)": "I smell like a 5000-point run… (；￣Д￣)",
+  "Tô contando as estrelinhas do teto… já perdi a conta! (*'▽'*)": "I'm counting the little stars on the ceiling… I lost count already! (*'▽'*)",
+  "Um dango… pequenininho… por favor? (｡•́︿•̀｡)": "One dango… a teeny one… please? (｡•́︿•̀｡)",
+  "Um rei não boceja. Isso foi… um rugido. (－_－)": "A king doesn't yawn. That was… a roar. (－_－)",
+  "Um rei não precisa de nada. …talvez de um petisco. (￣～￣)": "A king needs nothing. …maybe a snack. (￣～￣)",
+  "Uma majestade não fica suja. Isso é… purpurina escura. (¬_¬;)": "Majesty doesn't get dirty. This is… dark glitter. (¬_¬;)",
+  "Valeu por cuidar de mim… de verdade… (っ´▽`)っ♡": "Thank you for taking care of me… really… (っ´▽`)っ♡",
+  "Você sumiu igual cometa… volta mais vezes? (｡•́︿•̀｡)": "You vanished like a comet… come back more often? (｡•́︿•̀｡)"},
+  es: {
+  "…curvem-se… diante de {p}… zzz": "…inclínense… ante {p}… zzz",
+  "…dango… de nuvem… zzz": "…dango… de nube… zzz",
+  "…hmph… meu gyoza… zzz": "…hmph… mi gyoza… zzz",
+  "…kyu… tá quentinho… zzz": "…kyu… qué calentito… zzz",
+  "…mais cinco voltas na lua… zzz": "…cinco vueltas más a la luna… zzz",
+  "…nyaa… estrela cadente… minha… zzz": "…nyaa… estrella fugaz… mía… zzz",
+  "{n} é a melhor Idol da galáxia inteira! ★": "¡{n} es la mejor Idol de toda la galaxia! ★",
+  "{n}, você canta tão bonito… eu durmo feliz… ♪": "{n}, cantas tan bonito… duermo feliz… ♪",
+  "{n}! {n}! Olha eu aqui! ヾ(≧▽≦*)o": "¡{n}! ¡{n}! ¡Mira, aquí estoy! ヾ(≧▽≦*)o",
+  "{n}… até que você é uma Idol razoável. Hmph. (¬‿¬)": "{n}… eres una Idol aceptable, supongo. Hmph. (¬‿¬)",
+  "{n}… gosto de falar seu nome… ele é macio… (◡‿◡)": "{n}… me gusta decir tu nombre… es suavecito… (◡‿◡)",
+  "A noite é a melhor hora pra ver estrela! ☆ﾟ.*･｡ﾟ": "¡La noche es el mejor momento para ver estrellas! ☆ﾟ.*･｡ﾟ",
+  "A realeza não boceja. Isso foi… um rugido. (－_－)": "La realeza no bosteza. Eso fue… un rugido. (－_－)",
+  "A realeza não precisa de nada. …talvez de um petisco. (￣～￣)": "La realeza no necesita nada. …tal vez un bocadito. (￣～￣)",
+  "Acho que dormi na poeira… ops… (〃▽〃)": "Creo que me dormí en el polvo… ups… (〃▽〃)",
+  "Apaga a luz. É uma ordem real. 👑 (－ω－)": "Apaga la luz. Es una orden real. 👑 (－ω－)",
+  "Banho de espuma! Com bolhas gigantes! Por favor! ✧(◕‿◕✿)": "¡Baño de espuma! ¡Con burbujas gigantes! ¡Porfa! ✧(◕‿◕✿)",
+  "Banho de espuma. Só aceito o de espuma. 🫧 (￣^￣)": "Baño de espuma. Solo acepto el de espuma. 🫧 (￣^￣)",
+  "Banho quentinho… depois soneca… combinado? (´･ω･`)": "Bañito calentito… y después siesta… ¿trato? (´･ω･`)",
+  "Boa noite. E eu não ronco. Nunca. (－_－)": "Buenas noches. Y yo no ronco. Nunca. (－_－)",
+  "Boa noite… sonha comigo, tá…? 🌙 (˘ω˘)": "Buenas noches… sueña conmigo, ¿sí…? 🌙 (˘ω˘)",
+  "Bom dia. Pode servir meu café da manhã agora. 👑 (￣^￣)": "Buenos días. Ya puedes servir mi desayuno. 👑 (￣^￣)",
+  "Bom dia… já? …tá bom… (－ω－)☀️": "Buenos días… ¿ya? …bueno… (－ω－)☀️",
+  "Bom diaaa! O sol já subiu no palco! ☀️ ٩(◕‿◕)۶": "¡Buenos díaaas! ¡El sol ya subió al escenario! ☀️ ٩(◕‿◕)۶",
+  "Bora fazer um show? Eu já tô aquecido! ٩(^ω^)و": "¿Hacemos un show? ¡Ya calenté motores! ٩(^ω^)و",
+  "Bora fazer um show? Já tô no aquecimento! ٩(^ω^)و": "¿Hacemos un show? ¡Ya calenté motores! ٩(^ω^)و",
+  "Brinca comigo? Só um pouquinho? (っ´ω`)っ": "¿Juegas conmigo? ¿Solo un poquito? (っ´ω`)っ",
+  "Cinco minutinhos… ou cinquenta… (－_－) zzZ": "Cinco minutitos… o cincuenta… (－_－) zzZ",
+  "Dango! Gyoza! Qualquer coisa! Rápido! ヽ(°〇°)ﾉ": "¡Dango! ¡Gyoza! ¡Lo que sea! ¡Rápido! ヽ(°〇°)ﾉ",
+  "Escutei a música do camarim… ela é fofinha… ♪(´ε`)": "Escuché la música del camerino… es tiernita… ♪(´ε`)",
+  "Estou supervisionando o camarim. É um trabalho importante. (￣^￣)ゞ": "Estoy supervisando el camerino. Es un trabajo importante. (￣^￣)ゞ",
+  "Eu NÃO tô com sono! …tô sim. (￣o￣) zzZ": "¡NO tengo sueño! …sí tengo. (￣o￣) zzZ",
+  "Fica mais um pouquinho…? (｡•́︿•̀｡)": "¿Te quedas un ratito más…? (｡•́︿•̀｡)",
+  "Fica tudo quentinho quando você vem aqui… (˘ω˘)♡": "Todo se pone calentito cuando vienes… (˘ω˘)♡",
+  "Fico quentinha quando você vem aqui… (˘ω˘)♡": "Me siento calentita cuando vienes… (˘ω˘)♡",
+  "Fiquei olhando a porta esperando você… (´；ω；`)": "Me quedé mirando la puerta esperándote… (´；ω；`)",
+  "Guardei um cantinho do sofá pra você… (っ˘ω˘ς)": "Te guardé un rinconcito del sofá… (っ˘ω˘ς)",
+  "Gyoza. Agora. Eu sou da realeza, sabia? (¬_¬)": "Gyoza. Ya. Soy de la realeza, ¿sabías? (¬_¬)",
+  "Hmph. Até que esse lugar é aceitável. (¬_¬)": "Hmph. Este lugar es… aceptable. (¬_¬)",
+  "Hmph. Não é como se eu gostasse de carinho… continua. (￣^￣)": "Hmph. No es que me gusten los mimos… sigue. (￣^￣)",
+  "Hmph. Nem percebi que você sumiu. …contei cada minuto, mas nem percebi. (｀ε´)": "Hmph. Ni noté que te fuiste. …conté cada minuto, pero ni lo noté. (｀ε´)",
+  "Hoje tá tudo tão macio… igual nuvem… (◡‿◡✿)": "Hoy todo está tan suavecito… como una nube… (◡‿◡✿)",
+  "Meu coração tá dando loop de montanha-russa! (ﾉ≧∀≦)ﾉ": "¡Mi corazón da vueltas de montaña rusa! (ﾉ≧∀≦)ﾉ",
+  "Meus olhinhos tão pesados… igual cobertor… (˘ω˘)": "Mis ojitos pesan… como una cobija… (˘ω˘)",
+  "Minha barriga tá fazendo barulho de nave espacial… (´・ω・`)": "Mi pancita hace ruido de nave espacial… (´・ω・`)",
+  "Minha barriguinha fez \"kyu~\"… (´；ω；`)": "Mi pancita hizo \"kyu~\"… (´；ω；`)",
+  "Minha bateria tá piscando no vermelho… (－ω－) zzz": "Mi batería parpadea en rojo… (－ω－) zzz",
+  "Não é que eu estava te esperando. Eu só estava aqui. Na porta. (¬_¬)": "No es que te estuviera esperando. Solo estaba aquí. En la puerta. (¬_¬)",
+  "Não fica se achando só porque eu tô sorrindo. (¬‿¬)": "No te creas mucho solo porque estoy sonriendo. (¬‿¬)",
+  "Não tô cansado! Só tô descansando os olhos. (￣ρ￣)..zzZ": "¡No estoy cansado! Solo descanso los ojos. (￣ρ￣)..zzZ",
+  "Não tô com fome. Minha barriga que tá. Hmph. (｀へ´)": "No tengo hambre. Mi panza sí. Hmph. (｀へ´)",
+  "Não tô com sono! Só tô descansando os olhos. (￣ρ￣)..zzZ": "¡No tengo sueño! Solo descanso los ojos. (￣ρ￣)..zzZ",
+  "Ninguém viu nada. Me dá logo esse banho. (╬Ò﹏Ó)": "Nadie vio nada. Dame ese baño de una vez. (╬Ò﹏Ó)",
+  "Nya~ tô de boa, mas com energia pra aventura! (｀・ω・´)✧": "Nya~ estoy tranqui, ¡pero con energía para la aventura! (｀・ω・´)✧",
+  "Nya~ tô de boa, mas pronto pra aventura! (｀・ω・´)✧": "Nya~ estoy tranqui, ¡pero listo para la aventura! (｀・ω・´)✧",
+  "Nyaa! Hoje eu brilho mais que estrela! ☆(ゝω・)v": "¡Nyaa! ¡Hoy brillo más que una estrella! ☆(ゝω・)v",
+  "O serviço deste camarim está péssimo. Cadê meu bolo? (╬Ò﹏Ó)": "El servicio de este camerino es pésimo. ¿Y mi pastel? (╬Ò﹏Ó)",
+  "Obrigada por cuidar de mim… de verdade… (っ´▽`)っ♡": "Gracias por cuidarme… de verdad… (っ´▽`)っ♡",
+  "Posso dormir aqui no seu colo…? (。-ω-)zzz": "¿Puedo dormir aquí en tu regazo…? (。-ω-)zzz",
+  "Quero ficar cheirosa… igual flor… 🌸 (◡ω◡)": "Quiero quedar olorosita… como una flor… 🌸 (◡ω◡)",
+  "Quero ficar com cheirinho de flor… 🌸 (◡ω◡)": "Quiero oler a flor… 🌸 (◡ω◡)",
+  "Rolei numa nuvem de poeira estelar… acho que preciso de banho! (^▽^;)": "Me revolqué en una nube de polvo estelar… ¡creo que necesito un baño! (^▽^;)",
+  "Sabe o que é bom? Ficar de bobeira… com você… (´ω`)": "¿Sabes qué es lindo? No hacer nada… contigo… (´ω`)",
+  "Sabe o que é bom? Ficar paradinha… com você… (´ω`)": "¿Sabes qué es lindo? Quedarme quietita… contigo… (´ω`)",
+  "Sabia que existe planeta feito de diamante? Eu quero um! (・ω・)ノ": "¿Sabías que existe un planeta de diamante? ¡Quiero uno! (・ω・)ノ",
+  "Se eu não comer agora, viro poeira cósmica… (×_×)": "Si no como ahora, me vuelvo polvo cósmico… (×_×)",
+  "Se você sumir de novo, eu… vou ficar bravo. Muito. (´；ω；`)": "Si desapareces otra vez, me… voy a enojar. Mucho. (´；ω；`)",
+  "Se você sumir de novo, eu… vou ficar de mal. Muito. (´；ω；`)": "Si desapareces otra vez, me… voy a enojar. Mucho. (´；ω；`)"
+  ,
+  "Senti sua falta… bem baixinho… (´._.`)": "Te extrañé… bajito… (´._.`)",
+  "Será que tem tiramisu… escondido em algum lugar…? (・ω・)": "¿Habrá tiramisú… escondido en algún lugar…? (・ω・)",
+  "Só mais um pulinho… e depois dormir… (=^-ω-^=)": "Solo un saltito más… y luego a dormir… (=^-ω-^=)",
+  "Tá, {n}, você pode ser minha fã número um. Só hoje. (￣ー￣)": "Vale, {n}, puedes ser mi fan número uno. Solo hoy. (￣ー￣)",
+  "Tá, admito: hoje foi um dia digno da realeza. 👑 (￣ー￣)": "Vale, lo admito: hoy fue un día digno de la realeza. 👑 (￣ー￣)",
+  "Tô aqui… só existindo… devagarinho… (￣ー￣)": "Aquí estoy… solo existiendo… despacito… (￣ー￣)",
+  "Tô cheirando a corrida de 5000 pontos… (；￣Д￣)": "Huelo a carrera de 5000 puntos… (；￣Д￣)",
+  "Tô contando as estrelinhas do teto… já perdi a conta! (*'▽'*)": "Estoy contando las estrellitas del techo… ¡ya perdí la cuenta! (*'▽'*)",
+  "Um dango… pequenininho… por favor? (｡•́︿•̀｡)": "¿Un dango… chiquitito… por favor? (｡•́︿•̀｡)",
+  "Um rei não boceja. Isso foi… um rugido. (－_－)": "Un rey no bosteza. Eso fue… un rugido. (－_－)",
+  "Um rei não precisa de nada. …talvez de um petisco. (￣～￣)": "Un rey no necesita nada. …tal vez un bocadito. (￣～￣)",
+  "Uma majestade não fica suja. Isso é… purpurina escura. (¬_¬;)": "La majestad no se ensucia. Esto es… brillantina oscura. (¬_¬;)",
+  "Valeu por cuidar de mim… de verdade… (っ´▽`)っ♡": "Gracias por cuidarme… de verdad… (っ´▽`)っ♡",
+  "Você sumiu igual cometa… volta mais vezes? (｡•́︿•̀｡)": "Desapareciste como un cometa… ¿vuelves más seguido? (｡•́︿•̀｡)"},
+  th: {
+  "…curvem-se… diante de {p}… zzz": "…จงคำนับ… ต่อหน้า {p}… zzz",
+  "…dango… de nuvem… zzz": "…ดังโงะ… ก้อนเมฆ… zzz",
+  "…hmph… meu gyoza… zzz": "…ฮึ่ม… เกี๊ยวซ่าของฉัน… zzz",
+  "…kyu… tá quentinho… zzz": "…คิว… อุ่นจัง… zzz",
+  "…mais cinco voltas na lua… zzz": "…วนรอบดวงจันทร์อีกห้ารอบ… zzz",
+  "…nyaa… estrela cadente… minha… zzz": "…เนี้ยว… ดาวตก… ของฉัน… zzz",
+  "{n} é a melhor Idol da galáxia inteira! ★": "{n} คือไอดอลที่ดีที่สุดในกาแล็กซี! ★",
+  "{n}, você canta tão bonito… eu durmo feliz… ♪": "{n} ร้องเพลงเพราะจัง… หลับฝันดีเลย… ♪",
+  "{n}! {n}! Olha eu aqui! ヾ(≧▽≦*)o": "{n}! {n}! ดูนี่ ฉันอยู่ตรงนี้! ヾ(≧▽≦*)o",
+  "{n}… até que você é uma Idol razoável. Hmph. (¬‿¬)": "{n}… ก็เป็นไอดอลที่พอใช้ได้นะ ฮึ่ม (¬‿¬)",
+  "{n}… gosto de falar seu nome… ele é macio… (◡‿◡)": "{n}… ชอบเรียกชื่อเธอจัง… ฟังนุ่มดี… (◡‿◡)",
+  "A noite é a melhor hora pra ver estrela! ☆ﾟ.*･｡ﾟ": "กลางคืนเป็นเวลาดูดาวที่ดีที่สุด! ☆ﾟ.*･｡ﾟ",
+  "A realeza não boceja. Isso foi… um rugido. (－_－)": "ราชวงศ์ไม่หาวหรอก นั่นคือ… เสียงคำราม (－_－)",
+  "A realeza não precisa de nada. …talvez de um petisco. (￣～￣)": "ราชวงศ์ไม่ต้องการอะไรทั้งนั้น …ยกเว้นขนมสักชิ้น (￣～￣)",
+  "Acho que dormi na poeira… ops… (〃▽〃)": "สงสัยเผลอหลับในกองฝุ่น… อุ๊ย… (〃▽〃)",
+  "Apaga a luz. É uma ordem real. 👑 (－ω－)": "ปิดไฟซะ นี่คือพระราชโองการ 👑 (－ω－)",
+  "Banho de espuma! Com bolhas gigantes! Por favor! ✧(◕‿◕✿)": "อาบน้ำฟองสบู่! ฟองใหญ่ๆ! นะๆ! ✧(◕‿◕✿)",
+  "Banho de espuma. Só aceito o de espuma. 🫧 (￣^￣)": "อาบน้ำฟองสบู่ รับแค่แบบฟองสบู่เท่านั้น 🫧 (￣^￣)",
+  "Banho quentinho… depois soneca… combinado? (´･ω･`)": "อาบน้ำอุ่นๆ… แล้วงีบ… ตกลงไหม? (´･ω･`)",
+  "Boa noite. E eu não ronco. Nunca. (－_－)": "ราตรีสวัสดิ์ แล้วฉันไม่กรนนะ ไม่เคย (－_－)",
+  "Boa noite… sonha comigo, tá…? 🌙 (˘ω˘)": "ราตรีสวัสดิ์… ฝันถึงกันนะ…? 🌙 (˘ω˘)",
+  "Bom dia. Pode servir meu café da manhã agora. 👑 (￣^￣)": "อรุณสวัสดิ์ ยกอาหารเช้ามาได้แล้ว 👑 (￣^￣)",
+  "Bom dia… já? …tá bom… (－ω－)☀️": "อรุณสวัสดิ์… แล้วเหรอ? …ก็ได้… (－ω－)☀️",
+  "Bom diaaa! O sol já subiu no palco! ☀️ ٩(◕‿◕)۶": "อรุณสวัสดิ์~! พระอาทิตย์ขึ้นเวทีแล้ว! ☀️ ٩(◕‿◕)۶",
+  "Bora fazer um show? Eu já tô aquecido! ٩(^ω^)و": "มาโชว์กันไหม? ฉันวอร์มเครื่องเสร็จแล้ว! ٩(^ω^)و",
+  "Bora fazer um show? Já tô no aquecimento! ٩(^ω^)و": "มาโชว์กันไหม? ฉันวอร์มเครื่องเสร็จแล้ว! ٩(^ω^)و",
+  "Brinca comigo? Só um pouquinho? (っ´ω`)っ": "เล่นด้วยกันหน่อยนะ? นิดเดียวก็ได้ (っ´ω`)っ",
+  "Cinco minutinhos… ou cinquenta… (－_－) zzZ": "ขออีกห้านาที… หรือห้าสิบ… (－_－) zzZ",
+  "Dango! Gyoza! Qualquer coisa! Rápido! ヽ(°〇°)ﾉ": "ดังโงะ! เกี๊ยวซ่า! อะไรก็ได้! เร็วๆ! ヽ(°〇°)ﾉ",
+  "Escutei a música do camarim… ela é fofinha… ♪(´ε`)": "ได้ยินเพลงในห้องแต่งตัวแล้ว… น่ารักจัง… ♪(´ε`)",
+  "Estou supervisionando o camarim. É um trabalho importante. (￣^￣)ゞ": "กำลังตรวจตราห้องแต่งตัวอยู่ งานสำคัญนะ (￣^￣)ゞ",
+  "Eu NÃO tô com sono! …tô sim. (￣o￣) zzZ": "ไม่ได้ง่วงนะ! …ง่วงจริงๆ แหละ (￣o￣) zzZ",
+  "Fica mais um pouquinho…? (｡•́︿•̀｡)": "อยู่ต่ออีกหน่อยได้ไหม…? (｡•́︿•̀｡)",
+  "Fica tudo quentinho quando você vem aqui… (˘ω˘)♡": "รู้สึกอบอุ่นทุกครั้งที่เธอมาหานะ… (˘ω˘)♡",
+  "Fico quentinha quando você vem aqui… (˘ω˘)♡": "รู้สึกอบอุ่นทุกครั้งที่เธอมาหานะ… (˘ω˘)♡",
+  "Fiquei olhando a porta esperando você… (´；ω；`)": "นั่งจ้องประตูรอเธออยู่ตลอดเลย… (´；ω；`)",
+  "Guardei um cantinho do sofá pra você… (っ˘ω˘ς)": "เก็บมุมโซฟาไว้ให้เธอแล้วนะ… (っ˘ω˘ς)",
+  "Gyoza. Agora. Eu sou da realeza, sabia? (¬_¬)": "เกี๊ยวซ่า เดี๋ยวนี้ รู้ไหมว่าฉันเป็นราชวงศ์? (¬_¬)",
+  "Hmph. Até que esse lugar é aceitável. (¬_¬)": "ฮึ่ม ที่นี่ก็… พอใช้ได้ (¬_¬)",
+  "Hmph. Não é como se eu gostasse de carinho… continua. (￣^￣)": "ฮึ่ม ไม่ได้ชอบให้ลูบหรอกนะ… ทำต่อสิ (￣^￣)",
+  "Hmph. Nem percebi que você sumiu. …contei cada minuto, mas nem percebi. (｀ε´)": "ฮึ่ม ไม่ได้สังเกตเลยว่าเธอหายไป …นับทุกนาที แต่ไม่ได้สังเกตหรอก (｀ε´)",
+  "Hoje tá tudo tão macio… igual nuvem… (◡‿◡✿)": "วันนี้ทุกอย่างนุ่มไปหมด… เหมือนก้อนเมฆ… (◡‿◡✿)",
+  "Meu coração tá dando loop de montanha-russa! (ﾉ≧∀≦)ﾉ": "หัวใจฉันตีลังกาเหมือนรถไฟเหาะเลย! (ﾉ≧∀≦)ﾉ",
+  "Meus olhinhos tão pesados… igual cobertor… (˘ω˘)": "ตาหนักไปหมด… เหมือนผ้าห่ม… (˘ω˘)",
+  "Minha barriga tá fazendo barulho de nave espacial… (´・ω・`)": "ท้องร้องเสียงเหมือนยานอวกาศเลย… (´・ω・`)",
+  "Minha barriguinha fez \"kyu~\"… (´；ω；`)": "ท้องน้อยๆ ร้อง \"คิว~\" แล้ว… (´；ω；`)",
+  "Minha bateria tá piscando no vermelho… (－ω－) zzz": "แบตเตอรี่กะพริบแดงแล้ว… (－ω－) zzz",
+  "Não é que eu estava te esperando. Eu só estava aqui. Na porta. (¬_¬)": "ไม่ได้รอเธอหรอกนะ แค่อยู่ตรงนี้ ข้างประตู (¬_¬)",
+  "Não fica se achando só porque eu tô sorrindo. (¬‿¬)": "อย่าเพิ่งได้ใจเพราะเห็นฉันยิ้มล่ะ (¬‿¬)",
+  "Não tô cansado! Só tô descansando os olhos. (￣ρ￣)..zzZ": "ไม่ได้เหนื่อย! แค่พักสายตาเฉยๆ (￣ρ￣)..zzZ",
+  "Não tô com fome. Minha barriga que tá. Hmph. (｀へ´)": "ฉันไม่ได้หิว ท้องต่างหากที่หิว ฮึ่ม (｀へ´)",
+  "Não tô com sono! Só tô descansando os olhos. (￣ρ￣)..zzZ": "ไม่ได้ง่วง! แค่พักสายตาเฉยๆ (￣ρ￣)..zzZ",
+  "Ninguém viu nada. Me dá logo esse banho. (╬Ò﹏Ó)": "ไม่มีใครเห็นอะไรทั้งนั้น รีบพาไปอาบน้ำเลย (╬Ò﹏Ó)",
+  "Nya~ tô de boa, mas com energia pra aventura! (｀・ω・´)✧": "เนี้ยว~ ชิลอยู่ แต่พร้อมผจญภัยเสมอ! (｀・ω・´)✧",
+  "Nya~ tô de boa, mas pronto pra aventura! (｀・ω・´)✧": "เนี้ยว~ ชิลอยู่ แต่พร้อมผจญภัยเสมอ! (｀・ω・´)✧",
+  "Nyaa! Hoje eu brilho mais que estrela! ☆(ゝω・)v": "เนี้ยว! วันนี้ฉันเปล่งประกายกว่าดวงดาวอีก! ☆(ゝω・)v",
+  "O serviço deste camarim está péssimo. Cadê meu bolo? (╬Ò﹏Ó)": "บริการห้องนี้แย่มาก เค้กของฉันอยู่ไหน? (╬Ò﹏Ó)",
+  "Obrigada por cuidar de mim… de verdade… (っ´▽`)っ♡": "ขอบคุณที่ดูแลกันนะ… จริงๆ… (っ´▽`)っ♡",
+  "Posso dormir aqui no seu colo…? (。-ω-)zzz": "ขอนอนบนตักหน่อยได้ไหม…? (。-ω-)zzz",
+  "Quero ficar cheirosa… igual flor… 🌸 (◡ω◡)": "อยากตัวหอมๆ… เหมือนดอกไม้… 🌸 (◡ω◡)",
+  "Quero ficar com cheirinho de flor… 🌸 (◡ω◡)": "อยากตัวหอมๆ… เหมือนดอกไม้… 🌸 (◡ω◡)",
+  "Rolei numa nuvem de poeira estelar… acho que preciso de banho! (^▽^;)": "กลิ้งไปในกลุ่มฝุ่นดาวมา… ต้องอาบน้ำแล้วล่ะ! (^▽^;)",
+  "Sabe o que é bom? Ficar de bobeira… com você… (´ω`)": "รู้ไหมอะไรดี? นั่งนิ่งๆ… กับเธอ… (´ω`)",
+  "Sabe o que é bom? Ficar paradinha… com você… (´ω`)": "รู้ไหมอะไรดี? นั่งนิ่งๆ… กับเธอ… (´ω`)",
+  "Sabia que existe planeta feito de diamante? Eu quero um! (・ω・)ノ": "รู้ไหมว่ามีดาวเคราะห์ที่ทำจากเพชรด้วย? อยากได้สักดวง! (・ω・)ノ",
+  "Se eu não comer agora, viro poeira cósmica… (×_×)": "ถ้าไม่ได้กินตอนนี้ จะกลายเป็นฝุ่นอวกาศแล้ว… (×_×)",
+  "Se você sumir de novo, eu… vou ficar bravo. Muito. (´；ω；`)": "ถ้าหายไปอีก ฉัน… จะโกรธนะ มากด้วย (´；ω；`)",
+  "Se você sumir de novo, eu… vou ficar de mal. Muito. (´；ω；`)": "ถ้าหายไปอีก ฉัน… จะโกรธนะ มากด้วย (´；ω；`)"
+  ,
+  "Senti sua falta… bem baixinho… (´._.`)": "คิดถึงนะ… เบาๆ… (´._.`)",
+  "Será que tem tiramisu… escondido em algum lugar…? (・ω・)": "มีทีรามิสุ… ซ่อนอยู่ที่ไหนสักที่ไหมนะ…? (・ω・)",
+  "Só mais um pulinho… e depois dormir… (=^-ω-^=)": "ขอกระโดดอีกนิด… แล้วค่อยนอน… (=^-ω-^=)",
+  "Tá, {n}, você pode ser minha fã número um. Só hoje. (￣ー￣)": "ก็ได้ {n} เป็นแฟนคลับอันดับหนึ่งของฉันได้ แค่วันนี้นะ (￣ー￣)",
+  "Tá, admito: hoje foi um dia digno da realeza. 👑 (￣ー￣)": "ก็ได้ ยอมรับว่าวันนี้สมกับเป็นราชวงศ์จริงๆ 👑 (￣ー￣)",
+  "Tô aqui… só existindo… devagarinho… (￣ー￣)": "อยู่ตรงนี้… แค่อยู่เฉยๆ… ช้าๆ… (￣ー￣)",
+  "Tô cheirando a corrida de 5000 pontos… (；￣Д￣)": "ตัวเหม็นเหมือนวิ่งมา 5000 แต้มเลย… (；￣Д￣)",
+  "Tô contando as estrelinhas do teto… já perdi a conta! (*'▽'*)": "กำลังนับดาวบนเพดานอยู่… นับไม่ถ้วนแล้ว! (*'▽'*)",
+  "Um dango… pequenininho… por favor? (｡•́︿•̀｡)": "ขอดังโงะ… ลูกเล็กๆ… ได้ไหม? (｡•́︿•̀｡)",
+  "Um rei não boceja. Isso foi… um rugido. (－_－)": "ราชาไม่หาวหรอก นั่นคือ… เสียงคำราม (－_－)",
+  "Um rei não precisa de nada. …talvez de um petisco. (￣～￣)": "ราชาไม่ต้องการอะไรทั้งนั้น …ยกเว้นขนมสักชิ้น (￣～￣)",
+  "Uma majestade não fica suja. Isso é… purpurina escura. (¬_¬;)": "ผู้สูงศักดิ์ไม่เปื้อนหรอก นี่คือ… กากเพชรสีเข้ม (¬_¬;)",
+  "Valeu por cuidar de mim… de verdade… (っ´▽`)っ♡": "ขอบคุณที่ดูแลกันนะ… จริงๆ… (っ´▽`)っ♡",
+  "Você sumiu igual cometa… volta mais vezes? (｡•́︿•̀｡)": "หายไปเหมือนดาวหางเลย… มาบ่อยๆ ได้ไหม? (｡•́︿•̀｡)"},
+  ja: {
+  "…curvem-se… diante de {p}… zzz": "…{p}さまに…ひれふせ…zzz",
+  "…dango… de nuvem… zzz": "…くもの…おだんご…zzz",
+  "…hmph… meu gyoza… zzz": "…ふん…オレ様のぎょうざ…zzz",
+  "…kyu… tá quentinho… zzz": "…きゅ…あったかい…zzz",
+  "…mais cinco voltas na lua… zzz": "…月をあと5周…zzz",
+  "…nyaa… estrela cadente… minha… zzz": "…にゃ…ながれぼし…ボクの…zzz",
+  "{n} é a melhor Idol da galáxia inteira! ★": "{n}は銀河でいちばんのアイドル！★",
+  "{n}, você canta tão bonito… eu durmo feliz… ♪": "{n}のうた…きれい…しあわせにねむれる…♪",
+  "{n}! {n}! Olha eu aqui! ヾ(≧▽≦*)o": "{n}！{n}！ボクここだよ！ヾ(≧▽≦*)o",
+  "{n}… até que você é uma Idol razoável. Hmph. (¬‿¬)": "{n}…まあ、なかなかのアイドルだな。ふん。(¬‿¬)",
+  "{n}… gosto de falar seu nome… ele é macio… (◡‿◡)": "{n}…なまえ呼ぶの…すき…ふわふわするの…(◡‿◡)",
+  "A noite é a melhor hora pra ver estrela! ☆ﾟ.*･｡ﾟ": "夜は星を見るのにいちばんの時間！☆ﾟ.*･｡ﾟ",
+  "A realeza não boceja. Isso foi… um rugido. (－_－)": "王族はあくびなんてしない。今のは…ほえただけだ。(－_－)",
+  "A realeza não precisa de nada. …talvez de um petisco. (￣～￣)": "王族はなにもいらない。…おやつ以外はな。(￣～￣)",
+  "Acho que dormi na poeira… ops… (〃▽〃)": "ほこりの上でねちゃったかも…えへへ…(〃▽〃)",
+  "Apaga a luz. É uma ordem real. 👑 (－ω－)": "電気を消せ。王の命令だ。👑 (－ω－)",
+  "Banho de espuma! Com bolhas gigantes! Por favor! ✧(◕‿◕✿)": "あわあわバス！おっきい泡で！おねがい！✧(◕‿◕✿)",
+  "Banho de espuma. Só aceito o de espuma. 🫧 (￣^￣)": "あわあわバス。それ以外はみとめない。🫧 (￣^￣)",
+  "Banho quentinho… depois soneca… combinado? (´･ω･`)": "あったかいおふろ…それからおひるね…やくそく？(´･ω･`)",
+  "Boa noite. E eu não ronco. Nunca. (－_－)": "おやすみ。言っとくけど、いびきなんてかかないからな。(－_－)",
+  "Boa noite… sonha comigo, tá…? 🌙 (˘ω˘)": "おやすみ…ゆめで会おうね…？🌙 (˘ω˘)",
+  "Bom dia. Pode servir meu café da manhã agora. 👑 (￣^￣)": "おはよう。朝ごはんを出してもいいぞ。👑 (￣^￣)",
+  "Bom dia… já? …tá bom… (－ω－)☀️": "おはよ…もう…？…わかった…(－ω－)☀️",
+  "Bom diaaa! O sol já subiu no palco! ☀️ ٩(◕‿◕)۶": "おはよー！お日さまがもうステージに立ってるよ！☀️ ٩(◕‿◕)۶",
+  "Bora fazer um show? Eu já tô aquecido! ٩(^ω^)و": "ライブしよっ？ボク、もう準備バッチリ！٩(^ω^)و",
+  "Bora fazer um show? Já tô no aquecimento! ٩(^ω^)و": "ライブしよっ？ボク、もう準備バッチリ！٩(^ω^)و",
+  "Brinca comigo? Só um pouquinho? (っ´ω`)っ": "あそんでくれる？ちょっとだけでいいから (っ´ω`)っ",
+  "Cinco minutinhos… ou cinquenta… (－_－) zzZ": "あと5分…それか50分…(－_－) zzZ",
+  "Dango! Gyoza! Qualquer coisa! Rápido! ヽ(°〇°)ﾉ": "だんご！ぎょうざ！なんでもいい！はやく！ヽ(°〇°)ﾉ",
+  "Escutei a música do camarim… ela é fofinha… ♪(´ε`)": "楽屋の音楽…かわいいね…♪(´ε`)",
+  "Estou supervisionando o camarim. É um trabalho importante. (￣^￣)ゞ": "楽屋を見張ってるんだ。大事な仕事だぞ。(￣^￣)ゞ",
+  "Eu NÃO tô com sono! …tô sim. (￣o￣) zzZ": "ねむくないもん！…ねむい。(￣o￣) zzZ",
+  "Fica mais um pouquinho…? (｡•́︿•̀｡)": "もうちょっとだけ…いて…？(｡•́︿•̀｡)",
+  "Fica tudo quentinho quando você vem aqui… (˘ω˘)♡": "きてくれると…ぽかぽかするの…(˘ω˘)♡",
+  "Fico quentinha quando você vem aqui… (˘ω˘)♡": "きてくれると…ぽかぽかするの…(˘ω˘)♡",
+  "Fiquei olhando a porta esperando você… (´；ω；`)": "ずっとドア見て待ってたんだよ…(´；ω；`)",
+  "Guardei um cantinho do sofá pra você… (っ˘ω˘ς)": "ソファのすみっこ…とっておいたよ…(っ˘ω˘ς)",
+  "Gyoza. Agora. Eu sou da realeza, sabia? (¬_¬)": "ぎょうざ。いますぐ。オレ様は王族だぞ？(¬_¬)",
+  "Hmph. Até que esse lugar é aceitável. (¬_¬)": "ふん。ここも…まあ悪くない。(¬_¬)",
+  "Hmph. Não é como se eu gostasse de carinho… continua. (￣^￣)": "ふん。なでられるのが好きってわけじゃないし…つづけろ。(￣^￣)",
+  "Hmph. Nem percebi que você sumiu. …contei cada minuto, mas nem percebi. (｀ε´)": "ふん。いなかったなんて気づかなかった。…一分ずつ数えてたけど、気づかなかった。(｀ε´)",
+  "Hoje tá tudo tão macio… igual nuvem… (◡‿◡✿)": "きょうはぜんぶ…ふわふわ…雲みたい…(◡‿◡✿)",
+  "Meu coração tá dando loop de montanha-russa! (ﾉ≧∀≦)ﾉ": "ボクの心、ジェットコースターみたいにぐるぐるしてる！(ﾉ≧∀≦)ﾉ",
+  "Meus olhinhos tão pesados… igual cobertor… (˘ω˘)": "おめめが…おふとんみたいに…おもい…(˘ω˘)",
+  "Minha barriga tá fazendo barulho de nave espacial… (´・ω・`)": "おなかが宇宙船みたいな音してる…(´・ω・`)",
+  "Minha barriguinha fez \"kyu~\"… (´；ω；`)": "おなかが「きゅ〜」ってなった…(´；ω；`)",
+  "Minha bateria tá piscando no vermelho… (－ω－) zzz": "バッテリーが赤く点滅してる…(－ω－) zzz",
+  "Não é que eu estava te esperando. Eu só estava aqui. Na porta. (¬_¬)": "べつに待ってたわけじゃない。ここにいただけだ。ドアの前に。(¬_¬)",
+  "Não fica se achando só porque eu tô sorrindo. (¬‿¬)": "笑ってるからって調子に乗るなよ。(¬‿¬)",
+  "Não tô cansado! Só tô descansando os olhos. (￣ρ￣)..zzZ": "つかれてない！目を休めてるだけだ。(￣ρ￣)..zzZ",
+  "Não tô com fome. Minha barriga que tá. Hmph. (｀へ´)": "腹はへってない。へってるのはおなかのほうだ。ふん。(｀へ´)",
+  "Não tô com sono! Só tô descansando os olhos. (￣ρ￣)..zzZ": "ねむくない！目を休めてるだけだ。(￣ρ￣)..zzZ",
+  "Ninguém viu nada. Me dá logo esse banho. (╬Ò﹏Ó)": "だれも見てないな。さっさとおふろに入れろ。(╬Ò﹏Ó)",
+  "Nya~ tô de boa, mas com energia pra aventura! (｀・ω・´)✧": "にゃ〜まったり中。でも冒険ならいつでもOK！(｀・ω・´)✧",
+  "Nya~ tô de boa, mas pronto pra aventura! (｀・ω・´)✧": "にゃ〜まったり中。でも冒険ならいつでもOK！(｀・ω・´)✧",
+  "Nyaa! Hoje eu brilho mais que estrela! ☆(ゝω・)v": "にゃー！今日のボク、星よりキラキラしてる！☆(ゝω・)v",
+  "O serviço deste camarim está péssimo. Cadê meu bolo? (╬Ò﹏Ó)": "この楽屋のサービス、最悪だな。ケーキはどこだ？(╬Ò﹏Ó)",
+  "Obrigada por cuidar de mim… de verdade… (っ´▽`)っ♡": "おせわしてくれて…ほんとにありがとう…(っ´▽`)っ♡",
+  "Posso dormir aqui no seu colo…? (。-ω-)zzz": "おひざで…ねてもいい…？(。-ω-)zzz",
+  "Quero ficar cheirosa… igual flor… 🌸 (◡ω◡)": "お花みたいに…いいにおいになりたい…🌸 (◡ω◡)",
+  "Quero ficar com cheirinho de flor… 🌸 (◡ω◡)": "お花みたいに…いいにおいになりたい…🌸 (◡ω◡)",
+  "Rolei numa nuvem de poeira estelar… acho que preciso de banho! (^▽^;)": "星くずの雲でゴロゴロしちゃった…おふろ入らなきゃ！(^▽^;)",
+  "Sabe o que é bom? Ficar de bobeira… com você… (´ω`)": "いっしょに…じっとしてるのって…いいよね…(´ω`)",
+  "Sabe o que é bom? Ficar paradinha… com você… (´ω`)": "いっしょに…じっとしてるのって…いいよね…(´ω`)",
+  "Sabia que existe planeta feito de diamante? Eu quero um! (・ω・)ノ": "ダイヤモンドでできた星があるんだって！ボクもひとつほしい！(・ω・)ノ",
+  "Se eu não comer agora, viro poeira cósmica… (×_×)": "いま食べないと宇宙のチリになっちゃう…(×_×)",
+  "Se você sumir de novo, eu… vou ficar bravo. Muito. (´；ω；`)": "また消えたら…おこるからな。すごく。(´；ω；`)",
+  "Se você sumir de novo, eu… vou ficar de mal. Muito. (´；ω；`)": "また消えたら…おこるからな。すごく。(´；ω；`)"
+  ,
+  "Senti sua falta… bem baixinho… (´._.`)": "さみしかった…ちいさな声で…(´._.`)",
+  "Será que tem tiramisu… escondido em algum lugar…? (・ω・)": "ティラミス…どこかにかくれてないかな…？(・ω・)",
+  "Só mais um pulinho… e depois dormir… (=^-ω-^=)": "あとワンジャンプだけ…そしたら寝る…(=^-ω-^=)",
+  "Tá, {n}, você pode ser minha fã número um. Só hoje. (￣ー￣)": "しかたない、{n}。オレ様のファン1号にしてやる。今日だけな。(￣ー￣)",
+  "Tá, admito: hoje foi um dia digno da realeza. 👑 (￣ー￣)": "まあ…認めてやる。今日は王族にふさわしい一日だった。👑 (￣ー￣)",
+  "Tô aqui… só existindo… devagarinho… (￣ー￣)": "ここで…ただ…のんびりしてる…(￣ー￣)",
+  "Tô cheirando a corrida de 5000 pontos… (；￣Д￣)": "5000点ランのにおいがする…(；￣Д￣)",
+  "Tô contando as estrelinhas do teto… já perdi a conta! (*'▽'*)": "天井のお星さま数えてたら…わかんなくなっちゃった！(*'▽'*)",
+  "Um dango… pequenininho… por favor? (｡•́︿•̀｡)": "おだんご…ちっちゃいの…ひとつだけ…だめ？(｡•́︿•̀｡)",
+  "Um rei não boceja. Isso foi… um rugido. (－_－)": "王様はあくびなんてしない。今のは…ほえただけだ。(－_－)",
+  "Um rei não precisa de nada. …talvez de um petisco. (￣～￣)": "王様はなにもいらない。…おやつ以外はな。(￣～￣)",
+  "Uma majestade não fica suja. Isso é… purpurina escura. (¬_¬;)": "王族はよごれない。これは…黒いラメだ。(¬_¬;)",
+  "Valeu por cuidar de mim… de verdade… (っ´▽`)っ♡": "おせわしてくれて…ほんとにありがとう…(っ´▽`)っ♡",
+  "Você sumiu igual cometa… volta mais vezes? (｡•́︿•̀｡)": "彗星みたいにいなくなっちゃって…もっと来てくれる？(｡•́︿•̀｡)"}};
+
+// CONTA_DICT
+window.TW_I18N.tables.CONTA_DICT = {
+  en: {"CONFIRMAR":"CONFIRM","Conta pronta!":"Account ready!","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"It shows on the ranking and can't be the same as someone else's.","Entrar com Google":"Sign in with Google","Entre com Google para aparecer no ranking online":"Sign in with Google to appear on the online ranking","Escolha seu nome de Idol":"Choose your Idol name","Esse nome é reservado.":"That name is reserved.","Esse nome já está em uso.":"That name is already taken.","Esse nome tem caracteres não permitidos.":"That name has characters that aren't allowed.","estrelas importadas":"stars imported","Não deu para falar com o servidor. Tente de novo.":"Couldn't reach the server. Try again.","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"Sign-in works on the game's website (GitHub or Netlify), not in this file.","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Optional: saves your stars in the cloud and unlocks the online ranking.","Privacidade e segurança":"Privacy and security","Sair":"Sign out","Sem login, o ranking online fica desligado.":"Without signing in, the online ranking is off.","Use de 2 a 12 caracteres.":"Use 2 to 12 characters."},
+  es: {"CONFIRMAR":"CONFIRMAR","Conta pronta!":"¡Cuenta lista!","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"Aparece en el ranking y no puede ser igual al de otra persona.","Entrar com Google":"Entrar con Google","Entre com Google para aparecer no ranking online":"Entra con Google para aparecer en el ranking en línea","Escolha seu nome de Idol":"Elige tu nombre de Idol","Esse nome é reservado.":"Ese nombre está reservado.","Esse nome já está em uso.":"Ese nombre ya está en uso.","Esse nome tem caracteres não permitidos.":"Ese nombre tiene caracteres no permitidos.","estrelas importadas":"estrellas importadas","Não deu para falar com o servidor. Tente de novo.":"No se pudo conectar con el servidor. Inténtalo de nuevo.","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"El inicio de sesión funciona en el sitio del juego (GitHub o Netlify), no en este archivo.","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"Opcional: guarda tus estrellas en la nube y activa el ranking en línea.","Privacidade e segurança":"Privacidad y seguridad","Sair":"Salir","Sem login, o ranking online fica desligado.":"Sin iniciar sesión, el ranking en línea está apagado.","Use de 2 a 12 caracteres.":"Usa de 2 a 12 caracteres."},
+  th: {"CONFIRMAR":"ยืนยัน","Conta pronta!":"บัญชีพร้อมแล้ว!","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ชื่อนี้จะแสดงในอันดับ และห้ามซ้ำกับคนอื่น","Entrar com Google":"เข้าสู่ระบบด้วย Google","Entre com Google para aparecer no ranking online":"เข้าสู่ระบบด้วย Google เพื่อขึ้นอันดับออนไลน์","Escolha seu nome de Idol":"ตั้งชื่อไอดอลของคุณ","Esse nome é reservado.":"ชื่อนี้ถูกสงวนไว้","Esse nome já está em uso.":"ชื่อนี้มีคนใช้แล้ว","Esse nome tem caracteres não permitidos.":"ชื่อนี้มีตัวอักษรที่ใช้ไม่ได้","estrelas importadas":"ดาวที่นำเข้า","Não deu para falar com o servidor. Tente de novo.":"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองอีกครั้ง","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"เข้าสู่ระบบได้บนเว็บไซต์ของเกม (GitHub หรือ Netlify) ไม่ใช่ในไฟล์นี้","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"ไม่บังคับ: เก็บดาวไว้บนคลาวด์และเปิดอันดับออนไลน์","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Sair":"ออกจากระบบ","Sem login, o ranking online fica desligado.":"ถ้าไม่เข้าสู่ระบบ อันดับออนไลน์จะปิดอยู่","Use de 2 a 12 caracteres.":"ใช้ 2 ถึง 12 ตัวอักษร"},
+  ja: {"CONFIRMAR":"けってい","Conta pronta!":"アカウント準備OK！","Ele aparece no ranking e não pode ser igual ao de outra pessoa.":"ランキングに表示され、ほかの人と同じ名前は使えません。","Entrar com Google":"Googleでログイン","Entre com Google para aparecer no ranking online":"Googleでログインするとオンラインランキングにのれるよ","Escolha seu nome de Idol":"アイドル名を決めてね","Esse nome é reservado.":"その名前は予約されています。","Esse nome já está em uso.":"その名前はもう使われています。","Esse nome tem caracteres não permitidos.":"使えない文字が入っています。","estrelas importadas":"スターを引きつぎ","Não deu para falar com o servidor. Tente de novo.":"サーバーにつながりませんでした。もう一度ためしてね。","O login funciona no site do jogo (GitHub ou Netlify), não neste arquivo.":"ログインはゲームのサイト（GitHub か Netlify）で使えます。このファイルでは使えません。","Opcional: guarda suas estrelas na nuvem e libera o ranking online.":"任意：スターをクラウドに保存して、オンラインランキングに参加できます。","Privacidade e segurança":"プライバシーと安全","Sair":"ログアウト","Sem login, o ranking online fica desligado.":"ログインしないと、オンラインランキングはオフです。","Use de 2 a 12 caracteres.":"2〜12文字にしてね。"}};
+
+// PERF_DICT
+window.TW_I18N.tables.PERF_DICT = {
+  en: {"Abduzido":"Abducted","Acessório novo para o seu pet!":"New accessory for your pet!","Alcance esse rank para comprar.":"Reach this rank to buy it.","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"If you sign in, the cloud save replaces this device's save (pets, wall, look and minigame records). This device's save won't go to the cloud.","Baixar PNG":"Download PNG","Banzai":"Banzai","Básico":"Basic","Cancelar e sair da conta":"Cancel and sign out","Carregando...":"Loading...","Centers":"Centers","Céu":"Sky","Comprado!":"Purchased!","Comprar":"Buy","Cor do cabelo":"Hair color","Corridas":"Runs","de":"of","Esse nome ainda não tem perfil (jogou sem conta).":"This name has no profile yet (played without an account).",
+       "Esta conta já tem um save na nuvem":"This account already has a cloud save","Estrelas":"Stars","Estúdio":"Studio","Fechar":"Close","Fever":"Fever","Foto do perfil atualizada!":"Profile photo updated!","Fundo":"Background","Guardado no camarim do seu pet!":"Saved in your pet's dressing room!","Halloween":"Halloween","Ímã":"Magnet","Lightstick":"Lightstick","Mega":"Mega","Melhor por personagem":"Best per character","Microfone":"Mic","Minijogos do camarim":"Dressing room minigames",
+       "Montar Idol":"Build Idol","Nenhum pet ainda.":"No pets yet.","Nenhuma corrida online ainda.":"No online runs yet.","Ninguém jogou ainda.":"Nobody has played yet.","No {logo} desde {data}":"In {logo} since {data}","Noite":"Night","Nyan":"Nyan","OBA!":"YAY!","Palco":"Stage","Perfil":"Profile","Pet na foto":"Pet in the photo","Pets":"Pets","Presente do dia da conta":"Account daily gift","PRÉVIA":"PREVIEW","Prévia: compre o que está marcado com ★ para baixar e usar.":"Preview: buy what's marked with ★ to download and use it.","Pular corda":"Jump rope","Quadro novo no mural do camarim!":"New frame on the dressing room wall!","Ritmo":"Rhythm","Sem fundo":"No background","Sem pet":"No pet","Seu recorde":"Your record","Seu save da nuvem foi carregado!":"Your cloud save was loaded!","Toque na foto para ver inteira":"Tap the photo to see it whole","Tudo o que você muda aqui vale para o Idol do jogo.":"Everything you change here applies to your in-game Idol.","Últimas corridas":"Latest runs","Usar como foto do perfil":"Use as profile photo","USAR O SAVE DA NUVEM":"USE THE CLOUD SAVE","Visual":"Look"},
+  es: {"Abduzido":"Abducido","Acessório novo para o seu pet!":"¡Accesorio nuevo para tu mascota!","Alcance esse rank para comprar.":"Alcanza este rango para comprarlo.","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"Al entrar, la partida de la nube reemplaza la de este dispositivo (mascotas, mural, look y récords de minijuegos). La partida de este dispositivo no se sube a la nube.","Baixar PNG":"Descargar PNG","Banzai":"Banzai","Básico":"Básico","Cancelar e sair da conta":"Cancelar y cerrar sesión","Carregando...":"Cargando...","Centers":"Centers","Céu":"Cielo","Comprado!":"¡Comprado!","Comprar":"Comprar","Cor do cabelo":"Color del cabello","Corridas":"Carreras","de":"de","Esse nome ainda não tem perfil (jogou sem conta).":"Este nombre aún no tiene perfil (jugó sin cuenta).",
+       "Esta conta já tem um save na nuvem":"Esta cuenta ya tiene una partida en la nube","Estrelas":"Estrellas","Estúdio":"Estudio","Fechar":"Cerrar","Fever":"Fever","Foto do perfil atualizada!":"¡Foto de perfil actualizada!","Fundo":"Fondo","Guardado no camarim do seu pet!":"¡Guardado en el camerino de tu mascota!","Halloween":"Halloween","Ímã":"Imán","Lightstick":"Lightstick","Mega":"Mega","Melhor por personagem":"Mejor por personaje","Microfone":"Micrófono","Minijogos do camarim":"Minijuegos del camerino",
+       "Montar Idol":"Armar Idol","Nenhum pet ainda.":"Aún no hay mascotas.","Nenhuma corrida online ainda.":"Aún no hay carreras en línea.","Ninguém jogou ainda.":"Nadie ha jugado todavía.","No {logo} desde {data}":"En {logo} desde {data}","Noite":"Noche","Nyan":"Nyan","OBA!":"¡YUPI!","Palco":"Escenario","Perfil":"Perfil","Pet na foto":"Mascota en la foto","Pets":"Mascotas","Presente do dia da conta":"Regalo diario de la cuenta","PRÉVIA":"VISTA PREVIA","Prévia: compre o que está marcado com ★ para baixar e usar.":"Vista previa: compra lo marcado con ★ para descargarlo y usarlo.","Pular corda":"Saltar la cuerda","Quadro novo no mural do camarim!":"¡Cuadro nuevo en el mural del camerino!","Ritmo":"Ritmo","Sem fundo":"Sin fondo","Sem pet":"Sin mascota","Seu recorde":"Tu récord","Seu save da nuvem foi carregado!":"¡Se cargó tu partida de la nube!","Toque na foto para ver inteira":"Toca la foto para verla completa","Tudo o que você muda aqui vale para o Idol do jogo.":"Todo lo que cambies aquí vale para tu Idol del juego.","Últimas corridas":"Últimas carreras","Usar como foto do perfil":"Usar como foto de perfil","USAR O SAVE DA NUVEM":"USAR LA PARTIDA DE LA NUBE","Visual":"Look"},
+  th: {"Abduzido":"ถูกลักพาตัว","Acessório novo para o seu pet!":"เครื่องประดับใหม่สำหรับสัตว์เลี้ยง!","Alcance esse rank para comprar.":"ไปให้ถึงแรงก์นี้ก่อนจึงจะซื้อได้","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"ถ้าเข้าสู่ระบบ เซฟบนคลาวด์จะแทนที่เซฟในเครื่องนี้ (สัตว์เลี้ยง ผนัง ลุค และสถิติมินิเกม) เซฟในเครื่องนี้จะไม่ถูกส่งขึ้นคลาวด์","Baixar PNG":"ดาวน์โหลด PNG","Banzai":"บันไซ","Básico":"พื้นฐาน","Cancelar e sair da conta":"ยกเลิกและออกจากระบบ","Carregando...":"กำลังโหลด...","Centers":"เซ็นเตอร์","Céu":"ท้องฟ้า","Comprado!":"ซื้อแล้ว!","Comprar":"ซื้อ","Cor do cabelo":"สีผม","Corridas":"รอบที่วิ่ง","de":"จาก","Esse nome ainda não tem perfil (jogou sem conta).":"ชื่อนี้ยังไม่มีโปรไฟล์ (เล่นโดยไม่มีบัญชี)",
+       "Esta conta já tem um save na nuvem":"บัญชีนี้มีเซฟบนคลาวด์อยู่แล้ว","Estrelas":"ดาว","Estúdio":"สตูดิโอ","Fechar":"ปิด","Fever":"ฟีเวอร์","Foto do perfil atualizada!":"อัปเดตรูปโปรไฟล์แล้ว!","Fundo":"พื้นหลัง","Guardado no camarim do seu pet!":"เก็บไว้ในห้องแต่งตัวของสัตว์เลี้ยงแล้ว!","Halloween":"ฮาโลวีน","Ímã":"แม่เหล็ก","Lightstick":"แท่งไฟ","Mega":"เมก้า","Melhor por personagem":"สถิติของแต่ละตัวละคร","Microfone":"ไมค์","Minijogos do camarim":"มินิเกมในห้องแต่งตัว",
+       "Montar Idol":"แต่งไอดอล","Nenhum pet ainda.":"ยังไม่มีสัตว์เลี้ยง","Nenhuma corrida online ainda.":"ยังไม่มีรอบออนไลน์","Ninguém jogou ainda.":"ยังไม่มีใครเล่น","No {logo} desde {data}":"อยู่ใน {logo} ตั้งแต่ {data}","Noite":"กลางคืน","Nyan":"เนี้ยว","OBA!":"เย้!","Palco":"เวที","Perfil":"โปรไฟล์","Pet na foto":"สัตว์เลี้ยงในรูป","Pets":"สัตว์เลี้ยง","Presente do dia da conta":"ของขวัญประจำวันของบัญชี","PRÉVIA":"ตัวอย่าง","Prévia: compre o que está marcado com ★ para baixar e usar.":"ตัวอย่าง: ซื้อสิ่งที่มี ★ เพื่อดาวน์โหลดและใช้งาน","Pular corda":"กระโดดเชือก","Quadro novo no mural do camarim!":"รูปใหม่บนผนังห้องแต่งตัว!","Ritmo":"จังหวะ","Sem fundo":"ไม่มีพื้นหลัง","Sem pet":"ไม่มีสัตว์เลี้ยง","Seu recorde":"สถิติของคุณ","Seu save da nuvem foi carregado!":"โหลดเซฟจากคลาวด์แล้ว!","Toque na foto para ver inteira":"แตะรูปเพื่อดูเต็มตัว","Tudo o que você muda aqui vale para o Idol do jogo.":"ทุกอย่างที่เปลี่ยนตรงนี้จะใช้กับไอดอลในเกมด้วย","Últimas corridas":"รอบล่าสุด","Usar como foto do perfil":"ใช้เป็นรูปโปรไฟล์","USAR O SAVE DA NUVEM":"ใช้เซฟบนคลาวด์","Visual":"ลุค"},
+  ja: {"Abduzido":"アブダクション","Acessório novo para o seu pet!":"ペットの新しいアクセサリー！","Alcance esse rank para comprar.":"このランクに届くと買えるよ。","Ao entrar, o save da nuvem substitui o deste aparelho (pets, mural, visual e recordes dos minijogos). O save deste aparelho não vai para a nuvem.":"ログインすると、この端末のセーブはクラウドのセーブに置きかわります（ペット・かべ・ルック・ミニゲームの記録）。この端末のセーブはクラウドに送られません。","Baixar PNG":"PNGを保存","Banzai":"バンザイ","Básico":"ベーシック","Cancelar e sair da conta":"やめてログアウト","Carregando...":"読みこみ中...","Centers":"センター回数","Céu":"空","Comprado!":"買ったよ！","Comprar":"買う","Cor do cabelo":"髪の色","Corridas":"ラン回数","de":"/","Esse nome ainda não tem perfil (jogou sem conta).":"この名前のプロフィールはまだありません（アカウントなしでプレイ）。",
+       "Esta conta já tem um save na nuvem":"このアカウントにはクラウドのセーブがあります","Estrelas":"スター","Estúdio":"スタジオ","Fechar":"閉じる","Fever":"フィーバー","Foto do perfil atualizada!":"プロフィール写真を更新したよ！","Fundo":"背景","Guardado no camarim do seu pet!":"ペットの楽屋にしまったよ！","Halloween":"ハロウィン","Ímã":"マグネット","Lightstick":"ペンライト","Mega":"メガ","Melhor por personagem":"キャラ別ベスト","Microfone":"マイク","Minijogos do camarim":"楽屋のミニゲーム",
+       "Montar Idol":"アイドルメイク","Nenhum pet ainda.":"まだペットがいません。","Nenhuma corrida online ainda.":"オンラインのランはまだありません。","Ninguém jogou ainda.":"まだだれも遊んでいません。","No {logo} desde {data}":"{logo}デビュー：{data}","Noite":"夜","Nyan":"にゃん","OBA!":"やった！","Palco":"ステージ","Perfil":"プロフィール","Pet na foto":"写真にペット","Pets":"ペット","Presente do dia da conta":"今日のプレゼント","PRÉVIA":"プレビュー","Prévia: compre o que está marcado com ★ para baixar e usar.":"プレビュー：★のついたものを買うと保存・使用できます。","Pular corda":"なわとび","Quadro novo no mural do camarim!":"楽屋のかべに新しい絵！","Ritmo":"リズム","Sem fundo":"背景なし","Sem pet":"ペットなし","Seu recorde":"自己ベスト","Seu save da nuvem foi carregado!":"クラウドのセーブを読みこんだよ！","Toque na foto para ver inteira":"写真をタップすると全身が見られるよ","Tudo o que você muda aqui vale para o Idol do jogo.":"ここで変えたものはゲームのアイドルにも反映されるよ。","Últimas corridas":"さいきんのラン","Usar como foto do perfil":"プロフィール写真にする","USAR O SAVE DA NUVEM":"クラウドのセーブを使う","Visual":"ルック"}};
+
+// PERF_DICT2
+window.TW_I18N.tables.PERF_DICT2 = {   // lojinha, insígnias, oshi e frase, corações e recados
+  en: {"100 corridas no ranking online":"100 runs on the online ranking","1º lugar em um minijogo do camarim":"1st place in a dressing room minigame","5 compras no estúdio e na lojinha":"5 purchases in the studio and shop","Aceitar recados":"Accept messages","Bloqueada":"Locked","Brasil":"Brazil","Center Run":"Center Run","Chegou a 30000 pontos":"Reached 30000 points","Chegou a 5000 pontos":"Reached 5000 points","Chegou a 50000 pontos":"Reached 50000 points","Conquistada!":"Unlocked!","Coração de ouro":"Heart of gold","corações":"hearts","Correu em 7 dias diferentes":"Ran on 7 different days","Dar coração":"Give a heart","Decora kei":"Decora kei","Deixe um recado (até 60 letras)":"Leave a message (up to 60 letters)","Editar oshi e frase":"Edit oshi and phrase","Entre com Google para dar coração e deixar recados.":"Sign in with Google to give hearts and leave messages.","Enviar":"Send","Escolheu a própria foto do perfil":"Picked their own profile photo","Escreva uma frase fofa (até 60 letras)":"Write a cute phrase (up to 60 letters)","Essa frase tem palavras que não são permitidas.":"This phrase has words that aren't allowed.","Essa mensagem tem palavras que não são permitidas.":"This message has words that aren't allowed.","Essa pessoa não está recebendo recados.":"This person isn't receiving messages.","Estilista":"Stylist",
+       "Estreia":"Debut","Família completa":"Full family","Fantasia de alien":"Alien costume","Fashionista":"Fashionista","Fortune Disco":"Fortune Disco","Frase do perfil":"Profile phrase","Gingham Check":"Gingham Check","Happi de Matsuri":"Matsuri Happi","Hipster":"Hipster","Insígnias":"Badges","Lojinha de roupas":"Outfit shop","Maratona":"Marathon","Nenhum recado ainda.":"No messages yet.","no ranking geral":"in the overall ranking","Oshi":"Oshi","Pet lendário":"Legendary pet","Presença VIP":"VIP attendance","Primeira corrida no ranking online":"First run on the online ranking","Recado enviado!":"Message sent!","Recados":"Messages","Recebeu 10 corações":"Received 10 hearts","Rockstar":"Rockstar","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Outfits you can only get here. After buying, they show up under Outfit (for every character).","Salvar":"Save","Salvo!":"Saved!","Sem oshi":"No oshi","Techno Pop":"Techno Pop","Tem Chu, Koali, Pucchi e o Meu Pet":"Has Chu, Koali, Pucchi and My Pet","Top 1 do camarim":"Dressing room #1","Trio TsuLiPa":"TsuLiPa trio","Um pet chegou ao estágio Kami-Oshi":"A pet reached the Kami-Oshi stage","Vestindo":"Wearing","Vestir":"Wear","Você chegou ao limite de recados de hoje.":"You've reached today's message limit.","Você deu um coração hoje!":"You gave a heart today!","Você já deixou um recado hoje para essa pessoa.":"You already left a message for this person today."},
+  es: {"100 corridas no ranking online":"100 carreras en el ranking en línea","1º lugar em um minijogo do camarim":"1.er lugar en un minijuego del camerino","5 compras no estúdio e na lojinha":"5 compras en el estudio y la tiendita","Aceitar recados":"Aceptar mensajes","Bloqueada":"Bloqueada","Brasil":"Brasil","Center Run":"Center Run","Chegou a 30000 pontos":"Llegó a 30000 puntos","Chegou a 5000 pontos":"Llegó a 5000 puntos","Chegou a 50000 pontos":"Llegó a 50000 puntos","Conquistada!":"¡Conseguida!","Coração de ouro":"Corazón de oro","corações":"corazones","Correu em 7 dias diferentes":"Corrió en 7 días distintos","Dar coração":"Dar corazón","Decora kei":"Decora kei","Deixe um recado (até 60 letras)":"Deja un mensaje (hasta 60 letras)","Editar oshi e frase":"Editar oshi y frase","Entre com Google para dar coração e deixar recados.":"Entra con Google para dar corazones y dejar mensajes.","Enviar":"Enviar","Escolheu a própria foto do perfil":"Eligió su propia foto de perfil","Escreva uma frase fofa (até 60 letras)":"Escribe una frase linda (hasta 60 letras)","Essa frase tem palavras que não são permitidas.":"Esta frase tiene palabras no permitidas.","Essa mensagem tem palavras que não são permitidas.":"Este mensaje tiene palabras no permitidas.","Essa pessoa não está recebendo recados.":"Esta persona no está recibiendo mensajes.","Estilista":"Estilista",
+       "Estreia":"Debut","Família completa":"Familia completa","Fantasia de alien":"Disfraz de alien","Fashionista":"Fashionista","Fortune Disco":"Fortune Disco","Frase do perfil":"Frase del perfil","Gingham Check":"Gingham Check","Happi de Matsuri":"Happi de Matsuri","Hipster":"Hipster","Insígnias":"Insignias","Lojinha de roupas":"Tiendita de ropa","Maratona":"Maratón","Nenhum recado ainda.":"Aún no hay mensajes.","no ranking geral":"en el ranking general","Oshi":"Oshi","Pet lendário":"Mascota legendaria","Presença VIP":"Presencia VIP","Primeira corrida no ranking online":"Primera carrera en el ranking en línea","Recado enviado!":"¡Mensaje enviado!","Recados":"Mensajes","Recebeu 10 corações":"Recibió 10 corazones","Rockstar":"Rockstar","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"Ropa que solo existe aquí. Después de comprarla, aparece en Ropa (para todos los personajes).","Salvar":"Guardar","Salvo!":"¡Guardado!","Sem oshi":"Sin oshi","Techno Pop":"Techno Pop","Tem Chu, Koali, Pucchi e o Meu Pet":"Tiene a Chu, Koali, Pucchi y Mi Mascota","Top 1 do camarim":"Top 1 del camerino","Trio TsuLiPa":"Trío TsuLiPa","Um pet chegou ao estágio Kami-Oshi":"Una mascota llegó a la etapa Kami-Oshi","Vestindo":"Puesto","Vestir":"Vestir","Você chegou ao limite de recados de hoje.":"Llegaste al límite de mensajes de hoy.","Você deu um coração hoje!":"¡Diste un corazón hoy!","Você já deixou um recado hoje para essa pessoa.":"Ya le dejaste un mensaje hoy a esta persona."},
+  th: {"100 corridas no ranking online":"วิ่ง 100 รอบในอันดับออนไลน์","1º lugar em um minijogo do camarim":"ที่ 1 ในมินิเกมห้องแต่งตัว","5 compras no estúdio e na lojinha":"ซื้อของ 5 ครั้งในสตูดิโอและร้าน","Aceitar recados":"รับข้อความ","Bloqueada":"ยังล็อกอยู่","Brasil":"บราซิล","Center Run":"Center Run","Chegou a 30000 pontos":"ทำได้ 30000 คะแนน","Chegou a 5000 pontos":"ทำได้ 5000 คะแนน","Chegou a 50000 pontos":"ทำได้ 50000 คะแนน","Conquistada!":"ปลดล็อกแล้ว!","Coração de ouro":"หัวใจทองคำ","corações":"หัวใจ","Correu em 7 dias diferentes":"วิ่งใน 7 วันที่ต่างกัน","Dar coração":"ให้หัวใจ","Decora kei":"เดโคระ","Deixe um recado (até 60 letras)":"ฝากข้อความ (ไม่เกิน 60 ตัวอักษร)","Editar oshi e frase":"แก้ไขโอชิและคำแนะนำตัว","Entre com Google para dar coração e deixar recados.":"เข้าสู่ระบบด้วย Google เพื่อให้หัวใจและฝากข้อความ","Enviar":"ส่ง","Escolheu a própria foto do perfil":"เลือกรูปโปรไฟล์เอง","Escreva uma frase fofa (até 60 letras)":"เขียนคำน่ารัก ๆ (ไม่เกิน 60 ตัวอักษร)","Essa frase tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต","Essa mensagem tem palavras que não são permitidas.":"ข้อความนี้มีคำที่ไม่อนุญาต","Essa pessoa não está recebendo recados.":"คนนี้ปิดรับข้อความอยู่","Estilista":"สไตลิสต์",
+       "Estreia":"เดบิวต์","Família completa":"ครอบครัวครบ","Fantasia de alien":"ชุดเอเลี่ยน","Fashionista":"แฟชั่นนิสต้า","Fortune Disco":"ฟอร์จูนดิสโก้","Frase do perfil":"คำแนะนำตัว","Gingham Check":"กิงแฮมเช็ก","Happi de Matsuri":"ชุดฮัปปิเทศกาล","Hipster":"ฮิปสเตอร์","Insígnias":"เหรียญตรา","Lojinha de roupas":"ร้านเสื้อผ้า","Maratona":"มาราธอน","Nenhum recado ainda.":"ยังไม่มีข้อความ","no ranking geral":"ในอันดับรวม","Oshi":"โอชิ","Pet lendário":"สัตว์เลี้ยงในตำนาน","Presença VIP":"แขก VIP","Primeira corrida no ranking online":"วิ่งรอบแรกในอันดับออนไลน์","Recado enviado!":"ส่งข้อความแล้ว!","Recados":"ข้อความ","Recebeu 10 corações":"ได้รับ 10 หัวใจ","Rockstar":"ร็อกสตาร์","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ชุดที่มีเฉพาะที่นี่ ซื้อแล้วจะอยู่ในเมนูชุด (ใช้ได้กับทุกตัวละคร)","Salvar":"บันทึก","Salvo!":"บันทึกแล้ว!","Sem oshi":"ไม่มีโอชิ","Techno Pop":"เทคโนป๊อป","Tem Chu, Koali, Pucchi e o Meu Pet":"มี Chu, Koali, Pucchi และสัตว์เลี้ยงของฉัน","Top 1 do camarim":"ที่ 1 ห้องแต่งตัว","Trio TsuLiPa":"ทริโอ TsuLiPa","Um pet chegou ao estágio Kami-Oshi":"สัตว์เลี้ยงถึงขั้นคามิโอชิ","Vestindo":"สวมอยู่","Vestir":"สวม","Você chegou ao limite de recados de hoje.":"ครบจำนวนข้อความของวันนี้แล้ว","Você deu um coração hoje!":"วันนี้คุณให้หัวใจแล้ว!","Você já deixou um recado hoje para essa pessoa.":"วันนี้คุณฝากข้อความถึงคนนี้แล้ว"},
+  ja: {"100 corridas no ranking online":"オンラインランキングで100ラン","1º lugar em um minijogo do camarim":"楽屋ミニゲームで1位","5 compras no estúdio e na lojinha":"スタジオとショップで5回お買いもの","Aceitar recados":"メッセージを受け付ける","Bloqueada":"まだロック中","Brasil":"ブラジル","Center Run":"Center Run","Chegou a 30000 pontos":"30000点に到達","Chegou a 5000 pontos":"5000点に到達","Chegou a 50000 pontos":"50000点に到達","Conquistada!":"ゲット！","Coração de ouro":"黄金のハート","corações":"ハート","Correu em 7 dias diferentes":"7日間ちがう日にラン","Dar coração":"ハートを送る","Decora kei":"デコラ系","Deixe um recado (até 60 letras)":"メッセージを書く（60文字まで）","Editar oshi e frase":"推しとひとことを編集","Entre com Google para dar coração e deixar recados.":"Googleでログインするとハートとメッセージを送れるよ。","Enviar":"送る","Escolheu a própria foto do perfil":"プロフィール写真を自分で選んだ","Escreva uma frase fofa (até 60 letras)":"かわいいひとことを書いてね（60文字まで）","Essa frase tem palavras que não são permitidas.":"使えない言葉が入っています。","Essa mensagem tem palavras que não são permitidas.":"使えない言葉が入っています。","Essa pessoa não está recebendo recados.":"この人はメッセージを受け付けていません。","Estilista":"スタイリスト",
+       "Estreia":"デビュー","Família completa":"ペット大家族","Fantasia de alien":"エイリアンの着ぐるみ","Fashionista":"ファッショニスタ","Fortune Disco":"フォーチュンディスコ","Frase do perfil":"ひとこと","Gingham Check":"ギンガムチェック","Happi de Matsuri":"お祭りはっぴ","Hipster":"ヒップスター","Insígnias":"バッジ","Lojinha de roupas":"衣装ショップ","Maratona":"マラソン","Nenhum recado ainda.":"まだメッセージはありません。","no ranking geral":"総合ランキング","Oshi":"推し","Pet lendário":"伝説のペット","Presença VIP":"VIP皆勤","Primeira corrida no ranking online":"オンラインランキングで初ラン","Recado enviado!":"メッセージを送ったよ！","Recados":"メッセージ","Recebeu 10 corações":"ハートを10個もらった","Rockstar":"ロックスター","Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).":"ここだけの衣装。買うと「衣装」に追加されるよ（全キャラOK）。","Salvar":"保存","Salvo!":"保存したよ！","Sem oshi":"推しなし","Techno Pop":"テクノポップ","Tem Chu, Koali, Pucchi e o Meu Pet":"Chu・Koali・Pucchi・マイペットがそろった","Top 1 do camarim":"楽屋No.1","Trio TsuLiPa":"TsuLiPa箱推し","Um pet chegou ao estágio Kami-Oshi":"ペットが神推しステージに到達","Vestindo":"着用中","Vestir":"着る","Você chegou ao limite de recados de hoje.":"今日のメッセージ上限に達しました。","Você deu um coração hoje!":"今日はハートを送ったよ！","Você já deixou um recado hoje para essa pessoa.":"今日はもうこの人にメッセージを送ったよ。"}};
+
+// PERF_ADMIN_DICT
+window.TW_I18N.tables.PERF_ADMIN_DICT = {
+  en: {
+    'Ajustar roupa do Idol':'Adjust Idol outfit',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'Adjust the Idol outfit shown on the profile. Only unlocked or purchased outfits are listed.',
+    'Aplicar esta roupa ao Idol de':'Apply this outfit to',
+    'Cor da roupa':'Outfit color',
+    'Esta conta não tem pets para restaurar.':'This account has no pets to restore.',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'This outfit is not unlocked for this Idol yet.',
+    'Esta roupa não consta como comprada para esta conta.':'This outfit is not recorded as purchased for this account.',
+    'Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.':'Could not load this visual. The moderation database update still needs to be applied.',
+    'Não foi possível carregar o visual. Tente novamente.':'Could not load this visual. Try again.'
+  ,
+    'Não foi possível restaurar os pets. A atualização de moderação do banco ainda precisa ser aplicada.':'Could not restore pets. The moderation database update still needs to be applied.',
+    'Não foi possível salvar o ajuste. Verifique a atualização de moderação do banco.':'Could not save the adjustment. The moderation database update may still be pending.',
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'pets restored. The change will sync when the member refreshes or signs in again.',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'Restores hunger, energy, mood and hygiene to 100 for every pet on this account. Names, experience, accessories and collection stay unchanged.',
+    'Restaurar as quatro necessidades de todos os pets de':'Restore all four needs for every pet of',
+    'Restaurar todos os pets':'Restore all pets',
+    'Roupa do Idol':'Idol outfit',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'Profile outfit updated. The member will see it after refreshing the game.',
+    'Salvar ajuste':'Save adjustment'},
+  es: {
+    'Ajustar roupa do Idol':'Ajustar atuendo del Idol',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'Ajusta el atuendo del Idol que aparece en el perfil. Solo aparecen atuendos desbloqueados o comprados.',
+    'Aplicar esta roupa ao Idol de':'Aplicar este atuendo al Idol de',
+    'Cor da roupa':'Color del atuendo',
+    'Esta conta não tem pets para restaurar.':'Esta cuenta no tiene mascotas para restaurar.',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'Este atuendo aún no está desbloqueado para el Idol.',
+    'Esta roupa não consta como comprada para esta conta.':'Este atuendo no figura como comprado en esta cuenta.',
+    'Não foi possível carregar o visual. A atualização de moderação do banco ainda precisa ser aplicada.':'No se pudo cargar el aspecto. Falta aplicar la actualización de moderación de la base de datos.'
+  ,
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'mascotas restauradas. El cambio se sincroniza cuando la persona actualice el juego o vuelva a entrar.',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'Restablece hambre, energía, ánimo e higiene al 100 para todas las mascotas de esta cuenta. No cambia nombres, experiencia, accesorios ni colección.',
+    'Restaurar as quatro necessidades de todos os pets de':'Restaurar las cuatro necesidades de todas las mascotas de',
+    'Restaurar todos os pets':'Restaurar todas las mascotas',
+    'Roupa do Idol':'Atuendo del Idol',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'Atuendo del perfil actualizado. La persona verá el cambio al actualizar el juego.',
+    'Salvar ajuste':'Guardar ajuste'},
+  th: {
+    'Ajustar roupa do Idol':'ปรับชุดไอดอล',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'ปรับชุดไอดอลที่แสดงในโปรไฟล์ จะแสดงเฉพาะชุดที่ปลดล็อกหรือซื้อแล้ว',
+    'Aplicar esta roupa ao Idol de':'ใช้ชุดนี้กับไอดอลของ',
+    'Cor da roupa':'สีชุด',
+    'Esta conta não tem pets para restaurar.':'บัญชีนี้ไม่มีสัตว์เลี้ยงให้ฟื้นฟู',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'ชุดนี้ยังไม่ปลดล็อกสำหรับไอดอลนี้',
+    'Esta roupa não consta como comprada para esta conta.':'ไม่พบว่าบัญชีนี้ซื้อชุดนี้แล้ว'
+  ,
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'ฟื้นฟูสัตว์เลี้ยงแล้ว การเปลี่ยนแปลงจะซิงก์เมื่อสมาชิกรีเฟรชเกมหรือเข้าสู่ระบบอีกครั้ง',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'ฟื้นฟูความหิว พลังงาน อารมณ์ และสุขอนามัยของสัตว์เลี้ยงทุกตัวในบัญชีนี้เป็น 100 โดยไม่เปลี่ยนชื่อ ประสบการณ์ เครื่องประดับ หรือคอลเลกชัน',
+    'Restaurar as quatro necessidades de todos os pets de':'ฟื้นฟูความต้องการทั้งสี่ของสัตว์เลี้ยงทุกตัวของ',
+    'Restaurar todos os pets':'ฟื้นฟูสัตว์เลี้ยงทั้งหมด',
+    'Roupa do Idol':'ชุดไอดอล',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'อัปเดตชุดในโปรไฟล์แล้ว สมาชิกจะเห็นเมื่อรีเฟรชเกม',
+    'Salvar ajuste':'บันทึกการปรับ'},
+  ja: {
+    'Ajustar roupa do Idol':'アイドルの衣装を調整',
+    'Ajuste a roupa do Idol que aparece no perfil. Só aparecem roupas já desbloqueadas ou compradas.':'プロフィールに表示されるアイドルの衣装を調整します。解放済みまたは購入済みの衣装のみ表示されます。',
+    'Aplicar esta roupa ao Idol de':'次のメンバーのアイドルにこの衣装を適用',
+    'Cor da roupa':'衣装の色',
+    'Esta conta não tem pets para restaurar.':'このアカウントには回復するペットがいません。',
+    'Esta roupa ainda não foi desbloqueada para o Idol.':'このアイドルにはまだ解放されていない衣装です。',
+    'Esta roupa não consta como comprada para esta conta.':'このアカウントで購入済みの衣装ではありません。'
+  ,
+    'pets restaurados. A atualização será recebida quando a pessoa atualizar o jogo ou entrar novamente.':'匹のペットを回復しました。メンバーがゲームを更新するか再ログインすると同期されます。',
+    'Preencherá fome, energia, humor e higiene de todos os pets desta conta até 100. Nome, experiência, acessórios e coleção não serão alterados.':'このアカウントのすべてのペットの空腹・エネルギー・気分・清潔度を100にします。名前、経験値、アクセサリー、コレクションは変更しません。',
+    'Restaurar as quatro necessidades de todos os pets de':'次のメンバーの全ペットの4つの状態を回復',
+    'Restaurar todos os pets':'すべてのペットを回復',
+    'Roupa do Idol':'アイドルの衣装',
+    'Roupa do perfil atualizada. A pessoa verá a correção ao atualizar o jogo.':'プロフィールの衣装を更新しました。メンバーがゲームを更新すると反映されます。',
+    'Salvar ajuste':'変更を保存'}};
+
+// ADM_DICT
+window.TW_I18N.tables.ADM_DICT = {
+  en: {
+       "Apagar minha conta":"Delete my account","APAGAR PARA SEMPRE":"DELETE FOREVER","Ativar modo teste":"Turn on test mode","Bloquear":"Block","Conta apagada. Até a próxima! 💜":"Account deleted. See you! 💜","Conta bloqueada":"Blocked account","Contas":"Accounts","Contas bloqueadas":"Blocked accounts","Desbloquear":"Unblock","Feito!":"Done!","Ferramentas de teste":"Test tools","Forçar tema":"Force theme","Frases dos perfis":"Profile phrases","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"This really deletes your account, cloud save, ranking runs, messages and hearts. This device's progress stays here.","Limpar frase":"Clear phrase","Moderação":"Moderation","Nenhuma.":"None.","O nome não confere.":"The name doesn't match.","Os recados estão pausados pela moderação.":"Messages are paused by the moderation.","Para confirmar, digite o seu nome de Idol:":"To confirm, type your Idol name:","Privacidade e segurança":"Privacy and security","Recados no jogo todo":"Messages in the whole game","Renomear":"Rename","Sua conta está bloqueada pela moderação.":"Your account is blocked by the moderation.","Tem certeza?":"Are you sure?","Tema da data":"Today's theme","Últimos recados":"Latest messages"},
+  es: {
+       "Apagar minha conta":"Borrar mi cuenta","APAGAR PARA SEMPRE":"BORRAR PARA SIEMPRE","Ativar modo teste":"Activar modo prueba","Bloquear":"Bloquear","Conta apagada. Até a próxima! 💜":"Cuenta borrada. ¡Hasta pronto! 💜","Conta bloqueada":"Cuenta bloqueada","Contas":"Cuentas","Contas bloqueadas":"Cuentas bloqueadas","Desbloquear":"Desbloquear","Feito!":"¡Hecho!","Ferramentas de teste":"Herramientas de prueba","Forçar tema":"Forzar tema","Frases dos perfis":"Frases de los perfiles","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"Esto borra de verdad tu cuenta, la partida en la nube, las carreras del ranking, los mensajes y los corazones. El progreso de este dispositivo se queda aquí.","Limpar frase":"Borrar frase","Moderação":"Moderación","Nenhuma.":"Ninguna.","O nome não confere.":"El nombre no coincide.","Os recados estão pausados pela moderação.":"Los mensajes están pausados por la moderación.","Para confirmar, digite o seu nome de Idol:":"Para confirmar, escribe tu nombre de Idol:","Privacidade e segurança":"Privacidad y seguridad","Recados no jogo todo":"Mensajes en todo el juego","Renomear":"Renombrar","Sua conta está bloqueada pela moderação.":"Tu cuenta está bloqueada por la moderación.","Tem certeza?":"¿Seguro?","Tema da data":"Tema de la fecha","Últimos recados":"Últimos mensajes"},
+  th: {
+       "Apagar minha conta":"ลบบัญชีของฉัน","APAGAR PARA SEMPRE":"ลบถาวร","Ativar modo teste":"เปิดโหมดทดสอบ","Bloquear":"บล็อก","Conta apagada. Até a próxima! 💜":"ลบบัญชีแล้ว แล้วพบกันใหม่! 💜","Conta bloqueada":"บัญชีถูกบล็อก","Contas":"บัญชี","Contas bloqueadas":"บัญชีที่ถูกบล็อก","Desbloquear":"ปลดบล็อก","Feito!":"เรียบร้อย!","Ferramentas de teste":"เครื่องมือทดสอบ","Forçar tema":"บังคับธีม","Frases dos perfis":"คำแนะนำตัวในโปรไฟล์","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"จะลบบัญชี เซฟบนคลาวด์ รอบในอันดับ ข้อความ และหัวใจจริง ๆ ความคืบหน้าในเครื่องนี้ยังอยู่","Limpar frase":"ลบคำแนะนำตัว","Moderação":"ดูแลชุมชน","Nenhuma.":"ไม่มี","O nome não confere.":"ชื่อไม่ตรงกัน","Os recados estão pausados pela moderação.":"ข้อความถูกพักไว้โดยผู้ดูแล","Para confirmar, digite o seu nome de Idol:":"พิมพ์ชื่อไอดอลของคุณเพื่อยืนยัน:","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Recados no jogo todo":"ข้อความทั้งเกม","Renomear":"เปลี่ยนชื่อ","Sua conta está bloqueada pela moderação.":"บัญชีของคุณถูกบล็อกโดยผู้ดูแล","Tem certeza?":"แน่ใจไหม?","Tema da data":"ธีมตามวันที่","Últimos recados":"ข้อความล่าสุด"},
+  ja: {
+       "Apagar minha conta":"アカウントを削除","APAGAR PARA SEMPRE":"完全に削除","Ativar modo teste":"テストモードをオン","Bloquear":"ブロック","Conta apagada. Até a próxima! 💜":"アカウントを削除しました。またね！💜","Conta bloqueada":"ブロック中のアカウント","Contas":"アカウント","Contas bloqueadas":"ブロック中のアカウント","Desbloquear":"ブロック解除","Feito!":"完了！","Ferramentas de teste":"テストツール","Forçar tema":"テーマを固定","Frases dos perfis":"プロフィールのひとこと","Isso apaga de verdade a sua conta, o save na nuvem, as corridas do ranking, os recados e os corações. O progresso deste aparelho continua aqui.":"アカウント・クラウドのセーブ・ランキングの記録・メッセージ・ハートが本当に消えます。この端末の進行はそのまま残ります。","Limpar frase":"ひとことを消す","Moderação":"モデレーション","Nenhuma.":"なし","O nome não confere.":"名前が一致しません。","Os recados estão pausados pela moderação.":"メッセージはモデレーションで一時停止中です。","Para confirmar, digite o seu nome de Idol:":"確認のため、アイドル名を入力してね：","Privacidade e segurança":"プライバシーと安全","Recados no jogo todo":"ゲーム全体のメッセージ","Renomear":"名前を変える","Sua conta está bloqueada pela moderação.":"あなたのアカウントはモデレーションでブロックされています。","Tem certeza?":"本当にいい？","Tema da data":"日付のテーマ","Últimos recados":"さいきんのメッセージ"}};
+
+// HUB_DICT
+window.TW_I18N.tables.HUB_DICT = {
+  en: {"Adote um pet!":"Adopt a pet!","Ano Novo":"New Year","até":"until","Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet":"Backstage⭐Pet!: adopt, care for, dress up and play with your pet","Carregando...":"Loading...","Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!":"Center⭐Run!: run across the stage, grab stars and microphones… and try to reach Center!","Compre algo para o seu pet":"Buy something for your pet","Corações, recados e insígnias":"Hearts, messages and badges",
+    "Corra {n} vezes no Center⭐Run!":"Run {n} times in Center⭐Run!","Corra com Tsu, Lirika e Pati":"Run with Tsu, Lirika and Pati","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Take care of your pet in the dressing room: food, baths, outfits and minigames worth stars.","Da temporada":"Seasonal","Dê 1 coração em um perfil":"Give 1 heart on a profile","Deixe 1 recado em um perfil":"Leave 1 message on a profile","Entrar com Google":"Sign in with Google","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Sign in with Google to do the daily missions (up to ★45 a day).","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Sign in with Google to save in the cloud, build your Idol, earn badges, hearts and messages.","Essa roupa só se compra no período do tema.":"This outfit can only be bought during its theme.","está bem!":"is doing great!","Faça {n} pontos em uma corrida":"Score {n} points in one run","Forçar tema":"Force theme","Ganhe estrelas em um minijogo do camarim":"Win stars in a dressing room minigame","Início":"Home",
+    "Insígnia nova!":"New badge!","Insígnia secreta do Quarteto TsuLiPa":"Secret TsuLiPa Quartet badge","Inverno":"Winter","Jogar":"Play","Jogo em português, inglês, espanhol, tailandês e japonês":"Game in Portuguese, English, Spanish, Thai and Japanese","Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia":"Karaoke⭐Time!: sing to the rhythm with a new audience every day",
+    "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜":"TsuLiPa⭐World is officially launched! Thank you for playing with us 💜","Meu Perfil":"My Profile","Missões do dia":"Daily missions","Missões do dia valendo estrelas":"Daily missions worth stars","Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨":"Daily missions, weekly rankings and a few surprises to discover ✨","Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols":"Moon⭐Duo! and Meeting of the day: cute scenes with other Idols","Natal":"Christmas","Novidades":"What's new","Oba!":"Yay!","Outono":"Autumn","Pegue {n} estrelas nas corridas":"Collect {n} stars in runs",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Profile with Studio, Build Idol and the outfit shop","Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias":"Profile with Build Idol, Studio, shop, hearts, messages and badges","precisa de você!":"needs you!",
+    "Presente da TsuLiPa!":"A gift from TsuLiPa!","Primavera":"Spring","Privacidade e segurança":"Privacy and security","Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados":"Privacy and security updated: safer cloud save and you in control of your data","Próximo":"Next","Pular":"Skip",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Jump over the stage obstacles, grab stars and your partners' microphones. Reach Center!","Recorde":"Record","Resgatar":"Claim","Sem tema":"No theme","Só até":"Only until","Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana":"Sora⭐Jump!: hop from cloud to cloud and get into the week's Top Idols","Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores":"Star⭐Gacha!: 1 spin a day with stars and other players' cards","Tema da data":"Today's theme","Tema de":"Theme:","Tema do momento":"Current theme","Temas da temporada com roupa e insígnia especiais":"Seasonal themes with special outfit and badge","TOQUE PARA COMEÇAR":"TAP TO START","Vamos lá!":"Let's go!","Ver no perfil":"See on profile","Verão":"Summer"},
+  es: {"Adote um pet!":"¡Adopta una mascota!","Ano Novo":"Año Nuevo","até":"hasta","Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet":"Backstage⭐Pet!: adopta, cuida, viste y juega con tu mascota","Carregando...":"Cargando...","Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!":"Center⭐Run!: corre por el escenario, atrapa estrellas y micrófonos… ¡e intenta llegar al Center!","Compre algo para o seu pet":"Compra algo para tu mascota","Corações, recados e insígnias":"Corazones, mensajes e insignias",
+    "Corra {n} vezes no Center⭐Run!":"Corre {n} veces en Center⭐Run!","Corra com Tsu, Lirika e Pati":"Corre con Tsu, Lirika y Pati","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"Cuida de tu mascota en el camerino: comida, baño, ropita y minijuegos que dan estrellas.","Da temporada":"De temporada","Dê 1 coração em um perfil":"Da 1 corazón en un perfil","Deixe 1 recado em um perfil":"Deja 1 mensaje en un perfil","Entrar com Google":"Entrar con Google","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Entra con Google para hacer las misiones del día (hasta ★45 por día).","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Entra con Google para guardar en la nube, armar tu Idol, ganar insignias, corazones y mensajes.","Essa roupa só se compra no período do tema.":"Esta ropa solo se compra durante su tema.","está bem!":"¡está bien!","Faça {n} pontos em uma corrida":"Haz {n} puntos en una carrera","Forçar tema":"Forzar tema","Ganhe estrelas em um minijogo do camarim":"Gana estrellas en un minijuego del camerino","Início":"Inicio",
+    "Insígnia nova!":"¡Insignia nueva!","Insígnia secreta do Quarteto TsuLiPa":"Insignia secreta del Cuarteto TsuLiPa","Inverno":"Invierno","Jogar":"Jugar","Jogo em português, inglês, espanhol, tailandês e japonês":"Juego en portugués, inglés, español, tailandés y japonés","Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia":"Karaoke⭐Time!: canta al ritmo con un público nuevo cada día",
+    "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜":"¡Lanzamiento oficial de TsuLiPa⭐World! Gracias por jugar con nosotras 💜","Meu Perfil":"Mi Perfil","Missões do dia":"Misiones del día","Missões do dia valendo estrelas":"Misiones del día que dan estrellas","Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨":"Misiones del día, rankings de la semana y algunas sorpresas por descubrir ✨","Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols":"Moon⭐Duo! y Encuentro del día: escenas tiernas con otros Idols","Natal":"Navidad","Novidades":"Novedades","Oba!":"¡Bien!","Outono":"Otoño","Pegue {n} estrelas nas corridas":"Atrapa {n} estrellas en las carreras",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"Perfil con Estudio, Armar Idol y tienda de ropa","Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias":"Perfil con Armar Idol, Estudio, tienda, corazones, mensajes e insignias","precisa de você!":"¡te necesita!",
+    "Presente da TsuLiPa!":"¡Regalo de TsuLiPa!","Primavera":"Primavera","Privacidade e segurança":"Privacidad y seguridad","Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados":"Privacidad y seguridad actualizadas: guardado en la nube más seguro y tú en control de tus datos","Próximo":"Siguiente","Pular":"Saltar",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"Salta los obstáculos del escenario, atrapa estrellas y los micrófonos de tus compañeras. ¡Llega al Center!","Recorde":"Récord","Resgatar":"Cobrar","Sem tema":"Sin tema","Só até":"Solo hasta","Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana":"Sora⭐Jump!: salta de nube en nube y entra al Top Idols de la semana","Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores":"Star⭐Gacha!: 1 giro al día con estrellas y cards de otros jugadores","Tema da data":"Tema de la fecha","Tema de":"Tema:","Tema do momento":"Tema del momento","Temas da temporada com roupa e insígnia especiais":"Temas de temporada con ropa e insignia especiales","TOQUE PARA COMEÇAR":"TOCA PARA EMPEZAR","Vamos lá!":"¡Vamos!","Ver no perfil":"Ver en el perfil","Verão":"Verano"},
+  th: {"Adote um pet!":"รับเลี้ยงสัตว์เลี้ยง!","Ano Novo":"ปีใหม่","até":"ถึง","Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet":"Backstage⭐Pet!: รับเลี้ยง ดูแล แต่งตัว และเล่นกับสัตว์เลี้ยง","Carregando...":"กำลังโหลด...","Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!":"Center⭐Run!: วิ่งบนเวที เก็บดาวและไมค์… แล้วลองไปให้ถึง Center ดูสิ!","Compre algo para o seu pet":"ซื้อของให้สัตว์เลี้ยง","Corações, recados e insígnias":"หัวใจ ข้อความ และเหรียญ",
+    "Corra {n} vezes no Center⭐Run!":"วิ่ง {n} รอบใน Center⭐Run!","Corra com Tsu, Lirika e Pati":"วิ่งด้วย Tsu, Lirika และ Pati","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"ดูแลสัตว์เลี้ยงในห้องแต่งตัว: อาหาร อาบน้ำ ชุด และมินิเกมที่ได้ดาว","Da temporada":"ตามฤดูกาล","Dê 1 coração em um perfil":"ให้หัวใจ 1 ดวงในโปรไฟล์","Deixe 1 recado em um perfil":"ฝากข้อความ 1 ข้อความ","Entrar com Google":"เข้าสู่ระบบด้วย Google","Entre com Google para fazer as missões do dia (até ★45 por dia).":"เข้าสู่ระบบด้วย Google เพื่อทำภารกิจประจำวัน (สูงสุด ★45 ต่อวัน)","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"เข้าสู่ระบบด้วย Google เพื่อเซฟบนคลาวด์ แต่งไอดอล รับเหรียญ หัวใจ และข้อความ","Essa roupa só se compra no período do tema.":"ชุดนี้ซื้อได้เฉพาะช่วงธีมเท่านั้น","está bem!":"สบายดี!","Faça {n} pontos em uma corrida":"ทำ {n} คะแนนในรอบเดียว","Forçar tema":"บังคับธีม","Ganhe estrelas em um minijogo do camarim":"ได้ดาวจากมินิเกมในห้องแต่งตัว","Início":"หน้าแรก",
+    "Insígnia nova!":"เหรียญใหม่!","Insígnia secreta do Quarteto TsuLiPa":"เหรียญลับ TsuLiPa ควอเต็ต","Inverno":"ฤดูหนาว","Jogar":"เล่น","Jogo em português, inglês, espanhol, tailandês e japonês":"เกมมีภาษาโปรตุเกส อังกฤษ สเปน ไทย และญี่ปุ่น","Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia":"Karaoke⭐Time!: ร้องเพลงตามจังหวะกับผู้ชมใหม่ทุกวัน",
+    "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜":"TsuLiPa⭐World เปิดตัวอย่างเป็นทางการแล้ว! ขอบคุณที่มาเล่นกับเรานะ 💜","Meu Perfil":"โปรไฟล์ของฉัน","Missões do dia":"ภารกิจประจำวัน","Missões do dia valendo estrelas":"ภารกิจประจำวันที่ได้ดาว","Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨":"ภารกิจประจำวัน อันดับประจำสัปดาห์ และเซอร์ไพรส์ให้ค้นหา ✨","Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols":"Moon⭐Duo! และการพบกันประจำวัน: ฉากน่ารักกับไอดอลคนอื่น","Natal":"คริสต์มาส","Novidades":"มีอะไรใหม่","Oba!":"เย้!","Outono":"ฤดูใบไม้ร่วง","Pegue {n} estrelas nas corridas":"เก็บดาว {n} ดวงจากการวิ่ง",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"โปรไฟล์พร้อมสตูดิโอ แต่งไอดอล และร้านชุด","Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias":"โปรไฟล์พร้อมแต่งไอดอล สตูดิโอ ร้านค้า หัวใจ ข้อความ และเหรียญ","precisa de você!":"ต้องการคุณ!",
+    "Presente da TsuLiPa!":"ของขวัญจาก TsuLiPa!","Primavera":"ฤดูใบไม้ผลิ","Privacidade e segurança":"ความเป็นส่วนตัวและความปลอดภัย","Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados":"อัปเดตความเป็นส่วนตัวและความปลอดภัย: บันทึกบนคลาวด์ปลอดภัยขึ้น และคุณควบคุมข้อมูลของตัวเองได้","Próximo":"ถัดไป","Pular":"ข้าม",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"กระโดดข้ามสิ่งกีดขวาง เก็บดาวและไมค์ของเพื่อน ๆ ไปให้ถึง Center!","Recorde":"สถิติ","Resgatar":"รับรางวัล","Sem tema":"ไม่มีธีม","Só até":"ถึงวันที่","Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana":"Sora⭐Jump!: กระโดดจากเมฆสู่เมฆ แล้วติด Top Idols ประจำสัปดาห์","Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores":"Star⭐Gacha!: หมุนได้วันละ 1 ครั้ง พร้อมดาวและการ์ดของผู้เล่นคนอื่น","Tema da data":"ธีมตามวันที่","Tema de":"ธีม:","Tema do momento":"ธีมตอนนี้","Temas da temporada com roupa e insígnia especiais":"ธีมตามฤดูกาลพร้อมชุดและเหรียญพิเศษ","TOQUE PARA COMEÇAR":"แตะเพื่อเริ่ม","Vamos lá!":"ไปกันเลย!","Ver no perfil":"ดูในโปรไฟล์","Verão":"ฤดูร้อน"},
+  ja: {"Adote um pet!":"ペットを迎えよう！","Ano Novo":"お正月","até":"まで","Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet":"Backstage⭐Pet!：ペットをむかえて、お世話して、おきがえして遊ぼう","Carregando...":"読み込み中...","Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!":"Center⭐Run!：ステージを走って、スターとマイクを集めて…Centerをめざそう！","Compre algo para o seu pet":"ペットに何か買う","Corações, recados e insígnias":"ハート・メッセージ・バッジ",
+    "Corra {n} vezes no Center⭐Run!":"Center⭐Run!を{n}回走る","Corra com Tsu, Lirika e Pati":"Tsu・Lirika・Patiで走る","Cuide do seu pet no camarim: comida, banho, roupinhas e minijogos que valem estrelas.":"楽屋でペットのお世話：ごはん、おふろ、おきがえ、スターがもらえるミニゲーム。","Da temporada":"季節限定","Dê 1 coração em um perfil":"プロフィールにハートを1つ","Deixe 1 recado em um perfil":"プロフィールにメッセージを1つ","Entrar com Google":"Googleでログイン","Entre com Google para fazer as missões do dia (até ★45 por dia).":"Googleでログインしてきょうのミッションに挑戦（1日最大★45）。","Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.":"Googleでログインするとクラウド保存、アイドルメイク、バッジ・ハート・メッセージが使えるよ。","Essa roupa só se compra no período do tema.":"この服はテーマの期間中だけ買えます。","está bem!":"は元気！","Faça {n} pontos em uma corrida":"1回のランで{n}点","Forçar tema":"テーマを固定","Ganhe estrelas em um minijogo do camarim":"楽屋のミニゲームでスターをゲット","Início":"ホーム",
+    "Insígnia nova!":"新しいバッジ！","Insígnia secreta do Quarteto TsuLiPa":"TsuLiPaカルテットのひみつバッジ","Inverno":"冬","Jogar":"プレイ","Jogo em português, inglês, espanhol, tailandês e japonês":"ポルトガル語・英語・スペイン語・タイ語・日本語に対応","Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia":"Karaoke⭐Time!：毎日かわる観客の前でリズムにのって歌おう",
+    "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜":"TsuLiPa⭐World、正式オープン！いっしょに遊んでくれてありがとう💜","Meu Perfil":"マイプロフィール","Missões do dia":"きょうのミッション","Missões do dia valendo estrelas":"スターがもらえるきょうのミッション","Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨":"今日のミッション、週間ランキング、そして見つけてほしいサプライズ✨","Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols":"Moon⭐Duo!と今日の出会い：ほかのアイドルとかわいいシーン","Natal":"クリスマス","Novidades":"おしらせ","Oba!":"やった！","Outono":"秋","Pegue {n} estrelas nas corridas":"ランでスターを{n}個集める",
+    "Perfil com Estúdio, Montar Idol e lojinha de roupas":"スタジオ・アイドルメイク・洋服ショップつきプロフィール","Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias":"プロフィール：アイドルづくり、スタジオ、ショップ、ハート、メッセージ、バッジ","precisa de você!":"があなたを待ってるよ！",
+    "Presente da TsuLiPa!":"TsuLiPaからのプレゼント！","Primavera":"春","Privacidade e segurança":"プライバシーと安全","Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados":"プライバシーと安全を更新：より安全なクラウド保存、データはあなたが管理","Próximo":"つぎへ","Pular":"スキップ",
+    "Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!":"ステージの障害物をジャンプ、スターと仲間のマイクを集めてCenterを目指そう！","Recorde":"ベスト","Resgatar":"受け取る","Sem tema":"テーマなし","Só até":"期間：","Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana":"Sora⭐Jump!：雲から雲へジャンプして、今週のTop Idolsをめざそう","Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores":"Star⭐Gacha!：1日1回、スターとほかのプレイヤーのカードが当たる","Tema da data":"日付のテーマ","Tema de":"テーマ：","Tema do momento":"いまのテーマ","Temas da temporada com roupa e insígnia especiais":"季節のテーマと限定の服・バッジ","TOQUE PARA COMEÇAR":"タップしてスタート","Vamos lá!":"はじめよう！","Ver no perfil":"プロフィールで見る","Verão":"夏"}};
+
+// EXTRA_DICT_GACHA
+window.TW_I18N.tables.EXTRA_DICT_GACHA = {
+  en: {"1 giro por dia":"1 spin a day","Abrir":"Open","Blog do BRS48":"BRS48 Blog","Bônus do Star⭐Gacha!":"Gachapon bonus","Bônus na próxima corrida":"Bonus on your next run","Céu Estrelado (Senbatsu)":"Starry Sky (Senbatsu)","Entre com Google para girar (1 vez por dia).":"Sign in with Google to spin (once a day).","Essa pose ainda não foi comprada.":"This pose hasn't been bought yet.","Essa roupa ainda não foi comprada.":"This outfit hasn't been bought yet.","Esse fundo ainda não foi comprado.":"This background hasn't been bought yet.","Esse pet ainda não chegou na nuvem. Tente de novo em alguns segundos.":"This pet isn't in the cloud yet. Try again in a few seconds.","Esse visual ainda não foi comprado.":"This look hasn't been bought yet.","Girar!":"Spin!","Gire a manivela e veja o que sai da cápsula!":"Turn the crank and see what's in the capsule!","Mensagem da moderação":"Message from the moderators","Procurar Idol pelo nome":"Search an Idol by name","Star⭐Gacha!":"TsuLiPa Gachapon","Visite o BRS48 Collect!":"Visit BRS48 Collect!","Você ganhou":"You won","Volte amanhã":"Come back tomorrow"},
+  es: {"1 giro por dia":"1 giro al día","Abrir":"Abrir","Blog do BRS48":"Blog de BRS48","Bônus do Star⭐Gacha!":"Bonus del Gachapon","Bônus na próxima corrida":"Bonus en tu próxima carrera","Céu Estrelado (Senbatsu)":"Cielo Estrellado (Senbatsu)","Entre com Google para girar (1 vez por dia).":"Entra con Google para girar (1 vez al día).","Girar!":"¡Girar!","Gire a manivela e veja o que sai da cápsula!":"¡Gira la manivela y mira qué sale de la cápsula!","Mensagem da moderação":"Mensaje de la moderación","Procurar Idol pelo nome":"Buscar Idol por nombre","Star⭐Gacha!":"Gachapon de TsuLiPa","Visite o BRS48 Collect!":"¡Visita BRS48 Collect!","Você ganhou":"Ganaste","Volte amanhã":"Vuelve mañana"},
+  th: {"1 giro por dia":"หมุนได้วันละ 1 ครั้ง","Abrir":"เปิด","Blog do BRS48":"บล็อก BRS48","Bônus do Star⭐Gacha!":"โบนัสกาชาปอง","Bônus na próxima corrida":"โบนัสในรอบถัดไป","Céu Estrelado (Senbatsu)":"ท้องฟ้าดาว (Senbatsu)","Entre com Google para girar (1 vez por dia).":"เข้าสู่ระบบด้วย Google เพื่อหมุน (วันละครั้ง)","Girar!":"หมุน!","Gire a manivela e veja o que sai da cápsula!":"หมุนคันโยกแล้วดูว่าในแคปซูลมีอะไร!","Mensagem da moderação":"ข้อความจากผู้ดูแล","Procurar Idol pelo nome":"ค้นหาไอดอลด้วยชื่อ","Star⭐Gacha!":"กาชาปอง TsuLiPa","Visite o BRS48 Collect!":"ไปที่ BRS48 Collect!","Você ganhou":"คุณได้รับ","Volte amanhã":"กลับมาพรุ่งนี้นะ"},
+  ja: {"1 giro por dia":"1日1回","Abrir":"ひらく","Blog do BRS48":"BRS48ブログ","Bônus do Star⭐Gacha!":"ガチャポンボーナス","Bônus na próxima corrida":"次のランのボーナス","Céu Estrelado (Senbatsu)":"星空コーデ (Senbatsu)","Entre com Google para girar (1 vez por dia).":"Googleでログインしてまわそう（1日1回）。","Girar!":"まわす！","Gire a manivela e veja o que sai da cápsula!":"ハンドルをまわしてカプセルの中身を見よう！","Mensagem da moderação":"モデレーションからのメッセージ","Procurar Idol pelo nome":"名前でアイドルをさがす","Star⭐Gacha!":"TsuLiPaガチャポン","Visite o BRS48 Collect!":"BRS48 Collect!に行こう","Você ganhou":"ゲット","Volte amanhã":"また明日ね"}};
+
+// EXTRA_DICT_AVATAR
+window.TW_I18N.tables.EXTRA_DICT_AVATAR = {
+  en: {
+    "Baixar Render do Avatar": "Download Avatar PNG",
+    "Capitão": "Captain",
+    "Card! +100": "Card! +100",
+    "Dango": "Dango",
+    "Eternal Ace": "Eternal Ace",
+    "Foto BRS48": "BRS48 Photo",
+    "Gyoza": "Gyoza",
+    "Kami-Oshi": "Kami-Oshi"
+  ,
+    "Kimi wa Alien!": "Kimi wa Alien!",
+    "Mega TsuLiPa!": "Mega TsuLiPa!",
+    "MENU": "MENU",
+    "Onigiri": "Onigiri",
+    "Pixie": "Pixie",
+    "Pôster ジッパー": "Poster ジッパー",
+    "Presente do Pet! 🎁": "Pet Gift! 🎁",
+    "Quadro NeByura": "NeByura Frame",
+    "Quadro ツリパ ZIPPER": "Frame ツリパ ZIPPER",
+    "Solo Center": "Solo Center",
+    "Tiramisu": "Tiramisu",
+    "Tirar Foto": "Take Photo",
+    "Tom de pele": "Skin tone",
+    "Unit ✨ ": "Unit ✨ ",
+    "Unit Mode! Sinergia ✨": "Unit Mode! Synergy ✨"},
+  es: {
+    "Baixar Render do Avatar": "Descargar Avatar en PNG",
+    "Capitão": "Capitán",
+    "Card! +100": "¡Card! +100",
+    "Dango": "Dango",
+    "Eternal Ace": "Eternal Ace",
+    "Foto BRS48": "Foto BRS48",
+    "Gyoza": "Gyoza",
+    "Kami-Oshi": "Kami-Oshi"
+  ,
+    "Kimi wa Alien!": "¡Kimi wa Alien!",
+    "Mega TsuLiPa!": "¡Mega TsuLiPa!",
+    "MENU": "MENÚ",
+    "Onigiri": "Onigiri",
+    "Pixie": "Pixie",
+    "Pôster ジッパー": "Póster ジッパー",
+    "Presente do Pet! 🎁": "¡Regalo de la Mascota! 🎁",
+    "Quadro NeByura": "Cuadro NeByura",
+    "Quadro ツリパ ZIPPER": "Cuadro ツリパ ZIPPER",
+    "Solo Center": "Solo Center",
+    "Tiramisu": "Tiramisú",
+    "Tirar Foto": "Tomar Foto",
+    "Tom de pele": "Tono de piel",
+    "Unit ✨ ": "Unit ✨ ",
+    "Unit Mode! Sinergia ✨": "¡Modo Unit! Sinergia ✨"},
+  th: {
+    "Baixar Render do Avatar": "ดาวน์โหลดอวาตาร์ PNG",
+    "Capitão": "กัปตัน",
+    "Card! +100": "การ์ด! +100",
+    "Dango": "ดังโงะ",
+    "Eternal Ace": "เอซตลอดกาล",
+    "Foto BRS48": "รูปถ่าย BRS48",
+    "Gyoza": "เกี๊ยวซ่า",
+    "Kami-Oshi": "คามิโอชิ"
+  ,
+    "Kimi wa Alien!": "Kimi wa Alien!",
+    "Mega TsuLiPa!": "เมก้า TsuLiPa!",
+    "MENU": "เมนู",
+    "Onigiri": "โอนิกิริ",
+    "Pixie": "พิกซี่",
+    "Pôster ジッパー": "โปสเตอร์ ジッパー",
+    "Presente do Pet! 🎁": "ของขวัญจากสัตว์เลี้ยง! 🎁",
+    "Quadro NeByura": "กรอบรูป NeByura",
+    "Quadro ツリパ ZIPPER": "กรอบรูป ツリパ ZIPPER",
+    "Solo Center": "โซโล่เซ็นเตอร์",
+    "Tiramisu": "ทิรามิสุ",
+    "Tirar Foto": "ถ่ายรูป",
+    "Tom de pele": "สีผิว",
+    "Unit ✨ ": "ยูนิต ✨ ",
+    "Unit Mode! Sinergia ✨": "โหมดยูนิต! ซินเนอร์จี้ ✨"},
+  ja: {
+    "Baixar Render do Avatar": "アバターPNGを保存",
+    "Capitão": "キャプテン",
+    "Card! +100": "カード！ +100",
+    "Eternal Ace": "エターナルエース",
+    "Foto BRS48": "BRS48フォト",
+    "Kami-Oshi": "神推し"
+  ,
+    "Kimi wa Alien!": "キミはエイリアン！",
+    "Mega TsuLiPa!": "メガ・ツリパ！",
+    "MENU": "メニュー",
+    "Pixie": "ピクシー",
+    "Pôster ジッパー": "ポスター「ジッパー」",
+    "Presente do Pet! 🎁": "ペットからのプレゼント！ 🎁",
+    "Quadro NeByura": "フレーム「NeByura」",
+    "Quadro ツリパ ZIPPER": "フレーム「ツリパ ZIPPER」",
+    "Solo Center": "ソロセンター",
+    "Tirar Foto": "写真を撮る",
+    "Tom de pele": "肌の色",
+    "Unit ✨ ": "ユニット ✨ ",
+    "Unit Mode! Sinergia ✨": "ユニットモード！シナジー ✨"}};
+
+// S2_DICT
+window.TW_I18N.tables.S2_DICT = {
+  en: {
+    "📅 Corrida do dia": "📅 Daily Run",
+    "Abaixar": "Slide",
+    "Aeroporto da turnê": "Tour airport",
+    "Backstage do teatro": "Theater backstage",
+    "Coro! Parceiras na frente!": "Chorus! Partners ahead!",
+    "Corrida do dia": "Daily Run",
+    "Corrida do Dia": "Daily Run",
+    "Desafio concluído! +500": "Challenge cleared! +500",
+    "Desafio de fim de cenário!": "Stage Finale Challenge!",
+    "Dome do grande show": "Grand Dome show",
+    "Ensaio geral": "Dress rehearsal",
+    "Estúdio de TV": "TV studio",
+    "Festival de verão": "Summer festival",
+    "Fundo Dome desbloqueado!": "Dome background unlocked!"
+  ,
+    "High-five nos fãs!": "Fan High-five!",
+    "Nova insígnia: ": "New badge: ",
+    "Rua da cidade": "City street",
+    "Sala de ensaio": "Rehearsal room"},
+  es: {
+    "📅 Corrida do dia": "📅 Carrera del día",
+    "Abaixar": "Deslizar",
+    "Aeroporto da turnê": "Aeropuerto de gira",
+    "Backstage do teatro": "Backstage del teatro",
+    "Coro! Parceiras na frente!": "¡Coro! ¡Compañeras al frente!",
+    "Corrida do dia": "Carrera del día",
+    "Corrida do Dia": "Carrera del día",
+    "Desafio concluído! +500": "¡Desafío superado! +500",
+    "Desafio de fim de cenário!": "¡Desafío final de escenario!",
+    "Dome do grande show": "Dome del gran show",
+    "Ensaio geral": "Ensayo general",
+    "Estúdio de TV": "Estudio de TV",
+    "Festival de verão": "Festival de verano",
+    "Fundo Dome desbloqueado!": "¡Fondo Dome desbloqueado!"
+  ,
+    "High-five nos fãs!": "¡Choca esos cinco con los fans!",
+    "Nova insígnia: ": "Nueva insignia: ",
+    "Rua da cidade": "Calle de la ciudad",
+    "Sala de ensaio": "Sala de ensayo"},
+  th: {
+    "📅 Corrida do dia": "📅 วิ่งประจำวัน",
+    "Abaixar": "สไลด์",
+    "Aeroporto da turnê": "สนามบินทัวร์",
+    "Backstage do teatro": "หลังเวทีเธียเตอร์",
+    "Coro! Parceiras na frente!": "คอรัส! เพื่อนวิ่งนำหน้า!",
+    "Corrida do dia": "วิ่งประจำวัน",
+    "Corrida do Dia": "ประจำวัน",
+    "Desafio concluído! +500": "ผ่านภารกิจ! +500",
+    "Desafio de fim de cenário!": "ภารกิจท้ายฉาก!",
+    "Dome do grande show": "โดมคอนเสิร์ตใหญ่",
+    "Ensaio geral": "ซ้อมใหญ่",
+    "Estúdio de TV": "สตูดิโอทีวี",
+    "Festival de verão": "งานเทศกาลฤดูร้อน",
+    "Fundo Dome desbloqueado!": "ปลดล็อกพื้นหลังโดมแล้ว!"
+  ,
+    "High-five nos fãs!": "ไฮไฟว์กับแฟนคลับ!",
+    "Nova insígnia: ": "เหรียญตราใหม่: ",
+    "Rua da cidade": "ถนนในเมือง",
+    "Sala de ensaio": "ห้องซ้อมเต้น"},
+  ja: {
+    "📅 Corrida do dia": "📅 今日のラン",
+    "Abaixar": "スライディング",
+    "Aeroporto da turnê": "ツアー空港",
+    "Backstage do teatro": "劇場バックステージ",
+    "Coro! Parceiras na frente!": "コーラス！仲間が前で星を集めるよ！",
+    "Corrida do dia": "今日のラン",
+    "Corrida do Dia": "今日のラン",
+    "Desafio concluído! +500": "チャレンジ成功！+500",
+    "Desafio de fim de cenário!": "ステージラストチャレンジ！",
+    "Dome do grande show": "ドーム大公演",
+    "Ensaio geral": "ゲネプロ（全体リハーサル）",
+    "Estúdio de TV": "テレビスタジオ",
+    "Festival de verão": "夏祭り",
+    "Fundo Dome desbloqueado!": "ドーム背景が解放されました！"
+  ,
+    "High-five nos fãs!": "ファンとハイタッチ！",
+    "Nova insígnia: ": "新しいバッジ：",
+    "Rua da cidade": "街のストリート",
+    "Sala de ensaio": "レッスン室"}};
+
+// Lista multilíngue: seasonalAchievements (frase original em português)
+window.TW_I18N.rows.seasonalAchievements = [
+  ['A Lirika guardou o prêmio pra amanhã 🐨', 'Lirika saved the prize for tomorrow 🐨', 'Lirika guardó el premio para mañana 🐨', 'Lirika เก็บรางวัลไว้ให้พรุ่งนี้ 🐨', 'Lirikaが賞品を明日にとっておいたよ 🐨'],
+  ['Achei uma folha laranjinha! 🍂', 'I found an orange leaf! 🍂', '¡Encontré una hojita naranja! 🍂', 'เจอใบไม้สีส้มด้วย! 🍂', 'オレンジの葉っぱ見つけた！🍂'],
+  ['Amizade', 'Friendship', 'Amistad', 'มิตรภาพ', 'なかよし'],
+  ['As flores voltaram! 🌼', 'The flowers are back! 🌼', '¡Volvieron las flores! 🌼', 'ดอกไม้กลับมาแล้ว! 🌼', 'お花がもどってきた！🌼'],
+  ['As folhas estão dançando lá fora 🍁', 'The leaves are dancing outside 🍁', 'Las hojas bailan afuera 🍁', 'ใบไม้ข้างนอกกำลังเต้นรำ 🍁', '外で葉っぱがおどってる 🍁'],
+  ['As sakuras são lindas, né, {n}? 🌸', 'The sakuras are beautiful, right, {n}? 🌸', 'Las sakuras son lindas, ¿verdad, {n}? 🌸', 'ซากุระสวยใช่ไหม {n}? 🌸', '桜きれいだね、{n}？🌸'],
+  ['Baixar card', 'Download card', 'Descargar carta', 'ดาวน์โหลดการ์ด', 'カードを保存'],
+  ['Bônus do Star⭐Gacha!', 'Star⭐Gacha! bonus', 'Bonus de Star⭐Gacha!', 'โบนัส Star⭐Gacha!', 'Star⭐Gachaボーナス'],
+  ['Brrr! Me empresta um cachecol? 🧣', 'Brrr! Can I borrow a scarf? 🧣', '¡Brrr! ¿Me prestas una bufanda? 🧣', 'บรื๋อ! ขอยืมผ้าพันคอหน่อย 🧣', 'さむい！マフラー貸して？🧣'],
+  ['Cápsula vazia! Pelo menos você treinou o giro 💪', 'Empty capsule! At least you practiced spinning 💪', '¡Cápsula vacía! Al menos practicaste el giro 💪', 'แคปซูลว่าง! อย่างน้อยก็ได้ฝึกหมุน 💪', 'からっぽ！でも回す練習になったね 💪'],
+  ['Cardigã florido', 'Flower cardigan', 'Cárdigan floral', 'คาร์ดิแกนลายดอก', '花柄カーディガン'],
+  ['Carteiro', 'Mail carrier', 'Cartero', 'บุรุษไปรษณีย์', 'メッセンジャー'],
+  ['Center da semana', 'Center of the week', 'Center de la semana', 'Center ประจำสัปดาห์', '週間Center'],
+  ['Cheirinho de flor no ar 🌷', 'Smells like flowers 🌷', 'Huele a flores 🌷', 'มีกลิ่นดอกไม้ลอยมา 🌷', 'お花のいいにおい 🌷'],
+  ['Cheirinho de panetone no ar 🎄', 'Smells like Christmas cake 🎄', 'Huele a panetón 🎄', 'กลิ่นเค้กคริสต์มาสลอยมา 🎄', 'パネトーネのいいにおい 🎄'],
+  ['Cheiro de praia no camarim 🏖️', 'The dressing room smells like the beach 🏖️', 'Huele a playa en el camerino 🏖️', 'ห้องแต่งตัวมีกลิ่นทะเล 🏖️', '楽屋が海のにおい 🏖️'],
+  ['Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto', 'As the Idol, got all 3 mics in one run and saved the quartet photo', 'Con el Idol, atrapó los 3 micrófonos en una carrera y guardó la foto del cuarteto', 'เล่นเป็นไอดอล เก็บไมค์ครบ 3 อันในรอบเดียวและเซฟรูปควอเต็ต', 'アイドルで1回のランにマイク3本を集めてカルテット写真を保存'],
+  ['Comprou todas as roupas fixas da lojinha', 'Bought every regular outfit in the shop', 'Compró toda la ropa fija de la tienda', 'ซื้อชุดประจำร้านครบทุกชุด', 'ショップの定番服をすべて購入'],
+  ['Correu na época das sakuras', 'Ran in sakura season', 'Corrió en temporada de sakura', 'วิ่งช่วงซากุระบาน', '桜の季節に走った'],
+  ['Correu na virada do Ano Novo', 'Ran at New Year', 'Corrió en Año Nuevo', 'วิ่งช่วงปีใหม่', 'お正月に走った'],
+  ['Correu no começo da primavera', 'Ran at the start of spring', 'Corrió al inicio de la primavera', 'วิ่งช่วงต้นฤดูใบไม้ผลิ', '春のはじめに走った'],
+  ['Correu no começo do inverno', 'Ran at the start of winter', 'Corrió al inicio del invierno', 'วิ่งช่วงต้นฤดูหนาว', '冬のはじめに走った'],
+  ['Correu no começo do outono', 'Ran at the start of autumn', 'Corrió al inicio del otoño', 'วิ่งช่วงต้นฤดูใบไม้ร่วง', '秋のはじめに走った'],
+  ['Correu no começo do verão', 'Ran at the start of summer', 'Corrió al inicio del verano', 'วิ่งช่วงต้นฤดูร้อน', '夏のはじめに走った'],
+  ['Correu no Halloween', 'Ran on Halloween', 'Corrió en Halloween', 'วิ่งช่วงฮาโลวีน', 'ハロウィンに走った'],
+  ['Correu no Natal', 'Ran at Christmas', 'Corrió en Navidad', 'วิ่งช่วงคริสต์มาส', 'クリスマスに走った'],
+  ['Correu no Tanabata', 'Ran on Tanabata', 'Corrió en Tanabata', 'วิ่งช่วงทานาบาตะ', '七夕に走った'],
+  ['Correu no Valentine ou no Dia dos Namorados', 'Ran on Valentine\'s or Brazilian Lovers\' Day', 'Corrió en San Valentín o en el Día de los Enamorados', 'วิ่งช่วงวาเลนไทน์', 'バレンタインに走った'],
+  ['Deixou 10 recados', 'Left 10 messages', 'Dejó 10 mensajes', 'ฝากข้อความ 10 ครั้ง', 'メッセージを10回送った'],
+  ['Destaque da semana', 'Highlight of the week', 'Destacado de la semana', 'ไฮไลต์ประจำสัปดาห์', '今週のピックアップ'],
+  ['Deu 10 corações', 'Gave 10 hearts', 'Dio 10 corazones', 'ให้หัวใจ 10 ดวง', 'ハートを10回あげた'],
+  ['Doces ou travessuras? 🍬', 'Trick or treat? 🍬', '¿Dulce o truco? 🍬', 'หลอกหรือเลี้ยง? 🍬', 'トリック・オア・トリート？🍬'],
+  ['Escolha da moderação como destaque da semana', 'Chosen by the moderators as highlight of the week', 'Elegido por la moderación como destacado de la semana', 'ผู้ดูแลเลือกเป็นไฮไลต์ประจำสัปดาห์', 'モデレーターが今週のピックアップに選出'],
+  ['Escrevi um desejo pro Tanabata 🎋', 'I wrote a Tanabata wish 🎋', 'Escribí un deseo para Tanabata 🎋', 'เขียนคำอธิษฐานทานาบาตะแล้ว 🎋', '七夕のお願いを書いたよ 🎋'],
+  ['Este ano a gente chega no Center! ✨', 'This year we reach Center! ✨', '¡Este año llegamos al Center! ✨', 'ปีนี้เราไปถึง Center แน่! ✨', '今年こそCenterへ！✨'],
+  ['Feliz Ano Novo, {n}! 🥂', 'Happy New Year, {n}! 🥂', '¡Feliz Año Nuevo, {n}! 🥂', 'สวัสดีปีใหม่นะ {n}! 🥂', 'あけましておめでとう、{n}！🥂'],
+  ['Ficou em 1º lugar no ranking de uma semana', 'Finished 1st in a weekly ranking', 'Quedó 1.º en el ranking de una semana', 'ได้อันดับ 1 ประจำสัปดาห์', '週間ランキングで1位'],
+  ['Fiz chocolate pra você 🍫', 'I made chocolate for you 🍫', 'Hice chocolate para ti 🍫', 'ทำช็อกโกแลตให้นะ 🍫', 'チョコ作ったよ 🍫'],
+  ['Fundadores', 'Founders', 'Fundadores', 'ผู้บุกเบิก', 'ファウンダー'],
+  ['Ganhou um evento do TsuLiPa World', 'Won a TsuLiPa World event', 'Ganó un evento de TsuLiPa World', 'ชนะอีเวนต์ของ TsuLiPa World', 'TsuLiPa Worldのイベントで優勝'],
+  ['Guarda-roupa completo', 'Full wardrobe', 'Armario completo', 'ตู้เสื้อผ้าครบ', 'クローゼットコンプリート'],
+  ['Hanami no camarim! 🌸', 'Hanami in the dressing room! 🌸', '¡Hanami en el camerino! 🌸', 'ฮานามิในห้องแต่งตัว! 🌸', '楽屋でお花見！🌸'],
+  ['Haori de sakura', 'Sakura haori', 'Haori de sakura', 'ฮาโอริซากุระ', '桜の羽織'],
+  ['Hoje as estrelas se encontram ✨', 'Tonight the stars meet ✨', 'Hoy las estrellas se encuentran ✨', 'คืนนี้ดวงดาวได้พบกัน ✨', '今夜は星が出会う日 ✨'],
+  ['Hoje eu vou de fantasminha! 👻', 'Today I\'m dressing as a little ghost! 👻', '¡Hoy me disfrazo de fantasmita! 👻', 'วันนี้ขอเป็นผีน้อยนะ! 👻', '今日はおばけになるよ！👻'],
+  ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Nothing today... but luck spins tomorrow! 🍀', 'Hoy nada... ¡pero mañana gira la suerte! 🍀', 'วันนี้ไม่ได้อะไร... พรุ่งนี้โชคหมุนใหม่! 🍀', '今日はハズレ…明日はきっと当たる！🍀'],
+  ['Hoje não... mas o Center te espera! ⭐', 'Not today... but Center awaits! ⭐', 'Hoy no... ¡pero el Center te espera! ⭐', 'วันนี้ไม่ได้... แต่ Center รออยู่นะ! ⭐', '今日はダメ…でもCenterが待ってる！⭐'],
+  ['Hora do cobertor quentinho ❄️', 'Cozy blanket time ❄️', 'Hora de la mantita calentita ❄️', 'ถึงเวลาห่มผ้าห่มอุ่นๆ ❄️', 'ぬくぬく毛布タイム ❄️'],
+  ['Jogou desde o lançamento do TsuLiPa World', 'Played since TsuLiPa World launched', 'Juega desde el lanzamiento de TsuLiPa World', 'เล่นตั้งแต่ TsuLiPa World เปิดตัว', 'TsuLiPa Worldのリリースから遊んでいる'],
+  ['Meu desejo: ver você no Center! 🌟', 'My wish: to see you at Center! 🌟', 'Mi deseo: ¡verte en el Center! 🌟', 'คำอธิษฐาน: อยากเห็นเธอที่ Center! 🌟', 'お願い：Centerに立つきみを見たい！🌟'],
+  ['Nada hoje. A Tsu disse que dá sorte tentar amanhã 🎤', 'Nothing today. Tsu says tomorrow is lucky 🎤', 'Nada hoy. Tsu dice que mañana trae suerte 🎤', 'วันนี้ไม่มี Tsu บอกว่าพรุ่งนี้โชคดี 🎤', '今日はなし。Tsuが明日はラッキーだって 🎤'],
+  ['O Pati disse: amanhã é dia de coroa! 👑', 'Pati says: tomorrow is crown day! 👑', 'Pati dice: ¡mañana es día de corona! 👑', 'Pati บอกว่าพรุ่งนี้วันมงกุฎ! 👑', 'Pati「明日はクラウンの日！」👑'],
+  ['Ouvi um morcego cantando no camarim 🦇', 'I heard a bat singing in the dressing room 🦇', 'Escuché un murciélago cantando en el camerino 🦇', 'ได้ยินค้างคาวร้องเพลงในห้องแต่งตัว 🦇', '楽屋でコウモリが歌ってた 🦇'],
+  ['Passei protetor solar nas bochechas ☀️', 'I put sunscreen on my cheeks ☀️', 'Me puse protector en las mejillas ☀️', 'ทากันแดดที่แก้มแล้ว ☀️', 'ほっぺに日焼け止めぬったよ ☀️'],
+  ['Pendurei minha meia no camarim! 🧦', 'I hung my stocking in the dressing room! 🧦', '¡Colgué mi calcetín en el camerino! 🧦', 'แขวนถุงเท้าไว้ในห้องแต่งตัวแล้ว! 🧦', '楽屋にくつしたを飾ったよ！🧦'],
+  ['Pódio do evento', 'Event podium', 'Podio del evento', 'โพเดียมอีเวนต์', 'イベント表彰台'],
+  ['Puffer de inverno', 'Winter puffer', 'Plumífero de invierno', 'พัฟเฟอร์ฤดูหนาว', '冬のダウン'],
+  ['Quarteto TsuLiPa', 'TsuLiPa Quartet', 'Cuarteto TsuLiPa', 'ควอเต็ต TsuLiPa', 'TsuLiPaカルテット'],
+  ['Que calor! Bora tomar sorvete? 🍦', 'So hot! Ice cream time? 🍦', '¡Qué calor! ¿Vamos por helado? 🍦', 'ร้อนจัง! ไปกินไอติมกันไหม? 🍦', 'あついね！アイス食べよう？🍦'],
+  ['Réveillon', 'New Year\'s Eve', 'Nochevieja', 'คืนข้ามปี', '大みそか'],
+  ['Será que o Papai Noel traz estrelas? 🎅', 'Will Santa bring stars? 🎅', '¿Papá Noel traerá estrellas? 🎅', 'ซานต้าจะเอาดาวมาให้ไหมนะ? 🎅', 'サンタさんスターくれるかな？🎅'],
+  ['Só confete! 🎊 Volte amanhã', 'Just confetti! 🎊 Come back tomorrow', '¡Solo confeti! 🎊 Vuelve mañana', 'มีแต่กระดาษสี! 🎊 พรุ่งนี้มาใหม่นะ', '紙ふぶきだけ！🎊 また明日'],
+  ['Sobretudo de outono', 'Autumn coat', 'Abrigo de otoño', 'โค้ทฤดูใบไม้ร่วง', '秋のコート'],
+  ['Sorte pequena: um sorriso 😊', 'Small luck: a smile 😊', 'Suerte pequeña: una sonrisa 😊', 'โชคเล็กๆ: รอยยิ้ม 😊', '小吉：えがお 😊'],
+  ['Suéter de coração', 'Heart sweater', 'Suéter de corazón', 'สเวตเตอร์หัวใจ', 'ハートセーター'],
+  ['Suéter de rena', 'Reindeer sweater', 'Suéter de reno', 'สเวตเตอร์เรนเดียร์', 'トナカイセーター'],
+  ['Tem borboleta no camarim 🦋', 'There\'s a butterfly in the dressing room 🦋', 'Hay una mariposa en el camerino 🦋', 'มีผีเสื้อในห้องแต่งตัว 🦋', '楽屋にちょうちょがいる 🦋'],
+  ['Tem coraçãozinho voando por aqui 💕', 'Little hearts are flying around 💕', 'Hay corazoncitos volando por aquí 💕', 'มีหัวใจน้อยๆ ลอยอยู่แถวนี้ 💕', 'ハートがふわふわ飛んでる 💕'],
+  ['Tempo bom pra um chocolate quente ☕', 'Perfect weather for hot chocolate ☕', 'Buen clima para un chocolate caliente ☕', 'อากาศแบบนี้เหมาะกับโกโก้ร้อน ☕', 'ホットココア日和 ☕'],
+  ['Uma pétala caiu na minha cabeça 🌸', 'A petal fell on my head 🌸', 'Un pétalo cayó en mi cabeza 🌸', 'กลีบซากุระตกใส่หัว 🌸', '頭に花びらがのった 🌸'],
+  ['Vamos fazer um bonequinho de neve ☃️', 'Let\'s build a little snowman ☃️', 'Hagamos un muñequito de nieve ☃️', 'มาปั้นตุ๊กตาหิมะกัน ☃️', '雪だるま作ろう ☃️'],
+  ['Verão floral', 'Floral summer', 'Verano floral', 'ซัมเมอร์ลายดอก', 'フローラルサマー'],
+  ['Você é meu Oshi favorito, {n}! 💝', 'You\'re my favorite Oshi, {n}! 💝', '¡Eres mi Oshi favorito, {n}! 💝', 'เธอคือโอชิคนโปรดของฉันนะ {n}! 💝', '{n}がいちばんの推しだよ！💝'],
+  ['Você tirou o card de', 'You got the card of', 'Te salió la carta de', 'คุณได้การ์ดของ', 'カードをゲット：'],
+  ['Vou pular sete ondinhas no camarim! 🌊', 'I\'ll jump seven little waves in the dressing room! 🌊', '¡Voy a saltar siete olitas en el camerino! 🌊', 'จะกระโดดคลื่นเจ็ดลูกในห้องแต่งตัว! 🌊', '楽屋で7つの波をとびこえるよ！🌊'],
+  ['Yukata de Tanabata', 'Tanabata yukata', 'Yukata de Tanabata', 'ยูกาตะทานาบาตะ', '七夕の浴衣']
+];
+
+// Lista multilíngue: profileEditorLabels (frase original em português)
+window.TW_I18N.rows.profileEditorLabels = [
+  ['Bem gamer, tals...', 'Kinda gamer, you know...', 'Bien gamer, ¿sabes?...', 'สายเกมนิดหน่อยนะ...', 'ゲーマーなんだ〜'],
+  ['Editar perfil', 'Edit profile', 'Editar perfil', 'แก้ไขโปรไฟล์', 'プロフィールを編集'],
+  ['Eu amo comer pudim.', 'I love eating pudding.', 'Me encanta comer flan.', 'ฉันชอบกินพุดดิ้ง', 'プリンを食べるのが大好き。'],
+  ['Eu sou o Tsu!', "I'm Tsu!", '¡Soy Tsu!', 'ฉันคือ Tsu!', 'ツーだよ！'],
+  ['Li - ri - ka!', 'Li - ri - ka!', '¡Li - ri - ka!', 'ลิ - ริ - กะ!', 'リ・リ・カ！'],
+  ['Oi gente, meu nome é Pati!', "Hi everyone, my name is Pati!", '¡Hola a todos, me llamo Pati!', 'สวัสดีทุกคน ฉันชื่อ Pati!', 'みんな、パティだよ！'],
+  ['Oi, gente linda!', 'Hi, lovely people!', '¡Hola, gente linda!', 'สวัสดีทุกคนที่น่ารัก!', 'みんな、やっほー！'],
+  ['Oiê!', 'Hiii!', '¡Holii!', 'หวัดดี!', 'やっほー！'],
+  ['Sem time', 'No team', 'Sin equipo', 'ไม่มีทีม', 'チームなし'],
+  ['Seu emoji', 'Your emoji', 'Tu emoji', 'อีโมจิของคุณ', 'あなたの絵文字'],
+  ['Seu time no BRS48', 'Your BRS48 team', 'Tu equipo en BRS48', 'ทีมของคุณใน BRS48', 'BRS48のチーム'],
+  ['Sua cor', 'Your color', 'Tu color', 'สีของคุณ', 'あなたの色'],
+  ['Trio TsuLiPa', 'TsuLiPa trio', 'Trío TsuLiPa', 'ทริโอ TsuLiPa', 'TsuLiPaトリオ'],
+  ['Tudo bem com vocês?', 'How are you all?', '¿Cómo están todos?', 'ทุกคนสบายดีไหม?', 'みんな元気？'],
+  ['Um beijo. Chu!', 'Kisses. Chu!', 'Un beso. ¡Chu!', 'จุ๊บ ๆ Chu!', 'チュッ！'],
+  ['Use só emojis (até 8).', 'Use emojis only (up to 8).', 'Usa solo emojis (hasta 8).', 'ใช้อีโมจิเท่านั้น (สูงสุด 8)', '絵文字だけ（8個まで）にしてね。']
+];
+
+// Lista multilíngue: profileActivityLabels (frase original em português)
+window.TW_I18N.rows.profileActivityLabels = [
+  ['Abrir o camarim do pet', 'Open the pet\'s dressing room', 'Abrir el camerino de la mascota', 'เปิดห้องแต่งตัวสัตว์เลี้ยง', 'ペットの楽屋をひらく'],
+  ['Ai!', 'Ouch!', '¡Ay!', 'โอ๊ย!', 'いたっ！'],
+  ['Amor Grilado!', 'Cricket Love!', '¡Amor Grillado!', 'รักจิ้งหรีด!', 'コオロギの恋！'],
+  ['Aniversário do BRS48', 'BRS48 Anniversary', 'Aniversario de BRS48', 'วันครบรอบ BRS48', 'BRS48周年'],
+  ['Apaixonado', 'In love', 'Enamorado', 'ตกหลุมรัก', 'ラブラブ'],
+  ['Blog do BRS48 ↗', 'BRS48 Blog ↗', 'Blog de BRS48 ↗', 'บล็อก BRS48 ↗', 'BRS48ブログ ↗'],
+  ['Bora brincar de pega-pega? 🎈', 'Wanna play tag? 🎈', '¿Jugamos a la mancha? 🎈', 'มาเล่นไล่จับกันไหม? 🎈', 'おにごっこしよう？🎈'],
+  ['Chorinho', 'Teary', 'Lagrimita', 'น้ำตาซึม', 'うるうる'],
+  ['compras', 'purchases', 'compras', 'การซื้อ', '購入'],
+  ['corações dados', 'hearts given', 'corazones dados', 'หัวใจที่ให้', 'あげたハート'],
+  ['corações recebidos', 'hearts received', 'corazones recibidos', 'หัวใจที่ได้รับ', 'もらったハート'],
+  ['Correu na semana do aniversário do BRS48', 'Ran in BRS48\'s anniversary week', 'Corrió en la semana del aniversario de BRS48', 'วิ่งในสัปดาห์ครบรอบ BRS48', 'BRS48周年の週に走った'],
+  ['Correu na semana do Dia das Crianças', 'Ran in Children\'s Day week', 'Corrió en la semana del Día del Niño', 'วิ่งในสัปดาห์วันเด็ก', 'こどもの日の週に走った'],
+  ['corridas', 'runs', 'carreras', 'รอบ', 'ラン'],
+  ['Desde 13/11/2015 brilhando ✨', 'Shining since 11/13/2015 ✨', 'Brillando desde el 13/11/2015 ✨', 'เปล่งประกายตั้งแต่ 13/11/2015 ✨', '2015/11/13からキラキラ ✨'],
+  ['Dia das Crianças', 'Children\'s Day', 'Día del Niño', 'วันเด็ก', 'こどもの日'],
+  ['dias diferentes', 'different days', 'días distintos', 'วันที่ต่างกัน', '日'],
+  ['Feliz Dia das Crianças, {n}! 🧸', 'Happy Children\'s Day, {n}! 🧸', '¡Feliz Día del Niño, {n}! 🧸', 'สุขสันต์วันเด็กนะ {n}! 🧸', 'こどもの日おめでとう、{n}！🧸'],
+  ['Festa 48', 'Party 48', 'Fiesta 48', 'ปาร์ตี้ 48', 'パーティー48'],
+  ['Hashire! Penguin!', 'Hashire! Penguin!', '¡Hashire! Penguin!', 'Hashire! Penguin!', '走れ！ペンギン！'],
+  ['Hoje eu ganho doce, né? 🍭', 'I get candy today, right? 🍭', 'Hoy me dan dulces, ¿no? 🍭', 'วันนี้ได้ขนมใช่ไหม? 🍭', '今日はおかしもらえるよね？🍭'],
+  ['Jardineira colorida', 'Colorful overalls', 'Peto de colores', 'เอี๊ยมสีสดใส', 'カラフルサロペット'],
+  ['Nível', 'Level', 'Nivel', 'เลเวล', 'レベル'],
+  ['Padrão', 'Default', 'Estándar', 'ค่าเริ่มต้น', 'デフォルト'],
+  ['Parabéns, BRS48! 🎂', 'Happy birthday, BRS48! 🎂', '¡Feliz aniversario, BRS48! 🎂', 'สุขสันต์วันเกิด BRS48! 🎂', 'BRS48おめでとう！🎂'],
+  ['Próximo nível', 'Next level', 'Siguiente nivel', 'เลเวลถัดไป', '次のレベル'],
+  ['recados', 'messages', 'mensajes', 'ข้อความ', 'メッセージ'],
+  ['Surpresa', 'Surprise', 'Sorpresa', 'ประหลาดใจ', 'びっくり'],
+  ['Tirar foto com o pet', 'Take a photo with the pet', 'Tomar foto con la mascota', 'ถ่ายรูปกับสัตว์เลี้ยง', 'ペットと写真をとる'],
+  ['Vamos cantar parabéns no palco! 🎤', 'Let\'s sing happy birthday on stage! 🎤', '¡Cantemos feliz cumpleaños en el escenario! 🎤', 'มาร้องเพลงวันเกิดบนเวทีกัน! 🎤', 'ステージでハッピーバースデーを歌おう！🎤'],
+  ['YouTube do BRS48', 'BRS48 on YouTube', 'YouTube de BRS48', 'BRS48 บน YouTube', 'BRS48のYouTube'],
+  ['YouTube do BRS48 ↗', 'BRS48 on YouTube ↗', 'YouTube de BRS48 ↗', 'BRS48 บน YouTube ↗', 'BRS48のYouTube ↗']
+];
+
+// Lista multilíngue: birthdayLabels (frase original em português)
+window.TW_I18N.rows.birthdayLabels = [
+  ['Abril', 'April', 'Abril', 'เมษายน', '4月'],
+  ['Agosto', 'August', 'Agosto', 'สิงหาคม', '8月'],
+  ['Aniversário', 'Birthday', 'Cumpleaños', 'วันเกิด', '誕生日'],
+  ['Dá para trocar de novo em {data}.', 'You can change it again on {data}.', 'Se puede cambiar de nuevo el {data}.', 'เปลี่ยนได้อีกครั้งวันที่ {data}', '{data}にまた変更できます。'],
+  ['Dezembro', 'December', 'Diciembre', 'ธันวาคม', '12月'],
+  ['Dia', 'Day', 'Día', 'วัน', '日'],
+  ['Escolha o dia e o mês do aniversário.', 'Pick the day and month of your birthday.', 'Elige el día y el mes de tu cumpleaños.', 'เลือกวันและเดือนเกิด', '誕生日の日と月を選んでね。'],
+  ['Essa data não existe.', 'That date does not exist.', 'Esa fecha no existe.', 'ไม่มีวันที่นี้', 'その日付はありません。'],
+  ['Feliz aniversário! Hoje o seu perfil está em festa 🎉', 'Happy birthday! Your profile is partying today 🎉', '¡Feliz cumpleaños! Hoy tu perfil está de fiesta 🎉', 'สุขสันต์วันเกิด! วันนี้โปรไฟล์ของคุณมีปาร์ตี้ 🎉', 'お誕生日おめでとう！今日はプロフィールがパーティー🎉'],
+  ['Fevereiro', 'February', 'Febrero', 'กุมภาพันธ์', '2月'],
+  ['Hoje é aniversário de {nick}! Deixe um recado 💌', "Today is {nick}'s birthday! Leave a message 💌", '¡Hoy es el cumpleaños de {nick}! Déjale un mensaje 💌', 'วันนี้วันเกิดของ {nick}! ฝากข้อความหน่อยนะ 💌', '今日は{nick}の誕生日！メッセージを送ろう💌'],
+  ['Janeiro', 'January', 'Enero', 'มกราคม', '1月'],
+  ['Julho', 'July', 'Julio', 'กรกฎาคม', '7月'],
+  ['Junho', 'June', 'Junio', 'มิถุนายน', '6月'],
+  ['Maio', 'May', 'Mayo', 'พฤษภาคม', '5月'],
+  ['Março', 'March', 'Marzo', 'มีนาคม', '3月'],
+  ['Mês', 'Month', 'Mes', 'เดือน', '月'],
+  ['Novembro', 'November', 'Noviembre', 'พฤศจิกายน', '11月'],
+  ['O aniversário só pode ser trocado 1 vez por ano.', 'Your birthday can only be changed once a year.', 'El cumpleaños solo se puede cambiar 1 vez al año.', 'เปลี่ยนวันเกิดได้ปีละ 1 ครั้งเท่านั้น', '誕生日の変更は1年に1回だけです。'],
+  ['Outubro', 'October', 'Octubre', 'ตุลาคม', '10月'],
+  ['Setembro', 'September', 'Septiembre', 'กันยายน', '9月'],
+  ['Só dia e mês, sem o ano. No seu dia, seu perfil vira festa! Dá para trocar 1 vez por ano.', 'Just day and month, no year. On your day, your profile turns into a party! You can change it once a year.', 'Solo día y mes, sin el año. ¡En tu día, tu perfil se vuelve fiesta! Se puede cambiar 1 vez al año.', 'แค่วันและเดือน ไม่ต้องใส่ปี วันเกิดของคุณ โปรไฟล์จะกลายเป็นปาร์ตี้! เปลี่ยนได้ปีละ 1 ครั้ง', '日と月だけ（年はいりません）。誕生日にはプロフィールがパーティーに！変更は1年に1回。']
+];
+
+// Lista multilíngue: homeIntroLabels (frase original em português)
+window.TW_I18N.rows.homeIntroLabels = [
+  ["Aniversário no perfil: ★50 e card especial no seu dia","Birthday on your profile: ★50 and a special card on your day","Cumpleaños en el perfil: ★50 y carta especial en tu día","วันเกิดในโปรไฟล์: รับ ★50 และการ์ดพิเศษในวันของคุณ","プロフィールに誕生日：当日は★50とスペシャルカード"],
+  ["Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet (Ritmo e Pular corda)","Backstage⭐Pet!: adopt, care for, dress up and play with your pet (Rhythm and Jump rope)","Backstage⭐Pet!: adopta, cuida, viste y juega con tu mascota (Ritmo y Saltar la cuerda)","Backstage⭐Pet!: รับเลี้ยง ดูแล แต่งตัว และเล่นกับสัตว์เลี้ยง (จังหวะและกระโดดเชือก)","Backstage⭐Pet!：ペットをおむかえしてお世話・着せかえ・ミニゲーム（リズム、なわとび）"],
+  ["Câmera com photocard, molduras, poses e expressões","Camera with photocard, frames, poses and expressions","Cámara con photocard, marcos, poses y expresiones","กล้องพร้อมโฟโต้การ์ด กรอบ โพส และสีหน้า","フォトカード、フレーム、ポーズ、表情つきカメラ"],
+  ["Cartas de poder: Fever, Ímã, Abdução por UFO, Mega e Unit Mode","Power cards: Fever, Magnet, UFO Abduction, Mega and Unit Mode","Cartas de poder: Fever, Imán, Abducción OVNI, Mega y Unit Mode","การ์ดพลัง: Fever, แม่เหล็ก, ยูเอฟโอ, Mega และ Unit Mode","パワーカード：フィーバー、マグネット、UFO、メガ、ユニットモード"],
+  ["Center⭐Run!: corra pelo palco, pegue estrelas e microfones e suba de Audição até Kami-Oshi","Center⭐Run!: run across the stage, grab stars and mics, and rise from Audition to Kami-Oshi","Center⭐Run!: corre por el escenario, atrapa estrellas y micrófonos y sube de Audición a Kami-Oshi","Center⭐Run!: วิ่งบนเวที เก็บดาวและไมค์ ไต่จากออดิชันถึงคามิโอชิ","Center⭐Run!：ステージを走って星とマイクを集め、オーディションから神推しへ"],
+  ["Jogo em português, inglês, espanhol, tailandês e japonês","Game in Portuguese, English, Spanish, Thai and Japanese","Juego en portugués, inglés, español, tailandés y japonés","เกมมีภาษาโปรตุเกส อังกฤษ สเปน ไทย และญี่ปุ่น","ポルトガル語・英語・スペイン語・タイ語・日本語に対応"],
+  ["Missões do dia, ranking online e recorde de cada personagem","Daily missions, online ranking and a record for each character","Misiones diarias, ranking online y récord de cada personaje","ภารกิจรายวัน อันดับออนไลน์ และสถิติของแต่ละตัวละคร","デイリーミッション、オンラインランキング、キャラごとの記録"],
+  ["Moon⭐Duo!: monte cenas fofas com outro Idol e mande presentes","Moon⭐Duo!: make cute scenes with another Idol and send gifts","Moon⭐Duo!: crea escenas lindas con otro Idol y envía regalos","Moon⭐Duo!: สร้างฉากน่ารักกับไอดอลคนอื่นและส่งของขวัญ","Moon⭐Duo!：ほかのアイドルとかわいいシーンを作ってプレゼントも"],
+  ["Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias com níveis","Profile with Build Idol, Studio, shop, hearts, messages and leveled badges","Perfil con Armar Idol, Estudio, tiendita, corazones, mensajes e insignias con niveles","โปรไฟล์พร้อมสร้างไอดอล สตูดิโอ ร้านค้า หัวใจ ข้อความ และเหรียญหลายระดับ","アイドルづくり、スタジオ、ショップ、ハート、メッセージ、レベルつきバッジのプロフィール"],
+  ["Star⭐Gacha!: 1 giro por dia com estrelas, bônus e cards de outros jogadores","Star⭐Gacha!: 1 spin a day with stars, bonuses and other players' cards","Star⭐Gacha!: 1 giro al día con estrellas, bonos y cartas de otros jugadores","Star⭐Gacha!: หมุนวันละครั้ง ได้ดาว โบนัส และการ์ดผู้เล่นคนอื่น","Star⭐Gacha!：1日1回、スター・ボーナス・ほかのプレイヤーのカード"],
+  ["Temas da temporada com música, roupa e insígnia especiais","Seasonal themes with special music, outfit and badge","Temas de temporada con música, ropa e insignia especiales","ธีมตามฤดูกาลพร้อมเพลง ชุด และเหรียญพิเศษ","季節のテーマ：特別な曲・衣装・バッジ"]
+];
+
+// Lista multilíngue: moonDuoLabels (frase original em português)
+window.TW_I18N.rows.moonDuoLabels = [
+  ['{nick} te mandou um presente pelo Moon⭐Duo!', '{nick} sent you a gift through Moon⭐Duo!', '¡{nick} te envió un regalo por Moon⭐Duo!', '{nick} ส่งของขวัญให้คุณผ่าน Moon⭐Duo!', '{nick}がMoon⭐Duo!でプレゼントをくれたよ！'],
+  ['Acende o lightstick! 💜', 'Light up the lightstick! 💜', '¡Enciende el lightstick! 💜', 'เปิดแท่งไฟเลย! 💜', 'ペンライトつけて！💜'],
+  ['Aparecer no Moon⭐Duo! de outras pessoas', "Appear in other people's Moon⭐Duo!", 'Aparecer en el Moon⭐Duo! de otras personas', 'ให้คนอื่นเลือกฉันใน Moon⭐Duo!', 'ほかの人のMoon⭐Duo!に出る'],
+  ['As estrelas saem do seu saldo. 1 presente por pessoa por dia.', 'Stars come from your balance. 1 gift per person per day.', 'Las estrellas salen de tu saldo. 1 regalo por persona al día.', 'ดาวจะหักจากยอดของคุณ ส่งได้คนละ 1 ครั้งต่อวัน', 'スターはあなたの残高から。1人に1日1回まで。'],
+  ['Bora ensaiar mais um pouquinho? 🎶', 'Shall we rehearse a little more? 🎶', '¿Ensayamos un poquito más? 🎶', 'ซ้อมอีกนิดไหม? 🎶', 'もうちょっと練習しよっか？🎶'],
+  ['Bora torcer por {oshi} juntos! 💖', "Let's cheer for {oshi} together! 💖", '¡Animemos a {oshi} juntos! 💖', 'มาเชียร์ {oshi} ด้วยกัน! 💖', 'いっしょに{oshi}を応援しよう！💖'],
+  ['Brilhando igual neon! ✨', 'Shining like neon! ✨', '¡Brillando como neón! ✨', 'เปล่งแสงเหมือนนีออน! ✨', 'ネオンみたいにキラキラ！✨'],
+  ['Cada ensaio te deixa mais forte! 🔥', 'Every rehearsal makes you stronger! 🔥', '¡Cada ensayo te hace más fuerte! 🔥', 'ทุกการซ้อมทำให้คุณแข็งแกร่งขึ้น! 🔥', '練習するたびに強くなってるよ！🔥'],
+  ['Café kawaii', 'Kawaii café', 'Café kawaii', 'คาเฟ่น่ารัก', 'かわいいカフェ'],
+  ['Cena', 'Scene', 'Escena', 'ฉาก', 'シーン'],
+  ['Cenário', 'Background', 'Escenario', 'ฉากหลัง', '背景'],
+  ['cenas', 'scenes', 'escenas', 'ฉาก', 'シーン'],
+  ['Com os pets', 'With the pets', 'Con las mascotas', 'กับสัตว์เลี้ยง', 'ペットといっしょ'],
+  ['Comidinha', 'Snack time', 'Merienda', 'ขนมอร่อย', 'おやつタイム'],
+  ['Conta comigo sempre! 🤝', 'You can always count on me! 🤝', '¡Cuenta conmigo siempre! 🤝', 'พึ่งพาฉันได้เสมอ! 🤝', 'いつでもたよってね！🤝'],
+  ['Coração juntos', 'Heart together', 'Corazón juntos', 'หัวใจด้วยกัน', 'ふたりでハート'],
+  ['Dança', 'Dance', 'Baile', 'เต้น', 'ダンス'],
+  ['Debaixo do guarda-chuva tá quentinho! ☂️', "It's cozy under the umbrella! ☂️", '¡Bajo el paraguas está calentito! ☂️', 'ใต้ร่มอบอุ่นจัง! ☂️', '傘の下はぽかぽか！☂️'],
+  ['Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.', 'Two friends, a thousand scenes! Strike poses, dance and share snacks with another Idol.', '¡Dos amistades, mil escenas! Poses, bailes y meriendas con otro Idol.', 'เพื่อนสองคน พันฉาก! โพส เต้น และกินขนมกับไอดอลคนอื่น', 'ふたりで無限のシーン！ほかのアイドルとポーズ・ダンス・おやつを楽しもう'],
+  ['Dueto', 'Duet', 'Dueto', 'ดูเอ็ต', 'デュエット'],
+  ['Entre com Google para usar o Moon⭐Duo!', 'Sign in with Google to use Moon⭐Duo!', '¡Entra con Google para usar Moon⭐Duo!', 'เข้าสู่ระบบด้วย Google เพื่อใช้ Moon⭐Duo!', 'Moon⭐Duo!はGoogleでログインして遊んでね'],
+  ['Enviar', 'Send', 'Enviar', 'ส่ง', 'おくる'],
+  ['Enviar presente', 'Send a gift', 'Enviar regalo', 'ส่งของขวัญ', 'プレゼントをおくる'],
+  ['Escolha com quem fazer a dupla:', 'Choose your duo partner:', 'Elige con quién hacer dúo:', 'เลือกคู่ของคุณ:', 'ペアになる人をえらんでね：'],
+  ['Escolha outra pessoa para a dupla 😉', 'Pick someone else for your duo 😉', 'Elige a otra persona para el dúo 😉', 'เลือกคนอื่นมาเป็นคู่นะ 😉', 'ほかの人をえらんでね😉'],
+  ['Essa pessoa não está participando do Moon⭐Duo!', 'This person is not taking part in Moon⭐Duo!', 'Esta persona no participa en Moon⭐Duo!', 'คนนี้ไม่ได้เข้าร่วม Moon⭐Duo!', 'この人はMoon⭐Duo!に参加していません'],
+  ['Esse coração é pra você! 🫶', 'This heart is for you! 🫶', '¡Este corazón es para ti! 🫶', 'หัวใจนี้ให้คุณ! 🫶', 'このハートはあなたに！🫶'],
+  ['Estrelas insuficientes.', 'Not enough stars.', 'Estrellas insuficientes.', 'ดาวไม่พอ', 'スターが足りません。'],
+  ['Expressão de {nick}', "{nick}'s expression", 'Expresión de {nick}', 'สีหน้าของ {nick}', '{nick}の表情'],
+  ['Faça um Moon⭐Duo!', 'Make a Moon⭐Duo!', '¡Haz un Moon⭐Duo!', 'ทำ Moon⭐Duo!', 'Moon⭐Duo!をつくろう'],
+  ['Fez 5 cenas no Moon⭐Duo!', 'Made 5 Moon⭐Duo! scenes', 'Hizo 5 escenas en Moon⭐Duo!', 'สร้างฉาก Moon⭐Duo! 5 ฉาก', 'Moon⭐Duo!のシーンを5回つくった'],
+  ['Força! Eu acredito em você 💪', 'You got this! I believe in you 💪', '¡Ánimo! Creo en ti 💪', 'สู้ๆ! ฉันเชื่อในตัวคุณ 💪', 'ファイト！信じてるよ💪'],
+  ['Ganbatte! がんばって！ 💜', 'Ganbatte! がんばって！ 💜', '¡Ganbatte! がんばって！ 💜', 'Ganbatte! がんばって！ 💜', 'がんばって！💜'],
+  ['Guarda-chuva', 'Umbrella', 'Paraguas', 'ร่มคันเดียวกัน', 'あいあいがさ'],
+  ['High-touch', 'High five', 'Choca esos cinco', 'ไฮไฟว์', 'ハイタッチ'],
+  ['Hoje vai dar tudo certo! 🍀', 'Everything will go well today! 🍀', '¡Hoy todo saldrá bien! 🍀', 'วันนี้ทุกอย่างจะดีแน่นอน! 🍀', '今日はぜったいうまくいく！🍀'],
+  ['Itadakimasu! Tá uma delícia! 🍓', "Itadakimasu! It's delicious! 🍓", '¡Itadakimasu! ¡Qué rico! 🍓', 'อิทาดากิมัส! อร่อยมาก! 🍓', 'いただきます！おいしい！🍓'],
+  ['Juntos a gente vai mais longe! 🤝', 'Together we go further! 🤝', '¡Juntos llegamos más lejos! 🤝', 'ไปด้วยกันไปได้ไกลกว่า! 🤝', 'いっしょならもっと遠くへ！🤝'],
+  ['Lightsticks', 'Lightsticks', 'Lightsticks', 'แท่งไฟ', 'ペンライト'],
+  ['Mãos dadas', 'Holding hands', 'De la mano', 'จับมือกัน', 'てをつなごう'],
+  ['Minha expressão', 'My expression', 'Mi expresión', 'สีหน้าของฉัน', 'わたしの表情'],
+  ['Monte cenas fofas com outro Idol do TsuLiPa⭐World!', 'Make cute scenes with another TsuLiPa⭐World Idol!', '¡Crea escenas lindas con otro Idol de TsuLiPa⭐World!', 'สร้างฉากน่ารักกับไอดอลคนอื่นใน TsuLiPa⭐World!', 'TsuLiPa⭐Worldのほかのアイドルとかわいいシーンを作ろう！'],
+  ['Não para de dançar! 💃', "Don't stop dancing! 💃", '¡No pares de bailar! 💃', 'อย่าหยุดเต้นนะ! 💃', 'おどりつづけよう！💃'],
+  ['Ninguém com esse nome.', 'Nobody with that name.', 'Nadie con ese nombre.', 'ไม่มีใครชื่อนี้', 'その名前の人はいません。'],
+  ['Nossa harmonia ficou perfeita! 🎵', 'Our harmony was perfect! 🎵', '¡Nuestra armonía quedó perfecta! 🎵', 'เสียงประสานของเราเพอร์เฟกต์! 🎵', 'ハモり完璧！🎵'],
+  ['Obrigado pelo presente! {emo}', 'Thanks for the gift! {emo}', '¡Gracias por el regalo! {emo}', 'ขอบคุณสำหรับของขวัญ! {emo}', 'プレゼントありがとう！{emo}'],
+  ['Obrigado por ser meu duo! 🌙', 'Thanks for being my duo! 🌙', '¡Gracias por ser mi dúo! 🌙', 'ขอบคุณที่เป็นคู่ของฉัน! 🌙', 'ペアになってくれてありがとう！🌙'],
+  ['Os pets também viraram amigos! 🐾', 'Our pets became friends too! 🐾', '¡Las mascotas también se hicieron amigas! 🐾', 'สัตว์เลี้ยงก็เป็นเพื่อนกันแล้ว! 🐾', 'ペットたちもなかよし！🐾'],
+  ['PNG sem fundo', 'PNG without background', 'PNG sin fondo', 'PNG ไม่มีพื้นหลัง', '背景なしPNG'],
+  ['Pose dupla', 'Double pose', 'Pose doble', 'โพสคู่', 'ダブルポーズ'],
+  ['Pose Neon', 'Neon pose', 'Pose neón', 'โพสนีออน', 'ネオンポーズ'],
+  ['Presente enviado! {nick} vai receber quando entrar no jogo.', 'Gift sent! {nick} will get it when they open the game.', '¡Regalo enviado! {nick} lo recibirá al entrar al juego.', 'ส่งของขวัญแล้ว! {nick} จะได้รับเมื่อเข้าเกม', 'プレゼントを送ったよ！{nick}がゲームに来たら届きます。'],
+  ['Presente para {nick}', 'Gift for {nick}', 'Regalo para {nick}', 'ของขวัญสำหรับ {nick}', '{nick}へのプレゼント'],
+  ['Que dupla mais fofa a nossa! 🎀', 'What a cute duo we are! 🎀', '¡Qué dúo tan lindo somos! 🎀', 'เราเป็นคู่ที่น่ารักมาก! 🎀', 'わたしたち、かわいいペアだね！🎀'],
+  ['Respira fundo... você consegue! 🫶', 'Deep breath... you can do it! 🫶', 'Respira hondo... ¡tú puedes! 🫶', 'หายใจลึกๆ... คุณทำได้! 🫶', '深呼吸…きっとできるよ！🫶'],
+  ['Salvar PNG', 'Save PNG', 'Guardar PNG', 'บันทึก PNG', 'PNG保存'],
+  ['Selfie', 'Selfie', 'Selfie', 'เซลฟี่', 'セルフィー'],
+  ['Seu sorriso me dá energia! 😊', 'Your smile gives me energy! 😊', '¡Tu sonrisa me da energía! 😊', 'รอยยิ้มของคุณให้พลังฉัน! 😊', 'その笑顔で元気が出るよ！😊'],
+  ['Six Seven', 'Six Seven', 'Six Seven', 'Six Seven', 'シックスセブン'],
+  ['Six... SEVEN! 🙌', 'Six... SEVEN! 🙌', 'Six... ¡SEVEN! 🙌', 'Six... SEVEN! 🙌', 'シックス…セブン！🙌'],
+  ['Só carinho', 'Just love', 'Solo cariño', 'แค่ความรัก', 'きもちだけ'],
+  ['Sorria! Essa vai pro álbum! 📸', "Smile! This one's for the album! 📸", '¡Sonríe! ¡Esta va al álbum! 📸', 'ยิ้ม! รูปนี้ลงอัลบั้มแน่! 📸', '笑って！アルバム行き！📸'],
+  ['Sugestões', 'Suggestions', 'Sugerencias', 'แนะนำ', 'おすすめ'],
+  ['Tô muito feliz de estar aqui com você! 💖', "I'm so happy to be here with you! 💖", '¡Estoy muy feliz de estar aquí contigo! 💖', 'ดีใจมากที่ได้อยู่ตรงนี้กับคุณ! 💖', 'いっしょにいられてうれしい！💖'],
+  ['Toca aqui! Arrasamos! 🙌', 'High five! We nailed it! 🙌', '¡Choca! ¡Lo logramos! 🙌', 'ไฮไฟว์! เราทำได้! 🙌', 'ハイタッチ！最高！🙌'],
+  ['Toque em {nick} para ouvir uma mensagem!', 'Tap {nick} to hear a message!', '¡Toca a {nick} para escuchar un mensaje!', 'แตะ {nick} เพื่อฟังข้อความ!', '{nick}をタップしてメッセージを聞こう！'],
+  ['Trocar dupla', 'Change partner', 'Cambiar pareja', 'เปลี่ยนคู่', 'ペアをかえる'],
+  ['Vamos fazer história no BRS48! 🎤', "Let's make history in BRS48! 🎤", '¡Hagamos historia en BRS48! 🎤', 'มาสร้างประวัติศาสตร์ใน BRS48 กัน! 🎤', 'BRS48で歴史をつくろう！🎤'],
+  ['Vamos ser Center juntos! ⭐', "Let's be Center together! ⭐", '¡Seamos Center juntos! ⭐', 'มาเป็นเซ็นเตอร์ด้วยกันนะ! ⭐', 'いっしょにセンターになろう！⭐'],
+  ['Você brilha muito no palco! ✨', 'You really shine on stage! ✨', '¡Brillas mucho en el escenario! ✨', 'คุณเปล่งประกายบนเวทีมาก! ✨', 'ステージでキラキラだね！✨'],
+  ['Você chegou ao limite de presentes de hoje.', "You reached today's gift limit.", 'Llegaste al límite de regalos de hoy.', 'คุณส่งของขวัญครบจำนวนของวันนี้แล้ว', '今日のプレゼントの上限です。'],
+  ['Você é incrível do jeitinho que é! 🌈', "You're amazing just the way you are! 🌈", '¡Eres increíble tal como eres! 🌈', 'คุณยอดเยี่ยมในแบบของคุณ! 🌈', 'そのままのあなたが最高！🌈'],
+  ['Você já mandou um presente hoje para essa pessoa.', 'You already sent this person a gift today.', 'Ya le enviaste un regalo hoy a esta persona.', 'วันนี้คุณส่งของขวัญให้คนนี้แล้ว', '今日はもうこの人にプレゼントを送ったよ。'],
+  ['Você merece todos os aplausos! 👏', 'You deserve all the applause! 👏', '¡Mereces todos los aplausos! 👏', 'คุณสมควรได้รับเสียงปรบมือทั้งหมด! 👏', '拍手はぜんぶあなたに！👏']
+];
+
+// Lista multilíngue: gachaCardBirthdayLabels (frase original em português)
+window.TW_I18N.rows.gachaCardBirthdayLabels = [
+  ['Card especial de aniversário', 'Special birthday card', 'Carta especial de cumpleaños', 'การ์ดวันเกิดพิเศษ', '誕生日スペシャルカード'],
+  ['estrelinhas', 'stars', 'estrellitas', 'ดาว', 'スター'],
+  ['Fechar', 'Close', 'Cerrar', 'ปิด', 'とじる'],
+  ['Feliz aniversário, {nick}!', 'Happy birthday, {nick}!', '¡Feliz cumpleaños, {nick}!', 'สุขสันต์วันเกิด {nick}!', '{nick}、お誕生日おめでとう！'],
+  ['Hoje o TsuLiPa⭐World inteiro está em festa por você! Que o seu novo ciclo seja cheio de brilho, música, amizades e muitos Centers! ✨🎤💖', 'Today the whole TsuLiPa⭐World is celebrating you! May your new year be full of sparkle, music, friendships and lots of Centers! ✨🎤💖', '¡Hoy todo TsuLiPa⭐World está de fiesta por ti! ¡Que tu nuevo ciclo esté lleno de brillo, música, amistades y muchos Centers! ✨🎤💖', 'วันนี้ทั้ง TsuLiPa⭐World ฉลองให้คุณ! ขอให้ปีใหม่ของคุณเต็มไปด้วยประกาย เพลง มิตรภาพ และเซ็นเตอร์มากมาย! ✨🎤💖', '今日はTsuLiPa⭐World全体であなたをお祝い！新しい一年がキラキラと音楽と友だちとたくさんのセンターでいっぱいになりますように！✨🎤💖'],
+  ['Nenhum card ainda.', 'No cards yet.', 'Aún no hay cartas.', 'ยังไม่มีการ์ด', 'まだカードがないよ。'],
+  ['Nenhum card ainda. Gire o Star⭐Gacha!', 'No cards yet. Spin the Star⭐Gacha!', 'Aún no hay cartas. ¡Gira el Star⭐Gacha!', 'ยังไม่มีการ์ด หมุน Star⭐Gacha! เลย', 'まだカードがないよ。Star⭐Gacha!をまわそう！'],
+  ['Obrigado! 💖', 'Thank you! 💖', '¡Gracias! 💖', 'ขอบคุณ! 💖', 'ありがとう！💖'],
+  ['Que o seu novo ciclo seja cheio de brilho, música e muitos Centers! ✨', 'May your new year be full of sparkle, music and lots of Centers! ✨', '¡Que tu nuevo ciclo esté lleno de brillo, música y muchos Centers! ✨', 'ขอให้ปีใหม่ของคุณเต็มไปด้วยประกาย เพลง และเซ็นเตอร์มากมาย! ✨', '新しい一年がキラキラと音楽とたくさんのセンターでいっぱいになりますように！✨'],
+  ['Salvar card', 'Save card', 'Guardar carta', 'บันทึกการ์ด', 'カードを保存'],
+  ['Salvar como imagem', 'Save as image', 'Guardar como imagen', 'บันทึกเป็นรูป', '画像で保存'],
+  ['Seus últimos cards', 'Your latest cards', 'Tus últimas cartas', 'การ์ดล่าสุดของคุณ', 'さいきんのカード'],
+  ['Últimos cards do Star⭐Gacha!', 'Latest Star⭐Gacha! cards', 'Últimas cartas de Star⭐Gacha!', 'การ์ดล่าสุดจาก Star⭐Gacha!', 'Star⭐Gacha!の最新カード'],
+  ['Ver card', 'View card', 'Ver carta', 'ดูการ์ด', 'カードを見る']
+];
+
+// Lista multilíngue: moonDuoAccessoryLabels (frase original em português)
+window.TW_I18N.rows.moonDuoAccessoryLabels = [
+  ['Acessórios','Accessories','Accesorios','เครื่องประดับ','アクセサリー'],
+  ['Chapéu de Palha','Straw hat','Sombrero de paja','หมวกฟาง','麦わら帽子'],
+  ['Coroa de Tulipas','Tulip crown','Corona de tulipanes','มงกุฎดอกทิวลิป','チューリップの花冠'],
+  ['Itens','Items','Objetos','ไอเท็ม','アイテム'],
+  ['Torrada','Toast','Tostada','ขนมปังปิ้ง','トースト'],
+  ['Use seus acessórios comprados no montador do Idol.','Use purchased accessories in the Idol editor.','Usa tus accesorios comprados en el editor de Idol.','ใช้อุปกรณ์เสริมที่ซื้อแล้วในตัวแต่งไอดอล','購入したアクセサリーをアイドル編集で使えます。']
+];
+
+// Lista multilíngue: moonDuoProfileLabels (frase original em português)
+window.TW_I18N.rows.moonDuoProfileLabels = [
+  ['(e mais {n} pessoas!)', '(and {n} more people!)', '(¡y {n} personas más!)', '(และอีก {n} คน!)', '（ほかに{n}人も！）'],
+  ['(e mais 1 pessoa!)', '(and 1 more person!)', '(¡y 1 persona más!)', '(และอีก 1 คน!)', '（ほかに1人も！）'],
+  ['{item} está na lojinha do perfil (Montar Idol) por ★{n}.', '{item} is in the profile shop (Build Idol) for ★{n}.', '{item} está en la tiendita del perfil (Armar Idol) por ★{n}.', '{item} มีขายในร้านของโปรไฟล์ (สร้างไอดอล) ราคา ★{n}', '{item}はプロフィールのショップ（アイドルをつくる）で★{n}。'],
+  ['{nick} encontrou você no Moon⭐Duo! e fez uma cena com você 🌙', '{nick} found you on Moon⭐Duo! and made a scene with you 🌙', '¡{nick} te encontró en Moon⭐Duo! e hizo una escena contigo 🌙', '{nick} เจอคุณใน Moon⭐Duo! และทำฉากกับคุณ 🌙', '{nick}がMoon⭐Duo!であなたを見つけて、いっしょにシーンを作ったよ🌙'],
+  ['5 melhores corridas', 'Top 5 runs', '5 mejores carreras', '5 รอบที่ดีที่สุด', 'ベスト5ラン'],
+  ['5 melhores subidas', 'Top 5 climbs', '5 mejores subidas', '5 รอบที่ดีที่สุด', 'ベスト5回'],
+  ['Aniversariantes de hoje', "Today's birthdays", 'Cumpleaños de hoy', 'วันเกิดวันนี้', '今日の誕生日'],
+  ['Aparecer no Moon⭐Duo! e nos outdoors do Center Run', 'Appear in Moon⭐Duo! and on the Center Run billboards', 'Aparecer en Moon⭐Duo! y en los carteles de Center Run', 'ให้ฉันปรากฏใน Moon⭐Duo! และบนป้ายใน Center Run', 'Moon⭐Duo!とCenter Runの看板に出る'],
+  ['Cenas no Moon⭐Duo!', 'Moon⭐Duo! scenes', 'Escenas en Moon⭐Duo!', 'ฉาก Moon⭐Duo!', 'Moon⭐Duo!のシーン'],
+  ['Corridas', 'Runs', 'Carreras', 'รอบวิ่ง', 'ラン'],
+  ['Desbloquear', 'Unlock', 'Desbloquear', 'ปลดล็อก', '解放する'],
+  ['Desbloqueie com estrelas para usar no Moon⭐Duo!', 'Unlock with stars to use in Moon⭐Duo!', '¡Desbloquéalo con estrellas para usarlo en Moon⭐Duo!', 'ปลดล็อกด้วยดาวเพื่อใช้ใน Moon⭐Duo!', 'スターで解放するとMoon⭐Duo!で使えます'],
+  ['desde', 'since', 'desde', 'ตั้งแต่', 'から'],
+  ['Devolver ao Moon⭐Duo!/outdoors', 'Return to Moon⭐Duo!/billboards', 'Devolver a Moon⭐Duo!/carteles', 'คืนสู่ Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板に戻す'],
+  ['Do perfil', 'From the profile', 'Del perfil', 'จากโปรไฟล์', 'プロフィール'],
+  ['Especiais', 'Specials', 'Especiales', 'พิเศษ', 'スペシャル'],
+  ['Estrelas ganhas', 'Stars earned', 'Estrellas ganadas', 'ดาวที่ได้', '獲得スター'],
+  ['Expressões', 'Expressions', 'Expresiones', 'สีหน้า', '表情'],
+  ['Fazer um Moon⭐Duo! com {nick}', 'Make a Moon⭐Duo! with {nick}', 'Hacer un Moon⭐Duo! con {nick}', 'ทำ Moon⭐Duo! กับ {nick}', '{nick}とMoon⭐Duo!をつくる'],
+  ['Fora do Moon⭐Duo!', 'Out of Moon⭐Duo!', 'Fuera de Moon⭐Duo!', 'ไม่อยู่ใน Moon⭐Duo!', 'Moon⭐Duo!不参加'],
+  ['Giros no Star⭐Gacha!', 'Star⭐Gacha! spins', 'Giros en Star⭐Gacha!', 'หมุน Star⭐Gacha!', 'Star⭐Gacha!の回数'],
+  ['Hoje no jogo', 'Today in the game', 'Hoy en el juego', 'วันนี้ในเกม', '今日のゲーム'],
+  ['Jogadores', 'Players', 'Jugadores', 'ผู้เล่น', 'プレイヤー'],
+  ['Limpar foto', 'Clear photo', 'Borrar foto', 'ล้างรูป', '写真をリセット'],
+  ['Lojinha de poses e extras', 'Poses & extras shop', 'Tiendita de poses y extras', 'ร้านโพสและของพิเศษ', 'ポーズとおまけのショップ'],
+  ['Mais escolhidos no Moon⭐Duo! (7 dias)', 'Most picked in Moon⭐Duo! (7 days)', 'Más elegidos en Moon⭐Duo! (7 días)', 'ถูกเลือกมากที่สุดใน Moon⭐Duo! (7 วัน)', 'Moon⭐Duo!人気（7日間）'],
+  ['Missões feitas', 'Missions done', 'Misiones hechas', 'ภารกิจที่ทำ', '達成ミッション'],
+  ['Na lojinha', 'In the shop', 'En la tiendita', 'ในร้าน', 'ショップで'],
+  ['Não funcionou? Entrar de outro jeito', "Didn't work? Sign in another way", '¿No funcionó? Entrar de otra forma', 'ไม่ได้ผล? เข้าสู่ระบบอีกวิธี', 'うまくいかない？別の方法でログイン'],
+  ['Pose', 'Pose', 'Pose', 'โพส', 'ポーズ'],
+  ['Poses e expressões valem para o Estúdio e para a câmera do jogo. Os extras do Moon⭐Duo! liberam cenas e cenários.', 'Poses and expressions work in the Studio and in the game camera. Moon⭐Duo! extras unlock scenes and backgrounds.', 'Las poses y expresiones sirven en el Estudio y en la cámara del juego. Los extras de Moon⭐Duo! desbloquean escenas y escenarios.', 'โพสและสีหน้าใช้ได้ในสตูดิโอและกล้องในเกม ของพิเศษ Moon⭐Duo! ปลดล็อกฉากและฉากหลัง', 'ポーズと表情はスタジオとゲームのカメラで使えます。Moon⭐Duo!のおまけはシーンと背景が解放されます。'],
+  ['Presente', 'Gift', 'Regalo', 'ของขวัญ', 'プレゼント'],
+  ['Presentes do Moon⭐Duo!', 'Moon⭐Duo! gifts', 'Regalos de Moon⭐Duo!', 'ของขวัญ Moon⭐Duo!', 'Moon⭐Duo!のプレゼント'],
+  ['Proibido copiar ou redistribuir o jogo, a arte e os personagens sem autorização.', 'Copying or redistributing the game, art and characters without permission is not allowed.', 'Prohibido copiar o redistribuir el juego, el arte y los personajes sin autorización.', 'ห้ามคัดลอกหรือเผยแพร่เกม งานศิลป์ และตัวละครโดยไม่ได้รับอนุญาต', 'ゲーム・イラスト・キャラクターの無断転載・再配布を禁止します。'],
+  ['Renomear pet', 'Rename pet', 'Renombrar mascota', 'เปลี่ยนชื่อสัตว์เลี้ยง', 'ペットの名前をかえる'],
+  ['Seu', 'Yours', 'Tuyo', 'ของคุณ', 'ゲット済み'],
+  ['seu saldo', 'your balance', 'tu saldo', 'ยอดของคุณ', '残高'],
+  ['Temas', 'Themes', 'Temas', 'ธีม', 'テーマ'],
+  ['Tirar do Moon⭐Duo!/outdoors', 'Remove from Moon⭐Duo!/billboards', 'Quitar de Moon⭐Duo!/carteles', 'เอาออกจาก Moon⭐Duo!/ป้าย', 'Moon⭐Duo!/看板から外す'],
+  ['Todas as contas', 'All accounts', 'Todas las cuentas', 'บัญชีทั้งหมด', 'すべてのアカウント'],
+  ['Todos os direitos reservados.', 'All rights reserved.', 'Todos los derechos reservados.', 'สงวนลิขสิทธิ์', 'All rights reserved.'],
+  ['Últimas 5 corridas', 'Last 5 runs', 'Últimas 5 carreras', '5 รอบล่าสุด', '最近の5ラン'],
+  ['Últimas 5 subidas', 'Last 5 climbs', 'Últimas 5 subidas', '5 รอบล่าสุด', '最近の5回'],
+  ['Você vai enviar', "You'll send", 'Vas a enviar', 'คุณจะส่ง', '送るもの']
+];
+
+// Lista multilíngue: miscStatusLabels (frase original em português)
+window.TW_I18N.rows.miscStatusLabels = [
+  ['Acessório', 'Accessory', 'Accesorio', 'เครื่องประดับ', 'アクセサリー'],
+  ['Look salvo! É assim que você aparece no Moon⭐Duo!', "Look saved! This is how you'll appear in Moon⭐Duo!", '¡Look guardado! Así apareces en Moon⭐Duo!', 'บันทึกลุคแล้ว! คุณจะปรากฏแบบนี้ใน Moon⭐Duo!', 'ルックを保存！Moon⭐Duo!ではこの姿で登場します'],
+  ['Online agora', 'Online now', 'En línea ahora', 'ออนไลน์ตอนนี้', 'いまオンライン'],
+  ['Orelhas de coelho', 'Bunny ears', 'Orejas de conejo', 'หูกระต่าย', 'うさみみ'],
+  ['Os 3 últimos cards que você tirar aparecem aqui. O novo sempre empurra o mais antigo.', 'Your last 3 cards show up here. A new one always pushes out the oldest.', 'Tus 3 últimas cartas aparecen aquí. La nueva siempre saca a la más antigua.', 'การ์ด 3 ใบล่าสุดจะแสดงตรงนี้ ใบใหม่จะดันใบเก่าที่สุดออก', '最新の3枚がここに並びます。新しいカードがいちばん古いカードと入れかわります'],
+  ['Salvar look', 'Save look', 'Guardar look', 'บันทึกลุค', 'ルックを保存'],
+  ['Só você vê, e só nesta aba. Para todo mundo continua o tema da data. Volte em “Tema da data” para sair.', 'Only you see it, only in this tab. Everyone else keeps the date theme. Pick “Date theme” to leave.', 'Solo tú lo ves, solo en esta pestaña. Para los demás sigue el tema de la fecha. Elige “Tema de la fecha” para salir.', 'เห็นแค่คุณ และเฉพาะแท็บนี้ คนอื่นยังเห็นธีมตามวันที่ เลือก “ธีมตามวันที่” เพื่อออก', 'あなたにだけ、このタブでだけ表示されます。ほかの人は日付のテーマのまま。「日付のテーマ」で戻せます'],
+  ['Vazio', 'Empty', 'Vacío', 'ว่าง', 'からっぽ'],
+  ['Você já girou hoje!', 'You already spun today!', '¡Ya giraste hoy!', 'วันนี้คุณหมุนแล้ว!', '今日はもう回したよ！']
+];
+
+// Lista multilíngue: encounterLabels (frase original em português)
+window.TW_I18N.rows.encounterLabels = [
+  ['Encontro de hoje', "Today's meeting", 'Encuentro de hoy', 'การพบกันวันนี้', '今日の出会い'],
+  ['Encontro do dia', 'Meeting of the day', 'Encuentro del día', 'การพบกันประจำวัน', '今日の出会い'],
+  ['estrelinhas pelo encontro!', 'stars for the meeting!', '¡estrellitas por el encuentro!', 'ดาวจากการพบกัน!', 'スターをゲット！'],
+  ['Foto', 'Photo', 'Foto', 'รูป', '写真'],
+  ['Quem vai aparecer hoje?', 'Who will show up today?', '¿Quién aparecerá hoy?', 'วันนี้ใครจะมา?', '今日は誰が来るかな？'],
+  ['ver de novo', 'see again', 'ver de nuevo', 'ดูอีกครั้ง', 'もう一度見る'],
+  ['Ver perfil', 'View profile', 'Ver perfil', 'ดูโปรไฟล์', 'プロフィールを見る']
+];
+
+// Lista multilíngue: pageHintLabels (frase original em português)
+window.TW_I18N.rows.pageHintLabels = [
+  ['✨ Surpresa! ✨', '✨ Surprise! ✨', '✨ ¡Sorpresa! ✨', '✨ เซอร์ไพรส์! ✨', '✨ サプライズ！ ✨'],
+  ['Baixar Render do Avatar', 'Download avatar render', 'Descargar render del avatar', 'ดาวน์โหลดภาพอวตาร', 'アバター画像を保存'],
+  ['Baixar Render em PNG', 'Download render as PNG', 'Descargar render en PNG', 'ดาวน์โหลดภาพ PNG', 'PNGで保存'],
+  ['Cor da Roupa', 'Outfit color', 'Color de la ropa', 'สีชุด', '衣装の色'],
+  ['Recarregar página', 'Reload page', 'Recargar página', 'โหลดหน้าใหม่', 'ページを再読み込み'],
+  ['Som desligado', 'Sound off', 'Sonido desactivado', 'ปิดเสียง', 'サウンドオフ'],
+  ['Som ligado', 'Sound on', 'Sonido activado', 'เปิดเสียง', 'サウンドオン'],
+  ['Tema do Oshi', 'Oshi theme', 'Tema del Oshi', 'ธีมโอชิ', '推しテーマ']
+];
+
+// Lista multilíngue: adminActionLabels (frase original em português)
+window.TW_I18N.rows.adminActionLabels = [
+  ['Completar missões do dia', 'Complete daily missions', 'Completar misiones del día', 'ทำภารกิจประจำวันให้ครบ', 'きょうのミッションを完了'],
+  ['Liberar tudo: desligado', 'Unlock all: off', 'Liberar todo: desactivado', 'ปลดล็อกทั้งหมด: ปิด', 'すべて解放：オフ'],
+  ['Liberar tudo: ligado', 'Unlock all: on', 'Liberar todo: activado', 'ปลดล็อกทั้งหมด: เปิด', 'すべて解放：オン'],
+  ['Liberar tudo: todas as roupas, poses, fundos, expressões e itens do Moon⭐Duo! ficam livres para você testar. Desligado, volta a valer só o que você comprou.',
+   'Unlock all: every outfit, pose, background, expression and Moon⭐Duo! item is free for you to test. When off, only what you bought counts again.',
+   'Liberar todo: toda la ropa, poses, fondos, expresiones y objetos de Moon⭐Duo! quedan libres para probar. Desactivado, vuelve a contar solo lo que compraste.',
+   'ปลดล็อกทั้งหมด: ชุด ท่าโพส ฉาก สีหน้า และไอเทม Moon⭐Duo! ใช้ทดสอบได้ทั้งหมด เมื่อปิด จะใช้ได้เฉพาะที่ซื้อแล้ว',
+   'すべて解放：服・ポーズ・背景・表情・Moon⭐Duo!のアイテムをすべてテストに使えます。オフにすると、買ったものだけに戻ります。'],
+  ['Missões completas!', 'Missions complete!', '¡Misiones completas!', 'ทำภารกิจครบแล้ว!', 'ミッション完了！']
+];
+
+// Lista multilíngue: groupEncounterLabels (frase original em português)
+window.TW_I18N.rows.groupEncounterLabels = [
+  ['Dupla do dia!', 'Duo of the day!', '¡Dúo del día!', 'คู่ประจำวัน!', '今日のデュオ！'],
+  ['Trio do dia!', 'Trio of the day!', '¡Trío del día!', 'ทริโอประจำวัน!', '今日のトリオ！']
+];
+
+// Lista multilíngue: seasonalThemeInfoLabels (frase original em português)
+window.TW_I18N.rows.seasonalThemeInfoLabels = [
+  ['{n} no jogo', '{n} in the game', '{n} en el juego', '{n} คนในเกม', '{n}人参加中'],
+  ['✨ Idols que você pode conhecer! ⭐', '✨ Idols you can meet! ⭐', '✨ ¡Idols que puedes conocer! ⭐', '✨ ไอดอลที่คุณจะได้รู้จัก! ⭐', '✨ 出会えるアイドルたち！⭐'],
+  ['Esse cenário volta na temporada do tema ({data}). Quem guardar durante o tema usa o ano todo.', 'This background comes back in its theme season ({data}). Keep it during the season to use it all year.', 'Este escenario vuelve en la temporada del tema ({data}). Si lo guardas durante el tema, lo usas todo el año.', 'ฉากนี้จะกลับมาในช่วงธีม ({data}) เก็บไว้ระหว่างช่วงธีมแล้วใช้ได้ทั้งปี', 'この背景はテーマの季節（{data}）に戻ってくるよ。期間中に保存すれば一年中使えるよ。'],
+  ['Grátis até', 'Free until', 'Gratis hasta', 'ฟรีถึง', '無料〜'],
+  ['Guardar para sempre', 'Keep forever', 'Guardar para siempre', 'เก็บไว้ตลอดไป', 'ずっと保存'],
+  ['Guarde para usar o ano todo, mesmo depois da temporada.', 'Keep it to use all year, even after the season.', 'Guárdalo para usarlo todo el año, incluso después de la temporada.', 'เก็บไว้ใช้ได้ทั้งปี แม้หมดฤดูกาลแล้ว', '保存すれば、シーズンが終わっても一年中使えるよ。'],
+  ['Só dá para guardar durante a temporada do tema.', 'You can only keep it during the theme season.', 'Solo se puede guardar durante la temporada del tema.', 'เก็บได้เฉพาะช่วงธีมเท่านั้น', 'テーマの期間中だけ保存できるよ。']
+];
+
+// Rótulos e textos localizados: TW_INDEX2_TUT_I18N
+window.TW_I18N.locale.TW_INDEX2_TUT_I18N = {
+  pt:['Suba entre nuvens, colete estrelas e descubra paisagens inesperadas.','🎤 Karaoke⭐Time! · 5 shows por dia!'],
+  en:['Jump between clouds, collect stars and discover unexpected landscapes.','🎤 Karaoke⭐Time! · 5 shows a day!'],
+  es:['Salta entre nubes, reúne estrellas y descubre paisajes inesperados.','🎤 Karaoke⭐Time! · ¡5 shows al día!'],
+  ja:['雲から雲へジャンプして、星を集め、思いがけない景色を見つけよう！','🎤 カラオケ⭐タイム！ · 1日5回のショー！'],
+  th:['กระโดดผ่านก้อนเมฆ เก็บดวงดาว และค้นพบวิวแสนพิเศษ','🎤 Karaoke⭐Time! · วันละ 5 โชว์!']
+};
+
+// Rótulos e textos localizados: labels
+window.TW_I18N.locale.labels = {pt:'Tickets extras de Karaoke',en:'Extra Karaoke tickets',es:'Tickets extra de Karaoke',th:'ตั๋วคาราโอเกะพิเศษ',ja:'追加カラオケチケット'};
+
+// Rótulos e textos localizados: twGamesTxt
+window.TW_I18N.locale.twGamesTxt = {
+    pt:['Pule entre nuvens, descubra cenários e colete estrelas.','Cante, dance e brilhe no palco!'],
+    en:['Jump through clouds, unlock scenes and collect stars.','Sing, dance and shine on stage!'],
+    es:['Salta entre nubes, descubre escenarios y recoge estrellas.','¡Canta, baila y brilla en el escenario!'],
+    ja:['雲の上をジャンプして、星を集めよう！','歌って、踊って、ステージで輝こう！'],
+    th:['กระโดดบนก้อนเมฆและเก็บดาว','ร้องเพลง เต้น และเปล่งประกายบนเวที!']
+  };
+
+// Rótulos e textos localizados: TW_MIC_WORDS
+window.TW_I18N.locale.TW_MIC_WORDS = {
+ pt:['💖 Quem acertou mais','Ninguém cantou ainda nesta semana. A primeira voz pode ser a sua! 🎶','Abrir quem acertou mais no Karaoke','Fechar','Acertos da semana · Karaoke⭐Time!','Acertos da semana'],
+ en:['💖 Most accurate','Nobody has sung this week yet. The first voice could be yours! 🎶','Open the Karaoke accuracy ranking','Close','Weekly accuracy · Karaoke⭐Time!','Weekly accuracy'],
+ es:['💖 Quién acertó más','Nadie ha cantado esta semana todavía. ¡La primera voz puede ser la tuya! 🎶','Abrir quién acertó más en el Karaoke','Cerrar','Aciertos de la semana · Karaoke⭐Time!','Aciertos de la semana'],
+ ja:['💖 いちばん正確','今週はまだ誰も歌っていません。最初の声はあなたかも！🎶','カラオケの正確さランキングを開く','閉じる','今週の正確さ · カラオケ⭐タイム！','今週の正確さ'],
+ th:['💖 ใครแม่นที่สุด','สัปดาห์นี้ยังไม่มีใครร้องเลย เสียงแรกอาจเป็นของคุณ! 🎶','เปิดอันดับความแม่นยำของคาราโอเกะ','ปิด','ความแม่นยำประจำสัปดาห์ · Karaoke⭐Time!','ความแม่นยำประจำสัปดาห์']
+};
+
+// Rótulos e textos localizados: TW_RANK_WORDS
+window.TW_I18N.locale.TW_RANK_WORDS = {
+ pt:['Sem pontuações ainda','Ranking temporariamente indisponível','Ranking indisponível','Você consegue correr mais rápido que ','Você consegue pular mais alto que ','Você consegue atingir mais notas que ','Renova aos domingos · horário de Brasília','Sua melhor altura semanal','Neste dispositivo; ainda não é ranking online','Sem subida nesta semana','Ranking semanal temporariamente indisponível','Canais do ranking semanal','TV dos rankings semanais','Melhores Idols da semana','Campeões da semana','Em breve'],
+ en:['No scores yet','Ranking temporarily unavailable','Ranking unavailable','Can you run faster than ','Can you jump higher than ','Can you hit more notes than ','Resets Sundays · São Paulo time','Your weekly best climb','On this device; not online yet','No climb this week','Weekly rankings are temporarily unavailable','Weekly ranking channels','Weekly ranking TV','Best Idols of the week','Weekly champions','Coming soon'],
+ es:['Sin puntuaciones todavía','Ranking temporalmente no disponible','Ranking no disponible','¿Puedes correr más rápido que ','¿Puedes saltar más alto que ','¿Puedes acertar más notas que ','Se renueva los domingos · hora de Brasil','Tu mejor salto semanal','En este dispositivo; aún no es online','Sin salto esta semana','Los rankings semanales no están disponibles temporalmente','Canales del ranking semanal','TV de los rankings semanales','Mejores Idols de la semana','Campeones de la semana','Próximamente'],
+ ja:['まだ記録はありません','ランキングは一時的に利用できません','ランキングを取得できません','もっと速く走れるかな？ ','もっと高く跳べるかな？ ','もっと多くの音符を当てられるかな？ ','日曜日更新 · ブラジル時間','今週の最高高度','この端末のみ・オンライン未対応','今週の記録なし','週間ランキングは一時的に利用できません','週間ランキングのチャンネル','週間ランキングTV','今週のトップアイドル','今週のチャンピオン','近日公開'],
+ th:['ยังไม่มีคะแนน','อันดับไม่พร้อมใช้งานชั่วคราว','โหลดอันดับไม่ได้','คุณวิ่งเร็วกว่าได้ไหม ','คุณกระโดดสูงกว่าได้ไหม ','คุณตีโน้ตมากกว่าได้ไหม ','รีเซ็ตวันอาทิตย์ · เวลาบราซิล','สถิติการกระโดดประจำสัปดาห์','เฉพาะอุปกรณ์นี้ ยังไม่ใช่ออนไลน์','สัปดาห์นี้ยังไม่มีคะแนน','อันดับประจำสัปดาห์ไม่พร้อมใช้งานชั่วคราว','ช่องอันดับประจำสัปดาห์','ทีวีอันดับประจำสัปดาห์','ไอดอลยอดเยี่ยมประจำสัปดาห์','แชมป์ประจำสัปดาห์','เร็วๆ นี้']
+};
+
+// Rótulos e textos localizados: tvOpenLabels
+window.TW_I18N.locale.tvOpenLabels = {pt:'Abrir TsuLiPa⭐TV!',en:'Open TsuLiPa⭐TV!',es:'Abrir TsuLiPa⭐TV!',ja:'TsuLiPa⭐TV!を開く',th:'เปิด TsuLiPa⭐TV!'};
+
+// Rótulos e textos localizados: tvCloseLabels
+window.TW_I18N.locale.tvCloseLabels = {pt:'Fechar TV',en:'Close TV',es:'Cerrar TV',ja:'テレビを閉じる',th:'ปิดทีวี'};
+
+// Rótulos e textos localizados: twPreviewTextos
+window.TW_I18N.locale.twPreviewTextos = {pt:'Início',en:'Home',es:'Inicio',ja:'ホーム',th:'หน้าหลัก'};
+
+// Rótulos e textos localizados: TW_SORA_SOM_TEXTOS
+window.TW_I18N.locale.TW_SORA_SOM_TEXTOS = {
+  pt:{off:'Desativar som',on:'Ativar som'},en:{off:'Turn sound off',on:'Turn sound on'},
+  es:{off:'Desactivar sonido',on:'Activar sonido'},ja:{off:'サウンドをオフにする',on:'サウンドをオンにする'},
+  th:{off:'ปิดเสียง',on:'เปิดเสียง'}
+};
+
+// Rótulos e textos localizados: S2_BONUS_LABELS
+window.TW_I18N.locale.S2_BONUS_LABELS = {
+  pt:{title:'BÔNUS DE PASSAGEM',jump:'▲ PULE!',slide:'▼ DESLIZE!',note:'Cada acerto vale uma ★'},
+  en:{title:'STAGE BONUS',jump:'▲ JUMP!',slide:'▼ SLIDE!',note:'Each correct move earns ★'},
+  es:{title:'BONO DE ESCENARIO',jump:'▲ ¡SALTA!',slide:'▼ ¡DESLIZA!',note:'Cada acierto gana ★'},
+  ja:{title:'ステージボーナス',jump:'▲ ジャンプ！',slide:'▼ スライド！',note:'成功で★をゲット'},
+  th:{title:'โบนัสเปลี่ยนฉาก',jump:'▲ กระโดด!',slide:'▼ สไลด์!',note:'ทำถูกได้ ★'}
+};
+

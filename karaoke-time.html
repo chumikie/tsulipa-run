@@ -140,7 +140,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
-<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script>
+<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=1"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -1540,7 +1540,7 @@ var krSt={aberta:true,sabado:false,faltam10:false,vista:'',noite:null,ultimos10:
 ].map(function(b){return {nick:b[0],x:b[1],y:b[2],char:b[3],pose:b[4]||'v',expr:b[5]||2,drink:b[6]||''};});krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});
 var krBolhas=[],krBaloes={},krTrilha=[],krT=0,krCortina=0,krAlvo=null;
 var krLoungeCastRef=null,krLoungeActors=[],krLoungeNextAt=0,krAutoMicNextAt=0,KR_LOUNGE_AISLE_Y=520,KR_LOUNGE_STOPS=[230,300,370,590,660,730],KR_LOUNGE_MAX_WALKERS=1,KR_LOUNGE_LANES=[520];
-var krLoungeEscolherVariado=window.KaraokeRoomAutoMic.createRotation(3,Math.random)
+var krLoungeEscolherVariado=window.KaraokeRoomAutoMic.createRotation(3,Math.random);var krLoungePersonality=window.KaraokeRoomPersonality&&window.KaraokeRoomPersonality.create({random:Math.random});
 function ktCoracaoDe(c){var h=String(c&&(c.hair||c.img)||'#ff6fb5'),n=parseInt(h.slice(1),16);if(!(n>=0))return '💖';var r=(n>>16&255)/255,g=(n>>8&255)/255,bl=(n&255)/255,mx=Math.max(r,g,bl),mn=Math.min(r,g,bl),l=(mx+mn)/2,d=mx-mn;if(d<.12)return l>.75?'🤍':l<.25?'🖤':'💜';var hue=mx===r?((g-bl)/d+6)%6*60:mx===g?((bl-r)/d+2)*60:((r-g)/d+4)*60;return hue<15||hue>=345?'❤️':hue<40?'🧡':hue<70?'💛':hue<165?'💚':hue<250?'💙':hue<290?'💜':'💗';}
 /* Pedestal de microfone no palco, na frente de quem canta (balança quando tocado) */
 /* Globo: toque liga/desliga o modo festa */
@@ -2536,10 +2536,10 @@ function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}
 function krLoungeReset(){
  krLoungeActors.forEach(function(b){b._ktLoungeWalking=false;});
  krLoungeActors.length=0;if(typeof krLoungeEscolherVariado==='function')krLoungeEscolherVariado.reset();krLoungeCastRef=krBots;
- krLoungeNextAt=krT+540+Math.random()*180;krAutoMicNextAt=krT+900+Math.random()*900;krLoungeSocialReset();
+ krLoungeNextAt=krT+540+Math.random()*180;krAutoMicNextAt=krT+900+Math.random()*900;krLoungeSocialReset();if(krLoungePersonality)krLoungePersonality.reset(krBots);
  for(var i=0;i<krBots.length;i++){
   var b=krBots[i];
-  b._ktLounge={phase:'rest',route:null,routeIndex:0,returnX:b.x,returnY:b.y,waitUntil:krT+540+Math.random()*300,laneY:KR_LOUNGE_AISLE_Y,targetX:null};
+  b._ktLounge={phase:'rest',route:null,routeIndex:0,returnX:b.x,returnY:b.y,waitUntil:krT+540+Math.random()*300+(krLoungePersonality?krLoungePersonality.delay(b,'wander'):0),laneY:KR_LOUNGE_AISLE_Y,targetX:null};
   b._ktLoungeWalking=false;b._ktLoungeFacing=b.x>480?-1:1;
  }
 }
@@ -2581,7 +2581,7 @@ function krLoungeAvancarAtores(dt,returnAll){
   var target=st.route&&st.route[st.routeIndex];
   if(!target){
    if(st.phase==='out'&&!returnAll){st.phase='pause';st.waitUntil=krT+120+Math.random()*180;b._ktLoungeWalking=false;continue;}
-   st.phase='rest';st.route=null;st.routeIndex=0;st.targetX=null;st.waitUntil=krT+600+Math.random()*240;
+   st.phase='rest';st.route=null;st.routeIndex=0;st.targetX=null;st.waitUntil=krT+600+Math.random()*240+(krLoungePersonality?krLoungePersonality.delay(b,'wander'):0);
    b._ktLoungeWalking=false;krLoungeActors.splice(wi,1);krLoungeNextAt=Math.max(krLoungeNextAt,krT+600+Math.random()*180);continue;
   }
   var dx=target[0]-b.x,dy=target[1]-b.y,d=Math.hypot(dx,dy);
@@ -2664,34 +2664,34 @@ function krLoungeSocialUpdate(){
   krLoungeSocialClear();krLoungeSocialNextAt=krT+360+Math.random()*240;
  }
  if(krLoungeActors.length||krT<krLoungeSocialNextAt)return;
- var singer=krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null),eligible=0;
- for(var i=0;i<krBots.length;i++)if(krLoungePodeSocializar(krBots[i],singer))eligible++;
+ var singer=krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null),eligible=[];
+ for(var i=0;i<krBots.length;i++)if(krLoungePodeSocializar(krBots[i],singer))eligible.push(krBots[i]);
  if(singer){
-  if(!eligible){krLoungeSocialNextAt=krT+240;return;}
- }else if(eligible<2){krLoungeSocialNextAt=krT+300;return;}
- var firstSlot=Math.floor(Math.random()*eligible);
- var secondSlot=eligible>1?(firstSlot+1+Math.floor(Math.random()*(eligible-1)))%eligible:-1;
- var first=null,second=null,seen=0;
- for(var j=0;j<krBots.length;j++){
-  var candidate=krBots[j];if(!krLoungePodeSocializar(candidate,singer))continue;
-  if(seen===firstSlot)first=candidate;
-  if(seen===secondSlot)second=candidate;
-  seen++;
+  if(!eligible.length){krLoungeSocialNextAt=krT+240;return;}
+ }else if(eligible.length<2){krLoungeSocialNextAt=krT+300;return;}
+ var first=null,second=null;
+ if(krLoungePersonality){
+  var selected=singer?krLoungePersonality.chooseAudience(eligible):krLoungePersonality.chooseConversation(eligible);
+  if(selected&&selected.length){first=selected[0]||null;second=selected[1]||null;}
  }
- if(!first){krLoungeSocialNextAt=krT+300;return;}
+ if(!first){
+  var firstSlot=Math.floor(Math.random()*eligible.length),secondSlot=eligible.length>1?(firstSlot+1+Math.floor(Math.random()*(eligible.length-1)))%eligible.length:-1;
+  first=eligible[firstSlot]||null;second=secondSlot>=0?eligible[secondSlot]||null:null;
+ }
+ if(!first||(!singer&&!second)){krLoungeSocialNextAt=krT+300;return;}
  var copy=KR_LOUNGE_SOCIAL_COPY[LANG]||KR_LOUNGE_SOCIAL_COPY.pt;
  if(singer){
   var until=krT+90+Math.random()*70;
-  first._ktSocialKind='applause';first._ktSocialTargetX=singer.x;first._ktSocialUntil=until;
-  if(second){second._ktSocialKind='look';second._ktSocialTargetX=singer.x;second._ktSocialUntil=until;}
-  krBaloes[first.playerId||first.nick]={txt:copy.cheer[Math.floor(Math.random()*copy.cheer.length)],t0:krT};
+  first._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(first,'cheer'):'applause';first._ktSocialTargetX=singer.x;first._ktSocialUntil=until;
+  if(second){second._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(second,'listen'):'look';second._ktSocialTargetX=singer.x;second._ktSocialUntil=until;}
+  krBaloes[first.playerId||first.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(first,'cheer',LANG):copy.cheer[Math.floor(Math.random()*copy.cheer.length)],t0:krT};
   krLoungeSocialNextAt=krT+360+Math.random()*300;
  }else{
   var talkUntil=krT+150+Math.random()*60;
-  first._ktSocialKind='talk';first._ktSocialTargetX=second.x;first._ktSocialUntil=talkUntil;
-  second._ktSocialKind='talk';second._ktSocialTargetX=first.x;second._ktSocialUntil=talkUntil;
-  krBaloes[first.playerId||first.nick]={txt:copy.talkA[Math.floor(Math.random()*copy.talkA.length)],t0:krT};
-  krBaloes[second.playerId||second.nick]={txt:copy.talkB[Math.floor(Math.random()*copy.talkB.length)],t0:krT+45};
+  first._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(first,'talk'):'talk';first._ktSocialTargetX=second.x;first._ktSocialUntil=talkUntil;
+  second._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(second,'listen'):'talk';second._ktSocialTargetX=first.x;second._ktSocialUntil=talkUntil;
+  krBaloes[first.playerId||first.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(first,'start',LANG):copy.talkA[Math.floor(Math.random()*copy.talkA.length)],t0:krT};
+  krBaloes[second.playerId||second.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(second,'reply',LANG):copy.talkB[Math.floor(Math.random()*copy.talkB.length)],t0:krT+45};
   krLoungeSocialNextAt=krT+510+Math.random()*390;
  }
  krLoungeSocialA=first;krLoungeSocialB=second;krLoungeSocialUntil=krT+(singer?160:230);

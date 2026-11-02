@@ -8,7 +8,7 @@ const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102023122_
 
 test('coroa, torrada e chapéu têm itens e preços oficiais sem duplicar acessórios legados', () => {
   assert.match(html, /\['det_tulipa', '🌷', 'Coroa de Tulipas', 50, 'acc'\]/);
-  assert.match(html, /\['det_torrada', '🍞', 'Torrada de Anime', 50, 'acc'\]/);
+  assert.match(html, /\['det_torrada', '🍞', 'Torrada', 50, 'item'\]/);
   assert.match(html, /\['hat_palha', '👒', 'Chapéu de Palha', 70, 'acc'\]/);
   assert.match(html, /if\(d==='tulipa'\)/);
   assert.match(html, /if\(d==='torrada'\)/);
@@ -58,7 +58,19 @@ test('acessórios comprados aparecem no vestuário do menu e no Montar Idol sem 
   assert.match(html, /function perfMontUI\(\)\{\s*if\(typeof acessoriosSync==='function'\) acessoriosSync\(\)/);
   assert.match(html, /perfLojaOpcoes\(\);\s*if\(typeof acessoriosSync==='function'\) acessoriosSync\(\)/);
   assert.match(html, /lojaTem\('det_'\+it\[0\]\)\|\|CU\.det===it\[0\]/);
+  assert.match(html, /lojaTem\('det_tulipa'\)\|\|CU\.det==='tulipa'/);
+  assert.match(html, /lojaTem\('det_torrada'\)\|\|CU\.det==='torrada'/);
   assert.match(html, /lojaTem\('hat_palha'\)\|\|CU\.hat==='palha'/);
   assert.match(html, /if\(temPalha&&!palha\)/);
   assert.match(html, /if\(tem&&!o\)/);
+});
+
+test('Coroa no campo Acessório e Torrada no campo Item preservam as chaves legadas', () => {
+  assert.match(html, /h\.querySelector\('option\[value="tulipa"\]'\)/);
+  assert.match(html, /itens\.querySelector\('option\[value="torrada"\]'\)/);
+  assert.match(html, /CU\.det==='tulipa'\?'tulipa'/);
+  assert.match(html, /CU\.det==='torrada'\?'torrada'/);
+  assert.match(html, /boxItens\.innerHTML=cards/);
+  assert.match(html, /id="perfLojaItens"/);
+  assert.doesNotMatch(html.slice(html.indexOf('var LOJA_EXTRA ='),html.indexOf('var DUO_TEMA_PRECO')), /Torrada de Anime/);
 });

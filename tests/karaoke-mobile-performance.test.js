@@ -404,7 +404,7 @@ const sharedCustomPetStart=main.indexOf('function petDrawCustom(ctx, cfg, t, ex,
 const sharedCustomPetEnd=(function(){const a=main.indexOf('// ---------- Reações do personagem',sharedCustomPetStart),b=main.indexOf('\nfunction ',sharedCustomPetStart+10);return a<0?b:b<0?a:Math.min(a,b);})();   // petDrawCustom mora em pet.js desde a Etapa 1 da refatoração
 const sharedCustomPet=main.slice(sharedCustomPetStart,sharedCustomPetEnd);
 const standardPetStart=main.indexOf('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)');
-const standardPetEnd=main.indexOf('\n\nvar PAL=',standardPetStart);
+const standardPetEnd=(function(){const a=main.indexOf('\n\nvar PAL=',standardPetStart),b=main.indexOf('\nfunction ',standardPetStart+10),c=main.indexOf('\nvar PAL=',standardPetStart);const v=[a,b,c].filter(x=>x>0);return v.length?Math.min(...v):-1;})();   // Etapa 8: drawPet mora em centerrun.js
 const standardPet=main.slice(standardPetStart,standardPetEnd);
 const rankPetStart=main.indexOf('function petDrawRankAcc(ctx, a, tp)');
 const rankPetEnd=main.indexOf('\nfunction petDrawPromo',rankPetStart);

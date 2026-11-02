@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const html=require('./site-source.js')();
 const start=html.indexOf('function contaFimCorrida('),end=html.indexOf('function contaGasto(',start);
 assert(start>=0&&end>start,'Center Run reward function found');
 const code=html.slice(start,end);

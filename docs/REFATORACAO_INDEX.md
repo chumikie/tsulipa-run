@@ -36,7 +36,7 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 5 | Encontro do dia | `encontro.js`, `encontro.css` | Extraído (02/11/2026). 16 funções + 6 tabelas (cena, halo, emojis, ordem do trio, prêmio); 18 linhas de CSS. O botão na tela de início fica para a etapa do Hub. |
 | 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
 | 7 | Tela de início (hub) | `hub.js`, `hub.css` | Extraído (02/11/2026). 91 funções + 33 tabelas (cards, missões, Top Idols, TV, insígnia nova, busca, música, vitrine); 103 linhas de CSS. Temas da temporada e desenhos do Center⭐Run ficam para a Etapa 8. |
-| 8 | Center⭐Run | — | Pendente |
+| 8 | Center⭐Run! (com temas da temporada e desenhos) | `centerrun.js`, `centerrun.css` | Extraído (02/11/2026). 172 funções + 62 tabelas; `centerrun.css` é o antigo primeiro `<style>` inteiro (base do site + jogo), no mesmo lugar e ordem. |
 | — | Consolidação do index.html e redução controlada de `!important` | — | Depois das etapas |
 
 ### Etapa 1 — o que ficou no index.html
@@ -45,6 +45,16 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 - `drawPet` e os desenhos de pet usados também pelo Center⭐Run e pelo Perfil (ficam para a etapa do
   Center⭐Run, por serem compartilhados).
 - `pet-sync.js` continua sendo a única camada de sincronização.
+
+### Etapa 8 — notas e conferência
+- Correção no extrator: quando uma declaração dividia a linha com outra instrução (ex.: `var LANG='pt';try{…}`),
+  ele podia levar um caractere a mais. Pego pela validação de sintaxe nesta etapa e corrigido; conferido no
+  histórico que as etapas 1 a 7 não tinham linhas cortadas pela metade.
+- Além das tabelas lidas antes da declaração por outras partes, agora também ficam no `index.html` as lidas
+  antes da declaração dentro do próprio trecho (8 nomes no script inteiro).
+- Abertura, visitante, menu do Center⭐Run e uma corrida com sorteio fixo, em 390 px e 1280 px: estilos
+  calculados idênticos (fora animações); a corrida termina igual (mesmo recorde; a pontuação difere só na
+  segunda casa decimal pelo tempo entre quadros); nenhum erro.
 
 ### Etapa 7 — conferência antes × depois
 - Abertura, visitante, logado com missões, aba do Top Idols, TsuLiPa⭐TV e busca (dados de teste), em 390 px e

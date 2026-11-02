@@ -1,4 +1,4 @@
-// Refatoração da PR #62: módulos extraídos do index.html (Etapa 1: pet; Etapa 2: perfil; Etapa 3: gacha; Etapa 4: duo; Etapa 5: encontro; Etapa 7: hub).
+// Refatoração da PR #62: módulos extraídos do index.html (Etapa 1: pet; Etapa 2: perfil; Etapa 3: gacha; Etapa 4: duo; Etapa 5: encontro; Etapa 7: hub; Etapa 8: centerrun).
 // Garante que a extração continua "mecânica":
 //  1. pet.js só DECLARA funções e tabelas fixas (não executa nada ao carregar),
 //     então carregar antes do script principal reproduz o hoisting de quando tudo morava no mesmo arquivo;
@@ -16,6 +16,7 @@ const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const noIndex = new Set([...html.matchAll(/^function ([A-Za-z_$][\w$]*)\s*\(/gm)].map((m) => m[1]));
 const iMain = html.indexOf("window.TW_JOGOS_SEM_LOGIN = false;");
 const MODULOS = [
+  { js: "centerrun.js", css: "centerrun.css", tem: ["drawChar", "saveCu", "cenaCartazes"], cssTem: [/\.cust \{/, /\.oshi-sel \{/] },
   { js: "pet.js", css: "pet.css", tem: ["petOpenUI", "petPay", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },

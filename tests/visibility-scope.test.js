@@ -8,7 +8,10 @@ const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const close="applyLang();\n";
 const mainEnd=html.indexOf('</script>',html.lastIndexOf(close));
 assert(mainEnd>0,'fim do script principal encontrado');
-const main=html.slice(0,mainEnd),after=html.slice(mainEnd);
+// Refatoração da PR #62: as funções do jogo moram também nos módulos (pet.js, hub.js, centerrun.js…),
+// que fazem parte do mesmo escopo do jogo; o "depois" continua sendo só o resto do index.html.
+const modulos=require('./site-source.js')().slice(html.length);
+const main=html.slice(0,mainEnd)+modulos,after=html.slice(mainEnd);
 assert(!after.includes('id="twAnimationVisibilityLifecycle"'),'ciclo de visibilidade não fica em <script> separado');
 assert(main.includes('(function twAnimationVisibilityLifecycle(){'),'ciclo de visibilidade roda dentro do escopo do jogo');
 for(const name of ['twIntervaloVisivel(','twTimeoutVisivel(','twOverlayInvalidar(','twIndex2BaseFramesPaused(','twAnimacaoVisivel(','hubLoop','encLoop','petLoop']){

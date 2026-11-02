@@ -3,8 +3,8 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-const scene=html.slice(html.indexOf('function cenaCartazes(P2){'),html.indexOf('// ---------- Obstáculos da pista'));
+const html=require('./site-source.js')();
+const scene=(function(){const a=html.indexOf('function cenaCartazes(P2){'),b=html.indexOf('\nfunction ',a+10),c=html.indexOf('// ---------- Obstáculos da pista',a);return html.slice(a,b<0?c:c<0?b:Math.min(b,c));})();   // Etapa 8: a função mora em centerrun.js
 
 test('outdoor SKU usa identidade laranja e construção Canvas 2D da placa BRS',()=>{
   assert.match(scene,/var sku = !jog && \(\(i % 15 \+ 15\) % 15 === 9\)/);

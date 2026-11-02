@@ -546,8 +546,10 @@ try{
 try{
   const html=read("index.html");
   const start=html.indexOf("// --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---");
-  const end=html.indexOf("function saveCu(){",start);
-  assert(start>=0&&end>start,"Avatar save loader must remain available");
+  // Etapa 8 da refatoração: saveCu() mudou para centerrun.js; o carregador termina no catch depois de "CU.img = CU.hair;".
+  const fimCU=html.indexOf("CU.img = CU.hair;",start),fimCatch=fimCU<0?-1:html.indexOf("} catch(e) {}",fimCU);
+  const end=fimCatch<0?-1:fimCatch+"} catch(e) {}".length;
+  assert(start>=0&&end>start&&html.slice(start,end).length<4000,"Avatar save loader must remain available");
   if(start>=0&&end>start){
     const loader=html.slice(start,end);
     const defaults={n:"Idol",hair:"#ff7eb6",hair2:"#4dd8ff",skin:"#f1c9a5",eye:"#5a3b2e",outcol:"#ffffff",front:"lateral",back:"chanel"};

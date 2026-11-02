@@ -1,0 +1,159 @@
+/* Center⭐Run! e a base visual do site (que nasceu no Center Run): cores do tema e do Oshi, painéis, botões,
+   palco, campo de nome, montador do menu, ranking local e seletor de Oshi.
+   Era o primeiro <style> do index.html, movido inteiro em 02/11/2026 (refatoração da PR #62, Etapa 8), no mesmo
+   lugar e na mesma ordem: nada muda na cascata. */
+
+@keyframes inputGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 111, 181, 0.3); }
+  50% { box-shadow: 0 0 14px rgba(255, 111, 181, 0.75); }
+}
+
+.nick.chamativo {
+  border: 2.5px solid var(--pink) !important;
+  background: var(--card) !important;
+  font-weight: 800 !important;
+  color: var(--b1) !important;
+  animation: inputGlow 2s infinite ease-in-out;
+}
+
+@keyframes erroInput {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.nick.aviso-erro {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.7) !important;
+  animation: erroInput 0.4s ease-in-out !important;
+}
+
+#menu-title, .logo b {
+  font-family: "Kosugi Maru", "M PLUS Rounded 1c", sans-serif !important;
+  letter-spacing: 0.5px;
+}
+
+:root{--bg1:#c9ecfc;--bg2:#8fd0f5;--card:#fff;--ink:#12365e;--sub:#5b7fa6;--b1:#7b3ff0;--b2:#4169e1;--edge:#2c1a8f;--lime:#4e9a00;--chip:#eef6fd;--pink:#ff6fb5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#0d2340;--bg2:#10315a;--card:#14294a;--ink:#e6f3ff;--sub:#8fb2d8;--chip:#1c3a63;--b1:#a678ff;--lime:#b6ff3b}}
+:root[data-theme="dark"]{--bg1:#0d2340;--bg2:#10315a;--card:#14294a;--ink:#e6f3ff;--sub:#8fb2d8;--chip:#1c3a63;--b1:#a678ff;--lime:#b6ff3b}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:"M PLUS Rounded 1c",system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2));background-color:var(--bg2);display:flex;flex-direction:column;align-items:center;padding:14px 12px 24px}
+header{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer;user-select:none;-webkit-user-select:none;}
+.logo i{width:38px;height:38px;border-radius:10px;background:transparent;display:grid;place-items:center;color:#fff;font-style:normal;font-size:20px}
+.tw-ico{width:38px;height:38px;display:block;filter:drop-shadow(0 2px 4px rgba(80,40,140,.25))}
+.tw-ico .ico-dk{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tw-ico .ico-lt{display:none}:root:not([data-theme="light"]) .tw-ico .ico-dk{display:inline}}
+:root[data-theme="dark"] .tw-ico .ico-lt{display:none}:root[data-theme="dark"] .tw-ico .ico-dk{display:inline}
+.logo b{display:block;font-size:18px;line-height:1.1;background:linear-gradient(90deg,#b04fe6,#4ade80 50%,#4a74ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo small{font-size:11px;color:var(--pink)}
+.pill{border:1.5px solid var(--lime);background:var(--card);border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;box-shadow:0 1px 6px rgba(10,80,160,.15)}
+.stage{position:relative;width:100%;max-width:760px;aspect-ratio:720/380;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(10,60,130,.3),0 0 0 2px rgba(155,48,217,.6);touch-action:manipulation;user-select:none;background:#0a1830}
+canvas{width:100%;height:100%;display:block}
+.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;background:rgba(6,16,38,.55)}
+.ov[hidden]{display:none}
+.panel{background:var(--card);border-radius:18px;padding:16px 20px;text-align:center;width:min(92%,420px);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.panel h1{margin:0;font-size:clamp(20px,5vw,28px);font-weight:800;cursor:default;}
+.panel h1 small{display:block;font-size:12px;font-weight:400;color:var(--pink);letter-spacing:.08em}
+.panel p{margin:6px 0 10px;font-size:13px;color:var(--sub)}
+.chars{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.chip{border:2px solid transparent;background:var(--chip);color:var(--ink);border-radius:14px;padding:6px 10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.chip span{width:22px;height:22px;border-radius:50%}
+.chip[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.chip:focus-visible,.btn:focus-visible,.mute:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.btn{border:0;cursor:pointer;font:inherit;font-weight:800;font-size:17px;color:#fff;padding:10px 34px;border-radius:99px;background:linear-gradient(90deg,#7b3ff0,var(--b2));box-shadow:0 5px 0 var(--edge);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--edge)}
+.res{font-size:14px;margin:4px 0 10px}
+.res strong{font-size:22px;color:var(--b1)}
+.mute {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(220, 235, 255, 0.85));
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(10, 30, 70, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+.mute:active {
+  transform: scale(0.92);
+}
+
+.hint{margin-top:12px;font-size:12px;color:var(--sub);text-align:center;max-width:520px}
+.ov{position:fixed;z-index:5;overflow:auto;padding:16px}.panel{margin:auto}
+.conta{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin:-2px 0 12px}
+.conta-google{display:inline-flex;align-items:center;gap:8px;border:1px solid #dadce0;background:#fff;color:#3c4043;border-radius:99px;padding:6px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.conta-google:active{transform:scale(.97)}.conta-dica{width:100%;text-align:center;font-size:11px;color:var(--sub)}
+.conta-ok{font-size:13px;color:var(--b1)}.conta-sair{border:0;background:var(--chip);color:var(--sub);border-radius:99px;padding:3px 10px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.nick:disabled{opacity:.85}
+.nick{width:100%;border:2px solid var(--chip);background:var(--chip);color:var(--ink);border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;margin-bottom:10px;text-align:center}
+.nick:focus-visible{outline:3px solid var(--pink)}
+
+.cust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 2px 0 10px;
+  font-size: 12px;
+  color: var(--sub);
+}
+.cust[hidden] { display: none; }
+.cbr{flex-basis:100%;height:0}
+@media(max-width:400px){.cust{column-gap:6px}.cust input[type=color]{width:36px}}
+.cust label { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
+.sw { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; margin: 0 1px; }
+.sw[aria-pressed="true"] { border-color: var(--b1); box-shadow: 0 0 0 2px var(--card) inset; }
+.cust select, .cust input[type=color] {
+  font: inherit; font-size: 12px; border-radius: 6px; border: 1px solid var(--sub);
+  background: var(--card); color: var(--ink); height: 24px; padding: 0 4px;
+}
+	
+.sec{background:transparent;border:0;color:var(--b1);font:inherit;font-weight:700;font-size:13px;cursor:pointer;margin-top:10px;text-decoration:underline}
+.lb{list-style:none;margin:8px 0 0;padding:0;font-size:13px;text-align:left;max-height:150px;overflow:auto}
+.lb li{display:flex;justify-content:space-between;gap:8px;padding:3px 8px;border-radius:8px}
+.lb li:nth-child(odd){background:var(--chip)}
+.lb em{font-style:normal;color:var(--sub);font-size:11px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn.alt{background:var(--chip);color:var(--b1);box-shadow:0 5px 0 var(--sub), 0 8px 15px rgba(0,0,0,0.25);border: 2px solid var(--card)}
+.tabs{display:flex;gap:6px;justify-content:center;margin-top:10px}.tabs button{border:0;border-radius:99px;padding:4px 14px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;background:var(--chip);color:var(--sub)}.tabs button[aria-pressed="true"]{background:#7b3ff0;color:#fff}.tabs button:focus-visible{outline:3px solid var(--pink)}
+.nb{background:var(--pink);color:#fff;border-radius:99px;padding:2px 8px;font-size:11px;animation:pl .9s infinite alternate}@keyframes pl{to{transform:scale(1.12)}}
+.lang{display:flex;gap:4px;justify-content:center;margin-bottom:12px}.lang button{border:0;border-radius:99px;padding:4px 9px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;background:var(--chip);color:var(--sub)}.lang button[aria-pressed="true"]{background:#7b3ff0;color:#fff}.lang button:focus-visible{outline:3px solid var(--pink)}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+/* O Center Run virou uma janela da tela de início, que já tem os links e o tema do Oshi: some com os repetidos.
+   Durante a corrida some também a dica e o rodapé (tela limpa, sem toques sem querer) */
+body .links,body .oshi-sel{display:none}
+body.jogando .hint,body.jogando .sitefoot{display:none}.lk{text-decoration:none;font-size:14px;padding:8px 20px}
+.stage,.stage *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.stage input,.stage select{-webkit-user-select:text;user-select:text}
+.jb{display:none;position:absolute;right:12px;bottom:12px;width:64px;height:64px;border-radius:50%;border:0;background:rgba(123,63,240,.88);color:#fff;font-size:28px;box-shadow:0 4px 0 #2c1a8f;touch-action:manipulation;z-index:3;cursor:pointer}
+body:not(.jogando) #sb{display:none!important}
+@media (pointer:coarse){.jb{display:block}}
+
+/* Cores Base dos Oshis (Modo Claro) */
+:root[data-oshi="tsu"] { --bg1:#e9d5ff; --bg2:#a855f7; --b1:#9333ea; --lime:#d8b4fe; }
+:root[data-oshi="lirika"] { --bg1:#dcfce7; --bg2:#22c55e; --b1:#16a34a; --lime:#bbf7d0; }
+:root[data-oshi="pati"] { --bg1:#dbeafe; --bg2:#3b82f6; --b1:#2563eb; --lime:#bfdbfe; }
+
+/* Cores Base dos Oshis (Modo Escuro do Celular/PC) */
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme="light"])[data-oshi="tsu"] { --bg1:#3b0764; --bg2:#581c87; --card:#2e1065; --ink:#f3e8ff; --chip:#4c1d95; --sub:#c084fc; }
+  :root:not([data-theme="light"])[data-oshi="lirika"] { --bg1:#052e16; --bg2:#14532d; --card:#064e3b; --ink:#ecfdf5; --chip:#065f46; --sub:#34d399; }
+  :root:not([data-theme="light"])[data-oshi="pati"] { --bg1:#172554; --bg2:#1e3a8a; --card:#1e40af; --ink:#eff6ff; --chip:#1d4ed8; --sub:#60a5fa; }
+}
+
+/* Design dos botões de seleção de Oshi (ficarão na parte de baixo do site) */
+.oshi-sel { display:flex; gap:12px; justify-content:center; margin-top:20px; }
+.oshi-sel button { background:var(--card); border:2px solid transparent; border-radius:50%; width:44px; height:44px; font-size:20px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.2); display:grid; place-items:center; padding:0; transition: transform 0.1s; }
+.oshi-sel button:active { transform:scale(0.9); }
+.oshi-sel button[aria-pressed="true"] { border-color:var(--b1); box-shadow:0 0 0 2px var(--card) inset, 0 0 0 3px var(--b1) inset; }
+

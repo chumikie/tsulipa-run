@@ -14,6 +14,8 @@ const html = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
 // 1. O que vai para o ar: interruptor de teste desligado e login visível de fora do IIFE.
 assert(/window\.TW_JOGOS_SEM_LOGIN\s*=\s*false\s*;/.test(html),
   "TW_JOGOS_SEM_LOGIN precisa estar false antes do merge (senão Sora e Karaoke abrem sem conta)");
+assert(html.includes('id="hubLoginBtn"') && html.includes("$('hubLoginBtn').onclick=function(e){ e.stopPropagation(); contaEntrar(); }"),
+  "o botão de login do topo precisa existir e chamar contaEntrar()");
 assert(html.includes("Object.defineProperty(window, 'contaJ'"),
   "o script principal precisa expor o login real em window.contaJ");
 
@@ -25,12 +27,14 @@ const codigo = m[1];
 function montar(conta, semLogin) {
   const ouvintes = [];
   const perf = { cliques: 0, click() { this.cliques++; }, classList: { contains: c => c === "hubperf" }, dataset: { ir: "perfil" }, id: "" };
+  const login = { cliques: 0, click() { this.cliques++; } };   // #hubLoginBtn (chama contaEntrar)
   const window = { TW_JOGOS_SEM_LOGIN: semLogin };
   Object.defineProperty(window, "contaJ", { get: () => conta });
   const document = {
     addEventListener(tipo, fn) { if (tipo === "click") ouvintes.push(fn); },
     querySelector(sel) { return sel.includes("hubperf") || sel.includes("hubPerf") ? perf : null; },
     querySelectorAll() { return []; },
+    getElementById(id) { return id === "hubLoginBtn" ? login : null; },
     createElement() { return { setAttribute() {}, appendChild() {}, classList: { add() {} }, style: {} }; }
   };
   const sandbox = { window, document, hubOv:{hidden:true}, twIntervaloVisivel:()=>({destroy(){}}), setInterval() { return 0; }, setTimeout() { return 0; }, console };
@@ -43,7 +47,7 @@ function montar(conta, semLogin) {
       stopImmediatePropagation() { parado = true; }, preventDefault() {}
     };
     ouvintes.forEach(fn => fn(e));
-    return { foiProPerfil: perf.cliques > 0, parado };
+    return { foiProLogin: login.cliques > 0, foiProPerfil: perf.cliques > 0, parado };
   }
   return { clicar, perf };
 }
@@ -54,19 +58,19 @@ const CARDS = [["pet", "hubpet"], ["gacha", "hubgacha"], ["duo", "hubduo"], ["so
 for (const [ir, classe] of CARDS) {
   const t = montar({ nick: "Teste", id: "00000000-0000-0000-0000-000000000000" }, false);
   const r = t.clicar(ir, classe);
-  assert(!r.foiProPerfil && !r.parado, "logada, o card " + ir + " não pode abrir o perfil");
+  assert(!r.foiProLogin && !r.foiProPerfil && !r.parado, "logada, o card " + ir + " não pode abrir o perfil");
 }
 
-// 4. Sem conta: os cards com cadeado levam ao login; Center Run e Perfil ficam livres.
+// 4. Sem conta: os cards com cadeado levam direto ao login (botão #hubLoginBtn); Center Run e Perfil ficam livres.
 for (const [ir, classe] of CARDS) {
   const t = montar(null, false);
   const r = t.clicar(ir, classe);
-  assert(r.foiProPerfil && r.parado, "sem conta, o card " + ir + " deve levar ao login");
+  assert(r.foiProLogin && r.parado, "sem conta, o card " + ir + " deve levar direto ao login");
 }
 for (const [ir, classe] of [["run", "hubrun"], ["perfil", "hubperf"]]) {
   const t = montar(null, false);
   const r = t.clicar(ir, classe);
-  assert(!r.foiProPerfil, "o card " + ir + " é livre mesmo sem conta");
+  assert(!r.foiProLogin && !r.parado, "o card " + ir + " é livre mesmo sem conta");
 }
 
 console.log("✓ login simulado: cards abrem o próprio jogo logada, e pedem login sem conta");

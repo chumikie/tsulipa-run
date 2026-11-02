@@ -9,7 +9,7 @@ if [[ -n "$container" ]]; then base=(docker exec -i "$container" psql -X -U post
 "${base[@]}" -d postgres -v ON_ERROR_STOP=1 -qc 'drop database if exists admin_idol_test;' -c 'create database admin_idol_test;'
 q(){ "${base[@]}" -d admin_idol_test -v ON_ERROR_STOP=1 -At "$@"; }
 q -q < "$repo_dir/supabase/tests/admin_idol_pg_setup.sql"
-q -q < "$repo_dir/supabase/sql/admin_montar_idol.sql"
+q -q < "$repo_dir/supabase/sql/aplicado/admin_montar_idol.sql"
 tsu='40000000-0000-4000-8000-000000000001'; nova='40000000-0000-4000-8000-000000000002'; outra='40000000-0000-4000-8000-000000000003'
 rpc(){ q -c "set role authenticated; set request.jwt.claim.sub='$1'; select ($2)::text;" | tail -1; }
 expect(){ local o f; o="$(printf '%s' "$1" | tr -d '[:space:]')"; f="$(printf '%s' "$2" | tr -d '[:space:]')"

@@ -9,7 +9,7 @@ if [[ -n "$container" ]]; then base=(docker exec -i "$container" psql -X -U post
 "${base[@]}" -d postgres -v ON_ERROR_STOP=1 -qc 'drop database if exists kt_musica_test;' -c 'create database kt_musica_test;'
 q(){ "${base[@]}" -d kt_musica_test -v ON_ERROR_STOP=1 -At "$@"; }
 q -q < "$repo_dir/supabase/tests/karaoke_musica_pg_setup.sql"
-q -q < "$repo_dir/supabase/sql/karaoke_musica_da_semana.sql"
+q -q < "$repo_dir/supabase/sql/aplicado/karaoke_musica_da_semana.sql"
 id(){ printf '60000000-0000-4000-8000-%012d' "$1"; }
 expect(){ local o f; o="$(printf '%s' "$1" | tr -d '[:space:]')"; f="$(printf '%s' "$2" | tr -d '[:space:]')"
   if [[ "$o" != *"$f"* ]]; then echo "FAIL $3: falta $2 em $1" >&2; exit 1; fi; echo "ok - $3"; }

@@ -8,7 +8,7 @@ const root=path.join(__dirname,'..');
 const V=require('../karaoke-room-views.js');
 const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const sql=fs.readFileSync(path.join(root,'supabase/sql/karaoke_musica_da_semana.sql'),'utf8');
+const sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/karaoke_musica_da_semana.sql'),'utf8');
 const at=s=>Date.parse(s);
 assert.deepEqual({...V.SONGS},{gigoia:'chill',liberdade:'duo',tailandia:'normal',harajuku:'fast',praia:'gacha'},'pares aprovados pela dona');
 for(const [iso,song] of [['2026-11-01T03:00:00Z','duo'],['2026-11-08T03:00:00Z','normal'],['2026-11-15T03:00:00Z','fast'],['2026-11-22T03:00:00Z','gacha'],['2026-11-29T03:00:00Z','chill'],['2026-11-08T02:59:59Z','duo']])

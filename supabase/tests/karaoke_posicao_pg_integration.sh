@@ -9,7 +9,7 @@ if [[ -n "$container" ]]; then base=(docker exec -i "$container" psql -X -U post
 "${base[@]}" -d postgres -v ON_ERROR_STOP=1 -qc 'drop database if exists kt_posicao_test;' -c 'create database kt_posicao_test;'
 q(){ "${base[@]}" -d kt_posicao_test -v ON_ERROR_STOP=1 -At "$@"; }
 q -q < "$repo_dir/supabase/tests/karaoke_posicao_pg_setup.sql"
-q -q < "$repo_dir/supabase/sql/karaoke_minha_posicao.sql"
+q -q < "$repo_dir/supabase/sql/aplicado/karaoke_minha_posicao.sql"
 id(){ printf '50000000-0000-4000-8000-%012d' "$1"; }
 rpc(){ q -c "set role authenticated; set request.jwt.claim.sub='$(id "$1")'; select public.kt_minha_posicao()::text;" | tail -1; }
 expect(){ local o f; o="$(printf '%s' "$1" | tr -d '[:space:]')"; f="$(printf '%s' "$2" | tr -d '[:space:]')"

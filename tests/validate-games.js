@@ -134,7 +134,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/aplicado/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
@@ -468,7 +468,7 @@ try{
 
 // Profile badge collection and weekly reset policy.
 try{
-  const gameBadgesSql=read("supabase/sql/profile_game_badges_sunday_week.sql");
+  const gameBadgesSql=read("supabase/sql/aplicado/profile_game_badges_sunday_week.sql");
   const main=read("index.html"), karaokeTime=read("karaoke-time.html");
   const localBadges=["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"];
   const soraBadges=["sora_500","sora_1500","sora_3000"];

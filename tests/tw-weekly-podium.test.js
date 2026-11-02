@@ -6,11 +6,11 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
-const sql=fs.readFileSync(path.join(root,'supabase/sql/tw_weekly_podium_proposal.sql'),'utf8');
+const sql=fs.readFileSync(path.join(root,'supabase/sql/proposta/tw_weekly_podium_proposal.sql'),'utf8');
 const soraOnlineSql=fs.readFileSync(path.join(root,'supabase/sql/sora_jump_tv_profile_integration.sql'),'utf8');
-const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/sora_weekly_zero_default.sql'),'utf8');
-const adminProfileSql=fs.readFileSync(path.join(root,'supabase/sql/admin_player_profile_proposal.sql'),'utf8');
-const gameBadgesSql=fs.readFileSync(path.join(root,'supabase/sql/profile_game_badges_sunday_week.sql'),'utf8');
+const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/sora_weekly_zero_default.sql'),'utf8');
+const adminProfileSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/admin_player_profile_proposal.sql'),'utf8');
+const gameBadgesSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/profile_game_badges_sunday_week.sql'),'utf8');
 const privacy=fs.readFileSync(path.join(root,'privacidade.html'),'utf8');
 function get(a,b){
  const start=html.indexOf(a),end=html.indexOf(b,start+a.length);

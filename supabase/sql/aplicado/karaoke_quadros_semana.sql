@@ -1,44 +1,29 @@
--- TsuLiPa⭐World / Karaoke⭐Time! — "Música da semana" (PR #58)
+-- TsuLiPa⭐World / Karaoke⭐Time! — quadros "Mais shows na semana" e "Quem mais evoluiu" (PR #58)
 -- PROPOSTA PARA REVISÃO. NÃO APLICAR SEM AUTORIZAÇÃO EXPLÍCITA DA DONA DO PROJETO.
 -- APLICADA no Supabase em 02/11/2026 com autorização da dona (relato do ChatGPT na PR58_STATUS).
--- Antes de aplicar: conferir que a função ativa public.kt_run_finish é a de supabase/sql/karaoke_time_ranking.sql
--- (mesmos parâmetros e mesmo corpo). Se for diferente, NÃO aplicar: ajustar esta proposta primeiro.
+-- Depende de supabase/sql/aplicado/karaoke_musica_da_semana.sql JÁ APLICADO (kt_run_finish com p_song).
+-- Antes de aplicar: conferir que o kt_run_finish ativo é o daquele arquivo. Se for diferente, NÃO aplicar.
 --
--- O que faz:
---   * private.kt_musica_da_semana(semana): a música da semana, igual à do site (karaoke-room-views.js):
---     semana de domingo 01/11/2026 = Liberdade → Moon⭐Duo!; depois Tailândia → Brilha Comigo; Harajuku → Love × Debut;
---     Praia → Star⭐Gacha!; Gigoia → Doce Melodia; e assim por diante, trocando todo domingo à 0h de Brasília.
---   * kt_run_finish ganha o parâmetro opcional p_song. O resto do corpo é o mesmo (mesmas conferências, mesmo ranking).
---     Se p_song for a música da semana e o resultado for aceito, guarda o melhor resultado da conta nessa música.
---     Sites antigos (sem p_song) continuam funcionando: o parâmetro tem valor padrão.
---   * public.kt_musica_semana(): Top 5 da música da semana + a posição de quem pergunta.
--- Não mexe em estrelas, tickets, no limite de 5 shows por dia nem nos três quadros atuais.
--- Limite conhecido: o servidor confia na música informada pelo site (como já confia na pontuação dentro das faixas
--- conferidas). A conferência de notas por show (1 a 200) continua valendo para todas as músicas.
+-- Substituem, na tela, os quadros Acertos e Combo (que repetiam as mesmas pessoas da Pontuação).
+--   * Mais shows na semana: quantos shows aceitos pelo servidor cada conta fez na semana (domingo a sábado, Brasília).
+--   * Quem mais evoluiu: melhor pontuação desta semana menos a melhor da semana passada (só quem jogou nas duas
+--     e melhorou). Usa private.kt_scores, que já guarda 4 semanas.
+-- kt_ranking continua igual (os campos acertos/combo seguem existindo para versões antigas do site).
+-- Não mexe em estrelas, tickets nem no limite de 5 shows por dia.
 begin;
 
-create table if not exists private.kt_song_scores(
+create table if not exists private.kt_week_shows(
   player_id uuid not null references public.players(id) on delete cascade,
   week_start date not null,
-  song text not null,
-  score integer not null default 0,
-  score_at timestamptz,
+  shows integer not null default 0,
+  last_at timestamptz,
   primary key(player_id, week_start)
 );
-create index if not exists kt_song_scores_week on private.kt_song_scores(week_start);
-alter table private.kt_song_scores enable row level security;
-revoke all on table private.kt_song_scores from public, anon, authenticated;
+create index if not exists kt_week_shows_week on private.kt_week_shows(week_start);
+alter table private.kt_week_shows enable row level security;
+revoke all on table private.kt_week_shows from public, anon, authenticated;
 
-create or replace function private.kt_musica_da_semana(p_week date) returns text
-language sql immutable set search_path = '' as $$
-  select (array['chill','duo','normal','fast','gacha'])[
-    1 + (((((p_week - date '2026-11-01') / 7) + 1) % 5) + 5) % 5
-  ]
-$$;
-revoke all on function private.kt_musica_da_semana(date) from public, anon, authenticated;
-
--- Troca de assinatura: a versão antiga (6 parâmetros) sai e entra a nova, com p_song opcional.
-drop function if exists public.kt_run_finish(uuid, integer, integer, integer, integer, integer);
+-- Mesmo kt_run_finish da música da semana, com o contador de shows.
 create or replace function public.kt_run_finish(
   p_run uuid, p_score integer, p_hits integer, p_attempts integer, p_combo integer, p_notes integer,
   p_song text default null
@@ -84,6 +69,12 @@ begin
     acc_at   = case when (excluded.acc, excluded.acc_hits) > (private.kt_scores.acc, private.kt_scores.acc_hits) then excluded.acc_at else private.kt_scores.acc_at end;
   delete from private.kt_scores where week_start < v_week - 28;
 
+  -- Mais shows na semana: conta cada show aceito (a tabela de corridas só guarda 2 dias, por isso o contador próprio).
+  insert into private.kt_week_shows(player_id, week_start, shows, last_at)
+  values (v_uid, v_week, 1, v_now)
+  on conflict (player_id, week_start) do update set shows = private.kt_week_shows.shows + 1, last_at = excluded.last_at;
+  delete from private.kt_week_shows where week_start < v_week - 28;
+
   -- Música da semana: só a música combinada desta semana entra no quadro extra.
   if p_song is not null and p_song = private.kt_musica_da_semana(v_week) then
     insert into private.kt_song_scores(player_id, week_start, song, score, score_at)
@@ -98,27 +89,36 @@ end $$;
 revoke all on function public.kt_run_finish(uuid, integer, integer, integer, integer, integer, text) from public, anon, authenticated;
 grant execute on function public.kt_run_finish(uuid, integer, integer, integer, integer, integer, text) to authenticated;
 
-create or replace function public.kt_musica_semana() returns jsonb
+create or replace function public.kt_quadros_semana() returns jsonb
 language sql stable security definer set search_path = '' as $$
   with w as (select private.kt_domingo() as d),
-  base as (
-    select s.*, coalesce(nullif(pg_catalog.btrim(p.nick),''),'Idol') as nick, p.avatar, p.cor
-      from private.kt_song_scores s join public.players p on p.id = s.player_id, w
-     where s.week_start = w.d and s.score > 0 and not coalesce(p.bloqueado, false)
+  pl as (select id, coalesce(nullif(pg_catalog.btrim(nick),''),'Idol') as nick, avatar, cor from public.players where not coalesce(bloqueado, false)),
+  sh as (
+    select s.player_id, s.shows as valor, s.last_at as at, p.nick, p.avatar, p.cor
+      from private.kt_week_shows s join pl p on p.id = s.player_id, w
+     where s.week_start = w.d and s.shows > 0
   ),
-  eu as (select * from base where player_id = auth.uid())
+  ev as (
+    select a.player_id, a.score - b.score as valor, a.score_at as at, p.nick, p.avatar, p.cor
+      from private.kt_scores a
+      join private.kt_scores b on b.player_id = a.player_id and b.week_start = a.week_start - 7
+      join pl p on p.id = a.player_id, w
+     where a.week_start = w.d and a.score > 0 and b.score > 0 and a.score > b.score
+  )
   select pg_catalog.jsonb_build_object(
-    'musica', private.kt_musica_da_semana(w.d),
-    'semana', pg_catalog.to_char(w.d,'YYYY-MM-DD'),
-    'fim', pg_catalog.to_char(w.d + 6,'YYYY-MM-DD'),
-    'top', coalesce((select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('nick',b.nick,'avatar',b.avatar,'cor',b.cor,'score',b.score) order by b.score desc, b.score_at, b.nick)
-                       from (select * from base order by score desc, score_at, nick limit 5) b), '[]'::jsonb),
-    'eu', (select pg_catalog.jsonb_build_object('pos',
-             1 + (select count(*) from base b where b.score > e.score or (b.score = e.score and b.score_at < e.score_at)),
-             'valor', e.score) from eu e)
+    'shows', pg_catalog.jsonb_build_object(
+      'top', coalesce((select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('nick',x.nick,'avatar',x.avatar,'cor',x.cor,'valor',x.valor) order by x.valor desc, x.at, x.nick)
+                         from (select * from sh order by valor desc, at, nick limit 5) x), '[]'::jsonb),
+      'eu', (select pg_catalog.jsonb_build_object('pos', 1 + (select count(*) from sh o where o.valor > e.valor or (o.valor = e.valor and o.at < e.at)), 'valor', e.valor)
+               from sh e where e.player_id = auth.uid())),
+    'evolucao', pg_catalog.jsonb_build_object(
+      'top', coalesce((select pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('nick',x.nick,'avatar',x.avatar,'cor',x.cor,'valor',x.valor) order by x.valor desc, x.at, x.nick)
+                         from (select * from ev order by valor desc, at, nick limit 5) x), '[]'::jsonb),
+      'eu', (select pg_catalog.jsonb_build_object('pos', 1 + (select count(*) from ev o where o.valor > e.valor or (o.valor = e.valor and o.at < e.at)), 'valor', e.valor)
+               from ev e where e.player_id = auth.uid()))
   ) from w
 $$;
-revoke all on function public.kt_musica_semana() from public, anon, authenticated;
-grant execute on function public.kt_musica_semana() to authenticated;
+revoke all on function public.kt_quadros_semana() from public, anon, authenticated;
+grant execute on function public.kt_quadros_semana() to authenticated;
 
 commit;

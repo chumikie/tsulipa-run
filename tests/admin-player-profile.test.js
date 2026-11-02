@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const sql = fs.readFileSync(path.join(__dirname, '..', 'supabase/sql/admin_player_profile_proposal.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(__dirname, '..', 'supabase/sql/proposta/admin_player_profile_proposal.sql'), 'utf8');
 const doc = fs.readFileSync(path.join(__dirname, '..', 'docs/backstage-admin/README.md'), 'utf8');
 
 function has(pattern, message) {

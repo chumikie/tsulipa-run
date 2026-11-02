@@ -6,7 +6,7 @@
 - `proposta/`: **não aplicados**. Só com autorização da dona e revisão do ChatGPT.
 - `historico/`: a antiga sala online do Karaoke⭐Day! (aposentada) e os testes do laboratório `karaoke_lab_3a*`. **Nunca executar em produção.**
 - Ainda na raiz, **estado a confirmar com o ChatGPT** antes de mover: `admin_corrida_contadores.sql`, `fechar_funcoes_internas.sql`, `gacha_sem_card_proprio.sql`, `karaoke_tickets_REVIEW_ONLY.sql`, `sora_jump_online_ranking.sql`, `sora_jump_tv_profile_integration.sql`, e o pacote do limite de 100 estrelas do Center⭐Run! (`center_run_daily_100_*`, `README-`, `RUNBOOK-` e `CHECKLIST-center-run-100.md`; a versão aplicada é a migração `supabase/migrations/20261101234420_center_run_daily_100.sql`).
-- Migrações que o Supabase aplica sozinho pela integração com o GitHub ficam em `supabase/migrations/`, não aqui.
+- Migrações que o Supabase aplica sozinho pela integração com o GitHub ficam em `supabase/migrations/`, não aqui. Só entra lá o que já está aplicado (mesma versão no banco) ou foi autorizado para aplicar na publicação.
 - Já aplicados também (pastas `aplicado/`): `admin_montar_idol.sql`, `karaoke_minha_posicao.sql`, `karaoke_musica_da_semana.sql`, `karaoke_quadros_semana.sql` (PR #58, 01–02/11/2026).
 
 Um arquivo aqui **não** significa que ele está no banco. Esta lista distingue o que continua ativo, o que foi aposentado e o que é apenas uma proposta.
@@ -33,6 +33,8 @@ O projeto foi criado para testar a antiga sala de ensaio do Karaoke⭐Day!. Essa
 **A recomendação é manter o projeto de homologação como ambiente de testes de mudanças futuras** (por exemplo, a ficha administrativa ainda proposta), sem reativar a sala antiga. As ferramentas de pets/visual já foram aplicadas em produção; não são uma proposta pendente. A limpeza dos objetos de laboratório pode ser feita separadamente; nenhum projeto, tabela ou conta foi apagado nesta atualização.
 
 ## Propostas — não aplicadas; exigem aprovação e homologação
+
+- **Grupos nacionais** (`proposta/20261102140310_grupos_nacionais.sql`, `proposta/20261102140311_avisos_grupo_e_roupa_sku.sql`, `proposta/20261102140312_acessorios_tulipa_laco_fundo_cafe.sql`): **não aplicadas** (conferido pelo ChatGPT em 02/11/2026: nenhuma das versões está em `supabase_migrations.schema_migrations`; `public.idol_grupos` e `players.grupo` não existem). Saíram de `supabase/migrations/` em 02/11/2026 para que a publicação no GitHub não as aplique sozinha (integração Supabase–GitHub ligada). Ordem obrigatória: grupos → avisos → acessórios; testadas em PostgreSQL isolado por `supabase/tests/grupos_nacionais_pg_integration.sh`. O site funciona sem elas (catálogo local de grupos). Para ativar: autorização da dona, aplicação pelo ChatGPT e, depois, voltar os arquivos para `supabase/migrations/` com a versão registrada no banco.
 
 - `tw_weekly_podium_proposal.sql`: pódio semanal online de Sora/Karaoke. Verificar o estado atual antes de qualquer uso; o ranking do Karaoke⭐Time! já possui o backend específico `kt_ranking`.
 - `admin_player_profile_proposal.sql`: proposta de RPC somente de leitura para a ficha administrativa de jogador do Backstage Admin (busca exata por nickname, recordes, participação, pets e histórico administrativo). **Não aplicada**; revisar compatibilidade do schema e homologar antes de produção.

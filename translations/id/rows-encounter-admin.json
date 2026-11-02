@@ -1,0 +1,22 @@
+{
+  "encounterLabels": [
+    "Pertemuan hari ini",
+    "Pertemuan harian",
+    "bintang kecil dari pertemuan!",
+    "Foto",
+    "Siapa yang akan muncul hari ini?",
+    "lihat lagi",
+    "Lihat profil"
+  ],
+  "adminActionLabels": [
+    "Selesaikan misi harian",
+    "Buka semua: mati",
+    "Buka semua: menyala",
+    "Buka semua: semua pakaian, pose, latar, ekspresi, dan item Moon⭐Duo! dapat kamu gunakan untuk pengujian. Jika dimatikan, hanya item yang kamu beli yang tersedia.",
+    "Misi selesai!"
+  ],
+  "groupEncounterLabels": [
+    "Pasangan hari ini!",
+    "Trio hari ini!"
+  ]
+}

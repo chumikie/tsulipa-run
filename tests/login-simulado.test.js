@@ -9,7 +9,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 const assert = require("node:assert");
 
-const html = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
+const html = require("./site-source.js")();
 
 // 1. O que vai para o ar: interruptor de teste desligado e login visível de fora do IIFE.
 assert(/window\.TW_JOGOS_SEM_LOGIN\s*=\s*false\s*;/.test(html),

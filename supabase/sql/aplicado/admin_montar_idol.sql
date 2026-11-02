@@ -127,7 +127,7 @@ BEGIN
   v_o := v_o || jsonb_build_object('front', v_v);
 
   v_v := coalesce(p_c->>'mecha', '');
-  IF v_v NOT IN ('', 'uma', 'dupla', 'luzes', 'escondida') THEN
+  IF v_v NOT IN ('', 'uma', 'dupla', 'luzes', 'escondida', 'antena', 'coracao') THEN
     RETURN json_build_object('ok', false, 'erro', 'mecha');
   END IF;
   v_o := v_o || jsonb_build_object('mecha', v_v, 'streak', v_v <> '');
@@ -165,7 +165,7 @@ BEGIN
   v_v := lower(btrim(coalesce(p_c->>'out', '')));
   IF v_v NOT IN (
     '', 'seifuku', 'estrelado', 'y2k', 'zipper', 'sweet', 'citypop',
-    'brasil', 'pijama', 'happi', 'gingham', 'hipster', 'rock', 'disco',
+    'brasil', 'tailandia', 'pijama', 'happi', 'gingham', 'hipster', 'rock', 'disco',
     'technopop', 'decora', 'alienfan', 'vampiro', 'rena', 'reveillon',
     'floral', 'coracao', 'outono', 'sakura', 'puffer', 'yukata',
     'cardiga', 'jardineira', 'festa48'

@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=4"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -141,6 +141,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
 <script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -330,33 +331,26 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillStyle='#fbbf24'; g.fillRect(x+17, y+28, 2, 2);
 
 }else if(roupa==='zipper'){
-    // Shortinhos brancos bufantes por baixo
     g.fillStyle='#fff'; g.fillRect(x+6, y+31, 18, 7);
     
-    // Saia aberta na frente (duas abas laterais) — por baixo do top (V2.1.3)
     g.fillStyle=corDaRoupa;
     T([x+4, y+30, x+12, y+30, x+2, y+42]); // Aba caindo para a esquerda
     T([x+26, y+30, x+18, y+30, x+28, y+42]); // Aba caindo para a direita
     
-    // Top branco
     g.fillStyle='#fff'; g.fillRect(x+5, y+22, 20, 10);
     
-    // Mangas bufantes (com a cor escolhida pelo jogador)
     g.fillStyle=corDaRoupa; E(x+3, y+24, 3, 4); E(x+27, y+24, 3, 4);
     
-    // Cadarço do corset (Laces) preto no peito
     g.strokeStyle='#222'; g.lineWidth=1;
     g.beginPath(); 
     g.moveTo(x+12, y+23); g.lineTo(x+18, y+26); g.moveTo(x+18, y+23); g.lineTo(x+12, y+26); // X de cima
     g.moveTo(x+12, y+27); g.lineTo(x+18, y+30); g.moveTo(x+18, y+27); g.lineTo(x+12, y+30); // X de baixo
     g.stroke();
     
-    // Cintura alta / Cinto
     g.fillStyle=corDaRoupa;
     g.fillRect(x+5, y+29, 20, 3);
 
 } else if(roupa==='sweet'){
-    // --- INÍCIO DO LOOK VALENTINE (SWEET) ---
     g.fillStyle = corDaRoupa;
     T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada (por baixo do vestido, V2.1.3)
     g.fillStyle = '#ffffff';   // Babado de chantilly
@@ -382,7 +376,6 @@ function drawChar(c,x,y,run,expr,isPartner){
 
     g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 4, y + 33.4, 22, .8);   // cós da saia
 
-    // --- FIM DO LOOK VALENTINE ---
 
      }else if(roupa==='estrelado' && typeof roupaEstrelado==='function'){ roupaEstrelado(c, x, y, corDaRoupa, E, T);   // V2.1.3
      }else if(roupa==='espacial'){
@@ -395,20 +388,16 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillRect(x+12,y+24,6,4);                                               // painel
     g.fillStyle='#fff'; g.fillRect(x+14,y+25,2,2);
   }else if(perfRoupaLoja(roupa, c, x, y, corDaRoupa, E, T)){
-    // V2.1.3: roupa da lojinha (desenhada no módulo do perfil)
   }else{
 
-    // Roupa Básica
     g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
   }
 
-  // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
   if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }   // com pose, os braços vêm depois das roupas (V2.1.2)
 
-  // Mangas bufantes por cima dos braços
   if(roupa === 'sweet' || roupa === 'zipper'){
     g.fillStyle = (roupa === 'sweet') ? '#ffffff' : corDaRoupa; 
     E(x + 1.5, y + 24.5, 4, 4);  
@@ -467,7 +456,6 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
 
- // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
   
   if(hacc==='boina'){g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+15,y+2,11,4,-0.15,0,7);g.fill();g.fillStyle='#111';g.fillRect(x+14,y-4,2,2);}
@@ -1125,8 +1113,8 @@ return {current:current,draw:draw};
 })();
 
 function escHtml(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
-var LANG=(function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}return ['pt','en','es','th','ja'].indexOf(l)>=0?l:'pt';})(),OSHI='',starT=500,nick='Tsu',sel=0;
-var DICT={en:{},es:{},th:{},ja:{}};window.KT_DICT=DICT;window.KT_LANG=function(){return LANG;};
+var LANG=(function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}return l==='id'&&window.TW_ID_PREVIEW_DATA?'id':['pt','en','es','th','ja'].indexOf(l)>=0?l:'pt';})(),OSHI='',starT=500,nick='Tsu',sel=0;
+var DICT={en:{},es:{},th:{},ja:{}};if(LANG==='id')DICT.id=window.TW_ID_PREVIEW_DATA.karaoke.dict;window.KT_DICT=DICT;window.KT_LANG=function(){return LANG;};
 [
 ['Início','Home','Inicio','หน้าแรก','ホーム'],['Simulação: sala fechada','Simulation: room closed','Simulación: sala cerrada','จำลอง: ห้องปิด','シミュレーション：閉室'],['Você','You','Tú','คุณ','あなた'],['Música da semana','Song of the week','Canción de la semana','เพลงประจำสัปดาห์','今週の曲'],['Mais shows na semana','Most shows this week','Más shows de la semana','โชว์มากที่สุดในสัปดาห์','今週のショー回数'],['Quem mais evoluiu','Most improved','Quien más mejoró','พัฒนามากที่สุด','いちばん成長した人'],['já é 1º em Pontuação','already #1 in Score','ya es 1.º en Puntuación','อันดับ 1 คะแนนอยู่แล้ว','スコア1位'],['show','show','show','โชว์','回'],['shows','shows','shows','โชว์','回'],['Abre em {t}','Opens in {t}','Abre en {t}','เปิดในอีก {t}','オープンまで {t}'],['Abrindo em {t}','Opening in {t}','Abriendo en {t}','กำลังจะเปิดใน {t}','まもなくオープン {t}'],['Aberta · {n}/9','Open · {n}/9','Abierta · {n}/9','เปิดอยู่ · {n}/9','オープン中 · {n}/9'],['Amanhã ao meio-dia! O quarteto da semana já foi sorteado 👀',"Tomorrow at noon! This week's quartet is already picked 👀",'¡Mañana al mediodía! El cuarteto de la semana ya fue sorteado 👀','พรุ่งนี้เที่ยงตรง! สุ่มควอเต็ตประจำสัปดาห์แล้ว 👀','明日お昼12時！今週のカルテットが決定👀'],['Você é do quarteto da semana! Apareça no telão domingo ao meio-dia 🎤',"You're in this week's quartet! Catch yourself on the big screen Sunday at noon 🎤",'¡Estás en el cuarteto de la semana! Saldrás en la pantalla el domingo al mediodía 🎤','คุณอยู่ในควอเต็ตประจำสัปดาห์! ขึ้นจอใหญ่วันอาทิตย์เที่ยงตรง 🎤','今週のカルテットに選ばれたよ！日曜お昼12時にスクリーン登場🎤'],['Ilha da Gigoia · RJ','Gigoia Island · RJ','Isla da Gigoia · RJ','เกาะจิกอยอา · รีโอ','ジゴイア島・リオ'],['Liberdade · SP','Liberdade · SP','Liberdade · SP','ย่านลิเบอร์ดาเด · เซาเปาโล','リベルダーデ・サンパウロ'],['Pegar microfone','Grab mic','Tomar micrófono','จับไมค์','マイクを持つ'],['Soltar microfone','Leave mic','Soltar micrófono','วางไมค์','マイクを置く'],['Dançar','Dance','Bailar','เต้น','ダンス'],['Drinks','Drinks','Bebidas','เครื่องดื่ม','ドリンク'],['Brindar! 🥂','Cheers! 🥂','¡Salud! 🥂','ชนแก้ว! 🥂','かんぱい！🥂'],['Dança sincronizada! ✨','Synced dance! ✨','¡Baile sincronizado! ✨','เต้นพร้อมกัน! ✨','シンクロダンス！✨'],['Última música! 🎶','Last song! 🎶','¡Última canción! 🎶','เพลงสุดท้าย! 🎶','ラストソング！🎶'],['A cortina fechou! Até domingo que vem ao meio-dia 💜','Curtain closed! See you next Sunday at noon 💜','¡Se cerró el telón! Hasta el próximo domingo al mediodía 💜','ปิดม่านแล้ว! เจอกันวันอาทิตย์หน้าตอนเที่ยงนะ 💜','閉幕！また来週日曜のお昼12時にね💜'],['Sala cheia! Você é a {n}ª pessoa da fila.','Room full! You are #{n} in line.','¡Sala llena! Eres la {n}.ª persona en la fila.','ห้องเต็ม! คุณอยู่คิวที่ {n}','満室です！順番待ち {n}番目'],['Sua vaga abriu! Confirme em {s}s','Your spot is ready! Confirm in {s}s','¡Hay lugar! Confirma en {s}s','ถึงคิวแล้ว! ยืนยันใน {s}วิ','席が空いたよ！{s}秒以内に確認してね'],['ENTRAR NA SALA','JOIN ROOM','ENTRAR A LA SALA','เข้าห้อง','入室する'],['Sair da fila','Leave queue','Salir de la fila','ออกจากคิว','列から出る'],['Tem gente esperando! Que tal dar a vez? 💖','People are waiting in line! Passing the mic soon 💖','¡Hay gente esperando! ¿Le damos el lugar? 💖','มีคนรอคิวอยู่! แบ่งรอบให้เพื่อนกันนะ 💖','待っている人がいるよ！そろそろ交代しよう💖'],['Modo plateia (celular): assista ao show e mande emojis! Para andar e cantar, entre pelo computador 💻','Audience mode (phone): watch the show and send emojis! To walk and sing, join from a computer 💻','Modo público (móvil): ¡mira el show y manda emojis! Para caminar y cantar, entra desde una computadora 💻','โหมดผู้ชม (มือถือ): ดูโชว์และส่งอีโมจิ! หากต้องการเดินและร้องเพลง ให้เข้าจากคอมพิวเตอร์ 💻','観客モード（スマホ）：絵文字で応援しよう！歩いて歌うにはパソコンから入ってね💻'],['Ver perfil','View profile','Ver perfil','ดูโปรไฟล์','プロフィール'],['Dar coração','Give heart','Dar corazón','ให้หัวใจ','ハートを送る'],['Tirar da sala','Remove from room','Sacar de la sala','เชิญออกจากห้อง','退室させる'],['Que voz! ✨','What a voice! ✨','¡Qué voz! ✨','เสียงสุดยอด! ✨','いい声！✨'],['Bis! Bis! 👏','Encore! 👏','¡Otra! ¡Otra! 👏','เอาอีก! 👏','アンコール！👏'],['Ganbatte! 💜','Ganbatte! 💜','¡Ganbatte! 💜','กัมบัตเตะ! 💜','がんばって！💜'],['Amo essa música! 🎶','I love this song! 🎶','¡Amo esta canción! 🎶','ชอบเพลงนี้จัง! 🎶','この曲だいすき！🎶'],['Brilha muito! ⭐','Shining so bright! ⭐','¡Brillas muchísimo! ⭐','เปล่งประกายมาก! ⭐','キラキラしてる！⭐'],['Saúde! 🥂','Cheers! 🥂','¡Salud! 🥂','ชนแก้ว! 🥂','かんぱい！🥂'],['Lindo demais! 💖','So cute! 💖','¡Qué lindo! 💖','น่ารักเกินไปแล้ว! 💖','かわいすぎる！💖'],['Quarteto Estrela Cadente','Shooting Star Quartet','Cuarteto Estrella Fugaz','ควอเต็ตดาวตก','流れ星カルテット']
 ].forEach(function(t){['en','es','th','ja'].forEach(function(l,i){DICT[l][t[0]]=t[i+1];});});
@@ -1175,6 +1163,7 @@ var KR_DEMO_QUEUE_LABELS={
  th:['🎤 นักร้อง 3 คนถัดไป','🧪 คิวจำลอง','ว่าง','ขอคิว','ออกจากคิว','🧪 จำลองคนต่อไป','คิวเต็มแล้ว!','คิวของคุณ: ','ถึงคิวแล้ว!','อยู่ในคิวแล้ว','นี่เป็นคิวจำลอง ไม่มีผู้เล่นจริง','รอนักร้องคนถัดไป...'],
  ja:['🎤 次の３人','🧪 ローカル順番待ち','空席','順番を予約','列から出る','🧪 ほかのアイドルを試す','順番待ちは満員です！','あなたの順番: ','あなたの番です！','すでに予約済み','これはローカル練習です。実際の予約はありません。','次の歌い手を待っています']
 };
+if(LANG==='id')KR_DEMO_QUEUE_LABELS.id=window.TW_ID_PREVIEW_DATA.karaoke.queue;
 function krDemoTr(){return KR_DEMO_QUEUE_LABELS[LANG]||KR_DEMO_QUEUE_LABELS.pt;}
 function krDemoFree(){return !krRhythmRun&&!krDemoCantor&&!krEu.no_mic&&!window.ktShowAdmissionPending&&!krMeuRetornoAt&&!krMeuVoltandoAoMic&&!krMoveQueue.length&&krEuNoMicrofone();}
 function krDemoQueueRender(){
@@ -1259,6 +1248,7 @@ var KR_RHYTHM_HIT_HELP={
  th:'🎯 กดเมื่อโน้ตแตะตรงกลางปุ่ม D, F, J หรือ K ที่สว่างอยู่ ใช้คีย์บอร์ดหรือแตะช่องนั้นได้',
  ja:'🎯 ノーツが光る D・F・J・K ボタンの中央に重なった瞬間！ キーボードでもレーンのタップでもOK。'
 };
+if(LANG==='id'){KR_RHYTHM_LANG.id=window.TW_ID_PREVIEW_DATA.karaoke.rhythm;KR_RHYTHM_HIT_HELP.id=window.TW_ID_PREVIEW_DATA.karaoke.rhythmHelp;}
 var KR_RHYTHM_PAUSE_COPY={
  pt:['⏸ Pausar','▶ Retomar (3 s)','⏳ Cancelar contagem','✦ Voltando ao palco... ✦'],
  en:['⏸ Pause','▶ Resume (3 s)','⏳ Cancel countdown','✦ Back on stage... ✦'],
@@ -3241,7 +3231,7 @@ if(ktNoSite()){
 /* Traduções PT/EN/ES/TH/JA; idioma vem do menu ou de brs48cr_lang. */
 (function(){
 var L=window.KT_LANG?window.KT_LANG():'pt';if(L==='pt')return;
-var col={en:1,es:2,th:3,ja:4}[L];if(!col)return;
+var col={en:1,es:2,th:3,ja:4,id:5}[L];if(!col)return;
 var ROWS=[
 ["voz","voice","voz","เสียง","ボイス"],
 ["Toque em Tsu, Lirika ou Pati. Cada toque traz uma fala diferente. 💜","Tap Tsu, Lirika or Pati. Each tap plays a different line. 💜","Toca a Tsu, Lirika o Pati. Cada toque reproduce una frase diferente. 💜","แตะ Tsu, Lirika หรือ Pati แต่ละครั้งจะพูดประโยคใหม่ 💜","Tsu、Lirika、Patiをタップすると、毎回ちがうセリフを話します。💜"],
@@ -3263,6 +3253,7 @@ var ROWS=[
 ["Toque em uma cabecinha para ouvir sua primeira voz e abrir as outras falas.","Tap a character head to hear their first voice and open the other lines.","Toca una cabecita para escuchar su primera voz y abrir las demás frases.","แตะหัวตัวละครเพื่อฟังเสียงแรกและเปิดเสียงพูดอื่น ๆ","キャラクターの顔をタップすると最初のボイスが再生され、ほかのセリフが開きます。"],
 ["Escolha uma música ou uma voz.","Choose a song or a voice.","Elige una canción o una voz.","เลือกเพลงหรือเสียง","曲またはボイスを選んでください。"],
 ],PAT=[["^(\\d+)\\/5 usados · (\\d+) disponíveis$", "$1/5 used · $2 left", "$1/5 usados · $2 disponibles", "ใช้แล้ว $1/5 · เหลือ $2", "$1/5 使用 · 残り$2"], ["^Reabre à meia-noite de Brasília · faltam (.+)$", "Reopens at midnight, Brasília time · $1 left", "Reabre a medianoche (Brasilia) · faltan $1", "เปิดอีกครั้งเที่ยงคืนเวลาบราซิเลีย · อีก $1", "ブラジリア時間0時に再開 · あと$1"], ["^Plateia de ([^·]+)$", "Audience of $1", "Público del $1", "ผู้ชมวันที่ $1", "$1の観客"], ["^Semana de (.+) a (.+)$", "Week of $1 to $2", "Semana del $1 al $2", "สัปดาห์ $1 ถึง $2", "$1〜$2の週"], ["^Interagir com ([^·]+)$", "Interact with $1", "Interactuar con $1", "เล่นกับ $1", "$1とふれあう"], ["^(\\d)\\. Livre$", "$1. Open", "$1. Libre", "$1. ว่าง", "$1. 空き"]];
+if(L==='id'&&window.TW_ID_PREVIEW_DATA){var idDraft=window.TW_ID_PREVIEW_DATA.karaoke;ROWS.forEach(function(r,i){r[5]=idDraft.rows[i];});PAT.forEach(function(r,i){r[5]=idDraft.patterns[i];});}
 var T=Object.create(null),D=(window.KT_DICT||{})[L]||{};
 Object.keys(D).forEach(function(k){T[k]=D[k];});
 ROWS.forEach(function(r){T[r[0]]=r[col];});
@@ -3309,7 +3300,7 @@ function idiomaObservar(){
 function iniciar(){
   if(!document.body)return;
   if(!idiomaIniciado){
-    document.documentElement.lang={en:'en',es:'es',th:'th',ja:'ja'}[L];
+    document.documentElement.lang={en:'en',es:'es',th:'th',ja:'ja',id:'id'}[L];
     varrer(document.body);idiomaIniciado=true;
   }
   idiomaObservar();

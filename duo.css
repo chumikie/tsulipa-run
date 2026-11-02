@@ -1,0 +1,63 @@
+/* Moon⭐Duo! — janela, abas, cartões, lojinha, itens travados e aviso.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração da PR #62, Etapa 4), sem mudar valores.
+   Carrega no ponto do primeiro bloco do Duo; a ordem das regras do Duo entre si foi mantida.
+   Regras mistas (com perfil, aniversário, gacha, Encontro) e o card do Duo na tela de início ficam no index.html. */
+/* Moon⭐Duo! */
+.duoov .duop{width:min(100%,760px);max-height:calc(100vh - 24px);overflow:auto;position:relative}
+.duotit{margin:0;font-size:clamp(26px,6vw,36px);text-align:center;background:linear-gradient(90deg,#7b3ff0,#ff6fb5,#4169e1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.duosub{margin:2px 0 10px;text-align:center;font-size:13px;color:var(--sub)}
+.duoquem{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px;font-size:15px;color:var(--b1)}
+.duoquem .btn{padding:6px 12px;font-size:13px}
+#duoCv{display:block;width:100%;height:auto;border-radius:20px;box-shadow:0 6px 18px rgba(60,20,120,.25);cursor:pointer;background:repeating-conic-gradient(#f4eefc 0 25%,#fff 0 50%) 0 0/20px 20px;touch-action:manipulation}
+.duodica{margin:6px 0 8px;text-align:center;font-size:13px;color:var(--sub)}
+.duogrp{margin:8px 0}.duogrp b{display:block;font-size:13px;color:var(--b1);margin-bottom:4px}
+.duoex{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duochips{display:flex;flex-wrap:wrap;gap:6px}
+.duochip{border:0;border-radius:99px;padding:6px 11px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--chip);cursor:pointer;box-shadow:0 2px 0 rgba(44,26,143,.15)}
+.duochip[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
+.duochip small{opacity:.7;font-weight:600}
+.duosug{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}
+.duobusca{width:100%;box-sizing:border-box}
+.duobtns{flex-wrap:wrap}
+.duopres{margin:8px 0;padding:12px;border-radius:16px;background:var(--chip);display:flex;flex-direction:column;gap:8px}
+.duopres small{color:var(--sub)}
+.duopres .duochip span{font-size:20px}
+@media (max-width:520px){.duoex{grid-template-columns:1fr}}
+.duochip.trava{opacity:.82;background:repeating-linear-gradient(135deg,var(--chip) 0 8px,rgba(155,48,217,.08) 8px 16px)}
+.duochip.trava small{color:#9b30d9;font-weight:800;opacity:1}
+.duoavisoov{z-index:26}.duoavisop{width:min(100%,380px);text-align:center;background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5);color:#fff}
+.duoavisop .duotit{background:none;color:#fff;-webkit-text-fill-color:#fff}
+.panel p.duoavisolua{margin:0;font-size:52px}.panel p.duoavisotxt{color:#fff;font-size:16px;font-weight:700;line-height:1.45}
+.duoavisoov .panel.duoavisop{background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5)!important;color:#fff}
+.duoavisoov .duoavisop .btn.alt{color:#4b2a9a}
+/* Moon⭐Duo! organizado em abas */
+.duoacoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.duoacoes .btn{margin:0;text-align:center;text-decoration:none;padding:10px 8px;font-size:14px}
+.duotabs{position:sticky;top:-16px;z-index:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:12px 0 10px;padding:4px;border-radius:16px;background:var(--chip);box-shadow:0 2px 0 rgba(44,26,143,.12)}
+.duotabs button{min-width:0;border:0;border-radius:12px;padding:9px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:560px){.duotabs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;font-size:11.5px;line-height:1.15}.duotabs button span{font-size:18px}}
+.duotabs button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;box-shadow:0 3px 8px rgba(123,63,240,.3)}
+.duotabc h4{margin:12px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.duogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.duogrid.thumbs{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.duocard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:76px;padding:8px 6px;border:2px solid transparent;border-radius:16px;font:inherit;color:var(--ink);background:var(--chip);cursor:pointer;transition:transform .12s}
+.duocard i{font-style:normal;font-size:26px;line-height:1}
+.duocard span{font-size:12px;font-weight:800;line-height:1.2;text-align:center}
+.duocard canvas{width:100%;height:auto;border-radius:10px;display:block}
+.duocard:hover{transform:translateY(-2px)}
+.duocard[aria-pressed="true"]{border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.25)}
+.duocard.trava{opacity:.55}.duocard.trava:hover{opacity:.85}
+.duopreco{position:absolute;top:4px;right:4px;font-style:normal;font-size:10px;font-weight:900;padding:2px 6px;border-radius:99px;background:rgba(123,63,240,.9);color:#fff}
+.duopreco.duogratis{background:linear-gradient(90deg,#ff6fb5,#ff9a3c)}
+.duoexrow{margin:6px 0 12px}.duoexrow b{display:block;font-size:13px;color:var(--b1);margin-bottom:6px}.duoexrow small{display:block;margin-top:4px;font-size:12px;color:var(--sub)}
+.duoexbtns,.duopresemo{display:flex;flex-wrap:wrap;gap:8px}
+.duoexb{position:relative;width:46px;height:46px;border:2px solid transparent;border-radius:50%;font-size:24px;line-height:1;background:var(--chip);cursor:pointer;padding:0}
+.duoexb[aria-pressed="true"]{border-color:#ff6fb5;background:linear-gradient(135deg,rgba(123,63,240,.25),rgba(255,111,181,.25))}
+.duoexb.trava{opacity:.5}.duoexb em{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:12px}
+.duoseg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;border-radius:14px;background:var(--chip)}
+.duoseg button{border:0;border-radius:10px;padding:8px 4px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:none;cursor:pointer}
+.duoseg button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
+.duotabc .duopres,.duotabc>b{display:block}
+.duoresumo{margin:2px 0;font-size:13px;color:var(--ink)}
+#duoTabC>b{margin-bottom:8px;color:var(--b1)}
+.duotrava{margin-bottom:8px}
+.duotrava[hidden],#duoPresBox[hidden]{display:none!important}.duotabc{text-align:left}.duotabc .duoexrow small{text-align:left}

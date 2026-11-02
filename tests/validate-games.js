@@ -40,7 +40,7 @@ for(const game of games){
 
 let karaokeTime="",sora="",preview="";
 try{
-  preview=read("index.html");
+  preview=require("./site-source.js")();   // index.html + módulos extraídos (pet.js, perfil.js…)
   karaokeTime=read("karaoke-time.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
@@ -94,7 +94,8 @@ assert(karaokeTime.includes("krHandBusy")&&karaokeTime.includes("krClearHandheld
   "Karaoke handheld exclusivity missing");
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
-const lab=read("index.html");
+const lab=require("./site-source.js")();   // index.html + módulos extraídos
+const translations=read("tw-i18n.js");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
 assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),
@@ -132,7 +133,7 @@ assert(lab.includes("var TW_INDEX2_TUT_KEY='tw_index2_tut_v2'")&&
   "Index 2 welcome should not overwrite brs48cr_tut");
 assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
-       lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
+       translations.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
 const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/aplicado/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=2"')&&
@@ -185,14 +186,14 @@ const privacyPage=read("privacidade.html");
 assert(!privacyPage.includes("Karaoke⭐Day!")&&
        (privacyPage.match(/Karaoke⭐Time!/g)||[]).length>=10,
   "Privacy page must describe only Karaoke Time, not the retired Sunday virtual room, in all five locales");
-assert(lab.includes("Ranking temporariamente indisponível")&&
-       lab.includes("Ranking temporarily unavailable")&&
-       lab.includes("Ranking temporalmente no disponible")&&
-       lab.includes("ランキングは一時的に利用できません")&&
-       lab.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
+assert(translations.includes("Ranking temporariamente indisponível")&&
+       translations.includes("Ranking temporarily unavailable")&&
+       translations.includes("Ranking temporalmente no disponible")&&
+       translations.includes("ランキングは一時的に利用できません")&&
+       translations.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
        !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
   "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
-const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar(){"))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
 const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
 assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
@@ -351,9 +352,14 @@ for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaR
 // Behavioral smoke test: execute ONLY the isolated INDEX2 preview controller
 // against a fake DOM. Never load the live site or call Supabase.
 try{
-  const from=lab.indexOf("var twPreviewJogoAnterior = null;");
-  const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
-  if(from<0||to<=from)throw Error("Preview controller not found");
+  // Etapa 7 da refatoração: as funções do controlador moram em hub.js e as variáveis com estado
+  // ficam no index.html; o teste junta os dois trechos (a ordem das declarações não importa aqui).
+  const hubSrc=read("hub.js"),idx=read("index.html");
+  const hA=hubSrc.indexOf("var twPreviewJogoAnterior = null;"),hF=hubSrc.indexOf("function twPreviewFecharJogo(",hA);
+  const hB=hF<0?-1:hF+10+hubSrc.slice(hF+10).search(/\n(function|var) /);
+  const iA=idx.indexOf("var twPreviewTextos = "),iB=idx.indexOf("(function twPreviewPrepararJanelas(){",iA);
+  if(hA<0||hB<=hF||iA<0||iB<=iA)throw Error("Preview controller not found");
+  const controllerSource=hubSrc.slice(hA,hB)+"\n"+idx.slice(iA,iB);
   const iframe={src:"",title:"",style:{}},attrs={};
   const overlay={
     hidden:true,setAttribute:(name,value)=>{attrs[name]=String(value);},
@@ -403,7 +409,8 @@ try{
       body:{classList:{remove:()=>{}}}
     }
   };
-  vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
+  vm.runInNewContext(translations,sandbox,{filename:"tw-i18n.js"});
+  vm.runInNewContext(controllerSource,sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
   // O Sora agora abre como pop-up SOBRE o hub (igual ao Star Gacha): o hub fica atras, visivel.
   assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&!fakeHub.hidden,
@@ -471,7 +478,7 @@ try{
 // Profile badge collection and weekly reset policy.
 try{
   const gameBadgesSql=read("supabase/sql/aplicado/profile_game_badges_sunday_week.sql");
-  const main=read("index.html"), karaokeTime=read("karaoke-time.html");
+  const main=require("./site-source.js")(), karaokeTime=read("karaoke-time.html");
   const localBadges=["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"];
   const soraBadges=["sora_500","sora_1500","sora_3000"];
   assert(main.includes("function s2SyncProfile()")&&main.includes("sincronizar_insignias_jogos"),
@@ -539,8 +546,10 @@ try{
 try{
   const html=read("index.html");
   const start=html.indexOf("// --- CARREGAMENTO AUTOMÁTICO DO VISUAL E ROUPAS SALVAS ---");
-  const end=html.indexOf("function saveCu(){",start);
-  assert(start>=0&&end>start,"Avatar save loader must remain available");
+  // Etapa 8 da refatoração: saveCu() mudou para centerrun.js; o carregador termina no catch depois de "CU.img = CU.hair;".
+  const fimCU=html.indexOf("CU.img = CU.hair;",start),fimCatch=fimCU<0?-1:html.indexOf("} catch(e) {}",fimCU);
+  const end=fimCatch<0?-1:fimCatch+"} catch(e) {}".length;
+  assert(start>=0&&end>start&&html.slice(start,end).length<4000,"Avatar save loader must remain available");
   if(start>=0&&end>start){
     const loader=html.slice(start,end);
     const defaults={n:"Idol",hair:"#ff7eb6",hair2:"#4dd8ff",skin:"#f1c9a5",eye:"#5a3b2e",outcol:"#ffffff",front:"lateral",back:"chanel"};

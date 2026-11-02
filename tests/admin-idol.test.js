@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const html=require('./site-source.js')();   // index.html + módulos (admin.js…)
 const sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/admin_montar_idol.sql'),'utf8');
 assert(html.includes("contaRpc('admin_idol_info', { p_nick: alvoVisual })")&&html.includes("admVisualRoupa(f, alvoVisual)"),'tenta o editor completo e tem reserva só de roupa');
 assert(html.includes("contaRpc('admin_montar_idol',{p_nick:inick,p_c:admIdol.c,"),'salva pelo RPC novo');

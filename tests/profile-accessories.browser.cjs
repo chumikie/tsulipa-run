@@ -13,7 +13,8 @@ const server=http.createServer((req,res)=>{
   fs.readFile(file,(err,data)=>{
     if(err){res.writeHead(404).end();return;}
     res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
-    if(name==='index.html'){
+    // Refatoração da PR #62 (Etapa 8): drawChar mora em centerrun.js, já no escopo global da página.
+    if(name==='centerrun.js'){
       const marker='function drawChar(c,x,y,run,expr,isPartner){';
       const wrapper="window.qaRenderAvatar=function(ctx,c,x,y){var oldG=g,oldState=state,oldPose=charPose,oldRank=rankI,oldAcc=accSel;try{g=ctx;state='menu';charPose='';rankI=0;accSel='';drawChar(c,x,y,0,0,false);}finally{g=oldG;state=oldState;charPose=oldPose;rankI=oldRank;accSel=oldAcc;}};\n";
       const html=data.toString();assert(html.includes(marker),'Canvas injection point moved');

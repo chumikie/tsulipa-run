@@ -35,7 +35,8 @@ $$;
 revoke all on function public.admin_avisos_grupo() from public,anon;
 grant execute on function public.admin_avisos_grupo() to authenticated;
 
--- Avisos globais permanecem visíveis a todos; avisos de grupo só a quem o escolheu.
+-- Avisos globais permanecem visíveis a todos; perfis legados (grupo NULL)
+-- recebem somente o aviso BRS48, sem reclassificar ou preencher players.grupo.
 -- A assinatura e o tipo de retorno de aviso_inicio() permanecem inalterados.
 create or replace function public.aviso_inicio() returns text
 language sql stable security definer set search_path='public' as $$
@@ -43,8 +44,8 @@ language sql stable security definer set search_path='public' as $$
     nullif((select valor #>> '{}' from public.config where chave='aviso'),''),
     case when auth.uid() is not null then
       (select nullif(c.valor #>> '{}','') from public.players p
-       join public.config c on c.chave='aviso_grupo_'||p.grupo
-       where p.id=auth.uid() and p.grupo is not null)
+       join public.config c on c.chave='aviso_grupo_'||coalesce(p.grupo,'BRS48')
+       where p.id=auth.uid())
     end
   ),'');
 $$;
@@ -61,7 +62,7 @@ begin
   original:=pg_get_functiondef(oid_func);
   alterado:=replace(original,
     '(''roupa_brasil'', 150, 0),',
-    '(''roupa_brasil'', 150, 0), (''roupa_tailandia'', 150, 0),');
+    '(''roupa_brasil'', 150, 0), (''roupa_tailandia'', 150, 0), (''roupa_indonesia'', 150, 0),');
   if original=alterado then raise exception 'Tabela de preços mudou; revisar visual_preco'; end if;
   execute alterado;
 end $$;

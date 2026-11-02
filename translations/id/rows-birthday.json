@@ -1,0 +1,42 @@
+{
+  "birthdayLabels": [
+    "April",
+    "Agustus",
+    "Ulang tahun",
+    "Kamu bisa mengubahnya lagi pada {data}.",
+    "Desember",
+    "Tanggal",
+    "Pilih tanggal dan bulan ulang tahunmu.",
+    "Tanggal ini tidak valid.",
+    "Selamat ulang tahun! Hari ini profilmu sedang merayakan 🎉",
+    "Februari",
+    "Hari ini ulang tahun {nick}! Tinggalkan pesan 💌",
+    "Januari",
+    "Juli",
+    "Juni",
+    "Mei",
+    "Maret",
+    "Bulan",
+    "November",
+    "Tanggal ulang tahun hanya bisa diubah sekali dalam setahun.",
+    "Oktober",
+    "September",
+    "Cukup tanggal dan bulan, tanpa tahun. Pada hari ulang tahunmu, profilmu akan meriah! Kamu bisa mengubahnya sekali dalam setahun."
+  ],
+  "gachaCardBirthdayLabels": [
+    "Kartu ulang tahun spesial",
+    "bintang kecil",
+    "Tutup",
+    "Selamat ulang tahun, {nick}!",
+    "Hari ini seluruh TsuLiPa⭐World ikut merayakanmu! Semoga tahun barumu penuh kilau, musik, persahabatan, dan banyak kesempatan menjadi Center! ✨🎤💖",
+    "Belum ada kartu.",
+    "Belum ada kartu. Putar Star⭐Gacha!",
+    "Terima kasih! 💖",
+    "Semoga tahun barumu penuh kilau, musik, dan banyak kesempatan menjadi Center! ✨",
+    "Simpan kartu",
+    "Simpan sebagai gambar",
+    "Kartu terakhirmu",
+    "Kartu terbaru dari Star⭐Gacha!",
+    "Lihat kartu"
+  ]
+}

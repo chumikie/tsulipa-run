@@ -248,7 +248,7 @@ async function testCoalescenciaComLimiteDeEspera() {
 
 async function testLigacaoDoPetNaPagina() {
   const fs = require('node:fs');
-  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const html = require('./site-source.js')();
   assert.match(html, /function petSave\(changed\)/);
   assert.match(html, /if\(changed && typeof perfPetMudou === 'function'\) perfPetMudou\(\)/);
   assert.match(html, /function petClose\(\)[\s\S]{0,500}perfEnviar\(\)/);
@@ -265,7 +265,7 @@ async function testLigacaoDoPetNaPagina() {
 async function testConflitoRemotoAntesDeSalvar() {
   const fs = require('node:fs');
   const vm = require('node:vm');
-  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const html = require('./site-source.js')();
   const signature = /function perfSalvarRpc\(nome,\s*args\)/.exec(html);
   const start = signature ? signature.index : -1;
   const end = html.indexOf('function perfConferir()', start);
@@ -303,7 +303,7 @@ async function testConflitoRemotoAntesDeSalvar() {
 async function testPetPagoSoDepoisDoDebito() {
   const fs = require('node:fs');
   const vm = require('node:vm');
-  const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const html = require('./site-source.js')();
   const start = html.indexOf('var petComprando = false;');
   const end = html.indexOf('function petFind(list, k)', start);
   assert.ok(start >= 0 && end > start, 'localizar função de pagamento do pet');

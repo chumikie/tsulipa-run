@@ -5,8 +5,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102014635_grupos_nacionais.sql'), 'utf8');
+const html = require('./site-source.js')();
+const sql = fs.readFileSync(path.join(root, 'supabase/sql/proposta/20261102140310_grupos_nacionais.sql'), 'utf8');
 const catalog = html.match(/var PERF_GRUPOS = (\[[\s\S]*?\]);/);
 assert.ok(catalog, 'catálogo local disponível mesmo antes da migração');
 const groups = vm.runInNewContext(catalog[1]);
@@ -17,6 +17,9 @@ test('BRS48 preserva B/R/S/KKS e SKU48 ainda não oferece divisões internas', (
   assert.deepEqual(Array.from(byCode.SKU48.times, t => t.codigo), []);
   assert.equal(byCode.BRS48.pais, 'BR');
   assert.equal(byCode.SKU48.pais, 'TH');
+  assert.equal(byCode.SPR48.pais, 'ID');
+  assert.deepEqual(Array.from(byCode.SPR48.times, t => t.codigo), []);
+  assert.match(sql, /\('SPR48','SPR48','ID'\)/);
   assert.doesNotMatch(sql, /\('SKU48','(?:S|K|U|KKS)','Team/);
 });
 
@@ -24,7 +27,7 @@ test('interface preserva escolha legada e limpa divisão na troca de grupo', () 
   assert.match(html, /function perfGrupoCodigo\(d\)\{ return d && d\.grupo \|\| 'BRS48'; \}/);
   assert.match(html, /if\(e\.target\.id!=='perfBioGrupo'\)return/);
   assert.match(html, /sel\.innerHTML='<option value="">'/);
-  assert.match(html, /g\.codigo==='SKU48' \? Object\.assign\(\{\},g,\{times:\[\]\}\)/);
+  assert.match(html, /g\.codigo==='SKU48' \|\| g\.codigo==='SPR48' \? Object\.assign\(\{\},g,\{times:\[\]\}\)/);
   assert.match(html, /perfGrupoCodigo\(p\)===gp\[0\]/);
 });
 

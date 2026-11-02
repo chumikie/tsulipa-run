@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const html = require('./site-source.js')();
 const karaoke = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 
 test('cor oficial do perfil segue sendo lida e salva sem criar chave nova', () => {

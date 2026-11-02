@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'karaoke-tickets.js'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'),'utf8');
 const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const index=require('./site-source.js')();
 assert(index.includes('src="./karaoke-tickets.js?v=2"'),'módulo integrado na página principal');
 assert(index.includes('ktTicketInventory')&&index.includes('ktTicketAdminSlot'),'inventário e moderação integrados');
 assert(index.includes("r.tipo === 'ticket'")&&index.includes('window.ktTickets.acceptBalance(r)'),'Gacha mostra ticket e atualiza saldo');

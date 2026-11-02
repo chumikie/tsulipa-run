@@ -1,0 +1,30 @@
+/* Modo admin (moderação) — barra, ferramentas, formulários, histórico e lista de contas.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração, Etapa 6), sem mudar valores. */
+/* V2.1.3 · moderação (só aparece para a conta admin) e "Apagar minha conta" */
+.admbarra{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:8px 0;padding:8px 10px;border-radius:14px;background:repeating-linear-gradient(135deg,rgba(255,79,154,.10) 0 10px,rgba(123,63,240,.10) 10px 20px);border:2px dashed #ff6fb5}
+.admbarra b{width:100%;text-align:center;font-size:13px;color:#9b30d9}
+.admbarra button,.admdesb,.admtools select{font:inherit;font-size:12px;font-weight:800;border:0;border-radius:99px;padding:5px 12px;background:#fff;color:#2c1a8f;box-shadow:0 2px 0 rgba(44,26,143,.25);cursor:pointer}
+.admbarra button:disabled{opacity:.5}
+.admnums{display:flex;gap:10px;justify-content:center;font-size:14px;margin:4px 0 8px}
+.admon{display:flex;gap:8px;align-items:center;justify-content:center;font-weight:800;margin:6px 0 10px}
+.admtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.admaviso{background:rgba(255,79,154,.14);border-radius:12px;padding:6px 10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .admbarra button,:root:not([data-theme="light"]) .admdesb,:root:not([data-theme="light"]) .admtools select{background:var(--chip);color:var(--ink)}}
+:root[data-theme="dark"] .admbarra button,:root[data-theme="dark"] .admdesb,:root[data-theme="dark"] .admtools select{background:var(--chip);color:var(--ink)}
+.admtema select{margin-left:4px}
+/* V2.1.3 · ferramentas novas da moderação e aviso da tela de início */
+.admform{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:6px 0;width:100%}
+.admform input,.admform select{font:inherit;font-size:13px;padding:6px 8px;border-radius:10px;border:2px solid rgba(255,111,181,.45);background:var(--card);color:var(--ink);max-width:100%}
+.admform #admMotivo,.admform #presMsg,.admform #avisoTxt{flex:1 1 180px}
+.admform .btn{margin:0;padding:7px 14px;font-size:13px}
+.admlog{list-style:none;margin:6px 0;padding:0;font-size:12px;text-align:left;max-height:220px;overflow:auto}
+.admlog li{padding:4px 6px;border-bottom:1px dashed rgba(123,63,240,.2)}
+.admlog .pos{color:#16a34a}.admlog .neg{color:#d6336c}
+.admcorr{margin-left:6px;border:0;background:rgba(255,79,109,.15);color:#d6336c;border-radius:50%;width:22px;height:22px;font-weight:900;cursor:pointer}
+.admtemas{text-align:left;font-size:13px;font-weight:700;margin:6px 0 10px}
+.admform .cust select,.admform .cust input{padding:0 4px;height:26px;border-width:1px;border-radius:6px}.admform .cust input[type=color]{width:40px}
+.admnota{display:block;margin:4px 0 8px;font-size:11.5px;color:var(--sub)}
+.admbusca{width:100%;box-sizing:border-box;margin:4px 0 8px}
+.admcontas{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow:auto;padding-right:4px}
+.admconta{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:8px 12px!important;border-radius:12px;background:var(--chip)!important;text-decoration:none!important}
+.admconta small{font-size:11.5px;color:var(--sub);font-weight:600}

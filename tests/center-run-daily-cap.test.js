@@ -5,7 +5,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
-const page=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const page=require('./site-source.js')();   // index.html + módulos (conta.js…)
 const sql=fs.readFileSync(path.join(root,'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'),'utf8');
 const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261101234420_center_run_daily_100.sql'),'utf8');
 assert.equal(migration,sql,'versioned migration must exactly match the tested and reviewed SQL');

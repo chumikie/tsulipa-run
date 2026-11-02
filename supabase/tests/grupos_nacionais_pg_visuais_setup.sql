@@ -2,12 +2,15 @@
 -- Contrato isolado dos recursos visuais. Os IDs e saldos são sintéticos.
 -- salvar_avatar abaixo espelha a definição versionada em
 -- supabase/sql/aplicado/admin_pet_visual_tools.sql (sem SQL remoto).
--- comprar_visual abaixo é um simulador transacional para validar que os
--- itens adicionados ao catálogo são adquiríveis; não substitui teste
--- ponta a ponta da RPC de compra presente na produção.
+-- comprar_visual reproduz a definição lida da RPC ativa em 02/11/2026:
+-- retorno idempotente de compras repetidas, checagem de temporada/rank/saldo
+-- e débito com star_log. Dependências auxiliares são dublês locais da CI;
+-- não há chamada SQL nem alteração no Supabase ativo.
 
 alter table public.players
   add column visuais text[] not null default '{}'::text[],
+  add column best integer not null default 0,
+  add column aniver date,
   add column avatar jsonb not null default '{}'::jsonb,
   add column nuvem_visual jsonb not null default '{}'::jsonb,
   add column nuvem_pet jsonb not null default '{}'::jsonb;
@@ -96,38 +99,47 @@ BEGIN
 END;
 $function$;
 
-create or replace function public.comprar_visual(p_key text)
-returns json language plpgsql security definer set search_path to ''
-as $compra_teste$
-declare
-  p public.players;
-  custo integer;
-  pontos_necessarios integer;
+-- Campos/serviços mínimos necessários ao contrato real de comprar_visual.
+-- São apenas estruturas fictícias no PostgreSQL descartável do GitHub Actions.
+create table public.star_log (
+  id bigserial primary key,
+  user_id uuid not null,
+  delta integer not null,
+  reason text not null
+);
+create or replace function public.visual_tema(p_key text) returns text
+language sql stable as $ select null::text $;
+create or replace function public.hoje_br() returns date
+language sql stable as $ select current_date $;
+create or replace function public.tema_do_dia(p_data date) returns text
+language sql stable as $ select 'tema_ci'::text $;
+create or replace function public.aniver_hoje(p_aniver date) returns boolean
+language sql stable as $ select false $;
+
+-- Definição de comprar_visual inspecionada em produção por leitura, sem
+-- executar RPC nem migrações no projeto ativo.
+CREATE OR REPLACE FUNCTION public.comprar_visual(p_key text)
+RETURNS json LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $function$
+declare pr record; p public.players; tm text;
 begin
-  if auth.uid() is null then
-    return json_build_object('ok',false,'erro','login');
+  select * into pr from public.visual_preco(p_key);
+  if pr.preco is null then return json_build_object('ok', false, 'erro', 'visual'); end if;
+  select * into p from public.players where id = auth.uid() for update;
+  if not found then return json_build_object('ok', false, 'erro', 'sem_conta'); end if;
+  if p_key = any(p.visuais) then return json_build_object('ok', true, 'stars', p.stars, 'visuais', p.visuais); end if;
+  tm := public.visual_tema(p_key);
+  if tm is not null and tm is distinct from public.tema_do_dia(public.hoje_br()) and not public.eh_admin()
+     and not (tm = 'aniversario' and public.aniver_hoje(p.aniver)) then
+    return json_build_object('ok', false, 'erro', 'temporada', 'stars', p.stars);
   end if;
-  select * into p from public.players where id=auth.uid() for update;
-  if not found then
-    return json_build_object('ok',false,'erro','sem_conta');
-  end if;
-  select preco,pontos into custo,pontos_necessarios
-    from public.visual_preco(p_key);
-  if custo is null then
-    return json_build_object('ok',false,'erro','visual');
-  end if;
-  if p_key = any(p.visuais) then
-    return json_build_object('ok',false,'erro','ja_tem');
-  end if;
-  if p.stars < custo then
-    return json_build_object('ok',false,'erro','estrelas');
-  end if;
-  update public.players
-     set stars=stars-custo, visuais=array_append(visuais,p_key), updated_at=now()
-   where id=auth.uid();
-  return json_build_object('ok',true,'custo',custo);
-end
-$compra_teste$;
+  if p.best < pr.pontos then return json_build_object('ok', false, 'erro', 'rank', 'stars', p.stars); end if;
+  if p.stars < pr.preco then return json_build_object('ok', false, 'erro', 'saldo', 'stars', p.stars); end if;
+  update public.players set stars = stars - pr.preco, visuais = array_append(visuais, p_key), updated_at = now()
+   where id = auth.uid() returning * into p;
+  insert into public.star_log (user_id, delta, reason) values (auth.uid(), -pr.preco, 'visual:' || p_key);
+  return json_build_object('ok', true, 'stars', p.stars, 'visuais', p.visuais);
+end; $function$;
 
 revoke all on function public.salvar_avatar(jsonb), public.comprar_visual(text) from public, anon;
 grant execute on function public.salvar_avatar(jsonb), public.comprar_visual(text) to authenticated;

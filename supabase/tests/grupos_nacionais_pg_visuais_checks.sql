@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 -- Execução real das três migrações sobre PostgreSQL descartável.
--- A compra é um simulador isolado; o catálogo e salvar_avatar são os
--- códigos submetidos às substituições SQL das migrações reais.
+-- comprar_visual reproduz o contrato da função ativa, com serviços auxiliares
+-- fictícios (incluindo star_log), sem execução no Supabase de produção.
 
 do $catalogo$
 declare
@@ -42,7 +42,7 @@ declare
 begin
   perform set_config('request.jwt.claim.sub','',true);
   r := public.comprar_visual('det_tulipa');
-  if r->>'erro' <> 'login' then raise exception 'compra anônima aceita: %',r; end if;
+  if r->>'erro' <> 'sem_conta' then raise exception 'compra sem conta aceita: %',r; end if;
   r := public.salvar_avatar('{"c":{"det":"tulipa"}}'::jsonb);
   if r->>'erro' <> 'tamanho' then raise exception 'avatar anônimo aceito: %',r; end if;
 
@@ -62,11 +62,16 @@ begin
   if r->>'erro' <> 'visual' then raise exception 'compra fora do catálogo: %',r; end if;
 
   r := public.comprar_visual('det_tulipa');
-  if r->>'ok' <> 'true' or (r->>'custo')::integer <> 50 then
-    raise exception 'compra da tulipa falhou: %',r;
+  if r->>'ok' <> 'true' or (r->>'stars')::integer <> 406
+     or not ((r->'visuais')::jsonb @> '["det_tulipa"]'::jsonb) then
+    raise exception 'compra da tulipa não devolveu saldo/posse reais: %',r;
   end if;
   r := public.comprar_visual('det_tulipa');
-  if r->>'erro' <> 'ja_tem' then raise exception 'cobrança duplicada da tulipa: %',r; end if;
+  if r->>'ok' <> 'true' or (r->>'stars')::integer <> 406
+     or not ((r->'visuais')::jsonb @> '["det_tulipa"]'::jsonb)
+     or (select count(*) from public.star_log where reason='visual:det_tulipa') <> 1 then
+    raise exception 'compra repetida não foi idempotente: %',r;
+  end if;
   r := public.salvar_avatar('{"c":{"det":"tulipa"}}'::jsonb);
   if r->>'ok' <> 'true' then raise exception 'tulipa comprada não pôde ser salva: %',r; end if;
 
@@ -81,7 +86,8 @@ begin
   if r->>'ok' <> 'true' then raise exception 'chapéu comprado não pôde ser salvo: %',r; end if;
 
   r := public.comprar_visual('duo_cafe');
-  if r->>'ok' <> 'true' or (r->>'custo')::integer <> 90 then
+  if r->>'ok' <> 'true' or (r->>'stars')::integer <> 196
+     or not ((r->'visuais')::jsonb @> '["duo_cafe"]'::jsonb) then
     raise exception 'compra duo_cafe: %',r;
   end if;
   r := public.salvar_avatar('{"fundo":"cafe"}'::jsonb);
@@ -91,6 +97,12 @@ begin
   if r->>'ok' <> 'true' then raise exception 'compra da roupa legada Brasil: %',r; end if;
   r := public.salvar_avatar('{"fundo":"cafe","c":{"out":"brasil","det":"torrada","hat":"palha"}}'::jsonb);
   if r->>'ok' <> 'true' then raise exception 'salvamento combinado perdeu compatibilidade: %',r; end if;
+
+  -- Saldo insuficiente e item inexistente não podem gerar um débito.
+  r := public.comprar_visual('roupa_pijama');
+  if r->>'erro' <> 'saldo' or (r->>'stars')::integer <> 46 then
+    raise exception 'compra sem saldo não foi bloqueada: %',r;
+  end if;
 
   -- Administração existente conserva o comportamento de visuais livres.
   perform set_config('request.jwt.claim.sub','50000000-0000-4000-8000-000000000001',true);
@@ -123,6 +135,16 @@ begin
      or b.avatar #>> '{c,hat}' <> 'palha' then
     raise exception 'último save do avatar não preservado: %',b.avatar;
   end if;
+  if (select count(*) from public.star_log) <> 5
+     or (select coalesce(sum(delta),0) from public.star_log) <> -410
+     or (select count(distinct reason) from public.star_log) <> 5
+     or (select count(*) from public.star_log
+         where user_id <> '50000000-0000-4000-8000-000000000002'::uuid
+            or reason not in ('visual:det_tulipa','visual:det_torrada','visual:hat_palha',
+                              'visual:duo_cafe','visual:roupa_brasil')) <> 0
+     or a.best <> 0 or b.best <> 0 then
+    raise exception 'star_log, saldo ou recordes alterados fora das 5 compras';
+  end if;
   if (select pontos from public.ci_ranking_guard where id=1) <> 98765
      or (select count(*) from public.admin_log) <> 2 then
     raise exception 'ranking ou auditoria administrativa alterados';
@@ -130,4 +152,4 @@ begin
 end
 $integridade_visuais$;
 
-select 'PASS: 3 migrations + catalogue, isolated purchase, ownership, avatar, Cafe, ACL and integrity' as result;
+select 'PASS: 3 migrations + live purchase contract, star_log, ownership, avatar, Cafe, ACL and integrity' as result;

@@ -84,17 +84,18 @@ var PERF_TIMES = { B:['Team B', '#4169e1'], R:['Team R', '#f5c400'], S:['Team S'
 // Identidade nacional independente do time: null/legado continua BRS48 sem migrar saves.
 var PERF_GRUPOS = [
   { codigo:'BRS48', nome:'BRS48', pais:'BR', times:[{codigo:'B',nome:'Team B',cor:'#4169e1'},{codigo:'R',nome:'Team R',cor:'#f5c400'},{codigo:'S',nome:'Team S',cor:'#3cb043'},{codigo:'KKS',nome:'Team KKS',cor:'#4dd8ff'}] },
-  { codigo:'SKU48', nome:'SKU48', pais:'TH', times:[] }
+  { codigo:'SKU48', nome:'SKU48', pais:'TH', times:[] },
+  { codigo:'SPR48', nome:'SPR48', pais:'ID', times:[] }
 ];
 var PERF_GRUPOS_CARREGADOS = false;
 function perfGrupoCodigo(d){ return d && d.grupo || 'BRS48'; }
 function perfGrupo(g){ return PERF_GRUPOS.find(function(x){return x.codigo===g;}) || PERF_GRUPOS[0]; }
-function perfGrupoBandeira(g){ return g.pais==='TH'?'🇹🇭':g.pais==='BR'?'🇧🇷':'🌏'; }
+function perfGrupoBandeira(g){ return g.pais==='TH'?'🇹🇭':g.pais==='ID'?'🇮🇩':g.pais==='BR'?'🇧🇷':'🌏'; }
 function perfGruposCarregar(){
   if(PERF_GRUPOS_CARREGADOS)return Promise.resolve(PERF_GRUPOS);
   return contaRpc('grupos_disponiveis').then(function(lista){
     if(Array.isArray(lista)&&lista.length && lista.every(function(g){return /^[A-Z0-9]{2,16}$/.test(g.codigo)&&Array.isArray(g.times)&&/^[A-Z]{2}$/.test(g.pais);}))
-      PERF_GRUPOS=lista.map(function(g){ return g.codigo==='SKU48' ? Object.assign({},g,{times:[]}) : g; }); // SKU ainda não tem divisões, mesmo com RPC antiga em cache
+      PERF_GRUPOS=lista.map(function(g){ return g.codigo==='SKU48' || g.codigo==='SPR48' ? Object.assign({},g,{times:[]}) : g; }); // SKU ainda não tem divisões, mesmo com RPC antiga em cache
     PERF_GRUPOS_CARREGADOS=true;return PERF_GRUPOS;
   }).catch(function(){return PERF_GRUPOS;});
 }
@@ -171,6 +172,15 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle='#2d2a4a';T([x+10,y+22,x+20,y+22,x+15,y+27]);
     g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+25]);
     g.fillStyle='#2d2a4a';g.fillRect(x+6,y+33,18,4.5);
+    g.fillStyle='#f4f5f8';g.fillRect(x+6,y+33,1.4,4.5);g.fillRect(x+22.6,y+33,1.4,4.5);
+  } else if(roupa === 'indonesia'){ // mesmo molde Brasil/Tailândia; bandeira da Indonésia (vermelho sobre branco)
+    g.fillStyle='#ce1126';g.fillRect(x+4,y+22,22,5.5);
+    g.fillStyle='#f4f5f8';g.fillRect(x+4,y+27.5,22,5.5);
+    g.fillStyle='#ce1126';g.fillRect(x+4,y+31.6,22,1.4);
+    g.fillStyle='#f4f5f8';T([x+10,y+22,x+20,y+22,x+15,y+27]);
+    g.fillStyle='#ce1126';T([x+12,y+22,x+18,y+22,x+15,y+25]);
+    g.fillStyle='#ce1126';E(x+20,y+30,1.6,1.6);g.fillStyle='#fff';g.fillRect(x+19.6,y+29.6,.8,.8);
+    g.fillStyle='#ce1126';g.fillRect(x+6,y+33,18,4.5);
     g.fillStyle='#f4f5f8';g.fillRect(x+6,y+33,1.4,4.5);g.fillRect(x+22.6,y+33,1.4,4.5);
   } else if(roupa === 'hipster'){   // Hippie: camiseta tie-dye (na cor escolhida), colete de franjas, calça jeans com florzinha e faixa na testa
     var td = branco ? '#ff9ccd' : cor;

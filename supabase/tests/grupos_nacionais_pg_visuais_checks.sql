@@ -9,6 +9,7 @@ declare
 begin
   for k,expected_price in select * from (values
     ('roupa_tailandia',150),
+    ('roupa_indonesia',150),
     ('det_tulipa',50),
     ('det_torrada',50),
     ('hat_palha',70),

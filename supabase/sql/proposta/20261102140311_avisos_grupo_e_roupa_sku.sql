@@ -62,7 +62,7 @@ begin
   original:=pg_get_functiondef(oid_func);
   alterado:=replace(original,
     '(''roupa_brasil'', 150, 0),',
-    '(''roupa_brasil'', 150, 0), (''roupa_tailandia'', 150, 0),');
+    '(''roupa_brasil'', 150, 0), (''roupa_tailandia'', 150, 0), (''roupa_indonesia'', 150, 0),');
   if original=alterado then raise exception 'Tabela de preços mudou; revisar visual_preco'; end if;
   execute alterado;
 end $$;

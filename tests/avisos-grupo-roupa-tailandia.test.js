@@ -32,6 +32,10 @@ test('camisa tailandesa mantém preço e fluxo de compra oficial da brasileira',
   assert.match(html, /\['brasil',\s*'🇧🇷',\s*'Brasil',\s*150\]/);
   assert.match(html, /\['tailandia',\s*'🇹🇭',\s*'Tailândia',\s*150\]/);
   assert.match(html, /roupa\s*===\s*'tailandia'/);
+  // SPR48 (02/11/2026): camisa da Indonésia no mesmo molde e com o mesmo preço
+  assert.match(html, /\['indonesia',\s*'🇮🇩',\s*'Indonésia',\s*150\]/);
+  assert.match(html, /roupa\s*===\s*'indonesia'/);
+  assert.match(sql, /\(''roupa_indonesia'', 150, 0\)/);
   assert.match(html, /roupa\s*===\s*'brasil'/);
   assert.match(sql, /\(''roupa_tailandia'', 150, 0\)/);
   assert.match(sql, /visual_preco/);

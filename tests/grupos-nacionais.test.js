@@ -17,6 +17,9 @@ test('BRS48 preserva B/R/S/KKS e SKU48 ainda não oferece divisões internas', (
   assert.deepEqual(Array.from(byCode.SKU48.times, t => t.codigo), []);
   assert.equal(byCode.BRS48.pais, 'BR');
   assert.equal(byCode.SKU48.pais, 'TH');
+  assert.equal(byCode.SPR48.pais, 'ID');
+  assert.deepEqual(Array.from(byCode.SPR48.times, t => t.codigo), []);
+  assert.match(sql, /\('SPR48','SPR48','ID'\)/);
   assert.doesNotMatch(sql, /\('SKU48','(?:S|K|U|KKS)','Team/);
 });
 
@@ -24,7 +27,7 @@ test('interface preserva escolha legada e limpa divisão na troca de grupo', () 
   assert.match(html, /function perfGrupoCodigo\(d\)\{ return d && d\.grupo \|\| 'BRS48'; \}/);
   assert.match(html, /if\(e\.target\.id!=='perfBioGrupo'\)return/);
   assert.match(html, /sel\.innerHTML='<option value="">'/);
-  assert.match(html, /g\.codigo==='SKU48' \? Object\.assign\(\{\},g,\{times:\[\]\}\)/);
+  assert.match(html, /g\.codigo==='SKU48' \|\| g\.codigo==='SPR48' \? Object\.assign\(\{\},g,\{times:\[\]\}\)/);
   assert.match(html, /perfGrupoCodigo\(p\)===gp\[0\]/);
 });
 

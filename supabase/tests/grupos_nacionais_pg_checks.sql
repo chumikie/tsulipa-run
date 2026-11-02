@@ -49,9 +49,11 @@ begin
   if r->>'erro' <> 'login' then raise exception 'auth.uid nulo não foi bloqueado: %',r; end if;
 
   groups := public.grupos_disponiveis();
-  if json_array_length(groups) <> 2
+  if json_array_length(groups) <> 3
      or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='BRS48')->'times') <> 4
-     or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='SKU48')->'times') <> 0 then
+     or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='SKU48')->'times') <> 0
+     or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='SPR48')->'times') <> 0
+     or (select x.value->>'pais' from json_array_elements(groups) as x(value) where x.value->>'codigo'='SPR48') <> 'ID' then
     raise exception 'catálogo público dos grupos/times incompleto: %',groups;
   end if;
 
@@ -67,7 +69,7 @@ begin
   r := public.admin_aviso_grupo('INVALIDO','Não deve gravar');
   if r->>'erro' <> 'grupo' then raise exception 'grupo inválido aceito para aviso: %',r; end if;
   notices := public.admin_avisos_grupo();
-  if json_array_length(notices) <> 2
+  if json_array_length(notices) <> 3   -- um por grupo: BRS48, SKU48 e SPR48 (sem aviso)
      or not exists(select 1 from json_array_elements(notices) as x(value) where x.value->>'grupo'='SKU48' and x.value->>'texto'='Aviso exclusivo SKU48')
      or not exists(select 1 from json_array_elements(notices) as x(value) where x.value->>'grupo'='BRS48' and x.value->>'texto'='Aviso exclusivo BRS48') then
     raise exception 'admin_avisos_grupo não devolveu os avisos por grupo: %',notices;

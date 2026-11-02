@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const html = require('./site-source.js')();
-const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102023122_acessorios_tulipa_laco_fundo_cafe.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102140312_acessorios_tulipa_laco_fundo_cafe.sql'), 'utf8');
 
 test('coroa, torrada e chapéu têm itens e preços oficiais sem duplicar acessórios legados', () => {
   assert.match(html, /\['det_tulipa', '🌷', 'Coroa de Tulipas', 50, 'acc'\]/);

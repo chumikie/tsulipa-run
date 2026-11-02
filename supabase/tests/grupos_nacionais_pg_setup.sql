@@ -42,7 +42,8 @@ create table public.admins (user_id uuid primary key);
 insert into public.admins(user_id) values ('50000000-0000-4000-8000-000000000001');
 insert into public.config(chave,valor) values ('aviso',to_jsonb('Aviso global'::text));
 
--- Mesmo contrato e âncora de preço das funções públicas consultadas no Supabase.
+-- Catálogo sintético mínimo com as âncoras reais das três migrações.
+-- duo_cafe continua sendo a única compra que dá direito ao fundo cafe.
 create or replace function public.eh_admin()
 returns boolean language sql stable security definer set search_path to 'public'
 as $eh_admin$ select exists (select 1 from public.admins where user_id = auth.uid()) $eh_admin$;
@@ -51,7 +52,8 @@ create or replace function public.visual_preco(p_key text, OUT preco integer, OU
 returns record language sql immutable set search_path to 'public'
 as $visual_preco$
   select v.preco, v.pontos from (values
-    ('roupa_brasil', 150, 0), ('roupa_pijama', 180, 0)
+    ('roupa_brasil', 150, 0), ('det_coelho', 50, 0),
+    ('duo_cafe', 90, 0), ('roupa_pijama', 180, 0)
   ) as v(k, preco, pontos) where v.k = p_key;
 $visual_preco$;
 

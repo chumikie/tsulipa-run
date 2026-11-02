@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const html = require('./site-source.js')();
-const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102020938_avisos_grupo_e_roupa_sku.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102140311_avisos_grupo_e_roupa_sku.sql'), 'utf8');
 
 test('admin escolhe todos ou grupo nacional, nunca time interno', () => {
   assert.match(html, /<select id="avisoAlvo"><option value="">🌏 Todos os jogadores/);
@@ -20,7 +20,8 @@ test('RPC de aviso usa catálogo, valida admin e isola mensagens por grupo', () 
   assert.match(sql, /if not public\.eh_admin\(\)/);
   assert.match(sql, /from public\.idol_grupos where codigo=g and ativo/);
   assert.match(sql, /'aviso_grupo_'\|\|g/);
-  assert.match(sql, /p\.id=auth\.uid\(\) and p\.grupo is not null/);
+  assert.match(sql, /c\.chave='aviso_grupo_'\|\|coalesce\(p\.grupo,'BRS48'\)/);
+  assert.doesNotMatch(sql, /p\.grupo is not null/);
   assert.match(sql, /where p\.id=auth\.uid\(\)/);
   assert.match(sql, /grant execute on function public\.admin_aviso_grupo\(text,text\) to authenticated/);
   assert.match(sql, /grant execute on function public\.aviso_inicio\(\) to anon,authenticated/);

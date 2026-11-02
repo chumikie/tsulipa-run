@@ -113,6 +113,22 @@ begin
   end if;
 
   perform set_config('request.jwt.claim.sub','50000000-0000-4000-8000-000000000002',true);
+  -- Conta B ainda não escolheu grupo: NULL deve herdar apenas avisos BRS48,
+  -- sem gravar um valor novo no perfil e sem vazar avisos SKU48.
+  profile := public.meu_perfil();
+  if profile->>'grupo' is not null then
+    raise exception 'perfil legado recebeu grupo por backfill: %',profile;
+  end if;
+  notice := public.aviso_inicio();
+  if position('Aviso global' in coalesce(notice,''))=0
+     or position('Aviso exclusivo BRS48' in coalesce(notice,''))=0
+     or position('Aviso exclusivo SKU48' in coalesce(notice,''))>0 then
+    raise exception 'aviso_inicio não reconheceu NULL como BRS48 sem vazamento: %',notice;
+  end if;
+  profile := public.meu_perfil();
+  if profile->>'grupo' is not null then
+    raise exception 'leitura de aviso alterou grupo NULL: %',profile;
+  end if;
   r := public.salvar_grupo('BRS48','B');
   if r->>'ok' <> 'true' then raise exception 'segunda conta não conseguiu salvar grupo: %',r; end if;
   public_profile := public.perfil_publico('Conta B');

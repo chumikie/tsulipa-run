@@ -97,6 +97,7 @@ window.TWAvatarHair={
  },
  mecha:function(g,c,x,y,f){   // Uma (JJ), Dupla (Meichan/Tata), Luzes (Apollo/Nanamaru), Escondida (Yami)
   var m=MECHA[f]||MECHA.bagunca,H2=c.hair2||'#ffffff',st=c.mecha||'uma',sg=g.createLinearGradient(0,y+1,0,y+18);
+  if(st==='antena'||st==='coracao')return; // enfeite de mecha é desenhado acima do cabelo por bicolor()
   sg.addColorStop(0,H2);sg.addColorStop(1,escurecer(H2,60));
   g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.fillStyle=sg;
   if(st==='luzes'){   // fios finos acompanhando a curva da cabeça, suaves na raiz e claros na ponta
@@ -114,13 +115,13 @@ window.TWAvatarHair={
   }
   g.restore();
  },
- detalhe:function(g,c,x,y){   // Antena (Decchan) e Coque de coração (Z), na cor do cabelo
-  var d=c.det,H=c.hair||'#ff7eb6',hg=g.createLinearGradient(0,y-9,0,y+3);hg.addColorStop(0,clarear(H,30));hg.addColorStop(1,escurecer(H,50));g.fillStyle=hg;
+ detalhe:function(g,c,x,y){   // Antena (Decchan) e Coração (Z), na cor independente da mecha
+  var d=c.mecha==='antena'||c.mecha==='coracao'?c.mecha:c.det,H=c.hair2||c.hair||'#ff7eb6',hg=g.createLinearGradient(0,y-9,0,y+3);hg.addColorStop(0,clarear(H,30));hg.addColorStop(1,escurecer(H,50));g.fillStyle=hg;
   if(d==='antena'){g.beginPath();g.moveTo(x+13,y+1.5);g.quadraticCurveTo(x+13,y-6,x+19,y-8);g.quadraticCurveTo(x+16,y-4.5,x+16.5,y+1.5);g.closePath();g.fill();}
   else if(d==='coracao'){g.beginPath();g.moveTo(x+15,y+1.5);g.bezierCurveTo(x+8,y-3,x+10,y-9,x+15,y-5.5);g.bezierCurveTo(x+20,y-9,x+22,y-3,x+15,y+1.5);g.closePath();g.fill();g.fillStyle='rgba(255,255,255,.3)';g.beginPath();g.ellipse(x+12.5,y-4.5,1.2,.8,-.5,0,7);g.fill();}
  },
  bicolor:function(g,c,x,y,b){
-  if(c.det==='antena'||c.det==='coracao')this.detalhe(g,c,x,y);
+  if(c.mecha==='antena'||c.mecha==='coracao'||c.det==='antena'||c.det==='coracao')this.detalhe(g,c,x,y); // legado de saves em det
   if(b!=='onduladom2')return;
   // metade direita (de quem olha) em preto: topo, costeleta e a franja escolhida
   var f=c.front||'bagunca',pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,PRETO_TOPO);pg.addColorStop(1,PRETO_BASE);

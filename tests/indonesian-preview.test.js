@@ -13,8 +13,15 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
     assert.match(src,/translations\/id\/preview-data\.js/);
     assert.ok(src.indexOf("get('lang')==='id'")>=0);
   }
-  assert.match(read('index.html'),/<button data-l="id">🇮🇩 ID<\/button>/);
-  assert.match(read('hub.js'),/\['id', '🇮🇩 ID'\]/);
+  assert.match(read('index.html'),/<button data-l="id">ID<\/button>/);
+  assert.match(read('hub.js'),/\['id', 'ID'\]/);
+  const menu=read('index.html').match(/<div class="lang"[\s\S]*?<\/div>/)[0];
+  assert.ok(menu.indexOf('data-l="en"')<menu.indexOf('data-l="id"'));
+  assert.ok(menu.indexOf('data-l="id"')<menu.indexOf('data-l="th"'));
+  const hub=read('hub.js');
+  assert.ok(hub.indexOf("['id', 'ID']")<hub.indexOf("['th', 'TH']"));
+  assert.match(read('index.html'),/twCarregarIdiomaId\(\)\.then/);
+  assert.doesNotMatch(read('index.html'),/location\.reload\(\)/);
   for(const lang of ['pt','es','en','th','ja'])assert.match(read('index.html'),new RegExp('data-l="'+lang+'"'));
   assert.equal(catalog.karaoke.rows.length,202);
   assert.equal(catalog.karaoke.patterns.length,6);

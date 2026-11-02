@@ -187,9 +187,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
        <button data-l="pt" aria-pressed="true">PT</button>
        <button data-l="es">ES</button>
        <button data-l="en">EN</button>
+       <button data-l="id">ID</button>
        <button data-l="th">TH</button>
        <button data-l="ja">日本語</button>
-       <button data-l="id">🇮🇩 ID</button>
      </div>
 
 
@@ -709,11 +709,25 @@ window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
+var twIdCarregamento=null;
+function twCarregarIdiomaId(){
+  if(window.TW_ID_PREVIEW_DATA)return Promise.resolve();
+  if(twIdCarregamento)return twIdCarregamento;
+  twIdCarregamento=new Promise(function(resolve,reject){
+    var script=document.createElement('script');
+    script.src='./translations/id/preview-data.js';
+    script.onload=function(){window.TW_ID_PREVIEW_DATA?resolve():reject(new Error('Catálogo ID indisponível'));};
+    script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
+    document.head.appendChild(script);
+  }).catch(function(e){twIdCarregamento=null;throw e;});
+  return twIdCarregamento;
+}
 [].forEach.call(document.querySelectorAll('.lang button'),function(b){
   b.onclick=function(){
-    if(b.dataset.l==='id'){
-      try{localStorage.setItem('brs48cr_lang','id')}catch(e){}
-      location.reload();return;
+    if(b.dataset.l==='id'&&!window.TW_ID_PREVIEW_DATA){
+      b.disabled=true;
+      twCarregarIdiomaId().then(function(){b.disabled=false;b.click();}).catch(function(e){b.disabled=false;console.warn(e);});
+      return;
     }
     LANG=b.dataset.l;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}

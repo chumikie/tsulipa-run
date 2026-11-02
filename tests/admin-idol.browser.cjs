@@ -14,7 +14,7 @@ const server=http.createServer((req,res)=>{
     if(err){res.writeHead(404).end();return;}
     if(name==='index.html'){
       const marker='var admIdol=null;';
-      const hook="window.__qaAdminIdol={setRpc:function(fn){contaRpc=fn;perfAbrir=function(){};},mount:function(raw){perfAtual={nick:raw.nick};perfOv.hidden=false;var f=document.getElementById('admForm');if(!f){f=document.createElement('div');f.id='admForm';perfOv.appendChild(f);}f.hidden=false;f.innerHTML=admIdolFormHtml(raw);admIdolPrev();}};\\n";
+      const hook="window.__qaAdminIdol={setRpc:function(fn){contaRpc=fn;perfAbrir=function(){};},mount:function(raw){perfAtual={nick:raw.nick};perfOv.hidden=false;var f=document.getElementById('admForm');if(!f){f=document.createElement('div');f.id='admForm';perfOv.appendChild(f);}f.hidden=false;f.innerHTML=admIdolFormHtml(raw);admIdolPrev();}};\n";
       const html=data.toString();
       assert(html.includes(marker),'Admin Idol injection point moved');
       data=Buffer.from(html.replace(marker,hook+marker));

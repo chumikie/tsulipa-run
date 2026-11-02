@@ -10,6 +10,7 @@ has('profile=j===krRoomRenderPlayer?ktMicCor()','Pillow color must read the loca
 has('krEu._ktGoingToSofa=true','Sofa routes must enter their slower movement mode');
 has('if(krEu._ktGoingToSofa)krVelocidadeAlvo=2.65','Sofa walking must use its slower target speed without changing the fast return contract');
 has("pose=singPose===1?'neon':singPose===2?'banzai':'mic'",'Singing must alternate microphone and dance poses');
+has('busy=krHandBusy(j)&&!walking&&!j.no_mic','Singing avatars must not be frozen by the handheld-item busy state');
 has('talking||j.no_mic?1','Singing and spoken balloons must activate the open-mouth expression');
 has('touchAge>=0&&touchAge<1?6','Speaker-box jumps must activate a temporary expressive face');
 has('if(ex===4||ex===5)ex=2','The renderer must preserve expression 1 for singing/speech');

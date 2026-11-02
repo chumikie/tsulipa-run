@@ -73,6 +73,12 @@ const env={
 };
 vm.createContext(env);
 vm.runInContext(loungeSource,env,{timeout:1000});
+function startFirstEligibleWalker(){
+ const due=env.krBots.filter(bot=>env.krLoungePodePassear(bot)).map(bot=>bot._ktLounge.waitUntil).filter(Number.isFinite);
+ assert(due.length>0,'at least one eligible character has an outing time');
+ env.krT=Math.max(env.krT,env.krLoungeNextAt,Math.min(...due))+1;
+ env.krLoungeUpdate(1);
+}
 
 env.krBots[0].drink='tsu';
 assert.equal(env.krLoungePodePassear(env.krBots[0]),false,'an Idol holding a drink does not enter autonomous walking or the automatic mic queue');
@@ -81,7 +87,7 @@ env.krLoungeReset();
 assert(env.krBots.every(bot=>bot._ktPersonality&&typeof bot._ktPersonality.type==='string'),'the lounge reset assigns a stable personality to every member');
 assert(new Set(env.krBots.map(bot=>bot._ktPersonality.type)).size>=5,'the cast receives a varied mix of individual temperaments');
 assert.equal(env.krLoungeActors.length,0);
-for(const time of [540,585,630]){env.krT=time;env.krLoungeUpdate(1);}
+startFirstEligibleWalker();
 assert.equal(env.krLoungeActors.length,1,'only one Idol walks at a time, preventing paths from crossing');
 assert.equal(new Set(env.krLoungeActors).size,1,'the active walker is a single cast member');
 const walker=env.krLoungeActors[0],startX=walker.x,startY=walker.y;
@@ -97,7 +103,7 @@ for(let i=0;i<12&&env.krLoungeActors.length;i++){env.krT+=1;env.krLoungeUpdate(6
 assert.equal(env.krLoungeActors.length,0,'walkers finish their return routes while the player is away from the microphone');
 assert(env.krBots.every((b,i)=>Math.abs(b.x-env.KR_SOFA_SLOTS[i][0])<1.3&&Math.abs(b.y-env.KR_SOFA_SLOTS[i][1])<1.3),'the audience walks back and settles into its original seats');
 env.krEuNoMicrofone=()=>true;env.krLoungeReset();
-for(const time of [env.krT+540,env.krT+585,env.krT+630]){env.krT=time;env.krLoungeUpdate(1);}
+startFirstEligibleWalker();
 assert.equal(env.krLoungeActors.length,1,'the lounge resumes one safe walker after the player returns to the microphone');
 // A character taking the microphone is immediately removed from the walking set.
 const singer=env.krLoungeActors[0];singer.no_mic=true;

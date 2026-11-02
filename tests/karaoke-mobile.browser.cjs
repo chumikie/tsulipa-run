@@ -168,7 +168,7 @@ async function metrics(frame){
    if(!baseline){
     const poster=frame.locator('#ktPosterDialog'),portrait=frame.locator('#ktPosterPortrait'),posterColors=[];
     for(let posterIndex=0;posterIndex<6;posterIndex++){
-     const posterClick=await frame.locator('body').evaluate(index=>window.qaRoomControllers.openPoster(index),posterIndex);
+     const posterClick=await frame.locator('body').evaluate(()=>{var index=window.__qaPosterIndex||0;window.__qaPosterIndex=index+1;return window.qaRoomControllers.openPoster(index);});
      assert.equal(posterClick.opened,true,'wall Polaroid '+(posterIndex+1)+' opens through the real canvas pointer event: '+JSON.stringify(posterClick));
      assert.equal(posterClick.posterCount,6,'the room exposes all six wall Polaroids');
      await poster.waitFor({state:'visible'});await frame.locator('#ktPosterSave').waitFor({state:'visible'});

@@ -12,7 +12,7 @@ na tela: os blocos grandes foram para arquivos próprios. Método e conferência
 2. Scripts compartilhados: `tw-motion-lifecycle.js`, `tw-avatar-items.js`, `tw-avatar-hair.js`, Supabase,
    `pet-sync.js`, `tw-i18n.js` (traduções).
 3. **Módulos (só declaram funções e tabelas fixas, não executam nada ao carregar):**
-   `centerrun.js` → `pet.js` → `perfil.js` → `gacha.js` → `duo.js` → `encontro.js` → `hub.js` → `conta.js`.
+   `centerrun.js` → `pet.js` → `perfil.js` → `gacha.js` → `duo.js` → `encontro.js` → `hub.js` → `conta.js` → `admin.js`.
 4. **Script principal do `index.html`**: cria o estado, monta as janelas, liga os eventos e inicia tudo, na mesma
    ordem de antes (por isso ele pode chamar funções dos módulos em qualquer ponto).
 5. Depois: `tw-index2-ux-fixes` (inline), `tw-windows.js`, `karaoke-tickets.js`.
@@ -21,7 +21,7 @@ na tela: os blocos grandes foram para arquivos próprios. Método e conferência
 
 | Arquivo | O que tem | Tamanho |
 |---|---|---|
-| `index.html` | Estrutura da página, estado de cada área, montagem das janelas, eventos, inicialização, ponte com o Karaoke⭐Time!/Sora⭐Jump!, **modo admin** (Etapa 6, pendente) e regras de CSS mistas | ~218 KB |
+| `index.html` | Estrutura da página, estado de cada área, montagem das janelas, eventos, inicialização, ponte com o Karaoke⭐Time!/Sora⭐Jump! e regras de CSS mistas | ~218 KB |
 | `centerrun.js` / `centerrun.css` | Center⭐Run!: personagens (`drawChar`), corrida, cenário vivo, ranking local, foto/photocard, PNG do avatar, temas da temporada, easter eggs, outdoors, obstáculos, Temporada 2 · CSS: base visual do site inteiro | ~218 KB |
 | `pet.js` / `pet.css` | Backstage⭐Pet!: camarim, ações, câmera, coleção, Meu Pet, sons, conversa, estágios, minijogos, temas do camarim | ~118 KB |
 | `perfil.js` / `perfil.css` | Perfil público e pessoal, Estúdio de foto, Montar Idol, lojinha, nuvem, presente diário | ~107 KB |
@@ -29,6 +29,7 @@ na tela: os blocos grandes foram para arquivos próprios. Método e conferência
 | `duo.js` / `duo.css` | Moon⭐Duo!: desenho da cena, telas, abas, lojinha, itens travados, aviso | ~39 KB |
 | `gacha.js` / `gacha.css` | Star⭐Gacha!: giro, card do Idol, últimos cards, zoom | ~16 KB |
 | `conta.js` | Login com Google, caixa de login, carregar/importar a conta, estrelas e ranking no servidor, modo teste com parceiras, apagar conta (LGPD) | ~13 KB |
+| `admin.js` / `admin.css` | Modo admin (moderação): painel, ferramentas, Montar o Idol, avisos, missões e "Liberar tudo"; o servidor confere `eh_admin()` | ~19 KB |
 | `encontro.js` / `encontro.css` | Encontro do dia: cena, halo, emojis, ordem do trio, prêmio | ~11 KB |
 | `pet-sync.js` | Sincronização do pet com a nuvem (única camada; não duplicar) | — |
 | `tw-i18n.js` | Traduções (en/es/th/ja) usadas pela página inicial | ~238 KB |
@@ -40,7 +41,6 @@ na tela: os blocos grandes foram para arquivos próprios. Método e conferência
   (`hubMostrar()`, `petAlertLigar()`…). Mover isso mudaria a ordem em que as coisas acontecem.
 - **Tabelas lidas antes da própria declaração** (ex.: `PERF_LOJA`, `PERF_POSES`, `LOJA_EXTRA`): se fossem para um
   módulo, passariam a existir mais cedo do que antes.
-- **Modo admin** (`admin*`, `adm*`): Etapa 6, esperando a PR #60.
 - Pequenos restos sem dono claro (aniversário do jogador, rodapé, botão de som das janelas, look atual no servidor,
   acessórios comprados, frases da temporada dos pets): poucos e ligados a várias áreas.
 

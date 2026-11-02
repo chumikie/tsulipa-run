@@ -34,7 +34,7 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 3 | Star⭐Gacha! | `gacha.js`, `gacha.css` | Extraído (02/11/2026). 15 funções + 4 tabelas (giro, card do Idol, últimos cards e zoom); 19 linhas de CSS. O card do Gacha na tela de início fica para a etapa do Hub. |
 | 4 | Moon⭐Duo! | `duo.js`, `duo.css` | Extraído (02/11/2026). 51 funções + 15 tabelas (desenho, telas, abas, lojinha, itens travados, aviso); 56 linhas de CSS. |
 | 5 | Encontro do dia | `encontro.js`, `encontro.css` | Extraído (02/11/2026). 16 funções + 6 tabelas (cena, halo, emojis, ordem do trio, prêmio); 18 linhas de CSS. O botão na tela de início fica para a etapa do Hub. |
-| 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
+| 6 | Administração | `admin.js`, `admin.css` | Extraído (02/11/2026, depois da #60). 21 funções; 26 linhas de CSS. As RPCs continuam conferindo `eh_admin()` no servidor. |
 | 7 | Tela de início (hub) | `hub.js`, `hub.css` | Extraído (02/11/2026). 91 funções + 33 tabelas (cards, missões, Top Idols, TV, insígnia nova, busca, música, vitrine); 103 linhas de CSS. Temas da temporada e desenhos do Center⭐Run ficam para a Etapa 8. |
 | 8 | Center⭐Run! (com temas da temporada e desenhos) | `centerrun.js`, `centerrun.css` | Extraído (02/11/2026). 172 funções + 62 tabelas; `centerrun.css` é o antigo primeiro `<style>` inteiro (base do site + jogo), no mesmo lugar e ordem. |
 | — | Consolidação | `conta.js`, `docs/MAPA_DO_CODIGO.md` | Feita (02/11/2026): conta/login em `conta.js` (19 funções + 3 tabelas); mapa dos módulos e regras para novas mudanças. `index.html` com ~218 KB. |

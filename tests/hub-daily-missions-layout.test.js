@@ -4,6 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const skin=fs.readFileSync(path.join(root,'index2-skin.css'),'utf8');
 const todayStart=html.indexOf('id="hubHoje"');
 const menuStart=html.indexOf('<div id="hubMenu"');
 const search=html.indexOf('<section class="hubpainel hubbusca"',menuStart);
@@ -23,4 +24,11 @@ assert(gallery.includes("var hall = $('twRankHall'); if(hall && box.nextElementS
 assert(html.includes("function hubMisUI(){")&&html.includes("data-resg="),'mission progress and claim actions remain intact');
 assert(html.includes('hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();'),'the original hub render still populates mission data');
 assert(html.includes("function hubMisCarregar(){")&&html.includes("contaRpc('missoes')"),'daily missions still load from the existing account RPC');
-console.log('✓ Daily missions follow the Idol search bar and precede the Idol gallery; Hoje keeps meeting and weekly music.');
+
+const hub=html.slice(html.indexOf('function hubCardsUI(){'),html.indexOf('function hubMisUI(){'));
+const order=['class="hubbt-mundo"','class="hubcard hubperf"','class="hubcard hubpet','class="hubcard hubgacha','class="hubbt-jogos"','class="hubcard hubrun"','class="tw-hubgame tw-hubgame-sora','class="tw-hubgame tw-hubgame-karaoke"','class="hubcard hubduo"'];
+let previous=-1;
+for(const marker of order){const at=hub.indexOf(marker);assert(at>previous,'Meu Mundo must precede Jogos in accessible DOM order: '+marker);previous=at;}
+assert(skin.includes('grid-template-areas:"tm tm" "profile profile" "pet gacha" "tj tj" "run run" "sora karaoke" "duo duo"'),'mobile grid places Meu Mundo above Jogos');
+assert(skin.includes('grid-template-areas:"tm tm tm" "profile pet gacha" "tj tj tj" "run run run" "sora karaoke duo"'),'desktop grid places Meu Mundo above Jogos');
+console.log('✓ Meu Mundo precedes Jogos; daily missions remain after Idol search and before the gallery.');

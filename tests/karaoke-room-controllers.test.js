@@ -172,4 +172,29 @@ function fakeNode(){
  dialog.close();
 }
 
+{
+ const dialog=fakeNode(),opener={isConnected:true,focus(){}},revoked=[];
+ let serial=0,lateClose=null;
+ const pendingBlobs=[],urlApi={createObjectURL(blob){assert.equal(blob.type,'image/png');return 'blob:race-'+(++serial);},revokeObjectURL(url){revoked.push(url);}};
+ const host={innerHeight:700,URL:urlApi,addEventListener(){}};host.parent=host;
+ const doc={activeElement:opener,documentElement:{clientHeight:700},body:{appendChild(){}},createElement:()=>dialog};
+ const viewer=Polaroid.create({document:doc,window:host,URL:urlApi,makeCharacter:()=>({n:'Reopen'}),drawIdol(){},getTime:()=>0});
+ assert(viewer.open({nick:'Before close',avatar:{c:{}}},0,opener),'first portrait opens before delayed close event');
+ const firstUrl=dialog.elements.ktPosterSave.href;
+ // HTMLDialogElement queues its close event; the same dialog can be reopened before that task runs.
+ dialog.close=function(){this.open=false;lateClose=()=>{if(this.listeners.close)this.listeners.close();};};
+ dialog.close();
+ dialog.elements.ktPosterPortrait.toBlob=function(callback,type){this.lastBlobType=type;pendingBlobs.push(()=>callback({type:type}));};
+ assert(viewer.open({nick:'Reopened',avatar:{c:{}}},1,opener),'the same portrait dialog reopens before the old close event is delivered');
+ assert.equal(dialog.elements.ktPosterSave.hidden,true,'new PNG remains pending while toBlob is asynchronous');
+ lateClose();
+ assert.equal(dialog.open,true,'the delayed close event belongs to the old closing cycle, not the reopened dialog');
+ pendingBlobs.shift()();
+ assert.equal(dialog.elements.ktPosterSave.hidden,false,'stale close event cannot hide the newly generated PNG link');
+ assert.equal(dialog.elements.ktPosterSave.href,'blob:race-2','the reopened portrait retains its own blob URL');
+ assert(revoked.includes(firstUrl),'the previous portrait URL is released when the next portrait opens');
+ assert(!revoked.includes('blob:race-2'),'the newly generated URL is not revoked by a stale close event');
+ dialog.close();
+}
+ 
 console.log('✓ Karaoke room controllers use explicit dependencies and preserve NPC mic + Polaroid behavior');

@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
    data=data.toString().replace('\nhubMostrar();\n// Só','\n'+fixture);
    assert(data.includes('window.qaKaraoke='),'Local fixture injection point changed');
   }
-  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.__qaIncomingMessages=[];window.addEventListener('message',function(event){var entry={type:event.data&&event.data.type,active:event.data&&event.data.active,visible:event.data&&event.data.visible,sourceParent:event.source===window.parent,origin:event.origin,roomOrigin:location.origin};window.__qaIncomingMessages.push(entry);if(window.__qaIncomingMessages.length>30)window.__qaIncomingMessages.shift();},true);\n  window.qaRoomState=function(){
+  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.__qaIncomingMessages=[];window.__qaLoungeErrors=[];var __qaOriginalConsoleError=console.error;console.error=function(){var args=Array.prototype.slice.call(arguments);if(args.length&&String(args[0]).indexOf('[Karaoke] circulação autônoma pausada após erro')===0)window.__qaLoungeErrors.push(args.map(String).join(' '));return __qaOriginalConsoleError.apply(console,args);};window.addEventListener('message',function(event){var entry={type:event.data&&event.data.type,active:event.data&&event.data.active,visible:event.data&&event.data.visible,sourceParent:event.source===window.parent,origin:event.origin,roomOrigin:location.origin};window.__qaIncomingMessages.push(entry);if(window.__qaIncomingMessages.length>30)window.__qaIncomingMessages.shift();},true);\n  window.qaRoomState=function(){
    var canvas=document.getElementById('krCv'),ctx=canvas&&canvas.getContext('2d');
    var probe=window.__qaPaintProbe||{calls:0,methods:[]},pixels={opaque:0,unique:0,hash:0,error:null};
    try{
@@ -38,7 +38,7 @@ const server=http.createServer((req,res)=>{
    }catch(error){pixels.error=String(error&&error.message||error);}
    var vis={pageHidden:document.hidden,host:krRoomHostVisible,canvasObserver:krRoomCanvasVisible,rhythmObserver:krRhythmPanelVisible,
     canvasInViewport:krRoomElementoVisivel(krCanvasHD),pageActive:!window.TWMotionLifecycle||TWMotionLifecycle.isPageActive(),
-    roomCanAnimate:krRoomPodeAnimar(),rafScheduled:!!krLoopFrame};
+    roomCanAnimate:krRoomPodeAnimar(),stageVisible:krRoomPalcoVisivel(),rhythmPanelVisible:krRoomPainelRitmoVisivel(),rafScheduled:!!krLoopFrame};
    var history=window.qaRoomVisibilityHistory||(window.qaRoomVisibilityHistory=[]);
    history.push({at:performance.now(),host:vis.host,canvasObserver:vis.canvasObserver,canvasInViewport:vis.canvasInViewport,
     pageHidden:vis.pageHidden,pageActive:vis.pageActive,roomCanAnimate:vis.roomCanAnimate,paintCalls:probe.calls});
@@ -51,7 +51,7 @@ const server=http.createServer((req,res)=>{
     session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,practice:!!(krRhythmRun&&krRhythmRun.practice),
     pending:!!window.ktShowAdmissionPending,singer:krDemoCantor?{nick:krDemoCantor.bot.nick,phase:krDemoCantor.phase,automatic:!!krDemoCantor.automatic,
      x:krDemoCantor.bot.x,y:krDemoCantor.bot.y,noMic:!!krDemoCantor.bot.no_mic,routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY}:null,
-    visibility:vis,visibilityHistory:history.slice(),incomingMessages:(window.__qaIncomingMessages||[]).slice(-12),paint:{calls:probe.calls,methods:probe.methods.slice(),pixels:pixels},roomTick:krT,
+    visibility:vis,visibilityHistory:history.slice(),incomingMessages:(window.__qaIncomingMessages||[]).slice(-12),loungeErrors:(window.__qaLoungeErrors||[]).slice(-8),paint:{calls:probe.calls,methods:probe.methods.slice(),pixels:pixels},roomTick:krT,
     pets:ktPets.map(function(p){return {k:p.k,x:p.x,y:p.y,hitY:p.hitY,ex:p.ex,taps:p.toques||0,visit:p.visita?{phase:p.visita.phase,nome:p.visita.nome}:null};}),
     pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
    };
@@ -198,7 +198,7 @@ async function metrics(frame){
      if(state.player.atMic&&state.walkers===0){atMic=true;break;}
      await p.waitForTimeout(100);
     }
-    assert(atMic,'player reaches the mic and every lounge walker completes its return route before the NPC turn: '+JSON.stringify({prep,player:lastRoomState&&lastRoomState.player,walkers:lastRoomState&&lastRoomState.loungeWalkers,visibility:lastRoomState&&lastRoomState.visibility,roomTick:lastRoomState&&lastRoomState.roomTick}));
+    assert(atMic,'player reaches the mic and every lounge walker completes its return route before the NPC turn: '+JSON.stringify({prep,player:lastRoomState&&lastRoomState.player,walkers:lastRoomState&&lastRoomState.loungeWalkers,visibility:lastRoomState&&lastRoomState.visibility,loungeErrors:lastRoomState&&lastRoomState.loungeErrors,roomTick:lastRoomState&&lastRoomState.roomTick}));
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state: '+JSON.stringify(autoMic));
     assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');

@@ -2662,41 +2662,20 @@ function krLoungeSocialDeveAtualizar(){
 }
 function krLoungeSocialUpdate(){
  if(!krLoungeSoloPermitido()){krLoungeSocialClear();return;}
- if(krLoungeSocialA){
-  if(krT<krLoungeSocialUntil&&krLoungeSocialA._ktSocialUntil>krT&&(!krLoungeSocialB||krLoungeSocialB._ktSocialUntil>krT))return;
-  krLoungeSocialClear();krLoungeSocialNextAt=krT+360+Math.random()*240;
- }
+ if(krLoungeSocialA){if(krT<krLoungeSocialUntil&&krLoungeSocialA._ktSocialUntil>krT&&(!krLoungeSocialB||krLoungeSocialB._ktSocialUntil>krT))return;krLoungeSocialClear();krLoungeSocialNextAt=krT+360+Math.random()*240;}
  if(krLoungeActors.length||krT<krLoungeSocialNextAt)return;
  var singer=krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null),eligible=[];
  for(var i=0;i<krBots.length;i++)if(krLoungePodeSocializar(krBots[i],singer))eligible.push(krBots[i]);
- if(singer){
-  if(!eligible.length){krLoungeSocialNextAt=krT+240;return;}
- }else if(eligible.length<2){krLoungeSocialNextAt=krT+300;return;}
- var first=null,second=null;
- if(krLoungePersonality){
-  var selected=singer?krLoungePersonality.chooseAudience(eligible):krLoungePersonality.chooseConversation(eligible);
-  if(selected&&selected.length){first=selected[0]||null;second=selected[1]||null;}
- }
- if(!first){
-  var firstSlot=Math.floor(Math.random()*eligible.length),secondSlot=eligible.length>1?(firstSlot+1+Math.floor(Math.random()*(eligible.length-1)))%eligible.length:-1;
-  first=eligible[firstSlot]||null;second=secondSlot>=0?eligible[secondSlot]||null:null;
- }
+ if(singer?!eligible.length:eligible.length<2){krLoungeSocialNextAt=krT+(singer?240:300);return;}
+ var social=krLoungePersonality&&krLoungePersonality.decideSocial(eligible,singer,LANG),first=social&&social.first,second=social&&social.second,copy=KR_LOUNGE_SOCIAL_COPY[LANG]||KR_LOUNGE_SOCIAL_COPY.pt;
+ if(!first){first=eligible[Math.floor(Math.random()*eligible.length)];var others=eligible.filter(function(b){return b!==first;});second=others.length?others[Math.floor(Math.random()*others.length)]:null;}
  if(!first||(!singer&&!second)){krLoungeSocialNextAt=krT+300;return;}
- var copy=KR_LOUNGE_SOCIAL_COPY[LANG]||KR_LOUNGE_SOCIAL_COPY.pt;
- if(singer){
-  var until=krT+90+Math.random()*70;
-  first._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(first,'cheer'):'applause';first._ktSocialTargetX=singer.x;first._ktSocialUntil=until;
-  if(second){second._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(second,'listen'):'look';second._ktSocialTargetX=singer.x;second._ktSocialUntil=until;}
-  krBaloes[first.playerId||first.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(first,'cheer',LANG):copy.cheer[Math.floor(Math.random()*copy.cheer.length)],t0:krT};
-  krLoungeSocialNextAt=krT+360+Math.random()*300;
- }else{
-  var talkUntil=krT+150+Math.random()*60;
-  first._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(first,'talk'):'talk';first._ktSocialTargetX=second.x;first._ktSocialUntil=talkUntil;
-  second._ktSocialKind=krLoungePersonality?krLoungePersonality.gesture(second,'listen'):'talk';second._ktSocialTargetX=first.x;second._ktSocialUntil=talkUntil;
-  krBaloes[first.playerId||first.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(first,'start',LANG):copy.talkA[Math.floor(Math.random()*copy.talkA.length)],t0:krT};
-  krBaloes[second.playerId||second.nick]={txt:krLoungePersonality?krLoungePersonality.dialogue(second,'reply',LANG):copy.talkB[Math.floor(Math.random()*copy.talkB.length)],t0:krT+45};
-  krLoungeSocialNextAt=krT+510+Math.random()*390;
- }
+ var until=krT+(singer?90+Math.random()*70:150+Math.random()*60);
+ first._ktSocialKind=social?social.firstKind:(singer?'applause':'talk');first._ktSocialTargetX=singer?singer.x:second.x;first._ktSocialUntil=until;
+ if(second){second._ktSocialKind=social?social.secondKind:(singer?'look':'talk');second._ktSocialTargetX=singer?singer.x:first.x;second._ktSocialUntil=until;}
+ krBaloes[first.playerId||first.nick]={txt:social?social.firstLine:(singer?copy.cheer:copy.talkA)[Math.floor(Math.random()*(singer?copy.cheer:copy.talkA).length)],t0:krT};
+ if(!singer)krBaloes[second.playerId||second.nick]={txt:social?social.secondLine:copy.talkB[Math.floor(Math.random()*copy.talkB.length)],t0:krT+45};
+ krLoungeSocialNextAt=krT+(singer?360+Math.random()*300:510+Math.random()*390);
  krLoungeSocialA=first;krLoungeSocialB=second;krLoungeSocialUntil=krT+(singer?160:230);
 }
 

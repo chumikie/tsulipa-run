@@ -1,0 +1,107 @@
+/* Tela de início (hub) — logo, cards, tutorial, insígnia nova, vitrine dos Idols, links, botões do Encontro/login e tema.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração da PR #62, Etapa 7), sem mudar valores.
+   Carrega no ponto do primeiro bloco do hub; a ordem das regras do hub entre si foi mantida.
+   Regras mistas (com admin, ranking, gacha) ficam no index.html. */
+/* V2.1.3 · tela de início (hub), tutorial, insígnia nova e roupas da temporada */
+.hub[hidden],.hubtut[hidden],.hubtema[hidden],#hubMenu[hidden],.hubtoque[hidden]{display:none}
+.hub{position:fixed;inset:0;z-index:9;overflow:auto;display:flex;justify-content:center;padding:18px 16px 28px;background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2))}
+body.hubon{overflow:hidden}
+body.hubon #mute{visibility:hidden}
+.hubpart{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.hubpart i{position:absolute;top:-30px;font-style:normal;opacity:.55;animation:hubcai linear infinite}
+@keyframes hubcai{0%{transform:translateY(-30px) rotate(0)}100%{transform:translateY(110vh) rotate(300deg)}}
+.hub[data-tema="valentine"] .hubpart i{animation-name:hubsobe}
+@keyframes hubsobe{0%{transform:translateY(110vh)}100%{transform:translateY(-40px)}}
+.hubin{position:relative;width:100%;max-width:560px;margin:auto 0;text-align:center}
+.hublogo{margin:4px 0 0;font-size:clamp(34px,10vw,56px);font-weight:900;line-height:1.05;letter-spacing:-.01em;filter:drop-shadow(0 3px 0 rgba(255,255,255,.85)) drop-shadow(0 6px 14px rgba(123,63,240,.3))}
+.hublogo span{display:inline-block;animation:hubpula 2.4s ease-in-out infinite;color:#4a74ee}
+.hublogo .c1{color:#b04fe6}.hublogo .c2{color:#4ade80}.hublogo .c3{color:#4a74ee}.hublogo .st{color:#f5b400;margin:0 .04em}
+@keyframes hubpula{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px) rotate(-3deg)}}
+.hubsub{margin:2px 0 6px;font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.12em}
+.hubtema{display:inline-block;margin:2px 0 10px;padding:5px 14px;border-radius:99px;font-size:13px;font-weight:800;background:var(--card);color:var(--b1);box-shadow:0 3px 0 rgba(123,63,240,.18)}
+#hubCv{display:block;width:100%;height:auto;aspect-ratio:640/340;border-radius:26px;background:var(--chip);box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(255,111,181,.5),0 12px 30px rgba(60,20,120,.25)}
+.hubtoque{margin:22px auto 6px;display:block;border:0;border-radius:99px;padding:15px 34px;font:inherit;font-size:clamp(16px,4.6vw,20px);font-weight:900;letter-spacing:.06em;color:#fff;cursor:pointer;background:linear-gradient(90deg,#7b3ff0,#ff6fb5,#4169e1);background-size:200% 100%;box-shadow:0 5px 0 rgba(44,26,143,.45),0 10px 24px rgba(255,111,181,.35);animation:hubpisca 1.6s ease-in-out infinite,hubbrilho 4s linear infinite}
+@keyframes hubpisca{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes hubbrilho{to{background-position:200% 0}}
+.hubcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}
+.hubcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:20px;padding:12px 8px 12px;font:inherit;color:var(--ink);cursor:pointer;background:var(--card);background-clip:padding-box;box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(60,20,120,.12);transition:transform .12s}
+.hubcard:hover{transform:translateY(-2px)}.hubcard:active{transform:translateY(2px)}
+.hubcard i{font-style:normal;font-size:30px;line-height:1.1}
+.hubcard b{font-size:14px;font-weight:900}
+.hubcard small{font-size:11.5px;color:var(--sub);font-weight:700;line-height:1.25}
+.hubcard canvas{width:44px;height:44px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 0 0 4px #ff6fb5}
+.hubrun{background:linear-gradient(160deg,#7b3ff0,#9b30d9);color:#fff}.hubrun small{color:#f1e3ff}
+.hubgo{margin-top:3px;padding:3px 12px;border-radius:99px;background:#b6ff3b;color:#2c1a5e;font-size:12px;font-weight:900}
+.hubalerta{position:absolute;top:-6px;right:-4px;width:24px;height:24px;border-radius:50%;background:#ff4f6d;color:#fff;font-style:normal;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--card);animation:hubpisca 1s ease-in-out infinite}
+.hubpainel{margin-top:12px;padding:12px 14px;border-radius:20px;background:var(--card);text-align:left;box-shadow:0 4px 14px rgba(60,20,120,.1)}
+.hubpainel h2,.hubpainel summary{margin:0 0 6px;font-size:15px;font-weight:900;color:var(--b1);cursor:pointer}
+.hubnov summary{margin:0}.hubnov[open] summary{margin-bottom:6px}
+.hubnov ul{margin:0;padding-left:4px;list-style:none;font-size:13px;line-height:1.7}
+.hubdica{margin:0;font-size:13px;color:var(--sub)}
+.hubmis{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hubmis li{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;background:var(--chip)}
+.hubmis li>span{font-size:20px}
+.hubmis li>div{flex:1;min-width:0}
+.hubmis b{display:block;font-size:12.5px;line-height:1.25}
+.hubmis i{display:block;height:6px;margin-top:5px;border-radius:99px;background:rgba(123,63,240,.15);overflow:hidden;position:relative}
+.hubmis i::after{content:"";position:absolute;inset:0;width:var(--p);border-radius:99px;background:linear-gradient(90deg,#9b30d9,#ff6fb5)}
+.hubmis em{font-style:normal;font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
+.hubmis em.ok{color:#16a34a}
+.hubmis li.pronta{box-shadow:0 0 0 2px #ff6fb5}
+.hubmis li.feita{opacity:.7}
+.hubmis .btn{padding:6px 12px;font-size:12px;margin:0;white-space:nowrap}
+.hubrodape{margin:12px 0 0;font-size:12px;color:var(--sub)}
+.hubrodape a{color:var(--b1)}
+.hubvolta{display:block;margin:-4px 0 4px;border:0;background:var(--chip);color:var(--b1);border-radius:99px;padding:4px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.hubtut{position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,10,50,.5)}
+.hubtutc{width:min(100%,360px);background:var(--card);border-radius:24px;padding:20px 18px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.35);animation:inspop .35s ease-out}
+.hubtutc i{display:block;font-style:normal;font-size:46px}
+.hubtutc b{display:block;margin:4px 0;font-size:20px;font-weight:900;color:var(--b1)}
+.hubtutc p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink)}
+.hubdots{display:flex;gap:6px;justify-content:center;margin:6px 0 12px}
+.hubdots span{width:8px;height:8px;border-radius:50%;background:var(--chip)}.hubdots span.on{background:#ff6fb5;width:20px;border-radius:99px}
+.insov{z-index:25}
+.insp{max-width:320px}
+.insnova{margin:0;font-weight:900;color:var(--pink);letter-spacing:.06em}
+.insemo{font-size:64px;line-height:1.2;margin:6px auto;width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#fff7c2,#ffe14d);box-shadow:0 0 0 5px #fff,0 0 0 9px rgba(245,180,0,.5),0 0 30px rgba(255,225,77,.8);animation:inspop .5s cubic-bezier(.2,1.6,.4,1)}
+.insp b{display:block;font-size:18px;color:var(--b1)}
+@keyframes inspop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+@media (max-width:420px){.hubcards{grid-template-columns:1fr 1fr}.hubcards .hubrun{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
+@media (prefers-reduced-motion:reduce){.hublogo span,.hubtoque,.hubpart i,.hubalerta{animation:none}}
+/* Depois da v2.1.3 · vitrine dos Idols: palco animado embaixo do trio (os Idols cantam, dançam e pulam) */
+.hubidols[hidden]{display:none}
+.hubidols{position:relative;margin:16px 0 0;border-radius:24px;overflow:hidden;background:#2a0f63;box-shadow:0 0 0 4px #fff,0 0 0 7px rgba(123,63,240,.45),0 12px 30px rgba(60,20,120,.25)}
+.hubidols.mini{margin-top:12px}
+.hubidols.mini h2{top:6px;padding:2px 10px;font-size:11px}
+.hubidols.mini #hubIdolsCv{height:clamp(104px,15vh,140px)}
+#hubIdolsCv{display:block;width:100%;height:192px;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+.hubidols h2{position:absolute;top:9px;left:50%;transform:translateX(-50%);max-width:calc(100% - 20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;margin:0;padding:4px 11px;border-radius:99px;background:rgba(20,6,60,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;font-size:12px;font-weight:900;letter-spacing:.03em;text-align:center;pointer-events:none;box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
+.hubidols h2 em{font-style:normal;margin-left:6px;padding:0 7px;border-radius:99px;background:linear-gradient(90deg,#ff6fb5,#9b30d9);font-size:11px}
+.hubidolslista{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hubidolslista button:focus{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:auto;height:auto;clip:auto;z-index:30;padding:6px 14px;border-radius:99px;background:#fff;color:#5b2bb5}
+.hubaviso{margin:12px 0 0;padding:10px 14px;border-radius:16px;background:linear-gradient(120deg,rgba(255,111,181,.18),rgba(123,63,240,.16));font-weight:800;font-size:14px;color:var(--ink);text-align:left}
+.hubcfg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 8px}
+.hubcfg span{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--card);box-shadow:0 3px 0 rgba(123,63,240,.15)}
+.hubcfg button{border:0;border-radius:99px;padding:5px 10px;font:inherit;font-size:12px;font-weight:800;color:var(--sub);background:transparent;cursor:pointer}
+.hubcfg button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}
+.hublinks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.hublinks a{padding:8px 14px;border-radius:99px;background:var(--card);color:var(--b1);font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 3px 0 rgba(123,63,240,.18)}
+.hubgacha{background:linear-gradient(160deg,#ff6fb5,#ffb3d6);color:#fff}.hubgacha small{color:#fff}
+.hubsub .logotsl{height:2.1em;vertical-align:-.7em}
+.hublogo{filter:drop-shadow(0 8px 16px rgba(123,63,240,.35))}
+.hublogo span{-webkit-text-stroke:.15em #fff;paint-order:stroke fill;text-shadow:0 .07em 0 #fff,0 .13em 0 rgba(44,26,143,.5),0 .2em .16em rgba(44,26,143,.3)}
+.hublogo .st{-webkit-text-stroke:0;text-shadow:0 .08em .1em rgba(160,90,0,.4)}
+.hubcards .hubduo{background:linear-gradient(135deg,#2b1a6b,#5b2bb5 55%,#ff6fb5);color:#fff}
+.hubcards .hubduo small{color:rgba(255,255,255,.85)}
+@media (min-width:421px){.hubcards .hubduo{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;flex-wrap:wrap}}
+.hublogo span{text-shadow:none}.hublogo{filter:drop-shadow(0 3px 6px rgba(44,26,143,.35))}
+.hubcards .hubgacha:not(.on){background:var(--card);color:var(--ink)}.hubcards .hubgacha:not(.on) small{color:var(--sub)}
+.hubcards .hubperf{background:linear-gradient(160deg,#ff6fb5,#ffb3d6);color:#fff}.hubcards .hubperf small{color:#fff}
+.hubonline{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 10px;border:0;border-radius:99px;padding:7px 16px;font:inherit;font-size:13px;font-weight:800;color:var(--ink);background:var(--card);box-shadow:0 3px 0 rgba(44,26,143,.15);cursor:pointer}
+.hubonline[hidden]{display:none}.hubonline i{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e}
+.hubenc{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;margin:12px 0 4px;border:0;border-radius:18px;padding:12px 16px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6fb5,#9b30d9);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(255,111,181,.3)}
+.hubcfg .hubloginbox{padding:4px}#hub #twRankHall #twRankColumns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#hub #twRankColumns .tw-rank-game{max-width:none;min-width:0;margin:0}@media(max-width:620px){#hub #twRankHall #twRankColumns{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}}
+.hublinks-rodape{margin:0 0 4px;gap:4px 14px}.hublinks-rodape a{padding:2px 0;background:none;box-shadow:none;font-size:12px;color:var(--sub);text-decoration:underline;text-underline-offset:3px}.hubbloco{margin-top:14px}.hubblocot{margin:0;padding:0 4px;text-align:left;font-size:17px;font-weight:900;color:var(--b1)}.hubblocot small{margin-left:6px;font-size:11px;font-weight:700;opacity:.8}.hubhoje .hubpainel{margin-top:8px}.hubhojelinha{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.hubhojelinha .hubenc{margin:0;width:auto;flex-direction:column;flex-wrap:nowrap;gap:2px;padding:10px 8px;text-align:center}#hub .hubhojelinha .hubenc .tw-hubgame-jp{flex-basis:auto;margin:0}.hubblocot .tw-jpsub{display:inline!important}.hubmusica{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:18px;padding:10px 8px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b3ff0,#ff6fb5);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(123,63,240,.25)}.hubmusica small{opacity:.92;font-weight:600}
+.hubloginbox[hidden]{display:none!important}.hubcfg .hublogin{display:inline-flex;align-items:center;gap:5px;height:25px;line-height:1;color:#3c2a8f}.hublogin svg{width:13px;height:13px;flex:none}.hublogin:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.hubenc small{opacity:.9;font-weight:600}.hubenc.feito{background:var(--card);color:var(--ink)}.hubenc.feito small{color:var(--sub)}

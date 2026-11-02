@@ -35,7 +35,7 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 4 | Moon⭐Duo! | `duo.js`, `duo.css` | Extraído (02/11/2026). 51 funções + 15 tabelas (desenho, telas, abas, lojinha, itens travados, aviso); 56 linhas de CSS. |
 | 5 | Encontro do dia | `encontro.js`, `encontro.css` | Extraído (02/11/2026). 16 funções + 6 tabelas (cena, halo, emojis, ordem do trio, prêmio); 18 linhas de CSS. O botão na tela de início fica para a etapa do Hub. |
 | 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
-| 7 | Hub | — | Pendente |
+| 7 | Tela de início (hub) | `hub.js`, `hub.css` | Extraído (02/11/2026). 91 funções + 33 tabelas (cards, missões, Top Idols, TV, insígnia nova, busca, música, vitrine); 103 linhas de CSS. Temas da temporada e desenhos do Center⭐Run ficam para a Etapa 8. |
 | 8 | Center⭐Run | — | Pendente |
 | — | Consolidação do index.html e redução controlada de `!important` | — | Depois das etapas |
 
@@ -45,6 +45,12 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 - `drawPet` e os desenhos de pet usados também pelo Center⭐Run e pelo Perfil (ficam para a etapa do
   Center⭐Run, por serem compartilhados).
 - `pet-sync.js` continua sendo a única camada de sincronização.
+
+### Etapa 7 — conferência antes × depois
+- Abertura, visitante, logado com missões, aba do Top Idols, TsuLiPa⭐TV e busca (dados de teste), em 390 px e
+  1280 px: estilos calculados idênticos, fora animações (alertas pulsando, TV e microfone); nenhum erro.
+- O teste de fumaça do controlador da vitrine (`validate-games.js`) agora junta as funções de `hub.js` com as
+  variáveis que ficaram no `index.html`.
 
 ### Etapa 5 — conferência antes × depois
 - Encontro em trio (abrir, tocar no palco), em 390 px e 1280 px, com dados de teste: estilos calculados

@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const html=require('./site-source.js')();
 const css=fs.readFileSync(path.join(root,'karaoke-tickets.css'),'utf8');
 const src=fs.readFileSync(path.join(root,'karaoke-tickets.js'),'utf8');
 assert(html.includes('id="ktHeaderTickets"')&&html.includes('id="ktHeaderTicketNumber"'),'contador permanente ao lado das estrelas');

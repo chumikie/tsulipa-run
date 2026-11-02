@@ -6,7 +6,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
-const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const index = require('./site-source.js')();   // index.html + módulos extraídos (refatoração da PR #62)
 const i18nSource = fs.readFileSync(path.join(root, 'tw-i18n.js'), 'utf8');
 const sandbox = { window: {} };
 vm.runInNewContext(i18nSource, sandbox, { filename: 'tw-i18n.js' });

@@ -352,9 +352,14 @@ for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaR
 // Behavioral smoke test: execute ONLY the isolated INDEX2 preview controller
 // against a fake DOM. Never load the live site or call Supabase.
 try{
-  const from=lab.indexOf("var twPreviewJogoAnterior = null;");
-  const to=lab.indexOf("(function twPreviewPrepararJanelas(){",from);
-  if(from<0||to<=from)throw Error("Preview controller not found");
+  // Etapa 7 da refatoração: as funções do controlador moram em hub.js e as variáveis com estado
+  // ficam no index.html; o teste junta os dois trechos (a ordem das declarações não importa aqui).
+  const hubSrc=read("hub.js"),idx=read("index.html");
+  const hA=hubSrc.indexOf("var twPreviewJogoAnterior = null;"),hF=hubSrc.indexOf("function twPreviewFecharJogo(",hA);
+  const hB=hF<0?-1:hF+10+hubSrc.slice(hF+10).search(/\n(function|var) /);
+  const iA=idx.indexOf("var twPreviewTextos = "),iB=idx.indexOf("(function twPreviewPrepararJanelas(){",iA);
+  if(hA<0||hB<=hF||iA<0||iB<=iA)throw Error("Preview controller not found");
+  const controllerSource=hubSrc.slice(hA,hB)+"\n"+idx.slice(iA,iB);
   const iframe={src:"",title:"",style:{}},attrs={};
   const overlay={
     hidden:true,setAttribute:(name,value)=>{attrs[name]=String(value);},
@@ -405,7 +410,7 @@ try{
     }
   };
   vm.runInNewContext(translations,sandbox,{filename:"tw-i18n.js"});
-  vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
+  vm.runInNewContext(controllerSource,sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
   // O Sora agora abre como pop-up SOBRE o hub (igual ao Star Gacha): o hub fica atras, visivel.
   assert(iframe.src==="./sora-jump.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&!fakeHub.hidden,

@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const html=require('./site-source.js')();
 const skin=fs.readFileSync(path.join(root,'index2-skin.css'),'utf8');
 const todayStart=html.indexOf('id="hubHoje"');
 const menuStart=html.indexOf('<div id="hubMenu"');
@@ -17,7 +17,7 @@ assert(search>menuStart&&mission>search&&novelties>mission,'daily missions rende
 assert.equal((html.match(/id="hubMisPainel"/g)||[]).length,1,'mission panel has one unique container');
 assert.equal((html.match(/id="hubMisT"/g)||[]).length,1,'mission title ID stays unique');
 assert.equal((html.match(/id="hubMis"/g)||[]).length,1,'mission body ID stays unique');
-const gallery=html.slice(html.indexOf('function hubIdolsLugar(){'),html.indexOf('// ---- Palco animado da vitrine ----'));
+const gallery=(function(){const a=html.indexOf('function hubIdolsLugar(){'),b=html.indexOf('\nfunction ',a+10),c=html.indexOf('// ---- Palco animado da vitrine ----',a);return html.slice(a,b<0?c:c<0?b:Math.min(b,c));})();   // Etapa 7: a função mora em hub.js
 assert(gallery.includes("missions = $('hubMisPainel')"),'the gallery placement knows about the mission panel');
 assert(gallery.includes('var anchor = missions || busca;')&&gallery.includes('anchor.parentNode.insertBefore(box, anchor.nextSibling)'),'the Idol gallery follows missions on the started hub');
 assert(gallery.includes("var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling);"),'Top Idols remains below the Idol gallery');

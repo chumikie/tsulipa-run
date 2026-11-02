@@ -100,12 +100,12 @@
   .tw-preview-stage .hubpart i{animation:none!important}
 }
 
-/* Página inicial em blocos (02/11/2026): "Jogos" (Center Run, Sora, Karaoke, Moon Duo)
-   e "Meu mundo" (Perfil, Pet, Gacha); as missões ficam depois da busca e antes da vitrine de Idols.
+/* Página inicial em blocos (02/11/2026): "Meu mundo" (Perfil, Pet, Gacha) vem antes de "Jogos" (Center Run, Sora, Karaoke, Moon Duo).
+   As missões ficam depois da busca e antes da vitrine de Idols.
    O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-areas:"tj tj" "run run" "sora karaoke" "duo duo" "tm tm" "profile profile" "pet gacha";
+  grid-template-areas:"tm tm" "profile profile" "pet gacha" "tj tj" "run run" "sora karaoke" "duo duo";
 }
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
@@ -124,7 +124,7 @@
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tj tj tj" "run run run" "sora karaoke duo" "tm tm tm" "profile pet gacha";
+   grid-template-areas:"tm tm tm" "profile pet gacha" "tj tj tj" "run run run" "sora karaoke duo";
    align-items:stretch;
  }
  #hub #hubCards .hubperf,#hub #hubCards .hubduo{

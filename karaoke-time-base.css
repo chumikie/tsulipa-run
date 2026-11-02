@@ -291,3 +291,7 @@ html.tw-karaoke-embed[data-theme="light"] #ktPopup>div:first-child span{color:va
 }
 /* Toque: sem a legenda das teclas do computador */
 @media(hover:none) and (pointer:coarse){.kt-shortcuts{display:none!important}}
+/* Durante o show, no celular em pé dentro do site: a linha de acerto fica logo abaixo da sala. */
+@media(max-width:620px) and (orientation:portrait){
+ html.kt-no-site body.kt-playing .krwrap #ktTimingFeedback{order:2;margin:6px 0 0}
+}

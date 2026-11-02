@@ -22,7 +22,7 @@ assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function
 assert(/var krVelocidadeAlvo=krMeuVoltandoAoMic\?6\.0/.test(html),'return to microphone uses a faster sprint');
 assert(html.includes('eligible[Math.floor(Math.random()*eligible.length)]'),'random singer selection is used by the manual call action');
 assert(html.includes('KD_LUGARES=10')&&html.includes('members.length===10'),'daily room has ten decorative members');
-assert(html.includes('selectPolaroids(catalog,selfId,active.day,active.members,photoGuests'),'Polaroids select guests outside the current room roster');
+assert(html.includes('selectPolaroids(catalog,selfId,active.day,active.members,guests'),'Polaroids select guests outside the current room roster');
 assert(html.includes('krT+600+Math.random()*180'),'all seated members get an extended shared rest');
 assert(html.includes('glitterCount=Math.max(7'),'sofa glitter uses the existing animation clock');
 

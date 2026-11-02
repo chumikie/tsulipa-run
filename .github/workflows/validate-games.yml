@@ -234,6 +234,8 @@ jobs:
         run: node tests/karaoke-room-controllers.test.js
       - name: Validate Karaoke room pet visits and pandeiros
         run: node tests/karaoke-room-reactions.test.js
+      - name: Validate national groups and legacy profiles
+        run: node --test tests/grupos-nacionais.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations

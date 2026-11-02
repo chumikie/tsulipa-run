@@ -6775,6 +6775,23 @@ PERF_OSHI_TIMES.forEach(function(t){ t[1].forEach(function(m){ PERF_OSHI[perfOsh
 // V3: o Oshi é escolhido entre quem JOGA (apelido, emoji, cor e time de cada conta). A lista antiga dos 52 membros
 // fica só para mostrar oshis já escolhidos antes. Times do BRS48: B azul, R amarelo, S verde, KKS ciano.
 var PERF_TIMES = { B:['Team B', '#4169e1'], R:['Team R', '#f5c400'], S:['Team S', '#3cb043'], KKS:['Team KKS', '#4dd8ff'] };
+// Identidade nacional independente do time: null/legado continua BRS48 sem migrar saves.
+var PERF_GRUPOS = [
+  { codigo:'BRS48', nome:'BRS48', pais:'BR', times:[{codigo:'B',nome:'Team B',cor:'#4169e1'},{codigo:'R',nome:'Team R',cor:'#f5c400'},{codigo:'S',nome:'Team S',cor:'#3cb043'},{codigo:'KKS',nome:'Team KKS',cor:'#4dd8ff'}] },
+  { codigo:'SKU48', nome:'SKU48', pais:'TH', times:[{codigo:'S',nome:'Team S',cor:'#3cb043'},{codigo:'K',nome:'Team K',cor:'#8448fa'},{codigo:'U',nome:'Team U',cor:'#ff6fb5'},{codigo:'KKS',nome:'Team KKS',cor:'#4dd8ff'}] }
+];
+var PERF_GRUPOS_CARREGADOS = false;
+function perfGrupoCodigo(d){ return d && d.grupo || 'BRS48'; }
+function perfGrupo(g){ return PERF_GRUPOS.find(function(x){return x.codigo===g;}) || PERF_GRUPOS[0]; }
+function perfGrupoBandeira(g){ return g.pais==='TH'?'🇹🇭':g.pais==='BR'?'🇧🇷':'🌏'; }
+function perfGruposCarregar(){
+  if(PERF_GRUPOS_CARREGADOS)return Promise.resolve(PERF_GRUPOS);
+  return contaRpc('grupos_disponiveis').then(function(lista){
+    if(Array.isArray(lista)&&lista.length && lista.every(function(g){return /^[A-Z0-9]{2,16}$/.test(g.codigo)&&Array.isArray(g.times)&&/^[A-Z]{2}$/.test(g.pais);}))
+      PERF_GRUPOS=lista;
+    PERF_GRUPOS_CARREGADOS=true;return PERF_GRUPOS;
+  }).catch(function(){return PERF_GRUPOS;});
+}
 var PERF_OSHI_JOG = null;   // [{nick, emoji, cor, time}] vindo do servidor
 function perfOshiJogCarregar(){
   if(PERF_OSHI_JOG) return Promise.resolve(PERF_OSHI_JOG);
@@ -6788,9 +6805,10 @@ function perfOshiJogCarregar(){
   }).catch(function(){ return null; });
 }
 function perfEstiloChip(d){   // emoji + time ao lado do nome
-  var t = d && PERF_TIMES[d.time], h = '';
+  var g=perfGrupo(perfGrupoCodigo(d)), t=d&&g.times.find(function(x){return x.codigo===d.time;}), h = '';
   if(d && d.emoji) h += '<span class="perfemo" aria-hidden="true">' + escHtml(d.emoji) + '</span>';
-  if(t) h += '<span class="perftime" style="background:' + t[1] + ';color:' + perfCorTexto(t[1]) + '">' + escHtml(t[0]) + '</span>';
+  if(d)h += '<span class="perftime" style="background:#efe4ff;color:#2c1a5e">' + perfGrupoBandeira(g) + ' ' + escHtml(g.nome) + '</span>';
+  if(t) h += '<span class="perftime" style="background:' + t.cor + ';color:' + perfCorTexto(t.cor) + '">' + escHtml(t.nome) + '</span>';
   return h;
 }
 function perfCorTexto(hex){ var c = parseInt(String(hex).replace('#', ''), 16) || 0; return ((c >> 16) * .299 + ((c >> 8) & 255) * .587 + (c & 255) * .114) > 165 ? '#2c1a5e' : '#fff'; }   // texto legível sobre a cor do membro
@@ -7410,7 +7428,7 @@ function perfAbrir(nick, manterAba){
   if(!manterAba) $('perfCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(perfOv.hidden){ perfOv.hidden = false; perfOv.scrollTop = 0; if(sfx.card) sfx.card(); }
   var pr = perfMeu ? contaRpc('meu_perfil') : contaRpc('perfil_publico', { p_nick: String(nick).slice(0, 24) });
-  pr = Promise.all([pr, perfOshiJogCarregar()]).then(function(r){ return r[0]; });   // lista de Oshi = quem joga
+  pr = Promise.all([pr, perfOshiJogCarregar(), perfGruposCarregar()]).then(function(r){ return r[0]; });   // lista de Oshi e grupos
   pr.then(function(d){
     if(perfOv.hidden||pedido!==perfPedido) return;
     if(!d){ $('perfCorpo').innerHTML = '<h2 class="perfnm">' + escHtml(nick || '') + '</h2><p class="perfcarr">' + escHtml(tr('Esse nome ainda não tem perfil (jogou sem conta).')) + '</p>'; return; }
@@ -7695,13 +7713,15 @@ perfOv.addEventListener('change', function(e){
 function perfBioHtml(d){
   var cur = d.oshi || '';
   if(PERF_OSHI_JOG && PERF_OSHI_JOG.length){   // só quem joga, agrupado pelo time
-    var grupos = [['S'], ['B'], ['R'], ['KKS'], ['']], meuK = perfSlug(d.nick || '');
+    var grupos = [];
+    PERF_GRUPOS.forEach(function(g){g.times.forEach(function(t){grupos.push([g.codigo,t.codigo,perfGrupoBandeira(g)+' '+g.nome+' · '+t.nome]);});grupos.push([g.codigo,'',perfGrupoBandeira(g)+' '+g.nome+' · '+tr('Sem time')]);});
+    var meuK = perfSlug(d.nick || '');
     var opts = '<option value=""' + (cur ? '' : ' selected') + '>' + escHtml(tr('Sem oshi')) + '</option>' +
       '<option value="tsulipa"' + (cur === 'tsulipa' ? ' selected' : '') + '>🎤🐨👑 ' + escHtml(tr('Trio TsuLiPa')) + '</option>';
     grupos.forEach(function(gp){
-      var L = PERF_OSHI_JOG.filter(function(p){ return (p.time || '') === gp[0] && perfSlug(p.nick) !== meuK; });
+      var L = PERF_OSHI_JOG.filter(function(p){ return perfGrupoCodigo(p)===gp[0] && (p.time||'')===gp[1] && perfSlug(p.nick)!==meuK; });
       if(!L.length) return;
-      opts += '<optgroup label="' + escHtml(gp[0] ? PERF_TIMES[gp[0]][0] : tr('Sem time')) + '">' + L.map(function(p){
+      opts += '<optgroup label="' + escHtml(gp[2]) + '">' + L.map(function(p){
         var k = perfSlug(p.nick), o = PERF_OSHI[k] || ['⭐'];
         return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + escHtml(o[0]) + ' ' + escHtml(p.nick) + '</option>'; }).join('') + '</optgroup>';
     });
@@ -7718,17 +7738,24 @@ function perfBioHtml(d){
 }
 var PERF_EMOJIS = ['🎤','🌸','⭐','💜','💚','💙','🐱','🐨','👑','🍓','🌙','🔥','🦋','🍀','🎀','🐰','🌈','💎','🍰','🐳'];
 function perfBioMontar(d, sel2){
-  var tm = d.time || '', cor = /^#[0-9a-f]{6}$/i.test(d.cor || '') ? d.cor : '#ff6fb5';
+  var tm = d.time || '', grupo=perfGrupoCodigo(d), cor = /^#[0-9a-f]{6}$/i.test(d.cor || '') ? d.cor : '#ff6fb5';
   return '<div class="perfbio"><h3>✏️ ' + escHtml(tr('Editar perfil')) + '</h3>' +
     '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" maxlength="8" autocomplete="off" value="' + escHtml(d.emoji || '') + '" placeholder="🎤"></label>' +
     '<div class="perfemolist" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + PERF_EMOJIS.map(function(e){ return '<button type="button" data-pemo="' + e + '">' + e + '</button>'; }).join('') + '</div>' +
     '<label>' + escHtml(tr('Sua cor')) + ' <input type="color" id="perfBioCor" value="' + cor + '"></label>' +
-    '<label>' + escHtml(tr('Seu time no BRS48')) + ' <select id="perfBioTime"><option value="">' + escHtml(tr('Sem time')) + '</option>' +
-      Object.keys(PERF_TIMES).map(function(k){ return '<option value="' + k + '"' + (k === tm ? ' selected' : '') + '>' + escHtml(PERF_TIMES[k][0]) + '</option>'; }).join('') + '</select></label>' +
+    '<label>🌏 ' + escHtml(tr('Grupo')) + ' <select id="perfBioGrupo">' + PERF_GRUPOS.map(function(g){return '<option value="'+escHtml(g.codigo)+'"'+(grupo===g.codigo?' selected':'')+'>'+perfGrupoBandeira(g)+' '+escHtml(g.nome)+'</option>';}).join('')+'</select></label>' +
+    '<label>' + escHtml(tr('Seu time')) + ' <select id="perfBioTime"><option value="">' + escHtml(tr('Sem time')) + '</option>' +
+      perfGrupo(grupo).times.map(function(t){return '<option value="'+escHtml(t.codigo)+'"'+(t.codigo===tm?' selected':'')+'>'+escHtml(t.nome)+'</option>';}).join('')+'</select></label>' +
     '<label>' + escHtml(tr('Oshi')) + ' <select id="perfBioOshi">' + sel2 + '</select></label>' +
     '<label>' + escHtml(tr('Frase do perfil')) + ' <input class="nick perfcampo" id="perfBioFrase" maxlength="60" autocomplete="off" placeholder="✨ ' + escHtml(tr('Escreva uma frase fofa (até 60 letras)')) + '" value="' + escHtml(d.frase || '') + '"></label>' +
     perfAniverHtml(d) + '<p class="perfmsg" id="perfBioMsg" hidden></p><div class="btns"><button type="button" class="btn" id="perfBioOk">' + escHtml(tr('Salvar')) + '</button></div></div>';
 }
+perfOv.addEventListener('change',function(e){
+  if(e.target.id!=='perfBioGrupo')return;
+  var sel=$('perfBioTime'),g=perfGrupo(e.target.value);
+  if(!sel)return;
+  sel.innerHTML='<option value="">'+escHtml(tr('Sem time'))+'</option>'+g.times.map(function(t){return '<option value="'+escHtml(t.codigo)+'">'+escHtml(t.nome)+'</option>';}).join('');
+});
 perfOv.addEventListener('click', function(e){
   var pe = e.target.closest && e.target.closest('[data-pemo]');
   if(pe){ var ip = $('perfBioEmoji'); if(ip) ip.value = pe.dataset.pemo; return; }
@@ -7746,11 +7773,12 @@ perfOv.addEventListener('click', function(e){
     if(perfOv.hidden||pedidoPerfil!==perfPedido)return;
     if(ra && !ra.ok) throw { aniv: ra.erro };
     if(ra && ra.ok){ perfAtual.aniver = ra.aniver; perfAtual.aniver_hoje = perfAniverVer = perfMeuAniverHoje = !!ra.hoje; if(ra.hoje && typeof aniverFesta === 'function')twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&pedidoPerfil===perfPedido;},aniverFesta,900); }
-    var em = $('perfBioEmoji') ? $('perfBioEmoji').value.trim() : '', co = $('perfBioCor') ? $('perfBioCor').value : '', ti = $('perfBioTime') ? $('perfBioTime').value : '';
-    return contaRpc('salvar_estilo', { p_emoji: em, p_cor: co, p_time: ti }).then(function(re){
-      if(re && re.ok && !perfOv.hidden && pedidoPerfil===perfPedido){ perfAtual.emoji = re.emoji; perfAtual.cor = re.cor; perfAtual.time = re.time; PERF_OSHI_JOG = null; perfGuardarCor(re.cor); }
-      else if(re && re.erro === 'emoji') throw { estilo: 'emoji' };
-    }, function(){ /* servidor ainda sem a coluna: segue salvando oshi e frase */ }).then(function(){ return contaRpc('salvar_bio', { p_oshi: os, p_frase: fr }); });
+    var em = $('perfBioEmoji') ? $('perfBioEmoji').value.trim() : '', co = $('perfBioCor') ? $('perfBioCor').value : '', ti = $('perfBioTime') ? $('perfBioTime').value : '', gr = $('perfBioGrupo') ? $('perfBioGrupo').value : 'BRS48';
+    return contaRpc('salvar_grupo_estilo',{p_grupo:gr,p_time:ti,p_emoji:em,p_cor:co}).then(function(re){
+      if(!re||!re.ok)throw {estilo:re&&re.erro};
+      if(!perfOv.hidden&&pedidoPerfil===perfPedido){perfAtual.grupo=re.grupo;perfAtual.emoji=re.emoji;perfAtual.cor=re.cor;perfAtual.time=re.time;PERF_OSHI_JOG=null;perfGuardarCor(re.cor);}
+      return contaRpc('salvar_bio',{p_oshi:os,p_frase:fr});
+    });
   }).then(function(r){
     if(perfOv.hidden||pedidoPerfil!==perfPedido)return;
     b.disabled = false;

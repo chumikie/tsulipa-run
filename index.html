@@ -2325,30 +2325,33 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
 
-  if(d==='tulipa'){ // coroa floral: violeta, verde e azul TsuLiPa + cor pessoal
+  if(d==='tulipa'){ // guirlanda mística: ramos, folhas ovais e tulipas de pétalas arredondadas
     var tc=['#9b30d9','#b6ff3b','#4169e1',/^#[0-9a-f]{6}$/i.test(c.luz||'')?c.luz:'#ff6fb5'];
-    g.strokeStyle='#29855c';g.lineWidth=1.5;g.beginPath();g.arc(x+15,y+7,12,Math.PI*1.08,Math.PI*1.92);g.stroke();
+    g.strokeStyle='#3b9d70';g.lineWidth=1.25;g.beginPath();g.moveTo(x+2,y+8);g.bezierCurveTo(x+7,y-2,x+23,y-2,x+28,y+8);g.stroke();
     for(var tf=0;tf<4;tf++){
-      var fx=x+6+tf*6,fy=y+1-Math.sin(tf*Math.PI/3)*3;
-      g.fillStyle='#58b975';T([fx,fy+3,fx-3,fy+1,fx-1,fy+5]);T([fx,fy+3,fx+3,fy+1,fx+1,fy+5]);
-      g.fillStyle=tc[tf];T([fx-3,fy+2,fx-3,fy-3,fx,fy]);T([fx+3,fy+2,fx+3,fy-3,fx,fy]);
-      E(fx,fy+1,3.2,3.3);g.fillStyle='rgba(255,255,255,.8)';E(fx-.8,fy,.8,1);
+      var fx=x+5.5+tf*6.3,fy=y+2.8-Math.sin(tf*Math.PI/3)*2;
+      g.fillStyle='#52b978';E(fx-3.5,fy+2.8,2.6,1.25,-.55);E(fx+3.5,fy+2.8,2.6,1.25,.55);
+      g.strokeStyle='#32875c';g.lineWidth=.7;g.beginPath();g.moveTo(fx,fy+5);g.lineTo(fx,fy);g.stroke();
+      g.fillStyle=tc[tf];g.beginPath();g.moveTo(fx-3,fy+1.5);g.bezierCurveTo(fx-4.3,fy-3.5,fx-1.8,fy-4.3,fx,fy-1.8);g.bezierCurveTo(fx+1.8,fy-4.3,fx+4.3,fy-3.5,fx+3,fy+1.5);g.quadraticCurveTo(fx,fy+4.6,fx-3,fy+1.5);g.fill();
+      g.fillStyle='rgba(255,255,255,.65)';E(fx-.9,fy-.7,.75,1.05,-.4);
     }
-    g.fillStyle='#fff7b0';E(x+15,y-5,1.1,1.1);E(x+3,y+3,.8,.8);E(x+27,y+3,.8,.8);
+    g.fillStyle='#fff4b1';E(x+15,y-5.5,.9,.9);E(x+2,y+3,.65,.65);E(x+28,y+3,.65,.65);
   }
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
   
   if(hacc==='boina'){g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+15,y+2,11,4,-0.15,0,7);g.fill();g.fillStyle='#111';g.fillRect(x+14,y-4,2,2);}
-  if(hacc==='palha'){ // chapéu de palha: copa, fita e aba em camadas Canvas 2D
-    g.fillStyle='#b88742';g.beginPath();g.ellipse(x+15,y+5,17,4,0,0,7);g.fill();
-    g.fillStyle='#f7d88b';g.fillRect(x+7,y-6,16,11);E(x+15,y-6,8,3);
-    g.fillStyle='#d8a55d';g.fillRect(x+7,y+1,16,2.5);
-    g.fillStyle='#9b30d9';g.fillRect(x+7,y+2,5,2);g.fillStyle='#b6ff3b';g.fillRect(x+12,y+2,6,2);g.fillStyle='#4169e1';g.fillRect(x+18,y+2,5,2);
-    g.fillStyle='#f7d88b';g.beginPath();g.ellipse(x+15,y+5,17,3.3,0,0,7);g.fill();
-    g.strokeStyle='#b88742';g.lineWidth=.9;g.beginPath();g.ellipse(x+15,y+5,17,3.3,0,0,7);g.stroke();
-    g.fillStyle='rgba(255,255,255,.42)';g.fillRect(x+9,y-4,2,4);
+  if(hacc==='palha'){ // palha leve sobre o cabelo: aba fina, copa curva e fita floral TsuLiPa
+    g.fillStyle='#e7bf74';g.beginPath();g.ellipse(x+15,y+4.5,14.6,2.75,-.06,0,7);g.fill();
+    g.fillStyle='#f7dc9b';g.beginPath();g.moveTo(x+8,y+3);g.lineTo(x+9,y-5);g.quadraticCurveTo(x+10,y-8,x+15,y-8);g.quadraticCurveTo(x+20,y-8,x+21,y-5);g.lineTo(x+22,y+3);g.closePath();g.fill();
+    g.strokeStyle='#e2b970';g.lineWidth=.55;g.beginPath();g.moveTo(x+9,y-5);g.quadraticCurveTo(x+15,y-7.5,x+21,y-5);g.stroke();
+    g.fillStyle='#9b30d9';g.fillRect(x+8.4,y+.4,13.2,1.65);
+    g.fillStyle='#b6ff3b';g.fillRect(x+13,y+.4,3,1.65);g.fillStyle='#4169e1';g.fillRect(x+17,y+.4,3,1.65);
+    g.fillStyle='#f9df9d';g.beginPath();g.ellipse(x+15,y+4.4,15.2,2.25,-.06,0,7);g.fill();
+    g.strokeStyle='rgba(172,121,55,.48)';g.lineWidth=.6;g.beginPath();g.ellipse(x+15,y+4.4,15.2,2.25,-.06,0,7);g.stroke();
+    g.strokeStyle='rgba(177,130,59,.35)';g.lineWidth=.45;g.beginPath();g.moveTo(x+7,y-2);g.lineTo(x+20,y-2);g.moveTo(x+10,y-4);g.lineTo(x+19,y-4);g.stroke();
+    g.fillStyle='#9b30d9';E(x+22,y+2.8,1.9,1.45);g.fillStyle='#fff3b2';E(x+22,y+2.8,.7,.7);
   }
   if(hacc==='presilhas'){g.strokeStyle='#ff3d5e';g.lineWidth=1.5;g.beginPath();g.moveTo(x+7,y+7);g.lineTo(x+11,y+11);g.moveTo(x+11,y+7);g.lineTo(x+7,y+11);g.stroke();g.strokeStyle='#4dd8ff';g.beginPath();g.moveTo(x+9,y+5);g.lineTo(x+13,y+9);g.moveTo(x+13,y+5);g.lineTo(x+9,y+9);g.stroke();}
   if(hacc==='fones'){g.strokeStyle='#111';g.lineWidth=1.5;g.beginPath();g.arc(x+15,y+12,14,Math.PI,0);g.stroke();g.fillStyle='#e02a4a';E(x+1,y+15,3,5);E(x+29,y+15,3,5);}
@@ -2411,12 +2414,12 @@ if(hacc==='coala'){
 
   g.fillStyle='rgba(255,111,181,.5)';g.fillRect(x+7,y+22,4,2);g.fillRect(x+21,y+22,4,2);
 
-  if(d==='torrada'){ // clássico anime: torrada inclinada presa à boca
-    g.save();g.translate(x+17,y+24);g.rotate(-.32);
-    g.fillStyle='#aa642e';g.fillRect(0,-4,11,10);E(5.5,-4,5.5,3);
-    g.fillStyle='#f5c574';g.fillRect(1,-3,9,8);E(5.5,-3,4.4,2.1);
-    g.fillStyle='#ffe7a3';g.fillRect(3,-1,5,4);
-    g.fillStyle='rgba(160,90,38,.45)';g.fillRect(2,3,7,1);g.restore();
+  if(d==='torrada'){ // a ponta fica entre os lábios, com o pão pendendo para fora
+    g.save();g.translate(x+15.5,y+24);g.rotate(-.24);
+    g.fillStyle='#bc7a40';g.beginPath();g.moveTo(-1,-1);g.lineTo(1,-2.4);g.lineTo(3,-1.5);g.quadraticCurveTo(9,-4,11,-1);g.lineTo(11,9);g.quadraticCurveTo(6,11,1,9);g.closePath();g.fill();
+    g.fillStyle='#f6ce86';g.beginPath();g.moveTo(1,.2);g.lineTo(3,-.2);g.quadraticCurveTo(8,-2,9,-.2);g.lineTo(9,7.6);g.quadraticCurveTo(5,9,2,7.4);g.closePath();g.fill();
+    g.fillStyle='#ffe9b1';g.fillRect(4,2,3.8,3.5);g.fillStyle='rgba(176,109,53,.28)';g.fillRect(3,6.7,5,1);g.restore();
+    g.strokeStyle='#643725';g.lineWidth=1.4;g.beginPath();g.moveTo(x+13.1,y+24);g.quadraticCurveTo(x+15.2,y+25.3,x+17,y+24);g.stroke(); // boca segura a ponta do pão
   }
 
 	if(c.gl){
@@ -6809,7 +6812,7 @@ var PERF_TIMES = { B:['Team B', '#4169e1'], R:['Team R', '#f5c400'], S:['Team S'
 // Identidade nacional independente do time: null/legado continua BRS48 sem migrar saves.
 var PERF_GRUPOS = [
   { codigo:'BRS48', nome:'BRS48', pais:'BR', times:[{codigo:'B',nome:'Team B',cor:'#4169e1'},{codigo:'R',nome:'Team R',cor:'#f5c400'},{codigo:'S',nome:'Team S',cor:'#3cb043'},{codigo:'KKS',nome:'Team KKS',cor:'#4dd8ff'}] },
-  { codigo:'SKU48', nome:'SKU48', pais:'TH', times:[{codigo:'S',nome:'Team S',cor:'#3cb043'},{codigo:'K',nome:'Team K',cor:'#8448fa'},{codigo:'U',nome:'Team U',cor:'#ff6fb5'},{codigo:'KKS',nome:'Team KKS',cor:'#4dd8ff'}] }
+  { codigo:'SKU48', nome:'SKU48', pais:'TH', times:[] }
 ];
 var PERF_GRUPOS_CARREGADOS = false;
 function perfGrupoCodigo(d){ return d && d.grupo || 'BRS48'; }
@@ -6819,7 +6822,7 @@ function perfGruposCarregar(){
   if(PERF_GRUPOS_CARREGADOS)return Promise.resolve(PERF_GRUPOS);
   return contaRpc('grupos_disponiveis').then(function(lista){
     if(Array.isArray(lista)&&lista.length && lista.every(function(g){return /^[A-Z0-9]{2,16}$/.test(g.codigo)&&Array.isArray(g.times)&&/^[A-Z]{2}$/.test(g.pais);}))
-      PERF_GRUPOS=lista;
+      PERF_GRUPOS=lista.map(function(g){ return g.codigo==='SKU48' ? Object.assign({},g,{times:[]}) : g; }); // SKU ainda não tem divisões, mesmo com RPC antiga em cache
     PERF_GRUPOS_CARREGADOS=true;return PERF_GRUPOS;
   }).catch(function(){return PERF_GRUPOS;});
 }
@@ -7608,6 +7611,7 @@ function perfAbaMostrar(){
     h += '<canvas id="perfGenCv" width="560" height="560" aria-hidden="true"></canvas>';
     if(perfAba === 'montar') h += '<p class="perfdica">' + escHtml(tr('Tudo o que você muda aqui vale para o Idol do jogo.')) + '</p><div class="cust perfmont" id="perfMont"></div><div class="btns"><button type="button" class="btn alt" id="perfLook">💾 ' + escHtml(tr('Salvar look')) + '</button></div><p class="perfmsg" id="perfLookMsg" hidden></p>' +
       '<h3>🛍️ ' + escHtml(tr('Lojinha de roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).')) + '</p><p class="perfmsg" id="perfLojaMsg" hidden></p><div class="perfloja" id="perfLoja"></div>' +
+      '<h3>🎀 ' + escHtml(tr('Acessórios')) + '</h3><p class="perfdica">' + escHtml(tr('Use seus acessórios comprados no montador do Idol.')) + '</p><div class="perfloja" id="perfLojaAcessorios"></div>' +
       '<h3>🛍️ ' + escHtml(tr('Lojinha de poses e extras')) + '</h3><p class="perfdica">' + escHtml(tr('Poses e expressões valem para o Estúdio e para a câmera do jogo. Os extras do Moon⭐Duo! liberam cenas e cenários.')) + '</p><p class="perfmsg" id="perfLoja2Msg" hidden></p><div class="perfloja" id="perfLoja2"></div>';
     else h += '<p class="perfmsg" id="perfGenMsg" hidden></p><div class="btns perfbtns" id="perfGenBtns"></div><div class="petph perfopts" id="perfGenOpts"></div>';
     box.innerHTML = h;
@@ -11357,7 +11361,9 @@ var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
 [
  ['Coroa de Tulipas','Tulip crown','Corona de tulipanes','มงกุฎดอกทิวลิป','チューリップの花冠'],
  ['Torrada de Anime','Anime toast','Tostada de anime','ขนมปังปิ้งอนิเมะ','アニメの食パントースト'],
- ['Chapéu de Palha','Straw hat','Sombrero de paja','หมวกฟาง','麦わら帽子']
+ ['Chapéu de Palha','Straw hat','Sombrero de paja','หมวกฟาง','麦わら帽子'],
+ ['Acessórios','Accessories','Accesorios','เครื่องประดับ','アクセサリー'],
+ ['Use seus acessórios comprados no montador do Idol.','Use purchased accessories in the Idol editor.','Usa tus accesorios comprados en el editor de Idol.','ใช้อุปกรณ์เสริมที่ซื้อแล้วในตัวแต่งไอดอล','購入したアクセサリーをアイドル編集で使えます。']
 ].forEach(function(a){['en','es','th','ja'].forEach(function(l,i){if(DICT[l])DICT[l][a[0]]=a[i+1];});});
 // (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
 var DUO_TEMA_PRECO = 60;
@@ -11379,16 +11385,18 @@ function lojaItem(k){
 function lojaTem(k){ return !lojaItem(k) || (Array.isArray(perfDono) && perfDono.indexOf(String(k)) >= 0); }
 function perfLoja2UI(){
   acessoriosSync();
-  var box = $('perfLoja2'); if(!box) return;
+  var box = $('perfLoja2'), boxAcc = $('perfLojaAcessorios'); if(!box||!boxAcc) return;
   var L = PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], o[1], o[2], o[3], 'pose']; }).concat(LOJA_EXTRA);
-  box.innerHTML = L.map(function(it){
+  function cards(lista){return lista.map(function(it){
     var dono = lojaTem(it[0]);
     var prev = it[4] === 'duo' ? '<i class="lojaemo" aria-hidden="true">' + it[1] + '</i>' : '<canvas width="160" height="160" data-l2="' + it[0] + '"></canvas>';
     var tipo = it[4] === 'pose' ? tr('Pose') : it[4] === 'expr' ? tr('Expressão') : it[4] === 'acc' ? tr('Acessório') : 'Moon⭐Duo!';
     return '<div class="perfroupa">' + prev + '<b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small class="perftemp" translate="no">' + escHtml(tipo) + '</small>' +
       (dono ? '<em class="ok">✓ ' + escHtml(tr('Seu')) + '</em>' : '<button type="button" class="btn" data-comprar2="' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>') + '</div>';
-  }).join('');
-  [].forEach.call(box.querySelectorAll('canvas[data-l2]'), function(cv){
+  }).join('');}
+  boxAcc.innerHTML=cards(L.filter(function(it){return it[4]==='acc';}));
+  box.innerHTML=cards(L.filter(function(it){return it[4]!=='acc';}));
+  [].forEach.call(document.querySelectorAll('#perfLoja2 canvas[data-l2], #perfLojaAcessorios canvas[data-l2]'), function(cv){
     var k = cv.dataset.l2, av = perfAvAtual({ pose: /^pose_/.test(k) ? k.slice(5) : '', expr: /^expr_/.test(k) ? +k.slice(5) : 2, fundo: 'basico' });
     if(/^det_(coelho|tulipa|torrada)$/.test(k)){ av.c.det = k.slice(4); av.pose = 'v'; }
     if(k==='hat_palha'){ av.c.hat='palha'; av.pose='v'; }
@@ -11407,7 +11415,7 @@ function lojaComprar(k, btn, depois){
   }).catch(function(){ btn.disabled = false; depois(false, tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 perfOv.addEventListener('click', function(e){
-  var b = e.target.closest('#perfLoja2 [data-comprar2]'); if(!b) return;
+  var b = e.target.closest('#perfLoja2 [data-comprar2], #perfLojaAcessorios [data-comprar2]'); if(!b) return;
   lojaComprar(b.dataset.comprar2, b, function(ok, msg){ if(ok){ perfLoja2UI(); if(typeof perfMontUI === 'function' && $('perfMont')) perfMontUI(); } var m = $('perfLoja2Msg'); if(m){ m.textContent = msg; m.hidden = false; } });
 });
 
@@ -11496,7 +11504,7 @@ duoAvisoOv.addEventListener('click', function(e){
 });
 
 
-// ---------- Outdoors do Center Run: BRS48 e fotos dos jogadores registrados ----------
+// ---------- Outdoors do Center Run: BRS48, grupo irmão SKU48 e fotos dos jogadores ----------
 var outdoorJog = [], outdoorFoto = {}, outdoorPedido = false;
 function outdoorCarregar(){
   if(outdoorPedido || typeof contaRpc !== 'function') return; outdoorPedido = true;
@@ -11514,13 +11522,14 @@ function cenaCartazes(P2){
   function rr(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
   for(var i = i0; i <= i0 + 2; i++){
     var jog = outdoorJog.length && (i % 3 !== 0) ? outdoorJog[((i % outdoorJog.length) + outdoorJog.length) % outdoorJog.length] : null;
+    var sku = !jog && ((i % 15 + 15) % 15 === 9); // 1 SKU a cada 5 placas institucionais; BRS continua predominante
     var w = jog ? 58 : 54, h = jog ? 74 : 66, x = Math.round(i * esp - off + 260), y0 = GY - (jog ? 118 : 110), k;
     if(x < -80 || x > W + 20) continue;
-    var neon = jog ? '#ff6fb5' : '#4dd8ff';
+    var neon = jog ? '#ff6fb5' : sku ? '#ffc18e' : '#4dd8ff';
     g.save(); g.globalAlpha = noite ? .95 : .88;
     // poste único, discreto
     g.fillStyle = noite ? '#231d38' : '#4a4266'; g.fillRect(x + w / 2 - 2, y0 + h, 4, GY - y0 - h);
-    if(noite){ var lg = g.createRadialGradient(x + w / 2, y0 + h / 2, 6, x + w / 2, y0 + h / 2, 60); lg.addColorStop(0, jog ? 'rgba(255,111,181,.22)' : 'rgba(77,216,255,.22)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = lg; g.fillRect(x - 40, y0 - 40, w + 80, h + 80); }
+    if(noite){ var lg = g.createRadialGradient(x + w / 2, y0 + h / 2, 6, x + w / 2, y0 + h / 2, 60); lg.addColorStop(0, jog ? 'rgba(255,111,181,.22)' : sku ? 'rgba(255,153,85,.22)' : 'rgba(77,216,255,.22)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = lg; g.fillRect(x - 40, y0 - 40, w + 80, h + 80); }
     // moldura escura com contorno neon
     g.fillStyle = '#1d1730'; rr(x - 3, y0 - 3, w + 6, h + 6, 7); g.fill();
     g.strokeStyle = neon; g.lineWidth = 1.6; if(noite){ g.shadowColor = neon; g.shadowBlur = 8; } rr(x - 3, y0 - 3, w + 6, h + 6, 7); g.stroke(); g.shadowBlur = 0;
@@ -11531,10 +11540,10 @@ function cenaCartazes(P2){
       g.fillStyle = '#ffe9f5'; g.font = '800 8px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
       g.fillText('⭐ ' + String(jog.nick).slice(0, 10), x + w / 2, y0 + w + 11, w - 4);
     } else {
-      var bg = g.createLinearGradient(x, y0, x + w, y0 + h); bg.addColorStop(0, '#3c46ca'); bg.addColorStop(1, '#262d8f');
+      var bg = g.createLinearGradient(x, y0, x + w, y0 + h); bg.addColorStop(0, sku ? '#ffac71' : '#3c46ca'); bg.addColorStop(1, sku ? '#ff9550' : '#262d8f');
       g.fillStyle = bg; g.fillRect(x, y0, w, h);
       g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '200 21px "Josefin Sans","Futura","Century Gothic","Avenir",sans-serif';
-      g.fillText('BRS', x + 7, y0 + 30); g.fillText('48', x + 7, y0 + 56);
+      g.fillText(sku ? 'SKU' : 'BRS', x + 7, y0 + 30); g.fillText('48', x + 7, y0 + 56);
     }
     g.fillStyle = 'rgba(255,255,255,.08)'; g.beginPath(); g.moveTo(x, y0); g.lineTo(x + w * .6, y0); g.lineTo(x, y0 + h * .5); g.closePath(); g.fill();   // reflexo
     g.restore();

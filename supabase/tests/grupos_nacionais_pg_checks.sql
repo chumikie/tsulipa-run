@@ -51,7 +51,7 @@ begin
   groups := public.grupos_disponiveis();
   if json_array_length(groups) <> 2
      or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='BRS48')->'times') <> 4
-     or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='SKU48')->'times') <> 4 then
+     or json_array_length((select x.value from json_array_elements(groups) as x(value) where x.value->>'codigo'='SKU48')->'times') <> 0 then
     raise exception 'catálogo público dos grupos/times incompleto: %',groups;
   end if;
 
@@ -73,8 +73,10 @@ begin
     raise exception 'admin_avisos_grupo não devolveu os avisos por grupo: %',notices;
   end if;
   r := public.salvar_grupo('SKU48','U');
-  if r->>'ok' <> 'true' or r->>'grupo' <> 'SKU48' or r->>'time' <> 'U' then
-    raise exception 'seleção válida de grupo/time falhou: %',r;
+  if r->>'erro' <> 'time' then raise exception 'time inexistente do SKU foi aceito: %',r; end if;
+  r := public.salvar_grupo('SKU48','');
+  if r->>'ok' <> 'true' or r->>'grupo' <> 'SKU48' or r->>'time' <> '' then
+    raise exception 'grupo SKU sem divisão não foi salvo: %',r;
   end if;
   r := public.salvar_grupo('NOPE','B');
   if r->>'erro' <> 'grupo' then raise exception 'grupo inválido aceito: %',r; end if;
@@ -86,16 +88,20 @@ begin
   r := public.salvar_grupo_estilo('SKU48','KKS','🌸','red');
   if r->>'erro' <> 'cor' then raise exception 'cor inválida aceita: %',r; end if;
   r := public.salvar_grupo_estilo('SKU48','KKS','🌸','#ff80ba');
-  if r->>'ok' <> 'true' or r->>'grupo' <> 'SKU48' or r->>'time' <> 'KKS'
+  if r->>'erro' <> 'time' then raise exception 'estilo aceitou divisão SKU inexistente: %',r; end if;
+  r := public.salvar_grupo_estilo('SKU48','','🌸','#ff80ba');
+  if r->>'ok' <> 'true' or r->>'grupo' <> 'SKU48' or r->>'time' <> ''
      or r->>'emoji' <> '🌸' or r->>'cor' <> '#ff80ba' then
     raise exception 'gravação atômica de grupo/estilo falhou: %',r;
   end if;
 
   -- A RPC legada grava estilo sem retornar a conta para BRS48.
   r := public.salvar_estilo('🌟','#00aa55','S');
+  if r->>'erro' <> 'time' then raise exception 'salvar_estilo legado aceitou divisão SKU inexistente: %',r; end if;
+  r := public.salvar_estilo('🌟','#00aa55','');
   if r->>'ok' <> 'true' then raise exception 'salvar_estilo legado falhou: %',r; end if;
   profile := public.meu_perfil();
-  if profile->>'grupo' <> 'SKU48' or profile->>'time' <> 'S'
+  if profile->>'grupo' <> 'SKU48' or profile->>'time' <> ''
      or profile->>'emoji' <> '🌟' or profile->>'cor' <> '#00aa55' then
     raise exception 'meu_perfil não expôs o grupo/estilo atual: %',profile;
   end if;

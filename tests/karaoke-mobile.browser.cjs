@@ -173,8 +173,9 @@ async function waitForRoomMode(frame, expectMobile){
     const settledVisibility=await frame.locator('body').evaluate(()=>new Promise(resolve=>{
      const started=performance.now();let last=null;
      function poll(){
-      last={host:krRoomHostVisible,canvasObserver:krRoomCanvasVisible,
-       canvasInViewport:krRoomElementoVisivel(krCanvasHD),roomCanAnimate:krRoomPodeAnimar()};
+      // The diagnostics wrapper has access to the room's lexical state.
+      // Read its public snapshot instead of assuming those bindings are globals.
+      last=window.qaRoomState().visibility;
       if(last.host&&last.canvasObserver&&last.canvasInViewport&&last.roomCanAnimate){resolve(last);return;}
       if(performance.now()-started>3500){resolve(last);return;}
       requestAnimationFrame(poll);

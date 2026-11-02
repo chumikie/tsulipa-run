@@ -781,7 +781,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         <label>Cabelo <input type="color" id="chair" value="#ff7eb6"></label>
         <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
         <i class="cbr"></i>
-        <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
+        <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
         <i class="cbr"></i>
         <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option></select></label>
         <label>Detalhe <select id="cdet">
@@ -790,7 +790,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="gato" data-r="0" data-twh="Gato">Gato</option>
           <option value="elfo" data-r="0" data-twh="Elfo">Elfo</option>
           <option value="olheiras" data-r="0" data-twh="Olheiras">Olheiras</option>
-          <option value="chifres" data-r="0">Chifres</option><option value="antena" data-r="0" data-twh="Antena">Antena</option><option value="coracao" data-r="0" data-twh="Coração">Coração</option>
+          <option value="chifres" data-r="0">Chifres</option>
         </select></label>
         <i class="cbr"></i>
         <span id="skins"></span>
@@ -1129,6 +1129,7 @@ try {
     for (var k in sv) {
       if(Object.prototype.hasOwnProperty.call(sv,k)) CU[k]=sv[k];
     }
+    if(CU.det==='antena'||CU.det==='coracao'){if(!CU.mecha)CU.mecha=CU.det;CU.streak=!!CU.mecha;CU.det='';} // save antigo: conserva a peça no novo campo de Mecha
   }
   Object.keys(cuCoresPadrao).forEach(function(k){
     if(typeof CU[k]!=='string'||!/^#[0-9a-f]{6}$/i.test(CU[k])) CU[k]=cuCoresPadrao[k];
@@ -7888,6 +7889,7 @@ function perfMiniUI(r, resumo){   // r: ranking completo (seu perfil) · resumo:
 
 // ---------- Montar Idol (o mesmo montador do menu, gravando no Idol) ----------
 function perfMontUI(){
+  if(typeof acessoriosSync==='function') acessoriosSync(); // antes de copiar as opções para o montador do perfil
   var box = $('perfMont'), h = '';
   function rotulo(id){ var el = $(id), lb = el && el.closest('label'); if(!lb) return ''; var t = ''; [].forEach.call(lb.childNodes, function(n){ if(n.nodeType === 3) t += n.nodeValue; }); return t.trim(); }
   function opts(id, cur){ return [].map.call($(id).options, function(o){ return '<option value="' + escHtml(o.value) + '"' + (o.disabled ? ' disabled' : '') + (o.value === cur ? ' selected' : '') + '>' + escHtml(o.textContent) + '</option>'; }).join(''); }
@@ -7939,6 +7941,7 @@ function perfLojaSincronizar(){   // as compras do servidor valem também para a
   CU.loja = compradas;
   if(JSON.stringify(compradas) !== antes){ saveCu(); }
   perfLojaOpcoes();
+  if(typeof acessoriosSync==='function') acessoriosSync(); // libera imediatamente no menu de vestir após sincronizar compras
 }
 function perfLojaUI(){
   var box = $('perfLoja'); if(!box) return;

@@ -69,7 +69,7 @@ assert(html.includes("krLoungeReactToShow('start'"),'the actual music start reac
 assert(html.includes("krLoungeReactToShow(isSessionRecord?'record':'finish'"),'finishes and session records have distinct audience events');
 assert(html.includes('showReactionActive=!!(j._ktShowReaction&&j._ktShowReaction.until>t)'),'audience reactions render without moving characters');
 assert(html.includes("krLoungePersonality.decideActivity(chosen,{seatAvailable:!!freeSeat})"),'the activity director checks for a genuinely free sofa');
-assert(html.includes('krLoungePersonality.activateActivity(b,st)')&&html.includes('krLoungePersonality.finishActivity(b,st)'),'the existing personality module chooses and expires individual lounge activities');
+assert(html.includes('krLoungePersonality.activateActivity(b,st)')&&html.includes('krLoungePersonality.finishActivity(b,st,{'),'the existing personality module chooses and expires individual lounge activities');
 assert(!html.includes("b.danca='banzai';krBolhas.push({emo:i%2"),'the show result no longer forces a synchronized audience pose');
 const interactionActor={playerId:'interaction-test',nick:'Interaction test',x:100,y:100},interactionState={activity:'drink',activeItem:'',phase:'pause'};
 personality.activateActivity(interactionActor,interactionState);

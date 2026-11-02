@@ -1772,7 +1772,7 @@ function ktPetToque(px,py){var p=null,best=Infinity;
 var ktMicBalanco={t0:-9999},ktMicCorC={t:-1e9,v:'#ff6fb5'};
 /* Cor do microfone relida do perfil a cada dois segundos. */
 function ktMicCor(p){var v=p&&p!==krRoomRenderPlayer?((p.char||{}).luz||(p.char||{}).hair):'';if(!v){var a=performance.now();if(a-ktMicCorC.t>2000){ktMicCorC.t=a;try{ktMicCorC.v=localStorage.getItem('brs48cr_cor')||'';}catch(e){ktMicCorC.v='';}}v=ktMicCorC.v;}return /^#[0-9a-f]{6}$/i.test(v||'')?v:'#ff6fb5';}
-function ktPedestal(x,px,py,person){var ag=performance.now();if(person)py-=0;var k=(ag-ktMicBalanco.t0)/900,ang=k<1?Math.sin(k*Math.PI*5)*(1-k)*.22:0,bx=px+18,by=py+8,cor=ktMicCor(person);
+function ktPedestal(x,px,py,person){var ag=performance.now(),k=(ag-ktMicBalanco.t0)/900,ang=k<1?Math.sin(k*Math.PI*5)*(1-k)*.22:0,bx=px+18,by=py+8,cor=ktMicCor(person);
  x.save();x.fillStyle='rgba(15,6,40,.35)';x.beginPath();x.ellipse(bx,by+2,13,3.5,0,0,7);x.fill();
  var bg=x.createLinearGradient(bx-12,by-4,bx+12,by);bg.addColorStop(0,'#5b4a86');bg.addColorStop(1,'#2a1f45');x.fillStyle=bg;x.beginPath();x.ellipse(bx,by,12,3.6,0,0,7);x.fill();
  x.translate(bx,by);x.rotate(ang);

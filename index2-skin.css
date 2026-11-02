@@ -101,8 +101,8 @@
 }
 
 /* Página inicial em blocos (02/11/2026): "Jogos" (Center Run, Sora, Karaoke, Moon Duo)
-   e "Meu mundo" (Perfil, Pet, Gacha) dentro do mesmo #hubCards, com títulos como itens da grade.
-   O bloco "Hoje" (Missões, Encontro, Música da semana) fica antes, em #hubHoje. */
+   e "Meu mundo" (Perfil, Pet, Gacha); as missões ficam depois da busca e antes da vitrine de Idols.
+   O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
   grid-template-areas:"tj tj" "run run" "sora karaoke" "duo duo" "tm tm" "profile profile" "pet gacha";

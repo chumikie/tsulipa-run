@@ -8,8 +8,8 @@ const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const fn=html.slice(html.indexOf('function krRoomPodeAnimar(){'),html.indexOf('function krIrAoPalco(){'));
 assert(html.includes('function krShowAtivo(){'),'existe o teste de show em andamento');
-const listenerStart=html.indexOf("window.addEventListener('message',function(e){\\n if(e.source!==parent||!e.data)return;");
-const listenerEnd=html.indexOf("\\ndocument.addEventListener('visibilitychange',krRoomAtualizar);",listenerStart);
+const listenerStart=html.indexOf("window.addEventListener('message',function(e){\n if(e.source!==parent||!e.data)return;");
+const listenerEnd=html.indexOf("\ndocument.addEventListener('visibilitychange',krRoomAtualizar);",listenerStart);
 assert(listenerStart>=0&&listenerEnd>listenerStart,'host visibility message listener exists');
 const listeners={},hostWindow={},sandbox={
  parent:hostWindow,location:{protocol:'https:',origin:'https://room.test'},

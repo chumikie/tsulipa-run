@@ -4,7 +4,7 @@ const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8')
 function has(source,message){assert(html.includes(source),message);}
 has('function ktMicCor(p)','Microphone color resolver must accept the active singer');
 has('function ktPedestal(x,px,py,person)','Stage microphone must receive its owner');
-has('if(micSinger)ktPedestal(x,micSinger.x,micSinger.y,micSinger)','A singer on stage must always have a microphone at their position');
+has('if(micSinger)ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y,micSinger)','An active singer must color the fixed stage microphone with their profile color');
 has('j.profileColor||j.corPerfil||j.color||j.cor','Pillow color must prefer the member profile color');
 has('profile=j===krRoomRenderPlayer?ktMicCor()','Pillow color must read the local profile color for the seated player');
 has('krEu._ktGoingToSofa=true','Sofa routes must enter their slower movement mode');

@@ -6,6 +6,7 @@ const vm=require('node:vm');
 
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const autoMic=fs.readFileSync(path.join(__dirname,'..','karaoke-room-auto-mic.js'),'utf8');
+const Personality=require('../karaoke-room-personality.js');
 const polaroid=fs.readFileSync(path.join(__dirname,'..','karaoke-room-polaroid.js'),'utf8');
 const dailyStart=html.indexOf('var KaraokeDaily=(function(){');
 const dailyEnd=html.indexOf('var KaraokeAvatar=(function(){',dailyStart);
@@ -64,6 +65,7 @@ const env={
   KR_LOUNGE_MAX_WALKERS:1,
   KR_LOUNGE_LANES:[520],
   krLoungeEscolherVariado:Object.assign(function(candidates){return candidates[0]||null;},{reset:function(){}}),
+  krLoungePersonality:Personality.create({random:()=>0}),
   krLoungeSocialA:null,
   krLoungeSocialB:null,
   krLoungeSocialReset(){},
@@ -76,6 +78,8 @@ env.krBots[0].drink='tsu';
 assert.equal(env.krLoungePodePassear(env.krBots[0]),false,'an Idol holding a drink does not enter autonomous walking or the automatic mic queue');
 assert.equal(env.krLoungePodePassear(env.krBots[1]),true,'an Idol without a held item remains eligible');
 env.krLoungeReset();
+assert(env.krBots.every(bot=>bot._ktPersonality&&typeof bot._ktPersonality.type==='string'),'the lounge reset assigns a stable personality to every member');
+assert(new Set(env.krBots.map(bot=>bot._ktPersonality.type)).size>=5,'the cast receives a varied mix of individual temperaments');
 assert.equal(env.krLoungeActors.length,0);
 for(const time of [540,585,630]){env.krT=time;env.krLoungeUpdate(1);}
 assert.equal(env.krLoungeActors.length,1,'only one Idol walks at a time, preventing paths from crossing');

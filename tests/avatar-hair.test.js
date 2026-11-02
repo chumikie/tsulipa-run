@@ -100,13 +100,17 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  assert(day.includes("localStorage.getItem('brs48cr_cu2')")&&day.includes('function meuChar()'),'Karaoke Day retains the saved custom Idol look path');
 
 for(const v of ['uma','dupla','luzes','escondida'])assert(index.includes('<option value="'+v+'" data-twh='),'menu de mecha oferece '+v);
-for(const v of ['antena','coracao'])assert(index.includes('<option value="'+v+'" data-r="0" data-twh='),'detalhe '+v+' disponível');
+for(const v of ['antena','coracao'])assert(index.includes('<option value="'+v+'" data-twh='),'mecha '+v+' disponível');
+assert(!/value="(?:antena|coracao)" data-r="0"/.test(index),'Antena e Coração não continuam no seletor Detalhe');
 assert(index.includes("CU.mecha=this.value;CU.streak=!!this.value;")&&index.includes("if(campo === 'mecha')CU.streak = !!v;"),'estilo da mecha salvo sem mudar o campo streak enviado ao servidor');
 assert(index.includes("<select data-m=\"mecha\">"),'Perfil edita o estilo da mecha');
 for(const st of ['uma','dupla','luzes','escondida']){ops=[];hair.mecha(g,{hair2:'#ffffff',mecha:st},0,0,'bagunca');assert(ops.length>2,'mecha '+st+' desenha');}
-for(const d of ['antena','coracao']){ops=[];hair.bicolor(g,{hair:'#335577',det:d},0,0,'');assert(ops.length>2,'detalhe '+d+' desenha');}
+for(const d of ['antena','coracao']){
+ ops=[];hair.bicolor(g,{hair:'#335577',hair2:'#4dd8ff',mecha:d},0,0,'');assert(ops.length>2,'mecha '+d+' desenha com cor própria');
+ ops=[];hair.bicolor(g,{hair:'#335577',det:d},0,0,'');assert(ops.length>2,'save legado de '+d+' continua visível');
+}
 const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 assert(/PERF_CAMPOS = \[[^\]]*'mecha'/.test(index),'perfil publica o estilo da mecha');
-assert(karaoke.includes("['back','front','det','out','hat','gl','mecha'].forEach")&&karaoke.includes('String(c.mecha)'),'Karaoke normaliza mecha no avatar público e preserva no cache do sprite');
+assert(karaoke.includes("'gl','mecha'].forEach")&&karaoke.includes('streak:1,mecha:1,')&&karaoke.includes('String(c.mecha)'),'Karaoke mantém o estilo da mecha (avatar público e cache do sprite)');
 assert(day.includes('streak:1,mecha:1,')&&online.includes("'gl','mecha'].forEach")&&sora.includes("'gl','mecha'];"),'outras telas mantêm o estilo da mecha');
 console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

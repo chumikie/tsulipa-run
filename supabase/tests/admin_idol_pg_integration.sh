@@ -31,5 +31,8 @@ expect "$r" '"mecha":"luzes"' 'mecha gravada'
 expect "$r" '"streak":true' 'streak acompanha a mecha'
 expect "$r" '"back":"onduladof"' 'corte gravado no cu2 e no avatar'
 expect "$(q -c "select count(*) from public.admin_log where acao='visual_montar' and alvo='Novata';")" '1' 'registro no admin_log'
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/luzes/antena}'::jsonb,'mecha antena')")" '"ok":true' 'mecha Antena do editor aceita pelo banco'
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/luzes/coracao}'::jsonb,'mecha coracao')")" '"ok":true' 'mecha Coração do editor aceita pelo banco'
+expect "$(q -c "select nuvem_visual #>> '{cu2,mecha}' from public.players where nick='Novata';")" 'coracao' 'mecha Coração persiste no perfil fictício'
 expect "$(q -c "select has_function_privilege('anon','public.admin_montar_idol(text,jsonb,text)','execute');")" 'f' 'anon sem acesso'
 echo "✓ admin_montar_idol: regras e gravação conferidas"

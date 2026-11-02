@@ -239,7 +239,7 @@ assert(roomPaintEnd>start&&!roomPaint.includes('lista.sort(krOrdenarPersonagensS
 
 
 const posterCacheStart=html.indexOf('function krDesenharPosterIdol(x,person,fx,fy,idx,t)');
-const posterCacheEnd=html.indexOf('// Etapa 3A.5e',posterCacheStart);
+const posterCacheEnd=html.indexOf('\nfunction ',posterCacheStart+10);
 const posterCache=html.slice(posterCacheStart,posterCacheEnd);
 assert(html.includes('var krPosterArtes=new WeakMap();')&&posterCache.includes('krPosterArtes.get(owner)')&&posterCache.includes('krPosterArtes.set(owner')&&!posterCache.includes('JSON.stringify'),'Karaoke poster cache should use weak object identity instead of serializing avatar JSON on every paint');
 assert(posterCache.includes('record.avatarChar===avatarChar')&&posterCache.includes('record.avatarA===avatarA')&&posterCache.includes('record.avatarVisual===avatarVisual')&&posterCache.includes('record.avatarPose===avatarPose')&&posterCache.includes('record.avatarExpr===avatarExpr'),'Poster cache identity must invalidate when avatar references or rendering fields change');

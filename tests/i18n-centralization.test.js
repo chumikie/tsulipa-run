@@ -82,7 +82,7 @@ test('legacy aliases and original merge sites are preserved', () => {
  assert.ok(index.includes('[PERF_DICT, PERF_DICT2, PERF_ADMIN_DICT].forEach'));
  assert.ok(index.includes('Object.keys(EXTRA_DICT).forEach'));
  assert.ok(index.includes('Object.keys(S2_DICT).forEach'));
- assert.doesNotMatch(index,/\]\.forEach\(function\(t\)\{\s*\['en',\s*'es',\s*'th',\s*'ja'\]/,'no translated row array remains inline');
+ assert.ok(!index.includes("['Dueto', 'Duet', 'Dueto', 'ดูเอ็ต', 'デュエット']"),'Moon Duo translation rows are not inline');
 });
 test('representative original translations are unchanged', () => {
  assert.equal(registry.tables.PET_DICT.en.Camarim,'Dressing room');

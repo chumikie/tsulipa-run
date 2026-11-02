@@ -215,7 +215,7 @@ assert(perfDraw.includes('PERF_GEN_COLOR_AV')&&!perfDraw.includes('Object.assign
 
 const whimsicalStart=html.indexOf('function krDesenharWhimsical('),whimsicalEnd=html.indexOf('\nvar krDecorWallCache',whimsicalStart);
 const whimsical=html.slice(whimsicalStart,whimsicalEnd);
-const decorStart=html.indexOf('function krDesenharDecoracaoSala('),decorEnd=html.indexOf('\n// Telão:',decorStart);
+const decorStart=html.indexOf('function krDesenharDecoracaoSala('),decorEnd=html.indexOf('\n// Grupos semanais mudam aos domingos, ao meio-dia de Brasília.',decorStart);
 const decor=html.slice(decorStart,decorEnd);
 assert(html.includes('var KR_WHIMSIDES=')&&html.includes('KR_WHIMSY_STARS=')&&html.includes('KR_WHIMSY_BOKEH=')&&!whimsical.includes('.forEach('),'Whimsical curtain, hanging stars and bokeh must reuse static geometry and avoid per-frame callback allocation');
 const decorLive=decor.slice(decor.indexOf('x.drawImage(krDecorPlanterCache,0,0)'));

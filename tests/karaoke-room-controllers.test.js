@@ -22,7 +22,11 @@ assert.equal(AutoMic.SHOW_PLAY_MS,11000,'the four-second count-in is included in
 assert(autoSource.includes('function simulatePerformance(run,now,actor,onEvent)'),'the existing autonomous mic module simulates note outcomes');
 assert(html.includes('KaraokeRoomAutoMic.simulatePerformance(run,now,krDemoCantor&&krDemoCantor.bot'),'the simulated show drives the real stage screen without a parallel game engine');
 assert(html.includes('durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:60000'),'only NPC runs use the short rhythm duration');
-assert(html.includes('hand=person&&krPontoMaoSala(person,person.y,ag,person.x>480?-1:1,\'mic\')')&&html.includes('px=hand.x-17.5;py=hand.y+39.5;'),'the foreground pedestal overlaps the singer hand-microphone point');
+const pedestal=html.slice(html.indexOf('function ktPedestal('),html.indexOf('var ktMicArea',html.indexOf('function ktPedestal(')));
+assert(!pedestal.includes('krPontoMaoSala')&&!pedestal.includes('hand.x'),'the floor pedestal never follows the moving singer hand');
+assert(pedestal.includes('x.fillRect(-1.8,-45,3.6,45)')&&pedestal.includes('x.translate(0,-45)'),'the microphone head is raised a small fixed amount while the stand base stays planted');
+assert(pedestal.includes('ktMicArea={x:bx-6,y:by-68.75}'),'the interaction target follows the raised microphone head');
+assert(html.includes('ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y,micSinger)'),'the singer pedestal remains anchored at the room microphone position');
 
 assert(autoSource.includes("singer.phase='player_to_sofa'")&&autoSource.includes("singer.phase='player_wait_departure'")&&autoSource.includes('deps.movePlayerToSeat')&&autoSource.includes('deps.movePlayerToWait'),'auto-mic choreography protects the sofa handoff');
 assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function krPlanearRotaEspera(x,y)'),'player uses dedicated collision-safe sofa routes');

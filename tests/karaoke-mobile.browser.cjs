@@ -45,7 +45,7 @@ const server=http.createServer((req,res)=>{
    if(history.length>80)history.splice(0,history.length-80);
    return {
     members:krBots.map(function(b,i){var seat=KR_SOFA_SLOTS[i]||null;return {nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,walking:!!b._ktLoungeWalking,seat:seat};}),
-    player:{x:krEu.x,y:krEu.y,noMic:!!krEu.no_mic,atMic:krEuNoMicrofone()},
+    player:{x:krEu.x,y:krEu.y,noMic:!!krEu.no_mic,atMic:krEuNoMicrofone()},walkers:krLoungeActors.length,
     attempts:ktMeta.controls().used,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),
     session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,practice:!!(krRhythmRun&&krRhythmRun.practice),
     pending:!!window.ktShowAdmissionPending,singer:krDemoCantor?{nick:krDemoCantor.bot.nick,phase:krDemoCantor.phase,automatic:!!krDemoCantor.automatic,
@@ -194,10 +194,10 @@ async function metrics(frame){
     let atMic=false;
     for(let tries=0;tries<180;tries++){
      const state=await frame.locator('body').evaluate(()=>window.qaRoomState());
-     if(state.player.atMic){atMic=true;break;}
+     if(state.player.atMic&&state.walkers===0){atMic=true;break;}
      await p.waitForTimeout(100);
     }
-    assert(atMic,'player uses the existing return route to reach the microphone before the NPC turn: '+JSON.stringify(prep));
+    assert(atMic,'player reaches the mic and every lounge walker completes its return route before the NPC turn: '+JSON.stringify(prep));
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state: '+JSON.stringify(autoMic));
     assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');

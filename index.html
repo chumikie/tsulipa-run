@@ -1465,8 +1465,10 @@ function spawn(){
     var fanChance = score < 5000 ? 0.30 + ((score - 450) / 4550) * 0.45 : 0.90;
     
     if (s2CosRand() < fanChance) {
-      var lsColors = ['#9b30d9', '#b6ff3b', '#4169e1']; 
-      if (sel === 3) lsColors.push(CU.hair); 
+      // A torcida acompanha o lightstick do perfil; sem escolha, mantém a paleta clássica.
+      var lsColors = typeof perfMinhaCor === 'string' && /^#[0-9a-f]{6}$/i.test(perfMinhaCor)
+        ? [perfMinhaCor] : ['#9b30d9', '#b6ff3b', '#4169e1'];
+      if (!perfMinhaCor && sel === 3) lsColors.push(CU.hair);
       
       // quantos grupinhos por intervalo, mínimo/máximo de fãs por grupo e distância entre eles
       var fanGroups = score >= 10000 ? 3 : score >= 5000 ? 2 : 1;
@@ -2958,8 +2960,9 @@ function draw(){
     g.beginPath(); g.arc(f.x + 6, fy - 5, 6, 0, 7); g.fill(); // Cabeça
     
     // Lightstick neon brilhando
-    g.fillStyle = f.color;
-    g.shadowColor = f.color;
+    var corFan = typeof perfMinhaCor === 'string' && /^#[0-9a-f]{6}$/i.test(perfMinhaCor) ? perfMinhaCor : f.color;
+    g.fillStyle = corFan;
+    g.shadowColor = corFan;
     g.shadowBlur = 8;
     g.fillRect(f.x + 10, fy - 12, 3, 14); // O bastão de luz na mãozinha
     g.shadowBlur = 0;
@@ -6346,7 +6349,7 @@ function cenaPassaros(P2){
 function cenaMultidao(P2){
   var dens = score >= 10000 ? .95 : score >= 5000 ? .7 : score >= 2500 ? .32 : 0;
   if(!dens) return;
-  var cores = ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5', '#ffe14d'], esp = 11, off = dist * .45, i0 = Math.floor(off / esp);
+  var cores = perfMinhaCor ? [perfMinhaCor] : ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5', '#ffe14d'], esp = 11, off = dist * .45, i0 = Math.floor(off / esp);
   var silh = cenaMix(cenaRGB(P2[3]), [10, 8, 30], .45);
   for(var fila = 0; fila < (score >= 10000 ? 2 : 1); fila++){
     var base = GY - 14 - fila * 6;
@@ -11534,7 +11537,7 @@ function obsDesenhar(o){
     g.fillStyle = '#211b36'; g.beginPath(); g.arc(cx, y + h * .22, 4.5, 0, 7); g.fill(); g.fillStyle = '#8d84c2'; g.beginPath(); g.arc(cx, y + h * .22, 1.8, 0, 7); g.fill();
     g.fillStyle = Math.floor(frame / 10) % 2 ? '#b6ff3b' : '#4dd8ff'; g.shadowColor = g.fillStyle; g.shadowBlur = 6; g.fillRect(x + 7, y + h - 6, w - 14, 1.8); g.shadowBlur = 0;
   } else {   // lightsticks de verdade: cabo, tubo de luz e estrelinha no topo
-    var c = o.pal;
+    var c = perfMinhaCor ? [perfMinhaCor, perfMinhaCor, perfMinhaCor] : o.pal;
     for(i = 0; i < 3; i++){
       var lx = x + i * 8 + 1, top = y + (i % 2) * 4, sw = Math.sin(frame * .15 + i) * .04;
       g.save(); g.translate(lx + 3, y + h); g.rotate(sw); g.translate(-(lx + 3), -(y + h));

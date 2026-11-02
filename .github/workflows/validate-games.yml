@@ -101,6 +101,7 @@ on:
       - 'supabase/sql/sora_weekly_zero_default.sql'
       - 'tests/admin-player-profile.test.js'
       - 'tests/avisos-grupo-roupa-tailandia.test.js'
+      - 'tests/lightsticks-cor-perfil.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -247,6 +248,8 @@ jobs:
         run: node --test tests/grupos-nacionais.test.js
       - name: Validate group notices and Thailand shirt
         run: node --test tests/avisos-grupo-roupa-tailandia.test.js
+      - name: Validate profile-colored lightsticks
+        run: node --test tests/lightsticks-cor-perfil.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations

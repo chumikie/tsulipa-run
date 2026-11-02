@@ -328,6 +328,7 @@ jobs:
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
           QA_WIDTHS: 320,375,390,430,844,1440
+          QA_POLAROID_ONLY: '390'
         run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
       - uses: actions/upload-artifact@v4
         if: always()

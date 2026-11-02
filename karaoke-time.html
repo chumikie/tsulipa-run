@@ -2533,7 +2533,7 @@ function krMontarListaRenderSala(andando){
 function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}
 function krLoungeReset(){
  krLoungeActors.forEach(function(b){b._ktLoungeWalking=false;});
- krLoungeActors.length=0;krLoungeEscolherVariado.reset();krLoungeCastRef=krBots;
+ krLoungeActors.length=0;if(typeof krLoungeEscolherVariado==='function')krLoungeEscolherVariado.reset();krLoungeCastRef=krBots;
  krLoungeNextAt=krT+540+Math.random()*180;krAutoMicNextAt=krT+900+Math.random()*900;krLoungeSocialReset();
  for(var i=0;i<krBots.length;i++){
   var b=krBots[i];

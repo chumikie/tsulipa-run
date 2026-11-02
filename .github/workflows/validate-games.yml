@@ -63,6 +63,7 @@ on:
       - 'tests/karaoke-personal-song-records.test.js'
       - 'tests/karaoke-music-preview.test.js'
       - 'tests/karaoke-lounge-movement.test.js'
+      - 'tests/karaoke-room-personality.test.js'
       - 'tests/karaoke-input-timing.test.js'
       - 'tests/karaoke-melody-cues.test.js'
       - 'tests/karaoke-button-target.test.js'

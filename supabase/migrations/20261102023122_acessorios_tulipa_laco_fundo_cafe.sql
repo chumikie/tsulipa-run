@@ -6,7 +6,7 @@ begin
   origem := pg_get_functiondef('public.visual_preco(text)'::regprocedure);
   novo := replace(origem,
     '(''det_coelho'', 50, 0),',
-    '(''det_coelho'', 50, 0), (''det_tulipa'', 50, 0), (''det_laco'', 50, 0),');
+    '(''det_coelho'', 50, 0), (''det_tulipa'', 50, 0), (''det_torrada'', 50, 0), (''hat_palha'', 70, 0),');
   if novo = origem then raise exception 'visual_preco mudou: revisar catálogo antes de migrar'; end if;
   execute novo;
 end $migration$;
@@ -25,7 +25,10 @@ begin
   origem := novo;
   novo := replace(origem,
     'IF pk <> '''' AND NOT coalesce((p.nuvem_pet->''pets'') ? pk, false) THEN',
-    'IF NOT livre AND coalesce(v_avatar #>> ''{c,det}'', '''') IN (''tulipa'', ''laco'') AND NOT ((''det_'' || (v_avatar #>> ''{c,det}'')) = ANY(p.visuais)) THEN
+    'IF NOT livre AND coalesce(v_avatar #>> ''{c,det}'', '''') IN (''tulipa'', ''torrada'') AND NOT ((''det_'' || (v_avatar #>> ''{c,det}'')) = ANY(p.visuais)) THEN
+    RETURN json_build_object(''ok'', false, ''erro'', ''acessorio_nao_comprado'');
+  END IF;
+  IF NOT livre AND coalesce(v_avatar #>> ''{c,hat}'', '''') = ''palha'' AND NOT (''hat_palha'' = ANY(p.visuais)) THEN
     RETURN json_build_object(''ok'', false, ''erro'', ''acessorio_nao_comprado'');
   END IF;
   IF pk <> '''' AND NOT coalesce((p.nuvem_pet->''pets'') ? pk, false) THEN');

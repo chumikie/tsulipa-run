@@ -9,7 +9,7 @@ const sql=fs.readFileSync(path.join(root,'supabase/sql/admin_montar_idol.sql'),'
 assert(html.includes("contaRpc('admin_idol_info', { p_nick: alvoVisual })")&&html.includes("admVisualRoupa(f, alvoVisual)"),'tenta o editor completo e tem reserva só de roupa');
 assert(html.includes("contaRpc('admin_montar_idol',{p_nick:inick,p_c:admIdol.c,"),'salva pelo RPC novo');
 for(const k of ['hair','hair2','eye','skin','outcol','back','front','mecha','det','gl','hat','out'])assert(new RegExp('\\b'+k+':').test(html.slice(html.indexOf('admIdol={nick'),html.indexOf('admIdol={nick')+600)),'campo '+k+' no editor');
-assert(html.includes("return (+o.getAttribute('data-r')||0)<=best;")&&html.includes("owned.indexOf('det_'+o.value)>=0")&&html.includes('/^(coelho|tulipa|laco)$/'),'acessórios pelo recorde e detalhes comprados');
+assert(html.includes("return (+o.getAttribute('data-r')||0)<=best&&")&&html.includes("owned.indexOf('det_'+o.value)>=0")&&html.includes('/^(coelho|tulipa|torrada)$/')&&html.includes("owned.indexOf('hat_palha')>=0"),'acessórios pelo recorde e detalhes comprados');
 assert(/eh_admin\(\)/.test(sql)&&/REVOKE ALL ON FUNCTION public\.admin_montar_idol\(text, jsonb, text\) FROM PUBLIC, anon;/.test(sql),'SQL restrito à admin');
 assert(/NÃO APLICAR SEM AUTORIZAÇÃO/.test(sql),'SQL marcado como proposta');
 assert(html.includes('id="admIdolPng"')&&html.includes("a.download='tsulipa-idol-'")&&html.includes("if(e.target.closest&&e.target.closest('#admIdolPng')){admIdolPng();return;}"),'câmera baixa o PNG do Idol montado');

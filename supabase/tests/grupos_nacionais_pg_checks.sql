@@ -133,7 +133,7 @@ begin
   r := public.admin_aviso_grupo('BRS48','Tentativa de conta sem admin');
   if r->>'erro' <> 'admin' then raise exception 'conta sem admin alterou aviso de grupo: %',r; end if;
   notices := public.admin_avisos_grupo();
-  if notices <> '[]'::json then raise exception 'conta sem admin leu avisos administrativos: %',notices; end if;
+  if notices::text <> '[]'::text then raise exception 'conta sem admin leu avisos administrativos: %',notices; end if;
 end
 $authenticated$;
 reset role;

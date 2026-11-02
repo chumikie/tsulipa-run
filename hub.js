@@ -231,10 +231,10 @@ function twKaraokeAtualizarCard(){
     var al=card.querySelector('.hubalerta');
     if(pendente&&!al)card.insertAdjacentHTML('beforeend','<em class="hubalerta" aria-hidden="true">!</em>');
     else if(!pendente&&al)al.remove();
-    var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์'}:
-      faltam===0&&extras>0?{pt:'🎤 Gratuitas usadas',en:'🎤 Free shows used',es:'🎤 Gratis agotados',ja:'🎤 無料分終了',th:'🎤 ใช้สิทธิ์ฟรีครบแล้ว'}:
-      faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้'}:
-      {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์'};
+    var txtK=faltam===null?{pt:'🎤 5 shows por dia',en:'🎤 5 shows a day',es:'🎤 5 shows al día',ja:'🎤 1日5回のショー',th:'🎤 วันละ 5 โชว์',id:'🎤 5 pertunjukan per hari'}:
+      faltam===0&&extras>0?{pt:'🎤 Gratuitas usadas',en:'🎤 Free shows used',es:'🎤 Gratis agotados',ja:'🎤 無料分終了',th:'🎤 ใช้สิทธิ์ฟรีครบแล้ว',id:'🎤 Jatah gratis habis'}:
+      faltam===0?{pt:'🌙 Volte amanhã',en:'🌙 Come back tomorrow',es:'🌙 Vuelve mañana',ja:'🌙 また明日',th:'🌙 กลับมาพรุ่งนี้',id:'🌙 Kembali besok'}:
+      {pt:'🎤 Faltam '+faltam+' de 5 shows',en:'🎤 '+faltam+' of 5 shows left',es:'🎤 Quedan '+faltam+' de 5 shows',ja:'🎤 残り'+faltam+'/5回',th:'🎤 เหลือ '+faltam+' จาก 5 โชว์',id:'🎤 Tersisa '+faltam+' dari 5 pertunjukan'};
     // as mesmas estrelinhas da sala: ★ = show que ainda resta hoje, ☆ = show já usado
     var pips=faltam===null?'':'★'.repeat(faltam)+'☆'.repeat(5-faltam)+' · ';
     if(tt)tt.textContent=pips?pips+(txtK[LANG]||txtK.pt).replace(/^\S+\s/,''):(txtK[LANG]||txtK.pt);
@@ -287,10 +287,11 @@ function hubCardsUI(){
     '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
-  var twGamesTxt = window.TW_I18N.locale.twGamesTxt;[LANG]||['Pule entre nuvens e colete estrelas.','Cante, dance e brilhe no palco!'];
+  var twGamesTxt = window.TW_I18N.locale.twGamesTxt;
+  twGamesTxt = twGamesTxt[LANG]||twGamesTxt.pt;
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="Abrir Sora Jump">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="Abrir Karaoke Time">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="'+escHtml(tr('Abrir Sora Jump'))+'">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(tr('Abrir Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
   twKaraokeAtualizarCard();
@@ -548,6 +549,7 @@ function hubMontar(){
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
+  hubIdolsTituloUI();
   if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
@@ -959,11 +961,17 @@ function hubIdolsCarregar(){
   contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); })
     .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
 }
+function hubIdolsTituloUI(){
+  var title=$('hubIdolsT');if(!title)return;
+  var tituloIdols=window.TW_I18N.rows.seasonalThemeInfoLabels[1];
+  var idiomaIdols={pt:0,en:1,es:2,th:3,ja:4,id:5}[LANG];
+  title.innerHTML=escHtml(tituloIdols[idiomaIdols]||tituloIdols[0])+' <small class="tw-jpsub tw-jpinline" lang="ja">出会えるアイドル</small>';
+}
 function hubIdolsUI(){
   var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
   if(!L.length){ box.hidden = true; hubIdolsParar(); return; }
-  $('hubIdolsT').innerHTML = escHtml(tr('✨ Idols que você pode conhecer! ⭐')) + ' <small class="tw-jpsub tw-jpinline" lang="ja">出会えるアイドル</small>';
+  hubIdolsTituloUI();
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
   $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
   hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });

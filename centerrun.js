@@ -16,7 +16,7 @@ function applyLang(){
   L.forEach(function(node){
     var raw=node.__pt!==undefined?node.__pt:node.nodeValue, k=raw.trim();
     if(node.__pt===undefined){
-      if(DICT.en[k]||DICT.es[k]||DICT.th[k]||DICT.ja[k])node.__pt=raw;
+      if(DICT.en[k]||DICT.es[k]||DICT.th[k]||DICT.ja[k]||(DICT.id&&DICT.id[k]))node.__pt=raw;
       else return;
     }
     var d=DICT[LANG], v=d&&d[k];
@@ -27,7 +27,7 @@ function applyLang(){
       if(!e.hasAttribute(a))return;
       var key='data-pt-'+a;
       if(!e.hasAttribute(key)){
-        if(DICT.en[e.getAttribute(a)]||DICT.es[e.getAttribute(a)]||DICT.ja[e.getAttribute(a)]||DICT.th[e.getAttribute(a)])e.setAttribute(key,e.getAttribute(a));
+        if(DICT.en[e.getAttribute(a)]||DICT.es[e.getAttribute(a)]||DICT.ja[e.getAttribute(a)]||DICT.th[e.getAttribute(a)]||(DICT.id&&DICT.id[e.getAttribute(a)]))e.setAttribute(key,e.getAttribute(a));
         else return;
       }
       var o=e.getAttribute(key),d=DICT[LANG];

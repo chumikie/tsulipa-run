@@ -22,6 +22,9 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
   assert.ok(hub.indexOf("['id', 'ID']")<hub.indexOf("['th', 'TH']"));
   assert.match(read('index.html'),/twCarregarIdiomaId\(\)\.then/);
   assert.doesNotMatch(read('index.html'),/location\.reload\(\)/);
+  assert.match(hub,/twGamesTxt = twGamesTxt\[LANG\]\|\|twGamesTxt\.pt/);
+  assert.match(hub,/hubIdolsTituloUI\(\);/);
+  assert.match(read('centerrun.js'),/DICT\.id&&DICT\.id\[k\]/);
   for(const lang of ['pt','es','en','th','ja'])assert.match(read('index.html'),new RegExp('data-l="'+lang+'"'));
   assert.equal(catalog.karaoke.rows.length,202);
   assert.equal(catalog.karaoke.patterns.length,6);
@@ -38,6 +41,23 @@ test('arquivo sob demanda preserva catálogos originais e aplica sexta coluna',(
   assert.ok(Object.values(rows).every(r=>r.every(row=>row.length===6)));
   assert.equal(JSON.stringify(Object.fromEntries(Object.entries(rows).map(([k,v])=>[k,v.map(row=>row.slice(0,5))]))),original);
   assert.ok(Object.keys(context.window.TW_DICT.id).length>0);
+});
+test('carregamento dinâmico incorpora as traduções dos módulos e das linhas',()=>{
+  const context={window:{}};
+  vm.runInNewContext(read('tw-i18n.js'),context);
+  vm.runInNewContext(read('translations/id/preview-data.js'),context);
+  const html=read('index.html');
+  const start=html.indexOf('function twIntegrarDicionariosId(){');
+  const end=html.indexOf('\nfunction twCarregarIdiomaId(){',start);
+  assert.ok(start>=0&&end>start);
+  assert.equal(context.window.TW_DICT.id['Adote um pet!'],undefined);
+  vm.runInNewContext(html.slice(start,end),context);
+  assert.equal(vm.runInNewContext('twIntegrarDicionariosId()',context),true);
+  assert.equal(context.window.TW_DICT.id['Adote um pet!'],catalog.central.tables.HUB_DICT['Adote um pet!']);
+  assert.equal(context.window.TW_DICT.id['✨ Idols que você pode conhecer! ⭐'],catalog.central.rows.seasonalThemeInfoLabels[1]);
+  assert.match(context.window.TW_DICT.id['Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.'],/^Dua sahabat,/);
+  assert.equal(context.window.TW_DICT.id['Abrir Sora Jump'],'Buka Sora Jump');
+  assert.equal(context.window.TW_DICT.id['Abrir Karaoke Time'],'Buka Karaoke Time');
 });
 test('índices e placeholders das linhas do Karaoke',()=>{
   const html=read('karaoke-time.html');

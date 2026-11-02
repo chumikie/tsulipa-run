@@ -710,13 +710,24 @@ window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
 var twIdCarregamento=null;
+function twIntegrarDicionariosId(){
+  var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
+  if(!dados||!window.TW_DICT||!window.TW_DICT.id)return false;
+  var destino=window.TW_DICT.id;
+  Object.keys(dados.tables).forEach(function(nome){Object.keys(dados.tables[nome]).forEach(function(chave){destino[chave]=dados.tables[nome][chave];});});
+  Object.keys(dados.rows).forEach(function(nome){
+    var linhas=window.TW_I18N.rows[nome];
+    if(linhas)linhas.forEach(function(linha){if(linha.length>5&&linha[5])destino[linha[0]]=linha[5];});
+  });
+  return true;
+}
 function twCarregarIdiomaId(){
   if(window.TW_ID_PREVIEW_DATA)return Promise.resolve();
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
     script.src='./translations/id/preview-data.js';
-    script.onload=function(){window.TW_ID_PREVIEW_DATA?resolve():reject(new Error('Catálogo ID indisponível'));};
+    script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);
   }).catch(function(e){twIdCarregamento=null;throw e;});

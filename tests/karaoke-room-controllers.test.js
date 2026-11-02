@@ -17,6 +17,13 @@ assert(html.includes("window.ktShowAdmissionPending=false;kt.start('confirmed',i
 assert(html.includes('Silenciar / restaurar som')&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('krAlternarSom();return;')&&!html.includes('muteButton.focus({preventScroll:true})')&&!html.includes('muteButton.click()'),'M calls the shared mute state directly without synthetic focus or click');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({'),'page injects avatar renderer dependencies into the Polaroid factory');
 assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-room-polaroid.js?v=3')&&html.includes('karaoke-photo.css?v=3'),'both separated controllers use fresh cache versions');
+assert.equal(AutoMic.SHOW_DURATION_MS,15000,'the NPC microphone reservation lasts fifteen seconds');
+assert.equal(AutoMic.SHOW_PLAY_MS,11000,'the four-second count-in is included in the fifteen-second reservation');
+assert(autoSource.includes('function simulatePerformance(run,now,actor,onEvent)'),'the existing autonomous mic module simulates note outcomes');
+assert(html.includes('KaraokeRoomAutoMic.simulatePerformance(run,now,krDemoCantor&&krDemoCantor.bot'),'the simulated show drives the real stage screen without a parallel game engine');
+assert(html.includes('durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:60000'),'only NPC runs use the short rhythm duration');
+assert(html.includes('hand=person&&krPontoMaoSala(person,person.y,ag,person.x>480?-1:1,\'mic\')')&&html.includes('px=hand.x-11.5;py=hand.y+53;'),'the foreground pedestal overlaps the singer hand-microphone point');
+
 assert(autoSource.includes("singer.phase='player_to_sofa'")&&autoSource.includes("singer.phase='player_wait_departure'")&&autoSource.includes('deps.movePlayerToSeat')&&autoSource.includes('deps.movePlayerToWait'),'auto-mic choreography protects the sofa handoff');
 assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function krPlanearRotaEspera(x,y)'),'player uses dedicated collision-safe sofa routes');
 assert(/var krVelocidadeAlvo=krMeuVoltandoAoMic\?6\.0/.test(html),'return to microphone uses a faster sprint');
@@ -92,7 +99,7 @@ for(const [label,state] of blocked){
  h.reachSeat();h.controller.updateMovement(1);
  assert.equal(h.state.singer.phase,'singing','practice begins only after player reaches the sofa');
  assert(h.calls.some(c=>c[0]==='start'),'music starts after safe seat handoff');
- assert.equal(h.state.singer.endsAt,70000,'NPC show keeps original duration');
+ assert.equal(h.state.singer.endsAt,20000,'NPC microphone reservation lasts fifteen seconds from the singing handoff');
  assert.equal(h.controller.finishSinger(),true,'ending show starts player sofa exit');
  assert.equal(h.state.singer.phase,'player_wait_departure','player vacates sofa before singer return');
  assert.equal(h.calls.filter(x=>x[0]==='player-wait').length,1,'initial exit route is temporarily blocked');
@@ -231,4 +238,18 @@ function fakeNode(){
  dialog.close();
 }
  
-console.log('✓ Karaoke room controllers use explicit dependencies and preserve NPC mic + Polaroid behavior');
+
+{
+ const sim={auto:true,song:{style:'pop'},notes:[0,1,2,3].map(i=>({idx:i,at:100+i*100,lane:i,done:false})),score:0,combo:0,maxCombo:0,hits:0,attempts:0,flash:[0,0,0,0]};
+ const events=[],performer={nick:'Demo idol',_ktPersonality:{energy:.8,curiosity:.7,musicPreferences:{pop:.9}}};
+ assert.equal(AutoMic.simulatePerformance(sim,1000,performer,event=>events.push(event)),4,'NPC autoplay advances each due note');
+ assert(sim.notes.every(n=>n.done),'each simulated note receives a terminal judgment');
+ assert.equal(sim.attempts,4,'screen score counts all simulated judgments');
+ assert.equal(sim.hits+(sim.autoMisses||0),4,'screen score separates hits and misses');
+ assert(sim.score>=0&&sim.maxCombo>=0,'simulated score and combo are available to the projector');
+ assert(events.every(e=>['combo','hit','miss'].includes(e)),'simulated judgments can trigger audience events');
+ const human={auto:false,notes:[{idx:0,at:0,lane:0,done:false}],attempts:0};
+ assert.equal(AutoMic.simulatePerformance(human,1000,performer),0,'human performances are never autoplayed');
+ assert.equal(human.notes[0].done,false,'human note state stays under player input');
+}
+console.log('✓ Karaoke room controllers: fifteen-second NPC mic, simulated screen play and isolated player input passed');

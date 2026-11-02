@@ -47,9 +47,7 @@ $$;
 create or replace function public.oshi_opcoes()
 returns json language sql stable security definer set search_path to 'public'
 as $$
-  select coalesce(json_agg(json_build_object(
-    'nick', nick, 'emoji', emoji, 'cor', cor, 'time', time
-  ) order by lower(nick)), '[]'::json)
+  select coalesce(json_agg(json_build_object('nick', nick, 'emoji', emoji, 'cor', cor, 'time', time) order by lower(nick)), '[]'::json)
   from public.players;
 $$;
 

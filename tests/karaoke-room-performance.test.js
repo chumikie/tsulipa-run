@@ -19,5 +19,5 @@ has('handSide=mirror?-1:1','The held-item side is derived from the exact avatar 
 has('krDesenharAcessorioSala(x,j,baseY,t,busy?\'v\':pose,handSide)','Snacks, pandeiros and hand props share the avatar facing direction');
 has('krPontoMaoSala(j,baseY,0,handSide,\'v\')','Drinks are anchored to the same mirrored hand as the avatar');
 has('side=sideOverride||(j.x>480?-1:1)','Accessory drawing accepts the resolved hand side instead of recomputing room-side');
-has('&&!b.drink&&!b.itemSala&&!b.snackSala','A drinking NPC is not selected for an autonomous walk or mic performance');
+has('(!b.drink||ownActivity)&&!b.itemSala&&!b.snackSala&&(!b.danca||ownActivity)','Only the drink/dance owned by the active lounge activity is exempt from the item safety gate');
 console.log('Karaoke room performance: singer microphone/profile color, pillow colors, slower sofa route, singing choreography and reactive expressions passed');

@@ -164,9 +164,11 @@ assert(html.includes('function krLoungeUpdate(dt){')&&html.includes('Math.min(1.
 assert(html.includes('krLoungeReset();krBaloes={};')&&html.includes('KR_LOUNGE_AISLE_Y=520')&&html.includes('KR_LOUNGE_MAX_WALKERS=1'),'The daily cast should reinitialize autonomous audience state and use one safe front aisle walker');
 assert(html.includes('var walking=!!j._ktLoungeWalking')&&html.includes('krEstaNoSofa(j)&&!walking')&&html.includes('walking?j._ktLoungeFacing<0:socialActive?j._ktSocialTargetX<j.x:j.x>480'),'Walking audience members should stand, face their direction and retain existing seat poses when idle');
 assert(html.includes('function krLoungeSocialUpdate()')&&html.includes('krLoungeSocialUpdate();'),'Lounge interactions must reuse the existing room loop');
-const social=html.slice(html.indexOf('function krLoungeSocialUpdate()'),html.indexOf('function krRoomPalcoVisivel()',html.indexOf('function krLoungeSocialUpdate()')));
-assert(social.includes('krLoungeActors.length||krT<krLoungeSocialNextAt')&&social.includes('krLoungeSocialA=first;krLoungeSocialB=second'),'Only a small, bounded pair may interact, with cooldowns and no new animation loop');
-assert(!/setTimeout|setInterval|requestAnimationFrame/.test(social),'Audience conversations and applause must not allocate independent timers or loops');
+const personality=fs.readFileSync(path.join(root,'karaoke-room-personality.js'),'utf8');
+const socialStart=personality.indexOf('function createSocialDirector('),socialEnd=personality.indexOf('function createShowReactor(',socialStart);
+const social=socialStart>=0&&socialEnd>socialStart?personality.slice(socialStart,socialEnd):'';
+assert(social.includes('var first=null,second=null')&&social.includes('eligible.length<2')&&social.includes('first=a;second=b;until='),'The personality-owned social director may select at most one bounded pair and applies its cooldown');
+assert(!/setTimeout|setInterval|requestAnimationFrame/.test(social),'Audience conversations are scheduled by the existing room clock without independent timers or animation loops');
 assert(html.includes('var krRoomPalette=[];')&&html.includes('cols=krRoomPalette;cols.length=0;'),'Room palette should reuse a scratch buffer instead of allocating one on each rendered frame');
 assert(html.includes('var KR_FESTA_RGB=')&&html.includes('KR_FESTA_RGB[i%KR_FESTA_RGB.length]'),'Disco floor should reuse its fixed RGB palette instead of rebuilding a literal array in its particle loop');
 assert(html.includes("j._ktSocialKind==='applause'?'banzai'")&&html.includes("j._ktSocialKind==='talk'?'coracao'")&&html.includes('j._ktSocialTargetX<j.x'),'Audience reactions should reuse existing poses and face their conversation/singing target');

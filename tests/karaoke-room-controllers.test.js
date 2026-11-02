@@ -168,7 +168,7 @@ function fakeNode(){
  assert(viewer.open(fallbackPerson,0,opener),'fallback portrait reopens after toBlob returns null');
  assert.equal(dialog.elements.ktPosterSave.hidden,false,'PNG data URL fallback still exposes Save');
  assert.equal(dialog.elements.ktPosterSave.href,'data:image/png;base64,UE5H','fallback exports PNG data rather than leaving a dead link');
- assert.match(dialog.elements.ktPosterSave.download,/\\.png$/,'fallback download filename remains PNG');
+ assert.match(dialog.elements.ktPosterSave.download,/\.png$/,'fallback download filename remains PNG');
  dialog.close();
 }
 

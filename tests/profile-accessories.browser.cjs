@@ -64,13 +64,14 @@ async function main(){
               });
             });
         });
-        document.body.replaceChildren(canvas);
-        document.body.style.cssText='background:#141029;margin:0;padding:10px;box-sizing:border-box';
+        const overlay=document.createElement('div');
+        overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#141029;overflow:auto;padding:10px;box-sizing:border-box';
+        overlay.appendChild(canvas);document.body.appendChild(overlay); // preserva os elementos usados pelos timers do jogo
         return {metrics,logicalSize:[width,height]};
       });
       assert.equal(report.metrics.length,24,'four hairstyles × three items × two colors');
       for(const entry of report.metrics)assert(entry.matching>2,`missing accessory color ${JSON.stringify(entry)}`);
-      await page.screenshot({path:path.join(output,`accessories-${width}.png`),fullPage:true});
+      await page.screenshot({path:path.join(output,`accessories-${width}.png`)});
       assert.equal(errors.length,0,`page errors: ${errors.join('; ')}`);
       console.log(JSON.stringify({viewport:width,combos:report.metrics.length,errors,output:`accessories-${width}.png`}));
       await page.close();

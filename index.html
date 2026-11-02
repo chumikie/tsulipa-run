@@ -9178,7 +9178,6 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
   '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
   '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
-  '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
   '<div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
@@ -9186,6 +9185,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
   '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
+  '<section class="hubpainel hub-missoes-mundo" id="hubMisPainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
   '<div class="siterodape"><div class="hublinks hublinks-rodape" id="hubLinks"></div><p class="sitedir" data-dir="1"></p><img class="logotsl footlogo" alt="TsuLiPa"></div>' +
   '<p class="hubrodape"><a href="privacidade.html" target="_blank" rel="noopener" id="hubPriv"></a> · <span translate="no">v3.0</span></p></div>' +
@@ -12101,8 +12101,8 @@ function hubIdolsUI(){
   box.hidden = false; hubIdolsTam(); hubIdolsLigar(); if(typeof twRankRender==='function')twRankRender();
 }
 function hubIdolsLugar(){
-  var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), cv = $('hubCv'); if(!box || !busca || !cv) return;
-  if(hubComecou){ if(box.previousElementSibling !== busca) busca.parentNode.insertBefore(box, busca.nextSibling); box.classList.remove('mini');
+  var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), missions = $('hubMisPainel'), cv = $('hubCv'); if(!box || !busca || !cv) return;
+  if(hubComecou){ var anchor = missions || busca; if(box.previousElementSibling !== anchor) anchor.parentNode.insertBefore(box, anchor.nextSibling); box.classList.remove('mini');
     // Top Idols logo abaixo da vitrine (site corrido, em coluna única).
     var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling); }
   else { if(box.previousElementSibling !== cv) cv.parentNode.insertBefore(box, cv.nextSibling); box.classList.add('mini'); }

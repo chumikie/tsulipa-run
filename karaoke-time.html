@@ -2738,7 +2738,7 @@ function krRoomParar(){
  krMusicaParar();
  if(krRhythmRun&&typeof kt!=='undefined'&&kt&&kt.active()&&!kt.paused()){try{kt.pause(true);}catch(e){}}
 }
-function krRoomAtualizar(){if(krRoomPodeAnimar())krRoomRetomar();else krRoomParar();}
+function krRoomAtualizar(){if(krCanvasHD)krRoomCanvasVisible=krRoomHostVisible&&krRoomElementoVisivel(krCanvasHD);if(krRoomPodeAnimar())krRoomRetomar();else krRoomParar();}
 function krRoomRetomar(){
  if(!krRoomPodeAnimar())return;
  if(krRhythmRun)krRhythmTick();
@@ -2799,7 +2799,7 @@ function krSalvarFotoSala(){var cv=$('krCv');if(!cv)return;
 }
 function krMusicaMudarModo(){if(typeof krMusicaParar==='function')krMusicaParar();if(!muted&&typeof krMusicaLigar==='function')krMusicaLigar();}
 var krCanvasHD=$('krCv');if(krCanvasHD&&!krCanvasHD.dataset.krTelaPreparada){var krScale=window.matchMedia&&window.matchMedia('(max-width:620px)').matches?1:2;krCanvasHD.width=960*krScale;krCanvasHD.height=540*krScale;var krCtxHD=krCanvasHD.getContext('2d');if(krCtxHD)krCtxHD.setTransform(krScale,0,0,krScale,0,0);krCanvasHD.dataset.krTelaPreparada='1';}
-var krRoomObserver=null,krRhythmObserver=null,krRhythmPanel=$('krRhythm');
+var krRoomObserver=null,krRoomMotionGate=null,krRhythmObserver=null,krRhythmPanel=$('krRhythm');
 function krRoomElementoVisivel(el){if(!el||!el.getBoundingClientRect)return false;var r=el.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.right>0&&r.top<window.innerHeight&&r.left<window.innerWidth&&(!window.TWMotionLifecycle||TWMotionLifecycle.isVisible(el));}
 function krRoomFallbackAtualizar(){
  krRoomCanvasVisible=krRoomElementoVisivel(krCanvasHD);
@@ -2821,13 +2821,26 @@ function krRoomFallbackListenersDesconectar(){
 }
 function krRoomObserversConectar(){
  if(!krCanvasHD)return;
+ // O gate compartilhado também detecta modais/overlays que cobrem o canvas.
+ // IntersectionObserver sozinho só acompanha geometria; ao fechar um diálogo,
+ // a sala precisa receber um sinal explícito para reagendar o requestAnimationFrame.
+ if(window.TWMotionLifecycle&&typeof window.TWMotionLifecycle.watchLoop==='function'){
+  if(!krRoomMotionGate)krRoomMotionGate=window.TWMotionLifecycle.watchLoop(krCanvasHD,
+   function(){return krRoomHostVisible;},
+   function(){krRoomCanvasVisible=true;krRoomAtualizar();},
+   function(){krRoomCanvasVisible=false;krRoomAtualizar();}
+  );
+ }else if(!('IntersectionObserver' in window)){
+  krRoomFallbackAtualizar();krRoomFallbackListenersConectar();return;
+ }else{
+  if(!krRoomObserver)krRoomObserver=new IntersectionObserver(function(entries){
+   var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
+   if(visible===krRoomCanvasVisible)return;
+   krRoomCanvasVisible=visible;krRoomAtualizar();
+  },{threshold:0});
+  krRoomObserver.observe(krCanvasHD);
+ }
  if(!('IntersectionObserver' in window)){krRoomFallbackAtualizar();krRoomFallbackListenersConectar();return;}
- if(!krRoomObserver)krRoomObserver=new IntersectionObserver(function(entries){
-  var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
-  if(visible===krRoomCanvasVisible)return;
-  krRoomCanvasVisible=visible;krRoomAtualizar();
- },{threshold:0});
- krRoomObserver.observe(krCanvasHD);
  if(krRhythmPanel&&!krRhythmObserver)krRhythmObserver=new IntersectionObserver(function(entries){
   var e=entries[0],visible=!!(e&&e.isIntersecting&&e.intersectionRatio>0);
   if(visible===krRhythmPanelVisible)return;
@@ -2836,6 +2849,7 @@ function krRoomObserversConectar(){
  if(krRhythmPanel&&krRhythmObserver)krRhythmObserver.observe(krRhythmPanel);
 }
 function krRoomObserversDesconectar(){
+ if(krRoomMotionGate){krRoomMotionGate.destroy();krRoomMotionGate=null;}
  if(krRoomObserver){krRoomObserver.disconnect();krRoomObserver=null;}
  if(krRhythmObserver){krRhythmObserver.disconnect();krRhythmObserver=null;}
  krRoomFallbackListenersDesconectar();
@@ -2884,6 +2898,7 @@ window.addEventListener('message',function(e){
  else return;
  if(location.protocol!=='file:'&&e.origin!==location.origin)return;
  krRoomHostVisible=visible;
+ if(krRoomMotionGate)krRoomMotionGate.refresh();
  if(visible&&krCanvasHD){krRoomCanvasVisible=krRoomElementoVisivel(krCanvasHD);if(krRhythmPanel)krRhythmPanelVisible=krRoomElementoVisivel(krRhythmPanel);}
  krRoomAtualizar();
 });

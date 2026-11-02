@@ -46,7 +46,7 @@
   }
   function beginSinger(bot,automatic){
    var s=deps.getState(),bots=deps.getBots();
-   if(!bot||singer||s.singer||s.rhythmRun||s.playerNoMic||s.admissionPending||!s.soloAllowed||!s.roomOpen||
+   if(!bot||!deps.canWalk(bot)||singer||s.singer||s.rhythmRun||s.playerNoMic||s.admissionPending||!s.soloAllowed||!s.roomOpen||
     s.returnAt>0||s.returning||s.moveQueueLength||s.playerAtMic===false||s.walkerCount||s.queueLength)return false;
    var index=bots.indexOf(bot),seat=deps.getSeat(index)||[bot.x,bot.y],lounge=bot._ktLounge;
    var homeX=lounge&&Number.isFinite(lounge.returnX)?lounge.returnX:seat[0];

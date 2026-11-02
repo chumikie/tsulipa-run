@@ -13,7 +13,7 @@ const listenerEnd=html.indexOf("\ndocument.addEventListener('visibilitychange',k
 assert(listenerStart>=0&&listenerEnd>listenerStart,'host visibility message listener exists');
 const listeners={},hostWindow={},sandbox={
  parent:hostWindow,location:{protocol:'https:',origin:'https://room.test'},
- krRoomHostVisible:true,krHostMotionSeen:false,krCanvasHD:null,krRhythmPanel:null,
+ krRoomHostVisible:true,krHostMotionSeen:false,krCanvasHD:null,krRoomMotionGate:null,krRhythmPanel:null,
  krRoomElementoVisivel:function(){return true;},krRoomAtualizar:function(){},
  window:{addEventListener:function(type,fn){listeners[type]=fn;}}
 };

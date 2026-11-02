@@ -128,12 +128,12 @@ async function metrics(frame){
     assert(painted.visibility.pageActive&&painted.visibility.roomCanAnimate,'visible stage owns an active animation lifecycle');
     assert(painted.paint.calls>0,'Chromium observed actual canvas paint operations');
     assert(painted.paint.pixels.opaque>100&&painted.paint.pixels.unique>80&&painted.paint.pixels.hash!==0,'stage canvas contains opaque, varied and identifiable scene pixels');
-    await p.evaluate(()=>{const iframe=document.querySelector('#twPreviewIframe');iframe.hidden=true;window.TWMotionLifecycle.refresh();});
+    await frame.locator('body').evaluate(()=>window.dispatchEvent(new MessageEvent('message',{data:{type:'TW_GAME_VISIBILITY',visible:false},origin:location.origin,source:window.parent})));
     await p.waitForTimeout(120);
     const hidden=await frame.locator('body').evaluate(()=>window.qaRoomState());
     assert.equal(hidden.visibility.host,false,'host hide message reaches the room');
     assert.equal(hidden.visibility.roomCanAnimate,false,'hidden host suspends room animation');
-    await p.evaluate(()=>{const iframe=document.querySelector('#twPreviewIframe');iframe.hidden=false;window.TWMotionLifecycle.refresh();});
+    await frame.locator('body').evaluate(()=>window.dispatchEvent(new MessageEvent('message',{data:{type:'TW_GAME_VISIBILITY',visible:true},origin:location.origin,source:window.parent})));
     await p.waitForTimeout(320);
     const reopened=await frame.locator('body').evaluate(()=>window.qaRoomState());
     assert(reopened.visibility.host&&reopened.visibility.roomCanAnimate,'reopened host restores room ownership');
@@ -284,7 +284,7 @@ async function metrics(frame){
      assert(Math.abs(playing.crop.left-48)<.1,'Mild crop also preserves the audience during play');
      assert(playing.weekly.y>=playing.scene.bottom,'Ranking stays below the game while playing');
      // Test the real pointer-to-logical-canvas conversion after cropping.
-     await p.waitForTimeout(1200);
+     await p.waitForTimeout(4200); // The game intentionally keeps a 4s count-in before the first accepted note.
      const canvas=frame.locator('#krCv');
      for(let lane=0;lane<4;lane++){
       await canvas.click({position:{x:(286+(lane+.5)*97)*playing.canvas.w/960,y:160*playing.canvas.h/540}});

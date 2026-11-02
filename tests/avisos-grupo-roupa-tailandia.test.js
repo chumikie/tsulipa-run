@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const html = require('./site-source.js')();
-const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102140311_avisos_grupo_e_roupa_sku.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase/sql/proposta/20261102140311_avisos_grupo_e_roupa_sku.sql'), 'utf8');
 
 test('admin escolhe todos ou grupo nacional, nunca time interno', () => {
   assert.match(html, /<select id="avisoAlvo"><option value="">🌏 Todos os jogadores/);

@@ -12,7 +12,8 @@ docker exec "$container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
 psql_service "$db" < "$repo_dir/supabase/tests/grupos_nacionais_pg_setup.sql"
 psql_service "$db" < "$repo_dir/supabase/tests/grupos_nacionais_pg_visuais_setup.sql"
 # A última versão aplicada no projeto ativo, confirmada por leitura em 02/11/2026,
-# era 20261102044257. Estes três arquivos ainda não foram aplicados.
+# era 20261102044257. Estes três arquivos ainda não foram aplicados e, desde 02/11/2026,
+# ficam em supabase/sql/proposta/ (fora de supabase/migrations/, para a publicação não aplicá-los sozinha).
 # Ordem obrigatória: grupos -> avisos -> acessórios; falhar se timestamps regressarem.
 previous_version="20261102044257"
 migrations=(
@@ -27,7 +28,7 @@ for migration in "${migrations[@]}"; do
     exit 1
   fi
   previous_version="$version"
-  psql_service "$db" < "$repo_dir/supabase/migrations/$migration"
+  psql_service "$db" < "$repo_dir/supabase/sql/proposta/$migration"
 done
 psql_service "$db" < "$repo_dir/supabase/tests/grupos_nacionais_pg_checks.sql"
 psql_service "$db" < "$repo_dir/supabase/tests/grupos_nacionais_pg_visuais_checks.sql"

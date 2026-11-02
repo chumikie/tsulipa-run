@@ -17,24 +17,37 @@ assert(html.includes("window.ktShowAdmissionPending=false;kt.start('confirmed',i
 assert(html.includes('Silenciar / restaurar som')&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('krAlternarSom();return;')&&!html.includes('muteButton.focus({preventScroll:true})')&&!html.includes('muteButton.click()'),'M calls the shared mute state directly without synthetic focus or click');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({'),'page injects avatar renderer dependencies into the Polaroid factory');
 assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-room-polaroid.js?v=3')&&html.includes('karaoke-photo.css?v=3'),'both separated controllers use fresh cache versions');
+assert(autoSource.includes("singer.phase='player_to_sofa'")&&autoSource.includes("singer.phase='player_wait_departure'")&&autoSource.includes('deps.movePlayerToSeat')&&autoSource.includes('deps.movePlayerToWait'),'auto-mic choreography protects the sofa handoff');
+assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function krPlanearRotaEspera(x,y)'),'player uses dedicated collision-safe sofa routes');
+assert(/var krVelocidadeAlvo=krMeuVoltandoAoMic\?6\.0/.test(html),'return to microphone uses a faster sprint');
+assert(html.includes('eligible[Math.floor(Math.random()*eligible.length)]'),'random singer selection is used by the manual call action');
+assert(html.includes('KD_LUGARES=10')&&html.includes('members.length===10'),'daily room has ten decorative members');
+assert(html.includes('selectPolaroids(catalog,selfId,active.day,active.members,photoGuests'),'Polaroids select guests outside the current room roster');
+assert(html.includes('krT+600+Math.random()*180'),'all seated members get an extended shared rest');
+assert(html.includes('glitterCount=Math.max(7'),'sofa glitter uses the existing animation clock');
 
-function autoHarness(overrides){
- const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,admissionPending:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,playerX:480,playerY:286,playerWaited:false,playerReturning:false,playerTarget:null,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
+function autoHarness(overrides,randomValue){
+ const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,admissionPending:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,playerX:480,playerY:286,playerWaited:false,playerSeated:false,playerWaitTarget:null,playerSeatTarget:null,playerReturning:false,playerTarget:null,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
  const bots=[{nick:'A',x:200,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:160,returnY:400}},{nick:'B',x:700,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:800,returnY:400}}];
  const calls=[],deps={
   getState:()=>state,getBots:()=>bots,canWalk:bot=>!bot.no_mic,getSeat:i=>i===0?[160,400]:[800,400],
   removeWalker:bot=>{bot._ktLoungeWalking=false;calls.push(['remove',bot.nick]);},
   preparePlayerForSinger:(x,y)=>{state.playerTarget=[x,y];state.playerAtMic=false;calls.push(['player-departure',x,y]);return true;},
-  isPlayerAtSingerWait:()=>state.playerWaited,
+  isPlayerAtSingerWait:(x,y)=>state.playerWaited&&Math.hypot(state.playerX-x,state.playerY-y)<=3,
+  movePlayerToSeat:(x,y)=>{state.playerSeatTarget=[x,y];state.playerSeated=false;calls.push(['player-seat',x,y]);return true;},
+  isPlayerAtSeat:(x,y)=>state.playerSeated&&Math.hypot(state.playerX-x,state.playerY-y)<=3,
+  movePlayerToWait:(x,y)=>{state.playerWaitTarget=[x,y];state.playerWaited=false;calls.push(['player-wait',x,y]);return true;},
   restorePlayerAfterSinger:()=>{state.playerReturning=true;calls.push(['player-return']);return true;},
   isPlayerAtMic:()=>state.playerAtMic,
-  random:()=>0,nowMs:()=>5000,getTime:()=>state.time,setSinger:v=>{state.singer=v;calls.push(['singer',v&&v.phase]);},
+  random:()=>randomValue===undefined?0:randomValue,nowMs:()=>5000,getTime:()=>state.time,setSinger:v=>{state.singer=v;calls.push(['singer',v&&v.phase]);},
   setNextAt:v=>{state.nextAt=v;calls.push(['next',v]);},startPractice:()=>calls.push(['start']),switchMusicMode:()=>calls.push(['music']),updateUI:()=>calls.push(['ui']),onReturnComplete:()=>calls.push(['returned'])
  };
  const controller=AutoMic.create(deps);
  return {state,bots,calls,controller,tick:controller.tick,
-  movePlayerToWait:function(){assert(state.playerTarget,'player has a planned waiting destination');state.playerX=state.playerTarget[0];state.playerY=state.playerTarget[1];state.playerWaited=true;},
-  movePlayerToMic:function(){state.playerX=480;state.playerY=286;state.playerAtMic=true;state.playerWaited=false;},
+  reachInitialWait:function(){assert(state.playerTarget);state.playerX=state.playerTarget[0];state.playerY=state.playerTarget[1];state.playerWaited=true;},
+  reachSeat:function(){assert(state.playerSeatTarget);state.playerX=state.playerSeatTarget[0];state.playerY=state.playerSeatTarget[1];state.playerSeated=true;},
+  reachExitWait:function(){assert(state.playerWaitTarget);state.playerX=state.playerWaitTarget[0];state.playerY=state.playerWaitTarget[1];state.playerWaited=true;},
+  movePlayerToMic:function(){state.playerX=480;state.playerY=286;state.playerAtMic=true;state.playerWaited=false;state.playerSeated=false;},
   assertSeparate:function(label){const bot=state.singer&&state.singer.bot;if(!bot)return;const distance=Math.hypot(bot.x-state.playerX,bot.y-state.playerY);assert(distance>80,label+' keeps player and NPC sprite envelopes separate (distance '+distance.toFixed(1)+')');}
  };
 }
@@ -48,50 +61,57 @@ const blocked=[
 for(const [label,state] of blocked){
  const h=autoHarness(state);h.tick();
  assert.equal(h.calls.some(c=>c[0]==='singer'),false,label+' blocks autonomous mic');
- assert.equal(h.calls.some(c=>c[0]==='start'),false,label+' must not start the music engine');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,label+' must not start music');
 }
 {
  const h=autoHarness();h.tick();
- assert.equal(h.state.singer.bot,h.bots[0],'first eligible NPC receives the mic route deterministically');
- assert.equal(h.state.singer.phase,'player_departure','player is routed away before the NPC approaches');
- assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic,h.bots[0]._ktLoungeWalking],[200,400,false,false],'NPC waits at its seat while the player departs');
- assert.deepEqual(h.state.playerTarget,[620,320],'player receives the opposite waiting point');
- assert.equal(h.calls.some(c=>c[0]==='start'),false,'practice does not start during player departure');
- h.controller.updateMovement(500);
- assert.equal(h.state.singer.phase,'player_departure','NPC remains seated until player reaches the waiting point');
- h.assertSeparate('during player departure');
- h.movePlayerToWait();h.controller.updateMovement(500);
- assert.equal(h.state.singer.phase,'approach','NPC starts only after player reaches the safe waiting point');
- assert.deepEqual(h.state.singer.route,[[200,520],[340,520],[340,286],[480,286]],'approach route follows the clear aisle and side passage');
- for(let i=0;i<4;i++){h.controller.updateMovement(500);h.assertSeparate('during NPC approach');}
- assert.equal(h.state.singer.phase,'singing','practice begins only after the NPC reaches the microphone');
- assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'NPC reaches the mic before singing');
- assert.equal(h.state.singer.endsAt,70000,'NPC show keeps the original 65-second local duration');
- assert(h.calls.some(c=>c[0]==='start'),'practice engine starts after the route ends');
- assert.equal(h.controller.finishSinger(),true,'ending the show starts the return route');
- assert.equal(h.state.singer.phase,'return','singer keeps a return state instead of teleporting');
- assert.equal(h.bots[0]._ktLoungeWalking,true,'singer walks back after ending the show');
- for(let i=0;i<4;i++){h.controller.updateMovement(500);h.assertSeparate('during NPC return');}
- assert.equal(h.state.singer.phase,'player_return','player recovery waits until NPC reaches its seat');
- assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[160,400,false],'NPC returns to its original sofa before player recovery');
- assert(h.state.playerReturning,'player return route is explicitly started after NPC return');
- h.assertSeparate('during player recovery');
- h.movePlayerToMic();h.controller.updateMovement(500);
- assert.equal(h.state.singer,null,'singer state clears only after player regains the microphone');
- assert(h.calls.some(c=>c[0]==='returned'),'queue can advance after the NPC and player finish their routes');
+ assert.equal(h.state.singer.bot,h.bots[0],'first eligible NPC selected with injected random value');
+ assert.equal(h.state.singer.phase,'player_departure','player clears the microphone first');
+ assert.deepEqual(h.state.playerTarget,[620,320],'player receives the opposite safe waiting point');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,'practice waits for both actor routes');
+ h.controller.updateMovement(500);h.assertSeparate('initial player departure');
+ h.reachInitialWait();h.controller.updateMovement(500);
+ assert.equal(h.state.singer.phase,'approach','NPC approaches only after player clears the stage');
+ assert.deepEqual(h.state.singer.route,[[200,520],[340,520],[340,286],[480,286]],'NPC follows the safe stage route');
+ for(let i=0;i<4;i++){h.controller.updateMovement(500);h.assertSeparate('NPC approach');}
+ assert.equal(h.state.singer.phase,'player_to_sofa','singer arrives before player occupies the empty seat');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'singer reaches microphone first');
+ assert.deepEqual(h.state.playerSeatTarget,[160,400],'player takes the singer vacated sofa seat');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,'music waits until player is seated');
+ h.reachSeat();h.controller.updateMovement(1);
+ assert.equal(h.state.singer.phase,'singing','practice begins only after player reaches the sofa');
+ assert(h.calls.some(c=>c[0]==='start'),'music starts after safe seat handoff');
+ assert.equal(h.state.singer.endsAt,70000,'NPC show keeps original duration');
+ assert.equal(h.controller.finishSinger(),true,'ending show starts player sofa exit');
+ assert.equal(h.state.singer.phase,'player_wait_departure','player vacates sofa before singer return');
+ assert.deepEqual(h.state.playerWaitTarget,[620,320],'player receives safe aisle exit target');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[480,286,true],'singer remains on mic until player clears the seat');
+ h.reachExitWait();h.controller.updateMovement(1);
+ assert.equal(h.state.singer.phase,'return','NPC returns after sofa is vacated');
+ for(let i=0;i<4;i++){h.controller.updateMovement(500);h.assertSeparate('NPC return');}
+ assert.equal(h.state.singer.phase,'player_return','player returns after NPC is back on sofa');
+ assert.deepEqual([h.bots[0].x,h.bots[0].y,h.bots[0].no_mic],[160,400,false],'NPC returns to original seat');
+ assert(h.state.playerReturning,'player return route is started only after the singer is seated');
+ h.movePlayerToMic();h.controller.updateMovement(1);
+ assert.equal(h.state.singer,null,'mic lock clears only after player returns');
+ assert(h.calls.some(c=>c[0]==='returned'),'queue advances after both actors complete their routes');
 }
 {
  const h=autoHarness();h.tick();h.controller.finishSinger();
- assert.equal(h.state.singer.phase,'player_return','cancelling before NPC approach restores the player');
- assert(h.state.playerReturning,'early cancellation starts the player return route');
- h.movePlayerToMic();h.controller.updateMovement(500);
- assert.equal(h.state.singer,null,'early cancellation releases the automatic mic lock after recovery');
+ assert.equal(h.state.singer.phase,'player_return','cancellation before NPC approaches restores player');
+ assert(h.state.playerReturning,'early cancellation starts player recovery');
+ h.movePlayerToMic();h.controller.updateMovement(1);
+ assert.equal(h.state.singer,null,'early cancellation releases singer reservation');
 }
 {
  const h=autoHarness();h.bots.forEach(b=>b.no_mic=true);h.tick();
- assert.equal(h.state.singer,null,'no eligible NPC means no singer is reserved');
- assert.equal(h.calls.some(c=>c[0]==='start'),false,'no eligible NPC means no show starts');
- assert.equal(h.state.nextAt,280,'empty cast retries after the original 180-frame delay');
+ assert.equal(h.state.singer,null,'no eligible bot means no singer');
+ assert.equal(h.calls.some(c=>c[0]==='start'),false,'empty cast cannot start music');
+ assert.equal(h.state.nextAt,280,'empty cast retries after 180 logical frames');
+}
+{
+ const h=autoHarness({},.99);h.tick();
+ assert.equal(h.state.singer.bot,h.bots[1],'random selector can choose another eligible room member');
 }
 
 function fakeContext(){

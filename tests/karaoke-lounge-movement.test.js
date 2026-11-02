@@ -7,6 +7,26 @@ const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const autoMic=fs.readFileSync(path.join(__dirname,'..','karaoke-room-auto-mic.js'),'utf8');
 const polaroid=fs.readFileSync(path.join(__dirname,'..','karaoke-room-polaroid.js'),'utf8');
+const dailyStart=html.indexOf('var KaraokeDaily=(function(){');
+const dailyEnd=html.indexOf('var KaraokeAvatar=(function(){',dailyStart);
+assert(dailyStart>=0&&dailyEnd>dailyStart,'daily roster selector exists before the renderer');
+const dailyContext={Intl,Date,Math,Set,Map,Number,String,Array,Object,JSON,Error};
+vm.createContext(dailyContext);
+vm.runInContext(html.slice(dailyStart,dailyEnd)+';this.KaraokeDaily=KaraokeDaily;',dailyContext,{timeout:1000});
+const daily=dailyContext.KaraokeDaily;
+const avatar=hair=>({c:{hair,skin:'#f1c9a5',eye:'#5a3b2e'},pose:'v',expr:2});
+const publicProfiles=Array.from({length:9},(_,i)=>({id:'public-'+i,nick:'Public '+i,avatar:avatar(['#ff7eb6','#8bd5ff','#b9a0ff'][i%3])}));
+const fallbackRooms=Array.from({length:10},(_,i)=>({id:'npc-'+i,nick:'Room NPC '+i,avatar:avatar(['#f2a6cf','#8bd5ff','#b9a0ff'][i%3]),source:'npc'}));
+const room=daily.select(publicProfiles,'public-0','2026-11-01',fallbackRooms);
+assert.equal(room.members.length,10,'room roster fills ten seats with public profiles and decorative fallback');
+assert.equal(new Set(room.members.map(p=>p.id)).size,10,'ten room seats have unique identities');
+assert(!room.members.some(p=>p.id==='public-0'),'the player is not duplicated among room members');
+const photoGuests=Array.from({length:6},(_,i)=>({id:'photo-'+i,nick:'Photo Guest '+i,avatar:avatar(['#ffb3d9','#c7a6ff','#9fd8ff'][i%3]),source:'npc'}));
+const portraits=daily.selectPolaroids(publicProfiles,'public-0','2026-11-01',room.members,photoGuests,6);
+assert.equal(portraits.length,6,'all six Polaroid frames receive distinct guest portraits');
+assert.equal(new Set(portraits.map(p=>p.id)).size,6,'Polaroid guest identities are unique');
+assert(!portraits.some(p=>p.id==='public-0'||room.members.some(member=>member.id===p.id)),'Polaroids exclude the player and all seated room members');
+assert(!portraits.some(p=>room.members.some(member=>member.nick.toLowerCase()===p.nick.toLowerCase())),'Polaroids exclude repeated nicknames across different IDs');
 const loungeStart=html.indexOf('function krLoungeSoloPermitido(){');
 const loungeEnd=html.indexOf('var krLoungeSocialA=null',loungeStart);
 assert(loungeStart>=0&&loungeEnd>loungeStart,'Karaoke solo lounge state machine exists');
@@ -19,8 +39,8 @@ assert(html.includes('!krMeuRetornoAt&&!krMeuVoltandoAoMic&&!krMoveQueue.length&
 
 const math=Object.create(Math);
 math.random=()=>0;
-const bots=Array.from({length:8},(_,i)=>({
-  nick:'Idol '+i,x:[160,232,332,432,532,632,732,800][i],y:[400,470,470,470,470,470,470,400][i],
+const bots=Array.from({length:10},(_,i)=>({
+  nick:'Idol '+i,x:[160,214,290,366,442,518,594,670,746,800][i],y:[400,470,470,470,470,470,470,470,470,400][i],
   no_mic:false,itemSala:'',snackSala:'',danca:'',_ktSocialUntil:0
 }));
 const env={
@@ -38,7 +58,7 @@ const env={
   krAutoMicNextAt:0,
   krEu:{no_mic:false},krEuNoMicrofone:()=>true,krRhythmRun:null,krMeuRetornoAt:0,krMeuVoltandoAoMic:false,krMoveQueue:[],
   kt:{active:()=>false},
-  KR_SOFA_SLOTS:[[160,400],[232,470],[332,470],[432,470],[532,470],[632,470],[732,470],[800,400]],
+  KR_SOFA_SLOTS:[[160,400],[214,470],[290,470],[366,470],[442,470],[518,470],[594,470],[670,470],[746,470],[800,400]],
   KR_LOUNGE_AISLE_Y:520,
   KR_LOUNGE_STOPS:[230,300,370,590,660,730],
   KR_LOUNGE_MAX_WALKERS:1,
@@ -53,7 +73,7 @@ vm.runInContext(loungeSource,env,{timeout:1000});
 
 env.krLoungeReset();
 assert.equal(env.krLoungeActors.length,0);
-for(const time of [300,345,390]){env.krT=time;env.krLoungeUpdate(1);}
+for(const time of [540,585,630]){env.krT=time;env.krLoungeUpdate(1);}
 assert.equal(env.krLoungeActors.length,1,'only one Idol walks at a time, preventing paths from crossing');
 assert.equal(new Set(env.krLoungeActors).size,1,'the active walker is a single cast member');
 const walker=env.krLoungeActors[0],startX=walker.x,startY=walker.y;
@@ -69,7 +89,7 @@ for(let i=0;i<12&&env.krLoungeActors.length;i++){env.krT+=1;env.krLoungeUpdate(6
 assert.equal(env.krLoungeActors.length,0,'walkers finish their return routes while the player is away from the microphone');
 assert(env.krBots.every((b,i)=>Math.abs(b.x-env.KR_SOFA_SLOTS[i][0])<1.3&&Math.abs(b.y-env.KR_SOFA_SLOTS[i][1])<1.3),'the audience walks back and settles into its original seats');
 env.krEuNoMicrofone=()=>true;env.krLoungeReset();
-for(const time of [env.krT+300,env.krT+345,env.krT+390]){env.krT=time;env.krLoungeUpdate(1);}
+for(const time of [env.krT+540,env.krT+585,env.krT+630]){env.krT=time;env.krLoungeUpdate(1);}
 assert.equal(env.krLoungeActors.length,1,'the lounge resumes one safe walker after the player returns to the microphone');
 // A character taking the microphone is immediately removed from the walking set.
 const singer=env.krLoungeActors[0];singer.no_mic=true;

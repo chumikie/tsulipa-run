@@ -18,11 +18,9 @@ insert into public.idol_grupo_times(grupo,codigo,nome,cor) values
   ('BRS48','B','Team B','#4169e1'),
   ('BRS48','R','Team R','#f5c400'),
   ('BRS48','S','Team S','#3cb043'),
-  ('BRS48','KKS','Team KKS','#4dd8ff'),
-  ('SKU48','S','Team S','#3cb043'),
-  ('SKU48','K','Team K','#8448fa'),
-  ('SKU48','U','Team U','#ff6fb5'),
-  ('SKU48','KKS','Team KKS','#4dd8ff');
+  ('BRS48','KKS','Team KKS','#4dd8ff');
+-- SKU48/Tailândia é grupo oficial, sem times internos anunciados.
+-- Valores antigos de players.time permanecem intactos; a UI não os exibe como divisão SKU.
 alter table public.players add column grupo text references public.idol_grupos(codigo);
 -- Sem reclassificação automática: jogadores antigos preservam a escolha atual.
 create index players_grupo_idx on public.players(grupo);

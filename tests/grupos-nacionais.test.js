@@ -12,18 +12,19 @@ assert.ok(catalog, 'catálogo local disponível mesmo antes da migração');
 const groups = vm.runInNewContext(catalog[1]);
 const byCode = Object.fromEntries(groups.map(g => [g.codigo, g]));
 
-test('BRS48 e SKU48 têm times independentes, inclusive KKS compartilhado', () => {
+test('BRS48 preserva B/R/S/KKS e SKU48 ainda não oferece divisões internas', () => {
   assert.deepEqual(Array.from(byCode.BRS48.times, t => t.codigo), ['B', 'R', 'S', 'KKS']);
-  assert.deepEqual(Array.from(byCode.SKU48.times, t => t.codigo), ['S', 'K', 'U', 'KKS']);
+  assert.deepEqual(Array.from(byCode.SKU48.times, t => t.codigo), []);
   assert.equal(byCode.BRS48.pais, 'BR');
   assert.equal(byCode.SKU48.pais, 'TH');
-  assert.notEqual(byCode.BRS48.times, byCode.SKU48.times);
+  assert.doesNotMatch(sql, /\('SKU48','(?:S|K|U|KKS)','Team/);
 });
 
 test('interface preserva escolha legada e limpa divisão na troca de grupo', () => {
   assert.match(html, /function perfGrupoCodigo\(d\)\{ return d && d\.grupo \|\| 'BRS48'; \}/);
   assert.match(html, /if\(e\.target\.id!=='perfBioGrupo'\)return/);
   assert.match(html, /sel\.innerHTML='<option value="">'/);
+  assert.match(html, /g\.codigo==='SKU48' \? Object\.assign\(\{\},g,\{times:\[\]\}\)/);
   assert.match(html, /perfGrupoCodigo\(p\)===gp\[0\]/);
 });
 

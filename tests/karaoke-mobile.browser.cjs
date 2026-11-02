@@ -150,8 +150,10 @@ async function waitForRoomMode(frame, expectMobile){
      }
     }catch(error){window.__qaPaintInstrumentError=String(error&&error.message||error);}
    });
-   const p=await context.newPage(),errors=[];
-   p.on('pageerror',e=>errors.push(e.message));
+   const p=await context.newPage(),errors=[],consoleErrors=[],failedRequests=[];
+   p.on('pageerror',e=>errors.push(String(e&&e.stack||e&&e.message||e)));
+   p.on('console',message=>{if(message.type()==='error'&&consoleErrors.length<30)consoleErrors.push(message.text());});
+   p.on('requestfailed',request=>{if(failedRequests.length<30)failedRequests.push({url:request.url(),error:request.failure()&&request.failure().errorText});});
    await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts}):r.abort());
    await p.goto(origin);
    await p.evaluate(()=>window.qaKaraoke());
@@ -160,7 +162,17 @@ async function waitForRoomMode(frame, expectMobile){
    // gate correctly pauses a canvas while either document is scrolled away.
    const hostFrame=p.locator('#twPreviewIframe');
    const frame=p.frameLocator('#twPreviewIframe');
-   await frame.locator('#krCv').waitFor({state:'visible'});
+   try{await frame.locator('#krCv').waitFor({state:'visible',timeout:12000});}
+   catch(bootError){
+    const bootState=await p.evaluate(()=>{
+     const frame=document.querySelector('#twPreviewIframe'),wrap=document.querySelector('#twPreviewJogo');
+     const inspect=el=>{if(!el)return null;const cs=getComputedStyle(el),r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,hidden:!!el.hidden,open:typeof el.open==='boolean'?el.open:undefined,display:cs.display,visibility:cs.visibility,opacity:cs.opacity,rect:{x:r.x,y:r.y,w:r.width,h:r.height}};};
+     const out={page:{url:location.href,readyState:document.readyState,wrap:inspect(wrap),iframe:inspect(frame),iframeSrc:frame&&frame.getAttribute('src')},inner:null};
+     try{const d=frame&&frame.contentDocument,w=frame&&frame.contentWindow;if(d){const popup=d.querySelector('#ktPopup'),canvas=d.querySelector('#krCv');out.inner={url:w&&w.location.href,readyState:d.readyState,htmlClass:d.documentElement&&d.documentElement.className,bodyClass:d.body&&d.body.className,popup:inspect(popup),canvas:inspect(canvas),scripts:Array.from(d.scripts).map(s=>({src:s.src||'',id:s.id||'',inline:!s.src})).slice(-18)};}}catch(error){out.innerError=String(error&&error.stack||error);}
+     return out;
+    });
+    assert.fail('Karaoke iframe bootstrap failed: '+JSON.stringify({bootState,pageErrors:errors.slice(-20),consoleErrors:consoleErrors.slice(-20),failedRequests:failedRequests.slice(-20),cause:String(bootError&&bootError.message||bootError)}));
+   }
    await hostFrame.scrollIntoViewIfNeeded();
    await frame.locator('#krCv').scrollIntoViewIfNeeded();
    await frame.locator('#ktAvailability').evaluate(()=>document.fonts.ready);

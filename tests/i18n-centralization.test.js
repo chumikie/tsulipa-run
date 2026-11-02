@@ -76,7 +76,7 @@ test('legacy aliases and original merge sites are preserved', () => {
  for (const name of Object.keys(expectedRows)) assert.ok(index.includes('window.TW_I18N.rows.'+name),name+' row moved');
  for (const name of expectedLocale) assert.ok(index.includes('var '+name+' = window.TW_I18N.locale.'+name+';'),name+' locale alias');
  assert.ok(index.indexOf('src="./tw-i18n.js') < index.indexOf('var DICT=window.TW_DICT'),'i18n loads before DICT use');
- for (const name of ['PET_DICT','PET_DICT2','PET_DICT3','PET_DICT4','PET_DICT5','PET_DICT6','PET_DICT7','PET_DICT8','PET_DICT10','PET_FALAS_TR','CONTA_DICT','PERF_DICT','PERF_DICT2','PERF_ADMIN_DICT','ADM_DICT','HUB_DICT','S2_DICT']) {
+ for (const name of ['PET_DICT','PET_DICT2','PET_DICT3','PET_DICT4','PET_DICT5','PET_DICT6','PET_DICT7','PET_DICT8','PET_DICT10','PET_FALAS_TR','CONTA_DICT','ADM_DICT','HUB_DICT','S2_DICT']) {
   assert.ok(index.includes(name+').forEach'),name+' legacy merge still present');
  }
  assert.ok(index.includes('[PERF_DICT, PERF_DICT2, PERF_ADMIN_DICT].forEach'));

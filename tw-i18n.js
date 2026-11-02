@@ -102,7 +102,10 @@ window.TW_DICT={
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"View ranking",
   "Visite o Blog do BRS48":"Visit the BRS48 Blog",
+  "Visite o BRS48 Members Blog":"Visit the BRS48 Members Blog",
   "Visite o YouTube do BRS48":"Visit BRS48 on YouTube",
+  "Visite o YouTube do SKU48":"Visit SKU48 on YouTube",
+  "Visite o YouTube do SPR48":"Visit SPR48 on YouTube",
   "Você":"You",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"Good work!"
@@ -208,7 +211,10 @@ window.TW_DICT={
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"Ver ranking",
   "Visite o Blog do BRS48":"Visita el Blog de BRS48",
+  "Visite o BRS48 Members Blog":"Visita el BRS48 Members Blog",
   "Visite o YouTube do BRS48":"Visita el YouTube de BRS48",
+  "Visite o YouTube do SKU48":"Visita el YouTube de SKU48",
+  "Visite o YouTube do SPR48":"Visita el YouTube de SPR48",
   "Você":"Tú",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"¡Buen trabajo!"
@@ -314,7 +320,10 @@ window.TW_DICT={
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"ดูอันดับ",
   "Visite o Blog do BRS48":"เยี่ยมชมบล็อกของ BRS48",
+  "Visite o BRS48 Members Blog":"เยี่ยมชม BRS48 Members Blog",
   "Visite o YouTube do BRS48":"เยี่ยมชม YouTube ของ BRS48",
+  "Visite o YouTube do SKU48":"เยี่ยมชม YouTube ของ SKU48",
+  "Visite o YouTube do SPR48":"เยี่ยมชม YouTube ของ SPR48",
   "Você":"คุณ",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"ทำงานหนักมาก!"
@@ -420,7 +429,10 @@ window.TW_DICT={
   "Valentine (wCenter)":"バレンタイン (wCenter)",
   "Ver ranking":"ランキングを見る",
   "Visite o Blog do BRS48":"BRS48のブログを見に行こう",
+  "Visite o BRS48 Members Blog":"BRS48 Members Blogを見に行こう",
   "Visite o YouTube do BRS48":"BRS48のYouTubeを見に行こう",
+  "Visite o YouTube do SKU48":"SKU48のYouTubeを見に行こう",
+  "Visite o YouTube do SPR48":"SPR48のYouTubeを見に行こう",
   "Você":"あなた",
   "Zipper (tCenter)":"ジッパー (tCenter)"
  }

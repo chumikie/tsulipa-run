@@ -904,7 +904,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=2"></script>
+<script src="./tw-i18n.js?v=3"></script>
 <script>
 /* ================================================================
    ⚠️⚠️⚠️ CHAVES DE SAVE E DO BANCO — NUNCA RENOMEAR ⚠️⚠️⚠️
@@ -9141,11 +9141,14 @@ var HUB_COLLECT = 'https://brs48-collect.vercel.app/', HUB_BLOG = 'https://brs48
 var HUB_YOUTUBE = 'https://www.youtube.com/@BRS48';   // canal oficial do BRS48
 // Missão fixa "collect": a cada dia o site sorteia um destes destinos (mesmo para a conta o dia todo).
 // O servidor continua recebendo marcar_visita('collect'); a missão não muda de chave.
-// Para incluir Blog de Membros do BRS48 e os YouTubes do SPR48 e SKU48, acrescente [emoji, texto, endereço] aqui.
+// Para incluir outro destino, acrescente [emoji, texto, endereço] aqui (e a tradução em tw-i18n.js).
 var HUB_COLLECT_LINKS = [
   ['🎴', 'Visite o BRS48 Collect!', HUB_COLLECT],
   ['📰', 'Visite o Blog do BRS48', HUB_BLOG],
-  ['▶️', 'Visite o YouTube do BRS48', HUB_YOUTUBE]
+  ['▶️', 'Visite o YouTube do BRS48', HUB_YOUTUBE],
+  ['💌', 'Visite o BRS48 Members Blog', 'https://brs48membersblog.blogspot.com/'],
+  ['▶️', 'Visite o YouTube do SPR48', 'https://www.youtube.com/@SPR48'],
+  ['▶️', 'Visite o YouTube do SKU48', 'https://www.youtube.com/@SKU48Official']
 ];
 function hubCollectHoje(){
   var d = new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), id = (contaJ && contaJ.id) || '', h = 0, i, k = d + '|' + id;

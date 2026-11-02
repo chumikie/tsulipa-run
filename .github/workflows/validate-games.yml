@@ -73,6 +73,17 @@ jobs:
         run: |
           npm install --prefix /tmp/karaoke-playwright --no-save playwright
           /tmp/karaoke-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Fetch PR base for before/after homepage comparison
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+      - name: Compare homepage screenshots before and after translation extraction
+        if: github.event_name == 'pull_request'
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node tests/i18n-visual.browser.cjs /tmp/i18n-visual-captures
       - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
@@ -83,6 +94,13 @@ jobs:
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
         run: node tests/profile-accessories.browser.cjs /tmp/profile-accessories-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i18n-before-after-captures
+          path: /tmp/i18n-visual-captures
+          if-no-files-found: warn
+          retention-days: 5
       - uses: actions/upload-artifact@v4
         if: always()
         with:

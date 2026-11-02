@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const html=require('./site-source.js')();
 assert(!html.includes('data:image/webp;base64'),'index.html sem imagens base64');
 const refs=[...html.matchAll(/'\.\/(img\/[a-z0-9-]+\.webp)'/g)].map(m=>m[1]);
 for(const n of ['logo-tsl','mural-zipper','mural-brs48','mural-nebyura','mural-banner','mural-campo','mural-doces'])assert(refs.includes('img/'+n+'.webp'),n+' referenciada');

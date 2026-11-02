@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = require('./site-source.js')();
 const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102014635_grupos_nacionais.sql'), 'utf8');
 const catalog = html.match(/var PERF_GRUPOS = (\[[\s\S]*?\]);/);
 assert.ok(catalog, 'catálogo local disponível mesmo antes da migração');

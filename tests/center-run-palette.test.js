@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
-const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const html=require('./site-source.js')();
 const pick=re=>{const m=html.match(re);assert(m,'trecho não encontrado: '+re);return m[0];};
 const src=[pick(/var PAL=\[[\s\S]*?\]\];/),pick(/function hx\([^)]*\)\{[^\n]*\}/),pick(/var PALR=[^\n]*/),pick(/var CURPAL_CACHE=[^\n]*/),pick(/function curPal\(\)\{[^\n]*\}/)].join('\n');
 const ctx={frame:0};vm.createContext(ctx);vm.runInContext(src,ctx);

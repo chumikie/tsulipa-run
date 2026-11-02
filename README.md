@@ -15,7 +15,8 @@ Site publicado: https://tsulipa-world.vercel.app/
 
 | Caminho | O que é |
 |---|---|
-| `index.html` | Página inicial e Center⭐Run! (hub, perfil, pet, gacha, Moon⭐Duo!, moderação) |
+| `index.html` | Página inicial e Center⭐Run!: estrutura, estado, eventos e inicialização (e o modo admin) |
+| `centerrun.js/css`, `pet.js/css`, `perfil.js/css`, `hub.js/css`, `gacha.js/css`, `duo.js/css`, `encontro.js/css`, `conta.js` | Módulos da página inicial (só declaram funções e tabelas). Mapa completo: `docs/MAPA_DO_CODIGO.md` |
 | `karaoke-time.html` + `karaoke-*.js/css` | Karaoke⭐Time! (sala, ritmo, ranking, clipe do dia, vistas da janela) |
 | `sora-jump.html` + `sora-embed.css` | Sora⭐Jump! |
 | `tw-*.js/css` | Peças compartilhadas (cabelos, acessórios, animações, janelas) |

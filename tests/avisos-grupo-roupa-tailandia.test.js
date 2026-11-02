@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = require('./site-source.js')();
 const sql = fs.readFileSync(path.join(root, 'supabase/migrations/20261102020938_avisos_grupo_e_roupa_sku.sql'), 'utf8');
 
 test('admin escolhe todos ou grupo nacional, nunca time interno', () => {

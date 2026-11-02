@@ -124,14 +124,14 @@
   #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,246px)}
 }
 
-/* 6. MENU EM COLUNA ÚNICA (celular e computador): cards 3×2 sem buraco.
-   Ordem: Pet · Perfil · Gacha / Sora · Moon Duo · Karaoke. */
+/* 6. MENU EM COLUNA ÚNICA (celular e computador). A grade dos blocos
+   Jogos / Meu mundo fica em index2-skin.css (grid-template-areas). */
 #hub .hubcards .hubrun{order:0}
 #hub .hubcards .hubpet{order:1}
 #hub .hubcards .hubperf{order:2}
 #hub .hubcards .hubgacha{order:3}
 #hub .hubcards .tw-hubgame-sora{order:4}
-#hub .hubcards .hubduo{order:5;grid-column:auto!important;flex-direction:column!important;flex-wrap:nowrap!important}
+#hub .hubcards .hubduo{order:5}   /* posição e formato agora vêm dos blocos em index2-skin.css */
 #hub .hubcards .tw-hubgame-karaoke{order:6}
 #hub #hubCards>.hubcard:not(.hubrun){min-height:150px}
 #hub #hubMenu>.tw-rank-hall{margin-top:12px}

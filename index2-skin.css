@@ -100,24 +100,36 @@
   .tw-preview-stage .hubpart i{animation:none!important}
 }
 
-/* INDEX 2 desktop only: Center Run / 3 original cards / 3 special cards.
-   Mobile retains the original two-column layout. */
+/* Página inicial em blocos (02/11/2026): "Jogos" (Center Run, Sora, Karaoke, Moon Duo)
+   e "Meu mundo" (Perfil, Pet, Gacha) dentro do mesmo #hubCards, com títulos como itens da grade.
+   O bloco "Hoje" (Missões, Encontro, Música da semana) fica antes, em #hubHoje. */
+#hub #hubCards{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-areas:"tj tj" "run run" "sora karaoke" "duo duo" "tm tm" "profile profile" "pet gacha";
+}
+#hub #hubCards .hubbt-jogos{grid-area:tj}
+#hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
+#hub #hubCards .hubrun{grid-area:run}
+#hub #hubCards .hubpet{grid-area:pet}
+#hub #hubCards .hubperf{grid-area:profile;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px}
+#hub #hubCards .hubgacha{grid-area:gacha}
+#hub #hubCards .tw-hubgame-sora{grid-area:sora}
+#hub #hubCards .hubduo{grid-area:duo;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px}
+#hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
+/* no celular, Perfil e Moon Duo ocupam a linha inteira, em formato de faixa (sem a altura mínima de 150px) */
+#hub #hubCards>button.hubcard.hubperf,#hub #hubCards>button.hubcard.hubduo{min-height:0}
+#hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:100%}
 @media(min-width:700px){
+ #hub #hubCards>button.hubcard.hubperf,#hub #hubCards>button.hubcard.hubduo{min-height:150px}
+ #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke";
+   grid-template-areas:"tj tj tj" "run run run" "sora karaoke duo" "tm tm tm" "profile pet gacha";
    align-items:stretch;
  }
- #hub #hubCards .hubrun{grid-area:run}
- #hub #hubCards .hubpet{grid-area:pet}
- #hub #hubCards .hubperf{grid-area:profile}
- #hub #hubCards .hubgacha{grid-area:gacha}
- #hub #hubCards .tw-hubgame-sora{grid-area:sora}
- #hub #hubCards .hubduo{
-   grid-area:duo;grid-column:auto;
+ #hub #hubCards .hubperf,#hub #hubCards .hubduo{
    flex-direction:column;justify-content:center;gap:3px;flex-wrap:nowrap;
  }
- #hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
 }
 #hub #hubCards .tw-hubgame-karaoke .tw-karaoke-timer{
   display:block;margin-top:5px;padding:5px 8px;

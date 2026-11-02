@@ -135,7 +135,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
 const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/aplicado/admin_pet_visual_tools.sql");
-assert(lab.includes('href="./index2-skin.css?v=1"')&&
+assert(lab.includes('href="./index2-skin.css?v=2"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
   "Index 2 lost unified Gacha / Moon Duo modal design");
@@ -292,9 +292,11 @@ assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
        lab.includes("origem.innerHTML")&&
        lab.includes("wrap.removeAttribute('data-jogo')"),
   "INDEX2 must reuse the single existing header and seasonal particle markup");
-assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke"')&&
-       previewSkin.includes("@media(min-width:700px)"),
-  "INDEX2 desktop must have Moon Duo between Sora and Karaoke without changing mobile grid");
+assert(previewSkin.includes('grid-template-areas:"tj tj tj" "run run run" "sora karaoke duo" "tm tm tm" "profile pet gacha"')&&
+       previewSkin.includes('grid-template-areas:"tj tj" "run run" "sora karaoke" "duo duo" "tm tm" "profile profile" "pet gacha"')&&
+       previewSkin.includes("@media(min-width:700px)")&&
+       lab.includes('id="hubHoje"')&&lab.includes("hubbt-jogos")&&lab.includes("hubbt-mundo")&&lab.includes('id="hubMusica"'),
+  "INDEX2 home must keep the blocks Hoje / Jogos (Run, Sora, Karaoke, Duo) / Meu mundo (Perfil, Pet, Gacha)");
 
 assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
        lab.includes("encodeURIComponent(tema)")&&lab.includes("encodeURIComponent(LANG)")&&

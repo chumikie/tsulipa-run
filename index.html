@@ -625,7 +625,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .admconta{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:8px 12px!important;border-radius:12px;background:var(--chip)!important;text-decoration:none!important}
 .admconta small{font-size:11.5px;color:var(--sub);font-weight:600}
 .hubenc{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;margin:12px 0 4px;border:0;border-radius:18px;padding:12px 16px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6fb5,#9b30d9);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(255,111,181,.3)}
-.hubcfg .hubloginbox{padding:4px}.hubloginbox[hidden]{display:none!important}.hubcfg .hublogin{display:inline-flex;align-items:center;gap:5px;height:25px;line-height:1;color:#3c2a8f}.hublogin svg{width:13px;height:13px;flex:none}.hublogin:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.hubcfg .hubloginbox{padding:4px}.hubbloco{margin-top:14px}.hubblocot{margin:0;padding:0 4px;text-align:left;font-size:17px;font-weight:900;color:var(--b1)}.hubblocot small{margin-left:6px;font-size:11px;font-weight:700;opacity:.8}.hubhoje .hubpainel{margin-top:8px}.hubhojelinha{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.hubhojelinha .hubenc{margin:0;width:auto;flex-direction:column;flex-wrap:nowrap;gap:2px;padding:10px 8px;text-align:center}#hub .hubhojelinha .hubenc .tw-hubgame-jp{flex-basis:auto;margin:0}.hubblocot .tw-jpsub{display:inline!important}.hubmusica{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:18px;padding:10px 8px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b3ff0,#ff6fb5);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(123,63,240,.25)}.hubmusica small{opacity:.92;font-weight:600}
+.hubloginbox[hidden]{display:none!important}.hubcfg .hublogin{display:inline-flex;align-items:center;gap:5px;height:25px;line-height:1;color:#3c2a8f}.hublogin svg{width:13px;height:13px;flex:none}.hublogin:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 .hubenc small{opacity:.9;font-weight:600}.hubenc.feito{background:var(--card);color:var(--ink)}.hubenc.feito small{color:var(--sub)}
 .encov{z-index:24}.encp{width:min(100%,400px);text-align:center;position:relative}
 #encCv{width:100%;height:auto;border-radius:18px;box-shadow:0 6px 18px rgba(60,20,120,.25)}
@@ -720,9 +721,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <link rel="stylesheet" href="./tw-index2-preview.css?v=1" id="tw-index2-preview-css">
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
-<link rel="stylesheet" href="./index2-skin.css?v=1">
+<link rel="stylesheet" href="./index2-skin.css?v=2">
 <link rel="stylesheet" href="./karaoke-tickets.css?v=1">
-<link rel="stylesheet" href="./index2-launch-ui.css?v=9">
+<link rel="stylesheet" href="./index2-launch-ui.css?v=10">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
@@ -962,6 +963,9 @@ var DICT={
  ['Seu perfil pode ficar ainda mais com a sua cara!','Make your profile feel more like you!','¡Haz que tu perfil tenga aún más tu estilo!','ทำให้โปรไฟล์เป็นตัวคุณมากขึ้น!','プロフィールをもっと自分らしくしよう！'],
  ['Escolha um emoji e uma cor para personalizar sua identidade no TsuLiPa⭐World.','Choose an emoji and a color to personalize your TsuLiPa⭐World identity.','Elige un emoji y un color para personalizar tu identidad en TsuLiPa⭐World.','เลือกอีโมจิและสีเพื่อปรับแต่งตัวตนของคุณใน TsuLiPa⭐World','絵文字と色を選んで、TsuLiPa⭐Worldでの自分らしさを表現しよう。'],
  ['Preencher agora','Complete now','Completar ahora','กรอกตอนนี้','今すぐ設定'],
+ ['Jogos','Games','Juegos','เกม','ゲーム'],
+ ['Meu mundo','My world','Mi mundo','โลกของฉัน','マイワールド'],
+ ['Música da semana','Song of the week','Canción de la semana','เพลงประจำสัปดาห์','今週の曲'],
  ['Entrar','Sign in','Entrar','เข้าสู่ระบบ','ログイン'],
  ['☁️ Salva na nuvem · 🎯 Missões · 🏆 Ranking','☁️ Cloud save · 🎯 Missions · 🏆 Ranking','☁️ Guarda en la nube · 🎯 Misiones · 🏆 Ranking','☁️ บันทึกบนคลาวด์ · 🎯 ภารกิจ · 🏆 อันดับ','☁️ クラウド保存 · 🎯 ミッション · 🏆 ランキング']
 ].forEach(function(t){ ['en','es','th','ja'].forEach(function(l,i){ if(DICT[l]) DICT[l][t[0]]=t[i+1]; }); });
@@ -9199,12 +9203,14 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<div class="tw-rank-tv-head"><b id="twRankTvModalTitle">📺 TsuLiPa⭐TV!</b><small lang="ja">今週のランキング</small><button type="button" class="tw-rank-tv-close" id="twRankTvFechar" aria-label="Fechar TV">×</button></div>'+
   '<div class="tw-rank-tv-screen" id="twRankTvScreen" aria-live="polite"></div>'+
   '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
+  '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
+  '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
+  '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
   '<div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
   '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
-  '<section class="hubpainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
   '<div class="hublinks" id="hubLinks"></div>' +
@@ -9494,6 +9500,18 @@ function twSoraMissaoPendente(){
     return dia!==dk();
   }catch(e){return true;}
 }
+var HUB_MUSICAS = [['duo','Moon⭐Duo!'],['normal','Brilha Comigo'],['fast','Love × Debut'],['gacha','Star⭐Gacha!'],['chill','Doce Melodia']];
+function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca todo domingo 0h de Brasília; semana de 01/11/2026 = Moon⭐Duo!
+  var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5);
+  return HUB_MUSICAS[((sem % 5) + 5) % 5];
+}
+function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
+  var t = $('hubHojeT'); if(!t) return;
+  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>';
+  var m = hubMusicaSemana(), b = $('hubMusica');
+  b.innerHTML = '🎵 <b>' + escHtml(tr('Música da semana')) + '</b><small class="tw-hubgame-jp" lang="ja">今週の曲</small><small translate="no">' + escHtml(m[1]) + '</small>';
+  b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };
+}
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
   box.hidden=!!contaJ; if(contaJ) return;
@@ -9508,7 +9526,10 @@ function hubCardsUI(){
   var lockHtml = !contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '';
   // 🧪 Temporário: os cards dos jogos especiais aparecem livres sem login.
   var gameLock = (!contaJ && !window.TW_JOGOS_SEM_LOGIN) ? lockHtml : '';
+  hubBlocosUI();
   $('hubCards').innerHTML =
+    '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
+    '<h2 class="hubblocot hubbt-mundo">💖 ' + escHtml(tr('Meu mundo')) + ' <small class="tw-jpsub" lang="ja">マイワールド</small></h2>' +
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
@@ -11716,7 +11737,7 @@ encOv.innerHTML = '<div class="panel encp tw-window tw-window-surface" role="dia
   '<div class="encbtns"><button type="button" class="btn" id="encDuo"></button><a class="btn alt" id="encFoto" href="#" download="encontro-do-dia.png"></a><button type="button" class="btn alt" id="encPerfil"></button></div></div>';
 document.body.appendChild(encOv);
 var encBtn = document.createElement('button'); encBtn.type = 'button'; encBtn.className = 'hubenc';
-(function(){ var c = $('hubCards'); if(c && c.parentNode) c.parentNode.insertBefore(encBtn, c.nextSibling); })();
+(function(){ var l = $('hubHojeLinha'); if(l) l.insertBefore(encBtn, l.firstChild); })();   // bloco "Hoje": Missões, Encontro do dia, Música da semana
 var encDados = null, encAnim = 0, encT = 0, encRenderGrupo = [], encRenderOrdem = [];
 var ENC_POSES = ['v','tchau','banzai','coracao','luz','mic'];
 var ENC_POS_SOLO = [.5], ENC_POS_DUPLA = [.3,.7], ENC_POS_TRIO = [.5,.2,.8];

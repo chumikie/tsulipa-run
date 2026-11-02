@@ -8406,7 +8406,7 @@ function admIdolFormHtml(r){
   function cor(campo){return ' <input type="color" data-ai="'+campo+'" value="'+escHtml(admIdol.c[campo])+'">';}
   var roupas=admVisualFormHtml({best_idol:best,visuais:owned,out:admIdol.c.out,outcol:admIdol.c.outcol}).match(/<select id="admRoupa">([\s\S]*?)<\/select>/);
   return '<p>'+escHtml(tr('Monte o Idol que aparece no perfil e nos jogos. Roupas e acessórios: só os já liberados ou comprados.'))+(r.auto?' <b>'+escHtml(tr('Este membro ainda não montou o próprio Idol.'))+'</b>':'')+'</p>'+
-    '<canvas id="admIdolCv" width="120" height="150" style="display:block;margin:4px auto;width:120px;height:150px"></canvas><div class="cust">'+
+    '<div style="position:relative;width:120px;margin:4px auto"><canvas id="admIdolCv" width="120" height="150" style="display:block;width:120px;height:150px"></canvas><button type="button" id="admIdolPng" title="'+escHtml(tr('Baixar PNG'))+'" aria-label="'+escHtml(tr('Baixar PNG'))+'" style="position:absolute;bottom:4px;right:-30px;width:34px;height:34px;border:0;border-radius:50%;background:var(--b1);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)">📷</button></div><div class="cust">'+
     '<label>'+escHtml(tr('Cabelo'))+cor('hair')+'</label>'+sel('cback','back')+'<i class="cbr"></i>'+
     sel('cstk','mecha')+cor('hair2')+'<i class="cbr"></i>'+
     sel('cfront','front')+sel('cdet','det',function(o){return o.value!=='coelho'||owned.indexOf('det_coelho')>=0;})+'<i class="cbr"></i>'+
@@ -8418,12 +8418,17 @@ function admIdolFormHtml(r){
     '<button type="button" class="btn" id="admIdolSalvar">👗 '+escHtml(tr('Salvar Idol'))+'</button> <button type="button" class="sec" data-adm2="roupa">'+escHtml(tr('Só a roupa'))+'</button>'+
     '<p class="perfmsg" id="admMsg" hidden></p>';
 }
+function admIdolC(){ var c={};for(var k in PERF_BASE)c[k]=PERF_BASE[k];for(k in admIdol.c)c[k]=admIdol.c[k];c.streak=!!c.mecha;c.img=c.hair;return c; }
+function admIdolPng(){   // PNG transparente 1000×1000 do Idol montado (como o 📷 do menu)
+  if(!admIdol)return;var cv=document.createElement('canvas');cv.width=cv.height=1000;
+  try{perfDesenharIdol(cv.getContext('2d'),1000,1000,{v:1,c:admIdolC(),a:'',pose:'v',expr:2},false,false,0);}catch(e){return;}
+  var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='tsulipa-idol-'+(String(admIdol.nick).replace(/[^a-z0-9]/gi,'').toLowerCase()||'membro')+'.png';a.click();
+}
 function admIdolPrev(){
   var cv=$('admIdolCv');if(!cv||!admIdol)return;
   [].forEach.call($('admForm').querySelectorAll('select[data-ai]'),function(s){s.value=admIdol.c[s.dataset.ai];});
   var x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
-  var c={};for(var k in PERF_BASE)c[k]=PERF_BASE[k];for(k in admIdol.c)c[k]=admIdol.c[k];c.streak=!!c.mecha;c.img=c.hair;
-  try{perfDesenharIdol(x,cv.width,cv.height,{v:1,c:c,a:'',pose:'v',expr:2},false,false,0);}catch(e){}
+  try{perfDesenharIdol(x,cv.width,cv.height,{v:1,c:admIdolC(),a:'',pose:'v',expr:2},false,false,0);}catch(e){}
 }
 function admVisualFormHtml(r){
   var best=+r.best_idol||0, owned=Array.isArray(r.visuais)?r.visuais:[];
@@ -8498,6 +8503,7 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
     }).catch(function(){ petBtn.disabled=false; petMsg.textContent=tr('Não foi possível restaurar os pets. Tente novamente.'); petMsg.hidden=false; });
     return;
   }
+  if(e.target.closest&&e.target.closest('#admIdolPng')){admIdolPng();return;}
   var ai=e.target.closest&&e.target.closest('button[data-ai]');
   if(ai&&admIdol){admIdol.c[ai.dataset.ai]=ai.dataset.v;[].forEach.call(ai.parentNode.children,function(b){b.setAttribute('aria-pressed',b===ai);});admIdolPrev();return;}
   if(e.target.closest && e.target.closest('#admIdolSalvar') && perfAtual && admIdol && admIdol.nick===perfAtual.nick){

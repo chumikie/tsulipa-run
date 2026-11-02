@@ -79,7 +79,8 @@
   function delay(actor,activity){var p=profile(actor);if(!p)return 0;if(activity==='wander')return Math.round((1-p.wanderlust)*360);if(activity==='social')return Math.round((1-p.sociability)*180);return 0;}
   function gesture(actor,context){var p=profile(actor);if(!p)return 'look';if(context==='cheer')return p.cheer>.62&&p.energy>.42?'applause':'look';if(context==='listen')return p.expressiveness>.78&&p.shyness<.25?'talk':'look';if(context==='talk')return p.expressiveness>.43&&p.shyness<.82?'talk':'look';return 'look';}
   function dialogue(actor,role,language){var p=profile(actor),locale=LINES[language]?language:'pt',tone=p?p.tone:'gentle',pack=LINES[locale][tone]||LINES[locale].gentle,kind=role==='reply'?'reply':role==='cheer'?'cheer':'start',lines=pack[kind];return lines[Math.floor(roll()*lines.length)];}
-  return {profile:profile,prepare:prepare,reset:reset,choose:choose,chooseConversation:chooseConversation,chooseAudience:chooseAudience,delay:delay,gesture:gesture,dialogue:dialogue};
+  function decideSocial(actors,singer,language){var list=(Array.isArray(actors)?actors:[]).filter(Boolean);if(!list.length||(!singer&&list.length<2))return null;var selected=singer?chooseAudience(list):chooseConversation(list),first=selected&&selected[0],second=selected&&selected[1]||null;if(!first||(!singer&&!second))return null;return {first:first,second:second,firstKind:gesture(first,singer?'cheer':'talk'),secondKind:second?gesture(second,'listen'):'look',firstLine:dialogue(first,singer?'cheer':'start',language),secondLine:second&&!singer?dialogue(second,'reply',language):null};}
+  return {profile:profile,prepare:prepare,reset:reset,choose:choose,chooseConversation:chooseConversation,chooseAudience:chooseAudience,delay:delay,gesture:gesture,dialogue:dialogue,decideSocial:decideSocial};
  }
  return {create:create,types:TYPES.map(function(t){return t.id;})};
 });

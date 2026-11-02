@@ -40,7 +40,8 @@ const setup=()=>{
   perfAbrir=function(){}; // Prevent unrelated profile network requests after successful save.
   perfAtual={nick:'IdolFicticio'};
   perfOv.hidden=false;
-  const form=document.getElementById('admForm');
+  let form=document.getElementById('admForm');
+  if(!form){form=document.createElement('div');form.id='admForm';perfOv.appendChild(form);}
   form.hidden=false;
   window.__qaOpenIdol=async()=>{
     const data=await contaRpc('admin_idol_info',{p_nick:'IdolFicticio'});

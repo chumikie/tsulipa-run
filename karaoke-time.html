@@ -1538,7 +1538,7 @@ var krSt={aberta:true,sabado:false,faltam10:false,vista:(Math.floor((Date.now()-
 ].map(function(b){return {nick:b[0],x:b[1],y:b[2],char:b[3],pose:b[4]||'v',expr:b[5]||2,drink:b[6]||''};});krBots.forEach(function(b){b.antenaSala=Math.random()<.34;b.lookSala=Math.random()<.4;var opts=['','pandeiro','mic'];b.itemSala=opts[Math.floor(Math.random()*opts.length)];var snackOpts=['onigiri','takoyaki','dango','taiyaki'];b.snackSala=Math.random()<.28?snackOpts[Math.floor(Math.random()*snackOpts.length)]:'';if(b.snackSala)b.itemSala='';if(b.itemSala||b.snackSala)b.drink='';});
 var krBolhas=[],krBaloes={},krTrilha=[],krT=0,krCortina=0,krAlvo=null;
 var krLoungeCastRef=null,krLoungeActors=[],krLoungeNextAt=0,krAutoMicNextAt=0,KR_LOUNGE_AISLE_Y=520,KR_LOUNGE_STOPS=[230,300,370,590,660,730],KR_LOUNGE_MAX_WALKERS=1,KR_LOUNGE_LANES=[520];
-var krLoungeEscolherVariado=window.KaraokeRoomAutoMic.createRotation(3,Math.random);
+var krLoungeEscolherVariado=window.KaraokeRoomAutoMic.createRotation(3,Math.random)
 function ktCoracaoDe(c){var h=String(c&&(c.hair||c.img)||'#ff6fb5'),n=parseInt(h.slice(1),16);if(!(n>=0))return '💖';var r=(n>>16&255)/255,g=(n>>8&255)/255,bl=(n&255)/255,mx=Math.max(r,g,bl),mn=Math.min(r,g,bl),l=(mx+mn)/2,d=mx-mn;if(d<.12)return l>.75?'🤍':l<.25?'🖤':'💜';var hue=mx===r?((g-bl)/d+6)%6*60:mx===g?((bl-r)/d+2)*60:((r-g)/d+4)*60;return hue<15||hue>=345?'❤️':hue<40?'🧡':hue<70?'💛':hue<165?'💚':hue<250?'💙':hue<290?'💜':'💗';}
 /* Pedestal de microfone no palco, na frente de quem canta (balança quando tocado) */
 /* Globo: toque liga/desliga o modo festa */
@@ -3418,4 +3418,3 @@ if(document.body)iniciar();else document.addEventListener('DOMContentLoaded',ini
 <script src="./karaoke-mobile.js?v=1"></script>
 <script src="./karaoke-photo.js?v=1"></script>
 </body></html>
-

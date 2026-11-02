@@ -1,5 +1,5 @@
 /* Karaoke⭐Time! — vistas da janela da sala (Canvas 2D).
-   Cinco vistas, uma por semana, trocando toda segunda-feira à 0h de Brasília, sempre na mesma ordem:
+   Cinco vistas, uma por semana, trocando todo domingo à 0h de Brasília (junto com o ranking semanal), sempre na mesma ordem:
    Gigoia → Liberdade → Tailândia → Harajuku → Praia. Cada vista tem versão de dia (6h–18h em Brasília) e de noite.
    Gigoia e Liberdade de noite são as vistas originais da sala (mesmo desenho); as versões de dia trocam céu, luzes e cores.
    Arquivo independente: a página só chama KaraokeRoomViews.draw(...) no lugar da janela. */
@@ -13,7 +13,7 @@
  var VIEWS = ['gigoia', 'liberdade', 'tailandia', 'harajuku', 'praia'];
  var NAMES = { gigoia:'Gigoia', liberdade:'Liberdade', tailandia:'Tailândia', harajuku:'Harajuku', praia:'Praia' };
  var BRT = 3 * 3600e3, WEEK = 7 * 864e5;
- var ANCHOR = Date.UTC(2026, 10, 2, 3);   // segunda, 02/11/2026, 0h de Brasília: semana da Liberdade
+ var ANCHOR = Date.UTC(2026, 10, 1, 3);   // domingo, 01/11/2026, 0h de Brasília: semana da Liberdade
  var ANCHOR_INDEX = 1;
  var PI2 = Math.PI * 2;
 

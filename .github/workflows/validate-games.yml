@@ -36,6 +36,9 @@ on:
       - 'tests/admin-idol.test.js'
       - 'karaoke-room-views.js'
       - 'tests/karaoke-room-views.test.js'
+      - 'tests/karaoke-my-position.test.js'
+      - 'supabase/sql/karaoke_minha_posicao.sql'
+      - 'supabase/tests/karaoke_posicao_pg_*'
       - 'supabase/sql/admin_montar_idol.sql'
       - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
@@ -142,6 +145,9 @@ on:
       - 'tests/admin-idol.test.js'
       - 'karaoke-room-views.js'
       - 'tests/karaoke-room-views.test.js'
+      - 'tests/karaoke-my-position.test.js'
+      - 'supabase/sql/karaoke_minha_posicao.sql'
+      - 'supabase/tests/karaoke_posicao_pg_*'
       - 'supabase/sql/admin_montar_idol.sql'
       - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
@@ -233,6 +239,8 @@ jobs:
         run: node tests/admin-idol.test.js
       - name: Validate Karaoke window views (weekly rotation, day/night)
         run: node tests/karaoke-room-views.test.js
+      - name: Validate Karaoke 'my position' outside the Top 5
+        run: node tests/karaoke-my-position.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract
@@ -343,6 +351,8 @@ jobs:
         run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify admin Idol editor proposal against isolated PostgreSQL
         run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke 'my position' proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_posicao_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
         run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:

@@ -9757,6 +9757,7 @@ window.twKaraokeOnline={
    .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase())twRankRefreshAfterSora();return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
+ posicao:function(){return contaRpc('kt_minha_posicao');},
  // Plateia do dia: contas do site com Idol montado (todas podem ser sorteadas, inclusive as novas).
  plateia:function(){return contaRpc('vitrine_idols').then(function(d){return d&&Array.isArray(d.idols)?d.idols:[];});},
  cor:function(){return perfMinhaCor;}

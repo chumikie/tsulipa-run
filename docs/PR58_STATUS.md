@@ -4,11 +4,14 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
 
 **Regra de trabalho:** continuar exclusivamente nesta PR. Não criar PR paralela, não alterar `main`, não fazer merge ou deploy, e não executar SQL no Supabase sem autorização específica do responsável.
 
-**Último commit funcional verificado:** `dee9ccb9d3e341cb54573fe54c8fa5c826f8d073` — botões vivos do Tsu, Lirika e Pati; a revisão seguinte `eca6a44f` atualiza acessibilidade e o contrato de teste.
-**Último HEAD da branch:** `eca6a44fc2d8a87a70a76595395ad7057950120a`.
-**Estado da PR:** aberta, em Draft, não mesclada e marcada como mergeable. Base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Snapshot consultado: 383 commits, 53 arquivos alterados, 5.467 adições e 995 remoções.
-**CI mais recente do HEAD atual:** execução [#41349537397](https://github.com/chumikie/tsulipa-run/actions/runs/41349537397), com `static-validation` e `postgres-center-run` aprovados.
-**Escopo desta retomada:** etapas 1 (player musical) e 2 (botões vivos de voz) implementadas e aprovadas no CI. A reprodução auditiva e a homologação visual/física continuam pendentes. Próxima frente de código: etapa 3, plateia autônoma.
+**HEAD atual da PR:** `b41f8009eae50e7d82b8d2ed19279bd2942f4cca` — inclui as correções de visibilidade/testes, duas migrações nacionais com integração PostgreSQL, avisos por grupo, camisa tailandesa e a contribuição recente de paleta do Center Run/orelhas de coelho.
+**Estado da PR (01/11/2026):** aberta, em Draft e não mesclada. Branch `perf/karaoke-mobile-tile-occupancy`; base `main`: `983852cca2e5afc612dad6f77acc687b66a951f0`. Snapshot: 548 commits, 83 arquivos alterados, 7.721 adições e 1.165 remoções.
+**Workflow do HEAD atual:** execução [#41377898866](https://github.com/chumikie/tsulipa-run/actions/runs/41377898866). `static-validation` e `postgres-center-run` concluíram com sucesso; `browser-karaoke` permanecia em execução, sem falha publicada no último estado consultado.
+**Última matriz Chromium integral concluída:** execução [#41377482441](https://github.com/chumikie/tsulipa-run/actions/runs/41377482441), no HEAD `34d86798e23f133ab13f4033785eaa2f10c4ef27`; os três jobs passaram, incluindo 320×900, 375×900, 390×900, 430×900, 844×390 e 1440×900. A nova rodada no HEAD `b41f8009` está repetindo essa matriz após mudanças posteriores de outro contribuidor.
+**PostgreSQL no HEAD atual:** `postgres-center-run` passou. As migrações `20261102014635_grupos_nacionais.sql` e `20261102020938_avisos_grupo_e_roupa_sku.sql` foram aplicadas sequencialmente em banco PostgreSQL descartável. Duas identidades sintéticas sob a role `authenticated` passaram por grupo/time/estilo, perfil, isolamento, avisos por grupo, autorização de admin, aviso público global e consulta de preço de `roupa_tailandia` (150 estrelas, 0 pontos).
+**Homologação de conta — limite explícito:** as RPCs foram exercitadas com claims sintéticas por duas contas e uma conta administrativa simulada. Não houve sessão Google/Supabase real disponível para homologar a interface autenticada com uma conta humana; essa verificação visual permanece pendente.
+**Segurança de publicação:** nenhuma migração foi aplicada aos projetos Supabase ativos. O histórico registra integração Supabase–GitHub ligada; revisar o histórico e o plano de aplicação no projeto conectado antes de qualquer merge. Não fazer merge ou deploy de produção nesta etapa.
+**Regra de continuidade:** manter esta PR aberta em Draft, preservar commits dos outros contribuidores e usar atualizações de referência sem force-push. As seções abaixo são históricas; em caso de divergência, prevalece este cabeçalho e a seção 10.
 
 ---
 ---
@@ -332,4 +335,45 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - O diff da PR lista 51 arquivos. O endpoint de patch do GitHub não entregou patch completo para `index.html` e `karaoke-time.html`, devido ao tamanho dos arquivos. Os dois foram lidos em trechos direcionados e os contratos automatizados passaram, mas **não considero concluída uma revisão humana linha a linha de todo o diff desses dois arquivos**.
 - Também permanece pendente homologação visual autenticada e em aparelhos físicos nas seções 3.1–3.4.
 - Por esses motivos, a revisão integral ainda está **em andamento**. Não declarar a PR pronta para merge até terminar a leitura manual dos grandes diffs, a homologação visual/física e a revisão dos riscos externos de migração.
+## 10. Homologação das migrações nacionais e visibilidade da sala (01/11/2026)
 
+### 10.1. Visibilidade do Karaoke em 844 × 390 e desktop
+
+- Diagnóstico: a asserção de visibilidade era executada antes de garantir que o iframe hospedeiro e o canvas interno estivessem dentro das respectivas viewports. O controlador de ciclo de vida pausava corretamente o palco fora da janela; o teste não preparava a condição de visibilidade.
+- Correção em `tests/karaoke-mobile.browser.cjs`: rolagem explícita do iframe e do canvas para a área visível, registro das geometrias e espera pelos sinais de diagnóstico. A suíte continua exigindo `host`, `canvasObserver`, `canvasInViewport`, ciclo de animação ativo, operações reais de desenho e pixels opacos/variados.
+- O teste também oculta e reabre o iframe, exigindo suspensão e retomada da pintura. A asserção não foi removida nem enfraquecida.
+- No run [#41377482441](https://github.com/chumikie/tsulipa-run/actions/runs/41377482441), o log confirma sucesso individual para 320, 375, 390, 430, 844 e 1440 px. O `results.json` confirma os três sinais de visibilidade verdadeiros nas seis larguras, e pintura antes/depois da reabertura.
+- Capturas do run: [artefato #13112166970](https://github.com/chumikie/tsulipa-run/actions/runs/41377482441/artifacts/13112166970), 49 arquivos. As telas `chromium-844-playing.png` e `chromium-1440-playing.png` foram inspecionadas visualmente; palco e controles aparecem sem tela preta.
+- A alteração posterior de paleta/cabelo está sob novo run [#41377898866](https://github.com/chumikie/tsulipa-run/actions/runs/41377898866). No momento desta atualização, o job Chromium ainda estava ativo; aguardar o fechamento para considerar toda a ponta atual aprovada.
+
+### 10.2. Teste PostgreSQL real das duas migrações
+
+- A integração roda em banco PostgreSQL efêmero no GitHub Actions, com dados fictícios; não conecta nem grava no Supabase ativo.
+- A fixture prepara `players`, `config`, `admins`, `admin_log`, `auth.uid()` e `eh_admin()`. A função `visual_preco()` usa a âncora consultada por leitura no projeto Supabase.
+- O runner aplica nesta ordem: `20261102014635_grupos_nacionais.sql` e `20261102020938_avisos_grupo_e_roupa_sku.sql`.
+- Sob `SET ROLE authenticated`, duas identidades sintéticas validam catálogo BRS48/SKU48, times, rejeição de valores inválidos, estilo, perfil próprio/público, lista Oshi, compatibilidade da RPC legada e isolamento de contas.
+- A identidade admin fictícia cria avisos para SKU48 e BRS48; cada usuário recebe apenas o aviso do próprio grupo. A conta sem permissão administrativa não pode criar nem listar avisos; `anon` recebe somente o aviso global. O `admin_log` confirma as ações.
+- Após a segunda migração, `visual_preco('roupa_tailandia')` retorna 150 estrelas e 0 pontos, preservando o mesmo preço de `roupa_brasil`.
+- No run #41377898866, o log de PostgreSQL registra sucesso nos testes de Center Run, tickets, editor Idol e runner combinado de grupos/avisos/camisa.
+
+### 10.3. CI no HEAD atual e histórico de navegador
+
+- Run [#41377898866](https://github.com/chumikie/tsulipa-run/actions/runs/41377898866), HEAD `b41f8009`: `static-validation` success; `postgres-center-run` success; `browser-karaoke` em execução no último estado consultado.
+- Run [#41377482441](https://github.com/chumikie/tsulipa-run/actions/runs/41377482441), HEAD `34d86798`: os três jobs concluíram em sucesso, incluindo a matriz completa e as larguras 844×390 e 1440×900.
+- O teste de navegador usa fixture local com requisições externas bloqueadas; não equivale a acesso manual autenticado ao Deploy Preview.
+
+### 10.4. Autenticação e proteção de produção
+
+- A homologação autenticada foi feita em PostgreSQL com a role `authenticated`, JWT claims sintéticas de duas contas e uma conta administrativa. Isso comprova as regras das RPCs e o isolamento por identidade.
+- Não havia sessão real Google/Supabase no navegador para validar a interface logada de uma conta humana. Essa homologação de UI permanece pendente.
+- Nenhuma migração foi executada nos projetos Supabase ativos; não houve gravação em contas reais, merge, alteração em `main` ou deploy de produção.
+- Como a integração Supabase–GitHub está registrada como ativa no histórico da PR, revisar o histórico e o plano de migrações do projeto conectado antes de qualquer merge.
+
+### 10.5. Arquivos desta frente
+
+- `tests/karaoke-mobile.browser.cjs`: pré-condição de scroll e comprovação da pintura/recuperação do palco.
+- `supabase/tests/grupos_nacionais_pg_setup.sql`, `grupos_nacionais_pg_checks.sql` e `grupos_nacionais_pg_integration.sh`: fixture, cenários autenticados e execução PostgreSQL.
+- `.github/workflows/validate-games.yml`: path filters e etapa de integração das duas migrações.
+- Commits desta frente preservados em sequência, sem reescrever históricos de outros autores: `b511ff7`, `562796f`, `07036e6`, `42d5e03`, `c588058`, `385927a` e `34d8679`.
+
+**Estado desta atualização:** PR #58 permanece aberta e em Draft. PostgreSQL e validação estática estão verdes no HEAD `b41f8009`; o Chromium dessa ponta ainda precisava concluir.

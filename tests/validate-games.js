@@ -292,11 +292,11 @@ assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
        lab.includes("origem.innerHTML")&&
        lab.includes("wrap.removeAttribute('data-jogo')"),
   "INDEX2 must reuse the single existing header and seasonal particle markup");
-assert(previewSkin.includes('grid-template-areas:"tj tj tj" "run run run" "sora karaoke duo" "tm tm tm" "profile pet gacha"')&&
-       previewSkin.includes('grid-template-areas:"tj tj" "run run" "sora karaoke" "duo duo" "tm tm" "profile profile" "pet gacha"')&&
+assert(previewSkin.includes('grid-template-areas:"tm tm tm" "profile pet gacha" "tj tj tj" "run run run" "sora karaoke duo"')&&
+       previewSkin.includes('grid-template-areas:"tm tm" "profile profile" "pet gacha" "tj tj" "run run" "sora karaoke" "duo duo"')&&
        previewSkin.includes("@media(min-width:700px)")&&
        lab.includes('id="hubHoje"')&&lab.includes("hubbt-jogos")&&lab.includes("hubbt-mundo")&&lab.includes('id="hubMusica"'),
-  "INDEX2 home must keep the blocks Hoje / Jogos (Run, Sora, Karaoke, Duo) / Meu mundo (Perfil, Pet, Gacha)");
+  "INDEX2 home must keep Hoje first, Meu mundo (Perfil, Pet, Gacha) above Jogos (Run, Sora, Karaoke, Duo)");
 
 assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
        lab.includes("encodeURIComponent(tema)")&&lab.includes("encodeURIComponent(LANG)")&&

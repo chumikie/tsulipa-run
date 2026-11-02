@@ -6,6 +6,7 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
+const launchSkin=fs.readFileSync(path.join(root,'index2-launch-ui.css'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/proposta/tw_weekly_podium_proposal.sql'),'utf8');
 const soraOnlineSql=fs.readFileSync(path.join(root,'supabase/sql/sora_jump_tv_profile_integration.sql'),'utf8');
 const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/sora_weekly_zero_default.sql'),'utf8');
@@ -115,6 +116,14 @@ assert.ok(!/date_trunc\s*\(\s*'week'/i.test(gameBadgesSql),
   "Profile badge week must not retain PostgreSQL Monday-based date_trunc('week')");
 assert.ok(/revoke all on function public\.sincronizar_insignias_jogos\(text\[\]\) from public/i.test(gameBadgesSql));
 assert.ok(/grant execute on function public\.sincronizar_insignias_jogos\(text\[\]\) to authenticated/i.test(gameBadgesSql));
+
+assert.ok(launchSkin.includes('#hub #twRankHall h2{') &&
+  launchSkin.includes('#hub #twRankHall .tw-rank-game li{') &&
+  launchSkin.includes('display:flex;') &&
+  launchSkin.includes('#hub #twRankHall .tw-rank-game li>strong{') &&
+  launchSkin.includes('margin-left:auto;') &&
+  launchSkin.includes('#hub #twRankHall .tw-rank-avatar-wrap{flex-basis:38px;width:38px;height:38px}'),
+  'Top Idols weekly rows should follow the Karaoke board pattern: rank, avatar, nickname and score in one readable row');
 
 console.log('✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge');
 console.log('✓ Top Idols fixed podium, Sora selected period/zero defaults and current privacy');

@@ -52,7 +52,8 @@ const server=http.createServer((req,res)=>{
    if(history.length>80)history.splice(0,history.length-80);
    return {
     members:krBots.map(function(b,i){var seat=KR_SOFA_SLOTS[i]||null;return {nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,walking:!!b._ktLoungeWalking,seat:seat};}),
-    attempts:krMeta.controls().used,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),
+    player:{x:krEu.x,y:krEu.y,noMic:!!krEu.no_mic,atMic:krEuNoMicrofone()},
+    attempts:ktMeta.controls().used,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),
     session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,practice:!!(krRhythmRun&&krRhythmRun.practice),
     pending:!!window.ktShowAdmissionPending,singer:krDemoCantor?{nick:krDemoCantor.bot.nick,phase:krDemoCantor.phase,automatic:!!krDemoCantor.automatic,
      x:krDemoCantor.bot.x,y:krDemoCantor.bot.y,noMic:!!krDemoCantor.bot.no_mic,routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY}:null,
@@ -65,9 +66,9 @@ const server=http.createServer((req,res)=>{
    openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540,event=new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true});canvas.dispatchEvent(event);return {opened:!!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open,defaultPrevented:event.defaultPrevented,posterCount:KR_ROOM_POSTER_DRAW.length,frame:pos,canvas:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},client:{x:clientX,y:clientY}};},
    probePendingAutoMic:function(){var before=krDemoCantor;krAutoMicNextAt=krT-1;window.krLoungeAutoMicTick();return {pending:window.ktShowAdmissionPending,started:krDemoCantor!==before,singer:krDemoCantor&&krDemoCantor.phase,nextAt:krAutoMicNextAt};},
    prepareAutoMic:function(){krLoungeNextAt=krT+36000;krLoungeActors.forEach(function(actor){if(actor._ktLounge&&actor._ktLounge.phase!=='home')krLoungeCriarRetorno(actor);});return {walkers:krLoungeActors.length};},
-   startAutomaticMic:function(){krSt.aberta=true;krDemoFila.length=0;krAutoMicNextAt=krT-1;var before=ktMeta.controls().used;if(!krEuNoMicrofone()||window.ktShowAdmissionPending)return {available:false,atMic:krEuNoMicrofone(),pending:window.ktShowAdmissionPending};window.krLoungeAutoMicTick();return {available:!!krDemoCantor,phase:krDemoCantor&&krDemoCantor.phase,bot:krDemoCantor&&krDemoCantor.bot.nick,automatic:!!(krDemoCantor&&krDemoCantor.automatic),route:krDemoCantor&&krDemoCantor.route.map(function(p){return p.slice();}),from:{x:krDemoCantor&&krDemoCantor.bot.x,y:krDemoCantor&&krDemoCantor.bot.y},usedBefore:before,usedAfter:ktMeta.controls().used};},
-   singerState:function(){var b=krDemoCantor&&krDemoCantor.bot;return krDemoCantor?{phase:krDemoCantor.phase,nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY,active:kt.active(),practice:!!(krRhythmRun&&krRhythmRun.practice),used:ktMeta.controls().used,othersAtSofa:krBots.every(function(other,i){return other===b||!KR_SOFA_SLOTS[i]||Math.hypot(other.x-KR_SOFA_SLOTS[i][0],other.y-KR_SOFA_SLOTS[i][1])<2;})}:null;},
-   finishAutomaticMic:function(){if(kt.active())kt.end(false);else if(krDemoCantor)krDemoBotEnd();return krDemoCantor&&krDemoCantor.phase;},
+   startAutomaticMic:function(){krSt.aberta=true;krDemoFila.length=0;krAutoMicNextAt=krT-1;var before=ktMeta.controls().used;if(!krEuNoMicrofone()||window.ktShowAdmissionPending)return {available:false,atMic:krEuNoMicrofone(),pending:window.ktShowAdmissionPending};window.krLoungeAutoMicTick();return {available:!!krDemoCantor,phase:krDemoCantor&&krDemoCantor.phase,bot:krDemoCantor&&krDemoCantor.bot.nick,automatic:!!(krDemoCantor&&krDemoCantor.automatic),wait:krDemoCantor?{x:krDemoCantor.playerWaitX,y:krDemoCantor.playerWaitY}:null,route:krDemoCantor&&krDemoCantor.route.map(function(p){return p.slice();}),from:{x:krDemoCantor&&krDemoCantor.bot.x,y:krDemoCantor&&krDemoCantor.bot.y},usedBefore:before,usedAfter:ktMeta.controls().used};},
+   singerState:function(){var b=krDemoCantor&&krDemoCantor.bot;return krDemoCantor?{phase:krDemoCantor.phase,nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,playerX:krEu.x,playerY:krEu.y,playerAtMic:krEuNoMicrofone(),routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY,active:kt.active(),practice:!!(krRhythmRun&&krRhythmRun.practice),used:ktMeta.controls().used,othersAtSofa:krBots.every(function(other,i){return other===b||!KR_SOFA_SLOTS[i]||Math.hypot(other.x-KR_SOFA_SLOTS[i][0],other.y-KR_SOFA_SLOTS[i][1])<2;})}:null;},
+   finishAutomaticMic:function(){if(kt.active())kt.end(false);if(krDemoCantor)krDemoBotEnd();return krDemoCantor&&krDemoCantor.phase;},
    inspectAdmission:function(){var dialog=document.getElementById('ktStartConfirm'),accept=document.getElementById('ktConfirmAccept');return {roomOpen:krSt.aberta,playerAtMic:krEuNoMicrofone(),playerNoMic:krEu.no_mic,active:kt.active(),paused:kt.paused(),pending:!!window.ktShowAdmissionPending,confirmOpen:!!(dialog&&dialog.open),acceptDisabled:!!(accept&&accept.disabled),startDisabled:$('ktStart').disabled,meta:ktMeta.controls(),online:window.ktOnline.online(),queueLength:krDemoFila.length,singer:!!krDemoCantor};}
   };
   function ktNoSite(){`);
@@ -142,11 +143,33 @@ async function metrics(frame){
     await poster.evaluate(dialog=>dialog.close());await poster.waitFor({state:'hidden'});
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state');
-    assert.equal(autoMic.active,true,'autonomous NPC starts the local practice engine');
-    assert(autoMic.bot&&autoMic.automatic&&autoMic.singing&&autoMic.practice,'eligible NPC is singing in an automatic, non-ranked practice turn');
-    assert.equal(autoMic.usedAfter,autoMic.usedBefore,'autonomous NPC show does not spend the player attempt');
-    await frame.locator('body').evaluate(()=>window.qaRoomControllers.stopAutomaticMic());
-    assert.equal(await frame.locator('body').evaluate(()=>window.qaRoomState().active),false,'autonomous mic test cleans up without leaving the game active');
+    assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');
+    assert(autoMic.bot&&autoMic.automatic&&autoMic.wait,'eligible NPC receives a separate route and player waiting point');
+    const micCanvas=frame.locator('#krCv'),micBounds=await micCanvas.boundingBox();
+    await micCanvas.click({position:{x:autoMic.wait.x*micBounds.width/960,y:autoMic.wait.y*micBounds.height/540}});
+    let singerState=null;
+    for(let tries=0;tries<180;tries++){
+     singerState=await frame.locator('body').evaluate(()=>window.qaRoomControllers.singerState());
+     if(singerState){
+      assert(Math.hypot(singerState.x-singerState.playerX,singerState.y-singerState.playerY)>80,'player and NPC keep separate sprite envelopes throughout departure and approach');
+      if(singerState.phase==='singing')break;
+     }
+     await p.waitForTimeout(100);
+    }
+    assert(singerState&&singerState.phase==='singing'&&singerState.active&&singerState.practice,'NPC reaches the mic and starts a local, non-ranked practice show');
+    assert.equal(singerState.used,autoMic.usedBefore,'autonomous NPC show does not spend the player attempt');
+    await frame.locator('body').evaluate(()=>window.qaRoomControllers.finishAutomaticMic());
+    let returnState=null;
+    for(let tries=0;tries<180;tries++){
+     returnState=await frame.locator('body').evaluate(()=>window.qaRoomControllers.singerState());
+     if(!returnState)break;
+     assert(Math.hypot(returnState.x-returnState.playerX,returnState.y-returnState.playerY)>80,'NPC and player remain separated during NPC return and player recovery');
+     await p.waitForTimeout(100);
+    }
+    assert.equal(returnState,null,'NPC returns to its original seat before the player recovers the microphone');
+    const recovered=await frame.locator('body').evaluate(()=>window.qaRoomState());
+    assert(recovered.player.atMic,'player finishes the return route at the microphone');
+    assert.equal(recovered.active,false,'automatic mic test cleans up without leaving the game active');
    }
    let reactions=null;
    if(!baseline&&process.env.QA_REACTIONS){

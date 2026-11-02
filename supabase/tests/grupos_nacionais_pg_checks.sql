@@ -24,12 +24,6 @@ set role authenticated;
 do $authenticated$
 declare
   r json;
-  own_group text;
-  own_team text;
-  own_emoji text;
-  own_color text;
-  other_group text;
-  other_stars integer;
   profile json;
   public_profile json;
   oshi json;
@@ -90,16 +84,28 @@ begin
     raise exception 'oshi_opcoes não devolveu os grupos das duas contas: %',oshi;
   end if;
 
-  select grupo into other_group from public.players where nick='Conta A';
-  select stars into other_stars from public.players where nick='Conta B';
-  select grupo into own_group from public.players where id=auth.uid();
-  select time,emoji,cor into own_team,own_emoji,own_color from public.players where id=auth.uid();
-  if other_group <> 'SKU48' or own_group <> 'BRS48' or own_team <> 'B'
-     or own_emoji <> '💙' or own_color <> '#222222' or other_stars <> 456 then
-    raise exception 'isolamento entre contas/campos não preservado';
+  if public_profile->>'emoji' <> '💙' or public_profile->>'cor' <> '#222222' then
+    raise exception 'perfil público alterou estilo da segunda conta: %',public_profile;
   end if;
 end
 $authenticated$;
 reset role;
+
+-- Inspeção direta de integridade ocorre como owner do banco, fora do contexto
+-- autenticado, para não exigir SELECT em players como parte do contrato RPC.
+do $integrity$
+declare
+  group_a text;
+  group_b text;
+  stars_a integer;
+  stars_b integer;
+begin
+  select grupo,stars into group_a,stars_a from public.players where id='50000000-0000-4000-8000-000000000001';
+  select grupo,stars into group_b,stars_b from public.players where id='50000000-0000-4000-8000-000000000002';
+  if (group_a,group_b,stars_a,stars_b) is distinct from ('SKU48','BRS48',123,456) then
+    raise exception 'isolamento de dados entre contas/campos não preservado: %,%,%,%',group_a,group_b,stars_a,stars_b;
+  end if;
+end
+$integrity$;
 
 select 'PASS: migration applied; account-scoped RPCs, ACL, validation, legacy compatibility and profile propagation verified' as result;

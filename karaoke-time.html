@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=3"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=4"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -47,7 +47,7 @@ html.kt-no-site,html.kt-no-site body{margin-bottom:0!important;padding-bottom:0!
 
 .kt-cast h2,.kt-weekly h2{font:400 17px "Mochiy Pop One";color:var(--pink);margin:0 0 6px}
 @media(max-width:600px){.kt-cast h2,.kt-weekly h2{font-size:16px}}
-.kt-rank-card li.kt-rank-vaga{opacity:.55}.kt-song-week{margin-top:10px}.kt-rank-card li.kt-rank-lider{background:rgba(255,216,77,.12);border-radius:10px}.kt-lider-tag{display:block;font-size:9.5px;font-weight:800;color:#d08700}.kt-library-track.kt-week-song{box-shadow:0 0 0 2px #ffd76a inset;border-radius:12px}.kt-library-track.kt-week-song .kt-audio-label b::after{content:' ' attr(data-week-label);font-size:10px;color:#d08700}.kt-song-record{display:block;font-size:11px;font-weight:700;color:var(--sub);margin-top:3px;white-space:nowrap}.kt-rank-card li.kt-rank-eu{border-top:1.5px dashed rgba(201,184,255,.6);margin-top:4px;padding-top:6px}.kt-rank-eu .kt-rank-name{font-weight:900;color:var(--pink)}.kt-rank-vaga .kt-rank-face{border:2px dashed rgba(201,184,255,.5);border-radius:50%;box-sizing:border-box;background:transparent}.kt-rank-vaga .kt-rank-name{font-style:italic;color:var(--sub)}
+.kt-rank-card li.kt-rank-vaga{opacity:.55}.kt-rank-vaga .kt-rank-face{border:2px dashed rgba(201,184,255,.5);border-radius:50%;box-sizing:border-box;background:transparent}.kt-rank-vaga .kt-rank-name{font-style:italic;color:var(--sub)}
 .kt-no-site .kt-home,.kt-no-site .kt-hosttop,.kt-no-site .kt-daily-test,.kt-no-site .krtop,.kt-no-site .kt-foot{display:none!important}
 html.kt-no-site .kt-weekly{margin:14px auto 10px}
 html.kt-no-site .kt-weekly-note{max-width:70ch;margin:10px auto 2px;padding:0 8px;color:var(--sub);font:600 10px/1.7 var(--tw-modal-body);text-align:center;overflow-wrap:anywhere}
@@ -1820,7 +1820,7 @@ function krDesenharDrink(x,px,py,k,skin,side){
  x.fillStyle='#b7f0c7';x.beginPath();x.ellipse(4,-20,3,1.5,-.55,0,Math.PI*2);x.fill();
  x.fillStyle=skin;x.strokeStyle='rgba(43,27,76,.22)';x.lineWidth=.8;if(x.roundRect)x.roundRect(side>0?-8:-1,-7,5,6,2);else x.rect(side>0?-8:-1,-7,5,6);x.fill();x.stroke();x.restore();
 }
-/* Vista da janela: karaoke-room-views.js (5 vistas, uma por semana a partir de domingo 0h de Brasília, junto com o ranking; dia e noite pelo horário). */
+/* Vista da janela: karaoke-room-views.js. */
 function krDesenharJanela(x,rx,ry,rw,rh,t){if(window.KaraokeRoomViews){KaraokeRoomViews.draw(x,rx,ry,rw,rh,t,krSt.vista,krSt.noite===null?undefined:krSt.noite);return;}x.fillStyle='#587caa';x.fillRect(rx,ry,rw,rh);}
 function krDesenharTelao(x,tx,ty,tw,th,t){if(kt&&kt.active())kt.draw(x,tx,ty,tw,th);else if(ktClip)ktClip.draw(x,tx,ty,tw,th,t); }
 function poseListV4(t,i){return ['mic','banzai','neon','seis','v'][Math.floor(t/26+i*1.3)%5];}
@@ -2977,7 +2977,7 @@ function renderBoards(){var c=context(),b=window.ktOnline.boards()||rules.boards
   d.top.forEach(function(row,i){list.appendChild(ktRankLi(['🥇','🥈','🥉','4','5'][i],row,ktRankValor(metric,metric==='score'?row.score:row.valor)));});
   if(d.me&&+d.me.pos>5){var eu=ktRankLi(d.me.pos+'º',null,ktRankValor(metric,d.me.valor),'kt-rank-eu');eu.querySelector('.kt-rank-name').textContent=tr('Você');list.appendChild(eu);}
   for(i=d.top.length;i<3;i++)list.appendChild(ktRankLi(['🥇','🥈','🥉'][i],null,'—','kt-rank-vaga'));});try{renderSongWeek(c,b);}catch(e){}}
-/* Música da semana: combina com a vista da janela (karaoke-room-views.js) e troca junto com o ranking. */
+/* Música da semana (karaoke-room-views.js). */
 function ktSongWeekKey(){try{return window.KaraokeRoomViews?KaraokeRoomViews.songFor(Date.now()):'';}catch(e){return '';}}
 function ktSongWeekName(k){var n=document.querySelector('[data-kt-song-best="'+k+'"]'),t=n&&n.closest('.kt-library-track');return t?t.getAttribute('aria-label'):k;}
 function ktRankValor(m,v){v=+v||0;return m==='shows'?v+' '+tr(v===1?'show':'shows'):m==='evolucao'?'+'+v.toLocaleString('pt-BR'):v.toLocaleString('pt-BR');}
@@ -2985,7 +2985,7 @@ function ktRankLi(medal,row,value,cls){var li=document.createElement('li'),m=doc
 function renderSongWeek(c,b){var k=ktSongWeekKey(),box=$('ktSongWeek');if(!box)return;box.hidden=!k;if(!k)return;
  var d=b.online?(b.song&&b.song.song===k?b.song:{top:[],me:null}):rules.songBoard(c.day,k,c.id),list=$('ktBoard-song'),i;
  $('ktSongWeekTitle').textContent='🎵 '+tr('Música da semana')+': '+ktSongWeekName(k);list.replaceChildren();
- /* Medalha: quem já é 1º em Pontuação aparece com destaque (👑), e o ouro deste quadro vai para o próximo. */
+ /* 1º da Pontuação: 👑; o ouro vai para o próximo. */
  var lead=b.score&&b.score[0],m=0;d.top.forEach(function(row){var isLead=!!lead&&(b.online?row.nick===lead.nick:row.id===lead.id),li=ktRankLi(isLead?'👑':['🥇','🥈','🥉','4','5'][m++],row,(+row.score||0).toLocaleString('pt-BR'),isLead?'kt-rank-lider':'');if(isLead){var tag=document.createElement('small');tag.className='kt-lider-tag';tag.textContent=tr('já é 1º em Pontuação');li.querySelector('.kt-rank-name').appendChild(tag);}list.appendChild(li);});
  for(i=m;i<3;i++)list.appendChild(ktRankLi(['🥇','🥈','🥉'][i],null,'—','kt-rank-vaga'));
  if(d.me&&+d.me.pos>5){var eu=ktRankLi(d.me.pos+'º',null,(+d.me.valor||0).toLocaleString('pt-BR'),'kt-rank-eu');eu.querySelector('.kt-rank-name').textContent=tr('Você');list.appendChild(eu);}
@@ -3011,7 +3011,7 @@ else{document.addEventListener('visibilitychange',function(){if(document.hidden|
 return {begin:begin,checkpoint:checkpoint,complete:complete,refresh:refresh,controls:controls,personalSongs:function(){var c=context();return rules.personalSongs(c.day,c.id);},homeScoreRanking:function(){return rules.home(context().day);}};
 })();
 ktMeta.refresh();
-/* Recorde pessoal da música escolhida, ao lado da Trilha (mesmos recordes da Biblioteca musical, guardados neste aparelho). */
+/* Recorde pessoal da música escolhida (Trilha). */
 function ktSongRecordUI(){var el=$('ktSongRecord');if(!el)return;var p={};try{p=ktMeta.personalSongs()||{};}catch(e){}var row=p[$('ktSong').value];el.textContent='🏅 '+(row&&Number.isFinite(row.score)?tr('Seu recorde pessoal')+': '+Math.round(row.score).toLocaleString('pt-BR')+' pts':tr('Sem recorde ainda'))+(window.KaraokeRoomViews&&$('ktSong').value===KaraokeRoomViews.songFor(Date.now())?' · ⭐ '+tr('Música da semana'):'');}
 (function(){var r=ktMeta.refresh;ktMeta.refresh=function(){var x=r.apply(this,arguments);ktSongRecordUI();return x;};$('ktSong').addEventListener('change',ktSongRecordUI);ktSongRecordUI();})();
 /* Interações cenográficas são locais, sem presença online. */
@@ -3246,7 +3246,7 @@ ktOrganizarLayoutIntegrado();
 function ktCloseRoom(){if(kt.active()&&kt.paused()&&!window.confirm('Deseja mesmo sair? Vai perder sua vez!'))return;if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();kt.stopPreview(false);kt.allowExit();if(kt.active())kt.pause(true);if(ktNoSite()){try{parent.postMessage({type:'tsulipa-games-hub'},location.origin);}catch(_){try{parent.postMessage({type:'tsulipa-games-hub'},'*');}catch(__){}}return;}$('ktPopup').close();}
 $('ktClose').onclick=ktCloseRoom;$('ktFoto').addEventListener('click',function(e){e.stopPropagation();krSalvarFotoSala();});$('ktPopup').addEventListener('cancel',function(e){e.preventDefault();ktCloseRoom();});$('ktOpen').onclick=function(){$('ktPopup').showModal();};
 window.KaraokeTimeOffline={close:ktCloseRoom,dailyClip:function(){return ktClip.current();},getHomeScoreRanking:function(){return ktMeta.homeScoreRanking();},dailySnapshot:function(){return ktDaily.snapshot();}};
-/* No site o iframe tem a altura da página: as janelas modais abrem na parte que o jogador vê. */
+/* Modais na parte visível do site. */
 if(ktNoSite())(function(){var fe;try{fe=window.frameElement;}catch(_){}if(!fe)return;
  var po=function(){var ds=document.querySelectorAll('dialog[open]');for(var i=0;i<ds.length;i++){var d=ds[i],m;try{m=d.matches(':modal');}catch(_){m=d.id!=='ktPopup';}if(!m)continue;
   var r=fe.getBoundingClientRect(),a=Math.max(0,-r.top),b=Math.min(innerHeight,parent.innerHeight-r.top);if(b-a<160){a=0;b=Math.min(innerHeight,parent.innerHeight);}

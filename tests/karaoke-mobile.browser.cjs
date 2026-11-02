@@ -155,16 +155,36 @@ async function waitForRoomMode(frame, expectMobile){
    await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts}):r.abort());
    await p.goto(origin);
    await p.evaluate(()=>window.qaKaraoke());
+   // Bring the parent iframe and its stage into their respective viewports.
+   // CSS visibility alone does not imply viewport visibility; the lifecycle
+   // gate correctly pauses a canvas while either document is scrolled away.
+   const hostFrame=p.locator('#twPreviewIframe');
    const frame=p.frameLocator('#twPreviewIframe');
    await frame.locator('#krCv').waitFor({state:'visible'});
+   await hostFrame.scrollIntoViewIfNeeded();
+   await frame.locator('#krCv').scrollIntoViewIfNeeded();
    await frame.locator('#ktAvailability').evaluate(()=>document.fonts.ready);
+   const hostLayout=await hostFrame.evaluate(el=>{const r=el.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,viewport:innerHeight,scrollY};});
+   const canvasLayout=await frame.locator('#krCv').evaluate(el=>{const r=el.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,viewport:innerHeight,scrollY};});
    await p.waitForTimeout(6200); // Includes the existing 4.5s banner timer + opacity transition.
    const idle=await metrics(frame);
    let visibilityEvidence=null;
    if(!baseline){
+    const settledVisibility=await frame.locator('body').evaluate(()=>new Promise(resolve=>{
+     const started=performance.now();let last=null;
+     function poll(){
+      last={host:krRoomHostVisible,canvasObserver:krRoomCanvasVisible,
+       canvasInViewport:krRoomElementoVisivel(krCanvasHD),roomCanAnimate:krRoomPodeAnimar()};
+      if(last.host&&last.canvasObserver&&last.canvasInViewport&&last.roomCanAnimate){resolve(last);return;}
+      if(performance.now()-started>3500){resolve(last);return;}
+      requestAnimationFrame(poll);
+     }
+     poll();
+    }));
     await p.waitForTimeout(220);
     const painted=await frame.locator('body').evaluate(()=>window.qaRoomState());
-    assert(painted.visibility.host&&painted.visibility.canvasObserver&&painted.visibility.canvasInViewport,'host, canvas and observer report a visible stage');
+    assert(painted.visibility.host&&painted.visibility.canvasObserver&&painted.visibility.canvasInViewport,
+     'host, canvas and observer report a visible stage after explicit scroll: '+JSON.stringify({hostLayout,canvasLayout,settledVisibility,visibility:painted.visibility,history:painted.visibilityHistory.slice(-12)}));
     assert(painted.visibility.pageActive&&painted.visibility.roomCanAnimate,'visible stage owns an active animation lifecycle');
     assert(painted.paint.calls>0,'Chromium observed actual canvas paint operations');
     assert(painted.paint.pixels.opaque>100&&painted.paint.pixels.unique>80&&painted.paint.pixels.hash!==0,'stage canvas contains opaque, varied and identifiable scene pixels');

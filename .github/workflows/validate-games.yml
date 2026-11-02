@@ -63,6 +63,9 @@ on:
       - 'karaoke-photo.js'
       - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/grupos-nacionais.test.js'
+      - 'supabase/migrations/20261102014635_grupos_nacionais.sql'
+      - 'supabase/tests/grupos_nacionais_pg_*'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
@@ -159,6 +162,9 @@ on:
       - 'karaoke-photo.js'
       - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/grupos-nacionais.test.js'
+      - 'supabase/migrations/20261102014635_grupos_nacionais.sql'
+      - 'supabase/tests/grupos_nacionais_pg_*'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
@@ -314,6 +320,8 @@ jobs:
         run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify admin Idol editor proposal against isolated PostgreSQL
         run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
+        run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

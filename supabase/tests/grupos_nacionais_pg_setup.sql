@@ -24,6 +24,37 @@ create table public.players (
   updated_at timestamptz not null default now()
 );
 
+-- Estruturas mínimas reais requeridas pela migração de avisos por grupo.
+create table public.config (
+  chave text primary key,
+  valor jsonb not null
+);
+create table public.admin_log (
+  id bigserial primary key,
+  admin uuid,
+  acao text not null,
+  alvo text,
+  valor text,
+  motivo text,
+  created_at timestamptz not null default now()
+);
+create table public.admins (user_id uuid primary key);
+insert into public.admins(user_id) values ('50000000-0000-4000-8000-000000000001');
+insert into public.config(chave,valor) values ('aviso',to_jsonb('Aviso global'::text));
+
+-- Mesmo contrato e âncora de preço da função pública consultada no Supabase.
+create or replace function public.eh_admin()
+returns boolean language sql stable security definer set search_path to 'public'
+as $ select exists (select 1 from public.admins where user_id = auth.uid()) $;
+
+create or replace function public.visual_preco(p_key text, OUT preco integer, OUT pontos integer)
+returns record language sql immutable set search_path to 'public'
+as $
+  select v.preco, v.pontos from (values
+    ('roupa_brasil', 150, 0), ('roupa_pijama', 180, 0)
+  ) as v(k, preco, pontos) where v.k = p_key;
+$;
+
 -- Assinaturas reduzidas, mas com as mesmas âncoras que a migração substitui
 -- nas RPCs existentes em produção. O teste exige que o patch dinâmico ocorra.
 create or replace function public.meu_perfil()

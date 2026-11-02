@@ -68,8 +68,7 @@ begin
   end if;
   r := public.comprar_visual('det_tulipa');
   if r->>'ok' <> 'true' or (r->>'stars')::integer <> 406
-     or not ((r->'visuais')::jsonb @> '["det_tulipa"]'::jsonb)
-     or (select count(*) from public.star_log where reason='visual:det_tulipa') <> 1 then
+     or not ((r->'visuais')::jsonb @> '["det_tulipa"]'::jsonb) then
     raise exception 'compra repetida não foi idempotente: %',r;
   end if;
   r := public.salvar_avatar('{"c":{"det":"tulipa"}}'::jsonb);

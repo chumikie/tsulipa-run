@@ -58,7 +58,7 @@ const server=http.createServer((req,res)=>{
   window.qaRoomControllers={
    openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540,event=new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true});canvas.dispatchEvent(event);return {opened:!!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open,defaultPrevented:event.defaultPrevented,posterCount:KR_ROOM_POSTER_DRAW.length,frame:pos,canvas:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},client:{x:clientX,y:clientY}};},
    probePendingAutoMic:function(){var before=krDemoCantor;krAutoMicNextAt=krT-1;window.krLoungeAutoMicTick();return {pending:window.ktShowAdmissionPending,started:krDemoCantor!==before,singer:krDemoCantor&&krDemoCantor.phase,nextAt:krAutoMicNextAt};},
-   prepareAutoMic:function(){krLoungeNextAt=krT+36000;krLoungeActors.forEach(function(actor){if(actor._ktLounge&&actor._ktLounge.phase!=='home')krLoungeCriarRetorno(actor);});return {walkers:krLoungeActors.length};},
+   prepareAutoMic:function(){krLoungeNextAt=krT+36000;krLoungeActors.forEach(function(actor){if(actor._ktLounge&&actor._ktLounge.phase!=='home')krLoungeCriarRetorno(actor);});var before={x:krEu.x,y:krEu.y},atMic=krEuNoMicrofone(),planned=atMic?true:krPlanearRetornoMicrofone();return {walkers:krLoungeActors.length,atMic:atMic,planned:planned,before:before,returning:krMeuVoltandoAoMic};},
    startAutomaticMic:function(){krSt.aberta=true;krDemoFila.length=0;krAutoMicNextAt=krT-1;var before=ktMeta.controls().used;if(!krEuNoMicrofone()||window.ktShowAdmissionPending)return {available:false,atMic:krEuNoMicrofone(),pending:window.ktShowAdmissionPending};window.krLoungeAutoMicTick();return {available:!!krDemoCantor,phase:krDemoCantor&&krDemoCantor.phase,bot:krDemoCantor&&krDemoCantor.bot.nick,automatic:!!(krDemoCantor&&krDemoCantor.automatic),wait:krDemoCantor?{x:krDemoCantor.playerWaitX,y:krDemoCantor.playerWaitY}:null,route:krDemoCantor&&krDemoCantor.route.map(function(p){return p.slice();}),from:{x:krDemoCantor&&krDemoCantor.bot.x,y:krDemoCantor&&krDemoCantor.bot.y},usedBefore:before,usedAfter:ktMeta.controls().used};},
    singerState:function(){var b=krDemoCantor&&krDemoCantor.bot;return krDemoCantor?{phase:krDemoCantor.phase,nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,playerX:krEu.x,playerY:krEu.y,playerAtMic:krEuNoMicrofone(),routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY,active:kt.active(),practice:!!(krRhythmRun&&krRhythmRun.practice),used:ktMeta.controls().used,othersAtSofa:krBots.every(function(other,i){return other===b||!KR_SOFA_SLOTS[i]||Math.hypot(other.x-KR_SOFA_SLOTS[i][0],other.y-KR_SOFA_SLOTS[i][1])<2;})}:null;},
    finishAutomaticMic:function(){if(kt.active())kt.end(false);if(krDemoCantor)krDemoBotEnd();return krDemoCantor&&krDemoCantor.phase;},
@@ -190,8 +190,16 @@ async function metrics(frame){
      await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
     }
     assert.equal(new Set(posterColors).size,6,'each of the six Polaroids paints its own color palette');
+    const prep=await frame.locator('body').evaluate(()=>window.qaRoomControllers.prepareAutoMic());
+    let atMic=false;
+    for(let tries=0;tries<180;tries++){
+     const state=await frame.locator('body').evaluate(()=>window.qaRoomState());
+     if(state.player.atMic){atMic=true;break;}
+     await p.waitForTimeout(100);
+    }
+    assert(atMic,'player uses the existing return route to reach the microphone before the NPC turn: '+JSON.stringify(prep));
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
-    assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state');
+    assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state: '+JSON.stringify(autoMic));
     assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');
     assert(autoMic.bot&&autoMic.automatic&&autoMic.wait,'eligible NPC receives a separate route and player waiting point');
     const micCanvas=frame.locator('#krCv'),micBounds=await micCanvas.boundingBox();

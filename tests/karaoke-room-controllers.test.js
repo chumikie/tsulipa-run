@@ -109,7 +109,7 @@ function fakeNode(){
    markup=value;elements.ktPosterClose={onclick:null};elements.ktPosterTitle={textContent:''};
    elements.ktPosterSave={hidden:true,href:'',download:'',removeAttribute(name){if(name==='href')this.href='';}};
    elements.ktPosterPortrait={attrs:{},ctx:fakeContext(),getContext(){return this.ctx;},setAttribute(k,v){this.attrs[k]=v;},
-    toBlob(callback,type){this.lastBlobType=type;callback({type:type});}};
+    toBlob(callback,type){this.lastBlobType=type;callback({type:type});},toDataURL(){return 'data:image/png;base64,UE5H';}};
   },
   get innerHTML(){return markup;},setAttribute(){},addEventListener(type,fn){listeners[type]=fn;},
   appendChild(){},querySelector(sel){return elements[sel.slice(1)]||null;},
@@ -155,4 +155,18 @@ function fakeNode(){
  dialog.close();assert.equal(opener.focused,true,'focus returns to the opener when the portrait closes');
  assert.equal(revoked.length,6,'each generated PNG object URL is released on close or replacement');
 }
+
+{
+ const dialog=fakeNode(),opener={isConnected:true,focus(){}},host={innerHeight:700,URL:{},addEventListener(){}};
+ host.parent=host;
+ const doc={activeElement:opener,documentElement:{clientHeight:700},body:{appendChild(){}},createElement:()=>dialog};
+ const viewer=Polaroid.create({document:doc,window:host,URL:host.URL,makeCharacter:()=>({n:'Fallback'}),drawIdol(){},getTime:()=>0});
+ dialog.elements.ktPosterPortrait.toBlob=function(callback,type){this.lastBlobType=type;callback(null);};
+ assert(viewer.open({nick:'Fallback',avatar:{c:{}}},0,opener),'fallback portrait opens');
+ assert.equal(dialog.elements.ktPosterSave.hidden,false,'PNG data URL fallback still exposes Save');
+ assert.equal(dialog.elements.ktPosterSave.href,'data:image/png;base64,UE5H','fallback exports PNG data rather than leaving a dead link');
+ assert.match(dialog.elements.ktPosterSave.download,/\\.png$/,'fallback download filename remains PNG');
+ dialog.close();
+}
+
 console.log('✓ Karaoke room controllers use explicit dependencies and preserve NPC mic + Polaroid behavior');

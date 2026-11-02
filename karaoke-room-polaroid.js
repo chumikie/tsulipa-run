@@ -98,13 +98,25 @@
    ctx.fillStyle='#d88ab7';ctx.font='22px sans-serif';ctx.fillText('✦  ♡  ✧  ♡  ✦',260,592);
    if(!posterDialog.open)posterDialog.showModal();
    position();
-   var stamp=new Date().toISOString().replace(/[:.]/g,'-'),generation=++saveGeneration;
-   try{
-    canvas.toBlob(function(blob){
-     if(!blob||generation!==saveGeneration||!posterDialog||!posterDialog.open||!saveLink||!URLApi||typeof URLApi.createObjectURL!=='function')return;
-     saveUrl=URLApi.createObjectURL(blob);saveLink.href=saveUrl;saveLink.download='TsuLiPa_Karaoke_Polaroid_'+stamp+'.png';saveLink.hidden=false;
-    },'image/png');
-   }catch(error){saveLink.hidden=true;}
+   var stamp=new Date().toISOString().replace(/[:.]/g,'-'),filename='TsuLiPa_Karaoke_Polaroid_'+stamp+'.png',generation=++saveGeneration;
+   function showDataUrl(){
+    if(generation!==saveGeneration||!posterDialog||!posterDialog.open||!saveLink)return false;
+    try{
+     if(typeof canvas.toDataURL!=='function')throw new Error('PNG export is unavailable');
+     var dataUrl=canvas.toDataURL('image/png');
+     if(!/^data:image\/png(?:;|,)/i.test(dataUrl))throw new Error('Canvas did not return a PNG data URL');
+     saveLink.href=dataUrl;saveLink.download=filename;saveLink.hidden=false;return true;
+    }catch(error){saveLink.hidden=true;return false;}
+   }
+   function showBlob(blob){
+    if(generation!==saveGeneration||!posterDialog||!posterDialog.open||!saveLink)return;
+    if(blob&&URLApi&&typeof URLApi.createObjectURL==='function'){
+     try{saveUrl=URLApi.createObjectURL(blob);saveLink.href=saveUrl;saveLink.download=filename;saveLink.hidden=false;return;}catch(error){}
+    }
+    showDataUrl();
+   }
+   try{if(typeof canvas.toBlob==='function')canvas.toBlob(showBlob,'image/png');else showDataUrl();}
+   catch(error){showDataUrl();}
    return true;
   }
   return Object.freeze({open:open});

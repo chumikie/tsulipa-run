@@ -57,6 +57,7 @@ const server=http.createServer((req,res)=>{
    };
   };
   window.qaRoomControllers={
+   inspectHandAnchor:function(mirror){var fake={x:480,y:400,drink:'tsu'},side=mirror?-1:1,point=krPontoMaoSala(fake,400,0,side,'v');return {mirror:!!mirror,side:side,relativeX:point.x-fake.x,relativeY:point.y-400,scale:point.scale};},
    openPoster:function(index){var pos=KR_ROOM_POSTER_POS[index],bob=Math.sin(index*1.4)*2,canvas=document.getElementById('krCv'),rect=canvas.getBoundingClientRect(),clientX=rect.left+pos[0]*rect.width/960,clientY=rect.top+(pos[1]+bob+10)*rect.height/540,event=new PointerEvent('pointerdown',{bubbles:true,cancelable:true,clientX:clientX,clientY:clientY,pointerId:1,pointerType:'mouse',isPrimary:true});canvas.dispatchEvent(event);return {opened:!!document.getElementById('ktPosterDialog')&&document.getElementById('ktPosterDialog').open,defaultPrevented:event.defaultPrevented,posterCount:KR_ROOM_POSTER_DRAW.length,frame:pos,canvas:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},client:{x:clientX,y:clientY}};},
    probePendingAutoMic:function(){var before=krDemoCantor;krAutoMicNextAt=krT-1;window.krLoungeAutoMicTick();return {pending:window.ktShowAdmissionPending,started:krDemoCantor!==before,singer:krDemoCantor&&krDemoCantor.phase,nextAt:krAutoMicNextAt};},
    prepareAutoMic:function(){krLoungeNextAt=krT+36000;krAutoMicNextAt=krT+36000;if(krDemoCantor){if(kt.active())kt.end(false);if(krDemoCantor)krDemoBotEnd();}krLoungeActors.forEach(function(actor){if(actor._ktLounge&&actor._ktLounge.phase!=='home')krLoungeCriarRetorno(actor);});var before={x:krEu.x,y:krEu.y},atMic=krEuNoMicrofone(),planned=atMic?true:krPlanearRetornoMicrofone();return {walkers:krLoungeActors.length,atMic:atMic,planned:planned,before:before,returning:krMeuVoltandoAoMic,time:krT,rafScheduled:!!krLoopFrame};},
@@ -196,6 +197,12 @@ async function waitForRoomMode(frame, expectMobile){
     }));
     await p.waitForTimeout(220);
     const painted=await frame.locator('body').evaluate(()=>window.qaRoomState());
+    const heldAnchors=await frame.locator('body').evaluate(()=>({normal:window.qaRoomControllers.inspectHandAnchor(false),mirrored:window.qaRoomControllers.inspectHandAnchor(true)}));
+    assert.equal(heldAnchors.normal.side,1,'unmirrored avatar uses its right-hand item anchor');
+    assert.equal(heldAnchors.mirrored.side,-1,'mirrored avatar reverses the held-item anchor with its body');
+    assert(heldAnchors.normal.relativeX>0&&heldAnchors.mirrored.relativeX<0,'held item remains attached to the visible hand on either facing direction');
+    assert(Math.abs(Math.abs(heldAnchors.normal.relativeX)-Math.abs(heldAnchors.mirrored.relativeX))<.01,'mirror changes only the side, not the hand offset or scale');
+
     assert(painted.visibility.host&&painted.visibility.canvasObserver&&painted.visibility.canvasInViewport,
      'host, canvas and observer report a visible stage after explicit scroll: '+JSON.stringify({hostLayout,canvasLayout,settledVisibility,visibility:painted.visibility,history:painted.visibilityHistory.slice(-12)}));
     assert(painted.visibility.pageActive&&painted.visibility.roomCanAnimate,'visible stage owns an active animation lifecycle');

@@ -45,6 +45,7 @@ const server=http.createServer((req,res)=>{
    if(history.length>80)history.splice(0,history.length-80);
    return {
     members:krBots.map(function(b,i){var seat=KR_SOFA_SLOTS[i]||null;return {nick:b.nick,x:b.x,y:b.y,noMic:!!b.no_mic,walking:!!b._ktLoungeWalking,seat:seat};}),
+    loungeWalkers:krLoungeActors.map(function(b){var st=b._ktLounge||{};return {nick:b.nick,x:b.x,y:b.y,walking:!!b._ktLoungeWalking,phase:st.phase,routeIndex:st.routeIndex,route:st.route,targetX:st.targetX,returnX:st.returnX,returnY:st.returnY,laneY:st.laneY};}),
     player:{x:krEu.x,y:krEu.y,noMic:!!krEu.no_mic,atMic:krEuNoMicrofone()},walkers:krLoungeActors.length,
     attempts:ktMeta.controls().used,flash:krRhythmRun?krRhythmRun.flash:[],active:kt.active(),paused:kt.paused(),
     session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,practice:!!(krRhythmRun&&krRhythmRun.practice),
@@ -190,13 +191,14 @@ async function metrics(frame){
     }
     assert.equal(new Set(posterColors).size,6,'each of the six Polaroids paints its own color palette');
     const prep=await frame.locator('body').evaluate(()=>window.qaRoomControllers.prepareAutoMic());
-    let atMic=false;
+    let atMic=false,lastRoomState=null;
     for(let tries=0;tries<180;tries++){
      const state=await frame.locator('body').evaluate(()=>window.qaRoomState());
+     lastRoomState=state;
      if(state.player.atMic&&state.walkers===0){atMic=true;break;}
      await p.waitForTimeout(100);
     }
-    assert(atMic,'player reaches the mic and every lounge walker completes its return route before the NPC turn: '+JSON.stringify(prep));
+    assert(atMic,'player reaches the mic and every lounge walker completes its return route before the NPC turn: '+JSON.stringify({prep,player:lastRoomState&&lastRoomState.player,walkers:lastRoomState&&lastRoomState.loungeWalkers,visibility:lastRoomState&&lastRoomState.visibility,roomTick:lastRoomState&&lastRoomState.roomTick}));
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state: '+JSON.stringify(autoMic));
     assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');

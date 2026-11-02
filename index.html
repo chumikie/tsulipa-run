@@ -1169,7 +1169,7 @@ function pick(i){
   var source = (i === 3) ? CU : CH[i];
   if ($('cout')) $('cout').value = source.out || '';
   if ($('coutcol')) $('coutcol').value = source.outcol || '#ffffff';
-  if ($('chat')) $('chat').value = source.hat || '';
+  if ($('chat')) $('chat').value = source.det==='tulipa' ? 'tulipa' : (source.hat || '');
   if ($('cgl')) $('cgl').value = source.gl || '';
   if ($('chair')) $('chair').value = source.hair || '#ff7eb6';
   if ($('cstr')) $('cstr').value = source.hair2 || '#4dd8ff';
@@ -1196,6 +1196,7 @@ function refreshAcc(){
     e.appendChild(o);if(a[0]===accSel&&u)ok=true;
   });
   if(!ok)accSel='';e.value=accSel;
+  if(typeof LOJA_EXTRA!=='undefined'&&typeof acessoriosSync==='function')acessoriosSync(); // recoloca a Torrada comprada após reconstruir os itens
   $('newb').hidden=ACC.filter(function(a){return best>=a[2]}).length<=seen;
 
   ['cout','chat','cgl'].forEach(function(id){
@@ -1229,12 +1230,14 @@ Object.keys(CF).forEach(function(id){
   }
   e.oninput=e.onchange=function(){
     if(sel === 3){
-      CU[f] = this.value;
+      if(f==='hat'&&this.value==='tulipa'){CU.det='tulipa';CU.hat='';}
+      else {CU[f] = this.value;if(f==='hat'&&CU.det==='tulipa')CU.det='';}
       if(f === 'hair'){ CU.img = this.value; cw.children[3].firstChild.style.background = this.value; }
     } else {
       CH[sel][f] = this.value;
     }
     saveCu();
+    if(sel===3&&(f==='hat'||f==='det'))pick(3); // sincroniza Acessório/Detalhe após uma troca
   };
 });
 
@@ -1242,7 +1245,12 @@ Object.keys(CF).forEach(function(id){
 $('cstk').value=CU.mecha||(CU.streak?'uma':'');$('cstk').onchange=function(){CU.mecha=this.value;CU.streak=!!this.value;saveCu()};
 cw.children[3].firstChild.style.background=CU.hair;
 	try{accSel=localStorage.getItem('brs48cr_acc')||''}catch(e){}
-pick(sel);refreshAcc();$('acc').onchange=function(){accSel=this.value;try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}};
+pick(sel);refreshAcc();$('acc').onchange=function(){
+  if(this.value==='torrada'){CU.det='torrada';accSel='';saveCu();}
+  else {if(CU.det==='torrada'){CU.det='';saveCu();}accSel=this.value;}
+  try{localStorage.setItem('brs48cr_acc',accSel)}catch(e){}
+  pick(3); // Item Torrada é vestido pelo detalhe legado, sem alterar a chave da compra
+};
 $('acc').onfocus=function(){seen=ACC.filter(function(a){return best>=a[2]}).length;try{localStorage.setItem('brs48cr_seen',seen)}catch(e){}$('newb').hidden=true};
 var nick=''; try{nick=localStorage.getItem('brs48cr_nick')||''}catch(e){}
 var nickIn = $('nick');
@@ -7613,6 +7621,7 @@ function perfAbaMostrar(){
     if(perfAba === 'montar') h += '<p class="perfdica">' + escHtml(tr('Tudo o que você muda aqui vale para o Idol do jogo.')) + '</p><div class="cust perfmont" id="perfMont"></div><div class="btns"><button type="button" class="btn alt" id="perfLook">💾 ' + escHtml(tr('Salvar look')) + '</button></div><p class="perfmsg" id="perfLookMsg" hidden></p>' +
       '<h3>🛍️ ' + escHtml(tr('Lojinha de roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Roupas que só existem aqui. Depois de comprar, aparecem em Roupa no montador (para todas as personagens).')) + '</p><p class="perfmsg" id="perfLojaMsg" hidden></p><div class="perfloja" id="perfLoja"></div>' +
       '<h3>🎀 ' + escHtml(tr('Acessórios')) + '</h3><p class="perfdica">' + escHtml(tr('Use seus acessórios comprados no montador do Idol.')) + '</p><div class="perfloja" id="perfLojaAcessorios"></div>' +
+      '<h3>🍞 ' + escHtml(tr('Itens')) + '</h3><div class="perfloja" id="perfLojaItens"></div>' +
       '<h3>🛍️ ' + escHtml(tr('Lojinha de poses e extras')) + '</h3><p class="perfdica">' + escHtml(tr('Poses e expressões valem para o Estúdio e para a câmera do jogo. Os extras do Moon⭐Duo! liberam cenas e cenários.')) + '</p><p class="perfmsg" id="perfLoja2Msg" hidden></p><div class="perfloja" id="perfLoja2"></div>';
     else h += '<p class="perfmsg" id="perfGenMsg" hidden></p><div class="btns perfbtns" id="perfGenBtns"></div><div class="petph perfopts" id="perfGenOpts"></div>';
     box.innerHTML = h;
@@ -7904,16 +7913,20 @@ function perfMontUI(){
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label><i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
-  [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], CU[p[1]] || '') + '</select></label>'; });
-  h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', accSel) + '</select></label>';
+  [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], p[1]==='hat'&&CU.det==='tulipa'?'tulipa':(CU[p[1]]||'')) + '</select></label>'; });
+  h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', CU.det==='torrada'?'torrada':accSel) + '</select></label>';
   box.innerHTML = h;
 }
 function perfMontMudou(campo, v){
   if(campo === 'acc'){
-    accSel = v; try{ localStorage.setItem('brs48cr_acc', accSel); }catch(e){}
-    if($('acc')) $('acc').value = accSel;
+    if(v==='torrada'){CU.det='torrada';accSel='';saveCu();}
+    else {if(CU.det==='torrada'){CU.det='';saveCu();}accSel=v;}
+    try{ localStorage.setItem('brs48cr_acc', accSel); }catch(e){}
+    if($('acc')) $('acc').value = v;
   } else {
-    CU[campo] = v;if(campo === 'mecha')CU.streak = !!v;
+    if(campo==='hat'&&v==='tulipa'){CU.det='tulipa';CU.hat='';}
+    else {CU[campo] = v;if(campo==='hat'&&CU.det==='tulipa')CU.det='';}
+    if(campo === 'mecha')CU.streak = !!v;
     if(campo === 'hair'){ CU.img = v; cw.children[3].firstChild.style.background = v; }
     if(campo === 'skin') [].forEach.call($('skins').children, function(b, i){ b.setAttribute('aria-pressed', SK[i] === v); });
     saveCu();
@@ -7921,6 +7934,7 @@ function perfMontMudou(campo, v){
   }
   perfMontou = true; perfProva = '';
   perfFotoAtual();
+  if(campo==='hat'||campo==='det'||campo==='acc')perfMontUI();
   if(campo === 'out') perfLojaUI();
 }
 perfOv.addEventListener('input', function(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color') perfMontMudou(el.dataset.m, el.value); });
@@ -11359,13 +11373,14 @@ var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
   ['duo_selfie', '🤳', 'Selfie', 80, 'duo'], ['duo_guarda', '☂️', 'Guarda-chuva', 100, 'duo'], ['duo_seis', '6️⃣', 'Six Seven', 120, 'duo'],
   ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo'],
   ['det_coelho', '🐰', 'Orelhas de coelho', 50, 'acc'], ['det_tulipa', '🌷', 'Coroa de Tulipas', 50, 'acc'],
-  ['det_torrada', '🍞', 'Torrada de Anime', 50, 'acc'], ['hat_palha', '👒', 'Chapéu de Palha', 70, 'acc']
+  ['det_torrada', '🍞', 'Torrada', 50, 'item'], ['hat_palha', '👒', 'Chapéu de Palha', 70, 'acc']
 ];
 [
  ['Coroa de Tulipas','Tulip crown','Corona de tulipanes','มงกุฎดอกทิวลิป','チューリップの花冠'],
- ['Torrada de Anime','Anime toast','Tostada de anime','ขนมปังปิ้งอนิเมะ','アニメの食パントースト'],
+ ['Torrada','Toast','Tostada','ขนมปังปิ้ง','トースト'],
  ['Chapéu de Palha','Straw hat','Sombrero de paja','หมวกฟาง','麦わら帽子'],
  ['Acessórios','Accessories','Accesorios','เครื่องประดับ','アクセサリー'],
+ ['Itens','Items','Objetos','ไอเท็ม','アイテム'],
  ['Use seus acessórios comprados no montador do Idol.','Use purchased accessories in the Idol editor.','Usa tus accesorios comprados en el editor de Idol.','ใช้อุปกรณ์เสริมที่ซื้อแล้วในตัวแต่งไอดอล','購入したアクセサリーをアイドル編集で使えます。']
 ].forEach(function(a){['en','es','th','ja'].forEach(function(l,i){if(DICT[l])DICT[l][a[0]]=a[i+1];});});
 // (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
@@ -11388,18 +11403,19 @@ function lojaItem(k){
 function lojaTem(k){ return !lojaItem(k) || (Array.isArray(perfDono) && perfDono.indexOf(String(k)) >= 0); }
 function perfLoja2UI(){
   acessoriosSync();
-  var box = $('perfLoja2'), boxAcc = $('perfLojaAcessorios'); if(!box||!boxAcc) return;
+  var box = $('perfLoja2'), boxAcc = $('perfLojaAcessorios'), boxItens=$('perfLojaItens'); if(!box||!boxAcc||!boxItens) return;
   var L = PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], o[1], o[2], o[3], 'pose']; }).concat(LOJA_EXTRA);
   function cards(lista){return lista.map(function(it){
     var dono = lojaTem(it[0]);
     var prev = it[4] === 'duo' ? '<i class="lojaemo" aria-hidden="true">' + it[1] + '</i>' : '<canvas width="160" height="160" data-l2="' + it[0] + '"></canvas>';
-    var tipo = it[4] === 'pose' ? tr('Pose') : it[4] === 'expr' ? tr('Expressão') : it[4] === 'acc' ? tr('Acessório') : 'Moon⭐Duo!';
+    var tipo = it[4] === 'pose' ? tr('Pose') : it[4] === 'expr' ? tr('Expressão') : it[4] === 'acc' ? tr('Acessório') : it[4] === 'item' ? tr('Item') : 'Moon⭐Duo!';
     return '<div class="perfroupa">' + prev + '<b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small class="perftemp" translate="no">' + escHtml(tipo) + '</small>' +
       (dono ? '<em class="ok">✓ ' + escHtml(tr('Seu')) + '</em>' : '<button type="button" class="btn" data-comprar2="' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>') + '</div>';
   }).join('');}
   boxAcc.innerHTML=cards(L.filter(function(it){return it[4]==='acc';}));
-  box.innerHTML=cards(L.filter(function(it){return it[4]!=='acc';}));
-  [].forEach.call(document.querySelectorAll('#perfLoja2 canvas[data-l2], #perfLojaAcessorios canvas[data-l2]'), function(cv){
+  boxItens.innerHTML=cards(L.filter(function(it){return it[4]==='item';}));
+  box.innerHTML=cards(L.filter(function(it){return it[4]!=='acc'&&it[4]!=='item';}));
+  [].forEach.call(document.querySelectorAll('#perfLoja2 canvas[data-l2], #perfLojaAcessorios canvas[data-l2], #perfLojaItens canvas[data-l2]'), function(cv){
     var k = cv.dataset.l2, av = perfAvAtual({ pose: /^pose_/.test(k) ? k.slice(5) : '', expr: /^expr_/.test(k) ? +k.slice(5) : 2, fundo: 'basico' });
     if(/^det_(coelho|tulipa|torrada)$/.test(k)){ av.c.det = k.slice(4); av.pose = 'v'; }
     if(k==='hat_palha'){ av.c.hat='palha'; av.pose='v'; }
@@ -11418,7 +11434,7 @@ function lojaComprar(k, btn, depois){
   }).catch(function(){ btn.disabled = false; depois(false, tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 perfOv.addEventListener('click', function(e){
-  var b = e.target.closest('#perfLoja2 [data-comprar2], #perfLojaAcessorios [data-comprar2]'); if(!b) return;
+  var b = e.target.closest('#perfLoja2 [data-comprar2], #perfLojaAcessorios [data-comprar2], #perfLojaItens [data-comprar2]'); if(!b) return;
   lojaComprar(b.dataset.comprar2, b, function(ok, msg){ if(ok){ perfLoja2UI(); if(typeof perfMontUI === 'function' && $('perfMont')) perfMontUI(); } var m = $('perfLoja2Msg'); if(m){ m.textContent = msg; m.hidden = false; } });
 });
 
@@ -11677,17 +11693,29 @@ if(typeof perfFechar === 'function'){ var lookFecharOrig = perfFechar; perfFecha
 // ---------- Acessórios comprados: opções liberadas no montador ----------
 function acessoriosSync(){
   var s = $('cdet'); if(!s) return;
-  [['coelho','Orelhas de coelho'],['tulipa','Coroa de Tulipas'],['torrada','Torrada de Anime']].forEach(function(it){
+  [['coelho','Orelhas de coelho']].forEach(function(it){
     var o=s.querySelector('option[value="'+it[0]+'"]'),tem=lojaTem('det_'+it[0])||CU.det===it[0];
     if(tem&&!o){o=document.createElement('option');o.value=it[0];o.setAttribute('data-r','0');s.appendChild(o);}
     if(o)o.textContent=tr(it[1]);
     if(!tem&&o)o.remove();
   });
+  ['tulipa','torrada'].forEach(function(k){var old=s.querySelector('option[value="'+k+'"]');if(old)old.remove();});
   var h=$('chat');if(!h)return;
   var palha=h.querySelector('option[value="palha"]'),temPalha=lojaTem('hat_palha')||CU.hat==='palha';
   if(temPalha&&!palha){palha=document.createElement('option');palha.value='palha';palha.setAttribute('data-r','0');h.appendChild(palha);}
   if(palha)palha.textContent=tr('Chapéu de Palha');
   if(!temPalha&&palha)palha.remove();
+  var coroa=h.querySelector('option[value="tulipa"]'),temCoroa=lojaTem('det_tulipa')||CU.det==='tulipa';
+  if(temCoroa&&!coroa){coroa=document.createElement('option');coroa.value='tulipa';coroa.setAttribute('data-r','0');h.appendChild(coroa);}
+  if(coroa)coroa.textContent=tr('Coroa de Tulipas');
+  if(!temCoroa&&coroa)coroa.remove();
+  h.value=CU.det==='tulipa'?'tulipa':(CU.hat||'');
+  var itens=$('acc');if(!itens)return;
+  var torrada=itens.querySelector('option[value="torrada"]'),temTorrada=lojaTem('det_torrada')||CU.det==='torrada';
+  if(temTorrada&&!torrada){torrada=document.createElement('option');torrada.value='torrada';itens.appendChild(torrada);}
+  if(torrada)torrada.textContent='🍞 '+tr('Torrada');
+  if(!temTorrada&&torrada)torrada.remove();
+  itens.value=CU.det==='torrada'?'torrada':accSel;
 }
 acessoriosSync();
 var acessoriosSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!perfMeu&&perfAba==='montar';},acessoriosSync,3000);

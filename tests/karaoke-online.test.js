@@ -10,7 +10,7 @@ assert(js.includes("rpc('karaoke_sala',")||js.includes("rpc('karaoke_sala'"),'us
 assert(js.includes("get('homol')==='1')return"),'não roda junto da homologação');
 assert(js.includes("p_action:'leave'"),'libera a vaga ao fechar');
 ['pt','en','es','th','ja'].forEach(l=>assert(js.includes(l+':{tit:'),'textos em '+l));
-assert(game.includes("'./karaoke-online.js?v=1'"),'jogo carrega o cliente online');
+assert(game.includes("'./karaoke-online.js?v=2'"),'jogo carrega o cliente online');
 assert(sql.includes("revoke all on function public.karaoke_sala(text,uuid) from public, anon"),'anon sem acesso');
 assert(sql.includes("if not public.eh_admin() then raise exception 'admin_only'"),'moderação só admin');
 assert(!/stars|estrelas\s*=|ganhar_minijogo/.test(sql.replace(/--.*$/gm,'')),'sem prêmios');

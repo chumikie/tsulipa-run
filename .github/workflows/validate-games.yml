@@ -5,6 +5,12 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'tw-avatar-items.js'
+      - 'tw-avatar-hair.js'
+      - 'tests/avatar-hair.test.js'
+      - 'tests/avatar-items.test.js'
+      - 'tw-motion-lifecycle.js'
+      - 'tests/karaoke-mobile-performance.test.js'
       - 'privacidade.html'
       - 'pet-sync.js'
       - 'tests/pet-sync.test.js'
@@ -12,14 +18,40 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-room-auto-mic.js'
+      - 'karaoke-room-polaroid.js'
+      - 'tests/karaoke-room-controllers.test.js'
+      - 'karaoke-time-base.css'
+      - 'karaoke-music-preview.js'
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-recovery.test.js'
+      - 'tests/center-run-daily-cap.test.js'
+      - 'tests/center-run-credit-recovery.test.js'
+      - 'tests/center-run-palette.test.js'
+      - 'tests/visibility-scope.test.js'
+      - 'tests/index-images.test.js'
+      - 'tests/admin-idol.test.js'
+      - 'supabase/sql/admin_montar_idol.sql'
+      - 'supabase/tests/admin_idol_pg_*'
+      - 'img/**'
+      - 'tests/karaoke-show-visibility.test.js'
+      - 'supabase/tests/center_run_pg_setup.sql'
+      - 'supabase/tests/center_run_pg_checks.sql'
+      - 'supabase/tests/center_run_pg_integration.sh'
+      - 'supabase/tests/karaoke_ticket_pg_setup.sql'
+      - 'supabase/tests/karaoke_ticket_pg_checks.sql'
+      - 'supabase/tests/karaoke_ticket_pg_integration.sh'
+      - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
       - 'tests/karaoke-note-map.test.js'
       - 'tests/karaoke-flow.test.js'
+      - 'tests/karaoke-personal-song-records.test.js'
+      - 'tests/karaoke-music-preview.test.js'
+      - 'tests/karaoke-lounge-movement.test.js'
       - 'tests/karaoke-input-timing.test.js'
       - 'tests/karaoke-melody-cues.test.js'
       - 'tests/karaoke-button-target.test.js'
@@ -31,6 +63,10 @@ on:
       - 'karaoke-photo.js'
       - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/grupos-nacionais.test.js'
+      - 'supabase/migrations/20261102014635_grupos_nacionais.sql'
+      - 'supabase/migrations/20261102020938_avisos_grupo_e_roupa_sku.sql'
+      - 'supabase/tests/grupos_nacionais_pg_*'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
@@ -64,11 +100,19 @@ on:
       - 'supabase/sql/admin_player_profile_proposal.sql'
       - 'supabase/sql/sora_weekly_zero_default.sql'
       - 'tests/admin-player-profile.test.js'
+      - 'tests/avisos-grupo-roupa-tailandia.test.js'
+      - 'tests/lightsticks-cor-perfil.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
     paths:
       - 'index.html'
+      - 'tw-avatar-items.js'
+      - 'tw-avatar-hair.js'
+      - 'tests/avatar-hair.test.js'
+      - 'tests/avatar-items.test.js'
+      - 'tw-motion-lifecycle.js'
+      - 'tests/karaoke-mobile-performance.test.js'
       - 'privacidade.html'
       - 'pet-sync.js'
       - 'tests/pet-sync.test.js'
@@ -76,14 +120,40 @@ on:
       - 'sora-jump.html'
       - 'karaoke-day.html'
       - 'karaoke-time.html'
+      - 'karaoke-room-auto-mic.js'
+      - 'karaoke-room-polaroid.js'
+      - 'tests/karaoke-room-controllers.test.js'
+      - 'karaoke-time-base.css'
+      - 'karaoke-music-preview.js'
       - 'karaoke-tickets.js'
       - 'karaoke-tickets.css'
       - 'tests/karaoke-tickets.test.js'
+      - 'tests/karaoke-ticket-recovery.test.js'
+      - 'tests/center-run-daily-cap.test.js'
+      - 'tests/center-run-credit-recovery.test.js'
+      - 'tests/center-run-palette.test.js'
+      - 'tests/visibility-scope.test.js'
+      - 'tests/index-images.test.js'
+      - 'tests/admin-idol.test.js'
+      - 'supabase/sql/admin_montar_idol.sql'
+      - 'supabase/tests/admin_idol_pg_*'
+      - 'img/**'
+      - 'tests/karaoke-show-visibility.test.js'
+      - 'supabase/tests/center_run_pg_setup.sql'
+      - 'supabase/tests/center_run_pg_checks.sql'
+      - 'supabase/tests/center_run_pg_integration.sh'
+      - 'supabase/tests/karaoke_ticket_pg_setup.sql'
+      - 'supabase/tests/karaoke_ticket_pg_checks.sql'
+      - 'supabase/tests/karaoke_ticket_pg_integration.sh'
+      - 'supabase/sql/center_run_daily_100_REVIEW_ONLY.sql'
       - 'tests/karaoke-ticket-ui.test.js'
       - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
       - 'supabase/sql/README-karaoke-tickets.md'
       - 'tests/karaoke-note-map.test.js'
       - 'tests/karaoke-flow.test.js'
+      - 'tests/karaoke-personal-song-records.test.js'
+      - 'tests/karaoke-music-preview.test.js'
+      - 'tests/karaoke-lounge-movement.test.js'
       - 'tests/karaoke-input-timing.test.js'
       - 'tests/karaoke-melody-cues.test.js'
       - 'tests/karaoke-button-target.test.js'
@@ -95,6 +165,10 @@ on:
       - 'karaoke-photo.js'
       - 'tests/karaoke-photo-flow.cjs'
       - 'tests/karaoke-mobile.browser.cjs'
+      - 'tests/grupos-nacionais.test.js'
+      - 'supabase/migrations/20261102014635_grupos_nacionais.sql'
+      - 'supabase/migrations/20261102020938_avisos_grupo_e_roupa_sku.sql'
+      - 'supabase/tests/grupos_nacionais_pg_*'
       - 'tests/karaoke-room-reactions.test.js'
       - 'karaoke-homol-view.js'
       - 'karaoke-homol-client.js'
@@ -136,14 +210,46 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate original three wavy haircuts across avatar renderers
+        run: node tests/avatar-hair.test.js
+      - name: Validate original Captain hat and Star across avatar renderers
+        run: node tests/avatar-items.test.js
+      - name: Validate Center Run auth readiness and credit reconciliation
+        run: node tests/center-run-credit-recovery.test.js
+      - name: Validate Center Run scenery palette renders every color
+        run: node tests/center-run-palette.test.js
+      - name: Validate visibility lifecycle runs inside the game scope
+        run: node tests/visibility-scope.test.js
+      - name: Validate index images moved to WebP files
+        run: node tests/index-images.test.js
+      - name: Validate admin Idol editor (moderation)
+        run: node tests/admin-idol.test.js
+      - name: Validate Karaoke show keeps running with the stage in view on phones
+        run: node tests/karaoke-show-visibility.test.js
+      - name: Validate Center Run daily cap and server response contract
+        run: node tests/center-run-daily-cap.test.js
       - name: Validate shared window contracts
         run: node tests/windows-shared.test.js
       - name: Validate Karaoke mobile viewport script
         run: node --check karaoke-mobile.js
       - name: Validate Karaoke photo preview script
         run: node --check karaoke-photo.js
+      - name: Validate Karaoke room Polaroid controller
+        run: node --check karaoke-room-polaroid.js
+      - name: Validate Karaoke autonomous mic controller
+        run: node --check karaoke-room-auto-mic.js
+      - name: Validate Karaoke Polaroid controller
+        run: node --check karaoke-room-polaroid.js
+      - name: Validate Karaoke room controller dependency injection
+        run: node tests/karaoke-room-controllers.test.js
       - name: Validate Karaoke room pet visits and pandeiros
         run: node tests/karaoke-room-reactions.test.js
+      - name: Validate national groups and legacy profiles
+        run: node --test tests/grupos-nacionais.test.js
+      - name: Validate group notices and Thailand shirt
+        run: node --test tests/avisos-grupo-roupa-tailandia.test.js
+      - name: Validate profile-colored lightsticks
+        run: node --test tests/lightsticks-cor-perfil.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations
@@ -152,16 +258,26 @@ jobs:
         run: node tests/privacidade-script.test.js
       - name: Validate nine-player room state machine
         run: node tests/karaoke-room-model.test.js
+      - name: Validate Karaoke mobile room tile rendering optimization
+        run: node tests/karaoke-mobile-performance.test.js
       - name: Validate original rhythm minigame
         run: node tests/karaoke-rhythm.test.js
       - name: Validate Karaoke Time melody note maps and checkpoint timing
         run: node tests/karaoke-note-map.test.js
       - name: Validate Karaoke Time confirmation, shortcuts and device offset
         run: node tests/karaoke-flow.test.js
+      - name: Validate ticket recovery after lost responses, reload and account switch
+        run: node tests/karaoke-ticket-recovery.test.js
       - name: Validate Karaoke ticket review, Gacha, inventory, gifts, moderation and safe admission
         run: node tests/karaoke-tickets.test.js
       - name: Validate visible Karaoke ticket counters, gift and Gacha balance sync
         run: node tests/karaoke-ticket-ui.test.js
+      - name: Validate Karaoke personal best records by song and account
+        run: node tests/karaoke-personal-song-records.test.js
+      - name: Validate Karaoke music preview player
+        run: node tests/karaoke-music-preview.test.js
+      - name: Validate Karaoke three-walker lounge and player return to mic
+        run: node tests/karaoke-lounge-movement.test.js
       - name: Validate Karaoke Time input timestamps, visual target and timing feedback
         run: node tests/karaoke-input-timing.test.js
       - name: Validate Karaoke Time melodic cues and compact stage settings
@@ -188,3 +304,53 @@ jobs:
         run: node tests/login-simulado.test.js
 
 
+
+  postgres-center-run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: center_run_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d center_run_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Center Run daily cap against isolated PostgreSQL
+        run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify admin Idol editor proposal against isolated PostgreSQL
+        run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
+        run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
+  browser-karaoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix /tmp/karaoke-playwright --no-save playwright
+          /tmp/karaoke-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+          QA_WIDTHS: 320,375,390,430,844,1440
+        run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: karaoke-room-browser-captures
+          path: /tmp/karaoke-room-browser
+          if-no-files-found: warn
+          retention-days: 5

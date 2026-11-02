@@ -16,6 +16,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="./tw-motion-lifecycle.js?v=2"></script>
+<script src="./tw-avatar-items.js?v=2"></script>
+<script src="./tw-avatar-hair.js?v=9"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Day! ao vivo aos domingos, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -700,7 +703,8 @@ function drawChar(c,x,y,run,expr,isPartner){
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
   var HD='#'+H.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
   g.fillStyle=HD;
-  if(b==='chanel'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-2,y+30,x+5,y+31);g.lineTo(x+25,y+31);g.quadraticCurveTo(x+32,y+30,x+28,y+13);g.fill()}
+  if(TWAvatarHair.back(g,c,x,y,b,E,T)){}
+  else if(b==='chanel'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-2,y+30,x+5,y+31);g.lineTo(x+25,y+31);g.quadraticCurveTo(x+32,y+30,x+28,y+13);g.fill()}
   else if(b==='longo'){g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-4,y+34,x+3,y+41);g.lineTo(x+27,y+41);g.quadraticCurveTo(x+34,y+34,x+28,y+13);g.fill()}
   else if(b==='marias'){E(x-3,y+25,5,13,.15+sw*.03); E(x-1,y+29,3.5,10,.2+sw*.03); E(x+33,y+25,5,13,-.15-sw*.03); E(x+31,y+29,3.5,10,-.2-sw*.03)}
   else if(b==='rabo'){E(x+29,y+20+sw,6,14,.3); E(x+31,y+24+sw,4,10,.4)}
@@ -840,39 +844,39 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(hacc==='bandaid'){g.fillStyle='#d97706'; g.fillRect(x+6, y+21, 7, 4); g.fillStyle='#fcd34d'; g.fillRect(x+6.5, y+21.5, 6, 3); g.fillStyle='#fff'; g.fillRect(x+8, y+22, 3, 2);}
 
   var hg=g.createLinearGradient(0,y+5,0,y+24);hg.addColorStop(0,H);hg.addColorStop(1,HD);g.fillStyle=hg;
-  g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();
-  g.fillRect(x+3,y+11.5,4,sl+0.5);g.fillRect(x+23,y+11.5,4,sl+0.5); // +0.5 elimina qualquer fresta entre o topo e as costeletas
-
-  if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
-    g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
+  if(TWAvatarHair.isWavy(b)){
+    TWAvatarHair.top(g,x,y,b);
+  }else{
+    g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.fill();
+    g.fillRect(x+3,y+11.5,4,sl+0.5);g.fillRect(x+23,y+11.5,4,sl+0.5); // +0.5 elimina qualquer fresta entre o topo e as costeletas
+    if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
+      g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
+    }
   }
 
   g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
 
   g.fillStyle=hg;
-  if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
-  else if(f==='reta')g.fillRect(x+3,y+8,24,6);
-  else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
-  else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
-  else if(f==='arcoiris'){
-    g.fillRect(x+3,y+6,24,8);
-    var cols = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'];
-    for(var idx=0; idx<6; idx++){
-      g.fillStyle=cols[idx];
-      g.fillRect(x+4 + (idx*3.6), y+6, 3.8, 9 + (idx%3===1?1:0));
+  if(!TWAvatarHair.fringe(g,x,y,b,f,T)){
+    if(f==='bagunca')T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);
+    else if(f==='reta')g.fillRect(x+3,y+8,24,6);
+    else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
+    else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
+    else if(f==='arcoiris'){
+      g.fillRect(x+3,y+6,24,8);
+      var cols = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'];
+      for(var idx=0; idx<6; idx++){
+        g.fillStyle=cols[idx];
+        g.fillRect(x+4 + (idx*3.6), y+6, 3.8, 9 + (idx%3===1?1:0));
+      }
     }
   }
 
   g.restore();
+  TWAvatarHair.bicolor(g,c,x,y,b);
 
-  if(c.streak){
-    var shd2='#'+c.hair2.replace(/^#/,'').replace(/../g,function(cc){return ('0'+Math.max(0,parseInt(cc,16)-60).toString(16)).substr(-2)});
-    var sg2 = g.createLinearGradient(0,y+5,0,y+15);
-    sg2.addColorStop(0,c.hair2); sg2.addColorStop(1,shd2);
-    g.fillStyle=sg2;
-    g.fillRect(x+10,y+5,3,10);
-  }
+  if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
@@ -909,6 +913,9 @@ if(hacc==='coala'){
     g.fill();
     g.fillStyle='#0284c7'; g.beginPath(); g.arc(x+15, y-1, 1.8, 0, 7); g.fill(); // Nó central
   }
+
+  if(hacc==='capitao') TWAvatarItems.capitao(g,x,y);
+  if(A==='estrela') TWAvatarItems.estrela(g,x,y);
 
   if(expr===1){
     g.strokeStyle='#223'; g.lineWidth=1.5; g.beginPath();
@@ -1549,6 +1556,8 @@ var soraOnlineProfileLoaded = false;
 var soraOnlineRunId = null;
 var soraOnlineRunStartPromise = null;
 var soraOnlineRunFinishSent = false;
+var soraOnlineRunOwnerId = null;
+var soraOnlineRunGeneration = 0;
 var soraRankPeriod = 'week';
 var soraRankRequestSerial = 0;
 var soraRankRowsCache = { week:null, all:null };
@@ -1557,7 +1566,7 @@ var soraRankCacheAt = { week:0, all:0 };
 function soraOnlineApplyProfile(profile){
   var data = profile && typeof profile === 'object' ? profile : null;
   var visual = data && data.character && typeof data.character === 'object' ? data.character : {};
-  var keys = ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl'];
+  var keys = ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl','mecha'];
   var active = Object.assign({}, CH[sel] || CH[0]);
   keys.forEach(function(key){
     var value = visual[key];
@@ -1614,6 +1623,9 @@ function soraOnlineSetSession(session){
   var user = session && session.user;
   var nextId = user && user.is_anonymous !== true ? user.id : null;
   if(nextId === soraOnlineUserId) return;
+  var previousId=soraOnlineUserId;
+  if(previousId||soraOnlineRunOwnerId)soraOnlineRunGeneration++;
+  if(soraOnlineRunOwnerId&&soraOnlineRunOwnerId!==nextId){soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;}
   soraOnlineUserId = nextId;
   soraOnlineProfile = null;
   soraOnlineProfileLoaded = false;
@@ -1661,32 +1673,40 @@ function soraOnlineInitAuth(){
 }
 function soraOnlineBeginRun(){
   if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId) return Promise.resolve(null);
-  soraOnlineRunId = null;
-  soraOnlineRunFinishSent = false;
-  soraOnlineRunStartPromise = soraOnlineInitAuth().then(function(){
-    var userId = soraOnlineUserId;
-    if(!userId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+  var generation=++soraOnlineRunGeneration;
+  soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunFinishSent=false;
+  soraOnlineRunStartPromise=soraOnlineInitAuth().then(function(){
+    if(generation!==soraOnlineRunGeneration)return null;
+    var userId=soraOnlineUserId;
+    if(!userId||!_supabase||typeof _supabase.rpc!=='function')return null;
+    soraOnlineRunOwnerId=userId;
     return _supabase.rpc('sora_run_start').then(function(result){
-      if(result && result.error) throw result.error;
-      if(!result || typeof result.data !== 'string') throw new Error('Resposta inválida ao iniciar partida.');
-      soraOnlineRunId = result.data;
+      if(result&&result.error)throw result.error;
+      if(!result||typeof result.data!=='string')throw new Error('Resposta inválida ao iniciar partida.');
+      if(userId!==soraOnlineUserId)return null;
+      if(generation!==soraOnlineRunGeneration){
+        _supabase.rpc('sora_run_abort',{p_run_id:result.data}).catch(function(){});
+        return null;
+      }
+      soraOnlineRunId=result.data;
       return soraOnlineRunId;
     });
   }).catch(function(error){
-    soraOnlineRunId = null;
-    console.warn('Sora⭐Jump: não foi possível registrar o início da partida.', error);
+    if(generation===soraOnlineRunGeneration){soraOnlineRunId=null;soraOnlineRunOwnerId=null;}
+    console.warn('Sora⭐Jump: não foi possível registrar o início da partida.',error);
     return null;
   });
   return soraOnlineRunStartPromise;
 }
 function soraOnlineFinishRun(score){
-  if(!SORA_ONLINE_RANKING_ENABLED || soraTestSceneId || soraOnlineRunFinishSent ||
-     !Number.isSafeInteger(score) || score < 0 || !soraOnlineRunStartPromise) return;
-  soraOnlineRunFinishSent = true;
+  var owner=soraOnlineRunOwnerId,generation=soraOnlineRunGeneration;
+  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId)return;
+  soraOnlineRunFinishSent=true;
   Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
-    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
+    if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId||!runId||!_supabase||typeof _supabase.rpc!=='function')return null;
     return _supabase.rpc('sora_run_finish',{p_run_id:runId,p_score:score});
   }).then(function(result){
+    if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId)return;
     if(result && result.error) throw result.error;
     if(result && result.data && result.data.ok === false)
       console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
@@ -1695,6 +1715,7 @@ function soraOnlineFinishRun(score){
       try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
     }
     soraOnlineRunId = null;
+    soraOnlineRunOwnerId = null;
     soraOnlineRunStartPromise = null;
     soraRankRowsCache.week = null;
     soraRankRowsCache.all = null;
@@ -1706,23 +1727,21 @@ function soraOnlineFinishRun(score){
   });
 }
 function soraOnlineAbortRun(){
-  if(!SORA_ONLINE_RANKING_ENABLED || !soraOnlineRunStartPromise) return;
-  Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
-    if(!runId || !_supabase || typeof _supabase.rpc !== 'function') return null;
-    return _supabase.rpc('sora_run_abort',{p_run_id:runId});
-  }).catch(function(error){
-    console.info('Sora⭐Jump: encerramento da partida pendente.', error && error.message || error);
-  });
-  soraOnlineRunId = null;
-  soraOnlineRunStartPromise = null;
-  soraOnlineRunFinishSent = true;
+  if(!SORA_ONLINE_RANKING_ENABLED||!soraOnlineRunStartPromise)return;
+  var owner=soraOnlineRunOwnerId,runId=soraOnlineRunId;
+  soraOnlineRunGeneration++;
+  if(owner&&owner===soraOnlineUserId&&runId&&_supabase&&typeof _supabase.rpc==='function'){
+    _supabase.rpc('sora_run_abort',{p_run_id:runId}).catch(function(error){console.info('Sora⭐Jump: encerramento da partida pendente.',error&&error.message||error);});
+  }
+  // Se a RPC de início ainda está em voo, seu callback vê a nova geração e aborta o ID recebido.
+  soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;
 }
 soraOnlineInitAuth();
 
 var soraState = 'menu';
 var soraCv = null, soraCtx = null;
 var SW = 360, SH = 520;
-var soraRaf = 0, soraLastT = 0, soraFrame = 0;
+var soraRaf = 0, soraLastT = 0, soraFrame = 0, soraHostVisible = true, soraCanvasVisible = true;
 var soraSecretClicks = 0, soraSecretUnlocked = false, soraTestSceneId = '';
 var soraVisitorUfo = null, soraVisitorElapsed = 0, soraVisitorWaitFrames = 0, soraVisitorAttempted = false;
 var soraVisitorRowsCache = null, soraVisitorRowsPromise = null;
@@ -1935,7 +1954,7 @@ function soraMusicStop(){
 function soraMusicStart(){
   soraMusicStop();
   soraMusicStep = 0;
-  if(!soraSoundOn || muted) return;
+  if(!soraSoundOn || muted || !soraPodeAnimar()) return;
   var audio = ac();
   if(!audio) return;
   if(audio.state === 'suspended' && typeof audio.resume === 'function'){
@@ -2277,6 +2296,7 @@ function soraCompactAlive(list,bottom,mode){
  return list;
 }
 function soraUpdate(dt){
+  var soraFrameAnterior=soraFrame;
   soraFrame += dt;
   soraVisitorElapsed += dt;
   if(!soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
@@ -2319,7 +2339,7 @@ function soraUpdate(dt){
     soraP.wingsT -= dt;
     soraP.vy = -9.2;
     soraP.slipping = false;
-    if((soraFrame | 0) % 5 === 0){
+    if(Math.floor(soraFrameAnterior/5)<Math.floor(soraFrame/5)){
       soraParticles.push({ x:soraP.x + 15, y:soraP.y + 30, vx:(Math.random()-0.5)*2, vy:1.5, c:'#ff9ccd', t:0 });
     }
   } else {
@@ -3850,13 +3870,28 @@ function soraDraw(){
     x.restore();
   }
 }
+function soraPodeAnimar(){
+  var overlay=$('soraOv'),motionActive=!window.TWMotionLifecycle||TWMotionLifecycle.isPageActive();
+  return !!(soraOpen&&soraHostVisible&&soraCanvasVisible&&motionActive&&!document.hidden&&overlay&&!overlay.hidden);
+}
+function soraPararLoop(){
+  if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
+  soraLastT=0;
+}
+function soraAgendarLoop(){
+  if(!soraRaf&&soraPodeAnimar()){
+    soraLastT=performance.now();
+    soraRaf=requestAnimationFrame(soraLoop);
+  }
+}
 function soraLoop(t){
-  if(!soraOpen) return;
+  soraRaf=0;
+  if(!soraPodeAnimar()){soraMusicStop();return;}
   var dt = soraLastT ? Math.max(0.1, Math.min(2.5, (t - soraLastT) / 16.667)) : 1;
   soraLastT = t;
   if(soraState === 'play') soraUpdate(dt);
-  soraDraw();
-  soraRaf = requestAnimationFrame(soraLoop);
+  if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(soraCv,t))soraDraw();
+  if(soraPodeAnimar())soraRaf=requestAnimationFrame(soraLoop);
 }
 function soraStartGame(){
   var audioReady = soraSoundOn ? ac() : null;
@@ -3869,7 +3904,7 @@ function soraStartGame(){
   }
   if($('soraMenuBox')) $('soraMenuBox').hidden = true;
   if($('soraOverBox')) $('soraOverBox').hidden = true;
-  if($('soraHomeBtn')) $('soraHomeBtn').hidden = false;
+  if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;   // sem botão "Início" sobre a tela durante a partida
 }
 function soraEndGame(){
   soraMusicStop();
@@ -4196,8 +4231,24 @@ function soraSetupUI(){
   window.addEventListener('pointercancel', function(){ soraTouchDir = 0; });
   window.addEventListener('blur', function(){ soraTouchDir = 0; soraKeyL = false; soraKeyR = false; });
   document.addEventListener('visibilitychange', function(){
-    if(document.hidden){ soraTouchDir = 0; soraKeyL = false; soraKeyR = false; soraMusicStop(); }
-    else if(soraOpen && soraState === 'play' && soraSoundOn && !muted) soraMusicStart();
+    if(document.hidden){
+      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+    }else{
+      soraAgendarLoop();
+      if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
+    }
+  });
+  window.addEventListener('message',function(e){
+    if(e.source!==parent||!e.data||e.data.type!=='TW_GAME_VISIBILITY')return;
+    if(location.protocol!=='file:'&&e.origin!==location.origin)return;
+    soraHostVisible=e.data.visible===true;
+    if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();
+    if(!soraHostVisible){
+      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+    }else{
+      soraAgendarLoop();
+      if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
+    }
   });
 
   // Setas / A-D no computador
@@ -4341,6 +4392,7 @@ function soraBindTestProfileTools(){
   }
 }
 soraSetupUI();
+var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
 function soraReturnToMenu(){
   if(soraState === 'play') soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
@@ -4385,6 +4437,7 @@ function soraOpenUIReady(){
   soraSoundOn = !muted;
   soraMusicStop();
   soraOpen = true; soraState = 'menu'; soraReset(); soraState = 'menu';
+  if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();   // o vigia foi criado com o Sora fechado; reavalia ao abrir
   if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m';
   if($('soraMenuStars')) $('soraMenuStars').textContent = String(starT);
   soraRefreshTestProfile(); soraBindTestProfileTools();
@@ -4393,24 +4446,23 @@ function soraOpenUIReady(){
   if($('soraOverBox')) $('soraOverBox').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = 'none';
   $('soraOv').hidden = false;
-  soraLastT = performance.now(); cancelAnimationFrame(soraRaf); soraRaf = requestAnimationFrame(soraLoop);
+  soraPararLoop();soraAgendarLoop();
 }
 // A background-cached iframe must resume RAF/audio on pageshow.
 function soraSuspendForNavigation(){
- soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;
- if(soraRaf){cancelAnimationFrame(soraRaf);soraRaf=0;}
+ soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();
 }
 window.addEventListener('pagehide',soraSuspendForNavigation);
 window.addEventListener('pageshow',function(){
- if(!soraOpen||soraRaf)return;
- soraLastT=performance.now();soraRaf=requestAnimationFrame(soraLoop);
- if(soraState==='play'&&!document.hidden&&soraSoundOn&&!muted)soraMusicStart();
+ if(!soraOpen)return;
+ soraAgendarLoop();
+ if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted&&soraMusicTimer===null)soraMusicStart();
 });
 function soraCloseUI(){
   if(soraState === 'play') soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
-  cancelAnimationFrame(soraRaf); soraRaf=0; if($('soraOv')) $('soraOv').hidden = true;
+  soraPararLoop(); if($('soraOv')) $('soraOv').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = '';
   if(soraSavedMutedBeforeOpen !== null){ muted = soraSavedMutedBeforeOpen; soraSavedMutedBeforeOpen = null; }
 }

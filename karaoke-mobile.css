@@ -13,6 +13,7 @@
   grid-column:1/-1;justify-content:center;flex-wrap:wrap;gap:4px;
  }
  html.kt-no-site .kt-toolbar .krgrp{gap:4px;padding:4px}
+ html.kt-no-site .kt-toolbar #ktSession .krgrp:last-child{flex-wrap:wrap;white-space:normal;max-width:100%}
  html.kt-no-site .kt-toolbar .krb{font-size:10px;padding:5px 7px}
  html.kt-no-site .kt-toolbar #ktClock{font-size:14px}
  html.kt-no-site .kt-toolbar #ktScore{font-size:10px}
@@ -44,9 +45,17 @@
  html.kt-no-site .kt-mobile-overview .kt-room-viewport{aspect-ratio:960/540}
  html.kt-no-site .kt-mobile-overview #krPalco.kt-room-mobile #krCv{width:100%!important}
  html.kt-no-site .kt-room-tools{
-  position:relative;z-index:10;display:flex;align-items:center;justify-content:flex-end;
+  position:relative;z-index:10;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;
   gap:6px;padding:4px 6px;background:var(--card);border-bottom:1px solid var(--tw-kr-edge);
  }
+ html.kt-no-site .kt-room-tools #ktPause{position:static;inset:auto;transform:none;margin:0;flex:0 0 auto;width:auto;min-width:76px;min-height:44px;padding:8px 10px}
+ html.kt-no-site .kt-room-tools .kt-calibration{position:relative;width:auto;max-width:none;height:auto;margin:0;flex:0 0 auto;font-size:9px}
+ html.kt-no-site .kt-room-tools .kt-calibration summary{display:flex;align-items:center;min-height:44px;padding:6px 9px;font-size:10px;white-space:nowrap}
+ html.kt-no-site .kt-room-tools .kt-calibration[open]{flex:1 0 100%;white-space:normal}
+ html.kt-no-site .kt-room-tools .kt-calibration-panel{position:static;width:min(100%,300px);max-height:38dvh;margin:5px 0 0;padding:9px;overflow:auto}
+ html.kt-no-site .kt-room-tools .kt-calibration-body{gap:5px;margin:6px auto}
+ html.kt-no-site .kt-room-tools .kt-calibration-body button{min-height:36px;padding:6px 8px}
+ html.kt-no-site .kt-room-tools .kt-calibration p{font-size:9px}
  html.kt-no-site #krPalco .kt-room-tools :is(#krMute,#ktFoto){
   position:static;inset:auto;transform:none;margin:0;flex:none;
   width:44px;height:44px;min-width:44px;min-height:44px;

@@ -138,7 +138,7 @@ async function init(){
 async function rpc(name,args){var r=await client.rpc(name,args||{});if(r.error)throw r.error;return r.data;}
 function cleanAvatar(a){
  var c=a&&a.c,out={};if(!c||typeof c!=='object')return null;
- ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl'].forEach(function(k){if(typeof c[k]==='string'&&c[k].length<=32)out[k]=c[k];});
+ ['hair','hair2','skin','eye','back','front','det','out','outcol','hat','gl','mecha'].forEach(function(k){if(typeof c[k]==='string'&&c[k].length<=32)out[k]=c[k];});
  if(typeof c.streak==='boolean')out.streak=c.streak;return out;
 }
 function cleanNick(n){return typeof n==='string'?n.replace(/[<>]/g,'').slice(0,16):'';}

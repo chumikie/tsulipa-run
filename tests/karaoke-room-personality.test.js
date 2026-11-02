@@ -50,4 +50,25 @@ assert(html.includes('krLoungePersonality.decideSocial(eligible,singer,LANG)'),'
 assert(html.includes('krLoungeCriarPasseio(chosen,stopX,freeLanes[0])'),'the existing path controller still owns the actual walking route');
 assert(html.includes('krLoungeAvancarAtores(dt,false)'),'the existing movement state machine remains responsible for walking');
 assert(html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({'),'the existing autonomous-mic controller remains intact');
-console.log('Karaoke room personality: stable individual traits, varied activity timing, distinct conversation pairs, audience roles, gestures and five-language dialogue passed');
+assert.equal(cast.every(actor=>actor._ktPersonality.favoriteStyles.length===2&&actor._ktPersonality.gestureFavorites.length===3),true,'each NPC receives stable music preferences and favorite gestures');
+assert(cast.some(actor=>actor._ktPersonality.musicPreferences.pop!==actor._ktPersonality.musicPreferences.ballad),'music affinity varies by character and style');
+assert(['walk','drink','dance','observe','seat'].includes(personality.decideActivity(cast[0],{seatAvailable:true})),'the activity director returns a supported intention');
+assert(personality.activityDuration(cast[0],'dance')>0,'activity duration is personality-dependent and positive');
+const reactionPersonality=Personality.create({random:()=>0});
+for(const event of ['start','hit','combo','miss','finish','record']){
+ const reactions=reactionPersonality.decideReactions(cast,event,{song:{style:'pop'},language:'pt'});
+ assert(reactions.length>0,'the audience can react individually to '+event);
+ assert(reactions.every(item=>cast.includes(item.actor)&&['banzai','coracao','neon','v'].includes(item.pose)&&item.duration>0&&item.emoji),'each response contains an actor, supported pose, duration and emoji');
+}
+const silent=Personality.create({random:()=>.999999});
+assert.equal(silent.decideReactions(cast,'combo',{song:{style:'ballad'}}).length,0,'quiet audience members may keep observing without a forced reaction');
+const playPersonality=Personality.create({random:()=>0});
+assert.equal(playPersonality.decideSocial(cast,null,'pt').interaction,'play','playful personalities can turn a conversation into a small joke');
+assert(html.includes('function krLoungeReactToShow(event,details)'),'show events reach the audience reaction coordinator');
+assert(html.includes("krLoungeReactToShow('start'"),'the actual music start reaches the audience');
+assert(html.includes("krLoungeReactToShow(isSessionRecord?'record':'finish'"),'finishes and session records have distinct audience events');
+assert(html.includes('showReactionActive=!!(j._ktShowReaction&&j._ktShowReaction.until>t)'),'audience reactions render without moving characters');
+assert(html.includes("krLoungePersonality.decideActivity(chosen,{seatAvailable:!!freeSeat})"),'the activity director checks for a genuinely free sofa');
+assert(html.includes("st.activity==='drink'")&&html.includes("st.activity==='dance'"),'drink and dance activities use the existing movement controller');
+assert(!html.includes("b.danca='banzai';krBolhas.push({emo:i%2"),'the show result no longer forces a synchronized audience pose');
+console.log('Karaoke room personality: individual music preferences, audience events, social play and natural activities passed');

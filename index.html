@@ -355,14 +355,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=1"></script>
+<script src="./tw-i18n.js?v=4"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./pet.js?v=1"></script>
 <script src="./perfil.js?v=1"></script>
 <script src="./gacha.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=1"></script>
+<script src="./hub.js?v=2"></script>
 <script src="./conta.js?v=1"></script>
 <script>
 /* ================================================================
@@ -2208,7 +2208,7 @@ hubOv.addEventListener('click', function(e){
   if(t.id === 'hubTutPular'){ hubTutFim(); return; }
   if((b = t.closest('[data-hduo]'))){ duoAbrir(); return; }
   if((b = t.closest('[data-collect]'))){   // missão do dia: abre o jogo irmão e marca a visita
-    window.open(HUB_COLLECT, '_blank', 'noopener');
+    window.open(hubCollectHoje()[2], '_blank', 'noopener');
     contaRpc('marcar_visita', { p_k:'collect' }).then(function(){ setTimeout(function(){if(!hubOv.hidden)hubMisCarregar();},600); }).catch(function(){});
     return;
   }

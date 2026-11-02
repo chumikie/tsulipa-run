@@ -5,12 +5,29 @@
    Temas da temporada, desenhos do Center⭐Run e o modo admin ficam para outras etapas. */
 var HUB_COLLECT = 'https://brs48-collect.vercel.app/', HUB_BLOG = 'https://brs48.blogspot.com/';
 var HUB_YOUTUBE = 'https://www.youtube.com/@BRS48';   // canal oficial do BRS48
+// Missão fixa "collect": a cada dia o site sorteia um destes destinos (mesmo para a conta o dia todo).
+// O servidor continua recebendo marcar_visita('collect'); a missão não muda de chave.
+// Para incluir outro destino, acrescente [emoji, texto, endereço] aqui (e a tradução em tw-i18n.js).
+var HUB_COLLECT_LINKS = [
+  ['🎴', 'Visite o BRS48 Collect!', 'https://brs48-collect.vercel.app/'],
+  ['📰', 'Visite o Blog do BRS48', 'https://brs48.blogspot.com/'],
+  ['▶️', 'Visite o YouTube do BRS48', 'https://www.youtube.com/@BRS48'],
+  ['💌', 'Visite o BRS48 Members Blog', 'https://brs48membersblog.blogspot.com/'],
+  ['▶️', 'Visite o YouTube do SPR48', 'https://www.youtube.com/@SPR48'],
+  ['▶️', 'Visite o YouTube do SKU48', 'https://www.youtube.com/@SKU48Official']
+];
+function hubCollectHoje(){
+  var d = new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), id = (contaJ && contaJ.id) || '', h = 0, i, k = d + '|' + id;
+  for(i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0;
+  return HUB_COLLECT_LINKS[h % HUB_COLLECT_LINKS.length];
+}
 var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_lista)
-  collect:['🎴', 'Visite o BRS48 Collect!'],
+  collect:['🎴', 'Visite o BRS48 Collect!'],   // texto trocado pelo link do dia (hubCollectHoje)
   duo:['🌙', 'Faça um Moon⭐Duo!'],
   corra2:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra3:['🏃', 'Corra {n} vezes no Center⭐Run!'], corra5:['🏃', 'Corra {n} vezes no Center⭐Run!'],
   coracao:['💖', 'Dê 1 coração em um perfil'], recado:['💌', 'Deixe 1 recado em um perfil'], mini:['🎮', 'Ganhe estrelas em um minijogo do camarim'], pet:['🛍️', 'Compre algo para o seu pet'],
   estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
+  estrelas50:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas100:['🌟', 'Chegue a {n} estrelas nas corridas hoje'],
   pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
 };
 var HUB_NOVIDADES = [["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados"], ["🌏", "Jogo em português, inglês, espanhol, tailandês e japonês"]];
@@ -282,10 +299,10 @@ function hubCardsUI(){
 function hubMisUI(){
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
-  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★45 por dia).')) + '</p>'; return; }
+  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★50 por dia).')) + '</p>'; return; }
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
-    var t = HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
+    var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
     var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : (m.k === 'collect' && !pronto) ? '<button type="button" class="btn alt" data-collect="1">' + escHtml(tr('Abrir')) + ' ↗</button>' : (m.k === 'duo' && !pronto) ? '<button type="button" class="btn alt" data-hduo="1">' + escHtml(tr('Abrir')) + ' 🌙</button>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
     return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';

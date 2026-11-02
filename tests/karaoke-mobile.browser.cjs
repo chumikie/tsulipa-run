@@ -109,6 +109,27 @@ async function metrics(frame){
    await frame.locator('#ktAvailability').evaluate(()=>document.fonts.ready);
    await p.waitForTimeout(6200); // Includes the existing 4.5s banner timer + opacity transition.
    const idle=await metrics(frame);
+   let visibilityEvidence=null;
+   if(!baseline){
+    await p.waitForTimeout(220);
+    const painted=await frame.locator('body').evaluate(()=>window.qaRoomState());
+    assert(painted.visibility.host&&painted.visibility.canvasObserver&&painted.visibility.canvasInViewport,'host, canvas and observer report a visible stage');
+    assert(painted.visibility.pageActive&&painted.visibility.roomCanAnimate,'visible stage owns an active animation lifecycle');
+    assert(painted.paint.calls>0,'Chromium observed actual canvas paint operations');
+    assert(painted.paint.pixels.opaque>100&&painted.paint.pixels.unique>80&&painted.paint.pixels.hash!==0,'stage canvas contains opaque, varied and identifiable scene pixels');
+    await p.evaluate(()=>document.querySelector('#twPreviewIframe').contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:false},location.origin));
+    await p.waitForTimeout(120);
+    const hidden=await frame.locator('body').evaluate(()=>window.qaRoomState());
+    assert.equal(hidden.visibility.host,false,'host hide message reaches the room');
+    assert.equal(hidden.visibility.roomCanAnimate,false,'hidden host suspends room animation');
+    await p.evaluate(()=>document.querySelector('#twPreviewIframe').contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:true},location.origin));
+    await p.waitForTimeout(320);
+    const reopened=await frame.locator('body').evaluate(()=>window.qaRoomState());
+    assert(reopened.visibility.host&&reopened.visibility.roomCanAnimate,'reopened host restores room ownership');
+    assert(reopened.paint.calls>hidden.paint.calls&&reopened.paint.pixels.opaque>100&&reopened.paint.pixels.unique>80,'reopened stage paints identifiable pixels again');
+    assert(reopened.visibilityHistory.some(v=>v.host===false)&&reopened.visibilityHistory.some(v=>v.host===true),'visibility history records hide and recovery');
+    visibilityEvidence={visible:painted.visibility,hidden:hidden.visibility,reopened:reopened.visibility,painted:painted.paint,recovered:reopened.paint};
+   }
    if(!baseline){
     assert.equal(await p.locator('#best').isVisible(),false,'Center score is absent only while Karaoke is open');
     assert(idle.scroll<=idle.viewport+1,'No horizontal overflow');
@@ -205,8 +226,17 @@ async function metrics(frame){
     console.log(engine,width,'both pandeiros + three pet visits/return passed');
    }
    await frame.locator('#ktStart').click(); // Local offline storage only; all external requests are blocked.
-   await frame.locator('#ktStartConfirm').waitFor({state:'visible'});
-   await frame.locator('#ktConfirmAccept').evaluate(button=>{if(button.disabled)throw new Error('Show confirmation is unexpectedly disabled');button.click();}); // Preserve the game's explicit admission confirmation.
+   const confirmDialog=frame.locator('#ktStartConfirm');
+   await confirmDialog.waitFor({state:'visible'});
+   const confirmViewport=p.viewportSize(),confirmBox=await confirmDialog.boundingBox(),cancelBox=await frame.locator('#ktConfirmCancel').boundingBox();
+   for(const box of [confirmBox,cancelBox])assert(box&&box.x>=0&&box.y>=0&&box.x+box.width<=confirmViewport.width+1&&box.y+box.height<=confirmViewport.height+1,'Confirm show and Cancel are inside the visible host viewport');
+   await frame.locator('#ktConfirmCancel').click();
+   await confirmDialog.waitFor({state:'hidden'});
+   await frame.locator('#ktStart').click();
+   await confirmDialog.waitFor({state:'visible'});
+   const acceptBox=await frame.locator('#ktConfirmAccept').boundingBox();
+   assert(acceptBox&&acceptBox.x>=0&&acceptBox.y>=0&&acceptBox.x+acceptBox.width<=confirmViewport.width+1&&acceptBox.y+acceptBox.height<=confirmViewport.height+1,'Confirm button is visible and reachable without impossible scrolling');
+   await frame.locator('#ktConfirmAccept').click();
    await p.waitForTimeout(500);
    const admission=await frame.locator('body').evaluate(()=>window.qaRoomControllers.inspectAdmission());console.log('Karaoke browser admission:',JSON.stringify(admission));
    await frame.locator('body.kt-playing').waitFor();
@@ -260,7 +290,7 @@ async function metrics(frame){
    await p.locator('#twPreviewVoltar').click();
    if(!baseline)assert.equal(await p.locator('#best').isVisible(),true,'Returning to Center restores its score');
    assert.deepEqual(errors,[]);
-   results.push({engine,width,idle,playing,reactions,photo});
+   results.push({engine,width,idle,playing,reactions,photo,visibility:visibilityEvidence});
    console.log(engine,width,'idle + play + return passed');
    await context.close();
   }

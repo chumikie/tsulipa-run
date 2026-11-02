@@ -40,10 +40,11 @@ for(const game of games){
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");
 }
 
-let karaoke="",sora="",preview="";
+let karaoke="",karaokeTime="",sora="",preview="";
 try{
   preview=read("index.html");
   karaoke=read("karaoke-day.html");
+  karaokeTime=read("karaoke-time.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
 
@@ -89,15 +90,15 @@ assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
        karaoke.includes("krRhythmStop('abandoned')"),
   "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
 // Dez lugares no sofá + o microfone = onze personagens, sem empilhamento.
-const sofa=JSON.parse((karaoke.match(/KR_SOFA_SLOTS=(\[\[[0-9,\[\]]*\]\])/)||[])[1]||'[]');
+const sofa=JSON.parse((karaokeTime.match(/KR_SOFA_SLOTS=(\[\[[0-9,\[\]]*\]\])/)||[])[1]||'[]');
 assert(sofa.length===10,'Karaoke: dez lugares no sofa');
 assert(new Set(sofa.map(s=>s[0])).size===10,'Karaoke: cada lugar num x proprio (ninguem empilhado)');
 assert(sofa.every(s=>s[0]>=120&&s[0]<=840&&s[1]>=330&&s[1]<=500),'Karaoke: lugares dentro da sala');
-assert(karaoke.includes("'🧪 '+tr('Sala de ensaio')+' · 👥 '+krSt.ocupadas+'/11'")&&
-       !karaoke.includes("Aberta · {n}/12")&&
-       !karaoke.includes("micT=30*60")&&
-       !karaoke.includes("uma das 12 vagas"),
-  "Karaoke must show truthful nine-seat demo and remove legacy frame-based mic");
+assert(karaokeTime.includes("tr('Aberta · {n}/11')")&&
+       !karaokeTime.includes("Aberta · {n}/12")&&
+       !karaokeTime.includes("micT=30*60")&&
+       !karaokeTime.includes("uma das 12 vagas"),
+  "Karaoke Time must show eleven visual positions and remove the legacy frame-based mic");
 assert(rhythm.includes("RHYTHM_MS=45000")&&
        rhythm.includes("TOTAL_MS=INTRO_MS+RHYTHM_MS+OUTRO_MS")&&
        !rhythm.includes(".rpc(")&&!rhythm.includes("supabase")&&
@@ -126,7 +127,7 @@ assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
   "Offline room model must never connect to the live database");
 
 assert(sora.includes("soraSetupUI")&&sora.includes("soraOpenUI"),"Sora core integration missing");
-assert(karaoke.includes('function posters()')&&karaoke.includes('KaraokeDaily.selectPolaroids(catalog,selfId,active.day,active.members')&&karaoke.includes('baseCast=ktDaily.posters()'),"Karaoke Polaroids must use guests independent of current room members");
+assert(karaokeTime.includes('function posters()')&&karaokeTime.includes('KaraokeDaily.selectPolaroids(catalog,selfId,active.day,active.members')&&karaokeTime.includes('baseCast=ktDaily.posters()'),"Karaoke Time Polaroids must use guests independent of current room members");
 assert(karaoke.includes("krAgendarLoop")&&karaoke.includes("logicalW=960,logicalH=540"),
   "Karaoke mobile draw/click coordination changed");
 assert(karaoke.includes('id="krDev" hidden'),"Karaoke simulator must start collapsed");

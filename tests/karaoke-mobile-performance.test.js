@@ -255,7 +255,7 @@ const socialDue=html.slice(socialDueStart,socialDueEnd);
 assert(socialDue.includes('if(!krLoungeSoloPermitido())return false;')&&socialDue.includes('return krT>=dueAt;')&&socialDue.includes('return krT>=krLoungeSocialNextAt;'),'Autonomous social updates should be scheduled at interaction deadlines and remain disabled outside solo behavior');
 assert(html.includes('if(krLoungeSocialDeveAtualizar())krLoungeSocialUpdate();'),'The room loop should not run the audience social updater on every logical frame');
 assert(html.includes('function krLoungeUpdateDeveRodar()')&&html.includes('try{if(krLoungeUpdateDeveRodar())krLoungeUpdate(krFrameDelta);}catch(krLoungeFrameError)')&&html.includes('return !!krEu.no_mic||!!krDemoCantor||!!(kt&&kt.active())||krLoungeActors.length>0||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;'),'The lounge sleeps between deadlines but wakes for walkers and active player/NPC shows');
-assert(html.includes('if(krLoungeCastRef!==null||krLoungeSocialA||krLoungeSocialB)')&&html.includes('krLoungeSocialClear();'),'Solo audience state should be cleared once when autonomous behavior becomes unavailable, not on every frame');
+assert(html.includes('return krLoungeActors.length>0||krLoungeCastRef!==null||!!krLoungeSocialA||!!krLoungeSocialB;')&&html.includes('krLoungeCastRef=null;krLoungeSocialClear();krLoungeAvancarAtores(dt,true);'),'Solo audience state should clear on its final gated update and return active walkers safely');
 const roomLifeStart=html.indexOf('var krRoomObserver=null');
 const roomLifeEnd=html.indexOf("window.addEventListener('message'",roomLifeStart);
 const roomLife=html.slice(roomLifeStart,roomLifeEnd);

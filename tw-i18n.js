@@ -20,6 +20,7 @@ window.TW_DICT={
   "Cabelo":"Hair",
   "Cacheado":"Curly",
   "Chanel":"Bob",
+  "Chegue a {n} estrelas nas corridas hoje":"Reach {n} stars in races today",
   "Chifres":"Horns",
   "CONTINUAR":"RESUME",
   "Coques":"Buns",
@@ -100,6 +101,8 @@ window.TW_DICT={
   "Uniforme (Team)":"Uniform (Team)",
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"View ranking",
+  "Visite o Blog do BRS48":"Visit the BRS48 Blog",
+  "Visite o YouTube do BRS48":"Visit BRS48 on YouTube",
   "Você":"You",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"Good work!"
@@ -123,6 +126,7 @@ window.TW_DICT={
   "Cabelo":"Cabello",
   "Cacheado":"Rizado",
   "Chanel":"Bob",
+  "Chegue a {n} estrelas nas corridas hoje":"Llega a {n} estrellas en las carreras hoy",
   "Chifres":"Cuernos",
   "CONTINUAR":"CONTINUAR",
   "Coques":"Moños",
@@ -203,6 +207,8 @@ window.TW_DICT={
   "Uniforme (Team)":"Uniforme (Team)",
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"Ver ranking",
+  "Visite o Blog do BRS48":"Visita el Blog de BRS48",
+  "Visite o YouTube do BRS48":"Visita el YouTube de BRS48",
   "Você":"Tú",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"¡Buen trabajo!"
@@ -226,6 +232,7 @@ window.TW_DICT={
   "Cabelo":"ผม",
   "Cacheado":"หยิก",
   "Chanel":"บ๊อบ",
+  "Chegue a {n} estrelas nas corridas hoje":"สะสมดาวจากการวิ่งให้ถึง {n} ดวงวันนี้",
   "Chifres":"เขา",
   "CONTINUAR":"เล่นต่อ",
   "Coques":"มวยผม",
@@ -306,6 +313,8 @@ window.TW_DICT={
   "Uniforme (Team)":"เครื่องแบบ (ทีม)",
   "Valentine (wCenter)":"Valentine (wCenter)",
   "Ver ranking":"ดูอันดับ",
+  "Visite o Blog do BRS48":"เยี่ยมชมบล็อกของ BRS48",
+  "Visite o YouTube do BRS48":"เยี่ยมชม YouTube ของ BRS48",
   "Você":"คุณ",
   "Zipper (tCenter)":"Zipper (tCenter)",
   "おつかれさま":"ทำงานหนักมาก!"
@@ -329,6 +338,7 @@ window.TW_DICT={
   "Cabelo":"髪色",
   "Cacheado":"くせ毛",
   "Chanel":"ボブ",
+  "Chegue a {n} estrelas nas corridas hoje":"今日のレースで星を{n}個にしよう",
   "Chifres":"つの",
   "CONTINUAR":"つづける",
   "Coques":"お団子",
@@ -409,6 +419,8 @@ window.TW_DICT={
   "Uniforme (Team)":"制服（チーム）",
   "Valentine (wCenter)":"バレンタイン (wCenter)",
   "Ver ranking":"ランキングを見る",
+  "Visite o Blog do BRS48":"BRS48のブログを見に行こう",
+  "Visite o YouTube do BRS48":"BRS48のYouTubeを見に行こう",
   "Você":"あなた",
   "Zipper (tCenter)":"ジッパー (tCenter)"
  }

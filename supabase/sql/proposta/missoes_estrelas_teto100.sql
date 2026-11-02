@@ -1,0 +1,30 @@
+-- PROPOSTA (não aplicada) — Missões de estrelas compatíveis com o teto de ★100/dia do Center⭐Run!
+-- Data: 02/11/2026. Pedido da dona (opção 1). Aplicar só com autorização específica dela.
+--
+-- Problema (confirmado pelo ChatGPT no Supabase ativo, só leitura):
+--   missoes_progresso soma leaderboard.stars do dia, e leaderboard.stars guarda as estrelas CREDITADAS,
+--   limitadas a 100/dia por terminar_corrida. Logo 'estrelas150' (média) e 'estrelas300' (difícil)
+--   nunca chegam à meta, mas continuam sendo sorteadas.
+--
+-- Mudança proposta — SOMENTE dentro de public.missoes_lista (o resto fica igual):
+--   * média:   'estrelas150' (meta 150, ★15)  ->  'estrelas50'  (meta 50,  ★15)
+--   * difícil: 'estrelas300' (meta 300, ★20)  ->  'estrelas100' (meta 100, ★20)
+--   Mesma família ("estrelas"), mesma dificuldade e mesmo prêmio; o máximo diário continua ★50.
+--   missoes_progresso, missoes e resgatar_missao NÃO mudam: o progresso das novas chaves já é a mesma
+--   soma de leaderboard.stars do dia (conferir no corpo ativo se o cálculo é por família/prefixo
+--   'estrelas' ou por chave exata; se for por chave exata, incluir as duas chaves novas ali também).
+--
+-- Como aplicar (ChatGPT):
+--   1. Ler o corpo ATIVO de public.missoes_lista e public.missoes_progresso (pg_get_functiondef).
+--   2. Criar a migração com CREATE OR REPLACE do corpo ativo, trocando apenas as duas entradas acima.
+--   3. Preservar dono, SECURITY DEFINER/INVOKER, search_path e GRANT/REVOKE atuais.
+--   4. Missões já sorteadas hoje com 'estrelas150'/'estrelas300' ficam como estão até virar o dia
+--      (ou, se o sorteio for recalculado na hora, simplesmente passam a vir as chaves novas).
+--
+-- O site (branch feat/missoes-estrelas-links) já tem os textos de 'estrelas50' e 'estrelas100' em 5 idiomas.
+-- Publicar o site ANTES de aplicar este SQL; senão a missão aparece com a chave crua.
+--
+-- Conferência depois de aplicar (só leitura, trocar o uuid por uma conta real de teste):
+--   select * from public.missoes_lista();                       -- não deve listar estrelas150/estrelas300
+--   select pg_get_functiondef('public.missoes_lista'::regproc);  -- conferir metas 50 e 100
+--   -- Em transação revertida: simular corridas creditando 100 estrelas e ver o progresso 100/100.

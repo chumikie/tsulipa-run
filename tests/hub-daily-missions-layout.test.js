@@ -25,7 +25,9 @@ assert(html.includes("function hubMisUI(){")&&html.includes("data-resg="),'missi
 assert(html.includes('hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();'),'the original hub render still populates mission data');
 assert(html.includes("function hubMisCarregar(){")&&html.includes("contaRpc('missoes')"),'daily missions still load from the existing account RPC');
 
-const hub=html.slice(html.indexOf('function hubCardsUI(){'),html.indexOf('function hubMisUI(){'));
+const hubStart=html.indexOf('function hubCardsUI(){');
+const hubEnd=html.indexOf('function hubMisUI(){',hubStart);
+const hub=html.slice(hubStart,hubEnd);
 const order=['class="hubbt-mundo"','class="hubcard hubperf"','class="hubcard hubpet','class="hubcard hubgacha','class="hubbt-jogos"','class="hubcard hubrun"','class="tw-hubgame tw-hubgame-sora','class="tw-hubgame tw-hubgame-karaoke"','class="hubcard hubduo"'];
 let previous=-1;
 for(const marker of order){const at=hub.indexOf(marker);assert(at>previous,'Meu Mundo must precede Jogos in accessible DOM order: '+marker);previous=at;}

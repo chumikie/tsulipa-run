@@ -29,7 +29,7 @@ assert.equal(new Set(portraits.map(p=>p.id)).size,6,'Polaroid guest identities a
 assert(!portraits.some(p=>p.id==='public-0'||room.members.some(member=>member.id===p.id)),'Polaroids exclude the player and all seated room members');
 assert(!portraits.some(p=>room.members.some(member=>member.nick.toLowerCase()===p.nick.toLowerCase())),'Polaroids exclude repeated nicknames across different IDs');
 const loungeStart=html.indexOf('function krLoungeSoloPermitido(){');
-const loungeEnd=html.indexOf('var krLoungeSocialA=null',loungeStart);
+const loungeEnd=html.indexOf('function krLoungePodeSocializar(',loungeStart);
 assert(loungeStart>=0&&loungeEnd>loungeStart,'Karaoke solo lounge state machine exists');
 const loungeSource=html.slice(loungeStart,loungeEnd);
 assert(loungeSource.includes('function krLoungeAvancarAtores(dt,returnAll)'),'lounge movement advances through a shared route state machine');

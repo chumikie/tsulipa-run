@@ -14,6 +14,11 @@
   var index=Math.min(pool.length-1,Math.max(0,Math.floor(value*pool.length)));
   return pool[index];
  }
+ function createRotation(limit,random){
+  var recent=[],max=Math.max(0,Number(limit)||0);
+  function choose(candidates){var selected=pickCandidate(candidates,recent,random);if(selected){recent.push(selected);if(recent.length>max)recent.shift();}return selected;}
+  choose.reset=function(){recent.length=0;};return choose;
+ }
  function create(deps){
   if(!deps||typeof deps.getState!=='function'||typeof deps.getBots!=='function'||typeof deps.canWalk!=='function'||
    typeof deps.preparePlayerForSinger!=='function'||typeof deps.isPlayerAtSingerWait!=='function'||
@@ -146,5 +151,5 @@
   }
   return Object.freeze({tick:tick,beginSinger:beginSinger,finishSinger:finishSinger,updateMovement:updateMovement,getSinger:function(){return singer;}});
  }
- return Object.freeze({create:create,pickCandidate:pickCandidate});
+ return Object.freeze({create:create,pickCandidate:pickCandidate,createRotation:createRotation});
 });

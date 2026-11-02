@@ -34,6 +34,8 @@ on:
       - 'tests/visibility-scope.test.js'
       - 'tests/index-images.test.js'
       - 'tests/admin-idol.test.js'
+      - 'karaoke-room-views.js'
+      - 'tests/karaoke-room-views.test.js'
       - 'supabase/sql/admin_montar_idol.sql'
       - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
@@ -138,6 +140,8 @@ on:
       - 'tests/visibility-scope.test.js'
       - 'tests/index-images.test.js'
       - 'tests/admin-idol.test.js'
+      - 'karaoke-room-views.js'
+      - 'tests/karaoke-room-views.test.js'
       - 'supabase/sql/admin_montar_idol.sql'
       - 'supabase/tests/admin_idol_pg_*'
       - 'img/**'
@@ -227,6 +231,8 @@ jobs:
         run: node tests/index-images.test.js
       - name: Validate admin Idol editor (moderation)
         run: node tests/admin-idol.test.js
+      - name: Validate Karaoke window views (weekly rotation, day/night)
+        run: node tests/karaoke-room-views.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract

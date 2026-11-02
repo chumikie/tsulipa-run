@@ -69,6 +69,6 @@ assert(html.includes("krLoungeReactToShow('start'"),'the actual music start reac
 assert(html.includes("krLoungeReactToShow(isSessionRecord?'record':'finish'"),'finishes and session records have distinct audience events');
 assert(html.includes('showReactionActive=!!(j._ktShowReaction&&j._ktShowReaction.until>t)'),'audience reactions render without moving characters');
 assert(html.includes("krLoungePersonality.decideActivity(chosen,{seatAvailable:!!freeSeat})"),'the activity director checks for a genuinely free sofa');
-assert(html.includes("st.activity==='drink'")&&html.includes("st.activity==='dance'"),'drink and dance activities use the existing movement controller');
+assert(html.includes("activity==='drink'")&&html.includes("activity==='dance'"),'drink and dance activities use the existing movement controller');
 assert(!html.includes("b.danca='banzai';krBolhas.push({emo:i%2"),'the show result no longer forces a synchronized audience pose');
 console.log('Karaoke room personality: individual music preferences, audience events, social play and natural activities passed');

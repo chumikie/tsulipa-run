@@ -73,6 +73,14 @@ assert.ok(html.includes('function hubMostrar()')&&html.includes("$('hubMenu').hi
 assert.ok(html.includes('id="twRankHall"'));
 assert.ok(html.includes('href="./tw-weekly-podium.css?v=9"'));
 assert.ok(html.includes('href="./index2-launch-ui.css?v=11"'),'homepage must request the refreshed leaderboard stylesheet instead of reusing cached layout');
+assert.ok(!html.includes('twRankHallTab')&&!html.includes('data-tw-rank-tab')&&!html.includes('tw-rank-tabs'),
+  'Top Idols must not keep the old tab state or hidden single-board markup');
+assert.ok(html.includes('hall.innerHTML=twRankGames.map(function(k){'),
+  'Top Idols renderer must create one visible board for every game');
+assert.ok(html.includes('#hub #twRankHall #twRankColumns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}') &&
+  html.includes('#hub #twRankColumns .tw-rank-game{max-width:none;min-width:0;margin:0}') &&
+  !html.includes('#hub #twRankHall #twRankColumns{display:block}'),
+  'Homepage-level styles must not collapse the three-board grid');
 assert.ok(Buffer.byteLength(style,'utf8')<11000,'Weekly CSS under 11KB including fixed empty podium slots');
 assert.ok(style.includes('@media(min-width:900px)'),'Top Idols docks beside the hub cards on desktop');
 assert.ok(style.includes('tw-rank-avatar-wrap'),'podium supports existing Idol avatars with a fallback');

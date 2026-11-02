@@ -5,13 +5,29 @@
  else root.KaraokeRoomAutoMic=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
+ function pickCandidate(candidates,recent,random){
+  if(!Array.isArray(candidates)||!candidates.length)return null;
+  var history=Array.isArray(recent)?recent:[],pool=candidates.length>1?candidates.filter(function(candidate){return history.indexOf(candidate)<0;}):candidates;
+  if(!pool.length)pool=candidates;
+  var value=typeof random==='function'?Number(random()):Math.random();
+  if(!Number.isFinite(value))value=0;
+  var index=Math.min(pool.length-1,Math.max(0,Math.floor(value*pool.length)));
+  return pool[index];
+ }
  function create(deps){
   if(!deps||typeof deps.getState!=='function'||typeof deps.getBots!=='function'||typeof deps.canWalk!=='function'||
    typeof deps.preparePlayerForSinger!=='function'||typeof deps.isPlayerAtSingerWait!=='function'||
    typeof deps.restorePlayerAfterSinger!=='function'||typeof deps.isPlayerAtMic!=='function'||typeof deps.movePlayerToSeat!=='function'||typeof deps.movePlayerToWait!=='function'||typeof deps.isPlayerAtSeat!=='function'){
    throw new TypeError('KaraokeRoomAutoMic needs explicit room and player-movement dependencies');
   }
-  var singer=null;
+  var singer=null,recentSingers=[];
+  function chooseSinger(candidates){
+   var chosen=pickCandidate(candidates,recentSingers,deps.random);
+   if(!chosen)return null;
+   recentSingers.push(chosen);
+   if(recentSingers.length>3)recentSingers.shift();
+   return chosen;
+  }
   function beginPlayerReturn(){
    if(!singer)return;
    singer.phase='player_return';singer.route=[];singer.routeIndex=0;singer.playerReturnStarted=!!deps.restorePlayerAfterSinger();
@@ -124,11 +140,11 @@
    var bots=deps.getBots(),eligible=[];
    for(var i=0;i<bots.length;i++)if(deps.canWalk(bots[i])&&!bots[i]._ktLoungeWalking)eligible.push(bots[i]);
    if(!eligible.length){deps.setNextAt(s.time+180);return;}
-   var bot=eligible[Math.floor(deps.random()*eligible.length)];
+   var bot=chooseSinger(eligible);
    if(!beginSinger(bot,true)){deps.setNextAt(s.time+180);return;}
    deps.setNextAt(s.time+900+deps.random()*1200);deps.switchMusicMode();deps.updateUI();
   }
   return Object.freeze({tick:tick,beginSinger:beginSinger,finishSinger:finishSinger,updateMovement:updateMovement,getSinger:function(){return singer;}});
  }
- return Object.freeze({create:create});
+ return Object.freeze({create:create,pickCandidate:pickCandidate});
 });

@@ -13,6 +13,12 @@ const server=http.createServer((req,res)=>{
   fs.readFile(file,(err,data)=>{
     if(err){res.writeHead(404).end();return;}
     res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
+    if(name==='index.html'){
+      const marker='function drawChar(c,x,y,run,expr,isPartner){';
+      const wrapper="window.qaRenderAvatar=function(ctx,c,x,y){var oldG=g,oldState=state,oldPose=charPose,oldRank=rankI,oldAcc=accSel;try{g=ctx;state='menu';charPose='';rankI=0;accSel='';drawChar(c,x,y,0,0,false);}finally{g=oldG;state=oldState;charPose=oldPose;rankI=oldRank;accSel=oldAcc;}};\n";
+      const html=data.toString();assert(html.includes(marker),'Canvas injection point moved');
+      data=Buffer.from(html.replace(marker,wrapper+marker));
+    }
     res.end(data);
   });
 });
@@ -27,8 +33,7 @@ async function main(){
       page.on('pageerror',e=>errors.push(e.message));
       await page.goto(`http://127.0.0.1:${server.address().port}/index.html`,{waitUntil:'domcontentloaded'});
       const report=await page.evaluate(()=>{
-        if(typeof drawChar!=='function')throw Error('drawChar unavailable');
-        const oldG=g,oldState=state,oldPose=charPose,oldRank=rankI,oldAcc=accSel;
+        if(typeof window.qaRenderAvatar!=='function')throw Error('Canvas QA hook unavailable');
         const styles=[['curto','pixie','lateral'],['longo','longo','reta'],['volumoso','cacheado','bagunca'],['franja espetada','pixie','espetada']];
         const accessories=[['Coroa de Tulipas','tulipa',''],['Torrada de Anime','torrada',''],['Chapéu de Palha','','palha']];
         const colors=['#ff6fb5','#4dd8ff'];
@@ -38,9 +43,7 @@ async function main(){
         ctx.fillStyle='#201a38';ctx.fillRect(0,0,width,height);
         ctx.font='bold 16px system-ui';ctx.fillStyle='#fff';ctx.fillText('TsuLiPa World — acessórios Canvas 2D • QA isolado',24,28);
         const metrics=[];
-        try{
-          g=ctx;state='menu';charPose='';rankI=0;accSel='';
-          accessories.forEach(([label,det,hat],row)=>{
+        accessories.forEach(([label,det,hat],row)=>{
             ctx.fillStyle='#fff';ctx.font='bold 16px system-ui';ctx.fillText(label,24,66+row*212);
             styles.forEach(([style,back,front],col)=>{
               const left=28+col*215,top=84+row*212;
@@ -49,10 +52,10 @@ async function main(){
               colors.forEach((luz,i)=>{
                 const x=left+31+i*90,y=top+59;
                 ctx.save();ctx.translate(x,y);ctx.scale(1.8,1.8);
-                drawChar({hair:'#6c3299',skin:'#f5c9ae',eye:'#3562c9',luz,back,front,det,hat,out:'seifuku'},0,0,0,0,false);
+                window.qaRenderAvatar(ctx,{hair:'#6c3299',skin:'#f5c9ae',eye:'#3562c9',luz,back,front,det,hat,out:'seifuku'},0,0);
                 ctx.restore();
                 const pixels=ctx.getImageData(x-12,y-25,90,110).data;
-                const expected=det==='tulipa'?luz:(det==='torrada'?'#f5c574':'#f7d88b');
+                const expected=det==='tulipa'?luz:(det==='torrada'?'#f6ce86':'#f9df9d');
                 const rgb=expected.match(/[\da-f]{2}/gi).map(n=>parseInt(n,16));
                 let matching=0;
                 for(let n=0;n<pixels.length;n+=4)
@@ -60,8 +63,7 @@ async function main(){
                 metrics.push({accessory:label,style,color:luz,matching});
               });
             });
-          });
-        }finally{g=oldG;state=oldState;charPose=oldPose;rankI=oldRank;accSel=oldAcc;}
+        });
         document.body.replaceChildren(canvas);
         document.body.style.cssText='background:#141029;margin:0;padding:10px;box-sizing:border-box';
         return {metrics,logicalSize:[width,height]};

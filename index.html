@@ -8599,7 +8599,8 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
     contaRpc('admin_montar_idol',{p_nick:inick,p_c:admIdol.c,p_motivo:($('admMotivo').value||'').trim()}).then(function(r){
       ib.disabled=false;
       if(r&&r.ok){perfTopoMsg('👗 '+tr('Idol atualizado. A pessoa verá a mudança ao atualizar o jogo.'));perfAbrir(inick,true);return;}
-      imsg.textContent=r&&r.erro==='bloqueada'?tr('Esta roupa ainda não foi desbloqueada para o Idol.'):r&&r.erro==='nao_comprada'?tr('Esta roupa não consta como comprada para esta conta.'):tr('Não foi possível salvar o ajuste. Tente novamente.');imsg.hidden=false;
+      var idolErros={bloqueada:'O acessório ou a roupa ainda não foi desbloqueado para este Idol.',nao_comprada:'Este detalhe ou roupa não consta como comprado para esta conta.',cor:'Uma das cores enviadas é inválida.',mecha:'A mecha selecionada não é aceita pelo servidor.',corte:'O corte selecionado não é aceito pelo servidor.',franja:'A franja selecionada não é aceita pelo servidor.',detalhe:'O detalhe selecionado não é aceito pelo servidor.',oculos:'Os óculos selecionados não são aceitos pelo servidor.',acessorio:'O acessório selecionado não é aceito pelo servidor.',roupa:'A roupa selecionada não é aceita pelo servidor.',dados:'O visual enviado está incompleto ou inválido.',admin:'Esta conta não pode receber essa alteração administrativa.',perfil:'O perfil não foi encontrado.'};
+      imsg.textContent=tr(idolErros[r&&r.erro]||'Não foi possível salvar o ajuste. Tente novamente.');imsg.hidden=false;
     }).catch(function(){ib.disabled=false;imsg.textContent=tr('Não foi possível salvar o ajuste. Tente novamente.');imsg.hidden=false;});
     return;
   }

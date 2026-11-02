@@ -2325,6 +2325,18 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
 
+  if(d==='tulipa'){ // presilha lateral com tulipa: sobre o cabelo, sem esconder a franja
+    g.strokeStyle='#24945d';g.lineWidth=1.4;g.beginPath();g.moveTo(x+24,y+7);g.lineTo(x+23,y+13);g.stroke();
+    g.fillStyle='#57c982';T([x+23,y+11,x+19,y+9,x+22,y+13]);
+    g.fillStyle=c.luz||'#9b30d9';T([x+20,y+5,x+22,y+1,x+24,y+4]);T([x+24,y+4,x+27,y+1,x+28,y+5]);
+    E(x+24,y+5,3.5,3.5);g.fillStyle='#ffe8ff';E(x+23.4,y+4.2,.9,1.1);
+  }
+  if(d==='laco'){ // laço pequeno preso à lateral do cabelo
+    g.fillStyle='#df4b9b';T([x+8,y+7,x+3,y+3,x+4,y+11]);T([x+9,y+7,x+14,y+3,x+13,y+11]);
+    g.fillStyle='#ffaddc';E(x+8.5,y+7,2.2,2.3);g.fillStyle='#fff';E(x+8,y+6.5,.7,.7);
+    g.fillStyle='#df4b9b';T([x+7,y+9,x+5,y+14,x+9,y+11]);T([x+10,y+9,x+12,y+14,x+8,y+11]);
+  }
+
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
   
@@ -7134,6 +7146,7 @@ function perfEnfeites(x, W2, H2, cores, n, seed, t, alfa){   // ✦ e ♡ espalh
 }
 function perfFundo(x, W2, H2, f, cor, t){
   if(!f) return;
+  if(f==='cafe'){ duoFundoDesenhar(x,W2,H2,'cafe',t||0,cor); return; } // reutiliza a arte do Moon⭐Duo!
   var u = W2 / 320, gr, i;
   t = t || 0;
   if(f === 'basico'){   // pastel nas cores do TsuLiPa (roxo → verde → azul), com bolinhas
@@ -7950,18 +7963,18 @@ perfOv.addEventListener('click', function(e){
 // ---------- Estúdio de foto (só no seu perfil) ----------
 function perfTem(tipo, k){
   if(tipo === 'visual') return !k || perfDono.indexOf(k) >= 0;
-  if(tipo === 'fundo') return !k || k === 'basico' || k === 'temporada' || perfDono.indexOf('fundo_' + k) >= 0;
+  if(tipo === 'fundo') return !k || k === 'basico' || k === 'temporada' || perfDono.indexOf(k === 'cafe' ? 'duo_cafe' : 'fundo_' + k) >= 0;
   if(tipo === 'pose'){ var p = perfPoseInfo(k); return !p || !p[3] || perfDono.indexOf('pose_' + k) >= 0; }
   if(tipo === 'expr') return typeof lojaTem === 'function' ? lojaTem('expr_' + k) : true;
   return true;
 }
 function perfVisInfo(k){ for(var i = 0; i < PERF_VIS.length; i++) if(PERF_VIS[i][0] === k) return PERF_VIS[i]; return PERF_VIS[0]; }
-function perfFundoInfo(k){ for(var i = 0; i < PERF_FUNDOS.length; i++) if(PERF_FUNDOS[i][0] === k) return PERF_FUNDOS[i]; return PERF_FUNDOS[0]; }
+function perfFundoInfo(k){ if(k==='cafe')return ['cafe','☕','Café kawaii',90]; for(var i = 0; i < PERF_FUNDOS.length; i++) if(PERF_FUNDOS[i][0] === k) return PERF_FUNDOS[i]; return PERF_FUNDOS[0]; }
 function perfFaltando(){   // o que está escolhido e ainda não foi comprado: [chave no servidor, emoji + nome, preço]
   var av = perfGenAv, L = [];
   if(!perfTem('visual', av.visual)){ var v = perfVisInfo(av.visual); L.push([v[0], perfRot(v), v[3]]); }
   if(!perfTem('pose', av.pose)){ var p = perfPoseInfo(av.pose); L.push(['pose_' + p[0], perfRot(p), p[3]]); }
-  if(!perfTem('fundo', av.fundo)){ var f = perfFundoInfo(av.fundo); L.push(['fundo_' + f[0], perfRot(f), f[3]]); }
+  if(!perfTem('fundo', av.fundo)){ var f = perfFundoInfo(av.fundo); L.push([f[0]==='cafe'?'duo_cafe':'fundo_' + f[0], perfRot(f), f[3]]); }
   if(!perfTem('expr', av.expr) && typeof lojaItem === 'function'){ var ei = lojaItem('expr_' + av.expr); if(ei) L.push([ei[0], ei[1] + ' ' + tr(ei[2]), ei[3]]); }
   return L;
 }
@@ -7984,7 +7997,7 @@ function perfGenUI(){
   var pets = [['', '🚫', 'Sem pet']].concat(perfPetsDono().map(function(k){ var p = petData.pets[k]; return [k, PET_SP[k].emo, p.nome || PET_SP[k].n]; }));
   if(av.pet && perfPetsDono().indexOf(av.pet.k) < 0) av.pet = null;
   $('perfGenOpts').innerHTML = grp('Visual', 'visual', vis, av.visual) + grp('Pose', 'pose', PERF_POSES, av.pose) + grp('Expressão', 'expr', exprs, String(av.expr)) +
-    grp('Fundo', 'fundo', PERF_FUNDOS.filter(function(o){ return o[0] !== 'temporada' || temaPerfil(); }), av.fundo) + (pets.length > 1 ? grp('Pet na foto', 'pet', pets, av.pet ? av.pet.k : '') : '');
+    grp('Fundo', 'fundo', PERF_FUNDOS.filter(function(o){ return o[0] !== 'temporada' || temaPerfil(); }).concat([['cafe','☕','Café kawaii',90]]), av.fundo) + (pets.length > 1 ? grp('Pet na foto', 'pet', pets, av.pet ? av.pet.k : '') : '');
   var b = $('perfGenBtns'), m = $('perfGenMsg'), falta = perfFaltando();
   if(!falta.length){
     b.innerHTML = '<a class="btn" id="perfPng" download="tsulipa-idol.png" href="#">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a><button type="button" class="btn alt" id="perfUsar">🖼️ ' + escHtml(tr('Usar como foto do perfil')) + '</button>';
@@ -8453,7 +8466,7 @@ function admIdolFormHtml(r){
     '<div style="position:relative;width:120px;margin:4px auto"><canvas id="admIdolCv" width="120" height="150" style="display:block;width:120px;height:150px"></canvas><button type="button" id="admIdolPng" title="'+escHtml(tr('Baixar PNG'))+'" aria-label="'+escHtml(tr('Baixar PNG'))+'" style="position:absolute;bottom:4px;right:-30px;width:34px;height:34px;border:0;border-radius:50%;background:var(--b1);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)">📷</button></div><div class="cust">'+
     '<label>'+escHtml(tr('Cabelo'))+cor('hair')+'</label>'+sel('cback','back')+'<i class="cbr"></i>'+
     sel('cstk','mecha')+cor('hair2')+'<i class="cbr"></i>'+
-    sel('cfront','front')+sel('cdet','det',function(o){return o.value!=='coelho'||owned.indexOf('det_coelho')>=0;})+'<i class="cbr"></i>'+
+    sel('cfront','front')+sel('cdet','det',function(o){return !/^(coelho|tulipa|laco)$/.test(o.value)||owned.indexOf('det_'+o.value)>=0;})+'<i class="cbr"></i>'+
     '<span class="perfskins">'+SK.map(function(sk){return '<button type="button" class="sw" data-ai="skin" data-v="'+sk+'" style="background:'+sk+'" aria-pressed="'+(sk===admIdol.c.skin)+'"></button>';}).join('')+'</span>'+
     '<label>'+escHtml(tr('Olhos'))+cor('eye')+'</label><i class="cbr"></i>'+
     '<label>'+escHtml(tr('Roupa'))+' <select data-ai="out">'+(roupas?roupas[1]:'')+'</select>'+cor('outcol')+'</label><i class="cbr"></i>'+
@@ -11320,8 +11333,13 @@ aniverOv.addEventListener('click', function(e){ if(e.target.id === 'aniverOk'){ 
 var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
   ['expr_4', '😮', 'Surpresa', 60, 'expr'], ['expr_5', '🥺', 'Chorinho', 60, 'expr'], ['expr_6', '😍', 'Apaixonado', 80, 'expr'],
   ['duo_selfie', '🤳', 'Selfie', 80, 'duo'], ['duo_guarda', '☂️', 'Guarda-chuva', 100, 'duo'], ['duo_seis', '6️⃣', 'Six Seven', 120, 'duo'],
-  ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo'], ['det_coelho', '🐰', 'Orelhas de coelho', 50, 'acc']
+  ['duo_neon', '✨', 'Pose Neon', 150, 'duo'], ['duo_cafe', '☕', 'Café kawaii', 90, 'duo'],
+  ['det_coelho', '🐰', 'Orelhas de coelho', 50, 'acc'], ['det_tulipa', '🌷', 'Presilha de Tulipa', 50, 'acc'], ['det_laco', '🎀', 'Laço de Estreia', 50, 'acc']
 ];
+[
+ ['Presilha de Tulipa','Tulip hair clip','Pasador de tulipán','กิ๊บติดผมทิวลิป','チューリップのヘアピン'],
+ ['Laço de Estreia','Debut bow','Lazo de debut','โบว์เดบิวต์','デビューリボン']
+].forEach(function(a){['en','es','th','ja'].forEach(function(l,i){if(DICT[l])DICT[l][a[0]]=a[i+1];});});
 // (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
 var DUO_TEMA_PRECO = 60;
 function duoTemaK(k){ return TEMA_INFO[k] && k !== 'halloween' ? k : ''; }   // o Halloween tem o fundo próprio da lojinha
@@ -11341,7 +11359,7 @@ function lojaItem(k){
 }
 function lojaTem(k){ return !lojaItem(k) || (Array.isArray(perfDono) && perfDono.indexOf(String(k)) >= 0); }
 function perfLoja2UI(){
-  coelhoSync();
+  acessoriosSync();
   var box = $('perfLoja2'); if(!box) return;
   var L = PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], o[1], o[2], o[3], 'pose']; }).concat(LOJA_EXTRA);
   box.innerHTML = L.map(function(it){
@@ -11353,7 +11371,7 @@ function perfLoja2UI(){
   }).join('');
   [].forEach.call(box.querySelectorAll('canvas[data-l2]'), function(cv){
     var k = cv.dataset.l2, av = perfAvAtual({ pose: /^pose_/.test(k) ? k.slice(5) : '', expr: /^expr_/.test(k) ? +k.slice(5) : 2, fundo: 'basico' });
-    if(k === 'det_coelho'){ av.c.det = 'coelho'; av.pose = 'v'; }
+    if(/^det_(coelho|tulipa|laco)$/.test(k)){ av.c.det = k.slice(4); av.pose = 'v'; }
     av.pose = /^pose_/.test(k) ? k.slice(5) : ''; av.expr = /^expr_/.test(k) ? +k.slice(5) : 2;
     try{ perfDesenharIdol(cv.getContext('2d'), 160, 160, av, true, /^expr_/.test(k), 0); }catch(e){}
   });
@@ -11624,16 +11642,18 @@ var lookSaveGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!p
 perfOv.addEventListener('click', function(e){ if(e.target.id === 'perfLook'){ lookSalvar(true, $('perfLookMsg')); if(sfx.card) sfx.card(); } });
 if(typeof perfFechar === 'function'){ var lookFecharOrig = perfFechar; perfFechar = function(){ var r = lookFecharOrig.apply(this, arguments); lookSalvar(); return r; }; $('perfX').onclick = perfFechar; }
 
-// ---------- Orelhas de coelho (item da lojinha) ----------
-function coelhoSync(){
+// ---------- Acessórios comprados: opções liberadas no montador ----------
+function acessoriosSync(){
   var s = $('cdet'); if(!s) return;
-  var o = s.querySelector('option[value="coelho"]'), tem = lojaTem('det_coelho') || CU.det === 'coelho';
-  if(tem && !o){ o = document.createElement('option'); o.value = 'coelho'; o.setAttribute('data-r', '0'); s.appendChild(o); }
-  if(o) o.textContent = tr('Orelhas de coelho');
-  if(!tem && o) o.remove();
+  [['coelho','Orelhas de coelho'],['tulipa','Presilha de Tulipa'],['laco','Laço de Estreia']].forEach(function(it){
+    var o=s.querySelector('option[value="'+it[0]+'"]'),tem=lojaTem('det_'+it[0])||CU.det===it[0];
+    if(tem&&!o){o=document.createElement('option');o.value=it[0];o.setAttribute('data-r','0');s.appendChild(o);}
+    if(o)o.textContent=tr(it[1]);
+    if(!tem&&o)o.remove();
+  });
 }
-coelhoSync();
-var coelhoSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!perfMeu&&perfAba==='montar';},coelhoSync,3000);
+acessoriosSync();
+var acessoriosSyncGate=twIntervaloVisivel(perfOv,function(){return !perfOv.hidden&&!!perfMeu&&perfAba==='montar';},acessoriosSync,3000);
 
 // ---------- Botão de som dentro do gacha e do Moon⭐Duo! ----------
 (function(){ var p = duoOv.querySelector('.panel'); if(p){ var b = document.createElement('button'); b.type = 'button'; b.className = 'ovsom tw-window-control tw-window-sound'; b.setAttribute('data-som', '1'); p.insertBefore(b, p.firstChild); } })();

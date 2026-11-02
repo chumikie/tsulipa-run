@@ -227,15 +227,13 @@ async function waitForRoomMode(frame, expectMobile){
     if(width>620)assert(Math.abs(idle.canvas.w-idle.scene.w)<1&&Math.abs(idle.canvas.h-idle.scene.h)<1,'Desktop canvas fits the room');
     for(const r of idle.controls)assert(r.x>=0&&r.right<=width+1,r.id+' fits the viewport');
     if(width<=620){
-     assert(Math.abs(idle.crop.left-48)<.1&&Math.abs(idle.crop.right-912)<.1,'Only the decorative side margins are cropped');
+     // Celular em pé (02/11/2026, aprovado pela dona): recorte médio, centro de 720 dos 960 px
+     // lógicos (120 por lado). As pontas da plateia podem ficar em parte cortadas, mas o centro
+     // de cada Idol e o do jogador continuam sempre visíveis.
+     assert(Math.abs(idle.crop.left-120)<.1&&Math.abs(idle.crop.right-840)<.1,'Portrait crop keeps the central 720 logical pixels');
      const bounds=await frame.locator('body').evaluate(()=>window.qaRoomState());
-     // The complete cached sprite covers every pose. Use the largest standing
-     // scale (2.3) for a conservative bound; seated members are only 2.06.
-     for(const b of bounds.members){
-      const left=b.x-(b.x>480?45:31)*2.3,right=b.x+(b.x>480?31:45)*2.3;
-      assert(left>=idle.crop.left&&right<=idle.crop.right,'Entire member sprite, including animation envelope, remains visible');
-     }
-     assert(120-31*2.3>=idle.crop.left&&840+31*2.3<=idle.crop.right,'Walking limits retain the complete player sprite');
+     for(const b of bounds.members)assert(b.x>=idle.crop.left&&b.x<=idle.crop.right,'Every member stays visible (at least its centre)');
+     assert(120>=idle.crop.left&&840<=idle.crop.right,'Walking limits keep the player centre visible');
      for(const r of idle.tools)assert(r.bottom<=idle.roomView.y+.1&&r.x>=idle.scene.x&&r.right<=idle.scene.right,'Tools occupy their own band above the picture');
      const soundTool=idle.tools[0],cameraTool=idle.tools[1];assert(soundTool.right<=cameraTool.x||cameraTool.right<=soundTool.x||soundTool.bottom<=cameraTool.y||cameraTool.bottom<=soundTool.y,'Sound and camera controls never overlap, even when the tools wrap');
      assert.equal(idle.bannerOpacity,'1','Mobile attempts remain visible after fade timer');
@@ -362,7 +360,7 @@ async function waitForRoomMode(frame, expectMobile){
    if(!baseline){
     assert(playing.scroll<=playing.viewport+1,'Playing does not widen the document');
     if(width<=620){
-     assert(Math.abs(playing.crop.left-48)<.1,'Mild crop also preserves the audience during play');
+     assert(Math.abs(playing.crop.left-120)<.1,'The same medium crop is kept during play');
      assert(playing.weekly.y>=playing.scene.bottom,'Ranking stays below the game while playing');
      // Test the real pointer-to-logical-canvas conversion after cropping.
      await p.waitForTimeout(4200); // The game intentionally keeps a 4s count-in before the first accepted note.
@@ -377,7 +375,7 @@ async function waitForRoomMode(frame, expectMobile){
      assert(Math.abs(overview.crop.left)<.1&&Math.abs(overview.crop.right-960)<.1,'Full room toggle restores the entire canvas');
      await frame.locator('#ktViewMobile').click();
      const cropped=await metrics(frame);
-     assert(Math.abs(cropped.crop.left-48)<.1,'Second toggle restores gentle crop');
+     assert(Math.abs(cropped.crop.left-120)<.1,'Second toggle restores the medium crop');
      const soundBefore=await frame.locator('#krMute').innerText();
      await frame.locator('#krMute').click();
      assert.notEqual(await frame.locator('#krMute').innerText(),soundBefore,'Moved sound button still toggles');
@@ -403,7 +401,7 @@ async function waitForRoomMode(frame, expectMobile){
     await p.setViewportSize({width,height:900});
     await waitForRoomMode(frame,true);
     const mobileAgain=await metrics(frame);
-    assert(Math.abs(mobileAgain.crop.left-48)<.1,'Resize back restores mobile crop');
+    assert(Math.abs(mobileAgain.crop.left-120)<.1,'Resize back restores mobile crop');
     assert.equal(await frame.locator('.kt-room-tools #krMute').count(),1,'No duplicate sound button after resize');
    }
    await p.locator('#twPreviewVoltar').click();

@@ -8419,10 +8419,17 @@ function admIdolFormHtml(r){
     '<p class="perfmsg" id="admMsg" hidden></p>';
 }
 function admIdolC(){ var c={};for(var k in PERF_BASE)c[k]=PERF_BASE[k];for(k in admIdol.c)c[k]=admIdol.c[k];c.streak=!!c.mecha;c.img=c.hair;return c; }
-function admIdolPng(){   // PNG transparente 1000×1000 do Idol montado (como o 📷 do menu)
-  if(!admIdol)return;var cv=document.createElement('canvas');cv.width=cv.height=1000;
-  try{perfDesenharIdol(cv.getContext('2d'),1000,1000,{v:1,c:admIdolC(),a:'',pose:'v',expr:2},false,false,0);}catch(e){return;}
-  var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='tsulipa-idol-'+(String(admIdol.nick).replace(/[^a-z0-9]/gi,'').toLowerCase()||'membro')+'.png';a.click();
+function admPng(nick,av){   // PNG transparente 1000×1000 do Idol (como o 📷 do menu)
+  var cv=document.createElement('canvas');cv.width=cv.height=1000;
+  try{perfDesenharIdol(cv.getContext('2d'),1000,1000,av,false,false,0);}catch(e){return;}
+  var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='tsulipa-idol-'+(String(nick).replace(/[^a-z0-9]/gi,'').toLowerCase()||'membro')+'.png';a.click();
+}
+function admIdolPng(){ if(admIdol)admPng(admIdol.nick,{v:1,c:admIdolC(),a:'',pose:'v',expr:2}); }
+function admRoupaPng(){   // ajuste só de roupa: o visual público do membro com a roupa escolhida
+  if(!perfAtual)return;var av=JSON.parse(JSON.stringify(perfAtual.avatar&&typeof perfAtual.avatar==='object'?perfAtual.avatar:{}));
+  av.c=av.c&&typeof av.c==='object'?av.c:{};av.pet=null;av.fundo='';
+  if($('admRoupa'))av.c.out=$('admRoupa').value;if($('admRoupaCor'))av.c.outcol=$('admRoupaCor').value;
+  admPng(perfAtual.nick,av);
 }
 function admIdolPrev(){
   var cv=$('admIdolCv');if(!cv||!admIdol)return;
@@ -8451,6 +8458,7 @@ function admVisualFormHtml(r){
     '<label>' + escHtml(tr('Cor da roupa')) + ' <input type="color" id="admRoupaCor" value="' + escHtml(color) + '"></label>' +
     '<input id="admMotivo" maxlength="60" placeholder="' + escHtml(tr('Motivo (aparece no extrato)')) + '">' +
     '<button type="button" class="btn" id="admVestirSalvar">👗 ' + escHtml(tr('Salvar ajuste')) + '</button>' +
+    ' <button type="button" class="btn" id="admRoupaPng" title="' + escHtml(tr('Baixar PNG')) + '" aria-label="' + escHtml(tr('Baixar PNG')) + '">📷</button>' +
     '<p class="perfmsg" id="admMsg" hidden></p>';
 }
 perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia especial e ver o extrato (perfil de outra pessoa)
@@ -8504,6 +8512,7 @@ perfOv.addEventListener('click', function(e){   // dar estrelas, item, insígnia
     return;
   }
   if(e.target.closest&&e.target.closest('#admIdolPng')){admIdolPng();return;}
+  if(e.target.closest&&e.target.closest('#admRoupaPng')){admRoupaPng();return;}
   var ai=e.target.closest&&e.target.closest('button[data-ai]');
   if(ai&&admIdol){admIdol.c[ai.dataset.ai]=ai.dataset.v;[].forEach.call(ai.parentNode.children,function(b){b.setAttribute('aria-pressed',b===ai);});admIdolPrev();return;}
   if(e.target.closest && e.target.closest('#admIdolSalvar') && perfAtual && admIdol && admIdol.nick===perfAtual.nick){

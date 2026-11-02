@@ -13,4 +13,5 @@ assert(html.includes("return (+o.getAttribute('data-r')||0)<=best;")&&html.inclu
 assert(/eh_admin\(\)/.test(sql)&&/REVOKE ALL ON FUNCTION public\.admin_montar_idol\(text, jsonb, text\) FROM PUBLIC, anon;/.test(sql),'SQL restrito à admin');
 assert(/NÃO APLICAR SEM AUTORIZAÇÃO/.test(sql),'SQL marcado como proposta');
 assert(html.includes('id="admIdolPng"')&&html.includes("a.download='tsulipa-idol-'")&&html.includes("if(e.target.closest&&e.target.closest('#admIdolPng')){admIdolPng();return;}"),'câmera baixa o PNG do Idol montado');
+assert(html.includes('id="admRoupaPng"')&&html.includes("if(e.target.closest&&e.target.closest('#admRoupaPng')){admRoupaPng();return;}"),'câmera também no ajuste só de roupa');
 console.log('✓ Moderação: montar o Idol de um membro (editor, regras e SQL proposto)');

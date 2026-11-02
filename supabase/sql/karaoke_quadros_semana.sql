@@ -1,5 +1,6 @@
 -- TsuLiPa⭐World / Karaoke⭐Time! — quadros "Mais shows na semana" e "Quem mais evoluiu" (PR #58)
 -- PROPOSTA PARA REVISÃO. NÃO APLICAR SEM AUTORIZAÇÃO EXPLÍCITA DA DONA DO PROJETO.
+-- APLICADA no Supabase em 02/11/2026 com autorização da dona (relato do ChatGPT na PR58_STATUS).
 -- Depende de supabase/sql/karaoke_musica_da_semana.sql JÁ APLICADO (kt_run_finish com p_song).
 -- Antes de aplicar: conferir que o kt_run_finish ativo é o daquele arquivo. Se for diferente, NÃO aplicar.
 --

@@ -13,7 +13,7 @@ assert(!/\bCH\b|\bdesenharIdol\b|\bkrT\b/.test(polaroidSource),'Polaroid module 
 assert(html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({')&&html.includes('window.krLoungeAutoMicTick=window.krLoungeAutoMicController.tick'),'page injects room state into the autonomous mic factory');
 assert(html.includes('window.ktShowAdmissionPending=true')&&html.includes("dialog.addEventListener('cancel'")&&html.includes('window.ktShowAdmissionPending=false;dialog.close();'),'player admission locks NPC turns until confirmed or cancelled');
 assert(html.includes("window.ktShowAdmissionPending=false;kt.start('confirmed',info)")&&html.includes('window.ktShowAdmissionPending=false;aviso('),'admission lock clears on confirmed start and gate failure');
-assert(html.includes('Silenciar / restaurar som')&&html.includes('muteButton.focus({preventScroll:true});muteButton.click();'),'M caption and focus target are the sound button');
+assert(html.includes('Silenciar / restaurar som')&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('krAlternarSom();return;')&&!html.includes('muteButton.focus({preventScroll:true})')&&!html.includes('muteButton.click()'),'M calls the shared mute state directly without synthetic focus or click');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({'),'page injects avatar renderer dependencies into the Polaroid factory');
 assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-room-polaroid.js?v=2'),'both separated controllers use fresh cache versions');
 

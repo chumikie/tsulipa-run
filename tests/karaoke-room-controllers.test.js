@@ -26,6 +26,12 @@ assert.equal(AutoMic.pickCandidate(['A','B','C'],['A','B'],()=>0),'C','automatic
 assert.equal(AutoMic.pickCandidate(['A','B'],['A'],()=>0),'B','the next singer changes even when the injected random value repeats');
 assert.equal(AutoMic.pickCandidate(['A'],['A'],()=>0),'A','the only eligible singer remains selectable');
 assert.equal(AutoMic.pickCandidate([],[],()=>0),null,'an empty singer pool remains empty');
+{
+ const h=autoHarness();h.bots[0].drink='tsu';
+ assert.equal(h.controller.beginSinger(h.bots[0],false),false,'a character holding a drink cannot be pulled directly onto the singing stage');
+ h.tick();
+ assert.equal(h.state.singer.bot,h.bots[1],'automatic mic rotation skips a character holding a drink when another idol is free');
+}
 assert(html.includes('KD_LUGARES=10')&&html.includes('members.length===10'),'daily room has ten decorative members');
 assert(html.includes('selectPolaroids(catalog,selfId,active.day,active.members,guests'),'Polaroids select guests outside the current room roster');
 assert(html.includes('krT+600+Math.random()*180'),'all seated members get an extended shared rest');
@@ -35,7 +41,7 @@ function autoHarness(overrides,randomValue){
  const state=Object.assign({soloAllowed:true,roomOpen:true,nextAt:100,time:100,singer:null,rhythmRun:null,playerNoMic:false,admissionPending:false,returnAt:0,returning:false,moveQueueLength:0,playerAtMic:true,playerX:480,playerY:286,playerWaited:false,playerSeated:false,playerWaitTarget:null,playerSeatTarget:null,playerReturning:false,playerTarget:null,walkerCount:0,queueLength:0,gameActive:false},overrides||{});
  const bots=[{nick:'A',x:200,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:160,returnY:400}},{nick:'B',x:700,y:400,no_mic:false,_ktLoungeWalking:false,_ktLounge:{returnX:800,returnY:400}}];
  const calls=[],deps={
-  getState:()=>state,getBots:()=>bots,canWalk:bot=>!bot.no_mic,getSeat:i=>i===0?[160,400]:[800,400],
+  getState:()=>state,getBots:()=>bots,canWalk:bot=>!bot.no_mic&&!bot.drink,getSeat:i=>i===0?[160,400]:[800,400],
   removeWalker:bot=>{bot._ktLoungeWalking=false;calls.push(['remove',bot.nick]);},
   preparePlayerForSinger:(x,y)=>{state.playerTarget=[x,y];state.playerAtMic=false;calls.push(['player-departure',x,y]);return true;},
   isPlayerAtSingerWait:(x,y)=>state.playerWaited&&Math.hypot(state.playerX-x,state.playerY-y)<=3,

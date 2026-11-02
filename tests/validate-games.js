@@ -404,6 +404,7 @@ try{
       body:{classList:{remove:()=>{}}}
     }
   };
+  vm.runInNewContext(translations,sandbox,{filename:"tw-i18n.js"});
   vm.runInNewContext(lab.slice(from,to),sandbox,{filename:"index2-preview-controller.js"});
   sandbox.twPreviewAbrirJogo("sora");
   // O Sora agora abre como pop-up SOBRE o hub (igual ao Star Gacha): o hub fica atras, visivel.

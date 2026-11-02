@@ -50,7 +50,7 @@
     posterDialog.innerHTML='<button type="button" class="tw-window-control tw-window-close" id="ktPosterClose" aria-label="Fechar retrato">×</button><div class="kt-poster-heading"><h2 id="ktPosterTitle"></h2><small lang="ja">メンバー・ポラロイド</small></div><canvas id="ktPosterPortrait" width="520" height="620" role="img"></canvas><div class="kt-poster-actions"><a class="btn" id="ktPosterSave" hidden download>⬇️ Salvar retrato</a></div><p class="kt-poster-caption">Karaoke⭐Time! · TsuLiPa⭐World</p>';
     d.body.appendChild(posterDialog);
     posterDialog.querySelector('#ktPosterClose').onclick=function(){posterDialog.close();};
-    posterDialog.addEventListener('close',function(){releaseSave();if(activeOpener&&activeOpener.isConnected)activeOpener.focus({preventScroll:true});});
+    posterDialog.addEventListener('close',function(){if(posterDialog.open)return;releaseSave();if(activeOpener&&activeOpener.isConnected)activeOpener.focus({preventScroll:true});});
     host.addEventListener('resize',follow,{passive:true});
     host.addEventListener('scroll',follow,{passive:true,capture:true});
    }

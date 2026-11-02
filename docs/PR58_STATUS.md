@@ -409,3 +409,10 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - A simulação pertence ao controlador de microfone automático existente e só atua em runs `auto`; ela não usa input do jogador, não gasta tickets e não cria resultado ou ranking de jogador.
 - O pedestal do palco usa o mesmo ponto de mão da pose `mic` e continua desenhado no primeiro plano, cobrindo o microfone da animação do cantor.
 - Testes adicionados para distribuição de props, duração, julgamento simulado, isolamento do jogador e alinhamento visual do pedestal.
+
+
+### 2026-11-02 — Correção fina do pedestal do microfone
+- O pedestal voltou a usar exclusivamente a âncora fixa `KR_MIC_HOME_X/KR_MIC_HOME_Y`; a posição lateral e a base não acompanham mais a mão do personagem.
+- A haste e a cápsula subiram apenas 5 unidades do desenho (6,75 px na escala atual), para cobrir o microfone de mão na região da boca sem deslocar o pedestal pelo palco.
+- A área de interação do microfone acompanha a cápsula elevada.
+- O teste do controlador agora exige âncora fixa, pequeno deslocamento vertical e ausência de rastreamento da mão.

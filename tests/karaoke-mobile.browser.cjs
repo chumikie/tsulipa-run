@@ -97,8 +97,8 @@ async function waitForRoomMode(frame, expectMobile){
     width:innerWidth,
     mediaMobile:matchMedia('(max-width:620px)').matches,
     roomMobile:!!(room&&room.classList.contains('kt-room-mobile')),
-    soundParent:sound&&sound.parentElement?(sound.parentElement.id||sound.parentElement.className):null,
-    canvasParent:canvas&&canvas.parentElement?(canvas.parentElement.id||canvas.parentElement.className):null,
+    soundParent:sound&&sound.parentElement?String(sound.parentElement.className):null,
+    canvasParent:canvas&&canvas.parentElement?String(canvas.parentElement.className):null,
     viewportAttached:!!(viewport&&viewport.parentElement===room),
     toolsAttached:!!(tools&&tools.parentElement===room)
    };

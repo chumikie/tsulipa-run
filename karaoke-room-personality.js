@@ -121,7 +121,15 @@
    return {clear:clear,reset:reset,active:active,shouldUpdate:shouldUpdate,update:update};
   }
   function createShowReactor(deps){deps=deps||{};var lastEventAt=-1e9;return function(event,details){if(typeof deps.allowed==='function'&&!deps.allowed())return 0;var t=Number(typeof deps.now==='function'?deps.now():0);if(event==='hit'&&t-lastEventAt<24)return 0;if(event==='combo'&&t-lastEventAt<28)return 0;lastEventAt=t;var ctx=Object.assign({},details||{}),singer=ctx.player||(typeof deps.singer==='function'?deps.singer(ctx):null);if(event==='start'&&typeof deps.onStart==='function')deps.onStart();var eligible=typeof deps.eligible==='function'?deps.eligible(singer,t):[];ctx.language=ctx.language||(typeof deps.language==='function'?deps.language():'pt');var reactions=decideReactions(eligible,event,ctx);for(var i=0;i<reactions.length;i++)if(typeof deps.apply==='function')deps.apply(reactions[i],singer,t,event);if(typeof deps.after==='function')deps.after();return reactions.length;};}
-  return {profile:profile,prepare:prepare,reset:reset,choose:choose,chooseConversation:chooseConversation,chooseAudience:chooseAudience,delay:delay,activityDuration:activityDuration,decideActivity:decideActivity,gesture:gesture,dialogue:dialogue,decideSocial:decideSocial,decideReactions:decideReactions,musicAffinity:musicAffinity,clearActivity:clearActivity,activateActivity:activateActivity,finishActivity:finishActivity,freeSofaSlot:freeSofaSlot,createSocialDirector:createSocialDirector,createShowReactor:createShowReactor};
+  function equipRoomProps(actors){
+   var list=Array.isArray(actors)?actors:[],roles=['drink','drink','snack','snack','snack','pandeiro','pandeiro','mic','',''],drinks=['tsu','lirika','pati'],snacks=['onigiri','takoyaki','dango','taiyaki'];
+   function shuffle(items){for(var i=items.length-1;i>0;i--){var j=Math.floor(roll()*(i+1)),v=items[i];items[i]=items[j];items[j]=v;}return items;}
+   shuffle(roles);shuffle(drinks);shuffle(snacks);var di=0,si=0;
+   list.forEach(function(actor,index){var p=profile(actor),role=roles[index%roles.length];actor.lookSala=roll()<.2+p.expressiveness*.25;actor.antenaSala=roll()<.12+p.curiosity*.32;actor.drink='';actor.itemSala='';actor.snackSala='';
+    if(role==='drink')actor.drink=drinks[di++%drinks.length];else if(role==='snack')actor.snackSala=snacks[si++%snacks.length];else if(role==='pandeiro'||role==='mic')actor.itemSala=role;
+   });return list;
+  }
+  return {profile:profile,prepare:prepare,reset:reset,choose:choose,chooseConversation:chooseConversation,chooseAudience:chooseAudience,delay:delay,activityDuration:activityDuration,decideActivity:decideActivity,gesture:gesture,dialogue:dialogue,decideSocial:decideSocial,decideReactions:decideReactions,musicAffinity:musicAffinity,clearActivity:clearActivity,activateActivity:activateActivity,finishActivity:finishActivity,freeSofaSlot:freeSofaSlot,createSocialDirector:createSocialDirector,createShowReactor:createShowReactor,equipRoomProps:equipRoomProps};
  }
  return {create:create,types:TYPES.map(function(t){return t.id;})};
 });

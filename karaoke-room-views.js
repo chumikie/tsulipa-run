@@ -149,6 +149,7 @@
    x.fillStyle = idx % 2 ? '#8a3d58' : '#b3444c'; for(var st = 0; st < 4; st++) x.fillRect(sx2 - 3 + st * (sw + 6) / 4, topo + 8, (sw + 6) / 8, 5);
    if(a[2]){ x.fillStyle = N ? 'rgba(247,224,207,.94)' : 'rgba(90,40,60,.9)'; x.font = '900 7px sans-serif'; x.textAlign = 'center'; x.fillText(a[2], sx2 + sw * .5, topo + 22); }
   });
+  multidao(x, R, ruaY + 1, ry + rh - 1, 16, t, N, N ? ['luz', '', 'luz', 'sacola', 'luz', 'crepe'] : ['sacola', '', 'crepe', 'balao', '', 'sacola']);
   for(var r2 = 0; r2 < 6; r2++){
    x.fillStyle = ['rgba(255,226,190,.22)', 'rgba(247,168,210,.18)', 'rgba(167,243,208,.15)'][r2 % 3];
    x.beginPath(); x.ellipse(rx + 17 + r2 * 33, ry + rh - 6, 7 + (r2 % 3) * 2, 1.7, 0, 0, PI2); x.fill();
@@ -179,10 +180,12 @@
   if(N){ x.fillStyle = 'rgba(255,214,140,.75)'; for(i = 0; i < 26; i++) x.fillRect(rx + (i * 37 % rw), rio - 10 - (i * 11 % 16), 1.6, 1.6); }
   // árvores e base do templo
   x.fillStyle = N ? '#1f3a3a' : '#4f9a6c';
-  for(i = 0; i < 9; i++){ x.beginPath(); x.arc(rx + i * rw / 8, rio - 6, 9 + (i % 3) * 2, Math.PI, 0); x.fill(); }
+  for(i = 0; i < 9; i++){ x.beginPath(); x.arc(rx + i * rw / 8, rio - 7, 9 + (i % 3) * 2, Math.PI, 0); x.fill(); }
   var cx = rx + rw * .5, base = rio - 8;
+  x.fillStyle = N ? '#2a2a4a' : '#b9a98e'; x.fillRect(rx, rio - 7, rw, 7);   // margem de pedra até a água
+  x.fillStyle = N ? 'rgba(255,220,150,.25)' : 'rgba(255,255,255,.35)'; x.fillRect(rx, rio - 7, rw, 1);
   if(N) glow(x, cx, base - 40, 70, 'rgba(255,200,110,.38)');
-  x.fillStyle = N ? '#d9a752' : '#e6d8bf'; x.fillRect(cx - rw * .28, base - 6, rw * .56, 8);
+  x.fillStyle = N ? '#d9a752' : '#e6d8bf'; x.fillRect(cx - rw * .28, base - 6, rw * .56, 13);
   prang(x, cx - rw * .2, base - 4, 16, 34, N); prang(x, cx + rw * .2, base - 4, 16, 34, N);
   prang(x, cx, base - 4, 30, 70, N);
   // rio
@@ -231,7 +234,12 @@
   x.fillStyle = pg; rr(x, gx0 - 4, fy - 12, gx1 - gx0 + 8, 13, 4); x.fill(); x.restore();
   x.fillStyle = '#ffffff'; x.font = '900 7px sans-serif'; x.textAlign = 'center'; x.fillText('竹下通り', (gx0 + gx1) / 2, fy - 3);
   // balões no portal
-  [['#ff7eb6', -1], ['#ffe066', 0], ['#7ec8ff', 1]].forEach(function(b, k){ var bx = (k ? gx1 + 2 : gx0 - 2) + (k === 2 ? 0 : 0), by = fy - 14 - Math.sin(t * .04 + k) * 1.5; if(k === 1) bx = gx0 - 6; x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, 3.2, 4, 0, 0, PI2); x.fill(); });
+  [[gx0 - 1, '#ff7eb6', -5], [gx0 + 4, '#ffe066', -3], [gx1 + 1, '#7ec8ff', 5], [gx1 - 4, '#ff9cc8', 3]].forEach(function(b, k){   // balões amarrados no portal
+   var ax = b[0], ay = fy - 6, bx = ax + b[2] + Math.sin(t * .04 + k) * 1.2, by = fy - 22 - (k % 2) * 4;
+   x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = .6; x.beginPath(); x.moveTo(ax, ay); x.lineTo(bx, by + 3.6); x.stroke();
+   x.fillStyle = b[1]; x.beginPath(); x.ellipse(bx, by, 3.2, 4, 0, 0, PI2); x.fill();
+   x.fillStyle = 'rgba(255,255,255,.5)'; x.beginPath(); x.ellipse(bx - 1, by - 1.4, .9, 1.3, 0, 0, PI2); x.fill();
+  });
   // loja de crepe no fim da rua
   var cx = rx + rw * .5, cy = chao - 26;
   x.fillStyle = N ? '#3a2a55' : '#ffffff'; x.fillRect(cx - 18, cy, 36, 26);
@@ -242,9 +250,9 @@
   var g = x.createLinearGradient(0, chao, 0, ry + rh); g.addColorStop(0, N ? '#2b2440' : '#e9dff2'); g.addColorStop(1, N ? '#1b1630' : '#d6c8e6');
   x.fillStyle = g; x.fillRect(rx, chao, rw, ry + rh - chao);
   if(N) for(i = 0; i < 6; i++){ x.fillStyle = ['rgba(255,95,176,.25)', 'rgba(95,242,255,.22)', 'rgba(255,224,102,.2)'][i % 3]; x.beginPath(); x.ellipse(rx + 18 + i * 34, ry + rh - 7, 9, 1.8, 0, 0, PI2); x.fill(); }
-  // confetes
-  for(i = 0; i < 12; i++){ x.fillStyle = neon[i % neon.length]; x.globalAlpha = N ? .8 : .65; x.fillRect(rx + (i * 31 + t * .2) % rw, ry + 20 + ((i * 17 + t * .4) % (rh * .5)), 2, 2); }
-  x.globalAlpha = 1;
+  // rua lotada: gente fazendo compras, comendo crepe, com balões e lightsticks
+  multidao(x, R, chao - 1, chao + 3, 16, t, N, N ? ['luz', 'luz', 'sacola', 'luz', 'crepe', 'luz'] : ['sacola', 'crepe', 'balao', 'sacola', '', 'luz'], .12);
+  multidao(x, R, chao + 4, ry + rh - 1, 20, t + 500, N, N ? ['luz', 'sacola', 'luz', 'balao', 'luz'] : ['crepe', 'sacola', 'balao', '', 'sacola', 'luz'], .2);
  }
 
  // ---------- Praia ----------
@@ -278,10 +286,12 @@
    x.fillStyle = N ? 'rgba(255,255,255,.3)' : '#ffffff'; x.beginPath(); x.moveTo(ux - 6, uy - 7); x.quadraticCurveTo(ux + 1, uy - 15, ux + 2, uy - 14); x.lineTo(ux + 4, uy - 6); x.closePath(); x.fill();
    if(!k && !N){ x.fillStyle = '#ffe066'; rr(x, ux + 4, uy + 10, 14, 4, 2); x.fill(); }
   });
-  coqueiro(x, rx + 10, ry + rh - 4, rh * .62, 1, N); coqueiro(x, rx + rw - 8, ry + rh - 2, rh * .55, -1, N);
+  var h1 = rh * .62, h2 = rh * .55, t1 = [rx + 10 + h1 * .32, ry + rh - 4 - h1], t2 = [rx + rw - 8 - h2 * .32, ry + rh - 2 - h2];
+  coqueiro(x, rx + 10, ry + rh - 4, h1, 1, N); coqueiro(x, rx + rw - 8, ry + rh - 2, h2, -1, N);
   if(N){
    // varal de luzinhas entre os coqueiros e fogueira
-   for(i = 0; i <= 9; i++){ var lx = rx + 18 + i * (rw - 34) / 9, ly = ry + rh * .36 + Math.sin(i / 9 * Math.PI) * 10; x.save(); x.shadowColor = '#ffd98a'; x.shadowBlur = 6; x.fillStyle = ['#ffd98a', '#ff9fb6', '#a7f3d0'][i % 3]; x.beginPath(); x.arc(lx, ly, 1.8, 0, PI2); x.fill(); x.restore(); }
+   var my2 = Math.max(t1[1], t2[1]) + 22; x.strokeStyle = 'rgba(40,30,50,.8)'; x.lineWidth = .8; x.beginPath(); x.moveTo(t1[0], t1[1] + 4); x.quadraticCurveTo((t1[0] + t2[0]) / 2, my2, t2[0], t2[1] + 4); x.stroke();
+   for(i = 1; i <= 9; i++){ var u = i / 10, lx = (1 - u) * (1 - u) * t1[0] + 2 * (1 - u) * u * (t1[0] + t2[0]) / 2 + u * u * t2[0], ly = (1 - u) * (1 - u) * (t1[1] + 4) + 2 * (1 - u) * u * my2 + u * u * (t2[1] + 4) + 1.5; x.save(); x.shadowColor = '#ffd98a'; x.shadowBlur = 6; x.fillStyle = ['#ffd98a', '#ff9fb6', '#a7f3d0'][i % 3]; x.beginPath(); x.arc(lx, ly, 1.8, 0, PI2); x.fill(); x.restore(); }
    var fx = rx + rw * .8, fy = ry + rh - 10, f = Math.sin(t * .25) * 1.5;
    glow(x, fx, fy - 6, 26, 'rgba(255,150,60,.5)');
    x.fillStyle = '#ff8a2a'; x.beginPath(); x.moveTo(fx - 6, fy); x.quadraticCurveTo(fx - 4, fy - 12 - f, fx, fy - 16 - f); x.quadraticCurveTo(fx + 4, fy - 10 + f, fx + 6, fy); x.closePath(); x.fill();
@@ -291,8 +301,43 @@
    // pipa no céu
    var kx = rx + rw * .36 + Math.sin(t * .02) * 6, ky = ry + rh * .2 + Math.cos(t * .03) * 3;
    x.fillStyle = '#ff6fa8'; x.beginPath(); x.moveTo(kx, ky - 6); x.lineTo(kx + 5, ky); x.lineTo(kx, ky + 7); x.lineTo(kx - 5, ky); x.closePath(); x.fill();
-   x.strokeStyle = 'rgba(255,255,255,.7)'; x.lineWidth = .8; x.beginPath(); x.moveTo(kx, ky + 7); x.quadraticCurveTo(kx - 6, ky + 20, kx - 2, areia); x.stroke();
+   var hx = rx + rw * .44, hy = ry + rh - 6;   // quem segura a pipa, em pé na areia
+   pessoa(x, hx, hy, 1.1, 2, t, false, '', -1);
+   x.strokeStyle = 'rgba(255,255,255,.7)'; x.lineWidth = .8; x.beginPath(); x.moveTo(kx, ky + 7); x.quadraticCurveTo(kx + 2, ky + 30, hx - 4, hy - 9); x.stroke();
   }
+ }
+
+ // Pessoas da multidão: pés sempre na linha do chão (fy). De dia, roupas coloridas; de noite, silhuetas com lightstick neon,
+ // como a plateia do Center⭐Run!. item: 'luz' (lightstick), 'sacola', 'balao' (preso na mão), 'crepe' ou ''.
+ var ROUPAS_DIA = ['#ff8fc4', '#7ec8ff', '#ffd76a', '#b79cff', '#7fe0b0', '#ffb38a', '#ffffff'];
+ var CABELOS = ['#2a1f2e', '#5a3a2a', '#f2d27a', '#ff7eb6', '#7a5cff', '#1d2b55', '#c8c8d8'];
+ var NEON = ['#ff5fb0', '#5ff2ff', '#ffe066', '#b47bff', '#7cf29a', '#9b30d9', '#b6ff3b', '#4169e1'];
+ function pessoa(x, px, fy, s, k, t, N, item, dir){
+  var passo = Math.sin(t * .18 + k * 1.7), corpo = N ? '#1e293b' : ROUPAS_DIA[k % ROUPAS_DIA.length], pele = N ? '#1e293b' : ['#f1c9a5', '#d9a074', '#8d5a3b', '#fbe5d8'][k % 4];
+  var perna = 4 * s, tronco = 7 * s, larg = 5.6 * s, cab = 2.7 * s, bob = Math.abs(passo) * .5 * s;
+  x.fillStyle = N ? '#141c2e' : '#3a3550';
+  x.fillRect(px - larg * .38 + passo * s * .8, fy - perna, 1.8 * s, perna);
+  x.fillRect(px + larg * .1 - passo * s * .8, fy - perna, 1.8 * s, perna);
+  x.fillStyle = corpo; rr(x, px - larg / 2, fy - perna - tronco - bob, larg, tronco, 1.5 * s); x.fill();
+  var hy = fy - perna - tronco - cab - bob;
+  x.fillStyle = pele; x.beginPath(); x.arc(px, hy, cab, 0, PI2); x.fill();
+  x.fillStyle = N ? '#0f1626' : CABELOS[(k * 3) % CABELOS.length]; x.beginPath(); x.arc(px, hy - cab * .15, cab * 1.05, Math.PI, 0); x.fill();
+  var mx = px + (dir || 1) * larg * .62, my = fy - perna - tronco * .55 - bob;
+  if(item === 'luz'){ var c = NEON[k % NEON.length], up = Math.abs(Math.sin(t * .12 + k)) * 2 * s; x.save(); if(N){ x.shadowColor = c; x.shadowBlur = 6; } x.fillStyle = c; x.fillRect(mx - .7 * s, my - 6 * s - up, 1.5 * s, 6.5 * s); x.restore(); }
+  else if(item === 'sacola'){ x.fillStyle = NEON[(k + 2) % NEON.length]; x.fillRect(mx - 1.6 * s, my, 3.2 * s, 3.2 * s); x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = .5; x.strokeRect(mx - 1.6 * s, my, 3.2 * s, 3.2 * s); }
+  else if(item === 'balao'){ var bx = mx + Math.sin(t * .05 + k) * s, by = my - 11 * s; x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = .6; x.beginPath(); x.moveTo(mx, my); x.lineTo(bx, by + 2.4 * s); x.stroke(); x.fillStyle = ['#ff7eb6', '#ffe066', '#7ec8ff'][k % 3]; x.beginPath(); x.ellipse(bx, by, 2 * s, 2.5 * s, 0, 0, PI2); x.fill(); }
+  else if(item === 'crepe'){ x.fillStyle = '#f2c27a'; x.beginPath(); x.moveTo(mx - 1.2 * s, my - 2.6 * s); x.lineTo(mx, my + .8 * s); x.lineTo(mx + 1.2 * s, my - 2.6 * s); x.closePath(); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(mx, my - 2.8 * s, 1.2 * s, 0, PI2); x.fill(); }
+ }
+ // multidão andando numa faixa de chão [y0, y1] (mais longe = menor); cada pessoa entra por um lado e sai pelo outro
+ function multidao(x, R, y0, y1, n, t, N, itens, vel){
+  var L = [];
+  for(var k = 0; k < n; k++){
+   var prof = (k * .618) % 1, fy = y0 + (y1 - y0) * prof, s = .55 + prof * .55, dir = k % 3 ? 1 : -1, v = (vel || .16) * (.6 + (k % 4) * .2);
+   var span = R.w + 30, px = R.x - 15 + (((k * 37.7 + dir * t * v) % span) + span) % span;
+   L.push([fy, px, s, k, dir]);
+  }
+  L.sort(function(a, b){ return a[0] - b[0]; });
+  L.forEach(function(p){ var it = itens[p[3] % itens.length]; pessoa(x, p[1], p[0], p[2], p[3], t, N, it, p[4]); });
  }
 
  var CENAS = { gigoia:gigoia, liberdade:liberdade, tailandia:tailandia, harajuku:harajuku, praia:praia };

@@ -20,4 +20,9 @@ assert.equal(V.isNight(at('2026-11-08T21:00:00Z')),true,'18h BRT é noite');
 let ops=0;const grad={addColorStop(){}};
 const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(k==='createLinearGradient'||k==='createRadialGradient')?()=>grad:(k==='roundRect'?undefined:()=>{ops++;}),set:(t,k,v)=>{t[k]=v;return true;}});
 for(const k of V.VIEWS)for(const n of [false,true]){ops=0;assert.equal(V.draw(ctx,42,52,206,148,120,k,n),k);assert(ops>40,k+(n?' noite':' dia')+' desenha');}
+// ligado na sala: a página carrega o arquivo e a janela usa as vistas novas (sem o sorteio antigo da quinta-feira)
+const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
+assert(html.includes('<script src="./karaoke-room-views.js?v=1"></script>'),'sala carrega as vistas');
+assert(html.includes('KaraokeRoomViews.draw(x,rx,ry,rw,rh,t,krSt.vista,')&&!html.includes('604800e3)%2'),'janela usa as vistas novas');
+for(const k of V.VIEWS.concat(['dianoite']))assert(html.includes('data-sim="'+k+'"'),'botão de teste '+k);
 console.log('✓ Karaoke: 5 vistas da janela, rodízio semanal na segunda 0h de Brasília e dia/noite');

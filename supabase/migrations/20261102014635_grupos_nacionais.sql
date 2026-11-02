@@ -32,6 +32,7 @@ alter table public.idol_grupo_times enable row level security;
 create policy grupos_publicos_ler on public.idol_grupos for select to anon, authenticated using (ativo);
 create policy grupos_times_publicos_ler on public.idol_grupo_times for select to anon, authenticated
   using (exists(select 1 from public.idol_grupos g where g.codigo=grupo and g.ativo));
+revoke all on public.idol_grupos, public.idol_grupo_times from public, anon, authenticated;
 grant select on public.idol_grupos, public.idol_grupo_times to anon, authenticated;
 
 create or replace function public.grupos_disponiveis() returns json

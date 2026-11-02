@@ -84,6 +84,11 @@ jobs:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node tests/i18n-visual.browser.cjs /tmp/i18n-visual-captures
+      - name: Verify automatic Idol moderation after reload in isolated Chromium
+        if: always()
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+        run: node tests/admin-idol.browser.cjs /tmp/admin-idol-browser
       - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
@@ -99,6 +104,13 @@ jobs:
         with:
           name: i18n-before-after-captures
           path: /tmp/i18n-visual-captures
+          if-no-files-found: warn
+          retention-days: 5
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: admin-idol-browser-captures
+          path: /tmp/admin-idol-browser
           if-no-files-found: warn
           retention-days: 5
       - uses: actions/upload-artifact@v4

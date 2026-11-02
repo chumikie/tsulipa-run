@@ -6,7 +6,7 @@ const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 const songSource = html.match(/var songs=\{[\s\S]*?\n\};/);
 const beatStart = html.indexOf('function beat(i,target){');
-const beatEnd = html.indexOf('/* Relógio único do ritmo:', beatStart);
+const beatEnd = html.indexOf('/* Relógio de áudio único', beatStart);
 assert(songSource && beatStart >= 0 && beatEnd > beatStart, 'música e agendador de beats presentes');
 
 const calls = [];

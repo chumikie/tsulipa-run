@@ -3,129 +3,8 @@ name: Check TsuLiPa special games
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'index.html'
-      - 'privacidade.html'
-      - 'pet-sync.js'
-      - 'tests/pet-sync.test.js'
-      - 'index2.html'
-      - 'sora-jump.html'
-      - 'karaoke-day.html'
-      - 'karaoke-time.html'
-      - 'karaoke-tickets.js'
-      - 'karaoke-tickets.css'
-      - 'tests/karaoke-tickets.test.js'
-      - 'tests/karaoke-ticket-ui.test.js'
-      - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
-      - 'supabase/sql/README-karaoke-tickets.md'
-      - 'tests/karaoke-note-map.test.js'
-      - 'tests/karaoke-flow.test.js'
-      - 'tests/karaoke-input-timing.test.js'
-      - 'tests/karaoke-melody-cues.test.js'
-      - 'tests/karaoke-button-target.test.js'
-      - 'tests/karaoke-shortcuts.test.js'
-      - 'karaoke-popup.css'
-      - 'karaoke-mobile.css'
-      - 'karaoke-mobile.js'
-      - 'karaoke-photo.css'
-      - 'karaoke-photo.js'
-      - 'tests/karaoke-photo-flow.cjs'
-      - 'tests/karaoke-mobile.browser.cjs'
-      - 'tests/karaoke-room-reactions.test.js'
-      - 'karaoke-homol-view.js'
-      - 'karaoke-homol-client.js'
-      - 'karaoke-homol-sync.js'
-      - 'tests/karaoke-homol-sync.test.js'
-      - 'supabase/sql/karaoke_lab_*.sql'
-      - 'supabase/tests/karaoke_lab_*.sql'
-      - 'tests/karaoke-homol-view.test.js'
-      - 'games-theme.css'
-      - 'index2-skin.css'
-      - 'tw-windows.css'
-      - 'tw-windows.js'
-      - 'tests/windows-shared.test.js'
-      - 'tests/windows-browser.cjs'
-      - 'tw-mic-cd-popup.css'
-      - 'sora-embed.css'
-      - 'karaoke-embed.css'
-      - 'karaoke-rhythm.js'
-      - 'karaoke-rhythm.css'
-      - 'tests/karaoke-rhythm.test.js'
-      - 'karaoke-online-lab.html'
-      - 'karaoke-room-model.js'
-      - 'tests/karaoke-room-model.test.js'
-      - 'tests/validate-games.js'
-      - 'tests/sora-stability.test.js'
-      - 'tests/karaoke-homol-refresh.test.js'
-      - 'tests/tw-weekly-podium.test.js'
-      - 'tests/login-simulado.test.js'
-      - 'supabase/sql/tw_weekly_podium_proposal.sql'
-      - 'supabase/sql/admin_pet_visual_tools.sql'
-      - 'supabase/sql/admin_player_profile_proposal.sql'
-      - 'supabase/sql/sora_weekly_zero_default.sql'
-      - 'tests/admin-player-profile.test.js'
-      - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
-    paths:
-      - 'index.html'
-      - 'privacidade.html'
-      - 'pet-sync.js'
-      - 'tests/pet-sync.test.js'
-      - 'index2.html'
-      - 'sora-jump.html'
-      - 'karaoke-day.html'
-      - 'karaoke-time.html'
-      - 'karaoke-tickets.js'
-      - 'karaoke-tickets.css'
-      - 'tests/karaoke-tickets.test.js'
-      - 'tests/karaoke-ticket-ui.test.js'
-      - 'supabase/sql/karaoke_tickets_REVIEW_ONLY.sql'
-      - 'supabase/sql/README-karaoke-tickets.md'
-      - 'tests/karaoke-note-map.test.js'
-      - 'tests/karaoke-flow.test.js'
-      - 'tests/karaoke-input-timing.test.js'
-      - 'tests/karaoke-melody-cues.test.js'
-      - 'tests/karaoke-button-target.test.js'
-      - 'tests/karaoke-shortcuts.test.js'
-      - 'karaoke-popup.css'
-      - 'karaoke-mobile.css'
-      - 'karaoke-mobile.js'
-      - 'karaoke-photo.css'
-      - 'karaoke-photo.js'
-      - 'tests/karaoke-photo-flow.cjs'
-      - 'tests/karaoke-mobile.browser.cjs'
-      - 'tests/karaoke-room-reactions.test.js'
-      - 'karaoke-homol-view.js'
-      - 'karaoke-homol-client.js'
-      - 'karaoke-homol-sync.js'
-      - 'tests/karaoke-homol-sync.test.js'
-      - 'supabase/sql/karaoke_lab_*.sql'
-      - 'supabase/tests/karaoke_lab_*.sql'
-      - 'tests/karaoke-homol-view.test.js'
-      - 'games-theme.css'
-      - 'index2-skin.css'
-      - 'tw-windows.css'
-      - 'tw-windows.js'
-      - 'tests/windows-shared.test.js'
-      - 'tests/windows-browser.cjs'
-      - 'tw-mic-cd-popup.css'
-      - 'sora-embed.css'
-      - 'karaoke-embed.css'
-      - 'karaoke-rhythm.js'
-      - 'karaoke-rhythm.css'
-      - 'tests/karaoke-rhythm.test.js'
-      - 'karaoke-online-lab.html'
-      - 'karaoke-room-model.js'
-      - 'tests/karaoke-room-model.test.js'
-      - 'tests/validate-games.js'
-      - 'tests/sora-stability.test.js'
-      - 'tests/karaoke-homol-refresh.test.js'
-      - 'tests/tw-weekly-podium.test.js'
-      - 'tests/login-simulado.test.js'
-      - 'supabase/sql/tw_weekly_podium_proposal.sql'
-      - 'supabase/sql/admin_pet_visual_tools.sql'
-      - '.github/workflows/validate-games.yml'
 
 jobs:
   static-validation:
@@ -136,55 +15,85 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate shared window contracts
-        run: node tests/windows-shared.test.js
+      - name: Run all site checks (tests/run-all.js)
+        run: node tests/run-all.js
       - name: Validate Karaoke mobile viewport script
         run: node --check karaoke-mobile.js
       - name: Validate Karaoke photo preview script
         run: node --check karaoke-photo.js
-      - name: Validate Karaoke room pet visits and pandeiros
-        run: node tests/karaoke-room-reactions.test.js
-      - name: Validate game HTML and routes
-        run: node tests/validate-games.js
-      - name: Validate Backstage Pet cloud save retries and confirmations
-        run: node tests/pet-sync.test.js
-      - name: Privacy page translations compile
-        run: node tests/privacidade-script.test.js
-      - name: Validate nine-player room state machine
-        run: node tests/karaoke-room-model.test.js
-      - name: Validate original rhythm minigame
-        run: node tests/karaoke-rhythm.test.js
-      - name: Validate Karaoke Time melody note maps and checkpoint timing
-        run: node tests/karaoke-note-map.test.js
-      - name: Validate Karaoke Time confirmation, shortcuts and device offset
-        run: node tests/karaoke-flow.test.js
-      - name: Validate Karaoke ticket review, Gacha, inventory, gifts, moderation and safe admission
-        run: node tests/karaoke-tickets.test.js
-      - name: Validate visible Karaoke ticket counters, gift and Gacha balance sync
-        run: node tests/karaoke-ticket-ui.test.js
-      - name: Validate Karaoke Time input timestamps, visual target and timing feedback
-        run: node tests/karaoke-input-timing.test.js
-      - name: Validate Karaoke Time melodic cues and compact stage settings
-        run: node tests/karaoke-melody-cues.test.js
-      - name: Validate Karaoke Time button-perfect visual zones on all seven tracks
-        run: node tests/karaoke-button-target.test.js
-      - name: Validate Karaoke Time keyboard shortcuts and three-second resume
-        run: node tests/karaoke-shortcuts.test.js
-      - name: Validate Karaoke homol stage, queue and safety
-        run: node tests/karaoke-homol-view.test.js
-      - name: Validate Karaoke realtime lifecycle and recovery
-        run: node tests/karaoke-homol-sync.test.js
-      - name: Validate Karaoke 3A.11 lease renewal and browser restore
-        run: node tests/karaoke-homol-refresh.test.js
-      - name: Validate Sora mobile and iframe stability
-        run: node tests/sora-stability.test.js
-      - name: Validate actual INDEX 2 weekly podium integration
-        run: node tests/tw-weekly-podium.test.js
-      - name: Validate Backstage Admin player profile guards
-        run: node tests/admin-player-profile.test.js
-      - name: Karaoke online (produção)
-        run: node tests/karaoke-online.test.js
-      - name: Cards com login simulado (e interruptor de teste desligado)
-        run: node tests/login-simulado.test.js
+      - name: Validate Karaoke room Polaroid controller
+        run: node --check karaoke-room-polaroid.js
+      - name: Validate Karaoke autonomous mic controller
+        run: node --check karaoke-room-auto-mic.js
+      - name: Validate Karaoke Polaroid controller
+        run: node --check karaoke-room-polaroid.js
 
 
+
+  postgres-center-run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: center_run_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d center_run_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Center Run daily cap against isolated PostgreSQL
+        run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify admin Idol editor proposal against isolated PostgreSQL
+        run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke 'my position' proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_posicao_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke song of the week proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_musica_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke weekly boards proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_quadros_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
+        run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
+  browser-karaoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix /tmp/karaoke-playwright --no-save playwright
+          /tmp/karaoke-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+          QA_WIDTHS: 320,375,390,430,844,1440
+        run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
+      - name: Verify profile accessories across hairstyles and viewports in Chromium
+        if: always()
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+        run: node tests/profile-accessories.browser.cjs /tmp/profile-accessories-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profile-accessories-browser-captures
+          path: /tmp/profile-accessories-browser
+          if-no-files-found: warn
+          retention-days: 5
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: karaoke-room-browser-captures
+          path: /tmp/karaoke-room-browser
+          if-no-files-found: warn
+          retention-days: 5

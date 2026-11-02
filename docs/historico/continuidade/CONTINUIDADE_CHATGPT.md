@@ -40,7 +40,7 @@ Arquivos relevantes:
 - `sora-jump.html`: página isolada (~250 KB UTF-8), reduzida de uma cópia anterior de mais de 500 mil caracteres pela retirada de trechos herdados. Preserva lógica de Sora. Ainda precisa de teste amplo de todas as fases e saves.
 - `karaoke-day.html`: página isolada (~103 KB UTF-8), com lógica de itens, snacks japoneses, pôsteres de avatares públicos, renderização mobile adaptativa e pausa de áudio/animação quando oculto.
 - `games-theme.css`: estilos compartilhados dos minijogos (fonte, subtítulos JP, bordas, sombras, botões).
-- `supabase/sql/karaoke_posteres_semana.sql`: SQL versionado da tabela privada e função RPC para elenco fixo.
+- `supabase/sql/historico/karaoke_posteres_semana.sql`: SQL versionado da tabela privada e função RPC para elenco fixo.
 - `.github/workflows/validate-games.yml` e `tests/validate-games.js`: validação automatizada de sintaxe, rotas e limites de tamanho. Últimas execuções passaram.
 - `docs/auditorias/AUDITORIA_V3.md`, `docs/auditorias/AUDITORIA_RANKING_LOJA_INDEX2.md`, `README.md`: documentos de auditoria com detalhes técnicos e riscos.
 

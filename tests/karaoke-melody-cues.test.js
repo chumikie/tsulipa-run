@@ -5,13 +5,13 @@ const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 const songSource = html.match(/var songs=\{[\s\S]*?\n\};/);
-const beatStart = html.indexOf('function beat(i){');
-const beatEnd = html.indexOf('/* Relógio único do ritmo:', beatStart);
+const beatStart = html.indexOf('function beat(i,target){');
+const beatEnd = html.indexOf('/* Relógio de áudio único', beatStart);
 assert(songSource && beatStart >= 0 && beatEnd > beatStart, 'música e agendador de beats presentes');
 
 const calls = [];
 const ctx = vm.createContext({
-  AC:{currentTime:9.8},
+  AC:{currentTime:9.8,state:'running'},
   performance:{now:()=>1234},
   muted:false,
   hz:m=>440*Math.pow(2,(m-69)/12),
@@ -21,7 +21,7 @@ vm.runInContext(songSource[0]+'\n'+html.slice(beatStart,beatEnd),ctx);
 
 const song = ctx.songs.normal;
 const step = 60000/song.bpm/2;
-ctx.run = {song,audioOrigin:10,step,auto:false,cuesByStep:{0:[{idx:0,lane:1}]}};
+ctx.run = {song,audioOrigin:10,audioReady:true,audioClock:true,step,auto:false,cuesByStep:{0:[{idx:0,lane:1}]}};
 ctx.beat(0);
 const t = 10;
 assert(calls.length > 0, 'primeiro beat emite música');
@@ -47,6 +47,6 @@ assert(calls.every(call=>Math.abs(call.time-(t+7*step/1000))<.00001),'ataques ag
 
 assert(html.includes('run.cuesByStep[n.idx]'),'cada ataque usa o idx do mapa de notas');
 assert(html.includes('noteMap:2'),'formato de salvamento de partidas mantido');
-assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações transferidas ao palco');
+assert(html.includes("($('krPalco')||shortcuts.parentNode).appendChild(adjust)"),'ajustar timing fica no palco, com realocação mobile');
 assert(html.includes('#krPalco #krMute{right:64px'),'controle de som fica junto à câmera');
 console.log('Karaoke: lead, notas visíveis e duplas no mesmo beat, configurações na cena e salvamento preservado OK');

@@ -1,0 +1,36 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const skin=fs.readFileSync(path.join(root,'index2-skin.css'),'utf8');
+const todayStart=html.indexOf('id="hubHoje"');
+const menuStart=html.indexOf('<div id="hubMenu"');
+const search=html.indexOf('<section class="hubpainel hubbusca"',menuStart);
+const mission=html.indexOf('<section class="hubpainel hub-missoes-mundo" id="hubMisPainel"',search);
+const novelties=html.indexOf('<details class="hubpainel hubnov"',mission);
+const today=html.slice(todayStart,search);
+assert(today.includes('id="hubHojeLinha"'),'Hoje keeps its meeting and weekly music shortcuts');
+assert(!today.includes('id="hubMis"')&&!today.includes('id="hubMisT"'),'daily missions no longer appear in Hoje');
+assert(search>menuStart&&mission>search&&novelties>mission,'daily missions render immediately after the Idol search bar');
+assert.equal((html.match(/id="hubMisPainel"/g)||[]).length,1,'mission panel has one unique container');
+assert.equal((html.match(/id="hubMisT"/g)||[]).length,1,'mission title ID stays unique');
+assert.equal((html.match(/id="hubMis"/g)||[]).length,1,'mission body ID stays unique');
+const gallery=html.slice(html.indexOf('function hubIdolsLugar(){'),html.indexOf('// ---- Palco animado da vitrine ----'));
+assert(gallery.includes("missions = $('hubMisPainel')"),'the gallery placement knows about the mission panel');
+assert(gallery.includes('var anchor = missions || busca;')&&gallery.includes('anchor.parentNode.insertBefore(box, anchor.nextSibling)'),'the Idol gallery follows missions on the started hub');
+assert(gallery.includes("var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling);"),'Top Idols remains below the Idol gallery');
+assert(html.includes("function hubMisUI(){")&&html.includes("data-resg="),'mission progress and claim actions remain intact');
+assert(html.includes('hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();'),'the original hub render still populates mission data');
+assert(html.includes("function hubMisCarregar(){")&&html.includes("contaRpc('missoes')"),'daily missions still load from the existing account RPC');
+
+const hubStart=html.indexOf('function hubCardsUI(){');
+const hubEnd=html.indexOf('function hubMisUI(){',hubStart);
+const hub=html.slice(hubStart,hubEnd);
+const order=['class="hubblocot hubbt-mundo"','class="hubcard hubperf"','class="hubcard hubpet','class="hubcard hubgacha','class="hubblocot hubbt-jogos"','class="hubcard hubrun"','class="hubcard tw-hubgame tw-hubgame-sora','class="hubcard tw-hubgame tw-hubgame-karaoke"','class="hubcard hubduo"'];
+let previous=-1;
+for(const marker of order){const at=hub.indexOf(marker);assert(at>previous,'Meu Mundo must precede Jogos in accessible DOM order: '+marker);previous=at;}
+assert(skin.includes('grid-template-areas:"tm tm" "profile profile" "pet gacha" "tj tj" "run run" "sora karaoke" "duo duo"'),'mobile grid places Meu Mundo above Jogos');
+assert(skin.includes('grid-template-areas:"tm tm tm" "profile pet gacha" "tj tj tj" "run run run" "sora karaoke duo"'),'desktop grid places Meu Mundo above Jogos');
+console.log('✓ Meu Mundo precedes Jogos; daily missions remain after Idol search and before the gallery.');

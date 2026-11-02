@@ -7,11 +7,12 @@ const songsSource = html.match(/var songs=\{[\s\S]*?\n\};/);
 const lanesSource = html.match(/Object\.keys\(songs\)\.forEach\(function\(k\)\{[^\n]+/);
 const mapSource = html.match(/function makeNoteMap\(song,total,step,start\)\{[\s\S]*?\n \}return notes;\}/);
 const clockSource = html.match(/function kNow\(\)\{[^\n]+/);
+const latencySource = html.match(/function ktOutputLatencyMs\(\)\{[\s\S]*?\n\}/);
 const scheduleSource = html.match(/function schedule\(\)\{[^\n]+/);
 const laneSource = html.match(/function laneAt\(px,py,event\)\{[^\n]+/);
-assert(songsSource && lanesSource && mapSource && clockSource && scheduleSource && laneSource, 'Mapa, relógios e controles presentes no Karaoke');
+assert(songsSource && lanesSource && mapSource && clockSource && latencySource && scheduleSource && laneSource, 'Mapa, relógios e controles presentes no Karaoke');
 const context = vm.createContext({});
-vm.runInContext(`${songsSource[0]}\n${lanesSource[0]}\n${mapSource[0]}\n${clockSource[0]}\n${scheduleSource[0]}\n${laneSource[0]}`, context);
+vm.runInContext(`${songsSource[0]}\n${lanesSource[0]}\n${mapSource[0]}\n${clockSource[0]}\n${latencySource[0]}\n${scheduleSource[0]}\n${laneSource[0]}`, context);
 
 for (const [key, song] of Object.entries(context.songs)) {
   const step = 60000 / song.bpm / 2;
@@ -53,7 +54,7 @@ for (const [key, song] of Object.entries(context.songs)) {
 // A antiga soma extra de latência no mapa fazia este teste falhar.
 const song = context.songs.normal, step = 60000 / song.bpm / 2;
 const note = context.makeNoteMap(song, 100, step, 4000)[4];
-context.run = {start:4000, audioOrigin:20, paused:false, step, audioStep:0, total:100};
+context.run = {start:4000, audioOrigin:20, audioReady:true, audioClock:true, paused:false, step, audioStep:0, total:100};
 context.performance = {now: () => 4000};
 for (const latency of [0, 0.03, 0.08, 0.12]) {
   context.AC = {state:'running', currentTime:20 + note.idx * step / 1000 + latency, outputLatency:latency, baseLatency:latency};

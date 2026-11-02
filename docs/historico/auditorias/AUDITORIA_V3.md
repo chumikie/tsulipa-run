@@ -30,7 +30,7 @@
 - Advisories obtidos em 29/10/2026 apontam 4 chaves estrangeiras sem índice de cobertura: `duo_log.para`, `duo_presentes.para`, `presentes.para`, `presentes_resgates.user_id`. Confirmar plano de execução e utilidade antes de criar índices.
 - Avisos de `SECURITY DEFINER` expostas a `anon` e `authenticated` precisam de auditoria das validações de acesso **dentro** de cada função. Uma RPC intencionalmente pública não é automaticamente falha de segurança.
 - RLS habilitado em tabelas sem políticas pode ser intencional quando leitura/escrita ocorre por funções SQL controladas. Não alterar sem avaliar dependências.
-- Alterações aditivas no Supabase feitas nesta etapa: uma tabela privada para o elenco e uma RPC pública com `SECURITY DEFINER`, `search_path` vazio e permissão de execução explícita para `anon`/`authenticated`. Ver SQL documentado em `supabase/sql/karaoke_posteres_semana.sql`. Funções existentes, índices, políticas, contas e saves não foram alterados.
+- Alterações aditivas no Supabase feitas nesta etapa: uma tabela privada para o elenco e uma RPC pública com `SECURITY DEFINER`, `search_path` vazio e permissão de execução explícita para `anon`/`authenticated`. Ver SQL documentado em `supabase/sql/historico/karaoke_posteres_semana.sql`. Funções existentes, índices, políticas, contas e saves não foram alterados.
 
 ## Próxima otimização do index.html (sem reescrever)
 1. Mapear módulos por tela: Center Run, Pet, Gacha, Perfil, Moon Duo, Meeting; medir bundle transferido por compressão.

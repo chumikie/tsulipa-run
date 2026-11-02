@@ -13,7 +13,7 @@ A autorização existente é a fonte de verdade: `public.eh_admin()`, que consul
 - O projeto `TsuLiPa World - Homologação` é o laboratório antigo do Karaoke⭐Day!, praticamente vazio e não representativo da produção. Não usar como espelho de homologação do Backstage Admin.
 
 ## Etapa 1 — ficha administrativa (proposta)
-A proposta `supabase/sql/admin_player_profile_proposal.sql` adiciona uma RPC somente de leitura:
+A proposta `supabase/sql/proposta/admin_player_profile_proposal.sql` adiciona uma RPC somente de leitura:
 - Busca por nickname exato, sem expor email ou UUID.
 - Reúne avatar/visual, estado da conta, estrelas, recordes e posição no Center⭐Run!/Sora⭐Jump!, dados semanais do Karaoke⭐Time!, contagens de participação e resumo de pets.
 - Mostra até 20 ações administrativas anteriores registradas para aquele nickname.

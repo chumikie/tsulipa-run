@@ -6,11 +6,12 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
-const sql=fs.readFileSync(path.join(root,'supabase/sql/tw_weekly_podium_proposal.sql'),'utf8');
+const launchSkin=fs.readFileSync(path.join(root,'index2-launch-ui.css'),'utf8');
+const sql=fs.readFileSync(path.join(root,'supabase/sql/proposta/tw_weekly_podium_proposal.sql'),'utf8');
 const soraOnlineSql=fs.readFileSync(path.join(root,'supabase/sql/sora_jump_tv_profile_integration.sql'),'utf8');
-const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/sora_weekly_zero_default.sql'),'utf8');
-const adminProfileSql=fs.readFileSync(path.join(root,'supabase/sql/admin_player_profile_proposal.sql'),'utf8');
-const gameBadgesSql=fs.readFileSync(path.join(root,'supabase/sql/profile_game_badges_sunday_week.sql'),'utf8');
+const soraZeroSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/sora_weekly_zero_default.sql'),'utf8');
+const adminProfileSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/admin_player_profile_proposal.sql'),'utf8');
+const gameBadgesSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/profile_game_badges_sunday_week.sql'),'utf8');
 const privacy=fs.readFileSync(path.join(root,'privacidade.html'),'utf8');
 function get(a,b){
  const start=html.indexOf(a),end=html.indexOf(b,start+a.length);
@@ -71,6 +72,15 @@ assert.ok(html.includes('id="hubToque"')&&html.includes('id="hubCards"'));
 assert.ok(html.includes('function hubMostrar()')&&html.includes("$('hubMenu').hidden = !hubComecou"));
 assert.ok(html.includes('id="twRankHall"'));
 assert.ok(html.includes('href="./tw-weekly-podium.css?v=9"'));
+assert.ok(html.includes('href="./index2-launch-ui.css?v=11"'),'homepage must request the refreshed leaderboard stylesheet instead of reusing cached layout');
+assert.ok(!html.includes('twRankHallTab')&&!html.includes('data-tw-rank-tab')&&!html.includes('tw-rank-tabs'),
+  'Top Idols must not keep the old tab state or hidden single-board markup');
+assert.ok(html.includes('hall.innerHTML=twRankGames.map(function(k){'),
+  'Top Idols renderer must create one visible board for every game');
+assert.ok(html.includes('#hub #twRankHall #twRankColumns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}') &&
+  html.includes('#hub #twRankColumns .tw-rank-game{max-width:none;min-width:0;margin:0}') &&
+  !html.includes('#hub #twRankHall #twRankColumns{display:block}'),
+  'Homepage-level styles must not collapse the three-board grid');
 assert.ok(Buffer.byteLength(style,'utf8')<11000,'Weekly CSS under 11KB including fixed empty podium slots');
 assert.ok(style.includes('@media(min-width:900px)'),'Top Idols docks beside the hub cards on desktop');
 assert.ok(style.includes('tw-rank-avatar-wrap'),'podium supports existing Idol avatars with a fallback');
@@ -115,6 +125,16 @@ assert.ok(!/date_trunc\s*\(\s*'week'/i.test(gameBadgesSql),
   "Profile badge week must not retain PostgreSQL Monday-based date_trunc('week')");
 assert.ok(/revoke all on function public\.sincronizar_insignias_jogos\(text\[\]\) from public/i.test(gameBadgesSql));
 assert.ok(/grant execute on function public\.sincronizar_insignias_jogos\(text\[\]\) to authenticated/i.test(gameBadgesSql));
+
+assert.ok(launchSkin.includes('#hub #twRankHall h2{') &&
+  launchSkin.includes('#hub #twRankHall .tw-rank-game li{') &&
+  launchSkin.includes('display:flex;') &&
+  launchSkin.includes('#hub #twRankHall .tw-rank-game li>strong{') &&
+  launchSkin.includes('margin-left:auto;') &&
+  launchSkin.includes('grid-template-columns:repeat(3,minmax(0,1fr));') &&
+  launchSkin.includes('grid-template-rows:27px auto auto;') &&
+  !launchSkin.includes('#hub #twRankHall .tw-rank-columns{grid-template-columns:minmax(0,1fr)'),
+  'Top Idols must keep all three boards visible side by side on mobile without tabs or hide/show buttons');
 
 console.log('✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge');
 console.log('✓ Top Idols fixed podium, Sora selected period/zero defaults and current privacy');

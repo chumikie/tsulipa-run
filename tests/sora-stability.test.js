@@ -81,19 +81,23 @@ function evaluate(script,context){
 {
   const script=between('function soraSuspendForNavigation(){','function soraCloseUI(){');
   const handlers={};
-  let stops=0,resumes=0,requested=0;
-  const env=evaluate(script,{
-    soraRaf:5,soraOpen:true,soraState:'play',soraTouchDir:1,
+  let stops=0,resumes=0,requested=0,loopStops=0;
+  const sandbox={
+    soraRaf:5,soraOpen:true,soraState:'play',soraHostVisible:true,soraMusicTimer:null,soraTouchDir:1,
     soraKeyL:true,soraKeyR:true,soraLastT:0,soraSoundOn:true,muted:false,
-    soraMusicStop:()=>{stops++;},soraMusicStart:()=>{resumes++;},
+    soraMusicStop:()=>{stops++;sandbox.soraMusicTimer=null;},soraMusicStart:()=>{resumes++;sandbox.soraMusicTimer=1;},
+    soraPararLoop:function(){loopStops++;sandbox.soraRaf=0;},
     cancelAnimationFrame(){},
     requestAnimationFrame:()=>{requested++;return 8;},soraLoop:()=>{},
+    soraAgendarLoop:function(){if(!sandbox.soraRaf)sandbox.soraRaf=sandbox.requestAnimationFrame(sandbox.soraLoop);},
     performance:{now:()=>12345},document:{hidden:false},
     window:{addEventListener:(event,cb)=>{handlers[event]=cb;}}
-  });
+  };
+  const env=evaluate(script,sandbox);
   handlers.pagehide();
   assert.equal(env.soraRaf,0);
   assert.equal(stops,1);
+  assert.equal(loopStops,1,'pagehide cancels the canvas RAF as well as music');
   handlers.pageshow();
   handlers.pageshow();
   assert.equal(env.soraRaf,8);
@@ -154,6 +158,7 @@ console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe 
   const input={value:'Tsu'};
   const env=evaluate(script,{
     soraOnlineUserId:'previous-session',
+     soraOnlineRunGeneration:0,soraOnlineRunOwnerId:null,
     soraOnlineProfile:{nick:'Old'},
     soraOnlineProfileLoaded:true,
     soraOnlineProfilePromise:Promise.resolve(null),

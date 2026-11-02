@@ -25,9 +25,13 @@ function get(id){if(!elements.has(id))elements.set(id,new Element(id));return el
 const values = new Map();
 const calls=[];
 let quotaState={used:2,remaining:3,pending:null,tickets:0};
+let atMicrophone=true,returnRequests=0,notices=[];
 const context = vm.createContext({
   LANG:'pt',
   krSt:{aberta:true},
+  krEuNoMicrofone:()=>atMicrophone,
+  krPlanearRetornoMicrofone:()=>{returnRequests++;return true;},
+  krAviso:message=>notices.push(message),
   $:get,
   document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
   localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
@@ -41,8 +45,14 @@ assert.equal(ui.offset(),0,'offset inicial zero');
 
 async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));}
 (async()=>{
+  atMicrophone=false;ui.request();
+  assert.equal(returnRequests,1,'player away from the mic is routed back');
+  assert.equal(notices.length,1,'player away from the mic receives the return-to-mic notice');
+  assert.equal(get('ktStartConfirm').open,false,'player away from the mic cannot open the official confirmation');
+  assert.equal(calls.length,0,'mic gate runs before admission and quota');
+  atMicrophone=true;
   ui.request();
-  assert.equal(get('ktStartConfirm').open,true,'modal abre antes da RPC');
+  assert.equal(get('ktStartConfirm').open,true,'modal abre antes da RPC when the player is at the mic');
   assert.equal(calls.length,0,'a abertura não gasta tentativa');
   get('ktConfirmCancel').onclick();
   await waitForQuota();
@@ -76,10 +86,13 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
 
   assert.equal(elements.has('ktPractice'),false,'sem ensaio gratuito na barra');
   assert.equal(calls.length,charged+2,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
+  assert(html.includes("if(key==='m'&&$('ktClosed').hidden){var muteButton=$('krMute')"),'M aciona o controle de som, não o microfone');
+  assert(html.includes('id="krMute" aria-label="Silenciar som" aria-pressed="false" aria-keyshortcuts="M"')&&html.includes("muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som')"),'controle de som anuncia M e alterna seu nome acessível entre silenciar e ativar');
+  assert(!html.includes('id="krMicBtn" aria-keyshortcuts="M"'),'microfone não reivindica mais o atalho M');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>S</kbd>'),'atalho das configurações aparece na instrução');
-  assert(html.includes("$('krPalco').appendChild(adjust)"),'configurações ficam no palco, não na barra de música');
+  assert(flow[0].includes("($('krPalco')||shortcuts.parentNode).appendChild(adjust)"),'ajustar timing fica no palco, junto de som e câmera, e a barra mobile o leva para cima da tela');
   assert(!flow[0].includes('practice.after(adjust)'),'calibração não ocupa a barra principal');
   assert.equal(get('ktCalibration').html.includes('kt-calibration-panel'),true,'controle de ajustes vira painel compacto');
   assert(flow[0].includes('kt-dream-sparkles'),'cortina possui estrelas e corações decorativos');

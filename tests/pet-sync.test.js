@@ -252,7 +252,7 @@ async function testLigacaoDoPetNaPagina() {
   assert.match(html, /function petSave\(changed\)/);
   assert.match(html, /if\(changed && typeof perfPetMudou === 'function'\) perfPetMudou\(\)/);
   assert.match(html, /function petClose\(\)[\s\S]{0,500}perfEnviar\(\)/);
-  assert.match(html, /if\(petData && petT % 300 === 0\)\{ petTick\(\); petSave\(\);/);
+  assert.match(html, /if\(petData&&Math\.floor\(petT\/300\)>Math\.floor\(antes\/300\)\)\{petTick\(\);petSave\(\);petUI\(\);\}/, 'o Pet mantém o tick a cada ~5 s pelo relógio lógico mesmo em 30 FPS');
   assert.match(html, /ignoreUnmarkedChanges: true/);
   assert.match(html, /function petPay\(price\)[\s\S]{0,1400}contaRpc\('gastar_estrelas'/);
   assert.match(html, /return petPay\(guardado \? 0 : it\[2\]\)\.then\(function\(ok\)/);

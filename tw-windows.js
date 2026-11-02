@@ -4,9 +4,11 @@
  // Iframes use the host viewport for typography, not their narrow embedded width.
  if(window.parent!==window){
   try{
-   var viewport=window.parent.matchMedia('(max-width:600px)');
+   var viewport=window.parent.matchMedia('(max-width:600px)'),listening=false;
    var sync=function(){document.documentElement.style.setProperty('--tw-window-title-size',viewport.matches?'24px':'35px');};
-   sync();viewport.addEventListener('change',sync);
+   function attach(){if(listening)return;listening=true;viewport.addEventListener('change',sync);sync();}
+   function detach(){if(!listening)return;listening=false;viewport.removeEventListener('change',sync);}
+   attach();
    document.addEventListener('keydown',function(e){
     if(e.key!=='Tab'||document.querySelector('dialog[open]'))return;
     var items=Array.from(document.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')).filter(function(el){return !el.disabled&&el.getClientRects().length;});
@@ -17,7 +19,8 @@
      if(close){e.preventDefault();close.focus({preventScroll:true});}
     }
    });
-   window.addEventListener('pagehide',function(){viewport.removeEventListener('change',sync);},{once:true});
+   window.addEventListener('pagehide',detach);
+   window.addEventListener('pageshow',attach);
   }catch(e){/* Cross-origin standalone integrations use the CSS fallback. */}
   return;
  }

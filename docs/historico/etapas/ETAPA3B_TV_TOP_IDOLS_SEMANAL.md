@@ -18,7 +18,7 @@ Sora: no término de partida verdadeira (fora das cenas de teste), o iframe avis
 Karaoke: a pontuação do ensaio local NÃO entra na classificação competitiva. Só um cantor de sessão válida e verificada pelo servidor poderá entrar no pódio.
 
 ## Banco de dados e privacidade
-O script supabase/sql/tw_weekly_podium_proposal.sql está VERSIONADO, não aplicado. Uma tabela privada guarda uma linha por jogador, por jogo e por semana (somente 3 no Karaoke). Um helper privado transacional faz o UPSERT e descarta o 4º colocado. Não concede acesso direto a jogadores ou ao papel anon. A RPC pública é somente leitura e expõe nick e pontuação, nunca UUID ou dados internos.
+O script supabase/sql/proposta/tw_weekly_podium_proposal.sql está VERSIONADO, não aplicado. Uma tabela privada guarda uma linha por jogador, por jogo e por semana (somente 3 no Karaoke). Um helper privado transacional faz o UPSERT e descarta o 4º colocado. Não concede acesso direto a jogadores ou ao papel anon. A RPC pública é somente leitura e expõe nick e pontuação, nunca UUID ou dados internos.
 A API filtra sempre a semana atual; a rotina para apagar linhas antigas será agendada via Supabase Cron só depois da aprovação e do teste em homologação. Sem alterar o banco real nesta etapa.
 
 TW_RANK_ONLINE_READY fica false; nenhuma pontuação online é inventada.

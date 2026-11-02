@@ -1,0 +1,170 @@
+(function(root,factory){
+ 'use strict';
+ var api=factory();
+ if(typeof module==='object'&&module.exports)module.exports=api;
+ else root.KaraokeRoomAutoMic=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ var SHOW_DURATION_MS=15000,SHOW_COUNT_IN_MS=4000,SHOW_PLAY_MS=SHOW_DURATION_MS-SHOW_COUNT_IN_MS;
+ function hash(value){var s=String(value),h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+ function simulatePerformance(run,now,actor,onEvent){
+  if(!run||!run.auto||!Array.isArray(run.notes)||!actor)return 0;
+  var p=actor._ktPersonality||{},prefs=p.musicPreferences||{},style=run.song&&run.song.style||'pop',affinity=Number.isFinite(prefs[style])?prefs[style]:.5;
+  var energy=Number.isFinite(p.energy)?p.energy:.5,curiosity=Number.isFinite(p.curiosity)?p.curiosity:.5;
+  var skill=Math.max(.64,Math.min(.95,.79+(affinity-.5)*.22+(energy-.5)*.08+(curiosity-.5)*.06)),id=actor.playerId||actor.nick||'npc',processed=0;
+  for(var i=0;i<run.notes.length;i++){
+   var n=run.notes[i];if(n.done)continue;var elapsed=now-n.at;if(elapsed<0)continue;
+   var chance=hash(id+'|'+style+'|'+n.idx+'|'+n.lane)/4294967295;
+   if(chance<skill){var delta=hash(id+'|timing|'+style+'|'+n.idx+'|'+n.lane)%131-65,perfect=Math.abs(delta)<=45;n.done=true;run.hits++;run.attempts++;run.combo++;run.maxCombo=Math.max(run.maxCombo,run.combo);run.score+=(perfect?100:65)+Math.min(20,run.combo)*2;run.feedback=(perfect?'PERFECT! ✨':'BOM! 💫')+' '+Math.abs(delta)+' ms';run.feedbackUntil=now+520;if(run.flash)run.flash[n.lane]=now+(perfect?220:110);if(onEvent&&run.combo%5===0)onEvent('combo');else if(onEvent&&run.combo%3===0)onEvent('hit');processed++;
+   }else if(elapsed>220){n.done=true;run.attempts++;run.combo=0;run.autoMisses=(run.autoMisses||0)+1;run.feedback='MISS ♪ A plateia segue torcendo!';run.feedbackUntil=now+520;if(onEvent&&run.autoMisses%2===1)onEvent('miss');processed++;}
+  }
+  return processed;
+ }
+ function pickCandidate(candidates,recent,random){
+  if(!Array.isArray(candidates)||!candidates.length)return null;
+  var history=Array.isArray(recent)?recent:[],pool=candidates.length>1?candidates.filter(function(candidate){return history.indexOf(candidate)<0;}):candidates;
+  if(!pool.length)pool=candidates;
+  var value=typeof random==='function'?Number(random()):Math.random();
+  if(!Number.isFinite(value))value=0;
+  var index=Math.min(pool.length-1,Math.max(0,Math.floor(value*pool.length)));
+  return pool[index];
+ }
+ function createRotation(limit,random){
+  var recent=[],max=Math.max(0,Number(limit)||0);
+  function choose(candidates){var selected=pickCandidate(candidates,recent,random);if(selected){recent.push(selected);if(recent.length>max)recent.shift();}return selected;}
+  choose.reset=function(){recent.length=0;};return choose;
+ }
+ function create(deps){
+  if(!deps||typeof deps.getState!=='function'||typeof deps.getBots!=='function'||typeof deps.canWalk!=='function'||
+   typeof deps.preparePlayerForSinger!=='function'||typeof deps.isPlayerAtSingerWait!=='function'||
+   typeof deps.restorePlayerAfterSinger!=='function'||typeof deps.isPlayerAtMic!=='function'||typeof deps.movePlayerToSeat!=='function'||typeof deps.movePlayerToWait!=='function'||typeof deps.isPlayerAtSeat!=='function'){
+   throw new TypeError('KaraokeRoomAutoMic needs explicit room and player-movement dependencies');
+  }
+  var singer=null,recentSingers=[];
+  function chooseSinger(candidates){
+   var chosen=pickCandidate(candidates,recentSingers,deps.random);
+   if(!chosen)return null;
+   recentSingers.push(chosen);
+   if(recentSingers.length>3)recentSingers.shift();
+   return chosen;
+  }
+  function beginPlayerReturn(){
+   if(!singer)return;
+   singer.phase='player_return';singer.route=[];singer.routeIndex=0;singer.playerReturnStarted=!!deps.restorePlayerAfterSinger();
+   if(!singer.playerReturnStarted&&deps.onError)deps.onError(new Error('Could not route the player back to the microphone'));
+   deps.switchMusicMode();deps.updateUI();
+  }
+  function completePlayerReturn(){
+   if(!singer)return;
+   singer=null;deps.setSinger(null);deps.setNextAt(deps.getTime()+900+deps.random()*1200);
+   deps.switchMusicMode();deps.updateUI();if(deps.onReturnComplete)deps.onReturnComplete();
+  }
+  function beginSinger(bot,automatic){
+   var s=deps.getState(),bots=deps.getBots();
+   if(!bot||!deps.canWalk(bot)||singer||s.singer||s.rhythmRun||s.playerNoMic||s.admissionPending||!s.soloAllowed||!s.roomOpen||
+    s.returnAt>0||s.returning||s.moveQueueLength||s.playerAtMic===false||s.walkerCount||s.queueLength)return false;
+   var index=bots.indexOf(bot),seat=deps.getSeat(index)||[bot.x,bot.y],lounge=bot._ktLounge;
+   var homeX=lounge&&Number.isFinite(lounge.returnX)?lounge.returnX:seat[0];
+   var homeY=lounge&&Number.isFinite(lounge.returnY)?lounge.returnY:seat[1];
+   var side=bot.x<480?340:620,playerWaitX=side===340?620:340,playerWaitY=320;
+   // Player clears the microphone first; after the NPC reaches the stage, the player
+   // occupies the exact sofa place released by that singer.
+   if(!deps.preparePlayerForSinger(playerWaitX,playerWaitY))return false;
+   singer={bot:bot,phase:'player_departure',automatic:!!automatic,homeX:homeX,homeY:homeY,
+    side:side,playerWaitX:playerWaitX,playerWaitY:playerWaitY,playerReturnStarted:false,playerSeatStarted:false,
+    route:[],routeIndex:0,endsAt:0};
+   deps.removeWalker(bot);
+   bot.no_mic=false;bot.danca='';bot._ktLoungeWalking=false;bot._ktLoungeFacing=bot.x>480?-1:1;
+   deps.setSinger(singer);deps.updateUI();return true;
+  }
+  function beginPlayerWait(){
+   if(!singer)return;
+   singer.phase='player_wait_departure';
+   singer.playerWaitStarted=!!deps.movePlayerToWait(singer.playerWaitX,singer.playerWaitY);
+   deps.switchMusicMode();deps.updateUI();
+  }
+  function beginSingerReturn(){
+   if(!singer)return;
+   var b=singer.bot;b.no_mic=false;b.danca='';b._ktLoungeWalking=true;
+   singer.phase='return';singer.route=[[singer.side,286],[singer.side,520],[singer.homeX,520],[singer.homeX,singer.homeY]];singer.routeIndex=0;
+   deps.switchMusicMode();deps.updateUI();
+  }
+  function finishSinger(){
+   if(!singer||singer.phase==='return'||singer.phase==='player_return'||singer.phase==='player_wait_departure')return false;
+   if(singer.phase==='player_departure'){beginPlayerReturn();return true;}
+   beginPlayerWait();return true;
+  }
+  function completeApproach(){
+   if(!singer)return;
+   singer.bot.no_mic=true;singer.bot._ktLoungeWalking=false;
+   singer.phase='player_to_sofa';
+   singer.playerSeatStarted=!!deps.movePlayerToSeat(singer.homeX,singer.homeY);
+   if(!singer.playerSeatStarted){if(deps.onError)deps.onError(new Error('Could not route the player to the free sofa seat'));beginPlayerWait();return;}
+   deps.switchMusicMode();deps.updateUI();
+  }
+  function beginPractice(){
+   if(!singer||singer.phase!=='player_to_sofa')return;
+   singer.phase='singing';singer.endsAt=deps.nowMs()+SHOW_DURATION_MS;
+   try{deps.startPractice();}catch(error){beginPlayerWait();if(deps.onError)deps.onError(error);return;}
+   deps.switchMusicMode();deps.updateUI();
+  }
+  function completeReturn(){
+   if(!singer)return;
+   var done=singer,b=done.bot;
+   // The NPC reaches the sofa only after the player vacates that seat.
+   b.no_mic=false;b.danca='';b._ktLoungeWalking=false;
+   if(b._ktLounge){b._ktLounge.phase='rest';b._ktLounge.route=null;b._ktLounge.routeIndex=0;b._ktLounge.returnX=done.homeX;b._ktLounge.returnY=done.homeY;b._ktLounge.targetX=null;b._ktLounge.waitUntil=deps.getTime()+600+deps.random()*180;}
+   beginPlayerReturn();
+  }
+  function updateMovement(dt){
+   if(!singer)return false;
+   if(singer.phase==='player_departure'){
+    if(!deps.isPlayerAtSingerWait(singer.playerWaitX,singer.playerWaitY))return true;
+    singer.phase='approach';singer.route=[[singer.bot.x,520],[singer.side,520],[singer.side,286],[480,286]];singer.routeIndex=0;
+    deps.updateUI();return true;
+   }
+   if(singer.phase==='player_to_sofa'){
+    if(deps.isPlayerAtSeat(singer.homeX,singer.homeY))beginPractice();
+    return true;
+   }
+   if(singer.phase==='player_wait_departure'){
+    if(!singer.playerWaitStarted)singer.playerWaitStarted=!!deps.movePlayerToWait(singer.playerWaitX,singer.playerWaitY);
+    if(singer.playerWaitStarted&&deps.isPlayerAtSingerWait(singer.playerWaitX,singer.playerWaitY))beginSingerReturn();
+    return true;
+   }
+   if(singer.phase==='player_return'){
+    if(!singer.playerReturnStarted)singer.playerReturnStarted=!!deps.restorePlayerAfterSinger();
+    if(deps.isPlayerAtMic())completePlayerReturn();
+    return true;
+   }
+   var target=singer.route[singer.routeIndex];
+   if(!target){if(singer.phase==='approach')completeApproach();else if(singer.phase==='return')completeReturn();return true;}
+   var bot=singer.bot,dx=target[0]-bot.x,dy=target[1]-bot.y,d=Math.hypot(dx,dy),step=1.65*Math.max(0,Number(dt)||1);
+   if(d<=Math.max(1.2,step)){bot.x=target[0];bot.y=target[1];singer.routeIndex++;}
+   else{
+    bot.x+=(dx/d)*step;bot.y+=(dy/d)*step;
+    if(Math.abs(dx)>.01)bot._ktLoungeFacing=dx<0?-1:1;
+   }
+   bot._ktLoungeWalking=true;
+   if(singer.routeIndex>=singer.route.length){if(singer.phase==='approach')completeApproach();else if(singer.phase==='return')completeReturn();}
+   return true;
+  }
+  function tick(){
+   var s=deps.getState();
+   if(!s.soloAllowed||!s.roomOpen||!s.nextAt||s.time<s.nextAt)return;
+   if(s.singer||s.rhythmRun||s.playerNoMic||s.admissionPending||s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic||s.walkerCount||s.queueLength){
+    if(!s.singer)deps.setNextAt(s.time+90);
+    return;
+   }
+   if(s.gameActive){deps.setNextAt(s.time+90);return;}
+   var bots=deps.getBots(),eligible=[];
+   for(var i=0;i<bots.length;i++)if(deps.canWalk(bots[i])&&!bots[i]._ktLoungeWalking)eligible.push(bots[i]);
+   if(!eligible.length){deps.setNextAt(s.time+180);return;}
+   var bot=chooseSinger(eligible);
+   if(!beginSinger(bot,true)){deps.setNextAt(s.time+180);return;}
+   deps.setNextAt(s.time+900+deps.random()*1200);deps.switchMusicMode();deps.updateUI();
+  }
+  return Object.freeze({tick:tick,beginSinger:beginSinger,finishSinger:finishSinger,updateMovement:updateMovement,getSinger:function(){return singer;}});
+ }
+ return Object.freeze({create:create,pickCandidate:pickCandidate,createRotation:createRotation,simulatePerformance:simulatePerformance,SHOW_DURATION_MS:SHOW_DURATION_MS,SHOW_COUNT_IN_MS:SHOW_COUNT_IN_MS,SHOW_PLAY_MS:SHOW_PLAY_MS});
+});

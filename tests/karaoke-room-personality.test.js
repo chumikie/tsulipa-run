@@ -1,0 +1,117 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const Personality=require('../karaoke-room-personality.js');
+const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const names=['Momo','Nene','Lirika','Pati','Nanamaru','Hiruru','Fuji','Acádia','Kiko','Hana'];
+const cast=names.map((nick,i)=>({nick,playerId:'npc-'+i}));
+const personality=Personality.create({random:()=>.2});
+personality.prepare(cast);
+assert.equal(new Set(cast.map(actor=>actor._ktPersonality.type)).size,7,'the current ten-character fallback cast receives a broad, deterministic personality mix');
+for(const actor of cast){
+ const again=personality.profile({nick:actor.nick,playerId:actor.playerId});
+ assert.deepEqual({...again},{...actor._ktPersonality},'the same stable identity receives the same temperament');
+ assert(actor._ktPersonality.wanderlust>=.05&&actor._ktPersonality.wanderlust<=.98,'personality values remain bounded');
+}
+const shy=cast.find(a=>a._ktPersonality.type==='timido'),party=cast.find(a=>a._ktPersonality.type==='festeiro');
+assert(party&&shy&&personality.delay(party,'wander')<personality.delay(shy,'wander'),'a lively Idol tends to choose an outing earlier than a shy Idol');
+assert.equal(personality.choose([], 'wander'),null,'empty candidate lists do not create an activity');
+assert(cast.includes(personality.choose(cast,'wander')),'the activity chooser returns an eligible character');
+const pair=personality.chooseConversation(cast);
+assert(pair&&pair.length===2&&pair[0]!==pair[1],'spontaneous conversations always use two distinct characters');
+const nextPair=personality.chooseConversation(cast);
+assert(nextPair&&nextPair[0]!==nextPair[1],'conversation selection remains valid after remembering the previous pair');
+const audience=personality.chooseAudience(cast);
+assert.equal(audience.length,2,'a singer receives one expressive supporter and one additional audience member');
+assert.notEqual(audience[0],audience[1],'audience reactions never assign one character twice');
+for(const actor of cast){
+ assert(['talk','look','applause'].includes(personality.gesture(actor,'talk')),'conversation gestures use an existing room pose');
+ assert(['look','applause'].includes(personality.gesture(actor,'cheer')),'show reactions use existing room poses');
+ for(const locale of ['pt','en','es','th','ja'])for(const role of ['start','reply','cheer'])assert(personality.dialogue(actor,role,locale),'each personality can speak in every supported room language');
+}
+const talkDecision=personality.decideSocial(cast,null,'pt');
+assert(talkDecision&&talkDecision.first!==talkDecision.second&&talkDecision.secondLine,'conversation decisions return two distinct speakers and individualized dialogue');
+assert(['talk','look'].includes(talkDecision.firstKind)&&['talk','look'].includes(talkDecision.secondKind),'conversation decisions use supported individual gestures');
+const showDecision=personality.decideSocial(cast.slice(1),cast[0],'en');
+assert(showDecision&&showDecision.firstLine&&['applause','look'].includes(showDecision.firstKind),'show decisions choose a supporter and a localized reaction');
+const playful=cast.find(a=>a._ktPersonality.type==='brincalhao');
+assert.equal(personality.profile(playful).tone,'bright','the playful archetype has an expressive conversational tone');
+personality.reset(cast);
+assert.equal(personality.chooseConversation(cast).length,2,'reset clears conversational memory without losing the cast');
+assert(html.includes('<script src="./karaoke-room-personality.js?v=3"></script>'),'the updated personality module bypasses the old browser cache');
+assert(html.includes('window.KaraokeRoomPersonality&&window.KaraokeRoomPersonality.create({random:Math.random})'),'the page injects randomness without giving the personality module movement controls');
+assert(html.includes('krLoungePersonality.reset(krBots)'),'the current cast receives individual profiles on room reset');
+assert(html.includes("krLoungePersonality.delay(b,'wander')"),'personality changes only when each character chooses an autonomous outing');
+assert(html.includes('krLoungePersonality.createSocialDirector(')&&html.includes('krLoungePersonality.createShowReactor('),'the existing personality module owns social scheduling and show reactions');
+
+
+
+assert(html.includes('krLoungeCriarPasseio(chosen,stopX,freeLanes[0])'),'the existing path controller still owns the actual walking route');
+assert(html.includes('krLoungeAvancarAtores(dt,false)'),'the existing movement state machine remains responsible for walking');
+assert(html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({'),'the existing autonomous-mic controller remains intact');
+assert.equal(cast.every(actor=>actor._ktPersonality.favoriteStyles.length===2&&actor._ktPersonality.gestureFavorites.length===3),true,'each NPC receives stable music preferences and favorite gestures');
+assert(cast.some(actor=>actor._ktPersonality.musicPreferences.pop!==actor._ktPersonality.musicPreferences.ballad),'music affinity varies by character and style');
+assert(['walk','drink','dance','observe','seat'].includes(personality.decideActivity(cast[0],{seatAvailable:true})),'the activity director returns a supported intention');
+assert(personality.activityDuration(cast[0],'dance')>0,'activity duration is personality-dependent and positive');
+const reactionPersonality=Personality.create({random:()=>0});
+for(const event of ['start','hit','combo','miss','finish','record']){
+ const reactions=reactionPersonality.decideReactions(cast,event,{song:{style:'pop'},language:'pt'});
+ assert(reactions.length>0,'the audience can react individually to '+event);
+ assert(reactions.every(item=>cast.includes(item.actor)&&['banzai','coracao','neon','v'].includes(item.pose)&&item.duration>0&&item.emoji),'each response contains an actor, supported pose, duration and emoji');
+}
+const silent=Personality.create({random:()=>.999999});
+assert.equal(silent.decideReactions(cast,'combo',{song:{style:'ballad'}}).length,0,'quiet audience members may keep observing without a forced reaction');
+const playPersonality=Personality.create({random:()=>0});
+assert.equal(playPersonality.decideSocial(cast,null,'pt').interaction,'play','playful personalities can turn a conversation into a small joke');
+assert(html.includes('function krLoungeReactToShow(event,details)'),'show events reach the audience reaction coordinator');
+assert(html.includes("krLoungeReactToShow('start'"),'the actual music start reaches the audience');
+assert(html.includes("krLoungeReactToShow(isSessionRecord?'record':'finish'"),'finishes and session records have distinct audience events');
+assert(html.includes('showReactionActive=!!(j._ktShowReaction&&j._ktShowReaction.until>t)'),'audience reactions render without moving characters');
+assert(html.includes("krLoungePersonality.decideActivity(chosen,{seatAvailable:!!freeSeat})"),'the activity director checks for a genuinely free sofa');
+assert(html.includes('krLoungePersonality.activateActivity(b,st)')&&html.includes('krLoungePersonality.finishActivity(b,st,{'),'the existing personality module chooses and expires individual lounge activities');
+assert(!html.includes("b.danca='banzai';krBolhas.push({emo:i%2"),'the show result no longer forces a synchronized audience pose');
+const interactionActor={playerId:'interaction-test',nick:'Interaction test',x:100,y:100},interactionState={activity:'drink',activeItem:'',phase:'pause'};
+personality.activateActivity(interactionActor,interactionState);
+assert(['tsu','lirika','pati'].includes(interactionActor.drink)&&interactionState.activeItem==='drink','drink activity records ownership');
+personality.clearActivity(interactionActor,interactionState);
+assert.equal(interactionActor.drink,'','only an autonomous drink is cleared at activity end');
+interactionState.activity='dance';personality.activateActivity(interactionActor,interactionState);
+assert(['neon','giro','pulo'].includes(interactionActor.danca)&&interactionState.activeItem==='dance','dance uses a renderer-supported pose');
+const activityActors=[interactionActor],nextTimes=[];
+personality.finishActivity(interactionActor,interactionState,{time:100,actors:activityActors,nextAt:0,delay:()=>30,setNextAt:v=>nextTimes.push(v),random:()=>0});
+assert.equal(activityActors.length,0,'finished activity releases its walker slot');
+assert.equal(interactionState.phase,'rest','finished activity returns NPC to rest');
+assert.equal(interactionState.waitUntil,730,'personality rest delay is respected');
+assert.equal(nextTimes[0],700,'the director receives the next activity time');
+const seatActor={x:100,y:100},seatSlots=[[100,100],[200,200]],seatActors=[seatActor];
+assert.deepEqual(personality.freeSofaSlot(seatActor,seatActors,seatSlots,null,null),seatSlots[1],'seat selection skips the actor own sofa');
+seatActors.push({x:200,y:200});
+assert.equal(personality.freeSofaSlot(seatActor,seatActors,seatSlots,null,null),null,'occupied sofa slots are not offered');
+const socialActors=cast.slice(0,4).map((actor,i)=>({id:actor.playerId,nick:actor.nick,x:100+i*30,y:100}));
+let socialClock=0,socialLines=[];
+const socialDirector=personality.createSocialDirector({now:()=>socialClock,allowed:()=>true,hasWalkers:()=>false,actors:()=>socialActors,singer:()=>null,canSocialize:()=>true,language:()=> 'pt',onDialogue:(actor,line,at)=>socialLines.push({actor,line,at})});
+socialDirector.reset();socialClock=721;
+assert.equal(socialDirector.shouldUpdate(),true,'social director wakes after its quiet interval');
+assert.equal(socialDirector.update(),true,'director starts a conversation when two NPCs are free');
+assert.equal(socialDirector.active(),true,'conversation state is tracked without timers');
+assert.equal(socialLines.length,2,'both participants receive individual dialogue');
+socialDirector.clear();assert.equal(socialDirector.active(),false,'clearing a conversation releases both participants');
+let showClock=100,showSeen=[];
+const showReactor=personality.createShowReactor({allowed:()=>true,now:()=>showClock,singer:()=>null,language:()=> 'pt',eligible:()=>socialActors,apply:d=>showSeen.push(d)});
+assert.equal(showReactor('start',{}),socialActors.length,'song start offers independent audience reactions');
+showClock+=1;assert.equal(showReactor('hit',{}),0,'rapid duplicate event reactions are throttled');
+showClock+=24;assert(showReactor('hit',{})>0,'audience can react again after logical cooldown');
+console.log('Karaoke room personality: social director, show reactions, individual activities and free sofa selection passed');
+
+const propCast=Array.from({length:10},(_,i)=>({id:'prop-'+i,nick:'Prop '+i}));
+personality.equipRoomProps(propCast);
+assert.equal(propCast.filter(a=>a.drink).length,2,'only two NPCs hold drinks');
+assert.equal(propCast.filter(a=>a.snackSala).length,3,'three NPCs hold existing snack sprites');
+assert.equal(propCast.filter(a=>a.itemSala==='pandeiro').length,2,'two NPCs carry the existing pandeiro');
+assert.equal(propCast.filter(a=>a.itemSala==='mic').length,1,'one NPC carries the decorative mic');
+assert.equal(propCast.filter(a=>!a.drink&&!a.snackSala&&!a.itemSala).length,2,'two NPCs keep their hands free for microphone turns');
+assert.equal(new Set(propCast.filter(a=>a.drink).map(a=>a.drink)).size,2,'the drinks use different existing variants');
+assert.equal(new Set(propCast.filter(a=>a.snackSala).map(a=>a.snackSala)).size,3,'the foods vary instead of repeating one snack');
+assert(propCast.every(a=>typeof a.lookSala==='boolean'&&typeof a.antenaSala==='boolean'),'glasses and antennas are independently randomized');
+console.log('Karaoke room personality: varied existing room props across the cast passed');

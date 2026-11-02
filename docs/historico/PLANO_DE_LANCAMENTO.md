@@ -13,7 +13,7 @@
 - [x] O cadastro de ensaio continua desligado (SIGNUP_ENABLED=false) e o portão do servidor fica fechado por padrão. Não abrir durante esta organização.
 - [x] O projeto **BRS48's Project** é o Supabase que contém os dados reais do jogo. A prévia não é um sandbox, mesmo com escritas bloqueadas pelo helper contaRpc.
 - [x] O elenco semanal dos pôsteres usa a tabela privada private.karaoke_poster_elencos e a RPC public.karaoke_posteres_semana(), já presentes na produção.
-- [x] O pódio semanal tw_podio_semana e a tabela private.tw_weekly_podium_scores **não existem na produção**; supabase/sql/tw_weekly_podium_proposal.sql é uma proposta versionada, não uma migração aplicada.
+- [x] O pódio semanal tw_podio_semana e a tabela private.tw_weekly_podium_scores **não existem na produção**; supabase/sql/proposta/tw_weekly_podium_proposal.sql é uma proposta versionada, não uma migração aplicada.
 - [ ] O tamanho transferido, uso comprimido, FPS real, tráfego de Supabase/Realtime e consumo Vercel ainda precisam ser medidos em dashboards e dispositivos. Não se promete compatibilidade com o plano gratuito apenas pela inspeção do código.
 - [ ] A auditoria do Supabase sinalizou RLS desativado na tabela privada dos pôsteres. As permissões diretas de anon e authenticated foram consultadas e não permitem acesso direto à tabela/schema, mas o aviso deve ser revisado explicitamente antes da liberação. Não ligar RLS nem mudar grants às cegas: a RPC pública depende desse modelo de acesso.
 

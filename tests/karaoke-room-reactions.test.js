@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 function block(from,to){const a=html.indexOf(from),b=html.indexOf(to,a);assert(a>=0&&b>a);return html.slice(a,b);}
 const pets=block('var ktPets=','var ktMicBalanco=');
-const faces=block('function ktPetRosto(','/* Pets da TsuLiPa na sala');
+const faces=block('function ktPetRosto(','var ktPets=');
 const drums=block('var ktPandeiro=','function ktMesaKaraoke(');
 function setup(){
  let now=1000;const audio=[];

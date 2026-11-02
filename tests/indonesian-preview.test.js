@@ -14,6 +14,7 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
     assert.ok(src.indexOf("get('lang')==='id'")>=0);
   }
   assert.match(read('index.html'),/<button data-l="id">🇮🇩 ID<\/button>/);
+  assert.match(read('hub.js'),/\['id', '🇮🇩 ID'\]/);
   for(const lang of ['pt','es','en','th','ja'])assert.match(read('index.html'),new RegExp('data-l="'+lang+'"'));
   assert.equal(catalog.karaoke.rows.length,202);
   assert.equal(catalog.karaoke.patterns.length,6);

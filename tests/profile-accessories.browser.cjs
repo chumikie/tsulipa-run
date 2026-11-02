@@ -10,7 +10,11 @@ const server=http.createServer((req,res)=>{
   const name=decodeURIComponent(new URL(req.url,'http://localhost').pathname).slice(1)||'index.html';
   const file=path.resolve(root,name);
   if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
-  fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end();return;}res.end(data);});
+  fs.readFile(file,(err,data)=>{
+    if(err){res.writeHead(404).end();return;}
+    res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
+    res.end(data);
+  });
 });
 async function main(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));

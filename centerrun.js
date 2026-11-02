@@ -6,7 +6,7 @@
 var LANG='pt';
 function tr(k){var d=DICT[LANG];return (d&&d[k])||k}
 function applyLang(){
-  document.documentElement.lang=LANG==='ja'?'ja':LANG==='th'?'th':LANG==='es'?'es':LANG==='en'?'en':'pt-BR';
+  document.documentElement.lang=LANG==='id'?'id':LANG==='ja'?'ja':LANG==='th'?'th':LANG==='es'?'es':LANG==='en'?'en':'pt-BR';
   var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,L=[];
   while(n=w.nextNode()){
     var pn=n.parentNode&&n.parentNode.nodeName;

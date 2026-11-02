@@ -447,6 +447,7 @@ html,body{min-height:100%;}
 })();
 </script>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head>
 <body class="tw-game-sora">
 <div id="soraLegacyHooks" hidden aria-hidden="true"><canvas id="c" width="720" height="300"></canvas><canvas id="cel" width="200" height="150"></canvas><canvas id="prev" width="150" height="150"></canvas><span id="best"></span><div id="chars"></div><input id="nick" maxlength="12"></div>
@@ -543,6 +544,7 @@ function soraEnsureSupabaseClient(){
 var LANG='pt';
 try{LANG=window.__TW_TEST_STORAGE.getItem('brs48cr_lang')||'pt'}catch(e){}
 try{if(new URLSearchParams(location.search).get('embed')==='index2'){var l=new URLSearchParams(location.search).get('lang');if(['pt','es','en','th','ja'].indexOf(l)>=0)LANG=l;}}catch(e){}
+if(window.TW_ID_PREVIEW_DATA&&(new URLSearchParams(location.search).get('lang')==='id'||LANG==='id'))LANG='id';
 var DICT={
   "en": {
     "Pule os obstáculos do palco, pegue estrelas e suba no ranking até o Center.": "Jump over the stage obstacles, collect stars and climb the ranks up to Center.",
@@ -1423,6 +1425,7 @@ Object.assign(SORA_DICT.ja,{"🔊 Som": "🔊 サウンド", "🔇 Som": "🔇 �
 Object.keys(SORA_DICT).forEach(function(l){
   if(DICT[l]) Object.keys(SORA_DICT[l]).forEach(function(k){ DICT[l][k] = SORA_DICT[l][k]; });
 });
+if(LANG==='id'&&window.TW_ID_PREVIEW_DATA)DICT.id=window.TW_ID_PREVIEW_DATA.sora;
 var histData = null;
 function histPadrao(){
   return {

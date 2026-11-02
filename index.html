@@ -189,6 +189,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
        <button data-l="en">EN</button>
        <button data-l="th">TH</button>
        <button data-l="ja">日本語</button>
+       <button data-l="id">🇮🇩 ID</button>
      </div>
 
 
@@ -331,6 +332,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
 <script src="./tw-i18n.js?v=5"></script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./pet.js?v=1"></script>
 <script src="./perfil.js?v=2"></script>
@@ -377,6 +379,7 @@ window.TW_JOGOS_SEM_LOGIN = false;   // true so para teste local; NUNCA true na 
 	
 /* (invólucro da IIFE principal removido em 02/11/2026: as funções viram globais para poderem morar em arquivos separados) */
 try{LANG=localStorage.getItem('brs48cr_lang')||'pt'}catch(e){}
+if(LANG==='id'&&!window.TW_ID_PREVIEW_DATA)LANG='pt';
 var DICT=window.TW_DICT;   // tabela em tw-i18n.js (ordem alfabética)
 
 
@@ -708,6 +711,10 @@ document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.targe
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
 [].forEach.call(document.querySelectorAll('.lang button'),function(b){
   b.onclick=function(){
+    if(b.dataset.l==='id'){
+      try{localStorage.setItem('brs48cr_lang','id')}catch(e){}
+      location.reload();return;
+    }
     LANG=b.dataset.l;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}
     applyLang();

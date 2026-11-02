@@ -1,0 +1,50 @@
+{
+  "TW_INDEX2_TUT_I18N": [
+    "Lompatlah di antara awan, kumpulkan bintang, dan temukan pemandangan yang tak terduga.",
+    "🎤 Karaoke⭐Time! · 5 pertunjukan per hari!"
+  ],
+  "labels": "Tiket Karaoke tambahan",
+  "twGamesTxt": [
+    "Lompatlah di antara awan, temukan berbagai latar, dan kumpulkan bintang.",
+    "Bernyanyi, menari, dan bersinarlah di atas panggung!"
+  ],
+  "TW_MIC_WORDS": [
+    "💖 Paling akurat",
+    "Belum ada yang bernyanyi minggu ini. Suara pertama bisa jadi milikmu! 🎶",
+    "Buka peringkat akurasi Karaoke",
+    "Tutup",
+    "Akurasi mingguan · Karaoke⭐Time!",
+    "Akurasi mingguan"
+  ],
+  "TW_RANK_WORDS": [
+    "Belum ada skor",
+    "Peringkat untuk sementara tidak tersedia",
+    "Peringkat tidak tersedia",
+    "Bisakah kamu berlari lebih cepat daripada ",
+    "Bisakah kamu melompat lebih tinggi daripada ",
+    "Bisakah kamu mengenai lebih banyak not daripada ",
+    "Diperbarui setiap Minggu · waktu Brasília",
+    "Lompatan tertinggimu minggu ini",
+    "Hanya di perangkat ini; belum termasuk peringkat online",
+    "Belum ada hasil lompatan minggu ini",
+    "Peringkat mingguan untuk sementara tidak tersedia",
+    "Saluran peringkat mingguan",
+    "TV peringkat mingguan",
+    "Idol terbaik minggu ini",
+    "Juara minggu ini",
+    "Segera hadir"
+  ],
+  "tvOpenLabels": "Buka TsuLiPa⭐TV!",
+  "tvCloseLabels": "Tutup TV",
+  "twPreviewTextos": "Beranda",
+  "TW_SORA_SOM_TEXTOS": {
+    "off": "Matikan suara",
+    "on": "Nyalakan suara"
+  },
+  "S2_BONUS_LABELS": {
+    "title": "BONUS PERGANTIAN ADEGAN",
+    "jump": "▲ LOMPAT!",
+    "slide": "▼ MELUNCUR!",
+    "note": "Setiap gerakan tepat menghasilkan satu ★"
+  }
+}

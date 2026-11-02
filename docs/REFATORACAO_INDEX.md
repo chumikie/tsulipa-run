@@ -33,7 +33,7 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 2 | Perfil | `perfil.js`, `perfil.css` | Extraído (02/11/2026). 97 funções + 22 tabelas; 130 linhas de CSS. Modo admin fica para a Etapa 6. |
 | 3 | Star⭐Gacha! | `gacha.js`, `gacha.css` | Extraído (02/11/2026). 15 funções + 4 tabelas (giro, card do Idol, últimos cards e zoom); 19 linhas de CSS. O card do Gacha na tela de início fica para a etapa do Hub. |
 | 4 | Moon⭐Duo! | `duo.js`, `duo.css` | Extraído (02/11/2026). 51 funções + 15 tabelas (desenho, telas, abas, lojinha, itens travados, aviso); 56 linhas de CSS. |
-| 5 | Encontro do dia | — | Pendente |
+| 5 | Encontro do dia | `encontro.js`, `encontro.css` | Extraído (02/11/2026). 16 funções + 6 tabelas (cena, halo, emojis, ordem do trio, prêmio); 18 linhas de CSS. O botão na tela de início fica para a etapa do Hub. |
 | 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
 | 7 | Hub | — | Pendente |
 | 8 | Center⭐Run | — | Pendente |
@@ -45,6 +45,10 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 - `drawPet` e os desenhos de pet usados também pelo Center⭐Run e pelo Perfil (ficam para a etapa do
   Center⭐Run, por serem compartilhados).
 - `pet-sync.js` continua sendo a única camada de sincronização.
+
+### Etapa 5 — conferência antes × depois
+- Encontro em trio (abrir, tocar no palco), em 390 px e 1280 px, com dados de teste: estilos calculados
+  idênticos, fora animações (corações pulsando, botões da TV e do microfone); nenhum erro.
 
 ### Etapa 4 — conferência antes × depois
 - Janela do Duo e as abas Cena, Cenário, Expressões e Presente (dados de teste, sem banco), em 390 px e

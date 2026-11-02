@@ -1,0 +1,21 @@
+/* Encontro do dia — janela, palco, cartão do membro, prêmio e botões.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração da PR #62, Etapa 5), sem mudar valores.
+   O botão do Encontro na tela de início (.hubenc) fica para a etapa do Hub. */
+.encov{z-index:24}.encp{width:min(100%,400px);text-align:center;position:relative}
+#encCv{width:100%;height:auto;border-radius:18px;box-shadow:0 6px 18px rgba(60,20,120,.25)}
+.panel p.enctopo{margin:0 0 8px;font-weight:800;color:var(--b1);font-size:14px}.encnick{margin:10px 0 2px;font-size:22px;color:var(--ink)}
+.panel p.encfala{margin:4px 0 12px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.45}
+.encp{background:linear-gradient(170deg,var(--card),var(--card))}
+.encpalco{position:relative;border-radius:20px;padding:4px;background:linear-gradient(135deg,#7b3ff0,#ff6fb5,#4169e1)}
+.encpalco #encCv{display:block;border-radius:17px;box-shadow:none;cursor:pointer;touch-action:manipulation}
+.encselo{position:absolute;right:14px;bottom:14px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(60,20,120,.3)}
+.enchero{position:relative;margin:12px 0 8px;padding:14px 16px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.14) 55%,rgba(65,105,225,.14))}
+.enchero .encnick{margin:0;font-size:24px;font-weight:900;color:#ff6fb5}
+.encchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.enchero .perffrase{margin:2px 0 0;font-size:15px;font-weight:700;color:var(--ink)}
+.encpremio{margin:0 0 8px;padding:6px 12px;border-radius:99px;display:inline-block;font-weight:800;font-size:13px;color:#fff;background:linear-gradient(90deg,#ffb347,#ff6fb5)}
+.panel p.encpremio{color:#fff}.encpremio[hidden],.enccoracoes[hidden]{display:none!important}
+.panel p.enccoracoes{margin:2px 0 8px;font-size:26px;line-height:1;letter-spacing:6px;text-align:center}.enccoracoes span{display:inline-block;animation:encbate 1.2s ease-in-out infinite}.enccoracoes span:nth-child(2){animation-delay:.2s}.enccoracoes span:nth-child(3){animation-delay:.4s}@keyframes encbate{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){.enccoracoes span{animation:none}}
+.encbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.encbtns #encDuo{grid-column:1/-1}.encbtns .btn{margin:0;text-decoration:none;text-align:center}
+.encflash{position:absolute;inset:4px;border-radius:17px;background:#fff;animation:encflash .4s ease-out forwards;pointer-events:none}
+@keyframes encflash{from{opacity:.9}to{opacity:0}}

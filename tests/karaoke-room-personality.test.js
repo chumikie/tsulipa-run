@@ -103,3 +103,15 @@ assert.equal(showReactor('start',{}),socialActors.length,'song start offers inde
 showClock+=1;assert.equal(showReactor('hit',{}),0,'rapid duplicate event reactions are throttled');
 showClock+=24;assert(showReactor('hit',{})>0,'audience can react again after logical cooldown');
 console.log('Karaoke room personality: social director, show reactions, individual activities and free sofa selection passed');
+
+const propCast=Array.from({length:10},(_,i)=>({id:'prop-'+i,nick:'Prop '+i}));
+personality.equipRoomProps(propCast);
+assert.equal(propCast.filter(a=>a.drink).length,2,'only two NPCs hold drinks');
+assert.equal(propCast.filter(a=>a.snackSala).length,3,'three NPCs hold existing snack sprites');
+assert.equal(propCast.filter(a=>a.itemSala==='pandeiro').length,2,'two NPCs carry the existing pandeiro');
+assert.equal(propCast.filter(a=>a.itemSala==='mic').length,1,'one NPC carries the decorative mic');
+assert.equal(propCast.filter(a=>!a.drink&&!a.snackSala&&!a.itemSala).length,2,'two NPCs keep their hands free for microphone turns');
+assert.equal(new Set(propCast.filter(a=>a.drink).map(a=>a.drink)).size,2,'the drinks use different existing variants');
+assert.equal(new Set(propCast.filter(a=>a.snackSala).map(a=>a.snackSala)).size,3,'the foods vary instead of repeating one snack');
+assert(propCast.every(a=>typeof a.lookSala==='boolean'&&typeof a.antenaSala==='boolean'),'glasses and antennas are independently randomized');
+console.log('Karaoke room personality: varied existing room props across the cast passed');

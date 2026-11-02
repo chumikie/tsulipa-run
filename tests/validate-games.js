@@ -11,9 +11,7 @@ const games=[
   {file:"index.html",max:1150000},
   {file:"index2.html",max:1000},
   {file:"sora-jump.html",max:400000},
-  {file:"karaoke-day.html",max:150000},
-  {file:"karaoke-time.html",max:450000},
-  {file:"karaoke-online-lab.html",max:30000}
+  {file:"karaoke-time.html",max:450000}
 ];
 let errors=[];
 const read=name=>fs.readFileSync(path.join(root,name),"utf8");
@@ -40,10 +38,9 @@ for(const game of games){
   console.log("✓",game.file,bytes+" bytes",count+" inline scripts");
 }
 
-let karaoke="",karaokeTime="",sora="",preview="";
+let karaokeTime="",sora="",preview="";
 try{
   preview=read("index.html");
-  karaoke=read("karaoke-day.html");
   karaokeTime=read("karaoke-time.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
@@ -54,7 +51,7 @@ assert(!fs.existsSync(path.join(root,"sora-jump-karaoke.html")),"O seletor avuls
 
 // Nenhuma pagina pode apontar para um arquivo do projeto que nao existe mais,
 // e nenhuma pode navegar o proprio iframe para outra pagina do site.
-for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html","karaoke-time.html","privacidade.html","karaoke-online-lab.html"]){
+for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-time.html","privacidade.html"]){
   const txt=read(nome);
   const alvos=new Set();
   for(const m of txt.matchAll(/(?:href|src)=["']\.?\/?([A-Za-z0-9_.-]+\.(?:html|css|js|json|png|jpg|svg|mp3))(?:\?[^"']*)?["']/g)) alvos.add(m[1]);
@@ -64,7 +61,7 @@ for(const nome of ["index.html","index2.html","sora-jump.html","karaoke-day.html
       nome+" aponta para um arquivo que nao existe: "+alvo);
   }
 }
-for(const jogo of ["sora-jump.html","karaoke-day.html","karaoke-time.html"]){
+for(const jogo of ["sora-jump.html","karaoke-time.html"]){
   const txt=read(jogo);
   assert(!/catch[^]{0,80}location\.href\s*=\s*['"]\.\/[A-Za-z0-9_.-]+\.html/.test(txt),
     jogo+": dentro do pop-up o voltar nunca pode navegar o iframe");
@@ -78,17 +75,6 @@ assert(!preview.includes('name="robots" content="noindex'),"Canonical home must 
 const redirect=read("index2.html");
 assert(redirect.includes("location.replace('/')")&&redirect.includes('content="0; url=/"')&&!redirect.includes('contaRpc'),"index2 must redirect to canonical home, including without JS");
 assert(sora.includes("games-theme.css"),"Sora missing shared theme");
-assert(karaoke.includes("games-theme.css"),"Karaoke missing shared theme");
-const rhythm=read("karaoke-rhythm.js"),rhythmStyle=read("karaoke-rhythm.css");
-assert(karaoke.includes('src="./karaoke-rhythm.js?v=1"')&&
-       karaoke.includes('href="./karaoke-rhythm.css?v=1"')&&
-       karaoke.includes('id="krRhythmHit"')&&
-       karaoke.includes('id="krRhythmScore"')&&
-       karaoke.includes('id="krRhythmNote"')&&
-       karaoke.includes("krRhythmStart()")&&
-       karaoke.includes("krRhythmTick()")&&
-       karaoke.includes("krRhythmStop('abandoned')"),
-  "Karaoke must expose a playable 60-second mic with 45-second rhythm locally");
 // Dez lugares no sofá + o microfone = onze personagens, sem empilhamento.
 const sofa=JSON.parse((karaokeTime.match(/KR_SOFA_SLOTS=(\[\[[0-9,\[\]]*\]\])/)||[])[1]||'[]');
 assert(sofa.length===10,'Karaoke: dez lugares no sofa');
@@ -99,39 +85,12 @@ assert(karaokeTime.includes("tr('Aberta · {n}/11')")&&
        !karaokeTime.includes("micT=30*60")&&
        !karaokeTime.includes("uma das 12 vagas"),
   "Karaoke Time must show eleven visual positions and remove the legacy frame-based mic");
-assert(rhythm.includes("RHYTHM_MS=45000")&&
-       rhythm.includes("TOTAL_MS=INTRO_MS+RHYTHM_MS+OUTRO_MS")&&
-       !rhythm.includes(".rpc(")&&!rhythm.includes("supabase")&&
-       rhythmStyle.length<5500,
-  "Rhythm engine must have exact duration, no database calls and lightweight CSS");
 
-const rehearsal=read("karaoke-online-lab.html"),model=read("karaoke-room-model.js");
-assert(rehearsal.includes('name="robots" content="noindex,nofollow,noarchive"')&&
-       rehearsal.includes("SIMULAÇÃO LOCAL")&&
-       rehearsal.includes('src="./karaoke-room-model.js"')&&
-       rehearsal.includes("9 vagas")&&
-       rehearsal.includes("Não conta para o ranking"),
-  "Offline rehearsal must be transparent about fake users and scores");
-assert(model.includes("QUEUE_CAPACITY=3")&&
-       rehearsal.includes('id="queue4"')&&
-       karaoke.includes('id="krMicQueueList"')&&
-       karaoke.includes('id="krMicQueueBot"')&&
-       karaoke.includes('var KR_DEMO_QUEUE_LIMIT=3')&&
-       karaoke.includes("krDemoStartNext()")&&
-       preview.includes("TW_KARAOKE_PRIMEIRA_DATA='2026-11-08'")&&
-       preview.includes("Date.UTC(2026,10,8,15,0,0)"),
-  "9-person Karaoke must have FIFO 3-person waitlist and planned Nov 8 premiere schedule");
-assert(model.includes("CAPACITY=9")&&model.includes("TURN_MS=60000")&&
-       model.includes("RHYTHM_MS=45000")&&model.includes('verification:"demo_unverified"')&&
-       !model.includes("_supabase")&&!model.includes(".rpc("),
-  "Offline room model must never connect to the live database");
 
 assert(sora.includes("soraSetupUI")&&sora.includes("soraOpenUI"),"Sora core integration missing");
 assert(karaokeTime.includes('function posters()')&&karaokeTime.includes('KaraokeDaily.selectPolaroids(catalog,selfId,active.day,active.members')&&karaokeTime.includes('baseCast=ktDaily.posters()'),"Karaoke Time Polaroids must use guests independent of current room members");
-assert(karaoke.includes("krAgendarLoop")&&karaoke.includes("logicalW=960,logicalH=540"),
-  "Karaoke mobile draw/click coordination changed");
-assert(karaoke.includes('id="krDev" hidden'),"Karaoke simulator must start collapsed");
-assert(karaoke.includes("krHandBusy")&&karaoke.includes("krClearHandheld"),
+assert(karaokeTime.includes('id="krDev" hidden'),"Karaoke simulator must start collapsed");
+assert(karaokeTime.includes("krHandBusy")&&karaokeTime.includes("krClearHandheld"),
   "Karaoke handheld exclusivity missing");
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
@@ -175,7 +134,7 @@ assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
        lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
-const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),karaokeEmbedSkin=read("karaoke-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
+const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=1"')&&
        previewSkin.includes(".tw-modal.tw-modal-gacha")&&previewSkin.includes(".tw-modal.tw-modal-duo")&&
        lab.includes("tw-modal-star")&&lab.includes("スター・ガチャ")&&lab.includes("ムーン・デュオ"),
@@ -244,8 +203,8 @@ assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
        sfxSource.includes("OSHI === 'tsu'")&&sfxSource.includes("OSHI === 'lirika'")&&sfxSource.includes("OSHI === 'pati'"),
   "Seasonal presentation must not replace the trio's touch voices, Oshi sound effects or saved outfits");
 assert(lab.includes('href="./tw-mic-cd-popup.css?v=3"')&&
-       lab.includes("antiga sala simultânea de domingo")&&
-       lab.includes("O ranking semanal é online"),
+       lab.includes("Não existe sala online")&&
+       lab.includes("o ranking semanal é online"),
   "Karaoke Time is the only current karaoke experience; old Sunday room is documented as retired");
 const syncStart=lab.indexOf("function perfEnviar(){"),syncEnd=lab.indexOf("function perfConferir(",syncStart);
 const syncSource=lab.slice(syncStart,syncEnd);
@@ -292,7 +251,7 @@ assert(sora.includes("twSoraEmbedBoot")&&
        soraEmbedSkin.includes("html.tw-sora-embed #soraOv>.panel.sora-panel")&&
        soraEmbedSkin.includes("aspect-ratio:360/520"),
   "Sora should have an opt-in, independently scoped embed shell");
-assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(karaokeEmbedSkin,"utf8")<10000&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000,
+assert(Buffer.byteLength(previewSkin,"utf8")<10000&&Buffer.byteLength(soraEmbedSkin,"utf8")<11500&&Buffer.byteLength(launchSkin,"utf8")<11500&&Buffer.byteLength(micCdSkin,"utf8")<8000,
   "New preview stylesheets exceed 10 KB budget");
 assert(previewSkin.includes(".tw-preview-stage .hubpart")&&
        previewSkin.includes("prefers-reduced-motion:reduce")&&
@@ -336,27 +295,14 @@ assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
 assert(previewSkin.includes('grid-template-areas:"run run run" "pet profile gacha" "sora duo karaoke"')&&
        previewSkin.includes("@media(min-width:700px)"),
   "INDEX2 desktop must have Moon Duo between Sora and Karaoke without changing mobile grid");
-assert(lab.includes("function twKaraokeHorario()")&&
-       lab.includes("timeZone:'America/Sao_Paulo'")&&
-       lab.includes("function twKaraokeAtualizarCard()")&&
-       lab.includes("if(tipo==='karaoke'&&!kTime&&!ensaio&&!horarioKaraoke.aberto&&")&&
-       lab.includes("horarioKaraoke.foraHomologacao")&&
-       lab.includes('class="tw-karaoke-timer"')&&
-       previewSkin.includes(".tw-hubgame-karaoke.tw-karaoke-locked"),
-  "INDEX2 should display Sunday countdown and guard preview card outside the time window");
 
 assert(lab.includes("var tema=['tsu','lirika','pati'].indexOf(OSHI)")&&
        lab.includes("encodeURIComponent(tema)")&&lab.includes("encodeURIComponent(LANG)")&&
-       soraEmbedSkin.includes('[data-oshi="lirika"]')&&karaokeEmbedSkin.includes('[data-oshi="pati"]')&&
-       karaoke.includes("twKaraokeEmbedBoot")&&karaoke.includes("./karaoke-embed.css?v=2")&&
+       soraEmbedSkin.includes('[data-oshi="lirika"]')&&
        soraEmbedSkin.includes("#soraImportProfileBtn"),
   "Index 2 embed games must inherit selected Oshi and hide Sora test import");
-assert(lab.includes("typeof contaAdmin==='function'&&contaAdmin()")&&
-       lab.includes("twKaraokeMostrarFechado")&&
-       lab.includes('id="twKaraokeEnsaiar"')&&
-       lab.includes("twPreviewAbrirJogo('karaoke',true)")&&
-       !lab.includes("twKaraokeConviteRascunho"),
-  "Admin preview needs permission and unfinished invitations must be absent");
+assert(!lab.includes("twKaraokeMostrarFechado")&&!lab.includes('id="twKaraokeEnsaiar"')&&!lab.includes("karaoke-day.html")&&!lab.includes("twKaraokeConviteRascunho"),
+  "Sem sala online: nada de aviso de sala fechada, ensaio do Karaoke Day ou convites");
 assert(karaokePopupSkin.includes('body:has(#twPreviewJogo[data-karaoke-tela]) > .stage')&&
        karaokePopupSkin.includes('> .hint')&&karaokePopupSkin.includes('> .links')&&
        karaokePopupSkin.includes('> .oshi-sel'),
@@ -371,7 +317,7 @@ assert(!lab.includes('href="./karaoke-player-popup.css?v=1"')&&
   "Karaoke Time inside INDEX2 must inherit the homepage CSS with a transparent embedded game, not a separate CD layout");
 
 assert(preview.includes("var TW_KARAOKE_TIME=true;")&&preview.includes("'./karaoke-time.html'+context"),
-  "O card do Karaoke abre o Karaoke⭐Time! (o Day fica guardado, desligado)");
+  "O card do Karaoke abre o Karaoke⭐Time! (jogo solo; o Karaoke Day foi removido)");
 assert(kTime.includes("type:'tsulipa-games-hub'")&&kTime.includes("kt-no-site")&&
        kTime.includes("read('brs48cr_nick')")&&kTime.includes('id="ktTraducoes"')&&kTime.includes("get('lang')")&&
        !preview.includes("data-admkar")&&!preview.includes("karaoke_sala_admin")&&kTime.includes("read('brs48cr_char')")&&kTime.includes("read('brs48cr_cu2')"),
@@ -389,9 +335,9 @@ assert(kTime.includes("init:apply,live:live,")&&preview.includes("plateia:functi
 assert(preview.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&kTime.includes("var cor = c.luz || c.hair || '#ff6fb5';")&&
        kTime.includes("read('brs48cr_cor')"),
   "Lightstick: cor do perfil, senão a do cabelo");
-assert(sora.includes("type:'tsulipa-games-hub'")&&karaoke.includes("type:'tsulipa-games-hub'"),
+assert(sora.includes("type:'tsulipa-games-hub'")&&karaokeTime.includes("type:'tsulipa-games-hub'"),
   "Integrated games must request return to the parent hub");
-assert(karaoke.includes("'Melon Juice!'")&&!karaoke.includes("'Melon Soda'"),
+assert(karaokeTime.includes("'Melon Juice!'")&&!karaokeTime.includes("'Melon Soda'"),
   "Karaoke drink must be called Melon Juice! without changing its internal Lirika key");
 
 for(const fn of ["top_scores","comprar_visual","admin_acao","hubCardsUI","contaRpc","gachaAbrir","perfAbrir"]){
@@ -474,41 +420,16 @@ try{
          hubReturns===1&&launchesFocused===1&&
          !("data-jogo" in attrs)&&previewPart.textContent===""&&restored===0,
     "Sora return must unload iframe, clear effects and focus");
-  sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
-  sandbox.twPreviewAbrirJogo("karaoke");
-  assert(overlay.hidden&&iframe.src==="about:blank"&&blockedKaraoke===1,
-    "Karaoke preview should refuse to open outside Sunday window");
-  // A conscious rehearsal click can open the disconnected demo even on a weekday.
-  // This is NOT the same as granting online seats or privileges.
-  sandbox.twPreviewAbrirJogo("karaoke",true);
-  assert(!overlay.hidden&&iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light&rehearsal=1"&&
-         gameTitle.textContent.includes("Ensaio"),
-    "INDEX2 rehearsal must work outside Sunday and be clearly identified as local only");
-  sandbox.twPreviewFecharJogo();
-  sandbox.twKaraokeHorario=()=>({aberto:true,faltam:0});
-  sandbox.twPreviewAbrirJogo("karaoke");
-  assert(iframe.src==="./karaoke-day.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&!overlay.hidden&&gameTitle.textContent.includes("Karaoke"),
-    "Karaoke preview should open during scheduled window");
-  sandbox.twPreviewFecharJogo();
-  assert(iframe.src==="about:blank"&&hubReturns===3&&launchesFocused===3,
-    "Karaoke return must unload iframe and restore hub focus");
   sandbox.LANG="ja";
   sandbox.twPreviewAtualizarIdioma();
   assert(backText.textContent==="ホーム",
     "Preview text should update when the hub language changes");
-  sandbox.contaAdmin=()=>true;
-  sandbox.twKaraokeHorario=()=>({aberto:false,faltam:86400});
-  sandbox.twPreviewAbrirJogo("karaoke");
-  assert(!overlay.hidden&&iframe.src.includes("karaoke-day.html?embed=index2"),
-    "Server-verified moderator should enter the TEST preview while closed");
-  sandbox.twPreviewFecharJogo();
   // Karaoke⭐Time! (solo, offline): sem portão de domingo e sem ensaio.
   sandbox.contaAdmin=()=>false;sandbox.LANG="pt";sandbox.TW_KARAOKE_TIME=true;
-  sandbox.twKaraokeHorario=()=>{throw Error("Karaoke Time nao consulta o horario de domingo");};
-  sandbox.twPreviewAbrirJogo("karaoke",true);
+  sandbox.twPreviewAbrirJogo("karaoke");
   assert(!overlay.hidden&&iframe.src==="./karaoke-time.html?embed=index2&oshi=lirika&lang=pt&theme=light"&&
          gameTitle.textContent==="🎤 Karaoke⭐Time!",
-    "Karaoke Time must open any day, in the new file, without rehearsal flag");
+    "Karaoke Time must open any day, with no Sunday gate or rehearsal flag");
   assert(fakeHub.hidden&&("data-karaoke-tela" in attrs)&&!("data-karaoke-popup" in attrs)&&sandbox.location.hash==="#karaoke",
     "Karaoke Time opens as a screen of the page (like Center Run), with #karaoke for the back button");
   const returnsBeforeClose=hubReturns;
@@ -516,72 +437,12 @@ try{
   assert(iframe.src==="about:blank"&&overlay.hidden&&!fakeHub.hidden&&!("data-karaoke-tela" in attrs)&&
          hubReturns===returnsBeforeClose+1&&sandbox.location.hash==="",
     "Karaoke Time close unloads the game and returns to the hub");
-  console.log("✓ Preview controller smoke test: Sora, Karaoke Day, Karaoke Time, mod preview, focus, locale");
+  console.log("✓ Preview controller smoke test: Sora, Karaoke Time, focus, locale");
 }catch(e){errors.push("Preview navigation smoke test failed: "+e.message);}
 
 
-// Sunday 12:00–13:10 in Brasília must be consistent even on devices in other zones.
-try{
-  const a=lab.indexOf("var TW_KARAOKE_PRIMEIRA_DATA="),
-        fnStart=lab.indexOf("function twKaraokeHorario(){",a),
-        end=lab.indexOf("function twKaraokeAtualizarCard(){",fnStart);
-  if(a<0||fnStart<a||end<fnStart)throw Error("Karaoke premiere/clock function not found");
-  const fn=lab.slice(a,end);
-  for(const [iso,open,premiere] of [
-    ["2026-10-29T12:00:00Z",false,true],
-    ["2026-11-01T14:59:00Z",false,true],
-    ["2026-11-01T15:00:00Z",false,true],
-    ["2026-11-01T16:09:00Z",false,true],
-    ["2026-11-01T16:11:00Z",false,true],
-    ["2026-11-08T14:59:00Z",false,true],
-    ["2026-11-08T15:00:00Z",true,false],
-    ["2026-11-08T16:09:00Z",true,false],
-    ["2026-11-08T16:10:00Z",false,false],
-    ["2026-11-15T15:00:00Z",true,false]
-  ]){
-    const ClockDate=class extends Date {
-      constructor(...args){super(...(args.length?args:[iso]));}
-      static now(){return Date.parse(iso);}
-    };
-    const scope={Date:ClockDate,Intl,location:{protocol:"https:",hostname:"deploy-preview-34--tsulipa-run.netlify.app"}};
-    vm.runInNewContext(fn,scope);
-    const result=scope.twKaraokeHorario();
-    assert(result.aberto===open&&!!result.estreia===premiere&&Number.isFinite(result.faltam)&&!result.foraHomologacao,
-      "Karaoke preview schedule incorrect at "+iso);
-  }
-  const productionIso="2026-11-08T15:30:00Z";
-  const ProductionDate=class extends Date {
-    constructor(...args){super(...(args.length?args:[productionIso]));}
-    static now(){return Date.parse(productionIso);}
-  };
-  const productionScope={Date:ProductionDate,Intl,location:{protocol:"https:",hostname:"tsulipa-world.vercel.app"}};
-  vm.runInNewContext(fn,productionScope);
-  const productionState=productionScope.twKaraokeHorario();
-  // Lançamento: a sala online é real; o site oficial abre no mesmo horário que a prévia.
-  assert(productionState.aberto&&!productionState.foraHomologacao,
-    "Karaoke must open on Sunday 12:00–13:10 BRT on the public host");
-  console.log("✓ Karaoke timer: Sundays 12:00–13:10 BRT on preview and public host");
-}catch(e){errors.push("Karaoke timer smoke test failed: "+e.message);}
-
-// Closed-room copy is refreshed at every opening in each supported language.
-try{
-  const dictionary=lab.slice(lab.indexOf('var TW_KARAOKE_FECHADO_TEXTOS ='),lab.indexOf('// Original header node'));
-  const noticeFn=lab.slice(lab.indexOf('function twKaraokeMostrarFechado(){'),lab.indexOf('// Visual mode now belongs'));
-  for(const lang of ['pt','en','es','th','ja']){
-    const nodes={};
-    for(const id of ['twKaraokeFechado','twKaraokeFechadoTxt','twKaraokeDescanso','twKaraokeFecharAviso','twKaraokeEnsaiar'])nodes[id]={hidden:true,textContent:'',focus(){}};
-    const env={LANG:lang,$:id=>nodes[id]||null,twKaraokeAtualizarCard(){},twKaraokeHorario:()=>({estreia:true,faltam:90000})};
-    vm.runInNewContext(dictionary+noticeFn,env);
-    for(const premiere of [true,false]){
-      env.twKaraokeHorario=()=>({estreia:premiere,faltam:90000});
-      env.twKaraokeMostrarFechado();
-      const copy=env.TW_KARAOKE_FECHADO_TEXTOS[lang];
-      assert(nodes.twKaraokeFechado.hidden===false&&nodes.twKaraokeFechadoTxt.textContent.startsWith(copy[premiere?1:2])&&nodes.twKaraokeFechadoTxt.textContent.endsWith(copy[3]),'Closed schedule/status in '+lang);
-      assert(nodes.twKaraokeDescanso.textContent===copy[0]&&nodes.twKaraokeFecharAviso.textContent===copy[4]&&nodes.twKaraokeEnsaiar.textContent===copy[5],'Closed actions in '+lang);
-    }
-  }
-  console.log('✓ Closed Karaoke notice: premiere and weekly copy in PT/EN/ES/TH/JA');
-}catch(e){errors.push('Closed Karaoke locale test: '+e.message);}
+// Karaoke⭐Time! é solo: não existe mais horário de domingo nem aviso de sala fechada (Karaoke Day removido).
+assert(!lab.includes('function twKaraokeHorario(')&&!lab.includes('TW_KARAOKE_FECHADO_TEXTOS')&&!fs.existsSync(path.join(root,'karaoke-day.html')),'Karaoke Day e o horário de domingo foram removidos');
 
 // Standalone mode must not load INDEX2 styles. Embed mode adds exactly one stylesheet.
 try{

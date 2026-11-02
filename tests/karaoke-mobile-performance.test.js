@@ -157,10 +157,6 @@ assert(lifecycle.includes('function render30Due(owner,stamp)')&&lifecycle.includ
 assert(main.includes("render30Due($('stage'),t)")&&main.includes('render30Due(pc.canvas,t)')&&main.includes('render30Due(cc.canvas,t)')&&main.includes('render30Due(cv,t)'),'Center Run, avatar preview, victory and birthday canvases must use the mobile render cap');
 assert(main.includes('function perfAnimar(ms){')&&main.includes('function hubLoop(ms){')&&main.includes('function gachaLoop(ms){')&&main.includes('function duoLoop(ms){'),'Avatar maker, Hub, Gacha and Moon Duo RAF loops must receive the timestamp they use for delta-time and render limiting');
 assert(html.includes('render30Due(cv,performance.now())')&&sora.includes('render30Due(soraCv,t)'),'Karaoke room and Sora must cap canvas painting without skipping their per-frame simulation updates');
-const day=fs.readFileSync(path.join(root,'karaoke-day.html'),'utf8');
-assert(day.includes('krLoopLastTime=0')&&day.includes('(stamp-krLoopLastTime)/(1000/60)'),'Karaoke Day animation clock should use elapsed time rather than callback count');
-assert(day.includes('Math.min(4.2*dt,d)')&&day.includes('trl.t+=dt')&&day.includes('b.t+=dt')&&day.includes('krCortina+.018*dt'),'Karaoke Day character movement, trails, bubbles and curtain should preserve speed at 30/60 Hz');
-assert(day.includes('Math.floor(krTAnterior/10)<Math.floor(krT/10)')&&day.includes('Math.floor((krTAnterior-30)/160)<Math.floor((krT-30)/160)'),'Karaoke Day periodic trail and speech effects should trigger by elapsed-time threshold crossings, including 30 Hz');
 const partyFront=html.slice(html.indexOf('var ktFestaUltimoT=null;'),html.indexOf('/* Positive pet expressions'));
 assert(partyFront.includes('Math.min(2,t-ktFestaUltimoT)')&&partyFront.includes('p.y-=p.v*dt')&&partyFront.includes('p.f+=.04*dt'),'Karaoke disco foreground particles should advance by elapsed logical frames at 30/60 Hz');
 assert(html.includes('var krHomolAtivo=krSoHomol;')&&html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}')&&!html.includes('krOnlineAtivo'),'Karaoke Time is a local lounge; the homol URL disables autonomous behavior without inventing an online room mode');
@@ -197,7 +193,7 @@ assert(main.includes("Math.floor((perfT+1e-6)/2)>Math.floor((perfPrevT+1e-6)/2)"
 
 assert(main.includes("var petRaf=0,petDrawDelta=1,petDrawDeltaPending=0;")&&main.includes("petDrawDelta=Math.max(.1,petDrawDeltaPending||delta)")&&main.includes("e.t+=petDrawDelta")&&main.includes("b.t+=petDrawDelta")&&main.includes("pr.t+=petDrawDelta"),'Pet-room effects, speech bubbles and promotions must advance by elapsed render time when the canvas is capped at 30 Hz');
 assert(main.includes("Math.floor(a.t/22)>Math.floor((a.t-petDrawDelta)/22)")&&main.includes("Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)"),'Pet animation events must not be skipped when a draw advances more than one logical frame');
-assert(main.includes("// Chave de liberação do calendário/estreia; não representa nem ativa uma sala online."),'Karaoke schedule gate must not be described as an online room mode');
+assert(!main.includes('function twKaraokeHorario(')&&!main.includes('karaoke-day.html')&&main.includes("var kTime=tipo==='karaoke';"),'Karaoke Time is solo: no Sunday gate and no online room page');
 
 
 const curPalStart=main.indexOf('function curPal()'),curPalEnd=main.indexOf('\nfunction GLc()',curPalStart);
@@ -335,10 +331,7 @@ assert(!html.includes('class="kt-library-voice-panel"')&&!html.includes('data-kt
 assert(!html.includes('class="kt-library-special"')&&!html.includes('data-kt-audio="encontro"'),'The Encontro audio control is intentionally absent from the character voice section');
 assert((html.match(/<canvas class="kt-library-face" width="88" height="96"/g)||[]).length===3&&audienceAudio.includes("out:'zipper',outcol:avatarColors[group]")&&audienceAudio.includes('KaraokeAvatar.draw(ctx,cached.value,44,91,1.45,pose,expression,'),'The three miniatures use the original full-body renderer, with fixed zipper outfits in each official character color');
 const lirikaKaraoke=(html.match(/\{n:'Lirika'[^}]*\}/)||[])[0]||'';
-const karaokeDay=fs.readFileSync(path.join(__dirname,'..','karaoke-day.html'),'utf8');
-const lirikaDay=(karaokeDay.match(/\{n:'Lirika'[^}]*\}/)||[])[0]||'';
 assert(lirikaKaraoke.includes("back:'chanel'")&&lirikaKaraoke.includes("det:'coques'")&&!lirikaKaraoke.includes("hat:'coala'"),'Karaoke Time Lirika keeps the chanel + twin-bun hairstyle without a default koala tiara');
-assert(lirikaDay.includes("back:'chanel'")&&lirikaDay.includes("det:'coques'")&&!lirikaDay.includes("hat:'coala'"),'Karaoke Day Lirika keeps the chanel + twin-bun hairstyle without a default koala tiara');
 assert(audienceAudio.includes("avatarColors={tsu:'#9b30d9',lirika:'#4ade80',pati:'#4169e1'}")&&audienceAudio.includes("Object.assign({},CH[index],{out:'zipper',outcol:avatarColors[group]})")&&!audienceAudio.includes("out:'zipper',outcol:avatarColors[group],hat:''"),'Miniature clothing uses a separate zipper/color copy but preserves the actual character headwear setting');
 assert(audienceAudio.includes("next.volume=.6"),'Character voice clips use a slightly lower playback volume');
 assert(audienceAudio.includes('function animateHeads(now)')&&audienceAudio.includes('requestAnimationFrame(animateHeads)')&&audienceAudio.includes('cancelAnimationFrame(animationFrame)')&&audienceAudio.includes('headsVisible')&&audienceAudio.includes('IntersectionObserver')&&audienceAudio.includes('document.hidden'),'Miniature pose/expression animation runs only while the voice miniatures are on screen and cleans up its frame loop');

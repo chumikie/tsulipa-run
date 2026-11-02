@@ -25,4 +25,5 @@ assert.equal(rules.mine(DAY,'ninguem').score,undefined,'sem resultado, sem posi�
 assert(html.includes("if(me&&+me.pos>5){")&&html.includes("ne.textContent=tr('Você');")&&html.includes("['Você','You','Tú','คุณ','あなた']"),'linha "Você" só fora do Top 5, traduzida');
 assert(html.includes("if(a.posicao)a.posicao().then(")&&index.includes("posicao:function(){return contaRpc('kt_minha_posicao');},"),'online pede a posição ao servidor (função opcional)');
 assert(!html.includes("tr('Todo domingo, 12h às 13h10')")&&!html.includes('🟢 Domingo · 12h00–13h10'),'textos do antigo evento de domingo saíram da sala');
+assert(html.includes('<small class="kt-song-record" id="ktSongRecord" aria-live="polite"></small>')&&html.includes("function ktSongRecordUI(){")&&html.includes("$('ktSong').addEventListener('change',ktSongRecordUI)"),'recorde pessoal da música escolhida ao lado da Trilha');
 console.log('✓ Karaoke: minha posição fora do Top 5 (local e online) e textos antigos corrigidos');

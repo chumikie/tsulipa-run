@@ -108,13 +108,13 @@ create table public.star_log (
   reason text not null
 );
 create or replace function public.visual_tema(p_key text) returns text
-language sql stable as $ select null::text $;
+language sql stable as $ci$ select null::text $ci$;
 create or replace function public.hoje_br() returns date
-language sql stable as $ select current_date $;
+language sql stable as $ci$ select current_date $ci$;
 create or replace function public.tema_do_dia(p_data date) returns text
-language sql stable as $ select 'tema_ci'::text $;
+language sql stable as $ci$ select 'tema_ci'::text $ci$;
 create or replace function public.aniver_hoje(p_aniver date) returns boolean
-language sql stable as $ select false $;
+language sql stable as $ci$ select false $ci$;
 
 -- Definição de comprar_visual inspecionada em produção por leitura, sem
 -- executar RPC nem migrações no projeto ativo.

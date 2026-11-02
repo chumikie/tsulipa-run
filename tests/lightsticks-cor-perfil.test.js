@@ -21,12 +21,19 @@ test('lightsticks pessoais e palco seguem a cor do avatar de cada conta', () => 
   assert.match(karaoke, /var cor = c\.luz \|\| c\.hair \|\| '#ff6fb5'/);
 });
 
-test('Center Run acompanha troca de cor inclusive em fãs já criados; sem perfil conserva paleta', () => {
-  assert.match(html, /var lsColors = typeof perfMinhaCor/);
-  assert.match(html, /\? \[perfMinhaCor\] : \['#9b30d9', '#b6ff3b', '#4169e1'\]/);
-  assert.match(html, /var corFan = typeof perfMinhaCor/);
-  assert.match(html, /g\.fillStyle = corFan;\s*g\.shadowColor = corFan;/);
-  assert.match(html, /var cores = perfMinhaCor \? \[perfMinhaCor\]/);
-  assert.match(html, /var c = perfMinhaCor \? \[perfMinhaCor, perfMinhaCor, perfMinhaCor\] : o\.pal/);
+test('Center Run conserva cores tradicionais da torcida, multidão e obstáculos', () => {
+  assert.match(html, /var lsColors = \['#9b30d9', '#b6ff3b', '#4169e1'\]/);
+  assert.match(html, /g\.fillStyle = f\.color;\s*g\.shadowColor = f\.color;/);
+  assert.match(html, /var cores = \['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5', '#ffe14d'\]/);
+  assert.match(html, /var c = o\.pal;/);
+  assert.doesNotMatch(html, /var corFan = typeof perfMinhaCor/);
   assert.doesNotMatch(html.slice(html.indexOf('function perfGuardarCor'), html.indexOf('var CONTA_DICT')), /brs48cr_\w+\s*=/);
+});
+
+test('orelhas de coelho ficam abaixo da linha superior e atrás do cabelo', () => {
+  const coelho = html.indexOf("if(d==='coelho'){[[9.5,-.2]");
+  const cabelo = html.indexOf('var hg=g.createLinearGradient', coelho);
+  assert.ok(coelho > 0 && cabelo > coelho, 'orelhas são desenhadas antes do cabelo');
+  assert.match(html.slice(coelho, cabelo), /translate\(x\+p\[0\],y\+1\)/);
+  assert.match(html.slice(coelho, cabelo), /g\.ellipse\(0,-5,3\.4,9/);
 });

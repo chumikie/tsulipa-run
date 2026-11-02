@@ -2527,7 +2527,7 @@ function ktPlacar(x,t){
 }
 function songTitleKt(k){var m={normal:'Brilha Comigo',fast:'Love × Debut',chill:'Doce Melodia',tema:'TsuLiPa⭐World',corrida:'Center⭐Run!',gacha:'Star⭐Gacha!',duo:'Moon⭐Duo!'};return m[k]||'';}
 var krTilesPisados=new Uint8Array(90); // buffer reutilizado: não alocar memória a cada quadro
-var krLoopFrame=0,krRoomHostVisible=true,krRoomHostMotionStateReceived=false,krRoomCanvasVisible=true,krRhythmPanelVisible=false;
+var krLoopFrame=0,krRoomHostVisible=true,krHostMotionSeen=false,krRoomCanvasVisible=true,krRhythmPanelVisible=false;
 var krRoomRenderLista=[],krRoomRenderPlayer={},krRoomRenderBalloon={},krRoomRenderRoster=[],krRoomRenderIncludesPlayer=null;
 function krOrdenarPersonagensSala(a,b){return a.y-b.y;}
 function krMontarListaRenderSala(andando){
@@ -2879,15 +2879,9 @@ krRoomObserversConectar();
 window.addEventListener('message',function(e){
  if(e.source!==parent||!e.data)return;
  var visible;
- if(e.data.type==='TW_GAME_VISIBILITY'){
-  // Compatibility fallback only: once the host motion lifecycle speaks, legacy
-  // visibility pings must not undo its authoritative suspend/resume state.
-  if(krRoomHostMotionStateReceived)return;
-  visible=e.data.visible===true;
- }else if(e.data.type==='tsulipa-motion-state'){
-  krRoomHostMotionStateReceived=true;
-  visible=e.data.active===true;
- }else return;
+ if(e.data.type==='TW_GAME_VISIBILITY'){if(krHostMotionSeen)return;visible=e.data.visible===true;}
+ else if(e.data.type==='tsulipa-motion-state'){krHostMotionSeen=true;visible=e.data.active===true;}
+ else return;
  if(location.protocol!=='file:'&&e.origin!==location.origin)return;
  krRoomHostVisible=visible;
  if(visible&&krCanvasHD){krRoomCanvasVisible=krRoomElementoVisivel(krCanvasHD);if(krRhythmPanel)krRhythmPanelVisible=krRoomElementoVisivel(krRhythmPanel);}

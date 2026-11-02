@@ -13,7 +13,7 @@ const listenerEnd=html.indexOf("\ndocument.addEventListener('visibilitychange',k
 assert(listenerStart>=0&&listenerEnd>listenerStart,'host visibility message listener exists');
 const listeners={},hostWindow={},sandbox={
  parent:hostWindow,location:{protocol:'https:',origin:'https://room.test'},
- krRoomHostVisible:true,krRoomHostMotionStateReceived:false,krCanvasHD:null,krRhythmPanel:null,
+ krRoomHostVisible:true,krHostMotionSeen:false,krCanvasHD:null,krRhythmPanel:null,
  krRoomElementoVisivel:function(){return true;},krRoomAtualizar:function(){},
  window:{addEventListener:function(type,fn){listeners[type]=fn;}}
 };
@@ -22,7 +22,7 @@ const sendHostState=data=>listeners.message({source:hostWindow,origin:'https://r
 sendHostState({type:'TW_GAME_VISIBILITY',visible:false});
 assert.equal(sandbox.krRoomHostVisible,false,'legacy visibility remains a fallback before the motion protocol connects');
 sendHostState({type:'tsulipa-motion-state',active:false});
-assert.equal(sandbox.krRoomHostMotionStateReceived,true,'modern motion lifecycle becomes authoritative');
+assert.equal(sandbox.krHostMotionSeen,true,'modern motion lifecycle becomes authoritative');
 sendHostState({type:'TW_GAME_VISIBILITY',visible:true});
 assert.equal(sandbox.krRoomHostVisible,false,'legacy visible pings cannot resume a room suspended by the modern lifecycle');
 sendHostState({type:'tsulipa-motion-state',active:true});

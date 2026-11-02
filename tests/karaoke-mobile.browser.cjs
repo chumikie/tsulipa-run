@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
    data=data.toString().replace('\nhubMostrar();\n// Só','\n'+fixture);
    assert(data.includes('window.qaKaraoke='),'Local fixture injection point changed');
   }
-  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.qaRoomState=function(){
+  if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.__qaIncomingMessages=[];window.addEventListener('message',function(event){var entry={type:event.data&&event.data.type,active:event.data&&event.data.active,visible:event.data&&event.data.visible,sourceParent:event.source===window.parent,origin:event.origin,roomOrigin:location.origin};window.__qaIncomingMessages.push(entry);if(window.__qaIncomingMessages.length>30)window.__qaIncomingMessages.shift();},true);\n  window.qaRoomState=function(){
    var canvas=document.getElementById('krCv'),ctx=canvas&&canvas.getContext('2d');
    var probe=window.__qaPaintProbe||{calls:0,methods:[]},pixels={opaque:0,unique:0,hash:0,error:null};
    try{
@@ -50,7 +50,7 @@ const server=http.createServer((req,res)=>{
     session:krRhythmRun&&krRhythmRun.session&&krRhythmRun.session.token,practice:!!(krRhythmRun&&krRhythmRun.practice),
     pending:!!window.ktShowAdmissionPending,singer:krDemoCantor?{nick:krDemoCantor.bot.nick,phase:krDemoCantor.phase,automatic:!!krDemoCantor.automatic,
      x:krDemoCantor.bot.x,y:krDemoCantor.bot.y,noMic:!!krDemoCantor.bot.no_mic,routeIndex:krDemoCantor.routeIndex,homeX:krDemoCantor.homeX,homeY:krDemoCantor.homeY}:null,
-    visibility:vis,visibilityHistory:history.slice(),paint:{calls:probe.calls,methods:probe.methods.slice(),pixels:pixels},roomTick:krT,
+    visibility:vis,visibilityHistory:history.slice(),incomingMessages:(window.__qaIncomingMessages||[]).slice(-12),paint:{calls:probe.calls,methods:probe.methods.slice(),pixels:pixels},roomTick:krT,
     pets:ktPets.map(function(p){return {k:p.k,x:p.x,y:p.y,hitY:p.hitY,ex:p.ex,taps:p.toques||0,visit:p.visita?{phase:p.visita.phase,nome:p.visita.nome}:null};}),
     pandeiro:{x:ktPandeiro.x,y:ktPandeiro.y,t0:ktPandeiro.t0},extra:typeof ktPandeiroExtra==='undefined'?null:{x:ktPandeiroExtra.x,y:ktPandeiroExtra.y,t0:ktPandeiroExtra.t0}
    };

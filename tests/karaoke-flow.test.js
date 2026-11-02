@@ -87,7 +87,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(elements.has('ktPractice'),false,'sem ensaio gratuito na barra');
   assert.equal(calls.length,charged+2,'sem possibilidade de iniciar um ensaio pelo fluxo do jogador');
   assert(html.includes("if(key==='m'&&$('ktClosed').hidden){var muteButton=$('krMute')"),'M aciona o controle de som, não o microfone');
-  assert(html.includes('id="krMute" aria-label="Som" aria-keyshortcuts="M"'),'controle de som anuncia o atalho M');
+  assert(html.includes('id="krMute" aria-label="Silenciar som" aria-pressed="false" aria-keyshortcuts="M"')&&html.includes("muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som')"),'controle de som anuncia M e alterna seu nome acessível entre silenciar e ativar');
   assert(!html.includes('id="krMicBtn" aria-keyshortcuts="M"'),'microfone não reivindica mais o atalho M');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>P</kbd>'),'atalhos aparecem na instrução');
   assert(get('ktShortcuts').innerHTML.includes('<kbd>C</kbd>'),'atalho da câmera aparece na instrução');

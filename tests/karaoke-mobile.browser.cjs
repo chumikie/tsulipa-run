@@ -84,6 +84,45 @@ async function metrics(frame){
    controls:['ktSong','ktStart','ktSession','ktPause','ktEnd','ktScore'].map(id=>({id,...rect(id)})),playing:body.classList.contains('kt-playing')};
  });
 }
+async function waitForRoomMode(frame, expectMobile){
+ const state=await frame.locator('body').evaluate((body, expectedMobile)=>new Promise(resolve=>{
+  let remaining=240,last=null;
+  function snapshot(){
+   const room=document.getElementById('krPalco');
+   const canvas=document.getElementById('krCv');
+   const sound=document.getElementById('krMute');
+   const viewport=room&&room.querySelector('.kt-room-viewport');
+   const tools=room&&room.querySelector('.kt-room-tools');
+   return {
+    width:innerWidth,
+    mediaMobile:matchMedia('(max-width:620px)').matches,
+    roomMobile:!!(room&&room.classList.contains('kt-room-mobile')),
+    soundParent:sound&&sound.parentElement?(sound.parentElement.id||sound.parentElement.className):null,
+    canvasParent:canvas&&canvas.parentElement?(canvas.parentElement.id||canvas.parentElement.className):null,
+    viewportAttached:!!(viewport&&viewport.parentElement===room),
+    toolsAttached:!!(tools&&tools.parentElement===room)
+   };
+  }
+  function settled(s){
+   return s.mediaMobile===expectedMobile&&s.roomMobile===expectedMobile&&
+    (expectedMobile
+     ?s.soundParent==='kt-room-tools'&&s.canvasParent==='kt-room-viewport'&&s.viewportAttached&&s.toolsAttached
+     :s.soundParent==='krpalco'&&s.canvasParent==='krpalco'&&!s.viewportAttached&&!s.toolsAttached);
+  }
+  function poll(){
+   last=snapshot();
+   if(settled(last)||remaining--<=0){resolve(last);return;}
+   requestAnimationFrame(poll);
+  }
+  poll();
+ }),expectMobile);
+ assert.equal(state.mediaMobile,expectMobile,'Iframe media query reaches '+(expectMobile?'mobile':'desktop')+' after host resize: '+JSON.stringify(state));
+ assert.equal(state.roomMobile,expectMobile,'Karaoke room DOM finishes '+(expectMobile?'mobile':'desktop')+' relocation: '+JSON.stringify(state));
+ assert.equal(state.soundParent,expectMobile?'kt-room-tools':'krpalco','Sound control returns to the expected '+(expectMobile?'mobile toolbar':'stage')+' parent: '+JSON.stringify(state));
+ assert.equal(state.canvasParent,expectMobile?'kt-room-viewport':'krpalco','Canvas returns to the expected '+(expectMobile?'mobile viewport':'stage')+' parent: '+JSON.stringify(state));
+ return state;
+}
+
 (async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const origin='http://127.0.0.1:'+server.address().port;

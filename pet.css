@@ -1,0 +1,83 @@
+/* Backstage⭐Pet! — estilos do camarim dos pets.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração da PR #62, Etapa 1), sem mudar valores.
+   Carrega no ponto em que o primeiro bloco do Pet estava; a ordem das regras do Pet entre si foi mantida. */
+/* --- MINI JOGO DE PETS: CAMARIM --- */
+.petp{width:min(94%,440px)}
+#petc{width:100%;height:auto;aspect-ratio:360/220;display:block;margin:8px 0 6px;border-radius:14px;cursor:pointer;touch-action:manipulation;box-shadow:0 0 0 2px rgba(155,48,217,.45);-webkit-tap-highlight-color:transparent}
+.petinfo{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--sub);font-weight:700}
+.petinfo b{font-size:17px;color:var(--b1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.petstar{color:#d4a017;white-space:nowrap}
+.petbars{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:8px 0 0;text-align:left;font-size:12px}
+.petbar span{display:flex;justify-content:space-between;color:var(--sub);font-weight:700;margin-bottom:2px}
+.petbar i{display:block;height:9px;border-radius:99px;background:var(--chip);overflow:hidden}
+.petbar i b{display:block;height:100%;border-radius:99px;transition:width .4s}
+.pethint{font-size:12px!important;margin:8px 0 0!important}
+.petpick{display:flex;gap:8px;justify-content:center;margin:6px 0 10px}
+.petpick button{border:2px solid transparent;background:var(--chip);color:var(--ink);border-radius:14px;padding:4px 6px 6px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.petpick button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petpick button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petpick canvas{width:72px;height:60px;display:block}
+/* --- MINI JOGO DE PETS: AÇÕES --- */
+.petacts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 0}
+.petacts button{border:0;border-radius:12px;padding:7px 2px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;background:var(--chip);color:var(--b1);box-shadow:0 3px 0 rgba(123,63,240,.25);line-height:1.2}
+.petacts button[aria-pressed="true"]{background:var(--b1);color:#fff}
+.petacts button:disabled{opacity:.45;cursor:default}
+.petacts small{display:block;font-size:10px;color:var(--sub);font-weight:700}
+.petrank{display:flex;align-items:center;gap:8px;margin:6px 0 2px;font-size:12px;font-weight:800;color:var(--b1)}
+.petrank b{white-space:nowrap}.petrank small{font-size:10px;color:var(--sub);white-space:nowrap}
+.petrank i{flex:1;height:7px;border-radius:9px;background:var(--chip);overflow:hidden;display:block}
+.petrank u{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#9b30d9,#b6ff3b,#4169e1)}
+.petren{border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px;vertical-align:middle}
+.petrenbox{display:inline-flex;gap:4px;align-items:center;margin-left:4px}.petrenbox[hidden]{display:none}.petrenbox .nick{width:120px;padding:4px 8px;font-size:14px}.petrenbox .btn{padding:4px 10px}
+#petov{z-index:23!important}
+.petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.petph[hidden]{display:none}
+.petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
+.petph span{width:100%;text-align:center;font-size:12px;font-weight:800;color:var(--sub)}
+.petph button{border:2px solid transparent;border-radius:99px;background:var(--chip);color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:4px 10px;cursor:pointer}
+.petph button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petph button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.petmenu[hidden]{display:none}
+.petmenu button{border:2px solid transparent;border-radius:12px;padding:4px 2px 6px;background:var(--chip);color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.petmenu button:disabled{opacity:.45;cursor:default}
+.petmenu canvas{width:36px;height:30px;display:block}
+.petmenu b{font-size:11px;line-height:1.15}
+.petmenu small{font-size:10px;color:var(--sub)}
+.petmenu em{font-style:normal;font-size:11px;font-weight:800;color:#d4a017}
+.petacts button:focus-visible,.petmenu button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+/* --- MINI JOGO DE PETS: CÂMERA DO CAMARIM --- */
+#petRoom{position:relative}
+#petCam{position:absolute;top:16px;right:8px;z-index:1;width:38px;height:38px;border:none;border-radius:50%;background:var(--pink);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;transition:transform .1s}
+#petCam:active{transform:scale(.9)}
+#petCam:focus-visible{outline:3px solid var(--b1);outline-offset:2px}
+/* --- PAINEL DE TESTE DO PET --- */
+.petdev{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;padding:6px;border:2px dashed var(--pink);border-radius:12px}
+.petdev[hidden]{display:none}
+.petdev button{border:0;border-radius:99px;padding:4px 10px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;background:var(--pink);color:#fff}
+/* --- BACKSTAGE⭐PET! V2: COLEÇÃO, CRIADOR E DECORAÇÃO --- */
+.petpick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.petpick button{min-width:0;padding:4px 3px 6px;gap:1px}
+.petpick canvas{width:100%;max-width:72px;height:auto;aspect-ratio:144/120}
+.petpick b{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.petpick small{font-size:10px;color:var(--sub);font-weight:800}
+.petpick button.on small{color:var(--b1)}
+.petpick button.lock{opacity:.8}
+.pickmsg{color:var(--pink)!important;font-weight:700}
+#petColBtn{position:absolute;top:16px;left:8px;z-index:1;width:38px;height:38px;border:none;border-radius:50%;background:var(--b1);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;transition:transform .1s}
+#petColBtn:active{transform:scale(.9)}
+#petColBtn:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+#petMkCv{width:150px;height:100px;display:block;margin:0 auto 6px}
+.petmk{display:flex;flex-direction:column;gap:7px;margin:2px 0 10px;text-align:left}
+.petmk .grp{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.petmk .grp>span{font-size:12px;font-weight:800;color:var(--sub);width:100%}
+.petmk button{border:2px solid transparent;border-radius:99px;background:var(--chip);color:var(--ink);font:inherit;font-size:11px;font-weight:700;padding:3px 8px;cursor:pointer}
+.petmk button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petmk button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petmk .sw2{width:24px;height:24px;padding:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.petacts{grid-template-columns:repeat(4,minmax(0,1fr))}
+.petacts button{font-size:11px;padding:7px 1px}
+.petmenu img{width:44px;height:34px;object-fit:cover;border-radius:4px;display:block;margin-bottom:2px}
+.petmenu button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.petinfo b{background:linear-gradient(90deg,#9b30d9,#ff6fb5,#4169e1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.petpick button[aria-pressed="true"],.petmenu button[aria-pressed="true"]{box-shadow:0 0 12px rgba(155,48,217,.3)}

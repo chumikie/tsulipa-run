@@ -11,7 +11,7 @@ const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-mot
 assert(lifecycle.includes('function disconnectFrame(frame)')&&lifecycle.includes("frame.removeEventListener('load',record.onLoad)")&&lifecycle.includes('frameGates.set(frame,{gate:gate,onLoad:onLoad})'),'Removed iframes must release their load listener and motion gate');
 assert(lifecycle.includes("if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}"),'Changing an iframe source must replace the previous visibility bridge');
 const sora=fs.readFileSync(require('node:path').join(__dirname,'..','sora-jump.html'),'utf8');
-const main=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
+const main=require('./site-source.js')();
 const vercel=fs.readFileSync(require('node:path').join(__dirname,'..','vercel.json'),'utf8');
 const windows=fs.readFileSync(require('node:path').join(__dirname,'..','tw-windows.js'),'utf8');
 const tickets=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-tickets.js'),'utf8');
@@ -399,7 +399,7 @@ const petSharedStart=main.indexOf('function petDrawEllipse(ctx,cx,cy,rx,ry,r)');
 const petSharedEnd=main.indexOf('function drawPet(ctx, type',petSharedStart);
 const petShared=main.slice(petSharedStart,petSharedEnd);
 const sharedCustomPetStart=main.indexOf('function petDrawCustom(ctx, cfg, t, ex, appearanceOverride)');
-const sharedCustomPetEnd=main.indexOf('// ---------- Reações do personagem',sharedCustomPetStart);
+const sharedCustomPetEnd=(function(){const a=main.indexOf('// ---------- Reações do personagem',sharedCustomPetStart),b=main.indexOf('\nfunction ',sharedCustomPetStart+10);return a<0?b:b<0?a:Math.min(a,b);})();   // petDrawCustom mora em pet.js desde a Etapa 1 da refatoração
 const sharedCustomPet=main.slice(sharedCustomPetStart,sharedCustomPetEnd);
 const standardPetStart=main.indexOf('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)');
 const standardPetEnd=main.indexOf('\n\nvar PAL=',standardPetStart);

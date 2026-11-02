@@ -127,7 +127,7 @@ BEGIN
   v_o := v_o || jsonb_build_object('front', v_v);
 
   v_v := coalesce(p_c->>'mecha', '');
-  IF v_v NOT IN ('', 'uma', 'dupla', 'luzes', 'escondida') THEN
+  IF v_v NOT IN ('', 'uma', 'dupla', 'luzes', 'escondida', 'antena', 'coracao') THEN
     RETURN json_build_object('ok', false, 'erro', 'mecha');
   END IF;
   v_o := v_o || jsonb_build_object('mecha', v_v, 'streak', v_v <> '');

@@ -2542,7 +2542,7 @@ function krLoungeReset(){
  }
 }
 function krLoungePodePassear(b,jaAtivo){
- return !!b&&!b.no_mic&&!krEu.no_mic&&!krDemoCantor&&!krRhythmRun&&!b.itemSala&&!b.snackSala&&!b.danca&&
+ return !!b&&!b.no_mic&&!krEu.no_mic&&!krDemoCantor&&!krRhythmRun&&!b.drink&&!b.itemSala&&!b.snackSala&&!b.danca&&
   !(b._ktSocialUntil>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&
   krDemoFila.indexOf(b.nick)<0&&(jaAtivo||krLoungeActors.indexOf(b)<0);
 }

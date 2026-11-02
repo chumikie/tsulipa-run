@@ -140,7 +140,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
-<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=1"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
+<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=2"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -2556,7 +2556,7 @@ function krLoungePodePassear(b,jaAtivo){
 }
 function krLoungeUpdateDeveRodar(){
  if(krLoungeSoloPermitido())return !!krEu.no_mic||!!krDemoCantor||!!(kt&&kt.active())||krLoungeActors.length>0||krLoungeCastRef!==krBots||krT>=krLoungeNextAt;
- return krLoungeActors.length>0||krLoungeCastRef!==null||!!krLoungeSocialA||!!krLoungeSocialB;
+ return krLoungeActors.length>0||krLoungeCastRef!==null||!!(krLoungeSocialDirector&&krLoungeSocialDirector.active());
 }
 function krLoungeCriarPasseio(b,targetX,laneY){
  var st=b._ktLounge,x0=b.x,y0=b.y,edge=x0<205?205:x0>755?755:x0;
@@ -2570,19 +2570,9 @@ function krLoungeCriarRetorno(b){
  if(st.activeItem==='dance')krLoungeLimparAtividade(b,st);
  st.route=[[b.x,st.laneY],[x0,st.laneY],[x0,y0]];st.routeIndex=0;st.phase='home';
 }
-function krLoungeLimparAtividade(b,st){
- if(!b||!st)return;if(st.activeItem==='drink'&&b._ktLoungeDrink)b.drink='';if(st.activeItem==='dance')b.danca='';st.activeItem='';b._ktLoungeDrink=false;
-}
-function krLoungeConcluirAtividade(b,st){
- krLoungeLimparAtividade(b,st);st.phase='rest';st.route=null;st.routeIndex=0;st.targetX=null;st.activity='observe';st.waitUntil=krT+600+Math.random()*240+(krLoungePersonality?krLoungePersonality.delay(b,'wander'):0);
- b._ktLoungeWalking=false;var pos=krLoungeActors.indexOf(b);if(pos>=0)krLoungeActors.splice(pos,1);krLoungeNextAt=Math.max(krLoungeNextAt,krT+600+Math.random()*180);
-}
-function krLoungeAtivarAtividade(b,st){
- var activity=st.activity||'walk';
- if(activity==='drink'&&!b.drink&&!b.itemSala&&!b.snackSala){b.drink=['tsu','lirika','pati'][Math.floor(Math.random()*3)];st.activeItem='drink';b._ktLoungeDrink=true;}
- else if(activity==='dance'&&!b.itemSala&&!b.snackSala){b.danca=['neon','giro','nyan'][Math.floor(Math.random()*3)];st.activeItem='dance';}
- else if(activity==='seat'&&st.targetSeat){st.returnX=st.targetSeat[0];st.returnY=st.targetSeat[1];}
-}
+function krLoungeLimparAtividade(b,st){if(krLoungePersonality)krLoungePersonality.clearActivity(b,st);}
+function krLoungeConcluirAtividade(b,st){if(krLoungePersonality)krLoungePersonality.finishActivity(b,st,{time:krT,actors:krLoungeActors,nextAt:krLoungeNextAt,delay:function(a){return krLoungePersonality.delay(a,'wander');},setNextAt:function(v){krLoungeNextAt=v;}});}
+function krLoungeAtivarAtividade(b,st){if(krLoungePersonality)krLoungePersonality.activateActivity(b,st);}
 function krLoungeAvancarAtores(dt,returnAll){
  for(var wi=krLoungeActors.length-1;wi>=0;wi--){
   var b=krLoungeActors[wi],st=b._ktLounge;if(!st){b._ktLoungeWalking=false;krLoungeActors.splice(wi,1);continue;}
@@ -2602,14 +2592,7 @@ function krLoungeAvancarAtores(dt,returnAll){
   b._ktLoungeWalking=st.routeIndex<st.route.length;
  }
 }
-function krLoungeSofaLivre(actor){
- for(var si=0;si<KR_SOFA_SLOTS.length;si++){var slot=KR_SOFA_SLOTS[si],occupied=false;
-  for(var bi=0;bi<krBots.length;bi++){var other=krBots[bi];if(other!==actor&&Math.hypot(other.x-slot[0],other.y-slot[1])<34){occupied=true;break;}}
-  if(!occupied&&krEu&&!krEu.no_mic&&Math.hypot(krEu.x-slot[0],krEu.y-slot[1])<34)occupied=true;
-  if(!occupied&&krDemoCantor&&krDemoCantor.bot&&Math.hypot(krDemoCantor.bot.x-slot[0],krDemoCantor.bot.y-slot[1])<34)occupied=true;
-  if(!occupied&&Math.hypot(actor.x-slot[0],actor.y-slot[1])>28)return slot;
- }return null;
-}
+function krLoungeSofaLivre(actor){return krLoungePersonality?krLoungePersonality.freeSofaSlot(actor,krBots,KR_SOFA_SLOTS,krEu,krDemoCantor&&krDemoCantor.bot):null;}
 function krLoungeUpdate(dt){
  var returnAll=!!(window.ktShowAdmissionPending||krEu.no_mic||krDemoCantor||(kt&&kt.active())||!krEuNoMicrofone()||krMeuRetornoAt>0||krMeuVoltandoAoMic||krMoveQueue.length);
  if(returnAll){krLoungeSocialClear();krLoungeNextAt=krT+90;krLoungeAvancarAtores(dt,true);return;}
@@ -2630,76 +2613,20 @@ function krLoungeUpdate(dt){
  chosen._ktLoungeWalking=true;krLoungeActors.push(chosen);krLoungeNextAt=krT+45;
 }
 
-var krLoungeSocialA=null,krLoungeSocialB=null,krLoungeSocialUntil=0,krLoungeSocialNextAt=0;
-var KR_LOUNGE_SOCIAL_COPY={
- pt:{talkA:['Olha aquele passo! ✨','Amei essa música! ♪'],talkB:['Também adorei! 💜','Que refrão lindo! ♡'],cheer:['👏 Arrasa!','Isso, brilha! 💜']},
- en:{talkA:['Look at that move! ✨','I love this song! ♪'],talkB:['Me too! 💜','What a lovely chorus! ♡'],cheer:['👏 You shine!','Go, Idol! 💜']},
- es:{talkA:['¡Mira ese paso! ✨','¡Me encanta esta canción! ♪'],talkB:['¡A mí también! 💜','¡Qué lindo coro! ♡'],cheer:['👏 ¡Brilla!','¡Vamos, Idol! 💜']},
- th:{talkA:['ดูท่านั้นสิ! ✨','ชอบเพลงนี้จัง! ♪'],talkB:['ฉันก็ชอบ! 💜','ท่อนนี้เพราะมาก! ♡'],cheer:['👏 สู้ ๆ!','เปล่งประกายนะ! 💜']},
- ja:{talkA:['あのステップ見て！ ✨','この曲、大好き！ ♪'],talkB:['私も大好き！ 💜','すてきなサビ！ ♡'],cheer:['👏 輝いて！','いけるよ、アイドル！ 💜']}
-};
-function krLoungeSocialClear(){
- var a=krLoungeSocialA,b=krLoungeSocialB;
- if(a){a._ktSocialUntil=0;a._ktSocialKind='';a._ktSocialTargetX=a.x;}
- if(b){b._ktSocialUntil=0;b._ktSocialKind='';b._ktSocialTargetX=b.x;}
- krLoungeSocialA=null;krLoungeSocialB=null;krLoungeSocialUntil=0;
-}
-function krLoungeSocialReset(){
- krLoungeSocialClear();krLoungeSocialNextAt=krT+480+Math.random()*240;
-}
-var krLoungeShowLastEventAt=-1e9;
-function krLoungeReactToShow(event,details){
- if(!krLoungeSoloPermitido()||!krLoungePersonality||!Array.isArray(krBots))return 0;
- var ctx=details||{},singer=ctx.player||(krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null));
- if(event==='hit'&&krT-krLoungeShowLastEventAt<24)return 0;if(event==='combo'&&krT-krLoungeShowLastEventAt<28)return 0;krLoungeShowLastEventAt=krT;
- if(event==='start')krLoungeSocialClear();
- var eligible=[];for(var i=0;i<krBots.length;i++){var actor=krBots[i],reaction=actor._ktShowReaction;
-  if(actor===singer||actor.no_mic||actor._ktLoungeWalking||krLoungeActors.indexOf(actor)>=0||actor.danca||krHandBusy(actor)||actor._ktSocialUntil>krT)continue;
-  if(reaction&&reaction.until>krT)continue;if(actor._ktShowReactNextAt>krT||krDemoFila.indexOf(actor.nick)>=0)continue;eligible.push(actor);
- }
- ctx.language=ctx.language||LANG;var decisions=krLoungePersonality.decideReactions(eligible,event,ctx);
- for(var di=0;di<decisions.length;di++){var decision=decisions[di],actor=decision.actor,key=actor.playerId||actor.nick,duration=decision.duration||90;
-  actor._ktSocialTargetX=singer&&Number.isFinite(singer.x)?singer.x:480;actor._ktShowReaction={until:krT+duration,pose:decision.pose,expr:decision.gesture==='smile'?6:2,targetX:actor._ktSocialTargetX,intensity:decision.intensity,kind:event};
-  actor._ktShowReactNextAt=krT+Math.round(duration*1.35);if(decision.line)krBaloes[key]={txt:decision.line,t0:krT};
-  if(decision.emoji){var now=performance.now();krBolhas=krBolhas.filter(function(bubble){return !bubble._ktUntil||bubble._ktUntil>now;});if(krBolhas.length>10)krBolhas.splice(0,krBolhas.length-10);krBolhas.push({emo:decision.emoji,x:actor.x,y:actor.y-78,t:0,_ktUntil:now+Math.min(1800,duration*16)});}
- }
- var keys=Object.keys(krBaloes);if(keys.length>14){keys.sort(function(a,b){return krBaloes[a].t0-krBaloes[b].t0;});for(var bi=0;bi<keys.length-14;bi++)delete krBaloes[keys[bi]];}
- return decisions.length;
-}
-function krLoungePodeSocializar(b,singer){
- return !!b&&b!==singer&&!b.no_mic&&!b.danca&&!b.itemSala&&!b.snackSala&&!b.drink&&
-  !(b._ktLoungeWalking)&&!(krLoungeActors.indexOf(b)>=0)&&!(b._ktSocialUntil>krT)&&
-  !(b._ktShowReaction&&b._ktShowReaction.until>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&krDemoFila.indexOf(b.nick)<0;
-}
-function krLoungeSocialDeveAtualizar(){
- if(!krLoungeSoloPermitido())return false;
- if(krLoungeSocialA){
-  var dueAt=krLoungeSocialUntil,aUntil=krLoungeSocialA._ktSocialUntil;
-  if(typeof aUntil==='number'&&aUntil<dueAt)dueAt=aUntil;
-  if(krLoungeSocialB&&typeof krLoungeSocialB._ktSocialUntil==='number'&&krLoungeSocialB._ktSocialUntil<dueAt)dueAt=krLoungeSocialB._ktSocialUntil;
-  return krT>=dueAt;
- }
- if(krLoungeActors.length)return false;
- return krT>=krLoungeSocialNextAt;
-}
-function krLoungeSocialUpdate(){
- if(!krLoungeSoloPermitido()){krLoungeSocialClear();return;}
- if(krLoungeSocialA){if(krT<krLoungeSocialUntil&&krLoungeSocialA._ktSocialUntil>krT&&(!krLoungeSocialB||krLoungeSocialB._ktSocialUntil>krT))return;krLoungeSocialClear();krLoungeSocialNextAt=krT+360+Math.random()*240;}
- if(krLoungeActors.length||krT<krLoungeSocialNextAt)return;
- var singer=krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null),eligible=[];
- for(var i=0;i<krBots.length;i++)if(krLoungePodeSocializar(krBots[i],singer))eligible.push(krBots[i]);
- if(singer?!eligible.length:eligible.length<2){krLoungeSocialNextAt=krT+(singer?240:300);return;}
- var social=krLoungePersonality&&krLoungePersonality.decideSocial(eligible,singer,LANG),first=social&&social.first,second=social&&social.second,copy=KR_LOUNGE_SOCIAL_COPY[LANG]||KR_LOUNGE_SOCIAL_COPY.pt;
- if(!first){first=eligible[Math.floor(Math.random()*eligible.length)];var others=eligible.filter(function(b){return b!==first;});second=others.length?others[Math.floor(Math.random()*others.length)]:null;}
- if(!first||(!singer&&!second)){krLoungeSocialNextAt=krT+300;return;}
- var until=krT+(singer?90+Math.random()*70:150+Math.random()*60);
- first._ktSocialKind=social?social.firstKind:(singer?'applause':'talk');first._ktSocialTargetX=singer?singer.x:second.x;first._ktSocialUntil=until;
- if(second){second._ktSocialKind=social?social.secondKind:(singer?'look':'talk');second._ktSocialTargetX=singer?singer.x:first.x;second._ktSocialUntil=until;}
- krBaloes[first.playerId||first.nick]={txt:social?social.firstLine:(singer?copy.cheer:copy.talkA)[Math.floor(Math.random()*(singer?copy.cheer:copy.talkA).length)],t0:krT};
- if(!singer)krBaloes[second.playerId||second.nick]={txt:social?social.secondLine:copy.talkB[Math.floor(Math.random()*copy.talkB.length)],t0:krT+45};
- krLoungeSocialNextAt=krT+(singer?360+Math.random()*300:510+Math.random()*390);
- krLoungeSocialA=first;krLoungeSocialB=second;krLoungeSocialUntil=krT+(singer?160:230);
-}
+function krLoungePodeSocializar(b,singer){return !!b&&b!==singer&&!b.no_mic&&!b.danca&&!b.itemSala&&!b.snackSala&&!b.drink&&!(b._ktLoungeWalking)&&!(krLoungeActors.indexOf(b)>=0)&&!(b._ktSocialUntil>krT)&&!(b._ktShowReaction&&b._ktShowReaction.until>krT)&&!(krDemoCantor&&krDemoCantor.bot===b)&&krDemoFila.indexOf(b.nick)<0;}
+var krLoungeSocialDirector=krLoungePersonality&&krLoungePersonality.createSocialDirector({allowed:krLoungeSoloPermitido,now:function(){return krT;},hasWalkers:function(){return krLoungeActors.length>0;},actors:function(){return krBots;},singer:function(){return krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null);},canSocialize:krLoungePodeSocializar,language:function(){return LANG;},onDialogue:function(actor,line,at){krBaloes[actor.playerId||actor.nick]={txt:line,t0:at};}});
+function krLoungeSocialClear(){if(krLoungeSocialDirector)krLoungeSocialDirector.clear();}
+function krLoungeSocialReset(){if(krLoungeSocialDirector)krLoungeSocialDirector.reset();}
+function krLoungeSocialDeveAtualizar(){return !!(krLoungeSocialDirector&&krLoungeSocialDirector.shouldUpdate());}
+function krLoungeSocialUpdate(){if(krLoungeSocialDirector)krLoungeSocialDirector.update();}
+var krLoungeShowReactor=krLoungePersonality&&krLoungePersonality.createShowReactor({
+ allowed:function(){return krLoungeSoloPermitido()&&Array.isArray(krBots);},now:function(){return krT;},
+ singer:function(){return krDemoCantor&&krDemoCantor.bot?krDemoCantor.bot:(krEu.no_mic?krEu:null);},language:function(){return LANG;},onStart:krLoungeSocialClear,
+ eligible:function(singer,now){var out=[];for(var i=0;i<krBots.length;i++){var actor=krBots[i],reaction=actor._ktShowReaction;if(actor===singer||actor.no_mic||actor._ktLoungeWalking||krLoungeActors.indexOf(actor)>=0||actor.danca||krHandBusy(actor)||actor._ktSocialUntil>now)continue;if(reaction&&reaction.until>now)continue;if(actor._ktShowReactNextAt>now||krDemoFila.indexOf(actor.nick)>=0)continue;out.push(actor);}return out;},
+ apply:function(decision,singer,now,event){var actor=decision.actor,key=actor.playerId||actor.nick,duration=decision.duration||90;actor._ktSocialTargetX=singer&&Number.isFinite(singer.x)?singer.x:480;actor._ktShowReaction={until:now+duration,pose:decision.pose,expr:decision.gesture==='smile'?6:2,targetX:actor._ktSocialTargetX,intensity:decision.intensity,kind:event};actor._ktShowReactNextAt=now+Math.round(duration*1.35);if(decision.line)krBaloes[key]={txt:decision.line,t0:now};if(decision.emoji){var stamp=performance.now();krBolhas=krBolhas.filter(function(x){return !x._ktUntil||x._ktUntil>stamp;});if(krBolhas.length>10)krBolhas.splice(0,krBolhas.length-10);krBolhas.push({emo:decision.emoji,x:actor.x,y:actor.y-78,t:0,_ktUntil:stamp+Math.min(1800,duration*16)});}},
+ after:function(){var keys=Object.keys(krBaloes);if(keys.length>14){keys.sort(function(x,y){return krBaloes[x].t0-krBaloes[y].t0;});for(var i=0;i<keys.length-14;i++)delete krBaloes[keys[i]];}}
+});
+function krLoungeReactToShow(event,details){return krLoungeShowReactor?krLoungeShowReactor(event,details):0;}
 
 function krRoomPalcoVisivel(){
  if(!krRoomCanvasVisible)return false;

@@ -130,8 +130,8 @@ assert(autoMic.includes('function create(deps)')&&autoMic.includes('function beg
 assert(autoMic.includes('s.admissionPending||s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic'),'NPC waits through admission, mandatory return and the player turn');
 assert(html.includes('window.ktShowAdmissionPending=true')&&html.includes('window.ktShowAdmissionPending=false'),'player admission remains pending until confirm, cancel or failed gate');
 assert(autoMic.includes('singer.phase=\'approach\'')&&autoMic.includes('singer.phase=\'return\'')&&autoMic.includes('deps.startPractice();'),'NPC walks to the mic and returns to the sofa before the next turn');
-assert(polaroid.includes('function open(person,index,opener){')&&polaroid.includes('deps.makeCharacter(person,index)'),'wall Polaroids receive a character constructed by the page');
-assert(polaroid.includes('deps.drawIdol(ctx,char,260,405,5.8')&&polaroid.includes('deps.getTime()'),'the enlarged portrait uses the injected existing avatar renderer and room clock');
+assert(polaroid.includes('function open(person,index,opener){')&&polaroid.includes('deps.makeCharacter(person,posterIndex)'),'wall Polaroids receive a character constructed by the page');
+assert(polaroid.includes('deps.drawIdol(ctx,char,260,470,7.8')&&polaroid.includes('EXPRESSIONS[posterIndex]')&&polaroid.includes('deps.getTime()'),'the enlarged portrait uses the injected existing avatar renderer and room clock');
 assert(polaroid.includes('posterDialog.showModal()'),'the enlarged portrait is presented in an accessible dialog');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({')&&html.includes('window.KaraokeRoomPolaroid.open(KR_ROOM_POSTER_DRAW[photo],photo,document.activeElement)'),'wall Polaroids receive page-private avatar dependencies before their pointer hit target is used');
 console.log('✓ Karaoke lounge: single clear-aisle walker, sofa occupancy, random NPC mic guard, interactive Polaroids, homologation and player turn protections');

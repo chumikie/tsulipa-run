@@ -6686,6 +6686,7 @@ var PERF_FUNDOS = [   // chave no servidor: fundo_...
 ];
 var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: roupa_...); o valor vai em "out" do personagem
   ['brasil',    '🇧🇷', 'Brasil',            150],
+  ['tailandia', '🇹🇭', 'Tailândia',         150],
   ['pijama',    '😴', 'Yume',              180],   // pijama ("Yume wa Nigenai", estreia do Draft) — chave antiga mantida
   ['happi',     '🏮', 'Happi de Matsuri',  200],   // festival de verão japonês (happi + hachimaki)
   ['gingham',   '🧺', 'Teacher Teacher',   250],   // camisa xadrez de colégio — chave antiga mantida
@@ -6916,6 +6917,10 @@ var PERF_ADMIN_DICT = {
     'Esta roupa não consta como comprada para esta conta.':'このアカウントで購入済みの衣装ではありません。'
   }
 };
+PERF_DICT2.en['Tailândia']='Thailand';
+PERF_DICT2.es['Tailândia']='Tailandia';
+PERF_DICT2.th['Tailândia']='ประเทศไทย';
+PERF_DICT2.ja['Tailândia']='タイ';
 [PERF_DICT, PERF_DICT2, PERF_ADMIN_DICT].forEach(function(D){ Object.keys(D).forEach(function(l){ if(DICT[l]) Object.keys(D[l]).forEach(function(k){ DICT[l][k] = D[l][k]; }); }); });
 
 function perfLer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -6963,6 +6968,16 @@ function perfRoupaLoja(roupa, c, x, y, cor, E, T){
     g.fillStyle = '#002776'; E(x + 20, y + 26.5, 1.8, 1.8); g.fillStyle = '#fff'; g.fillRect(x + 19.6, y + 26, .9, .9);
     g.fillStyle = '#009c3b'; g.fillRect(x + 4, y + 31, 22, 1.4);
     g.fillStyle = '#002776'; g.fillRect(x + 6, y + 32, 18, 5.5); g.fillStyle = '#fff'; g.fillRect(x + 6, y + 32, 1.4, 5.5); g.fillRect(x + 22.6, y + 32, 1.4, 5.5);
+  } else if(roupa === 'tailandia'){ // mesmo molde Brasil; faixas da bandeira tailandesa
+    g.fillStyle='#a51931';g.fillRect(x+4,y+22,22,11);
+    g.fillStyle='#f4f5f8';g.fillRect(x+4,y+24,22,2);
+    g.fillStyle='#2d2a4a';g.fillRect(x+4,y+26,22,4);
+    g.fillStyle='#f4f5f8';g.fillRect(x+4,y+30,22,2);
+    g.fillStyle='#a51931';g.fillRect(x+4,y+32,22,1);
+    g.fillStyle='#2d2a4a';T([x+10,y+22,x+20,y+22,x+15,y+27]);
+    g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+25]);
+    g.fillStyle='#2d2a4a';g.fillRect(x+6,y+33,18,4.5);
+    g.fillStyle='#f4f5f8';g.fillRect(x+6,y+33,1.4,4.5);g.fillRect(x+22.6,y+33,1.4,4.5);
   } else if(roupa === 'hipster'){   // Hippie: camiseta tie-dye (na cor escolhida), colete de franjas, calça jeans com florzinha e faixa na testa
     var td = branco ? '#ff9ccd' : cor;
     g.fillStyle = '#4f74b8'; g.fillRect(x + 7, y + 32, 7.5, 9.5); g.fillRect(x + 15.5, y + 32, 7.5, 9.5); g.fillRect(x + 7, y + 32, 16, 3);
@@ -8669,16 +8684,24 @@ function admCamarimOpts(){   // itens do camarim para o presente: comida e banho
   return L;
 }
 function admExtra(){   // presente para todos, aviso da tela de início e histórico da moderação
-  contaRpc('admin_extra').then(function(d){
+  Promise.all([contaRpc('admin_extra'),contaRpc('admin_avisos_grupo').catch(function(){return [];}),perfGruposCarregar()]).then(function(res){
+    var d=res[0], avisosGrupo=Array.isArray(res[1])?res[1]:[];
     var box = $('admExtra'); if(!box || !d || !d.ok) return;
     var h = '<h3>🎁 Presente para todos</h3><div class="admform"><input type="number" id="presEst" min="0" max="2000" step="10" value="100"> ★ ' +
       '<select id="presItem"><option value="">— sem item da loja —</option>' + admOpts(admItens()) + '</select><select id="presCam">' + admOpts(admCamarimOpts()) + '</select>' +
       '<input id="presMsg" maxlength="80" placeholder="Mensagem (ex.: Feliz Halloween!)"><label>Dias <input type="number" id="presDias" min="1" max="30" value="7"></label><button type="button" class="btn" id="presCriar">Criar presente</button></div>';
     h += (d.presentes.length ? '<ul class="admlog">' + d.presentes.map(function(p){ return '<li>🎁 <b>' + escHtml(p.mensagem || '—') + '</b> · ★' + p.estrelas + (p.item ? ' · ' + escHtml(p.item) : '') + (p.camarim ? ' · ' + escHtml(p.camarim) : '') + ' · ' + p.resgates + ' resgates · até ' + escHtml(perfData(p.expira)) + ' <button type="button" class="admdesb" data-presfim="' + p.id + '">Encerrar</button></li>'; }).join('') + '</ul>' : '');
     h += '<section id="ktTicketAdminSlot"></section>';
-    h += '<h3>📣 Aviso na tela de início</h3><div class="admform"><input id="avisoTxt" maxlength="140" value="' + escHtml(d.aviso || '') + '" placeholder="Vazio = sem aviso"><button type="button" class="btn" id="avisoOk">Salvar aviso</button></div>';
+    h += '<h3>📣 Aviso na tela de início</h3><div class="admform"><label>Destinatários <select id="avisoAlvo"><option value="">🌏 Todos os jogadores</option>' +
+      PERF_GRUPOS.map(function(g){return '<option value="'+escHtml(g.codigo)+'">'+perfGrupoBandeira(g)+' '+escHtml(g.nome)+'</option>';}).join('') +
+      '</select></label><input id="avisoTxt" maxlength="140" value="' + escHtml(d.aviso || '') + '" placeholder="Vazio = sem aviso"><button type="button" class="btn" id="avisoOk">Salvar aviso</button></div>';
     h += '<h3>📜 Histórico da moderação</h3><ul class="admlog">' + (d.log.length ? d.log.map(function(l){ return '<li><b>' + escHtml(l.acao) + '</b> ' + escHtml(l.alvo || '') + ' ' + escHtml(l.valor || '') + ' <i>' + escHtml(l.motivo || '') + '</i> <small>' + escHtml(perfData(l.created_at)) + '</small></li>'; }).join('') : '<li>' + escHtml(tr('Nenhuma.')) + '</li>') + '</ul>';
     box.innerHTML = h;
+    var avisoAlvo=$('avisoAlvo'), avisoTxt=$('avisoTxt');
+    if(avisoAlvo)avisoAlvo.onchange=function(){
+      var alvo=avisoAlvo.value,info=avisosGrupo.find(function(a){return a.grupo===alvo;});
+      avisoTxt.value=alvo?(info&&info.texto||''):(d.aviso||'');
+    };
     if(window.ktTickets)window.ktTickets.renderAdmin();
   }).catch(function(){});
 }
@@ -8694,7 +8717,10 @@ perfOv.addEventListener('click', function(e){
     contaRpc('admin_presente', { p_acao:'encerrar', p_id: +t.dataset.presfim }).then(function(){ admExtra(); });
   } else if(t.id === 'avisoOk'){
     t.disabled = true;
-    contaRpc('admin_aviso', { p_texto: $('avisoTxt').value }).then(function(r){ t.disabled = false; if(r && r.ok){ perfTopoMsg('📣 ' + tr('Feito!')); admExtra(); } }).catch(function(){ t.disabled = false; });
+    var grupoAviso=$('avisoAlvo')&&$('avisoAlvo').value||'',textoAviso=$('avisoTxt').value;
+    contaRpc(grupoAviso?'admin_aviso_grupo':'admin_aviso',grupoAviso?{p_grupo:grupoAviso,p_texto:textoAviso}:{p_texto:textoAviso})
+      .then(function(r){t.disabled=false;if(r&&r.ok){perfTopoMsg('📣 '+tr('Feito!'));admExtra();}else perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.'));})
+      .catch(function(){t.disabled=false;perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.'));});
   }
 });
 perfOv.addEventListener('keydown', function(e){ if(e.target.closest && e.target.closest('.admform')) e.stopPropagation(); });

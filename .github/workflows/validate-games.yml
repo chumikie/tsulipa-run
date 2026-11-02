@@ -99,6 +99,7 @@ on:
       - 'supabase/sql/admin_player_profile_proposal.sql'
       - 'supabase/sql/sora_weekly_zero_default.sql'
       - 'tests/admin-player-profile.test.js'
+      - 'tests/avisos-grupo-roupa-tailandia.test.js'
       - '.github/workflows/validate-games.yml'
   push:
     branches: [main]
@@ -242,6 +243,8 @@ jobs:
         run: node tests/karaoke-room-reactions.test.js
       - name: Validate national groups and legacy profiles
         run: node --test tests/grupos-nacionais.test.js
+      - name: Validate group notices and Thailand shirt
+        run: node --test tests/avisos-grupo-roupa-tailandia.test.js
       - name: Validate game HTML and routes
         run: node tests/validate-games.js
       - name: Validate Backstage Pet cloud save retries and confirmations

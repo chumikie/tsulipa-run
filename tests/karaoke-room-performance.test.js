@@ -8,7 +8,7 @@ has('if(krStageSinger)ktPedestal(x,krStageSinger.x,krStageSinger.y,krStageSinger
 has('j.profileColor||j.corPerfil||j.color||j.cor','Pillow color must prefer the member profile color');
 has('p.profileColor=ktMicCor();','The local player profile color must be copied into the render record without per-frame closures');
 has('krEu._ktGoingToSofa=true','Sofa routes must enter their slower movement mode');
-has('krEu._ktGoingToSofa?2.65','Sofa walking must use its slower target speed');
+has('if(krEu._ktGoingToSofa)krVelocidadeAlvo=2.65','Sofa walking must use its slower target speed without changing the fast return contract');
 has("pose=['mic','neon','banzai','mic'][singPose]",'Singing must alternate microphone and dance poses');
 has('talking||j.no_mic?1','Singing and spoken balloons must activate the open-mouth expression');
 has('touchAge>=0&&touchAge<1?6','Speaker-box jumps must activate a temporary expressive face');

@@ -23,13 +23,6 @@ const server=http.createServer((req,res)=>{
   }
   if(name==='karaoke-time.html')data=data.toString().replace('function ktNoSite(){',`window.qaRoomState=function(){
    var canvas=document.getElementById('krCv'),ctx=canvas&&canvas.getContext('2d');
-   if(!window.__qaPaintProbe&&ctx){
-    var probe={calls:0,methods:[]};window.__qaPaintProbe=probe;
-    ['clearRect','fillRect','drawImage','fill','stroke','fillText','strokeText'].forEach(function(name){
-     var original=ctx[name];if(typeof original!=='function')return;
-     try{ctx[name]=(function(fn){return function(){probe.calls++;return fn.apply(this,arguments);};})(original);probe.methods.push(name);}catch(_){}
-    });
-   }
    var probe=window.__qaPaintProbe||{calls:0,methods:[]},pixels={opaque:0,unique:0,hash:0,error:null};
    try{
     var scale=canvas.width/960,off=window.__qaPixelCanvas||(window.__qaPixelCanvas=document.createElement('canvas'));
@@ -98,7 +91,25 @@ async function metrics(frame){
   for(const width of (process.env.QA_PHOTO_STANDALONE?[]:(process.env.QA_WIDTHS||'320,390,430,844,1440').split(',').map(Number))){
    const context=await browser.newContext({viewport:{width,height:width===844?390:900},colorScheme:photoQA&&width===320?'light':'dark'});
    if(photoQA)await photoQA.install(context);
-   await context.addInitScript(()=>{localStorage.setItem('brs48cr_tut','1');localStorage.setItem('brs48cr_nick','QA Idol');});
+   await context.addInitScript(()=>{
+    localStorage.setItem('brs48cr_tut','1');localStorage.setItem('brs48cr_nick','QA Idol');
+    var probe=window.__qaPaintProbe={calls:0,methods:[]};
+    try{
+     var proto=CanvasRenderingContext2D.prototype;
+     if(!proto.__qaPaintInstrumented){
+      Object.defineProperty(proto,'__qaPaintInstrumented',{value:true});
+      ['clearRect','fillRect','drawImage','fill','stroke','fillText','strokeText'].forEach(function(name){
+       var original=proto[name];if(typeof original!=='function')return;
+       Object.defineProperty(proto,name,{configurable:true,writable:true,value:function(){
+        if(this.canvas&&this.canvas.id==='krCv'){
+         probe.calls++;if(probe.methods.indexOf(name)<0)probe.methods.push(name);
+        }
+        return original.apply(this,arguments);
+       }});
+      });
+     }
+    }catch(error){window.__qaPaintInstrumentError=String(error&&error.message||error);}
+   });
    const p=await context.newPage(),errors=[];
    p.on('pageerror',e=>errors.push(e.message));
    await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts}):r.abort());
@@ -155,13 +166,30 @@ async function metrics(frame){
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-idle.png'),fullPage:true});
    if(!baseline){
-    const posterClick=await frame.locator('body').evaluate(()=>window.qaRoomControllers.openPoster(0));assert.equal(posterClick.opened,true,'wall Polaroid opens through the real canvas pointer event: '+JSON.stringify(posterClick));
-    const poster=frame.locator('#ktPosterDialog');await poster.waitFor({state:'visible'});
-    const portrait=frame.locator('#ktPosterPortrait');
-    const portraitInfo=await portrait.evaluate(canvas=>{const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(40,40,440,460).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]&&((pixels[i]>90&&pixels[i]<245)||(pixels[i+1]>70&&pixels[i+1]<225)||(pixels[i+2]>70&&pixels[i+2]<245)))ink++;return {width:canvas.width,height:canvas.height,ink};});
-    assert.equal(portraitInfo.width,520);assert.equal(portraitInfo.height,620);assert(portraitInfo.ink>1000,'enlarged portrait canvas contains rendered artwork, not just an empty dialog');
-    await poster.screenshot({path:path.join(out,engine+'-'+width+'-polaroid.png')});
-    await poster.evaluate(dialog=>dialog.close());await poster.waitFor({state:'hidden'});
+    const poster=frame.locator('#ktPosterDialog'),portrait=frame.locator('#ktPosterPortrait'),posterColors=[];
+    for(let posterIndex=0;posterIndex<6;posterIndex++){
+     const posterClick=await frame.locator('body').evaluate(index=>window.qaRoomControllers.openPoster(index),posterIndex);
+     assert.equal(posterClick.opened,true,'wall Polaroid '+(posterIndex+1)+' opens through the real canvas pointer event: '+JSON.stringify(posterClick));
+     assert.equal(posterClick.posterCount,6,'the room exposes all six wall Polaroids');
+     await poster.waitFor({state:'visible'});await frame.locator('#ktPosterSave').waitFor({state:'visible'});
+     const visual=await poster.evaluate(dialog=>{
+      const backdrop=getComputedStyle(dialog,'::backdrop'),canvas=dialog.querySelector('#ktPosterPortrait'),ctx=canvas.getContext('2d');
+      const data=ctx.getImageData(44,300,1,1).data;
+      return {backdrop:backdrop.backgroundColor,filter:backdrop.backdropFilter,width:canvas.width,height:canvas.height,sample:Array.from(data).join(',')};
+     });
+     assert.equal(visual.backdrop,'rgba(0, 0, 0, 0)','Polaroid leaves the colorful room visible without a dark backdrop');
+     assert.equal(visual.filter,'none','Polaroid does not blur or dim the room');
+     const portraitInfo=await portrait.evaluate(canvas=>{const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(40,40,440,460).data;let ink=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]&&((pixels[i]>90&&pixels[i]<245)||(pixels[i+1]>70&&pixels[i+1]<225)||(pixels[i+2]>70&&pixels[i+2]<245)))ink++;return {width:canvas.width,height:canvas.height,ink};});
+     assert.equal(portraitInfo.width,520);assert.equal(portraitInfo.height,620);assert(portraitInfo.ink>1000,'enlarged portrait canvas contains rendered artwork, not just an empty dialog');
+     posterColors.push(visual.sample);
+     await poster.screenshot({path:path.join(out,engine+'-'+width+'-polaroid-'+posterIndex+'.png')});
+     if(posterIndex===0){
+      const pngDownload=p.waitForEvent('download');await frame.locator('#ktPosterSave').click();
+      assert((await pngDownload).suggestedFilename().endsWith('.png'),'Polaroid download produces a PNG');
+     }
+     await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
+    }
+    assert.equal(new Set(posterColors).size,6,'each of the six Polaroids paints its own color palette');
     const autoMic=await frame.locator('body').evaluate(()=>window.qaRoomControllers.startAutomaticMic());
     assert.equal(autoMic.available,true,'automatic mic factory is bound to page-private room state');
     assert.equal(autoMic.phase,'player_departure','the player leaves the microphone before the NPC approaches');

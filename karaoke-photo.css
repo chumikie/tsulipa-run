@@ -53,13 +53,13 @@ html.kt-no-site #ktPhotoDialog::backdrop{background:var(--tw-modal-backdrop,rgba
 @media(max-width:620px){#ktPhotoDialog #ktPhotoFrameDownload{grid-column:1/-1}}
 
 /* Enlarged portrait opened from a wall Polaroid. */
-#ktPosterDialog{position:fixed;inset:auto auto auto auto;left:50%;top:var(--kt-poster-top,12px);transform:translateX(-50%);margin:0;width:min(500px,calc(100% - 18px));max-width:500px;max-height:var(--kt-poster-max-height,calc(100dvh - 24px));overflow-y:auto;overscroll-behavior:contain;padding:18px 14px 12px;text-align:center;font-family:var(--tw-modal-body)}
+#ktPosterDialog{position:fixed;inset:auto auto auto auto;left:50%;top:var(--kt-poster-top,12px);transform:translateX(-50%);margin:0;width:min(500px,calc(100% - 18px));max-width:500px;max-height:var(--kt-poster-max-height,calc(100dvh - 24px));overflow-y:auto;overscroll-behavior:contain;padding:18px 14px 12px;text-align:center;font-family:var(--tw-modal-body);background:linear-gradient(155deg,#fffafd 0%,#fff3fb 57%,#eefaff 100%);border-color:rgba(255,153,211,.82);box-shadow:0 16px 36px rgba(105,45,120,.18),0 5px 0 rgba(160,75,155,.12)}
 #ktPosterDialog .kt-poster-actions{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin:10px auto 0}
 #ktPosterDialog .kt-poster-actions .btn{min-height:40px;padding:8px 15px}
 #ktPosterDialog .kt-poster-actions [hidden]{display:none!important}
 #ktPosterDialog:not([open]){display:none}
-#ktPosterDialog::backdrop{background:var(--tw-modal-backdrop,rgba(6,16,38,.62));backdrop-filter:blur(4px)}
-html.kt-no-site #ktPosterDialog::backdrop{background:var(--tw-modal-backdrop,rgba(6,16,38,.62))!important;backdrop-filter:blur(4px)!important}
+#ktPosterDialog::backdrop{background:transparent!important;backdrop-filter:none!important}
+html.kt-no-site #ktPosterDialog::backdrop{background:transparent!important;backdrop-filter:none!important}
 #ktPosterDialog .kt-poster-heading{padding:0 34px 10px}
 #ktPosterDialog .kt-poster-heading h2{margin:0;color:var(--ink,#513078);font:800 21px/1.3 var(--tw-modal-title)}
 #ktPosterDialog .kt-poster-heading small{display:block;margin-top:3px;color:var(--sub,#9276a8);font-size:10px;letter-spacing:.08em}

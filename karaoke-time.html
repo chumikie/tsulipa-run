@@ -140,7 +140,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
-<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=1"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script>
+<script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=1"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -1060,7 +1060,7 @@ function ktLegenda(x,c,w,h){var li=['pt','en','es','th','ja'].indexOf(typeof LAN
  x.restore();}
 var ktClip=(function(){
 var cacheKey='',production=null,reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function current(){if(typeof ktDaily==='undefined'||!ktDaily)return null;var s=ktDaily.snapshot();if(!s)return null;var key=s.day+'|'+s.viewerId+'|'+s.ids.join('|');if(key!==cacheKey){production=KaraokeClip.make(s.day,krBots.map(function(b){return {id:b.playerId,nick:b.nick,char:b.char};}),s.viewerId);cacheKey=key;}return production;}
+function current(){if(typeof ktDaily==='undefined'||!ktDaily)return null;var s=ktDaily.snapshot();if(!s)return null;var key=s.day+'|'+s.viewerId+'|'+s.ids.join('|');if(key!==cacheKey){production=KaraokeClip.make(s.day,krBots.map(function(b){return {id:b.playerId,nick:b.nick,char:b.char};}),s.viewerId);if(window.KaraokeClipUniforms)production=KaraokeClipUniforms.apply(production);cacheKey=key;}return production;}
 function star(x,a,b,r,color){x.fillStyle=color;x.beginPath();for(var i=0;i<10;i++){var ang=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.43:r;if(!i)x.moveTo(a+Math.cos(ang)*rr,b+Math.sin(ang)*rr);else x.lineTo(a+Math.cos(ang)*rr,b+Math.sin(ang)*rr);}x.closePath();x.fill();}
 function rgba(hex,a){var n=parseInt(String(hex).slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')';}
 function glow(x,cx,cy,r,color,a){var g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,rgba(color,a));g.addColorStop(1,rgba(color,0));x.fillStyle=g;x.fillRect(cx-r,cy-r,r*2,r*2);}

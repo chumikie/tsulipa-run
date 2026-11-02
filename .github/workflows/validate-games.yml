@@ -38,6 +38,8 @@ on:
       - 'tests/karaoke-my-position.test.js'
       - 'tests/karaoke-song-week.test.js'
       - 'tests/karaoke-weekly-boards.test.js'
+      - 'karaoke-clip-uniforms.js'
+      - 'tests/karaoke-clip-uniforms.test.js'
       - 'supabase/sql/karaoke_quadros_semana.sql'
       - 'supabase/tests/karaoke_quadros_pg_*'
       - 'supabase/sql/karaoke_musica_da_semana.sql'
@@ -140,6 +142,8 @@ on:
       - 'tests/karaoke-my-position.test.js'
       - 'tests/karaoke-song-week.test.js'
       - 'tests/karaoke-weekly-boards.test.js'
+      - 'karaoke-clip-uniforms.js'
+      - 'tests/karaoke-clip-uniforms.test.js'
       - 'supabase/sql/karaoke_quadros_semana.sql'
       - 'supabase/tests/karaoke_quadros_pg_*'
       - 'supabase/sql/karaoke_musica_da_semana.sql'
@@ -230,6 +234,8 @@ jobs:
         run: node tests/karaoke-song-week.test.js
       - name: Validate Karaoke weekly boards (shows, most improved, song medal)
         run: node tests/karaoke-weekly-boards.test.js
+      - name: Validate Karaoke daily clip uniforms
+        run: node tests/karaoke-clip-uniforms.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract

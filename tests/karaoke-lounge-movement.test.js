@@ -63,6 +63,7 @@ const env={
   KR_LOUNGE_STOPS:[230,300,370,590,660,730],
   KR_LOUNGE_MAX_WALKERS:1,
   KR_LOUNGE_LANES:[520],
+  krLoungeEscolherVariado:Object.assign(function(candidates){return candidates[0]||null;},{reset:function(){}}),
   krLoungeSocialA:null,
   krLoungeSocialB:null,
   krLoungeSocialReset(){},
@@ -71,6 +72,9 @@ const env={
 vm.createContext(env);
 vm.runInContext(loungeSource,env,{timeout:1000});
 
+env.krBots[0].drink='tsu';
+assert.equal(env.krLoungePodePassear(env.krBots[0]),false,'an Idol holding a drink does not enter autonomous walking or the automatic mic queue');
+assert.equal(env.krLoungePodePassear(env.krBots[1]),true,'an Idol without a held item remains eligible');
 env.krLoungeReset();
 assert.equal(env.krLoungeActors.length,0);
 for(const time of [540,585,630]){env.krT=time;env.krLoungeUpdate(1);}

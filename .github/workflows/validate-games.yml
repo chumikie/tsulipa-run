@@ -243,6 +243,8 @@ jobs:
         run: node tests/karaoke-room-performance.test.js
       - name: Validate Karaoke room pet visits and pandeiros
         run: node tests/karaoke-room-reactions.test.js
+      - name: Validate Karaoke room personalities and spontaneous social behavior
+        run: node tests/karaoke-room-personality.test.js
       - name: Validate national groups and legacy profiles
         run: node --test tests/grupos-nacionais.test.js
       - name: Validate SKU48 sister-group billboards in Center Run

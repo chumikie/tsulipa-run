@@ -1050,9 +1050,9 @@ function make(day,members,selfId){var n=KaraokeDaily.dayNumber(day),concept=conc
 return {make:make,concepts:concepts,formations:formations};
 })();
 /* Clip captions rotate through the five supported languages. */
-/* Quatro versos por conceito, alternando PT, EN, ES, TH e JA. */
+/* A letra inteira passa em PT, depois JA, TH, ES e EN (um idioma por volta, não por verso). */
 function ktLegenda(x,c,w,h){var li=['pt','en','es','th','ja'].indexOf(typeof LANG==='string'?LANG:'pt');if(li<0)li=0;
- var DUR=3400,ag=performance.now(),n=Math.floor(ag/DUR),f=(ag%DUR)/DUR,V=c.letra||[c.tags||[c.tag]],vs=V[n%V.length],txt='​♪ '+(vs[(li+n)%vs.length]||vs[0])+' ♪',prog=Math.min(1,Math.max(0,(f-.08)/.72)),fade=Math.min(1,f/.08,(1-f)/.08);
+ var DUR=3400,ag=performance.now(),n=Math.floor(ag/DUR),f=(ag%DUR)/DUR,V=c.letra||[c.tags||[c.tag]],vs=V[n%V.length],txt='​♪ '+(vs[[0,4,3,2,1][Math.floor(n/V.length)%5]]||vs[0])+' ♪',prog=Math.min(1,Math.max(0,(f-.08)/.72)),fade=Math.min(1,f/.08,(1-f)/.08);
  x.save();x.fillStyle='rgba(7,4,23,.74)';x.beginPath();var bw=w*.43-8;x.roundRect(8,h-23,bw,16,8);x.fill();x.globalAlpha=Math.max(0,fade);x.font='800 8px "M PLUS Rounded 1c","Noto Sans Thai","Noto Sans JP",sans-serif';x.textAlign='left';x.textBaseline='middle';
  var mw=bw-14,tw=Math.min(mw,x.measureText(txt).width),lx=8+(bw-tw)/2,ly=h-14.6;x.fillStyle='#fff';x.fillText(txt,lx,ly,mw);
  x.save();x.beginPath();x.rect(lx,h-24,tw*prog,18);x.clip();x.fillStyle=c.colors[2];x.shadowColor=c.colors[2];x.shadowBlur=4;x.fillText(txt,lx,ly,mw);x.restore();

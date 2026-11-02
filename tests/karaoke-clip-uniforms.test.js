@@ -17,4 +17,8 @@ assert.equal(p.members[0].char.hair,'#ff7eb6','cabelo e resto do visual continua
 assert.equal(original.out,'zipper','o visual salvo da conta não muda');
 assert.equal(U.apply({concept:{set:'novo'},members:[{char:original}]}).members[0].char.out,'zipper','tema sem uniforme fica como está');
 assert(html.includes('<script src="./karaoke-clip-uniforms.js?v=1"></script>')&&html.includes('if(window.KaraokeClipUniforms)production=KaraokeClipUniforms.apply(production);'),'sala aplica o uniforme no clipe');
-console.log('✓ Karaoke: clipe do dia com elenco uniformizado por tema');
+// Legenda: a letra inteira em PT, depois JA, TH, ES e EN (não um idioma por verso).
+assert(html.includes("vs[[0,4,3,2,1][Math.floor(n/V.length)%5]]")&&!html.includes('vs[(li+n)%vs.length]'),'legenda passa a letra inteira em cada idioma');
+const ord=[0,4,3,2,1],nomes=['pt','en','es','th','ja'],seq=[];for(let n=0;n<20;n++)seq.push(nomes[ord[Math.floor(n/4)%5]]+(n%4));
+assert.equal(seq.join(' '),'pt0 pt1 pt2 pt3 ja0 ja1 ja2 ja3 th0 th1 th2 th3 es0 es1 es2 es3 en0 en1 en2 en3','ordem PT → JA → TH → ES → EN');
+console.log('✓ Karaoke: clipe do dia com elenco uniformizado por tema e legenda por idioma');

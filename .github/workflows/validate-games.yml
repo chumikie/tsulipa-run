@@ -352,6 +352,7 @@ jobs:
           QA_WIDTHS: 320,375,390,430,844,1440
         run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
       - name: Verify profile accessories across hairstyles and viewports in Chromium
+        if: always()
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
         run: node tests/profile-accessories.browser.cjs /tmp/profile-accessories-browser

@@ -122,8 +122,10 @@ assert.ok(launchSkin.includes('#hub #twRankHall h2{') &&
   launchSkin.includes('display:flex;') &&
   launchSkin.includes('#hub #twRankHall .tw-rank-game li>strong{') &&
   launchSkin.includes('margin-left:auto;') &&
-  launchSkin.includes('#hub #twRankHall .tw-rank-avatar-wrap{flex-basis:38px;width:38px;height:38px}'),
-  'Top Idols weekly rows should follow the Karaoke board pattern: rank, avatar, nickname and score in one readable row');
+  launchSkin.includes('grid-template-columns:repeat(3,minmax(0,1fr));') &&
+  launchSkin.includes('grid-template-rows:27px auto auto;') &&
+  !launchSkin.includes('#hub #twRankHall .tw-rank-columns{grid-template-columns:minmax(0,1fr)'),
+  'Top Idols must keep all three boards visible side by side on mobile without tabs or hide/show buttons');
 
 console.log('✓ INDEX2 original: TV, weekly profile, Sunday BR, top3 unique, safe score bridge');
 console.log('✓ Top Idols fixed podium, Sora selected period/zero defaults and current privacy');

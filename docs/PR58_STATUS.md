@@ -33,8 +33,10 @@ Documento de acompanhamento da PR #58 (`perf/karaoke-mobile-tile-occupancy` → 
   - CI: as etapas de cabelos e acessórios passam. O vermelho atual vem dos testes da sala de Karaoke em andamento pelo outro contribuidor (microfone automático, visitas dos pets e pandeiros) e da etapa "shows passam pelo servidor quando há conta" do `validate-games.js`, que já falhava antes destas correções.
 - Testes logados (Perfil, Montar Idol, Gacha, Pet, Moon Duo, Karaoke com tickets) ficam com o responsável.
 - **Moderação "Montar o Idol" (01/11/2026, pedido da dona):** no Perfil de um membro, o botão de admin "👗 Montar o Idol" abre o editor completo (cabelo, corte, mecha, franja, detalhe, pele, olhos, roupa e cor, acessório, óculos), com prévia. Vale para qualquer membro, menos a própria admin e outros admins. Roupas, acessórios e o detalhe Coelho seguem as regras de liberação/compra do membro; o item da mão não muda.
-  - Banco: **proposta** `supabase/sql/admin_montar_idol.sql` (`admin_idol_info` e `admin_montar_idol`), testada em PostgreSQL isolado (`supabase/tests/admin_idol_pg_integration.sh`). **Não aplicada.** Precisa de autorização da dona e aplicação pelo ChatGPT.
-  - Enquanto a função nova não existir no banco, o botão cai automaticamente no ajuste antigo, só de roupa (`admin_vestir`, em produção desde 31/10).
+  - Banco: `supabase/sql/admin_montar_idol.sql` (`admin_idol_info` e `admin_montar_idol`), testado em PostgreSQL isolado (`supabase/tests/admin_idol_pg_integration.sh`). **APLICADO no Supabase em 01/11/2026 (~21:10)**, com autorização da dona, pelo ChatGPT. Relato dele: funções ativas; tabelas e funções compatíveis; só admins usam; a admin não altera o próprio Idol; itens não comprados e cores inválidas são recusados; uma montagem válida foi aceita e registrada; testes revertidos, sem mudanças em perfis; sem merge nem deploy.
+  - 📷 nos dois formulários (editor completo e ajuste só de roupa) baixa um PNG transparente 1000×1000 do Idol; é só do navegador, não usa o banco.
+  - **Falta (homologação):** depois de publicar a PR, testar logada como Tsu num membro automático (abrir, montar, salvar, conferir no Perfil e no jogo do membro).
+  - Se a função nova falhar, o botão cai automaticamente no ajuste antigo, só de roupa (`admin_vestir`, em produção desde 31/10).
 
 ## 1. Implementado no branch — presença confirmada no código
 

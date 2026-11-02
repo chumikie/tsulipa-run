@@ -1,5 +1,6 @@
 -- TsuLiPa⭐World — Moderação: montar o Idol de um membro (visual completo)
 -- PROPOSTA PARA REVISÃO (PR #58). NÃO APLICAR SEM AUTORIZAÇÃO EXPLÍCITA DA DONA DO PROJETO.
+-- APLICADA no Supabase em 01/11/2026 com autorização da dona (relato do ChatGPT na PR58_STATUS).
 -- Quem aplica e confere no Supabase é o responsável pelo banco (ChatGPT), não o GitHub.
 --
 -- Pedido da dona (01/11/2026): a admin (Tsu) monta o Idol de qualquer membro (menos o próprio e de outros admins),

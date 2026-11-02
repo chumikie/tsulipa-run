@@ -13,6 +13,34 @@
   {id:'curioso',tone:'curious',sociability:.7,energy:.66,wanderlust:.84,cheer:.69,expressiveness:.67,shyness:.2,curiosity:.99,playfulness:.58}
  ];
  var MUSIC_STYLES=['pop','dance','ballad','run','box'],GESTURES=['applause','heart','wave','smile','nod','emoji'];
+ var LINES={
+  pt:{
+   bright:{start:['Olha isso! ✨','Que energia boa!','Essa sala tá brilhando!'],reply:['Siiim! 💜','Também senti!','Bora aproveitar! ♡'],cheer:['Vai, estrela! ⭐','Arrasa no refrão! 💖','Aí sim! 👏']},
+   gentle:{start:['Que música bonita...','Gosto desse clima.','Tá tudo tão leve hoje.'],reply:['Também acho. ♡','É gostoso ficar aqui.','Dá vontade de ouvir mais.'],cheer:['Você tá indo bem. 💜','Que bonito de ouvir. ✨','Tô torcendo daqui. ♡']},
+   curious:{start:['Como será a próxima?','Reparou naquele detalhe?','Esse ritmo é diferente!'],reply:['Agora fiquei curiosa!','Quero ver também!','Boa pergunta! ♪'],cheer:['Que virada boa! ✨','Olha esse combo!','Quero ouvir mais!']}
+  },
+  en:{
+   bright:{start:['Look at that! ✨','Such good energy!','This room is glowing!'],reply:['Yesss! 💜','I feel it too!','Let’s enjoy this! ♡'],cheer:['Shine on! ⭐','Own that chorus! 💖','That was it! 👏']},
+   gentle:{start:['What a lovely song...','I like this mood.','It feels so peaceful.'],reply:['I think so too. ♡','It’s nice being here.','I could listen all day.'],cheer:['You’re doing great. 💜','That sounded lovely. ✨','I’m cheering for you. ♡']},
+   curious:{start:['What comes on next?','Did you notice that detail?','That rhythm is different!'],reply:['Now I’m curious!','I want to see too!','Good question! ♪'],cheer:['What a lovely turn! ✨','Look at that combo!','More, please!']}
+  },
+  es:{
+   bright:{start:['¡Mira eso! ✨','¡Qué energía tan buena!','¡La sala brilla!'],reply:['¡Siii! 💜','¡Yo también lo siento!','¡Vamos a disfrutar! ♡'],cheer:['¡Brilla! ⭐','¡Dale con ese coro! 💖','¡Eso es! 👏']},
+   gentle:{start:['Qué canción tan bonita...','Me gusta este ambiente.','Hoy todo está tranquilo.'],reply:['Pienso igual. ♡','Se está muy bien aquí.','Podría escucharla más.'],cheer:['Vas muy bien. 💜','Qué bonito suena. ✨','Te apoyo desde aquí. ♡']},
+   curious:{start:['¿Qué vendrá después?','¿Viste ese detalle?','¡Qué ritmo tan distinto!'],reply:['¡Ahora tengo curiosidad!','¡Yo también quiero verlo!','¡Buena pregunta! ♪'],cheer:['¡Qué buen cambio! ✨','¡Mira ese combo!','¡Quiero escuchar más!']}
+  },
+  th:{
+   bright:{start:['ดูนั่นสิ! ✨','พลังดีมากเลย!','ห้องนี้สดใสจัง!'],reply:['ใช่เลย! 💜','ฉันก็รู้สึกเหมือนกัน!','มาสนุกกันเถอะ! ♡'],cheer:['เปล่งประกายเลย! ⭐','ร้องท่อนนี้ให้สุด! 💖','เยี่ยมมาก! 👏']},
+   gentle:{start:['เพลงเพราะจัง...','ชอบบรรยากาศแบบนี้','วันนี้สงบดีนะ'],reply:['ฉันก็คิดแบบนั้น ♡','อยู่ตรงนี้สบายจัง','ฟังได้อีกนานเลย'],cheer:['ทำได้ดีมาก 💜','เพราะมากเลย ✨','ฉันเป็นกำลังใจให้นะ ♡']},
+   curious:{start:['เพลงต่อไปจะเป็นอะไรนะ?','เห็นรายละเอียดนั้นไหม?','จังหวะนี้แปลกใหม่จัง!'],reply:['ตอนนี้ฉันสงสัยแล้ว!','ฉันก็อยากเห็น!','เป็นคำถามที่ดี! ♪'],cheer:['เปลี่ยนจังหวะได้ดี! ✨','ดูคอมโบนั่นสิ!','อยากฟังอีก!']}
+  },
+  ja:{
+   bright:{start:['見て見て！ ✨','すごくいい雰囲気！','この部屋、輝いてる！'],reply:['そうそう！ 💜','私もそう思う！','一緒に楽しもう！ ♡'],cheer:['輝いて！ ⭐','サビを決めて！ 💖','最高！ 👏']},
+   gentle:{start:['すてきな曲だね...','この雰囲気が好き。','今日は穏やかだね。'],reply:['私もそう思う。♡','ここにいると落ち着くね。','ずっと聴いていたいな。'],cheer:['その調子だよ。💜','とてもきれいな歌声。✨','ここから応援してる。♡']},
+   curious:{start:['次は何の曲かな？','あの細かいところ気づいた？','面白いリズムだね！'],reply:['気になってきた！','私も見たい！','いい質問だね！ ♪'],cheer:['いい切り替え！ ✨','あのコンボを見て！','もっと聴きたい！']}
+  }
+ };
+
  var REACTION_LINES={
   pt:{start:['A música começou! ✨','Vamos ouvir! ♡','Que clima bom! ♪'],hit:['Boa! 💜','Aí sim! ✨','Gostei desse acerto!'],combo:['Olha esse combo! ⭐','Que sequência linda! 👏','Tá brilhando! 💖'],miss:['Vai dar certo! 💜','Respira, você consegue! ♡','Tô torcendo por você!'],finish:['Que apresentação! 👏','Aplausos! Você brilhou! ✨','Foi lindo de assistir! ♡'],record:['NOVO RECORDE! ⭐','Você brilhou demais! 💖','Essa marca merece festa! ✨']},
   en:{start:['The song is starting! ✨','Let’s listen! ♡','What a lovely mood! ♪'],hit:['Nice one! 💜','That was great! ✨','Loved that hit!'],combo:['Look at that combo! ⭐','What a lovely streak! 👏','You’re shining! 💖'],miss:['You’ve got this! 💜','Take a breath, you can do it! ♡','I’m cheering for you!'],finish:['What a performance! 👏','Bravo! You shone! ✨','That was lovely to watch! ♡'],record:['NEW RECORD! ⭐','You absolutely shone! 💖','That deserves a celebration! ✨']},

@@ -992,7 +992,7 @@ function draw(ctx,c,px,py,sc,pose,expr,t,mirror,options){
  var record=resolveChar(c);c=record.value;
  var p=pose||'v',tick=Math.floor((t||0)/12)%8,ex=Number.isFinite(expr)?expr:0;
  // Piscar sem manter todos os olhos fechados durante toda a apresentação.
- if(ex===1||ex===4||ex===5)ex=2;   /* sala de karaokê: nada de choro, careta ou susto */
+ if(ex===4||ex===5)ex=2;   /* surpresa/chorinho ficam neutralizados; boca aberta (1) é a expressão de canto/fala. */
  if(ex===2&&tick<6)ex=0;
  var key=record.signature+'|'+p+'|'+ex+'|'+tick,cv=cache.get(key);
  if(!cv){cv=document.createElement('canvas');cv.width=UW*S;cv.height=UH*S;var cg=cv.getContext('2d');g=cg;frame=tick*12;charPose=p;perfAntena='';accSel=c._avatarA||'';var vis=c._avatarVisual||'';state=vis?'play':'menu';rankI=PERF_RANKVIS[vis]||0;pw=['fever','ima','alien'].indexOf(vis)>=0?{k:vis}:null;sash=rankI>=7;cg.scale(S,S);cg.translate(-UX,-UY);drawChar(c,0,0,0,ex,false);cache.set(key,cv);if(cache.size>64)cache.delete(cache.keys().next().value);}
@@ -2526,7 +2526,7 @@ function krMontarListaRenderSala(andando){
   krRoomRenderIncludesPlayer=incluirJogador;
  }
  if(incluirJogador){
-  var p=krRoomRenderPlayer;p.playerId=typeof ktDaily!=='undefined'&&ktDaily?ktDaily.currentId():nick;p.nick=krHomolAtivo?krHomolMeuNick:nick;p.x=krEu.x;p.y=krEu.y;p.danca=krEu.danca;p.pose=krEu.pose;p.expr=krEu.expr;p.drink=krEu.drink;p.no_mic=krEu.no_mic;p.canto=krEu.canto;p.char=krHomolAtivo?krHomolMeuChar:krMeuCharSala();p.andando=andando;p.itemSala=krEu.itemSala;p.antenaSala=krEu.antenaSala;p.lookSala=krEu.lookSala;p.snackSala=krEu.snackSala;p.profileColor=(function(){try{return localStorage.getItem('brs48cr_cor')||'';}catch(e){return '';}})();
+  var p=krRoomRenderPlayer;p.playerId=typeof ktDaily!=='undefined'&&ktDaily?ktDaily.currentId():nick;p.nick=krHomolAtivo?krHomolMeuNick:nick;p.x=krEu.x;p.y=krEu.y;p.danca=krEu.danca;p.pose=krEu.pose;p.expr=krEu.expr;p.drink=krEu.drink;p.no_mic=krEu.no_mic;p.canto=krEu.canto;p.char=krHomolAtivo?krHomolMeuChar:krMeuCharSala();p.andando=andando;p.itemSala=krEu.itemSala;p.antenaSala=krEu.antenaSala;p.lookSala=krEu.lookSala;p.snackSala=krEu.snackSala;p.profileColor=ktMicCor();
  }
  var ordemMudou=false;
  for(var oi=1;oi<lista.length;oi++)if(lista[oi-1].y>lista[oi].y){ordemMudou=true;break;}

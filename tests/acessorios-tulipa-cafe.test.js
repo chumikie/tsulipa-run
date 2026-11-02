@@ -53,3 +53,12 @@ test('RPC mantém proteção dos demais fundos e novos acessórios', () => {
   assert.match(sql, /IF NOT livre/);
   assert.doesNotMatch(sql, /drop table|delete from public\.players|update public\.players|brs48cr_|stars\s*=/i);
 });
+
+test('acessórios comprados aparecem no vestuário do menu e no Montar Idol sem segunda compra', () => {
+  assert.match(html, /function perfMontUI\(\)\{\s*if\(typeof acessoriosSync==='function'\) acessoriosSync\(\)/);
+  assert.match(html, /perfLojaOpcoes\(\);\s*if\(typeof acessoriosSync==='function'\) acessoriosSync\(\)/);
+  assert.match(html, /lojaTem\('det_'\+it\[0\]\)\|\|CU\.det===it\[0\]/);
+  assert.match(html, /lojaTem\('hat_palha'\)\|\|CU\.hat==='palha'/);
+  assert.match(html, /if\(temPalha&&!palha\)/);
+  assert.match(html, /if\(tem&&!o\)/);
+});

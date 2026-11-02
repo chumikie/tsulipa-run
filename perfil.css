@@ -1,0 +1,134 @@
+/* Perfil — perfil público e pessoal, Estúdio de foto, Montar Idol, lojinha, nuvem e presente da conta.
+   Extraído do <style> do index.html em 02/11/2026 (refatoração da PR #62, Etapa 2), sem mudar valores.
+   Carrega logo depois do pet.css, no ponto do primeiro bloco do Perfil; a ordem das regras do Perfil entre si foi mantida.
+   Os estilos do modo admin ficam para a Etapa 6. */
+/* --- V2.1.3: PERFIL, ESTÚDIO DE FOTO, MONTAR IDOL E PRESENTE DA CONTA --- */
+.perfov{position:fixed;z-index:20;overflow:auto;align-items:flex-start;padding:16px 10px}
+.perfp{position:relative;width:min(94%,440px);margin:auto;text-align:left;background:radial-gradient(circle at 0 0,rgba(255,111,181,.16),transparent 38%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.13),transparent 42%),radial-gradient(circle at 20% 100%,rgba(65,105,225,.1),transparent 40%),var(--card)}
+.perfx{position:absolute;top:26px;right:28px;z-index:3;border:0;background:var(--chip);color:var(--sub);width:32px;height:32px;border-radius:50%;font:inherit;font-weight:800;cursor:pointer}
+.perfhero{position:relative;display:flex;align-items:center;gap:16px;margin:2px 0 16px;padding:16px 44px 14px 14px;border-radius:18px;background:linear-gradient(120deg,rgba(155,48,217,.16),rgba(255,111,181,.16) 45%,rgba(77,216,255,.14));overflow:hidden}
+.perfbr{position:absolute;font-style:normal;color:#ff6fb5;font-size:14px;opacity:.8;animation:perfpisca 2.4s ease-in-out infinite;pointer-events:none}
+.perfbr.b1{top:6px;left:48%}.perfbr.b2{bottom:8px;right:16px;color:#9b30d9;animation-delay:.6s}.perfbr.b3{top:12px;right:44px;color:#4169e1;font-size:11px;animation-delay:1.2s}.perfbr.b4{bottom:6px;left:120px;color:#f5b400;font-size:10px;animation-delay:1.8s}
+@keyframes perfpisca{0%,100%{opacity:.25;transform:scale(.7) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+.perffotow{position:relative;flex:none;width:108px;height:108px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.perffotow:active{transform:scale(.94)}
+.perffotow::before{content:"";position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(#9b30d9,#ff6fb5,#ffe14d,#b6ff3b,#4dd8ff,#4169e1,#9b30d9);animation:perfgira 6s linear infinite}
+.perffotow:focus-visible{outline:3px solid var(--pink);outline-offset:6px}
+@keyframes perfgira{to{transform:rotate(360deg)}}
+#perfFoto{position:relative;display:block;width:108px;height:108px;border-radius:50%;box-shadow:0 0 0 3px var(--card),0 6px 16px rgba(60,20,120,.3)}
+.perfselo{position:absolute;right:-4px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:18px;box-shadow:0 2px 8px rgba(60,20,120,.3)}
+.perfid{display:flex;flex-direction:column;gap:2px;min-width:0}
+.perfnm{font-size:24px;line-height:1.15;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:linear-gradient(90deg,#9b30d9,#ff6fb5,#4169e1,#9b30d9);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:perfbrilho 4s linear infinite}
+@keyframes perfbrilho{to{background-position:200% center}}
+.perfrk{font-weight:800;color:var(--pink);font-size:14px}
+.perfid small{color:var(--sub);font-size:12px}.perfid small b{color:var(--ink)}
+.perfkao{font-style:normal;font-size:12px;color:var(--b1);font-weight:700;margin-top:2px}
+.perflogo{font-weight:900;background:linear-gradient(90deg,#b04fe6,#4ade80 50%,#4a74ee);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.perflogo i{font-style:normal;-webkit-text-fill-color:#f5b400;color:#f5b400}
+.perftabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 6px}
+.perftabs button{border:2px solid transparent;border-radius:99px;padding:6px 14px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;background:var(--chip);color:var(--sub)}
+.perftabs button[aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;box-shadow:0 3px 10px rgba(123,63,240,.35)}
+.perftabs button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.perfp h3{margin:18px 0 8px;font-size:14px;color:var(--b1)}
+.perfp h3::after{content:" ✧";color:var(--pink)}
+.perfnums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}
+.perfnums div{border-radius:14px;padding:8px 4px;text-align:center;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+.perfnums .n1{background:linear-gradient(160deg,#fff4c2,#ffe0f0)}.perfnums .n2{background:linear-gradient(160deg,#e9e0ff,#dff1ff)}.perfnums .n3{background:linear-gradient(160deg,#ffe0f0,#e9e0ff)}
+.perfnums b{display:block;font-size:18px;color:#2c1a5e}.perfnums small{font-size:11px;color:#6b5a8e;font-weight:800}
+.perfchips{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}
+.perfchips span{background:var(--chip);border-radius:99px;padding:4px 11px;font-weight:700}
+.perfpets{display:flex;flex-wrap:wrap;gap:8px}
+.perfpet{flex:1 1 84px;max-width:130px;background:var(--chip);border:2px solid transparent;border-radius:14px;padding:4px 4px 6px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.perfpet.on{border-color:var(--b1);box-shadow:0 0 12px rgba(155,48,217,.3)}
+.perfpet canvas{width:72px;height:60px;display:block;animation:perfpula 2.2s ease-in-out infinite;animation-delay:inherit}
+@keyframes perfpula{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.perfpet b{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perfpet small{font-size:10px;color:var(--sub);font-weight:700}
+.perfmini{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.perfjogo{background:var(--chip);border-radius:14px;padding:8px 10px;font-size:12px}
+.perfjtop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px;margin-bottom:2px}
+.perfjtop b{color:var(--b1);font-size:13px}
+.perfpos{background:linear-gradient(90deg,#ff6fb5,#9b30d9);color:#fff;border-radius:99px;padding:1px 8px;font-weight:900;font-size:12px;white-space:nowrap}.perfpos small{font-size:10px;opacity:.85}
+.perfjogo>small{color:var(--sub);font-weight:700}
+.perfjogo ol{list-style:none;margin:6px 0 0;padding:0}
+.perfjogo li{display:flex;justify-content:space-between;gap:4px;padding:1px 0}
+.perfjogo li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perfjogo li.eu{color:var(--b1);font-weight:800}
+.perfult{max-height:none}.perfult small{color:var(--sub)}
+.perfcarr{text-align:center;color:var(--sub);font-size:13px;margin:10px 0}
+.perfdica{text-align:center;font-size:12px;color:var(--sub);font-weight:700;margin:0 0 8px}
+#perfGenCv{width:min(100%,280px);height:auto;aspect-ratio:1;display:block;margin:10px auto 16px;border-radius:18px;background:repeating-conic-gradient(#e9e2f7 0 25%,#fff 0 50%) 0 0/16px 16px;box-shadow:0 0 0 3px var(--card),0 0 0 5px rgba(155,48,217,.5),0 8px 20px rgba(60,20,120,.25)}
+.perfmont{gap:10px 12px;margin:0 0 6px}
+.perfskins{display:flex}
+.perfbtns{margin:0 0 6px}
+.perfopts{margin-top:14px;gap:10px}
+.perfp .btns .btn{font-size:14px;padding:8px 18px;text-decoration:none}
+.perfp .btn:disabled{opacity:.5;cursor:default}
+.perfopts em{font-style:normal;color:#d4a017;font-weight:800}
+.perfmsg{text-align:center;font-size:12px;font-weight:800;color:var(--pink);margin:0 0 10px}
+.perfmsg[hidden]{display:none}
+.perfpres{text-align:center;width:min(86%,320px)}.perfpres h2{font-size:18px;margin:4px 0}
+#perfPresArte{display:flex;justify-content:center;align-items:center;min-height:90px;margin:6px 0}
+#perfPresArte canvas{width:80px;height:70px}#perfPresArte img{max-height:90px;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.perfpres-emo{font-size:54px;line-height:1}
+#perfPresNome{display:block;font-size:18px;color:var(--b1)}
+@media (prefers-reduced-motion:reduce){.perfbr,.perffotow::before,.perfnm,.perfpet canvas{animation:none}}
+.perffotocol{display:flex;flex-direction:column;align-items:center;gap:10px;flex:none}
+.perfcora{display:inline-flex;align-items:center;gap:4px;border:0;border-radius:99px;padding:3px 12px;font:inherit;font-size:13px;font-weight:800;background:var(--card);color:var(--pink);box-shadow:0 2px 8px rgba(123,63,240,.25)}
+button.perfcora{cursor:pointer;transition:transform .12s}button.perfcora:active{transform:scale(.92)}
+button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out infinite}
+@keyframes perfbate{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.perfsobe{position:fixed;z-index:30;font-style:normal;font-size:18px;pointer-events:none;animation:perfsobe 1.4s ease-out forwards}
+@keyframes perfsobe{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-90px) scale(1.2)}}
+.perfoshi{align-self:flex-start;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,#9b30d9,#ff6fb5);border-radius:99px;padding:1px 10px;margin:2px 0;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 2px 6px rgba(60,20,120,.2)}
+.perffrase{display:block;font-size:13px;font-style:italic;color:var(--ink);margin-top:4px;overflow-wrap:anywhere}
+.perffrase::before{content:"“";color:var(--pink)}.perffrase::after{content:"”";color:var(--pink)}
+.perfins{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.perfin{aspect-ratio:1;border:0;border-radius:50%;padding:0;cursor:pointer;display:grid;place-items:center;background:var(--chip);font-size:20px;filter:grayscale(1);opacity:.55;transition:transform .12s}
+.perfin.ok{filter:none;opacity:1;background:radial-gradient(circle at 30% 30%,#fff 0,#ffe0f0 45%,#e9e0ff 100%);box-shadow:0 0 0 2px #ffd23f inset,0 3px 10px rgba(245,180,0,.35)}
+.perfin[aria-pressed="true"]{transform:scale(1.12);outline:3px solid var(--pink);outline-offset:2px}
+.perfinsdesc{text-align:center;font-size:12px;color:var(--sub);margin:8px 0 0}.perfinsdesc[hidden]{display:none}
+.perfinsdesc b{color:var(--b1)}.perfinsdesc em{font-style:normal;font-weight:800;color:var(--sub)}.perfinsdesc em.ok{color:#d4a017}
+.perfpos-geral{margin:0 0 8px;font-size:13px;color:var(--sub);font-weight:700}.perfpos-geral b{color:var(--ink)}
+.perfrecform{display:flex;gap:6px;align-items:center}.perfrecform .nick{margin:0;flex:1;min-width:0}
+.perfrecform .btn{font-size:13px;padding:7px 14px;white-space:nowrap}
+.perfrecs{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.perfrecs li{position:relative;background:var(--chip);border-radius:14px 14px 14px 4px;padding:6px 34px 7px 10px;font-size:13px}
+.perfrecs li:nth-child(3n+1){background:linear-gradient(120deg,rgba(155,48,217,.13),var(--chip))}.perfrecs li:nth-child(3n+2){background:linear-gradient(120deg,rgba(92,199,44,.14),var(--chip))}.perfrecs li:nth-child(3n){background:linear-gradient(120deg,rgba(65,105,225,.14),var(--chip))}
+.perfrecs li small{color:var(--sub);font-size:10px}.perfrecs li p{margin:2px 0 0;overflow-wrap:anywhere}
+.perfrecx{position:absolute;top:6px;right:6px;border:0;background:none;color:var(--sub);font:inherit;font-size:12px;cursor:pointer;width:22px;height:22px;border-radius:50%}
+.perfrecx:hover{background:var(--card)}
+.perfrecon{display:flex;gap:6px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--sub);font-weight:700;margin-top:8px}
+.perfbio{margin-top:18px;background:linear-gradient(135deg,rgba(255,111,181,.1),rgba(123,63,240,.08)),var(--chip);border:2px dashed rgba(255,111,181,.7);border-radius:16px;padding:10px 12px 12px}
+.perfprofile-nudge{margin:12px 0;padding:12px 14px;border:1.5px solid rgba(255,111,181,.65);border-radius:15px;background:linear-gradient(120deg,rgba(255,111,181,.12),rgba(123,63,240,.1)),var(--chip);text-align:center}
+.perfprofile-nudge strong{display:block;color:var(--b1);font-size:13px}
+.perfprofile-nudge p{margin:5px 0 10px;color:var(--sub);font-size:12px;line-height:1.5}
+.perfprofile-nudge .btn{min-height:38px;padding:7px 15px}
+.perfbio h3{margin:0 0 2px}
+.perfbio label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub);margin-top:8px}
+.perfbio select{font:inherit;font-size:13px;border-radius:8px;border:1px solid var(--sub);background:var(--card);color:var(--ink);padding:4px 6px}
+.perfbio .nick{margin:0}
+.perfloja{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.perfroupa{background:var(--chip);border:2px solid transparent;border-radius:14px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer}
+.perfroupa.on{border-color:var(--pink);box-shadow:0 0 12px rgba(255,111,181,.35)}
+.perfroupa canvas{width:88px;height:88px;border-radius:12px}
+.perfroupa b{font-size:12px;line-height:1.2}
+.perfroupa .btn{font-size:12px;padding:5px 14px;box-shadow:0 3px 0 var(--edge)}
+.perfroupa em.ok{font-style:normal;font-size:12px;font-weight:800;color:var(--b1)}
+.perfp .btn{box-shadow:0 3px 0 rgba(44,26,143,.45);background-clip:padding-box}
+.perfp .btn.alt{border-color:transparent;box-shadow:0 3px 0 rgba(91,127,166,.4)}
+.perftabs button,.petph.perfopts button,.perfroupa{background-clip:padding-box}
+.perftabs button{border:0;padding:8px 16px}
+.perfcampo{border:2px solid rgba(255,111,181,.75)!important;background:var(--card)!important;box-shadow:0 0 0 3px rgba(255,111,181,.12)}
+.perfcampo:focus{border-color:var(--b1)!important;box-shadow:0 0 0 4px rgba(123,63,240,.2);outline:none}
+.perfcampo::placeholder{color:var(--sub);opacity:.8}
+.perftemp{display:inline-block;font-size:10.5px;font-weight:800;color:#d6336c;background:rgba(255,111,181,.14);border-radius:99px;padding:1px 8px}
+.perfroupa.temp{box-shadow:0 0 0 2px rgba(255,111,181,.55)}
+.perfin{position:relative}.perfnv{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#f5b400;letter-spacing:-1px;text-shadow:0 1px 0 #fff}
+.perfaniv-sel{display:flex;gap:6px}.perfaniv-sel select{flex:1}
+.perfaniv-nota{display:block;margin:4px 0 10px;line-height:1.35;opacity:.75;font-size:.8em}
+#perfCorpo .perfaniv,.perfaniv{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;margin:12px 0 0;padding:12px 40px;border-radius:18px;text-align:center;color:#fff;background:linear-gradient(90deg,#ff6fb5,#ff9a3c,#9b30d9,#4169e1,#ff6fb5);background-size:300% 100%;animation:aniverarco 6s linear infinite;box-shadow:0 6px 18px rgba(155,48,217,.35)}
+.perfaniv b{font-size:16px;font-weight:900;-webkit-text-fill-color:#fff;text-shadow:0 1px 3px rgba(60,20,110,.45)}
+.perfaniv small{font-size:12.5px;font-weight:700;-webkit-text-fill-color:#fff;opacity:.95;text-shadow:0 1px 2px rgba(60,20,110,.4)}
+.perfaniv-c{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:22px;animation:hubpula 1.4s ease-in-out infinite}.perfaniv-c.d{left:auto;right:10px;animation-delay:.4s}
+.perfsub{margin:10px 0 4px;font-size:13px;color:var(--b1)}

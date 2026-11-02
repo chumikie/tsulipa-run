@@ -291,15 +291,17 @@ assert(main.includes('var CHAR_DRAW_RAMP_CACHE=new Map()')&&main.includes('CHAR_
 assert(main.includes('charDrawStaticAssets().koalaEar')&&main.includes('charDrawStaticAssets().technopop.canvas')&&main.includes('g.drawImage(assets.clothHorizontal')&&main.includes('g.drawImage(assets.clothVertical'),'Shared accessory and clothing light/shadow gradients should use reusable raster ramps');
 
 
-const profileGradientCacheStart=main.indexOf('var PERF_BG_TEXTURE_CACHE = new Map()');
-const profileGradientCacheEnd=main.indexOf('// ---------- Fundos do estúdio',profileGradientCacheStart);
+// Etapa 2 da refatoração: o cache fica no index.html e a função que o usa mora em perfil.js.
+const profileGradientCacheStart=main.indexOf('var PERF_BG_TEXTURE_CACHE = new Map()')>=0?main.lastIndexOf('\nfunction ',main.indexOf('PERF_BG_TEXTURE_CACHE.size >= 32')):-1;
+const profileGradientCacheEnd=main.indexOf('\nfunction ',profileGradientCacheStart+10);
 const profileGradientCache=main.slice(profileGradientCacheStart,profileGradientCacheEnd);
 assert(profileGradientCacheStart>=0&&profileGradientCacheEnd>profileGradientCacheStart&&profileGradientCache.includes('PERF_BG_TEXTURE_CACHE.size >= 32')&&profileGradientCache.includes('drawImage(cv, 0, 0, W2, H2)'),'Profile and Studio base gradients should reuse bounded raster textures keyed by theme and dimensions');
 assert(main.includes("perfFundoGradiente(x, W2, H2, 'perfil:basico'")&&main.includes("'perfil:palco'")&&main.includes("'perfil:oshi:'")&&main.includes("'perfil:noite'")&&main.includes("'perfil:halloween'"),'Fixed Profile background gradients should use the shared bounded texture cache');
 assert(main.includes("'tema:' + k + ':' + inf[2] + ':' + inf[3]")&&main.includes("'camarim:' + k + ':' + inf[2] + ':' + inf[3]"),'Seasonal Studio and dressing-room base gradients should be cached by theme colors and dimensions');
 assert(main.includes('perfBrilhos(x, W2, H2 * .55')&&main.includes('perfEnfeites(x, W2, H2')&&main.includes('temaParticulas(x, W2, H2 * .9, k, 22, t, u)')&&main.includes('r *= pulso; perfHaloTextura(x, cx, cy, r, cor)'),'Caching fixed background gradients must preserve animated sparkles, seasonal particles and pulsing character halos');
-const avatarHaloStart=main.indexOf('var PERF_HALO_TEXTURE_CACHE = new Map()');
-const avatarHaloEnd=main.indexOf('// ---------- Desenha o Idol',avatarHaloStart);
+// Etapa 2 da refatoração: o cache fica no index.html e a função que o usa mora em perfil.js.
+const avatarHaloStart=main.indexOf('var PERF_HALO_TEXTURE_CACHE = new Map()')>=0?main.lastIndexOf('\nfunction ',main.indexOf('PERF_HALO_TEXTURE_CACHE.size >= 24')):-1;
+const avatarHaloEnd=main.indexOf('\nfunction ',avatarHaloStart+10);
 const avatarHaloCache=main.slice(avatarHaloStart,avatarHaloEnd);
 assert(avatarHaloStart>=0&&avatarHaloEnd>avatarHaloStart&&avatarHaloCache.includes('PERF_HALO_TEXTURE_CACHE.size >= 24')&&avatarHaloCache.includes('x.drawImage(cv, cx - half, cy - half)')&&avatarHaloCache.includes('x.createRadialGradient(cx, cy, 2, cx, cy, r)'),'Avatar halo gradients should use a bounded reusable texture cache with a CanvasGradient fallback');
 assert(main.includes('function halo(r, cor){ r *= pulso; perfHaloTextura(x, cx, cy, r, cor); }'),'Avatar halo pulse must remain animated while the static radial texture is reused');
@@ -364,7 +366,7 @@ assert(audienceDecor.includes('function hit(px,py)')&&audienceDecor.includes("if
 assert(html.includes('ktDecor.hit(px,py)')&&html.includes('krDesenharEstanteItens=ktDecor.shelf'),'Main-room interactions and the decorative accessory shelf must remain connected');
 
 const profileStart=main.indexOf('function perfAbaMostrar()');
-const profileEnd=main.indexOf('perfOv.addEventListener(\'click\'',profileStart);
+const profileEnd=(function(){const a=main.indexOf('perfOv.addEventListener(\'click\'',profileStart),b=main.indexOf('\n// ---',profileStart);return a<0?b:b<0?a:Math.min(a,b);})();   // Etapa 2: perfAbaMostrar mora em perfil.js
 const profileUi=main.slice(profileStart,profileEnd);
 assert(profileUi.includes('!perfilTemEmoji || !perfilTemCor')&&profileUi.includes('id="perfProfileStyleCta"'),'The personal profile should prompt for missing emoji or color without showing the prompt on complete profiles');
 assert(profileUi.includes('target.scrollIntoView')&&profileUi.includes('target.focus({ preventScroll:true })')&&main.includes('.perfprofile-nudge{'),'The profile prompt should guide the player directly to the emoji/color editor');
@@ -388,7 +390,7 @@ assert(customPet.includes('var bg = ctx.createLinearGradient'),'Custom pet gradi
 
 
 const petRenderHelperStart=main.indexOf('function perfDesenharPetEm(x, p, px, py, s, t)');
-const petRenderHelperEnd=main.indexOf('// ---------- Desenha o Idol',petRenderHelperStart);
+const petRenderHelperEnd=(function(){const a=main.indexOf('// ---------- Desenha o Idol',petRenderHelperStart),b=main.indexOf('\nfunction ',petRenderHelperStart+10);return a<0?b:b<0?a:Math.min(a,b);})();   // Etapa 2: a função mora em perfil.js
 const petRenderHelper=main.slice(petRenderHelperStart,petRenderHelperEnd);
 assert(petRenderHelperStart>=0&&petRenderHelperEnd>petRenderHelperStart&&petRenderHelper.includes("drawPet(x,p.k==='meu'?(p.cfg||PET_MK_DEF):p.k,px,py,s,t||0,'feliz',p)")&&!petRenderHelper.includes('petData =')&&!petRenderHelper.includes('var pets = {}'),'Avatar pet previews should pass their own appearance directly instead of replacing global petData or allocating temporary pet maps');
 assert(main.includes('function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride)')&&main.includes('petAnelAtras(ctx, type, appearanceOverride)')&&main.includes('petDrawCustom(ctx, type, tFrame, ex, appearanceOverride)'),'The shared pet renderer should forward appearance overrides through custom pets and rear-ring accessories');

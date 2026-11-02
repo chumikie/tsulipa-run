@@ -40,7 +40,7 @@ for(const game of games){
 
 let karaokeTime="",sora="",preview="";
 try{
-  preview=read("index.html");
+  preview=require("./site-source.js")();   // index.html + módulos extraídos (pet.js, perfil.js…)
   karaokeTime=read("karaoke-time.html");
   sora=read("sora-jump.html");
 }catch(_){/* Already reported above */}
@@ -94,7 +94,7 @@ assert(karaokeTime.includes("krHandBusy")&&karaokeTime.includes("krClearHandheld
   "Karaoke handheld exclusivity missing");
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
-const lab=read("index.html");
+const lab=require("./site-source.js")();   // index.html + módulos extraídos
 const translations=read("tw-i18n.js");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
@@ -193,7 +193,7 @@ assert(translations.includes("Ranking temporariamente indisponível")&&
        translations.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
        !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
   "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
-const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar(){"))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
 const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
 assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
@@ -473,7 +473,7 @@ try{
 // Profile badge collection and weekly reset policy.
 try{
   const gameBadgesSql=read("supabase/sql/aplicado/profile_game_badges_sunday_week.sql");
-  const main=read("index.html"), karaokeTime=read("karaoke-time.html");
+  const main=require("./site-source.js")(), karaokeTime=read("karaoke-time.html");
   const localBadges=["s2_ensaio","s2_backstage","s2_estudio","s2_festival","s2_aeroporto","s2_geral","s2_dome"];
   const soraBadges=["sora_500","sora_1500","sora_3000"];
   assert(main.includes("function s2SyncProfile()")&&main.includes("sincronizar_insignias_jogos"),

@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const html=require('./site-source.js')();
 const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const style=fs.readFileSync(path.join(root,'tw-weekly-podium.css'),'utf8');
 const launchSkin=fs.readFileSync(path.join(root,'index2-launch-ui.css'),'utf8');

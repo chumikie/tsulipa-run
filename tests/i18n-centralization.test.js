@@ -56,7 +56,7 @@ test('translated five-column row catalogues are complete and alphabetic', () => 
   const rows=registry.rows[name]; assert.ok(rows,name+' exists');
   assert.equal(rows.length,count,name+' row count');
   assert.ok(rows.every(row=>Array.isArray(row)&&row.length===5),name+' PT/EN/ES/TH/JA columns');
-  const keys=rows.map(row=>row[0]);
+  const keys=Array.from(rows,row=>row[0]);
   assert.deepEqual(keys,[...keys].sort((a,b)=>a.localeCompare(b,'pt-BR')),name+' sorted');
  }
 });

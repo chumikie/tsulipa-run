@@ -39,7 +39,7 @@ const playful=cast.find(a=>a._ktPersonality.type==='brincalhao');
 assert.equal(personality.profile(playful).tone,'bright','the playful archetype has an expressive conversational tone');
 personality.reset(cast);
 assert.equal(personality.chooseConversation(cast).length,2,'reset clears conversational memory without losing the cast');
-assert(html.includes('<script src="./karaoke-room-personality.js?v=2"></script>'),'the updated personality module bypasses the old browser cache');
+assert(html.includes('<script src="./karaoke-room-personality.js?v=3"></script>'),'the updated personality module bypasses the old browser cache');
 assert(html.includes('window.KaraokeRoomPersonality&&window.KaraokeRoomPersonality.create({random:Math.random})'),'the page injects randomness without giving the personality module movement controls');
 assert(html.includes('krLoungePersonality.reset(krBots)'),'the current cast receives individual profiles on room reset');
 assert(html.includes("krLoungePersonality.delay(b,'wander')"),'personality changes only when each character chooses an autonomous outing');

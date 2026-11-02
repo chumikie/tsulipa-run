@@ -95,6 +95,7 @@ assert(karaokeTime.includes("krHandBusy")&&karaokeTime.includes("krClearHandheld
 assert(fs.existsSync(path.join(root,"games-theme.css")),"Missing games-theme.css");
 assert(fs.existsSync(path.join(root,"index.html")),"Missing canonical index.html");
 const lab=read("index.html");
+const translations=read("tw-i18n.js");
 assert(lab.includes('data-ir="sora"')&&lab.includes('data-ir="karaoke"'),
   "Index 2 missing new game cards");
 assert(lab.includes("function twPreviewAbrirJogo(")&&lab.includes("function twPreviewFecharJogo("),
@@ -132,7 +133,7 @@ assert(lab.includes("var TW_INDEX2_TUT_KEY='tw_index2_tut_v2'")&&
   "Index 2 welcome should not overwrite brs48cr_tut");
 assert(lab.includes("TW_INDEX2_TUT_I18N")&&
        lab.includes("hubTutI===3")&&lab.includes("tw-hubtut-soon")&&
-       lab.includes("Karaoke⭐Time! · 5 shows por dia!"),
+       translations.includes("Karaoke⭐Time! · 5 shows por dia!"),
   "Index 2 missing Sora intro or Karaoke Time teaser");
 const previewSkin=read("index2-skin.css"),soraEmbedSkin=read("sora-embed.css"),tvSkin=read("tw-weekly-podium.css"),launchSkin=read("index2-launch-ui.css"),micCdSkin=read("tw-mic-cd-popup.css"),karaokePopupSkin=read("karaoke-popup.css"),adminToolsSql=read("supabase/sql/aplicado/admin_pet_visual_tools.sql");
 assert(lab.includes('href="./index2-skin.css?v=2"')&&
@@ -185,11 +186,11 @@ const privacyPage=read("privacidade.html");
 assert(!privacyPage.includes("Karaoke⭐Day!")&&
        (privacyPage.match(/Karaoke⭐Time!/g)||[]).length>=10,
   "Privacy page must describe only Karaoke Time, not the retired Sunday virtual room, in all five locales");
-assert(lab.includes("Ranking temporariamente indisponível")&&
-       lab.includes("Ranking temporarily unavailable")&&
-       lab.includes("Ranking temporalmente no disponible")&&
-       lab.includes("ランキングは一時的に利用できません")&&
-       lab.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
+assert(translations.includes("Ranking temporariamente indisponível")&&
+       translations.includes("Ranking temporarily unavailable")&&
+       translations.includes("Ranking temporalmente no disponible")&&
+       translations.includes("ランキングは一時的に利用できません")&&
+       translations.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
        !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
   "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
 const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop()",lab.indexOf("function hubDesenhar(){")));

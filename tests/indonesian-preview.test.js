@@ -7,6 +7,20 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const catalog=JSON.parse(read('translations/id/preview-catalog.json'));
+test('rótulos dinâmicos do hub acompanham PT → ID → EN → ID',()=>{
+  const src=read('hub.js');
+  const start=src.indexOf('function hubGameAbrir(nome){');
+  const end=src.indexOf('\nfunction hubCardsUI(){',start);
+  assert.ok(start>=0&&end>start);
+  const context={LANG:'pt'};
+  vm.runInNewContext(src.slice(start,end),context);
+  for(const [lang,expected] of [['pt','Abrir Sora Jump'],['id','Buka Sora Jump'],['en','Open Sora Jump'],['id','Buka Karaoke Time']]){
+    context.LANG=lang;
+    assert.equal(vm.runInNewContext('hubGameAbrir('+JSON.stringify(expected.includes('Karaoke')?'Karaoke Time':'Sora Jump')+')',context),expected);
+  }
+  assert.match(src,/if\(runBack\)runBack\.textContent='← '\+tr\('Início'\)/);
+  assert.match(src,/if\(dailyRun\)dailyRun\.textContent=tr\('📅 Corrida do dia'\)/);
+});
 test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
   for(const page of ['index.html','karaoke-time.html','sora-jump.html']){
     const src=read(page);

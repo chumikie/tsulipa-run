@@ -272,6 +272,10 @@ function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do te
   $('hubLoginBtn').title=dica; $('hubLoginBtn').setAttribute('aria-label',dica);
   $('hubLoginBtn').onclick=function(e){ e.stopPropagation(); contaEntrar(); };
 }
+function hubGameAbrir(nome){
+  var verbo={pt:'Abrir',en:'Open',es:'Abrir',ja:'開く',th:'เปิด',id:'Buka'};
+  return (verbo[LANG]||verbo.pt)+' '+nome;
+}
 function hubCardsUI(){
   hubLoginCtaUI();
   var pi = hubPetInfo(), soraPendente = twSoraMissaoPendente();
@@ -290,8 +294,8 @@ function hubCardsUI(){
   var twGamesTxt = window.TW_I18N.locale.twGamesTxt;
   twGamesTxt = twGamesTxt[LANG]||twGamesTxt.pt;
   $('hubCards').insertAdjacentHTML('beforeend',
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="'+escHtml(tr('Abrir Sora Jump'))+'">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
-    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(tr('Abrir Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-sora' + (soraPendente ? ' tw-alert-pink' : '') + '" data-ir="sora" aria-label="'+escHtml(hubGameAbrir('Sora Jump'))+'">' + gameLock + '<i aria-hidden="true">☁️</i><b translate="no">Sora<span class="tw-star">⭐</span>Jump!</b><small class="tw-hubgame-jp" lang="ja">ソラ・ジャンプ</small><small>'+escHtml(twGamesTxt[0])+'</small>'+(contaJ && soraPendente?'<em class="hubalerta" aria-hidden="true">!</em>':'')+'</button>'+
+    '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(hubGameAbrir('Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
   twKaraokeAtualizarCard();
@@ -537,6 +541,9 @@ function twRankVisibility(){
 }
 function hubMontar(){
   $('hubToque').textContent = tr('TOQUE PARA COMEÇAR');
+  var runBack=$('hubVolta'),dailyRun=$('playDaily');
+  if(runBack)runBack.textContent='← '+tr('Início');
+  if(dailyRun)dailyRun.textContent=tr('📅 Corrida do dia');
   var tvTitle=$('twRankTvModalTitle'),tvOpen=$('twRankTvAbrir'),tvClose=$('twRankTvFechar');
   var tvOpenLabels = window.TW_I18N.locale.tvOpenLabels;;
   var tvCloseLabels = window.TW_I18N.locale.tvCloseLabels;;

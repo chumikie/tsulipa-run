@@ -5,6 +5,21 @@
  else root.KaraokeRoomAutoMic=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
+ var SHOW_DURATION_MS=15000,SHOW_COUNT_IN_MS=4000,SHOW_PLAY_MS=SHOW_DURATION_MS-SHOW_COUNT_IN_MS;
+ function hash(value){var s=String(value),h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+ function simulatePerformance(run,now,actor,onEvent){
+  if(!run||!run.auto||!Array.isArray(run.notes)||!actor)return 0;
+  var p=actor._ktPersonality||{},prefs=p.musicPreferences||{},style=run.song&&run.song.style||'pop',affinity=Number.isFinite(prefs[style])?prefs[style]:.5;
+  var energy=Number.isFinite(p.energy)?p.energy:.5,curiosity=Number.isFinite(p.curiosity)?p.curiosity:.5;
+  var skill=Math.max(.64,Math.min(.95,.79+(affinity-.5)*.22+(energy-.5)*.08+(curiosity-.5)*.06)),id=actor.playerId||actor.nick||'npc',processed=0;
+  for(var i=0;i<run.notes.length;i++){
+   var n=run.notes[i];if(n.done)continue;var elapsed=now-n.at;if(elapsed<0)continue;
+   var chance=hash(id+'|'+style+'|'+n.idx+'|'+n.lane)/4294967295;
+   if(chance<skill){var delta=hash(id+'|timing|'+style+'|'+n.idx+'|'+n.lane)%131-65,perfect=Math.abs(delta)<=45;n.done=true;run.hits++;run.attempts++;run.combo++;run.maxCombo=Math.max(run.maxCombo,run.combo);run.score+=(perfect?100:65)+Math.min(20,run.combo)*2;run.feedback=(perfect?'PERFECT! ✨':'BOM! 💫')+' '+Math.abs(delta)+' ms';run.feedbackUntil=now+520;if(run.flash)run.flash[n.lane]=now+(perfect?220:110);if(onEvent&&run.combo%5===0)onEvent('combo');else if(onEvent&&run.combo%3===0)onEvent('hit');processed++;
+   }else if(elapsed>220){n.done=true;run.attempts++;run.combo=0;run.autoMisses=(run.autoMisses||0)+1;run.feedback='MISS ♪ A plateia segue torcendo!';run.feedbackUntil=now+520;if(onEvent&&run.autoMisses%2===1)onEvent('miss');processed++;}
+  }
+  return processed;
+ }
  function pickCandidate(candidates,recent,random){
   if(!Array.isArray(candidates)||!candidates.length)return null;
   var history=Array.isArray(recent)?recent:[],pool=candidates.length>1?candidates.filter(function(candidate){return history.indexOf(candidate)<0;}):candidates;
@@ -89,7 +104,7 @@
   }
   function beginPractice(){
    if(!singer||singer.phase!=='player_to_sofa')return;
-   singer.phase='singing';singer.endsAt=deps.nowMs()+65000;
+   singer.phase='singing';singer.endsAt=deps.nowMs()+SHOW_DURATION_MS;
    try{deps.startPractice();}catch(error){beginPlayerWait();if(deps.onError)deps.onError(error);return;}
    deps.switchMusicMode();deps.updateUI();
   }
@@ -151,5 +166,5 @@
   }
   return Object.freeze({tick:tick,beginSinger:beginSinger,finishSinger:finishSinger,updateMovement:updateMovement,getSinger:function(){return singer;}});
  }
- return Object.freeze({create:create,pickCandidate:pickCandidate,createRotation:createRotation});
+ return Object.freeze({create:create,pickCandidate:pickCandidate,createRotation:createRotation,simulatePerformance:simulatePerformance,SHOW_DURATION_MS:SHOW_DURATION_MS,SHOW_COUNT_IN_MS:SHOW_COUNT_IN_MS,SHOW_PLAY_MS:SHOW_PLAY_MS});
 });

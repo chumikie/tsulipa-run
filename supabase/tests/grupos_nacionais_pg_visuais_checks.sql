@@ -19,7 +19,7 @@ begin
       raise exception 'catálogo/pontos incorretos para %: %, %',k,found_price,found_points;
     end if;
   end loop;
-  if exists(select 1 from public.visual_preco('fundo_cafe')) then
+  if (select preco from public.visual_preco('fundo_cafe')) is not null then
     raise exception 'Café foi cadastrado como fundo cobrado novamente';
   end if;
   if not (select prosecdef from pg_proc where oid='public.salvar_avatar(jsonb)'::regprocedure)

@@ -91,7 +91,7 @@ assert.equal(personality.freeSofaSlot(seatActor,seatActors,seatSlots,null,null),
 const socialActors=cast.slice(0,4).map((actor,i)=>({id:actor.playerId,nick:actor.nick,x:100+i*30,y:100}));
 let socialClock=0,socialLines=[];
 const socialDirector=personality.createSocialDirector({now:()=>socialClock,allowed:()=>true,hasWalkers:()=>false,actors:()=>socialActors,singer:()=>null,canSocialize:()=>true,language:()=> 'pt',onDialogue:(actor,line,at)=>socialLines.push({actor,line,at})});
-socialDirector.reset();socialClock=481;
+socialDirector.reset();socialClock=721;
 assert.equal(socialDirector.shouldUpdate(),true,'social director wakes after its quiet interval');
 assert.equal(socialDirector.update(),true,'director starts a conversation when two NPCs are free');
 assert.equal(socialDirector.active(),true,'conversation state is tracked without timers');

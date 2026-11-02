@@ -12,6 +12,8 @@
  'use strict';
  var VIEWS = ['gigoia', 'liberdade', 'tailandia', 'harajuku', 'praia'];
  var NAMES = { gigoia:'Gigoia', liberdade:'Liberdade', tailandia:'Tailândia', harajuku:'Harajuku', praia:'Praia' };
+ // Música da semana: combina com a vista (mesma regra do banco em private.kt_musica_da_semana)
+ var SONGS = { gigoia:'chill', liberdade:'duo', tailandia:'normal', harajuku:'fast', praia:'gacha' };
  var BRT = 3 * 3600e3, WEEK = 7 * 864e5;
  var ANCHOR = Date.UTC(2026, 10, 1, 3);   // domingo, 01/11/2026, 0h de Brasília: semana da Liberdade
  var ANCHOR_INDEX = 1;
@@ -20,6 +22,7 @@
  function weekIndex(ms){ return Math.floor((ms - ANCHOR) / WEEK); }
  function viewFor(ms){ var i = (ANCHOR_INDEX + weekIndex(ms)) % VIEWS.length; return VIEWS[(i + VIEWS.length) % VIEWS.length]; }
  function nextChange(ms){ return ANCHOR + (weekIndex(ms) + 1) * WEEK; }
+ function songFor(ms){ return SONGS[viewFor(ms)]; }
  function isNight(ms){ var h = new Date(ms - BRT).getUTCHours(); return h < 6 || h >= 18; }
 
  // ---------- utilidades ----------
@@ -382,5 +385,5 @@
   return key;
  }
 
- return Object.freeze({ VIEWS:VIEWS.slice(), NAMES:NAMES, viewFor:viewFor, nextChange:nextChange, isNight:isNight, weekIndex:weekIndex, draw:draw });
+ return Object.freeze({ VIEWS:VIEWS.slice(), NAMES:NAMES, SONGS:SONGS, viewFor:viewFor, songFor:songFor, nextChange:nextChange, isNight:isNight, weekIndex:weekIndex, draw:draw });
 });

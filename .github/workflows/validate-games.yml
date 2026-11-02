@@ -36,6 +36,9 @@ on:
       - 'karaoke-room-views.js'
       - 'tests/karaoke-room-views.test.js'
       - 'tests/karaoke-my-position.test.js'
+      - 'tests/karaoke-song-week.test.js'
+      - 'supabase/sql/karaoke_musica_da_semana.sql'
+      - 'supabase/tests/karaoke_musica_pg_*'
       - 'supabase/sql/karaoke_minha_posicao.sql'
       - 'supabase/tests/karaoke_posicao_pg_*'
       - 'supabase/sql/admin_montar_idol.sql'
@@ -131,6 +134,9 @@ on:
       - 'karaoke-room-views.js'
       - 'tests/karaoke-room-views.test.js'
       - 'tests/karaoke-my-position.test.js'
+      - 'tests/karaoke-song-week.test.js'
+      - 'supabase/sql/karaoke_musica_da_semana.sql'
+      - 'supabase/tests/karaoke_musica_pg_*'
       - 'supabase/sql/karaoke_minha_posicao.sql'
       - 'supabase/tests/karaoke_posicao_pg_*'
       - 'supabase/sql/admin_montar_idol.sql'
@@ -213,6 +219,8 @@ jobs:
         run: node tests/karaoke-room-views.test.js
       - name: Validate Karaoke 'my position' outside the Top 5
         run: node tests/karaoke-my-position.test.js
+      - name: Validate Karaoke song of the week
+        run: node tests/karaoke-song-week.test.js
       - name: Validate Karaoke show keeps running with the stage in view on phones
         run: node tests/karaoke-show-visibility.test.js
       - name: Validate Center Run daily cap and server response contract
@@ -313,6 +321,8 @@ jobs:
         run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke 'my position' proposal against isolated PostgreSQL
         run: bash supabase/tests/karaoke_posicao_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Karaoke song of the week proposal against isolated PostgreSQL
+        run: bash supabase/tests/karaoke_musica_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify national groups migration and authenticated profile RPCs against isolated PostgreSQL
         run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:

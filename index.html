@@ -9715,11 +9715,14 @@ window.twKaraokeOnline={
  iniciar:function(resume,useTicket){var owner=contaJ&&String(contaJ.nick||'').toLowerCase(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
   var owner=contaJ&&String(contaJ.nick||'').toLowerCase();
-  return contaRpc('kt_run_finish',{p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null})
+  var base={p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null};
+  // Música da semana: envia a música; se o banco ainda não tiver o parâmetro p_song (PGRST202), repete sem ele.
+  return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);throw e;}):contaRpc('kt_run_finish',base))
    .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase())twRankRefreshAfterSora();return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  posicao:function(){return contaRpc('kt_minha_posicao');},
+ musicaSemana:function(){return contaRpc('kt_musica_semana');},
  // Plateia do dia: contas do site com Idol montado (todas podem ser sorteadas, inclusive as novas).
  plateia:function(){return contaRpc('vitrine_idols').then(function(d){return d&&Array.isArray(d.idols)?d.idols:[];});},
  cor:function(){return perfMinhaCor;}

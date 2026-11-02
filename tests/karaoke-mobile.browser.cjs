@@ -89,7 +89,7 @@ async function metrics(frame){
  const origin='http://127.0.0.1:'+server.address().port;
  for(const engine of (process.env.QA_WEBKIT?['chromium','webkit']:['chromium'])){
   browser=await ({chromium,webkit}[engine]).launch({headless:true,args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
-  for(const width of (process.env.QA_PHOTO_STANDALONE?[]:(process.env.QA_WIDTHS||'320,390,430,844,1440').split(',').map(Number))){
+  for(const width of (process.env.QA_POLAROID_ONLY?[Number(process.env.QA_POLAROID_ONLY)]:(process.env.QA_PHOTO_STANDALONE?[]:(process.env.QA_WIDTHS||'320,390,430,844,1440').split(',').map(Number)))){
    const context=await browser.newContext({viewport:{width,height:width===844?390:900},colorScheme:photoQA&&width===320?'light':'dark'});
    if(photoQA)await photoQA.install(context);
    await context.addInitScript(()=>{
@@ -171,7 +171,7 @@ async function metrics(frame){
      const posterClick=await frame.locator('body').evaluate(()=>{var index=window.__qaPosterIndex||0;window.__qaPosterIndex=index+1;return window.qaRoomControllers.openPoster(index);});
      assert.equal(posterClick.opened,true,'wall Polaroid '+(posterIndex+1)+' opens through the real canvas pointer event: '+JSON.stringify(posterClick));
      assert.equal(posterClick.posterCount,6,'the room exposes all six wall Polaroids');
-     await poster.waitFor({state:'visible'});await frame.locator('#ktPosterSave').waitFor({state:'visible'});
+     await poster.waitFor({state:'visible'});try{await frame.locator('#ktPosterSave').waitFor({state:'visible',timeout:8000});}catch(error){const exportState=await frame.locator('body').evaluate(()=>({open:!!document.getElementById('ktPosterDialog')?.open,link:(function(){var a=document.getElementById('ktPosterSave');return a?{hidden:a.hidden,href:a.getAttribute('href'),download:a.download}:null;})(),canvas:(function(){var c=document.getElementById('ktPosterPortrait');return c?{width:c.width,height:c.height}:null;})()}));assert.fail('Polaroid PNG link did not appear after toBlob/fallback: '+JSON.stringify({posterIndex,exportState,errors:errors.slice(-8),cause:String(error&&error.message||error)}));}
      const visual=await poster.evaluate(dialog=>{
       const backdrop=getComputedStyle(dialog,'::backdrop'),canvas=dialog.querySelector('#ktPosterPortrait'),ctx=canvas.getContext('2d');
       const data=ctx.getImageData(44,300,1,1).data;
@@ -190,6 +190,7 @@ async function metrics(frame){
      await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
     }
     assert.equal(new Set(posterColors).size,6,'each of the six Polaroids paints its own color palette');
+    if(process.env.QA_POLAROID_ONLY){results.push({engine,width,polaroidOnly:true,posterColors});console.log(engine,width,'Polaroid-only six portraits + PNG download + close/reopen passed');await context.close();continue;}
     const prep=await frame.locator('body').evaluate(()=>window.qaRoomControllers.prepareAutoMic());
     let atMic=false,lastRoomState=null;
     for(let tries=0;tries<180;tries++){

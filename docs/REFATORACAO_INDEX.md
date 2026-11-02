@@ -32,7 +32,7 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 | 1 | Backstage⭐Pet! | `pet.js`, `pet.css` | Extraído (02/11/2026). 121 funções + 56 tabelas; 83 linhas de CSS. |
 | 2 | Perfil | `perfil.js`, `perfil.css` | Extraído (02/11/2026). 97 funções + 22 tabelas; 130 linhas de CSS. Modo admin fica para a Etapa 6. |
 | 3 | Star⭐Gacha! | `gacha.js`, `gacha.css` | Extraído (02/11/2026). 15 funções + 4 tabelas (giro, card do Idol, últimos cards e zoom); 19 linhas de CSS. O card do Gacha na tela de início fica para a etapa do Hub. |
-| 4 | Moon⭐Duo | — | Pendente |
+| 4 | Moon⭐Duo! | `duo.js`, `duo.css` | Extraído (02/11/2026). 51 funções + 15 tabelas (desenho, telas, abas, lojinha, itens travados, aviso); 56 linhas de CSS. |
 | 5 | Encontro do dia | — | Pendente |
 | 6 | Administração | — | Pendente (esperar a PR #60, que mexe no admin) |
 | 7 | Hub | — | Pendente |
@@ -45,6 +45,11 @@ Objetivo: tirar do `index.html` os grandes blocos de funcionalidade, um por vez,
 - `drawPet` e os desenhos de pet usados também pelo Center⭐Run e pelo Perfil (ficam para a etapa do
   Center⭐Run, por serem compartilhados).
 - `pet-sync.js` continua sendo a única camada de sincronização.
+
+### Etapa 4 — conferência antes × depois
+- Janela do Duo e as abas Cena, Cenário, Expressões e Presente (dados de teste, sem banco), em 390 px e
+  1280 px: estilos calculados idênticos, fora o balanço animado dos botões da TV e do microfone; nenhum erro.
+  Testes de navegador do CI (tradução, acessórios, Karaoke) conferidos só no GitHub nesta etapa.
 
 ### Etapa 3 — conferência antes × depois
 - Janela do Gacha, giro (resultado com card), zoom do card e últimos cards no perfil (dados de teste, sem banco),

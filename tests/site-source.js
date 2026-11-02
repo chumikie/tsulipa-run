@@ -3,7 +3,7 @@
 "use strict";
 const fs = require("node:fs");
 const path = require("node:path");
-const MODULOS = ["pet.js", "perfil.js", "gacha.js", "pet.css", "perfil.css", "gacha.css"];   // na ordem em que o index.html carrega
+const MODULOS = ["pet.js", "perfil.js", "gacha.js", "duo.js", "pet.css", "perfil.css", "gacha.css", "duo.css"];   // na ordem em que o index.html carrega
 module.exports = function siteSource(){
   const root = path.join(__dirname, "..");
   return [fs.readFileSync(path.join(root, "index.html"), "utf8")]

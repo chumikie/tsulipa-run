@@ -1,4 +1,4 @@
-// Refatoração da PR #62: módulos extraídos do index.html (Etapa 1: pet; Etapa 2: perfil; Etapa 3: gacha).
+// Refatoração da PR #62: módulos extraídos do index.html (Etapa 1: pet; Etapa 2: perfil; Etapa 3: gacha; Etapa 4: duo).
 // Garante que a extração continua "mecânica":
 //  1. pet.js só DECLARA funções e tabelas fixas (não executa nada ao carregar),
 //     então carregar antes do script principal reproduz o hoisting de quando tudo morava no mesmo arquivo;
@@ -18,7 +18,8 @@ const iMain = html.indexOf("window.TW_JOGOS_SEM_LOGIN = false;");
 const MODULOS = [
   { js: "pet.js", css: "pet.css", tem: ["petOpenUI", "petPay", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
-  { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] }
+  { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
+  { js: "duo.js", css: "duo.css", tem: ["duoAbrir", "duoRender", "duoComprar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] }
 ];
 let anterior = html.indexOf('<script src="./pet-sync.js?v=');
 const vistos = new Set();

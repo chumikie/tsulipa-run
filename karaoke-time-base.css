@@ -156,6 +156,19 @@ html.tw-karaoke-embed #krVolta,html.tw-karaoke-embed #krHubBtn,html.tw-karaoke-e
 @media(max-width:620px){#ktPopup{padding:7px;border-radius:15px;max-height:99dvh}.krwrap{padding:10px 8px!important}.kt-hosttop{margin:0 2px 6px}.krtop{gap:8px}.krsub{font-size:10px}.krtop #ktStart{font-size:11px;padding:9px 13px}.krtop #krRelogio{display:none}.kt-availability{padding:8px 10px;margin:6px 0 10px;font-size:10px;gap:4px 8px}.kt-availability>div{gap:7px}.kt-availability small{font-size:9px}#ktLimitPips{font-size:13px;letter-spacing:1px}.kt-playing:not(.kt-mobile-overview) .krpalco{aspect-ratio:auto;height:292px}.kt-playing:not(.kt-mobile-overview) #krCv{width:800px!important;height:450px!important;max-width:none;position:absolute;top:-14px;left:50%;transform:translateX(-50%)}.kt-playing #ktViewMobile{display:inline-flex}
  /* Dentro do site (karaoke-mobile.js põe som/pausa/timing/câmera numa faixa acima da cena):
     o recorte passa de 48 px por lado para o centro de 720 dos 960 px lógicos (120 px por lado). */
+ /* Dentro do site: a sala vem logo abaixo de Trilha / Jogar ritmo (e do relógio);
+    a dica e a linha de acerto descem para depois do ranking semanal (faixa das tentativas e ranking ficam colados na sala). */
+ html.kt-no-site .krwrap{display:flex;flex-direction:column}
+ html.kt-no-site .krwrap>*{order:6}
+ html.kt-no-site .krwrap>.kt-rhythm-controls{display:contents}
+ html.kt-no-site .krwrap .kt-toolbar{order:0}
+ html.kt-no-site .krwrap>#krPalco{order:1}
+ html.kt-no-site .krwrap #ktHint,html.kt-no-site .krwrap #ktTimingFeedback{order:6}
+ html.kt-no-site .krwrap #ktHint{margin-top:8px}
+ /* Em cima fica só Trilha + Jogar ritmo; o recorde pessoal continua na Biblioteca musical, abaixo. */
+ html.kt-no-site #ktSongRecord{display:none!important}
+ html.kt-no-site .kt-toolbar label{flex:1 1 auto;min-width:0}
+ html.kt-no-site .kt-toolbar select{flex:1 1 auto;min-width:0;width:100%;max-width:none}
  html.kt-no-site body:not(.kt-mobile-overview) .kt-room-viewport{aspect-ratio:720/540}
  html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile #krCv{width:calc(100% * 960 / 720)!important}
  body .kt-toolbar #ktSession{flex-wrap:wrap;justify-content:center;row-gap:6px;max-width:100%}.kt-keys{position:sticky;bottom:0;z-index:10;background:var(--card);padding:8px 3px;border-radius:14px;border:1px solid var(--tw-kr-edge);box-shadow:0 -3px 12px rgba(15,6,36,.2);gap:7px}.kt-keys .krb{min-height:52px;font-size:15px;min-width:0;flex:1;border-radius:12px;padding:7px}.kt-playing .krwrap{display:flex;flex-direction:column}.kt-playing .krtop{order:0}.kt-playing #ktAvailability{order:1}.kt-playing .krpalco{order:2}.kt-playing #ktKeys{order:3}.kt-playing #ktSession{order:4}.kt-playing #ktHint{order:5}.kt-playing #ktAudience{order:6}.kt-playing .kt-customize{order:7}.kt-playing .kt-foot{order:9}.kt-playing .kt-daily-test{order:10}.kt-rank-grid{grid-template-columns:1fr}.kt-rank-card[data-mobile-active="false"]{display:none}.kt-rank-tabs{display:flex;gap:5px;margin:10px 0}.kt-rank-tabs .krb{flex:1;min-height:39px;font-size:11px;border:1px solid var(--tw-kr-edge)}.kt-rank-tabs [aria-pressed="true"]{background:linear-gradient(90deg,#7b3ff0,#d55baf);color:white}.kt-weekly-heading{align-items:flex-start;flex-direction:column;gap:5px}.kt-weekly h2{font-size:16px}.kt-rank-card li{font-size:12px;min-height:52px}.kt-rank-card li>strong{font-size:13px}.kt-rank-face{width:38px;height:38px}.kt-rank-card h3{font-size:14px}.kt-closed .krbox{padding:14px 12px;max-width:310px}.kt-closed h2{font-size:16px}.kt-closed p{font-size:11px}.kt-closed-icon{font-size:27px!important}.kt-customize summary{font-size:11px}}

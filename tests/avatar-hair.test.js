@@ -107,6 +107,6 @@ for(const st of ['uma','dupla','luzes','escondida']){ops=[];hair.mecha(g,{hair2:
 for(const d of ['antena','coracao']){ops=[];hair.bicolor(g,{hair:'#335577',det:d},0,0,'');assert(ops.length>2,'detalhe '+d+' desenha');}
 const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 assert(/PERF_CAMPOS = \[[^\]]*'mecha'/.test(index),'perfil publica o estilo da mecha');
-assert(karaoke.includes("'gl','mecha'].forEach")&&karaoke.includes('streak:1,mecha:1,')&&karaoke.includes('String(c.mecha)'),'Karaoke mantém o estilo da mecha (avatar público e cache do sprite)');
+assert(karaoke.includes("['back','front','det','out','hat','gl','mecha'].forEach")&&karaoke.includes('String(c.mecha)'),'Karaoke normaliza mecha no avatar público e preserva no cache do sprite');
 assert(day.includes('streak:1,mecha:1,')&&online.includes("'gl','mecha'].forEach")&&sora.includes("'gl','mecha'];"),'outras telas mantêm o estilo da mecha');
 console.log('✓ Cortes extras (ondulado curto, curto bicolor, repicado): camadas 2D, valores salvos e paridade com o Karaoke');

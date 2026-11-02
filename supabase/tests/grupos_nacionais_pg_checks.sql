@@ -68,8 +68,8 @@ begin
   if r->>'erro' <> 'grupo' then raise exception 'grupo inválido aceito para aviso: %',r; end if;
   notices := public.admin_avisos_grupo();
   if json_array_length(notices) <> 2
-     or not exists(select 1 from json_array_elements(notices) x where x->>'grupo'='SKU48' and x->>'texto'='Aviso exclusivo SKU48')
-     or not exists(select 1 from json_array_elements(notices) x where x->>'grupo'='BRS48' and x->>'texto'='Aviso exclusivo BRS48') then
+     or not exists(select 1 from json_array_elements(notices) as x(value) where x.value->>'grupo'='SKU48' and x.value->>'texto'='Aviso exclusivo SKU48')
+     or not exists(select 1 from json_array_elements(notices) as x(value) where x.value->>'grupo'='BRS48' and x.value->>'texto'='Aviso exclusivo BRS48') then
     raise exception 'admin_avisos_grupo não devolveu os avisos por grupo: %',notices;
   end if;
   r := public.salvar_grupo('SKU48','U');

@@ -42,18 +42,18 @@ create table public.admins (user_id uuid primary key);
 insert into public.admins(user_id) values ('50000000-0000-4000-8000-000000000001');
 insert into public.config(chave,valor) values ('aviso',to_jsonb('Aviso global'::text));
 
--- Mesmo contrato e âncora de preço da função pública consultada no Supabase.
+-- Mesmo contrato e âncora de preço das funções públicas consultadas no Supabase.
 create or replace function public.eh_admin()
 returns boolean language sql stable security definer set search_path to 'public'
-as $ select exists (select 1 from public.admins where user_id = auth.uid()) $;
+as $eh_admin$ select exists (select 1 from public.admins where user_id = auth.uid()) $eh_admin$;
 
 create or replace function public.visual_preco(p_key text, OUT preco integer, OUT pontos integer)
 returns record language sql immutable set search_path to 'public'
-as $
+as $visual_preco$
   select v.preco, v.pontos from (values
     ('roupa_brasil', 150, 0), ('roupa_pijama', 180, 0)
   ) as v(k, preco, pontos) where v.k = p_key;
-$;
+$visual_preco$;
 
 -- Assinaturas reduzidas, mas com as mesmas âncoras que a migração substitui
 -- nas RPCs existentes em produção. O teste exige que o patch dinâmico ocorra.

@@ -273,7 +273,7 @@ const rhythmEnd=html.indexOf('function krRhythmLabels(){',rhythmStart);
 const rhythm=html.slice(rhythmStart,rhythmEnd);
 assert(rhythmStart>=0&&rhythmEnd>rhythmStart,'Karaoke rhythm engine should remain inspectable');
 assert([108,132,90,116,120,124,84].every(bpm=>rhythm.includes('bpm:'+bpm+',')),'All seven generated rhythm songs should keep their defined BPM values');
-assert(rhythm.includes('step=60000/song.bpm/2')&&rhythm.includes('run.total=Math.floor(59000/step)')&&rhythm.includes('if(now-run.start>=60000)'),'Generated beat subdivisions and the one-minute show duration must remain tied to each song BPM');
+assert(rhythm.includes('step=60000/song.bpm/2')&&rhythm.includes('run.total=Math.floor((run.durationMs-1000)/step)')&&rhythm.includes('if(now-run.start>=run.durationMs)'),'Generated beat subdivisions and the one-minute show duration must remain tied to each song BPM');
 assert(rhythm.includes('function ktPrepararRelogioAudio(')&&rhythm.includes('pending.then(arm,arm)')&&rhythm.includes('target.audioOrigin=audioReady?ctx.currentTime+prepareMs/1000-elapsed/1000:0'),'The song countdown and note/audio timeline must wait for AudioContext resume and share a single origin');
 assert(rhythm.includes('acResumePromise')&&rhythm.includes("if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||AC.state!=='running')return;"),'Audio scheduling must not run against a suspended or unsynchronized AudioContext');
 assert(rhythm.includes('function ktOutputLatencyMs()')&&rhythm.includes('Number.isFinite(AC.outputLatency)')&&rhythm.includes('return run.start+(AC.currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();'),'Rhythm judgement should use the audio clock with one consistent output-latency correction');

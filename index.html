@@ -625,7 +625,8 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 .admconta{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:8px 12px!important;border-radius:12px;background:var(--chip)!important;text-decoration:none!important}
 .admconta small{font-size:11.5px;color:var(--sub);font-weight:600}
 .hubenc{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;margin:12px 0 4px;border:0;border-radius:18px;padding:12px 16px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(90deg,#ffb347,#ff6fb5,#9b30d9);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(255,111,181,.3)}
-.hubcfg .hubloginbox{padding:4px}.hubbloco{margin-top:14px}.hubblocot{margin:0;padding:0 4px;text-align:left;font-size:17px;font-weight:900;color:var(--b1)}.hubblocot small{margin-left:6px;font-size:11px;font-weight:700;opacity:.8}.hubhoje .hubpainel{margin-top:8px}.hubhojelinha{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.hubhojelinha .hubenc{margin:0;width:auto;flex-direction:column;flex-wrap:nowrap;gap:2px;padding:10px 8px;text-align:center}#hub .hubhojelinha .hubenc .tw-hubgame-jp{flex-basis:auto;margin:0}.hubblocot .tw-jpsub{display:inline!important}.hubmusica{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:18px;padding:10px 8px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b3ff0,#ff6fb5);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(123,63,240,.25)}.hubmusica small{opacity:.92;font-weight:600}
+.hubcfg .hubloginbox{padding:4px}.tw-rank-tabs{display:flex;gap:5px;justify-content:center;flex-wrap:nowrap;margin:6px 0 10px}.tw-rank-tabs button{border:0;border-radius:99px;padding:6px 9px;font:inherit;font-size:11px;font-weight:800;color:var(--sub);background:var(--card);box-shadow:0 2px 0 rgba(123,63,240,.15);cursor:pointer}.tw-rank-tabs button[aria-selected="true"]{background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff}#hub #twRankHall #twRankColumns{display:block}#hub #twRankColumns .tw-rank-game{max-width:420px;margin:0 auto}
+.hubbloco{margin-top:14px}.hubblocot{margin:0;padding:0 4px;text-align:left;font-size:17px;font-weight:900;color:var(--b1)}.hubblocot small{margin-left:6px;font-size:11px;font-weight:700;opacity:.8}.hubhoje .hubpainel{margin-top:8px}.hubhojelinha{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.hubhojelinha .hubenc{margin:0;width:auto;flex-direction:column;flex-wrap:nowrap;gap:2px;padding:10px 8px;text-align:center}#hub .hubhojelinha .hubenc .tw-hubgame-jp{flex-basis:auto;margin:0}.hubblocot .tw-jpsub{display:inline!important}.hubmusica{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:18px;padding:10px 8px;font:inherit;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b3ff0,#ff6fb5);box-shadow:0 4px 0 rgba(44,26,143,.2),0 8px 18px rgba(123,63,240,.25)}.hubmusica small{opacity:.92;font-weight:600}
 .hubloginbox[hidden]{display:none!important}.hubcfg .hublogin{display:inline-flex;align-items:center;gap:5px;height:25px;line-height:1;color:#3c2a8f}.hublogin svg{width:13px;height:13px;flex:none}.hublogin:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 .hubenc small{opacity:.9;font-weight:600}.hubenc.feito{background:var(--card);color:var(--ink)}.hubenc.feito small{color:var(--sub)}
 .encov{z-index:24}.encp{width:min(100%,400px);text-align:center;position:relative}
@@ -9670,6 +9671,8 @@ function twRankDrawAvatars(){
   }catch(e){cv.style.display='none';}
  });
 }
+var twRankHallTab=0;
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-tw-rank-tab]');if(!b)return;twRankHallTab=+b.getAttribute('data-tw-rank-tab');twRankRender();var n=document.querySelector('[data-tw-rank-tab="'+twRankHallTab+'"]');if(n)n.focus({preventScroll:true});});
 function twRankRender(){
  twRankCheckWeek();
  var tv=$('twRankTv'),screen=$('twRankTvScreen'),buttons=$('twRankTvButtons'),hall=$('twRankColumns'),hallWrap=$('twRankHall');
@@ -9695,7 +9698,11 @@ function twRankRender(){
   return '<button type="button" data-tw-rank="'+i+'" aria-pressed="'+(twRankData.active===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
  }).join('');
  var note=$('twRankWeekNote');if(note)note.textContent=twRankData.online?twRankWord(6):twRankWord(10);
- hall.innerHTML=twRankGames.map(function(k){
+ // Top Idols em abas: um jogo por vez (02/11/2026)
+ if(!(twRankHallTab>=0&&twRankHallTab<twRankGames.length))twRankHallTab=0;
+ hall.innerHTML='<div class="tw-rank-tabs" role="tablist">'+twRankGames.map(function(k,i){
+  return '<button type="button" role="tab" data-tw-rank-tab="'+i+'" aria-selected="'+(twRankHallTab===i)+'">'+k[1]+' <span>'+k[2]+'</span></button>';
+ }).join('')+'</div>'+twRankGames.filter(function(k,i){return i===twRankHallTab;}).map(function(k){
   var list=twRankData[k[0]];
   var ready=k[0]==='center'?twRankData.centerOK:twRankData.online;
   return '<div class="tw-rank-game"><h3>'+k[1]+' '+k[2]+'</h3>'+

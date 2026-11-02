@@ -368,7 +368,8 @@ const profileEnd=main.indexOf('perfOv.addEventListener(\'click\'',profileStart);
 const profileUi=main.slice(profileStart,profileEnd);
 assert(profileUi.includes('!perfilTemEmoji || !perfilTemCor')&&profileUi.includes('id="perfProfileStyleCta"'),'The personal profile should prompt for missing emoji or color without showing the prompt on complete profiles');
 assert(profileUi.includes('target.scrollIntoView')&&profileUi.includes('target.focus({ preventScroll:true })')&&main.includes('.perfprofile-nudge{'),'The profile prompt should guide the player directly to the emoji/color editor');
-assert(main.includes('Make your profile feel more like you!')&&main.includes('TsuLiPa⭐World identity'),'Profile completion prompts should include translations');
+const i18n=fs.readFileSync(path.join(__dirname,'..','tw-i18n.js'),'utf8');
+assert(main.includes('tw-i18n.js')&&i18n.includes('Make your profile feel more like you!')&&i18n.includes('TsuLiPa⭐World identity'),'Profile completion prompts should include translations');
 assert(vercel.includes('"source": "/index2.html"')&&vercel.includes('"source": "/index2"')&&vercel.includes('"destination": "/"'),'Legacy homepage aliases should redirect at the server before the intermediate HTML page renders');
 assert(main.includes('<a href="/" class="logo" title="Página inicial">')&&!main.includes('<a href="javascript:location.reload()" class="logo"'),'The homepage logo should navigate to the canonical home route instead of invoking a same-page reload');
 

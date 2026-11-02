@@ -64,7 +64,7 @@ assert(main.includes("typeof twIndex2StageVisible!=='undefined'&&!twIndex2StageV
 assert(main.includes('function duoBuscaCancelar()')&&main.includes('duoBuscaCancelar();var msg=')&&main.includes('duoLoadSeq++;duoOv.hidden = true;')&&main.includes('seq!==duoBuscaSeq||duoOv.hidden'),'Moon Duo search and guest lookup should not update a closed panel');
 assert(main.includes('insConferirToken++')&&main.includes('insCancelar()')&&main.includes('token!==insConferirToken'),'Pending badge notifications should be invalidated when the account signs out');
 assert(main.includes('painelAtual=pedidoRecado===perfPedido&&!perfOv.hidden&&perfAtual&&perfAtual.nick===alvo')&&main.includes('function(){return !perfOv.hidden&&perfMeu&&perfilOrigem===perfPedido;}')&&main.includes('if(!gachaOv.hidden)gachaCardsCarregar();'),'Deferred profile and gacha UI callbacks should not reopen or update closed panels');
-assert(html.includes('b._ktResultReaction===token'),'A delayed Karaoke reaction must not overwrite a newer character pose');
+assert(html.includes('showReactionActive=!!(j._ktShowReaction&&j._ktShowReaction.until>t)')&&!html.includes('setTimeout(function(){if(b._ktResultReaction===token)'),'Karaoke audience reactions expire on the room clock and cannot overwrite a newer pose through delayed callbacks');
 const encounterStart=main.indexOf('function encLoop(ms){');
 const encounterEnd=main.indexOf('\nfunction encToqueBolhas(',encounterStart);
 assert(encounterStart>=0&&encounterEnd>encounterStart,'The encounter animation loop should remain inspectable');

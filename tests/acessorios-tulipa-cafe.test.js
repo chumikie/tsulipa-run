@@ -24,10 +24,15 @@ test('coroa, torrada e chapéu têm itens e preços oficiais sem duplicar acess�
 test('desenhos Canvas 2D respeitam camada do cabelo e paleta TsuLiPa + perfil', () => {
   assert.match(html, /var tc=\['#9b30d9','#b6ff3b','#4169e1',/);
   assert.match(html, /test\(c\.luz\|\|''\)\?c\.luz/);
-  assert.match(html, /g\.arc\(x\+15,y\+7,12/);
-  assert.match(html, /g\.translate\(x\+17,y\+24\);g\.rotate\(-\.32\)/);
+  assert.match(html, /g\.bezierCurveTo\(x\+7,y-2,x\+23,y-2,x\+28,y\+8\)/);
+  assert.match(html, /E\(fx-3\.5,fy\+2\.8,2\.6,1\.25,-\.55\)/);
+  assert.match(html, /g\.translate\(x\+15\.5,y\+24\);g\.rotate\(-\.24\)/);
+  assert.match(html, /boca segura a ponta do pão/);
+  assert.match(html, /g\.ellipse\(x\+15,y\+4\.4,15\.2,2\.25/);
   assert.ok(html.indexOf("if(d==='torrada')") > html.indexOf("if(expr===1)"), 'torrada fica sobre a boca');
   assert.ok(html.indexOf("if(hacc==='palha')") > html.indexOf('TWAvatarHair.bicolor'), 'chapéu sobre o cabelo');
+  assert.match(html, /id="perfLojaAcessorios"/);
+  assert.match(html, /boxAcc\.innerHTML=cards\(L\.filter\(function\(it\)\{return it\[4\]==='acc';\}\)\)/);
 });
 
 test('café reaproveita desenho e compra duo_cafe, sem fundo_cafe pago em duplicidade', () => {

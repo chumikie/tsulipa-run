@@ -12,6 +12,13 @@ const server=http.createServer((req,res)=>{
   if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
   fs.readFile(file,(err,data)=>{
     if(err){res.writeHead(404).end();return;}
+    if(name==='index.html'){
+      const marker='var admIdol=null;';
+      const hook="window.__qaAdminIdol={setRpc:function(fn){contaRpc=fn;perfAbrir=function(){};},mount:function(raw){perfAtual={nick:raw.nick};perfOv.hidden=false;var f=document.getElementById('admForm');if(!f){f=document.createElement('div');f.id='admForm';perfOv.appendChild(f);}f.hidden=false;f.innerHTML=admIdolFormHtml(raw);admIdolPrev();}};\\n";
+      const html=data.toString();
+      assert(html.includes(marker),'Admin Idol injection point moved');
+      data=Buffer.from(html.replace(marker,hook+marker));
+    }
     res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
     res.end(data);
   });
@@ -24,7 +31,7 @@ const setup=()=>{
   const write=d=>sessionStorage.setItem(key,JSON.stringify(d));
   window.confirm=()=>true;
   window.__qaIsAdmin=true;
-  contaRpc=function(name,args){
+  window.__qaRpc=function(name,args){
     const d=read();
     if(name==='admin_idol_info')return Promise.resolve({ok:true,nick:d.nick,c:d.c,auto:d.auto,best_idol:15000,visuais:d.visuais});
     if(name==='admin_montar_idol'){
@@ -37,16 +44,10 @@ const setup=()=>{
     }
     return Promise.reject(new Error('Unexpected RPC '+name));
   };
-  perfAbrir=function(){}; // Prevent unrelated profile network requests after successful save.
-  perfAtual={nick:'IdolFicticio'};
-  perfOv.hidden=false;
-  let form=document.getElementById('admForm');
-  if(!form){form=document.createElement('div');form.id='admForm';perfOv.appendChild(form);}
-  form.hidden=false;
+  window.__qaAdminIdol.setRpc(window.__qaRpc);
   window.__qaOpenIdol=async()=>{
-    const data=await contaRpc('admin_idol_info',{p_nick:'IdolFicticio'});
-    form.innerHTML=admIdolFormHtml(data);
-    admIdolPrev();
+    const data=await window.__qaRpc('admin_idol_info',{p_nick:'IdolFicticio'});
+    window.__qaAdminIdol.mount(data);
   };
   window.__qaGetState=()=>read();
 };

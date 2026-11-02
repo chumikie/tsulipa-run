@@ -356,10 +356,12 @@ async function waitForRoomMode(frame, expectMobile){
    if(!baseline&&width<=620){
     await frame.locator('#ktEnd').click();
     await p.setViewportSize({width:1000,height:900});
+    await waitForRoomMode(frame,false);
     const restored=await metrics(frame);
     assert.equal(restored.toolsParent,'krpalco','Desktop restores original sound parent');
     assert(Math.abs(restored.scene.w-restored.canvas.w)<1,'Resize to desktop removes crop');
     await p.setViewportSize({width,height:900});
+    await waitForRoomMode(frame,true);
     const mobileAgain=await metrics(frame);
     assert(Math.abs(mobileAgain.crop.left-48)<.1,'Resize back restores mobile crop');
     assert.equal(await frame.locator('.kt-room-tools #krMute').count(),1,'No duplicate sound button after resize');

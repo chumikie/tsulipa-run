@@ -87,6 +87,7 @@ env.krLoungeReset();
 assert(env.krBots.every(bot=>bot._ktPersonality&&typeof bot._ktPersonality.type==='string'),'the lounge reset assigns a stable personality to every member');
 assert(new Set(env.krBots.map(bot=>bot._ktPersonality.type)).size>=5,'the cast receives a varied mix of individual temperaments');
 assert.equal(env.krLoungeActors.length,0);
+assert.equal(typeof env.krLoungePersonality.decideActivity,'function','the existing personality system also directs lounge activities');
 startFirstEligibleWalker();
 assert.equal(env.krLoungeActors.length,1,'only one Idol walks at a time, preventing paths from crossing');
 assert.equal(new Set(env.krLoungeActors).size,1,'the active walker is a single cast member');

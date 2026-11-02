@@ -34,5 +34,15 @@ expect "$(q -c "select count(*) from public.admin_log where acao='visual_montar'
 expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/luzes/antena}'::jsonb,'mecha antena')")" '"ok":true' 'mecha Antena do editor aceita pelo banco'
 expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/luzes/coracao}'::jsonb,'mecha coracao')")" '"ok":true' 'mecha Coração do editor aceita pelo banco'
 expect "$(q -c "select nuvem_visual #>> '{cu2,mecha}' from public.players where nick='Novata';")" 'coracao' 'mecha Coração persiste no perfil fictício'
+# A Tailândia é oferecida pela lojinha, mas só pode ser aplicada quando já comprada.
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/rock/tailandia}'::jsonb,'roupa sem compra')")" '"erro":"nao_comprada"' 'Tailândia não comprada é recusada'
+expect "$(q -c "select nuvem_visual #>> '{cu2,out}' from public.players where nick='Novata';")" 'rock' 'rejeição preserva roupa anterior'
+q -q -c "update public.players set visuais=array_append(visuais,'roupa_tailandia') where nick='Novata';"
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/rock/tailandia}'::jsonb,'roupa comprada')")" '"ok":true' 'Tailândia comprada é aceita'
+expect "$(q -c "select avatar #>> '{c,out}' from public.players where nick='Novata';")" 'tailandia' 'Tailândia gravada no avatar fictício'
+expect "$(q -c "select nuvem_visual #>> '{cu2,out}' from public.players where nick='Novata';")" 'tailandia' 'Tailândia gravada na nuvem fictícia'
+expect "$(rpc "$tsu" "public.admin_idol_info('Novata')")" '"out":"tailandia"' 'reabertura do editor lê a roupa salva'
+expect "$(rpc "$tsu" "public.admin_idol_info('Novata')")" '"auto":true' 'reabertura preserva sinalizador automático'
+expect "$(q -c "select avatar #>> '{a}' from public.players where nick='Novata';")" 'mic' 'item de mão preservado após reabertura'
 expect "$(q -c "select has_function_privilege('anon','public.admin_montar_idol(text,jsonb,text)','execute');")" 'f' 'anon sem acesso'
 echo "✓ admin_montar_idol: regras e gravação conferidas"

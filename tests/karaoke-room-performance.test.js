@@ -14,4 +14,10 @@ has('busy=krHandBusy(j)&&!walking&&!j.no_mic','Singing avatars must not be froze
 has('talking||j.no_mic?1','Singing and spoken balloons must activate the open-mouth expression');
 has('touchAge>=0&&touchAge<1?6','Speaker-box jumps must activate a temporary expressive face');
 has('if(ex===4||ex===5)ex=2','The renderer must preserve expression 1 for singing/speech');
+has('mirror=walking?j._ktLoungeFacing<0:socialActive?j._ktSocialTargetX<j.x:j.x>480','The avatar facing direction is resolved once for movement and social reactions');
+has('handSide=mirror?-1:1','The held-item side is derived from the exact avatar mirror transform');
+has('krDesenharAcessorioSala(x,j,baseY,t,busy?\'v\':pose,handSide)','Snacks, pandeiros and hand props share the avatar facing direction');
+has('krPontoMaoSala(j,baseY,0,handSide,\'v\')','Drinks are anchored to the same mirrored hand as the avatar');
+has('side=sideOverride||(j.x>480?-1:1)','Accessory drawing accepts the resolved hand side instead of recomputing room-side');
+has('&&!b.drink&&!b.itemSala&&!b.snackSala','A drinking NPC is not selected for an autonomous walk or mic performance');
 console.log('Karaoke room performance: singer microphone/profile color, pillow colors, slower sofa route, singing choreography and reactive expressions passed');

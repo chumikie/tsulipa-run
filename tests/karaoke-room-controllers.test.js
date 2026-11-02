@@ -20,7 +20,12 @@ assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-roo
 assert(autoSource.includes("singer.phase='player_to_sofa'")&&autoSource.includes("singer.phase='player_wait_departure'")&&autoSource.includes('deps.movePlayerToSeat')&&autoSource.includes('deps.movePlayerToWait'),'auto-mic choreography protects the sofa handoff');
 assert(html.includes('function krPlanearRotaSofa(x,y)')&&html.includes('function krPlanearRotaEspera(x,y)'),'player uses dedicated collision-safe sofa routes');
 assert(/var krVelocidadeAlvo=krMeuVoltandoAoMic\?6\.0/.test(html),'return to microphone uses a faster sprint');
-assert(html.includes('eligible[Math.floor(Math.random()*eligible.length)]'),'random singer selection is used by the manual call action');
+assert(html.includes('function krLoungeEscolherVariado(candidates)')&&html.includes('krLoungeRecentWalkers.indexOf(candidate)<0'),'lounge walker selection avoids recent repeats when alternatives exist');
+assert(html.includes('krLoungeRecentWalkers.length=0;krLoungeCastRef=krBots;'),'walker rotation resets only when the cast is rebuilt');
+assert.equal(AutoMic.pickCandidate(['A','B','C'],['A','B'],()=>0),'C','automatic singer selection excludes the two most recent singers when alternatives exist');
+assert.equal(AutoMic.pickCandidate(['A','B'],['A'],()=>0),'B','the next singer changes even when the injected random value repeats');
+assert.equal(AutoMic.pickCandidate(['A'],['A'],()=>0),'A','the only eligible singer remains selectable');
+assert.equal(AutoMic.pickCandidate([],[],()=>0),null,'an empty singer pool remains empty');
 assert(html.includes('KD_LUGARES=10')&&html.includes('members.length===10'),'daily room has ten decorative members');
 assert(html.includes('selectPolaroids(catalog,selfId,active.day,active.members,guests'),'Polaroids select guests outside the current room roster');
 assert(html.includes('krT+600+Math.random()*180'),'all seated members get an extended shared rest');

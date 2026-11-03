@@ -74,6 +74,7 @@
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
 <link rel="stylesheet" href="./album.css?v=1">
+<link rel="stylesheet" href="./fa.css?v=1">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -342,9 +343,10 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./perfil.js?v=4"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=1"></script>
+<script src="./fa.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=7"></script>
+<script src="./hub.js?v=8"></script>
 <script src="./shop.js?v=3"></script>
 <script src="./jornal.js?v=9"></script>
 <script src="./banner.js?v=4"></script>
@@ -2174,6 +2176,13 @@ gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window 
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
+// Pedidos de fã (fa.js)
+var faOv = document.createElement('div');
+faOv.className = 'ov faov tw-window-overlay'; faOv.id = 'faOv'; faOv.hidden = true;
+faOv.innerHTML = '<div class="panel fap tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="faTit"><button type="button" class="perfx tw-window-control tw-window-close" id="faX">✕</button><h2 class="tw-modal-title" id="faTit">💌</h2><small class="tw-modal-jp" lang="ja">ファンのお願い</small><div id="faCorpo"></div></div>';
+document.body.appendChild(faOv);
+$('faX').onclick = faFechar;
+faOv.addEventListener('click', function(e){ if(e.target.id === 'faEntregar') faEntregar(e.target); });
 // Álbum de cards (album.js): um espaço para cada Idol da vitrine
 var albumOv = document.createElement('div');
 albumOv.className = 'ov albumov tw-window-overlay'; albumOv.id = 'albumOv'; albumOv.hidden = true;

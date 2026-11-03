@@ -48,7 +48,7 @@ function hsFechar(){ hsOv.hidden = true; hs = null; }
 function hsNovaRodada(){
   var r = hsSorteio(Date.now() + hs.rodada * 977), usadosNome = {};
   hs.historico.forEach(function(f){ usadosNome[f.nome] = 1; });
-  var livres = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), n = Math.min(3 + hs.rodada, 7), fila = [];
+  var livres = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), n = Math.min(3 + Math.floor(hs.rodada * .8), 6), fila = [];
   for(var i = 0; i < n && livres.length; i++){ var nome = livres.splice(Math.floor(r() * livres.length), 1)[0]; fila.push(hsFa(r, nome)); }
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
@@ -62,7 +62,7 @@ function hsNovaRodada(){
   hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
   hsUI();
 }
-function hsTempoPergunta(){ return Math.max(150, 270 - hs.rodada * 20); }   // em quadros (60 por segundo)
+function hsTempoPergunta(){ return Math.max(240, 420 - hs.rodada * 30); }   // ~7s no começo, ~4s no fim   // em quadros (60 por segundo)
 function hsProxima(){
   hs.qi++;
   if(hs.qi >= hs.quiz.length){ if(hs.hype <= 0 || hs.rodada >= 5) return hsFim(); hs.fase = 'pausa'; hs.t0 = hsT; hsUI(); return; }
@@ -94,6 +94,7 @@ function hsResponder(i){
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsFim(){
+  if(contaJ && hs && hs.acertos > 0) contaRpc('marcar_visita', { p_k:'handshake' }).catch(function(){});   // missão do dia (quando o servidor tiver a chave)
   hs.fase = 'fim'; var rec = hsRecorde(); hs.novo = hs.pontos > rec;
   if(hs.novo) try{ localStorage.setItem(HS_RECORDE_KEY, hs.pontos); }catch(e){}
   hsUI();
@@ -112,8 +113,8 @@ function hsLoop(ms){
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('hsCv'), ms) : 1; hsT += d;
   if(hs){
     var dt = hsT - hs.t0;
-    if(hs.fase === 'fila' && dt > 110){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
-    else if(hs.fase === 'lembrar' && dt > 70) hsProxima();
+    if(hs.fase === 'fila' && dt > 160){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
+    else if(hs.fase === 'lembrar' && dt > 100) hsProxima();
     else if(hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
     else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();

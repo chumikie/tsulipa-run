@@ -1,4 +1,4 @@
-/* Backstage⭐Cafe! — café temático do grupo, inspirado nos cafés de shakes, frappés e docinhos.
+/* Happy⭐Cafe! — café temático do grupo, inspirado nos cafés de shakes, frappés e docinhos.
    Os clientes (fãs NPC com nomes inventados e visuais que já existem no jogo) pedem uma bebida montada
    em camadas (base → cobertura → enfeite) e às vezes um docinho. Monte, sirva antes da paciência acabar.
    Prêmios só visuais: cada pedido perfeito libera um cartão de receita no Caderno do café (salvo no aparelho).
@@ -70,6 +70,7 @@ function cfServir(saiu){
 }
 function cfFim(){
   cf.fase = 'fim';
+  if(contaJ && cf.perfeitos > 0) contaRpc('marcar_visita', { p_k:'cafe' }).catch(function(){});   // missão do dia (quando o servidor tiver a chave)
   var rec = cfLer(CF_RECORDE_KEY, 0); cf.novoRec = cf.pontos > rec; if(cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
   cfUI();
 }
@@ -107,19 +108,28 @@ function cfDesenhar(){
   x.strokeStyle = '#d9b3ff'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 18); x.quadraticCurveTo(W2 / 2, 44, W2, 18); x.stroke();
   for(var l = 0; l < 14; l++){ var lx = l * W2 / 13, ly = 18 + Math.sin(l / 13 * Math.PI) * 13; x.fillStyle = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#3fc1ff'][l % 4]; x.globalAlpha = .6 + .4 * Math.sin(t / 12 + l); x.beginPath(); x.arc(lx, ly + 6, 5, 0, 7); x.fill(); }
   x.globalAlpha = 1;
-  x.save(); x.fillStyle = '#4b3a63'; x.strokeStyle = '#c98b55'; x.lineWidth = 6; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .58, 52, W2 * .38, 108, 10); else x.rect(W2 * .58, 52, W2 * .38, 108); x.fill(); x.stroke();
-  x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Backstage⭐Cafe!', W2 * .77, 78);
-  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText('Shakes · Frappés · Lattes', W2 * .77, 100); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .77, 120);
-  x.fillStyle = '#ffd23f'; x.fillText('バックステージ・カフェ', W2 * .77, 142); x.restore();
+  x.save(); x.fillStyle = '#4b3a63'; x.strokeStyle = '#c98b55'; x.lineWidth = 6; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .6, 40, W2 * .36, 96, 10); else x.rect(W2 * .6, 40, W2 * .36, 96); x.fill(); x.stroke();
+  x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
+  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
+  x.fillStyle = '#ffd23f'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
   // cliente no balcão
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5, H2 * .26); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
   }
+  // você é o barista: o seu Idol atrás do balcão, à direita, com crachá
+  try{ var eu = perfAvAtual({ pose:cf && cf.fase === 'reacao' && cf.ok ? 'banzai' : 'tchau', expr:cf && cf.fase === 'reacao' && !cf.ok ? 0 : 3, fundo:'' });
+    x.save(); x.translate(W2 * .74, H2 * .38); perfDesenharIdol(x, W2 * .26, H2 * .5, eu, false, false, t); x.restore(); }catch(e){}
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
-  if(cf && cf.monta) cfCopo(x, W2 * .62, H2 * .9, cf.monta, 1);
+  if(cf && cf.monta) cfCopo(x, W2 * .56, H2 * .9, cf.monta, 1);
+  var nomeEu = (contaJ && contaJ.nick) || 'Idol';
+  x.save(); x.font = '900 14px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  var pw = Math.min(W2 * .24, x.measureText(nomeEu).width + 40), px = W2 * .87 - pw / 2, py = H2 * .82;
+  var gp = x.createLinearGradient(px, py, px + pw, py); gp.addColorStop(0, '#ffe0c2'); gp.addColorStop(1, '#ffd1ea');
+  x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, 30, 10); else x.rect(px, py, pw, 30); x.fill(); x.stroke();
+  x.fillStyle = '#a0673a'; x.fillText('☕ ' + nomeEu, W2 * .87, py + 16); x.font = '800 9px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('BARISTA', W2 * .87, py - 6); x.restore();
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
     var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;
@@ -175,5 +185,5 @@ function cfClique(e){
   if(e.target.closest && e.target.closest('#cfJogar')){ cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:cfT, fala:'', novas:[], hearts:[] }; cfNovoCliente(); }
 }
 function cfHubHtml(){
-  return '<button type="button" class="hubcard hubcafe" data-ir="cafe"><i>🧋</i><b translate="no">Backstage⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
+  return '<button type="button" class="hubcard hubcafe" data-ir="cafe"><i>🧋</i><b translate="no">Happy⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">ハッピー・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
 }

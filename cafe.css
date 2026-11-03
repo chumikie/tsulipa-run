@@ -15,7 +15,6 @@
 .cfrec{display:flex;align-items:center;justify-content:center;height:40px;border-radius:12px;background:#fff;box-shadow:0 2px 0 #f2c5e3;font-size:18px}
 .cfrec.vazio{background:#f3eee8;box-shadow:none;opacity:.6;font-size:14px}
 @media (prefers-reduced-motion:reduce){.cfop{transition:none}}
-.cfop canvas.cfic{width:46px;height:46px;display:block}
 .cfgrupo{padding:8px;border-radius:16px;background:rgba(255,255,255,.55);border:2px solid #f6d7ea}
 .cfgrupo>b{font-family:"Mochiy Pop One","M PLUS Rounded 1c",sans-serif;font-weight:400;color:#7b3ff0}
 .cfgrupo>b::after{content:" ♡";color:#ff6fb5}

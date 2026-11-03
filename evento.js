@@ -55,13 +55,16 @@ function eventoPet(){
    sem balões, timers extras ou som automático. Cada cena guarda só sua área de toque. */
 var eventoPetCenas = Object.create(null);
 function eventoPetResetar(modo){ delete eventoPetCenas[modo]; }
-function eventoPetReagir(modo, t, comSom){
+function eventoPetReagir(modo, t, comSom, tipo){
   var p = eventoPet(), cena = eventoPetCenas[modo];
   if(!p || !cena) return false;
+  // Erro, acerto e combo mudam somente a expressão; a voz continua opcional no toque.
+  tipo = tipo === 'erro' || tipo === 'combo' ? tipo : 'acerto';
   if(cena.reacao && t - cena.reacao.inicio < 16 &&
      (!comSom || (cena.ultimoSom != null && t - cena.ultimoSom < 16))) return true;
-  cena.reacao = { inicio:t, emoji:p.k === 'tsu' ? '💜' : p.k === 'lirika' ? '💚' : p.k === 'pati' ? '⭐' : '💖' };
-  if(comSom && typeof petVoice === 'function'){
+  cena.reacao = { inicio:t, tipo:tipo, emoji:tipo === 'erro' ? '💦' : tipo === 'combo' ? '🌟' :
+    p.k === 'tsu' ? '💜' : p.k === 'lirika' ? '💚' : p.k === 'pati' ? '⭐' : '💖' };
+  if(comSom && typeof petVoice === 'function' && (cena.ultimoSom == null || t - cena.ultimoSom >= 28)){
     try{ petVoice(typeof petAtivo === 'function' ? petAtivo() : null, p.k); }catch(e){}
     cena.ultimoSom = t;
   }
@@ -80,6 +83,8 @@ function eventoPetDesenhar(x, W2, chao, t, s, alvoX, modo){   // passeia, reage 
     if(modo) eventoPetResetar(modo);
     return null;
   }
+  // Pets maiores, com o pé no mesmo chão e sem cobrir a área dos pedidos.
+  s = Math.min(s * (modo === 'cafe' ? 1.22 : modo === 'handshake' ? 1.2 : 1), 2.3);
   var vai = alvoX != null ? alvoX : W2 * (.5 + .42 * Math.sin(t / 260));
   var cena = modo ? (eventoPetCenas[modo] || (eventoPetCenas[modo] = {})) : null;
   var idade = cena && cena.reacao ? t - cena.reacao.inicio : 999;
@@ -87,10 +92,14 @@ function eventoPetDesenhar(x, W2, chao, t, s, alvoX, modo){   // passeia, reage 
     cena.x = vai; cena.y = chao; cena.escala = s;
     if(idade >= 76 || idade < 0){ cena.reacao = null; idade = 999; }
   }
-  var pulo = Math.abs(Math.sin(t / 9)) * 3 + (idade < 76 ? Math.abs(Math.sin(idade / 5)) * 11 : 0);
+  var tipo = cena && cena.reacao ? cena.reacao.tipo : '';
+  var pulo = Math.abs(Math.sin(t / 10)) * 3 +
+    (idade < 76 && tipo !== 'erro' ? Math.abs(Math.sin(idade / 5)) * (tipo === 'combo' ? 15 : 10) : 0);
+  var tremor = idade < 32 && tipo === 'erro' ? Math.sin(idade * .9) * 2 : 0;
   try{
-    if(idade < 34 && typeof drawPet === 'function')
-      drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, vai, chao - pulo, s, t, 'amor', p);
+    if(idade < 42 && typeof drawPet === 'function')
+      drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, vai + tremor, chao - pulo,
+        s, t, tipo === 'erro' ? 'choro' : tipo === 'combo' ? 'amor' : 'feliz', p);
     else perfDesenharPetEm(x, p, vai, chao - pulo, s, t);
   }catch(e){}
   if(cena){

@@ -20,11 +20,11 @@ function cfPedido(r, n){
   if(typeof eventoAtual === 'function' && r() < .5){ var ev = eventoAtual(); p.base = ev.base; if(p.doce >= 0) p.doce = ev.doce; }   // pedido da semana
   return p;
 }
-function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
+function cfPaciencia(){ return cf && cf.servidor && cf.servidor.limite_segundos ? cf.servidor.limite_segundos * 60 : Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
 function cfAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
-  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, provaEstado:'' };
+  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[] };
   cfUI();
   var cena = $('cfCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', cfCenaClique); cena.dataset.idolReage = '1'; }
   if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
@@ -54,14 +54,35 @@ function cfNovoClienteLocal(){
 }
 function cfNovoCliente(){
   if(!cf) return;
-  if(!contaJ || cf.provaEstado==='confirmado'){cf.servidor=null;cfNovoClienteLocal();return;}
   var atual=cf;
-  cf.fase='preparando';cfUI();
-  contaRpc('cafe_iniciar').then(function(r){
+  if(!contaJ || atual.modoServidor==='treino' ||
+      (atual.modoServidor==='legado' && atual.provaEstado==='confirmado')){
+    atual.servidor=null;cfNovoClienteLocal();return;
+  }
+  atual.fase='preparando';cfUI();
+  if(atual.modoServidor==='novo'){
+    contaRpc('cafe_run_pedido',{p_run:atual.runId}).then(function(r){
+      if(cf!==atual)return;
+      if(r && r.ok && r.pedido && r.sessao){atual.servidor=r;cfNovoClienteLocal();}
+      else {atual.modoServidor='treino';atual.provaEstado='sem_comprovacao';atual.servidor=null;cfNovoClienteLocal();}
+    }).catch(function(){if(cf===atual){atual.modoServidor='treino';atual.provaEstado='pendente';atual.servidor=null;cfNovoClienteLocal();}});
+    return;
+  }
+  if(atual.modoServidor==='legado'){
+    contaRpc('cafe_iniciar').then(function(r){
+      if(cf!==atual)return;
+      atual.servidor=r&&r.ok?r:null;cfNovoClienteLocal();
+    }).catch(function(){if(cf===atual){atual.servidor=null;cfNovoClienteLocal();}});
+    return;
+  }
+  // Ao publicar o front antes do SQL, preservar a missão diária na RPC antiga.
+  contaRpc('cafe_run_iniciar').then(function(r){
     if(cf!==atual)return;
-    atual.servidor=r&&r.ok?r:null;
-    cfNovoClienteLocal();
-  }).catch(function(){if(cf===atual){atual.servidor=null;cfNovoClienteLocal();}});
+    if(r && r.ok && r.run_id){atual.runId=r.run_id;atual.modoServidor='novo';cfNovoCliente();}
+    else {atual.modoServidor='treino';atual.provaEstado='sem_comprovacao';cfNovoClienteLocal();}
+  }).catch(function(){
+    if(cf===atual){atual.modoServidor='legado';cfNovoCliente();}
+  });
 }
 function cfFalaPedido(p){
   var s = tr('Quero um {b}').replace('{b}', CF_BASES[p.base][0] + ' ' + tr(CF_BASES[p.base][1]));
@@ -82,47 +103,93 @@ function cfEscolher(tipo, i){
 }
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
-  var p = cf.cli.pedido, m = cf.monta, J = HS_JEITOS[cf.cli.jeito] || HS_JEITOS.fofo;
+  var p = cf.cli.pedido, m = cf.monta;
   var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
   var resto = Math.max(0, 1 - (cfT - cf.t0) / cfPaciencia());
   cf.atendidos++;
-  if(cf.servidor){
-    var atual=cf, args={p_sessao:cf.servidor.sessao, p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}};
-    contaRpc('cafe_concluir',args).then(function(r){
+  if(cf.servidor && cf.modoServidor==='novo'){
+    var atual=cf, args={p_sessao:cf.servidor.sessao,
+      p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce},p_saiu:!!saiu};
+    atual.verificacaoPendente=true;
+    contaRpc('cafe_run_etapa',args).then(function(r){
+      if(cf!==atual)return;
+      atual.verificacaoPendente=false;
+      if(r && r.ok && r.confirmado){
+        atual.pontos=+r.pontos||0;atual.vidas=+r.vidas;atual.perfeitos=+r.perfeitos;
+        atual.combo=+r.combo||0;
+        if(r.certo){
+          atual.provaEstado='confirmado';
+          try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
+        }else if(atual.provaEstado!=='confirmado') atual.provaEstado='sem_comprovacao';
+        if(!!r.certo!==atual.ok){
+          atual.ok=!!r.certo;
+          atual.fala=tr(r.certo?'Pedido confirmado! 💖':'Pedido não confirmado pelo servidor. 🥲');
+        }
+      }else{atual.modoServidor='treino';atual.provaEstado='sem_comprovacao';}
+      cfUI();
+    }).catch(function(){
+      if(cf!==atual)return;
+      atual.verificacaoPendente=false;atual.modoServidor='treino';atual.provaEstado='pendente';cfUI();
+    });
+  }else if(cf.servidor && cf.modoServidor==='legado'){
+    var atualLegado=cf;
+    contaRpc('cafe_concluir',{p_sessao:cf.servidor.sessao,
+      p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}}).then(function(r){
       if(r && r.ok && r.confirmado){
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
-        atual.provaEstado='confirmado';
-      } else atual.provaEstado='sem_comprovacao';
-      if(cf===atual) cfUI();
-    }).catch(function(){atual.provaEstado='pendente';if(cf===atual)cfUI();});
+        atualLegado.provaEstado='confirmado';
+      }else atualLegado.provaEstado='sem_comprovacao';
+      if(cf===atualLegado)cfUI();
+    }).catch(function(){atualLegado.provaEstado='pendente';if(cf===atualLegado)cfUI();});
   }
   if(certo){
     cf.combo++; cf.perfeitos++;
-    var semana = typeof eventoAtual === 'function' && p.base === eventoAtual().base;
-    cf.pontos += (semana ? 50 : 0) + Math.round((100 + resto * 100 + (p.cob >= 0 ? 30 : 0) + (p.doce >= 0 ? 40 : 0)) * (1 + Math.min(cf.combo - 1, 5) * .1));
-    var oks = { animado:['Que delícia! Vou postar foto! 📸', 'Perfeito!! 💖'], timido:['E-está lindo… obrigado. 🥹', 'Tão gostoso…'], fofo:['Que fofo esse copo! 💕', 'Yay! Igualzinho! ☕'] }[cf.cli.jeito] || ['Perfeito!! 💖'];
-    cf.fala = tr(oks[Math.floor(Math.random() * oks.length)]);
-    var rec = cfLer(CF_RECEITAS_KEY, {}), chave = p.base + '-' + p.enf;
-    if(!rec[chave]){ rec[chave] = 1; cfGravar(CF_RECEITAS_KEY, rec); cf.novas.push(cfNomeReceita(p));
-      if(Object.keys(rec).length >= CF_BASES.length * CF_ENFEITES.length && typeof conqGanhar === 'function' && conqGanhar('jogo_caderno')) cf.conq.push('📒 ' + tr('Caderno completo')); }
-    for(var k = 0; k < 6; k++) cf.hearts.push({ x:.2 + Math.random() * .2, y:.55, v:.004 + Math.random() * .004, t:0, e:['💖', '☕', '✨'][k % 3] });
-    if(sfx && sfx.star) try{ sfx.star(); }catch(e){}
-  } else {
-    cf.combo = 0; cf.vidas--;
-    cf.fala = saiu ? tr('Demorou… volto outro dia. 😢') : tr('Hmm… não foi bem isso que eu pedi. 🥲');
-    if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
+    var semana=typeof eventoAtual==='function' && p.base===eventoAtual().base;
+    cf.pontos+=(semana?50:0)+Math.round((100+resto*100+(p.cob>=0?30:0)+(p.doce>=0?40:0))*(1+Math.min(cf.combo-1,5)*.1));
+    var oks={animado:['Que delícia! Vou postar foto! 📸','Perfeito!! 💖'],
+      timido:['E-está lindo… obrigado. 🥹','Tão gostoso…'],
+      fofo:['Que fofo esse copo! 💕','Yay! Igualzinho! ☕']}[cf.cli.jeito]||['Perfeito!! 💖'];
+    cf.fala=tr(oks[Math.floor(Math.random()*oks.length)]);
+    var rec=cfLer(CF_RECEITAS_KEY,{}),chave=p.base+'-'+p.enf;
+    if(!rec[chave]){
+      rec[chave]=1;cfGravar(CF_RECEITAS_KEY,rec);cf.novas.push(cfNomeReceita(p));
+      if(Object.keys(rec).length>=CF_BASES.length*CF_ENFEITES.length &&
+          typeof conqGanhar==='function' && conqGanhar('jogo_caderno'))
+        cf.conq.push('📒 '+tr('Caderno completo'));
+    }
+    for(var k=0;k<6;k++)cf.hearts.push({x:.2+Math.random()*.2,y:.55,v:.004+Math.random()*.004,t:0,e:['💖','☕','✨'][k%3]});
+    if(sfx&&sfx.star)try{sfx.star();}catch(e){}
+  }else{
+    cf.combo=0;cf.vidas--;
+    cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
+    if(sfx&&sfx.hit)try{sfx.hit();}catch(e){}
   }
-  if(certo && typeof eventoPetReagir === 'function') eventoPetReagir('cafe', cfT, false);
-  cf.ok = certo; cf.fase = 'reacao'; cf.t0 = cfT; cfUI();
+  if(certo&&typeof eventoPetReagir==='function')eventoPetReagir('cafe',cfT,false);
+  cf.ok=certo;cf.fase='reacao';cf.t0=cfT;cfUI();
 }
 function cfFim(){
-  if(!cf || cf.fase === 'fim') return;
-  cf.fase = 'fim';
-  if(cf.perfeitos >= 12 && typeof conqGanhar === 'function' && conqGanhar('jogo_barista')) cf.conq.push('🧋 ' + tr('Barista perfeito'));
-  var rec = typeof recMaiorLocal === 'function' ? recMaiorLocal('cafe') : cfLer(CF_RECORDE_KEY, 0);
-  cf.novoRec = cf.pontos > rec;
-  if(typeof recRegistrarLocal === 'function') recRegistrarLocal('cafe',cf.pontos);
-  if(!contaJ && cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
+  if(!cf||cf.fase==='fim')return;
+  var atual=cf;
+  cf.fase='fim';
+  if(cf.perfeitos>=12&&typeof conqGanhar==='function'&&conqGanhar('jogo_barista'))
+    cf.conq.push('🧋 '+tr('Barista perfeito'));
+  var rec=typeof recMaiorLocal==='function'?recMaiorLocal('cafe'):cfLer(CF_RECORDE_KEY,0);
+  cf.novoRec=cf.pontos>rec;
+  if(typeof recRegistrarLocal==='function')recRegistrarLocal('cafe',cf.pontos);
+  if(!contaJ&&cf.novoRec)cfGravar(CF_RECORDE_KEY,cf.pontos);
+  if(atual.modoServidor==='novo'&&atual.runId){
+    atual.provaEstado='finalizando';
+    contaRpc('cafe_run_finalizar',{p_run:atual.runId}).then(function(r){
+      if(cf!==atual)return;
+      if(r&&r.ok&&r.confirmado){
+        atual.provaEstado='verificado';
+        atual.pontosVerificados=+r.pontos_verificados||0;
+        atual.pontos=atual.pontosVerificados;
+        if(typeof recCarregar==='function')recCarregar();
+      }else atual.provaEstado='sem_comprovacao';
+      cfUI();
+    }).catch(function(){if(cf===atual){atual.provaEstado='pendente';cfUI();}});
+  }
   cfUI();
 }
 function cfLoop(ms){
@@ -133,7 +200,7 @@ function cfLoop(ms){
     if(cf.fase === 'pedido' && cf.cli && cf.cli.vaiRoubar && !cf.cli.roubou && cf.monta.doce >= 0 && cfT - cf.doceT > 45 && typeof eventoPet === 'function' && eventoPet()){   // o pet pega o docinho!
       var pt = eventoPet(); cf.cli.roubou = true; cf.monta.doce = -1; cf.rouboT = cfT; cf.aviso = '🐾 ' + tr('{p} pegou o docinho! Coloque outro.').replace('{p}', pt.nome || tr('Seu pet')); cfUI(); }
     if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) bar.style.width = Math.max(0, 100 - dt / cfPaciencia() * 100) + '%'; }
-    else if(cf.fase === 'reacao' && dt > 90){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
+    else if(cf.fase === 'reacao' && dt > 90 && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
   }
   if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
   cfAnim = requestAnimationFrame(cfLoop);
@@ -265,11 +332,13 @@ function cfUI(){
   else if(cf.fase === 'fim'){
     h += '<p class="hsfim">' + (cf.novoRec ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('O café fechou!')) + ' <b>' + cf.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>' +
       '<div class="hsresumo"><span>☕ ' + cf.perfeitos + '/' + cf.atendidos + ' ' + escHtml(tr('perfeitos')) + '</span><span>📒 ' + nRec + '/' + totRec + '</span></div>';
-    if(cf.provaEstado==='confirmado') h += '<p class="faok">✅ ' + escHtml(tr('Pedido confirmado no servidor para a missão do dia.')) + '</p>';
+    if(cf.provaEstado==='verificado') h += '<p class="faok">✅ ' + escHtml(tr('Partida verificada pelo servidor, incluindo tempo e combos. Pontuação salva na conta:')) + ' ' + recNum(cf.pontosVerificados) + '</p>';
+    else if(cf.provaEstado==='finalizando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Verificando a pontuação completa no servidor…')) + '</p>';
+    else if(cf.provaEstado==='confirmado') h += '<p class="faok">✅ ' + escHtml(tr('Pedido confirmado no servidor para a missão do dia.')) + '</p>';
     else if(cf.provaEstado==='pendente') h += '<p class="hsdica">⏳ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
     else if(cf.provaEstado==='sem_comprovacao') h += '<p class="hsdica">⚠️ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
-    else if(cf.perfeitos>0 && !cf.servidor) h += '<p class="hsdica">🔒 ' + escHtml(tr('Modo treino: pedido sem validação do servidor.')) + '</p>';
-    if(cf.conq.length) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + cf.conq.map(escHtml).join(' · ') + '</p>';
+    else if(cf.perfeitos>0 && !cf.runId && !cf.servidor) h += '<p class="hsdica">🔒 ' + escHtml(tr('Modo treino: pedido sem validação do servidor.')) + '</p>';
+    if(cf.conq.length) h += '<p class="faok">🏆 ' + escHtml(tr(contaJ && cf.provaEstado!=='verificado' ? 'Conquista visual local (conta ainda não confirmada):' : 'Insígnia nova na Estante de troféus:')) + ' ' + cf.conq.map(escHtml).join(' · ') + '</p>';
     if(cf.novas.length) h += '<p class="faok">📒 ' + escHtml(tr('Receitas novas no Caderno:')) + ' ' + cf.novas.map(escHtml).join(' · ') + '</p>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
@@ -282,7 +351,7 @@ function cfCaderno(rec){
   return h + '</div></div>';
 }
 function cfIniciarSeguro(){
-  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,provaEstado:''};
+  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[]};
   cfNovoCliente();
 }
 function cfClique(e){

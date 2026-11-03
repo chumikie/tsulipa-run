@@ -85,7 +85,11 @@ function eventoPetDesenhar(x, W2, chao, t, s, alvoX, modo){   // passeia, reage 
     if(idade >= 76 || idade < 0){ cena.reacao = null; idade = 999; }
   }
   var pulo = Math.abs(Math.sin(t / 9)) * 3 + (idade < 76 ? Math.abs(Math.sin(idade / 5)) * 11 : 0);
-  try{ perfDesenharPetEm(x, p, vai, chao - pulo, s, t); }catch(e){}
+  try{
+    if(idade < 34 && typeof drawPet === 'function')
+      drawPet(x, p.k === 'meu' ? (p.cfg || PET_MK_DEF) : p.k, vai, chao - pulo, s, t, 'amor', p);
+    else perfDesenharPetEm(x, p, vai, chao - pulo, s, t);
+  }catch(e){}
   if(cena){
     x.save();
     x.textAlign = 'center'; x.textBaseline = 'middle';

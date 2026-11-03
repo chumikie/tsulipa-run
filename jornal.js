@@ -40,8 +40,9 @@ function jornalMontar(d){
       '<li>🧋 Happy⭐Cafe!: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[ev.base][0] + ' ' + tr(CF_BASES[ev.base][1]))) + '</li>' +
       '<li>🤝 Handshake⭐Event!: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', ev.pres)) + '</li>' +
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
+  h += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
+  h += jornalFeitosHtml(d);
   h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
-  h += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma historinha fictícia do TsuLiPa, montada com as fotos e os Idols de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
   h += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
   if(combo || prec) h += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
@@ -100,21 +101,109 @@ function jornalCenasDoDia(dia){
 }
 // Pequena crônica fictícia do mundo do jogo, derivada das mesmas cenas e elencos
 // que o visitante vê acima. Não descreve atividades reais dos integrantes.
+// Roteiros de três atos. Cada história segue a dupla da PRIMEIRA foto pública,
+// sem atribuir o segundo ensaio/foto do dia a integrantes que não aparecem nela.
+var JORNAL_DIARIO_ARCOS = {
+  palco:[
+    '{a} convidou {b} para ensaiar uma coreografia nova no palco.',
+    ['Um passo saiu diferente, e a dupla começou a rir antes de tentar outra vez.', 'A música parou no meio, mas {b} marcou o ritmo para {a} continuar.'],
+    'No fim, a dupla acertou os passos e guardou o ensaio nas fotos do Idol⭐News!'
+  ],
+  cafe:[
+    '{a} encontrou {b} para um lanchinho no Happy⭐Cafe!',
+    ['A dupla ficou indecisa diante dos doces e resolveu dividir a escolha.', '{b} contou uma história divertida enquanto {a} escolhia o pedido.'],
+    'Entre conversas e risadas, o encontro virou uma foto para lembrar.'
+  ],
+  ceu:[
+    '{a} chamou {b} para uma aventura pelas nuvens do TsuLiPa.',
+    ['Uma nuvem parecia longe demais, então a dupla inventou um salto em conjunto.', '{b} encontrou um caminho de nuvens e mostrou o próximo pulo a {a}.'],
+    'A dupla chegou ao outro lado e comemorou com uma pose para o Idol⭐News!'
+  ],
+  noite:[
+    '{a} e {b} ficaram para um ensaio especial quando as luzes da cidade acenderam.',
+    ['Uma nota difícil pediu mais uma tentativa, e a dupla não desistiu.', '{b} marcou a entrada da música para ajudar {a} a encontrar o tempo.'],
+    'A última passagem saiu bonita, encerrando o ensaio com uma foto noturna.'
+  ],
+  basico:[
+    '{a} chamou {b} para inventar poses de uma nova foto de grupo.',
+    ['Cada pose ficou mais engraçada que a anterior até encontrarem a favorita.', '{b} sugeriu uma pose inesperada, e {a} resolveu acompanhar.'],
+    'A escolha final entrou na coleção de fotos do Idol⭐News!'
+  ],
+  oshi:[
+    '{a} encontrou {b} com lightsticks preparados para torcer pelo Oshi.',
+    ['A dupla ensaiou uma sequência de luzes para animar a plateia.', '{b} inventou um movimento com a luz, e {a} respondeu com outro.'],
+    'As cores iluminaram o encontro, que terminou numa fotografia especial.'
+  ],
+  figurinos:[
+    '{a} convidou {b} para escolher detalhes dos figurinos no camarim.',
+    ['Um laço combinava com tudo, mas faltava decidir onde colocá-lo.', '{b} encontrou um detalhe brilhante e mostrou a ideia para {a}.'],
+    'A dupla terminou os ajustes e registrou os looks no Idol⭐News!'
+  ],
+  aniversario:[
+    '{a} e {b} se encontraram para uma pequena comemoração no café.',
+    ['Na hora da surpresa, quase esqueceram as velinhas do bolo!', '{b} escondeu o docinho até {a} terminar a contagem.'],
+    'A surpresa terminou em sorrisos e numa foto de aniversário.'
+  ],
+  cartas:[
+    '{a} chamou {b} para abrir as cartinhas recebidas dos fãs.',
+    ['Uma mensagem carinhosa fez a dupla parar para agradecer.', '{b} encontrou um desenho entre as cartas e mostrou a {a}.'],
+    'A dupla guardou as mensagens e tirou uma foto para o Idol⭐News!'
+  ],
+  bastidores:[
+    '{a} encontrou {b} nos bastidores antes da apresentação.',
+    ['Faltava revisar um gesto da coreografia, então a dupla ensaiou baixinho.', '{b} percebeu um detalhe no figurino de {a} e ajudou a arrumar.'],
+    'Quando chegou a hora do show, a dupla estava pronta e registrou o momento.'
+  ],
+  estudio:[
+    '{a} se reuniu com {b} para uma gravação no estúdio.',
+    ['Na primeira tentativa, a dupla riu de uma entrada fora do tempo.', '{b} sugeriu experimentar outra maneira de cantar o refrão.'],
+    'Depois de encontrar a versão favorita, a dupla celebrou com uma foto.'
+  ],
+  jardim:[
+    '{a} chamou {b} para um piquenique tranquilo no jardim.',
+    ['Uma brisa levou o guardanapo para longe, e a dupla saiu atrás dele.', '{b} preparou um lugar à sombra enquanto {a} organizava o lanchinho.'],
+    'O passeio terminou com uma fotografia para guardar aquele dia.'
+  ]
+};
 function jornalDiarioTexto(fotos){
-  var momentos = (fotos || []).filter(function(f){ return f && !f.tipo && f.cena && f.grupo && f.grupo.length >= 2; });
-  if(momentos.length < 2) return [];
-  return [
-    '☀️ ' + tr('Hoje no TsuLiPa:') + ' ' + jornalLegenda(momentos[0]) + '.',
-    '✨ ' + tr('Em outro cantinho da cidade:') + ' ' + jornalLegenda(momentos[1]) + '.',
-    '📸 ' + tr('As duas cenas entraram para o Idol⭐News de hoje!')
-  ];
+  var momento = (fotos || []).find(function(f){ return f && !f.tipo && f.cena && f.grupo && f.grupo.length >= 2; });
+  if(!momento) return [];
+  var a = String(momento.grupo[0].nick), b = String(momento.grupo[1].nick);
+  var tema = momento.cena[4] || momento.cena[0], roteiro = JORNAL_DIARIO_ARCOS[tema] || JORNAL_DIARIO_ARCOS.basico;
+  var dia = Number.isInteger(momento.dia) ? momento.dia : Math.floor((Date.now() - 3 * 3600e3) / 864e5);
+  var meio = roteiro[1][((dia % roteiro[1].length) + roteiro[1].length) % roteiro[1].length];
+  function dizer(s){ return tr(s).replace(/\{a\}/g, a).replace(/\{b\}/g, b); }
+  return ['🌱 ' + dizer(roteiro[0]), '✨ ' + dizer(meio), '📸 ' + dizer(roteiro[2])];
 }
 function jornalDiarioUI(fotos){
   var box = $('jornalDiarioDia'); if(!box) return;
   var linhas = jornalDiarioTexto(fotos);
-  box.innerHTML = linhas.length ? '<ol class="jndiariolista">' + linhas.map(function(t){
-    return '<li>' + escHtml(t) + '</li>';
+  box.innerHTML = linhas.length ? '<ol class="jndiariolista">' + linhas.map(function(t, i){
+    return '<li><small>' + escHtml(tr(['Começo','Reviravolta','Final'][i])) + '</small>' + escHtml(t) + '</li>';
   }).join('') + '</ol>' : '<p class="jnvazio">' + escHtml(tr('O diário aparece quando os Idols do dia carregarem.')) + '</p>';
+}
+// Somente feitos presentes nos placares públicos retornados pelo servidor.
+// Não transforma ações privadas de Café/Handshake, prêmios ou pontuações locais em notícia.
+function jornalFeitosPublicos(d){
+  d = d || {};
+  var modos = [
+    ['center','🏁','Center⭐Run!','pontos'],
+    ['sora','☁️','Sora⭐Jump!','m'],
+    ['karaoke','🎤','Karaoke⭐Time!','pontos']
+  ];
+  return modos.map(function(m){
+    var lista = Array.isArray(d[m[0]]) ? d[m[0]] : [], top = lista[0];
+    if(!top || typeof top.nick !== 'string' || !top.nick.trim() || !Number.isFinite(Number(top.score)) || Number(top.score) <= 0) return null;
+    return m[1] + ' ' + tr('{a} apareceu no placar semanal de {b} com {n} {u}.')
+      .replace('{a}', top.nick).replace('{b}', m[2]).replace('{n}', jornalNum(top.score)).replace('{u}', tr(m[3]));
+  }).filter(Boolean);
+}
+function jornalFeitosHtml(d){
+  var itens = jornalFeitosPublicos(d);
+  return '<section class="jnbloco jnfeitos"><h4>⭐ ' + escHtml(tr('Aconteceu no TsuLiPa de verdade!')) + '</h4>' +
+    '<p class="jndiariodica">' + escHtml(tr('Destaques de pontuações públicas confirmadas no servidor — não são acontecimentos fictícios nem prêmios novos.')) + '</p>' +
+    (itens.length ? '<ul>' + itens.map(function(t){ return '<li>' + escHtml(t) + '</li>'; }).join('') + '</ul>' :
+    '<p class="jnvazio">' + escHtml(tr('Ainda não há destaques públicos confirmados.')) + '</p>') + '</section>';
 }
 function jornalFotosDia(){
   var box = $('jornalFotosDia'); if(!box) return;

@@ -89,7 +89,7 @@ function bannerTorcida(){   // null = sem torcida; {tsulipa:true} = Tsu, Lirika 
 }
 function bannerTorcidaDesenhar(x, W2, H2, t, girando){   // no canto esquerdo da sala do Gacha, pequenos, pulando
   var tc = bannerTorcida(); if(!tc) return;
-  var sc = 1.9, chao = H2 * .9, xs = [W2 * .06, W2 * .14, W2 * .22];
+  var sc = 2.2, chao = H2 * .9, xs = [W2 * .06, W2 * .14, W2 * .22]; // torcida ~16% maior, ainda dentro da faixa esquerda
   var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame;
   try{
     state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; frame = t;

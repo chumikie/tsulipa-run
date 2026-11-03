@@ -118,18 +118,9 @@ function cfDesenhar(){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5, H2 * .26); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
   }
-  // você é o barista: o seu Idol atrás do balcão, à direita, com crachá
-  try{ var eu = perfAvAtual({ pose:cf && cf.fase === 'reacao' && cf.ok ? 'banzai' : 'tchau', expr:cf && cf.fase === 'reacao' && !cf.ok ? 0 : 3, fundo:'' });
-    x.save(); x.translate(W2 * .74, H2 * .38); perfDesenharIdol(x, W2 * .26, H2 * .5, eu, false, false, t); x.restore(); }catch(e){}
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
-  if(cf && cf.monta) cfCopo(x, W2 * .56, H2 * .9, cf.monta, 1);
-  var nomeEu = (contaJ && contaJ.nick) || 'Idol';
-  x.save(); x.font = '900 14px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  var pw = Math.min(W2 * .24, x.measureText(nomeEu).width + 40), px = W2 * .87 - pw / 2, py = H2 * .82;
-  var gp = x.createLinearGradient(px, py, px + pw, py); gp.addColorStop(0, '#ffe0c2'); gp.addColorStop(1, '#ffd1ea');
-  x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, 30, 10); else x.rect(px, py, pw, 30); x.fill(); x.stroke();
-  x.fillStyle = '#a0673a'; x.fillText('☕ ' + nomeEu, W2 * .87, py + 16); x.font = '800 9px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('BARISTA', W2 * .87, py - 6); x.restore();
+  if(cf && cf.monta) cfCopo(x, W2 * .62, H2 * .9, cf.monta, 1);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
     var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;

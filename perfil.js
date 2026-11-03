@@ -798,6 +798,9 @@ function perfInsHtml(tem, meu){
   perfInsTem = tem || [];
   var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
   var lista = PERF_INS.filter(function(i){ return perfInsNv(tem, i[0]) > 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
+  // As insígnias sazonais ficam no fim da estante, inclusive quando conquistadas.
+  var sazonais = lista.filter(function(i){ return i[0].indexOf('tema_') === 0; });
+  lista = lista.filter(function(i){ return i[0].indexOf('tema_') !== 0; }).concat(sazonais);
   if(!lista.length) return '<p class="perfcarr">✧</p>';
   var ganhos = lista.filter(function(i){ return perfInsNv(tem, i[0]) > 0; }).length;
   return '<p class="perfestconta"><b>' + ganhos + '</b> / ' + lista.length + ' ' + escHtml(tr('troféus na estante')) + '</p>' +

@@ -1314,7 +1314,6 @@ function temaAtual(){
 }
 var SORA_LB_KEY = 'brs48cr_sora_lb';
 var HIST_KEY    = 'brs48cr_hist';
-var MIS_DIA_KEY = 'brs48cr_mis_sora';
 var SORA_DICT = {
   en: {
     "Sora⭐Jump!": "Sora⭐Jump!",
@@ -1565,6 +1564,63 @@ var soraRankPeriod = 'week';
 var soraRankRequestSerial = 0;
 var soraRankRowsCache = { week:null, all:null };
 var soraRankCacheAt = { week:0, all:0 };
+var SORA_DAILY_REWARD_MESSAGES = {
+  pt:{
+    pending:'🎯 Conferindo ★25 no servidor…',
+    login:'🎯 Entre com Google para receber ★25 na conta.',
+    credited:'🎯 Missão de 500 m: +25 ★ creditadas na sua conta!',
+    already:'🎯 As ★25 de hoje já foram recebidas nesta conta.',
+    unverified:'🎯 Partida registrada, mas o prêmio ★25 não foi confirmado.',
+    offline:'🎯 Não foi possível confirmar as ★25 agora. Consulte sua conta.',
+    rejected:'🎯 Partida não validada; nenhuma estrela foi creditada.'
+  },
+  en:{
+    pending:'🎯 Checking the ★25 reward…',login:'🎯 Sign in with Google to receive ★25.',
+    credited:'🎯 500 m mission: +25 ★ added to your account!',
+    already:'🎯 Today’s ★25 have already been awarded to this account.',
+    unverified:'🎯 Run saved, but the ★25 reward was not confirmed.',
+    offline:'🎯 Could not confirm the ★25 reward. Check your account.',
+    rejected:'🎯 Run was not validated; no stars awarded.'
+  },
+  es:{
+    pending:'🎯 Comprobando el premio de ★25…',login:'🎯 Entra con Google para recibir ★25.',
+    credited:'🎯 Misión de 500 m: ¡+25 ★ añadidas a tu cuenta!',
+    already:'🎯 Ya recibiste las ★25 de hoy en esta cuenta.',
+    unverified:'🎯 Partida guardada, pero no se confirmó el premio de ★25.',
+    offline:'🎯 No se pudo confirmar el premio de ★25. Revisa tu cuenta.',
+    rejected:'🎯 Partida no validada; no se entregaron estrellas.'
+  },
+  th:{
+    pending:'🎯 กำลังตรวจสอบรางวัล ★25…',login:'🎯 เข้าสู่ระบบด้วย Google เพื่อรับ ★25',
+    credited:'🎯 ภารกิจ 500 ม.: เพิ่ม +25 ★ ในบัญชีแล้ว!',
+    already:'🎯 บัญชีนี้ได้รับ ★25 ของวันนี้ไปแล้ว',
+    unverified:'🎯 บันทึกคะแนนแล้ว แต่ยังยืนยันรางวัล ★25 ไม่ได้',
+    offline:'🎯 ยืนยันรางวัล ★25 ไม่ได้ โปรดตรวจสอบบัญชี',
+    rejected:'🎯 ไม่ผ่านการตรวจสอบรอบเล่น จึงไม่ได้รับดาว'
+  },
+  ja:{
+    pending:'🎯 ★25の報酬を確認中…',login:'🎯 ★25を受け取るにはGoogleでログインしてください。',
+    credited:'🎯 500mミッション：+25★をアカウントに付与しました！',
+    already:'🎯 今日の★25はこのアカウントで受け取り済みです。',
+    unverified:'🎯 記録は保存されましたが、★25の付与は確認できません。',
+    offline:'🎯 ★25の付与を確認できません。アカウントをご確認ください。',
+    rejected:'🎯 記録が承認されなかったため、スターは付与されません。'
+  },
+  id:{
+    pending:'🎯 Memeriksa hadiah ★25…',login:'🎯 Masuk dengan Google untuk menerima ★25.',
+    credited:'🎯 Misi 500 m: +25 ★ ditambahkan ke akunmu!',
+    already:'🎯 Hadiah ★25 hari ini sudah diterima akun ini.',
+    unverified:'🎯 Skor tersimpan, tetapi hadiah ★25 belum terkonfirmasi.',
+    offline:'🎯 Tidak dapat memastikan hadiah ★25. Periksa akunmu.',
+    rejected:'🎯 Permainan tidak tervalidasi; tidak ada bintang diberikan.'
+  }
+};
+function soraDailyRewardShow(kind){
+  var el = $('soraDailyRewardStatus');
+  if(!el || soraState !== 'over') return;
+  var dict = SORA_DAILY_REWARD_MESSAGES[LANG] || SORA_DAILY_REWARD_MESSAGES.pt;
+  el.textContent = dict[kind] || SORA_DAILY_REWARD_MESSAGES.pt.unverified;
+}
 
 function soraOnlineApplyProfile(profile){
   var data = profile && typeof profile === 'object' ? profile : null;
@@ -1703,7 +1759,10 @@ function soraOnlineBeginRun(){
 }
 function soraOnlineFinishRun(score){
   var owner=soraOnlineRunOwnerId,generation=soraOnlineRunGeneration;
-  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId)return;
+  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId){
+    if(score>=500&&!soraTestSceneId)soraDailyRewardShow(!soraOnlineUserId?'login':'offline');
+    return;
+  }
   soraOnlineRunFinishSent=true;
   Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
     if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId||!runId||!_supabase||typeof _supabase.rpc!=='function')return null;
@@ -1711,9 +1770,20 @@ function soraOnlineFinishRun(score){
   }).then(function(result){
     if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId)return;
     if(result && result.error) throw result.error;
-    if(result && result.data && result.data.ok === false)
-      console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
-    if(result && result.data && result.data.ok === true && result.data.ranked === true &&
+    var data=result&&result.data;
+    if(data && data.ok === false)
+      console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', data.reason);
+    if(score>=500){
+      if(data&&data.ok===true&&data.stars_credited===25){
+        soraDailyRewardShow('credited');
+        if(parent!==window&&new URLSearchParams(location.search).get('embed')==='index2'){
+          try{parent.postMessage({type:'TW_SORA_STARS_CREDITED'},location.origin);}catch(e){}
+        }
+      }else if(data&&data.ok===true&&data.reward_claimed_today===true){
+        soraDailyRewardShow('already');
+      }else soraDailyRewardShow(data&&data.ok===false?'rejected':data?'unverified':'offline');
+    }
+    if(data && data.ok === true && data.ranked === true &&
        parent !== window && new URLSearchParams(location.search).get('embed') === 'index2'){
       try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
     }
@@ -1726,6 +1796,8 @@ function soraOnlineFinishRun(score){
     soraRankCacheAt.all = 0;
     if(soraState === 'over') soraRenderLb();
   }).catch(function(error){
+    if(generation===soraOnlineRunGeneration&&owner===soraOnlineUserId&&score>=500)
+      soraDailyRewardShow('offline');
     console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
   });
 }
@@ -3916,7 +3988,6 @@ function soraEndGame(){
   if(soraSoundOn && sfx && sfx.over) sfx.over();
   var h = Math.floor(soraHeight);
   var isTestScene = !!soraTestSceneId;
-  if(!isTestScene) soraOnlineFinishRun(h);
   var isNew = !isTestScene && h > soraBest;
   if(isNew){
     soraBest = h;
@@ -3945,20 +4016,11 @@ function soraEndGame(){
     }catch(e){}
   }
 
-  // Missão diária: "Suba 500 metros no Sora⭐Jump!"
-  var misBonus = '';
-  if(!isTestScene && h >= 500){
-    try{
-      var md = window.__TW_TEST_STORAGE.getItem(MIS_DIA_KEY);
-      if(md !== dk()){
-        window.__TW_TEST_STORAGE.setItem(MIS_DIA_KEY, dk());
-        starT += 25;
-        window.__TW_TEST_STORAGE.setItem('brs48cr_st', starT);
-        setBest();
-        misBonus = '<br><b style="color:#4ade80">🎯 ' + tr('Missão concluída! +25 ★') + '</b>';
-      }
-    }catch(e){}
-  }
+  // O prêmio de 500 m só aparece confirmado após o retorno da RPC do Supabase.
+  // Nenhum ★25 é acrescentado ao armazenamento local antes da confirmação.
+  var misBonus = !isTestScene && h >= 500
+    ? '<div id="soraDailyRewardStatus" class="sora-mission-bonus" role="status" aria-live="polite"></div>'
+    : '';
 
   var tier = soraBadgeTier();
   var tierTxt = tr(tier === 3 ? '🌙 Show na Lua (Nv.3)' : tier === 2 ? '🌌 Voo Estrelado (Nv.2)' : tier === 1 ? '☁️ Pulo nas Nuvens (Nv.1)' : 'Rumo aos 500m!');
@@ -3974,13 +4036,17 @@ function soraEndGame(){
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
-      (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
+      misBonus;
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';
   if($('soraOverTitle')) $('soraOverTitle').textContent = tr(isTestScene ? 'TESTE DE CENÁRIO CONCLUÍDO!' : isNew ? 'NOVO RECORDE!' : 'Fim da subida!');
   if($('soraOverSubtitle')) $('soraOverSubtitle').textContent = tr(isTestScene ? 'Esta sessão não altera seus recordes, histórico ou estrelas permanentes.' : isNew ? 'Mais alto a cada tentativa! 💖' : 'Cada pulo é mais uma estrelinha na sua história ✨');
   soraRenderLb();
   if($('soraOverBox')) $('soraOverBox').hidden = false;
+  if(!isTestScene){
+    if(h>=500)soraDailyRewardShow('pending');
+    soraOnlineFinishRun(h);
+  }
 }
 function soraRenderLbRows(rows, online, serial){
   var el = $('soraLbList'), source = $('soraRankSource');

@@ -14,3 +14,13 @@ button.albumslot{cursor:zoom-in}
 .albumslot small{font-size:12px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .albumpags{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;font-weight:800;color:#3c2a8f}
 .gachaalbum{margin-top:10px}
+/* Troca de cards */
+.trocaov{z-index:23}
+.trlista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tritem{background:#fff;border-radius:14px;padding:8px 10px;box-shadow:0 3px 0 rgba(123,63,240,.1);color:#3c2a8f;font-size:14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tritem>span{flex:1 1 200px}.tritem .btns{margin:0;gap:6px}.tritem .btn{padding:6px 12px;font-size:13px}
+.trstatus{font-style:normal;font-weight:800;font-size:13px}
+.trform{display:flex;flex-direction:column;gap:8px;background:#f7f2ff;border-radius:14px;padding:10px;color:#3c2a8f}
+.trform label{display:flex;flex-direction:column;gap:3px;font-weight:800;font-size:13px}
+.trform input,.trform select{font:inherit;padding:6px 8px;border-radius:8px;border:2px solid #d9c7fb;background:#fff}
+#trocaCorpo h3{margin:14px 0 6px;color:var(--b1)}

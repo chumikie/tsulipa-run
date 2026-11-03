@@ -38,6 +38,7 @@ function albumUI(){
     return '<button type="button" class="albumslot" data-cardz="album|' + i + '" title="' + escHtml(tr('Ver card')) + '"><canvas id="albumCv' + i + '" width="360" height="504"></canvas><small>' + escHtml(n) + (+c.vezes > 1 ? ' ×' + (+c.vezes) : '') + '</small></button>';
   }).join('') + '</div>';
   if(pags > 1) h += '<div class="albumpags"><button type="button" class="btn alt" data-album="-1"' + (albumPag ? '' : ' disabled') + '>◀</button><span>' + (albumPag + 1) + ' / ' + pags + '</span><button type="button" class="btn alt" data-album="1"' + (albumPag < pags - 1 ? '' : ' disabled') + '>▶</button></div>';
+  if(albumPronto) h += '<div class="btns"><button type="button" class="btn" id="albumTrocar">🔁 ' + escHtml(tr('Trocar cards')) + '</button></div>';
   corpo.innerHTML = h;
   cardsMem.album = lista;
   lista.forEach(function(c, i){ var cv = $('albumCv' + i); if(cv && c.card) try{ gachaCardDesenhar(cv, cardsDados(c)); }catch(e){} });

@@ -3,7 +3,7 @@
    Center⭐Run! e Sora⭐Jump! vêm do servidor (os mesmos dados que antes ficavam no seu perfil);
    Karaoke vem do quadro semanal já carregado; Handshake e Happy Cafe ficam no aparelho. */
 var recAba = '', recPerfil = null, recSora = null, recCarregando = false;
-var REC_ABAS = [['run', '🏁', 'Center⭐Run!'], ['sora', '☁️', 'Sora⭐Jump!'], ['karaoke', '🎤', 'Karaoke⭐Time!'], ['hand', '🤝', 'Handshake⭐Event!'], ['cafe', '🧋', 'Happy⭐Cafe!']];
+var REC_ABAS = [['run', '🏁', 'Center⭐Run!'], ['hand', '🤝', 'Handshake⭐Event!'], ['cafe', '🧋', 'Happy⭐Cafe!'], ['karaoke', '🎤', 'Karaoke⭐Time!'], ['sora', '☁️', 'Sora⭐Jump!']];
 function recLocal(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
 function recNum(v){ return (+v || 0).toLocaleString('pt-BR'); }
 // Histórico pequeno por conta neste aparelho: sem RPC, prêmios ou ranking público.

@@ -2058,6 +2058,17 @@ var twPreviewHeaderPrincipal=document.querySelector('body > header');
       if(twPreviewJogoAnterior==='sora')twRankRefreshAfterSora();
       return;
     }
+    // Refaz leitura autenticada do saldo: nunca confia em estrelas enviadas pelo iframe.
+    if(e.data&&e.data.type==='TW_SORA_STARS_CREDITED'){
+      if(twPreviewJogoAnterior==='sora'&&contaJ){
+        var soraOwner=contaJ.id,soraSessao=contaSessaoToken;
+        contaRpc('jogador').then(function(j){
+          if(j&&contaJ&&contaJ.id===soraOwner&&contaSessaoToken===soraSessao&&
+             j.id===soraOwner&&typeof j.stars==='number')contaAplicar(j,soraSessao,true);
+        }).catch(function(){});
+      }
+      return;
+    }
     if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
       if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);
       return;

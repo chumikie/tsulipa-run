@@ -140,6 +140,7 @@ function cfDesenhar(){
   }
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
+  cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
   if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
@@ -201,3 +202,42 @@ function cfHubHtml(){
 }
 
 
+
+// Decoração do café no mesmo desenho chapado: prateleira com canecas, potinho de gorjeta com estrelas e moedas,
+// vasinho, lightstick, toalhinha rendada e adesivos no balcão
+function cfDecor(x, W2, H2, k, t){
+  function E(cx, cy, rx, ry){ x.beginPath(); x.ellipse(cx, cy, rx * k, ry * k, 0, 0, 7); x.fill(); }
+  function R(rx, ry, w, h){ x.fillRect(rx, ry, w * k, h * k); }
+  function Est(cx, cy, r, cor){ x.fillStyle = cor; x.beginPath(); for(var q = 0; q < 10; q++){ var an = -Math.PI / 2 + q * Math.PI / 5, rr = q % 2 ? r * .45 : r; x.lineTo(cx + Math.cos(an) * rr * k, cy + Math.sin(an) * rr * k); } x.closePath(); x.fill(); }
+  function Cor(cx, cy, r, cor){ x.fillStyle = cor; E(cx - r * .45 * k, cy - r * .2 * k, r * .55, r * .55); E(cx + r * .45 * k, cy - r * .2 * k, r * .55, r * .55); x.beginPath(); x.moveTo(cx - r * k, cy); x.lineTo(cx + r * k, cy); x.lineTo(cx, cy + r * 1.05 * k); x.closePath(); x.fill(); }
+  var topo = H2 * .74;
+  x.save();
+  // prateleira sob o quadro: canecas TsuLiPa, bolo na boleira e porta-retrato
+  var sy = 172, sx = W2 * .7, sw = W2 * .27;
+  x.fillStyle = '#a0673a'; x.fillRect(sx, sy, sw, 4); x.fillStyle = '#c98b55'; x.fillRect(sx, sy - 2, sw, 3);
+  [['#ffd1ea', 0], ['#c8e3fb', 1], ['#cdeec6', 2]].forEach(function(c){ var mx = sx + 6 + c[1] * 7 * k; x.fillStyle = c[0]; x.fillRect(mx, sy - 6 * k, 5 * k, 6 * k); x.fillStyle = cfEscurece(c[0], -45); x.fillRect(mx + 5 * k, sy - 4.6 * k, 1.4 * k, 3 * k); Cor(mx + 2.5 * k, sy - 3.6 * k, 1, '#ff6fb5'); });
+  var bx = sx + sw * .66; x.fillStyle = '#e9dcef'; x.fillRect(bx - 1, sy - 2 * k, 2, 2 * k); E(bx, sy - 2 * k, 5, 1); x.fillStyle = '#ffb3d9'; x.fillRect(bx - 4 * k, sy - 6.5 * k, 8 * k, 4.4 * k); x.fillStyle = '#fffaf2'; x.fillRect(bx - 4 * k, sy - 7 * k, 8 * k, 1.4 * k); x.fillStyle = '#d6123a'; E(bx, sy - 7.8 * k, .9, .9);
+  var fx = sx + sw * .9; x.fillStyle = '#fff'; x.fillRect(fx - 4 * k, sy - 9 * k, 8 * k, 9 * k); x.fillStyle = '#c8b6ff'; x.fillRect(fx - 3 * k, sy - 8 * k, 6 * k, 6 * k); Est(fx, sy - 5 * k, 2, '#ffd23f');
+  // toalhinha rendada na frente do balcão + adesivos
+  for(var i = 0; i < 26; i++){ x.fillStyle = i % 2 ? '#ffd1ea' : '#fff3f9'; E(i * W2 / 25, topo + 12, 2.6, 1.8); }
+  Cor(W2 * .1, topo + 34, 3, 'rgba(255,111,181,.75)'); Est(W2 * .3, topo + 40, 3.2, 'rgba(255,210,63,.85)'); Cor(W2 * .5, topo + 46, 2.4, 'rgba(200,182,255,.9)');
+  Est(W2 * .72, topo + 44, 2.6, 'rgba(255,255,255,.75)'); Cor(W2 * .92, topo + 38, 3, 'rgba(255,111,181,.75)');
+  // potinho de gorjetas: vidro com estrelas e moedas (cintilam)
+  var px = W2 * .84, pb = topo + 2;
+  x.fillStyle = 'rgba(30,10,60,.18)'; E(px, pb, 6, 1.2);
+  x.fillStyle = 'rgba(235,245,255,.7)'; x.fillRect(px - 5 * k, pb - 11 * k, 10 * k, 11 * k);
+  x.fillStyle = '#ffc21a'; [[-2.5, -1.5], [1.5, -1.3], [-.5, -3.2], [3, -3.6], [-3, -4.4]].forEach(function(p){ E(px + p[0] * k, pb + p[1] * k, 1.5, 1); });
+  x.fillStyle = '#ffe680'; E(px - .5 * k, pb - 3.4 * k, .7, .4);
+  Est(px - 1.5 * k, pb - 7 * k, 2, '#ffd23f'); Est(px + 2.3 * k, pb - 6 * k, 1.6, '#ff9ccf'); Est(px + .5 * k, pb - 9.2 * k, 1.4, '#c8b6ff');
+  x.fillStyle = 'rgba(255,255,255,.75)'; x.fillRect(px - 4 * k, pb - 10 * k, 1 * k, 8 * k);
+  x.fillStyle = '#ff6fb5'; x.fillRect(px - 6 * k, pb - 12.4 * k, 12 * k, 1.6 * k);   // tampinha
+  x.fillStyle = '#fff'; x.fillRect(px - 3.6 * k, pb - 16.6 * k, 7.2 * k, 3.6 * k); x.fillStyle = '#ff6fb5'; Cor(px, pb - 15.6 * k, 1.1, '#ff6fb5');   // plaquinha
+  var brilho = (Math.sin(t / 14) + 1) / 2; x.globalAlpha = brilho; Est(px + 4.5 * k, pb - 12 * k, 1.2, '#ffffff'); x.globalAlpha = 1;
+  // vasinho com flor
+  var vx = W2 * .955; x.fillStyle = '#5fb04a'; x.fillRect(vx - .5 * k, pb - 12 * k, 1 * k, 7 * k); E(vx - 2 * k, pb - 9 * k, 2, 1); E(vx + 2 * k, pb - 8 * k, 2, 1);
+  x.fillStyle = '#ffb3d9'; [[0, -14], [-1.8, -12.6], [1.8, -12.6], [-1.1, -10.8], [1.1, -10.8]].forEach(function(p){ E(vx + p[0] * k, pb + p[1] * k, 1.4, 1.4); }); x.fillStyle = '#ffd23f'; E(vx, pb - 12.4 * k, .9, .9);
+  x.fillStyle = '#c98b55'; x.fillRect(vx - 3 * k, pb - 5 * k, 6 * k, 5 * k); x.fillStyle = '#e0a370'; x.fillRect(vx - 3.6 * k, pb - 5.6 * k, 7.2 * k, 1.6 * k);
+  // lightstick do fã-clube apoiado no balcão
+  var lx = W2 * .43; x.fillStyle = '#4b3a63'; x.fillRect(lx - .8 * k, pb - 8 * k, 1.6 * k, 8 * k); x.fillStyle = 'rgba(255,111,181,' + (.6 + .4 * brilho) + ')'; E(lx, pb - 10.5 * k, 2.6, 3); x.fillStyle = '#fff'; Est(lx, pb - 10.6 * k, 1.3, '#ffffff');
+  x.restore();
+}

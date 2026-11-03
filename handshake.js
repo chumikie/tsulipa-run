@@ -6,7 +6,17 @@
    Prêmio diário (ticket do Karaoke ou item do pet, nunca estrelas): RPC handshake_premio,
    proposta em supabase/sql/proposta/20261103200000_handshake_premio.sql. Este arquivo só declara funções e tabelas. */
 var HS_NOMES = ['Nana', 'Kiko', 'Lulu', 'Momo', 'Rafi', 'Yumi', 'Toto', 'Pipo', 'Mel', 'Juju', 'Cacau', 'Lili', 'Koko', 'Duda', 'Nino', 'Mimi', 'Teté', 'Bubu', 'Fifi', 'Gigi', 'Zezé', 'Biba', 'Tuca', 'Dodô', 'Lalá', 'Chico', 'Pururu', 'Nunu', 'Kaká', 'Pepê'];
-var HS_PRESENTES = [['🍓', 'Morango'], ['🍰', 'Bolo'], ['🎀', 'Laço'], ['🌸', 'Flor'], ['💌', 'Cartinha'], ['🧸', 'Ursinho'], ['🍬', 'Bala'], ['🌙', 'Lua'], ['🎵', 'Música'], ['🍙', 'Onigiri'], ['🧁', 'Cupcake'], ['💎', 'Joia']];
+var HS_PRESENTES = [   // [emoji, nome, grupo]: as opções erradas vêm de preferência do mesmo grupo (fica mais difícil)
+  ['🍓', 'Morango', 'doce'], ['🍰', 'Bolo', 'doce'], ['🍬', 'Bala', 'doce'], ['🧁', 'Cupcake', 'doce'], ['🍙', 'Onigiri', 'doce'],
+  ['🎀', 'Laço', 'fofo'], ['🧸', 'Ursinho', 'fofo'], ['💌', 'Cartinha', 'fofo'], ['🌸', 'Flor', 'fofo'],
+  ['🌙', 'Lua', 'brilho'], ['💎', 'Joia', 'brilho'], ['🎵', 'Música', 'brilho'], ['⭐', 'Estrela', 'brilho'], ['🌈', 'Arco-íris', 'brilho']];
+// Jeitos dos fãs: muda como se apresentam e como reagem
+var HS_JEITOS = {
+  animado: { oi:['Aaah, é você! Eu sou {n}!', 'Oi oi! Sou {n}!'], fav:'Eu AMO {p}!', ok:['Você lembrou! 💖', 'Aaaah! Vou contar pra todo mundo!'], erro:['Ah… era {p}! 🥲'] },
+  timido:  { oi:['É-é um prazer… sou {n}.', 'Oi… eu sou {n}.'], fav:'Eu gosto de {p}…', ok:['Você lembrou de mim… 🥹', 'O-obrigado!'], erro:['Tudo bem… era {p}.'] },
+  fofo:    { oi:['Oiê! Me chamo {n}!', 'Olá! Sou {n}!'], fav:'Meu favorito: {p}!', ok:['Que fofo! 💕', 'Yay! Acertou!'], erro:['Hehe, era {p}!'] }
+};
+var HS_JEITO_LISTA = ['animado', 'timido', 'fofo'];
 var HS_CABELOS = ['#ff7eb6', '#000000', '#864ffe', '#0000ff', '#ffd23f', '#8b4513', '#4dd8ff', '#b6ff3b', '#f2f2f2', '#d63384', '#2f5be0', '#c98b55'];
 var HS_PELES = ['#f1c9a5', '#e0ac69', '#b97a50', '#8d5524', '#ffdbac'];
 var HS_RECORDE_KEY = 'tw_handshake_recorde';
@@ -25,37 +35,62 @@ function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já exi
   c.back = um(hsOpcoes('cback')); c.front = um(hsOpcoes('cfront')); c.det = r() < .4 ? um(hsOpcoes('cdet')) : '';
   c.out = um(hsOpcoes('cout')); c.outcol = um(['#ffffff', '#ff9ccd', '#c8e3fb', '#cdeec6', '#ffe9a8', '#d9c7fb']);
   c.gl = r() < .25 ? um(hsOpcoes('cgl')) : ''; c.hat = r() < .25 ? um(hsOpcoes('chat')) : '';
-  return { nome:nome, c:c, pres:Math.floor(r() * HS_PRESENTES.length), pose:um(['v', 'tchau', 'coracao', '']), expr:um([2, 3, 6]) };
+  var jeito = um(HS_JEITO_LISTA), J = HS_JEITOS[jeito];
+  return { nome:nome, c:c, pres:Math.floor(r() * HS_PRESENTES.length), pose:um(['v', 'tchau', 'coracao', '']), expr:jeito === 'timido' ? 0 : um([2, 3, 6]), jeito:jeito, oi:um(J.oi) };
 }
 function hsRecorde(){ try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
-  hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null };
+  hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[] };
   hsUI(); if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
 }
 function hsFechar(){ hsOv.hidden = true; hs = null; }
 function hsNovaRodada(){
-  var r = hsSorteio(Date.now() + hs.rodada * 977), livres = hsNomesLivres().slice(), n = Math.min(3 + hs.rodada, 7), fila = [];
+  var r = hsSorteio(Date.now() + hs.rodada * 977), usadosNome = {};
+  hs.historico.forEach(function(f){ usadosNome[f.nome] = 1; });
+  var livres = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), n = Math.min(3 + hs.rodada, 7), fila = [];
   for(var i = 0; i < n && livres.length; i++){ var nome = livres.splice(Math.floor(r() * livres.length), 1)[0]; fila.push(hsFa(r, nome)); }
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
-  hs.fila = fila; hs.quiz = fila.slice().sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
+  var quiz = fila.slice();
+  // Superfã: da 2ª rodada em diante, um fã de uma rodada anterior volta SEM se apresentar de novo (vale bônus)
+  if(hs.historico.length && hs.rodada >= 1){
+    var sf = hs.historico[Math.floor(r() * hs.historico.length)];
+    if(!usados[sf.pres]){ sf = Object.assign({}, sf, { superfa:true }); quiz.push(sf); }
+  }
+  hs.historico = hs.historico.concat(fila);
+  hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
   hsUI();
 }
 function hsTempoPergunta(){ return Math.max(150, 270 - hs.rodada * 20); }   // em quadros (60 por segundo)
 function hsProxima(){
   hs.qi++;
   if(hs.qi >= hs.quiz.length){ if(hs.hype <= 0 || hs.rodada >= 5) return hsFim(); hs.fase = 'pausa'; hs.t0 = hsT; hsUI(); return; }
-  var f = hs.quiz[hs.qi], ops = [f.pres], r = hsSorteio(Date.now());
+  var f = hs.quiz[hs.qi], ops = [f.pres], r = hsSorteio(Date.now()), grupo = HS_PRESENTES[f.pres][2];
+  // as erradas: até 2 do mesmo grupo do certo e, de preferência, presentes de outros fãs da fila (pegadinha)
+  var mesmo = HS_PRESENTES.map(function(p, i){ return i; }).filter(function(i){ return i !== f.pres && HS_PRESENTES[i][2] === grupo; });
+  var daFila = hs.quiz.map(function(q){ return q.pres; }).filter(function(p){ return p !== f.pres; });
+  [daFila, mesmo].forEach(function(L){ L = L.slice(); while(ops.length < 3 && L.length){ var o = L.splice(Math.floor(r() * L.length), 1)[0]; if(ops.indexOf(o) < 0) ops.push(o); } });
   while(ops.length < 4){ var o = Math.floor(r() * HS_PRESENTES.length); if(ops.indexOf(o) < 0) ops.push(o); }
   hs.ops = ops.sort(function(){ return r() - .5; }); hs.fase = 'quiz'; hs.t0 = hsT; hs.resp = -1; hsUI();
 }
 function hsResponder(i){
   if(!hs || hs.fase !== 'quiz' || hs.resp >= 0) return;
-  var f = hs.quiz[hs.qi], ok = i >= 0 && hs.ops[i] === f.pres, rest = Math.max(0, 1 - (hsT - hs.t0) / hsTempoPergunta());
-  hs.resp = i; hs.ok = ok;
-  if(ok){ hs.pontos += 100 + Math.round(rest * 60) + hs.rodada * 10; hs.hype = Math.min(100, hs.hype + 8); if(sfx && sfx.star) try{ sfx.star(); }catch(e){} }
-  else { hs.hype = Math.max(0, hs.hype - 22); if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){} }
+  var f = hs.quiz[hs.qi], ok = i >= 0 && hs.ops[i] === f.pres, rest = Math.max(0, 1 - (hsT - hs.t0) / hsTempoPergunta()), J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo;
+  hs.resp = i; hs.ok = ok; hs.total++;
+  if(ok){
+    hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
+    var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);
+    hs.pontos += Math.round(base * (1 + Math.min(hs.combo - 1, 10) * .1));
+    hs.hype = Math.min(100, hs.hype + (f.superfa ? 15 : 8)); if(f.superfa) hs.superfas++;
+    hs.fala = tr(J.ok[Math.floor(Math.random() * J.ok.length)]);
+    for(var k = 0; k < 6; k++) hs.hearts.push({ x:.18 + Math.random() * .2, y:.6, v:.004 + Math.random() * .004, t:0, e:['💖', '💕', '✨'][k % 3] });
+    if(sfx && sfx.star) try{ sfx.star(); }catch(e){}
+  } else {
+    hs.combo = 0; hs.hype = Math.max(0, hs.hype - (i < 0 ? 18 : 22));
+    hs.fala = tr(J.erro[0]).replace('{p}', HS_PRESENTES[f.pres][0] + ' ' + tr(HS_PRESENTES[f.pres][1]));
+    if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
+  }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsFim(){
@@ -80,7 +115,7 @@ function hsLoop(ms){
     if(hs.fase === 'fila' && dt > 110){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
     else if(hs.fase === 'lembrar' && dt > 70) hsProxima();
     else if(hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
-    else if(hs.fase === 'resposta' && dt > 55){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
+    else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();
     if(hs.fase === 'quiz'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / hsTempoPergunta() * 100) + '%'; }
   }
@@ -99,37 +134,62 @@ function hsDesenhar(){
   x.clearRect(0, 0, W2, H2);
   try{ perfFundo(x, W2, H2, 'palco', '#ff6fb5', t); }catch(e){}
   // faixa do evento
-  x.save(); x.fillStyle = 'rgba(255,255,255,.92)'; x.fillRect(W2 * .18, 14, W2 * .64, 34); x.fillStyle = '#d63384'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  // holofotes + fila de fãs esperando ao fundo
+  x.save(); x.globalAlpha = .18 + .06 * Math.sin(t / 20); x.fillStyle = '#fff6b0';
+  [[.3, -1], [.75, 1]].forEach(function(h){ x.beginPath(); x.moveTo(W2 * h[0], 0); x.lineTo(W2 * h[0] + h[1] * W2 * .2 - W2 * .12, H2); x.lineTo(W2 * h[0] + h[1] * W2 * .2 + W2 * .12, H2); x.closePath(); x.fill(); });
+  x.restore();
+  if(hs && (hs.fase === 'fila' || hs.fase === 'inicio')){ var resta = hs.fase === 'inicio' ? 4 : Math.max(0, hs.fila.length - hs.vi - 1);
+    x.save(); x.globalAlpha = .55; for(var q = 0; q < Math.min(resta, 6); q++){ var qx = W2 * .05 + q * 26, qy = H2 * .6 + Math.sin(t / 9 + q) * 2;
+      x.fillStyle = ['#ffb3d9', '#c8b6ff', '#a8e6cf'][q % 3]; x.beginPath(); x.arc(qx, qy, 11, 0, 7); x.fill(); x.fillRect(qx - 10, qy + 9, 20, 26); } x.restore(); }
+  x.save(); x.fillStyle = 'rgba(255,255,255,.94)'; x.strokeStyle = '#ff9ccf'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .18, 12, W2 * .64, 38, 19); else x.rect(W2 * .18, 12, W2 * .64, 38); x.fill(); x.stroke(); x.fillStyle = '#d63384'; x.textAlign = 'center'; x.textBaseline = 'middle';
   x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32); x.restore();
   // o seu Idol atrás da mesa (à direita)
   try{ var meu = perfAvAtual({ pose:hs && hs.fase === 'resposta' && hs.ok ? 'banzai' : 'tchau', expr:hs && hs.fase === 'resposta' && !hs.ok ? 0 : 3, fundo:'' });
     x.save(); x.translate(W2 * .52, H2 * .02); perfDesenharIdol(x, W2 * .46, H2 * .92, meu, false, false, t); x.restore(); }catch(e){}
   // mesa
   x.fillStyle = '#c98b55'; x.fillRect(W2 * .46, H2 * .7, W2 * .54, H2 * .3); x.fillStyle = '#a0673a'; x.fillRect(W2 * .46, H2 * .7, W2 * .54, 8);
-  x.fillStyle = '#fff'; x.fillRect(W2 * .6, H2 * .76, W2 * .26, H2 * .1); x.fillStyle = '#ff6fb5'; x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center';
-  x.fillText(contaJ && contaJ.nick ? contaJ.nick : 'Idol', W2 * .73, H2 * .82);
+  x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(W2 * .46, H2 * .7 + 8, W2 * .54, 4);
+  var nomeIdol = (typeof idolNomeVisivel === 'function' && idolNomeVisivel()) || (contaJ && contaJ.nick) || 'Idol';
+  x.save(); x.font = '900 17px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  var pw = Math.min(W2 * .4, x.measureText(nomeIdol).width + 54), px = W2 * .73 - pw / 2, py = H2 * .75, ph = 40;
+  var gp = x.createLinearGradient(px, py, px + pw, py + ph); gp.addColorStop(0, '#ffd1ea'); gp.addColorStop(1, '#d9c8ff');
+  x.fillStyle = 'rgba(80,40,120,.25)'; x.beginPath(); if(x.roundRect) x.roundRect(px + 3, py + 4, pw, ph, 12); else x.rect(px + 3, py + 4, pw, ph); x.fill();
+  x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, ph, 12); else x.rect(px, py, pw, ph); x.fill(); x.stroke();
+  x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1);
+  x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('HANDSHAKE', W2 * .73, py - 7); x.restore();
+  // combo
+  if(hs && hs.combo >= 2){ x.save(); x.font = '900 20px "Mochiy Pop One",sans-serif'; x.textAlign = 'right'; x.fillStyle = '#ff6fb5'; x.strokeStyle = '#fff'; x.lineWidth = 5;
+    var ct = 'COMBO x' + hs.combo; x.strokeText(ct, W2 - 14, 74); x.fillText(ct, W2 - 14, 74); x.restore(); }
   // o fã da vez (à esquerda), entrando
   var f = hsFaAtual();
   if(f){
     var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * .27;
     try{ x.save(); x.translate(fx, H2 * .06); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:f.c, pose:f.pose, expr:f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(hs.fase === 'fila'){   // balão: nome + presente favorito
-      var txt = tr('Oi! Eu sou {n}!').replace('{n}', f.nome), pr = HS_PRESENTES[f.pres], t2l = tr('Meu favorito:') + ' ' + pr[0] + ' ' + tr(pr[1]);
+      var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
       x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W2 * .56, Math.max(x.measureText(txt).width, x.measureText(t2l).width) + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 4; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w, 86, 18); else x.rect(12, H2 * .16, w, 86); x.fill(); x.stroke();
       x.fillStyle = '#3c2a8f'; x.textAlign = 'left'; x.fillText(txt, 28, H2 * .16 + 34);
       x.fillStyle = '#d63384'; x.fillText(t2l, 28, H2 * .16 + 68); x.restore();
     } else {
-      x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var t2 = tr('Lembra de mim? Sou {n}!').replace('{n}', f.nome), w2 = Math.min(W2 * .56, x.measureText(t2).width + 32);
+      x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var t2 = hs.fase === 'resposta' && hs.fala ? hs.fala : f.superfa ? tr('Voltei! Lembra de mim? Sou {n}! 🌟').replace('{n}', f.nome) : tr('Lembra de mim? Sou {n}!').replace('{n}', f.nome), w2 = Math.min(W2 * .56, x.measureText(t2).width + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#7b3ff0'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w2, 50, 18); else x.rect(12, H2 * .16, w2, 50); x.fill(); x.stroke();
       x.fillStyle = '#7b3ff0'; x.textAlign = 'left'; x.fillText(t2, 28, H2 * .16 + 33); x.restore();
+      if(f.superfa){ x.save(); x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#fff'; x.strokeStyle = '#ffb000'; x.lineWidth = 2; x.beginPath(); if(x.roundRect) x.roundRect(14, H2 * .16 + 56, 120, 22, 11); else x.rect(14, H2 * .16 + 56, 120, 22); x.fillStyle = '#ffb000'; x.fill(); x.fillStyle = '#fff'; x.fillText('🌟 ' + tr('Superfã! +150'), 22, H2 * .16 + 71); x.restore(); }
       if(hs.fase === 'resposta'){ x.save(); x.font = '48px sans-serif'; x.textAlign = 'center'; x.fillText(hs.ok ? '💖' : '💦', W2 * .5, H2 * .45 - Math.min(20, dt)); x.restore(); }
     }
   }
+  hsCoracoes(x, W2, H2);
 }
+function hsCoracoes(x, W2, H2){
+  if(!hs || !hs.hearts.length) return; x.save(); x.font = '26px sans-serif'; x.textAlign = 'center';
+  hs.hearts = hs.hearts.filter(function(h){ h.t++; h.y -= h.v; x.globalAlpha = Math.max(0, 1 - h.t / 70); x.fillText(h.e, W2 * h.x + Math.sin(h.t / 6) * 8, H2 * h.y); return h.t < 70; });
+  x.restore();
+}
+function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[] }; }
 function hsUI(){
   var c = $('hsCorpo'); if(!c || !hs) return;
-  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/5</span><span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
+  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/5</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
     '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
@@ -145,6 +205,7 @@ function hsUI(){
   else if(hs.fase === 'pausa') h += '<p class="hsdica">🎶 ' + escHtml(tr('Próxima fila chegando… agora com mais fãs!')) + '</p>';
   else if(hs.fase === 'fim'){
     h += '<p class="hsfim">' + (hs.novo ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('Fim do evento!')) + ' <b>' + hs.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>';
+    h += '<div class="hsresumo"><span>🎯 ' + hs.acertos + '/' + hs.total + '</span><span>🔥 ' + escHtml(tr('Combo máx.')) + ' ' + hs.comboMax + '</span><span>🌟 ' + escHtml(tr('Superfãs')) + ' ' + hs.superfas + '</span></div>';
     if(hs.premio && hs.premio.ok) h += '<p class="faok">🎁 ' + escHtml(hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
     else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
     else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
@@ -155,7 +216,7 @@ function hsUI(){
 }
 function hsClique(e){
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
-  if(e.target.closest && e.target.closest('#hsJogar')){ hs.pontos = 0; hs.hype = 60; hs.rodada = 0; hs.premio = null; hsNovaRodada(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
+  if(e.target.closest && e.target.closest('#hsJogar')){ hsReiniciar(); hsNovaRodada(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
 }
 function hsHubHtml(){
   return '<button type="button" class="hubcard hubhandshake" data-ir="handshake"><i>🤝</i><b translate="no">Handshake⭐Event!</b><small class="tw-hubgame-jp" lang="ja">握手会</small><small>' + escHtml(tr('Lembre o presente de cada fã!')) + '</small></button>';

@@ -1,0 +1,12 @@
+/* Mapa da cidade idol (hub) */
+.mapa{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px}
+.mapalugar{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 6px 9px;border:0;border-radius:18px;background:var(--card,#fff);color:var(--b1,#3c2a8f);font:inherit;cursor:pointer;box-shadow:0 4px 0 rgba(123,63,240,.16),0 8px 18px rgba(123,63,240,.12);transition:transform .15s}
+.mapalugar:first-child{grid-column:1 / -1}
+.mapalugar:hover{transform:translateY(-2px)}
+.mapalugar:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.mapalugar canvas{width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:12px}
+.mapalugar b{font-size:15px;font-weight:900;margin-top:2px}
+.mapalugar small{font-size:12px;font-weight:700;opacity:.85}
+.mapasem{position:absolute;top:10px;left:10px;font-style:normal;font-size:11px;font-weight:800;color:#fff;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);padding:3px 9px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){.mapalugar{transition:none}.mapalugar:hover{transform:none}}
+@media (min-width:700px){.mapa{grid-template-columns:repeat(5,minmax(0,1fr))}.mapalugar:first-child{grid-column:auto}}

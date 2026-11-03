@@ -283,7 +283,7 @@ function hubCardsUI(){
   // 🧪 Temporário: os cards dos jogos especiais aparecem livres sem login.
   var gameLock = (!contaJ && !window.TW_JOGOS_SEM_LOGIN) ? lockHtml : '';
   hubBlocosUI();
-  $('hubCards').innerHTML =
+  $('hubCards').innerHTML = (typeof mapaHtml === 'function' ? mapaHtml() : '') +
     '<h2 class="hubblocot hubbt-mundo">💖 ' + escHtml(tr('Meu mundo')) + ' <small class="tw-jpsub" lang="ja">マイワールド</small></h2>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
@@ -299,6 +299,7 @@ function hubCardsUI(){
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
   twKaraokeAtualizarCard();
+  if(typeof mapaDesenhar === 'function') mapaDesenhar();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){

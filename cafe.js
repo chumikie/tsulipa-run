@@ -164,7 +164,7 @@ function cfServir(saiu){
     cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
     if(sfx&&sfx.hit)try{sfx.hit();}catch(e){}
   }
-  if(certo&&typeof eventoPetReagir==='function')eventoPetReagir('cafe',cfT,false);
+  if(typeof eventoPetReagir==='function')eventoPetReagir('cafe',cfT,false,certo?(cf.combo>=3?'combo':'acerto'):'erro');
   cf.ok=certo;cf.fase='reacao';cf.t0=cfT;cfUI();
 }
 function cfFim(){

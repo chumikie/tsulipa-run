@@ -275,7 +275,17 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
-  box.hidden=!!contaJ; if(contaJ) return;
+  var btn=$('hubLoginBtn'); box.hidden=false;
+  if(contaJ){   // logado: o mesmo lugar vira "Sair" (toque duas vezes para confirmar)
+    btn.classList.add('hubsair'); $('hubLoginTxt').textContent='🚪 '+tr('Sair');
+    btn.title=tr('Sair da conta')+' ('+contaJ.nick+')'; btn.setAttribute('aria-label',btn.title);
+    btn.onclick=function(e){ e.stopPropagation();
+      if(btn.dataset.confirma){ delete btn.dataset.confirma; contaSair(); return; }
+      btn.dataset.confirma='1'; $('hubLoginTxt').textContent='🚪 '+tr('Sair?')+' ✓';
+      setTimeout(function(){ if(btn.dataset.confirma){ delete btn.dataset.confirma; if(contaJ) $('hubLoginTxt').textContent='🚪 '+tr('Sair'); } },4000); };
+    return;
+  }
+  btn.classList.remove('hubsair'); delete btn.dataset.confirma;
   $('hubLoginTxt').textContent=tr('Entrar');
   var dica=tr('Entrar com Google')+': '+tr('☁️ Salva na nuvem · 🎯 Missões · 🏆 Ranking');
   $('hubLoginBtn').title=dica; $('hubLoginBtn').setAttribute('aria-label',dica);

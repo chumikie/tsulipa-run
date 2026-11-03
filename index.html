@@ -58,7 +58,7 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=2">
+<link rel="stylesheet" href="./hub.css?v=3">
 <link rel="stylesheet" href="./shop.css?v=3">
 <link rel="stylesheet" href="./jornal.css?v=10">
 <style>
@@ -348,9 +348,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./hoje.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=9"></script>
+<script src="./hub.js?v=10"></script>
 <script src="./shop.js?v=3"></script>
-<script src="./jornal.js?v=9"></script>
+<script src="./jornal.js?v=10"></script>
 <script src="./banner.js?v=4"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
@@ -1552,7 +1552,7 @@ jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; 
 jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
 $('jornalX').onclick = jornalFechar;
-jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
+jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
 jornalOv.addEventListener('change', function(e){ if(e.target.id === 'jnPostImg') jornalPostImagem(e.target.files && e.target.files[0]); });
 // Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
 var shopOv = document.createElement('div');

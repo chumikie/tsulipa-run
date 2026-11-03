@@ -22,6 +22,7 @@ function cfPedido(r, n){
 }
 function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
 function cfAbrir(){
+  if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
   cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, provaEstado:'' };
   cfUI();
@@ -111,6 +112,7 @@ function cfServir(saiu){
     cf.fala = saiu ? tr('Demorou… volto outro dia. 😢') : tr('Hmm… não foi bem isso que eu pedi. 🥲');
     if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
   }
+  if(certo && typeof eventoPetReagir === 'function') eventoPetReagir('cafe', cfT, false);
   cf.ok = certo; cf.fase = 'reacao'; cf.t0 = cfT; cfUI();
 }
 function cfFim(){
@@ -212,7 +214,7 @@ function cfDesenhar(){
   hsBalcaoArte(x, 0, H2 * .74, W2, H2 * .26);
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
   if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
-    eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.1, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)));
+    eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.7, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)), 'cafe');
     if(rb < 80){ x.save(); x.font = '20px sans-serif'; x.textAlign = 'center'; x.globalAlpha = Math.max(0, 1 - rb / 80); x.fillText('😋', W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0), H2 * .74 - 52 - rb * .3); x.restore(); } }
   if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
   // O efeito visual do atendente fica acima do balcão, sem botão de fala.
@@ -413,11 +415,16 @@ function cfDecor(x, W2, H2, k, t){
 
 /* Toque opcional somente no Idol da apresentação, nunca substitui os clientes sorteados. */
 function cfCenaClique(ev){
-  if(!cf || cfOv.hidden || cf.fase !== 'inicio') return;
+  if(!cf || cfOv.hidden) return;
   var cv = $('cfCv'), b = cv.getBoundingClientRect();
   if(!b.width || !b.height) return;
   var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
-  if(px >= cv.width * .08 && px <= cv.width * .38 && py >= cv.height * .2 && py <= cv.height * .77){
+  if(typeof eventoPetToque === 'function' && eventoPetToque('cafe', px, py, cfT)){
+    cfDesenhar(); // carinho e voz do pet, sem interferir no pedido ou na pontuação
+    return;
+  }
+  if(cf.fase === 'inicio' && px >= cv.width * .08 && px <= cv.width * .38 &&
+     py >= cv.height * .2 && py <= cv.height * .77){
     hsReacaoAtivar(cf, cfT);
     cfDesenhar(); // resposta imediata ao toque, mesmo entre quadros reduzidos no celular
   }

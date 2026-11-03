@@ -69,7 +69,7 @@ function hsRecorde(){ if(typeof recMaiorLocal === 'function') return recMaiorLoc
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
   hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' };
-  hsUI(); hsRecuperar(); if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
+  hsUI(); hsRecuperar(); var tela = $('hsCv'); if(tela) tela.onclick = hsTocarIdol; if(tela) tela.setAttribute('aria-label',tr('Toque no Idol')); if(tela) tela.onkeydown=function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); hsReagirIdol(); } }; var camera=$('hsFoto'); if(camera){ camera.title=tr('Tirar foto'); camera.setAttribute('aria-label',tr('Tirar foto')); } if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
 }
 function hsFechar(){ hsOv.hidden = true; hs = null; }
 function hsNovaRodada(){
@@ -189,6 +189,7 @@ function hsFim(){
 }
 function hsLoop(ms){
   hsAnim = 0; if(!twAnimacaoVisivel(hsOv)) return;
+  if($('shr') && !$('shr').hidden){ hsAnim = requestAnimationFrame(hsLoop); return; } // foto aberta: pausa o relógio sem consumir a rodada
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('hsCv'), ms) : 1; hsT += d;
   if(hs){
     var dt = hsT - hs.t0;
@@ -229,7 +230,7 @@ function hsDesenhar(){
       x.fillStyle = '#7b3ff0'; x.textBaseline = 'middle'; x.fillText('👥 ' + tr('Fila') + ': ' + prox.length, 20, H2 - 19); x.restore(); }
   }
   x.save(); x.fillStyle = 'rgba(255,255,255,.94)'; x.strokeStyle = '#ff9ccf'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .18, 12, W2 * .64, 38, 19); else x.rect(W2 * .18, 12, W2 * .64, 38); x.fill(); x.stroke(); x.fillStyle = '#d63384'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32); x.restore();
+  x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.fillText('💌 ' + tr('Um encontro especial') + ' 💌', W2 / 2, 32, W2 * .58); x.restore();
   // o seu Idol atrás da mesa (à direita)
   try{ var meu = perfAvAtual({ pose:hs && hs.fase === 'resposta' && hs.ok ? 'banzai' : 'tchau', expr:hs && hs.fase === 'resposta' && !hs.ok ? 0 : 3, fundo:'' });
     x.save(); x.translate(W2 * .52, H2 * .02); perfDesenharIdol(x, W2 * .46, H2 * .92, meu, false, false, t); x.restore(); }catch(e){}
@@ -238,12 +239,17 @@ function hsDesenhar(){
   x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(W2 * .46, H2 * .7 + 8, W2 * .54, 4);
   var nomeIdol = (typeof idolNomeVisivel === 'function' && idolNomeVisivel()) || (contaJ && contaJ.nick) || 'Idol';
   x.save(); x.font = '900 17px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  var pw = Math.min(W2 * .4, x.measureText(nomeIdol).width + 54), px = W2 * .73 - pw / 2, py = H2 * .75, ph = 40;
+  var pw = Math.min(W2 * .4, x.measureText('⭐ ' + nomeIdol + ' ⭐').width + 34), px = W2 * .73 - pw / 2, py = H2 * .75, ph = 40;
   var gp = x.createLinearGradient(px, py, px + pw, py + ph); gp.addColorStop(0, '#ffd1ea'); gp.addColorStop(1, '#d9c8ff');
   x.fillStyle = 'rgba(80,40,120,.25)'; x.beginPath(); if(x.roundRect) x.roundRect(px + 3, py + 4, pw, ph, 12); else x.rect(px + 3, py + 4, pw, ph); x.fill();
   x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, ph, 12); else x.rect(px, py, pw, ph); x.fill(); x.stroke();
-  x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1);
-  x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('HANDSHAKE', W2 * .73, py - 7); x.restore();
+  x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1, pw - 18);
+  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe9a7'; x.fillText('✦ ' + tr('Idol') + ' ✦', W2 * .73, py - 12); x.restore();
+  // Convite discreto, sem encobrir o rosto; a reação é só visual.
+  x.save(); x.globalAlpha = .86 + .12 * Math.sin(t / 16); x.fillStyle = '#fff5ff'; x.strokeStyle = '#f2c5e3'; x.lineWidth = 2;
+  x.beginPath(); if(x.roundRect) x.roundRect(W2 * .63, H2 * .58, W2 * .32, 27, 13); else x.rect(W2 * .63, H2 * .58, W2 * .32, 27); x.fill(); x.stroke();
+  x.fillStyle = '#a44cba'; x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('✨ ' + tr('Toque no Idol') + ' 💖', W2 * .79, H2 * .58 + 14, W2 * .29); x.restore();
   // combo
   if(hs && hs.combo >= 2){ x.save(); x.font = '900 20px "Mochiy Pop One",sans-serif'; x.textAlign = 'right'; x.fillStyle = '#ff6fb5'; x.strokeStyle = '#fff'; x.lineWidth = 5;
     var ct = 'COMBO x' + hs.combo; x.strokeText(ct, W2 - 14, 74); x.fillText(ct, W2 - 14, 74); x.restore(); }
@@ -280,7 +286,7 @@ function hsUI(){
   var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/5</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
   if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
-  if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
+  if(hs.fase === 'inicio') h += '<div class="hc-instrucoes"><span aria-hidden="true">💌</span><p>' + escHtml(tr('Conheça os fãs e memorize seus presentes. Quando voltarem, escolha o presente certo antes do tempo acabar!')) + '</p></div>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', eventoAtual().pres)) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
@@ -308,7 +314,41 @@ function hsUI(){
   }
   c.innerHTML = h;
 }
+
+// Reação ao toque no seu Idol: só partículas, nunca pontos, progresso ou prêmios.
+function hsTocarIdol(e){
+  if(!hs) return;
+  var b=e.currentTarget.getBoundingClientRect(), px=(e.clientX-b.left)/b.width, py=(e.clientY-b.top)/b.height;
+  if(px<.54 || px>.98 || py<.12 || py>.70) return;
+  hsReagirIdol();
+}
+function hsReagirIdol(){ if(!hs) return;
+  var emoticons=['💖','💕','✨','🌟','🫶','💜'];
+  for(var i=0;i<7;i++) hs.hearts.push({x:.64+Math.random()*.26,y:.52+Math.random()*.08,v:.004+Math.random()*.004,t:0,e:emoticons[i%emoticons.length]});
+  if(hs.hearts.length>24) hs.hearts=hs.hearts.slice(-24);
+  if(typeof sfx!=='undefined' && sfx && sfx.card) try{sfx.card();}catch(err){}
+}
+// Usa a mesma janela de baixar foto do camarim e da corrida.
+function hsFotografar(id,titulo,slug){
+  var origem=$(id), foto=$('shr'), imagem=$('shimg'), baixar=$('shdl');
+  if(!origem || !foto || !imagem || !baixar) return;
+  try{
+    var c=document.createElement('canvas'); c.width=720;c.height=478;
+    var a=c.getContext('2d');
+    a.fillStyle='#fff2fa';a.fillRect(0,0,c.width,c.height);
+    a.fillStyle='#7b3ff0';a.font='bold 24px "M PLUS Rounded 1c",sans-serif';a.fillText('✨ '+titulo,25,38);
+    a.drawImage(origem,24,56,672,378);
+    a.fillStyle='#9a68ba';a.font='bold 15px "M PLUS Rounded 1c",sans-serif';
+    a.fillText('TsuLiPa⭐World  ♡  '+new Date().toLocaleDateString('pt-BR'),25,460);
+    var url=c.toDataURL('image/png');imagem.src=url;baixar.href=url;
+    baixar.download='tsulipa-'+slug+'-'+new Date().toISOString().slice(0,10)+'.png';
+    if(typeof petPhShow==='function') petPhShow(false);
+    foto.hidden=false;
+    if(typeof sfx!=='undefined' && sfx && sfx.photo) try{sfx.photo();}catch(err){}
+  }catch(err){ alert(tr('Não foi possível gerar a foto.')); }
+}
 function hsClique(e){
+  if(e.target.closest && e.target.closest('#hsFoto')){ hsFotografar('hsCv', 'Handshake⭐Event!', 'handshake'); return; }
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
   if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
 }

@@ -112,9 +112,13 @@ function cfServir(saiu){
   cf.ok = certo; cf.fase = 'reacao'; cf.t0 = cfT; cfUI();
 }
 function cfFim(){
+  if(!cf || cf.fase === 'fim') return;
   cf.fase = 'fim';
   if(cf.perfeitos >= 12 && typeof conqGanhar === 'function' && conqGanhar('jogo_barista')) cf.conq.push('🧋 ' + tr('Barista perfeito'));
-  var rec = cfLer(CF_RECORDE_KEY, 0); cf.novoRec = cf.pontos > rec; if(cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
+  var rec = typeof recMaiorLocal === 'function' ? recMaiorLocal('cafe') : cfLer(CF_RECORDE_KEY, 0);
+  cf.novoRec = cf.pontos > rec;
+  if(typeof recRegistrarLocal === 'function') recRegistrarLocal('cafe',cf.pontos);
+  if(!contaJ && cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
   cfUI();
 }
 function cfLoop(ms){

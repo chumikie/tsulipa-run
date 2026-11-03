@@ -256,6 +256,23 @@ function hsDesenhar(){
   x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, ph, 12); else x.rect(px, py, pw, ph); x.fill(); x.stroke();
   x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
   x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 1.5; x.beginPath(); if(x.roundRect) x.roundRect(px + 4, py + 4, pw - 8, ph - 8, 9); else x.rect(px + 4, py + 4, pw - 8, ph - 8); x.stroke();
+  // Microluzes na moldura: LEDs e estrelinhas discretas, mantendo o nome legível.
+  var semPiscar = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var luzes = ['#fffaf2','#ffe47c','#ffb5e4','#c9edff'];
+  x.shadowColor = 'rgba(255,226,150,.9)'; x.shadowBlur = 5;
+  for(var led = 0; led < 7; led++){
+    var ledX = px + 11 + (pw - 22) * led / 6;
+    var luz = semPiscar ? .86 : .65 + .35 * (.5 + .5 * Math.sin(t / 9 + led * 1.7));
+    x.globalAlpha = luz; x.fillStyle = luzes[led % luzes.length];
+    x.beginPath(); x.arc(ledX, py + 1.7, 2, 0, Math.PI * 2); x.fill();
+    x.beginPath(); x.arc(ledX, py + ph - 1.7, 1.7, 0, Math.PI * 2); x.fill();
+  }
+  for(var lado = 0; lado < 2; lado++){
+    x.globalAlpha = semPiscar ? .8 : .64 + .36 * (.5 + .5 * Math.sin(t / 11 + lado * 3));
+    x.fillStyle = '#fff5b9'; x.beginPath();
+    x.arc(lado ? px + pw - 1.5 : px + 1.5, py + ph * .5, 1.8, 0, Math.PI * 2); x.fill();
+  }
+  x.globalAlpha = 1; x.shadowBlur = 0; x.shadowColor = 'transparent';
   x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1);
   x.restore();
   // combo

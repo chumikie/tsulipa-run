@@ -71,3 +71,35 @@ test('sem oito membros a foto especial não duplica Idols', () => {
   assert.equal(r.fotos.some(f => f.tipo === 'janela'), false);
   assert.equal(r.fotos.length, 3);
 });
+
+test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols dimensionados', () => {
+  const começo = jornal.indexOf('function jornalFotoDesenhar(');
+  const fim = jornal.indexOf('function jornalFotoAmpliar(');
+  assert.ok(começo >= 0 && fim > começo);
+  const desenho = jornal.slice(começo, fim);
+  for(const local of ['gigoia','liberdade','tailandia','harajuku','praia']){
+    for(const [largura,altura] of [[480,300],[1440,900]]){
+      const movimentos = [], cenas = [], idols = [];
+      const pincel = new Proxy({translate:(a,b)=>movimentos.push([a,b])},{
+        get(obj,chave){ return chave in obj ? obj[chave] : ()=>{}; },
+        set(obj,chave,valor){ obj[chave] = valor; return true; }
+      });
+      const atores = Array.from({length:8},(_,i)=>({avatar:{c:{hair:'#ff6fb5'}}}));
+      const ambiente = vm.createContext({
+        cv:{width:largura,height:altura,getContext:()=>pincel},
+        foto:{tipo:'janela',local,noturna:false,grupo:atores,cena:['ceu','📸','foto',['v','banzai']]},
+        KaraokeRoomViews:{drawScene:(ctx,x,y,w,h)=>cenas.push({x,y,w,h})},
+        perfDesenharIdol:(ctx,w,h)=>idols.push({w,h}),
+        perfFundo:()=>{}
+      });
+      vm.runInContext(desenho + '\\n jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
+      const deslocamento = local==='tailandia'?.55:.25;
+      assert.equal(cenas.length,1,local+' usa a arte oficial');
+      assert.equal(cenas[0].w,largura);
+      assert.ok(Math.abs(cenas[0].h-altura*(1+deslocamento))<.001);
+      assert.ok(movimentos.some(([x,y])=>x===0&&Math.abs(y+altura*deslocamento)<.001),'câmera valoriza a paisagem');
+      assert.equal(idols.length,8,'nenhum Idol foi removido da cena');
+      assert.ok(idols.every(p=>p.h<altura*.44&&p.h>altura*.37),'oito Idols abaixo dos monumentos');
+    }
+  }
+});

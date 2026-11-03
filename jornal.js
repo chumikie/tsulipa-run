@@ -113,7 +113,14 @@ function jornalFotoDesenhar(cv, f, assinatura){
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
   x.clearRect(0, 0, W2, H2);
   try{
-    if(f.tipo === 'janela' && typeof KaraokeRoomViews !== 'undefined') KaraokeRoomViews.drawScene(x, 0, 0, W2, H2, 0, f.local, !!f.noturna);
+    if(f.tipo === 'janela' && typeof KaraokeRoomViews !== 'undefined'){
+      // Enquadramento fotográfico: mostra os marcos do cenário, sem a moldura da janela.
+      // No templo tailandês, o céu é recortado para preservar a torre acima do elenco.
+      var pan = f.local === 'tailandia' ? .55 : .25;
+      x.save(); x.translate(0, -H2 * pan);
+      KaraokeRoomViews.drawScene(x, 0, 0, W2, H2 * (1 + pan), 0, f.local, !!f.noturna);
+      x.restore();
+    }
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
     else perfFundo(x, W2, H2, f.cena[0], cor, 0);
   }catch(e){}
@@ -142,7 +149,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
       var av8 = JSON.parse(JSON.stringify(p.avatar)), slot8 = W2 / 8;
       var balanco = [-.045,.025,-.035,.04,-.025,.04,-.03,.035][k];
       var varia = [1.04,.98,1.02,1.06,.97,1.03,.99,1.04][k];
-      var altura = H2 * .54 * varia;
+      var altura = H2 * .40 * varia; // rosto visível, monumento ao fundo descoberto
       var chao = H2 * (.962 - Math.abs(k - 3.5) * .009);
       var centro = slot8 * (k + .5);
       av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][k % 4]; av8.visual = ''; av8.pet = null;
@@ -153,27 +160,28 @@ function jornalFotoDesenhar(cv, f, assinatura){
       try{ perfDesenharIdol(x, slot8 * 1.04, altura, av8, false, false, 0); }catch(e){}
       x.restore();
     });
-    // Bandeirolas e brilhinhos no alto: detalhe de festa sem cobrir rostos ou paisagem.
+    // Guirlandas simétricas nos cantos: cada bandeirinha toca exatamente o fio.
+    // O miolo fica livre para os marcos das cinco vistas (inclusive a torre).
     x.save();
-    x.lineWidth = Math.max(1, H2 * .005);
-    x.strokeStyle = 'rgba(255,255,255,.82)';
-    x.beginPath(); x.moveTo(W2 * .065, H2 * .045);
-    x.quadraticCurveTo(W2 * .5, H2 * .175, W2 * .935, H2 * .045); x.stroke();
-    var coresFesta = ['#ff7eb6','#ffe47a','#8ae4ff','#b59bff','#94eec8'];
-    for(var b = 0; b < 9; b++){
-      var ux = W2 * (.12 + b * .095), t = (ux / W2 - .065) / .87;
-      var uy = H2 * (.045 + .26 * t * (1 - t));
-      x.fillStyle = coresFesta[b % coresFesta.length];
-      x.beginPath(); x.moveTo(ux - W2 * .016, uy);
-      x.lineTo(ux + W2 * .016, uy); x.lineTo(ux, uy + H2 * .052);
-      x.closePath(); x.fill();
+    var coresFesta = ['#ff7eb6','#ffe47a','#8ae4ff','#94eec8'];
+    for(var lado = 0; lado < 2; lado++){
+      x.save();
+      if(lado){ x.translate(W2, 0); x.scale(-1, 1); }
+      x.strokeStyle = 'rgba(255,255,255,.88)';
+      x.lineWidth = Math.max(1.5, H2 * .006);
+      x.beginPath(); x.moveTo(W2 * .025, H2 * .055);
+      x.quadraticCurveTo(W2 * .16, H2 * .14, W2 * .295, H2 * .055); x.stroke();
+      for(var b = 0; b < 4; b++){
+        var t = (b + .5) / 4;
+        var ux = W2 * (.025 + .27 * t);
+        var uy = H2 * (.055 + .17 * t * (1 - t));
+        x.fillStyle = coresFesta[b];
+        x.beginPath(); x.moveTo(ux - W2 * .011, uy);
+        x.lineTo(ux + W2 * .011, uy); x.lineTo(ux, uy + H2 * .038);
+        x.closePath(); x.fill();
+      }
+      x.restore();
     }
-    [[.075,.2,'#ffe47a'],[.93,.22,'#ff8ec4'],[.19,.29,'#9aebff'],[.82,.30,'#ffe47a']].forEach(function(a){
-      var sx = W2 * a[0], sy = H2 * a[1], r = H2 * .018;
-      x.strokeStyle = a[2]; x.lineWidth = Math.max(2, H2 * .007);
-      x.beginPath(); x.moveTo(sx-r,sy); x.lineTo(sx+r,sy);
-      x.moveTo(sx,sy-r); x.lineTo(sx,sy+r); x.stroke();
-    });
     x.restore();
     n = 0;
   }

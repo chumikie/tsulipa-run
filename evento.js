@@ -28,16 +28,19 @@ function eventoBanner(x, W2, H2){   // plaquinha no canto do banner
   x.fillStyle = '#3c2a8f'; x.textBaseline = 'middle'; x.fillText(txt, px + fs * .7, py + h / 2 + 1); x.restore();
 }
 
-/* Conquistas dos jogos novos (insígnias visuais na Estante de troféus). Ficam no aparelho e, quando o
-   servidor tiver a função conquista_jogo (proposta SQL), também na conta. */
+/* Conquistas locais antigas permanecem preservadas. A conta só recebe as três novas
+   insígnias com prova do servidor em players.insignias_jogos. */
 var CONQ_KEY = 'tw_conquistas';
 function conqLer(){ try{ return JSON.parse(localStorage.getItem(CONQ_KEY)) || {}; }catch(e){ return {}; } }
 function conqTem(k){ return !!conqLer()[k]; }
-function conqGanhar(k){   // devolve true se é nova
-  var c = conqLer(); if(c[k]) return false;
-  c[k] = Date.now(); try{ localStorage.setItem(CONQ_KEY, JSON.stringify(c)); }catch(e){}
-  if(typeof contaJ !== 'undefined' && contaJ) contaRpc('conquista_jogo', { p_k:k }).catch(function(){});
-  return true;
+function conqGanhar(k){   // devolve true se é nova somente no registro visual deste aparelho
+  var c = conqLer(), nova = !c[k];
+  if(nova){ c[k] = Date.now(); try{ localStorage.setItem(CONQ_KEY, JSON.stringify(c)); }catch(e){} }
+  // Tentar sincronizar inclusive conquistas locais antigas; a RPC verifica provas, jamais confia na chave.
+  if(typeof contaJ !== 'undefined' && contaJ) contaRpc('conquista_jogo', {p_k:k}).then(function(r){
+    if(r && r.ok && typeof recCarregar === 'function') recCarregar();
+  }).catch(function(){});
+  return nova;
 }
 function conqLista(){ var c = conqLer(); return Object.keys(c).map(function(k){ return k + ':1'; }); }
 

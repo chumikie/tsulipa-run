@@ -130,7 +130,7 @@ function hsResponder(i){
     hs.fala = tr(J.erro[0]).replace('{p}', HS_PRESENTES[f.pres][0] + ' ' + tr(HS_PRESENTES[f.pres][1]));
     if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
   }
-  if(ok && typeof eventoPetReagir === 'function') eventoPetReagir('handshake', hsT, false);
+  if(typeof eventoPetReagir === 'function') eventoPetReagir('handshake', hsT, false, ok ? (hs.combo >= 3 ? 'combo' : 'acerto') : 'erro');
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsAplicarPet(r){

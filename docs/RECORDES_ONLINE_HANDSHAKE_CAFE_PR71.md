@@ -39,7 +39,7 @@
 
 1. `handshake_premio`: prêmio do dia (ticket ou item do pet, sem estrelas), `public.handshake_premios` e lançamento de ticket.
 2. `missoes_handshake_cafe`: **★10** mediante prova de atividade, sem usar placar local.
-3. `conquistas_jogos_novos`: proposta ainda incompatível com o esquema ativo; precisa de provas de servidor e de adaptação a `players.insignias_jogos`. Não aplicar até revisão independente.
+3. `conquistas_jogos_novos`: proposta anterior foi desativada; a nova RPC `conquista_jogo` verifica resultados registrados no servidor e acrescenta insígnias em `players.insignias_jogos`, sem apagar valores existentes.
 
 ## Critérios de aceitação para autorizar o SQL
 
@@ -50,4 +50,11 @@
 - Simular 50 partidas/conta/jogo: no máximo 10 registros de partidas + os máximos necessários; cruzar domingo e retenção.
 - Testar SQL em transação revertida antes de qualquer produção e pedir autorização separada. **Sem merge/deploy até a decisão do usuário.**
 
-**Estado:** a PR #71 contém melhorias de visual, reação e fotografia, mas esta especificação não ativa recordes online. Banco não alterado nesta etapa.
+**Estado em 03/11/2026:** implementação de cliente e SQL de revisão preparados na própria PR #71.
+- Handshake: `handshake_run_finish` registra toda sessão confirmada mesmo após o prêmio diário; `handshake_iniciar` permite recomeçar até 30 sessões/24h. O prêmio original só acontece uma vez por dia e há recibo idempotente vinculado à sessão.
+- Café: `cafe_run_iniciar`, `cafe_run_pedido`, `cafe_run_etapa` e `cafe_run_finalizar` verificam até 12 pedidos, tempo e combo. A pontuação exibida como online vem do servidor.
+- Insígnias: `conquista_jogo` permite somente `jogo_memoria`, `jogo_barista` e `jogo_caderno`, baseadas em provas armazenadas, e usa `players.insignias_jogos`.
+- Recordes: `meus_recordes_jogo` retorna listas e máximos por conta. Enquanto a RPC não estiver ativa, a tela deixa claro quando mostra registros apenas deste aparelho.
+- SQL **não aplicado**, não existe publicação/merge autorizada. Revisão isolada em `supabase/sql/proposta/PR71_RECORDES_ONLINE_E_INSIGNIAS_REVIEW_ONLY.sql`.
+
+**Validação local feita:** os quatro scripts JavaScript novos passaram na análise sintática e as regras estruturais críticas do SQL foram conferidas. **Ainda pendem:** transação SQL revertida, testes de duas contas e 50 partidas, testes de rede/latência no Café, regressão de missão ★10 e prêmios com saldo de tickets 99, além do CI da PR atualizado. Nenhum resultado online deve ser anunciado como ativo até essas confirmações.

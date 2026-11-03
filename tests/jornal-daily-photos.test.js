@@ -61,6 +61,11 @@ test('a cena adicional preserva o telão e a foto privada do jogador com pet', (
   assert.equal((resultado.html.match(/data-jfoto=/g) || []).length, 6);
 });
 
+test('as cinco vistas oficiais aparecem uma vez por ciclo de cinco dias', () => {
+  const locais = Array.from({ length: 5 }, (_, i) => gerar({ dia: 20760 + i }).fotos.find(f => f.tipo === 'janela').local);
+  assert.equal(new Set(locais).size, 5);
+});
+
 test('sem oito membros a foto especial não duplica Idols', () => {
   const r = gerar({ quantidade: 7 });
   assert.equal(r.fotos.some(f => f.tipo === 'janela'), false);

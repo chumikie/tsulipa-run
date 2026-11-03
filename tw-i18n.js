@@ -2,6 +2,13 @@
 // As tabelas são mantidas separadas para preservar os pontos e a ordem atuais de mesclagem em DICT.
 window.TW_DICT={
  "en":{
+  "{n} preparando os figurinos no camarim":"{n} getting outfits ready in the dressing room",
+  "{n} comemorando um aniversário no café":"{n} celebrating a birthday at the café",
+  "{n} lendo cartinhas dos fãs":"{n} reading letters from fans",
+  "{n} nos bastidores antes do show":"{n} backstage before the show",
+  "{n} gravando música no estúdio":"{n} recording a song in the studio",
+  "{n} num piquenique no jardim":"{n} having a picnic in the garden",
+
   " Escudo e look!":" Shield and new look!",
   "{a} com {b} no camarim":"{a} with {b} in the dressing room",
   "{a} e {b}":"{a} and {b}",
@@ -268,6 +275,13 @@ window.TW_DICT={
   "おつかれさま":"Good work!"
  },
  "es":{
+  "{n} preparando os figurinos no camarim":"{n} preparando los vestuarios en el camerino",
+  "{n} comemorando um aniversário no café":"{n} celebrando un cumpleaños en el café",
+  "{n} lendo cartinhas dos fãs":"{n} leyendo cartas de fans",
+  "{n} nos bastidores antes do show":"{n} entre bastidores antes del show",
+  "{n} gravando música no estúdio":"{n} grabando una canción en el estudio",
+  "{n} num piquenique no jardim":"{n} de pícnic en el jardín",
+
   " Escudo e look!":" ¡Escudo y nuevo look!",
   "{a} com {b} no camarim":"{a} con {b} en el camerino",
   "{a} e {b}":"{a} y {b}",
@@ -534,6 +548,13 @@ window.TW_DICT={
   "おつかれさま":"¡Buen trabajo!"
  },
  "th":{
+  "{n} preparando os figurinos no camarim":"{n} เตรียมชุดในห้องแต่งตัว",
+  "{n} comemorando um aniversário no café":"{n} ฉลองวันเกิดที่คาเฟ่",
+  "{n} lendo cartinhas dos fãs":"{n} อ่านจดหมายจากแฟน ๆ",
+  "{n} nos bastidores antes do show":"{n} อยู่หลังเวทีก่อนการแสดง",
+  "{n} gravando música no estúdio":"{n} อัดเพลงในสตูดิโอ",
+  "{n} num piquenique no jardim":"{n} ไปปิกนิกในสวน",
+
   " Escudo e look!":" ได้โล่และชุดใหม่!",
   "{a} com {b} no camarim":"{a} กับ {b} ในห้องแต่งตัว",
   "{a} e {b}":"{a} และ {b}",
@@ -800,6 +821,13 @@ window.TW_DICT={
   "おつかれさま":"ทำงานหนักมาก!"
  },
  "ja":{
+  "{n} preparando os figurinos no camarim":"{n}が楽屋で衣装を準備中",
+  "{n} comemorando um aniversário no café":"{n}がカフェで誕生日をお祝い",
+  "{n} lendo cartinhas dos fãs":"{n}がファンレターを読んでいる",
+  "{n} nos bastidores antes do show":"{n}が公演前に舞台裏で待機中",
+  "{n} gravando música no estúdio":"{n}がスタジオでレコーディング中",
+  "{n} num piquenique no jardim":"{n}が庭でピクニック中",
+
   " Escudo e look!":" シールドと新衣装！",
   "{a} com {b} no camarim":"楽屋で{a}と{b}",
   "{a} e {b}":"{a}と{b}",

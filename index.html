@@ -159,7 +159,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
-<link rel="stylesheet" href="./atualizacao2.css?v=1">
+<link rel="stylesheet" href="./atualizacao2.css?v=3">
+<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=1"><'+'/script>');</script>
 </head>
 <body>
 <header>
@@ -349,9 +350,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./hoje.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=11"></script>
-<script src="./shop.js?v=3"></script>
-<script src="./jornal.js?v=10"></script>
+<script src="./hub.js?v=12"></script>
+<script src="./shop.js?v=4"></script>
+<script src="./jornal.js?v=11"></script>
 <script src="./banner.js?v=4"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
@@ -1536,16 +1537,27 @@ perfOv.addEventListener('click', function(e){
 // ---------- Ranking dos minijogos do camarim (Ritmo e Pular corda) ----------
 
 // ---------- Montar Idol (o mesmo montador do menu, gravando no Idol) ----------
-perfOv.addEventListener('input', function(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color') perfMontMudou(el.dataset.m, el.value); });
-perfOv.addEventListener('change', function(e){
+// Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
+var shopOv = document.createElement('div');
+shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.hidden = true; shopOv.innerHTML = shopHtml();
+document.body.appendChild(shopOv);
+$('shopX').onclick = shopFechar;
+$('shopCv').addEventListener('click', shopReage);
+shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); });
+// Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
+function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
+function montChange(e){
   var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return;
   perfMontMudou(el.dataset.m, el.type === 'checkbox' ? el.checked : el.value);
-});
-perfOv.addEventListener('click', function(e){
+  if(!shopOv.hidden) shopProvador();
+}
+function montClique(e){
   var b = e.target.closest('#perfMont .sw'); if(!b) return;
   [].forEach.call(b.parentNode.children, function(x){ x.setAttribute('aria-pressed', x === b); });
   perfMontMudou('skin', b.dataset.v);
-});
+  if(!shopOv.hidden) shopProvador();
+}
+[perfOv, shopOv].forEach(function(ov){ ov.addEventListener('input', montInput); ov.addEventListener('change', montChange); ov.addEventListener('click', montClique); });
 
 // Idol⭐News! (jornal.js): só leitura dos pódios da semana
 var jornalOv = document.createElement('div');
@@ -1553,15 +1565,8 @@ jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; 
 jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
 $('jornalX').onclick = jornalFechar;
-jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
+jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } if(e.target.id === 'jnMusicaIr'){ jornalFechar(); var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
 jornalOv.addEventListener('change', function(e){ if(e.target.id === 'jnPostImg') jornalPostImagem(e.target.files && e.target.files[0]); });
-// Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
-var shopOv = document.createElement('div');
-shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.hidden = true; shopOv.innerHTML = shopHtml();
-document.body.appendChild(shopOv);
-$('shopX').onclick = shopFechar;
-$('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); });
 // ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
 function lojaRoupasClique(e){
   var b = e.target.closest('#perfLoja [data-vestir]');

@@ -43,6 +43,8 @@ function jornalMontar(d){
     (mus ? '<li>' + escHtml(tr('Música da semana')) + ': <b translate="no">' + escHtml(mus[1]) + '</b></li>' : '') +
     (vista ? '<li>' + escHtml(tr('Vista da janela do Karaoke')) + ': <b>' + escHtml(vista) + '</b></li>' : '') +
     (total ? '<li>' + escHtml(tr('Idols na vitrine')) + ': <b>' + total + '</b></li>' : '') + '</ul></section>';
+  if(mus) h += '<section class="jnbloco jnmusica"><h4>🎵 ' + escHtml(tr('Música da semana')) + '</h4><p><b translate="no">' + escHtml(mus[1]) + '</b>' + (vista ? ' · ' + escHtml(tr('Vista da janela do Karaoke')) + ': ' + escHtml(vista) : '') + '</p>' +
+    '<div class="btns"><button type="button" class="btn" id="jnMusicaIr">🎤 ' + escHtml(tr('Cantar no Karaoke⭐Time!')) + '</button></div></section>';
   h += jornalTimesHtml() + jornalFestHtml() + jornalTrioHtml();
   h += jornalPostsHtml();
   return h;

@@ -62,3 +62,14 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 /* Zipper⭐Shop! no hub: brilhinho no canto */
 #hub #hubCards>button.hubcard.hubloja::after{content:"✦";position:absolute;top:10px;right:14px;color:#fff;opacity:.9;font-size:16px;animation:tw2brilho 2.2s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){#hub #hubCards>button.hubcard.hubloja::after{animation:none}}
+
+/* Hoje: Encontro, Idol⭐News! e Pedido de fã em 3 quadrados */
+#hub #hubHojeLinha{grid-template-columns:repeat(3,minmax(0,1fr))}
+#hub #hubHojeLinha>button{min-width:0;padding:10px 6px}
+#hub #hubHojeLinha>button small{overflow-wrap:anywhere}
+@media (max-width:420px){#hub #hubHojeLinha>button{font-size:13px}#hub #hubHojeLinha>button small:not(.tw-hubgame-jp){font-size:11px}}
+
+/* botões: mesmo espaçamento e sem sublinhado nos links-botão */
+.shopp .btns,.jornalp .btns,.albump .btns,.fap .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:10px 0}
+.shopp a.btn,.jornalp a.btn{text-decoration:none}
+.shopmontbtns{margin-top:6px}

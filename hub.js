@@ -267,6 +267,7 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
   var m = hubMusicaSemana(), b = $('hubMusica');
   b.innerHTML = '🎵 <b>' + escHtml(tr('Música da semana')) + '</b><small class="tw-hubgame-jp" lang="ja">今週の曲</small><small translate="no">' + escHtml(m[1]) + '</small>';
   b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };
+  b.style.display = 'none';   // a Música da semana agora mora no Idol⭐News!
   var linha = $('hubHojeLinha'), jn = $('hubJornal');
   if(linha && !jn){ jn = document.createElement('button'); jn.type = 'button'; jn.className = 'hubmusica hubjornal'; jn.id = 'hubJornal'; jn.onclick = function(){ if(sfx.card) sfx.card(); jornalAbrir(); }; linha.appendChild(jn); }
   var fb = $('hubFa');

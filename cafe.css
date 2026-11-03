@@ -1,0 +1,17 @@
+/* Backstage⭐Cafe! — usa a base visual do Handshake (.hsp) e adiciona os grupos de ingredientes */
+.cfp #cfCv{width:100%;height:auto;display:block;border-radius:18px;margin:8px 0;box-shadow:0 4px 0 rgba(201,139,85,.35)}
+.cfgrupo{margin:6px 0;text-align:left}
+.cfgrupo>b{display:block;font-size:13px;color:#a0673a;margin:0 0 4px 4px}
+.cfops{display:flex;flex-wrap:wrap;gap:6px}
+.cfop{flex:1 1 70px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 4px;border:0;border-radius:14px;background:#fff;font:inherit;color:#3c2a8f;cursor:pointer;box-shadow:0 3px 0 #f2c5e3;transition:transform .12s ease,box-shadow .12s ease}
+.cfop span{font-size:24px}.cfop small{font-weight:800;font-size:11px;line-height:1.2}
+.cfop:not([disabled]):hover{transform:translateY(-2px);box-shadow:0 5px 0 #e7b6d6}
+.cfop.on{background:linear-gradient(135deg,#ffe0f0,#efe6ff);box-shadow:0 0 0 3px #ff6fb5 inset,0 3px 0 #f2c5e3}
+.cfop[disabled]{opacity:.45;cursor:default}
+.cfacoes{margin-top:8px}
+.cfcaderno{margin:10px 0;padding:10px;border-radius:16px;background:#fff8ef;border:2px dashed #e8c39e;text-align:left}
+.cfcaderno>b{color:#a0673a}
+.cfrecs{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin-top:6px}
+.cfrec{display:flex;align-items:center;justify-content:center;height:40px;border-radius:12px;background:#fff;box-shadow:0 2px 0 #f2c5e3;font-size:18px}
+.cfrec.vazio{background:#f3eee8;box-shadow:none;opacity:.6;font-size:14px}
+@media (prefers-reduced-motion:reduce){.cfop{transition:none}}

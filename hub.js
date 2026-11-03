@@ -311,7 +311,7 @@ function hubCardsUI(){
     '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
     '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    (typeof hsHubHtml === 'function' ? hsHubHtml() : '');
+    (typeof hsHubHtml === 'function' ? hsHubHtml() : '') + (typeof cfHubHtml === 'function' ? cfHubHtml() : '');
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = window.TW_I18N.locale.twGamesTxt;
   twGamesTxt = twGamesTxt[LANG]||twGamesTxt.pt;

@@ -105,7 +105,7 @@
    O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "sora karaoke" "gacha duo" "hand hand";
+  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "sora karaoke" "gacha duo" "hand cafe";
 }
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
@@ -118,6 +118,8 @@
 #hub #hubCards .hubduo{grid-area:duo}
 #hub #hubCards .hubhandshake{grid-area:hand;background:linear-gradient(135deg,#ffb15c,#ff6fb5);color:#fff}
 #hub #hubCards .hubhandshake b,#hub #hubCards .hubhandshake small{color:#fff}
+#hub #hubCards .hubcafe{grid-area:cafe;background:linear-gradient(135deg,#8a5a3b,#d9a273 50%,#ffb3d9);color:#fff}
+#hub #hubCards .hubcafe b,#hub #hubCards .hubcafe small{color:#fff}
 #hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
 /* no celular, Perfil e Moon Duo ocupam a linha inteira, em formato de faixa (sem a altura mínima de 150px) */
 #hub #hubCards>button.hubcard.hubperf{min-height:0}
@@ -126,7 +128,7 @@
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand hand";
+   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand cafe";
    align-items:stretch;
  }
  #hub #hubCards .hubperf{

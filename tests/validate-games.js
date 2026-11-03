@@ -293,8 +293,8 @@ assert(lab.includes("function twPreviewCabecalhoOficial(abrir)")&&
        lab.includes("origem.innerHTML")&&
        lab.includes("wrap.removeAttribute('data-jogo')"),
   "INDEX2 must reuse the single existing header and seasonal particle markup");
-assert(previewSkin.includes('grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand hand"')&&
-       previewSkin.includes('grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "sora karaoke" "gacha duo" "hand hand"')&&
+assert(previewSkin.includes('grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand cafe"')&&
+       previewSkin.includes('grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "sora karaoke" "gacha duo" "hand cafe"')&&
        previewSkin.includes("@media(min-width:700px)")&&
        lab.includes('id="hubHoje"')&&lab.includes("hubbt-jogos")&&lab.includes("hubbt-mundo")&&lab.includes('id="hubMusica"'),
   "INDEX2 home must keep Hoje first, Meu mundo (Perfil, Pet, Gacha) above Jogos (Run, Sora, Karaoke, Duo)");

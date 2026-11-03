@@ -1743,21 +1743,22 @@ function ktPetsDesenhar(x,t){var ag=performance.now();ktPets.forEach(function(p,
  var hop=krWhimsicalReducedMotion?0:k>=0&&k<1?Math.sin(k*Math.PI)*16:running?Math.abs(Math.sin(ag*.024+i))*4:0;
  var gira=krWhimsicalReducedMotion?0:k>=0&&k<1?Math.sin(k*Math.PI*2)*.18:0,dir=p.dir||1;
  p.hitY=p.y-14-hop+Math.sin((t+i*40)*.08)*3.5;
- x.save();x.fillStyle='rgba(8,4,26,.18)';x.beginPath();x.ellipse(p.x,p.y+8,10,2.6,0,0,7);x.fill();
+ x.save();x.fillStyle='rgba(8,4,26,.18)';x.beginPath();x.ellipse(p.x,p.y+8,13,3.2,0,0,7);x.fill();
  x.translate(p.x,p.y-14-hop);x.rotate(gira+dir*.08);x.scale(dir,1);
- ktPetDesenho(x,p.k,0,0,1.2,t+i*40,(p.visita||ag-p.t0<1200)?p.ex:'',running&&!krWhimsicalReducedMotion);x.restore();
+ ktPetDesenho(x,p.k,0,0,1.6,t+i*40,(p.visita||ag-p.t0<1200)?p.ex:'',running&&!krWhimsicalReducedMotion);x.restore();
+ if(!krWhimsicalReducedMotion){x.save();x.textAlign='center';x.font='900 13px sans-serif';x.fillStyle='#fff2af';x.globalAlpha=.3+.27*Math.sin(t*.075+i*2);x.fillText('✦',p.x-31,p.y-36+Math.sin(t*.04+i)*3);x.fillStyle='#ffc1ee';x.globalAlpha=.3+.2*Math.cos(t*.065+i);x.fillText('✧',p.x+30,p.y-29);x.restore();}
  });}
 function ktPetToque(px,py){var p=null,best=Infinity;
  /* Toque prioriza o rosto mais próximo; empates favorecem o pet à frente. */
  for(var i=ktPets.length-1;i>=0;i--){var candidate=ktPets[i],cy=candidate.hitY===undefined?candidate.y-14:candidate.hitY;
-  var d=Math.pow((px-candidate.x)/26,2)+Math.pow((py-cy)/24,2);
+  var d=Math.pow((px-candidate.x)/34,2)+Math.pow((py-cy)/31,2);
   if(d<=1&&d<best){p=candidate;best=d;}
  }
  if(!p)return false;var ag=performance.now(),hy=p.hitY===undefined?p.y-14:p.hitY;
  if(p.t0!==undefined&&ag-p.t0<450)return true;
  p.t0=ag;p.toques=(p.toques||0)+1;p.ex=p.toques%2?'feliz':'amor';ktPetVisitar(p);ac();ktPetVoz(p.k);
  krBolhas=krBolhas.filter(function(b){return !b._ktUntil||b._ktUntil>ag;}).slice(-18);
- krBolhas.push({emo:p.cor,x:p.x-8,y:hy-20,t:0,_ktUntil:ag+1100},{emo:'♪',x:p.x+10,y:hy-26,t:0,_ktUntil:ag+1100});return true;
+ krBolhas.push({emo:p.cor,x:p.x-12,y:hy-28,t:0,_ktUntil:ag+1100},{emo:'♪',x:p.x+12,y:hy-30,t:0,_ktUntil:ag+1100},{emo:'✨',x:p.x-23,y:hy-12,t:0,_ktUntil:ag+900},{emo:'⭐',x:p.x+23,y:hy-17,t:0,_ktUntil:ag+900});return true;
 }
 var ktMicBalanco={t0:-9999},ktMicCorC={t:-1e9,v:'#ff6fb5'};
 /* Cor do microfone relida do perfil a cada dois segundos. */

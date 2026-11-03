@@ -38,6 +38,33 @@ function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já exi
   var jeito = um(HS_JEITO_LISTA), J = HS_JEITOS[jeito];
   return { nome:nome, c:c, pres:Math.floor(r() * HS_PRESENTES.length), pose:um(['v', 'tchau', 'coracao', '']), expr:jeito === 'timido' ? 0 : um([2, 3, 6]), jeito:jeito, oi:um(J.oi) };
 }
+// Pequenas lembranças de fãs NPCs (somente neste aparelho e nesta conta; nunca dão prêmios).
+// Preserva o visual do fã para que o reencontro no Café seja reconhecível.
+var HS_MEMORIA_CHAVE = 'tw_hs_memorias_v1:';
+function hsMemChave(){
+  var id = typeof contaJ !== 'undefined' && contaJ && (contaJ.id || contaJ.nick);
+  return id ? HS_MEMORIA_CHAVE + String(id) : '';
+}
+function hsMemLer(){
+  var chave = hsMemChave(); if(!chave) return [];
+  try{
+    var lista = JSON.parse(localStorage.getItem(chave) || '[]');
+    return Array.isArray(lista) ? lista.filter(function(m){
+      return m && HS_NOMES.indexOf(m.nome) >= 0 && Number.isInteger(m.pres) && m.pres >= 0 && m.pres < HS_PRESENTES.length;
+    }).slice(0, 8) : [];
+  }catch(e){ return []; }
+}
+function hsMemGuardar(f){
+  var chave = hsMemChave();
+  if(!chave || !f || HS_NOMES.indexOf(f.nome) < 0 || !Number.isInteger(f.pres)) return;
+  var detalhes = {}, campos = ['hair','hair2','img','skin','back','front','det','out','outcol','gl','hat'];
+  campos.forEach(function(k){ if(f.c && typeof f.c[k] === 'string') detalhes[k] = f.c[k]; });
+  var memoria = { nome:f.nome, pres:f.pres, c:detalhes, jeito:f.jeito, dia:new Date(Date.now() - 3 * 3600e3).toISOString().slice(0,10) };
+  try{
+    var lista = hsMemLer().filter(function(m){ return m.nome !== f.nome; });
+    lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
+  }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
+}
 function hsRecorde(){ try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
@@ -86,6 +113,7 @@ function hsResponder(i){
   hs.resp = i; hs.ok = ok; hs.total++;
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
+    hsMemGuardar(f); // lembrança narrativa local, independente da confirmação de recompensa
     if(typeof eventoPresente === 'function' && f.pres === eventoPresente()) hs.pontos += 50;
     if(hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
     var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);

@@ -112,7 +112,7 @@ RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
     ELSE 0 END)::integer
 $$;
 CREATE OR REPLACE FUNCTION public.marcar_visita(p_k text)
-RETURNS json LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $
+RETURNS json LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $function$
 DECLARE v_id uuid:=auth.uid(); v_dia date:=(now() AT TIME ZONE 'America/Sao_Paulo')::date;
 BEGIN
  IF v_id IS NULL OR p_k NOT IN ('collect','handshake','cafe')
@@ -128,6 +128,6 @@ BEGIN
  THEN RETURN json_build_object('ok',false,'erro','prova'); END IF;
  INSERT INTO public.visitas(user_id,dia,k) VALUES(v_id,v_dia,p_k) ON CONFLICT DO NOTHING;
  RETURN json_build_object('ok',true,'k',p_k);
-END $;
+END $function$;
 -- As chaves novas só são marcadas após os resultados privados comprovados.
 COMMIT;

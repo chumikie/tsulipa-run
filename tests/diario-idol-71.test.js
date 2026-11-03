@@ -61,7 +61,7 @@ test('Café reencontra fã conhecido sem alterar o pedido validado no servidor',
   assert.equal(ctx.cf.cli.hsLembranca,undefined,'reencontro especial só no primeiro cliente');
 });
 
-test('Diário narra as duas cenas públicas do dia e nunca usa fotos privadas ou especiais', () => {
+test('Diário cria três atos com a mesma dupla, sem misturar fotos privadas', () => {
   const box = { innerHTML:'' };
   const ctx = {
     $:id=>id==='jornalDiarioDia'?box:null, tr:s=>s,
@@ -69,7 +69,7 @@ test('Diário narra as duas cenas públicas do dia e nunca usa fotos privadas ou
     jornalLegenda:f=>f.cena[1]+' '+f.grupo.map(p=>p.nick).join(' e ')
   };
   vm.createContext(ctx);
-  vm.runInContext(trecho(jornal,'function jornalDiarioTexto(','function jornalFotosDia(){'),ctx);
+  vm.runInContext(trecho(jornal,'var JORNAL_DIARIO_ARCOS =','function jornalFotosDia(){'),ctx);
   const fotos = [
     {cena:['palco','ensaiando'],grupo:[{nick:'Pati'},{nick:'Lirika'}]},
     {tipo:'pet',cena:['cafe','pet'],grupo:[{nick:'Jogador'}]},
@@ -79,10 +79,48 @@ test('Diário narra as duas cenas públicas do dia e nunca usa fotos privadas ou
   ctx.jornalDiarioUI(fotos);
   assert.match(box.innerHTML,/Pati/);
   assert.match(box.innerHTML,/Lirika/);
-  assert.match(box.innerHTML,/Tsu/);
+  assert.doesNotMatch(box.innerHTML,/Tsu|Momo/,'personagens de outra foto não invadem a história');
   assert.doesNotMatch(box.innerHTML,/Jogador|Cantora/);
   assert.equal((box.innerHTML.match(/<li>/g)||[]).length,3);
+  assert.match(box.innerHTML,/Começo/);
+  assert.match(box.innerHTML,/Reviravolta/);
+  assert.match(box.innerHTML,/Final/);
   ctx.jornalDiarioUI([]);
   assert.match(box.innerHTML,/O diário aparece/);
   assert.match(jornal,/jornalDiarioUI\(fotos\);/,'atualiza com o sorteio real de fotos');
+});
+
+test('12 cenários têm começo, meio e fim estáveis por dia',()=>{
+  const ctx={tr:s=>s,Date};
+  vm.createContext(ctx);
+  vm.runInContext(trecho(jornal,'var JORNAL_DIARIO_ARCOS =','function jornalFotosDia(){'),ctx);
+  for(const tema of ['palco','cafe','ceu','noite','basico','oshi','figurinos','aniversario','cartas','bastidores','estudio','jardim']){
+    const f={dia:20761,cena:['basico','📝','',[],tema],grupo:[{nick:'Pati'},{nick:'Lirika'}]};
+    const a=ctx.jornalDiarioTexto([f]),b=ctx.jornalDiarioTexto([f]);
+    assert.equal(a.length,3);
+    assert.match(a[0],/Pati/);
+    assert.equal(JSON.stringify(a),JSON.stringify(b),'história estável para '+tema);
+  }
+});
+
+test('novidades reais só citam placares públicos, sem inventar atividade privada',()=>{
+  const ctx={tr:s=>s,jornalNum:n=>Number(n).toLocaleString('pt-BR'),
+    escHtml:s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')};
+  vm.createContext(ctx);
+  vm.runInContext(trecho(jornal,'function jornalFeitosPublicos(','function jornalFotosDia(){'),ctx);
+  const feitos=ctx.jornalFeitosPublicos({
+    center:[{nick:'Jogador A',score:12345}],
+    sora:[{nick:'Jogadora B',score:567}],
+    karaoke:[{nick:'<b>Teste</b>',score:23456}],
+    cafe:[{nick:'Cliente privado',score:999}],
+    handshake:[{nick:'Fã privado',score:999}]
+  });
+  assert.equal(feitos.length,3);
+  assert.ok(feitos.some(x=>x.includes('Jogador A')&&x.includes('Center⭐Run!')));
+  assert.ok(feitos.some(x=>x.includes('Jogadora B')&&x.includes('Sora⭐Jump!')));
+  assert.ok(!feitos.some(x=>x.includes('Cliente privado')||x.includes('Fã privado')));
+  const html=ctx.jornalFeitosHtml({karaoke:[{nick:'<b>Teste</b>',score:23456}]});
+  assert.equal(html.includes('<b>Teste</b>'),false,'apelidos do ranking escapados no HTML');
+  assert.match(html,/&lt;b>/);
+  assert.equal(ctx.jornalFeitosPublicos({}).length,0,'sem placar, sem notícia inventada');
 });

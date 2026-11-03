@@ -176,3 +176,8 @@ test('o jornal localiza nomes de paisagens e conjunções; itens ID são atualiz
   assert.equal(id.central.dict['Tailândia'],'Thailand');
   assert.equal(id.central.tables.PET_DICT4['Estrela'],'Bintang');
 });
+
+test('painel de login redesenha rótulos de privacidade após mudar idioma',()=>{
+  const s=read('index.html');
+  assert.match(s,/applyLang\(\);\s*if\(typeof contaUI==='function'\)contaUI\(\);/);
+});

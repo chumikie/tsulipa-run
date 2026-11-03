@@ -85,24 +85,40 @@ function cfLoop(ms){
   if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
   cfAnim = requestAnimationFrame(cfLoop);
 }
-function cfCopo(x, cx, by, m, s){   // copo em pixel (blocos), mesmo jeito das roupas: bebida, faixa TsuLiPa, cobertura, enfeite, canudo
-  var u = 7 * s, cw = 12, ch = 15, ox = Math.round(cx - cw * u / 2), oy = Math.round(by - ch * u), j, i;
-  x.fillStyle = 'rgba(30,10,60,.18)'; x.fillRect(ox - u, by - u * .4, (cw + 2) * u, u * .8);
-  for(j = 0; j < ch; j++){ var enc = j >= 12 ? 1 : 0, l0 = enc, l1 = cw - enc;   // copo afunila embaixo
-    for(i = l0; i < l1; i++){
-      var borda = i === l0 || i === l1 - 1, cor = 'rgba(255,255,255,.45)';
-      if(m.base >= 0 && j >= 3){ cor = CF_BASES[m.base][2]; if(i === l0 + 1) cor = 'rgba(255,255,255,.35)'; }
-      if(j >= 7 && j <= 8) cor = '#ff9ccf';
-      if(borda) cor = '#ffffff';
-      x.fillStyle = cor; x.fillRect(ox + i * u, oy + j * u, Math.ceil(u), Math.ceil(u));
-      if(m.base >= 0 && j >= 3 && i === l0 + 1 && !(j >= 7 && j <= 8)){ x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(ox + i * u, oy + j * u, Math.ceil(u), Math.ceil(u)); }
-    }
+// Copo e itens no mesmo desenho dos personagens e roupas: formas chapadas (retângulos, elipses, triângulos)
+// numa grade de unidades igual à do Idol, sem contorno, com um tom mais escuro e um mais claro.
+function cfEscurece(hex, n){ return '#' + hex.replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.max(0, Math.min(255, parseInt(cc, 16) + n)).toString(16)).substr(-2); }); }
+function cfCopo(x, cx, by, m, k){   // k = tamanho de 1 unidade (o mesmo do Idol em cena)
+  function E(ex, ey, rx, ry){ x.beginPath(); x.ellipse(cx + ex * k, by + ey * k, rx * k, ry * k, 0, 0, 7); x.fill(); }
+  function T(a){ x.beginPath(); x.moveTo(cx + a[0] * k, by + a[1] * k); for(var i = 2; i < a.length; i += 2) x.lineTo(cx + a[i] * k, by + a[i + 1] * k); x.closePath(); x.fill(); }
+  function R(rx, ry, w, h){ x.fillRect(cx + rx * k, by + ry * k, w * k, h * k); }
+  x.save();
+  x.fillStyle = 'rgba(30,10,60,.22)'; E(0, 0, 9, 1.6);   // sombra no balcão
+  x.fillStyle = '#ff6fb5'; R(2, -30, 2, 12); R(2, -31, 5, 2);   // canudo
+  x.fillStyle = 'rgba(235,245,255,.75)'; T([-7, -21, 7, -21, 5.5, 0, -5.5, 0]);   // copo
+  if(m.base >= 0){ var cor = CF_BASES[m.base][2]; x.fillStyle = cor; T([-6.2, -17, 6.2, -17, 5, -1, -5, -1]); x.fillStyle = cfEscurece(cor, -40); T([2.5, -17, 6.2, -17, 5, -1, 1.8, -1]); }
+  x.fillStyle = 'rgba(255,255,255,.7)'; R(-5.5, -19, 1.2, 16);   // brilho do vidro
+  x.fillStyle = '#ff9ccf'; T([-6.6, -12, 6.6, -12, 6.3, -8.5, -6.3, -8.5]); x.fillStyle = '#fff'; R(-2.5, -11, 5, 1.4);   // faixa TsuLiPa
+  x.fillStyle = '#ffffff'; R(-7.6, -22, 15.2, 1.6);   // borda
+  var topo = -22;
+  if(m.cob === 0 || m.cob === 2){ x.fillStyle = '#f1e6da'; E(0, -22, 7.5, 2.6); x.fillStyle = '#fffaf2'; E(0, -23.5, 7, 2.6); E(0, -26, 5, 2.4); E(0, -28.3, 3, 2); x.fillStyle = '#fffaf2'; T([-1, -29.5, 1, -29.5, 0, -32]); topo = -30;
+    if(m.cob === 2){ [['#ff6fb5', -4, -24], ['#7b3ff0', 2, -25], ['#ffd23f', -1, -27], ['#3fc1ff', 4, -23], ['#5fd18b', -3, -26.5], ['#ff6fb5', 1, -29], ['#ffd23f', 5, -24.5], ['#3fc1ff', -5, -23]].forEach(function(p){ x.fillStyle = p[0]; R(p[1], p[2], 1.2, .6); }); } }
+  else if(m.cob === 1){ x.fillStyle = '#f0a73a'; E(0, -22.5, 7.4, 2.2); R(-6, -22, 1.4, 3.5); R(-2, -22, 1.4, 5); R(3, -22, 1.4, 2.8); E(-5.3, -18.5, .7, .7); E(-1.3, -17, .7, .7); E(3.7, -19.2, .7, .7); x.fillStyle = '#ffc46b'; E(-2, -23.2, 3, .7); topo = -24; }
+  // enfeite
+  var ex = -1, ey = topo - 3;
+  if(m.enf === 0){ x.fillStyle = '#ff4f9a'; E(ex - 1.6, ey - 1, 2, 2); E(ex + 1.6, ey - 1, 2, 2); T([ex - 3.5, ey - .3, ex + 3.5, ey - .3, ex, ey + 3.2]); x.fillStyle = '#ffb3d9'; E(ex - 2, ey - 1.6, .7, .6); }
+  else if(m.enf === 1){ x.fillStyle = '#ffd23f'; var pts = []; for(var q = 0; q < 10; q++){ var an = -Math.PI / 2 + q * Math.PI / 5, rr = q % 2 ? 1.7 : 3.8; pts.push(ex + Math.cos(an) * rr, ey + Math.sin(an) * rr); } T(pts); x.fillStyle = '#fff3a6'; E(ex - .8, ey - .9, .7, .6); }
+  else if(m.enf === 2){ x.fillStyle = '#5fb04a'; T([ex - 1.8, ey + 1, ex - 1, ey + 1, ex + 1.4, ey - 4.5, ex + 2, ey - 4]); T([ex + 2.4, ey + 1.2, ex + 3, ey + 1.2, ex + 2, ey - 4]); x.fillStyle = '#d6123a'; E(ex - 1.6, ey + 1.6, 1.9, 1.9); E(ex + 2.8, ey + 2, 1.9, 1.9); x.fillStyle = '#ff7a8a'; E(ex - 2.2, ey + 1, .5, .5); E(ex + 2.2, ey + 1.4, .5, .5); }
+  else if(m.enf === 3){ x.fillStyle = '#e8b27a'; T([ex, ey, ex - 4.5, ey - 2.5, ex - 4.5, ey + 2.5]); T([ex, ey, ex + 4.5, ey - 2.5, ex + 4.5, ey + 2.5]); x.fillStyle = '#ff9ccf'; E(ex, ey, 1.3, 1.3); x.fillStyle = '#c98b55'; R(ex - 3.6, ey - .3, 1, .6); R(ex + 2.6, ey - .3, 1, .6); }
+  // docinho no pratinho, ao lado
+  if(m.doce >= 0){ var dx = 14;
+    x.fillStyle = '#e9dcef'; E(dx, -.4, 7.5, 1.8); x.fillStyle = '#ffffff'; E(dx, -1, 7, 1.6);
+    if(m.doce === 0){ x.fillStyle = '#c98b55'; E(dx, -3.6, 4.6, 3); x.fillStyle = '#e3a346'; E(dx, -4, 4.2, 2.6); x.fillStyle = '#5b3420'; [[-2, -4.6], [1.2, -3], [2.4, -5], [-.6, -5.6], [-2.6, -3]].forEach(function(p){ E(dx + p[0], p[1], .6, .5); }); }
+    else if(m.doce === 1){ x.fillStyle = '#5b3420'; R(dx - 4, -6, 8, 4.6); x.fillStyle = '#8a5236'; R(dx - 4, -7.4, 8, 1.8); x.fillStyle = '#ff9ccf'; E(dx, -7.4, 1, .7); x.fillStyle = '#a8683f'; R(dx - 3.4, -6.9, 2, .5); }
+    else if(m.doce === 2){ x.fillStyle = '#d98a2b'; E(dx - 3.4, -2.6, 2, 1.8); E(dx + 3.4, -2.6, 2, 1.8); x.fillStyle = '#e8a33c'; E(dx - 1.6, -3.6, 2.3, 2.4); E(dx + 1.6, -3.6, 2.3, 2.4); x.fillStyle = '#ffc46b'; E(dx, -4.4, 2, 2.6); x.fillStyle = '#ffe2a6'; E(dx - .6, -5.6, .8, .5); }
+    else { x.fillStyle = '#d99a4e'; R(dx - 4.5, -7.6, 9, 6.2); x.fillStyle = '#ffd27a'; for(var a1 = 0; a1 < 3; a1++) for(var b1 = 0; b1 < 2; b1++) R(dx - 3.7 + a1 * 2.8, -6.8 + b1 * 2.8, 2, 2); x.fillStyle = '#fffaf2'; E(dx + 1.5, -7.6, 2, 1); x.fillStyle = '#ff6fb5'; E(dx + 1.5, -8.4, .7, .6); }
   }
-  x.fillStyle = '#fff'; x.fillRect(ox + 4 * u, oy + 7 * u + 2, 4 * u, u - 2);   // letreirinho da faixa
-  x.fillStyle = '#ff6fb5'; x.fillRect(ox + 8 * u, oy - 7 * u, u, 9 * u); x.fillRect(ox + 9 * u, oy - 8 * u, u, u);   // canudo
-  if(m.cob >= 0) cfSprite(x, 'cob' + m.cob, cx, oy + u, u);
-  if(m.enf >= 0) cfSprite(x, 'enf' + m.enf, cx - u, oy - (m.cob >= 0 ? 4 : 0) * u, u * .8);
-  if(m.doce >= 0){ var dx = ox + (cw + 7) * u; x.fillStyle = '#fff'; x.fillRect(dx - 7 * u, by - u, 14 * u, u); x.fillStyle = '#f2c5e3'; x.fillRect(dx - 6 * u, by, 12 * u, u * .6); cfSprite(x, 'doce' + m.doce, dx, by - u, u); }
+  x.restore();
 }
 function cfDesenhar(){
   var cv = $('cfCv'); if(!cv) return;
@@ -124,7 +140,7 @@ function cfDesenhar(){
   }
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
-  if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .82, cf.monta, 1);
+  if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
     var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;
@@ -185,23 +201,3 @@ function cfHubHtml(){
 }
 
 
-/* Itens da cena em pixel, como as roupas e os personagens: cada letra é um bloquinho de cor. */
-var CF_PX = {
-  cob0:['....WW....','...WWWW...','..WWHWWW..','.WWWWWWWW.','WWHWWWWWWW','.WWWWWWWW.'],
-  cob1:['.CCCCCCCC.','CCHCCCCCCC','CCCCCCCCCC','C.CC.CC.CC','C..C.CC..C','...C..C...'],
-  cob2:['....WW....','...WPWW...','..WWWWYW..','.WBWWWWPW.','WWWWGWWWWW','.WWPWWWBW.'],
-  enf0:['.RR...RR.','RRHR.RRRR','RHRRRRRRR','RRRRRRRRR','.RRRRRRR.','..RRRRR..','...RRR...','....R....'],
-  enf1:['....Y....','...YHY...','YYYYHYYYY','.YYYYYYY.','..YYYYY..','.YYY.YYY.','YY.....YY'],
-  enf2:['.....GG..','....G....','...G.G...','..G...G..','.KK...KK.','KHKK.KHKK','KKKK.KKKK','.KK...KK.'],
-  enf3:['OO.....OO','OOO...OOO','OOOOPOOOO','OOOPPPOOO','OOOOPOOOO','OOO...OOO','OO.....OO'],
-  doce0:['..TTTTT..','.TTHTTDT.','TTDTTTTTT','TTTTTDTTT','TDTTTTTTT','.TTTDTTT.','..TTTTT..'],
-  doce1:['MMMMMMMMMM','MLLLPLLLLM','MLLLLLLLLM','DDDDDDDDDD','DLDDDDDDDD','DDDDDDDDDD'],
-  doce2:['...TTT...','..THTTT..','.TTDTTDT.','TTDTTTDTT','TT.....TT','T.......T'],
-  doce3:['TTTTTTTTT','THDTDTDTT','TTTTTTTTT','TDTDTDTDT','TTTTTTTTT','TDTDTDTDT','TTTTTTTTT']
-};
-var CF_PAL = { W:'#fffaf2', H:'#ffffff', C:'#f0a73a', P:'#ff6fb5', Y:'#ffd23f', B:'#3fc1ff', G:'#5fb04a', R:'#ff4f9a', K:'#d6123a', O:'#e8b27a',
-  T:'#e3a346', D:'#7a4a2a', M:'#8a5236', L:'#a8683f', S:'#ff9ccf' };
-function cfSprite(x, nome, cx, by, u){   // desenha o sprite com a base em (cx, by); u = tamanho do bloquinho
-  var m = CF_PX[nome]; if(!m) return; var w = m[0].length, h = m.length, ox = Math.round(cx - w * u / 2), oy = Math.round(by - h * u);
-  for(var j = 0; j < h; j++) for(var i = 0; i < w; i++){ var ch = m[j][i]; if(ch === '.') continue; x.fillStyle = CF_PAL[ch]; x.fillRect(ox + i * u, oy + j * u, Math.ceil(u), Math.ceil(u)); }
-}

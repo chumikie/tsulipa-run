@@ -51,6 +51,16 @@ function fixture(storage=new Map()){
  assert.equal(ok.ctx.contaCorridasLer().length,0);
  assert.equal(ok.calls.filter(c=>c.name==='terminar_corrida').length,1);
 
+ // A stale/unwritable localStorage must not prevent the freshly completed run
+ // from reaching the server. The in-memory queue remains available as fallback.
+ const staleStorage=new Map([['brs48cr_corridas_pendentes_v1','[]']]);
+ const stale=fixture(staleStorage);
+ stale.ctx.localStorage.setItem=()=>{throw Error('quota_exceeded');};
+ stale.ctx.contaRun=Promise.resolve('new-run-not-in-storage');
+ stale.ctx.contaFimCorrida(800,12,'Tsu',()=>{});await flush();
+ assert.equal(stale.calls.filter(c=>c.name==='terminar_corrida').length,1,'new run must be submitted even with stale storage');
+ assert.equal(stale.calls.find(c=>c.name==='terminar_corrida').arg.p_run,'new-run-not-in-storage');
+
  // Lost response: retry only after a later recovery signal, using exactly the same UUID.
  const lost=fixture();lost.ctx.finish=()=>Promise.reject(Error('network_offline'));
  lost.ctx.contaRun=Promise.resolve('same-run');

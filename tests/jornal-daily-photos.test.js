@@ -7,7 +7,7 @@ const path = require('node:path');
 
 // Isola somente a composição das fotos: sem Supabase, navegador ou desenho real.
 const jornal = fs.readFileSync(path.join(__dirname, '..', 'jornal.js'), 'utf8');
-const ini = jornal.indexOf('function jornalSorteio(');
+const ini = jornal.indexOf('var JORNAL_CENAS =');
 const fim = jornal.indexOf('function jornalFotoDesenhar(');
 assert.ok(ini > 0 && fim > ini, 'rotinas de foto devem existir');
 const composicao = jornal.slice(ini, fim);

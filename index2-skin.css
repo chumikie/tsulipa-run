@@ -105,7 +105,7 @@
    O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "sora karaoke" "gacha duo" "hand cafe";
+  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "karaoke sora" "gacha duo" "hand cafe";
 }
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
@@ -116,31 +116,22 @@
 #hub #hubCards .hubgacha{grid-area:gacha}
 #hub #hubCards .tw-hubgame-sora{grid-area:sora}
 #hub #hubCards .hubduo{grid-area:duo}
-#hub #hubCards .hubhandshake{grid-area:hand;background:linear-gradient(135deg,#ffb15c,#ff6fb5);color:#fff}
-#hub #hubCards .hubhandshake b,#hub #hubCards .hubhandshake small{color:#fff}
-#hub #hubCards .hubcafe{grid-area:cafe;background:linear-gradient(135deg,#8a5a3b,#d9a273 50%,#ffb3d9);color:#fff}
-#hub #hubCards .hubcafe b,#hub #hubCards .hubcafe small{color:#fff}
+#hub #hubCards .hubhandshake{grid-area:hand}
+#hub #hubCards .hubcafe{grid-area:cafe}
 #hub #hubCards .tw-hubgame-karaoke{grid-area:karaoke}
 /* no celular, Perfil e Moon Duo ocupam a linha inteira, em formato de faixa (sem a altura mínima de 150px) */
 #hub #hubCards>button.hubcard.hubperf{min-height:0}
 @media(min-width:700px){
- #hub #hubCards>button.hubcard.hubperf,#hub #hubCards>button.hubcard.hubduo{min-height:150px}
+ #hub #hubCards>button.hubcard.hubperf,#hub #hubCards>button.hubcard.hubduo,#hub #hubCards>button.hubcard.hubhandshake,#hub #hubCards>button.hubcard.hubcafe{min-height:150px}
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand cafe";
+   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "karaoke sora gacha" "duo hand cafe";
    align-items:stretch;
  }
- #hub #hubCards .hubperf{
+ #hub #hubCards .hubperf,#hub #hubCards .hubduo{
    flex-direction:column;justify-content:center;gap:3px;flex-wrap:nowrap;
  }
- /* Moon Duo e Handshake: faixas largas como o Center⭐Run!, ícone + título + descrição na mesma linha */
- #hub #hubCards>button.hubcard.hubduo,#hub #hubCards>button.hubcard.hubhandshake{
-   min-height:0;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:center;gap:14px;padding:16px 26px;
- }
- #hub #hubCards .hubduo>i,#hub #hubCards .hubhandshake>i{font-size:36px;margin:0}
- #hub #hubCards .hubduo>small,#hub #hubCards .hubhandshake>small{flex-basis:auto;margin:0;text-align:left}
- #hub #hubCards .hubduo>small:not(.tw-hubgame-jp),#hub #hubCards .hubhandshake>small:not(.tw-hubgame-jp){max-width:46ch}
 }
 #hub #hubCards .tw-hubgame-karaoke .tw-karaoke-timer{
   display:block;margin-top:5px;padding:5px 8px;

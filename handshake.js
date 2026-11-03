@@ -94,7 +94,7 @@ function hsResponder(i){
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsFim(){
-  if(contaJ && hs && hs.acertos > 0) contaRpc('marcar_visita', { p_k:'handshake' }).catch(function(){});   // missão do dia (quando o servidor tiver a chave)
+  if(hs && hs.acertos > 0){ try{ localStorage.setItem('tw_hs_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(e){} if(contaJ) contaRpc('marcar_visita', { p_k:'handshake' }).catch(function(){}); }   // missão do dia (quando o servidor tiver a chave)
   hs.fase = 'fim'; var rec = hsRecorde(); hs.novo = hs.pontos > rec;
   if(hs.novo) try{ localStorage.setItem(HS_RECORDE_KEY, hs.pontos); }catch(e){}
   hsUI();
@@ -227,5 +227,6 @@ function hsClique(e){
   if(e.target.closest && e.target.closest('#hsJogar')){ hsReiniciar(); hsNovaRodada(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
 }
 function hsHubHtml(){
-  return '<button type="button" class="hubcard hubhandshake" data-ir="handshake"><i>🤝</i><b translate="no">Handshake⭐Event!</b><small class="tw-hubgame-jp" lang="ja">握手会</small><small>' + escHtml(tr('Lembre o presente de cada fã!')) + '</small></button>';
+  var feito = false; try{ feito = localStorage.getItem('tw_hs_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
+  return '<button type="button" class="hubcard hubhandshake' + (feito ? '' : ' tw-alert-pink') + '" data-ir="handshake">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🤝</i><b translate="no">Handshake⭐Event!</b><small class="tw-hubgame-jp" lang="ja">握手会</small><small>' + escHtml(tr('Lembre o presente de cada fã!')) + '</small></button>';
 }

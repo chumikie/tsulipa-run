@@ -416,3 +416,54 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - A haste e a cápsula subiram apenas 5 unidades do desenho (6,75 px na escala atual), para cobrir o microfone de mão na região da boca sem deslocar o pedestal pelo palco.
 - A área de interação do microfone acompanha a cápsula elevada.
 - O teste do controlador agora exige âncora fixa, pequeno deslocamento vertical e ausência de rastreamento da mão.
+
+## 11. PR #71 (`feat/album-cards`) — atualizações de novembro/2026
+
+A #71 concentra todo o trabalho novo até a publicação, para economizar deploys do Vercel. Não altera a `main` diretamente; o merge é feito pela usuária.
+
+### 11.1. O que entrou (front)
+
+| Área | O que faz | Arquivos |
+|---|---|---|
+| Álbum de cards | Coleção de cards com progresso; botão "🔁 Trocar cards" | `album.js`, `album.css` |
+| Troca de cards | Propor, aceitar/recusar e cancelar trocas com qualquer jogador | `troca.js` |
+| Pedidos de fã | Pedido do dia com tema especial; botão quadrado no bloco "Hoje" | `fa.js`, `fa.css` |
+| Hoje | Hora, data e clima (Open-Meteo, só com 📍 autorizado); Encontro, Idol⭐News! e Pedido de fã lado a lado | `hoje.js`, `hub.js` |
+| Idol⭐News! | Top 5 com link para o perfil, blog do admin (5 últimos posts), Meta dos Teams, Festival de Unidades, Ensaio de trio, Fotos do dia (telão do Karaoke e jogador com o pet) | `jornal.js` |
+| Zipper⭐Shop! | Provador, "✏️ Montar Idol", atendente que nunca é o próprio jogador | `shop.js`, `index.html` |
+| Banner | Trios uniformizados em tons pastel; torcida do Gacha | `banner.js` |
+| Perfil | Estante de troféus para as insígnias; botão 🚪 Sair com confirmação | `perfil.js`, `hub.js` |
+| Handshake⭐Event! | Jogo de memória: fila de fãs NPC (nomes inventados, visuais já existentes), personalidades, superfã, combo, resumo final; placa com o nome do Idol; ritmo mais calmo | `handshake.js`, `handshake.css` |
+| Happy⭐Cafe! | Café do grupo (shakes, frappés, lattes e docinhos montados em camadas); 3 vidas, 12 clientes; prêmio só visual: Caderno de receitas (20, salvo no aparelho) | `cafe.js`, `cafe.css` |
+| Jogos no hub | Center⭐Run! no topo; depois Karaoke, Sora e Gacha; depois Moon Duo, Handshake e Happy Cafe (3 por linha no computador, 2 no celular). Handshake e Café usam o rosa de alerta com "!" até a partida do dia | `index2-skin.css`, `hub.js` |
+| Missões e Novidades | Textos das missões `handshake` e `cafe`; o site chama `marcar_visita` ao fim da partida. Novidades com os jogos novos | `hub.js` |
+| Acabamento | Brilhos, bordas pastel, títulos em roxo, contraste da pílula do Hoje, espaçamento dos botões | `atualizacao2.css` |
+| Traduções | Todos os textos novos em en/es/th/ja/id (conferência: 0 faltando) | `tw-i18n.js`, `translations/id/` |
+| Prévia | `?demo=1` simula conta e respostas do servidor (nunca no domínio de produção) | `demo.js` |
+
+Regras mantidas: os jogos novos não dão estrelas e não usam o teto de ★50 dos minijogos do Pet; NPCs nunca usam nomes de jogadores reais; desenhos 2D preservados; Karaoke continua solo.
+
+### 11.2. Supabase — depende do ChatGPT
+
+| Proposta (`supabase/sql/proposta/`) | Estado |
+|---|---|
+| `20261103170000_pedidos_de_fa.sql` | Aplicada (registrada em `aplicado/`) |
+| `20261103180000_troca_de_cards.sql` | Aplicada pelo ChatGPT/Miniwa (validada em PostgreSQL local com teste de troca) |
+| `20261103190000_festival_e_ensaio_trio.sql` | Aplicada pelo ChatGPT/Miniwa |
+| `20261103200000_handshake_premio.sql` | **Pendente.** Sem ela, o prêmio do dia do Handshake (ticket do Karaoke ou mimo do pet) não é entregue; o jogo funciona |
+| `20261103210000_missoes_handshake_cafe.sql` | **Pendente.** Adiciona as missões `handshake` e `cafe` (nível 1, ★10). O ChatGPT precisa também fazer `marcar_visita` e `missoes()` aceitarem essas chaves (o corpo dessas funções não está no repositório). **Decisão da usuária:** ★10 ou só enfeite |
+
+Outras pendências de banco comunicadas: PR #74 (recompensa do Sora), recorde da Patiliri (56.343), conciliação das missões antigas (★160), URLs de redirecionamento do login nas prévias do Netlify.
+
+### 11.3. Testes e CI
+
+- `node tests/run-all.js`: 51/51 no HEAD desta atualização.
+- Navegador (Playwright, modo demo): Handshake e Happy Cafe jogados sem erros; hub conferido em 430 px e 1150 px.
+- CI do GitHub: conferir no commit desta atualização (`static-validation`, `postgres-center-run`, `browser-karaoke`, prévia Netlify).
+
+### 11.4. Checklist para publicar a #71
+
+- [ ] CI verde no último commit
+- [ ] Prévia conferida (Handshake, Happy Cafe, organização dos Jogos, Álbum, Trocas, Pedidos de fã)
+- [ ] ChatGPT aplicou `handshake_premio` e as missões (ou a usuária decidiu publicar sem elas)
+- [ ] Ready for review + Merge pela usuária

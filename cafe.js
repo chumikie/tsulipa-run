@@ -70,7 +70,7 @@ function cfServir(saiu){
 }
 function cfFim(){
   cf.fase = 'fim';
-  if(contaJ && cf.perfeitos > 0) contaRpc('marcar_visita', { p_k:'cafe' }).catch(function(){});   // missão do dia (quando o servidor tiver a chave)
+  if(cf.perfeitos > 0){ try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(e){} if(contaJ) contaRpc('marcar_visita', { p_k:'cafe' }).catch(function(){}); }   // missão do dia (quando o servidor tiver a chave)
   var rec = cfLer(CF_RECORDE_KEY, 0); cf.novoRec = cf.pontos > rec; if(cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
   cfUI();
 }
@@ -176,5 +176,6 @@ function cfClique(e){
   if(e.target.closest && e.target.closest('#cfJogar')){ cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:cfT, fala:'', novas:[], hearts:[] }; cfNovoCliente(); }
 }
 function cfHubHtml(){
-  return '<button type="button" class="hubcard hubcafe" data-ir="cafe"><i>🧋</i><b translate="no">Happy⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">ハッピー・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
+  var feito = false; try{ feito = localStorage.getItem('tw_cf_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
+  return '<button type="button" class="hubcard hubcafe' + (feito ? '' : ' tw-alert-pink') + '" data-ir="cafe">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🧋</i><b translate="no">Happy⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">ハッピー・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
 }

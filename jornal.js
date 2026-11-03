@@ -41,10 +41,11 @@ function jornalMontar(d){
       '<li>🧋 Happy⭐Cafe!: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[ev.base][0] + ' ' + tr(CF_BASES[ev.base][1]))) + '</li>' +
       '<li>🤝 Handshake⭐Event!: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', ev.pres)) + '</li>' +
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
+  vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   vida += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
+  vida += jornalTrioHtml();
   comunidade += jornalFeitosHtml(d);
   comunidade += jornalAtividadeHtml();
-  vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   comunidade += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
   if(combo || prec) comunidade += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
@@ -57,7 +58,7 @@ function jornalMontar(d){
     (total ? '<li>' + escHtml(tr('Idols na vitrine')) + ': <b>' + total + '</b></li>' : '') + '</ul></section>';
   if(mus) vida += '<section class="jnbloco jnmusica"><h4>🎵 ' + escHtml(tr('Música da semana')) + '</h4><p><b translate="no">' + escHtml(mus[1]) + '</b>' + (vista ? ' · ' + escHtml(tr('Vista da janela do Karaoke')) + ': ' + escHtml(vista) : '') + '</p>' +
     '<div class="btns"><button type="button" class="btn" id="jnMusicaIr">🎤 ' + escHtml(tr('Cantar no Karaoke⭐Time!')) + '</button></div></section>';
-  comunidade += jornalTimesHtml() + jornalFestHtml() + jornalTrioHtml();
+  comunidade += jornalTimesHtml() + jornalFestHtml();
   comunidade += jornalPostsHtml();
   return h + jornalAbasHtml(vida, comunidade);
 }

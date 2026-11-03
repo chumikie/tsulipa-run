@@ -105,12 +105,11 @@
    O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-areas:"tm tm" "profile profile" "pet gacha" "tj tj" "run run" "sora karaoke" "duo duo" "tmap tmap" "mapa mapa";
+  grid-template-areas:"tm tm" "profile profile" "pet gacha" "loja loja" "tj tj" "run run" "sora karaoke" "duo duo";
 }
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
-#hub #hubCards .hubbt-mapa{grid-area:tmap;margin-top:10px}
-#hub #hubCards .mapa{grid-area:mapa}
+#hub #hubCards .hubloja{grid-area:loja;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px;min-height:0}
 #hub #hubCards .hubrun{grid-area:run}
 #hub #hubCards .hubpet{grid-area:pet}
 #hub #hubCards .hubperf{grid-area:profile;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px}
@@ -126,7 +125,7 @@
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tm tm tm" "profile pet gacha" "tj tj tj" "run run run" "sora karaoke duo" "tmap tmap tmap" "mapa mapa mapa";
+   grid-template-areas:"tm tm tm" "profile pet gacha" "loja loja loja" "tj tj tj" "run run run" "sora karaoke duo";
    align-items:stretch;
  }
  #hub #hubCards .hubperf,#hub #hubCards .hubduo{

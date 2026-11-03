@@ -59,7 +59,7 @@
 .perfdica{text-align:center;font-size:13px}
 </style>
 <link rel="stylesheet" href="./hub.css?v=1">
-<link rel="stylesheet" href="./mapa.css?v=1">
+<link rel="stylesheet" href="./loja-hub.css?v=1">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -341,8 +341,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./gacha.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=3"></script>
-<script src="./mapa.js?v=1"></script>
+<script src="./hub.js?v=4"></script>
+<script src="./loja-hub.js?v=1"></script>
+<script src="./banner.js?v=1"></script>
 <script src="./conta.js?v=1"></script>
 <script src="./admin.js?v=1"></script>
 <script>
@@ -1920,6 +1921,10 @@ try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
   cv.addEventListener('click', function(e){
     var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height, best = -1, d = .14;
+    if(typeof bannerElenco === 'function' && bannerElenco()){   // dia de trio do site: sem pets e sem vozes
+      HUB_TRIO.forEach(function(m, i){ if(Math.abs(fx - m[2]) < d){ d = Math.abs(fx - m[2]); best = i; } });
+      bannerVisitaReage(best); return;
+    }
     var a = cv.height / cv.width, rx = 9 / 96 * a, pyF = .9 - 22 / 96;   // pets: ao lado de cada uma (mesma conta do desenho)
     for(var q = 0; q < HUB_TRIO.length; q++){
       var pxF = HUB_TRIO[q][2] + 24 / 96 * a;
@@ -2064,7 +2069,6 @@ hubOv.addEventListener('click', function(e){
     }).catch(function(){ b.disabled = false; });
     return;
   }
-  if((b = t.closest('[data-mapa]'))){ mapaIr(b.dataset.mapa); return; }
   if((b = t.closest('.hubcard'))){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); if(location.hash !== '#center-run'){ try{ history.pushState({ tw:'center-run' }, '', '#center-run'); }catch(e){} } var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
@@ -2072,6 +2076,7 @@ hubOv.addEventListener('click', function(e){
     else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
+    else if(ir === 'loja') lojaHubAbrir();
     else if(ir === 'duo') duoAbrir();
     else if(ir === 'sora' || ir === 'karaoke') twPreviewAbrirJogo(ir);
   }

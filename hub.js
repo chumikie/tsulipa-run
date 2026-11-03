@@ -140,7 +140,10 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
     x.clearRect(0, 0, W2, H2);
     perfFundo(x, W2, H2, 'temporada', '#ff6fb5', t);
     state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; accSel = ''; frame = t;
-    HUB_TRIO.forEach(function(m, i){
+    var visita = typeof bannerElenco === 'function' ? bannerElenco() : null;
+    if(cv.getAttribute('role') === 'img' && typeof bannerRotulo === 'function'){ var rot = bannerRotulo(); if(cv.getAttribute('aria-label') !== rot) cv.setAttribute('aria-label', rot); }
+    if(visita) bannerVisitaDesenhar(x, W2, H2, visita, t, roupa, sc, chao);
+    else HUB_TRIO.forEach(function(m, i){
       var c=HUB_TRIO_DRAW_CHARS[i],base=CH[m[0]];
       c.out=base.out;c.outcol=base.outcol;
       if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada na cor de cada um
@@ -283,11 +286,12 @@ function hubCardsUI(){
   // 🧪 Temporário: os cards dos jogos especiais aparecem livres sem login.
   var gameLock = (!contaJ && !window.TW_JOGOS_SEM_LOGIN) ? lockHtml : '';
   hubBlocosUI();
-  $('hubCards').innerHTML = (typeof mapaHtml === 'function' ? mapaHtml() : '') +
+  $('hubCards').innerHTML =
     '<h2 class="hubblocot hubbt-mundo">💖 ' + escHtml(tr('Meu mundo')) + ' <small class="tw-jpsub" lang="ja">マイワールド</small></h2>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    (typeof lojaHubHtml === 'function' ? lojaHubHtml() : '') +
     '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
     '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>';
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
@@ -299,7 +303,7 @@ function hubCardsUI(){
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
   twKaraokeAtualizarCard();
-  if(typeof mapaDesenhar === 'function') mapaDesenhar();
+  if(typeof lojaHubDesenhar === 'function') lojaHubDesenhar();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){

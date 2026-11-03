@@ -16,9 +16,9 @@ function jornalAvatar(nick){
 }
 function jornalNum(n){ return (+n || 0).toLocaleString('pt-BR'); }
 function jornalPodio(tit, lista, un){
-  lista = Array.isArray(lista) ? lista.slice(0, 3) : [];
+  lista = Array.isArray(lista) ? lista.slice(0, 5) : [];
   return '<section class="jnpodio"><h4>' + tit + '</h4>' + (lista.length ? '<ol>' + lista.map(function(p, i){
-    return '<li><span class="jnmed">' + ['🥇', '🥈', '🥉'][i] + '</span><canvas class="jnfoto" width="64" height="64" data-jnick="' + escHtml(p.nick) + '" aria-hidden="true"></canvas><b>' + escHtml(p.nick) + '</b><small>' + jornalNum(p.score) + ' ' + un + '</small></li>';
+    return '<li><span class="jnmed">' + (['🥇', '🥈', '🥉'][i] || '<b class="jnpos">' + (i + 1) + 'º</b>') + '</span><canvas class="jnfoto" width="64" height="64" data-jnick="' + escHtml(p.nick) + '" aria-hidden="true"></canvas><b>' + escHtml(p.nick) + '</b><small>' + jornalNum(p.score) + ' ' + un + '</small></li>';
   }).join('') + '</ol>' : '<p class="jnvazio">' + escHtml(tr('Ninguém ainda. Seja a primeira pessoa!')) + '</p>') + '</section>';
 }
 function jornalMontar(d){
@@ -30,8 +30,8 @@ function jornalMontar(d){
   var combo = (d.karaoke_combo || [])[0], prec = (d.karaoke_acertos || [])[0];
   var h = '<header class="jntopo"><b class="jnnome" translate="no">📰 Idol<span class="tw-modal-star">⭐</span>News!</b><small lang="ja">アイドル・ニュース</small>' +
     '<p>' + (sem ? escHtml(tr('Semana de {a} a {b}').replace('{a}', jornalData(sem)).replace('{b}', jornalData(sem, 6))) + ' · ' : '') + escHtml(tr('placar parcial até domingo 0h')) + '</p></header>';
-  if(c1) h += '<article class="jnmanchete"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas><div><small>' + escHtml(tr('Manchete')) + '</small>' +
-    '<h3>' + escHtml(c1.nick) + ' ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
+  if(c1) h += '<article class="jnmanchete"><button type="button" class="jnfotolink" data-jnperfil="' + escHtml(c1.nick) + '" aria-label="' + escHtml(tr('Ver perfil') + ': ' + c1.nick) + '"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas></button><div><small>' + escHtml(tr('Manchete')) + '</small>' +
+    '<h3><button type="button" class="jnnick jnnickg" data-jnperfil="' + escHtml(c1.nick) + '">' + escHtml(c1.nick) + '</button> ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
   h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   h += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
   if(combo || prec) h += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
@@ -107,11 +107,23 @@ function jornalFotoAmpliar(i){   // abre grande, com BAIXAR (a mesma tela de fot
   if(typeof petPhShow === 'function') petPhShow(false);
   $('shr').hidden = false; if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
 }
+function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke têm listas maiores: completa até 5
+  d = d || {};
+  var cen = _supabase ? _supabase.rpc('top_scores', { periodo:'week' }).then(function(r){ return r.error ? null : (r.data || []).map(function(x){ return { nick:x.name, score:x.score }; }); }) : Promise.resolve(null);
+  var sor = _supabase ? _supabase.rpc('sora_ranking', { p_period:'week' }).then(function(r){ return r.error ? null : (r.data || []).map(function(x){ return { nick:x.nick, score:x.score }; }); }) : Promise.resolve(null);
+  var kar = contaJ ? contaRpc('kt_ranking').then(function(k){ return k && Array.isArray(k.score) ? k.score.map(function(x){ return { nick:x.nick, score:x.score }; }) : null; }) : Promise.resolve(null);
+  return Promise.all([cen.catch(function(){ return null; }), sor.catch(function(){ return null; }), kar.catch(function(){ return null; })]).then(function(r){
+    if(r[0] && r[0].length >= (d.center || []).length) d.center = r[0];
+    if(r[1] && r[1].length >= (d.sora || []).length) d.sora = r[1];
+    if(r[2] && r[2].length >= (d.karaoke || []).length) d.karaoke = r[2];
+    return d;
+  });
+}
 function jornalAbrir(){
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
-  contaRpc('tw_podio_semana').then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); })
+  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); })
     .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); } });
 }
 function jornalFechar(){ jornalOv.hidden = true; }

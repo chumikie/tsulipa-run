@@ -54,3 +54,10 @@
 .jnpostar label{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-weight:700;font-size:13px}
 .jnpostar input[type=text],.jnpostar textarea{font:inherit;padding:6px 8px;border-radius:8px;border:2px solid #d9c7fb}
 #jnPostPrev{max-width:100%;border-radius:10px;margin-top:6px}
+
+.jnnick{border:0;background:none;padding:0;font:inherit;font-weight:800;color:#3c2a8f;cursor:pointer;text-align:left;text-decoration:underline dotted;text-underline-offset:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-size:13px}
+.jnnickg{font-size:inherit;color:inherit;font-family:inherit}
+.jnfotolink{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;flex:none}
+.jnfotolink:focus-visible,.jnnick:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.jnpos{font-size:12px;color:#7b3ff0;min-width:22px;text-align:center}
+.jndica{font-weight:600;font-size:11px;opacity:.85;line-height:1.35}

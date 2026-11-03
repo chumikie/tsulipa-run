@@ -79,8 +79,8 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
   const desenho = jornal.slice(começo, fim);
   for(const local of ['gigoia','liberdade','tailandia','harajuku','praia']){
     for(const [largura,altura] of [[480,300],[1440,900]]){
-      const movimentos = [], cenas = [], idols = [];
-      const pincel = new Proxy({translate:(a,b)=>movimentos.push([a,b])},{
+      const movimentos = [], escalas = [], cenas = [], idols = [];
+      const pincel = new Proxy({translate:(a,b)=>movimentos.push([a,b]),scale:(a,b)=>escalas.push([a,b])},{
         get(obj,chave){ return chave in obj ? obj[chave] : ()=>{}; },
         set(obj,chave,valor){ obj[chave] = valor; return true; }
       });
@@ -95,9 +95,10 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
       vm.runInContext(desenho + String.fromCharCode(10) + 'jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
       const deslocamento = local==='tailandia'?.55:.25;
       assert.equal(cenas.length,1,local+' usa a arte oficial');
-      assert.equal(cenas[0].w,largura);
-      assert.ok(Math.abs(cenas[0].h-altura*(1+deslocamento))<.001);
-      assert.ok(movimentos.some(([x,y])=>x===0&&Math.abs(y+altura*deslocamento)<.001),'câmera valoriza a paisagem');
+      assert.equal(cenas[0].w,480,'a câmera virtual mantém o mesmo traço no download');
+      assert.ok(Math.abs(cenas[0].h-300*(1+deslocamento))<.001);
+      assert.ok(movimentos.some(([x,y])=>x===0&&Math.abs(y+300*deslocamento)<.001),'câmera valoriza a paisagem');
+      assert.ok(escalas.some(([sx,sy])=>sx===largura/480&&sy===altura/300),'miniatura e download têm mesma proporção');
       assert.equal(idols.length,8,'nenhum Idol foi removido da cena');
       assert.ok(idols.every(p=>p.h<altura*.44&&p.h>altura*.37),'oito Idols abaixo dos monumentos');
     }

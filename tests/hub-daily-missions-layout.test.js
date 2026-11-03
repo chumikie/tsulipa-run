@@ -20,7 +20,7 @@ assert.equal((html.match(/id="hubMis"/g)||[]).length,1,'mission body ID stays un
 const gallery=(function(){const a=html.indexOf('function hubIdolsLugar(){'),b=html.indexOf('\nfunction ',a+10),c=html.indexOf('// ---- Palco animado da vitrine ----',a);return html.slice(a,b<0?c:c<0?b:Math.min(b,c));})();   // Etapa 7: a função mora em hub.js
 assert(gallery.includes("missions = $('hubMisPainel')"),'the gallery placement knows about the mission panel');
 assert(gallery.includes('var anchor = missions || busca;')&&gallery.includes('anchor.parentNode.insertBefore(box, anchor.nextSibling)'),'the Idol gallery follows missions on the started hub');
-assert(gallery.includes("var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling);"),'Top Idols remains below the Idol gallery');
+assert(require('fs').readFileSync(require('path').join(__dirname,'..','jornal.js'),'utf8').includes("Top Idols ' + escHtml(tr('da semana'))"),'Top Idols of the week lives inside Idol⭐News!');
 assert(html.includes("function hubMisUI(){")&&html.includes("data-resg="),'mission progress and claim actions remain intact');
 assert(html.includes('hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();'),'the original hub render still populates mission data');
 assert(html.includes("function hubMisCarregar(){")&&html.includes("contaRpc('missoes')"),'daily missions still load from the existing account RPC');

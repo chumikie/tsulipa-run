@@ -59,8 +59,8 @@
 .perfdica{text-align:center;font-size:13px}
 </style>
 <link rel="stylesheet" href="./hub.css?v=1">
-<link rel="stylesheet" href="./shop.css?v=1">
-<link rel="stylesheet" href="./jornal.css?v=1">
+<link rel="stylesheet" href="./shop.css?v=2">
+<link rel="stylesheet" href="./jornal.css?v=3">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -342,11 +342,11 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./gacha.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=6"></script>
-<script src="./shop.js?v=1"></script>
-<script src="./jornal.js?v=1"></script>
+<script src="./hub.js?v=7"></script>
+<script src="./shop.js?v=2"></script>
+<script src="./jornal.js?v=3"></script>
 <script src="./banner.js?v=1"></script>
-<script src="./conta.js?v=1"></script>
+<script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
 <script>
 /* ================================================================
@@ -474,6 +474,16 @@ CH.forEach(function(c,i){
   var b=document.createElement('button');b.className='chip';b.innerHTML='<span style="background:'+c.img+'"></span>'+c.n;
   b.setAttribute('aria-pressed',i===sel);b.onclick=function(){pick(i)};cw.appendChild(b);
 });
+// O 4º personagem aparece com o nome de quem joga (conta ou apelido digitado); a chave interna continua "Idol"
+function idolNomeVisivel(){
+  var n=(typeof contaJ!=='undefined'&&contaJ&&contaJ.nick)||(($('nick')&&$('nick').value)||'').trim();
+  return n?String(n).slice(0,12):'Idol';
+}
+function idolChipNome(){
+  var b=cw&&cw.children[3];if(!b)return;var sp=b.querySelector('span');
+  b.textContent='';if(sp)b.appendChild(sp);b.appendChild(document.createTextNode(idolNomeVisivel()));
+}
+idolChipNome();
 SK.forEach(function(sk){
   var b=document.createElement('button');b.className='sw';b.style.background=sk;b.setAttribute('aria-label','Tom de pele');
   b.setAttribute('aria-pressed',sk===CU.skin);b.onclick=function(){CU.skin=sk;[].forEach.call($('skins').children,function(x){x.setAttribute('aria-pressed',x===b)});saveCu()};
@@ -515,7 +525,7 @@ var nickIn = $('nick');
 if(nickIn){
   nickIn.value = nick;
   if(!nick) nickIn.classList.add('chamativo');
-  nickIn.oninput = function(){
+  nickIn.oninput = function(){ if(typeof idolChipNome === "function") idolChipNome();
     nick = this.value.trim().slice(0, 12);
     this.classList.toggle('chamativo', !nick);
     this.classList.remove('aviso-erro'); // Limpa o estado de erro
@@ -1530,10 +1540,10 @@ perfOv.addEventListener('click', function(e){
   perfMontMudou('skin', b.dataset.v);
 });
 
-// Jornal TsuLiPa (jornal.js): só leitura dos pódios da semana
+// Idol⭐News! (jornal.js): só leitura dos pódios da semana
 var jornalOv = document.createElement('div');
 jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; jornalOv.hidden = true;
-jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Jornal TsuLiPa"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
+jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
 $('jornalX').onclick = jornalFechar;
 // Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
@@ -1542,6 +1552,7 @@ shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.h
 document.body.appendChild(shopOv);
 $('shopX').onclick = shopFechar;
 $('shopCv').addEventListener('click', shopReage);
+shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); });
 // ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
 function lojaRoupasClique(e){
   var b = e.target.closest('#perfLoja [data-vestir]');
@@ -1564,7 +1575,7 @@ function lojaRoupasClique(e){
     return;
   }
   var c = e.target.closest('#perfLoja [data-provar]');
-  if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); }
+  if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); if(!shopOv.hidden) shopProvador(); }
 }
 perfOv.addEventListener('click', lojaRoupasClique);
 shopOv.addEventListener('click', lojaRoupasClique);

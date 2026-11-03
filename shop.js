@@ -16,7 +16,10 @@ function shopHtml(){
     '<div id="shopCorpo"></div></div>';
 }
 function shopCorpoHtml(){   // os mesmos blocos (e ids) da lojinha do perfil: as compras seguem iguais
-  return '<h3>👗 ' + escHtml(tr('Roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Toque em Provar para ver no seu Idol antes de comprar.')) + '</p>' +
+  return '<section class="shopprov"><h3>🪞 ' + escHtml(tr('Provador')) + '</h3><canvas id="shopProvCv" width="512" height="512" aria-hidden="true"></canvas>' +
+    '<div class="btns"><button type="button" class="btn" id="shopSalvar">💾 ' + escHtml(tr('Salvar visual')) + '</button><a class="btn alt" id="shopPng" href="#" download="zipper-shop.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a></div>' +
+    '<p class="perfmsg" id="shopProvMsg" hidden></p></section>' +
+    '<h3>👗 ' + escHtml(tr('Roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Toque em Provar para ver no seu Idol antes de comprar.')) + '</p>' +
     '<div class="perfloja" id="perfLoja"></div><p class="perfmsg" id="perfLojaMsg" hidden></p>' +
     '<h3>🎀 ' + escHtml(tr('Acessórios')) + '</h3><div class="perfloja" id="perfLojaAcessorios"></div>' +
     '<h3>🍞 ' + escHtml(tr('Itens')) + '</h3><div class="perfloja" id="perfLojaItens"></div>' +
@@ -28,6 +31,31 @@ function shopUI(){
   $('shopSaldo').textContent = '★ ' + (starT || 0);
   if(typeof perfLojaUI === 'function') perfLojaUI();
   if(typeof perfLoja2UI === 'function') perfLoja2UI();
+  shopProvador();
+}
+function shopAvAtual(){   // o seu Idol (com a roupa que está provando)
+  var av = perfAvAtual({ fundo:'basico', pose:'v', expr:3 }); if(perfProva) av.c.out = perfProva; return av;
+}
+function shopProvador(){
+  var cv = $('shopProvCv'), x = cv && cv.getContext('2d'); if(!x) return;
+  x.clearRect(0, 0, cv.width, cv.height);
+  try{ perfDesenharIdol(x, cv.width, cv.height, shopAvAtual(), true); }catch(e){}
+}
+function shopPng(a){   // PNG 1024×1024 com assinatura, como o do perfil
+  var cv = document.createElement('canvas'); cv.width = cv.height = 1024; var x = cv.getContext('2d');
+  try{ perfDesenharIdol(x, 1024, 1024, shopAvAtual(), true); }catch(e){}
+  x.font = '800 26px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.85)'; x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 6;
+  x.fillText((contaJ && contaJ.nick ? contaJ.nick + ' · ' : '') + 'Zipper⭐Shop! · TsuLiPa⭐World', 1000, 1004);
+  a.href = cv.toDataURL('image/png'); a.download = 'zipper-shop' + (contaJ && contaJ.nick ? '-' + String(contaJ.nick).replace(/[^\w-]+/g, '') : '') + '.png';
+}
+function shopSalvar(){
+  var m = $('shopProvMsg');
+  if(perfProva && !perfLojaTem(perfProva)){ if(m){ m.textContent = tr('Compre a roupa para salvar com ela.'); m.hidden = false; } return; }
+  if(perfProva){ perfMontMudou('out', perfProva); perfProva = ''; }
+  if(typeof lookSalvar === 'function') lookSalvar(true, m);
+  if(contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});
+  if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
+  shopUI();
 }
 function shopAbrir(){
   if(!contaJ){ contaEntrar(); return; }

@@ -268,7 +268,7 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
   b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };
   var linha = $('hubHojeLinha'), jn = $('hubJornal');
   if(linha && !jn){ jn = document.createElement('button'); jn.type = 'button'; jn.className = 'hubmusica hubjornal'; jn.id = 'hubJornal'; jn.onclick = function(){ if(sfx.card) sfx.card(); jornalAbrir(); }; linha.appendChild(jn); }
-  if(jn) jn.innerHTML = '📰 <b translate="no">Jornal TsuLiPa</b><small class="tw-hubgame-jp" lang="ja">ツリパ新聞</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
+  if(jn) jn.innerHTML = '📰 <b translate="no">Idol⭐News!</b><small class="tw-hubgame-jp" lang="ja">アイドル・ニュース</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
@@ -995,7 +995,7 @@ function hubIdolsLugar(){
   var box = $('hubIdols'), busca = hubOv.querySelector('.hubbusca'), missions = $('hubMisPainel'), cv = $('hubCv'); if(!box || !busca || !cv) return;
   if(hubComecou){ var anchor = missions || busca; if(box.previousElementSibling !== anchor) anchor.parentNode.insertBefore(box, anchor.nextSibling); box.classList.remove('mini');
     // Top Idols logo abaixo da vitrine (site corrido, em coluna única).
-    var hall = $('twRankHall'); if(hall && box.nextElementSibling !== hall) box.parentNode.insertBefore(hall, box.nextSibling); }
+    }   // o Top Idols mora no Idol⭐News! (jornal.js)
   else { if(box.previousElementSibling !== cv) cv.parentNode.insertBefore(box, cv.nextSibling); box.classList.add('mini'); }
   hubIV.cw = 0;
 }

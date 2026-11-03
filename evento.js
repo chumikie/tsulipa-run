@@ -48,9 +48,66 @@ function eventoPet(){
   var p = petData.pets[petData.ativo];
   return { k:petData.ativo === 'meu' ? 'meu' : petData.ativo, acc:p.acc || '', cfg:petData.ativo === 'meu' ? p.cfg : null, nome:p.nome || '' };
 }
-function eventoPetDesenhar(x, W2, chao, t, s, alvoX){   // anda de um lado pro outro (ou até alvoX), com pulinhos
-  var p = eventoPet(); if(!p || typeof perfDesenharPetEm !== 'function') return null;
-  var vai = alvoX != null ? alvoX : W2 * (.5 + .42 * Math.sin(t / 260)), pulo = Math.abs(Math.sin(t / 9)) * 3;
+/* Reações dos pets nos minijogos: reaproveitam o sprite e a voz do Backstage⭐Pet!,
+   sem balões, timers extras ou som automático. Cada cena guarda só sua área de toque. */
+var eventoPetCenas = Object.create(null);
+function eventoPetResetar(modo){ delete eventoPetCenas[modo]; }
+function eventoPetReagir(modo, t, comSom){
+  var p = eventoPet(), cena = eventoPetCenas[modo];
+  if(!p || !cena) return false;
+  if(cena.reacao && t - cena.reacao.inicio < 16 &&
+     (!comSom || (cena.ultimoSom != null && t - cena.ultimoSom < 16))) return true;
+  cena.reacao = { inicio:t, emoji:p.k === 'tsu' ? '💜' : p.k === 'lirika' ? '💚' : p.k === 'pati' ? '⭐' : '💖' };
+  if(comSom && typeof petVoice === 'function'){
+    try{ petVoice(typeof petAtivo === 'function' ? petAtivo() : null, p.k); }catch(e){}
+    cena.ultimoSom = t;
+  }
+  return true;
+}
+function eventoPetToque(modo, px, py, t){
+  var cena = eventoPetCenas[modo];
+  if(!cena || !eventoPet()) return false;
+  if(Math.abs(px - cena.x) > Math.max(28, cena.escala * 23) ||
+     Math.abs(py - cena.y) > Math.max(27, cena.escala * 25)) return false;
+  return eventoPetReagir(modo, t, true);
+}
+function eventoPetDesenhar(x, W2, chao, t, s, alvoX, modo){   // passeia, reage ao carinho e brilha sem balões
+  var p = eventoPet();
+  if(!p || typeof perfDesenharPetEm !== 'function'){
+    if(modo) eventoPetResetar(modo);
+    return null;
+  }
+  var vai = alvoX != null ? alvoX : W2 * (.5 + .42 * Math.sin(t / 260));
+  var cena = modo ? (eventoPetCenas[modo] || (eventoPetCenas[modo] = {})) : null;
+  var idade = cena && cena.reacao ? t - cena.reacao.inicio : 999;
+  if(cena){
+    cena.x = vai; cena.y = chao; cena.escala = s;
+    if(idade >= 76 || idade < 0){ cena.reacao = null; idade = 999; }
+  }
+  var pulo = Math.abs(Math.sin(t / 9)) * 3 + (idade < 76 ? Math.abs(Math.sin(idade / 5)) * 11 : 0);
   try{ perfDesenharPetEm(x, p, vai, chao - pulo, s, t); }catch(e){}
+  if(cena){
+    x.save();
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = '900 ' + Math.round(9 + s * 2) + 'px sans-serif';
+    x.fillStyle = '#fff6b2';
+    x.globalAlpha = .35 + .25 * Math.sin(t / 12);
+    x.fillText('✦', vai - s * 18, chao - s * 14 - Math.sin(t / 14) * 3);
+    x.fillStyle = '#ff94ce';
+    x.globalAlpha = .42 + .25 * Math.sin(t / 16 + 2);
+    x.fillText('✧', vai + s * 17, chao - s * 8 + Math.cos(t / 13) * 3);
+    if(idade < 76){
+      var sobe = idade * .65, alfa = Math.max(0, 1 - idade / 76);
+      x.globalAlpha = alfa;
+      x.font = Math.round(16 + s * 5) + 'px sans-serif';
+      x.fillText(cena.reacao.emoji, vai, chao - s * 23 - sobe);
+      x.font = '900 ' + Math.round(13 + s * 2) + 'px sans-serif';
+      x.fillStyle = '#fff3a2';
+      x.fillText('✦', vai - s * 23 - idade * .12, chao - s * 13 - sobe * .65);
+      x.fillStyle = '#ff8dcc';
+      x.fillText('✦', vai + s * 22 + idade * .1, chao - s * 25 - sobe * .45);
+    }
+    x.restore();
+  }
   return vai;
 }

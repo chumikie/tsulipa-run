@@ -385,5 +385,20 @@
   return key;
  }
 
- return Object.freeze({ VIEWS:VIEWS.slice(), NAMES:NAMES, SONGS:SONGS, viewFor:viewFor, songFor:songFor, nextChange:nextChange, isNight:isNight, weekIndex:weekIndex, draw:draw });
+ // Apenas a PAISAGEM por trás da janela: sem vidro, divisórias ou moldura.
+ // Idol⭐News! usa a arte oficial das cinco vistas, sem redesenhar cenários.
+ function drawScene(x, rx, ry, rw, rh, t, key, night){
+  var now = Date.now(), R = { x:rx, y:ry, w:rw, h:rh };
+  key = CENAS[key] ? key : viewFor(now);
+  if(typeof night !== 'boolean') night = isNight(now);
+  t = t || 0;
+  x.save();
+  x.beginPath(); x.rect(rx, ry, rw, rh); x.clip();
+  CENAS[key](x, R, t, night);
+  if(key === 'liberdade') liberdadeFrente(x, R, t, night);
+  x.restore();
+  return key;
+ }
+
+ return Object.freeze({ VIEWS:VIEWS.slice(), NAMES:NAMES, SONGS:SONGS, viewFor:viewFor, songFor:songFor, nextChange:nextChange, isNight:isNight, weekIndex:weekIndex, draw:draw, drawScene:drawScene });
 });

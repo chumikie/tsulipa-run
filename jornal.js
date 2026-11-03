@@ -29,7 +29,7 @@ function jornalMontar(d){
   var total = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && +hubIdolsDados.total || 0;
   var combo = (d.karaoke_combo || [])[0], prec = (d.karaoke_acertos || [])[0];
   var h = '<header class="jntopo"><b class="jnnome" translate="no">📰 Idol<span class="tw-modal-star">⭐</span>News!</b><small lang="ja">アイドル・ニュース</small>' +
-    '<p>' + (sem ? escHtml(tr('Semana de')) + ' ' + jornalData(sem) + ' ' + escHtml(tr('a')) + ' ' + jornalData(sem, 6) + ' · ' : '') + escHtml(tr('placar parcial até domingo 0h')) + '</p></header>';
+    '<p>' + (sem ? escHtml(tr('Semana de {a} a {b}').replace('{a}', jornalData(sem)).replace('{b}', jornalData(sem, 6))) + ' · ' : '') + escHtml(tr('placar parcial até domingo 0h')) + '</p></header>';
   if(c1) h += '<article class="jnmanchete"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas><div><small>' + escHtml(tr('Manchete')) + '</small>' +
     '<h3>' + escHtml(c1.nick) + ' ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
   h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
@@ -74,20 +74,39 @@ function jornalFotosDia(){
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
     return { cena:cenas[i % cenas.length], grupo:grupo };
   });
+  jornalFotosHoje = fotos;
   box.innerHTML = fotos.map(function(f, i){
-    var nomes = f.grupo.map(function(p){ return p.nick; }), lista = nomes.slice(0, -1).join(', ') + ' ' + tr('e') + ' ' + nomes[nomes.length - 1];
-    return '<figure class="jnfoto3"><canvas width="480" height="300" data-jfoto="' + i + '" aria-hidden="true"></canvas><figcaption>' + f.cena[1] + ' ' + escHtml(tr(f.cena[2]).replace('{n}', lista)) + '</figcaption></figure>';
+    return '<figure class="jnfoto3"><button type="button" class="jnfotobtn" data-jfoto="' + i + '" aria-label="' + escHtml(tr('Ampliar foto')) + '"><canvas width="480" height="300" aria-hidden="true"></canvas></button><figcaption>' + f.cena[1] + ' ' + escHtml(jornalLegenda(f)) + '</figcaption></figure>';
   }).join('');
-  fotos.forEach(function(f, i){
-    var cv = box.querySelector('[data-jfoto="' + i + '"]'), x = cv && cv.getContext('2d'); if(!x) return;
-    var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
-    try{ if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor); else perfFundo(x, W2, H2, f.cena[0], cor, 0); }catch(e){}
-    var n = f.grupo.length, slot = W2 / n;
-    f.grupo.forEach(function(p, k){
-      var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
-      x.save(); x.translate(k * slot - slot * .1, H2 * .06); try{ perfDesenharIdol(x, slot * 1.2, H2 * .94, av, false, false, 0); }catch(e){} x.restore();
-    });
+  fotos.forEach(function(f, i){ var b = box.querySelector('[data-jfoto="' + i + '"]'), cv = b && b.querySelector('canvas'); if(cv) jornalFotoDesenhar(cv, f, false); });
+}
+var jornalFotosHoje = [];
+function jornalLegenda(f){
+  var nomes = f.grupo.map(function(p){ return p.nick; }), lista = tr('{a} e {b}').replace('{a}', nomes.slice(0, -1).join(', ')).replace('{b}', nomes[nomes.length - 1]);
+  return tr(f.cena[2]).replace('{n}', lista);
+}
+function jornalFotoDesenhar(cv, f, assinatura){
+  var x = cv.getContext('2d'); if(!x) return;
+  var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
+  x.clearRect(0, 0, W2, H2);
+  try{ if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor); else perfFundo(x, W2, H2, f.cena[0], cor, 0); }catch(e){}
+  var n = f.grupo.length, slot = W2 / n;
+  f.grupo.forEach(function(p, k){
+    var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
+    x.save(); x.translate(k * slot - slot * .1, H2 * .06); try{ perfDesenharIdol(x, slot * 1.2, H2 * .94, av, false, false, 0); }catch(e){} x.restore();
   });
+  if(assinatura){
+    var u = W2 / 480; x.font = '800 ' + Math.round(13 * u) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.9)';
+    x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 5 * u; x.fillText('Idol⭐News! · TsuLiPa⭐World', W2 - 10 * u, H2 - 10 * u); x.shadowBlur = 0;
+  }
+}
+function jornalFotoAmpliar(i){   // abre grande, com BAIXAR (a mesma tela de foto do jogo)
+  var f = jornalFotosHoje[i]; if(!f) return;
+  var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 900; jornalFotoDesenhar(cv, f, true);
+  var u = cv.toDataURL('image/png'), dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  $('shimg').src = u; $('shimg').alt = jornalLegenda(f); $('shdl').href = u; $('shdl').download = 'idol-news-' + dia + '-' + (i + 1) + '.png';
+  if(typeof petPhShow === 'function') petPhShow(false);
+  $('shr').hidden = false; if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
 }
 function jornalAbrir(){
   jornalOv.hidden = false; jornalOv.scrollTop = 0;

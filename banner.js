@@ -63,3 +63,50 @@ function bannerVisitaReage(i){   // sem voz: frase, emojis e um efeito sonoro
   HUB_REAGE = { i:i, t0:hubT, dur:200, txt:f[0], emo:[0, 1, 2, 3, 4].map(function(n){ return { e:n % 2 ? f[1] : BANNER_EMO[(i * 2 + n) % BANNER_EMO.length], dx:0, v:.5 + Math.random() * .5 }; }) };
   try{ if(!(typeof muted !== 'undefined' && muted) && sfx && sfx.star) sfx.star(); }catch(e){}
 }
+
+// Torcida do Star⭐Gacha!: os 3 do banner do dia torcem por quem gira.
+// Nunca aparece a própria pessoa; se for Tsu, Lirika ou Patiliri, o TsuLiPa não torce (entra um trio do site).
+function bannerPool(){
+  var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols : [];
+  L = L.filter(function(p){ return p && p.nick && p.avatar && p.avatar.c && typeof p.avatar.c === 'object' && BANNER_TSULIPA.indexOf(String(p.nick).toLowerCase()) < 0; });
+  L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
+  return bannerSorteio(L, Math.floor(bannerDia() / 3));
+}
+function bannerTorcida(){   // null = sem torcida; {tsulipa:true} = Tsu, Lirika e Pati; senão {gente:[{nick,av}]}
+  var eu = String(typeof contaJ !== 'undefined' && contaJ && contaJ.nick || '').toLowerCase();
+  var souTsulipa = BANNER_TSULIPA.indexOf(eu) >= 0 || eu === 'pati';
+  var cast = bannerElenco();
+  if(!cast && !souTsulipa) return { tsulipa:true };
+  var pool = bannerPool(); if(pool.length < 3) return souTsulipa ? null : { tsulipa:true };
+  var gente = (cast || pool.slice(0, 3).map(function(p){ return { nick:String(p.nick).slice(0, 24), av:p.avatar }; })).filter(function(p){ return String(p.nick).toLowerCase() !== eu; });
+  for(var i = 0; gente.length < 3 && i < pool.length; i++){   // completa sem repetir e sem a própria pessoa
+    var p = pool[i], nk = String(p.nick).slice(0, 24);
+    if(nk.toLowerCase() !== eu && !gente.some(function(g){ return g.nick === nk; })) gente.push({ nick:nk, av:p.avatar });
+  }
+  return gente.length === 3 ? { gente:gente } : null;
+}
+function bannerTorcidaDesenhar(x, W2, H2, t, girando){   // no canto esquerdo da sala do Gacha, pequenos, pulando
+  var tc = bannerTorcida(); if(!tc) return;
+  var sc = 1.9, chao = H2 * .9, xs = [W2 * .06, W2 * .14, W2 * .22];
+  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame;
+  try{
+    state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; frame = t;
+    for(var i = 0; i < 3; i++){
+      var c, pose = girando ? ['banzai', 'luz', 'banzai'][i] : ['luz', 'v', 'coracao'][i], ex = girando ? 3 : 2;
+      if(tc.tsulipa){ c = CH[i]; accSel = ''; }
+      else { var av = tc.gente[i].av || {}; c = perfChar(av); accSel = typeof av.a === 'string' ? av.a : ''; }
+      var pulo = Math.abs(Math.sin(t * (girando ? .16 : .06) + i * 1.3)) * (girando ? 9 : 3), cx = xs[i];
+      x.fillStyle = 'rgba(30,10,60,.2)'; x.beginPath(); x.ellipse(cx, chao, 11 * sc, 1.8 * sc, 0, 0, 7); x.fill();
+      perfCharContorno(x, cx - 15 * sc, chao - 44 * sc - pulo, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+      charPose = ''; perfAntena = '';
+      if(girando && Math.floor(t / 20 + i) % 3 === 0){ x.save(); x.font = '16px sans-serif'; x.textAlign = 'center'; x.fillText(['💖', '⭐', '✨'][i], cx, chao - 50 * sc - pulo); x.restore(); }
+    }
+    if(girando){   // faixinha de torcida
+      x.save(); x.font = '800 13px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      var txt = tr('Boa sorte!'), w = x.measureText(txt).width + 18, cx2 = W2 * .14, cy = chao - 50 * sc - 30;
+      x.fillStyle = '#fff'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 2; x.beginPath(); if(x.roundRect) x.roundRect(cx2 - w / 2, cy - 12, w, 24, 12); else x.rect(cx2 - w / 2, cy - 12, w, 24); x.fill(); x.stroke();
+      x.fillStyle = '#d63384'; x.fillText(txt, cx2, cy + 1); x.restore();
+    }
+  }catch(e){}
+  finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = ''; }
+}

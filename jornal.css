@@ -29,9 +29,12 @@
 .jnfoto3{margin:0;background:#fff;border-radius:14px;padding:6px 6px 8px;box-shadow:0 3px 0 rgba(123,63,240,.12);transform:rotate(-.6deg)}
 .jnfoto3:nth-child(2){transform:rotate(.7deg)}
 .jnfoto3 canvas{width:100%;height:auto;display:block;border-radius:10px}
-.jnfoto3 figcaption{font-size:13px;font-weight:700;text-align:center;margin-top:6px}
+.jnfoto3 figcaption{font-size:13px;font-weight:800;text-align:center;margin-top:6px;color:#3c2a8f}
+.jnfotobtn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;border-radius:10px}
+.jnfotobtn:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 @media (min-width:600px){.jnfotos{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* Novidades e Top Idols agora ficam só no Idol⭐News! */
 #hub .hubnov{display:none!important}
 #hub #twRankHall{display:none!important}
 .jntopt{margin:14px 0 0;color:var(--b1)}
+.jornalp .jnbloco,.jornalp .jnpodio,.jornalp .jnmanchete{color:#3c2a8f}

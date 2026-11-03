@@ -74,7 +74,8 @@
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
 <link rel="stylesheet" href="./album.css?v=2">
-<link rel="stylesheet" href="./fa.css?v=2">
+<link rel="stylesheet" href="./fa.css?v=3">
+<link rel="stylesheet" href="./handshake.css?v=1">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -152,7 +153,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <link rel="stylesheet" href="./tw-index2-preview.css?v=1" id="tw-index2-preview-css">
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
-<link rel="stylesheet" href="./index2-skin.css?v=4">
+<link rel="stylesheet" href="./index2-skin.css?v=5">
 <link rel="stylesheet" href="./karaoke-tickets.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=11">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
@@ -348,11 +349,12 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=2"></script>
 <script src="./troca.js?v=1"></script>
-<script src="./fa.js?v=1"></script>
+<script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
+<script src="./handshake.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=12"></script>
+<script src="./hub.js?v=13"></script>
 <script src="./shop.js?v=4"></script>
 <script src="./jornal.js?v=12"></script>
 <script src="./banner.js?v=4"></script>
@@ -2140,6 +2142,7 @@ hubOv.addEventListener('click', function(e){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); if(location.hash !== '#center-run'){ try{ history.pushState({ tw:'center-run' }, '', '#center-run'); }catch(e){} } var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
+    else if(ir === 'handshake') hsAbrir();   // joga sem conta; o prêmio do dia pede conta
     else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
@@ -2210,6 +2213,13 @@ gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window 
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
+// Handshake⭐Event! (handshake.js)
+var hsOv = document.createElement('div');
+hsOv.className = 'ov hsov tw-window-overlay'; hsOv.id = 'hsOv'; hsOv.hidden = true;
+hsOv.innerHTML = '<div class="panel hsp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="hsTit"><button type="button" class="perfx tw-window-control tw-window-close" id="hsX">✕</button><h2 class="tw-modal-title" id="hsTit" translate="no">🤝 Handshake<span class="tw-modal-star">⭐</span>Event!</h2><small class="tw-modal-jp" lang="ja">握手会</small><canvas id="hsCv" width="640" height="360" aria-hidden="true"></canvas><div id="hsCorpo"></div></div>';
+document.body.appendChild(hsOv);
+$('hsX').onclick = hsFechar;
+hsOv.addEventListener('click', hsClique);
 // Pedidos de fã (fa.js)
 var faOv = document.createElement('div');
 faOv.className = 'ov faov tw-window-overlay'; faOv.id = 'faOv'; faOv.hidden = true;
@@ -3241,7 +3251,7 @@ applyLang();
     var logado = !!(window.contaJ);
     var cards = document.querySelectorAll('#hub #hubCards .hubcard');
     cards.forEach(function(card){
-      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.id === 'hubPerf' || card.id === 'hubRun';
       // 🧪 Temporário: Sora⭐Jump! e Karaoke⭐Time! ficam abertos sem login.
       if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) isFree = true;
       var lockEl = card.querySelector('.tw-profile-lock');
@@ -3268,7 +3278,7 @@ applyLang();
     if(!card || window.contaJ) return;
     // 🧪 Temporário: sem cadeado nos jogos especiais liberados para teste.
     if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) return;
-    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.id === 'hubPerf' || card.id === 'hubRun';
     if(!isFree){
       e.stopImmediatePropagation();
       e.preventDefault();

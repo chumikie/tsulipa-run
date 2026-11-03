@@ -1,0 +1,14 @@
+/* Handshake⭐Event! */
+.hsov{z-index:21}.hsp{max-width:600px;position:relative;text-align:center}
+.hsp h2{margin:4px 0 2px;color:var(--b1);padding:0 44px}
+#hsCv{width:100%;height:auto;display:block;border-radius:18px;margin:8px 0}
+.hsstatus{display:flex;justify-content:space-between;gap:8px;font-weight:900;color:#3c2a8f;font-size:15px;padding:0 4px}
+.hshype{display:flex;align-items:center;gap:8px;margin:6px 0;color:#d63384}.hshype .albumbarra{flex:1;margin:0;max-width:none}
+.hsdica{color:#3c2a8f;font-weight:700;font-size:14px;margin:8px 0}
+.hstempo{height:8px;border-radius:999px;background:#efe6ff;overflow:hidden;margin:6px 0}.hstempo i{display:block;height:100%;background:linear-gradient(90deg,#ff6fb5,#ffd23f)}
+.hsops{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}
+.hsop{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:0;border-radius:16px;background:#fff;font:inherit;color:#3c2a8f;cursor:pointer;box-shadow:0 4px 0 rgba(123,63,240,.18)}
+.hsop span{font-size:30px}.hsop small{font-weight:800;font-size:12px}
+.hsop:active{transform:translateY(2px)}.hsop.certo{background:#d9f7d0;box-shadow:0 0 0 3px #3fae62 inset}.hsop.errado{background:#ffe0e6;box-shadow:0 0 0 3px #e0303a inset}
+.hsfim{font-size:18px;font-weight:800;color:#3c2a8f}
+@media (max-width:420px){.hsops{grid-template-columns:repeat(2,minmax(0,1fr))}}

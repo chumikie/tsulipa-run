@@ -8,3 +8,7 @@
 #hub #hubCards>button.hubcard.hubloja{min-height:0}
 .shopprov{text-align:center}
 #shopProvCv{width:min(240px,70%);height:auto;border-radius:18px;display:block;margin:0 auto 6px}
+/* botão em destaque, como o do Center⭐Run! (rosa/roxo da lojinha) */
+#hub #hubCards>button.hubcard.hubloja{background:linear-gradient(135deg,#ff6fb5,#9b30d9);color:#fff;box-shadow:0 5px 0 rgba(123,63,240,.35),0 10px 22px rgba(255,111,181,.35)}
+#hub #hubCards>button.hubcard.hubloja b,#hub #hubCards>button.hubcard.hubloja small{color:#fff}
+#hub #hubCards>button.hubcard.hubloja .tw-hubgame-jp{color:#ffe3f2}

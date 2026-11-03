@@ -38,3 +38,8 @@
 #hub #twRankHall{display:none!important}
 .jntopt{margin:14px 0 0;color:var(--b1)}
 .jornalp .jnbloco,.jornalp .jnpodio,.jornalp .jnmanchete{color:#3c2a8f}
+/* fundo claro fixo nos blocos (o tema escuro deixava texto escuro em fundo escuro) */
+.jornalp .jnbloco,.jornalp .jnpodio{background:#fff}
+.jornalp .jnmanchete{background:linear-gradient(135deg,#fff,#fff0fa)}
+.jornalp .jnbloco h4,.jornalp .jnpodio h4,.jornalp .jntopt{color:#7b3ff0}
+.jornalp .jnbloco li,.jornalp .jnpodio b,.jornalp .jnpodio small,.jornalp .jnvazio{color:#3c2a8f}

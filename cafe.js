@@ -347,5 +347,6 @@ function cfCenaClique(ev){
   var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
   if(px >= cv.width * .055 && px <= cv.width * .33 && py >= cv.height * .38 && py <= cv.height * .98){
     hsReacaoAtivar(cf, cfT);
+    cfDesenhar(); // resposta imediata ao toque, mesmo entre quadros reduzidos no celular
   }
 }

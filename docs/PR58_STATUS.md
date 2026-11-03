@@ -437,7 +437,7 @@ A #71 concentra todo o trabalho novo até a publicação, para economizar deploy
 | Happy⭐Cafe! | Café do grupo (shakes, frappés, lattes e docinhos montados em camadas); 3 vidas, 12 clientes; prêmio só visual: Caderno de receitas (20, salvo no aparelho) | `cafe.js`, `cafe.css` |
 | Jogos no hub | Center⭐Run! no topo; depois Karaoke, Sora e Gacha; depois Moon Duo, Handshake e Happy Cafe (3 por linha no computador, 2 no celular). Handshake e Café usam o rosa de alerta com "!" até a partida do dia | `index2-skin.css`, `hub.js` |
 | Missões e Novidades | Textos das missões `handshake` e `cafe`; o site chama `marcar_visita` ao fim da partida. Novidades com os jogos novos | `hub.js` |
-| Evento da semana | Tema que muda toda segunda (Morango, Chocolate, Matcha, Estrelas, Café): pedidos do Café e presente do Handshake valem +50; aparece no Pedido de fã (quando não há tema de data) e numa plaquinha no banner | `evento.js` |
+| Evento da semana | Tema que muda toda segunda (Morango, Chocolate, Matcha, Estrelas, Café): pedidos do Café e presente do Handshake valem +50; aparece no Pedido de fã (quando não há tema de data) e numa bloco no Idol⭐News! | `evento.js` |
 | Conquistas dos jogos novos | Insígnias visuais na Estante: 🧋 Barista perfeito, 🤝 Memória de fã, 📒 Caderno completo (no aparelho; na conta depois da proposta SQL) | `evento.js`, `perfil.js` |
 | Diário de carreira | Linha do tempo no Perfil: estreia, marcos de corridas e Centers, recorde, insígnias, corações, receitas e recordes dos jogos novos | `perfil.js`, `atualizacao2.css` |
 | Pet nos jogos novos | O pet ativo passeia no Handshake e no balcão do Café, e às vezes pega o docinho do pedido | `evento.js`, `cafe.js`, `handshake.js` |

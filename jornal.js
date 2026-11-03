@@ -35,6 +35,11 @@ function jornalMontar(d){
     '<p>' + (sem ? escHtml(tr('Semana de {a} a {b}').replace('{a}', jornalData(sem)).replace('{b}', jornalData(sem, 6))) + ' · ' : '') + escHtml(tr('placar parcial até domingo 0h')) + '</p></header>';
   if(c1) h += '<article class="jnmanchete"><button type="button" class="jnfotolink" data-jnperfil="' + escHtml(c1.nick) + '" aria-label="' + escHtml(tr('Ver perfil') + ': ' + c1.nick) + '"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas></button><div><small>' + escHtml(tr('Manchete')) + '</small>' +
     '<h3><button type="button" class="jnnick jnnickg" data-jnperfil="' + escHtml(c1.nick) + '">' + escHtml(c1.nick) + '</button> ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
+  if(typeof eventoAtual === 'function'){ var ev = eventoAtual();   // evento da semana (muda toda segunda)
+    h += '<section class="jnbloco jnevento"><h4>' + ev.emo + ' ' + escHtml(tr(ev.nome)) + '</h4><ul>' +
+      '<li>🧋 Happy⭐Cafe!: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[ev.base][0] + ' ' + tr(CF_BASES[ev.base][1]))) + '</li>' +
+      '<li>🤝 Handshake⭐Event!: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', ev.pres)) + '</li>' +
+      '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
   h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   h += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma historinha fictícia do TsuLiPa, montada com as fotos e os Idols de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
   h += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';

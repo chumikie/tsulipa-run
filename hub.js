@@ -202,7 +202,6 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
     if(temaPerfil() === 'halloween'){   // abóboras na frente: nada fica por cima delas
       var u = W2 / 320; petDrawAbobora(x, W2 * .1, H2 * .95, 2.1 * u, true); petDrawAbobora(x, W2 * .9, H2 * .95, 1.7 * u, true);
     }
-    if(typeof eventoBanner === 'function') eventoBanner(x, W2, H2);
   }catch(e){}
   finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = ''; }
 }

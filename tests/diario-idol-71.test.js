@@ -151,7 +151,16 @@ test('duas abas mantêm todos os conteúdos, acessíveis e sem excluir elementos
   ctx.jornalTrocarAba('vida');
   assert.equal(panels[0].hidden,false);
   assert.equal(panels[1].hidden,true);
-  assert.match(jornal,/comunidade \+= jornalTimesHtml\(\) \+ jornalFestHtml\(\) \+ jornalTrioHtml\(\)/);
+  const montagem=trecho(jornal,'function jornalMontar(','// Duas abas');
+  const fotos=montagem.indexOf("tr('Fotos do dia')");
+  const diario=montagem.indexOf("tr('Diário de uma Idol')");
+  const ensaio=montagem.indexOf('vida += jornalTrioHtml();');
+  assert.ok(fotos>=0 && diario>fotos && ensaio>diario,'fotos, diário e ensaio nesta ordem em Vida das Idols');
+  assert.match(montagem,/comunidade \+= jornalTimesHtml\(\) \+ jornalFestHtml\(\)/);
+  assert.doesNotMatch(montagem,/comunidade \+= .*jornalTrioHtml\(\)/,'ensaio não duplicado na Comunidade');
+  assert.equal((montagem.match(/jornalTrioHtml\(\)/g)||[]).length,1);
+  assert.match(montagem,/id="jornalFotosDia"/);
+  assert.match(montagem,/id="jornalDiarioDia"/);
   assert.match(jornal,/comunidade \+= jornalPostsHtml\(\)/);
   assert.match(jornal,/vida \+= '<section class="jnbloco jndiario"/);
 });

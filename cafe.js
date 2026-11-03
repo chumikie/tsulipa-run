@@ -203,6 +203,11 @@ function cfDesenhar(){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5, H2 * .26); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
   }
+  // Apresentação: atendente ATRÁS da madeira, com a metade inferior escondida.
+  if(cf && cf.fase === 'inicio'){
+    try{ x.save(); x.translate(W2 * .08, H2 * .2 + hsReacaoPulo(cf, t, 14));
+      perfDesenharIdol(x, W2 * .3, H2 * .74, perfAvAtual({pose:'tchau',expr:3,fundo:''}), false, false, t); x.restore(); }catch(e){ try{x.restore();}catch(z){} }
+  }
   // balcão de madeira
   hsBalcaoArte(x, 0, H2 * .74, W2, H2 * .26);
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
@@ -210,13 +215,8 @@ function cfDesenhar(){
     eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.1, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)));
     if(rb < 80){ x.save(); x.font = '20px sans-serif'; x.textAlign = 'center'; x.globalAlpha = Math.max(0, 1 - rb / 80); x.fillText('😋', W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0), H2 * .74 - 52 - rb * .3); x.restore(); } }
   if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
-  // Apenas na apresentação: o seu Idol fica NA FRENTE do balcão.
-  // Durante o jogo o cliente aleatório continua sendo o único Idol visível.
-  if(cf && cf.fase === 'inicio'){
-    try{ x.save(); x.translate(W2 * .055, H2 * .395 + hsReacaoPulo(cf, t, 20));
-      perfDesenharIdol(x, W2 * .27, H2 * .60, perfAvAtual({pose:'tchau',expr:3,fundo:''}), false, false, t); x.restore(); }catch(e){ try{x.restore();}catch(z){} }
-    hsReacaoDesenhar(x, W2, H2, t, cf, W2 * .19, H2 * .5);
-  }
+  // O efeito visual do atendente fica acima do balcão, sem botão de fala.
+  if(cf && cf.fase === 'inicio') hsReacaoDesenhar(x, W2, H2, t, cf, W2 * .23, H2 * .3);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
     var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;
@@ -345,7 +345,7 @@ function cfCenaClique(ev){
   var cv = $('cfCv'), b = cv.getBoundingClientRect();
   if(!b.width || !b.height) return;
   var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
-  if(px >= cv.width * .055 && px <= cv.width * .33 && py >= cv.height * .38 && py <= cv.height * .98){
+  if(px >= cv.width * .08 && px <= cv.width * .38 && py >= cv.height * .2 && py <= cv.height * .77){
     hsReacaoAtivar(cf, cfT);
     cfDesenhar(); // resposta imediata ao toque, mesmo entre quadros reduzidos no celular
   }

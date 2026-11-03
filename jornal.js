@@ -139,15 +139,18 @@ function jornalFotoDesenhar(cv, f, assinatura){
   }
   if(f.tipo === 'janela'){
     f.grupo.forEach(function(p, k){
-      var av8 = JSON.parse(JSON.stringify(p.avatar)), row = k >= 4 ? 1 : 0, col = k % 4, colW = W2 / 4;
-      var balanco = [-.08,.06,-.07,.08,.06,-.075,.08,-.06][k], varia = [1.04,.97,1.07,.98,1.03,1.06,.98,1.04][k];
-      var altura = H2 * (row ? .7 : .63) * varia, chao = H2 * (row ? .97 : .77);
-      var centro = W2 / 2 + (col - 1.5) * colW * .78;
-      av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][col]; av8.visual = ''; av8.pet = null;
-      // Giro suave ao redor dos pés: sombras na areia e sem efeito de levitação.
+      var av8 = JSON.parse(JSON.stringify(p.avatar)), slot8 = W2 / 8;
+      var balanco = [-.045,.025,-.035,.04,-.025,.04,-.03,.035][k];
+      var varia = [1.04,.98,1.02,1.06,.97,1.03,.99,1.04][k];
+      var altura = H2 * .54 * varia;
+      var chao = H2 * (.962 - Math.abs(k - 3.5) * .009);
+      var centro = slot8 * (k + .5);
+      av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][k % 4]; av8.visual = ''; av8.pet = null;
+      // Panorâmica em arco: oito rostos visíveis, sem uma fila cobrir a outra.
+      // Cada Idol gira ao redor dos próprios pés, que continuam na areia.
       x.save(); x.translate(centro, chao); x.rotate(balanco);
-      x.translate(-colW * .61, -altura * .9);
-      try{ perfDesenharIdol(x, colW * 1.22, altura, av8, false, false, 0); }catch(e){}
+      x.translate(-slot8 * .52, -altura * .9);
+      try{ perfDesenharIdol(x, slot8 * 1.04, altura, av8, false, false, 0); }catch(e){}
       x.restore();
     });
     n = 0;

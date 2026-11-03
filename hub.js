@@ -311,7 +311,7 @@ function hubCardsUI(){
 function hubMisUI(){
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
-  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★50 por dia).')) + '</p>'; return; }
+  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml('🔒 ' + tr('Entrar com Google') + ' · ' + tr('Missões do dia')) + '</p>'; return; }
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;

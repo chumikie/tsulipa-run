@@ -80,7 +80,8 @@ function jornalFotosDia(){
   // Foto especial: 8 Idols diante de uma paisagem do Karaoke, sorteada por dia.
   // Reutiliza o Canvas 2D da janela da sala sem alterar os três sorteios anteriores.
   if(gente.length >= 8 && typeof KaraokeRoomViews !== 'undefined' && KaraokeRoomViews.VIEWS.length){
-    var local = jornalSorteio(KaraokeRoomViews.VIEWS, dia + 31)[0], oito = [];
+    var ciclo = KaraokeRoomViews.VIEWS.length, locais = jornalSorteio(KaraokeRoomViews.VIEWS, Math.floor(dia / ciclo) + 31);
+    var local = locais[((dia % ciclo) + ciclo) % ciclo], oito = [];
     for(var j = 0; j < 8; j++) oito.push(gente[(pos + j) % gente.length]);
     fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0 });
   }
@@ -112,7 +113,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
   x.clearRect(0, 0, W2, H2);
   try{
-    if(f.tipo === 'janela' && typeof KaraokeRoomViews !== 'undefined') KaraokeRoomViews.draw(x, 4, 4, W2 - 8, H2 - 8, 0, f.local, !!f.noturna);
+    if(f.tipo === 'janela' && typeof KaraokeRoomViews !== 'undefined') KaraokeRoomViews.drawScene(x, 0, 0, W2, H2, 0, f.local, !!f.noturna);
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
     else perfFundo(x, W2, H2, f.cena[0], cor, 0);
   }catch(e){}

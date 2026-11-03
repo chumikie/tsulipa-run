@@ -196,11 +196,11 @@ function jornalTimesUI(){
   if(jornalTimes === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   var L = jornalTimes && Array.isArray(jornalTimes.times) ? jornalTimes.times : [];
   if(!L.length){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('A meta dos Teams começa em breve: escolha o seu Team no perfil e jogue Center⭐Run! e Karaoke⭐Time! para encher a barra.')) + '</p>'; return; }
-  box.innerHTML = '<p class="jndica">' + escHtml(tr('Estrelas do Center⭐Run! + 10 pontos por show do Karaoke⭐Time!. Quem bate a meta ganha a coroa 👑 no Team.')) + '</p>' + L.map(function(t, i){
+  box.innerHTML = '<p class="jndica">' + escHtml(tr('Como funciona: cada Team tem uma meta de 300 pontos por membro que jogou nesta semana. Os pontos são as estrelas ganhas no Center⭐Run! + 10 por show do Karaoke⭐Time!. Bateu a meta, o Team ganha a coroa 👑.')) + '</p>' + L.map(function(t, i){
     var info = jornalTimeInfo(t.codigo), meta = Math.max(1, +t.meta || 1), pts = +t.pontos || 0, pc = Math.min(100, Math.round(pts / meta * 100)), ok = pts >= meta;
     return '<div class="jntime"><div class="jntimel"><b style="color:' + info.cor + '">' + (i + 1) + 'º ' + escHtml(info.nome) + (ok ? ' 👑' : '') + '</b><small>' + jornalNum(pts) + ' / ' + jornalNum(meta) + '</small></div>' +
       '<div class="albumbarra jntimeb"><i style="width:' + pc + '%;background:' + info.cor + '"></i></div>' +
-      '<small class="jntimed">⭐ ' + jornalNum(t.estrelas) + ' · 🎤 ' + jornalNum(t.shows) + ' ' + escHtml(tr('shows')) + ' · 👥 ' + (+t.ativos || 0) + '/' + (+t.membros || 0) + '</small></div>';
+      '<small class="jntimed">' + escHtml(tr('Pontos: ⭐ {e} + 🎤 {s} shows × 10 · Meta: 300 × {a} que jogaram')).replace('{e}', jornalNum(t.estrelas)).replace('{s}', jornalNum(t.shows)).replace('{a}', Math.max(1, +t.ativos || 0)) + '</small></div>';
   }).join('');
 }
 function jornalTimesCarregar(){

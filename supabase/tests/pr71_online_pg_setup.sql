@@ -1,8 +1,8 @@
 -- Banco descartável do CI da PR #71: somente o esquema mínimo das RPCs novas.
-DO $ BEGIN
+DO $$ BEGIN
  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOLOGIN; END IF;
  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
-END $;
+END $$;
 CREATE SCHEMA auth;
 CREATE SCHEMA private;
 CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$

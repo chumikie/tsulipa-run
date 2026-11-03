@@ -1,0 +1,26 @@
+/* Jornal TsuLiPa */
+.jornalov{z-index:21}
+.jornalp{max-width:620px;position:relative;text-align:left}
+.jntopo{display:block!important;text-align:center;border-bottom:3px double rgba(123,63,240,.35);padding:4px 40px 10px;margin-bottom:12px}
+.jnnome{display:block;font-size:26px!important;font-family:"Mochiy Pop One","M PLUS Rounded 1c",sans-serif;font-size:28px;color:var(--b1)}
+.jntopo small{display:block;color:#ff6fb5;font-weight:800;letter-spacing:3px}
+.jntopo p{display:block;margin:6px 0 0;font-size:13px;font-weight:700;opacity:.8}
+.jnmanchete{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,#fff,#fff0fa);border-radius:18px;padding:12px;box-shadow:0 4px 0 rgba(123,63,240,.12)}
+.jnmanchete small{font-weight:900;color:#ff6fb5;text-transform:uppercase;letter-spacing:1px}
+.jnmanchete h3{margin:2px 0;font-family:"Mochiy Pop One","M PLUS Rounded 1c",sans-serif;font-weight:400;font-size:20px;color:var(--b1)}
+.jnmanchete p{margin:0;font-weight:700}
+.jnfoto{width:40px;height:40px;border-radius:50%;flex:none;background:var(--chip)}
+.jnfoto.jngrande{width:84px;height:84px}
+.jnpodios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.jnpodio{background:var(--card,#fff);border-radius:16px;padding:8px;box-shadow:0 3px 0 rgba(123,63,240,.1)}
+.jnpodio h4,.jnbloco h4{margin:0 0 6px;font-size:14px;color:var(--b1)}
+.jnpodio ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.jnpodio li{display:grid;grid-template-columns:auto auto 1fr;grid-template-rows:auto auto;column-gap:5px;align-items:center}
+.jnpodio .jnmed{grid-row:1/3}.jnpodio .jnfoto{grid-row:1/3;width:32px;height:32px}
+.jnpodio b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jnpodio small{font-size:11px;font-weight:700;opacity:.8}
+.jnvazio{font-size:12px;opacity:.75;margin:0}
+.jnbloco{background:var(--card,#fff);border-radius:16px;padding:10px 12px;margin:10px 0;box-shadow:0 3px 0 rgba(123,63,240,.1)}
+.jnbloco ul{margin:0;padding-left:18px;font-size:14px;line-height:1.6}
+@media (max-width:520px){.jnpodios{grid-template-columns:1fr}}
+#hubHojeLinha .hubjornal{grid-column:1/-1}

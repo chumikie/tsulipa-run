@@ -1,0 +1,8 @@
+/* Zipper⭐Shop! */
+.shopov{z-index:21}
+.shopp{max-width:560px;position:relative}
+.shopp h2{margin:4px 0 2px;color:var(--b1);padding:0 44px}
+#shopCv{width:100%;height:auto;display:block;border-radius:18px;margin:8px 0 4px;cursor:pointer}
+.shopsaldo{text-align:center;font-weight:900;color:var(--b1);margin:4px 0 8px}
+#shopCorpo h3{margin:14px 0 6px;color:var(--b1)}
+#hub #hubCards>button.hubcard.hubloja{min-height:0}

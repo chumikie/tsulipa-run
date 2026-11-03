@@ -110,6 +110,7 @@
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
 #hub #hubCards .hubloja{grid-area:loja;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px;min-height:0}
+#hub #hubCards .hubloja>small:not(.tw-hubgame-jp){flex-basis:100%}
 #hub #hubCards .hubrun{grid-area:run}
 #hub #hubCards .hubpet{grid-area:pet}
 #hub #hubCards .hubperf{grid-area:profile;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:4px 10px}

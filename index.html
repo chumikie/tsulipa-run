@@ -59,7 +59,8 @@
 .perfdica{text-align:center;font-size:13px}
 </style>
 <link rel="stylesheet" href="./hub.css?v=1">
-<link rel="stylesheet" href="./loja-hub.css?v=1">
+<link rel="stylesheet" href="./shop.css?v=1">
+<link rel="stylesheet" href="./jornal.css?v=1">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -337,12 +338,13 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./pet.js?v=1"></script>
-<script src="./perfil.js?v=2"></script>
+<script src="./perfil.js?v=3"></script>
 <script src="./gacha.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=4"></script>
-<script src="./loja-hub.js?v=1"></script>
+<script src="./hub.js?v=6"></script>
+<script src="./shop.js?v=1"></script>
+<script src="./jornal.js?v=1"></script>
 <script src="./banner.js?v=1"></script>
 <script src="./conta.js?v=1"></script>
 <script src="./admin.js?v=1"></script>
@@ -1528,10 +1530,22 @@ perfOv.addEventListener('click', function(e){
   perfMontMudou('skin', b.dataset.v);
 });
 
-// ---------- Lojinha de roupas (dentro do Montar Idol) ----------
-perfOv.addEventListener('click', function(e){
+// Jornal TsuLiPa (jornal.js): só leitura dos pódios da semana
+var jornalOv = document.createElement('div');
+jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; jornalOv.hidden = true;
+jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Jornal TsuLiPa"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
+document.body.appendChild(jornalOv);
+$('jornalX').onclick = jornalFechar;
+// Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
+var shopOv = document.createElement('div');
+shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.hidden = true; shopOv.innerHTML = shopHtml();
+document.body.appendChild(shopOv);
+$('shopX').onclick = shopFechar;
+$('shopCv').addEventListener('click', shopReage);
+// ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
+function lojaRoupasClique(e){
   var b = e.target.closest('#perfLoja [data-vestir]');
-  if(b){ perfMontMudou('out', b.dataset.vestir); perfMontUI(); if(sfx.card) sfx.card(); return; }
+  if(b){ perfMontMudou('out', b.dataset.vestir); perfMontUI(); if(!shopOv.hidden){ perfProva = ''; shopUI(); } if(sfx.card) sfx.card(); return; }
   b = e.target.closest('#perfLoja [data-comprar]');
   if(b){
     b.disabled = true;
@@ -1542,7 +1556,7 @@ perfOv.addEventListener('click', function(e){
       perfDono = Array.isArray(r.visuais) ? r.visuais : perfDono;
       perfLojaSincronizar();
       var k = b.dataset.comprar.slice(6);
-      perfMontMudou('out', k); perfMontUI();
+      perfMontMudou('out', k); perfMontUI(); if(!shopOv.hidden) shopUI();
       m.textContent = '✨ ' + tr('Comprado!'); m.hidden = false;
       if(sfx.rank) sfx.rank();
       if(typeof insConferir === 'function') insConferir();   // pode ter liberado o Guarda-roupa completo
@@ -1551,7 +1565,9 @@ perfOv.addEventListener('click', function(e){
   }
   var c = e.target.closest('#perfLoja [data-provar]');
   if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); }
-});
+}
+perfOv.addEventListener('click', lojaRoupasClique);
+shopOv.addEventListener('click', lojaRoupasClique);
 
 // ---------- Estúdio de foto (só no seu perfil) ----------
 perfOv.addEventListener('click', function(e){
@@ -2076,7 +2092,7 @@ hubOv.addEventListener('click', function(e){
     else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
-    else if(ir === 'loja') lojaHubAbrir();
+    else if(ir === 'loja') shopAbrir();
     else if(ir === 'duo') duoAbrir();
     else if(ir === 'sora' || ir === 'karaoke') twPreviewAbrirJogo(ir);
   }
@@ -2394,10 +2410,12 @@ var LOJA_EXTRA = [   // [chave no servidor, emoji, nome, preço, tipo]
 window.TW_I18N.rows.moonDuoAccessoryLabels.forEach(function(a){['en','es','th','ja'].forEach(function(l,i){if(DICT[l])DICT[l][a[0]]=a[i+1];});});
 // (só dá para guardar no período do tema, como as roupas da temporada). Chave no servidor: tema_<tema>
 var DUO_TEMA_PRECO = 60;
-perfOv.addEventListener('click', function(e){
+function lojaExtrasClique(e){
   var b = e.target.closest('#perfLoja2 [data-comprar2], #perfLojaAcessorios [data-comprar2], #perfLojaItens [data-comprar2]'); if(!b) return;
-  lojaComprar(b.dataset.comprar2, b, function(ok, msg){ if(ok){ perfLoja2UI(); if(typeof perfMontUI === 'function' && $('perfMont')) perfMontUI(); } var m = $('perfLoja2Msg'); if(m){ m.textContent = msg; m.hidden = false; } });
-});
+  lojaComprar(b.dataset.comprar2, b, function(ok, msg){ if(ok){ perfLoja2UI(); if(typeof perfMontUI === 'function' && $('perfMont')) perfMontUI(); if(!shopOv.hidden) shopUI(); } var m = $('perfLoja2Msg'); if(m){ m.textContent = msg; m.hidden = false; } });
+}
+perfOv.addEventListener('click', lojaExtrasClique);
+shopOv.addEventListener('click', lojaExtrasClique);
 
 // ---------- Câmera do jogo: as mesmas poses do perfil, expressões novas da lojinha e "Auto" sorteando ----------
 PET_PH_POSES = PERF_POSES.map(function(o){ return [o[0], o[1], o[2], o[3]]; });

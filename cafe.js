@@ -350,6 +350,31 @@ function cfDecor(x, W2, H2, k, t){
   }
   Cor(W2 * .1, topo + 34, 3, 'rgba(255,111,181,.75)'); Est(W2 * .3, topo + 40, 3.2, 'rgba(255,210,63,.85)'); Cor(W2 * .5, topo + 46, 2.4, 'rgba(200,182,255,.9)');
   Est(W2 * .72, topo + 44, 2.6, 'rgba(255,255,255,.75)'); Cor(W2 * .92, topo + 38, 3, 'rgba(255,111,181,.75)');
+  // Chuva delicada de estrelas na madeira; pontos fixos com brilho alternado,
+  // sem elementos aleatórios por quadro nem alterações no pet ou nos pedidos.
+  x.save();
+  var semPiscar = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var tons = ['#fffaf2','#ffe47c','#ffd1ea','#d9c8ff','#baf2ff'];
+  for(var sp = 0; sp < 22; sp++){
+    var sx2 = W2 * (.045 + ((sp * 41 + 7) % 90) / 100);
+    var sy2 = topo + 24 + ((sp * 23 + 7) % 56);
+    var r2 = sp % 5 === 0 ? 4.3 : 2.3 + (sp % 3) * .55;
+    var pulso = semPiscar ? .76 : .36 + .64 * (.5 + .5 * Math.sin(t / 12 + sp * 1.47));
+    x.globalAlpha = pulso; x.fillStyle = tons[sp % tons.length];
+    x.beginPath(); x.moveTo(sx2, sy2 - r2 * 1.8);
+    x.lineTo(sx2 + r2 * .34, sy2 - r2 * .35);
+    x.lineTo(sx2 + r2 * 1.35, sy2);
+    x.lineTo(sx2 + r2 * .34, sy2 + r2 * .35);
+    x.lineTo(sx2, sy2 + r2 * 1.8);
+    x.lineTo(sx2 - r2 * .34, sy2 + r2 * .35);
+    x.lineTo(sx2 - r2 * 1.35, sy2);
+    x.lineTo(sx2 - r2 * .34, sy2 - r2 * .35); x.closePath(); x.fill();
+    if(sp % 3 === 0){
+      x.globalAlpha = pulso * .72;
+      x.beginPath(); x.arc(sx2 + 8, sy2 - 8, 1.15, 0, Math.PI * 2); x.fill();
+    }
+  }
+  x.restore();
   // potinho de gorjetas: vidro com estrelas e moedas (cintilam)
   var px = W2 * .84, pb = topo + 2;
   x.fillStyle = 'rgba(30,10,60,.18)'; E(px, pb, 6, 1.2);

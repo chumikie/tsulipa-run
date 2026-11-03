@@ -61,3 +61,4 @@
 .jnfotolink:focus-visible,.jnnick:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 .jnpos{font-size:12px;color:#7b3ff0;min-width:22px;text-align:center}
 .jndica{font-weight:600;font-size:11px;opacity:.85;line-height:1.35}
+.jntime{margin:8px 0}.jntimel{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.jntimel small,.jntimed{font-size:12px;font-weight:700;color:#3c2a8f;opacity:.85}.jntimeb{max-width:none;margin:4px 0}.jntimes h4 small{font-size:11px;color:#9c8ac8}

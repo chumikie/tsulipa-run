@@ -43,6 +43,7 @@ function jornalMontar(d){
     (mus ? '<li>' + escHtml(tr('Música da semana')) + ': <b translate="no">' + escHtml(mus[1]) + '</b></li>' : '') +
     (vista ? '<li>' + escHtml(tr('Vista da janela do Karaoke')) + ': <b>' + escHtml(vista) + '</b></li>' : '') +
     (total ? '<li>' + escHtml(tr('Idols na vitrine')) + ': <b>' + total + '</b></li>' : '') + '</ul></section>';
+  h += jornalTimesHtml();
   h += jornalPostsHtml();
   return h;
 }
@@ -123,8 +124,8 @@ function jornalAbrir(){
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
-  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); })
-    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); } });
+  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); })
+    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); } });
 }
 function jornalFechar(){ jornalOv.hidden = true; }
 // ---------- Novidades como blog: só a admin posta (imagem, título e legenda); ficam os 5 últimos ----------
@@ -182,4 +183,27 @@ function jornalPostar(btn){
 }
 function jornalPostApagar(id){
   contaRpc('admin_news_apagar', { p_id:id }).then(function(){ jornalPostsCarregar(); }).catch(function(){});
+}
+// ---------- Meta semanal dos Teams do BRS48 (RPC times_semana: proposta 20261103160000_times_semana.sql) ----------
+var jornalTimes = null;
+function jornalTimesHtml(){ return '<section class="jnbloco jntimes"><h4>🤝 ' + escHtml(tr('Meta dos Teams')) + ' <small>BRS48</small></h4><div id="jornalTimes"></div></section>'; }
+function jornalTimeInfo(cod){
+  var g = typeof PERF_GRUPOS !== 'undefined' ? PERF_GRUPOS.find(function(x){ return x.codigo === 'BRS48'; }) : null;
+  return (g && g.times || []).find(function(t){ return t.codigo === cod; }) || { codigo:cod, nome:'Team ' + cod, cor:'#7b3ff0' };
+}
+function jornalTimesUI(){
+  var box = $('jornalTimes'); if(!box) return;
+  if(jornalTimes === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
+  var L = jornalTimes && Array.isArray(jornalTimes.times) ? jornalTimes.times : [];
+  if(!L.length){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('A meta dos Teams começa em breve: escolha o seu Team no perfil e jogue Center⭐Run! e Karaoke⭐Time! para encher a barra.')) + '</p>'; return; }
+  box.innerHTML = '<p class="jndica">' + escHtml(tr('Estrelas do Center⭐Run! + 10 pontos por show do Karaoke⭐Time!. Quem bate a meta ganha a coroa 👑 no Team.')) + '</p>' + L.map(function(t, i){
+    var info = jornalTimeInfo(t.codigo), meta = Math.max(1, +t.meta || 1), pts = +t.pontos || 0, pc = Math.min(100, Math.round(pts / meta * 100)), ok = pts >= meta;
+    return '<div class="jntime"><div class="jntimel"><b style="color:' + info.cor + '">' + (i + 1) + 'º ' + escHtml(info.nome) + (ok ? ' 👑' : '') + '</b><small>' + jornalNum(pts) + ' / ' + jornalNum(meta) + '</small></div>' +
+      '<div class="albumbarra jntimeb"><i style="width:' + pc + '%;background:' + info.cor + '"></i></div>' +
+      '<small class="jntimed">⭐ ' + jornalNum(t.estrelas) + ' · 🎤 ' + jornalNum(t.shows) + ' ' + escHtml(tr('shows')) + ' · 👥 ' + (+t.ativos || 0) + '/' + (+t.membros || 0) + '</small></div>';
+  }).join('');
+}
+function jornalTimesCarregar(){
+  jornalTimes = null; jornalTimesUI();
+  contaRpc('times_semana').then(function(d){ jornalTimes = d || {}; jornalTimesUI(); }).catch(function(){ jornalTimes = {}; jornalTimesUI(); });
 }

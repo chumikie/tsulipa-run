@@ -170,6 +170,7 @@ function cardsDesenhar(lista, pre){
 function gachaCardsCarregar(){
   var box = $('gachaCards'); if(!box) return;
   $('gachaCardsT').textContent = '🃏 ' + tr('Seus últimos cards');
+  var ab = $('gachaAlbum'); if(ab){ ab.textContent = '📖 ' + tr('Álbum de cards'); ab.hidden = !contaJ; }
   if(!contaJ){ box.innerHTML = ''; return; }
   contaRpc('meus_cards').then(function(L){ box.innerHTML = cardsHtml(L || [], 'gachaCards', true); cardsDesenhar(L || [], 'gachaCards'); }).catch(function(){});
 }

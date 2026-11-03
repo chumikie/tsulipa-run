@@ -73,6 +73,7 @@
 .buscares em{font-size:12px;color:var(--sub)}
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
+<link rel="stylesheet" href="./album.css?v=1">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -333,13 +334,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=7"></script>
+<script src="./tw-i18n.js?v=8"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./pet.js?v=1"></script>
 <script src="./perfil.js?v=3"></script>
-<script src="./gacha.js?v=2"></script>
+<script src="./gacha.js?v=3"></script>
+<script src="./album.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=7"></script>
@@ -2170,8 +2172,17 @@ var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
 gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
-  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div></div></div>';
+  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
+// Álbum de cards (album.js): um espaço para cada Idol da vitrine
+var albumOv = document.createElement('div');
+albumOv.className = 'ov albumov tw-window-overlay'; albumOv.id = 'albumOv'; albumOv.hidden = true;
+albumOv.innerHTML = '<div class="panel albump tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="albumTit"><button type="button" class="perfx tw-window-control tw-window-close" id="albumX">✕</button><h2 class="tw-modal-title" id="albumTit">📖</h2><small class="tw-modal-jp" lang="ja">カードアルバム</small><div id="albumCorpo"></div></div>';
+document.body.appendChild(albumOv);
+$('albumX').onclick = albumFechar;
+albumOv.addEventListener('click', function(e){ var b = e.target.closest('[data-album]'); if(b) albumPagina(+b.dataset.album); });
+$('gachaAlbum').onclick = function(){ $('albumTit').textContent = '📖 ' + tr('Álbum de cards'); albumAbrir(); };
+
 $('gachaX').onclick = gachaFechar;
 $('gachaGirar').onclick = function(){
   if(!contaJ){ contaEntrar(); return; }

@@ -1,0 +1,16 @@
+/* Álbum de cards (Star⭐Gacha!) */
+.albumov{z-index:22}
+.albump{max-width:560px;position:relative}
+.albump h2{margin:4px 0 2px;color:var(--b1);padding:0 44px}
+.albumprog{text-align:center;font-weight:800;margin:8px 0 4px;color:#3c2a8f}
+.albumbarra{height:10px;border-radius:999px;background:#efe6ff;overflow:hidden;margin:0 auto 10px;max-width:320px}
+.albumbarra i{display:block;height:100%;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);border-radius:999px}
+.albumaviso{background:#fff7e0;color:#7a5200;border-radius:12px;padding:8px 10px;font-weight:700;font-size:13px;text-align:center}
+.albumgrade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+.albumslot{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border:0;border-radius:14px;background:#fff;font:inherit;color:#3c2a8f;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+button.albumslot{cursor:zoom-in}
+.albumslot canvas{width:100%;height:auto;border-radius:8px;display:block}
+.albumslot .cardvazio{width:100%;aspect-ratio:360/504;border-radius:8px;border:2px dashed #cdb8f5;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#a58be0}
+.albumslot small{font-size:12px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.albumpags{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;font-weight:800;color:#3c2a8f}
+.gachaalbum{margin-top:10px}

@@ -321,6 +321,11 @@ function hubCardsUI(){
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(hubGameAbrir('Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
+  // Jogos em ordem alfabética. O Center⭐Run! continua primeiro e ocupa a linha inteira.
+  ['handshake','cafe','karaoke','duo','sora','gacha'].forEach(function(k){
+    var card = $('hubCards').querySelector('[data-ir="' + k + '"]');
+    if(card) $('hubCards').appendChild(card);
+  });
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }

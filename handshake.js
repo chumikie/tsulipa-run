@@ -413,5 +413,8 @@ function hsCenaClique(ev){
   if(!hs || hsOv.hidden) return;
   var cv = $('hsCv'), b = cv.getBoundingClientRect(); if(!b.width || !b.height) return;
   var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
-  if(px >= cv.width * .54 && px <= cv.width * .98 && py >= cv.height * .12 && py <= cv.height * .7) hsReacaoAtivar(hs, hsT);
+  if(px >= cv.width * .54 && px <= cv.width * .98 && py >= cv.height * .12 && py <= cv.height * .7){
+    hsReacaoAtivar(hs, hsT);
+    hsDesenhar(); // resposta imediata ao toque, mesmo entre quadros reduzidos no celular
+  }
 }

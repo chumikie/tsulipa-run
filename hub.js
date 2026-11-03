@@ -262,7 +262,8 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
 }
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
-  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>';
+  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
+  if(typeof hojeIniciar === 'function') hojeIniciar();
   var m = hubMusicaSemana(), b = $('hubMusica');
   b.innerHTML = '🎵 <b>' + escHtml(tr('Música da semana')) + '</b><small class="tw-hubgame-jp" lang="ja">今週の曲</small><small translate="no">' + escHtml(m[1]) + '</small>';
   b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };

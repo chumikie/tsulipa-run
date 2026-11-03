@@ -117,8 +117,11 @@ function jornalFotoDesenhar(cv, f, assinatura){
       // Enquadramento fotográfico: mostra os marcos do cenário, sem a moldura da janela.
       // No templo tailandês, o céu é recortado para preservar a torre acima do elenco.
       var pan = f.local === 'tailandia' ? .55 : .25;
-      x.save(); x.translate(0, -H2 * pan);
-      KaraokeRoomViews.drawScene(x, 0, 0, W2, H2 * (1 + pan), 0, f.local, !!f.noturna);
+      // A arte das cinco vistas mistura medidas relativas e pixels fixos (ex.: templo).
+      // Desenha sempre numa câmera virtual de 480×300 e escala tudo junto no download.
+      var fotoW = 480, fotoH = 300;
+      x.save(); x.scale(W2 / fotoW, H2 / fotoH); x.translate(0, -fotoH * pan);
+      KaraokeRoomViews.drawScene(x, 0, 0, fotoW, fotoH * (1 + pan), 0, f.local, !!f.noturna);
       x.restore();
     }
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);

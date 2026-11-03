@@ -9,7 +9,7 @@ var HS_NOMES = ['Nana', 'Kiko', 'Lulu', 'Momo', 'Rafi', 'Yumi', 'Toto', 'Pipo', 
 var HS_PRESENTES = [   // [emoji, nome, grupo]: as opções erradas vêm de preferência do mesmo grupo (fica mais difícil)
   ['🍓', 'Morango', 'doce'], ['🍰', 'Bolo', 'doce'], ['🍬', 'Bala', 'doce'], ['🧁', 'Cupcake', 'doce'], ['🍙', 'Onigiri', 'doce'],
   ['🎀', 'Laço', 'fofo'], ['🧸', 'Ursinho', 'fofo'], ['💌', 'Cartinha', 'fofo'], ['🌸', 'Flor', 'fofo'],
-  ['🌙', 'Lua', 'brilho'], ['💎', 'Joia', 'brilho'], ['🎵', 'Música', 'brilho'], ['⭐', 'Estrela', 'brilho'], ['🌈', 'Arco-íris', 'brilho']];
+  ['🌙', 'Lua', 'brilho'], ['💎', 'Joia', 'brilho'], ['🎵', 'Música', 'brilho'], ['⭐', 'Estrelinha', 'brilho'], ['🌈', 'Arco-íris', 'brilho']];
 // Jeitos dos fãs: muda como se apresentam e como reagem
 var HS_JEITOS = {
   animado: { oi:['Aaah, é você! Eu sou {n}!', 'Oi oi! Sou {n}!'], fav:'Eu AMO {p}!', ok:['Você lembrou! 💖', 'Aaaah! Vou contar pra todo mundo!'], erro:['Ah… era {p}! 🥲'] },

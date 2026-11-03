@@ -354,6 +354,22 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./hoje.js?v=1"></script>
 <script src="./evento.js?v=1"></script>
 <script src="./recordes.js?v=1"></script>
+<script>
+// Cursor de coração em TUDO que é clicável: quem tem cursor:pointer vindo de outro CSS (divs, canvas, itens de lista)
+// ganha o coração na primeira vez que o mouse passa por cima. Só com mouse.
+(function(){
+  if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) return;
+  var CORACAO = getComputedStyle(document.documentElement).getPropertyValue('--tw-cursor-coracao');
+  document.addEventListener('pointerover', function(e){
+    for(var el = e.target, n = 0; el && el.nodeType === 1 && n < 6; el = el.parentElement, n++){
+      if(el.dataset.twCursor) return;
+      var c = getComputedStyle(el).cursor;
+      if(c === 'pointer'){ el.style.setProperty('cursor', CORACAO || c, 'important'); el.dataset.twCursor = '1'; return; }
+      if(c && c !== 'auto' && c !== 'default') return;
+    }
+  }, { passive:true });
+})();
+</script>
 <script src="./handshake.js?v=1"></script>
 <script src="./cafe.js?v=1"></script>
 <script src="./duo.js?v=1"></script>

@@ -5,7 +5,7 @@
    Não dá estrelas e não usa o teto de ★50 do pet. */
 var CF_BASES = [['☕', 'Café gelado', '#8a5a3b'], ['🍵', 'Matcha latte', '#9fd18b'], ['🍫', 'Chocolate', '#6b3b2a'], ['🍓', 'Frappé de morango', '#ff9cc4'], ['🫐', 'Shake de mirtilo', '#a99cff']];
 var CF_COBERTURAS = [['🍦', 'Chantilly', '#fffaf2'], ['🍯', 'Caramelo', '#f0a73a'], ['🌈', 'Granulado', '#ffe0f0']];
-var CF_ENFEITES = [['💗', 'Coração'], ['⭐', 'Estrela'], ['🍒', 'Cereja'], ['🎀', 'Laço de biscoito']];
+var CF_ENFEITES = [['💗', 'Coração'], ['⭐', 'Estrelinha'], ['🍒', 'Cereja'], ['🎀', 'Laço de biscoito']];
 var CF_DOCES = [['🍪', 'Cookie'], ['🟫', 'Brownie'], ['🥐', 'Croissant'], ['🧇', 'Waffle']];
 var CF_RECEITAS_KEY = 'tw_cafe_receitas', CF_RECORDE_KEY = 'tw_cafe_recorde';
 var cf = null, cfAnim = 0, cfT = 0;

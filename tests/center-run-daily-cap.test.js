@@ -62,7 +62,7 @@ let startResult=()=>Promise.resolve('run-1');
 let finishResult=()=>Promise.resolve({ok:true,creditadas:20,stars:120,best:500});
 const ctx={
   contaJ:{id:'A',nick:'Tsu'},contaRun:null,contaUltimaRun:null,contaSessaoToken:1,
-  isTestGame:false,starT:100,did:'device-test',gachaBonus:()=>{},
+  isTestGame:false,starT:100,best:0,did:'device-test',gachaBonus:()=>{},
   contaRpc:(name,args)=>{
     if(name==='iniciar_corrida'){starts++;return startResult();}
     if(name==='terminar_corrida'){ends++;assert.equal(args.p_run,'run-1');return finishResult();}

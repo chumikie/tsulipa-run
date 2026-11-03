@@ -19,10 +19,11 @@ function gerar({ dia = 20761, quantidade = 20, karaoke = false, pet = false } = 
     avatar: { c: { hair: '#ff6fb5' } }
   }));
   const ctx = {
-    Date: { now: () => dia * 86400000 + 10800000 },
+    Date: class FixedDate extends Date { static now(){ return dia * 86400000 + 10800000; } },
     $: id => id === 'jornalFotosDia' ? box : null,
     hubIdolsDados: { idols },
     jornalSemanaDados: { karaoke: karaoke ? [{ nick: 'Idol00' }, { nick: 'Idol01' }] : [] },
+    KaraokeNewsPhoto: {cast: () => karaoke ? {concept:{name:'Ocean Pop',set:'ocean',colors:['#093543','#17657b','#9df5e2']},members:idols.slice(0,6).map(p=>({nick:p.nick,avatar:p.avatar}))} : null},
     jornalAvatar: nick => idols.find(p => p.nick === nick)?.avatar || null,
     KaraokeRoomViews: {
       VIEWS: ['gigoia', 'liberdade', 'tailandia', 'harajuku', 'praia'],
@@ -103,4 +104,13 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
       assert.ok(idols.every(p=>p.h<altura*.44&&p.h>altura*.37),'oito Idols abaixo dos monumentos');
     }
   }
+});
+
+test('telão escolhe o elenco do dia e não reaproveita o pódio semanal', () => {
+  const fotos = gerar({ karaoke:true }).fotos;
+  const palco = fotos.find(f => f.tipo === 'telao');
+  assert.ok(palco);
+  assert.equal(palco.grupo.length, 6);
+  assert.equal(palco.clipe.set, 'ocean');
+  assert.deepEqual(Array.from(palco.grupo, p => p.nick), ['Idol00','Idol01','Idol02','Idol03','Idol04','Idol05']);
 });

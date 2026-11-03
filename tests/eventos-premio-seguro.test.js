@@ -54,3 +54,10 @@ test('Missões de ★10 dependem de resultados privados e não de marcar_visita'
   assert.match(missions,/AND acertos>=1/);
   assert.match(missions,/erro','prova/);
 });
+
+test('Café sinaliza também a falha definitiva de comprovação, além da pendência', () => {
+  assert.match(cafe, /atual\.provaEstado='sem_comprovacao'/);
+  assert.match(cafe, /cf\.provaEstado==='confirmado'/);
+  assert.match(cafe, /cf\.provaEstado==='pendente'/);
+  assert.match(cafe, /else if\(cf\.provaEstado==='sem_comprovacao'\).*⚠️/);
+});

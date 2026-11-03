@@ -21,15 +21,27 @@ function cfPedido(r, n){
 function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
 function cfAbrir(){
   cfOv.hidden = false; cfOv.scrollTop = 0;
-  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[] };
+  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, provaEstado:'' };
   cfUI(); if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
-function cfNovoCliente(){
+function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
   var f = hsFa(r, nome); f.pedido = cfPedido(r, cf.atendidos);
+  if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
   cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
   cfUI();
+}
+function cfNovoCliente(){
+  if(!cf) return;
+  if(!contaJ || cf.provaEstado==='confirmado'){cf.servidor=null;cfNovoClienteLocal();return;}
+  var atual=cf;
+  cf.fase='preparando';cfUI();
+  contaRpc('cafe_iniciar').then(function(r){
+    if(cf!==atual)return;
+    atual.servidor=r&&r.ok?r:null;
+    cfNovoClienteLocal();
+  }).catch(function(){if(cf===atual){atual.servidor=null;cfNovoClienteLocal();}});
 }
 function cfFalaPedido(p){
   var s = tr('Quero um {b}').replace('{b}', CF_BASES[p.base][0] + ' ' + tr(CF_BASES[p.base][1]));
@@ -52,6 +64,16 @@ function cfServir(saiu){
   var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
   var resto = Math.max(0, 1 - (cfT - cf.t0) / cfPaciencia());
   cf.atendidos++;
+  if(cf.servidor){
+    var atual=cf, args={p_sessao:cf.servidor.sessao, p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}};
+    contaRpc('cafe_concluir',args).then(function(r){
+      if(r && r.ok && r.confirmado){
+        try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
+        atual.provaEstado='confirmado';
+      } else atual.provaEstado='sem_comprovacao';
+      if(cf===atual) cfUI();
+    }).catch(function(){atual.provaEstado='pendente';if(cf===atual)cfUI();});
+  }
   if(certo){
     cf.combo++; cf.perfeitos++;
     cf.pontos += Math.round((100 + resto * 100 + (p.cob >= 0 ? 30 : 0) + (p.doce >= 0 ? 40 : 0)) * (1 + Math.min(cf.combo - 1, 5) * .1));
@@ -70,7 +92,6 @@ function cfServir(saiu){
 }
 function cfFim(){
   cf.fase = 'fim';
-  if(cf.perfeitos > 0){ try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(e){} if(contaJ) contaRpc('marcar_visita', { p_k:'cafe' }).catch(function(){}); }   // missão do dia (quando o servidor tiver a chave)
   var rec = cfLer(CF_RECORDE_KEY, 0); cf.novoRec = cf.pontos > rec; if(cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
   cfUI();
 }
@@ -168,6 +189,7 @@ function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   var rec = cfLer(CF_RECEITAS_KEY, {}), nRec = Object.keys(rec).length, totRec = CF_BASES.length * CF_ENFEITES.length;
   var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>🏆 ' + cfLer(CF_RECORDE_KEY, 0).toLocaleString('pt-BR') + '</span></div>';
+  if(cf.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>';
   if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
@@ -179,6 +201,9 @@ function cfUI(){
   else if(cf.fase === 'fim'){
     h += '<p class="hsfim">' + (cf.novoRec ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('O café fechou!')) + ' <b>' + cf.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>' +
       '<div class="hsresumo"><span>☕ ' + cf.perfeitos + '/' + cf.atendidos + ' ' + escHtml(tr('perfeitos')) + '</span><span>📒 ' + nRec + '/' + totRec + '</span></div>';
+    if(cf.provaEstado==='confirmado') h += '<p class="faok">✅ ' + escHtml(tr('Pedido confirmado no servidor para a missão do dia.')) + '</p>';
+    else if(cf.provaEstado==='pendente') h += '<p class="hsdica">⏳ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
+    else if(cf.perfeitos>0 && !cf.servidor) h += '<p class="hsdica">🔒 ' + escHtml(tr('Modo treino: pedido sem validação do servidor.')) + '</p>';
     if(cf.novas.length) h += '<p class="faok">📒 ' + escHtml(tr('Receitas novas no Caderno:')) + ' ' + cf.novas.map(escHtml).join(' · ') + '</p>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
@@ -190,11 +215,15 @@ function cfCaderno(rec){
     h += '<span class="cfrec' + (tem ? '' : ' vazio') + '" title="' + (tem ? escHtml(tr(b[1])) : '?') + '">' + (tem ? b[0] + e[0] : '❔') + '</span>'; }); });
   return h + '</div></div>';
 }
+function cfIniciarSeguro(){
+  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,provaEstado:''};
+  cfNovoCliente();
+}
 function cfClique(e){
   var b = e.target.closest && e.target.closest('[data-cf]');
   if(b){ var p = b.dataset.cf.split(':'); cfEscolher(p[0], +p[1]); return; }
   if(e.target.closest && e.target.closest('#cfServir')){ cfServir(false); return; }
-  if(e.target.closest && e.target.closest('#cfJogar')){ cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:cfT, fala:'', novas:[], hearts:[] }; cfNovoCliente(); }
+  if(e.target.closest && e.target.closest('#cfJogar')){ cfIniciarSeguro(); }
 }
 function cfHubHtml(){
   var feito = false; try{ feito = localStorage.getItem('tw_cf_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}

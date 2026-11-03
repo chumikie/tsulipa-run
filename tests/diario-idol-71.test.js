@@ -124,3 +124,52 @@ test('novidades reais só citam placares públicos, sem inventar atividade priva
   assert.match(html,/&lt;b>/);
   assert.equal(ctx.jornalFeitosPublicos({}).length,0,'sem placar, sem notícia inventada');
 });
+
+test('duas abas mantêm todos os conteúdos, acessíveis e sem excluir elementos',()=>{
+  const buttons=[
+    {dataset:{jnaba:'vida'},attrs:{},setAttribute(k,v){this.attrs[k]=v;}},
+    {dataset:{jnaba:'comunidade'},attrs:{},setAttribute(k,v){this.attrs[k]=v;}}
+  ];
+  const panels=[{id:'jnAbaVida',hidden:false},{id:'jnAbaComunidade',hidden:true}];
+  const area={innerHTML:''};
+  const corpo={querySelectorAll(s){return s==='[data-jnaba]'?buttons:s==='.jnabapainel'?panels:[];}};
+  const ctx={
+    tr:s=>s,escHtml:s=>String(s),contaJ:null,jornalOv:{hidden:false},
+    $:id=>id==='jornalCorpo'?corpo:id==='jornalAtividadeDia'?area:null
+  };
+  vm.createContext(ctx);
+  vm.runInContext(trecho(jornal,'var jornalAba =','function jornalFotos(){'),ctx);
+  const html=ctx.jornalAbasHtml('DIÁRIO_E_FOTOS','PLACARES_E_BLOG');
+  assert.match(html,/role="tablist"/);
+  assert.match(html,/DIÁRIO_E_FOTOS/);
+  assert.match(html,/PLACARES_E_BLOG/);
+  assert.match(html,/id="jnAbaComunidade"[^>]+hidden/);
+  ctx.jornalTrocarAba('comunidade');
+  assert.equal(panels[0].hidden,true);
+  assert.equal(panels[1].hidden,false);
+  assert.equal(buttons[1].attrs['aria-selected'],'true');
+  ctx.jornalTrocarAba('vida');
+  assert.equal(panels[0].hidden,false);
+  assert.equal(panels[1].hidden,true);
+  assert.match(jornal,/comunidade \+= jornalTimesHtml\(\) \+ jornalFestHtml\(\) \+ jornalTrioHtml\(\)/);
+  assert.match(jornal,/comunidade \+= jornalPostsHtml\(\)/);
+  assert.match(jornal,/vida \+= '<section class="jnbloco jndiario"/);
+});
+
+test('notícias de missão mostram somente atividades do próprio jogador confirmadas no servidor',()=>{
+  const ctx={tr:s=>s,escHtml:s=>String(s),contaJ:null,$:()=>null};
+  vm.createContext(ctx);
+  vm.runInContext(trecho(jornal,'var jornalAba =','function jornalFotos(){'),ctx);
+  const noticias=ctx.jornalAtividadeTexto([
+    {k:'handshake',prog:1,meta:1,feito:false},
+    {k:'cafe',prog:0,meta:1,feito:true},
+    {k:'cafe',prog:0,meta:1,feito:false},
+    {k:'pet',prog:1,meta:1,feito:true},
+    {k:'collect',prog:1,meta:1,feito:true}
+  ]);
+  assert.equal(noticias.length,2);
+  assert.match(noticias[0],/Handshake/);
+  assert.match(noticias[1],/Happy⭐Cafe/);
+  assert.equal(ctx.jornalAtividadeTexto([{k:'handshake',prog:0,meta:1,feito:false}]).length,0);
+  assert.equal(ctx.jornalAtividadeTexto([]).length,0);
+});

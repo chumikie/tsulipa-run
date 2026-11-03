@@ -123,10 +123,12 @@ function contaCorridasGuardar(a){
 function contaCorridaRetirar(p){
   contaCorridasGuardar(contaCorridasLer().filter(function(x){return x.owner!==p.owner||x.id!==p.id;}));
 }
-function contaRecuperarCorridas(){
+function contaRecuperarCorridas(preferida){
   if(contaCorridaEnviando||!contaJ)return;
   var owner=String(contaJ.id),sessao=contaSessaoToken;
-  var p=contaCorridasLer().find(function(x){return x.owner===owner;});
+  // A corrida recém-finalizada deve seguir ao servidor mesmo se o armazenamento local
+  // estiver indisponível ou devolver uma versão antiga da fila.
+  var p=(preferida&&preferida.owner===owner?preferida:null)||contaCorridasLer().find(function(x){return x.owner===owner;});
   if(!p)return;
   var definitiva=false,feedback=contaCorridaAvisos[p.id];
   function mesmaConta(){return !!(contaJ&&String(contaJ.id)===owner&&contaSessaoToken===sessao);}
@@ -149,8 +151,9 @@ function contaRecuperarCorridas(){
     contaUltimaRun.ok=true;
     quartetoTalvez();hubAposCorrida();
     if(!feedback&&typeof showLb==='function'){try{showLb($('lbo'));}catch(e){}}
-  }).catch(function(){
+  }).catch(function(err){
     if(!mesmaConta())return;
+    console.error('Center⭐Run!: falha ao confirmar corrida online',err&&err.message||err);
     var pendente=!definitiva;
     // Uma resposta perdida pode ter sido gravada. Consulta o saldo antes de informar.
     return contaRpc('jogador').then(function(j){
@@ -189,9 +192,9 @@ function contaFimCorrida(score, est, ch, refresh){
     if(!fila.some(function(x){return x.owner===p.owner&&x.id===p.id;}))fila.push(p);
     contaCorridasGuardar(fila);
     contaCorridaAvisos[id]={aviso:aviso,refresh:refresh};
-    contaRecuperarCorridas();
-  }).catch(function(){
-    if(mesmaConta()){aviso(tr('Corrida sem autorização do servidor'));refresh();}
+    contaRecuperarCorridas(p);
+  }).catch(function(err){
+    if(mesmaConta()){console.error('Center⭐Run!: autorização da corrida indisponível',err&&err.message||err);aviso(tr('Corrida sem autorização do servidor'));refresh();}
   });
 }
 if(typeof window!=='undefined'&&window.addEventListener){

@@ -1,22 +1,22 @@
 /* TsuLiPa⭐World — acabamento da 2ª atualização (Zipper⭐Shop!, Idol⭐News!, Álbum, Trocas, Pedido de fã).
    Só decoração: brilhinhos, corações e tons pastel do TsuLiPa (roxo, verde, azul e rosa). Nada muda no conteúdo. */
-.shopp,.jornalp,.albump,.fap{
+.shopp,.jornalp,.albump,.fap,.hsp{
   background-image:
     radial-gradient(circle at 8% 4%,rgba(255,111,181,.16) 0,rgba(255,111,181,0) 28%),
     radial-gradient(circle at 96% 10%,rgba(123,63,240,.14) 0,rgba(123,63,240,0) 30%),
     radial-gradient(circle at 50% 100%,rgba(77,216,255,.14) 0,rgba(77,216,255,0) 40%);
 }
 /* brilhinhos e coração nos cantos do título */
-.shopp::before,.jornalp::before,.albump::before,.fap::before{
+.shopp::before,.jornalp::before,.albump::before,.fap::before,.hsp::before{
   content:"✦ ♡ ✧";position:absolute;top:16px;left:58px;font-size:14px;letter-spacing:6px;color:#ff9ccd;opacity:.85;pointer-events:none;
   animation:tw2brilho 2.6s ease-in-out infinite;
 }
-.shopp::after,.jornalp::after,.albump::after,.fap::after{
+.shopp::after,.jornalp::after,.albump::after,.fap::after,.hsp::after{
   content:"✧ ♡";position:absolute;top:62px;right:20px;font-size:13px;letter-spacing:5px;color:#b48cff;opacity:.8;pointer-events:none;
   animation:tw2brilho 3.2s ease-in-out infinite .8s;
 }
 @keyframes tw2brilho{0%,100%{opacity:.35;transform:translateY(0) scale(.96)}50%{opacity:1;transform:translateY(-2px) scale(1.04)}}
-@media (prefers-reduced-motion:reduce){.shopp::before,.jornalp::before,.albump::before,.fap::before,.shopp::after,.jornalp::after,.albump::after,.fap::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.shopp::before,.jornalp::before,.albump::before,.fap::before,.shopp::after,.jornalp::after,.albump::after,.fap::after,.hsp::after{animation:none}}
 
 /* títulos de seção com degradê do TsuLiPa e um coraçãozinho */
 #shopCorpo h3,#trocaCorpo h3,.jornalp .jnbloco h4,.jornalp .jnpodio h4,.jornalp .jntopt{color:#7b3ff0!important;text-shadow:0 1px 0 #fff,0 0 10px rgba(255,156,205,.35)}
@@ -53,8 +53,8 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 .facarta::before{content:"💌";position:absolute;top:-14px;right:12px;font-size:22px;transform:rotate(12deg)}
 
 /* botões principais com brilhinho no hover */
-#shopSalvar,#faEntregar,#trPropor,#albumTrocar,#jnPostOk{position:relative}
-#shopSalvar::after,#faEntregar::after,#trPropor::after,#albumTrocar::after,#jnPostOk::after{content:"✦";position:absolute;top:-6px;right:-4px;font-size:14px;color:#ffd23f;text-shadow:0 0 6px rgba(255,210,63,.8);pointer-events:none}
+#shopSalvar,#faEntregar,#trPropor,#albumTrocar,#jnPostOk,#hsJogar,#cfJogar,#cfServir{position:relative}
+#shopSalvar::after,#faEntregar::after,#trPropor::after,#albumTrocar::after,#jnPostOk::after,#hsJogar::after,#cfJogar::after,#cfServir::after{content:"✦";position:absolute;top:-6px;right:-4px;font-size:14px;color:#ffd23f;text-shadow:0 0 6px rgba(255,210,63,.8);pointer-events:none}
 
 /* Hoje: hora/clima em pílula com brilho */
 .hojeinfo{background:rgba(255,255,255,.85);border-radius:999px;padding:2px 10px;box-shadow:0 2px 0 rgba(123,63,240,.12)}
@@ -72,6 +72,6 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 @media (max-width:420px){#hub #hubHojeLinha>button{font-size:13px}#hub #hubHojeLinha>button small:not(.tw-hubgame-jp){font-size:11px}}
 
 /* botões: mesmo espaçamento e sem sublinhado nos links-botão */
-.shopp .btns,.jornalp .btns,.albump .btns,.fap .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:10px 0}
+.shopp .btns,.jornalp .btns,.albump .btns,.fap .btns,.hsp .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:10px 0}
 .shopp a.btn,.jornalp a.btn{text-decoration:none}
 .shopmontbtns{margin-top:6px}

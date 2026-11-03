@@ -89,15 +89,15 @@ function cfCopo(x, cx, by, m, s){   // copo transparente montado em camadas
   var w = 70 * s, h = 96 * s;
   x.save();
   if(m.base >= 0){ x.fillStyle = CF_BASES[m.base][2]; x.beginPath(); x.moveTo(cx - w / 2 + 4, by - h + 22 * s); x.lineTo(cx + w / 2 - 4, by - h + 22 * s); x.lineTo(cx + w / 2 - 10 * s, by - 4); x.lineTo(cx - w / 2 + 10 * s, by - 4); x.closePath(); x.fill(); }
-  x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 4; x.fillStyle = 'rgba(255,255,255,.22)';
+  x.strokeStyle = CF_LINHA; x.lineWidth = 3; x.lineJoin = 'round'; x.fillStyle = 'rgba(255,255,255,.28)';
   x.beginPath(); x.moveTo(cx - w / 2, by - h); x.lineTo(cx + w / 2, by - h); x.lineTo(cx + w / 2 - 8 * s, by); x.lineTo(cx - w / 2 + 8 * s, by); x.closePath(); x.fill(); x.stroke();
   x.fillStyle = '#ff9ccf'; x.fillRect(cx - w / 2 + 8 * s, by - h * .55, w - 16 * s, 12 * s);   // faixinha do café
   x.fillStyle = '#fff'; x.font = '900 ' + Math.round(9 * s) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('TsuLiPa', cx, by - h * .55 + 6 * s);
   if(m.cob >= 0){ x.fillStyle = CF_COBERTURAS[m.cob][2]; x.beginPath(); for(var i = 0; i < 3; i++) x.arc(cx - 20 * s + i * 20 * s, by - h - 2 * s, 16 * s, 0, 7); x.fill();
     if(m.cob === 2){ for(var g = 0; g < 10; g++){ x.fillStyle = ['#ff6fb5', '#7b3ff0', '#ffd23f', '#3fc1ff'][g % 4]; x.fillRect(cx - 28 * s + g * 6 * s, by - h - 8 * s + (g % 3) * 5 * s, 4 * s, 2 * s); } } }
   x.fillStyle = '#ff6fb5'; x.fillRect(cx + 10 * s, by - h - 40 * s, 5 * s, 44 * s);   // canudo
-  if(m.enf >= 0){ x.font = Math.round(26 * s) + 'px sans-serif'; x.fillText(CF_ENFEITES[m.enf][0], cx - 6 * s, by - h - 18 * s); }
-  if(m.doce >= 0){ x.fillStyle = '#fff'; x.beginPath(); x.ellipse(cx + w * .95, by - 6 * s, 30 * s, 9 * s, 0, 0, 7); x.fill(); x.font = Math.round(28 * s) + 'px sans-serif'; x.fillText(CF_DOCES[m.doce][0], cx + w * .95, by - 20 * s); }
+  if(m.enf >= 0) cfItem(x, 'enf', m.enf, cx - 6 * s, by - h - 20 * s, .75 * s);
+  if(m.doce >= 0){ x.fillStyle = '#fff'; cfTraco(x, s * .8); x.beginPath(); x.ellipse(cx + w * .95, by - 6 * s, 30 * s, 9 * s, 0, 0, 7); x.fill(); x.stroke(); cfItem(x, 'doce', m.doce, cx + w * .95, by - 22 * s, .85 * s); }
   x.restore();
 }
 function cfDesenhar(){
@@ -140,7 +140,7 @@ function cfDesenhar(){
 function cfBotoes(tipo, lista, tit){
   var m = cf.monta, trava = tipo !== 'base' && tipo !== 'doce' && m.base < 0;
   return '<div class="cfgrupo"><b>' + escHtml(tr(tit)) + '</b><div class="cfops">' + lista.map(function(o, i){
-    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
+    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><canvas class="cfic" data-ic="' + tipo + ':' + i + '" width="112" height="112" aria-hidden="true"></canvas><small>' + escHtml(tr(o[1])) + '</small></button>';
   }).join('') + '</div></div>';
 }
 function cfUI(){
@@ -161,7 +161,7 @@ function cfUI(){
     if(cf.novas.length) h += '<p class="faok">📒 ' + escHtml(tr('Receitas novas no Caderno:')) + ' ' + cf.novas.map(escHtml).join(' · ') + '</p>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
-  c.innerHTML = h;
+  c.innerHTML = h; cfPintarIcones();
 }
 function cfCaderno(rec){
   var h = '<div class="cfcaderno"><b>📒 ' + escHtml(tr('Caderno do café')) + '</b><div class="cfrecs">';
@@ -178,4 +178,63 @@ function cfClique(e){
 function cfHubHtml(){
   var feito = false; try{ feito = localStorage.getItem('tw_cf_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
   return '<button type="button" class="hubcard hubcafe' + (feito ? '' : ' tw-alert-pink') + '" data-ir="cafe">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🧋</i><b translate="no">Happy⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">ハッピー・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
+}
+
+/* Desenhos dos itens no estilo do site: contorno roxo-escuro arredondado, sombra suave e brilhinho branco */
+var CF_LINHA = '#4a2d5e';
+function cfTraco(x, s){ x.lineWidth = Math.max(2, 2.6 * s); x.strokeStyle = CF_LINHA; x.lineJoin = 'round'; x.lineCap = 'round'; }
+function cfBrilho(x, px, py, s){ x.save(); x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(px, py, 3.2 * s, 2 * s, -.6, 0, 7); x.fill(); x.beginPath(); x.arc(px + 5 * s, py + 3 * s, 1.2 * s, 0, 7); x.fill(); x.restore(); }
+function cfCor(hex, k){ var n = parseInt(hex.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255; function c(v){ return Math.max(0, Math.min(255, Math.round(k < 0 ? v * (1 + k) : v + (255 - v) * k))); } return 'rgb(' + c(r) + ',' + c(g) + ',' + c(b) + ')'; }
+function cfCoracao(x, cx, cy, r){ x.beginPath(); x.moveTo(cx, cy + r * .9); x.bezierCurveTo(cx - r * 1.4, cy - r * .1, cx - r * .7, cy - r * 1.1, cx, cy - r * .35); x.bezierCurveTo(cx + r * .7, cy - r * 1.1, cx + r * 1.4, cy - r * .1, cx, cy + r * .9); x.closePath(); }
+function cfEstrela(x, cx, cy, r){ x.beginPath(); for(var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .48 : r; x.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } x.closePath(); }
+function cfItem(x, tipo, i, cx, cy, s){   // desenha um item centrado em (cx, cy); s = escala (1 ≈ 48 px)
+  x.save(); cfTraco(x, s);
+  if(tipo === 'base'){   // copinho com a bebida, tampa e canudo
+    var cor = CF_BASES[i][2];
+    x.fillStyle = 'rgba(74,45,94,.15)'; x.beginPath(); x.ellipse(cx, cy + 21 * s, 15 * s, 3.5 * s, 0, 0, 7); x.fill();
+    x.fillStyle = '#ff6fb5'; x.beginPath(); x.moveTo(cx + 3 * s, cy - 14 * s); x.lineTo(cx + 9 * s, cy - 25 * s); x.lineTo(cx + 12 * s, cy - 24 * s); x.lineTo(cx + 6 * s, cy - 13 * s); x.closePath(); x.fill(); x.stroke();
+    var g = x.createLinearGradient(cx - 13 * s, 0, cx + 13 * s, 0); g.addColorStop(0, cfCor(cor, .25)); g.addColorStop(1, cfCor(cor, -.18));
+    x.fillStyle = g; x.beginPath(); x.moveTo(cx - 14 * s, cy - 10 * s); x.lineTo(cx + 14 * s, cy - 10 * s); x.lineTo(cx + 10 * s, cy + 20 * s); x.lineTo(cx - 10 * s, cy + 20 * s); x.closePath(); x.fill(); x.stroke();
+    x.fillStyle = '#fff5fb'; x.beginPath(); if(x.roundRect) x.roundRect(cx - 17 * s, cy - 16 * s, 34 * s, 7 * s, 3.5 * s); else x.rect(cx - 17 * s, cy - 16 * s, 34 * s, 7 * s); x.fill(); x.stroke();
+    x.fillStyle = '#ffd1ea'; x.fillRect(cx - 11.5 * s, cy + 1 * s, 23 * s, 6 * s);
+    cfBrilho(x, cx - 7 * s, cy - 4 * s, s);
+  } else if(tipo === 'cob'){
+    if(i === 1){   // caramelo escorrendo de uma colherada
+      x.fillStyle = '#f0a73a'; x.beginPath(); x.moveTo(cx - 16 * s, cy - 6 * s); x.quadraticCurveTo(cx, cy - 20 * s, cx + 16 * s, cy - 6 * s);
+      x.lineTo(cx + 16 * s, cy + 2 * s); x.quadraticCurveTo(cx + 12 * s, cy + 6 * s, cx + 10 * s, cy + 2 * s); x.lineTo(cx + 8 * s, cy + 14 * s); x.quadraticCurveTo(cx + 4 * s, cy + 19 * s, cx + 1 * s, cy + 13 * s);
+      x.lineTo(cx, cy + 3 * s); x.quadraticCurveTo(cx - 4 * s, cy + 8 * s, cx - 7 * s, cy + 3 * s); x.lineTo(cx - 9 * s, cy + 9 * s); x.quadraticCurveTo(cx - 13 * s, cy + 13 * s, cx - 15 * s, cy + 6 * s); x.closePath(); x.fill(); x.stroke();
+      cfBrilho(x, cx - 6 * s, cy - 8 * s, s);
+    } else {   // chantilly em espiral (com granulado colorido se for o caso)
+      x.fillStyle = '#fffaf2';
+      [[0, 10, 17, 7], [0, 1, 13, 7], [0, -8, 9, 6]].forEach(function(c){ x.beginPath(); x.ellipse(cx + c[0] * s, cy + c[1] * s, c[2] * s, c[3] * s, 0, 0, 7); x.fill(); x.stroke(); });
+      x.beginPath(); x.moveTo(cx - 3 * s, cy - 13 * s); x.quadraticCurveTo(cx, cy - 21 * s, cx + 3 * s, cy - 13 * s); x.fill(); x.stroke();
+      if(i === 2){ var cs = ['#ff6fb5', '#7b3ff0', '#ffd23f', '#3fc1ff', '#5fd18b']; for(var k = 0; k < 12; k++){ var a = k * 2.4, rr = 4 + (k % 4) * 3.5; x.save(); x.translate(cx + Math.cos(a) * rr * s, cy + 2 * s + Math.sin(a) * rr * .5 * s - (k % 3) * 5 * s); x.rotate(a); x.fillStyle = cs[k % 5]; x.fillRect(-2.5 * s, -1 * s, 5 * s, 2 * s); x.restore(); } }
+      cfBrilho(x, cx - 6 * s, cy + 6 * s, s);
+    }
+  } else if(tipo === 'enf'){
+    if(i === 0){ var gh = x.createRadialGradient(cx - 5 * s, cy - 6 * s, 2, cx, cy, 18 * s); gh.addColorStop(0, '#ffb3d9'); gh.addColorStop(1, '#ff4f9a'); x.fillStyle = gh; cfCoracao(x, cx, cy, 16 * s); x.fill(); x.stroke(); cfBrilho(x, cx - 8 * s, cy - 6 * s, s); }
+    else if(i === 1){ var ge = x.createRadialGradient(cx - 4 * s, cy - 5 * s, 2, cx, cy, 18 * s); ge.addColorStop(0, '#fff3a6'); ge.addColorStop(1, '#ffc21a'); x.fillStyle = ge; cfEstrela(x, cx, cy + 1 * s, 18 * s); x.fill(); x.stroke(); cfBrilho(x, cx - 4 * s, cy - 4 * s, s); }
+    else if(i === 2){ x.strokeStyle = '#5a8f3a'; x.lineWidth = 2.4 * s; x.beginPath(); x.moveTo(cx - 6 * s, cy + 2 * s); x.quadraticCurveTo(cx - 2 * s, cy - 14 * s, cx + 6 * s, cy - 17 * s); x.moveTo(cx + 8 * s, cy + 4 * s); x.quadraticCurveTo(cx + 6 * s, cy - 10 * s, cx + 6 * s, cy - 17 * s); x.stroke();
+      x.fillStyle = '#7fd36b'; x.beginPath(); x.ellipse(cx + 11 * s, cy - 16 * s, 6 * s, 3 * s, -.4, 0, 7); x.fill(); cfTraco(x, s);
+      [[-7, 7], [8, 9]].forEach(function(p){ var gc = x.createRadialGradient(cx + (p[0] - 3) * s, cy + (p[1] - 3) * s, 1, cx + p[0] * s, cy + p[1] * s, 9 * s); gc.addColorStop(0, '#ff7a8a'); gc.addColorStop(1, '#d6123a'); x.fillStyle = gc; x.beginPath(); x.arc(cx + p[0] * s, cy + p[1] * s, 8 * s, 0, 7); x.fill(); x.stroke(); cfBrilho(x, cx + (p[0] - 3) * s, cy + (p[1] - 3) * s, s * .8); }); }
+    else { x.fillStyle = '#e8b27a'; [[-1], [1]].forEach(function(d){ x.beginPath(); x.moveTo(cx, cy); x.quadraticCurveTo(cx + d[0] * 20 * s, cy - 16 * s, cx + d[0] * 18 * s, cy + 2 * s); x.quadraticCurveTo(cx + d[0] * 16 * s, cy + 12 * s, cx, cy); x.fill(); x.stroke(); });
+      x.fillStyle = '#ff9ccf'; x.beginPath(); x.arc(cx, cy, 5 * s, 0, 7); x.fill(); x.stroke(); x.fillStyle = '#fff'; [[-11, -3], [11, -3], [-9, 4], [9, 4]].forEach(function(p){ x.beginPath(); x.arc(cx + p[0] * s, cy + p[1] * s, 1.4 * s, 0, 7); x.fill(); }); }
+  } else if(tipo === 'doce'){
+    x.fillStyle = 'rgba(74,45,94,.15)'; x.beginPath(); x.ellipse(cx, cy + 15 * s, 18 * s, 4 * s, 0, 0, 7); x.fill();
+    if(i === 0){ var gk = x.createRadialGradient(cx - 5 * s, cy - 5 * s, 2, cx, cy, 18 * s); gk.addColorStop(0, '#f6cf8e'); gk.addColorStop(1, '#d99a4e'); x.fillStyle = gk; x.beginPath(); x.arc(cx, cy, 16 * s, 0, 7); x.fill(); x.stroke();
+      x.fillStyle = '#5b3420'; [[-7, -5], [5, -8], [8, 4], [-3, 7], [-9, 4], [2, -1]].forEach(function(p){ x.beginPath(); x.ellipse(cx + p[0] * s, cy + p[1] * s, 2.6 * s, 2 * s, .5, 0, 7); x.fill(); }); cfBrilho(x, cx - 8 * s, cy - 9 * s, s * .8); }
+    else if(i === 1){ x.fillStyle = '#5b3420'; x.beginPath(); if(x.roundRect) x.roundRect(cx - 16 * s, cy - 8 * s, 32 * s, 20 * s, 4 * s); else x.rect(cx - 16 * s, cy - 8 * s, 32 * s, 20 * s); x.fill(); x.stroke();
+      x.fillStyle = '#8a5236'; x.beginPath(); if(x.roundRect) x.roundRect(cx - 16 * s, cy - 14 * s, 32 * s, 9 * s, 4 * s); else x.rect(cx - 16 * s, cy - 14 * s, 32 * s, 9 * s); x.fill(); x.stroke();
+      x.fillStyle = '#ff9ccf'; cfCoracao(x, cx, cy - 10 * s, 4.5 * s); x.fill(); cfBrilho(x, cx - 10 * s, cy - 11 * s, s * .7); }
+    else if(i === 2){ var gr = x.createLinearGradient(0, cy - 14 * s, 0, cy + 12 * s); gr.addColorStop(0, '#ffd27a'); gr.addColorStop(1, '#d98a2b'); x.fillStyle = gr;
+      [[-13, 4, 8, 7], [13, 4, 8, 7], [-6, -2, 9, 10], [6, -2, 9, 10], [0, -5, 8, 11]].forEach(function(c){ x.beginPath(); x.ellipse(cx + c[0] * s, cy + c[1] * s, c[2] * s, c[3] * s, 0, 0, 7); x.fill(); x.stroke(); }); cfBrilho(x, cx - 3 * s, cy - 10 * s, s * .8); }
+    else { var gw = x.createLinearGradient(0, cy - 15 * s, 0, cy + 15 * s); gw.addColorStop(0, '#ffd88a'); gw.addColorStop(1, '#e3a346'); x.fillStyle = gw; x.beginPath(); if(x.roundRect) x.roundRect(cx - 16 * s, cy - 14 * s, 32 * s, 28 * s, 7 * s); else x.rect(cx - 16 * s, cy - 14 * s, 32 * s, 28 * s); x.fill(); x.stroke();
+      x.strokeStyle = 'rgba(160,96,40,.75)'; x.lineWidth = 1.8 * s; for(var q = -1; q <= 1; q++){ x.beginPath(); x.moveTo(cx + q * 8 * s, cy - 12 * s); x.lineTo(cx + q * 8 * s, cy + 12 * s); x.moveTo(cx - 14 * s, cy + q * 7 * s); x.lineTo(cx + 14 * s, cy + q * 7 * s); x.stroke(); }
+      x.fillStyle = '#fffaf2'; cfTraco(x, s * .8); x.beginPath(); x.ellipse(cx + 4 * s, cy - 6 * s, 7 * s, 4 * s, 0, 0, 7); x.fill(); x.stroke(); x.fillStyle = '#ff6fb5'; cfCoracao(x, cx + 4 * s, cy - 8 * s, 3 * s); x.fill(); }
+  }
+  x.restore();
+}
+function cfPintarIcones(){
+  var cs = document.querySelectorAll('#cfCorpo canvas.cfic');
+  for(var i = 0; i < cs.length; i++){ var c = cs[i], p = c.dataset.ic.split(':'), x = c.getContext('2d'); x.clearRect(0, 0, c.width, c.height); cfItem(x, p[0], +p[1], c.width / 2, c.height / 2 + 2, c.width / 56); }
 }

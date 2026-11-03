@@ -92,7 +92,7 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
         perfDesenharIdol:(ctx,w,h)=>idols.push({w,h}),
         perfFundo:()=>{}
       });
-      vm.runInContext(desenho + '\\n jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
+      vm.runInContext(desenho + String.fromCharCode(10) + 'jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
       const deslocamento = local==='tailandia'?.55:.25;
       assert.equal(cenas.length,1,local+' usa a arte oficial');
       assert.equal(cenas[0].w,largura);

@@ -160,3 +160,20 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 /* Revisão dos novos recordes: cartões alinhados aos demais painéis do hub. */
 #hub .recaba:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 #hub .reccorpo{box-shadow:0 3px 0 rgba(123,63,240,.1)}
+
+/* PR #71 · pequenos refinamentos apenas nos painéis NOVOS, usando as cores do tema. */
+#hub .recabas{gap:10px;margin-bottom:12px}
+#hub .recaba{background:linear-gradient(165deg,var(--card),var(--chip));border-color:rgba(155,48,217,.22);box-shadow:0 3px 0 rgba(60,20,120,.14),0 5px 12px rgba(60,20,120,.08)}
+#hub .recaba.on{background:linear-gradient(135deg,#ff6fb5,#9b30d9);border-color:var(--card);box-shadow:0 3px 0 rgba(60,20,120,.35)}
+#hub .reccorpo{margin-top:0;padding:14px;border:1.5px solid rgba(155,48,217,.22);background:linear-gradient(145deg,var(--card),var(--chip));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 10px rgba(60,20,120,.08)}
+#hub .recnums{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:12px;margin:0 0 13px}
+#hub .recnums span{flex:none;min-height:66px;justify-content:center;padding:10px 8px;border:1px solid rgba(155,48,217,.18);border-radius:14px;background:linear-gradient(160deg,var(--chip),var(--card));box-shadow:0 2px 0 rgba(60,20,120,.1)}
+#hub .recnums b{font-size:17px;color:var(--b1)}
+#hub .recnums small{color:var(--sub);line-height:1.25}
+#hub .recsemana{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;padding:9px 12px;border-radius:12px;background:var(--chip);border:1px solid rgba(155,48,217,.18);color:var(--sub);font-size:12px;font-weight:800}
+#hub .recsemana b{font-size:17px;color:var(--b1);font-variant-numeric:tabular-nums}
+#hub .reccorpo .perfsub{margin:12px 0 6px;color:var(--b1)}
+#hub .reccorpo .perfult{margin:0 0 10px;padding:0;background:transparent}
+#hub .reccorpo .perfult li{margin:5px 0;padding:6px 10px;border-radius:10px;background:var(--chip);border:1px solid rgba(155,48,217,.13)}
+#hsOv .hsdica.evsemana,#cfOv .hsdica.evsemana{margin:12px 0;padding:8px 11px;text-align:left;font-size:12px;line-height:1.45;background:linear-gradient(90deg,var(--chip),rgba(255,111,181,.06));border:0;border-left:3px solid var(--pink);border-radius:9px;box-shadow:none;color:var(--ink)}
+@media(max-width:620px){#hub .recabas{gap:5px}#hub .reccorpo{padding:10px}#hub .recnums{gap:8px}#hub .recnums span{padding:8px 5px;min-height:60px}}

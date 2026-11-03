@@ -29,7 +29,22 @@ function cfAbrir(){
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
-  var f = hsFa(r, nome); f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
+  var f = hsFa(r, nome);
+  // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
+  var memorias = typeof hsMemLer === 'function' ? hsMemLer() : [];
+  var conhecidos = typeof hsNomesLivres === 'function' ? hsNomesLivres() : [];
+  memorias = memorias.filter(function(m){ return conhecidos.indexOf(m.nome) >= 0; });
+  if(cf.atendidos === 0 && memorias.length){
+    var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
+    var lembranca = memorias[((dia % memorias.length) + memorias.length) % memorias.length];
+    f.nome = lembranca.nome;
+    if(lembranca.c && typeof lembranca.c === 'object') for(var parte in lembranca.c){
+      if(Object.prototype.hasOwnProperty.call(lembranca.c, parte) && typeof f.c[parte] === 'string' && typeof lembranca.c[parte] === 'string') f.c[parte] = lembranca.c[parte];
+    }
+    if(HS_JEITOS[lembranca.jeito]) f.jeito = lembranca.jeito;
+    f.hsLembranca = lembranca;
+  }
+  f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
   cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
   cfUI();
@@ -207,6 +222,12 @@ function cfUI(){
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
+    if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
+      var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
+      h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +
+        escHtml(tr('Você lembrou do meu presente naquele dia!')) + ' ' +
+        (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
+    }
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += '<div class="hstempo"><i id="cfPac" style="width:100%"></i></div>' +
       cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +

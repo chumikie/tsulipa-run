@@ -7,6 +7,14 @@ var BANNER_TSULIPA = ['tsu', 'lirika', 'patiliri'];
 var BANNER_FALAS = [['Oi!', '👋'], ['Bem-vindo!', '💖'], ['Vamos jogar?', '🎮'], ['Hoje tem show!', '🎤'], ['Obrigado por vir!', '✨'], ['Bora pro Center!', '🏁'], ['hehe~', '😆']];
 var BANNER_EMO = ['💖', '⭐', '✨', '🎵', '🌸', '💫'];
 var bannerCache = { chave:'', elenco:null };
+// Uniforme dos trios do site: todos com a mesma roupa do jogo (troca a cada ciclo de 3 dias), cada um num tom pastel
+var BANNER_UNIFORMES = ['seifuku', 'estrelado', 'y2k', 'zipper', 'sweet', 'citypop'];
+var BANNER_PASTEIS = ['#f6c6e0', '#c8e3fb', '#cdeec6'];   // rosa, azul e verde suaves (as cores do TsuLiPa, em pastel)
+function bannerUniforme(c, i, roupa){
+  c.out = roupa || BANNER_UNIFORMES[((Math.floor(bannerDia() / 3) % BANNER_UNIFORMES.length) + BANNER_UNIFORMES.length) % BANNER_UNIFORMES.length];
+  c.outcol = BANNER_PASTEIS[i % BANNER_PASTEIS.length];
+  return c;
+}
 function bannerDia(){ return Math.floor((Date.now() - 3 * 3600e3) / 864e5); }   // dia de Brasília
 function bannerSorteio(L, semente){   // embaralha igual para todos no mesmo ciclo
   var a = L.slice(), s = (semente * 2654435761) >>> 0 || 1;
@@ -39,7 +47,7 @@ function bannerRotulo(){
 function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os três Idols do site, com o nome embaixo
   elenco.forEach(function(p, i){
     var av = p.av || {}, c = perfChar(av), cx = W2 * HUB_TRIO[i][2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc;
-    if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada, igual ao TsuLiPa
+    bannerUniforme(c, i, roupa);   // uniformizados: mesma roupa (ou a do tema), tons pastel
     var ex = [0, 1, 2, 3, 4, 5, 6].indexOf(+av.expr) >= 0 ? +av.expr : 2;
     var rg = HUB_REAGE.i === i ? hubT - HUB_REAGE.t0 : 999, rgD = (HUB_REAGE.dur || 200) - 30;
     if(rg < rgD){ bob -= Math.abs(Math.sin(rg / 35 * Math.PI)) * (rg < 70 ? 9 : 3) * sc * (rg < 70 ? 1 - rg / 90 : 1); ex = 3; }
@@ -94,7 +102,7 @@ function bannerTorcidaDesenhar(x, W2, H2, t, girando){   // no canto esquerdo da
     for(var i = 0; i < 3; i++){
       var c, pose = girando ? ['banzai', 'luz', 'banzai'][i] : ['luz', 'v', 'coracao'][i], ex = girando ? 3 : 2;
       if(tc.tsulipa){ c = CH[i]; accSel = ''; }
-      else { var av = tc.gente[i].av || {}; c = perfChar(av); accSel = typeof av.a === 'string' ? av.a : ''; }
+      else { var av = tc.gente[i].av || {}; c = bannerUniforme(perfChar(av), i, typeof HUB_ROUPA_TEMA !== 'undefined' && typeof temaAtual === 'function' ? HUB_ROUPA_TEMA[temaAtual()] || '' : ''); accSel = typeof av.a === 'string' ? av.a : ''; }
       var pulo = Math.abs(Math.sin(t * (girando ? .16 : .06) + i * 1.3)) * (girando ? 9 : 3), cx = xs[i];
       x.fillStyle = 'rgba(30,10,60,.2)'; x.beginPath(); x.ellipse(cx, chao, 11 * sc, 1.8 * sc, 0, 0, 7); x.fill();
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc - pulo, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });

@@ -5,7 +5,12 @@
 var SHOP_ATENDE = [['Tsu', 0, '#9b30d9'], ['Lirika', 1, '#3f9c1f'], ['Pati', 2, '#4169e1']];
 var SHOP_OI = ['Bem-vindo à Zipper⭐Shop!', 'Provou, gostou, levou!', 'Tem roupa nova na arara!'];
 var shopT = 0, shopAnim = 0, shopFala = { txt:'', t0:-999 };
-function shopAtendente(){ var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5); return SHOP_ATENDE[((d % 3) + 3) % 3]; }
+function shopAtendente(){   // uma por dia; nunca a própria pessoa (Tsu, Lirika ou Pati/Patiliri não se atendem)
+  var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5), eu = String(typeof contaJ !== 'undefined' && contaJ && contaJ.nick || '').toLowerCase();
+  if(eu === 'patiliri') eu = 'pati';
+  for(var k = 0; k < 3; k++){ var a = SHOP_ATENDE[(((d + k) % 3) + 3) % 3]; if(a[0].toLowerCase() !== eu) return a; }
+  return SHOP_ATENDE[0];
+}
 function shopHtml(){
   return '<div class="panel shopp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="shopTit">' +
     '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX">✕</button>' +

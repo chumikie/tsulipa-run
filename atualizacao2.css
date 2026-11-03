@@ -104,3 +104,14 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 #hub .tw-tv-float .tw-rank-tv-launch{right:auto;left:-10px;top:46px}
 @media(max-width:620px){#hub .tw-tv-float .tw-rank-tv-launch{right:auto;left:-4px;top:36px}}
 #hub .tw-tv-float .tw-rank-tv-launch::after{left:auto;right:-10px}
+/* botões voadores do banner menores: microfone > troféu > bandeira */
+#hub .tw-tv-float .tw-mic-launch,#hub .tw-tv-float .tw-rank-tv-launch,#hub .tw-tv-float .tw-br-launch{width:40px;height:40px;min-height:40px;left:-8px;border-width:2px}
+#hub .tw-tv-float .tw-mic-launch{top:-12px}#hub .tw-tv-float .tw-rank-tv-launch{top:34px}#hub .tw-tv-float .tw-br-launch{top:80px}
+#hub .tw-tv-float .tw-mic-launch>span,#hub .tw-tv-float .tw-rank-tv-launch>span:first-child{font-size:20px}
+#hub .tw-tv-float .tw-br-launch svg{width:22px;height:16px}
+@media(max-width:620px){
+ #hub .tw-tv-float .tw-mic-launch,#hub .tw-tv-float .tw-rank-tv-launch,#hub .tw-tv-float .tw-br-launch{width:32px;height:32px;min-height:32px;left:-4px}
+ #hub .tw-tv-float .tw-mic-launch{top:-10px}#hub .tw-tv-float .tw-rank-tv-launch{top:27px}#hub .tw-tv-float .tw-br-launch{top:64px}
+ #hub .tw-tv-float .tw-mic-launch>span,#hub .tw-tv-float .tw-rank-tv-launch>span:first-child{font-size:16px}
+ #hub .tw-tv-float .tw-br-launch svg{width:18px;height:13px}
+}

@@ -41,8 +41,8 @@ function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já exi
 function hsRecorde(){ try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
-  hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[] };
-  hsUI(); if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
+  hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' };
+  hsUI(); hsRecuperar(); if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
 }
 function hsFechar(){ hsOv.hidden = true; hs = null; }
 function hsNovaRodada(){
@@ -50,6 +50,10 @@ function hsNovaRodada(){
   hs.historico.forEach(function(f){ usadosNome[f.nome] = 1; });
   var livres = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), n = Math.min(3 + Math.floor(hs.rodada * .8), 6), fila = [];
   for(var i = 0; i < n && livres.length; i++){ var nome = livres.splice(Math.floor(r() * livres.length), 1)[0]; fila.push(hsFa(r, nome)); }
+  // O servidor determina as respostas desta partida; a estética/ordem dos fãs permanece local.
+  var presentesServidor = hs.servidor && hs.servidor.desafios && hs.servidor.desafios[hs.rodada];
+  if(Array.isArray(presentesServidor) && presentesServidor.length === fila.length){ fila.forEach(function(f, i){ f.pres = presentesServidor[i]; }); }
+  fila.forEach(function(f,i){ f.hsOrigem=hs.rodada+1; f.hsIndice=i; });
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
   var quiz = fila.slice();
@@ -77,6 +81,7 @@ function hsProxima(){
 function hsResponder(i){
   if(!hs || hs.fase !== 'quiz' || hs.resp >= 0) return;
   var f = hs.quiz[hs.qi], ok = i >= 0 && hs.ops[i] === f.pres, rest = Math.max(0, 1 - (hsT - hs.t0) / hsTempoPergunta()), J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo;
+  if(hs.servidor && f.hsOrigem && Number.isInteger(f.hsIndice)) hs.respostas.push({ rodada:hs.rodada, origem:f.hsOrigem, indice:f.hsIndice, resposta:i>=0?hs.ops[i]:-1, restante:Math.round(rest*1000), superfa:!!f.superfa });
   hs.resp = i; hs.ok = ok; hs.total++;
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
@@ -93,20 +98,62 @@ function hsResponder(i){
   }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
+function hsAplicarPet(r){
+  if(!r || r.tipo !== 'pet' || !r.item) return true;
+  if(!petData && typeof petLoad === 'function') petLoad();
+  if(!petData) return false; // prêmio fica no registro do Supabase; resgatar quando houver pet.
+  var dono = contaJ && (contaJ.id || contaJ.nick) || '', chave = dono + ':' + r.dia;
+  petData.hsPremios = petData.hsPremios || {};
+  if(petData.hsPremios[chave]) return true;
+  petData.inv = petData.inv || {};
+  petData.inv[r.item] = (petData.inv[r.item] || 0) + 1;
+  petData.hsPremios[chave] = r.item; // marcador e item são salvos juntos, para evitar reaplicação.
+  petSave(true);
+  return true;
+}
+function hsReceberPremio(r, atual){
+  if(!r || !r.ok) return;
+  if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
+  var pronto = hsAplicarPet(r);
+  if(atual && hs === atual){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
+}
+function hsRecuperar(){
+  if(!contaJ) return;
+  contaRpc('handshake_estado').then(function(r){ if(r && r.ok && r.entregue) hsReceberPremio(r, hs); }).catch(function(){});
+  var pendente = null;
+  try{ pendente = JSON.parse(localStorage.getItem('tw_hs_pendente') || 'null'); }catch(e){}
+  if(!pendente || pendente.nick !== contaJ.nick || !pendente.sessao) return;
+  contaRpc('handshake_premio', {p_sessao:pendente.sessao,p_respostas:pendente.respostas}).then(function(r){
+    if(r && r.ok){ try{localStorage.removeItem('tw_hs_pendente');}catch(e){} hsReceberPremio(r, hs); }
+    else if(r && r.erro === 'pontos') try{localStorage.removeItem('tw_hs_pendente');}catch(e){}
+  }).catch(function(){});
+}
+function hsIniciarSeguro(){
+  hsReiniciar(); var atual = hs;
+  if(!contaJ){ hsNovaRodada(); return; } // livre para praticar sem conta.
+  hs.fase = 'preparando'; hsUI();
+  contaRpc('handshake_iniciar').then(function(r){
+    if(hs !== atual) return;
+    if(r && r.ok && Array.isArray(r.desafios)) atual.servidor = r;
+    else atual.provaErro = (r && r.erro) || 'servidor';
+    hsNovaRodada();
+  }).catch(function(){ if(hs === atual){ atual.provaErro='servidor'; hsNovaRodada(); } });
+}
 function hsFim(){
-  if(hs && hs.acertos > 0){ try{ localStorage.setItem('tw_hs_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(e){} if(contaJ) contaRpc('marcar_visita', { p_k:'handshake' }).catch(function(){}); }   // missão do dia (quando o servidor tiver a chave)
-  hs.fase = 'fim'; var rec = hsRecorde(); hs.novo = hs.pontos > rec;
-  if(hs.novo) try{ localStorage.setItem(HS_RECORDE_KEY, hs.pontos); }catch(e){}
+  var atual=hs;
+  if(!atual || atual.fase==='fim') return;
+  atual.fase='fim'; var rec=hsRecorde(); atual.novo=atual.pontos>rec;
+  if(atual.novo) try{ localStorage.setItem(HS_RECORDE_KEY,atual.pontos); }catch(e){}
   hsUI();
-  if(contaJ && hs.pontos >= 600) contaRpc('handshake_premio', { p_pontos:hs.pontos }).then(function(r){
-    if(!hs) return;
-    if(r && r.ok){
-      if(r.tipo === 'pet' && r.item){ if(!petData && typeof petLoad === 'function') petLoad(); if(petData){ petData.inv = petData.inv || {}; petData.inv[r.item] = (petData.inv[r.item] || 0) + 1; petSave(true); } }
-      if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
-      hs.premio = r;
-    } else hs.premio = { erro:r && r.erro };
-    hsUI();
-  }).catch(function(){ if(hs){ hs.premio = { erro:'servidor' }; hsUI(); } });
+  if(!contaJ || !atual.servidor || !atual.respostas.length) return;
+  var args={p_sessao:atual.servidor.sessao,p_respostas:atual.respostas};
+  try{ localStorage.setItem('tw_hs_pendente',JSON.stringify({nick:contaJ.nick,sessao:args.p_sessao,respostas:args.p_respostas})); }catch(e){}
+  contaRpc('handshake_premio',args).then(function(r){
+    if(r && (r.ok || r.erro==='pontos')) try{ localStorage.removeItem('tw_hs_pendente'); }catch(e){}
+    if(hs!==atual) return;
+    if(r && r.ok) hsReceberPremio(r,atual);
+    else { atual.premio={erro:r&&r.erro||'servidor'}; hsUI(); }
+  }).catch(function(){ if(hs===atual){atual.premio={erro:'servidor'};hsUI();} });
 }
 function hsLoop(ms){
   hsAnim = 0; if(!twAnimacaoVisivel(hsOv)) return;
@@ -194,11 +241,12 @@ function hsCoracoes(x, W2, H2){
   hs.hearts = hs.hearts.filter(function(h){ h.t++; h.y -= h.v; x.globalAlpha = Math.max(0, 1 - h.t / 70); x.fillText(h.e, W2 * h.x + Math.sin(h.t / 6) * 8, H2 * h.y); return h.t < 70; });
   x.restore();
 }
-function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[] }; }
+function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' }; }
 function hsUI(){
   var c = $('hsCorpo'); if(!c || !hs) return;
   var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/5</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
+  if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
     '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
@@ -214,6 +262,9 @@ function hsUI(){
   else if(hs.fase === 'fim'){
     h += '<p class="hsfim">' + (hs.novo ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('Fim do evento!')) + ' <b>' + hs.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>';
     h += '<div class="hsresumo"><span>🎯 ' + hs.acertos + '/' + hs.total + '</span><span>🔥 ' + escHtml(tr('Combo máx.')) + ' ' + hs.comboMax + '</span><span>🌟 ' + escHtml(tr('Superfãs')) + ' ' + hs.superfas + '</span></div>';
+    if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
+    if(!hs.servidor && contaJ) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
+    if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
     if(hs.premio && hs.premio.ok) h += '<p class="faok">🎁 ' + escHtml(hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
     else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
     else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
@@ -224,7 +275,7 @@ function hsUI(){
 }
 function hsClique(e){
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
-  if(e.target.closest && e.target.closest('#hsJogar')){ hsReiniciar(); hsNovaRodada(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
+  if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
 }
 function hsHubHtml(){
   var feito = false; try{ feito = localStorage.getItem('tw_hs_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}

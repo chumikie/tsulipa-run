@@ -20,6 +20,9 @@
       if(n === 'pedido_fa_hoje') return Promise.resolve({ ok:true, tipo:'corridas3', meta:3, progresso:ent ? 3 : 3, feito:true, resgatado:ent, cartas:cartas });
       if(n === 'entregar_pedido_fa'){ ent = true; cartas++; return Promise.resolve({ ok:true, cartas:cartas }); }
       if(n === 'album_cards') return Promise.resolve(idols().slice(0, 9).map(function(p, i){ return { card:{ nick:p.nick, avatar:p.avatar, best:p.best }, tipo:'card', vezes:i % 3 + 1 }; }));
+      if(n === 'meu_perfil') return Promise.resolve({ nick:'Demo', corridas:42, centers:3, best:10854, pos_geral:3, desde:'2026-05-02', coracoes:9, insignias:['estreia:1'], cards:[], avatar:{},
+        por_personagem:{ Idol:10854, Tsu:3442 }, ultimas:[{ score:2362, char:'Idol', created_at:'2026-10-31T12:00:00Z' }, { score:3992, char:'Idol', created_at:'2026-10-30T12:00:00Z' }], melhores:[{ score:10854, char:'Idol', created_at:'2026-10-28T12:00:00Z' }] });
+      if(n === 'sora_my_profile') return Promise.resolve({ ultimas:[{ score:76, at:'2026-11-02' }, { score:398, at:'2026-11-01' }], melhores:[{ score:1079, at:'2026-10-31' }] });
       if(n === 'minhas_trocas'){
         if(!trocas) trocas = [
           { id:1, eu_propus:false, outro:nome(1), dou:nome(2).toLowerCase(), quero:nome(4).toLowerCase(), status:'pendente' },

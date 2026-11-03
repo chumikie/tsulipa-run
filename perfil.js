@@ -717,6 +717,7 @@ function perfAbaMostrar(){
     h += '<h3>📔 ' + escHtml(tr('Diário de carreira')) + '</h3>' + perfDiarioHtml(d, meu);
     if(typeof cardsHtml === 'function') h += '<h3>🃏 ' + escHtml(tr('Últimos cards do Star⭐Gacha!')) + '</h3>' + cardsHtml(d.cards || [], 'perfCards', meu);
     // Center Run: posição geral, recorde por personagem e últimas corridas
+    if(!meu){   // no próprio perfil, esses recordes ficam em 🏅 Meus recordes, na tela de início
     h += '<h3>🏁 ' + escHtml(tr('Center Run')) + '</h3>';
     if(d.pos_geral) h += '<p class="perfpos-geral"><span class="perfpos">#' + d.pos_geral + '</span> ' + escHtml(tr('no ranking geral')) + ' · ' + escHtml(tr('Recorde')) + ' <b>' + (+d.best || 0) + '</b></p>';
     if(meu){
@@ -727,7 +728,7 @@ function perfAbaMostrar(){
     }
     h += '<h4 class="perfsub">🕒 ' + escHtml(tr('Últimas 5 corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.ultimas || [], d.admin_ver) + '</ol>';
     if(d.melhores && d.melhores.length) h += '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores corridas')) + '</h4><ol class="lb perfult">' + perfUltimas(d.melhores, d.admin_ver) + '</ol>';
-    if(meu) h += '<section class="tw-rank-profile" id="twSoraWeekProfile"><h3>☁️ Sora⭐Jump! <small lang="ja">今週の最高記録</small></h3><p id="twSoraWeekScore"></p>' + perfSoraHist() + '</section>';
+    } else h += '<p class="perfrecaviso">🏅 ' + escHtml(tr('Seus recordes do Center⭐Run!, Sora⭐Jump! e dos outros jogos agora ficam em Meus recordes, na tela de início.')) + '</p>';
     h += '<h3>🎮 ' + escHtml(tr('Minijogos do camarim')) + '</h3><div class="perfmini" id="perfMini">' + (meu ? '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>' : '') + '</div>';
     h += '<h3>🐾 ' + escHtml(tr('Pets')) + '</h3><div class="perfpets" id="perfPets"></div>';
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);

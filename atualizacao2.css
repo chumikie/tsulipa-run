@@ -115,3 +115,34 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
  #hub .tw-tv-float .tw-mic-launch>span,#hub .tw-tv-float .tw-rank-tv-launch>span:first-child{font-size:16px}
  #hub .tw-tv-float .tw-br-launch svg{width:18px;height:13px}
 }
+
+/* 🏅 Meus recordes: abas lado a lado que se abrem como sanfona */
+#hub .hubrec h2{margin:0 0 8px;font-size:17px;color:#7b3ff0}
+#hub .hubrec h2 small{font-size:10px;color:#ff6fb5;margin-left:4px}
+#hub .recabas{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+#hub .recaba{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border:2px solid #f6d7ea;border-radius:16px;background:linear-gradient(180deg,#fff,#fff4fa);color:#3c2a8f;font:inherit;cursor:pointer;box-shadow:0 3px 0 #f2c5e3;transition:transform .12s ease}
+#hub .recaba i{font-style:normal;font-size:22px}#hub .recaba b{font-size:11px;line-height:1.2}#hub .recaba small{font-weight:900;color:#d63384;font-size:12px}
+#hub .recaba:hover{transform:translateY(-2px)}
+#hub .recaba.on{background:linear-gradient(135deg,#ff6fb5,#a86bff);border-color:#fff;color:#fff;box-shadow:0 3px 0 #7b3ff0}#hub .recaba.on small{color:#fff}
+#hub .reccorpo{margin-top:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.7);border:2px solid #f6d7ea}
+@keyframes recAbre{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+#hub .recnums{display:flex;flex-wrap:wrap;gap:8px}
+#hub .recnums span{flex:1 1 90px;display:flex;flex-direction:column;align-items:center;padding:8px;border-radius:14px;background:#fff;box-shadow:0 2px 0 #f2c5e3}
+#hub .recnums b{font-size:18px;color:#7b3ff0}#hub .recnums small{font-size:11px;color:#6b5a8f;font-weight:700}
+#hub .recvazio,#hub .recdica{margin:6px 0 0;font-size:12px;color:#6b5a8f;font-weight:700}
+.perfrecaviso{margin:8px 0;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,.12);border:2px dashed #f2c5e3;font-size:13px;font-weight:700}
+@media(max-width:620px){#hub .recabas{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}#hub .recaba{padding:7px 2px}#hub .recaba b{display:none}#hub .recaba i{font-size:20px}#hub .recaba small{font-size:10px;white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){#hub .reccorpo{animation:none}#hub .recaba{transition:none}}
+
+/* Cursor do TsuLiPa⭐World: varinha de estrela (normal) e coraçãozinho (em botões e links). Só em mouse. */
+@media (pointer:fine){
+  html,body{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M4 28 15 17' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M4 28 15 17' stroke='%23a86bff' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M20 2l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L11.4 8.3l6-.7z' fill='%23ffd23f' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Ccircle cx='18.3' cy='8.6' r='1.2' fill='%23fff'/%3E%3C/svg%3E") 3 29,auto}
+  a,button,[role=button],[role=tab],label,select,summary,canvas[style*=pointer],.hubcard{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M16 28C6 21 3 15 3 10.5 3 6.9 5.9 4 9.5 4c2.7 0 5 1.6 6.5 3.9C17.5 5.6 19.8 4 22.5 4 26.1 4 29 6.9 29 10.5 29 15 26 21 16 28z' fill='%23ff6fb5' stroke='%23fff' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cellipse cx='9.5' cy='10' rx='2.6' ry='1.8' fill='%23fff' opacity='.8'/%3E%3C/svg%3E") 16 16,pointer}
+  input,textarea,[contenteditable=true]{cursor:text}
+  button:disabled,[aria-disabled=true]{cursor:not-allowed}
+}
+#hub .reccorpo,#hub .reccorpo .perfult li,#hub .reccorpo .perfult span,#hub .reccorpo .perfult strong,#hub .reccorpo p{color:#3c2a8f}
+#hub .reccorpo .perfult small,#hub .reccorpo .perfult em{color:#7a6a9a}
+#hub .reccorpo .perfult li{background:linear-gradient(90deg,#fff3fa,#f3edff)!important;border-radius:12px}
+#hub .reccorpo .perfsub{color:#7b3ff0}
+#hub .reccorpo .perfchips span{background:#fff;color:#3c2a8f;box-shadow:0 2px 0 #f2c5e3}

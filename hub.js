@@ -336,6 +336,7 @@ function hubMisUI(){
   }).join('') + '</ul>';
 }
 function hubMisCarregar(){
+  if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
@@ -466,7 +467,7 @@ function twRankRender(){
  twRankDrawAvatars();
 }
 function twRankRenderProfile(){
- var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
+ var box=$('twSoraWeekScore');if(!box||!contaJ)return;
  twRankCheckWeek();
  var score=Number.isSafeInteger(twRankData.mine)&&twRankData.mine>=0?twRankData.mine:0,local=twRankLocal();
  box.textContent=score>0?

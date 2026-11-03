@@ -353,6 +353,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
 <script src="./evento.js?v=1"></script>
+<script src="./recordes.js?v=1"></script>
 <script src="./handshake.js?v=1"></script>
 <script src="./cafe.js?v=1"></script>
 <script src="./duo.js?v=1"></script>
@@ -1926,6 +1927,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
   '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
   '<div class="hubcards" id="hubCards"></div>' +
+  '<section class="hubpainel hubrec" id="hubRec"></section>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
@@ -2236,6 +2238,7 @@ cfOv.innerHTML = '<div class="panel hsp cfp tw-modal tw-window tw-window-surface
 document.body.appendChild(cfOv);
 $('cfX').onclick = cfFechar;
 cfOv.addEventListener('click', cfClique);
+hubOv.addEventListener('click', function(e){ if(typeof recClique === 'function' && e.target.closest && e.target.closest('#hubRec')) recClique(e); });
 // Pedidos de fã (fa.js)
 var faOv = document.createElement('div');
 faOv.className = 'ov faov tw-window-overlay'; faOv.id = 'faOv'; faOv.hidden = true;

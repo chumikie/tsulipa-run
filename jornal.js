@@ -65,15 +65,39 @@ var JORNAL_CENAS = [   // [fundo, emoji, legenda, poses]
   ['ceu', '☁️', '{n} pulando de nuvem em nuvem', ['banzai', 'v', 'nyan', 'tchau']],
   ['noite', '🌙', '{n} no ensaio da noite', ['luz', 'mic', 'coracao', 'v']],
   ['basico', '🌸', '{n} tirando foto de grupo', ['v', 'coracao', 'nyan', 'tchau']],
-  ['oshi', '💖', '{n} com lightsticks para o Oshi', ['luz', 'luz', 'coracao', 'banzai']]
+  ['oshi', '💖', '{n} com lightsticks para o Oshi', ['luz', 'luz', 'coracao', 'banzai']],
+  ['basico', '🎀', '{n} preparando os figurinos no camarim', ['tchau', 'coracao', 'v', 'nyan'], 'figurinos'],
+  ['cafe', '🎂', '{n} comemorando um aniversário no café', ['coracao', 'banzai', 'v', 'tchau'], 'aniversario'],
+  ['oshi', '💌', '{n} lendo cartinhas dos fãs', ['coracao', 'v', 'nyan', 'tchau'], 'cartas'],
+  ['palco', '🎬', '{n} nos bastidores antes do show', ['mic', 'v', 'tchau', 'coracao'], 'bastidores'],
+  ['noite', '🎧', '{n} gravando música no estúdio', ['mic', 'mic', 'v', 'coracao'], 'estudio'],
+  ['basico', '🌷', '{n} num piquenique no jardim', ['nyan', 'v', 'coracao', 'tchau'], 'jardim']
 ];
 function jornalSorteio(L, s){ var a = L.slice(); s = (s * 2654435761) >>> 0 || 7; for(var i = a.length - 1; i > 0; i--){ s = (s * 1103515245 + 12345) >>> 0; var k = s % (i + 1), t = a[i]; a[i] = a[k]; a[k] = t; } return a; }
+// A seleção pública varia por blocos de quatro dias: as 12 cenas aparecem antes de repetir.
+// A passagem entre blocos também evita repetir a mesma situação de ontem.
+function jornalCenasDoDia(dia){
+  var bloco = Math.floor(dia / 4), parte = ((dia % 4) + 4) % 4;
+  var cenas = jornalSorteio(JORNAL_CENAS, bloco + 7);
+  var ultimas = jornalSorteio(JORNAL_CENAS, bloco - 1 + 7).slice(-3);
+  // Troca só com o miolo, preservando as três últimas fotos de cada bloco.
+  for(var i = 0; i < 3; i++){
+    if(ultimas.indexOf(cenas[i]) < 0) continue;
+    for(var j = 3; j < cenas.length - 3; j++){
+      if(ultimas.indexOf(cenas[j]) < 0){
+        var tmp = cenas[i]; cenas[i] = cenas[j]; cenas[j] = tmp;
+        break;
+      }
+    }
+  }
+  return cenas.slice(parte * 3, parte * 3 + 3);
+}
 function jornalFotosDia(){
   var box = $('jornalFotosDia'); if(!box) return;
   var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar && p.avatar.c; }) : [];
   if(L.length < 3){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('As fotos aparecem quando a vitrine carregar.')) + '</p>'; return; }
   L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
-  var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5), gente = jornalSorteio(L, dia), cenas = jornalSorteio(JORNAL_CENAS, dia + 7), pos = 0, h = '';
+  var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5), gente = jornalSorteio(L, dia), cenas = jornalCenasDoDia(dia), pos = 0, h = '';
   var fotos = [0, 1, 2].map(function(i){
     var n = i === 2 ? 3 : ((dia + i) % 2 ? 4 : 3); if(L.length < n) n = L.length;
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
@@ -125,6 +149,79 @@ function jornalLegenda(f){
   var nomes = f.grupo.map(function(p){ return p.nick; }), lista = tr('{a} e {b}').replace('{a}', nomes.slice(0, -1).join(', ')).replace('{b}', nomes[nomes.length - 1]);
   return tr(f.cena[2]).replace('{n}', lista);
 }
+// Adereços das novas histórias, no mesmo Canvas 2D das fotos originais.
+// Coordenadas numa câmera fixa de 480×300: miniatura e imagem ampliada coincidem.
+function jornalCenaDetalhes(x, tema, w, h){
+  x.save(); x.scale(w / 480, h / 300);
+  function bolha(px,py,raio,cor){
+    x.fillStyle=cor; x.beginPath(); x.arc(px,py,raio,0,Math.PI*2); x.fill();
+  }
+  function flor(px,py,cor){
+    for(var f=0;f<5;f++){var a=f*Math.PI*2/5;bolha(px+Math.cos(a)*8,py+Math.sin(a)*8,7,cor);}
+    bolha(px,py,5,'#ffe58c');
+  }
+  if(tema==='figurinos'){
+    // Espelho do camarim, luminárias e cabideiro com looks prontos.
+    x.fillStyle='#a96fb2';x.fillRect(16,37,106,151);
+    x.fillStyle='#ffe4f2';x.fillRect(23,44,92,137);
+    x.fillStyle='#bedfee';x.fillRect(29,50,80,125);
+    for(var i=0;i<6;i++){bolha(19,53+i*24,4,'#fff6c0');bolha(119,53+i*24,4,'#fff6c0');}
+    x.strokeStyle='#e0b9f2';x.lineWidth=5;x.beginPath();x.moveTo(354,67);x.lineTo(456,67);x.moveTo(362,67);x.lineTo(362,210);x.moveTo(450,67);x.lineTo(450,210);x.stroke();
+    ['#ff97bf','#91d4ff','#e6b5ff'].forEach(function(c,i){
+      var cx=377+i*31;x.strokeStyle='#fff3e8';x.lineWidth=2;
+      x.beginPath();x.moveTo(cx-6,80);x.lineTo(cx,74);x.lineTo(cx+6,80);x.stroke();
+      x.fillStyle=c;x.beginPath();x.moveTo(cx-8,85);x.lineTo(cx+8,85);x.lineTo(cx+13,119);x.lineTo(cx-13,119);x.closePath();x.fill();
+    });
+  }else if(tema==='aniversario'){
+    // Balões presos nas laterais e bolo de festa atrás dos Idols.
+    [[45,62,'#ff78b7'],[83,38,'#ffe17c'],[415,55,'#8fddf8'],[450,84,'#d8abff']].forEach(function(a){
+      x.strokeStyle='rgba(111,76,110,.65)';x.lineWidth=1.4;
+      x.beginPath();x.moveTo(a[0],a[1]+18);x.lineTo(a[0]+4,177);x.stroke();
+      x.save();x.translate(a[0],a[1]);x.scale(.86,1.16);bolha(0,0,18,a[2]);x.restore();
+    });
+    x.fillStyle='#fff4da';x.fillRect(380,197,76,28);
+    x.fillStyle='#ff82ba';x.fillRect(380,191,76,12);
+    x.fillStyle='#ffdb65';x.fillRect(395,177,3,14);x.fillRect(418,177,3,14);x.fillRect(441,177,3,14);
+    ['#fff0a1','#fff0a1','#fff0a1'].forEach(function(c,i){bolha(396+i*23,173,4,c);});
+  }else if(tema==='cartas'){
+    // Cartinhas de fãs abertas, corações e pequenos selos.
+    [[32,73,-.1],[385,56,.12],[390,181,-.08]].forEach(function(a,i){
+      x.save();x.translate(a[0],a[1]);x.rotate(a[2]);
+      x.fillStyle=i%2?'#ffdcf0':'#fff2cf';x.fillRect(0,0,65,43);
+      x.strokeStyle='#dba4c5';x.lineWidth=2;x.beginPath();x.moveTo(0,0);x.lineTo(33,24);x.lineTo(65,0);x.stroke();
+      x.fillStyle='#ff659e';x.fillRect(49,28,11,10);x.restore();
+    });
+    x.font='bold 24px sans-serif';x.fillStyle='#ff8cb5';x.fillText('♥',132,69);x.fillText('♥',345,107);
+  }else if(tema==='bastidores'){
+    // Treliça de palco, spots e caixas de equipamento.
+    x.fillStyle='#624774';x.fillRect(0,25,480,12);
+    for(var n=0;n<8;n++){x.fillStyle=n%2?'#fbeab2':'#bfe8ff';x.fillRect(24+n*60,27,23,7);}
+    x.fillStyle='#3d3357';x.fillRect(16,174,80,88);x.fillRect(390,164,76,95);
+    x.strokeStyle='#c3b6d8';x.lineWidth=3;x.strokeRect(23,182,67,68);x.strokeRect(397,172,62,74);
+    x.fillStyle='#ffe1f4';x.font='bold 19px sans-serif';x.fillText('★ LIVE',370,93);
+  }else if(tema==='estudio'){
+    // Cabine de gravação: painéis acústicos, mesa de som e microfone.
+    x.fillStyle='#302c58';x.fillRect(24,39,128,134);x.fillRect(339,37,110,129);
+    for(var i=0;i<9;i++){
+      x.fillStyle=i%2?'#564e84':'#645a97';x.fillRect(31+i*13,47,8,118);
+      x.fillStyle=['#8ff0d0','#ffe284','#fc97bf'][i%3];x.fillRect(356+i*9,121-(i*17%60),5,46+(i*17%60));
+    }
+    x.strokeStyle='#e8d5ff';x.lineWidth=5;x.beginPath();x.moveTo(410,49);x.lineTo(310,79);x.lineTo(310,166);x.stroke();
+    x.fillStyle='#cfc9eb';x.fillRect(299,119,22,35);
+    bolha(310,119,14,'#dedcf0');
+  }else if(tema==='jardim'){
+    // O piquenique ganha canteiros, flores e uma toalha ao fundo.
+    x.fillStyle='rgba(180,236,176,.67)';x.fillRect(0,207,480,93);
+    x.fillStyle='#fff1e4';x.beginPath();x.moveTo(38,236);x.lineTo(435,235);x.lineTo(466,298);x.lineTo(16,298);x.closePath();x.fill();
+    x.strokeStyle='#ffb9c8';x.lineWidth=7;
+    for(var i=0;i<6;i++){x.beginPath();x.moveTo(52+i*64,237);x.lineTo(30+i*71,299);x.stroke();}
+    [[30,99,'#ff9bc6'],[77,151,'#bba8ff'],[424,112,'#ffdc78'],[461,159,'#ff91bc']].forEach(function(a){
+      x.strokeStyle='#6ca782';x.lineWidth=3;x.beginPath();x.moveTo(a[0],a[1]+8);x.lineTo(a[0],a[1]+43);x.stroke();
+      flor(a[0],a[1],a[2]);
+    });
+  }
+  x.restore();
+}
 function jornalFotoDesenhar(cv, f, assinatura){
   var x = cv.getContext('2d'); if(!x) return;
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
@@ -145,6 +242,8 @@ function jornalFotoDesenhar(cv, f, assinatura){
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
     else perfFundo(x, W2, H2, f.cena[0], cor, 0);
   }catch(e){}
+  // Elementos de cena ficam atrás dos personagens; a foto continua legível.
+  if(!f.tipo && f.cena[4]) jornalCenaDetalhes(x, f.cena[4], W2, H2);
   var n = f.grupo.length, slot = W2 / n;
   if(f.tipo === 'telao' && f.clipe){
     // Máscara do telão: as silhuetas não podem sair da área visível.

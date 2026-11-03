@@ -775,6 +775,8 @@ function twSelecionarIdioma(novo){
     // A home tem botões próprios: ambos só podem ser redesenhados com LANG definitivo.
     if(typeof hubMontar==='function')hubMontar();
     applyLang();
+    // O painel de login é HTML gerado dinamicamente (inclui link de privacidade).
+    if(typeof contaUI==='function')contaUI();
     setBest();
     refreshAcc();
     if(!$('lbmw').hidden)showLb($('lbm'));

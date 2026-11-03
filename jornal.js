@@ -36,6 +36,7 @@ function jornalMontar(d){
   if(c1) h += '<article class="jnmanchete"><button type="button" class="jnfotolink" data-jnperfil="' + escHtml(c1.nick) + '" aria-label="' + escHtml(tr('Ver perfil') + ': ' + c1.nick) + '"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas></button><div><small>' + escHtml(tr('Manchete')) + '</small>' +
     '<h3><button type="button" class="jnnick jnnickg" data-jnperfil="' + escHtml(c1.nick) + '">' + escHtml(c1.nick) + '</button> ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
   h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
+  h += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma historinha fictícia do TsuLiPa, montada com as fotos e os Idols de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
   h += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
   if(combo || prec) h += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
@@ -92,10 +93,28 @@ function jornalCenasDoDia(dia){
   }
   return cenas.slice(parte * 3, parte * 3 + 3);
 }
+// Pequena crônica fictícia do mundo do jogo, derivada das mesmas cenas e elencos
+// que o visitante vê acima. Não descreve atividades reais dos integrantes.
+function jornalDiarioTexto(fotos){
+  var momentos = (fotos || []).filter(function(f){ return f && !f.tipo && f.cena && f.grupo && f.grupo.length >= 2; });
+  if(momentos.length < 2) return [];
+  return [
+    '☀️ ' + tr('Hoje no TsuLiPa:') + ' ' + jornalLegenda(momentos[0]) + '.',
+    '✨ ' + tr('Em outro cantinho da cidade:') + ' ' + jornalLegenda(momentos[1]) + '.',
+    '📸 ' + tr('As duas cenas entraram para o Idol⭐News de hoje!')
+  ];
+}
+function jornalDiarioUI(fotos){
+  var box = $('jornalDiarioDia'); if(!box) return;
+  var linhas = jornalDiarioTexto(fotos);
+  box.innerHTML = linhas.length ? '<ol class="jndiariolista">' + linhas.map(function(t){
+    return '<li>' + escHtml(t) + '</li>';
+  }).join('') + '</ol>' : '<p class="jnvazio">' + escHtml(tr('O diário aparece quando os Idols do dia carregarem.')) + '</p>';
+}
 function jornalFotosDia(){
   var box = $('jornalFotosDia'); if(!box) return;
   var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar && p.avatar.c; }) : [];
-  if(L.length < 3){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('As fotos aparecem quando a vitrine carregar.')) + '</p>'; return; }
+  if(L.length < 3){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('As fotos aparecem quando a vitrine carregar.')) + '</p>'; jornalDiarioUI([]); return; }
   L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
   var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5), gente = jornalSorteio(L, dia), cenas = jornalCenasDoDia(dia), pos = 0, h = '';
   var fotos = [0, 1, 2].map(function(i){
@@ -137,6 +156,7 @@ function jornalFotosDia(){
   // A foto do jogador com pet fica entre o trio e o telão quando há login/pet.
   if(fotoTelao) fotos.push(fotoTelao);
   jornalFotosHoje = fotos;
+  jornalDiarioUI(fotos);
   box.innerHTML = fotos.map(function(f, i){
     return '<figure class="jnfoto3"><button type="button" class="jnfotobtn" data-jfoto="' + i + '" aria-label="' + escHtml(tr('Ampliar foto')) + '"><canvas width="480" height="300" aria-hidden="true"></canvas></button><figcaption>' + f.cena[1] + ' ' + escHtml(jornalLegenda(f)) + '</figcaption></figure>';
   }).join('');

@@ -612,7 +612,7 @@ function end(){
   finalExpr = typeof exprFinal === 'function' ? exprFinal(s, nb) : (s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2));   // V2.1.3
   
   var rId = rankOf(s);
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?tr('Aguardando validação do servidor'):stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
+  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
   
  var isTesting = isTestGame;

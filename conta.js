@@ -69,7 +69,7 @@ function contaSessao(sess){
     else contaPedirNome(token);
   }).catch(function(){if(token===contaSessaoToken)contaAviso(tr('Não deu para falar com o servidor. Tente de novo.'));});
 }
-function contaAplicar(j, token){
+function contaAplicar(j, token, semRecuperar){
   if(token!==undefined&&token!==contaSessaoToken)return;
   contaJ = j;
   starT = j.stars;
@@ -82,6 +82,7 @@ function contaAplicar(j, token){
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
   if(typeof duoAvisoAgendar==='function')duoAvisoAgendar();
+  if(!semRecuperar)contaRecuperarCorridas();
 }
 function contaPedirNome(token){
   token=token===undefined?contaSessaoToken:token;
@@ -94,48 +95,111 @@ function contaPedirNome(token){
 function contaInicioCorrida(){
   contaRun = null;
   if(!contaJ || isTestGame) return;
-  contaRun = contaRpc('iniciar_corrida').catch(function(){ return null; });
+  contaRecuperarCorridas();
+  function semInicio(){
+    if(typeof toast==='string'){toast=tr('Corrida sem autorização do servidor');toastT=180;}
+    return null;
+  }
+  contaRun = contaRpc('iniciar_corrida').then(function(id){return id||semInicio();},semInicio);
   if(typeof gachaBonus === 'function') gachaBonus();   // V2.1.3
 }
+// Recupera a mesma corrida autorizada pelo servidor, inclusive após fechar/reabrir a página.
+// O UUID permanece o mesmo: a RPC impede dupla finalização e mantém o limite de 100 estrelas.
+var contaCorridasKey='brs48cr_corridas_pendentes_v1';
+var contaCorridasMemoria=[],contaCorridaEnviando=false,contaCorridaAvisos={};
+function contaCorridasLer(){
+  var a=contaCorridasMemoria;
+  try{var salvo=localStorage.getItem(contaCorridasKey);if(salvo!==null)a=JSON.parse(salvo);}catch(e){}
+  if(!Array.isArray(a))return [];
+  var agora=Date.now();
+  return a.filter(function(p){return p&&typeof p.owner==='string'&&typeof p.id==='string'&&p.id.length>0&&p.id.length<100&&
+    Number.isInteger(p.score)&&p.score>=0&&p.score<=300000&&Number.isInteger(p.stars)&&p.stars>=0&&
+    typeof p.char==='string'&&typeof p.at==='number'&&p.at<=agora+60000&&agora-p.at<7200000;});
+}
+function contaCorridasGuardar(a){
+  contaCorridasMemoria=a;
+  try{localStorage.setItem(contaCorridasKey,JSON.stringify(a));}catch(e){}
+}
+function contaCorridaRetirar(p){
+  contaCorridasGuardar(contaCorridasLer().filter(function(x){return x.owner!==p.owner||x.id!==p.id;}));
+}
+function contaRecuperarCorridas(){
+  if(contaCorridaEnviando||!contaJ)return;
+  var owner=String(contaJ.id),sessao=contaSessaoToken;
+  var p=contaCorridasLer().find(function(x){return x.owner===owner;});
+  if(!p)return;
+  var definitiva=false,feedback=contaCorridaAvisos[p.id];
+  function mesmaConta(){return !!(contaJ&&String(contaJ.id)===owner&&contaSessaoToken===sessao);}
+  function atualizar(msg){if(feedback){feedback.aviso(msg);try{feedback.refresh();}catch(e){}}}
+  contaCorridaEnviando=true;
+  contaUltimaRun={id:p.id,ok:false};
+  contaRpc('terminar_corrida',{p_run:p.id,p_score:p.score,p_stars:p.stars,p_char:p.char,p_device:did}).then(function(r){
+    if(!mesmaConta())return;
+    if(!r||r.ok!==true){
+      // Rejeição definitiva, inclusive UUID já encerrado: nunca reenvia nem concede moedas.
+      if(r&&r.ok===false){contaCorridaRetirar(p);definitiva=true;}
+      throw Error(r&&r.erro||'corrida_nao_confirmada');
+    }
+    contaCorridaRetirar(p);definitiva=true;
+    if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
+    if(typeof r.best==='number'&&r.best>best){best=r.best;try{localStorage.setItem('brs48cr_best',best);}catch(e){}setBest();}
+    atualizar(r.limite_diario===true?
+      (r.creditadas>0?String(r.creditadas)+' '+tr('estrelas')+' · ':'')+tr('Limite diário do Center⭐Run! atingido (100 estrelas)'):
+      String(r.creditadas||0)+' '+tr('estrelas'));
+    contaUltimaRun.ok=true;
+    quartetoTalvez();hubAposCorrida();
+    if(!feedback&&typeof showLb==='function'){try{showLb($('lbo'));}catch(e){}}
+  }).catch(function(){
+    if(!mesmaConta())return;
+    var pendente=!definitiva;
+    // Uma resposta perdida pode ter sido gravada. Consulta o saldo antes de informar.
+    return contaRpc('jogador').then(function(j){
+      if(!mesmaConta())return;
+      if(j&&typeof j.stars==='number')contaAplicar(j,sessao,true);
+      atualizar(pendente?tr('Resultado pendente de sincronização · tente ao reconectar'):
+        tr('Saldo conferido na nuvem; corrida não confirmada.'));
+    }).catch(function(){
+      if(mesmaConta())atualizar(pendente?tr('Resultado pendente de sincronização'):tr('Recompensa não validada'));
+    });
+  }).finally(function(){
+    contaCorridaEnviando=false;
+    if(definitiva)delete contaCorridaAvisos[p.id];
+    // Processa pendências restantes somente após confirmação ou rejeição definitiva.
+    if(definitiva&&mesmaConta())contaRecuperarCorridas();
+  });
+}
 function contaFimCorrida(score, est, ch, refresh){
-  var owner=contaJ&&contaJ.id, sessao=contaSessaoToken;
+  var owner=contaJ&&contaJ.id,sessao=contaSessaoToken,campo=$('cr-recompensa');
   function mesmaConta(){return !!(owner&&contaJ&&contaJ.id===owner&&contaSessaoToken===sessao);}
   function aviso(msg){
     var rr=$('res'),aguardando=tr('Aguardando validação do servidor');
-    if(rr&&rr.innerHTML.includes(aguardando))rr.innerHTML=rr.innerHTML.replace(aguardando,msg);
+    if(campo&&campo.isConnected!==false)campo.textContent=msg;
+    else if(rr&&rr.innerHTML.includes(aguardando))rr.innerHTML=rr.innerHTML.replace(aguardando,msg);
   }
   if(!mesmaConta()||!contaRun){
     aviso(tr('Recompensa não validada')+' · '+tr('Corrida sem autorização do servidor'));
     refresh();return;
   }
-  var run=contaRun;contaRun=null;contaUltimaRun=null;
+  var run=contaRun;contaRun=null;
   run.then(function(id){
-    if(!mesmaConta())return null;
-    if(!id)throw Error('inicio_nao_validado');
-    contaUltimaRun={id:id,ok:false};
-    return contaRpc('terminar_corrida',{p_run:id,p_score:score,p_stars:est,p_char:ch,p_device:did});
-  }).then(function(r){
     if(!mesmaConta())return;
-    if(!r||r.ok!==true)throw Error(r&&r.erro||'corrida_nao_confirmada');
-    if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
-    if(r.limite_diario===true){
-      aviso((r.creditadas>0?String(r.creditadas)+' '+tr('estrelas')+' · ':'')+tr('Limite diário do Center⭐Run! atingido (100 estrelas)'));
-    }else{
-      aviso(String(r.creditadas||0)+' '+tr('estrelas'));
-    }
-    if(contaUltimaRun){contaUltimaRun.ok=true;quartetoTalvez();}
-    hubAposCorrida();refresh();
-  }).catch(function(err){
-    if(!mesmaConta())return;
-    if(err&&err.message==='inicio_nao_validado'){aviso(tr('Corrida sem autorização do servidor'));refresh();return;}
-    contaRpc('jogador').then(function(j){
-      if(!mesmaConta())return;
-      if(!j||typeof j.stars!=='number')throw Error('saldo_nao_confirmado');
-      contaAplicar(j,sessao);
-      aviso(tr('Saldo conferido na nuvem; valor desta corrida não confirmado.'));
-      refresh();
-    }).catch(function(){if(!mesmaConta())return;aviso(tr('Recompensa não validada'));refresh();});
+    if(typeof id!=='string'||!id)throw Error('inicio_nao_validado');
+    var p={owner:String(owner),id:id,score:Math.floor(score),stars:Math.max(0,Math.floor(est)),char:String(ch||'').slice(0,12),at:Date.now()};
+    var fila=contaCorridasLer();
+    if(!fila.some(function(x){return x.owner===p.owner&&x.id===p.id;}))fila.push(p);
+    contaCorridasGuardar(fila);
+    contaCorridaAvisos[id]={aviso:aviso,refresh:refresh};
+    contaRecuperarCorridas();
+  }).catch(function(){
+    if(mesmaConta()){aviso(tr('Corrida sem autorização do servidor'));refresh();}
   });
+}
+if(typeof window!=='undefined'&&window.addEventListener){
+  window.addEventListener('online',contaRecuperarCorridas);
+  window.addEventListener('pageshow',contaRecuperarCorridas);
+}
+if(typeof document!=='undefined'&&document.addEventListener){
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)contaRecuperarCorridas();});
 }
 function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e confirma no servidor
   if(!contaJ || qtd <= 0) return;

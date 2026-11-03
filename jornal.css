@@ -63,3 +63,9 @@
 .jndica{font-weight:600;font-size:11px;opacity:.85;line-height:1.35}
 .jntime{margin:8px 0}.jntimel{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.jntimel small,.jntimed{font-size:12px;font-weight:700;color:#3c2a8f;opacity:.85}.jntimeb{max-width:none;margin:4px 0}.jntimes h4 small{font-size:11px;color:#9c8ac8}
 .jntime .jntimeb{max-width:none;margin:4px 0}
+
+/* Diário: cartões discretos, com respiro, sem mudar o enquadramento das fotos. */
+.jndiario{background:linear-gradient(135deg,#fffdf3,#fff4fc)!important;border:1px solid #f1dcec}
+.jndiariodica{font-size:11px;color:#816d99;margin:0 0 8px;font-weight:700}
+.jndiariolista{list-style:none;counter-reset:none;margin:0;padding:0;display:grid;gap:7px}
+.jndiariolista li{background:#fff;border-left:3px solid #e8b8ef;border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.5;color:#3c2a8f;font-weight:700}

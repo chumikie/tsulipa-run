@@ -46,6 +46,8 @@ check "(select stars from public.players where id='$a')=125"
 check "(select count(*) from private.sora_daily_500_rewards where player_id='$a')=1"
 
 # 500m alegados em <10 segundos podem ser recorde (limite antigo), não recompensa.
+# Ajusta o relógio do fixture agora, evitando flaky timing do CI.
+psql_ci -c "update private.sora_runs set started_at=clock_timestamp()-interval '7 seconds' where id='30000000-0000-4000-8000-000000000002';"
 short="$(rpc "$b" '30000000-0000-4000-8000-000000000002' 500)"
 [[ "$short" == *'"stars_credited": 0'* ]]
 check "(select stars from public.players where id='$b')=100"

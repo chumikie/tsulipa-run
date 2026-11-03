@@ -26,7 +26,9 @@ function jornalMontar(d){
   d = d || {}; jornalSemanaDados = d;
   var sem = typeof d.semana === 'string' ? d.semana : '', c1 = (d.center || [])[0], cast = typeof bannerElenco === 'function' ? bannerElenco() : null;
   var at = typeof shopAtendente === 'function' ? shopAtendente() : null, mus = typeof hubMusicaSemana === 'function' ? hubMusicaSemana() : null;
-  var vista = ''; try{ vista = KaraokeRoomViews.NAMES[KaraokeRoomViews.viewFor(Date.now())]; }catch(e){}
+  var noBanner = cast && cast.length ? cast.map(function(p){return p.nick;}) : ['Tsu','Lirika','Pati'];
+  var elencoBanner = noBanner.length > 1 ? tr('{a} e {b}').replace('{a}',noBanner.slice(0,-1).join(', ')).replace('{b}',noBanner[noBanner.length-1]) : (noBanner[0] || '');
+  var vista = ''; try{ vista = tr(KaraokeRoomViews.NAMES[KaraokeRoomViews.viewFor(Date.now())]); }catch(e){}
   var total = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && +hubIdolsDados.total || 0;
   var combo = (d.karaoke_combo || [])[0], prec = (d.karaoke_acertos || [])[0];
   var h = '<header class="jntopo"><b class="jnnome" translate="no">📰 Idol<span class="tw-modal-star">⭐</span>News!</b><small lang="ja">アイドル・ニュース</small>' +
@@ -39,7 +41,7 @@ function jornalMontar(d){
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
     (prec ? '<li>' + escHtml(tr('Melhor precisão')) + ': <b>' + escHtml(prec.nick) + '</b> (' + String(prec.score).replace('.', ',') + '%)</li>' : '') + '</ul></section>';
   h += '<section class="jnbloco"><h4>🏙️ ' + escHtml(tr('Na cidade')) + '</h4><ul>' +
-    '<li>' + escHtml(tr('No banner de hoje')) + ': <b>' + escHtml(cast ? cast.map(function(p){ return p.nick; }).join(', ') : 'Tsu, Lirika e Pati') + '</b></li>' +
+    '<li>' + escHtml(tr('No banner de hoje')) + ': <b>' + escHtml(elencoBanner) + '</b></li>' +
     (at ? '<li>' + escHtml(tr('No balcão da Zipper⭐Shop!')) + ': <b>' + escHtml(at[0]) + '</b></li>' : '') +
     (mus ? '<li>' + escHtml(tr('Música da semana')) + ': <b translate="no">' + escHtml(mus[1]) + '</b></li>' : '') +
     (vista ? '<li>' + escHtml(tr('Vista da janela do Karaoke')) + ': <b>' + escHtml(vista) + '</b></li>' : '') +
@@ -119,7 +121,7 @@ function jornalFotosDia(){
 var jornalFotosHoje = [];
 function jornalLegenda(f){
   if(f.legenda) return f.legenda;
-  if(f.tipo === 'janela') return tr('{n} tirando foto de grupo').replace('{n}', '8 Idols') + ' · ' + (KaraokeRoomViews.NAMES[f.local] || f.local);
+  if(f.tipo === 'janela') return tr('{n} tirando foto de grupo').replace('{n}', '8 Idols') + ' · ' + tr(KaraokeRoomViews.NAMES[f.local] || f.local);
   var nomes = f.grupo.map(function(p){ return p.nick; }), lista = tr('{a} e {b}').replace('{a}', nomes.slice(0, -1).join(', ')).replace('{b}', nomes[nomes.length - 1]);
   return tr(f.cena[2]).replace('{n}', lista);
 }

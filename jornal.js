@@ -85,9 +85,17 @@ function jornalFotosDia(){
     for(var j = 0; j < 8; j++) oito.push(gente[(pos + j) % gente.length]);
     fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0 });
   }
-  // telão do Karaoke: o pódio da semana se apresentando juntos
-  var kar = (jornalSemanaDados.karaoke || []).slice(0, 3).map(function(p){ var a = jornalAvatar(p.nick); return a ? { nick:p.nick, avatar:a } : null; }).filter(Boolean);
-  if(kar.length >= 2) fotos.push({ cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic', 'luz', 'banzai']], grupo:kar, tipo:'telao' });
+  // O telão usa o elenco do clipe do dia — nunca os vencedores do ranking semanal.
+  // O mesmo sorteio/tema do Karaoke é compartilhado e há elenco só com vitrine completa.
+  if(typeof KaraokeNewsPhoto !== 'undefined'){
+    var dataDoClipe = new Date(dia * 86400000).toISOString().slice(0, 10);
+    var euNoClipe = contaJ && contaJ.nick ? contaJ.nick : 'Tsu';
+    var clipe = KaraokeNewsPhoto.cast(dataDoClipe, L, euNoClipe);
+    if(clipe && clipe.members.length === 6) fotos.push({
+      cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic','banzai','mic','luz','mic','banzai']],
+      grupo:clipe.members.map(function(m){ return { nick:m.nick, avatar:m.avatar }; }), tipo:'telao', clipe:clipe.concept
+    });
+  }
   // você e o seu pet (só para quem entrou e tem pet)
   var pa = typeof petAtivo === 'function' ? petAtivo() : null;
   if(contaJ && pa && petData && PET_SP[petData.ativo] && typeof perfAvAtual === 'function'){
@@ -124,6 +132,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
       KaraokeRoomViews.drawScene(x, 0, 0, fotoW, fotoH * (1 + pan), 0, f.local, !!f.noturna);
       x.restore();
     }
+    else if(f.tipo === 'telao' && f.clipe && typeof KaraokeNewsPhoto !== 'undefined') KaraokeNewsPhoto.drawBackground(x, f.clipe, W2, H2);
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
     else perfFundo(x, W2, H2, f.cena[0], cor, 0);
   }catch(e){}
@@ -133,6 +142,28 @@ function jornalFotoDesenhar(cv, f, assinatura){
     x.restore();
   }
   var n = f.grupo.length, slot = W2 / n;
+  if(f.tipo === 'telao' && f.clipe){
+    // Mesmo uniforme do videoclipe do dia (altera só a cópia usada na foto).
+    var uniforme = typeof KaraokeClipUniforms !== 'undefined' ? KaraokeClipUniforms.UNIFORMES[f.clipe.set] : null;
+    f.grupo.forEach(function(p, k){
+      var av = JSON.parse(JSON.stringify(p.avatar));
+      av.visual = ''; av.pet = null;
+      av.pose = ['mic','banzai','mic','luz','mic','banzai'][k]; av.expr = k % 2 ? 3 : 2;
+      if(uniforme){ av.c.out = uniforme[0]; av.c.outcol = uniforme[1]; }
+      var largura = W2 / 6, altura = H2 * [ .59,.62,.65,.65,.62,.59 ][k];
+      var cx = largura * (k + .5), base = H2 * (.935 - Math.abs(k - 2.5) * .006);
+      x.save(); x.translate(cx, base); x.rotate([-.04,.035,-.02,.025,-.035,.04][k]);
+      x.translate(-largura * .48, -altura * .90);
+      try{ perfDesenharIdol(x, largura * .96, altura, av, false, false, 0); }catch(e){}
+      x.restore();
+    });
+    x.save(); x.fillStyle = 'rgba(7,4,23,.73)'; x.fillRect(W2*.05,H2*.034,W2*.90,H2*.072);
+    x.fillStyle = f.clipe.colors[2]; x.textAlign = 'center';
+    x.font = '900 ' + Math.round(H2 * .045) + 'px "M PLUS Rounded 1c",sans-serif';
+    x.fillText('♪ ' + f.clipe.name + ' · CLIPE DO DIA', W2*.5, H2*.085, W2*.84);
+    x.restore();
+    n = 0;
+  }
   if(f.tipo === 'pet'){
     var av1 = JSON.parse(JSON.stringify(f.grupo[0].avatar)), pet = typeof perfPetDoAvatar === 'function' ? perfPetDoAvatar(av1) : null;
     av1.visual = ''; av1.pet = null; av1.pose = 'banzai'; av1.expr = 3;

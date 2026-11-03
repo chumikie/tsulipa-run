@@ -177,3 +177,25 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 #hub .reccorpo .perfult li{margin:5px 0;padding:6px 10px;border-radius:10px;background:var(--chip);border:1px solid rgba(155,48,217,.13)}
 #hsOv .hsdica.evsemana,#cfOv .hsdica.evsemana{margin:12px 0;padding:8px 11px;text-align:left;font-size:12px;line-height:1.45;background:linear-gradient(90deg,var(--chip),rgba(255,111,181,.06));border:0;border-left:3px solid var(--pink);border-radius:9px;box-shadow:none;color:var(--ink)}
 @media(max-width:620px){#hub .recabas{gap:5px}#hub .reccorpo{padding:10px}#hub .recnums{gap:8px}#hub .recnums span{padding:8px 5px;min-height:60px}}
+
+
+/* PR #71 · três atalhos do banner em cantos separados, mantendo os pop-ups. */
+#hub .tw-tv-float .tw-mic-launch{left:-8px;right:auto;top:-12px}
+#hub .tw-tv-float .tw-rank-tv-launch{left:auto;right:-8px;top:-12px}
+#hub .tw-tv-float .tw-br-launch{left:-8px;right:auto;top:clamp(90px,calc(53vw - 51px),246px)}
+@media(max-width:620px){
+  #hub .tw-tv-float .tw-mic-launch{left:-4px;right:auto;top:-10px}
+  #hub .tw-tv-float .tw-rank-tv-launch{left:auto;right:-4px;top:-10px}
+  #hub .tw-tv-float .tw-br-launch{left:-4px;right:auto;top:clamp(90px,calc(53vw - 51px),246px)}
+}
+/* PR #71 · contraste adaptável claro/escuro, limitado a Meus recordes. */
+#hub .recaba:not(.on),#hub .recaba:not(.on) b{color:var(--ink)}
+#hub .recaba:not(.on) small{color:var(--b1)}
+#hub .reccorpo .recnums span,#hub .reccorpo .recnums b{color:var(--ink)}
+#hub .reccorpo .recnums small{color:var(--sub)}
+#hub .reccorpo p.recsemana,#hub .reccorpo p.recsemana b{color:var(--ink)}
+#hub .reccorpo .recsemana span{color:var(--ink)}
+#hub .reccorpo .recvazio,#hub .reccorpo .recdica{color:var(--sub)}
+#hub .reccorpo .perfult li{background:var(--chip)!important;color:var(--ink)}
+#hub .reccorpo .perfult li span,#hub .reccorpo .perfult li strong{color:var(--ink)}
+#hub .reccorpo .perfult li em,#hub .reccorpo .perfult li small{color:var(--sub)}

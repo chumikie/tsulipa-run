@@ -37,9 +37,20 @@ test('Pet aplica o mesmo prêmio uma vez ao aparelho, inclusive se RPC repetir',
   assert.equal(petData.inv.dango, 1);
   assert.equal(saves, 1);
 });
-test('Café valida pedido com sessão e ingredientes antes da missão', () => {
-  assert.match(cafe,/contaRpc\('cafe_iniciar'\)/);
-  assert.match(cafe,/contaRpc\('cafe_concluir',args\)/);
+test('Café confirma até 12 pedidos no servidor; preserva a missão da RPC antiga', () => {
+  const novo = read('supabase/sql/proposta/PR71_RECORDES_ONLINE_E_INSIGNIAS_REVIEW_ONLY.sql');
+  assert.match(cafe,/contaRpc\('cafe_run_iniciar'\)/);
+  assert.match(cafe,/contaRpc\('cafe_run_pedido'/);
+  assert.match(cafe,/contaRpc\('cafe_run_etapa',args\)/);
+  assert.match(cafe,/contaRpc\('cafe_run_finalizar'/);
+  assert.match(cafe,/contaRpc\('cafe_iniciar'\)/); // fallback antes da migração
+  assert.match(cafe,/contaRpc\('cafe_concluir'/); // missão anterior preservada
+  assert.match(novo,/private\.cafe_runs/);
+  assert.match(novo,/v_r\.rodadas>=12/);
+  assert.match(novo,/v_segundos:=extract\(epoch FROM clock_timestamp\(\)-v_s\.criado\)/);
+  assert.match(novo,/combo_max=greatest\(combo_max,v_combo\)/);
+  assert.match(novo,/INSERT INTO private\.cafe_resultados/);
+  assert.doesNotMatch(novo,/private\.player_badges/);
   assert.match(missions,/v_correto:=\(p_monta->>'base'\)/);
   assert.match(missions,/INSERT INTO private\.cafe_resultados/);
 });
@@ -60,4 +71,24 @@ test('Café sinaliza também a falha definitiva de comprovação, além da pend�
   assert.match(cafe, /cf\.provaEstado==='confirmado'/);
   assert.match(cafe, /cf\.provaEstado==='pendente'/);
   assert.match(cafe, /else if\(cf\.provaEstado==='sem_comprovacao'\).*⚠️/);
+});
+
+test('Insígnias só entram em players.insignias_jogos depois de prova do servidor', () => {
+  const sql = read('supabase/sql/proposta/PR71_RECORDES_ONLINE_E_INSIGNIAS_REVIEW_ONLY.sql');
+  const badges = ['jogo_memoria','jogo_barista','jogo_caderno'];
+  badges.forEach(k=>assert.match(sql,new RegExp(k)));
+  assert.match(sql,/UPDATE public\.players SET insignias_jogos=array_append/);
+  assert.match(sql,/combo_max>=10/);
+  assert.match(sql,/finalizado IS NOT NULL AND perfeitos=12/);
+  assert.match(sql,/count\(\*\)>=20/);
+  assert.doesNotMatch(sql,/private\.player_badges/);
+});
+test('Handshake valida novas partidas depois do presente diário sem duplicar tickets', () => {
+  const sql = read('supabase/sql/proposta/PR71_RECORDES_ONLINE_E_INSIGNIAS_REVIEW_ONLY.sql');
+  assert.match(hs,/contaRpc\('handshake_run_finish',args\)/);
+  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.handshake_run_finish/);
+  assert.ok(sql.indexOf("PERFORM private.jogo_registrar(v_id,'hand'") < sql.indexOf('IF v_pontos<600'));
+  assert.match(sql,/SELECT \* INTO v_ant FROM public\.handshake_premios WHERE user_id=v_id AND dia=v_dia/);
+  assert.match(sql,/sessao_origem/); // recupera prêmio de sessão repetida
+  assert.doesNotMatch(sql,/UPDATE public\.players SET stars/);
 });

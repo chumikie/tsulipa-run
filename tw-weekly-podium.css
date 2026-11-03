@@ -186,3 +186,16 @@
 /* Lugares ainda vagos no Top Idols: mantêm a grade das três posições. */
 #hub .tw-rank-game li.tw-rank-empty{opacity:.78}
 #hub .tw-rank-game .tw-rank-empty-name{grid-column:3;grid-row:1;color:var(--sub);font-weight:800}
+
+/* 7c. Bandeirinha do Brasil (abre o site do BRS48), embaixo do microfone, no mesmo estilo dos botões voadores */
+#hub .tw-tv-float .tw-br-launch{
+  position:absolute;left:-10px;top:46px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  border:3px solid #fff;background:radial-gradient(circle at 35% 30%,#eafff0,#7fe3a0 45%,#1fa64a);
+  box-shadow:0 4px 0 #13723a,0 8px 18px rgba(60,20,120,.3);animation:twTrofeuVoa 2.6s ease-in-out -.6s infinite;text-decoration:none
+}
+#hub .tw-tv-float .tw-br-launch svg{width:26px;height:19px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.15))}
+#hub .tw-tv-float .tw-br-launch::after{content:"✦";position:absolute;right:-7px;top:-6px;font-size:13px;color:#ffe14d;text-shadow:0 0 6px #fff;animation:twTvSparkle 1.2s ease-in-out infinite alternate}
+#hub .tw-tv-float .tw-br-launch:hover{transform:scale(1.08)}
+#hub .tw-tv-float .tw-br-launch:focus-visible{outline:3px solid #ffe14d;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#hub .tw-tv-float .tw-br-launch,#hub .tw-tv-float .tw-br-launch::after{animation:none}}
+@media(max-width:620px){#hub .tw-tv-float .tw-br-launch{left:-4px;top:38px;width:40px;height:40px}#hub .tw-tv-float .tw-br-launch svg{width:22px;height:16px}}

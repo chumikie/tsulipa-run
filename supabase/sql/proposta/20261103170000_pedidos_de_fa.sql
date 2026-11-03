@@ -4,7 +4,7 @@
 -- O progresso é conferido no servidor com o que já é gravado hoje; nada é informado pelo site.
 -- Prêmio só simbólico: 1 "carta de fã" 💌 (contador no perfil). NÃO dá estrelas, não mexe em saldo, missões nem tetos (★100 Center, ★50 Pet).
 -- CONFERIR ANTES: nomes public.runs(user_id, finished_at, score), public.star_log(user_id, delta, reason, created_at),
---                 private.kt_week_shows (shows aceitos do Karaoke; usar a mesma fonte que times_semana).
+--                 private.kt_week_shows(player_id, week_start, shows, last_at) — shows aceitos do Karaoke (mesma fonte da times_semana).
 BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.fa_pedidos (
@@ -37,7 +37,9 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
                             AND (s.created_at AT TIME ZONE 'America/Sao_Paulo')::date = p_dia)
     WHEN 'pontos1500' THEN (SELECT coalesce(max(r.score), 0)::int FROM public.runs r WHERE r.user_id = p_user
                             AND (r.finished_at AT TIME ZONE 'America/Sao_Paulo')::date = p_dia)
-    WHEN 'karaoke1' THEN (SELECT count(*)::int FROM private.kt_week_shows k WHERE k.player_id = p_user AND k.dia = p_dia)
+    -- kt_week_shows guarda o total da semana e a hora do último show aceito: houve show hoje se last_at caiu hoje
+    WHEN 'karaoke1' THEN (SELECT CASE WHEN EXISTS (SELECT 1 FROM private.kt_week_shows k WHERE k.player_id = p_user AND k.shows > 0
+                            AND (k.last_at AT TIME ZONE 'America/Sao_Paulo')::date = p_dia) THEN 1 ELSE 0 END)
     ELSE 0 END;
 $$;
 REVOKE ALL ON FUNCTION private.fa_progresso(uuid, date, text) FROM PUBLIC, anon, authenticated;

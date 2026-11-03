@@ -32,7 +32,7 @@ GRANT EXECUTE ON FUNCTION public.festival_unidades() TO anon, authenticated;
 --    Cada um faz a sua parte até domingo 0h: terminar 1 corrida válida no Center⭐Run! OU 1 show aceito no Karaoke⭐Time!
 --    de sexta em diante. Quando os 3 fazem, o trio libera a cena especial (só visual, no site).
 --    Quem fica sobrando (menos de 3) entra num trio com Tsu/Lirika/Patiliri do site, se precisar completar.
---    CONFERIR: public.runs(user_id, finished_at, score), private.kt_week_shows(player_id, dia).
+--    Fontes: public.runs(user_id, finished_at, score) e private.kt_week_shows(player_id, week_start, shows, last_at).
 CREATE OR REPLACE FUNCTION public.meu_trio_semana()
 RETURNS json LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
 DECLARE
@@ -48,7 +48,7 @@ BEGIN
     SELECT DISTINCT r.user_id AS id FROM public.runs r
       WHERE r.score IS NOT NULL AND (r.finished_at AT TIME ZONE 'America/Sao_Paulo')::date BETWEEN v_ini AND v_sexta - 1
     UNION
-    SELECT DISTINCT k.player_id FROM private.kt_week_shows k WHERE k.dia BETWEEN v_ini AND v_sexta - 1
+    SELECT k.player_id FROM private.kt_week_shows k WHERE k.week_start = v_ini AND k.shows > 0
   ) a JOIN public.players p ON p.id = a.id WHERE NOT coalesce(p.bloqueado, false);
   v_pos := array_position(v_lista, v_eu);
   IF v_pos IS NULL THEN RETURN json_build_object('ok', true, 'aberto', true, 'fora', true); END IF;
@@ -59,7 +59,8 @@ BEGIN
     'membros', (SELECT json_agg(json_build_object('nick', p.nick, 'avatar', p.avatar, 'eu', p.id = v_eu,
         'feito', EXISTS (SELECT 1 FROM public.runs r WHERE r.user_id = p.id AND r.score IS NOT NULL
                            AND (r.finished_at AT TIME ZONE 'America/Sao_Paulo')::date >= v_sexta)
-              OR EXISTS (SELECT 1 FROM private.kt_week_shows k WHERE k.player_id = p.id AND k.dia >= v_sexta))
+              OR EXISTS (SELECT 1 FROM private.kt_week_shows k WHERE k.player_id = p.id AND k.week_start = v_ini AND k.shows > 0
+                           AND (k.last_at AT TIME ZONE 'America/Sao_Paulo')::date >= v_sexta))
       ORDER BY array_position(v_trio, p.id)) FROM public.players p WHERE p.id = ANY (v_trio)));
 END $$;
 REVOKE ALL ON FUNCTION public.meu_trio_semana() FROM PUBLIC, anon;

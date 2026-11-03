@@ -339,8 +339,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=8"></script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
+<script src="./tw-i18n.js?v=9"></script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
@@ -353,7 +353,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
 <script src="./evento.js?v=1"></script>
-<script src="./recordes.js?v=1"></script>
+<script src="./recordes.js?v=2"></script>
 <script>
 // Cursor de coração em TUDO que é clicável: quem tem cursor:pointer vindo de outro CSS (divs, canvas, itens de lista)
 // ganha o coração na primeira vez que o mouse passa por cima. Só com mouse.
@@ -370,8 +370,8 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   }, { passive:true });
 })();
 </script>
-<script src="./handshake.js?v=1"></script>
-<script src="./cafe.js?v=1"></script>
+<script src="./handshake.js?v=2"></script>
+<script src="./cafe.js?v=2"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=13"></script>
@@ -780,7 +780,7 @@ function twCarregarIdiomaId(){
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js';
+    script.src='./translations/id/preview-data.js?v=2';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);

@@ -153,7 +153,7 @@ function contaRecuperarCorridas(preferida){
     if(!feedback&&typeof showLb==='function'){try{showLb($('lbo'));}catch(e){}}
   }).catch(function(err){
     if(!mesmaConta())return;
-    console.error('Center⭐Run!: falha ao confirmar corrida online',err&&err.message||err);
+    if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: falha ao confirmar corrida online',err&&err.message||err);
     var pendente=!definitiva;
     // Uma resposta perdida pode ter sido gravada. Consulta o saldo antes de informar.
     return contaRpc('jogador').then(function(j){
@@ -194,7 +194,7 @@ function contaFimCorrida(score, est, ch, refresh){
     contaCorridaAvisos[id]={aviso:aviso,refresh:refresh};
     contaRecuperarCorridas(p);
   }).catch(function(err){
-    if(mesmaConta()){console.error('Center⭐Run!: autorização da corrida indisponível',err&&err.message||err);aviso(tr('Corrida sem autorização do servidor'));refresh();}
+    if(mesmaConta()){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: autorização da corrida indisponível',err&&err.message||err);aviso(tr('Corrida sem autorização do servidor'));refresh();}
   });
 }
 if(typeof window!=='undefined'&&window.addEventListener){

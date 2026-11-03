@@ -105,7 +105,7 @@
    O bloco "Hoje" (Encontro, Música da semana) fica antes, em #hubHoje. */
 #hub #hubCards{
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "karaoke sora" "gacha duo" "hand cafe";
+  grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "hand cafe" "karaoke duo" "sora gacha";
 }
 #hub #hubCards .hubbt-jogos{grid-area:tj}
 #hub #hubCards .hubbt-mundo{grid-area:tm;margin-top:10px}
@@ -126,7 +126,7 @@
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "karaoke sora gacha" "duo hand cafe";
+   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "hand cafe karaoke" "duo sora gacha";
    align-items:stretch;
  }
  #hub #hubCards .hubperf,#hub #hubCards .hubduo{

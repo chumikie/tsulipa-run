@@ -28,7 +28,7 @@
 .duoavisoov{z-index:26}.duoavisop{width:min(100%,380px);text-align:center;background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5);color:#fff}
 .duoavisop .duotit{background:none;color:#fff;-webkit-text-fill-color:#fff}
 .panel p.duoavisolua{margin:0;font-size:52px}.panel p.duoavisotxt{color:#fff;font-size:16px;font-weight:700;line-height:1.45}
-.duoavisoov .panel.duoavisop{background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5)!important;color:#fff}
+.duoavisoov .panel.duoavisop{background:linear-gradient(160deg,#1e1450,#4b2a9a 60%,#ff6fb5);color:#fff}
 .duoavisoov .duoavisop .btn.alt{color:#4b2a9a}
 /* Moon⭐Duo! organizado em abas */
 .duoacoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.duoacoes .btn{margin:0;text-align:center;text-decoration:none;padding:10px 8px;font-size:14px}

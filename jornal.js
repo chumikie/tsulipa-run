@@ -73,10 +73,13 @@ function jornalFotosDia(){
   L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
   var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5), gente = jornalSorteio(L, dia), cenas = jornalSorteio(JORNAL_CENAS, dia + 7), pos = 0, h = '';
   var fotos = [0, 1, 2].map(function(i){
-    var n = (dia + i) % 2 ? 4 : 3; if(L.length < n) n = L.length;
+    var n = i === 2 ? 3 : ((dia + i) % 2 ? 4 : 3); if(L.length < n) n = L.length;
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
     return { cena:cenas[i % cenas.length], grupo:grupo };
   });
+  // Na primeira fileira, a paisagem dos 8 substitui a antiga terceira foto.
+  // O ensaio fotográfico de trio fica no início da segunda fileira.
+  var fotoTrio = fotos.pop();
   // Foto especial: 8 Idols diante de uma paisagem do Karaoke, sorteada por dia.
   // Reutiliza o Canvas 2D da janela da sala sem alterar os três sorteios anteriores.
   if(gente.length >= 8 && typeof KaraokeRoomViews !== 'undefined' && KaraokeRoomViews.VIEWS.length){
@@ -85,16 +88,18 @@ function jornalFotosDia(){
     for(var j = 0; j < 8; j++) oito.push(gente[(pos + j) % gente.length]);
     fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0 });
   }
+  fotos.push(fotoTrio);
   // O telão usa o elenco do clipe do dia — nunca os vencedores do ranking semanal.
+  var fotoTelao = null;
   // O mesmo sorteio/tema do Karaoke é compartilhado e há elenco só com vitrine completa.
   if(typeof KaraokeNewsPhoto !== 'undefined'){
     var dataDoClipe = new Date(dia * 86400000).toISOString().slice(0, 10);
     var euNoClipe = contaJ && contaJ.nick ? contaJ.nick : 'Tsu';
     var clipe = KaraokeNewsPhoto.cast(dataDoClipe, L, euNoClipe);
-    if(clipe && clipe.members.length === 6) fotos.push({
+    if(clipe && clipe.members.length === 6) fotoTelao = {
       cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic','banzai','mic','luz','mic','banzai']],
       grupo:clipe.members.map(function(m){ return { nick:m.nick, avatar:m.avatar }; }), tipo:'telao', clipe:clipe.concept
-    });
+    };
   }
   // você e o seu pet (só para quem entrou e tem pet)
   var pa = typeof petAtivo === 'function' ? petAtivo() : null;
@@ -103,6 +108,8 @@ function jornalFotosDia(){
     var nomePet = pa.nome || PET_SP[petData.ativo].n;
     fotos.push({ cena:['oshi', '🐾', '{n} com ' + nomePet + ' no camarim', ['coracao']], grupo:[{ nick:contaJ.nick, avatar:meu }], tipo:'pet', legenda:tr('{a} com {b} no camarim').replace('{a}', contaJ.nick).replace('{b}', nomePet) });
   }
+  // A foto do jogador com pet fica entre o trio e o telão quando há login/pet.
+  if(fotoTelao) fotos.push(fotoTelao);
   jornalFotosHoje = fotos;
   box.innerHTML = fotos.map(function(f, i){
     return '<figure class="jnfoto3"><button type="button" class="jnfotobtn" data-jfoto="' + i + '" aria-label="' + escHtml(tr('Ampliar foto')) + '"><canvas width="480" height="300" aria-hidden="true"></canvas></button><figcaption>' + f.cena[1] + ' ' + escHtml(jornalLegenda(f)) + '</figcaption></figure>';
@@ -136,13 +143,10 @@ function jornalFotoDesenhar(cv, f, assinatura){
     else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
     else perfFundo(x, W2, H2, f.cena[0], cor, 0);
   }catch(e){}
-  if(f.tipo === 'telao'){   // moldura de telão com luzinhas
-    x.save(); x.strokeStyle = '#ffd23f'; x.lineWidth = W2 / 60; x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W2 - x.lineWidth, H2 - x.lineWidth);
-    for(var q = 0; q < 16; q++){ x.fillStyle = q % 2 ? '#ff6fb5' : '#4dd8ff'; x.beginPath(); x.arc(W2 * (q + .5) / 16, W2 / 120, W2 / 140, 0, 7); x.fill(); }
-    x.restore();
-  }
   var n = f.grupo.length, slot = W2 / n;
   if(f.tipo === 'telao' && f.clipe){
+    // Máscara do telão: as silhuetas não podem sair da área visível.
+    x.save(); x.beginPath(); x.rect(W2*.014, H2*.022, W2*.972, H2*.956); x.clip();
     // Mesmo uniforme do videoclipe do dia (altera só a cópia usada na foto).
     var uniforme = typeof KaraokeClipUniforms !== 'undefined' ? KaraokeClipUniforms.UNIFORMES[f.clipe.set] : null;
     f.grupo.forEach(function(p, k){
@@ -162,6 +166,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
     x.font = '900 ' + Math.round(H2 * .045) + 'px "M PLUS Rounded 1c",sans-serif';
     x.fillText('♪ ' + f.clipe.name + ' · CLIPE DO DIA', W2*.5, H2*.085, W2*.84);
     x.restore();
+    x.restore(); // encerra o recorte antes de desenhar a moldura na frente
     n = 0;
   }
   if(f.tipo === 'pet'){
@@ -179,6 +184,28 @@ function jornalFotoDesenhar(cv, f, assinatura){
     x.restore(); n = 0;
   }
   if(f.tipo === 'janela'){
+    // Piso em primeiro plano nas cinco paisagens: os pés nunca ficam na água.
+    // Tons da própria vista (madeira, areia ou pedra), sem esconder os monumentos.
+    var pisos = { tailandia:['#b88966','#805036','#dbb18a'], praia:['#f5dab4','#d2a174','#fff1d5'],
+      gigoia:['#c4926b','#825238','#e0b58f'], liberdade:['#d6c2b8','#90817d','#fff0e0'],
+      harajuku:['#cabfda','#8880a1','#f0e7ff'] };
+    var tons = pisos[f.local] || pisos.gigoia, inicio = H2*.825;
+    x.save();
+    var piso = x.createLinearGradient(0,inicio,0,H2);
+    piso.addColorStop(0,tons[0]); piso.addColorStop(1,tons[1]);
+    x.fillStyle = piso; x.beginPath(); x.moveTo(0,inicio+H2*.013);
+    x.lineTo(W2*.5,inicio); x.lineTo(W2,inicio+H2*.013);
+    x.lineTo(W2,H2); x.lineTo(0,H2); x.closePath(); x.fill();
+    x.strokeStyle = tons[2]; x.lineWidth = Math.max(2,H2*.007);
+    x.beginPath(); x.moveTo(0,inicio+H2*.015); x.lineTo(W2*.5,inicio+H2*.003); x.lineTo(W2,inicio+H2*.015); x.stroke();
+    // Juntas do deck/calçamento em perspectiva, discretas sob os Idols.
+    x.strokeStyle = 'rgba(45,31,50,.19)'; x.lineWidth = Math.max(1,H2*.003);
+    [.89,.953].forEach(function(y){ x.beginPath(); x.moveTo(0,H2*y); x.lineTo(W2,H2*y); x.stroke(); });
+    for(var tabua=0;tabua<=8;tabua++){
+      var px=W2*tabua/8;
+      x.beginPath(); x.moveTo(W2*.5+(px-W2*.5)*.55,inicio); x.lineTo(px,H2); x.stroke();
+    }
+    x.restore();
     f.grupo.forEach(function(p, k){
       var av8 = JSON.parse(JSON.stringify(p.avatar)), slot8 = W2 / 8;
       var balanco = [-.045,.025,-.035,.04,-.025,.04,-.03,.035][k];
@@ -194,28 +221,33 @@ function jornalFotoDesenhar(cv, f, assinatura){
       try{ perfDesenharIdol(x, slot8 * 1.04, altura, av8, false, false, 0); }catch(e){}
       x.restore();
     });
-    // Guirlandas simétricas nos cantos: cada bandeirinha toca exatamente o fio.
-    // O miolo fica livre para os marcos das cinco vistas (inclusive a torre).
+    // Um único fio de bandeirinhas atravessa a foto de borda a borda.
+    // A curva e as bases dos triângulos compartilham a mesma equação.
     x.save();
     var coresFesta = ['#ff7eb6','#ffe47a','#8ae4ff','#94eec8'];
-    for(var lado = 0; lado < 2; lado++){
-      x.save();
-      if(lado){ x.translate(W2, 0); x.scale(-1, 1); }
-      x.strokeStyle = 'rgba(255,255,255,.88)';
-      x.lineWidth = Math.max(1.5, H2 * .006);
-      x.beginPath(); x.moveTo(W2 * .025, H2 * .055);
-      x.quadraticCurveTo(W2 * .16, H2 * .14, W2 * .295, H2 * .055); x.stroke();
-      for(var b = 0; b < 4; b++){
-        var t = (b + .5) / 4;
-        var ux = W2 * (.025 + .27 * t);
-        var uy = H2 * (.055 + .17 * t * (1 - t));
-        x.fillStyle = coresFesta[b];
-        x.beginPath(); x.moveTo(ux - W2 * .011, uy);
-        x.lineTo(ux + W2 * .011, uy); x.lineTo(ux, uy + H2 * .038);
-        x.closePath(); x.fill();
-      }
-      x.restore();
+    var yFio = function(t){ return H2*(.032 + .405*t*(1-t)); };
+    x.lineWidth = Math.max(1.5,H2*.006);
+    x.strokeStyle = 'rgba(255,248,232,.94)';
+    x.beginPath(); x.moveTo(0,yFio(0));
+    x.bezierCurveTo(W2/3,H2*.167,W2*2/3,H2*.167,W2,yFio(1)); x.stroke();
+    for(var bandeira=0;bandeira<18;bandeira++){
+      var t=(bandeira+.5)/18, px=W2*t, py=yFio(t);
+      var larguraB=W2*.011, alturaB=H2*.042;
+      x.fillStyle=coresFesta[bandeira%coresFesta.length];
+      x.beginPath(); x.moveTo(px-larguraB,py); x.lineTo(px+larguraB,py);
+      x.lineTo(px,py+alturaB); x.closePath(); x.fill();
+      x.strokeStyle='rgba(255,255,255,.63)'; x.lineWidth=Math.max(.7,H2*.002);
+      x.stroke();
     }
+    // Laços nos extremos prendem o fio à própria borda do retrato.
+    [0,W2].forEach(function(px,i){
+      x.save(); x.translate(px,yFio(i));
+      x.fillStyle='#fff3d1';
+      x.beginPath(); x.arc(0,0,H2*.011,0,Math.PI*2); x.fill();
+      x.strokeStyle='#ff7eb6'; x.lineWidth=Math.max(1,H2*.004);
+      x.beginPath(); x.moveTo(-W2*.016,-H2*.02); x.lineTo(0,0); x.lineTo((i?1:-1)*W2*.015,H2*.025); x.stroke();
+      x.restore();
+    });
     x.restore();
     n = 0;
   }
@@ -229,6 +261,15 @@ function jornalFotoDesenhar(cv, f, assinatura){
     x.translate(-slot * .61, -altura * .9);
     try{ perfDesenharIdol(x, slot * 1.22, altura, av, false, false, 0); }catch(e){} x.restore();
   });
+  if(f.tipo === 'telao'){   // aro do telão sobreposto aos cantores (até aos cabelos)
+    x.save(); x.strokeStyle = '#ffd23f'; x.lineWidth = W2 / 60;
+    x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W2 - x.lineWidth, H2 - x.lineWidth);
+    for(var q = 0; q < 16; q++){
+      x.fillStyle = q % 2 ? '#ff6fb5' : '#4dd8ff';
+      x.beginPath(); x.arc(W2 * (q + .5) / 16, W2 / 120, W2 / 140, 0, Math.PI * 2); x.fill();
+    }
+    x.restore();
+  }
   if(assinatura){
     var u = W2 / 480; x.font = '800 ' + Math.round(13 * u) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.9)';
     x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 5 * u; x.fillText('Idol⭐News! · TsuLiPa⭐World', W2 - 10 * u, H2 - 10 * u); x.shadowBlur = 0;

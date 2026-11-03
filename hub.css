@@ -117,7 +117,7 @@ body.hubon #mute{visibility:hidden}
 #hub .hublogin.hubsair{background:linear-gradient(135deg,#7b3ff0,#ff6fb5)!important;border-color:#fff!important}
 #hub .hublogin.hubsair #hubLoginTxt{background:transparent!important;color:#fff!important;font-weight:900}
 /* tickets do Karaoke legíveis em qualquer fundo */
-#hub #hubCards .tw-karaoke-ticket-count{color:#3c2a8f!important}
+#hub #hubCards .tw-karaoke-ticket-count{background:#fff!important;color:#3c2a8f!important}
 /* títulos longos não quebram só o "!" no celular; Moon Duo alinhado em cima como os outros */
 @media(max-width:620px){#hub #hubCards .hubhandshake>b,#hub #hubCards .hubcafe>b{font-size:14px;letter-spacing:-.3px;white-space:nowrap}}
 #hub #hubCards>button.hubcard.hubduo{justify-content:flex-start}

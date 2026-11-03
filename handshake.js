@@ -69,7 +69,9 @@ function hsRecorde(){ if(typeof recMaiorLocal === 'function') return recMaiorLoc
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
   hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' };
-  hsUI(); hsRecuperar(); if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
+  hsUI(); hsRecuperar();
+  var cena = $('hsCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', hsCenaClique); cena.dataset.idolReage = '1'; }
+  if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
 }
 function hsFechar(){ hsOv.hidden = true; hs = null; }
 function hsNovaRodada(){
@@ -228,20 +230,32 @@ function hsDesenhar(){
     if(prox.length){ x.save(); x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); if(x.roundRect) x.roundRect(10, H2 - 30, 92, 22, 11); else x.rect(10, H2 - 30, 92, 22); x.fill();
       x.fillStyle = '#7b3ff0'; x.textBaseline = 'middle'; x.fillText('👥 ' + tr('Fila') + ': ' + prox.length, 20, H2 - 19); x.restore(); }
   }
-  x.save(); x.fillStyle = 'rgba(255,255,255,.94)'; x.strokeStyle = '#ff9ccf'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .18, 12, W2 * .64, 38, 19); else x.rect(W2 * .18, 12, W2 * .64, 38); x.fill(); x.stroke(); x.fillStyle = '#d63384'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32); x.restore();
+  // Letreiro em relevo suave, na linguagem das janelas e photocards.
+  x.save(); var lx = W2 * .18, ly = 12, lw = W2 * .64, lh = 38, lg = x.createLinearGradient(0, ly, 0, ly + lh);
+  lg.addColorStop(0, '#fff'); lg.addColorStop(.65, '#fff1fa'); lg.addColorStop(1, '#f8d7f0');
+  x.shadowColor = 'rgba(24,8,70,.34)'; x.shadowBlur = 10; x.shadowOffsetY = 4;
+  x.fillStyle = lg; x.strokeStyle = '#ff9ccf'; x.lineWidth = 3;
+  x.beginPath(); if(x.roundRect) x.roundRect(lx, ly, lw, lh, 19); else x.rect(lx, ly, lw, lh); x.fill(); x.stroke();
+  x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
+  x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 2;
+  x.beginPath(); if(x.roundRect) x.roundRect(lx + 4, ly + 4, lw - 8, lh - 8, 15); else x.rect(lx + 4, ly + 4, lw - 8, lh - 8); x.stroke();
+  x.fillStyle = '#ce3889'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
+  x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32);
+  x.font = '15px sans-serif'; x.fillStyle = '#ffe47c'; x.fillText('✦', lx + 8, 9); x.fillText('✦', lx + lw - 8, ly + lh + 7); x.restore();
   // o seu Idol atrás da mesa (à direita)
   try{ var meu = perfAvAtual({ pose:hs && hs.fase === 'resposta' && hs.ok ? 'banzai' : 'tchau', expr:hs && hs.fase === 'resposta' && !hs.ok ? 0 : 3, fundo:'' });
-    x.save(); x.translate(W2 * .52, H2 * .02); perfDesenharIdol(x, W2 * .46, H2 * .92, meu, false, false, t); x.restore(); }catch(e){}
+    x.save(); x.translate(W2 * .52, H2 * .02 + hsReacaoPulo(hs, t, 24)); perfDesenharIdol(x, W2 * .46, H2 * .92, meu, false, false, t); x.restore(); }catch(e){}
   // mesa
-  x.fillStyle = '#c98b55'; x.fillRect(W2 * .46, H2 * .7, W2 * .54, H2 * .3); x.fillStyle = '#a0673a'; x.fillRect(W2 * .46, H2 * .7, W2 * .54, 8);
-  x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(W2 * .46, H2 * .7 + 8, W2 * .54, 4);
+  hsBalcaoArte(x, W2 * .46, H2 * .7, W2 * .54, H2 * .3);
   var nomeIdol = (typeof idolNomeVisivel === 'function' && idolNomeVisivel()) || (contaJ && contaJ.nick) || 'Idol';
   x.save(); x.font = '900 17px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
   var pw = Math.min(W2 * .4, x.measureText(nomeIdol).width + 54), px = W2 * .73 - pw / 2, py = H2 * .75, ph = 40;
   var gp = x.createLinearGradient(px, py, px + pw, py + ph); gp.addColorStop(0, '#ffd1ea'); gp.addColorStop(1, '#d9c8ff');
-  x.fillStyle = 'rgba(80,40,120,.25)'; x.beginPath(); if(x.roundRect) x.roundRect(px + 3, py + 4, pw, ph, 12); else x.rect(px + 3, py + 4, pw, ph); x.fill();
+  x.shadowColor = 'rgba(51,24,100,.35)'; x.shadowBlur = 8; x.shadowOffsetY = 4;
   x.fillStyle = gp; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(px, py, pw, ph, 12); else x.rect(px, py, pw, ph); x.fill(); x.stroke();
+  x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
+  x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 1.5; x.beginPath(); if(x.roundRect) x.roundRect(px + 4, py + 4, pw - 8, ph - 8, 9); else x.rect(px + 4, py + 4, pw - 8, ph - 8); x.stroke();
   x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1);
   x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('HANDSHAKE', W2 * .73, py - 7); x.restore();
   // combo
@@ -268,6 +282,7 @@ function hsDesenhar(){
   }
   if(typeof eventoPetDesenhar === 'function') eventoPetDesenhar(x, W2 * .46, H2 * .9, t, 1.3, W2 * (.4 + .04 * Math.sin(t / 90)));
   hsCoracoes(x, W2, H2);
+  hsReacaoDesenhar(x, W2, H2, t, hs, W2 * .75, H2 * .34);
 }
 function hsCoracoes(x, W2, H2){
   if(!hs || !hs.hearts.length) return; x.save(); x.font = '26px sans-serif'; x.textAlign = 'center';
@@ -315,4 +330,88 @@ function hsClique(e){
 function hsHubHtml(){
   var feito = false; try{ feito = localStorage.getItem('tw_hs_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
   return '<button type="button" class="hubcard hubhandshake' + (feito ? '' : ' tw-alert-pink') + '" data-ir="handshake">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🤝</i><b translate="no">Handshake⭐Event!</b><small class="tw-hubgame-jp" lang="ja">握手会</small><small>' + escHtml(tr('Lembre o presente de cada fã!')) + '</small></button>';
+}
+
+/* Acabamento artístico compartilhado pelos dois balcões, sem alterar posições ou atendimento. */
+function hsBalcaoArte(x, left, top, width, height){
+  x.save();
+  var madeira = x.createLinearGradient(0, top, 0, top + height);
+  madeira.addColorStop(0, '#e9ae7d'); madeira.addColorStop(.16, '#d69b64');
+  madeira.addColorStop(.72, '#c78b55'); madeira.addColorStop(1, '#a86c43');
+  x.fillStyle = madeira; x.fillRect(left, top, width, height);
+  x.fillStyle = 'rgba(78,36,29,.22)'; x.fillRect(left, top + 8, width, 5);
+  var borda = x.createLinearGradient(0, top, 0, top + 11);
+  borda.addColorStop(0, '#f6c897'); borda.addColorStop(.42, '#d69b63'); borda.addColorStop(1, '#9e603c');
+  x.fillStyle = borda; x.fillRect(left, top, width, 11);
+  x.fillStyle = 'rgba(255,250,226,.52)'; x.fillRect(left, top + 1, width, 2);
+  x.fillStyle = 'rgba(255,255,255,.09)'; x.fillRect(left + 5, top + 14, Math.max(0, width - 10), 3);
+  for(var s = 1; s < 4; s++){
+    var seam = left + width * s / 4;
+    x.fillStyle = 'rgba(115,57,38,.10)'; x.fillRect(seam, top + 16, 2, Math.max(0, height - 24));
+    x.fillStyle = 'rgba(255,233,199,.18)'; x.fillRect(seam + 2, top + 16, 1, Math.max(0, height - 24));
+  }
+  x.strokeStyle = 'rgba(108,51,39,.11)'; x.lineWidth = 1.7;
+  for(var i = 0; i < 4; i++){
+    var gx = left + width * (.07 + (i * .23)), gy = top + height * (.32 + (i % 2) * .22);
+    x.beginPath(); x.moveTo(gx, gy); x.bezierCurveTo(gx + 14, gy - 5, gx + 26, gy + 4, gx + 42, gy); x.stroke();
+  }
+  x.fillStyle = 'rgba(67,24,35,.13)'; x.fillRect(left, top + height - 6, width, 6);
+  x.restore();
+}
+/* A mesma linguagem do toque no trio inicial: pulinho, balão com rabinho e cinco emojis brilhantes. */
+function hsReacaoAtivar(alvo, t){
+  if(!alvo || (alvo.reage && t - alvo.reage.t0 < 30)) return;
+  var lista = ['💜','⭐','✨','💜','⭐'];
+  alvo.reage = {t0:t, txt:'Oiê!', emo:lista.map(function(e,n){ return {e:e, v:.5 + Math.random() * .5, dx:(n - 2) * 9}; })};
+  if(typeof beep === 'function') try{
+    [[523,0],[659,.07],[784,.14],[1046,.22]].forEach(function(n){ beep(n[0], .12, 'triangle', .035, n[1]); });
+  }catch(e){}
+}
+function hsReacaoPulo(alvo, t, max){
+  var rg = alvo && alvo.reage ? t - alvo.reage.t0 : -1;
+  return rg >= 0 && rg < 66 ? -Math.sin(rg / 66 * Math.PI) * max : 0;
+}
+function hsReacaoDesenhar(x, W, H, t, alvo, hx, top){
+  if(!alvo || !alvo.reage) return;
+  var rg = t - alvo.reage.t0, sc = H / 96, dur = 220;
+  if(rg < 0 || rg >= dur) return;
+  var al = rg < dur - 30 ? 1 : (dur - rg) / 30, pop = rg < 8 ? .6 + rg / 20 : 1;
+  x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.textBaseline = 'middle';
+  var txt = typeof tr === 'function' ? tr(alvo.reage.txt) : alvo.reage.txt;
+  x.font = (5 * sc) + 'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
+  var tw = x.measureText(txt).width + 10 * sc, th = 11 * sc;
+  var bx = Math.max(tw / 2 + 6, Math.min(W - tw / 2 - 6, hx)), by = top - 9 * sc;
+  x.translate(bx, by); x.scale(pop, pop);
+  var rr = th / 2, l = -tw / 2, rt = tw / 2, tp = -th / 2, bt = th / 2;
+  var tx = Math.max(l + rr + 2.5 * sc, Math.min(rt - rr - 2.5 * sc, hx - bx)), tl = 3.2 * sc;
+  x.beginPath(); x.moveTo(l + rr, tp); x.lineTo(rt - rr, tp); x.arc(rt - rr, 0, rr, -Math.PI / 2, Math.PI / 2);
+  x.lineTo(tx + 2.4 * sc, bt); x.quadraticCurveTo(tx + .6 * sc, bt + tl * .5, tx, bt + tl);
+  x.quadraticCurveTo(tx - .6 * sc, bt + tl * .5, tx - 2.4 * sc, bt);
+  x.lineTo(l + rr, bt); x.arc(l + rr, 0, rr, Math.PI / 2, Math.PI * 1.5); x.closePath();
+  var gr = x.createLinearGradient(0, tp, 0, bt + tl); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#fff0fa');
+  x.shadowColor = '#9b30d9'; x.shadowBlur = 5 * sc; x.fillStyle = gr; x.fill();
+  x.shadowColor = 'transparent'; x.shadowBlur = 0;
+  x.lineWidth = .9 * sc; x.lineJoin = 'round'; x.strokeStyle = '#9b30d9'; x.stroke();
+  x.fillStyle = '#9b30d9'; x.fillText(txt, 0, .4 * sc);
+  x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = '#ff9ce6'; x.fillText('✦', l - 1.6 * sc, tp + .5 * sc); x.fillText('♡', rt + 1.8 * sc, bt - 1.5 * sc);
+  x.restore();
+  if(rg >= 140) return;
+  x.save(); x.globalAlpha = rg < 110 ? 1 : (140 - rg) / 30;
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = (6.5 * sc) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  x.shadowColor = 'rgba(255,255,255,.95)'; x.shadowBlur = 2.4 * sc; x.fillStyle = '#000';
+  alvo.reage.emo.forEach(function(e,n){
+    var lado = n % 2 ? 1 : -1, ex = hx + lado * (13 + (n % 3) * 4) * sc;
+    var ey = top + 22 * sc - rg * e.v * sc / 7 - n * 2 * sc;
+    var nasce = rg - n * 3, escala = nasce < 0 ? 0 : nasce < 8 ? .4 + nasce / 8 * .9 : nasce < 13 ? 1.3 - (nasce - 8) / 5 * .3 : 1;
+    if(escala <= 0) return;
+    x.save(); x.translate(ex + Math.sin(rg / 9 + n) * 1.5 * sc, Math.max(top + 4 * sc, ey));
+    x.rotate(Math.sin(rg / 11 + n * 1.7) * .18); x.scale(escala, escala); x.fillText(e.e, 0, 0); x.restore();
+  });
+  x.restore();
+}
+function hsCenaClique(ev){
+  if(!hs || hsOv.hidden) return;
+  var cv = $('hsCv'), b = cv.getBoundingClientRect(); if(!b.width || !b.height) return;
+  var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
+  if(px >= cv.width * .54 && px <= cv.width * .98 && py >= cv.height * .12 && py <= cv.height * .7) hsReacaoAtivar(hs, hsT);
 }

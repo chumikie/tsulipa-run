@@ -65,7 +65,7 @@ function hsMemGuardar(f){
     lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
   }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
 }
-function hsRecorde(){ try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
+function hsRecorde(){ if(typeof recMaiorLocal === 'function') return recMaiorLocal('hand'); try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
   hsOv.hidden = false; hsOv.scrollTop = 0;
   hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' };
@@ -174,7 +174,8 @@ function hsFim(){
   var atual=hs;
   if(!atual || atual.fase==='fim') return;
   atual.fase='fim'; var rec=hsRecorde(); atual.novo=atual.pontos>rec;
-  if(atual.novo) try{ localStorage.setItem(HS_RECORDE_KEY,atual.pontos); }catch(e){}
+  if(typeof recRegistrarLocal === 'function') recRegistrarLocal('hand',atual.pontos);
+  if(!contaJ && atual.novo) try{ localStorage.setItem(HS_RECORDE_KEY,atual.pontos); }catch(e){}
   hsUI();
   if(!contaJ || !atual.servidor || !atual.respostas.length) return;
   var args={p_sessao:atual.servidor.sessao,p_respostas:atual.respostas};

@@ -148,9 +148,16 @@ function hsAplicarPet(r){
 }
 function hsReceberPremio(r, atual){
   if(!r || !r.ok) return;
+  if(r.confirmado && typeof recCarregar === 'function') recCarregar();
   if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
   var pronto = hsAplicarPet(r);
   if(atual && hs === atual){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
+}
+function hsFinalizarNoServidor(args){
+  // Compatibilidade temporária: a PR pode ser pré-visualizada antes da aprovação do SQL.
+  return contaRpc('handshake_run_finish',args).catch(function(){
+    return contaRpc('handshake_premio',args);
+  });
 }
 function hsRecuperar(){
   if(!contaJ) return;
@@ -158,7 +165,7 @@ function hsRecuperar(){
   var pendente = null;
   try{ pendente = JSON.parse(localStorage.getItem('tw_hs_pendente') || 'null'); }catch(e){}
   if(!pendente || pendente.nick !== contaJ.nick || !pendente.sessao) return;
-  contaRpc('handshake_premio', {p_sessao:pendente.sessao,p_respostas:pendente.respostas}).then(function(r){
+  hsFinalizarNoServidor({p_sessao:pendente.sessao,p_respostas:pendente.respostas}).then(function(r){
     if(r && r.ok){ try{localStorage.removeItem('tw_hs_pendente');}catch(e){} hsReceberPremio(r, hs); }
     else if(r && r.erro === 'pontos') try{localStorage.removeItem('tw_hs_pendente');}catch(e){}
   }).catch(function(){});
@@ -184,7 +191,7 @@ function hsFim(){
   if(!contaJ || !atual.servidor || !atual.respostas.length) return;
   var args={p_sessao:atual.servidor.sessao,p_respostas:atual.respostas};
   try{ localStorage.setItem('tw_hs_pendente',JSON.stringify({nick:contaJ.nick,sessao:args.p_sessao,respostas:args.p_respostas})); }catch(e){}
-  contaRpc('handshake_premio',args).then(function(r){
+  hsFinalizarNoServidor(args).then(function(r){
     if(r && (r.ok || r.erro==='pontos')) try{ localStorage.removeItem('tw_hs_pendente'); }catch(e){}
     if(hs!==atual) return;
     if(r && r.ok) hsReceberPremio(r,atual);
@@ -334,7 +341,8 @@ function hsUI(){
     if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
     if(!hs.servidor && contaJ) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
     if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
-    if(hs.premio && hs.premio.ok) h += '<p class="faok">🎁 ' + escHtml(hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
+    if(hs.premio && hs.premio.ok && hs.premio.tipo) h += '<p class="faok">🎁 ' + escHtml(hs.premio.repetido ? tr('Prêmio do dia já registrado') : hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
+    else if(hs.premio && hs.premio.confirmado) h += '<p class="faok">✅ ' + escHtml(tr('Pontuação confirmada na conta:')) + ' ' + recNum(hs.premio.pontos_verificados) + ' · ' + escHtml(tr(hs.premio.premio_entregue ? 'Prêmio diário já entregue' : 'Partida registrada')) + '</p>';
     else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
     else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
     else if(hs.pontos < 600) h += '<p class="hsdica">' + escHtml(tr('Faça 600 pontos para ganhar o prêmio do dia.')) + '</p>';

@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -2853,7 +2853,7 @@ ktDaily.init();
 (function(){try{if(!document.documentElement.classList.contains('kt-no-site'))return;var a=window.parent&&window.parent.twKaraokeOnline;if(!a||!a.plateia)return;a.plateia().then(function(l){ktDaily.live(l);}).catch(function(){});}catch(e){}})();
 
 /* Ranking uses server-confirmed shows and weekly boards. */
-</script><script src="./karaoke-online.js?v=1"></script><script>
+window.ktOnline=window.KaraokeOnlineFactory($,krAviso,CH,KaraokeAvatar,ktDaily,LANG);
 var ktMeta=(function(){
 var storage;try{storage=localStorage;}catch(e){storage={getItem:function(){throw Error('storage');},setItem:function(){throw Error('storage');}};}var rules=KaraokeShowRules.create(storage),lastSignature='',activeTab='score';
 function context(){var c=ktDaily.context();return {id:c.id,nick:c.nick,avatar:c.avatar,day:c.day,simulated:c.simulated};}

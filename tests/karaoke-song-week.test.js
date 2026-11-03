@@ -8,6 +8,7 @@ const root=path.join(__dirname,'..');
 const V=require('../karaoke-room-views.js');
 const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/karaoke_musica_da_semana.sql'),'utf8');
 const at=s=>Date.parse(s);
 assert.deepEqual({...V.SONGS},{gigoia:'chill',liberdade:'duo',tailandia:'normal',harajuku:'fast',praia:'gacha'},'pares aprovados pela dona');
@@ -29,7 +30,7 @@ assert.equal(rules.songBoard(DAY,'duo','idol-7').me,null,'quem tocou outra músi
 assert.equal(rules.songBoard('2026-11-08','duo','idol-1').top.length,0,'quadro zera na semana seguinte');
 // sala e ponte com o servidor
 assert(html.includes('id="ktSongWeek"')&&html.includes("function renderSongWeek(c,b)")&&html.includes("try{renderSongWeek(c,b);}catch(e){}"),'quadro na sala, sem derrubar o ranking se falhar');
-assert(html.includes("completedAt:Date.now(),song:run.session.song}")&&html.includes("if(a.musicaSemana)a.musicaSemana().then("),'resultado leva a música; online lê o quadro');
+assert(html.includes("completedAt:Date.now(),song:run.session.song}")&&online.includes("if(a.musicaSemana)a.musicaSemana().then("),'resultado leva a música; online lê o quadro');
 assert(index.includes("musicaSemana:function(){return contaRpc('kt_musica_semana');},")&&index.includes("if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);"),'envia p_song e repete sem ele se o banco ainda não tiver');
 assert(html.includes("['Música da semana','Song of the week','Canción de la semana','เพลงประจำสัปดาห์','今週の曲']"),'traduzido');
 console.log('✓ Karaoke: música da semana (pares, rodízio, quadro local/online e envio ao servidor)');

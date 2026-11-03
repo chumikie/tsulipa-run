@@ -5,8 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
 const onlineSource = fs.readFileSync(path.join(__dirname, '..', 'karaoke-online.js'), 'utf8');
-const code = onlineSource.match(/window\.ktOnline=\(function\(\)\{[\s\S]*?\n\}\)\(\);/);
-assert(code, 'módulo de ranking online encontrado');
+assert(onlineSource.includes('window.KaraokeOnlineFactory=function('), 'fábrica da ponte de ranking encontrada');
 assert(html.includes('id="ktResultDelivery"') && html.includes('id="ktDeliveryRecovery"'), 'estados acessíveis no resultado e na sala');
 const RUN = '77777777-7777-4777-8777-777777777777';
 const SCORE = {score:56343,hits:88,attempts:100,combo:38,totalNotes:100,song:'duo'};
@@ -37,7 +36,8 @@ function harness(map, finish) {
   };
   const context={window,localStorage,document:{documentElement:{classList:{contains:name=>name==='kt-no-site'}}},
     LANG:'pt',$:get,krAviso:s=>notices.push(s),CH:[{}],KaraokeAvatar:{draw:()=>{}}};
-  vm.runInNewContext(code[0],context);
+  vm.runInNewContext(onlineSource,context);
+  window.ktOnline=window.KaraokeOnlineFactory(get,context.krAviso,[{}],{draw:()=>{}},null,'pt');
   return {online:window.ktOnline,get,calls,tickets,notices,setOwner:x=>currentOwner=x};
 }
 async function start(h) {

@@ -1,5 +1,5 @@
-/* Karaoke⭐Time! — ponte de conta e confirmação idempotente da pontuação. */
-window.ktOnline=(function(){
+/* Karaoke⭐Time! — ponte online extraída do jogo; usa o contexto original da sala. */
+window.KaraokeOnlineFactory=function($,krAviso,CH,KaraokeAvatar,ktDaily,LANG){return (function(){
  var lastPos=0,KEY='kt_online_run_v1',run=null,runOwner='',boards=null,readAt=0,busy=false,usados=null,tickets=0,admissionTicket=false,activeOwner='';
  function sessionKey(a){try{if(a&&typeof a.sessionKey==='function')return String(a.sessionKey()||'');return a&&a.ativo()?'legacy-session':'';}catch(e){return '';}}
  function api(){try{
@@ -129,4 +129,4 @@ window.ktOnline=(function(){
  /* Com conta, o limite diário vem do servidor, não do aparelho. */
  function ajusta(a){if(!api()||usados===null||a.pending)return Object.assign({},a,{tickets:api()?tickets:0});var u=Math.min(5,Math.max(0,usados));return Object.assign({},a,{used:u,remaining:5-u,tickets:tickets});}
  return {gate:gate,finish:finish,load:load,quota:quota,ajusta:ajusta,showResult:showFinishResult,ticketAdmission:function(){return admissionTicket;},boards:function(){return api()&&boards?boards:null;},online:function(){return !!api();}};
-})();
+})();};

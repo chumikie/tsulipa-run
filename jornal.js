@@ -153,6 +153,28 @@ function jornalFotoDesenhar(cv, f, assinatura){
       try{ perfDesenharIdol(x, slot8 * 1.04, altura, av8, false, false, 0); }catch(e){}
       x.restore();
     });
+    // Bandeirolas e brilhinhos no alto: detalhe de festa sem cobrir rostos ou paisagem.
+    x.save();
+    x.lineWidth = Math.max(1, H2 * .005);
+    x.strokeStyle = 'rgba(255,255,255,.82)';
+    x.beginPath(); x.moveTo(W2 * .065, H2 * .045);
+    x.quadraticCurveTo(W2 * .5, H2 * .175, W2 * .935, H2 * .045); x.stroke();
+    var coresFesta = ['#ff7eb6','#ffe47a','#8ae4ff','#b59bff','#94eec8'];
+    for(var b = 0; b < 9; b++){
+      var ux = W2 * (.12 + b * .095), t = (ux / W2 - .065) / .87;
+      var uy = H2 * (.045 + .26 * t * (1 - t));
+      x.fillStyle = coresFesta[b % coresFesta.length];
+      x.beginPath(); x.moveTo(ux - W2 * .016, uy);
+      x.lineTo(ux + W2 * .016, uy); x.lineTo(ux, uy + H2 * .052);
+      x.closePath(); x.fill();
+    }
+    [[.075,.2,'#ffe47a'],[.93,.22,'#ff8ec4'],[.19,.29,'#9aebff'],[.82,.30,'#ffe47a']].forEach(function(a){
+      var sx = W2 * a[0], sy = H2 * a[1], r = H2 * .018;
+      x.strokeStyle = a[2]; x.lineWidth = Math.max(2, H2 * .007);
+      x.beginPath(); x.moveTo(sx-r,sy); x.lineTo(sx+r,sy);
+      x.moveTo(sx,sy-r); x.lineTo(sx,sy+r); x.stroke();
+    });
+    x.restore();
     n = 0;
   }
   if(n) f.grupo.forEach(function(p, k){

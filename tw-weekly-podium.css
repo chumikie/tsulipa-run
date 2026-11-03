@@ -186,16 +186,3 @@
 /* Lugares ainda vagos no Top Idols: mantêm a grade das três posições. */
 #hub .tw-rank-game li.tw-rank-empty{opacity:.78}
 #hub .tw-rank-game .tw-rank-empty-name{grid-column:3;grid-row:1;color:var(--sub);font-weight:800}
-
-
-/* 7d. Os três botões voadores juntos no canto esquerdo, em fila: microfone > troféu > bandeira */
-#hub .tw-tv-float>.tw-mic-launch,#hub .tw-tv-float>.tw-rank-tv-launch,#hub .tw-tv-float>.tw-br-launch{left:-12px;right:auto;width:48px;height:48px;min-height:48px}
-#hub .tw-tv-float>.tw-mic-launch{top:-16px}
-#hub .tw-tv-float>.tw-rank-tv-launch{top:42px}
-#hub .tw-tv-float>.tw-br-launch{top:100px}
-@media(max-width:620px){
-  #hub .tw-tv-float>.tw-mic-launch,#hub .tw-tv-float>.tw-rank-tv-launch,#hub .tw-tv-float>.tw-br-launch{left:-6px;width:40px;height:40px;min-height:40px}
-  #hub .tw-tv-float>.tw-mic-launch{top:-14px}
-  #hub .tw-tv-float>.tw-rank-tv-launch{top:34px}
-  #hub .tw-tv-float>.tw-br-launch{top:82px}
-}

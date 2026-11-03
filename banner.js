@@ -44,7 +44,7 @@ function bannerRotulo(){
   var e = bannerElenco();
   return e ? tr('Idols do TsuLiPa⭐World') + ': ' + e.map(function(p){ return p.nick; }).join(', ') : 'TsuLiPa: Tsu, Lirika e Pati';
 }
-function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os três Idols do site, com o nome embaixo
+function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os três Idols do site (sem plaquinha de nome)
   elenco.forEach(function(p, i){
     var av = p.av || {}, c = perfChar(av), cx = W2 * HUB_TRIO[i][2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc;
     bannerUniforme(c, i, roupa);   // uniformizados: mesma roupa (ou a do tema), tons pastel
@@ -56,12 +56,6 @@ function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os tr
     x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();
     perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
     charPose = ''; perfAntena = '';
-    // plaquinha com o apelido
-    x.save(); x.font = (3.4 * sc) + 'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    var nm = p.nick, w = x.measureText(nm).width + 5 * sc, h = 5.4 * sc, ny = Math.min(H2 - h / 2 - 1, chao + 2.8 * sc);
-    x.fillStyle = ['#9b30d9', '#3f9c1f', '#4169e1'][i]; x.beginPath();
-    if(x.roundRect) x.roundRect(cx - w / 2, ny - h / 2, w, h, h / 2); else x.rect(cx - w / 2, ny - h / 2, w, h);
-    x.fill(); x.fillStyle = '#fff'; x.fillText(nm, cx, ny + .2 * sc); x.restore();
   });
   accSel = '';
 }

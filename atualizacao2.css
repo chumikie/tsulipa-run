@@ -156,3 +156,7 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 #albumOv .albumprog,#albumOv .albumpags,#faOv .fainfo{color:var(--ink)}
 #hsOv .hshype,#cfOv .hshype,#hsOv .faok,#cfOv .faok,#faOv .faok{color:var(--b1)}
 #hsOv .hsdica.evsemana,#cfOv .hsdica.evsemana{color:#3c2a8f}
+
+/* Revisão dos novos recordes: cartões alinhados aos demais painéis do hub. */
+#hub .recaba:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+#hub .reccorpo{box-shadow:0 3px 0 rgba(123,63,240,.1)}

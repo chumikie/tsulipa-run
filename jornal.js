@@ -21,8 +21,9 @@ function jornalPodio(tit, lista, un){
     return '<li><span class="jnmed">' + (['🥇', '🥈', '🥉'][i] || '<b class="jnpos">' + (i + 1) + 'º</b>') + '</span><canvas class="jnfoto" width="64" height="64" data-jnick="' + escHtml(p.nick) + '" aria-hidden="true"></canvas><b>' + escHtml(p.nick) + '</b><small>' + jornalNum(p.score) + ' ' + un + '</small></li>';
   }).join('') + '</ol>' : '<p class="jnvazio">' + escHtml(tr('Ninguém ainda. Seja a primeira pessoa!')) + '</p>') + '</section>';
 }
+var jornalSemanaDados = {};
 function jornalMontar(d){
-  d = d || {};
+  d = d || {}; jornalSemanaDados = d;
   var sem = typeof d.semana === 'string' ? d.semana : '', c1 = (d.center || [])[0], cast = typeof bannerElenco === 'function' ? bannerElenco() : null;
   var at = typeof shopAtendente === 'function' ? shopAtendente() : null, mus = typeof hubMusicaSemana === 'function' ? hubMusicaSemana() : null;
   var vista = ''; try{ vista = KaraokeRoomViews.NAMES[KaraokeRoomViews.viewFor(Date.now())]; }catch(e){}
@@ -76,6 +77,16 @@ function jornalFotosDia(){
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
     return { cena:cenas[i % cenas.length], grupo:grupo };
   });
+  // telão do Karaoke: o pódio da semana se apresentando juntos
+  var kar = (jornalSemanaDados.karaoke || []).slice(0, 3).map(function(p){ var a = jornalAvatar(p.nick); return a ? { nick:p.nick, avatar:a } : null; }).filter(Boolean);
+  if(kar.length >= 2) fotos.push({ cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic', 'luz', 'banzai']], grupo:kar, tipo:'telao' });
+  // você e o seu pet (só para quem entrou e tem pet)
+  var pa = typeof petAtivo === 'function' ? petAtivo() : null;
+  if(contaJ && pa && petData && PET_SP[petData.ativo] && typeof perfAvAtual === 'function'){
+    var meu = perfAvAtual({ pose:'coracao', expr:3, fundo:'basico' }); meu.pet = { k:petData.ativo, acc:typeof pa.acc === 'string' ? pa.acc : '' };
+    var nomePet = pa.nome || PET_SP[petData.ativo].n;
+    fotos.push({ cena:['oshi', '🐾', '{n} com ' + nomePet + ' no camarim', ['coracao']], grupo:[{ nick:contaJ.nick, avatar:meu }], tipo:'pet', legenda:tr('{a} com {b} no camarim').replace('{a}', contaJ.nick).replace('{b}', nomePet) });
+  }
   jornalFotosHoje = fotos;
   box.innerHTML = fotos.map(function(f, i){
     return '<figure class="jnfoto3"><button type="button" class="jnfotobtn" data-jfoto="' + i + '" aria-label="' + escHtml(tr('Ampliar foto')) + '"><canvas width="480" height="300" aria-hidden="true"></canvas></button><figcaption>' + f.cena[1] + ' ' + escHtml(jornalLegenda(f)) + '</figcaption></figure>';
@@ -84,6 +95,7 @@ function jornalFotosDia(){
 }
 var jornalFotosHoje = [];
 function jornalLegenda(f){
+  if(f.legenda) return f.legenda;
   var nomes = f.grupo.map(function(p){ return p.nick; }), lista = tr('{a} e {b}').replace('{a}', nomes.slice(0, -1).join(', ')).replace('{b}', nomes[nomes.length - 1]);
   return tr(f.cena[2]).replace('{n}', lista);
 }
@@ -92,8 +104,14 @@ function jornalFotoDesenhar(cv, f, assinatura){
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
   x.clearRect(0, 0, W2, H2);
   try{ if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor); else perfFundo(x, W2, H2, f.cena[0], cor, 0); }catch(e){}
+  if(f.tipo === 'telao'){   // moldura de telão com luzinhas
+    x.save(); x.strokeStyle = '#ffd23f'; x.lineWidth = W2 / 60; x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W2 - x.lineWidth, H2 - x.lineWidth);
+    for(var q = 0; q < 16; q++){ x.fillStyle = q % 2 ? '#ff6fb5' : '#4dd8ff'; x.beginPath(); x.arc(W2 * (q + .5) / 16, W2 / 120, W2 / 140, 0, 7); x.fill(); }
+    x.restore();
+  }
   var n = f.grupo.length, slot = W2 / n;
-  f.grupo.forEach(function(p, k){
+  if(f.tipo === 'pet'){ var av1 = JSON.parse(JSON.stringify(f.grupo[0].avatar)); av1.visual = ''; x.save(); x.translate(-W2 * .1, -H2 * .16); try{ perfDesenharIdol(x, W2 * 1.2, H2 * 1.2, av1, false, false, 0); }catch(e){} x.restore(); n = 0; }
+  if(n) f.grupo.forEach(function(p, k){
     var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
     x.save(); x.translate(k * slot - slot * .1, H2 * .06); try{ perfDesenharIdol(x, slot * 1.2, H2 * .94, av, false, false, 0); }catch(e){} x.restore();
   });

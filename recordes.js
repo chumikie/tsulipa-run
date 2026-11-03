@@ -64,7 +64,7 @@ function recHistoricoHtml(k){
   var melhores = d.partidas.slice().sort(function(a,b){return b.score-a.score || a.at-b.at;}).slice(0,5);
   var recentes = d.partidas.slice().sort(function(a,b){return b.at-a.at;}).slice(0,5);
   var vazio = '<li style="justify-content:center"><em>—</em></li>';
-  return '<div class="recnums"><span><b>' + (d.melhorSemana ? recNum(d.melhorSemana) : '—') + '</b><small>' + escHtml(tr('Melhor da semana')) + '</small></span></div>' +
+  return '<p class="recsemana"><span>✦ ' + escHtml(tr('Melhor da semana')) + '</span><b>' + (d.melhorSemana ? recNum(d.melhorSemana) : '—') + '</b></p>' +
     '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores pontuações')) + '</h4><ol class="lb perfult">' + (melhores.length ? melhores.map(linha).join('') : vazio) + '</ol>' +
     '<h4 class="perfsub">🕒 ' + escHtml(tr('5 pontuações recentes')) + '</h4><ol class="lb perfult">' + (recentes.length ? recentes.map(linha).join('') : vazio) + '</ol>';
 }

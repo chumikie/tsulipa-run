@@ -74,3 +74,14 @@
 .jnfeitos{border:1px solid #bfe8d1;background:linear-gradient(135deg,#f5fff8,#fff)!important}
 .jnfeitos ul{margin:0;padding-left:18px;line-height:1.55}
 .jnfeitos li{margin:4px 0}
+
+/* Idol⭐News! em duas seções clicáveis: preserva todos os widgets no DOM. */
+.jnabas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+.jnababotao{appearance:none;border:2px solid #d8c6f6;border-radius:14px;min-height:48px;padding:9px 10px;background:#fff;color:#5b3a9a;font:800 13px "M PLUS Rounded 1c",sans-serif;line-height:1.35;cursor:pointer;box-shadow:0 3px 0 rgba(123,63,240,.12);transition:background .12s,border-color .12s}
+.jnababotao[aria-selected="true"]{background:linear-gradient(135deg,#fff1fa,#f2e9ff);border-color:#9958db;color:#702bba}
+.jnababotao:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.jnabapainel[hidden]{display:none!important}
+.jnatividade{border:1px solid #bee4f8;background:linear-gradient(135deg,#f6fcff,#fff)!important}
+.jnatividade ul{margin:4px 0;padding-left:18px}
+.jnatividade li{margin:6px 0;line-height:1.5}
+@media(max-width:390px){.jnababotao{font-size:12px;padding:8px 5px}}

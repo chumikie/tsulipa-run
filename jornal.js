@@ -33,31 +33,107 @@ function jornalMontar(d){
   var combo = (d.karaoke_combo || [])[0], prec = (d.karaoke_acertos || [])[0];
   var h = '<header class="jntopo"><b class="jnnome" translate="no">📰 Idol<span class="tw-modal-star">⭐</span>News!</b><small lang="ja">アイドル・ニュース</small>' +
     '<p>' + (sem ? escHtml(tr('Semana de {a} a {b}').replace('{a}', jornalData(sem)).replace('{b}', jornalData(sem, 6))) + ' · ' : '') + escHtml(tr('placar parcial até domingo 0h')) + '</p></header>';
-  if(c1) h += '<article class="jnmanchete"><button type="button" class="jnfotolink" data-jnperfil="' + escHtml(c1.nick) + '" aria-label="' + escHtml(tr('Ver perfil') + ': ' + c1.nick) + '"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas></button><div><small>' + escHtml(tr('Manchete')) + '</small>' +
+  var vida = '', comunidade = '';
+  if(c1) comunidade += '<article class="jnmanchete"><button type="button" class="jnfotolink" data-jnperfil="' + escHtml(c1.nick) + '" aria-label="' + escHtml(tr('Ver perfil') + ': ' + c1.nick) + '"><canvas class="jnfoto jngrande" width="128" height="128" data-jnick="' + escHtml(c1.nick) + '" aria-hidden="true"></canvas></button><div><small>' + escHtml(tr('Manchete')) + '</small>' +
     '<h3><button type="button" class="jnnick jnnickg" data-jnperfil="' + escHtml(c1.nick) + '">' + escHtml(c1.nick) + '</button> ' + escHtml(tr('lidera o')) + ' <span translate="no">Center⭐Run!</span></h3><p>' + jornalNum(c1.score) + ' ' + escHtml(tr('pontos na melhor corrida da semana.')) + '</p></div></article>';
   if(typeof eventoAtual === 'function'){ var ev = eventoAtual();   // evento da semana (muda toda segunda)
-    h += '<section class="jnbloco jnevento"><h4>' + ev.emo + ' ' + escHtml(tr(ev.nome)) + '</h4><ul>' +
+    comunidade += '<section class="jnbloco jnevento"><h4>' + ev.emo + ' ' + escHtml(tr(ev.nome)) + '</h4><ul>' +
       '<li>🧋 Happy⭐Cafe!: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[ev.base][0] + ' ' + tr(CF_BASES[ev.base][1]))) + '</li>' +
       '<li>🤝 Handshake⭐Event!: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', ev.pres)) + '</li>' +
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
-  h += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
-  h += jornalFeitosHtml(d);
-  h += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
-  h += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
-  if(combo || prec) h += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
+  vida += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
+  comunidade += jornalFeitosHtml(d);
+  comunidade += jornalAtividadeHtml();
+  vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
+  comunidade += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
+  if(combo || prec) comunidade += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
     (prec ? '<li>' + escHtml(tr('Melhor precisão')) + ': <b>' + escHtml(prec.nick) + '</b> (' + String(prec.score).replace('.', ',') + '%)</li>' : '') + '</ul></section>';
-  h += '<section class="jnbloco"><h4>🏙️ ' + escHtml(tr('Na cidade')) + '</h4><ul>' +
+  vida += '<section class="jnbloco"><h4>🏙️ ' + escHtml(tr('Na cidade')) + '</h4><ul>' +
     '<li>' + escHtml(tr('No banner de hoje')) + ': <b>' + escHtml(elencoBanner) + '</b></li>' +
     (at ? '<li>' + escHtml(tr('No balcão da Zipper⭐Shop!')) + ': <b>' + escHtml(at[0]) + '</b></li>' : '') +
     (mus ? '<li>' + escHtml(tr('Música da semana')) + ': <b translate="no">' + escHtml(mus[1]) + '</b></li>' : '') +
     (vista ? '<li>' + escHtml(tr('Vista da janela do Karaoke')) + ': <b>' + escHtml(vista) + '</b></li>' : '') +
     (total ? '<li>' + escHtml(tr('Idols na vitrine')) + ': <b>' + total + '</b></li>' : '') + '</ul></section>';
-  if(mus) h += '<section class="jnbloco jnmusica"><h4>🎵 ' + escHtml(tr('Música da semana')) + '</h4><p><b translate="no">' + escHtml(mus[1]) + '</b>' + (vista ? ' · ' + escHtml(tr('Vista da janela do Karaoke')) + ': ' + escHtml(vista) : '') + '</p>' +
+  if(mus) vida += '<section class="jnbloco jnmusica"><h4>🎵 ' + escHtml(tr('Música da semana')) + '</h4><p><b translate="no">' + escHtml(mus[1]) + '</b>' + (vista ? ' · ' + escHtml(tr('Vista da janela do Karaoke')) + ': ' + escHtml(vista) : '') + '</p>' +
     '<div class="btns"><button type="button" class="btn" id="jnMusicaIr">🎤 ' + escHtml(tr('Cantar no Karaoke⭐Time!')) + '</button></div></section>';
-  h += jornalTimesHtml() + jornalFestHtml() + jornalTrioHtml();
-  h += jornalPostsHtml();
-  return h;
+  comunidade += jornalTimesHtml() + jornalFestHtml() + jornalTrioHtml();
+  comunidade += jornalPostsHtml();
+  return h + jornalAbasHtml(vida, comunidade);
+}
+// Duas abas, sem remover nós do DOM: fotos, ranking, editor e RPCs continuam funcionando.
+var jornalAba = 'vida', jornalAtividadeCarregada = false;
+function jornalAbasHtml(vida, comunidade){
+  return '<div class="jnabas" role="tablist" aria-label="' + escHtml(tr('Seções do Idol⭐News!')) + '">' +
+    '<button type="button" id="jnAbaBtnVida" class="jnababotao" data-jnaba="vida" role="tab" aria-controls="jnAbaVida" aria-selected="true">🌷 ' + escHtml(tr('Vida das Idols')) + '</button>' +
+    '<button type="button" id="jnAbaBtnComunidade" class="jnababotao" data-jnaba="comunidade" role="tab" aria-controls="jnAbaComunidade" aria-selected="false">⭐ ' + escHtml(tr('Jogadores e eventos')) + '</button></div>' +
+    '<div class="jnabapainel" id="jnAbaVida" role="tabpanel" aria-labelledby="jnAbaBtnVida">' + vida + '</div>' +
+    '<div class="jnabapainel" id="jnAbaComunidade" role="tabpanel" aria-labelledby="jnAbaBtnComunidade" hidden>' + comunidade + '</div>';
+}
+function jornalTrocarAba(aba){
+  if(aba !== 'vida' && aba !== 'comunidade') return;
+  var corpo = $('jornalCorpo'); if(!corpo) return;
+  jornalAba = aba;
+  [].forEach.call(corpo.querySelectorAll('[data-jnaba]'), function(b){
+    var ativa = b.dataset.jnaba === aba;
+    b.setAttribute('aria-selected', ativa ? 'true' : 'false'); b.tabIndex = ativa ? 0 : -1;
+  });
+  [].forEach.call(corpo.querySelectorAll('.jnabapainel'), function(p){
+    p.hidden = p.id !== (aba === 'vida' ? 'jnAbaVida' : 'jnAbaComunidade');
+  });
+  if(aba === 'comunidade' && !jornalAtividadeCarregada) jornalAtividadeCarregar();
+}
+function jornalAbasIniciar(){
+  var corpo = $('jornalCorpo'); if(!corpo) return;
+  [].forEach.call(corpo.querySelectorAll('[data-jnaba]'), function(b){
+    b.addEventListener('click', function(){ jornalTrocarAba(b.dataset.jnaba); });
+    b.addEventListener('keydown', function(e){
+      if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var proxima = b.dataset.jnaba === 'vida' ? 'comunidade' : 'vida';
+      jornalTrocarAba(proxima);
+      var alvo = corpo.querySelector('[data-jnaba="' + proxima + '"]'); if(alvo) alvo.focus();
+    });
+  });
+  jornalTrocarAba(jornalAba);
+}
+// Atividade individual: somente o dono da sessão vê o resultado de missoes().
+// Não usa localStorage nem publica dados de Handshake/Café de outras contas.
+function jornalAtividadeHtml(){
+  return '<section class="jnbloco jnatividade"><h4>💌 ' + escHtml(tr('Minha atividade confirmada hoje')) + '</h4>' +
+    '<p class="jndiariodica">' + escHtml(tr('Só você vê estes registros das suas missões diárias.')) + '</p>' +
+    '<div id="jornalAtividadeDia"><p class="jnvazio">' + escHtml(tr('Abra esta seção para consultar suas atividades.')) + '</p></div></section>';
+}
+function jornalAtividadeTexto(missoes){
+  if(!Array.isArray(missoes)) return [];
+  var nomes = {
+    handshake:'🤝 ' + tr('Você acertou um presente no Handshake⭐Event! hoje!'),
+    cafe:'☕ ' + tr('Você serviu um pedido perfeito no Happy⭐Cafe! hoje!')
+  };
+  return missoes.filter(function(m){
+    if(!m || !Object.prototype.hasOwnProperty.call(nomes, m.k)) return false;
+    var prog = Number(m.prog), meta = Number(m.meta);
+    return m.feito === true || (Number.isFinite(prog) && Number.isFinite(meta) && meta > 0 && prog >= meta);
+  }).map(function(m){ return nomes[m.k]; });
+}
+function jornalAtividadeCarregar(){
+  var box = $('jornalAtividadeDia'); if(!box) return;
+  jornalAtividadeCarregada = true;
+  if(!contaJ){
+    box.innerHTML = '<p class="jnvazio">' + escHtml(tr('Entre na sua conta para consultar suas missões confirmadas.')) + '</p>';
+    return;
+  }
+  var dono = String(contaJ.id || contaJ.nick || '');
+  box.innerHTML = '<p class="jnvazio">' + escHtml(tr('Conferindo suas missões no servidor…')) + '</p>';
+  contaRpc('missoes').then(function(r){
+    if(jornalOv.hidden || !contaJ || String(contaJ.id || contaJ.nick || '') !== dono) return;
+    var relatos = jornalAtividadeTexto(r);
+    box.innerHTML = relatos.length ? '<ul>' + relatos.map(function(t){ return '<li>' + escHtml(t) + '</li>'; }).join('') + '</ul>' :
+      '<p class="jnvazio">' + escHtml(tr('Nenhum destaque de Handshake ou Café nas missões de hoje.')) + '</p>';
+  }).catch(function(){
+    if(jornalOv.hidden || !contaJ || String(contaJ.id || contaJ.nick || '') !== dono) return;
+    box.innerHTML = '<p class="jnvazio">' + escHtml(tr('Não foi possível confirmar suas atividades agora.')) + '</p>';
+  });
 }
 function jornalFotos(){
   [].forEach.call(document.querySelectorAll('#jornalCorpo canvas[data-jnick]'), function(cv){
@@ -548,11 +624,12 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
   });
 }
 function jornalAbrir(){
+  jornalAba = 'vida'; jornalAtividadeCarregada = false;
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
-  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); })
-    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); } });
+  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalAbasIniciar(); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); })
+    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalAbasIniciar(); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); } });
 }
 function jornalFechar(){ jornalOv.hidden = true; }
 // ---------- Novidades como blog: só a admin posta (imagem, título e legenda); ficam os 5 últimos ----------

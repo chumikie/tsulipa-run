@@ -132,3 +132,12 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfaniv small{font-size:12.5px;font-weight:700;-webkit-text-fill-color:#fff;opacity:.95;text-shadow:0 1px 2px rgba(60,20,110,.4)}
 .perfaniv-c{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:22px;animation:hubpula 1.4s ease-in-out infinite}.perfaniv-c.d{left:auto;right:10px;animation-delay:.4s}
 .perfsub{margin:10px 0 4px;font-size:13px;color:var(--b1)}
+
+/* Estante de troféus: as insígnias em prateleiras de madeira, 5 por prateleira */
+.perfestconta{text-align:center;font-size:13px;font-weight:700;color:var(--sub);margin:0 0 8px}.perfestconta b{color:var(--b1)}
+.perfins.perfestante{grid-template-columns:repeat(5,minmax(0,1fr));gap:24px 10px;padding:14px 12px 22px;border-radius:18px;background:linear-gradient(180deg,#fff7ee,#fdebd8);box-shadow:inset 0 0 0 3px #e8c9a4}
+.perfestante .perfin{position:relative;overflow:visible}
+.perfestante .perfin::after{content:"";position:absolute;left:-8px;right:-8px;bottom:-13px;height:8px;border-radius:3px;background:linear-gradient(180deg,#c98b55,#a0673a);box-shadow:0 3px 0 rgba(90,50,20,.25);pointer-events:none}
+.perfestante .perfin.ok{box-shadow:0 0 0 2px #ffd23f inset,0 6px 12px rgba(245,180,0,.35)}
+@media (max-width:380px){.perfins.perfestante{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.perfestante .perfin[aria-pressed="true"]{transform:none}

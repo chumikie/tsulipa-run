@@ -710,7 +710,7 @@ function perfAbaMostrar(){
         h += '<aside class="perfprofile-nudge" role="status"><strong>✨ ' + escHtml(tr('Seu perfil pode ficar ainda mais com a sua cara!')) + '</strong><p>' + escHtml(tr('Escolha um emoji e uma cor para personalizar sua identidade no TsuLiPa⭐World.')) + '</p><button type="button" class="btn" id="perfProfileStyleCta">🎨 ' + escHtml(tr('Preencher agora')) + '</button></aside>';
       }
     }
-    h += '<h3>🏅 ' + escHtml(tr('Insígnias')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
+    h += '<h3>🏆 ' + escHtml(tr('Estante de troféus')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
     if(typeof cardsHtml === 'function') h += '<h3>🃏 ' + escHtml(tr('Últimos cards do Star⭐Gacha!')) + '</h3>' + cardsHtml(d.cards || [], 'perfCards', meu);
     // Center Run: posição geral, recorde por personagem e últimas corridas
     h += '<h3>🏁 ' + escHtml(tr('Center Run')) + '</h3>';
@@ -793,7 +793,9 @@ function perfInsHtml(tem, meu){
   var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
   var lista = PERF_INS.filter(function(i){ return perfInsNv(tem, i[0]) > 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
   if(!lista.length) return '<p class="perfcarr">✧</p>';
-  return '<div class="perfins" id="perfIns">' + lista.map(function(i){
+  var ganhos = lista.filter(function(i){ return perfInsNv(tem, i[0]) > 0; }).length;
+  return '<p class="perfestconta"><b>' + ganhos + '</b> / ' + lista.length + ' ' + escHtml(tr('troféus na estante')) + '</p>' +
+    '<div class="perfins perfestante" id="perfIns">' + lista.map(function(i){
     var nv = perfInsNv(tem, i[0]), ok = nv > 0;
     return '<button type="button" class="perfin' + (ok ? ' ok' : '') + '" data-ins="' + i[0] + '" aria-pressed="' + (perfInsSel === i[0]) + '" title="' + escHtml(tr(i[2])) + '"><span>' + (ok ? i[1] : '🔒') + '</span>' + (nv > 1 ? '<i class="perfnv">' + '★★★'.slice(0, nv) + '</i>' : '') + '</button>';
   }).join('') + '</div><p class="perfinsdesc" id="perfInsDesc"' + (perfInsSel ? '' : ' hidden') + '></p>';

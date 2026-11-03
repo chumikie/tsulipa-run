@@ -126,12 +126,19 @@
  #hub #hubCards .hubduo>small:not(.tw-hubgame-jp){flex-basis:auto}
  #hub #hubCards{
    grid-template-columns:repeat(3,minmax(0,1fr));
-   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo hand hand";
+   grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "sora karaoke gacha" "duo duo duo" "hand hand hand";
    align-items:stretch;
  }
- #hub #hubCards .hubperf,#hub #hubCards .hubduo{
+ #hub #hubCards .hubperf{
    flex-direction:column;justify-content:center;gap:3px;flex-wrap:nowrap;
  }
+ /* Moon Duo e Handshake: faixas largas como o Center⭐Run!, ícone + título + descrição na mesma linha */
+ #hub #hubCards>button.hubcard.hubduo,#hub #hubCards>button.hubcard.hubhandshake{
+   min-height:0;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:center;gap:14px;padding:16px 26px;
+ }
+ #hub #hubCards .hubduo>i,#hub #hubCards .hubhandshake>i{font-size:36px;margin:0}
+ #hub #hubCards .hubduo>small,#hub #hubCards .hubhandshake>small{flex-basis:auto;margin:0;text-align:left}
+ #hub #hubCards .hubduo>small:not(.tw-hubgame-jp),#hub #hubCards .hubhandshake>small:not(.tw-hubgame-jp){max-width:46ch}
 }
 #hub #hubCards .tw-hubgame-karaoke .tw-karaoke-timer{
   display:block;margin-top:5px;padding:5px 8px;

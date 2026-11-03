@@ -138,9 +138,16 @@ function hsDesenhar(){
   x.save(); x.globalAlpha = .18 + .06 * Math.sin(t / 20); x.fillStyle = '#fff6b0';
   [[.3, -1], [.75, 1]].forEach(function(h){ x.beginPath(); x.moveTo(W2 * h[0], 0); x.lineTo(W2 * h[0] + h[1] * W2 * .2 - W2 * .12, H2); x.lineTo(W2 * h[0] + h[1] * W2 * .2 + W2 * .12, H2); x.closePath(); x.fill(); });
   x.restore();
-  if(hs && (hs.fase === 'fila' || hs.fase === 'inicio')){ var resta = hs.fase === 'inicio' ? 4 : Math.max(0, hs.fila.length - hs.vi - 1);
-    x.save(); x.globalAlpha = .55; for(var q = 0; q < Math.min(resta, 6); q++){ var qx = W2 * .05 + q * 26, qy = H2 * .6 + Math.sin(t / 9 + q) * 2;
-      x.fillStyle = ['#ffb3d9', '#c8b6ff', '#a8e6cf'][q % 3]; x.beginPath(); x.arc(qx, qy, 11, 0, 7); x.fill(); x.fillRect(qx - 10, qy + 9, 20, 26); } x.restore(); }
+  // fila de verdade: os próximos fãs (mesmo visual sorteado), pequenos e esperando a vez, com plaquinha de nº
+  if(hs && hs.fase === 'fila'){
+    var prox = hs.fila.slice(hs.vi + 1, hs.vi + 5);
+    prox.forEach(function(pf, q){
+      var esc = .5 - q * .05, fw = W2 * .3 * esc / .5, fh = H2 * .62 * esc / .5, qx = W2 * .02 + q * W2 * .085, qy = H2 * .32 + q * 4 + Math.sin(t / 10 + q) * 2;
+      x.save(); x.globalAlpha = .9 - q * .15; try{ x.translate(qx, qy); perfDesenharIdol(x, fw, fh, { c:pf.c, pose:'', expr:pf.expr, fundo:'' }, false, false, t + q * 13); }catch(e){} x.restore();
+    });
+    if(prox.length){ x.save(); x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); if(x.roundRect) x.roundRect(10, H2 - 30, 92, 22, 11); else x.rect(10, H2 - 30, 92, 22); x.fill();
+      x.fillStyle = '#7b3ff0'; x.textBaseline = 'middle'; x.fillText('👥 ' + tr('Fila') + ': ' + prox.length, 20, H2 - 19); x.restore(); }
+  }
   x.save(); x.fillStyle = 'rgba(255,255,255,.94)'; x.strokeStyle = '#ff9ccf'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .18, 12, W2 * .64, 38, 19); else x.rect(W2 * .18, 12, W2 * .64, 38); x.fill(); x.stroke(); x.fillStyle = '#d63384'; x.textAlign = 'center'; x.textBaseline = 'middle';
   x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32); x.restore();
   // o seu Idol atrás da mesa (à direita)
@@ -163,7 +170,7 @@ function hsDesenhar(){
   // o fã da vez (à esquerda), entrando
   var f = hsFaAtual();
   if(f){
-    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * .27;
+    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * (hs.fase === 'fila' ? .37 : .27);
     try{ x.save(); x.translate(fx, H2 * .06); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:f.c, pose:f.pose, expr:f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(hs.fase === 'fila'){   // balão: nome + presente favorito
       var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));

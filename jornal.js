@@ -101,7 +101,7 @@ function jornalFotosDia(){
   var fotos = [0, 1, 2].map(function(i){
     var n = i === 2 ? 3 : ((dia + i) % 2 ? 4 : 3); if(L.length < n) n = L.length;
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
-    return { cena:cenas[i % cenas.length], grupo:grupo };
+    return { cena:cenas[i % cenas.length], grupo:grupo, dia:dia };
   });
   // Na primeira fileira, a paisagem dos 8 substitui a antiga terceira foto.
   // O ensaio fotográfico de trio fica no início da segunda fileira.
@@ -112,7 +112,7 @@ function jornalFotosDia(){
     var ciclo = KaraokeRoomViews.VIEWS.length, locais = jornalSorteio(KaraokeRoomViews.VIEWS, Math.floor(dia / ciclo) + 31);
     var local = locais[((dia % ciclo) + ciclo) % ciclo], oito = [];
     for(var j = 0; j < 8; j++) oito.push(gente[(pos + j) % gente.length]);
-    fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0 });
+    fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0, dia:dia });
   }
   fotos.push(fotoTrio);
   // O telão usa o elenco do clipe do dia — nunca os vencedores do ranking semanal.
@@ -124,7 +124,7 @@ function jornalFotosDia(){
     var clipe = KaraokeNewsPhoto.cast(dataDoClipe, L, euNoClipe);
     if(clipe && clipe.members.length === 6) fotoTelao = {
       cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic','banzai','mic','luz','mic','banzai']],
-      grupo:clipe.members.map(function(m){ return { nick:m.nick, avatar:m.avatar }; }), tipo:'telao', clipe:clipe.concept
+      grupo:clipe.members.map(function(m){ return { nick:m.nick, avatar:m.avatar }; }), tipo:'telao', clipe:clipe.concept, dia:dia
     };
   }
   // você e o seu pet (só para quem entrou e tem pet)
@@ -132,7 +132,7 @@ function jornalFotosDia(){
   if(contaJ && pa && petData && PET_SP[petData.ativo] && typeof perfAvAtual === 'function'){
     var meu = perfAvAtual({ pose:'coracao', expr:3, fundo:'basico' }); meu.pet = { k:petData.ativo, acc:typeof pa.acc === 'string' ? pa.acc : '' };
     var nomePet = pa.nome || PET_SP[petData.ativo].n;
-    fotos.push({ cena:['oshi', '🐾', '{n} com ' + nomePet + ' no camarim', ['coracao']], grupo:[{ nick:contaJ.nick, avatar:meu }], tipo:'pet', legenda:tr('{a} com {b} no camarim').replace('{a}', contaJ.nick).replace('{b}', nomePet) });
+    fotos.push({ cena:['oshi', '🐾', '{n} com ' + nomePet + ' no camarim', ['coracao']], grupo:[{ nick:contaJ.nick, avatar:meu }], tipo:'pet', dia:dia, legenda:tr('{a} com {b} no camarim').replace('{a}', contaJ.nick).replace('{b}', nomePet) });
   }
   // A foto do jogador com pet fica entre o trio e o telão quando há login/pet.
   if(fotoTelao) fotos.push(fotoTelao);
@@ -222,6 +222,41 @@ function jornalCenaDetalhes(x, tema, w, h){
   }
   x.restore();
 }
+// Atuação fotográfica estável por data: thumbnail e download recebem os mesmos gestos.
+// Uma dupla responde à outra em cada cena, sem mudar posições, altura ou enquadramento.
+function jornalFotoAtuacao(f, k, n){
+  var dia = typeof f.dia === 'number' ? f.dia : 0;
+  var tema = f.cena[4] || f.cena[0] || 'basico';
+  var poses = f.cena[3] || ['v'];
+  var s = (Math.imul(dia + tema.length * 17, 1103515245) ^ Math.imul(k + 1, 12345)) >>> 0;
+  var gesto = poses[(k + ((s >>> 8) % poses.length)) % poses.length];
+  var olhar = [2, 3, 6, 4, 0][(s >>> 4) % 5];
+  var duplas = {
+    palco:['mic','banzai'], cafe:['coracao','tchau'], ceu:['banzai','tchau'],
+    noite:['mic','luz'], basico:['v','coracao'], oshi:['luz','luz'],
+    figurinos:['v','tchau'], aniversario:['banzai','coracao'], cartas:['coracao','v'],
+    bastidores:['tchau','mic'], estudio:['mic','v'], jardim:['coracao','v']
+  };
+  if(n >= 3 && f.tipo !== 'telao'){
+    // Na panorâmica, a interação continua no centro e não tapa os extremos.
+    var par = f.tipo === 'janela' ? 2 + (dia % 2) : ((dia + tema.length) % (n - 1));
+    var gestos = duplas[tema] || ['v','coracao'];
+    if(k === par){ gesto = gestos[0]; olhar = tema === 'aniversario' ? 4 : 6; }
+    if(k === par + 1){ gesto = gestos[1]; olhar = 3; }
+  }
+  if(tema === 'aniversario' && n >= 3){
+    // A pessoa aniversariante se surpreende e a vizinha comemora.
+    var aniversariante = dia % n;
+    if(k === aniversariante){ gesto = 'coracao'; olhar = 4; }
+    if(k === (aniversariante + 1) % n){ gesto = 'banzai'; olhar = 3; }
+  }
+  if(tema === 'estudio' && f.tipo !== 'janela' && f.tipo !== 'telao'){
+    // Os microfones continuam na mão de quem está gravando.
+    if(k === 0 || k === 2){ gesto = 'mic'; olhar = k === 0 ? 2 : 3; }
+  }
+  if(f.tipo === 'telao') olhar = [2,3,6,2,3,6][(k + (dia % 6)) % 6];
+  return { pose:gesto, expr:olhar, inclinar:((s % 3) - 1) * .012 };
+}
 function jornalFotoDesenhar(cv, f, assinatura){
   var x = cv.getContext('2d'); if(!x) return;
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
@@ -253,7 +288,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
     f.grupo.forEach(function(p, k){
       var av = JSON.parse(JSON.stringify(p.avatar));
       av.visual = ''; av.pet = null;
-      av.pose = ['mic','banzai','mic','luz','mic','banzai'][k]; av.expr = k % 2 ? 3 : 2;
+      av.pose = ['mic','banzai','mic','luz','mic','banzai'][k]; av.expr = jornalFotoAtuacao(f, k, 6).expr;
       if(uniforme){ av.c.out = uniforme[0]; av.c.outcol = uniforme[1]; }
       var largura = W2 / 6, altura = H2 * [ .59,.62,.65,.65,.62,.59 ][k];
       var cx = largura * (k + .5), base = H2 * (.935 - Math.abs(k - 2.5) * .006);
@@ -314,7 +349,8 @@ function jornalFotoDesenhar(cv, f, assinatura){
       var altura = H2 * .40 * varia; // rosto visível, monumento ao fundo descoberto
       var chao = H2 * (.962 - Math.abs(k - 3.5) * .009);
       var centro = slot8 * (k + .5);
-      av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][k % 4]; av8.visual = ''; av8.pet = null;
+      var atuacao8 = jornalFotoAtuacao(f, k, 8);
+      av8.pose = atuacao8.pose; av8.expr = atuacao8.expr; av8.visual = ''; av8.pet = null;
       // Panorâmica em arco: oito rostos visíveis, sem uma fila cobrir a outra.
       // Cada Idol gira ao redor dos próprios pés, que continuam na areia.
       x.save(); x.translate(centro, chao); x.rotate(balanco);
@@ -353,8 +389,9 @@ function jornalFotoDesenhar(cv, f, assinatura){
     n = 0;
   }
   if(n) f.grupo.forEach(function(p, k){
-    var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
-    var inclinacao = [-.065,.06,-.045,.07][k % 4], ampliacao = [1.045,.985,1.07,1.015][k % 4];
+    var av = JSON.parse(JSON.stringify(p.avatar)), atuacao = jornalFotoAtuacao(f, k, n);
+    av.pose = atuacao.pose; av.expr = atuacao.expr; av.visual = '';
+    var inclinacao = [-.065,.06,-.045,.07][k % 4] + atuacao.inclinar, ampliacao = [1.045,.985,1.07,1.015][k % 4];
     var altura = H2 * .94 * ampliacao, chao = H2 * (.93 + [0,.008,-.007,.005][k % 4]);
     var centro = W2 / 2 + (k - (n - 1) / 2) * slot * .79;
     // Aproxima o trio, alterna pose e escala, mas conserva os pés na linha do chão.

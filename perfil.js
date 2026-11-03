@@ -60,7 +60,10 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   // especiais: dadas à mão pela moderação (só aparecem em quem ganhou)
   ['esp_evento',     '🏆', 'Pódio do evento',    'Ganhou um evento do TsuLiPa World'],
   ['esp_destaque',   '🌟', 'Destaque da semana', 'Escolha da moderação como destaque da semana'],
-  ['esp_fundador',   '💎', 'Fundadores',         'Jogou desde o lançamento do TsuLiPa World']
+  ['esp_fundador',   '💎', 'Fundadores',         'Jogou desde o lançamento do TsuLiPa World'],
+  ['jogo_barista', '🧋', 'Barista perfeito', '12 pedidos perfeitos em um turno do Happy⭐Cafe!'],
+  ['jogo_memoria', '🤝', 'Memória de fã', 'Combo de 10 acertos no Handshake⭐Event!'],
+  ['jogo_caderno', '📒', 'Caderno completo', 'Todas as receitas do Caderno do Happy⭐Cafe!']
 ];
 // Oshi: membros atuais do BRS48, com a cor e o emoji de cada um (lista do Blog de Membros do BRS48, out/2026).
 // Para atualizar, é só mexer nesta lista: [apelido, emoji, cor].
@@ -711,6 +714,7 @@ function perfAbaMostrar(){
       }
     }
     h += '<h3>🏆 ' + escHtml(tr('Estante de troféus')) + '</h3>' + perfInsHtml(d.insignias || [], meu);
+    h += '<h3>📔 ' + escHtml(tr('Diário de carreira')) + '</h3>' + perfDiarioHtml(d, meu);
     if(typeof cardsHtml === 'function') h += '<h3>🃏 ' + escHtml(tr('Últimos cards do Star⭐Gacha!')) + '</h3>' + cardsHtml(d.cards || [], 'perfCards', meu);
     // Center Run: posição geral, recorde por personagem e últimas corridas
     h += '<h3>🏁 ' + escHtml(tr('Center Run')) + '</h3>';
@@ -789,6 +793,7 @@ var PERF_TIERS = { duo:[5, 25, 100, 'cenas'], presenca:[7, 30, 100, 'dias difere
 var perfInsTem = [];
 function perfInsNv(tem, k){ var n = 0; (tem || []).forEach(function(x){ var p = String(x).split(':'); if(p[0] === k) n = Math.max(n, +p[1] || 1); }); return n; }
 function perfInsHtml(tem, meu){
+  if(meu && typeof conqLista === 'function') tem = (tem || []).concat(conqLista());   // conquistas dos jogos novos guardadas no aparelho
   perfInsTem = tem || [];
   var tmA = typeof temaAtual === 'function' ? temaAtual() : '';
   var lista = PERF_INS.filter(function(i){ return perfInsNv(tem, i[0]) > 0 || (meu && (!/^(tema_|esp_)/.test(i[0]) || i[0] === 'tema_' + tmA)); });
@@ -1356,4 +1361,28 @@ function perfPresente(){
     perfPres.hidden = false;
     if(sfx.rank) sfx.rank();
   }).catch(function(){});
+}
+
+// Diário de carreira: linha do tempo de marcos, montada com o que o perfil já traz (e, no próprio perfil,
+// com o que fica no aparelho: receitas do Happy⭐Cafe!, recorde do Handshake e conquistas dos jogos novos).
+function perfDiarioHtml(d, meu){
+  var itens = [], n = function(v){ return (+v || 0).toLocaleString('pt-BR'); };
+  if(d.desde) itens.push(['🌱', tr('Estreia no TsuLiPa⭐World'), String(d.desde).slice(0, 10).split('-').reverse().join('/')]);
+  var c = +d.corridas || 0;
+  [1, 10, 50, 100, 500, 1000].forEach(function(m){ if(c >= m) itens.push(['🏃', m === 1 ? tr('Primeira corrida no Center⭐Run!') : tr('{n} corridas no Center⭐Run!').replace('{n}', n(m)), '']); });
+  var ce = +d.centers || 0;
+  if(ce >= 1) itens.push(['👑', tr('Primeiro Center!'), '']);
+  [10, 50, 100].forEach(function(m){ if(ce >= m) itens.push(['👑', tr('{n} Centers').replace('{n}', n(m)), '']); });
+  if(+d.best > 0) itens.push(['🏆', tr('Recorde no Center⭐Run!'), n(d.best) + ' ' + tr('pts')]);
+  var ins = (d.insignias || []).concat(meu && typeof conqLista === 'function' ? conqLista() : []);
+  var nomes = {}; PERF_INS.forEach(function(i){ nomes[i[0]] = i; });
+  ins.forEach(function(x){ var k = String(x).split(':')[0], i = nomes[k]; if(i) itens.push([i[1], tr('Insígnia: {n}').replace('{n}', tr(i[2])), '']); });
+  if(+d.coracoes > 0) itens.push(['💖', tr('Corações recebidos'), n(d.coracoes)]);
+  if(meu){
+    try{ var rec = JSON.parse(localStorage.getItem('tw_cafe_receitas')) || {}, nr = Object.keys(rec).length; if(nr) itens.push(['📒', tr('Receitas no Caderno do Happy⭐Cafe!'), nr + '/20']); }catch(e){}
+    try{ var rc = +localStorage.getItem('tw_cafe_recorde') || 0; if(rc) itens.push(['🧋', tr('Recorde no Happy⭐Cafe!'), n(rc) + ' ' + tr('pts')]); }catch(e){}
+    try{ var rh = +localStorage.getItem('tw_handshake_recorde') || 0; if(rh) itens.push(['🤝', tr('Recorde no Handshake⭐Event!'), n(rh) + ' ' + tr('pts')]); }catch(e){}
+  }
+  if(!itens.length) return '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
+  return '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
 }

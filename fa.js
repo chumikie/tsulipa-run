@@ -34,7 +34,8 @@ function faUI(){
   else {
     var p = FA_PEDIDOS[faDados.tipo] || ['💌', '{n}'], meta = +faDados.meta || 1, prog = Math.min(meta, +faDados.progresso || 0);
     var tm = typeof temaAtual === 'function' ? temaAtual() : '', ti = tm && typeof TEMA_INFO !== 'undefined' ? TEMA_INFO[tm] : null;
-    if(ti) h += '<p class="fatema">' + ti[0] + ' ' + escHtml(tr('Pedido especial: {t}!').replace('{t}', tr(ti[1]))) + '</p>';   // pedidos ligados ao evento do momento
+    if(ti) h += '<p class="fatema">' + ti[0] + ' ' + escHtml(tr('Pedido especial: {t}!').replace('{t}', tr(ti[1]))) + '</p>';
+    else if(typeof eventoAtual === 'function') h += '<p class="fatema">' + eventoAtual().emo + ' ' + escHtml(tr(eventoAtual().nome)) + '</p>';   // sem data especial: o evento da semana   // pedidos ligados ao evento do momento
     h += '<div class="facarta"><small>' + escHtml(tr('Um recado de')) + ' <b>' + escHtml(fa ? fa.nick : tr('um fã')) + '</b></small><p>' + p[0] + ' ' + escHtml(tr(p[1]).replace('{n}', meta.toLocaleString('pt-BR'))) + '</p></div>' +
       '<div class="albumbarra"><i style="width:' + Math.round(prog / meta * 100) + '%"></i></div><p class="albumprog">' + prog.toLocaleString('pt-BR') + ' / ' + meta.toLocaleString('pt-BR') + '</p>' +
       (faDados.resgatado ? '<p class="faok">💌 ' + escHtml(tr('Pedido entregue! Volte amanhã para um novo.')) + '</p>'

@@ -15,8 +15,10 @@ function cfGravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch
 function cfNomeReceita(p){ return tr(CF_BASES[p.base][1]) + ' ' + CF_ENFEITES[p.enf][0]; }
 function cfPedido(r, n){
   // começa simples (base + enfeite) e vai pedindo cobertura e docinho
-  return { base:Math.floor(r() * CF_BASES.length), cob:n >= 2 || r() < .4 ? Math.floor(r() * CF_COBERTURAS.length) : -1,
+  var p = { base:Math.floor(r() * CF_BASES.length), cob:n >= 2 || r() < .4 ? Math.floor(r() * CF_COBERTURAS.length) : -1,
     enf:Math.floor(r() * CF_ENFEITES.length), doce:n >= 4 && r() < .6 ? Math.floor(r() * CF_DOCES.length) : -1 };
+  if(typeof eventoAtual === 'function' && r() < .5){ var ev = eventoAtual(); p.base = ev.base; if(p.doce >= 0) p.doce = ev.doce; }   // pedido da semana
+  return p;
 }
 function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
 function cfAbrir(){
@@ -27,7 +29,7 @@ function cfAbrir(){
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
-  var f = hsFa(r, nome); f.pedido = cfPedido(r, cf.atendidos);
+  var f = hsFa(r, nome); f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
   cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
   cfUI();
@@ -55,6 +57,8 @@ function cfEscolher(tipo, i){
   if(tipo === 'lixo'){ cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cfUI(); return; }
   if(tipo !== 'doce' && tipo !== 'base' && cf.monta.base < 0) return;   // primeiro a base no copo
   cf.monta[tipo] = cf.monta[tipo] === i && tipo === 'doce' ? -1 : i;
+  if(tipo === 'doce') cf.doceT = cfT;
+  cf.aviso = '';
   if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
   cfUI();
 }
@@ -76,11 +80,13 @@ function cfServir(saiu){
   }
   if(certo){
     cf.combo++; cf.perfeitos++;
-    cf.pontos += Math.round((100 + resto * 100 + (p.cob >= 0 ? 30 : 0) + (p.doce >= 0 ? 40 : 0)) * (1 + Math.min(cf.combo - 1, 5) * .1));
+    var semana = typeof eventoAtual === 'function' && p.base === eventoAtual().base;
+    cf.pontos += (semana ? 50 : 0) + Math.round((100 + resto * 100 + (p.cob >= 0 ? 30 : 0) + (p.doce >= 0 ? 40 : 0)) * (1 + Math.min(cf.combo - 1, 5) * .1));
     var oks = { animado:['Que delícia! Vou postar foto! 📸', 'Perfeito!! 💖'], timido:['E-está lindo… obrigado. 🥹', 'Tão gostoso…'], fofo:['Que fofo esse copo! 💕', 'Yay! Igualzinho! ☕'] }[cf.cli.jeito] || ['Perfeito!! 💖'];
     cf.fala = tr(oks[Math.floor(Math.random() * oks.length)]);
     var rec = cfLer(CF_RECEITAS_KEY, {}), chave = p.base + '-' + p.enf;
-    if(!rec[chave]){ rec[chave] = 1; cfGravar(CF_RECEITAS_KEY, rec); cf.novas.push(cfNomeReceita(p)); }
+    if(!rec[chave]){ rec[chave] = 1; cfGravar(CF_RECEITAS_KEY, rec); cf.novas.push(cfNomeReceita(p));
+      if(Object.keys(rec).length >= CF_BASES.length * CF_ENFEITES.length && typeof conqGanhar === 'function' && conqGanhar('jogo_caderno')) cf.conq.push('📒 ' + tr('Caderno completo')); }
     for(var k = 0; k < 6; k++) cf.hearts.push({ x:.2 + Math.random() * .2, y:.55, v:.004 + Math.random() * .004, t:0, e:['💖', '☕', '✨'][k % 3] });
     if(sfx && sfx.star) try{ sfx.star(); }catch(e){}
   } else {
@@ -92,6 +98,7 @@ function cfServir(saiu){
 }
 function cfFim(){
   cf.fase = 'fim';
+  if(cf.perfeitos >= 12 && typeof conqGanhar === 'function' && conqGanhar('jogo_barista')) cf.conq.push('🧋 ' + tr('Barista perfeito'));
   var rec = cfLer(CF_RECORDE_KEY, 0); cf.novoRec = cf.pontos > rec; if(cf.novoRec) cfGravar(CF_RECORDE_KEY, cf.pontos);
   cfUI();
 }
@@ -100,6 +107,8 @@ function cfLoop(ms){
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('cfCv'), ms) : 1; cfT += d;
   if(cf){
     var dt = cfT - cf.t0;
+    if(cf.fase === 'pedido' && cf.cli && cf.cli.vaiRoubar && !cf.cli.roubou && cf.monta.doce >= 0 && cfT - cf.doceT > 45 && typeof eventoPet === 'function' && eventoPet()){   // o pet pega o docinho!
+      var pt = eventoPet(); cf.cli.roubou = true; cf.monta.doce = -1; cf.rouboT = cfT; cf.aviso = '🐾 ' + tr('{p} pegou o docinho! Coloque outro.').replace('{p}', pt.nome || tr('Seu pet')); cfUI(); }
     if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) bar.style.width = Math.max(0, 100 - dt / cfPaciencia() * 100) + '%'; }
     else if(cf.fase === 'reacao' && dt > 90){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
   }
@@ -162,6 +171,9 @@ function cfDesenhar(){
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
+  if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
+    eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.1, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)));
+    if(rb < 80){ x.save(); x.font = '20px sans-serif'; x.textAlign = 'center'; x.globalAlpha = Math.max(0, 1 - rb / 80); x.fillText('😋', W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0), H2 * .74 - 52 - rb * .3); x.restore(); } }
   if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
@@ -192,8 +204,10 @@ function cfUI(){
   if(cf.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>';
   if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
+    (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
+    if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += '<div class="hstempo"><i id="cfPac" style="width:100%"></i></div>' +
       cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
       '<div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>';
@@ -204,6 +218,7 @@ function cfUI(){
     if(cf.provaEstado==='confirmado') h += '<p class="faok">✅ ' + escHtml(tr('Pedido confirmado no servidor para a missão do dia.')) + '</p>';
     else if(cf.provaEstado==='pendente') h += '<p class="hsdica">⏳ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
     else if(cf.perfeitos>0 && !cf.servidor) h += '<p class="hsdica">🔒 ' + escHtml(tr('Modo treino: pedido sem validação do servidor.')) + '</p>';
+    if(cf.conq.length) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + cf.conq.map(escHtml).join(' · ') + '</p>';
     if(cf.novas.length) h += '<p class="faok">📒 ' + escHtml(tr('Receitas novas no Caderno:')) + ' ' + cf.novas.map(escHtml).join(' · ') + '</p>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }

@@ -56,6 +56,7 @@ function hsNovaRodada(){
   fila.forEach(function(f,i){ f.hsOrigem=hs.rodada+1; f.hsIndice=i; });
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
+  if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
   var quiz = fila.slice();
   // Superfã: da 2ª rodada em diante, um fã de uma rodada anterior volta SEM se apresentar de novo (vale bônus)
   if(hs.historico.length && hs.rodada >= 1){
@@ -85,6 +86,8 @@ function hsResponder(i){
   hs.resp = i; hs.ok = ok; hs.total++;
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
+    if(typeof eventoPresente === 'function' && f.pres === eventoPresente()) hs.pontos += 50;
+    if(hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
     var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);
     hs.pontos += Math.round(base * (1 + Math.min(hs.combo - 1, 10) * .1));
     hs.hype = Math.min(100, hs.hype + (f.superfa ? 15 : 8)); if(f.superfa) hs.superfas++;
@@ -234,6 +237,7 @@ function hsDesenhar(){
       if(hs.fase === 'resposta'){ x.save(); x.font = '48px sans-serif'; x.textAlign = 'center'; x.fillText(hs.ok ? '💖' : '💦', W2 * .5, H2 * .45 - Math.min(20, dt)); x.restore(); }
     }
   }
+  if(typeof eventoPetDesenhar === 'function') eventoPetDesenhar(x, W2 * .46, H2 * .9, t, 1.3, W2 * (.4 + .04 * Math.sin(t / 90)));
   hsCoracoes(x, W2, H2);
 }
 function hsCoracoes(x, W2, H2){
@@ -248,6 +252,7 @@ function hsUI(){
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
   if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
+    (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', eventoAtual().pres)) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
   else if(hs.fase === 'fila') h += '<p class="hsdica">👀 ' + escHtml(tr('Memorize: fã {a} de {b}')).replace('{a}', hs.vi + 1).replace('{b}', hs.fila.length) + '</p>';
@@ -261,6 +266,7 @@ function hsUI(){
   else if(hs.fase === 'pausa') h += '<p class="hsdica">🎶 ' + escHtml(tr('Próxima fila chegando… agora com mais fãs!')) + '</p>';
   else if(hs.fase === 'fim'){
     h += '<p class="hsfim">' + (hs.novo ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('Fim do evento!')) + ' <b>' + hs.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>';
+    if(hs.conq) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + escHtml(hs.conq) + '</p>';
     h += '<div class="hsresumo"><span>🎯 ' + hs.acertos + '/' + hs.total + '</span><span>🔥 ' + escHtml(tr('Combo máx.')) + ' ' + hs.comboMax + '</span><span>🌟 ' + escHtml(tr('Superfãs')) + ' ' + hs.superfas + '</span></div>';
     if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
     if(!hs.servidor && contaJ) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';

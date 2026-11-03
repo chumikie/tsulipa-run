@@ -437,6 +437,10 @@ A #71 concentra todo o trabalho novo até a publicação, para economizar deploy
 | Happy⭐Cafe! | Café do grupo (shakes, frappés, lattes e docinhos montados em camadas); 3 vidas, 12 clientes; prêmio só visual: Caderno de receitas (20, salvo no aparelho) | `cafe.js`, `cafe.css` |
 | Jogos no hub | Center⭐Run! no topo; depois Karaoke, Sora e Gacha; depois Moon Duo, Handshake e Happy Cafe (3 por linha no computador, 2 no celular). Handshake e Café usam o rosa de alerta com "!" até a partida do dia | `index2-skin.css`, `hub.js` |
 | Missões e Novidades | Textos das missões `handshake` e `cafe`; o site chama `marcar_visita` ao fim da partida. Novidades com os jogos novos | `hub.js` |
+| Evento da semana | Tema que muda toda segunda (Morango, Chocolate, Matcha, Estrelas, Café): pedidos do Café e presente do Handshake valem +50; aparece no Pedido de fã (quando não há tema de data) e numa plaquinha no banner | `evento.js` |
+| Conquistas dos jogos novos | Insígnias visuais na Estante: 🧋 Barista perfeito, 🤝 Memória de fã, 📒 Caderno completo (no aparelho; na conta depois da proposta SQL) | `evento.js`, `perfil.js` |
+| Diário de carreira | Linha do tempo no Perfil: estreia, marcos de corridas e Centers, recorde, insígnias, corações, receitas e recordes dos jogos novos | `perfil.js`, `atualizacao2.css` |
+| Pet nos jogos novos | O pet ativo passeia no Handshake e no balcão do Café, e às vezes pega o docinho do pedido | `evento.js`, `cafe.js`, `handshake.js` |
 | Acabamento | Brilhos, bordas pastel, títulos em roxo, contraste da pílula do Hoje, espaçamento dos botões | `atualizacao2.css` |
 | Traduções | Todos os textos novos em en/es/th/ja/id (conferência: 0 faltando) | `tw-i18n.js`, `translations/id/` |
 | Prévia | `?demo=1` simula conta e respostas do servidor (nunca no domínio de produção) | `demo.js` |
@@ -451,6 +455,7 @@ Regras mantidas: os jogos novos não dão estrelas e não usam o teto de ★50 d
 | `20261103180000_troca_de_cards.sql` | Aplicada pelo ChatGPT/Miniwa (validada em PostgreSQL local com teste de troca) |
 | `20261103190000_festival_e_ensaio_trio.sql` | Aplicada pelo ChatGPT/Miniwa |
 | `20261103200000_handshake_premio.sql` | **Pendente.** Sem ela, o prêmio do dia do Handshake (ticket do Karaoke ou mimo do pet) não é entregue; o jogo funciona |
+| `20261103220000_conquistas_jogos_novos.sql` | **Pendente.** `conquista_jogo(p_k)` grava as 3 insígnias dos jogos novos na conta (o nome real da tabela de insígnias precisa ser confirmado pelo ChatGPT) |
 | `20261103210000_missoes_handshake_cafe.sql` | **Pendente.** Adiciona as missões `handshake` e `cafe` (nível 1, ★10). O ChatGPT precisa também fazer `marcar_visita` e `missoes()` aceitarem essas chaves (o corpo dessas funções não está no repositório). **Decisão da usuária:** ★10 ou só enfeite |
 
 Outras pendências de banco comunicadas: PR #74 (recompensa do Sora), recorde da Patiliri (56.343), conciliação das missões antigas (★160), URLs de redirecionamento do login nas prévias do Netlify.

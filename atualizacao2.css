@@ -75,3 +75,14 @@ button.albumslot{box-shadow:0 0 0 2px #ffe08a inset,0 4px 0 rgba(123,63,240,.10)
 .shopp .btns,.jornalp .btns,.albump .btns,.fap .btns,.hsp .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:10px 0}
 .shopp a.btn,.jornalp a.btn{text-decoration:none}
 .shopmontbtns{margin-top:6px}
+/* Diário de carreira: linha do tempo com bolinhas e fio pastel */
+.perfdiario{list-style:none;margin:6px 0 12px;padding:0 0 0 8px;position:relative;max-height:320px;overflow:auto}
+.perfdiario::before{content:"";position:absolute;left:24px;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(#ffb3d9,#c8b6ff,#a8e6cf)}
+.perfdiario li{position:relative;display:flex;align-items:center;gap:10px;padding:6px 8px;margin:4px 0;border-radius:14px;background:rgba(255,255,255,.75);border:2px solid #f6d7ea}
+.perfdiario .pdemo{flex:0 0 32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;box-shadow:0 2px 0 #f2c5e3;font-size:17px;z-index:1}
+.perfdiario b{flex:1;color:#3c2a8f;font-size:13px}
+.perfdiario small{color:#d63384;font-weight:800;font-size:12px;white-space:nowrap}
+/* Evento da semana e aviso do pet no café */
+.hsdica.evsemana{background:linear-gradient(90deg,#fff0f7,#f3edff);border:2px dashed #f2c5e3;border-radius:14px;padding:6px 10px}
+.cfaviso{margin:6px 0;padding:6px 10px;border-radius:14px;background:#fff6dc;border:2px solid #ffd98a;color:#a0673a;font-weight:800;font-size:13px;animation:hsPulso .5s ease}
+@media (prefers-reduced-motion:reduce){.cfaviso{animation:none}}

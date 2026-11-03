@@ -24,7 +24,7 @@ function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em
 function cfAbrir(){
   cfOv.hidden = false; cfOv.scrollTop = 0;
   cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, provaEstado:'' };
-  cfUI(); if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
+  cfUI(); var tela=$('cfCv'); if(tela) tela.onclick=cfTocarIdol; if(tela) tela.setAttribute('aria-label',tr('Toque no Idol')); if(tela) tela.onkeydown=function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); cfReagirIdol(); } }; var camera=$('cfFoto'); if(camera){ camera.title=tr('Tirar foto'); camera.setAttribute('aria-label',tr('Tirar foto')); } if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
@@ -123,6 +123,7 @@ function cfFim(){
 }
 function cfLoop(ms){
   cfAnim = 0; if(!twAnimacaoVisivel(cfOv)) return;
+  if($('shr') && !$('shr').hidden){ cfAnim=requestAnimationFrame(cfLoop); return; } // relógio pausado durante a foto
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('cfCv'), ms) : 1; cfT += d;
   if(cf){
     var dt = cfT - cf.t0;
@@ -178,9 +179,15 @@ function cfDesenhar(){
   for(var l = 0; l < 14; l++){ var lx = l * W2 / 13, ly = 18 + Math.sin(l / 13 * Math.PI) * 13; x.fillStyle = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#3fc1ff'][l % 4]; x.globalAlpha = .6 + .4 * Math.sin(t / 12 + l); x.beginPath(); x.arc(lx, ly + 6, 5, 0, 7); x.fill(); }
   x.globalAlpha = 1;
   x.save(); x.fillStyle = '#4b3a63'; x.strokeStyle = '#c98b55'; x.lineWidth = 6; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .6, 40, W2 * .36, 96, 10); else x.rect(W2 * .6, 40, W2 * .36, 96); x.fill(); x.stroke();
-  x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
-  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
+  x.fillStyle = '#fff'; x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
+  x.font = '800 14px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText('🧋 Shakes · Lattes', W2 * .78, 84, W2 * .32); x.fillStyle = '#c8e3fb'; x.fillText('🍪 Cookies · Waffles', W2 * .78, 105, W2 * .32);
   x.fillStyle = '#ffd23f'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
+  // O seu Idol recebe os fãs antes de abrir e na hora de fechar o Café.
+  // Durante os pedidos o espaço volta aos clientes: nenhuma colisão visual no atendimento.
+  if(cf && (cf.fase==='inicio' || cf.fase==='fim')){
+    try{var meuCafe=perfAvAtual({pose:'tchau',expr:3,fundo:''});
+      x.save();x.translate(W2*.12,H2*.20);perfDesenharIdol(x,W2*.34,H2*.78,meuCafe,false,false,t);x.restore();}catch(e){}
+  }
   // cliente no balcão
   var c = cf && cf.cli;
   if(c){
@@ -190,6 +197,12 @@ function cfDesenhar(){
   // balcão de madeira
   x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
+  if(cf && (cf.fase==='inicio' || cf.fase==='fim')){
+    x.save(); x.globalAlpha=.88+.1*Math.sin(t/15);x.fillStyle='#fff5fb';x.strokeStyle='#f2c5e3';x.lineWidth=2;
+    x.beginPath();if(x.roundRect)x.roundRect(W2*.1,H2*.62,W2*.34,27,13);else x.rect(W2*.1,H2*.62,W2*.34,27);x.fill();x.stroke();
+    x.fillStyle='#a44cba';x.textAlign='center';x.textBaseline='middle';x.font='800 13px "M PLUS Rounded 1c",sans-serif';
+    x.fillText('💕 '+tr('Toque no Idol')+' ✨',W2*.27,H2*.62+14,W2*.31);x.restore();
+  }
   if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
     eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.1, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)));
     if(rb < 80){ x.save(); x.font = '20px sans-serif'; x.textAlign = 'center'; x.globalAlpha = Math.max(0, 1 - rb / 80); x.fillText('😋', W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0), H2 * .74 - 52 - rb * .3); x.restore(); } }
@@ -219,9 +232,9 @@ function cfBotoes(tipo, lista, tit){
 function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   var rec = cfLer(CF_RECEITAS_KEY, {}), nRec = Object.keys(rec).length, totRec = CF_BASES.length * CF_ENFEITES.length;
-  var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>🏆 ' + cfLer(CF_RECORDE_KEY, 0).toLocaleString('pt-BR') + '</span></div>';
+  var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>🏆 ' + (typeof recMaiorLocal==='function' ? recMaiorLocal('cafe') : cfLer(CF_RECORDE_KEY, 0)).toLocaleString('pt-BR') + '</span></div>';
   if(cf.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>';
-  if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
+  if(cf.fase === 'inicio') h += '<div class="hc-instrucoes"><span aria-hidden="true">🧋</span><p>' + escHtml(tr('Prepare cada pedido: base, cobertura, enfeite e docinho, quando solicitado. Sirva antes do tempo acabar!')) + '</p></div>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
@@ -260,7 +273,22 @@ function cfIniciarSeguro(){
   cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,provaEstado:''};
   cfNovoCliente();
 }
+
+// Carinho visual: o toque no Idol do Café não serve pedidos nem altera pontuações.
+function cfTocarIdol(e){
+  if(!cf || (cf.fase!=='inicio' && cf.fase!=='fim')) return;
+  var b=e.currentTarget.getBoundingClientRect(), px=(e.clientX-b.left)/b.width,py=(e.clientY-b.top)/b.height;
+  if(px<.10 || px>.46 || py<.19 || py>.74) return;
+  cfReagirIdol();
+}
+function cfReagirIdol(){ if(!cf || (cf.fase!=='inicio' && cf.fase!=='fim')) return;
+  var emo=['💕','☕','✨','💖','🌸','🫶'];
+  for(var i=0;i<7;i++) cf.hearts.push({x:.2+Math.random()*.2,y:.58+Math.random()*.07,v:.004+Math.random()*.004,t:0,e:emo[i%emo.length]});
+  if(cf.hearts.length>24) cf.hearts=cf.hearts.slice(-24);
+  if(typeof sfx!=='undefined' && sfx && sfx.card) try{sfx.card();}catch(err){}
+}
 function cfClique(e){
+  if(e.target.closest && e.target.closest('#cfFoto')){ hsFotografar('cfCv', 'Happy⭐Cafe!', 'happy-cafe'); return; }
   var b = e.target.closest && e.target.closest('[data-cf]');
   if(b){ var p = b.dataset.cf.split(':'); cfEscolher(p[0], +p[1]); return; }
   if(e.target.closest && e.target.closest('#cfServir')){ cfServir(false); return; }

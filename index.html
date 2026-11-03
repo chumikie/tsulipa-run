@@ -735,7 +735,7 @@ window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
-var twIdCarregamento=null;
+var twIdCarregamento=null, twIdiomaEscolhaToken=0;
 function twIntegrarDicionariosId(){
   var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
   if(!dados||!window.TW_DICT||!window.TW_DICT.id)return false;
@@ -747,7 +747,12 @@ function twIntegrarDicionariosId(){
   });
   return true;
 }
-if(window.TW_ID_PREVIEW_DATA)twIntegrarDicionariosId();
+if(window.TW_ID_PREVIEW_DATA){
+  twIntegrarDicionariosId();
+  // Os itens do Center foram desenhados antes da mesclagem do catálogo ID.
+  // Atualiza opções dinâmicas como "Estrela" sem exigir um segundo clique.
+  refreshAcc();
+}
 function twCarregarIdiomaId(){
   if(window.TW_ID_PREVIEW_DATA)return Promise.resolve();
   if(twIdCarregamento)return twIdCarregamento;
@@ -760,21 +765,37 @@ function twCarregarIdiomaId(){
   }).catch(function(e){twIdCarregamento=null;throw e;});
   return twIdCarregamento;
 }
-[].forEach.call(document.querySelectorAll('.lang button'),function(b){
-  b.onclick=function(){
-    if(b.dataset.l==='id'&&!window.TW_ID_PREVIEW_DATA){
-      b.disabled=true;
-      twCarregarIdiomaId().then(function(){b.disabled=false;b.click();}).catch(function(e){b.disabled=false;console.warn(e);});
-      return;
-    }
-    LANG=b.dataset.l;
+function twSelecionarIdioma(novo){
+  var token=++twIdiomaEscolhaToken;
+  function aplicar(){
+    // Se a pessoa escolheu outro idioma enquanto o ID carregava, não reverte a escolha.
+    if(token!==twIdiomaEscolhaToken)return;
+    LANG=novo;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}
+    // A home tem botões próprios: ambos só podem ser redesenhados com LANG definitivo.
+    if(typeof hubMontar==='function')hubMontar();
     applyLang();
     setBest();
     refreshAcc();
-    if(!$('lbmw').hidden) showLb($('lbm'));
-    if(!$('over').hidden) showLb($('lbo'));
+    if(!$('lbmw').hidden)showLb($('lbm'));
+    if(!$('over').hidden)showLb($('lbo'));
   }
+  if(novo==='id'&&!window.TW_ID_PREVIEW_DATA){
+    var idBtn=document.querySelector('.lang button[data-l="id"]');
+    if(idBtn)idBtn.disabled=true;
+    twCarregarIdiomaId().then(function(){
+      if(idBtn)idBtn.disabled=false;
+      aplicar();
+    }).catch(function(e){
+      if(idBtn)idBtn.disabled=false;
+      console.warn(e);
+    });
+    return;
+  }
+  aplicar();
+}
+[].forEach.call(document.querySelectorAll('.lang button'),function(b){
+  b.onclick=function(){twSelecionarIdioma(b.dataset.l);};
 });
 
 
@@ -2091,7 +2112,8 @@ hubOv.addEventListener('click', function(e){
   if(t.id === 'hubToque'){ hubComecar(); return; }
   if(t.dataset && t.dataset.hl){   // idioma: usa o mesmo botão do menu (salva em brs48cr_lang e traduz o jogo todo)
     var lb = document.querySelector('.lang button[data-l="' + t.dataset.hl + '"]'); if(lb) lb.click();
-    hubMontar(); beep(988, .05, 'triangle', .04); return;
+    // O seletor do Center atualiza o hub somente depois que o idioma estiver pronto.
+    beep(988, .05, 'triangle', .04); return;
   }
   if(t.dataset && t.dataset.ho !== undefined){ applyOshi(t.dataset.ho); hubCfgUI(); beep(1175, .05, 'triangle', .04); return; }
   if(t.id === 'hubTutOk'){ beep(1175, .06, 'triangle', .04); if(++hubTutI >= HUB_TUT.length) hubTutFim(); else hubTutUI(); return; }

@@ -28,9 +28,10 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   coracao:['💖', 'Dê 1 coração em um perfil'], recado:['💌', 'Deixe 1 recado em um perfil'], mini:['🎮', 'Ganhe estrelas em um minijogo do camarim'], pet:['🛍️', 'Compre algo para o seu pet'],
   estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
   estrelas50:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas100:['🌟', 'Chegue a {n} estrelas nas corridas hoje'],
-  pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
+  pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati'],
+  handshake:['🤝', 'Acerte um presente no Handshake⭐Event!'], cafe:['🧋', 'Sirva um pedido perfeito no Happy⭐Cafe!']
 };
-var HUB_NOVIDADES = [["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados"], ["🌏", "Jogo em português, inglês, espanhol, tailandês e japonês"]];
+var HUB_NOVIDADES = [["🗓️", "Evento da semana no Idol⭐News!: um tema novo toda segunda, com bônus no Happy⭐Cafe! e no Handshake⭐Event!"], ["📔", "Diário de carreira e Estante de troféus no Perfil, com insígnias dos jogos novos"], ["📰", "Idol⭐News!: Top 5, Fotos do dia, Festival de Unidades e Ensaio de trio"], ["💌", "Pedido de fã: um pedido especial por dia"], ["🐾", "Seu pet passeia no Café e no Handshake… e às vezes pega um docinho!"], ["🤝", "Handshake⭐Event!: lembre o presente favorito de cada fã na fila"], ["🧋", "Happy⭐Cafe!: monte shakes, frappés e docinhos para os fãs e complete o Caderno de receitas"], ["🎴", "Álbum de cards e Troca de cards com outros Idols"], ["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: o que os jogos novos guardam, trocas de cards e como funciona o clima do Hoje"], ["🌏", "Jogo em português, inglês, espanhol, indonésio, tailandês e japonês"]];
 // Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
 var HUB_TUT = [['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.'],
                ['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
@@ -262,17 +263,31 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
 }
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
-  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>';
+  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
+  if(typeof hojeIniciar === 'function') hojeIniciar();
   var m = hubMusicaSemana(), b = $('hubMusica');
   b.innerHTML = '🎵 <b>' + escHtml(tr('Música da semana')) + '</b><small class="tw-hubgame-jp" lang="ja">今週の曲</small><small translate="no">' + escHtml(m[1]) + '</small>';
   b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };
+  b.style.display = 'none';   // a Música da semana agora mora no Idol⭐News!
   var linha = $('hubHojeLinha'), jn = $('hubJornal');
   if(linha && !jn){ jn = document.createElement('button'); jn.type = 'button'; jn.className = 'hubmusica hubjornal'; jn.id = 'hubJornal'; jn.onclick = function(){ if(sfx.card) sfx.card(); jornalAbrir(); }; linha.appendChild(jn); }
+  var fb = $('hubFa');
+  if(linha && typeof faCartaoHtml === 'function'){ if(fb) fb.remove(); linha.insertAdjacentHTML('beforeend', faCartaoHtml()); fb = $('hubFa'); fb.onclick = function(){ if(sfx.card) sfx.card(); $('faTit').textContent = '💌 ' + tr('Pedido de fã'); faAbrir(); }; }
   if(jn) jn.innerHTML = '📰 <b translate="no">Idol⭐News!</b><small class="tw-hubgame-jp" lang="ja">アイドル・ニュース</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
-  box.hidden=!!contaJ; if(contaJ) return;
+  var btn=$('hubLoginBtn'); box.hidden=false;
+  if(contaJ){   // logado: o mesmo lugar vira "Sair" (toque duas vezes para confirmar)
+    btn.classList.add('hubsair'); $('hubLoginTxt').textContent='🚪 '+tr('Sair');
+    btn.title=tr('Sair da conta')+' ('+contaJ.nick+')'; btn.setAttribute('aria-label',btn.title);
+    btn.onclick=function(e){ e.stopPropagation();
+      if(btn.dataset.confirma){ delete btn.dataset.confirma; contaSair(); return; }
+      btn.dataset.confirma='1'; $('hubLoginTxt').textContent='🚪 '+tr('Sair?')+' ✓';
+      setTimeout(function(){ if(btn.dataset.confirma){ delete btn.dataset.confirma; if(contaJ) $('hubLoginTxt').textContent='🚪 '+tr('Sair'); } },4000); };
+    return;
+  }
+  btn.classList.remove('hubsair'); delete btn.dataset.confirma;
   $('hubLoginTxt').textContent=tr('Entrar');
   var dica=tr('Entrar com Google')+': '+tr('☁️ Salva na nuvem · 🎯 Missões · 🏆 Ranking');
   $('hubLoginBtn').title=dica; $('hubLoginBtn').setAttribute('aria-label',dica);
@@ -293,10 +308,11 @@ function hubCardsUI(){
     '<h2 class="hubblocot hubbt-mundo">💖 ' + escHtml(tr('Meu mundo')) + ' <small class="tw-jpsub" lang="ja">マイワールド</small></h2>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     (typeof shopHubHtml === 'function' ? shopHubHtml() : '') +
     '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
-    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>';
+    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    (typeof hsHubHtml === 'function' ? hsHubHtml() : '') + (typeof cfHubHtml === 'function' ? cfHubHtml() : '');
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = window.TW_I18N.locale.twGamesTxt;
   twGamesTxt = twGamesTxt[LANG]||twGamesTxt.pt;
@@ -305,13 +321,18 @@ function hubCardsUI(){
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(hubGameAbrir('Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
+  // Jogos em ordem alfabética. O Center⭐Run! continua primeiro e ocupa a linha inteira.
+  ['handshake','cafe','karaoke','duo','sora','gacha'].forEach(function(k){
+    var card = $('hubCards').querySelector('[data-ir="' + k + '"]');
+    if(card) $('hubCards').appendChild(card);
+  });
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
-  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★50 por dia).')) + '</p>'; return; }
+  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml('🔒 ' + tr('Entrar com Google') + ' · ' + tr('Missões do dia')) + '</p>'; return; }
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
@@ -320,6 +341,7 @@ function hubMisUI(){
   }).join('') + '</ul>';
 }
 function hubMisCarregar(){
+  if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
@@ -450,7 +472,7 @@ function twRankRender(){
  twRankDrawAvatars();
 }
 function twRankRenderProfile(){
- var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
+ var box=$('twSoraWeekScore');if(!box||!contaJ)return;
  twRankCheckWeek();
  var score=Number.isSafeInteger(twRankData.mine)&&twRankData.mine>=0?twRankData.mine:0,local=twRankLocal();
  box.textContent=score>0?

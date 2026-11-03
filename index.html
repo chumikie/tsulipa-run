@@ -41,7 +41,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./centerrun.css?v=2">
 <link rel="stylesheet" href="./pet.css?v=1">
-<link rel="stylesheet" href="./perfil.css?v=1">
+<link rel="stylesheet" href="./perfil.css?v=2">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 .lbn:hover,.lbn:focus-visible{color:var(--b1)}
@@ -58,9 +58,9 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=1">
-<link rel="stylesheet" href="./shop.css?v=3">
-<link rel="stylesheet" href="./jornal.css?v=6">
+<link rel="stylesheet" href="./hub.css?v=3">
+<link rel="stylesheet" href="./shop.css?v=4">
+<link rel="stylesheet" href="./jornal.css?v=10">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -73,6 +73,10 @@
 .buscares em{font-size:12px;color:var(--sub)}
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
+<link rel="stylesheet" href="./album.css?v=2">
+<link rel="stylesheet" href="./fa.css?v=3">
+<link rel="stylesheet" href="./handshake.css?v=1">
+<link rel="stylesheet" href="./cafe.css?v=1">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -150,13 +154,15 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <link rel="stylesheet" href="./tw-index2-preview.css?v=1" id="tw-index2-preview-css">
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
-<link rel="stylesheet" href="./index2-skin.css?v=3">
+<link rel="stylesheet" href="./index2-skin.css?v=6">
 <link rel="stylesheet" href="./karaoke-tickets.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=11">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
 <link rel="stylesheet" href="./tw-mic-cd-popup.css?v=3">
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
+<link rel="stylesheet" href="./atualizacao2.css?v=8">
+<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=1"><'+'/script>');</script>
 </head>
 <body>
 <header>
@@ -333,19 +339,45 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=7"></script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
+<script src="./tw-i18n.js?v=9"></script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
+<script src="./karaoke-clip-uniforms.js?v=1"></script>
+<script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./pet.js?v=1"></script>
-<script src="./perfil.js?v=3"></script>
-<script src="./gacha.js?v=2"></script>
+<script src="./perfil.js?v=4"></script>
+<script src="./gacha.js?v=3"></script>
+<script src="./album.js?v=2"></script>
+<script src="./troca.js?v=1"></script>
+<script src="./fa.js?v=2"></script>
+<script src="./hoje.js?v=1"></script>
+<script src="./evento.js?v=4"></script>
+<script src="./recordes.js?v=5"></script>
+<script>
+// Cursor de coração em TUDO que é clicável: quem tem cursor:pointer vindo de outro CSS (divs, canvas, itens de lista)
+// ganha o coração na primeira vez que o mouse passa por cima. Só com mouse.
+(function(){
+  if(!window.matchMedia || !matchMedia('(pointer:fine)').matches) return;
+  var CORACAO = getComputedStyle(document.documentElement).getPropertyValue('--tw-cursor-coracao');
+  document.addEventListener('pointerover', function(e){
+    for(var el = e.target, n = 0; el && el.nodeType === 1 && n < 6; el = el.parentElement, n++){
+      if(el.dataset.twCursor) return;
+      var c = getComputedStyle(el).cursor;
+      if(c === 'pointer'){ el.style.setProperty('cursor', CORACAO || c, 'important'); el.dataset.twCursor = '1'; return; }
+      if(c && c !== 'auto' && c !== 'default') return;
+    }
+  }, { passive:true });
+})();
+</script>
+<script src="./handshake.js?v=8"></script>
+<script src="./cafe.js?v=9"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=7"></script>
-<script src="./shop.js?v=2"></script>
-<script src="./jornal.js?v=6"></script>
-<script src="./banner.js?v=2"></script>
+<script src="./hub.js?v=14"></script>
+<script src="./shop.js?v=4"></script>
+<script src="./jornal.js?v=12"></script>
+<script src="./banner.js?v=4"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
 <script>
@@ -725,7 +757,7 @@ window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
 $('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
-var twIdCarregamento=null;
+var twIdCarregamento=null, twIdiomaEscolhaToken=0;
 function twIntegrarDicionariosId(){
   var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
   if(!dados||!window.TW_DICT||!window.TW_DICT.id)return false;
@@ -737,34 +769,57 @@ function twIntegrarDicionariosId(){
   });
   return true;
 }
-if(window.TW_ID_PREVIEW_DATA)twIntegrarDicionariosId();
+if(window.TW_ID_PREVIEW_DATA){
+  twIntegrarDicionariosId();
+  // Os itens do Center foram desenhados antes da mesclagem do catálogo ID.
+  // Atualiza opções dinâmicas como "Estrela" sem exigir um segundo clique.
+  refreshAcc();
+}
 function twCarregarIdiomaId(){
   if(window.TW_ID_PREVIEW_DATA)return Promise.resolve();
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js';
+    script.src='./translations/id/preview-data.js?v=2';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);
   }).catch(function(e){twIdCarregamento=null;throw e;});
   return twIdCarregamento;
 }
-[].forEach.call(document.querySelectorAll('.lang button'),function(b){
-  b.onclick=function(){
-    if(b.dataset.l==='id'&&!window.TW_ID_PREVIEW_DATA){
-      b.disabled=true;
-      twCarregarIdiomaId().then(function(){b.disabled=false;b.click();}).catch(function(e){b.disabled=false;console.warn(e);});
-      return;
-    }
-    LANG=b.dataset.l;
+function twSelecionarIdioma(novo){
+  var token=++twIdiomaEscolhaToken;
+  function aplicar(){
+    // Se a pessoa escolheu outro idioma enquanto o ID carregava, não reverte a escolha.
+    if(token!==twIdiomaEscolhaToken)return;
+    LANG=novo;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}
+    // A home tem botões próprios: ambos só podem ser redesenhados com LANG definitivo.
+    if(typeof hubMontar==='function')hubMontar();
     applyLang();
+    // O painel de login é HTML gerado dinamicamente (inclui link de privacidade).
+    if(typeof contaUI==='function')contaUI();
     setBest();
     refreshAcc();
-    if(!$('lbmw').hidden) showLb($('lbm'));
-    if(!$('over').hidden) showLb($('lbo'));
+    if(!$('lbmw').hidden)showLb($('lbm'));
+    if(!$('over').hidden)showLb($('lbo'));
   }
+  if(novo==='id'&&!window.TW_ID_PREVIEW_DATA){
+    var idBtn=document.querySelector('.lang button[data-l="id"]');
+    if(idBtn)idBtn.disabled=true;
+    twCarregarIdiomaId().then(function(){
+      if(idBtn)idBtn.disabled=false;
+      aplicar();
+    }).catch(function(e){
+      if(idBtn)idBtn.disabled=false;
+      console.warn(e);
+    });
+    return;
+  }
+  aplicar();
+}
+[].forEach.call(document.querySelectorAll('.lang button'),function(b){
+  b.onclick=function(){twSelecionarIdioma(b.dataset.l);};
 });
 
 
@@ -1529,16 +1584,27 @@ perfOv.addEventListener('click', function(e){
 // ---------- Ranking dos minijogos do camarim (Ritmo e Pular corda) ----------
 
 // ---------- Montar Idol (o mesmo montador do menu, gravando no Idol) ----------
-perfOv.addEventListener('input', function(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color') perfMontMudou(el.dataset.m, el.value); });
-perfOv.addEventListener('change', function(e){
+// Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
+var shopOv = document.createElement('div');
+shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.hidden = true; shopOv.innerHTML = shopHtml();
+document.body.appendChild(shopOv);
+$('shopX').onclick = shopFechar;
+$('shopCv').addEventListener('click', shopReage);
+shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); });
+// Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
+function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
+function montChange(e){
   var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return;
   perfMontMudou(el.dataset.m, el.type === 'checkbox' ? el.checked : el.value);
-});
-perfOv.addEventListener('click', function(e){
+  if(!shopOv.hidden) shopProvador();
+}
+function montClique(e){
   var b = e.target.closest('#perfMont .sw'); if(!b) return;
   [].forEach.call(b.parentNode.children, function(x){ x.setAttribute('aria-pressed', x === b); });
   perfMontMudou('skin', b.dataset.v);
-});
+  if(!shopOv.hidden) shopProvador();
+}
+[perfOv, shopOv].forEach(function(ov){ ov.addEventListener('input', montInput); ov.addEventListener('change', montChange); ov.addEventListener('click', montClique); });
 
 // Idol⭐News! (jornal.js): só leitura dos pódios da semana
 var jornalOv = document.createElement('div');
@@ -1546,15 +1612,8 @@ jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; 
 jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
 $('jornalX').onclick = jornalFechar;
-jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
+jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } if(e.target.id === 'jnMusicaIr'){ jornalFechar(); var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
 jornalOv.addEventListener('change', function(e){ if(e.target.id === 'jnPostImg') jornalPostImagem(e.target.files && e.target.files[0]); });
-// Zipper⭐Shop!: a lojinha como sessão própria (shop.js); as compras usam os mesmos botões da lojinha do perfil
-var shopOv = document.createElement('div');
-shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.hidden = true; shopOv.innerHTML = shopHtml();
-document.body.appendChild(shopOv);
-$('shopX').onclick = shopFechar;
-$('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); });
 // ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
 function lojaRoupasClique(e){
   var b = e.target.closest('#perfLoja [data-vestir]');
@@ -1884,6 +1943,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
   '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
   '<div class="hubcards" id="hubCards"></div>' +
+  '<section class="hubpainel hubrec" id="hubRec"></section>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
@@ -1917,6 +1977,11 @@ document.body.appendChild(hubOv);
     }
   },true);
 })();
+setTimeout(function twBrPreparar(){   // bandeirinha do Brasil no banner: abre o site do BRS48
+  var lugar = hubOv.querySelector('.tw-tv-float'); if(!lugar || $('twBrAbrir')) return;
+  lugar.insertAdjacentHTML('beforeend', '<a class="tw-br-launch" id="twBrAbrir" href="https://www.youtube.com/c/BRS48" target="_blank" rel="noopener" title="BRS48" aria-label="' + escHtml(tr('Abrir o site do BRS48')) + '">' +
+    '<svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="3" fill="#1fa64a"/><path d="M14 2.4 25.6 10 14 17.6 2.4 10z" fill="#ffd23f"/><circle cx="14" cy="10" r="4.6" fill="#2b4fc4"/><path d="M9.6 9.1q4.4-1.6 8.8 1.4" stroke="#fff" stroke-width="1" fill="none"/></svg></a>');
+}, 0);
 setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME e os textos vêm mais abaixo)
   if(typeof TW_KARAOKE_TIME === 'undefined' || TW_KARAOKE_TIME !== true) return;
   var lugar = hubOv.querySelector('.tw-tv-float'); if(!lugar) return;
@@ -2077,7 +2142,8 @@ hubOv.addEventListener('click', function(e){
   if(t.id === 'hubToque'){ hubComecar(); return; }
   if(t.dataset && t.dataset.hl){   // idioma: usa o mesmo botão do menu (salva em brs48cr_lang e traduz o jogo todo)
     var lb = document.querySelector('.lang button[data-l="' + t.dataset.hl + '"]'); if(lb) lb.click();
-    hubMontar(); beep(988, .05, 'triangle', .04); return;
+    // O seletor do Center atualiza o hub somente depois que o idioma estiver pronto.
+    beep(988, .05, 'triangle', .04); return;
   }
   if(t.dataset && t.dataset.ho !== undefined){ applyOshi(t.dataset.ho); hubCfgUI(); beep(1175, .05, 'triangle', .04); return; }
   if(t.id === 'hubTutOk'){ beep(1175, .06, 'triangle', .04); if(++hubTutI >= HUB_TUT.length) hubTutFim(); else hubTutUI(); return; }
@@ -2102,6 +2168,8 @@ hubOv.addEventListener('click', function(e){
     var ir = b.dataset.ir; if(sfx.card) sfx.card();
     if(ir === 'run'){ hubFechar(); window.scrollTo(0, 0); if(location.hash !== '#center-run'){ try{ history.pushState({ tw:'center-run' }, '', '#center-run'); }catch(e){} } var n = $('nick'); if(n && !n.value.trim() && !contaJ) n.focus(); }
     else if(ir === 'perfil'){ if(contaJ) perfAbrir(); else contaEntrar(); }
+    else if(ir === 'handshake') hsAbrir();
+    else if(ir === 'cafe') cfAbrir();   // joga sem conta; prêmios só visuais, no aparelho   // joga sem conta; o prêmio do dia pede conta
     else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN && (ir === 'sora' || ir === 'karaoke'))){ contaEntrar(); }
     else if(ir === 'pet'){ petVeioHub = true; hubMusicaParar(); var pb = $('petBtn'); if(pb) pb.click(); }
     else if(ir === 'gacha') gachaAbrir();
@@ -2170,8 +2238,47 @@ var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
 gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
-  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div></div></div>';
+  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
+// Handshake⭐Event! (handshake.js)
+var hsOv = document.createElement('div');
+hsOv.className = 'ov hsov tw-window-overlay'; hsOv.id = 'hsOv'; hsOv.hidden = true;
+hsOv.innerHTML = '<div class="panel hsp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="hsTit"><button type="button" class="perfx tw-window-control tw-window-close" id="hsX">✕</button><h2 class="tw-modal-title" id="hsTit" translate="no">🤝 Handshake<span class="tw-modal-star">⭐</span>Event!</h2><small class="tw-modal-jp" lang="ja">握手会</small><canvas id="hsCv" width="640" height="360" aria-hidden="true"></canvas><div id="hsCorpo"></div></div>';
+document.body.appendChild(hsOv);
+$('hsX').onclick = hsFechar;
+hsOv.addEventListener('click', hsClique);
+// Happy⭐Cafe! (cafe.js)
+var cfOv = document.createElement('div');
+cfOv.className = 'ov hsov cfov tw-window-overlay'; cfOv.id = 'cfOv'; cfOv.hidden = true;
+cfOv.innerHTML = '<div class="panel hsp cfp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="cfTit"><button type="button" class="perfx tw-window-control tw-window-close" id="cfX">✕</button><h2 class="tw-modal-title" id="cfTit" translate="no">🧋 Happy<span class="tw-modal-star">⭐</span>Cafe!</h2><small class="tw-modal-jp" lang="ja">ハッピー・カフェ</small><canvas id="cfCv" width="640" height="360" aria-hidden="true"></canvas><div id="cfCorpo"></div></div>';
+document.body.appendChild(cfOv);
+$('cfX').onclick = cfFechar;
+cfOv.addEventListener('click', cfClique);
+hubOv.addEventListener('click', function(e){ if(typeof recClique === 'function' && e.target.closest && e.target.closest('#hubRec')) recClique(e); });
+// Pedidos de fã (fa.js)
+var faOv = document.createElement('div');
+faOv.className = 'ov faov tw-window-overlay'; faOv.id = 'faOv'; faOv.hidden = true;
+faOv.innerHTML = '<div class="panel fap tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="faTit"><button type="button" class="perfx tw-window-control tw-window-close" id="faX">✕</button><h2 class="tw-modal-title" id="faTit">💌</h2><small class="tw-modal-jp" lang="ja">ファンのお願い</small><div id="faCorpo"></div></div>';
+document.body.appendChild(faOv);
+$('faX').onclick = faFechar;
+document.addEventListener('click', function(e){ if(e.target && e.target.id === 'hojeLoc') hojeLocalizar(); });
+faOv.addEventListener('click', function(e){ if(e.target.id === 'faEntregar') faEntregar(e.target); });
+// Álbum de cards (album.js): um espaço para cada Idol da vitrine
+var albumOv = document.createElement('div');
+albumOv.className = 'ov albumov tw-window-overlay'; albumOv.id = 'albumOv'; albumOv.hidden = true;
+albumOv.innerHTML = '<div class="panel albump tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="albumTit"><button type="button" class="perfx tw-window-control tw-window-close" id="albumX">✕</button><h2 class="tw-modal-title" id="albumTit">📖</h2><small class="tw-modal-jp" lang="ja">カードアルバム</small><div id="albumCorpo"></div></div>';
+document.body.appendChild(albumOv);
+$('albumX').onclick = albumFechar;
+albumOv.addEventListener('click', function(e){ var b = e.target.closest('[data-album]'); if(b) albumPagina(+b.dataset.album); });
+var trocaOv = document.createElement('div');
+trocaOv.className = 'ov trocaov tw-window-overlay'; trocaOv.id = 'trocaOv'; trocaOv.hidden = true;
+trocaOv.innerHTML = '<div class="panel albump tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="trocaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="trocaX">✕</button><h2 class="tw-modal-title" id="trocaTit">🔁</h2><small class="tw-modal-jp" lang="ja">カード交換</small><div id="trocaCorpo"></div></div>';
+document.body.appendChild(trocaOv);
+$('trocaX').onclick = trocaFechar;
+trocaOv.addEventListener('click', trocaClique);
+albumOv.addEventListener('click', function(e){ if(e.target.id === 'albumTrocar'){ $('trocaTit').textContent = '🔁 ' + tr('Troca de cards'); trocaAbrir(); } });
+$('gachaAlbum').onclick = function(){ $('albumTit').textContent = '📖 ' + tr('Álbum de cards'); albumAbrir(); };
+
 $('gachaX').onclick = gachaFechar;
 $('gachaGirar').onclick = function(){
   if(!contaJ){ contaEntrar(); return; }
@@ -3179,7 +3286,7 @@ applyLang();
     var logado = !!(window.contaJ);
     var cards = document.querySelectorAll('#hub #hubCards .hubcard');
     cards.forEach(function(card){
-      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun';
       // 🧪 Temporário: Sora⭐Jump! e Karaoke⭐Time! ficam abertos sem login.
       if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) isFree = true;
       var lockEl = card.querySelector('.tw-profile-lock');
@@ -3206,7 +3313,7 @@ applyLang();
     if(!card || window.contaJ) return;
     // 🧪 Temporário: sem cadeado nos jogos especiais liberados para teste.
     if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) return;
-    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.id === 'hubPerf' || card.id === 'hubRun';
+    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun';
     if(!isFree){
       e.stopImmediatePropagation();
       e.preventDefault();

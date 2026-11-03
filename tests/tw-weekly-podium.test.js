@@ -54,7 +54,7 @@ assert.ok(soraZeroSql.includes("s.period_type = 'week'") && soraZeroSql.includes
 assert.ok(adminProfileSql.includes("s.period_type = 'all'") && adminProfileSql.includes("s.period_type = 'week'"));
 assert.ok(adminProfileSql.includes("'geral', jsonb_build_object") && adminProfileSql.includes("'semana', jsonb_build_object"));
 assert.ok(privacy.includes('Sora⭐Jump!') && privacy.includes('Karaoke⭐Time!'));
-assert.ok(privacy.includes('31/10/2026') && privacy.includes('10/31/2026'));
+assert.ok(privacy.includes('03/11/2026') && privacy.includes('11/03/2026'));
 assert.ok(!privacy.includes('Não há sala simultânea'));
 assert.ok(!privacy.includes('There is no simultaneous room'));
 assert.ok(!privacy.includes('No hay sala simultánea'));

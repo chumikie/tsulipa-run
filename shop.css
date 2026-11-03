@@ -5,7 +5,6 @@
 #shopCv{width:100%;height:auto;display:block;border-radius:18px;margin:8px 0 4px;cursor:pointer}
 .shopsaldo{text-align:center;font-weight:900;color:var(--b1);margin:4px 0 8px}
 #shopCorpo h3{margin:14px 0 6px;color:var(--b1)}
-#hub #hubCards>button.hubcard.hubloja{min-height:0}
 .shopprov{text-align:center}
 #shopProvCv{width:min(240px,70%);height:auto;border-radius:18px;display:block;margin:0 auto 6px}
 /* botão em destaque, como o do Center⭐Run! (rosa/roxo da lojinha) */

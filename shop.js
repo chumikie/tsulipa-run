@@ -5,7 +5,12 @@
 var SHOP_ATENDE = [['Tsu', 0, '#9b30d9'], ['Lirika', 1, '#3f9c1f'], ['Pati', 2, '#4169e1']];
 var SHOP_OI = ['Bem-vindo à Zipper⭐Shop!', 'Provou, gostou, levou!', 'Tem roupa nova na arara!'];
 var shopT = 0, shopAnim = 0, shopFala = { txt:'', t0:-999 };
-function shopAtendente(){ var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5); return SHOP_ATENDE[((d % 3) + 3) % 3]; }
+function shopAtendente(){   // uma por dia; nunca a própria pessoa (Tsu, Lirika ou Pati/Patiliri não se atendem)
+  var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5), eu = String(typeof contaJ !== 'undefined' && contaJ && contaJ.nick || '').toLowerCase();
+  if(eu === 'patiliri') eu = 'pati';
+  for(var k = 0; k < 3; k++){ var a = SHOP_ATENDE[(((d + k) % 3) + 3) % 3]; if(a[0].toLowerCase() !== eu) return a; }
+  return SHOP_ATENDE[0];
+}
 function shopHtml(){
   return '<div class="panel shopp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="shopTit">' +
     '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX">✕</button>' +
@@ -19,6 +24,8 @@ function shopCorpoHtml(){   // os mesmos blocos (e ids) da lojinha do perfil: as
   return '<section class="shopprov"><h3>🪞 ' + escHtml(tr('Provador')) + '</h3><canvas id="shopProvCv" width="512" height="512" aria-hidden="true"></canvas>' +
     '<div class="btns"><button type="button" class="btn" id="shopSalvar">💾 ' + escHtml(tr('Salvar visual')) + '</button><a class="btn alt" id="shopPng" href="#" download="zipper-shop.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a></div>' +
     '<p class="perfmsg" id="shopProvMsg" hidden></p></section>' +
+    '<h3>✏️ ' + escHtml(tr('Montar Idol')) + '</h3><div class="cust perfmont" id="perfMont"></div>' +
+    '<div class="btns shopmontbtns"><button type="button" class="btn alt" id="shopFotoPerfil">📸 ' + escHtml(tr('Foto do perfil')) + '</button></div>' +
     '<h3>👗 ' + escHtml(tr('Roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Toque em Provar para ver no seu Idol antes de comprar.')) + '</p>' +
     '<div class="perfloja" id="perfLoja"></div><p class="perfmsg" id="perfLojaMsg" hidden></p>' +
     '<h3>🎀 ' + escHtml(tr('Acessórios')) + '</h3><div class="perfloja" id="perfLojaAcessorios"></div>' +
@@ -29,6 +36,7 @@ function shopUI(){
   var a = shopAtendente();
   $('shopLede').textContent = tr('Hoje quem atende é') + ' ' + a[0] + ' ' + ['💜', '💚', '💙'][a[1]];
   $('shopSaldo').textContent = '★ ' + (starT || 0);
+  if(typeof perfMontUI === 'function') perfMontUI();
   if(typeof perfLojaUI === 'function') perfLojaUI();
   if(typeof perfLoja2UI === 'function') perfLoja2UI();
   shopProvador();
@@ -112,9 +120,9 @@ function shopDesenhar(){
     x.fillStyle = '#c98b55'; x.fillRect(bx + 10, chao - 70, 150, 70); x.fillStyle = '#a0673a'; x.fillRect(bx + 10, chao - 70, 150, 8);   // balcão
     x.font = '22px sans-serif'; x.fillText('🛍️', bx + 50, chao - 84); x.fillText('🎀', bx + 128, chao - 82);
     // o seu Idol entra pela esquerda (com a roupa que estiver provando)
-    var c = Object.assign({}, sel === 3 ? CU : CH[sel]); if(perfProva){ c.out = perfProva; if(sel !== 3) c.img = c.img || c.hair; }
+    var c = Object.assign({}, CU); if(perfProva) c.out = perfProva;   // na loja é sempre o seu Idol (o que você monta aqui)
     var psc = 3, alvo = bx - 230, px = Math.min(alvo, -30 + t * 3), anda = px < alvo;
-    accSel = typeof perfAvAtual === 'function' && sel === 3 ? (perfAvAtual().a || '') : '';
+    accSel = typeof perfAvAtual === 'function' ? (perfAvAtual().a || '') : '';
     x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(px, chao, 14 * psc, 2.4 * psc, 0, 0, 7); x.fill();
     perfCharContorno(x, px - 15 * psc, chao - 44 * psc - (anda ? Math.abs(Math.sin(t * .3)) * 4 : 0), psc, function(){ charPose = anda ? '' : (perfProva ? 'v' : ''); drawChar(c, 0, 0, anda ? 1 : 0, perfProva ? 3 : 2, false); });
   }catch(e){}
@@ -139,4 +147,8 @@ function shopHubHtml(){   // botão em "Meu mundo"
   var lock = !contaJ ? '<em class="tw-profile-lock" aria-hidden="true" title="' + escHtml(tr('Entrar com Google')) + '">🔒</em>' : '';
   return '<button type="button" class="hubcard hubloja" data-ir="loja">' + lock + '<i>🛍️</i><b translate="no">Zipper⭐Shop!</b><small class="tw-hubgame-jp" lang="ja">ジッパー・ショップ</small>' +
     '<small>' + escHtml(tr('Roupas, acessórios e poses')) + '</small></button>';
+}
+function shopFotoPerfil(){   // a foto do perfil (Estúdio) continua no perfil: a loja leva até lá
+  shopOv.hidden = true; perfProva = ''; $('shopCorpo').innerHTML = '';
+  perfAba = 'estudio'; perfZoom = true; perfAbrir(undefined, true);
 }

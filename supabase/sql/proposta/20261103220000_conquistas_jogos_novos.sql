@@ -1,0 +1,7 @@
+-- SUPERADA em 03/11/2026 na PR #71. Não executar este arquivo antigo.
+-- A versão anterior referenciava private.player_badges, que não existe.
+-- O armazenamento correto é public.players.insignias_jogos (text[]).
+-- Consulte a proposta completa, ainda NÃO APLICADA:
+--   supabase/sql/proposta/PR71_RECORDES_ONLINE_E_INSIGNIAS_REVIEW_ONLY.sql
+-- Ela contém public.conquista_jogo(p_k) com provas reais no banco.
+-- Não aplicar SQL em produção sem teste de transação revertida e autorização separada.

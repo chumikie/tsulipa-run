@@ -6,6 +6,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
 const autoSource=fs.readFileSync(path.join(__dirname,'..','karaoke-room-auto-mic.js'),'utf8');
+const online=fs.readFileSync(path.join(__dirname,'..','karaoke-online.js'),'utf8');
 const polaroidSource=fs.readFileSync(path.join(__dirname,'..','karaoke-room-polaroid.js'),'utf8');
 const polaroidCss=fs.readFileSync(path.join(__dirname,'..','karaoke-photo.css'),'utf8');
 
@@ -13,7 +14,7 @@ assert(!/\bkrLoungeSoloPermitido\b|\bkrSt\b|\bkrT\b|\bkrEu\b|\bkrDemoCantor\b|\b
 assert(!/\bCH\b|\bdesenharIdol\b|\bkrT\b/.test(polaroidSource),'Polaroid module must not reach into the page IIFE');
 assert(html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({')&&html.includes('window.krLoungeAutoMicTick=window.krLoungeAutoMicController.tick'),'page injects room state into the autonomous mic factory');
 assert(html.includes('window.ktShowAdmissionPending=true')&&html.includes("dialog.addEventListener('cancel'")&&html.includes('window.ktShowAdmissionPending=false;dialog.close();'),'player admission locks NPC turns until confirmed or cancelled');
-assert(html.includes("window.ktShowAdmissionPending=false;kt.start('confirmed',info)")&&html.includes('window.ktShowAdmissionPending=false;aviso('),'admission lock clears on confirmed start and gate failure');
+assert(html.includes("window.ktShowAdmissionPending=false;kt.start('confirmed',info)")&&online.includes('window.ktShowAdmissionPending=false;aviso('),'admission lock clears on confirmed start and gate failure');
 assert(html.includes('Silenciar / restaurar som')&&html.includes("if(key==='m'&&$('ktClosed').hidden)")&&html.includes('krAlternarSom();return;')&&!html.includes('muteButton.focus({preventScroll:true})')&&!html.includes('muteButton.click()'),'M calls the shared mute state directly without synthetic focus or click');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({'),'page injects avatar renderer dependencies into the Polaroid factory');
 assert(html.includes('karaoke-room-auto-mic.js?v=3')&&html.includes('karaoke-room-polaroid.js?v=3')&&html.includes('karaoke-photo.css?v=3'),'both separated controllers use fresh cache versions');

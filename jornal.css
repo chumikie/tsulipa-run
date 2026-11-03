@@ -43,3 +43,14 @@
 .jornalp .jnmanchete{background:linear-gradient(135deg,#fff,#fff0fa)}
 .jornalp .jnbloco h4,.jornalp .jnpodio h4,.jornalp .jntopt{color:#7b3ff0}
 .jornalp .jnbloco li,.jornalp .jnpodio b,.jornalp .jnpodio small,.jornalp .jnvazio{color:#3c2a8f}
+
+.jnpost{border-top:1px dashed #e3d6fb;padding:10px 0}.jnpost:first-child{border-top:0}
+.jnpost img{width:100%;max-height:360px;object-fit:cover;border-radius:12px;display:block;margin-bottom:6px}
+.jnpost h5{margin:0;font-size:16px;color:#7b3ff0}.jnpost h5 small{font-size:11px;color:#9c8ac8;font-weight:700}
+.jnpost p{margin:4px 0 0;color:#3c2a8f;white-space:pre-wrap}
+.jnpostdel{margin-top:6px;font-size:12px;padding:4px 10px}
+.jnpostar{background:#f7f2ff;border-radius:12px;padding:8px 10px;margin-bottom:8px;color:#3c2a8f}
+.jnpostar summary{cursor:pointer;font-weight:800}
+.jnpostar label{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-weight:700;font-size:13px}
+.jnpostar input[type=text],.jnpostar textarea{font:inherit;padding:6px 8px;border-radius:8px;border:2px solid #d9c7fb}
+#jnPostPrev{max-width:100%;border-radius:10px;margin-top:6px}

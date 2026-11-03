@@ -43,8 +43,7 @@ function jornalMontar(d){
     (mus ? '<li>' + escHtml(tr('Música da semana')) + ': <b translate="no">' + escHtml(mus[1]) + '</b></li>' : '') +
     (vista ? '<li>' + escHtml(tr('Vista da janela do Karaoke')) + ': <b>' + escHtml(vista) + '</b></li>' : '') +
     (total ? '<li>' + escHtml(tr('Idols na vitrine')) + ': <b>' + total + '</b></li>' : '') + '</ul></section>';
-  var nov = JORNAL_NOVIDADES.concat(typeof HUB_NOVIDADES !== 'undefined' ? HUB_NOVIDADES : []);
-  h += '<section class="jnbloco"><h4>✨ ' + escHtml(tr('Novidades')) + '</h4><ul>' + nov.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('') + '</ul></section>';
+  h += jornalPostsHtml();
   return h;
 }
 function jornalFotos(){
@@ -112,7 +111,63 @@ function jornalAbrir(){
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
-  contaRpc('tw_podio_semana').then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); })
-    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); } });
+  contaRpc('tw_podio_semana').then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); })
+    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); } });
 }
 function jornalFechar(){ jornalOv.hidden = true; }
+// ---------- Novidades como blog: só a admin posta (imagem, título e legenda); ficam os 5 últimos ----------
+// RPCs news_posts / admin_news_postar / admin_news_apagar: proposta em supabase/sql/proposta/20261103150000_idol_news_posts.sql
+var jornalPosts = null, jornalPostImg = '';
+function jornalPostsHtml(){
+  var h = '<section class="jnbloco jnblog"><h4>✨ ' + escHtml(tr('Novidades')) + '</h4>';
+  if(typeof perfAdmin !== 'undefined' && perfAdmin && contaJ) h += '<details class="jnpostar"><summary>✏️ ' + escHtml(tr('Novo post')) + '</summary>' +
+    '<label>' + escHtml(tr('Título')) + ' <input type="text" id="jnPostTit" maxlength="80"></label>' +
+    '<label>' + escHtml(tr('Legenda')) + ' <textarea id="jnPostLeg" maxlength="600" rows="3"></textarea></label>' +
+    '<label>' + escHtml(tr('Imagem')) + ' <input type="file" id="jnPostImg" accept="image/*"></label><img id="jnPostPrev" alt="" hidden>' +
+    '<div class="btns"><button type="button" class="btn" id="jnPostOk">' + escHtml(tr('Publicar')) + '</button></div><p class="perfmsg" id="jnPostMsg" hidden></p></details>';
+  h += '<div id="jornalPosts"></div></section>';
+  return h;
+}
+function jornalPostsUI(){
+  var box = $('jornalPosts'); if(!box) return;
+  if(jornalPosts === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
+  if(!jornalPosts.length){   // sem posts (ou o blog ainda não está no servidor): as novidades desta versão
+    box.innerHTML = '<ul>' + JORNAL_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('') + '</ul>'; return;
+  }
+  var adm = typeof perfAdmin !== 'undefined' && perfAdmin;
+  box.innerHTML = jornalPosts.map(function(p){
+    var d = new Date(p.criado), dt = isNaN(d) ? '' : ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2);
+    return '<article class="jnpost">' + (/^data:image\/jpeg;base64,/.test(p.imagem || '') ? '<img src="' + p.imagem + '" alt="' + escHtml(p.titulo) + '" loading="lazy">' : '') +
+      '<h5>' + escHtml(p.titulo) + (dt ? ' <small>' + dt + '</small>' : '') + '</h5>' + (p.legenda ? '<p>' + escHtml(p.legenda) + '</p>' : '') +
+      (adm ? '<button type="button" class="btn alt jnpostdel" data-jnapagar="' + (+p.id) + '">🗑️ ' + escHtml(tr('Apagar')) + '</button>' : '') + '</article>';
+  }).join('');
+}
+function jornalPostsCarregar(){
+  jornalPosts = null; jornalPostsUI();
+  contaRpc('news_posts').then(function(L){ jornalPosts = Array.isArray(L) ? L.slice(0, 5) : []; jornalPostsUI(); })
+    .catch(function(){ jornalPosts = []; jornalPostsUI(); });
+}
+function jornalPostImagem(file){   // reduz para até 900 px e JPEG, antes de enviar
+  jornalPostImg = ''; var pv = $('jnPostPrev'); if(!file) { if(pv) pv.hidden = true; return; }
+  var r = new FileReader();
+  r.onload = function(){ var im = new Image(); im.onload = function(){
+    var k = Math.min(1, 900 / Math.max(im.width, im.height)), cv = document.createElement('canvas'); cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+    cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+    var q = .82, u = cv.toDataURL('image/jpeg', q); while(u.length > 340000 && q > .4){ q -= .1; u = cv.toDataURL('image/jpeg', q); }
+    jornalPostImg = u; if(pv){ pv.src = u; pv.hidden = false; }
+  }; im.src = r.result; };
+  r.readAsDataURL(file);
+}
+function jornalPostar(btn){
+  var m = $('jnPostMsg'), t = ($('jnPostTit').value || '').trim(), l = ($('jnPostLeg').value || '').trim();
+  if(!t){ m.textContent = tr('Escreva um título.'); m.hidden = false; return; }
+  btn.disabled = true;
+  contaRpc('admin_news_postar', { p_titulo:t, p_legenda:l, p_imagem:jornalPostImg }).then(function(r){
+    btn.disabled = false;
+    if(!r || !r.ok){ m.textContent = tr('Não deu para publicar.'); m.hidden = false; return; }
+    $('jnPostTit').value = ''; $('jnPostLeg').value = ''; jornalPostImagem(null); m.textContent = '✨ ' + tr('Publicado!'); m.hidden = false; jornalPostsCarregar();
+  }).catch(function(){ btn.disabled = false; m.textContent = tr('Não deu para publicar.'); m.hidden = false; });
+}
+function jornalPostApagar(id){
+  contaRpc('admin_news_apagar', { p_id:id }).then(function(){ jornalPostsCarregar(); }).catch(function(){});
+}

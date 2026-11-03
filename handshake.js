@@ -239,9 +239,9 @@ function hsDesenhar(){
   x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
   x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 2;
   x.beginPath(); if(x.roundRect) x.roundRect(lx + 4, ly + 4, lw - 8, lh - 8, 15); else x.rect(lx + 4, ly + 4, lw - 8, lh - 8); x.stroke();
-  x.fillStyle = '#ce3889'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = '#442667'; x.textAlign = 'center'; x.textBaseline = 'middle';
   x.font = '900 18px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
-  x.fillText('🤝 HANDSHAKE ⭐ EVENT! 握手会', W2 / 2, 32);
+  x.fillText('🤝 Handshake⭐Event!', W2 / 2, 32);
   x.font = '15px sans-serif'; x.fillStyle = '#ffe47c'; x.fillText('✦', lx + 8, 9); x.fillText('✦', lx + lw - 8, ly + lh + 7); x.restore();
   // o seu Idol atrás da mesa (à direita)
   try{ var meu = perfAvAtual({ pose:hs && hs.fase === 'resposta' && hs.ok ? 'banzai' : 'tchau', expr:hs && hs.fase === 'resposta' && !hs.ok ? 0 : 3, fundo:'' });
@@ -257,7 +257,7 @@ function hsDesenhar(){
   x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
   x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 1.5; x.beginPath(); if(x.roundRect) x.roundRect(px + 4, py + 4, pw - 8, ph - 8, 9); else x.rect(px + 4, py + 4, pw - 8, ph - 8); x.stroke();
   x.fillStyle = '#7b3ff0'; x.fillText('⭐ ' + nomeIdol + ' ⭐', W2 * .73, py + ph / 2 + 1);
-  x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#d63384'; x.fillText('HANDSHAKE', W2 * .73, py - 7); x.restore();
+  x.restore();
   // combo
   if(hs && hs.combo >= 2){ x.save(); x.font = '900 20px "Mochiy Pop One",sans-serif'; x.textAlign = 'right'; x.fillStyle = '#ff6fb5'; x.strokeStyle = '#fff'; x.lineWidth = 5;
     var ct = 'COMBO x' + hs.combo; x.strokeText(ct, W2 - 14, 74); x.fillText(ct, W2 - 14, 74); x.restore(); }
@@ -361,8 +361,8 @@ function hsBalcaoArte(x, left, top, width, height){
 /* A mesma linguagem do toque no trio inicial: pulinho, balão com rabinho e cinco emojis brilhantes. */
 function hsReacaoAtivar(alvo, t){
   if(!alvo || (alvo.reage && t - alvo.reage.t0 < 30)) return;
-  var lista = ['💜','⭐','✨','💜','⭐'];
-  alvo.reage = {t0:t, txt:'Oiê!', emo:lista.map(function(e,n){ return {e:e, v:.5 + Math.random() * .5, dx:(n - 2) * 9}; })};
+  var lista = ['💖','⭐','✨','💜','🌸'];
+  alvo.reage = {t0:t, emo:lista.map(function(e,n){ return {e:e, v:.5 + Math.random() * .5, dx:(n - 2) * 9}; })};
   if(typeof beep === 'function') try{
     [[523,0],[659,.07],[784,.14],[1046,.22]].forEach(function(n){ beep(n[0], .12, 'triangle', .035, n[1]); });
   }catch(e){}
@@ -373,29 +373,8 @@ function hsReacaoPulo(alvo, t, max){
 }
 function hsReacaoDesenhar(x, W, H, t, alvo, hx, top){
   if(!alvo || !alvo.reage) return;
-  var rg = t - alvo.reage.t0, sc = H / 96, dur = 220;
-  if(rg < 0 || rg >= dur) return;
-  var al = rg < dur - 30 ? 1 : (dur - rg) / 30, pop = rg < 8 ? .6 + rg / 20 : 1;
-  x.save(); x.globalAlpha = Math.max(0, al); x.textAlign = 'center'; x.textBaseline = 'middle';
-  var txt = typeof tr === 'function' ? tr(alvo.reage.txt) : alvo.reage.txt;
-  x.font = (5 * sc) + 'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
-  var tw = x.measureText(txt).width + 10 * sc, th = 11 * sc;
-  var bx = Math.max(tw / 2 + 6, Math.min(W - tw / 2 - 6, hx)), by = top - 9 * sc;
-  x.translate(bx, by); x.scale(pop, pop);
-  var rr = th / 2, l = -tw / 2, rt = tw / 2, tp = -th / 2, bt = th / 2;
-  var tx = Math.max(l + rr + 2.5 * sc, Math.min(rt - rr - 2.5 * sc, hx - bx)), tl = 3.2 * sc;
-  x.beginPath(); x.moveTo(l + rr, tp); x.lineTo(rt - rr, tp); x.arc(rt - rr, 0, rr, -Math.PI / 2, Math.PI / 2);
-  x.lineTo(tx + 2.4 * sc, bt); x.quadraticCurveTo(tx + .6 * sc, bt + tl * .5, tx, bt + tl);
-  x.quadraticCurveTo(tx - .6 * sc, bt + tl * .5, tx - 2.4 * sc, bt);
-  x.lineTo(l + rr, bt); x.arc(l + rr, 0, rr, Math.PI / 2, Math.PI * 1.5); x.closePath();
-  var gr = x.createLinearGradient(0, tp, 0, bt + tl); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#fff0fa');
-  x.shadowColor = '#9b30d9'; x.shadowBlur = 5 * sc; x.fillStyle = gr; x.fill();
-  x.shadowColor = 'transparent'; x.shadowBlur = 0;
-  x.lineWidth = .9 * sc; x.lineJoin = 'round'; x.strokeStyle = '#9b30d9'; x.stroke();
-  x.fillStyle = '#9b30d9'; x.fillText(txt, 0, .4 * sc);
-  x.font = (3.6 * sc) + 'px sans-serif'; x.fillStyle = '#ff9ce6'; x.fillText('✦', l - 1.6 * sc, tp + .5 * sc); x.fillText('♡', rt + 1.8 * sc, bt - 1.5 * sc);
-  x.restore();
-  if(rg >= 140) return;
+  var rg = t - alvo.reage.t0, sc = H / 96;
+  if(rg < 0 || rg >= 140) return;
   x.save(); x.globalAlpha = rg < 110 ? 1 : (140 - rg) / 30;
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = (6.5 * sc) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
   x.shadowColor = 'rgba(255,255,255,.95)'; x.shadowBlur = 2.4 * sc; x.fillStyle = '#000';

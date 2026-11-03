@@ -21,13 +21,3 @@
 .cfop{background:linear-gradient(180deg,#fff,#fff6fb);border:2px solid #f6d7ea}
 .cfrec{border:2px solid #f6d7ea}
 .cfops{display:grid;grid-template-columns:repeat(auto-fit,minmax(62px,1fr))}.cfop{padding:6px 2px}
-
-/* PR #71 · legibilidade e delicadeza da sala do Café, sem alterar regras. */
-.cfp .hc-cena #cfCv{margin:0}
-#cfOv .cfgrupo{background:rgba(255,255,255,.92);border-color:#f4cde2;box-shadow:0 2px 0 rgba(123,63,240,.08)}
-#cfOv .cfgrupo>b{margin:1px 0 7px 4px;color:#7839ae}
-#cfOv .cfop{min-height:61px;outline-offset:2px}
-#cfOv .cfop:focus-visible{outline:3px solid #7b3ff0}
-#cfOv .cfreencontro{padding:10px;border-radius:15px;border:1px solid #f6c6e0;background:#fff6fc;color:#7b3ff0}
-#cfOv .cfaviso{color:#85440d}
-#cfOv .cfcaderno{background:#fff8ef;color:#67477f}

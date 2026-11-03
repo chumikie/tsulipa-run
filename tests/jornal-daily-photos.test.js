@@ -97,7 +97,7 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
         perfDesenharIdol:(ctx,w,h)=>idols.push({w,h}),
         perfFundo:()=>{}
       });
-      vm.runInContext(desenho + String.fromCharCode(10) + 'jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
+      vm.runInContext(jornal.slice(jornal.indexOf('function jornalFotoAtuacao('),jornal.indexOf('function jornalFotoDesenhar(')) + desenho + String.fromCharCode(10) + 'jornalFotoDesenhar(cv,foto,false);',ambiente,{timeout:1000});
       const deslocamento = local==='tailandia'?.55:.25;
       assert.equal(cenas.length,1,local+' usa a arte oficial');
       assert.equal(cenas[0].w,480,'a câmera virtual mantém o mesmo traço no download');
@@ -174,4 +174,42 @@ test('as seis histórias novas têm decoração própria e legendas em cinco idi
     assert.ok(idjs.includes(JSON.stringify(frase)),'dicionário carregado sob demanda '+tema);
   }
   assert.match(jornal,/jornalCenaDetalhes\(x, f\.cena\[4\], W2, H2\)/,'desenho acima do fundo, atrás dos personagens');
+});
+
+test('expressões e gestos reagem em duplas sem alterar a geometria das fotos', () => {
+  const inicio=jornal.indexOf('function jornalFotoAtuacao('), fim=jornal.indexOf('function jornalFotoDesenhar(',inicio);
+  assert.ok(inicio>0&&fim>inicio,'atuação fotográfica definida');
+  const act=(foto,k,n)=>vm.runInNewContext(jornal.slice(inicio,fim)+'\njornalFotoAtuacao(foto,k,n)',{foto,k,n});
+  const temas={
+    aniversario:['banzai','coracao'],cartas:['coracao','v'],bastidores:['tchau','mic'],
+    estudio:['mic','v'],jardim:['coracao','v']
+  };
+  for(const [tema,gestos] of Object.entries(temas)){
+    const cena=['basico','🎞️','teste',['v','coracao','tchau','banzai'],tema];
+    const foto={cena,grupo:[{},{},{},{}],dia:20760};
+    const poses=Array.from({length:4},(_,k)=>act(foto,k,4));
+    assert.equal(JSON.stringify(poses),JSON.stringify(Array.from({length:4},(_,k)=>act(foto,k,4))),'mesma data mantém thumbnail e download');
+    assert.ok(poses.every(p=>['v','coracao','tchau','banzai','mic','luz','nyan',''].includes(p.pose)),'gestos são suportados');
+    assert.ok(poses.every(p=>[0,2,3,4,6].includes(p.expr)),'expressões alegres e surpreendidas são suportadas');
+    assert.ok(poses.every(p=>Math.abs(p.inclinar)<=.012),'variação não desloca enquadramento');
+    if(tema!=='aniversario' && tema!=='estudio'){
+      const dupla=(foto.dia+tema.length)%3;
+      assert.equal(poses[dupla].pose,gestos[0]);
+      assert.equal(poses[dupla+1].pose,gestos[1]);
+    }
+  }
+  const aniversario={cena:['cafe','🎂','teste',['v','coracao'],'aniversario'],grupo:[{},{},{},{}],dia:20760};
+  assert.equal(act(aniversario,0,4).expr,4,'aniversariante surpresa');
+  assert.equal(act(aniversario,1,4).pose,'banzai','vizinha comemora junto');
+  const repeticoes=Array.from({length:8},(_,dia)=>Array.from({length:4},(_,k)=>act({...aniversario,dia:20760+dia},k,4).expr).join(','));
+  assert.ok(new Set(repeticoes).size>1,'expressões variam entre dias');
+});
+
+test('panorama e telão preservam dimensões, posições e cantores',()=>{
+  const s=jornal.slice(jornal.indexOf('function jornalFotoDesenhar('),jornal.indexOf('function jornalFotoAmpliar('));
+  assert.match(s,/var altura = H2 \* \.40 \* varia/,'altura da panorâmica mantida');
+  assert.match(s,/var centro = slot8 \* \(k \+ \.5\)/,'oito posições da panorâmica mantidas');
+  assert.match(s,/var largura = W2 \/ 6, altura = H2 \* \[ \.59,\.62,\.65,\.65,\.62,\.59 \]\[k\]/,'tamanhos dos cantores mantidos');
+  assert.match(s,/av\.pose = \['mic','banzai','mic','luz','mic','banzai'\]\[k\]/,'microfones do telão preservados');
+  assert.match(s,/jornalFotoAtuacao\(f, k, 8\)/,'a panorâmica recebe rostos variados');
 });

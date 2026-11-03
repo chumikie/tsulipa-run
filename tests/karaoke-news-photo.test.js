@@ -36,7 +36,7 @@ test('as seis pessoas e o tema diário coincidem com o clipe real por 16 dias',(
   const fotoDia=foto.cast(dia,vitrine,'Tsu');
   assert.ok(fotoDia,dia+' tem 6 Idols');
   assert.equal(fotoDia.concept.name,producao.concept.name);
-  assert.deepEqual(fotoDia.members.map(p=>p.nick),producao.members.map(p=>p.nick),dia);
+  assert.deepEqual(Array.from(fotoDia.members,p=>p.nick),Array.from(producao.members,p=>p.nick),dia);
  }
 });
 

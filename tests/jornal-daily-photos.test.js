@@ -60,6 +60,10 @@ test('a cena adicional preserva o telão e a foto privada do jogador com pet', (
   assert.equal(resultado.fotos.filter(f => f.tipo === 'telao').length, 1);
   assert.equal(resultado.fotos.filter(f => f.tipo === 'pet').length, 1);
   assert.equal((resultado.html.match(/data-jfoto=/g) || []).length, 6);
+  assert.equal(resultado.fotos[2].tipo, 'janela', 'oito Idols fecham a primeira fileira');
+  assert.equal(resultado.fotos[3].grupo.length, 3, 'foto de trio abre a segunda fileira');
+  assert.equal(resultado.fotos[4].tipo, 'pet', 'pet fica entre trio e telão');
+  assert.equal(resultado.fotos[5].tipo, 'telao', 'telão fecha a segunda fileira');
 });
 
 test('as cinco vistas oficiais aparecem uma vez por ciclo de cinco dias', () => {
@@ -81,7 +85,7 @@ test('foto panorâmica mantém os cinco cenários visíveis, com câmera e Idols
   for(const local of ['gigoia','liberdade','tailandia','harajuku','praia']){
     for(const [largura,altura] of [[480,300],[1440,900]]){
       const movimentos = [], escalas = [], cenas = [], idols = [];
-      const pincel = new Proxy({translate:(a,b)=>movimentos.push([a,b]),scale:(a,b)=>escalas.push([a,b])},{
+      const pincel = new Proxy({translate:(a,b)=>movimentos.push([a,b]),scale:(a,b)=>escalas.push([a,b]),createLinearGradient:()=>({addColorStop(){}})},{
         get(obj,chave){ return chave in obj ? obj[chave] : ()=>{}; },
         set(obj,chave,valor){ obj[chave] = valor; return true; }
       });
@@ -113,4 +117,19 @@ test('telão escolhe o elenco do dia e não reaproveita o pódio semanal', () =>
   assert.equal(palco.grupo.length, 6);
   assert.equal(palco.clipe.set, 'ocean');
   assert.deepEqual(Array.from(palco.grupo, p => p.nick), ['Idol00','Idol01','Idol02','Idol03','Idol04','Idol05']);
+});
+
+test('paisagem dos oito tem piso próprio, bandeirinhas contínuas e telão com aro na frente', () => {
+  const comeco = jornal.indexOf('function jornalFotoDesenhar(');
+  const fim = jornal.indexOf('function jornalFotoAmpliar(');
+  const desenho = jornal.slice(comeco, fim);
+  assert.ok(desenho.includes("var pisos = { tailandia:"), 'piso funciona em todas as vistas');
+  assert.ok(desenho.includes('x.moveTo(0,yFio(0))'), 'fio começa preso na borda esquerda');
+  assert.ok(desenho.includes('W2,yFio(1)'), 'fio termina na borda direita');
+  assert.ok(!desenho.includes('for(var lado = 0; lado < 2; lado++)'), 'não são dois fios curtos');
+  const moldura = desenho.indexOf("if(f.tipo === 'telao'){   // aro");
+  const cantores = desenho.indexOf("if(f.tipo === 'telao' && f.clipe){");
+  const outros = desenho.indexOf('if(n) f.grupo.forEach');
+  assert.ok(cantores >= 0 && moldura > outros, 'a moldura vai à frente dos Idols');
+  assert.ok(desenho.includes('x.clip()'), 'recorte evita personagens fora do telão');
 });

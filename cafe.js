@@ -24,7 +24,9 @@ function cfPaciencia(){ return Math.max(420, 900 - cf.atendidos * 45); }   // em
 function cfAbrir(){
   cfOv.hidden = false; cfOv.scrollTop = 0;
   cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, provaEstado:'' };
-  cfUI(); if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
+  cfUI();
+  var cena = $('cfCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', cfCenaClique); cena.dataset.idolReage = '1'; }
+  if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
@@ -174,13 +176,27 @@ function cfDesenhar(){
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = cfT;
   // parede listrada pastel + varal de luzinhas + quadro do cardápio
   for(var i = 0; i < 16; i++){ x.fillStyle = i % 2 ? '#ffe3f1' : '#fff3f9'; x.fillRect(i * W2 / 16, 0, W2 / 16 + 1, H2); }
+  x.save(); var luz = x.createRadialGradient(W2 * .28, H2 * .12, 10, W2 * .28, H2 * .12, W2 * .7);
+  luz.addColorStop(0, 'rgba(255,255,255,.55)'); luz.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = luz; x.fillRect(0, 0, W2, H2); x.restore();
   x.strokeStyle = '#d9b3ff'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 18); x.quadraticCurveTo(W2 / 2, 44, W2, 18); x.stroke();
   for(var l = 0; l < 14; l++){ var lx = l * W2 / 13, ly = 18 + Math.sin(l / 13 * Math.PI) * 13; x.fillStyle = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#3fc1ff'][l % 4]; x.globalAlpha = .6 + .4 * Math.sin(t / 12 + l); x.beginPath(); x.arc(lx, ly + 6, 5, 0, 7); x.fill(); }
   x.globalAlpha = 1;
-  x.save(); x.fillStyle = '#4b3a63'; x.strokeStyle = '#c98b55'; x.lineWidth = 6; x.beginPath(); if(x.roundRect) x.roundRect(W2 * .6, 40, W2 * .36, 96, 10); else x.rect(W2 * .6, 40, W2 * .36, 96); x.fill(); x.stroke();
+  // Quadro com moldura de madeira, borda interna e brilho discreto (mantém o mesmo menu).
+  x.save(); var mx = W2 * .6, my = 40, mw = W2 * .36, mh = 96;
+  x.shadowColor = 'rgba(53,20,76,.28)'; x.shadowBlur = 10; x.shadowOffsetY = 5;
+  var moldura = x.createLinearGradient(0, my, 0, my + mh);
+  moldura.addColorStop(0, '#f4c08a'); moldura.addColorStop(.5, '#c98b55'); moldura.addColorStop(1, '#a96c42');
+  x.fillStyle = moldura; x.beginPath(); if(x.roundRect) x.roundRect(mx - 4, my - 4, mw + 8, mh + 8, 13); else x.rect(mx - 4, my - 4, mw + 8, mh + 8); x.fill();
+  x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
+  var giz = x.createLinearGradient(mx, my, mx + mw, my + mh);
+  giz.addColorStop(0, '#615174'); giz.addColorStop(1, '#392d53');
+  x.fillStyle = giz; x.beginPath(); if(x.roundRect) x.roundRect(mx + 2, my + 2, mw - 4, mh - 4, 8); else x.rect(mx + 2, my + 2, mw - 4, mh - 4); x.fill();
+  x.strokeStyle = 'rgba(255,227,184,.55)'; x.lineWidth = 1.5;
+  x.beginPath(); if(x.roundRect) x.roundRect(mx + 6, my + 6, mw - 12, mh - 12, 6); else x.rect(mx + 6, my + 6, mw - 12, mh - 12); x.stroke();
   x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
-  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
-  x.fillStyle = '#ffd23f'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
+  x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe2f1'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
+  x.fillStyle = '#ffe47c'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
   // cliente no balcão
   var c = cf && cf.cli;
   if(c){
@@ -188,12 +204,19 @@ function cfDesenhar(){
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5, H2 * .26); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
   }
   // balcão de madeira
-  x.fillStyle = '#c98b55'; x.fillRect(0, H2 * .74, W2, H2 * .26); x.fillStyle = '#a0673a'; x.fillRect(0, H2 * .74, W2, 9); x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(0, H2 * .74 + 9, W2, 4);
+  hsBalcaoArte(x, 0, H2 * .74, W2, H2 * .26);
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
   if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
     eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.1, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)));
     if(rb < 80){ x.save(); x.font = '20px sans-serif'; x.textAlign = 'center'; x.globalAlpha = Math.max(0, 1 - rb / 80); x.fillText('😋', W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0), H2 * .74 - 52 - rb * .3); x.restore(); } }
   if(cf && cf.monta) cfCopo(x, W2 * .6, H2 * .8, cf.monta, H2 * .74 / 82 * 1.25);
+  // Apenas na apresentação: o seu Idol fica NA FRENTE do balcão.
+  // Durante o jogo o cliente aleatório continua sendo o único Idol visível.
+  if(cf && cf.fase === 'inicio'){
+    try{ x.save(); x.translate(W2 * .055, H2 * .395 + hsReacaoPulo(cf, t, 20));
+      perfDesenharIdol(x, W2 * .27, H2 * .60, perfAvAtual({pose:'tchau',expr:3,fundo:''}), false, false, t); x.restore(); }catch(e){ try{x.restore();}catch(z){} }
+    hsReacaoDesenhar(x, W2, H2, t, cf, W2 * .19, H2 * .5);
+  }
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
     var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;
@@ -284,7 +307,11 @@ function cfDecor(x, W2, H2, k, t){
   x.save();
   // prateleira sob o quadro: canecas TsuLiPa, bolo na boleira e porta-retrato
   var sy = 172, sx = W2 * .7, sw = W2 * .27;
-  x.fillStyle = '#a0673a'; x.fillRect(sx, sy, sw, 4); x.fillStyle = '#c98b55'; x.fillRect(sx, sy - 2, sw, 3);
+  x.fillStyle = 'rgba(70,32,43,.18)'; x.fillRect(sx + 2, sy + 3, sw, 4);
+  var prateleira = x.createLinearGradient(0, sy - 3, 0, sy + 4);
+  prateleira.addColorStop(0, '#f1be8d'); prateleira.addColorStop(.5, '#c98b55'); prateleira.addColorStop(1, '#915735');
+  x.fillStyle = prateleira; x.fillRect(sx, sy - 3, sw, 7);
+  x.fillStyle = 'rgba(255,244,220,.58)'; x.fillRect(sx, sy - 3, sw, 1.5);
   [['#ffd1ea', 0], ['#c8e3fb', 1], ['#cdeec6', 2]].forEach(function(c){ var mx = sx + 6 + c[1] * 7 * k; x.fillStyle = c[0]; x.fillRect(mx, sy - 6 * k, 5 * k, 6 * k); x.fillStyle = cfEscurece(c[0], -45); x.fillRect(mx + 5 * k, sy - 4.6 * k, 1.4 * k, 3 * k); Cor(mx + 2.5 * k, sy - 3.6 * k, 1, '#ff6fb5'); });
   var bx = sx + sw * .66; x.fillStyle = '#e9dcef'; x.fillRect(bx - 1, sy - 2 * k, 2, 2 * k); E(bx, sy - 2 * k, 5, 1); x.fillStyle = '#ffb3d9'; x.fillRect(bx - 4 * k, sy - 6.5 * k, 8 * k, 4.4 * k); x.fillStyle = '#fffaf2'; x.fillRect(bx - 4 * k, sy - 7 * k, 8 * k, 1.4 * k); x.fillStyle = '#d6123a'; E(bx, sy - 7.8 * k, .9, .9);
   var fx = sx + sw * .9; x.fillStyle = '#fff'; x.fillRect(fx - 4 * k, sy - 9 * k, 8 * k, 9 * k); x.fillStyle = '#c8b6ff'; x.fillRect(fx - 3 * k, sy - 8 * k, 6 * k, 6 * k); Est(fx, sy - 5 * k, 2, '#ffd23f');
@@ -310,4 +337,15 @@ function cfDecor(x, W2, H2, k, t){
   // lightstick do fã-clube apoiado no balcão
   var lx = W2 * .43; x.fillStyle = '#4b3a63'; x.fillRect(lx - .8 * k, pb - 8 * k, 1.6 * k, 8 * k); x.fillStyle = 'rgba(255,111,181,' + (.6 + .4 * brilho) + ')'; E(lx, pb - 10.5 * k, 2.6, 3); x.fillStyle = '#fff'; Est(lx, pb - 10.6 * k, 1.3, '#ffffff');
   x.restore();
+}
+
+/* Toque opcional somente no Idol da apresentação, nunca substitui os clientes sorteados. */
+function cfCenaClique(ev){
+  if(!cf || cfOv.hidden || cf.fase !== 'inicio') return;
+  var cv = $('cfCv'), b = cv.getBoundingClientRect();
+  if(!b.width || !b.height) return;
+  var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
+  if(px >= cv.width * .055 && px <= cv.width * .33 && py >= cv.height * .38 && py <= cv.height * .98){
+    hsReacaoAtivar(cf, cfT);
+  }
 }

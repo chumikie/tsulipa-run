@@ -77,6 +77,13 @@ function jornalFotosDia(){
     var grupo = []; for(var k = 0; k < n; k++) grupo.push(gente[(pos + k) % gente.length]); pos += n;
     return { cena:cenas[i % cenas.length], grupo:grupo };
   });
+  // Foto especial: 8 Idols diante de uma paisagem do Karaoke, sorteada por dia.
+  // Reutiliza o Canvas 2D da janela da sala sem alterar os três sorteios anteriores.
+  if(gente.length >= 8 && typeof KaraokeRoomViews !== 'undefined' && KaraokeRoomViews.VIEWS.length){
+    var local = jornalSorteio(KaraokeRoomViews.VIEWS, dia + 31)[0], oito = [];
+    for(var j = 0; j < 8; j++) oito.push(gente[(pos + j) % gente.length]);
+    fotos.push({ cena:['ceu', '📸', '{n} tirando foto de grupo', ['v','banzai','nyan','coracao','tchau','v','banzai','coracao']], grupo:oito, tipo:'janela', local:local, noturna:dia % 3 === 0 });
+  }
   // telão do Karaoke: o pódio da semana se apresentando juntos
   var kar = (jornalSemanaDados.karaoke || []).slice(0, 3).map(function(p){ var a = jornalAvatar(p.nick); return a ? { nick:p.nick, avatar:a } : null; }).filter(Boolean);
   if(kar.length >= 2) fotos.push({ cena:['palco', '📺', '{n} no telão do Karaoke⭐Time!', ['mic', 'luz', 'banzai']], grupo:kar, tipo:'telao' });
@@ -96,6 +103,7 @@ function jornalFotosDia(){
 var jornalFotosHoje = [];
 function jornalLegenda(f){
   if(f.legenda) return f.legenda;
+  if(f.tipo === 'janela') return tr('{n} tirando foto de grupo').replace('{n}', '8 Idols') + ' · ' + (KaraokeRoomViews.NAMES[f.local] || f.local);
   var nomes = f.grupo.map(function(p){ return p.nick; }), lista = tr('{a} e {b}').replace('{a}', nomes.slice(0, -1).join(', ')).replace('{b}', nomes[nomes.length - 1]);
   return tr(f.cena[2]).replace('{n}', lista);
 }
@@ -103,14 +111,41 @@ function jornalFotoDesenhar(cv, f, assinatura){
   var x = cv.getContext('2d'); if(!x) return;
   var W2 = cv.width, H2 = cv.height, cor = (f.grupo[0].avatar.c && f.grupo[0].avatar.c.hair) || '#ff6fb5';
   x.clearRect(0, 0, W2, H2);
-  try{ if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor); else perfFundo(x, W2, H2, f.cena[0], cor, 0); }catch(e){}
+  try{
+    if(f.tipo === 'janela' && typeof KaraokeRoomViews !== 'undefined') KaraokeRoomViews.draw(x, 4, 4, W2 - 8, H2 - 8, 0, f.local, !!f.noturna);
+    else if(f.cena[0] === 'cafe' && typeof duoFundoDesenhar === 'function') duoFundoDesenhar(x, W2, H2, 'cafe', 0, cor);
+    else perfFundo(x, W2, H2, f.cena[0], cor, 0);
+  }catch(e){}
   if(f.tipo === 'telao'){   // moldura de telão com luzinhas
     x.save(); x.strokeStyle = '#ffd23f'; x.lineWidth = W2 / 60; x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W2 - x.lineWidth, H2 - x.lineWidth);
     for(var q = 0; q < 16; q++){ x.fillStyle = q % 2 ? '#ff6fb5' : '#4dd8ff'; x.beginPath(); x.arc(W2 * (q + .5) / 16, W2 / 120, W2 / 140, 0, 7); x.fill(); }
     x.restore();
   }
   var n = f.grupo.length, slot = W2 / n;
-  if(f.tipo === 'pet'){ var av1 = JSON.parse(JSON.stringify(f.grupo[0].avatar)); av1.visual = ''; x.save(); x.translate(-W2 * .1, -H2 * .16); try{ perfDesenharIdol(x, W2 * 1.2, H2 * 1.2, av1, false, false, 0); }catch(e){} x.restore(); n = 0; }
+  if(f.tipo === 'pet'){
+    var av1 = JSON.parse(JSON.stringify(f.grupo[0].avatar)), pet = typeof perfPetDoAvatar === 'function' ? perfPetDoAvatar(av1) : null;
+    av1.visual = ''; av1.pet = null; av1.pose = 'banzai'; av1.expr = 3;
+    x.save(); x.translate(-W2 * .07, -H2 * .42);
+    try{ perfDesenharIdol(x, W2 * .82, H2 * 1.55, av1, false, false, 0); }catch(e){}
+    x.restore();
+    if(pet && typeof perfDesenharPetEm === 'function'){
+      x.save(); x.translate(W2 * .77, H2 * .69); x.rotate(-.12);
+      perfDesenharPetEm(x, pet, 0, 0, H2 / 68, 0); x.restore();
+    }
+    x.save(); x.textAlign = 'center'; x.font = '900 ' + Math.round(H2 * .095) + 'px sans-serif';
+    [['♥',.82,.23,'#ff6fb5'],['✦',.61,.13,'#ffe14d'],['✦',.93,.45,'#8ae8ff']].forEach(function(a){ x.fillStyle = a[3]; x.fillText(a[0], W2 * a[1], H2 * a[2]); });
+    x.restore(); n = 0;
+  }
+  if(f.tipo === 'janela'){
+    f.grupo.forEach(function(p, k){
+      var av8 = JSON.parse(JSON.stringify(p.avatar)), row = k >= 4 ? 1 : 0, col = k % 4, colW = W2 / 4;
+      av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][col]; av8.visual = ''; av8.pet = null;
+      x.save(); x.translate(col * colW - colW * .075, H2 * (row ? .38 : .02));
+      try{ perfDesenharIdol(x, colW * 1.15, H2 * (row ? .65 : .57), av8, false, false, 0); }catch(e){}
+      x.restore();
+    });
+    n = 0;
+  }
   if(n) f.grupo.forEach(function(p, k){
     var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
     x.save(); x.translate(k * slot - slot * .1, H2 * .06); try{ perfDesenharIdol(x, slot * 1.2, H2 * .94, av, false, false, 0); }catch(e){} x.restore();

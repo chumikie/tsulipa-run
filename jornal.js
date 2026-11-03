@@ -139,23 +139,27 @@ function jornalFotoDesenhar(cv, f, assinatura){
   if(f.tipo === 'janela'){
     f.grupo.forEach(function(p, k){
       var av8 = JSON.parse(JSON.stringify(p.avatar)), row = k >= 4 ? 1 : 0, col = k % 4, colW = W2 / 4;
-      var balanco = [-.11,.07,-.08,.10,.08,-.11,.12,-.07][k], varia = [1.07,.94,1.1,.96,1.04,1.13,.95,1.06][k];
-      var altura = H2 * (row ? .65 : .57) * varia, origemY = H2 * ([.05,-.01,.08,.02,.4,.34,.43,.37][k]);
+      var balanco = [-.08,.06,-.07,.08,.06,-.075,.08,-.06][k], varia = [1.04,.97,1.07,.98,1.03,1.06,.98,1.04][k];
+      var altura = H2 * (row ? .7 : .63) * varia, chao = H2 * (row ? .97 : .77);
+      var centro = W2 / 2 + (col - 1.5) * colW * .78;
       av8.pose = f.cena[3][k]; av8.expr = [3,2,6,3][col]; av8.visual = ''; av8.pet = null;
-      x.save(); x.translate(col * colW - colW * .075 + colW * ([.01,-.03,.03,-.01][col]), origemY);
-      x.translate(colW * .575, altura * .54); x.rotate(balanco); x.translate(-colW * .575, -altura * .54);
-      try{ perfDesenharIdol(x, colW * 1.15, altura, av8, false, false, 0); }catch(e){}
+      // Giro suave ao redor dos pés: sombras na areia e sem efeito de levitação.
+      x.save(); x.translate(centro, chao); x.rotate(balanco);
+      x.translate(-colW * .61, -altura * .9);
+      try{ perfDesenharIdol(x, colW * 1.22, altura, av8, false, false, 0); }catch(e){}
       x.restore();
     });
     n = 0;
   }
   if(n) f.grupo.forEach(function(p, k){
     var av = JSON.parse(JSON.stringify(p.avatar)); av.pose = f.cena[3][k % f.cena[3].length]; av.expr = [2, 3, 6, 3][k % 4]; av.visual = '';
-    var desloc = [-.04,.07,.01,-.065][k % 4], inclinacao = [-.085,.075,-.055,.095][k % 4];
-    var ampliacao = [1.08,.97,1.13,1.02][k % 4], altura = H2 * .94 * ampliacao;
-    x.save(); x.translate(k * slot - slot * .1 + slot * desloc, H2 * ([.04,.095,.015,.08][k % 4]));
-    x.translate(slot * .6, altura * .51); x.rotate(inclinacao); x.translate(-slot * .6, -altura * .51);
-    try{ perfDesenharIdol(x, slot * 1.2, altura, av, false, false, 0); }catch(e){} x.restore();
+    var inclinacao = [-.065,.06,-.045,.07][k % 4], ampliacao = [1.045,.985,1.07,1.015][k % 4];
+    var altura = H2 * .94 * ampliacao, chao = H2 * (.93 + [0,.008,-.007,.005][k % 4]);
+    var centro = W2 / 2 + (k - (n - 1) / 2) * slot * .79;
+    // Aproxima o trio, alterna pose e escala, mas conserva os pés na linha do chão.
+    x.save(); x.translate(centro, chao); x.rotate(inclinacao);
+    x.translate(-slot * .61, -altura * .9);
+    try{ perfDesenharIdol(x, slot * 1.22, altura, av, false, false, 0); }catch(e){} x.restore();
   });
   if(assinatura){
     var u = W2 / 480; x.font = '800 ' + Math.round(13 * u) + 'px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.9)';

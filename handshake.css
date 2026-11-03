@@ -27,7 +27,7 @@
 /* PR #71 · acabamento pontual do Handshake e do Happy⭐Cafe! */
 .hsp .hc-cena{position:relative;margin:8px 0;border-radius:18px;overflow:hidden}
 .hsp .hc-cena canvas{display:block;width:100%;height:auto;margin:0}
-.hsp .hc-foto{position:absolute;right:12px;top:12px;display:grid;place-items:center;width:44px;height:44px;border:2px solid #fff;border-radius:14px;background:linear-gradient(145deg,#ffecf7,#d9c7ff);box-shadow:0 4px 0 #7b3ff0,0 6px 14px #33105455;color:#7635bd;font-size:24px;cursor:pointer;z-index:2}
+.hsp .hc-foto{position:absolute;left:12px;top:12px;display:grid;place-items:center;width:44px;height:44px;border:2px solid #fff;border-radius:14px;background:linear-gradient(145deg,#ffecf7,#d9c7ff);box-shadow:0 4px 0 #7b3ff0,0 6px 14px #33105455;color:#7635bd;font-size:24px;cursor:pointer;z-index:2}
 .hsp .hc-foto:active{transform:translateY(2px);box-shadow:0 2px 0 #7b3ff0}
 .hsp .hc-foto:focus-visible{outline:3px solid #ffd23f;outline-offset:3px}
 .hsp .hc-instrucoes{display:flex;align-items:flex-start;gap:11px;max-width:530px;margin:12px auto 8px;padding:11px 13px;text-align:left;border-radius:16px;background:rgba(255,255,255,.11);border:1px solid rgba(255,220,245,.35)}
@@ -39,7 +39,7 @@
 .hsp .hsdica{color:#e6dffc;line-height:1.45;font-size:13px}
 .hsp .hsdica.evsemana{color:#743a8c;background:linear-gradient(95deg,#fff1fb,#f6efff);border-color:#ffb6da}
 .hsp .hsfim{color:#fff0fc}
-@media(max-width:420px){.hsp .hc-foto{right:8px;top:8px;width:40px;height:40px}.hsp .hc-instrucoes{padding:9px 10px}.hsp .hc-instrucoes p{font-size:13px}.hsp .hsstatus{font-size:12px}}
+@media(max-width:420px){.hsp .hc-foto{left:8px;top:8px;width:40px;height:40px}.hsp .hc-instrucoes{padding:9px 10px}.hsp .hc-instrucoes p{font-size:13px}.hsp .hsstatus{font-size:12px}}
 
 .hsp .hc-cena #hsCv{margin:0}
 

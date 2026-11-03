@@ -312,11 +312,42 @@ function cfDecor(x, W2, H2, k, t){
   prateleira.addColorStop(0, '#f1be8d'); prateleira.addColorStop(.5, '#c98b55'); prateleira.addColorStop(1, '#915735');
   x.fillStyle = prateleira; x.fillRect(sx, sy - 3, sw, 7);
   x.fillStyle = 'rgba(255,244,220,.58)'; x.fillRect(sx, sy - 3, sw, 1.5);
-  [['#ffd1ea', 0], ['#c8e3fb', 1], ['#cdeec6', 2]].forEach(function(c){ var mx = sx + 6 + c[1] * 7 * k; x.fillStyle = c[0]; x.fillRect(mx, sy - 6 * k, 5 * k, 6 * k); x.fillStyle = cfEscurece(c[0], -45); x.fillRect(mx + 5 * k, sy - 4.6 * k, 1.4 * k, 3 * k); Cor(mx + 2.5 * k, sy - 3.6 * k, 1, '#ff6fb5'); });
-  var bx = sx + sw * .66; x.fillStyle = '#e9dcef'; x.fillRect(bx - 1, sy - 2 * k, 2, 2 * k); E(bx, sy - 2 * k, 5, 1); x.fillStyle = '#ffb3d9'; x.fillRect(bx - 4 * k, sy - 6.5 * k, 8 * k, 4.4 * k); x.fillStyle = '#fffaf2'; x.fillRect(bx - 4 * k, sy - 7 * k, 8 * k, 1.4 * k); x.fillStyle = '#d6123a'; E(bx, sy - 7.8 * k, .9, .9);
+  // Canecas de cerâmica: volume, borda, alça e reflexo (sem trocar produtos).
+  [['#ffd1ea', 0], ['#c8e3fb', 1], ['#cdeec6', 2]].forEach(function(c){
+    var mx = sx + 6 + c[1] * 7 * k, cy = sy - 6 * k;
+    x.strokeStyle = cfEscurece(c[0], -55); x.lineWidth = 1.25 * k;
+    x.beginPath(); x.moveTo(mx + 4.8 * k, cy + 1.6 * k);
+    x.bezierCurveTo(mx + 9 * k, cy, mx + 9 * k, cy + 5.4 * k, mx + 5 * k, cy + 4.9 * k); x.stroke();
+    var tinta = x.createLinearGradient(mx, 0, mx + 5 * k, 0);
+    tinta.addColorStop(0, cfEscurece(c[0], -19)); tinta.addColorStop(.4, c[0]); tinta.addColorStop(1, cfEscurece(c[0], -42));
+    x.fillStyle = tinta; x.beginPath(); if(x.roundRect) x.roundRect(mx, cy, 5.4 * k, 6 * k, [1.1 * k,1.1 * k,1.6 * k,1.6 * k]); else x.rect(mx, cy, 5.4 * k, 6 * k); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.68)'; x.fillRect(mx + .7 * k, cy + .6 * k, .65 * k, 3.8 * k);
+    x.fillStyle = '#fffaf2'; E(mx + 2.7 * k, cy + .6 * k, 2.55, .55);
+    Cor(mx + 2.7 * k, cy + 3.4 * k, .9, '#ff6fb5');
+  });
+  // Dois suportes de madeira sob a prateleira.
+  x.fillStyle = '#ac704a'; x.fillRect(sx + 8 * k, sy + 4, 3 * k, 2.2 * k);
+  x.fillRect(sx + sw - 11 * k, sy + 4, 3 * k, 2.2 * k);
+  var bx = sx + sw * .66;
+  x.fillStyle = 'rgba(69,37,45,.24)'; E(bx, sy - .2 * k, 5.8, .65);
+  x.fillStyle = '#e9dcef'; x.fillRect(bx - 1, sy - 2 * k, 2, 2 * k); E(bx, sy - 2 * k, 5, 1);
+  var recheio = x.createLinearGradient(0, sy - 7 * k, 0, sy - 2 * k);
+  recheio.addColorStop(0, '#ffe5f4'); recheio.addColorStop(.46, '#ff9cc7'); recheio.addColorStop(1, '#d96396');
+  x.fillStyle = recheio; x.fillRect(bx - 4 * k, sy - 6.5 * k, 8 * k, 4.4 * k);
+  x.fillStyle = '#fffaf2'; x.fillRect(bx - 4.3 * k, sy - 7.1 * k, 8.6 * k, 1.2 * k);
+  x.fillStyle = 'rgba(255,255,255,.7)'; x.fillRect(bx - 3.3 * k, sy - 5.6 * k, .7 * k, 2.5 * k);
+  x.fillStyle = '#d6123a'; E(bx, sy - 7.8 * k, .9, .9);
+  x.fillStyle = '#fff6fb'; E(bx - .3 * k, sy - 8.15 * k, .28, .24);
   var fx = sx + sw * .9; x.fillStyle = '#fff'; x.fillRect(fx - 4 * k, sy - 9 * k, 8 * k, 9 * k); x.fillStyle = '#c8b6ff'; x.fillRect(fx - 3 * k, sy - 8 * k, 6 * k, 6 * k); Est(fx, sy - 5 * k, 2, '#ffd23f');
-  // toalhinha rendada na frente do balcão + adesivos
-  for(var i = 0; i < 26; i++){ x.fillStyle = i % 2 ? '#ffd1ea' : '#fff3f9'; E(i * W2 / 25, topo + 12, 2.6, 1.8); }
+  // Renda do balcão: barra contínua com franjas suaves, não bolinhas soltas.
+  x.fillStyle = 'rgba(99,48,68,.16)'; x.fillRect(0, topo + 13, W2, 2);
+  var renda = x.createLinearGradient(0, topo + 3, 0, topo + 15);
+  renda.addColorStop(0, '#fff9fc'); renda.addColorStop(.6, '#ffe3f1'); renda.addColorStop(1, '#f3b8d1');
+  x.fillStyle = renda; x.fillRect(0, topo + 4, W2, 7);
+  for(var i = 0; i < 26; i++){
+    x.fillStyle = i % 2 ? '#ffcfdf' : '#fff3f9'; E(i * W2 / 25, topo + 11, 2.6, 1.6);
+    x.fillStyle = 'rgba(255,255,255,.6)'; E(i * W2 / 25 - 1.2 * k, topo + 9.8, .48, .3);
+  }
   Cor(W2 * .1, topo + 34, 3, 'rgba(255,111,181,.75)'); Est(W2 * .3, topo + 40, 3.2, 'rgba(255,210,63,.85)'); Cor(W2 * .5, topo + 46, 2.4, 'rgba(200,182,255,.9)');
   Est(W2 * .72, topo + 44, 2.6, 'rgba(255,255,255,.75)'); Cor(W2 * .92, topo + 38, 3, 'rgba(255,111,181,.75)');
   // potinho de gorjetas: vidro com estrelas e moedas (cintilam)
@@ -333,9 +364,25 @@ function cfDecor(x, W2, H2, k, t){
   // vasinho com flor
   var vx = W2 * .955; x.fillStyle = '#5fb04a'; x.fillRect(vx - .5 * k, pb - 12 * k, 1 * k, 7 * k); E(vx - 2 * k, pb - 9 * k, 2, 1); E(vx + 2 * k, pb - 8 * k, 2, 1);
   x.fillStyle = '#ffb3d9'; [[0, -14], [-1.8, -12.6], [1.8, -12.6], [-1.1, -10.8], [1.1, -10.8]].forEach(function(p){ E(vx + p[0] * k, pb + p[1] * k, 1.4, 1.4); }); x.fillStyle = '#ffd23f'; E(vx, pb - 12.4 * k, .9, .9);
-  x.fillStyle = '#c98b55'; x.fillRect(vx - 3 * k, pb - 5 * k, 6 * k, 5 * k); x.fillStyle = '#e0a370'; x.fillRect(vx - 3.6 * k, pb - 5.6 * k, 7.2 * k, 1.6 * k);
-  // lightstick do fã-clube apoiado no balcão
-  var lx = W2 * .43; x.fillStyle = '#4b3a63'; x.fillRect(lx - .8 * k, pb - 8 * k, 1.6 * k, 8 * k); x.fillStyle = 'rgba(255,111,181,' + (.6 + .4 * brilho) + ')'; E(lx, pb - 10.5 * k, 2.6, 3); x.fillStyle = '#fff'; Est(lx, pb - 10.6 * k, 1.3, '#ffffff');
+  var vaso = x.createLinearGradient(vx - 3 * k, 0, vx + 3 * k, 0);
+  vaso.addColorStop(0, '#a96b43'); vaso.addColorStop(.45, '#e9ae7d'); vaso.addColorStop(1, '#ba7c4e');
+  x.fillStyle = vaso; x.fillRect(vx - 3 * k, pb - 5 * k, 6 * k, 5 * k);
+  x.fillStyle = '#f0bf91'; x.fillRect(vx - 3.6 * k, pb - 5.6 * k, 7.2 * k, 1.4 * k);
+  x.fillStyle = 'rgba(255,250,220,.5)'; x.fillRect(vx - 2.2 * k, pb - 4.2 * k, .7 * k, 3.2 * k);
+  // Lightstick do fã-clube (não microfone): cabo com empunhadura e estrela dentro de cúpula.
+  var lx = W2 * .43;
+  x.fillStyle = 'rgba(52,28,75,.18)'; E(lx, pb - .1 * k, 3, .7);
+  x.fillStyle = '#433459'; x.fillRect(lx - .8 * k, pb - 8 * k, 1.6 * k, 8 * k);
+  x.fillStyle = '#a78cc2'; x.fillRect(lx - .52 * k, pb - 7.4 * k, .37 * k, 5.6 * k);
+  x.fillStyle = '#ffe5f3'; x.fillRect(lx - 1.1 * k, pb - 8.3 * k, 2.2 * k, .9 * k);
+  var halo = x.createRadialGradient(lx, pb - 10.6 * k, 0, lx, pb - 10.6 * k, 5 * k);
+  halo.addColorStop(0, 'rgba(255,255,255,' + (.32 + .18 * brilho) + ')');
+  halo.addColorStop(.65, 'rgba(255,111,181,' + (.1 + .1 * brilho) + ')');
+  halo.addColorStop(1, 'rgba(255,111,181,0)');
+  x.fillStyle = halo; E(lx, pb - 10.6 * k, 5, 5);
+  x.fillStyle = '#ff8cc9'; E(lx, pb - 10.6 * k, 2.8, 3.1);
+  x.fillStyle = 'rgba(255,255,255,.55)'; E(lx - .9 * k, pb - 11.8 * k, .55, 1.1);
+  Est(lx, pb - 10.6 * k, 1.3, '#ffffff');
   x.restore();
 }
 

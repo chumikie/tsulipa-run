@@ -67,6 +67,7 @@ function hsMemGuardar(f){
 }
 function hsRecorde(){ if(typeof recMaiorLocal === 'function') return recMaiorLocal('hand'); try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
+  if(typeof eventoPetResetar === 'function') eventoPetResetar('handshake');
   hsOv.hidden = false; hsOv.scrollTop = 0;
   hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:0, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' };
   hsUI(); hsRecuperar();
@@ -129,6 +130,7 @@ function hsResponder(i){
     hs.fala = tr(J.erro[0]).replace('{p}', HS_PRESENTES[f.pres][0] + ' ' + tr(HS_PRESENTES[f.pres][1]));
     if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
   }
+  if(ok && typeof eventoPetReagir === 'function') eventoPetReagir('handshake', hsT, false);
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsAplicarPet(r){
@@ -297,7 +299,7 @@ function hsDesenhar(){
       if(hs.fase === 'resposta'){ x.save(); x.font = '48px sans-serif'; x.textAlign = 'center'; x.fillText(hs.ok ? '💖' : '💦', W2 * .5, H2 * .45 - Math.min(20, dt)); x.restore(); }
     }
   }
-  if(typeof eventoPetDesenhar === 'function') eventoPetDesenhar(x, W2 * .46, H2 * .9, t, 1.3, W2 * (.4 + .04 * Math.sin(t / 90)));
+  if(typeof eventoPetDesenhar === 'function') eventoPetDesenhar(x, W2 * .46, H2 * .9, t, 1.85, W2 * (.4 + .04 * Math.sin(t / 90)), 'handshake');
   hsCoracoes(x, W2, H2);
   hsReacaoDesenhar(x, W2, H2, t, hs, W2 * .75, H2 * .34);
 }
@@ -409,6 +411,10 @@ function hsCenaClique(ev){
   if(!hs || hsOv.hidden) return;
   var cv = $('hsCv'), b = cv.getBoundingClientRect(); if(!b.width || !b.height) return;
   var px = (ev.clientX - b.left) * cv.width / b.width, py = (ev.clientY - b.top) * cv.height / b.height;
+  if(typeof eventoPetToque === 'function' && eventoPetToque('handshake', px, py, hsT)){
+    hsDesenhar(); // pulinho, emojis e voz própria do pet; sem balões
+    return;
+  }
   if(px >= cv.width * .54 && px <= cv.width * .98 && py >= cv.height * .12 && py <= cv.height * .7){
     hsReacaoAtivar(hs, hsT);
     hsDesenhar(); // resposta imediata ao toque, mesmo entre quadros reduzidos no celular

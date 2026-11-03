@@ -58,7 +58,7 @@ test('arquivo sob demanda preserva catálogos originais e aplica sexta coluna',(
   assert.ok(Object.keys(context.window.TW_DICT.id).length>0);
 });
 test('carregamento dinâmico incorpora as traduções dos módulos e das linhas',()=>{
-  const context={window:{}};
+  const context={window:{},refreshAcc:()=>{}};
   vm.runInNewContext(read('tw-i18n.js'),context);
   vm.runInNewContext(read('translations/id/preview-data.js'),context);
   const html=read('index.html');

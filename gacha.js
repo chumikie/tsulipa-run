@@ -119,6 +119,7 @@ function gachaDesenhar(){
     x.fillStyle = '#fff'; x.beginPath(); x.arc(mx - 15, my - 6 + (aberta ? 6 : 0), 10, 0, Math.PI); x.fill();
     if(aberta){ x.font = '28px sans-serif'; x.fillText(gachaRes.tipo === 'estrelas' ? '⭐' : gachaRes.tipo === 'bonus' ? '✨' : '🍀', mx - 15, my - 26 - Math.abs(Math.sin(t * .08)) * 8); }
   }
+  if(typeof bannerTorcidaDesenhar === 'function') bannerTorcidaDesenhar(x, W2, H2, t, gachaGiro >= 0 || !!(gachaFeito && gachaRes && gachaAgora));   // torcida do banner do dia
   // o seu personagem vai até a barraquinha
   var c = sel === 3 ? CU : CH[sel], sc = 3.2, alvo = bx - 120, px = Math.min(alvo, 40 + t * 3), anda = px < alvo;
   var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oF = frame;

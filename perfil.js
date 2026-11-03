@@ -928,6 +928,7 @@ function perfMiniUI(r, resumo){   // r: ranking completo (seu perfil) · resumo:
 function perfMontUI(){
   if(typeof acessoriosSync==='function') acessoriosSync(); // antes de copiar as opções para o montador do perfil
   var box = $('perfMont'), h = '';
+  if(!box) return;   // Zipper⭐Shop! aberta sem o Montar Idol
   function rotulo(id){ var el = $(id), lb = el && el.closest('label'); if(!lb) return ''; var t = ''; [].forEach.call(lb.childNodes, function(n){ if(n.nodeType === 3) t += n.nodeValue; }); return t.trim(); }
   function opts(id, cur){ return [].map.call($(id).options, function(o){ return '<option value="' + escHtml(o.value) + '"' + (o.disabled ? ' disabled' : '') + (o.value === cur ? ' selected' : '') + '>' + escHtml(o.textContent) + '</option>'; }).join(''); }
   function sel(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], CU[p[1]] || '') + '</select></label>'; }

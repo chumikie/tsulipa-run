@@ -16,6 +16,7 @@ function contaRpc(nome, args){
 }
 function contaSiteOk(){ return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/i.test(location.hostname); }
 function contaUI(){
+  if(typeof idolChipNome === 'function') idolChipNome();
   if(typeof hubLoginCtaUI==='function') hubLoginCtaUI();
   var box = $('contaBox'); if(!box) return;
   var nIn = $('nick');

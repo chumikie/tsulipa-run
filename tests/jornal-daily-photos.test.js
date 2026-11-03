@@ -133,3 +133,45 @@ test('paisagem dos oito tem piso próprio, bandeirinhas contínuas e telão com 
   assert.ok(cantores >= 0 && moldura > outros, 'a moldura vai à frente dos Idols');
   assert.ok(desenho.includes('x.clip()'), 'recorte evita personagens fora do telão');
 });
+
+test('doze acontecimentos variados passam pelo jornal sem repetição no dia seguinte', () => {
+  const temas = new Set();
+  const ctx = { JORNAL_CENAS: null };
+  vm.runInNewContext(composicao + '\nthis.acontecimentos = JORNAL_CENAS.map(c => c[2]);', ctx);
+  assert.equal(ctx.acontecimentos.length, 12, 'catálogo ampliado sem retirar as seis cenas anteriores');
+  assert.equal(new Set(ctx.acontecimentos).size, 12);
+  let anterior = new Set();
+  for(let dia=20760;dia<20784;dia++){
+    const cenas = gerar({dia}).fotos.filter(f=>!f.tipo).map(f=>f.cena[2]);
+    assert.equal(cenas.length,3);
+    assert.equal(new Set(cenas).size,3,'três histórias diferentes no mesmo dia');
+    for(const cena of cenas){
+      assert.ok(!anterior.has(cena),'não repete a história de ontem: dia '+dia);
+      temas.add(cena);
+    }
+    anterior=new Set(cenas);
+  }
+  assert.equal(temas.size,12,'todas as cenas aparecem no ciclo');
+});
+
+test('as seis histórias novas têm decoração própria e legendas em cinco idiomas', () => {
+  const i18n={window:{}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','tw-i18n.js'),'utf8'),i18n);
+  const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'..','translations/id/preview-catalog.json'),'utf8'));
+  const idjs=fs.readFileSync(path.join(__dirname,'..','translations/id/preview-data.js'),'utf8');
+  const novos=[
+    ['figurinos','{n} preparando os figurinos no camarim'],
+    ['aniversario','{n} comemorando um aniversário no café'],
+    ['cartas','{n} lendo cartinhas dos fãs'],
+    ['bastidores','{n} nos bastidores antes do show'],
+    ['estudio','{n} gravando música no estúdio'],
+    ['jardim','{n} num piquenique no jardim']
+  ];
+  for(const [tema,frase] of novos){
+    assert.ok(jornal.includes("'"+tema+"'"),'decoração '+tema);
+    for(const idioma of ['en','es','th','ja'])assert.ok(i18n.window.TW_DICT[idioma][frase],'tradução '+idioma+' de '+tema);
+    assert.ok(catalog.central.dict[frase],'tradução ID de '+tema);
+    assert.ok(idjs.includes(JSON.stringify(frase)),'dicionário carregado sob demanda '+tema);
+  }
+  assert.match(jornal,/jornalCenaDetalhes\(x, f\.cena\[4\], W2, H2\)/,'desenho acima do fundo, atrás dos personagens');
+});

@@ -5,4 +5,4 @@
 .facarta{background:#fff;border-radius:16px;padding:10px 14px;box-shadow:0 3px 0 rgba(123,63,240,.12);color:#3c2a8f;position:relative}
 .facarta small{font-weight:700;color:#9c8ac8}.facarta p{margin:4px 0 0;font-weight:800;font-size:16px}
 .faok{font-weight:800;color:#d63384}.fainfo{font-size:13px;color:#3c2a8f;font-weight:700}
-#hubHojeLinha .hubfa{grid-column:1/-1}
+#hubHojeLinha .hubfa{grid-column:auto}

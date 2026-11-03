@@ -23,7 +23,7 @@
 .jnbloco{background:var(--card,#fff);border-radius:16px;padding:10px 12px;margin:10px 0;box-shadow:0 3px 0 rgba(123,63,240,.1)}
 .jnbloco ul{margin:0;padding-left:18px;font-size:14px;line-height:1.6}
 @media (max-width:520px){.jnpodios{grid-template-columns:1fr}}
-#hubHojeLinha .hubjornal{grid-column:1/-1}
+#hubHojeLinha .hubjornal{grid-column:auto}
 
 .jnfotos{display:grid;grid-template-columns:1fr;gap:10px}
 .jnfoto3{margin:0;background:#fff;border-radius:14px;padding:6px 6px 8px;box-shadow:0 3px 0 rgba(123,63,240,.12);transform:rotate(-.6deg)}

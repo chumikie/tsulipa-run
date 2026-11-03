@@ -69,3 +69,8 @@
 .jndiariodica{font-size:11px;color:#816d99;margin:0 0 8px;font-weight:700}
 .jndiariolista{list-style:none;counter-reset:none;margin:0;padding:0;display:grid;gap:7px}
 .jndiariolista li{background:#fff;border-left:3px solid #e8b8ef;border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.5;color:#3c2a8f;font-weight:700}
+
+.jndiariolista li small{display:block;margin:0 0 4px;color:#9d55be;font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.jnfeitos{border:1px solid #bfe8d1;background:linear-gradient(135deg,#f5fff8,#fff)!important}
+.jnfeitos ul{margin:0;padding-left:18px;line-height:1.55}
+.jnfeitos li{margin:4px 0}

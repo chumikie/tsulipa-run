@@ -13,6 +13,46 @@ var cf = null, cfAnim = 0, cfT = 0;
 function cfLer(k, def){ try{ var v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; }catch(e){ return def; } }
 function cfGravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 function cfNomeReceita(p){ return tr(CF_BASES[p.base][1]) + ' ' + CF_ENFEITES[p.enf][0]; }
+// A escolha da assinatura existe apenas durante a partida, sem salvar progresso novo.
+function cfAssinaturaOpcoes(rec){
+  var opcoes = '', atual = cf && cf.assinatura;
+  CF_BASES.forEach(function(b, bi){ CF_ENFEITES.forEach(function(e, ei){
+    var chave = bi + '-' + ei;
+    if(!rec[chave]) return;
+    var escolhida = atual && atual.base === bi && atual.enf === ei;
+    opcoes += '<button type="button" class="cfassinatura-opcao' + (escolhida ? ' on' : '') +
+      '" data-cf-assinatura="' + chave + '" aria-pressed="' + (escolhida ? 'true' : 'false') +
+      '" title="' + escHtml(cfNomeReceita({base:bi,enf:ei})) + '">' + b[0] + e[0] +
+      ' ' + escHtml(cfNomeReceita({base:bi,enf:ei})) + '</button>';
+  }); });
+  if(!opcoes) return '';
+  return '<div class="cfassinatura"><strong>📒 ' + escHtml(tr('Receita de Assinatura')) + '</strong>' +
+    '<p class="hsdica">' + escHtml(tr('Escolha uma receita descoberta para usar uma vez neste turno (base + enfeite).')) + '</p>' +
+    '<div class="cfassinatura-opcoes"><button type="button" class="cfassinatura-opcao' +
+    (!atual ? ' on' : '') + '" data-cf-assinatura="nenhuma" aria-pressed="' + (!atual ? 'true' : 'false') +
+    '">✖ ' + escHtml(tr('Sem assinatura')) + '</button>' + opcoes + '</div></div>';
+}
+function cfSelecionarAssinatura(chave){
+  if(!cf || cf.fase !== 'inicio') return;
+  if(chave === 'nenhuma'){ cf.assinatura = null; cfUI(); return; }
+  var m = /^(\d+)-(\d+)$/.exec(chave);
+  if(!m) return;
+  var base = +m[1], enf = +m[2];
+  if(base >= CF_BASES.length || enf >= CF_ENFEITES.length || !cfLer(CF_RECEITAS_KEY, {})[base + '-' + enf]) return;
+  cf.assinatura = {base:base,enf:enf};
+  cfUI();
+}
+function cfUsarAssinatura(){
+  if(!cf || cf.fase !== 'pedido' || !cf.assinatura || cf.assinaturaUsada || !cf.cli || !cf.cli.pedido) return;
+  var a = cf.assinatura, p = cf.cli.pedido;
+  if(p.base !== a.base || p.enf !== a.enf) return;
+  // A validação online continua recebendo os mesmos quatro índices de cf.monta.
+  cf.monta.base = a.base;
+  cf.monta.enf = a.enf;
+  cf.assinaturaUsada = true;
+  cf.aviso = '';
+  cfUI();
+}
 function cfPedido(r, n){
   // começa simples (base + enfeite) e vai pedindo cobertura e docinho
   var p = { base:Math.floor(r() * CF_BASES.length), cob:n >= 2 || r() < .4 ? Math.floor(r() * CF_COBERTURAS.length) : -1,
@@ -24,7 +64,7 @@ function cfPaciencia(){ return cf && cf.servidor && cf.servidor.limite_segundos 
 function cfAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
-  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[] };
+  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:null, assinaturaUsada:false };
   cfUI();
   var cena = $('cfCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', cfCenaClique); cena.dataset.idolReage = '1'; }
   if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
@@ -363,6 +403,7 @@ function cfUI(){
   if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
+    cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
@@ -372,8 +413,14 @@ function cfUI(){
         (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
     }
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
-    h += '<div class="hstempo"><i id="cfPac" style="width:100%"></i></div>' +
-      cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
+    h += '<div class="hstempo"><i id="cfPac" style="width:100%"></i></div>';
+    if(cf.fase === 'pedido' && cf.assinatura && !cf.assinaturaUsada && cf.cli &&
+       cf.cli.pedido.base === cf.assinatura.base && cf.cli.pedido.enf === cf.assinatura.enf &&
+       (cf.monta.base !== cf.assinatura.base || cf.monta.enf !== cf.assinatura.enf)){
+      h += '<div class="cfassinatura-pedido"><button type="button" class="btn sec" id="cfUsarAssinatura">' +
+        '📒 ' + escHtml(tr('Usar assinatura: base + enfeite')) + '</button></div>';
+    }
+    h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
       '<div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>';
   }
   else if(cf.fase === 'fim'){
@@ -411,10 +458,14 @@ function cfCaderno(rec){
   return h + '</div></div>';
 }
 function cfIniciarSeguro(){
-  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[]};
+  var escolhida = cf && cf.fase === 'inicio' ? cf.assinatura : null;
+  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[],assinatura:escolhida,assinaturaUsada:false};
   cfNovoCliente();
 }
 function cfClique(e){
+  var assina = e.target.closest && e.target.closest('[data-cf-assinatura]');
+  if(assina){ cfSelecionarAssinatura(assina.dataset.cfAssinatura); return; }
+  if(e.target.closest && e.target.closest('#cfUsarAssinatura')){ cfUsarAssinatura(); return; }
   var b = e.target.closest && e.target.closest('[data-cf]');
   if(b){ var p = b.dataset.cf.split(':'); cfEscolher(p[0], +p[1]); return; }
   if(e.target.closest && e.target.closest('#cfServir')){ cfServir(false); return; }

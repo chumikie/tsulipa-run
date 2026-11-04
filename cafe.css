@@ -21,3 +21,13 @@
 .cfop{background:linear-gradient(180deg,#fff,#fff6fb);border:2px solid #f6d7ea}
 .cfrec{border:2px solid #f6d7ea}
 .cfops{display:grid;grid-template-columns:repeat(auto-fit,minmax(62px,1fr))}.cfop{padding:6px 2px}
+
+/* Receita de Assinatura: seleção compacta, sem sobrepor a montagem no celular. */
+.cfassinatura{margin:9px 0;padding:10px;border:2px dashed #e8c39e;border-radius:16px;background:#fff8ef;text-align:left}
+.cfassinatura>strong{color:#a0673a;font-size:13px}
+.cfassinatura .hsdica{margin:5px 0;font-size:12px}
+.cfassinatura-opcoes{display:flex;gap:7px;overflow-x:auto;padding:5px 2px 7px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.cfassinatura-opcao{flex:0 0 auto;min-height:40px;padding:7px 9px;border:2px solid #f6d7ea;border-radius:12px;background:#fff;color:#674176;font:inherit;font-size:12px;cursor:pointer}
+.cfassinatura-opcao.on{border-color:#ff6fb5;background:#ffe0f0}
+.cfassinatura-pedido{margin:8px 0;text-align:center}
+.cfassinatura-pedido button{min-height:44px;white-space:normal}

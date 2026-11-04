@@ -219,6 +219,19 @@ function hsFaAtual(){
   if(hs.fase === 'quiz' || hs.fase === 'resposta') return hs.quiz[hs.qi];
   return null;
 }
+// Reencontro do Superfã que já voltou pelo histórico da partida.
+// Apenas gesto Canvas sincronizado ao quiz, sem timer, save ou alteração de prêmio.
+function hsSuperfaGesto(f, dt, fase){
+  if(!f || !f.superfa || fase !== 'quiz' || dt < 0 || dt >= 76) return null;
+  var u = dt / 76, alfa = Math.sin(u * Math.PI), jeito = f.jeito;
+  return {dx:(jeito === 'timido' ? -2 : jeito === 'fofo' ? 2 : 0) * alfa,
+    dy:-(jeito === 'animado' ? 5 : jeito === 'timido' ? 1 : 2.5) * alfa,
+    pose:jeito === 'animado' ? 'tchau' : jeito === 'timido' ? '' : 'coracao',
+    expr:jeito === 'animado' ? 3 : jeito === 'timido' ? 2 : 6,
+    sinal:jeito === 'animado' ? '✦' : jeito === 'timido' ? '♡' : '♥',
+    cor:jeito === 'animado' ? '#ffe47c' : jeito === 'timido' ? '#c8e3fb' : '#ff9fcf',
+    alfa:alfa};
+}
 function hsDesenhar(){
   var cv = $('hsCv'); if(!cv) return;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = hsT;
@@ -291,7 +304,12 @@ function hsDesenhar(){
   var f = hsFaAtual();
   if(f){
     var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * (hs.fase === 'fila' ? .37 : .27);
-    try{ x.save(); x.translate(fx, H2 * .06); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:f.c, pose:f.pose, expr:f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    var reencontro = hsSuperfaGesto(f, dt, hs.fase);
+    try{ x.save(); x.translate(fx + (reencontro ? reencontro.dx : 0), H2 * .06 + (reencontro ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:f.c, pose:reencontro ? reencontro.pose : f.pose, expr:reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    if(reencontro){ x.save(); x.globalAlpha = reencontro.alfa * .85; x.fillStyle = reencontro.cor;
+      x.font = '22px sans-serif'; x.textAlign = 'center';
+      x.fillText(reencontro.sinal, W2 * .33, H2 * .45 - reencontro.alfa * 9);
+      x.restore(); }
     if(hs.fase === 'fila'){   // balão: nome + presente favorito
       var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
       x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W2 * .56, Math.max(x.measureText(txt).width, x.measureText(t2l).width) + 32);

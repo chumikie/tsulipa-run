@@ -34,7 +34,11 @@ function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carre
   if(pool.length >= 3){
     pool = bannerSorteio(pool, Math.floor(dia / 3));
     var ini = fase === 1 ? 0 : 3;
-    elenco = [0, 1, 2].map(function(n){ var p = pool[(ini + n) % pool.length]; return { nick:String(p.nick).slice(0, 24), av:p.avatar }; });
+    elenco = [0, 1, 2].map(function(n){
+      var p = pool[(ini + n) % pool.length];
+      return { nick:String(p.nick).slice(0, 24), av:p.avatar,
+        pet:typeof perfPetDoAvatar === 'function' ? perfPetDoAvatar(p.avatar) : null };
+    });
     if(new Set(elenco.map(function(p){ return p.nick; })).size < 3) elenco = null;
   }
   bannerCache = { chave:chave, elenco:elenco };
@@ -55,6 +59,11 @@ function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os tr
     accSel = typeof av.a === 'string' ? av.a : '';
     x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();
     perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+    if(p.pet && typeof perfDesenharPetEm === 'function'){
+      // Mesma escala e posição do trio oficial; nenhum Pet é inventado para quem não tem.
+      var ps = sc * .46, px = cx + 24 * sc, py = chao - 22 * sc + Math.sin(t * .08 + i) * 1.5 * sc;
+      perfDesenharPetEm(x, p.pet, px, py, ps, t + i * 40);
+    }
     charPose = ''; perfAntena = '';
   });
   accSel = '';

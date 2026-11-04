@@ -2017,7 +2017,7 @@ try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
   cv.addEventListener('click', function(e){
     var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height, best = -1, d = .14;
-    if(typeof bannerElenco === 'function' && bannerElenco()){   // dia de trio do site: sem pets e sem vozes
+    if(typeof bannerElenco === 'function' && bannerElenco()){   // trio de jogadores: Pets ilustrativos, sem voz ou ações novas
       HUB_TRIO.forEach(function(m, i){ if(Math.abs(fx - m[2]) < d){ d = Math.abs(fx - m[2]); best = i; } });
       bannerVisitaReage(best); return;
     }

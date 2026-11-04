@@ -819,6 +819,7 @@ function hubMostrar(){
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubFechar(){
+  petLifeCancelar('celular');
   buscaCancelarTodas();
   var micModal=$('twMicModal');if(micModal&&!micModal.hidden)twMicFechar(true);
   hubVozParar();
@@ -847,6 +848,7 @@ function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "
 function hubComecar(){
   ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  petLifeVoltaUI();
   twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();

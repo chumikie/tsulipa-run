@@ -17,7 +17,7 @@ function albumAbrir(){
   contaRpc('album_cards').then(function(L){ albumDados = Array.isArray(L) ? L : []; albumPronto = true; albumUI(); })
     .catch(function(){ albumDados = []; albumPronto = false; albumUI(); });
 }
-function albumFechar(){ albumOv.hidden = true; }
+function albumFechar(){ albumOv.hidden = true; petLifeRetornar('album'); }
 function albumUI(){
   var corpo = $('albumCorpo'); if(!corpo) return;
   var nomes = albumIdols(), tenho = {};

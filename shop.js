@@ -67,6 +67,7 @@ function shopSalvar(){
 }
 function shopAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  if(!perfOv.hidden) petLifeCancelar('trofeus'); // troca de rota a partir do Perfil
   if(perfOv.hidden){ var pc = $('perfAbaCorpo'); if(pc) pc.innerHTML = ''; }   // os ids da lojinha passam a ser os da Zipper⭐Shop!
   else perfFechar();
   perfProva = '';
@@ -79,7 +80,7 @@ function shopAbrir(){
   }).catch(function(){});
   if(!shopAnim) shopAnim = requestAnimationFrame(shopLoop);
 }
-function shopFechar(){ shopOv.hidden = true; perfProva = ''; $('shopCorpo').innerHTML = ''; hubMostrar(); }
+function shopFechar(){ shopOv.hidden = true; perfProva = ''; $('shopCorpo').innerHTML = ''; if(!petLifeRetornar('espelho')) hubMostrar(); }
 function shopLoop(ms){
   shopAnim = 0; if(!twAnimacaoVisivel(shopOv)) return;
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('shopCv'), ms) : 1, ant = shopT; shopT += d;
@@ -149,6 +150,7 @@ function shopHubHtml(){   // botão em "Meu mundo"
     '<small>' + escHtml(tr('Roupas, acessórios e poses')) + '</small></button>';
 }
 function shopFotoPerfil(){   // a foto do perfil (Estúdio) continua no perfil: a loja leva até lá
+  petLifeCancelar('espelho'); // quem seguiu para outra tela deixa de estar no fluxo do espelho
   shopOv.hidden = true; perfProva = ''; $('shopCorpo').innerHTML = '';
   perfAba = 'estudio'; perfZoom = true; perfAbrir(undefined, true);
 }

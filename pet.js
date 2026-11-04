@@ -170,6 +170,43 @@ function petLifeUI(){
     if(botao) botao.setAttribute('aria-expanded','false');
   }
 }
+// A origem da navegação vive apenas nesta aba e nunca entra nos saves do Pet.
+var petLifeOrigem = '', petLifeVeioHub = false, petLifeHubAntes = false;
+function petLifeVoltaUI(){
+  var linha = $('hubHojeLinha');
+  if(!linha) return;
+  var voltar = $('petLifeVoltar');
+  if(petLifeOrigem !== 'celular'){
+    if(voltar) voltar.remove();
+    return;
+  }
+  if(!voltar){
+    voltar = document.createElement('button');
+    voltar.type = 'button'; voltar.id = 'petLifeVoltar'; voltar.className = 'petlife-voltar';
+    voltar.onclick = function(){ petLifeRetornar('celular'); };
+  }
+  // O Hub ainda pode estar na tela inicial "TOQUE PARA COMEÇAR".
+  // Nesse caso o retorno não pode ficar escondido dentro de #hubMenu.
+  if(!hubComecou) $('hubToque').after(voltar);
+  else linha.insertBefore(voltar, linha.firstChild);
+  voltar.textContent = '↩ ' + tr('Meu Camarim⭐Life!');
+}
+function petLifeCancelar(k){
+  if(k && petLifeOrigem !== k) return false;
+  if(!petLifeOrigem) return false;
+  petLifeOrigem = ''; petLifeVoltaUI();
+  return true;
+}
+function petLifeRetornar(k){
+  if(petLifeOrigem !== k || !contaJ || state !== 'menu') return false;
+  var veioHub = petLifeVeioHub, hubAntes = petLifeHubAntes;
+  petLifeCancelar(k);
+  if(!hubAntes && !hubOv.hidden) hubFechar();
+  petVeioHub = veioHub;
+  if(!hubOv.hidden) hubMusicaParar();
+  petOpenUI(); // reabre o mesmo quarto; sem novo save ou progressão de ML1.1
+  return true;
+}
 // Só navega para telas existentes. Nada é comprado, creditado ou salvo aqui.
 function petLifeAbrir(k){
   if(!petOpen || !petAtivo() || petView !== 'room' || petGame) return false;
@@ -183,8 +220,12 @@ function petLifeAbrir(k){
   if(!contaJ){ contaEntrar(); return true; } // mesmas proteções do Provador, Perfil e Álbum
   if(painel) painel.hidden = true;
   if(botao) botao.setAttribute('aria-expanded','false');
+  petLifeVeioHub = petVeioHub;
+  petLifeHubAntes = !hubOv.hidden;
   petClose(); // conserva o encerramento normal do Backstage e o retorno ao Hub
   if(hubOv.hidden) hubMostrar();
+  petLifeOrigem = k;
+  petLifeVoltaUI();
   if(k === 'espelho') shopAbrir();
   else if(k === 'trofeus') perfAbrir();
   else if(k === 'album'){

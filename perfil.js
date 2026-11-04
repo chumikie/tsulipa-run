@@ -651,6 +651,7 @@ function perfFechar(){
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
   perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfAniverVer = false; perfIconeConta();
+  petLifeRetornar('trofeus');
 }
 function perfMontar(){
   var d = perfAtual, meu = perfMeu, h = '';

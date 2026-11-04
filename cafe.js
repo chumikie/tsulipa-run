@@ -129,6 +129,7 @@ function cfNovoClienteLocal(){
     if(HS_JEITOS[lembranca.jeito]) f.jeito = lembranca.jeito;
     f.hsLembranca = lembranca;
   }
+  if(cf.atendidos > 0 && cf.visitaComunidade && contaJ && String(contaJ.id) === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
   f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
   cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
@@ -172,6 +173,14 @@ function cfFalaPedido(p){
   s += ' ' + tr('e {e} em cima').replace('{e}', CF_ENFEITES[p.enf][0]);
   if(p.doce >= 0) s += ' + ' + CF_DOCES[p.doce][0] + ' ' + tr(CF_DOCES[p.doce][1]);
   return s + '!';
+}
+// Pedido mostrado como lista do jogo, sem atribuir fala pessoal à Idol visitante.
+function cfPedidoIlustrativo(p){
+  var partes = [CF_BASES[p.base][0] + ' ' + tr(CF_BASES[p.base][1])];
+  if(p.cob >= 0) partes.push(CF_COBERTURAS[p.cob][0] + ' ' + tr(CF_COBERTURAS[p.cob][1]));
+  partes.push(CF_ENFEITES[p.enf][0] + ' ' + tr(CF_ENFEITES[p.enf][1]));
+  if(p.doce >= 0) partes.push(CF_DOCES[p.doce][0] + ' ' + tr(CF_DOCES[p.doce][1]));
+  return '☕ ' + partes.join(' · ');
 }
 function cfEscolher(tipo, i){
   if(!cf || cf.fase !== 'pedido') return;
@@ -394,8 +403,9 @@ function cfDesenhar(){
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
-    var gesto = cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
-    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    var visita = cf.visitaAlvo === c && contaJ && cf.visitaComunidade && String(contaJ.id) === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
+    var gesto = visita ? null : cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
+    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
       x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
       if(gesto.reencontro){
@@ -420,15 +430,15 @@ function cfDesenhar(){
   if(cf && cf.fase === 'inicio') hsReacaoDesenhar(x, W2, H2, t, cf, W2 * .23, H2 * .3);
   // balão do pedido / reação
   if(c && (cf.fase === 'pedido' || cf.fase === 'reacao')){
-    var txt = cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = c.nome;
+    var txt = visita ? (cf.fase === 'pedido' ? cfPedidoIlustrativo(c.pedido) : cf.ok ? '☕ ✅' : '☕ ✦') : cf.fase === 'pedido' ? cfFalaPedido(c.pedido) : cf.fala, nomeTxt = visita ? '✨ ' + visita.nick : c.nome;
     x.save(); x.font = '900 17px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'left';
     var linhas = [], palavras = txt.split(' '), lin = '';
     palavras.forEach(function(pw){ var tst = lin ? lin + ' ' + pw : pw; if(x.measureText(tst).width > W2 * .5 && lin){ linhas.push(lin); lin = pw; } else lin = tst; }); if(lin) linhas.push(lin);
     var bw = W2 * .54, bh = 34 + linhas.length * 22;
     x.fillStyle = '#fff'; x.strokeStyle = cf.fase === 'reacao' ? (cf.ok ? '#3fae62' : '#e0303a') : '#ff6fb5'; x.lineWidth = 4;
     x.beginPath(); if(x.roundRect) x.roundRect(10, 50, bw, bh, 18); else x.rect(10, 50, bw, bh); x.fill(); x.stroke();
-    x.fillStyle = '#d63384'; x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.fillText(nomeTxt, 24, 70);
-    x.fillStyle = '#3c2a8f'; x.font = '900 17px "M PLUS Rounded 1c",sans-serif'; linhas.forEach(function(L, i){ x.fillText(L, 24, 92 + i * 22); }); x.restore();
+    x.fillStyle = '#d63384'; x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.fillText(nomeTxt, 24, 70, bw - 28);
+    x.fillStyle = '#3c2a8f'; x.font = '900 17px "M PLUS Rounded 1c",sans-serif'; linhas.forEach(function(L, i){ x.fillText(L, 24, 92 + i * 22, bw - 24); }); x.restore();
   }
   if(cf && cf.combo >= 2){ x.save(); x.font = '900 18px "Mochiy Pop One",sans-serif'; x.textAlign = 'right'; x.fillStyle = '#ff6fb5'; x.strokeStyle = '#fff'; x.lineWidth = 5; var ct = 'COMBO x' + cf.combo; x.strokeText(ct, W2 - 12, H2 * .7); x.fillText(ct, W2 - 12, H2 * .7); x.restore(); }
   if(cf && cf.hearts.length){ x.save(); x.font = '26px sans-serif'; x.textAlign = 'center';
@@ -451,6 +461,7 @@ function cfUI(){
     cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
+    if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && contaJ && String(contaJ.id) === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
       h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +
@@ -506,6 +517,7 @@ function cfIniciarSeguro(){
   var escolhida = cf && cf.fase === 'inicio' ? cf.assinatura : null;
   var visita = cf && cf.fase === 'inicio' ? cf.faEspecial : null;
   cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[],assinatura:escolhida,assinaturaUsada:false,faEspecial:visita};
+  hsVisitaPreparar(cf);
   cfNovoCliente();
 }
 function cfClique(e){

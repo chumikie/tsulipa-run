@@ -28,6 +28,34 @@ function hsNomesLivres(){   // nunca usa um nome igual ao de um jogador real
   if(contaJ && contaJ.nick) reais[String(contaJ.nick).toLowerCase()] = 1;
   return HS_NOMES.filter(function(n){ return !reais[n.toLowerCase()]; });
 }
+// Visita⭐Surpresa!: aparição visual rara, sem memória, RPC nova ou presença online.
+function hsVisitaPreparar(partida){
+  if(!partida || typeof contaJ === 'undefined' || !contaJ || !contaJ.id || !contaJ.nick ||
+     typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols) ||
+     typeof contaRpc !== 'function' || Math.random() >= .05) return;
+  var dono = String(contaJ.id), meuNick = String(contaJ.nick).trim().toLowerCase();
+  var vitrine = hubIdolsDados.idols.filter(function(p){
+    return p && typeof p.nick === 'string' && p.nick.trim() &&
+      p.nick.trim().toLowerCase() !== meuNick && p.avatar && typeof p.avatar === 'object';
+  });
+  if(!vitrine.length) return;
+  // duo_sugestoes já exclui contas bloqueadas e duo_on=false. Falha = apenas NPC.
+  contaRpc('duo_sugestoes').then(function(lista){
+    if(!Array.isArray(lista) || !contaJ || String(contaJ.id) !== dono ||
+       String(contaJ.nick).trim().toLowerCase() !== meuNick) return;
+    var permitidos = {};
+    lista.forEach(function(p){
+      if(p && typeof p.nick === 'string') permitidos[p.nick.trim().toLowerCase()] = true;
+    });
+    var elegiveis = vitrine.filter(function(p){ return permitidos[p.nick.trim().toLowerCase()]; });
+    if(!elegiveis.length) return;
+    var escolhido = elegiveis[Math.floor(Math.random() * elegiveis.length)];
+    partida.visitaComunidade = {nick:escolhido.nick, avatar:escolhido.avatar, dono:dono};
+  }).catch(function(){}); // sem confirmação de privacidade, nenhuma visita real
+}
+function hsVisitaAtual(f){
+  return hs && f && hs.visitaAlvo === f && hs.visitaComunidade && contaJ && String(contaJ.id) === hs.visitaComunidade.dono ? hs.visitaComunidade : null;
+}
 function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já existe
   function um(L){ return L[Math.floor(r() * L.length)]; }
   var c = {}; for(var k in PERF_BASE) c[k] = PERF_BASE[k];
@@ -139,10 +167,16 @@ function hsNovaRodada(){
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
   if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
   hsCafeAplicarReencontro(fila, presentesServidor);
+  // Reencontros têm prioridade; a visita ocupa apenas um lugar comum já existente.
+  if(hs.visitaComunidade && contaJ && String(contaJ.id) === hs.visitaComunidade.dono && !hs.visitaAlvo){
+    var comuns = fila.filter(function(f){ return !f.hsCafeVoltou; });
+    if(comuns.length) hs.visitaAlvo = comuns[Math.floor(Math.random() * comuns.length)];
+  }
   var quiz = fila.slice();
   // Superfã: da 2ª rodada em diante, um fã de uma rodada anterior volta SEM se apresentar de novo (vale bônus)
-  if(hs.historico.length && hs.rodada >= 1){
-    var sf = hs.historico[Math.floor(r() * hs.historico.length)];
+  var anteriores = hs.historico.filter(function(f){ return f !== hs.visitaAlvo; });
+  if(anteriores.length && hs.rodada >= 1){
+    var sf = anteriores[Math.floor(r() * anteriores.length)];
     if(!usados[sf.pres]){ sf = Object.assign({}, sf, { superfa:true }); quiz.push(sf); }
   }
   hs.historico = hs.historico.concat(fila);
@@ -168,7 +202,7 @@ function hsResponder(i){
   hs.resp = i; hs.ok = ok; hs.total++;
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
-    hsMemGuardar(f); // lembrança narrativa local, independente da confirmação de recompensa
+    if(hs.visitaAlvo !== f) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
     if(typeof eventoPresente === 'function' && f.pres === eventoPresente()) hs.pontos += 50;
     if(hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
     var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);
@@ -224,6 +258,7 @@ function hsRecuperar(){
 }
 function hsIniciarSeguro(){
   hsReiniciar(); var atual = hs;
+  hsVisitaPreparar(atual);
   if(!contaJ){ hsNovaRodada(); return; } // livre para praticar sem conta.
   hs.fase = 'preparando'; hsUI();
   contaRpc('handshake_iniciar').then(function(r){
@@ -299,7 +334,7 @@ function hsDesenhar(){
     var prox = hs.fila.slice(hs.vi + 1, hs.vi + 5);
     prox.forEach(function(pf, q){
       var esc = .5 - q * .05, fw = W2 * .3 * esc / .5, fh = H2 * .62 * esc / .5, qx = W2 * .02 + q * W2 * .085, qy = H2 * .32 + q * 4 + Math.sin(t / 10 + q) * 2;
-      x.save(); x.globalAlpha = .9 - q * .15; try{ x.translate(qx, qy); perfDesenharIdol(x, fw, fh, { c:pf.c, pose:'', expr:pf.expr, fundo:'' }, false, false, t + q * 13); }catch(e){} x.restore();
+      x.save(); x.globalAlpha = .9 - q * .15; try{ x.translate(qx, qy); perfDesenharIdol(x, fw, fh, { c:(hsVisitaAtual(pf) || {}).avatar || pf.c, pose:'', expr:pf.expr, fundo:'' }, false, false, t + q * 13); }catch(e){} x.restore();
     });
     if(prox.length){ x.save(); x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); if(x.roundRect) x.roundRect(10, H2 - 30, 92, 22, 11); else x.rect(10, H2 - 30, 92, 22); x.fill();
       x.fillStyle = '#7b3ff0'; x.textBaseline = 'middle'; x.fillText('👥 ' + tr('Fila') + ': ' + prox.length, 20, H2 - 19); x.restore(); }
@@ -356,22 +391,22 @@ function hsDesenhar(){
   var f = hsFaAtual();
   if(f){
     var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * (hs.fase === 'fila' ? .37 : .27);
-    var reencontro = hsSuperfaGesto(f, dt, hs.fase);
-    try{ x.save(); x.translate(fx + (reencontro ? reencontro.dx : 0), H2 * .06 + (reencontro ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:f.c, pose:reencontro ? reencontro.pose : f.pose, expr:reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    var visita = hsVisitaAtual(f), reencontro = hsSuperfaGesto(f, dt, hs.fase);
+    try{ x.save(); x.translate(fx + (reencontro ? reencontro.dx : 0), H2 * .06 + (reencontro ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:visita ? visita.avatar : f.c, pose:visita ? 'tchau' : reencontro ? reencontro.pose : f.pose, expr:visita ? 3 : reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(reencontro){ x.save(); x.globalAlpha = reencontro.alfa * .85; x.fillStyle = reencontro.cor;
       x.font = '22px sans-serif'; x.textAlign = 'center';
       x.fillText(reencontro.sinal, W2 * .33, H2 * .45 - reencontro.alfa * 9);
       x.restore(); }
     if(hs.fase === 'fila'){   // balão: nome + presente favorito
-      var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
+      var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = visita ? '✨ Visita⭐Surpresa! · ' + visita.nick : tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = visita ? '🎁 ' + pr[0] + ' ' + tr(pr[1]) : tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
       x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W2 * .56, Math.max(x.measureText(txt).width, x.measureText(t2l).width) + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 4; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w, 86, 18); else x.rect(12, H2 * .16, w, 86); x.fill(); x.stroke();
-      x.fillStyle = '#3c2a8f'; x.textAlign = 'left'; x.fillText(txt, 28, H2 * .16 + 34);
-      x.fillStyle = '#d63384'; x.fillText(t2l, 28, H2 * .16 + 68); x.restore();
+      x.fillStyle = '#3c2a8f'; x.textAlign = 'left'; x.fillText(txt, 28, H2 * .16 + 34, w - 24);
+      x.fillStyle = '#d63384'; x.fillText(t2l, 28, H2 * .16 + 68, w - 24); x.restore();
     } else {
-      x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var t2 = hs.fase === 'resposta' && hs.fala ? hs.fala : f.superfa ? tr('Voltei! Lembra de mim? Sou {n}! 🌟').replace('{n}', f.nome) : tr('Lembra de mim? Sou {n}!').replace('{n}', f.nome), w2 = Math.min(W2 * .56, x.measureText(t2).width + 32);
+      x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var t2 = visita ? '✨ Visita⭐Surpresa! · ' + visita.nick : hs.fase === 'resposta' && hs.fala ? hs.fala : f.superfa ? tr('Voltei! Lembra de mim? Sou {n}! 🌟').replace('{n}', f.nome) : tr('Lembra de mim? Sou {n}!').replace('{n}', f.nome), w2 = Math.min(W2 * .56, x.measureText(t2).width + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#7b3ff0'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w2, 50, 18); else x.rect(12, H2 * .16, w2, 50); x.fill(); x.stroke();
-      x.fillStyle = '#7b3ff0'; x.textAlign = 'left'; x.fillText(t2, 28, H2 * .16 + 33); x.restore();
+      x.fillStyle = '#7b3ff0'; x.textAlign = 'left'; x.fillText(t2, 28, H2 * .16 + 33, w2 - 24); x.restore();
       if(f.superfa){ x.save(); x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#fff'; x.strokeStyle = '#ffb000'; x.lineWidth = 2; x.beginPath(); if(x.roundRect) x.roundRect(14, H2 * .16 + 56, 120, 22, 11); else x.rect(14, H2 * .16 + 56, 120, 22); x.fillStyle = '#ffb000'; x.fill(); x.fillStyle = '#fff'; x.fillText('🌟 ' + tr('Superfã! +150'), 22, H2 * .16 + 71); x.restore(); }
       if(hs.fase === 'resposta'){ x.save(); x.font = '48px sans-serif'; x.textAlign = 'center'; x.fillText(hs.ok ? '💖' : '💦', W2 * .5, H2 * .45 - Math.min(20, dt)); x.restore(); }
     }

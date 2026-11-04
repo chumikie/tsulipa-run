@@ -199,9 +199,10 @@ function petDecorReacao(x, k, cfg, t, ativo){
   x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
   x.fillText('✦', origemX + (PET_X - 18 - origemX) * u,
     origemY + (PET_FLOOR - 60 - origemY) * u - passo);
-  if(jeito === 'pati'){ x.font = '11px sans-serif';
+  if(jeito === 'pati' && petPreferenciaAtividade(k,cfg,'explorar')){ x.font = '11px sans-serif';
     x.fillText('✧', origemX + (PET_X - 30 - origemX) * u,
-      origemY - 10 + (PET_FLOOR - 80 - origemY) * u); }
+      origemY - 10 + (PET_FLOOR - 80 - origemY) * u);
+    x.fillText('✦', PET_X + 25, PET_FLOOR - 70 - Math.sin(u * 9) * 4); }
   x.restore();
   return true;
 }
@@ -300,6 +301,10 @@ function petDrawRoom(){
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();
   if(recebendo) petRecepcaoDesenhar(x, petData.ativo, p.cfg, petRecepcaoFrames);
+  if(rotina.modo === 'descanso' && petPreferenciaAtividade(petData.ativo,p.cfg,'descanso')){
+    x.save(); x.globalAlpha = .5; x.font = '12px sans-serif'; x.fillStyle = '#b8f2ba';
+    x.fillText('✧', PET_X + 24, PET_FLOOR - 64); x.restore();
+  }
   if(petRecepcaoFrames > 0) petRecepcaoFrames = Math.max(0, petRecepcaoFrames - petDrawDelta);
   if(jeito.brilho){ x.save(); x.fillStyle = '#ffe47c'; x.font = '12px sans-serif';
     x.fillText('✧', PET_X + jeito.x + 22, PET_FLOOR - 67 + jeito.y); x.restore(); }
@@ -617,6 +622,22 @@ function petDesenharLembranca(x){
   x.restore();
   return true;
 }
+// Afinidade visual por atividade, sem bônus de jogo ou novo estado persistido.
+function petPreferenciaAtividade(k, cfg, atividade){
+  k = petRecepcaoJeito(k, cfg);
+  return k === 'tsu' ? atividade === 'brincar' :
+    k === 'lirika' ? (atividade === 'carinho' || atividade === 'descanso') :
+    (atividade === 'comer' || atividade === 'explorar');
+}
+function petPreferenciaCelebrar(atividade){
+  var k = petData && petData.ativo, p = petAtivo();
+  if(!k || !petPreferenciaAtividade(k, p && p.cfg, atividade)) return false;
+  var jeito = petRecepcaoJeito(k, p && p.cfg);
+  petFx.push({x:PET_X + 27,y:PET_FLOOR - 89,t:0,
+    s:jeito === 'tsu' ? '🌟' : jeito === 'lirika' ? '💚' : '✧'});
+  petSmile = Math.max(petSmile, 35);
+  return true;
+}
 function petCuidadoReagir(acao){
   petLembrarCuidado(acao);
   var k = petData && petData.ativo, cfg = k === 'meu' && petAtivo() ? petAtivo().cfg : null;
@@ -629,6 +650,7 @@ function petCuidadoReagir(acao){
   var lista = emotes[k] && emotes[k][acao] || ['✨'];
   for(var i = 0; i < lista.length; i++)
     petFx.push({x:PET_X + (i ? 19 : -12), y:PET_FLOOR - 72 - (i ? 8 : 0), t:0, s:lista[i]});
+  petPreferenciaCelebrar(acao);
 }
 function petDrawExtras(x, p){
   // Noite: quarto escurece enquanto o pet dorme
@@ -672,7 +694,7 @@ function petDrawExtras(x, p){
       petEstrelaBrinquedo(x, sx, sy, a.t * .15, 1);
       if(u > .9 && petHop === 0) petHop = 20;
       petSmile = 40;
-      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }
+      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); petPreferenciaCelebrar('brincar'); }
     } else if(a.k === 'cantar'){
       petSingFrame(x, a);   // show do 🎤 Cantar (sons do camarim)
     }

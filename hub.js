@@ -296,6 +296,14 @@ function hubAgendaEscolher(lista){
   var pronta = abertas.find(function(m){ return +m.prog >= Math.max(1, +m.meta || 1); });
   return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || lista[0] || null;
 }
+// Só oferece outra missão diária realmente pendente; pedidos de fã não são missões novas.
+function hubAgendaProximo(lista, atual){
+  if(!Array.isArray(lista)) return null;
+  var pendentes = lista.filter(function(m){
+    return m && m.k !== 'pedido_fa' && m.k !== atual && +m.meta > 0 && !m.feito && +m.prog < +m.meta;
+  });
+  return pendentes.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || pendentes[0] || null;
+}
 function hubAgendaUI(){
   var linha = $('hubHojeLinha'), b = $('hubAgenda');
   if(!linha) return;
@@ -320,17 +328,18 @@ function hubAgendaUI(){
   var t = ehPedido ? ['💌',m.titulo] : m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
   var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
   var pronta = ehPedido ? m.pronta : prog >= meta, rotulos = {
-    pt:['Agenda do Idol','Meu compromisso de hoje','Concluída'],
-    en:['Idol Agenda',"Today's focus",'Completed'],
-    es:['Agenda del Idol','Mi compromiso de hoy','Completada'],
-    id:['Agenda Idol','Fokus hari ini','Selesai'],
-    th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว'],
-    ja:['アイドルの予定','今日の目標','達成']
+    pt:['Agenda do Idol','Meu compromisso de hoje','Concluída','Próximo compromisso'],
+    en:['Idol Agenda',"Today's focus",'Completed','Next commitment'],
+    es:['Agenda del Idol','Mi compromiso de hoy','Completada','Siguiente compromiso'],
+    id:['Agenda Idol','Fokus hari ini','Selesai','Komitmen berikutnya'],
+    th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว','ภารกิจถัดไป'],
+    ja:['アイドルの予定','今日の目標','達成','次の予定']
   }, textos = rotulos[LANG] || rotulos.pt;
   var descricao = t[0] + ' ' + (ehPedido ? t[1] : tr(t[1]).replace('{n}', m.meta));
   var estado = ehPedido && !m.carregado ? '—' : m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta;
   var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
     m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : tr('Abrir');
+  var proximo = (m.feito || pronta) ? hubAgendaProximo(missoes, m.k) : null;
   var opcoes = missoes.map(function(item){
     var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
     var legenda = nome[0] + ' ' + (item.k === 'pedido_fa' ? nome[1] : tr(nome[1]).replace('{n}', item.meta)) + (item.feito ? ' ✓' : '');
@@ -342,7 +351,9 @@ function hubAgendaUI(){
     '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + estado + '</small>' +
     '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>' +
     (ehPedido && m.carregado && !pronta && !m.feito ?
-      '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '');
+      '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '') +
+    (proximo ? '<button type="button" class="hubagendaabrir hubagendaproximo" aria-label="' +
+      escHtml(textos[3]) + '">✨ ' + escHtml(textos[3]) + ' ↗</button>' : '');
   b.querySelector('select').onchange = function(e){
     var chave = e.target.value;
     if(missoes.some(function(item){ return item.k === chave; })){
@@ -360,6 +371,12 @@ function hubAgendaUI(){
   };
   var ver = b.querySelector('.hubagendaver');
   if(ver) ver.onclick = faAbrir; // atualização somente quando o jogador solicitar
+  var avancar = b.querySelector('.hubagendaproximo');
+  if(avancar) avancar.onclick = function(){
+    var outra = hubAgendaProximo(missoes, m.k);
+    if(!outra) return;
+    hubAgendaFocoAtual(); hubAgendaFoco = outra.k; hubAgendaUI();
+  };
 }
 // Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
 document.addEventListener('click', function(e){

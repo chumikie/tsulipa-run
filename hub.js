@@ -379,10 +379,16 @@ function hubAgendaUI(){
   };
 }
 // Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
-document.addEventListener('click', function(e){
-  if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
-  if(hubAgendaFocoAtual() && contaJ && typeof hubOv !== 'undefined' && hubOv && !hubOv.hidden) hubMisCarregar();
-});
+// Registrar somente quando o Hub abre, sem executar código ao importar o módulo.
+var hubAgendaFechamentoRegistrado = false;
+function hubAgendaEscutarFechamento(){
+  if(hubAgendaFechamentoRegistrado) return;
+  document.addEventListener('click', function(e){
+    if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
+    if(hubAgendaFocoAtual() && contaJ && typeof hubOv !== 'undefined' && hubOv && !hubOv.hidden) hubMisCarregar();
+  });
+  hubAgendaFechamentoRegistrado = true;
+}
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
   t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
@@ -760,6 +766,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
   }).catch(function(){});
 }
 function hubMostrar(){
+  hubAgendaEscutarFechamento();
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
   sync();

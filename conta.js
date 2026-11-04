@@ -103,6 +103,13 @@ function contaInicioCorrida(){
   contaRun = contaRpc('iniciar_corrida').then(function(id){return id||semInicio();},semInicio);
   if(typeof gachaBonus === 'function') gachaBonus();   // V2.1.3
 }
+// Id da sessão autenticada quando o perfil não expõe a coluna id.
+// Preserva a identidade usada nos registros antigos se jogador().id existir.
+function contaCorridaDono(){
+  if(!contaJ)return '';
+  if(contaJ.id)return String(contaJ.id);
+  return typeof contaAuthUserId==='string'?contaAuthUserId:'';
+}
 // Recupera a mesma corrida autorizada pelo servidor, inclusive após fechar/reabrir a página.
 // O UUID permanece o mesmo: a RPC impede dupla finalização e mantém o limite de 100 estrelas.
 var contaCorridasKey='brs48cr_corridas_pendentes_v1';
@@ -125,13 +132,14 @@ function contaCorridaRetirar(p){
 }
 function contaRecuperarCorridas(preferida){
   if(contaCorridaEnviando||!contaJ)return;
-  var owner=String(contaJ.id),sessao=contaSessaoToken;
+  var owner=contaCorridaDono(),sessao=contaSessaoToken;
+  if(!owner)return;
   // A corrida recém-finalizada deve seguir ao servidor mesmo se o armazenamento local
   // estiver indisponível ou devolver uma versão antiga da fila.
   var p=(preferida&&preferida.owner===owner?preferida:null)||contaCorridasLer().find(function(x){return x.owner===owner;});
   if(!p)return;
   var definitiva=false,feedback=contaCorridaAvisos[p.id];
-  function mesmaConta(){return !!(contaJ&&String(contaJ.id)===owner&&contaSessaoToken===sessao);}
+  function mesmaConta(){return !!(contaJ&&contaCorridaDono()===owner&&contaSessaoToken===sessao);}
   function atualizar(msg){if(feedback){feedback.aviso(msg);try{feedback.refresh();}catch(e){}}}
   contaCorridaEnviando=true;
   contaUltimaRun={id:p.id,ok:false};
@@ -172,8 +180,8 @@ function contaRecuperarCorridas(preferida){
   });
 }
 function contaFimCorrida(score, est, ch, refresh){
-  var owner=contaJ&&contaJ.id,sessao=contaSessaoToken,campo=$('cr-recompensa');
-  function mesmaConta(){return !!(owner&&contaJ&&contaJ.id===owner&&contaSessaoToken===sessao);}
+  var owner=contaCorridaDono(),sessao=contaSessaoToken,campo=$('cr-recompensa');
+  function mesmaConta(){return !!(owner&&contaJ&&contaCorridaDono()===owner&&contaSessaoToken===sessao);}
   function aviso(msg){
     var rr=$('res'),aguardando=tr('Aguardando validação do servidor');
     if(campo&&campo.isConnected!==false)campo.textContent=msg;

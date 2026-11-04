@@ -165,6 +165,27 @@ function petBrinquedoEspontaneo(x, k, cfg, t, ativo){
   x.restore();
   return true;
 }
+// O Pet admira o pôster gratuito quando ele está realmente exposto no mural.
+// Reação somente visual: respeita a decoração guardada e a pausa das animações.
+function petDecorReacao(x, k, cfg, t, ativo){
+  var imagem = petDecorImgs.zipper, decor = petData && petData.decor;
+  var fase = t % 860;
+  if(!ativo || !decor || !decor.zipper || !imagem || !imagem.complete ||
+      !imagem.naturalWidth || fase < 350 || fase > 490) return false;
+  var u = (fase - 350) / 140, alfa = Math.min(1, u * 8, (1 - u) * 8);
+  var jeito = k === 'meu' ? (cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati') : k;
+  // Brilho sai do canto do pôster e aproxima-se do Pet; cada jeito tem um ritmo.
+  var passo = jeito === 'tsu' ? Math.abs(Math.sin(u * 13)) * 5 :
+    jeito === 'pati' ? Math.sin(u * 11) * 3 : 0;
+  x.save(); x.globalAlpha = alfa; x.textAlign = 'center';
+  x.fillStyle = jeito === 'lirika' ? '#b8f2ba' : jeito === 'pati' ? '#b7ddff' : '#ffe47c';
+  x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
+  x.fillText('✦', 196 + u * 37, 77 + u * 64 - passo);
+  if(jeito === 'pati'){ x.font = '11px sans-serif'; x.fillText('✧', 191 + u * 43, 68 + u * 49); }
+  x.restore();
+  return true;
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -203,6 +224,7 @@ function petDrawRoom(){
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
+  petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC, sleepy ? petT * .35 : petT, petEx(p));

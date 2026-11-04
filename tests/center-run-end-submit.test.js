@@ -57,6 +57,28 @@ function scenario(failAt){
   ok.ctx.end();await flush();
   assert.equal(ok.calls.filter(x=>x.name==='terminar_corrida').length,1,'duplicate end never sends twice');
 
+  // O início autorizado deve concluir mesmo se jogador() vier sem id,
+  // desde que a sessão Google forneça o dono da corrida.
+  const authOnly=scenario();
+  authOnly.ctx.contaJ={nick:'Fã A',stars:100,best:900};
+  authOnly.ctx.contaAuthUserId='A';
+  authOnly.ctx.contaInicioCorrida();await flush();
+  authOnly.ctx.end();await flush();
+  assert.equal(authOnly.calls.filter(x=>x.name==='iniciar_corrida').length,1);
+  assert.equal(authOnly.calls.filter(x=>x.name==='terminar_corrida').length,1,
+    'o envio da corrida não deve depender de jogador.id quando a sessão está autenticada');
+
+  const switched=scenario();
+  switched.ctx.contaJ={nick:'Fã A'};
+  switched.ctx.contaAuthUserId='A';
+  switched.ctx.contaInicioCorrida();await flush();
+  switched.ctx.end();
+  switched.ctx.contaAuthUserId='B';
+  switched.ctx.contaSessaoToken++;
+  await flush();
+  assert.equal(switched.calls.filter(x=>x.name==='terminar_corrida').length,0,
+    'não enviar autorização após troca de sessão');
+
   const guest=scenario();guest.ctx.contaJ=null;
   guest.ctx.contaInicioCorrida();guest.ctx.end();await flush();
   assert.equal(guest.calls.length,0,'guest game never submits an online score');

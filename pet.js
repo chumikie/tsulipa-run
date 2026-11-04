@@ -305,6 +305,7 @@ function petDrawRoom(){
     x.fillText('✧', PET_X + jeito.x + 22, PET_FLOOR - 67 + jeito.y); x.restore(); }
 
   petDrawExtras(x, p);
+  petDesenharLembranca(x);
   // Balão de humor acima do pet
   x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
   x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 - petMoodLift(p) + Math.sin(petT * .07) * 3);
@@ -377,7 +378,7 @@ function petOpenUI(){
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
-  petRecepcaoFrames = 0;
+  petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;petAnimParar();
@@ -597,7 +598,27 @@ function petDrawItem(x, k, cx, cy, s){
 }
 // Agradecimentos visuais por cuidado. Usa os efeitos que já existem no Canvas.
 // Nunca altera as necessidades, custos, cooldowns ou o save.
+// Último cuidado apenas nesta sessão de camarim (não entra em petData/save).
+var petLembrancaRecente = null;
+function petLembrarCuidado(acao){
+  if(petData && petData.ativo) petLembrancaRecente = {pet:petData.ativo, acao:acao, t:petT};
+}
+function petDesenharLembranca(x){
+  var m = petLembrancaRecente;
+  if(!m || !petData || m.pet !== petData.ativo) return false;
+  var idade = petT - m.t;
+  if(idade < 45 || idade > 270){ if(idade > 270 || idade < 0) petLembrancaRecente = null; return false; }
+  var simbolos = {comer:'♡', banho:'✧', carinho:'♥', brincar:'♪'};
+  var p = petAtivo(), k = petRecepcaoJeito(petData.ativo, p && p.cfg);
+  var cor = k === 'lirika' ? '#54ae70' : k === 'pati' ? '#5b8be5' : '#e858a5';
+  x.save(); x.globalAlpha = Math.min(.65, (270 - idade) / 90);
+  x.font = '15px sans-serif'; x.textAlign = 'center'; x.fillStyle = cor;
+  x.fillText(simbolos[m.acao] || '✦', PET_X - 28, PET_FLOOR - 54 - Math.sin(idade * .04) * 3);
+  x.restore();
+  return true;
+}
 function petCuidadoReagir(acao){
+  petLembrarCuidado(acao);
   var k = petData && petData.ativo, cfg = k === 'meu' && petAtivo() ? petAtivo().cfg : null;
   if(k === 'meu') k = petRecepcaoJeito(k, cfg);
   var emotes = {
@@ -651,7 +672,7 @@ function petDrawExtras(x, p){
       petEstrelaBrinquedo(x, sx, sy, a.t * .15, 1);
       if(u > .9 && petHop === 0) petHop = 20;
       petSmile = 40;
-      if(a.t >= 210){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }
+      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }
     } else if(a.k === 'cantar'){
       petSingFrame(x, a);   // show do 🎤 Cantar (sons do camarim)
     }
@@ -886,7 +907,7 @@ function petSwitch(k){   // os pets que não estão ativos "descansam" e não pe
   if(petData.ativo !== k){
     petTick();
     petData.ativo = k; petData.pets[k].t = Date.now();
-    petAnim = null; petMenuK = ''; petEmote = null;
+    petAnim = null; petMenuK = ''; petEmote = null; petLembrancaRecente = null;
     petSave(true);
     petSay(petEmo(k) + ' ' + petData.pets[k].nome + '!');
   }

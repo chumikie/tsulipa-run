@@ -273,6 +273,20 @@ function hubAgendaFocoAtual(){
   }
   return dono ? hubAgendaFoco : '';
 }
+// Pedido de fã é apenas uma opção da Agenda: os dados vêm da janela já existente.
+var HUB_AGENDA_FA_ROTAS = {corridas3:'run',estrelas30:'run',pontos1500:'run',karaoke1:'karaoke'};
+function hubAgendaPedidoFa(){
+  if(!contaJ || typeof faAbrir !== 'function') return null;
+  var d = typeof faDadosAtuais === 'function' ? faDadosAtuais() : null;
+  var conhecido = d && typeof FA_PEDIDOS !== 'undefined' && FA_PEDIDOS[d.tipo];
+  return {
+    k:'pedido_fa', titulo:conhecido ? tr(conhecido[1]).replace('{n}', d.meta) : tr('Pedido de fã'),
+    meta:d ? Math.max(1, +d.meta || 1) : 0,
+    prog:d ? Math.max(0, +d.progresso || 0) : 0,
+    feito:!!(d && d.resgatado), pronta:!!(d && d.feito),
+    carregado:!!conhecido, pedidoTipo:conhecido ? d.tipo : ''
+  };
+}
 function hubAgendaEscolher(lista){
   if(!Array.isArray(lista) || !lista.length) return null;
   var foco = hubAgendaFocoAtual();
@@ -286,6 +300,9 @@ function hubAgendaUI(){
   var linha = $('hubHojeLinha'), b = $('hubAgenda');
   if(!linha) return;
   var missoes = Array.isArray(hubMisDados) ? hubMisDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }) : [];
+  // O pedido só se junta às opções quando a lista normal do Hub foi carregada.
+  var pedido = contaJ && Array.isArray(hubMisDados) ? hubAgendaPedidoFa() : null;
+  if(pedido) missoes.push(pedido);
   if(!contaJ || !missoes.length){
     if(b) b.remove();
     return;
@@ -298,12 +315,11 @@ function hubAgendaUI(){
     b.style.gridColumn = '1 / -1';
     linha.appendChild(b);
   }
-  // A Agenda continua no fim de Hoje, inclusive após a reconstrução dos outros cartões.
   if(linha.lastElementChild !== b) linha.appendChild(b);
-  var m = hubAgendaEscolher(missoes);
-  var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
+  var m = hubAgendaEscolher(missoes), ehPedido = m.k === 'pedido_fa';
+  var t = ehPedido ? ['💌',m.titulo] : m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
   var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
-  var pronta = prog >= meta, rotulos = {
+  var pronta = ehPedido ? m.pronta : prog >= meta, rotulos = {
     pt:['Agenda do Idol','Meu compromisso de hoje','Concluída'],
     en:['Idol Agenda',"Today's focus",'Completed'],
     es:['Agenda del Idol','Mi compromiso de hoy','Completada'],
@@ -311,18 +327,22 @@ function hubAgendaUI(){
     th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว'],
     ja:['アイドルの予定','今日の目標','達成']
   }, textos = rotulos[LANG] || rotulos.pt;
-  var descricao = t[0] + ' ' + tr(t[1]).replace('{n}', m.meta);
-  var acao = m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : tr('Abrir');
+  var descricao = t[0] + ' ' + (ehPedido ? t[1] : tr(t[1]).replace('{n}', m.meta));
+  var estado = ehPedido && !m.carregado ? '—' : m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta;
+  var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
+    m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : tr('Abrir');
   var opcoes = missoes.map(function(item){
-    var nome = item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
-    var legenda = nome[0] + ' ' + tr(nome[1]).replace('{n}', item.meta) + (item.feito ? ' ✓' : '');
+    var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
+    var legenda = nome[0] + ' ' + (item.k === 'pedido_fa' ? nome[1] : tr(nome[1]).replace('{n}', item.meta)) + (item.feito ? ' ✓' : '');
     return '<option value="' + escHtml(item.k) + '"' + (item.k === m.k ? ' selected' : '') + '>' + escHtml(legenda) + '</option>';
   }).join('');
   b.innerHTML = '<label for="hubAgendaEscolha">📅 <b>' + escHtml(textos[0]) + '</b></label>' +
     '<small>' + escHtml(textos[1]) + '</small>' +
     '<select id="hubAgendaEscolha" aria-label="' + escHtml(textos[1]) + '">' + opcoes + '</select>' +
-    '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + (m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta) + '</small>' +
-    '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>';
+    '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + estado + '</small>' +
+    '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>' +
+    (ehPedido && m.carregado && !pronta && !m.feito ?
+      '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '');
   b.querySelector('select').onchange = function(e){
     var chave = e.target.value;
     if(missoes.some(function(item){ return item.k === chave; })){
@@ -330,12 +350,16 @@ function hubAgendaUI(){
     }
   };
   b.querySelector('button').onclick = function(){
-    var rota = !m.feito && !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
+    if(ehPedido && (!m.carregado || pronta || m.feito)){ faAbrir(); return; }
+    var rota = ehPedido ? HUB_AGENDA_FA_ROTAS[m.pedidoTipo] : !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
     var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
     if(destino && typeof destino.click === 'function'){ destino.click(); return; }
+    if(ehPedido){ faAbrir(); return; }
     var painel = $('hubMisPainel');
     if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});
   };
+  var ver = b.querySelector('.hubagendaver');
+  if(ver) ver.onclick = faAbrir; // atualização somente quando o jogador solicitar
 }
 // Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
 document.addEventListener('click', function(e){

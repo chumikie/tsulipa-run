@@ -1377,12 +1377,18 @@ function perfDiarioHojeHtml(meu){
   var feitas = validas.filter(function(m){ return !!m.feito || (+m.prog >= +m.meta); });
   var chaveFoco = typeof hubAgendaFocoAtual === 'function' ? hubAgendaFocoAtual() : '';
   var foco = chaveFoco && validas.find(function(m){ return m.k === chaveFoco; });
+  var pedidoFoco = chaveFoco === 'pedido_fa' && typeof hubAgendaPedidoFa === 'function' ? hubAgendaPedidoFa() : null;
   var focoTxt = {pt:'Em foco',en:'In focus',es:'En foco',id:'Fokus',th:'เป้าหมาย',ja:'目標'};
   var destaque = '';
   if(foco){
     var tf = foco.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[foco.k]) || ['🎯','Missões do dia'];
     var total = Math.max(1, +foco.meta || 1), feito = Math.min(total, Math.max(0, +foco.prog || 0));
     destaque = '<li>📌 ' + escHtml(focoTxt[LANG] || focoTxt.pt) + ': ' + escHtml(tf[0] + ' ' + tr(tf[1]).replace('{n}', foco.meta)) + ' · ' + (foco.feito ? '✓' : feito + '/' + total) + '</li>';
+  }
+  if(pedidoFoco){
+    var estadoPedido = !pedidoFoco.carregado ? '' : pedidoFoco.feito ? ' · ✓' :
+      ' · ' + Math.min(pedidoFoco.meta, pedidoFoco.prog) + '/' + pedidoFoco.meta;
+    destaque = '<li>📌 ' + escHtml(focoTxt[LANG] || focoTxt.pt) + ': 💌 ' + escHtml(pedidoFoco.titulo) + estadoPedido + '</li>';
   }
   var nomes = feitas.filter(function(m){ return !foco || m.k !== foco.k; }).slice(0, 2).map(function(m){
     var t = m.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[m.k]) || ['🎯','Missões do dia'];

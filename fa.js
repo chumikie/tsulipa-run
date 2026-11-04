@@ -8,7 +8,13 @@ var FA_PEDIDOS = {   // texto do pedido; {n} = meta
   pontos1500: ['🎯', 'Faz {n} pontos numa corrida do Center⭐Run!, por favor!'],
   karaoke1:   ['🎤', 'Canta pra mim no Karaoke⭐Time! hoje? Só {n} show!']
 };
-var faDados = null;
+var faDados = null, faDadosConta = '', faDadosDia = '';
+function faDadosAtuais(){
+  var dono = contaJ ? String(contaJ.id || contaJ.nick || '') : '';
+  var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  return dono && dono === faDadosConta && dia === faDadosDia && faDados && !faDados.erro &&
+    Object.prototype.hasOwnProperty.call(FA_PEDIDOS, faDados.tipo) ? faDados : null;
+}
 function faFa(){   // o fã do dia: um Idol da vitrine que não é você (mesmo para o dia todo)
   var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
   var eu = String(contaJ && contaJ.nick || '').toLowerCase(); L = L.filter(function(p){ return String(p.nick).toLowerCase() !== eu; });
@@ -22,8 +28,17 @@ function faCartaoHtml(){
 }
 function faAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  var dono = String(contaJ.id || contaJ.nick || '');
+  var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  faDadosConta = dono; faDadosDia = dia;
   faOv.hidden = false; faDados = null; faUI();
-  contaRpc('pedido_fa_hoje').then(function(d){ faDados = d && d.ok ? d : { erro:'servidor' }; faUI(); }).catch(function(){ faDados = { erro:'servidor' }; faUI(); });
+  if(typeof hubAgendaUI === 'function') hubAgendaUI();
+  function atual(d){
+    if(!contaJ || String(contaJ.id || contaJ.nick || '') !== dono || faDadosConta !== dono || faDadosDia !== dia) return;
+    faDados = d && d.ok ? d : { erro:'servidor' }; faUI();
+    if(typeof hubAgendaUI === 'function') hubAgendaUI();
+  }
+  contaRpc('pedido_fa_hoje').then(atual).catch(function(){ atual(null); });
 }
 function faFechar(){ faOv.hidden = true; }
 function faUI(){
@@ -49,7 +64,7 @@ function faUI(){
 function faEntregar(b){
   b.disabled = true;
   contaRpc('entregar_pedido_fa').then(function(r){
-    if(r && r.ok){ faDados.resgatado = true; faDados.cartas = +r.cartas || (+faDados.cartas || 0) + 1; if(sfx && sfx.rank) try{ sfx.rank(); }catch(e){} faUI(); return; }
+    if(r && r.ok){ faDados.resgatado = true; faDados.cartas = +r.cartas || (+faDados.cartas || 0) + 1; if(sfx && sfx.rank) try{ sfx.rank(); }catch(e){} faUI(); if(typeof hubAgendaUI === 'function') hubAgendaUI(); return; }
     var m = $('faMsg'); if(m){ m.textContent = tr(r && r.erro === 'incompleto' ? 'Ainda falta um pouquinho!' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; } b.disabled = false;
   }).catch(function(){ b.disabled = false; });
 }

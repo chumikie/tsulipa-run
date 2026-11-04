@@ -129,3 +129,6 @@ body.hubon #mute{visibility:hidden}
 .hubagenda .hubagendaresumo{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
 .hubagenda .hubagendaabrir{border:0;border-radius:999px;background:#fff;color:#6633b3;padding:6px 18px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
 .hubagenda select:focus-visible,.hubagenda .hubagendaabrir:focus-visible{outline:3px solid #ffe9a8;outline-offset:2px}
+
+/* Pedido de fã: consulta manual no mesmo cartão, sem nova chamada automática. */
+.hubagenda .hubagendaver{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.8);padding:4px 12px}

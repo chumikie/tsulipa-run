@@ -1369,6 +1369,19 @@ function perfPresente(){
 
 // Diário de carreira: linha do tempo de marcos, montada com o que o perfil já traz (e, no próprio perfil,
 // com o que fica no aparelho: receitas do Happy⭐Cafe!, recorde do Handshake e conquistas dos jogos novos).
+// Resumo transitório da Agenda: somente missões já confirmadas no Hub, nunca um marco salvo.
+function perfDiarioHojeHtml(meu){
+  if(!meu || typeof contaJ === 'undefined' || !contaJ || typeof hubMisDados === 'undefined' || !Array.isArray(hubMisDados)) return '';
+  var validas = hubMisDados.filter(function(m){ return m && +m.meta > 0; });
+  if(!validas.length) return '';
+  var feitas = validas.filter(function(m){ return !!m.feito || (+m.prog >= +m.meta); });
+  var nomes = feitas.slice(0, 2).map(function(m){
+    var t = m.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[m.k]) || ['🎯','Missões do dia'];
+    return '<li>' + escHtml(t[0] + ' ' + tr(t[1]).replace('{n}', m.meta)) + '</li>';
+  }).join('');
+  return '<section class="perfdiario-hoje"><div class="perfdiario-hoje-top"><b>🌸 ' + escHtml(tr('Hoje')) + ' · ' + escHtml(tr('Missões do dia')) + '</b><em>' + feitas.length + '/' + validas.length + '</em></div>' +
+    (nomes ? '<ul>' + nomes + '</ul>' : '') + '</section>';
+}
 function perfDiarioHtml(d, meu){
   var itens = [], n = function(v){ return (+v || 0).toLocaleString('pt-BR'); };
   if(d.desde) itens.push(['🌱', tr('Estreia no TsuLiPa⭐World'), String(d.desde).slice(0, 10).split('-').reverse().join('/')]);
@@ -1387,6 +1400,7 @@ function perfDiarioHtml(d, meu){
     try{ var rc = +localStorage.getItem('tw_cafe_recorde') || 0; if(rc) itens.push(['🧋', tr('Recorde no Happy⭐Cafe!'), n(rc) + ' ' + tr('pts')]); }catch(e){}
     try{ var rh = +localStorage.getItem('tw_handshake_recorde') || 0; if(rh) itens.push(['🤝', tr('Recorde no Handshake⭐Event!'), n(rh) + ' ' + tr('pts')]); }catch(e){}
   }
-  if(!itens.length) return '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
-  return '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
+  var hoje = perfDiarioHojeHtml(meu);
+  if(!itens.length) return hoje + '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
+  return hoje + '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
 }

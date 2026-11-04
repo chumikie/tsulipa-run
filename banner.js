@@ -21,11 +21,27 @@ function bannerSorteio(L, semente){   // embaralha igual para todos no mesmo cic
   for(var i = a.length - 1; i > 0; i--){ s = (s * 1103515245 + 12345) >>> 0; var j = s % (i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
   return a;
 }
+function bannerPetPublico(d){   // somente Pets já expostos no perfil público do jogador
+  if(!d || !Array.isArray(d.pets) || typeof perfPetDoAvatar !== 'function') return null;
+  var pets = d.pets.filter(function(p){ return p && typeof p === 'object' && typeof PET_SP !== 'undefined' && PET_SP[p.k]; });
+  var ativo = String(d.ativo || ''), pet = pets.find(function(p){ return p.k === ativo; }) || pets[0];
+  return pet ? perfPetDoAvatar({pet:pet}) : null;
+}
+function bannerPetsCarregar(elenco){   // reaproveita a consulta pública do Perfil; nenhum dado é salvo
+  if(!elenco || typeof contaRpc !== 'function') return;
+  elenco.forEach(function(p){
+    if(p.pet || p.petConsulta) return;
+    p.petConsulta = true; // não consultar a cada quadro do Canvas
+    Promise.resolve().then(function(){ return contaRpc('perfil_publico', {p_nick:p.nick}); }).then(function(d){
+      if(bannerCache.elenco === elenco) p.pet = bannerPetPublico(d);
+    }).catch(function(){}); // perfil indisponível: mantém o Idol, sem inventar Pet
+  });
+}
 function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carregou)
   var dia = bannerDia(), fase = ((dia % 3) + 3) % 3;
   if(fase === 0 || typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols)) return null;
   var chave = dia + '|' + hubIdolsDados.idols.length;
-  if(bannerCache.chave === chave) return bannerCache.elenco;
+  if(bannerCache.chave === chave){ bannerPetsCarregar(bannerCache.elenco); return bannerCache.elenco; }
   var pool = hubIdolsDados.idols.filter(function(p){
     return p && p.nick && p.avatar && p.avatar.c && typeof p.avatar.c === 'object' && BANNER_TSULIPA.indexOf(String(p.nick).toLowerCase()) < 0;
   });
@@ -42,6 +58,7 @@ function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carre
     if(new Set(elenco.map(function(p){ return p.nick; })).size < 3) elenco = null;
   }
   bannerCache = { chave:chave, elenco:elenco };
+  bannerPetsCarregar(elenco);
   return elenco;
 }
 function bannerRotulo(){

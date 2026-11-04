@@ -111,7 +111,9 @@ function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
   var f = hsFa(r, nome);
   // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
-  var memorias = cf.atendidos === 0 ? cfVisitasMemorias() : [];
+  var memorias = cf.atendidos === 0 && typeof hsMemLer === 'function' ? hsMemLer() : [];
+  var conhecidos = typeof hsNomesLivres === 'function' ? hsNomesLivres() : [];
+  memorias = memorias.filter(function(m){ return conhecidos.indexOf(m.nome) >= 0; });
   if(memorias.length){
     var visita = cf.faEspecial;
     var lembranca = visita && visita.conta === (typeof hsMemChave === 'function' ? hsMemChave() : '') ?

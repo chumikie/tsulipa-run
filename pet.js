@@ -292,6 +292,17 @@ function petAmizadeVisual(k, cfg, t, livre){
     cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
     u:u, alfa:alfa};
 }
+// Resposta ao toque no Idol, sincronizada ao emote já existente (sem timer novo).
+function petToqueIdolVisual(k, cfg, t, ativo){
+  if(!ativo || t < 0 || t >= 46) return null;
+  var jeito = petRecepcaoJeito(k, cfg), u = t / 46;
+  var alfa = Math.sin(u * Math.PI);
+  return { ex:jeito === 'lirika' ? 'amor' : 'feliz',
+    x:-(jeito === 'lirika' ? 2 : jeito === 'pati' ? 4 : 0) * alfa,
+    sinal:jeito === 'tsu' ? '♥' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa };
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -316,6 +327,11 @@ function petDrawRoom(){
   var amizade = petAmizadeVisual(petData.ativo, p.cfg, petT,
     !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
+  var toqueIdol = petEmote && petEmote.toqueIdol ?
+    petToqueIdolVisual(petData.ativo, p.cfg, petEmote.t,
+      !sleepy && !petAnim && p.fome >= 25 && p.humor >= 25 &&
+      petRecepcaoFrames <= 0 && petLove <= 0) : null;
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
   var expr = (petSmile > 0 || petCharT > 0 || happy || amizade) ? 2 : 0;
@@ -343,16 +359,21 @@ function petDrawRoom(){
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
-  jeito.x += passeio.x + (amizade ? amizade.x : 0); jeito.y += passeio.y;
+  jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0); jeito.y += passeio.y;
   petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
     sleepy ? petT * .35 : petT,
-    petEx(p) || (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null))));
+    toqueIdol ? toqueIdol.ex : (petEx(p) || (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null)))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();
+  if(toqueIdol){ x.save(); x.globalAlpha = toqueIdol.alfa * .9; x.fillStyle = toqueIdol.cor;
+    x.textAlign = 'center'; x.font = '15px sans-serif';
+    x.fillText(toqueIdol.sinal, PET_X + jeito.x - 27,
+      PET_FLOOR - 79 - Math.sin(toqueIdol.u * Math.PI) * 9);
+    x.restore(); }
   if(amizade){ x.save(); x.globalAlpha = amizade.alfa * .85; x.fillStyle = amizade.cor;
     x.textAlign = 'center'; x.font = '16px sans-serif';
     x.fillText(amizade.sinal, 206 - 52 * amizade.u,
@@ -1196,8 +1217,11 @@ function petDrawCustom(ctx, cfg, t, ex, appearanceOverride){
 function petCharTap(){
   if(petCharT > 0) return;
   petCharT = 24; petSmile = 50;
-  petEmote = { s:PET_EMOTES[Math.floor(Math.random() * PET_EMOTES.length)], t:0 };
-  var p = petAtivo(); if(p && !p.dorme) petHop = 20;   // o pet pula junto
+  var p = petAtivo(), acordado = !!(p && !p.dorme);
+  petEmote = { s:PET_EMOTES[Math.floor(Math.random() * PET_EMOTES.length)], t:0,
+    toqueIdol:acordado && !petAnim };
+  // Chu pula; Koali e Pucchi respondem com gestos suaves no mesmo Canvas.
+  if(acordado && petRecepcaoJeito(petData.ativo, p.cfg) === 'tsu') petHop = 20;
   petCharVoice();
 }
 function petDrawEmote(x){

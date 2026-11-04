@@ -120,6 +120,23 @@ function petMakeBg(){
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
   petBg = c; petBgOshi = OSHI;
 }
+// Personalidade visual: só usa o tempo de desenho, sem timers ou dados novos no save.
+function petIdleJeito(k, cfg, t, parado){
+  if(!parado) return { x:0, y:0, brilho:false };
+  if(k === 'meu'){
+    // O visual já escolhido define o jeito: olhos sonolentos, felizes ou curiosos.
+    k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+        cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  }
+  if(k === 'tsu') return { x:Math.sin(t * .042) * 2.2,
+    y:-Math.pow(Math.max(0, Math.sin(t * .095)), 6) * 5.5, brilho:false };
+  if(k === 'lirika') return { x:Math.sin(t * .012) * .7,
+    y:Math.sin(t * .027) * 1.2, brilho:false };
+  // Pucchi observa o quarto e dá passinhos pequenos, com curiosidade discreta.
+  return { x:Math.sin(t * .017) * 5,
+    y:-Math.pow(Math.max(0, Math.sin(t * .053)), 8) * 2.5,
+    brilho:Math.sin(t * .033) > .985 };
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -152,12 +169,17 @@ function petDrawRoom(){
     g.restore();
   } finally { g = og; }
 
-  // Sombra + pet (pula no carinho, balança devagar quando está com sono)
+  // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
-  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  var jeito = petIdleJeito(petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  x.save(); x.translate(jeito.x, jeito.y);
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC, sleepy ? petT * .35 : petT, petEx(p));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
+  x.restore();
+  if(jeito.brilho){ x.save(); x.fillStyle = '#ffe47c'; x.font = '12px sans-serif';
+    x.fillText('✧', PET_X + jeito.x + 22, PET_FLOOR - 67 + jeito.y); x.restore(); }
 
   petDrawExtras(x, p);
   // Balão de humor acima do pet

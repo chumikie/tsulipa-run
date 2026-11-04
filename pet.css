@@ -92,26 +92,28 @@
 .petpick button[aria-pressed="true"],.petmenu button[aria-pressed="true"]{box-shadow:0 0 12px rgba(155,48,217,.3)}
 /* ML1.2-A — Idol⭐Touch: aparelho Y2K próprio, sem render loop adicional. */
 .petphone-mask[hidden]{display:none}
-.petphone-mask{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:12px;background:rgba(15,11,48,.82);isolation:isolate}
-.petphone-shell{--petphone-oshi:#ff6fb5;position:relative;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:min(316px,calc(100vw - 24px));height:min(628px,calc(100dvh - 24px));min-height:0;padding:41px 16px 12px;border:4px solid #ffe8f7;border-radius:43px;background:linear-gradient(137deg,#b7e7ff 0%,#f4e4ff 20%,#ffb9dd 58%,#ffcfe9 78%,#b7e6ff 100%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.68),inset 0 -8px 0 rgba(181,97,179,.23),0 18px 44px rgba(10,5,37,.45);font-family:"M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:#452466}
+.petphone-mask{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:12px 12px calc(24px + env(safe-area-inset-bottom,0px));background:rgba(15,11,48,.82);isolation:isolate}
+.petphone-shell{--petphone-oshi:#ff6fb5;position:relative;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;width:min(304px,calc(100vw - 28px));height:min(472px,calc(100dvh - 60px - env(safe-area-inset-bottom,0px)));min-height:0;padding:33px 13px 9px;border:4px solid #ffe8f7;border-radius:40px;background:linear-gradient(137deg,#b7e7ff 0%,#f4e4ff 20%,#ffb9dd 58%,#ffcfe9 78%,#b7e6ff 100%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.68),inset 0 -8px 0 rgba(181,97,179,.23),0 18px 44px rgba(10,5,37,.45);font-family:"M PLUS Rounded 1c","Kosugi Maru",sans-serif;color:#452466}
 .petphone-shell:before{content:"";position:absolute;inset:8px;border:1px solid rgba(255,255,255,.5);border-radius:34px;pointer-events:none}
 .petphone-shell button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .petphone-shell button:focus-visible{outline:3px solid #522397;outline-offset:2px}
-.petphone-speaker{position:absolute;top:20px;left:50%;width:46px;height:7px;transform:translateX(-50%);border-radius:99px;background:#8d6ea9;box-shadow:inset 0 2px 2px rgba(40,28,88,.3),0 1px 1px #fff}
-.petphone-cristais{position:absolute;top:10px;left:13px;width:45px;height:30px;font-size:16px;line-height:24px;text-align:center;color:#604ea0;text-shadow:0 1px 0 #fff;pointer-events:none}
-.petphone-cristais:before{content:"";position:absolute;z-index:-1;left:2px;top:1px;width:15px;height:18px;background:linear-gradient(130deg,#fff 5%,#b0f0ff 45%,#8973e7 95%);clip-path:polygon(50% 0%,100% 30%,80% 100%,20% 100%,0% 30%)}
+.petphone-speaker{position:absolute;top:16px;left:50%;width:46px;height:7px;transform:translateX(-50%);border-radius:99px;background:#8d6ea9;box-shadow:inset 0 2px 2px rgba(40,28,88,.3),0 1px 1px #fff}
+.petphone-cristais{position:absolute;top:9px;left:13px;width:50px;height:25px;display:flex;align-items:center;gap:3px;pointer-events:none;filter:drop-shadow(0 2px 1px rgba(76,52,153,.25))}
+.petphone-cristais i{display:block;width:21px;height:24px;background:linear-gradient(145deg,#fff 0 24%,#b9f5ff 25% 50%,#83b8f9 51% 75%,#7358b6 76%);clip-path:polygon(25% 0,76% 0,100% 30%,50% 100%,0 30%);box-shadow:inset 0 0 0 1px #fff}
+.petphone-cristais i:nth-child(2){width:13px;height:16px;opacity:.85;transform:rotate(18deg)}
+.petphone-cristais b{align-self:flex-start;color:#7952b0;font-size:15px;font-weight:900}
 .petphone-x{position:absolute;top:4px;right:5px;z-index:2;width:44px;height:42px;border:0;border-radius:50%;background:transparent;color:#7b3686;font-size:25px!important;font-weight:900!important}
 .petphone-screen{display:flex;flex:1;flex-direction:column;min-height:0;width:100%;overflow:hidden;border:4px solid #a88fc9;border-radius:17px;background:#fff5fc;box-shadow:inset 0 0 0 2px #fff,0 3px 0 rgba(80,47,127,.2)}
-.petphone-status{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:4px;min-height:32px;padding:0 9px;background:linear-gradient(95deg,#bdeaff,#f5d1f5);border-bottom:1px solid #c9a4dc;color:#65388b;font-size:10px;font-weight:900;letter-spacing:.01em}
-.petphone-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 10px 14px;background:linear-gradient(180deg,#fff4fc,#f7eeff 60%,#e5f7ff);scrollbar-width:thin}
-.petphone-capa{position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(110deg,#dfd1ff,#ffeaf7);box-shadow:0 0 0 2px #fff,0 3px 9px rgba(69,36,102,.13);margin-bottom:19px}
+.petphone-status{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:4px;min-height:30px;padding:0 9px;background:linear-gradient(95deg,#bdeaff,#f5d1f5);border-bottom:1px solid #c9a4dc;color:#65388b;font-size:10px;font-weight:900;letter-spacing:.01em}
+.petphone-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 9px 8px;background:linear-gradient(180deg,#fff4fc,#f7eeff 60%,#e5f7ff);scrollbar-width:thin}
+.petphone-capa{position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(110deg,#dfd1ff,#ffeaf7);box-shadow:0 0 0 2px #fff,0 3px 9px rgba(69,36,102,.13);margin-bottom:11px}
 .petphone-capa canvas{display:block;width:100%;height:auto;aspect-ratio:260/125;object-fit:cover}
-.petphone-capa strong,.petphone-capa>span{position:absolute;left:7px;right:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 14px);border-radius:6px;padding:1px 5px;font-size:10px;text-shadow:0 1px 1px #fff;background:rgba(255,248,255,.86)}
-.petphone-capa strong{top:6px;color:#68268e}.petphone-capa>span{bottom:5px;left:auto;right:6px;width:max-content;color:#69498c}
-.petphone-apps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;padding:0 4px}
-.petphone-apps button{display:flex;min-width:0;min-height:84px;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 3px;border:2px solid #fff;border-bottom-color:#c6a2e5;border-radius:16px;background:linear-gradient(150deg,#fff,#f6d9fd 65%,#d7efff);color:#632c90;box-shadow:0 3px 0 rgba(131,74,165,.28),0 1px 9px rgba(182,123,206,.17)}
+.petphone-capa strong,.petphone-capa>span{position:absolute;left:7px;width:max-content;max-width:calc(100% - 14px);box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:2px 8px;font-size:10px;text-shadow:0 1px 1px #fff;background:rgba(255,248,255,.84);box-shadow:0 1px 4px rgba(75,35,105,.18)}
+.petphone-capa strong{top:6px;color:#68268e}.petphone-capa>span{bottom:5px;color:#69498c}
+.petphone-apps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 10px;padding:0 3px}
+.petphone-apps button{display:flex;min-width:0;min-height:77px;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 3px;border:2px solid #fff;border-bottom-color:#c6a2e5;border-radius:16px;background:linear-gradient(150deg,#fff,#f6d9fd 65%,#d7efff);color:#632c90;box-shadow:0 3px 0 rgba(131,74,165,.28),0 1px 9px rgba(182,123,206,.17)}
 .petphone-apps button:active,.petphone-appbox button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(131,74,165,.3)}
-.petphone-apps button>span{display:grid;place-items:center;width:39px;height:36px;border-radius:13px;background:linear-gradient(135deg,#fff8fe,#c8efff);font-size:25px;line-height:1}
+.petphone-apps button>canvas{display:block;width:47px;height:47px;flex:none}
 .petphone-apps button b{max-width:100%;font-weight:900;font-size:12px;overflow-wrap:anywhere}
 .petphone-pagetopo{display:flex;align-items:center;gap:7px;min-height:44px;margin:-7px -5px 13px;border-bottom:2px dotted #e8b8e9;padding:0 0 9px}
 .petphone-pagetopo button{flex:0 0 44px;min-height:44px;border:0;border-radius:11px;background:#ecd4fc;color:#6b3198;font-size:30px;line-height:1}
@@ -125,10 +127,10 @@
 .petphone-appbox button{width:100%;min-height:44px;border:2px solid var(--petphone-oshi);border-radius:14px;background:#65328c;color:#fff;box-shadow:0 3px 0 #b197cb;font-weight:800;font-size:13px}
 .petphone-balao{border:1px solid #e9c4ea;border-radius:15px 15px 15px 4px;background:#fff;padding:12px 13px;color:#543471;box-shadow:0 3px 6px rgba(110,53,145,.1)}
 .petphone-balao span{font-weight:900;font-size:11px;color:#9b30d9}.petphone-balao p{margin:6px 0 0;font-size:13px;line-height:1.5}
-.petphone-home{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;min-height:44px;margin-top:10px;border:3px solid #fff;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff,#d4e9ff 72%,#9c8ac0);box-shadow:inset 0 0 0 3px #b9a3d7,0 3px 1px rgba(131,74,165,.25);color:#8e67ad;font-size:21px!important;font-weight:900!important}
+.petphone-home{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;min-height:44px;margin-top:6px;border:3px solid #fff;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff,#d4e9ff 72%,#9c8ac0);box-shadow:inset 0 0 0 3px #b9a3d7,0 3px 1px rgba(131,74,165,.25);color:#8e67ad;font-size:21px!important;font-weight:900!important}
 .petphone-home span{transform:rotate(0);font-size:17px}
-.petphone-pingente{position:absolute;right:-14px;top:116px;z-index:2;display:flex;flex-direction:column;align-items:center;font-size:21px;line-height:1;filter:drop-shadow(0 2px 1px rgba(47,14,78,.4));pointer-events:none}
-.petphone-pingente:before{content:"";width:2px;height:29px;margin-bottom:-2px;background:linear-gradient(#fff,#9d70c8)}
-.petphone-pingente i{font-style:normal;font-size:18px;transform:rotate(9deg)}
-@media (max-height:650px){.petphone-shell{padding-top:31px;border-radius:34px}.petphone-speaker{top:14px}.petphone-cristais{top:4px}.petphone-capa{margin-bottom:11px}.petphone-apps{gap:7px}.petphone-apps button{min-height:66px;padding:4px 2px}.petphone-home{flex-basis:44px;height:44px;margin-top:5px}}
+.petphone-pingente{position:absolute;right:-14px;top:108px;z-index:2;display:flex;flex-direction:column;align-items:center;font-size:21px;line-height:1;filter:drop-shadow(0 2px 1px rgba(47,14,78,.4));pointer-events:none}
+.petphone-pingente:before{content:"";width:2px;height:23px;margin-bottom:-1px;background:linear-gradient(#fff,#9d70c8)}
+.petphone-pingente i{font-style:normal;font-size:18px;transform:rotate(-7deg)}.petphone-pingente b{font-size:18px;transform:rotate(9deg)}
+@media (max-height:760px){.petphone-shell{height:min(448px,calc(100dvh - 60px - env(safe-area-inset-bottom,0px)));padding-top:30px;border-radius:36px}.petphone-speaker{top:14px}.petphone-cristais{top:6px}.petphone-capa{margin-bottom:8px}.petphone-apps{gap:7px}.petphone-apps button{min-height:67px;padding:3px 2px}.petphone-apps button>canvas{width:42px;height:42px}.petphone-home{flex-basis:44px;height:44px;margin-top:4px}}
 @media (prefers-reduced-motion:reduce){.petphone-shell button{transition:none!important}}

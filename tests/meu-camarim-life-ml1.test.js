@@ -206,6 +206,56 @@ test('ML1.2-A: Agenda só consulta missões, descarta resposta tardia de outra c
   assert.equal(ctx.petPhoneTela, 'home');
 });
 
+test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {
+  const {ctx,nodes} = fakeRoom();
+  nodes.petPhoneWp.width=260;nodes.petPhoneWp.height=125;
+  let args;
+  nodes.petPhoneWp.getContext=()=>({clearRect(){},drawImage(...a){args=a;}});
+  ctx.petPhonePapel();
+  assert.ok(args, 'reaproveita a imagem já desenhada do camarim');
+  assert.equal(args[3],360);
+  assert.ok(args[2] > 0, 'posiciona recorte para incluir os personagens');
+  assert.ok(Math.abs(args[3]/args[4]-260/125)<0.001, 'mantém a proporção original');
+  assert.equal(args[7],260);assert.equal(args[8],125);
+});
+
+test('ML1.2-A.1: quatro ícones T2 originais são desenhados uma vez com Canvas 2D', () => {
+  const {ctx} = fakeRoom();
+  for(const tipo of ['agenda','chat','fotos','perfil']){
+    const ops=[];
+    const canvas={width:128,height:128,getContext(){
+      return new Proxy({}, {
+        get(obj,k){
+          if(k==='createLinearGradient')return ()=>({addColorStop(){}});
+          if(k in obj)return obj[k];
+          return (...a)=>{ops.push([k,...a]);};
+        },
+        set(obj,k,v){obj[k]=v;return true;}
+      });
+    }};
+    ctx.petPhoneIcon(canvas,tipo);
+    assert.ok(ops.filter(x=>x[0]==='fill').length>=4, 'desenho completo: '+tipo);
+    assert.ok(ops.some(x=>x[0]==='scale'), 'ícone preparado para tela retina: '+tipo);
+  }
+  assert.match(pet, /canvas data-phone-icon=/);
+  assert.equal(pet.slice(pet.indexOf('function petPhoneIcon('),pet.indexOf('function petPhoneAgendaHtml(')).includes('requestAnimationFrame'),false);
+});
+
+test('ML1.2-A.1: geometria responsiva cabe em 320×640 e 390×844 com botão físico visível', () => {
+  assert.match(css,/width:min\(304px,calc\(100vw - 28px\)\)/);
+  assert.match(css,/height:min\(472px,calc\(100dvh - 60px/);
+  assert.match(css,/@media \(max-height:760px\)\{\.petphone-shell\{height:min\(448px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const pequena=h<=760, largura=Math.min(304,w-28), altura=Math.min(pequena?448:472,h-60);
+    const conteudo=altura-(8+9+(pequena?30:33)+(pequena?44:46)+(pequena?4:6)+8+30+18);
+    const papel=(largura-60)*125/260, apps=2*(pequena?67:77)+(pequena?7:9);
+    assert.ok(conteudo>=papel+(pequena?8:11)+apps,`${w}×${h}: apps cabem sem corte`);
+    assert.ok(altura<=h-60,`${w}×${h}: sobra espaço para navegação do navegador`);
+  }
+  assert.match(css,/\.petphone-home\{[^}]*min-height:44px/);
+  assert.match(css,/\.petphone-x\{[^}]*width:44px/);
+});
+
 test('ML1.1: origem Hub fica preservada e navegação comum não é sequestrada', () => {
   const fromHub = fakeRoom();
   fromHub.ctx.hubOv.hidden=false; fromHub.ctx.petVeioHub=true;

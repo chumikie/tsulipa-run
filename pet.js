@@ -175,7 +175,75 @@ function petPhonePapel(){
   var c = $('petPhoneWp'); if(!c || !petCv || !petCv.width) return;
   var x = c.getContext('2d'); if(!x) return;
   x.clearRect(0, 0, c.width, c.height);
-  x.drawImage(petCv, 0, 0, petCv.width, petCv.height, 0, 0, c.width, c.height);
+  // Recorte proporcional do cenário já desenhado: Idol e Pet sem distorção.
+  var srcW = petCv.width, srcH = petCv.height, ratio = c.width / c.height;
+  var cropH = Math.min(srcH, srcW / ratio), cropW = Math.min(srcW, srcH * ratio);
+  var sx = (srcW - cropW) / 2, sy = (srcH - cropH) * .68;
+  x.drawImage(petCv, sx, sy, cropW, cropH, 0, 0, c.width, c.height);
+}
+// Quatro ícones originais do Idol⭐Touch, desenhados uma vez em Canvas 2D.
+// Reutilizam a paleta T2; não há imagens externas, timers ou animação extra.
+function petPhoneIcon(c, tipo){
+  if(!c || !c.getContext) return;
+  var x = c.getContext('2d'); if(!x) return;
+  x.save(); x.clearRect(0,0,c.width,c.height); x.scale(c.width/64,c.height/64);
+  function rr(a,b,w,h,r){
+    x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);
+    x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();
+  }
+  function box(a,b,w,h,r,fill,stroke,lw){
+    rr(a,b,w,h,r);x.fillStyle=fill;x.fill();
+    if(stroke){x.strokeStyle=stroke;x.lineWidth=lw||2;x.stroke();}
+  }
+  function star(a,b,r,fill){
+    x.beginPath();for(var i=0;i<10;i++){
+      var z=-Math.PI/2+i*Math.PI/5,d=i%2?r*.44:r;
+      if(!i)x.moveTo(a+Math.cos(z)*d,b+Math.sin(z)*d);
+      else x.lineTo(a+Math.cos(z)*d,b+Math.sin(z)*d);
+    }
+    x.closePath();x.fillStyle=fill;x.fill();
+  }
+  var cor={agenda:['#ffe0f0','#ff6fb5'],chat:['#cbefff','#4169e1'],
+    fotos:['#e8d5ff','#9b30d9'],perfil:['#e9f5d1','#9b30d9']}[tipo];
+  if(!cor){x.restore();return;}
+  var bg=x.createLinearGradient(6,5,57,60);
+  bg.addColorStop(0,'#fff');bg.addColorStop(.53,cor[0]);bg.addColorStop(1,'#d7eaff');
+  box(3,3,58,58,17,bg,'#fff',2.2);
+  x.fillStyle='rgba(255,255,255,.6)';rr(9,7,37,7,4);x.fill();
+  if(tipo==='agenda'){
+    box(12,15,40,37,7,'#fff','#c184c7',2);
+    box(12,15,40,12,6,'#ff6fb5');
+    x.strokeStyle='#fff';x.lineWidth=3;x.lineCap='round';
+    for(var d=22;d<=42;d+=20){x.beginPath();x.moveTo(d,12);x.lineTo(d,20);x.stroke();}
+    x.fillStyle='#b9a0e4';x.font='bold 18px sans-serif';x.textAlign='center';
+    x.fillText('♥',31,45);star(47,46,7,'#ffe37a');
+  }else if(tipo==='chat'){
+    box(11,17,36,27,11,'#fff','#7a78cb',2.3);
+    x.fillStyle='#fff';x.beginPath();x.moveTo(20,42);x.lineTo(17,51);x.lineTo(29,43);x.fill();
+    x.fillStyle='#4169e1';for(var j=0;j<3;j++){x.beginPath();x.arc(23+j*8,30,2.6,0,7);x.fill();}
+    box(35,35,16,14,6,'#ffd5ef','#fff',1.8);
+    x.fillStyle='#d4549a';x.font='bold 12px sans-serif';x.textAlign='center';x.fillText('♥',43,45);
+  }else if(tipo==='fotos'){
+    x.save();x.translate(28,32);x.rotate(-.13);box(-19,-19,37,43,4,'#fff','#c79fd6',2);
+    box(-15,-15,29,28,3,'#c5edff');
+    x.fillStyle='#b6e64b';x.beginPath();x.moveTo(-15,13);x.lineTo(-4,-1);x.lineTo(3,7);x.lineTo(12,-4);x.lineTo(14,13);x.fill();
+    star(4,-8,5,'#ffe16a');x.restore();
+    star(48,16,8,'#ffcf48');
+    x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.moveTo(48,5);x.lineTo(48,27);x.moveTo(37,16);x.lineTo(59,16);x.stroke();
+  }else if(tipo==='perfil'){
+    x.fillStyle='#fff';x.beginPath();x.arc(32,31,22,0,7);x.fill();
+    box(16,40,32,14,9,'#ff80c1','#fff',1.5);
+    x.fillStyle='#9b30d9';x.beginPath();x.arc(32,29,17,Math.PI,Math.PI*2);x.lineTo(49,36);x.lineTo(15,36);x.closePath();x.fill();
+    x.fillStyle='#f6b37c';x.beginPath();x.ellipse(32,33,11,12,0,0,7);x.fill();
+    x.fillStyle='#654386';for(var j=0;j<2;j++){x.beginPath();x.arc(28+j*8,34,1.4,0,7);x.fill();}
+    x.strokeStyle='#854e74';x.lineWidth=1.5;x.beginPath();x.arc(32,36,3,.2,Math.PI-.2);x.stroke();
+    star(45,17,9,'#ffdf5f');
+  }
+  x.restore();
+}
+function petPhoneIcones(corpo){
+  if(!corpo || !corpo.querySelectorAll) return;
+  corpo.querySelectorAll('canvas[data-phone-icon]').forEach(function(c){petPhoneIcon(c,c.dataset.phoneIcon);});
 }
 function petPhoneAgendaHtml(){
   if(!contaJ) return '<p class="petphone-dica">🔒 ' + escHtml(tr('Entre com Google para ver sua Agenda.')) + '</p>';
@@ -196,11 +264,12 @@ function petPhoneRender(){
   var nomes = PET_PHONE_APPS[LANG] || PET_PHONE_APPS.pt;
   if(petPhoneTela === 'home'){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas>' +
-      '<strong>Meu Idol ✦ ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
-      '<div class="petphone-apps">' + [['agenda','📅',nomes[0]],['chat','💬',nomes[1]],['fotos','📸',nomes[2]],['perfil','💖',nomes[3]]].map(function(a){
-        return '<button type="button" data-phone="' + a[0] + '"><span aria-hidden="true">' + a[1] + '</span><b>' + escHtml(a[2]) + '</b></button>';
+      '<strong>✦ ' + escHtml(tr('Meu Idol')) + ' · ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
+      '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['perfil',nomes[3]]].map(function(a){
+        return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b></button>';
       }).join('') + '</div>';
     petPhonePapel();
+    petPhoneIcones(corpo);
     return;
   }
   var idx = {agenda:0,chat:1,fotos:2,perfil:3}[petPhoneTela];

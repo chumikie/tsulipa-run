@@ -61,6 +61,15 @@
       notice: 'Local browser evidence only; not verified by the server. No points or stars were restored.' };
   }
 
+  function recoveryAccount(player, owner) {
+    return player && owner && typeof player.nick === 'string'
+      ? {id: String(owner), nick: player.nick} : null;
+  }
+  function currentRecoveryAccount() {
+    var player = typeof contaJ !== 'undefined' ? contaJ : null;
+    var owner = typeof contaCorridaDono === 'function' ? contaCorridaDono() : player && player.id;
+    return recoveryAccount(player, owner);
+  }
   function init() {
     var menu = document.querySelector('#menu .panel');
     if (!menu || document.getElementById('cr-recovery-open')) return;
@@ -87,7 +96,7 @@
     function hide() { box.hidden = true; button.setAttribute('aria-expanded', 'false'); report = null; reportOwner = ''; entries.replaceChildren(); }
     function open() {
       refreshLabels();
-      var player = typeof contaJ !== 'undefined' ? contaJ : null;
+      var player = currentRecoveryAccount();
       report = collect(localStorage, player);
       reportOwner = player && player.id ? String(player.id) : '';
       entries.replaceChildren();
@@ -110,7 +119,7 @@
     button.onclick = function () { if (box.hidden) open(); else hide(); };
     close.onclick = hide;
     download.onclick = function () {
-      var player = typeof contaJ !== 'undefined' ? contaJ : null;
+      var player = currentRecoveryAccount();
       if (!report || !player || String(player.id) !== reportOwner) { hide(); return; }
       var file = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
       var url = URL.createObjectURL(file), link = document.createElement('a');
@@ -129,7 +138,7 @@
     if (langs) langs.addEventListener('click', function () { setTimeout(refreshLabels, 0); });
   }
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = { collect: collect };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { collect: collect, recoveryAccount: recoveryAccount };
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
     else init();

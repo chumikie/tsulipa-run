@@ -276,6 +276,22 @@ function petSurpresaAntes(k, cfg, t, livre){
     cor:jeito === 'tsu' ? '#f8b21c' : jeito === 'lirika' ? '#69b881' : '#5b8be5',
     alfa:Math.sin(u * Math.PI) };
 }
+// Cumprimento espontâneo entre Pet e Idol, só com estado visual do quadro.
+// Nunca desloca a posição habitual, o hitbox, as necessidades ou o save.
+function petAmizadeVisual(k, cfg, t, livre){
+  if(!livre) return null;
+  var fase = t % 960, faseToy = t % 620, faseDecor = t % 860;
+  if(fase < 680 || fase >= 790 ||
+    (faseToy >= 206 && faseToy <= 410) ||
+    (faseDecor >= 325 && faseDecor <= 490)) return null;
+  var u = (fase - 680) / 110, alfa = Math.sin(u * Math.PI);
+  var jeito = petRecepcaoJeito(k, cfg);
+  return {x:-(jeito === 'tsu' ? 9 : jeito === 'lirika' ? 3 : 7) * alfa,
+    ex:jeito === 'tsu' ? 'amor' : 'feliz',
+    sinal:jeito === 'tsu' ? '♥' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa};
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -296,8 +312,13 @@ function petDrawRoom(){
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
+  // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
+  var amizade = petAmizadeVisual(petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
-  var expr = (petSmile > 0 || petCharT > 0 || happy) ? 2 : 0;
+  var expr = (petSmile > 0 || petCharT > 0 || happy || amizade) ? 2 : 0;
   var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
   var og = g;
   try{
@@ -322,16 +343,21 @@ function petDrawRoom(){
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
-  jeito.x += passeio.x; jeito.y += passeio.y;
+  jeito.x += passeio.x + (amizade ? amizade.x : 0); jeito.y += passeio.y;
   petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
     sleepy ? petT * .35 : petT,
-    petEx(p) || (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null)));
+    petEx(p) || (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();
+  if(amizade){ x.save(); x.globalAlpha = amizade.alfa * .85; x.fillStyle = amizade.cor;
+    x.textAlign = 'center'; x.font = '16px sans-serif';
+    x.fillText(amizade.sinal, 206 - 52 * amizade.u,
+      PET_FLOOR - 83 - Math.sin(amizade.u * Math.PI) * 9);
+    x.restore(); }
   if(surpresa){ x.save(); x.globalAlpha = surpresa.alfa; x.fillStyle = surpresa.cor;
     x.textAlign = 'center'; x.font = '900 15px sans-serif';
     x.fillText(surpresa.sinal, PET_X + jeito.x + 22, PET_FLOOR - 68 + jeito.y);

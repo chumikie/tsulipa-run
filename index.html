@@ -325,6 +325,15 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
     <canvas id="petc" width="360" height="220" aria-hidden="true"></canvas>
     <button type="button" id="petCam" title="Tirar foto com o pet" aria-label="Tirar foto com o pet">📸</button>
     <button type="button" id="petColBtn" title="Meus pets" aria-label="Meus pets">🐾</button>
+    <div class="petlife" id="petLifeNav" role="group" aria-label="Meu Camarim⭐Life!">
+      <button type="button" data-life="espelho">🪞 <span>Espelho</span></button>
+      <button type="button" data-life="celular">📱 <span>Celular</span></button>
+      <button type="button" data-life="estante" aria-expanded="false" aria-controls="petLifeEstante">🏆 <span>Estante</span></button>
+    </div>
+    <div class="petlife-estante" id="petLifeEstante" role="group" aria-label="Estante de troféus e cards" hidden>
+      <button type="button" data-life="trofeus">🏅 <span>Troféus</span></button>
+      <button type="button" data-life="album">🃏 <span>Álbum</span></button>
+    </div>
     <div class="petinfo"><b id="petNm"></b><span id="petSt"></span><span class="petstar" id="petStars"></span></div>
     <div class="petrank" id="petRank"></div>
     <div class="petbars" id="petBars"></div>
@@ -962,7 +971,7 @@ petCv.addEventListener('pointerdown', function(e){
   var p = petAtivo(); if(!p) return;
   var r = petCv.getBoundingClientRect();
   var lx = (e.clientX - r.left) * 360 / r.width, ly = (e.clientY - r.top) * 220 / r.height;
-  if(petGameTap(lx, ly) || petRoomTap(lx, ly)) return;   // minijogo e item do tema (V2.1)
+  if(petGameTap(lx, ly) || petRoomTap(lx, ly) || petLifeTap(lx, ly)) return;   // minijogo, tema e objetos do camarim
   if(lx > 70 && lx < 158 && ly > PET_FLOOR - 112 && ly < PET_FLOOR + 4){ petCharTap(); return; }   // tocou no personagem
   var cy = PET_FLOOR - 12 * PET_SC;
   if(Math.abs(lx - PET_X) > 40 || Math.abs(ly - cy) > 42) return;
@@ -1018,6 +1027,14 @@ $('petActs').addEventListener('click', function(e){
   else if(a === 'dormir') petToggleSleep();
   else if(a === 'cantar') petSing();
   else if(a === 'falar') petTalk();
+});
+$('petLifeNav').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-life]');
+  if(b) petLifeAbrir(b.dataset.life);
+});
+$('petLifeEstante').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-life]');
+  if(b) petLifeAbrir(b.dataset.life);
 });
 $('petMenu').addEventListener('click', function(e){
   var b = e.target.closest('button'); if(!b || b.disabled) return;

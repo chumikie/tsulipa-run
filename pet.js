@@ -100,6 +100,24 @@ function petMakeBg(){
   x.fillStyle = '#ff6fb5'; x.fillRect(118, 130, 6, 10); x.fillStyle = '#c0265f'; x.fillRect(118, 127, 6, 4);
   x.fillStyle = 'rgba(180,220,255,.9)'; RR(130, 126, 12, 14, 3); x.fill(); x.fillStyle = '#4169e1'; x.fillRect(134, 122, 4, 5);
 
+  // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.
+  // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.
+  x.fillStyle = '#dfb1dc'; RR(152, 149, 27, 21, 4); x.fill();
+  x.fillStyle = '#c68dbd'; x.fillRect(154, 156, 23, 2);
+  x.fillStyle = '#6742a6'; RR(159, 124, 15, 26, 4); x.fill();
+  x.fillStyle = '#ffeaf8'; RR(161, 127, 11, 17, 2); x.fill();
+  x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(166.5, 135, 3, 0, 7); x.fill();
+  x.fillStyle = '#fff'; x.font = '8px sans-serif'; x.textAlign = 'center'; x.fillText('♥', 166.5, 138);
+  x.fillStyle = '#ead6ff'; x.beginPath(); x.arc(166.5, 147, 1.3, 0, 7); x.fill();
+
+  // Pequena estante de lembranças sob o mural; não ocupa espaços de decoração salvos.
+  x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
+  x.fillStyle = '#84539d'; x.fillRect(184, 149, 4, 9); x.fillRect(212, 149, 4, 9);
+  x.fillStyle = '#ffe4a4'; RR(186, 126, 12, 17, 2); x.fill();
+  x.fillStyle = '#e6b952'; x.fillRect(190, 137, 4, 6);
+  x.fillStyle = '#9b30d9'; x.fillRect(201, 130, 13, 12);
+  x.fillStyle = '#fff4c9'; x.font = '10px sans-serif'; x.fillText('★', 207.5, 139);
+
   // Arara de roupas com os figurinos nas cores do TsuLiPa
   x.strokeStyle = '#b9a3d6'; x.lineWidth = 3;
   x.beginPath(); x.moveTo(292, 58); x.lineTo(292, 170); x.moveTo(350, 58); x.lineTo(350, 170); x.moveTo(288, 60); x.lineTo(354, 60); x.stroke();
@@ -119,6 +137,69 @@ function petMakeBg(){
   x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 4, 46, 9, 0, 0, 7); x.fill();
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
   petBg = c; petBgOshi = OSHI;
+}
+// Áreas pequenas e explícitas: o espelho fica acima do hitbox do Idol e
+// a estante acima do item de temporada. Botões HTML oferecem alvos maiores.
+function petLifeHit(lx, ly){
+  if(lx >= 45 && lx <= 126 && ly >= 52 && ly <= 82) return 'espelho';
+  if(lx >= 156 && lx <= 180 && ly >= 122 && ly <= 156) return 'celular';
+  if(lx >= 180 && lx <= 211 && ly >= 123 && ly <= 149) return 'estante';
+  return '';
+}
+var PET_LIFE_TEXTOS = {
+  pt:['Espelho','Celular','Estante','Troféus','Álbum'],
+  en:['Mirror','Phone','Shelf','Trophies','Album'],
+  es:['Espejo','Móvil','Estante','Trofeos','Álbum'],
+  id:['Cermin','Ponsel','Rak','Piala','Album'],
+  th:['กระจก','โทรศัพท์','ชั้นวาง','ถ้วยรางวัล','อัลบั้ม'],
+  ja:['鏡','スマホ','棚','トロフィー','アルバム']
+};
+function petLifeUI(){
+  var nomes = PET_LIFE_TEXTOS[LANG] || PET_LIFE_TEXTOS.pt;
+  ['espelho','celular','estante','trofeus','album'].forEach(function(k,i){
+    var b = document.querySelector('#petRoom [data-life="' + k + '"]');
+    if(!b) return;
+    b.querySelector('span').textContent = nomes[i];
+    b.setAttribute('aria-label', nomes[i]);
+  });
+  var estante = $('petLifeEstante');
+  if(estante) estante.setAttribute('aria-label', tr('Estante de troféus'));
+  if(petView !== 'room'){
+    var painel = $('petLifeEstante'), botao = document.querySelector('#petLifeNav [data-life="estante"]');
+    if(painel) painel.hidden = true;
+    if(botao) botao.setAttribute('aria-expanded','false');
+  }
+}
+// Só navega para telas existentes. Nada é comprado, creditado ou salvo aqui.
+function petLifeAbrir(k){
+  if(!petOpen || !petAtivo() || petView !== 'room' || petGame) return false;
+  var painel = $('petLifeEstante'), botao = document.querySelector('#petLifeNav [data-life="estante"]');
+  if(k === 'estante'){
+    painel.hidden = !painel.hidden;
+    if(botao) botao.setAttribute('aria-expanded', String(!painel.hidden));
+    return true;
+  }
+  if(['espelho','celular','trofeus','album'].indexOf(k) < 0) return false;
+  if(!contaJ){ contaEntrar(); return true; } // mesmas proteções do Provador, Perfil e Álbum
+  if(painel) painel.hidden = true;
+  if(botao) botao.setAttribute('aria-expanded','false');
+  petClose(); // conserva o encerramento normal do Backstage e o retorno ao Hub
+  if(hubOv.hidden) hubMostrar();
+  if(k === 'espelho') shopAbrir();
+  else if(k === 'trofeus') perfAbrir();
+  else if(k === 'album'){
+    $('albumTit').textContent = '📖 ' + tr('Álbum de cards');
+    albumAbrir();
+  }else{
+    var hoje = $('hubHojeLinha');
+    if(hoje && typeof hoje.scrollIntoView === 'function') hoje.scrollIntoView({block:'start'});
+  }
+  return true;
+}
+function petLifeTap(lx, ly){
+  if(!petOpen || petView !== 'room' || petGame) return false;
+  var k = petLifeHit(lx, ly);
+  return k ? petLifeAbrir(k) : false;
 }
 // Personalidade visual: só usa o tempo de desenho, sem timers ou dados novos no save.
 function petIdleJeito(k, cfg, t, parado){
@@ -492,6 +573,9 @@ function petOpenUI(){
 }
 function petClose(){
   petRecepcaoFrames = 0; petLembrancaRecente = null;
+  var estante = $('petLifeEstante'), bEstante = document.querySelector('#petLifeNav [data-life="estante"]');
+  if(estante) estante.hidden = true;
+  if(bEstante) bEstante.setAttribute('aria-expanded','false');
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;petAnimParar();
@@ -979,6 +1063,7 @@ function petShow(){
   $('petAdopt').hidden = petView !== 'col';
   $('petMake').hidden = petView !== 'make';
   $('petRoom').hidden = petView !== 'room';
+  petLifeUI();
   if(petView === 'col') petBuildPick();
   else if(petView === 'make') petMakeUI();
   else { petFitCanvas(); petUI(); }

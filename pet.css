@@ -4,6 +4,12 @@
 /* --- MINI JOGO DE PETS: CAMARIM --- */
 .petp{width:min(94%,440px)}
 #petc{width:100%;height:auto;aspect-ratio:360/220;display:block;margin:8px 0 6px;border-radius:14px;cursor:pointer;touch-action:manipulation;box-shadow:0 0 0 2px rgba(155,48,217,.45);-webkit-tap-highlight-color:transparent}
+.petlife{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:7px 0 9px}
+.petlife-estante{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:-3px 0 9px}
+.petlife-estante[hidden]{display:none}
+.petlife button,.petlife-estante button{min-width:0;min-height:44px;border:1px solid rgba(155,48,217,.28);border-radius:12px;background:var(--chip);color:var(--b1);font:inherit;font-weight:800;font-size:12px;cursor:pointer;padding:7px 4px;box-shadow:0 2px 0 rgba(123,63,240,.15)}
+.petlife button:focus-visible,.petlife-estante button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.petlife button[aria-expanded="true"]{background:var(--card);border-color:var(--b1)}
 .petinfo{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--sub);font-weight:700}
 .petinfo b{font-size:17px;color:var(--b1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .petstar{color:#d4a017;white-space:nowrap}

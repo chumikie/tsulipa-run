@@ -141,3 +141,11 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfestante .perfin.ok{box-shadow:0 0 0 2px #ffd23f inset,0 6px 12px rgba(245,180,0,.35)}
 @media (max-width:380px){.perfins.perfestante{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .perfestante .perfin[aria-pressed="true"]{transform:none}
+
+/* Diário de carreira: atividade de hoje (somente leitura, sem histórico persistente). */
+.perfdiario-hoje{margin:6px 0 10px;padding:10px 12px;border-radius:14px;background:linear-gradient(120deg,rgba(255,111,181,.12),rgba(155,48,217,.09));box-shadow:inset 0 0 0 1px rgba(155,48,217,.14);color:var(--ink)}
+.perfdiario-hoje-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.perfdiario-hoje-top b{font-size:13px}
+.perfdiario-hoje-top em{font-style:normal;font-size:12px;font-weight:900;white-space:nowrap;color:var(--b1);background:var(--card,#fff);border-radius:99px;padding:3px 9px}
+.perfdiario-hoje ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:3px}
+.perfdiario-hoje li{font-size:12px;line-height:1.3;overflow-wrap:anywhere}

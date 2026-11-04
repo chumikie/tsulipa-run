@@ -303,6 +303,19 @@ function petToqueIdolVisual(k, cfg, t, ativo){
     cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
     u:u, alfa:alfa };
 }
+// O Idol acompanha por instantes a estrelinha já desenhada no quarto.
+// Somente cálculo do quadro; a pose retorna ao eixo habitual sem estado salvo.
+function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
+  var fase = t % 620, faseDecor = t % 860;
+  if(!livre || fase < 265 || fase >= 360 ||
+    (faseDecor >= 350 && faseDecor <= 490)) return null;
+  var u = (fase - 265) / 95, alfa = Math.sin(u * Math.PI);
+  var jeito = petRecepcaoJeito(k, cfg);
+  return { inclina:(jeito === 'tsu' ? .03 : jeito === 'lirika' ? .012 : .022) * alfa,
+    sinal:jeito === 'tsu' ? '✦' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ffdb81' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa };
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -333,17 +346,29 @@ function petDrawRoom(){
       !sleepy && !petAnim && p.fome >= 25 && p.humor >= 25 &&
       petRecepcaoFrames <= 0 && petLove <= 0) : null;
 
+  // O Idol observa a brincadeira espontânea, sem deslocar o lugar habitual.
+  var idolBrincando = petIdolAcompanhaBrinquedo(petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
-  var expr = (petSmile > 0 || petCharT > 0 || happy || amizade) ? 2 : 0;
+  var expr = (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando) ? 2 : 0;
   var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
   var og = g;
   try{
     g = x; g.save();
     g.translate(78, PET_FLOOR - 44 * 2.4 + Math.sin(petT * .05) * 1.5 - chop);
+    if(idolBrincando) g.rotate(idolBrincando.inclina);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
   } finally { g = og; }
+  if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
+    x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
+    x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,
+      PET_FLOOR - 105 + 61 * idolBrincando.u -
+      Math.sin(idolBrincando.u * Math.PI) * 4);
+    x.restore(); }
 
   // O mesmo brinquedo do Brincar visita o quarto sem afetar o minijogo.
   petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,

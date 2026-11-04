@@ -137,6 +137,34 @@ function petIdleJeito(k, cfg, t, parado){
     y:-Math.pow(Math.max(0, Math.sin(t * .053)), 8) * 2.5,
     brilho:Math.sin(t * .033) > .985 };
 }
+// A estrelinha do minijogo Brincar também aparece às vezes no camarim.
+// Tudo é visual e determinístico: nenhum contador, timer, recompensa ou save.
+function petEstrelaBrinquedo(x, px, py, ang, esc){
+  x.save(); x.translate(px, py); x.rotate(ang); x.scale(esc, esc);
+  x.fillStyle = '#ffe14d'; x.strokeStyle = '#f59e0b'; x.lineWidth = 1;
+  x.beginPath();
+  for(var q = 0; q < 10; q++){
+    var rr = q % 2 ? 4 : 9, an = q * Math.PI / 5 - Math.PI / 2;
+    x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, Math.sin(an) * rr);
+  }
+  x.closePath(); x.fill(); x.stroke(); x.restore();
+}
+function petBrinquedoEspontaneo(x, k, cfg, t, ativo){
+  var fase = t % 620;
+  if(!ativo || fase < 240 || fase > 390) return false;
+  var u = (fase - 240) / 150, fade = Math.min(1, u * 8, (1 - u) * 8);
+  var jeito = k === 'meu' ? (cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati') : k;
+  var px = 184 + (jeito === 'pati' ? 28 * u : jeito === 'tsu' ? 37 * u : 8 * u);
+  var py = PET_FLOOR - 13 - (jeito === 'tsu' ? Math.abs(Math.sin(fase * .12)) * 12 :
+    jeito === 'pati' ? Math.abs(Math.sin(fase * .07)) * 5 : 0);
+  x.save(); x.globalAlpha = fade;
+  petEstrelaBrinquedo(x, px, py, fase * (jeito === 'lirika' ? .012 : .055), .85);
+  if(jeito === 'pati' && u > .55){ x.font = '13px sans-serif'; x.fillStyle = '#fff2a2';
+    x.fillText('✧', px + 14, py - 12); }
+  x.restore();
+  return true;
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -169,6 +197,9 @@ function petDrawRoom(){
     g.restore();
   } finally { g = og; }
 
+  // O mesmo brinquedo do Brincar visita o quarto sem afetar o minijogo.
+  petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
@@ -509,10 +540,7 @@ function petDrawExtras(x, p){
     } else if(a.k === 'brincar'){
       var u = .5 - .5 * Math.cos(a.t * .045);
       var sx = 120 + (PET_X - 150) * u, sy = PET_FLOOR - 28 - Math.abs(Math.sin(a.t * .09)) * 55;
-      x.save(); x.translate(sx, sy); x.rotate(a.t * .15);
-      x.fillStyle = '#ffe14d'; x.strokeStyle = '#f59e0b'; x.lineWidth = 1;
-      x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? 4 : 9, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, Math.sin(an) * rr); } x.closePath(); x.fill(); x.stroke();
-      x.restore();
+      petEstrelaBrinquedo(x, sx, sy, a.t * .15, 1);
       if(u > .9 && petHop === 0) petHop = 20;
       petSmile = 40;
       if(a.t >= 210){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }

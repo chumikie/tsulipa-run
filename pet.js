@@ -149,6 +149,19 @@ function petEstrelaBrinquedo(x, px, py, ang, esc){
   }
   x.closePath(); x.fill(); x.stroke(); x.restore();
 }
+// Passinho curto até a estrelinha e volta ao mesmo lugar, no tempo do loop existente.
+// Nunca altera PET_X, o save, o hitbox ou o estado das ações do jogador.
+function petPasseioBrinquedo(k, cfg, t, livre){
+  var fase = t % 620;
+  if(!livre || fase < 230 || fase > 410) return {x:0,y:0};
+  k = petRecepcaoJeito(k, cfg);
+  var u = (fase - 230) / 180;
+  var aproxima = Math.pow(Math.sin(Math.PI * u), 2);
+  var distancia = k === 'tsu' ? 20 : k === 'lirika' ? 8 : 24;
+  var passo = k === 'lirika' ? .038 : k === 'tsu' ? .115 : .077;
+  return {x:-distancia * aproxima,
+    y:-Math.abs(Math.sin(fase * passo)) * (k === 'tsu' ? 2.5 : k === 'pati' ? 1.8 : .7) * aproxima};
+}
 function petBrinquedoEspontaneo(x, k, cfg, t, ativo){
   var fase = t % 620;
   if(!ativo || fase < 240 || fase > 390) return false;
@@ -291,6 +304,8 @@ function petDrawRoom(){
   hop += rotina.pulo;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
+  var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
+  jeito.x += passeio.x; jeito.y += passeio.y;
   petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);

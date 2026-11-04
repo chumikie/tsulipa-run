@@ -392,9 +392,22 @@ function cfUI(){
   c.innerHTML = h;
 }
 function cfCaderno(rec){
-  var h = '<div class="cfcaderno"><b>📒 ' + escHtml(tr('Caderno do café')) + '</b><div class="cfrecs">';
-  CF_BASES.forEach(function(b, bi){ CF_ENFEITES.forEach(function(e, ei){ var tem = rec[bi + '-' + ei];
-    h += '<span class="cfrec' + (tem ? '' : ' vazio') + '" title="' + (tem ? escHtml(tr(b[1])) : '?') + '">' + (tem ? b[0] + e[0] : '❔') + '</span>'; }); });
+  rec = rec || {};
+  var total = CF_BASES.length * CF_ENFEITES.length, ganhos = 0;
+  CF_BASES.forEach(function(b, bi){ CF_ENFEITES.forEach(function(e, ei){ if(rec[bi + '-' + ei]) ganhos++; }); });
+  var novas = cf && Array.isArray(cf.novas) ? cf.novas : [];
+  var h = '<div class="cfcaderno"><b>📒 ' + escHtml(tr('Caderno do café')) + '</b>' +
+    '<span style="float:right;color:#a0673a;font-weight:800">' + ganhos + '/' + total + '</span>' +
+    '<div class="hstempo" role="progressbar" aria-label="' + escHtml(tr('Caderno do café')) +
+    '" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + ganhos +
+    '"><i style="width:' + (total ? Math.round(ganhos / total * 100) : 0) + '%"></i></div><div class="cfrecs">';
+  CF_BASES.forEach(function(b, bi){ CF_ENFEITES.forEach(function(e, ei){
+    var tem = rec[bi + '-' + ei], nome = tem ? cfNomeReceita({base:bi,enf:ei}) : '';
+    var nova = tem && novas.indexOf(nome) >= 0;
+    var destaque = nova ? ' style="border-color:#ffd23f;box-shadow:0 0 0 2px rgba(255,210,63,.5),0 2px 0 #e4c28a"' : '';
+    h += '<span class="cfrec' + (tem ? '' : ' vazio') + '"' + destaque + ' title="' +
+      (tem ? (nova ? '✨ ' : '') + escHtml(nome) : '?') + '">' +
+      (tem ? b[0] + e[0] : '❔') + '</span>'; }); });
   return h + '</div></div>';
 }
 function cfIniciarSeguro(){

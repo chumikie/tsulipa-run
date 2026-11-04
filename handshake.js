@@ -29,11 +29,19 @@ function hsNomesLivres(){   // nunca usa um nome igual ao de um jogador real
   return HS_NOMES.filter(function(n){ return !reais[n.toLowerCase()]; });
 }
 // Visita⭐Surpresa!: aparição visual rara, sem memória, RPC nova ou presença online.
+function hsVisitaDono(){
+  if(typeof contaJ === 'undefined' || !contaJ || !contaJ.nick) return '';
+  var authId = typeof contaAuthUserId === 'string' ? contaAuthUserId : '';
+  // Aparições reais exigem sessão autenticada; perfil antigo sem id é suportado.
+  return authId && (!contaJ.id || String(contaJ.id) === authId) ? authId : '';
+}
 function hsVisitaPreparar(partida){
-  if(!partida || typeof contaJ === 'undefined' || !contaJ || !contaJ.id || !contaJ.nick ||
+  var dono = hsVisitaDono();
+  if(!partida || !dono ||
      typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols) ||
      typeof contaRpc !== 'function' || Math.random() >= .05) return;
-  var dono = String(contaJ.id), meuNick = String(contaJ.nick).trim().toLowerCase();
+  var sessao = typeof contaSessaoToken === 'number' ? contaSessaoToken : null;
+  var meuNick = String(contaJ.nick).trim().toLowerCase();
   var vitrine = hubIdolsDados.idols.filter(function(p){
     return p && typeof p.nick === 'string' && p.nick.trim() &&
       p.nick.trim().toLowerCase() !== meuNick && p.avatar && typeof p.avatar === 'object';
@@ -41,7 +49,8 @@ function hsVisitaPreparar(partida){
   if(!vitrine.length) return;
   // duo_sugestoes já exclui contas bloqueadas e duo_on=false. Falha = apenas NPC.
   contaRpc('duo_sugestoes').then(function(lista){
-    if(!Array.isArray(lista) || !contaJ || String(contaJ.id) !== dono ||
+    if(!Array.isArray(lista) || hsVisitaDono() !== dono ||
+       (sessao !== null && contaSessaoToken !== sessao) ||
        String(contaJ.nick).trim().toLowerCase() !== meuNick) return;
     var permitidos = {};
     lista.forEach(function(p){
@@ -54,7 +63,7 @@ function hsVisitaPreparar(partida){
   }).catch(function(){}); // sem confirmação de privacidade, nenhuma visita real
 }
 function hsVisitaAtual(f){
-  return hs && f && hs.visitaAlvo === f && hs.visitaComunidade && contaJ && String(contaJ.id) === hs.visitaComunidade.dono ? hs.visitaComunidade : null;
+  return hs && f && hs.visitaAlvo === f && hs.visitaComunidade && hsVisitaDono() === hs.visitaComunidade.dono ? hs.visitaComunidade : null;
 }
 function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já existe
   function um(L){ return L[Math.floor(r() * L.length)]; }
@@ -168,7 +177,7 @@ function hsNovaRodada(){
   if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
   hsCafeAplicarReencontro(fila, presentesServidor);
   // Reencontros têm prioridade; a visita ocupa apenas um lugar comum já existente.
-  if(hs.visitaComunidade && contaJ && String(contaJ.id) === hs.visitaComunidade.dono && !hs.visitaAlvo){
+  if(hs.visitaComunidade && hsVisitaDono() === hs.visitaComunidade.dono && !hs.visitaAlvo){
     var comuns = fila.filter(function(f){ return !f.hsCafeVoltou; });
     if(comuns.length) hs.visitaAlvo = comuns[Math.floor(Math.random() * comuns.length)];
   }

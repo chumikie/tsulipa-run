@@ -266,7 +266,8 @@ var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mi
 // O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
 var hubAgendaFoco = '', hubAgendaFocoConta = '', hubAgendaFocoDia = '';
 function hubAgendaFocoAtual(){
-  var dono = typeof contaJ !== 'undefined' && contaJ ? String(contaJ.id || contaJ.nick || '') : '';
+  var dono = typeof contaJ !== 'undefined' && contaJ ?
+    String((typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '') : '';
   var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   if(dono !== hubAgendaFocoConta || dia !== hubAgendaFocoDia){
     hubAgendaFoco = ''; hubAgendaFocoConta = dono; hubAgendaFocoDia = dia;

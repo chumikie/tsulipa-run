@@ -129,7 +129,7 @@ function cfNovoClienteLocal(){
     if(HS_JEITOS[lembranca.jeito]) f.jeito = lembranca.jeito;
     f.hsLembranca = lembranca;
   }
-  if(cf.atendidos > 0 && cf.visitaComunidade && contaJ && String(contaJ.id) === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
+  if(cf.atendidos > 0 && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
   f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
   cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
@@ -403,7 +403,7 @@ function cfDesenhar(){
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
-    var visita = cf.visitaAlvo === c && contaJ && cf.visitaComunidade && String(contaJ.id) === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
+    var visita = cf.visitaAlvo === c && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
     var gesto = visita ? null : cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
@@ -461,7 +461,7 @@ function cfUI(){
     cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
-    if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && contaJ && String(contaJ.id) === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
+    if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
       h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +

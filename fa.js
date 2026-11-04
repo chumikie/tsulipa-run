@@ -9,8 +9,13 @@ var FA_PEDIDOS = {   // texto do pedido; {n} = meta
   karaoke1:   ['🎤', 'Canta pra mim no Karaoke⭐Time! hoje? Só {n} show!']
 };
 var faDados = null, faDadosConta = '', faDadosDia = '';
+function faContaDono(){
+  if(typeof contaJ === 'undefined' || !contaJ) return '';
+  // jogador() pode omitir id; a sessão Google distingue contas com o mesmo nick.
+  return String((typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '');
+}
 function faDadosAtuais(){
-  var dono = contaJ ? String(contaJ.id || contaJ.nick || '') : '';
+  var dono = faContaDono();
   var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   return dono && dono === faDadosConta && dia === faDadosDia && faDados && !faDados.erro &&
     Object.prototype.hasOwnProperty.call(FA_PEDIDOS, faDados.tipo) ? faDados : null;
@@ -28,13 +33,14 @@ function faCartaoHtml(){
 }
 function faAbrir(){
   if(!contaJ){ contaEntrar(); return; }
-  var dono = String(contaJ.id || contaJ.nick || '');
+  var dono = faContaDono(), sessao = typeof contaSessaoToken === 'number' ? contaSessaoToken : null;
   var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   faDadosConta = dono; faDadosDia = dia;
   faOv.hidden = false; faDados = null; faUI();
   if(typeof hubAgendaUI === 'function') hubAgendaUI();
   function atual(d){
-    if(!contaJ || String(contaJ.id || contaJ.nick || '') !== dono || faDadosConta !== dono || faDadosDia !== dia) return;
+    if(!contaJ || faContaDono() !== dono || faDadosConta !== dono || faDadosDia !== dia ||
+       (sessao !== null && contaSessaoToken !== sessao)) return;
     faDados = d && d.ok ? d : { erro:'servidor' }; faUI();
     if(typeof hubAgendaUI === 'function') hubAgendaUI();
   }
@@ -62,8 +68,15 @@ function faUI(){
   if(x){ try{ perfFundo(x, cv.width, cv.height, 'basico', '#ff6fb5', 0); if(fa) perfDesenharIdol(x, cv.width, cv.height, Object.assign({}, fa.avatar, { pose:'coracao', expr:3, visual:'' }), false, false, 0); }catch(e){} }
 }
 function faEntregar(b){
+  var dono = faContaDono(), dia = faDadosDia, dados = faDados;
+  var sessao = typeof contaSessaoToken === 'number' ? contaSessaoToken : null;
+  function mesmaConta(){
+    return !!(dono && faContaDono() === dono && faDadosConta === dono && faDadosDia === dia &&
+      faDados === dados && (sessao === null || contaSessaoToken === sessao));
+  }
   b.disabled = true;
   contaRpc('entregar_pedido_fa').then(function(r){
+    if(!mesmaConta()){ b.disabled = false; return; }
     if(r && r.ok){ faDados.resgatado = true; faDados.cartas = +r.cartas || (+faDados.cartas || 0) + 1; if(sfx && sfx.rank) try{ sfx.rank(); }catch(e){} faUI(); if(typeof hubAgendaUI === 'function') hubAgendaUI(); return; }
     var m = $('faMsg'); if(m){ m.textContent = tr(r && r.erro === 'incompleto' ? 'Ainda falta um pouquinho!' : 'Não deu para falar com o servidor. Tente de novo.'); m.hidden = false; } b.disabled = false;
   }).catch(function(){ b.disabled = false; });

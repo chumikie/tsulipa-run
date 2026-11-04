@@ -14,7 +14,10 @@ function scopeFor(nick, suggestions, chance = .01) {
   const math = Object.create(Math);
   math.random = () => chance;
   const scope = {
-    contaJ: nick ? {id:'conta-atual', nick} : null,
+    // jogador() de produção não expõe id: a sessão Google é a identidade real.
+    contaJ: nick ? {nick} : null,
+    contaAuthUserId: nick ? 'conta-atual' : '',
+    contaSessaoToken: 1,
     hubIdolsDados: {idols:[
       {nick:'Eu',avatar:{skin:'#ffffff'}},
       {nick:'Outra',avatar:{skin:'#f1c9a5'}},
@@ -61,9 +64,25 @@ test('sem login, com chance negada ou troca de conta o sorteio falha fechado', a
   caso = scopeFor('Eu',[{nick:'Outra'}]);
   const run = {};
   caso.scope.hsVisitaPreparar(run);
-  caso.scope.contaJ = {id:'outra-conta',nick:'Pessoa'};
+  caso.scope.contaAuthUserId = 'outra-conta';
+  caso.scope.contaJ = {nick:'Pessoa'};
   await Promise.resolve(); await Promise.resolve();
   assert.equal(run.visitaComunidade, undefined);
+});
+
+test('mesmo apelido em outra sessão e perfil sem autenticação não recebem visita', async () => {
+  const caso = scopeFor('Eu', [{nick:'Outra'}]);
+  const run = {};
+  caso.scope.hsVisitaPreparar(run);
+  caso.scope.contaAuthUserId = 'outra-conta';
+  caso.scope.contaSessaoToken++;
+  await Promise.resolve(); await Promise.resolve();
+  assert.equal(run.visitaComunidade, undefined);
+
+  const semSessao = scopeFor('Eu', [{nick:'Outra'}]);
+  semSessao.scope.contaAuthUserId = '';
+  semSessao.scope.hsVisitaPreparar({});
+  assert.equal(semSessao.getCalls(), 0);
 });
 
 test('Café e Handshake só trocam apresentação, mantendo lógica de jogos e memórias', () => {

@@ -28,7 +28,7 @@ function scenario(failAt){
     state:'play',sfx:{over(){}},sync(){},shake:0,score:2300,stars:20,isTestGame:false,best:900,
     lastS:0,dpw:null,pw:null,_supabase:{},contaJ:{id:'A',nick:'Fã A'},contaSessaoToken:1,
     nick:'Fã A',starT:100,sel:0,CH:[{n:'Tsu'}],RANKS:[[0,'A']],tr:s=>s,
-    rankOf:()=>0,setBest(){},newItems:()=>'',exprFinal:()=>2,
+    rankOf:()=>0,setBest(){},newItems(){if(failAt==='newItems')throw Error('failure in optional UI');return '';},exprFinal:()=>2,
     bestcSalvar(){},refreshAcc(){if(failAt==='refreshAcc')throw Error('failure in optional UI');},
     local:[],lw:{w:'week',rows:[]},ld:{d:'day',rows:[]},
     wk:()=> 'week',dk:()=> 'day',upd:(rows,r)=>[...rows,r],showLb(){},
@@ -71,5 +71,11 @@ function scenario(failAt){
   const finished=stuck.calls.filter(x=>x.name==='terminar_corrida');
   assert.equal(finished.length,1,'server finalization must survive a later UI failure');
   assert.equal(finished[0].args.p_run,'run-uuid');
+  const early=scenario('newItems');early.ctx.contaInicioCorrida();await flush();
+  assert.doesNotThrow(()=>early.ctx.end(), 'optional item drawing must not interrupt the run result');
+  await flush();
+  assert.equal(early.calls.filter(x=>x.name==='terminar_corrida').length,1,
+    'item drawing failure must not prevent online finalization');
+  assert(early.elements.get('res').innerHTML.includes('2300 pontos'));
   console.log('✓ Center Run: finalization precedes optional UI and is sent only once');
 })().catch(e=>{console.error(e);process.exitCode=1;});

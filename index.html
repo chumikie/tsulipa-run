@@ -972,7 +972,7 @@ petCv.addEventListener('pointerdown', function(e){
   petTick();
   p.humor = petClamp(p.humor + 4);
   petHop = 20; petSmile = 70; petLove = 50;
-  petFx.push({ x:PET_X + (Math.random() * 30 - 15), y:cy - 30, t:0, s:['💕','💖','✨','💗'][Math.floor(Math.random() * 4)] });
+  petCuidadoReagir('carinho');
   petVoice(p);   // Chu "nya~", Koali "kyu~", Pucchi "hmph!", Meu Pet "pi-pi!"
   petSave(true); petUI();
 });

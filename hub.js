@@ -261,6 +261,175 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
   var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5);
   return HUB_MUSICAS[((sem % 5) + 5) % 5];
 }
+// Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
+var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+// O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
+var hubAgendaFoco = '', hubAgendaFocoConta = '', hubAgendaFocoDia = '';
+function hubAgendaFocoAtual(){
+  var dono = typeof contaJ !== 'undefined' && contaJ ?
+    String((typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '') : '';
+  var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  if(dono !== hubAgendaFocoConta || dia !== hubAgendaFocoDia){
+    hubAgendaFoco = ''; hubAgendaFocoConta = dono; hubAgendaFocoDia = dia;
+  }
+  return dono ? hubAgendaFoco : '';
+}
+// Pedido de fã é apenas uma opção da Agenda: os dados vêm da janela já existente.
+var HUB_AGENDA_FA_ROTAS = {corridas3:'run',estrelas30:'run',pontos1500:'run',karaoke1:'karaoke'};
+function hubAgendaPedidoFa(){
+  if(!contaJ || typeof faAbrir !== 'function') return null;
+  var d = typeof faDadosAtuais === 'function' ? faDadosAtuais() : null;
+  var conhecido = d && typeof FA_PEDIDOS !== 'undefined' && FA_PEDIDOS[d.tipo];
+  return {
+    k:'pedido_fa', titulo:conhecido ? tr(conhecido[1]).replace('{n}', d.meta) : tr('Pedido de fã'),
+    meta:d ? Math.max(1, +d.meta || 1) : 0,
+    prog:d ? Math.max(0, +d.progresso || 0) : 0,
+    feito:!!(d && d.resgatado), pronta:!!(d && d.feito),
+    carregado:!!conhecido, pedidoTipo:conhecido ? d.tipo : ''
+  };
+}
+// Convite somente da sessão atual: não é missão nem cria estado persistido.
+function hubAgendaReencontro(){
+  var pendente = typeof hsCafePendente !== 'undefined' ? hsCafePendente : null;
+  if(!pendente || !contaJ || typeof hsMemChave !== 'function' ||
+     pendente.conta !== hsMemChave() || typeof hsMemLer !== 'function' ||
+     typeof hsNomesLivres !== 'function') return null;
+  var memoria = hsMemLer().find(function(m){ return m.nome === pendente.nome && m.pres === pendente.pres; });
+  return memoria && hsNomesLivres().indexOf(memoria.nome) >= 0 ? memoria : null;
+}
+function hubAgendaEscolher(lista){
+  if(!Array.isArray(lista) || !lista.length) return null;
+  var foco = hubAgendaFocoAtual();
+  var escolhida = foco && lista.find(function(m){ return m && m.k === foco; });
+  if(escolhida) return escolhida; // manter o compromisso visível até o jogador escolher outro
+  var abertas = lista.filter(function(m){ return m && !m.feito; });
+  var pronta = abertas.find(function(m){ return +m.prog >= Math.max(1, +m.meta || 1); });
+  return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || lista[0] || null;
+}
+// Só oferece outra missão diária realmente pendente; pedidos de fã não são missões novas.
+// Ação social já confirmada: atualizar somente a missão em foco pela consulta existente.
+function hubAgendaSocialConfirmar(tipo){
+  if(!contaJ || hubAgendaFocoAtual() !== tipo) return;
+  hubMisCarregar();
+}
+function hubAgendaProximo(lista, atual){
+  if(!Array.isArray(lista)) return null;
+  var pendentes = lista.filter(function(m){
+    return m && m.k !== 'pedido_fa' && m.k !== atual && +m.meta > 0 && !m.feito && +m.prog < +m.meta;
+  });
+  return pendentes.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || pendentes[0] || null;
+}
+function hubAgendaUI(){
+  var linha = $('hubHojeLinha'), b = $('hubAgenda');
+  if(!linha) return;
+  var missoes = Array.isArray(hubMisDados) ? hubMisDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }) : [];
+  // O pedido só se junta às opções quando a lista normal do Hub foi carregada.
+  var pedido = contaJ && Array.isArray(hubMisDados) ? hubAgendaPedidoFa() : null;
+  if(pedido) missoes.push(pedido);
+  if(!contaJ || !missoes.length){
+    if(b) b.remove();
+    return;
+  }
+  if(!b || b.tagName !== 'DIV'){
+    if(b) b.remove();
+    b = document.createElement('div');
+    b.id = 'hubAgenda';
+    b.className = 'hubmusica hubagenda';
+    b.style.gridColumn = '1 / -1';
+    linha.appendChild(b);
+  }
+  if(linha.lastElementChild !== b) linha.appendChild(b);
+  var m = hubAgendaEscolher(missoes), ehPedido = m.k === 'pedido_fa';
+  var social = m.k === 'coracao' || m.k === 'recado';
+  var t = ehPedido ? ['💌',m.titulo] : m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
+  var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
+  var pronta = ehPedido ? m.pronta : prog >= meta, rotulos = {
+    pt:['Agenda do Idol','Meu compromisso de hoje','Concluída','Próximo compromisso'],
+    en:['Idol Agenda',"Today's focus",'Completed','Next commitment'],
+    es:['Agenda del Idol','Mi compromiso de hoy','Completada','Siguiente compromiso'],
+    id:['Agenda Idol','Fokus hari ini','Selesai','Komitmen berikutnya'],
+    th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว','ภารกิจถัดไป'],
+    ja:['アイドルの予定','今日の目標','達成','次の予定']
+  }, textos = rotulos[LANG] || rotulos.pt;
+  var descricao = t[0] + ' ' + (ehPedido ? t[1] : tr(t[1]).replace('{n}', m.meta));
+  var estado = ehPedido && !m.carregado ? '—' : m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta;
+  var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
+    m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : social ? tr('Procurar Idol pelo nome') : tr('Abrir');
+  var proximo = (m.feito || pronta) ? hubAgendaProximo(missoes, m.k) : null;
+  var reencontro = hubAgendaReencontro();
+  var mensagemReencontro = reencontro && tr(
+    reencontro.jeito === 'animado' ? '{n} saiu animado do Café! Talvez volte no Handshake.' :
+    reencontro.jeito === 'timido' ? '{n} sorriu timidamente no Café. Talvez vocês se encontrem no Handshake.' :
+    '{n} guardou com carinho a visita ao Café. Talvez volte no Handshake.'
+  ).replace('{n}', reencontro.nome);
+  var opcoes = missoes.map(function(item){
+    var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
+    var legenda = nome[0] + ' ' + (item.k === 'pedido_fa' ? nome[1] : tr(nome[1]).replace('{n}', item.meta)) + (item.feito ? ' ✓' : '');
+    return '<option value="' + escHtml(item.k) + '"' + (item.k === m.k ? ' selected' : '') + '>' + escHtml(legenda) + '</option>';
+  }).join('');
+  b.innerHTML = '<label for="hubAgendaEscolha">📅 <b>' + escHtml(textos[0]) + '</b></label>' +
+    '<small>' + escHtml(textos[1]) + '</small>' +
+    '<select id="hubAgendaEscolha" aria-label="' + escHtml(textos[1]) + '">' + opcoes + '</select>' +
+    '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + estado + '</small>' +
+    '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>' +
+    (ehPedido && m.carregado && !pronta && !m.feito ?
+      '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '') +
+    (proximo ? '<button type="button" class="hubagendaabrir hubagendaproximo" aria-label="' +
+      escHtml(textos[3]) + '">✨ ' + escHtml(textos[3]) + ' ↗</button>' : '') +
+    (reencontro ? '<strong class="hubagendaresumo">💌 ' + escHtml(tr('Possível reencontro com {n}').replace('{n}', reencontro.nome)) + '</strong>' +
+      '<small class="hubagendaresumo">' + escHtml(mensagemReencontro) + ' ' +
+      escHtml(tr('A aparição depende dos desafios do servidor.')) + '</small>' +
+      '<button type="button" class="hubagendaabrir hubagendareencontro" style="min-height:44px">🤝 ' +
+      escHtml(tr('Tentar reencontro no Handshake')) + ' ↗</button>' : '');
+  b.querySelector('select').onchange = function(e){
+    var chave = e.target.value;
+    if(missoes.some(function(item){ return item.k === chave; })){
+      hubAgendaFocoAtual(); hubAgendaFoco = chave; hubAgendaUI();
+    }
+  };
+  b.querySelector('button').onclick = function(){
+    if(ehPedido && (!m.carregado || pronta || m.feito)){ faAbrir(); return; }
+    if(social && !pronta && !m.feito){
+      var busca = $('hubBusca');
+      if(busca){
+        if(typeof busca.scrollIntoView === 'function') busca.scrollIntoView({behavior:'smooth', block:'center'});
+        busca.focus(); return; // o jogador escolhe o perfil e decide dar coração ou escrever
+      }
+    }
+    var rota = ehPedido ? HUB_AGENDA_FA_ROTAS[m.pedidoTipo] : !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
+    var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
+    if(destino && typeof destino.click === 'function'){ destino.click(); return; }
+    if(ehPedido){ faAbrir(); return; }
+    var painel = $('hubMisPainel');
+    if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  var ver = b.querySelector('.hubagendaver');
+  if(ver) ver.onclick = faAbrir; // atualização somente quando o jogador solicitar
+  var avancar = b.querySelector('.hubagendaproximo');
+  if(avancar) avancar.onclick = function(){
+    var outra = hubAgendaProximo(missoes, m.k);
+    if(!outra) return;
+    hubAgendaFocoAtual(); hubAgendaFoco = outra.k; hubAgendaUI();
+  };
+  var tentar = b.querySelector('.hubagendareencontro');
+  if(tentar) tentar.onclick = function(){
+    var cards = $('hubCards'), destino = cards && cards.querySelector('[data-ir="handshake"]');
+    if(destino && typeof destino.click === 'function') destino.click();
+  };
+}
+// Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
+// Registrar somente quando o Hub abre, sem executar código ao importar o módulo.
+var hubAgendaFechamentoRegistrado = false;
+function hubAgendaEscutarFechamento(){
+  if(hubAgendaFechamentoRegistrado) return;
+  document.addEventListener('click', function(e){
+    if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
+    if(!contaJ || typeof hubOv === 'undefined' || !hubOv || hubOv.hidden) return;
+    hubAgendaUI(); // convite e despedida atualizam sem nova consulta online
+    if(hubAgendaFocoAtual()) hubMisCarregar();
+  });
+  hubAgendaFechamentoRegistrado = true;
+}
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
   t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
@@ -274,6 +443,7 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
   var fb = $('hubFa');
   if(linha && typeof faCartaoHtml === 'function'){ if(fb) fb.remove(); linha.insertAdjacentHTML('beforeend', faCartaoHtml()); fb = $('hubFa'); fb.onclick = function(){ if(sfx.card) sfx.card(); $('faTit').textContent = '💌 ' + tr('Pedido de fã'); faAbrir(); }; }
   if(jn) jn.innerHTML = '📰 <b translate="no">Idol⭐News!</b><small class="tw-hubgame-jp" lang="ja">アイドル・ニュース</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
+  hubAgendaUI();
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
@@ -330,6 +500,7 @@ function hubCardsUI(){
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
+  hubAgendaUI();
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
   if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml('🔒 ' + tr('Entrar com Google') + ' · ' + tr('Missões do dia')) + '</p>'; return; }
@@ -343,6 +514,7 @@ function hubMisUI(){
 function hubMisCarregar(){
   if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
+  hubMisDados = null; hubMisUI();
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
@@ -635,6 +807,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
   }).catch(function(){});
 }
 function hubMostrar(){
+  hubAgendaEscutarFechamento();
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
   sync();

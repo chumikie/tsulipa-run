@@ -371,14 +371,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   }, { passive:true });
 })();
 </script>
-<script src="./handshake.js?v=8"></script>
-<script src="./cafe.js?v=9"></script>
+<script src="./handshake.js?v=9"></script>
+<script src="./cafe.js?v=10"></script>
 <script src="./duo.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=14"></script>
 <script src="./shop.js?v=4"></script>
 <script src="./jornal.js?v=12"></script>
-<script src="./banner.js?v=4"></script>
+<script src="./banner.js?v=5"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
 <script>
@@ -973,7 +973,7 @@ petCv.addEventListener('pointerdown', function(e){
   petTick();
   p.humor = petClamp(p.humor + 4);
   petHop = 20; petSmile = 70; petLove = 50;
-  petFx.push({ x:PET_X + (Math.random() * 30 - 15), y:cy - 30, t:0, s:['💕','💖','✨','💗'][Math.floor(Math.random() * 4)] });
+  petCuidadoReagir('carinho');
   petVoice(p);   // Chu "nya~", Koali "kyu~", Pucchi "hmph!", Meu Pet "pi-pi!"
   petSave(true); petUI();
 });
@@ -1521,6 +1521,7 @@ perfOv.addEventListener('click', function(e){
           perfAbrir(alvo,true);
           var pedidoMensagem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&pedidoMensagem===perfPedido&&perfAtual&&perfAtual.nick===alvo;},function(){perfTopoMsg('💌 '+tr('Recado enviado!'));},400);
         }
+        if(typeof hubAgendaSocialConfirmar==='function')hubAgendaSocialConfirmar('recado');
         if(typeof insConferir==='function')insConferir();return;
       }
       if(painelAtual){var m=$('perfRecMsg');m.textContent=tr(PERF_REC_ERRO[r&&r.erro]||'Não deu para falar com o servidor. Tente de novo.');m.hidden=false;if(sfx.hit)sfx.hit();}
@@ -2016,7 +2017,7 @@ try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
   cv.addEventListener('click', function(e){
     var r = cv.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height, best = -1, d = .14;
-    if(typeof bannerElenco === 'function' && bannerElenco()){   // dia de trio do site: sem pets e sem vozes
+    if(typeof bannerElenco === 'function' && bannerElenco()){   // trio de jogadores: Pets ilustrativos, sem voz ou ações novas
       HUB_TRIO.forEach(function(m, i){ if(Math.abs(fx - m[2]) < d){ d = Math.abs(fx - m[2]); best = i; } });
       bannerVisitaReage(best); return;
     }

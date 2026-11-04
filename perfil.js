@@ -818,6 +818,7 @@ function perfDarCoracao(){
     b.disabled = false;
     if(r && r.ok === false && PERF_REC_ERRO[r.erro]){ perfTopoMsg(tr(PERF_REC_ERRO[r.erro])); return; }   // bloqueado pela moderação
     d.dei_coracao = true; if(r && typeof r.total === 'number') d.coracoes = r.total;
+    if(r && r.ok === true && typeof hubAgendaSocialConfirmar === 'function') hubAgendaSocialConfirmar('coracao');
     b.innerHTML = '💖 <b>' + (+d.coracoes || 0) + '</b>'; b.setAttribute('aria-pressed', 'true');
     perfChuvaCoracoes(b);
     perfTopoMsg('💖 ' + tr('Você deu um coração hoje!'));
@@ -1369,6 +1370,34 @@ function perfPresente(){
 
 // Diário de carreira: linha do tempo de marcos, montada com o que o perfil já traz (e, no próprio perfil,
 // com o que fica no aparelho: receitas do Happy⭐Cafe!, recorde do Handshake e conquistas dos jogos novos).
+// Resumo transitório da Agenda: somente missões já confirmadas no Hub, nunca um marco salvo.
+function perfDiarioHojeHtml(meu){
+  if(!meu || typeof contaJ === 'undefined' || !contaJ || typeof hubMisDados === 'undefined' || !Array.isArray(hubMisDados)) return '';
+  var validas = hubMisDados.filter(function(m){ return m && +m.meta > 0; });
+  if(!validas.length) return '';
+  var feitas = validas.filter(function(m){ return !!m.feito || (+m.prog >= +m.meta); });
+  var chaveFoco = typeof hubAgendaFocoAtual === 'function' ? hubAgendaFocoAtual() : '';
+  var foco = chaveFoco && validas.find(function(m){ return m.k === chaveFoco; });
+  var pedidoFoco = chaveFoco === 'pedido_fa' && typeof hubAgendaPedidoFa === 'function' ? hubAgendaPedidoFa() : null;
+  var focoTxt = {pt:'Em foco',en:'In focus',es:'En foco',id:'Fokus',th:'เป้าหมาย',ja:'目標'};
+  var destaque = '';
+  if(foco){
+    var tf = foco.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[foco.k]) || ['🎯','Missões do dia'];
+    var total = Math.max(1, +foco.meta || 1), feito = Math.min(total, Math.max(0, +foco.prog || 0));
+    destaque = '<li>📌 ' + escHtml(focoTxt[LANG] || focoTxt.pt) + ': ' + escHtml(tf[0] + ' ' + tr(tf[1]).replace('{n}', foco.meta)) + ' · ' + (foco.feito ? '✓' : feito + '/' + total) + '</li>';
+  }
+  if(pedidoFoco){
+    var estadoPedido = !pedidoFoco.carregado ? '' : pedidoFoco.feito ? ' · ✓' :
+      ' · ' + Math.min(pedidoFoco.meta, pedidoFoco.prog) + '/' + pedidoFoco.meta;
+    destaque = '<li>📌 ' + escHtml(focoTxt[LANG] || focoTxt.pt) + ': 💌 ' + escHtml(pedidoFoco.titulo) + estadoPedido + '</li>';
+  }
+  var nomes = feitas.filter(function(m){ return !foco || m.k !== foco.k; }).slice(0, 2).map(function(m){
+    var t = m.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[m.k]) || ['🎯','Missões do dia'];
+    return '<li>' + escHtml(t[0] + ' ' + tr(t[1]).replace('{n}', m.meta)) + '</li>';
+  }).join('');
+  return '<section class="perfdiario-hoje"><div class="perfdiario-hoje-top"><b>🌸 ' + escHtml(tr('Hoje')) + ' · ' + escHtml(tr('Missões do dia')) + '</b><em>' + feitas.length + '/' + validas.length + '</em></div>' +
+    (destaque || nomes ? '<ul>' + destaque + nomes + '</ul>' : '') + '</section>';
+}
 function perfDiarioHtml(d, meu){
   var itens = [], n = function(v){ return (+v || 0).toLocaleString('pt-BR'); };
   if(d.desde) itens.push(['🌱', tr('Estreia no TsuLiPa⭐World'), String(d.desde).slice(0, 10).split('-').reverse().join('/')]);
@@ -1387,6 +1416,7 @@ function perfDiarioHtml(d, meu){
     try{ var rc = +localStorage.getItem('tw_cafe_recorde') || 0; if(rc) itens.push(['🧋', tr('Recorde no Happy⭐Cafe!'), n(rc) + ' ' + tr('pts')]); }catch(e){}
     try{ var rh = +localStorage.getItem('tw_handshake_recorde') || 0; if(rh) itens.push(['🤝', tr('Recorde no Handshake⭐Event!'), n(rh) + ' ' + tr('pts')]); }catch(e){}
   }
-  if(!itens.length) return '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
-  return '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
+  var hoje = perfDiarioHojeHtml(meu);
+  if(!itens.length) return hoje + '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
+  return hoje + '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
 }

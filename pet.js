@@ -120,6 +120,202 @@ function petMakeBg(){
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
   petBg = c; petBgOshi = OSHI;
 }
+// Personalidade visual: só usa o tempo de desenho, sem timers ou dados novos no save.
+function petIdleJeito(k, cfg, t, parado){
+  if(!parado) return { x:0, y:0, brilho:false };
+  if(k === 'meu'){
+    // O visual já escolhido define o jeito: olhos sonolentos, felizes ou curiosos.
+    k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+        cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  }
+  if(k === 'tsu') return { x:Math.sin(t * .042) * 2.2,
+    y:-Math.pow(Math.max(0, Math.sin(t * .095)), 6) * 5.5, brilho:false };
+  if(k === 'lirika') return { x:Math.sin(t * .012) * .7,
+    y:Math.sin(t * .027) * 1.2, brilho:false };
+  // Pucchi observa o quarto e dá passinhos pequenos, com curiosidade discreta.
+  return { x:Math.sin(t * .017) * 5,
+    y:-Math.pow(Math.max(0, Math.sin(t * .053)), 8) * 2.5,
+    brilho:Math.sin(t * .033) > .985 };
+}
+// A estrelinha do minijogo Brincar também aparece às vezes no camarim.
+// Tudo é visual e determinístico: nenhum contador, timer, recompensa ou save.
+function petEstrelaBrinquedo(x, px, py, ang, esc){
+  x.save(); x.translate(px, py); x.rotate(ang); x.scale(esc, esc);
+  x.fillStyle = '#ffe14d'; x.strokeStyle = '#f59e0b'; x.lineWidth = 1;
+  x.beginPath();
+  for(var q = 0; q < 10; q++){
+    var rr = q % 2 ? 4 : 9, an = q * Math.PI / 5 - Math.PI / 2;
+    x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, Math.sin(an) * rr);
+  }
+  x.closePath(); x.fill(); x.stroke(); x.restore();
+}
+// Passinho curto até a estrelinha e volta ao mesmo lugar, no tempo do loop existente.
+// Nunca altera PET_X, o save, o hitbox ou o estado das ações do jogador.
+function petPasseioBrinquedo(k, cfg, t, livre){
+  var fase = t % 620;
+  if(!livre || fase < 230 || fase > 410) return {x:0,y:0};
+  k = petRecepcaoJeito(k, cfg);
+  var u = (fase - 230) / 180;
+  var aproxima = Math.pow(Math.sin(Math.PI * u), 2);
+  var distancia = k === 'tsu' ? 20 : k === 'lirika' ? 8 : 24;
+  var passo = k === 'lirika' ? .038 : k === 'tsu' ? .115 : .077;
+  return {x:-distancia * aproxima,
+    y:-Math.abs(Math.sin(fase * passo)) * (k === 'tsu' ? 2.5 : k === 'pati' ? 1.8 : .7) * aproxima};
+}
+function petBrinquedoEspontaneo(x, k, cfg, t, ativo){
+  var fase = t % 620;
+  if(!ativo || fase < 240 || fase > 390) return false;
+  var u = (fase - 240) / 150, fade = Math.min(1, u * 8, (1 - u) * 8);
+  var jeito = k === 'meu' ? (cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati') : k;
+  var px = 184 + (jeito === 'pati' ? 28 * u : jeito === 'tsu' ? 37 * u : 8 * u);
+  var py = PET_FLOOR - 13 - (jeito === 'tsu' ? Math.abs(Math.sin(fase * .12)) * 12 :
+    jeito === 'pati' ? Math.abs(Math.sin(fase * .07)) * 5 : 0);
+  x.save(); x.globalAlpha = fade;
+  petEstrelaBrinquedo(x, px, py, fase * (jeito === 'lirika' ? .012 : .055), .85);
+  if(jeito === 'pati' && u > .55){ x.font = '13px sans-serif'; x.fillStyle = '#fff2a2';
+    x.fillText('✧', px + 14, py - 12); }
+  x.restore();
+  return true;
+}
+// O Pet admira o pôster gratuito quando ele está realmente exposto no mural.
+// Reação somente visual: respeita a decoração guardada e a pausa das animações.
+// Cada espécie presta atenção primeiro à decoração que combina com seu jeito.
+// Usa apenas objetos já expostos e imagens prontas; o pôster gratuito é o fallback.
+function petDecorFavorito(k, cfg, decor, imgs){
+  if(k === 'meu') k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  var preferencias = k === 'tsu' ? ['brs48','zipper'] :
+    k === 'lirika' ? ['campo','banner','zipper'] :
+    ['nebyura','doces','zipper'];
+  for(var i = 0; i < preferencias.length; i++){
+    var chave = preferencias[i], img = imgs[chave];
+    if(decor && decor[chave] && img && img.complete && img.naturalWidth){
+      for(var j = 0; j < PET_DECOR.length; j++) if(PET_DECOR[j][0] === chave)
+        return { item:PET_DECOR[j], jeito:k };
+    }
+  }
+  return null;
+}
+function petDecorReacao(x, k, cfg, t, ativo){
+  var fase = t % 860;
+  if(!ativo || fase < 350 || fase > 490) return false;
+  var alvo = petDecorFavorito(k, cfg, petData && petData.decor, petDecorImgs);
+  if(!alvo) return false;
+  var u = (fase - 350) / 140, alfa = Math.min(1, u * 8, (1 - u) * 8);
+  var it = alvo.item, jeito = alvo.jeito;
+  var origemX = it[3] + it[5] / 2, origemY = it[4] + it[6] / 2;
+  var passo = jeito === 'tsu' ? Math.abs(Math.sin(u * 13)) * 5 :
+    jeito === 'pati' ? Math.sin(u * 11) * 3 : 0;
+  x.save(); x.globalAlpha = alfa; x.textAlign = 'center';
+  x.fillStyle = jeito === 'lirika' ? '#b8f2ba' : jeito === 'pati' ? '#b7ddff' : '#ffe47c';
+  x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
+  x.fillText('✦', origemX + (PET_X - 18 - origemX) * u,
+    origemY + (PET_FLOOR - 60 - origemY) * u - passo);
+  if(jeito === 'pati' && petPreferenciaAtividade(k,cfg,'explorar')){ x.font = '11px sans-serif';
+    x.fillText('✧', origemX + (PET_X - 30 - origemX) * u,
+      origemY - 10 + (PET_FLOOR - 80 - origemY) * u);
+    x.fillText('✦', PET_X + 25, PET_FLOOR - 70 - Math.sin(u * 9) * 4); }
+  x.restore();
+  return true;
+}
+// Pequena rotina cíclica de descanso, observação e brincadeira.
+// Não muda p.dorme, barras ou saves; somente a pose desenhada quando ocioso.
+function petRotinaVisual(k, cfg, t, ativo){
+  if(!ativo) return { modo:'', pulo:0 };
+  if(k === 'meu') k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  var fase = t % 900;
+  var descanso = k === 'lirika' ? fase >= 130 && fase < 320 :
+    k === 'pati' ? fase >= 590 && fase < 655 : fase >= 90 && fase < 155;
+  var observa = k === 'pati' ? fase >= 160 && fase < 325 :
+    k === 'lirika' ? fase >= 430 && fase < 515 : fase >= 275 && fase < 345;
+  var brinca = k === 'tsu' ? fase >= 410 && fase < 535 :
+    k === 'pati' ? fase >= 350 && fase < 435 : fase >= 665 && fase < 705;
+  return { modo:descanso?'descanso':observa?'observa':brinca?'brinca':'',
+    pulo:brinca ? Math.pow(Math.max(0,Math.sin(fase * (k === 'tsu' ? .1 : .055))),6) * (k === 'tsu' ? 4 : 2) : 0 };
+}
+// Saudação visual curta ao abrir o camarim; sem áudio, timer ou persistência.
+var petRecepcaoFrames = 0;
+function petRecepcaoJeito(k, cfg){
+  if(k !== 'meu') return k;
+  return cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+}
+function petRecepcaoPulo(k, cfg, restante){
+  if(restante <= 0) return 0;
+  var t = (90 - restante) / 90, jeito = petRecepcaoJeito(k, cfg);
+  return jeito === 'tsu' ? Math.pow(Math.max(0,Math.sin(t * Math.PI * 4)),2) * 6 :
+    jeito === 'pati' ? Math.pow(Math.max(0,Math.sin(t * Math.PI * 2)),2) * 2 : 0;
+}
+function petRecepcaoDesenhar(x, k, cfg, restante){
+  if(restante <= 0) return;
+  var jeito = petRecepcaoJeito(k, cfg), t = (90 - restante) / 90;
+  x.save(); x.globalAlpha = Math.min(1, (1 - t) * 4);
+  x.textAlign = 'center'; x.fillStyle = jeito === 'lirika' ? '#b8f2ba' :
+    jeito === 'pati' ? '#b7ddff' : '#ff8ac9';
+  x.font = jeito === 'tsu' ? '18px sans-serif' : '15px sans-serif';
+  x.fillText(jeito === 'tsu' ? '♥' : '✦', PET_X + 21, PET_FLOOR - 69 - t * 18);
+  if(jeito === 'pati'){ x.font = '11px sans-serif';
+    x.fillText('✧', PET_X - 23, PET_FLOOR - 57 - t * 10); }
+  x.restore();
+}
+// Pequena pausa de surpresa antes do brinquedo ou de admirar o mural.
+// Apenas função do quadro atual: sem timers e sem alterar o estado do Pet.
+function petSurpresaAntes(k, cfg, t, livre){
+  if(!livre) return null;
+  var faseToy = t % 620, faseDecor = t % 860;
+  var toy = faseToy >= 206 && faseToy < 230;
+  var decor = !toy && (faseToy < 230 || faseToy > 410) &&
+    faseDecor >= 325 && faseDecor < 350 &&
+    !!petDecorFavorito(k, cfg, petData && petData.decor, petDecorImgs);
+  if(!toy && !decor) return null;
+  var jeito = petRecepcaoJeito(k, cfg), u = toy ? (faseToy - 206) / 24 : (faseDecor - 325) / 25;
+  return { ex:jeito === 'tsu' ? 'feliz' : jeito === 'lirika' ? 'sono' : null,
+    sinal:jeito === 'tsu' ? '✦' : jeito === 'lirika' ? '✧' : '!',
+    cor:jeito === 'tsu' ? '#f8b21c' : jeito === 'lirika' ? '#69b881' : '#5b8be5',
+    alfa:Math.sin(u * Math.PI) };
+}
+// Cumprimento espontâneo entre Pet e Idol, só com estado visual do quadro.
+// Nunca desloca a posição habitual, o hitbox, as necessidades ou o save.
+function petAmizadeVisual(k, cfg, t, livre){
+  if(!livre) return null;
+  var fase = t % 960, faseToy = t % 620, faseDecor = t % 860;
+  if(fase < 680 || fase >= 790 ||
+    (faseToy >= 206 && faseToy <= 410) ||
+    (faseDecor >= 325 && faseDecor <= 490)) return null;
+  var u = (fase - 680) / 110, alfa = Math.sin(u * Math.PI);
+  var jeito = petRecepcaoJeito(k, cfg);
+  return {x:-(jeito === 'tsu' ? 9 : jeito === 'lirika' ? 3 : 7) * alfa,
+    ex:jeito === 'tsu' ? 'amor' : 'feliz',
+    sinal:jeito === 'tsu' ? '♥' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa};
+}
+// Resposta ao toque no Idol, sincronizada ao emote já existente (sem timer novo).
+function petToqueIdolVisual(k, cfg, t, ativo){
+  if(!ativo || t < 0 || t >= 46) return null;
+  var jeito = petRecepcaoJeito(k, cfg), u = t / 46;
+  var alfa = Math.sin(u * Math.PI);
+  return { ex:jeito === 'lirika' ? 'amor' : 'feliz',
+    x:-(jeito === 'lirika' ? 2 : jeito === 'pati' ? 4 : 0) * alfa,
+    sinal:jeito === 'tsu' ? '♥' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ff8ac9' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa };
+}
+// O Idol acompanha por instantes a estrelinha já desenhada no quarto.
+// Somente cálculo do quadro; a pose retorna ao eixo habitual sem estado salvo.
+function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
+  var fase = t % 620, faseDecor = t % 860;
+  if(!livre || fase < 265 || fase >= 360 ||
+    (faseDecor >= 350 && faseDecor <= 490)) return null;
+  var u = (fase - 265) / 95, alfa = Math.sin(u * Math.PI);
+  var jeito = petRecepcaoJeito(k, cfg);
+  return { inclina:(jeito === 'tsu' ? .03 : jeito === 'lirika' ? .012 : .022) * alfa,
+    sinal:jeito === 'tsu' ? '✦' : jeito === 'lirika' ? '♡' : '✧',
+    cor:jeito === 'tsu' ? '#ffdb81' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
+    u:u, alfa:alfa };
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -140,26 +336,89 @@ function petDrawRoom(){
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
+  // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
+  var amizade = petAmizadeVisual(petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
+  var toqueIdol = petEmote && petEmote.toqueIdol ?
+    petToqueIdolVisual(petData.ativo, p.cfg, petEmote.t,
+      !sleepy && !petAnim && p.fome >= 25 && p.humor >= 25 &&
+      petRecepcaoFrames <= 0 && petLove <= 0) : null;
+
+  // O Idol observa a brincadeira espontânea, sem deslocar o lugar habitual.
+  var idolBrincando = petIdolAcompanhaBrinquedo(petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
-  var expr = (petSmile > 0 || petCharT > 0 || happy) ? 2 : 0;
+  var expr = (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando) ? 2 : 0;
   var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
   var og = g;
   try{
     g = x; g.save();
     g.translate(78, PET_FLOOR - 44 * 2.4 + Math.sin(petT * .05) * 1.5 - chop);
+    if(idolBrincando) g.rotate(idolBrincando.inclina);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
   } finally { g = og; }
+  if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
+    x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
+    x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,
+      PET_FLOOR - 105 + 61 * idolBrincando.u -
+      Math.sin(idolBrincando.u * Math.PI) * 4);
+    x.restore(); }
 
-  // Sombra + pet (pula no carinho, balança devagar quando está com sono)
+  // O mesmo brinquedo do Brincar visita o quarto sem afetar o minijogo.
+  petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,
+    !sleepy && !petAnim && !petGame && petHop <= 0);
+  // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
-  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
-  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC, sleepy ? petT * .35 : petT, petEx(p));
+  var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
+  if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
+  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 && !recebendo;
+  var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
+  hop += rotina.pulo;
+  var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
+  if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
+  var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
+  var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
+  jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0); jeito.y += passeio.y;
+  petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  x.save(); x.translate(jeito.x, jeito.y);
+  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
+    sleepy ? petT * .35 : petT,
+    toqueIdol ? toqueIdol.ex : (petEx(p) || (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null)))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
+  x.restore();
+  if(toqueIdol){ x.save(); x.globalAlpha = toqueIdol.alfa * .9; x.fillStyle = toqueIdol.cor;
+    x.textAlign = 'center'; x.font = '15px sans-serif';
+    x.fillText(toqueIdol.sinal, PET_X + jeito.x - 27,
+      PET_FLOOR - 79 - Math.sin(toqueIdol.u * Math.PI) * 9);
+    x.restore(); }
+  if(amizade){ x.save(); x.globalAlpha = amizade.alfa * .85; x.fillStyle = amizade.cor;
+    x.textAlign = 'center'; x.font = '16px sans-serif';
+    x.fillText(amizade.sinal, 206 - 52 * amizade.u,
+      PET_FLOOR - 83 - Math.sin(amizade.u * Math.PI) * 9);
+    x.restore(); }
+  if(surpresa){ x.save(); x.globalAlpha = surpresa.alfa; x.fillStyle = surpresa.cor;
+    x.textAlign = 'center'; x.font = '900 15px sans-serif';
+    x.fillText(surpresa.sinal, PET_X + jeito.x + 22, PET_FLOOR - 68 + jeito.y);
+    x.restore(); }
+  if(recebendo) petRecepcaoDesenhar(x, petData.ativo, p.cfg, petRecepcaoFrames);
+  if(rotina.modo === 'descanso' && petPreferenciaAtividade(petData.ativo,p.cfg,'descanso')){
+    x.save(); x.globalAlpha = .5; x.font = '12px sans-serif'; x.fillStyle = '#b8f2ba';
+    x.fillText('✧', PET_X + 24, PET_FLOOR - 64); x.restore();
+  }
+  if(petRecepcaoFrames > 0) petRecepcaoFrames = Math.max(0, petRecepcaoFrames - petDrawDelta);
+  if(jeito.brilho){ x.save(); x.fillStyle = '#ffe47c'; x.font = '12px sans-serif';
+    x.fillText('✧', PET_X + jeito.x + 22, PET_FLOOR - 67 + jeito.y); x.restore(); }
 
   petDrawExtras(x, p);
+  petDesenharLembranca(x);
   // Balão de humor acima do pet
   x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
   x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 - petMoodLift(p) + Math.sin(petT * .07) * 3);
@@ -228,9 +487,11 @@ function petOpenUI(){
   $('petov').hidden = false;
   petView = petData ? 'room' : 'col';
   petShow();
+  petRecepcaoFrames = petData ? 90 : 0;
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
+  petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;petAnimParar();
@@ -448,6 +709,57 @@ function petDrawItem(x, k, cx, cy, s){
   }
   x.restore();
 }
+// Agradecimentos visuais por cuidado. Usa os efeitos que já existem no Canvas.
+// Nunca altera as necessidades, custos, cooldowns ou o save.
+// Último cuidado apenas nesta sessão de camarim (não entra em petData/save).
+var petLembrancaRecente = null;
+function petLembrarCuidado(acao){
+  if(petData && petData.ativo) petLembrancaRecente = {pet:petData.ativo, acao:acao, t:petT};
+}
+function petDesenharLembranca(x){
+  var m = petLembrancaRecente;
+  if(!m || !petData || m.pet !== petData.ativo) return false;
+  var idade = petT - m.t;
+  if(idade < 45 || idade > 270){ if(idade > 270 || idade < 0) petLembrancaRecente = null; return false; }
+  var simbolos = {comer:'♡', banho:'✧', carinho:'♥', brincar:'♪'};
+  var p = petAtivo(), k = petRecepcaoJeito(petData.ativo, p && p.cfg);
+  var cor = k === 'lirika' ? '#54ae70' : k === 'pati' ? '#5b8be5' : '#e858a5';
+  x.save(); x.globalAlpha = Math.min(.65, (270 - idade) / 90);
+  x.font = '15px sans-serif'; x.textAlign = 'center'; x.fillStyle = cor;
+  x.fillText(simbolos[m.acao] || '✦', PET_X - 28, PET_FLOOR - 54 - Math.sin(idade * .04) * 3);
+  x.restore();
+  return true;
+}
+// Afinidade visual por atividade, sem bônus de jogo ou novo estado persistido.
+function petPreferenciaAtividade(k, cfg, atividade){
+  k = petRecepcaoJeito(k, cfg);
+  return k === 'tsu' ? atividade === 'brincar' :
+    k === 'lirika' ? (atividade === 'carinho' || atividade === 'descanso') :
+    (atividade === 'comer' || atividade === 'explorar');
+}
+function petPreferenciaCelebrar(atividade){
+  var k = petData && petData.ativo, p = petAtivo();
+  if(!k || !petPreferenciaAtividade(k, p && p.cfg, atividade)) return false;
+  var jeito = petRecepcaoJeito(k, p && p.cfg);
+  petFx.push({x:PET_X + 27,y:PET_FLOOR - 89,t:0,
+    s:jeito === 'tsu' ? '🌟' : jeito === 'lirika' ? '💚' : '✧'});
+  petSmile = Math.max(petSmile, 35);
+  return true;
+}
+function petCuidadoReagir(acao){
+  petLembrarCuidado(acao);
+  var k = petData && petData.ativo, cfg = k === 'meu' && petAtivo() ? petAtivo().cfg : null;
+  if(k === 'meu') k = petRecepcaoJeito(k, cfg);
+  var emotes = {
+    tsu: {comer:['😋','💜'], banho:['🫧','✨'], carinho:['💕','✦']},
+    lirika: {comer:['🍡'], banho:['🫧','💚'], carinho:['💚']},
+    pati: {comer:['⭐','😋'], banho:['💦','✧'], carinho:['💙','✧']}
+  };
+  var lista = emotes[k] && emotes[k][acao] || ['✨'];
+  for(var i = 0; i < lista.length; i++)
+    petFx.push({x:PET_X + (i ? 19 : -12), y:PET_FLOOR - 72 - (i ? 8 : 0), t:0, s:lista[i]});
+  petPreferenciaCelebrar(acao);
+}
 function petDrawExtras(x, p){
   // Noite: quarto escurece enquanto o pet dorme
   if(p.dorme){
@@ -470,7 +782,7 @@ function petDrawExtras(x, p){
       if(bite < 1) petDrawItem(x, a.item, PET_X - 42, PET_FLOOR - 30, 1.9 * (1 - bite * .6));
       x.fillStyle = '#f5d9a8';
       for(var c = 0; c < 4; c++) if((a.t + c * 7) % 28 < 14) x.fillRect(PET_X - 30 + c * 5, PET_FLOOR - 12 + ((a.t + c * 7) % 14), 2, 2);
-      if(a.t >= 95){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'😋' }); petSay(tr('Que delícia!')); }
+      if(a.t >= 95){ petAnim = null; petCuidadoReagir('comer'); petSay(tr('Que delícia!')); }
     } else if(a.k === 'banho'){
       for(var i = 0; i < 16; i++){
         var bx = PET_X + Math.sin(i * 2.1 + a.t * .05) * 32, by = PET_FLOOR - 8 - ((a.t * 1.2 + i * 17) % 75), r = 2.5 + (i % 3) * 1.8;
@@ -483,17 +795,14 @@ function petDrawExtras(x, p){
         [[-12, 0, 8], [0, -4, 10], [12, 0, 8], [-5, -10, 6], [7, -9, 6]].forEach(function(f){ x.beginPath(); x.arc(PET_X + f[0], PET_FLOOR - 52 + f[1], f[2], 0, 7); x.fill(); });
       }
       if(Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)) petHop = 20;
-      if(a.t >= 150){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'✨' }); }
+      if(a.t >= 150){ petAnim = null; petCuidadoReagir('banho'); }
     } else if(a.k === 'brincar'){
       var u = .5 - .5 * Math.cos(a.t * .045);
       var sx = 120 + (PET_X - 150) * u, sy = PET_FLOOR - 28 - Math.abs(Math.sin(a.t * .09)) * 55;
-      x.save(); x.translate(sx, sy); x.rotate(a.t * .15);
-      x.fillStyle = '#ffe14d'; x.strokeStyle = '#f59e0b'; x.lineWidth = 1;
-      x.beginPath(); for(var q = 0; q < 10; q++){ var rr = q % 2 ? 4 : 9, an = q * Math.PI / 5 - Math.PI / 2; x[q ? 'lineTo' : 'moveTo'](Math.cos(an) * rr, Math.sin(an) * rr); } x.closePath(); x.fill(); x.stroke();
-      x.restore();
+      petEstrelaBrinquedo(x, sx, sy, a.t * .15, 1);
       if(u > .9 && petHop === 0) petHop = 20;
       petSmile = 40;
-      if(a.t >= 210){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); }
+      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); petPreferenciaCelebrar('brincar'); }
     } else if(a.k === 'cantar'){
       petSingFrame(x, a);   // show do 🎤 Cantar (sons do camarim)
     }
@@ -728,7 +1037,7 @@ function petSwitch(k){   // os pets que não estão ativos "descansam" e não pe
   if(petData.ativo !== k){
     petTick();
     petData.ativo = k; petData.pets[k].t = Date.now();
-    petAnim = null; petMenuK = ''; petEmote = null;
+    petAnim = null; petMenuK = ''; petEmote = null; petLembrancaRecente = null;
     petSave(true);
     petSay(petEmo(k) + ' ' + petData.pets[k].nome + '!');
   }
@@ -933,8 +1242,11 @@ function petDrawCustom(ctx, cfg, t, ex, appearanceOverride){
 function petCharTap(){
   if(petCharT > 0) return;
   petCharT = 24; petSmile = 50;
-  petEmote = { s:PET_EMOTES[Math.floor(Math.random() * PET_EMOTES.length)], t:0 };
-  var p = petAtivo(); if(p && !p.dorme) petHop = 20;   // o pet pula junto
+  var p = petAtivo(), acordado = !!(p && !p.dorme);
+  petEmote = { s:PET_EMOTES[Math.floor(Math.random() * PET_EMOTES.length)], t:0,
+    toqueIdol:acordado && !petAnim };
+  // Chu pula; Koali e Pucchi respondem com gestos suaves no mesmo Canvas.
+  if(acordado && petRecepcaoJeito(petData.ativo, p.cfg) === 'tsu') petHop = 20;
   petCharVoice();
 }
 function petDrawEmote(x){

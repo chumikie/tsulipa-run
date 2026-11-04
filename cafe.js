@@ -42,6 +42,43 @@ function cfSelecionarAssinatura(chave){
   cf.assinatura = {base:base,enf:enf};
   cfUI();
 }
+// Só consulta as lembranças já existentes do Handshake; a visita escolhida não é salva.
+function cfVisitasMemorias(){
+  if(typeof hsMemLer !== 'function' || typeof hsNomesLivres !== 'function') return [];
+  var livres = hsNomesLivres();
+  return hsMemLer().filter(function(m){ return livres.indexOf(m.nome) >= 0; });
+}
+function cfVisitaOpcoes(){
+  var memorias = cfVisitasMemorias();
+  if(!memorias.length) return '';
+  var chave = typeof hsMemChave === 'function' ? hsMemChave() : '';
+  var atual = cf && cf.faEspecial;
+  var surpresa = !atual || atual.conta !== chave ||
+    !memorias.some(function(m){ return m.nome === atual.nome && m.pres === atual.pres; });
+  var opcoes = memorias.map(function(m, i){
+    var escolhida = !surpresa && m.nome === atual.nome && m.pres === atual.pres;
+    var presente = HS_PRESENTES[m.pres], jeito = m.jeito === 'timido' ? 'Tímido' : m.jeito === 'animado' ? 'Animado' : 'Fofo';
+    return '<button type="button" class="cfassinatura-opcao' + (escolhida ? ' on' : '') +
+      '" data-cf-fa="' + i + '" aria-pressed="' + (escolhida ? 'true' : 'false') +
+      '">' + escHtml(m.nome) + ' · ' + escHtml(tr(jeito)) + ' ' + presente[0] + '</button>';
+  }).join('');
+  return '<div class="cfassinatura"><strong>💌 ' + escHtml(tr('Visita de um Fã Especial')) + '</strong>' +
+    '<p class="hsdica">' + escHtml(tr('Escolha quem será o primeiro cliente. O pedido continua sendo definido pelo servidor.')) + '</p>' +
+    '<div class="cfassinatura-opcoes" role="group" aria-label="' + escHtml(tr('Fã da primeira visita')) + '">' +
+    '<button type="button" class="cfassinatura-opcao' + (surpresa ? ' on' : '') +
+    '" data-cf-fa="surpresa" aria-pressed="' + (surpresa ? 'true' : 'false') +
+    '">🎲 ' + escHtml(tr('Visita surpresa')) + '</button>' + opcoes + '</div></div>';
+}
+function cfSelecionarVisita(indice){
+  if(!cf || cf.fase !== 'inicio') return;
+  if(indice === 'surpresa'){ cf.faEspecial = null; cfUI(); return; }
+  if(!/^[0-9]+$/.test(indice)) return;
+  var m = cfVisitasMemorias()[+indice];
+  var chave = typeof hsMemChave === 'function' ? hsMemChave() : '';
+  if(!m || !chave) return;
+  cf.faEspecial = {conta:chave, nome:m.nome, pres:m.pres};
+  cfUI();
+}
 function cfUsarAssinatura(){
   if(!cf || cf.fase !== 'pedido' || !cf.assinatura || cf.assinaturaUsada || !cf.cli || !cf.cli.pedido) return;
   var a = cf.assinatura, p = cf.cli.pedido;
@@ -64,7 +101,7 @@ function cfPaciencia(){ return cf && cf.servidor && cf.servidor.limite_segundos 
 function cfAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
-  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:null, assinaturaUsada:false };
+  cf = { fase:'inicio', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:null, t0:0, fala:'', novas:[], hearts:[], servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:null, assinaturaUsada:false, faEspecial:null };
   cfUI();
   var cena = $('cfCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', cfCenaClique); cena.dataset.idolReage = '1'; }
   if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
@@ -74,13 +111,16 @@ function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
   var f = hsFa(r, nome);
   // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
-  var memorias = typeof hsMemLer === 'function' ? hsMemLer() : [];
-  var conhecidos = typeof hsNomesLivres === 'function' ? hsNomesLivres() : [];
-  memorias = memorias.filter(function(m){ return conhecidos.indexOf(m.nome) >= 0; });
-  if(cf.atendidos === 0 && memorias.length){
-    var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
-    var lembranca = memorias[((dia % memorias.length) + memorias.length) % memorias.length];
-    f.nome = lembranca.nome;
+  var memorias = cf.atendidos === 0 ? cfVisitasMemorias() : [];
+  if(memorias.length){
+    var visita = cf.faEspecial;
+    var lembranca = visita && visita.conta === (typeof hsMemChave === 'function' ? hsMemChave() : '') ?
+      memorias.find(function(m){ return m.nome === visita.nome && m.pres === visita.pres; }) : null;
+    if(!lembranca){
+      var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
+      lembranca = memorias[((dia % memorias.length) + memorias.length) % memorias.length];
+    }
+    f.nome = lembranca.nome; f.pres = lembranca.pres;
     if(lembranca.c && typeof lembranca.c === 'object') for(var parte in lembranca.c){
       if(Object.prototype.hasOwnProperty.call(lembranca.c, parte) && typeof f.c[parte] === 'string' && typeof lembranca.c[parte] === 'string') f.c[parte] = lembranca.c[parte];
     }
@@ -406,7 +446,7 @@ function cfUI(){
   if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
-    cfAssinaturaOpcoes(rec) +
+    cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
@@ -462,10 +502,13 @@ function cfCaderno(rec){
 }
 function cfIniciarSeguro(){
   var escolhida = cf && cf.fase === 'inicio' ? cf.assinatura : null;
-  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[],assinatura:escolhida,assinaturaUsada:false};
+  var visita = cf && cf.fase === 'inicio' ? cf.faEspecial : null;
+  cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[],assinatura:escolhida,assinaturaUsada:false,faEspecial:visita};
   cfNovoCliente();
 }
 function cfClique(e){
+  var fa = e.target.closest && e.target.closest('[data-cf-fa]');
+  if(fa){ cfSelecionarVisita(fa.dataset.cfFa); return; }
   var assina = e.target.closest && e.target.closest('[data-cf-assinatura]');
   if(assina){ cfSelecionarAssinatura(assina.dataset.cfAssinatura); return; }
   if(e.target.closest && e.target.closest('#cfUsarAssinatura')){ cfUsarAssinatura(); return; }

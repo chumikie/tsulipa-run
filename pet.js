@@ -221,6 +221,31 @@ function petRotinaVisual(k, cfg, t, ativo){
   return { modo:descanso?'descanso':observa?'observa':brinca?'brinca':'',
     pulo:brinca ? Math.pow(Math.max(0,Math.sin(fase * (k === 'tsu' ? .1 : .055))),6) * (k === 'tsu' ? 4 : 2) : 0 };
 }
+// Saudação visual curta ao abrir o camarim; sem áudio, timer ou persistência.
+var petRecepcaoFrames = 0;
+function petRecepcaoJeito(k, cfg){
+  if(k !== 'meu') return k;
+  return cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+}
+function petRecepcaoPulo(k, cfg, restante){
+  if(restante <= 0) return 0;
+  var t = (90 - restante) / 90, jeito = petRecepcaoJeito(k, cfg);
+  return jeito === 'tsu' ? Math.pow(Math.max(0,Math.sin(t * Math.PI * 4)),2) * 6 :
+    jeito === 'pati' ? Math.pow(Math.max(0,Math.sin(t * Math.PI * 2)),2) * 2 : 0;
+}
+function petRecepcaoDesenhar(x, k, cfg, restante){
+  if(restante <= 0) return;
+  var jeito = petRecepcaoJeito(k, cfg), t = (90 - restante) / 90;
+  x.save(); x.globalAlpha = Math.min(1, (1 - t) * 4);
+  x.textAlign = 'center'; x.fillStyle = jeito === 'lirika' ? '#b8f2ba' :
+    jeito === 'pati' ? '#b7ddff' : '#ff8ac9';
+  x.font = jeito === 'tsu' ? '18px sans-serif' : '15px sans-serif';
+  x.fillText(jeito === 'tsu' ? '♥' : '✦', PET_X + 21, PET_FLOOR - 69 - t * 18);
+  if(jeito === 'pati'){ x.font = '11px sans-serif';
+    x.fillText('✧', PET_X - 23, PET_FLOOR - 57 - t * 10); }
+  x.restore();
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -258,7 +283,9 @@ function petDrawRoom(){
     !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
-  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25;
+  var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
+  if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
+  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 && !recebendo;
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
   hop += rotina.pulo;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
@@ -272,6 +299,8 @@ function petDrawRoom(){
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();
+  if(recebendo) petRecepcaoDesenhar(x, petData.ativo, p.cfg, petRecepcaoFrames);
+  if(petRecepcaoFrames > 0) petRecepcaoFrames = Math.max(0, petRecepcaoFrames - petDrawDelta);
   if(jeito.brilho){ x.save(); x.fillStyle = '#ffe47c'; x.font = '12px sans-serif';
     x.fillText('✧', PET_X + jeito.x + 22, PET_FLOOR - 67 + jeito.y); x.restore(); }
 
@@ -344,9 +373,11 @@ function petOpenUI(){
   $('petov').hidden = false;
   petView = petData ? 'room' : 'col';
   petShow();
+  petRecepcaoFrames = petData ? 90 : 0;
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
+  petRecepcaoFrames = 0;
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;petAnimParar();

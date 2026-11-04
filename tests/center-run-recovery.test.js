@@ -1,6 +1,6 @@
 'use strict';
 const assert = require('node:assert/strict');
-const {collect} = require('../center-recovery.js');
+const {collect,recoveryAccount} = require('../center-recovery.js');
 
 const now = Date.UTC(2026, 10, 4, 15);
 const owner = 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa';
@@ -28,7 +28,11 @@ const storage = {
 
 assert.equal(collect(storage, null, now),null, 'guest cannot inspect a shared browser');
 assert.deepEqual(gets,[], 'no read before confirming account');
-const report = collect(storage, {id:owner,nick:'Matheus'}, now);
+// A sessão autenticada fornece o id que jogador() não retorna.
+assert.equal(recoveryAccount({nick:'Matheus'},''),null, 'no account without a session owner');
+const account = recoveryAccount({nick:'Matheus',stars:930,best:10854,importado:true}, owner);
+assert.deepEqual(account,{id:owner,nick:'Matheus'},'do not copy stars or extra fields into the evidence collector');
+const report = collect(storage, account, now);
 assert.equal(report.local_scores.length,1, 'same score in 3 rankings deduplicated');
 assert.deepEqual(report.local_scores[0].sources,['all','week','day']);
 assert.equal(report.pending_runs.length,1, 'only owner pending runs');

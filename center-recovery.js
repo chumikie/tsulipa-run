@@ -121,7 +121,8 @@
     };
     box.append(heading, warning, result, entries, download, close);
     var ranking = document.getElementById('lbmw');
-    if (ranking && ranking.parentNode === menu) { menu.insertBefore(button, ranking); menu.insertBefore(box, ranking); }
+    // Keep the original opening screen untouched; offer recovery in "Ver ranking".
+    if (ranking && ranking.parentNode === menu) { ranking.insertBefore(button, ranking.firstChild); ranking.insertBefore(box, button.nextSibling); }
     else menu.append(button, box);
     refreshLabels(); button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-controls', box.id);
     var langs = menu.querySelector('.lang');

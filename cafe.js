@@ -240,6 +240,19 @@ function cfCopo(x, cx, by, m, k){   // k = tamanho de 1 unidade (o mesmo do Idol
   }
   x.restore();
 }
+// Pequenas manias visuais dos fãs enquanto esperam: só Canvas e tempo da cena.
+// Não altera a personalidade sorteada, o pedido, a paciência nem os saves.
+function cfClienteGesto(c, dt, fase){
+  if(!c || fase !== 'pedido' || dt < 65) return null;
+  var momento = (dt - 65) % 330;
+  if(momento >= 82) return null;
+  var u = momento / 82, alfa = Math.sin(u * Math.PI), jeito = c.jeito;
+  return {dy:-(jeito === 'animado' ? 5 : jeito === 'timido' ? .7 : 2) * alfa,
+    dx:(jeito === 'timido' ? -2 : jeito === 'fofo' ? 2 : 0) * alfa,
+    pose:jeito === 'animado' ? 'tchau' : jeito === 'timido' ? '' : 'coracao',
+    sinal:c.hsLembranca ? '💌' : jeito === 'animado' ? '📸' : jeito === 'timido' ? '♡' : '🎀',
+    u:u, alfa:alfa};
+}
 function cfDesenhar(){
   var cv = $('cfCv'); if(!cv) return;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = cfT;
@@ -270,7 +283,12 @@ function cfDesenhar(){
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
-    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5, H2 * .26); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    var gesto = cfClienteGesto(c, dt, cf.fase);
+    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
+      x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
+      x.fillText(gesto.sinal, W2 * .485, H2 * .52 - gesto.alfa * 7);
+      x.restore(); }
   }
   // Apresentação: atendente ATRÁS da madeira, com a metade inferior escondida.
   if(cf && cf.fase === 'inicio'){

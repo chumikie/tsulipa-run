@@ -612,8 +612,17 @@ function end(){
   finalExpr = typeof exprFinal === 'function' ? exprFinal(s, nb) : (s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2));   // V2.1.3
   
   var rId = rankOf(s);
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+newItems(ob,s)
+  // Este acabamento é opcional: se refreshAcc falhar, a confirmação online não pode parar.
+  var novosItens='';
+  try{novosItens=newItems(ob,s)}catch(err){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: acabamento dos itens indisponível',err);}
+  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+novosItens
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
+
+  // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos
+  // opcionais abaixo não podem impedir a confirmação online da corrida.
+  var enviarOnline=!!(_supabase&&contaJ&&!isTestGame&&(nick||'').trim().toLowerCase()!=='tsuadmin');
+  var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
+  if(enviarOnline)contaFimCorrida(s,stars,CH[sel].n,refresh);
   
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
@@ -636,15 +645,8 @@ function end(){
     }catch(e){}
   }
   
-  var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
-
-// V2.1.2: o ranking online recebe só corridas de quem está logado, conferidas pela função terminar_corrida
-  // (o servidor confere o tempo real da partida, credita as estrelas e grava no ranking com o nome da conta)
-  if(_supabase && !isTesting && !isAdmin && contaJ){
-    contaFimCorrida(s, stars, row.char, refresh);
-  } else {
-    refresh();
-  }
+  // V2.1.2: apenas o servidor confirma pontos e estrelas de partidas autenticadas.
+  if(!enviarOnline)refresh();
   
 clearTimeout(overTimer);
   overTimer = setTimeout(function(){

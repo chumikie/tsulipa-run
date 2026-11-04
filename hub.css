@@ -121,3 +121,11 @@ body.hubon #mute{visibility:hidden}
 /* títulos longos não quebram só o "!" no celular; Moon Duo alinhado em cima como os outros */
 @media(max-width:620px){#hub #hubCards .hubhandshake>b,#hub #hubCards .hubcafe>b{font-size:14px;letter-spacing:-.3px;white-space:nowrap}}
 #hub #hubCards>button.hubcard.hubduo{justify-content:flex-start}
+
+/* Vida de Idol: compromisso escolhido nas missões existentes (cartão Hoje). */
+.hubagenda{cursor:default;gap:6px;text-align:center;padding:10px 12px}
+.hubagenda label{display:block;font-weight:900}
+.hubagenda select{display:block;width:min(100%,420px);max-width:100%;box-sizing:border-box;border:1px solid rgba(63,32,125,.28);border-radius:10px;background:#fff;color:#3c2a75;padding:7px 10px;font:inherit;font-size:12px;font-weight:700;text-overflow:ellipsis}
+.hubagenda .hubagendaresumo{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+.hubagenda .hubagendaabrir{border:0;border-radius:999px;background:#fff;color:#6633b3;padding:6px 18px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.hubagenda select:focus-visible,.hubagenda .hubagendaabrir:focus-visible{outline:3px solid #ffe9a8;outline-offset:2px}

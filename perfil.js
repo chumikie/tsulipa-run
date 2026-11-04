@@ -1375,12 +1375,21 @@ function perfDiarioHojeHtml(meu){
   var validas = hubMisDados.filter(function(m){ return m && +m.meta > 0; });
   if(!validas.length) return '';
   var feitas = validas.filter(function(m){ return !!m.feito || (+m.prog >= +m.meta); });
-  var nomes = feitas.slice(0, 2).map(function(m){
+  var chaveFoco = typeof hubAgendaFocoAtual === 'function' ? hubAgendaFocoAtual() : '';
+  var foco = chaveFoco && validas.find(function(m){ return m.k === chaveFoco; });
+  var focoTxt = {pt:'Em foco',en:'In focus',es:'En foco',id:'Fokus',th:'เป้าหมาย',ja:'目標'};
+  var destaque = '';
+  if(foco){
+    var tf = foco.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[foco.k]) || ['🎯','Missões do dia'];
+    var total = Math.max(1, +foco.meta || 1), feito = Math.min(total, Math.max(0, +foco.prog || 0));
+    destaque = '<li>📌 ' + escHtml(focoTxt[LANG] || focoTxt.pt) + ': ' + escHtml(tf[0] + ' ' + tr(tf[1]).replace('{n}', foco.meta)) + ' · ' + (foco.feito ? '✓' : feito + '/' + total) + '</li>';
+  }
+  var nomes = feitas.filter(function(m){ return !foco || m.k !== foco.k; }).slice(0, 2).map(function(m){
     var t = m.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[m.k]) || ['🎯','Missões do dia'];
     return '<li>' + escHtml(t[0] + ' ' + tr(t[1]).replace('{n}', m.meta)) + '</li>';
   }).join('');
   return '<section class="perfdiario-hoje"><div class="perfdiario-hoje-top"><b>🌸 ' + escHtml(tr('Hoje')) + ' · ' + escHtml(tr('Missões do dia')) + '</b><em>' + feitas.length + '/' + validas.length + '</em></div>' +
-    (nomes ? '<ul>' + nomes + '</ul>' : '') + '</section>';
+    (destaque || nomes ? '<ul>' + destaque + nomes + '</ul>' : '') + '</section>';
 }
 function perfDiarioHtml(d, meu){
   var itens = [], n = function(v){ return (+v || 0).toLocaleString('pt-BR'); };

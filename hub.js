@@ -263,46 +263,85 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
 }
 // Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
 var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+// O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
+var hubAgendaFoco = '', hubAgendaFocoConta = '', hubAgendaFocoDia = '';
+function hubAgendaFocoAtual(){
+  var dono = typeof contaJ !== 'undefined' && contaJ ? String(contaJ.id || contaJ.nick || '') : '';
+  var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  if(dono !== hubAgendaFocoConta || dia !== hubAgendaFocoDia){
+    hubAgendaFoco = ''; hubAgendaFocoConta = dono; hubAgendaFocoDia = dia;
+  }
+  return dono ? hubAgendaFoco : '';
+}
 function hubAgendaEscolher(lista){
   if(!Array.isArray(lista) || !lista.length) return null;
+  var foco = hubAgendaFocoAtual();
+  var escolhida = foco && lista.find(function(m){ return m && m.k === foco; });
+  if(escolhida) return escolhida; // manter o compromisso visível até o jogador escolher outro
   var abertas = lista.filter(function(m){ return m && !m.feito; });
   var pronta = abertas.find(function(m){ return +m.prog >= Math.max(1, +m.meta || 1); });
-  return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || null;
+  return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || lista[0] || null;
 }
 function hubAgendaUI(){
   var linha = $('hubHojeLinha'), b = $('hubAgenda');
   if(!linha) return;
-  if(!contaJ || !Array.isArray(hubMisDados) || !hubMisDados.length){
+  var missoes = Array.isArray(hubMisDados) ? hubMisDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }) : [];
+  if(!contaJ || !missoes.length){
     if(b) b.remove();
     return;
   }
-  if(!b){
-    b = document.createElement('button');
-    b.type = 'button';
+  if(!b || b.tagName !== 'DIV'){
+    if(b) b.remove();
+    b = document.createElement('div');
     b.id = 'hubAgenda';
-    b.className = 'hubmusica';
+    b.className = 'hubmusica hubagenda';
     b.style.gridColumn = '1 / -1';
     linha.appendChild(b);
   }
-  // O cartão fica depois do Pedido de fã mesmo quando os cards do Hub são recriados.
+  // A Agenda continua no fim de Hoje, inclusive após a reconstrução dos outros cartões.
   if(linha.lastElementChild !== b) linha.appendChild(b);
-  var m = hubAgendaEscolher(hubMisDados);
-  var t = m ? (m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯','Missões do dia']) : ['✓','Missões do dia'];
-  var pronta = !!(m && +m.prog >= Math.max(1, +m.meta || 1));
-  var rotulos = {pt:'Agenda do Idol',en:'Idol Agenda',es:'Agenda del Idol',id:'Agenda Idol',th:'ตารางไอดอล',ja:'アイドルの予定'};
-  var titulo = rotulos[LANG] || rotulos.pt;
-  var descricao = m ? t[0] + ' ' + tr(t[1]).replace('{n}', m.meta) : '✓ ' + tr('Missões do dia');
-  var acao = pronta ? tr('Resgatar') : tr('Abrir');
-  b.innerHTML = '📅 <b>' + escHtml(titulo) + '</b><small>' + escHtml(descricao) + '</small><small>' + escHtml(acao) + ' ↗</small>';
-  b.setAttribute('aria-label', titulo + ': ' + descricao + '. ' + acao);
-  b.onclick = function(){
-    var rota = m && !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
+  var m = hubAgendaEscolher(missoes);
+  var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
+  var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
+  var pronta = prog >= meta, rotulos = {
+    pt:['Agenda do Idol','Meu compromisso de hoje','Concluída'],
+    en:['Idol Agenda',"Today's focus",'Completed'],
+    es:['Agenda del Idol','Mi compromiso de hoy','Completada'],
+    id:['Agenda Idol','Fokus hari ini','Selesai'],
+    th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว'],
+    ja:['アイドルの予定','今日の目標','達成']
+  }, textos = rotulos[LANG] || rotulos.pt;
+  var descricao = t[0] + ' ' + tr(t[1]).replace('{n}', m.meta);
+  var acao = m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : tr('Abrir');
+  var opcoes = missoes.map(function(item){
+    var nome = item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
+    var legenda = nome[0] + ' ' + tr(nome[1]).replace('{n}', item.meta) + (item.feito ? ' ✓' : '');
+    return '<option value="' + escHtml(item.k) + '"' + (item.k === m.k ? ' selected' : '') + '>' + escHtml(legenda) + '</option>';
+  }).join('');
+  b.innerHTML = '<label for="hubAgendaEscolha">📅 <b>' + escHtml(textos[0]) + '</b></label>' +
+    '<small>' + escHtml(textos[1]) + '</small>' +
+    '<select id="hubAgendaEscolha" aria-label="' + escHtml(textos[1]) + '">' + opcoes + '</select>' +
+    '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + (m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta) + '</small>' +
+    '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>';
+  b.querySelector('select').onchange = function(e){
+    var chave = e.target.value;
+    if(missoes.some(function(item){ return item.k === chave; })){
+      hubAgendaFocoAtual(); hubAgendaFoco = chave; hubAgendaUI();
+    }
+  };
+  b.querySelector('button').onclick = function(){
+    var rota = !m.feito && !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
     var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
     if(destino && typeof destino.click === 'function'){ destino.click(); return; }
     var painel = $('hubMisPainel');
     if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});
   };
 }
+// Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
+document.addEventListener('click', function(e){
+  if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
+  if(hubAgendaFocoAtual() && contaJ && typeof hubOv !== 'undefined' && hubOv && !hubOv.hidden) hubMisCarregar();
+});
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
   t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');

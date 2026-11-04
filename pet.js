@@ -104,11 +104,15 @@ function petMakeBg(){
   // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.
   x.fillStyle = '#dfb1dc'; RR(152, 149, 27, 21, 4); x.fill();
   x.fillStyle = '#c68dbd'; x.fillRect(154, 156, 23, 2);
-  x.fillStyle = '#6742a6'; RR(159, 124, 15, 26, 4); x.fill();
-  x.fillStyle = '#ffeaf8'; RR(161, 127, 11, 17, 2); x.fill();
-  x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(166.5, 135, 3, 0, 7); x.fill();
-  x.fillStyle = '#fff'; x.font = '8px sans-serif'; x.textAlign = 'center'; x.fillText('♥', 166.5, 138);
-  x.fillStyle = '#ead6ff'; x.beginPath(); x.arc(166.5, 147, 1.3, 0, 7); x.fill();
+  x.fillStyle = '#ffb9dd'; RR(158.5, 123.5, 16, 27.5, 4); x.fill();
+  x.strokeStyle = '#b8eaff'; x.lineWidth = 1.5; x.stroke();
+  x.fillStyle = '#eddaff'; RR(160.5, 127, 12, 17, 2); x.fill();
+  x.fillStyle = '#b6eaff'; RR(161.5, 128, 10, 15, 2); x.fill();
+  x.fillStyle = ac; x.beginPath(); x.arc(166.5, 135, 3, 0, 7); x.fill();
+  x.fillStyle = '#fff'; x.font = '8px sans-serif'; x.textAlign = 'center'; x.fillText('★', 166.5, 138);
+  x.fillStyle = '#fff'; x.beginPath(); x.arc(166.5, 147.3, 1.5, 0, 7); x.fill();
+  x.fillStyle = '#bbebff'; x.fillRect(158, 122, 3, 3); x.fillStyle = '#fff'; x.fillRect(159, 123, 1, 1);
+  x.fillStyle = '#ff80c4'; x.fillText('✦', 178, 146);
 
   // Pequena estante de lembranças sob o mural; não ocupa espaços de decoração salvos.
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
@@ -154,6 +158,113 @@ var PET_LIFE_TEXTOS = {
   th:['กระจก','โทรศัพท์','ชั้นวาง','ถ้วยรางวัล','อัลบั้ม'],
   ja:['鏡','スマホ','棚','トロフィー','アルバム']
 };
+// ML1.2-A: TsuPhone vive na memória da aba; não cria saves nem progressão.
+var PET_PHONE_APPS = {
+  pt:['Agenda⭐','Chat⭐','Fotos⭐','Perfil⭐'], en:['Agenda⭐','Chat⭐','Photos⭐','Profile⭐'],
+  es:['Agenda⭐','Chat⭐','Fotos⭐','Perfil⭐'], id:['Agenda⭐','Chat⭐','Foto⭐','Profil⭐'],
+  th:['ตาราง⭐','แชต⭐','รูปภาพ⭐','โปรไฟล์⭐'], ja:['予定⭐','チャット⭐','写真⭐','プロフィール⭐']
+};
+var petPhoneOpen = false, petPhoneTela = 'home', petPhoneVoltarTela = '';
+var petPhoneAgendaDados = null, petPhoneAgendaDono = '', petPhoneAgendaReq = 0;
+function petPhoneContaChave(){
+  if(!contaJ) return '';
+  var id = (typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '';
+  return String(id) + ':' + (typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : '');
+}
+function petPhonePapel(){
+  var c = $('petPhoneWp'); if(!c || !petCv || !petCv.width) return;
+  var x = c.getContext('2d'); if(!x) return;
+  x.clearRect(0, 0, c.width, c.height);
+  x.drawImage(petCv, 0, 0, petCv.width, petCv.height, 0, 0, c.width, c.height);
+}
+function petPhoneAgendaHtml(){
+  if(!contaJ) return '<p class="petphone-dica">🔒 ' + escHtml(tr('Entre com Google para ver sua Agenda.')) + '</p>';
+  if(petPhoneAgendaDono !== petPhoneContaChave()) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(petPhoneAgendaDados === null) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(!petPhoneAgendaDados.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
+  var validas = petPhoneAgendaDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }).slice(0, 6);
+  if(!validas.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
+  return '<ul class="petphone-agenda">' + validas.map(function(m){
+    var cfg = m.k === 'collect' && typeof hubCollectHoje === 'function' ? hubCollectHoje() : (typeof HUB_MIS !== 'undefined' && HUB_MIS[m.k]) || ['🎯',m.k];
+    var meta = Math.max(1,+m.meta||1), prog = Math.min(meta,Math.max(0,+m.prog||0));
+    return '<li><span>' + cfg[0] + '</span><div><b>' + escHtml(tr(cfg[1]).replace('{n}',String(meta))) + '</b><small>' + (m.feito ? '✓ ' + escHtml(tr('Concluída')) : prog + '/' + meta) + '</small></div></li>';
+  }).join('') + '</ul>';
+}
+function petPhoneRender(){
+  if(!petPhoneOpen) return;
+  var corpo = $('petPhoneCorpo'); if(!corpo) return;
+  var nomes = PET_PHONE_APPS[LANG] || PET_PHONE_APPS.pt;
+  if(petPhoneTela === 'home'){
+    corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas>' +
+      '<strong>Meu Idol ✦ ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
+      '<div class="petphone-apps">' + [['agenda','📅',nomes[0]],['chat','💬',nomes[1]],['fotos','📸',nomes[2]],['perfil','💖',nomes[3]]].map(function(a){
+        return '<button type="button" data-phone="' + a[0] + '"><span aria-hidden="true">' + a[1] + '</span><b>' + escHtml(a[2]) + '</b></button>';
+      }).join('') + '</div>';
+    petPhonePapel();
+    return;
+  }
+  var idx = {agenda:0,chat:1,fotos:2,perfil:3}[petPhoneTela];
+  var titulo = ['📅 ','💬 ','📸 ','💖 '][idx] + nomes[idx];
+  var conteudo = '';
+  if(petPhoneTela === 'agenda') conteudo = petPhoneAgendaHtml();
+  else if(petPhoneTela === 'chat') conteudo = '<div class="petphone-balao"><span>⭐ TsuPhone</span><p>' + escHtml(tr('Seu Chat⭐ está prontinho! As conversas com fãs chegam na próxima etapa.')) + '</p></div>';
+  else if(petPhoneTela === 'fotos') conteudo = '<div class="petphone-appbox"><span>🃏✨</span><p>' + escHtml(tr('Seus cards estão guardados no Álbum de Idols.')) + '</p><button type="button" data-phone="abrir-album">📖 ' + escHtml(tr('Abrir Álbum')) + '</button></div>';
+  else if(petPhoneTela === 'perfil') conteudo = '<div class="petphone-appbox"><span>💖✨</span><p>' + escHtml(contaJ && contaJ.nick || tr('Meu Idol')) + '</p><button type="button" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button></div>';
+  corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
+}
+function petPhoneAbrir(tela){
+  if(!petOpen || petView !== 'room' || petGame || !petAtivo() || !contaJ) return false;
+  petPhoneAgendaDados = null; petPhoneAgendaDono = '';
+  petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';
+  $('petPhone').hidden = false; petPhoneOpen = true;
+  $('petPhoneHora').textContent = new Date().toLocaleTimeString(LANG === 'pt' ? 'pt-BR' : undefined,{hour:'2-digit',minute:'2-digit'});
+  $('petPhone').style.setProperty('--petphone-oshi',({tsu:'#9b30d9',lirika:'#22c55e',pati:'#4169e1'})[OSHI]||'#ff6fb5');
+  petAnimParar(); petPhoneRender();
+  if(petPhoneTela === 'agenda') petPhoneAgendaCarregar();
+  $('petPhoneX').focus();
+  return true;
+}
+function petPhoneFechar(retomar){
+  if(!petPhoneOpen) return false;
+  petPhoneOpen = false; petPhoneTela = 'home'; petPhoneAgendaReq++;
+  petPhoneAgendaDados = null; petPhoneAgendaDono = '';
+  $('petPhone').hidden = true;
+  if(retomar !== false){ petAnimLigar(); var botao = document.querySelector('#petLifeNav [data-life="celular"]'); if(botao) botao.focus(); }
+  return true;
+}
+function petPhoneVoltar(){
+  if(!petPhoneOpen) return false;
+  if(petPhoneTela === 'home') return petPhoneFechar();
+  petPhoneTela = 'home'; petPhoneAgendaReq++; petPhoneRender(); return true;
+}
+function petPhoneTelaAbrir(k){
+  if(!petPhoneOpen || ['agenda','chat','fotos','perfil'].indexOf(k) < 0) return false;
+  petPhoneTela = k; petPhoneRender();
+  if(k === 'agenda') petPhoneAgendaCarregar();
+  return true;
+}
+function petPhoneAgendaCarregar(){
+  if(!petPhoneOpen || petPhoneTela !== 'agenda') return;
+  var req = ++petPhoneAgendaReq, dono = petPhoneContaChave();
+  petPhoneAgendaDados = null; petPhoneAgendaDono = dono; petPhoneRender();
+  contaRpc('missoes').then(function(d){
+    if(req !== petPhoneAgendaReq || !petPhoneOpen || petPhoneTela !== 'agenda' || dono !== petPhoneContaChave()) return;
+    petPhoneAgendaDados = Array.isArray(d) ? d : []; petPhoneAgendaDono = dono; petPhoneRender();
+  }).catch(function(){
+    if(req === petPhoneAgendaReq && petPhoneOpen && petPhoneTela === 'agenda' && dono === petPhoneContaChave()){
+      petPhoneAgendaDados = []; petPhoneRender();
+    }
+  });
+}
+function petPhoneExterno(k){
+  if(!petPhoneOpen || (k !== 'album' && k !== 'perfil')) return false;
+  petPhoneVoltarTela = petPhoneTela;
+  petPhoneFechar(false);
+  if(!petLifeAbrir(k === 'album' ? 'album' : 'trofeus')){
+    petPhoneVoltarTela = ''; petPhoneAbrir(); return false;
+  }
+  return true;
+}
 function petLifeUI(){
   var nomes = PET_LIFE_TEXTOS[LANG] || PET_LIFE_TEXTOS.pt;
   ['espelho','celular','estante','trofeus','album'].forEach(function(k,i){
@@ -195,16 +306,18 @@ function petLifeCancelar(k){
   if(k && petLifeOrigem !== k) return false;
   if(!petLifeOrigem) return false;
   petLifeOrigem = ''; petLifeVoltaUI();
+  petPhoneVoltarTela = '';
   return true;
 }
 function petLifeRetornar(k){
   if(petLifeOrigem !== k || !contaJ || state !== 'menu') return false;
-  var veioHub = petLifeVeioHub, hubAntes = petLifeHubAntes;
+  var veioHub = petLifeVeioHub, hubAntes = petLifeHubAntes, phoneTela = petPhoneVoltarTela;
   petLifeCancelar(k);
   if(!hubAntes && !hubOv.hidden) hubFechar();
   petVeioHub = veioHub;
   if(!hubOv.hidden) hubMusicaParar();
   petOpenUI(); // reabre o mesmo quarto; sem novo save ou progressão de ML1.1
+  if(phoneTela && petOpen) petPhoneAbrir(phoneTela);
   return true;
 }
 // Só navega para telas existentes. Nada é comprado, creditado ou salvo aqui.
@@ -220,6 +333,7 @@ function petLifeAbrir(k){
   if(!contaJ){ contaEntrar(); return true; } // mesmas proteções do Provador, Perfil e Álbum
   if(painel) painel.hidden = true;
   if(botao) botao.setAttribute('aria-expanded','false');
+  if(k === 'celular') return petPhoneAbrir(); // não sai do quarto nem passa pelo Hub
   petLifeVeioHub = petVeioHub;
   petLifeHubAntes = !hubOv.hidden;
   petClose(); // conserva o encerramento normal do Backstage e o retorno ao Hub
@@ -231,9 +345,6 @@ function petLifeAbrir(k){
   else if(k === 'album'){
     $('albumTit').textContent = '📖 ' + tr('Álbum de cards');
     albumAbrir();
-  }else{
-    var hoje = $('hubHojeLinha');
-    if(hoje && typeof hoje.scrollIntoView === 'function') hoje.scrollIntoView({block:'start'});
   }
   return true;
 }
@@ -563,7 +674,7 @@ function petDrawRoom(){
 var petRaf=0,petDrawDelta=1,petDrawDeltaPending=0;
 function petLoop(ms){
   petRaf=0;
-  if(!petOpen||!twAnimacaoVisivel($('petov'))){petDrawDeltaPending=0;return;}
+  if(!petOpen||petPhoneOpen||!twAnimacaoVisivel($('petov'))){petDrawDeltaPending=0;return;}
   var cv=$('petCv'),mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30());
   var antes=petT,delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta(cv,ms):1;
   petT+=delta;petDrawDeltaPending+=delta;
@@ -578,7 +689,7 @@ function petLoop(ms){
   if(petData&&Math.floor(petT/300)>Math.floor(antes/300)){petTick();petSave();petUI();} // relógio lógico preservado (~5 s)
   petRaf=requestAnimationFrame(petLoop);
 }
-function petAnimLigar(){if(!petRaf&&petOpen&&twAnimacaoVisivel($('petov')))petRaf=requestAnimationFrame(petLoop);}
+function petAnimLigar(){if(!petRaf&&petOpen&&!petPhoneOpen&&twAnimacaoVisivel($('petov')))petRaf=requestAnimationFrame(petLoop);}
 function petAnimParar(){if(petRaf){cancelAnimationFrame(petRaf);petRaf=0;}petDrawDeltaPending=0;}
 function petOpenUI(){
   if(state !== 'menu') return;
@@ -614,6 +725,7 @@ function petOpenUI(){
 }
 function petClose(){
   petRecepcaoFrames = 0; petLembrancaRecente = null;
+  if(petPhoneOpen) petPhoneFechar(false);
   var estante = $('petLifeEstante'), bEstante = document.querySelector('#petLifeNav [data-life="estante"]');
   if(estante) estante.hidden = true;
   if(bEstante) bEstante.setAttribute('aria-expanded','false');

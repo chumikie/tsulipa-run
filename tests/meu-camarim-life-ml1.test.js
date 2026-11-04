@@ -18,7 +18,9 @@ function fakeRoom(signedIn = true){
   const nodes = {};
   const element = (id) => ({
     id, hidden: id === 'petLifeEstante',
-    textContent: '',
+    textContent: '', innerHTML:'', style:{setProperty(k,v){attr[id + ':style:' + k] = v;}},
+    focus(){calls.push(id + ':focus');},
+    getContext(){return {clearRect(){},drawImage(){calls.push('wallpaper');}};},
     scrollIntoView(){ calls.push('agenda-focus'); },
     setAttribute(k,v){ attr[id + ':' + k] = v; },
     querySelector(){ return labels[id] || (labels[id] = {textContent:''}); },
@@ -26,12 +28,17 @@ function fakeRoom(signedIn = true){
     after(node){ nodes[node.id] = node; },
     remove(){ delete nodes[this.id]; }
   });
-  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg'].map(k => [k, element(k)])));
+  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp'].map(k => [k, element(k)])));
   const shelfBtn = element('shelfBtn');
   const roomBtns = Object.fromEntries(['espelho','celular','estante','trofeus','album'].map(k => [k, element(k)]));
   const ctx = {
     petOpen:true, petView:'room', petGame:null, contaJ:signedIn ? {nick:'IdolTeste'} : null,
-    LANG:'pt', hubComecou:true, petVeioHub:false, state:'menu', petAtivo:() => ({}), $:k => nodes[k], tr:s=>s,
+    LANG:'pt', OSHI:'tsu', hubComecou:true, petVeioHub:false, state:'menu', petAtivo:() => ({nome:'Pipoca'}), $:k => nodes[k], tr:s=>s,
+    escHtml:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'),
+    petCv:{width:360,height:220}, contaSessaoToken:3, contaAuthUserId:'mock-id',
+    petAnimParar(){calls.push('petAnimParar');}, petAnimLigar(){calls.push('petAnimLigar');},
+    contaRpc(k){calls.push('rpc:'+k);return Promise.resolve([{k:'corra2',meta:2,prog:1,feito:false}]);},
+    HUB_MIS:{corra2:['🏃','Corra {n} vezes no Center⭐Run!']},
     document:{querySelector(q){
       if(q.includes('#petLifeNav') && q.includes('estante')) return shelfBtn;
       const m=q.match(/data-life="([^"]+)"/);
@@ -75,7 +82,9 @@ test('ML1: ações no camarim só navegam para telas existentes com backend simu
 
   const phone = fakeRoom();
   assert.equal(phone.ctx.petLifeAbrir('celular'), true);
-  assert.deepEqual(phone.calls, ['petClose','hubMostrar','agenda-focus']);
+  assert.deepEqual(phone.calls, ['petAnimParar','wallpaper','petPhoneX:focus']);
+  assert.equal(phone.ctx.petOpen, true, 'TsuPhone fica dentro do Camarim');
+  assert.equal(phone.ctx.hubOv.hidden, true, 'não pula para o Hub');
 
   const shelf = fakeRoom();
   assert.equal(shelf.ctx.petLifeAbrir('estante'), true);
@@ -127,28 +136,74 @@ test('ML1.1: espelho e estante fecham a tela e voltam direto ao Camarim, não ao
   }
 });
 
-test('ML1.1: celular mostra volta explícita junto à Agenda, sem criar missão ou save', () => {
+test('ML1.2-A: TsuPhone mantém o Idol/Pet no papel de parede e apps internos', () => {
   const {ctx,calls,nodes} = fakeRoom();
   ctx.petLifeAbrir('celular');
-  assert.equal(nodes.petLifeVoltar.textContent, '↩ Meu Camarim⭐Life!');
-  assert.equal(ctx.petLifeOrigem, 'celular');
+  assert.equal(nodes.petPhone.hidden, false);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="agenda"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="chat"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="fotos"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="perfil"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /Pipoca/);
+  assert.equal(ctx.petLifeOrigem, '', 'não cria navegação temporária no Hub');
+  assert.equal(ctx.petPhoneTelaAbrir('chat'), true);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /próxima etapa/);
+  assert.equal(ctx.petPhoneTelaAbrir('fotos'), true);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="abrir-album"/);
+  assert.equal(ctx.petPhoneVoltar(), true);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="chat"/);
   calls.length=0;
-  nodes.petLifeVoltar.onclick();
-  assert.deepEqual(calls, ['hubFechar','petOpenUI']);
-  assert.equal(nodes.petLifeVoltar, undefined, 'o botão temporário some ao retornar');
-  assert.equal(ctx.petLifeOrigem, '');
-  assert.equal(ctx.petLifeCancelar('celular'), false);
+  assert.equal(ctx.petPhoneVoltar(), true);
+  assert.equal(nodes.petPhone.hidden, true);
+  assert.deepEqual(calls, ['petAnimLigar','celular:focus'], 'retoma o Pet e o foco no botão de origem');
+  assert.equal(ctx.petOpen, true);
 });
 
-test('ML1.1: mesmo antes de começar o Hub, o retorno ao Camarim fica acessível', () => {
+test('ML1.2-A: TsuPhone não depende de iniciar Hub nem de perfil aberto', () => {
   const {ctx,nodes,calls} = fakeRoom();
   ctx.hubComecou = false;
+  assert.equal(ctx.petLifeAbrir('celular'), true);
+  assert.equal(nodes.petPhone.hidden, false);
+  assert.equal(calls.includes('hubMostrar'), false);
+  assert.equal(ctx.petPhoneTelaAbrir('perfil'), true);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="abrir-perfil"/);
+});
+
+test('ML1.2-A: abrir Álbum ou Perfil existente volta ao aplicativo correto', () => {
+  for(const [app,externo,fechar] of [['fotos','album','albumFechar'],['perfil','perfil','perfFechar']]){
+    const {ctx,calls,nodes} = fakeRoom();
+    ctx.petLifeAbrir('celular');
+    ctx.petPhoneTelaAbrir(app);
+    calls.length=0;
+    assert.equal(ctx.petPhoneExterno(externo), true);
+    assert.equal(nodes.petPhone.hidden, true);
+    assert.equal(ctx.petLifeOrigem, externo === 'album' ? 'album' : 'trofeus');
+    assert.equal(calls.includes(externo === 'album' ? 'albumAbrir' : 'perfAbrir'), true);
+    calls.length=0;
+    ctx[fechar]();
+    assert.equal(ctx.petPhoneTela, app);
+    assert.equal(nodes.petPhone.hidden, false);
+    assert.equal(ctx.petOpen, true);
+    assert.equal(ctx.petLifeOrigem, '');
+    assert.equal(ctx.petPhoneVoltar(), true);
+    assert.equal(ctx.petPhoneTela, 'home');
+  }
+});
+
+test('ML1.2-A: Agenda só consulta missões, descarta resposta tardia de outra conta', async () => {
+  const {ctx,calls,nodes} = fakeRoom();
+  let resolver;
+  ctx.contaRpc=k=>{calls.push('rpc:'+k);return new Promise(resolve=>{resolver=resolve;});};
   ctx.petLifeAbrir('celular');
-  assert.ok(nodes.petLifeVoltar, 'aparece ao lado do toque para começar');
-  calls.length = 0;
-  nodes.petLifeVoltar.onclick();
-  assert.deepEqual(calls, ['hubFechar','petOpenUI']);
-  assert.match(read('hub.js'), /hubComecou = true;[^\n]+\n  petLifeVoltaUI\(\);/);
+  ctx.petPhoneTelaAbrir('agenda');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')), ['rpc:missoes']);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /Carregando/);
+  ctx.contaSessaoToken=4;
+  resolver([{k:'corra2',meta:2,prog:1}]);
+  await Promise.resolve();
+  assert.match(nodes.petPhoneCorpo.innerHTML, /Carregando/, 'não mistura dados de outra sessão');
+  ctx.petPhoneVoltar();
+  assert.equal(ctx.petPhoneTela, 'home');
 });
 
 test('ML1.1: origem Hub fica preservada e navegação comum não é sequestrada', () => {
@@ -176,6 +231,7 @@ test('ML1.1: origem Hub fica preservada e navegação comum não é sequestrada'
   out.calls.length=0; out.ctx.shopFechar();
   assert.deepEqual(out.calls, ['hubMostrar'], 'ir do Provador para outro lugar cancela a volta pendente');
   assert.equal(logic.includes('localStorage'), false);
-  assert.equal(logic.includes('contaRpc'), false);
-  assert.match(html, /petLifeCancelar\('celular'\)/);
+  assert.match(logic, /contaRpc\('missoes'\)/, 'somente consulta de leitura da Agenda');
+  assert.equal(/contaRpc\('(?!missoes')/.test(logic), false, 'nenhuma RPC de escrita adicionada');
+  assert.match(html, /id="petPhone"/);
 });

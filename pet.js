@@ -167,22 +167,41 @@ function petBrinquedoEspontaneo(x, k, cfg, t, ativo){
 }
 // O Pet admira o pôster gratuito quando ele está realmente exposto no mural.
 // Reação somente visual: respeita a decoração guardada e a pausa das animações.
+// Cada espécie presta atenção primeiro à decoração que combina com seu jeito.
+// Usa apenas objetos já expostos e imagens prontas; o pôster gratuito é o fallback.
+function petDecorFavorito(k, cfg, decor, imgs){
+  if(k === 'meu') k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  var preferencias = k === 'tsu' ? ['brs48','zipper'] :
+    k === 'lirika' ? ['campo','banner','zipper'] :
+    ['nebyura','doces','zipper'];
+  for(var i = 0; i < preferencias.length; i++){
+    var chave = preferencias[i], img = imgs[chave];
+    if(decor && decor[chave] && img && img.complete && img.naturalWidth){
+      for(var j = 0; j < PET_DECOR.length; j++) if(PET_DECOR[j][0] === chave)
+        return { item:PET_DECOR[j], jeito:k };
+    }
+  }
+  return null;
+}
 function petDecorReacao(x, k, cfg, t, ativo){
-  var imagem = petDecorImgs.zipper, decor = petData && petData.decor;
   var fase = t % 860;
-  if(!ativo || !decor || !decor.zipper || !imagem || !imagem.complete ||
-      !imagem.naturalWidth || fase < 350 || fase > 490) return false;
+  if(!ativo || fase < 350 || fase > 490) return false;
+  var alvo = petDecorFavorito(k, cfg, petData && petData.decor, petDecorImgs);
+  if(!alvo) return false;
   var u = (fase - 350) / 140, alfa = Math.min(1, u * 8, (1 - u) * 8);
-  var jeito = k === 'meu' ? (cfg && cfg.olhos === 'sono' ? 'lirika' :
-    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati') : k;
-  // Brilho sai do canto do pôster e aproxima-se do Pet; cada jeito tem um ritmo.
+  var it = alvo.item, jeito = alvo.jeito;
+  var origemX = it[3] + it[5] / 2, origemY = it[4] + it[6] / 2;
   var passo = jeito === 'tsu' ? Math.abs(Math.sin(u * 13)) * 5 :
     jeito === 'pati' ? Math.sin(u * 11) * 3 : 0;
   x.save(); x.globalAlpha = alfa; x.textAlign = 'center';
   x.fillStyle = jeito === 'lirika' ? '#b8f2ba' : jeito === 'pati' ? '#b7ddff' : '#ffe47c';
   x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
-  x.fillText('✦', 196 + u * 37, 77 + u * 64 - passo);
-  if(jeito === 'pati'){ x.font = '11px sans-serif'; x.fillText('✧', 191 + u * 43, 68 + u * 49); }
+  x.fillText('✦', origemX + (PET_X - 18 - origemX) * u,
+    origemY + (PET_FLOOR - 60 - origemY) * u - passo);
+  if(jeito === 'pati'){ x.font = '11px sans-serif';
+    x.fillText('✧', origemX + (PET_X - 30 - origemX) * u,
+      origemY - 10 + (PET_FLOOR - 80 - origemY) * u); }
   x.restore();
   return true;
 }

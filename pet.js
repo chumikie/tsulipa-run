@@ -205,6 +205,22 @@ function petDecorReacao(x, k, cfg, t, ativo){
   x.restore();
   return true;
 }
+// Pequena rotina cíclica de descanso, observação e brincadeira.
+// Não muda p.dorme, barras ou saves; somente a pose desenhada quando ocioso.
+function petRotinaVisual(k, cfg, t, ativo){
+  if(!ativo) return { modo:'', pulo:0 };
+  if(k === 'meu') k = cfg && cfg.olhos === 'sono' ? 'lirika' :
+    cfg && cfg.olhos === 'feliz' ? 'tsu' : 'pati';
+  var fase = t % 900;
+  var descanso = k === 'lirika' ? fase >= 130 && fase < 320 :
+    k === 'pati' ? fase >= 590 && fase < 655 : fase >= 90 && fase < 155;
+  var observa = k === 'pati' ? fase >= 160 && fase < 325 :
+    k === 'lirika' ? fase >= 430 && fase < 515 : fase >= 275 && fase < 345;
+  var brinca = k === 'tsu' ? fase >= 410 && fase < 535 :
+    k === 'pati' ? fase >= 350 && fase < 435 : fase >= 665 && fase < 705;
+  return { modo:descanso?'descanso':observa?'observa':brinca?'brinca':'',
+    pulo:brinca ? Math.pow(Math.max(0,Math.sin(fase * (k === 'tsu' ? .1 : .055))),6) * (k === 'tsu' ? 4 : 2) : 0 };
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI) petMakeBg();
@@ -242,11 +258,17 @@ function petDrawRoom(){
     !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
-  var jeito = petIdleJeito(petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
+  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25;
+  var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
+  hop += rotina.pulo;
+  var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
+  if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
-  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC, sleepy ? petT * .35 : petT, petEx(p));
+  drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
+    sleepy ? petT * .35 : petT,
+    petEx(p) || (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();

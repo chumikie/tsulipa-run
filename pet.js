@@ -595,6 +595,20 @@ function petDrawItem(x, k, cx, cy, s){
   }
   x.restore();
 }
+// Agradecimentos visuais por cuidado. Usa os efeitos que já existem no Canvas.
+// Nunca altera as necessidades, custos, cooldowns ou o save.
+function petCuidadoReagir(acao){
+  var k = petData && petData.ativo, cfg = k === 'meu' && petAtivo() ? petAtivo().cfg : null;
+  if(k === 'meu') k = petRecepcaoJeito(k, cfg);
+  var emotes = {
+    tsu: {comer:['😋','💜'], banho:['🫧','✨'], carinho:['💕','✦']},
+    lirika: {comer:['🍡'], banho:['🫧','💚'], carinho:['💚']},
+    pati: {comer:['⭐','😋'], banho:['💦','✧'], carinho:['💙','✧']}
+  };
+  var lista = emotes[k] && emotes[k][acao] || ['✨'];
+  for(var i = 0; i < lista.length; i++)
+    petFx.push({x:PET_X + (i ? 19 : -12), y:PET_FLOOR - 72 - (i ? 8 : 0), t:0, s:lista[i]});
+}
 function petDrawExtras(x, p){
   // Noite: quarto escurece enquanto o pet dorme
   if(p.dorme){
@@ -617,7 +631,7 @@ function petDrawExtras(x, p){
       if(bite < 1) petDrawItem(x, a.item, PET_X - 42, PET_FLOOR - 30, 1.9 * (1 - bite * .6));
       x.fillStyle = '#f5d9a8';
       for(var c = 0; c < 4; c++) if((a.t + c * 7) % 28 < 14) x.fillRect(PET_X - 30 + c * 5, PET_FLOOR - 12 + ((a.t + c * 7) % 14), 2, 2);
-      if(a.t >= 95){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'😋' }); petSay(tr('Que delícia!')); }
+      if(a.t >= 95){ petAnim = null; petCuidadoReagir('comer'); petSay(tr('Que delícia!')); }
     } else if(a.k === 'banho'){
       for(var i = 0; i < 16; i++){
         var bx = PET_X + Math.sin(i * 2.1 + a.t * .05) * 32, by = PET_FLOOR - 8 - ((a.t * 1.2 + i * 17) % 75), r = 2.5 + (i % 3) * 1.8;
@@ -630,7 +644,7 @@ function petDrawExtras(x, p){
         [[-12, 0, 8], [0, -4, 10], [12, 0, 8], [-5, -10, 6], [7, -9, 6]].forEach(function(f){ x.beginPath(); x.arc(PET_X + f[0], PET_FLOOR - 52 + f[1], f[2], 0, 7); x.fill(); });
       }
       if(Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)) petHop = 20;
-      if(a.t >= 150){ petAnim = null; petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'✨' }); }
+      if(a.t >= 150){ petAnim = null; petCuidadoReagir('banho'); }
     } else if(a.k === 'brincar'){
       var u = .5 - .5 * Math.cos(a.t * .045);
       var sx = 120 + (PET_X - 150) * u, sy = PET_FLOOR - 28 - Math.abs(Math.sin(a.t * .09)) * 55;

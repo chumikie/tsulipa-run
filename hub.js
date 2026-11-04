@@ -297,6 +297,11 @@ function hubAgendaEscolher(lista){
   return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || lista[0] || null;
 }
 // Só oferece outra missão diária realmente pendente; pedidos de fã não são missões novas.
+// Ação social já confirmada: atualizar somente a missão em foco pela consulta existente.
+function hubAgendaSocialConfirmar(tipo){
+  if(!contaJ || hubAgendaFocoAtual() !== tipo) return;
+  hubMisCarregar();
+}
 function hubAgendaProximo(lista, atual){
   if(!Array.isArray(lista)) return null;
   var pendentes = lista.filter(function(m){
@@ -325,6 +330,7 @@ function hubAgendaUI(){
   }
   if(linha.lastElementChild !== b) linha.appendChild(b);
   var m = hubAgendaEscolher(missoes), ehPedido = m.k === 'pedido_fa';
+  var social = m.k === 'coracao' || m.k === 'recado';
   var t = ehPedido ? ['💌',m.titulo] : m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
   var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
   var pronta = ehPedido ? m.pronta : prog >= meta, rotulos = {
@@ -338,7 +344,7 @@ function hubAgendaUI(){
   var descricao = t[0] + ' ' + (ehPedido ? t[1] : tr(t[1]).replace('{n}', m.meta));
   var estado = ehPedido && !m.carregado ? '—' : m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta;
   var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
-    m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : tr('Abrir');
+    m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : social ? tr('Procurar Idol pelo nome') : tr('Abrir');
   var proximo = (m.feito || pronta) ? hubAgendaProximo(missoes, m.k) : null;
   var opcoes = missoes.map(function(item){
     var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
@@ -362,6 +368,13 @@ function hubAgendaUI(){
   };
   b.querySelector('button').onclick = function(){
     if(ehPedido && (!m.carregado || pronta || m.feito)){ faAbrir(); return; }
+    if(social && !pronta && !m.feito){
+      var busca = $('hubBusca');
+      if(busca){
+        if(typeof busca.scrollIntoView === 'function') busca.scrollIntoView({behavior:'smooth', block:'center'});
+        busca.focus(); return; // o jogador escolhe o perfil e decide dar coração ou escrever
+      }
+    }
     var rota = ehPedido ? HUB_AGENDA_FA_ROTAS[m.pedidoTipo] : !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
     var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
     if(destino && typeof destino.click === 'function'){ destino.click(); return; }

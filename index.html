@@ -1520,6 +1520,7 @@ perfOv.addEventListener('click', function(e){
           perfAbrir(alvo,true);
           var pedidoMensagem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&pedidoMensagem===perfPedido&&perfAtual&&perfAtual.nick===alvo;},function(){perfTopoMsg('💌 '+tr('Recado enviado!'));},400);
         }
+        if(typeof hubAgendaSocialConfirmar==='function')hubAgendaSocialConfirmar('recado');
         if(typeof insConferir==='function')insConferir();return;
       }
       if(painelAtual){var m=$('perfRecMsg');m.textContent=tr(PERF_REC_ERRO[r&&r.erro]||'Não deu para falar com o servidor. Tente de novo.');m.hidden=false;if(sfx.hit)sfx.hit();}

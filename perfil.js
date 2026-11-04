@@ -818,6 +818,7 @@ function perfDarCoracao(){
     b.disabled = false;
     if(r && r.ok === false && PERF_REC_ERRO[r.erro]){ perfTopoMsg(tr(PERF_REC_ERRO[r.erro])); return; }   // bloqueado pela moderação
     d.dei_coracao = true; if(r && typeof r.total === 'number') d.coracoes = r.total;
+    if(r && r.ok === true && typeof hubAgendaSocialConfirmar === 'function') hubAgendaSocialConfirmar('coracao');
     b.innerHTML = '💖 <b>' + (+d.coracoes || 0) + '</b>'; b.setAttribute('aria-pressed', 'true');
     perfChuvaCoracoes(b);
     perfTopoMsg('💖 ' + tr('Você deu um coração hoje!'));

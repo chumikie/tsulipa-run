@@ -267,6 +267,18 @@ function cfClienteImpaciente(c, dt, limite, fase){
     sinal:c.hsLembranca ? '💌' : jeito === 'animado' ? '!' : jeito === 'timido' ? '♡' : urgente ? '💦' : '✧',
     alfa:alfa * (.55 + (1 - restante / .3) * .35)};
 }
+// Saudação breve do fã já reconhecido pelo Handshake (memória local existente).
+// Usa o mesmo quadro/pose do Café; não cria registro, prêmio ou temporizador.
+function cfClienteReencontro(c, dt, fase){
+  if(!c || !c.hsLembranca || fase !== 'pedido' || dt < 18 || dt >= 118) return null;
+  var u = (dt - 18) / 100, alfa = Math.sin(u * Math.PI), jeito = c.jeito;
+  return {dx:(jeito === 'timido' ? -2 : jeito === 'fofo' ? 2 : 0) * alfa,
+    dy:-(jeito === 'animado' ? 6 : jeito === 'timido' ? 1.2 : 3) * alfa,
+    pose:jeito === 'animado' ? 'tchau' : jeito === 'timido' ? '' : 'coracao',
+    expr:jeito === 'animado' ? 3 : jeito === 'timido' ? 2 : 6,
+    sinal:jeito === 'animado' ? '✦' : jeito === 'timido' ? '♡' : '♥',
+    alfa:alfa, reencontro:true};
+}
 function cfDesenhar(){
   var cv = $('cfCv'); if(!cv) return;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = cfT;
@@ -297,11 +309,14 @@ function cfDesenhar(){
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
-    var gesto = cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
+    var gesto = cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
     try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
       x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
-      x.fillText(gesto.sinal, W2 * .485, H2 * .52 - gesto.alfa * 7);
+      if(gesto.reencontro){
+        x.fillText('💌', W2 * .485 - 5, H2 * .52 - gesto.alfa * 7);
+        x.font = '16px sans-serif'; x.fillText(gesto.sinal, W2 * .485 + 27, H2 * .52 - 13 - gesto.alfa * 7);
+      }else x.fillText(gesto.sinal, W2 * .485, H2 * .52 - gesto.alfa * 7);
       x.restore(); }
   }
   // Apresentação: atendente ATRÁS da madeira, com a metade inferior escondida.

@@ -65,6 +65,53 @@ function hsMemGuardar(f){
     lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
   }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
 }
+// A visita bem atendida no Café abre um reencontro transitório, sem alterar memórias salvas.
+var hsCafePendente = null;
+function hsCafeConfirmar(f, contaOrigem){
+  var chave = hsMemChave();
+  if(!chave || chave !== contaOrigem || !f || !f.hsLembranca) return;
+  var m = hsMemLer().find(function(item){
+    return item.nome === f.nome && item.pres === f.hsLembranca.pres;
+  });
+  if(m) hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+}
+function hsCafeAplicarReencontro(fila, presentesServidor){
+  var pendente = hsCafePendente;
+  if(!pendente) return false;
+  var conta = hsMemChave();
+  if(!conta || pendente.conta !== conta){ hsCafePendente = null; return false; }
+  // Não interferir no modo treino nem nos presentes/respostas validados pelo servidor.
+  if(!Array.isArray(presentesServidor) || presentesServidor.length !== fila.length) return false;
+  var memoria = hsMemLer().find(function(m){ return m.nome === pendente.nome && m.pres === pendente.pres; });
+  if(!memoria || hsNomesLivres().indexOf(pendente.nome) < 0){
+    hsCafePendente = null; return false;
+  }
+  if(hs.historico.some(function(f){ return f.nome === memoria.nome; })){
+    hsCafePendente = null; return false;
+  }
+  // Se o nome já veio no sorteio, nunca duplicá-lo na mesma fila.
+  var mesmoNome = fila.findIndex(function(f){ return f.nome === memoria.nome; });
+  var indice = mesmoNome >= 0 ? mesmoNome : fila.findIndex(function(f, i){
+    return f.pres === memoria.pres && presentesServidor[i] === memoria.pres;
+  });
+  if(indice < 0) return false; // tentar em outra rodada desta partida
+  if(fila[indice].pres !== memoria.pres || presentesServidor[indice] !== memoria.pres){
+    if(mesmoNome >= 0) hsCafePendente = null;
+    return false;
+  }
+  var f = fila[indice], campos = ['hair','hair2','img','skin','back','front','det','out','outcol','gl','hat'];
+  f.nome = memoria.nome;
+  campos.forEach(function(k){
+    if(memoria.c && typeof memoria.c[k] === 'string' && f.c && typeof f.c[k] === 'string') f.c[k] = memoria.c[k];
+  });
+  if(HS_JEITOS[memoria.jeito]) f.jeito = memoria.jeito;
+  f.expr = f.jeito === 'timido' ? 0 : 3;
+  f.pose = f.jeito === 'animado' ? 'tchau' : f.jeito === 'fofo' ? 'coracao' : '';
+  f.oi = (HS_JEITOS[f.jeito] || HS_JEITOS.fofo).oi[0];
+  f.hsCafeVoltou = true;
+  hsCafePendente = null;
+  return true;
+}
 function hsRecorde(){ if(typeof recMaiorLocal === 'function') return recMaiorLocal('hand'); try{ return +localStorage.getItem(HS_RECORDE_KEY) || 0; }catch(e){ return 0; } }
 function hsAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('handshake');
@@ -87,6 +134,7 @@ function hsNovaRodada(){
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
   if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
+  hsCafeAplicarReencontro(fila, presentesServidor);
   var quiz = fila.slice();
   // Superfã: da 2ª rodada em diante, um fã de uma rodada anterior volta SEM se apresentar de novo (vale bônus)
   if(hs.historico.length && hs.rodada >= 1){
@@ -222,13 +270,13 @@ function hsFaAtual(){
 // Reencontro do Superfã que já voltou pelo histórico da partida.
 // Apenas gesto Canvas sincronizado ao quiz, sem timer, save ou alteração de prêmio.
 function hsSuperfaGesto(f, dt, fase){
-  if(!f || !f.superfa || fase !== 'quiz' || dt < 0 || dt >= 76) return null;
+  if(!f || (!f.superfa && !f.hsCafeVoltou) || fase !== 'quiz' || dt < 0 || dt >= 76) return null;
   var u = dt / 76, alfa = Math.sin(u * Math.PI), jeito = f.jeito;
   return {dx:(jeito === 'timido' ? -2 : jeito === 'fofo' ? 2 : 0) * alfa,
     dy:-(jeito === 'animado' ? 5 : jeito === 'timido' ? 1 : 2.5) * alfa,
     pose:jeito === 'animado' ? 'tchau' : jeito === 'timido' ? '' : 'coracao',
     expr:jeito === 'animado' ? 3 : jeito === 'timido' ? 2 : 6,
-    sinal:jeito === 'animado' ? '✦' : jeito === 'timido' ? '♡' : '♥',
+    sinal:f.hsCafeVoltou ? '☕' : jeito === 'animado' ? '✦' : jeito === 'timido' ? '♡' : '♥',
     cor:jeito === 'animado' ? '#ffe47c' : jeito === 'timido' ? '#c8e3fb' : '#ff9fcf',
     alfa:alfa};
 }

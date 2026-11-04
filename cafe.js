@@ -143,7 +143,8 @@ function cfEscolher(tipo, i){
 }
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
-  var p = cf.cli.pedido, m = cf.monta;
+  var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
+  var contaAtendimento = typeof hsMemChave === 'function' ? hsMemChave() : '';
   var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
   var resto = Math.max(0, 1 - (cfT - cf.t0) / cfPaciencia());
   cf.atendidos++;
@@ -155,6 +156,7 @@ function cfServir(saiu){
       if(cf!==atual)return;
       atual.verificacaoPendente=false;
       if(r && r.ok && r.confirmado){
+        if(r.certo === true && certo && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
         atual.pontos=+r.pontos||0;atual.vidas=+r.vidas;atual.perfeitos=+r.perfeitos;
         atual.combo=+r.combo||0;
         if(r.certo){
@@ -176,6 +178,7 @@ function cfServir(saiu){
     contaRpc('cafe_concluir',{p_sessao:cf.servidor.sessao,
       p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}}).then(function(r){
       if(r && r.ok && r.confirmado){
+        if(certo && r.certo !== false && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         atualLegado.provaEstado='confirmado';
       }else atualLegado.provaEstado='sem_comprovacao';

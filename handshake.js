@@ -91,13 +91,17 @@ function hsCafeAplicarReencontro(fila, presentesServidor){
   }
   // Se o nome já veio no sorteio, nunca duplicá-lo na mesma fila.
   var mesmoNome = fila.findIndex(function(f){ return f.nome === memoria.nome; });
-  var indice = mesmoNome >= 0 ? mesmoNome : fila.findIndex(function(f, i){
+  var indice = fila.findIndex(function(f, i){
     return f.pres === memoria.pres && presentesServidor[i] === memoria.pres;
   });
   if(indice < 0) return false; // tentar em outra rodada desta partida
-  if(fila[indice].pres !== memoria.pres || presentesServidor[indice] !== memoria.pres){
-    if(mesmoNome >= 0) hsCafePendente = null;
-    return false;
+  if(mesmoNome >= 0 && mesmoNome !== indice){
+    // O nome já sorteado estava em outro desafio: trocar só a identidade visual,
+    // sem mover o presente, o índice online ou a pergunta de nenhuma posição.
+    var outro = fila[mesmoNome], destino = fila[indice];
+    ['nome','c','jeito','oi','expr','pose'].forEach(function(k){
+      var anterior = outro[k]; outro[k] = destino[k]; destino[k] = anterior;
+    });
   }
   var f = fila[indice], campos = ['hair','hair2','img','skin','back','front','det','out','outcol','gl','hat'];
   f.nome = memoria.nome;

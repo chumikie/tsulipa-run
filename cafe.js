@@ -253,6 +253,20 @@ function cfClienteGesto(c, dt, fase){
     sinal:c.hsLembranca ? '💌' : jeito === 'animado' ? '📸' : jeito === 'timido' ? '♡' : '🎀',
     u:u, alfa:alfa};
 }
+// Sinal visual de espera longa usando a paciência já existente (sem novos timers).
+function cfClienteImpaciente(c, dt, limite, fase){
+  if(!c || fase !== 'pedido' || limite <= 0) return null;
+  var restante = 1 - dt / limite, ciclo = dt % 104;
+  if(restante > .3 || restante <= 0 || ciclo >= 62) return null;
+  var u = ciclo / 62, alfa = Math.sin(u * Math.PI), jeito = c.jeito;
+  var urgente = restante < .12;
+  return {dy:-(jeito === 'animado' ? 3 : jeito === 'timido' ? .5 : 1.5) * alfa,
+    dx:(jeito === 'timido' ? -2 : jeito === 'fofo' ? 1.2 : 0) * alfa,
+    pose:jeito === 'animado' ? 'tchau' : jeito === 'timido' ? '' : 'coracao',
+    expr:jeito === 'timido' ? (urgente ? 5 : 0) : jeito === 'animado' ? 4 : (urgente ? 4 : 0),
+    sinal:c.hsLembranca ? '💌' : jeito === 'animado' ? '!' : jeito === 'timido' ? '♡' : urgente ? '💦' : '✧',
+    alfa:alfa * (.55 + (1 - restante / .3) * .35)};
+}
 function cfDesenhar(){
   var cv = $('cfCv'); if(!cv) return;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = cfT;
@@ -283,8 +297,8 @@ function cfDesenhar(){
   var c = cf && cf.cli;
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
-    var gesto = cfClienteGesto(c, dt, cf.fase);
-    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    var gesto = cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
+    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:c.c, pose:cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
       x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
       x.fillText(gesto.sinal, W2 * .485, H2 * .52 - gesto.alfa * 7);

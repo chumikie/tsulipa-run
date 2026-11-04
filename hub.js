@@ -287,6 +287,15 @@ function hubAgendaPedidoFa(){
     carregado:!!conhecido, pedidoTipo:conhecido ? d.tipo : ''
   };
 }
+// Convite somente da sessão atual: não é missão nem cria estado persistido.
+function hubAgendaReencontro(){
+  var pendente = typeof hsCafePendente !== 'undefined' ? hsCafePendente : null;
+  if(!pendente || !contaJ || typeof hsMemChave !== 'function' ||
+     pendente.conta !== hsMemChave() || typeof hsMemLer !== 'function' ||
+     typeof hsNomesLivres !== 'function') return null;
+  var memoria = hsMemLer().find(function(m){ return m.nome === pendente.nome && m.pres === pendente.pres; });
+  return memoria && hsNomesLivres().indexOf(memoria.nome) >= 0 ? memoria : null;
+}
 function hubAgendaEscolher(lista){
   if(!Array.isArray(lista) || !lista.length) return null;
   var foco = hubAgendaFocoAtual();
@@ -346,6 +355,12 @@ function hubAgendaUI(){
   var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
     m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : social ? tr('Procurar Idol pelo nome') : tr('Abrir');
   var proximo = (m.feito || pronta) ? hubAgendaProximo(missoes, m.k) : null;
+  var reencontro = hubAgendaReencontro();
+  var mensagemReencontro = reencontro && tr(
+    reencontro.jeito === 'animado' ? '{n} saiu animado do Café! Talvez volte no Handshake.' :
+    reencontro.jeito === 'timido' ? '{n} sorriu timidamente no Café. Talvez vocês se encontrem no Handshake.' :
+    '{n} guardou com carinho a visita ao Café. Talvez volte no Handshake.'
+  ).replace('{n}', reencontro.nome);
   var opcoes = missoes.map(function(item){
     var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
     var legenda = nome[0] + ' ' + (item.k === 'pedido_fa' ? nome[1] : tr(nome[1]).replace('{n}', item.meta)) + (item.feito ? ' ✓' : '');
@@ -359,7 +374,12 @@ function hubAgendaUI(){
     (ehPedido && m.carregado && !pronta && !m.feito ?
       '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '') +
     (proximo ? '<button type="button" class="hubagendaabrir hubagendaproximo" aria-label="' +
-      escHtml(textos[3]) + '">✨ ' + escHtml(textos[3]) + ' ↗</button>' : '');
+      escHtml(textos[3]) + '">✨ ' + escHtml(textos[3]) + ' ↗</button>' : '') +
+    (reencontro ? '<strong class="hubagendaresumo">💌 ' + escHtml(tr('Possível reencontro com {n}').replace('{n}', reencontro.nome)) + '</strong>' +
+      '<small class="hubagendaresumo">' + escHtml(mensagemReencontro) + ' ' +
+      escHtml(tr('A aparição depende dos desafios do servidor.')) + '</small>' +
+      '<button type="button" class="hubagendaabrir hubagendareencontro" style="min-height:44px">🤝 ' +
+      escHtml(tr('Tentar reencontro no Handshake')) + ' ↗</button>' : '');
   b.querySelector('select').onchange = function(e){
     var chave = e.target.value;
     if(missoes.some(function(item){ return item.k === chave; })){
@@ -390,6 +410,11 @@ function hubAgendaUI(){
     if(!outra) return;
     hubAgendaFocoAtual(); hubAgendaFoco = outra.k; hubAgendaUI();
   };
+  var tentar = b.querySelector('.hubagendareencontro');
+  if(tentar) tentar.onclick = function(){
+    var cards = $('hubCards'), destino = cards && cards.querySelector('[data-ir="handshake"]');
+    if(destino && typeof destino.click === 'function') destino.click();
+  };
 }
 // Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
 // Registrar somente quando o Hub abre, sem executar código ao importar o módulo.
@@ -398,7 +423,9 @@ function hubAgendaEscutarFechamento(){
   if(hubAgendaFechamentoRegistrado) return;
   document.addEventListener('click', function(e){
     if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
-    if(hubAgendaFocoAtual() && contaJ && typeof hubOv !== 'undefined' && hubOv && !hubOv.hidden) hubMisCarregar();
+    if(!contaJ || typeof hubOv === 'undefined' || !hubOv || hubOv.hidden) return;
+    hubAgendaUI(); // convite e despedida atualizam sem nova consulta online
+    if(hubAgendaFocoAtual()) hubMisCarregar();
   });
   hubAgendaFechamentoRegistrado = true;
 }

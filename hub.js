@@ -261,6 +261,46 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
   var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5);
   return HUB_MUSICAS[((sem % 5) + 5) % 5];
 }
+// Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
+var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+function hubAgendaEscolher(lista){
+  if(!Array.isArray(lista) || !lista.length) return null;
+  var abertas = lista.filter(function(m){ return m && !m.feito; });
+  var pronta = abertas.find(function(m){ return +m.prog >= Math.max(1, +m.meta || 1); });
+  return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || null;
+}
+function hubAgendaUI(){
+  var linha = $('hubHojeLinha'), b = $('hubAgenda');
+  if(!linha) return;
+  if(!contaJ || !Array.isArray(hubMisDados) || !hubMisDados.length){
+    if(b) b.remove();
+    return;
+  }
+  if(!b){
+    b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'hubAgenda';
+    b.className = 'hubmusica';
+    b.style.gridColumn = '1 / -1';
+    linha.appendChild(b);
+  }
+  var m = hubAgendaEscolher(hubMisDados);
+  var t = m ? (m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯','Missões do dia']) : ['✓','Missões do dia'];
+  var pronta = !!(m && +m.prog >= Math.max(1, +m.meta || 1));
+  var rotulos = {pt:'Agenda do Idol',en:'Idol Agenda',es:'Agenda del Idol',id:'Agenda Idol',th:'ตารางไอดอล',ja:'アイドルの予定'};
+  var titulo = rotulos[LANG] || rotulos.pt;
+  var descricao = m ? t[0] + ' ' + tr(t[1]).replace('{n}', m.meta) : '✓ ' + tr('Missões do dia');
+  var acao = pronta ? tr('Resgatar') : tr('Abrir');
+  b.innerHTML = '📅 <b>' + escHtml(titulo) + '</b><small>' + escHtml(descricao) + '</small><small>' + escHtml(acao) + ' ↗</small>';
+  b.setAttribute('aria-label', titulo + ': ' + descricao + '. ' + acao);
+  b.onclick = function(){
+    var rota = m && !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
+    var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
+    if(destino && typeof destino.click === 'function'){ destino.click(); return; }
+    var painel = $('hubMisPainel');
+    if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+}
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
   t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
@@ -274,6 +314,7 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
   var fb = $('hubFa');
   if(linha && typeof faCartaoHtml === 'function'){ if(fb) fb.remove(); linha.insertAdjacentHTML('beforeend', faCartaoHtml()); fb = $('hubFa'); fb.onclick = function(){ if(sfx.card) sfx.card(); $('faTit').textContent = '💌 ' + tr('Pedido de fã'); faAbrir(); }; }
   if(jn) jn.innerHTML = '📰 <b translate="no">Idol⭐News!</b><small class="tw-hubgame-jp" lang="ja">アイドル・ニュース</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
+  hubAgendaUI();
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
   var box=$('hubLoginCta'); if(!box) return;
@@ -330,6 +371,7 @@ function hubCardsUI(){
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
+  hubAgendaUI();
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
   if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml('🔒 ' + tr('Entrar com Google') + ' · ' + tr('Missões do dia')) + '</p>'; return; }
@@ -343,6 +385,7 @@ function hubMisUI(){
 function hubMisCarregar(){
   if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
+  hubMisDados = null; hubMisUI();
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.

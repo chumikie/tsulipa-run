@@ -38,8 +38,9 @@ test('ML1.3-A: as três poses são locais, reversíveis e não alteram economia'
 test('ML1.3-A: assento e poses reutilizam avatar e loop sem novos assets', () => {
   assert.match(pet,/petLifeSofa\(x, false\)/);
   assert.match(pet,/petLifeSofa\(x, true\)/);
-  assert.match(pet,/petLifePose \? 169 : 181/, 'assento frontal oculta pernas retas na pose sentada');
-  assert.match(pet,/petLifePose \? 92 : PET_FLOOR/, 'Idol sentado desce até o assento');
+  assert.match(pet,/if\(petLifePose\)\{ g\.beginPath\(\); g\.rect\(0, 0, 360, PET_LIFE_ASSENTO\); g\.clip\(\); \}/, 'sentado: pernas retas recortadas no assento');
+  assert.match(pet,/petLifePose \? 96 : PET_FLOOR/, 'Idol sentado desce até o assento');
+  assert.match(pet,/if\(!petLifePose\) petLifeSofa\(x, true\);/, 'em pé: frente do sofá atrás do Idol, sem pés dentro do sofá');
   assert.match(pet,/drawChar\(CH\[sel\], 0, 0, 0, expr\)/);
   assert.match(pet,/petLifePose === 'conviver'/);
   assert.match(html,/id="petLifePoses"/);

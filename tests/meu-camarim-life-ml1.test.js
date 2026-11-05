@@ -31,7 +31,7 @@ function fakeRoom(signedIn = true){
     after(node){ nodes[node.id] = node; },
     remove(){ delete nodes[this.id]; }
   });
-  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp','petPhoneFotoImg','petPhoneFotoBaixar','petPhoneJornalImg','petPhoneJornalBaixar'].map(k => [k, element(k)])));
+  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp','petPhoneCapa','petPhoneFotoImg','petPhoneFotoBaixar','petPhoneJornalImg','petPhoneJornalBaixar'].map(k => [k, element(k)])));
   const shelfBtn = element('shelfBtn');
   const roomBtns = Object.fromEntries(['espelho','celular','estante','trofeus','album'].map(k => [k, element(k)]));
   const ctx = {

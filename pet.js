@@ -65,24 +65,38 @@ function petLifeSofa(x, frente){
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
     x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
-  }else{
-    // O assento frontal encobre as pernas verticais do sprite em pé quando o
-    // Idol senta; os pés projetados dão leitura de joelhos dobrados.
-    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,petLifePose ? 169 : 181,97,petLifePose ? 25 : 13,6);x.fill();
-    if(petLifePose){
-      x.fillStyle='#e8b8e3';x.fillRect(65,171,65,3);
-      x.fillStyle='#1c1c30';
-      x.beginPath();x.roundRect(84,190,17,5,2);x.fill();
-      x.beginPath();x.roundRect(108,190,17,5,2);x.fill();
-    }
-    x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
-    x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
-    x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
-    x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
+  }else if(!petLifePose){
+    // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
+    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
+    petLifeSofaBracos(x);
     x.fillStyle='#fff3fa';x.font='12px sans-serif';x.textAlign='center';x.fillText('♥',95,192);
+  }else{
+    // Sentado: o corpo do Idol é recortado na altura do assento (PET_LIFE_ASSENTO);
+    // a frente da almofada cobre o colo e as canelas descem até o chão.
+    var inclina = petLifePose === 'conviver' ? .045 : petLifePose === 'descansar' ? -.025 : 0;
+    var dx = -Math.sin(inclina) * 84;   // acompanha a leve inclinação do corpo
+    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,168,97,15,7);x.fill();
+    x.fillStyle='#e8b8e3';x.fillRect(62,171,67,2.5);
+    petLifeSofaBracos(x);
+    // Sombra de contato dos pés e canelas na cor das pernas do avatar.
+    x.fillStyle='rgba(60,25,90,.22)';x.beginPath();x.ellipse(101+dx,198,22,3,0,0,7);x.fill();
+    x.fillStyle='#1c1c30';
+    [85.6,104.8].forEach(function(px){
+      x.fillRect(px+dx,182,12,12);
+      x.beginPath();x.roundRect(px+dx-1.5,192,15,5.5,2.8);x.fill();   // pés apoiados no chão
+    });
+    x.fillStyle='rgba(255,255,255,.18)';[85.6,104.8].forEach(function(px){x.fillRect(px+dx+2,183,2,9);});
+    x.fillStyle='#fff3fa';x.font='11px sans-serif';x.textAlign='center';x.fillText('♥',95,180);
   }
   x.restore();
 }
+function petLifeSofaBracos(x){
+  x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
+  x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
+  x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
+  x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
+}
+var PET_LIFE_ASSENTO = 180;   // linha do assento: abaixo dela o Idol sentado não desenha as pernas retas
 var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
 var petHop = 0, petSmile = 0, petLastPat = 0, petBg = null, petBgOshi = null, petDpr = 1;
 function petLoad(){
@@ -169,23 +183,38 @@ function petMakeBg(){
   x.fillStyle = '#ff6fb5'; x.fillRect(118, 130, 6, 10); x.fillStyle = '#c0265f'; x.fillRect(118, 127, 6, 4);
   x.fillStyle = 'rgba(180,220,255,.9)'; RR(130, 126, 12, 14, 3); x.fill(); x.fillStyle = '#4169e1'; x.fillRect(134, 122, 4, 5);
 
+  // Piso de madeira rosada
+  var fg = x.createLinearGradient(0, 170, 0, 220); fg.addColorStop(0, '#f5c9dd'); fg.addColorStop(1, '#e4a9c6');
+  x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
+  x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
+  for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
+  x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
   // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.
   // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.
-  x.fillStyle = '#dfb1dc'; RR(152, 149, 27, 21, 4); x.fill();
-  x.fillStyle = '#c68dbd'; x.fillRect(154, 156, 23, 2);
-  x.fillStyle = '#ffb9dd'; RR(158.5, 123.5, 16, 27.5, 4); x.fill();
-  x.strokeStyle = '#b8eaff'; x.lineWidth = 1.5; x.stroke();
-  x.fillStyle = '#eddaff'; RR(160.5, 127, 12, 17, 2); x.fill();
-  x.fillStyle = '#b6eaff'; RR(161.5, 128, 10, 15, 2); x.fill();
-  x.fillStyle = ac; x.beginPath(); x.arc(166.5, 135, 3, 0, 7); x.fill();
-  x.fillStyle = '#fff'; x.font = '8px sans-serif'; x.textAlign = 'center'; x.fillText('★', 166.5, 138);
-  x.fillStyle = '#fff'; x.beginPath(); x.arc(166.5, 147.3, 1.5, 0, 7); x.fill();
-  x.fillStyle = '#bbebff'; x.fillRect(158, 122, 3, 3); x.fillStyle = '#fff'; x.fillRect(159, 123, 1, 1);
-  x.fillStyle = '#ff80c4'; x.fillText('✦', 178, 146);
+  // Mesinha e estante têm pés até o chão (y 170+) e sombra de contato.
+  x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(166, 177, 17, 3, 0, 0, 7); x.fill();
+  x.fillStyle = '#b97fb5'; x.fillRect(154, 158, 3, 19); x.fillRect(175, 158, 3, 19);   // pés
+  x.fillStyle = '#dfb1dc'; RR(152, 150, 28, 13, 3); x.fill();                           // gaveta
+  x.fillStyle = '#c68dbd'; x.fillRect(155, 156, 22, 1.5);
+  x.fillStyle = '#fff4c9'; x.beginPath(); x.arc(166, 159.5, 1.4, 0, 7); x.fill();
+  x.fillStyle = '#efc6ea'; RR(150, 147, 32, 4, 2); x.fill();                            // tampo
+  // Celular em pé no suporte, proporcional à mesinha.
+  x.fillStyle = '#b77bc4'; x.beginPath(); x.moveTo(160, 147); x.lineTo(172, 147); x.lineTo(170, 143); x.lineTo(162, 143); x.closePath(); x.fill();
+  x.fillStyle = '#ffb9dd'; RR(160, 125, 12, 20, 3); x.fill();
+  x.strokeStyle = '#b8eaff'; x.lineWidth = 1.2; x.stroke();
+  x.fillStyle = '#b6eaff'; RR(161.6, 127.5, 8.8, 13.5, 1.5); x.fill();
+  x.fillStyle = ac; x.beginPath(); x.arc(166, 133.5, 2.4, 0, 7); x.fill();
+  x.fillStyle = '#fff'; x.font = '6px sans-serif'; x.textAlign = 'center'; x.fillText('★', 166, 135.7);
+  x.fillStyle = '#fff'; x.beginPath(); x.arc(166, 142.8, 1, 0, 7); x.fill();
+  x.fillStyle = '#ff80c4'; x.font = '8px sans-serif'; x.fillText('✦', 177, 141);
 
-  // Pequena estante de lembranças sob o mural; não ocupa espaços de decoração salvos.
+  // Pequena estante de lembranças sob o mural: dois andares, pés no chão.
+  x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(200, 177, 22, 3, 0, 0, 7); x.fill();
+  x.fillStyle = '#84539d'; x.fillRect(184, 147, 3, 30); x.fillRect(213, 147, 3, 30);
+  x.fillStyle = '#bd82c1'; RR(182, 162, 36, 3.5, 1.5); x.fill();
+  x.fillStyle = '#ff9fd0'; x.fillRect(189, 154, 5, 8); x.fillStyle = '#9fd3ff'; x.fillRect(195, 156, 5, 6);
+  x.fillStyle = '#ffe37a'; x.fillRect(201, 155, 4, 7);
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
-  x.fillStyle = '#84539d'; x.fillRect(184, 149, 4, 9); x.fillRect(212, 149, 4, 9);
   x.fillStyle = '#ffe4a4'; RR(186, 126, 12, 17, 2); x.fill();
   x.fillStyle = '#e6b952'; x.fillRect(190, 137, 4, 6);
   x.fillStyle = '#9b30d9'; x.fillRect(201, 130, 13, 12);
@@ -200,12 +229,6 @@ function petMakeBg(){
     x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(r[1] - 1, 68, 2, 40);
   });
 
-  // Piso de madeira rosada
-  var fg = x.createLinearGradient(0, 170, 0, 220); fg.addColorStop(0, '#f5c9dd'); fg.addColorStop(1, '#e4a9c6');
-  x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
-  x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
-  for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
-  x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
   // Tapetinho redondo embaixo do pet
   x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 4, 46, 9, 0, 0, 7); x.fill();
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
@@ -280,6 +303,61 @@ function petPhonePapel(){
   x.clearRect(0, 0, c.width, c.height);
   // Visor 360:220: enquadramento inteiro, sem cortar as bordas do Idol/Pet.
   x.drawImage(petCv, 0, 0, petCv.width, petCv.height, 0, 0, c.width, c.height);
+}
+// Papel de parede próprio do celular (não é a foto do quarto): Idol e Pet num
+// palquinho na cor do Oshi, sempre na proporção do visor (260×140) e na resolução da tela.
+var PET_CAPA_W = 260, PET_CAPA_H = 140;
+function petPhoneCapaDesenhar(){
+  var c = $('petPhoneCapa'); if(!c || !c.getContext) return;
+  var x = c.getContext('2d'); if(!x) return;
+  var p = petAtivo && petAtivo();
+  if(typeof drawChar !== 'function' || typeof drawPet !== 'function' || !x.setTransform || !p || !petData){
+    // Sem os desenhos: recorta o quarto mantendo a proporção, sem esticar.
+    if(!petCv || !petCv.width) return;
+    var sh = petCv.width * PET_CAPA_H / PET_CAPA_W, sy = Math.max(0, (petCv.height - sh) / 2);
+    x.clearRect(0, 0, c.width, c.height);
+    x.drawImage(petCv, 0, sy, petCv.width, Math.min(sh, petCv.height), 0, 0, c.width, c.height);
+    return;
+  }
+  var d = Math.min(2, window.devicePixelRatio || 1);
+  if(c.width !== PET_CAPA_W * d){ c.width = PET_CAPA_W * d; c.height = PET_CAPA_H * d; }
+  x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, PET_CAPA_W, PET_CAPA_H);
+  var ac = { tsu:'#9b30d9', lirika:'#22c55e', pati:'#4169e1' }[OSHI] || '#ff6fb5';
+  var W = PET_CAPA_W, H = PET_CAPA_H, chao = 110;   // pés acima das etiquetas de nome
+  var fundo = x.createLinearGradient(0, 0, 0, H);
+  fundo.addColorStop(0, petMix(ac, 1, .72)); fundo.addColorStop(.62, petMix('#ff6fb5', 1, .8)); fundo.addColorStop(1, '#fff3fa');
+  x.fillStyle = fundo; x.fillRect(0, 0, W, H);
+  // Holofotes e brilho central (formas chapadas, sem contorno)
+  x.fillStyle = 'rgba(255,255,255,.28)';
+  [[52, -.22], [W - 52, .22]].forEach(function(f){
+    x.beginPath(); x.moveTo(f[0] - 7, 0); x.lineTo(f[0] + 7, 0); x.lineTo(W / 2 + f[1] * 260 + 34, chao); x.lineTo(W / 2 + f[1] * 260 - 34, chao); x.closePath(); x.fill();
+  });
+  var luz = x.createRadialGradient(W / 2, chao - 34, 6, W / 2, chao - 34, 92);
+  luz.addColorStop(0, 'rgba(255,255,255,.75)'); luz.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = luz; x.fillRect(0, 0, W, H);
+  // Bandeirinhas e estrelinhas
+  var fc = ['#9b30d9', '#b6ff3b', '#4169e1', '#ff6fb5'];
+  x.strokeStyle = 'rgba(123,63,240,.3)'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 8); x.quadraticCurveTo(W / 2, 22, W, 8); x.stroke();
+  for(var f = 0; f < 10; f++){ var fx = 13 + f * 26, fy = 8 + Math.sin(f / 9 * Math.PI) * 6.5; x.fillStyle = fc[f % 4]; x.beginPath(); x.moveTo(fx - 5, fy); x.lineTo(fx + 5, fy); x.lineTo(fx, fy + 9); x.closePath(); x.fill(); }
+  x.textAlign = 'center'; x.fillStyle = '#fff';
+  [[24, 46, 9], [236, 40, 11], [212, 74, 7], [40, 84, 7], [130, 30, 8], [100, 62, 6]].forEach(function(e, i){
+    x.globalAlpha = .55 + (i % 3) * .15; x.font = e[2] + 'px sans-serif'; x.fillText(i % 2 ? '✦' : '★', e[0], e[1]);
+  });
+  x.globalAlpha = 1;
+  // Palquinho
+  x.fillStyle = 'rgba(255,255,255,.62)'; x.beginPath(); x.ellipse(W / 2, chao + 6, 118, 15, 0, 0, 7); x.fill();
+  x.fillStyle = petMix(ac, 1, .55); x.fillRect(0, chao + 10, W, H - chao - 10);
+  x.fillStyle = 'rgba(255,255,255,.35)'; for(var t = 0; t < W; t += 16) x.fillRect(t, chao + 10, 8, 2);
+  // Sombras, Idol (sorrindo) e Pet lado a lado
+  x.fillStyle = 'rgba(60,25,90,.2)';
+  x.beginPath(); x.ellipse(98, chao + 1, 25, 4, 0, 0, 7); x.fill();
+  x.beginPath(); x.ellipse(170, chao + 1, 23, 4, 0, 0, 7); x.fill();
+  var og = g;
+  try{ g = x; g.save(); g.translate(98 - 15 * 2, chao - 44 * 2); g.scale(2, 2); drawChar(CH[sel], 0, 0, 0, 2); g.restore(); }
+  finally { g = og; }
+  drawPet(x, petType(petData.ativo), 170, chao - 12 * 2, 2, 0, p.dorme ? 'sono' : 'feliz');
+  x.fillStyle = '#ff6fb5'; x.font = '12px sans-serif'; x.fillText('♥', 134, chao - 66); x.font = '9px sans-serif'; x.fillText('♥', 143, chao - 77);
+  x.setTransform(1, 0, 0, 1, 0, 0);
 }
 // Quatro ícones originais do Idol⭐Touch, desenhados uma vez em Canvas 2D.
 // Reutilizam a paleta T2; não há imagens externas, timers ou animação extra.
@@ -896,14 +974,14 @@ function petPhoneRender(){
   var corpo = $('petPhoneCorpo'); if(!corpo) return;
   var nomes = PET_PHONE_APPS[LANG] || PET_PHONE_APPS.pt;
   if(petPhoneTela === 'home'){
-    corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas>' +
+    corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneCapa" width="520" height="280" aria-hidden="true"></canvas>' +
       '<strong>✦ ' + escHtml(tr('Meu Idol')) + ' · ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
       '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['cartas',nomes[3]]].map(function(a){
         var novas = a[0] === 'cartas' ? petCartasNovas() : 0;
         return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b>' +
           (novas ? '<i class="petphone-badge" aria-label="' + escHtml(tr('{n} cartas novas').split('{n}').join(novas)) + '">' + novas + '</i>' : '') + '</button>';
       }).join('') + '</div>';
-    petPhonePapel();
+    petPhoneCapaDesenhar();
     petPhoneIcones(corpo);
     return;
   }
@@ -1303,6 +1381,7 @@ function petDrawRoom(){
 
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   petLifeSofa(x, false);
+  if(!petLifePose) petLifeSofa(x, true);   // em pé, o sofá inteiro fica atrás do Idol
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
   // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
@@ -1327,8 +1406,10 @@ function petDrawRoom(){
   var og = g;
   try{
     g = x; g.save();
+    if(petLifePose){ g.beginPath(); g.rect(0, 0, 360, PET_LIFE_ASSENTO); g.clip(); }
+    else { g.fillStyle = 'rgba(60,25,90,.18)'; g.beginPath(); g.ellipse(114, PET_FLOOR + 1, 21, 3.5, 0, 0, 7); g.fill(); }
     g.translate(petLifePose ? 64 : 78,
-      (petLifePose ? 92 : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (petLifePose ? .55 : 1.5) - chop);
+      (petLifePose ? 96 : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (petLifePose ? .55 : 1.5) - chop);
     if(petLifePose === 'conviver') g.rotate(.045);
     else if(petLifePose === 'descansar') g.rotate(-.025);
     if(idolBrincando) g.rotate(idolBrincando.inclina);
@@ -1336,7 +1417,7 @@ function petDrawRoom(){
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
   } finally { g = og; }
-  petLifeSofa(x, true);
+  if(petLifePose) petLifeSofa(x, true);   // sentado: almofada na frente do colo e pés no chão
   if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
     x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
     x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,

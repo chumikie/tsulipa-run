@@ -10,6 +10,11 @@
 .petlife button,.petlife-estante button{min-width:0;min-height:44px;border:1px solid rgba(155,48,217,.28);border-radius:12px;background:var(--chip);color:var(--b1);font:inherit;font-weight:800;font-size:12px;cursor:pointer;padding:7px 4px;box-shadow:0 2px 0 rgba(123,63,240,.15)}
 .petlife button:focus-visible,.petlife-estante button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .petlife button[aria-expanded="true"]{background:var(--card);border-color:var(--b1)}
+.petlife-poses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:-3px 0 9px}
+.petlife-poses button{min-width:0;min-height:44px;padding:7px 4px;border:1px solid rgba(155,48,217,.28);border-radius:12px;background:#f8ebfa;color:#682d90;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.petlife-poses button[aria-pressed="true"]{background:#e9c8ef;border-color:#9b30d9;box-shadow:inset 0 0 0 1px #9b30d9}
+.petlife-poses button:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.petlife-poses button:disabled{opacity:.55;cursor:default}
 .petlife-voltar{min-height:44px;padding:8px 13px;border:1px solid rgba(155,48,217,.35);border-radius:999px;background:#f7e9ff;color:#6324ad;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
 .petlife-voltar:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 #hub .hubhojelinha .petlife-voltar{grid-column:1/-1;justify-self:start}

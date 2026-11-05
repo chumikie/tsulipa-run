@@ -330,6 +330,11 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <button type="button" data-life="celular">📱 <span>Celular</span></button>
       <button type="button" data-life="estante" aria-expanded="false" aria-controls="petLifeEstante">🏆 <span>Estante</span></button>
     </div>
+    <div class="petlife-poses" id="petLifePoses" role="group" aria-label="Descansar no sofá">
+      <button type="button" data-pose="sentar" aria-pressed="false">🛋️ <span>Sentar</span></button>
+      <button type="button" data-pose="descansar" aria-pressed="false">💤 <span>Descansar</span></button>
+      <button type="button" data-pose="conviver" aria-pressed="false">💗 <span>Conviver</span></button>
+    </div>
     <div class="petlife-estante" id="petLifeEstante" role="group" aria-label="Estante de troféus e cards" hidden>
       <button type="button" data-life="trofeus">🏅 <span>Troféus</span></button>
       <button type="button" data-life="album">🃏 <span>Álbum</span></button>
@@ -1069,6 +1074,10 @@ $('petActs').addEventListener('click', function(e){
 $('petLifeNav').addEventListener('click', function(e){
   var b = e.target.closest('button[data-life]');
   if(b) petLifeAbrir(b.dataset.life);
+});
+$('petLifePoses').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-pose]');
+  if(b) petLifePoseEscolher(b.dataset.pose);
 });
 $('petLifeEstante').addEventListener('click', function(e){
   var b = e.target.closest('button[data-life]');

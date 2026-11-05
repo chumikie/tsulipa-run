@@ -14,6 +14,42 @@ var PET_NEEDS = [['fome','🍙','Fome','#ff6fb5'],['energia','⚡','Energia','#4
 var PET_RATE = { fome:7.0, energia:5.0, humor:6.0, higiene:4.0 }; // dobro da velocidade original
 var PET_CAP = 12 * 36e5;                                           // queda máxima contada: 12h fora
 var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
+// ML1.3-A: estado exclusivamente visual; nunca entra em petData ou no save.
+var petLifePose = '', petLifePoseInicio = 0;
+function petLifePoseEscolher(pose){
+  if(!petOpen || petView !== 'room' || !petAtivo() || petGame || petAnim || petPhoneOpen) return false;
+  if(['sentar','descansar','conviver'].indexOf(pose) < 0) return false;
+  petLifePose = petLifePose === pose ? '' : pose;
+  petLifePoseInicio = petT;
+  petLifePoseUI();
+  return true;
+}
+function petLifePoseUI(){
+  var barra = $('petLifePoses'); if(!barra) return;
+  barra.querySelectorAll('button[data-pose]').forEach(function(b){
+    b.setAttribute('aria-pressed', String(b.dataset.pose === petLifePose));
+    b.disabled = !!petGame || !!petAnim || petView !== 'room';
+  });
+}
+function petLifeSofa(x, frente){
+  x.save();
+  if(!frente){
+    x.fillStyle = 'rgba(88,44,112,.18)'; x.beginPath(); x.ellipse(95,199,57,6,0,0,7); x.fill();
+    x.fillStyle='#b77bc4';x.fillRect(49,186,7,13);x.fillRect(136,186,7,13);
+    x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
+    x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
+    x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
+  }else{
+    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
+    x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
+    x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
+    x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
+    x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
+    x.fillStyle='#fff3fa';x.font='12px sans-serif';x.textAlign='center';x.fillText('♥',95,192);
+  }
+  x.restore();
+}
 var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
 var petHop = 0, petSmile = 0, petLastPat = 0, petBg = null, petBgOshi = null, petDpr = 1;
 function petLoad(){
@@ -1132,6 +1168,7 @@ function petDrawRoom(){
   x.globalAlpha = 1;
 
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
+  petLifeSofa(x, false);
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
   // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
@@ -1146,21 +1183,26 @@ function petDrawRoom(){
 
   // O Idol observa a brincadeira espontânea, sem deslocar o lugar habitual.
   var idolBrincando = petIdolAcompanhaBrinquedo(petData.ativo, p.cfg, petT,
-    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    !petLifePose && !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
-  var expr = (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando) ? 2 : 0;
+  // expr 2 reutiliza os olhos fechados/sorriso do avatar, sem trocar olhos ou rosto salvos.
+  var expr = petLifePose === 'descansar' ? 2 : (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando || petLifePose === 'conviver') ? 2 : 0;
   var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
   var og = g;
   try{
     g = x; g.save();
-    g.translate(78, PET_FLOOR - 44 * 2.4 + Math.sin(petT * .05) * 1.5 - chop);
+    g.translate(petLifePose ? 64 : 78,
+      (petLifePose ? 80 : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (petLifePose ? .55 : 1.5) - chop);
+    if(petLifePose === 'conviver') g.rotate(.045);
+    else if(petLifePose === 'descansar') g.rotate(-.025);
     if(idolBrincando) g.rotate(idolBrincando.inclina);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
   } finally { g = og; }
+  petLifeSofa(x, true);
   if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
     x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
     x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,
@@ -1175,7 +1217,7 @@ function petDrawRoom(){
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
   if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
-  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 && !recebendo;
+  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 && !recebendo && !petLifePose;
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
   hop += rotina.pulo;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
@@ -1183,6 +1225,10 @@ function petDrawRoom(){
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
   jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0); jeito.y += passeio.y;
+  if(petLifePose === 'conviver' && !sleepy && !petAnim && !recebendo){
+    var aproxima = Math.min(1, Math.max(0, (petT-petLifePoseInicio)/28));
+    jeito.x -= 27 * aproxima;
+  }
   petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
@@ -1289,6 +1335,7 @@ function petOpenUI(){
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
+  petLifePose = ''; petLifePoseUI();
   petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petPhoneOpen) petPhoneFechar(false);
   var estante = $('petLifeEstante'), bEstante = document.querySelector('#petLifeNav [data-life="estante"]');
@@ -1782,6 +1829,8 @@ function petShow(){
   $('petMake').hidden = petView !== 'make';
   $('petRoom').hidden = petView !== 'room';
   petLifeUI();
+  if(petView !== 'room') petLifePose = '';
+  petLifePoseUI();
   if(petView === 'col') petBuildPick();
   else if(petView === 'make') petMakeUI();
   else { petFitCanvas(); petUI(); }
@@ -1838,6 +1887,7 @@ function petAdopt(){
 function petSwitch(k){   // os pets que não estão ativos "descansam" e não perdem pontos
   if(!petData || !petData.pets[k]) return;
   if(petData.ativo !== k){
+    petLifePose = '';
     petTick();
     petData.ativo = k; petData.pets[k].t = Date.now();
     petAnim = null; petMenuK = ''; petEmote = null; petLembrancaRecente = null;

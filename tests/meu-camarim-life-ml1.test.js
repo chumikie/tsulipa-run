@@ -28,7 +28,7 @@ function fakeRoom(signedIn = true){
     after(node){ nodes[node.id] = node; },
     remove(){ delete nodes[this.id]; }
   });
-  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp'].map(k => [k, element(k)])));
+  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp','petPhoneFotoImg','petPhoneFotoBaixar'].map(k => [k, element(k)])));
   const shelfBtn = element('shelfBtn');
   const roomBtns = Object.fromEntries(['espelho','celular','estante','trofeus','album'].map(k => [k, element(k)]));
   const ctx = {
@@ -334,6 +334,70 @@ test('ML1.2-B.1: falas acompanham estado do Pet e recordações; reação é est
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/Happy⭐Cafe/,'sem atendimento confirmado na conta atual');
   assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
   assert.equal(logic.includes('localStorage'),false);
+});
+
+test('ML1.2-C.1: Fotos⭐ mostra câmera interna e só gera PNG quando o jogador pedir', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const url='data:image/png;base64,iVBORw0KGgo=';
+  let fotos=0;
+  ctx.petData={ativo:'tsu'};
+  ctx.petMakePhoto=()=>{fotos++;return url;};
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');
+  assert.equal(fotos,0,'abrir Fotos não gera imagem de alta resolução');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="tirar-selfie"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneWp"/,'miniatura reaproveita Canvas ativo');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="abrir-album"/,'álbum de cards separado');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"/,'download só depois de capturar');
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  assert.equal(fotos,1);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoImg"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"/);
+  assert.equal(nodes.petPhoneFotoImg.src,url);
+  assert.equal(nodes.petPhoneFotoBaixar.href,url);
+  assert.equal(nodes.petPhoneFotoBaixar.download,'tsulipa-camarim-pipoca.png');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/iVBORw0K/,'não injeta PNG grande em HTML');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'sem backend ou save no Fotos');
+  assert.equal(ctx.petPhoneVoltar(),true);
+  assert.equal(ctx.petPhoneTela,'home');
+  assert.equal(ctx.petPhoneFechar(),true);
+  assert.equal(ctx.petPhoneFotoUrl,'','descarta imagem ao sair do celular');
+  assert.equal(logic.includes('localStorage'),false,'não cria novos dados salvos');
+});
+
+test('ML1.2-C.1: protege sessão, Pet, captura inválida e bloqueios existentes', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.petData={ativo:'tsu'};
+  ctx.petMakePhoto=()=>'data:image/png;base64,aGVsbG8=';
+  assert.equal(ctx.petPhoneFotoTirar(),false,'não tira selfie fora do app');
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  ctx.petData.ativo='pati';ctx.petPhoneRender();
+  assert.equal(ctx.petPhoneFotoUrl,'','não exibe foto de outro Pet');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoImg"/);
+  ctx.petMakePhoto=()=>'<img src=x onerror=alert(1)>';
+  assert.equal(ctx.petPhoneFotoTirar(),false,'descarta URL inesperada');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Não foi possível tirar a selfie/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/onerror/);
+  ctx.petGame={k:'corda'};
+  assert.equal(ctx.petPhoneFotoTirar(),false,'não captura durante minijogo');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.match(pet,/try\{ url = petMakePhoto\(\); \}catch\(e\)\{\}/,'usa câmera original');
+  assert.match(html,/data-trava/,'controles e travas da câmera original não são removidos');
+  assert.match(html,/k === 'tirar-selfie'/,'toque no Fotos ligado à captura');
+});
+
+test('ML1.2-C.1: interface cabe em 320×640 e 390×844 e respeita toque no celular', () => {
+  assert.match(css,/\.petphone-photo-preview\{[^}]*height:154px/);
+  assert.match(css,/@media \(max-height:760px\)\{\.petphone-photo-preview\{height:118px/);
+  assert.match(css,/\.petphone-photo button,\.petphone-photo-baixar\{[^}]*min-height:44px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const pequena=h<=760,largura=Math.min(304,w-28),altura=Math.min(pequena?448:472,h-60);
+    const content=altura-(8+9+(pequena?30:33)+(pequena?44:46)+(pequena?4:6)+8+30+18);
+    const preview=pequena?118:154;
+    assert.ok(content>=preview+44,`${w}×${h}: foto e botão de captura visíveis sem corte`);
+    assert.ok(largura>=260,`${w}×${h}: controles têm largura útil`);
+  }
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotoLimpar('),logic.indexOf('function petPhoneChatContatos('))),false,'sem ciclo novo de renderização');
 });
 
 test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {

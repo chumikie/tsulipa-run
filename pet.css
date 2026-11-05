@@ -244,3 +244,13 @@
 .petmenu .petarrumo-dica{grid-column:1/-1;margin:0;padding:6px 8px;border-radius:10px;background:var(--chip);color:var(--ink);font-size:12px;font-weight:800;text-align:center}
 .petmenu [data-k="arrumar-pronto"],.petmenu [data-k="arrumar-padrao"]{min-height:44px;flex-direction:row;justify-content:center;gap:4px}
 .petmenu [data-k="arrumar-pronto"]{grid-column:span 2;background:var(--b1);color:#fff}
+/* ML1.7 — acabamento do celular: X no aro (sem cobrir o relógio) e título centralizado. */
+.petphone-x{top:0;right:14px;width:44px;height:33px;border-radius:12px;font-size:21px!important;line-height:1}
+.petphone-shell .petphone-x:focus-visible{outline-offset:-3px}
+.petphone-pagetopo{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:4px;margin:-6px -3px 11px;padding:0 0 8px}
+.petphone-pagetopo h2{grid-column:2;text-align:center;font-size:15px;line-height:1.2}
+.petphone-pagetopo button{width:44px;font-size:26px;padding:0 0 3px}
+.petphone-status{min-height:28px;font-size:10.5px}
+.petphone-content{padding:10px 10px 10px}
+.petphone-dica{margin:22px 8px;padding:16px 10px;border:2px dashed rgba(155,48,217,.22);border-radius:14px;background:var(--card)}
+.petphone-pingente{right:-11px;top:118px}

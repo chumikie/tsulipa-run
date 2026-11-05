@@ -23,13 +23,14 @@ function fakeRoom(signedIn = true){
     getContext(){return {clearRect(){},drawImage(){calls.push('wallpaper');}};},
     scrollIntoView(){ calls.push('agenda-focus'); },
     setAttribute(k,v){ attr[id + ':' + k] = v; },
+    removeAttribute(k){ delete this[k]; },
     querySelector(){ return labels[id] || (labels[id] = {textContent:''}); },
     querySelectorAll(){return [];},
     insertBefore(node){ nodes[node.id] = node; },
     after(node){ nodes[node.id] = node; },
     remove(){ delete nodes[this.id]; }
   });
-  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp','petPhoneFotoImg','petPhoneFotoBaixar'].map(k => [k, element(k)])));
+  Object.assign(nodes,Object.fromEntries(['petLifeEstante','albumTit','hubHojeLinha','hubToque','shopCorpo','perfTopoMsg','petPhone','petPhoneHora','petPhoneCorpo','petPhoneX','petPhoneWp','petPhoneFotoImg','petPhoneFotoBaixar','petPhoneJornalImg','petPhoneJornalBaixar'].map(k => [k, element(k)])));
   const shelfBtn = element('shelfBtn');
   const roomBtns = Object.fromEntries(['espelho','celular','estante','trofeus','album'].map(k => [k, element(k)]));
   const ctx = {
@@ -401,7 +402,7 @@ test('ML1.2-C.1: interface cabe em 320×640 e 390×844 e respeita toque no celul
   assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotoLimpar('),logic.indexOf('function petPhoneChatContatos('))),false,'sem ciclo novo de renderização');
 });
 
-test('ML1.2-C.2-A: três abas de Fotos⭐, mantendo câmera e Jornal futuro separados', () => {
+test('ML1.2-C.2-A: três abas de Fotos⭐, mantendo câmera e Jornal separados', () => {
   const {ctx,nodes,calls}=fakeRoom();
   ctx.petData={ativo:'tsu'};
   let capturas=0;
@@ -421,8 +422,8 @@ test('ML1.2-C.2-A: três abas de Fotos⭐, mantendo câmera e Jornal futuro sepa
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"|data-phone="tirar-selfie"/,'sem câmera oculta na aba vazia');
   assert.equal(ctx.petPhoneFotoTirar(),false,'não captura fora da aba Câmera');
   assert.equal(ctx.petPhoneFotosAbaAbrir('jornal'),true);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Fotos do dia⭐/);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Idol⭐News!/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/vitrine de Idols carregar/,'estado vazio honesto sem vitrine');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="jornal-atualizar"/);
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-jfoto|data:image\/png/,'não duplica fotos públicas nem guarda imagens');
   assert.equal(ctx.petPhoneFotosAbaAbrir('invalida'),false);
   assert.equal(ctx.petPhoneFotosAbaAbrir('camera'),true);
@@ -501,7 +502,7 @@ test('ML1.2-C.2-B: fontes Pet/Center/Duo sem misturar Karaoke e Jornal', () => {
   ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('momentos');
   for(const label of ['Backstage⭐Pet!','Center⭐Run!','Moon⭐Duo!']) assert.match(nodes.petPhoneCorpo.innerHTML,new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   ctx.petPhoneFotosAbaAbrir('jornal');
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Idol⭐News!/,'Jornal continua reservado para C.2-C');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/vitrine de Idols carregar/,'Jornal aguarda cenas públicas do dia');
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-momento-id/);
   assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'nenhuma chamada de backend');
   assert.match(html,/id="shPhone"[^>]*hidden/,'botão compartilhado começa oculto');
@@ -625,6 +626,84 @@ test('ML1.2-C.2-B.1: visor mostra o Canvas 360×220 inteiro sem recorte', () => 
   assert.equal(args[0],ctx.petCv);
   assert.match(ctx.petPhoneFotoHtml(),/id="petPhoneWp" width="360" height="220"/);
   assert.match(css,/\.petphone-photo-espera canvas\{[^}]*object-fit:contain/);
+});
+
+test('ML1.2-C.2-C.1: Jornal exibe miniaturas públicas, sem misturar foto privada ou salvar dados', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const fotos=[
+    {tipo:'',legenda:'Encontro dos Idols'},
+    {tipo:'janela',legenda:'Oito Idols no Karaoke'},
+    {tipo:'pet',legenda:'Selfie privada do jogador'},
+    {tipo:'telao',legenda:'Telão do show'}
+  ];
+  const desenhos=[];
+  ctx.jornalFotosMontarDoDia=()=>fotos;
+  ctx.jornalLegenda=f=>f.legenda;
+  ctx.jornalFotoDesenhar=(cv,f,assinatura)=>desenhos.push({cv,f,assinatura});
+  nodes.petPhoneCorpo.querySelectorAll=seletor=>seletor==='canvas[data-jornal-mini]'
+    ? [0,1,2].map(i=>({dataset:{jornalMini:String(i)},width:240,height:150})) : [];
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');
+  assert.equal(ctx.petPhoneFotosAbaAbrir('jornal'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Cenas públicas do Idol⭐News!/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Encontro dos Idols/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Oito Idols no Karaoke/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Telão do show/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/Selfie privada do jogador|data-momento-id|data:image\/png/);
+  assert.equal(ctx.petPhoneJornalFotos.length,3);
+  assert.deepEqual(desenhos.map(d=>[d.cv.width,d.cv.height,d.assinatura]),[[240,150,false],[240,150,false],[240,150,false]]);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'Jornal do celular não faz RPC');
+  assert.equal(ctx.petPhoneJornalUrl,'','não gera PNG sem toque');
+});
+
+test('ML1.2-C.2-C.1: ampliação e PNG são voluntários; voltar libera imagem em memória', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const foto={tipo:'janela',legenda:'Grupo da semana'};
+  ctx.jornalFotosMontarDoDia=()=>[foto];
+  ctx.jornalLegenda=f=>f.legenda;
+  const desenhos=[];
+  ctx.jornalFotoDesenhar=(cv,f,assinatura)=>desenhos.push([cv.width,cv.height,f,assinatura]);
+  ctx.document.createElement=()=>({width:0,height:0,toDataURL:()=> 'data:image/png;base64,aGVsbG8='});
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('jornal');
+  assert.equal(ctx.petPhoneJornalAbrir(-1),false);
+  assert.equal(ctx.petPhoneJornalAbrir(1),false);
+  assert.equal(ctx.petPhoneJornalAbrir(0),true);
+  assert.ok(desenhos.some(d=>d[0]===1440&&d[1]===900&&d[2]===foto&&d[3]===true));
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneJornalImg"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneJornalBaixar"/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-momento-id/,'Jornal não invade Momentos');
+  assert.equal(nodes.petPhoneJornalImg.src,'data:image/png;base64,aGVsbG8=');
+  assert.match(nodes.petPhoneJornalBaixar.download,/^idol-news-.*\.png$/);
+  assert.equal(ctx.petPhoneVoltar(),true,'seta interna retorna à galeria antes da tela inicial');
+  assert.equal(ctx.petPhoneTela,'fotos');
+  assert.equal(ctx.petPhoneJornalUrl,'');
+  assert.equal(nodes.petPhoneJornalImg.src,undefined);
+  assert.equal(ctx.petPhoneJornalAbrir(0),true);
+  assert.equal(ctx.petPhoneFotosAbaAbrir('momentos'),true);
+  assert.equal(ctx.petPhoneJornalUrl,'','trocar de aba descarta PNG temporária');
+  ctx.petPhoneFechar();
+  assert.equal(ctx.petPhoneJornalFotos.length,0,'descarte da lista ao fechar');
+  assert.equal(ctx.petPhoneJornalAbrir(0),false,'fora da aba não gera novas fotos');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('localStorage'),false);
+  assert.match(html,/k === 'jornal-foto'\) petPhoneJornalAbrir\(Number\(b\.dataset\.foto\)\)/);
+});
+
+test('ML1.2-C.2-C.1: galeria e revisão cabem em 320×640 e 390×844', () => {
+  assert.match(css,/\.petphone-jornal-grid\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.petphone-jornal-grid canvas\{[^}]*aspect-ratio:8\/5/);
+  assert.match(css,/\.petphone-jornal-revisao img\{[^}]*max-height:220px;object-fit:contain/);
+  assert.match(css,/\.petphone-jornal-revisao img\{[^}]*box-sizing:border-box;width:100%;max-width:100%/,'borda da foto não aumenta a largura do visor');
+  assert.match(css,/\.petphone-jornal-revisao a,\.petphone-jornal-revisao button,\.petphone-jornal-atualizar\{[^}]*min-height:44px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const altura = Math.min(h<=760?448:472,h-60), largura = Math.min(304,w-28);
+    const inner = largura - 8 - 26 - 8 - 18;
+    const tile = (inner-7)/2;
+    assert.ok(tile>=105,`${w}×${h}: duas miniaturas legíveis`);
+    assert.ok(tile*5/8 + 44<altura-160,`${w}×${h}: miniatura e alvo de toque no visor rolável`);
+    assert.ok(220+44<=altura-100,`${w}×${h}: ampliação e download rolam sem recorte horizontal`);
+  }
+  const trecho=logic.slice(logic.indexOf('function petPhoneJornalLimpar('),logic.indexOf('function petPhoneChatContatos('));
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage/.test(trecho),false,'nenhuma animação, backend ou save adicional');
 });
 
 test('ML1.2-A.1: quatro ícones T2 originais são desenhados uma vez com Canvas 2D', () => {

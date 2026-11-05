@@ -184,10 +184,20 @@ var PET_PHONE_MOMENTO_TEXTO = {
   th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่ รูปวิ่ง หรือรูป Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ'],
   ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィー、レース、Moon⭐Duo!の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。']
 };
+var PET_PHONE_JORNAL_TEXTO = {
+  pt:['Cenas públicas do Idol⭐News! · novas fotos a cada dia.','As fotos aparecem quando a vitrine de Idols carregar.','Atualizar fotos','Ampliar foto','Voltar ao Jornal','Baixar PNG','No iPhone, segure a imagem para salvar se necessário.'],
+  en:['Public Idol⭐News! scenes · new photos every day.','Photos appear once the Idol showcase loads.','Refresh photos','Enlarge photo','Back to News','Download PNG','On iPhone, press and hold the image to save if needed.'],
+  es:['Escenas públicas de Idol⭐News! · nuevas fotos cada día.','Las fotos aparecen cuando carga la vitrina de Idols.','Actualizar fotos','Ampliar foto','Volver a Noticias','Descargar PNG','En iPhone, mantén pulsada la imagen para guardarla si hace falta.'],
+  id:['Foto publik Idol⭐News! · foto baru setiap hari.','Foto muncul setelah etalase Idol dimuat.','Segarkan foto','Perbesar foto','Kembali ke Berita','Unduh PNG','Di iPhone, tekan dan tahan gambar untuk menyimpan jika perlu.'],
+  th:['ภาพสาธารณะจาก Idol⭐News! · ภาพใหม่ทุกวัน','ภาพจะปรากฏเมื่อโหลดรายชื่อไอดอลแล้ว','อัปเดตภาพ','ขยายภาพ','กลับไปข่าว','ดาวน์โหลด PNG','บน iPhone กดค้างที่ภาพเพื่อบันทึกหากจำเป็น'],
+  ja:['Idol⭐News! の公開写真 · 毎日新しい写真','アイドル一覧の読み込み後に写真が表示されます。','写真を更新','写真を拡大','ニュースに戻る','PNGを保存','iPhoneでは必要に応じて画像を長押しして保存できます。']
+};
 // Fotos⭐: uma única Polaroid temporária; nunca entra no save ou no Supabase.
 var petPhoneFotoUrl = '', petPhoneFotoDono = '', petPhoneFotoErro = '';
 // ML1.2-C.2-B: até quatro fotos da sessão, nunca persistidas ou transmitidas.
 var petPhoneMomentos = [], petPhoneMomentosDono = '', petPhoneMomentoFonte = '', petPhoneMomentoFonteDono = '';
+// Fotos públicas do Jornal: só objetos da cena e uma PNG temporária sob toque.
+var petPhoneJornalFotos = [], petPhoneJornalIndice = -1, petPhoneJornalUrl = '';
 // ML1.2-B: diálogos fictícios, só nesta sessão. Nunca enviam ou salvam mensagens.
 var petPhoneChatConversa = '', petPhoneChatSessao = '', petPhoneChatRespostas = {};
 function petPhoneContaChave(){
@@ -355,6 +365,64 @@ function petPhoneFotoHtml(){
     '<button type="button" class="petphone-photo-album" data-phone="abrir-album">🃏 ' + escHtml(tr('Ver Álbum de cards')) + '</button>' +
     (fotoPronta ? '<p class="petphone-photo-ajuda">' + escHtml(tr('No iPhone, segure a imagem para salvar se o download não abrir.')) + '</p>' : '') + '</div>';
 }
+function petPhoneJornalLimpar(){
+  var imagem = $('petPhoneJornalImg'), baixar = $('petPhoneJornalBaixar');
+  if(imagem) imagem.removeAttribute('src');
+  if(baixar) baixar.removeAttribute('href');
+  petPhoneJornalIndice = -1; petPhoneJornalUrl = '';
+}
+function petPhoneJornalHtml(){
+  var txt = PET_PHONE_JORNAL_TEXTO[LANG] || PET_PHONE_JORNAL_TEXTO.pt;
+  if(petPhoneJornalIndice >= 0 && petPhoneJornalUrl){
+    var selecionada = petPhoneJornalFotos[petPhoneJornalIndice];
+    return '<section class="petphone-jornal-revisao"><img id="petPhoneJornalImg" alt="' + escHtml(selecionada && typeof jornalLegenda === 'function' ? jornalLegenda(selecionada) : txt[3]) + '">' +
+      '<a id="petPhoneJornalBaixar" download="idol-news.png">⬇️ ' + escHtml(txt[5]) + '</a>' +
+      '<button type="button" data-phone="jornal-voltar">‹ ' + escHtml(txt[4]) + '</button>' +
+      '<p class="petphone-photo-ajuda">' + escHtml(txt[6]) + '</p></section>';
+  }
+  // A vitrine e o sorteio são os mesmos do Jornal; nunca copiar a foto pessoal
+  // do Idol/Pet para uma galeria de cenas públicas.
+  petPhoneJornalFotos = typeof jornalFotosMontarDoDia === 'function'
+    ? jornalFotosMontarDoDia().filter(function(f){ return f && f.tipo !== 'pet'; }) : [];
+  if(!petPhoneJornalFotos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>📰</span><span>🌷</span><span>📸</span></div>' +
+    '<strong>' + escHtml(txt[1]) + '</strong><button type="button" class="petphone-jornal-atualizar" data-phone="jornal-atualizar">↻ ' + escHtml(txt[2]) + '</button></section>';
+  return '<section class="petphone-jornal"><p class="petphone-jornal-nota">📰 ' + escHtml(txt[0]) + '</p>' +
+    '<div class="petphone-jornal-grid">' + petPhoneJornalFotos.map(function(f,i){
+      return '<button type="button" data-phone="jornal-foto" data-foto="' + i + '" aria-label="' + escHtml(txt[3] + ': ' + jornalLegenda(f)) + '">' +
+        '<canvas data-jornal-mini="' + i + '" width="240" height="150" aria-hidden="true"></canvas><span>' + escHtml(jornalLegenda(f)) + '</span></button>';
+    }).join('') + '</div></section>';
+}
+function petPhoneJornalRender(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'jornal') return;
+  if(petPhoneJornalIndice >= 0 && petPhoneJornalUrl){
+    var img = $('petPhoneJornalImg'), dl = $('petPhoneJornalBaixar');
+    if(img) img.src = petPhoneJornalUrl;
+    if(dl){
+      var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0,10);
+      dl.href = petPhoneJornalUrl;
+      dl.download = 'idol-news-' + dia + '-' + (petPhoneJornalIndice + 1) + '.png';
+    }
+    return;
+  }
+  var corpo = $('petPhoneCorpo'); if(!corpo || !corpo.querySelectorAll || typeof jornalFotoDesenhar !== 'function') return;
+  corpo.querySelectorAll('canvas[data-jornal-mini]').forEach(function(cv){
+    var i = Number(cv.dataset.jornalMini), foto = petPhoneJornalFotos[i];
+    if(foto) jornalFotoDesenhar(cv, foto, false);
+  });
+}
+function petPhoneJornalAbrir(i){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'jornal' ||
+    !Number.isInteger(i) || i < 0 || i >= petPhoneJornalFotos.length || typeof jornalFotoDesenhar !== 'function') return false;
+  var cv = document.createElement('canvas');cv.width = 1440;cv.height = 900;
+  var url = '';
+  try{ jornalFotoDesenhar(cv, petPhoneJornalFotos[i], true); url = cv.toDataURL('image/png'); }catch(e){return false;}
+  if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
+  petPhoneJornalIndice = i;petPhoneJornalUrl = url;petPhoneRender();return true;
+}
+function petPhoneJornalVoltar(){
+  if(petPhoneJornalIndice < 0) return false;
+  petPhoneJornalLimpar();petPhoneRender();return true;
+}
 function petPhoneFotosHtml(){
   var txt = PET_PHONE_FOTOS_TEXTO[LANG] || PET_PHONE_FOTOS_TEXTO.pt;
   var tabs = [['camera','📸'],['momentos','💗'],['jornal','📰']];
@@ -366,14 +434,11 @@ function petPhoneFotosHtml(){
     return (petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave() ? '' : nav) + petPhoneFotoHtml();
   }
   if(petPhoneFotosAba === 'momentos') return nav + petPhoneMomentosHtml();
-  var jornal = petPhoneFotosAba === 'jornal';
-  return nav + '<section class="petphone-fotos-espera" aria-label="' + escHtml(txt[jornal ? 5 : 3]) + '">' +
-    '<div class="petphone-fotos-ilustra" aria-hidden="true"><span>' + (jornal ? '📰' : '🏁') + '</span><span>' + (jornal ? '🌷' : '🎤') + '</span><span>' + (jornal ? '📸' : '🌙') + '</span></div>' +
-    '<strong>' + escHtml(txt[jornal ? 5 : 3]) + '</strong><p>' + escHtml(txt[jornal ? 6 : 4]) + '</p>' +
-    '<small>✦ ' + escHtml(txt[7]) + ' ✦</small></section>';
+  return (petPhoneJornalIndice >= 0 ? '' : nav) + petPhoneJornalHtml();
 }
 function petPhoneFotosAbaAbrir(k){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || ['camera','momentos','jornal'].indexOf(k) < 0) return false;
+  if(k !== 'jornal') {petPhoneJornalLimpar();petPhoneJornalFotos = [];}
   petPhoneFotosAba = k; petPhoneRender();
   var botao = document.querySelector('#petPhoneCorpo [data-phone="fotos-aba"][data-aba="' + k + '"]');
   if(botao) botao.focus();
@@ -614,13 +679,14 @@ function petPhoneRender(){
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
   if(petPhoneTela === 'fotos'){
-    petPhoneFotoRender(); petPhoneMomentosRender();
+    petPhoneFotoRender(); petPhoneMomentosRender(); petPhoneJornalRender();
   }
 }
 function petPhoneAbrir(tela){
   if(!petOpen || petView !== 'room' || petGame || !petAtivo() || !contaJ) return false;
   if(petPhoneFotoDono && petPhoneFotoDono !== petPhoneFotoChave()) petPhoneFotoLimpar();
   petPhoneMomentosConferir();
+  petPhoneJornalLimpar();petPhoneJornalFotos = [];
   petPhoneFotosAba = 'camera';
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';
@@ -637,16 +703,19 @@ function petPhoneFechar(retomar){
   petPhoneOpen = false; petPhoneTela = 'home'; petPhoneFotosAba = 'camera'; petPhoneAgendaReq++;
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneFotoLimpar();
+  petPhoneJornalLimpar();petPhoneJornalFotos = [];
   $('petPhone').hidden = true;
   if(retomar !== false){ petAnimLigar(); var botao = document.querySelector('#petLifeNav [data-life="celular"]'); if(botao) botao.focus(); }
   return true;
 }
 function petPhoneVoltar(){
   if(!petPhoneOpen) return false;
+  if(petPhoneTela === 'fotos' && petPhoneJornalIndice >= 0) return petPhoneJornalVoltar();
   if(petPhoneTela === 'chat' && petPhoneChatConversa){
     petPhoneChatConversa = '';petPhoneRender();return true;
   }
   if(petPhoneTela === 'home') return petPhoneFechar();
+  petPhoneJornalLimpar();petPhoneJornalFotos = [];
   petPhoneTela = 'home'; petPhoneAgendaReq++; petPhoneRender(); return true;
 }
 function petPhoneTelaAbrir(k){

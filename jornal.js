@@ -282,10 +282,11 @@ function jornalFeitosHtml(d){
     (itens.length ? '<ul>' + itens.map(function(t){ return '<li>' + escHtml(t) + '</li>'; }).join('') + '</ul>' :
     '<p class="jnvazio">' + escHtml(tr('Ainda não há destaques públicos confirmados.')) + '</p>') + '</section>';
 }
-function jornalFotosDia(){
-  var box = $('jornalFotosDia'); if(!box) return;
+// Fonte única das fotos do dia: Jornal e TsuPhone usam o mesmo sorteio sem
+// precisar abrir o Jornal ou fazer uma segunda consulta ao servidor.
+function jornalFotosMontarDoDia(){
   var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar && p.avatar.c; }) : [];
-  if(L.length < 3){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('As fotos aparecem quando a vitrine carregar.')) + '</p>'; jornalDiarioUI([]); return; }
+  if(L.length < 3) return [];
   L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
   var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5), gente = jornalSorteio(L, dia), cenas = jornalCenasDoDia(dia), pos = 0, h = '';
   var fotos = [0, 1, 2].map(function(i){
@@ -326,6 +327,12 @@ function jornalFotosDia(){
   }
   // A foto do jogador com pet fica entre o trio e o telão quando há login/pet.
   if(fotoTelao) fotos.push(fotoTelao);
+  return fotos;
+}
+function jornalFotosDia(){
+  var box = $('jornalFotosDia'); if(!box) return;
+  var fotos = jornalFotosMontarDoDia();
+  if(!fotos.length){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('As fotos aparecem quando a vitrine carregar.')) + '</p>'; jornalDiarioUI([]); return; }
   jornalFotosHoje = fotos;
   jornalDiarioUI(fotos);
   box.innerHTML = fotos.map(function(f, i){

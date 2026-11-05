@@ -45,3 +45,7 @@ const i=html.indexOf('ktMusicasModosMontar(songs,document)'),lanes=html.indexOf(
 assert(i>0&&lanes>i,'as trilhas entram antes das pistas serem calculadas');
 assert(html.includes("ktMusicaModoNome(k)"),'o placar semanal mostra o nome das trilhas novas');
 console.log('karaoke-musicas-modos: ok');
+// Biblioteca no celular: nome inteiro e botões lado a lado; uma coluna só em telas de até 360 px.
+const baseCss=fs.readFileSync(path.join(__dirname,'..','karaoke-time-base.css'),'utf8');
+assert(/@media \(max-width:560px\)\{[^@]*\.kt-library-actions\{flex:1 1 100%;flex-direction:row/.test(baseCss),'no celular os botões ficam embaixo, lado a lado');
+assert(baseCss.includes('@media (max-width:360px){ .kt-library-panel .kt-library-tracks{grid-template-columns:minmax(0,1fr)}'),'em 320 px a biblioteca vira uma coluna');

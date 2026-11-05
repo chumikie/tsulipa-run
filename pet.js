@@ -1202,7 +1202,7 @@ function petDrawRoom(){
   try{
     g = x; g.save();
     g.translate(petLifePose ? 64 : 78,
-      (petLifePose ? 80 : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (petLifePose ? .55 : 1.5) - chop);
+      (petLifePose ? 92 : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (petLifePose ? .55 : 1.5) - chop);
     if(petLifePose === 'conviver') g.rotate(.045);
     else if(petLifePose === 'descansar') g.rotate(-.025);
     if(idolBrincando) g.rotate(idolBrincando.inclina);

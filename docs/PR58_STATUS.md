@@ -472,3 +472,40 @@ Outras pendências de banco comunicadas: PR #74 (recompensa do Sora), recorde da
 - [ ] Prévia conferida (Handshake, Happy Cafe, organização dos Jogos, Álbum, Trocas, Pedidos de fã)
 - [ ] ChatGPT aplicou `handshake_premio` e as missões (ou a usuária decidiu publicar sem elas)
 - [ ] Ready for review + Merge pela usuária
+
+## 12. PR #81 (`feat/meu-camarim-ml1-20261104`) — Meu Camarim⭐Life! (novembro/2026)
+
+PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na memória da aba ou com os dados que já existem.
+
+### O que entrou
+
+| Etapa | O que faz | Estado |
+|---|---|---|
+| ML1 / ML1.1 | Espelho → Provador, Celular → TsuPhone, Estante → Troféus/Álbum, volta direto ao Camarim | Implementado |
+| ML1.2 (A–D) | Celular com Agenda (missões), Chat com Idols e fãs lembrados, Fotos (câmera Idol + Pet, Momentos da sessão, fotos públicas do Jornal) | Implementado |
+| ML1.3 | Sofá com Sentar, Descansar e Conviver; reações do Pet à companhia | Implementado |
+| Tema | Telas do celular e botão "Guardar" do Karaoke usam as variáveis de tema (`--card`, `--chip`, `--ink`, `--sub`, `--b1`, `--pink`): funcionam no modo escuro e com o Oshi | Implementado (`10fb4e3`, `c61e025`) |
+| ML1.4 | Balão de vontade do Pet (estilo The Sims): pede um cuidado existente; atender dá +8 de humor e corações, nunca estrelas, XP ou servidor. Celular passa a ser `{nick}Phone`. App Perfil vira **Cartas** de fã (uma por dia, nomes inventados via `hsNomesLivres`, "lida" só na sessão; o Perfil abre pelo fim da lista) | Implementado (`858d261`, `0d47c62`) |
+| ML1.5 | Papel de parede próprio do celular (Idol + Pet no palquinho, 260×140, resolução da tela); Idol em pé à frente do sofá; sentar de verdade (quadril no assento, coxas na cor da roupa, pernas penduradas); três poses com lugar e postura próprios; mesinha e estante com pés até o chão e sombra | Implementado (`d27c427`, `44c9649`, `b08c11d`) |
+
+### Regra de desenho para tudo que for novo
+
+**Poses, cenas e objetos novos usam só as formas que o `drawChar` (centerrun.js) e o `drawPet` já usam.**
+
+- As pernas do avatar são dois retângulos escuros (`#1c1c30`, 5×8 unidades), sem pé separado, sapato ou contorno. Uma pose nova pode encurtar, recortar ou mudar a cor dessas formas, mas não cria pés redondos, dedos, joelhos dobrados desenhados à parte ou outro estilo de corpo.
+- Cores de roupa vêm do próprio avatar (ex.: `petLifeLerCorColo` lê o pixel do quadril já desenhado), nunca de uma tabela paralela.
+- Objetos de cenário seguem o estilo chapado do quarto: retângulos e elipses com uma cor clara e uma escura, sem contorno. Tudo que fica no chão encosta na linha do piso (y ≥ 170 no Camarim) e tem sombra de contato.
+- Mudar o desenho base dos personagens (ex.: dar pés) **não** é feito sem uma etapa própria: ele aparece no Center⭐Run!, Perfil, vitrine, Gacha, Karaoke, Handshake, Café, banner e nas fotos do Jornal, e os testes visuais dependem dele.
+- O teste `tests/meu-camarim-life-ml15.test.js` barra pés redondos nas pernas sentadas e confere os móveis no chão.
+
+### Testes e CI
+
+- `node tests/run-all.js`: 66/66 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15`).
+- `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
+- CI verde em `0d47c62` e `44c9649` (static-validation, postgres-center-run, browser-karaoke). Ver o resultado do último commit na própria PR.
+
+### Pendências
+
+- Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
+- Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
+- Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.

@@ -702,7 +702,7 @@ function petCartaAbrir(id){
   petPhoneCartaAberta = String(id || '');
   var lidas = petCartasLidas();
   if(petPhoneCartaAberta && lidas.indexOf(petPhoneCartaAberta) < 0) lidas.push(petPhoneCartaAberta);
-  petPhoneRender(); petLifeUI();
+  petPhoneRender(); petLifeUI(); petPhoneSom('carta');
   return true;
 }
 function petCartaDataTxt(dia){
@@ -1174,7 +1174,7 @@ function petPhoneChatAbrir(id){
   if(!petPhoneOpen || petPhoneTela !== 'chat') return false;
   petPhoneChatSincronizar();
   if(!petPhoneChatContatos().some(function(c){return c.id === id;})) return false;
-  petPhoneChatConversa = id;petPhoneRender();
+  petPhoneChatConversa = id;petPhoneRender();petPhoneSom('toque');
   var corpo = $('petPhoneCorpo');if(corpo)corpo.scrollTop = 0;
   return true;
 }
@@ -1184,7 +1184,7 @@ function petPhoneChatResponder(opcao){
   var contato = petPhoneChatContatos().find(function(c){return c.id === petPhoneChatConversa;});
   if(!contato || petPhoneChatRespostas[contato.id]) return false;
   petPhoneChatRespostas[contato.id] = {opcao:opcao,reacao:petPhoneChatReacao(contato,opcao)};
-  petPhoneRender();
+  petPhoneRender();petPhoneSom('toque');
   var corpo = $('petPhoneCorpo');if(corpo)corpo.scrollTop = corpo.scrollHeight || 0;
   return true;
 }
@@ -1218,6 +1218,19 @@ function petPhoneRender(){
     petPhoneFotoRender(); petPhoneMomentosRender(); petPhoneJornalRender();
   }
 }
+// Sons do celular (Web Audio, mesmo beep do jogo; respeita o mudo). Curtos e fofos, estilo celular Y2K.
+var PET_PHONE_SONS = {
+  abrir:[[1047,.07,'triangle',.035,0],[1319,.07,'triangle',.035,.07],[1568,.07,'triangle',.035,.14],[2093,.16,'sine',.03,.21],[2637,.1,'sine',.012,.3]],
+  fechar:[[1568,.06,'triangle',.03,0],[1175,.06,'triangle',.03,.06],[880,.12,'sine',.03,.12]],
+  app:[[1319,.05,'sine',.032,0],[1760,.08,'sine',.028,.05]],
+  voltar:[[1175,.05,'sine',.028,0],[880,.07,'sine',.025,.05]],
+  toque:[[1568,.04,'sine',.026,0],[2093,.06,'triangle',.016,.04]],
+  carta:[[988,.05,'triangle',.028,0],[1319,.05,'triangle',.028,.06],[1976,.14,'sine',.022,.12]]
+};
+function petPhoneSom(k){
+  if(typeof beep !== 'function' || !PET_PHONE_SONS[k]) return;
+  try{ PET_PHONE_SONS[k].forEach(function(n){ beep(n[0], n[1], n[2], n[3], n[4]); }); }catch(e){}
+}
 function petPhoneAbrir(tela){
   if(!petOpen || petView !== 'room' || petGame || !petAtivo() || !contaJ) return false;
   if(petPhoneFotoDono && petPhoneFotoDono !== petPhoneFotoChave()) petPhoneFotoLimpar();
@@ -1237,6 +1250,7 @@ function petPhoneAbrir(tela){
   $('petPhone').style.setProperty('--petphone-oshi',({tsu:'#9b30d9',lirika:'#22c55e',pati:'#4169e1'})[OSHI]||'#ff6fb5');
   petAnimParar(); petPhoneRender();
   if(petPhoneTela === 'agenda') petPhoneAgendaCarregar();
+  petPhoneSom('abrir');
   $('petPhoneX').focus();
   return true;
 }
@@ -1247,11 +1261,13 @@ function petPhoneFechar(retomar){
   petPhoneFotoLimpar();
   petPhoneJornalLimpar();petPhoneJornalFotos = [];
   $('petPhone').hidden = true;
+  petPhoneSom('fechar');
   if(retomar !== false){ petAnimLigar(); var botao = document.querySelector('#petLifeNav [data-life="celular"]'); if(botao) botao.focus(); }
   return true;
 }
 function petPhoneVoltar(){
   if(!petPhoneOpen) return false;
+  if(petPhoneTela !== 'home') petPhoneSom('voltar');
   if(petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos' && petPhoneMomentoSelecionado) return petPhoneMomentoVoltar();
   if(petPhoneTela === 'fotos' && petPhoneJornalIndice >= 0) return petPhoneJornalVoltar();
   if(petPhoneTela === 'cartas' && petPhoneCartaAberta){
@@ -1270,7 +1286,7 @@ function petPhoneTelaAbrir(k){
   if(k === 'chat') petPhoneChatConversa = '';
   if(k === 'cartas') petPhoneCartaAberta = '';
   if(k === 'fotos'){petPhoneFotosAba = 'camera';petPhoneMomentoSelecionado = '';}
-  petPhoneTela = k; petPhoneRender();
+  petPhoneTela = k; petPhoneRender(); petPhoneSom('app');
   if(k === 'agenda') petPhoneAgendaCarregar();
   return true;
 }

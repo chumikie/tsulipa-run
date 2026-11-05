@@ -79,7 +79,7 @@ test('ML1.4: ações existentes avisam a vontade no fim do cuidado', () => {
 function celular(nick){
   const ctx = {contaJ:nick ? {nick} : null, petAtivo:() => ({nome:'Pipoca'}), best:12345, LANG:'pt', tr:s => s,
     escHtml:s => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;'), petPhoneOpen:true, petPhoneTela:'cartas',
-    petPhoneRender(){ ctx.render = (ctx.render || 0) + 1; }, petLifeUI(){}, $:() => null, Date, Math,
+    petPhoneRender(){ ctx.render = (ctx.render || 0) + 1; }, petLifeUI(){}, petPhoneSom(){}, $:() => null, Date, Math,
     hsNomesLivres:() => ['Nana', 'Kiko', 'Lulu']};
   vm.runInNewContext(cartas, ctx);
   return ctx;

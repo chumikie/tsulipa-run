@@ -95,3 +95,8 @@ test('Perfil aberto pela vitrine/busca volta para a página principal, não para
   assert.match(html, /if\(b\)\{ perfVoltaHub = true; hubFechar\(\); \}/);
   assert.match(perfil, /if\(!petLifeRetornar\('trofeus'\) && voltaHub && typeof hubMostrar === 'function'\) hubMostrar\(\);/);
 });
+
+test('ML1.7: celular tem som ao abrir, fechar, trocar de app, voltar, tocar e abrir carta', () => {
+  for(const k of ['abrir', 'fechar', 'app', 'voltar', 'toque', 'carta']) assert.match(pet, new RegExp("petPhoneSom\\('" + k + "'\\)"), k);
+  assert.match(pet, /if\(typeof beep !== 'function' \|\| !PET_PHONE_SONS\[k\]\) return;/, 'usa o beep do jogo (que respeita o mudo)');
+});

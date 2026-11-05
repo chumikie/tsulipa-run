@@ -77,6 +77,7 @@ test('ML1.3-B: TsuPhone usa um quadro único antes de pausar, com backend simula
     petAnimParar(){calls.push('pausa');},petPhoneRender(){calls.push('papel');},
     petPhoneAgendaCarregar(){calls.push('agenda');},
     petPhoneMarca(){}, // nome "{nick}Phone" na barra (ML1.4)
+    petPhoneSom(){}, // sons do celular (ML1.7)
     contaRpc(){throw Error('não deve chamar backend');},petSave(){throw Error('não deve salvar');}
   };
   vm.runInNewContext('var petLifePhoneOlhar = false;\n' + phoneSource, ctx);

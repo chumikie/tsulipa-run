@@ -492,6 +492,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 | Karaoke — tela de jogo | No show do próprio jogador a sala ocupa a tela e as pistas D F J K aparecem por cima, em canvas transparente (`karaoke-arena.js/.css`), com velocidade constante das notas. Toque sem nota por perto não conta mais como erro. Pausar sem contagem sai da tela de jogo; o "← Início" do site fica sempre visível | Implementado (`008be8f`) |
 | Karaoke — balões | Falas dos NPCs não se sobrepõem: fila de balões em até 4 andares, jogador primeiro, desenhada depois de todos os Idols (`krBaloesLayout`) | Implementado (`28676df`) |
 | Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
+| Karaoke — músicas novas | Sete trilhas de outros modos viram músicas do jogo de ritmo (`karaoke-musicas-modos.js`, fora do HTML pelo limite de tamanho): Mega Kawaii, Corrida Tensa, Modo Difícil, Kimi wa Alien! e Unit⭐Sync! (Center⭐Run!), Sora⭐Jump! e Vitrine Brilhante (início). Mesmo formato das 7 originais (64 passos, acordes a cada 8), cartão na biblioteca e opção no seletor. A rotação semanal continua com as mesmas 5 | Implementado |
 | Sons do celular | Abrir, fechar, voltar, abrir app, tocar, conversar e abrir carta têm sons curtos (`PET_PHONE_SONS` via `beep`), que respeitam o mudo | Implementado (`9bb3645`) |
 | Visual dos personagens | Visual 2.0 (mangas e sombra extra) foi revertido em `98c56f8`: a manga ficava solta do tronco e a sombra somava sobre a existente. Em estudo, sem nada no jogo: **proposta C** (mesmo degradê de hoje, mas contínuo do ombro até a barra, recortado só no tecido, sem escurecer detalhes, com ombreira ligada à roupa) | Aguardando aprovação |
 
@@ -507,7 +508,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 ### Testes e CI
 
-- `node tests/run-all.js`: 68/68 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16` e `karaoke-baloes`).
+- `node tests/run-all.js`: 69/69 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16`, `karaoke-baloes` e `karaoke-musicas-modos`).
 - `tests/karaoke-mobile.browser.cjs` confere as pistas da tela de jogo do Karaoke.
 - Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
 - `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
@@ -517,7 +518,6 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 - Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
 - Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
-- Karaoke: escolher quais trilhas sintetizadas de outros modos entram como músicas novas (o servidor aceita qualquer chave de música; só a rotação semanal é fixa em 5).
 - Visual dos personagens: aprovar a proposta C antes de aplicar no site, Karaoke e Sora Jump e trocar a referência visual.
 - Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
 - A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

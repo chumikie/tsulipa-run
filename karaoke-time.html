@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -1355,7 +1355,7 @@ var songs={
   mel:[81,-1,-1,79,76,-1,79,-1, 76,-1,74,-1,72,-1,-1,-1, 77,-1,76,74,72,-1,74,-1, 76,-1,-1,72,71,-1,72,-1,
        81,-1,84,-1,81,79,-1,-1, 79,-1,76,-1,74,-1,-1,-1, 77,-1,81,79,77,-1,76,-1, 74,-1,72,-1,71,-1,72,-1]}
 };
-/* Cada musica e uma melodia; -1 marca pausas. */
+/* Cada musica e uma melodia; -1 marca pausas. */if(typeof ktMusicasModosMontar==='function')ktMusicasModosMontar(songs,document);
 Object.keys(songs).forEach(function(k){var c=songs[k],cnt={},tot=0;c.mel.forEach(function(m){if(m>=0){cnt[m]=(cnt[m]||0)+1;tot++;}});var acc=0;c.lanes={};Object.keys(cnt).map(Number).sort(function(a,b){return a-b;}).forEach(function(m){c.lanes[m]=Math.min(3,Math.floor((acc+cnt[m]/2)*4/tot));acc+=cnt[m];});});
 /* Deterministic note map keeps rests, including on strong beats. */
 function makeNoteMap(song,total,step,start){var notes=[],heard=0,lastLane=-1,streak=0,lastPitch=-1;
@@ -2537,7 +2537,7 @@ function ktPlacar(x,t){
  }
  x.textBaseline='alphabetic';
 }
-function songTitleKt(k){var m={normal:'Brilha Comigo',fast:'Love × Debut',chill:'Doce Melodia',tema:'TsuLiPa⭐World',corrida:'Center⭐Run!',gacha:'Star⭐Gacha!',duo:'Moon⭐Duo!'};return m[k]||'';}
+function songTitleKt(k){var m={normal:'Brilha Comigo',fast:'Love × Debut',chill:'Doce Melodia',tema:'TsuLiPa⭐World',corrida:'Center⭐Run!',gacha:'Star⭐Gacha!',duo:'Moon⭐Duo!'};return m[k]||(typeof ktMusicaModoNome==='function'?ktMusicaModoNome(k):'')||'';}
 var krTilesPisados=new Uint8Array(90); // buffer reutilizado: não alocar memória a cada quadro
 var krLoopFrame=0,krRoomHostVisible=true,krHostMotionSeen=false,krRoomCanvasVisible=true,krRhythmPanelVisible=false;
 var krRoomRenderLista=[],krRoomRenderPlayer={},krRoomRenderBalloon={},krRoomRenderRoster=[],krRoomRenderIncludesPlayer=null;

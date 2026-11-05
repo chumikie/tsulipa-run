@@ -1027,7 +1027,7 @@ function twPreviewFecharJogo(){
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
-  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');wrap.removeAttribute('data-karaoke-arena');document.documentElement.classList.remove('tw-kt-arena');frame.style.height='';
+  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');wrap.removeAttribute('data-karaoke-arena');if(document.documentElement)document.documentElement.classList.remove('tw-kt-arena');frame.style.height='';
   if(ultimo==='karaoke'&&location.hash==='#karaoke'){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
   wrap.removeAttribute('role');wrap.removeAttribute('aria-modal');
   hubOv.inert=false;

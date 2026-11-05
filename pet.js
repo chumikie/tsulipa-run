@@ -16,6 +16,31 @@ var PET_CAP = 12 * 36e5;                                           // queda máx
 var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
 // ML1.3-A: estado exclusivamente visual; nunca entra em petData ou no save.
 var petLifePose = '', petLifePoseInicio = 0;
+var petLifePhoneOlhar = false;
+// ML1.3-B: um gesto curto por escolha, calculado no loop existente.
+// Nenhuma mudança nas necessidades, no hitbox ou nos dados guardados.
+function petLifeCompanhiaVisual(k, cfg, t, pose, inicio, livre, telefone){
+  if(!livre) return null;
+  var jeito = petRecepcaoJeito(k, cfg);
+  if(telefone) return {x:0,pulo:0,inclina:jeito === 'pati' ? -.055 : 0,
+    ex:jeito === 'lirika' ? 'sono' : 'feliz',
+    sinal:jeito === 'pati' ? '✧' : '',alfa:jeito === 'pati' ? .8 : 0};
+  if(pose !== 'sentar' && pose !== 'descansar') return null;
+  var idade = t - inicio;
+  if(idade < 0 || idade >= 125) return null;
+  var chega = idade < 20 ? 0 : idade < 65 ? Math.sin((idade - 20) / 45 * Math.PI / 2) :
+    idade < 85 ? 1 : Math.max(0, 1 - (idade - 85) / 40);
+  var distancia = pose === 'descansar' ? (jeito === 'tsu' ? 5 : jeito === 'lirika' ? 0 : 2) :
+    (jeito === 'tsu' ? 12 : jeito === 'lirika' ? 6 : 10);
+  var pulo = jeito === 'tsu' && pose === 'sentar' && idade >= 38 && idade <= 57 ?
+    Math.sin((idade - 38) / 19 * Math.PI) * 4 : 0;
+  return {x:-distancia * chega,pulo:pulo,
+    inclina:jeito === 'pati' ? -.055 * Math.sin(Math.PI * Math.min(1,idade/75)) :
+      jeito === 'lirika' ? .015 * chega : .025 * chega,
+    ex:pose === 'descansar' && jeito === 'lirika' ? 'sono' : 'feliz',
+    sinal:jeito === 'tsu' ? '♥' : jeito === 'pati' ? '✧' : '',
+    alfa:idade >= 25 && idade < 78 ? Math.sin((idade - 25) / 53 * Math.PI) * .6 : 0};
+}
 function petLifePoseEscolher(pose){
   if(!petOpen || petView !== 'room' || !petAtivo() || petGame || petAnim || petPhoneOpen) return false;
   if(['sentar','descansar','conviver'].indexOf(pose) < 0) return false;
@@ -814,6 +839,10 @@ function petPhoneAbrir(tela){
   petPhoneJornalLimpar();petPhoneJornalFotos = [];
   petPhoneFotosAba = 'camera';
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
+  // O TsuPhone captura um único quadro com o olhar do Pet e pausa o Canvas.
+  // Não altera petT nem cria outra animação enquanto o celular está aberto.
+  petLifePhoneOlhar = true;
+  try{ petDrawRoom(); } finally { petLifePhoneOlhar = false; }
   petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';
   $('petPhone').hidden = false; petPhoneOpen = true;
   $('petPhoneHora').textContent = new Date().toLocaleTimeString(LANG === 'pt' ? 'pt-BR' : undefined,{hour:'2-digit',minute:'2-digit'});
@@ -1181,7 +1210,7 @@ function petDrawRoom(){
 
   // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
   var amizade = petAmizadeVisual(petData.ativo, p.cfg, petT,
-    !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    !petLifePose && !petLifePhoneOlhar && !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
 
   var toqueIdol = petEmote && petEmote.toqueIdol ?
@@ -1220,32 +1249,49 @@ function petDrawRoom(){
 
   // O mesmo brinquedo do Brincar visita o quarto sem afetar o minijogo.
   petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,
-    !sleepy && !petAnim && !petGame && petHop <= 0);
+    !petLifePose && !petLifePhoneOlhar && !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
   var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
   if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
-  var livre = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 && !recebendo && !petLifePose;
+  var podeReagir = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
+    !recebendo && petCharT <= 0 && petLove <= 0 && !petEmote;
+  var companhia = petLifeCompanhiaVisual(petData.ativo,p.cfg,petT,petLifePose,
+    petLifePoseInicio,podeReagir,petLifePhoneOlhar);
+  var livre = podeReagir && !petLifePhoneOlhar && !companhia && petLifePose !== 'conviver';
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
-  hop += rotina.pulo;
+  hop += rotina.pulo + (companhia ? companhia.pulo : 0);
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
-  jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0); jeito.y += passeio.y;
-  if(petLifePose === 'conviver' && !sleepy && !petAnim && !recebendo){
+  jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0) +
+    (companhia ? companhia.x : 0); jeito.y += passeio.y;
+  if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
     var aproxima = Math.min(1, Math.max(0, (petT-petLifePoseInicio)/28));
     jeito.x -= 27 * aproxima;
   }
-  petDecorReacao(x, petData.ativo, p.cfg, petT, !sleepy && !petAnim && petHop <= 0);
+  petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
+  if(companhia && companhia.inclina){
+    x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
+    x.rotate(companhia.inclina);
+    x.translate(-PET_X,-(PET_FLOOR - 12 * PET_SC));
+  }
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
     sleepy ? petT * .35 : petT,
-    toqueIdol ? toqueIdol.ex : (petEx(p) || (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null)))));
+    toqueIdol ? toqueIdol.ex : (petEx(p) || (companhia ? companhia.ex :
+      (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null))))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
   x.restore();
+  if(companhia && companhia.alfa > 0 && companhia.sinal){
+    x.save();x.globalAlpha=companhia.alfa;x.fillStyle=petRecepcaoJeito(petData.ativo,p.cfg) === 'lirika' ? '#b8f2ba' :
+      petRecepcaoJeito(petData.ativo,p.cfg) === 'pati' ? '#b7ddff' : '#ffe9ad';
+    x.font='14px sans-serif';x.textAlign='center';
+    x.fillText(companhia.sinal,PET_X + jeito.x + 24,PET_FLOOR - 79);x.restore();
+  }
   if(toqueIdol){ x.save(); x.globalAlpha = toqueIdol.alfa * .9; x.fillStyle = toqueIdol.cor;
     x.textAlign = 'center'; x.font = '15px sans-serif';
     x.fillText(toqueIdol.sinal, PET_X + jeito.x - 27,

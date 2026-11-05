@@ -40,6 +40,7 @@ function fakeRoom(signedIn = true){
     escHtml:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'),
     petCv:{width:360,height:220}, contaSessaoToken:3, contaAuthUserId:'mock-id',
     petAnimParar(){calls.push('petAnimParar');}, petAnimLigar(){calls.push('petAnimLigar');},
+    petDrawRoom(){}, // O Canvas real desenha um quadro com olhar do Pet antes da foto do TsuPhone.
     contaRpc(k){calls.push('rpc:'+k);return Promise.resolve([{k:'corra2',meta:2,prog:1,feito:false}]);},
     HUB_MIS:{corra2:['🏃','Corra {n} vezes no Center⭐Run!']},
     document:{querySelector(q){

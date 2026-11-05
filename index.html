@@ -20,6 +20,7 @@
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=9"></script>
+<script src="./tw-avatar-roupa.js?v=1"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -365,15 +366,15 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=12"></script>
+<script src="./tw-i18n.js?v=13"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=4"></script>
+<script src="./centerrun.js?v=5"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=18"></script>
-<script src="./perfil.js?v=9"></script>
+<script src="./perfil.js?v=10"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=3"></script>
 <script src="./troca.js?v=1"></script>
@@ -502,6 +503,7 @@ try {
     }
     if(CU.det==='antena'||CU.det==='coracao'){if(!CU.mecha)CU.mecha=CU.det;CU.streak=!!CU.mecha;CU.det='';} // save antigo: conserva a peça no novo campo de Mecha
     if(CU.legcol!==undefined&&!(typeof CU.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(CU.legcol))) delete CU.legcol;   // meias: só cor válida
+    if(CU.baixo!==undefined&&CU.baixo!=='saia'&&CU.baixo!=='bermuda') delete CU.baixo;   // parte de baixo: saia ou bermuda
   }
   Object.keys(cuCoresPadrao).forEach(function(k){
     if(typeof CU[k]!=='string'||!/^#[0-9a-f]{6}$/i.test(CU[k])) CU[k]=cuCoresPadrao[k];
@@ -518,6 +520,7 @@ try {
         if (item.out) CH[idx].out = item.out;
         if (item.outcol) CH[idx].outcol = item.outcol;
         if (item.legcol && /^#[0-9a-f]{6}$/i.test(item.legcol)) CH[idx].legcol = item.legcol;
+        if (item.baixo === 'saia' || item.baixo === 'bermuda') CH[idx].baixo = item.baixo;   // parte de baixo escolhida
         if (item.hat) CH[idx].hat = item.hat;
         if (item.gl) CH[idx].gl = item.gl;
       }
@@ -1514,8 +1517,8 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
 PERF_OSHI_TIMES.forEach(function(t){ t[1].forEach(function(m){ PERF_OSHI[perfOshiKey(m[0])] = [m[1], m[0], m[2]]; }); });
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_TSL = ['#9b30d9', '#5cc72c', '#4169e1'];   // roxo Tsu, verde Lirika, azul Pati
-var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', hat:'' };
-var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'hat'];
+var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'' };
+var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat'];
 
 var PERF_DICT = window.TW_I18N.tables.PERF_DICT;;
 var PERF_DICT2 = window.TW_I18N.tables.PERF_DICT2;;

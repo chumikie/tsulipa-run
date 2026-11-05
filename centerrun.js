@@ -39,9 +39,9 @@ function applyLang(){
   });
 }
 var CH=[
-  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
-  {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:''},
-  {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',outcol:'#ffffff',hat:''},
+  {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:'',baixo:'bermuda'},
+  {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:'',baixo:'saia'},
+  {n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'',outcol:'#ffffff',hat:'',baixo:'bermuda'},
   {n:'Idol',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'',outcol:'#ffffff',hat:''}
 ];
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
@@ -122,7 +122,7 @@ function saveCu(){
   try{
     localStorage.setItem('brs48cr_cu2', JSON.stringify(CU));
     localStorage.setItem('brs48cr_ch2', JSON.stringify(CH.map(function(c){
-      return {out: c.out||'', outcol: c.outcol||'', legcol: c.legcol||'', hat: c.hat||'', gl: c.gl||''};
+      return {out: c.out||'', outcol: c.outcol||'', legcol: c.legcol||'', baixo: c.baixo||'', hat: c.hat||'', gl: c.gl||''};
     })));
   }catch(e){}
 }
@@ -1017,13 +1017,14 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
   g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));
-  g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);
+  var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||(PX&&PX.k==='alien'))?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
+  if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
   var AL = (PX && PX.k === 'alien');
   var roupa = AL ? 'espacial' : (OF > 0 ? '' : (c.out || ''));
 
   if(roupa==='seifuku'){
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12); 
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12); if(TWR)TWR.tronco(g,x,y,twRoupa);
     g.fillStyle='#1b2a5e';T([x+4,y+22, x+26,y+22, x+15,y+29]); 
     g.fillStyle=corDaRoupa;T([x+10,y+22, x+20,y+22, x+15,y+27]); 
     g.fillStyle='#e02a4a';E(x+15,y+27,2,2); T([x+15,y+27, x+12,y+31, x+14,y+32]); T([x+15,y+27, x+18,y+31, x+16,y+32]); 
@@ -1031,11 +1032,12 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillStyle='#111';g.fillRect(x+7,y+22,16,6); 
     g.fillStyle=c.skin;g.fillRect(x+7,y+28,16,4); 
     g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,12);g.fillRect(x+21,y+22,6,12); // Pinta as mangas e o blazer da cor escolhida
-    g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); 
+    g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); if(TWR)TWR.tronco(g,x,y,twRoupa); 
   }else if(roupa==='citypop'){
     g.fillStyle='#111827'; g.fillRect(x+7, y+22, 16, 12);
     g.fillStyle='#fff'; g.fillRect(x+7, y+32, 16, 2);
     g.fillStyle=corDaRoupa; g.fillRect(x+2, y+22, 6, 12); g.fillRect(x+22, y+22, 6, 12); g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Pinta o paletó da cor escolhida
+    if(TWR)TWR.tronco(g,x,y,twRoupa);
     g.fillStyle='#34d399'; g.fillRect(x+11, y+22, 8, 5);
     g.fillStyle='#fbbf24'; g.fillRect(x+17, y+28, 2, 2);
 
@@ -1109,7 +1111,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else{
 
     // Roupa Básica
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
   }
 
@@ -1131,9 +1133,9 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(OF===4){g.fillStyle=PX?OUT[1]:'#1a1426';T([x+6,y+31,x+24,y+31,x+28,y+39,x+2,y+39]);g.fillStyle=PX?OUT[0]:'#1a1426';g.fillRect(x+5,y+22,20,10);g.fillStyle='#ffd23f';g.fillRect(x+2,y+38,26,1.6);g.fillRect(x+13,y+22,4,10);g.fillStyle='#fff';T([x+12,y+22,x+18,y+22,x+15,y+27]);g.fillStyle='#ff3d5e';E(x+15,y+29,1.8,1.8);g.fillStyle='#ffd23f';g.fillRect(x+4,y+22,5,2);g.fillRect(x+21,y+22,5,2)}
   if(OF===5){g.fillStyle=PX?OUT[0]:'#fffdf2';T([x+4,y+22,x+26,y+22,x+30,y+42,x,y+42]);g.fillStyle='#ffd23f';g.fillRect(x+13,y+22,4,20);g.fillRect(x,y+40,30,2);g.fillStyle='rgba(255,226,140,'+(.5+.4*Math.sin(frame*.2))+')';g.fillRect(x+7,y+29,2,2);g.fillRect(x+22,y+34,2,2);g.fillRect(x+10,y+38,2,2)}
   
-  roupaSombra(x, y);   // V2.1.3: luz e sombra nas roupas (igual ao degradê do cabelo)
+  if(!(TWR&&TWR.tem(twRoupa))) roupaSombra(x, y);   // V2.1.3: luz e sombra nas roupas (igual ao degradê do cabelo)
   if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
-  if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); }   // pose da Foto 2.0 por cima da roupa e da faixa
+  if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); } if(TWR)TWR.ombro(g,c,x,y,twRoupa);   // pose da Foto 2.0 por cima da roupa e da faixa
   g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
   
   // As orelhas ficam por trás do cabelo; a base é mais baixa para não cobrir a franja.

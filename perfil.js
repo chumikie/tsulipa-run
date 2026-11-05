@@ -142,6 +142,7 @@ function perfChar(av){
     var v = src[f];
     if(f === 'streak') c.streak = !!v;
     else if(/^(hair|hair2|skin|eye|outcol|legcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(f === 'baixo'){ if(v === 'saia' || v === 'bermuda') c.baixo = v; }   // saia ou bermuda; vazio = padrão da roupa
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
   c.img = c.hair;
@@ -957,6 +958,7 @@ function perfMontUI(){
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label><i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
+  h += '<label>' + escHtml(tr('Parte de baixo')) + ' <select data-m="baixo" title="' + escHtml(tr('Vale para Trainee, Cheeky, Seifuku e City Pop')) + '">' + [['', tr('Padrão da roupa')], ['saia', tr('Saia')], ['bermuda', tr('Bermuda')]].map(function(o){ return '<option value="' + o[0] + '"' + ((CU.baixo || '') === o[0] ? ' selected' : '') + '>' + escHtml(o[1]) + '</option>'; }).join('') + '</select></label>';
   h += '<label>' + escHtml(tr('Meias')) + ' <input type="color" data-m="legcol" value="' + escHtml(CU.legcol || '#1c1c30') + '" title="' + escHtml(tr('Cor das meias ou botas')) + '"></label>';
   [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], p[1]==='hat'&&CU.det==='tulipa'?'tulipa':(CU[p[1]]||'')) + '</select></label>'; });
   h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', CU.det==='torrada'?'torrada':accSel) + '</select></label>';

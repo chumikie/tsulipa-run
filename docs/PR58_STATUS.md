@@ -494,7 +494,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 | Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
 | Karaoke — músicas novas | Sete trilhas de outros modos viram músicas do jogo de ritmo (`karaoke-musicas-modos.js`, fora do HTML pelo limite de tamanho): Mega Kawaii, Corrida Tensa, Modo Difícil, Kimi wa Alien! e Unit⭐Sync! (Center⭐Run!), Sora⭐Jump! e Vitrine Brilhante (início). Mesmo formato das 7 originais (64 passos, acordes a cada 8), cartão na biblioteca e opção no seletor. A rotação semanal continua com as mesmas 5 | Implementado |
 | Sons do celular | Abrir, fechar, voltar, abrir app, tocar, conversar e abrir carta têm sons curtos (`PET_PHONE_SONS` via `beep`), que respeitam o mudo | Implementado (`9bb3645`) |
-| Visual dos personagens | Visual 2.0 (mangas e sombra extra) foi revertido em `98c56f8`: a manga ficava solta do tronco e a sombra somava sobre a existente. Em estudo, sem nada no jogo: **proposta C** (mesmo degradê de hoje, mas contínuo do ombro até a barra, recortado só no tecido, sem escurecer detalhes, com ombreira ligada à roupa) | Aguardando aprovação |
+| Visual dos personagens | Folha E aprovada: Trainee, Cheeky, Seifuku e City Pop ganham parte de baixo própria (**Saia** pregueada ou **Bermuda** de cintura alta, campo `baixo` no Montar Idol do Perfil e da Zipper⭐Shop!; sem escolha, City Pop usa bermuda e as outras, saia), ombro ligado à roupa e luz contínua recortada só no tecido (sem escurecer gravata, laço, gola ou estampa). Tsu e Pati começam de bermuda, Lirika de saia. Módulo único `tw-avatar-roupa.js` nas três cópias do `drawChar`. Estrelado, Zipper, Sweet, roupas da loja e looks de rank continuam como estavam | Implementado |
 
 ### Regra de desenho para tudo que for novo
 
@@ -508,7 +508,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 ### Testes e CI
 
-- `node tests/run-all.js`: 69/69 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16`, `karaoke-baloes` e `karaoke-musicas-modos`).
+- `node tests/run-all.js`: 70/70 localmente (inclui `avatar-roupa`, `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16`, `karaoke-baloes` e `karaoke-musicas-modos`).
 - `tests/karaoke-mobile.browser.cjs` confere as pistas da tela de jogo do Karaoke.
 - Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
 - `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
@@ -518,6 +518,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 - Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
 - Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
-- Visual dos personagens: aprovar a proposta C antes de aplicar no site, Karaoke e Sora Jump e trocar a referência visual.
+- Visual dos personagens: decidir se Estrelado, Zipper, Sweet e as roupas da loja também passam para a luz contínua (hoje mantêm a sombra antiga).
+- Meias no Backstage⭐Pet: relato de que mudam durante as interações; não reproduzido em Comer, Banho, Brincar, Cantar, Conversar, Sentar, Descansar e Conviver. Aguardando personagem, interação e cor.
 - Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
 - A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

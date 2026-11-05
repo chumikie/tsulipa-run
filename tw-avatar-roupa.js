@@ -6,8 +6,8 @@
    - ombro ligado à roupa: a manga começa no tronco e o braço (parado ou levantado) sai de dentro dela;
    - luz contínua: o mesmo degradê de antes (claro à esquerda, escuro à direita, mais escuro embaixo),
      recortado só no tecido base, sem passar por cima de gravata, laço, gola ou estampa.
-   Só retângulos, trapézios e cantos arredondados, como o resto do drawChar. Estrelado, Zipper, Sweet,
-   roupas da loja e looks de rank continuam com o desenho e a sombra que já tinham.
+   Só retângulos, trapézios e cantos arredondados, como o resto do drawChar. Folha F: Estrelado, Zipper e Sweet
+   mantêm o desenho e ganham a mesma luz contínua. Roupas da loja e looks de rank continuam como estavam.
    Usado pelas três cópias do drawChar: centerrun.js, karaoke-time.html e sora-jump.html. */
 (function(root){
   'use strict';
@@ -106,7 +106,27 @@
     luz(g, x, y, todas, false);
   }
 
-  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, BAIXO:BAIXO, BRACOS:BRACOS };
+
+  // Folha F: Estrelado, Zipper e Sweet usam a mesma luz contínua, só no tecido da cor escolhida.
+  var LUZ_PROPRIA = { estrelado:1, zipper:1, sweet:1 };
+  function luzPropria(roupa){ return tem(roupa) || (typeof roupa === 'string' && LUZ_PROPRIA[roupa] === 1); }
+  var PARTES = {
+    'estrelado-baixo': [true,  function(g, x, y){ g.moveTo(x + 5, y + 31); g.lineTo(x + 25, y + 31); g.lineTo(x + 27, y + 38); g.lineTo(x + 3, y + 38); g.closePath(); }],
+    'estrelado-tronco':[false, function(g, x, y){ g.rect(x + 4, y + 22, 22, 10); }],
+    'estrelado-sora':  [false, function(g, x, y){ g.rect(x + 4, y + 22, 22, 12); }],
+    'zipper-saia':     [true,  function(g, x, y){ g.moveTo(x + 4, y + 30); g.lineTo(x + 12, y + 30); g.lineTo(x + 2, y + 42); g.closePath(); g.moveTo(x + 26, y + 30); g.lineTo(x + 18, y + 30); g.lineTo(x + 28, y + 42); g.closePath(); }],
+    'zipper-tronco':   [false, function(g, x, y){ g.ellipse(x + 3, y + 24, 3, 4, 0, 0, 7); g.moveTo(x + 30, y + 24); g.ellipse(x + 27, y + 24, 3, 4, 0, 0, 7); g.rect(x + 5, y + 29, 20, 3); }],
+    'zipper-mangas':   [false, function(g, x, y){ g.ellipse(x + 1.5, y + 24.5, 4, 4, 0, 0, 7); g.moveTo(x + 32.5, y + 24.5); g.ellipse(x + 28.5, y + 24.5, 4, 4, 0, 0, 7); }],
+    'sweet-saia':      [true,  function(g, x, y){ g.moveTo(x + 2, y + 33); g.lineTo(x + 28, y + 33); g.lineTo(x + 34, y + 43); g.lineTo(x - 2, y + 43); g.closePath(); }],
+    'sweet-tronco':    [false, function(g, x, y){ g.rect(x + 4, y + 22, 22, 12); }]
+  };
+  // Chamada logo depois de cada peça de tecido e antes dos detalhes que ficam por cima dela.
+  function parte(g, x, y, nome){
+    var p = PARTES[nome]; if(!p) return;
+    luz(g, x, y, function(){ p[1](g, x, y); }, p[0]);
+  }
+
+  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : this);

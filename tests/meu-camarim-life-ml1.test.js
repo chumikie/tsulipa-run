@@ -631,6 +631,69 @@ test('ML1.2-C.2-C.2: iframe valida origem, sessão, PNG e confirmação em 320×
   assert.equal(/localStorage|contaRpc|fetch\(/.test(karaokePhoto.slice(karaokePhoto.indexOf('keep.onclick='),karaokePhoto.indexOf('share.onclick='))),false);
 });
 
+test('ML1.2-C.2-D: Momentos amplia as quatro origens sem copiar o PNG e volta à mesma galeria', () => {
+  const {ctx,nodes,calls}=fakeRoom();ctx.petData={ativo:'tsu'};ctx.Blob=Blob;
+  let nextUrl=0;ctx.URL={createObjectURL:()=>`blob:foto-${++nextUrl}`,revokeObjectURL:()=>{}};
+  const png='data:image/png;base64,iVBORw0KGgo=';
+  for(const tipo of ['pet','center','duo']) assert.equal(ctx.petPhoneMomentoGuardar(tipo,png),true);
+  assert.equal(ctx.petPhoneMomentoGuardarBlob('karaoke',new Blob(['original'],{type:'image/png'}),new Blob(['miniatura'],{type:'image/png'})),true);
+  const originais=ctx.petPhoneMomentos.map(f=>({id:f.id,url:f.url,mini:f.miniUrl}));
+  nodes.petPhoneMomentoImagem={src:'',removeAttribute(){this.src='';}};
+  nodes.petPhoneMomentoBaixar={href:'',download:'',removeAttribute(){this.href='';}};
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('momentos');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="momento-abrir"/);
+  for(const f of ctx.petPhoneMomentos){
+    assert.equal(ctx.petPhoneMomentoAbrir(f.id),true,f.tipo);
+    assert.match(nodes.petPhoneCorpo.innerHTML,/petphone-momento-revisao/);
+    assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/petphone-fotos-tabs/,'revisão aproveita o espaço das abas');
+    assert.equal(nodes.petPhoneMomentoImagem.src,f.url,'ampliação usa a imagem original, não a miniatura');
+    assert.equal(nodes.petPhoneMomentoBaixar.href,f.url,'download usa o mesmo PNG original');
+    assert.match(nodes.petPhoneMomentoBaixar.download,new RegExp('^tsulipa-'+f.tipo+'-'));
+    assert.equal(ctx.petPhoneVoltar(),true,'voltar do TsuPhone retorna à grade');
+    assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="momento-abrir"/);
+    assert.equal(ctx.petPhoneMomentoSelecionado,'');
+  }
+  assert.equal(ctx.petPhoneMomentoAbrir('foto-inexistente'),false);
+  assert.deepEqual(ctx.petPhoneMomentos.map(f=>({id:f.id,url:f.url,mini:f.miniUrl})),originais,'nenhum PNG ou save novo');
+  assert.equal(ctx.petPhoneMomentoAbrir(ctx.petPhoneMomentos[0].id),true);
+  ctx.petPhoneFechar();
+  assert.equal(ctx.petPhoneMomentoSelecionado,'','fechar celular limpa só a seleção');
+  assert.equal(ctx.petPhoneMomentos.length,4,'as fotografias continuam na sessão');
+  assert.deepEqual(calls.filter(v=>v.startsWith('rpc:')),[]);
+});
+
+test('ML1.2-C.2-D: revisão protege a sessão e permanece legível em 320×640 e 390×844', () => {
+  const {ctx,nodes}=fakeRoom();ctx.petData={ativo:'tsu'};ctx.Blob=Blob;
+  const revogadas=[];ctx.URL={createObjectURL:()=>`blob:seguro-${revogadas.length+1}`,revokeObjectURL:u=>revogadas.push(u)};
+  nodes.petPhoneMomentoImagem={src:'',removeAttribute(){this.src='';}};
+  nodes.petPhoneMomentoBaixar={href:'',removeAttribute(){this.href='';}};
+  assert.equal(ctx.petPhoneMomentoGuardarBlob('karaoke',new Blob(['arquivo'],{type:'image/png'})),true);
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('momentos');
+  assert.equal(ctx.petPhoneMomentoAbrir(ctx.petPhoneMomentos[0].id),true);
+  ctx.contaSessaoToken=100;ctx.petPhoneMomentosConferir();
+  assert.equal(ctx.petPhoneMomentoSelecionado,'');
+  assert.equal(ctx.petPhoneMomentos.length,0);
+  assert.equal(nodes.petPhoneMomentoImagem.src,'');
+  assert.equal(nodes.petPhoneMomentoBaixar.href,'');
+  assert.deepEqual(revogadas,['blob:seguro-1']);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Nenhuma foto nesta sessão/);
+  assert.equal(ctx.petPhoneMomentoVoltar(),false,'sem foto não existe retorno pendente');
+  assert.match(html,/k === 'momento-abrir'\) petPhoneMomentoAbrir\(b\.dataset\.momento\)/);
+  assert.match(html,/k === 'momento-voltar'\) petPhoneMomentoVoltar\(\)/);
+  assert.match(pet,/petPhoneFotosAba === 'momentos' && petPhoneMomentoSelecionado\) return petPhoneMomentoVoltar\(\)/);
+  assert.match(css,/\.petphone-momento-polaroid img\{[^}]*object-fit:contain/);
+  assert.match(css,/\.petphone-momento-revisao a,\.petphone-momento-revisao button\{[^}]*min-height:44px/);
+  assert.match(css,/\.petphone-momento-ver\{[^}]*min-height:44px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const largura=Math.min(304,w-28),coluna=(largura-24-7)/2,painel=Math.min(h<=760?448:472,h-60);
+    assert.ok(coluna>=130,`${w}×${h}: Polaroids acessíveis em duas colunas`);
+    assert.ok(225+44+44+50<=painel,`${w}×${h}: foto ampliada e ações na área rolável`);
+  }
+  for(const idioma of ['pt','en','es','id','th','ja']) assert.match(pet,new RegExp('(?:^|\\n)  '+idioma+':\\[.*(?:Ampliar|Enlarge|Perbesar|ขยาย|拡大)'));
+  const trecho=pet.slice(pet.indexOf('function petPhoneMomentoSoltar('),pet.indexOf('function petPhoneFotoHtml('));
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage|toDataURL/.test(trecho),false);
+});
+
 test('ML1.2-C.2-B.1: captura abre revisão inteira no TsuPhone, mantendo PNG e ações originais', () => {
   const {ctx,nodes,calls}=fakeRoom();
   const png='data:image/png;base64,iVBORw0KGgo=';

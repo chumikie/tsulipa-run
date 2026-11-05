@@ -177,12 +177,12 @@ var PET_PHONE_FOTOS_TEXTO = {
   ja:['カメラ','思い出','ニュース','わたしの思い出⭐','レースやライブ、出会いの写真は今後の更新でここに登場します。','今日の写真⭐','Idol⭐News!の公開写真は今後の更新でここに登場します。','準備中']
 };
 var PET_PHONE_MOMENTO_TEXTO = {
-  pt:['Guardar em Momentos⭐','Guardado no TsuPhone! 💗','Não foi possível guardar esta foto.','Nenhuma foto nesta sessão.','Guarde voluntariamente uma selfie ou foto da corrida, do Karaoke⭐Time! ou do Moon⭐Duo! para vê-la aqui.','Baixar PNG','Fotos temporárias: somem ao sair da página.'],
-  en:['Keep in Moments⭐','Saved to TsuPhone! 💗','Could not keep this photo.','No photos in this session.','Choose to keep a selfie or a photo from Center⭐Run!, Karaoke⭐Time! or Moon⭐Duo! to see it here.','Download PNG','Temporary photos: cleared when leaving the page.'],
-  es:['Guardar en Momentos⭐','¡Guardado en TsuPhone! 💗','No se pudo guardar esta foto.','Aún no hay fotos en esta sesión.','Guarda una selfie o foto de Center⭐Run!, Karaoke⭐Time! o Moon⭐Duo! para verla aquí.','Descargar PNG','Fotos temporales: desaparecen al salir de la página.'],
-  id:['Simpan di Momen⭐','Tersimpan di TsuPhone! 💗','Foto ini tidak bisa disimpan.','Belum ada foto dalam sesi ini.','Simpan selfie atau foto Center⭐Run!, Karaoke⭐Time!, atau Moon⭐Duo! untuk melihatnya di sini.','Unduh PNG','Foto sementara: hilang saat meninggalkan halaman.'],
-  th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่หรือรูปจาก Center⭐Run!, Karaoke⭐Time! หรือ Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ'],
-  ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィーや Center⭐Run!、Karaoke⭐Time!、Moon⭐Duo! の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。']
+  pt:['Guardar em Momentos⭐','Guardado no TsuPhone! 💗','Não foi possível guardar esta foto.','Nenhuma foto nesta sessão.','Guarde voluntariamente uma selfie ou foto da corrida, do Karaoke⭐Time! ou do Moon⭐Duo! para vê-la aqui.','Baixar PNG','Fotos temporárias: somem ao sair da página.','Ampliar foto','Voltar aos Momentos'],
+  en:['Keep in Moments⭐','Saved to TsuPhone! 💗','Could not keep this photo.','No photos in this session.','Choose to keep a selfie or a photo from Center⭐Run!, Karaoke⭐Time! or Moon⭐Duo! to see it here.','Download PNG','Temporary photos: cleared when leaving the page.','Enlarge photo','Back to Moments'],
+  es:['Guardar en Momentos⭐','¡Guardado en TsuPhone! 💗','No se pudo guardar esta foto.','Aún no hay fotos en esta sesión.','Guarda una selfie o foto de Center⭐Run!, Karaoke⭐Time! o Moon⭐Duo! para verla aquí.','Descargar PNG','Fotos temporales: desaparecen al salir de la página.','Ampliar foto','Volver a Momentos'],
+  id:['Simpan di Momen⭐','Tersimpan di TsuPhone! 💗','Foto ini tidak bisa disimpan.','Belum ada foto dalam sesi ini.','Simpan selfie atau foto Center⭐Run!, Karaoke⭐Time!, atau Moon⭐Duo! untuk melihatnya di sini.','Unduh PNG','Foto sementara: hilang saat meninggalkan halaman.','Perbesar foto','Kembali ke Momen'],
+  th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่หรือรูปจาก Center⭐Run!, Karaoke⭐Time! หรือ Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ','ขยายรูป','กลับไปความทรงจำ'],
+  ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィーや Center⭐Run!、Karaoke⭐Time!、Moon⭐Duo! の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。','写真を拡大','思い出に戻る']
 };
 var PET_PHONE_JORNAL_TEXTO = {
   pt:['Cenas públicas do Idol⭐News! · novas fotos a cada dia.','As fotos aparecem quando a vitrine de Idols carregar.','Atualizar fotos','Ampliar foto','Voltar ao Jornal','Baixar PNG','No iPhone, segure a imagem para salvar se necessário.'],
@@ -195,7 +195,7 @@ var PET_PHONE_JORNAL_TEXTO = {
 // Fotos⭐: uma única Polaroid temporária; nunca entra no save ou no Supabase.
 var petPhoneFotoUrl = '', petPhoneFotoDono = '', petPhoneFotoErro = '';
 // ML1.2-C.2-B: até quatro fotos da sessão, nunca persistidas ou transmitidas.
-var petPhoneMomentos = [], petPhoneMomentosDono = '', petPhoneMomentoFonte = '', petPhoneMomentoFonteDono = '';
+var petPhoneMomentos = [], petPhoneMomentosDono = '', petPhoneMomentoFonte = '', petPhoneMomentoFonteDono = '', petPhoneMomentoSelecionado = '';
 // Fotos públicas do Jornal: só objetos da cena e uma PNG temporária sob toque.
 var petPhoneJornalFotos = [], petPhoneJornalIndice = -1, petPhoneJornalUrl = '';
 // ML1.2-B: diálogos fictícios, só nesta sessão. Nunca enviam ou salvam mensagens.
@@ -304,6 +304,7 @@ function petPhoneMomentosLimitar(){
   while(petPhoneMomentos.length > 4 || petPhoneMomentos.reduce(function(n,f){ return n + (f.bytes || f.url.length); },0) > 16*1024*1024){
     petPhoneMomentoSoltar(petPhoneMomentos.shift());
   }
+  if(petPhoneMomentoSelecionado && !petPhoneMomentos.some(function(f){return f.id === petPhoneMomentoSelecionado;})) petPhoneMomentoSelecionado = '';
 }
 function petPhoneMomentosLimpar(){
   var corpo = $('petPhoneCorpo');
@@ -311,8 +312,11 @@ function petPhoneMomentosLimpar(){
     corpo.querySelectorAll('[data-momento-id]').forEach(function(img){img.removeAttribute('src');});
     corpo.querySelectorAll('[data-momento-baixar]').forEach(function(a){a.removeAttribute('href');});
   }
+  var ampliada=$('petPhoneMomentoImagem'),download=$('petPhoneMomentoBaixar');
+  if(ampliada)ampliada.removeAttribute('src');
+  if(download)download.removeAttribute('href');
   petPhoneMomentos.forEach(petPhoneMomentoSoltar);
-  petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = '';
+  petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = ''; petPhoneMomentoSelecionado = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
 }
@@ -365,20 +369,52 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
 }
 function petPhoneMomentosHtml(){
   petPhoneMomentosConferir();
+  var escolhida = petPhoneMomentos.find(function(f){ return f.id === petPhoneMomentoSelecionado && f.dono === petPhoneFotoChave(); });
+  if(petPhoneMomentoSelecionado && !escolhida) petPhoneMomentoSelecionado = '';
+  if(escolhida) return '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid petphone-momento-' + escolhida.tipo + '">' +
+    '<img id="petPhoneMomentoImagem" alt="' + escHtml(escolhida.rotulo) + '"><figcaption>✦ ' + escHtml(escolhida.rotulo) + ' ✦</figcaption></figure>' +
+    '<a id="petPhoneMomentoBaixar" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a>' +
+    '<button type="button" data-phone="momento-voltar">‹ ' + escHtml(petPhoneMomentoTexto(8)) + '</button>' +
+    '<p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
   if(!petPhoneMomentos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
   return '<section class="petphone-momentos"><div class="petphone-momentos-grid">' + petPhoneMomentos.slice().reverse().map(function(f){
-    return '<article class="petphone-momento"><img data-momento-id="' + f.id + '" alt="' + escHtml(f.rotulo) + '" loading="lazy"><b>' + escHtml(f.rotulo) + '</b><a data-momento-baixar="' + f.id + '" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a></article>';
+    return '<article class="petphone-momento petphone-momento-' + f.tipo + '"><button type="button" class="petphone-momento-ver" data-phone="momento-abrir" data-momento="' + f.id + '" aria-label="' + escHtml(petPhoneMomentoTexto(7) + ': ' + f.rotulo) + '">' +
+      '<span class="petphone-momento-print"><img data-momento-id="' + f.id + '" alt="' + escHtml(f.rotulo) + '" loading="lazy"></span><b>✦ ' + escHtml(f.rotulo) + '</b></button>' +
+      '<a data-momento-baixar="' + f.id + '" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a></article>';
   }).join('') + '</div><p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
 }
 function petPhoneMomentosRender(){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return;
   var corpo = $('petPhoneCorpo'); if(!corpo || !corpo.querySelectorAll) return;
+  var escolhida = petPhoneMomentos.find(function(f){return f.id === petPhoneMomentoSelecionado && f.dono === petPhoneFotoChave();});
+  if(escolhida){
+    var imagem=$('petPhoneMomentoImagem'), baixar=$('petPhoneMomentoBaixar');
+    if(imagem) imagem.src=escolhida.url;
+    if(baixar){baixar.href=escolhida.url;baixar.download='tsulipa-'+escolhida.tipo+'-'+escolhida.id+'.png';}
+    return;
+  }
   petPhoneMomentos.forEach(function(f){
     var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
     var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
     if(img) img.src = f.miniUrl || f.url;
     if(dl){dl.href = f.url;dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.png';}
   });
+}
+function petPhoneMomentoAbrir(id){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return false;
+  petPhoneMomentosConferir();
+  if(!petPhoneMomentos.some(function(f){return f.id === id && f.dono === petPhoneFotoChave();})) return false;
+  petPhoneMomentoSelecionado=id;petPhoneRender();
+  var corpo=$('petPhoneCorpo');if(corpo)corpo.scrollTop=0;
+  var voltar=document.querySelector('#petPhoneCorpo [data-phone="momento-voltar"]');if(voltar)voltar.focus();
+  return true;
+}
+function petPhoneMomentoVoltar(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos' || !petPhoneMomentoSelecionado) return false;
+  var anterior=petPhoneMomentoSelecionado;petPhoneMomentoSelecionado='';petPhoneRender();
+  var botao=document.querySelector('#petPhoneCorpo [data-phone="momento-abrir"][data-momento="' + anterior + '"]');
+  if(botao)botao.focus();
+  return true;
 }
 function petPhoneFotoHtml(){
   var fotoPronta = !!petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave();
@@ -475,11 +511,12 @@ function petPhoneFotosHtml(){
     // Na revisão, a Polaroid recebe o espaço que seria ocupado pelas três abas.
     return (petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave() ? '' : nav) + petPhoneFotoHtml();
   }
-  if(petPhoneFotosAba === 'momentos') return nav + petPhoneMomentosHtml();
+  if(petPhoneFotosAba === 'momentos') return (petPhoneMomentoSelecionado ? '' : nav) + petPhoneMomentosHtml();
   return (petPhoneJornalIndice >= 0 ? '' : nav) + petPhoneJornalHtml();
 }
 function petPhoneFotosAbaAbrir(k){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || ['camera','momentos','jornal'].indexOf(k) < 0) return false;
+  if(k !== 'momentos') petPhoneMomentoSelecionado = '';
   if(k !== 'jornal') {petPhoneJornalLimpar();petPhoneJornalFotos = [];}
   petPhoneFotosAba = k;
   if(k === 'jornal') petPhoneJornalAtualizar();
@@ -744,7 +781,7 @@ function petPhoneAbrir(tela){
 }
 function petPhoneFechar(retomar){
   if(!petPhoneOpen) return false;
-  petPhoneOpen = false; petPhoneTela = 'home'; petPhoneFotosAba = 'camera'; petPhoneAgendaReq++;
+  petPhoneOpen = false; petPhoneTela = 'home'; petPhoneFotosAba = 'camera'; petPhoneMomentoSelecionado = ''; petPhoneAgendaReq++;
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneFotoLimpar();
   petPhoneJornalLimpar();petPhoneJornalFotos = [];
@@ -754,6 +791,7 @@ function petPhoneFechar(retomar){
 }
 function petPhoneVoltar(){
   if(!petPhoneOpen) return false;
+  if(petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos' && petPhoneMomentoSelecionado) return petPhoneMomentoVoltar();
   if(petPhoneTela === 'fotos' && petPhoneJornalIndice >= 0) return petPhoneJornalVoltar();
   if(petPhoneTela === 'chat' && petPhoneChatConversa){
     petPhoneChatConversa = '';petPhoneRender();return true;
@@ -765,7 +803,7 @@ function petPhoneVoltar(){
 function petPhoneTelaAbrir(k){
   if(!petPhoneOpen || ['agenda','chat','fotos','perfil'].indexOf(k) < 0) return false;
   if(k === 'chat') petPhoneChatConversa = '';
-  if(k === 'fotos') petPhoneFotosAba = 'camera';
+  if(k === 'fotos'){petPhoneFotosAba = 'camera';petPhoneMomentoSelecionado = '';}
   petPhoneTela = k; petPhoneRender();
   if(k === 'agenda') petPhoneAgendaCarregar();
   return true;

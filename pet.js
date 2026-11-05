@@ -166,6 +166,8 @@ var PET_PHONE_APPS = {
 };
 var petPhoneOpen = false, petPhoneTela = 'home', petPhoneVoltarTela = '';
 var petPhoneAgendaDados = null, petPhoneAgendaDono = '', petPhoneAgendaReq = 0;
+// ML1.2-B: diálogos fictícios, só nesta sessão. Nunca enviam ou salvam mensagens.
+var petPhoneChatConversa = '', petPhoneChatSessao = '', petPhoneChatRespostas = {};
 function petPhoneContaChave(){
   if(!contaJ) return '';
   var id = (typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '';
@@ -258,6 +260,112 @@ function petPhoneAgendaHtml(){
     return '<li><span>' + cfg[0] + '</span><div><b>' + escHtml(tr(cfg[1]).replace('{n}',String(meta))) + '</b><small>' + (m.feito ? '✓ ' + escHtml(tr('Concluída')) : prog + '/' + meta) + '</small></div></li>';
   }).join('') + '</ul>';
 }
+function petPhoneChatContatos(){
+  var contatos = [
+    {id:'idol:tsu',nome:'Tsu',tipo:'idol',avatar:'🎤',papel:tr('Idol · Tsu'),cor:'#9b30d9'},
+    {id:'idol:lirika',nome:'Lirika',tipo:'idol',avatar:'🐨',papel:tr('Idol · Lirika'),cor:'#22a76d'},
+    {id:'idol:pati',nome:'Pati',tipo:'idol',avatar:'👑',papel:tr('Idol · Pati'),cor:'#4169e1'}
+  ];
+  // Fonte única: fãs NPCs já reconhecidos e filtrados pelo Happy⭐Cafe!.
+  // Não usar os jogadores reais exibidos como figurantes no Handshake.
+  var memorias = typeof cfVisitasMemorias === 'function' ? cfVisitasMemorias() : [];
+  if(!Array.isArray(memorias)) return contatos;
+  var vistos = Object.create(null);
+  memorias.slice(0,8).forEach(function(m){
+    if(!m || typeof HS_NOMES === 'undefined' || HS_NOMES.indexOf(m.nome) < 0 || vistos[m.nome] ||
+      typeof HS_PRESENTES === 'undefined' || !Number.isInteger(m.pres) || !HS_PRESENTES[m.pres]) return;
+    vistos[m.nome] = true;
+    var cor = m.c && typeof m.c.hair === 'string' && /^#[0-9a-fA-F]{6}$/.test(m.c.hair) ? m.c.hair : '#b778d1';
+    contatos.push({id:'fan:'+m.nome,nome:m.nome,tipo:'fan',avatar:'💗',papel:tr('Fã conhecido · Handshake'),
+      cor:cor,jeito:['animado','timido','fofo'].indexOf(m.jeito)>=0 ? m.jeito : 'fofo',
+      presente:HS_PRESENTES[m.pres],cafe:typeof hsCafePendente !== 'undefined' && hsCafePendente &&
+        typeof hsMemChave === 'function' && hsCafePendente.conta === hsMemChave() &&
+        hsCafePendente.nome === m.nome && hsCafePendente.pres === m.pres});
+  });
+  return contatos;
+}
+function petPhoneChatMensagens(c){
+  if(c.tipo === 'fan'){
+    var presente = c.presente, favorito = String(presente[0])+' '+String(presente[1]);
+    var oi = c.jeito === 'timido' ? 'Oi… lembra de mim? Fiquei feliz de te encontrar no Handshake. 💗' :
+      c.jeito === 'animado' ? 'OII!! Que bom te ver de novo! ⭐' : 'Oii! Adorei nosso encontro! 💕';
+    var jeito = typeof HS_JEITOS !== 'undefined' && HS_JEITOS[c.jeito];
+    var recordacao = jeito && typeof jeito.fav === 'string' ? jeito.fav.replace('{p}',favorito) : 'Meu favorito é '+favorito+'!';
+    return [oi,recordacao].concat(c.cafe ? ['Adorei o carinho no Happy⭐Cafe! Quero te ver de novo no Handshake. ☕'] : []);
+  }
+  var nomePet = petAtivo() && petAtivo().nome || tr('seu Pet');
+  if(c.id === 'idol:tsu') return ['Ei, '+(contaJ && contaJ.nick || tr('Idol'))+'! ⭐',
+    'O camarim está uma graça! Já deu carinho para '+nomePet+' hoje?'];
+  if(c.id === 'idol:lirika') return ['Um dia de cada vez, Idol. 🌷',
+    'As lembranças dos fãs no Happy⭐Cafe! e no Handshake deixam os encontros especiais.'];
+  return ['Oii! 🎀', 'Já passou no espelho do camarim? Quero ver seu próximo look de show! ✨'];
+}
+function petPhoneChatReacao(c,opcao){
+  if(c.tipo === 'fan'){
+    if(c.jeito === 'timido') return opcao === 0 ? 'O-obrigada… vou guardar essa lembrança. 💗' : 'Sério? Fico tão feliz… até logo! 🌷';
+    if(c.jeito === 'animado') return opcao === 0 ? 'ISSOOO! Melhor encontro!! ⭐' : 'AEEE! Vou torcer muito por você!! 💖';
+    return opcao === 0 ? 'Que fofura! Meu coração brilhou! 💕' : 'Combinado! Vou estar torcendo por você! 🎀';
+  }
+  if(c.id === 'idol:tsu') return opcao === 0 ? 'Isso! Um carinho no Pet e bora brilhar! ⭐' : 'Te espero no próximo show! ✨';
+  if(c.id === 'idol:lirika') return opcao === 0 ? 'Que bom. As pequenas coisas importam. 🌷' : 'Até mais. Cuide das suas lembranças. 💖';
+  return opcao === 0 ? 'Aaa, quero ver esse visual! 🎀' : 'Boa! Vai ficar lindo no palco! ⭐';
+}
+function petPhoneChatSincronizar(){
+  var chave = petPhoneContaChave();
+  if(chave !== petPhoneChatSessao){
+    petPhoneChatSessao = chave;
+    petPhoneChatConversa = '';
+    petPhoneChatRespostas = Object.create(null);
+  }
+}
+function petPhoneChatHtml(){
+  petPhoneChatSincronizar();
+  var contatos = petPhoneChatContatos();
+  var contato = contatos.find(function(c){return c.id === petPhoneChatConversa;});
+  var aviso = '<p class="petphone-chat-aviso">✦ '+escHtml(tr('Conversas fictícias do jogo · ninguém recebe mensagens'))+'</p>';
+  if(!contato){
+    petPhoneChatConversa = '';
+    var lista = contatos.map(function(c){
+      return '<button type="button" class="petphone-chat-contato" data-phone="chat-abrir" data-conversa="'+escHtml(c.id)+'">'+
+        '<span class="petphone-chat-avatar" style="--chat-cor:'+c.cor+'">'+c.avatar+'</span><span class="petphone-chat-contato-texto"><b>'+escHtml(c.nome)+
+        '</b><small>'+escHtml(c.papel)+'</small></span><span aria-hidden="true">›</span></button>';
+    }).join('');
+    var temFas = contatos.some(function(c){return c.tipo === 'fan';});
+    return aviso+'<div class="petphone-chat-lista">'+lista+'</div>'+
+      (!temFas ? '<p class="petphone-chat-dica">💌 '+escHtml(tr('Conheça fãs no Handshake⭐Event! para guardar novas lembranças aqui.'))+'</p>' : '');
+  }
+  var mensagens = petPhoneChatMensagens(contato);
+  var resposta = petPhoneChatRespostas[contato.id];
+  var opcoes = contato.tipo === 'fan' ? ['Vou guardar nossa lembrança! 💖','Até o próximo encontro! ⭐'] :
+    ['Vou cuidar de tudo! 💕','Até o próximo show! ✨'];
+  return '<div class="petphone-chat-pessoa"><span class="petphone-chat-avatar" style="--chat-cor:'+contato.cor+'">'+contato.avatar+
+    '</span><div><b>'+escHtml(contato.nome)+'</b><small>'+escHtml(contato.papel)+'</small></div></div>'+aviso+
+    '<div class="petphone-chat-falas">'+mensagens.map(function(msg){
+      return '<p class="petphone-chat-msg petphone-chat-npc">'+escHtml(msg)+'</p>';
+    }).join('')+(resposta ? '<p class="petphone-chat-msg petphone-chat-eu">'+escHtml(opcoes[resposta.opcao])+'</p>'+
+      '<p class="petphone-chat-msg petphone-chat-npc">'+escHtml(resposta.reacao)+'</p>' : '')+'</div>'+
+    (!resposta ? '<div class="petphone-chat-opcoes"><span>'+escHtml(tr('Escolha uma resposta:'))+'</span>'+opcoes.map(function(op,i){
+      return '<button type="button" data-phone="chat-responder" data-resposta="'+i+'">'+escHtml(op)+'</button>';
+    }).join('')+'</div>' : '<p class="petphone-chat-fim">✦ '+escHtml(tr('Conversa por hoje concluída.'))+'</p>');
+}
+function petPhoneChatAbrir(id){
+  if(!petPhoneOpen || petPhoneTela !== 'chat') return false;
+  petPhoneChatSincronizar();
+  if(!petPhoneChatContatos().some(function(c){return c.id === id;})) return false;
+  petPhoneChatConversa = id;petPhoneRender();
+  var corpo = $('petPhoneCorpo');if(corpo)corpo.scrollTop = 0;
+  return true;
+}
+function petPhoneChatResponder(opcao){
+  if(!petPhoneOpen || petPhoneTela !== 'chat' || (opcao !== 0 && opcao !== 1)) return false;
+  petPhoneChatSincronizar();
+  var contato = petPhoneChatContatos().find(function(c){return c.id === petPhoneChatConversa;});
+  if(!contato || petPhoneChatRespostas[contato.id]) return false;
+  petPhoneChatRespostas[contato.id] = {opcao:opcao,reacao:petPhoneChatReacao(contato,opcao)};
+  petPhoneRender();
+  var corpo = $('petPhoneCorpo');if(corpo)corpo.scrollTop = corpo.scrollHeight || 0;
+  return true;
+}
 function petPhoneRender(){
   if(!petPhoneOpen) return;
   var corpo = $('petPhoneCorpo'); if(!corpo) return;
@@ -276,7 +384,7 @@ function petPhoneRender(){
   var titulo = ['📅 ','💬 ','📸 ','💖 '][idx] + nomes[idx];
   var conteudo = '';
   if(petPhoneTela === 'agenda') conteudo = petPhoneAgendaHtml();
-  else if(petPhoneTela === 'chat') conteudo = '<div class="petphone-balao"><span>⭐ TsuPhone</span><p>' + escHtml(tr('Seu Chat⭐ está prontinho! As conversas com fãs chegam na próxima etapa.')) + '</p></div>';
+  else if(petPhoneTela === 'chat') conteudo = petPhoneChatHtml();
   else if(petPhoneTela === 'fotos') conteudo = '<div class="petphone-appbox"><span>🃏✨</span><p>' + escHtml(tr('Seus cards estão guardados no Álbum de Idols.')) + '</p><button type="button" data-phone="abrir-album">📖 ' + escHtml(tr('Abrir Álbum')) + '</button></div>';
   else if(petPhoneTela === 'perfil') conteudo = '<div class="petphone-appbox"><span>💖✨</span><p>' + escHtml(contaJ && contaJ.nick || tr('Meu Idol')) + '</p><button type="button" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button></div>';
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
@@ -303,11 +411,15 @@ function petPhoneFechar(retomar){
 }
 function petPhoneVoltar(){
   if(!petPhoneOpen) return false;
+  if(petPhoneTela === 'chat' && petPhoneChatConversa){
+    petPhoneChatConversa = '';petPhoneRender();return true;
+  }
   if(petPhoneTela === 'home') return petPhoneFechar();
   petPhoneTela = 'home'; petPhoneAgendaReq++; petPhoneRender(); return true;
 }
 function petPhoneTelaAbrir(k){
   if(!petPhoneOpen || ['agenda','chat','fotos','perfil'].indexOf(k) < 0) return false;
+  if(k === 'chat') petPhoneChatConversa = '';
   petPhoneTela = k; petPhoneRender();
   if(k === 'agenda') petPhoneAgendaCarregar();
   return true;

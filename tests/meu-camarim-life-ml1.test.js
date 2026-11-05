@@ -147,7 +147,8 @@ test('ML1.2-A: TsuPhone mantém o Idol/Pet no papel de parede e apps internos', 
   assert.match(nodes.petPhoneCorpo.innerHTML, /Pipoca/);
   assert.equal(ctx.petLifeOrigem, '', 'não cria navegação temporária no Hub');
   assert.equal(ctx.petPhoneTelaAbrir('chat'), true);
-  assert.match(nodes.petPhoneCorpo.innerHTML, /próxima etapa/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-conversa="idol:tsu"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /Conversas fictícias do jogo/);
   assert.equal(ctx.petPhoneTelaAbrir('fotos'), true);
   assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="abrir-album"/);
   assert.equal(ctx.petPhoneVoltar(), true);
@@ -204,6 +205,89 @@ test('ML1.2-A: Agenda só consulta missões, descarta resposta tardia de outra c
   assert.match(nodes.petPhoneCorpo.innerHTML, /Carregando/, 'não mistura dados de outra sessão');
   ctx.petPhoneVoltar();
   assert.equal(ctx.petPhoneTela, 'home');
+});
+
+test('ML1.2-B: Chat lista Idols e somente fãs NPCs realmente lembrados', () => {
+  const {ctx,nodes,calls} = fakeRoom();
+  ctx.HS_NOMES=['Nana','Lulu'];
+  ctx.HS_PRESENTES=[['🍓','Morango','doce']];
+  ctx.cfVisitasMemorias=()=>[
+    {nome:'Nana',pres:0,jeito:'timido',c:{hair:'#e664ac'}},
+    {nome:'JogadorReal',pres:0,jeito:'animado',c:{hair:'#abcdef'}},
+    {nome:'Nana',pres:0,jeito:'timido'}
+  ];
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  const lista=nodes.petPhoneCorpo.innerHTML;
+  for(const id of ['idol:tsu','idol:lirika','idol:pati','fan:Nana']){
+    assert.ok(lista.includes('data-conversa="'+id+'"'),'contato interno: '+id);
+  }
+  assert.equal((lista.match(/data-conversa="fan:Nana"/g)||[]).length,1,'fã duplicado não gera duas conversas');
+  assert.doesNotMatch(lista,/JogadorReal|fan:Lulu/,'não cria chat com usuário ou fã desconhecido');
+  assert.match(lista,/Hand[sS]hake/);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'inbox é local e não consulta backend');
+});
+
+test('ML1.2-B: diálogo reutiliza personalidade, presente e Café somente quando confirmado', () => {
+  const {ctx,nodes,calls} = fakeRoom();
+  ctx.HS_NOMES=['Nana'];ctx.HS_PRESENTES=[['🍓','Morango','doce']];
+  ctx.HS_JEITOS={timido:{fav:'Eu gosto de {p}…'}};
+  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'timido',c:{hair:'#aabbcc'}}];
+  ctx.hsMemChave=()=> 'tw_hs_memorias_v1:IdolTeste';
+  ctx.hsCafePendente={conta:'tw_hs_memorias_v1:IdolTeste',nome:'Nana',pres:0};
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  assert.equal(ctx.petPhoneChatAbrir('fan:Nana'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Oi… lembra de mim/,'jeito tímido');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Morango/,'presente conhecido');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Eu gosto de 🍓 Morango/,'usa fala do jeito real no Handshake');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Adorei o carinho no Happy⭐Cafe/,'atendimento confirmado');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-resposta="0"/);
+  assert.equal(ctx.petPhoneChatResponder(1),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Até o próximo encontro/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Fico tão feliz/);
+  assert.equal(ctx.petPhoneChatResponder(0),false,'não duplica respostas');
+  assert.equal(ctx.petPhoneVoltar(),true);
+  assert.equal(ctx.petPhoneTela,'chat','volta primeiro à lista do Chat');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-conversa="fan:Nana"/);
+  assert.equal(ctx.petPhoneVoltar(),true);
+  assert.equal(ctx.petPhoneTela,'home','depois volta à tela de apps');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('localStorage'),false,'nenhum save adicional');
+});
+
+test('ML1.2-B: bloqueia contatos falsos, protege HTML e isola respostas por sessão', () => {
+  const {ctx,nodes} = fakeRoom();
+  ctx.contaJ.nick='<script>roubar</script>';
+  ctx.HS_NOMES=['Nana'];ctx.HS_PRESENTES=[['🍓','Morango','doce']];
+  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'fofo',c:{hair:'red; background:url(...)'}}];
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  assert.equal(ctx.petPhoneChatAbrir('fan:JogadorReal'),false);
+  assert.equal(ctx.petPhoneChatAbrir('idol:tsu'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/&lt;script&gt;roubar&lt;\/script&gt;/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/<script>/);
+  assert.equal(ctx.petPhoneChatResponder(5),false);
+  assert.equal(ctx.petPhoneChatResponder(0),true);
+  assert.ok(ctx.petPhoneChatRespostas['idol:tsu']);
+  ctx.contaSessaoToken=99;ctx.petPhoneRender();
+  assert.equal(ctx.petPhoneChatConversa,'','mudança de sessão sai da conversa antiga');
+  assert.deepEqual(Object.keys(ctx.petPhoneChatRespostas),[],'respostas descartadas na troca de conta');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/red; background:url/,'cores inválidas não entram no HTML');
+  assert.match(html,/k === 'chat-responder'/,'toque nas respostas está ligado ao handler');
+  assert.match(css,/\.petphone-chat-opcoes button\{[^}]*min-height:44px/,'alvos móveis mínimos');
+});
+
+test('ML1.2-B: sem memória de fãs, Chat acolhe sem inventar contatos ou alterar ranking', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.cfVisitasMemorias=()=>[];
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Conheça fãs no Handshake/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-conversa="fan:/);
+  assert.equal(ctx.petPhoneChatAbrir('fan:Desconhecido'),false);
+  assert.equal(ctx.petPhoneChatAbrir('idol:lirika'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/pequenas lembranças|lembranças dos fãs/i);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  for(const k of ['terminar_corrida','iniciar_corrida','petSave(','star_log','localStorage']){
+    assert.equal(logic.includes(k),false,'sem alterações econômicas ou persistência: '+k);
+  }
 });
 
 test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {

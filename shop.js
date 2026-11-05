@@ -23,7 +23,7 @@ function shopHtml(){
 function shopCorpoHtml(){   // os mesmos blocos (e ids) da lojinha do perfil: as compras seguem iguais
   return '<section class="shopprov"><h3>🪞 ' + escHtml(tr('Provador')) + '</h3><canvas id="shopProvCv" width="512" height="512" aria-hidden="true"></canvas>' +
     '<div class="btns"><button type="button" class="btn" id="shopSalvar">💾 ' + escHtml(tr('Salvar visual')) + '</button><a class="btn alt" id="shopPng" href="#" download="zipper-shop.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a></div>' +
-    '<p class="perfmsg" id="shopProvMsg" hidden></p></section>' +
+    '<p class="perfmsg" id="shopProvMsg" hidden></p>' + shopLookHtml() + '</section>' +
     '<h3>✏️ ' + escHtml(tr('Montar Idol')) + '</h3><div class="cust perfmont" id="perfMont"></div>' +
     '<div class="btns shopmontbtns"><button type="button" class="btn alt" id="shopFotoPerfil">📸 ' + escHtml(tr('Foto do perfil')) + '</button></div>' +
     '<h3>👗 ' + escHtml(tr('Roupas')) + '</h3><p class="perfdica">' + escHtml(tr('Toque em Provar para ver no seu Idol antes de comprar.')) + '</p>' +
@@ -40,9 +40,76 @@ function shopUI(){
   if(typeof perfLojaUI === 'function') perfLojaUI();
   if(typeof perfLoja2UI === 'function') perfLoja2UI();
   shopProvador();
+  shopLookUI();
 }
 function shopAvAtual(){   // o seu Idol (com a roupa que está provando)
   var av = perfAvAtual({ fundo:'basico', pose:'v', expr:3 }); if(perfProva) av.c.out = perfProva; return av;
+}
+// Look do dia (dress-up da Barbie): um tema de cor por dia (0h de Brasília), igual para todo mundo.
+// Combina quando a cor da roupa entra no tema; com as meias no mesmo tom, vira "Look completo".
+// A foto é uma polaroid PNG feita no aparelho e guardada nos Momentos da sessão. Nada vai ao servidor.
+var SHOP_LOOKS = [
+  ['chiclete', '💗', 'Look rosa-chiclete', 'Roupa em tons de rosa.', function(h){ return h.s > .25 && h.l > .45 && (h.h >= 300 || h.h < 12); }],
+  ['ceu',      '🩵', 'Look céu azul', 'Roupa azul-clara ou azul-céu.', function(h){ return h.s > .2 && h.l > .4 && h.h >= 185 && h.h < 240; }],
+  ['menta',    '🌿', 'Look menta', 'Roupa verde ou verde-menta.', function(h){ return h.s > .2 && h.l > .3 && h.h >= 80 && h.h < 175; }],
+  ['por',      '🌅', 'Look pôr do sol', 'Roupa laranja, pêssego ou amarela.', function(h){ return h.s > .3 && h.l > .35 && h.h >= 12 && h.h < 60; }],
+  ['lavanda',  '💜', 'Look lavanda', 'Roupa lilás, lavanda ou roxa.', function(h){ return h.s > .2 && h.h >= 245 && h.h < 300; }],
+  ['branco',   '🤍', 'Look tudo branco', 'Roupa branca ou quase branca.', function(h){ return h.l > .86 && h.s < .35; }],
+  ['noite',    '🌙', 'Look noite estrelada', 'Roupa escura: preto, marinho ou vinho.', function(h){ return h.l < .3; }]
+];
+function shopLookHoje(){ var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5); return SHOP_LOOKS[((d % SHOP_LOOKS.length) + SHOP_LOOKS.length) % SHOP_LOOKS.length]; }
+function shopHsl(hex){
+  var c = parseInt(String(hex || '').replace('#', ''), 16); if(isNaN(c)) return {h:0, s:0, l:1};
+  var r = (c >> 16) / 255, g2 = ((c >> 8) & 255) / 255, b = (c & 255) / 255, mx = Math.max(r, g2, b), mn = Math.min(r, g2, b), l = (mx + mn) / 2, d = mx - mn, h = 0, s = 0;
+  if(d){ s = d / (1 - Math.abs(2 * l - 1)); h = mx === r ? ((g2 - b) / d) % 6 : mx === g2 ? (b - r) / d + 2 : (r - g2) / d + 4; h = (h * 60 + 360) % 360; }
+  return {h:h, s:s, l:l};
+}
+function shopLookEstado(){
+  var look = shopLookHoje(), c = shopAvAtual().c || {};
+  var roupa = look[4](shopHsl(c.outcol || '#ffffff')), meias = !!c.legcol && c.legcol !== '#1c1c30' && look[4](shopHsl(c.legcol));
+  return {look:look, combina:roupa, completo:roupa && meias};
+}
+function shopLookHtml(){
+  return '<div class="shoplook" id="shopLook" role="status" aria-live="polite"></div>' +
+    '<div class="btns"><button type="button" class="btn" id="shopLookFoto">📸 ' + escHtml(tr('Foto do Look do dia')) + '</button></div>' +
+    '<p class="perfmsg" id="shopLookMsg" hidden></p>';
+}
+function shopLookUI(){
+  var box = $('shopLook'), bt = $('shopLookFoto'); if(!box) return;
+  var e = shopLookEstado(), L = e.look;
+  box.className = 'shoplook' + (e.combina ? ' on' : '');
+  box.innerHTML = '<b>' + L[1] + ' ' + escHtml(tr('Look do dia')) + ': ' + escHtml(tr(L[2])) + '</b><span>' + escHtml(tr(L[3])) + ' ' +
+    escHtml(tr('As meias no mesmo tom completam o look.')) + '</span><em>' +
+    escHtml(e.completo ? '✨ ' + tr('Look completo!') : e.combina ? '💖 ' + tr('Combina com o tema!') : '🪞 ' + tr('Escolha a cor da roupa em Montar Idol.')) + '</em>';
+  if(bt) bt.disabled = !e.combina;
+}
+function shopLookFoto(){
+  var e = shopLookEstado(), msg = $('shopLookMsg'); if(!e.combina) return;
+  var W = 600, H = 720, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  var x = cv.getContext('2d'); if(!x) return;
+  var cor = (shopAvAtual().c || {}).outcol || '#ff6fb5';
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);                                   // papel da polaroid
+  var fundo = x.createLinearGradient(0, 30, 0, 570); fundo.addColorStop(0, '#fff0f8'); fundo.addColorStop(1, cor);
+  x.fillStyle = fundo; x.fillRect(30, 30, 540, 540);
+  x.globalAlpha = .5; x.fillStyle = '#ffffff'; x.font = '34px sans-serif'; x.textAlign = 'center';
+  [[90, 100, '✦'], [510, 130, '★'], [80, 470, '★'], [520, 480, '✦'], [300, 80, '♡']].forEach(function(s){ x.fillText(s[2], s[0], s[1]); });
+  x.globalAlpha = 1;
+  x.save(); x.beginPath(); x.rect(30, 30, 540, 540); x.clip(); x.translate(30, 30);
+  try{ perfDesenharIdol(x, 540, 540, shopAvAtual(), false); }catch(err){}
+  x.restore();
+  x.fillStyle = '#7b3ff0'; x.font = '900 30px "M PLUS Rounded 1c",sans-serif';
+  x.fillText(e.look[1] + ' ' + tr(e.look[2]) + (e.completo ? ' ✨' : ''), W / 2, 625);
+  x.fillStyle = '#8a6aa8'; x.font = '800 20px "M PLUS Rounded 1c",sans-serif';
+  var hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(5, 10).split('-').reverse().join('/');
+  x.fillText((contaJ && contaJ.nick ? contaJ.nick + ' · ' : '') + tr('Look do dia') + ' · ' + hoje + ' · Zipper⭐Shop!', W / 2, 668);
+  var url = cv.toDataURL('image/png');
+  var guardou = typeof petPhoneMomentoGuardar === 'function' && petPhoneMomentoGuardar('look', url);
+  if(msg){
+    msg.hidden = false;
+    msg.innerHTML = escHtml(guardou ? '💗 ' + tr('Guardado nos Momentos do celular!') : tr('Adote um pet no Backstage⭐Pet! para guardar nos Momentos.')) +
+      ' <a href="' + url + '" download="look-do-dia.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a>';
+  }
+  if(sfx && sfx.card) try{ sfx.card(); }catch(err){}
 }
 function shopProvador(){
   var cv = $('shopProvCv'), x = cv && cv.getContext('2d'); if(!x) return;

@@ -487,6 +487,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 | Tema | Telas do celular e botão "Guardar" do Karaoke usam as variáveis de tema (`--card`, `--chip`, `--ink`, `--sub`, `--b1`, `--pink`): funcionam no modo escuro e com o Oshi | Implementado (`10fb4e3`, `c61e025`) |
 | ML1.4 | Balão de vontade do Pet (estilo The Sims): pede um cuidado existente; atender dá +8 de humor e corações, nunca estrelas, XP ou servidor. Celular passa a ser `{nick}Phone`. App Perfil vira **Cartas** de fã (uma por dia, nomes inventados via `hsNomesLivres`, "lida" só na sessão; o Perfil abre pelo fim da lista) | Implementado (`858d261`, `0d47c62`) |
 | ML1.5 | Papel de parede próprio do celular (Idol + Pet no palquinho, 260×140, resolução da tela); Idol em pé à frente do sofá; sentar de verdade (quadril no assento, coxas na cor da roupa, pernas penduradas); três poses com lugar e postura próprios; mesinha e estante com pés até o chão e sombra | Implementado (`d27c427`, `44c9649`, `b08c11d`) |
+| ML1.6 | **Arrumar o quarto** (Decorar → ✋): mesinha, estante e abajur deslizam só no chão (base sempre em y 177, sem sobrepor) e os quadros na parede; chave própria `tw_camarim_arrumacao`, fora do save sincronizado. **Luz pelo horário de Brasília**: janela com céu da manhã, dia, fim de tarde e noite; abajur aceso à noite. **Carta com foto**: um fã responde com a polaroid do último Momento da sessão. **Look do dia** no Provador: tema de cor diário, "Look completo" com meias no mesmo tom, polaroid guardada nos Momentos. **Cor das meias** no Montar Idol (Perfil e Zipper⭐Shop!): mesmo retângulo do `drawChar`, padrão `#1c1c30`; a página inicial não muda | Implementado |
 
 ### Regra de desenho para tudo que for novo
 
@@ -500,7 +501,8 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 ### Testes e CI
 
-- `node tests/run-all.js`: 66/66 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15`).
+- `node tests/run-all.js`: 67/67 localmente (inclui `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16`).
+- Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
 - `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
 - CI verde em `0d47c62` e `44c9649` (static-validation, postgres-center-run, browser-karaoke). Ver o resultado do último commit na própria PR.
 
@@ -509,3 +511,4 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 - Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
 - Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
 - Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
+- A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

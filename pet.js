@@ -84,7 +84,7 @@ function petLifeSofa(x, frente){
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
       var bal = Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
-      x.fillStyle='#1c1c30';
+      x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
       x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
       x.fillStyle=petLifeCorColo;
       x.fillRect(px-7,q.y-3,14,10);                                   // coxa na cor da roupa, reta
@@ -123,7 +123,162 @@ function petLifeLerCorColo(x, q){   // 1 pixel do quadril: as coxas usam a mesma
   }catch(e){}
 }
 var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
-var petHop = 0, petSmile = 0, petLastPat = 0, petBg = null, petBgOshi = null, petDpr = 1;
+var petHop = 0, petSmile = 0, petLastPat = 0, petBg = null, petBgOshi = null, petDpr = 1, petBgFase = '';
+// Luz da janela pelo horário de Brasília (UTC−3): só muda o desenho, nunca o jogo.
+function petLuzFase(agora){
+  var h = new Date((agora || Date.now()) - 3 * 36e5).getUTCHours();
+  return h >= 6 && h < 10 ? 'manha' : h >= 10 && h < 16 ? 'dia' : h >= 16 && h < 19 ? 'tarde' : 'noite';
+}
+var PET_LUZ_CEU = { manha:['#bfe8ff','#fff1c9'], dia:['#8fd0f5','#d6f0ff'], tarde:['#ff9a6b','#ffd1a3'], noite:['#1c1f5a','#3b3486'] };
+function petDesenharJanela(x, fase){
+  // Janela estreita à esquerda do espelho (livre dos botões e do mural).
+  var L = 7, T = 62, W = 18, H = 52, ceu = PET_LUZ_CEU[fase] || PET_LUZ_CEU.dia;
+  x.save();
+  x.fillStyle = '#ffffff'; x.fillRect(L - 3, T - 3, W + 6, H + 6);              // moldura
+  var g2 = x.createLinearGradient(0, T, 0, T + H); g2.addColorStop(0, ceu[0]); g2.addColorStop(1, ceu[1]);
+  x.fillStyle = g2; x.fillRect(L, T, W, H);
+  if(fase === 'noite'){
+    x.fillStyle = '#fff6c9'; x.beginPath(); x.arc(L + 9, T + 11, 4.5, 0, 7); x.fill();
+    x.fillStyle = ceu[0]; x.beginPath(); x.arc(L + 11.3, T + 9.6, 3.9, 0, 7); x.fill();   // lua crescente
+    x.fillStyle = '#fff'; [[3, 5], [14, 20], [4, 31], [13, 40], [6, 46]].forEach(function(e){ x.fillRect(L + e[0], T + e[1], 1.3, 1.3); });
+  } else {
+    var sol = fase === 'tarde' ? [9, 40, '#ffdf6e'] : fase === 'manha' ? [9, 14, '#fff3a6'] : [10, 9, '#fff6c2'];
+    x.fillStyle = sol[2]; x.beginPath(); x.arc(L + sol[0], T + sol[1], 5, 0, 7); x.fill();
+    x.fillStyle = fase === 'tarde' ? 'rgba(255,225,235,.85)' : 'rgba(255,255,255,.9)';
+    [[6, 28, 4], [11, 26, 4.5], [15, 29, 3.5]].forEach(function(n){ x.beginPath(); x.arc(L + n[0], T + n[1], n[2], 0, 7); x.fill(); });
+  }
+  x.fillStyle = '#ffffff'; x.fillRect(L + W / 2 - 1, T, 2, H); x.fillRect(L, T + H / 2 - 1, W, 2);   // caixilho
+  x.fillStyle = '#ffc2e0'; x.fillRect(L - 5, T - 5, 4, H + 10); x.fillRect(L + W + 1, T - 5, 4, H + 10);  // cortininhas
+  x.fillStyle = '#e9b8d3'; x.fillRect(L - 4, T + H + 3, W + 8, 3);                // peitoril
+  x.restore();
+}
+// Arrumar o quarto (modo construir do Sims / quartos do LPS): arrastar móveis e quadros.
+// Móveis só deslizam no chão (a base fica sempre em y 177, com sombra); quadros ficam na parede.
+// A arrumação mora só neste aparelho (chave própria, fora do save sincronizado do Pet).
+var PET_ARRUMO_KEY = 'tw_camarim_arrumacao';
+var PET_MOVEIS = {   // centro padrão, largura e limites no chão (entre o sofá e a arara)
+  mesa:    {cx:166, w:30, min:166, max:272},
+  estante: {cx:200, w:38, min:170, max:268},
+  abajur:  {cx:279, w:24, min:170, max:282}
+};
+var petArrumo = null, petArrumando = false, petArrastando = null;
+function petArrumoLer(){
+  if(petArrumo) return petArrumo;
+  try{ petArrumo = JSON.parse(localStorage.getItem(PET_ARRUMO_KEY) || 'null'); }catch(e){ petArrumo = null; }
+  if(!petArrumo || petArrumo.v !== 1) petArrumo = {v:1, chao:{}, parede:{}};
+  petArrumo.chao = petArrumo.chao || {}; petArrumo.parede = petArrumo.parede || {};
+  return petArrumo;
+}
+function petArrumoSalvar(){ try{ localStorage.setItem(PET_ARRUMO_KEY, JSON.stringify(petArrumoLer())); }catch(e){} }
+function petArrumoX(k){
+  var m = PET_MOVEIS[k], v = petArrumoLer().chao[k];
+  return m ? (typeof v === 'number' && v >= m.min && v <= m.max ? v : m.cx) : 0;
+}
+function petArrumoDx(k){ return PET_MOVEIS[k] ? petArrumoX(k) - PET_MOVEIS[k].cx : 0; }
+function petArrumoQuadro(it){   // posição do quadro na parede (padrão = tabela PET_DECOR)
+  var v = petArrumoLer().parede[it[0]];
+  if(!Array.isArray(v) || typeof v[0] !== 'number' || typeof v[1] !== 'number') return [it[3], it[4]];
+  return [Math.max(4, Math.min(356 - it[5], v[0])), Math.max(28, Math.min(150 - it[6], v[1]))];
+}
+function petArrumoLivre(k, cx){   // dois móveis não ocupam o mesmo lugar no chão
+  var m = PET_MOVEIS[k];
+  if(cx < m.min || cx > m.max) return false;
+  return Object.keys(PET_MOVEIS).every(function(o){
+    return o === k || Math.abs(petArrumoX(o) - cx) >= (PET_MOVEIS[o].w + m.w) / 2;
+  });
+}
+function petArrumoPegar(lx, ly){
+  var achou = null;
+  Object.keys(PET_MOVEIS).forEach(function(k){
+    var m = PET_MOVEIS[k], cx = petArrumoX(k), topo = k === 'abajur' ? 104 : 122;
+    if(Math.abs(lx - cx) <= m.w / 2 + 3 && ly >= topo && ly <= 180) achou = {tipo:'chao', k:k, dx:cx - lx};
+  });
+  if(achou) return achou;
+  if(petData && petData.decor) PET_DECOR.forEach(function(it){
+    if(!petData.decor[it[0]]) return;
+    var p = petArrumoQuadro(it);
+    if(lx >= p[0] - 3 && lx <= p[0] + it[5] + 3 && ly >= p[1] - 3 && ly <= p[1] + it[6] + 6) achou = {tipo:'parede', k:it[0], dx:p[0] - lx, dy:p[1] - ly, it:it};
+  });
+  return achou;
+}
+function petArrumoMover(lx, ly){
+  var a = petArrastando; if(!a) return;
+  var A = petArrumoLer();
+  if(a.tipo === 'chao'){
+    var m = PET_MOVEIS[a.k], cx = Math.round(Math.max(m.min, Math.min(m.max, lx + a.dx)));
+    if(petArrumoLivre(a.k, cx)) A.chao[a.k] = cx;
+  } else {
+    A.parede[a.k] = [Math.round(Math.max(4, Math.min(356 - a.it[5], lx + a.dx))), Math.round(Math.max(28, Math.min(150 - a.it[6], ly + a.dy)))];
+  }
+  petBg = null;   // o fundo em cache é refeito no próximo quadro
+}
+function petArrumoAbaixo(lx, ly){
+  if(!petArrumando) return false;
+  petArrastando = petArrumoPegar(lx, ly);
+  if(petArrastando) beep(880, .04, 'triangle', .03);
+  return true;   // no modo arrumar, o toque não vira carinho nem abre objetos
+}
+function petArrumoSoltar(){
+  if(!petArrastando) return false;
+  petArrastando = null; petArrumoSalvar(); beep(660, .05, 'triangle', .03);
+  return true;
+}
+function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no toque
+  petArrumando = !!on; petArrastando = null;
+  if(!on) petArrumoSalvar();
+  if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';
+}
+function petArrumoPadrao(){ petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null; }
+function petArrumoDesenhar(x){   // contornos tracejados só enquanto arruma
+  if(!petArrumando) return;
+  x.save(); x.setLineDash([3, 3]); x.lineWidth = 1.5;
+  Object.keys(PET_MOVEIS).forEach(function(k){
+    var m = PET_MOVEIS[k], cx = petArrumoX(k), topo = k === 'abajur' ? 104 : 122;
+    x.strokeStyle = petArrastando && petArrastando.k === k ? '#ff6fb5' : 'rgba(123,63,240,.7)';
+    x.strokeRect(cx - m.w / 2 - 2, topo, m.w + 4, 179 - topo);
+  });
+  if(petData && petData.decor) PET_DECOR.forEach(function(it){
+    if(!petData.decor[it[0]]) return;
+    var p = petArrumoQuadro(it);
+    x.strokeStyle = petArrastando && petArrastando.k === it[0] ? '#ff6fb5' : 'rgba(123,63,240,.55)';
+    x.strokeRect(p[0] - 4, p[1] - 4, it[5] + 8, it[6] + 10);
+  });
+  x.setLineDash([]);
+  x.strokeStyle = 'rgba(255,111,181,.55)'; x.beginPath(); x.moveTo(0, 177.5); x.lineTo(360, 177.5); x.stroke();   // linha do chão
+  x.restore();
+}
+// Abajur de chão ao lado da arara: base no piso (y 177) e sombra, como os outros móveis.
+var PET_ABAJUR_X = 279;
+function petDesenharAbajur(x, aceso){
+  var cx = (typeof petArrumoX === 'function') ? petArrumoX('abajur') : PET_ABAJUR_X;
+  x.save();
+  if(!aceso){
+    x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(cx, 177, 11, 2.5, 0, 0, 7); x.fill();
+    x.fillStyle = '#b97fb5'; x.fillRect(cx - 7, 173, 14, 4); x.fillRect(cx - 1, 120, 2, 54);
+    x.fillStyle = '#ffd1e6'; x.beginPath(); x.moveTo(cx - 8, 106); x.lineTo(cx + 8, 106); x.lineTo(cx + 12, 121); x.lineTo(cx - 12, 121); x.closePath(); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.4)'; x.fillRect(cx - 6, 108, 3, 11);
+  } else {   // à noite, a cúpula acende e espalha uma luz quentinha
+    var g3 = x.createRadialGradient(cx, 118, 3, cx, 130, 70);
+    g3.addColorStop(0, 'rgba(255,226,150,.55)'); g3.addColorStop(1, 'rgba(255,226,150,0)');
+    x.fillStyle = g3; x.fillRect(cx - 80, 50, 160, 150);
+    x.fillStyle = '#fff1b8'; x.beginPath(); x.moveTo(cx - 8, 106); x.lineTo(cx + 8, 106); x.lineTo(cx + 12, 121); x.lineTo(cx - 12, 121); x.closePath(); x.fill();
+  }
+  x.restore();
+}
+function petLuzAmbiente(x){   // tom do horário por cima do quarto, antes dos personagens
+  var f = petLuzFase();
+  x.save();
+  if(f === 'manha' || f === 'tarde'){
+    x.fillStyle = f === 'manha' ? 'rgba(255,246,205,.16)' : 'rgba(255,150,90,.11)';
+    x.fillRect(0, 0, 360, 220);
+    x.fillStyle = f === 'manha' ? 'rgba(255,250,225,.2)' : 'rgba(255,190,120,.18)';   // raio de sol da janela
+    x.beginPath(); x.moveTo(7, 114); x.lineTo(25, 114); x.lineTo(150, 205); x.lineTo(40, 205); x.closePath(); x.fill();
+  } else if(f === 'noite'){
+    x.fillStyle = 'rgba(30,22,92,.22)'; x.fillRect(0, 0, 360, 220);
+    petDesenharAbajur(x, true);
+  }
+  x.restore();
+}
 function petLoad(){
   try{
     var d = JSON.parse(localStorage.getItem(PET_KEY) || 'null');
@@ -217,6 +372,7 @@ function petMakeBg(){
   // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.
   // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.
   // Mesinha e estante têm pés até o chão (y 170+) e sombra de contato.
+  x.save(); x.translate(petArrumoDx('mesa'), 0);   // posição escolhida em Arrumar o quarto
   x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(166, 177, 17, 3, 0, 0, 7); x.fill();
   x.fillStyle = '#b97fb5'; x.fillRect(154, 158, 3, 19); x.fillRect(175, 158, 3, 19);   // pés
   x.fillStyle = '#dfb1dc'; RR(152, 150, 28, 13, 3); x.fill();                           // gaveta
@@ -232,8 +388,10 @@ function petMakeBg(){
   x.fillStyle = '#fff'; x.font = '6px sans-serif'; x.textAlign = 'center'; x.fillText('★', 166, 135.7);
   x.fillStyle = '#fff'; x.beginPath(); x.arc(166, 142.8, 1, 0, 7); x.fill();
   x.fillStyle = '#ff80c4'; x.font = '8px sans-serif'; x.fillText('✦', 177, 141);
+  x.restore();
 
   // Pequena estante de lembranças sob o mural: dois andares, pés no chão.
+  x.save(); x.translate(petArrumoDx('estante'), 0);
   x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(200, 177, 22, 3, 0, 0, 7); x.fill();
   x.fillStyle = '#84539d'; x.fillRect(184, 147, 3, 30); x.fillRect(213, 147, 3, 30);
   x.fillStyle = '#bd82c1'; RR(182, 162, 36, 3.5, 1.5); x.fill();
@@ -244,6 +402,10 @@ function petMakeBg(){
   x.fillStyle = '#e6b952'; x.fillRect(190, 137, 4, 6);
   x.fillStyle = '#9b30d9'; x.fillRect(201, 130, 13, 12);
   x.fillStyle = '#fff4c9'; x.font = '10px sans-serif'; x.fillText('★', 207.5, 139);
+  x.restore();
+
+  petDesenharJanela(x, petLuzFase());
+  petDesenharAbajur(x, false);
 
   // Arara de roupas com os figurinos nas cores do TsuLiPa
   x.strokeStyle = '#b9a3d6'; x.lineWidth = 3;
@@ -257,14 +419,15 @@ function petMakeBg(){
   // Tapetinho redondo embaixo do pet
   x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 4, 46, 9, 0, 0, 7); x.fill();
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
-  petBg = c; petBgOshi = OSHI;
+  petBg = c; petBgOshi = OSHI; petBgFase = petLuzFase();
 }
 // Áreas pequenas e explícitas: o espelho fica acima do hitbox do Idol e
 // a estante acima do item de temporada. Botões HTML oferecem alvos maiores.
 function petLifeHit(lx, ly){
   if(lx >= 45 && lx <= 126 && ly >= 52 && ly <= 82) return 'espelho';
-  if(lx >= 156 && lx <= 180 && ly >= 122 && ly <= 156) return 'celular';
-  if(lx >= 180 && lx <= 211 && ly >= 123 && ly <= 149) return 'estante';
+  var dm = typeof petArrumoDx === 'function' ? petArrumoDx('mesa') : 0, de = typeof petArrumoDx === 'function' ? petArrumoDx('estante') : 0;
+  if(lx >= 156 + dm && lx <= 180 + dm && ly >= 122 && ly <= 156) return 'celular';
+  if(lx >= 180 + de && lx <= 211 + de && ly >= 123 && ly <= 149) return 'estante';
   return '';
 }
 var PET_LIFE_TEXTOS = {
@@ -501,7 +664,37 @@ function petCartasLista(){
     lista.unshift({id:dia, dia:dia, tema:tema, texto:texto, fa:nomes[(h >>> 4) % nomes.length],
       selo:PET_CARTA_SELOS[(h >>> 9) % PET_CARTA_SELOS.length], nova:i === 0 && lidas.indexOf(dia) < 0});
   }
+  petCartaComFoto(lista);
   return lista;
+}
+// Carta com foto: quando um Momento é guardado na sessão, um fã responde com a polaroid.
+var PET_CARTA_FOTO_TEXTOS = {
+  pet:'Que foto fofa de você com {p}! Já virou o fundo do meu celular. 📸',
+  center:'Vi sua foto do Center⭐Run! e guardei no meu mural de fã. 🏁',
+  karaoke:'Sua foto do Karaoke⭐Time! ficou com cara de capa de revista! 🎤',
+  duo:'A foto do Moon⭐Duo! ficou linda. Vocês combinam muito! 🌙',
+  look:'Amei o seu Look do dia! Você arrasou no tema. 👗'
+};
+function petCartaFotoMomento(){
+  if(typeof petPhoneMomentos === 'undefined' || !petPhoneMomentos.length || typeof petPhoneFotoChave !== 'function') return null;
+  var dono = petPhoneFotoChave();
+  for(var i = petPhoneMomentos.length - 1; i >= 0; i--) if(petPhoneMomentos[i].dono === dono) return petPhoneMomentos[i];
+  return null;
+}
+function petCartaComFoto(lista){
+  var m = petCartaFotoMomento(); if(!m) return;
+  var nomes = typeof hsNomesLivres === 'function' ? hsNomesLivres() : PET_CARTA_FAS;
+  if(!nomes.length) nomes = PET_CARTA_FAS;
+  var h = petCartaHash(m.id), pet = petAtivo();
+  lista.unshift({id:'foto:' + m.id, dia:petCartaDia(0), tema:'foto', momento:m.id, rotulo:m.rotulo,
+    texto:tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet).split('{p}').join(pet ? pet.nome : ''),
+    fa:nomes[(h >>> 3) % nomes.length], selo:'📸', nova:petCartasLidas().indexOf('foto:' + m.id) < 0});
+}
+function petCartaFotoRender(corpo){
+  if(!corpo || !corpo.querySelector || typeof petPhoneMomentos === 'undefined') return;
+  var img = corpo.querySelector('[data-carta-foto]'); if(!img) return;
+  var m = petPhoneMomentos.filter(function(f){ return f.id === img.getAttribute('data-carta-foto'); })[0];
+  if(m) img.src = m.miniUrl || m.url;
 }
 function petCartasNovas(){ return contaJ ? petCartasLista().filter(function(c){ return c.nova; }).length : 0; }
 function petCartaAbrir(id){
@@ -523,6 +716,7 @@ function petCartasHtml(){
     return '<article class="petphone-carta"><span class="petphone-carta-selo" aria-hidden="true">' + aberta.selo + '</span>' +
       '<p class="petphone-carta-oi">' + escHtml(tr('Oi, {n}!').split('{n}').join(contaJ && contaJ.nick || tr('Meu Idol'))) + '</p>' +
       '<p>' + escHtml(aberta.texto) + '</p>' +
+      (aberta.momento ? '<figure class="petphone-carta-foto"><img data-carta-foto="' + escHtml(aberta.momento) + '" alt="' + escHtml(tr('Foto guardada nos Momentos')) + '"><figcaption>' + escHtml(aberta.rotulo || '') + '</figcaption></figure>' : '') +
       '<p class="petphone-carta-ass">' + escHtml(tr('Com carinho,')) + '<br><b>' + escHtml(aberta.fa) + '</b> · ' + escHtml(petCartaDataTxt(aberta.dia)) + '</p></article>' +
       '<button type="button" class="petphone-carta-voltar" data-phone="voltar">‹ ' + escHtml(tr('Voltar às cartas')) + '</button>';
   }
@@ -592,11 +786,11 @@ function petPhoneMomentoDisponivel(tipo){
   b.disabled = false; b.textContent = '💗 ' + petPhoneMomentoTexto(0);
 }
 function petPhoneMomentoGuardar(tipo, url){
-  if(['pet','center','duo'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
+  if(['pet','center','duo','look'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
   if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
   petPhoneMomentosConferir();
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
-  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!'}[tipo];
+  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐')}[tipo];
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
@@ -1019,6 +1213,7 @@ function petPhoneRender(){
   else if(petPhoneTela === 'cartas') conteudo = petCartasHtml();
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
+  if(petPhoneTela === 'cartas') petCartaFotoRender(corpo);
   if(petPhoneTela === 'fotos'){
     petPhoneFotoRender(); petPhoneMomentosRender(); petPhoneJornalRender();
   }
@@ -1389,7 +1584,7 @@ function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
 }
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
-  if(!petBg || petBgOshi !== OSHI) petMakeBg();
+  if(!petBg || petBgOshi !== OSHI || petBgFase !== petLuzFase()) petMakeBg();
   var x = petCtx;
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, petCv.width, petCv.height);
   x.drawImage(petBg, 0, 0);
@@ -1404,6 +1599,8 @@ function petDrawRoom(){
   }
   x.globalAlpha = 1;
 
+  petLuzAmbiente(x);   // manhã clara, fim de tarde alaranjado, noite com abajur
+  petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   petLifeSofa(x, false);
   if(!petLifePose) petLifeSofa(x, true);   // em pé, o sofá inteiro fica atrás do Idol
@@ -1608,6 +1805,7 @@ function petClose(){
   if(petData){ petTick(); petSave(); }
   if(contaJ && typeof perfEnviar==='function' && perfSync.hasPending(contaJ.nick)) perfEnviar();
   petOpen = false;petAnimParar();
+  if(petArrumando) petArrumoModo(false);   // sair do quarto encerra a arrumação
   $('petov').hidden = true;
   petGameAbort(); petPhShow(false);   // V2.1
   sync();   // volta a música do menu
@@ -1739,6 +1937,7 @@ function petActUI(){
 }
 function petMenuUI(){
   var m = $('petMenu'), p = petAtivo();
+  if(petArrumando && petMenuK !== 'decorar') petArrumoModo(false);   // sair do Decorar encerra a arrumação
   if(petMenuK === 'decorar' && p){ petDecorMenuUI(m); return; }   // mural (V2)
   if(petMenuK === 'visual' && p){ petDressMenuUI(m, p); return; } // vestir itens no pet
   if(petMenuK === 'brincar' && p && !p.dorme){ petPlayMenuUI(m, p); return; } // minijogos (V2.1)
@@ -2476,7 +2675,7 @@ function petDrawDecor(x){
   PET_DECOR.forEach(function(it){
     var k = it[0], im = petDecorImgs[k];
     if(!petData.decor[k] || !im || !im.complete || !im.naturalWidth) return;
-    var px = it[3], py = it[4], w = it[5], h = it[6], st = it[7];
+    var pos = petArrumoQuadro(it), px = pos[0], py = pos[1], w = it[5], h = it[6], st = it[7];
     x.save(); x.translate(px + w / 2, py + h / 2); x.rotate(it[8]);
     x.shadowColor = 'rgba(80,30,120,.28)'; x.shadowBlur = 4; x.shadowOffsetY = 2;
     if(st === 'polaroid'){ x.fillStyle = '#fff'; x.fillRect(-w / 2 - 2.5, -h / 2 - 2.5, w + 5, h + 9); }
@@ -2499,7 +2698,13 @@ function petDrawDecor(x){
 function petDecorMenuUI(m){
   var d = petData.decor || {};
   m.hidden = false;
-  m.innerHTML = PET_DECOR.map(function(it){
+  if(petArrumando){
+    m.innerHTML = '<p class="petarrumo-dica">✋ ' + escHtml(tr('Arraste os móveis pelo chão e os quadros pela parede.')) + '</p>' +
+      '<button type="button" data-k="arrumar-pronto">✅ <b>' + escHtml(tr('Pronto, arrumado!')) + '</b></button>' +
+      '<button type="button" data-k="arrumar-padrao">↺ <b>' + escHtml(tr('Arrumação original')) + '</b></button>';
+    return;
+  }
+  m.innerHTML = '<button type="button" class="petarrumo-abrir" data-k="arrumar">✋ <b>' + escHtml(tr('Arrumar o quarto')) + '</b><em>' + escHtml(tr('Mover móveis e quadros')) + '</em></button>' + PET_DECOR.map(function(it){
     var k = it[0], own = k in d;
     var tag = own ? (d[k] ? '🖼️ ' + tr('Na parede') : tr('Guardado')) : (it[2] ? '★ ' + it[2] : tr('Grátis'));
     var off = !own && starT < it[2];
@@ -2508,6 +2713,8 @@ function petDecorMenuUI(m){
   }).join('');
 }
 function petDecorClick(k){
+  if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
+  if(k === 'arrumar-padrao'){ petArrumoPadrao(); petUI(); return; }
   var it=petFind(PET_DECOR,k);if(!it||!petData)return;
   var d=petData.decor,comprar=!(k in d);
   return petPay(comprar ? it[2] : 0).then(function(ok){

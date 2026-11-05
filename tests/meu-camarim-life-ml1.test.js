@@ -120,7 +120,7 @@ test('ML1: bloqueia minijogo, ausência de Pet e acesso sem login sem criar save
   for(const k of ['brs48cr_st','terminar_corrida','iniciar_corrida','petSave(']){
     assert.equal(logic.includes(k), false, 'navegação ML1 não altera '+k);
   }
-  assert.match(pet, /if\(!petBg \|\| petBgOshi !== OSHI\) petMakeBg\(\)/, 'usa o mesmo fundo em cache');
+  assert.match(pet, /if\(!petBg \|\| petBgOshi !== OSHI \|\| petBgFase !== petLuzFase\(\)\) petMakeBg\(\)/, 'usa o mesmo fundo em cache (refeito só ao trocar Oshi ou a luz do horário)');
 });
 
 test('ML1.1: espelho e estante fecham a tela e voltam direto ao Camarim, não ao Hub', () => {

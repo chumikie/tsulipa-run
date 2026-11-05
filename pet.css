@@ -233,3 +233,14 @@
 .petphone-carta-ass{text-align:right;color:var(--sub)}.petphone-carta-ass b{color:var(--b1)}
 .petphone-carta-selo{position:absolute;top:-8px;right:10px;display:grid;place-items:center;width:30px;height:34px;border:2px dashed rgba(155,48,217,.35);border-radius:4px;background:var(--chip);font-size:17px;transform:rotate(6deg)}
 .petphone-carta-voltar,.petphone-carta-perfil{display:grid;place-items:center;width:100%;min-height:44px;box-sizing:border-box;padding:7px;border:2px solid var(--card);border-bottom-color:rgba(155,48,217,.3);border-radius:12px;background:var(--chip);color:var(--b1);font:800 11px "M PLUS Rounded 1c",sans-serif}
+/* ML1.6 — carta com a polaroid do último Momento guardado (moldura só em CSS). */
+.petphone-carta-foto{margin:6px auto 10px;max-width:78%;padding:6px 6px 4px;border:1px solid rgba(155,48,217,.18);border-bottom:10px solid var(--card);border-radius:6px;background:var(--card);box-shadow:0 3px 8px rgba(89,49,132,.18);transform:rotate(-3deg)}
+.petphone-carta-foto img{display:block;width:100%;height:auto;max-height:150px;object-fit:contain;border-radius:4px;background:var(--chip)}
+.petphone-carta-foto figcaption{margin-top:3px;color:var(--sub);font-size:9px;font-weight:800;line-height:1.3;text-align:center}
+.petphone-momento-look,.petphone-momento-polaroid.petphone-momento-look{--momento-cor:#ffc2e0}
+/* ML1.6 — Arrumar o quarto. */
+.petmenu .petarrumo-abrir{grid-column:1/-1;flex-direction:row;justify-content:center;gap:6px;min-height:44px;border-color:rgba(155,48,217,.3)}
+.petmenu .petarrumo-abrir em{font-style:normal;font-size:11px;color:var(--sub)}
+.petmenu .petarrumo-dica{grid-column:1/-1;margin:0;padding:6px 8px;border-radius:10px;background:var(--chip);color:var(--ink);font-size:12px;font-weight:800;text-align:center}
+.petmenu [data-k="arrumar-pronto"],.petmenu [data-k="arrumar-padrao"]{min-height:44px;flex-direction:row;justify-content:center;gap:4px}
+.petmenu [data-k="arrumar-pronto"]{grid-column:span 2;background:var(--b1);color:#fff}

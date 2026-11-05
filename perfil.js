@@ -141,7 +141,7 @@ function perfChar(av){
   PERF_CAMPOS.forEach(function(f){
     var v = src[f];
     if(f === 'streak') c.streak = !!v;
-    else if(/^(hair|hair2|skin|eye|outcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(/^(hair|hair2|skin|eye|outcol|legcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
   c.img = c.hair;
@@ -955,6 +955,7 @@ function perfMontUI(){
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label><i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
+  h += '<label>' + escHtml(tr('Meias')) + ' <input type="color" data-m="legcol" value="' + escHtml(CU.legcol || '#1c1c30') + '" title="' + escHtml(tr('Cor das meias ou botas')) + '"></label>';
   [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], p[1]==='hat'&&CU.det==='tulipa'?'tulipa':(CU[p[1]]||'')) + '</select></label>'; });
   h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', CU.det==='torrada'?'torrada':accSel) + '</select></label>';
   box.innerHTML = h;

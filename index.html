@@ -2193,6 +2193,11 @@ var twPreviewHeaderPrincipal=document.querySelector('body > header');
     if(!frame||e.source!==frame.contentWindow)return;
     if(location.protocol!=='file:' && e.origin!==location.origin)return;
     if(typeof twPreviewKaraokeFotoReceber==='function' && twPreviewKaraokeFotoReceber(e))return;
+    if(e.data&&e.data.type==='tw-kt-arena'){   // Karaoke⭐Time!: durante o show, o iframe ocupa a tela inteira
+      var naArena=!!e.data.on&&twPreviewJogoAnterior==='karaoke',w=$('twPreviewJogo');
+      if(w)w.toggleAttribute('data-karaoke-arena',naArena);document.documentElement.classList.toggle('tw-kt-arena',naArena);
+      return;
+    }
     if(e.data&&e.data.type==='tw-kt-altura'){   // Karaoke⭐Time!: o iframe cresce com o conteúdo
       var hh=Math.round(+e.data.h);if(twPreviewJogoAnterior==='karaoke'&&hh>200&&hh<20000)frame.style.height=hh+'px';
       return;

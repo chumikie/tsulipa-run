@@ -489,6 +489,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 | ML1.5 | Papel de parede próprio do celular (Idol + Pet no palquinho, 260×140, resolução da tela); Idol em pé à frente do sofá; sentar de verdade (quadril no assento, coxas na cor da roupa, pernas penduradas); três poses com lugar e postura próprios; mesinha e estante com pés até o chão e sombra | Implementado (`d27c427`, `44c9649`, `b08c11d`) |
 | ML1.6 | **Arrumar o quarto** (Decorar → ✋): mesinha, estante e abajur deslizam só no chão (base sempre em y 177, sem sobrepor) e os quadros na parede; chave própria `tw_camarim_arrumacao`, fora do save sincronizado. **Luz pelo horário de Brasília**: janela com céu da manhã, dia, fim de tarde e noite; abajur aceso à noite. **Carta com foto**: um fã responde com a polaroid do último Momento da sessão. **Look do dia** no Provador: tema de cor diário, "Look completo" com meias no mesmo tom, polaroid guardada nos Momentos. **Cor das meias** no Montar Idol (Perfil e Zipper⭐Shop!): mesmo retângulo do `drawChar`, padrão `#1c1c30`; a página inicial não muda | Implementado |
 | ML1.7 | Celular: botão ✕ e título de cada app alinhados numa grade de 3 colunas (44 px · título centralizado · 44 px) | Implementado (`180cfb3`) |
+| ML1.8-A | Naturalidade no Camarim: joelho direito de Conviver dentro do sofá, braço à frente da roupa; saias e vestidos Sweet/Zipper com tecido sobre as coxas; transição breve de sentar/descansar/levantar desde a posição visível; Pet aproxima/retorna sem salto; olhar sutil por personalidade, desligado com movimento reduzido. Só `pet.js`, sem save ou novos timers. | Implementado localmente; prévia #81 após push |
 | Karaoke — tela de jogo | No show do próprio jogador a sala ocupa a tela e as pistas D F J K aparecem por cima, em canvas transparente (`karaoke-arena.js/.css`), com velocidade constante das notas. Toque sem nota por perto não conta mais como erro. Pausar sem contagem sai da tela de jogo; o "← Início" do site fica sempre visível | Implementado (`008be8f`) |
 | Karaoke — balões | Falas dos NPCs não se sobrepõem: fila de balões em até 4 andares, jogador primeiro, desenhada depois de todos os Idols (`krBaloesLayout`) | Implementado (`28676df`) |
 | Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
@@ -509,7 +510,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 ### Testes e CI
 
-- `node tests/run-all.js`: 70/70 localmente (inclui `avatar-roupa`, `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16`, `karaoke-baloes` e `karaoke-musicas-modos`).
+- `node tests/run-all.js`: 71/71 localmente após ML1.8-A (inclui `avatar-roupa`, `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16/ml18`, `karaoke-baloes` e `karaoke-musicas-modos`).
 - `tests/karaoke-mobile.browser.cjs` confere as pistas da tela de jogo do Karaoke.
 - Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
 - `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).

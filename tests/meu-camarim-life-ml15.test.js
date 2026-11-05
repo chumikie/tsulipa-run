@@ -30,16 +30,16 @@ test('ML1.5: papel de parede próprio, com a mesma proporção no canvas e no CS
 });
 
 test('ML1.5: sentar de verdade — quadril sobre o assento, coxas, joelhos e pernas penduradas', () => {
-  assert.match(pet, /if\(pose\)\{ g\.beginPath\(\); g\.rect\(0, 0, 360, Math\.min\(PET_LIFE_ASSENTO, quadril\.y \+ 3\)\); g\.clip\(\); \}/);
+  assert.match(pet, /var limite = \(PET_FLOOR \+ 2\) \* \(1-pose\.sit\) \+ Math\.min\(PET_LIFE_ASSENTO,quadril\.y\+barra\)\*pose\.sit;/);
   const sofa = pet.slice(pet.indexOf('function petLifeSofa('), pet.indexOf('function petLifeSofaBracos('));
   assert.match(sofa, /x\.fillStyle=petLifeCorColo;/, 'coxas na cor da roupa lida do próprio avatar');
   assert.match(sofa, /x\.fillRect\(px-6,q\.y\+6,12,15\+bal\)/, 'canela igual à perna do avatar: retângulo 12 px (5u), sem pé redondo');
   assert.doesNotMatch(sofa, /roundRect\(px/, 'pernas e coxas retas como no drawChar');
   assert.doesNotMatch(sofa, /roundRect\(84,190,17,5,2\)/, 'sem os sapatos soltos antigos');
-  assert.match(pet, /if\(!petLifePose\) petLifeSofa\(x, true\);/, 'em pé: Idol na frente do sofá');
-  assert.match(pet, /if\(petLifePose\) petLifeSofa\(x, true\);/);
+  assert.match(pet, /if\(!petLifePose && !pose\) petLifeSofa\(x, true\);/, 'em pé: Idol na frente do sofá');
+  assert.match(pet, /if\(pose\) petLifeSofa\(x, true, pose\);/);
   // As três poses têm lugar e postura diferentes.
-  const ctx = {Math};
+  const ctx = {Math,PET_FLOOR:196};
   vm.runInNewContext(pet.slice(pet.indexOf('var PET_LIFE_POSES'), pet.indexOf('function petLifeLerCorColo(')) + '\nvar petLifePose = "";', ctx);
   const q = {};
   for(const k of ['sentar','descansar','conviver']){ ctx.petLifePose = k; q[k] = ctx.petLifeQuadril(); }
@@ -47,7 +47,7 @@ test('ML1.5: sentar de verdade — quadril sobre o assento, coxas, joelhos e per
   assert.ok(ctx.PET_LIFE_POSES.descansar.rot < -.1 && ctx.PET_LIFE_POSES.conviver.rot > .1, 'inclinações visíveis e opostas');
   for(const k in q) assert.ok(q[k].y > 160 && q[k].y < 172, k + ': quadril na altura do assento');
   assert.match(sofa, /petLifePose === 'descansar'\)\{   \/\/ mantinha/);
-  assert.match(pet, /jeito\.x -= 52 \* aproxima/, 'Pet chega perto quando convive');
+  assert.match(pet, /jeito\.x -= petLifePetAproximar\(true,petDrawDelta\)/, 'Pet chega perto quando convive');
 });
 
 test('ML1.5: mesinha e estante têm pés até o chão, sombra e o piso vem antes', () => {

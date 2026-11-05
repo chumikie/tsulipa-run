@@ -16,6 +16,7 @@ var PET_CAP = 12 * 36e5;                                           // queda máx
 var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
 // ML1.3-A: estado exclusivamente visual; nunca entra em petData ou no save.
 var petLifePose = '', petLifePoseInicio = 0;
+var petLifePoseOrigem = null, petLifePetPerto = 0; // ML1.8-A: somente estado visual da aba
 var petLifePhoneOlhar = false;
 // ML1.3-B: um gesto curto por escolha, calculado no loop existente.
 // Nenhuma mudança nas necessidades, no hitbox ou nos dados guardados.
@@ -44,6 +45,7 @@ function petLifeCompanhiaVisual(k, cfg, t, pose, inicio, livre, telefone){
 function petLifePoseEscolher(pose){
   if(!petOpen || petView !== 'room' || !petAtivo() || petGame || petAnim || petPhoneOpen) return false;
   if(['sentar','descansar','conviver'].indexOf(pose) < 0) return false;
+  petLifePoseOrigem = petLifePoseDesenho(petT); // recomeça da posição visível, inclusive em toques rápidos
   petLifePose = petLifePose === pose ? '' : pose;
   petLifePoseInicio = petT;
   petLifePoseUI();
@@ -56,7 +58,7 @@ function petLifePoseUI(){
     b.disabled = !!petGame || !!petAnim || petView !== 'room';
   });
 }
-function petLifeSofa(x, frente){
+function petLifeSofa(x, frente, visual){
   x.save();
   if(!frente){
     x.fillStyle = 'rgba(88,44,112,.18)'; x.beginPath(); x.ellipse(95,199,57,6,0,0,7); x.fill();
@@ -74,11 +76,11 @@ function petLifeSofa(x, frente){
     // Sentado de verdade: o quadril fica SOBRE o assento, as coxas aparecem por cima
     // da almofada (na cor da roupa do avatar), os joelhos passam da borda e as
     // canelas descem até o chão. Cada pose tem lugar e postura próprios.
-    var q = petLifeQuadril();
+    var q = petLifeQuadril(visual), roupa = petLifeRoupaSaia();
     x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
     x.fillStyle='#e8b8e3';x.fillRect(62,176,67,2);
-    petLifeSofaBracos(x);
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
+    x.save();x.globalAlpha *= visual ? visual.sit : 1;
     [-8.4, 10.8].forEach(function(o){
       var px = q.x + o;
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
@@ -87,15 +89,23 @@ function petLifeSofa(x, frente){
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
       x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
       petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);                  // polainas da roupa (ex.: Nagareboshi) também sentado
-      x.fillStyle=petLifeCorColo;
-      x.fillRect(px-7,q.y-3,14,10);                                   // coxa na cor da roupa, reta
+      if(!roupa){ x.fillStyle=petLifeCorColo;
+        x.fillRect(px-7,q.y-3,14,10); }                              // bermuda: coxas retas
     });
+    if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
+      var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
+      x.fillStyle=petLifeCorSaia;
+      x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
+      x.lineTo(q.x+largura,q.y+12);x.lineTo(q.x-largura,q.y+12);x.closePath();x.fill();
+    }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';
       x.fillStyle=ac;x.beginPath();x.roundRect(q.x-22,q.y-2,46,20,[5,5,9,9]);x.fill();
       x.fillStyle='rgba(255,255,255,.45)';for(var m=q.x-18;m<q.x+22;m+=9)x.fillRect(m,q.y-2,4,20);
       x.fillStyle='rgba(255,255,255,.7)';x.font='9px sans-serif';x.textAlign='center';x.fillText('♥',q.x+1,q.y+12);
     }
+    x.restore();
+    petLifeSofaBracos(x); // o braço cobre a lateral da roupa/joelho, não o contrário
   }
   x.restore();
 }
@@ -110,11 +120,39 @@ var PET_LIFE_ASSENTO = 180;   // nenhuma pose desenha as pernas retas abaixo do 
 var PET_LIFE_POSES = {
   sentar:    {x:64, y:84, rot:0},      // sentado ereto no meio do sofá
   descansar: {x:50, y:91, rot:-.17},   // recostado na almofada do braço, com mantinha
-  conviver:  {x:94, y:84, rot:.13}     // na ponta do sofá, inclinado para o Pet
+  conviver:  {x:92, y:84, rot:.13}     // 2 px para dentro: joelho não atravessa o braço direito
 };
+var PET_LIFE_EM_PE = {x:78, y:PET_FLOOR - 44*2.4, rot:0, sit:0};
+function petLifeMovimentoReduzido(){
+  return typeof window !== 'undefined' && !!window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function petLifePoseDesenho(t){
+  var alvo = PET_LIFE_POSES[petLifePose] || PET_LIFE_EM_PE;
+  var ate = {x:alvo.x, y:alvo.y, rot:alvo.rot, sit:petLifePose ? 1 : 0};
+  if(!petLifePoseOrigem || petLifeMovimentoReduzido()) return ate;
+  var p = Math.max(0,Math.min(1,(t-petLifePoseInicio)/24));p=p*p*(3-2*p);
+  var de = petLifePoseOrigem;
+  return {x:de.x+(ate.x-de.x)*p,y:de.y+(ate.y-de.y)*p,
+    rot:de.rot+(ate.rot-de.rot)*p,sit:de.sit+(ate.sit-de.sit)*p};
+}
+function petLifePetAproximar(quer, delta){
+  var alvo = quer ? 52 : 0, passo = Math.max(.1,Math.min(4,delta||1))*2.2;
+  if(petLifeMovimentoReduzido()) return (petLifePetPerto=alvo);
+  petLifePetPerto += Math.max(-passo,Math.min(passo,alvo-petLifePetPerto));
+  return petLifePetPerto; // um único deslocamento limitado; sem fila ou novo loop
+}
+function petLifeRoupaSaia(){
+  var c = CH[sel];if(!c)return '';
+  var out = c.out || '';
+  if(out === 'sweet' || out === 'zipper') return out;
+  if(['','y2k','seifuku','citypop'].indexOf(out) < 0) return '';
+  return typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.qual(c,out) === 'saia' ? 'saia' : '';
+}
 var petLifeCorColo = '#dfe6f5';   // cor da roupa no quadril, lida do próprio avatar desenhado
-function petLifeQuadril(){   // centro do quadril (15u, 34u do avatar) já com a inclinação
-  var c = PET_LIFE_POSES[petLifePose] || PET_LIFE_POSES.sentar, cs = Math.cos(c.rot), sn = Math.sin(c.rot);
+var petLifeCorSaia = '#dfe6f5';
+function petLifeQuadril(visual){   // centro do quadril (15u, 34u do avatar) já com a inclinação
+  var c = visual || PET_LIFE_POSES[petLifePose] || PET_LIFE_POSES.sentar, cs = Math.cos(c.rot), sn = Math.sin(c.rot);
   return { x:c.x + cs * 36 - sn * 81.6, y:c.y + sn * 36 + cs * 81.6 };
 }
 // Roupas que pintam a perna no drawChar (polainas do Estrelado/Nagareboshi) repetem o desenho na canela sentada,
@@ -127,9 +165,16 @@ function petLifeCanelaRoupa(x, px, base){
   x.fillStyle = '#4dd8ff'; x.fillRect(px - 6, topo + 3.4 * u, 12, .9 * u);
 }
 function petLifeLerCorColo(x, q){   // 1 pixel do quadril: as coxas usam a mesma cor da roupa
+  var saia = petLifeRoupaSaia();petLifeCorSaia = petLifeCorColo;
   try{
-    var d = x.getImageData(Math.round(q.x * petDpr), Math.round((q.y - 2) * petDpr), 1, 1).data;
+    var extra = saia ? Math.round(8*petDpr) : 0;
+    var pixels = x.getImageData(Math.round(q.x*petDpr),Math.round((q.y-2)*petDpr),1,extra+1).data;
+    var d = pixels.subarray(0,4);
     if(d[3] > 200) petLifeCorColo = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+    if(saia){
+      d=pixels.subarray(extra*4,extra*4+4);
+      petLifeCorSaia=d[3]>200?'rgb('+d[0]+','+d[1]+','+d[2]+')':petLifeCorColo;
+    }
   }catch(e){}
 }
 var petData = null, petOpen = false, petT = 0, petFx = [], petEsc = 'tsu';
@@ -1629,7 +1674,8 @@ function petDrawRoom(){
   petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   petLifeSofa(x, false);
-  if(!petLifePose) petLifeSofa(x, true);   // em pé, o sofá inteiro fica atrás do Idol
+  var poseDesenho = petLifePoseDesenho(petT), pose = poseDesenho.sit > .001 ? poseDesenho : null;
+  if(!petLifePose && !pose) petLifeSofa(x, true); // em pé, o sofá inteiro fica atrás do Idol
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
   // Quando estão livres, Pet e Idol trocam um gesto breve de amizade.
@@ -1654,23 +1700,33 @@ function petDrawRoom(){
   var og = g;
   try{
     g = x; g.save();
-    var pose = PET_LIFE_POSES[petLifePose], quadril = pose ? petLifeQuadril() : null;
+    var quadril = pose ? petLifeQuadril(pose) : null;
     if(petLifePose === 'descansar'){   // almofadinha onde a cabeça encosta
       g.fillStyle = '#ffd3ea'; g.beginPath(); g.roundRect(42, 128, 26, 20, 8); g.fill();
       g.fillStyle = '#ffffff'; g.globalAlpha = .55; g.beginPath(); g.roundRect(46, 131, 10, 5, 3); g.fill(); g.globalAlpha = 1;
     }
-    if(pose){ g.beginPath(); g.rect(0, 0, 360, Math.min(PET_LIFE_ASSENTO, quadril.y + 3)); g.clip(); }
+    if(pose){ // o recorte acompanha o sentar; saias mantêm a barra em vez de virar bermuda
+      var barra = petLifeRoupaSaia() ? 12 : 3;
+      var limite = (PET_FLOOR + 2) * (1-pose.sit) + Math.min(PET_LIFE_ASSENTO,quadril.y+barra)*pose.sit;
+      g.beginPath();g.rect(0,0,360,limite);g.clip();
+    }
     else { g.fillStyle = 'rgba(60,25,90,.18)'; g.beginPath(); g.ellipse(114, PET_FLOOR + 1, 21, 3.5, 0, 0, 7); g.fill(); }
-    g.translate(pose ? pose.x : 78,
-      (pose ? pose.y : PET_FLOOR - 44 * 2.4) + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5) - (pose ? 0 : chop));
+    g.translate(poseDesenho.x,
+      poseDesenho.y + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5) - (pose ? 0 : chop));
     if(pose && pose.rot) g.rotate(pose.rot);
+    // Olhar sugerido pelo corpo, sem editar olhos/pupilas ou a função drawChar compartilhada.
+    if(petLifePose === 'conviver' && !sleepy && !petAnim && !petLifePhoneOlhar &&
+      !petLifeMovimentoReduzido() && p.fome >= 25 && p.humor >= 25){
+      var idadeOlhar = petT - petLifePoseInicio;
+      if(idadeOlhar >= 30 && idadeOlhar < 100) g.rotate(Math.sin((idadeOlhar-30)/70*Math.PI)*.018);
+    }
     if(idolBrincando) g.rotate(idolBrincando.inclina);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
     if(pose) petLifeLerCorColo(x, quadril);
   } finally { g = og; }
-  if(petLifePose) petLifeSofa(x, true);   // sentado: almofada na frente do colo e pés no chão
+  if(pose) petLifeSofa(x, true, pose);   // sentado: almofada na frente do colo e pés no chão
   if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
     x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
     x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,
@@ -1687,9 +1743,10 @@ function petDrawRoom(){
   if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
   var podeReagir = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     !recebendo && petCharT <= 0 && petLove <= 0 && !petEmote;
-  var companhia = petLifeCompanhiaVisual(petData.ativo,p.cfg,petT,petLifePose,
-    petLifePoseInicio,podeReagir,petLifePhoneOlhar);
-  var livre = podeReagir && !petLifePhoneOlhar && !companhia && petLifePose !== 'conviver';
+  var companhia = petLifePetPerto > .1 && petLifePose !== 'conviver' ? null :
+    petLifeCompanhiaVisual(petData.ativo,p.cfg,petT,petLifePose,
+      petLifePoseInicio,podeReagir,petLifePhoneOlhar);
+  var livre = podeReagir && !petLifePhoneOlhar && !companhia && petLifePose !== 'conviver' && petLifePetPerto < .1;
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
   hop += rotina.pulo + (companhia ? companhia.pulo : 0);
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
@@ -1699,15 +1756,19 @@ function petDrawRoom(){
   jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0) +
     (companhia ? companhia.x : 0); jeito.y += passeio.y;
   if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
-    var aproxima = Math.min(1, Math.max(0, (petT-petLifePoseInicio)/28));
-    jeito.x -= 52 * aproxima;   // o Pet vem para perto da ponta do sofá
-  }
+    jeito.x -= petLifePetAproximar(true,petDrawDelta);
+  }else jeito.x -= petLifePetAproximar(false,petDrawDelta); // retorno sem salto de 52 px
   petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
-  if(companhia && companhia.inclina){
+  if((companhia && companhia.inclina) || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
     x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
-    x.rotate(companhia.inclina);
+    var inclinacao = companhia ? companhia.inclina : 0;
+    if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
+      var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
+      if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
+    }
+    x.rotate(inclinacao);
     x.translate(-PET_X,-(PET_FLOOR - 12 * PET_SC));
   }
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
@@ -1822,7 +1883,7 @@ function petOpenUI(){
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){
-  petLifePose = ''; petLifePoseUI();
+  petLifePose = ''; petLifePoseOrigem = null; petLifePetPerto = 0; petLifePoseUI();
   petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petPhoneOpen) petPhoneFechar(false);
   var estante = $('petLifeEstante'), bEstante = document.querySelector('#petLifeNav [data-life="estante"]');
@@ -2466,7 +2527,7 @@ function petAdopt(){
 function petSwitch(k){   // os pets que não estão ativos "descansam" e não perdem pontos
   if(!petData || !petData.pets[k]) return;
   if(petData.ativo !== k){
-    petLifePose = '';
+    petLifePose = '';petLifePoseOrigem = null;petLifePetPerto = 0;
     petTick();
     petData.ativo = k; petData.pets[k].t = Date.now();
     petAnim = null; petMenuK = ''; petEmote = null; petLembrancaRecente = null;

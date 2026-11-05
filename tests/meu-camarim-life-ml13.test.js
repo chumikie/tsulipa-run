@@ -15,7 +15,7 @@ test('ML1.3-A: as três poses são locais, reversíveis e não alteram economia'
     dataset:{pose}, disabled:false, attrs:{}, setAttribute(k,v){this.attrs[k]=v;}
   }));
   const ctx = {petOpen:true,petView:'room',petGame:null,petAnim:null,petPhoneOpen:false,
-    petT:20,petAtivo:()=>({nome:'Pet'}),$:()=>({querySelectorAll:()=>buttons}),
+    petT:20,PET_FLOOR:196,petAtivo:()=>({nome:'Pet'}),$:()=>({querySelectorAll:()=>buttons}),
     localStorage:{setItem(){writes.push('save');}},contaRpc(){writes.push('rpc');}};
   vm.runInNewContext(logic,ctx);
   assert.equal(ctx.petLifePoseEscolher('sentar'),true);
@@ -38,8 +38,8 @@ test('ML1.3-A: as três poses são locais, reversíveis e não alteram economia'
 test('ML1.3-A: assento e poses reutilizam avatar e loop sem novos assets', () => {
   assert.match(pet,/petLifeSofa\(x, false\)/);
   assert.match(pet,/petLifeSofa\(x, true\)/);
-  assert.match(pet,/if\(pose\)\{ g\.beginPath\(\); g\.rect\(0, 0, 360, Math\.min\(PET_LIFE_ASSENTO, quadril\.y \+ 3\)\); g\.clip\(\); \}/, 'sentado: pernas retas recortadas no quadril');
-  assert.match(pet,/if\(!petLifePose\) petLifeSofa\(x, true\);/, 'em pé: frente do sofá atrás do Idol, sem pés dentro do sofá');
+  assert.match(pet,/var limite = \(PET_FLOOR \+ 2\) \* \(1-pose\.sit\) \+ Math\.min\(PET_LIFE_ASSENTO,quadril\.y\+barra\)\*pose\.sit;/, 'recorte acompanha o sentar e a barra da saia');
+  assert.match(pet,/if\(!petLifePose && !pose\) petLifeSofa\(x, true\);/, 'em pé: frente do sofá atrás do Idol, sem pés dentro do sofá');
   assert.match(pet,/drawChar\(CH\[sel\], 0, 0, 0, expr\)/);
   assert.match(pet,/petLifePose === 'conviver'/);
   assert.match(html,/id="petLifePoses"/);

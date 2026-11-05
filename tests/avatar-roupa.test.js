@@ -47,4 +47,7 @@ assert(ler('centerrun.js').includes("baixo: c.baixo||''"),'saveCu guarda a parte
   assert(pts.some(p=>p[1]<21.5&&p[0]<6),'manga esquerda sobe junto com o braço no banzai'); }
 assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&&!R.luzPropria('espacial'),'folha F: Estrelado, Zipper e Sweet sem a sombra antiga');
 { const gg=fake();R.parte(gg,0,0,'sweet-tronco');assert(gg.log.includes('clip'),'luz da Sweet recortada no vestido'); }
+// Sentado no sofá do Camarim, a canela repete as polainas da Nagareboshi (Estrelado) em vez de virar meia preta.
+const pet=ler('pet.js');
+assert(pet.includes('petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
 console.log('avatar-roupa: ok');

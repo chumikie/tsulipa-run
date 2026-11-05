@@ -86,6 +86,7 @@ function petLifeSofa(x, frente){
       var bal = Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
       x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
+      petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);                  // polainas da roupa (ex.: Nagareboshi) também sentado
       x.fillStyle=petLifeCorColo;
       x.fillRect(px-7,q.y-3,14,10);                                   // coxa na cor da roupa, reta
     });
@@ -115,6 +116,15 @@ var petLifeCorColo = '#dfe6f5';   // cor da roupa no quadril, lida do próprio a
 function petLifeQuadril(){   // centro do quadril (15u, 34u do avatar) já com a inclinação
   var c = PET_LIFE_POSES[petLifePose] || PET_LIFE_POSES.sentar, cs = Math.cos(c.rot), sn = Math.sin(c.rot);
   return { x:c.x + cs * 36 - sn * 81.6, y:c.y + sn * 36 + cs * 81.6 };
+}
+// Roupas que pintam a perna no drawChar (polainas do Estrelado/Nagareboshi) repetem o desenho na canela sentada,
+// na mesma escala do avatar (2,4 px por unidade) e encostadas no pé, como em pé.
+function petLifeCanelaRoupa(x, px, base){
+  var c = CH[sel]; if(!c || c.out !== 'estrelado') return;
+  var u = 2.4, topo = base - 5.5 * u;
+  x.fillStyle = '#ff9ccd'; x.fillRect(px - 6, topo, 12, 5.5 * u);
+  x.fillStyle = '#ffe14d'; x.fillRect(px - 6, topo + 1.6 * u, 12, 1 * u);
+  x.fillStyle = '#4dd8ff'; x.fillRect(px - 6, topo + 3.4 * u, 12, .9 * u);
 }
 function petLifeLerCorColo(x, q){   // 1 pixel do quadril: as coxas usam a mesma cor da roupa
   try{

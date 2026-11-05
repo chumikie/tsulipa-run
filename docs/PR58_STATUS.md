@@ -493,6 +493,7 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 | Karaoke — balões | Falas dos NPCs não se sobrepõem: fila de balões em até 4 andares, jogador primeiro, desenhada depois de todos os Idols (`krBaloesLayout`) | Implementado (`28676df`) |
 | Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
 | Karaoke — músicas novas | Sete trilhas de outros modos viram músicas do jogo de ritmo (`karaoke-musicas-modos.js`, fora do HTML pelo limite de tamanho): Mega Kawaii, Corrida Tensa, Modo Difícil, Kimi wa Alien! e Unit⭐Sync! (Center⭐Run!), Sora⭐Jump! e Vitrine Brilhante (início). Mesmo formato das 7 originais (64 passos, acordes a cada 8), cartão na biblioteca e opção no seletor. A rotação semanal continua com as mesmas 5 | Implementado |
+| Meias no sofá | A Nagareboshi (Estrelado) mostrava polainas listradas em pé e meia escura sentada: a canela sentada agora repete as polainas (`petLifeCanelaRoupa`) | Corrigido |
 | Sons do celular | Abrir, fechar, voltar, abrir app, tocar, conversar e abrir carta têm sons curtos (`PET_PHONE_SONS` via `beep`), que respeitam o mudo | Implementado (`9bb3645`) |
 | Visual dos personagens | Folha E aprovada: Trainee, Cheeky, Seifuku e City Pop ganham parte de baixo própria (**Saia** pregueada ou **Bermuda** de cintura alta, campo `baixo` no Montar Idol do Perfil e da Zipper⭐Shop!; sem escolha, City Pop usa bermuda e as outras, saia), ombro ligado à roupa e luz contínua recortada só no tecido (sem escurecer gravata, laço, gola ou estampa). Trainee volta a ser camisa inteira na cor escolhida com gravata (laterais e manga do mesmo tecido). Tsu e Pati começam de bermuda, Lirika de saia. Módulo único `tw-avatar-roupa.js` nas três cópias do `drawChar`. Folha F: Estrelado, Zipper e Sweet mantêm o desenho e ganham a mesma luz contínua (top e avental brancos deixam de escurecer); roupas da loja e looks de rank continuam como estavam. A manga acompanha o braço em V, Tchau, Banzai e Lightstick | Implementado |
 
@@ -518,6 +519,5 @@ PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na me
 
 - Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
 - Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
-- Meias no Backstage⭐Pet: relato de que mudam durante as interações; não reproduzido em Comer, Banho, Brincar, Cantar, Conversar, Sentar, Descansar e Conviver. Aguardando personagem, interação e cor.
 - Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
 - A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

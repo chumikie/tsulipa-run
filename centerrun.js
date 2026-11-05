@@ -1030,7 +1030,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else if(roupa==='y2k'){
     g.fillStyle='#111';g.fillRect(x+7,y+22,16,6); 
     g.fillStyle=c.skin;g.fillRect(x+7,y+28,16,4); 
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,5,12);g.fillRect(x+21,y+22,5,12); // blazer na largura do tronco (as mangas vêm do Visual 2.0)
+    g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,12);g.fillRect(x+21,y+22,6,12); // Pinta as mangas e o blazer da cor escolhida
     g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); 
   }else if(roupa==='citypop'){
     g.fillStyle='#111827'; g.fillRect(x+7, y+22, 16, 12);
@@ -1116,8 +1116,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(typeof charMangaCor==='function') charManga=charMangaCor(roupa,OF,PX,OUT,corDaRoupa);   // Visual 2.0: mangas na cor da roupa
-  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); if(typeof charMangaReta==='function'){charMangaReta(x+1,y+24);charMangaReta(x+25,y+24);g.fillStyle=c.skin;} }   // com pose, os braços vêm depois das roupas (V2.1.2)
+  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }   // com pose, os braços vêm depois das roupas (V2.1.2)
 
   // Mangas bufantes por cima dos braços
   if(roupa === 'sweet' || roupa === 'zipper'){
@@ -1155,7 +1154,6 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
     g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
   }
-  if(!TWAvatarHair.isWavy(b)&&typeof charSombraCabelo==='function')charSombraCabelo(x,y,sl);   // Visual 2.0: sombra suave do lado direito do cabelo
 
   g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }

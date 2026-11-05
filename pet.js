@@ -472,7 +472,7 @@ function petCartasLista(){
     var tema = (livres.length ? livres : temas)[h % (livres.length || temas.length)];
     anterior = tema;
     var texto = tr(PET_CARTA_TEXTOS[tema]).split('{b}').join(bestRun.toLocaleString(LANG === 'pt' ? 'pt-BR' : undefined))
-      .split('{p}').join(pet ? pet.nome : '').split('{n}').join(nick || tr('Idol'));
+      .split('{p}').join(pet ? pet.nome : '').split('{n}').join(nick || tr('Meu Idol'));
     lista.unshift({id:dia, dia:dia, tema:tema, texto:texto, fa:nomes[(h >>> 4) % nomes.length],
       selo:PET_CARTA_SELOS[(h >>> 9) % PET_CARTA_SELOS.length], nova:i === 0 && lidas.indexOf(dia) < 0});
   }
@@ -496,7 +496,7 @@ function petCartasHtml(){
   var aberta = lista.filter(function(c){ return c.id === petPhoneCartaAberta; })[0];
   if(aberta){
     return '<article class="petphone-carta"><span class="petphone-carta-selo" aria-hidden="true">' + aberta.selo + '</span>' +
-      '<p class="petphone-carta-oi">' + escHtml(tr('Oi, {n}!').split('{n}').join(contaJ && contaJ.nick || tr('Idol'))) + '</p>' +
+      '<p class="petphone-carta-oi">' + escHtml(tr('Oi, {n}!').split('{n}').join(contaJ && contaJ.nick || tr('Meu Idol'))) + '</p>' +
       '<p>' + escHtml(aberta.texto) + '</p>' +
       '<p class="petphone-carta-ass">' + escHtml(tr('Com carinho,')) + '<br><b>' + escHtml(aberta.fa) + '</b> · ' + escHtml(petCartaDataTxt(aberta.dia)) + '</p></article>' +
       '<button type="button" class="petphone-carta-voltar" data-phone="voltar">‹ ' + escHtml(tr('Voltar às cartas')) + '</button>';
@@ -506,7 +506,7 @@ function petCartasHtml(){
       return '<li><button type="button" data-phone="carta-abrir" data-carta="' + escHtml(c.id) + '"' + (c.nova ? ' class="nova"' : '') + '>' +
         '<span class="petphone-carta-env" aria-hidden="true">' + (c.nova ? '💌' : '✉️') + '</span>' +
         '<span class="petphone-carta-txt"><b>' + escHtml(c.fa) + ' ' + c.selo + '</b><small>' + escHtml(c.texto) + '</small></span>' +
-        '<span class="petphone-carta-dia">' + (c.nova ? '<i>' + escHtml(tr('nova')) + '</i>' : escHtml(petCartaDataTxt(c.dia))) + '</span></button></li>';
+        '<span class="petphone-carta-dia">' + (c.nova ? '<i>' + escHtml(tr('carta nova')) + '</i>' : escHtml(petCartaDataTxt(c.dia))) + '</span></button></li>';
     }).join('') + '</ul>' + perfil;
 }
 function petPhoneAgendaHtml(){

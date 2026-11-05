@@ -199,11 +199,8 @@ function petPhonePapel(){
   var c = $('petPhoneWp'); if(!c || !petCv || !petCv.width) return;
   var x = c.getContext('2d'); if(!x) return;
   x.clearRect(0, 0, c.width, c.height);
-  // Recorte proporcional do cenário já desenhado: Idol e Pet sem distorção.
-  var srcW = petCv.width, srcH = petCv.height, ratio = c.width / c.height;
-  var cropH = Math.min(srcH, srcW / ratio), cropW = Math.min(srcW, srcH * ratio);
-  var sx = (srcW - cropW) / 2, sy = (srcH - cropH) * .68;
-  x.drawImage(petCv, sx, sy, cropW, cropH, 0, 0, c.width, c.height);
+  // Visor 360:220: enquadramento inteiro, sem cortar as bordas do Idol/Pet.
+  x.drawImage(petCv, 0, 0, petCv.width, petCv.height, 0, 0, c.width, c.height);
 }
 // Quatro ícones originais do Idol⭐Touch, desenhados uma vez em Canvas 2D.
 // Reutilizam a paleta T2; não há imagens externas, timers ou animação extra.
@@ -344,17 +341,19 @@ function petPhoneMomentosRender(){
 }
 function petPhoneFotoHtml(){
   var fotoPronta = !!petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave();
-  return '<div class="petphone-photo">' +
-    '<div class="petphone-photo-preview">' + (fotoPronta
+  return '<div class="petphone-photo' + (fotoPronta ? ' petphone-photo-revisando' : '') + '">' +
+    '<div class="petphone-photo-preview ' + (fotoPronta ? 'petphone-photo-review' : 'petphone-photo-visor') + '">' + (fotoPronta
       ? '<img id="petPhoneFotoImg" alt="' + escHtml(tr('Selfie do Idol com o Pet')) + '">'
-      : '<div class="petphone-photo-espera"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas><span>📸 ' + escHtml(tr('Idol + Pet')) + '</span></div>') + '</div>' +
-    '<button type="button" class="petphone-photo-tirar" data-phone="tirar-selfie">📸 ' + escHtml(tr(fotoPronta ? 'Tirar outra selfie!' : 'Tirar selfie!')) + '</button>' +
-    (fotoPronta ? '<a class="petphone-photo-baixar" id="petPhoneFotoBaixar" download="tsulipa-camarim.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a>' +
-      '<button type="button" data-phone="guardar-selfie">💗 ' + escHtml(petPhoneMomentoTexto(0)) + '</button>' : '') +
+      : '<div class="petphone-photo-espera"><canvas id="petPhoneWp" width="360" height="220" aria-hidden="true"></canvas><span>📸 ' + escHtml(tr('Idol + Pet')) + '</span></div>') + '</div>' +
+    (fotoPronta
+      ? '<div class="petphone-photo-actions"><a class="petphone-photo-baixar" id="petPhoneFotoBaixar" download="tsulipa-camarim.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a>' +
+        '<button type="button" data-phone="guardar-selfie">💗 ' + escHtml(petPhoneMomentoTexto(0)) + '</button></div>' +
+        '<button type="button" class="petphone-photo-retomar" data-phone="repetir-selfie">📸 ' + escHtml(tr('Tirar outra selfie!')) + '</button>'
+      : '<button type="button" class="petphone-photo-tirar" data-phone="tirar-selfie">📸 ' + escHtml(tr('Tirar selfie!')) + '</button>') +
     (petPhoneFotoErro ? '<p class="petphone-photo-erro" role="status">' + escHtml(petPhoneFotoErro) + '</p>' : '') +
-    '<p class="petphone-photo-dica">' + escHtml(tr('Use as poses e molduras já disponíveis na câmera do Camarim. A foto só fica aqui até fechar o TsuPhone.')) + '</p>' +
+    (!fotoPronta ? '<p class="petphone-photo-dica">' + escHtml(tr('Use as poses e molduras já disponíveis na câmera do Camarim. A foto só fica aqui até fechar o TsuPhone.')) + '</p>' : '') +
     '<button type="button" class="petphone-photo-album" data-phone="abrir-album">🃏 ' + escHtml(tr('Ver Álbum de cards')) + '</button>' +
-    '<p class="petphone-photo-ajuda">' + escHtml(tr('No iPhone, segure a imagem para salvar se o download não abrir.')) + '</p></div>';
+    (fotoPronta ? '<p class="petphone-photo-ajuda">' + escHtml(tr('No iPhone, segure a imagem para salvar se o download não abrir.')) + '</p>' : '') + '</div>';
 }
 function petPhoneFotosHtml(){
   var txt = PET_PHONE_FOTOS_TEXTO[LANG] || PET_PHONE_FOTOS_TEXTO.pt;
@@ -362,7 +361,10 @@ function petPhoneFotosHtml(){
   var nav = '<nav class="petphone-fotos-tabs" aria-label="' + escHtml(tr('Fotos')) + '">' + tabs.map(function(t, i){
     return '<button type="button" data-phone="fotos-aba" data-aba="' + t[0] + '" aria-pressed="' + (petPhoneFotosAba === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span><b>' + escHtml(txt[i]) + '</b></button>';
   }).join('') + '</nav>';
-  if(petPhoneFotosAba === 'camera') return nav + petPhoneFotoHtml();
+  if(petPhoneFotosAba === 'camera'){
+    // Na revisão, a Polaroid recebe o espaço que seria ocupado pelas três abas.
+    return (petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave() ? '' : nav) + petPhoneFotoHtml();
+  }
   if(petPhoneFotosAba === 'momentos') return nav + petPhoneMomentosHtml();
   var jornal = petPhoneFotosAba === 'jornal';
   return nav + '<section class="petphone-fotos-espera" aria-label="' + escHtml(txt[jornal ? 5 : 3]) + '">' +
@@ -402,6 +404,11 @@ function petPhoneFotoTirar(){
     petPhoneRender();return false;
   }
   petPhoneFotoUrl = url;petPhoneFotoDono = chave;petPhoneFotoErro = '';
+  petPhoneRender();return true;
+}
+function petPhoneFotoRepetir(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'camera' || !petPhoneFotoUrl) return false;
+  petPhoneFotoLimpar();
   petPhoneRender();return true;
 }
 function petPhoneFotoGuardar(){

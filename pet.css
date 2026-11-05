@@ -129,10 +129,16 @@
 .petphone-photo-preview{display:grid;place-items:center;height:154px;min-height:0;overflow:hidden;border:2px solid #fff;border-radius:14px;background:linear-gradient(160deg,#fbe5f7,#dcefff);box-shadow:0 2px 7px rgba(104,58,142,.15)}
 .petphone-photo-preview img{display:block;max-width:100%;height:100%;object-fit:contain}
 .petphone-photo-espera{position:relative;display:grid;place-items:center;width:100%;height:100%;overflow:hidden}
-.petphone-photo-espera canvas{display:block;width:100%;height:100%;object-fit:cover}
+.petphone-photo-espera canvas{display:block;width:100%;height:100%;object-fit:contain}
 .petphone-photo-espera span{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);max-width:92%;padding:3px 9px;white-space:nowrap;border:1px solid #fff;border-radius:99px;background:rgba(255,250,255,.89);color:#67348a;font-size:11px;font-weight:900}
+.petphone-photo-visor{border-color:#d8b6e6}
+.petphone-photo-visor .petphone-photo-espera span{top:5px;right:6px;bottom:auto;left:auto;transform:none}
+.petphone-photo-review{height:auto;min-height:0;padding:6px 4px;overflow:visible;border-color:#d8b6e6}
+.petphone-photo-review img{display:block;width:auto;max-width:100%;height:auto;max-height:226px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(104,58,142,.17))}
 .petphone-photo button,.petphone-photo-baixar{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;min-height:44px;padding:7px 9px;border:2px solid #fff;border-bottom-color:#bb9bd8;border-radius:12px;background:linear-gradient(135deg,#ffe5f7,#d9eeff);color:#64338b;font:800 12px "M PLUS Rounded 1c",sans-serif;text-decoration:none;text-align:center;box-shadow:0 2px 0 rgba(104,57,144,.16)}
 .petphone-photo .petphone-photo-tirar{background:linear-gradient(125deg,var(--petphone-oshi),#6f55d3);color:#fff}
+.petphone-photo-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.petphone-photo-actions button,.petphone-photo-actions a{min-width:0;font-size:10px;overflow-wrap:anywhere}
 .petphone-photo-dica,.petphone-photo-ajuda,.petphone-photo-erro{margin:0;color:#73518c;font-size:10px;line-height:1.45;text-align:center}
 .petphone-photo-erro{color:#a72562;font-weight:800}
 .petphone-photo-ajuda{color:#827198;font-size:9px}
@@ -176,4 +182,5 @@
 .petphone-pingente i{font-style:normal;font-size:18px;transform:rotate(-7deg)}.petphone-pingente b{font-size:18px;transform:rotate(9deg)}
 @media (max-height:760px){.petphone-shell{height:min(448px,calc(100dvh - 60px - env(safe-area-inset-bottom,0px)));padding-top:30px;border-radius:36px}.petphone-speaker{top:14px}.petphone-cristais{top:6px}.petphone-capa{margin-bottom:8px}.petphone-apps{gap:7px}.petphone-apps button{min-height:67px;padding:3px 2px}.petphone-apps button>canvas{width:42px;height:42px}.petphone-home{flex-basis:44px;height:44px;margin-top:4px}}
 @media (max-height:760px){.petphone-photo-preview{height:118px}.petphone-photo{gap:6px}}
+@media (max-height:760px){.petphone-photo-review{height:auto}.petphone-photo-review img{max-height:196px}}
 @media (prefers-reduced-motion:reduce){.petphone-shell button{transition:none!important}}

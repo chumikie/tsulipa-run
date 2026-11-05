@@ -556,17 +556,75 @@ test('ML1.2-C.2-B: galeria responsiva simulada em 320×640 e 390×844', () => {
   assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage/.test(trecho),false,'sem timers, rede ou saves');
 });
 
-test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {
+test('ML1.2-C.2-B.1: captura abre revisão inteira no TsuPhone, mantendo PNG e ações originais', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const png='data:image/png;base64,iVBORw0KGgo=';
+  let capturas=0;
+  ctx.petData={ativo:'tsu'};
+  ctx.petMakePhoto=()=>{capturas++;return png;};
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/class="petphone-photo-preview petphone-photo-visor"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-aba="momentos"/);
+  assert.equal(capturas,0,'visor não captura automaticamente');
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  assert.equal(capturas,1,'captura original executada uma vez');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/petphone-photo-review/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoImg"/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-aba="camera"/,'abas liberam espaço para a Polaroid');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="guardar-selfie"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="repetir-selfie"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="abrir-album"/);
+  assert.equal(nodes.petPhoneFotoImg.src,png);
+  assert.equal(nodes.petPhoneFotoBaixar.href,png);
+  assert.equal(nodes.petPhoneFotoBaixar.download,'tsulipa-camarim-pipoca.png');
+  assert.equal(ctx.petPhoneMomentos.length,0,'foto ainda não foi guardada');
+  assert.equal(ctx.petPhoneFotoRepetir(),true);
+  assert.equal(capturas,1,'voltar ao visor não cria outra captura');
+  assert.equal(ctx.petPhoneFotoUrl,'','revisão temporária descartada pelo jogador');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-aba="camera"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneWp"/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"/);
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  assert.equal(capturas,2);
+  assert.equal(ctx.petPhoneFotoGuardar(),true);
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.equal(ctx.petPhoneMomentos.length,1);
+  assert.equal(ctx.petPhoneMomentos[0].url,png);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('localStorage'),false);
+  assert.match(html,/k === 'repetir-selfie'\) petPhoneFotoRepetir\(\)/,'navegação interna conectada');
+});
+
+test('ML1.2-C.2-B.1: apresentação inteira em 320×640 e 390×844 sem renderização contínua', () => {
+  assert.match(css,/\.petphone-photo-review\{[^}]*height:auto/);
+  assert.match(css,/\.petphone-photo-review img\{[^}]*max-height:226px;object-fit:contain/);
+  assert.match(css,/@media \(max-height:760px\)\{\.petphone-photo-review\{height:auto\}\.petphone-photo-review img\{max-height:196px/);
+  assert.match(css,/\.petphone-photo-actions\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.petphone-photo button,\.petphone-photo-baixar\{[^}]*min-height:44px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const curta=h<=760,phoneWidth=Math.min(304,w-28),phoneHeight=Math.min(curta?448:472,h-60);
+    const reviewHeight=curta?196:226,reviewWidth=reviewHeight*400/430;
+    const innerWidth=phoneWidth-4*2-13*2-4*2-9*2-4*2;
+    assert.ok(reviewWidth<=innerWidth,`${w}×${h}: Polaroid inteira na largura útil do TsuPhone`);
+    assert.ok(reviewHeight+44<=phoneHeight-100,`${w}×${h}: imagem e controle cabem na região rolável`);
+  }
+  const trecho=logic.slice(logic.indexOf('function petPhonePapel('),logic.indexOf('function petPhoneIcon('))+
+    logic.slice(logic.indexOf('function petPhoneFotoHtml('),logic.indexOf('function petPhoneChatContatos('));
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage/.test(trecho),false,'sem nova animação, RPC ou persistência');
+  assert.match(pet,/try\{ url = petMakePhoto\(\); \}catch\(e\)\{\}/,'câmera e molduras seguem originais');
+});
+
+test('ML1.2-C.2-B.1: visor mostra o Canvas 360×220 inteiro sem recorte', () => {
   const {ctx,nodes} = fakeRoom();
-  nodes.petPhoneWp.width=260;nodes.petPhoneWp.height=125;
+  nodes.petPhoneWp.width=360;nodes.petPhoneWp.height=220;
   let args;
   nodes.petPhoneWp.getContext=()=>({clearRect(){},drawImage(...a){args=a;}});
   ctx.petPhonePapel();
   assert.ok(args, 'reaproveita a imagem já desenhada do camarim');
-  assert.equal(args[3],360);
-  assert.ok(args[2] > 0, 'posiciona recorte para incluir os personagens');
-  assert.ok(Math.abs(args[3]/args[4]-260/125)<0.001, 'mantém a proporção original');
-  assert.equal(args[7],260);assert.equal(args[8],125);
+  assert.deepEqual(args.slice(1),[0,0,360,220,0,0,360,220], 'usa a área original por inteiro');
+  assert.equal(args[0],ctx.petCv);
+  assert.match(ctx.petPhoneFotoHtml(),/id="petPhoneWp" width="360" height="220"/);
+  assert.match(css,/\.petphone-photo-espera canvas\{[^}]*object-fit:contain/);
 });
 
 test('ML1.2-A.1: quatro ícones T2 originais são desenhados uma vez com Canvas 2D', () => {

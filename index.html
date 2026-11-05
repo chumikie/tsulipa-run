@@ -373,7 +373,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./centerrun.js?v=2"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=16"></script>
-<script src="./perfil.js?v=6"></script>
+<script src="./perfil.js?v=7"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=3"></script>
 <script src="./troca.js?v=1"></script>
@@ -2320,7 +2320,7 @@ function temaFalas(){ var k = temaAtual(); return TEMA_FALAS[k] || null; }
   $('lbBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
   buscaLigar($('lbBusca'), $('lbBuscaRes'));
 })();
-hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBuscaRes .lbn, #hubIdols .lbn'); if(b){ hubFechar(); } }, true);
+hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBuscaRes .lbn, #hubIdols .lbn'); if(b){ perfVoltaHub = true; hubFechar(); } }, true);   // ao fechar o perfil, volta para a página principal
 
 // ---------- Star⭐Gacha! (1 giro por dia, sorteio no servidor) ----------
 var gachaOv = document.createElement('div');

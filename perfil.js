@@ -651,8 +651,10 @@ function perfFechar(){
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
   perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfAniverVer = false; perfIconeConta();
-  petLifeRetornar('trofeus');
+  var voltaHub = perfVoltaHub; perfVoltaHub = false;
+  if(!petLifeRetornar('trofeus') && voltaHub && typeof hubMostrar === 'function') hubMostrar();   // veio da vitrine/busca: volta à página principal, não ao Center⭐Run!
 }
+var perfVoltaHub = false;
 function perfMontar(){
   var d = perfAtual, meu = perfMeu, h = '';
   perfBestConta = Math.max(+d.best || 0, meu ? best : 0);

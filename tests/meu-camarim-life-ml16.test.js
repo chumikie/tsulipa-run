@@ -90,3 +90,8 @@ test('ML1.6: cor das meias mantém os quadradinhos e o padrão escuro', () => {
   assert.match(perfil, /data-m="legcol"/);
   assert.doesNotMatch(html, /id="cleg"/, 'a página inicial não muda (teste visual de idiomas)');
 });
+
+test('Perfil aberto pela vitrine/busca volta para a página principal, não para o Center⭐Run!', () => {
+  assert.match(html, /if\(b\)\{ perfVoltaHub = true; hubFechar\(\); \}/);
+  assert.match(perfil, /if\(!petLifeRetornar\('trofeus'\) && voltaHub && typeof hubMostrar === 'function'\) hubMostrar\(\);/);
+});

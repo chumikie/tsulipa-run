@@ -286,6 +286,8 @@ function roupaSombra(x, y){
   g.drawImage(assets.clothHorizontal,x+5,y+22,20,11);
   g.fillStyle='rgba(40,10,70,.18)';g.fillRect(x+10,y+22,10,1.3);
   g.drawImage(assets.clothVertical,x+5,y+29,20,4);
+  // Visual 2.0: luz vem da esquerda; o lado direito do tronco fica um tom mais escuro.
+  if(typeof charSombraTronco === 'function') charSombraTronco(x, y);   // Visual 2.0 (avatar-visual.js)
 }
 function perfFundoGradiente(x, W2, H2, key, vertical, stops){
   var id = String(key) + '|' + W2 + 'x' + H2, cv = PERF_BG_TEXTURE_CACHE.get(id);
@@ -547,17 +549,18 @@ function perfPoseInfo(k){ for(var i = 0; i < PERF_POSES.length; i++) if(PERF_POS
 function perfPoseAtras(c, x, y){
   var p = charPose; if(p !== 'mic' && p !== 'banzai' && p !== 'nyan' && p !== 'luz') return false;
   g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin; g.fillStyle = c.skin; g.lineWidth = 4;
-  if(p === 'mic' || p === 'luz') g.fillRect(x + 1, y + 24, 4, 9);   // braço esquerdo normal
+  if(p === 'mic' || p === 'luz'){ g.fillRect(x + 1, y + 24, 4, 9); charMangaReta(x + 1, y + 24); g.fillStyle = c.skin; }   // braço esquerdo normal
   if(p === 'banzai'){
     [[3, -3.5], [27, 33.5]].forEach(function(b){
       g.strokeStyle = c.skin; g.lineWidth = 4; g.beginPath(); g.moveTo(x + b[0], y + 25.5); g.lineTo(x + b[1], y + 13.5); g.stroke();
+      charMangaLinha(x + b[0], y + 25.5, x + b[1], y + 13.5);
       g.fillStyle = c.skin; g.beginPath(); g.arc(x + b[1], y + 12.5, 2.4, 0, 7); g.fill();
       g.strokeStyle = '#ffe14d'; g.lineWidth = .9; var d = b[1] < 15 ? -1 : 1;
       g.beginPath(); g.moveTo(x + b[1] + d * 3, y + 9); g.lineTo(x + b[1] + d * 5.5, y + 6.5); g.moveTo(x + b[1] + d * 4, y + 12); g.lineTo(x + b[1] + d * 7, y + 11.5); g.moveTo(x + b[1], y + 8.5); g.lineTo(x + b[1], y + 5.5); g.stroke();
     });
   } else if(p === 'luz'){
     var cor = c.luz || c.hair || '#ff6fb5';   // lightstick: cor do perfil, senão a do cabelo
-    g.beginPath(); g.moveTo(x + 27, y + 25.5); g.lineTo(x + 33, y + 16.5); g.stroke();
+    g.beginPath(); g.moveTo(x + 27, y + 25.5); g.lineTo(x + 33, y + 16.5); g.stroke(); charMangaLinha(x + 27, y + 25.5, x + 33, y + 16.5); g.strokeStyle = c.skin; g.lineWidth = 4;
     g.save(); g.shadowColor = cor; g.shadowBlur = 6; g.strokeStyle = cor; g.lineWidth = 2.8;
     g.beginPath(); g.moveTo(x + 34, y + 13.5); g.lineTo(x + 37, y + 2); g.stroke(); g.restore();
     g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 34.2, y + 12.5); g.lineTo(x + 36.8, y + 3); g.stroke();
@@ -599,7 +602,7 @@ function perfPoseFrente(c, x, y){
   if(ant && typeof temaAntena === 'function') temaAntena(ant, c, x, y);   // gorro, chifres de rena, flores... (módulo de temas)
   g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(p === 'mic'){
-    g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 22.5, y + 23.2); g.stroke();
+    g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 22.5, y + 23.2); g.stroke(); charMangaLinha(x + 27, y + 26, x + 22.5, y + 23.2);
     g.strokeStyle = '#2a2438'; g.lineWidth = 2; g.beginPath(); g.moveTo(x + 22.8, y + 24.8); g.lineTo(x + 19.6, y + 20.4); g.stroke();
     g.fillStyle = '#d7dbe4'; g.beginPath(); g.arc(x + 19, y + 19.4, 2.4, 0, 7); g.fill();
     g.strokeStyle = '#ff6fb5'; g.lineWidth = .8; g.beginPath(); g.arc(x + 19, y + 19.4, 2.4, 0, 7); g.stroke();
@@ -607,7 +610,7 @@ function perfPoseFrente(c, x, y){
     g.fillStyle = '#ff6fb5'; g.font = '7px sans-serif'; g.textAlign = 'left'; g.fillText('♪', x + 25, y + 14); g.fillText('♫', x + 30, y + 9);
   } else if(p === 'nyan'){
     [[3, 6.5], [27, 23.5]].forEach(function(b){
-      g.strokeStyle = c.skin; g.lineWidth = 4; g.beginPath(); g.moveTo(x + b[0], y + 26); g.lineTo(x + b[1], y + 21.5); g.stroke();
+      g.strokeStyle = c.skin; g.lineWidth = 4; g.beginPath(); g.moveTo(x + b[0], y + 26); g.lineTo(x + b[1], y + 21.5); g.stroke(); charMangaLinha(x + b[0], y + 26, x + b[1], y + 21.5);
       g.fillStyle = c.skin; g.beginPath(); g.arc(x + b[1], y + 20, 2.8, 0, 7); g.fill();
       g.fillStyle = '#ff9ccd'; g.beginPath(); g.arc(x + b[1], y + 20.7, 1.05, 0, 7); g.fill();
       [-1.4, 0, 1.4].forEach(function(o){ g.beginPath(); g.arc(x + b[1] + o, y + 18.5, .6, 0, 7); g.fill(); });

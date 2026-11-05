@@ -19,6 +19,7 @@
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=9"></script>
+<script src="./avatar-visual.js?v=1"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -564,7 +565,7 @@ var DICT={
   }
 };
 function tr(k){var d=DICT[LANG];return (d&&d[k])||k}
-var cv=document.getElementById('c'),g=cv.getContext('2d'),W=720,H=380,GY=300,SC=1,K=1;
+var cv=document.getElementById('c'),g=cv.getContext('2d'),W=720,H=380,GY=300,SC=1,K=1;window.twAvatarG=function(){return g;};   /* Visual 2.0 (avatar-visual.js) desenha no mesmo g */
 var CH=[
   {n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'',outcol:'#ffffff',hat:''},
   {n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'',outcol:'#ffffff',hat:''},
@@ -729,7 +730,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else if(roupa==='y2k'){
     g.fillStyle='#111';g.fillRect(x+7,y+22,16,6); 
     g.fillStyle=c.skin;g.fillRect(x+7,y+28,16,4); 
-    g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,12);g.fillRect(x+21,y+22,6,12); // Pinta as mangas e o blazer da cor escolhida
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,5,12);g.fillRect(x+21,y+22,5,12); // Pinta as mangas e o blazer da cor escolhida
     g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); 
   }else if(roupa==='citypop'){
     g.fillStyle='#111827'; g.fillRect(x+7, y+22, 16, 12);
@@ -815,7 +816,8 @@ function drawChar(c,x,y,run,expr,isPartner){
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }   // com pose, os braços vêm depois das roupas (V2.1.2)
+  if(typeof charMangaCor==='function') charManga=charMangaCor(roupa,OF,PX,OUT,corDaRoupa);
+  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); if(typeof charMangaReta==='function'){charMangaReta(x+1,y+24);charMangaReta(x+25,y+24);g.fillStyle=c.skin;} }   // com pose, os braços vêm depois das roupas (V2.1.2)
 
   // Mangas bufantes por cima dos braços
   if(roupa === 'sweet' || roupa === 'zipper'){
@@ -854,6 +856,7 @@ function drawChar(c,x,y,run,expr,isPartner){
     if(b===''||b==='pixie'){   // pontas arredondadas nas laterais
       g.fillStyle=hg; E(x+5,y+12+sl,2,2.2); E(x+25,y+12+sl,2,2.2);
     }
+  if(typeof charSombraCabelo==='function'&&!(window.TWAvatarHair&&TWAvatarHair.isWavy(b)))charSombraCabelo(x,y,sl);   // Visual 2.0
   }
 
   g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
@@ -1288,6 +1291,7 @@ function perfRoupaLoja(roupa, c, x, y, corDaRoupa, E, T){
 function roupaSombra(x, y){
   g.fillStyle = "rgba(0,0,0,0.06)";
   g.fillRect(x+4, y+30, 22, 4);
+  if(typeof charSombraTronco === 'function') charSombraTronco(x, y);   // Visual 2.0
 }
 function petPoseArms(c, x, y){
   g.fillRect(x+1, y+24, 4, 9);

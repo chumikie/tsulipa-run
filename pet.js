@@ -177,12 +177,12 @@ var PET_PHONE_FOTOS_TEXTO = {
   ja:['カメラ','思い出','ニュース','わたしの思い出⭐','レースやライブ、出会いの写真は今後の更新でここに登場します。','今日の写真⭐','Idol⭐News!の公開写真は今後の更新でここに登場します。','準備中']
 };
 var PET_PHONE_MOMENTO_TEXTO = {
-  pt:['Guardar em Momentos⭐','Guardado no TsuPhone! 💗','Não foi possível guardar esta foto.','Nenhuma foto nesta sessão.','Guarde voluntariamente uma selfie, foto da corrida ou do Moon⭐Duo! para vê-la aqui.','Baixar PNG','Fotos temporárias: somem ao sair da página.'],
-  en:['Keep in Moments⭐','Saved to TsuPhone! 💗','Could not keep this photo.','No photos in this session.','Choose to keep a selfie, race photo or Moon⭐Duo! photo to see it here.','Download PNG','Temporary photos: cleared when leaving the page.'],
-  es:['Guardar en Momentos⭐','¡Guardado en TsuPhone! 💗','No se pudo guardar esta foto.','Aún no hay fotos en esta sesión.','Guarda una selfie, foto de carrera o Moon⭐Duo! para verla aquí.','Descargar PNG','Fotos temporales: desaparecen al salir de la página.'],
-  id:['Simpan di Momen⭐','Tersimpan di TsuPhone! 💗','Foto ini tidak bisa disimpan.','Belum ada foto dalam sesi ini.','Simpan selfie, foto lari, atau foto Moon⭐Duo! untuk melihatnya di sini.','Unduh PNG','Foto sementara: hilang saat meninggalkan halaman.'],
-  th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่ รูปวิ่ง หรือรูป Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ'],
-  ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィー、レース、Moon⭐Duo!の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。']
+  pt:['Guardar em Momentos⭐','Guardado no TsuPhone! 💗','Não foi possível guardar esta foto.','Nenhuma foto nesta sessão.','Guarde voluntariamente uma selfie ou foto da corrida, do Karaoke⭐Time! ou do Moon⭐Duo! para vê-la aqui.','Baixar PNG','Fotos temporárias: somem ao sair da página.'],
+  en:['Keep in Moments⭐','Saved to TsuPhone! 💗','Could not keep this photo.','No photos in this session.','Choose to keep a selfie or a photo from Center⭐Run!, Karaoke⭐Time! or Moon⭐Duo! to see it here.','Download PNG','Temporary photos: cleared when leaving the page.'],
+  es:['Guardar en Momentos⭐','¡Guardado en TsuPhone! 💗','No se pudo guardar esta foto.','Aún no hay fotos en esta sesión.','Guarda una selfie o foto de Center⭐Run!, Karaoke⭐Time! o Moon⭐Duo! para verla aquí.','Descargar PNG','Fotos temporales: desaparecen al salir de la página.'],
+  id:['Simpan di Momen⭐','Tersimpan di TsuPhone! 💗','Foto ini tidak bisa disimpan.','Belum ada foto dalam sesi ini.','Simpan selfie atau foto Center⭐Run!, Karaoke⭐Time!, atau Moon⭐Duo! untuk melihatnya di sini.','Unduh PNG','Foto sementara: hilang saat meninggalkan halaman.'],
+  th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่หรือรูปจาก Center⭐Run!, Karaoke⭐Time! หรือ Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ'],
+  ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィーや Center⭐Run!、Karaoke⭐Time!、Moon⭐Duo! の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。']
 };
 var PET_PHONE_JORNAL_TEXTO = {
   pt:['Cenas públicas do Idol⭐News! · novas fotos a cada dia.','As fotos aparecem quando a vitrine de Idols carregar.','Atualizar fotos','Ampliar foto','Voltar ao Jornal','Baixar PNG','No iPhone, segure a imagem para salvar se necessário.'],
@@ -296,12 +296,22 @@ function petPhoneFotoChave(){
   return petPhoneContaChave() + ':' + (typeof petData !== 'undefined' && petData ? petData.ativo || '' : '');
 }
 function petPhoneMomentoTexto(i){ return (PET_PHONE_MOMENTO_TEXTO[LANG] || PET_PHONE_MOMENTO_TEXTO.pt)[i]; }
+function petPhoneMomentoSoltar(f){
+  // PNGs recebidos do iframe vivem somente nesta página. As outras fotos usam data URLs.
+  if(f && f.blobUrl){ URL.revokeObjectURL(f.url); if(f.miniUrl && f.miniUrl !== f.url) URL.revokeObjectURL(f.miniUrl); }
+}
+function petPhoneMomentosLimitar(){
+  while(petPhoneMomentos.length > 4 || petPhoneMomentos.reduce(function(n,f){ return n + (f.bytes || f.url.length); },0) > 16*1024*1024){
+    petPhoneMomentoSoltar(petPhoneMomentos.shift());
+  }
+}
 function petPhoneMomentosLimpar(){
   var corpo = $('petPhoneCorpo');
   if(corpo && corpo.querySelectorAll){
     corpo.querySelectorAll('[data-momento-id]').forEach(function(img){img.removeAttribute('src');});
     corpo.querySelectorAll('[data-momento-baixar]').forEach(function(a){a.removeAttribute('href');});
   }
+  petPhoneMomentos.forEach(petPhoneMomentoSoltar);
   petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
@@ -328,7 +338,28 @@ function petPhoneMomentoGuardar(tipo, url){
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
-  while(petPhoneMomentos.length > 4 || petPhoneMomentos.reduce(function(n,f){ return n + f.url.length; },0) > 16*1024*1024) petPhoneMomentos.shift();
+  petPhoneMomentosLimitar();
+  if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
+  return true;
+}
+function petPhoneMomentoGuardarBlob(tipo, blob, mini){
+  if(tipo !== 'karaoke' || !contaJ || !petAtivo() || !(blob instanceof Blob) || blob.type !== 'image/png' || !blob.size || blob.size > 10*1024*1024) return false;
+  if(mini && (!(mini instanceof Blob) || mini.type !== 'image/png' || !mini.size || mini.size > 1024*1024)) return false;
+  if(blob.size + (mini ? mini.size : 0) > 16*1024*1024) return false;
+  petPhoneMomentosConferir();
+  var dono = petPhoneFotoChave(), url = '', miniUrl = '';
+  if(!dono || !petPhoneContaChave()) return false;
+  try{
+    url = URL.createObjectURL(blob);
+    miniUrl = mini ? URL.createObjectURL(mini) : url;
+  }catch(e){
+    if(url) URL.revokeObjectURL(url);
+    return false;
+  }
+  petPhoneMomentosDono = dono;
+  petPhoneMomentos.push({tipo:tipo,rotulo:'Karaoke⭐Time!',url:url,miniUrl:miniUrl,blobUrl:true,
+    bytes:blob.size+(mini ? mini.size : 0),dono:dono,id:String(Date.now())+'-'+String(Math.random()).slice(2,8)});
+  petPhoneMomentosLimitar();
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
@@ -345,7 +376,7 @@ function petPhoneMomentosRender(){
   petPhoneMomentos.forEach(function(f){
     var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
     var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
-    if(img) img.src = f.url;
+    if(img) img.src = f.miniUrl || f.url;
     if(dl){dl.href = f.url;dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.png';}
   });
 }

@@ -35,6 +35,7 @@ html.kt-no-site #ktPhotoDialog::backdrop{background:var(--tw-modal-backdrop,rgba
 #ktPhotoDialog .kt-photo-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
 #ktPhotoDialog .kt-photo-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:9px 16px;font-size:12px;text-decoration:none}
 #ktPhotoDialog .kt-photo-actions .btn:disabled{opacity:.6;cursor:wait}
+#ktPhotoDialog #ktPhotoKeep{background:linear-gradient(135deg,#ffdbf0,#d9eaff);color:#63318b;border:1px solid rgba(155,48,217,.34);font-weight:900}
 #ktPhotoDialog .kt-photo-actions:has(#ktPhotoDownload[hidden]) #ktPhotoBack{grid-column:1/-1}
 #ktPhotoDialog .kt-photo-hint{margin:12px 0 0;color:var(--sub);font-size:11px;line-height:1.6}
 #ktPhotoDialog .kt-photo-status{min-height:1.5em;margin:7px 0 0;color:var(--pink);font-size:11px;font-weight:800;line-height:1.5}
@@ -43,6 +44,7 @@ html.kt-no-site #ktPhotoDialog::backdrop{background:var(--tw-modal-backdrop,rgba
  #ktPhotoDialog .kt-photo-heading{padding:0 30px}
  #ktPhotoDialog .kt-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
  #ktPhotoDialog #ktPhotoShare{grid-column:1/-1}
+ #ktPhotoDialog #ktPhotoKeep{grid-column:1/-1}
  #ktPhotoDialog .kt-photo-actions .btn{padding:8px;font-size:11px}
 }
 

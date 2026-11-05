@@ -870,6 +870,62 @@ function hubTutUI(){   // Quatro slides de boas-vindas.
 function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
+// A fotografia do Karaoke só pode atravessar o iframe por escolha do jogador.
+// O bilhete é efêmero e vinculado à captura e à conta/Pet desta sessão.
+var twPreviewKaraokeFoto = null;
+function twPreviewKaraokeFotoReceber(e){
+  var data=e&&e.data, tipo=data&&data.type;
+  if(['TW_KARAOKE_PHOTO_READY','TW_KARAOKE_PHOTO_SAVE','TW_KARAOKE_PHOTO_CANCEL'].indexOf(tipo)<0) return false;
+  var frame=$('twPreviewIframe');
+  if(!frame || e.source!==frame.contentWindow || location.protocol==='file:' || e.origin!==location.origin || twPreviewJogoAnterior!=='karaoke') return true;
+  var id=data.id;
+  if(typeof id!=='string' || !/^[a-z0-9_-]{8,80}$/i.test(id)) return true;
+  function responder(type,campos){
+    try{frame.contentWindow.postMessage(Object.assign({type:type,id:id},campos),location.origin);}catch(_){}
+  }
+  if(tipo==='TW_KARAOKE_PHOTO_READY'){
+    var dono=contaJ&&typeof petAtivo==='function'&&petAtivo()&&typeof petPhoneFotoChave==='function'?petPhoneFotoChave():'';
+    var token=dono?(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):'';
+    twPreviewKaraokeFoto=token?{id:id,token:token,dono:dono,pendente:false,guardada:false}:null;
+    responder('TW_KARAOKE_PHOTO_CONTEXT',{token:token});
+    return true;
+  }
+  var ctx=twPreviewKaraokeFoto;
+  if(!ctx || ctx.id!==id || tipo==='TW_KARAOKE_PHOTO_CANCEL' && ctx.token!==data.token) return true;
+  if(tipo==='TW_KARAOKE_PHOTO_CANCEL'){
+    twPreviewKaraokeFoto=null;return true;
+  }
+  if(ctx.token!==data.token || ctx.pendente || ctx.guardada || !contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  var blob=data.blob, mini=data.mini;
+  if(!(blob instanceof Blob) || blob.type!=='image/png' || !blob.size || blob.size>10*1024*1024 ||
+     mini!=null && (!(mini instanceof Blob) || mini.type!=='image/png' || !mini.size || mini.size>1024*1024)){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  // A assinatura e o IHDR impedem que outro arquivo se faça passar por uma foto PNG.
+  function pngValido(b,w,h){
+    if(!b)return Promise.resolve(true);
+    return b.slice(0,24).arrayBuffer().then(function(buffer){
+      var v=new DataView(buffer),sig=[137,80,78,71,13,10,26,10];
+      if(v.byteLength<24 || sig.some(function(n,i){return v.getUint8(i)!==n;}))return false;
+      return v.getUint32(8)===13 && v.getUint32(12)===0x49484452 && v.getUint32(16)===w && v.getUint32(20)===h;
+    });
+  }
+  ctx.pendente=true;
+  Promise.all([pngValido(blob,1920,1080),pngValido(mini,240,135)]).then(function(validos){
+    if(twPreviewKaraokeFoto!==ctx || twPreviewJogoAnterior!=='karaoke' || frame.contentWindow!==e.source)return;
+    if(!contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+      ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return;
+    }
+    var ok=!!(validos[0]&&validos[1]&&typeof petPhoneMomentoGuardarBlob==='function'&&petPhoneMomentoGuardarBlob('karaoke',blob,mini));
+    ctx.pendente=false;ctx.guardada=ok;
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:ok});
+  }).catch(function(){
+    if(twPreviewKaraokeFoto===ctx){ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});}
+  });
+  return true;
+}
 function twPreviewEnviarVisibilidadeIframe(visible){
   var frame=$('twPreviewIframe');if(!frame||!frame.contentWindow||!twPreviewJogoAnterior)return;
   try{frame.contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:!!visible},location.protocol==='file:'?'*':location.origin);}catch(e){}
@@ -924,6 +980,7 @@ function twPreviewAbrirJogo(tipo){
   var kTime=tipo==='karaoke';   // Karaoke⭐Time! abre todo dia: é jogo solo, sem sala online nem horário
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
+  twPreviewKaraokeFoto=null;
   twPreviewJogoAnterior=tipo;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
@@ -964,6 +1021,7 @@ function twPreviewFecharJogo(){
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
   var eraPopup=wrap.hasAttribute('data-karaoke-popup');
+  twPreviewKaraokeFoto=null;
   twPreviewEnviarVisibilidadeIframe(false);
   frame.src='about:blank';
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}

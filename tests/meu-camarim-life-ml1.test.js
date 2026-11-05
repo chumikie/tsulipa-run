@@ -8,6 +8,7 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const pet = read('pet.js'), html = read('index.html'), css = read('pet.css');
+const hub = read('hub.js'), karaokePhoto = read('karaoke-photo.js'), karaokeCss = read('karaoke-photo.css');
 const logic = pet.slice(pet.indexOf('function petLifeHit('), pet.indexOf('function petIdleJeito('));
 const shopClose = read('shop.js').match(/function shopFechar\(\)\{[^\n]+\}/)[0];
 const albumClose = read('album.js').match(/function albumFechar\(\)\{[^\n]+\}/)[0];
@@ -555,6 +556,79 @@ test('ML1.2-C.2-B: galeria responsiva simulada em 320×640 e 390×844', () => {
   }
   const trecho=logic.slice(logic.indexOf('function petPhoneMomentosLimpar('),logic.indexOf('function petPhoneFotoHtml('));
   assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage/.test(trecho),false,'sem timers, rede ou saves');
+});
+
+test('ML1.2-C.2-C.2: PNG voluntário do Karaoke usa Blob e libera miniaturas/arquivos na sessão', () => {
+  const {ctx,nodes,calls} = fakeRoom();
+  ctx.petData={ativo:'tsu'};
+  ctx.Blob=Blob;
+  const revoked=[];let n=0;
+  ctx.URL={createObjectURL:()=>`blob:mock-${++n}`,revokeObjectURL:url=>revoked.push(url)};
+  const png=new Blob(['foto original'],{type:'image/png'}),mini=new Blob(['miniatura'],{type:'image/png'});
+  assert.equal(ctx.petPhoneMomentos.length,0,'fotografar não guarda automaticamente');
+  assert.equal(ctx.petPhoneMomentoGuardarBlob('karaoke',png,mini),true);
+  assert.equal(ctx.petPhoneMomentos[0].rotulo,'Karaoke⭐Time!');
+  assert.equal(ctx.petPhoneMomentos[0].url,'blob:mock-1');
+  assert.equal(ctx.petPhoneMomentos[0].miniUrl,'blob:mock-2');
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('momentos');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Karaoke⭐Time!/);
+  const id=ctx.petPhoneMomentos[0].id,img={},dl={};
+  nodes.petPhoneCorpo.querySelector=q=>q.includes('data-momento-id="'+id+'"')?img:q.includes('data-momento-baixar="'+id+'"')?dl:null;
+  ctx.petPhoneMomentosRender();
+  assert.equal(img.src,'blob:mock-2','miniatura reduzida é exibida');
+  assert.equal(dl.href,'blob:mock-1','download mantém o PNG original');
+  ctx.contaSessaoToken=4;ctx.petPhoneMomentosConferir();
+  assert.equal(ctx.petPhoneMomentos.length,0);
+  assert.deepEqual(revoked,['blob:mock-1','blob:mock-2'],'URLs liberadas ao trocar de sessão');
+  assert.equal(ctx.petPhoneMomentoGuardarBlob('karaoke',new Blob(['x'],{type:'text/html'})),false);
+  assert.deepEqual(calls.filter(x=>x.startsWith('rpc:')),[],'sem backend ou novos saves');
+});
+
+test('ML1.2-C.2-C.2: iframe valida origem, sessão, PNG e confirmação em 320×640 e 390×844', async () => {
+  const code=hub.slice(hub.indexOf('var twPreviewKaraokeFoto = null;'),hub.indexOf('function twPreviewEnviarVisibilidadeIframe('));
+  const assinatura=Buffer.from('89504e470d0a1a0a','hex');
+  function png(w,h){
+    const b=Buffer.alloc(24);assinatura.copy(b);b.writeUInt32BE(13,8);b.write('IHDR',12);b.writeUInt32BE(w,16);b.writeUInt32BE(h,20);
+    return new Blob([b],{type:'image/png'});
+  }
+  for(const [w,h] of [[320,640],[390,844]]){
+    let owner='conta-1:pet-tsu',saved=[];const replies=[];
+    const frameWindow={postMessage:(data,origin)=>replies.push({data,origin})};
+    const ctx={Blob,Promise,location:{protocol:'https:',origin:'https://preview.test'},
+      twPreviewJogoAnterior:'karaoke',contaJ:{nick:'IdolTeste'},petAtivo:()=>({nome:'Chu'}),
+      petPhoneFotoChave:()=>owner,petPhoneMomentoGuardarBlob:(tipo,blob,mini)=>{saved.push({tipo,blob,mini});return true;},
+      $:id=>id==='twPreviewIframe'?{contentWindow:frameWindow}:null};
+    vm.runInNewContext(code,ctx,{filename:'hub-karaoke-photo'});
+    const event=(type,props={},origin='https://preview.test',source=frameWindow)=>({data:{type,id:'capture-12345',...props},origin,source});
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_READY',{},'https://outro.site'));
+    assert.equal(replies.length,0,`${w}×${h}: origem desconhecida ignorada`);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_READY'));
+    const ticket=replies.at(-1).data.token;
+    assert.ok(ticket,`${w}×${h}: bilhete da captura vinculado à conta`);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_SAVE',{token:'errado',blob:png(1920,1080)}));
+    assert.equal(saved.length,0,`${w}×${h}: bilhete incorreto bloqueado`);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_SAVE',{token:ticket,blob:png(960,540)}));
+    await new Promise(setImmediate);
+    assert.equal(saved.length,0,`${w}×${h}: dimensões incompatíveis bloqueadas`);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_SAVE',{token:ticket,blob:png(1920,1080),mini:png(240,135)}));
+    await new Promise(setImmediate);
+    assert.equal(saved.length,1,`${w}×${h}: uma fotografia entra após toque explícito`);
+    assert.equal(replies.at(-1).data.ok,true);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_SAVE',{token:ticket,blob:png(1920,1080)}));
+    assert.equal(saved.length,1,`${w}×${h}: clique repetido não duplica`);
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_READY'));
+    owner='conta-2:pet-tsu';
+    ctx.twPreviewKaraokeFotoReceber(event('TW_KARAOKE_PHOTO_SAVE',{token:replies.at(-1).data.token,blob:png(1920,1080)}));
+    assert.equal(saved.length,1,`${w}×${h}: mudança de conta bloqueada`);
+    assert.match(karaokePhoto,/id="ktPhotoKeep" hidden/);
+    assert.match(karaokePhoto,/type:'TW_KARAOKE_PHOTO_SAVE'/);
+    assert.match(html,/twPreviewKaraokeFotoReceber\(e\)/);
+    assert.match(karaokeCss,/#ktPhotoDialog #ktPhotoKeep\{grid-column:1\/-1\}/);
+    assert.match(karaokeCss, /min-height:44px/,`${w}×${h}: toque mínimo mantido`);
+    assert.ok(w>=320&&h>=640);
+  }
+  for(const lang of ['pt','en','es','id','th','ja']) assert.match(karaokePhoto,new RegExp('\\b'+lang+':\\[.*Guardar|\\b'+lang+':\\[.*(?:Keep|Simpan|เก็บ|保存|Guardar)'));
+  assert.equal(/localStorage|contaRpc|fetch\(/.test(karaokePhoto.slice(karaokePhoto.indexOf('keep.onclick='),karaokePhoto.indexOf('share.onclick='))),false);
 });
 
 test('ML1.2-C.2-B.1: captura abre revisão inteira no TsuPhone, mantendo PNG e ações originais', () => {

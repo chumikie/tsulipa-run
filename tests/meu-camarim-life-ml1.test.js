@@ -688,6 +688,29 @@ test('ML1.2-C.2-C.1: ampliação e PNG são voluntários; voltar libera imagem e
   assert.match(html,/k === 'jornal-foto'\) petPhoneJornalAbrir\(Number\(b\.dataset\.foto\)\)/);
 });
 
+test('ML1.2-C.2-C.1: vitrine existente carrega uma vez e atualiza Jornal sem polling', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  let carregou=false, pedidos=0;
+  ctx.hubIdolsEm=0;
+  ctx.hubIdolsCarregar=()=>{pedidos++;};
+  ctx.jornalFotosMontarDoDia=()=>carregou ? [{tipo:'',legenda:'Ensaio da tarde'}] : [];
+  ctx.jornalLegenda=f=>f.legenda;
+  ctx.jornalFotoDesenhar=()=>{};
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('jornal');
+  assert.equal(pedidos,1,'usa função já existente do Hub');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/vitrine de Idols carregar/);
+  ctx.hubIdolsEm=Date.now();
+  ctx.petPhoneJornalAtualizar();
+  assert.equal(pedidos,1,'atualizar durante consulta não duplica chamadas');
+  carregou=true;ctx.petPhoneJornalVitrinePronta();
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Ensaio da tarde/,'atualiza ao receber vitrine');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'não acrescenta consulta no TsuPhone');
+  assert.match(read('hub.js'),/petPhoneJornalVitrinePronta\(\)/,'aviso parte da vitrine existente');
+  ctx.petPhoneFechar();
+  ctx.petPhoneJornalVitrinePronta();
+  assert.equal(ctx.petPhoneJornalFotos.length,0,'aviso tardio não reabre a tela');
+});
+
 test('ML1.2-C.2-C.1: galeria e revisão cabem em 320×640 e 390×844', () => {
   assert.match(css,/\.petphone-jornal-grid\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css,/\.petphone-jornal-grid canvas\{[^}]*aspect-ratio:8\/5/);

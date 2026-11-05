@@ -423,6 +423,17 @@ function petPhoneJornalVoltar(){
   if(petPhoneJornalIndice < 0) return false;
   petPhoneJornalLimpar();petPhoneRender();return true;
 }
+function petPhoneJornalVitrinePronta(){
+  if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'jornal' && petPhoneJornalIndice < 0) petPhoneRender();
+}
+function petPhoneJornalAtualizar(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'jornal') return false;
+  petPhoneRender();
+  // Reaproveita a vitrine de leitura do Hub: nunca cria uma RPC nem faz polling.
+  if(!petPhoneJornalFotos.length && typeof hubIdolsCarregar === 'function' &&
+    (typeof hubIdolsEm !== 'number' || Date.now() - hubIdolsEm > 15000)) hubIdolsCarregar();
+  return true;
+}
 function petPhoneFotosHtml(){
   var txt = PET_PHONE_FOTOS_TEXTO[LANG] || PET_PHONE_FOTOS_TEXTO.pt;
   var tabs = [['camera','📸'],['momentos','💗'],['jornal','📰']];
@@ -439,7 +450,9 @@ function petPhoneFotosHtml(){
 function petPhoneFotosAbaAbrir(k){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || ['camera','momentos','jornal'].indexOf(k) < 0) return false;
   if(k !== 'jornal') {petPhoneJornalLimpar();petPhoneJornalFotos = [];}
-  petPhoneFotosAba = k; petPhoneRender();
+  petPhoneFotosAba = k;
+  if(k === 'jornal') petPhoneJornalAtualizar();
+  else petPhoneRender();
   var botao = document.querySelector('#petPhoneCorpo [data-phone="fotos-aba"][data-aba="' + k + '"]');
   if(botao) botao.focus();
   return true;

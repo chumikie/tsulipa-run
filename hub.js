@@ -1169,7 +1169,7 @@ function twMusicaPaginaVisibilidade(){
 function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
   hubIdolsEm = Date.now();
-  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); })
+  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); if(typeof petPhoneJornalVitrinePronta === 'function') petPhoneJornalVitrinePronta(); })
     .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsTituloUI(){

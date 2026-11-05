@@ -79,16 +79,34 @@
     return true;
   }
 
-  // Ombro ligado à roupa, por cima do começo do braço (parado ou em pose).
-  function ombro(g, c, x, y, roupa){
+  // Braços que saem do lugar em cada pose: [ombro x, ombro y, mão x, mão y] (mesma régua do petPoseArms/perfPose*).
+  var BRACOS = {
+    v:{ R:[27, 25.5, 34, 15.5] }, tchau:{ R:[27, 25.5, 34, 15.5] }, luz:{ R:[27, 25.5, 33, 16.5] },
+    banzai:{ L:[3, 25.5, -3.5, 13.5], R:[27, 25.5, 33.5, 13.5] },
+    coracao:{}, mic:{}, nyan:{}   // braços dobrados para dentro: a manga fica no ombro e o braço passa por cima
+  };
+  // Ombro ligado à roupa. Braço parado: manguinha no ombro. Braço em pose: a manga gira junto com o braço,
+  // saindo do ombro na direção da mão, e o braço continua de dentro dela.
+  function ombro(g, c, x, y, roupa, pose){
     if(!tem(roupa)) return;
-    var cor = BAIXO[roupa].ombro || (c && c.outcol) || '#ffffff';
-    function caps(){ retangulo(g, x + .6, y + 22, 5.6, 4.6, [2.2, 0, 0, 1.2]); retangulo(g, x + 23.8, y + 22, 5.6, 4.6, [0, 2.2, 1.2, 0]); }
-    g.save(); g.fillStyle = cor; g.beginPath(); caps(); g.fill(); g.restore();
-    luz(g, x, y, caps, false);
+    var cor = (c && c.outcol) || '#ffffff', mov = !pose ? {} : (BRACOS[pose] || BRACOS.v);   // outras poses do petPoseArms levantam o braço direito
+    var formas = [];
+    if(mov.L) formas.push(manga(x, y, mov.L)); else formas.push(function(){ retangulo(g, x + .6, y + 22, 5.6, 4.6, [2.2, 0, 0, 1.2]); });
+    if(mov.R) formas.push(manga(x, y, mov.R)); else formas.push(function(){ retangulo(g, x + 23.8, y + 22, 5.6, 4.6, [0, 2.2, 1.2, 0]); });
+    function manga(x, y, b){   // retângulo de 4 de comprimento e 5,4 de largura ao longo do braço, com o ombro arredondado
+      return function(){
+        var dx = b[2] - b[0], dy = b[3] - b[1], n = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / n, uy = dy / n, px = -uy * 2.7, py = ux * 2.7;
+        var ax = x + b[0], ay = y + b[1], bx = ax + ux * 4, by = ay + uy * 4;
+        g.moveTo(ax + px, ay + py); g.lineTo(bx + px, by + py); g.lineTo(bx - px, by - py); g.lineTo(ax - px, ay - py); g.closePath();
+        g.moveTo(ax + 2.7, ay); g.arc(ax, ay, 2.7, 0, Math.PI * 2);
+      };
+    }
+    function todas(){ formas.forEach(function(f){ f(); }); }
+    g.save(); g.fillStyle = cor; g.beginPath(); todas(); g.fill(); g.restore();
+    luz(g, x, y, todas, false);
   }
 
-  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, BAIXO:BAIXO };
+  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, BAIXO:BAIXO, BRACOS:BRACOS };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : this);

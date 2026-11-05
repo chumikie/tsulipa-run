@@ -1135,7 +1135,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(!(TWR&&TWR.tem(twRoupa))) roupaSombra(x, y);   // V2.1.3: luz e sombra nas roupas (igual ao degradê do cabelo)
   if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
-  if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); } if(TWR)TWR.ombro(g,c,x,y,twRoupa);   // pose da Foto 2.0 por cima da roupa e da faixa
+  if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); } if(TWR)TWR.ombro(g,c,x,y,twRoupa,charPose);   // pose da Foto 2.0 por cima da roupa e da faixa
   g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
   
   // As orelhas ficam por trás do cabelo; a base é mais baixa para não cobrir a franja.

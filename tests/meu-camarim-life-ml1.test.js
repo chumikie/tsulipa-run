@@ -231,19 +231,20 @@ test('ML1.2-B: diálogo reutiliza personalidade, presente e Café somente quando
   const {ctx,nodes,calls} = fakeRoom();
   ctx.HS_NOMES=['Nana'];ctx.HS_PRESENTES=[['🍓','Morango','doce']];
   ctx.HS_JEITOS={timido:{fav:'Eu gosto de {p}…'}};
-  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'timido',c:{hair:'#aabbcc'}}];
+  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'timido',c:{hair:'#aabbcc'},dia:'2026-11-03'}];
   ctx.hsMemChave=()=> 'tw_hs_memorias_v1:IdolTeste';
   ctx.hsCafePendente={conta:'tw_hs_memorias_v1:IdolTeste',nome:'Nana',pres:0};
   ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
   assert.equal(ctx.petPhoneChatAbrir('fan:Nana'),true);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Oi… lembra de mim/,'jeito tímido');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Oi…|É-é você/,'jeito tímido');
   assert.match(nodes.petPhoneCorpo.innerHTML,/Morango/,'presente conhecido');
   assert.match(nodes.petPhoneCorpo.innerHTML,/Eu gosto de 🍓 Morango/,'usa fala do jeito real no Handshake');
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Adorei o carinho no Happy⭐Cafe/,'atendimento confirmado');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/03\/11/,'data do encontro realmente lembrado');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Happy⭐Cafe/,'atendimento confirmado');
   assert.match(nodes.petPhoneCorpo.innerHTML,/data-resposta="0"/);
   assert.equal(ctx.petPhoneChatResponder(1),true);
   assert.match(nodes.petPhoneCorpo.innerHTML,/Até o próximo encontro/);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Fico tão feliz/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Fico tão feliz|vou esperar|Vou torcer baixinho/);
   assert.equal(ctx.petPhoneChatResponder(0),false,'não duplica respostas');
   assert.equal(ctx.petPhoneVoltar(),true);
   assert.equal(ctx.petPhoneTela,'chat','volta primeiro à lista do Chat');
@@ -288,6 +289,51 @@ test('ML1.2-B: sem memória de fãs, Chat acolhe sem inventar contatos ou altera
   for(const k of ['terminar_corrida','iniciar_corrida','petSave(','star_log','localStorage']){
     assert.equal(logic.includes(k),false,'sem alterações econômicas ou persistência: '+k);
   }
+});
+
+test('ML1.2-B.1: os retratos usam a aparência real lembrada no Canvas, sem animações extras', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const visual={hair:'#ff7eb6',skin:'#f1c9a5',front:'franja',out:'rosa'};
+  ctx.HS_NOMES=['Nana'];ctx.HS_PRESENTES=[['🍓','Morango','doce']];
+  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'timido',c:visual}];
+  const ops=[];
+  const x={clearRect(){ops.push('clear');},save(){ops.push('save');},restore(){ops.push('restore');},fillText(){ops.push('emoji');}};
+  const retratos=['idol:tsu','fan:Nana'].map(id=>({dataset:{phonePortrait:id},width:96,height:96,getContext:()=>x}));
+  nodes.petPhoneCorpo.querySelectorAll=sel=>sel==='canvas[data-phone-portrait]'?retratos:[];
+  ctx.perfDesenharIdol=(context,w,h,av,fundo,zoom,t)=>{
+    ops.push({w,h,av,fundo,zoom,t});
+  };
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone-portrait="fan:Nana"/);
+  assert.equal(ops.filter(o=>o&&typeof o==='object').length,1,'só o fã usa a aparência salva');
+  const fan=ops.find(o=>o&&typeof o==='object');
+  assert.equal(fan.av.c,visual,'reutiliza o visual existente do Handshake sem alterá-lo');
+  assert.equal(fan.zoom,true,'usa o modo retrato, da coroa aos ombros');
+  assert.equal(fan.fundo,false,'não redesenha o cenário');
+  assert.equal(ops.filter(o=>o==='emoji').length,1,'trio conserva ícone oficial em Canvas');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('requestAnimationFrame'),false,'Chat não acrescenta animação por quadro');
+  assert.equal(logic.includes('setInterval'),false,'Chat não adiciona temporizadores');
+});
+
+test('ML1.2-B.1: falas acompanham estado do Pet e recordações; reação é estável por dia', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.petAtivo=()=>({nome:'Pipoca',humor:20});
+  ctx.HS_NOMES=['Nana'];ctx.HS_PRESENTES=[['🍓','Morango','doce']];
+  ctx.cfVisitasMemorias=()=>[{nome:'Nana',pres:0,jeito:'animado',c:{hair:'#ff7eb6'},dia:'2026-11-02'}];
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('chat');
+  assert.equal(ctx.petPhoneChatAbrir('idol:tsu'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Pipoca parece precisar de carinho/,'Pet com humor baixo');
+  const contatos=ctx.petPhoneChatContatos(),fan=contatos.find(c=>c.id==='fan:Nana');
+  assert.ok(fan && fan.encontro==='2026-11-02');
+  assert.equal(ctx.petPhoneChatReacao(fan,0),ctx.petPhoneChatReacao(fan,0),'reação não pisca ao renderizar');
+  assert.notEqual(ctx.petPhoneChatReacao(fan,0),ctx.petPhoneChatReacao(fan,1),'as duas escolhas reagem diferente');
+  ctx.petPhoneVoltar();ctx.hsCafePendente={conta:'outra-conta',nome:'Nana',pres:0};
+  ctx.petPhoneChatAbrir('fan:Nana');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/02\/11/,'encontro antigo é lembrado');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/Happy⭐Cafe/,'sem atendimento confirmado na conta atual');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('localStorage'),false);
 });
 
 test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {

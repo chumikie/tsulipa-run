@@ -131,6 +131,8 @@
 .petphone-chat-lista{display:flex;flex-direction:column;gap:7px}
 .petphone-chat-contato{display:flex;align-items:center;gap:8px;width:100%;min-height:55px;padding:6px 8px;border:2px solid #fff;border-bottom-color:#dcbee9;border-radius:13px;background:linear-gradient(105deg,#fff,#fce6fb 78%,#e3f5ff);color:#65328c;text-align:left;box-shadow:0 2px 4px rgba(97,55,142,.11)}
 .petphone-chat-avatar{display:grid;flex:0 0 37px;place-items:center;width:37px;height:37px;border:2px solid #fff;border-radius:13px;background:linear-gradient(145deg,#fff 15%,var(--chat-cor,#ce91ed) 115%);color:#60338c;font-size:19px;box-shadow:0 2px 0 rgba(97,55,142,.15)}
+.petphone-chat-avatar canvas{display:block;width:100%;height:100%;border-radius:11px;image-rendering:pixelated}
+.petphone-chat-pessoa .petphone-chat-avatar{flex-basis:49px;width:49px;height:49px;border-radius:15px}
 .petphone-chat-contato-texto{display:flex;min-width:0;flex:1;flex-direction:column;gap:2px}.petphone-chat-contato-texto b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.petphone-chat-contato-texto small{font-size:10px;color:#806395;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .petphone-chat-contato>span:last-child{font-size:22px;color:#9976bd}.petphone-chat-dica{margin:9px 2px 0;padding:9px 8px;border-radius:12px;background:#f3e9ff;color:#70518b;font-size:11px;line-height:1.45;text-align:center}
 .petphone-chat-pessoa{display:flex;align-items:center;gap:8px;margin:-6px 0 8px}.petphone-chat-pessoa>div{min-width:0;display:flex;flex-direction:column;gap:2px}.petphone-chat-pessoa b{font-size:13px;color:#65328c}.petphone-chat-pessoa small{font-size:10px;color:#7f6395}

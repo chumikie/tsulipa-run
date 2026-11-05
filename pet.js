@@ -166,6 +166,16 @@ var PET_PHONE_APPS = {
 };
 var petPhoneOpen = false, petPhoneTela = 'home', petPhoneVoltarTela = '';
 var petPhoneAgendaDados = null, petPhoneAgendaDono = '', petPhoneAgendaReq = 0;
+// ML1.2-C.2-A: abas apenas em memória; Momentos/Jornal serão conectados nas próximas etapas.
+var petPhoneFotosAba = 'camera';
+var PET_PHONE_FOTOS_TEXTO = {
+  pt:['Câmera','Momentos','Jornal','Minhas Memórias⭐','As fotos de corridas, shows e encontros aparecerão aqui nas próximas etapas.','Fotos do dia⭐','As cenas públicas do Idol⭐News! serão integradas aqui na próxima etapa.','Em preparação'],
+  en:['Camera','Moments','News','My Memories⭐','Photos of races, shows and encounters will appear here in future updates.','Photos of the day⭐','Public Idol⭐News! scenes will appear here in a future update.','Coming soon'],
+  es:['Cámara','Momentos','Noticias','Mis Recuerdos⭐','Las fotos de carreras, shows y encuentros aparecerán aquí próximamente.','Fotos del día⭐','Las escenas públicas de Idol⭐News! se integrarán aquí próximamente.','Próximamente'],
+  id:['Kamera','Momen','Berita','Kenanganku⭐','Foto dari lari, pertunjukan, dan pertemuan akan muncul di sini pada pembaruan berikutnya.','Foto hari ini⭐','Adegan publik Idol⭐News! akan hadir di sini pada pembaruan berikutnya.','Segera hadir'],
+  th:['กล้อง','ความทรงจำ','ข่าว','ความทรงจำของฉัน⭐','ภาพจากการวิ่ง การแสดง และการพบปะจะปรากฏที่นี่ในการอัปเดตถัดไป','ภาพวันนี้⭐','ภาพสาธารณะจาก Idol⭐News! จะปรากฏที่นี่ในการอัปเดตถัดไป','เร็ว ๆ นี้'],
+  ja:['カメラ','思い出','ニュース','わたしの思い出⭐','レースやライブ、出会いの写真は今後の更新でここに登場します。','今日の写真⭐','Idol⭐News!の公開写真は今後の更新でここに登場します。','準備中']
+};
 // Fotos⭐: uma única Polaroid temporária; nunca entra no save ou no Supabase.
 var petPhoneFotoUrl = '', petPhoneFotoDono = '', petPhoneFotoErro = '';
 // ML1.2-B: diálogos fictícios, só nesta sessão. Nunca enviam ou salvam mensagens.
@@ -281,8 +291,28 @@ function petPhoneFotoHtml(){
     '<button type="button" class="petphone-photo-album" data-phone="abrir-album">🃏 ' + escHtml(tr('Ver Álbum de cards')) + '</button>' +
     '<p class="petphone-photo-ajuda">' + escHtml(tr('No iPhone, segure a imagem para salvar se o download não abrir.')) + '</p></div>';
 }
+function petPhoneFotosHtml(){
+  var txt = PET_PHONE_FOTOS_TEXTO[LANG] || PET_PHONE_FOTOS_TEXTO.pt;
+  var tabs = [['camera','📸'],['momentos','💗'],['jornal','📰']];
+  var nav = '<nav class="petphone-fotos-tabs" aria-label="' + escHtml(tr('Fotos')) + '">' + tabs.map(function(t, i){
+    return '<button type="button" data-phone="fotos-aba" data-aba="' + t[0] + '" aria-pressed="' + (petPhoneFotosAba === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span><b>' + escHtml(txt[i]) + '</b></button>';
+  }).join('') + '</nav>';
+  if(petPhoneFotosAba === 'camera') return nav + petPhoneFotoHtml();
+  var jornal = petPhoneFotosAba === 'jornal';
+  return nav + '<section class="petphone-fotos-espera" aria-label="' + escHtml(txt[jornal ? 5 : 3]) + '">' +
+    '<div class="petphone-fotos-ilustra" aria-hidden="true"><span>' + (jornal ? '📰' : '🏁') + '</span><span>' + (jornal ? '🌷' : '🎤') + '</span><span>' + (jornal ? '📸' : '🌙') + '</span></div>' +
+    '<strong>' + escHtml(txt[jornal ? 5 : 3]) + '</strong><p>' + escHtml(txt[jornal ? 6 : 4]) + '</p>' +
+    '<small>✦ ' + escHtml(txt[7]) + ' ✦</small></section>';
+}
+function petPhoneFotosAbaAbrir(k){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || ['camera','momentos','jornal'].indexOf(k) < 0) return false;
+  petPhoneFotosAba = k; petPhoneRender();
+  var botao = document.querySelector('#petPhoneCorpo [data-phone="fotos-aba"][data-aba="' + k + '"]');
+  if(botao) botao.focus();
+  return true;
+}
 function petPhoneFotoRender(){
-  if(!petPhoneOpen || petPhoneTela !== 'fotos') return;
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'camera') return;
   if(petPhoneFotoDono && petPhoneFotoDono !== petPhoneFotoChave()) petPhoneFotoLimpar();
   var img = $('petPhoneFotoImg'), baixar = $('petPhoneFotoBaixar');
   if(petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave()){
@@ -295,7 +325,7 @@ function petPhoneFotoRender(){
   }else petPhonePapel(); // miniatura do mesmo Canvas do Camarim, sem nova renderização.
 }
 function petPhoneFotoTirar(){
-  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petView !== 'room' || petGame || !contaJ || !petAtivo()) return false;
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'camera' || petView !== 'room' || petGame || !contaJ || !petAtivo()) return false;
   // A câmera existente respeita pose, expressão, molduras e bloqueios da lojinha.
   // A captura é feita somente no toque; nunca em animação nem em segundo plano.
   var chave = petPhoneFotoChave(), url = null;
@@ -501,7 +531,7 @@ function petPhoneRender(){
   var conteudo = '';
   if(petPhoneTela === 'agenda') conteudo = petPhoneAgendaHtml();
   else if(petPhoneTela === 'chat') conteudo = petPhoneChatHtml();
-  else if(petPhoneTela === 'fotos') conteudo = petPhoneFotoHtml();
+  else if(petPhoneTela === 'fotos') conteudo = petPhoneFotosHtml();
   else if(petPhoneTela === 'perfil') conteudo = '<div class="petphone-appbox"><span>💖✨</span><p>' + escHtml(contaJ && contaJ.nick || tr('Meu Idol')) + '</p><button type="button" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button></div>';
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
@@ -510,6 +540,7 @@ function petPhoneRender(){
 function petPhoneAbrir(tela){
   if(!petOpen || petView !== 'room' || petGame || !petAtivo() || !contaJ) return false;
   if(petPhoneFotoDono && petPhoneFotoDono !== petPhoneFotoChave()) petPhoneFotoLimpar();
+  petPhoneFotosAba = 'camera';
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';
   $('petPhone').hidden = false; petPhoneOpen = true;
@@ -522,7 +553,7 @@ function petPhoneAbrir(tela){
 }
 function petPhoneFechar(retomar){
   if(!petPhoneOpen) return false;
-  petPhoneOpen = false; petPhoneTela = 'home'; petPhoneAgendaReq++;
+  petPhoneOpen = false; petPhoneTela = 'home'; petPhoneFotosAba = 'camera'; petPhoneAgendaReq++;
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneFotoLimpar();
   $('petPhone').hidden = true;
@@ -540,6 +571,7 @@ function petPhoneVoltar(){
 function petPhoneTelaAbrir(k){
   if(!petPhoneOpen || ['agenda','chat','fotos','perfil'].indexOf(k) < 0) return false;
   if(k === 'chat') petPhoneChatConversa = '';
+  if(k === 'fotos') petPhoneFotosAba = 'camera';
   petPhoneTela = k; petPhoneRender();
   if(k === 'agenda') petPhoneAgendaCarregar();
   return true;

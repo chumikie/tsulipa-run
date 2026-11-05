@@ -400,6 +400,64 @@ test('ML1.2-C.1: interface cabe em 320×640 e 390×844 e respeita toque no celul
   assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotoLimpar('),logic.indexOf('function petPhoneChatContatos('))),false,'sem ciclo novo de renderização');
 });
 
+test('ML1.2-C.2-A: três abas de Fotos⭐, com câmera funcional e futuras integrações honestas', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.petData={ativo:'tsu'};
+  let capturas=0;
+  ctx.petMakePhoto=()=>{capturas++;return 'data:image/png;base64,iVBORw0KGgo=';};
+  assert.equal(ctx.petLifeAbrir('celular'),true);
+  assert.equal(ctx.petPhoneTelaAbrir('fotos'),true);
+  for(const k of ['camera','momentos','jornal']){
+    assert.match(nodes.petPhoneCorpo.innerHTML,new RegExp('data-phone="fotos-aba" data-aba="'+k+'"'));
+  }
+  assert.match(nodes.petPhoneCorpo.innerHTML,/aria-pressed="true"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="tirar-selfie"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="abrir-album"/,'cards seguem em Álbum separado');
+  assert.equal(capturas,0,'trocar de aba não gera PNG');
+  assert.equal(ctx.petPhoneFotosAbaAbrir('momentos'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Minhas Memórias⭐/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/nas próximas etapas/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"|data-phone="tirar-selfie"/,'sem câmera oculta na aba vazia');
+  assert.equal(ctx.petPhoneFotoTirar(),false,'não captura fora da aba Câmera');
+  assert.equal(ctx.petPhoneFotosAbaAbrir('jornal'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Fotos do dia⭐/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Idol⭐News!/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-jfoto|data:image\/png/,'não duplica fotos públicas nem guarda imagens');
+  assert.equal(ctx.petPhoneFotosAbaAbrir('invalida'),false);
+  assert.equal(ctx.petPhoneFotosAbaAbrir('camera'),true);
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  assert.equal(capturas,1);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"/);
+  assert.equal(ctx.petPhoneFotosAbaAbrir('momentos'),true);
+  assert.equal(ctx.petPhoneFotosAbaAbrir('camera'),true);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"/,'foto atual continua na Câmera durante navegação interna');
+  assert.equal(ctx.petPhoneVoltar(),true);
+  assert.equal(ctx.petPhoneTela,'home');
+  assert.equal(ctx.petPhoneTelaAbrir('fotos'),true);
+  assert.equal(ctx.petPhoneFotosAba,'camera','entrar novamente inicia pela câmera');
+  assert.equal(ctx.petPhoneFechar(),true);
+  assert.equal(ctx.petPhoneFotoUrl,'','C.2-A não muda descarte de fotos da C.1');
+  assert.equal(ctx.petPhoneFotosAbaAbrir('jornal'),false,'abas não funcionam com o celular fechado');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'interface não chama backend');
+  assert.equal(logic.includes('localStorage'),false,'interface não cria saves');
+});
+
+test('ML1.2-C.2-A: abas legíveis em 320×640 e 390×844 sem render contínuo', () => {
+  assert.match(css,/\.petphone-fotos-tabs\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.petphone-fotos-tabs button\{[^}]*min-height:44px/);
+  assert.match(css,/\.petphone-fotos-espera\{[^}]*min-height:174px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const pequena=h<=760,largura=Math.min(304,w-28),altura=Math.min(pequena?448:472,h-60);
+    const conteudo=altura-(8+9+(pequena?30:33)+(pequena?44:46)+(pequena?4:6)+8+30+18);
+    const tamanhoAba=(largura-26-8-18-10)/3;
+    assert.ok(tamanhoAba>=64,`${w}×${h}: cada aba mantém largura de toque`);
+    assert.ok(conteudo>=44+44+118,`${w}×${h}: título, abas e captura ficam na área rolável`);
+  }
+  assert.match(html,/k === 'fotos-aba'\) petPhoneFotosAbaAbrir\(b\.dataset\.aba\)/);
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotosHtml('),logic.indexOf('function petPhoneChatContatos('))),false);
+  for(const idioma of ['pt','en','es','id','th','ja']) assert.match(pet,new RegExp('(?:^|\\n)  '+idioma+':\\['),'abas traduzidas para o idioma escolhido');
+});
+
 test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {
   const {ctx,nodes} = fakeRoom();
   nodes.petPhoneWp.width=260;nodes.petPhoneWp.height=125;

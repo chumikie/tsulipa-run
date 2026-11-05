@@ -10,7 +10,9 @@
   var geo = null, ligada = false;
   function rr(x, X, Y, W, H, R){ x.beginPath(); if(x.roundRect) x.roundRect(X, Y, W, H, R); else x.rect(X, Y, W, H); }
   function geometria(W, H){
-    var lw = Math.min(118, Math.floor(Math.min(W - 20, 480) / 4));
+    // Celular: faixa de até 480 px. Computador (tela larga e deitada): pistas largas, ocupando quase metade da tela.
+    var largo = W >= 900 && W > H * 1.2;
+    var lw = largo ? Math.min(170, Math.floor(W * .46 / 4)) : Math.min(118, Math.floor(Math.min(W - 20, 480) / 4));
     return { lw:lw, left:Math.round((W - lw * 4) / 2), top:Math.max(150, H * .17), target:Math.round(H - Math.max(86, Math.min(150, H * .15))), W:W, H:H };
   }
   function pista(px){

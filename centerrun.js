@@ -1111,7 +1111,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else{
 
     // Roupa Básica
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa);
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
   }
 

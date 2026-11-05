@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=1"></script>
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=2"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -811,7 +811,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else{
 
     // Roupa Básica
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa);
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);
     g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);
   }
 

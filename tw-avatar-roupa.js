@@ -2,6 +2,7 @@
    Para Trainee (''), Cheeky (y2k), Seifuku e City Pop:
    - parte de baixo própria, à escolha do jogador: c.baixo = 'saia' (pregueada) ou 'bermuda' (cintura alta);
      sem escolha, City Pop usa bermuda e as outras, saia;
+   - Trainee: camisa inteira na cor escolhida, com gravata (as laterais e a manga são do mesmo tecido);
    - ombro ligado à roupa: a manga começa no tronco e o braço (parado ou levantado) sai de dentro dela;
    - luz contínua: o mesmo degradê de antes (claro à esquerda, escuro à direita, mais escuro embaixo),
      recortado só no tecido base, sem passar por cima de gravata, laço, gola ou estampa.
@@ -11,7 +12,7 @@
 (function(root){
   'use strict';
   var BAIXO = {
-    '':      { cor:'#4a5170', linha:'#3b4160', ombro:'#4a5170' },
+    '':      { cor:'#4a5170', linha:'#3b4160' },
     y2k:     { cor:'#1d1b29', linha:'#34304a', barra:true },
     seifuku: { cor:'#1b2a5e', linha:'#2e4183' },
     citypop: { cor:'#f1e7d0', linha:'#d8caa8' }
@@ -46,8 +47,12 @@
   }
 
   // Luz do tronco: chamada logo depois do tecido base e antes dos detalhes de cada roupa.
-  function tronco(g, x, y, roupa){
+  function tronco(g, x, y, roupa, c){
     if(!tem(roupa)) return;
+    if(roupa === '' && c){   // Trainee: camisa inteira na cor escolhida; as laterais cinza viram só uma dobra do mesmo tecido
+      g.fillStyle = c.outcol || '#ffffff'; g.fillRect(x + 4, y + 22, 3, 12); g.fillRect(x + 23, y + 22, 3, 12);
+      g.fillStyle = 'rgba(40,10,70,.12)'; g.fillRect(x + 4, y + 22, 1.4, 12); g.fillRect(x + 24.6, y + 22, 1.4, 12);
+    }
     luz(g, x, y, function(){
       if(roupa === 'y2k'){ g.rect(x + 3, y + 22, 6, 12); g.rect(x + 21, y + 22, 6, 12); g.rect(x + 7, y + 22, 3, 10); g.rect(x + 20, y + 22, 3, 10); }
       else if(roupa === 'citypop'){ g.rect(x + 2, y + 22, 6, 12); g.rect(x + 22, y + 22, 6, 12); g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }

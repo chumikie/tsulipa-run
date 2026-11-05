@@ -41,7 +41,15 @@ function petLifeSofa(x, frente){
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
     x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
   }else{
-    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
+    // O assento frontal encobre as pernas verticais do sprite em pé quando o
+    // Idol senta; os pés projetados dão leitura de joelhos dobrados.
+    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,petLifePose ? 169 : 181,97,petLifePose ? 25 : 13,6);x.fill();
+    if(petLifePose){
+      x.fillStyle='#e8b8e3';x.fillRect(65,171,65,3);
+      x.fillStyle='#1c1c30';
+      x.beginPath();x.roundRect(84,190,17,5,2);x.fill();
+      x.beginPath();x.roundRect(108,190,17,5,2);x.fill();
+    }
     x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
     x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
     x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();

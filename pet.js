@@ -176,8 +176,18 @@ var PET_PHONE_FOTOS_TEXTO = {
   th:['กล้อง','ความทรงจำ','ข่าว','ความทรงจำของฉัน⭐','ภาพจากการวิ่ง การแสดง และการพบปะจะปรากฏที่นี่ในการอัปเดตถัดไป','ภาพวันนี้⭐','ภาพสาธารณะจาก Idol⭐News! จะปรากฏที่นี่ในการอัปเดตถัดไป','เร็ว ๆ นี้'],
   ja:['カメラ','思い出','ニュース','わたしの思い出⭐','レースやライブ、出会いの写真は今後の更新でここに登場します。','今日の写真⭐','Idol⭐News!の公開写真は今後の更新でここに登場します。','準備中']
 };
+var PET_PHONE_MOMENTO_TEXTO = {
+  pt:['Guardar em Momentos⭐','Guardado no TsuPhone! 💗','Não foi possível guardar esta foto.','Nenhuma foto nesta sessão.','Guarde voluntariamente uma selfie, foto da corrida ou do Moon⭐Duo! para vê-la aqui.','Baixar PNG','Fotos temporárias: somem ao sair da página.'],
+  en:['Keep in Moments⭐','Saved to TsuPhone! 💗','Could not keep this photo.','No photos in this session.','Choose to keep a selfie, race photo or Moon⭐Duo! photo to see it here.','Download PNG','Temporary photos: cleared when leaving the page.'],
+  es:['Guardar en Momentos⭐','¡Guardado en TsuPhone! 💗','No se pudo guardar esta foto.','Aún no hay fotos en esta sesión.','Guarda una selfie, foto de carrera o Moon⭐Duo! para verla aquí.','Descargar PNG','Fotos temporales: desaparecen al salir de la página.'],
+  id:['Simpan di Momen⭐','Tersimpan di TsuPhone! 💗','Foto ini tidak bisa disimpan.','Belum ada foto dalam sesi ini.','Simpan selfie, foto lari, atau foto Moon⭐Duo! untuk melihatnya di sini.','Unduh PNG','Foto sementara: hilang saat meninggalkan halaman.'],
+  th:['เก็บในความทรงจำ⭐','เก็บใน TsuPhone แล้ว! 💗','เก็บรูปนี้ไม่สำเร็จ','ยังไม่มีรูปในรอบนี้','เลือกเก็บเซลฟี่ รูปวิ่ง หรือรูป Moon⭐Duo! เพื่อดูที่นี่','ดาวน์โหลด PNG','รูปชั่วคราวจะหายไปเมื่อออกจากหน้าเว็บ'],
+  ja:['思い出に保存⭐','TsuPhoneに保存しました! 💗','この写真は保存できませんでした。','このセッションの写真はまだありません。','セルフィー、レース、Moon⭐Duo!の写真を選んで保存するとここに表示されます。','PNGを保存','写真は一時保存です。ページを離れると消えます。']
+};
 // Fotos⭐: uma única Polaroid temporária; nunca entra no save ou no Supabase.
 var petPhoneFotoUrl = '', petPhoneFotoDono = '', petPhoneFotoErro = '';
+// ML1.2-C.2-B: até quatro fotos da sessão, nunca persistidas ou transmitidas.
+var petPhoneMomentos = [], petPhoneMomentosDono = '', petPhoneMomentoFonte = '', petPhoneMomentoFonteDono = '';
 // ML1.2-B: diálogos fictícios, só nesta sessão. Nunca enviam ou salvam mensagens.
 var petPhoneChatConversa = '', petPhoneChatSessao = '', petPhoneChatRespostas = {};
 function petPhoneContaChave(){
@@ -278,6 +288,60 @@ function petPhoneFotoLimpar(){
 function petPhoneFotoChave(){
   return petPhoneContaChave() + ':' + (typeof petData !== 'undefined' && petData ? petData.ativo || '' : '');
 }
+function petPhoneMomentoTexto(i){ return (PET_PHONE_MOMENTO_TEXTO[LANG] || PET_PHONE_MOMENTO_TEXTO.pt)[i]; }
+function petPhoneMomentosLimpar(){
+  var corpo = $('petPhoneCorpo');
+  if(corpo && corpo.querySelectorAll){
+    corpo.querySelectorAll('[data-momento-id]').forEach(function(img){img.removeAttribute('src');});
+    corpo.querySelectorAll('[data-momento-baixar]').forEach(function(a){a.removeAttribute('href');});
+  }
+  petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = '';
+  var botao = $('shPhone'); if(botao) botao.hidden = true;
+  if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
+}
+function petPhoneMomentosConferir(){
+  var dono = petPhoneFotoChave();
+  if(petPhoneMomentosDono && (petPhoneMomentosDono !== dono || !petPhoneContaChave())) petPhoneMomentosLimpar();
+}
+function petPhoneMomentoDisponivel(tipo){
+  petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = '';
+  var b = $('shPhone'); if(!b) return;
+  if(['pet','center'].indexOf(tipo) >= 0 && contaJ && petAtivo()){
+    petPhoneMomentoFonte = tipo; petPhoneMomentoFonteDono = petPhoneFotoChave();
+  }
+  b.hidden = !petPhoneMomentoFonte;
+  b.disabled = false; b.textContent = '💗 ' + petPhoneMomentoTexto(0);
+}
+function petPhoneMomentoGuardar(tipo, url){
+  if(['pet','center','duo'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
+  if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
+  petPhoneMomentosConferir();
+  var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
+  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!'}[tipo];
+  var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
+  petPhoneMomentosDono = dono;
+  petPhoneMomentos.push(entrada);
+  while(petPhoneMomentos.length > 4 || petPhoneMomentos.reduce(function(n,f){ return n + f.url.length; },0) > 16*1024*1024) petPhoneMomentos.shift();
+  if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
+  return true;
+}
+function petPhoneMomentosHtml(){
+  petPhoneMomentosConferir();
+  if(!petPhoneMomentos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
+  return '<section class="petphone-momentos"><div class="petphone-momentos-grid">' + petPhoneMomentos.slice().reverse().map(function(f){
+    return '<article class="petphone-momento"><img data-momento-id="' + f.id + '" alt="' + escHtml(f.rotulo) + '" loading="lazy"><b>' + escHtml(f.rotulo) + '</b><a data-momento-baixar="' + f.id + '" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a></article>';
+  }).join('') + '</div><p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
+}
+function petPhoneMomentosRender(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return;
+  var corpo = $('petPhoneCorpo'); if(!corpo || !corpo.querySelectorAll) return;
+  petPhoneMomentos.forEach(function(f){
+    var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
+    var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
+    if(img) img.src = f.url;
+    if(dl){dl.href = f.url;dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.png';}
+  });
+}
 function petPhoneFotoHtml(){
   var fotoPronta = !!petPhoneFotoUrl && petPhoneFotoDono === petPhoneFotoChave();
   return '<div class="petphone-photo">' +
@@ -285,7 +349,8 @@ function petPhoneFotoHtml(){
       ? '<img id="petPhoneFotoImg" alt="' + escHtml(tr('Selfie do Idol com o Pet')) + '">'
       : '<div class="petphone-photo-espera"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas><span>📸 ' + escHtml(tr('Idol + Pet')) + '</span></div>') + '</div>' +
     '<button type="button" class="petphone-photo-tirar" data-phone="tirar-selfie">📸 ' + escHtml(tr(fotoPronta ? 'Tirar outra selfie!' : 'Tirar selfie!')) + '</button>' +
-    (fotoPronta ? '<a class="petphone-photo-baixar" id="petPhoneFotoBaixar" download="tsulipa-camarim.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a>' : '') +
+    (fotoPronta ? '<a class="petphone-photo-baixar" id="petPhoneFotoBaixar" download="tsulipa-camarim.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a>' +
+      '<button type="button" data-phone="guardar-selfie">💗 ' + escHtml(petPhoneMomentoTexto(0)) + '</button>' : '') +
     (petPhoneFotoErro ? '<p class="petphone-photo-erro" role="status">' + escHtml(petPhoneFotoErro) + '</p>' : '') +
     '<p class="petphone-photo-dica">' + escHtml(tr('Use as poses e molduras já disponíveis na câmera do Camarim. A foto só fica aqui até fechar o TsuPhone.')) + '</p>' +
     '<button type="button" class="petphone-photo-album" data-phone="abrir-album">🃏 ' + escHtml(tr('Ver Álbum de cards')) + '</button>' +
@@ -298,6 +363,7 @@ function petPhoneFotosHtml(){
     return '<button type="button" data-phone="fotos-aba" data-aba="' + t[0] + '" aria-pressed="' + (petPhoneFotosAba === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span><b>' + escHtml(txt[i]) + '</b></button>';
   }).join('') + '</nav>';
   if(petPhoneFotosAba === 'camera') return nav + petPhoneFotoHtml();
+  if(petPhoneFotosAba === 'momentos') return nav + petPhoneMomentosHtml();
   var jornal = petPhoneFotosAba === 'jornal';
   return nav + '<section class="petphone-fotos-espera" aria-label="' + escHtml(txt[jornal ? 5 : 3]) + '">' +
     '<div class="petphone-fotos-ilustra" aria-hidden="true"><span>' + (jornal ? '📰' : '🏁') + '</span><span>' + (jornal ? '🌷' : '🎤') + '</span><span>' + (jornal ? '📸' : '🌙') + '</span></div>' +
@@ -337,6 +403,11 @@ function petPhoneFotoTirar(){
   }
   petPhoneFotoUrl = url;petPhoneFotoDono = chave;petPhoneFotoErro = '';
   petPhoneRender();return true;
+}
+function petPhoneFotoGuardar(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'camera' || !petPhoneFotoUrl || petPhoneFotoDono !== petPhoneFotoChave()) return false;
+  if(!petPhoneMomentoGuardar('pet',petPhoneFotoUrl)) return false;
+  petPhoneFotosAba = 'momentos'; petPhoneRender();return true;
 }
 function petPhoneChatContatos(){
   var contatos = [
@@ -535,11 +606,14 @@ function petPhoneRender(){
   else if(petPhoneTela === 'perfil') conteudo = '<div class="petphone-appbox"><span>💖✨</span><p>' + escHtml(contaJ && contaJ.nick || tr('Meu Idol')) + '</p><button type="button" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button></div>';
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
-  if(petPhoneTela === 'fotos') petPhoneFotoRender();
+  if(petPhoneTela === 'fotos'){
+    petPhoneFotoRender(); petPhoneMomentosRender();
+  }
 }
 function petPhoneAbrir(tela){
   if(!petOpen || petView !== 'room' || petGame || !petAtivo() || !contaJ) return false;
   if(petPhoneFotoDono && petPhoneFotoDono !== petPhoneFotoChave()) petPhoneFotoLimpar();
+  petPhoneMomentosConferir();
   petPhoneFotosAba = 'camera';
   petPhoneAgendaDados = null; petPhoneAgendaDono = '';
   petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';

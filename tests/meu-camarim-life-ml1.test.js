@@ -24,6 +24,7 @@ function fakeRoom(signedIn = true){
     scrollIntoView(){ calls.push('agenda-focus'); },
     setAttribute(k,v){ attr[id + ':' + k] = v; },
     querySelector(){ return labels[id] || (labels[id] = {textContent:''}); },
+    querySelectorAll(){return [];},
     insertBefore(node){ nodes[node.id] = node; },
     after(node){ nodes[node.id] = node; },
     remove(){ delete nodes[this.id]; }
@@ -400,7 +401,7 @@ test('ML1.2-C.1: interface cabe em 320×640 e 390×844 e respeita toque no celul
   assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotoLimpar('),logic.indexOf('function petPhoneChatContatos('))),false,'sem ciclo novo de renderização');
 });
 
-test('ML1.2-C.2-A: três abas de Fotos⭐, com câmera funcional e futuras integrações honestas', () => {
+test('ML1.2-C.2-A: três abas de Fotos⭐, mantendo câmera e Jornal futuro separados', () => {
   const {ctx,nodes,calls}=fakeRoom();
   ctx.petData={ativo:'tsu'};
   let capturas=0;
@@ -415,8 +416,8 @@ test('ML1.2-C.2-A: três abas de Fotos⭐, com câmera funcional e futuras integ
   assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="abrir-album"/,'cards seguem em Álbum separado');
   assert.equal(capturas,0,'trocar de aba não gera PNG');
   assert.equal(ctx.petPhoneFotosAbaAbrir('momentos'),true);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/Minhas Memórias⭐/);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/nas próximas etapas/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Nenhuma foto nesta sessão/,'Momentos fica vazia até guardar voluntariamente');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Guarde voluntariamente/);
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/id="petPhoneFotoBaixar"|data-phone="tirar-selfie"/,'sem câmera oculta na aba vazia');
   assert.equal(ctx.petPhoneFotoTirar(),false,'não captura fora da aba Câmera');
   assert.equal(ctx.petPhoneFotosAbaAbrir('jornal'),true);
@@ -456,6 +457,103 @@ test('ML1.2-C.2-A: abas legíveis em 320×640 e 390×844 sem render contínuo', 
   assert.match(html,/k === 'fotos-aba'\) petPhoneFotosAbaAbrir\(b\.dataset\.aba\)/);
   assert.equal(/requestAnimationFrame|setInterval|setTimeout/.test(logic.slice(logic.indexOf('function petPhoneFotosHtml('),logic.indexOf('function petPhoneChatContatos('))),false);
   for(const idioma of ['pt','en','es','id','th','ja']) assert.match(pet,new RegExp('(?:^|\\n)  '+idioma+':\\['),'abas traduzidas para o idioma escolhido');
+});
+
+test('ML1.2-C.2-B: selfie entra em Momentos só após guardar; galeria fica apenas na sessão', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  const png='data:image/png;base64,iVBORw0KGgo=';
+  ctx.petData={ativo:'tsu'};
+  ctx.petMakePhoto=()=>png;
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');
+  assert.equal(ctx.petPhoneFotoTirar(),true);
+  assert.equal(ctx.petPhoneMomentos.length,0,'tirar foto não cria registro automaticamente');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-phone="guardar-selfie"/,'ação explícita de guardar');
+  assert.equal(ctx.petPhoneFotoGuardar(),true);
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.equal(ctx.petPhoneMomentos.length,1);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Backstage⭐Pet!/);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/data-momento-id/);
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/iVBORw0K/,'base64 não passa por innerHTML');
+  const id=ctx.petPhoneMomentos[0].id;
+  const img={}, dl={};
+  nodes.petPhoneCorpo.querySelector=q=>q.includes('data-momento-id="'+id+'"') ? img : q.includes('data-momento-baixar="'+id+'"') ? dl : null;
+  ctx.petPhoneMomentosRender();
+  assert.equal(img.src,png,'renderiza apenas em propriedade do elemento');
+  assert.equal(dl.href,png,'download permanece voluntário');
+  assert.match(dl.download,/^tsulipa-pet-.*\.png$/);
+  ctx.petPhoneFechar();
+  assert.equal(ctx.petPhoneFotoUrl,'','câmera original limpa ao fechar');
+  assert.equal(ctx.petPhoneMomentos.length,1,'Momentos continua enquanto a página está aberta');
+  ctx.petPhoneMomentosLimpar();
+  assert.equal(ctx.petPhoneMomentos.length,0,'pagehide descarta toda a sessão');
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+  assert.equal(logic.includes('localStorage'),false,'nenhum save criado');
+});
+
+test('ML1.2-C.2-B: fontes Pet/Center/Duo sem misturar Karaoke e Jornal', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.petData={ativo:'tsu'};
+  const png='data:image/png;base64,aGVsbG8=';
+  for(const tipo of ['pet','center','duo']) assert.equal(ctx.petPhoneMomentoGuardar(tipo,png),true,tipo+' aceito');
+  assert.equal(ctx.petPhoneMomentos.length,3);
+  assert.equal(ctx.petPhoneMomentoGuardar('jornal',png),false);
+  assert.equal(ctx.petPhoneMomentoGuardar('karaoke',png),false);
+  ctx.petLifeAbrir('celular');ctx.petPhoneTelaAbrir('fotos');ctx.petPhoneFotosAbaAbrir('momentos');
+  for(const label of ['Backstage⭐Pet!','Center⭐Run!','Moon⭐Duo!']) assert.match(nodes.petPhoneCorpo.innerHTML,new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  ctx.petPhoneFotosAbaAbrir('jornal');
+  assert.match(nodes.petPhoneCorpo.innerHTML,/Idol⭐News!/,'Jornal continua reservado para C.2-C');
+  assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-momento-id/);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[],'nenhuma chamada de backend');
+  assert.match(html,/id="shPhone"[^>]*hidden/,'botão compartilhado começa oculto');
+  assert.match(html,/\? 'center' : ''\)/,'Center ativa botão apenas após foto');
+  assert.match(html,/\? 'pet' : ''\)/,'Backstage ativa botão apenas após foto');
+  assert.match(html,/id="duoPhone"/,'Moon tem ação explícita');
+  assert.match(html,/petPhoneMomentoGuardar\('duo',png\)/,'Moon usa foto local da cena já montada');
+  assert.match(html,/window\.addEventListener\('pagehide',petPhoneMomentosLimpar\)/);
+});
+
+test('ML1.2-C.2-B: protege privacidade, conta/Pet, tipos de imagem e limite de memória', () => {
+  const {ctx,nodes,calls}=fakeRoom();
+  ctx.petData={ativo:'tsu'};
+  const png='data:image/png;base64,aGVsbG8=';
+  assert.equal(ctx.petPhoneMomentoGuardar('center','<svg onload=alert(1)>'),false);
+  assert.equal(ctx.petPhoneMomentoGuardar('pet','data:image/jpeg;base64,aGVsbG8='),false);
+  assert.equal(ctx.petPhoneMomentos.length,0);
+  for(let i=0;i<7;i++) assert.equal(ctx.petPhoneMomentoGuardar(i%2?'center':'duo',png),true);
+  assert.equal(ctx.petPhoneMomentos.length,4,'guarda somente quatro fotos recentes');
+  nodes.shPhone={hidden:true,disabled:false,textContent:''};
+  ctx.petPhoneMomentoDisponivel('center');
+  assert.equal(nodes.shPhone.hidden,false);
+  assert.equal(ctx.petPhoneMomentoFonteDono,ctx.petPhoneFotoChave());
+  ctx.contaSessaoToken=4;
+  ctx.petPhoneMomentosConferir();
+  assert.equal(ctx.petPhoneMomentos.length,0,'troca de sessão apaga imagens anteriores');
+  assert.equal(ctx.petPhoneMomentoFonte,'','fonte anterior é invalidada');
+  ctx.petPhoneMomentoGuardar('pet',png);
+  ctx.petData.ativo='lirika';ctx.petPhoneMomentosConferir();
+  assert.equal(ctx.petPhoneMomentos.length,0,'troca de Pet apaga imagens anteriores');
+  ctx.contaJ=null;
+  assert.equal(ctx.petPhoneMomentoGuardar('center',png),false,'sem conta não guarda foto');
+  ctx.petPhoneMomentoDisponivel('center');
+  assert.equal(nodes.shPhone.hidden,true);
+  assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
+});
+
+test('ML1.2-C.2-B: galeria responsiva simulada em 320×640 e 390×844', () => {
+  assert.match(css,/\.petphone-momentos-grid\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.petphone-momento img\{[^}]*object-fit:contain/,'fotos horizontais não são cortadas na miniatura');
+  assert.match(css,/\.petphone-momento a\{[^}]*min-height:44px/);
+  assert.match(css,/#shPhone\{min-height:44px/);
+  assert.match(read('duo.css'),/\.duoacoes #duoPhone\{grid-column:1\/-1;min-height:44px/);
+  for(const [w,h] of [[320,640],[390,844]]){
+    const largura=Math.min(304,w-28),area=largura-24;
+    const coluna=(area-7)/2;
+    const altura=Math.min(h<=760?448:472,h-60);
+    assert.ok(coluna>=130,`${w}×${h}: miniaturas em duas colunas legíveis`);
+    assert.ok(altura>=400,`${w}×${h}: painel mantém área rolável`);
+  }
+  const trecho=logic.slice(logic.indexOf('function petPhoneMomentosLimpar('),logic.indexOf('function petPhoneFotoHtml('));
+  assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage/.test(trecho),false,'sem timers, rede ou saves');
 });
 
 test('ML1.2-A.1: papel de parede recorta o Canvas sem deformar o Idol ou o Pet', () => {

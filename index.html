@@ -40,7 +40,7 @@
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./centerrun.css?v=2">
-<link rel="stylesheet" href="./pet.css?v=8">
+<link rel="stylesheet" href="./pet.css?v=9">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
@@ -87,7 +87,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 /* Títulos com mais personalidade (Mochiy Pop One, estilo adesivo) */
 .hublogo,.logo b,.hubcard b,#gachaTit,.duotit{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;font-weight:400;letter-spacing:.01em}
 </style>
-<link rel="stylesheet" href="./duo.css?v=2">
+<link rel="stylesheet" href="./duo.css?v=3">
 <style>
 .perfduo{margin-top:10px}.duobtn{background:linear-gradient(90deg,#4169e1,#7b3ff0,#ff6fb5)!important;color:#fff!important}
 /* Últimos cards */
@@ -299,7 +299,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   <button type="button" data-oshi="pati" aria-pressed="false" title="Pati">👑</button>
 </div>
 <div class="ov" id="pz" hidden><div class="panel"><h1>Pausado<small>一時停止</small></h1><div class="btns" style="margin-top:12px"><button class="btn" id="resume">CONTINUAR</button></div></div></div>
-<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
+<div class="ov" id="shr" hidden style="z-index:9"><div class="panel"><img id="shimg" alt="Imagem do seu resultado" style="max-width:100%;max-height:55vh;border-radius:12px"><div class="btns" style="margin-top:12px"><a class="btn" id="shdl" download="tsulipa-center-run.png" style="text-decoration:none">BAIXAR</a><button class="btn" id="shPhone" type="button" hidden>💗 Guardar em Momentos⭐</button><button class="btn alt" id="shx">FECHAR</button></div><p>Se o download não abrir, segure (celular) ou clique com o botão direito (computador) na imagem e escolha salvar.</p></div></div>
 <div class="ov tw-window-overlay" id="petov" hidden style="z-index:8"><div class="panel petp tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="petWindowTitle"><button type="button" class="tw-window-control tw-window-close" id="petWindowClose" aria-label="Fechar">×</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="Som"></button>
   <h1 class="bp-title tw-window-title" id="petWindowTitle" translate="no">Backstage<span class="st">⭐</span>Pet!<small class="tw-window-jp">バックステージ・ペット</small></h1>
   <div id="petAdopt" hidden>
@@ -367,7 +367,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=8"></script>
+<script src="./pet.js?v=9"></script>
 <script src="./perfil.js?v=5"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=3"></script>
@@ -394,7 +394,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </script>
 <script src="./handshake.js?v=9"></script>
 <script src="./cafe.js?v=10"></script>
-<script src="./duo.js?v=1"></script>
+<script src="./duo.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=15"></script>
 <script src="./shop.js?v=5"></script>
@@ -865,6 +865,7 @@ $('cam').onclick = function(e){
   $('shdl').href = u;
   $('shdl').download = 'tsulipa-photocard.png';
   $('shr').hidden = false;
+  petPhoneMomentoDisponivel(typeof u === 'string' && u.startsWith('data:image/png;base64,') ? 'center' : '');
   petPhShow(true, 'run');   // Foto 2.0 também na corrida
 };
 
@@ -913,7 +914,13 @@ $('dlAvatar').onclick = function(e) {
   link.click();
 };
 
-$('shbtn').onclick=function(){quartetoFoto();var u=safeCall(makeShare);$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false;petPhShow(true,'share')};$('shx').onclick=function(){$('shr').hidden=true};
+$('shbtn').onclick=function(){quartetoFoto();var u=safeCall(makeShare);$('shdl').download='tsulipa-center-run.png';$('shimg').src=u;$('shdl').href=u;$('shr').hidden=false;petPhoneMomentoDisponivel(typeof u === 'string' && u.startsWith('data:image/png;base64,') ? 'center' : '');petPhShow(true,'share')};$('shx').onclick=function(){$('shr').hidden=true;petPhoneMomentoDisponivel('')};
+$('shPhone').onclick=function(){
+  if(!petPhoneMomentoFonte || petPhoneMomentoFonteDono !== petPhoneFotoChave() || !petPhoneMomentoGuardar(petPhoneMomentoFonte,$('shimg').src)){
+    $('shPhone').textContent = petPhoneMomentoTexto(2); return;
+  }
+  $('shPhone').textContent = petPhoneMomentoTexto(1);$('shPhone').disabled=true;
+};
 document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
 ['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(){held=false})});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();
@@ -1013,6 +1020,7 @@ $('petPhone').addEventListener('click', function(e){
   else if(k === 'voltar') petPhoneVoltar();
   else if(k === 'fotos-aba') petPhoneFotosAbaAbrir(b.dataset.aba);
   else if(k === 'tirar-selfie') petPhoneFotoTirar();
+  else if(k === 'guardar-selfie') petPhoneFotoGuardar();
   else if(k === 'chat-abrir') petPhoneChatAbrir(b.dataset.conversa);
   else if(k === 'chat-responder') petPhoneChatResponder(Number(b.dataset.resposta));
   else if(k === 'abrir-album' || k === 'abrir-perfil') petPhoneExterno(k === 'abrir-album' ? 'album' : 'perfil');
@@ -1097,6 +1105,7 @@ $('petCam').onclick = function(e){
   $('shdl').href = u;
   $('shdl').download = 'tsulipa-camarim-' + ((p.nome || 'pet').replace(/[^a-z0-9]/gi, '').toLowerCase() || 'pet') + '.png';
   $('shr').hidden = false;
+  petPhoneMomentoDisponivel(typeof u === 'string' && u.startsWith('data:image/png;base64,') ? 'pet' : '');
   petPhShow(true);   // molduras e poses (Foto 2.0)
 };
 // --- FIM DA CÂMERA DO CAMARIM ---
@@ -1325,7 +1334,8 @@ petPhBox.addEventListener('click', function(e){
   petPhUI();
 });
 // Some sozinha quando a tela da foto fecha (✕, Esc ou qualquer outro caminho)
-if(window.MutationObserver) new MutationObserver(function(){ if($('shr').hidden) petPhShow(false); }).observe($('shr'), { attributes:true, attributeFilter:['hidden'] });
+if(window.MutationObserver) new MutationObserver(function(){ if($('shr').hidden){ petPhShow(false);petPhoneMomentoDisponivel(''); } }).observe($('shr'), { attributes:true, attributeFilter:['hidden'] });
+window.addEventListener('pagehide',petPhoneMomentosLimpar);
 
 // ---------- O pet nas fotos e no palco da corrida ----------
 
@@ -2383,7 +2393,7 @@ duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-win
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
     '<canvas id="duoCv" width="960" height="600"></canvas><p class="duodica" id="duoDica"></p>' +
-    '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a></div>' +
+    '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button class="btn alt" type="button" id="duoPhone"></button></div>' +
     '<p class="perfmsg" id="duoMsg" hidden></p>' +
     '<div class="duotabs" role="tablist" id="duoTabs"></div><div class="duopres duotrava" id="duoPresBox" hidden></div><div class="duotabc" id="duoTabC"></div>' +
   '</div></div>';
@@ -2486,6 +2496,14 @@ duoOv.addEventListener('click', function(e){
     try{ duoRender(cv.getContext('2d'), 960, 600, t.id === 'duoPng', false); }catch(er){}
     t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
     if(sfx.card) sfx.card();
+  }
+  if(t.id === 'duoPhone'){
+    // Guarda apenas após toque explícito, usando a cena e os bloqueios já validados pelo Moon⭐Duo!.
+    if(!duoGu || !contaJ || !petAtivo()){ duoMsg(petPhoneMomentoTexto(2));return; }
+    var foto = document.createElement('canvas'); foto.width = 960;foto.height = 600;
+    var png = '';
+    try{duoRender(foto.getContext('2d'), 960, 600, true, false);png=foto.toDataURL('image/png');}catch(er){}
+    duoMsg(petPhoneMomentoTexto(petPhoneMomentoGuardar('duo',png) ? 1 : 2));
   }
 });
 

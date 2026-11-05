@@ -81,16 +81,13 @@ function petLifeSofa(x, frente){
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     [-8.4, 10.8].forEach(function(o){
       var px = q.x + o;
-      x.fillStyle='#1c1c30';
-      // Pernas de chibi são curtas: balançam penduradas na frente do assento, como no Sims/LPS.
+      // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
+      // separado. Só a altura encurta, porque a coxa vem para frente.
       var bal = Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
-      x.fillRect(px-6,q.y+6,12,13+bal);                               // canela
-      x.beginPath();x.roundRect(px-7.5,q.y+17+bal,15,5.5,2.8);x.fill(); // pé
-      // Coxa vista de frente (encurtada) terminando no joelho redondo.
+      x.fillStyle='#1c1c30';
+      x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
       x.fillStyle=petLifeCorColo;
-      x.beginPath();x.roundRect(px-7.5,q.y-3,15,13,[3,3,7.5,7.5]);x.fill();
-      x.fillStyle='rgba(60,25,90,.12)';x.beginPath();x.ellipse(px,q.y+8.5,6.5,2,0,0,7);x.fill();
-      x.fillStyle='rgba(255,255,255,.28)';x.fillRect(px-4.5,q.y-1,3,7);
+      x.fillRect(px-7,q.y-3,14,10);                                   // coxa na cor da roupa, reta
     });
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';

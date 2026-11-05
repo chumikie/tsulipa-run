@@ -40,7 +40,7 @@
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./centerrun.css?v=2">
-<link rel="stylesheet" href="./pet.css?v=11">
+<link rel="stylesheet" href="./pet.css?v=12">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
@@ -354,7 +354,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <button type="button" class="petphone-x" id="petPhoneX" data-phone="fechar" aria-label="Fechar TsuPhone">×</button>
       <span class="petphone-cristais" aria-hidden="true"><i></i><i></i><b>✦</b></span><span class="petphone-speaker" aria-hidden="true"></span>
       <div class="petphone-screen">
-        <div class="petphone-status"><span>✦ TsuPhone⭐</span><span id="petPhoneHora">✧ ✧ ✧</span></div>
+        <div class="petphone-status"><span id="petPhoneMarca">✦ TsuPhone⭐</span><span id="petPhoneHora">✧ ✧ ✧</span></div>
         <div class="petphone-content" id="petPhoneCorpo" aria-live="polite"></div>
       </div>
       <button type="button" id="petPhoneHome" class="petphone-home" data-phone="voltar" aria-label="Início ou voltar ao Camarim"><span aria-hidden="true">□</span></button>
@@ -365,14 +365,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=9"></script>
+<script src="./tw-i18n.js?v=10"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=1"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=11"></script>
+<script src="./pet.js?v=12"></script>
 <script src="./perfil.js?v=5"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=3"></script>
@@ -1007,6 +1007,7 @@ petCv.addEventListener('pointerdown', function(e){
   p.humor = petClamp(p.humor + 4);
   petHop = 20; petSmile = 70; petLove = 50;
   petCuidadoReagir('carinho');
+  petVontadeAtender('carinho');
   petVoice(p);   // Chu "nya~", Koali "kyu~", Pucchi "hmph!", Meu Pet "pi-pi!"
   petSave(true); petUI();
 });
@@ -1034,8 +1035,9 @@ $('petPhone').addEventListener('click', function(e){
   else if(k === 'guardar-selfie') petPhoneFotoGuardar();
   else if(k === 'chat-abrir') petPhoneChatAbrir(b.dataset.conversa);
   else if(k === 'chat-responder') petPhoneChatResponder(Number(b.dataset.resposta));
+  else if(k === 'carta-abrir') petCartaAbrir(b.dataset.carta);
   else if(k === 'abrir-album' || k === 'abrir-perfil') petPhoneExterno(k === 'abrir-album' ? 'album' : 'perfil');
-  else if(['agenda','chat','fotos','perfil'].indexOf(k) >= 0) petPhoneTelaAbrir(k);
+  else if(['agenda','chat','fotos','cartas'].indexOf(k) >= 0) petPhoneTelaAbrir(k);
 });
 document.addEventListener('visibilitychange',function(){if(document.hidden){petAlertParar();petAnimParar();if(petData){petTick();petSave();}}else{petAlertLigar();if(petOpen)petAnimLigar();}});
 window.addEventListener('pagehide',function(){petAlertParar();if(petData){petTick();petSave();}});

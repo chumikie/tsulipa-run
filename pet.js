@@ -229,9 +229,9 @@ var PET_LIFE_TEXTOS = {
 };
 // ML1.2-A: TsuPhone vive na memória da aba; não cria saves nem progressão.
 var PET_PHONE_APPS = {
-  pt:['Agenda⭐','Chat⭐','Fotos⭐','Perfil⭐'], en:['Agenda⭐','Chat⭐','Photos⭐','Profile⭐'],
-  es:['Agenda⭐','Chat⭐','Fotos⭐','Perfil⭐'], id:['Agenda⭐','Chat⭐','Foto⭐','Profil⭐'],
-  th:['ตาราง⭐','แชต⭐','รูปภาพ⭐','โปรไฟล์⭐'], ja:['予定⭐','チャット⭐','写真⭐','プロフィール⭐']
+  pt:['Agenda⭐','Chat⭐','Fotos⭐','Cartas⭐'], en:['Agenda⭐','Chat⭐','Photos⭐','Letters⭐'],
+  es:['Agenda⭐','Chat⭐','Fotos⭐','Cartas⭐'], id:['Agenda⭐','Chat⭐','Foto⭐','Surat⭐'],
+  th:['ตาราง⭐','แชต⭐','รูปภาพ⭐','จดหมาย⭐'], ja:['予定⭐','チャット⭐','写真⭐','お手紙⭐']
 };
 var petPhoneOpen = false, petPhoneTela = 'home', petPhoneVoltarTela = '';
 var petPhoneAgendaDados = null, petPhoneAgendaDono = '', petPhoneAgendaReq = 0;
@@ -304,7 +304,7 @@ function petPhoneIcon(c, tipo){
     x.closePath();x.fillStyle=fill;x.fill();
   }
   var cor={agenda:['#ffe0f0','#ff6fb5'],chat:['#cbefff','#4169e1'],
-    fotos:['#e8d5ff','#9b30d9'],perfil:['#e9f5d1','#9b30d9']}[tipo];
+    fotos:['#e8d5ff','#9b30d9'],cartas:['#ffe4d6','#ff6fb5']}[tipo];
   if(!cor){x.restore();return;}
   var bg=x.createLinearGradient(6,5,57,60);
   bg.addColorStop(0,'#fff');bg.addColorStop(.53,cor[0]);bg.addColorStop(1,'#d7eaff');
@@ -330,20 +330,106 @@ function petPhoneIcon(c, tipo){
     star(4,-8,5,'#ffe16a');x.restore();
     star(48,16,8,'#ffcf48');
     x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.moveTo(48,5);x.lineTo(48,27);x.moveTo(37,16);x.lineTo(59,16);x.stroke();
-  }else if(tipo==='perfil'){
-    x.fillStyle='#fff';x.beginPath();x.arc(32,31,22,0,7);x.fill();
-    box(16,40,32,14,9,'#ff80c1','#fff',1.5);
-    x.fillStyle='#9b30d9';x.beginPath();x.arc(32,29,17,Math.PI,Math.PI*2);x.lineTo(49,36);x.lineTo(15,36);x.closePath();x.fill();
-    x.fillStyle='#f6b37c';x.beginPath();x.ellipse(32,33,11,12,0,0,7);x.fill();
-    x.fillStyle='#654386';for(var j=0;j<2;j++){x.beginPath();x.arc(28+j*8,34,1.4,0,7);x.fill();}
-    x.strokeStyle='#854e74';x.lineWidth=1.5;x.beginPath();x.arc(32,36,3,.2,Math.PI-.2);x.stroke();
-    star(45,17,9,'#ffdf5f');
+  }else if(tipo==='cartas'){
+    x.save();x.translate(31,34);x.rotate(.08);
+    box(-21,-14,42,29,5,'#fff','#e9a5c9',2);
+    x.fillStyle='#ffd7ea';x.beginPath();x.moveTo(-19,-12);x.lineTo(0,3);x.lineTo(19,-12);x.closePath();x.fill();
+    x.strokeStyle='#e9a5c9';x.lineWidth=1.6;x.beginPath();x.moveTo(-19,-12);x.lineTo(0,3);x.lineTo(19,-12);x.stroke();
+    x.fillStyle='#ff6fb5';x.font='bold 13px sans-serif';x.textAlign='center';x.fillText('♥',0,7);
+    x.restore();
+    star(48,15,8,'#ffdf5f');
   }
   x.restore();
 }
 function petPhoneIcones(corpo){
   if(!corpo || !corpo.querySelectorAll) return;
   corpo.querySelectorAll('canvas[data-phone-icon]').forEach(function(c){petPhoneIcon(c,c.dataset.phoneIcon);});
+}
+// O celular leva o nome do jogador: "{nick}Phone". Sem conta, continua TsuPhone.
+function petPhoneNome(){
+  var n = String((typeof contaJ !== 'undefined' && contaJ && contaJ.nick) || '').trim();
+  return (n ? Array.from(n).slice(0, 12).join('') : 'Tsu') + 'Phone';
+}
+function petPhoneMarca(){
+  var nome = petPhoneNome(), marca = $('petPhoneMarca'), caixa = $('petPhone');
+  if(marca) marca.textContent = '✦ ' + nome + '⭐';
+  var sh = caixa && caixa.querySelector && caixa.querySelector('.petphone-shell');
+  if(sh && sh.setAttribute) sh.setAttribute('aria-label', nome + '⭐');
+  var x = $('petPhoneX'); if(x && x.setAttribute) x.setAttribute('aria-label', tr('Fechar') + ' ' + nome);
+}
+// Cartas de fã (o correio do Neopets): uma por dia, montada no aparelho com o que já
+// existe (recordes, pet). Fãs com nomes inventados; nada vai ao servidor nem ao save.
+var petPhoneCartaAberta = '';
+var petCartasLidasSessao = [];   // como o resto do celular: só na memória da aba, sem save
+var PET_CARTA_FAS = ['Nana','Kiko','Lulu','Momo','Rafi','Yumi','Toto','Pipo','Mel','Juju','Cacau','Lili','Koko','Duda','Nino','Mimi','Bubu','Fifi','Gigi','Biba'];
+var PET_CARTA_SELOS = ['🌸','🍓','🐰','⭐','🎀','🌙','🍰','💐'];
+var PET_CARTA_TEXTOS = {
+  rec:'Vi seu recorde de {b} no Center⭐Run! Treinei a semana inteira para chegar perto. 😳',
+  look:'O seu look de hoje ficou lindo! Posso me inspirar nele para o próximo show? 🎀',
+  pet:'Manda um oi para {p}! É o pet mais fofo de todo o backstage. 🐾',
+  hand:'Fui no Handshake⭐Event! e você lembrou do meu presente favorito. Ganhei o dia! 🤝',
+  cafe:'Pedi no Happy⭐Cafe! a bebida que você recomendou. Já virou a minha favorita! 🧋',
+  vontade:'Soube que você realizou as vontades de {p}. Que cuidado lindo! 💕',
+  apoio:'Torço por você em todos os shows. Continua brilhando, {n}! ✨'
+};
+function petCartaHash(s){ var h = 2166136261; for(var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function petCartaDia(atras){ return new Date(Date.now() - 3 * 36e5 - atras * 864e5).toISOString().slice(0, 10); }   // dia de Brasília
+function petCartasLidas(){ return petCartasLidasSessao; }
+function petCartaRecorde(k){ try{ return typeof recMaiorLocal === 'function' ? +recMaiorLocal(k) || 0 : 0; }catch(e){ return 0; } }
+function petCartasLista(){
+  var nick = String(contaJ && contaJ.nick || ''), pet = petAtivo(), lidas = petCartasLidas(), lista = [];
+  var bestRun = typeof best === 'number' ? best : 0;
+  var nomes = typeof hsNomesLivres === 'function' ? hsNomesLivres() : PET_CARTA_FAS;
+  if(!nomes.length) nomes = PET_CARTA_FAS;
+  var anterior = '';
+  for(var i = 3; i >= 0; i--){   // do dia mais antigo para hoje, sem repetir o assunto do dia anterior
+    var dia = petCartaDia(i), h = petCartaHash(dia + '|' + nick);
+    var temas = ['apoio', 'look'];
+    if(pet) temas.push('pet');
+    if(bestRun > 0) temas.push('rec');
+    if(petCartaRecorde('hand') > 0) temas.push('hand');
+    if(petCartaRecorde('cafe') > 0) temas.push('cafe');
+    if(i === 0 && typeof petVontadeFeitas === 'number' && petVontadeFeitas > 0 && pet) temas = ['vontade'];   // a carta de hoje comenta o cuidado de hoje
+    var livres = temas.filter(function(t){ return t !== anterior; });
+    var tema = (livres.length ? livres : temas)[h % (livres.length || temas.length)];
+    anterior = tema;
+    var texto = tr(PET_CARTA_TEXTOS[tema]).split('{b}').join(bestRun.toLocaleString(LANG === 'pt' ? 'pt-BR' : undefined))
+      .split('{p}').join(pet ? pet.nome : '').split('{n}').join(nick || tr('Idol'));
+    lista.unshift({id:dia, dia:dia, tema:tema, texto:texto, fa:nomes[(h >>> 4) % nomes.length],
+      selo:PET_CARTA_SELOS[(h >>> 9) % PET_CARTA_SELOS.length], nova:i === 0 && lidas.indexOf(dia) < 0});
+  }
+  return lista;
+}
+function petCartasNovas(){ return contaJ ? petCartasLista().filter(function(c){ return c.nova; }).length : 0; }
+function petCartaAbrir(id){
+  if(!petPhoneOpen || petPhoneTela !== 'cartas') return false;
+  petPhoneCartaAberta = String(id || '');
+  var lidas = petCartasLidas();
+  if(petPhoneCartaAberta && lidas.indexOf(petPhoneCartaAberta) < 0) lidas.push(petPhoneCartaAberta);
+  petPhoneRender(); petLifeUI();
+  return true;
+}
+function petCartaDataTxt(dia){
+  var p = dia.split('-');
+  return LANG === 'pt' || LANG === 'es' || LANG === 'id' ? p[2] + '/' + p[1] : p[1] + '/' + p[2];
+}
+function petCartasHtml(){
+  var lista = petCartasLista(), perfil = '<button type="button" class="petphone-carta-perfil" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button>';
+  var aberta = lista.filter(function(c){ return c.id === petPhoneCartaAberta; })[0];
+  if(aberta){
+    return '<article class="petphone-carta"><span class="petphone-carta-selo" aria-hidden="true">' + aberta.selo + '</span>' +
+      '<p class="petphone-carta-oi">' + escHtml(tr('Oi, {n}!').split('{n}').join(contaJ && contaJ.nick || tr('Idol'))) + '</p>' +
+      '<p>' + escHtml(aberta.texto) + '</p>' +
+      '<p class="petphone-carta-ass">' + escHtml(tr('Com carinho,')) + '<br><b>' + escHtml(aberta.fa) + '</b> · ' + escHtml(petCartaDataTxt(aberta.dia)) + '</p></article>' +
+      '<button type="button" class="petphone-carta-voltar" data-phone="voltar">‹ ' + escHtml(tr('Voltar às cartas')) + '</button>';
+  }
+  return '<p class="petphone-chat-aviso">✦ ' + escHtml(tr('Cartinhas de fãs do jogo · uma nova por dia')) + '</p>' +
+    '<ul class="petphone-cartas">' + lista.map(function(c){
+      return '<li><button type="button" data-phone="carta-abrir" data-carta="' + escHtml(c.id) + '"' + (c.nova ? ' class="nova"' : '') + '>' +
+        '<span class="petphone-carta-env" aria-hidden="true">' + (c.nova ? '💌' : '✉️') + '</span>' +
+        '<span class="petphone-carta-txt"><b>' + escHtml(c.fa) + ' ' + c.selo + '</b><small>' + escHtml(c.texto) + '</small></span>' +
+        '<span class="petphone-carta-dia">' + (c.nova ? '<i>' + escHtml(tr('nova')) + '</i>' : escHtml(petCartaDataTxt(c.dia))) + '</span></button></li>';
+    }).join('') + '</ul>' + perfil;
 }
 function petPhoneAgendaHtml(){
   if(!contaJ) return '<p class="petphone-dica">🔒 ' + escHtml(tr('Entre com Google para ver sua Agenda.')) + '</p>';
@@ -364,7 +450,7 @@ function petPhoneFotoLimpar(){
 function petPhoneFotoChave(){
   return petPhoneContaChave() + ':' + (typeof petData !== 'undefined' && petData ? petData.ativo || '' : '');
 }
-function petPhoneMomentoTexto(i){ return (PET_PHONE_MOMENTO_TEXTO[LANG] || PET_PHONE_MOMENTO_TEXTO.pt)[i]; }
+function petPhoneMomentoTexto(i){ return String((PET_PHONE_MOMENTO_TEXTO[LANG] || PET_PHONE_MOMENTO_TEXTO.pt)[i]).split('TsuPhone').join(petPhoneNome()); }
 function petPhoneMomentoSoltar(f){
   // PNGs recebidos do iframe vivem somente nesta página. As outras fotos usam data URLs.
   if(f && f.blobUrl){ URL.revokeObjectURL(f.url); if(f.miniUrl && f.miniUrl !== f.url) URL.revokeObjectURL(f.miniUrl); }
@@ -812,20 +898,22 @@ function petPhoneRender(){
   if(petPhoneTela === 'home'){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneWp" width="260" height="125" aria-hidden="true"></canvas>' +
       '<strong>✦ ' + escHtml(tr('Meu Idol')) + ' · ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
-      '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['perfil',nomes[3]]].map(function(a){
-        return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b></button>';
+      '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['cartas',nomes[3]]].map(function(a){
+        var novas = a[0] === 'cartas' ? petCartasNovas() : 0;
+        return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b>' +
+          (novas ? '<i class="petphone-badge" aria-label="' + escHtml(tr('{n} cartas novas').split('{n}').join(novas)) + '">' + novas + '</i>' : '') + '</button>';
       }).join('') + '</div>';
     petPhonePapel();
     petPhoneIcones(corpo);
     return;
   }
-  var idx = {agenda:0,chat:1,fotos:2,perfil:3}[petPhoneTela];
-  var titulo = ['📅 ','💬 ','📸 ','💖 '][idx] + nomes[idx];
+  var idx = {agenda:0,chat:1,fotos:2,cartas:3}[petPhoneTela];
+  var titulo = ['📅 ','💬 ','📸 ','💌 '][idx] + nomes[idx];
   var conteudo = '';
   if(petPhoneTela === 'agenda') conteudo = petPhoneAgendaHtml();
   else if(petPhoneTela === 'chat') conteudo = petPhoneChatHtml();
   else if(petPhoneTela === 'fotos') conteudo = petPhoneFotosHtml();
-  else if(petPhoneTela === 'perfil') conteudo = '<div class="petphone-appbox"><span>💖✨</span><p>' + escHtml(contaJ && contaJ.nick || tr('Meu Idol')) + '</p><button type="button" data-phone="abrir-perfil">👤 ' + escHtml(tr('Abrir Perfil')) + '</button></div>';
+  else if(petPhoneTela === 'cartas') conteudo = petCartasHtml();
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
   if(petPhoneTela === 'fotos'){
@@ -843,9 +931,11 @@ function petPhoneAbrir(tela){
   // Não altera petT nem cria outra animação enquanto o celular está aberto.
   petLifePhoneOlhar = true;
   try{ petDrawRoom(); } finally { petLifePhoneOlhar = false; }
-  petPhoneTela = ['agenda','chat','fotos','perfil'].indexOf(tela) >= 0 ? tela : 'home';
+  if(tela === 'perfil') tela = 'cartas';   // a antiga tela Perfil virou Cartas (o Perfil abre por lá)
+  petPhoneTela = ['agenda','chat','fotos','cartas'].indexOf(tela) >= 0 ? tela : 'home';
   $('petPhone').hidden = false; petPhoneOpen = true;
   $('petPhoneHora').textContent = new Date().toLocaleTimeString(LANG === 'pt' ? 'pt-BR' : undefined,{hour:'2-digit',minute:'2-digit'});
+  petPhoneMarca();
   $('petPhone').style.setProperty('--petphone-oshi',({tsu:'#9b30d9',lirika:'#22c55e',pati:'#4169e1'})[OSHI]||'#ff6fb5');
   petAnimParar(); petPhoneRender();
   if(petPhoneTela === 'agenda') petPhoneAgendaCarregar();
@@ -866,6 +956,9 @@ function petPhoneVoltar(){
   if(!petPhoneOpen) return false;
   if(petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos' && petPhoneMomentoSelecionado) return petPhoneMomentoVoltar();
   if(petPhoneTela === 'fotos' && petPhoneJornalIndice >= 0) return petPhoneJornalVoltar();
+  if(petPhoneTela === 'cartas' && petPhoneCartaAberta){
+    petPhoneCartaAberta = '';petPhoneRender();return true;
+  }
   if(petPhoneTela === 'chat' && petPhoneChatConversa){
     petPhoneChatConversa = '';petPhoneRender();return true;
   }
@@ -874,8 +967,10 @@ function petPhoneVoltar(){
   petPhoneTela = 'home'; petPhoneAgendaReq++; petPhoneRender(); return true;
 }
 function petPhoneTelaAbrir(k){
-  if(!petPhoneOpen || ['agenda','chat','fotos','perfil'].indexOf(k) < 0) return false;
+  if(k === 'perfil') k = 'cartas';
+  if(!petPhoneOpen || ['agenda','chat','fotos','cartas'].indexOf(k) < 0) return false;
   if(k === 'chat') petPhoneChatConversa = '';
+  if(k === 'cartas') petPhoneCartaAberta = '';
   if(k === 'fotos'){petPhoneFotosAba = 'camera';petPhoneMomentoSelecionado = '';}
   petPhoneTela = k; petPhoneRender();
   if(k === 'agenda') petPhoneAgendaCarregar();
@@ -909,7 +1004,9 @@ function petLifeUI(){
     var b = document.querySelector('#petRoom [data-life="' + k + '"]');
     if(!b) return;
     b.querySelector('span').textContent = nomes[i];
-    b.setAttribute('aria-label', nomes[i]);
+    var novas = k === 'celular' ? petCartasNovas() : 0;
+    b.setAttribute('aria-label', nomes[i] + (novas ? ' · ' + tr('{n} cartas novas').split('{n}').join(novas) : ''));
+    if(novas) b.setAttribute('data-novo', String(novas)); else b.removeAttribute('data-novo');
   });
   var estante = $('petLifeEstante');
   if(estante) estante.setAttribute('aria-label', tr('Estante de troféus'));
@@ -1318,8 +1415,10 @@ function petDrawRoom(){
   petDrawExtras(x, p);
   petDesenharLembranca(x);
   // Balão de humor acima do pet
-  x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
-  x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 - petMoodLift(p) + Math.sin(petT * .07) * 3);
+  if(!petVontadeDesenhar(x, p)){   // o balão de vontade ocupa o lugar do humor
+    x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000';
+    x.fillText(mood[0], PET_X + 4, PET_FLOOR - 66 - petMoodLift(p) + Math.sin(petT * .07) * 3);
+  }
 
   // Efeitos (corações do carinho etc.)
   for(var k = petFx.length - 1; k >= 0; k--){
@@ -1498,7 +1597,7 @@ function petToggleSleep(){
   petTick();
   if(!p.dorme && p.energia >= 90){ petSay(tr('Ainda não está com sono!')); return; }
   p.dorme = !p.dorme; petMenuK = '';
-  if(p.dorme){ petSay(tr('Boa noite!') + ' 🌙'); beep(523, .2, 'sine', .04); beep(392, .3, 'sine', .04, .18); }
+  if(p.dorme){ petSay(tr('Boa noite!') + ' 🌙'); beep(523, .2, 'sine', .04); beep(392, .3, 'sine', .04, .18); petVontadeAtender('dormir'); }
   else { petSay(tr('Bom dia!') + ' ☀️'); beep(784, .1, 'triangle', .05); beep(1046, .15, 'triangle', .05, .1); }
   petSave(true); petUI();
 }
@@ -1633,6 +1732,96 @@ function petDesenharLembranca(x){
   x.restore();
   return true;
 }
+// Balão de vontade (inspirado no The Sims): o Pet pede um cuidado que já existe.
+// Vive só nesta aba; atender dá humor e corações, nunca estrelas nem pontos de cuidado.
+var petVontade = null, petVontadeProx = 0, petVontadeFeitas = 0;
+var PET_VONTADE_TXT = {comer:'quero {i}!', banho:'banho!', dormir:'soninho...', brincar:'brincar!', carinho:'carinho!', cantar:'cantar!', falar:'conversar!'};
+var PET_VONTADE_EMO = {banho:'🛁', dormir:'💤', brincar:'⭐', carinho:'💕', cantar:'🎤', falar:'💬'};
+var PET_COMIDA_EMO = {onigiri:'🍙', agua:'💧', gyoza:'🥟', dango:'🍡', redvelvet:'🍰', tiramisu:'🍮'};
+function petVontadeComidas(){   // só o que dá para oferecer agora sem gastar estrelas
+  var inv = petData && petData.inv || {}, ok = [];
+  PET_FOOD.forEach(function(it){
+    var k = it[0];
+    if(PET_SPECIAL[k]) return;
+    if((inv[k] || 0) > 0 || (it[2] === 0 && !(it[3] && petRecLeft(k, it[3]) > 0))) ok.push(k);
+  });
+  return ok;
+}
+function petVontadeEscolher(p){
+  var comidas = p.fome < 85 ? petVontadeComidas() : [], op = [];
+  var sorteia = function(l){ return l[Math.floor(Math.random() * l.length)]; };
+  if(p.fome < 50 && comidas.length) return {k:'comer', item:sorteia(comidas)};
+  if(p.higiene < 50) return {k:'banho'};
+  if(p.energia < 30) return {k:'dormir'};
+  if(p.humor < 50) op.push('carinho', 'carinho');
+  if(comidas.length) op.push('comer');
+  if(p.higiene < 80) op.push('banho');
+  if(p.energia >= 15 && petRecLeft('brincar', PET_PLAY_CD) <= 0) op.push('brincar');
+  if(p.energia >= 10 && petRecLeft('cantar', PET_SING_CD) <= 0) op.push('cantar');
+  op.push('carinho', 'falar');
+  var k = sorteia(op);
+  return k === 'comer' ? {k:'comer', item:sorteia(comidas)} : {k:k};
+}
+function petVontadeTick(p){
+  var agora = Date.now();
+  if(!p || p.dorme){ petVontade = null; return; }
+  if(petVontade && (agora > petVontade.fim || petVontade.pet !== petData.ativo)){
+    petVontade = null; petVontadeProx = agora + 2e4;
+  }
+  if(petVontade || petAnim || petGame || petView !== 'room') return;
+  if(!petVontadeProx){ petVontadeProx = agora + 6e3; return; }   // primeiro pedido logo após entrar
+  if(agora < petVontadeProx) return;
+  var v = petVontadeEscolher(p);
+  v.ini = agora; v.fim = agora + 7e4; v.pet = petData.ativo;
+  petVontade = v;
+}
+function petVontadeAtender(acao, item){
+  var v = petVontade, p = petAtivo();
+  if(!v || !p || v.k !== acao || (acao === 'comer' && v.item !== item)) return false;
+  petVontade = null; petVontadeFeitas++;
+  petVontadeProx = Date.now() + 25e3 + Math.random() * 25e3;
+  p.humor = petClamp(p.humor + 8);
+  ['💖', '💕', '✨'].forEach(function(s, i){ petFx.push({x:PET_X - 16 + i * 16, y:PET_FLOOR - 76 - i * 6, t:0, s:s}); });
+  petSmile = Math.max(petSmile, 70); petHop = 20;
+  petSay('💭 ' + tr('Vontade realizada!') + ' 💖');
+  [988, 1319, 1568].forEach(function(f, i){ beep(f, .08, 'triangle', .035, i * .08); });
+  petSave(true); if(petOpen) petUI();
+  return true;
+}
+function petVontadeTexto(v){
+  var nome = v.k === 'comer' ? tr((petFind(PET_FOOD, v.item) || [0, ''])[1]) : '';
+  return tr(PET_VONTADE_TXT[v.k]).split('{i}').join(nome);
+}
+function petVontadeDesenhar(x, p){
+  petVontadeTick(p);
+  var v = petVontade; if(!v) return false;
+  var agora = Date.now(), al = Math.min(1, (agora - v.ini) / 400, (v.fim - agora) / 600);
+  if(al <= 0) return false;
+  var emo = v.k === 'comer' ? (PET_COMIDA_EMO[v.item] || '🍙') : PET_VONTADE_EMO[v.k];
+  var txt = petVontadeTexto(v);
+  x.save(); x.globalAlpha = al;
+  x.font = '800 10px "M PLUS Rounded 1c",sans-serif';
+  while(txt.length > 4 && x.measureText(txt).width > 96) txt = txt.slice(0, -2) + '…';
+  var tw = x.measureText(txt).width, w = tw + 36, h = 24;
+  var bob = Math.sin(petT * .06) * 2;
+  var cx = Math.max(w / 2 + 4, Math.min(356 - w / 2, PET_X + 26)), cy = PET_FLOOR - 104 + bob;
+  var l = cx - w / 2, t = cy - h / 2;
+  // Nuvem de pensamento em formas chapadas (mesmo jeito dos desenhos do camarim).
+  var nuvem = function(dx, dy, cor){
+    x.fillStyle = cor;
+    x.beginPath(); x.roundRect(l + dx, t + dy, w, h, 12); x.fill();
+    [[.28, 5], [.55, 7], [.8, 5]].forEach(function(b){ x.beginPath(); x.arc(l + dx + w * b[0], t + dy + 2, b[1], 0, 7); x.fill(); });
+    x.beginPath(); x.arc(PET_X + 12 + dx, t + h + 8 + dy, 4, 0, 7); x.fill();
+    x.beginPath(); x.arc(PET_X + 6 + dx, t + h + 17 + dy, 2.5, 0, 7); x.fill();
+  };
+  nuvem(0, 2, 'rgba(123,63,240,.18)');
+  nuvem(0, 0, '#fff');
+  x.textAlign = 'left'; x.textBaseline = 'middle';
+  x.font = '13px sans-serif'; x.fillStyle = '#000'; x.fillText(emo, l + 8, cy + 1);
+  x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#7b3ff0'; x.fillText(txt, l + 27, cy + 1);
+  x.restore();
+  return true;
+}
 // Afinidade visual por atividade, sem bônus de jogo ou novo estado persistido.
 function petPreferenciaAtividade(k, cfg, atividade){
   k = petRecepcaoJeito(k, cfg);
@@ -1685,7 +1874,7 @@ function petDrawExtras(x, p){
       if(bite < 1) petDrawItem(x, a.item, PET_X - 42, PET_FLOOR - 30, 1.9 * (1 - bite * .6));
       x.fillStyle = '#f5d9a8';
       for(var c = 0; c < 4; c++) if((a.t + c * 7) % 28 < 14) x.fillRect(PET_X - 30 + c * 5, PET_FLOOR - 12 + ((a.t + c * 7) % 14), 2, 2);
-      if(a.t >= 95){ petAnim = null; petCuidadoReagir('comer'); petSay(tr('Que delícia!')); }
+      if(a.t >= 95){ petAnim = null; petCuidadoReagir('comer'); petSay(tr('Que delícia!')); petVontadeAtender('comer', a.item); }
     } else if(a.k === 'banho'){
       for(var i = 0; i < 16; i++){
         var bx = PET_X + Math.sin(i * 2.1 + a.t * .05) * 32, by = PET_FLOOR - 8 - ((a.t * 1.2 + i * 17) % 75), r = 2.5 + (i % 3) * 1.8;
@@ -1698,14 +1887,14 @@ function petDrawExtras(x, p){
         [[-12, 0, 8], [0, -4, 10], [12, 0, 8], [-5, -10, 6], [7, -9, 6]].forEach(function(f){ x.beginPath(); x.arc(PET_X + f[0], PET_FLOOR - 52 + f[1], f[2], 0, 7); x.fill(); });
       }
       if(Math.floor(a.t/40)>Math.floor((a.t-petDrawDelta)/40)) petHop = 20;
-      if(a.t >= 150){ petAnim = null; petCuidadoReagir('banho'); }
+      if(a.t >= 150){ petAnim = null; petCuidadoReagir('banho'); petVontadeAtender('banho'); }
     } else if(a.k === 'brincar'){
       var u = .5 - .5 * Math.cos(a.t * .045);
       var sx = 120 + (PET_X - 150) * u, sy = PET_FLOOR - 28 - Math.abs(Math.sin(a.t * .09)) * 55;
       petEstrelaBrinquedo(x, sx, sy, a.t * .15, 1);
       if(u > .9 && petHop === 0) petHop = 20;
       petSmile = 40;
-      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); petPreferenciaCelebrar('brincar'); }
+      if(a.t >= 210){ petAnim = null; petLembrarCuidado('brincar'); petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'🎵' }); petPreferenciaCelebrar('brincar'); petVontadeAtender('brincar'); }
     } else if(a.k === 'cantar'){
       petSingFrame(x, a);   // show do 🎤 Cantar (sons do camarim)
     }
@@ -2330,6 +2519,7 @@ function petSingFrame(x, a){
     petVoice(petAtivo());
     petFx.push({ x:PET_X, y:PET_FLOOR - 70, t:0, s:'👏' });
     petSay(tr('Que show!') + ' 🎤');
+    petVontadeAtender('cantar');
     petUI();
   }
 }
@@ -2432,6 +2622,7 @@ function petTalk(){
   petBabble(petPers(), Math.min(9, 3 + Math.round(s.length / 12)), p.dorme);
   if(!p.dorme){
     petHop = 14; petSmile = 60;
+    petVontadeAtender('falar');
     petData.rec = petData.rec || {};
     if(petRecLeft('falar', PET_TALK_CD) <= 0){
       petData.rec.falar = Date.now();

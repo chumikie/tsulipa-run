@@ -147,7 +147,7 @@ test('ML1.2-A: TsuPhone mantém o Idol/Pet no papel de parede e apps internos', 
   assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="agenda"/);
   assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="chat"/);
   assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="fotos"/);
-  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="perfil"/);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="cartas"/);
   assert.match(nodes.petPhoneCorpo.innerHTML, /Pipoca/);
   assert.equal(ctx.petLifeOrigem, '', 'não cria navegação temporária no Hub');
   assert.equal(ctx.petPhoneTelaAbrir('chat'), true);
@@ -170,12 +170,12 @@ test('ML1.2-A: TsuPhone não depende de iniciar Hub nem de perfil aberto', () =>
   assert.equal(ctx.petLifeAbrir('celular'), true);
   assert.equal(nodes.petPhone.hidden, false);
   assert.equal(calls.includes('hubMostrar'), false);
-  assert.equal(ctx.petPhoneTelaAbrir('perfil'), true);
-  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="abrir-perfil"/);
+  assert.equal(ctx.petPhoneTelaAbrir('cartas'), true);
+  assert.match(nodes.petPhoneCorpo.innerHTML, /data-phone="abrir-perfil"/, 'Perfil continua acessível pelas Cartas');
 });
 
 test('ML1.2-A: abrir Álbum ou Perfil existente volta ao aplicativo correto', () => {
-  for(const [app,externo,fechar] of [['fotos','album','albumFechar'],['perfil','perfil','perfFechar']]){
+  for(const [app,externo,fechar] of [['fotos','album','albumFechar'],['cartas','perfil','perfFechar']]){
     const {ctx,calls,nodes} = fakeRoom();
     ctx.petLifeAbrir('celular');
     ctx.petPhoneTelaAbrir(app);
@@ -869,7 +869,7 @@ test('ML1.2-C.2-C.1: galeria e revisão cabem em 320×640 e 390×844', () => {
 
 test('ML1.2-A.1: quatro ícones T2 originais são desenhados uma vez com Canvas 2D', () => {
   const {ctx} = fakeRoom();
-  for(const tipo of ['agenda','chat','fotos','perfil']){
+  for(const tipo of ['agenda','chat','fotos','cartas']){
     const ops=[];
     const canvas={width:128,height:128,getContext(){
       return new Proxy({}, {

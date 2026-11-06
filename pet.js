@@ -1348,11 +1348,15 @@ function petPhoneTelaAbrir(k){
   if(k === 'agenda') petPhoneAgendaCarregar();
   return true;
 }
+var petPhoneAgendaCache = null;
 function petPhoneAgendaCarregar(){
   if(!petPhoneOpen || petPhoneTela !== 'agenda') return;
-  var req = ++petPhoneAgendaReq, dono = petPhoneContaChave();
+  var req = ++petPhoneAgendaReq, dono = petPhoneContaChave(), cache = petPhoneAgendaCache;
+  // V3.1: abrir e fechar a Agenda várias vezes não repete a consulta ao Supabase (30 s por conta).
+  if(cache && cache.dono === dono && Date.now() - cache.em < 30000){ petPhoneAgendaDados = cache.d; petPhoneAgendaDono = dono; petPhoneRender(); return; }
   petPhoneAgendaDados = null; petPhoneAgendaDono = dono; petPhoneRender();
   contaRpc('missoes').then(function(d){
+    if(Array.isArray(d)) petPhoneAgendaCache = {dono:dono, em:Date.now(), d:d};
     if(req !== petPhoneAgendaReq || !petPhoneOpen || petPhoneTela !== 'agenda' || dono !== petPhoneContaChave()) return;
     petPhoneAgendaDados = Array.isArray(d) ? d : []; petPhoneAgendaDono = dono; petPhoneRender();
   }).catch(function(){

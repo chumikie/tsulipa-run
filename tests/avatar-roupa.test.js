@@ -37,7 +37,7 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=7"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=8"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
@@ -78,3 +78,15 @@ assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&
 const pet=ler('pet.js');
 assert(pet.includes('petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
 console.log('avatar-roupa: ok');
+
+// V3.1 (06/11/2026): pele com a luz contínua, costas do chanel/longo emendadas, sombra da franja, franja da Tsu e gravata.
+for(const fn of ['bracos','rosto','cabelo','costas','sombraFranja','bagunca','gravata'])assert.equal(typeof R[fn],'function','tw-avatar-roupa exporta '+fn);
+g=fake();assert.equal(R.cabelo(g,'#b04fe6','#7016a9',0,'pixie',0),null,'só chanel e longo ganham as costas novas');
+assert.notEqual(R.cabelo(fake(),'#b04fe6','#7016a9',0,'chanel',0),null);assert.notEqual(R.cabelo(fake(),'#b04fe6','#7016a9',0,'longo',1),null);
+g=fake();R.bracos(g,0,0);assert(g.log.includes('clip')&&g.log[0]==='save'&&g.log[g.log.length-1]==='restore','luz dos braços recortada e isolada');
+g=fake();g.ellipse=()=>{};R.rosto(g,0,0);assert(g.log.includes('clip')&&g.log[g.log.length-1]==='restore','luz do rosto recortada e isolada');
+g=fake();g.arc=()=>{};R.sombraFranja(g,0,0,'espetada',5,false);assert.equal(g.log.length,0,'franja espetada não ganha sombra');
+for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
+  const s=ler(f);
+  for(const k of ['TWR.bracos(g,x,y)','TWR.rosto(g,x,y)','TWAvatarRoupa.cabelo(g,H,HD,y,b,0)','TWAvatarRoupa.costas(g,x,y,b)','TWR.sombraFranja(','TWR.bagunca(g,x,y)','TWR.gravata(g,x,y)'])assert(s.includes(k),f+' usa '+k);
+}

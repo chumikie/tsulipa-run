@@ -132,7 +132,61 @@
     luz(g, x, y, function(){ p[1](g, x, y); }, p[0]);
   }
 
-  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS };
+  // V3.1 (06/11/2026): pele, cabelo e gravata com a mesma luz contínua da roupa. Usado pelas três cópias do drawChar.
+  function escuro(hex, n){ return '#' + String(hex || '').replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.max(0, parseInt(cc, 16) - n).toString(16)).substr(-2); }); }
+  function luzPele(g, X0, X1, Y0, Y1, forte, base){   // claro à esquerda, escuro à direita e embaixo (recorte já aplicado)
+    var h = g.createLinearGradient(X0, 0, X1, 0);
+    h.addColorStop(0, 'rgba(255,255,255,' + (forte ? .18 : .16) + ')'); h.addColorStop(forte ? .32 : .35, 'rgba(255,255,255,0)');
+    h.addColorStop(forte ? .6 : .62, 'rgba(40,10,70,0)'); h.addColorStop(1, 'rgba(40,10,70,' + (forte ? .22 : .16) + ')');
+    g.fillStyle = h; g.fillRect(X0 - 1, Y0, X1 - X0 + 2, Y1 - Y0);
+    var v = g.createLinearGradient(0, base, 0, Y1);
+    v.addColorStop(0, 'rgba(40,10,70,0)'); v.addColorStop(1, 'rgba(40,10,70,.14)');
+    g.fillStyle = v; g.fillRect(X0 - 1, base, X1 - X0 + 2, Y1 - base);
+  }
+  function bracos(g, x, y){   // braços parados
+    g.save(); g.beginPath(); g.rect(x + 1, y + 24, 4, 9); g.rect(x + 25, y + 24, 4, 9); g.clip();
+    luzPele(g, x + 1, x + 29, y + 24, y + 33, true, y + 28); g.restore();
+  }
+  function rosto(g, x, y){
+    g.save(); g.beginPath(); g.ellipse(x + 15, y + 17, 11, 11, 0, 0, 7); g.clip();
+    luzPele(g, x + 4, x + 26, y + 5, y + 28, false, y + 21); g.restore();
+  }
+  // Chanel e longo: as costas continuam o degradê do topo. A cabeça fica 4px acima (translate), por isso 'topo' desloca a régua.
+  function cabelo(g, H, HD, y, b, topo){
+    if(b !== 'chanel' && b !== 'longo') return null;
+    var L = b === 'longo' ? 41 : 31, d = topo ? 4 : 0, gr = g.createLinearGradient(0, y + 1 + d, 0, y + L + d);
+    gr.addColorStop(0, H); gr.addColorStop(19 / (L - 1), HD); gr.addColorStop(1, escuro(H, 82));
+    return gr;
+  }
+  function costas(g, x, y, b){   // contorno: sai da cabeça (centro y+8 antes do translate) e desce pelas laterais
+    g.beginPath(); g.moveTo(x + 3, y + 8); g.arc(x + 15, y + 8, 12, Math.PI, 0);
+    if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
+    else { g.quadraticCurveTo(x + 32, y + 30, x + 25, y + 31); g.lineTo(x + 5, y + 31); g.quadraticCurveTo(x - 2, y + 30, x + 3, y + 8); }
+    g.fill();
+  }
+  // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê). Chamar dentro do save() da franja.
+  function sombraFranja(g, x, y, f, sl, ondulado){
+    if(f === 'espetada' || f === 'arcoiris' || ondulado) return;
+    g.beginPath(); g.rect(x - 12, y - 16, 54, 60); g.moveTo(x + 3, y + 12); g.arc(x + 15, y + 12, 12, Math.PI, 0); g.closePath();
+    g.rect(x + 3, y + 11.5, 4, sl + .5); g.rect(x + 23, y + 11.5, 4, sl + .5); g.clip('evenodd');
+    var t = g.getTransform ? Math.abs(g.getTransform().d) : 1;
+    g.shadowColor = 'rgba(40,10,70,.22)'; g.shadowOffsetX = 0; g.shadowOffsetY = t * 1.1; g.shadowBlur = 0;
+  }
+  function bagunca(g, x, y){   // franja da Tsu: três mechas curvas
+    g.beginPath(); g.moveTo(x + 3, y + 8); g.lineTo(x + 3, y + 12); g.quadraticCurveTo(x + 4.5, y + 17, x + 8, y + 19.5);
+    g.quadraticCurveTo(x + 8.6, y + 14, x + 11.5, y + 10.5); g.quadraticCurveTo(x + 12.6, y + 15.5, x + 16, y + 18);
+    g.quadraticCurveTo(x + 16.8, y + 13, x + 19.8, y + 9.5); g.quadraticCurveTo(x + 21.4, y + 14, x + 24.5, y + 16.5);
+    g.quadraticCurveTo(x + 24.9, y + 12.5, x + 27, y + 10.5); g.lineTo(x + 27, y + 8); g.closePath(); g.fill();
+  }
+  function gravata(g, x, y){   // Trainee: nó, lâmina com ponta e brilho do lado da luz
+    g.fillStyle = '#1b2a5e'; T(g, [x + 14.4, y + 24.2, x + 16.6, y + 24.2, x + 17.5, y + 30.6, x + 15.5, y + 32.6, x + 13.5, y + 30.6]);
+    g.fillStyle = 'rgba(255,255,255,.16)'; T(g, [x + 14.4, y + 24.2, x + 15.5, y + 24.2, x + 15.5, y + 32.6, x + 13.5, y + 30.6]);
+    g.fillStyle = '#14204a'; T(g, [x + 13.7, y + 22, x + 17.3, y + 22, x + 16.7, y + 24.4, x + 14.3, y + 24.4]);
+    g.fillStyle = 'rgba(255,255,255,.22)'; g.fillRect(x + 14.3, y + 22.4, 1.2, .8);
+  }
+
+  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
+              bracos:bracos, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : this);

@@ -1116,7 +1116,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else{
 
     // Roupa Básica
-    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);else{g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);}   // V3.1: sem o cinza por baixo (vazava como listra)
     if(TWR)TWR.gravata(g,x,y);else{g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);}
   }
 
@@ -1169,7 +1169,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   g.save();   // franjas ficam dentro do contorno redondo da cabeça (sem cantos quadrados); a espetada pode passar para fora
   if(f!=='espetada'){ g.beginPath(); g.arc(x+15,y+12,12,Math.PI,0); g.lineTo(x+27,y+30); g.lineTo(x+3,y+30); g.closePath(); g.clip(); }
 
-  if(TWR)TWR.sombraFranja(g,x,y,f,sl,TWAvatarHair.isWavy(b));   // V3.1: sombra da franja na pele
+  for(var fp=TWR&&TWR.sombraFranja(g,x,y,f,sl,TWAvatarHair.isWavy(b))?0:1;fp<2;fp++){   // V3.1: 1ª passada só gera a sombra na pele; a 2ª desenha a franja inteira, sem recorte
   g.fillStyle=hg;
   if(TWAvatarHair.fringe(g,x,y,b,f,T)){}
   else if(f==='bagunca'){if(TWR)TWR.bagunca(g,x,y);else T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);}
@@ -1183,6 +1183,8 @@ function drawChar(c,x,y,run,expr,isPartner){
       g.fillStyle=cols[idx];
       g.fillRect(x+4 + (idx*3.6), y+6, 3.8, 9 + (idx%3===1?1:0));
     }
+  }
+  if(fp===0)g.restore();
   }
 
   g.restore();

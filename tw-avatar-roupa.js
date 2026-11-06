@@ -164,13 +164,16 @@
     else { g.quadraticCurveTo(x + 32, y + 30, x + 25, y + 31); g.lineTo(x + 5, y + 31); g.quadraticCurveTo(x - 2, y + 30, x + 3, y + 8); }
     g.fill();
   }
-  // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê). Chamar dentro do save() da franja.
+  // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê).
+  // Abre um save() próprio e devolve true: o drawChar desenha a franja uma vez aqui (só para gerar a sombra),
+  // fecha com restore() e desenha a franja de novo sem este recorte, cobrindo as frestas de anti-aliasing do recorte.
   function sombraFranja(g, x, y, f, sl, ondulado){
-    if(f === 'espetada' || f === 'arcoiris' || ondulado) return;
-    g.beginPath(); g.rect(x - 12, y - 16, 54, 60); g.moveTo(x + 3, y + 12); g.arc(x + 15, y + 12, 12, Math.PI, 0); g.closePath();
+    if(f === 'espetada' || f === 'arcoiris' || ondulado) return false;
+    g.save(); g.beginPath(); g.rect(x - 12, y - 16, 54, 60); g.moveTo(x + 3, y + 12); g.arc(x + 15, y + 12, 12, Math.PI, 0); g.closePath();
     g.rect(x + 3, y + 11.5, 4, sl + .5); g.rect(x + 23, y + 11.5, 4, sl + .5); g.clip('evenodd');
     var t = g.getTransform ? Math.abs(g.getTransform().d) : 1;
     g.shadowColor = 'rgba(40,10,70,.22)'; g.shadowOffsetX = 0; g.shadowOffsetY = t * 1.1; g.shadowBlur = 0;
+    return true;
   }
   function bagunca(g, x, y){   // franja da Tsu: três mechas curvas
     g.beginPath(); g.moveTo(x + 3, y + 8); g.lineTo(x + 3, y + 12); g.quadraticCurveTo(x + 4.5, y + 17, x + 8, y + 19.5);

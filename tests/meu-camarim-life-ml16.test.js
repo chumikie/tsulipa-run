@@ -88,7 +88,7 @@ test('ML1.6: cor das meias mantém os quadradinhos e o padrão escuro', () => {
   assert.match(html, /'outcol', 'legcol', 'baixo', 'hat'\]/);
   assert.match(perfil, /\(hair\|hair2\|skin\|eye\|outcol\|legcol\)/);
   assert.match(perfil, /data-m="legcol"/);
-  assert.doesNotMatch(html, /id="cleg"/, 'a página inicial não muda (teste visual de idiomas)');
+  assert.match(html, /id="cleg"/, 'cor das meias também no personalizador do jogo (06/11/2026)');
 });
 
 test('Perfil aberto pela vitrine/busca volta para a página principal, não para o Center⭐Run!', () => {

@@ -1329,7 +1329,7 @@ function perfAplicarNuvem(n, nick){
 // Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual.
 // Aproveita para trazer as roupas compradas na lojinha para a lista "Roupa" do menu.
 function perfAvatarAuto(){
-  var dono=contaJ&&contaJ.nick;if(!dono)return;
+  var dono=contaJ&&contaJ.nick,token=contaSessaoToken;if(!dono)return;
   contaRpc('meu_perfil').then(function(d){
     if(!d||!contaJ||contaJ.nick!==dono) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
@@ -1337,7 +1337,13 @@ function perfAvatarAuto(){
     if(d.aniver_hoje && typeof aniverFesta === 'function')twTimeoutVisivel(document.documentElement,function(){return !!contaJ&&contaJ.nick===dono;},aniverFesta,1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
-    return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
+    var avatarAuto=perfAvAtual({ auto:true });
+    return contaRpc('salvar_avatar', { p_avatar:avatarAuto }).then(function(r){
+      // Primeira foto: só mostrar o Idol após o servidor confirmar, sem substituir uma foto escolhida enquanto aguardava.
+      if(!d.avatar && r && r.ok && contaJ && contaJ.nick===dono && contaSessaoToken===token && !perfMeuAv){
+        perfMeuAv=avatarAuto;perfIconeConta();
+      }
+    });
   }).catch(function(){});
 }
 function perfSortear(s1, s2){

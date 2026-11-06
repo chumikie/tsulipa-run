@@ -119,3 +119,34 @@ test('ML1.8-A: sofá desenha saia, vestido e bermuda sem erro nos dois visores s
     assert.ok(largura<=390 && altura>=640);
   }
 });
+
+test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 320/390',()=>{
+  for(const largura of [320,390]){
+    const {ctx}=quarto();
+    const escala=Math.min(.94*largura,440)/360;
+    for(const [out,baixo,comSaia] of [['sweet','saia',true],['seifuku','saia',true],['citypop','bermuda',false]]){
+      ctx.CH[0]={out,baixo};
+      ctx.petLifePose='sentar';ctx.petLifePoseOrigem=null;ctx.petT=100;
+      assert.equal(ctx.petLifePoseEscolher('sentar'),true,'toque na pose inicia levantar');
+      assert.equal(ctx.petLifePose,'');
+      function desenho(t){
+        const retangulos=[],poligonos=[];
+        const x={globalAlpha:1,save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},
+          fillRect(a,b,w,h){retangulos.push([a,b,w,h]);},moveTo(a,b){poligonos.push([a,b]);},
+          lineTo(){},closePath(){},fill(){},stroke(){},strokeRect(){},fillText(){}};
+        const visual=ctx.petLifePoseDesenho(t);
+        ctx.petLifeSofa(x,true,visual);
+        return {visual,canela:retangulos.filter(r=>r[2]===12),saia:poligonos.length};
+      }
+      const inicio=desenho(100),meio=desenho(112),fim=desenho(124);
+      assert.equal(inicio.canela.length,2,`${largura}px: ${out} mantém canelas ao levantar`);
+      assert.equal(meio.canela.length,2,`${largura}px: ${out} mantém canelas a meio caminho`);
+      assert.ok(meio.visual.sit>0&&meio.visual.sit<1);
+      assert.equal(inicio.saia>0,comSaia,`${largura}px: ${out} preserva a saia`);
+      assert.equal(meio.saia>0,comSaia,`${largura}px: ${out} preserva a saia durante o movimento`);
+      assert.equal(fim.visual.sit,0);
+      assert.equal(fim.canela.length,0,`${largura}px: ${out} encerra o desenho sentado`);
+      assert.ok(escala>0);
+    }
+  }
+});

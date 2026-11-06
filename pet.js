@@ -67,7 +67,7 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
     x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
-  }else if(!petLifePose){
+  }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
     x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
     petLifeSofaBracos(x);

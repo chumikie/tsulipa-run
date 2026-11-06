@@ -1031,12 +1031,12 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else if(roupa==='y2k'){
     g.fillStyle='#111';g.fillRect(x+7,y+22,16,6); 
     g.fillStyle=c.skin;g.fillRect(x+7,y+28,16,4); 
-    g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,5);g.fillRect(x+21,y+22,6,5); // Ombros curtos: a manga acompanha o braço sem duplicar a lateral
-    g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); if(TWR)TWR.tronco(g,x,y,twRoupa); 
+    g.fillStyle=corDaRoupa;g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); // Abas do blazer; mangas somente em TWR.ombro
+    if(TWR)TWR.tronco(g,x,y,twRoupa);
   }else if(roupa==='citypop'){
     g.fillStyle='#111827'; g.fillRect(x+7, y+22, 16, 12);
     g.fillStyle='#fff'; g.fillRect(x+7, y+32, 16, 2);
-    g.fillStyle=corDaRoupa; g.fillRect(x+2, y+22, 6, 5); g.fillRect(x+22, y+22, 6, 5); g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Ombros curtos e abas do paletó preservadas
+    g.fillStyle=corDaRoupa; g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Abas do paletó; mangas somente em TWR.ombro
     if(TWR)TWR.tronco(g,x,y,twRoupa);
     g.fillStyle='#34d399'; g.fillRect(x+11, y+22, 8, 5);
     g.fillStyle='#fbbf24'; g.fillRect(x+17, y+28, 2, 2);

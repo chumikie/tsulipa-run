@@ -33,11 +33,11 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('if(!(TWR&&TWR.luzPropria(twRoupa))) roupaSombra(x, y);'),f+': a sombra antiga não soma por cima nas roupas com luz própria');
   assert(['zipper-saia','zipper-tronco','zipper-mangas','sweet-saia','sweet-tronco'].every(k=>s.includes("TWAvatarRoupa.parte(g,x,y,'"+k+"')")),f+': Zipper e Sweet com luz só no tecido (folha F)');
   assert(s.includes('petPoseArms(c, x, y); } if(TWR)TWR.ombro(g,c,x,y,twRoupa,charPose);'),f+': ombro por cima do começo do braço');
-  assert(s.includes('g.fillRect(x+3,y+22,6,5);g.fillRect(x+21,y+22,6,5)'),f+': Cheeky não duplica mangas compridas junto aos braços');
-  assert(s.includes('g.fillRect(x+2, y+22, 6, 5); g.fillRect(x+22, y+22, 6, 5)'),f+': City Pop mantém só a base das mangas nos ombros');
+  assert(s.includes('g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10)')&&!s.includes('g.fillRect(x+3,y+22,6,5)'),f+': Cheeky só desenha abas do tronco, sem segunda manga');
+  assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=5"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=6"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
@@ -47,20 +47,27 @@ assert(ler('centerrun.js').includes("baixo: c.baixo||''"),'saveCu guarda a parte
   R.ombro(gg,{outcol:'#ffb3d6'},0,0,'','banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]>24),'manga direita sobe junto com o braço no banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]<6),'manga esquerda sobe junto com o braço no banzai'); }
-// Backend simulado, apenas Canvas 2D: os painéis externos não ficam pendurados nas duas larguras móveis.
+// Backend simulado, apenas Canvas 2D: cada ombro tem uma única manga, ligada à parte frontal do casaco.
 for(const [vw,vh] of [[320,640],[390,844]]){
   const escala=Math.min(vw/390,vh/844);
-  for(const [look,esq,dir] of [['y2k',3,21],['citypop',2,22]]){
+  for(const [look,esq,dir,larg,altura] of [['y2k',7,20,3,10],['citypop',7,19,4,11]]){
     const gg=fake();R.tronco(gg,0,0,look,{});
     for(const px of [esq,dir]){
-      assert(gg.shapes.some(r=>r[0]===px&&r[1]===22&&r[2]===6&&r[3]===5),look+': ombro curto com luz na tela '+vw+'×'+vh);
-      assert(!gg.shapes.some(r=>r[0]===px&&r[1]===22&&r[2]===6&&r[3]===12),look+': sem manga duplicada em '+vw+'×'+vh);
+      assert(gg.shapes.some(r=>r[0]===px&&r[1]===22&&r[2]===larg&&r[3]===altura),look+': abas do casaco preservadas em '+vw+'×'+vh);
     }
-    assert((22+5)*escala<(22+12)*escala,'geometria móvel preserva o recorte da manga');
-    assert(gg.shapes.some(r=>r[3]>=10&&r[2]<=4),'abas longas do blazer continuam no tronco');
-    const pts=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),arc(){}});
+    assert(!gg.shapes.some(r=>r[2]===6),'não existe manga externa fixa sob a manga móvel');
+    assert(altura*escala<vh,'geometria permanece proporcional no visor móvel');
+    const pts=[],ombros=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),arc:(x,y,r,inicio,fim,anti)=>ombros.push([x,y,r,anti])});
     R.ombro(raised,{outcol:'#b3d6ff'},0,0,look,'v');
-    assert(pts.some(p=>p[0]>26&&p[1]<22),'manga direita acompanha o braço em V em '+vw+'×'+vh);
+    assert(pts.some(p=>p[0]>26)&&pts.some(p=>p[1]<22),'manga direita acompanha o braço em V em '+vw+'×'+vh);
+    assert.equal(ombros.length,2,'a mesma manga participa das passagens de cor e sombra');
+    assert.deepEqual(ombros[0],[24,25.5,3.4,true],'base da manga encosta no casaco sem criar fresta por preenchimento oposto');
+    for(const pose of ['tchau','luz','banzai']){
+      const circulos=[];const ggPose=Object.assign(fake(),{arc:(x,y,r,a,b,anti)=>circulos.push([x,y,r,anti])});
+      R.ombro(ggPose,{outcol:'#b3d6ff'},0,0,look,pose);
+      assert.equal(circulos.length,pose==='banzai'?4:2,pose+': somente as mangas dos braços levantados giram');
+      assert(circulos.every(p=>p[3]===true),pose+': sem recorte transparente no encontro do braço com a manga');
+    }
   }
 }
 assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&&!R.luzPropria('espacial'),'folha F: Estrelado, Zipper e Sweet sem a sombra antiga');

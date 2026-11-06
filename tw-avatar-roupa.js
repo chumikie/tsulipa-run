@@ -54,8 +54,8 @@
       g.fillStyle = 'rgba(40,10,70,.12)'; g.fillRect(x + 4, y + 22, 1.4, 12); g.fillRect(x + 24.6, y + 22, 1.4, 12);
     }
     luz(g, x, y, function(){
-      if(roupa === 'y2k'){ g.rect(x + 3, y + 22, 6, 5); g.rect(x + 21, y + 22, 6, 5); g.rect(x + 7, y + 22, 3, 10); g.rect(x + 20, y + 22, 3, 10); }
-      else if(roupa === 'citypop'){ g.rect(x + 2, y + 22, 6, 5); g.rect(x + 22, y + 22, 6, 5); g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }
+      if(roupa === 'y2k'){ g.rect(x + 7, y + 22, 3, 10); g.rect(x + 20, y + 22, 3, 10); }
+      else if(roupa === 'citypop'){ g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }
       else g.rect(x + 4, y + 22, 22, 12);
     }, false);
   }
@@ -89,16 +89,21 @@
   // saindo do ombro na direção da mão, e o braço continua de dentro dela.
   function ombro(g, c, x, y, roupa, pose){
     if(!tem(roupa)) return;
-    var cor = (c && c.outcol) || '#ffffff', mov = !pose ? {} : (BRACOS[pose] || BRACOS.v);   // outras poses do petPoseArms levantam o braço direito
+    var cor = (c && c.outcol) || '#ffffff', mov = !pose ? {} : (BRACOS[pose] || BRACOS.v),
+        blazer = roupa === 'y2k' || roupa === 'citypop';   // nesses dois looks, a manga substitui o painel lateral antigo
     var formas = [];
-    if(mov.L) formas.push(manga(x, y, mov.L)); else formas.push(function(){ retangulo(g, x + .6, y + 22, 5.6, 4.6, [2.2, 0, 0, 1.2]); });
-    if(mov.R) formas.push(manga(x, y, mov.R)); else formas.push(function(){ retangulo(g, x + 23.8, y + 22, 5.6, 4.6, [0, 2.2, 1.2, 0]); });
-    function manga(x, y, b){   // retângulo de 4 de comprimento e 5,4 de largura ao longo do braço, com o ombro arredondado
+    if(mov.L) formas.push(manga(x, y, blazer ? [6, mov.L[1], mov.L[2], mov.L[3]] : mov.L));
+    else formas.push(function(){ retangulo(g, x + (blazer ? 1 : .6), y + 22, blazer ? 8.5 : 5.6, blazer ? 7 : 4.6, [2.2, 0, 0, 1.2]); });
+    if(mov.R) formas.push(manga(x, y, blazer ? [24, mov.R[1], mov.R[2], mov.R[3]] : mov.R));
+    else formas.push(function(){ retangulo(g, x + (blazer ? 20.5 : 23.8), y + 22, blazer ? 8.5 : 5.6, blazer ? 7 : 4.6, [0, 2.2, 1.2, 0]); });
+    function manga(x, y, b){   // Manga única começa no blazer e cobre o começo do braço, sem painel pendurado
       return function(){
-        var dx = b[2] - b[0], dy = b[3] - b[1], n = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / n, uy = dy / n, px = -uy * 2.7, py = ux * 2.7;
-        var ax = x + b[0], ay = y + b[1], bx = ax + ux * 4, by = ay + uy * 4;
+        var dx = b[2] - b[0], dy = b[3] - b[1], n = Math.sqrt(dx * dx + dy * dy) || 1,
+            ux = dx / n, uy = dy / n, raio = blazer ? 3.4 : 2.7, alcance = blazer ? 6 : 4,
+            px = -uy * raio, py = ux * raio;
+        var ax = x + b[0], ay = y + b[1], bx = ax + ux * alcance, by = ay + uy * alcance;
         g.moveTo(ax + px, ay + py); g.lineTo(bx + px, by + py); g.lineTo(bx - px, by - py); g.lineTo(ax - px, ay - py); g.closePath();
-        g.moveTo(ax + 2.7, ay); g.arc(ax, ay, 2.7, 0, Math.PI * 2);
+        g.moveTo(ax + raio, ay); g.arc(ax, ay, raio, 0, Math.PI * 2, true); // mesma orientação do polígono: não recorta uma fresta no ombro
       };
     }
     function todas(){ formas.forEach(function(f){ f(); }); }

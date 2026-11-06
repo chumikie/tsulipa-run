@@ -24,15 +24,18 @@ function simular(largura,altura,calmo=false){
     '[data-buddy="pet"]':pecas.pet,'[data-buddy="missoes"]':pecas.missoes,
     '[data-buddy="recolher"]':pecas.recolher};
   const el=elemento('buddy');el.hidden=true;el.listeners={};
+  const classes=new Set();
+  el.classList={add(nome){classes.add(nome);},remove(nome){classes.delete(nome);},contains(nome){return classes.has(nome);}};
   el.addEventListener=(nome,fn)=>el.listeners[nome]=fn;
   el.querySelector=(chave)=>seletores[chave]||null;
   const nodes={hubTut:{hidden:true},hubMisPainel:{scrollIntoView(op){chamadas.push('rolagem:'+op.behavior);}}};
   const cards={perfil:{click(){chamadas.push('abrir-perfil');}},pet:{click(){chamadas.push('abrir-pet');}}};
   const hubOv={hidden:false,scrollTop:0,contains:()=>false,appendChild(n){nodes[n.id]=n;},
     querySelector(sel){return sel.includes('data-ir="perfil"')?cards.perfil:sel.includes('data-ir="pet"')?cards.pet:null;}};
-  const document={activeElement:{tagName:'BODY'},createElement(tipo){return tipo==='div'?el:{width:0,height:0,getContext:()=>contexto2d};}};
+  const document={hidden:false,activeElement:{tagName:'BODY'},createElement(tipo){return tipo==='div'?el:{width:0,height:0,getContext:()=>contexto2d};}};
   const ctx={hubOv,hubComecou:true,hubT:0,LANG:'pt',contaJ:null,contaAuthUserId:'',perfMeuAv:null,
     window:{matchMedia:()=>({matches:calmo})},matchMedia:()=>({matches:calmo}),document,
+    muted:false,sfx:{star(){chamadas.push('som-estrela');}},
     $(id){return nodes[id]||null;},
     perfDesenharIdol(_x,w,h,av,fundo,zoom){assert.equal(w,96);assert.equal(h,110);assert.equal(fundo,false);assert.equal(zoom,false);chamadas.push('desenhar:'+av.pose);},
     contaRpc(){throw Error('Não pode chamar backend');},localStorage:{setItem(){throw Error('Não pode salvar');}},
@@ -48,10 +51,13 @@ test('TsuBuddy só aparece após login, abertura do Hub e perfil salvo; sai sem 
   c.contaJ={id:'A',nick:'Idol'};c.hubBuddyAtualizar();assert.equal(s.chamadas.length,0,'sem avatar salvo, nada de substituto local');
   c.perfMeuAv={c:[{hair:'rosa'}],pose:'',visual:'',expr:2};c.hubComecou=false;c.hubBuddyAtualizar();assert.equal(s.chamadas.length,0);
   c.hubComecou=true;c.hubBuddyAtualizar();assert.equal(s.el.hidden,false);
+  assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,1,'som existente dispara só na primeira aparição');
+  assert.equal(s.el.classList.contains('hubbuddy-chegada'),true,'brilhos só na primeira aparição');
   assert.equal(s.chamadas.filter(x=>x.startsWith('desenhar:')).length,3,'os três quadros são cacheados');
   c.hubBuddyAtualizar();assert.equal(s.chamadas.filter(x=>x.startsWith('desenhar:')).length,3,'nenhuma renderização pesada repetida');
   s.hubOv.hidden=true;c.hubBuddyFrame(true);assert.equal(s.el.hidden,true,'o companion não aparece em outros jogos');
   s.hubOv.hidden=false;c.contaJ=null;c.perfMeuAv=null;c.hubBuddyLimpar();assert.equal(s.el.hidden,true);
+  assert.equal(s.el.classList.contains('hubbuddy-chegada'),false,'logout limpa a animação');
   assert.equal(c.hubBuddyEstado.quadros,null,'frames descartados após logout');
 });
 
@@ -65,11 +71,13 @@ test('TsuBuddy: menu, atalhos originais, recolher/mostrar e troca de conta',()=>
   c.contaJ={id:'B',nick:'B'};c.perfMeuAv={c:[{hair:'azul'}],pose:'v'};c.hubBuddyAtualizar();
   assert.equal(c.hubBuddyEstado.dono,'B');assert.equal(c.hubBuddyEstado.recolhido,false);
   assert.equal(c.hubBuddyEstado.menu,false);
+  assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,2,'outra conta tem apenas sua própria chegada');
 });
 
 test('TsuBuddy: descanso, curiosidade, redução de movimento, tutorial e foco',()=>{
   const s=simular(320,640),c=s.ctx;c.contaJ={id:'A'};c.perfMeuAv={c:[{}],pose:''};c.hubBuddyAtualizar();
   c.hubT=30;c.hubBuddyFrame(true);assert.match(s.pecas.menu.style.transform,/translate/,'chegada discreta');
+  assert.match(s.pecas.menu.style.transform,/translate\(-/,'miniatura chega pela esquerda');
   c.hubT=370;c.hubBuddyFrame(true);assert.equal(c.hubBuddyEstado.ultimo.split(':')[0],'curioso');
   c.hubT=580;c.hubBuddyFrame(true);assert.match(s.pecas.menu.style.transform,/scaleY\(\.93\)/,'descansa sem re-renderizar avatar');
   s.hubOv.scrollTop=91;c.hubBuddyFrame(true);assert.equal(s.pecas.mostrar.hidden,false,'rolagem recolhe para pétala pequena');
@@ -77,6 +85,7 @@ test('TsuBuddy: descanso, curiosidade, redução de movimento, tutorial e foco',
   s.document.activeElement={tagName:'BODY'};s.hubOv.contains=()=>false;s.ctx.$('hubTut').hidden=false;c.hubBuddyFrame(true);assert.equal(s.el.hidden,true,'não cobre o tutorial');
   const reduced=simular(390,844,true);reduced.ctx.contaJ={id:'A'};reduced.ctx.perfMeuAv={c:[{}]};reduced.ctx.hubBuddyAtualizar();
   reduced.ctx.hubT=370;reduced.ctx.hubBuddyFrame(true);assert.equal(reduced.pecas.menu.style.transform,'none');
+  assert.equal(reduced.el.classList.contains('hubbuddy-chegada'),false,'sem brilhos ao reduzir movimento');
   assert.equal(reduced.ctx.hubBuddyEstado.ultimo.split(':')[0],'parado');
 });
 
@@ -93,9 +102,28 @@ test('TsuBuddy: seis idiomas, segurança, integração e proporções 320×640 /
   assert.match(css,/\.hubbuddy\[hidden\],\.hubbuddy \[hidden\]\{display:none!important\}/);
   assert.match(css,/@media\(max-width:360px\)/);
   assert.match(css,/safe-area-inset-bottom/);
+  assert.match(css,/left:max\(8px,env\(safe-area-inset-left\)\)/,'âncora no canto inferior esquerdo');
+  assert.match(css,/\.hubbuddy-menu\{position:absolute;left:0/,'menu abre sobre o lado esquerdo');
+  assert.match(css,/@keyframes hubbuddy-brilho/,'brilhos curtos por CSS');
   assert.match(hub,/hubBuddyFrame\(false\);\s*hubAnim = requestAnimationFrame\(hubLoop\)/,'reusa o loop do Hub');
   assert.match(perf,/if\(typeof hubBuddyAtualizar==='function'\)hubBuddyAtualizar\(\)/,'foto salva atualiza o buddy');
   assert.doesNotMatch(buddy,/\b(?:contaRpc|localStorage|setInterval|setTimeout|requestAnimationFrame)\s*\(/);
+});
+
+test('TsuBuddy: mudo, tutorial e visibilidade impedem som de chegada atrasado ou duplicado',()=>{
+  const s=simular(390,844),c=s.ctx;c.contaJ={id:'A'};c.perfMeuAv={c:[{}]};
+  c.muted=true;s.document.hidden=false;c.hubBuddyAtualizar();
+  assert.equal(s.chamadas.includes('som-estrela'),false,'mudo não toca');
+  c.muted=false;c.hubT=10;c.hubBuddyFrame(true);
+  assert.equal(s.chamadas.includes('som-estrela'),false,'desmutar não toca som retroativo');
+  c.contaJ={id:'B'};s.ctx.$('hubTut').hidden=false;c.hubBuddyAtualizar();
+  assert.equal(s.chamadas.includes('som-estrela'),false,'tutorial impede a aparição');
+  s.ctx.$('hubTut').hidden=true;s.document.hidden=true;c.hubBuddyFrame(true);
+  assert.equal(s.chamadas.includes('som-estrela'),false,'aba oculta não toca');
+  s.document.hidden=false;c.hubBuddyFrame(true);
+  assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,1,'toca ao ficar visível pela primeira vez');
+  c.contaJ={id:'C'};c.hubBuddyAtualizar();
+  assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,2,'som único por nova conta com som ativado');
 });
 
 function primeiraFoto(avatarNoServidor=null){

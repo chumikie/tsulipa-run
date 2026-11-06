@@ -104,7 +104,7 @@ var HUB_BUDDY_TXT = {
   th:['ไอดอลคู่ใจ','โปรไฟล์ของฉัน','ห้องแต่งตัว','ภารกิจ','ซ่อน','แสดง TsuBuddy'],
   ja:['私のアイドル','マイプロフィール','楽屋','ミッション','しまう','TsuBuddyを表示']
 };
-var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:''};
+var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:'',chegou:false};
 function hubBuddyTexto(){return HUB_BUDDY_TXT[LANG] || HUB_BUDDY_TXT.pt;}
 function hubBuddyCriar(){
   var el=document.createElement('div');el.id='hubBuddy';el.className='hubbuddy';el.hidden=true;
@@ -136,8 +136,8 @@ function hubBuddyCriar(){
 }
 function hubBuddyReducao(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);}
 function hubBuddyLimpar(){
-  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:''};
-  var el=$('hubBuddy');if(el)el.hidden=true;
+  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:'',chegou:false};
+  var el=$('hubBuddy');if(el){el.hidden=true;el.classList.remove('hubbuddy-chegada');}
 }
 function hubBuddyQuadro(av,pose){
   var cv=document.createElement('canvas');cv.width=96;cv.height=110;
@@ -182,6 +182,12 @@ function hubBuddyFrame(forcar){
   el.querySelector('#hubBuddyMenu').hidden=!hubBuddyEstado.menu||recolhido;
   el.querySelector('[data-buddy="menu"]').setAttribute('aria-expanded',String(hubBuddyEstado.menu&&!recolhido));
   if(recolhido)return;
+  if(!hubBuddyEstado.chegou&&!document.hidden){
+    hubBuddyEstado.chegou=true;
+    hubBuddyEstado.nasceu=hubT;
+    if(!hubBuddyReducao())el.classList.add('hubbuddy-chegada');
+    if(typeof muted!=='undefined'&&!muted&&typeof sfx!=='undefined'&&sfx&&typeof sfx.star==='function')sfx.star();
+  }
   // O Hub já desenha em 30 fps no celular; a miniatura só muda de quadro/posição a cada ~4 passos.
   var idade=Math.max(0,hubT-hubBuddyEstado.nasceu),ciclo=(idade-75+720)%720;
   var calmo=hubBuddyReducao()||hubBuddyEstado.menu;
@@ -192,10 +198,10 @@ function hubBuddyFrame(forcar){
   hubBuddyEstado.ultimo=chave;
   var botao=el.querySelector('[data-buddy="menu"]'),cv=botao.querySelector('canvas'),x=cv.getContext('2d');
   x.clearRect(0,0,cv.width,cv.height);x.drawImage(hubBuddyEstado.quadros[quadro],0,0);
-  var chegada=calmo?0:idade<60?(1-idade/60)*14:0;
+  var chegada=calmo?0:idade<60?Math.pow(1-idade/60,2)*18:0;
   var passo=quadro==='curioso'?Math.sin((ciclo-250)/70*Math.PI)*7:0;
-  botao.style.opacity=calmo?'1':String(1-.35*chegada/14);
-  botao.style.transform=calmo?'none':'translate('+(passo+chegada).toFixed(1)+'px,'+(descanso?4:(Math.sin(hubT*.035)*1.3)).toFixed(1)+'px) scaleY('+(descanso?'.93':'1')+')';
+  botao.style.opacity=calmo?'1':String(1-.7*chegada/18);
+  botao.style.transform=calmo?'none':'translate('+(passo-chegada).toFixed(1)+'px,'+(descanso?4:(Math.sin(hubT*.035)*1.3)).toFixed(1)+'px) scaleY('+(descanso?'.93':'1')+')';
 }
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];

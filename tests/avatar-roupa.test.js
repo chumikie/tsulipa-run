@@ -37,7 +37,7 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=6"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=7"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
@@ -61,12 +61,14 @@ for(const [vw,vh] of [[320,640],[390,844]]){
     R.ombro(raised,{outcol:'#b3d6ff'},0,0,look,'v');
     assert(pts.some(p=>p[0]>26)&&pts.some(p=>p[1]<22),'manga direita acompanha o braço em V em '+vw+'×'+vh);
     assert.equal(ombros.length,2,'a mesma manga participa das passagens de cor e sombra');
-    assert.deepEqual(ombros[0],[24,25.5,3.4,true],'base da manga encosta no casaco sem criar fresta por preenchimento oposto');
+    assert.deepEqual(ombros[0],[26.5,25.5,3.4,true],'manga direita parte da mesma linha do braço levantado');
+    assert(Math.abs(ombros[0][0]-R.BRACOS.v.R[0])<=.5,'Cheeky/City Pop: manga não parte três pixels para dentro do braço');
     for(const pose of ['tchau','luz','banzai']){
       const circulos=[];const ggPose=Object.assign(fake(),{arc:(x,y,r,a,b,anti)=>circulos.push([x,y,r,anti])});
       R.ombro(ggPose,{outcol:'#b3d6ff'},0,0,look,pose);
       assert.equal(circulos.length,pose==='banzai'?4:2,pose+': somente as mangas dos braços levantados giram');
       assert(circulos.every(p=>p[3]===true),pose+': sem recorte transparente no encontro do braço com a manga');
+      if(pose==='banzai')assert.equal(circulos[0][0],3.5,'manga esquerda mantém-se a meio pixel do braço levantado');
     }
   }
 }

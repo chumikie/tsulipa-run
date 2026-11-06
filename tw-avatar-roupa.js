@@ -92,9 +92,10 @@
     var cor = (c && c.outcol) || '#ffffff', mov = !pose ? {} : (BRACOS[pose] || BRACOS.v),
         blazer = roupa === 'y2k' || roupa === 'citypop';   // nesses dois looks, a manga substitui o painel lateral antigo
     var formas = [];
-    if(mov.L) formas.push(manga(x, y, blazer ? [6, mov.L[1], mov.L[2], mov.L[3]] : mov.L));
+    // A costura acompanha o braço (x=3/27); o blazer recua meio pixel para manter o tecido unido.
+    if(mov.L) formas.push(manga(x, y, blazer ? [3.5, mov.L[1], mov.L[2], mov.L[3]] : mov.L));
     else formas.push(function(){ retangulo(g, x + (blazer ? 1 : .6), y + 22, blazer ? 8.5 : 5.6, blazer ? 7 : 4.6, [2.2, 0, 0, 1.2]); });
-    if(mov.R) formas.push(manga(x, y, blazer ? [24, mov.R[1], mov.R[2], mov.R[3]] : mov.R));
+    if(mov.R) formas.push(manga(x, y, blazer ? [26.5, mov.R[1], mov.R[2], mov.R[3]] : mov.R));
     else formas.push(function(){ retangulo(g, x + (blazer ? 20.5 : 23.8), y + 22, blazer ? 8.5 : 5.6, blazer ? 7 : 4.6, [0, 2.2, 1.2, 0]); });
     function manga(x, y, b){   // Manga única começa no blazer e cobre o começo do braço, sem painel pendurado
       return function(){

@@ -47,7 +47,7 @@ var CH=[
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
 function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT;if(window.ktTickets&&window.ktTickets.renderBadge)window.ktTickets.renderBadge();}
-var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
+var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cbaixo:'baixo',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
 function dk(){
   return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 }
@@ -140,7 +140,8 @@ function pick(i){
   if ($('cstr')) $('cstr').value = source.hair2 || '#4dd8ff';
   if ($('cstk')) $('cstk').value = source.mecha||(source.streak?'uma':'');
   if ($('ceye')) $('ceye').value = source.eye || '#5a3b2e';
-  if ($('cleg')) $('cleg').value = source.legcol || '#1c1c30';   // meia/bota: mesmo retângulo, só a cor
+  if ($('cleg')) $('cleg').value = source.legcol || '#1c1c30';
+  if ($('cbaixo')) $('cbaixo').value = source.baixo || '';   // saia ou bermuda   // meia/bota: mesmo retângulo, só a cor
   if ($('cback')) $('cback').value = source.back || '';
   if ($('cfront')) $('cfront').value = source.front || 'bagunca';
   if ($('cdet')) $('cdet').value = source.det || '';

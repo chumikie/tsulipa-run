@@ -104,7 +104,7 @@ var HUB_BUDDY_TXT = {
   th:['ไอดอลคู่ใจ','โปรไฟล์ของฉัน','ห้องแต่งตัว','ภารกิจ','ซ่อน','แสดง TsuBuddy'],
   ja:['私のアイドル','マイプロフィール','楽屋','ミッション','しまう','TsuBuddyを表示']
 };
-var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:'',chegou:false};
+var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
 function hubBuddyTexto(){return HUB_BUDDY_TXT[LANG] || HUB_BUDDY_TXT.pt;}
 function hubBuddyCriar(){
   var el=document.createElement('div');el.id='hubBuddy';el.className='hubbuddy';el.hidden=true;
@@ -118,8 +118,11 @@ function hubBuddyCriar(){
     var b=e.target.closest('button[data-buddy]');if(!b)return;
     var acao=b.dataset.buddy;
     if(acao==='menu') hubBuddyEstado.menu=!hubBuddyEstado.menu;
-    else if(acao==='recolher'){hubBuddyEstado.recolhido=true;hubBuddyEstado.menu=false;}
-    else if(acao==='mostrar'){hubBuddyEstado.recolhido=false;hubBuddyEstado.menu=false;}
+    else if(acao==='recolher'){hubBuddyEstado.recolhido=true;hubBuddyEstado.rolagemAoMostrar=null;hubBuddyEstado.menu=false;}
+    else if(acao==='mostrar'){
+      hubBuddyEstado.recolhido=false;hubBuddyEstado.menu=false;
+      hubBuddyEstado.rolagemAoMostrar=hubOv.scrollTop>90?hubOv.scrollTop:null;
+    }
     else {
       hubBuddyEstado.menu=false;
       if(acao==='perfil'||acao==='pet'){
@@ -136,7 +139,7 @@ function hubBuddyCriar(){
 }
 function hubBuddyReducao(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);}
 function hubBuddyLimpar(){
-  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,menu:false,nasceu:0,ultimo:'',chegou:false};
+  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
   var el=$('hubBuddy');if(el){el.hidden=true;el.classList.remove('hubbuddy-chegada');}
 }
 function hubBuddyQuadro(av,pose){
@@ -175,7 +178,10 @@ function hubBuddyFrame(forcar){
   var tutorial=$('hubTut');
   el.hidden=!contaJ||!hubComecou||hubOv.hidden||editando||(tutorial&&!tutorial.hidden);
   if(el.hidden)return;
-  var recolhido=hubBuddyEstado.recolhido||hubOv.scrollTop>90;
+  // Toque na flor prevalece sobre a rolagem atual; só uma nova rolagem perceptível recolhe de novo.
+  var pos=hubOv.scrollTop;
+  if(hubBuddyEstado.rolagemAoMostrar!==null&&(pos<=90||Math.abs(pos-hubBuddyEstado.rolagemAoMostrar)>8))hubBuddyEstado.rolagemAoMostrar=null;
+  var recolhido=hubBuddyEstado.recolhido||(pos>90&&hubBuddyEstado.rolagemAoMostrar===null);
   if(recolhido)hubBuddyEstado.menu=false;
   el.querySelector('[data-buddy="menu"]').hidden=recolhido;
   el.querySelector('[data-buddy="mostrar"]').hidden=!recolhido;

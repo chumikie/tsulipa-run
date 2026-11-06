@@ -74,6 +74,35 @@ test('TsuBuddy: menu, atalhos originais, recolher/mostrar e troca de conta',()=>
   assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,2,'outra conta tem apenas sua própria chegada');
 });
 
+test('TsuBuddy: flor prevalece sobre a rolagem; nova rolagem recolhe, gesto mínimo não (320×640 / 390×844)',()=>{
+  for(const [largura,altura] of [[320,640],[390,844]]){
+    const s=simular(largura,altura),c=s.ctx;
+    c.contaJ={id:'A'};c.perfMeuAv={c:[{}],pose:'v'};
+    c.hubBuddyAtualizar();
+    s.hubOv.scrollTop=180;c.hubBuddyFrame(true);
+    assert.equal(s.pecas.menu.hidden,true,'rolagem automática recolhe em '+largura+'×'+altura);
+    s.agir('mostrar');
+    assert.equal(s.pecas.menu.hidden,false,'flor mostra o Idol sem voltar ao topo');
+    assert.equal(s.pecas.mostrar.hidden,true,'flor some enquanto o Idol está visível');
+    assert.equal(c.hubBuddyEstado.rolagemAoMostrar,180,'guarda apenas a posição desta aparição');
+    s.hubOv.scrollTop=188;c.hubBuddyFrame(true);
+    assert.equal(s.pecas.menu.hidden,false,'um movimento de até oito pixels não recolhe');
+    s.hubOv.scrollTop=189;c.hubBuddyFrame(true);
+    assert.equal(s.pecas.menu.hidden,true,'nova rolagem perceptível recolhe novamente');
+    assert.equal(c.hubBuddyEstado.rolagemAoMostrar,null,'liberação temporária termina após a rolagem');
+    s.hubOv.scrollTop=0;c.hubBuddyFrame(true);
+    assert.equal(s.pecas.menu.hidden,false,'ao voltar ao topo o recolhimento automático se desfaz');
+    s.agir('menu');s.agir('recolher');
+    assert.equal(s.pecas.mostrar.hidden,false,'recolhimento manual permanece flor mesmo no topo');
+    s.hubOv.scrollTop=180;c.hubBuddyFrame(true);
+    assert.equal(s.pecas.menu.hidden,true,'rolagem não desfaz a escolha manual');
+    s.agir('mostrar');
+    assert.equal(s.pecas.menu.hidden,false,'flor também desfaz recolhimento manual no meio do Hub');
+    assert.equal(s.chamadas.filter(x=>x==='som-estrela').length,1,'reaparição não repete som de chegada');
+    assert.equal(s.chamadas.filter(x=>x.startsWith('desenhar:')).length,3,'reaparição reutiliza os quadros cacheados');
+  }
+});
+
 test('TsuBuddy: descanso, curiosidade, redução de movimento, tutorial e foco',()=>{
   const s=simular(320,640),c=s.ctx;c.contaJ={id:'A'};c.perfMeuAv={c:[{}],pose:''};c.hubBuddyAtualizar();
   c.hubT=30;c.hubBuddyFrame(true);assert.match(s.pecas.menu.style.transform,/translate/,'chegada discreta');

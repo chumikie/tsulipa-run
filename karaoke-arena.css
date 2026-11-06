@@ -1,0 +1,27 @@
+/* Arena do Karaoke⭐Time!: durante o SEU show, a sala vira a tela do jogo.
+   A sala fica atrás (cobrindo a tela) e #ktArena desenha as pistas por cima, com fundo transparente. */
+body.kt-arena{overflow:hidden!important;overscroll-behavior:none}
+html body.kt-arena.kt-playing:not(.kt-mobile-overview) #krCv#krCv{position:fixed!important;inset:0!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;transform:none!important;aspect-ratio:auto!important;object-fit:cover;object-position:50% 46%;background:#1b0f3a;z-index:60;pointer-events:none;filter:saturate(1.06) brightness(.92)}
+#ktArena{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;z-index:61;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#ktArena[hidden]{display:none!important}
+body.kt-arena #ktSession{position:fixed!important;z-index:62;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:6px;width:max-content;max-width:calc(100vw - 14px);margin:0!important;padding:5px 7px;border:2px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(28,12,64,.72);box-shadow:0 4px 14px rgba(10,4,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+body.kt-arena #ktSession .krgrp{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;margin:0}
+body.kt-arena #ktSession .krb{min-height:36px;padding:5px 10px;font-size:12px;white-space:nowrap}
+body.kt-arena #ktClock{font-size:15px;color:#fff!important;background:none!important;font-variant-numeric:tabular-nums}
+body.kt-arena #ktScore{font-size:12px;font-weight:800;color:#ffd1ea!important;white-space:nowrap}
+body.kt-arena #ktKeys{display:none!important}
+@media(max-width:400px){body.kt-arena #ktSession .krb{padding:5px 8px;font-size:11px}body.kt-arena #ktScore{display:none}}
+@media(prefers-reduced-motion:reduce){body.kt-arena #krCv{filter:brightness(.88)}}
+/* Som e câmera continuam à mão durante o show, no canto de cima. */
+html body.kt-arena #krMute,html body.kt-arena #ktFoto{position:fixed!important;z-index:62!important;top:calc(62px + env(safe-area-inset-top,0px))!important;bottom:auto!important;left:auto!important;margin:0!important;transform:none!important}
+html body.kt-arena #ktFoto{right:12px!important}
+html body.kt-arena #krMute{right:62px!important}
+html.kt-no-site body.kt-arena{background:#1b0f3a!important}
+/* No site (celular), o Pausar mora na barra de ferramentas da sala: durante o show ele fica no canto. */
+html.kt-no-site body.kt-arena .kt-room-tools #ktPause{position:fixed!important;z-index:62!important;top:calc(62px + env(safe-area-inset-top,0px))!important;left:12px!important;margin:0!important;min-height:40px}
+/* No site, o "← Início" fica no canto de cima: a barra do show desce um pouco para não encostar nele. */
+html.kt-no-site body.kt-arena #ktSession{top:calc(50px + env(safe-area-inset-top,0px))}
+html.kt-no-site body.kt-arena #krMute,html.kt-no-site body.kt-arena #ktFoto,html.kt-no-site body.kt-arena .kt-room-tools #ktPause{top:calc(100px + env(safe-area-inset-top,0px))!important}
+/* Na barra do show, os grupos ficam transparentes: relógio e pontos em branco legível sobre o fundo escuro. */
+body.kt-arena #ktSession .krgrp{background:transparent!important;border:0!important;box-shadow:none!important}
+body.kt-arena #ktScore{color:#fff!important}

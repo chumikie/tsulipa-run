@@ -4,6 +4,21 @@
    Regras mistas (com admin, ranking, gacha) ficam no index.html. */
 /* V2.1.3 · tela de início (hub), tutorial, insígnia nova e roupas da temporada */
 .hub[hidden],.hubtut[hidden],.hubtema[hidden],#hubMenu[hidden],.hubtoque[hidden]{display:none}
+/* TsuBuddy⭐: miniatura da foto salva, desenhada no Canvas existente do Hub. */
+.hubbuddy[hidden],.hubbuddy [hidden]{display:none!important}
+.hubbuddy{position:fixed;z-index:6;left:max(8px,env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));pointer-events:none;display:flex;align-items:flex-end;justify-content:flex-start}
+.hubbuddy button{font:inherit;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.hubbuddy-idol{position:relative;width:96px;height:110px;padding:0;border:0;background:transparent;filter:drop-shadow(0 3px 2px rgba(40,14,90,.35));transform-origin:50% 100%}
+.hubbuddy-idol canvas{width:96px;height:110px;display:block}
+.hubbuddy-chegada .hubbuddy-idol::before,.hubbuddy-chegada .hubbuddy-idol::after{content:'✦';position:absolute;z-index:1;pointer-events:none;opacity:0;top:12%;left:5%;font-size:18px;color:#ff9bdc;text-shadow:0 0 7px #fff,0 0 12px #d89aff;animation:hubbuddy-brilho .9s ease-out both}
+.hubbuddy-chegada .hubbuddy-idol::after{top:35%;left:90%;font-size:12px;color:#ffe59a;animation-delay:.18s}
+@keyframes hubbuddy-brilho{0%,100%{opacity:0;transform:translateY(7px) scale(.5)}35%{opacity:.9;transform:translateY(-3px) scale(1)}70%{opacity:.4;transform:translateY(-11px) scale(.8)}}
+.hubbuddy-idol:focus-visible,.hubbuddy-voltar:focus-visible,.hubbuddy-menu button:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
+.hubbuddy-voltar{width:44px;height:44px;border:2px solid #fff;border-radius:50%;background:linear-gradient(135deg,#7b3ff0,#ff6fb5);color:#fff;box-shadow:0 3px 8px rgba(44,26,143,.25);font-size:22px}
+.hubbuddy-menu{position:absolute;left:0;bottom:calc(100% + 4px);display:grid;gap:5px;width:min(176px,calc(100vw - 20px));padding:7px;border:2px solid #fff;border-radius:15px;background:var(--card);box-shadow:0 6px 18px rgba(44,26,143,.24);pointer-events:auto}
+.hubbuddy-menu button{min-height:42px;border:0;border-radius:10px;background:var(--chip);color:var(--ink);padding:6px 8px;font-size:12px;font-weight:800;text-align:left;overflow-wrap:anywhere}
+@media(max-width:360px){.hubbuddy-idol,.hubbuddy-idol canvas{width:78px;height:89px}.hubbuddy-idol{height:89px}.hubbuddy-menu{width:152px}}
+@media(prefers-reduced-motion:reduce){.hubbuddy-idol{transition:none!important;transform:none!important}.hubbuddy-chegada .hubbuddy-idol::before,.hubbuddy-chegada .hubbuddy-idol::after{animation:none;display:none}}
 .hub{position:fixed;inset:0;z-index:9;overflow:auto;display:flex;justify-content:center;padding:18px 16px 28px;background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2))}
 body.hubon{overflow:hidden}
 body.hubon #mute{visibility:hidden}

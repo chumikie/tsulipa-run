@@ -95,6 +95,120 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
   av.pet = p && petData && PET_SP[petData.ativo] ? { k:petData.ativo, acc:p.acc || '', cfg: petData.ativo === 'meu' ? p.cfg : null } : null;
   return av;
 }
+// TsuBuddy⭐ — miniatura do próprio Idol no Hub. Somente visual/sessão; sem save, RPC ou loop novo.
+var HUB_BUDDY_TXT = {
+  pt:['Meu Idol companheiro','Meu Perfil','Meu Camarim','Missões','Recolher','Mostrar TsuBuddy'],
+  es:['Mi Idol acompañante','Mi perfil','Mi camerino','Misiones','Ocultar','Mostrar TsuBuddy'],
+  en:['My Idol companion','My profile','My dressing room','Missions','Tuck away','Show TsuBuddy'],
+  id:['Idol pendampingku','Profilku','Ruang gantiku','Misi','Sembunyikan','Tampilkan TsuBuddy'],
+  th:['ไอดอลคู่ใจ','โปรไฟล์ของฉัน','ห้องแต่งตัว','ภารกิจ','ซ่อน','แสดง TsuBuddy'],
+  ja:['私のアイドル','マイプロフィール','楽屋','ミッション','しまう','TsuBuddyを表示']
+};
+var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
+function hubBuddyTexto(){return HUB_BUDDY_TXT[LANG] || HUB_BUDDY_TXT.pt;}
+function hubBuddyCriar(){
+  var el=document.createElement('div');el.id='hubBuddy';el.className='hubbuddy';el.hidden=true;
+  el.innerHTML='<div class="hubbuddy-menu" id="hubBuddyMenu" role="group" hidden>'+
+    '<button type="button" data-buddy="perfil"></button><button type="button" data-buddy="pet"></button>'+
+    '<button type="button" data-buddy="missoes"></button><button type="button" data-buddy="recolher"></button></div>'+
+    '<button type="button" class="hubbuddy-idol" data-buddy="menu" aria-haspopup="true" aria-expanded="false">'+
+    '<canvas width="96" height="110" aria-hidden="true"></canvas></button>'+
+    '<button type="button" class="hubbuddy-voltar" data-buddy="mostrar" hidden>🌸</button>';
+  el.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-buddy]');if(!b)return;
+    var acao=b.dataset.buddy;
+    if(acao==='menu') hubBuddyEstado.menu=!hubBuddyEstado.menu;
+    else if(acao==='recolher'){hubBuddyEstado.recolhido=true;hubBuddyEstado.rolagemAoMostrar=null;hubBuddyEstado.menu=false;}
+    else if(acao==='mostrar'){
+      hubBuddyEstado.recolhido=false;hubBuddyEstado.menu=false;
+      hubBuddyEstado.rolagemAoMostrar=hubOv.scrollTop>90?hubOv.scrollTop:null;
+    }
+    else {
+      hubBuddyEstado.menu=false;
+      if(acao==='perfil'||acao==='pet'){
+        var atalho=hubOv.querySelector('#hubCards [data-ir="'+(acao==='perfil'?'perfil':'pet')+'"]');
+        if(atalho)atalho.click();
+      }else if(acao==='missoes'){
+        var mis=$('hubMisPainel');if(mis)mis.scrollIntoView({behavior:hubBuddyReducao()?'auto':'smooth',block:'start'});
+      }
+    }
+    hubBuddyFrame(true);
+  });
+  el.addEventListener('keydown',function(e){if(e.key==='Escape'&&hubBuddyEstado.menu){hubBuddyEstado.menu=false;hubBuddyFrame(true);el.querySelector('[data-buddy="menu"]').focus();}});
+  hubOv.appendChild(el);return el;
+}
+function hubBuddyReducao(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);}
+function hubBuddyLimpar(){
+  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
+  var el=$('hubBuddy');if(el){el.hidden=true;el.classList.remove('hubbuddy-chegada');}
+}
+function hubBuddyQuadro(av,pose){
+  var cv=document.createElement('canvas');cv.width=96;cv.height=110;
+  var desenho=JSON.parse(JSON.stringify(av));desenho.pet=null;desenho.fundo='';
+  if(pose!==null)desenho.pose=pose;
+  perfDesenharIdol(cv.getContext('2d'),cv.width,cv.height,desenho,false,false,0);
+  return cv;
+}
+function hubBuddyAtualizar(){
+  if(typeof hubOv==='undefined'||!hubOv)return;
+  if(!contaJ){hubBuddyLimpar();return;}
+  var av=typeof perfMeuAv!=='undefined'&&perfMeuAv&&perfMeuAv.c?perfMeuAv:null;
+  var el=$('hubBuddy');
+  if(!av||!hubComecou||hubOv.hidden){if(el)el.hidden=true;return;}
+  var dono=String((typeof contaAuthUserId==='string'&&contaAuthUserId)||contaJ.id||contaJ.nick);
+  var assinatura=JSON.stringify([av.c,av.a,av.visual,av.pose,av.expr,av.cor]);
+  if(!el)el=hubBuddyCriar();
+  if(dono!==hubBuddyEstado.dono){hubBuddyLimpar();hubBuddyEstado.dono=dono;hubBuddyEstado.nasceu=hubT;}
+  if(hubBuddyEstado.assinatura!==assinatura){
+    try{
+      hubBuddyEstado.quadros={parado:hubBuddyQuadro(av,null),tchau:hubBuddyQuadro(av,'tchau'),curioso:hubBuddyQuadro(av,'v')};
+      hubBuddyEstado.assinatura=assinatura;hubBuddyEstado.ultimo='';
+    }catch(e){el.hidden=true;hubBuddyEstado.quadros=null;return;}
+  }
+  var t=hubBuddyTexto();
+  el.querySelector('[data-buddy="menu"]').setAttribute('aria-label','TsuBuddy⭐ — '+t[0]);
+  [['perfil',1],['pet',2],['missoes',3],['recolher',4]].forEach(function(p){el.querySelector('[data-buddy="'+p[0]+'"]').textContent=t[p[1]];});
+  el.querySelector('[data-buddy="mostrar"]').setAttribute('aria-label',t[5]);
+  hubBuddyFrame(true);
+}
+function hubBuddyFrame(forcar){
+  var el=$('hubBuddy');if(!el||!hubBuddyEstado.quadros)return;
+  var foco=document.activeElement;
+  var editando=foco&&hubOv.contains(foco)&&/^(INPUT|TEXTAREA|SELECT)$/.test(foco.tagName);
+  var tutorial=$('hubTut');
+  el.hidden=!contaJ||!hubComecou||hubOv.hidden||editando||(tutorial&&!tutorial.hidden);
+  if(el.hidden)return;
+  // Toque na flor prevalece sobre a rolagem atual; só uma nova rolagem perceptível recolhe de novo.
+  var pos=hubOv.scrollTop;
+  if(hubBuddyEstado.rolagemAoMostrar!==null&&(pos<=90||Math.abs(pos-hubBuddyEstado.rolagemAoMostrar)>8))hubBuddyEstado.rolagemAoMostrar=null;
+  var recolhido=hubBuddyEstado.recolhido||(pos>90&&hubBuddyEstado.rolagemAoMostrar===null);
+  if(recolhido)hubBuddyEstado.menu=false;
+  el.querySelector('[data-buddy="menu"]').hidden=recolhido;
+  el.querySelector('[data-buddy="mostrar"]').hidden=!recolhido;
+  el.querySelector('#hubBuddyMenu').hidden=!hubBuddyEstado.menu||recolhido;
+  el.querySelector('[data-buddy="menu"]').setAttribute('aria-expanded',String(hubBuddyEstado.menu&&!recolhido));
+  if(recolhido)return;
+  if(!hubBuddyEstado.chegou&&!document.hidden){
+    hubBuddyEstado.chegou=true;
+    hubBuddyEstado.nasceu=hubT;
+    if(!hubBuddyReducao())el.classList.add('hubbuddy-chegada');
+    if(typeof muted!=='undefined'&&!muted&&typeof sfx!=='undefined'&&sfx&&typeof sfx.star==='function')sfx.star();
+  }
+  // O Hub já desenha em 30 fps no celular; a miniatura só muda de quadro/posição a cada ~4 passos.
+  var idade=Math.max(0,hubT-hubBuddyEstado.nasceu),ciclo=(idade-75+720)%720;
+  var calmo=hubBuddyReducao()||hubBuddyEstado.menu;
+  var quadro=calmo?'parado':idade<75?'tchau':ciclo>=250&&ciclo<320?'curioso':'parado';
+  var descanso=!calmo&&idade>=75&&ciclo>=450&&ciclo<570;
+  var etapa=calmo?0:Math.floor(hubT/4),chave=quadro+':'+etapa+':'+descanso;
+  if(!forcar&&hubBuddyEstado.ultimo===chave)return;
+  hubBuddyEstado.ultimo=chave;
+  var botao=el.querySelector('[data-buddy="menu"]'),cv=botao.querySelector('canvas'),x=cv.getContext('2d');
+  x.clearRect(0,0,cv.width,cv.height);x.drawImage(hubBuddyEstado.quadros[quadro],0,0);
+  var chegada=calmo?0:idade<60?Math.pow(1-idade/60,2)*18:0;
+  var passo=quadro==='curioso'?Math.sin((ciclo-250)/70*Math.PI)*7:0;
+  botao.style.opacity=calmo?'1':String(1-.7*chegada/18);
+  botao.style.transform=calmo?'none':'translate('+(passo-chegada).toFixed(1)+'px,'+(descanso?4:(Math.sin(hubT*.035)*1.3)).toFixed(1)+'px) scaleY('+(descanso?'.93':'1')+')';
+}
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];
 var HUB_REAGE = { i:-1, t0:0, emo:[] };
@@ -208,6 +322,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
 function hubLoop(ms){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1,hubPrevT=hubT;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2))) hubDesenhar();
+  hubBuddyFrame(false);
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
@@ -446,6 +561,7 @@ function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o at
   hubAgendaUI();
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
+  if(!contaJ)hubBuddyLimpar();
   var box=$('hubLoginCta'); if(!box) return;
   var btn=$('hubLoginBtn'); box.hidden=false;
   if(contaJ){   // logado: o mesmo lugar vira "Sair" (toque duas vezes para confirmar)
@@ -759,6 +875,7 @@ function hubMontar(){
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
   hubIdolsTituloUI();
   if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
+  hubBuddyAtualizar();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['id', 'ID'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
@@ -817,8 +934,10 @@ function hubMostrar(){
   twRankVisibility();twRankLoad();
   if(hubComecou) hubMisCarregar();
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
+  hubBuddyAtualizar();
 }
 function hubFechar(){
+  petLifeCancelar('celular');
   buscaCancelarTodas();
   var micModal=$('twMicModal');if(micModal&&!micModal.hidden)twMicFechar(true);
   hubVozParar();
@@ -847,6 +966,7 @@ function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "
 function hubComecar(){
   ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  petLifeVoltaUI();
   twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();
@@ -855,6 +975,7 @@ function hubComecar(){
   var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
   if(!visto||rever){hubTutI=0;hubTutUI();}
   else twAbrirPeloEndereco();
+  hubBuddyAtualizar();
 }
 function hubTutUI(){   // Quatro slides de boas-vindas.
   var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
@@ -865,9 +986,65 @@ function hubTutUI(){   // Quatro slides de boas-vindas.
     '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">'+escHtml(tr('Pular'))+'</button><button type="button" class="btn" id="hubTutOk">'+escHtml(tr(hubTutI<HUB_TUT.length-1?'Próximo':'Vamos lá!'))+'</button></div></div>';
   el.hidden=false;
 }
-function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
+function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} hubBuddyAtualizar(); }
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
+// A fotografia do Karaoke só pode atravessar o iframe por escolha do jogador.
+// O bilhete é efêmero e vinculado à captura e à conta/Pet desta sessão.
+var twPreviewKaraokeFoto = null;
+function twPreviewKaraokeFotoReceber(e){
+  var data=e&&e.data, tipo=data&&data.type;
+  if(['TW_KARAOKE_PHOTO_READY','TW_KARAOKE_PHOTO_SAVE','TW_KARAOKE_PHOTO_CANCEL'].indexOf(tipo)<0) return false;
+  var frame=$('twPreviewIframe');
+  if(!frame || e.source!==frame.contentWindow || location.protocol==='file:' || e.origin!==location.origin || twPreviewJogoAnterior!=='karaoke') return true;
+  var id=data.id;
+  if(typeof id!=='string' || !/^[a-z0-9_-]{8,80}$/i.test(id)) return true;
+  function responder(type,campos){
+    try{frame.contentWindow.postMessage(Object.assign({type:type,id:id},campos),location.origin);}catch(_){}
+  }
+  if(tipo==='TW_KARAOKE_PHOTO_READY'){
+    var dono=contaJ&&typeof petAtivo==='function'&&petAtivo()&&typeof petPhoneFotoChave==='function'?petPhoneFotoChave():'';
+    var token=dono?(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):'';
+    twPreviewKaraokeFoto=token?{id:id,token:token,dono:dono,pendente:false,guardada:false}:null;
+    responder('TW_KARAOKE_PHOTO_CONTEXT',{token:token});
+    return true;
+  }
+  var ctx=twPreviewKaraokeFoto;
+  if(!ctx || ctx.id!==id || tipo==='TW_KARAOKE_PHOTO_CANCEL' && ctx.token!==data.token) return true;
+  if(tipo==='TW_KARAOKE_PHOTO_CANCEL'){
+    twPreviewKaraokeFoto=null;return true;
+  }
+  if(ctx.token!==data.token || ctx.pendente || ctx.guardada || !contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  var blob=data.blob, mini=data.mini;
+  if(!(blob instanceof Blob) || blob.type!=='image/png' || !blob.size || blob.size>10*1024*1024 ||
+     mini!=null && (!(mini instanceof Blob) || mini.type!=='image/png' || !mini.size || mini.size>1024*1024)){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  // A assinatura e o IHDR impedem que outro arquivo se faça passar por uma foto PNG.
+  function pngValido(b,w,h){
+    if(!b)return Promise.resolve(true);
+    return b.slice(0,24).arrayBuffer().then(function(buffer){
+      var v=new DataView(buffer),sig=[137,80,78,71,13,10,26,10];
+      if(v.byteLength<24 || sig.some(function(n,i){return v.getUint8(i)!==n;}))return false;
+      return v.getUint32(8)===13 && v.getUint32(12)===0x49484452 && v.getUint32(16)===w && v.getUint32(20)===h;
+    });
+  }
+  ctx.pendente=true;
+  Promise.all([pngValido(blob,1920,1080),pngValido(mini,240,135)]).then(function(validos){
+    if(twPreviewKaraokeFoto!==ctx || twPreviewJogoAnterior!=='karaoke' || frame.contentWindow!==e.source)return;
+    if(!contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+      ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return;
+    }
+    var ok=!!(validos[0]&&validos[1]&&typeof petPhoneMomentoGuardarBlob==='function'&&petPhoneMomentoGuardarBlob('karaoke',blob,mini));
+    ctx.pendente=false;ctx.guardada=ok;
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:ok});
+  }).catch(function(){
+    if(twPreviewKaraokeFoto===ctx){ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});}
+  });
+  return true;
+}
 function twPreviewEnviarVisibilidadeIframe(visible){
   var frame=$('twPreviewIframe');if(!frame||!frame.contentWindow||!twPreviewJogoAnterior)return;
   try{frame.contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:!!visible},location.protocol==='file:'?'*':location.origin);}catch(e){}
@@ -922,6 +1099,7 @@ function twPreviewAbrirJogo(tipo){
   var kTime=tipo==='karaoke';   // Karaoke⭐Time! abre todo dia: é jogo solo, sem sala online nem horário
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
+  twPreviewKaraokeFoto=null;
   twPreviewJogoAnterior=tipo;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
@@ -962,12 +1140,13 @@ function twPreviewFecharJogo(){
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
   var eraPopup=wrap.hasAttribute('data-karaoke-popup');
+  twPreviewKaraokeFoto=null;
   twPreviewEnviarVisibilidadeIframe(false);
   frame.src='about:blank';
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
-  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');frame.style.height='';
+  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');wrap.removeAttribute('data-karaoke-arena');if(document.documentElement)document.documentElement.classList.remove('tw-kt-arena');frame.style.height='';
   if(ultimo==='karaoke'&&location.hash==='#karaoke'){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
   wrap.removeAttribute('role');wrap.removeAttribute('aria-modal');
   hubOv.inert=false;
@@ -1167,7 +1346,7 @@ function twMusicaPaginaVisibilidade(){
 function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
   hubIdolsEm = Date.now();
-  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); })
+  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); if(typeof petPhoneJornalVitrinePronta === 'function') petPhoneJornalVitrinePronta(); })
     .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsTituloUI(){

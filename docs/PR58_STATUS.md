@@ -472,3 +472,53 @@ Outras pendências de banco comunicadas: PR #74 (recompensa do Sora), recorde da
 - [ ] Prévia conferida (Handshake, Happy Cafe, organização dos Jogos, Álbum, Trocas, Pedidos de fã)
 - [ ] ChatGPT aplicou `handshake_premio` e as missões (ou a usuária decidiu publicar sem elas)
 - [ ] Ready for review + Merge pela usuária
+
+## 12. PR #81 (`feat/meu-camarim-ml1-20261104`) — Meu Camarim⭐Life! (novembro/2026)
+
+PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na memória da aba ou com os dados que já existem.
+
+### O que entrou
+
+| Etapa | O que faz | Estado |
+|---|---|---|
+| ML1 / ML1.1 | Espelho → Provador, Celular → TsuPhone, Estante → Troféus/Álbum, volta direto ao Camarim | Implementado |
+| ML1.2 (A–D) | Celular com Agenda (missões), Chat com Idols e fãs lembrados, Fotos (câmera Idol + Pet, Momentos da sessão, fotos públicas do Jornal) | Implementado |
+| ML1.3 | Sofá com Sentar, Descansar e Conviver; reações do Pet à companhia | Implementado |
+| Tema | Telas do celular e botão "Guardar" do Karaoke usam as variáveis de tema (`--card`, `--chip`, `--ink`, `--sub`, `--b1`, `--pink`): funcionam no modo escuro e com o Oshi | Implementado (`10fb4e3`, `c61e025`) |
+| ML1.4 | Balão de vontade do Pet (estilo The Sims): pede um cuidado existente; atender dá +8 de humor e corações, nunca estrelas, XP ou servidor. Celular passa a ser `{nick}Phone`. App Perfil vira **Cartas** de fã (uma por dia, nomes inventados via `hsNomesLivres`, "lida" só na sessão; o Perfil abre pelo fim da lista) | Implementado (`858d261`, `0d47c62`) |
+| ML1.5 | Papel de parede próprio do celular (Idol + Pet no palquinho, 260×140, resolução da tela); Idol em pé à frente do sofá; sentar de verdade (quadril no assento, coxas na cor da roupa, pernas penduradas); três poses com lugar e postura próprios; mesinha e estante com pés até o chão e sombra | Implementado (`d27c427`, `44c9649`, `b08c11d`) |
+| ML1.6 | **Arrumar o quarto** (Decorar → ✋): mesinha, estante e abajur deslizam só no chão (base sempre em y 177, sem sobrepor) e os quadros na parede; chave própria `tw_camarim_arrumacao`, fora do save sincronizado. **Luz pelo horário de Brasília**: janela com céu da manhã, dia, fim de tarde e noite; abajur aceso à noite. **Carta com foto**: um fã responde com a polaroid do último Momento da sessão. **Look do dia** no Provador: tema de cor diário, "Look completo" com meias no mesmo tom, polaroid guardada nos Momentos. **Cor das meias** no Montar Idol (Perfil e Zipper⭐Shop!): mesmo retângulo do `drawChar`, padrão `#1c1c30`; a página inicial não muda | Implementado |
+| ML1.7 | Celular: botão ✕ e título de cada app alinhados numa grade de 3 colunas (44 px · título centralizado · 44 px) | Implementado (`180cfb3`) |
+| ML1.8-A | Naturalidade no Camarim: joelho direito de Conviver dentro do sofá, braço à frente da roupa; saias e vestidos Sweet/Zipper com tecido sobre as coxas; transição breve de sentar/descansar/levantar desde a posição visível; Pet aproxima/retorna sem salto; olhar sutil por personalidade, desligado com movimento reduzido. Só `pet.js`, sem save ou novos timers. | Implementado localmente; prévia #81 após push |
+| Karaoke — tela de jogo | No show do próprio jogador a sala ocupa a tela e as pistas D F J K aparecem por cima, em canvas transparente (`karaoke-arena.js/.css`), com velocidade constante das notas. Toque sem nota por perto não conta mais como erro. Pausar sem contagem sai da tela de jogo; o "← Início" do site fica sempre visível | Implementado (`008be8f`) |
+| Karaoke — balões | Falas dos NPCs não se sobrepõem: fila de balões em até 4 andares, jogador primeiro, desenhada depois de todos os Idols (`krBaloesLayout`) | Implementado (`28676df`) |
+| Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
+| Karaoke — músicas novas | Sete trilhas de outros modos viram músicas do jogo de ritmo (`karaoke-musicas-modos.js`, fora do HTML pelo limite de tamanho): Mega Kawaii, Corrida Tensa, Modo Difícil, Kimi wa Alien! e Unit⭐Sync! (Center⭐Run!), Sora⭐Jump! e Vitrine Brilhante (início). Mesmo formato das 7 originais (64 passos, acordes a cada 8), cartão na biblioteca e opção no seletor. A rotação semanal continua com as mesmas 5 | Implementado |
+| Meias no sofá | A Nagareboshi (Estrelado) mostrava polainas listradas em pé e meia escura sentada: a canela sentada agora repete as polainas (`petLifeCanelaRoupa`) | Corrigido |
+| Sons do celular | Abrir, fechar, voltar, abrir app, tocar, conversar e abrir carta têm sons curtos (`PET_PHONE_SONS` via `beep`), que respeitam o mudo | Implementado (`9bb3645`) |
+| Visual dos personagens | Folha E aprovada: Trainee, Cheeky, Seifuku e City Pop ganham parte de baixo própria (**Saia** pregueada ou **Bermuda** de cintura alta, campo `baixo` no Montar Idol do Perfil e da Zipper⭐Shop!; sem escolha, City Pop usa bermuda e as outras, saia), ombro ligado à roupa e luz contínua recortada só no tecido (sem escurecer gravata, laço, gola ou estampa). Trainee volta a ser camisa inteira na cor escolhida com gravata (laterais e manga do mesmo tecido). Tsu e Pati começam de bermuda, Lirika de saia. Módulo único `tw-avatar-roupa.js` nas três cópias do `drawChar`. Folha F: Estrelado, Zipper e Sweet mantêm o desenho e ganham a mesma luz contínua (top e avental brancos deixam de escurecer); roupas da loja e looks de rank continuam como estavam. A manga acompanha o braço em V, Tchau, Banzai e Lightstick | Implementado |
+
+### Regra de desenho para tudo que for novo
+
+**Poses, cenas e objetos novos usam só as formas que o `drawChar` (centerrun.js) e o `drawPet` já usam.**
+
+- As pernas do avatar são dois retângulos escuros (`#1c1c30`, 5×8 unidades), sem pé separado, sapato ou contorno. Uma pose nova pode encurtar, recortar ou mudar a cor dessas formas, mas não cria pés redondos, dedos, joelhos dobrados desenhados à parte ou outro estilo de corpo.
+- Cores de roupa vêm do próprio avatar (ex.: `petLifeLerCorColo` lê o pixel do quadril já desenhado), nunca de uma tabela paralela.
+- Objetos de cenário seguem o estilo chapado do quarto: retângulos e elipses com uma cor clara e uma escura, sem contorno. Tudo que fica no chão encosta na linha do piso (y ≥ 170 no Camarim) e tem sombra de contato.
+- Mudar o desenho base dos personagens (ex.: dar pés) **não** é feito sem uma etapa própria: ele aparece no Center⭐Run!, Perfil, vitrine, Gacha, Karaoke, Handshake, Café, banner e nas fotos do Jornal, e os testes visuais dependem dele.
+- O teste `tests/meu-camarim-life-ml15.test.js` barra pés redondos nas pernas sentadas e confere os móveis no chão.
+
+### Testes e CI
+
+- `node tests/run-all.js`: 71/71 localmente após ML1.8-A (inclui `avatar-roupa`, `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16/ml18`, `karaoke-baloes` e `karaoke-musicas-modos`).
+- `tests/karaoke-mobile.browser.cjs` confere as pistas da tela de jogo do Karaoke.
+- Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
+- `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
+- CI verde em `0d47c62` e `44c9649` (static-validation, postgres-center-run, browser-karaoke). Ver o resultado do último commit na própria PR.
+
+### Pendências
+
+- Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
+- Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
+- Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
+- A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

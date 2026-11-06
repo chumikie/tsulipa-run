@@ -17,7 +17,7 @@ const expectedTables = {
  PET_DICT3:{en:2,es:2,th:2,ja:2}, PET_DICT4:{en:36,es:36,th:36,ja:36},
  PET_DICT5:{en:6,es:6,th:6,ja:6}, PET_DICT6:{en:2,es:2,th:2,ja:2},
  PET_DICT7:{en:5,es:5,th:5,ja:5}, PET_DICT8:{en:31,es:31,th:31,ja:31},
- PET_DICT10:{en:8,es:8,th:8,ja:8}, PET_FALAS_TR:{en:82,es:82,th:82,ja:82},
+ PET_DICT10:{en:8,es:8,th:8,ja:8}, PET_DICT11:{en:102,es:102,th:102,ja:102}, PET_FALAS_TR:{en:82,es:82,th:82,ja:82},
  CONTA_DICT:{en:17,es:17,th:17,ja:17}, PERF_DICT:{en:60,es:60,th:60,ja:60},
  PERF_DICT2:{en:62,es:62,th:62,ja:62}, PERF_ADMIN_DICT:{en:18,es:15,th:14,ja:14},
  ADM_DICT:{en:27,es:27,th:27,ja:27}, HUB_DICT:{en:64,es:64,th:64,ja:64},
@@ -76,7 +76,7 @@ test('legacy aliases and original merge sites are preserved', () => {
  for (const name of Object.keys(expectedRows)) assert.ok(index.includes('window.TW_I18N.rows.'+name),name+' row moved');
  for (const name of expectedLocale) assert.ok(index.includes('var '+name+' = window.TW_I18N.locale.'+name+';'),name+' locale alias');
  assert.ok(index.indexOf('src="./tw-i18n.js') < index.indexOf('var DICT=window.TW_DICT'),'i18n loads before DICT use');
- for (const name of ['PET_DICT','PET_DICT2','PET_DICT3','PET_DICT4','PET_DICT5','PET_DICT6','PET_DICT7','PET_DICT8','PET_DICT10','PET_FALAS_TR','CONTA_DICT','ADM_DICT','HUB_DICT','S2_DICT']) {
+ for (const name of ['PET_DICT','PET_DICT2','PET_DICT3','PET_DICT4','PET_DICT5','PET_DICT6','PET_DICT7','PET_DICT8','PET_DICT10','PET_DICT11','PET_FALAS_TR','CONTA_DICT','ADM_DICT','HUB_DICT','S2_DICT']) {
   assert.ok(index.includes(name+').forEach'),name+' legacy merge still present');
  }
  assert.ok(index.includes('[PERF_DICT, PERF_DICT2, PERF_ADMIN_DICT].forEach'));

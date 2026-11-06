@@ -141,7 +141,8 @@ function perfChar(av){
   PERF_CAMPOS.forEach(function(f){
     var v = src[f];
     if(f === 'streak') c.streak = !!v;
-    else if(/^(hair|hair2|skin|eye|outcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(/^(hair|hair2|skin|eye|outcol|legcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(f === 'baixo'){ if(v === 'saia' || v === 'bermuda') c.baixo = v; }   // saia ou bermuda; vazio = padrão da roupa
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
   c.img = c.hair;
@@ -651,7 +652,10 @@ function perfFechar(){
   if(perfMontou && contaJ && (!perfMeuAv || perfMeuAv.auto)) contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) }).catch(function(){});   // a foto automática acompanha o Idol novo
   perfMontou = false; perfProva = '';
   perfOv.hidden = true; perfAtual = null; perfAniverVer = false; perfIconeConta();
+  var voltaHub = perfVoltaHub; perfVoltaHub = false;
+  if(!petLifeRetornar('trofeus') && voltaHub && typeof hubMostrar === 'function') hubMostrar();   // veio da vitrine/busca: volta à página principal, não ao Center⭐Run!
 }
+var perfVoltaHub = false;
 function perfMontar(){
   var d = perfAtual, meu = perfMeu, h = '';
   perfBestConta = Math.max(+d.best || 0, meu ? best : 0);
@@ -954,6 +958,8 @@ function perfMontUI(){
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label><i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
+  h += '<label>' + escHtml(tr('Parte de baixo')) + ' <select data-m="baixo" title="' + escHtml(tr('Vale para Trainee, Cheeky, Seifuku e City Pop')) + '">' + [['', tr('Padrão da roupa')], ['saia', tr('Saia')], ['bermuda', tr('Bermuda')]].map(function(o){ return '<option value="' + o[0] + '"' + ((CU.baixo || '') === o[0] ? ' selected' : '') + '>' + escHtml(o[1]) + '</option>'; }).join('') + '</select></label>';
+  h += '<label>' + escHtml(tr('Meias')) + ' <input type="color" data-m="legcol" value="' + escHtml(CU.legcol || '#1c1c30') + '" title="' + escHtml(tr('Cor das meias ou botas')) + '"></label>';
   [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], p[1]==='hat'&&CU.det==='tulipa'?'tulipa':(CU[p[1]]||'')) + '</select></label>'; });
   h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', CU.det==='torrada'?'torrada':accSel) + '</select></label>';
   box.innerHTML = h;
@@ -1157,8 +1163,9 @@ function perfUsarFoto(){
   }).catch(function(){ if(!perfOv.hidden&&pedido===perfPedido)btn.disabled = false; });
 }
 function perfIconeConta(){
-  var cv = $('contaAv'); if(!cv) return;
-  perfFotoRedonda(cv, perfMeuAv && !perfMeuAv.auto ? perfMeuAv : perfAvAtual(), true);
+  var cv = $('contaAv');
+  if(cv) perfFotoRedonda(cv, perfMeuAv && !perfMeuAv.auto ? perfMeuAv : perfAvAtual(), true);
+  if(typeof hubBuddyAtualizar==='function')hubBuddyAtualizar();
 }
 var perfEntrou = false, perfSyncOn = false, perfSnap = '', perfNuvemPre = null;
 var perfSyncEstado = 'idle';
@@ -1299,7 +1306,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
   }).catch(function(){if(token!==contaSessaoToken||!contaJ||contaJ.nick!==dono)return;perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI();});
 }
-function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
+function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof hubBuddyLimpar==='function')hubBuddyLimpar();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
 function perfAplicarNuvem(n, nick){
   try{
     if(n.pet) localStorage.setItem('brs48cr_pet', JSON.stringify(n.pet));
@@ -1322,7 +1329,7 @@ function perfAplicarNuvem(n, nick){
 // Enquanto a pessoa não escolhe uma foto, a foto do perfil acompanha o Idol atual.
 // Aproveita para trazer as roupas compradas na lojinha para a lista "Roupa" do menu.
 function perfAvatarAuto(){
-  var dono=contaJ&&contaJ.nick;if(!dono)return;
+  var dono=contaJ&&contaJ.nick,token=contaSessaoToken;if(!dono)return;
   contaRpc('meu_perfil').then(function(d){
     if(!d||!contaJ||contaJ.nick!==dono) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
@@ -1330,7 +1337,13 @@ function perfAvatarAuto(){
     if(d.aniver_hoje && typeof aniverFesta === 'function')twTimeoutVisivel(document.documentElement,function(){return !!contaJ&&contaJ.nick===dono;},aniverFesta,1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
-    return contaRpc('salvar_avatar', { p_avatar: perfAvAtual({ auto:true }) });
+    var avatarAuto=perfAvAtual({ auto:true });
+    return contaRpc('salvar_avatar', { p_avatar:avatarAuto }).then(function(r){
+      // Primeira foto: só mostrar o Idol após o servidor confirmar, sem substituir uma foto escolhida enquanto aguardava.
+      if(!d.avatar && r && r.ok && contaJ && contaJ.nick===dono && contaSessaoToken===token && !perfMeuAv){
+        perfMeuAv=avatarAuto;perfIconeConta();
+      }
+    });
   }).catch(function(){});
 }
 function perfSortear(s1, s2){

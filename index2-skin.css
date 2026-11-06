@@ -143,3 +143,11 @@
   cursor:not-allowed;
 }
 
+/* Karaoke⭐Time!: durante o show do jogador o iframe ocupa a tela (arena do jogo). */
+html.tw-kt-arena,html.tw-kt-arena body{overflow:hidden!important}
+#twPreviewJogo[data-karaoke-arena] #twPreviewIframe{position:fixed!important;inset:0!important;width:100vw!important;max-width:none!important;height:100vh!important;height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important;z-index:2147483000!important}
+#twPreviewJogo[data-karaoke-arena] .tw-preview-header-slot{visibility:hidden!important}
+/* O Voltar do site continua à mão durante o show, no canto, acima da arena. */
+#twPreviewJogo[data-karaoke-arena] #twPreviewVoltar{visibility:visible!important;position:fixed!important;top:calc(8px + env(safe-area-inset-top,0px))!important;left:8px!important;z-index:2147483001!important;margin:0!important}
+html.tw-kt-arena .siterodape,html.tw-kt-arena footer{visibility:hidden!important}
+#twPreviewJogo[data-karaoke-arena]{z-index:2147482999!important}

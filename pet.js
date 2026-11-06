@@ -1132,43 +1132,45 @@ function petPhoneChatVariante(c){
 }
 function petPhoneChatMensagens(c){
   if(c.tipo === 'fan'){
-    var presente = c.presente, favorito = String(presente[0])+' '+String(presente[1]);
+    var presente = c.presente, favorito = String(presente[0])+' '+tr(String(presente[1]));
     var v=petPhoneChatVariante(c);
     var abertura={
       timido:['Oi… lembra de mim? Fiquei feliz de te encontrar no Handshake. 💗','É-é você! O nosso encontro foi muito especial… 💗','Oi… fiquei pensando no nosso aperto de mão. 🌷'],
       animado:['OII!! Que bom te ver de novo! ⭐','AAAA! Olha quem apareceu no meu Chat!! 🎉','Você voltou! Que dia perfeito para um reencontro!! 💖'],
       fofo:['Oii! Adorei nosso encontro! 💕','Yay! Nosso reencontro merece estrelinhas! ✨','Oiee! Que alegria ver seu nome aqui! 🎀']
     };
-    var oi=abertura[c.jeito][v];
+    var oi=tr(abertura[c.jeito][v]);   // V3.1: chat do TsuPhone traduzido (PET_DICT11)
     var jeito = typeof HS_JEITOS !== 'undefined' && HS_JEITOS[c.jeito];
-    var recordacao = jeito && typeof jeito.fav === 'string' ? jeito.fav.replace('{p}',favorito) : 'Meu favorito é '+favorito+'!';
+    var recordacao = (jeito && typeof jeito.fav === 'string' ? tr(jeito.fav) : tr('Meu favorito é {p}!')).replace('{p}',favorito);
     var falas=[oi,recordacao];
     if(c.encontro){
       var dia=c.encontro.slice(8,10)+'/'+c.encontro.slice(5,7);
-      falas.push(['Lembra de '+dia+'? Guardei aquele encontro com carinho. 💌',
-        'Ainda lembro do nosso encontro de '+dia+'! ⭐',
-        'O dia '+dia+' ficou no meu coração. 💖'][v]);
+      var locDia={en:'en-US',es:'es',th:'th-TH',ja:'ja-JP',id:'id-ID'}[typeof LANG==='string'?LANG:''];   // V3.1: data no formato do idioma (3 Nov, 11月3日…)
+      if(locDia){try{dia=new Date(c.encontro+'T12:00:00').toLocaleDateString(locDia,{day:'numeric',month:'short'});}catch(e){}}
+      falas.push(tr(['Lembra de {d}? Guardei aquele encontro com carinho. 💌',
+        'Ainda lembro do nosso encontro de {d}! ⭐',
+        'O dia {d} ficou no meu coração. 💖'][v]).replace('{d}',dia));
     }
-    if(c.cafe) falas.push(['Adorei o carinho no Happy⭐Cafe! Quero te ver de novo no Handshake. ☕',
+    if(c.cafe) falas.push(tr(['Adorei o carinho no Happy⭐Cafe! Quero te ver de novo no Handshake. ☕',
       'Foi tão bom ser atendido por você no Happy⭐Cafe! 🍰',
-      'Valeu por lembrar de mim no Happy⭐Cafe! Até o próximo Handshake! 💗'][v]);
+      'Valeu por lembrar de mim no Happy⭐Cafe! Até o próximo Handshake! 💗'][v]));
     return falas;
   }
   var p=petAtivo(), nomePet = p && p.nome || tr('seu Pet');
-  var hora=new Date().getHours(), saudacao=hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite';
+  var hora=new Date().getHours(), saudacao=tr(hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite');
   var v=petPhoneChatVariante(c), preocupado=p && Number.isFinite(p.humor) && p.humor<40;
-  if(c.id === 'idol:tsu') return [saudacao+', '+(contaJ && contaJ.nick || tr('Idol'))+'! ⭐',
-    preocupado ? nomePet+' parece precisar de carinho. Que tal uma pausa no camarim? 🐾' :
-      ['O camarim está uma graça! Já deu carinho para '+nomePet+' hoje?',
-       nomePet+' está por perto? Hora de descansar um pouquinho antes do show! 🐾',
-       'Um show fica melhor depois de brincar com '+nomePet+'! ✨'][v]];
-  if(c.id === 'idol:lirika') return [saudacao+', Idol. 🌷',
-    ['As lembranças dos fãs no Happy⭐Cafe! e no Handshake deixam os encontros especiais.',
+  if(c.id === 'idol:tsu') return [tr('{s}, {n}! ⭐').replace('{s}',saudacao).replace('{n}',contaJ && contaJ.nick || tr('Idol')),
+    tr(preocupado ? '{p} parece precisar de carinho. Que tal uma pausa no camarim? 🐾' :
+      ['O camarim está uma graça! Já deu carinho para {p} hoje?',
+       '{p} está por perto? Hora de descansar um pouquinho antes do show! 🐾',
+       'Um show fica melhor depois de brincar com {p}! ✨'][v]).replace('{p}',nomePet)];
+  if(c.id === 'idol:lirika') return [tr('{s}, Idol. 🌷').replace('{s}',saudacao),
+    tr(['As lembranças dos fãs no Happy⭐Cafe! e no Handshake deixam os encontros especiais.',
      'Guardar as lembranças dos fãs também é cuidar da nossa história. 🌷',
-     'Os reencontros no Café e no Handshake merecem carinho, mesmo nos dias calmos. 💌'][v]];
-  return [saudacao+'! 🎀', ['Já passou no espelho do camarim? Quero ver seu próximo look de show! ✨',
+     'Os reencontros no Café e no Handshake merecem carinho, mesmo nos dias calmos. 💌'][v])];
+  return [tr('{s}! 🎀').replace('{s}',saudacao), tr(['Já passou no espelho do camarim? Quero ver seu próximo look de show! ✨',
     'Se você mudou o visual hoje, me conta depois! O espelho te espera. 💄',
-    'Um laço, uma cor nova… que tal escolher um look para o próximo show? 👑'][v]];
+    'Um laço, uma cor nova… que tal escolher um look para o próximo show? 👑'][v])];
 }
 function petPhoneChatReacao(c,opcao){
   var v=petPhoneChatVariante(c);
@@ -1178,14 +1180,14 @@ function petPhoneChatReacao(c,opcao){
       animado:[['ISSOOO! Melhor encontro!! ⭐','AEEE! Vou contar pra todo mundo!! 🎉','Que demais! Meu coração tá pulando!! 💖'],['AEEE! Vou torcer muito por você!! 💖','Até a próxima! Não esquece de mim!! ⭐','SHOW! Já estou contando os dias!! 🎤']],
       fofo:[['Que fofura! Meu coração brilhou! 💕','Ownn! Você é um amor! 🎀','Nossas lembranças têm glitter! ✨'],['Combinado! Vou estar torcendo por você! 🎀','Até logo, estrelinha! 💌','Nos vemos no próximo encontro! 💖']]
     };
-    return reacoes[c.jeito][opcao][v];
+    return tr(reacoes[c.jeito][opcao][v]);
   }
-  if(c.id === 'idol:tsu') return (opcao === 0 ? ['Isso! Um carinho no Pet e bora brilhar! ⭐','O Pet também faz parte do nosso time! 🐾','Cuidar do Pet é coisa de Idol estrela! ✨'] :
-    ['Te espero no próximo show! ✨','Até logo! Vamos brilhar no palco! 🎤','O próximo show vai ser incrível! ⭐'])[v];
-  if(c.id === 'idol:lirika') return (opcao === 0 ? ['Que bom. As pequenas coisas importam. 🌷','Que lindo. Guarde esse sentimento. 💌','Fico feliz de ouvir isso. 🌷'] :
-    ['Até mais. Cuide das suas lembranças. 💖','Boa sorte no próximo encontro. 🌟','Até o próximo dia tranquilo. 🌸'])[v];
-  return (opcao === 0 ? ['Aaa, quero ver esse visual! 🎀','Agora sim! Arrasa no espelho! 💄','É isso! Mostra seu brilho! 👑'] :
-    ['Boa! Vai ficar lindo no palco! ⭐','Até o próximo show! 🎀','Te espero na próxima apresentação! 💕'])[v];
+  if(c.id === 'idol:tsu') return tr((opcao === 0 ? ['Isso! Um carinho no Pet e bora brilhar! ⭐','O Pet também faz parte do nosso time! 🐾','Cuidar do Pet é coisa de Idol estrela! ✨'] :
+    ['Te espero no próximo show! ✨','Até logo! Vamos brilhar no palco! 🎤','O próximo show vai ser incrível! ⭐'])[v]);
+  if(c.id === 'idol:lirika') return tr((opcao === 0 ? ['Que bom. As pequenas coisas importam. 🌷','Que lindo. Guarde esse sentimento. 💌','Fico feliz de ouvir isso. 🌷'] :
+    ['Até mais. Cuide das suas lembranças. 💖','Boa sorte no próximo encontro. 🌟','Até o próximo dia tranquilo. 🌸'])[v]);
+  return tr((opcao === 0 ? ['Aaa, quero ver esse visual! 🎀','Agora sim! Arrasa no espelho! 💄','É isso! Mostra seu brilho! 👑'] :
+    ['Boa! Vai ficar lindo no palco! ⭐','Até o próximo show! 🎀','Te espero na próxima apresentação! 💕'])[v]);
 }
 function petPhoneChatSincronizar(){
   var chave = petPhoneContaChave();
@@ -1215,6 +1217,7 @@ function petPhoneChatHtml(){
   var resposta = petPhoneChatRespostas[contato.id];
   var opcoes = contato.tipo === 'fan' ? ['Vou guardar nossa lembrança! 💖','Até o próximo encontro! ⭐'] :
     ['Vou cuidar de tudo! 💕','Até o próximo show! ✨'];
+  opcoes = opcoes.map(function(t){return tr(t);});
   return '<div class="petphone-chat-pessoa">'+petPhoneChatAvatarHtml(contato)+
     '<div><b>'+escHtml(contato.nome)+'</b><small>'+escHtml(contato.papel)+'</small></div></div>'+aviso+
     '<div class="petphone-chat-falas">'+mensagens.map(function(msg){

@@ -54,8 +54,8 @@
       g.fillStyle = 'rgba(40,10,70,.12)'; g.fillRect(x + 4, y + 22, 1.4, 12); g.fillRect(x + 24.6, y + 22, 1.4, 12);
     }
     luz(g, x, y, function(){
-      if(roupa === 'y2k'){ g.rect(x + 3, y + 22, 6, 12); g.rect(x + 21, y + 22, 6, 12); g.rect(x + 7, y + 22, 3, 10); g.rect(x + 20, y + 22, 3, 10); }
-      else if(roupa === 'citypop'){ g.rect(x + 2, y + 22, 6, 12); g.rect(x + 22, y + 22, 6, 12); g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }
+      if(roupa === 'y2k'){ g.rect(x + 3, y + 22, 6, 5); g.rect(x + 21, y + 22, 6, 5); g.rect(x + 7, y + 22, 3, 10); g.rect(x + 20, y + 22, 3, 10); }
+      else if(roupa === 'citypop'){ g.rect(x + 2, y + 22, 6, 5); g.rect(x + 22, y + 22, 6, 5); g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }
       else g.rect(x + 4, y + 22, 22, 12);
     }, false);
   }

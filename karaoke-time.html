@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=4"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=5"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -322,12 +322,12 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else if(roupa==='y2k'){
     g.fillStyle='#111';g.fillRect(x+7,y+22,16,6); 
     g.fillStyle=c.skin;g.fillRect(x+7,y+28,16,4); 
-    g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,12);g.fillRect(x+21,y+22,6,12); // Pinta as mangas e o blazer da cor escolhida
+    g.fillStyle=corDaRoupa;g.fillRect(x+3,y+22,6,5);g.fillRect(x+21,y+22,6,5); // Ombros curtos: a manga acompanha o braço sem duplicar a lateral
     g.fillRect(x+7,y+22,3,10);g.fillRect(x+20,y+22,3,10); if(TWR)TWR.tronco(g,x,y,twRoupa); 
   }else if(roupa==='citypop'){
     g.fillStyle='#111827'; g.fillRect(x+7, y+22, 16, 12);
     g.fillStyle='#fff'; g.fillRect(x+7, y+32, 16, 2);
-    g.fillStyle=corDaRoupa; g.fillRect(x+2, y+22, 6, 12); g.fillRect(x+22, y+22, 6, 12); g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Pinta o paletó da cor escolhida
+    g.fillStyle=corDaRoupa; g.fillRect(x+2, y+22, 6, 5); g.fillRect(x+22, y+22, 6, 5); g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11); // Ombros curtos e abas do paletó preservadas
     if(TWR)TWR.tronco(g,x,y,twRoupa);
     g.fillStyle='#34d399'; g.fillRect(x+11, y+22, 8, 5);
     g.fillStyle='#fbbf24'; g.fillRect(x+17, y+28, 2, 2);

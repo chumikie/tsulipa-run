@@ -39,7 +39,7 @@ function admVisualRoupa(f, alvoVisual){   // reserva: só a roupa (funciona ante
 var admIdol=null;
 function admIdolFormHtml(r){
   var c=r.c||{},best=+r.best_idol||0,owned=Array.isArray(r.visuais)?r.visuais:[],hex=function(v,d){return /^#[0-9a-f]{6}$/i.test(v||'')?v:d;};
-  admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||''}};
+  admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||'',baixo:c.baixo==='saia'||c.baixo==='bermuda'?c.baixo:'',legcol:hex(c.legcol,'#1c1c30')}};
   function lista(id,ok){return [].filter.call($(id).options,function(o){return o.value===admIdol.c[CF[id]||'mecha']||ok(o);}).map(function(o){return [o.value,o.textContent.replace(/^🔒\s*/,'')];});}
   function sel(id,campo,ok){return '<label>'+escHtml(tr(($(id).closest('label').firstChild.nodeValue||'').trim()))+' <select data-ai="'+campo+'">'+admOpts(lista(id,ok||function(){return true;}))+'</select></label>';}
   function cor(campo){return ' <input type="color" data-ai="'+campo+'" value="'+escHtml(admIdol.c[campo])+'">';}
@@ -51,7 +51,9 @@ function admIdolFormHtml(r){
     sel('cfront','front')+sel('cdet','det',function(o){return !/^(coelho|tulipa|torrada)$/.test(o.value)||owned.indexOf('det_'+o.value)>=0;})+'<i class="cbr"></i>'+
     '<span class="perfskins">'+SK.map(function(sk){return '<button type="button" class="sw" data-ai="skin" data-v="'+sk+'" style="background:'+sk+'" aria-pressed="'+(sk===admIdol.c.skin)+'"></button>';}).join('')+'</span>'+
     '<label>'+escHtml(tr('Olhos'))+cor('eye')+'</label><i class="cbr"></i>'+
-    '<label>'+escHtml(tr('Roupa'))+' <select data-ai="out">'+(roupas?roupas[1]:'')+'</select>'+cor('outcol')+'</label><i class="cbr"></i>'+
+    '<label>'+escHtml(tr('Roupa'))+' <select data-ai="out">'+(roupas?roupas[1]:'')+'</select>'+cor('outcol')+'</label>'+
+    '<label>'+escHtml(tr('Parte de baixo'))+' <select data-ai="baixo">'+admOpts([['',tr('Padrão da roupa')],['saia',tr('Saia')],['bermuda',tr('Bermuda')]])+'</select></label>'+
+    '<label>'+escHtml(tr('Meias'))+cor('legcol')+'</label><i class="cbr"></i>'+
     sel('chat','hat',function(o){return (+o.getAttribute('data-r')||0)<=best&&(o.value!=='palha'||owned.indexOf('hat_palha')>=0);})+sel('cgl','gl')+'</div>'+
     '<input id="admMotivo" maxlength="60" placeholder="'+escHtml(tr('Motivo (aparece no extrato)'))+'">'+
     '<button type="button" class="btn" id="admIdolSalvar">👗 '+escHtml(tr('Salvar Idol'))+'</button> <button type="button" class="sec" data-adm2="roupa">'+escHtml(tr('Só a roupa'))+'</button>'+

@@ -21,7 +21,7 @@
   function qual(c, roupa){
     var b = c && c.baixo;
     if(b === 'saia' || b === 'bermuda') return b;
-    return roupa === 'citypop' ? 'bermuda' : 'saia';
+    return 'bermuda';   // V3.1: padrão unissex; a saia só aparece quando a pessoa escolhe
   }
   function T(g, a){ g.beginPath(); g.moveTo(a[0], a[1]); for(var i = 2; i < a.length; i += 2) g.lineTo(a[i], a[i + 1]); g.closePath(); g.fill(); }
   function retangulo(g, X, Y, W, H, R){ if(R && g.roundRect) g.roundRect(X, Y, W, H, R); else g.rect(X, Y, W, H); }

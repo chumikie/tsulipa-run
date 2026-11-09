@@ -9,8 +9,8 @@ const ler=f=>fs.readFileSync(path.join(root,f),'utf8');
 
 assert.deepEqual(Object.keys(R.BAIXO),['','y2k','seifuku','citypop'],'só Trainee, Cheeky, Seifuku e City Pop ganham a parte de baixo nova');
 assert(!R.tem('estrelado')&&!R.tem('zipper')&&!R.tem('sweet')&&!R.tem('-'),'Estrelado, Zipper, Sweet e looks de rank ficam como estavam');
-assert.equal(R.qual({},''),'saia');assert.equal(R.qual({},'citypop'),'bermuda');
-assert.equal(R.qual({baixo:'bermuda'},'seifuku'),'bermuda');assert.equal(R.qual({baixo:'xx'},'y2k'),'saia','valor inválido volta ao padrão');
+assert.equal(R.qual({},''),'bermuda','padrão unissex: bermuda');assert.equal(R.qual({},'citypop'),'bermuda');
+assert.equal(R.qual({baixo:'bermuda'},'seifuku'),'bermuda');assert.equal(R.qual({baixo:'xx'},'y2k'),'bermuda','valor inválido volta ao padrão');assert.equal(R.qual({baixo:'saia'},''),'saia','saia só quando escolhida');
 
 // Canvas falso: registra o que é desenhado.
 function fake(){const log=[],shapes=[];const grad=()=>({addColorStop(){}});return {log,shapes,fillStyle:'',
@@ -20,7 +20,7 @@ function fake(){const log=[],shapes=[];const grad=()=>({addColorStop(){}});retur
 let g=fake();assert.equal(R.baixo(g,{},0,0,'zipper'),false,'roupa sem parte de baixo nova devolve false');
 g=fake();assert.equal(R.baixo(g,{baixo:'bermuda'},0,0,'citypop'),true);
 assert(g.log.includes('rect:#f1e7d0')&&g.log.includes('clip'),'bermuda creme da City Pop, com luz recortada no tecido');
-g=fake();R.baixo(g,{},0,0,'seifuku');assert(g.log.includes('fill:#1b2a5e')&&g.log.includes('fill:#2e4183'),'saia pregueada azul-marinho com pregas');
+g=fake();R.baixo(g,{baixo:'saia'},0,0,'seifuku');assert(g.log.includes('fill:#1b2a5e')&&g.log.includes('fill:#2e4183'),'saia pregueada azul-marinho com pregas');
 g=fake();R.ombro(g,{outcol:'#ff8fc8'},0,0,'y2k');assert(g.log.includes('fill:#ff8fc8'),'ombro na cor do blazer');
 g=fake();R.ombro(g,{outcol:'#ffb3d6'},0,0,'');assert(g.log.includes('fill:#ffb3d6'),'Trainee: manga na cor da camisa');
 g=fake();R.tronco(g,0,0,'',{outcol:'#ffb3d6'});assert(g.log.includes('rect:#ffb3d6')&&!g.log.includes('rect:#4a5170'),'Trainee: laterais no tecido da camisa, sem o cinza');

@@ -119,7 +119,7 @@ BEGIN
   v_v := lower(btrim(coalesce(p_c->>'out', '')));
   IF v_v NOT IN (
     '', 'seifuku', 'estrelado', 'y2k', 'zipper', 'sweet', 'citypop',
-    'brasil', 'tailandia', 'pijama', 'happi', 'gingham', 'hipster', 'rock', 'disco',
+    'brasil', 'tailandia', 'indonesia', 'pijama', 'happi', 'gingham', 'hipster', 'rock', 'disco',
     'technopop', 'decora', 'alienfan', 'vampiro', 'rena', 'reveillon',
     'floral', 'coracao', 'outono', 'sakura', 'puffer', 'yukata',
     'cardiga', 'jardineira', 'festa48'

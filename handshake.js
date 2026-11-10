@@ -244,6 +244,7 @@ function hsAplicarPet(r){
 function hsReceberPremio(r, atual){
   if(!r || !r.ok) return;
   if(r.confirmado && typeof recCarregar === 'function') recCarregar();
+  if(typeof twMissoesAtualizar === 'function') twMissoesAtualizar();   // missão do Handshake marca na hora
   if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
   var pronto = hsAplicarPet(r);
   if(atual && hs === atual){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }

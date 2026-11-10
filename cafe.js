@@ -232,6 +232,7 @@ function cfServir(saiu){
         if(certo && r.certo !== false && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         atualLegado.provaEstado='confirmado';
+        if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
       }else atualLegado.provaEstado='sem_comprovacao';
       if(cf===atualLegado)cfUI();
     }).catch(function(){atualLegado.provaEstado='pendente';if(cf===atualLegado)cfUI();});
@@ -280,6 +281,7 @@ function cfFim(){
         atual.pontosVerificados=+r.pontos_verificados||0;
         atual.pontos=atual.pontosVerificados;
         if(typeof recCarregar==='function')recCarregar();
+        if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
       }else atual.provaEstado='sem_comprovacao';
       cfUI();
     }).catch(function(){if(cf===atual){atual.provaEstado='pendente';cfUI();}});

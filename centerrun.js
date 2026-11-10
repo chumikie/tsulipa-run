@@ -1545,7 +1545,8 @@ function drawPet(ctx, type, x, y, sc, tFrame, ex, appearanceOverride){   // ex (
     var a = pObj.acc || '';
     if(a === 'laco'){ ctx.fillStyle = '#ff4f9a'; petDrawPolygon(ctx,[-7, -10, -12, -13, -12, -7]); petDrawPolygon(ctx,[-7, -10, -2, -13, -2, -7]); ctx.fillStyle = '#be185d'; petDrawEllipse(ctx,-7, -10, 1.4, 1.4); }
     else if(a === 'estrela'){ ctx.fillStyle = '#ffe14d'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = .6; ctx.beginPath();
-      for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.2, an = q * Math.PI / 5 - Math.PI / 2; ctx[q ? 'lineTo' : 'moveTo'](8 + Math.cos(an) * rr, -10 + Math.sin(an) * rr); }
+      var ex8 = type === 'pati' ? -8 : 8;   // Pucchi: estrela do lado esquerdo, longe da coroa (V3.1)
+      for(var q = 0; q < 10; q++){ var rr = q % 2 ? 1.8 : 4.2, an = q * Math.PI / 5 - Math.PI / 2; ctx[q ? 'lineTo' : 'moveTo'](ex8 + Math.cos(an) * rr, -10 + Math.sin(an) * rr); }
       ctx.closePath(); ctx.fill(); ctx.stroke(); }
     else if(a === 'anel'){ ctx.save(); ctx.rotate(-.22); ctx.lineCap = 'round';
       ctx.strokeStyle = 'rgba(255,255,255,.88)'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.ellipse(0, 2, 20, 4.5, 0, -0.35, Math.PI + 0.35); ctx.stroke();

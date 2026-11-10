@@ -627,6 +627,11 @@ function hubMisUI(){
     return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';
 }
+// V3.1: depois de um resultado confirmado (Handshake, Café), as missões mostram o progresso novo
+function twMissoesAtualizar(){
+  if(typeof petPhoneAgendaCache !== 'undefined') petPhoneAgendaCache = null;
+  if(contaJ) setTimeout(hubMisCarregar, 400);
+}
 function hubMisCarregar(){
   if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }

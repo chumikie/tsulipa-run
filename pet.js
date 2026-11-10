@@ -3138,7 +3138,7 @@ function petDrawRankAcc(ctx, a, tp){
     ctx.beginPath(); ctx.moveTo(-11, 1.5); ctx.quadraticCurveTo(-10, 6, -4, 5.6); ctx.stroke();
     ctx.fillStyle = '#ff6fb5'; petDrawEllipse(ctx,-3.6, 5.6, 1.3, 1.1);
   } else if(a === 'tiara'){   // tiara com três estrelinhas
-    var tpTi = tp === 'pati'; if(tpTi){ ctx.save(); ctx.translate(-6, 3); ctx.rotate(-.42); ctx.scale(.78, .78); }   // Pucchi: tiara de lado, ao lado da coroa
+    var tpTi = tp === 'pati'; if(tpTi){ ctx.save(); ctx.translate(-1, -1.5); ctx.rotate(-.58); ctx.scale(.82, .82); }   // Pucchi: tiara girada sobre a cabeça, à esquerda da coroa (V3.1)
     ctx.strokeStyle = '#f5b400'; ctx.lineWidth = .8; ctx.beginPath(); ctx.ellipse(0, -1, 11, 10.2, 0, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
     for(var si=0;si<PET_RANK_TIARA_STARS.length;si++){
       var star=PET_RANK_TIARA_STARS[si];ctx.fillStyle='#ffe14d';ctx.beginPath();

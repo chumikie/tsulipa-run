@@ -3133,7 +3133,7 @@ function petDrawRankAcc(ctx, a, tp){
     ctx.restore();
     ctx.fillStyle = '#ff6fb5'; petDrawPolygon(ctx,[10.5, -7, 15.5, -10, 14.5, -5.5]); petDrawPolygon(ctx,[10.5, -6.5, 15, -3, 12.5, -2.5]);
   } else if(a === 'mic'){   // headset com microfone
-    ctx.strokeStyle = '#334155'; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(0, -1, 12.6, 11.6, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(0, -1, 12.6, 11.6, 0, Math.PI * 1.05, Math.PI * (tp === 'pati' ? 1.52 : 1.95)); ctx.stroke();   // Pucchi: arco para antes da coroa
     ctx.fillStyle = '#334155'; petDrawEllipse(ctx,-11.6, 0, 2, 2.6);
     ctx.beginPath(); ctx.moveTo(-11, 1.5); ctx.quadraticCurveTo(-10, 6, -4, 5.6); ctx.stroke();
     ctx.fillStyle = '#ff6fb5'; petDrawEllipse(ctx,-3.6, 5.6, 1.3, 1.1);
@@ -3148,13 +3148,13 @@ function petDrawRankAcc(ctx, a, tp){
     if(tpTi) ctx.restore();
   } else if(a === 'faixa'){   // faixa dourada de Center atravessando o corpo
     ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, 12, 11, 0, 0, 7); ctx.clip();
-    ctx.rotate(.62); ctx.fillStyle = '#fbbf24'; ctx.fillRect(-16, 1.6, 32, 3.6);
-    ctx.fillStyle = '#fff7d6'; ctx.fillRect(-16, 2.1, 32, .7);
+    ctx.rotate(.3); ctx.fillStyle = '#fbbf24'; ctx.fillRect(-16, 6.4, 32, 3.2);   // V3.1: faixa mais baixa, abaixo da boca (não cobre os olhos)
+    ctx.fillStyle = '#fff7d6'; ctx.fillRect(-16, 6.9, 32, .7);
     ctx.restore();
-    ctx.fillStyle = '#ff6fb5'; petDrawEllipse(ctx,5.4, 7.6, 1.6, 1.6);
+    ctx.fillStyle = '#ff6fb5'; petDrawEllipse(ctx,6.2, 10.4, 1.6, 1.6);
   } else if(a === 'aureola'){   // auréola dourada flutuando
     ctx.save(); ctx.shadowColor = '#fde047'; ctx.shadowBlur = 6;
-    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.ellipse(0, -18.5, 8, 2.4, 0, 0, 7); ctx.stroke();
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.ellipse(0, tp === 'pati' ? -23 : -18.5, 8, 2.4, 0, 0, 7); ctx.stroke();   // Pucchi: acima da coroa
     ctx.restore();
   }
 }

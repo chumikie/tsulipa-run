@@ -182,8 +182,8 @@
   var BRILHOS=[[700,215,9],[905,190,8],[1220,300,7],[1085,270,6],[380,520,6],[275,470,5],[575,700,6],[870,700,6],[1370,560,7],[1160,640,6],[345,330,6],[1450,150,7],[960,520,5],[640,560,5]];
   function brilho(tm){
     ctx.save();
-    var p=.5+.5*Math.sin(tm*2.2),g=ctx.createRadialGradient(800,182,0,800,182,70+p*16);
-    g.addColorStop(0,'rgba(255,240,150,'+(.35+p*.25).toFixed(2)+')');g.addColorStop(1,'rgba(255,240,150,0)');
+    var p=.5+.5*Math.sin(tm*2.2),g=ctx.createRadialGradient(800,186,0,800,186,52+p*10);
+    g.addColorStop(0,'rgba(255,225,120,'+(.16+p*.12).toFixed(2)+')');g.addColorStop(1,'rgba(255,225,120,0)');
     ctx.globalCompositeOperation='lighter';ctx.fillStyle=g;ctx.fillRect(700,90,200,200);
     ctx.globalCompositeOperation='source-over';
     BRILHOS.forEach(function(b,i){var a=Math.max(0,Math.sin(tm*1.7+i*1.3));if(a<.05)return;var s2=b[2]*(.6+a*.6);

@@ -39,7 +39,7 @@
     sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
-    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=3';
+    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=4';
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     cv.addEventListener('click',function(e){var l=achar(e);if(!l)return;var c=card(l);if(c&&!c.disabled)c.click();});
@@ -83,6 +83,7 @@
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     if(hover){var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.22)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([10,8]);
       rr(b[0],b[1],b[2]-b[0],b[3]-b[1],26);ctx.fill();ctx.stroke();ctx.restore();}
+    lotes(tm);
     ceu(tm);
     andar(tm);
     idols(tm);
@@ -145,6 +146,24 @@
       for(var i=0;i<26;i++){var sx=OX+((i*397)%MW),sy=OY+((i*211)%230),a=.4+.6*Math.abs(Math.sin(tm*1.5+i));ctx.fillStyle='rgba(255,247,190,'+a.toFixed(2)+')';ctx.fillRect(sx,sy,3,3);}
     }
     ctx.restore();
+  }
+
+  // lotes vagos para os jogos novos (Fase 4): cerquinha, terra e placa "Em breve"
+  var LOTES=[[985,860]];   // ao lado da sua casa: o lugar do Bloom⭐Garden!
+  var BREVE={pt:'Em breve',en:'Coming soon',es:'Próximamente',id:'Segera hadir',th:'เร็ว ๆ นี้',ja:'近日公開'};
+  function lotes(tm){
+    LOTES.forEach(function(l,i){var x=l[0],y=l[1],w=118,h=58;
+      ctx.save();
+      ctx.fillStyle='rgba(60,143,99,.22)';ctx.beginPath();ctx.ellipse(x,y+h/2+4,w*.58,10,0,0,7);ctx.fill();
+      ctx.fillStyle='#d9a873';rr(x-w/2,y-h/2,w,h,14);ctx.fill();
+      ctx.strokeStyle='rgba(150,95,50,.35)';ctx.lineWidth=3;for(var k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-w/2+12,y+k*14);ctx.lineTo(x+w/2-12,y+k*14);ctx.stroke();}
+      ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.setLineDash([9,7]);rr(x-w/2,y-h/2,w,h,14);ctx.stroke();ctx.setLineDash([]);
+      var py=y-h/2-18+Math.sin(tm*2+i)*2;
+      ctx.fillStyle='#b47b4b';ctx.fillRect(x-3,py,6,26);
+      ctx.font='13px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';var tx=(BREVE[lang()]||BREVE.pt)+' ✨',tw=ctx.measureText(tx).width+22;
+      ctx.fillStyle='#fff';ctx.strokeStyle='#ff9bd0';ctx.lineWidth=3;rr(x-tw/2,py-24,tw,26,13);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#d94d92';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(tx,x,py-11);
+      ctx.restore();});
   }
   // o TsuLiPa (trio) com os pets na praça, desenhado com as mesmas funções do palco (drawChar + contorno de adesivo)
   var IDOL_X=[724,800,876],IDOL_CHAO=680,IDOL_SC=1.65;

@@ -47,7 +47,7 @@ const canvas=node('canvas');
 canvas.width=1600;canvas.height=1000;
 canvas.getContext=()=>ctx;
 canvas.getBoundingClientRect=()=>({left:0,top:0,width:1600,height:canvas.height});
-const sec=node('section'),menu=node('menu'),cards=node('hubCards'),roll=node('rolo');
+const sec=node('section'),menu=node('menu'),cards=node('hubCards'),roll=node('rolo'),hub=node('hub');
 roll.scrollWidth=1600;roll.clientWidth=500;roll.scrollHeight=1000;roll.clientHeight=400;
 const button=node('abrir'),back=node('voltar'),title=node('titulo'),subtitle=node('subtitulo'),hint=node('dica');
 sec.querySelector=(selector)=>({
@@ -63,7 +63,7 @@ function getCard(selector) {
 const document = {
   readyState:'complete',hidden:false,
   createElement:()=>sec,addEventListener(event,handler){eventHandlers['document:'+event]=handler;},
-  getElementById(id){return id==='hubMenu'?menu:id==='hubCards'?cards:id==='twMapa'&&sec.parentNode?sec:null;},
+  getElementById(id){return id==='hub'?hub:id==='hubMenu'?menu:id==='hubCards'?cards:id==='twMapa'&&sec.parentNode?sec:null;},
   querySelector(sel) {
     return ({
       '#twMapa .tw-mapa-txt b':title,
@@ -151,6 +151,12 @@ eventHandlers['document:keydown']({key:'Escape',defaultPrevented:false,preventDe
 assert.equal(canvas.height,760,'Esc não interfere no jogo aberto');
 assert.equal(preventedInGame,false,'Esc livre para o jogo aberto');
 jogo.hidden=true;
+hub.hidden=true;
+let preventedHidden=false;
+eventHandlers['document:keydown']({key:'Escape',defaultPrevented:false,preventDefault(){preventedHidden=true;}});
+assert.equal(canvas.height,760,'Esc não fecha rua enquanto outro jogo oculta o Hub');
+assert.equal(preventedHidden,false,'Esc permanece com o jogo quando Hub está oculto');
+hub.hidden=false;
 assert.equal(pushes,pushesAntesModal);
 eventHandlers['abrir:click']();
 assert.equal(canvas.height,1000,'fechar mapa na rua restaura o mundo');

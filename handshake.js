@@ -17,6 +17,20 @@ var HS_JEITOS = {
   fofo:    { oi:['Oiê! Me chamo {n}!', 'Olá! Sou {n}!'], fav:'Meu favorito: {p}!', ok:['Que fofo! 💕', 'Yay! Acertou!'], erro:['Hehe, era {p}!'] }
 };
 var HS_JEITO_LISTA = ['animado', 'timido', 'fofo'];
+// Segundo detalhe (da 3ª rodada em diante): a cor do lightstick do fã. As cores vêm do servidor
+// (handshake_iniciar.cores); presente E cor certos valem +50 também na pontuação verificada.
+var HS_CORES = ['#ff6fb5', '#9b6bff', '#4169e1', '#5ccf3a', '#ffc21a', '#ffffff'];
+var HS_COR_TR = {
+  pt:{n:['Rosa','Roxo','Azul','Verde','Amarelo','Branco'],l:'Lightstick',q:'E a cor do lightstick?',ok:'E o lightstick também! +50 💡'},
+  en:{n:['Pink','Purple','Blue','Green','Yellow','White'],l:'Lightstick',q:'And the lightstick color?',ok:'The lightstick too! +50 💡'},
+  es:{n:['Rosa','Morado','Azul','Verde','Amarillo','Blanco'],l:'Lightstick',q:'¿Y el color del lightstick?',ok:'¡Y el lightstick también! +50 💡'},
+  id:{n:['Merah muda','Ungu','Biru','Hijau','Kuning','Putih'],l:'Lightstick',q:'Lalu warna lightstick-nya?',ok:'Lightstick-nya juga! +50 💡'},
+  th:{n:['ชมพู','ม่วง','ฟ้า','เขียว','เหลือง','ขาว'],l:'แท่งไฟ',q:'แล้วแท่งไฟสีอะไร?',ok:'แท่งไฟก็ถูก! +50 💡'},
+  ja:{n:['ピンク','むらさき','青','緑','黄色','白'],l:'ペンライト',q:'ペンライトの色は？',ok:'ペンライトも正解！+50 💡'}
+};
+function hsCorT(){ return HS_COR_TR[typeof LANG === 'string' && HS_COR_TR[LANG] ? LANG : 'pt']; }
+// O jeito agora vale na jogada: o fã tímido se apresenta mais rápido, o animado fica um pouco mais; o lightstick dá mais tempo.
+function hsTempoFila(f){ return 160 + (f && f.cor !== undefined ? 40 : 0) + (f && f.jeito === 'timido' ? -30 : f && f.jeito === 'animado' ? 20 : 0); }
 var HS_CABELOS = ['#ff7eb6', '#000000', '#864ffe', '#0000ff', '#ffd23f', '#8b4513', '#4dd8ff', '#b6ff3b', '#f2f2f2', '#d63384', '#2f5be0', '#c98b55'];
 var HS_PELES = ['#f1c9a5', '#e0ac69', '#b97a50', '#8d5524', '#ffdbac'];
 var HS_RECORDE_KEY = 'tw_handshake_recorde';
@@ -180,6 +194,10 @@ function hsNovaRodada(){
   var presentesServidor = hs.servidor && hs.servidor.desafios && hs.servidor.desafios[hs.rodada];
   if(Array.isArray(presentesServidor) && presentesServidor.length === fila.length){ fila.forEach(function(f, i){ f.pres = presentesServidor[i]; }); }
   fila.forEach(function(f,i){ f.hsOrigem=hs.rodada+1; f.hsIndice=i; });
+  // Cores do lightstick: do servidor quando ele manda; sem conta, sorteio local; servidor antigo (sem cores): sem cor.
+  var coresServidor = hs.servidor && Array.isArray(hs.servidor.cores) ? hs.servidor.cores[hs.rodada] : null;
+  if(hs.rodada >= 2 && (!hs.servidor || Array.isArray(coresServidor))) fila.forEach(function(f, i){
+    f.cor = Array.isArray(coresServidor) && coresServidor.length === fila.length ? (+coresServidor[i] || 0) % HS_CORES.length : Math.floor(r() * HS_CORES.length); });
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
   var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
   if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
@@ -234,6 +252,20 @@ function hsResponder(i){
     if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
   }
   if(typeof eventoPetReagir === 'function') eventoPetReagir('handshake', hsT, false, ok ? (hs.combo >= 3 ? 'combo' : 'acerto') : 'erro');
+  if(ok && f.cor !== undefined){
+    var outras = HS_CORES.map(function(c, k){ return k; }).filter(function(k){ return k !== f.cor; }).sort(function(){ return Math.random() - .5; }).slice(0, 3);
+    hs.corOps = outras.concat([f.cor]).sort(function(){ return Math.random() - .5; });
+    hs.corEntrada = hs.servidor && hs.respostas.length ? hs.respostas[hs.respostas.length - 1] : null;
+    hs.corResp = -1; hs.fase = 'quizcor'; hs.t0 = hsT; hsUI(); return;
+  }
+  hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
+}
+function hsResponderCor(j){
+  if(!hs || hs.fase !== 'quizcor') return;
+  var f = hs.quiz[hs.qi], c = j >= 0 ? hs.corOps[j] : -1;
+  if(hs.corEntrada && c >= 0) hs.corEntrada.cor = c;   // o servidor confere a cor e soma os +50 dele
+  hs.corResp = j;
+  if(c === f.cor){ hs.pontos += 50; hs.fala = hsCorT().ok; if(typeof beep === 'function') try{ beep(1568, .07, 'triangle', .04); }catch(e){} }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsAplicarPet(r){
@@ -308,12 +340,13 @@ function hsLoop(ms){
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('hsCv'), ms) : 1; hsT += d;
   if(hs){
     var dt = hsT - hs.t0;
-    if(hs.fase === 'fila' && dt > 160){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
+    if(hs.fase === 'fila' && dt > hsTempoFila(hs.fila[hs.vi])){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
     else if(hs.fase === 'lembrar' && dt > 100) hsProxima();
     else if(hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
+    else if(hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
     else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();
-    if(hs.fase === 'quiz'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / hsTempoPergunta() * 100) + '%'; }
+    if(hs.fase === 'quiz' || hs.fase === 'quizcor'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / (hs.fase === 'quiz' ? hsTempoPergunta() : 210) * 100) + '%'; }
   }
   if(Math.floor(hsT / 2) !== Math.floor((hsT - d) / 2)) hsDesenhar();
   hsAnim = requestAnimationFrame(hsLoop);
@@ -321,7 +354,7 @@ function hsLoop(ms){
 function hsFaAtual(){
   if(!hs) return null;
   if(hs.fase === 'fila') return hs.fila[hs.vi];
-  if(hs.fase === 'quiz' || hs.fase === 'resposta') return hs.quiz[hs.qi];
+  if(hs.fase === 'quiz' || hs.fase === 'quizcor' || hs.fase === 'resposta') return hs.quiz[hs.qi];
   return null;
 }
 // Reencontro do Superfã que já voltou pelo histórico da partida.
@@ -421,6 +454,11 @@ function hsDesenhar(){
       x.fillStyle = '#fff'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 4; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w, 86, 18); else x.rect(12, H2 * .16, w, 86); x.fill(); x.stroke();
       x.fillStyle = '#3c2a8f'; x.textAlign = 'left'; x.fillText(txt, 28, H2 * .16 + 34, w - 24);
       x.fillStyle = '#d63384'; x.fillText(t2l, 28, H2 * .16 + 68, w - 24); x.restore();
+      if(f.cor !== undefined){ var lx = 12 + w + 26, ly = H2 * .16 + 70, cc = HS_CORES[f.cor], pis = .6 + .4 * Math.abs(Math.sin(hsT / 12));
+        x.save(); x.translate(lx, ly); x.rotate(-.35); x.fillStyle = '#5a4a7a'; x.fillRect(-4, 0, 8, 30);
+        x.globalAlpha = .35 * pis; x.fillStyle = cc; x.beginPath(); x.arc(0, -16, 24, 0, 7); x.fill(); x.globalAlpha = 1;
+        x.fillStyle = cc; x.strokeStyle = '#3c2a8f'; x.lineWidth = 2; x.beginPath(); if(x.roundRect) x.roundRect(-8, -40, 16, 42, 8); else x.rect(-8, -40, 16, 42); x.fill(); x.stroke();
+        x.fillStyle = 'rgba(255,255,255,.7)'; x.fillRect(-4, -34, 3, 26); x.restore(); }
     } else {
       x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var t2 = visita ? '✨ Visita⭐Surpresa! · ' + visita.nick : hs.fase === 'resposta' && hs.fala ? hs.fala : f.superfa ? tr('Voltei! Lembra de mim? Sou {n}! 🌟').replace('{n}', f.nome) : tr('Lembra de mim? Sou {n}!').replace('{n}', f.nome), w2 = Math.min(W2 * .56, x.measureText(t2).width + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#7b3ff0'; x.lineWidth = 3; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w2, 50, 18); else x.rect(12, H2 * .16, w2, 50); x.fill(); x.stroke();
@@ -448,7 +486,13 @@ function hsUI(){
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', eventoAtual().pres)) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
-  else if(hs.fase === 'fila') h += '<p class="hsdica">👀 ' + escHtml(tr('Memorize: fã {a} de {b}')).replace('{a}', hs.vi + 1).replace('{b}', hs.fila.length) + '</p>';
+  else if(hs.fase === 'fila'){ var fv = hs.fila[hs.vi];
+    h += '<p class="hsdica">👀 ' + escHtml(tr('Memorize: fã {a} de {b}')).replace('{a}', hs.vi + 1).replace('{b}', hs.fila.length) +
+      (fv && fv.cor !== undefined ? ' · <span class="hscor" style="background:' + HS_CORES[fv.cor] + '"></span> ' + escHtml(hsCorT().l + ': ' + hsCorT().n[fv.cor]) : '') + '</p>'; }
+  else if(hs.fase === 'quizcor'){
+    h += '<p class="hsdica">💡 ' + escHtml(hsCorT().q) + '</p><div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops hscores">' + hs.corOps.map(function(c, i){
+      return '<button type="button" class="hsop" data-hscor="' + i + '"><span class="hscor" style="background:' + HS_CORES[c] + '"></span><small>' + escHtml(hsCorT().n[c]) + '</small></button>'; }).join('') + '</div>';
+  }
   else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>';
   else if(hs.fase === 'quiz' || hs.fase === 'resposta'){
     h += '<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops">' + hs.ops.map(function(o, i){
@@ -475,6 +519,7 @@ function hsUI(){
 }
 function hsClique(e){
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
+  var bc = e.target.closest && e.target.closest('[data-hscor]'); if(bc){ hsResponderCor(+bc.dataset.hscor); return; }
   if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
 }
 function hsHubHtml(){

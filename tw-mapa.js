@@ -22,6 +22,7 @@
     palco:'Star Stage',harajuku:'Rua das Vitrines',fofo:'Vila das Flores',
     praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
   };
+  var BAIRROS_EMOJI={palco:'🎤',harajuku:'🛍️',fofo:'🌷',praca:'⛲',arena:'🏟️',ceu:'☁️'};
   var cena='mundo',imagens={};
   // Marca exclusiva do mapa: preserva history.state usado pelo Karaoke e Center.
   var CHAVE_RUA_HIST='twWorldRuaV1';
@@ -58,7 +59,7 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     mostrarCena('mundo');
@@ -72,6 +73,29 @@
       var c=card(l);if(c&&!c.disabled)c.click();
     });
     sec.querySelector('.tw-mapa-voltar').addEventListener('click',voltarAoMundo);
+    // A arte completa cabe no celular, mas os nomes ficam pequenos: atalhos
+    // acessíveis preservam alvos de toque e a lógica original mundo → rua.
+    var atalhos=sec.querySelector('.tw-mapa-bairros');
+    if(atalhos){
+      atalhos.innerHTML=Object.keys(BAIRROS).map(function(id){
+        return '<button type="button" data-tw-bairro="'+id+'"><span aria-hidden="true">'+BAIRROS_EMOJI[id]+'</span><span>'+ROTULOS_BAIRROS[id]+'</span></button>';
+      }).join('');
+      atalhos.addEventListener('click',function(e){
+        var botao=e.target&&e.target.closest&&e.target.closest('[data-tw-bairro]');
+        if(botao&&cena==='mundo')entrarRua(botao.getAttribute('data-tw-bairro'));
+      });
+    }
+    var zoomBotao=sec.querySelector('.tw-mapa-zoom');
+    if(zoomBotao)zoomBotao.addEventListener('click',function(){
+      if(cena!=='mundo'||!aberto)return;
+      var aproximado=sec.classList.toggle('tw-mapa-zoomed');
+      zoomBotao.setAttribute('aria-pressed',aproximado?'true':'false');
+      zoomBotao.textContent=aproximado?'↖ Visão geral':'🔎 Aproximar';
+      centrado=false;
+      if(aproximado)centralizar();
+      else{var roloMapa=sec.querySelector('.tw-mapa-rolo');
+        if(roloMapa){roloMapa.scrollLeft=0;roloMapa.scrollTop=0;}}
+    });
     // Só intercepta Esc enquanto a rua do mapa está efetivamente aberta.
     document.addEventListener('keydown',function(e){
       if(!e||e.key!=='Escape'||e.defaultPrevented||!mapaAtivo()||cena==='mundo')return;
@@ -117,6 +141,12 @@
     if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):('Rua: '+ROTULOS_BAIRROS[cena]));}
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
     if(centrado||!r||!cv)return;
+    var sec=document.getElementById('twMapa');
+    // Mundo: no celular começa inteiro na janela, sem deslocamento automático.
+    if(cena==='mundo'&&window.matchMedia&&window.matchMedia('(max-width:760px)').matches&&
+        sec&&!sec.classList.contains('tw-mapa-zoomed')){
+      r.scrollLeft=0;r.scrollTop=0;centrado=true;return;
+    }
     var k=cv.getBoundingClientRect().width/MW;
     var px=cena==='mundo'?800:800,py=cena==='mundo'?610:450;
     r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
@@ -165,6 +195,14 @@
     if(sec){var voltar=sec.querySelector('.tw-mapa-voltar');
       if(voltar)voltar.hidden=destino==='mundo';
       sec.setAttribute('data-cena',destino);
+      // Toda volta ao mundo oferece novamente a visão geral, não um zoom antigo.
+      sec.classList.toggle('tw-mapa-zoomed',false);
+      var visao=sec.querySelector('.tw-mapa-visao');
+      if(visao)visao.hidden=destino!=='mundo';
+      var atalhos=sec.querySelector('.tw-mapa-bairros');
+      if(atalhos)atalhos.hidden=destino!=='mundo';
+      var botaoZoom=sec.querySelector('.tw-mapa-zoom');
+      if(botaoZoom){botaoZoom.textContent='🔎 Aproximar';botaoZoom.setAttribute('aria-pressed','false');}
       var rolo=sec.querySelector('.tw-mapa-rolo');
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }

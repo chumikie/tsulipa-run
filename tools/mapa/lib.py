@@ -29,4 +29,5 @@ def novo():
 def salvar(nome, W, H):
     svg = f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'><defs>{''.join(G['defs'])}</defs>{''.join(G['out'])}</svg>"
     html = f"<!doctype html><html><head><meta charset='utf-8'><link rel='stylesheet' href='../../kt-fonts.css'><style>html,body{{margin:0}}</style></head><body>{svg}</body></html>"
+    open(nome + '.svg', 'w').write(svg)
     open(nome + '.html', 'w').write(html)

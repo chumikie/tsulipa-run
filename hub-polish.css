@@ -133,12 +133,12 @@ html[data-theme="light"] body #hub .tw-hud-txt small{color:#c02a7a}
 /* ===== PC: duas colunas (≥1180px). Abaixo disso a coluna da esquerda some do layout (display:contents) ===== */
 .tw-esq{display:contents}
 @media (min-width:1180px){
-  html body #hub .hubin{max-width:1320px!important;width:calc(100% - 48px);display:flex;align-items:flex-start;gap:36px;margin:0 auto}
-  html body #hub .tw-esq{display:flex;flex-direction:column;align-items:center;gap:10px;width:500px;flex:none;position:sticky;top:20px;padding-top:6px}
-  html body #hub .tw-esq>*{margin-left:0;margin-right:0}
-  html body #hub .tw-esq .hublogo{font-size:48px;white-space:nowrap}
-  html body #hub .tw-esq .tw-hud{position:static;width:100%;margin:6px 0 2px}
-  html body #hub .tw-esq #hubCv{width:100%!important;height:auto!important;max-width:500px}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])){max-width:1320px!important;width:calc(100% - 48px);display:flex;align-items:flex-start;gap:36px;margin:0 auto}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])) .tw-esq{display:flex;flex-direction:column;align-items:center;gap:10px;width:500px;flex:none;position:sticky;top:20px;padding-top:6px}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])) .tw-esq>*{margin-left:0;margin-right:0}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])) .tw-esq .hublogo{font-size:48px;white-space:nowrap}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])) .tw-esq .tw-hud{position:static;width:100%;margin:6px 0 2px}
+  html body #hub .hubin:has(>#hubMenu:not([hidden])) .tw-esq #hubCv{width:100%!important;height:auto!important;max-width:500px}
   html body #hub #hubMenu{flex:1;min-width:0;max-width:none;padding-top:10px}
   html body #hub #hubMenu .tw-destaque,html body #hub #hubMenu .hubpainel{max-width:none}
   html body #hub #hubMenu>*+*{margin-top:22px}
@@ -179,6 +179,20 @@ html body .ov .tw-window .tw-window-close{
  background:linear-gradient(180deg,#ff8cc6,#ff4f9a);color:#fff;border:2px solid rgba(255,255,255,.75);
  box-shadow:0 3px 0 rgba(150,30,90,.45),0 8px 16px -6px rgba(255,79,154,.6)}
 html body .ov .tw-window .tw-window-close:hover{transform:translateY(-1px)}
+
+/* ===== Tela de abertura ("Toque para começar") ===== */
+body:has(#hubMenu[hidden]) .tw-nav{display:none!important}
+html body #hub .hubtoque{position:relative;width:auto;max-width:calc(100% - 28px);white-space:nowrap;margin:22px auto 10px;padding:16px 30px 17px 54px;font:400 clamp(15px,4.3vw,20px)/1 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;letter-spacing:.03em;
+ color:#fff;text-shadow:0 2px 0 rgba(120,20,90,.35);border:3px solid rgba(255,255,255,.85);
+ background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0) 48%) no-repeat,linear-gradient(100deg,#ff7cc0,#ff4f9a 40%,#9b5cff);
+ box-shadow:0 6px 0 #b8317a,0 14px 30px -6px rgba(255,79,154,.6);animation:twToque 1.8s ease-in-out infinite}
+html body #hub .hubtoque::before{content:"▶";position:absolute;left:16px;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;
+ display:grid;place-items:center;font-size:12px;color:#ff4f9a;background:#fff;text-shadow:none;box-shadow:0 2px 0 rgba(184,49,122,.35)}
+html body #hub .hubtoque::after{content:"";position:absolute;inset:-9px;border-radius:inherit;border:2px solid rgba(255,140,200,.55);animation:twHalo 1.8s ease-out infinite;pointer-events:none}
+html body #hub .hubtoque:active{transform:translateY(4px);box-shadow:0 2px 0 #b8317a,0 8px 16px -6px rgba(255,79,154,.6)}
+@keyframes twToque{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.035)}}
+@keyframes twHalo{0%{opacity:.9;transform:scale(.96)}100%{opacity:0;transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){html body #hub .hubtoque,html body #hub .hubtoque::after{animation:none}}
 
 /* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
 @media (prefers-color-scheme:light){

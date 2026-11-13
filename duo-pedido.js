@@ -1,4 +1,5 @@
-/* Moon⭐Duo! — Pedido de cena do dia (só front-end, sem prêmio no banco).
+/* Moon⭐Duo! — Pedido de cena do dia. Prêmio de ★5/dia conferido no servidor (duo_pedido_premio),
+   só quando existe o duo da cena pedida registrado hoje; sem a função no banco, nada muda.
    Todo dia (0h de Brasília) sai uma cena e um cenário liberados para todo mundo. Montar e salvar a foto
    cumpre o pedido (fica marcado no aparelho). Liga o Duo a um objetivo diário e prepara o Photo⭐Studio!. */
 (function(){
@@ -10,12 +11,26 @@
     fundo:{pt:'Cenário', en:'Backdrop', es:'Fondo', id:'Latar', th:'ฉากหลัง', ja:'背景'},
     mont: {pt:'Montar', en:'Set up', es:'Montar', id:'Atur', th:'จัดฉาก', ja:'セット'},
     pron: {pt:'Pronto! Agora é só salvar a foto 📸', en:'Ready! Now just save the photo 📸', es:'¡Listo! Ahora guarda la foto 📸', id:'Siap! Tinggal simpan fotonya 📸', th:'พร้อมแล้ว! บันทึกรูปได้เลย 📸', ja:'準備OK！写真を保存しよう📸'},
+    premio:{pt:'+★5 pelo pedido do dia!', en:'+★5 for today\'s request!', es:'¡+★5 por el pedido del día!', id:'+★5 untuk permintaan hari ini!', th:'+★5 จากคำขอวันนี้!', ja:'今日のリクエストで★5ゲット！'},
     feito:{pt:'Pedido do dia cumprido! Volte amanhã ✨', en:'Done for today! Come back tomorrow ✨', es:'¡Pedido cumplido! Vuelve mañana ✨', id:'Selesai hari ini! Kembali besok ✨', th:'ทำสำเร็จแล้ว! พรุ่งนี้มาใหม่นะ ✨', ja:'今日のリクエスト達成！また明日✨'}
   };
   function t(k){ var L = (typeof LANG === 'string' && LANG) || 'pt'; return T[k][L] || T[k].pt; }
   function diaBR(){ return Math.floor((Date.now() - 3 * 3600e3) / 864e5); }
   function feitoHoje(){ try{ return localStorage.getItem(CHAVE) === String(diaBR()); }catch(e){ return false; } }
   function marcar(){ try{ localStorage.setItem(CHAVE, String(diaBR())); }catch(e){} }
+  var premioMsg = '';
+  // O servidor confere se o duo da cena pedida foi registrado hoje e paga uma vez por dia.
+  function premiar(p){
+    if(typeof contaJ === 'undefined' || !contaJ || typeof contaRpc !== 'function' || !p) return;
+    contaRpc('duo_pedido_premio', { p_cena: String(p.cena[0]) }).then(function(r){
+      if(!r || !r.ok || !(+r.estrelas > 0)) return;
+      if(typeof r.stars === 'number' && typeof starT !== 'undefined'){
+        starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){}
+        if(typeof setBest === 'function') try{ setBest(); }catch(e){}
+      }
+      premioMsg = t('premio'); ui();
+    }).catch(function(){});   // função ainda não aplicada no banco: o pedido continua só visual
+  }
   function pronto(){ return typeof DUO_CENAS !== 'undefined' && typeof duoFundos === 'function' && typeof duoTrava === 'function'; }
   // sorteio estável do dia (mesmo pedido para todo mundo na mesma data, quando possível)
   function pedido(){
@@ -39,7 +54,7 @@
     var feito = feitoHoje(), ok = bate(p);
     box.classList.toggle('feito', feito); box.classList.toggle('ok', ok && !feito);
     box.innerHTML = '<span class="duo-pedido-ico">📸</span><span class="duo-pedido-txt"><b>' + esc(t('tit')) + '</b><small>' +
-      (feito ? esc(t('feito')) : ok ? esc(t('pron')) :
+      (feito ? esc(premioMsg ? premioMsg + ' ' + t('feito') : t('feito')) : ok ? esc(t('pron')) :
         esc(t('cena')) + ': ' + p.cena[1] + ' ' + esc(nome(p.cena)) + ' · ' + esc(t('fundo')) + ': ' + p.fundo[1] + ' ' + esc(nome(p.fundo))) +
       '</small></span>' + (feito || ok ? '' : '<button type="button" class="duo-pedido-bt">' + esc(t('mont')) + '</button>');
   }
@@ -57,7 +72,7 @@
     if(el.closest('.duo-pedido-bt')){ e.preventDefault(); montar(); return; }
     // salvar a foto com a cena e o cenário do dia cumpre o pedido
     if(el.closest('#duoPng,#duoPngSem') && !feitoHoje() && bate(pedido())){
-      marcar(); ui();
+      marcar(); ui(); premiar(pedido());
       if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(er){}
     }
   }, true);

@@ -1,4 +1,4 @@
-/* TsuLiPa⭐World — mapa da cidade (Canvas 2D sobre a arte mapa-cidade.svg).
+/* TsuLiPa⭐World — mapa em dois níveis (Canvas 2D sobre SVGs dos bairros).
    TW_LUGARES = registro único dos lugares: cada um aponta para o card do hub que já existe,
    então login, cadeado, alertas e abertura continuam com a lógica original (nada duplicado). */
 (function(){
@@ -114,7 +114,7 @@
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
       img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=1';
+      img.src='./'+arquivo+'?v=2';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();

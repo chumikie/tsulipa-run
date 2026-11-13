@@ -23,6 +23,8 @@
     praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
   };
   var cena='mundo',imagens={};
+  // Marca exclusiva do mapa: preserva history.state usado pelo Karaoke e Center.
+  var CHAVE_RUA_HIST='twWorldRuaV1';
   var TW_LUGARES=window.TW_LUGARES=[
     {id:'run',      card:'#hubCards [data-ir="run"]',      box:[600,140,1000,475]},
     {id:'karaoke',  card:'#hubCards [data-ir="karaoke"]',  box:[1050,250,1270,525]},
@@ -65,11 +67,31 @@
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     cv.addEventListener('click',function(e){
       var l=achar(e);if(!l)return;
-      if(cena==='mundo'){mostrarCena(l.id);return;}
-      if(l.voltar){mostrarCena('mundo');return;}
+      if(cena==='mundo'){entrarRua(l.id);return;}
+      if(l.voltar){voltarAoMundo();return;}
       var c=card(l);if(c&&!c.disabled)c.click();
     });
-    sec.querySelector('.tw-mapa-voltar').addEventListener('click',function(){mostrarCena('mundo');});
+    sec.querySelector('.tw-mapa-voltar').addEventListener('click',voltarAoMundo);
+    // Só intercepta Esc enquanto a rua do mapa está efetivamente aberta.
+    document.addEventListener('keydown',function(e){
+      if(!e||e.key!=='Escape'||e.defaultPrevented||!mapaAtivo()||cena==='mundo')return;
+      var alvo=e.target;
+      if(alvo&&(/^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName||'')||alvo.isContentEditable))return;
+      var jogo=document.getElementById('twPreviewJogo');
+      if(jogo&&!jogo.hidden)return;
+      // Não roubar Esc de diálogos de outros jogos/telas.
+      if(document.querySelector('[aria-modal="true"]:not([hidden]),dialog[open]'))return;
+      e.preventDefault();voltarAoMundo();
+    });
+    window.addEventListener('popstate',function(e){
+      if(!mapaAtivo())return;
+      // Nunca disputar o botão Voltar com as rotas do Center ou Karaoke.
+      var hash=window.location&&window.location.hash;
+      if(hash==='#center-run'||hash==='#karaoke')return;
+      var rua=e&&e.state&&e.state[CHAVE_RUA_HIST];
+      if(rua&&CENAS_RUA[rua]){if(cena!==rua)mostrarCena(rua);}
+      else if(cena!=='mundo')mostrarCena('mundo');
+    });
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(desenhar);
@@ -83,7 +105,10 @@
   function posicionar(){var sec=document.getElementById('twMapa'),cards=document.getElementById('hubCards');if(!sec||!cards)return;
     var jg=cards.querySelector('.hubbt-jogos');if(jg){if(sec.nextElementSibling!==jg)cards.insertBefore(sec,jg);}
     else if(sec.parentNode!==cards)cards.appendChild(sec);}
-  function abrir(sim,inicio){aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
+  function abrir(sim,inicio){
+    // Fechar o acordeão nunca deixa uma rua oculta presa no histórico.
+    if(!sim&&aberto&&cena!=='mundo')voltarAoMundo();
+    aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
     textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
@@ -96,6 +121,39 @@
     var px=cena==='mundo'?800:800,py=cena==='mundo'?610:450;
     r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
     r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;
+  }
+  function mapaAtivo(){
+    var menu=document.getElementById('hubMenu');
+    return aberto&&(!menu||!menu.hidden)&&!!document.getElementById('twMapa');
+  }
+  function entrarRua(destino){
+    if(cena!=='mundo'||!CENAS_RUA[destino])return;
+    // Cada visita cria apenas uma entrada extra; Voltar retorna ao mundo.
+    try{
+      var h=window.history;
+      if(h&&typeof h.pushState==='function'){
+        var base=h.state;
+        var proximo=base&&typeof base==='object'&&!Array.isArray(base)?Object.assign({},base):{};
+        proximo[CHAVE_RUA_HIST]=destino;
+        h.pushState(proximo,'',window.location.href);
+      }
+    }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Histórico do mapa indisponível',e);}
+    mostrarCena(destino);
+  }
+  function voltarAoMundo(){
+    if(cena==='mundo')return;
+    var rua=cena,sec=document.getElementById('twMapa');
+    var voltar=sec&&sec.querySelector('.tw-mapa-voltar');
+    mostrarCena('mundo');
+    if(voltar&&document.activeElement===voltar){
+      var abrirBtn=sec.querySelector('.tw-mapa-botao');
+      if(abrirBtn&&abrirBtn.focus)abrirBtn.focus({preventScroll:true});
+    }
+    // Consome somente a entrada criada pelo próprio mapa.
+    try{
+      var h=window.history;
+      if(h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
+    }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Voltar do mapa indisponível',e);}
   }
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;

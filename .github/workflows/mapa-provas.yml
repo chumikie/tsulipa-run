@@ -6,6 +6,7 @@ on:
       - '.github/workflows/mapa-provas.yml'
       - 'tools/mapa/**'
       - 'tw-mapa.js'
+      - 'tests/tw-mapa-dois-niveis.test.js'
       - 'hub-polish.css'
       - 'index.html'
   workflow_dispatch:

@@ -148,7 +148,7 @@ html[data-theme="light"] body #hub .tw-hud-txt small{color:#c02a7a}
 
 /* ===== Janelas (Perfil, Pet, Shop, Gacha…): moldura de brinquedo, igual aos painéis do hub ===== */
 /* a barra de baixo some quando qualquer janela está aberta (não cobre botões) */
-body:has(.ov:not(#menu):not([hidden]),.tw-preview-game:not([hidden])) .tw-nav{display:none!important}
+body:has(.ov:not(#menu):not([hidden]),.tw-preview-game:not([hidden]),.tw-rank-tv-modal:not([hidden])) .tw-nav{display:none!important}
 html body .ov .tw-window.tw-window-surface{
  border:2.5px solid transparent;
  background:
@@ -193,6 +193,28 @@ html body #hub .hubtoque:active{transform:translateY(4px);box-shadow:0 2px 0 #b8
 @keyframes twToque{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.035)}}
 @keyframes twHalo{0%{opacity:.9;transform:scale(.96)}100%{opacity:0;transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){html body #hub .hubtoque,html body #hub .hubtoque::after{animation:none}}
+
+/* ===== Top Idols (no Idol⭐News!): placar de palco ===== */
+html body .jornalp .jntopt{display:flex;align-items:center;gap:6px;width:fit-content;margin:18px 0 4px;padding:7px 16px 8px;border-radius:999px;
+ font:400 16px/1 "Mochiy Pop One",sans-serif;color:#5a3300!important;text-shadow:0 1px 0 rgba(255,255,255,.6)!important;
+ background:linear-gradient(180deg,#ffe48a,#ffbf3b);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 0 #c9861a}
+html body .jornalp .jnpodios{gap:12px}
+html body .jornalp .jnpodios>.jnpodio{--g1:#9b6bff;--g2:#6630dc;position:relative;padding:0 0 10px;overflow:hidden;border-radius:18px;
+ background:#fff;border:2px solid color-mix(in srgb,var(--g1) 45%,#fff);box-shadow:0 4px 0 color-mix(in srgb,var(--g2) 35%,transparent)}
+html body .jornalp .jnpodios>.jnpodio:nth-child(2){--g1:#72c6ff;--g2:#4a78ef}
+html body .jornalp .jnpodios>.jnpodio:nth-child(3){--g1:#ff62ab;--g2:#b83a9e}
+html body .jornalp .jnpodios>.jnpodio>h4{margin:0 0 8px;padding:9px 12px 10px;font:400 14px/1.1 "Mochiy Pop One",sans-serif;color:#fff!important;
+ text-shadow:0 1px 0 rgba(0,0,0,.2)!important;background:radial-gradient(rgba(255,255,255,.18) 1.2px,transparent 1.6px) 0 0/10px 10px,linear-gradient(120deg,var(--g1),var(--g2))}
+html body .jornalp .jnpodios>.jnpodio ol{gap:6px;padding:0 8px}
+html body .jornalp .jnpodios>.jnpodio li{grid-template-columns:26px 34px 1fr;padding:5px 10px 5px 6px;border-radius:999px;background:#f6f0ff}
+html body .jornalp .jnpodios>.jnpodio li:first-child{background:linear-gradient(90deg,#fff3c2,#ffe08a);box-shadow:inset 0 0 0 1.5px #ffcf4d}
+html body .jornalp .jnpodios>.jnpodio .jnmed{font-size:18px;text-align:center}
+html body .jornalp .jnpodios>.jnpodio .jnfoto{border-radius:50%;background:radial-gradient(circle at 50% 38%,#fff 0 22%,transparent 23%),linear-gradient(180deg,color-mix(in srgb,var(--g1) 30%,#fff),color-mix(in srgb,var(--g1) 55%,#fff));box-shadow:0 0 0 2px #fff,0 0 0 3.5px color-mix(in srgb,var(--g1) 60%,#fff)}
+html body .jornalp .jnpodios>.jnpodio li b{color:#3b2470!important;font-weight:800}
+html body .jornalp .jnpodios>.jnpodio li small{color:color-mix(in srgb,var(--g2) 80%,#000)!important;opacity:1;font-weight:800}
+html body .jornalp .jnpodios>.jnpodio .jnvazio{margin:0 8px;padding:12px 10px;border-radius:14px;border:2px dashed color-mix(in srgb,var(--g1) 55%,#fff);
+ text-align:center;font-weight:700;color:#6b4fa8!important;opacity:1;background:color-mix(in srgb,var(--g1) 8%,#fff)}
+html body .jornalp .jnpodios>.jnpodio .jnvazio::before{content:"🎤 ";}
 
 /* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
 @media (prefers-color-scheme:light){

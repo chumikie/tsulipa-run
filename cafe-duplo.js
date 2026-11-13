@@ -3,7 +3,7 @@
    Liga quando dá para validar do jeito certo:
      • sem conta (treino): sempre;
      • com conta: só se o servidor tiver cafe_run_pedidos/cafe_run_etapa2
-       (proposta em supabase/sql/proposta/cafe_dois_no_balcao_REVIEW_ONLY.sql).
+       (aplicadas em produção em 13/11; arquivo em supabase/sql/aplicado/20261113_cafe_dois_no_balcao.sql, PR #88).
    Em qualquer outro caso o Café roda exatamente como antes (um cliente por vez, cafe.js).
    Mesma pontuação, 12 pedidos, 3 vidas; cada pedido ganha +4 s de paciência porque o tempo corre para os dois. */
 (function(){

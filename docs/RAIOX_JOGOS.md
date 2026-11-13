@@ -81,6 +81,7 @@ Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, 
 - **Forte:** corrida madura, cartas e power-ups, ranking semanal, polaroid.
 - **Falta:** um objetivo curto do dia. Os desafios existem, mas aparecem pouco no hub.
 - **Melhoria:** desafio do dia em destaque (ex.: "pegue 3 Fever numa corrida") ligado às Missões e ao mapa (balão sobre o palco).
+- **Feito (13/11):** as missões do dia do Center aparecem no mapa (🎯 no Star Stage e balão com progresso sobre o Center⭐Run!).
 
 ## Karaoke⭐Time!
 - **Forte:** sala, músicas da semana, figurinos, polaroid e online.
@@ -95,7 +96,7 @@ Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, 
 ## Backstage⭐Pet!
 - **Forte:** necessidades que caem com o tempo, pets dos membros e pet montável, sincronização na nuvem.
 - **Já tem:** saudade quando você some, reencontro quando volta, comentários sobre recordes.
-- **Melhoria:** passear no mapa da cidade e, mais tarde, ajudar no Bloom⭐Garden!.
+- **Melhoria:** passear no mapa da cidade (**feito**: o pet segue o dono nas ruas) e, mais tarde, ajudar no Bloom⭐Garden!.
 
 ## Moon⭐Duo!
 - **Forte:** cenas em dupla com Idols reais (`duo_convidado`), poses, falas e lojinha de extras.

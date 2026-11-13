@@ -86,6 +86,20 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - **Prévia Vercel:** `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/` (alias da PR #88), build verificado READY no commit `63a8b443`. Projeto existente `tsulipa-world`, sem alterar produção. A prévia tem Vercel Authentication/SSO ativo: acesso exige conta autorizada na Vercel. **Login Google/Supabase real não foi comprovado.** Se desejar autenticar na prévia, conferir allow list no Supabase Auth > URL Configuration e origem autorizada do Google Cloud para esse domínio, sem mudar Site URL de produção. Não aplicar alterações de configuração sem autorização.
 - **Regras mantidas:** sem tocar em Supabase ou `main`, sem duplicar lógica dos cards, sem mexer nas chaves `brs48cr_*`. Dois nomes de bairros continuam provisórios.
 
+## Mapa Vivo⭐ — refinamento (13/11/2026, noite)
+- Textos das artes desenhados no canvas com a fonte do jogo e traduzidos (`tools/mapa/textos.py` → `mapa-textos.js`); antes saíam serifados.
+- Rótulos e botões do mapa nos seis idiomas; a dica "Arraste para passear" fica abaixo da arte.
+- Ruas: Idols visitam as portas em ritmos diferentes, com balãozinho (♪ ❤ ★); o pet segue e senta ao lado; passeantes abaixo das placas.
+- Detalhes discretos: pétalas, floquinhos, notinhas, corações, vapor do Café, brilhos; no mundo, gotinhas na fonte e nuvens. Tudo desliga com "reduzir movimento".
+- À noite as placas ficam acesas como letreiros.
+- Atalho destaca o bairro; entrar na rua aproxima a câmera até ele.
+- Missões do dia (as da Agenda do Idol) aparecem no mapa: 🎯 no bairro e balão com progresso sobre o prédio (ex.: 🏃 1/2 no Center⭐Run!). Sem mudança no banco.
+- **Não testado:** iPhone físico e conta real.
+
+## Star⭐Gacha! — pó de estrela e garantia (pronto, esperando o OK do SQL)
+- SQL auditado e testado em PostgreSQL isolado (38 verificações): `supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql`. Detalhes em `docs/GACHA_REPETIDOS_GARANTIA_PROPOSTA.md`.
+- Interface no Álbum (`gacha-po.js`) já está no site, mas só aparece quando a função existir no banco.
+
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

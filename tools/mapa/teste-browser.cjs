@@ -137,7 +137,7 @@ async function teste(page,dir,label){
   for(const [arquivo,marca] of [['mapa-rua-fofo.svg','bloom-garden'],
     ['mapa-rua-ceu.svg','photo-studio'],['mapa-rua-arena.svg','idol-battle']]){
     const dados=fs.readFileSync(path.join(raiz,arquivo),'utf8');
-    assert.ok(dados.includes("data-reserva='"+marca+"'"),'espaço reservado '+marca);
+    assert.ok(new RegExp('data-reserva=["\']'+marca+'["\']').test(dados),'espaço reservado '+marca);
   }
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const url='http://127.0.0.1:'+server.address().port+'/';

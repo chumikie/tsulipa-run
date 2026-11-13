@@ -270,9 +270,10 @@
     if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;
     var tm=performance.now()/1000;
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
-    ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);textosCena();
+    ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     ceu(tm); // mesmo horário de Brasília no mundo e nas ruas
-    if(cena==='mundo'){idols(tm);alertasMundo(tm);}
+    textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
+    if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
     else{detalhes(tm);andar(tm);alertasRua(tm);}
     if(hover&&!hover.voltar){
       var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.12)';
@@ -396,6 +397,21 @@
         }
       });
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa andar',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
+  }
+  // Mundo vivo, discreto: gotinhas na fonte da Praça Central, nuvenzinhas passando e brilhos nos bairros
+  var BRILHOS_MUNDO=[[640,330,7],[960,330,6],[1150,560,6],[1440,620,5],[300,560,6],[520,780,5],[1180,860,5],[1450,200,7],[1210,190,5],[700,560,5]];
+  function mundoVivo(tm){
+    if(reduzMov)return;
+    ctx.save();
+    for(var g=0;g<10;g++){var f=((tm*.9+g/10)%1),lado=g%2?1:-1,dx=lado*(10+(g%5)*6)*f,y=596-38*f*(1-f)*4+f*34;
+      ctx.globalAlpha=.85*(1-f*.6);ctx.fillStyle=g%3?'#c8f1ff':'#ffffff';ctx.beginPath();ctx.arc(800+dx,y,2.6,0,7);ctx.fill();}
+    for(var n=0;n<3;n++){var x=((tm*(9+n*4)+n*620)%1900)-150,y2=60+n*70;ctx.globalAlpha=.55;ctx.fillStyle='#ffffff';
+      ctx.beginPath();ctx.ellipse(x,y2,46,15,0,0,7);ctx.ellipse(x-22,y2+4,26,12,0,0,7);ctx.ellipse(x+24,y2-6,28,14,0,0,7);ctx.fill();}
+    BRILHOS_MUNDO.forEach(function(b,i){var a=Math.max(0,Math.sin(tm*1.6+i*1.4));if(a<.05)return;var r=b[2]*(.6+a*.6);
+      ctx.globalAlpha=a*.9;ctx.fillStyle=i%3?'#ffffff':'#fff3a8';ctx.beginPath();
+      ctx.moveTo(b[0],b[1]-r);ctx.quadraticCurveTo(b[0]+r*.18,b[1]-r*.18,b[0]+r,b[1]);ctx.quadraticCurveTo(b[0]+r*.18,b[1]+r*.18,b[0],b[1]+r);
+      ctx.quadraticCurveTo(b[0]-r*.18,b[1]+r*.18,b[0]-r,b[1]);ctx.quadraticCurveTo(b[0]-r*.18,b[1]-r*.18,b[0],b[1]-r);ctx.fill();});
+    ctx.restore();
   }
   // Detalhes vivos de cada rua, discretos (desligados com "reduzir movimento" do sistema)
   function detalhes(tm){

@@ -84,6 +84,7 @@
       var l=achar(e);if(!l)return;
       if(cena==='mundo'){entrarRua(l.id);return;}
       if(l.voltar){voltarAoMundo();return;}
+      if(l.bloom){window.bloomAbrir();return;}
       var c=card(l);if(c&&!c.disabled)c.click();
     });
     sec.querySelector('.tw-mapa-voltar').addEventListener('click',voltarAoMundo);
@@ -256,6 +257,9 @@
       });return achado;
     }
     var ids=BAIRROS[cena].lugares,centros=[300,800,1300],achado=null;
+    // Bloom⭐Garden!: a horta da Vila das Flores abre o jardim quando o servidor já tem o jogo
+    if(cena==='fofo'&&window.TW_BLOOM_ON&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
+      return {id:'bloom',bloom:true,box:[1100,280,1500,640]};
     ids.forEach(function(id,i){if(!id)return;var l=TW_LUGARES.find(function(v){return v.id===id;});
       if(!l)return;var b=[centros[i]-200,280,centros[i]+200,640];
       if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l))achado={id:l.id,card:l.card,box:b};
@@ -276,7 +280,14 @@
     });
     ctx.restore();
   }
-  function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(T)T.forEach(texto);}
+  function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
+    T.forEach(function(t){
+      // com o Bloom⭐Garden! ligado, a placa "Em breve" da horta vira convite
+      if(window.TW_BLOOM_ON&&/^em breve$/i.test(t.t)&&(cena==='fofo'||(cena==='mundo'&&t.x<700))){
+        var B=window.BLOOM_TR,L=B&&(B[lang()]||B.pt);
+        t=Object.assign({},t,cena==='mundo'?{t:'Bloom★Garden!',s:t.s*.8}:{t:'🌱 '+(L?L.plantar:'Plantar')});
+      }
+      texto(t);});}
   function desenhar(){
     if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;
     var tm=performance.now()/1000;

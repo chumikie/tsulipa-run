@@ -344,3 +344,21 @@ html:not([data-theme="dark"]) body .ov .tw-window.tw-window-surface{
 /* Mapa Vivo⭐: a dica "Arraste para passear" fica abaixo da arte, nunca por cima do cenário */
 html body #hub .tw-mapa .tw-mapa-dica{position:static;transform:none;align-self:center;width:max-content;max-width:100%;margin:8px auto 0;white-space:normal;text-align:center}
 html body #hub .tw-mapa.mexeu .tw-mapa-dica{display:none!important}
+
+/* Bloom⭐Garden! (bloom.js) */
+.bloomov{z-index:22}
+.bloomp{max-width:640px;position:relative}
+.bloomp h2{margin:4px 0 2px;color:var(--b1);padding:0 44px}
+#bloomCv{display:block;width:100%;height:auto;border-radius:16px;margin:8px 0;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+.bloomsub,.bloomdica{margin:4px 0;font-size:13px;font-weight:700;color:#7b62b8;text-align:center}
+.bloomsub b{color:#e8a400}
+.bloommsg{margin:6px 0;font-weight:800;font-size:14px;color:#b83a9e;text-align:center}
+.bloomlista{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.bloomlista li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:8px 10px;color:#3c2a8f;box-shadow:0 3px 0 rgba(123,63,240,.1);font-size:14px}
+.bloomlista li>span{flex:1 1 140px;font-weight:700}
+.bloomlista select{font:inherit;min-height:38px;border-radius:10px;border:2px solid #d9c7fb;background:#fff;color:#3c2a8f;padding:4px 6px;max-width:100%}
+.bloomlista .btn{padding:7px 14px;min-height:38px}
+.bloomlista em{font-style:normal;font-weight:800;color:#3fae62}
+.bloomp h3{margin:12px 0 4px;color:var(--b1);text-align:center}
+.bloomflores{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}
+.bloomflores span{background:#fff;border-radius:999px;padding:5px 10px;font-weight:800;color:#3c2a8f;box-shadow:0 2px 0 rgba(123,63,240,.12)}

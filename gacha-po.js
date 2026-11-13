@@ -1,6 +1,6 @@
 /* TsuLiPa⭐World — Pó de estrela do Star⭐Gacha! (dentro do Álbum).
    1 cópia repetida = 1 pó · 5 pós = 1 card que falta. Regras e segurança no servidor:
-   supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql (gacha_po_status,
+   supabase/sql/aplicado/20261113_gacha_po_garantia.sql (gacha_po_status,
    gacha_converter_repetido, gacha_resgatar_card).
    DESLIGADO POR CONSTRUÇÃO: a seção só aparece quando gacha_po_status() existe no banco e
    responde ok. Antes do SQL ser aplicado o Álbum continua exatamente igual.

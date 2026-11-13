@@ -8,7 +8,7 @@ P="psql -X -q -v ON_ERROR_STOP=1 -U postgres"
 createdb -U postgres "$DB"
 trap 'dropdb -U postgres "$DB"' EXIT
 $P -d "$DB" -f fixture.sql
-$P -d "$DB" -f ../../sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql
+$P -d "$DB" -f ../../sql/aplicado/20261113_gacha_po_garantia.sql
 $P -d "$DB" -c "revoke execute on function public.gacha_girar() from public; grant execute on function public.gacha_girar() to authenticated, service_role;"
 $P -d "$DB" -f dados.sql
 $P -d "$DB" -o /dev/null -f testes.sql 2>teste.log || { sed 's/^psql:[^ ]* //' teste.log; rm -f teste.log; exit 1; }

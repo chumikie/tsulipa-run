@@ -96,9 +96,9 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Missões do dia (as da Agenda do Idol) aparecem no mapa: 🎯 no bairro e balão com progresso sobre o prédio (ex.: 🏃 1/2 no Center⭐Run!). Sem mudança no banco.
 - **Não testado:** iPhone físico e conta real.
 
-## Star⭐Gacha! — pó de estrela e garantia (pronto, esperando o OK do SQL)
-- SQL auditado e testado em PostgreSQL isolado (38 verificações): `supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql`. Detalhes em `docs/GACHA_REPETIDOS_GARANTIA_PROPOSTA.md`.
-- Interface no Álbum (`gacha-po.js`) já está no site, mas só aparece quando a função existir no banco.
+## Star⭐Gacha! — pó de estrela e garantia (APLICADO em produção em 13/11, com o OK do dono)
+- SQL auditado e testado em PostgreSQL isolado (38 verificações): `supabase/sql/aplicado/20261113_gacha_po_garantia.sql`. Detalhes em `docs/GACHA_REPETIDOS_GARANTIA_PROPOSTA.md`.
+- Interface no Álbum (`gacha-po.js`, PR #88): aparece sozinha agora que a função existe no banco. Conferido com dados reais (só leitura): status responde ok. Converter/resgatar com conta real ainda não testados.
 
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:

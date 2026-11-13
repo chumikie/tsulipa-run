@@ -1,3 +1,5 @@
+> **APLICADO em produção em 13/11/2026** com o OK do dono (migração `20261113_gacha_po_garantia`). Grants conferidos: RPCs só para authenticated/service_role; tabelas de pó no schema private com RLS.
+
 # Star⭐Gacha! — protótipo isolado de repetidos e garantia de prêmio
 
 **Estado:** somente proposta de jogabilidade (PR #88, `visual/layout-hud`). **NÃO está ativo no site**, não foi aplicado SQL, não altera tabelas, RPCs, giros, estrelas, tickets, perfis ou saves. O protótipo em `tools/gacha/regras-proposta.js` é testável sem conta.
@@ -55,7 +57,7 @@ PGHOST=<socket local> PGPORT=<porta> sh supabase/tests/gacha-po/rodar.sh   # nun
 
 ## Arquivo de implementação de servidor (somente para revisão)
 
-`supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql`
+`supabase/sql/aplicado/20261113_gacha_po_garantia.sql`
 
 Contém carteira e log privados com RLS, RPCs `gacha_po_status`, `gacha_converter_repetido`, `gacha_resgatar_card` e alteração mínima de `gacha_girar` para garantir a ausência de `nada` no 8º giro consecutivo. Conversão e resgate utilizam uma chave UUID de idempotência por operação, além do lock transacional compartilhado com trocas sociais.
 

@@ -1,4 +1,4 @@
--- Star⭐Gacha! — PROPOSTA PARA REVISÃO, NÃO EXECUTAR SEM APROVAÇÃO EXPLÍCITA DO DONO.
+-- Star⭐Gacha! — APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_gacha_po_garantia).
 -- Base: pg_get_functiondef das funções reais de produção (gacha_girar, album_cards,
 -- private.cards_qtd, propor_troca, responder_troca), conferidas em 13/11/2026.
 -- Regras aprovadas: 1 cópia repetida -> 1 pó; 5 pós -> 1 card faltante;

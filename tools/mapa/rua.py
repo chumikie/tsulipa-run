@@ -69,7 +69,8 @@ for vx in (40, 1560):
     A(f"<rect x='{vx-16}' y='{580}' width='32' height='26' rx='6' fill='#ff9bd0'/>")
     G['arvore'](vx, 584, .7)
 # topo: título do bairro e volta para o mapa
-A(f"<g transform='translate(30,26)'><rect width='280' height='56' rx='28' fill='#fff' opacity='.92'/><text x='140' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='{21 if bairro == 'palco' else 24}' fill='{cor_tema}'>{titulo}</text></g>")
+titulo_largura = max(280, min(450, len(titulo) * 15 + 55))
+A(f"<g transform='translate(30,26)'><rect width='{titulo_largura}' height='56' rx='28' fill='#fff' opacity='.92'/><text x='{titulo_largura/2:.0f}' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='{21 if bairro == 'palco' else 24}' fill='{cor_tema}'>{titulo}</text></g>")
 A(f"<g transform='translate({W-200},28)'><rect width='170' height='48' rx='24' fill='{cor_tema}'/><text x='85' y='32' text-anchor='middle' font-family='Mochiy Pop One' font-size='18' fill='#fff'>◀ Mapa</text></g>")
 salvar('rua' if len(sys.argv) == 1 else 'rua_' + bairro, W, H)
 print('ok')

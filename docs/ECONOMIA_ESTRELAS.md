@@ -35,7 +35,7 @@ Visual (roupas ★150–350, poses ★100–150, extras do Duo ★80–150, deta
 - **★10 por dia no Happy⭐Cafe!** e **★10 por dia no Handshake⭐Event!**, na primeira partida **verificada pelo servidor** com **600+ pontos** (o mesmo corte do prêmio do Handshake).
 - No máximo **+★20/dia** no total → +8% para quem já joga tudo; para quem só joga Café/Handshake, passa a valer a pena.
 - Sem teto novo no Center, sem mexer em preços.
-- SQL: `supabase/sql/proposta/bonus_jogo_dia_REVIEW_ONLY.sql` (precisa do OK do dono).
+- **Aplicado em 13/11/2026** (`supabase/sql/aplicado/20261113_bonus_jogo_dia.sql`).
 
 ## Depois (quando vierem os jogos novos)
 

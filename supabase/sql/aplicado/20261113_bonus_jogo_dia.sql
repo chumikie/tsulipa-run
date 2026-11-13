@@ -1,4 +1,5 @@
 -- TsuLiPa⭐World — "Bônus do dia por jogo" (Café e Handshake)
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono. bonus_jogo_dia_dar sem EXECUTE para ninguém (só via jogo_registrar).
 -- REVISÃO SOMENTE: NÃO APLICAR SEM O OK DO DONO DO PROJETO.
 -- Análise: docs/ECONOMIA_ESTRELAS.md
 --

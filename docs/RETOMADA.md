@@ -55,7 +55,7 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 
 ## Economia de estrelas
 - Retrato real em `docs/ECONOMIA_ESTRELAS.md` (o teto de ★100/dia do Center ESTÁ em produção desde 02/11; o README-center-run-100.md está desatualizado).
-- Proposta pendente de OK: `supabase/sql/proposta/bonus_jogo_dia_REVIEW_ONLY.sql` (★10/dia no Café e no Handshake, 600+ pontos verificados).
+- **Aplicado em 13/11:** bônus do dia, ★10/dia no Café e no Handshake (1ª partida verificada com 600+ pontos). Arquivo em `supabase/sql/aplicado/20261113_bonus_jogo_dia.sql`.
 
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

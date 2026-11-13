@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_handshake_cor). A 1ª tentativa falhou sem mudar nada (comentário engolia o resto de uma linha); corrigido e reaplicado.
 -- Handshake⭐Event! — fãs com dois detalhes: a partir da 3ª rodada cada fã também tem a cor do
 -- lightstick (0–5). Lembrar o presente E a cor vale +50. Compatível com a versão antiga do site:
 -- a cor é opcional na resposta; sem ela, a pontuação é exatamente a de hoje.
@@ -48,7 +49,7 @@ begin
   if (length(d)-length(replace(d,m1,'')))/length(m1)<>1 or (length(d)-length(replace(d,m2,'')))/length(m2)<>1
      or (length(d)-length(replace(d,m3,'')))/length(m3)<>1 then
     raise exception 'marcadores do handshake_run_finish mudaram'; end if;
-  d := replace(d, m1, ' v_tipo text; v_cor integer; v_vcor integer;   -- lightstick');
+  d := replace(d, m1, ' v_tipo text; v_cor integer; v_vcor integer;');   -- sem comentário: o resto da linha continua valendo
   d := replace(d, m2, m2 || E'   v_cor:=CASE WHEN jsonb_typeof(v_a->''cor'')=''number'' THEN (v_a->>''cor'')::integer END;   -- opcional\n');
   d := replace(d, m3, m3 || E'     v_vcor:=(v_s.cores #>> ARRAY[(v_origem-1)::text,v_idx::text])::integer;\n     IF v_vcor IS NOT NULL AND v_cor=v_vcor THEN v_pontos:=v_pontos+50; END IF;   -- lightstick certo\n');
   execute d;

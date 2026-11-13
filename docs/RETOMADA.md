@@ -110,8 +110,8 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 ## Café VIP — APLICADO (13/11, noite, OK do dono)
 - `supabase/sql/aplicado/20261113_cafe_vip.sql`: cliente VIP do Café (6ª e 11ª clientes valem o dobro). Insere uma linha em `cafe_run_etapa` e `cafe_run_etapa2` (lidas na hora de aplicar; falha se o marcador mudar). Testado isolado em `supabase/tests/cafe-vip/`. O front (`cafe-vip.js`) já está no PR #88 Conferido em produção: as duas funções têm a linha VIP e mantêm os grants.
 
-## Handshake: fãs com dois detalhes (front feito; SQL esperando o OK do dono)
-- SQL: `supabase/sql/proposta/20261113_handshake_cor.sql` (testado isolado em `supabase/tests/handshake-cor/`). Compatível com a versão antiga: sem `cor` na resposta, pontuação igual a hoje.
+## Handshake: fãs com dois detalhes — APLICADO (13/11, noite, OK do dono)
+- SQL: `supabase/sql/aplicado/20261113_handshake_cor.sql` (testado isolado em `supabase/tests/handshake-cor/`). Compatível com a versão antiga: sem `cor` na resposta, pontuação igual a hoje.
 - Front (`handshake.js?v=11`): cor do lightstick da 3ª rodada em diante, pergunta da cor depois do presente certo, +50; jeito muda o tempo da apresentação.
 - Servidor: `handshake_iniciar` passa a sortear também a cor do lightstick (0–5) para os fãs a partir da rodada 3; `handshake_run_finish` aceita `cor` na resposta e soma +50 quando presente E cor estão certos.
 - Cliente (`handshake.js`): depois do presente, escolher a cor (6 botões). O jeito do fã passa a valer: tímido mostra o texto por menos tempo, animado repete.

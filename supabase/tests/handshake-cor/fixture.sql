@@ -1,4 +1,4 @@
--- Réplica mínima para o teste do lightstick: tabelas do Handshake + cópias das funções de produção (13/11/2026).
+-- Réplica mínima para o teste do lightstick: tabelas do Handshake + cópia INTEIRA de handshake_run_finish de produção (13/11/2026).
 do $$ begin create role anon; exception when duplicate_object then null; end $$;
 do $$ begin create role authenticated; exception when duplicate_object then null; end $$;
 do $$ begin create role service_role; exception when duplicate_object then null; end $$;
@@ -34,9 +34,23 @@ BEGIN
  IF v_id IS NULL THEN RETURN json_build_object('ok',false,'erro','sem_conta'); END IF;
  SELECT coalesce(p.bloqueado,false) INTO v_bloqueado FROM public.players p WHERE p.id=v_id FOR UPDATE;
  IF NOT FOUND OR v_bloqueado THEN RETURN json_build_object('ok',false,'erro','conta'); END IF;
+ -- Uma recompensa anterior não impede verificar esta sessão nova.
  SELECT * INTO v_s FROM private.handshake_sessoes WHERE id=p_sessao AND user_id=v_id FOR UPDATE;
  IF NOT FOUND THEN RETURN json_build_object('ok',false,'erro','sessao'); END IF;
  IF v_s.concluido THEN
+   IF v_s.pontos_verificados IS NOT NULL THEN
+     SELECT * INTO v_ant FROM public.handshake_premios
+     WHERE user_id=v_id AND sessao_origem=v_s.id;
+     IF FOUND THEN
+       RETURN json_build_object('ok',true,'confirmado',true,'repetido',true,
+         'pontos_verificados',v_s.pontos_verificados,'acertos',v_s.acertos_verificados,
+         'combo_max',v_s.combo_max_verificado,'premio_novo',false,
+         'dia',v_ant.dia,'tipo',v_ant.tipo,'item',v_ant.item);
+     END IF;
+     RETURN json_build_object('ok',true,'confirmado',true,'repetido',true,'pontos_verificados',
+       v_s.pontos_verificados,'acertos',v_s.acertos_verificados,'combo_max',v_s.combo_max_verificado,
+       'premio_novo',false);
+   END IF;
    RETURN json_build_object('ok',false,'erro','sessao_antiga');
  END IF;
  IF v_s.criado<clock_timestamp()-interval '25 minutes'
@@ -46,6 +60,7 @@ BEGIN
  THEN RETURN json_build_object('ok',false,'erro','sessao'); END IF;
  IF jsonb_array_length(p_respostas) NOT BETWEEN 1 AND 60
  THEN RETURN json_build_object('ok',false,'erro','respostas'); END IF;
+ -- Mesmo ciclo semanal do evento.js; presentes: 🍓, 🍰, 🌸, ⭐, 🧁.
  v_semana:=floor(((now() AT TIME ZONE 'America/Sao_Paulo')::date - DATE '1970-01-01' + 3)::numeric/7)::integer % 5;
  v_pres_semana:=(ARRAY[0,1,8,12,3])[v_semana+1];
  FOR v_a IN SELECT value FROM jsonb_array_elements(p_respostas) LOOP
@@ -79,7 +94,40 @@ BEGIN
  END LOOP;
  UPDATE private.handshake_sessoes SET concluido=true,pontos_verificados=v_pontos,
    acertos_verificados=v_acertos,combo_max_verificado=v_combo_max WHERE id=v_s.id;
- RETURN json_build_object('ok',true,'confirmado',true,'pontos_verificados',v_pontos,'acertos',v_acertos);
+ INSERT INTO private.handshake_resultados(user_id,dia,acertos,pontos)
+ VALUES(v_id,v_dia,v_acertos,v_pontos)
+ ON CONFLICT(user_id,dia) DO UPDATE SET
+ acertos=greatest(private.handshake_resultados.acertos,EXCLUDED.acertos),
+ pontos=greatest(private.handshake_resultados.pontos,EXCLUDED.pontos);
+ PERFORM private.jogo_registrar(v_id,'hand',v_s.id,v_pontos,v_combo_max,v_acertos);
+ IF v_combo_max>=10 THEN PERFORM public.conquista_jogo('jogo_memoria'); END IF;
+ IF v_pontos<600 THEN RETURN json_build_object('ok',true,'confirmado',true,'repetido',false,
+    'pontos_verificados',v_pontos,'acertos',v_acertos,'combo_max',v_combo_max,
+    'premio_novo',false,'missao',v_acertos>0); END IF;
+ SELECT * INTO v_ant FROM public.handshake_premios WHERE user_id=v_id AND dia=v_dia;
+ IF FOUND THEN RETURN json_build_object('ok',true,'confirmado',true,'repetido',false,
+    'pontos_verificados',v_pontos,'acertos',v_acertos,'combo_max',v_combo_max,
+    'premio_novo',false,'premio_entregue',true); END IF;
+ v_tipo:=CASE WHEN random()<.4 THEN 'ticket' ELSE 'pet' END;
+ IF v_tipo='pet' THEN v_item:=v_itens[1+floor(random()*array_length(v_itens,1))::integer]; END IF;
+ INSERT INTO public.handshake_premios(user_id,dia,pontos,tipo,item,sessao_origem)
+ VALUES(v_id,v_dia,v_pontos,v_tipo,v_item,v_s.id);
+ IF v_tipo='ticket' THEN
+   INSERT INTO private.kt_ticket_wallet(player_id,balance) VALUES(v_id,1)
+   ON CONFLICT(player_id) DO UPDATE SET balance=private.kt_ticket_wallet.balance+1,
+      updated_at=clock_timestamp() WHERE private.kt_ticket_wallet.balance<99
+   RETURNING balance INTO v_saldo;
+   IF NOT FOUND THEN
+     v_tipo:='pet';v_item:=v_itens[1+floor(random()*array_length(v_itens,1))::integer];
+     UPDATE public.handshake_premios SET tipo=v_tipo,item=v_item WHERE user_id=v_id AND dia=v_dia;
+   ELSE
+     INSERT INTO private.kt_ticket_events(player_id,actor_id,delta,reason)
+       VALUES(v_id,v_id,1,'handshake');
+   END IF;
+ END IF;
+ RETURN json_build_object('ok',true,'confirmado',true,'repetido',false,'dia',v_dia,
+  'pontos',v_pontos,'pontos_verificados',v_pontos,'acertos',v_acertos,'combo_max',v_combo_max,
+  'premio_novo',true,'tipo',v_tipo,'item',v_item,'tickets',v_saldo);
 END $function$;
 CREATE OR REPLACE FUNCTION public.handshake_iniciar() RETURNS json LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $function$
 BEGIN RETURN json_build_object('ok',true); END $function$;

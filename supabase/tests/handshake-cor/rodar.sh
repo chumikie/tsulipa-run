@@ -6,8 +6,8 @@ cd "$(dirname "$0")"
 DB=hs_cor_$$; P="psql -X -q -tA -v ON_ERROR_STOP=1 -U postgres -d $DB"
 createdb -U postgres "$DB"; trap 'dropdb -U postgres "$DB"' EXIT
 $P -f fixture.sql >/dev/null
-$P -f ../../sql/proposta/20261113_handshake_cor.sql >/dev/null
-$P -f ../../sql/proposta/20261113_handshake_cor.sql >/dev/null   # reaplicar não duplica
+$P -f ../../sql/aplicado/20261113_handshake_cor.sql >/dev/null
+$P -f ../../sql/aplicado/20261113_handshake_cor.sql >/dev/null   # reaplicar não duplica
 A=00000000-0000-0000-0000-00000000000a
 ok(){ [ "$1" = "$2" ] && echo "  ok: $3" || { echo "FALHOU: $3 (veio '$1')"; exit 1; }; }
 ok "$($P -c "select (length(d)-length(replace(d,'lightstick certo','')))/16 from (select pg_get_functiondef('public.handshake_run_finish(uuid,jsonb)'::regprocedure) d) x")" 1 "linhas do lightstick inseridas uma vez"
@@ -28,4 +28,8 @@ ok "$p1" "$((p0+50))" "presente E cor certos: +50"
 ok "$p2" "$p0" "cor errada: igual a hoje"
 ok "$p3" 0 "cor sem acertar o presente não vale nada"
 ok "$p0" "$p0" "versão antiga do site (sem cor) continua válida"
+# partida de 600+ pontos passa pelo trecho do prêmio (v_item, v_saldo): pega erro de compilação no fim da função
+mk 00000000-0000-0000-0000-000000000009
+G=$(python3 -c "import json;print(json.dumps([{'rodada':r,'origem':3,'indice':0,'resposta':2,'restante':1000,'superfa':r>3,'cor':1} for r in [3]]+[{'rodada':3,'origem':3,'indice':i,'resposta':[2,5,9][i],'restante':1000,'superfa':False,'cor':[1,4,0][i]} for i in [1,2]]))")
+ok "$($P -c "select set_config('request.jwt.claim.sub','$A',false);" -c "select public.handshake_run_finish('00000000-0000-0000-0000-000000000009','$G')->>'premio_novo'" | tail -1)" true "partida com prêmio do dia roda a função inteira sem erro"
 echo "OK: lightstick do Handshake testado em PostgreSQL isolado"

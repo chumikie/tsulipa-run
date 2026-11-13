@@ -62,4 +62,48 @@ Primeira leva: Café, Handshake e Gacha, os candidatos a "muito básicos". Os ou
 2. **Café:** vários clientes ao mesmo tempo é a mudança que mais transforma.
 3. **Handshake:** hora extra e fãs com dois detalhes são mudanças pequenas.
 
-Segunda leva do raio-X: Center⭐Run!, Karaoke⭐Time!, Sora⭐Jump!, Backstage⭐Pet!, Moon⭐Duo! e Zipper⭐Shop!.
+# Segunda leva (13/11/2026)
+
+Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, e o foco aqui é o que falta.
+
+| Jogo | Profundidade | Integração | Técnica | Sensação | Resumo |
+|---|---|---|---|---|---|
+| Center⭐Run! | 4 | 4 | 4 | 5 | O mais redondo; falta motivo para jogar "só mais uma" no meio da semana |
+| Karaoke⭐Time! | 4 | 4 | 3 | 5 | O mais rico, mas o ritmo ainda tem atraso e o arquivo está no limite de tamanho |
+| Sora⭐Jump! | 3 | 3 | 3 | 4 | Bom de jogar; recompensa e anti-cheat ainda pendentes (PR #74) |
+| Backstage⭐Pet! | 3 | 4 | 3 | 4 | Bom gancho diário, mas cuidar vira rotina de 4 botões |
+| Moon⭐Duo! | 2 | 4 | 4 | 4 | A única peça social, mas é um "editor de foto" sem objetivo |
+| Zipper⭐Shop! | 2 | 5 | 4 | 4 | Cumpre o papel de loja; falta novidade que faça voltar |
+
+## Center⭐Run!
+- **Forte:** corrida madura, cartas e power-ups, ranking semanal, polaroid.
+- **Falta:** um objetivo curto do dia. Os desafios existem, mas aparecem pouco no hub.
+- **Melhoria:** desafio do dia em destaque (ex.: "pegue 3 Fever numa corrida") ligado às Missões e ao mapa (balão sobre o palco).
+
+## Karaoke⭐Time!
+- **Forte:** sala, músicas da semana, figurinos, polaroid e online.
+- **Falta:** o timing do ritmo, que ainda tem um atraso percebido, e folga no tamanho do `karaoke-time.html` (PR #86 resolve).
+- **Melhoria:** calibração de atraso (toque no compasso ao entrar) e aviso de "Perfeito / Bom" mais claro.
+
+## Sora⭐Jump!
+- **Forte:** subida vertical com cenários e segredo do disco voador.
+- **Falta:** o prêmio de 500 m do PR #74 depende de anti-cheat (tempo mínimo realista e validação no servidor).
+- **Melhoria:** fechar o anti-cheat e aplicar o PR #74; depois, cenários por estação ligados ao tema do momento.
+
+## Backstage⭐Pet!
+- **Forte:** necessidades que caem com o tempo, pets dos membros e pet montável, sincronização na nuvem.
+- **Falta:** as ações são sempre os mesmos 4 botões; o pet não reage ao que você faz nos outros jogos.
+- **Melhoria:** reações ao seu dia (comemora recorde, fica triste se você sumir), passeio pelo mapa e, mais tarde, ajudar no Bloom⭐Garden!.
+
+## Moon⭐Duo!
+- **Forte:** cenas em dupla com Idols reais (`duo_convidado`), poses, falas e lojinha de extras.
+- **Falta:** um objetivo. Você monta a cena e acabou.
+- **Melhoria:** "pedido de cena" do dia (tema + pose) e compartilhamento como polaroid. É a ponte natural para o Photo⭐Studio!.
+
+## Zipper⭐Shop!
+- **Forte:** atendimento diário pelo trio, provador, compras reais (`comprar_visual`).
+- **Falta:** a vitrine é sempre a mesma.
+- **Melhoria:** "vitrine da semana" com 3 itens em destaque (com desconto) que muda todo domingo, ligada ao tema do momento.
+
+## Conclusão da Fase 2
+Os mais fracos são **Gacha, Moon⭐Duo! e Café**. A ordem da Fase 3 continua: Gacha, Café, Handshake; Moon⭐Duo! entra junto com o Photo⭐Studio!.

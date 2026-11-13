@@ -44,9 +44,9 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 ## Planejamento (fases)
 - **Fase 0:** registro de lugares. ✅
 - **Fase 1:** mapa da cidade. ✅
-- **Fase 2:** raio-X dos jogos atuais. A primeira leva (Café, Handshake, Gacha) está em `docs/RAIOX_JOGOS.md`; falta a segunda leva.
+- **Fase 2:** raio-X dos jogos atuais, em `docs/RAIOX_JOGOS.md`. ✅
 - **Fase 3:** melhorar os jogos atuais, um PR por jogo. Ordem sugerida: Gacha, Café, Handshake.
 - **Fase 4:** jogos novos, na ordem Bloom⭐Garden!, Photo⭐Studio!, Idol⭐Battle!. A casa decorável ainda está em dúvida.
 
 ## Próximo passo
-Segunda leva do raio-X ou início da Fase 3 pelo Gacha (álbum com coleções e garantia). Pergunte ao dono qual dos dois.
+Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

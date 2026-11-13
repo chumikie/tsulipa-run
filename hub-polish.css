@@ -216,6 +216,15 @@ html body .jornalp .jnpodios>.jnpodio .jnvazio{margin:0 8px;padding:12px 10px;bo
  text-align:center;font-weight:700;color:#6b4fa8!important;opacity:1;background:color-mix(in srgb,var(--g1) 8%,#fff)}
 html body .jornalp .jnpodios>.jnpodio .jnvazio::before{content:"🎤 ";}
 
+/* ===== Mapa da cidade (tw-mapa.js) ===== */
+html body #hub .tw-mapa{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:6px auto 0}
+html body #hub .tw-mapa h2.hubbt-mapa{background:linear-gradient(180deg,#8fd7ff,#4a9cf0);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 0 #2f6fc4}
+html body #hub .tw-mapa-rolo{border-radius:24px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+ border:3px solid #fff;background:#cfe9ff;box-shadow:0 6px 0 rgba(70,35,140,.3),0 18px 36px -12px rgba(30,20,90,.45)}
+html body #hub .tw-mapa-rolo::-webkit-scrollbar{display:none}
+html body #hub .tw-mapa canvas{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
+@media (max-width:760px){html body #hub .tw-mapa canvas{width:820px;max-width:none}}
+
 /* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
 @media (prefers-color-scheme:light){
 html:not([data-theme="dark"]) body #hub .hojeinfo{background:#fff;color:#3b2470;border-color:rgba(123,63,240,.2)}

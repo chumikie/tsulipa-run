@@ -63,6 +63,8 @@ jobs:
         run: bash supabase/tests/grupos_nacionais_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify PR71 online records and badges against isolated PostgreSQL
         run: bash supabase/tests/pr71_online_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify Sora 500m reward proposal against isolated PostgreSQL
+        run: bash supabase/tests/sora_reward_pg_integration.sh "${{ job.services.postgres.id }}"
   browser-karaoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

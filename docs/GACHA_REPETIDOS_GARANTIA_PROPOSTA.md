@@ -46,6 +46,13 @@ PGHOST=<socket local> PGPORT=<porta> sh supabase/tests/gacha-po/rodar.sh   # nun
 
 **Comportamento herdado, não alterado:** se a cópia oferecida numa troca pendente for convertida, a troca continua pendente e é recusada no aceite (`sem_repetido_outro`), como já acontece hoje quando a cópia é trocada com outra pessoa.
 
+## Interface pronta e desligada (gacha-po.js)
+
+- Seção "✨ Pó de estrela" dentro do Álbum: saldo, repetidos convertíveis (botão por card), escolha de um card que falta e botão "Resgatar (−5 ✨)". Confirmação na própria tela antes de cada operação.
+- **Desligada por construção:** só aparece quando `gacha_po_status()` existe no banco e responde `ok`. Hoje o Álbum fica exatamente igual.
+- O navegador não calcula nada: mostra o que o servidor devolve. Numa falha de rede, a nova tentativa reenvia a **mesma** requisição (o servidor não repete a operação).
+- Seis idiomas (pt, en, es, id, th, ja). Teste: `node tests/gacha-po-ui.test.js`.
+
 ## Arquivo de implementação de servidor (somente para revisão)
 
 `supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql`

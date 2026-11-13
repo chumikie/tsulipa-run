@@ -24,3 +24,18 @@ button.albumslot{cursor:zoom-in}
 .trform label{display:flex;flex-direction:column;gap:3px;font-weight:800;font-size:13px}
 .trform input,.trform select{font:inherit;padding:6px 8px;border-radius:8px;border:2px solid #d9c7fb;background:#fff}
 #trocaCorpo h3{margin:14px 0 6px;color:var(--b1)}
+/* Pó de estrela (gacha-po.js) — só aparece quando o servidor tem gacha_po_status() */
+.gpo{background:linear-gradient(160deg,#fff7fd,#f3ecff);border-radius:16px;padding:10px 12px;margin:10px 0 6px;color:#3c2a8f;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+.gpo h3{margin:0 0 2px;font-size:16px;color:var(--b1)}.gpo h3 b{color:#ff6fb5}
+.gpo h4{margin:10px 0 6px;font-size:13px}
+.gpoexp,.gpovazio{margin:0;font-size:12px;font-weight:700;color:#7b62b8}
+.gpomsg{margin:6px 0 0;font-weight:800;font-size:13px;color:#b83a9e}
+.gporep{display:flex;flex-wrap:wrap;gap:6px}
+.gpochip{font:inherit;font-size:13px;font-weight:800;color:#3c2a8f;background:#fff;border:2px solid #e2d4ff;border-radius:999px;padding:6px 10px;min-height:38px;cursor:pointer}
+.gpochip i{font-style:normal;color:#ff6fb5}.gpochip:disabled{opacity:.55;cursor:default}
+.gporesg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gporesg select{font:inherit;flex:1 1 140px;min-height:38px;padding:6px 8px;border-radius:10px;border:2px solid #d9c7fb;background:#fff;color:#3c2a8f}
+.gpoconf{background:#fff;border-radius:12px;padding:8px 10px;margin-top:8px;font-weight:700;font-size:13px}
+.gpoconf p{margin:0 0 6px}.gpoconf .btns{margin:0;gap:8px}
+html[data-theme="dark"] .gpo{background:linear-gradient(160deg,#2a2146,#231b3d);color:#eee6ff}
+html[data-theme="dark"] .gpochip,html[data-theme="dark"] .gpoconf,html[data-theme="dark"] .gporesg select{background:#1d1733;color:#eee6ff;border-color:#4a3c7a}

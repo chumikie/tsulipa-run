@@ -37,7 +37,7 @@
     sec.innerHTML='<h2 class="hubblocot hubbt-mapa"></h2><div class="tw-mapa-rolo"><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
     var ref=document.getElementById('hubHoje');menu.insertBefore(sec,ref||menu.firstChild);
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
-    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=2';
+    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=3';
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     cv.addEventListener('click',function(e){var l=achar(e);if(!l)return;var c=card(l);if(c&&!c.disabled)c.click();});
@@ -68,6 +68,8 @@
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     if(hover){var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.22)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([10,8]);
       rr(b[0],b[1],b[2]-b[0],b[3]-b[1],26);ctx.fill();ctx.stroke();ctx.restore();}
+    ceu(tm);
+    andar(tm);
     idols(tm);
     TXT.forEach(texto);
     TW_LUGARES.forEach(function(l){if(l.card.indexOf('#hubCards')!==0)return;var e=estado(l);if(!e)return;var b=l.box,x=b[2]-18,y=b[1]+16+Math.sin(tm*3+b[0])*4;
@@ -77,6 +79,58 @@
     });
   }
 
+
+  // ruas (mesma geometria da arte): curva quadrática da praça até a porta de cada lugar
+  var PRACA=[800,610];
+  function rua(dest,curva){var x1=PRACA[0],y1=PRACA[1],x2=dest[0],y2=dest[1],mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1;
+    return [x1,y1,mx-dy*curva,my+dx*curva,x2,y2];}
+  function noPonto(r,u){var a=1-u;return [a*a*r[0]+2*a*u*r[2]+u*u*r[4],a*a*r[1]+2*a*u*r[3]+u*u*r[5]];}
+  var RUAS=[rua([1150,470],-.12),rua([330,670],-.1),rua([1110,800],-.12),rua([500,800],.1)];
+  var RUA_CASA=rua([800,830],0);
+  // quem passeia: o seu Idol (casa ↔ praça) e Idols reais da vitrine do site (nada inventado)
+  function passeantes(){
+    var l=[];
+    try{if(typeof hubAv==='function'&&typeof perfChar==='function')l.push({av:hubAv(),rua:RUA_CASA,u0:.4,u1:.84,fase:0});}catch(e){}
+    try{if(typeof hubIdolsDados!=='undefined'&&hubIdolsDados&&Array.isArray(hubIdolsDados.idols))
+      hubIdolsDados.idols.slice(0,RUAS.length).forEach(function(p,i){if(p&&p.av)l.push({av:p.av,rua:RUAS[i],u0:.36,u1:.86,fase:(i+1)*.27});});}catch(e){}
+    return l;
+  }
+  function andar(tm){
+    if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
+    var sc=1.4,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
+    try{
+      state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';frame=tm*60;
+      passeantes().forEach(function(p){
+        var ciclo=((tm/22+p.fase)%1+1)%1,u,dir,mov;   // 22 s: ida, pausa, volta, pausa
+        if(ciclo<.42){u=ciclo/.42;dir=1;mov=1;}else if(ciclo<.5){u=1;dir=1;mov=0;}else if(ciclo<.92){u=1-(ciclo-.5)/.42;dir=-1;mov=1;}else{u=0;dir=-1;mov=0;}
+        u=p.u0+(p.u1-p.u0)*(u*u*(3-2*u));
+        var pt=noPonto(p.rua,u),pt2=noPonto(p.rua,Math.min(1,u+.01)),vx=(pt2[0]-pt[0])*dir,c=perfChar(p.av);
+        var bob=mov?-Math.abs(Math.sin(tm*9))*2.2*sc:0;
+        ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(pt[0],pt[1],8*sc,1.7*sc,0,0,7);ctx.fill();
+        ctx.save();if(vx<0){ctx.translate(pt[0],0);ctx.scale(-1,1);ctx.translate(-pt[0],0);}
+        perfCharContorno(ctx,pt[0]-15*sc,pt[1]-44*sc+bob,sc,function(){charPose=mov?'':(p.av.pose||'');drawChar(c,0,0,mov?1:0,+p.av.expr||2,false);});
+        ctx.restore();
+      });
+    }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa andar',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
+  }
+  // hora do dia em Brasília: dia, entardecer e noite (janelas acesas)
+  var LUZES=[[1150,330],[1150,380],[520,400],[330,620],[500,750],[800,780],[1300,650],[1110,760],[990,550],[800,300],[300,360]];
+  function horaBR(){if(typeof window.TW_MAPA_HORA==='number')return window.TW_MAPA_HORA;
+    try{return +new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'numeric',hourCycle:'h23'}).format(new Date());}catch(e){return new Date().getHours();}}
+  function ceu(tm){
+    var h=horaBR();if(h>=6&&h<17)return;
+    ctx.save();
+    if(h>=17&&h<19){ctx.globalCompositeOperation='multiply';ctx.fillStyle='rgba(255,186,150,.75)';ctx.fillRect(OX,OY,MW,MH);}
+    else{
+      ctx.globalCompositeOperation='multiply';ctx.fillStyle='rgba(70,60,170,.55)';ctx.fillRect(OX,OY,MW,MH);
+      ctx.globalCompositeOperation='lighter';
+      LUZES.forEach(function(l,i){var r=52+Math.sin(tm*2+i)*3,g=ctx.createRadialGradient(l[0],l[1],0,l[0],l[1],r);
+        g.addColorStop(0,'rgba(255,190,90,.32)');g.addColorStop(1,'rgba(255,190,90,0)');ctx.fillStyle=g;ctx.fillRect(l[0]-r,l[1]-r,r*2,r*2);});
+      ctx.globalCompositeOperation='source-over';
+      for(var i=0;i<26;i++){var sx=OX+((i*397)%MW),sy=OY+((i*211)%230),a=.4+.6*Math.abs(Math.sin(tm*1.5+i));ctx.fillStyle='rgba(255,247,190,'+a.toFixed(2)+')';ctx.fillRect(sx,sy,3,3);}
+    }
+    ctx.restore();
+  }
   // o TsuLiPa (trio) com os pets na praça, desenhado com as mesmas funções do palco (drawChar + contorno de adesivo)
   var IDOL_X=[724,800,876],IDOL_CHAO=680,IDOL_SC=1.65;
   function idols(tm){

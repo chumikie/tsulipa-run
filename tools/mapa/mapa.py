@@ -10,7 +10,7 @@ def carregar_icones():
     if arquivo.is_file():
         return json.loads(arquivo.read_text(encoding='utf-8'))
     original = (Path(__file__).resolve().parents[2] / 'mapa-cidade.svg').read_text(encoding='utf-8')
-    codificados = re.findall(r"<image\\b[^>]*href='data:image/svg\\+xml;utf8,([^']+)'", original)
+    codificados = re.findall(r"<image\b[^>]*href='data:image/svg\+xml;utf8,([^']+)'", original)
     ordem = ['hubduo', 'hubhandshake', 'hubcafe', 'hubpet', 'hubpet',
              'hubperf', 'hubgacha', 'hubloja', 'tw-hubgame-karaoke',
              'tw-hubgame-karaoke', 'hubjornal', 'hubfa', 'hubrun',

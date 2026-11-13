@@ -254,6 +254,54 @@ html body #hub .tw-mapa.mexeu .tw-mapa-dica{opacity:0}
  html body #hub .tw-mapa.aberto .tw-mapa-dica{display:block}
 }
 
+/* Mapa Vivo⭐ (PR #88): visão panorâmica no celular, sem alterar a rua ampliada.
+   A ilha inteira fica visível; os atalhos mantêm os nomes legíveis e clicáveis. */
+html body #hub .tw-mapa-visao,
+html body #hub .tw-mapa-bairros{display:none}
+html body #hub .tw-mapa-visao[hidden],
+html body #hub .tw-mapa-bairros[hidden]{display:none!important}
+@media(max-width:760px){
+  html body #hub .tw-mapa.aberto[data-cena="mundo"] .tw-mapa-visao{
+    display:flex;justify-content:flex-end;padding:0 2px;
+  }
+  html body #hub .tw-mapa-zoom{
+    min-height:38px;border:2px solid #fff;border-radius:999px;
+    background:#fff;color:#6530c0;padding:7px 14px;
+    font:400 12px/1.25 "Mochiy Pop One",sans-serif;
+    box-shadow:0 3px 0 rgba(110,65,181,.22);cursor:pointer;
+  }
+  html body #hub .tw-mapa-zoom:focus-visible,
+  html body #hub .tw-mapa-bairros button:focus-visible{
+    outline:3px solid #7b3ff0;outline-offset:2px;
+  }
+  html body #hub .tw-mapa[data-cena="mundo"]:not(.tw-mapa-zoomed) .tw-mapa-rolo{
+    height:auto;overflow:hidden;overscroll-behavior:auto;
+  }
+  html body #hub .tw-mapa[data-cena="mundo"]:not(.tw-mapa-zoomed) canvas{
+    width:100%;max-width:100%;height:auto;touch-action:manipulation;
+  }
+  html body #hub .tw-mapa[data-cena="mundo"].tw-mapa-zoomed .tw-mapa-rolo{
+    height:min(62vh,480px);overflow:auto;
+  }
+  html body #hub .tw-mapa[data-cena="mundo"].tw-mapa-zoomed canvas{
+    width:1080px;max-width:none;touch-action:pan-x pan-y;
+  }
+  html body #hub .tw-mapa.aberto[data-cena="mundo"] .tw-mapa-bairros{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;width:100%;min-width:0;
+  }
+  html body #hub .tw-mapa-bairros button{
+    display:flex;align-items:center;justify-content:flex-start;gap:7px;
+    min-width:0;min-height:44px;text-align:left;
+    border:2px solid #fff;border-radius:14px;padding:7px 9px;
+    color:#53318f;background:linear-gradient(180deg,#fff,#f6eeff);
+    box-shadow:0 2px 0 rgba(104,68,175,.19);cursor:pointer;
+    font:400 11px/1.25 "Mochiy Pop One",sans-serif;
+  }
+  html body #hub .tw-mapa-bairros button span:first-child{flex:none;font-size:16px}
+  html body #hub .tw-mapa-bairros button span:last-child{overflow-wrap:anywhere}
+  html body #hub .tw-mapa[data-cena="mundo"] .tw-mapa-dica{display:none}
+}
 /* ===== Moon⭐Duo!: pedido de cena do dia (duo-pedido.js) ===== */
 .duo-pedido{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:16px;color:#fff;
  background:linear-gradient(110deg,#5a43c9,#9b6bff);border:2px solid rgba(255,255,255,.8);box-shadow:0 4px 0 rgba(44,29,120,.45)}

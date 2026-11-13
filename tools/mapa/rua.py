@@ -3,12 +3,12 @@ import random, sys
 random.seed(5)
 # Sem argumento preserva a prova Harajuku; com argumento gera a rua do bairro.
 CENAS = {
- 'palco': ('🎤 Distrito do Palco', ['# Handshake⭐Event!', '# Center⭐Run!', '# Karaoke⭐Time!'], '#7b3ff0'),
- 'harajuku': ('🛍️ Rua Harajuku', ['# Happy⭐Cafe!', '# Star⭐Gacha!', '# Zipper⭐Shop!'], '#7b3ff0'),
- 'fofo': ('🏡 Bairro Fofo', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
+ 'palco': ('🎤 Star Stage', ['# Handshake⭐Event!', '# Center⭐Run!', '# Karaoke⭐Time!'], '#7b3ff0'),
+ 'harajuku': ('🛍️ Rua das Vitrines', ['# Happy⭐Cafe!', '# Star⭐Gacha!', '# Zipper⭐Shop!'], '#7b3ff0'),
+ 'fofo': ('🏡 Vila das Flores', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
  'praca': ('⛲ Praça Central', ['# Pedido de fã', None, '# Idol⭐News!'], '#4169e1'),
- 'arena': ('🏟️ Arena', [None, None, None], '#9b30d9'),
- 'ceu': ('☁️ Céu', ['# Sora⭐Jump!', '# Moon⭐Duo!', None], '#4169e1')
+ 'arena': ('🏟️ Star Arena', [None, None, None], '#9b30d9'),
+ 'ceu': ('☁️ Jardim das Nuvens', ['# Sora⭐Jump!', '# Moon⭐Duo!', None], '#4169e1')
 }
 bairro = sys.argv[1] if len(sys.argv) > 1 else 'harajuku'
 if bairro not in CENAS:

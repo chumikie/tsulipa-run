@@ -329,9 +329,30 @@
         if(l){var e=estado(l);if(e&&e.alerta)qtd++;}
       });
       if(qtd)indicador(pos[id][0],pos[id][1],'alerta',tm,qtd);
+      var nm=0;BAIRROS[id].lugares.forEach(function(lid){if(lid)nm+=missoesDe(lid).length;});
+      if(nm){var mx=pos[id][0],my=pos[id][1]-(qtd?42:0);   // em cima do alerta (!) do bairro
+        ctx.save();ctx.translate(mx,my+Math.sin(tm*2.4+mx*.01)*2.2);ctx.fillStyle='#fff';ctx.strokeStyle='#7b3ff0';ctx.lineWidth=3;
+        rr(-26,-17,52,34,17);ctx.fill();ctx.stroke();ctx.font='17px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillStyle='#4b2a9e';ctx.fillText('🎯'+nm,0,1);ctx.restore();}
     });
   }
+  // Missões do dia (as mesmas da Agenda do Idol, vindas do servidor em hubMisDados) penduradas no lugar certo.
+  var MIS_LUGAR={corra2:'run',corra3:'run',corra5:'run',estrelas50:'run',estrelas100:'run',estrelas150:'run',estrelas300:'run',
+    pontos2000:'run',pontos5000:'run',tsulipa:'run',handshake:'handshake',cafe:'cafe',duo:'duo',pet:'pet',mini:'pet',coracao:'perfil',recado:'perfil'};
+  function missoesDe(lugar){
+    var L=(typeof hubMisDados!=='undefined'&&Array.isArray(hubMisDados))?hubMisDados:[];
+    return L.filter(function(m){return m&&MIS_LUGAR[m.k]===lugar&&+m.meta>0&&!m.feito;});
+  }
+  function balaoMissao(x,y,m,tm){
+    var ic=(typeof HUB_MIS!=='undefined'&&HUB_MIS[m.k]&&HUB_MIS[m.k][0])||'🎯',meta=Math.max(1,+m.meta||1),prog=Math.min(meta,Math.max(0,+m.prog||0));
+    var txt=ic+' '+(prog>=meta?'✓':prog+'/'+meta);
+    ctx.save();ctx.translate(x,y+Math.sin(tm*2+x*.01)*2);
+    ctx.font='24px "Mochiy Pop One",sans-serif';var w=ctx.measureText(txt).width+30;
+    ctx.fillStyle=prog>=meta?'#b6ff3b':'#fff';ctx.strokeStyle='#7b3ff0';ctx.lineWidth=3;rr(-w/2,-20,w,40,20);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#4b2a9e';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,0,1);ctx.restore();
+  }
   function alertasRua(tm){
+    BAIRROS[cena].lugares.forEach(function(id,i){if(!id)return;var ms=missoesDe(id);if(ms.length)balaoMissao([300,800,1300][i]-150,360,ms[0],tm);});
     var centros=[300,800,1300];
     BAIRROS[cena].lugares.forEach(function(id,i){
       if(!id)return;

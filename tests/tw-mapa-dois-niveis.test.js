@@ -24,7 +24,7 @@ const ctx = new Proxy({}, {
 });
 function node(name) {
   return {
-    name, hidden:false, disabled:false,
+    name, hidden:false, disabled:false, style:{},
     classList:{contains(){return false;},toggle(){},add(){}},
     addEventListener(event,handler) {eventHandlers[name+':'+event]=handler;},
     setAttribute(key,v){this[key]=v;},

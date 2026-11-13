@@ -86,3 +86,47 @@ html body #hub .hubhoje .hubenc b,html body #hub .hubhoje .hubjornal b,html body
 html body #hub #hubHojeT{flex-wrap:nowrap;white-space:nowrap}
 html body #hub #hubHojeT .hojeinfo{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 @media (max-width:480px){html body #hub #hubHojeT{gap:6px;padding:5px 10px 6px;font-size:15px}html body #hub #hubHojeT small{font-size:10px}html body #hub #hubHojeT .hojeinfo{font-size:12px;padding:2px 8px}}
+/* ===== Layout: barra fixa com você, destaque do dia, menos texto e navegação no celular ===== */
+html body #hub .tw-hud{position:sticky;top:8px;z-index:30;display:flex;align-items:center;gap:10px;margin:0 auto 12px;max-width:760px;width:calc(100% - 16px);padding:6px 10px 6px 6px;border-radius:999px;
+  background:linear-gradient(180deg,rgba(52,38,128,.94),rgba(33,24,92,.94));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 0 rgba(10,5,40,.4),0 14px 26px -14px rgba(0,0,0,.7);backdrop-filter:blur(8px)}
+html body #hub .tw-hud button{font:inherit;color:inherit;border:0;cursor:pointer}
+html body #hub .tw-hud-eu{display:flex;align-items:center;gap:8px;background:none;padding:0;min-width:0;flex:1;text-align:left}
+html body #hub .tw-hud-eu canvas{width:40px;height:40px;border-radius:50%;background:linear-gradient(160deg,#ff86bf,#7b3ff0);box-shadow:0 0 0 2px #fff,0 2px 0 3px rgba(10,5,40,.35);flex:none}
+html body #hub .tw-hud-txt{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+html body #hub .tw-hud-txt b{font:400 15px 'Mochiy Pop One','M PLUS Rounded 1c',sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #hub .tw-hud-txt small{font-size:11px;font-weight:800;color:#ffb3d9}
+html body #hub .tw-hud-stats{display:flex;gap:6px;flex:none}
+html body #hub .tw-hud-st{font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;background:linear-gradient(180deg,#ffe48a,#ffc23d);color:#5a3200;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 0 rgba(120,60,0,.35);white-space:nowrap}
+html body #hub .tw-hud-rec{background:linear-gradient(180deg,#c9b4ff,#9b6bff);color:#fff;text-shadow:0 1px 0 rgba(40,10,110,.4)}
+html body #hub .tw-hud-entrar{padding:6px 14px;border-radius:999px;background:linear-gradient(180deg,#ff8cc6,#ff5aa5)!important;color:#fff!important;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 rgba(150,20,80,.4)}
+html body #hub .tw-destaque{position:relative;display:flex;align-items:center;gap:14px;width:100%;max-width:760px;margin:6px auto 14px;padding:16px 18px;border-radius:24px;border:2px solid rgba(255,255,255,.35);cursor:pointer;text-align:left;color:#fff;font:inherit;
+  background:linear-gradient(120deg,#ff5aa5,#ff9f6b 55%,#ffd36b);box-shadow:inset 0 0 0 3px rgba(255,255,255,.2),inset 0 1px 0 rgba(255,255,255,.5),0 6px 0 rgba(120,30,80,.35),0 22px 34px -18px rgba(255,90,165,.65);animation:twDestaque 3.2s ease-in-out infinite}
+html body #hub .tw-destaque-tag{position:absolute;top:-11px;left:18px;font:800 11px 'M PLUS Rounded 1c',sans-serif;letter-spacing:.5px;padding:3px 10px;border-radius:999px;background:#fff;color:#ff3d8f;box-shadow:0 2px 0 rgba(120,30,80,.25)}
+html body #hub .tw-destaque-emo{font-size:40px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18));flex:none}
+html body #hub .tw-destaque-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+html body #hub .tw-destaque-txt b{font:400 20px 'Mochiy Pop One','M PLUS Rounded 1c',sans-serif;text-shadow:0 2px 0 rgba(120,30,80,.3)}
+html body #hub .tw-destaque-txt small{font-weight:800;font-size:13px;opacity:.95}
+html body #hub .tw-destaque-ir{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#ff3d8f;font-size:15px;box-shadow:0 3px 0 rgba(120,30,80,.3)}
+@keyframes twDestaque{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+/* menos texto: o japonês fica nas etiquetas das seções, não em cada card */
+html body #hub #hubCards .hubcard small.tw-hubgame-jp,html body #hub .hubhoje small[lang="ja"]{display:none}
+/* navegação de baixo (só celular, só no hub) */
+.tw-nav{display:none}
+@media (max-width:760px){
+  body.hubon .tw-nav{display:flex;position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:60;justify-content:space-around;padding:6px 4px;border-radius:22px;
+    background:linear-gradient(180deg,rgba(52,38,128,.96),rgba(30,22,86,.96));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 24px -8px rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+  body.hubon .tw-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0;border:0;border-radius:14px;background:none;color:#fff;font:800 10px 'M PLUS Rounded 1c',sans-serif;cursor:pointer}
+  body.hubon .tw-nav button span{font-size:20px;line-height:1.1}
+  body.hubon .tw-nav button:active{background:rgba(255,255,255,.12)}
+  body.hubon #hub{padding-bottom:84px}
+  html body #hub .tw-hud{top:6px}
+  html body #hub .tw-hud-rec{display:none}
+  html body #hub .tw-destaque{padding:14px}
+  html body #hub .tw-destaque-txt b{font-size:17px}
+}
+html[data-theme="light"] body #hub .tw-hud,html[data-theme="light"] body.hubon .tw-nav{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(245,238,255,.95));border-color:rgba(123,63,240,.18);color:#3b2470}
+html[data-theme="light"] body #hub .tw-hud-txt b{color:#3b2470}
+html[data-theme="light"] body.hubon .tw-nav button{color:#3b2470}
+@media (prefers-reduced-motion:reduce){html body #hub .tw-destaque{animation:none}}
+html body #hub .tw-hud ~ * #hubLoginCta,html body #hub #hubLoginCta{display:none!important}
+html[data-theme="light"] body #hub .tw-hud-txt small{color:#c02a7a}

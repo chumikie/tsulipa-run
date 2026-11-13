@@ -21,10 +21,12 @@
     return {permitido:true,semPremio:tipo==='nada'?semPremioAnterior+1:0,
       garantiaAtivada:semPremioAnterior>=PITY_LIMITE};
   }
-  function duplicata(quantidadePrevia,tipo){
-    inteiro(quantidadePrevia,'quantidade prévia');
-    // O servidor deve contar apenas eventos tipo card, sem aniversário nem card próprio.
-    return tipo==='card'&&quantidadePrevia>=1?PO_POR_DUPLICATA:0;
+  function converter(qtdAtual,teveCardDoGacha){
+    inteiro(qtdAtual,'quantidade atual');
+    // Conversão VOLUNTÁRIA: entrega uma cópia, mantém a primeira do Álbum.
+    // O servidor confere card_movimentos, o log de giros e o lock das trocas.
+    if(!teveCardDoGacha||qtdAtual<2)return {ok:false,erro:'sem_repetido'};
+    return {ok:true,qtdDepois:qtdAtual-1,poRecebido:PO_POR_DUPLICATA};
   }
   function troca(saldo,custo,disponiveis,escolhido){
     inteiro(saldo,'saldo');inteiro(custo,'custo');
@@ -35,5 +37,5 @@
     return {ok:true,saldoDepois:saldo-custo,card:escolhido};
   }
   return Object.freeze({PITY_LIMITE,PO_POR_DUPLICATA,CUSTO_RESGATE,
-    resultado,duplicata,troca});
+    resultado,converter,troca});
 }));

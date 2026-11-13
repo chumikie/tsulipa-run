@@ -23,6 +23,8 @@
   var NOMES={'Meu Perfil':{en:'My Profile',es:'Mi perfil',id:'Profilku',th:'โปรไฟล์ของฉัน',ja:'マイプロフィール'},
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
     'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'}};
+  var PASSEIA={pt:'Passear pela cidade',en:'Stroll around town',es:'Pasear por la ciudad',id:'Jalan-jalan keliling kota',th:'เดินเล่นในเมือง',ja:'まちをおさんぽ'};
+  var FECHA={pt:'Fechar o mapa',en:'Close the map',es:'Cerrar el mapa',id:'Tutup peta',th:'ปิดแผนที่',ja:'マップを閉じる'};
   var TIT={pt:'Mapa da cidade',en:'City map',es:'Mapa de la ciudad',id:'Peta kota',th:'แผนที่เมือง',ja:'まちのマップ'};
   var centrado=false,arte=null,cv=null,ctx=null,hover=null,anim=0,visivel=false;
   function lang(){return (typeof LANG==='string'&&LANG)||'pt';}
@@ -34,7 +36,7 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu||document.getElementById('twMapa'))return;
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<h2 class="hubblocot hubbt-mapa"></h2><div class="tw-mapa-rolo"><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
     var ref=document.getElementById('hubHoje');menu.insertBefore(sec,ref||menu.firstChild);
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=3';
@@ -44,9 +46,18 @@
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(desenhar);
+    sec.querySelector('.tw-mapa-botao').addEventListener('click',function(){abrir(!aberto);});
+    var salvo=false;try{salvo=localStorage.getItem('tw_mapa_aberto')==='1';}catch(e){}
+    abrir(salvo,true);
     textos();
   }
-  function textos(){var h=document.querySelector('#twMapa h2');if(h)h.textContent='🗺️ '+(TIT[lang()]||TIT.pt);
+  var aberto=false;
+  function abrir(sim,inicio){aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
+    sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
+    if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
+    textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
+  function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
+    if(b)b.textContent=TIT[lang()]||TIT.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
     if(cv)cv.setAttribute('aria-label',TIT[lang()]||TIT.pt);}
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');if(centrado||!r||r.scrollWidth<=r.clientWidth)return;r.scrollLeft=(r.scrollWidth-r.clientWidth)/2;centrado=true;}
   function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY,m=null,ma=1e9;

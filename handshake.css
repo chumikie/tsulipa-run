@@ -26,3 +26,11 @@
 /* lightstick (2º detalhe do fã, da 3ª rodada em diante) */
 .hscor{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;border:2px solid #3c2a8f;box-shadow:0 0 8px rgba(255,255,255,.9)}
 .hscores .hsop .hscor{width:30px;height:30px;margin:2px auto 4px;display:block}
+/* flores do Bloom⭐Garden! na mesa (flores.js) */
+.hsflores{background:#fff7fd;border-radius:14px;padding:8px 10px;margin:6px 0;text-align:center;color:#3c2a8f}
+.hsflores>b{display:block;font-size:13px;margin-bottom:6px}
+.hsflores>div{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.hsflor{font:inherit;font-size:13px;font-weight:800;color:#3c2a8f;background:#fff;border:2px solid #f2c6e0;border-radius:999px;padding:6px 10px;min-height:38px;cursor:pointer}
+.hsflor i{font-style:normal;color:#e8457a}
+.hsflor.on{background:#ffe3f1;border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.25)}
+.hsflormsg{font-weight:800;color:#b83a9e}

@@ -3,12 +3,12 @@ import random, sys
 random.seed(5)
 # Sem argumento preserva a prova Harajuku; com argumento gera a rua do bairro.
 CENAS = {
- 'palco': ('Distrito do Palco', ['# Handshake⭐Event!', '# Center⭐Run!', '# Karaoke⭐Time!'], '#7b3ff0'),
- 'harajuku': ('Rua Harajuku', ['# Happy⭐Cafe!', '# Star⭐Gacha!', '# Zipper⭐Shop!'], '#7b3ff0'),
- 'fofo': ('Bairro Fofo', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
- 'praca': ('Praça Central', ['# Pedido de fã', None, '# Idol⭐News!'], '#4169e1'),
- 'arena': ('Arena', [None, None, None], '#9b30d9'),
- 'ceu': ('Céu', ['# Sora⭐Jump!', '# Moon⭐Duo!', None], '#4169e1')
+ 'palco': ('🎤 Distrito do Palco', ['# Handshake⭐Event!', '# Center⭐Run!', '# Karaoke⭐Time!'], '#7b3ff0'),
+ 'harajuku': ('🛍️ Rua Harajuku', ['# Happy⭐Cafe!', '# Star⭐Gacha!', '# Zipper⭐Shop!'], '#7b3ff0'),
+ 'fofo': ('🏡 Bairro Fofo', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
+ 'praca': ('⛲ Praça Central', ['# Pedido de fã', None, '# Idol⭐News!'], '#4169e1'),
+ 'arena': ('🏟️ Arena', [None, None, None], '#9b30d9'),
+ 'ceu': ('☁️ Céu', ['# Sora⭐Jump!', '# Moon⭐Duo!', None], '#4169e1')
 }
 bairro = sys.argv[1] if len(sys.argv) > 1 else 'harajuku'
 if bairro not in CENAS:
@@ -69,7 +69,7 @@ for vx in (40, 1560):
     A(f"<rect x='{vx-16}' y='{580}' width='32' height='26' rx='6' fill='#ff9bd0'/>")
     G['arvore'](vx, 584, .7)
 # topo: título do bairro e volta para o mapa
-A(f"<g transform='translate(30,26)'><rect width='280' height='56' rx='28' fill='#fff' opacity='.92'/><text x='140' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='24' fill='{cor_tema}'>{titulo}</text></g>")
+A(f"<g transform='translate(30,26)'><rect width='280' height='56' rx='28' fill='#fff' opacity='.92'/><text x='140' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='{21 if bairro == 'palco' else 24}' fill='{cor_tema}'>{titulo}</text></g>")
 A(f"<g transform='translate({W-200},28)'><rect width='170' height='48' rx='24' fill='{cor_tema}'/><text x='85' y='32' text-anchor='middle' font-family='Mochiy Pop One' font-size='18' fill='#fff'>◀ Mapa</text></g>")
 salvar('rua' if len(sys.argv) == 1 else 'rua_' + bairro, W, H)
 print('ok')

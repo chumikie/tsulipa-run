@@ -38,7 +38,6 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
   - a arte é gerada por um script Python que não está no repositório. Para mudar a arte, edite o SVG ou peça para recriar o gerador.
 - **Pendências do dono:**
   - merges;
-  - aplicar `supabase/sql/admin_corrida_contadores.sql`;
   - limpar os branches já mergeados.
 
 ## Planejamento (fases)
@@ -51,7 +50,7 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 ## Banco (atualizado 13/11, à tarde)
 - **Já estava em produção:** `album_cards()` (o Álbum e as metas de coleção funcionam).
 - **Aplicado hoje, com o OK do dono:** hora extra do Handshake (8 filas, até 60 respostas), Sora 500 m com anti-cheat (prêmio ★25/dia, ≥20 s e ≤25 m/s), Café "Dois no balcão" (`cafe_run_pedidos`, `cafe_run_etapa2`, `cafe_run_finalizar`). Arquivos em `supabase/sql/aplicado/20261113_*.sql`.
-- **Falta:** `supabase/sql/admin_corrida_contadores.sql` (o MCP cancela por causa do DELETE; o dono roda no SQL Editor).
+- **Também aplicado hoje:** `admin_corrida` (excluir corrida no admin agora desfaz os contadores).
 - **Merges que destravam no site:** PR #88 (visual, mapa, hora extra no site), PR #89 (Café Dois no balcão), PR #74 (tela do prêmio do Sora; o SQL dele foi substituído pela versão com anti-cheat — não aplicar o SQL do #74).
 
 ## Próximo passo

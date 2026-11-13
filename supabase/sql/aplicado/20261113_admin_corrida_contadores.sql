@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 (OK do dono). Só admins (eh_admin); anon sem acesso.
 -- Moderação: ao excluir uma corrida, desfaz o que o gatilho lb_contar somou
 -- (1 corrida; +1 Center se a pontuação era 5000+). Dias jogados, estrelas e insígnias ficam como estão.
 create or replace function public.admin_corrida(p_id bigint) returns json language plpgsql security definer set search_path to 'public' as $function$

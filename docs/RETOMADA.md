@@ -57,5 +57,25 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 - Retrato real em `docs/ECONOMIA_ESTRELAS.md` (o teto de ★100/dia do Center ESTÁ em produção desde 02/11; o README-center-run-100.md está desatualizado).
 - **Aplicado em 13/11:** bônus do dia, ★10/dia no Café e no Handshake (1ª partida verificada com 600+ pontos). Arquivo em `supabase/sql/aplicado/20261113_bonus_jogo_dia.sql`.
 
+## Mapa em 2 níveis (aprovado pelo dono em 13/11)
+O mapa de 1 nível ficou lotado. Novo modelo:
+1. **Mapa do mundo** (`tools/mapa/mundo2.py`, prova em `docs/mapa-provas/mundo_v2.jpg`): os prédios reais agrupados em 6 bairros, só 6 plaquinhas (nome do bairro + ícones do que tem dentro).
+   - Distrito do Palco: Handshake, Center, Karaoke.
+   - Rua Harajuku: Café, Gacha, Shop.
+   - Bairro Fofo: Pet, Minha casa, horta "em breve" (Bloom⭐Garden!).
+   - Praça Central: fonte (Encontro do dia), Idol⭐News!, Pedido de fã.
+   - Arena: "?" (Idol⭐Battle!).
+   - Céu (única coisa no alto): Sora, Moon⭐Duo!, "?" (Photo⭐Studio!).
+2. **Cena da rua de cada bairro** (modelo: `tools/mapa/rua.py`, prova em `docs/mapa-provas/rua_harajuku.jpg`): tocar no bairro abre a rua dele, com os prédios grandes lado a lado (escala ~2), calçada, chão de pedrinha onde os Idols passeiam e botão "◀ Mapa". No celular a rua rola para os lados.
+
+**Ordem de implementação (nada disso está no código ainda):**
+1. Gerar `mapa-mundo.svg` (mundo2.py + sep.py) e as 6 ruas (copiar rua.py para cada bairro).
+2. Em `tw-mapa.js`: estado `cena = 'mundo' | <bairro>`; caixas de clique por bairro no mundo; na rua, caixas por prédio usando o mesmo `TW_LUGARES` (clique chama o `click()` do card original).
+3. Levar para a rua: passeantes (seu Idol + Idols da vitrine + pets), hora do dia (`horaBR`, `ceu`), alertas (!) e cadeados. No mundo ficam só alerta somado por bairro e o trio no palco.
+4. Botão "◀ Mapa", tecla Esc e `history` (voltar do celular volta ao mundo).
+5. Jogos novos entram ocupando o "?" do bairro.
+6. Testar desktop + celular (rolagem, cliques, tema escuro) e os testes `for f in tests/*.js; do node $f; done`.
+
 ## Próximo passo
+Implementar o mapa em 2 níveis (seção acima), no mesmo PR #88 (branch `visual/layout-hud`). Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

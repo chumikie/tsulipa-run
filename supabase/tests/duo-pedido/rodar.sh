@@ -18,7 +18,7 @@ create table private.bonus_jogo_dia(user_id uuid not null references public.play
 insert into public.players(id,nick,stars) values ('00000000-0000-0000-0000-00000000000a','Ana',10),('00000000-0000-0000-0000-00000000000b','Bia',0),('00000000-0000-0000-0000-00000000000c','Cai',0);
 update public.players set bloqueado=true where nick='Cai';
 SQL
-$P -f ../../sql/proposta/20261113_duo_pedido_premio.sql >/dev/null
+$P -f ../../sql/aplicado/20261113_duo_pedido_premio.sql >/dev/null
 r(){ $P -c "select set_config('request.jwt.claim.sub','$1',false);" -c "$2" | tail -1; }
 A=00000000-0000-0000-0000-00000000000a; C=00000000-0000-0000-0000-00000000000c
 ok(){ [ "$1" = "$2" ] && echo "  ok: $3" || { echo "FALHOU: $3 (veio $1)"; exit 1; }; }

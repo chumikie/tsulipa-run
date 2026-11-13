@@ -17,7 +17,7 @@ insert into private.dia_teste values ('2026-11-13');
 create function public.hoje_br() returns date language sql stable set search_path to 'public' as $$ select d from private.dia_teste $$;
 insert into public.players(id,nick,stars) values ('00000000-0000-0000-0000-00000000000a','Ana',100),('00000000-0000-0000-0000-00000000000b','Bia',10);
 SQL
-$P -f ../../sql/proposta/20261113_bloom_garden.sql >/dev/null
+$P -f ../../sql/aplicado/20261113_bloom_garden.sql >/dev/null
 A=00000000-0000-0000-0000-00000000000a; B=00000000-0000-0000-0000-00000000000b
 r(){ $P -c "select set_config('request.jwt.claim.sub','$1',false);" -c "$2" | tail -1; }
 dia(){ $P -c "update private.dia_teste set d='$1'" >/dev/null; }

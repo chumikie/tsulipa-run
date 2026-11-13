@@ -20,7 +20,7 @@ for(const l in T)for(const k in T.pt){assert.ok(T[l][k]&&T[l][k].trim(),l+'.'+k)
   const rpcs=[...src.matchAll(/rpc\('([a-z_]+)'/g)].map(m=>m[1]),acoes=[...src.matchAll(/acao\('([a-z_]+)'/g)].map(m=>m[1]);
   assert.deepEqual([...new Set([...rpcs,...acoes])].sort(),['jardim_colher','jardim_estado','jardim_plantar','jardim_regar']);
   assert.ok(!/brs48cr_(?!st)/.test(src),'não cria chaves brs48cr_ novas');
-  const sql=fs.readFileSync(path.join(raiz,'supabase/sql/proposta/20261113_bloom_garden.sql'),'utf8');
+  const sql=fs.readFileSync(path.join(raiz,'supabase/sql/aplicado/20261113_bloom_garden.sql'),'utf8');
   assert.ok(!/stars\s*=\s*stars\s*\+/.test(sql),'o jardim nunca dá ★ no servidor');
   console.log('OK: Bloom⭐Garden! — seis idiomas, só RPCs do jardim, desligado sem servidor');
 })().catch(e=>{console.error(e);process.exit(1);});

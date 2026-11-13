@@ -1,6 +1,6 @@
 /* TsuLiPa⭐World — Bloom⭐Garden! (Fase 4, versão 1).
    4 canteiros na Vila das Flores: semente custa ★, 1 rega por dia (Brasília), a flor fica guardada na conta.
-   Tudo conferido no servidor (supabase/sql/proposta/20261113_bloom_garden.sql: jardim_estado,
+   Tudo conferido no servidor (supabase/sql/aplicado/20261113_bloom_garden.sql: jardim_estado,
    jardim_plantar, jardim_regar, jardim_colher). Enquanto essas funções não existirem no banco, o
    jardim continua "Em breve" no mapa e esta janela não abre. Nunca dá ★: é um lugar de gastar. */
 (function(){

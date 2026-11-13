@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_duo_pedido_premio).
 -- Moon⭐Duo! — prêmio do "Pedido de cena do dia": ★5, uma vez por dia (horário de Brasília).
 -- Conferido no servidor: só paga se hoje existe um duo registrado (public.duo_log, gravado por
 -- duo_registrar) com a cena pedida. Reusa a trava diária private.bonus_jogo_dia (mesma do bônus do

@@ -100,6 +100,13 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - SQL auditado e testado em PostgreSQL isolado (38 verificações): `supabase/sql/aplicado/20261113_gacha_po_garantia.sql`. Detalhes em `docs/GACHA_REPETIDOS_GARANTIA_PROPOSTA.md`.
 - Interface no Álbum (`gacha-po.js`, PR #88): aparece sozinha agora que a função existe no banco. Conferido com dados reais (só leitura): status responde ok. Converter/resgatar com conta real ainda não testados.
 
+## Aplicado em 13/11 (noite), com o OK do dono
+- `20261113_gacha_po_garantia`: pó de estrela (1 repetido = 1 pó, 5 pós = 1 card) e garantia após 7 "nada".
+- `20261113_duo_pedido_premio`: ★5/dia pelo Pedido de cena do Moon⭐Duo! (confere o duo da cena em `duo_log`).
+- `20261113_bloom_garden`: Bloom⭐Garden! v1 — 4 canteiros, sementes ★20–60, 1 rega/dia, flores na conta; nunca dá ★.
+- Arquivos em `supabase/sql/aplicado/`; testes isolados em `supabase/tests/{gacha-po,duo-pedido,bloom}/rodar.sh`.
+- Front no PR #88: `gacha-po.js`, `duo-pedido.js`, `bloom.js` (horta da Vila das Flores no mapa), `cafe-gorjeta.js` (só visual).
+
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

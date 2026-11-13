@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_bloom_garden).
 -- Bloom⭐Garden! — versão 1 (Fase 4). PROPOSTA: aplicar só com o OK do dono.
 -- Um lugar de GASTAR estrelas (docs/ECONOMIA_ESTRELAS.md): sementes custam ★, crescem com
 -- 1 rega por dia (horário de Brasília) e viram flores guardadas na conta.

@@ -29,13 +29,13 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
   - #72: documentação;
   - #74: Sora 500 m. Precisa de anti-cheat antes de aplicar o SQL.
   - O #87 pode ser fechado, porque já está dentro do #88.
-- **Mapa da cidade** (`tw-mapa.js` + `mapa-cidade.svg`):
+- **Mapa da cidade original** (`tw-mapa.js` + `mapa-cidade.svg`, descrição do estado antes da navegação em 2 níveis):
   - é um botão "Passear pela cidade" no fim do Meu mundo, que abre e fecha;
   - `TW_LUGARES` é o registro de lugares, e cada prédio aciona o card original do hub;
   - o trio fica na praça, desenhado com `drawChar` e `perfCharContorno`;
   - o seu Idol e os Idols da vitrine passeiam pelas ruas;
   - a cidade muda com a hora de Brasília: dia, entardecer (17h) e noite (19h–6h);
-  - a arte é gerada por um script Python que não está no repositório. Para mudar a arte, edite o SVG ou peça para recriar o gerador.
+  - histórico: a arte antiga era editada sem gerador versionado; agora `tools/mapa/` contém os geradores SVG da versão em dois níveis, sem afetar o site publicado antes do merge.
 - **Pendências do dono:**
   - merges;
   - limpar os branches já mergeados.
@@ -60,15 +60,15 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 ## Mapa em 2 níveis (aprovado pelo dono em 13/11)
 O mapa de 1 nível ficou lotado. Novo modelo:
 1. **Mapa do mundo** (`tools/mapa/mundo2.py`, prova em `docs/mapa-provas/mundo_v2.jpg`): os prédios reais agrupados em 6 bairros, só 6 plaquinhas (nome do bairro + ícones do que tem dentro).
-   - Distrito do Palco: Handshake, Center, Karaoke.
-   - Rua Harajuku: Café, Gacha, Shop.
-   - Bairro Fofo: Pet, Minha casa, horta "em breve" (Bloom⭐Garden!).
+   - Star Stage (aprovado; ID `palco`): Handshake, Center, Karaoke.
+   - Rua das Vitrines (nome **provisório**, ID legado `harajuku`): Café, Gacha, Shop. Não usar Harajuku como nome exibido.
+   - Vila das Flores (nome **provisório**, ID legado `fofo`): Pet, Minha casa, horta "em breve" (Bloom⭐Garden!). Sem nome de pet.
    - Praça Central: fonte (Encontro do dia), Idol⭐News!, Pedido de fã.
-   - Arena: "?" (Idol⭐Battle!).
-   - Céu (única coisa no alto): Sora, Moon⭐Duo!, "?" (Photo⭐Studio!).
+   - Star Arena (aprovado; ID `arena`): "?" (Idol⭐Battle!).
+   - Jardim das Nuvens (aprovado; ID `ceu`, única ilha no alto): Sora, Moon⭐Duo!, "?" (Photo⭐Studio!).
 2. **Cena da rua de cada bairro** (modelo: `tools/mapa/rua.py`, prova em `docs/mapa-provas/rua_harajuku.jpg`): tocar no bairro abre a rua dele, com os prédios grandes lado a lado (escala ~2), calçada, chão de pedrinha onde os Idols passeiam e botão "◀ Mapa". No celular a rua rola para os lados.
 
-**Ordem de implementação (nada disso está no código ainda):**
+**Ordem de implementação (1–4 implementadas na PR #88, ainda sem merge/publicação):**
 1. Gerar `mapa-mundo.svg` (mundo2.py + sep.py) e as 6 ruas (copiar rua.py para cada bairro).
 2. Em `tw-mapa.js`: estado `cena = 'mundo' | <bairro>`; caixas de clique por bairro no mundo; na rua, caixas por prédio usando o mesmo `TW_LUGARES` (clique chama o `click()` do card original).
 3. Levar para a rua: passeantes (seu Idol + Idols da vitrine + pets), hora do dia (`horaBR`, `ceu`), alertas (!) e cadeados. No mundo ficam só alerta somado por bairro e o trio no palco.
@@ -76,6 +76,14 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 5. Jogos novos entram ocupando o "?" do bairro.
 6. Testar desktop + celular (rolagem, cliques, tema escuro) e os testes `for f in tests/*.js; do node $f; done`.
 
+## Estado de execução do mapa (13/11/2026 — PR #88)
+- **Passo 1:** mundo e seis SVGs de ruas gerados com `tools/mapa/gerar_2_niveis.py` e validados.
+- **Passo 2:** navegação mundo → bairro e clique nos cards originais implementados em `tw-mapa.js`; IDs internos antigos preservados.
+- **Passo 3:** Idols e pets existentes passeiam nas ruas, iluminação por horário de Brasília, cadeados e alertas por edifício; alertas agregados e trio no mundo.
+- **Passo 4:** botão HTML e SVG “◀ Mapa”, Esc quando não há jogo/modal em primeiro plano, histórico de navegação para Voltar/Avançar do celular. Preserva `history.state` de outros módulos.
+- **Pendente (passos 5–6):** ocupar os lotes “?” conforme os jogos realmente forem criados; QA real em iPhone/desktop, scroll e cliques, tema escuro. `node --check` e testes `tests/*.js` verificam os contratos com backend simulado; prints dos SVGs foram gerados, mas não equivalem ao QA interativo real.
+- **Regras mantidas:** sem tocar em Supabase ou `main`, sem duplicar lógica dos cards, sem mexer nas chaves `brs48cr_*`. Dois nomes de bairros continuam provisórios.
+
 ## Próximo passo
-Implementar o mapa em 2 níveis (seção acima), no mesmo PR #88 (branch `visual/layout-hud`). Depois:
+Continuar na mesma PR #88: passo 5 (marcação dos espaços reservados para jogos futuros, sem ativá-los) e passo 6 (QA visual e funcional). Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

@@ -54,6 +54,7 @@ async function dispararCliqueMapa(page,x,y){
 async function teste(page,dir,label){
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(dir,{waitUntil:'domcontentloaded'});
+  if(label.includes('escuro'))await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));
   await page.locator('.tw-mapa-botao').click();
   await page.locator('#twMapa canvas').waitFor({state:'visible'});
   await page.waitForFunction(()=>document.querySelector('#twMapa canvas').height===1000);
@@ -97,7 +98,6 @@ async function teste(page,dir,label){
     for(const [width,height,mode,label] of [[1280,800,'light','desktop'],
       [320,640,'light','320x640'],[390,844,'dark','390x844-escuro']]){
       const page=await browser.newPage({viewport:{width,height},colorScheme:mode});
-      if(mode==='dark')await page.addInitScript(()=>document.documentElement.setAttribute('data-theme','dark'));
       try{await teste(page,url,label);}finally{await page.close();}
     }
   }finally{await browser.close();server.close();}

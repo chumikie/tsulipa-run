@@ -66,14 +66,16 @@ Primeira leva: Café, Handshake e Gacha, os candidatos a "muito básicos". Os ou
 
 Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, e o foco aqui é o que falta.
 
+> **Correção (13/11):** esta leva foi feita olhando só o começo de cada arquivo e marcou como "falta" coisas que já existem. Revisado: a Zipper⭐Shop! já tem o **Look do dia** (objetivo diário com foto), e o Backstage⭐Pet! já sente saudade, comemora a sua volta e comenta os seus recordes. Antes de mexer em Center, Karaoke e Sora, refazer o raio-X deles lendo o código por inteiro.
+
 | Jogo | Profundidade | Integração | Técnica | Sensação | Resumo |
 |---|---|---|---|---|---|
 | Center⭐Run! | 4 | 4 | 4 | 5 | O mais redondo; falta motivo para jogar "só mais uma" no meio da semana |
 | Karaoke⭐Time! | 4 | 4 | 3 | 5 | O mais rico, mas o ritmo ainda tem atraso e o arquivo está no limite de tamanho |
 | Sora⭐Jump! | 3 | 3 | 3 | 4 | Bom de jogar; recompensa e anti-cheat ainda pendentes (PR #74) |
-| Backstage⭐Pet! | 3 | 4 | 3 | 4 | Bom gancho diário, mas cuidar vira rotina de 4 botões |
+| Backstage⭐Pet! | 4 | 4 | 3 | 4 | Bom gancho diário, já reage à sua presença e aos recordes |
 | Moon⭐Duo! | 2 | 4 | 4 | 4 | A única peça social, mas é um "editor de foto" sem objetivo |
-| Zipper⭐Shop! | 2 | 5 | 4 | 4 | Cumpre o papel de loja; falta novidade que faça voltar |
+| Zipper⭐Shop! | 3 | 5 | 4 | 4 | Loja com Look do dia; ok por enquanto |
 
 ## Center⭐Run!
 - **Forte:** corrida madura, cartas e power-ups, ranking semanal, polaroid.
@@ -92,18 +94,18 @@ Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, 
 
 ## Backstage⭐Pet!
 - **Forte:** necessidades que caem com o tempo, pets dos membros e pet montável, sincronização na nuvem.
-- **Falta:** as ações são sempre os mesmos 4 botões; o pet não reage ao que você faz nos outros jogos.
-- **Melhoria:** reações ao seu dia (comemora recorde, fica triste se você sumir), passeio pelo mapa e, mais tarde, ajudar no Bloom⭐Garden!.
+- **Já tem:** saudade quando você some, reencontro quando volta, comentários sobre recordes.
+- **Melhoria:** passear no mapa da cidade e, mais tarde, ajudar no Bloom⭐Garden!.
 
 ## Moon⭐Duo!
 - **Forte:** cenas em dupla com Idols reais (`duo_convidado`), poses, falas e lojinha de extras.
-- **Falta:** um objetivo. Você monta a cena e acabou.
-- **Melhoria:** "pedido de cena" do dia (tema + pose) e compartilhamento como polaroid. É a ponte natural para o Photo⭐Studio!.
+- **Feito (13/11):** "Pedido de cena do dia" em `duo-pedido.js` (cena e cenário livres do dia; cumpre ao salvar a foto; ainda sem prêmio no banco).
+- **Melhoria seguinte:** dar um prêmio pequeno pelo pedido cumprido (precisa de banco) e ligar ao Photo⭐Studio!.
 
 ## Zipper⭐Shop!
 - **Forte:** atendimento diário pelo trio, provador, compras reais (`comprar_visual`).
-- **Falta:** a vitrine é sempre a mesma.
-- **Melhoria:** "vitrine da semana" com 3 itens em destaque (com desconto) que muda todo domingo, ligada ao tema do momento.
+- **Já tem:** Look do dia (combinar o visual do dia e tirar foto).
+- **Melhoria:** nenhuma urgente.
 
 ## Conclusão da Fase 2
 Os mais fracos são **Gacha, Moon⭐Duo! e Café**. A ordem da Fase 3 continua: Gacha, Café, Handshake; Moon⭐Duo! entra junto com o Photo⭐Studio!.

@@ -12,3 +12,19 @@ Rodar sempre de dentro desta pasta (`cd tools/mapa`).
 Exemplo: `python3 mundo2.py && node shotx.js mundo2 1600 1000`
 
 Estilo obrigatório: igual às cenas do jogo. Sem contorno grosso; madeira, listras, babado, vidro com brilho, sombras suaves, tons pastel (#7b3ff0, #ff6fb5, #4169e1, #b6ff3b). Nada solto voando além da ilha do Céu.
+
+## Mapa em dois níveis — preparação das artes (PR #88)
+
+Rode **da pasta `tools/mapa`**:
+
+```sh
+python3 gerar_2_niveis.py
+node shotx.js mundo2 1600 1000
+for bairro in palco harajuku fofo praca arena ceu; do node shotx.js "rua_$bairro" 1600 760; done
+cd ../..
+for f in tests/*.js; do node "$f"; done
+```
+
+O gerador produz os SVGs `mapa-mundo.svg` e `mapa-rua-{palco,harajuku,fofo,praca,arena,ceu}.svg` na raiz do projeto, além dos arquivos HTML/SVG de conferência em `tools/mapa/`. Ele valida o XML de cada SVG.
+
+**Importante:** as novas ruas ainda precisam de conferência visual. O gerador não muda `tw-mapa.js` nem ativa a navegação de dois níveis. As figuras mantêm os textos SVG para a prova visual; a separação das etiquetas para desenho no canvas será validada antes da integração.

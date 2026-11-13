@@ -1,4 +1,5 @@
 -- TsuLiPa⭐World / Handshake⭐Event! — HORA EXTRA (rodadas 6 a 8)
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (conferido com pg_get_functiondef antes; permissões só authenticated).
 -- REVISÃO SOMENTE: NÃO APLICAR SEM O OK DO DONO DO PROJETO.
 --
 -- Base: as duas funções como estão em supabase/sql/aplicado/20261103231720_pr71_recordes_online_insignias_verificados.sql.

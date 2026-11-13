@@ -1,4 +1,5 @@
 -- TsuLiPa⭐World / Sora⭐Jump! — REVISÃO SOMENTE, NÃO APLICAR AUTOMATICAMENTE.
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (conferido com pg_get_functiondef antes; permissões só authenticated).
 -- Versão com anti-cheat (13/11) da proposta do PR #74: substitui o arquivo sora_500_daily_reward_REVIEW_ONLY.sql daquele PR.
 -- ANTES DE APLICAR: conferir com pg_get_functiondef se public.sora_run_finish em produção é igual à base deste arquivo.
 -- Prêmio oficial: ★25 ao finalizar uma partida online válida com >=500 m,

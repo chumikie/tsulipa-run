@@ -48,12 +48,11 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 - **Fase 3:** melhorar os jogos atuais. Feito no front-end: Pedido de cena do dia (Moon⭐Duo!), metas do Álbum (Gacha), hora extra do Handshake (vale já no treino sem conta). Com banco: ver a fila abaixo.
 - **Fase 4:** jogos novos, na ordem Bloom⭐Garden!, Photo⭐Studio!, Idol⭐Battle!. A casa decorável ainda está em dúvida.
 
-## Fila do banco (fazer quando o Supabase voltar)
-1. Aplicar `supabase/sql/proposta/album_cards_REVIEW_ONLY.sql` (só leitura). **O dono já deu o OK (13/11).** Com isso o Álbum e as metas de coleção funcionam.
-2. Hora extra do Handshake: `supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql`. Conferir com `pg_get_functiondef` se a produção está igual ao arquivo aplicado e **pedir o OK do dono**. O site já está pronto e só entra na hora extra quando o servidor manda 8 filas.
-3. `supabase/sql/admin_corrida_contadores.sql` (o dono aprovou; o MCP cancela por causa do DELETE, então o dono roda no SQL Editor).
-4. Sora 500 m (PR #74) com anti-cheat: `supabase/sql/proposta/sora_500_anticheat_REVIEW_ONLY.sql` (prêmio só com ≥20 s e média ≤25 m/s). Precisa do OK do dono; depois o PR #74 pode ser mergeado.
-5. Café "Dois no balcão": `supabase/sql/proposta/cafe_dois_no_balcao_REVIEW_ONLY.sql` (funções novas `cafe_run_pedidos` e `cafe_run_etapa2`; as atuais continuam). Precisa do OK do dono. Falta a reforma do `cafe.js` (dois clientes, dois relógios), a fazer num PR próprio, começando pelo modo treino.
+## Banco (atualizado 13/11, à tarde)
+- **Já estava em produção:** `album_cards()` (o Álbum e as metas de coleção funcionam).
+- **Aplicado hoje, com o OK do dono:** hora extra do Handshake (8 filas, até 60 respostas), Sora 500 m com anti-cheat (prêmio ★25/dia, ≥20 s e ≤25 m/s), Café "Dois no balcão" (`cafe_run_pedidos`, `cafe_run_etapa2`, `cafe_run_finalizar`). Arquivos em `supabase/sql/aplicado/20261113_*.sql`.
+- **Falta:** `supabase/sql/admin_corrida_contadores.sql` (o MCP cancela por causa do DELETE; o dono roda no SQL Editor).
+- **Merges que destravam no site:** PR #88 (visual, mapa, hora extra no site), PR #89 (Café Dois no balcão), PR #74 (tela do prêmio do Sora; o SQL dele foi substituído pela versão com anti-cheat — não aplicar o SQL do #74).
 
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

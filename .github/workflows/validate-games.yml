@@ -19,6 +19,8 @@ jobs:
         run: node tests/run-all.js
       - name: Validate Karaoke mobile viewport script
         run: node --check karaoke-mobile.js
+      - name: Validate Karaoke translations script
+        run: node --check kt-traducoes.js
       - name: Validate Karaoke photo preview script
         run: node --check karaoke-photo.js
       - name: Validate Karaoke room Polaroid controller

@@ -75,8 +75,8 @@ test('carregamento dinâmico incorpora as traduções dos módulos e das linhas'
   assert.equal(context.window.TW_DICT.id['Abrir Karaoke Time'],'Buka Karaoke Time');
 });
 test('índices e placeholders das linhas do Karaoke',()=>{
-  const html=read('karaoke-time.html');
-  const start=html.indexOf('var ROWS=[',html.indexOf('id="ktTraducoes"'));
+  const html=read('kt-traducoes.js');
+  const start=html.indexOf('var ROWS=[');
   const end=html.indexOf('],PAT=',start);
   const source=vm.runInNewContext(html.slice(start+9,end+1));
   assert.equal(source.length,catalog.karaoke.rows.length);

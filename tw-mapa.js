@@ -94,6 +94,10 @@
       atalhos.innerHTML=Object.keys(BAIRROS).map(function(id){
         return '<button type="button" data-tw-bairro="'+id+'"><span aria-hidden="true">'+BAIRROS_EMOJI[id]+'</span><span>'+ROTULOS_BAIRROS[id]+'</span></button>';
       }).join('');
+      var marcar=function(e){var b=e.target&&e.target.closest&&e.target.closest('[data-tw-bairro]');
+        var alvo=b&&cena==='mundo'?BAIRROS[b.getAttribute('data-tw-bairro')]:null;if(alvo!==hover){hover=alvo;desenhar();}};
+      ['pointerover','focusin'].forEach(function(ev){atalhos.addEventListener(ev,marcar);});
+      ['pointerleave','focusout'].forEach(function(ev){atalhos.addEventListener(ev,function(){if(hover&&cena==='mundo'){hover=null;desenhar();}});});
       atalhos.addEventListener('click',function(e){
         var botao=e.target&&e.target.closest&&e.target.closest('[data-tw-bairro]');
         if(botao&&cena==='mundo')entrarRua(botao.getAttribute('data-tw-bairro'));
@@ -188,7 +192,14 @@
         h.pushState(proximo,'',window.location.href);
       }
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Histórico do mapa indisponível',e);}
-    mostrarCena(destino);
+    mergulhar(destino);
+  }
+  // Transição curta: a câmera aproxima do bairro escolhido e um anel pulsa nele (sem com "reduzir movimento")
+  var mergulho=null;
+  function mergulhar(destino){
+    if(reduzMov||!ctx||!BAIRROS[destino]){mostrarCena(destino);return;}
+    mergulho={id:destino,t0:performance.now()};desenhar();
+    setTimeout(function(){if(mergulho&&mergulho.id===destino){mergulho=null;mostrarCena(destino);}},420);
   }
   function voltarAoMundo(){
     if(cena==='mundo')return;
@@ -275,9 +286,18 @@
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
     else{detalhes(tm);andar(tm);alertasRua(tm);}
+    if(mergulho&&cena==='mundo'){
+      var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
+          u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
+      var fx=cx+(MW/2-cx)*e,fy=cy+(MH/2-cy)*e;   // o bairro desliza para o centro enquanto aproxima
+      ctx.setTransform(z,0,0,z,fx-cx*z-OX,fy-cy*z-OY);ctx.drawImage(arte,0,0,W,H);textosCena();
+      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='rgba(255,255,255,'+(e*.55).toFixed(2)+')';ctx.fillRect(0,0,MW,MH);
+      ctx.setTransform(1,0,0,1,-OX,-OY);
+      if(!anim)requestAnimationFrame(desenhar);return;
+    }
     if(hover&&!hover.voltar){
-      var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.12)';
-      ctx.strokeStyle='rgba(255,255,255,.72)';ctx.lineWidth=2;
+      var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.2)';
+      ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([14,10]);
       rr(b[0],b[1],b[2]-b[0],b[3]-b[1],18);ctx.fill();ctx.stroke();ctx.restore();
     }
   }

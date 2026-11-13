@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_cafe_vip).
 -- Happy⭐Cafe! — cliente VIP: os pedidos da 6ª e da 11ª rodada valem o DOBRO de pontos.
 -- Mudança mínima e auditável: insere UMA linha nas funções de produção cafe_run_etapa e cafe_run_etapa2
 -- (lidas com pg_get_functiondef no momento de aplicar). Não mexe em geração de pedidos, vidas,

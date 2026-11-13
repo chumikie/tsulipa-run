@@ -5,8 +5,8 @@ cd "$(dirname "$0")"
 DB=cafe_vip_$$; P="psql -X -q -tA -v ON_ERROR_STOP=1 -U postgres -d $DB"
 createdb -U postgres "$DB"; trap 'dropdb -U postgres "$DB"' EXIT
 $P -f fixture.sql >/dev/null
-$P -f ../../sql/proposta/20261113_cafe_vip.sql >/dev/null
-$P -f ../../sql/proposta/20261113_cafe_vip.sql >/dev/null   # idempotente
+$P -f ../../sql/aplicado/20261113_cafe_vip.sql >/dev/null
+$P -f ../../sql/aplicado/20261113_cafe_vip.sql >/dev/null   # idempotente
 ok(){ [ "$1" = "$2" ] && echo "  ok: $3" || { echo "FALHOU: $3 (veio '$1')"; exit 1; }; }
 ok "$($P -c "select (length(d)-length(replace(d,'cliente VIP','')))/11 from (select pg_get_functiondef('public.cafe_run_etapa2(uuid,jsonb,boolean)'::regprocedure) d) x")" 1 "linha VIP inserida uma vez (reaplicar não duplica)"
 r(){ $P -c "select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false);" -c "select public.cafe_run_etapa2('$1','{\"base\":1,\"cob\":-1,\"enf\":2,\"doce\":-1}',false)->>'pontos_etapa'" | tail -1; }

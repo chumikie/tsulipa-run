@@ -1,6 +1,6 @@
 /* Happy⭐Cafe! — cliente VIP. A 6ª e a 11ª cliente de cada turno é alguém do TsuLiPa (Tsu, Lirika ou
    Pati) e o pedido vale o DOBRO. No modo verificado quem dobra é o servidor (cafe_run_etapa/etapa2,
-   supabase/sql/proposta/20261113_cafe_vip.sql); no treino sem conta o dobro é só local.
+   supabase/sql/aplicado/20261113_cafe_vip.sql); no treino sem conta o dobro é só local.
    Não altera cafe.js: envolve cfNovoClienteLocal, cfServir e cfDesenhar. */
 (function(){
   'use strict';

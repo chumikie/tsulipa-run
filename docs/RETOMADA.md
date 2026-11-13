@@ -107,8 +107,8 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Arquivos em `supabase/sql/aplicado/`; testes isolados em `supabase/tests/{gacha-po,duo-pedido,bloom}/rodar.sh`.
 - Front no PR #88: `gacha-po.js`, `duo-pedido.js`, `bloom.js` (horta da Vila das Flores no mapa), `cafe-gorjeta.js` (só visual).
 
-## Esperando o OK do dono (13/11, noite)
-- `supabase/sql/proposta/20261113_cafe_vip.sql`: cliente VIP do Café (6ª e 11ª clientes valem o dobro). Insere uma linha em `cafe_run_etapa` e `cafe_run_etapa2` (lidas na hora de aplicar; falha se o marcador mudar). Testado isolado em `supabase/tests/cafe-vip/`. O front (`cafe-vip.js`) já está no PR #88 — aplicar antes do merge, senão o selo "vale o dobro" aparece sem o servidor dobrar.
+## Café VIP — APLICADO (13/11, noite, OK do dono)
+- `supabase/sql/aplicado/20261113_cafe_vip.sql`: cliente VIP do Café (6ª e 11ª clientes valem o dobro). Insere uma linha em `cafe_run_etapa` e `cafe_run_etapa2` (lidas na hora de aplicar; falha se o marcador mudar). Testado isolado em `supabase/tests/cafe-vip/`. O front (`cafe-vip.js`) já está no PR #88 Conferido em produção: as duas funções têm a linha VIP e mantêm os grants.
 
 ## Handshake: fãs com dois detalhes (planejado, não feito)
 - Servidor: `handshake_iniciar` passa a sortear também a cor do lightstick (0–5) para os fãs a partir da rodada 3; `handshake_run_finish` aceita `cor` na resposta e soma +50 quando presente E cor estão certos.

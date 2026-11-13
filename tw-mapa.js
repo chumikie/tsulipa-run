@@ -18,6 +18,10 @@
     fofo:'mapa-rua-fofo.svg',praca:'mapa-rua-praca.svg',
     arena:'mapa-rua-arena.svg',ceu:'mapa-rua-ceu.svg'
   };
+  var ROTULOS_BAIRROS={
+    palco:'Star Stage',harajuku:'Rua das Vitrines',fofo:'Vila das Flores',
+    praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
+  };
   var cena='mundo',imagens={};
   var TW_LUGARES=window.TW_LUGARES=[
     {id:'run',      card:'#hubCards [data-ir="run"]',      box:[600,140,1000,475]},
@@ -85,7 +89,7 @@
     textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
-    if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):('Rua: '+cena));}
+    if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):('Rua: '+ROTULOS_BAIRROS[cena]));}
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
     if(centrado||!r||!cv)return;
     var k=cv.getBoundingClientRect().width/MW;

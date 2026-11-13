@@ -3,6 +3,19 @@
    Os dados vêm da consulta album_cards (proposta para o Supabase: docs/ALBUM_CARDS_SUPABASE.md).
    Enquanto ela não existir no banco, o álbum mostra os espaços e avisa que começa em breve.
    Este arquivo só declara funções e tabelas. */
+// Microtextos do resumo em todos os seis idiomas do site.
+var ALBUM_RESUMO_TR = {
+  pt:['Cards repetidos','Próxima meta','faltam'],
+  en:['Duplicate cards','Next milestone','remaining'],
+  es:['Cards repetidos','Próxima meta','faltan'],
+  id:['Kartu duplikat','Target berikutnya','kurang'],
+  th:['การ์ดซ้ำ','เป้าหมายถัดไป','เหลืออีก'],
+  ja:['重複カード','次の目標','あと']
+};
+function albumResumoTexto(i){
+  var l=typeof LANG==='string'&&ALBUM_RESUMO_TR[LANG]?LANG:'pt';
+  return ALBUM_RESUMO_TR[l][i];
+}
 var ALBUM_POR_PAGINA = 9;
 var albumPag = 0, albumDados = null, albumPronto = false;
 function albumIdols(){
@@ -39,9 +52,9 @@ function albumUI(){
   h += albumMetasHtml(achados);
   if(albumPronto){
     h += '<p class="albumresumo" aria-live="polite">🃏 ' + achados + ' / ' + total +
-      ' · ' + escHtml(tr('Cards repetidos')) + ': <b>' + repetidos + '</b>' +
-      (proximaMeta ? ' · ' + escHtml(tr('Próxima meta')) + ': ' +
-        proximaMeta[0] + ' (' + escHtml(tr('faltam')) + ' ' + (proximaMeta[0] - achados) + ')' : '') +
+      ' · ' + escHtml(albumResumoTexto(0)) + ': <b>' + repetidos + '</b>' +
+      (proximaMeta ? ' · ' + escHtml(albumResumoTexto(1)) + ': ' +
+        proximaMeta[0] + ' (' + escHtml(albumResumoTexto(2)) + ' ' + (proximaMeta[0] - achados) + ')' : '') +
       '</p>';
   }
   if(albumDados === null) h += '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';

@@ -123,8 +123,9 @@
     r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;
   }
   function mapaAtivo(){
-    var menu=document.getElementById('hubMenu');
-    return aberto&&(!menu||!menu.hidden)&&!!document.getElementById('twMapa');
+    var menu=document.getElementById('hubMenu'),hub=document.getElementById('hub');
+    // O menu permanece montado enquanto um minijogo esconde o Hub.
+    return aberto&&(!menu||!menu.hidden)&&(!hub||!hub.hidden)&&!!document.getElementById('twMapa');
   }
   function entrarRua(destino){
     if(cena!=='mundo'||!CENAS_RUA[destino])return;

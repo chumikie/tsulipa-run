@@ -25,11 +25,25 @@ function albumUI(){
   // quem saiu no álbum mas não está mais na vitrine continua com o seu espaço
   Object.keys(tenho).forEach(function(n){ if(nomes.indexOf(n) < 0) nomes.push(n); });
   var total = nomes.length, achados = nomes.filter(function(n){ return tenho[n]; }).length;
+  // Contagem informativa baseada exclusivamente em album_cards(). Repetidos não
+  // são moeda nem "pó de estrela" enquanto não existir regra de servidor aprovada.
+  var repetidos = Object.keys(tenho).reduce(function(n, nick){
+    var vezes = Number(tenho[nick].vezes);
+    return n + (Number.isFinite(vezes) ? Math.max(0, Math.floor(vezes) - 1) : 0);
+  }, 0);
+  var proximaMeta = ALBUM_METAS.find(function(m){ return m[0] > achados; });
   var pags = Math.max(1, Math.ceil(total / ALBUM_POR_PAGINA)); albumPag = Math.min(albumPag, pags - 1);
   var pg = nomes.slice(albumPag * ALBUM_POR_PAGINA, (albumPag + 1) * ALBUM_POR_PAGINA), lista = [];
   var h = '<p class="albumprog"><b>' + achados + '</b> / ' + total + ' ' + escHtml(tr('Idols no seu álbum')) + '</p>' +
     '<div class="albumbarra" aria-hidden="true"><i style="width:' + (total ? Math.round(achados / total * 100) : 0) + '%"></i></div>';
   h += albumMetasHtml(achados);
+  if(albumPronto){
+    h += '<p class="albumresumo" aria-live="polite">🃏 ' + achados + ' / ' + total +
+      ' · ' + escHtml(tr('Cards repetidos')) + ': <b>' + repetidos + '</b>' +
+      (proximaMeta ? ' · ' + escHtml(tr('Próxima meta')) + ': ' +
+        proximaMeta[0] + ' (' + escHtml(tr('faltam')) + ' ' + (proximaMeta[0] - achados) + ')' : '') +
+      '</p>';
+  }
   if(albumDados === null) h += '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   else if(!albumPronto) h += '<p class="albumaviso">🛠️ ' + escHtml(tr('O álbum começa a guardar seus cards em breve. Por enquanto, veja quem falta!')) + '</p>';
   h += '<div class="albumgrade">' + pg.map(function(n){

@@ -1,7 +1,29 @@
 import json, math, random, urllib.parse
 random.seed(48)
 W, H = 1600, 1000
-ICON = json.load(open('../arte/icons.json'))
+# Reutiliza os ícones originais já incorporados ao SVG publicado, sem redesenhar.
+# O antigo ../arte/icons.json não foi incluído no repositório.
+from pathlib import Path
+import re
+def carregar_icones():
+    arquivo = Path(__file__).resolve().parent.parent / 'arte' / 'icons.json'
+    if arquivo.is_file():
+        return json.loads(arquivo.read_text(encoding='utf-8'))
+    original = (Path(__file__).resolve().parents[2] / 'mapa-cidade.svg').read_text(encoding='utf-8')
+    codificados = re.findall(r"<image\\b[^>]*href='data:image/svg\\+xml;utf8,([^']+)'", original)
+    ordem = ['hubduo', 'hubhandshake', 'hubcafe', 'hubpet', 'hubpet',
+             'hubperf', 'hubgacha', 'hubloja', 'tw-hubgame-karaoke',
+             'tw-hubgame-karaoke', 'hubjornal', 'hubfa', 'hubrun',
+             'tw-hubgame-sora', 'hubenc']
+    if len(codificados) != len(ordem):
+        raise ValueError(f'Ícones originais inesperados: {len(codificados)}; esperado {len(ordem)}')
+    if codificados[3] != codificados[4] or codificados[8] != codificados[9]:
+        raise ValueError('Ordem dos ícones alterada no mapa original')
+    icones = {}
+    for chave, dado in zip(ordem, codificados):
+        icones[chave] = urllib.parse.unquote(dado)
+    return icones
+ICON = carregar_icones()
 out = []
 defs = []
 A = out.append

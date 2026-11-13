@@ -6,7 +6,9 @@
 --
 -- Mudanças (só duas linhas):
 --   handshake_iniciar:     gera 8 filas em vez de 5 (as 3 últimas com 6 fãs).
---   handshake_run_finish:  aceita respostas das rodadas 1 a 8 (antes 1 a 5).
+--   handshake_run_finish:  aceita respostas das rodadas 1 a 8 (antes 1 a 5) e até 60 respostas (antes 30;
+--                          8 rodadas somam 39 fãs + superfãs).
+-- Conferido em 13/11 contra a produção (pg_get_functiondef): base igual ao arquivo aplicado.
 -- Pontuação, prêmio do dia, limite de 30 sessões/dia e validação continuam iguais.
 -- O site (handshake.js, hsMaxRodadas) só entra na hora extra quando o servidor manda mais de 5 filas,
 -- então antes desta proposta tudo segue em 5 rodadas.
@@ -82,7 +84,7 @@ BEGIN
     OR jsonb_typeof(p_respostas) IS DISTINCT FROM 'array'
     OR coalesce(pg_column_size(p_respostas),0)>12000
  THEN RETURN json_build_object('ok',false,'erro','sessao'); END IF;
- IF jsonb_array_length(p_respostas) NOT BETWEEN 1 AND 30
+ IF jsonb_array_length(p_respostas) NOT BETWEEN 1 AND 60
  THEN RETURN json_build_object('ok',false,'erro','respostas'); END IF;
  -- Mesmo ciclo semanal do evento.js; presentes: 🍓, 🍰, 🌸, ⭐, 🧁.
  v_semana:=floor(((now() AT TIME ZONE 'America/Sao_Paulo')::date - DATE '1970-01-01' + 3)::numeric/7)::integer % 5;

@@ -19,7 +19,7 @@
     {id:'fa',       card:'#hubHoje .hubfa',                box:[530,555,750,690]},
     {id:'enc',      card:'#hubHoje .hubenc',               box:[670,490,930,670]}
   ];
-  var TXT=[[312, 460, "Moon★Duo!", 18.0, "#fff", "#3b2d9c", "m"], [532, 512, "Handshake★Event!", 18.0, "#fff", "#ff5a85", "m"], [330, 561, "CAFE", 14.0, "#fff", null, "m"], [342, 712, "Happy★Cafe!", 18.0, "#fff", "#f08a52", "m"], [512, 842, "Backstage★Pet!", 18.0, "#fff", "#1e8f9a", "m"], [812, 872, "Meu Perfil", 18.0, "#fff", "#ff5aa5", "m"], [1122, 842, "Star★Gacha!", 18.0, "#fff", "#f39a34", "m"], [1300, 572, "ZIPPER★SHOP!", 15.0, "#fff", null, "m"], [1312, 742, "Zipper★Shop!", 18.0, "#fff", "#7b3ff0", "m"], [1150, 294, "KARAOKE", 15.0, "#ff9bd0", null, "m"], [1054, 340, "♪", 20.0, "#ff62ab", null, "s"], [1062, 318, "♪", 20.0, "#ff62ab", null, "s"], [1070, 296, "♪", 20.0, "#ff62ab", null, "s"], [1162, 512, "Karaoke★Time!", 18.0, "#fff", "#b83a9e", "m"], [1002, 628, "Idol★News!", 18.0, "#fff", "#6a4ff0", "m"], [652, 676, "Pedido de fã", 18.0, "#fff", "#9b4bf0", "m"], [812, 458, "Center★Run!", 18.0, "#fff", "#6630dc", "m"], [1412, 124, "Sora★Jump!", 18.0, "#fff", "#4a78ef", "m"], [812, 518, "Encontro do dia", 18.0, "#fff", "#ff5aa5", "m"]];
+  var TXT=[[312, 460, "Moon★Duo!", 18.0, "#fff", "#3b2d9c", "m"], [528, 341, "握手会", 10.0, "#ff5a85", null, "m"], [520, 452, "Idol", 10.0, "#9b4bf0", null, "m"], [532, 512, "Handshake★Event!", 18.0, "#fff", "#ff5a85", "m"], [359, 587, "Happy★Cafe!", 9.0, "#fff", null, "m"], [342, 712, "Happy★Cafe!", 18.0, "#fff", "#f08a52", "m"], [512, 842, "Backstage★Pet!", 18.0, "#fff", "#1e8f9a", "m"], [812, 872, "Meu Perfil", 18.0, "#fff", "#ff5aa5", "m"], [1110, 668, "STAR★GACHA!", 10.0, "#d94d92", null, "m"], [1122, 842, "Star★Gacha!", 18.0, "#fff", "#f39a34", "m"], [1300, 568, "ZIPPER★SHOP!", 14.0, "#fff", null, "m"], [1312, 742, "Zipper★Shop!", 18.0, "#fff", "#7b3ff0", "m"], [1150, 285, "KARAOKE", 14.0, "#ffd6ec", null, "m"], [1052, 340, "♪", 20.0, "#ff62ab", null, "s"], [1060, 318, "♪", 20.0, "#ff62ab", null, "s"], [1068, 296, "♪", 20.0, "#ff62ab", null, "s"], [1162, 512, "Karaoke★Time!", 18.0, "#fff", "#b83a9e", "m"], [1002, 628, "Idol★News!", 18.0, "#fff", "#6a4ff0", "m"], [652, 676, "Pedido de fã", 18.0, "#fff", "#9b4bf0", "m"], [812, 458, "Center★Run!", 18.0, "#fff", "#6630dc", "m"], [1412, 124, "Sora★Jump!", 18.0, "#fff", "#4a78ef", "m"], [812, 518, "Encontro do dia", 18.0, "#fff", "#ff5aa5", "m"]];
   var NOMES={'Meu Perfil':{en:'My Profile',es:'Mi perfil',id:'Profilku',th:'โปรไฟล์ของฉัน',ja:'マイプロフィール'},
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
     'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'}};
@@ -39,7 +39,7 @@
     sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
-    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=4';
+    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=5';
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     cv.addEventListener('click',function(e){var l=achar(e);if(!l)return;var c=card(l);if(c&&!c.disabled)c.click();});
@@ -149,10 +149,10 @@
   }
 
   // lotes vagos para os jogos novos (Fase 4): cerquinha, terra e placa "Em breve"
-  var LOTES=[[985,860]];   // ao lado da sua casa: o lugar do Bloom⭐Garden!
+  var LOTES=[[945,878]];   // ao lado da sua casa: o lugar do Bloom⭐Garden!
   var BREVE={pt:'Em breve',en:'Coming soon',es:'Próximamente',id:'Segera hadir',th:'เร็ว ๆ นี้',ja:'近日公開'};
   function lotes(tm){
-    LOTES.forEach(function(l,i){var x=l[0],y=l[1],w=118,h=58;
+    LOTES.forEach(function(l,i){var x=l[0],y=l[1],w=100,h=50;
       ctx.save();
       ctx.fillStyle='rgba(60,143,99,.22)';ctx.beginPath();ctx.ellipse(x,y+h/2+4,w*.58,10,0,0,7);ctx.fill();
       ctx.fillStyle='#d9a873';rr(x-w/2,y-h/2,w,h,14);ctx.fill();

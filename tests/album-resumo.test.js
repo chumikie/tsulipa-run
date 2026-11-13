@@ -38,4 +38,13 @@ assert.match(corpo.innerHTML,/Cards repetidos[^<]*: <b>0<\/b>/);
 ctx.albumPronto=false;
 ctx.albumUI();
 assert.doesNotMatch(corpo.innerHTML,/Cards repetidos/,'não estimar duplicatas sem RPC confirmada');
-console.log('OK: repetidos informativos, próxima meta e falha de consulta sem economia simulada');
+ctx.albumPronto=true;
+ctx.LANG='en';
+ctx.albumUI();
+assert.match(corpo.innerHTML,/Duplicate cards/);
+assert.match(corpo.innerHTML,/Next milestone/);
+for(const lang of ['pt','en','es','id','th','ja']){
+  ctx.LANG=lang;
+  for(let i=0;i<3;i++)assert.ok(ctx.albumResumoTexto(i),'tradução ausente: '+lang+'/'+i);
+}
+console.log('OK: repetidos informativos, próxima meta, seis idiomas e falha RPC sem economia simulada');

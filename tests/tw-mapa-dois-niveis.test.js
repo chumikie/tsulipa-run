@@ -103,6 +103,9 @@ assert.ok(drew.sources[0].includes('mapa-mundo.svg'));
 assert.ok(drew.characters>=3,'trio desenhado no mundo');
 assert.ok(drew.night>0,'iluminação noturna de Brasília');
 const initialChars=drew.characters;
+// O navegador só permite navegar quando o acordeão de Meu mundo está aberto.
+eventHandlers['abrir:click']();
+assert.equal(roll.hidden,false,'mapa aberto antes de visitar um bairro');
 // Dois cards com alerta no mesmo bairro: mapa agrega um badge com o número.
 const alerts=new Set(['#hubCards [data-ir="handshake"]','#hubCards [data-ir="karaoke"]']);
 for(const sel of alerts)getCard(sel).classList.contains=(c)=>c==='tw-alert-pink';

@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const source=fs.readFileSync(path.join(__dirname,'..','karaoke-tickets.js'),'utf8');
-const karaoke=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const karaoke=fs.readFileSync(path.join(__dirname,'..','karaoke-online.js'),'utf8');
 function createStore(){const data=new Map();return {data,getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};}
 function boot(store,account,rpc,uuid){const win={LANG:'pt',contaJ:{id:account},localStorage:store,crypto:{randomUUID:uuid},contaRpc:rpc};new Function('window','document','_supabase',source)(win,{getElementById:()=>null},{});return win;}
 async function main(){
@@ -42,7 +42,7 @@ async function main(){
  assert(karaoke.includes('function ticketConcluir(id)'),'iframe acknowledges a finalized ticket run');
  assert(karaoke.includes('if(wantsTicket&&resume&&r&&r.reason===\'limit\'&&sameSession(a,owner))'),'stale resumed runs are reconciled without crossing accounts');
  assert(karaoke.includes("if(!sameSession(a,owner))return"),'all delayed responses retain session ownership checks');
- assert(karaoke.includes('if(x&&(x.ranked||x.reason===\'invalid\'))ticketConcluir(id)'),'terminal finish clears the saved request');
+ assert(karaoke.includes("if(sameSession(a,owner)){ticketConcluir(id);setFinish(owner,id,'success');load(true);}")&&karaoke.includes("if(sameSession(a,owner)){ticketConcluir(id);setFinish(owner,id,'invalid');}"),'terminal finish still reconciles tickets on accepted or invalid results');
  console.log('✓ Ticket recovery: lost response, reload, idempotency, concurrency, account switch and guarded completion');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

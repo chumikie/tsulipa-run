@@ -174,6 +174,7 @@ function duoTexto(){
   $('duoSub').textContent = tr('Monte cenas fofas com outro Idol do TsuLiPa⭐World!');
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
+  $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
 }
 function duoTrava(attr, o){   // chave da lojinha que falta para usar este chip ('' = liberado)
   if(attr === 'data-dfundo' && duoTemaK(o[0])) return duoTemaGratis(o[0]) || lojaTem('tema_' + o[0]) ? '' : 'tema_' + o[0];   // tema: grátis na temporada ou se guardou

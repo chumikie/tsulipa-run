@@ -8,6 +8,7 @@ const vm=require('node:vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/karaoke_quadros_semana.sql'),'utf8');
 const start=html.indexOf('var KaraokeShowRules=(function(){'),end=html.indexOf('/* Um conceito por dia de Brasília',start);
 const KaraokeDaily={dayNumber(d){return Math.floor(Date.parse(d+'T00:00:00Z')/86400000);},nextDay(d,o){return new Date((this.dayNumber(d)+o)*86400000).toISOString().slice(0,10);}};
@@ -30,7 +31,7 @@ assert(html.includes('id="ktBoard-shows"')&&html.includes('id="ktBoard-evolucao"
 assert(html.includes("['shows','Mais shows na semana','🎤'],['evolucao','Quem mais evoluiu','📈']"),'placar da sala acompanha');
 assert(html.includes("querySelectorAll('.kt-rank-card[data-metric]')"),'abas não escondem o quadro da música da semana');
 assert(html.includes("isLead=!!lead&&(b.online?row.nick===lead.nick:row.id===lead.id)")&&html.includes("isLead?'👑':['🥇','🥈','🥉','4','5'][m++]"),'música da semana: o 1º da Pontuação ganha 👑 e o ouro vai para o próximo');
-assert(index.includes("quadros:function(){return contaRpc('kt_quadros_semana');},")&&html.includes("if(a.quadros)a.quadros().then("),'online lê os quadros novos');
+assert(index.includes("quadros:function(){return contaRpc('kt_quadros_semana');},")&&online.includes("if(a.quadros)a.quadros().then("),'online lê os quadros novos');
 assert(/NÃO APLICAR SEM AUTORIZAÇÃO/.test(sql)&&sql.includes('Depende de supabase/sql/aplicado/karaoke_musica_da_semana.sql'),'SQL marcado como proposta e com dependência');
 assert(!/var lead=b\.score&&b\.score\[0\],k=/.test(html),'contador da medalha não reaproveita a variável da música');
 console.log('✓ Karaoke: quadros Pontuação, Mais shows na semana, Quem mais evoluiu e medalha da música da semana');

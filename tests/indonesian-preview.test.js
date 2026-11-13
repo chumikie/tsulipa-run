@@ -35,7 +35,7 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
   const hub=read('hub.js');
   assert.ok(hub.indexOf("['id', 'ID']")<hub.indexOf("['th', 'TH']"));
   assert.match(read('index.html'),/twCarregarIdiomaId\(\)\.then/);
-  assert.match(read('index.html'),/if\(window\.TW_ID_PREVIEW_DATA\)twIntegrarDicionariosId\(\);/);
+  assert.match(read('index.html'),/if\(window\.TW_ID_PREVIEW_DATA\)\{\s*twIntegrarDicionariosId\(\);/);
   assert.doesNotMatch(read('index.html'),/location\.reload\(\)/);
   assert.match(hub,/twGamesTxt = twGamesTxt\[LANG\]\|\|twGamesTxt\.pt/);
   assert.match(hub,/hubIdolsTituloUI\(\);/);
@@ -58,7 +58,7 @@ test('arquivo sob demanda preserva catálogos originais e aplica sexta coluna',(
   assert.ok(Object.keys(context.window.TW_DICT.id).length>0);
 });
 test('carregamento dinâmico incorpora as traduções dos módulos e das linhas',()=>{
-  const context={window:{}};
+  const context={window:{},refreshAcc:()=>{}};
   vm.runInNewContext(read('tw-i18n.js'),context);
   vm.runInNewContext(read('translations/id/preview-data.js'),context);
   const html=read('index.html');
@@ -103,4 +103,81 @@ test('falha de carregamento do catálogo não ativa ID nem afeta outros idiomas'
   for(const l of ['pt','en','es','th','ja'])assert.equal(choose('?lang='+l,'pt',undefined),l);
   assert.match(read('sora-jump.html'),/if\(window\.TW_ID_PREVIEW_DATA&&.*LANG='id'/);
   assert.match(read('index.html'),/if\(LANG==='id'&&!window\.TW_ID_PREVIEW_DATA\)LANG='pt'/);
+});
+
+test('ID assíncrono só atualiza home e menu após carregar; PT → ID → EN → ID',async()=>{
+  const html=read('index.html');
+  const begin=html.indexOf('var twIdCarregamento=null, twIdiomaEscolhaToken=0;');
+  const end=html.indexOf('// --- SISTEMA DE PHOTOCARD POLAROID ---',begin);
+  assert.ok(begin>0&&end>begin,'ciclo de troca de idioma disponível');
+  const actions=[], scripts=[], state={};
+  const buttons=['pt','es','en','id','th','ja'].map(l=>({
+    dataset:{l},disabled:false,click(){this.onclick();}
+  }));
+  const context={
+    window:{TW_DICT:{id:{}},TW_I18N:{rows:{}}},
+    document:{
+      querySelectorAll:()=>buttons,
+      querySelector:()=>buttons.find(b=>b.dataset.l==='id'),
+      createElement:()=>({}),
+      head:{appendChild:s=>scripts.push(s)}
+    },
+    LANG:'pt',
+    localStorage:{setItem:(k,v)=>{state[k]=v;}},
+    $:()=>({hidden:true}),
+    hubMontar:()=>actions.push('hub:'+context.LANG),
+    applyLang:()=>actions.push('apply:'+context.LANG),
+    setBest:()=>{},refreshAcc:()=>{},showLb:()=>{},
+    console:{warn:()=>{}}
+  };
+  vm.createContext(context);
+  vm.runInContext(html.slice(begin,end),context,{timeout:1000});
+  const choose=l=>buttons.find(b=>b.dataset.l===l).click();
+  choose('id');
+  assert.equal(buttons[3].disabled,true,'primeiro clique aguarda o catálogo');
+  assert.deepEqual(actions,[],'não redesenha a home ainda em português');
+  context.window.TW_ID_PREVIEW_DATA={central:{tables:{},rows:{}}};
+  scripts[0].onload();
+  await new Promise(setImmediate);
+  assert.equal(context.LANG,'id');
+  assert.equal(state.brs48cr_lang,'id');
+  assert.equal(buttons[3].disabled,false);
+  assert.deepEqual(actions.slice(0,2),['hub:id','apply:id']);
+  choose('en'); choose('id');
+  assert.equal(context.LANG,'id');
+  assert.deepEqual(actions.slice(-4),['hub:en','apply:en','hub:id','apply:id']);
+  const hubClick=html.slice(html.indexOf('if(t.dataset && t.dataset.hl){'),html.indexOf('if(t.dataset && t.dataset.ho !== undefined)'));
+  assert.doesNotMatch(hubClick,/hubMontar\(\)/,'hub não antecipa a tradução');
+});
+
+test('uma troca posterior prevalece sobre o carregamento lento do ID',async()=>{
+  const html=read('index.html');
+  const begin=html.indexOf('var twIdCarregamento=null, twIdiomaEscolhaToken=0;'),end=html.indexOf('// --- SISTEMA DE PHOTOCARD POLAROID ---',begin);
+  const scripts=[],buttons=['id','en'].map(l=>({dataset:{l},disabled:false,click(){this.onclick();}}));
+  const context={
+    window:{TW_DICT:{id:{}},TW_I18N:{rows:{}}},
+    document:{querySelectorAll:()=>buttons,querySelector:()=>buttons[0],createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}},
+    LANG:'pt',localStorage:{setItem:()=>{}},$:()=>({hidden:true}),
+    hubMontar:()=>{},applyLang:()=>{},setBest:()=>{},refreshAcc:()=>{},showLb:()=>{},console:{warn:()=>{}}
+  };
+  vm.createContext(context);vm.runInContext(html.slice(begin,end),context);
+  buttons[0].click();buttons[1].click();
+  context.window.TW_ID_PREVIEW_DATA={central:{tables:{},rows:{}}};
+  scripts[0].onload();await new Promise(setImmediate);
+  assert.equal(context.LANG,'en','carga atrasada não muda a escolha mais recente');
+});
+
+test('o jornal localiza nomes de paisagens e conjunções; itens ID são atualizados na inicialização',()=>{
+  const jornal=read('jornal.js'),html=read('index.html');
+  assert.match(jornal,/tr\(KaraokeRoomViews\.NAMES\[f\.local\] \|\| f\.local\)/);
+  assert.match(jornal,/var elencoBanner = noBanner\.length > 1 \? tr\('\{a\} e \{b\}'\)/);
+  assert.match(html,/if\(window\.TW_ID_PREVIEW_DATA\)\{\s*twIntegrarDicionariosId\(\);[\s\S]*?refreshAcc\(\);\s*\}/);
+  const id=JSON.parse(read('translations/id/preview-catalog.json'));
+  assert.equal(id.central.dict['Tailândia'],'Thailand');
+  assert.equal(id.central.tables.PET_DICT4['Estrela'],'Bintang');
+});
+
+test('painel de login redesenha rótulos de privacidade após mudar idioma',()=>{
+  const s=read('index.html');
+  assert.match(s,/applyLang\(\);[\s\S]*?if\(typeof contaUI==='function'\)contaUI\(\);/);
 });

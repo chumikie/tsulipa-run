@@ -20,6 +20,8 @@ assert.equal(V.isNight(at('2026-11-08T21:00:00Z')),true,'18h BRT é noite');
 let ops=0;const grad={addColorStop(){}};
 const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(k==='createLinearGradient'||k==='createRadialGradient')?()=>grad:(k==='roundRect'?undefined:()=>{ops++;}),set:(t,k,v)=>{t[k]=v;return true;}});
 for(const k of V.VIEWS)for(const n of [false,true]){ops=0;assert.equal(V.draw(ctx,42,52,206,148,120,k,n),k);assert(ops>40,k+(n?' noite':' dia')+' desenha');}
+// Fotos usam exatamente os cenários do Karaoke, sem desenhar vidro ou moldura.
+for(const k of V.VIEWS)for(const n of [false,true]){ops=0;assert.equal(V.drawScene(ctx,0,0,480,300,0,k,n),k);assert(ops>20,k+' paisagem pura desenha');}
 // ligado na sala: a página carrega o arquivo e a janela usa as vistas novas (sem o sorteio antigo da quinta-feira)
 const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
 assert(html.includes('<script src="./karaoke-room-views.js?v=1"></script>'),'sala carrega as vistas');

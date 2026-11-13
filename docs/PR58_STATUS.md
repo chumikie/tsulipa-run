@@ -416,3 +416,109 @@ Nenhuma alteração de Supabase foi executada nesta retomada. Os dados abaixo re
 - A haste e a cápsula subiram apenas 5 unidades do desenho (6,75 px na escala atual), para cobrir o microfone de mão na região da boca sem deslocar o pedestal pelo palco.
 - A área de interação do microfone acompanha a cápsula elevada.
 - O teste do controlador agora exige âncora fixa, pequeno deslocamento vertical e ausência de rastreamento da mão.
+
+## 11. PR #71 (`feat/album-cards`) — atualizações de novembro/2026
+
+A #71 concentra todo o trabalho novo até a publicação, para economizar deploys do Vercel. Não altera a `main` diretamente; o merge é feito pela usuária.
+
+### 11.1. O que entrou (front)
+
+| Área | O que faz | Arquivos |
+|---|---|---|
+| Álbum de cards | Coleção de cards com progresso; botão "🔁 Trocar cards" | `album.js`, `album.css` |
+| Troca de cards | Propor, aceitar/recusar e cancelar trocas com qualquer jogador | `troca.js` |
+| Pedidos de fã | Pedido do dia com tema especial; botão quadrado no bloco "Hoje" | `fa.js`, `fa.css` |
+| Hoje | Hora, data e clima (Open-Meteo, só com 📍 autorizado); Encontro, Idol⭐News! e Pedido de fã lado a lado | `hoje.js`, `hub.js` |
+| Idol⭐News! | Top 5 com link para o perfil, blog do admin (5 últimos posts), Meta dos Teams, Festival de Unidades, Ensaio de trio, Fotos do dia (telão do Karaoke e jogador com o pet) | `jornal.js` |
+| Zipper⭐Shop! | Provador, "✏️ Montar Idol", atendente que nunca é o próprio jogador | `shop.js`, `index.html` |
+| Banner | Trios uniformizados em tons pastel; torcida do Gacha | `banner.js` |
+| Perfil | Estante de troféus para as insígnias; botão 🚪 Sair com confirmação | `perfil.js`, `hub.js` |
+| Handshake⭐Event! | Jogo de memória: fila de fãs NPC (nomes inventados, visuais já existentes), personalidades, superfã, combo, resumo final; placa com o nome do Idol; ritmo mais calmo | `handshake.js`, `handshake.css` |
+| Happy⭐Cafe! | Café do grupo (shakes, frappés, lattes e docinhos montados em camadas); 3 vidas, 12 clientes; prêmio só visual: Caderno de receitas (20, salvo no aparelho) | `cafe.js`, `cafe.css` |
+| Jogos no hub | Center⭐Run! no topo; depois Karaoke, Sora e Gacha; depois Moon Duo, Handshake e Happy Cafe (3 por linha no computador, 2 no celular). Handshake e Café usam o rosa de alerta com "!" até a partida do dia | `index2-skin.css`, `hub.js` |
+| Missões e Novidades | Textos das missões `handshake` e `cafe`; o site chama `marcar_visita` ao fim da partida. Novidades com os jogos novos | `hub.js` |
+| Evento da semana | Tema que muda toda segunda (Morango, Chocolate, Matcha, Estrelas, Café): pedidos do Café e presente do Handshake valem +50; aparece no Pedido de fã (quando não há tema de data) e numa bloco no Idol⭐News! | `evento.js` |
+| Conquistas dos jogos novos | Insígnias visuais na Estante: 🧋 Barista perfeito, 🤝 Memória de fã, 📒 Caderno completo (no aparelho; na conta depois da proposta SQL) | `evento.js`, `perfil.js` |
+| Diário de carreira | Linha do tempo no Perfil: estreia, marcos de corridas e Centers, recorde, insígnias, corações, receitas e recordes dos jogos novos | `perfil.js`, `atualizacao2.css` |
+| Pet nos jogos novos | O pet ativo passeia no Handshake e no balcão do Café, e às vezes pega o docinho do pedido | `evento.js`, `cafe.js`, `handshake.js` |
+| Acabamento | Brilhos, bordas pastel, títulos em roxo, contraste da pílula do Hoje, espaçamento dos botões | `atualizacao2.css` |
+| Traduções | Todos os textos novos em en/es/th/ja/id (conferência: 0 faltando) | `tw-i18n.js`, `translations/id/` |
+| Prévia | `?demo=1` simula conta e respostas do servidor (nunca no domínio de produção) | `demo.js` |
+
+Regras mantidas: os jogos novos não dão estrelas e não usam o teto de ★50 dos minijogos do Pet; NPCs nunca usam nomes de jogadores reais; desenhos 2D preservados; Karaoke continua solo.
+
+### 11.2. Supabase — depende do ChatGPT
+
+| Proposta (`supabase/sql/proposta/`) | Estado |
+|---|---|
+| `20261103170000_pedidos_de_fa.sql` | Aplicada (registrada em `aplicado/`) |
+| `20261103180000_troca_de_cards.sql` | Aplicada pelo ChatGPT/Miniwa (validada em PostgreSQL local com teste de troca) |
+| `20261103190000_festival_e_ensaio_trio.sql` | Aplicada pelo ChatGPT/Miniwa |
+| `20261103200000_handshake_premio.sql` | **Pendente.** Sem ela, o prêmio do dia do Handshake (ticket do Karaoke ou mimo do pet) não é entregue; o jogo funciona |
+| `20261103220000_conquistas_jogos_novos.sql` | **Pendente.** `conquista_jogo(p_k)` grava as 3 insígnias dos jogos novos na conta (o nome real da tabela de insígnias precisa ser confirmado pelo ChatGPT) |
+| `20261103210000_missoes_handshake_cafe.sql` | **Pendente.** Adiciona as missões `handshake` e `cafe` (nível 1, ★10). O ChatGPT precisa também fazer `marcar_visita` e `missoes()` aceitarem essas chaves (o corpo dessas funções não está no repositório). **Decisão da usuária:** ★10 ou só enfeite |
+
+Outras pendências de banco comunicadas: PR #74 (recompensa do Sora), recorde da Patiliri (56.343), conciliação das missões antigas (★160), URLs de redirecionamento do login nas prévias do Netlify.
+
+### 11.3. Testes e CI
+
+- `node tests/run-all.js`: 51/51 no HEAD desta atualização.
+- Navegador (Playwright, modo demo): Handshake e Happy Cafe jogados sem erros; hub conferido em 430 px e 1150 px.
+- CI do GitHub: conferir no commit desta atualização (`static-validation`, `postgres-center-run`, `browser-karaoke`, prévia Netlify).
+
+### 11.4. Checklist para publicar a #71
+
+- [ ] CI verde no último commit
+- [ ] Prévia conferida (Handshake, Happy Cafe, organização dos Jogos, Álbum, Trocas, Pedidos de fã)
+- [ ] ChatGPT aplicou `handshake_premio` e as missões (ou a usuária decidiu publicar sem elas)
+- [ ] Ready for review + Merge pela usuária
+
+## 12. PR #81 (`feat/meu-camarim-ml1-20261104`) — Meu Camarim⭐Life! (novembro/2026)
+
+PR em rascunho. Nada de SQL, RPC nova ou save novo: tudo roda no aparelho, na memória da aba ou com os dados que já existem.
+
+### O que entrou
+
+| Etapa | O que faz | Estado |
+|---|---|---|
+| ML1 / ML1.1 | Espelho → Provador, Celular → TsuPhone, Estante → Troféus/Álbum, volta direto ao Camarim | Implementado |
+| ML1.2 (A–D) | Celular com Agenda (missões), Chat com Idols e fãs lembrados, Fotos (câmera Idol + Pet, Momentos da sessão, fotos públicas do Jornal) | Implementado |
+| ML1.3 | Sofá com Sentar, Descansar e Conviver; reações do Pet à companhia | Implementado |
+| Tema | Telas do celular e botão "Guardar" do Karaoke usam as variáveis de tema (`--card`, `--chip`, `--ink`, `--sub`, `--b1`, `--pink`): funcionam no modo escuro e com o Oshi | Implementado (`10fb4e3`, `c61e025`) |
+| ML1.4 | Balão de vontade do Pet (estilo The Sims): pede um cuidado existente; atender dá +8 de humor e corações, nunca estrelas, XP ou servidor. Celular passa a ser `{nick}Phone`. App Perfil vira **Cartas** de fã (uma por dia, nomes inventados via `hsNomesLivres`, "lida" só na sessão; o Perfil abre pelo fim da lista) | Implementado (`858d261`, `0d47c62`) |
+| ML1.5 | Papel de parede próprio do celular (Idol + Pet no palquinho, 260×140, resolução da tela); Idol em pé à frente do sofá; sentar de verdade (quadril no assento, coxas na cor da roupa, pernas penduradas); três poses com lugar e postura próprios; mesinha e estante com pés até o chão e sombra | Implementado (`d27c427`, `44c9649`, `b08c11d`) |
+| ML1.6 | **Arrumar o quarto** (Decorar → ✋): mesinha, estante e abajur deslizam só no chão (base sempre em y 177, sem sobrepor) e os quadros na parede; chave própria `tw_camarim_arrumacao`, fora do save sincronizado. **Luz pelo horário de Brasília**: janela com céu da manhã, dia, fim de tarde e noite; abajur aceso à noite. **Carta com foto**: um fã responde com a polaroid do último Momento da sessão. **Look do dia** no Provador: tema de cor diário, "Look completo" com meias no mesmo tom, polaroid guardada nos Momentos. **Cor das meias** no Montar Idol (Perfil e Zipper⭐Shop!): mesmo retângulo do `drawChar`, padrão `#1c1c30`; a página inicial não muda | Implementado |
+| ML1.7 | Celular: botão ✕ e título de cada app alinhados numa grade de 3 colunas (44 px · título centralizado · 44 px) | Implementado (`180cfb3`) |
+| ML1.8-A | Naturalidade no Camarim: joelho direito de Conviver dentro do sofá, braço à frente da roupa; saias e vestidos Sweet/Zipper com tecido sobre as coxas; transição breve de sentar/descansar/levantar desde a posição visível; Pet aproxima/retorna sem salto; olhar sutil por personalidade, desligado com movimento reduzido. Só `pet.js`, sem save ou novos timers. | Implementado localmente; prévia #81 após push |
+| Karaoke — tela de jogo | No show do próprio jogador a sala ocupa a tela e as pistas D F J K aparecem por cima, em canvas transparente (`karaoke-arena.js/.css`), com velocidade constante das notas. Toque sem nota por perto não conta mais como erro. Pausar sem contagem sai da tela de jogo; o "← Início" do site fica sempre visível | Implementado (`008be8f`) |
+| Karaoke — balões | Falas dos NPCs não se sobrepõem: fila de balões em até 4 andares, jogador primeiro, desenhada depois de todos os Idols (`krBaloesLayout`) | Implementado (`28676df`) |
+| Volta do perfil | Perfil aberto pela vitrine ou pela busca do hub volta para a página principal (`perfVoltaHub`), e não para o Center⭐Run! | Implementado |
+| Karaoke — músicas novas | Sete trilhas de outros modos viram músicas do jogo de ritmo (`karaoke-musicas-modos.js`, fora do HTML pelo limite de tamanho): Mega Kawaii, Corrida Tensa, Modo Difícil, Kimi wa Alien! e Unit⭐Sync! (Center⭐Run!), Sora⭐Jump! e Vitrine Brilhante (início). Mesmo formato das 7 originais (64 passos, acordes a cada 8), cartão na biblioteca e opção no seletor. A rotação semanal continua com as mesmas 5 | Implementado |
+| Meias no sofá | A Nagareboshi (Estrelado) mostrava polainas listradas em pé e meia escura sentada: a canela sentada agora repete as polainas (`petLifeCanelaRoupa`) | Corrigido |
+| Sons do celular | Abrir, fechar, voltar, abrir app, tocar, conversar e abrir carta têm sons curtos (`PET_PHONE_SONS` via `beep`), que respeitam o mudo | Implementado (`9bb3645`) |
+| Visual dos personagens | Folha E aprovada: Trainee, Cheeky, Seifuku e City Pop ganham parte de baixo própria (**Saia** pregueada ou **Bermuda** de cintura alta, campo `baixo` no Montar Idol do Perfil e da Zipper⭐Shop!; sem escolha, City Pop usa bermuda e as outras, saia), ombro ligado à roupa e luz contínua recortada só no tecido (sem escurecer gravata, laço, gola ou estampa). Trainee volta a ser camisa inteira na cor escolhida com gravata (laterais e manga do mesmo tecido). Tsu e Pati começam de bermuda, Lirika de saia. Módulo único `tw-avatar-roupa.js` nas três cópias do `drawChar`. Folha F: Estrelado, Zipper e Sweet mantêm o desenho e ganham a mesma luz contínua (top e avental brancos deixam de escurecer); roupas da loja e looks de rank continuam como estavam. A manga acompanha o braço em V, Tchau, Banzai e Lightstick | Implementado |
+
+### Regra de desenho para tudo que for novo
+
+**Poses, cenas e objetos novos usam só as formas que o `drawChar` (centerrun.js) e o `drawPet` já usam.**
+
+- As pernas do avatar são dois retângulos escuros (`#1c1c30`, 5×8 unidades), sem pé separado, sapato ou contorno. Uma pose nova pode encurtar, recortar ou mudar a cor dessas formas, mas não cria pés redondos, dedos, joelhos dobrados desenhados à parte ou outro estilo de corpo.
+- Cores de roupa vêm do próprio avatar (ex.: `petLifeLerCorColo` lê o pixel do quadril já desenhado), nunca de uma tabela paralela.
+- Objetos de cenário seguem o estilo chapado do quarto: retângulos e elipses com uma cor clara e uma escura, sem contorno. Tudo que fica no chão encosta na linha do piso (y ≥ 170 no Camarim) e tem sombra de contato.
+- Mudar o desenho base dos personagens (ex.: dar pés) **não** é feito sem uma etapa própria: ele aparece no Center⭐Run!, Perfil, vitrine, Gacha, Karaoke, Handshake, Café, banner e nas fotos do Jornal, e os testes visuais dependem dele.
+- O teste `tests/meu-camarim-life-ml15.test.js` barra pés redondos nas pernas sentadas e confere os móveis no chão.
+
+### Testes e CI
+
+- `node tests/run-all.js`: 71/71 localmente após ML1.8-A (inclui `avatar-roupa`, `meu-camarim-life-ml1/ml13/ml13b/ml14/ml15/ml16/ml18`, `karaoke-baloes` e `karaoke-musicas-modos`).
+- `tests/karaoke-mobile.browser.cjs` confere as pistas da tela de jogo do Karaoke.
+- Testes de navegador locais: `i18n-visual`, `profile-accessories` e `admin-idol` aprovados depois da cor das meias.
+- `tests/i18n-visual.browser.cjs` passou localmente depois de remover as chaves genéricas "Idol" e "nova" (que tinham derrubado o `browser-karaoke` no `858d261`).
+- CI verde em `0d47c62` e `44c9649` (static-validation, postgres-center-run, browser-karaoke). Ver o resultado do último commit na própria PR.
+
+### Pendências
+
+- Homologação no celular de verdade pela prévia do Netlify (320/390 px, claro/escuro).
+- Decidir se a carta lida deve ser lembrada depois de recarregar (hoje fica só na sessão, pela regra de não salvar nada no celular).
+- Detalhe visual: em Conviver, o joelho direito passa um pouco por cima do braço do sofá.
+- A cor das meias aparece para outros jogadores pelo `salvar_avatar` existente (aceita campos novos em `c`); o montador da página inicial não tem o campo para não mudar a captura de referência do teste visual de idiomas.

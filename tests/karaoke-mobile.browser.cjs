@@ -360,22 +360,22 @@ async function waitForRoomMode(frame, expectMobile){
    if(!baseline){
     assert(playing.scroll<=playing.viewport+1,'Playing does not widen the document');
     if(width<=620){
-     assert(Math.abs(playing.crop.left-120)<.1,'The same medium crop is kept during play');
-     assert(playing.weekly.y>=playing.scene.bottom,'Ranking stays below the game while playing');
-     // Test the real pointer-to-logical-canvas conversion after cropping.
+     // Arena: durante o próprio show a sala vira a tela do jogo (pistas por cima, fundo transparente).
+     const arena=await frame.locator('body').evaluate(()=>{const a=document.getElementById('ktArena'),c=document.getElementById('krCv').getBoundingClientRect(),r=a&&a.getBoundingClientRect();return {on:document.body.classList.contains('kt-arena'),hidden:!a||a.hidden,arena:r&&{x:r.x,y:r.y,w:r.width,h:r.height},canvas:{x:c.x,y:c.y,w:c.width,h:c.height},vw:innerWidth,vh:innerHeight,geo:window.KaraokeArena?KaraokeArena.geometry(innerWidth,innerHeight):null};});
+     assert(arena.on&&!arena.hidden,'Own show turns the room into the game arena: '+JSON.stringify(arena));
+     assert(Math.abs(arena.arena.w-arena.vw)<1&&Math.abs(arena.arena.h-arena.vh)<1,'Arena lanes cover the whole viewport');
+     assert(arena.canvas.w>=arena.vw-1&&arena.canvas.h>=arena.vh-1,'The room stays visible behind the lanes, covering the screen');
      await p.waitForTimeout(4200); // The game intentionally keeps a 4s count-in before the first accepted note.
-     const canvas=frame.locator('#krCv');
+     const lanes=frame.locator('#ktArena');
      for(let lane=0;lane<4;lane++){
-      await canvas.click({position:{x:(286+(lane+.5)*97)*playing.canvas.w/960,y:160*playing.canvas.h/540}});
+      await lanes.click({position:{x:arena.geo.left+(lane+.5)*arena.geo.lw,y:arena.geo.target}});
       const flash=await frame.locator('body').evaluate(()=>window.qaRoomState().flash);
-      assert(flash[lane]>0,'Touch reaches rhythm lane '+lane+' after cropping');
+      assert(flash[lane]>0,'Touch on arena button '+lane+' reaches rhythm lane '+lane);
      }
      await frame.locator('#ktViewMobile').click();
      const overview=await metrics(frame);
+     assert.equal(await frame.locator('body').evaluate(()=>document.body.classList.contains('kt-arena')),false,'Full room toggle leaves the arena');
      assert(Math.abs(overview.crop.left)<.1&&Math.abs(overview.crop.right-960)<.1,'Full room toggle restores the entire canvas');
-     await frame.locator('#ktViewMobile').click();
-     const cropped=await metrics(frame);
-     assert(Math.abs(cropped.crop.left-120)<.1,'Second toggle restores the medium crop');
      const soundBefore=await frame.locator('#krMute').innerText();
      await frame.locator('#krMute').click();
      assert.notEqual(await frame.locator('#krMute').innerText(),soundBefore,'Moved sound button still toggles');
@@ -388,6 +388,8 @@ async function waitForRoomMode(frame, expectMobile){
      assert((await photoDownload).suggestedFilename().endsWith('.png'),'Moved camera still exports the photo');
      await frame.locator('#ktPhotoBack').click();
      await frame.locator('#ktPhotoDialog').waitFor({state:'hidden'});
+     await frame.locator('#ktViewMobile').click();
+     assert.equal(await frame.locator('body').evaluate(()=>document.body.classList.contains('kt-arena')),true,'Second toggle returns to the arena');
     }
    }
    await p.screenshot({path:path.join(out,engine+'-'+width+'-playing.png'),fullPage:true});

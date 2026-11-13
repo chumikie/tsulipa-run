@@ -7,17 +7,41 @@ var BANNER_TSULIPA = ['tsu', 'lirika', 'patiliri'];
 var BANNER_FALAS = [['Oi!', '👋'], ['Bem-vindo!', '💖'], ['Vamos jogar?', '🎮'], ['Hoje tem show!', '🎤'], ['Obrigado por vir!', '✨'], ['Bora pro Center!', '🏁'], ['hehe~', '😆']];
 var BANNER_EMO = ['💖', '⭐', '✨', '🎵', '🌸', '💫'];
 var bannerCache = { chave:'', elenco:null };
+// Uniforme dos trios do site: todos com a mesma roupa do jogo (troca a cada ciclo de 3 dias), cada um num tom pastel
+var BANNER_UNIFORMES = ['seifuku', 'estrelado', 'y2k', 'zipper', 'sweet', 'citypop'];
+var BANNER_PASTEIS = ['#f6c6e0', '#c8e3fb', '#cdeec6'];   // rosa, azul e verde suaves (as cores do TsuLiPa, em pastel)
+function bannerUniforme(c, i, roupa){
+  c.out = roupa || BANNER_UNIFORMES[((Math.floor(bannerDia() / 3) % BANNER_UNIFORMES.length) + BANNER_UNIFORMES.length) % BANNER_UNIFORMES.length];
+  c.outcol = BANNER_PASTEIS[i % BANNER_PASTEIS.length];
+  return c;
+}
 function bannerDia(){ return Math.floor((Date.now() - 3 * 3600e3) / 864e5); }   // dia de Brasília
 function bannerSorteio(L, semente){   // embaralha igual para todos no mesmo ciclo
   var a = L.slice(), s = (semente * 2654435761) >>> 0 || 1;
   for(var i = a.length - 1; i > 0; i--){ s = (s * 1103515245 + 12345) >>> 0; var j = s % (i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
   return a;
 }
+function bannerPetPublico(d){   // somente Pets já expostos no perfil público do jogador
+  if(!d || !Array.isArray(d.pets) || typeof perfPetDoAvatar !== 'function') return null;
+  var pets = d.pets.filter(function(p){ return p && typeof p === 'object' && typeof PET_SP !== 'undefined' && PET_SP[p.k]; });
+  var ativo = String(d.ativo || ''), pet = pets.find(function(p){ return p.k === ativo; }) || pets[0];
+  return pet ? perfPetDoAvatar({pet:pet}) : null;
+}
+function bannerPetsCarregar(elenco){   // reaproveita a consulta pública do Perfil; nenhum dado é salvo
+  if(!elenco || typeof contaRpc !== 'function') return;
+  elenco.forEach(function(p){
+    if(p.pet || p.petConsulta) return;
+    p.petConsulta = true; // não consultar a cada quadro do Canvas
+    Promise.resolve().then(function(){ return contaRpc('perfil_publico', {p_nick:p.nick}); }).then(function(d){
+      if(bannerCache.elenco === elenco) p.pet = bannerPetPublico(d);
+    }).catch(function(){}); // perfil indisponível: mantém o Idol, sem inventar Pet
+  });
+}
 function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carregou)
   var dia = bannerDia(), fase = ((dia % 3) + 3) % 3;
   if(fase === 0 || typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols)) return null;
   var chave = dia + '|' + hubIdolsDados.idols.length;
-  if(bannerCache.chave === chave) return bannerCache.elenco;
+  if(bannerCache.chave === chave){ bannerPetsCarregar(bannerCache.elenco); return bannerCache.elenco; }
   var pool = hubIdolsDados.idols.filter(function(p){
     return p && p.nick && p.avatar && p.avatar.c && typeof p.avatar.c === 'object' && BANNER_TSULIPA.indexOf(String(p.nick).toLowerCase()) < 0;
   });
@@ -26,20 +50,25 @@ function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carre
   if(pool.length >= 3){
     pool = bannerSorteio(pool, Math.floor(dia / 3));
     var ini = fase === 1 ? 0 : 3;
-    elenco = [0, 1, 2].map(function(n){ var p = pool[(ini + n) % pool.length]; return { nick:String(p.nick).slice(0, 24), av:p.avatar }; });
+    elenco = [0, 1, 2].map(function(n){
+      var p = pool[(ini + n) % pool.length];
+      return { nick:String(p.nick).slice(0, 24), av:p.avatar,
+        pet:typeof perfPetDoAvatar === 'function' ? perfPetDoAvatar(p.avatar) : null };
+    });
     if(new Set(elenco.map(function(p){ return p.nick; })).size < 3) elenco = null;
   }
   bannerCache = { chave:chave, elenco:elenco };
+  bannerPetsCarregar(elenco);
   return elenco;
 }
 function bannerRotulo(){
   var e = bannerElenco();
   return e ? tr('Idols do TsuLiPa⭐World') + ': ' + e.map(function(p){ return p.nick; }).join(', ') : 'TsuLiPa: Tsu, Lirika e Pati';
 }
-function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os três Idols do site, com o nome embaixo
+function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os três Idols do site (sem plaquinha de nome)
   elenco.forEach(function(p, i){
     var av = p.av || {}, c = perfChar(av), cx = W2 * HUB_TRIO[i][2], bob = Math.sin(t * .06 + i * 2.1) * 1.1 * sc;
-    if(roupa){ c.out = roupa; c.outcol = c.img; }   // roupa da temporada, igual ao TsuLiPa
+    bannerUniforme(c, i, roupa);   // uniformizados: mesma roupa (ou a do tema), tons pastel
     var ex = [0, 1, 2, 3, 4, 5, 6].indexOf(+av.expr) >= 0 ? +av.expr : 2;
     var rg = HUB_REAGE.i === i ? hubT - HUB_REAGE.t0 : 999, rgD = (HUB_REAGE.dur || 200) - 30;
     if(rg < rgD){ bob -= Math.abs(Math.sin(rg / 35 * Math.PI)) * (rg < 70 ? 9 : 3) * sc * (rg < 70 ? 1 - rg / 90 : 1); ex = 3; }
@@ -47,13 +76,12 @@ function bannerVisitaDesenhar(x, W2, H2, elenco, t, roupa, sc, chao){   // os tr
     accSel = typeof av.a === 'string' ? av.a : '';
     x.fillStyle = 'rgba(30,10,60,.22)'; x.beginPath(); x.ellipse(cx, chao - .4 * sc, 9 * sc, 1.6 * sc, 0, 0, 7); x.fill();
     perfCharContorno(x, cx - 15 * sc, chao - 44 * sc + bob, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+    if(p.pet && typeof perfDesenharPetEm === 'function'){
+      // Mesma escala e posição do trio oficial; nenhum Pet é inventado para quem não tem.
+      var ps = sc * .46, px = cx + 24 * sc, py = chao - 22 * sc + Math.sin(t * .08 + i) * 1.5 * sc;
+      perfDesenharPetEm(x, p.pet, px, py, ps, t + i * 40);
+    }
     charPose = ''; perfAntena = '';
-    // plaquinha com o apelido
-    x.save(); x.font = (3.4 * sc) + 'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    var nm = p.nick, w = x.measureText(nm).width + 5 * sc, h = 5.4 * sc, ny = Math.min(H2 - h / 2 - 1, chao + 2.8 * sc);
-    x.fillStyle = ['#9b30d9', '#3f9c1f', '#4169e1'][i]; x.beginPath();
-    if(x.roundRect) x.roundRect(cx - w / 2, ny - h / 2, w, h, h / 2); else x.rect(cx - w / 2, ny - h / 2, w, h);
-    x.fill(); x.fillStyle = '#fff'; x.fillText(nm, cx, ny + .2 * sc); x.restore();
   });
   accSel = '';
 }
@@ -87,14 +115,14 @@ function bannerTorcida(){   // null = sem torcida; {tsulipa:true} = Tsu, Lirika 
 }
 function bannerTorcidaDesenhar(x, W2, H2, t, girando){   // no canto esquerdo da sala do Gacha, pequenos, pulando
   var tc = bannerTorcida(); if(!tc) return;
-  var sc = 1.9, chao = H2 * .9, xs = [W2 * .06, W2 * .14, W2 * .22];
+  var sc = 2.2, chao = H2 * .9, xs = [W2 * .06, W2 * .14, W2 * .22]; // torcida ~16% maior, ainda dentro da faixa esquerda
   var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame;
   try{
     state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; frame = t;
     for(var i = 0; i < 3; i++){
       var c, pose = girando ? ['banzai', 'luz', 'banzai'][i] : ['luz', 'v', 'coracao'][i], ex = girando ? 3 : 2;
       if(tc.tsulipa){ c = CH[i]; accSel = ''; }
-      else { var av = tc.gente[i].av || {}; c = perfChar(av); accSel = typeof av.a === 'string' ? av.a : ''; }
+      else { var av = tc.gente[i].av || {}; c = bannerUniforme(perfChar(av), i, typeof HUB_ROUPA_TEMA !== 'undefined' && typeof temaAtual === 'function' ? HUB_ROUPA_TEMA[temaAtual()] || '' : ''); accSel = typeof av.a === 'string' ? av.a : ''; }
       var pulo = Math.abs(Math.sin(t * (girando ? .16 : .06) + i * 1.3)) * (girando ? 9 : 3), cx = xs[i];
       x.fillStyle = 'rgba(30,10,60,.2)'; x.beginPath(); x.ellipse(cx, chao, 11 * sc, 1.8 * sc, 0, 0, 7); x.fill();
       perfCharContorno(x, cx - 15 * sc, chao - 44 * sc - pulo, sc, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });

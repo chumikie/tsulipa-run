@@ -28,9 +28,10 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   coracao:['💖', 'Dê 1 coração em um perfil'], recado:['💌', 'Deixe 1 recado em um perfil'], mini:['🎮', 'Ganhe estrelas em um minijogo do camarim'], pet:['🛍️', 'Compre algo para o seu pet'],
   estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
   estrelas50:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas100:['🌟', 'Chegue a {n} estrelas nas corridas hoje'],
-  pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati']
+  pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati'],
+  handshake:['🤝', 'Acerte um presente no Handshake⭐Event!'], cafe:['🧋', 'Sirva um pedido perfeito no Happy⭐Cafe!']
 };
-var HUB_NOVIDADES = [["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: salvamento na nuvem mais seguro e você no controle dos seus dados"], ["🌏", "Jogo em português, inglês, espanhol, tailandês e japonês"]];
+var HUB_NOVIDADES = [["🗓️", "Evento da semana no Idol⭐News!: um tema novo toda segunda, com bônus no Happy⭐Cafe! e no Handshake⭐Event!"], ["📔", "Diário de carreira e Estante de troféus no Perfil, com insígnias dos jogos novos"], ["📰", "Idol⭐News!: Top 5, Fotos do dia, Festival de Unidades e Ensaio de trio"], ["💌", "Pedido de fã: um pedido especial por dia"], ["🐾", "Seu pet passeia no Café e no Handshake… e às vezes pega um docinho!"], ["🤝", "Handshake⭐Event!: lembre o presente favorito de cada fã na fila"], ["🧋", "Happy⭐Cafe!: monte shakes, frappés e docinhos para os fãs e complete o Caderno de receitas"], ["🎴", "Álbum de cards e Troca de cards com outros Idols"], ["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: o que os jogos novos guardam, trocas de cards e como funciona o clima do Hoje"], ["🌏", "Jogo em português, inglês, espanhol, indonésio, tailandês e japonês"]];
 // Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
 var HUB_TUT = [['💖', 'Meu Perfil', 'Entre com Google para salvar na nuvem, montar seu Idol, ganhar insígnias, corações e recados.'],
                ['🏁', 'Center⭐Run!', 'Pule os obstáculos do palco, pegue estrelas e os microfones das parceiras. Chegue ao Center!'],
@@ -93,6 +94,120 @@ function hubAv(){   // o seu Idol (com a pose e o visual da foto do perfil) e o 
   var p = petAtivo && petAtivo();
   av.pet = p && petData && PET_SP[petData.ativo] ? { k:petData.ativo, acc:p.acc || '', cfg: petData.ativo === 'meu' ? p.cfg : null } : null;
   return av;
+}
+// TsuBuddy⭐ — miniatura do próprio Idol no Hub. Somente visual/sessão; sem save, RPC ou loop novo.
+var HUB_BUDDY_TXT = {
+  pt:['Meu Idol companheiro','Meu Perfil','Meu Camarim','Missões','Recolher','Mostrar TsuBuddy'],
+  es:['Mi Idol acompañante','Mi perfil','Mi camerino','Misiones','Ocultar','Mostrar TsuBuddy'],
+  en:['My Idol companion','My profile','My dressing room','Missions','Tuck away','Show TsuBuddy'],
+  id:['Idol pendampingku','Profilku','Ruang gantiku','Misi','Sembunyikan','Tampilkan TsuBuddy'],
+  th:['ไอดอลคู่ใจ','โปรไฟล์ของฉัน','ห้องแต่งตัว','ภารกิจ','ซ่อน','แสดง TsuBuddy'],
+  ja:['私のアイドル','マイプロフィール','楽屋','ミッション','しまう','TsuBuddyを表示']
+};
+var hubBuddyEstado = {dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
+function hubBuddyTexto(){return HUB_BUDDY_TXT[LANG] || HUB_BUDDY_TXT.pt;}
+function hubBuddyCriar(){
+  var el=document.createElement('div');el.id='hubBuddy';el.className='hubbuddy';el.hidden=true;
+  el.innerHTML='<div class="hubbuddy-menu" id="hubBuddyMenu" role="group" hidden>'+
+    '<button type="button" data-buddy="perfil"></button><button type="button" data-buddy="pet"></button>'+
+    '<button type="button" data-buddy="missoes"></button><button type="button" data-buddy="recolher"></button></div>'+
+    '<button type="button" class="hubbuddy-idol" data-buddy="menu" aria-haspopup="true" aria-expanded="false">'+
+    '<canvas width="96" height="110" aria-hidden="true"></canvas></button>'+
+    '<button type="button" class="hubbuddy-voltar" data-buddy="mostrar" hidden>🌸</button>';
+  el.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-buddy]');if(!b)return;
+    var acao=b.dataset.buddy;
+    if(acao==='menu') hubBuddyEstado.menu=!hubBuddyEstado.menu;
+    else if(acao==='recolher'){hubBuddyEstado.recolhido=true;hubBuddyEstado.rolagemAoMostrar=null;hubBuddyEstado.menu=false;}
+    else if(acao==='mostrar'){
+      hubBuddyEstado.recolhido=false;hubBuddyEstado.menu=false;
+      hubBuddyEstado.rolagemAoMostrar=hubOv.scrollTop>90?hubOv.scrollTop:null;
+    }
+    else {
+      hubBuddyEstado.menu=false;
+      if(acao==='perfil'||acao==='pet'){
+        var atalho=hubOv.querySelector('#hubCards [data-ir="'+(acao==='perfil'?'perfil':'pet')+'"]');
+        if(atalho)atalho.click();
+      }else if(acao==='missoes'){
+        var mis=$('hubMisPainel');if(mis)mis.scrollIntoView({behavior:hubBuddyReducao()?'auto':'smooth',block:'start'});
+      }
+    }
+    hubBuddyFrame(true);
+  });
+  el.addEventListener('keydown',function(e){if(e.key==='Escape'&&hubBuddyEstado.menu){hubBuddyEstado.menu=false;hubBuddyFrame(true);el.querySelector('[data-buddy="menu"]').focus();}});
+  hubOv.appendChild(el);return el;
+}
+function hubBuddyReducao(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);}
+function hubBuddyLimpar(){
+  hubBuddyEstado={dono:'',assinatura:'',quadros:null,recolhido:false,rolagemAoMostrar:null,menu:false,nasceu:0,ultimo:'',chegou:false};
+  var el=$('hubBuddy');if(el){el.hidden=true;el.classList.remove('hubbuddy-chegada');}
+}
+function hubBuddyQuadro(av,pose){
+  var cv=document.createElement('canvas');cv.width=96;cv.height=110;
+  var desenho=JSON.parse(JSON.stringify(av));desenho.pet=null;desenho.fundo='';
+  if(pose!==null)desenho.pose=pose;
+  perfDesenharIdol(cv.getContext('2d'),cv.width,cv.height,desenho,false,false,0);
+  return cv;
+}
+function hubBuddyAtualizar(){
+  if(typeof hubOv==='undefined'||!hubOv)return;
+  if(!contaJ){hubBuddyLimpar();return;}
+  var av=typeof perfMeuAv!=='undefined'&&perfMeuAv&&perfMeuAv.c?perfMeuAv:null;
+  var el=$('hubBuddy');
+  if(!av||!hubComecou||hubOv.hidden){if(el)el.hidden=true;return;}
+  var dono=String((typeof contaAuthUserId==='string'&&contaAuthUserId)||contaJ.id||contaJ.nick);
+  var assinatura=JSON.stringify([av.c,av.a,av.visual,av.pose,av.expr,av.cor]);
+  if(!el)el=hubBuddyCriar();
+  if(dono!==hubBuddyEstado.dono){hubBuddyLimpar();hubBuddyEstado.dono=dono;hubBuddyEstado.nasceu=hubT;}
+  if(hubBuddyEstado.assinatura!==assinatura){
+    try{
+      hubBuddyEstado.quadros={parado:hubBuddyQuadro(av,null),tchau:hubBuddyQuadro(av,'tchau'),curioso:hubBuddyQuadro(av,'v')};
+      hubBuddyEstado.assinatura=assinatura;hubBuddyEstado.ultimo='';
+    }catch(e){el.hidden=true;hubBuddyEstado.quadros=null;return;}
+  }
+  var t=hubBuddyTexto();
+  el.querySelector('[data-buddy="menu"]').setAttribute('aria-label','TsuBuddy⭐ — '+t[0]);
+  [['perfil',1],['pet',2],['missoes',3],['recolher',4]].forEach(function(p){el.querySelector('[data-buddy="'+p[0]+'"]').textContent=t[p[1]];});
+  el.querySelector('[data-buddy="mostrar"]').setAttribute('aria-label',t[5]);
+  hubBuddyFrame(true);
+}
+function hubBuddyFrame(forcar){
+  var el=$('hubBuddy');if(!el||!hubBuddyEstado.quadros)return;
+  var foco=document.activeElement;
+  var editando=foco&&hubOv.contains(foco)&&/^(INPUT|TEXTAREA|SELECT)$/.test(foco.tagName);
+  var tutorial=$('hubTut');
+  el.hidden=!contaJ||!hubComecou||hubOv.hidden||editando||(tutorial&&!tutorial.hidden);
+  if(el.hidden)return;
+  // Toque na flor prevalece sobre a rolagem atual; só uma nova rolagem perceptível recolhe de novo.
+  var pos=hubOv.scrollTop;
+  if(hubBuddyEstado.rolagemAoMostrar!==null&&(pos<=90||Math.abs(pos-hubBuddyEstado.rolagemAoMostrar)>8))hubBuddyEstado.rolagemAoMostrar=null;
+  var recolhido=hubBuddyEstado.recolhido||(pos>90&&hubBuddyEstado.rolagemAoMostrar===null);
+  if(recolhido)hubBuddyEstado.menu=false;
+  el.querySelector('[data-buddy="menu"]').hidden=recolhido;
+  el.querySelector('[data-buddy="mostrar"]').hidden=!recolhido;
+  el.querySelector('#hubBuddyMenu').hidden=!hubBuddyEstado.menu||recolhido;
+  el.querySelector('[data-buddy="menu"]').setAttribute('aria-expanded',String(hubBuddyEstado.menu&&!recolhido));
+  if(recolhido)return;
+  if(!hubBuddyEstado.chegou&&!document.hidden){
+    hubBuddyEstado.chegou=true;
+    hubBuddyEstado.nasceu=hubT;
+    if(!hubBuddyReducao())el.classList.add('hubbuddy-chegada');
+    if(typeof muted!=='undefined'&&!muted&&typeof sfx!=='undefined'&&sfx&&typeof sfx.star==='function')sfx.star();
+  }
+  // O Hub já desenha em 30 fps no celular; a miniatura só muda de quadro/posição a cada ~4 passos.
+  var idade=Math.max(0,hubT-hubBuddyEstado.nasceu),ciclo=(idade-75+720)%720;
+  var calmo=hubBuddyReducao()||hubBuddyEstado.menu;
+  var quadro=calmo?'parado':idade<75?'tchau':ciclo>=250&&ciclo<320?'curioso':'parado';
+  var descanso=!calmo&&idade>=75&&ciclo>=450&&ciclo<570;
+  var etapa=calmo?0:Math.floor(hubT/4),chave=quadro+':'+etapa+':'+descanso;
+  if(!forcar&&hubBuddyEstado.ultimo===chave)return;
+  hubBuddyEstado.ultimo=chave;
+  var botao=el.querySelector('[data-buddy="menu"]'),cv=botao.querySelector('canvas'),x=cv.getContext('2d');
+  x.clearRect(0,0,cv.width,cv.height);x.drawImage(hubBuddyEstado.quadros[quadro],0,0);
+  var chegada=calmo?0:idade<60?Math.pow(1-idade/60,2)*18:0;
+  var passo=quadro==='curioso'?Math.sin((ciclo-250)/70*Math.PI)*7:0;
+  botao.style.opacity=calmo?'1':String(1-.7*chegada/18);
+  botao.style.transform=calmo?'none':'translate('+(passo-chegada).toFixed(1)+'px,'+(descanso?4:(Math.sin(hubT*.035)*1.3)).toFixed(1)+'px) scaleY('+(descanso?'.93':'1')+')';
 }
 var HUB_ROUPA_TEMA = { criancas:'jardineira', aniversario:'festa48', halloween:'vampiro', natal:'rena', anonovo:'reveillon', verao:'floral', valentine:'coracao', outono:'outono', sakura:'sakura', inverno:'puffer', tanabata:'yukata', primavera:'cardiga' };
 var HUB_TRIO = [[0, 'nyan', .2, 'tsu', 6], [1, 'mic', .5, 'lirika', 3], [2, 'v', .78, 'pati', 2]];
@@ -207,6 +322,7 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
 function hubLoop(ms){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
   var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1,hubPrevT=hubT;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2))) hubDesenhar();
+  hubBuddyFrame(false);
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]
@@ -260,19 +376,204 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
   var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5);
   return HUB_MUSICAS[((sem % 5) + 5) % 5];
 }
+// Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
+var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+// O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
+var hubAgendaFoco = '', hubAgendaFocoConta = '', hubAgendaFocoDia = '';
+function hubAgendaFocoAtual(){
+  var dono = typeof contaJ !== 'undefined' && contaJ ?
+    String((typeof contaAuthUserId === 'string' && contaAuthUserId) || contaJ.id || contaJ.nick || '') : '';
+  var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  if(dono !== hubAgendaFocoConta || dia !== hubAgendaFocoDia){
+    hubAgendaFoco = ''; hubAgendaFocoConta = dono; hubAgendaFocoDia = dia;
+  }
+  return dono ? hubAgendaFoco : '';
+}
+// Pedido de fã é apenas uma opção da Agenda: os dados vêm da janela já existente.
+var HUB_AGENDA_FA_ROTAS = {corridas3:'run',estrelas30:'run',pontos1500:'run',karaoke1:'karaoke'};
+function hubAgendaPedidoFa(){
+  if(!contaJ || typeof faAbrir !== 'function') return null;
+  var d = typeof faDadosAtuais === 'function' ? faDadosAtuais() : null;
+  var conhecido = d && typeof FA_PEDIDOS !== 'undefined' && FA_PEDIDOS[d.tipo];
+  return {
+    k:'pedido_fa', titulo:conhecido ? tr(conhecido[1]).replace('{n}', d.meta) : tr('Pedido de fã'),
+    meta:d ? Math.max(1, +d.meta || 1) : 0,
+    prog:d ? Math.max(0, +d.progresso || 0) : 0,
+    feito:!!(d && d.resgatado), pronta:!!(d && d.feito),
+    carregado:!!conhecido, pedidoTipo:conhecido ? d.tipo : ''
+  };
+}
+// Convite somente da sessão atual: não é missão nem cria estado persistido.
+function hubAgendaReencontro(){
+  var pendente = typeof hsCafePendente !== 'undefined' ? hsCafePendente : null;
+  if(!pendente || !contaJ || typeof hsMemChave !== 'function' ||
+     pendente.conta !== hsMemChave() || typeof hsMemLer !== 'function' ||
+     typeof hsNomesLivres !== 'function') return null;
+  var memoria = hsMemLer().find(function(m){ return m.nome === pendente.nome && m.pres === pendente.pres; });
+  return memoria && hsNomesLivres().indexOf(memoria.nome) >= 0 ? memoria : null;
+}
+function hubAgendaEscolher(lista){
+  if(!Array.isArray(lista) || !lista.length) return null;
+  var foco = hubAgendaFocoAtual();
+  var escolhida = foco && lista.find(function(m){ return m && m.k === foco; });
+  if(escolhida) return escolhida; // manter o compromisso visível até o jogador escolher outro
+  var abertas = lista.filter(function(m){ return m && !m.feito; });
+  var pronta = abertas.find(function(m){ return +m.prog >= Math.max(1, +m.meta || 1); });
+  return pronta || abertas.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || abertas[0] || lista[0] || null;
+}
+// Só oferece outra missão diária realmente pendente; pedidos de fã não são missões novas.
+// Ação social já confirmada: atualizar somente a missão em foco pela consulta existente.
+function hubAgendaSocialConfirmar(tipo){
+  if(!contaJ || hubAgendaFocoAtual() !== tipo) return;
+  hubMisCarregar();
+}
+function hubAgendaProximo(lista, atual){
+  if(!Array.isArray(lista)) return null;
+  var pendentes = lista.filter(function(m){
+    return m && m.k !== 'pedido_fa' && m.k !== atual && +m.meta > 0 && !m.feito && +m.prog < +m.meta;
+  });
+  return pendentes.find(function(m){ return HUB_AGENDA_ROTAS[m.k]; }) || pendentes[0] || null;
+}
+function hubAgendaUI(){
+  var linha = $('hubHojeLinha'), b = $('hubAgenda');
+  if(!linha) return;
+  var missoes = Array.isArray(hubMisDados) ? hubMisDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }) : [];
+  // O pedido só se junta às opções quando a lista normal do Hub foi carregada.
+  var pedido = contaJ && Array.isArray(hubMisDados) ? hubAgendaPedidoFa() : null;
+  if(pedido) missoes.push(pedido);
+  if(!contaJ || !missoes.length){
+    if(b) b.remove();
+    return;
+  }
+  if(!b || b.tagName !== 'DIV'){
+    if(b) b.remove();
+    b = document.createElement('div');
+    b.id = 'hubAgenda';
+    b.className = 'hubmusica hubagenda';
+    b.style.gridColumn = '1 / -1';
+    linha.appendChild(b);
+  }
+  if(linha.lastElementChild !== b) linha.appendChild(b);
+  var m = hubAgendaEscolher(missoes), ehPedido = m.k === 'pedido_fa';
+  var social = m.k === 'coracao' || m.k === 'recado';
+  var t = ehPedido ? ['💌',m.titulo] : m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k];
+  var meta = Math.max(1, +m.meta || 1), prog = Math.min(meta, Math.max(0, +m.prog || 0));
+  var pronta = ehPedido ? m.pronta : prog >= meta, rotulos = {
+    pt:['Agenda do Idol','Meu compromisso de hoje','Concluída','Próximo compromisso'],
+    en:['Idol Agenda',"Today's focus",'Completed','Next commitment'],
+    es:['Agenda del Idol','Mi compromiso de hoy','Completada','Siguiente compromiso'],
+    id:['Agenda Idol','Fokus hari ini','Selesai','Komitmen berikutnya'],
+    th:['ตารางไอดอล','เป้าหมายวันนี้','สำเร็จแล้ว','ภารกิจถัดไป'],
+    ja:['アイドルの予定','今日の目標','達成','次の予定']
+  }, textos = rotulos[LANG] || rotulos.pt;
+  var descricao = t[0] + ' ' + (ehPedido ? t[1] : tr(t[1]).replace('{n}', m.meta));
+  var estado = ehPedido && !m.carregado ? '—' : m.feito ? '✓ ' + escHtml(textos[2]) : prog + '/' + meta;
+  var acao = ehPedido ? (!m.carregado || m.feito ? tr('Pedido de fã') : pronta ? tr('Entregar') : tr('Abrir')) :
+    m.feito ? tr('Missões do dia') : pronta ? tr('Resgatar') : social ? tr('Procurar Idol pelo nome') : tr('Abrir');
+  var proximo = (m.feito || pronta) ? hubAgendaProximo(missoes, m.k) : null;
+  var reencontro = hubAgendaReencontro();
+  var mensagemReencontro = reencontro && tr(
+    reencontro.jeito === 'animado' ? '{n} saiu animado do Café! Talvez volte no Handshake.' :
+    reencontro.jeito === 'timido' ? '{n} sorriu timidamente no Café. Talvez vocês se encontrem no Handshake.' :
+    '{n} guardou com carinho a visita ao Café. Talvez volte no Handshake.'
+  ).replace('{n}', reencontro.nome);
+  var opcoes = missoes.map(function(item){
+    var nome = item.k === 'pedido_fa' ? ['💌',item.titulo] : item.k === 'collect' ? hubCollectHoje() : HUB_MIS[item.k] || ['🎯', item.k];
+    var legenda = nome[0] + ' ' + (item.k === 'pedido_fa' ? nome[1] : tr(nome[1]).replace('{n}', item.meta)) + (item.feito ? ' ✓' : '');
+    return '<option value="' + escHtml(item.k) + '"' + (item.k === m.k ? ' selected' : '') + '>' + escHtml(legenda) + '</option>';
+  }).join('');
+  b.innerHTML = '<label for="hubAgendaEscolha">📅 <b>' + escHtml(textos[0]) + '</b></label>' +
+    '<small>' + escHtml(textos[1]) + '</small>' +
+    '<select id="hubAgendaEscolha" aria-label="' + escHtml(textos[1]) + '">' + opcoes + '</select>' +
+    '<small class="hubagendaresumo">' + escHtml(descricao) + ' · ' + estado + '</small>' +
+    '<button type="button" class="hubagendaabrir">' + escHtml(acao) + ' ↗</button>' +
+    (ehPedido && m.carregado && !pronta && !m.feito ?
+      '<button type="button" class="hubagendaabrir hubagendaver">💌 ' + escHtml(tr('Pedido de fã')) + ' ↗</button>' : '') +
+    (proximo ? '<button type="button" class="hubagendaabrir hubagendaproximo" aria-label="' +
+      escHtml(textos[3]) + '">✨ ' + escHtml(textos[3]) + ' ↗</button>' : '') +
+    (reencontro ? '<strong class="hubagendaresumo">💌 ' + escHtml(tr('Possível reencontro com {n}').replace('{n}', reencontro.nome)) + '</strong>' +
+      '<small class="hubagendaresumo">' + escHtml(mensagemReencontro) + ' ' +
+      escHtml(tr('A aparição depende dos desafios do servidor.')) + '</small>' +
+      '<button type="button" class="hubagendaabrir hubagendareencontro" style="min-height:44px">🤝 ' +
+      escHtml(tr('Tentar reencontro no Handshake')) + ' ↗</button>' : '');
+  b.querySelector('select').onchange = function(e){
+    var chave = e.target.value;
+    if(missoes.some(function(item){ return item.k === chave; })){
+      hubAgendaFocoAtual(); hubAgendaFoco = chave; hubAgendaUI();
+    }
+  };
+  b.querySelector('button').onclick = function(){
+    if(ehPedido && (!m.carregado || pronta || m.feito)){ faAbrir(); return; }
+    if(social && !pronta && !m.feito){
+      var busca = $('hubBusca');
+      if(busca){
+        if(typeof busca.scrollIntoView === 'function') busca.scrollIntoView({behavior:'smooth', block:'center'});
+        busca.focus(); return; // o jogador escolhe o perfil e decide dar coração ou escrever
+      }
+    }
+    var rota = ehPedido ? HUB_AGENDA_FA_ROTAS[m.pedidoTipo] : !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
+    var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
+    if(destino && typeof destino.click === 'function'){ destino.click(); return; }
+    if(ehPedido){ faAbrir(); return; }
+    var painel = $('hubMisPainel');
+    if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  var ver = b.querySelector('.hubagendaver');
+  if(ver) ver.onclick = faAbrir; // atualização somente quando o jogador solicitar
+  var avancar = b.querySelector('.hubagendaproximo');
+  if(avancar) avancar.onclick = function(){
+    var outra = hubAgendaProximo(missoes, m.k);
+    if(!outra) return;
+    hubAgendaFocoAtual(); hubAgendaFoco = outra.k; hubAgendaUI();
+  };
+  var tentar = b.querySelector('.hubagendareencontro');
+  if(tentar) tentar.onclick = function(){
+    var cards = $('hubCards'), destino = cards && cards.querySelector('[data-ir="handshake"]');
+    if(destino && typeof destino.click === 'function') destino.click();
+  };
+}
+// Ao fechar os dois jogos de fãs, reler as missões já existentes (sem nova RPC).
+// Registrar somente quando o Hub abre, sem executar código ao importar o módulo.
+var hubAgendaFechamentoRegistrado = false;
+function hubAgendaEscutarFechamento(){
+  if(hubAgendaFechamentoRegistrado) return;
+  document.addEventListener('click', function(e){
+    if(!e.target || !e.target.closest || !e.target.closest('#cfX, #hsX')) return;
+    if(!contaJ || typeof hubOv === 'undefined' || !hubOv || hubOv.hidden) return;
+    hubAgendaUI(); // convite e despedida atualizam sem nova consulta online
+    if(hubAgendaFocoAtual()) hubMisCarregar();
+  });
+  hubAgendaFechamentoRegistrado = true;
+}
 function hubBlocosUI(){   // títulos dos blocos Hoje / Jogos / Meu mundo e o atalho da Música da semana
   var t = $('hubHojeT'); if(!t) return;
-  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>';
+  t.innerHTML = '☀️ ' + escHtml(tr('Hoje')) + ' <small class="tw-jpsub" lang="ja">今日</small>' + (typeof hojeHtml === 'function' ? hojeHtml() : '');
+  if(typeof hojeIniciar === 'function') hojeIniciar();
   var m = hubMusicaSemana(), b = $('hubMusica');
   b.innerHTML = '🎵 <b>' + escHtml(tr('Música da semana')) + '</b><small class="tw-hubgame-jp" lang="ja">今週の曲</small><small translate="no">' + escHtml(m[1]) + '</small>';
   b.onclick = function(){ var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); };
+  b.style.display = 'none';   // a Música da semana agora mora no Idol⭐News!
   var linha = $('hubHojeLinha'), jn = $('hubJornal');
   if(linha && !jn){ jn = document.createElement('button'); jn.type = 'button'; jn.className = 'hubmusica hubjornal'; jn.id = 'hubJornal'; jn.onclick = function(){ if(sfx.card) sfx.card(); jornalAbrir(); }; linha.appendChild(jn); }
+  var fb = $('hubFa');
+  if(linha && typeof faCartaoHtml === 'function'){ if(fb) fb.remove(); linha.insertAdjacentHTML('beforeend', faCartaoHtml()); fb = $('hubFa'); fb.onclick = function(){ if(sfx.card) sfx.card(); $('faTit').textContent = '💌 ' + tr('Pedido de fã'); faAbrir(); }; }
   if(jn) jn.innerHTML = '📰 <b translate="no">Idol⭐News!</b><small class="tw-hubgame-jp" lang="ja">アイドル・ニュース</small><small>' + escHtml(tr('Os destaques da semana')) + '</small>';
+  hubAgendaUI();
 }
 function hubLoginCtaUI(){   // visitante: botão "Entrar" pequeno na linha do tema do Oshi (benefícios no title)
+  if(!contaJ)hubBuddyLimpar();
   var box=$('hubLoginCta'); if(!box) return;
-  box.hidden=!!contaJ; if(contaJ) return;
+  var btn=$('hubLoginBtn'); box.hidden=false;
+  if(contaJ){   // logado: o mesmo lugar vira "Sair" (toque duas vezes para confirmar)
+    btn.classList.add('hubsair'); $('hubLoginTxt').textContent='🚪 '+tr('Sair');
+    btn.title=tr('Sair da conta')+' ('+contaJ.nick+')'; btn.setAttribute('aria-label',btn.title);
+    btn.onclick=function(e){ e.stopPropagation();
+      if(btn.dataset.confirma){ delete btn.dataset.confirma; contaSair(); return; }
+      btn.dataset.confirma='1'; $('hubLoginTxt').textContent='🚪 '+tr('Sair?')+' ✓';
+      setTimeout(function(){ if(btn.dataset.confirma){ delete btn.dataset.confirma; if(contaJ) $('hubLoginTxt').textContent='🚪 '+tr('Sair'); } },4000); };
+    return;
+  }
+  btn.classList.remove('hubsair'); delete btn.dataset.confirma;
   $('hubLoginTxt').textContent=tr('Entrar');
   var dica=tr('Entrar com Google')+': '+tr('☁️ Salva na nuvem · 🎯 Missões · 🏆 Ranking');
   $('hubLoginBtn').title=dica; $('hubLoginBtn').setAttribute('aria-label',dica);
@@ -293,10 +594,11 @@ function hubCardsUI(){
     '<h2 class="hubblocot hubbt-mundo">💖 ' + escHtml(tr('Meu mundo')) + ' <small class="tw-jpsub" lang="ja">マイワールド</small></h2>' +
     '<button type="button" class="hubcard hubperf" data-ir="perfil"><canvas id="hubAvCv" width="96" height="96" aria-hidden="true"></canvas><b>' + escHtml(tr('Meu Perfil')) + '</b><small class="tw-hubgame-jp" lang="ja">マイプロフィール</small><small>' + escHtml(contaJ ? contaJ.nick : tr('Entrar com Google')) + '</small></button>' +
     '<button type="button" class="hubcard hubpet' + (pi[2] ? ' tw-alert-pink' : '') + '" data-ir="pet">' + lockHtml + '<i>' + (petData && petData.ativo && PET_SP[petData.ativo] ? PET_SP[petData.ativo].emo : '🐾') + '</i><b translate="no">Backstage⭐Pet!</b><small class="tw-hubgame-jp" lang="ja">バックステージ・ペット</small><small>' + escHtml(pi[0]) + '</small>' + (contaJ && pi[1] ? '<em class="hubalerta">!</em>' : '') + '</button>' +
-    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
     (typeof shopHubHtml === 'function' ? shopHubHtml() : '') +
     '<h2 class="hubblocot hubbt-jogos">🎮 ' + escHtml(tr('Jogos')) + ' <small class="tw-jpsub" lang="ja">ゲーム</small></h2>' +
-    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>';
+    '<button type="button" class="hubcard hubrun" data-ir="run"><i>🏁</i><b translate="no">Center⭐Run!</b><small class="tw-hubgame-jp" lang="ja">センター・ラン</small><small>🏆 ' + escHtml(tr('Recorde')) + ': ' + (best || 0) + '</small><span class="hubgo">▶ ' + escHtml(tr('Jogar')) + '</span></button>' +
+    '<button type="button" class="hubcard hubgacha' + (contaJ && gachaFeito ? '' : ' on') + '" data-ir="gacha">' + lockHtml + '<i>🎰</i><b>' + '<span translate="no">Star⭐Gacha!</span>' + '</b><small class="tw-hubgame-jp" lang="ja">スター・ガチャ</small><small>' + escHtml(tr('1 giro por dia')) + '</small>' + (contaJ && !gachaFeito ? '<em class="hubalerta">!</em>' : '') + '</button>' +
+    (typeof hsHubHtml === 'function' ? hsHubHtml() : '') + (typeof cfHubHtml === 'function' ? cfHubHtml() : '');
   // Vitrine de teste: dois novos jogos são cards nativos do hub, sem outra homepage.
   var twGamesTxt = window.TW_I18N.locale.twGamesTxt;
   twGamesTxt = twGamesTxt[LANG]||twGamesTxt.pt;
@@ -305,13 +607,19 @@ function hubCardsUI(){
     '<button type="button" class="hubcard tw-hubgame tw-hubgame-karaoke" data-ir="karaoke" aria-label="'+escHtml(hubGameAbrir('Karaoke Time'))+'">' + gameLock + '<i aria-hidden="true">🎤</i><b translate="no">Karaoke<span class="tw-star">⭐</span>'+(TW_KARAOKE_TIME?'Time!':'Day!')+'</b><small class="tw-hubgame-jp" lang="ja">'+(TW_KARAOKE_TIME?'カラオケ・タイム':'カラオケ・デー')+'</small><small>'+escHtml(twGamesTxt[1])+'</small><small class="tw-karaoke-timer" aria-live="off"></small><small class="tw-karaoke-ticket-count" aria-live="polite">🎟️ —</small></button>' +
     '<button type="button" class="hubcard hubduo" data-ir="duo">' + lockHtml + '<i>🌙</i><b translate="no">Moon⭐Duo!</b><small class="tw-hubgame-jp" lang="ja">ムーン・デュオ</small><small>' + escHtml(tr('Duas amizades, mil cenas! Monte poses, danças e lanchinhos com outro Idol.')) + '</small></button>'
   );
+  // Jogos em ordem alfabética. O Center⭐Run! continua primeiro e ocupa a linha inteira.
+  ['handshake','cafe','karaoke','duo','sora','gacha'].forEach(function(k){
+    var card = $('hubCards').querySelector('[data-ir="' + k + '"]');
+    if(card) $('hubCards').appendChild(card);
+  });
   twKaraokeAtualizarCard();
   try{ perfFotoRedonda($('hubAvCv'), hubAv(), true); }catch(e){}
 }
 function hubMisUI(){
+  hubAgendaUI();
   $('hubMisT').innerHTML = '🎯 ' + escHtml(tr('Missões do dia')) + '<small class="tw-jpsub" lang="ja">今日のミッション</small>';
   var box = $('hubMis');
-  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Entre com Google para fazer as missões do dia (até ★50 por dia).')) + '</p>'; return; }
+  if(!contaJ){ box.innerHTML = '<p class="hubdica">' + escHtml('🔒 ' + tr('Entrar com Google') + ' · ' + tr('Missões do dia')) + '</p>'; return; }
   if(!hubMisDados){ box.innerHTML = '<p class="hubdica">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
@@ -319,8 +627,15 @@ function hubMisUI(){
     return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';
 }
+// V3.1: depois de um resultado confirmado (Handshake, Café), as missões mostram o progresso novo
+function twMissoesAtualizar(){
+  if(typeof petPhoneAgendaCache !== 'undefined') petPhoneAgendaCache = null;
+  if(contaJ) setTimeout(hubMisCarregar, 400);
+}
 function hubMisCarregar(){
+  if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
+  hubMisDados = null; hubMisUI();
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});
 }
 // INDEX 2 · actual TsuLiPa hub extension, never a standalone/mock homepage.
@@ -450,7 +765,7 @@ function twRankRender(){
  twRankDrawAvatars();
 }
 function twRankRenderProfile(){
- var box=$('twSoraWeekScore');if(!box||!perfMeu||!contaJ)return;
+ var box=$('twSoraWeekScore');if(!box||!contaJ)return;
  twRankCheckWeek();
  var score=Number.isSafeInteger(twRankData.mine)&&twRankData.mine>=0?twRankData.mine:0,local=twRankLocal();
  box.textContent=score>0?
@@ -565,6 +880,7 @@ function hubMontar(){
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
   hubIdolsTituloUI();
   if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();
+  hubBuddyAtualizar();
 }
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['id', 'ID'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
@@ -613,6 +929,7 @@ function presentesConferir(){   // presentes para todos criados pela moderação
   }).catch(function(){});
 }
 function hubMostrar(){
+  hubAgendaEscutarFechamento();
   hubMontar(); hubAvisoCarregar(); gachaConferir();
   hubOv.hidden = false; document.body.classList.add('hubon');
   sync();
@@ -622,8 +939,10 @@ function hubMostrar(){
   twRankVisibility();twRankLoad();
   if(hubComecou) hubMisCarregar();
   if(!hubAnim) hubAnim = requestAnimationFrame(hubLoop);
+  hubBuddyAtualizar();
 }
 function hubFechar(){
+  petLifeCancelar('celular');
   buscaCancelarTodas();
   var micModal=$('twMicModal');if(micModal&&!micModal.hidden)twMicFechar(true);
   hubVozParar();
@@ -652,6 +971,7 @@ function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "
 function hubComecar(){
   ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
   hubComecou = true; $('hubToque').hidden = true; $('hubMenu').hidden = false;
+  petLifeVoltaUI();
   twRankVisibility();
   if(typeof hubIdolsLugar === 'function') hubIdolsLugar();   // a vitrine desce para o fim do menu
   hubMisCarregar();
@@ -660,6 +980,7 @@ function hubComecar(){
   var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
   if(!visto||rever){hubTutI=0;hubTutUI();}
   else twAbrirPeloEndereco();
+  hubBuddyAtualizar();
 }
 function hubTutUI(){   // Quatro slides de boas-vindas.
   var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
@@ -670,9 +991,65 @@ function hubTutUI(){   // Quatro slides de boas-vindas.
     '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">'+escHtml(tr('Pular'))+'</button><button type="button" class="btn" id="hubTutOk">'+escHtml(tr(hubTutI<HUB_TUT.length-1?'Próximo':'Vamos lá!'))+'</button></div></div>';
   el.hidden=false;
 }
-function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
+function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} hubBuddyAtualizar(); }
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
+// A fotografia do Karaoke só pode atravessar o iframe por escolha do jogador.
+// O bilhete é efêmero e vinculado à captura e à conta/Pet desta sessão.
+var twPreviewKaraokeFoto = null;
+function twPreviewKaraokeFotoReceber(e){
+  var data=e&&e.data, tipo=data&&data.type;
+  if(['TW_KARAOKE_PHOTO_READY','TW_KARAOKE_PHOTO_SAVE','TW_KARAOKE_PHOTO_CANCEL'].indexOf(tipo)<0) return false;
+  var frame=$('twPreviewIframe');
+  if(!frame || e.source!==frame.contentWindow || location.protocol==='file:' || e.origin!==location.origin || twPreviewJogoAnterior!=='karaoke') return true;
+  var id=data.id;
+  if(typeof id!=='string' || !/^[a-z0-9_-]{8,80}$/i.test(id)) return true;
+  function responder(type,campos){
+    try{frame.contentWindow.postMessage(Object.assign({type:type,id:id},campos),location.origin);}catch(_){}
+  }
+  if(tipo==='TW_KARAOKE_PHOTO_READY'){
+    var dono=contaJ&&typeof petAtivo==='function'&&petAtivo()&&typeof petPhoneFotoChave==='function'?petPhoneFotoChave():'';
+    var token=dono?(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)):'';
+    twPreviewKaraokeFoto=token?{id:id,token:token,dono:dono,pendente:false,guardada:false}:null;
+    responder('TW_KARAOKE_PHOTO_CONTEXT',{token:token});
+    return true;
+  }
+  var ctx=twPreviewKaraokeFoto;
+  if(!ctx || ctx.id!==id || tipo==='TW_KARAOKE_PHOTO_CANCEL' && ctx.token!==data.token) return true;
+  if(tipo==='TW_KARAOKE_PHOTO_CANCEL'){
+    twPreviewKaraokeFoto=null;return true;
+  }
+  if(ctx.token!==data.token || ctx.pendente || ctx.guardada || !contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  var blob=data.blob, mini=data.mini;
+  if(!(blob instanceof Blob) || blob.type!=='image/png' || !blob.size || blob.size>10*1024*1024 ||
+     mini!=null && (!(mini instanceof Blob) || mini.type!=='image/png' || !mini.size || mini.size>1024*1024)){
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return true;
+  }
+  // A assinatura e o IHDR impedem que outro arquivo se faça passar por uma foto PNG.
+  function pngValido(b,w,h){
+    if(!b)return Promise.resolve(true);
+    return b.slice(0,24).arrayBuffer().then(function(buffer){
+      var v=new DataView(buffer),sig=[137,80,78,71,13,10,26,10];
+      if(v.byteLength<24 || sig.some(function(n,i){return v.getUint8(i)!==n;}))return false;
+      return v.getUint32(8)===13 && v.getUint32(12)===0x49484452 && v.getUint32(16)===w && v.getUint32(20)===h;
+    });
+  }
+  ctx.pendente=true;
+  Promise.all([pngValido(blob,1920,1080),pngValido(mini,240,135)]).then(function(validos){
+    if(twPreviewKaraokeFoto!==ctx || twPreviewJogoAnterior!=='karaoke' || frame.contentWindow!==e.source)return;
+    if(!contaJ || !petAtivo() || ctx.dono!==petPhoneFotoChave()){
+      ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});return;
+    }
+    var ok=!!(validos[0]&&validos[1]&&typeof petPhoneMomentoGuardarBlob==='function'&&petPhoneMomentoGuardarBlob('karaoke',blob,mini));
+    ctx.pendente=false;ctx.guardada=ok;
+    responder('TW_KARAOKE_PHOTO_RESULT',{ok:ok});
+  }).catch(function(){
+    if(twPreviewKaraokeFoto===ctx){ctx.pendente=false;responder('TW_KARAOKE_PHOTO_RESULT',{ok:false});}
+  });
+  return true;
+}
 function twPreviewEnviarVisibilidadeIframe(visible){
   var frame=$('twPreviewIframe');if(!frame||!frame.contentWindow||!twPreviewJogoAnterior)return;
   try{frame.contentWindow.postMessage({type:'TW_GAME_VISIBILITY',visible:!!visible},location.protocol==='file:'?'*':location.origin);}catch(e){}
@@ -727,6 +1104,7 @@ function twPreviewAbrirJogo(tipo){
   var kTime=tipo==='karaoke';   // Karaoke⭐Time! abre todo dia: é jogo solo, sem sala online nem horário
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
+  twPreviewKaraokeFoto=null;
   twPreviewJogoAnterior=tipo;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
@@ -767,12 +1145,13 @@ function twPreviewFecharJogo(){
   if(!wrap||wrap.hidden)return;
   var ultimo=twPreviewJogoAnterior;
   var eraPopup=wrap.hasAttribute('data-karaoke-popup');
+  twPreviewKaraokeFoto=null;
   twPreviewEnviarVisibilidadeIframe(false);
   frame.src='about:blank';
   var som=$('twPreviewSom');if(som){som.hidden=true;som.disabled=true;}
   wrap.hidden=true;twPreviewJogoAnterior=null;
   wrap.removeAttribute('data-jogo');
-  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');frame.style.height='';
+  wrap.removeAttribute('data-karaoke-popup');wrap.removeAttribute('data-karaoke-tela');wrap.removeAttribute('data-karaoke-arena');if(document.documentElement)document.documentElement.classList.remove('tw-kt-arena');frame.style.height='';
   if(ultimo==='karaoke'&&location.hash==='#karaoke'){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
   wrap.removeAttribute('role');wrap.removeAttribute('aria-modal');
   hubOv.inert=false;
@@ -972,7 +1351,7 @@ function twMusicaPaginaVisibilidade(){
 function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
   hubIdolsEm = Date.now();
-  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); })
+  contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); if(typeof petPhoneJornalVitrinePronta === 'function') petPhoneJornalVitrinePronta(); })
     .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsTituloUI(){

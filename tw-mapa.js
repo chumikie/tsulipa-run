@@ -3,7 +3,22 @@
    então login, cadeado, alertas e abertura continuam com a lógica original (nada duplicado). */
 (function(){
   'use strict';
-  var W=1600,H=1000,OX=150,OY=70,MW=1390,MH=900; // recorte: só a ilha, sem céu vazio
+  var W=1600,H=1000,OX=0,OY=0,MW=1600,MH=1000;
+  // IDs internos estáveis; os nomes de exibição podem mudar sem afetar os cards.
+  var BAIRROS={
+    palco:{id:'palco',box:[535,295,1070,540],lugares:['handshake','run','karaoke']},
+    harajuku:{id:'harajuku',box:[1070,550,1500,795],lugares:['cafe','gacha','loja']},
+    fofo:{id:'fofo',box:[170,560,610,795],lugares:['pet','perfil',null]},
+    praca:{id:'praca',box:[635,555,960,775],lugares:['fa','enc','jornal']},
+    arena:{id:'arena',box:[935,805,1155,930],lugares:[null,null,null]},
+    ceu:{id:'ceu',box:[1160,120,1530,340],lugares:['sora','duo',null]}
+  };
+  var CENAS_RUA={
+    palco:'mapa-rua-palco.svg',harajuku:'mapa-rua-harajuku.svg',
+    fofo:'mapa-rua-fofo.svg',praca:'mapa-rua-praca.svg',
+    arena:'mapa-rua-arena.svg',ceu:'mapa-rua-ceu.svg'
+  };
+  var cena='mundo',imagens={};
   var TW_LUGARES=window.TW_LUGARES=[
     {id:'run',      card:'#hubCards [data-ir="run"]',      box:[600,140,1000,475]},
     {id:'karaoke',  card:'#hubCards [data-ir="karaoke"]',  box:[1050,250,1270,525]},
@@ -37,14 +52,20 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
-    arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=6';
+    mostrarCena('mundo');
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
-    cv.addEventListener('click',function(e){var l=achar(e);if(!l)return;var c=card(l);if(c&&!c.disabled)c.click();});
+    cv.addEventListener('click',function(e){
+      var l=achar(e);if(!l)return;
+      if(cena==='mundo'){mostrarCena(l.id);return;}
+      if(l.voltar){mostrarCena('mundo');return;}
+      var c=card(l);if(c&&!c.disabled)c.click();
+    });
+    sec.querySelector('.tw-mapa-voltar').addEventListener('click',function(){mostrarCena('mundo');});
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(desenhar);
@@ -64,12 +85,53 @@
     textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
-    if(cv)cv.setAttribute('aria-label',TIT[lang()]||TIT.pt);}
-  function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');if(centrado||!r||(r.scrollWidth<=r.clientWidth&&r.scrollHeight<=r.clientHeight))return;
-    var k=cv.getBoundingClientRect().width/MW;   // centro da praça (800,610 no mapa)
-    r.scrollLeft=Math.max(0,(800-OX)*k-r.clientWidth/2);r.scrollTop=Math.max(0,(610-OY)*k-r.clientHeight/2);centrado=true;}
-  function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY,m=null,ma=1e9;
-    TW_LUGARES.forEach(function(l){var b=l.box;if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l)){var a=(b[2]-b[0])*(b[3]-b[1]);if(a<ma){ma=a;m=l;}}});return m;}
+    if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):('Rua: '+cena));}
+  function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
+    if(centrado||!r||!cv)return;
+    var k=cv.getBoundingClientRect().width/MW;
+    var px=cena==='mundo'?800:800,py=cena==='mundo'?610:450;
+    r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
+    r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;
+  }
+  function mostrarCena(destino){
+    if(destino!=='mundo'&&!CENAS_RUA[destino])return;
+    cena=destino;hover=null;centrado=false;
+    W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
+    if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';}
+    var sec=document.getElementById('twMapa');
+    if(sec){var voltar=sec.querySelector('.tw-mapa-voltar');
+      if(voltar)voltar.hidden=destino==='mundo';
+      sec.setAttribute('data-cena',destino);
+      var rolo=sec.querySelector('.tw-mapa-rolo');
+      if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
+    }
+    var arquivo=destino==='mundo'?'mapa-mundo.svg':CENAS_RUA[destino];
+    if(!imagens[destino]){
+      var img=new Image();imagens[destino]=img;
+      img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
+      img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
+      img.src='./'+arquivo+'?v=1';
+    }
+    arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
+    textos();
+  }
+  function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
+    if(cena==='mundo'){
+      var achado=null,area=Infinity;
+      Object.keys(BAIRROS).forEach(function(id){var b=BAIRROS[id].box;
+        if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]){
+          var a=(b[2]-b[0])*(b[3]-b[1]);if(a<area){achado=BAIRROS[id];area=a;}
+        }
+      });return achado;
+    }
+    // O botão desenhado no SVG também funciona; o botão HTML é acessível por teclado.
+    if(x>=1380&&x<=1580&&y>=15&&y<=90)return {id:'voltar',voltar:true,box:[1380,15,1580,90]};
+    var ids=BAIRROS[cena].lugares,centros=[300,800,1300],achado=null;
+    ids.forEach(function(id,i){if(!id)return;var l=TW_LUGARES.find(function(v){return v.id===id;});
+      if(!l)return;var b=[centros[i]-200,280,centros[i]+200,640];
+      if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l))achado={id:l.id,card:l.card,box:b};
+    });return achado;
+  }
 
   function texto(t){
     var s=nome(t[2]);ctx.font=t[3]+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';ctx.textBaseline='alphabetic';
@@ -83,16 +145,15 @@
     });
   }
   function desenhar(){
-    if(!ctx||!arte||!arte.complete)return;var tm=performance.now()/1000;
+    if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;var tm=performance.now()/1000;
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
-    if(hover){var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.22)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([10,8]);
+    if(hover&&!hover.voltar){var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.22)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([10,8]);
       rr(b[0],b[1],b[2]-b[0],b[3]-b[1],26);ctx.fill();ctx.stroke();ctx.restore();}
-    lotes(tm);
-    brilho(tm);
-    ceu(tm);
-    andar(tm);
-    idols(tm);
-    TXT.forEach(texto);
+    // Etapa 2: preserva os passeantes, trio, alertas e cadeados antigos sem
+    // deslocá-los para coordenadas incorretas. Sua migração é a etapa 3.
+    if(cena!=='mundo')return;
+    // No mundo ficam apenas os alertas agregados por bairro (etapa 3).
+    return;
     TW_LUGARES.forEach(function(l){if(l.card.indexOf('#hubCards')!==0)return;var e=estado(l);if(!e)return;var b=l.box,x=b[2]-18,y=b[1]+16+Math.sin(tm*3+b[0])*4;
       if(e.alerta){ctx.save();ctx.fillStyle='#ff4f9a';ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,17,0,7);ctx.fill();ctx.stroke();
         ctx.fillStyle='#fff';ctx.font='22px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.fillText('!',x,y+8);ctx.restore();}

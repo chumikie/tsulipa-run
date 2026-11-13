@@ -36,7 +36,7 @@ A(f"<rect x='0' y='650' width='{W}' height='{H-650}' fill='#efe3cf'/>")
 for i in range(140):
     A(f"<ellipse cx='{random.uniform(0,W):.0f}' cy='{random.uniform(665,H-8):.0f}' rx='{random.uniform(8,13):.0f}' ry='{random.uniform(4,6):.0f}' fill='#f8eedd'/>")
 A(f"<rect x='0' y='648' width='{W}' height='6' fill='#e2c597'/>")
-# os três lugares da Rua Harajuku, grandes e com espaço
+# três locais de cada rua, grandes e com espaço
 def predio(cab, cx):
     A(f"<g transform='translate({cx},566) scale(2.05)'>"); bloco(cab, 0, 0); A('</g>')
 for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
@@ -50,18 +50,47 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
         A(f"<path d='M{cx},483 q-55,-50 -55,43 M{cx},483 q55,-50 55,43' stroke='#7fd3ff' stroke-width='8' fill='none' stroke-linecap='round'/>")
         A(f"<circle cx='{cx}' cy='482' r='13' fill='#ffe08a'/>")
     elif bairro == 'arena' and indice == 1:
-        A(f"<ellipse cx='{cx}' cy='558' rx='195' ry='54' fill='#7951bc' opacity='.3'/>")
-        A(f"<path d='M{cx-170},560 L{cx-152},370 Q{cx},300 {cx+152},370 L{cx+170},560 Z' fill='{grad('arenarua','#a37bff','#7b3ff0')}'/>")
-        A(f"<path d='M{cx-128},552 L{cx-112},416 Q{cx},358 {cx+112},416 L{cx+128},552 Z' fill='#ffe0f0'/>")
-        A(f"<ellipse cx='{cx}' cy='552' rx='130' ry='28' fill='#ffb56b'/>")
+        # Arena reservada: uma única vaga central para Idol⭐Battle!, não clicável.
+        A("<g data-reserva='idol-battle'><title>Idol⭐Battle! — Em breve</title>")
+        A(f"<ellipse cx='{cx}' cy='560' rx='203' ry='54' fill='#7951bc' opacity='.19'/>")
+        A(f"<path d='M{cx-170},558 L{cx-150},378 Q{cx},298 {cx+150},378 L{cx+170},558 Z' fill='{grad('arenarua','#a37bff','#7b3ff0')}'/>")
+        A(f"<path d='M{cx-128},550 L{cx-108},420 Q{cx},365 {cx+108},420 L{cx+128},550 Z' fill='#ffe0f0'/>")
+        A(f"<ellipse cx='{cx}' cy='552' rx='131' ry='27' fill='#ffb56b'/>")
+        A(f"<rect x='{cx-140}' y='328' width='280' height='44' rx='22' fill='#fff9ff' stroke='#d3b3ff' stroke-width='3'/>")
+        A(f"<text x='{cx}' y='357' font-family='Mochiy Pop One' font-size='20' fill='#7b3ff0' text-anchor='middle'>Idol★Battle!</text>")
+        A(f"<text x='{cx}' y='479' font-family='Mochiy Pop One' font-size='19' fill='#7b3ff0' text-anchor='middle'>Em breve</text>")
+        A("</g>")
     elif (bairro == 'fofo' and indice == 2) or (bairro == 'ceu' and indice == 2):
-        # Lote de Bloom ou Studio; não cria jogo inexistente.
-        A(f"<rect x='{cx-145}' y='452' width='290' height='110' rx='26' fill='#fff1df' stroke='#ffd2e9' stroke-width='5'/>")
-        A(f"<rect x='{cx-92}' y='482' width='184' height='44' rx='22' fill='#ff6fb5'/>")
-        A(f"<text x='{cx}' y='512' text-anchor='middle' font-family='Mochiy Pop One' font-size='20' fill='#fff'>Em breve ★</text>")
+        # Uma vaga decorativa por jogo futuro: sem áreas clicáveis ou links falsos.
+        flor = bairro == 'fofo'
+        identificador = 'bloom-garden' if flor else 'photo-studio'
+        legenda = 'Bloom★Garden!' if flor else 'Photo★Studio!'
+        cor = '#68bc88' if flor else '#7b3ff0'
+        A(f"<g data-reserva='{identificador}'><title>{legenda} — Em breve</title>")
+        A(f"<ellipse cx='{cx}' cy='565' rx='166' ry='20' fill='#553280' opacity='.12'/>")
+        A(f"<rect x='{cx-165}' y='410' width='330' height='145' rx='24' fill='#fff7f0' stroke='#fff' stroke-width='4'/>")
+        A(f"<rect x='{cx-151}' y='421' width='302' height='15' rx='7' fill='{cor}' opacity='.28'/>")
+        if flor:
+            # Horta com canteiro e brotos, sem implementar cultivo ou recompensas.
+            for bx in (cx-92,cx,cx+92):
+                A(f"<ellipse cx='{bx}' cy='510' rx='38' ry='17' fill='#bf8e61'/>")
+                A(f"<path d='M{bx},508 v-22 m0,8 q-25,-20 -24,-4 q15,12 24,4 m0,-6 q25,-20 24,-4 q-15,12 -24,4' fill='#77d39e' stroke='#61b77e' stroke-width='2'/>")
+        else:
+            # Moldura fotográfica e visor: símbolo original, sem usar personagem.
+            A(f"<rect x='{cx-58}' y='453' width='116' height='71' rx='12' fill='#e8dcff' stroke='#b998ff' stroke-width='4'/>")
+            A(f"<circle cx='{cx}' cy='489' r='24' fill='#fff' stroke='#b998ff' stroke-width='4'/>")
+            A(f"<circle cx='{cx}' cy='489' r='11' fill='#ff6fb5'/>")
+            A(f"<circle cx='{cx+37}' cy='465' r='5' fill='#fff'/>")
+        A(f"<rect x='{cx-133}' y='374' width='266' height='49' rx='23' fill='#fff' stroke='{cor}' stroke-width='3'/>")
+        A(f"<text x='{cx}' y='406' text-anchor='middle' font-family='Mochiy Pop One' font-size='19' fill='{cor}'>{legenda}</text>")
+        A(f"<rect x='{cx-87}' y='531' width='174' height='27' rx='13' fill='#ff6fb5'/>")
+        A(f"<text x='{cx}' y='550' text-anchor='middle' font-family='Mochiy Pop One' font-size='14' fill='#fff'>Em breve</text>")
+        A("</g>")
     elif bairro == 'arena':
-        A(f"<rect x='{cx-75}' y='493' width='150' height='68' rx='28' fill='#fff1df'/>")
-        A(f"<text x='{cx}' y='535' text-anchor='middle' font-family='Mochiy Pop One' font-size='30' fill='#9b30d9'>★</text>")
+        # Laterais da arena são decorativas, sem slots extras inventados.
+        A(f"<rect x='{cx-8}' y='425' width='16' height='128' rx='5' fill='#b98552'/>")
+        A(f"<path d='M{cx+8},432 l65,18 l-65,18 z' fill='#ff6fb5'/>")
+        A(f"<circle cx='{cx}' cy='415' r='13' fill='#ffe3a4'/>")
 # vasos com arvorezinhas e postes entre os prédios
 for px in (550, 1050):
     G['poste'](px, 600)

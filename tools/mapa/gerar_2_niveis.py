@@ -28,6 +28,7 @@ def main():
     for bairro in BAIRROS:
         executar('rua.py', bairro)
         instalar('rua_' + bairro + '.svg', 'mapa-rua-' + bairro + '.svg')
+    executar('textos.py')  # textos saem do SVG e vão para o canvas (fonte certa, seis idiomas)
     print('Sete SVGs gerados. Falta conferir visualmente antes de integrar ao canvas.')
 
 if __name__ == '__main__':

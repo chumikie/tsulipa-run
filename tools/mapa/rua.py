@@ -100,6 +100,6 @@ for vx in (40, 1560):
 # topo: título do bairro e volta para o mapa
 titulo_largura = max(280, min(450, len(titulo) * 15 + 55))
 A(f"<g transform='translate(30,26)'><rect width='{titulo_largura}' height='56' rx='28' fill='#fff' opacity='.92'/><text x='{titulo_largura/2:.0f}' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='{21 if bairro == 'palco' else 24}' fill='{cor_tema}'>{titulo}</text></g>")
-A(f"<g transform='translate({W-200},28)'><rect width='170' height='48' rx='24' fill='{cor_tema}'/><text x='85' y='32' text-anchor='middle' font-family='Mochiy Pop One' font-size='18' fill='#fff'>◀ Mapa</text></g>")
+# o botão ◀ Mapa é HTML (tw-mapa.js): acessível, traduzido e fora da arte
 salvar('rua' if len(sys.argv) == 1 else 'rua_' + bairro, W, H)
 print('ok')

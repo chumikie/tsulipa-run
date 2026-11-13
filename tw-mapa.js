@@ -41,17 +41,31 @@
     {id:'fa',       card:'#hubHoje .hubfa',                box:[530,555,750,690]},
     {id:'enc',      card:'#hubHoje .hubenc',               box:[670,490,930,670]}
   ];
-  var TXT=[[312, 460, "Moon★Duo!", 18.0, "#fff", "#3b2d9c", "m"], [528, 341, "握手会", 10.0, "#ff5a85", null, "m"], [520, 452, "Idol", 10.0, "#9b4bf0", null, "m"], [532, 512, "Handshake★Event!", 18.0, "#fff", "#ff5a85", "m"], [359, 587, "Happy★Cafe!", 9.0, "#fff", null, "m"], [342, 712, "Happy★Cafe!", 18.0, "#fff", "#f08a52", "m"], [512, 842, "Backstage★Pet!", 18.0, "#fff", "#1e8f9a", "m"], [812, 872, "Meu Perfil", 18.0, "#fff", "#ff5aa5", "m"], [1110, 668, "STAR★GACHA!", 10.0, "#d94d92", null, "m"], [1122, 842, "Star★Gacha!", 18.0, "#fff", "#f39a34", "m"], [1300, 568, "ZIPPER★SHOP!", 14.0, "#fff", null, "m"], [1312, 742, "Zipper★Shop!", 18.0, "#fff", "#7b3ff0", "m"], [1150, 285, "KARAOKE", 14.0, "#ffd6ec", null, "m"], [1052, 340, "♪", 20.0, "#ff62ab", null, "s"], [1060, 318, "♪", 20.0, "#ff62ab", null, "s"], [1068, 296, "♪", 20.0, "#ff62ab", null, "s"], [1162, 512, "Karaoke★Time!", 18.0, "#fff", "#b83a9e", "m"], [1002, 628, "Idol★News!", 18.0, "#fff", "#6a4ff0", "m"], [652, 676, "Pedido de fã", 18.0, "#fff", "#9b4bf0", "m"], [812, 458, "Center★Run!", 18.0, "#fff", "#6630dc", "m"], [1412, 124, "Sora★Jump!", 18.0, "#fff", "#4a78ef", "m"], [812, 518, "Encontro do dia", 18.0, "#fff", "#ff5aa5", "m"]];
   var NOMES={'Meu Perfil':{en:'My Profile',es:'Mi perfil',id:'Profilku',th:'โปรไฟล์ของฉัน',ja:'マイプロフィール'},
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
-    'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'}};
+    'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'},
+    'Rua das Vitrines':{en:'Showcase Street',es:'Calle de las Vitrinas',id:'Jalan Etalase',th:'ถนนร้านค้า',ja:'ショーウィンドウ通り'},
+    'Vila das Flores':{en:'Flower Village',es:'Villa de las Flores',id:'Desa Bunga',th:'หมู่บ้านดอกไม้',ja:'お花の村'},
+    'Praça Central':{en:'Central Square',es:'Plaza Central',id:'Alun-alun Pusat',th:'จัตุรัสกลาง',ja:'セントラル広場'},
+    'Jardim das Nuvens':{en:'Cloud Garden',es:'Jardín de las Nubes',id:'Taman Awan',th:'สวนเมฆ',ja:'雲の庭'},
+    'Em breve':{en:'Coming soon',es:'Próximamente',id:'Segera hadir',th:'เร็วๆ นี้',ja:'近日公開'},
+    'em breve':{en:'coming soon',es:'próximamente',id:'segera hadir',th:'เร็วๆ นี้',ja:'近日公開'}};
+  // botões e rótulos em HTML do mapa, nos seis idiomas do site
+  var UI={voltar:{pt:'◀ Mapa',en:'◀ Map',es:'◀ Mapa',id:'◀ Peta',th:'◀ แผนที่',ja:'◀ マップ'},
+    zoom:{pt:'🔎 Aproximar',en:'🔎 Zoom in',es:'🔎 Acercar',id:'🔎 Perbesar',th:'🔎 ซูมเข้า',ja:'🔎 ズーム'},
+    geral:{pt:'↖ Visão geral',en:'↖ Overview',es:'↖ Vista general',id:'↖ Lihat semua',th:'↖ ภาพรวม',ja:'↖ 全体を見る'},
+    bairros:{pt:'Explorar bairros',en:'Explore districts',es:'Explorar barrios',id:'Jelajahi distrik',th:'สำรวจย่าน',ja:'街を探検'},
+    rua:{pt:'Rua: ',en:'Street: ',es:'Calle: ',id:'Jalan: ',th:'ถนน: ',ja:'通り: '}};
+  function ui(k){return UI[k][lang()]||UI[k].pt;}
+  function rotulo(id){return nome(ROTULOS_BAIRROS[id]);}
   var DICA={pt:'👆 Arraste para passear',en:'👆 Drag to explore',es:'👆 Arrastra para pasear',id:'👆 Geser untuk jalan-jalan',th:'👆 ลากเพื่อเดินเล่น',ja:'👆 ドラッグでおさんぽ'};
   var PASSEIA={pt:'Passear pela cidade',en:'Stroll around town',es:'Pasear por la ciudad',id:'Jalan-jalan keliling kota',th:'เดินเล่นในเมือง',ja:'まちをおさんぽ'};
   var FECHA={pt:'Fechar o mapa',en:'Close the map',es:'Cerrar el mapa',id:'Tutup peta',th:'ปิดแผนที่',ja:'マップを閉じる'};
   var TIT={pt:'Mapa da cidade',en:'City map',es:'Mapa de la ciudad',id:'Peta kota',th:'แผนที่เมือง',ja:'まちのマップ'};
   var centrado=false,arte=null,cv=null,ctx=null,hover=null,anim=0,visivel=false;
   function lang(){return (typeof LANG==='string'&&LANG)||'pt';}
-  function nome(t){var n=NOMES[t];return n&&n[lang()]?n[lang()]:t;}
+  function nome(t){var n=NOMES[t];if(n)return n[lang()]||t;
+    for(var k in NOMES)if(t.indexOf(k)>=0&&NOMES[k][lang()])return t.replace(k,NOMES[k][lang()]);return t;}
   function card(l){return document.querySelector(l.card);}
   function estado(l){var c=card(l);if(!c)return null;
     return {alerta:c.classList.contains('tw-alert-pink'),off:c.disabled||c.getAttribute('aria-disabled')==='true'||c.hidden||c.classList.contains('tw-karaoke-locked')||!!c.querySelector('.tw-profile-lock')};}
@@ -90,7 +104,7 @@
       if(cena!=='mundo'||!aberto)return;
       var aproximado=sec.classList.toggle('tw-mapa-zoomed');
       zoomBotao.setAttribute('aria-pressed',aproximado?'true':'false');
-      zoomBotao.textContent=aproximado?'↖ Visão geral':'🔎 Aproximar';
+      zoomBotao.textContent=aproximado?ui('geral'):ui('zoom');
       centrado=false;
       if(aproximado)centralizar();
       else{var roloMapa=sec.querySelector('.tw-mapa-rolo');
@@ -138,7 +152,12 @@
     textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
-    if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):('Rua: '+ROTULOS_BAIRROS[cena]));}
+    if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):(ui('rua')+rotulo(cena)));
+    var sec=document.getElementById('twMapa');if(!sec)return;
+    var v=sec.querySelector('.tw-mapa-voltar');if(v)v.textContent=ui('voltar');
+    var z=sec.querySelector('.tw-mapa-zoom');if(z)z.textContent=sec.classList.contains('tw-mapa-zoomed')?ui('geral'):ui('zoom');
+    var nv=sec.querySelector('.tw-mapa-bairros');if(nv)nv.setAttribute('aria-label',ui('bairros'));
+    if(sec.querySelectorAll)[].forEach.call(sec.querySelectorAll('[data-tw-rotulo]'),function(el){el.textContent=rotulo(el.getAttribute('data-tw-rotulo'));});}
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
     if(centrado||!r||!cv)return;
     var sec=document.getElementById('twMapa');
@@ -202,7 +221,7 @@
       var atalhos=sec.querySelector('.tw-mapa-bairros');
       if(atalhos)atalhos.hidden=destino!=='mundo';
       var botaoZoom=sec.querySelector('.tw-mapa-zoom');
-      if(botaoZoom){botaoZoom.textContent='🔎 Aproximar';botaoZoom.setAttribute('aria-pressed','false');}
+      if(botaoZoom){botaoZoom.textContent=ui('zoom');botaoZoom.setAttribute('aria-pressed','false');}
       var rolo=sec.querySelector('.tw-mapa-rolo');
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }
@@ -211,7 +230,7 @@
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
       img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=3';
+      img.src='./'+arquivo+'?v=4';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();
@@ -225,8 +244,6 @@
         }
       });return achado;
     }
-    // O botão desenhado no SVG também funciona; o botão HTML é acessível por teclado.
-    if(x>=1380&&x<=1580&&y>=15&&y<=90)return {id:'voltar',voltar:true,box:[1380,15,1580,90]};
     var ids=BAIRROS[cena].lugares,centros=[300,800,1300],achado=null;
     ids.forEach(function(id,i){if(!id)return;var l=TW_LUGARES.find(function(v){return v.id===id;});
       if(!l)return;var b=[centros[i]-200,280,centros[i]+200,640];
@@ -234,22 +251,26 @@
     });return achado;
   }
 
+  // Textos das artes (tools/mapa/textos.py): no canvas a fonte Mochiy Pop One funciona e o texto é traduzido.
   function texto(t){
-    var s=nome(t[2]);ctx.font=t[3]+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';ctx.textBaseline='alphabetic';
+    var s=nome(t.t);ctx.save();ctx.translate(t.x,t.y);if(t.r)ctx.rotate(t.r*Math.PI/180);
+    ctx.font=t.s+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';ctx.textBaseline='alphabetic';ctx.textAlign='left';
     var partes=s.split('★'),ws=partes.map(function(p){return ctx.measureText(p).width;}),st=ctx.measureText('★').width,
-        tot=ws.reduce(function(a,b){return a+b;},0)+(partes.length-1)*st,x=t[6]==='m'?t[0]-tot/2:t[0];
-    ctx.lineJoin='round';
+        tot=ws.reduce(function(a,b){return a+b;},0)+(partes.length-1)*st,x=t.a==='m'?-tot/2:t.a==='e'?-tot:0;
+    ctx.lineJoin='round';ctx.lineWidth=t.w||4;
     partes.forEach(function(p,i){
-      if(t[5]){ctx.lineWidth=4;ctx.strokeStyle=t[5];ctx.strokeText(p,x,t[1]);}
-      ctx.fillStyle=t[4];ctx.fillText(p,x,t[1]);x+=ws[i];
-      if(i<partes.length-1){if(t[5]){ctx.strokeStyle=t[5];ctx.strokeText('★',x,t[1]);}ctx.fillStyle='#ffe14d';ctx.fillText('★',x,t[1]);x+=st;}
+      if(t.k){ctx.strokeStyle=t.k;ctx.strokeText(p,x,0);}
+      ctx.fillStyle=t.f;ctx.fillText(p,x,0);x+=ws[i];
+      if(i<partes.length-1){if(t.k){ctx.strokeStyle=t.k;ctx.strokeText('★',x,0);}ctx.fillStyle='#ffe14d';ctx.fillText('★',x,0);x+=st;}
     });
+    ctx.restore();
   }
+  function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(T)T.forEach(texto);}
   function desenhar(){
     if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;
     var tm=performance.now()/1000;
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
-    ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
+    ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);textosCena();
     ceu(tm); // mesmo horário de Brasília no mundo e nas ruas
     if(cena==='mundo'){idols(tm);alertasMundo(tm);}
     else{andar(tm);alertasRua(tm);}

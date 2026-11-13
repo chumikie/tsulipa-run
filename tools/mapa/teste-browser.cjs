@@ -9,7 +9,7 @@ const http=require('node:http');
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const raiz=path.resolve(__dirname,'../..');
-const docs=new Set(['tw-mapa.js','hub-polish.css','kt-fonts.css',
+const docs=new Set(['tw-mapa.js','mapa-textos.js','hub-polish.css','kt-fonts.css',
   'mapa-mundo.svg','mapa-rua-palco.svg','mapa-rua-harajuku.svg',
   'mapa-rua-fofo.svg','mapa-rua-praca.svg','mapa-rua-arena.svg','mapa-rua-ceu.svg']);
 const mime={'css':'text/css','js':'text/javascript','svg':'image/svg+xml'};

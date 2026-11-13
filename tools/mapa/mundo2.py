@@ -134,11 +134,11 @@ def bairro(x, y, nome, c1, c2, icones):
     for i, k in enumerate(icones):
         ix = x - (n - 1) * 17 + i * 34
         A(f"<circle cx='{ix}' cy='{y+36}' r='14' fill='#fff'/><circle cx='{ix}' cy='{y+36}' r='11.5' fill='{c2}'/>" + (ic(k, ix, y + 36, 17) if k else f"<text x='{ix}' y='{y+41}' text-anchor='middle' font-size='13' fill='#fff' font-family='Mochiy Pop One'>?</text>"))
-bairro(800, 498, 'Distrito do Palco', '#8b52ff', '#6630dc', ['hubhandshake', 'hubrun', 'tw-hubgame-karaoke'])
-bairro(1238, 758, 'Rua Harajuku', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
-bairro(360, 752, 'Bairro Fofo', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', None])
+bairro(800, 498, 'Star Stage', '#8b52ff', '#6630dc', ['hubhandshake', 'hubrun', 'tw-hubgame-karaoke'])
+bairro(1238, 758, 'Rua das Vitrines', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
+bairro(360, 752, 'Vila das Flores', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', None])
 bairro(800, 730, 'Praça Central', '#6fb6ff', '#4a78ef', ['hubfa', 'hubenc', 'hubjornal'])
-bairro(1040, 885, 'Arena', '#ffb35c', '#e0532f', [None])
-bairro(1330, 300, 'Céu', '#72c6ff', '#4a78ef', ['tw-hubgame-sora', 'hubduo', None])
+bairro(1040, 885, 'Star Arena', '#ffb35c', '#e0532f', [None])
+bairro(1330, 300, 'Jardim das Nuvens', '#72c6ff', '#4a78ef', ['tw-hubgame-sora', 'hubduo', None])
 salvar('mundo2', W, H)
 print('ok')

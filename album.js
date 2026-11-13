@@ -29,6 +29,7 @@ function albumUI(){
   var pg = nomes.slice(albumPag * ALBUM_POR_PAGINA, (albumPag + 1) * ALBUM_POR_PAGINA), lista = [];
   var h = '<p class="albumprog"><b>' + achados + '</b> / ' + total + ' ' + escHtml(tr('Idols no seu álbum')) + '</p>' +
     '<div class="albumbarra" aria-hidden="true"><i style="width:' + (total ? Math.round(achados / total * 100) : 0) + '%"></i></div>';
+  h += albumMetasHtml(achados);
   if(albumDados === null) h += '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   else if(!albumPronto) h += '<p class="albumaviso">🛠️ ' + escHtml(tr('O álbum começa a guardar seus cards em breve. Por enquanto, veja quem falta!')) + '</p>';
   h += '<div class="albumgrade">' + pg.map(function(n){
@@ -42,5 +43,20 @@ function albumUI(){
   corpo.innerHTML = h;
   cardsMem.album = lista;
   lista.forEach(function(c, i){ var cv = $('albumCv' + i); if(cv && c.card) try{ gachaCardDesenhar(cv, cardsDados(c)); }catch(e){} });
+}
+// metas de coleção (só visuais): 5, 15, 30 e 50 Idols. A primeira vez que alcança uma, comemora uma vez neste aparelho.
+var ALBUM_METAS = [[5, '🌱'], [15, '🌸'], [30, '💎'], [50, '👑']];
+function albumMetasHtml(achados){
+  if(!albumPronto) return '';
+  var visto = 0; try{ visto = +localStorage.getItem('tw_album_meta') || 0; }catch(e){}
+  var nova = 0;
+  var h = '<div class="albummetas">' + ALBUM_METAS.map(function(m){
+    var ok = achados >= m[0]; if(ok && m[0] > visto) nova = m[0];
+    return '<span class="albummeta' + (ok ? ' ok' : '') + '" title="' + m[0] + ' Idols"><i>' + m[1] + '</i><b>' + m[0] + '</b></span>';
+  }).join('') + '</div>';
+  if(nova){ try{ localStorage.setItem('tw_album_meta', String(nova)); }catch(e){}
+    h += '<p class="albummetanova">✨ ' + escHtml(tr('Nova meta do álbum: {n} Idols!').replace('{n}', nova)) + '</p>';
+    if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
+  return h;
 }
 function albumPagina(d){ albumPag = Math.max(0, albumPag + d); albumUI(); if(sfx && sfx.card) try{ sfx.card(); }catch(e){} }

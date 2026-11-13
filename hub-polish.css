@@ -252,6 +252,14 @@ html body #hub .tw-mapa canvas{display:block;width:100%;height:auto;touch-action
 .duo-pedido-bt{flex:none;padding:8px 14px;border-radius:999px;border:0;cursor:pointer;font:400 13px/1 "Mochiy Pop One",sans-serif;color:#5a43c9;background:#fff;box-shadow:0 3px 0 rgba(44,29,120,.35)}
 .duo-pedido-bt:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(44,29,120,.35)}
 
+/* ===== Álbum: metas de coleção ===== */
+.albummetas{display:flex;justify-content:center;gap:8px;margin:8px 0 4px;flex-wrap:wrap}
+.albummeta{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;font-weight:800;font-size:12px;color:#8d79b8;background:#f1ebff;opacity:.75}
+.albummeta i{font-style:normal;filter:grayscale(1);opacity:.6}
+.albummeta.ok{color:#fff;background:linear-gradient(180deg,#ffd36b,#f39a34);opacity:1;box-shadow:0 2px 0 #c9861a}
+.albummeta.ok i{filter:none;opacity:1}
+.albummetanova{text-align:center;font-weight:800;color:#d94d92;margin:4px 0}
+
 /* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
 @media (prefers-color-scheme:light){
 html:not([data-theme="dark"]) body #hub .hojeinfo{background:#fff;color:#3b2470;border-color:rgba(123,63,240,.2)}

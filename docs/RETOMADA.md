@@ -53,7 +53,7 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 2. Hora extra do Handshake: `supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql`. Conferir com `pg_get_functiondef` se a produção está igual ao arquivo aplicado e **pedir o OK do dono**. O site já está pronto e só entra na hora extra quando o servidor manda 8 filas.
 3. `supabase/sql/admin_corrida_contadores.sql` (o dono aprovou; o MCP cancela por causa do DELETE, então o dono roda no SQL Editor).
 4. Sora 500 m (PR #74) com anti-cheat: `supabase/sql/proposta/sora_500_anticheat_REVIEW_ONLY.sql` (prêmio só com ≥20 s e média ≤25 m/s). Precisa do OK do dono; depois o PR #74 pode ser mergeado.
-5. Café com 2–3 clientes ao mesmo tempo: exige refazer `cafe_run_pedido`/`cafe_run_etapa` para várias sessões abertas. Ainda não escrito; desenhar com o dono antes.
+5. Café "Dois no balcão": `supabase/sql/proposta/cafe_dois_no_balcao_REVIEW_ONLY.sql` (funções novas `cafe_run_pedidos` e `cafe_run_etapa2`; as atuais continuam). Precisa do OK do dono. Falta a reforma do `cafe.js` (dois clientes, dois relógios), a fazer num PR próprio, começando pelo modo treino.
 
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

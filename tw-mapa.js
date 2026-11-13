@@ -273,7 +273,7 @@
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);textosCena();
     ceu(tm); // mesmo horário de Brasília no mundo e nas ruas
     if(cena==='mundo'){idols(tm);alertasMundo(tm);}
-    else{andar(tm);alertasRua(tm);}
+    else{detalhes(tm);andar(tm);alertasRua(tm);}
     if(hover&&!hover.voltar){
       var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.12)';
       ctx.strokeStyle='rgba(255,255,255,.72)';ctx.lineWidth=2;
@@ -346,30 +346,82 @@
       });});}catch(e){}
     return l;
   }
+  // Na rua, cada Idol passeia de porta em porta (Café → Gacha → Shop…), para um pouco na frente de cada
+  // lugar e às vezes solta um balãozinho. Ritmos diferentes para não andarem em fila. O pet segue o dono.
+  var PORTAS=[300,800,1300],ROTA=[0,1,2,1],ANDA=150,PARA=2.4,BALOES=['♪','❤','★','♪','✨'];
+  var reduzMov=false;try{reduzMov=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){}
+  function posRua(i,tm){
+    var vel=ANDA*(1+((i*37)%5)*.08),seg=[],tot=0;
+    ROTA.forEach(function(a,k){var b=ROTA[(k+1)%ROTA.length],d=Math.abs(PORTAS[b]-PORTAS[a])/vel;seg.push([a,b,d]);tot+=d+PARA;});
+    var t=((tm+i*7.3)%tot+tot)%tot;
+    for(var k=0;k<seg.length;k++){var g=seg[k],xa=PORTAS[g[0]]+(i%2?-34:34)*(i>1?.5:1),xb=PORTAS[g[1]]+(i%2?-34:34)*(i>1?.5:1);
+      if(t<PARA)return {x:xa,dir:xb>=xa?1:-1,mov:0,porta:g[0],volta:k};
+      t-=PARA;
+      if(t<g[2]){var u=t/g[2];u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,volta:k};}
+      t-=g[2];}
+    return {x:PORTAS[0],dir:1,mov:0,porta:0,volta:0};
+  }
+  function balao(x,y,txt,a){
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#fff';ctx.strokeStyle='#e2d4ff';ctx.lineWidth=3;
+    ctx.beginPath();ctx.ellipse(x,y,21,17,0,0,7);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-6,y+14);ctx.lineTo(x-2,y+25);ctx.lineTo(x+5,y+14);ctx.closePath();ctx.fill();
+    ctx.font='18px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=txt==='❤'?'#ff6fb5':txt==='★'?'#f3b416':'#7b3ff0';ctx.fillText(txt,x,y+1);ctx.restore();
+  }
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
-    var sc=1.2,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
+    var sc=1.45,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
     try{
       state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';frame=tm*60;
-      passeantes().forEach(function(p){
-        var ciclo=((tm/22+p.fase)%1+1)%1,u,dir,mov;   // 22 s: ida, pausa, volta, pausa
-        if(ciclo<.42){u=ciclo/.42;dir=1;mov=1;}else if(ciclo<.5){u=1;dir=1;mov=0;}else if(ciclo<.92){u=1-(ciclo-.5)/.42;dir=-1;mov=1;}else{u=0;dir=-1;mov=0;}
-        u=p.u0+(p.u1-p.u0)*(u*u*(3-2*u));
-        var pt=noPonto(p.rua,u),pt2=noPonto(p.rua,Math.min(1,u+.01)),vx=(pt2[0]-pt[0])*dir,c=perfChar(p.av);
-        var bob=mov?-Math.abs(Math.sin(tm*9))*2.2*sc:0;
-        ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(pt[0],pt[1],8*sc,1.7*sc,0,0,7);ctx.fill();
-        ctx.save();if(vx<0){ctx.translate(pt[0],0);ctx.scale(-1,1);ctx.translate(-pt[0],0);}
-        perfCharContorno(ctx,pt[0]-15*sc,pt[1]-44*sc+bob,sc,function(){charPose=mov?'':(p.av.pose||'');drawChar(c,0,0,mov?1:0,+p.av.expr||2,false);});
+      passeantes().map(function(p,i){var q=reduzMov?{x:PORTAS[i%3]+(i>2?60:0),dir:1,mov:0,porta:i%3,volta:0}:posRua(i,tm);
+        q.p=p;q.i=i;q.y=738+(i%3)*8;return q;/* abaixo das placas */})
+        .sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
+        .forEach(function(q){
+        var p=q.p,c=perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
+        ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
+        ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
+        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=q.mov?'':(p.av.pose||'');drawChar(c,0,0,q.mov?1:0,+p.av.expr||2,false);});
         ctx.restore();
-        // o pet (do seu Idol ou do Idol da vitrine) vem atrás, pulando de leve
+        // parado numa porta: de vez em quando um balãozinho (♪ ❤ ★), que aparece e some suave
+        if(!q.mov&&!reduzMov&&(q.volta+q.i)%2===0){
+          var fase=((tm+q.i*7.3)%PARA+PARA)%PARA,a=Math.min(1,fase*3,(PARA-fase)*3);
+          balao(q.x+(q.dir<0?-40:40),q.y-44*sc+4,BALOES[(q.volta+q.i)%BALOES.length],Math.max(0,a));
+        }
+        // o pet vem atrás andando; quando o dono para, ele senta do lado
         var pet=typeof perfPetDoAvatar==='function'?perfPetDoAvatar(p.av):null;
         if(pet&&typeof perfDesenharPetEm==='function'){
-          var atras=vx<0?1:-1,pu=Math.max(0,Math.min(1,u-.035*dir)),pp=noPonto(p.rua,pu),hop=mov?-Math.abs(Math.sin(tm*9+1.3))*5:0;
-          ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(pp[0]+atras*14,pp[1],7,1.6,0,0,7);ctx.fill();
-          perfDesenharPetEm(ctx,pet,pp[0]+atras*14,pp[1]-10+hop,sc*.5,tm*60);
+          var px=q.x-q.dir*(q.mov?40:30),hop=q.mov?-Math.abs(Math.sin(tm*8+q.i+1.3))*6:0;
+          ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(px,q.y+2,8,1.8,0,0,7);ctx.fill();
+          perfDesenharPetEm(ctx,pet,px,q.y-14+hop,sc*.5,tm*60);
         }
       });
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa andar',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
+  }
+  // Detalhes vivos de cada rua, discretos (desligados com "reduzir movimento" do sistema)
+  function detalhes(tm){
+    if(reduzMov)return;
+    ctx.save();
+    if(cena==='fofo'||cena==='ceu'){   // pétalas (Vila das Flores) / floquinhos de nuvem (Jardim das Nuvens)
+      for(var i=0;i<16;i++){var sp=18+(i*7)%14,x=((i*233+tm*sp)%1700)-50,y=((i*97+tm*(22+(i*5)%11))%700)+20,r=tm*(1+(i%3)*.4)+i;
+        ctx.save();ctx.translate(x+Math.sin(tm+i)*14,y);ctx.rotate(r);ctx.globalAlpha=.75;
+        ctx.fillStyle=cena==='fofo'?(i%2?'#ffb3d6':'#ffd6ea'):'#ffffff';ctx.beginPath();ctx.ellipse(0,0,cena==='fofo'?7:6,cena==='fofo'?4:6,0,0,7);ctx.fill();ctx.restore();}
+    }
+    if(cena==='palco'||cena==='praca'){   // notinhas subindo do Karaoke / coraçõezinhos do Pedido de fã
+      var ox=cena==='palco'?1300:300,sim=cena==='palco'?['♪','♫']:['❤','♡'];
+      ctx.font='26px "Mochiy Pop One",sans-serif';ctx.textAlign='center';
+      for(var k=0;k<4;k++){var f=((tm*.32+k*.25)%1);ctx.globalAlpha=Math.sin(f*Math.PI)*.85;
+        ctx.fillStyle=cena==='palco'?(k%2?'#ff62ab':'#9b6bff'):'#ff6fb5';
+        ctx.fillText(sim[k%2],ox-70+k*48+Math.sin(tm*2+k)*10,300-f*170);}
+    }
+    if(cena==='harajuku'){   // vaporzinho do Café
+      for(var v=0;v<3;v++){var g=((tm*.4+v/3)%1);ctx.globalAlpha=Math.sin(g*Math.PI)*.55;ctx.fillStyle='#ffffff';
+        ctx.beginPath();ctx.arc(300+Math.sin(tm*1.6+v*2)*12,250-g*110,10+g*14,0,7);ctx.fill();}
+    }
+    if(cena==='arena'){   // brilhinhos da arena em obras
+      for(var b=0;b<6;b++){var a2=Math.max(0,Math.sin(tm*1.8+b*1.7));ctx.globalAlpha=a2*.8;ctx.fillStyle='#fff3a8';
+        ctx.beginPath();ctx.arc(560+b*95,330+Math.sin(b*2.3)*70,3+a2*3,0,7);ctx.fill();}
+    }
+    ctx.restore();
   }
   // hora do dia em Brasília: dia, entardecer e noite (janelas acesas)
   var LUZES_MUNDO=[[575,425],[800,390],[1035,425],[1238,655],[360,665],[800,640],[1330,220]];

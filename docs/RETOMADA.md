@@ -52,7 +52,8 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 1. Aplicar `supabase/sql/proposta/album_cards_REVIEW_ONLY.sql` (só leitura). **O dono já deu o OK (13/11).** Com isso o Álbum e as metas de coleção funcionam.
 2. Hora extra do Handshake: `supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql`. Conferir com `pg_get_functiondef` se a produção está igual ao arquivo aplicado e **pedir o OK do dono**. O site já está pronto e só entra na hora extra quando o servidor manda 8 filas.
 3. `supabase/sql/admin_corrida_contadores.sql` (o dono aprovou; o MCP cancela por causa do DELETE, então o dono roda no SQL Editor).
-4. Café com 2–3 clientes ao mesmo tempo: exige refazer `cafe_run_pedido`/`cafe_run_etapa` para várias sessões abertas. Ainda não escrito; desenhar com o dono antes.
+4. Sora 500 m (PR #74) com anti-cheat: `supabase/sql/proposta/sora_500_anticheat_REVIEW_ONLY.sql` (prêmio só com ≥20 s e média ≤25 m/s). Precisa do OK do dono; depois o PR #74 pode ser mergeado.
+5. Café com 2–3 clientes ao mesmo tempo: exige refazer `cafe_run_pedido`/`cafe_run_etapa` para várias sessões abertas. Ainda não escrito; desenhar com o dono antes.
 
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

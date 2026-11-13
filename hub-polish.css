@@ -234,6 +234,11 @@ html body #hub .tw-mapa-txt b{font:400 18px/1.1 "Mochiy Pop One",sans-serif;text
 html body #hub .tw-mapa-txt small{font-weight:800;font-size:12.5px;opacity:.95}
 html body #hub .tw-mapa-seta{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#2f8fd8;font-size:13px;transition:transform .2s ease}
 html body #hub .tw-mapa.aberto .tw-mapa-seta{transform:rotate(180deg)}
+html body #hub .tw-mapa-voltar{align-self:flex-start;border:2px solid #fff;border-radius:999px;
+ padding:10px 18px;background:#7b3ff0;color:#fff;font:400 14px/1.1 "Mochiy Pop One",sans-serif;
+ box-shadow:0 4px 0 #5430aa;cursor:pointer}
+html body #hub .tw-mapa-voltar[hidden]{display:none!important}
+html body #hub .tw-mapa-voltar:focus-visible{outline:3px solid #b6ff3b;outline-offset:3px}
 html body #hub .tw-mapa-rolo{border-radius:24px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;
  border:3px solid #fff;background:#cfe9ff;box-shadow:0 6px 0 rgba(70,35,140,.3),0 18px 36px -12px rgba(30,20,90,.45)}
 html body #hub .tw-mapa-rolo::-webkit-scrollbar{display:none}

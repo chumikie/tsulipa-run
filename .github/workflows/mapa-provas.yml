@@ -41,6 +41,10 @@ jobs:
           cd tools/mapa
           node shotx.js mundo2 1600 1000
           for bairro in palco harajuku fofo praca arena ceu; do node shotx.js "rua_$bairro" 1600 760; done
+      - name: QA interativo no Chromium com backend simulado
+        run: |
+          cd tools/mapa
+          node teste-browser.cjs
       - uses: actions/upload-artifact@v4
         with:
           name: mapa-duas-camadas-provas
@@ -49,6 +53,7 @@ jobs:
             mapa-rua-*.svg
             tools/mapa/mundo2.png
             tools/mapa/rua_*.png
+            tools/mapa/qa-*.png
           if-no-files-found: error
       - name: Registrar artes geradas no mesmo branch
         run: |

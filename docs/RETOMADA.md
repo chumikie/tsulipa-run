@@ -53,5 +53,9 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 - **Também aplicado hoje:** `admin_corrida` (excluir corrida no admin agora desfaz os contadores).
 - **Merges que destravam no site:** PR #88 (visual, mapa, hora extra no site), PR #89 (Café Dois no balcão), PR #74 (tela do prêmio do Sora; o SQL dele foi substituído pela versão com anti-cheat — não aplicar o SQL do #74).
 
+## Economia de estrelas
+- Retrato real em `docs/ECONOMIA_ESTRELAS.md` (o teto de ★100/dia do Center ESTÁ em produção desde 02/11; o README-center-run-100.md está desatualizado).
+- Proposta pendente de OK: `supabase/sql/proposta/bonus_jogo_dia_REVIEW_ONLY.sql` (★10/dia no Café e no Handshake, 600+ pontos verificados).
+
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

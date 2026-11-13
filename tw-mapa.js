@@ -126,6 +126,13 @@
         ctx.save();if(vx<0){ctx.translate(pt[0],0);ctx.scale(-1,1);ctx.translate(-pt[0],0);}
         perfCharContorno(ctx,pt[0]-15*sc,pt[1]-44*sc+bob,sc,function(){charPose=mov?'':(p.av.pose||'');drawChar(c,0,0,mov?1:0,+p.av.expr||2,false);});
         ctx.restore();
+        // o pet (do seu Idol ou do Idol da vitrine) vem atrás, pulando de leve
+        var pet=typeof perfPetDoAvatar==='function'?perfPetDoAvatar(p.av):null;
+        if(pet&&typeof perfDesenharPetEm==='function'){
+          var atras=vx<0?1:-1,pu=Math.max(0,Math.min(1,u-.035*dir)),pp=noPonto(p.rua,pu),hop=mov?-Math.abs(Math.sin(tm*9+1.3))*5:0;
+          ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(pp[0]+atras*14,pp[1],7,1.6,0,0,7);ctx.fill();
+          perfDesenharPetEm(ctx,pet,pp[0]+atras*14,pp[1]-10+hop,sc*.5,tm*60);
+        }
       });
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa andar',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
   }

@@ -4,6 +4,7 @@ on:
     branches: [visual/layout-hud]
     paths:
       - '.github/workflows/mapa-provas.yml'
+      - 'tools/mapa/**'
   workflow_dispatch:
 permissions:
   contents: write

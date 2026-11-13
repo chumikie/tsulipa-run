@@ -2,7 +2,7 @@
 import re, math, random
 SRC = open('mapa.py').read()
 L = SRC.split('\n')
-G = {}
+G = {'__file__': __import__('os').path.abspath('mapa.py')}
 # cabeçalho (imports, ic, grad, defs)
 cab = SRC[:SRC.index('# ---------- céu ----------')]
 exec(cab, G)

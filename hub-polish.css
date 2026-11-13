@@ -87,7 +87,7 @@ html body #hub #hubHojeT{flex-wrap:nowrap;white-space:nowrap}
 html body #hub #hubHojeT .hojeinfo{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 @media (max-width:480px){html body #hub #hubHojeT{gap:6px;padding:5px 10px 6px;font-size:15px}html body #hub #hubHojeT small{font-size:10px}html body #hub #hubHojeT .hojeinfo{font-size:12px;padding:2px 8px}}
 /* ===== Layout: barra fixa com você, destaque do dia, menos texto e navegação no celular ===== */
-html body #hub .tw-hud{position:sticky;top:8px;z-index:30;display:flex;align-items:center;gap:10px;margin:0 auto 12px;max-width:760px;width:calc(100% - 16px);padding:6px 10px 6px 6px;border-radius:999px;
+html body #hub .tw-hud{position:sticky;top:8px;z-index:30;display:flex;align-items:center;gap:10px;margin:10px auto 12px;max-width:760px;width:calc(100% - 16px);padding:6px 10px 6px 6px;border-radius:999px;
   background:linear-gradient(180deg,rgba(52,38,128,.94),rgba(33,24,92,.94));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 0 rgba(10,5,40,.4),0 14px 26px -14px rgba(0,0,0,.7);backdrop-filter:blur(8px)}
 html body #hub .tw-hud button{font:inherit;color:inherit;border:0;cursor:pointer}
 html body #hub .tw-hud-eu{display:flex;align-items:center;gap:8px;background:none;padding:0;min-width:0;flex:1;text-align:left}

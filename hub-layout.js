@@ -17,7 +17,9 @@
   function hudUI(){
     var h=hub(); if(!h) return; var inn=h.querySelector('.hubin')||h;
     var el=document.getElementById('twHud');
-    if(!el){el=document.createElement('div');el.id='twHud';el.className='tw-hud';inn.insertBefore(el,inn.firstChild);
+    if(!el){el=document.createElement('div');el.id='twHud';el.className='tw-hud';
+      // fica abaixo do logo e do menu de idioma: no topo não cobre nada, e ao rolar gruda no alto da tela
+      var ref=document.getElementById('hubCfg');if(ref&&ref.parentNode)ref.parentNode.insertBefore(el,ref.nextSibling);else inn.insertBefore(el,inn.firstChild);
       el.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
         if(b.dataset.hud==='perfil'){var c=card('perfil');if(c)c.click();}
         else if(b.dataset.hud==='entrar'&&typeof contaEntrar==='function')contaEntrar();});}

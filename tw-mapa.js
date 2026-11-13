@@ -34,10 +34,10 @@
     return {alerta:c.classList.contains('tw-alert-pink'),off:c.disabled||c.getAttribute('aria-disabled')==='true'||c.hidden||c.classList.contains('tw-karaoke-locked')||!!c.querySelector('.tw-profile-lock')};}
 
   function montar(){
-    var menu=document.getElementById('hubMenu');if(!menu||document.getElementById('twMapa'))return;
+    var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
     sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
-    var ref=document.getElementById('hubHoje');menu.insertBefore(sec,ref||menu.firstChild);
+    menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=3';
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
@@ -52,6 +52,10 @@
     textos();
   }
   var aberto=false;
+  // no fim do "Meu mundo": logo antes do título Jogos (o hub refaz os cards, então reposiciona sempre)
+  function posicionar(){var sec=document.getElementById('twMapa'),cards=document.getElementById('hubCards');if(!sec||!cards)return;
+    var jg=cards.querySelector('.hubbt-jogos');if(jg){if(sec.nextElementSibling!==jg)cards.insertBefore(sec,jg);}
+    else if(sec.parentNode!==cards)cards.appendChild(sec);}
   function abrir(sim,inicio){aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}

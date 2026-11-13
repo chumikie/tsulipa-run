@@ -217,7 +217,11 @@ html body .jornalp .jnpodios>.jnpodio .jnvazio{margin:0 8px;padding:12px 10px;bo
 html body .jornalp .jnpodios>.jnpodio .jnvazio::before{content:"🎤 ";}
 
 /* ===== Mapa da cidade (tw-mapa.js) ===== */
-html body #hub .tw-mapa{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:6px auto 0}
+html body #hub .tw-mapa{display:flex;flex-direction:column;gap:10px;width:100%;max-width:none;margin:2px 0 4px}
+/* o mapa ganha a sua linha no fim do "Meu mundo" (a grade do hub usa áreas nomeadas, em index2-skin.css) */
+html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm" "profile profile" "pet loja" "mapa mapa" "tj tj" "run run" "hand cafe" "karaoke duo" "sora gacha"}
+html body #hub #hubCards #twMapa{grid-area:mapa}
+@media(min-width:700px){html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm tm" "profile pet loja" "mapa mapa mapa" "tj tj tj" "run run run" "hand cafe karaoke" "duo sora gacha"}}
 html body #hub .tw-mapa-botao{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border-radius:20px;cursor:pointer;text-align:left;color:#fff;
  border:3px solid #fff;overflow:hidden;isolation:isolate;
  background:linear-gradient(100deg,rgba(74,156,240,.92),rgba(52,201,173,.88)),url(./mapa-cidade.svg?v=3) center 58%/150% auto no-repeat;

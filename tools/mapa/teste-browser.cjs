@@ -59,6 +59,32 @@ async function teste(page,dir,label){
   await page.locator('#twMapa canvas').waitFor({state:'visible'});
   await page.waitForFunction(()=>document.querySelector('#twMapa canvas').height===1000);
   await page.screenshot({path:path.join(__dirname,'qa-mundo-'+label+'.png'),fullPage:false});
+  if(label.includes('320')||label.includes('390')){
+    const medida=await page.locator('.tw-mapa-rolo').evaluate(el=>{
+      const c=el.querySelector('canvas'),box=c.getBoundingClientRect();
+      return {canvasWidth:box.width,viewportWidth:el.clientWidth,
+        canvasHeight:box.height,viewportHeight:el.clientHeight,
+        scrollWidth:el.scrollWidth,scrollHeight:el.scrollHeight};
+    });
+    assert.ok(Math.abs(medida.canvasWidth-medida.viewportWidth)<=3,
+      'o mundo deve caber inteiro na largura do celular: '+JSON.stringify(medida));
+    assert.ok(medida.scrollWidth<=medida.viewportWidth+2,'mundo panorâmico não rola lateralmente');
+    assert.ok(medida.scrollHeight<=medida.viewportHeight+2,'mundo panorâmico não corta a ilha embaixo');
+    assert.equal(await page.locator('.tw-mapa-bairros button').count(),6,
+      'seis bairros legíveis abaixo da visão geral');
+    await page.locator('.tw-mapa-zoom').click();
+    const zoom=await page.locator('.tw-mapa-rolo').evaluate(el=>({
+      scrollWidth:el.scrollWidth,clientWidth:el.clientWidth
+    }));
+    assert.ok(zoom.scrollWidth>zoom.clientWidth,'zoom permite explorar o mapa com rolagem');
+    await page.locator('.tw-mapa-zoom').click();
+    const volta=await page.locator('.tw-mapa-rolo').evaluate(el=>({
+      scrollWidth:el.scrollWidth,clientWidth:el.clientWidth
+    }));
+    assert.ok(volta.scrollWidth<=volta.clientWidth+2,'Visão geral restaura ilha completa');
+    console.log('OK '+label+' visão geral: '+Math.round(medida.canvasWidth)+'×'+
+      Math.round(medida.canvasHeight)+' px + seis atalhos e zoom');
+  }
   // A rua deve ser navegável mesmo em viewport estreita.
   await dispararCliqueMapa(page,800,420);
   await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='palco');
@@ -82,6 +108,13 @@ async function teste(page,dir,label){
   await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='harajuku');
   await page.locator('.tw-mapa-voltar').click();
   await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
+  if(label.includes('320')||label.includes('390')){
+    // A lista também é navegação real para quem não consegue ler a placa pequena.
+    await page.locator('.tw-mapa-bairros [data-tw-bairro="ceu"]').click();
+    await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='ceu');
+    await page.locator('.tw-mapa-voltar').click();
+    await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
+  }
   // Slots apenas decorativos: nenhum clique em Bloom, Photo ou Battle abre um jogo.
   for(const [bairro,x,y,areaX,areaY] of [
     ['fofo',360,690,1300,490],

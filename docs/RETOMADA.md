@@ -68,7 +68,7 @@ O mapa de 1 nível ficou lotado. Novo modelo:
    - Jardim das Nuvens (aprovado; ID `ceu`, única ilha no alto): Sora, Moon⭐Duo!, "?" (Photo⭐Studio!).
 2. **Cena da rua de cada bairro** (modelo: `tools/mapa/rua.py`, prova em `docs/mapa-provas/rua_harajuku.jpg`): tocar no bairro abre a rua dele, com os prédios grandes lado a lado (escala ~2), calçada, chão de pedrinha onde os Idols passeiam e botão "◀ Mapa". No celular a rua rola para os lados.
 
-**Ordem de implementação (1–4 implementadas na PR #88, ainda sem merge/publicação):**
+**Ordem de implementação (1–6 implementadas na PR #88; sem merge/publicação oficial):**
 1. Gerar `mapa-mundo.svg` (mundo2.py + sep.py) e as 6 ruas (copiar rua.py para cada bairro).
 2. Em `tw-mapa.js`: estado `cena = 'mundo' | <bairro>`; caixas de clique por bairro no mundo; na rua, caixas por prédio usando o mesmo `TW_LUGARES` (clique chama o `click()` do card original).
 3. Levar para a rua: passeantes (seu Idol + Idols da vitrine + pets), hora do dia (`horaBR`, `ceu`), alertas (!) e cadeados. No mundo ficam só alerta somado por bairro e o trio no palco.
@@ -81,9 +81,11 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - **Passo 2:** navegação mundo → bairro e clique nos cards originais implementados em `tw-mapa.js`; IDs internos antigos preservados.
 - **Passo 3:** Idols e pets existentes passeiam nas ruas, iluminação por horário de Brasília, cadeados e alertas por edifício; alertas agregados e trio no mundo.
 - **Passo 4:** botão HTML e SVG “◀ Mapa”, Esc quando não há jogo/modal em primeiro plano, histórico de navegação para Voltar/Avançar do celular. Preserva `history.state` de outros módulos.
-- **Pendente (passos 5–6):** ocupar os lotes “?” conforme os jogos realmente forem criados; QA real em iPhone/desktop, scroll e cliques, tema escuro. `node --check` e testes `tests/*.js` verificam os contratos com backend simulado; prints dos SVGs foram gerados, mas não equivalem ao QA interativo real.
+- **Passo 5:** três espaços reservados e ilustrados nas ruas: `bloom-garden` (horta da Vila das Flores), `photo-studio` (estúdio do Jardim das Nuvens) e `idol-battle` (arena central). Exibem “Em breve”, sem abrir jogos, criar saves ou conceder recompensas. Integração real desses jogos permanece para fase futura.
+- **Passo 6:** testes JS completos `for f in tests/*.js; do node "$f"; done` e QA interativo em Chromium, usando `tools/mapa/teste-browser.cjs`: desktop 1280×800, celular 320×640, celular 390×844 em tema escuro, rolagem, clique em card original, Esc, botão Voltar e histórico. Tudo validado na execução GitHub Actions #43467172453. **Não houve teste em iPhone físico nem login OAuth real.**
+- **Prévia Vercel:** `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/` (alias da PR #88), build verificado READY no commit `63a8b443`. Projeto existente `tsulipa-world`, sem alterar produção. A prévia tem Vercel Authentication/SSO ativo: acesso exige conta autorizada na Vercel. **Login Google/Supabase real não foi comprovado.** Se desejar autenticar na prévia, conferir allow list no Supabase Auth > URL Configuration e origem autorizada do Google Cloud para esse domínio, sem mudar Site URL de produção. Não aplicar alterações de configuração sem autorização.
 - **Regras mantidas:** sem tocar em Supabase ou `main`, sem duplicar lógica dos cards, sem mexer nas chaves `brs48cr_*`. Dois nomes de bairros continuam provisórios.
 
 ## Próximo passo
-Continuar na mesma PR #88: passo 5 (marcação dos espaços reservados para jogos futuros, sem ativá-los) e passo 6 (QA visual e funcional). Depois:
+Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

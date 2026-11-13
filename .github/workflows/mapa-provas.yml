@@ -1,0 +1,52 @@
+name: Mapa 2 níveis — gerar provas
+on:
+  push:
+    branches: [visual/layout-hud]
+    paths:
+      - '.github/workflows/mapa-provas.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: visual/layout-hud
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Gerar e validar SVGs (sem alterar site)
+        run: |
+          cd tools/mapa
+          python3 gerar_2_niveis.py
+      - name: Preparar Playwright para screenshots
+        run: |
+          cd tools/mapa
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Capturar sete provas visuais
+        run: |
+          cd tools/mapa
+          node shotx.js mundo2 1600 1000
+          for bairro in palco harajuku fofo praca arena ceu; do node shotx.js "rua_$bairro" 1600 760; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mapa-duas-camadas-provas
+          path: |
+            mapa-mundo.svg
+            mapa-rua-*.svg
+            tools/mapa/mundo2.png
+            tools/mapa/rua_*.png
+          if-no-files-found: error
+      - name: Registrar artes geradas no mesmo branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add mapa-mundo.svg mapa-rua-*.svg
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(mapa): gerar SVGs de mundo e seis ruas [skip ci]'
+            git push origin HEAD:visual/layout-hud
+          fi

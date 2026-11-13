@@ -107,6 +107,14 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Arquivos em `supabase/sql/aplicado/`; testes isolados em `supabase/tests/{gacha-po,duo-pedido,bloom}/rodar.sh`.
 - Front no PR #88: `gacha-po.js`, `duo-pedido.js`, `bloom.js` (horta da Vila das Flores no mapa), `cafe-gorjeta.js` (só visual).
 
+## Esperando o OK do dono (13/11, noite)
+- `supabase/sql/proposta/20261113_cafe_vip.sql`: cliente VIP do Café (6ª e 11ª clientes valem o dobro). Insere uma linha em `cafe_run_etapa` e `cafe_run_etapa2` (lidas na hora de aplicar; falha se o marcador mudar). Testado isolado em `supabase/tests/cafe-vip/`. O front (`cafe-vip.js`) já está no PR #88 — aplicar antes do merge, senão o selo "vale o dobro" aparece sem o servidor dobrar.
+
+## Handshake: fãs com dois detalhes (planejado, não feito)
+- Servidor: `handshake_iniciar` passa a sortear também a cor do lightstick (0–5) para os fãs a partir da rodada 3; `handshake_run_finish` aceita `cor` na resposta e soma +50 quando presente E cor estão certos.
+- Cliente (`handshake.js`): depois do presente, escolher a cor (6 botões). O jeito do fã passa a valer: tímido mostra o texto por menos tempo, animado repete.
+- Mexe no coração do jogo e em 2 funções em uso: fazer com teste isolado e OK do dono.
+
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

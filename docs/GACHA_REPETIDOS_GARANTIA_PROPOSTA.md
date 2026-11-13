@@ -26,13 +26,33 @@
 - Segurança atual conferida: `gacha_girar`, `album_cards` e as RPCs de troca são SECURITY DEFINER, pertencem a `postgres` e têm EXECUTE explícito a `authenticated` e `service_role`, não a `anon`.
 - Não houve alteração em dados ou schema de produção, nem teste de escrita autenticada.
 
+## Auditoria 2 + testes em PostgreSQL isolado (13/11/2026, noite)
+
+Regras **aprovadas pelo dono**: 1 pó por cópia repetida convertida voluntariamente; 5 pós = 1 card faltante; o giro depois de 7 "nada" seguidos não sai "nada"; 1 giro/dia mantido; primeira cópia sempre preservada; economia de ★ intacta.
+
+Comparei o SQL com as definições reais de produção (`gacha_girar`, `album_cards`, `private.cards_qtd`, `propor_troca`, `responder_troca`, esquema de `card_movimentos`/`gacha`; só leitura) e corrigi:
+
+1. **Garantia não dá mais ★5**: quando o giro garantido cairia em "nada", entrega um bônus de corrida (ímã/escudo/fever). Assim a economia de ★ não muda em nada.
+2. **Próprio card fora da conversão**: o card de aniversário (o seu próprio) nunca vira pó, mesmo com 2+ cópias.
+3. **Resgate determinístico**: a escolha do Idol usa `order by id limit 1` (nicks são únicos por `lower(nick)`).
+4. **`gacha_po_status()` devolve as listas da interface**: `repetidos` (convertíveis, com a contagem) e `faltando` (até 80 Idols ativos que ainda não estão no álbum).
+5. Grants: RPCs novas só para `authenticated` e `service_role`; tabelas de pó no schema `private` (sem acesso pela API).
+
+**Testes** (`supabase/tests/gacha-po/`, PostgreSQL 16 local com réplica mínima do esquema e cópias das funções reais): 38 asserções, incluindo idempotência, requisição reutilizada, primeira cópia preservada, card sem avatar/bloqueado/próprio, saldo insuficiente, integração com `album_cards`, garantia em 300 giros sem "nada" (controle com 6 "nada" continua normal), 1 giro/dia, permissões e **concorrência real** (duas conversões ao mesmo tempo; conversão × troca aceita ao mesmo tempo — só uma gasta a cópia).
+
+```sh
+PGHOST=<socket local> PGPORT=<porta> sh supabase/tests/gacha-po/rodar.sh   # nunca apontar para produção
+```
+
+**Comportamento herdado, não alterado:** se a cópia oferecida numa troca pendente for convertida, a troca continua pendente e é recusada no aceite (`sem_repetido_outro`), como já acontece hoje quando a cópia é trocada com outra pessoa.
+
 ## Arquivo de implementação de servidor (somente para revisão)
 
 `supabase/sql/proposta/20261113_gacha_po_garantia_REVIEW_ONLY.sql`
 
 Contém carteira e log privados com RLS, RPCs `gacha_po_status`, `gacha_converter_repetido`, `gacha_resgatar_card` e alteração mínima de `gacha_girar` para garantir a ausência de `nada` no 8º giro consecutivo. Conversão e resgate utilizam uma chave UUID de idempotência por operação, além do lock transacional compartilhado com trocas sociais.
 
-**Ainda falta antes de liberar online:** teste PostgreSQL isolado com concorrência, revisão de grants, testes funcionais de integração com `album_cards`/trocas, desenho do fluxo de confirmação e tradução completa do frontend. Nenhuma função deve ser publicada antes disso. Sem autorização específica, o arquivo não será aplicado.
+**Ainda falta antes de liberar online:** autorização do dono para aplicar o SQL e o teste com conta real depois de aplicado. Nenhuma função deve ser publicada antes disso. Sem autorização específica, o arquivo não será aplicado.
 
 ## Testes do protótipo
 

@@ -173,7 +173,7 @@
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
       img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=2';
+      img.src='./'+arquivo+'?v=3';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();

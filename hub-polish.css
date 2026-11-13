@@ -240,6 +240,18 @@ html body #hub .tw-mapa-rolo::-webkit-scrollbar{display:none}
 html body #hub .tw-mapa canvas{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
 @media (max-width:760px){html body #hub .tw-mapa canvas{width:820px;max-width:none}}
 
+/* ===== Moon⭐Duo!: pedido de cena do dia (duo-pedido.js) ===== */
+.duo-pedido{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:16px;color:#fff;
+ background:linear-gradient(110deg,#5a43c9,#9b6bff);border:2px solid rgba(255,255,255,.8);box-shadow:0 4px 0 rgba(44,29,120,.45)}
+.duo-pedido.ok{background:linear-gradient(110deg,#ff62ab,#b83a9e)}
+.duo-pedido.feito{background:linear-gradient(110deg,#34c9ad,#1e8f9a)}
+.duo-pedido-ico{font-size:24px;line-height:1}
+.duo-pedido-txt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.duo-pedido-txt b{font:400 14px/1.15 "Mochiy Pop One",sans-serif}
+.duo-pedido-txt small{font-size:12px;font-weight:700;opacity:.95}
+.duo-pedido-bt{flex:none;padding:8px 14px;border-radius:999px;border:0;cursor:pointer;font:400 13px/1 "Mochiy Pop One",sans-serif;color:#5a43c9;background:#fff;box-shadow:0 3px 0 rgba(44,29,120,.35)}
+.duo-pedido-bt:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(44,29,120,.35)}
+
 /* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
 @media (prefers-color-scheme:light){
 html:not([data-theme="dark"]) body #hub .hojeinfo{background:#fff;color:#3b2470;border-color:rgba(123,63,240,.2)}

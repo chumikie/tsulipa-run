@@ -23,6 +23,7 @@
   var NOMES={'Meu Perfil':{en:'My Profile',es:'Mi perfil',id:'Profilku',th:'โปรไฟล์ของฉัน',ja:'マイプロフィール'},
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
     'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'}};
+  var DICA={pt:'👆 Arraste para passear',en:'👆 Drag to explore',es:'👆 Arrastra para pasear',id:'👆 Geser untuk jalan-jalan',th:'👆 ลากเพื่อเดินเล่น',ja:'👆 ドラッグでおさんぽ'};
   var PASSEIA={pt:'Passear pela cidade',en:'Stroll around town',es:'Pasear por la ciudad',id:'Jalan-jalan keliling kota',th:'เดินเล่นในเมือง',ja:'まちをおさんぽ'};
   var FECHA={pt:'Fechar o mapa',en:'Close the map',es:'Cerrar el mapa',id:'Tutup peta',th:'ปิดแผนที่',ja:'マップを閉じる'};
   var TIT={pt:'Mapa da cidade',en:'City map',es:'Mapa de la ciudad',id:'Peta kota',th:'แผนที่เมือง',ja:'まちのマップ'};
@@ -36,11 +37,12 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     arte=new Image();arte.onload=function(){desenhar();centralizar();};arte.src='./mapa-cidade.svg?v=5';
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
+    var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     cv.addEventListener('click',function(e){var l=achar(e);if(!l)return;var c=card(l);if(c&&!c.disabled)c.click();});
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
@@ -61,9 +63,11 @@
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
     textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
-    if(b)b.textContent=TIT[lang()]||TIT.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
+    if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
     if(cv)cv.setAttribute('aria-label',TIT[lang()]||TIT.pt);}
-  function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');if(centrado||!r||r.scrollWidth<=r.clientWidth)return;r.scrollLeft=(r.scrollWidth-r.clientWidth)/2;centrado=true;}
+  function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');if(centrado||!r||(r.scrollWidth<=r.clientWidth&&r.scrollHeight<=r.clientHeight))return;
+    var k=cv.getBoundingClientRect().width/MW;   // centro da praça (800,610 no mapa)
+    r.scrollLeft=Math.max(0,(800-OX)*k-r.clientWidth/2);r.scrollTop=Math.max(0,(610-OY)*k-r.clientHeight/2);centrado=true;}
   function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY,m=null,ma=1e9;
     TW_LUGARES.forEach(function(l){var b=l.box;if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l)){var a=(b[2]-b[0])*(b[3]-b[1]);if(a<ma){ma=a;m=l;}}});return m;}
 
@@ -84,6 +88,7 @@
     if(hover){var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.22)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([10,8]);
       rr(b[0],b[1],b[2]-b[0],b[3]-b[1],26);ctx.fill();ctx.stroke();ctx.restore();}
     lotes(tm);
+    brilho(tm);
     ceu(tm);
     andar(tm);
     idols(tm);
@@ -171,6 +176,21 @@
       ctx.fillStyle='#fff';ctx.strokeStyle='#ff9bd0';ctx.lineWidth=3;rr(x-tw/2,py-24,tw,26,13);ctx.fill();ctx.stroke();
       ctx.fillStyle='#d94d92';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(tx,x,py-11);
       ctx.restore();});
+  }
+
+  // brilho: estrelinhas que piscam perto dos lugares e a estrela do palco pulsando (leve, só com o mapa aberto)
+  var BRILHOS=[[700,215,9],[905,190,8],[1220,300,7],[1085,270,6],[380,520,6],[275,470,5],[575,700,6],[870,700,6],[1370,560,7],[1160,640,6],[345,330,6],[1450,150,7],[960,520,5],[640,560,5]];
+  function brilho(tm){
+    ctx.save();
+    var p=.5+.5*Math.sin(tm*2.2),g=ctx.createRadialGradient(800,182,0,800,182,70+p*16);
+    g.addColorStop(0,'rgba(255,240,150,'+(.35+p*.25).toFixed(2)+')');g.addColorStop(1,'rgba(255,240,150,0)');
+    ctx.globalCompositeOperation='lighter';ctx.fillStyle=g;ctx.fillRect(700,90,200,200);
+    ctx.globalCompositeOperation='source-over';
+    BRILHOS.forEach(function(b,i){var a=Math.max(0,Math.sin(tm*1.7+i*1.3));if(a<.05)return;var s2=b[2]*(.6+a*.6);
+      ctx.globalAlpha=a*.9;ctx.fillStyle=i%3?'#ffffff':'#fff3a8';ctx.beginPath();
+      ctx.moveTo(b[0],b[1]-s2);ctx.quadraticCurveTo(b[0]+s2*.18,b[1]-s2*.18,b[0]+s2,b[1]);ctx.quadraticCurveTo(b[0]+s2*.18,b[1]+s2*.18,b[0],b[1]+s2);
+      ctx.quadraticCurveTo(b[0]-s2*.18,b[1]+s2*.18,b[0]-s2,b[1]);ctx.quadraticCurveTo(b[0]-s2*.18,b[1]-s2*.18,b[0],b[1]-s2);ctx.fill();});
+    ctx.restore();
   }
   // o TsuLiPa (trio) com os pets na praça, desenhado com as mesmas funções do palco (drawChar + contorno de adesivo)
   var IDOL_X=[724,800,876],IDOL_CHAO=680,IDOL_SC=1.65;

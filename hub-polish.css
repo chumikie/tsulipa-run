@@ -145,3 +145,56 @@ html[data-theme="light"] body #hub .tw-hud-txt small{color:#c02a7a}
   html body #hub #hubCards{gap:16px}
   html body #hub #hubCards h2.hubblocot{margin-top:14px}
 }
+
+/* ===== Janelas (Perfil, Pet, Shop, Gacha…): moldura de brinquedo, igual aos painéis do hub ===== */
+/* a barra de baixo some quando qualquer janela está aberta (não cobre botões) */
+body:has(.ov:not(#menu):not([hidden]),.tw-preview-game:not([hidden])) .tw-nav{display:none!important}
+html body .ov .tw-window.tw-window-surface{
+ border:2.5px solid transparent;
+ background:
+  radial-gradient(circle,rgba(255,255,255,.055) 1.2px,transparent 1.7px) 0 0/14px 14px padding-box,
+  radial-gradient(circle at 8% 0%,rgba(185,139,255,.22),transparent 42%) padding-box,
+  radial-gradient(circle at 100% 12%,rgba(255,111,181,.16),transparent 44%) padding-box,
+  linear-gradient(180deg,var(--tw-painel1),var(--tw-painel2)) padding-box,
+  linear-gradient(140deg,#ffa6d6,#b98bff 48%,#7fd3ff) border-box;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 6px 0 rgba(70,35,140,.45),0 26px 60px -12px rgba(8,6,40,.6);
+}
+html[data-theme="light"] body .ov .tw-window.tw-window-surface{
+ background:
+  radial-gradient(circle,rgba(123,63,240,.07) 1.2px,transparent 1.7px) 0 0/14px 14px padding-box,
+  radial-gradient(circle at 8% 0%,rgba(185,139,255,.16),transparent 42%) padding-box,
+  linear-gradient(180deg,#fff,#f7f0ff) padding-box,
+  linear-gradient(140deg,#ff9bd0,#b98bff 48%,#7fc8ff) border-box;
+ box-shadow:inset 0 2px 0 #fff,0 6px 0 rgba(123,63,240,.18),0 26px 60px -14px rgba(80,40,140,.4);
+}
+/* título com o mesmo brilho do logo */
+html body .ov .tw-window .tw-modal-title{letter-spacing:.01em;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+/* subtítulos das janelas viram etiquetas (como "Meu mundo") */
+html body .ov .tw-window :is(.shopprov>h3,#gachaCardsT){
+ display:inline-flex;align-items:center;gap:6px;width:fit-content;margin:14px auto 10px;
+ padding:6px 14px 7px;border-radius:999px;font:400 15px/1 "Mochiy Pop One",sans-serif;color:#fff;
+ background:linear-gradient(180deg,#c49bff,#8d5cf2);-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#fff;text-shadow:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 3px 0 rgba(70,35,140,.45)}
+/* botão de fechar: bolinha de bala */
+html body .ov .tw-window .tw-window-close{
+ background:linear-gradient(180deg,#ff8cc6,#ff4f9a);color:#fff;border:2px solid rgba(255,255,255,.75);
+ box-shadow:0 3px 0 rgba(150,30,90,.45),0 8px 16px -6px rgba(255,79,154,.6)}
+html body .ov .tw-window .tw-window-close:hover{transform:translateY(-1px)}
+
+/* ===== Tema claro pelo sistema (o site não define data-theme) ===== */
+@media (prefers-color-scheme:light){
+html:not([data-theme="dark"]) body #hub .hojeinfo{background:#fff;color:#3b2470;border-color:rgba(123,63,240,.2)}
+html:not([data-theme="dark"]) body #hub .hubpainel{background-image:radial-gradient(rgba(123,63,240,.07) 1px,transparent 1.4px),linear-gradient(180deg,#ffffff,#f6efff);border-color:rgba(123,63,240,.14);box-shadow:inset 0 2px 0 #fff,0 6px 0 rgba(123,63,240,.12),0 20px 36px -22px rgba(80,40,140,.35)}
+html:not([data-theme="dark"]) body #hub .hubcfg>span,html:not([data-theme="dark"]) body #hub .hubloginbox,html:not([data-theme="dark"]) body #hub .hubtema{background:linear-gradient(180deg,#fff,#f3ecff);border-color:rgba(123,63,240,.18);box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(123,63,240,.15)}
+html:not([data-theme="dark"]) body #hub .tw-hud,html:not([data-theme="dark"]) body.hubon .tw-nav{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(245,238,255,.95));border-color:rgba(123,63,240,.18);color:#3b2470}
+html:not([data-theme="dark"]) body #hub .tw-hud-txt b{color:#3b2470}
+html:not([data-theme="dark"]) body.hubon .tw-nav button{color:#3b2470}
+html:not([data-theme="dark"]) body #hub .tw-hud-txt small{color:#c02a7a}
+html:not([data-theme="dark"]) body .ov .tw-window.tw-window-surface{
+ background:
+  radial-gradient(circle,rgba(123,63,240,.07) 1.2px,transparent 1.7px) 0 0/14px 14px padding-box,
+  radial-gradient(circle at 8% 0%,rgba(185,139,255,.16),transparent 42%) padding-box,
+  linear-gradient(180deg,#fff,#f7f0ff) padding-box,
+  linear-gradient(140deg,#ff9bd0,#b98bff 48%,#7fc8ff) border-box;
+ box-shadow:inset 0 2px 0 #fff,0 6px 0 rgba(123,63,240,.18),0 26px 60px -14px rgba(80,40,140,.4);
+}
+}

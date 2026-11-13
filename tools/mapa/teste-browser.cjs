@@ -82,8 +82,23 @@ async function teste(page,dir,label){
   await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='harajuku');
   await page.locator('.tw-mapa-voltar').click();
   await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
+  // Slots apenas decorativos: nenhum clique em Bloom, Photo ou Battle abre um jogo.
+  for(const [bairro,x,y,areaX,areaY] of [
+    ['fofo',360,690,1300,490],
+    ['arena',1035,870,800,490],
+    ['ceu',1330,230,1300,490]
+  ]){
+    await dispararCliqueMapa(page,x,y);
+    await page.waitForFunction(id=>document.querySelector('#twMapa').dataset.cena===id,bairro);
+    const antes=(await page.evaluate(()=>window.abridos)).length;
+    await dispararCliqueMapa(page,areaX,areaY);
+    assert.equal((await page.evaluate(()=>window.abridos)).length,antes,
+      'reserva de '+bairro+' não dispara cards');
+    await page.locator('.tw-mapa-voltar').click();
+    await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
+  }
   assert.deepEqual(errors,[],'sem erros de JavaScript no navegador');
-  console.log('OK '+label+' mundo/rua, cards, rolagem, Esc, history; scrollWidth='+scroll.w);
+  console.log('OK '+label+' mundo/rua, cards, rolagem, Esc, history, reservas; scrollWidth='+scroll.w);
 }
 (async()=>{
   for(const [arquivo,marca] of [['mapa-rua-fofo.svg','bloom-garden'],

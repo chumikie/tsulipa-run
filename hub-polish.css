@@ -45,3 +45,44 @@ html body #hub #hubCards .hubcard.hubgacha{--art:url("data:image/svg+xml,%3Csvg 
 html body #hub #hubCards .hubcard.hubpet{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cellipse cx='60' cy='78' rx='22' ry='18' fill='%23fff'/%3E%3Cellipse cx='34' cy='52' rx='9' ry='12' fill='%23fff'/%3E%3Cellipse cx='52' cy='38' rx='9' ry='12' fill='%23fff'/%3E%3Cellipse cx='70' cy='38' rx='9' ry='12' fill='%23fff'/%3E%3Cellipse cx='88' cy='52' rx='9' ry='12' fill='%23fff'/%3E%3C/svg%3E")}
 html body #hub #hubCards .hubcard.hubloja{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath d='M28 44h64l-6 62H34Z' fill='%23fff'/%3E%3Cpath d='M44 46V34a16 16 0 0 1 32 0v12' fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E")}
 html body #hub #hubCards .hubcard.hubperf{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect x='30' y='14' width='60' height='88' rx='8' fill='%23fff' transform='rotate%2810 60 58%29'/%3E%3Cpath d='M62%2C36 L66.2%2C46.2 L77.2%2C47.1 L68.8%2C54.2 L71.4%2C64.9 L62.0%2C59.2 L52.6%2C64.9 L55.2%2C54.2 L46.8%2C47.1 L57.8%2C46.2Z' fill='%23000' opacity='.0'/%3E%3C/svg%3E")}
+
+/* ===== Polimento 2: paleta do site, "Hoje", títulos, painéis e menu ===== */
+:root{--tw-uva:#7b3ff0;--tw-uva2:#9b6bff;--tw-chiclete:#ff5aa5;--tw-menta:#34c9ad;--tw-ceu:#4a9dff;--tw-limao:#b6ff3b;--tw-pessego:#ffb56b;--tw-noite:#1b1442;--tw-painel1:#2a1f66;--tw-painel2:#1d1650}
+/* cards do Hoje com o mesmo acabamento dos jogos */
+html body #hub .hubhoje .hubenc,html body #hub .hubhoje .hubjornal,html body #hub .hubhoje .hubfa{
+  --hc1:#ffb56b;--hc2:#ff5aa5;position:relative;isolation:isolate;
+  background:linear-gradient(160deg,var(--hc1),var(--hc2));border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.18),inset 0 1px 0 rgba(255,255,255,.4),0 5px 0 rgba(30,16,90,.28),0 16px 28px -16px rgba(10,5,40,.65);
+  color:#fff;text-shadow:0 1px 2px rgba(40,10,80,.25);transition:transform .15s ease}
+html body #hub .hubhoje .hubjornal{--hc1:#6fb6ff;--hc2:#6a4ff0}
+html body #hub .hubhoje .hubfa{--hc1:#ff7cc4;--hc2:#9b4bf0}
+html body #hub .hubhoje .hubenc:hover,html body #hub .hubhoje .hubjornal:hover,html body #hub .hubhoje .hubfa:hover{transform:translateY(-2px)}
+html body #hub .hubhoje .hubenc::before,html body #hub .hubhoje .hubjornal::before,html body #hub .hubhoje .hubfa::before{content:'';position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;opacity:.2;background:var(--art) no-repeat right -12px bottom -14px/auto 88%,radial-gradient(rgba(255,255,255,.5) 1px,transparent 1.4px) 0 0/12px 12px}
+/* títulos das seções viram etiquetas brilhantes */
+html body #hub h2.hubblocot,html body #hub #hubRec>h2,html body #hub #hubMisT{display:inline-flex;align-items:center;gap:8px;padding:6px 16px 7px;border-radius:999px;
+  background:linear-gradient(180deg,var(--tw-uva2),var(--tw-uva));color:#fff;font-family:'Mochiy Pop One','M PLUS Rounded 1c',sans-serif;font-weight:400;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(40,10,110,.35),0 3px 0 rgba(20,8,60,.35);text-shadow:0 1px 0 rgba(40,10,110,.45)}
+html body #hub h2.hubblocot small,html body #hub #hubRec>h2 small,html body #hub #hubMisT small{color:#ffd6ec;opacity:.95}
+html body #hub h2.hubbt-mundo{background:linear-gradient(180deg,#ff8cc6,var(--tw-chiclete));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(150,20,80,.35),0 3px 0 rgba(20,8,60,.35)}
+html body #hub h2.hubbt-jogos{background:linear-gradient(180deg,#5fd8c0,#1fa58f);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(10,90,80,.35),0 3px 0 rgba(20,8,60,.35)}
+/* painéis com moldura de "janela" do mundinho */
+html body #hub .hubpainel{background:linear-gradient(180deg,var(--tw-painel1),var(--tw-painel2));border:2px solid rgba(255,255,255,.1);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 6px 0 rgba(10,5,40,.35),0 20px 36px -22px rgba(0,0,0,.8);
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px),linear-gradient(180deg,var(--tw-painel1),var(--tw-painel2));background-size:14px 14px,auto}
+/* menu do topo: botões de gel */
+html body #hub .hubcfg>span,html body #hub .hubloginbox,html body #hub .hubtema{background:linear-gradient(180deg,#2c2270,#1f185a);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 0 rgba(10,5,40,.4)}
+html body #hub .hubcfg>span button{transition:background .15s,color .15s}
+html body #hub .hubcfg>span button:hover{color:#fff;background:rgba(255,255,255,.08)}
+html body #hub .hubcfg button[style*="gradient"],html body #hub .hubcfg button.on,html body #hub .hubcfg button[aria-pressed="true"]{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(40,10,110,.35)}
+/* tema claro */
+html[data-theme="light"] body #hub .hubpainel{background-image:radial-gradient(rgba(123,63,240,.07) 1px,transparent 1.4px),linear-gradient(180deg,#ffffff,#f6efff);border-color:rgba(123,63,240,.14);box-shadow:inset 0 2px 0 #fff,0 6px 0 rgba(123,63,240,.12),0 20px 36px -22px rgba(80,40,140,.35)}
+html[data-theme="light"] body #hub .hubcfg>span,html[data-theme="light"] body #hub .hubloginbox,html[data-theme="light"] body #hub .hubtema{background:linear-gradient(180deg,#fff,#f3ecff);border-color:rgba(123,63,240,.18);box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(123,63,240,.15)}
+html body #hub .hubhoje .hubenc{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='66' cy='60' r='26' fill='%23fff'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%280 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%2845 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%2890 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%28135 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%28180 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%28225 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%28270 66 60%29'/%3E%3Crect x='63' y='6' width='6' height='18' rx='3' fill='%23fff' transform='rotate%28315 66 60%29'/%3E%3C/svg%3E")}
+html body #hub .hubhoje .hubjornal{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath fill='%23fff' fill-rule='evenodd' d='M16 24h80v72H16Z M26 34h60v12H26Z M26 54h26v4H26Z M26 62h26v4H26Z M26 70h26v4H26Z M26 78h26v4H26Z M60 54h26v28H60Z'/%3E%3Cpath fill='%23fff' d='M96 40h10v50a6 6 0 0 1-6 6h-4Z'/%3E%3C/svg%3E")}
+html body #hub .hubhoje .hubfa{--art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath fill='%23fff' fill-rule='evenodd' d='M12 32h96v64H12Z M18 38l42 32 42-32Z'/%3E%3Cpath fill='%23fff' d='M60 98C46 88 42 80 48 75s12 0 12 4c0-4 6-9 12-4s2 13-12 23Z' transform='translate%2820 -12%29 scale%28.9%29'/%3E%3C/svg%3E")}
+html body #hub h2.hubblocot,html body #hub #hubRec>h2,html body #hub #hubMisT{width:fit-content;max-width:100%;margin-left:0;margin-right:auto;justify-self:start;align-self:flex-start}
+html body #hub .hubhoje .hubenc,html body #hub .hubhoje .hubjornal,html body #hub .hubhoje .hubfa{font-weight:700}
+html body #hub .hubhoje .hubenc b,html body #hub .hubhoje .hubjornal b,html body #hub .hubhoje .hubfa b{font-family:'Mochiy Pop One','M PLUS Rounded 1c',sans-serif;font-weight:400}
+html body #hub #hubHojeT{flex-wrap:nowrap;white-space:nowrap}
+html body #hub #hubHojeT .hojeinfo{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+@media (max-width:480px){html body #hub #hubHojeT{gap:6px;padding:5px 10px 6px;font-size:15px}html body #hub #hubHojeT small{font-size:10px}html body #hub #hubHojeT .hojeinfo{font-size:12px;padding:2px 8px}}

@@ -130,3 +130,18 @@ html[data-theme="light"] body.hubon .tw-nav button{color:#3b2470}
 @media (prefers-reduced-motion:reduce){html body #hub .tw-destaque{animation:none}}
 html body #hub .tw-hud ~ * #hubLoginCta,html body #hub #hubLoginCta{display:none!important}
 html[data-theme="light"] body #hub .tw-hud-txt small{color:#c02a7a}
+/* ===== PC: duas colunas (≥1180px). Abaixo disso a coluna da esquerda some do layout (display:contents) ===== */
+.tw-esq{display:contents}
+@media (min-width:1180px){
+  html body #hub .hubin{max-width:1320px!important;width:calc(100% - 48px);display:flex;align-items:flex-start;gap:36px;margin:0 auto}
+  html body #hub .tw-esq{display:flex;flex-direction:column;align-items:center;gap:10px;width:500px;flex:none;position:sticky;top:20px;padding-top:6px}
+  html body #hub .tw-esq>*{margin-left:0;margin-right:0}
+  html body #hub .tw-esq .hublogo{font-size:48px;white-space:nowrap}
+  html body #hub .tw-esq .tw-hud{position:static;width:100%;margin:6px 0 2px}
+  html body #hub .tw-esq #hubCv{width:100%!important;height:auto!important;max-width:500px}
+  html body #hub #hubMenu{flex:1;min-width:0;max-width:none;padding-top:10px}
+  html body #hub #hubMenu .tw-destaque,html body #hub #hubMenu .hubpainel{max-width:none}
+  html body #hub #hubMenu>*+*{margin-top:22px}
+  html body #hub #hubCards{gap:16px}
+  html body #hub #hubCards h2.hubblocot{margin-top:14px}
+}

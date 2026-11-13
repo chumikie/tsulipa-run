@@ -69,7 +69,15 @@
   function navTxt(){var nav=document.getElementById('twNav');if(!nav)return;
     nav.innerHTML=[['ini','🏠'],['jog','🎮'],['eu','💖'],['loja','🛍️'],['mis','🎯']].map(function(n){return '<button type="button" data-nav="'+n[0]+'"><span aria-hidden="true">'+n[1]+'</span><small>'+esc(t(n[0]))+'</small></button>';}).join('');}
 
-  function tudo(){try{hudUI();}catch(e){} try{destaqueUI();}catch(e){} try{navUI();navTxt();}catch(e){}}
+  /* PC: coluna da esquerda (logo, você, tema e palco) fica parada enquanto a da direita rola */
+  function colunasUI(){
+    var h=hub(); if(!h) return; var inn=h.querySelector('.hubin'), menu=document.getElementById('hubMenu');
+    if(!inn||!menu||document.getElementById('twEsq')) return;
+    var esq=document.createElement('div'); esq.id='twEsq'; esq.className='tw-esq';
+    inn.insertBefore(esq,inn.firstChild);
+    [].slice.call(inn.children).forEach(function(c){ if(c===esq||c===menu||c.id==='hubTut'||c.id==='hubToque') return; if(c.compareDocumentPosition(menu)&Node.DOCUMENT_POSITION_FOLLOWING) esq.appendChild(c); });
+  }
+  function tudo(){try{colunasUI();}catch(e){} try{hudUI();}catch(e){} try{destaqueUI();}catch(e){} try{navUI();navTxt();}catch(e){}}
   // atualiza depois de cada montagem do hub (idioma, login, estrelas, alertas)
   ['hubMontar','hubCardsUI'].forEach(function(nome){var f=window[nome];if(typeof f!=='function')return;
     window[nome]=function(){var r=f.apply(this,arguments);try{tudo();}catch(e){}return r;};});

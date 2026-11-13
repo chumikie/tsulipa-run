@@ -163,6 +163,14 @@ function hsAbrir(){
   if(!hsAnim) hsAnim = requestAnimationFrame(hsLoop);
 }
 function hsFechar(){ hsOv.hidden = true; hs = null; }
+// Hora extra: depois da 5ª rodada, com Hype sobrando, vêm mais 3 filas (6 fãs, 4 s para responder).
+// Com conta, só existe se o servidor mandar as rodadas extras (proposta SQL em supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql);
+// sem isso, a partida termina na 5ª como sempre. Sem conta (treino), a hora extra já vale.
+function hsMaxRodadas(){
+  if(hs && hs.servidor && Array.isArray(hs.servidor.desafios)) return Math.max(5, Math.min(8, hs.servidor.desafios.length));
+  if(hs && hs.provaErro) return 5;
+  return contaJ ? 5 : 8;
+}
 function hsNovaRodada(){
   var r = hsSorteio(Date.now() + hs.rodada * 977), usadosNome = {};
   hs.historico.forEach(function(f){ usadosNome[f.nome] = 1; });
@@ -195,7 +203,7 @@ function hsNovaRodada(){
 function hsTempoPergunta(){ return Math.max(240, 420 - hs.rodada * 30); }   // ~7s no começo, ~4s no fim   // em quadros (60 por segundo)
 function hsProxima(){
   hs.qi++;
-  if(hs.qi >= hs.quiz.length){ if(hs.hype <= 0 || hs.rodada >= 5) return hsFim(); hs.fase = 'pausa'; hs.t0 = hsT; hsUI(); return; }
+  if(hs.qi >= hs.quiz.length){ if(hs.hype <= 0 || hs.rodada >= hsMaxRodadas()) return hsFim(); hs.fase = 'pausa'; hs.t0 = hsT; hsUI(); return; }
   var f = hs.quiz[hs.qi], ops = [f.pres], r = hsSorteio(Date.now()), grupo = HS_PRESENTES[f.pres][2];
   // as erradas: até 2 do mesmo grupo do certo e, de preferência, presentes de outros fãs da fila (pegadinha)
   var mesmo = HS_PRESENTES.map(function(p, i){ return i; }).filter(function(i){ return i !== f.pres && HS_PRESENTES[i][2] === grupo; });
@@ -433,7 +441,7 @@ function hsCoracoes(x, W2, H2){
 function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' }; }
 function hsUI(){
   var c = $('hsCorpo'); if(!c || !hs) return;
-  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/5</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
+  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/' + (hs.rodada > 5 ? hsMaxRodadas() : 5) + (hs.rodada > 5 ? ' ⏰' : '') + '</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
   if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
@@ -448,7 +456,7 @@ function hsUI(){
       return '<button type="button" class="hsop' + cls + '" data-hs="' + i + '"' + (hs.fase === 'resposta' ? ' disabled' : '') + '><span>' + p[0] + '</span><small>' + escHtml(tr(p[1])) + '</small></button>';
     }).join('') + '</div>';
   }
-  else if(hs.fase === 'pausa') h += '<p class="hsdica">🎶 ' + escHtml(tr('Próxima fila chegando… agora com mais fãs!')) + '</p>';
+  else if(hs.fase === 'pausa') h += hs.rodada >= 5 ? '<p class="hsdica hsextra">⏰ ' + escHtml(tr('HORA EXTRA! Os fãs não querem ir embora: mais filas, menos tempo!')) + '</p>' : '<p class="hsdica">🎶 ' + escHtml(tr('Próxima fila chegando… agora com mais fãs!')) + '</p>';
   else if(hs.fase === 'fim'){
     h += '<p class="hsfim">' + (hs.novo ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('Fim do evento!')) + ' <b>' + hs.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>';
     if(hs.conq) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + escHtml(hs.conq) + '</p>';

@@ -45,8 +45,14 @@ Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Clau
 - **Fase 0:** registro de lugares. ✅
 - **Fase 1:** mapa da cidade. ✅
 - **Fase 2:** raio-X dos jogos atuais, em `docs/RAIOX_JOGOS.md`. ✅
-- **Fase 3:** melhorar os jogos atuais, um PR por jogo. Ordem sugerida: Gacha, Café, Handshake.
+- **Fase 3:** melhorar os jogos atuais. Feito no front-end: Pedido de cena do dia (Moon⭐Duo!), metas do Álbum (Gacha), hora extra do Handshake (vale já no treino sem conta). Com banco: ver a fila abaixo.
 - **Fase 4:** jogos novos, na ordem Bloom⭐Garden!, Photo⭐Studio!, Idol⭐Battle!. A casa decorável ainda está em dúvida.
+
+## Fila do banco (fazer quando o Supabase voltar)
+1. Aplicar `supabase/sql/proposta/album_cards_REVIEW_ONLY.sql` (só leitura). **O dono já deu o OK (13/11).** Com isso o Álbum e as metas de coleção funcionam.
+2. Hora extra do Handshake: `supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql`. Conferir com `pg_get_functiondef` se a produção está igual ao arquivo aplicado e **pedir o OK do dono**. O site já está pronto e só entra na hora extra quando o servidor manda 8 filas.
+3. `supabase/sql/admin_corrida_contadores.sql` (o dono aprovou; o MCP cancela por causa do DELETE, então o dono roda no SQL Editor).
+4. Café com 2–3 clientes ao mesmo tempo: exige refazer `cafe_run_pedido`/`cafe_run_etapa` para várias sessões abertas. Ainda não escrito; desenhar com o dono antes.
 
 ## Próximo passo
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

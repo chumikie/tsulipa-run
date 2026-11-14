@@ -131,6 +131,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"Card trades start soon!",
   "Audição":"Audition",
   "Bagunça":"Messy",
+  "Tiara de estrela":"Star tiara","Flor no cabelo":"Hair flower","Cílios":"Lashes","Gotinha":"Droplet","Linguinha":"Tongue out","Triângulo":"Triangle","Biquinho":"Pout",
   "Cores":"Colors","Sobrancelha":"Eyebrows","Fina":"Thin","Cheia":"Full","Arqueada":"Arched","Preocupada":"Worried","Decidida":"Determined","Feliz":"Happy","Chorinho":"Teary","Apaixonado":"In love","Concentrado":"Focused","Girar":"Turn around","Partes":"Parts","Expressões":"Expressions","Prévia do visual":"Look preview",
   "Penteado":"Hairstyle","Rosto":"Face","Pele":"Skin","Cor dos olhos":"Eye color","Sortear":"Shuffle","Desfazer":"Undo",
   "Forma dos olhos":"Eye shape","Brilhante":"Sparkly","Pontinho":"Dot","Gatinho":"Cat-eye","Sereno":"Calm","Clássico":"Classic","Boca":"Mouth","Clássica":"Classic","Gatinho ω":"Kitty ω","Aberta":"Open","Dentinho":"Little fang","Bochecha":"Cheeks","Rosadinha":"Rosy","Corada":"Blushing","Sardas":"Freckles",
@@ -718,6 +719,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"¡Los intercambios de cartas empiezan pronto!",
   "Audição":"Audición",
   "Bagunça":"Despeinado",
+  "Tiara de estrela":"Tiara de estrella","Flor no cabelo":"Flor en el pelo","Cílios":"Pestañas","Gotinha":"Gotita","Linguinha":"Lengüita","Triângulo":"Triángulo","Biquinho":"Puchero",
   "Cores":"Colores","Sobrancelha":"Cejas","Fina":"Fina","Cheia":"Gruesa","Arqueada":"Arqueada","Preocupada":"Preocupada","Decidida":"Decidida","Feliz":"Feliz","Chorinho":"Lagrimita","Apaixonado":"Enamorado","Concentrado":"Concentrado","Girar":"Girar","Partes":"Partes","Expressões":"Expresiones","Prévia do visual":"Vista previa",
   "Penteado":"Peinado","Rosto":"Cara","Pele":"Piel","Cor dos olhos":"Color de ojos","Sortear":"Sortear","Desfazer":"Deshacer",
   
@@ -1306,6 +1308,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"การแลกการ์ดจะเริ่มเร็ว ๆ นี้!",
   "Audição":"ออดิชั่น",
   "Bagunça":"ยุ่ง",
+  "Tiara de estrela":"มงกุฎดาว","Flor no cabelo":"ดอกไม้ติดผม","Cílios":"ขนตา","Gotinha":"หยดน้ำ","Linguinha":"แลบลิ้น","Triângulo":"สามเหลี่ยม","Biquinho":"ปากจู๋",
   "Cores":"สี","Sobrancelha":"คิ้ว","Fina":"บาง","Cheia":"หนา","Arqueada":"โค้ง","Preocupada":"กังวล","Decidida":"มุ่งมั่น","Feliz":"มีความสุข","Chorinho":"น้ำตาซึม","Apaixonado":"ตกหลุมรัก","Concentrado":"ตั้งใจ","Girar":"หมุน","Partes":"ส่วนต่างๆ","Expressões":"สีหน้า","Prévia do visual":"ตัวอย่างลุค",
   "Penteado":"ทรงผม","Rosto":"ใบหน้า","Pele":"สีผิว","Cor dos olhos":"สีตา","Sortear":"สุ่ม","Desfazer":"ย้อนกลับ",
   
@@ -1894,6 +1897,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"カード交換はもうすぐスタート!",
   "Audição":"オーディション",
   "Bagunça":"ラフ",
+  "Tiara de estrela":"スターティアラ","Flor no cabelo":"花かざり","Cílios":"まつげ","Gotinha":"しずく","Linguinha":"ぺろっ","Triângulo":"さんかく","Biquinho":"むっ",
   "Cores":"カラー","Sobrancelha":"まゆげ","Fina":"ほそめ","Cheia":"ふとめ","Arqueada":"アーチ","Preocupada":"こまり眉","Decidida":"キリッ","Feliz":"にこにこ","Chorinho":"うるうる","Apaixonado":"ラブラブ","Concentrado":"がんばる","Girar":"くるっと","Partes":"パーツ","Expressões":"ひょうじょう","Prévia do visual":"プレビュー",
   "Penteado":"ヘア","Rosto":"かお","Pele":"はだ","Cor dos olhos":"目の色","Sortear":"おまかせ","Desfazer":"もどす",
   

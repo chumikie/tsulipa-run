@@ -118,7 +118,7 @@ window.TWAvatarHair={
    g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-5,y+28,x-2,y+38);
    for(var w=0;w<6;w++)g.quadraticCurveTo(x+.5+w*5.5,y+(w%2?41:45),x+3+w*5.5,y+42);
    g.quadraticCurveTo(x+35,y+28,x+28,y+13);g.closePath();g.fill();
-   E(x-1.5,y+30,3.4,4.6,.2);E(x+31.5,y+30,3.4,4.6,-.2);
+   E(x-.6,y+37,2.8,3.4,.25);E(x+30.6,y+37,2.8,3.4,-.25);   // cachos das pontas, junto da barra
    return true;
   }
   if(b==='hime'){   // hime: liso até a cintura, pontas retas
@@ -136,7 +136,6 @@ window.TWAvatarHair={
   if(b==='onduladom'){oval(g,x+4,y+14.5,2.4,4.6);oval(g,x+26,y+14.5,2.4,4.6);}   // laterais curvas do Ondulado
   if(b==='hime'){   // hime: mechas retas ao lado do rosto, cortadas na altura do queixo
    g.fillRect(x+2.6,y+10,4.6,16.5);g.fillRect(x+22.8,y+10,4.6,16.5);
-   g.save();g.fillStyle='rgba(255,255,255,.14)';g.fillRect(x+3.2,y+11,1,14);g.restore();
   }
   return franja(T,x,y,f,g);
  },

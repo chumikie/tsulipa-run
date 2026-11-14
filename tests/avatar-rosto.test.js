@@ -8,8 +8,9 @@ const raiz = path.join(__dirname, '..');
 const ler = f => fs.readFileSync(path.join(raiz, f), 'utf8');
 const ctx = {}; vm.runInNewContext(ler('tw-avatar-rosto.js'), ctx);
 const R = ctx.TWAvatarRosto;
-assert.deepEqual(Array.from(R.olhos), ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno']);
-assert.deepEqual(Array.from(R.bocas), ['', 'sorriso', 'gato', 'aberta', 'dentinho']);
+assert.deepEqual(Array.from(R.olhos), ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno', 'estrela', 'cilios', 'gotinha']);
+assert.deepEqual(Array.from(R.bocas), ['', 'sorriso', 'gato', 'aberta', 'dentinho', 'lingua', 'triangulo', 'biquinho']);
+assert.deepEqual(Array.from(R.enfeites), ['laco', 'tiara', 'flor']);
 assert.deepEqual(Array.from(R.bochechas), ['', 'sem', 'forte', 'sardas', 'estrelinha']);
 assert.deepEqual(Array.from(R.sobrancelhas), ['', 'fina', 'cheia', 'arqueada', 'preocupada', 'decidida']);
 assert.equal(R.forma({olho:'xyz'}), '', 'forma desconhecida vira o padrão (o rosto de antes)');
@@ -31,6 +32,7 @@ for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) {
   const s = ler(f);
   assert.match(s, /TWAvatarRosto\.rosto\(g,c,x,y,expr\)\)\{/, f + ': rosto');
   assert.match(s, /TWAvatarRosto\.pes\(g,c,x,y\);/, f + ': sapatos');
+  assert.match(s, /TWAvatarRosto\.enfeite\(g,c,x,y,hacc\);/, f + ': laço, tiara e flor');
   assert.match(s, /TWAvatarRosto\.arcoiris\(g,x,y\)/, f + ': franja arco-íris');
   assert.match(s, /TWAvatarRosto\.elfo\(g,c,x,y\)/, f + ': orelha de elfo');
 }

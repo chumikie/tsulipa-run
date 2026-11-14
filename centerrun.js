@@ -1263,6 +1263,7 @@ if(hacc==='coala'){
   }
 	
   if(hacc==='capitao') TWAvatarItems.capitao(g,x,y);
+  if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.enfeite)TWAvatarRosto.enfeite(g,c,x,y,hacc);   // laço, tiara e flor
   if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.rosto(g,c,x,y,expr)){   // olhos, boca e piscadinha novos (tw-avatar-rosto.js)
   } else if(expr===1){
     g.strokeStyle='#223'; g.lineWidth=1.5; g.beginPath();

@@ -121,7 +121,7 @@
       // corte: do topo à cintura (dá para ver curto × longo); franja/mecha/detalhe: a cabeça; rosto: zoom no rosto
       var rosto = /^(olho|sobrancelha|boca|bochecha|gl)$/.test(p.campo), corte = p.campo === 'back', corpo = p.campo === 'out' || p.campo === 'baixo',
           chapeu = p.campo === 'hat',
-          S = rosto ? 6.2 : corte ? 2.6 : corpo ? 2.35 : chapeu ? 3.9 : 4.4, meio = rosto ? 19 : corte ? 16 : corpo ? 19.5 : chapeu ? 9.5 : 12.5;
+          S = rosto ? 6.2 : corte ? 2.6 : corpo ? 2.35 : chapeu ? 3.4 : 4.4, meio = rosto ? 19 : corte ? 16 : corpo ? 19.5 : chapeu ? 8.5 : 12.5;
       pintar(cv, mod, S, 66 - 15 * S, 66 - meio * S, 0, false);
       b.addEventListener('click', function(){ if(b.disabled) return; trocar(p.id, o.value); });
       box.appendChild(b);

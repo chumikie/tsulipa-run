@@ -13,8 +13,9 @@
 (function(root){
   'use strict';
   // Peças do rosto à escolha. '' = o desenho de sempre (o mais simpático, padrão de todo mundo).
-  var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno'];
-  var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho'];
+  var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno', 'estrela', 'cilios', 'gotinha'];
+  var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho', 'lingua', 'triangulo', 'biquinho'];
+  var ENFEITES = ['laco', 'tiara', 'flor'];
   var BOCHECHAS = ['', 'sem', 'forte', 'sardas', 'estrelinha'];
   var SOBRANCELHAS = ['', 'fina', 'cheia', 'arqueada', 'preocupada', 'decidida'];
   var TINTA = '#223', PUPILA = '#112';
@@ -41,12 +42,23 @@
       g.fillStyle = '#fff'; E(g, x0 + 1, y + 19.3, .45, .45);
       return;
     }
-    var big = f === 'brilhante', w = big ? 3.4 : 3, h = big ? 4.6 : 4, X = x0 + 1.5 - w / 2, Y = y + 22 - h;
+    var big = f === 'brilhante', w = big ? 3.4 : f === 'gotinha' ? 2.5 : 3, h = big ? 4.6 : f === 'gotinha' ? 4.9 : 4, X = x0 + 1.5 - w / 2, Y = y + 22 - h;
     if(f === 'sereno'){ Y = y + 19.4; h = 2.6; }
     g.fillStyle = cor; RR(g, X, Y, w, h, [1.1, 1.1, 1.5, 1.5]);
     g.fillStyle = PUPILA; E(g, x0 + 1.6, Y + h * .58, w * .32, h * .27);
     g.fillStyle = TINTA; RR(g, X - .25, Y - 1, w + .5, 1.25, .6);                     // pálpebra cheia, sem linha solta
     if(f === 'gatinho'){ g.beginPath(); var ox = lado < 0 ? X - .25 : X + w + .25; g.moveTo(ox, Y - 1); g.lineTo(ox + lado * 1.6, Y - 1.9); g.lineTo(ox, Y + .25); g.closePath(); g.fill(); }
+    if(f === 'cilios'){   // dois cílios cheios no canto de fora e um embaixo
+      var cx2 = lado < 0 ? X - .25 : X + w + .25;
+      g.beginPath(); g.moveTo(cx2 - lado * .3, Y - .95); g.lineTo(cx2 + lado * 1.15, Y - 1.75); g.lineTo(cx2 - lado * .1, Y + .15); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(cx2 - lado * .9, Y - .95); g.lineTo(cx2 + lado * .15, Y - 2.05); g.lineTo(cx2 - lado * 1.2, Y - .7); g.closePath(); g.fill();
+    }
+    if(f === 'estrela'){   // brilho em forma de estrela
+      g.fillStyle = '#fff'; g.beginPath();
+      for(var k = 0; k < 10; k++){ var r = k % 2 ? .42 : 1.05, an = -Math.PI / 2 + k * Math.PI / 5; g.lineTo(X + w * .42 + Math.cos(an) * r, Y + h * .4 + Math.sin(an) * r); }
+      g.closePath(); g.fill(); E(g, X + w * .74, Y + h * .8, w * .1, w * .1);
+      return;
+    }
     g.fillStyle = '#fff'; E(g, X + w * .3, Y + h * .3, w * .2, h * .14);                // brilho grande
     E(g, X + w * .72, Y + h * .78, w * .12, w * .12);                                   // brilho pequeno
     if(big){ E(g, X + w * .75, Y + h * .35, .3, .3); }
@@ -60,6 +72,24 @@
   function boca(g, c, x, y, feliz){
     var b = escolha(BOCAS, c && c.boca);
     g.fillStyle = TINTA; g.strokeStyle = TINTA; g.lineCap = 'round';
+    if(b === 'triangulo'){   // ▽ de anime, com a parte de dentro rosada
+      var t = feliz ? 1.35 : 1;
+      g.beginPath(); g.moveTo(x + 15 - 1.9 * t, y + 23.1); g.lineTo(x + 15 + 1.9 * t, y + 23.1); g.lineTo(x + 15, y + 23.1 + 2.5 * t); g.closePath(); g.fill();
+      g.fillStyle = '#ff8fb0'; g.beginPath(); g.moveTo(x + 15 - .9 * t, y + 24.2 + .4 * t); g.lineTo(x + 15 + .9 * t, y + 24.2 + .4 * t); g.lineTo(x + 15, y + 23.1 + 2.3 * t); g.closePath(); g.fill();
+      return;
+    }
+    if(b === 'biquinho'){   // biquinho: lábios em "3" cheio
+      g.fillStyle = '#d2557f'; E(g, x + 15, y + 23.6, .95, .75); E(g, x + 15, y + 24.9, .95, .75);
+      g.fillStyle = 'rgba(255,255,255,.45)'; E(g, x + 14.7, y + 23.4, .3, .22);
+      return;
+    }
+    if(b === 'lingua'){   // linguinha de fora
+      if(feliz){ g.beginPath(); g.arc(x + 15, y + 23, 2.5, 0, Math.PI); g.fill(); }
+      else { g.lineWidth = 1; g.beginPath(); g.moveTo(x + 13.4, y + 23.6); g.quadraticCurveTo(x + 15, y + 25, x + 16.6, y + 23.6); g.stroke(); }
+      g.fillStyle = '#ff7aa2'; E(g, x + 15.9, y + (feliz ? 25.6 : 25), 1.15, 1.35);
+      g.fillStyle = 'rgba(160,30,80,.35)'; g.fillRect(x + 15.8, y + (feliz ? 25 : 24.4), .25, 1.2);
+      return;
+    }
     if(b === 'gato'){   // ω
       g.lineWidth = .9; g.beginPath(); g.moveTo(x + 12.6, y + 23.6);
       g.quadraticCurveTo(x + 13.8, y + 25.4, x + 15, y + 23.8); g.quadraticCurveTo(x + 16.2, y + 25.4, x + 17.4, y + 23.6); g.stroke();
@@ -100,6 +130,37 @@
       for(var i = 0; i < 10; i++){ var r = i % 2 ? .55 : 1.35, a = -Math.PI / 2 + i * Math.PI / 5; g.lineTo(x + 23.6 + Math.cos(a) * r, y + 22.4 + Math.sin(a) * r); }
       g.closePath(); g.fill();
     }
+  }
+
+  // Acessórios de cabeça novos (c.hat): laço, tiara de estrela e flor no cabelo. Coordenadas do rosto (cabeça: topo em y+0).
+  function enfeite(g, c, x, y, h){
+    if(ENFEITES.indexOf(h) < 0) return;
+    g.save();
+    if(h === 'laco'){   // laço grande do lado direito, levemente inclinado
+      g.translate(x + 22.5, y + 2.6); g.rotate(.32);
+      g.fillStyle = '#ff4f9a';
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(-7.5, -6.5, -7.6, 1); g.quadraticCurveTo(-6.6, 4.6, 0, 0); g.fill();
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(7.5, -6.5, 7.6, 1); g.quadraticCurveTo(6.6, 4.6, 0, 0); g.fill();
+      g.beginPath(); g.moveTo(-.8, .8); g.lineTo(-3.6, 6.8); g.lineTo(-1.6, 6.4); g.lineTo(.2, 1.4); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(.8, .8); g.lineTo(3.4, 6.6); g.lineTo(1.5, 6.4); g.lineTo(-.2, 1.4); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.4)'; E(g, -4.6, -1.6, 1.8, .9, -.5); E(g, 4.4, -1.8, 1.6, .8, .5);
+      g.fillStyle = '#d6337a'; E(g, 0, .4, 1.7, 1.6);
+    } else if(h === 'tiara'){   // aro dourado com estrela no meio
+      g.strokeStyle = '#f5c518'; g.lineWidth = 1.3; g.beginPath(); g.arc(x + 15, y + 11, 11.4, Math.PI * 1.08, Math.PI * 1.92); g.stroke();
+      g.fillStyle = '#ffe14d'; g.strokeStyle = '#e0a800'; g.lineWidth = .5; g.beginPath();
+      for(var k = 0; k < 10; k++){ var r = k % 2 ? 1.6 : 3.6, an = -Math.PI / 2 + k * Math.PI / 5; g.lineTo(x + 15 + Math.cos(an) * r, y - .6 + Math.sin(an) * r); }
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.7)'; E(g, x + 14.2, y - 1.6, .7, .5);
+      g.fillStyle = '#ff6fb5'; E(g, x + 8.6, y + 2.2, .9, .9); g.fillStyle = '#4dd8ff'; E(g, x + 21.4, y + 2.2, .9, .9);
+    } else {   // flor rosa acima da orelha esquerda, com folhinha
+      var fx = x + 5.2, fy = y + 6.6;
+      g.fillStyle = '#5bbf6a'; E(g, fx + 3.2, fy + 2.8, 2.4, 1.1, .6);
+      g.fillStyle = '#ff9ccd';
+      for(var p = 0; p < 5; p++){ var a = -Math.PI / 2 + p * Math.PI * 2 / 5; E(g, fx + Math.cos(a) * 2.2, fy + Math.sin(a) * 2.2, 1.7, 1.7); }
+      g.fillStyle = '#ffe14d'; E(g, fx, fy, 1.25, 1.25);
+      g.fillStyle = 'rgba(255,255,255,.55)'; E(g, fx - 1.6, fy - 1.9, .6, .45);
+    }
+    g.restore();
   }
 
   // Sobrancelhas: forma cheia (sem traço), na cor do cabelo um pouco mais escura, logo abaixo da franja.
@@ -180,5 +241,5 @@
     });
     g.fillStyle = pele;
   }
-  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), sobrancelhas:SOBRANCELHAS.slice(), sobrancelha:sobrancelha, forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo };
+  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), sobrancelhas:SOBRANCELHAS.slice(), sobrancelha:sobrancelha, enfeites:ENFEITES.slice(), enfeite:enfeite, forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo };
 })(typeof window !== 'undefined' ? window : this);

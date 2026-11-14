@@ -151,7 +151,7 @@
     h += '<ul class="bloomgrid">';
     for(var i = 0; i < 4; i++){
       var c = canteiro(i), florida = pronta(c);
-      h += '<li class="bloomcard' + (!c ? ' vazio' : florida ? ' florida' : '') + (escolha === i ? ' sel' : '') + '">' +
+      h += '<li class="bloomcard' + (!c ? ' vazio' : florida ? ' florida' : '') + (escolha === i ? ' sel' : '') + '" data-flor="' + esc(c ? c.semente : '') + '">' +
         icone(c ? c.semente : '', c ? Math.min(1, (+c.regas || 0) / Math.max(1, +c.precisa || 1)) : -1) +
         '<div class="bloomtxt"><small>' + esc(t('cant')) + ' ' + (i + 1) + '</small><b>' + esc(c ? t(c.semente) : t('vazio')) + '</b>' +
         (c ? (florida ? '<em>' + esc(t('pronta')) + '</em>' : pontos(c) + '<span class="bloomsr">' + esc(t('dia', c.regas, c.precisa)) + '</span>') : '') + '</div>';
@@ -239,6 +239,28 @@
   // Enfeites fixos atrás dos canteiros: plaquinha do jardim e regador.
   function enfeites(x, W, H, hz, tm, noite){
     var i;
+    // Caminho de pedrinhas em perspectiva, por baixo do Idol e dos canteiros.
+    x.save();
+    var caminho=x.createLinearGradient(0,hz,0,H);
+    caminho.addColorStop(0,noite?'#8b89a1':'#eee3d4');
+    caminho.addColorStop(1,noite?'#aca5ad':'#fff4df');
+    x.fillStyle=caminho;
+    x.beginPath();x.moveTo(W*.49,hz+2);x.bezierCurveTo(W*.46,hz+67,W*.32,H-42,W*.28,H);
+    x.lineTo(W*.75,H);x.bezierCurveTo(W*.68,H-55,W*.54,hz+62,W*.53,hz+2);x.closePath();x.fill();
+    x.strokeStyle=noite?'rgba(250,240,255,.16)':'rgba(255,255,255,.64)';x.lineWidth=3;
+    for(i=0;i<6;i++){
+      var yy=hz+18+i*34,larg=12+i*6,xx=W*.51+Math.sin(i*.95)*9;
+      x.beginPath();x.ellipse(xx,yy,larg,4+i*1.4,-.1,0,Math.PI*2);x.stroke();
+    }
+    // Flores miúdas e arbustos laterais dão profundidade sem cobrir as ações.
+    for(i=0;i<18;i++){
+      var lado=i%2,px=(lado?W-18:18)+(lado?-1:1)*(i%3)*11;
+      var py=hz+18+(i*31)%(H-hz-26),tamanho=4+(i%3)*2;
+      x.fillStyle=noite?'#478c7a':'#60bf80';x.beginPath();x.ellipse(px,py,tamanho*2,tamanho,0,0,Math.PI*2);x.fill();
+      x.fillStyle=(i%3===0?'#ffd5ef':i%3===1?'#fff2aa':'#d5c7ff');
+      x.beginPath();x.arc(px,py-3,tamanho*.4,0,Math.PI*2);x.fill();
+    }
+    x.restore();
     // plaquinha
     var px = 44, py = hz + 44;
     x.fillStyle = '#a96a36'; rr(x, px - 3, py - 4, 6, 34, 3); x.fill();

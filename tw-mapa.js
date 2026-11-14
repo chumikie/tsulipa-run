@@ -305,6 +305,11 @@
     });
     ctx.restore();
   }
+  // Com os Idols maiores, a cabeça pode passar na frente da plaquinha da porta:
+  // o nome do jogo é redesenhado por cima para continuar legível.
+  function nomesDasPortas(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
+    T.forEach(function(t){if(t.y>600)texto(t);});
+  }
   function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function');}
   function battleLigado(){return !!(window.TW_BATTLE_ON&&typeof window.battleAbrir==='function');}
   function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
@@ -321,7 +326,7 @@
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
-    else{detalhes(tm);andar(tm);alertasRua(tm);}
+    else{detalhes(tm);andar(tm);nomesDasPortas();alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
@@ -550,9 +555,11 @@
     ctx.fillStyle=pele;ctx.beginPath();ctx.ellipse(0,0,3,2.5,0,0,Math.PI*2);ctx.fill();
     ctx.restore();
   }
+  var ESCALA_RUA=1.75;   // Idols maiores só nas ruas; o mapa geral continua de longe.
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
-    var sc=1.45,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
+    // Escala dos Idols nas ruas (era 1.45). Os enfeites em volta acompanham por k.
+    var sc=ESCALA_RUA,k=sc/1.45,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
     try{
       state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';frame=reduzMov?0:tm*60;
       // A recordação vem de uma atividade confirmada; sem isso, apenas o
@@ -564,7 +571,7 @@
         var fixo=p.dono&&registro&&objeto?objeto.porta:i%3;
         if(p.dono&&registro&&cena==='praca')fixo=1;
         var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
-        q.p=p;q.i=i;q.y=738+(i%3)*8;return q;/* abaixo das placas */
+        q.p=p;q.i=i;q.y=744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
       });
       var fa=rua.find(function(q){return q.p.nomeFa;});
       var meuIdol=rua.find(function(q){return q.p.dono;});
@@ -573,7 +580,7 @@
       var despedindo=reencontro&&!reduzMov&&meuIdol.pausa>PARA-.65;
       if(fa){
         // O fã espera na Praça. O gesto acontece quando o Idol para por perto.
-        fa.x=900;fa.y=754;fa.mov=0;fa.dir=-1;
+        fa.x=900;fa.y=756;fa.mov=0;fa.dir=-1;
         if(reencontro)meuIdol.dir=1;
       }
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
@@ -592,6 +599,13 @@
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
         ctx.restore();
+        // O seu Idol ganha uma estrelinha por cima, para achar você entre os passeantes.
+        if(p.dono&&!(reencontro&&q===meuIdol&&!reconhecendo)){
+          var my=q.y-44*sc-16+bob+(reduzMov?0:Math.sin(tm*3)*2.5);
+          ctx.save();ctx.fillStyle='#b6ff3b';ctx.strokeStyle='#5a2fb0';ctx.lineWidth=2.2;ctx.beginPath();
+          for(var pk=0;pk<10;pk++){var ang=-Math.PI/2+pk*Math.PI/5,raio=pk%2?4.2:10;ctx.lineTo(q.x+Math.cos(ang)*raio,my+Math.sin(ang)*raio);}
+          ctx.closePath();ctx.stroke();ctx.fill();ctx.restore();
+        }
         if(segurando){
           ctx.save();
           ctx.globalAlpha=reduzMov?1:Math.min(1,q.pausa*5,(PARA-q.pausa)*5);
@@ -606,9 +620,9 @@
           ctx.save();ctx.font='13px "M PLUS Rounded 1c",sans-serif';
           var largura=Math.min(150,ctx.measureText(etiqueta).width+22);
           ctx.fillStyle='rgba(255,247,255,.96)';ctx.strokeStyle='#bfa4ed';ctx.lineWidth=2;
-          rr(q.x-largura/2,q.y-101,largura,26,11);ctx.fill();ctx.stroke();
+          rr(q.x-largura/2,q.y-44*sc-37,largura,26,11);ctx.fill();ctx.stroke();
           ctx.fillStyle='#674190';ctx.textAlign='center';ctx.textBaseline='middle';
-          ctx.fillText(etiqueta,q.x,q.y-88,largura-16);ctx.restore();
+          ctx.fillText(etiqueta,q.x,q.y-44*sc-24,largura-16);ctx.restore();
           if(reencontro&&!reconhecendo){
             var gesto=p.jeitoFa==='timido'?'…':p.jeitoFa==='animado'?'♪':'♥';
             var cor=p.jeitoFa==='timido'?'#9e83bc':p.jeitoFa==='animado'?'#d88731':'#ec6fa8';
@@ -617,27 +631,27 @@
             var alfa=reduzMov?1:Math.min(1,pausa*3,(PARA-pausa)*3);
             ctx.save();ctx.globalAlpha=alfa;ctx.fillStyle=cor;
             ctx.font='18px "Mochiy Pop One",sans-serif';ctx.textAlign='center';
-            ctx.fillText(gesto,q.x+largura/2+15,q.y-87);ctx.restore();
+            ctx.fillText(gesto,q.x+largura/2+15,q.y-44*sc-23);ctx.restore();
           }
         }
         // parado numa porta: de vez em quando um balãozinho (♪ ❤ ★), que aparece e some suave
         if(!q.mov&&!p.nomeFa&&!reduzMov&&!(reencontro&&p.dono)&&(q.volta+q.i)%2===0){
           var fase=q.pausa,a=Math.min(1,fase*3,(PARA-fase)*3);
-          balao(q.x+(q.dir<0?-40:40),q.y-44*sc+4,BALOES[(q.volta+q.i)%BALOES.length],Math.max(0,a));
+          balao(q.x+(q.dir<0?-40:40)*k,q.y-44*sc+4,BALOES[(q.volta+q.i)%BALOES.length],Math.max(0,a));
         }
         // o pet vem atrás andando; quando o dono para, ele senta do lado
         var pet=typeof perfPetDoAvatar==='function'?perfPetDoAvatar(p.av):null;
         if(pet&&typeof perfDesenharPetEm==='function'){
-          var px=q.x-q.dir*(q.mov?40:30),hop=q.mov?-Math.abs(Math.sin(tm*8+q.i+1.3))*6:0;
-          ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(px,q.y+2,8,1.8,0,0,7);ctx.fill();
-          perfDesenharPetEm(ctx,pet,px,q.y-14+hop,sc*.5,frame);
+          var px=q.x-q.dir*(q.mov?40:30)*k,hop=q.mov?-Math.abs(Math.sin(tm*8+q.i+1.3))*6*k:0;
+          ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(px,q.y+2,8*k,1.8*k,0,0,7);ctx.fill();
+          perfDesenharPetEm(ctx,pet,px,q.y-14*k+hop,sc*.5,frame);
           // O Pet também reconhece a pausa do Idol diante do fã conhecido.
           // Não sugere amizade nova nem altera estado: só aparece durante o reencontro.
           if(reencontro&&q===meuIdol&&!reconhecendo&&!despedindo){
             ctx.save();
             ctx.globalAlpha=reduzMov?1:Math.max(0,Math.min(1,meuIdol.pausa*2,(PARA-meuIdol.pausa)*2));
             ctx.font='17px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.fillStyle='#ed78ad';
-            ctx.fillText('♡',px+(q.dir<0?-12:12),q.y-45);
+            ctx.fillText('♡',px+(q.dir<0?-12:12)*k,q.y-31*sc);
             ctx.restore();
           }
         }
@@ -647,12 +661,12 @@
       if(!reduzMov&&parados.length>1&&!reencontro&&tm%12<3){
         var meu=parados.find(function(q){return q.p.dono;});
         var vizinho=meu&&parados.find(function(q){
-          return !q.p.dono&&!q.p.nomeFa&&Math.abs(q.x-meu.x)<105&&Math.abs(q.y-meu.y)<23;
+          return !q.p.dono&&!q.p.nomeFa&&Math.abs(q.x-meu.x)<105*k&&Math.abs(q.y-meu.y)<23;
         });
         if(vizinho){
           ctx.save();ctx.font='23px sans-serif';ctx.textAlign='center';
           ctx.globalAlpha=Math.min(1,tm%12,3-tm%12);
-          ctx.fillText('♡',(meu.x+vizinho.x)/2,Math.min(meu.y,vizinho.y)-99);
+          ctx.fillText('♡',(meu.x+vizinho.x)/2,Math.min(meu.y,vizinho.y)-44*sc-35);
           ctx.restore();
         }
       }

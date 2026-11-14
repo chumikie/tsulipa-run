@@ -146,6 +146,20 @@ for(const [jeito,pose,sinal] of [['timido','','…'],['fofo','coracao','♥']]){
  assert.equal(exibidos[1].pose,jeito==='timido'?'':'tchau');
  assert.ok(textos.includes(jeito==='timido'?'♡':'✦'));
 }
+// O Pet só reage se realmente existe e o reencontro confirmado está em curso.
+cenaCtx.perfPetDoAvatar=av=>av&&av.pose==='v'?{k:'tsu'}:null;
+cenaCtx.perfDesenharPetEm=()=>{};
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('praca',6.5,memoria,false);
+assert.ok(textos.includes('♡'),'o Pet acompanha o reencontro próximo ao Idol');
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('praca',4,memoria,false);
+assert.ok(!textos.includes('♡'),'o Pet não reage antes da pausa');
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('praca',0,memoria,true);
+assert.ok(textos.includes('♡'),'movimento reduzido mantém a reação estática');
+delete cenaCtx.perfPetDoAvatar;
+delete cenaCtx.perfDesenharPetEm;
 exibidos.length=textos.length=traducoes.length=0;
 cenaCtx.simular('harajuku',0,{tipo:'cafe'},false);
 assert.equal(exibidos[0].pose,'','a mão baixa substitui a pose de foto durante o uso do objeto');

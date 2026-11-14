@@ -124,9 +124,18 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 ## Fase 4 — estado em 14/11/2026
 - Bloom⭐Garden! v1 ✅ (aplicado), flores com uso ✅ (aplicado).
 - Photo⭐Studio! v1 ✅ e v2 Mural + Capa no Idol⭐News! ✅ (aplicados) — `docs/PHOTO_STUDIO_PROPOSTA.md`.
-- Idol⭐Battle!: **aprovado, não implementado** — `docs/IDOL_BATTLE_PROPOSTA.md`. Começar pela v1.
+- Idol⭐Battle! **v1 em treino e interface implementada na PR #88**, com acesso pela Star Arena, seis idiomas e polaroid. SQL `supabase/sql/proposta/20261114_idol_battle_v1_REVIEW_ONLY.sql` **NÃO aplicado**; testes isolados e Chromium passaram. Competições reais e ★5/dia dependem de autorização de SQL.
 - Padrão de trabalho que o dono aprovou: SQL em `supabase/sql/proposta/` + teste em PostgreSQL isolado (`supabase/tests/<nome>/rodar.sh`, com cópia INTEIRA de qualquer função de produção alterada) + front num arquivo próprio no PR #88; aplicar no banco só com a frase de OK do dono; depois mover para `aplicado/`.
 
-## Próximo passo
-Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
-Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).
+## Mapa Vivo⭐ — acabamento de textos e CSS na PR #88
+- Placas do mapa renderizadas em Mochiy Pop One, com largura máxima para traduções maiores e brilho/sombra discreta.
+- Letreiro do Sora⭐Jump! reposicionado dentro da rua do Jardim das Nuvens pelo gerador de textos.
+- Botões, chips de bairro, foco, contraste noturno e bordas refinados para acompanhar o CSS do Hub; reduzido movimento continua respeitado.
+- Bloom, Photo Studio (inclusive treino sem conta) e Idol Battle (treino até aplicação de SQL) usam entradas no próprio mapa.
+- CI do mapa #43540804733 aprovou JS, geração de SVGs, capturas e QA Chromium de desktop, celular e tema escuro. Testes físicos em iPhone ainda não realizados.
+
+## Próximo passo (antes do merge)
+1. Revisão final do SQL do Battle, conferência da segurança e autorização explícita para aplicação; após aplicar, testar conta real e premiação.
+2. Conferir o mapa e os jogos no iPhone físico, login e pequenos fluxos integrados.
+3. O CI geral continua vermelho no teste antigo `tests/i18n-visual.browser.cjs`, que compara a homepage contra um layout anterior. Atualizar a estratégia de comparação sem silenciar regressões.
+4. Atualizar a prévia da PR #88 e só então propor merge; os nomes provisórios Rua das Vitrines e Vila das Flores aguardam confirmação.

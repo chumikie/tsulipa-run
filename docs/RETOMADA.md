@@ -170,3 +170,12 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Conferido em produção por leitura: corpo das 4 funções idêntico ao testado (md5), anon sem acesso, authenticated só nas 3 RPCs públicas, RLS ligada sem políticas, 0 linhas.
 - Front no PR #88 (`battle.js?v=7`, `battle.css?v=5`): aba "Arena dos Idols" (montar e salvar a unit ali mesmo, lista de defesas, desafiar, show e polaroid), aviso de fã da defesa, narração das rodadas para leitor de tela, data da polaroid no formato do idioma, contraste dos textos corrigido no tema escuro.
 - Conferido em Chromium (claro e escuro) com servidor simulado. **Não testado: conta real, iPhone.**
+
+## Bloom⭐Garden! — refinamento (14/11/2026, só front, PR #88)
+- `bloom.js?v=3` (+ estilos em `hub-polish.css?v=33`), sem SQL novo e usando só as 4 RPCs de sempre.
+- Tocar num canteiro do desenho faz a ação certa: vazio abre as sementes em botões grandes (com ★ e dias; sem ★ suficiente fica apagado), crescendo rega, florido colhe.
+- "Regar tudo" e "Colher tudo" quando há 2 ou mais canteiros na mesma situação (uma chamada por canteiro, conferida no servidor).
+- Balão em cada canteiro (＋, 💧, 🌼) e progresso n/m maior; o céu acompanha a hora de Brasília (dia, entardecer, noite com lua e estrelas; flor-lunar brilha à noite).
+- O seu Idol e o pet ativo aparecem no jardim e vão até o canteiro cuidado.
+- Conferido em Chromium (390×844) com servidor simulado. **Não testado: conta real, iPhone.**
+

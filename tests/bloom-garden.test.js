@@ -22,5 +22,8 @@ for(const l in T)for(const k in T.pt){assert.ok(T[l][k]&&T[l][k].trim(),l+'.'+k)
   assert.ok(!/brs48cr_(?!st)/.test(src),'não cria chaves brs48cr_ novas');
   const sql=fs.readFileSync(path.join(raiz,'supabase/sql/aplicado/20261113_bloom_garden.sql'),'utf8');
   assert.ok(!/stars\s*=\s*stars\s*\+/.test(sql),'o jardim nunca dá ★ no servidor');
+  // Toque no desenho, sementes em botões e ações em lote continuam usando só as mesmas 4 RPCs.
+  assert.match(src,/data-bloom="semente"/);assert.match(src,/emSerie\('jardim_regar', pendentes\(false\)\)/);
+  assert.match(src,/emSerie\('jardim_colher', pendentes\(true\)\)/);assert.match(src,/function tocar\(/);
   console.log('OK: Bloom⭐Garden! — seis idiomas, só RPCs do jardim, desligado sem servidor');
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -125,6 +125,7 @@ function jogar(){
  contaRpc('battle_jogar',{p_unit:unit.slice(),p_requisicao:requisicao}).then(function(r){
    if(!r||!r.ok||!Array.isArray(r.rodadas)||r.rodadas.length!==3)throw Error('invalid result');
    rodadas=r.rodadas;estado.tentativas=Number(r.tentativas);estado.ultimo_premio=Number(r.premio)||0;
+   if(window.TWVidaCidade)window.TWVidaCidade.registrar('battle',{id:String(r.dia||'')+'/'+String(r.tentativas||'')});
    if(estado.ultimo_premio===5&&typeof r.stars==='number'&&typeof starT!=='undefined'){
      starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
      if(typeof setBest==='function')try{setBest();}catch(e){}

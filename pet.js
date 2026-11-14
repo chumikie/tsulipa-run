@@ -1691,6 +1691,14 @@ function petVidaLembrancaAbrir(acao){
   return true;
 }
 // As lembranças ocupam a prateleira superior e acompanham o móvel.
+function petVidaOlharLembranca(t, inicio, livre){
+  if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
+    !TWVidaCidade.objetosCamarim().length) return 0;
+  var fase = (t-inicio) % 720;
+  if(fase < 180 || fase >= 290) return 0;
+  var u = (fase-180)/110;
+  return Math.sin(u*Math.PI)*.022;
+}
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
@@ -1755,6 +1763,11 @@ function petDrawRoom(){
     !petLifePose && !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
 
+  var olharLembranca = petVidaOlharLembranca(petT,petLifePoseInicio,
+    petLifePose === 'conviver' && !sleepy && !petAnim && !petLifePhoneOlhar &&
+    !petArrumando && !petEmote && petHop <= 0 && petCharT <= 0 &&
+    petRecepcaoFrames <= 0 && petLove <= 0 && p.fome >= 25 && p.humor >= 25);
+
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
   // expr 2 reutiliza os olhos fechados/sorriso do avatar, sem trocar olhos ou rosto salvos.
   var expr = petLifePose === 'descansar' ? 2 : (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando || petLifePose === 'conviver') ? 2 : 0;
@@ -1783,6 +1796,7 @@ function petDrawRoom(){
       if(idadeOlhar >= 30 && idadeOlhar < 100) g.rotate(Math.sin((idadeOlhar-30)/70*Math.PI)*.018);
     }
     if(idolBrincando) g.rotate(idolBrincando.inclina);
+    if(olharLembranca) g.rotate(olharLembranca);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
@@ -1830,6 +1844,7 @@ function petDrawRoom(){
       var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
       if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
     }
+    inclinacao -= olharLembranca * (petRecepcaoJeito(petData.ativo,p.cfg) === 'pati' ? 1.6 : .8);
     x.rotate(inclinacao);
     x.translate(-PET_X,-(PET_FLOOR - 12 * PET_SC));
   }

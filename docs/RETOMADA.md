@@ -192,3 +192,9 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - **Hub (`hub-novos.js?v=1`, teste `tests/hub-novos.test.js`)**: Bloom⭐Garden!, Photo⭐Studio! e Idol⭐Battle! ganham cards na lista de Jogos, no molde dos outros (embrulha `hubCardsUI`, não edita `hub.js`). O card do jardim avisa quando há rega ou colheita. Sem conta, os três seguem a regra atual do Hub (cadeado → login); o treino sem conta do Studio e do Battle continua pelo mapa.
 - Conferido em Chromium (390×844 e 1280×900) com servidor simulado. **Não testado: conta real, iPhone, Safari.**
 
+## Refinamento visual — segunda passada (14/11/2026, só front, PR #88)
+- **Jardim (`bloom.js?v=5`)**: plaquinha do jardim, regador, borboletas de dia e vaga-lumes à noite (parados com "reduzir movimento").
+- **Photo⭐Studio! (`studio.js`, `hub-polish.css?v=35`)**: sem emoji no título, nas abas, na pauta e nos botões; cenário, luz e flores ganham uma amostra de cor desenhada; opções em grade alinhada (2 ou 3 colunas); moldura da foto igual à do jardim. Nenhuma regra ou RPC mudou.
+- Pendente de refinamento visual: Idol⭐Battle! (ainda usa emoji como ícone de rodada e de seção).
+- Conferido em Chromium (390×844). **Não testado: conta real, iPhone, Safari.**
+

@@ -9,27 +9,27 @@
       QUADROS = ['rosto','meio','inteiro'], OBJ = ['nenhum','balao','microfone','lightstick'], FLORES = {sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'⭐'};
   var EMO = {rosa:'🎀',cortina:'🪟',nuvens:'☁️',neon:'💜',normal:'🙂',v:'✌️',coracao:'🫰',tchau:'👋',suave:'🕯️',neon_l:'🌈',por:'🌇',rosto:'🙂',meio:'👕',inteiro:'🧍',nenhum:'✖',balao:'🎈',microfone:'🎤',lightstick:'🪄'};
   var T = {
-    pt:{tit:'Photo⭐Studio!',aba1:'📷 Estúdio',aba2:'📰 Mural',publicar:'📰 Publicar no mural',publicado:'Publicada no mural da semana!',ja:'Você já publicou uma foto hoje.',vazio:'Ninguém publicou ainda esta semana. Seja a primeira foto!',capa:'Capa da semana',parcial:'líder até agora',sua:'sua foto',dicaMural:'Uma foto por dia. Dê ❤️ nas fotos de que mais gostar: a mais curtida vira a Capa do Idol⭐News!',pauta:'Pauta do dia',fundo:'Cenário',pose:'Pose',luz:'Luz',quadro:'Enquadramento',objeto:'Objeto',clique:'📸 Clicar!',outra:'Tirar outra',salvar:'Salvar foto',
+    pt:{tit:'Photo⭐Studio!',aba1:'Estúdio',aba2:'Mural',publicar:'Publicar no mural',publicado:'Publicada no mural da semana!',ja:'Você já publicou uma foto hoje.',vazio:'Ninguém publicou ainda esta semana. Seja a primeira foto!',capa:'Capa da semana',parcial:'líder até agora',sua:'sua foto',dicaMural:'Uma foto por dia. Dê ❤️ nas fotos de que mais gostar: a mais curtida vira a Capa do Idol⭐News!',pauta:'Pauta do dia',fundo:'Cenário',pose:'Pose',luz:'Luz',quadro:'Enquadramento',objeto:'Objeto',clique:'📸 Clicar!',outra:'Tirar outra',salvar:'Salvar foto',
       treino:'Treino sem conta: entre para o fotógrafo conferir e ganhar ★5.',premio:'+★5 pela foto perfeita do dia!',erro:'Não deu certo. Tente de novo.',estrelas:'{n} de 3 estrelas',
       rosa:'Fundo rosa',cortina:'Janela',nuvens:'Nuvens',neon:'Neon',normal:'Normal',v:'V',coracao:'Coração',tchau:'Tchau',suave:'Suave',neon_l:'Neon',por:'Pôr do sol',rosto:'Rosto',meio:'Meio corpo',inteiro:'Corpo inteiro',nenhum:'Nenhum',balao:'Balões',microfone:'Microfone',lightstick:'Lightstick',flor:'Flor',
       t_luz:'Ensaio de luz',t_quadro:'Retrato de revista',t_objeto:'Capa com objeto'},
-    en:{tit:'Photo⭐Studio!',aba1:'📷 Studio',aba2:'📰 Board',publicar:'📰 Post to the board',publicado:'Posted to this week\'s board!',ja:'You already posted a photo today.',vazio:'Nobody has posted this week yet. Be the first photo!',capa:'Cover of the week',parcial:'leading so far',sua:'your photo',dicaMural:'One photo a day. Give ❤️ to your favorites: the most loved one becomes the Idol⭐News! cover.',pauta:'Today\'s brief',fundo:'Backdrop',pose:'Pose',luz:'Light',quadro:'Framing',objeto:'Prop',clique:'📸 Snap!',outra:'Take another',salvar:'Save photo',
+    en:{tit:'Photo⭐Studio!',aba1:'Studio',aba2:'Board',publicar:'Post to the board',publicado:'Posted to this week\'s board!',ja:'You already posted a photo today.',vazio:'Nobody has posted this week yet. Be the first photo!',capa:'Cover of the week',parcial:'leading so far',sua:'your photo',dicaMural:'One photo a day. Give ❤️ to your favorites: the most loved one becomes the Idol⭐News! cover.',pauta:'Today\'s brief',fundo:'Backdrop',pose:'Pose',luz:'Light',quadro:'Framing',objeto:'Prop',clique:'📸 Snap!',outra:'Take another',salvar:'Save photo',
       treino:'Practice without an account: sign in for the photographer to check and earn ★5.',premio:'+★5 for today\'s perfect photo!',erro:'Something went wrong. Try again.',estrelas:'{n} of 3 stars',
       rosa:'Pink backdrop',cortina:'Window',nuvens:'Clouds',neon:'Neon',normal:'Normal',v:'V',coracao:'Heart',tchau:'Wave',suave:'Soft',neon_l:'Neon',por:'Sunset',rosto:'Face',meio:'Half body',inteiro:'Full body',nenhum:'None',balao:'Balloons',microfone:'Microphone',lightstick:'Lightstick',flor:'Flower',
       t_luz:'Lighting shoot',t_quadro:'Magazine portrait',t_objeto:'Cover with a prop'},
-    es:{tit:'Photo⭐Studio!',aba1:'📷 Estudio',aba2:'📰 Mural',publicar:'📰 Publicar en el mural',publicado:'¡Publicada en el mural de la semana!',ja:'Ya publicaste una foto hoy.',vazio:'Nadie ha publicado esta semana. ¡Sé la primera foto!',capa:'Portada de la semana',parcial:'líder por ahora',sua:'tu foto',dicaMural:'Una foto por día. Da ❤️ a tus favoritas: la más querida es la portada de Idol⭐News!',pauta:'Pauta del día',fundo:'Fondo',pose:'Pose',luz:'Luz',quadro:'Encuadre',objeto:'Objeto',clique:'📸 ¡Clic!',outra:'Tomar otra',salvar:'Guardar foto',
+    es:{tit:'Photo⭐Studio!',aba1:'Estudio',aba2:'Mural',publicar:'Publicar en el mural',publicado:'¡Publicada en el mural de la semana!',ja:'Ya publicaste una foto hoy.',vazio:'Nadie ha publicado esta semana. ¡Sé la primera foto!',capa:'Portada de la semana',parcial:'líder por ahora',sua:'tu foto',dicaMural:'Una foto por día. Da ❤️ a tus favoritas: la más querida es la portada de Idol⭐News!',pauta:'Pauta del día',fundo:'Fondo',pose:'Pose',luz:'Luz',quadro:'Encuadre',objeto:'Objeto',clique:'📸 ¡Clic!',outra:'Tomar otra',salvar:'Guardar foto',
       treino:'Práctica sin cuenta: inicia sesión para que el fotógrafo revise y ganar ★5.',premio:'¡+★5 por la foto perfecta del día!',erro:'No funcionó. Inténtalo de nuevo.',estrelas:'{n} de 3 estrellas',
       rosa:'Fondo rosa',cortina:'Ventana',nuvens:'Nubes',neon:'Neón',normal:'Normal',v:'V',coracao:'Corazón',tchau:'Saludo',suave:'Suave',neon_l:'Neón',por:'Atardecer',rosto:'Rostro',meio:'Medio cuerpo',inteiro:'Cuerpo entero',nenhum:'Ninguno',balao:'Globos',microfone:'Micrófono',lightstick:'Lightstick',flor:'Flor',
       t_luz:'Sesión de luz',t_quadro:'Retrato de revista',t_objeto:'Portada con objeto'},
-    id:{tit:'Photo⭐Studio!',aba1:'📷 Studio',aba2:'📰 Papan',publicar:'📰 Pasang di papan',publicado:'Terpasang di papan minggu ini!',ja:'Kamu sudah memasang foto hari ini.',vazio:'Belum ada yang memasang minggu ini. Jadilah foto pertama!',capa:'Sampul minggu ini',parcial:'memimpin sementara',sua:'fotomu',dicaMural:'Satu foto per hari. Beri ❤️ ke favoritmu: yang paling disukai jadi sampul Idol⭐News!',pauta:'Tugas hari ini',fundo:'Latar',pose:'Pose',luz:'Cahaya',quadro:'Bingkai',objeto:'Properti',clique:'📸 Jepret!',outra:'Foto lagi',salvar:'Simpan foto',
+    id:{tit:'Photo⭐Studio!',aba1:'Studio',aba2:'Papan',publicar:'Pasang di papan',publicado:'Terpasang di papan minggu ini!',ja:'Kamu sudah memasang foto hari ini.',vazio:'Belum ada yang memasang minggu ini. Jadilah foto pertama!',capa:'Sampul minggu ini',parcial:'memimpin sementara',sua:'fotomu',dicaMural:'Satu foto per hari. Beri ❤️ ke favoritmu: yang paling disukai jadi sampul Idol⭐News!',pauta:'Tugas hari ini',fundo:'Latar',pose:'Pose',luz:'Cahaya',quadro:'Bingkai',objeto:'Properti',clique:'📸 Jepret!',outra:'Foto lagi',salvar:'Simpan foto',
       treino:'Latihan tanpa akun: masuk agar fotografer memeriksa dan dapat ★5.',premio:'+★5 untuk foto sempurna hari ini!',erro:'Gagal. Coba lagi.',estrelas:'{n} dari 3 bintang',
       rosa:'Latar pink',cortina:'Jendela',nuvens:'Awan',neon:'Neon',normal:'Normal',v:'V',coracao:'Hati',tchau:'Dadah',suave:'Lembut',neon_l:'Neon',por:'Senja',rosto:'Wajah',meio:'Setengah badan',inteiro:'Seluruh badan',nenhum:'Tidak ada',balao:'Balon',microfone:'Mikrofon',lightstick:'Lightstick',flor:'Bunga',
       t_luz:'Pemotretan cahaya',t_quadro:'Potret majalah',t_objeto:'Sampul dengan properti'},
-    th:{tit:'Photo⭐Studio!',aba1:'📷 สตูดิโอ',aba2:'📰 บอร์ด',publicar:'📰 โพสต์ลงบอร์ด',publicado:'โพสต์ลงบอร์ดของสัปดาห์แล้ว!',ja:'วันนี้คุณโพสต์รูปไปแล้ว',vazio:'สัปดาห์นี้ยังไม่มีใครโพสต์ เป็นรูปแรกเลย!',capa:'ปกประจำสัปดาห์',parcial:'นำอยู่ตอนนี้',sua:'รูปของคุณ',dicaMural:'วันละหนึ่งรูป กด ❤️ ให้รูปที่ชอบ: รูปที่ได้ใจมากที่สุดจะขึ้นปก Idol⭐News!',pauta:'โจทย์วันนี้',fundo:'ฉากหลัง',pose:'ท่าทาง',luz:'แสง',quadro:'มุมกล้อง',objeto:'พร็อพ',clique:'📸 ถ่ายเลย!',outra:'ถ่ายอีกรูป',salvar:'บันทึกรูป',
+    th:{tit:'Photo⭐Studio!',aba1:'สตูดิโอ',aba2:'บอร์ด',publicar:'โพสต์ลงบอร์ด',publicado:'โพสต์ลงบอร์ดของสัปดาห์แล้ว!',ja:'วันนี้คุณโพสต์รูปไปแล้ว',vazio:'สัปดาห์นี้ยังไม่มีใครโพสต์ เป็นรูปแรกเลย!',capa:'ปกประจำสัปดาห์',parcial:'นำอยู่ตอนนี้',sua:'รูปของคุณ',dicaMural:'วันละหนึ่งรูป กด ❤️ ให้รูปที่ชอบ: รูปที่ได้ใจมากที่สุดจะขึ้นปก Idol⭐News!',pauta:'โจทย์วันนี้',fundo:'ฉากหลัง',pose:'ท่าทาง',luz:'แสง',quadro:'มุมกล้อง',objeto:'พร็อพ',clique:'📸 ถ่ายเลย!',outra:'ถ่ายอีกรูป',salvar:'บันทึกรูป',
       treino:'ฝึกแบบไม่มีบัญชี: เข้าสู่ระบบเพื่อให้ช่างภาพตรวจและรับ ★5',premio:'+★5 จากรูปสมบูรณ์แบบวันนี้!',erro:'ไม่สำเร็จ ลองอีกครั้ง',estrelas:'{n} จาก 3 ดาว',
       rosa:'ฉากชมพู',cortina:'หน้าต่าง',nuvens:'ก้อนเมฆ',neon:'นีออน',normal:'ปกติ',v:'วี',coracao:'หัวใจ',tchau:'โบกมือ',suave:'นุ่มนวล',neon_l:'นีออน',por:'พระอาทิตย์ตก',rosto:'ใบหน้า',meio:'ครึ่งตัว',inteiro:'เต็มตัว',nenhum:'ไม่มี',balao:'ลูกโป่ง',microfone:'ไมโครโฟน',lightstick:'แท่งไฟ',flor:'ดอกไม้',
       t_luz:'ถ่ายเล่นแสง',t_quadro:'ภาพนิตยสาร',t_objeto:'ปกพร้อมพร็อพ'},
-    ja:{tit:'Photo⭐Studio!',aba1:'📷 スタジオ',aba2:'📰 掲示板',publicar:'📰 掲示板に投稿',publicado:'今週の掲示板に投稿しました！',ja:'今日はもう投稿しました。',vazio:'今週はまだ投稿がありません。最初の一枚になろう！',capa:'今週の表紙',parcial:'現在トップ',sua:'あなたの写真',dicaMural:'投稿は1日1枚。好きな写真に❤️を：一番人気がIdol⭐News!の表紙に！',pauta:'今日のお題',fundo:'背景',pose:'ポーズ',luz:'ライト',quadro:'フレーミング',objeto:'小物',clique:'📸 パシャ！',outra:'もう一枚',salvar:'写真を保存',
+    ja:{tit:'Photo⭐Studio!',aba1:'スタジオ',aba2:'掲示板',publicar:'掲示板に投稿',publicado:'今週の掲示板に投稿しました！',ja:'今日はもう投稿しました。',vazio:'今週はまだ投稿がありません。最初の一枚になろう！',capa:'今週の表紙',parcial:'現在トップ',sua:'あなたの写真',dicaMural:'投稿は1日1枚。好きな写真に❤️を：一番人気がIdol⭐News!の表紙に！',pauta:'今日のお題',fundo:'背景',pose:'ポーズ',luz:'ライト',quadro:'フレーミング',objeto:'小物',clique:'📸 パシャ！',outra:'もう一枚',salvar:'写真を保存',
       treino:'アカウントなしの練習：ログインするとカメラマンが判定して★5がもらえます。',premio:'今日のパーフェクト写真で★5！',erro:'うまくいきませんでした。もう一度試してね。',estrelas:'3つ中{n}つ星',
       rosa:'ピンク背景',cortina:'窓',nuvens:'くも',neon:'ネオン',normal:'ふつう',v:'ピース',coracao:'ハート',tchau:'バイバイ',suave:'やわらか',neon_l:'ネオン',por:'夕焼け',rosto:'顔',meio:'上半身',inteiro:'全身',nenhum:'なし',balao:'風船',microfone:'マイク',lightstick:'ペンライト',flor:'花',
       t_luz:'ライト撮影',t_quadro:'雑誌のポートレート',t_objeto:'小物の表紙'}
@@ -37,7 +37,15 @@
   function L(){ return typeof LANG === 'string' && T[LANG] ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k] || k; }
   function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return FLORES[k] + ' ' + ((B && (B[L()] || B.pt)[k]) || t('flor')); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
-  function emo(tipo, v){ return v.indexOf('flor_') === 0 ? FLORES[v.slice(5)] : EMO[tipo === 'luz' && v === 'neon' ? 'neon_l' : v] || ''; }
+  // Sem emoji nos botões: cenário, luz e flores ganham uma amostra de cor desenhada; o resto é só o nome.
+  var AMOSTRA = {fundo:{rosa:'linear-gradient(160deg,#ffe3f1,#ffb3d6)',cortina:'linear-gradient(160deg,#dff1ff,#fff 55%,#bfe0ff)',nuvens:'linear-gradient(180deg,#9fd4ff,#fff)',neon:'linear-gradient(135deg,#7b3ff0,#ff6fb5)'},
+    luz:{suave:'radial-gradient(circle at 35% 35%,#fff,#ffe9b8)',neon:'linear-gradient(135deg,#ff5fd2,#4dd8ff)',por:'linear-gradient(180deg,#ffb35c,#ff7fa8)'},
+    flor:{sakura:'#ff93c0',tulipa:'#f26a93',girassol:'#f8b62a',lunar:'#ab8ef6'}};
+  function emo(){ return ''; }
+  function marca(tipo, v){
+    var g = v.indexOf('flor_') === 0 ? AMOSTRA.flor[v.slice(5)] : (AMOSTRA[tipo] || {})[v];
+    return g ? '<i class="stsw" style="background:' + g + '" aria-hidden="true"></i>' : '';
+  }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
   window.TW_STUDIO_ON = true;
@@ -100,19 +108,19 @@
   }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
-      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + emo(tipo, v) + ' ' + esc(nomeOpc(tipo, v)) + '</button>'; }).join('') + '</div></div>';
+      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + esc(nomeOpc(tipo, v)) + '</button>'; }).join('') + '</div></div>';
   }
   function ui(){
     if(!ov) return;
-    ov.querySelector('#studioTit').textContent = '📸 ' + t('tit');
+    ov.querySelector('#studioTit').textContent = t('tit');
     var abas = ov.querySelector('#studioAbas'), noMural = aba === 'mural';
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
     ['#studioPauta','#studioCv','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
     ov.querySelector('#studioMural').hidden = !noMural;
     if(noMural){ muralUI(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
-    ov.querySelector('#studioPauta').innerHTML = pauta ? '<div class="stpauta"><b>📰 ' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
-      [[ac[0], emo('fundo', pauta.fundo) + ' ' + nomeOpc('fundo', pauta.fundo)], [ac[1], emo('pose', pauta.pose) + ' ' + nomeOpc('pose', pauta.pose)], [ac[2], emo(d.tipo, d.valor) + ' ' + nomeOpc(d.tipo, d.valor)]]
+    ov.querySelector('#studioPauta').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
+      [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]]
         .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' : '';
     var c = ov.querySelector('#studioCorpo'), hh = '';
     if(msg) hh += '<p class="stmsg" aria-live="polite">' + esc(msg) + '</p>';

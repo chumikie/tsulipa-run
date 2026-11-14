@@ -216,6 +216,7 @@
     x.fillStyle = cs; x.fillRect(0, hz - 9, W, 5); x.fillRect(0, hz + 7, W, 5);
     x.fillStyle = cf; x.fillRect(0, hz - 12, W, 5); x.fillRect(0, hz + 4, W, 5);
     for(i = 0; i < 22; i++){ var fx = 6 + i * 34; x.fillStyle = cs; rr(x, fx + 2, hz - 28, 14, 46, 7); x.fill(); x.fillStyle = cf; rr(x, fx, hz - 30, 14, 46, 7); x.fill(); }
+    enfeites(x, W, H, hz, tm, noite);
     jardineiro(x, H, tm);
     for(i = 0; i < 4; i++){
       var cx = 100 + i * 173, by = H * .82, c = canteiro(i);
@@ -224,6 +225,7 @@
       if(c) planta(x, cx, by - 16, c, tm, 1.22);
       balao(x, cx, by, i, c, tm);
     }
+    bichinhos(x, W, hz, tm, noite);
     // gotas da rega e pétalas da colheita
     var agora = performance.now();
     chuva = chuva.filter(function(p){ var u = (agora - p.t0) / 900; if(u > 1) return false;
@@ -233,6 +235,44 @@
     festa = festa.filter(function(p){ var u = (agora - p.t0) / 1500; if(u > 1) return false; var a = p.i / 14 * Math.PI * 2, r = 16 + u * 96, cc = COR[p.k] || COR.sakura;
       x.save(); x.globalAlpha = 1 - u * u; x.translate(100 + p.c * 173 + Math.cos(a) * r, H * .82 - 100 + Math.sin(a) * r * .6 - u * 34 + u * u * 46); x.rotate(a + u * 5);
       x.fillStyle = cc[p.i % 2]; x.beginPath(); x.ellipse(0, 0, 7, 3.6, 0, 0, 7); x.fill(); x.restore(); return true; });
+  }
+  // Enfeites fixos atrás dos canteiros: plaquinha do jardim e regador.
+  function enfeites(x, W, H, hz, tm, noite){
+    var i;
+    // plaquinha
+    var px = 44, py = hz + 44;
+    x.fillStyle = '#a96a36'; rr(x, px - 3, py - 4, 6, 34, 3); x.fill();
+    x.fillStyle = 'rgba(60,40,20,.16)'; rr(x, px - 25, py - 26, 52, 27, 8); x.fill();
+    x.fillStyle = noite ? '#e6dcc8' : '#fff8ee'; rr(x, px - 27, py - 29, 52, 27, 8); x.fill();
+    x.strokeStyle = '#d29a63'; x.lineWidth = 2; rr(x, px - 27, py - 29, 52, 27, 8); x.stroke();
+    cabeca(x, 'sakura', px - 1, py - 15.5, 9, 0, false);
+    // regador
+    var gx = W - 52, gy = hz + 56;
+    x.fillStyle = 'rgba(40,60,40,.16)'; x.beginPath(); x.ellipse(gx, gy + 20, 26, 5, 0, 0, 7); x.fill();
+    x.strokeStyle = noite ? '#7f9bd8' : '#8fb6ff'; x.lineWidth = 5; x.lineCap = 'round';
+    x.beginPath(); x.arc(gx + 15, gy + 2, 13, -1.2, 1.3); x.stroke();                       // alça
+    x.beginPath(); x.moveTo(gx - 15, gy + 6); x.lineTo(gx - 34, gy - 10); x.stroke();       // bico
+    x.fillStyle = noite ? '#8aa6e0' : '#a9c8ff'; rr(x, gx - 17, gy - 12, 34, 32, 8); x.fill();
+    x.fillStyle = noite ? '#7f9bd8' : '#8fb6ff'; rr(x, gx - 17, gy + 8, 34, 12, 6); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.55)'; rr(x, gx - 11, gy - 7, 5, 16, 2.5); x.fill();
+    x.fillStyle = noite ? '#7f9bd8' : '#8fb6ff'; x.beginPath(); x.ellipse(gx - 36, gy - 12, 6, 4, -.7, 0, 7); x.fill();
+  }
+  // Borboletas de dia, vaga-lumes à noite. Com "reduzir movimento" o laço não roda e eles ficam parados.
+  function bichinhos(x, W, hz, tm, noite){
+    var i;
+    if(noite){
+      for(i = 0; i < 9; i++){ var fx = (i * 83 + 60 + Math.sin(tm * .5 + i) * 26) % W, fy = hz + 30 + (i * 37) % 120 + Math.cos(tm * .7 + i * 2) * 10, a = .35 + .6 * Math.abs(Math.sin(tm * 1.6 + i * 1.3));
+        var gl = x.createRadialGradient(fx, fy, 0, fx, fy, 9); gl.addColorStop(0, 'rgba(255,246,170,' + a.toFixed(2) + ')'); gl.addColorStop(1, 'rgba(255,246,170,0)'); x.fillStyle = gl; x.beginPath(); x.arc(fx, fy, 9, 0, 7); x.fill(); }
+      return;
+    }
+    [['#ff9ccb', '#ffd3e8', 0], ['#a98bf5', '#e4d4ff', 2.4]].forEach(function(b, n){
+      var u = tm * .22 + b[2], bx = W * .5 + Math.sin(u) * (W * .36) + Math.sin(u * 3.1) * 22, by = hz + 34 + Math.sin(u * 1.7 + n) * 30, bate = Math.abs(Math.sin(tm * 9 + n));
+      x.save(); x.translate(bx, by); x.rotate(Math.cos(u) * .25);
+      [-1, 1].forEach(function(l){ x.save(); x.scale(l * (.35 + bate * .65), 1);
+        x.fillStyle = b[0]; x.beginPath(); x.ellipse(7, -4, 8, 6.5, -.4, 0, 7); x.fill();
+        x.fillStyle = b[1]; x.beginPath(); x.ellipse(5.5, 4, 5.5, 4.5, .4, 0, 7); x.fill(); x.restore(); });
+      x.fillStyle = '#6a4b8f'; rr(x, -1.2, -6, 2.4, 12, 1.2); x.fill(); x.restore();
+    });
   }
   // Caixote de madeira com terra; a terra escurece quando o canteiro já foi regado hoje.
   function caixote(x, cx, by, molhado, i, sel){

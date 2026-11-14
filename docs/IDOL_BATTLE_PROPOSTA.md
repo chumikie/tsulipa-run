@@ -56,3 +56,7 @@ Cada card é um Idol de verdade do site. Os atributos (1 a 10) saem do que essa 
 - Ajuste no SQL proposto: a **ordem do rival** e a **sorte ±1** eram derivadas de `hashtext()` sobre dados públicos (dia, id, tentativa) e podiam ser calculadas antes de jogar. Agora usam `random()` no servidor, por partida; o resultado gravado mantém a idempotência.
 - Testes isolados ampliados (`supabase/tests/battle/checks.sql`): grants de `authenticated`/funções privadas, cada rival em exatamente uma rodada, escala das pontuações e conta bloqueada (não joga, não consulta, não vira rival). Rodado 3× em PostgreSQL 16 local descartável + 87 testes JS.
 - **Aplicado em 14/11/2026** (migração `20261114_idol_battle_v1`). Conferido em produção por leitura: anon sem acesso, authenticated só nas duas RPCs, funções privadas fechadas, RLS ligada sem políticas, 0 partidas. Não testado: conta real, ★5 real, iPhone físico.
+
+## Top da Arena — proposta de 14/11/2026 (SQL não aplicado)
+Ranking semanal de vitórias (item "Prêmio e economia"): `battle_ranking()` só de leitura, mostrado na janela do Battle e como 4º pódio do Idol⭐News!. Detalhes e estado em `docs/RETOMADA.md`.
+

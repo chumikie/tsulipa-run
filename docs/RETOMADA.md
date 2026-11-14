@@ -155,3 +155,10 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Treino sem conta ficou vencível: a ordem escolhida decide (antes era impossível ganhar).
 - **Correção no mapa (`tw-mapa.js?v=39`)**: os Idols da vitrine não passeavam nas ruas porque o código lia `p.av`, mas a vitrine entrega `p.avatar`. Agora aceita os dois.
 - Conferido em Chromium local (390×844, 320×640 escuro, 1280×800 com movimento reduzido) com o `index.html` inteiro e com resposta de servidor simulada; 87 testes JS OK. **Não testado: conta real, iPhone físico, Safari.**
+
+## Idol⭐Battle! — Top da Arena (14/11/2026) — SQL **NÃO aplicado**
+- Proposta: `supabase/sql/proposta/20261114_idol_battle_ranking_REVIEW_ONLY.sql` — `battle_ranking()` só de leitura (vitórias da semana desde domingo, Brasília; top 10 + a sua posição; desempate por menos partidas; contas bloqueadas fora; sem ids) e um índice em `private.battle_partidas(dia)`. Não mexe em prêmio nem nas RPCs já aplicadas.
+- Teste isolado: `supabase/tests/battle/checks_ranking.sql` (roda dentro do `rodar.sh` do Battle, depois do v1).
+- Front já no PR #88 e inofensivo sem a função: seção "Top da Arena" na janela do Battle (`battle.js?v=4`) e 4º pódio no Idol⭐News! (`jornal.js?v=14`), ambos só aparecem quando o servidor responde.
+- Conferido em Chromium com resposta simulada. **Não testado: conta real, iPhone.** Aplicar só com o OK do dono; depois mover para `aplicado/` e ajustar os caminhos em `rodar.sh` e `tests/idol-battle.test.js`.
+

@@ -6,18 +6,19 @@
 (function(){
 'use strict';
 var T={
- pt:{title:'Idol⭐Battle!',subtitle:'Três Idols, três apresentações!',cant:'Canto',dance:'Dança',charm:'Carisma',daily:'Rival do dia',stage:'Escalar sua unit',play:'Começar show!',again:'Tentar novamente',save:'Salvar polaroid',practice:'Treino sem prêmio.',wait:'Carregando a Arena...',error:'Não foi possível conferir o show. Tente novamente.',used:'Tentativas restantes',win:'Sua unit venceu!',lose:'O rival venceu!',draw:'Empate!',reward:'Recompensa confirmada: ★5',noReward:'Sem recompensa nesta partida',locked:'Volte amanhã para desafiar o rival novamente.',guest:'Entre com Google para disputar partidas oficiais.',my:'Você',other:'Rival',starter:'Unit inicial',rivalHint:'Os três rivais são revelados; a ordem de apresentação permanece secreta.',choose:'Escolha três Idols diferentes, um por rodada.',none:'Sem cards suficientes, a unit inicial entra em cena.',loading:'Preparando a Arena...',points:'Pontos',skip:'Pular ▶▶',prizeDone:'★5 de hoje já conquistada!',prizeOpen:'A primeira vitória de hoje vale ★5.',round:'Rodada',yourUnit:'Sua unit',copies:'Cards repetidos dão bônus no palco.'},
- en:{title:'Idol⭐Battle!',subtitle:'Three Idols, three performances!',cant:'Singing',dance:'Dance',charm:'Charisma',daily:"Today's rival",stage:'Choose your unit',play:'Start the show!',again:'Try again',save:'Save polaroid',practice:'Practice only, no rewards.',wait:'Loading the Arena...',error:'Could not verify the show. Try again.',used:'Attempts left',win:'Your unit won!',lose:'The rival won!',draw:'Draw!',reward:'Verified reward: ★5',noReward:'No reward this match',locked:'Come back tomorrow to face the rival again.',guest:'Sign in with Google for official matches.',my:'You',other:'Rival',starter:'Starter unit',rivalHint:'See the three rivals, but not their performance order.',choose:'Choose three different Idols, one per round.',none:'Not enough cards? The starter unit can perform.',loading:'Preparing the Arena...',points:'Points',skip:'Skip ▶▶',prizeDone:"Today's ★5 already earned!",prizeOpen:"Today's first win is worth ★5.",round:'Round',yourUnit:'Your unit',copies:'Duplicate cards give a stage bonus.'},
- es:{title:'Idol⭐Battle!',subtitle:'¡Tres Idols, tres actuaciones!',cant:'Canto',dance:'Baile',charm:'Carisma',daily:'Rival del día',stage:'Forma tu unit',play:'¡Empezar!',again:'Intentar de nuevo',save:'Guardar polaroid',practice:'Solo práctica, sin premios.',wait:'Cargando la Arena...',error:'No se pudo verificar la actuación.',used:'Intentos restantes',win:'¡Ganó tu unit!',lose:'¡Ganó el rival!',draw:'¡Empate!',reward:'Premio verificado: ★5',noReward:'Sin premio esta vez',locked:'Vuelve mañana.',guest:'Entra con Google para jugar oficialmente.',my:'Tú',other:'Rival',starter:'Unit inicial',rivalHint:'Se ven los rivales, pero no su orden.',choose:'Elige tres Idols distintos.',none:'La unit inicial puede jugar.',loading:'Preparando la Arena...',points:'Puntos',skip:'Saltar ▶▶',prizeDone:'¡★5 de hoy ya conseguida!',prizeOpen:'La primera victoria de hoy vale ★5.',round:'Ronda',yourUnit:'Tu unit',copies:'Los cards repetidos dan un bonus en el escenario.'},
- id:{title:'Idol⭐Battle!',subtitle:'Tiga Idol, tiga penampilan!',cant:'Menyanyi',dance:'Tari',charm:'Karisma',daily:'Lawan hari ini',stage:'Pilih unit',play:'Mulai pertunjukan!',again:'Coba lagi',save:'Simpan polaroid',practice:'Latihan saja, tanpa hadiah.',wait:'Memuat Arena...',error:'Hasil tidak dapat diverifikasi.',used:'Percobaan tersisa',win:'Unitmu menang!',lose:'Lawan menang!',draw:'Seri!',reward:'Hadiah terverifikasi: ★5',noReward:'Tanpa hadiah kali ini',locked:'Kembali besok.',guest:'Masuk Google untuk pertandingan resmi.',my:'Kamu',other:'Lawan',starter:'Unit awal',rivalHint:'Tiga lawan terlihat, urutannya rahasia.',choose:'Pilih tiga Idol berbeda.',none:'Unit awal bisa digunakan.',loading:'Menyiapkan Arena...',points:'Poin',skip:'Lewati ▶▶',prizeDone:'★5 hari ini sudah didapat!',prizeOpen:'Kemenangan pertama hari ini bernilai ★5.',round:'Babak',yourUnit:'Unitmu',copies:'Kartu duplikat memberi bonus di panggung.'},
- th:{title:'Idol⭐Battle!',subtitle:'ไอดอล 3 คน 3 รอบ!',cant:'ร้องเพลง',dance:'เต้น',charm:'เสน่ห์',daily:'คู่แข่งวันนี้',stage:'เลือกยูนิต',play:'เริ่มโชว์!',again:'ลองอีกครั้ง',save:'บันทึกโพลารอยด์',practice:'โหมดฝึกซ้อมเท่านั้น ไม่มีรางวัล',wait:'กำลังโหลดอารีนา...',error:'ตรวจสอบผลไม่ได้ ลองอีกครั้ง',used:'ครั้งที่เหลือ',win:'ยูนิตของคุณชนะ!',lose:'คู่แข่งชนะ!',draw:'เสมอ!',reward:'รางวัลยืนยัน: ★5',noReward:'รอบนี้ไม่มีรางวัล',locked:'กลับมาใหม่พรุ่งนี้',guest:'เข้าสู่ระบบ Google เพื่อเล่นจริง',my:'คุณ',other:'คู่แข่ง',starter:'ยูนิตเริ่มต้น',rivalHint:'เห็นคู่แข่งทั้งสาม แต่ไม่เห็นลำดับ',choose:'เลือกไอดอล 3 คนไม่ซ้ำกัน',none:'ใช้ยูนิตเริ่มต้นได้',loading:'กำลังเตรียมอารีนา...',points:'คะแนน',skip:'ข้าม ▶▶',prizeDone:'ได้รับ ★5 ของวันนี้แล้ว!',prizeOpen:'ชนะครั้งแรกของวันนี้ได้ ★5',round:'รอบ',yourUnit:'ยูนิตของคุณ',copies:'การ์ดซ้ำให้โบนัสบนเวที'},
- ja:{title:'Idol⭐Battle!',subtitle:'3人のアイドルで3ステージ！',cant:'歌',dance:'ダンス',charm:'カリスマ',daily:'今日のライバル',stage:'ユニットを編成',play:'ショー開始！',again:'もう一度',save:'ポラロイドを保存',practice:'練習のみ。報酬はありません。',wait:'アリーナを読み込み中…',error:'結果を確認できませんでした。',used:'残り挑戦回数',win:'あなたのユニットの勝ち！',lose:'ライバルの勝ち！',draw:'引き分け！',reward:'確定報酬：★5',noReward:'今回は報酬なし',locked:'また明日挑戦してね',guest:'公式戦はGoogleでログイン',my:'あなた',other:'ライバル',starter:'初期ユニット',rivalHint:'ライバル3人は見えるけど、出番は秘密',choose:'異なる3人のアイドルを選んでね',none:'最初のユニットでも遊べます',loading:'アリーナを準備中…',points:'点',skip:'スキップ ▶▶',prizeDone:'今日の★5は獲得済み！',prizeOpen:'今日の初勝利で★5',round:'ラウンド',yourUnit:'あなたのユニット',copies:'同じカードが複数あるとステージでボーナス'}
+ pt:{title:'Idol⭐Battle!',subtitle:'Três Idols, três apresentações!',cant:'Canto',dance:'Dança',charm:'Carisma',daily:'Rival do dia',stage:'Escalar sua unit',play:'Começar show!',again:'Tentar novamente',save:'Salvar polaroid',practice:'Treino sem prêmio.',wait:'Carregando a Arena...',error:'Não foi possível conferir o show. Tente novamente.',used:'Tentativas restantes',win:'Sua unit venceu!',lose:'O rival venceu!',draw:'Empate!',reward:'Recompensa confirmada: ★5',noReward:'Sem recompensa nesta partida',locked:'Volte amanhã para desafiar o rival novamente.',guest:'Entre com Google para disputar partidas oficiais.',my:'Você',other:'Rival',starter:'Unit inicial',rivalHint:'Os três rivais são revelados; a ordem de apresentação permanece secreta.',choose:'Escolha três Idols diferentes, um por rodada.',none:'Sem cards suficientes, a unit inicial entra em cena.',loading:'Preparando a Arena...',points:'Pontos',skip:'Pular ▶▶',prizeDone:'★5 de hoje já conquistada!',prizeOpen:'A primeira vitória de hoje vale ★5.',round:'Rodada',yourUnit:'Sua unit',copies:'Cards repetidos dão bônus no palco.',rankTitle:'Top da Arena · semana',rankEmpty:'Ninguém venceu nesta semana ainda. Seja a primeira pessoa!'},
+ en:{title:'Idol⭐Battle!',subtitle:'Three Idols, three performances!',cant:'Singing',dance:'Dance',charm:'Charisma',daily:"Today's rival",stage:'Choose your unit',play:'Start the show!',again:'Try again',save:'Save polaroid',practice:'Practice only, no rewards.',wait:'Loading the Arena...',error:'Could not verify the show. Try again.',used:'Attempts left',win:'Your unit won!',lose:'The rival won!',draw:'Draw!',reward:'Verified reward: ★5',noReward:'No reward this match',locked:'Come back tomorrow to face the rival again.',guest:'Sign in with Google for official matches.',my:'You',other:'Rival',starter:'Starter unit',rivalHint:'See the three rivals, but not their performance order.',choose:'Choose three different Idols, one per round.',none:'Not enough cards? The starter unit can perform.',loading:'Preparing the Arena...',points:'Points',skip:'Skip ▶▶',prizeDone:"Today's ★5 already earned!",prizeOpen:"Today's first win is worth ★5.",round:'Round',yourUnit:'Your unit',copies:'Duplicate cards give a stage bonus.',rankTitle:'Arena Top · this week',rankEmpty:'No wins this week yet. Be the first!'},
+ es:{title:'Idol⭐Battle!',subtitle:'¡Tres Idols, tres actuaciones!',cant:'Canto',dance:'Baile',charm:'Carisma',daily:'Rival del día',stage:'Forma tu unit',play:'¡Empezar!',again:'Intentar de nuevo',save:'Guardar polaroid',practice:'Solo práctica, sin premios.',wait:'Cargando la Arena...',error:'No se pudo verificar la actuación.',used:'Intentos restantes',win:'¡Ganó tu unit!',lose:'¡Ganó el rival!',draw:'¡Empate!',reward:'Premio verificado: ★5',noReward:'Sin premio esta vez',locked:'Vuelve mañana.',guest:'Entra con Google para jugar oficialmente.',my:'Tú',other:'Rival',starter:'Unit inicial',rivalHint:'Se ven los rivales, pero no su orden.',choose:'Elige tres Idols distintos.',none:'La unit inicial puede jugar.',loading:'Preparando la Arena...',points:'Puntos',skip:'Saltar ▶▶',prizeDone:'¡★5 de hoy ya conseguida!',prizeOpen:'La primera victoria de hoy vale ★5.',round:'Ronda',yourUnit:'Tu unit',copies:'Los cards repetidos dan un bonus en el escenario.',rankTitle:'Top de la Arena · semana',rankEmpty:'Nadie ha ganado esta semana todavía. ¡Sé la primera persona!'},
+ id:{title:'Idol⭐Battle!',subtitle:'Tiga Idol, tiga penampilan!',cant:'Menyanyi',dance:'Tari',charm:'Karisma',daily:'Lawan hari ini',stage:'Pilih unit',play:'Mulai pertunjukan!',again:'Coba lagi',save:'Simpan polaroid',practice:'Latihan saja, tanpa hadiah.',wait:'Memuat Arena...',error:'Hasil tidak dapat diverifikasi.',used:'Percobaan tersisa',win:'Unitmu menang!',lose:'Lawan menang!',draw:'Seri!',reward:'Hadiah terverifikasi: ★5',noReward:'Tanpa hadiah kali ini',locked:'Kembali besok.',guest:'Masuk Google untuk pertandingan resmi.',my:'Kamu',other:'Lawan',starter:'Unit awal',rivalHint:'Tiga lawan terlihat, urutannya rahasia.',choose:'Pilih tiga Idol berbeda.',none:'Unit awal bisa digunakan.',loading:'Menyiapkan Arena...',points:'Poin',skip:'Lewati ▶▶',prizeDone:'★5 hari ini sudah didapat!',prizeOpen:'Kemenangan pertama hari ini bernilai ★5.',round:'Babak',yourUnit:'Unitmu',copies:'Kartu duplikat memberi bonus di panggung.',rankTitle:'Top Arena · minggu ini',rankEmpty:'Belum ada yang menang minggu ini. Jadilah yang pertama!'},
+ th:{title:'Idol⭐Battle!',subtitle:'ไอดอล 3 คน 3 รอบ!',cant:'ร้องเพลง',dance:'เต้น',charm:'เสน่ห์',daily:'คู่แข่งวันนี้',stage:'เลือกยูนิต',play:'เริ่มโชว์!',again:'ลองอีกครั้ง',save:'บันทึกโพลารอยด์',practice:'โหมดฝึกซ้อมเท่านั้น ไม่มีรางวัล',wait:'กำลังโหลดอารีนา...',error:'ตรวจสอบผลไม่ได้ ลองอีกครั้ง',used:'ครั้งที่เหลือ',win:'ยูนิตของคุณชนะ!',lose:'คู่แข่งชนะ!',draw:'เสมอ!',reward:'รางวัลยืนยัน: ★5',noReward:'รอบนี้ไม่มีรางวัล',locked:'กลับมาใหม่พรุ่งนี้',guest:'เข้าสู่ระบบ Google เพื่อเล่นจริง',my:'คุณ',other:'คู่แข่ง',starter:'ยูนิตเริ่มต้น',rivalHint:'เห็นคู่แข่งทั้งสาม แต่ไม่เห็นลำดับ',choose:'เลือกไอดอล 3 คนไม่ซ้ำกัน',none:'ใช้ยูนิตเริ่มต้นได้',loading:'กำลังเตรียมอารีนา...',points:'คะแนน',skip:'ข้าม ▶▶',prizeDone:'ได้รับ ★5 ของวันนี้แล้ว!',prizeOpen:'ชนะครั้งแรกของวันนี้ได้ ★5',round:'รอบ',yourUnit:'ยูนิตของคุณ',copies:'การ์ดซ้ำให้โบนัสบนเวที',rankTitle:'ท็อปอารีนา · สัปดาห์นี้',rankEmpty:'สัปดาห์นี้ยังไม่มีใครชนะ มาเป็นคนแรกกันเถอะ!'},
+ ja:{title:'Idol⭐Battle!',subtitle:'3人のアイドルで3ステージ！',cant:'歌',dance:'ダンス',charm:'カリスマ',daily:'今日のライバル',stage:'ユニットを編成',play:'ショー開始！',again:'もう一度',save:'ポラロイドを保存',practice:'練習のみ。報酬はありません。',wait:'アリーナを読み込み中…',error:'結果を確認できませんでした。',used:'残り挑戦回数',win:'あなたのユニットの勝ち！',lose:'ライバルの勝ち！',draw:'引き分け！',reward:'確定報酬：★5',noReward:'今回は報酬なし',locked:'また明日挑戦してね',guest:'公式戦はGoogleでログイン',my:'あなた',other:'ライバル',starter:'初期ユニット',rivalHint:'ライバル3人は見えるけど、出番は秘密',choose:'異なる3人のアイドルを選んでね',none:'最初のユニットでも遊べます',loading:'アリーナを準備中…',points:'点',skip:'スキップ ▶▶',prizeDone:'今日の★5は獲得済み！',prizeOpen:'今日の初勝利で★5',round:'ラウンド',yourUnit:'あなたのユニット',copies:'同じカードが複数あるとステージでボーナス',rankTitle:'アリーナTOP・今週',rankEmpty:'今週はまだ勝者がいません。最初の一人になろう！'}
 };
 var DEFAULT=[{nick:'Tsu',canto:5,danca:6,carisma:5,qtd:1},{nick:'Lirika',canto:6,danca:5,carisma:5,qtd:1},{nick:'Pati',canto:5,danca:5,carisma:6,qtd:1}];
 var ATR=['canto','danca','carisma'],ICO=['🎤','💃','💖'],COR=['#ff6fb5','#4dd8ff','#b6ff3b'];
 var SW=560,SH=320,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
 var fase='escalar',showT0=0,showRaf=0; // escalar → show → fim
+var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 function lang(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
 function esc(x){return typeof escHtml==='function'?escHtml(String(x)):String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -120,7 +121,7 @@ function montar(){
 }
 function abrir(){
  montar();ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
- rodadas=null;ocupado=false;msg='';servidor=false;fase='escalar';render();
+ rodadas=null;ocupado=false;msg='';servidor=false;fase='escalar';ranking=null;render();
  // Os visuais dos cards vêm da vitrine que o Hub já usa (sem consulta nova só para o Battle).
  try{if(typeof hubIdolsCarregar==='function'&&!(typeof hubIdolsDados!=='undefined'&&hubIdolsDados)&&logado())hubIdolsCarregar();}catch(e){}
  if(logado()){
@@ -133,7 +134,28 @@ function abrir(){
        render();
      }
    }).catch(function(){});
+   carregarRanking();
  }
+}
+// Ranking semanal de vitórias. Sem a função no servidor (ou com erro) a seção simplesmente não aparece.
+function carregarRanking(){
+ if(!logado())return;
+ contaRpc('battle_ranking').then(function(r){
+   if(!r||!r.ok||!Array.isArray(r.top))return;
+   ranking=r;if(ov&&!ov.hidden&&fase!=='show')render();
+ }).catch(function(){});
+}
+function rankingHtml(){
+ if(!ranking||!servidor)return '';
+ var top=ranking.top.slice(0,5),eu=ranking.eu&&typeof ranking.eu==='object'?ranking.eu:null;
+ var h='<section class="battle-rank"><h3>🏆 '+esc(trB('rankTitle'))+'</h3>';
+ if(!top.length)h+='<p class="battle-hint">'+esc(trB('rankEmpty'))+'</p>';
+ else h+='<ol>'+top.map(function(p,i){
+   return '<li><span class="battle-med">'+(['🥇','🥈','🥉'][i]||(i+1)+'º')+'</span>'+
+    '<canvas class="battle-av battle-av-s" width="132" height="150" data-battle-av="'+esc(p.nick)+'" data-meu="0" aria-hidden="true"></canvas>'+
+    '<b>'+esc(p.nick)+'</b><small>🏆 '+(Number(p.score)||0)+'</small></li>';}).join('')+'</ol>';
+ if(eu&&Number(eu.pos)>0)h+='<p class="battle-rank-eu">'+esc(trB('my'))+': '+Number(eu.pos)+'º · 🏆 '+(Number(eu.score)||0)+'</p>';
+ return h+'</section>';
 }
 function fechar(){pararShow();if(ov)ov.hidden=true;}
 function nomeRound(i){return trB(['cant','dance','charm'][i]);}
@@ -191,7 +213,7 @@ function render(){
    texto+='<p>'+esc(servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>'+
    '<button type="button" class="btn alt" data-battle="salvar">📸 '+esc(trB('save'))+'</button> '+
    '<button type="button" class="btn" data-battle="outra"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>';
-   area.innerHTML=texto;return;
+   area.innerHTML=texto+rankingHtml();desenharMiniaturas();return;
  }
  texto+='<section class="battle-rival"><h3>🏟️ '+esc(trB('daily'))+'</h3><div class="battle-trio">'+
    estado.rival.map(function(c){return idolHtml(c,false,'',-1);}).join('')+
@@ -208,7 +230,7 @@ function render(){
  if(msg)texto+='<p class="battle-error">'+esc(msg)+'</p>';
  texto+='<div class="btns"><button type="button" class="btn battle-start" data-battle="jogar"'+(limite||ocupado?' disabled':'')+'>'+
     esc(limite?trB('locked'):ocupado?trB('loading'):trB('play'))+'</button></div>';
- area.innerHTML=texto;
+ area.innerHTML=texto+rankingHtml();
  desenharMiniaturas();
 }
 function treinoShow(){
@@ -243,7 +265,7 @@ function jogar(){
      starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
      if(typeof setBest==='function')try{setBest();}catch(e){}
    }
-   ocupado=false;comecarShow();
+   ocupado=false;comecarShow();carregarRanking();
  }).catch(function(){msg=trB('error');ocupado=false;render();});
 }
 

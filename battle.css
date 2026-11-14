@@ -29,6 +29,18 @@
 .battle-stage{display:block;width:100%;height:auto;aspect-ratio:7/4;border-radius:19px;border:2px solid var(--battle-border);
  box-shadow:0 4px 0 rgba(90,51,166,.14);background:#2a1258;margin:8px 0}
 .battle-skip{min-height:42px}
+.battle-rank{border:2px solid var(--battle-border);border-radius:19px;padding:12px;margin:10px 0;
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,246,221,.97));box-shadow:0 4px 0 rgba(90,51,166,.11)}
+.battle-rank ol{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.battle-rank li{display:grid;grid-template-columns:30px 40px minmax(0,1fr) auto;align-items:center;gap:8px;
+ padding:4px 10px;border:1px solid #eadfb4;border-radius:13px;background:#fff;font-size:12.5px;color:#4b287c}
+.battle-rank li b{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle-rank li small{font-weight:800;color:#8a5a00;white-space:nowrap}
+.battle-med{text-align:center;font-weight:800;font-size:15px}
+.battle-av.battle-av-s{width:40px;height:45px}
+.battle-rank-eu{margin:8px 0 0;text-align:center;font-size:12px;font-weight:800;color:#73579d}
+/* 4º pódio do Idol⭐News! (Idol⭐Battle!) */
+html body .jornalp .jnpodios>.jnpodio:nth-child(4){--g1:#ffb347;--g2:#ff6fb5}
 .battle-placar{display:inline-block;margin-left:4px;padding:1px 9px;border-radius:99px;background:#7b3ff0;color:#fff;font-size:13px}
 .battle-round.win{border-color:#a8d94a;background:#f6ffe2}
 .battle-round strong{font-size:14px}

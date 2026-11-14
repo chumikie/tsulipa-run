@@ -39,4 +39,12 @@ assert.match(src,/data-battle="pular"/);
 assert.match(src,/prefers-reduced-motion/);
 assert.match(src,/function fimDoShow\(/);
 assert.ok(!/Math\.random/.test(src),'o cliente não sorteia nada');
+// Top da Arena: leitura opcional; proposta de SQL só lê, sem prêmio e sem expor ids.
+const rankSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_ranking_REVIEW_ONLY.sql'),'utf8');
+assert.match(src,/contaRpc\('battle_ranking'\)/);
+assert.match(rankSql,/create or replace function public\.battle_ranking\(\) returns jsonb/i);
+assert.match(rankSql,/language sql stable security definer set search_path to ''/i);
+assert.match(rankSql,/revoke all on function public\.battle_ranking\(\) from public,anon/i);
+assert.ok(!/insert into|update public|delete from|stars/i.test(rankSql),'ranking é só leitura');
+assert.match(fs.readFileSync(path.join(root,'jornal.js'),'utf8'),/Array\.isArray\(d\.arena\)/);
 console.log('OK: Battle v1 — treino seguro, 6 idiomas, contrato RPC, limites e acesso pelo mapa');

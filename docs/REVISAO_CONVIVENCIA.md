@@ -19,3 +19,11 @@ A prévia Vercel consultada está em a40eeb5 e não representa a versão final d
 - Autorizar a versão exata a ser usada na atualização da prévia.
 
 As verificações automatizadas usam dados simulados. A reversão da interface não desfaz recompensas já gravadas.
+
+## Microcenas de atividades — entrega incremental
+
+- Jardim: o objeto nas mãos acompanha o fato confirmado (sementes ao plantar, regador ao regar, flor ao colher).
+- Café: vapor discreto na xícara; Jardim: gotinhas ao regar e um brilho breve nas outras duas etapas. Apenas na lembrança confirmada do jogador, nunca atribuídos a outros avatares.
+- Em movimento reduzido, o objeto permanece estático; sem novos timers, saves, pontuações, RPCs, inventário ou sons.
+- Botões de lembranças do Camarim com alvos de 48 px e moldura Polaroid; contraste revisado no tema escuro, incluindo 320 px.
+- Os testes com Canvas simulado validam as três ações do Jardim. Safari e login real continuam pendentes.

@@ -50,23 +50,23 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
         A(f"<path d='M{cx},483 q-55,-50 -55,43 M{cx},483 q55,-50 55,43' stroke='#7fd3ff' stroke-width='8' fill='none' stroke-linecap='round'/>")
         A(f"<circle cx='{cx}' cy='482' r='13' fill='#ffe08a'/>")
     elif bairro == 'arena' and indice == 1:
-        # Arena reservada: uma única vaga central para Idol⭐Battle!, não clicável.
-        A("<g data-reserva='idol-battle'><title>Idol⭐Battle! — Em breve</title>")
+        # Arena de Idol⭐Battle!: a cena é clicável pelo mapa; treino até ativação oficial do servidor.
+        A("<g data-reserva='idol-battle'><title>Idol⭐Battle! — Entrar na Arena</title>")
         A(f"<ellipse cx='{cx}' cy='560' rx='203' ry='54' fill='#7951bc' opacity='.19'/>")
         A(f"<path d='M{cx-170},558 L{cx-150},378 Q{cx},298 {cx+150},378 L{cx+170},558 Z' fill='{grad('arenarua','#a37bff','#7b3ff0')}'/>")
         A(f"<path d='M{cx-128},550 L{cx-108},420 Q{cx},365 {cx+108},420 L{cx+128},550 Z' fill='#ffe0f0'/>")
         A(f"<ellipse cx='{cx}' cy='552' rx='131' ry='27' fill='#ffb56b'/>")
         A(f"<rect x='{cx-140}' y='328' width='280' height='44' rx='22' fill='#fff9ff' stroke='#d3b3ff' stroke-width='3'/>")
         A(f"<text x='{cx}' y='357' font-family='Mochiy Pop One' font-size='20' fill='#7b3ff0' text-anchor='middle'>Idol★Battle!</text>")
-        A(f"<text x='{cx}' y='479' font-family='Mochiy Pop One' font-size='19' fill='#7b3ff0' text-anchor='middle'>Em breve</text>")
+        A(f"<text x='{cx}' y='479' font-family='Mochiy Pop One' font-size='19' fill='#7b3ff0' text-anchor='middle'>Entrar</text>")
         A("</g>")
     elif (bairro == 'fofo' and indice == 2) or (bairro == 'ceu' and indice == 2):
-        # Uma vaga decorativa por jogo futuro: sem áreas clicáveis ou links falsos.
+        # Entradas do Bloom e Photo Studio: a navegação é feita pelo Canvas.
         flor = bairro == 'fofo'
         identificador = 'bloom-garden' if flor else 'photo-studio'
         legenda = 'Bloom★Garden!' if flor else 'Photo★Studio!'
         cor = '#68bc88' if flor else '#7b3ff0'
-        A(f"<g data-reserva='{identificador}'><title>{legenda} — Em breve</title>")
+        A(f"<g data-reserva='{identificador}'><title>{legenda} — Entrar</title>")
         A(f"<ellipse cx='{cx}' cy='565' rx='166' ry='20' fill='#553280' opacity='.12'/>")
         A(f"<rect x='{cx-165}' y='410' width='330' height='145' rx='24' fill='#fff7f0' stroke='#fff' stroke-width='4'/>")
         A(f"<rect x='{cx-151}' y='421' width='302' height='15' rx='7' fill='{cor}' opacity='.28'/>")
@@ -84,7 +84,7 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
         A(f"<rect x='{cx-133}' y='374' width='266' height='49' rx='23' fill='#fff' stroke='{cor}' stroke-width='3'/>")
         A(f"<text x='{cx}' y='406' text-anchor='middle' font-family='Mochiy Pop One' font-size='19' fill='{cor}'>{legenda}</text>")
         A(f"<rect x='{cx-87}' y='531' width='174' height='27' rx='13' fill='#ff6fb5'/>")
-        A(f"<text x='{cx}' y='550' text-anchor='middle' font-family='Mochiy Pop One' font-size='14' fill='#fff'>Em breve</text>")
+        A(f"<text x='{cx}' y='550' text-anchor='middle' font-family='Mochiy Pop One' font-size='14' fill='#fff'>Entrar</text>")
         A("</g>")
     elif bairro == 'arena':
         # Laterais da arena são decorativas, sem slots extras inventados.

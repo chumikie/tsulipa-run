@@ -31,7 +31,9 @@ test("demo: liga só em prévia/local com ?demo=1 e nunca no site oficial", () =
 test("demo: cobre as chamadas dos jogos novos e mantém a faixa de aviso", () => {
   for(const rpc of ["jardim_estado","jardim_plantar","jardim_regar","jardim_colher","jardim_usar_flor",
     "battle_status","battle_jogar","battle_ranking","battle_torcida","battle_torcida_levar","battle_unit_salvar","battle_arena","battle_desafiar",
-    "studio_pauta","studio_clique","studio_publicar","studio_mural","studio_curtir","studio_capa"])
+    "studio_pauta","studio_clique","studio_publicar","studio_mural","studio_curtir","studio_capa",
+    "cafe_run_iniciar","cafe_run_pedido","cafe_run_etapa","cafe_run_finalizar","cafe_caderno",
+    "handshake_estado","handshake_iniciar","handshake_run_finish","handshake_premio"])
     assert.ok(demo.includes("'" + rpc + "'"), "falta simular " + rpc);
   assert.match(demo, /Modo demonstração/);
   assert.match(demo, /feitas >= 5[\s\S]*erro:'limite'/, "limite de 5 partidas por dia");

@@ -2,7 +2,8 @@
    Serve para testar SEM LOGIN, com uma conta de mentira ("Demo", ★500):
    Pedido de fã, Troca de cards, Festival de Unidades, Ensaio de trio, Álbum,
    Idol⭐Battle! (rival do dia, Top da Arena, Arena dos Idols, Torcida de flores),
-   Bloom⭐Garden! e Photo⭐Studio! (pauta, prêmio, mural).
+   Bloom⭐Garden!, Photo⭐Studio! (pauta, prêmio, mural), Happy⭐Cafe! (partida verificada, cliente VIP,
+   bônus do dia) e Handshake⭐Event! (8 rodadas, cor do lightstick, prêmio do dia).
    As regras e os limites copiam as funções de supabase/sql/aplicado/ (5 partidas, 3 desafios,
    1 rega por dia, ★5 uma vez por dia...). O botão "+1 dia" da faixa avança o dia simulado.
    Nada é gravado: as respostas são inventadas no próprio navegador e somem ao recarregar.
@@ -49,8 +50,18 @@
       partidas: [], premiadoDia: '', vitoriasSemana: 0, partidasSemana: 0, pedidos: {},
       minhaUnit: null, meusFas: 0, desafios: [], fasAlheios: {},
       torcidaDia: '', torcidaFlor: null,
-      fotoPremioDia: '', mural: null, proxId: 100
+      fotoPremioDia: '', mural: null, proxId: 100,
+      cafeRuns: {}, cafeSessoes: {}, cafeReceitas: {}, hsSessoes: {}, hsPremio: null, bonusDia: {}, tickets: 0
     };
+    function novoId(){ try{ return crypto.randomUUID(); }catch(e){ return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); } }
+    function semanaJogo(){ return Math.floor((Math.floor(Date.parse(D.dia + 'T00:00:00Z') / 864e5) + 3) / 7) % 5; }   // mesma conta do servidor
+    function sorteio(n){ return Math.floor(Math.random() * n); }
+    function inteiro(v){ return typeof v === 'number' && isFinite(v) && Math.floor(v) === v; }
+    // Igual a private.bonus_jogo_dia_dar: ★10 na 1ª partida verificada do dia com 600+ pontos (Café e Handshake).
+    function bonusDoDia(jogo, pontos){
+      if(pontos < 600 || D.bonusDia[jogo] === D.dia) return 0;
+      D.bonusDia[jogo] = D.dia; mudaSaldo(10); return 10;
+    }
     function atributos(nick){ var o = {}; TIPOS.forEach(function(k){ o[k] = 1 + hash(baixo(nick) + k) % 10; }); return o; }
     function qtdCard(nick){ return 1 + hash(baixo(nick) + 'q') % 3; }
     function meusCards(){   // os cards da conta de mentira: até 8 Idols da vitrine
@@ -244,6 +255,112 @@
         r = { ok:true, dia:D.dia, alvo:alvo.nick, desafios:hoje.length + 1, rodadas:rod2, vitoria:v2 >= 2, premio:0, torcida:torcidaHoje() };
         D.desafios.push({ dia:D.dia, alvo:alvo.nick }); D.pedidos[a.p_requisicao] = r;
         return r;
+      }
+      /* ---- Happy⭐Cafe! (pr71_recordes_online, 20261113_cafe_vip e 20261113_bonus_jogo_dia) ---- */
+      if(n === 'cafe_run_iniciar'){
+        if(Object.keys(D.cafeRuns).filter(function(k){ return D.cafeRuns[k].dia === D.dia; }).length >= 20) return { ok:false, erro:'limite' };
+        r = novoId(); D.cafeRuns[r] = { dia:D.dia, rodadas:0, vidas:3, pontos:0, combo:0, comboMax:0, perfeitos:0, fim:false, ultimo:null };
+        return { ok:true, run_id:r };
+      }
+      if(n === 'cafe_run_pedido'){
+        var run = D.cafeRuns[a.p_run];
+        if(!run) return { ok:false, erro:'run' };
+        if(run.fim || run.rodadas >= 12 || run.vidas <= 0) return { ok:false, erro:'run_fechado' };
+        var aberta = run.ultimo && D.cafeSessoes[run.ultimo];
+        if(aberta && !aberta.concluido) return { ok:true, sessao:run.ultimo, pedido:aberta.pedido, rodada:aberta.etapa, limite_segundos:aberta.limite };
+        var sem = semanaJogo(), baseSem = [3,2,1,4,0][sem], doceSem = [0,1,2,3,0][sem];
+        var ped = { base:sorteio(5), cob:run.rodadas >= 2 || Math.random() < .4 ? sorteio(3) : -1, enf:sorteio(4),
+          doce:run.rodadas >= 4 && Math.random() < .6 ? sorteio(4) : -1 };
+        if(Math.random() < .5){ ped.base = baseSem; if(ped.doce >= 0) ped.doce = doceSem; }
+        var sid = novoId();
+        D.cafeSessoes[sid] = { run:a.p_run, pedido:ped, etapa:run.rodadas + 1, limite:Math.max(7, 15 - Math.ceil(run.rodadas * .75)), criado:Date.now(), concluido:false };
+        run.ultimo = sid;
+        return { ok:true, sessao:sid, pedido:ped, rodada:run.rodadas + 1, limite_segundos:D.cafeSessoes[sid].limite };
+      }
+      if(n === 'cafe_run_etapa'){
+        var se = D.cafeSessoes[a.p_sessao], ru = se && D.cafeRuns[se.run], m = a.p_monta;
+        if(!se || !ru) return { ok:false, erro:'sessao' };
+        if(se.concluido) return { ok:true, confirmado:true, repetido:true, certo:se.certo, pontos_etapa:se.pontos, pontos:ru.pontos, rodadas:ru.rodadas, vidas:ru.vidas, combo:ru.combo };
+        var seg = (Date.now() - se.criado) / 1000;
+        if(ru.fim || ru.vidas <= 0 || seg < .5 || !m || typeof m !== 'object' || typeof a.p_saiu !== 'boolean') return { ok:false, erro:'sessao' };
+        if(!inteiro(m.base) || !inteiro(m.cob) || !inteiro(m.enf) || !inteiro(m.doce) || m.base < -1 || m.base > 4 || m.cob < -1 || m.cob > 2 ||
+          m.enf < -1 || m.enf > 3 || m.doce < -1 || m.doce > 3) return { ok:false, erro:'monta' };
+        var resto = Math.max(0, Math.min(1, 1 - seg / se.limite)), pd = se.pedido;
+        var certoC = !a.p_saiu && seg <= se.limite + 1.5 && m.base === pd.base && m.cob === pd.cob && m.enf === pd.enf && m.doce === pd.doce;
+        var comboC = certoC ? ru.combo + 1 : 0, pts = 0;
+        if(certoC){
+          pts = Math.round((100 + Math.round(resto * 100) + (pd.cob >= 0 ? 30 : 0) + (pd.doce >= 0 ? 40 : 0)) * (1 + Math.min(comboC - 1, 5) * .1)) +
+            (pd.base === [3,2,1,4,0][semanaJogo()] ? 50 : 0);
+          if(se.etapa === 6 || se.etapa === 11) pts *= 2;   // cliente VIP paga em dobro
+          D.cafeReceitas[pd.base + '-' + pd.enf] = 1;
+        }
+        se.concluido = true; se.certo = certoC; se.pontos = pts;
+        ru.rodadas++; if(!certoC) ru.vidas--; ru.pontos += pts; ru.combo = comboC; ru.comboMax = Math.max(ru.comboMax, comboC); if(certoC) ru.perfeitos++;
+        return { ok:true, confirmado:true, repetido:false, certo:certoC, pontos_etapa:pts, pontos:ru.pontos, rodadas:ru.rodadas, vidas:ru.vidas, combo:comboC, perfeitos:ru.perfeitos };
+      }
+      if(n === 'cafe_run_finalizar'){
+        var rf = D.cafeRuns[a.p_run];
+        if(!rf) return { ok:false, erro:'run' };
+        var jaFim = rf.fim;
+        if(!rf.fim){
+          if(rf.vidas > 0 && rf.rodadas < 12) return { ok:false, erro:'incompleto' };
+          if(rf.ultimo && D.cafeSessoes[rf.ultimo] && !D.cafeSessoes[rf.ultimo].concluido) return { ok:false, erro:'pedido_pendente' };
+          rf.fim = true; bonusDoDia('cafe', rf.pontos);
+        }
+        return { ok:true, confirmado:true, repetido:jaFim, run_id:a.p_run, pontos_verificados:rf.pontos, rodadas:rf.rodadas, perfeitos:rf.perfeitos, combo_max:rf.comboMax };
+      }
+      if(n === 'cafe_caderno') return Object.keys(D.cafeReceitas).sort();
+      /* ---- Handshake⭐Event! (20261103200000_handshake_premio, 20261113_handshake_hora_extra e _handshake_cor) ---- */
+      if(n === 'handshake_estado') return D.hsPremio && D.hsPremio.dia === D.dia
+        ? { ok:true, entregue:true, dia:D.hsPremio.dia, tipo:D.hsPremio.tipo, item:D.hsPremio.item, pontos:D.hsPremio.pontos } : { ok:true, entregue:false };
+      if(n === 'handshake_iniciar'){
+        if(Object.keys(D.hsSessoes).filter(function(k){ return D.hsSessoes[k].dia === D.dia; }).length >= 30) return { ok:false, erro:'limite' };
+        var todos = [], cores = [];
+        for(var rd = 1; rd <= 8; rd++){
+          var qt = Math.min(3 + Math.floor((rd - 1) * .8), 6), fila = [], cf2 = [];
+          for(i = 0; i < qt; i++){
+            var pres = sorteio(14); while(fila.indexOf(pres) >= 0) pres = (pres + 1) % 14;
+            fila.push(pres); if(rd >= 3) cf2.push(sorteio(6));   // cor do lightstick da 3ª rodada em diante
+          }
+          todos.push(fila); cores.push(cf2);
+        }
+        r = novoId(); D.hsSessoes[r] = { dia:D.dia, desafios:todos, cores:cores, criado:Date.now(), fim:null };
+        return { ok:true, sessao:r, desafios:todos, cores:cores };
+      }
+      if(n === 'handshake_run_finish' || n === 'handshake_premio'){
+        var hsS = D.hsSessoes[a.p_sessao], R = a.p_respostas;
+        if(!hsS) return { ok:false, erro:'sessao' };
+        if(hsS.fim){ r = Object.assign({}, hsS.fim, { repetido:true, premio_novo:false }); return r; }
+        if(Date.now() - hsS.criado < 9000 || !Array.isArray(R)) return { ok:false, erro:'sessao' };
+        if(R.length < 1 || R.length > 60) return { ok:false, erro:'respostas' };
+        var presSem = [0,1,8,12,3][semanaJogo()], vistos = {}, ult = 0, cb = 0, cbMax = 0, pt = 0, ace = 0;
+        for(i = 0; i < R.length; i++){
+          var q = R[i];
+          if(!q || typeof q !== 'object' || !inteiro(q.rodada) || !inteiro(q.origem) || !inteiro(q.indice) || !inteiro(q.resposta) || !inteiro(q.restante) ||
+            typeof q.superfa !== 'boolean') return { ok:false, erro:'respostas' };
+          if(q.rodada < 1 || q.rodada > 8 || q.rodada < ult || q.origem < 1 || q.origem > q.rodada || q.indice < 0 || q.resposta < -1 || q.resposta > 13 ||
+            q.restante < 0 || q.restante > 1000 || q.superfa !== (q.origem < q.rodada) || q.indice >= hsS.desafios[q.origem - 1].length) return { ok:false, erro:'respostas' };
+          var ch = q.rodada + ':' + q.origem + ':' + q.indice;
+          if(vistos[ch]) return { ok:false, erro:'duplicado' };
+          vistos[ch] = 1; ult = q.rodada;
+          var verd = hsS.desafios[q.origem - 1][q.indice];
+          if(q.resposta === verd){
+            ace++; cb++; cbMax = Math.max(cbMax, cb);
+            var bs = 100 + Math.floor(q.restante * .08 + .5) + q.rodada * 10 + (q.superfa ? 150 : 0);
+            pt += Math.floor(bs * (1 + Math.min(cb - 1, 10) * .1) + .5);
+            if(verd === presSem) pt += 50;
+            var vcor = hsS.cores[q.origem - 1][q.indice];
+            if(typeof vcor === 'number' && inteiro(q.cor) && q.cor === vcor) pt += 50;   // lightstick certo
+          }else cb = 0;
+        }
+        bonusDoDia('hand', pt);
+        var basico = { ok:true, confirmado:true, repetido:false, pontos_verificados:pt, acertos:ace, combo_max:cbMax, premio_novo:false };
+        if(pt < 600){ basico.missao = ace > 0; hsS.fim = basico; return basico; }
+        if(D.hsPremio && D.hsPremio.dia === D.dia){ basico.premio_entregue = true; hsS.fim = basico; return basico; }
+        // No servidor o prêmio é ticket (40%) ou mimo do pet (60%). Aqui é sempre ticket, para não gravar nada no save do pet deste aparelho.
+        D.tickets++; D.hsPremio = { dia:D.dia, tipo:'ticket', item:'', pontos:pt };
+        hsS.fim = Object.assign({}, basico, { dia:D.dia, pontos:pt, tipo:'ticket', item:'' });
+        return Object.assign({}, hsS.fim, { premio_novo:true, tickets:D.tickets });
       }
       /* ---- Photo⭐Studio! (20261114_photo_studio.sql e _studio_mural.sql) ---- */
       if(n === 'studio_pauta'){ r = pauta(); r.ok = true; return r; }

@@ -61,6 +61,7 @@
     ocupado = true; msg = ''; ui();
     rpc(nome, args).then(function(r){
       if(r && r.ok){
+        if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});
         if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
         if(nome === 'jardim_colher'){ msg = SEM[r.flor][0] + ' ' + t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now()}); if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
         else if(typeof beep === 'function') try{ beep(nome === 'jardim_regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}

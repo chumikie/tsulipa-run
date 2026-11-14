@@ -90,7 +90,8 @@
     cv.addEventListener('click',function(e){
       if(arrastou){arrastou=false;return;}
       if(!mapaAtivo()||mergulho)return;
-      var l=achar(e);if(!l)return;
+      var l=achar(e);
+      if(!l){if(cena!=='mundo'){var pm=pontoMapa(e);tocarRua(pm.x,pm.y);}return;}
       if(cena==='mundo'){entrarRua(l.id);return;}
       if(l.voltar){voltarAoMundo();return;}
       if(l.bloom){window.bloomAbrir();return;}
@@ -326,7 +327,7 @@
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
-    else{detalhes(tm);andar(tm);nomesDasPortas();alertasRua(tm);}
+    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);andar(tm);nomesDasPortas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
@@ -555,6 +556,108 @@
     ctx.fillStyle=pele;ctx.beginPath();ctx.ellipse(0,0,3,2.5,0,0,Math.PI*2);ctx.fill();
     ctx.restore();
   }
+  /* ---------- Vida e toques nas ruas (só enfeite: nada é salvo nem enviado) ----------
+     Tocar no chão leva o seu Idol até lá; tocar num passeante faz ele pular e responder;
+     a fonte da Praça espirra água; bichinhos (borboletas, gatinho, passarinhos) reagem.
+     Com "reduzir movimento" fica só o balãozinho de resposta, sem animação. */
+  var toques=[],meuPasseio=null,pulos={},ultimos=[],bichoAssustado={},MEU_PARA=3.2;
+  var BICHOS={fofo:'borboleta',praca:'borboleta',harajuku:'gato',ceu:'passaro',palco:'gato',arena:'passaro'};
+  var TEMA_TOQUE={palco:['♪','♫','★'],harajuku:['✦','💗','✧'],fofo:['🌷','✿','❀'],praca:['♡','❤','✦'],arena:['★','✦','♪'],ceu:['☁','★','✧']};
+  function somMapa(k){try{if(typeof twJogoSom==='function')twJogoSom(k);}catch(e){}}
+  function pontoMapa(e){var r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)*MW/r.width+OX,y:(e.clientY-r.top)*MH/r.height+OY};}
+  // Borboletas e passarinhos: voo em curvas suaves, cada um com seu ritmo.
+  function posBicho(k,tm){
+    var fuga=bichoAssustado[cena+k],extra=fuga?Math.max(0,1-(tm-fuga)/1.6):0;
+    if(BICHOS[cena]==='passaro'){var vx=60+k*14,x=((tm*vx+k*530)%1900)-150+extra*extra*260;
+      return {x:x,y:150+k*48+Math.sin(tm*1.3+k)*18-extra*120,dir:1};}
+    var cx=[420,900,1260][k%3],t=tm*(0.5+k*.07);
+    return {x:cx+Math.sin(t)*150+Math.sin(t*2.3)*40+extra*180,y:600+Math.cos(t*1.7)*60-extra*140,dir:Math.cos(t)>=0?1:-1};
+  }
+  function desenharBichos(tm){
+    var tipo=BICHOS[cena];if(!tipo)return;
+    if(tipo==='gato'){
+      var gx=cena==='palco'?560:550,gy=700,noite=new Date().getHours()>=21||new Date().getHours()<6,
+          pt=pulos['gato'],up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*18:0,
+          cauda=reduzMov?0:Math.sin(tm*2.2)*.5;
+      ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);
+      ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(0,14+up,26,5,0,0,7);ctx.fill();
+      ctx.strokeStyle='#f6a04d';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(18,6);
+      ctx.quadraticCurveTo(38,0,34+cauda*10,-18);ctx.stroke();
+      ctx.fillStyle='#ffb35c';ctx.beginPath();ctx.ellipse(0,2,24,14,0,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(-18,-10,13,0,7);ctx.fill();
+      ctx.beginPath();ctx.moveTo(-29,-16);ctx.lineTo(-27,-31);ctx.lineTo(-18,-21);ctx.closePath();ctx.fill();
+      ctx.beginPath();ctx.moveTo(-15,-21);ctx.lineTo(-7,-30);ctx.lineTo(-6,-14);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#fff3e0';ctx.beginPath();ctx.ellipse(-20,-6,7,5,0,0,7);ctx.fill();
+      ctx.strokeStyle='#5a3a2a';ctx.lineWidth=2;
+      if(noite&&pt==null){ctx.beginPath();ctx.moveTo(-26,-12);ctx.lineTo(-21,-12);ctx.moveTo(-15,-12);ctx.lineTo(-10,-12);ctx.stroke();
+        if(!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='16px "Mochiy Pop One",sans-serif';ctx.globalAlpha=.4+.4*Math.sin(tm*2);ctx.fillText('z',2,-34-((tm*12)%14));}}
+      else{ctx.fillStyle='#3a2a2a';ctx.beginPath();ctx.arc(-23,-12,2.3,0,7);ctx.arc(-13,-12,2.3,0,7);ctx.fill();}
+      ctx.restore();
+      if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-92,'♪',Math.min(1,(1.8-(tm-pt))*2));
+      return;
+    }
+    var n=tipo==='passaro'?3:4;
+    for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm),tam=tipo==='passaro'?1.6:2;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.dir*tam,tam);
+      if(tipo==='borboleta'){var asa=reduzMov?1:Math.abs(Math.sin(tm*9+k)),cor=['#ff8fc8','#ffd36b','#b98bff','#7fd3ff'][k];
+        ctx.fillStyle=cor;ctx.globalAlpha=.92;
+        ctx.beginPath();ctx.ellipse(-6*asa,-5,8*asa+1,7,-.4,0,7);ctx.ellipse(6*asa,-5,8*asa+1,7,.4,0,7);ctx.fill();
+        ctx.beginPath();ctx.ellipse(-5*asa,5,5*asa+1,5,.3,0,7);ctx.ellipse(5*asa,5,5*asa+1,5,-.3,0,7);ctx.fill();
+        ctx.fillStyle='#5a3a7a';ctx.fillRect(-1.3,-8,2.6,16);}
+      else{var bat=reduzMov?0:Math.sin(tm*10+k)*7;
+        ctx.fillStyle=['#7fd3ff','#ffb3d6','#fff3a8'][k];ctx.beginPath();ctx.ellipse(0,0,13,9,0,0,7);ctx.fill();
+        ctx.beginPath();ctx.arc(11,-5,7,0,7);ctx.fill();ctx.fillStyle='#ffb35c';ctx.beginPath();ctx.moveTo(17,-6);ctx.lineTo(24,-4);ctx.lineTo(17,-2);ctx.fill();
+        ctx.fillStyle='#3a2a4a';ctx.beginPath();ctx.arc(13,-7,1.6,0,7);ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.moveTo(-4,-2);ctx.lineTo(4,-2);ctx.lineTo(-2,-14-bat);ctx.closePath();ctx.fill();}
+      ctx.restore();}
+  }
+  function desenharToques(tm){
+    toques=toques.filter(function(t){var u=(tm-t.t0)/(t.dur||1);if(u>1||u<0)return false;ctx.save();
+      if(t.tipo==='alvo'){ctx.globalAlpha=1-u;ctx.strokeStyle='#b6ff3b';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(t.x,t.y,14+u*30,4+u*8,0,0,7);ctx.stroke();}
+      else if(t.tipo==='agua'){for(var g=0;g<16;g++){var a=g/16*Math.PI*2,r=u*150,h=Math.sin(u*Math.PI)*120;ctx.globalAlpha=1-u;ctx.fillStyle=g%2?'#a9eaff':'#ffffff';
+          ctx.beginPath();ctx.ellipse(t.x+Math.cos(a)*r,t.y-h*(.6+.4*Math.abs(Math.sin(a*3)))+Math.sin(a)*r*.25,4,6,0,0,7);ctx.fill();}
+        ctx.globalAlpha=1-u;ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(t.x,t.y+40,40+u*170,8+u*24,0,0,7);ctx.stroke();
+        if(u<.85){ctx.globalAlpha=Math.min(1,(.85-u)*4);ctx.fillStyle='#7b3ff0';ctx.font='26px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.fillText(t.txt,t.x,t.y-150-u*30);}}
+      else{ctx.font='24px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        for(var p=0;p<7;p++){var a2=-Math.PI/2+(p-3)*.42,r2=18+u*80;ctx.globalAlpha=1-u*u;
+          ctx.fillStyle=['#ff6fb5','#7b3ff0','#ffb300','#4169e1'][p%4];ctx.fillText(t.sim[p%t.sim.length],t.x+Math.cos(a2)*r2,t.y+Math.sin(a2)*r2-u*20);}}
+      ctx.restore();return true;});
+  }
+  var FALA_TOQUE={pt:'✨ Desejo feito!',en:'✨ Wish made!',es:'✨ ¡Deseo pedido!',id:'✨ Harapan dibuat!',th:'✨ ขอพรแล้ว!',ja:'✨ ねがいごと!'};
+  function tocarRua(x,y){
+    var tm=performance.now()/1000;
+    // 1) passeante tocado: pula e responde (o seu Idol responde com coração)
+    var q=null;ultimos.forEach(function(o){if(Math.abs(o.x-x)<22*ESCALA_RUA&&y<=o.y+8&&y>=o.y-52*ESCALA_RUA)q=o;});
+    if(q){pulos[q.i]=tm;somMapa('ponto');if(!reduzMov)toques.push({x:q.x,y:q.y-50*ESCALA_RUA,t0:tm,dur:.9,sim:q.dono?['❤','♡']:['♪','✦','❤']});desenhar();return;}
+    // 2) bichinhos
+    var tipo=BICHOS[cena];
+    if(tipo==='gato'){var gx=cena==='palco'?560:550;if(Math.abs(x-gx)<70&&Math.abs(y-680)<60){pulos['gato']=tm;somMapa('toque');desenhar();return;}}
+    else if(tipo){var n=tipo==='passaro'?3:4;for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm);
+      if(Math.hypot(b.x-x,b.y-y)<60){bichoAssustado[cena+k]=tm;somMapa('toque');if(!reduzMov)toques.push({x:b.x,y:b.y,t0:tm,dur:.8,sim:['♡','✦']});desenhar();return;}}}
+    // 3) fonte da Praça: espirra água e faz um desejo
+    if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){somMapa('regar');
+      toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});desenhar();return;}
+    // 4) chão: o seu Idol caminha até lá, para um pouco e volta ao passeio
+    if(y>=650&&ultimos.some(function(o){return o.dono;})){
+      var meu=ultimos.find(function(o){return o.dono;}),alvo=Math.max(60,Math.min(1540,x));
+      meuPasseio={x0:meu.x,x1:alvo,t0:tm,ida:reduzMov?.01:Math.max(.35,Math.abs(alvo-meu.x)/(ANDA*1.3))};
+      toques.push({tipo:'alvo',x:alvo,y:Math.min(756,Math.max(744,y)),t0:tm,dur:.8});somMapa('toque');desenhar();return;
+    }
+    // 5) qualquer outro lugar: um punhado de símbolos do bairro
+    if(!reduzMov){toques.push({x:x,y:y,t0:tm,dur:1,sim:TEMA_TOQUE[cena]||['✦']});somMapa('toque');desenhar();}
+  }
+  // Posição do seu Idol enquanto atende ao toque: ida → pausa → volta suave ao passeio.
+  function passeioDoToque(q,tm){
+    var m=meuPasseio;if(!m)return q;var t=tm-m.t0;
+    if(t<0||t>m.ida+MEU_PARA+1.2){meuPasseio=null;return q;}
+    if(t<m.ida){var u=t/m.ida;u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,volta:0};}
+    if(t<m.ida+MEU_PARA){
+      // Parou perto da fonte da Praça: joga uma moedinha e faz um desejo.
+      if(cena==='praca'&&!m.desejo&&Math.abs(m.x1-800)<190){m.desejo=1;somMapa('regar');
+        toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});}
+      return {x:m.x1,dir:m.x1>=m.x0?1:-1,mov:0,porta:-1,volta:0,pausa:t-m.ida,toque:true};
+    }
+    var v=(t-m.ida-MEU_PARA)/1.2;v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,volta:0};
+  }
   var ESCALA_RUA=1.75;   // Idols maiores só nas ruas; o mapa geral continua de longe.
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
@@ -571,6 +674,7 @@
         var fixo=p.dono&&registro&&objeto?objeto.porta:i%3;
         if(p.dono&&registro&&cena==='praca')fixo=1;
         var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
+        if(p.dono&&meuPasseio)q=passeioDoToque(q,tm);
         q.p=p;q.i=i;q.y=744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
       });
       var fa=rua.find(function(q){return q.p.nomeFa;});
@@ -583,9 +687,12 @@
         fa.x=900;fa.y=756;fa.mov=0;fa.dir=-1;
         if(reencontro)meuIdol.dir=1;
       }
+      ultimos=[];
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
         var p=q.p,c=perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
+        var pulo=pulos[q.i];if(pulo!=null){var up=(tm-pulo)/.5;if(up>=0&&up<1&&!reduzMov)bob-=Math.sin(up*Math.PI)*16*k;if(tm-pulo>1.6)delete pulos[q.i];}
+        ultimos.push({x:q.x,y:q.y,i:q.i,dono:!!p.dono});
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
           ((p.dono&&registro)||(q.i===1&&!p.dono));
         var pose=q.mov||segurando?'':(p.av.pose||'');
@@ -635,6 +742,11 @@
           }
         }
         // parado numa porta: de vez em quando um balãozinho (♪ ❤ ★), que aparece e some suave
+        if(pulo!=null&&tm-pulo<1.6){
+          balao(q.x+(q.dir<0?-40:40)*k,q.y-44*sc+4,p.dono?'❤':BALOES[(q.i*3+1)%BALOES.length],Math.min(1,(1.6-(tm-pulo))*3));
+        }else if(q.toque){
+          balao(q.x+(q.dir<0?-40:40)*k,q.y-44*sc+4,'✨',Math.min(1,q.pausa*3,(MEU_PARA-q.pausa)*3));
+        }else
         if(!q.mov&&!p.nomeFa&&!reduzMov&&!(reencontro&&p.dono)&&(q.volta+q.i)%2===0){
           var fase=q.pausa,a=Math.min(1,fase*3,(PARA-fase)*3);
           balao(q.x+(q.dir<0?-40:40)*k,q.y-44*sc+4,BALOES[(q.volta+q.i)%BALOES.length],Math.max(0,a));

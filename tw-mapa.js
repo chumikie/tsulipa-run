@@ -48,8 +48,8 @@
     'Vila das Flores':{en:'Flower Village',es:'Villa de las Flores',id:'Desa Bunga',th:'หมู่บ้านดอกไม้',ja:'お花の村'},
     'Praça Central':{en:'Central Square',es:'Plaza Central',id:'Alun-alun Pusat',th:'จัตุรัสกลาง',ja:'セントラル広場'},
     'Jardim das Nuvens':{en:'Cloud Garden',es:'Jardín de las Nubes',id:'Taman Awan',th:'สวนเมฆ',ja:'雲の庭'},
-    'Em breve':{en:'Coming soon',es:'Próximamente',id:'Segera hadir',th:'เร็วๆ นี้',ja:'近日公開'},
-    'em breve':{en:'coming soon',es:'próximamente',id:'segera hadir',th:'เร็วๆ นี้',ja:'近日公開'}};
+    'Entrar':{en:'Enter',es:'Entrar',id:'Masuk',th:'เข้าไป',ja:'入る'},
+    'Jardim':{en:'Garden',es:'Jardín',id:'Taman',th:'สวน',ja:'ガーデン'}};
   // botões e rótulos em HTML do mapa, nos seis idiomas do site
   var UI={voltar:{pt:'◀ Mapa',en:'◀ Map',es:'◀ Mapa',id:'◀ Peta',th:'◀ แผนที่',ja:'◀ マップ'},
     zoom:{pt:'🔎 Aproximar',en:'🔎 Zoom in',es:'🔎 Acercar',id:'🔎 Perbesar',th:'🔎 ซูมเข้า',ja:'🔎 ズーム'},
@@ -244,7 +244,7 @@
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
       img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=4';
+      img.src='./'+arquivo+'?v=5';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();
@@ -260,7 +260,7 @@
     }
     var ids=BAIRROS[cena].lugares,centros=[300,800,1300],achado=null;
     // Bloom⭐Garden!: a horta da Vila das Flores abre o jardim quando o servidor já tem o jogo
-    if(cena==='fofo'&&window.TW_BLOOM_ON&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
+    if(cena==='fofo'&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
       return {id:'bloom',bloom:true,box:[1100,280,1500,640]};
     // Photo⭐Studio! e Idol⭐Battle!: com login usa RPCs, sem login só treino.
     if(cena==='ceu'&&studioLigado()&&x>=1100&&x<=1500&&y>=280&&y<=640)
@@ -298,20 +298,11 @@
   function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function');}
   function battleLigado(){return !!(window.TW_BATTLE_ON&&typeof window.battleAbrir==='function');}
   function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
-    T.forEach(function(t){
-      // com o Bloom⭐Garden! ligado, a placa "Em breve" da horta vira convite
-      if(studioLigado()&&/^em breve$/i.test(t.t)&&cena==='ceu'&&t.x>1100){
-        var S=window.STUDIO_TR,SL=S&&(S[lang()]||S.pt);t=Object.assign({},t,{t:'📸 '+(SL?SL.pauta:'Pauta do dia')});
-      }
-      if(battleLigado()&&/^em breve$/i.test(t.t)&&cena==='arena'){
-        var F=window.TW_BATTLE_TR,FL=F&&(F[lang()]||F.pt);
-        t=Object.assign({},t,{t:'🎤 '+(FL?FL.play:'Começar show!'),s:19});
-      }
-      if(window.TW_BLOOM_ON&&/^em breve$/i.test(t.t)&&(cena==='fofo'||(cena==='mundo'&&t.x<700))){
-        var B=window.BLOOM_TR,L=B&&(B[lang()]||B.pt);
-        t=Object.assign({},t,cena==='mundo'?{t:'Bloom★Garden!',s:t.s*.8}:{t:'🌱 '+(L?L.plantar:'Plantar')});
-      }
-      texto(t);});}
+    // O SVG gerado já usa as entradas reais. Não depender de login nem de
+    // respostas RPC para substituir "Em breve": visitante vê "Entrar",
+    // e Bloom abre o fluxo de login quando a conta for necessária.
+    T.forEach(texto);
+  }
   function desenhar(){
     if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;
     var tm=performance.now()/1000;

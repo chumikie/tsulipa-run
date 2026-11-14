@@ -86,6 +86,7 @@
       if(l.voltar){voltarAoMundo();return;}
       if(l.bloom){window.bloomAbrir();return;}
       if(l.studio){window.studioAbrir();return;}
+      if(l.battle){window.battleAbrir();return;}
       var c=card(l);if(c&&!c.disabled)c.click();
     });
     sec.querySelector('.tw-mapa-voltar').addEventListener('click',voltarAoMundo);
@@ -261,9 +262,11 @@
     // Bloom⭐Garden!: a horta da Vila das Flores abre o jardim quando o servidor já tem o jogo
     if(cena==='fofo'&&window.TW_BLOOM_ON&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
       return {id:'bloom',bloom:true,box:[1100,280,1500,640]};
-    // Photo⭐Studio!: o estúdio do Jardim das Nuvens (com conta; o treino sem conta abre pela própria janela)
+    // Photo⭐Studio! e Idol⭐Battle!: com login usa RPCs, sem login só treino.
     if(cena==='ceu'&&studioLigado()&&x>=1100&&x<=1500&&y>=280&&y<=640)
       return {id:'studio',studio:true,box:[1100,280,1500,640]};
+    if(cena==='arena'&&battleLigado()&&x>=600&&x<=1000&&y>=280&&y<=640)
+      return {id:'battle',battle:true,box:[600,280,1000,640]};
     ids.forEach(function(id,i){if(!id)return;var l=TW_LUGARES.find(function(v){return v.id===id;});
       if(!l)return;var b=[centros[i]-200,280,centros[i]+200,640];
       if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l))achado={id:l.id,card:l.card,box:b};
@@ -273,7 +276,15 @@
   // Textos das artes (tools/mapa/textos.py): no canvas a fonte Mochiy Pop One funciona e o texto é traduzido.
   function texto(t){
     var s=nome(t.t);ctx.save();ctx.translate(t.x,t.y);if(t.r)ctx.rotate(t.r*Math.PI/180);
-    ctx.font=t.s+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';ctx.textBaseline='alphabetic';ctx.textAlign='left';
+    // Rótulos com a mesma família tipográfica do hub; cabem na placa também
+    // quando a tradução é maior (sem cortar o texto ou mudar o hitbox).
+    var maxW=cena==='mundo'?310:(t.y<85?480:405);
+    var tamanho=t.s;
+    ctx.font=tamanho+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';
+    var largura=ctx.measureText(s).width;
+    if(largura>maxW){tamanho=Math.max(8,tamanho*maxW/largura);ctx.font=tamanho+'px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif';}
+    ctx.textBaseline='alphabetic';ctx.textAlign='left';
+    ctx.shadowColor='rgba(35,20,87,.28)';ctx.shadowBlur=t.k?2:0;ctx.shadowOffsetY=t.k?1:0;
     var partes=s.split('★'),ws=partes.map(function(p){return ctx.measureText(p).width;}),st=ctx.measureText('★').width,
         tot=ws.reduce(function(a,b){return a+b;},0)+(partes.length-1)*st,x=t.a==='m'?-tot/2:t.a==='e'?-tot:0;
     ctx.lineJoin='round';ctx.lineWidth=t.w||4;
@@ -284,12 +295,17 @@
     });
     ctx.restore();
   }
-  function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function'&&typeof contaJ!=='undefined'&&contaJ);}
+  function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function');}
+  function battleLigado(){return !!(window.TW_BATTLE_ON&&typeof window.battleAbrir==='function');}
   function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
     T.forEach(function(t){
       // com o Bloom⭐Garden! ligado, a placa "Em breve" da horta vira convite
       if(studioLigado()&&/^em breve$/i.test(t.t)&&cena==='ceu'&&t.x>1100){
         var S=window.STUDIO_TR,SL=S&&(S[lang()]||S.pt);t=Object.assign({},t,{t:'📸 '+(SL?SL.pauta:'Pauta do dia')});
+      }
+      if(battleLigado()&&/^em breve$/i.test(t.t)&&cena==='arena'){
+        var F=window.TW_BATTLE_TR,FL=F&&(F[lang()]||F.pt);
+        t=Object.assign({},t,{t:'🎤 '+(FL?FL.play:'Começar show!'),s:19});
       }
       if(window.TW_BLOOM_ON&&/^em breve$/i.test(t.t)&&(cena==='fofo'||(cena==='mundo'&&t.x<700))){
         var B=window.BLOOM_TR,L=B&&(B[lang()]||B.pt);

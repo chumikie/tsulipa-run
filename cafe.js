@@ -474,6 +474,8 @@ function cfUI(){
     cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
+    // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
+    if(cf.fase === 'pedido' && cf.cli && cf.cli.pedido) h += '<p class="cfpedidotxt" aria-live="polite"><b>' + escHtml(tr('Pedido')) + ':</b> ' + escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];

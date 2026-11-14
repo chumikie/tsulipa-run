@@ -27,6 +27,9 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Happy⭐Cafe! em jogo: ingredientes compactos (um grupo por linha) e "Recomeçar copo"/"Servir" presos no rodapé, para não rolar a tela durante o pedido.
 - 320 px: títulos das janelas ("Handshake⭐Event!") e o logo da abertura não cortam mais.
 - Modo demonstração: giro do Star⭐Gacha! (mesmas chances do servidor).
+- Idol⭐Battle!: cada rival esconde um atributo (?), o mesmo para todo mundo no dia (só na tela; o servidor ainda envia o valor).
+- Happy⭐Cafe!: o pedido aparece em letra grande abaixo da cena.
+- Photo⭐Studio!: o resultado diz o que faltou na pauta (as estrelas ficam só na polaroid).
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

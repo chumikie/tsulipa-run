@@ -586,3 +586,5 @@ html body .trform .btn{align-self:center;min-height:48px}
   html body .ov .tw-modal-title{font-size:clamp(15px,5.2vw,22px);padding-left:38px;padding-right:38px;white-space:nowrap}
 }
 @media(max-width:360px){html body .hublogo{font-size:clamp(28px,9.4vw,34px);white-space:nowrap}}
+html body .studiop .stfalta{margin:2px auto 8px;padding:6px 12px;max-width:340px;border-radius:12px;background:#fff7e0;border:2px solid #ffe08a;color:#6b4a00;font-size:13px;font-weight:800;text-align:center}
+html body .studiop .stfalta.ok{background:#eaffde;border-color:#5ccf3a;color:#2c7a12}

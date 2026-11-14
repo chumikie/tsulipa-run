@@ -108,3 +108,4 @@ html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
 .battle-status{padding:8px 12px;margin:6px 0 10px}
 .battle-hint{margin:8px 4px 4px}
 .battlep .btns:has(.battle-start){margin:14px 0 6px;display:flex;justify-content:center}
+.battle-chips i.oculto{background:#2c1a5e;color:#ffe14d;letter-spacing:.02em}

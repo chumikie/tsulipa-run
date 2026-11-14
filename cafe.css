@@ -47,3 +47,5 @@
 .btns.cfacoes #cfServir{flex:1 1 auto;max-width:220px;font-size:17px}
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) .btns.cfacoes{background:linear-gradient(180deg,rgba(32,22,64,0),rgba(32,22,64,.97) 30%)}}
 @media(max-width:360px){.btns.cfacoes{flex-wrap:nowrap;gap:6px}.btns.cfacoes .btn.sec{font-size:11.5px;padding:6px 8px}.btns.cfacoes #cfServir{font-size:15px;padding:8px 10px}}
+.cfpedidotxt{margin:6px 0 4px;padding:8px 12px;border-radius:14px;background:#fff;border:2px solid #ffc8e2;color:#3c2a8f;font-size:14px;font-weight:800;line-height:1.35;text-align:center;box-shadow:0 3px 0 rgba(255,111,181,.18)}
+.cfpedidotxt b{color:#d2447f;margin-right:2px}

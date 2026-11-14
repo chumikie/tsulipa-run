@@ -480,10 +480,16 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
   if(zoom){ sc = H2 / 46; tx = W2 / 2 - 15 * sc; ty = H2 * .5 - 10 * sc; chao = ty + 44 * sc; }   // rostinho: da coroa até os ombros
   else { sc = H2 / (big ? 68 : 82); chao = H2 * (big ? .95 : .9); tx = W2 / 2 - 15 * sc - (pet ? 10 * sc : 0); ty = chao - 44 * sc; }
   if(camera){
-    var base = camera === 'rosto' ? 46 : camera === 'meio' ? 60 : 78;
-    sc = Math.min(H2 * .88 / base, W2 * .82 / (pet ? 76 : camera === 'rosto' ? 44 : camera === 'meio' ? 50 : 58));
-    tx = W2 / 2 - (pet ? 25 : 17) * sc;
-    ty = H2 * .06 + 22 * sc;
+    // O desenho real ocupa y=-28..52 (80 unidades), não só os 44 até o chão.
+    // Cada enquadramento escolhe uma fatia diferente desse mesmo desenho.
+    // Rosto: rosto/ombros; meio: até o quadril; inteiro: sapatos visíveis.
+    var alturaVisivel = camera === 'rosto' ? 36 : camera === 'meio' ? 54 : 80;
+    var larguraVisivel = camera === 'rosto' ? 30 : camera === 'meio' ? 38 : 54;
+    var ocupacao = camera === 'rosto' ? .96 : .82;
+    if(camera !== 'inteiro') pet = null; // o close não encolhe o Idol para caber o Pet
+    sc = Math.min(H2 * .9 / alturaVisivel, W2 * ocupacao / larguraVisivel);
+    tx = W2 / 2 - (pet ? 24 : 15) * sc;
+    ty = H2 * .05 + 28 * sc; // topo do cabelo com margem igual nos três modos
     chao = ty + 44 * sc;
   }
   var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;

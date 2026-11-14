@@ -821,6 +821,7 @@ function petPhoneMomentosLimpar(){
   if(ampliada)ampliada.removeAttribute('src');
   if(download)download.removeAttribute('href');
   petPhoneMomentos.forEach(petPhoneMomentoSoltar);
+  petVidaFotoCache = null; petVidaFotoUrl = '';
   petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = ''; petPhoneMomentoSelecionado = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
@@ -1691,6 +1692,20 @@ function petVidaLembrancaAbrir(acao){
   return true;
 }
 // As lembranças ocupam a prateleira superior e acompanham o móvel.
+var petVidaFotoCache = null, petVidaFotoUrl = '';
+var petVidaRetornoInicio = -1000;
+function petVidaFotoAtual(){
+  petPhoneMomentosConferir();
+  var momento = petPhoneContaChave() ? petCartaFotoMomento() : null;
+  var url = momento && (momento.miniUrl || momento.url) || '';
+  if(!/^(blob:|data:image\/png;base64,)/.test(url)) url = '';
+  if(url !== petVidaFotoUrl){
+    petVidaFotoUrl = url;petVidaFotoCache = null;
+    if(url){petVidaFotoCache = new Image();petVidaFotoCache.src = url;}
+  }
+  return petVidaFotoCache && petVidaFotoCache.complete && petVidaFotoCache.naturalWidth
+    ? petVidaFotoCache : null;
+}
 function petVidaOlharLembranca(t, inicio, livre){
   if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
     !TWVidaCidade.objetosCamarim().length) return 0;
@@ -1703,6 +1718,7 @@ function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
   if(!objetos.length)return false;
+  var fotoReal=petVidaFotoAtual();
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
   objetos.forEach(function(a){
     x.save();x.translate(PET_VIDA_PRATELEIRA[a.tipo].x+dx,PET_VIDA_PRATELEIRA.y);
@@ -1715,7 +1731,11 @@ function petVidaLembrancaCenario(x){
     }else if(a.tipo==='foto'){
       x.rotate(-.04);x.fillStyle='#fff';x.fillRect(-9,-22,18,21);
       x.fillStyle='#e2caff';x.fillRect(-6,-19,12,13);
-      x.fillStyle='#9e76d9';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-9);
+      if(fotoReal){
+        var escala=Math.min(12/fotoReal.naturalWidth,13/fotoReal.naturalHeight);
+        var fw=fotoReal.naturalWidth*escala,fh=fotoReal.naturalHeight*escala;
+        x.drawImage(fotoReal,-fw/2,-19+(13-fh)/2,fw,fh);
+      }else{x.fillStyle='#9e76d9';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-9);}
       x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-9,-22,18,21);
     }
     x.restore();
@@ -1763,9 +1783,11 @@ function petDrawRoom(){
     !petLifePose && !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
 
-  var olharLembranca = petVidaOlharLembranca(petT,petLifePoseInicio,
-    petLifePose === 'conviver' && !sleepy && !petAnim && !petLifePhoneOlhar &&
-    !petArrumando && !petEmote && petHop <= 0 && petCharT <= 0 &&
+  var retornoLembranca = !petLifePose && petT-petVidaRetornoInicio < 290;
+  var olharLembranca = petVidaOlharLembranca(petT,
+    retornoLembranca ? petVidaRetornoInicio : petLifePoseInicio,
+    (petLifePose === 'conviver' || retornoLembranca) && !sleepy && !petAnim && !petLifePhoneOlhar &&
+    !petArrumando && !petEmote && !amizade && !idolBrincando && petHop <= 0 && petCharT <= 0 &&
     petRecepcaoFrames <= 0 && petLove <= 0 && p.fome >= 25 && p.humor >= 25);
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
@@ -1957,6 +1979,7 @@ function petOpenUI(){
   petView = petData ? 'room' : 'col';
   petShow();
   petRecepcaoFrames = petData ? 90 : 0;
+  petVidaRetornoInicio = petT;
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){

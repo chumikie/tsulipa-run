@@ -145,3 +145,25 @@ assert.ok(trecho.length>100);
 assert.equal(/requestAnimationFrame|setTimeout|setInterval|contaRpc|petSave\(/.test(trecho),false);
 assert.equal(/requestAnimationFrame|setTimeout|setInterval|localStorage|contaRpc/.test(src),false);
 console.log('OK Vida de Idol⭐: objetos no Canvas, encontros por proximidade e sem eventos falsos/novos loops');
+
+// A foto só é decodificada quando muda e sai do quadro ao perder o dono ou a origem.
+let momentoFoto={url:'data:image/png;base64,AAAA'}, contaFoto='idol-a', criadas=0;
+const fotoCtx={
+  Image:class {constructor(){criadas++;this.complete=true;this.naturalWidth=100;this.naturalHeight=60;}},
+  petPhoneMomentosConferir(){},
+  petPhoneContaChave:()=>contaFoto,
+  petCartaFotoMomento:()=>momentoFoto
+};
+vm.runInNewContext(pet.slice(pet.indexOf('var petVidaFotoCache'),pet.indexOf('function petVidaOlharLembranca(')),fotoCtx);
+const imagemInicial=fotoCtx.petVidaFotoAtual();
+assert.ok(imagemInicial);
+assert.equal(fotoCtx.petVidaFotoAtual(),imagemInicial);
+assert.equal(criadas,1);
+momentoFoto=null;
+assert.equal(fotoCtx.petVidaFotoAtual(),null);
+momentoFoto={url:'https://example.com/foto.png'};
+assert.equal(fotoCtx.petVidaFotoAtual(),null);
+momentoFoto={url:'blob:foto-local'};
+assert.ok(fotoCtx.petVidaFotoAtual());
+contaFoto='';
+assert.equal(fotoCtx.petVidaFotoAtual(),null);

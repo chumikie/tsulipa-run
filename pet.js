@@ -850,6 +850,7 @@ function petPhoneMomentoGuardar(tipo, url){
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
   petPhoneMomentosLimitar();
+  if(window.TWVidaCidade)window.TWVidaCidade.registrar('foto',{id:entrada.id});
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
@@ -871,6 +872,7 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
   petPhoneMomentos.push({tipo:tipo,rotulo:'Karaoke⭐Time!',url:url,miniUrl:miniUrl,blobUrl:true,
     bytes:blob.size+(mini ? mini.size : 0),dono:dono,id:String(Date.now())+'-'+String(Math.random()).slice(2,8)});
   petPhoneMomentosLimitar();
+  if(window.TWVidaCidade)window.TWVidaCidade.registrar('foto',{id:petPhoneMomentos[petPhoneMomentos.length-1].id});
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }

@@ -59,4 +59,19 @@ assert.match(arenaSql,/enable row level security/i);
 for(const f of ['battle_unit_salvar\\(jsonb\\)','battle_arena\\(\\)','battle_desafiar\\(text,jsonb,uuid\\)'])
   assert.match(arenaSql,new RegExp('revoke all on function public\\.'+f+' from public,anon','i'));
 assert.match(arenaSql,/revoke all on function private\.battle_unit_resolver\(uuid,jsonb\) from public,anon,authenticated/i);
+// Torcida de flores (v3): proposta; substitui battle_jogar/battle_desafiar por cópias inteiras + bônus.
+const torSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_v3_torcida_REVIEW_ONLY.sql'),'utf8');
+assert.match(src,/contaRpc\('battle_torcida'\)/);assert.match(src,/contaRpc\('battle_torcida_levar',\{p_flor:k\}\)/);
+assert.ok(!/stars\s*=\s*stars\s*\+\s*(?!5\b)/.test(torSql),'a torcida não cria prêmio novo');
+assert.equal((torSql.match(/stars=stars\+5/g)||[]).length,1,'só o prêmio já existente do rival do dia');
+assert.match(torSql,/primary key \(player_id,dia\)/i);
+// as cópias das funções aplicadas só podem diferir nas linhas da torcida
+const semTorcida=t=>t.split('\n').filter(l=>!/v_tor|v_bonus|-- v3:/.test(l)).join('\n');
+const corpo=(t,n)=>{const i=t.indexOf('create or replace function public.'+n);return t.slice(i,t.indexOf('end $fn$;',i));};
+const v2Sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/20261114_idol_battle_v2_arena.sql'),'utf8');
+for(const [orig,n] of [[sql,'battle_jogar('],[v2Sql,'battle_desafiar(']]){
+  const a=semTorcida(corpo(orig,n)).split('\n'),b=semTorcida(corpo(torSql,n)).split('\n');
+  assert.equal(b.length,a.length-3,n+' mantém as mesmas linhas fora as 3 reescritas');
+  assert.ok(b.every(l=>a.includes(l)),n+' não muda nenhuma outra linha');
+}
 console.log('OK: Battle v1 — treino seguro, 6 idiomas, contrato RPC, limites e acesso pelo mapa');

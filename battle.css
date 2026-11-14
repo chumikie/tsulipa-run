@@ -34,6 +34,12 @@
  font:800 12.5px/1.2 inherit;font-family:inherit;cursor:pointer;padding:6px 8px}
 .battle-tab.on{background:linear-gradient(105deg,#7b3ff0,#4169e1);border-color:#7b3ff0;color:#fff}
 .battle-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.battle-torcida{border:2px solid #ffc8e2;border-radius:19px;padding:12px;margin:10px 0;
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,236,246,.97));box-shadow:0 4px 0 rgba(90,51,166,.11)}
+.battle-flores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+.battle-flores .btn{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:50px;margin:0;padding:7px 6px;font-size:13px}
+.battle-flores .btn small{font-size:11.5px;font-weight:800;opacity:.85}
+.battle-bonus{font-style:normal;font-weight:800;font-size:11px;color:#c2337f;background:#ffe3f1;border-radius:99px;padding:1px 6px}
 .battle-fas{text-align:center;font-weight:800;font-size:12.5px;color:#c2337f;margin:8px 0 0}
 .battle-error.ok{color:#2c7a3f}
 .battle-def .btns{margin-top:9px}.battle-def .btn{min-height:42px}

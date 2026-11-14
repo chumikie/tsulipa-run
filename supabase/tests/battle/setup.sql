@@ -17,6 +17,8 @@ create table public.coracoes(de uuid,para uuid,dia date);
 create table public.recados(id bigint,para uuid,de uuid);
 create table public.star_log(user_id uuid,delta integer,reason text);
 create table private.dia_teste(dia date);
+-- mesmo formato da tabela de flores do Bloom⭐Garden! em produção
+create table private.jardim_flores(user_id uuid not null,flor text not null check (flor in ('sakura','tulipa','girassol','lunar')),qtd integer not null default 0 check (qtd>=0),primary key(user_id,flor));
 insert into private.dia_teste values('2026-11-14');
 create function public.hoje_br() returns date language sql stable as $$
  select dia from private.dia_teste limit 1

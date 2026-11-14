@@ -513,6 +513,8 @@
       var fa=rua.find(function(q){return q.p.nomeFa;});
       var meuIdol=rua.find(function(q){return q.p.dono;});
       var reencontro=fa&&meuIdol&&!meuIdol.mov&&meuIdol.porta===1;
+      var reconhecendo=reencontro&&!reduzMov&&meuIdol.pausa<.35;
+      var despedindo=reencontro&&!reduzMov&&meuIdol.pausa>PARA-.65;
       if(fa){
         // O fã espera na Praça. O gesto acontece quando o Idol para por perto.
         fa.x=900;fa.y=754;fa.mov=0;fa.dir=-1;
@@ -524,14 +526,22 @@
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
           ((p.dono&&registro)||(q.i===1&&!p.dono));
         var pose=q.mov||segurando?'':(p.av.pose||'');
-        if(reencontro&&q===meuIdol)pose='tchau';
-        if(p.nomeFa&&!reencontro)pose='';
-        var expressao=p.nomeFa?(reencontro?p.av.expr:2):(+p.av.expr||2);
+        if(reencontro&&q===meuIdol)pose=reconhecendo?'':'tchau';
+        if(p.nomeFa){
+          if(!reencontro||reconhecendo)pose='';
+          else if(despedindo)pose=p.jeitoFa==='timido'?'':'tchau';
+        }
+        var expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(+p.av.expr||2);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
         ctx.restore();
-        if(segurando)objetoRua(q.x,q.y,q.dir,objeto.k,sc,c.skin);
+        if(segurando){
+          ctx.save();
+          ctx.globalAlpha=reduzMov?1:Math.min(1,q.pausa*5,(PARA-q.pausa)*5);
+          objetoRua(q.x,q.y,q.dir,objeto.k,sc,c.skin);
+          ctx.restore();
+        }
         if(!q.mov)parados.push(q);
         if(p.nomeFa&&!q.mov){
           // Identificação simples, sem links, sem DOM novo e sem alterar hitboxes.
@@ -542,9 +552,10 @@
           rr(q.x-largura/2,q.y-101,largura,26,11);ctx.fill();ctx.stroke();
           ctx.fillStyle='#674190';ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.fillText(etiqueta,q.x,q.y-88,largura-16);ctx.restore();
-          if(reencontro){
+          if(reencontro&&!reconhecendo){
             var gesto=p.jeitoFa==='timido'?'…':p.jeitoFa==='animado'?'♪':'♥';
             var cor=p.jeitoFa==='timido'?'#9e83bc':p.jeitoFa==='animado'?'#d88731':'#ec6fa8';
+            if(despedindo)gesto=p.jeitoFa==='timido'?'♡':'✦';
             var pausa=meuIdol.pausa;
             var alfa=reduzMov?1:Math.min(1,pausa*3,(PARA-pausa)*3);
             ctx.save();ctx.globalAlpha=alfa;ctx.fillStyle=cor;

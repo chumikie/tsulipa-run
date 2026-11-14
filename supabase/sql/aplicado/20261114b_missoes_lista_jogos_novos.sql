@@ -1,6 +1,4 @@
--- APLICAR LOGO DEPOIS DO MERGE DA #88 (OK do dono já dado em 14/11/2026).
--- Antes do merge o site oficial não tem Jardim, Battle e Studio, e a missão ficaria impossível.
--- Foi aplicado por alguns minutos em 14/11 e revertido pelo mesmo motivo.
+-- APLICADO no Supabase de produção em 14/11/2026 (a #88 é publicada no mesmo dia, decisão do dono).
 -- A contagem (missoes_progresso) já está aplicada: supabase/sql/aplicado/20261114_missoes_jogos_novos.sql.
 CREATE OR REPLACE FUNCTION public.missoes_lista()
 RETURNS TABLE(k text,nivel integer,meta integer,premio integer,fam text)

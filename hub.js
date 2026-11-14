@@ -881,7 +881,7 @@ function hubMontar(){
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
-  $('hubLinks').innerHTML = '<a href="' + HUB_YOUTUBE + '" target="_blank" rel="noopener" data-hlink="yt">▶️ ' + escHtml(tr('YouTube do BRS48')) + '</a><a href="' + HUB_BLOG + '" target="_blank" rel="noopener" data-hlink="blog">📰 ' + escHtml(tr('Blog do BRS48')) + '</a><a href="' + HUB_COLLECT + '" target="_blank" rel="noopener" data-hlink="collect">🎴 BRS48 Collect!</a>';
+  $('hubLinks').innerHTML = '';   // links do BRS48 retirados do site (14/11/2026)
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
   hubIdolsTituloUI();
   if(typeof twPreviewAtualizarIdioma==='function')twPreviewAtualizarIdioma();

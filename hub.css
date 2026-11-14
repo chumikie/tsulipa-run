@@ -150,3 +150,6 @@ body.hubon #mute{visibility:hidden}
 
 /* Próximo Compromisso: escolha opcional após concluir, sem mudar resgates. */
 .hubagenda .hubagendaproximo{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.8);padding:5px 12px}
+
+/* Rodapé sem links externos (retirados em 14/11/2026) */
+.hublinks:empty{display:none}

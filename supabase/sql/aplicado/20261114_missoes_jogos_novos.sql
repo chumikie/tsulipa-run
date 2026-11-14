@@ -1,7 +1,6 @@
 -- APLICADO no Supabase de produção em 14/11/2026 (OK do dono na conversa): só a CONTAGEM das missões novos.
 --   jardim: regar ou plantar um canteiro hoje · battle: uma partida do dia · foto: a foto perfeita do dia
--- A LISTA (missoes_lista) com essas missões NÃO está aplicada: o site oficial ainda não tem os jogos.
--- Ela está em supabase/sql/proposta/20261114_missoes_lista_jogos_novos.sql — aplicar logo depois do merge da #88.
+-- A lista (missoes_lista) está em 20261114b_missoes_lista_jogos_novos.sql, também aplicada.
 CREATE OR REPLACE FUNCTION public.missoes_progresso(p_id uuid,p_k text,p_dia date)
 RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
   WITH l AS (

@@ -311,7 +311,7 @@ html body #hub .tw-mapa{
 html body #hub .tw-mapa-botao{
  border-radius:22px;border-color:rgba(255,255,255,.94);
  background-image:linear-gradient(100deg,rgba(107,62,198,.90),rgba(244,104,169,.78)),
-   url(./mapa-mundo.svg?v=4);
+   url(./mapa-mundo.svg?v=5);
  background-size:auto,150% auto;
  box-shadow:inset 0 2px 0 rgba(255,255,255,.20),0 5px 0 #5d3cab,0 14px 26px -10px rgba(49,26,124,.46);
 }

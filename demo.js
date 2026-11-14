@@ -55,7 +55,7 @@
       album: null, po: 0, gpoReq: {}, duoLog: []
     };
     // álbum de mentira: os 9 primeiros Idols da vitrine, com 1 a 3 cópias (os de 2+ podem virar pó)
-    function album(){ if(!D.album){ D.album = {}; idols().slice(0, 9).forEach(function(p, i){ D.album[p.nick] = i % 3 + 1; }); } return D.album; }
+    function album(){ if(!D.album || !Object.keys(D.album).length){ D.album = {}; idols().slice(0, 9).forEach(function(p, i){ D.album[p.nick] = i % 3 + 1; }); } return D.album; }
     function novoId(){ try{ return crypto.randomUUID(); }catch(e){ return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); } }
     function semanaJogo(){ return Math.floor((Math.floor(Date.parse(D.dia + 'T00:00:00Z') / 864e5) + 3) / 7) % 5; }   // mesma conta do servidor
     function sorteio(n){ return Math.floor(Math.random() * n); }
@@ -447,7 +447,7 @@
     window.TW_DEMO_ESTADO = D;   // para conferir pelo console
 
     var faixa = document.createElement('div');
-    faixa.textContent = '🧪 Modo demonstração · nada é salvo';
+    faixa.textContent = innerWidth < 380 ? '🧪 Demo · nada é salvo' : '🧪 Modo demonstração · nada é salvo';
     faixa.style.cssText = 'position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:99;background:#7b3ff0;color:#fff;font:800 12px "M PLUS Rounded 1c",sans-serif;padding:6px 8px 6px 14px;border-radius:999px;white-space:nowrap;max-width:96vw;box-shadow:0 4px 12px rgba(0,0,0,.25)';
     // "+1 dia": avança o dia simulado, para testar regas, limites diários e prêmios do dia seguinte.
     var maisDia = document.createElement('button');
@@ -459,7 +459,7 @@
       var sem = new Date(D.dia + 'T12:00:00Z').getUTCDay();
       if(sem === 0){ D.vitoriasSemana = 0; D.partidasSemana = 0; }   // Top da Arena: semana começa no domingo
       if(sem === 1) D.mural = null;                                  // mural do Studio: semana começa na segunda
-      faixa.firstChild.nodeValue = '🧪 Demonstração · dia ' + D.dia.slice(8) + '/' + D.dia.slice(5, 7) + ' · reabra o jogo';
+      faixa.firstChild.nodeValue = (innerWidth < 380 ? '🧪 Dia ' : '🧪 Demonstração · dia ') + D.dia.slice(8) + '/' + D.dia.slice(5, 7) + ' · reabra o jogo';
     };
     faixa.appendChild(maisDia);
     document.body.appendChild(faixa);

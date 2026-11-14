@@ -81,7 +81,7 @@
 #twVidaCamarim .tw-vida-foto img{max-height:116px;border-radius:2px}
 @media(max-width:360px){
  #twVidaCamarim .tw-vida-objetos button{flex-basis:104px;min-width:0}
- #twVidaCamarim .tw-vida-objetos button span{overflow-wrap:anywhere}
+ #twVidaCamarim .tw-vida-objetos button span{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 }
 @media(prefers-color-scheme:dark){
  html:not([data-theme="light"]) #twVidaCamarim{

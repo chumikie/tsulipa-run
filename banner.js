@@ -1,5 +1,8 @@
 /* TsuLiPa⭐World — rodízio do banner da página inicial (só front-end).
-   Dia 1: o TsuLiPa (com vozes). Dia 2: um trio de Idols do site. Dia 3: outro trio. Depois recomeça.
+   Ciclo de 4 dias: 3 dias de TsuLiPa (com vozes) e depois 1 dia com UM trio de Idols do site.
+   O trio alterna o estilo do visual em sequência: A·B·A num ciclo e B·A·B no seguinte (A = cabelo curto/pixie
+   ou bermuda, B = cabelo longo/marias/rabo/chanel ou saia). Não há campo de gênero: é só pelo visual escolhido;
+   quem tem visual neutro (ondulado, cacheado...) completa o trio quando falta alguém de um estilo.
    O dia vira à 0h de Brasília. Os trios vêm da vitrine pública (vitrine_idols) e são sorteados pela data,
    então todo mundo vê o mesmo trio no mesmo dia. Idols do site não têm voz: só frase, emoji e um efeito sonoro.
    Este arquivo só declara funções e tabelas. */
@@ -7,11 +10,29 @@ var BANNER_TSULIPA = ['tsu', 'lirika', 'patiliri'];
 var BANNER_FALAS = [['Oi!', '👋'], ['Bem-vindo!', '💖'], ['Vamos jogar?', '🎮'], ['Hoje tem show!', '🎤'], ['Obrigado por vir!', '✨'], ['Bora pro Center!', '🏁'], ['hehe~', '😆']];
 var BANNER_EMO = ['💖', '⭐', '✨', '🎵', '🌸', '💫'];
 var bannerCache = { chave:'', elenco:null };
+var BANNER_CICLO = 4;   // dias por ciclo; o último dia é do trio
+// Estilo do visual (decisão do dono do projeto): a parte de baixo escolhida vale mais que o corte.
+function bannerEstilo(av){
+  var c = av && av.c || {}, baixo = c.baixo, corte = c.back || '';
+  if(baixo === 'bermuda') return 'A';
+  if(baixo === 'saia') return 'B';
+  if(corte === '' || corte === 'pixie') return 'A';
+  if(['longo', 'marias', 'rabo', 'chanel'].indexOf(corte) >= 0) return 'B';
+  return '';
+}
+function bannerMontarTrio(pool, padrao){   // pool já embaralhado; segue o padrão, completa com neutros e depois com qualquer um
+  var usados = {}, trio = [];
+  function pega(teste){ for(var i = 0; i < pool.length; i++){ var p = pool[i]; if(!usados[p.nick] && teste(p)){ usados[p.nick] = 1; return p; } } return null; }
+  padrao.forEach(function(e){
+    trio.push(pega(function(p){ return bannerEstilo(p.avatar) === e; }) || pega(function(p){ return !bannerEstilo(p.avatar); }) || pega(function(){ return true; }));
+  });
+  return trio.every(Boolean) ? trio : null;
+}
 // Uniforme dos trios do site: todos com a mesma roupa do jogo (troca a cada ciclo de 3 dias), cada um num tom pastel
 var BANNER_UNIFORMES = ['seifuku', 'estrelado', 'y2k', 'zipper', 'sweet', 'citypop'];
 var BANNER_PASTEIS = ['#f6c6e0', '#c8e3fb', '#cdeec6'];   // rosa, azul e verde suaves (as cores do TsuLiPa, em pastel)
 function bannerUniforme(c, i, roupa){
-  c.out = roupa || BANNER_UNIFORMES[((Math.floor(bannerDia() / 3) % BANNER_UNIFORMES.length) + BANNER_UNIFORMES.length) % BANNER_UNIFORMES.length];
+  c.out = roupa || BANNER_UNIFORMES[((Math.floor(bannerDia() / BANNER_CICLO) % BANNER_UNIFORMES.length) + BANNER_UNIFORMES.length) % BANNER_UNIFORMES.length];
   c.outcol = BANNER_PASTEIS[i % BANNER_PASTEIS.length];
   return c;
 }
@@ -38,24 +59,22 @@ function bannerPetsCarregar(elenco){   // reaproveita a consulta pública do Per
   });
 }
 function bannerElenco(){   // null = dia do TsuLiPa (ou vitrine ainda não carregou)
-  var dia = bannerDia(), fase = ((dia % 3) + 3) % 3;
-  if(fase === 0 || typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols)) return null;
+  var dia = bannerDia(), fase = ((dia % BANNER_CICLO) + BANNER_CICLO) % BANNER_CICLO;
+  if(fase !== BANNER_CICLO - 1 || typeof hubIdolsDados === 'undefined' || !hubIdolsDados || !Array.isArray(hubIdolsDados.idols)) return null;
   var chave = dia + '|' + hubIdolsDados.idols.length;
   if(bannerCache.chave === chave){ bannerPetsCarregar(bannerCache.elenco); return bannerCache.elenco; }
   var pool = hubIdolsDados.idols.filter(function(p){
     return p && p.nick && p.avatar && p.avatar.c && typeof p.avatar.c === 'object' && BANNER_TSULIPA.indexOf(String(p.nick).toLowerCase()) < 0;
   });
   pool.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
-  var elenco = null;
+  var elenco = null, ciclo = Math.floor(dia / BANNER_CICLO);
   if(pool.length >= 3){
-    pool = bannerSorteio(pool, Math.floor(dia / 3));
-    var ini = fase === 1 ? 0 : 3;
-    elenco = [0, 1, 2].map(function(n){
-      var p = pool[(ini + n) % pool.length];
+    var trio = bannerMontarTrio(bannerSorteio(pool, ciclo), ciclo % 2 ? ['B', 'A', 'B'] : ['A', 'B', 'A']);
+    if(trio) elenco = trio.map(function(p){
       return { nick:String(p.nick).slice(0, 24), av:p.avatar,
         pet:typeof perfPetDoAvatar === 'function' ? perfPetDoAvatar(p.avatar) : null };
     });
-    if(new Set(elenco.map(function(p){ return p.nick; })).size < 3) elenco = null;
+    if(elenco && new Set(elenco.map(function(p){ return p.nick; })).size < 3) elenco = null;
   }
   bannerCache = { chave:chave, elenco:elenco };
   bannerPetsCarregar(elenco);
@@ -98,7 +117,7 @@ function bannerPool(){
   var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols : [];
   L = L.filter(function(p){ return p && p.nick && p.avatar && p.avatar.c && typeof p.avatar.c === 'object' && BANNER_TSULIPA.indexOf(String(p.nick).toLowerCase()) < 0; });
   L.sort(function(a, b){ return String(a.nick).localeCompare(String(b.nick)); });
-  return bannerSorteio(L, Math.floor(bannerDia() / 3));
+  return bannerSorteio(L, Math.floor(bannerDia() / BANNER_CICLO));
 }
 function bannerTorcida(){   // null = sem torcida; {tsulipa:true} = Tsu, Lirika e Pati; senão {gente:[{nick,av}]}
   var eu = String(typeof contaJ !== 'undefined' && contaJ && contaJ.nick || '').toLowerCase();

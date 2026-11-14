@@ -27,7 +27,7 @@ test('banner sorteado desenha somente os Pets públicos associados aos avatares'
   assert.ok(start >= 0 && end > start);
   vm.runInNewContext(perfil.slice(start, end), scope);
   vm.runInNewContext(read('banner.js'), scope);
-  scope.bannerDia = () => 1; // Dia de jogadores, nunca dia do trio oficial.
+  scope.bannerDia = () => 3; // Dia do trio de jogadores (4º dia do ciclo).
 
   const elenco = scope.bannerElenco();
   assert.equal(elenco.length, 3);
@@ -74,7 +74,7 @@ test('banner consulta uma vez os Pets dos perfis públicos quando a vitrine traz
   const perfil = read('perfil.js'), start=perfil.indexOf('function perfPetDoAvatar('), end=perfil.indexOf('function perfHaloTextura(',start);
   vm.runInNewContext(perfil.slice(start,end),scope);
   vm.runInNewContext(read('banner.js'),scope);
-  scope.bannerDia=()=>1;
+  scope.bannerDia=()=>3;
   const elenco=scope.bannerElenco();
   scope.bannerElenco();scope.bannerElenco();
   await new Promise(resolve=>setImmediate(resolve));

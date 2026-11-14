@@ -6,21 +6,43 @@
 (function(){
 'use strict';
 var T={
- pt:{title:'Idol⭐Battle!',subtitle:'Três Idols, três apresentações!',cant:'Canto',dance:'Dança',charm:'Carisma',daily:'Rival do dia',stage:'Escalar sua unit',play:'Começar show!',again:'Tentar novamente',save:'Salvar polaroid',practice:'Treino sem prêmio.',wait:'Carregando a Arena...',error:'Não foi possível conferir o show. Tente novamente.',used:'Tentativas restantes',win:'Sua unit venceu!',lose:'O rival venceu!',draw:'Empate!',reward:'Recompensa confirmada: ★5',noReward:'Sem recompensa nesta partida',locked:'Volte amanhã para desafiar o rival novamente.',guest:'Entre com Google para disputar partidas oficiais.',my:'Você',other:'Rival',starter:'Unit inicial',rivalHint:'Os três rivais são revelados; a ordem de apresentação permanece secreta.',choose:'Escolha três Idols diferentes, um por rodada.',none:'Sem cards suficientes, a unit inicial entra em cena.',loading:'Preparando a Arena...',points:'Pontos',skip:'Pular ▶▶',prizeDone:'★5 de hoje já conquistada!',prizeOpen:'A primeira vitória de hoje vale ★5.',round:'Rodada',yourUnit:'Sua unit',copies:'Cards repetidos dão bônus no palco.',rankTitle:'Top da Arena · semana',rankEmpty:'Ninguém venceu nesta semana ainda. Seja a primeira pessoa!',tabDaily:"Rival do dia",tabArena:"Arena dos Idols",arenaLeft:"Desafios restantes",friendly:"Desafio amistoso: vale a glória, não ★.",arenaMine:"Sua unit na arena",arenaNone:"Você ainda não tem uma unit valendo na arena.",arenaSave:"Deixar minha escalação na arena",arenaSaveHint:"Monte aqui a escalação que fica na arena. Quem desafiar você não vê a ordem.",arenaSaved:"Unit salva! Agora outros Idols podem desafiar você.",arenaEmpty:"Ainda não há units de outros Idols por aqui. Deixe a sua e chame a galera!",challenge:"Desafiar",challenged:"Já desafiado hoje",fans:"fãs da arena",vsUnit:"Unit de {n}",arenaLimit:"Você já fez os desafios de hoje. Volte amanhã!",arenaGone:"Essa unit não está mais disponível.",backArena:"◀ Voltar para a arena",defFan:"A defesa venceu: {n} ganhou um fã ❤️",cheerTitle:"Torcida de flores",cheerToday:"Hoje a torcida levou {f}: +1 em {r}.",cheerPick:"Leve uma flor (1 por dia, ela é gasta) e ganhe +1 nas partidas de hoje:",cheerNone:"Colha flores no Bloom⭐Garden! para animar a torcida: +1 no palco.",cheerAll:"todas as rodadas"},
- en:{title:'Idol⭐Battle!',subtitle:'Three Idols, three performances!',cant:'Singing',dance:'Dance',charm:'Charisma',daily:"Today's rival",stage:'Choose your unit',play:'Start the show!',again:'Try again',save:'Save polaroid',practice:'Practice only, no rewards.',wait:'Loading the Arena...',error:'Could not verify the show. Try again.',used:'Attempts left',win:'Your unit won!',lose:'The rival won!',draw:'Draw!',reward:'Verified reward: ★5',noReward:'No reward this match',locked:'Come back tomorrow to face the rival again.',guest:'Sign in with Google for official matches.',my:'You',other:'Rival',starter:'Starter unit',rivalHint:'See the three rivals, but not their performance order.',choose:'Choose three different Idols, one per round.',none:'Not enough cards? The starter unit can perform.',loading:'Preparing the Arena...',points:'Points',skip:'Skip ▶▶',prizeDone:"Today's ★5 already earned!",prizeOpen:"Today's first win is worth ★5.",round:'Round',yourUnit:'Your unit',copies:'Duplicate cards give a stage bonus.',rankTitle:'Arena Top · this week',rankEmpty:'No wins this week yet. Be the first!',tabDaily:"Today's rival",tabArena:"Idol Arena",arenaLeft:"Challenges left",friendly:"Friendly challenge: for glory, not ★.",arenaMine:"Your unit in the arena",arenaNone:"You don't have a unit in the arena yet.",arenaSave:"Leave my lineup in the arena",arenaSaveHint:"Build the lineup you leave in the arena here. Challengers can't see the order.",arenaSaved:"Unit saved! Other Idols can challenge you now.",arenaEmpty:"No units from other Idols yet. Leave yours and invite everyone!",challenge:"Challenge",challenged:"Already challenged today",fans:"arena fans",vsUnit:"{n}'s unit",arenaLimit:"You've used today's challenges. Come back tomorrow!",arenaGone:"That unit is no longer available.",backArena:"◀ Back to the arena",defFan:"The defense won: {n} gained a fan ❤️",cheerTitle:"Flower cheer",cheerToday:"Today the crowd brought {f}: +1 in {r}.",cheerPick:"Bring one flower (1 per day, it gets used up) for +1 in today's matches:",cheerNone:"Pick flowers in Bloom⭐Garden! to cheer the crowd: +1 on stage.",cheerAll:"every round"},
- es:{title:'Idol⭐Battle!',subtitle:'¡Tres Idols, tres actuaciones!',cant:'Canto',dance:'Baile',charm:'Carisma',daily:'Rival del día',stage:'Forma tu unit',play:'¡Empezar!',again:'Intentar de nuevo',save:'Guardar polaroid',practice:'Solo práctica, sin premios.',wait:'Cargando la Arena...',error:'No se pudo verificar la actuación.',used:'Intentos restantes',win:'¡Ganó tu unit!',lose:'¡Ganó el rival!',draw:'¡Empate!',reward:'Premio verificado: ★5',noReward:'Sin premio esta vez',locked:'Vuelve mañana.',guest:'Entra con Google para jugar oficialmente.',my:'Tú',other:'Rival',starter:'Unit inicial',rivalHint:'Se ven los rivales, pero no su orden.',choose:'Elige tres Idols distintos.',none:'La unit inicial puede jugar.',loading:'Preparando la Arena...',points:'Puntos',skip:'Saltar ▶▶',prizeDone:'¡★5 de hoy ya conseguida!',prizeOpen:'La primera victoria de hoy vale ★5.',round:'Ronda',yourUnit:'Tu unit',copies:'Los cards repetidos dan un bonus en el escenario.',rankTitle:'Top de la Arena · semana',rankEmpty:'Nadie ha ganado esta semana todavía. ¡Sé la primera persona!',tabDaily:"Rival del día",tabArena:"Arena de Idols",arenaLeft:"Desafíos restantes",friendly:"Desafío amistoso: por la gloria, no por ★.",arenaMine:"Tu unit en la arena",arenaNone:"Aún no tienes una unit en la arena.",arenaSave:"Dejar mi alineación en la arena",arenaSaveHint:"Arma aquí la alineación que dejas en la arena. Quien te desafíe no ve el orden.",arenaSaved:"¡Unit guardada! Ahora otros Idols pueden desafiarte.",arenaEmpty:"Todavía no hay units de otros Idols. ¡Deja la tuya e invita a todos!",challenge:"Desafiar",challenged:"Ya desafiado hoy",fans:"fans de la arena",vsUnit:"Unit de {n}",arenaLimit:"Ya hiciste los desafíos de hoy. ¡Vuelve mañana!",arenaGone:"Esa unit ya no está disponible.",backArena:"◀ Volver a la arena",defFan:"Ganó la defensa: {n} sumó un fan ❤️",cheerTitle:"Hinchada de flores",cheerToday:"Hoy la hinchada llevó {f}: +1 en {r}.",cheerPick:"Lleva una flor (1 por día, se gasta) y gana +1 en los shows de hoy:",cheerNone:"Cosecha flores en Bloom⭐Garden! para animar a la hinchada: +1 en el escenario.",cheerAll:"todas las rondas"},
- id:{title:'Idol⭐Battle!',subtitle:'Tiga Idol, tiga penampilan!',cant:'Menyanyi',dance:'Tari',charm:'Karisma',daily:'Lawan hari ini',stage:'Pilih unit',play:'Mulai pertunjukan!',again:'Coba lagi',save:'Simpan polaroid',practice:'Latihan saja, tanpa hadiah.',wait:'Memuat Arena...',error:'Hasil tidak dapat diverifikasi.',used:'Percobaan tersisa',win:'Unitmu menang!',lose:'Lawan menang!',draw:'Seri!',reward:'Hadiah terverifikasi: ★5',noReward:'Tanpa hadiah kali ini',locked:'Kembali besok.',guest:'Masuk Google untuk pertandingan resmi.',my:'Kamu',other:'Lawan',starter:'Unit awal',rivalHint:'Tiga lawan terlihat, urutannya rahasia.',choose:'Pilih tiga Idol berbeda.',none:'Unit awal bisa digunakan.',loading:'Menyiapkan Arena...',points:'Poin',skip:'Lewati ▶▶',prizeDone:'★5 hari ini sudah didapat!',prizeOpen:'Kemenangan pertama hari ini bernilai ★5.',round:'Babak',yourUnit:'Unitmu',copies:'Kartu duplikat memberi bonus di panggung.',rankTitle:'Top Arena · minggu ini',rankEmpty:'Belum ada yang menang minggu ini. Jadilah yang pertama!',tabDaily:"Lawan hari ini",tabArena:"Arena Idol",arenaLeft:"Tantangan tersisa",friendly:"Tantangan persahabatan: demi kehormatan, bukan ★.",arenaMine:"Unitmu di arena",arenaNone:"Kamu belum punya unit di arena.",arenaSave:"Taruh susunanku di arena",arenaSaveHint:"Susun di sini unit yang kamu taruh di arena. Penantang tidak melihat urutannya.",arenaSaved:"Unit tersimpan! Idol lain sekarang bisa menantangmu.",arenaEmpty:"Belum ada unit Idol lain. Taruh unitmu dan ajak semuanya!",challenge:"Tantang",challenged:"Sudah ditantang hari ini",fans:"penggemar arena",vsUnit:"Unit {n}",arenaLimit:"Tantangan hari ini sudah habis. Kembali besok!",arenaGone:"Unit itu sudah tidak tersedia.",backArena:"◀ Kembali ke arena",defFan:"Pertahanan menang: {n} mendapat satu penggemar ❤️",cheerTitle:"Dukungan bunga",cheerToday:"Hari ini penonton membawa {f}: +1 di {r}.",cheerPick:"Bawa satu bunga (1 per hari, bunganya terpakai) untuk +1 di pertandingan hari ini:",cheerNone:"Petik bunga di Bloom⭐Garden! untuk menyemangati penonton: +1 di panggung.",cheerAll:"semua babak"},
- th:{title:'Idol⭐Battle!',subtitle:'ไอดอล 3 คน 3 รอบ!',cant:'ร้องเพลง',dance:'เต้น',charm:'เสน่ห์',daily:'คู่แข่งวันนี้',stage:'เลือกยูนิต',play:'เริ่มโชว์!',again:'ลองอีกครั้ง',save:'บันทึกโพลารอยด์',practice:'โหมดฝึกซ้อมเท่านั้น ไม่มีรางวัล',wait:'กำลังโหลดอารีนา...',error:'ตรวจสอบผลไม่ได้ ลองอีกครั้ง',used:'ครั้งที่เหลือ',win:'ยูนิตของคุณชนะ!',lose:'คู่แข่งชนะ!',draw:'เสมอ!',reward:'รางวัลยืนยัน: ★5',noReward:'รอบนี้ไม่มีรางวัล',locked:'กลับมาใหม่พรุ่งนี้',guest:'เข้าสู่ระบบ Google เพื่อเล่นจริง',my:'คุณ',other:'คู่แข่ง',starter:'ยูนิตเริ่มต้น',rivalHint:'เห็นคู่แข่งทั้งสาม แต่ไม่เห็นลำดับ',choose:'เลือกไอดอล 3 คนไม่ซ้ำกัน',none:'ใช้ยูนิตเริ่มต้นได้',loading:'กำลังเตรียมอารีนา...',points:'คะแนน',skip:'ข้าม ▶▶',prizeDone:'ได้รับ ★5 ของวันนี้แล้ว!',prizeOpen:'ชนะครั้งแรกของวันนี้ได้ ★5',round:'รอบ',yourUnit:'ยูนิตของคุณ',copies:'การ์ดซ้ำให้โบนัสบนเวที',rankTitle:'ท็อปอารีนา · สัปดาห์นี้',rankEmpty:'สัปดาห์นี้ยังไม่มีใครชนะ มาเป็นคนแรกกันเถอะ!',tabDaily:"คู่แข่งวันนี้",tabArena:"อารีนาไอดอล",arenaLeft:"ท้าได้อีก",friendly:"ท้าประลองกระชับมิตร: เพื่อเกียรติ ไม่ได้ ★",arenaMine:"ยูนิตของคุณในอารีนา",arenaNone:"คุณยังไม่มียูนิตในอารีนา",arenaSave:"วางยูนิตของฉันในอารีนา",arenaSaveHint:"จัดยูนิตที่จะวางในอารีนาได้ที่นี่ ผู้ท้าจะไม่เห็นลำดับ",arenaSaved:"บันทึกยูนิตแล้ว! ไอดอลคนอื่นท้าคุณได้แล้ว",arenaEmpty:"ยังไม่มียูนิตของไอดอลคนอื่น วางของคุณแล้วชวนทุกคนมาเลย!",challenge:"ท้าประลอง",challenged:"ท้าไปแล้ววันนี้",fans:"แฟนอารีนา",vsUnit:"ยูนิตของ {n}",arenaLimit:"วันนี้ท้าครบแล้ว กลับมาใหม่พรุ่งนี้!",arenaGone:"ยูนิตนี้ไม่พร้อมใช้งานแล้ว",backArena:"◀ กลับไปอารีนา",defFan:"ฝ่ายป้องกันชนะ: {n} ได้แฟนเพิ่ม ❤️",cheerTitle:"กองเชียร์ดอกไม้",cheerToday:"วันนี้กองเชียร์ถือ {f}: +1 ใน{r}",cheerPick:"นำดอกไม้ 1 ดอก (วันละ 1 ดอก ใช้แล้วหมดไป) เพื่อ +1 ในการแข่งวันนี้:",cheerNone:"เก็บดอกไม้ใน Bloom⭐Garden! มาให้กองเชียร์: +1 บนเวที",cheerAll:"ทุกรอบ"},
- ja:{title:'Idol⭐Battle!',subtitle:'3人のアイドルで3ステージ！',cant:'歌',dance:'ダンス',charm:'カリスマ',daily:'今日のライバル',stage:'ユニットを編成',play:'ショー開始！',again:'もう一度',save:'ポラロイドを保存',practice:'練習のみ。報酬はありません。',wait:'アリーナを読み込み中…',error:'結果を確認できませんでした。',used:'残り挑戦回数',win:'あなたのユニットの勝ち！',lose:'ライバルの勝ち！',draw:'引き分け！',reward:'確定報酬：★5',noReward:'今回は報酬なし',locked:'また明日挑戦してね',guest:'公式戦はGoogleでログイン',my:'あなた',other:'ライバル',starter:'初期ユニット',rivalHint:'ライバル3人は見えるけど、出番は秘密',choose:'異なる3人のアイドルを選んでね',none:'最初のユニットでも遊べます',loading:'アリーナを準備中…',points:'点',skip:'スキップ ▶▶',prizeDone:'今日の★5は獲得済み！',prizeOpen:'今日の初勝利で★5',round:'ラウンド',yourUnit:'あなたのユニット',copies:'同じカードが複数あるとステージでボーナス',rankTitle:'アリーナTOP・今週',rankEmpty:'今週はまだ勝者がいません。最初の一人になろう！',tabDaily:"今日のライバル",tabArena:"アイドルアリーナ",arenaLeft:"残りチャレンジ",friendly:"フレンドリーマッチ：★はなし、名誉をかけて！",arenaMine:"アリーナのあなたのユニット",arenaNone:"まだアリーナにユニットがありません。",arenaSave:"この編成をアリーナに置く",arenaSaveHint:"アリーナに置く編成をここで組めます。挑戦者に出番は見えません。",arenaSaved:"ユニットを保存！他のアイドルが挑戦できます。",arenaEmpty:"まだ他のアイドルのユニットがありません。あなたのユニットを置いてみんなを誘おう！",challenge:"挑戦する",challenged:"今日は挑戦済み",fans:"アリーナのファン",vsUnit:"{n}のユニット",arenaLimit:"今日のチャレンジは終了。また明日！",arenaGone:"そのユニットは今は使えません。",backArena:"◀ アリーナに戻る",defFan:"防衛成功：{n}にファンが1人増えた ❤️",cheerTitle:"お花の応援",cheerToday:"今日の応援は{f}：{r}に+1。",cheerPick:"花を1つ届けると（1日1つ・使うとなくなります）、今日のバトルで+1：",cheerNone:"Bloom⭐Garden!で花を摘んで応援しよう：ステージで+1。",cheerAll:"全ラウンド"}
+ pt:{title:'Idol⭐Battle!',subtitle:'Três Idols, três apresentações!',cant:'Canto',dance:'Dança',charm:'Carisma',daily:'Rival do dia',stage:'Escalar sua unit',play:'Começar show!',again:'Tentar novamente',save:'Salvar polaroid',practice:'Treino sem prêmio.',wait:'Carregando a Arena...',error:'Não foi possível conferir o show. Tente novamente.',used:'Tentativas restantes',win:'Sua unit venceu!',lose:'O rival venceu!',draw:'Empate!',reward:'Recompensa confirmada: ★5',noReward:'Sem recompensa nesta partida',locked:'Volte amanhã para desafiar o rival novamente.',guest:'Entre com Google para disputar partidas oficiais.',my:'Você',other:'Rival',starter:'Unit inicial',rivalHint:'Os três rivais são revelados; a ordem de apresentação permanece secreta.',choose:'Escolha três Idols diferentes, um por rodada.',none:'Sem cards suficientes, a unit inicial entra em cena.',loading:'Preparando a Arena...',points:'Pontos',skip:'Pular ▶▶',prizeDone:'★5 de hoje já conquistada!',prizeOpen:'A primeira vitória de hoje vale ★5.',round:'Rodada',yourUnit:'Sua unit',copies:'Cards repetidos dão bônus no palco.',rankTitle:'Top da Arena · semana',rankEmpty:'Ninguém venceu nesta semana ainda. Seja a primeira pessoa!',tabDaily:"Rival do dia",tabArena:"Arena dos Idols",arenaLeft:"Desafios restantes",friendly:"Desafio amistoso: vale a glória, não ★.",arenaMine:"Sua unit na arena",arenaNone:"Você ainda não tem uma unit valendo na arena.",arenaSave:"Deixar minha escalação na arena",arenaSaveHint:"Monte aqui a escalação que fica na arena. Quem desafiar você não vê a ordem.",arenaSaved:"Unit salva! Agora outros Idols podem desafiar você.",arenaEmpty:"Ainda não há units de outros Idols por aqui. Deixe a sua e chame a galera!",challenge:"Desafiar",challenged:"Já desafiado hoje",fans:"fãs da arena",vsUnit:"Unit de {n}",arenaLimit:"Você já fez os desafios de hoje. Volte amanhã!",arenaGone:"Essa unit não está mais disponível.",backArena:"◀ Voltar para a arena",defFan:"A defesa venceu: {n} ganhou um fã",cheerTitle:"Torcida de flores",cheerToday:"Hoje a torcida levou {f}: +1 em {r}.",cheerPick:"Leve uma flor (1 por dia, ela é gasta) e ganhe +1 nas partidas de hoje:",cheerNone:"Colha flores no Bloom⭐Garden! para animar a torcida: +1 no palco.",cheerAll:"todas as rodadas"},
+ en:{title:'Idol⭐Battle!',subtitle:'Three Idols, three performances!',cant:'Singing',dance:'Dance',charm:'Charisma',daily:"Today's rival",stage:'Choose your unit',play:'Start the show!',again:'Try again',save:'Save polaroid',practice:'Practice only, no rewards.',wait:'Loading the Arena...',error:'Could not verify the show. Try again.',used:'Attempts left',win:'Your unit won!',lose:'The rival won!',draw:'Draw!',reward:'Verified reward: ★5',noReward:'No reward this match',locked:'Come back tomorrow to face the rival again.',guest:'Sign in with Google for official matches.',my:'You',other:'Rival',starter:'Starter unit',rivalHint:'See the three rivals, but not their performance order.',choose:'Choose three different Idols, one per round.',none:'Not enough cards? The starter unit can perform.',loading:'Preparing the Arena...',points:'Points',skip:'Skip ▶▶',prizeDone:"Today's ★5 already earned!",prizeOpen:"Today's first win is worth ★5.",round:'Round',yourUnit:'Your unit',copies:'Duplicate cards give a stage bonus.',rankTitle:'Arena Top · this week',rankEmpty:'No wins this week yet. Be the first!',tabDaily:"Today's rival",tabArena:"Idol Arena",arenaLeft:"Challenges left",friendly:"Friendly challenge: for glory, not ★.",arenaMine:"Your unit in the arena",arenaNone:"You don't have a unit in the arena yet.",arenaSave:"Leave my lineup in the arena",arenaSaveHint:"Build the lineup you leave in the arena here. Challengers can't see the order.",arenaSaved:"Unit saved! Other Idols can challenge you now.",arenaEmpty:"No units from other Idols yet. Leave yours and invite everyone!",challenge:"Challenge",challenged:"Already challenged today",fans:"arena fans",vsUnit:"{n}'s unit",arenaLimit:"You've used today's challenges. Come back tomorrow!",arenaGone:"That unit is no longer available.",backArena:"◀ Back to the arena",defFan:"The defense won: {n} gained a fan",cheerTitle:"Flower cheer",cheerToday:"Today the crowd brought {f}: +1 in {r}.",cheerPick:"Bring one flower (1 per day, it gets used up) for +1 in today's matches:",cheerNone:"Pick flowers in Bloom⭐Garden! to cheer the crowd: +1 on stage.",cheerAll:"every round"},
+ es:{title:'Idol⭐Battle!',subtitle:'¡Tres Idols, tres actuaciones!',cant:'Canto',dance:'Baile',charm:'Carisma',daily:'Rival del día',stage:'Forma tu unit',play:'¡Empezar!',again:'Intentar de nuevo',save:'Guardar polaroid',practice:'Solo práctica, sin premios.',wait:'Cargando la Arena...',error:'No se pudo verificar la actuación.',used:'Intentos restantes',win:'¡Ganó tu unit!',lose:'¡Ganó el rival!',draw:'¡Empate!',reward:'Premio verificado: ★5',noReward:'Sin premio esta vez',locked:'Vuelve mañana.',guest:'Entra con Google para jugar oficialmente.',my:'Tú',other:'Rival',starter:'Unit inicial',rivalHint:'Se ven los rivales, pero no su orden.',choose:'Elige tres Idols distintos.',none:'La unit inicial puede jugar.',loading:'Preparando la Arena...',points:'Puntos',skip:'Saltar ▶▶',prizeDone:'¡★5 de hoy ya conseguida!',prizeOpen:'La primera victoria de hoy vale ★5.',round:'Ronda',yourUnit:'Tu unit',copies:'Los cards repetidos dan un bonus en el escenario.',rankTitle:'Top de la Arena · semana',rankEmpty:'Nadie ha ganado esta semana todavía. ¡Sé la primera persona!',tabDaily:"Rival del día",tabArena:"Arena de Idols",arenaLeft:"Desafíos restantes",friendly:"Desafío amistoso: por la gloria, no por ★.",arenaMine:"Tu unit en la arena",arenaNone:"Aún no tienes una unit en la arena.",arenaSave:"Dejar mi alineación en la arena",arenaSaveHint:"Arma aquí la alineación que dejas en la arena. Quien te desafíe no ve el orden.",arenaSaved:"¡Unit guardada! Ahora otros Idols pueden desafiarte.",arenaEmpty:"Todavía no hay units de otros Idols. ¡Deja la tuya e invita a todos!",challenge:"Desafiar",challenged:"Ya desafiado hoy",fans:"fans de la arena",vsUnit:"Unit de {n}",arenaLimit:"Ya hiciste los desafíos de hoy. ¡Vuelve mañana!",arenaGone:"Esa unit ya no está disponible.",backArena:"◀ Volver a la arena",defFan:"Ganó la defensa: {n} sumó un fan",cheerTitle:"Hinchada de flores",cheerToday:"Hoy la hinchada llevó {f}: +1 en {r}.",cheerPick:"Lleva una flor (1 por día, se gasta) y gana +1 en los shows de hoy:",cheerNone:"Cosecha flores en Bloom⭐Garden! para animar a la hinchada: +1 en el escenario.",cheerAll:"todas las rondas"},
+ id:{title:'Idol⭐Battle!',subtitle:'Tiga Idol, tiga penampilan!',cant:'Menyanyi',dance:'Tari',charm:'Karisma',daily:'Lawan hari ini',stage:'Pilih unit',play:'Mulai pertunjukan!',again:'Coba lagi',save:'Simpan polaroid',practice:'Latihan saja, tanpa hadiah.',wait:'Memuat Arena...',error:'Hasil tidak dapat diverifikasi.',used:'Percobaan tersisa',win:'Unitmu menang!',lose:'Lawan menang!',draw:'Seri!',reward:'Hadiah terverifikasi: ★5',noReward:'Tanpa hadiah kali ini',locked:'Kembali besok.',guest:'Masuk Google untuk pertandingan resmi.',my:'Kamu',other:'Lawan',starter:'Unit awal',rivalHint:'Tiga lawan terlihat, urutannya rahasia.',choose:'Pilih tiga Idol berbeda.',none:'Unit awal bisa digunakan.',loading:'Menyiapkan Arena...',points:'Poin',skip:'Lewati ▶▶',prizeDone:'★5 hari ini sudah didapat!',prizeOpen:'Kemenangan pertama hari ini bernilai ★5.',round:'Babak',yourUnit:'Unitmu',copies:'Kartu duplikat memberi bonus di panggung.',rankTitle:'Top Arena · minggu ini',rankEmpty:'Belum ada yang menang minggu ini. Jadilah yang pertama!',tabDaily:"Lawan hari ini",tabArena:"Arena Idol",arenaLeft:"Tantangan tersisa",friendly:"Tantangan persahabatan: demi kehormatan, bukan ★.",arenaMine:"Unitmu di arena",arenaNone:"Kamu belum punya unit di arena.",arenaSave:"Taruh susunanku di arena",arenaSaveHint:"Susun di sini unit yang kamu taruh di arena. Penantang tidak melihat urutannya.",arenaSaved:"Unit tersimpan! Idol lain sekarang bisa menantangmu.",arenaEmpty:"Belum ada unit Idol lain. Taruh unitmu dan ajak semuanya!",challenge:"Tantang",challenged:"Sudah ditantang hari ini",fans:"penggemar arena",vsUnit:"Unit {n}",arenaLimit:"Tantangan hari ini sudah habis. Kembali besok!",arenaGone:"Unit itu sudah tidak tersedia.",backArena:"◀ Kembali ke arena",defFan:"Pertahanan menang: {n} mendapat satu penggemar",cheerTitle:"Dukungan bunga",cheerToday:"Hari ini penonton membawa {f}: +1 di {r}.",cheerPick:"Bawa satu bunga (1 per hari, bunganya terpakai) untuk +1 di pertandingan hari ini:",cheerNone:"Petik bunga di Bloom⭐Garden! untuk menyemangati penonton: +1 di panggung.",cheerAll:"semua babak"},
+ th:{title:'Idol⭐Battle!',subtitle:'ไอดอล 3 คน 3 รอบ!',cant:'ร้องเพลง',dance:'เต้น',charm:'เสน่ห์',daily:'คู่แข่งวันนี้',stage:'เลือกยูนิต',play:'เริ่มโชว์!',again:'ลองอีกครั้ง',save:'บันทึกโพลารอยด์',practice:'โหมดฝึกซ้อมเท่านั้น ไม่มีรางวัล',wait:'กำลังโหลดอารีนา...',error:'ตรวจสอบผลไม่ได้ ลองอีกครั้ง',used:'ครั้งที่เหลือ',win:'ยูนิตของคุณชนะ!',lose:'คู่แข่งชนะ!',draw:'เสมอ!',reward:'รางวัลยืนยัน: ★5',noReward:'รอบนี้ไม่มีรางวัล',locked:'กลับมาใหม่พรุ่งนี้',guest:'เข้าสู่ระบบ Google เพื่อเล่นจริง',my:'คุณ',other:'คู่แข่ง',starter:'ยูนิตเริ่มต้น',rivalHint:'เห็นคู่แข่งทั้งสาม แต่ไม่เห็นลำดับ',choose:'เลือกไอดอล 3 คนไม่ซ้ำกัน',none:'ใช้ยูนิตเริ่มต้นได้',loading:'กำลังเตรียมอารีนา...',points:'คะแนน',skip:'ข้าม ▶▶',prizeDone:'ได้รับ ★5 ของวันนี้แล้ว!',prizeOpen:'ชนะครั้งแรกของวันนี้ได้ ★5',round:'รอบ',yourUnit:'ยูนิตของคุณ',copies:'การ์ดซ้ำให้โบนัสบนเวที',rankTitle:'ท็อปอารีนา · สัปดาห์นี้',rankEmpty:'สัปดาห์นี้ยังไม่มีใครชนะ มาเป็นคนแรกกันเถอะ!',tabDaily:"คู่แข่งวันนี้",tabArena:"อารีนาไอดอล",arenaLeft:"ท้าได้อีก",friendly:"ท้าประลองกระชับมิตร: เพื่อเกียรติ ไม่ได้ ★",arenaMine:"ยูนิตของคุณในอารีนา",arenaNone:"คุณยังไม่มียูนิตในอารีนา",arenaSave:"วางยูนิตของฉันในอารีนา",arenaSaveHint:"จัดยูนิตที่จะวางในอารีนาได้ที่นี่ ผู้ท้าจะไม่เห็นลำดับ",arenaSaved:"บันทึกยูนิตแล้ว! ไอดอลคนอื่นท้าคุณได้แล้ว",arenaEmpty:"ยังไม่มียูนิตของไอดอลคนอื่น วางของคุณแล้วชวนทุกคนมาเลย!",challenge:"ท้าประลอง",challenged:"ท้าไปแล้ววันนี้",fans:"แฟนอารีนา",vsUnit:"ยูนิตของ {n}",arenaLimit:"วันนี้ท้าครบแล้ว กลับมาใหม่พรุ่งนี้!",arenaGone:"ยูนิตนี้ไม่พร้อมใช้งานแล้ว",backArena:"◀ กลับไปอารีนา",defFan:"ฝ่ายป้องกันชนะ: {n} ได้แฟนเพิ่ม",cheerTitle:"กองเชียร์ดอกไม้",cheerToday:"วันนี้กองเชียร์ถือ {f}: +1 ใน{r}",cheerPick:"นำดอกไม้ 1 ดอก (วันละ 1 ดอก ใช้แล้วหมดไป) เพื่อ +1 ในการแข่งวันนี้:",cheerNone:"เก็บดอกไม้ใน Bloom⭐Garden! มาให้กองเชียร์: +1 บนเวที",cheerAll:"ทุกรอบ"},
+ ja:{title:'Idol⭐Battle!',subtitle:'3人のアイドルで3ステージ！',cant:'歌',dance:'ダンス',charm:'カリスマ',daily:'今日のライバル',stage:'ユニットを編成',play:'ショー開始！',again:'もう一度',save:'ポラロイドを保存',practice:'練習のみ。報酬はありません。',wait:'アリーナを読み込み中…',error:'結果を確認できませんでした。',used:'残り挑戦回数',win:'あなたのユニットの勝ち！',lose:'ライバルの勝ち！',draw:'引き分け！',reward:'確定報酬：★5',noReward:'今回は報酬なし',locked:'また明日挑戦してね',guest:'公式戦はGoogleでログイン',my:'あなた',other:'ライバル',starter:'初期ユニット',rivalHint:'ライバル3人は見えるけど、出番は秘密',choose:'異なる3人のアイドルを選んでね',none:'最初のユニットでも遊べます',loading:'アリーナを準備中…',points:'点',skip:'スキップ ▶▶',prizeDone:'今日の★5は獲得済み！',prizeOpen:'今日の初勝利で★5',round:'ラウンド',yourUnit:'あなたのユニット',copies:'同じカードが複数あるとステージでボーナス',rankTitle:'アリーナTOP・今週',rankEmpty:'今週はまだ勝者がいません。最初の一人になろう！',tabDaily:"今日のライバル",tabArena:"アイドルアリーナ",arenaLeft:"残りチャレンジ",friendly:"フレンドリーマッチ：★はなし、名誉をかけて！",arenaMine:"アリーナのあなたのユニット",arenaNone:"まだアリーナにユニットがありません。",arenaSave:"この編成をアリーナに置く",arenaSaveHint:"アリーナに置く編成をここで組めます。挑戦者に出番は見えません。",arenaSaved:"ユニットを保存！他のアイドルが挑戦できます。",arenaEmpty:"まだ他のアイドルのユニットがありません。あなたのユニットを置いてみんなを誘おう！",challenge:"挑戦する",challenged:"今日は挑戦済み",fans:"アリーナのファン",vsUnit:"{n}のユニット",arenaLimit:"今日のチャレンジは終了。また明日！",arenaGone:"そのユニットは今は使えません。",backArena:"◀ アリーナに戻る",defFan:"防衛成功：{n}にファンが1人増えた",cheerTitle:"お花の応援",cheerToday:"今日の応援は{f}：{r}に+1。",cheerPick:"花を1つ届けると（1日1つ・使うとなくなります）、今日のバトルで+1：",cheerNone:"Bloom⭐Garden!で花を摘んで応援しよう：ステージで+1。",cheerAll:"全ラウンド"}
 };
 var DEFAULT=[{nick:'Tsu',canto:5,danca:6,carisma:5,qtd:1},{nick:'Lirika',canto:6,danca:5,carisma:5,qtd:1},{nick:'Pati',canto:5,danca:5,carisma:6,qtd:1}];
-var ATR=['canto','danca','carisma'],ICO=['🎤','💃','💖'],COR=['#ff6fb5','#4dd8ff','#b6ff3b'];
+var ATR=['canto','danca','carisma'],COR=['#ff6fb5','#4dd8ff','#b6ff3b'];
+// Ícones desenhados das três apresentações (microfone, sapatilha, coração) e do troféu: os mesmos
+// traços valem no HTML (SVG) e no palco (Path2D), sem depender do emoji de cada aparelho.
+var ICP=[
+ ['M12 2.5A3.5 3.5 0 0 0 8.5 6v5a3.5 3.5 0 0 0 7 0V6A3.5 3.5 0 0 0 12 2.5zM6 10.5a1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 6 6 0 0 1-5 5.9V19h2.5a1 1 0 0 1 0 2h-7a1 1 0 0 1 0-2H11v-2.6a6 6 0 0 1-5-5.9z'],
+ ['M7.5 3h4a1 1 0 0 1 1 1v7.2l6.3 2.4c1.4.5 2.2 1.8 2.2 3.2V17H3v-1.3c0-1 .3-2 .9-2.8L6.5 9.5V4a1 1 0 0 1 1-1z','M3 18.2h18V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z'],
+ ['M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'],
+ ['M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z']
+];
+function ico(i,extra){return '<svg class="battle-ic'+(extra?' '+extra:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+ICP[i].map(function(d){return '<path fill="currentColor" d="'+d+'"/>';}).join('')+'</svg>';}
+function icoCanvas(x,i,cx,cy,tam,cor){
+ if(typeof Path2D!=='function')return;
+ x.save();x.translate(cx-tam/2,cy-tam/2);x.scale(tam/24,tam/24);x.lineJoin='round';
+ ICP[i].forEach(function(d){var c=new Path2D(d);x.strokeStyle='rgba(30,10,70,.85)';x.lineWidth=5*24/tam;x.stroke(c);});
+ ICP[i].forEach(function(d){x.fillStyle=cor||'#fff';x.fill(new Path2D(d));});
+ x.restore();
+}
+// Texto do palco com o ícone da rodada à esquerda, os dois centralizados juntos.
+function rotulo(x,i,txt,cx,y,px,cor){
+ var w=x.measureText(txt).width,ic=px*1.05,total=ic+px*.3+w;
+ icoCanvas(x,i,cx-total/2+ic/2,y-px*.36,ic,cor);
+ contorno(x,txt,cx-total/2+ic+px*.3+w/2,y,cor);
+}
 var SW=560,SH=320,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
 var fase='escalar',showT0=0,showRaf=0; // escalar → show → fim
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
-var FLOR={sakura:['🌸',0],tulipa:['🌷',1],girassol:['🌻',2],lunar:['⭐',-1]};
+var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
 var modo='dia',arena=null,alvo=null,msgOk=false; // v2: Arena dos Idols (units salvas); alvo = unit desafiada
 function lang(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
@@ -167,8 +189,9 @@ function carregarTorcida(){
 }
 function nomeFlor(k){
  var n='';try{var B=window.BLOOM_TR;n=B&&(B[lang()]||B.pt)[k]||'';}catch(e){}
- return FLOR[k][0]+(n?' '+n:'');
+ return n||(k.charAt(0).toUpperCase()+k.slice(1));
 }
+function florDot(k){return FLOR[k]?'<i class="battle-fdot" style="background:'+FLOR[k][0]+'" aria-hidden="true"></i>':'';}
 function levarFlor(k){
  if(ocupado||!torcida||torcida.hoje||!FLOR[k]||!(Number(torcida.flores[k])>0))return;
  ocupado=true;msg='';render();
@@ -179,17 +202,17 @@ function levarFlor(k){
 }
 function torcidaHtml(){
  if(!torcida||!servidor)return '';
- var h='<section class="battle-torcida"><h3>💐 '+esc(trB('cheerTitle'))+'</h3>';
+ var h='<section class="battle-torcida"><h3>'+esc(trB('cheerTitle'))+'</h3>';
  if(torcida.hoje&&FLOR[torcida.hoje]){
    var i=FLOR[torcida.hoje][1];
-   h+='<p class="battle-fas">'+esc(trB('cheerToday').replace('{f}',nomeFlor(torcida.hoje)).replace('{r}',i<0?trB('cheerAll'):ICO[i]+' '+nomeRound(i)))+'</p>';
+   h+='<p class="battle-fas">'+florDot(torcida.hoje)+esc(trB('cheerToday').replace('{f}',nomeFlor(torcida.hoje)).replace('{r}',i<0?trB('cheerAll'):nomeRound(i)))+'</p>';
  }else{
    var tem=Object.keys(FLOR).filter(function(k){return Number(torcida.flores[k])>0;});
    if(!tem.length)h+='<p class="battle-hint">'+esc(trB('cheerNone'))+'</p>';
    else h+='<p class="battle-hint">'+esc(trB('cheerPick'))+'</p><div class="battle-flores">'+tem.map(function(k){
      var i=FLOR[k][1];
-     return '<button type="button" class="btn alt" data-battle="torcida" data-flor="'+k+'"'+(ocupado?' disabled':'')+'><span>'+esc(nomeFlor(k))+' ×'+Math.min(99,Number(torcida.flores[k]))+'</span>'+
-       '<small>+1 '+(i<0?'🎤💃💖':ICO[i]+' '+esc(nomeRound(i)))+'</small></button>';}).join('')+'</div>';
+     return '<button type="button" class="btn alt" data-battle="torcida" data-flor="'+k+'"'+(ocupado?' disabled':'')+'><span>'+florDot(k)+esc(nomeFlor(k))+' ×'+Math.min(99,Number(torcida.flores[k]))+'</span>'+
+       '<small>+1 '+(i<0?ico(0)+ico(1)+ico(2):ico(i)+esc(nomeRound(i)))+'</small></button>';}).join('')+'</div>';
  }
  return h+'</section>';
 }
@@ -214,7 +237,7 @@ function salvarUnit(){
 function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
-   h+='<label class="battle-slot"><span>'+ICO[i]+' '+esc(nomeRound(i))+'</span><select data-battle-slot="'+i+'">'+
+   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><select data-battle-slot="'+i+'">'+
     estado.cards.map(function(c){return '<option value="'+esc(c.nick)+'"'+(unit[i]===c.nick?' selected':'')+'>'+esc(c.nick)+
      ' · '+valor(c,i)+'/10</option>';}).join('')+'</select></label>';
  }
@@ -222,43 +245,43 @@ function slotsHtml(){
 }
 function abasHtml(){
  if(!servidor||!arena)return '';
- return '<div class="battle-tabs" role="tablist">'+[['dia','🏟️ ',trB('tabDaily')],['arena','🤝 ',trB('tabArena')]].map(function(t){
+ return '<div class="battle-tabs" role="tablist">'+[['dia','',trB('tabDaily')],['arena','',trB('tabArena')]].map(function(t){
    var on=(modo==='arena')===(t[0]==='arena');
    return '<button type="button" role="tab" aria-selected="'+on+'" class="battle-tab'+(on?' on':'')+'" data-battle="tab-'+t[0]+'">'+t[1]+esc(t[2])+'</button>';}).join('')+'</div>';
 }
 function arenaStatusHtml(){
  var max=Number(arena.max_desafios)||3,feitos=Number(arena.desafios)||0;
- return '<div class="battle-status real">🤝 '+esc(trB('arenaLeft'))+': '+Math.max(0,max-feitos)+' / '+max+'<br><small>'+esc(trB('friendly'))+'</small></div>';
+ return '<div class="battle-status real">'+esc(trB('arenaLeft'))+': '+Math.max(0,max-feitos)+' / '+max+'<br><small>'+esc(trB('friendly'))+'</small></div>';
 }
 function lobbyHtml(){
  var max=Number(arena.max_desafios)||3,cheio=(Number(arena.desafios)||0)>=max;
  var minha=arena.minha&&Array.isArray(arena.minha.unit)&&arena.minha.unit.length===3?arena.minha:null;
- var h=arenaStatusHtml()+'<section class="battle-escalar"><h3>🛡️ '+esc(trB('arenaMine'))+'</h3>';
- if(minha)h+='<div class="battle-trio">'+minha.unit.map(function(c,i){return idolHtml(c,true,ICO[i]+' '+esc(nomeRound(i)),i);}).join('')+
-   '</div><p class="battle-fas">❤️ '+(Number(minha.fas)||0)+' '+esc(trB('fans'))+'</p>';
+ var h=arenaStatusHtml()+'<section class="battle-escalar"><h3>'+esc(trB('arenaMine'))+'</h3>';
+ if(minha)h+='<div class="battle-trio">'+minha.unit.map(function(c,i){return idolHtml(c,true,ico(i)+esc(nomeRound(i)),i);}).join('')+
+   '</div><p class="battle-fas">'+ico(2)+(Number(minha.fas)||0)+' '+esc(trB('fans'))+'</p>';
  else h+='<p class="battle-hint">'+esc(trB('arenaNone'))+'</p>';
  h+='<p class="battle-hint">'+esc(trB('arenaSaveHint'))+'</p>'+slotsHtml()+
-   '<div class="btns"><button type="button" class="btn alt" data-battle="salvar-unit"'+(ocupado?' disabled':'')+'>🛡️ '+esc(trB('arenaSave'))+'</button></div>';
+   '<div class="btns"><button type="button" class="btn alt" data-battle="salvar-unit"'+(ocupado?' disabled':'')+'>'+esc(trB('arenaSave'))+'</button></div>';
  if(msg)h+='<p class="battle-error'+(msgOk?' ok':'')+'">'+esc(msg)+'</p>';
  h+='</section>';
  if(!arena.lista.length)return h+'<p class="battle-hint">'+esc(trB('arenaEmpty'))+'</p>';
  return h+arena.lista.map(function(d){
    var feito=!!d.desafiado,idols=Array.isArray(d.idols)?d.idols.slice(0,3):[];
-   return '<section class="battle-rival battle-def"><h3>'+esc(trB('vsUnit').replace('{n}',d.nick))+' <span class="battle-placar">❤️ '+(Number(d.fas)||0)+'</span></h3>'+
+   return '<section class="battle-rival battle-def"><h3>'+esc(trB('vsUnit').replace('{n}',d.nick))+' <span class="battle-placar">'+ico(2)+(Number(d.fas)||0)+'</span></h3>'+
      '<div class="battle-trio">'+idols.map(function(c){return idolHtml(c,false,'',-1);}).join('')+'</div>'+
      '<div class="btns"><button type="button" class="btn" data-battle="desafiar" data-nick="'+esc(d.nick)+'"'+(feito||cheio?' disabled':'')+'>'+
-     esc(feito?trB('challenged'):cheio?trB('arenaLimit'):'⚔️ '+trB('challenge'))+'</button></div></section>';}).join('');
+     esc(feito?trB('challenged'):cheio?trB('arenaLimit'):trB('challenge'))+'</button></div></section>';}).join('');
 }
 function rankingHtml(){
  if(!ranking||!servidor)return '';
  var top=ranking.top.slice(0,5),eu=ranking.eu&&typeof ranking.eu==='object'?ranking.eu:null;
- var h='<section class="battle-rank"><h3>🏆 '+esc(trB('rankTitle'))+'</h3>';
+ var h='<section class="battle-rank"><h3>'+ico(3)+esc(trB('rankTitle'))+'</h3>';
  if(!top.length)h+='<p class="battle-hint">'+esc(trB('rankEmpty'))+'</p>';
  else h+='<ol>'+top.map(function(p,i){
-   return '<li><span class="battle-med">'+(['🥇','🥈','🥉'][i]||(i+1)+'º')+'</span>'+
+   return '<li><span class="battle-med m'+(i+1)+'">'+(i+1)+'</span>'+
     '<canvas class="battle-av battle-av-s" width="132" height="150" data-battle-av="'+esc(p.nick)+'" data-meu="0" aria-hidden="true"></canvas>'+
-    '<b>'+esc(p.nick)+'</b><small>🏆 '+(Number(p.score)||0)+'</small></li>';}).join('')+'</ol>';
- if(eu&&Number(eu.pos)>0)h+='<p class="battle-rank-eu">'+esc(trB('my'))+': '+Number(eu.pos)+'º · 🏆 '+(Number(eu.score)||0)+'</p>';
+    '<b>'+esc(p.nick)+'</b><small>'+ico(3)+(Number(p.score)||0)+'</small></li>';}).join('')+'</ol>';
+ if(eu&&Number(eu.pos)>0)h+='<p class="battle-rank-eu">'+esc(trB('my'))+': '+Number(eu.pos)+'º · '+ico(3)+(Number(eu.score)||0)+'</p>';
  return h+'</section>';
 }
 function fechar(){pararShow();if(ov)ov.hidden=true;}
@@ -277,7 +300,7 @@ function melhorEscalacao(cards){
 }
 function chips(c,destaque){
  return '<span class="battle-chips">'+ATR.map(function(a,i){
-   return '<i'+(destaque===i?' class="on"':'')+'>'+ICO[i]+Number(c[a]||0)+'</i>';}).join('')+'</span>';
+   return '<i'+(destaque===i?' class="on"':'')+'>'+ico(i)+Number(c[a]||0)+'</i>';}).join('')+'</span>';
 }
 function idolHtml(c,meu,rotulo,destaque){
  return '<div class="battle-idol">'+(rotulo?'<small>'+rotulo+'</small>':'')+
@@ -309,24 +332,24 @@ function render(){
  var texto=(fase==='escalar'?abasHtml():'')+(emArena?arenaStatusHtml():'<div class="battle-status'+(servidor?' real':' treino')+'">'+
   (servidor?'★ '+esc(trB('used'))+': '+Math.max(0,max-usadas)+' / '+max+
      '<br><small>'+esc(estado.premiado?trB('prizeDone'):trB('prizeOpen'))+'</small>':
-    '🧪 '+esc(trB('practice'))+(logado()?'':' '+esc(trB('guest'))))+'</div>');
+    esc(trB('practice'))+(logado()?'':' '+esc(trB('guest'))))+'</div>');
  if(fase==='fim'&&rodadas){
    var wins=rodadas.filter(function(c){return c.ganhou===true;}).length,losses=3-wins;
    var cab=wins>losses?trB('win'):trB('lose');
-   texto+='<section class="battle-resultado"><h3>'+(wins>losses?'🏆 ':'🎭 ')+esc(cab)+' <span class="battle-placar">'+wins+' × '+losses+'</span></h3>';
-   texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ICO[i]+' '+esc(nomeRound(i))+'</b>'+
-      '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+FLOR[torcida.hoje][0]+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span></div>';}).join('')+'</div>';
+   texto+='<section class="battle-resultado"><h3>'+esc(cab)+' <span class="battle-placar">'+wins+' × '+losses+'</span></h3>';
+   texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
+      '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span></div>';}).join('')+'</div>';
    texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
-   '<button type="button" class="btn alt" data-battle="salvar">📸 '+esc(trB('save'))+'</button> '+
+   '<button type="button" class="btn alt" data-battle="salvar">'+esc(trB('save'))+'</button> '+
    (emArena?'<button type="button" class="btn" data-battle="voltar">'+esc(trB('backArena'))+'</button></section>':
    '<button type="button" class="btn" data-battle="outra"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>');
    area.innerHTML=texto+(emArena?'':rankingHtml());desenharMiniaturas();return;
  }
- texto+='<section class="battle-rival"><h3>'+(emArena?'⚔️ '+esc(trB('vsUnit').replace('{n}',alvo.nick)):'🏟️ '+esc(trB('daily')))+'</h3><div class="battle-trio">'+
+ texto+='<section class="battle-rival"><h3>'+(emArena?esc(trB('vsUnit').replace('{n}',alvo.nick)):esc(trB('daily')))+'</h3><div class="battle-trio">'+
    (emArena?alvo.idols:estado.rival).map(function(c){return idolHtml(c,false,'',-1);}).join('')+
    '</div><p class="battle-hint">'+esc(trB('rivalHint'))+'</p></section>';
- texto+='<section class="battle-escalar"><h3>✨ '+esc(trB('stage'))+'</h3><div class="battle-trio">'+
-   unit.map(function(n,i){var c=cardDe(n)||{nick:n};return idolHtml(c,true,ICO[i]+' '+esc(nomeRound(i)),i);}).join('')+
+ texto+='<section class="battle-escalar"><h3>'+esc(trB('stage'))+'</h3><div class="battle-trio">'+
+   unit.map(function(n,i){var c=cardDe(n)||{nick:n};return idolHtml(c,true,ico(i)+esc(nomeRound(i)),i);}).join('')+
    '</div><p class="battle-hint">'+esc(estado.starter?trB('none'):trB('choose'))+'</p>';
  texto+=slotsHtml()+'</section>'+torcidaHtml();
  if(msg)texto+='<p class="battle-error">'+esc(msg)+'</p>';
@@ -472,14 +495,14 @@ function desenharPalco(t){
      x.save();x.translate((k*89+40)%SW,60+(k*47)%150);x.rotate(k);x.fillRect(-3,-1.5,6,3);x.restore();}
    unit.forEach(function(n,i){desenharIdol(x,n,true,SW/2+(i-1)*112,240-(i===1?0:4),2.5,0,{expr:venceu?3:null});
      x.font=fonte(15);contorno(x,nomeCurto(n,10),SW/2+(i-1)*112,272);});
-   x.font=fonte(24);contorno(x,(venceu?'🏆 ':'')+(venceu?trB('win'):trB('lose')),SW/2,32,venceu?'#fff3a8':'#fff');
+   x.font=fonte(24);contorno(x,venceu?trB('win'):trB('lose'),SW/2,32,venceu?'#fff3a8':'#fff');
    pontos(x,3);
    x.font=fonte(22);contorno(x,wins+' × '+(3-wins),SW/2,92);
    return;
  }
  var i=Math.min(2,Math.floor(tt/DUR)),u=tt-i*DUR,r=rodadas[i];
  fundoPalco(x,COR[i],tt);
- x.font=fonte(24);contorno(x,ICO[i]+' '+nomeRound(i)+'  '+(i+1)+'/3',SW/2,32);
+ x.font=fonte(24);rotulo(x,i,nomeRound(i)+'  '+(i+1)+'/3',SW/2,32,24);
  pontos(x,i);
  var entra=Math.min(1,u/.35),e=1-Math.pow(1-entra,3);
  var conta=Math.max(0,Math.min(1,(u-.4)/.8)),veredito=u>1.3;
@@ -499,7 +522,7 @@ function desenharPalco(t){
    x.font=fonte(veredito&&!r.ganhou?58:48);contorno(x,String(b),SW/2+46,182,veredito&&!r.ganhou?'#fff3a8':'#fff');
    x.font=fonte(22);contorno(x,':',SW/2,172);
  }
- if(u>.4&&Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]){x.font=fonte(15);contorno(x,FLOR[torcida.hoje][0]+'+1',SW/2-46,136,'#ffd9f0');}
+ if(u>.4&&Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]){x.fillStyle=FLOR[torcida.hoje][0];x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(SW/2-62,131,6.5,0,Math.PI*2);x.fill();x.stroke();x.font=fonte(15);contorno(x,'+1',SW/2-42,136,'#ffd9f0');}
  if(veredito){
    var wx=r.ganhou?mx:rx,s=1+Math.max(0,.5-(u-1.3))*1.2;
    x.save();x.translate(wx,88);x.scale(s,s);x.font=fonte(24);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
@@ -522,10 +545,10 @@ function desenharPolaroid(){
  x.fillStyle=pg;x.beginPath();x.ellipse(W/2,286,250,26,0,0,Math.PI*2);x.fill();
  x.textAlign='center';x.textBaseline='alphabetic';
  x.font=fonte(26);contorno(x,'Idol⭐Battle!',W/2,62);
- x.font=fonte(15);contorno(x,(venceu?'🏆 ':'')+wins+' × '+(3-wins),W/2,92,venceu?'#fff3a8':'#fff');
+ x.font=fonte(15);contorno(x,wins+' × '+(3-wins),W/2,92,venceu?'#fff3a8':'#fff');
  unit.forEach(function(n,i){
    desenharIdol(x,n,true,W/2+(i-1)*150,284,3,0,{expr:venceu?3:null});
-   x.font=fonte(12);contorno(x,ICO[i]+' '+nomeCurto(n),W/2+(i-1)*150,308);
+   x.font=fonte(12);rotulo(x,i,nomeCurto(n),W/2+(i-1)*150,308,12);
  });
  x.restore();
  x.fillStyle='#48306e';x.font=fonte(15);x.textAlign='center';

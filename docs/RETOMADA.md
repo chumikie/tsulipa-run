@@ -195,6 +195,6 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 ## Refinamento visual — segunda passada (14/11/2026, só front, PR #88)
 - **Jardim (`bloom.js?v=5`)**: plaquinha do jardim, regador, borboletas de dia e vaga-lumes à noite (parados com "reduzir movimento").
 - **Photo⭐Studio! (`studio.js`, `hub-polish.css?v=35`)**: sem emoji no título, nas abas, na pauta e nos botões; cenário, luz e flores ganham uma amostra de cor desenhada; opções em grade alinhada (2 ou 3 colunas); moldura da foto igual à do jardim. Nenhuma regra ou RPC mudou.
-- Pendente de refinamento visual: Idol⭐Battle! (ainda usa emoji como ícone de rodada e de seção).
+- **Idol⭐Battle! (`battle.js?v=9`, `battle.css?v=7`)**: sem emoji como ícone — microfone, sapatilha, coração e troféu são desenhados e usados tanto no HTML (SVG) quanto no palco e na polaroid (Path2D); flores da torcida viram bolinhas de cor; pódio do ranking com medalhas numeradas; títulos de seção só com texto. Nenhuma regra ou RPC mudou.
 - Conferido em Chromium (390×844). **Não testado: conta real, iPhone, Safari.**
 

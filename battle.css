@@ -84,3 +84,14 @@ html body .battlep p.battle-error{color:#b52972}
 html body .battlep p.battle-error.ok{color:#2c7a3f}
 html body .battlep p.battle-rank-eu{color:#73579d}
 html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
+/* Ícones desenhados (sem emoji) */
+.battle-ic{width:1.05em;height:1.05em;flex:none;vertical-align:-.17em;margin-right:.3em}
+.battle-chips i .battle-ic{margin-right:.14em;width:.95em;height:.95em}
+.battle-flores small .battle-ic{margin-right:.12em}
+.battle-fas .battle-ic,.battle-placar .battle-ic{margin-right:.28em}
+.battle-fdot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(60,42,143,.16)}
+.battle-bonus .battle-fdot{width:8px;height:8px;margin-right:3px;box-shadow:none;vertical-align:0}
+.battle-med{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#efe6ff;color:#5a33a6;font-size:12.5px}
+.battle-med.m1{background:#ffe08a;color:#7a5200}.battle-med.m2{background:#e3e8f1;color:#4d5a70}.battle-med.m3{background:#f6cfa8;color:#7a4416}
+.battle-rank h3 .battle-ic{color:#e8a400}.battle-rank li small .battle-ic,.battle-rank-eu .battle-ic{color:#e8a400;margin-right:.2em}
+

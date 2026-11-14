@@ -58,6 +58,13 @@ function petLifePoseUI(){
     b.disabled = !!petGame || !!petAnim || petView !== 'room';
   });
 }
+// Deformação só visual do assento; acompanha a transição já existente,
+ // inclusive ao levantar ou trocar a pose rapidamente.
+function petLifeSofaApoio(visual){
+  if(!visual || visual.sit <= .001)return null;
+  var q=petLifeQuadril(visual), t=Math.min(1,Math.max(0,visual.sit));
+  return {x:Math.max(73,Math.min(126,q.x)), afunda:t*3, alfa:t*.21};
+}
 function petLifeSofa(x, frente, visual){
   x.save();
   if(!frente){
@@ -66,6 +73,16 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    var apoio=petLifeSofaApoio(visual);
+    if(apoio){
+      // Sombra e dobra curtas na almofada, atrás do avatar, sem alterar o quadril.
+      x.save();x.globalAlpha=apoio.alfa;x.fillStyle='#9a67ac';
+      x.beginPath();x.ellipse(apoio.x,176+apoio.afunda,27,3.8,0,0,7);x.fill();
+      x.strokeStyle='#fff6fd';x.lineWidth=1.2;x.beginPath();
+      x.moveTo(apoio.x-25,170+apoio.afunda);
+      x.quadraticCurveTo(apoio.x,174+apoio.afunda,apoio.x+25,170+apoio.afunda);x.stroke();
+      x.restore();
+    }
     x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
   }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
@@ -1714,6 +1731,28 @@ function petVidaOlharLembranca(t, inicio, livre){
   var u = (fase-180)/110;
   return Math.sin(u*Math.PI)*.022;
 }
+// Reage somente à lembrança real da sessão e ao olhar já permitido do Idol.
+ // A fotografia não ganha brilho sem uma imagem voluntária da própria conta.
+function petVidaLembrancaReacao(olhar){
+  if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
+    typeof TWVidaCidade.objetosCamarim !== 'function')return null;
+  var itens=TWVidaCidade.objetosCamarim();
+  var foto=itens.some(function(a){return a.tipo==='foto';}) && !!petVidaFotoAtual();
+  var flor=itens.some(function(a){return a.tipo==='flor';});
+  var tipo=foto?'foto':flor?'flor':'';
+  if(!tipo)return null;
+  return {tipo:tipo,
+    x:PET_VIDA_PRATELEIRA[tipo].x+petArrumoDx('estante'),
+    y:PET_VIDA_PRATELEIRA.y-(tipo==='foto'?27:25),
+    alfa:Math.min(.58,olhar*25)};
+}
+function petVidaLembrancaBrilho(x,olhar){
+  var a=petVidaLembrancaReacao(olhar);
+  if(!a)return;
+  x.save();x.globalAlpha=a.alfa;x.strokeStyle=a.tipo==='foto'?'#ffe6a3':'#ffacd9';x.lineWidth=1.8;
+  x.beginPath();x.moveTo(a.x,a.y-4);x.lineTo(a.x,a.y+4);
+  x.moveTo(a.x-4,a.y);x.lineTo(a.x+4,a.y);x.stroke();x.restore();
+}
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
@@ -1763,8 +1802,8 @@ function petDrawRoom(){
   petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
   petVidaLembrancaCenario(x);
-  petLifeSofa(x, false);
   var poseDesenho = petLifePoseDesenho(petT), pose = poseDesenho.sit > .001 ? poseDesenho : null;
+  petLifeSofa(x, false, pose);
   if(!petLifePose && !pose) petLifeSofa(x, true); // em pé, o sofá inteiro fica atrás do Idol
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
@@ -1825,6 +1864,7 @@ function petDrawRoom(){
     if(pose) petLifeLerCorColo(x, quadril);
   } finally { g = og; }
   if(pose) petLifeSofa(x, true, pose);   // sentado: almofada na frente do colo e pés no chão
+  petVidaLembrancaBrilho(x,olharLembranca);
   if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
     x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
     x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,

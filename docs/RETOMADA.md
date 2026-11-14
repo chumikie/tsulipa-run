@@ -162,11 +162,11 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Front no PR #88: seção "Top da Arena" na janela do Battle (`battle.js`) e 4º pódio no Idol⭐News! (`jornal.js?v=14`).
 - Conferido em produção por leitura: anon sem acesso, authenticated executa, semana começando no domingo, ranking vazio (0 partidas). **Não testado: conta real, iPhone.**
 
-## Idol⭐Battle! v2 — Arena dos Idols (14/11/2026) — SQL **NÃO aplicado**
-- Proposta: `supabase/sql/proposta/20261114_idol_battle_v2_arena_REVIEW_ONLY.sql`. Cada pessoa deixa UMA unit salva; os outros desafiam sem ninguém estar online. **Sem ★** (não toca em `stars`/`star_log`), não gasta cards, não altera nenhuma função já aplicada.
-  - `battle_unit_salvar(p_unit)`, `battle_arena()`, `battle_desafiar(p_alvo, p_unit, p_requisicao)`; tabelas `private.battle_units` (com contador `fas`) e `private.battle_desafios`; helper privado `battle_unit_resolver`.
-  - Regras: 3 desafios/dia, 1 por pessoa/dia, idempotência por UUID, empate é da defesa, +1 fã ❤️ para a defesa que vence. A lista mostra os 3 Idols em ordem alfabética (a ordem da defesa fica secreta) e nunca ids. Unit cuja dona perdeu um card fica indisponível até salvar de novo. Contas bloqueadas ficam fora.
+## Idol⭐Battle! v2 — Arena dos Idols — APLICADO (14/11/2026, OK do dono)
+- `supabase/sql/aplicado/20261114_idol_battle_v2_arena.sql`: cada pessoa deixa UMA unit salva; os outros desafiam sem ninguém estar online. **Sem ★** (não toca em `stars`/`star_log`), não gasta cards, não altera funções anteriores.
+  - `battle_unit_salvar(p_unit)`, `battle_arena()`, `battle_desafiar(p_alvo, p_unit, p_requisicao)`; tabelas `private.battle_units` (contador `fas`) e `private.battle_desafios`; helper privado `battle_unit_resolver`.
+  - Regras: 3 desafios/dia, 1 por pessoa/dia, idempotência por UUID, empate é da defesa, +1 fã ❤️ para a defesa que vence. A lista mostra os 3 Idols em ordem alfabética (ordem da defesa secreta) e nunca ids. Unit cuja dona perdeu um card fica indisponível até salvar de novo. Contas bloqueadas ficam fora.
 - Teste isolado: `supabase/tests/battle/checks_arena.sql` (no mesmo `rodar.sh`).
-- Front no PR #88 (`battle.js?v=6`, `battle.css?v=4`): aba "Arena dos Idols" na janela do Battle (salvar unit, lista de defesas, desafiar, show e polaroid). A aba só aparece quando `battle_arena()` responde.
-- Conferido em Chromium com servidor simulado. **Não testado: conta real, iPhone.** Decisão nº 3 da proposta (deixar a unit salva para os outros) continua sendo do dono: aplicar só com o OK.
-
+- Conferido em produção por leitura: corpo das 4 funções idêntico ao testado (md5), anon sem acesso, authenticated só nas 3 RPCs públicas, RLS ligada sem políticas, 0 linhas.
+- Front no PR #88 (`battle.js?v=7`, `battle.css?v=5`): aba "Arena dos Idols" (montar e salvar a unit ali mesmo, lista de defesas, desafiar, show e polaroid), aviso de fã da defesa, narração das rodadas para leitor de tela, data da polaroid no formato do idioma, contraste dos textos corrigido no tema escuro.
+- Conferido em Chromium (claro e escuro) com servidor simulado. **Não testado: conta real, iPhone.**

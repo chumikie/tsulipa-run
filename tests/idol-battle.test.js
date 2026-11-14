@@ -48,7 +48,7 @@ assert.match(rankSql,/revoke all on function public\.battle_ranking\(\) from pub
 assert.ok(!/insert into|update public|delete from|stars/i.test(rankSql),'ranking é só leitura');
 assert.match(fs.readFileSync(path.join(root,'jornal.js'),'utf8'),/Array\.isArray\(d\.arena\)/);
 // Arena dos Idols (v2): proposta sem ★; o cliente só envia nick do alvo, a própria unit e o UUID.
-const arenaSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_v2_arena_REVIEW_ONLY.sql'),'utf8');
+const arenaSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/20261114_idol_battle_v2_arena.sql'),'utf8');
 assert.match(src,/contaRpc\('battle_arena'\)/);
 assert.match(src,/contaRpc\('battle_desafiar',\{p_alvo:desafiado\.nick,p_unit:unit\.slice\(\),p_requisicao:requisicao\}\)/);
 assert.match(src,/contaRpc\('battle_unit_salvar',\{p_unit:unit\.slice\(\)\}\)/);

@@ -1,5 +1,5 @@
--- Idol⭐Battle! v2 — Arena dos Idols (units salvas + desafio assíncrono). REVISÃO SOMENTE.
--- NÃO EXECUTAR NO SUPABASE SEM AUTORIZAÇÃO DO DONO.
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_idol_battle_v2_arena).
+-- Idol⭐Battle! v2 — Arena dos Idols (units salvas + desafio assíncrono).
 -- Cada pessoa pode deixar UMA unit salva na arena; os outros desafiam essa unit sem ninguém
 -- precisar estar online. Vale a glória: NÃO dá ★, não gasta cards e não mexe no rival do dia.
 -- Quem defende ganha 1 "fã da arena" (❤️, só um contador) a cada defesa vencida.

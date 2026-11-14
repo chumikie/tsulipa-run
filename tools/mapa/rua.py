@@ -51,7 +51,8 @@ if estilo == 'noite':
 elif estilo == 'galeria':
     # Galeria do Brilho: fachadas pastel com letreiros neon, corações e muito brilho
     predios_fundo(['#ffd0e8', '#e2d4ff', '#d7efff'], '#ffffff')
-    for (nx, ny, cor) in [(130, 330, '#ff6fb5'), (330, 395, '#7fd3ff'), (660, 355, '#b98bff'), (975, 385, '#ff6fb5'), (1215, 345, '#7fd3ff'), (1475, 375, '#b98bff')]:
+    for (nx, ny, cor) in [(62, 330, '#ff6fb5'), (562, 300, '#7fd3ff'), (1046, 285, '#b98bff'), (1538, 320, '#ff6fb5')]:
+        A(f"<rect x='{nx-2}' y='{ny+15}' width='4' height='{520-ny}' fill='#c9b6f0'/>")
         A(f"<rect x='{nx-46}' y='{ny-15}' width='92' height='30' rx='15' fill='none' stroke='{cor}' stroke-width='9' opacity='.35' filter='url(#glow)'/>")
         A(f"<rect x='{nx-46}' y='{ny-15}' width='92' height='30' rx='15' fill='#fff' fill-opacity='.65' stroke='{cor}' stroke-width='4'/>")
         A(f"<path d='M{nx},{ny+7} c-14,-10 -10,-20 0,-12 c10,-8 14,2 0,12z' fill='{cor}'/>")
@@ -145,7 +146,8 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
         A(f"<ellipse cx='{cx}' cy='565' rx='110' ry='27' fill='#c9a7ff'/>")
         A(f"<ellipse cx='{cx}' cy='559' rx='98' ry='22' fill='{grad('fonterua', '#a9ecff', '#58b8f5')}'/>")
         A(f"<rect x='{cx-8}' y='475' width='16' height='80' rx='8' fill='#b98bff'/>")
-        A(f"<path d='M{cx},483 q-55,-50 -55,43 M{cx},483 q55,-50 55,43' stroke='#7fd3ff' stroke-width='8' fill='none' stroke-linecap='round'/>")
+        A(f"<path d='M{cx},483 q-60,-52 -66,65 M{cx},483 q60,-52 66,65' stroke='#7fd3ff' stroke-width='8' fill='none' stroke-linecap='round' opacity='.85'/>")
+        A(f"<ellipse cx='{cx-66}' cy='548' rx='14' ry='4' fill='#fff' opacity='.7'/><ellipse cx='{cx+66}' cy='548' rx='14' ry='4' fill='#fff' opacity='.7'/>")
         A(f"<circle cx='{cx}' cy='482' r='13' fill='#ffe08a'/>")
         for (gx, gy) in ((cx-60, 520), (cx+58, 515), (cx-20, 500), (cx+24, 530)):
             G['sparkle'](gx, gy, 5, '#ffffff')

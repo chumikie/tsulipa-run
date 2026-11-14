@@ -303,10 +303,9 @@ A(f"<rect x='{x+36}' y='{b-152}' width='18' height='40' rx='4' fill='#ff8fc4'/>"
 for i,(dx,dy,r) in enumerate([(45,-162,7),(54,-178,9),(48,-197,11)]):
     A(f"<circle cx='{x+dx}' cy='{b+dy}' r='{r}' fill='#fff' opacity='{.85-i*.2:.2f}'/>")
 A(f"<rect x='{x-72}' y='{b-92}' width='144' height='92' rx='10' fill='{grad('parcasa', '#fff0f7', '#ffd6ea')}'/>")
-A(f"<path d='M{x-86},{b-88} L{x},{b-156} L{x+86},{b-88} Z' fill='{grad('telcasa', '#ff9ccd', '#ff5aa5')}'/>")
-for k in range(3):
-    y = b - 98 - k * 18; w = 70 - k * 20
-    babado(x - w, y, 2 * w, '#ffb8da', 6)
+A(f"<path d='M{x-90},{b-86} L{x},{b-158} L{x+90},{b-86} Q{x},{b-80} {x-90},{b-86} Z' fill='{grad('telcasa', '#ff9ccd', '#ff5aa5')}'/>")
+A(f"<path d='M{x-90},{b-86} Q{x},{b-80} {x+90},{b-86}' stroke='#ffd0e6' stroke-width='6' fill='none' stroke-linecap='round'/>")
+A(f"<path d='M{x-58},{b-104} L{x-8},{b-144}' stroke='#fff' stroke-width='6' opacity='.45' stroke-linecap='round'/>")
 A(f"<path d='M{x},{b-112} c-7,-9 -21,-5 -19,5 c1,8 13,13 19,18 c6,-5 18,-10 19,-18 c2,-10 -12,-14 -19,-5Z' fill='#fff'/>")
 vidro(x-62, b-68, 32, 28, '#e3f4ff'); vidro(x+30, b-68, 32, 28, '#e3f4ff')
 for wx in (x-64, x+28):

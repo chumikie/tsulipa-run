@@ -652,6 +652,11 @@
     ctx.save();
     for(var g=0;g<10;g++){var f=((tm*.9+g/10)%1),lado=g%2?1:-1,dx=lado*(10+(g%5)*6)*f,y=596-38*f*(1-f)*4+f*34;
       ctx.globalAlpha=.85*(1-f*.6);ctx.fillStyle=g%3?'#c8f1ff':'#ffffff';ctx.beginPath();ctx.arc(800+dx,y,2.6,0,7);ctx.fill();}
+    // cachoeira do laguinho (mundo2.py: lx=300, ly=856): faixas brancas descendo e espuma na base
+    for(var c=0;c<6;c++){var fc=((tm*.9+c/6)%1),cx0=272+(c%3)*7,cy0=872+fc*84;ctx.globalAlpha=.75*Math.sin(fc*Math.PI);
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx0-fc*3,cy0);ctx.lineTo(cx0-fc*3-1,cy0+14);ctx.stroke();}
+    for(var e=0;e<5;e++){var fe=((tm*.5+e/5)%1),mx=282+(e%2?1:-1)*(4+fe*16),my=958+fe*14;   // névoa onde a água se desfaz no ar
+      ctx.globalAlpha=.55*(1-fe);ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(mx,my,6+fe*12,0,7);ctx.fill();}
     for(var n=0;n<3;n++){var x=((tm*(9+n*4)+n*620)%1900)-150,y2=60+n*70;ctx.globalAlpha=.55;ctx.fillStyle='#ffffff';
       ctx.beginPath();ctx.ellipse(x,y2,46,15,0,0,7);ctx.ellipse(x-22,y2+4,26,12,0,0,7);ctx.ellipse(x+24,y2-6,28,14,0,0,7);ctx.fill();}
     BRILHOS_MUNDO.forEach(function(b,i){var a=Math.max(0,Math.sin(tm*1.6+i*1.4));if(a<.05)return;var r=b[2]*(.6+a*.6);
@@ -680,9 +685,40 @@
       for(var v=0;v<3;v++){var g=((tm*.4+v/3)%1);ctx.globalAlpha=Math.sin(g*Math.PI)*.55;ctx.fillStyle='#ffffff';
         ctx.beginPath();ctx.arc(300+Math.sin(tm*1.6+v*2)*12,250-g*110,10+g*14,0,7);ctx.fill();}
     }
-    if(cena==='arena'){   // brilhinhos da arena em obras
-      for(var b=0;b<6;b++){var a2=Math.max(0,Math.sin(tm*1.8+b*1.7));ctx.globalAlpha=a2*.8;ctx.fillStyle='#fff3a8';
-        ctx.beginPath();ctx.arc(560+b*95,330+Math.sin(b*2.3)*70,3+a2*3,0,7);ctx.fill();}
+    if(cena==='arena'){   // torcida com lightsticks balançando e torres de luz pulsando
+      var CORES_LS=['#ff6fb5','#ffd36b','#7fd3ff','#b6ff3b','#b98bff'];ctx.lineCap='round';ctx.lineWidth=4;
+      for(var b=0;b<34;b++){var t3=(b+.5)/34,lx2=t3*1600,fila=b%4,ly2=350+fila*40-70*4*t3*(1-t3)*.5-26,ang=Math.sin(tm*3+b*.9)*.5;
+        if(lx2>560&&lx2<1040&&fila<3)continue;   // atrás da entrada da Arena não aparece
+        ctx.globalAlpha=.9;ctx.strokeStyle=CORES_LS[b%5];ctx.beginPath();ctx.moveTo(lx2,ly2);ctx.lineTo(lx2+Math.sin(ang)*16,ly2-Math.cos(ang)*16);ctx.stroke();}
+      [[90,147],[1510,147]].forEach(function(l,i){var a3=.25+.2*Math.sin(tm*2.2+i*2),g3=ctx.createRadialGradient(l[0],l[1],0,l[0],l[1],80);
+        g3.addColorStop(0,'rgba(255,247,200,'+a3.toFixed(2)+')');g3.addColorStop(1,'rgba(255,247,200,0)');ctx.globalAlpha=1;ctx.fillStyle=g3;ctx.fillRect(l[0]-80,l[1]-80,160,160);});
+    }
+    if(cena==='palco'||cena==='arena'||cena==='ceu'){   // estrelas piscando no céu
+      for(var z=0;z<22;z++){var zx=(z*389+71)%1600,zy=24+(z*137)%(cena==='ceu'?380:250),za=Math.max(0,Math.sin(tm*1.7+z*1.3));if(za<.08)continue;
+        var zr=(z%3?4:7)*(.5+za*.6);ctx.globalAlpha=za*.95;ctx.fillStyle=z%4?'#ffffff':'#fff3a8';ctx.beginPath();
+        ctx.moveTo(zx,zy-zr);ctx.quadraticCurveTo(zx+zr*.18,zy-zr*.18,zx+zr,zy);ctx.quadraticCurveTo(zx+zr*.18,zy+zr*.18,zx,zy+zr);
+        ctx.quadraticCurveTo(zx-zr*.18,zy+zr*.18,zx-zr,zy);ctx.quadraticCurveTo(zx-zr*.18,zy-zr*.18,zx,zy-zr);ctx.fill();}
+    }
+    if(cena==='palco'){   // dois holofotes varrendo o palco devagar
+      ctx.globalCompositeOperation='lighter';
+      [[300,-10,1],[1300,-10,-1]].forEach(function(h,i){var ang2=Math.sin(tm*.6+i*1.7)*.45*h[2];ctx.save();ctx.translate(h[0],h[1]);ctx.rotate(ang2);
+        var g4=ctx.createLinearGradient(0,0,0,560);g4.addColorStop(0,'rgba(255,247,200,.22)');g4.addColorStop(1,'rgba(255,247,200,0)');
+        ctx.fillStyle=g4;ctx.globalAlpha=1;ctx.beginPath();ctx.moveTo(-8,0);ctx.lineTo(-110,560);ctx.lineTo(110,560);ctx.lineTo(8,0);ctx.fill();ctx.restore();});
+      ctx.globalCompositeOperation='source-over';
+    }
+    if(cena==='harajuku'){   // Galeria do Brilho: letreiros neon pulsando e varal de luzinhas piscando
+      [[62,330,'255,111,181'],[562,300,'127,211,255'],[1046,285,'185,139,255'],[1538,320,'255,111,181']].forEach(function(n2,i){
+        var a4=.25+.35*(.5+.5*Math.sin(tm*2.4+i*1.1));ctx.globalAlpha=1;ctx.strokeStyle='rgba('+n2[2]+','+a4.toFixed(2)+')';ctx.lineWidth=10;
+        ctx.beginPath();if(ctx.roundRect)ctx.roundRect(n2[0]-50,n2[1]-19,100,38,19);else ctx.rect(n2[0]-50,n2[1]-19,100,38);ctx.stroke();});
+      for(var q2=0;q2<3;q2++)for(var k2=0;k2<9;k2++){var x0=q2*520,x1=x0+560,tq=(k2+.5)/9,lqx=x0+(x1-x0)*tq,lqy=150+46*4*tq*(1-tq)*.5+7,aq=Math.max(0,Math.sin(tm*3+k2*.8+q2*2));
+        if(aq<.3)continue;ctx.globalAlpha=aq*.7;ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(lqx,lqy,11,0,7);ctx.fill();}
+    }
+    if(cena==='praca'){   // fonte viva: gotas descendo pelos jatos e ondinhas onde a água cai (rua.py, escala 1,6 em 800,565)
+      var J=[[800,433.8,704,350.6,694.4,537.8],[800,433.8,896,350.6,905.6,537.8]];
+      J.forEach(function(j){for(var d=0;d<7;d++){var fd=((tm*.8+d/7)%1),u=1-fd,dx2=u*u*j[0]+2*u*fd*j[2]+fd*fd*j[4],dy2=u*u*j[1]+2*u*fd*j[3]+fd*fd*j[5];
+        ctx.globalAlpha=.9;ctx.fillStyle=d%2?'#ffffff':'#d6f5ff';ctx.beginPath();ctx.arc(dx2,dy2,4.2,0,7);ctx.fill();}
+        for(var o=0;o<2;o++){var fo=((tm*.6+o/2)%1);ctx.globalAlpha=.7*(1-fo);ctx.strokeStyle='#ffffff';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(j[4],j[5]+4,8+fo*30,2+fo*7,0,0,7);ctx.stroke();}});
+      var fb=(tm*.25)%1;ctx.globalAlpha=.35*(1-fb);ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(800,556,20+fb*120,5+fb*26,0,0,7);ctx.stroke();
     }
     ctx.restore();
   }

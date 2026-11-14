@@ -278,6 +278,7 @@ function cfFim(){
       if(cf!==atual)return;
       if(r&&r.ok&&r.confirmado){
         atual.provaEstado='verificado';
+        if(window.TWVidaCidade)window.TWVidaCidade.registrar('cafe',{id:atual.runId});
         atual.pontosVerificados=+r.pontos_verificados||0;
         atual.pontos=atual.pontosVerificados;
         if(typeof recCarregar==='function')recCarregar();

@@ -34,6 +34,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Privacidade (6 idiomas, 14/11): Battle, Photo Studio (Mural só ao publicar) e banner com trios. A opção de não aparecer continua valendo só para Moon⭐Duo! e outdoors (decisão do dono: o jogo é de inclusão).
 - Descrição do site (Google e compartilhamento) cita os jogos novos.
 - Links do BRS48 retirados (14/11): rodapé do Hub, botões do menu do Center⭐Run! e bandeirinha do Brasil no banner; item correspondente saiu da Privacidade.
+- Ruas do mapa com identidade própria (`tools/mapa/rua.py`): Star Stage à noite com holofotes e janelas acesas; Galeria do Brilho com letreiros neon e varal de luzes; Vila das Tulipas com colinas e campo de tulipas; Praça com árvores, bancos, canteiros e fonte maior; Star Arena com arquibancada, torres de luz e pódios; Jardim das Nuvens só de céu, com arco-íris. A ilha do Sora⭐Jump! não aparecia na rua (bug do desenho) e agora aparece.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 
@@ -54,7 +55,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Merge da #88:** é o que coloca tudo isso no site; o merge é do dono.
 - **#89 (Café: Dois no balcão):** o banco está aplicado, mas o front não entrou na #88.
 - **#74 (tela do prêmio do Sora):** rascunho; o SQL dele não deve ser aplicado, porque foi substituído pela versão com anti-cheat.
-- **Nomes:** "Vila das Tulipas" confirmado (14/11, antes Vila das Flores). "Rua das Vitrines" ainda provisório.
+- **Nomes:** "Vila das Tulipas" (antes Vila das Flores) e "Galeria do Brilho" (antes Rua das Vitrines), confirmados em 14/11.
 - **Casa decorável:** ainda em dúvida.
 - **Ideias não iniciadas:** calibração de atraso no Karaoke e o pet ajudando no jardim.
 - **Camarim em 320 px:** botões com 44 px e rótulo embaixo do emoji (CSS feito; não conferido em aparelho).

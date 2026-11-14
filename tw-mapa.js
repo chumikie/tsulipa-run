@@ -19,7 +19,7 @@
     arena:'mapa-rua-arena.svg',ceu:'mapa-rua-ceu.svg'
   };
   var ROTULOS_BAIRROS={
-    palco:'Star Stage',harajuku:'Rua das Vitrines',fofo:'Vila das Tulipas',
+    palco:'Star Stage',harajuku:'Galeria do Brilho',fofo:'Vila das Tulipas',
     praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
   };
   var BAIRROS_EMOJI={palco:'🎤',harajuku:'🛍️',fofo:'🌷',praca:'⛲',arena:'🏟️',ceu:'☁️'};
@@ -44,7 +44,7 @@
   var NOMES={'Meu Perfil':{en:'My Profile',es:'Mi perfil',id:'Profilku',th:'โปรไฟล์ของฉัน',ja:'マイプロフィール'},
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
     'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'},
-    'Rua das Vitrines':{en:'Showcase Street',es:'Calle de las Vitrinas',id:'Jalan Etalase',th:'ถนนร้านค้า',ja:'ショーウィンドウ通り'},
+    'Galeria do Brilho':{en:'Sparkle Gallery',es:'Galería del Brillo',id:'Galeri Kilau',th:'แกลเลอรีประกายแสง',ja:'キラキラギャラリー'},
     'Vila das Tulipas':{en:'Tulip Village',es:'Villa de los Tulipanes',id:'Desa Tulip',th:'หมู่บ้านทิวลิป',ja:'チューリップ村'},
     'Praça Central':{en:'Central Square',es:'Plaza Central',id:'Alun-alun Pusat',th:'จัตุรัสกลาง',ja:'セントラル広場'},
     'Jardim das Nuvens':{en:'Cloud Garden',es:'Jardín de las Nubes',id:'Taman Awan',th:'สวนเมฆ',ja:'雲の庭'},

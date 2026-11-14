@@ -140,7 +140,7 @@ def bairro(x, y, nome, c1, c2, icones):
             sinal = ic(k, ix, y + 36, 17) if k else ''
         A(f"<circle cx='{ix}' cy='{y+36}' r='14' fill='#fff'/><circle cx='{ix}' cy='{y+36}' r='11.5' fill='{c2}'/>" + sinal)
 bairro(800, 498, 'Star Stage', '#8b52ff', '#6630dc', ['hubhandshake', 'hubrun', 'tw-hubgame-karaoke'])
-bairro(1238, 758, 'Rua das Vitrines', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
+bairro(1238, 758, 'Galeria do Brilho', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
 bairro(360, 752, 'Vila das Tulipas', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', 'bloom'])
 bairro(800, 730, 'Praça Central', '#6fb6ff', '#4a78ef', ['hubfa', 'hubenc', 'hubjornal'])
 bairro(1040, 885, 'Star Arena', '#ffb35c', '#e0532f', ['battle'])

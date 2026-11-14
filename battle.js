@@ -237,9 +237,11 @@ function salvarUnit(){
 function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
-   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><select data-battle-slot="'+i+'">'+
+   var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
+   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection"><select data-battle-slot="'+i+'">'+
     estado.cards.map(function(c){return '<option value="'+esc(c.nick)+'"'+(unit[i]===c.nick?' selected':'')+'>'+esc(c.nick)+
-     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select></label>';
+     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select>'+
+     '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></label>';
  }
  return h;
 }
@@ -325,7 +327,9 @@ function render(){
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
  if(fase==='show'){
-   area.innerHTML='<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
+   area.innerHTML='<div class="battle-showhud"><b id="battleLiveRodada">'+esc(nomeRound(0))+' · 1/3</b><span>'+esc(trB('my'))+' × '+esc(trB('other'))+'</span></div>'+
+    '<div class="battle-showtrack" aria-hidden="true"><i id="battleShowFill"></i></div>'+
+    '<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
    return;
  }
  var max=Number(estado.max_tentativas)||5,usadas=Number(estado.tentativas)||0;
@@ -417,7 +421,8 @@ function jogar(){
 /* ---------- Show no palco ---------- */
 // Sons do próprio jogo (sfx respeita o mudo); se não existirem, o show segue em silêncio.
 var showSom=-1;
-function som(k){try{if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
+var SOM_NOVO={star:'ponto',hit:'perdeu',rank:'vitoria',over:'perdeu',photo:'flash'};
+function som(k){try{if(typeof twJogoSom==='function'&&SOM_NOVO[k])return twJogoSom(SOM_NOVO[k]);if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
@@ -429,6 +434,11 @@ function comecarShow(){
    var t=agora()-showT0;
    if(t>=DUR*3+.15){fimDoShow();return;}
    var ri=Math.min(2,Math.floor(t/DUR));
+   var live=ov.querySelector('#battleLiveRodada'),progresso=ov.querySelector('#battleShowFill');
+   if(live&&live.getAttribute('data-ri')!==String(ri)){
+     live.setAttribute('data-ri',String(ri));live.textContent=nomeRound(ri)+' · '+(ri+1)+'/3';
+   }
+   if(progresso)progresso.style.width=Math.min(100,t/(DUR*3)*100).toFixed(1)+'%';
    if(ri>showSom&&t-ri*DUR>1.3){showSom=ri;som(rodadas[ri].ganhou?'star':'hit');
      // quem usa leitor de tela acompanha o placar de cada rodada (a área é aria-live)
      var nr=ov.querySelector('#battleNarra'),rr=rodadas[ri];
@@ -455,6 +465,14 @@ function fundoPalco(x,cor,t){
    x.globalAlpha=.3;x.fillStyle=lg;x.beginPath();x.moveTo(h[0]+(h[1]+bal)*300-14,0);x.lineTo(h[0]+(h[1]+bal)*300+14,0);
    x.lineTo(h[0]+78,250);x.lineTo(h[0]-78,250);x.closePath();x.fill();
  });
+ x.restore();
+ // Painel de luz em barras: movimento pequeno, sem imagens externas ou timers novos.
+ x.save();x.fillStyle=cor;
+ for(var eq=0;eq<17;eq++){
+   var pulsoLuz=.5+.5*Math.sin(t*3.3+eq*.83),altura=12+Math.round(pulsoLuz*34);
+   x.globalAlpha=.12+pulsoLuz*.09;
+   x.fillRect(48+eq*27,178-altura,13,altura);
+ }
  x.restore();
  // estrelinhas do telão
  x.fillStyle='rgba(255,255,255,.75)';
@@ -529,6 +547,10 @@ function desenharPalco(t){
  if(veredito){
    var wx=r.ganhou?mx:rx,s=1+Math.max(0,.5-(u-1.3))*1.2;
    x.save();x.translate(wx,88);x.scale(s,s);x.font=fonte(24);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
+   // Faíscas saindo de quem venceu a rodada (o show inteiro já some com "reduzir movimento").
+   var ef=u-1.3;if(ef>=0&&ef<.9){x.save();for(var k=0;k<12;k++){var an=k/12*Math.PI*2+i*.4,rr=26+ef*110;
+     x.globalAlpha=1-ef/.9;x.fillStyle=k%3===0?'#b6ff3b':k%3===1?'#fff3a8':'#ff6fb5';
+     x.beginPath();x.arc(wx+Math.cos(an)*rr,150+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
  }
 }
 function desenharPolaroid(){

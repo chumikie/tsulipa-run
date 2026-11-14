@@ -480,10 +480,15 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
   if(zoom){ sc = H2 / 46; tx = W2 / 2 - 15 * sc; ty = H2 * .5 - 10 * sc; chao = ty + 44 * sc; }   // rostinho: da coroa até os ombros
   else { sc = H2 / (big ? 68 : 82); chao = H2 * (big ? .95 : .9); tx = W2 / 2 - 15 * sc - (pet ? 10 * sc : 0); ty = chao - 44 * sc; }
   if(camera){
-    var base = camera === 'rosto' ? 46 : camera === 'meio' ? 60 : 78;
-    sc = Math.min(H2 * .88 / base, W2 * .82 / (pet ? 76 : camera === 'rosto' ? 44 : camera === 'meio' ? 50 : 58));
-    tx = W2 / 2 - (pet ? 25 : 17) * sc;
-    ty = H2 * .06 + 22 * sc;
+    // Medido na tela (unidades a partir de tx/ty): cabelo y≈-5,5, boca ≈17, ombros ≈22, bermuda ≈33,
+    // pés ≈42 e sombra ≈46; largura x≈0..30. Cada enquadramento mostra uma faixa desse mesmo desenho:
+    // rosto = cabelo até o peito · meio = até o quadril · inteiro = dos pés à cabeça (com o Pet).
+    var faixa = camera === 'rosto' ? [-7, 27] : camera === 'meio' ? [-7, 41] : [-7, 49];
+    var largura = camera === 'rosto' ? 30 : camera === 'meio' ? 36 : (pet ? 76 : 44);
+    if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
+    sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
+    tx = W2 / 2 - (pet ? 25 : 15) * sc;
+    ty = (H2 - (faixa[1] - faixa[0]) * sc) / 2 - faixa[0] * sc;   // faixa centralizada na foto
     chao = ty + 44 * sc;
   }
   var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;

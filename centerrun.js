@@ -228,7 +228,8 @@ function beep(f,d,t,v,when){
 var mel=[523,659,784,659,587,698,880,698,523,659,784,1046,988,784,659,784],bass=[131,131,175,175,196,196,131,131],men=[523,659,784,659,880,784,659,587,523,659,784,1046,880,784,659,587],bi=0,mt=null;
 var BS={tense:[110,110,110,104,110,110,98,104],hard:[110,104,110,98,110,104,123,104]};
 function twJogoEmPopup(){   // Sora/Karaoke abertos: so vale a musica do jogo de dentro
-  var pv=document.getElementById('twPreviewJogo');return !!(pv&&!pv.hidden);
+  var pv=document.getElementById('twPreviewJogo');if(pv&&!pv.hidden)return true;
+  return typeof twJogoNovoAberto==='function'&&!!twJogoNovoAberto();   // Café, Battle, Jardim e Studio têm trilha própria (jogos-trilha.js)
 }
 function music(on){
   clearInterval(mt);if(!on)return;

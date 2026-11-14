@@ -628,6 +628,3 @@ html body .studiop .stfalta.ok{background:#eaffde;border-color:#5ccf3a;color:#2c
   .battle-showhud{font-size:11.5px}
   .bloomcard{padding:9px}
 }
-@media (prefers-reduced-motion:reduce){
-  .battle-showtrack i{transition:none}
-}

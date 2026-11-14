@@ -230,8 +230,8 @@
       // Acessório junto do retrato: em close ele fica na borda inferior,
       // em meio corpo ao lado do tronco, em corpo inteiro perto da mão.
       var quadro = e.quadro || 'inteiro';
-      var mao = quadro === 'rosto' ? [27,6] :
-                quadro === 'meio' ? [27,19] :
+      var mao = quadro === 'rosto' ? [25,22] :
+                quadro === 'meio' ? [27,27] :
                 e.pose === 'coracao' ? [10.3,28.5] : [3,31];
       x.save(); x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
       x.scale(corpo.scale, corpo.scale); x.rotate(-.18);

@@ -60,7 +60,7 @@ for(const f of ['battle_unit_salvar\\(jsonb\\)','battle_arena\\(\\)','battle_des
   assert.match(arenaSql,new RegExp('revoke all on function public\\.'+f+' from public,anon','i'));
 assert.match(arenaSql,/revoke all on function private\.battle_unit_resolver\(uuid,jsonb\) from public,anon,authenticated/i);
 // Torcida de flores (v3): proposta; substitui battle_jogar/battle_desafiar por cópias inteiras + bônus.
-const torSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_v3_torcida_REVIEW_ONLY.sql'),'utf8');
+const torSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/20261114_idol_battle_v3_torcida.sql'),'utf8');
 assert.match(src,/contaRpc\('battle_torcida'\)/);assert.match(src,/contaRpc\('battle_torcida_levar',\{p_flor:k\}\)/);
 assert.ok(!/stars\s*=\s*stars\s*\+\s*(?!5\b)/.test(torSql),'a torcida não cria prêmio novo');
 assert.equal((torSql.match(/stars=stars\+5/g)||[]).length,1,'só o prêmio já existente do rival do dia');

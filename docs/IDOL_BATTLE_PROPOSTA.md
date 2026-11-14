@@ -63,6 +63,6 @@ Ranking semanal de vitórias (item "Prêmio e economia"): `battle_ranking()` só
 ## v2 Arena dos Idols — aplicada em 14/11/2026
 Units salvas e desafio assíncrono, sem ★, com "fãs da arena" para a defesa. Regras, arquivos e estado em `docs/RETOMADA.md`.
 
-## v3 Torcida de flores — proposta de 14/11/2026 (SQL não aplicado)
+## v3 Torcida de flores — aplicada em 14/11/2026
 Flores do Bloom⭐Garden! dão +1 no palco por um dia. Regras, arquivos e estado em `docs/RETOMADA.md`.
 

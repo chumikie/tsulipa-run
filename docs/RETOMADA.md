@@ -179,10 +179,11 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - O seu Idol e o pet ativo aparecem no jardim e vão até o canteiro cuidado.
 - Conferido em Chromium (390×844) com servidor simulado. **Não testado: conta real, iPhone.**
 
-## Idol⭐Battle! v3 — Torcida de flores (14/11/2026) — SQL **NÃO aplicado**
-- Proposta: `supabase/sql/proposta/20261114_idol_battle_v3_torcida_REVIEW_ONLY.sql`. Liga o Bloom⭐Garden! ao Battle: 1 flor por dia, gasta, dá +1 à sua unit nas partidas daquele dia (rival do dia e arena). 🌸 Canto, 🌷 Dança, 🌻 Carisma, ⭐ flor-lunar nas três. Teto de 11 por rodada e regra de empate mantidos. Não dá ★.
+## Idol⭐Battle! v3 — Torcida de flores — APLICADO (14/11/2026, OK do dono)
+- `supabase/sql/aplicado/20261114_idol_battle_v3_torcida.sql`. Liga o Bloom⭐Garden! ao Battle: 1 flor por dia, gasta, dá +1 à sua unit nas partidas daquele dia (rival do dia e arena). 🌸 Canto, 🌷 Dança, 🌻 Carisma, ⭐ flor-lunar nas três. Teto de 11 por rodada e regra de empate mantidos. Não dá ★.
 - **Atenção:** substitui `battle_jogar` (a função do prêmio ★5) e `battle_desafiar` por cópias inteiras das versões aplicadas com as linhas da torcida. `tests/idol-battle.test.js` confere que nenhuma outra linha mudou. Funções novas: `battle_torcida()`, `battle_torcida_levar(p_flor)`; tabela `private.battle_torcida`.
 - Teste isolado: `supabase/tests/battle/checks_torcida.sql`; o `rodar.sh` agora também refaz TODAS as verificações antigas num banco novo já com as funções substituídas (regressão).
 - Front no PR #88 (`battle.js?v=8`, `battle.css?v=6`): seção "Torcida de flores" na escalação, 🌸+1 no palco e no resultado. Só aparece quando `battle_torcida()` responde.
-- Conferido em Chromium com servidor simulado. **Não testado: conta real, iPhone.** Aplicar só com o OK do dono.
+- Antes de aplicar, `battle_jogar`/`battle_desafiar` de produção tinham o md5 das versões aplicadas; depois, as 5 funções têm o md5 do que foi testado; anon sem acesso, RLS ligada, 0 linhas.
+- Conferido em Chromium com servidor simulado. **Não testado: conta real, iPhone.**
 

@@ -1,5 +1,5 @@
--- Idol⭐Battle! v3 — Torcida de flores (Bloom⭐Garden! → Battle). REVISÃO SOMENTE.
--- NÃO EXECUTAR NO SUPABASE SEM AUTORIZAÇÃO DO DONO.
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_idol_battle_v3_torcida).
+-- Idol⭐Battle! v3 — Torcida de flores (Bloom⭐Garden! → Battle).
 -- Uma vez por dia você pode levar 1 flor colhida para a torcida. A flor é gasta e dá +1 à sua
 -- unit em todas as partidas daquele dia (rival do dia e desafios da arena):
 --   🌸 sakura → Canto   🌷 tulipa → Dança   🌻 girassol → Carisma   ⭐ flor-lunar → as três rodadas

@@ -65,7 +65,7 @@ async function teste(page,dir,label){
   const rotulos=await page.evaluate(()=>window.TW_MAPA_TEXTOS);
   for(const bairro of ['mundo','fofo','arena','ceu']){
     assert.ok(Array.isArray(rotulos[bairro]),'textos do mapa disponíveis: '+bairro);
-    assert.ok(rotulos[bairro].every(t=>!/^\\s*(em breve|\\?)\\s*$/i.test(t.t)),
+    assert.ok(rotulos[bairro].every(t=>!/^\s*(em breve|\?)\s*$/i.test(t.t)),
       'sem Em breve nem ? no bairro '+bairro);
   }
   for(const bairro of ['fofo','arena','ceu'])

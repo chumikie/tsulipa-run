@@ -86,6 +86,56 @@ assert.match(mapa,/!q\.mov&&objeto/,'objetos só em pausa, sem deslocamentos ext
 assert.match(mapa,/if\(!reduzMov&&parados\.length>1/,'cumprimentos respeitam reduzir movimento');
 assert.match(mapa,/Math\.abs\(q\.x-meu\.x\)<105/,'cumprimentos só quando realmente próximos');
 assert.match(mapa,/q\.p\.dono/,'não inventa personagens, usa passeantes existentes');
+// Executa o desenho com relógio e Canvas simulados para observar poses e pontos de apoio.
+const exibidos=[], traducoes=[], textos=[];
+const canvas=new Proxy({
+ translate(x,y){traducoes.push([x,y]);},
+ fillText(t){textos.push(t);},
+ measureText(t){return {width:t.length*8};}
+},{get(obj,chave){return chave in obj?obj[chave]:()=>{};}});
+const cenaCtx={
+ console, TW_MAPA_DEBUG:true, document:{readyState:'loading',addEventListener(){}},
+ state:'menu',pw:null,dpw:null,rankI:0,sash:false,accSel:'',frame:0,charPose:'v',
+ hubAv:()=>({pose:'v',expr:2,c:{skin:'#ffd1b0'}}),
+ perfChar:av=>av.c, perfCharContorno:(x,tx,ty,sc,draw)=>draw(),
+ drawChar(c,x,y,mov,expr){exibidos.push({pose:cenaCtx.charPose,expr,mov});}
+};
+cenaCtx.window=cenaCtx;
+vm.runInNewContext(mapa.replace(/\}\)\(\);\s*$/, `
+  window.simular=function(bairro,tempo,registro,reduzido){
+    cena=bairro;ctx=window.canvas;reduzMov=reduzido;
+    window.TWVidaCidade={sinalCena:function(){return registro;}};
+    andar(tempo);
+  };
+})();`),cenaCtx);
+cenaCtx.canvas=canvas;
+const memoria={tipo:'reencontro',nome:'Nana',jeito:'animado',visual:{skin:'#edb390'}};
+cenaCtx.simular('praca',4,memoria,false);
+assert.equal(exibidos.length,2);
+assert.ok(textos.includes('💌 Nana'));
+assert.ok(!textos.includes('♪'),'fã aguarda enquanto o Idol anda');
+assert.equal(exibidos[1].pose,'');
+exibidos.length=textos.length=0;
+cenaCtx.simular('praca',6,memoria,false);
+assert.deepEqual(exibidos.map(p=>p.pose),['tchau','tchau']);
+assert.ok(textos.includes('♪'),'o gesto do fã acompanha a pausa do Idol');
+exibidos.length=textos.length=0;
+cenaCtx.simular('praca',0,memoria,true);
+assert.deepEqual(exibidos.map(p=>p.pose),['tchau','tchau']);
+assert.ok(textos.includes('♪'),'reencontro estático é visível com movimento reduzido');
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('harajuku',0,{tipo:'cafe'},false);
+assert.equal(exibidos[0].pose,'','a mão baixa substitui a pose de foto durante o uso do objeto');
+assert.deepEqual(traducoes[0],[334+12*1.45,738-13*1.45],'bandeja encaixada na mão do Idol');
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('fofo',12,{tipo:'bloom_regar'},false);
+assert.equal(exibidos[0].pose,'');
+assert.deepEqual(traducoes[2],[1334-12*1.45,738-13*1.45],'o regador acompanha a mão quando o Idol vira');
+exibidos.length=textos.length=traducoes.length=0;
+cenaCtx.simular('harajuku',0,null,false);
+assert.equal(exibidos[0].pose,'v');
+assert.equal(traducoes.length,0,'o Idol aguarda uma atividade confirmada para usar o objeto');
+assert.equal(cenaCtx.charPose,'v','a pose de perfil fica preservada fora do desenho');
 assert.match(pet,/function petVidaLembrancaCenario\(x\)/);
 assert.match(pet,/petVidaLembrancaCenario\(x\);/);
 assert.match(pet,/TWVidaCidade\.objetosCamarim/);

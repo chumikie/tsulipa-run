@@ -403,7 +403,7 @@
     var y=692+(i%3)*15;
     return [150,y,800,y-12,1450,y];
   }
-  function passeantes(){
+  function passeantes(registro){
     var l=[];
     try{if(typeof hubAv==='function'&&typeof perfChar==='function'){
       var av=hubAv();if(av)l.push({av:av,rua:trajetoRua(0),u0:.06,u1:.94,fase:0,dono:true});
@@ -415,8 +415,8 @@
       });});}catch(e){}
     // No máximo um fã NPC conhecido na Praça Central, somente após
     // atendimento confirmado pelo Café nesta sessão e mesma conta.
-    if(cena==='praca'&&window.TWVidaCidade&&typeof window.TWVidaCidade.sinalCena==='function'){
-      var fa=window.TWVidaCidade.sinalCena('praca');
+    if(cena==='praca'){
+      var fa=registro;
       if(fa&&fa.tipo==='reencontro'&&fa.visual&&fa.nome){
         var jeitoFa=/^(timido|animado|fofo)$/.test(fa.jeito)?fa.jeito:'fofo';
         var poseFa=jeitoFa==='timido'?'':jeitoFa==='animado'?'tchau':'coracao';
@@ -436,11 +436,11 @@
     ROTA.forEach(function(a,k){var b=ROTA[(k+1)%ROTA.length],d=Math.abs(PORTAS[b]-PORTAS[a])/vel;seg.push([a,b,d]);tot+=d+PARA;});
     var t=((tm+i*7.3)%tot+tot)%tot;
     for(var k=0;k<seg.length;k++){var g=seg[k],xa=PORTAS[g[0]]+(i%2?-34:34)*(i>1?.5:1),xb=PORTAS[g[1]]+(i%2?-34:34)*(i>1?.5:1);
-      if(t<PARA)return {x:xa,dir:xb>=xa?1:-1,mov:0,porta:g[0],volta:k};
+      if(t<PARA)return {x:xa,dir:xb>=xa?1:-1,mov:0,porta:g[0],volta:k,pausa:t};
       t-=PARA;
       if(t<g[2]){var u=t/g[2];u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,volta:k};}
       t-=g[2];}
-    return {x:PORTAS[0],dir:1,mov:0,porta:0,volta:0};
+    return {x:PORTAS[0],dir:1,mov:0,porta:0,volta:0,pausa:0};
   }
   function balao(x,y,txt,a){
     ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#fff';ctx.strokeStyle='#e2d4ff';ctx.lineWidth=3;
@@ -455,55 +455,83 @@
     harajuku:{porta:0,k:'cafe'},palco:{porta:0,k:'handshake'},
     fofo:{porta:2,k:'bloom'},ceu:{porta:2,k:'studio'},arena:{porta:1,k:'battle'}
   };
-  function objetoRua(x,y,dir,k){
-    ctx.save();ctx.translate(x+dir*22,y-31);
+  function objetoRua(x,y,dir,k,sc,pele){
+    // drawChar desenha a mão em (27, 31), para um avatar de largura 30.
+    ctx.save();ctx.translate(x+dir*12*sc,y-13*sc);ctx.scale(dir*.82,.82);
+    ctx.save();
     ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.strokeStyle='#654195';
     if(k==='cafe'){ // bandejinha com xícara
+      ctx.translate(9,-9);
       ctx.fillStyle='#f0b7e6';rr(-15,7,31,4,2);ctx.fill();ctx.stroke();
       ctx.fillStyle='#fff9ef';rr(-6,-8,15,16,4);ctx.fill();ctx.stroke();
       ctx.beginPath();ctx.arc(12,-1,5,-Math.PI/2,Math.PI/2);ctx.stroke();
       ctx.strokeStyle='#ffffff';ctx.beginPath();ctx.moveTo(-3,-12);ctx.quadraticCurveTo(-8,-17,-3,-20);ctx.stroke();
     }else if(k==='bloom'){ // pequeno regador junto à mão
+      ctx.translate(15,1);
       ctx.fillStyle='#8bd1bd';rr(-9,-7,21,16,5);ctx.fill();ctx.stroke();
       ctx.beginPath();ctx.moveTo(10,-3);ctx.lineTo(20,-10);ctx.lineTo(22,-6);ctx.stroke();
       ctx.beginPath();ctx.arc(-10,-1,6,Math.PI/2,Math.PI*1.5);ctx.stroke();
       ctx.fillStyle='#fff5b7';ctx.fillRect(-1,-10,3,4);
     }else if(k==='studio'){ // câmera
+      ctx.translate(11,-3);
       ctx.fillStyle='#d9b9fc';rr(-13,-8,27,20,4);ctx.fill();ctx.stroke();
       ctx.beginPath();ctx.arc(0,2,6,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
       ctx.fillStyle='#8660b8';ctx.beginPath();ctx.arc(0,2,3,0,Math.PI*2);ctx.fill();
       ctx.fillStyle='#fff';ctx.fillRect(-9,-11,9,4);
     }else if(k==='handshake'){ // lightstick
+      ctx.translate(0,-5);
       ctx.strokeStyle='#6f55b7';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,12);ctx.lineTo(0,-4);ctx.stroke();
       ctx.fillStyle='#ff82bf';ctx.strokeStyle='#fff';ctx.lineWidth=2;
       ctx.beginPath();ctx.arc(0,-11,8,0,Math.PI*2);ctx.fill();ctx.stroke();
     }else if(k==='battle'){ // microfone
+      ctx.translate(0,-5);
       ctx.strokeStyle='#8164a8';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-2,10);ctx.lineTo(5,-7);ctx.stroke();
       ctx.fillStyle='#f8dcff';ctx.strokeStyle='#6f55b7';ctx.lineWidth=2;
       ctx.beginPath();ctx.ellipse(7,-11,7,9,.3,0,Math.PI*2);ctx.fill();ctx.stroke();
     }
+    ctx.restore();
+    // Os dedos ficam à frente da alça, da base ou do cabo.
+    ctx.fillStyle=pele;ctx.beginPath();ctx.ellipse(0,0,3,2.5,0,0,Math.PI*2);ctx.fill();
     ctx.restore();
   }
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
     var sc=1.45,oS=state,oPw=pw,oDpw=dpw,oR=rankI,oSa=sash,oA=accSel,oF=frame,oP=charPose;
     try{
-      state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';frame=tm*60;
+      state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';frame=reduzMov?0:tm*60;
       // A recordação vem de uma atividade confirmada; sem isso, apenas o
       // segundo passeante pode usar um pequeno adereço decorativo do bairro.
       var registro=window.TWVidaCidade&&typeof window.TWVidaCidade.sinalCena==='function'
         ?window.TWVidaCidade.sinalCena(cena):null;
       var objeto=PORTA_OBJETO[cena],parados=[];
-      passeantes().map(function(p,i){var fixo=(i===0&&registro&&objeto)?objeto.porta:i%3;
+      var rua=passeantes(registro).map(function(p,i){
+        var fixo=p.dono&&registro&&objeto?objeto.porta:i%3;
+        if(p.dono&&registro&&cena==='praca')fixo=1;
         var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
-        q.p=p;q.i=i;q.y=738+(i%3)*8;return q;/* abaixo das placas */})
-        .sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
+        q.p=p;q.i=i;q.y=738+(i%3)*8;return q;/* abaixo das placas */
+      });
+      var fa=rua.find(function(q){return q.p.nomeFa;});
+      var meuIdol=rua.find(function(q){return q.p.dono;});
+      var reencontro=fa&&meuIdol&&!meuIdol.mov&&meuIdol.porta===1;
+      if(fa){
+        // O fã espera na Praça. O gesto acontece quando o Idol para por perto.
+        fa.x=900;fa.y=754;fa.mov=0;fa.dir=-1;
+        if(reencontro)meuIdol.dir=1;
+      }
+      rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
         var p=q.p,c=perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
+        var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
+          ((p.dono&&registro)||(q.i===1&&!p.dono));
+        var pose=q.mov||segurando?'':(p.av.pose||'');
+        if(reencontro&&q===meuIdol)pose='tchau';
+        if(p.nomeFa&&!reencontro)pose='';
+        var expressao=p.nomeFa?(reencontro?p.av.expr:2):(+p.av.expr||2);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
-        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=q.mov?'':(p.av.pose||'');drawChar(c,0,0,q.mov?1:0,p.nomeFa?p.av.expr:(+p.av.expr||2),false);});
+        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
         ctx.restore();
+        if(segurando)objetoRua(q.x,q.y,q.dir,objeto.k,sc,c.skin);
         if(!q.mov)parados.push(q);
         if(p.nomeFa&&!q.mov){
           // Identificação simples, sem links, sem DOM novo e sem alterar hitboxes.
@@ -513,24 +541,20 @@
           ctx.fillStyle='rgba(255,247,255,.96)';ctx.strokeStyle='#bfa4ed';ctx.lineWidth=2;
           rr(q.x-largura/2,q.y-101,largura,26,11);ctx.fill();ctx.stroke();
           ctx.fillStyle='#674190';ctx.textAlign='center';ctx.textBaseline='middle';
-          ctx.fillText(etiqueta,q.x,q.y-88);ctx.restore();
-          // Gesto da personalidade real do fã, apenas ao parar:
-          // tímido (…); animado (♪); fofo (♥). Sem DOM ou timer novo.
-          var gesto=p.jeitoFa==='timido'?'…':p.jeitoFa==='animado'?'♪':'♥';
-          var cor=p.jeitoFa==='timido'?'#9e83bc':p.jeitoFa==='animado'?'#d88731':'#ec6fa8';
-          var pausa=((tm+q.i*7.3)%PARA+PARA)%PARA;
-          var alfa=reduzMov?1:Math.max(0,Math.min(1,pausa*3,(PARA-pausa)*3));
-          ctx.save();ctx.globalAlpha=alfa;ctx.fillStyle=cor;
-          ctx.font='18px "Mochiy Pop One",sans-serif';ctx.textAlign='center';
-          ctx.fillText(gesto,q.x+Math.min(80,largura/2+15),q.y-87);ctx.restore();
-        }
-        if(!q.mov&&objeto&&q.porta===objeto.porta&&
-          ((p.dono&&registro)||(q.i===1&&!p.dono))){
-          objetoRua(q.x,q.y,q.dir,objeto.k);
+          ctx.fillText(etiqueta,q.x,q.y-88,largura-16);ctx.restore();
+          if(reencontro){
+            var gesto=p.jeitoFa==='timido'?'…':p.jeitoFa==='animado'?'♪':'♥';
+            var cor=p.jeitoFa==='timido'?'#9e83bc':p.jeitoFa==='animado'?'#d88731':'#ec6fa8';
+            var pausa=meuIdol.pausa;
+            var alfa=reduzMov?1:Math.min(1,pausa*3,(PARA-pausa)*3);
+            ctx.save();ctx.globalAlpha=alfa;ctx.fillStyle=cor;
+            ctx.font='18px "Mochiy Pop One",sans-serif';ctx.textAlign='center';
+            ctx.fillText(gesto,q.x+largura/2+15,q.y-87);ctx.restore();
+          }
         }
         // parado numa porta: de vez em quando um balãozinho (♪ ❤ ★), que aparece e some suave
-        if(!q.mov&&!p.nomeFa&&!reduzMov&&(q.volta+q.i)%2===0){
-          var fase=((tm+q.i*7.3)%PARA+PARA)%PARA,a=Math.min(1,fase*3,(PARA-fase)*3);
+        if(!q.mov&&!p.nomeFa&&!reduzMov&&!(reencontro&&p.dono)&&(q.volta+q.i)%2===0){
+          var fase=q.pausa,a=Math.min(1,fase*3,(PARA-fase)*3);
           balao(q.x+(q.dir<0?-40:40),q.y-44*sc+4,BALOES[(q.volta+q.i)%BALOES.length],Math.max(0,a));
         }
         // o pet vem atrás andando; quando o dono para, ele senta do lado
@@ -538,15 +562,15 @@
         if(pet&&typeof perfDesenharPetEm==='function'){
           var px=q.x-q.dir*(q.mov?40:30),hop=q.mov?-Math.abs(Math.sin(tm*8+q.i+1.3))*6:0;
           ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(px,q.y+2,8,1.8,0,0,7);ctx.fill();
-          perfDesenharPetEm(ctx,pet,px,q.y-14+hop,sc*.5,tm*60);
+          perfDesenharPetEm(ctx,pet,px,q.y-14+hop,sc*.5,frame);
         }
       });
       // Um encontro é só um aceno entre avatares que já estão no passeio:
       // sem afirmar amizade, encontro real ou recorde. Nunca acima de 1/rua.
-      if(!reduzMov&&parados.length>1&&tm%12<3){
+      if(!reduzMov&&parados.length>1&&!reencontro&&tm%12<3){
         var meu=parados.find(function(q){return q.p.dono;});
         var vizinho=meu&&parados.find(function(q){
-          return !q.p.dono&&Math.abs(q.x-meu.x)<105&&Math.abs(q.y-meu.y)<23;
+          return !q.p.dono&&!q.p.nomeFa&&Math.abs(q.x-meu.x)<105&&Math.abs(q.y-meu.y)<23;
         });
         if(vizinho){
           ctx.save();ctx.font='23px sans-serif';ctx.textAlign='center';

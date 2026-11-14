@@ -121,6 +121,12 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - `20261113_flores_e_caderno`: `jardim_usar_flor` (gasta 1 flor para levar à mesa do Handshake; o front dá +Hype: Sakura 10, Tulipa 15, Girassol 20, Flor-lunar 30) e `cafe_caderno` (só leitura das receitas comprovadas).
 - Front: `flores.js` (PR #88). Testes: `supabase/tests/flores/rodar.sh`, `tests/flores.test.js`.
 
+## Fase 4 — estado em 14/11/2026
+- Bloom⭐Garden! v1 ✅ (aplicado), flores com uso ✅ (aplicado).
+- Photo⭐Studio! v1 ✅ e v2 Mural + Capa no Idol⭐News! ✅ (aplicados) — `docs/PHOTO_STUDIO_PROPOSTA.md`.
+- Idol⭐Battle!: **aprovado, não implementado** — `docs/IDOL_BATTLE_PROPOSTA.md`. Começar pela v1.
+- Padrão de trabalho que o dono aprovou: SQL em `supabase/sql/proposta/` + teste em PostgreSQL isolado (`supabase/tests/<nome>/rodar.sh`, com cópia INTEIRA de qualquer função de produção alterada) + front num arquivo próprio no PR #88; aplicar no banco só com a frase de OK do dono; depois mover para `aplicado/`.
+
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

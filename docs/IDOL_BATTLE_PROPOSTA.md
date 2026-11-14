@@ -1,6 +1,6 @@
 # Idol⭐Battle! — proposta (Fase 4, 3º jogo novo) · 14/11/2026
 
-Status: **proposta para o dono aprovar**. Nada implementado.
+Status: **APROVADO pelo dono em 14/11/2026**: (1) atributos dos recordes reais; (2) rival do dia, até 5 tentativas, ★5 na 1ª vitória; (3) v2 com units salvas e desafio assíncrono. **Próximo passo: implementar a v1** (SQL testado isolado em `supabase/tests/battle/` + `battle.js` + entrada pela Star Arena no mapa), mesmo padrão do Photo⭐Studio! (`studio.js`, `supabase/sql/aplicado/20261114_photo_studio.sql`).
 
 ## Ideia em uma frase
 Um **show de palco por turnos** na Star Arena: você escala uma **unit de 3 cards** do seu Álbum (os cards do Star⭐Gacha!) e disputa 3 rodadas — **Canto, Dança e Carisma** — contra uma unit rival. Ganha quem levar 2 das 3 rodadas.

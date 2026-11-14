@@ -5,7 +5,10 @@
    do próprio catálogo do jogo (cabelos, cortes, franjas, roupas, acessórios). Recorde no aparelho.
    Prêmio diário (ticket do Karaoke ou item do pet, nunca estrelas): RPC handshake_premio,
    proposta em supabase/sql/proposta/20261103200000_handshake_premio.sql. Este arquivo só declara funções e tabelas. */
-var HS_NOMES = ['Nana', 'Kiko', 'Lulu', 'Momo', 'Rafi', 'Yumi', 'Toto', 'Pipo', 'Mel', 'Juju', 'Cacau', 'Lili', 'Koko', 'Duda', 'Nino', 'Mimi', 'Teté', 'Bubu', 'Fifi', 'Gigi', 'Zezé', 'Biba', 'Tuca', 'Dodô', 'Lalá', 'Chico', 'Pururu', 'Nunu', 'Kaká', 'Pepê'];
+// Nomes dos fãs/clientes em estilo mangá (sílabas misturadas, nomes inventados).
+var HS_NOMES = ['Usamado', 'Homina', 'Sayami', 'Kyorin', 'Hanoka', 'Mayoka', 'Minarei', 'Makohan', 'Amimi', 'Chibiko', 'Usahana', 'Rinako', 'Lucimi', 'Kyomami', 'Sakuhime', 'Pichiru', 'Kururun', 'Purinne', 'Momorin', 'Kiraho', 'Nyamomo', 'Reiyu', 'Homika', 'Madomi', 'Hanorei', 'Mamiyu', 'Ritako', 'Minaka', 'Sayaren', 'Lunami'];
+// Nomes antigos: continuam valendo para as lembranças que já estão salvas nos aparelhos.
+var HS_NOMES_ANTIGOS = ['Nana', 'Kiko', 'Lulu', 'Momo', 'Rafi', 'Yumi', 'Toto', 'Pipo', 'Mel', 'Juju', 'Cacau', 'Lili', 'Koko', 'Duda', 'Nino', 'Mimi', 'Teté', 'Bubu', 'Fifi', 'Gigi', 'Zezé', 'Biba', 'Tuca', 'Dodô', 'Lalá', 'Chico', 'Pururu', 'Nunu', 'Kaká', 'Pepê'];
 var HS_PRESENTES = [   // [emoji, nome, grupo]: as opções erradas vêm de preferência do mesmo grupo (fica mais difícil)
   ['🍓', 'Morango', 'doce'], ['🍰', 'Bolo', 'doce'], ['🍬', 'Bala', 'doce'], ['🧁', 'Cupcake', 'doce'], ['🍙', 'Onigiri', 'doce'],
   ['🎀', 'Laço', 'fofo'], ['🧸', 'Ursinho', 'fofo'], ['💌', 'Cartinha', 'fofo'], ['🌸', 'Flor', 'fofo'],
@@ -101,13 +104,13 @@ function hsMemLer(){
   try{
     var lista = JSON.parse(localStorage.getItem(chave) || '[]');
     return Array.isArray(lista) ? lista.filter(function(m){
-      return m && HS_NOMES.indexOf(m.nome) >= 0 && Number.isInteger(m.pres) && m.pres >= 0 && m.pres < HS_PRESENTES.length;
+      return m && (HS_NOMES.indexOf(m.nome) >= 0 || (typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(m.nome) >= 0)) && Number.isInteger(m.pres) && m.pres >= 0 && m.pres < HS_PRESENTES.length;
     }).slice(0, 8) : [];
   }catch(e){ return []; }
 }
 function hsMemGuardar(f){
   var chave = hsMemChave();
-  if(!chave || !f || HS_NOMES.indexOf(f.nome) < 0 || !Number.isInteger(f.pres)) return;
+  if(!chave || !f || !(HS_NOMES.indexOf(f.nome) >= 0 || (typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(f.nome) >= 0)) || !Number.isInteger(f.pres)) return;
   var detalhes = {}, campos = ['hair','hair2','img','skin','back','front','det','out','outcol','gl','hat'];
   campos.forEach(function(k){ if(f.c && typeof f.c[k] === 'string') detalhes[k] = f.c[k]; });
   var memoria = { nome:f.nome, pres:f.pres, c:detalhes, jeito:f.jeito, dia:new Date(Date.now() - 3 * 3600e3).toISOString().slice(0,10) };

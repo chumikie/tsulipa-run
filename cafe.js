@@ -108,7 +108,7 @@ function cfAbrir(){
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
-  var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
+  var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Momorin';
   var f = hsFa(r, nome);
   // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
   var memorias = cf.atendidos === 0 && typeof hsMemLer === 'function' ? hsMemLer() : [];

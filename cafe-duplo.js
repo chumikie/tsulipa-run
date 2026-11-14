@@ -20,7 +20,7 @@
   function novoFa(pedido){
     var r = hsSorteio(Date.now() + cf.criados * 131 + Math.floor(Math.random() * 997)), usados = nomesUsados();
     var livres = hsNomesLivres().filter(function(n){ return !usados[n]; });
-    var f = hsFa(r, livres[Math.floor(r() * livres.length)] || 'Mimi');
+    var f = hsFa(r, livres[Math.floor(r() * livres.length)] || 'Momorin');
     f.pedido = pedido || cfPedido(r, cf.criados);
     return f;
   }

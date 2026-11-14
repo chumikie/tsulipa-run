@@ -697,7 +697,7 @@ function petPhoneMarca(){
 // existe (recordes, pet). Fãs com nomes inventados; nada vai ao servidor nem ao save.
 var petPhoneCartaAberta = '';
 var petCartasLidasSessao = [];   // como o resto do celular: só na memória da aba, sem save
-var PET_CARTA_FAS = ['Nana','Kiko','Lulu','Momo','Rafi','Yumi','Toto','Pipo','Mel','Juju','Cacau','Lili','Koko','Duda','Nino','Mimi','Bubu','Fifi','Gigi','Biba'];
+var PET_CARTA_FAS = ['Usamado','Homina','Sayami','Kyorin','Hanoka','Mayoka','Minarei','Makohan','Amimi','Chibiko','Usahana','Rinako','Lucimi','Kyomami','Sakuhime','Pichiru','Kururun','Purinne','Momorin','Kiraho'];
 var PET_CARTA_SELOS = ['🌸','🍓','🐰','⭐','🎀','🌙','🍰','💐'];
 var PET_CARTA_TEXTOS = {
   rec:'Vi seu recorde de {b} no Center⭐Run! Treinei a semana inteira para chegar perto. 😳',
@@ -1099,7 +1099,7 @@ function petPhoneChatContatos(){
   if(!Array.isArray(memorias)) return contatos;
   var vistos = Object.create(null);
   memorias.slice(0,8).forEach(function(m){
-    if(!m || typeof HS_NOMES === 'undefined' || HS_NOMES.indexOf(m.nome) < 0 || vistos[m.nome] ||
+    if(!m || typeof HS_NOMES === 'undefined' || (HS_NOMES.indexOf(m.nome) < 0 && !(typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(m.nome) >= 0)) || vistos[m.nome] ||
       typeof HS_PRESENTES === 'undefined' || !Number.isInteger(m.pres) || !HS_PRESENTES[m.pres]) return;
     vistos[m.nome] = true;
     var cor = m.c && typeof m.c.hair === 'string' && /^#[0-9a-fA-F]{6}$/.test(m.c.hair) ? m.c.hair : '#b778d1';

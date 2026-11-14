@@ -108,7 +108,7 @@ function cfAbrir(){
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfNovoClienteLocal(){
-  var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Mimi';
+  var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Momorin';
   var f = hsFa(r, nome);
   // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
   var memorias = cf.atendidos === 0 && typeof hsMemLer === 'function' ? hsMemLer() : [];
@@ -192,6 +192,14 @@ function cfEscolher(tipo, i){
   if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
   cfUI();
 }
+// O reencontro não altera perguntas, recompensas nem a memória do Handshake.
+function cfCidadeReencontro(f,conta,comprovante){
+ if(!f||!f.hsLembranca||!comprovante||!window.TWVidaCidade)return;
+ window.TWVidaCidade.registrar('reencontro',{
+   id:String(comprovante).slice(0,90)+'/'+f.nome,
+   nome:f.nome,pres:f.pres,conta:conta
+ });
+}
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
   var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
@@ -208,6 +216,7 @@ function cfServir(saiu){
       atual.verificacaoPendente=false;
       if(r && r.ok && r.confirmado){
         if(r.certo === true && certo && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
+        if(r.certo===true&&certo)cfCidadeReencontro(faAtendido,contaAtendimento,args.p_sessao);
         atual.pontos=+r.pontos||0;atual.vidas=+r.vidas;atual.perfeitos=+r.perfeitos;
         atual.combo=+r.combo||0;
         if(r.certo){
@@ -230,6 +239,7 @@ function cfServir(saiu){
       p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}}).then(function(r){
       if(r && r.ok && r.confirmado){
         if(certo && r.certo !== false && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
+        if(certo&&r.certo===true)cfCidadeReencontro(faAtendido,contaAtendimento,atualLegado.servidor&&atualLegado.servidor.sessao);
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         atualLegado.provaEstado='confirmado';
         if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
@@ -278,6 +288,7 @@ function cfFim(){
       if(cf!==atual)return;
       if(r&&r.ok&&r.confirmado){
         atual.provaEstado='verificado';
+        if(window.TWVidaCidade)window.TWVidaCidade.registrar('cafe',{id:atual.runId});
         atual.pontosVerificados=+r.pontos_verificados||0;
         atual.pontos=atual.pontosVerificados;
         if(typeof recCarregar==='function')recCarregar();
@@ -402,7 +413,8 @@ function cfDesenhar(){
   x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe2f1'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
   x.fillStyle = '#ffe47c'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
   // cliente no balcão
-  var c = cf && cf.cli;
+  var c = cf && !cf.duplo && cf.cli;
+  if(cf && cf.duplo && typeof cfDuploClientes === 'function') cfDuploClientes(x, W2, H2, t);   // modo Dois no balcão (cafe-duplo.js)
   if(c){
     var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
     var visita = cf.visitaAlvo === c && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
@@ -442,6 +454,7 @@ function cfDesenhar(){
     x.fillStyle = '#d63384'; x.font = '900 13px "M PLUS Rounded 1c",sans-serif'; x.fillText(nomeTxt, 24, 70, bw - 28);
     x.fillStyle = '#3c2a8f'; x.font = '900 17px "M PLUS Rounded 1c",sans-serif'; linhas.forEach(function(L, i){ x.fillText(L, 24, 92 + i * 22, bw - 24); }); x.restore();
   }
+  if(cf && cf.duplo && typeof cfDuploBaloes === 'function') cfDuploBaloes(x, W2, H2, t);
   if(cf && cf.combo >= 2){ x.save(); x.font = '900 18px "Mochiy Pop One",sans-serif'; x.textAlign = 'right'; x.fillStyle = '#ff6fb5'; x.strokeStyle = '#fff'; x.lineWidth = 5; var ct = 'COMBO x' + cf.combo; x.strokeText(ct, W2 - 12, H2 * .7); x.fillText(ct, W2 - 12, H2 * .7); x.restore(); }
   if(cf && cf.hearts.length){ x.save(); x.font = '26px sans-serif'; x.textAlign = 'center';
     cf.hearts = cf.hearts.filter(function(h){ h.t++; h.y -= h.v; x.globalAlpha = Math.max(0, 1 - h.t / 70); x.fillText(h.e, W2 * h.x + Math.sin(h.t / 6) * 8, H2 * h.y); return h.t < 70; }); x.restore(); }
@@ -463,6 +476,8 @@ function cfUI(){
     cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
+    // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
+    if(cf.fase === 'pedido' && cf.cli && cf.cli.pedido) h += '<p class="cfpedidotxt" aria-live="polite"><b>' + escHtml(tr('Pedido')) + ':</b> ' + escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];

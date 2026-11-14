@@ -90,7 +90,7 @@ assert(html.includes('next.volume=.6'),'character voice playback volume is sligh
 assert(!html.includes("finish(tr('Prévia finalizada.'))")&&!html.includes("stop(tr('Prévia interrompida.'))"),'voice previews stop and end silently without completion/interruption notices');
 assert(html.includes('<canvas class="kt-library-face" width="88" height="96"'),'voice miniatures have a full-body canvas');
 assert(!html.includes('kt-library-tabs')&&!html.includes('data-kt-library-view=')&&!html.includes('data-kt-library-panel='),'music and voice controls share one continuous library page');
-const requestedLibraryStart=html.indexOf('id="ktAudioLibrary"'),requestedLibraryEnd=html.indexOf('id="krMicQueue"',requestedLibraryStart),requestedLibrary=html.slice(requestedLibraryStart,requestedLibraryEnd);
+const requestedLibraryStart=html.indexOf('id="ktAudioLibrary"'),requestedLibraryEnd=html.indexOf('id="krRhythm"',requestedLibraryStart),requestedLibrary=html.slice(requestedLibraryStart,requestedLibraryEnd);
 const shownOrder=[...requestedLibrary.matchAll(/data-kt-song-select="([^"]+)"/g)].map(match=>match[1]);
 assert.deepEqual(shownOrder,['tema','corrida','duo','gacha','normal','chill','fast'],'library keeps all seven tracks together in the exact requested sequence');
 assert(!requestedLibrary.includes('Músicas do jogo')&&!requestedLibrary.includes('Músicas novas'),'library does not add song subcategory headings');

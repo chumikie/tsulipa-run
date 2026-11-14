@@ -1,0 +1,111 @@
+/* Idol⭐Battle! — superfície e tipografia alinhadas ao TsuLiPa⭐World. */
+.battleov{z-index:24}
+.battlep{max-width:580px;position:relative;max-height:min(92dvh,940px);overflow-y:auto;
+ --battle-ink:#432675;--battle-border:#d9c8ff;color:var(--battle-ink)}
+.battlep .tw-modal-title{padding:0 42px}
+.battle-sub{text-align:center;margin:2px auto 10px;color:var(--battle-ink);font-weight:800;font-size:13px}
+.battle-status{border:2px solid var(--battle-border);background:linear-gradient(105deg,#f6f1ff,#effbff);
+ color:var(--battle-ink);border-radius:15px;padding:9px 12px;text-align:center;font-size:12px;font-weight:800;margin:8px 0}
+.battle-status.treino{background:#fff7db;border-color:#f3df95;color:#674c11}
+.battle-rival,.battle-escalar,.battle-resultado{border:2px solid var(--battle-border);
+ border-radius:19px;padding:12px;margin:10px 0;
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(244,235,255,.97));
+ box-shadow:0 4px 0 rgba(90,51,166,.11)}
+.battlep h3{margin:0 0 7px;color:var(--battle-ink);
+ font:400 15px/1.4 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;text-align:center}
+.battle-trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.battle-idol{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;
+ min-width:0;padding:10px 3px;border:2px solid #fff;border-radius:15px;
+ background:linear-gradient(160deg,#f6d5f1,#e7dafa);box-shadow:0 3px 0 rgba(90,51,166,.13);
+ font-size:13px;color:#4b287c}
+.battle-idol small{font-size:10.5px;font-weight:800;color:#73579d;line-height:1.2;text-align:center}
+.battle-idol em{font-style:normal;font-size:10.5px;font-weight:800;color:#fff;background:#9b30d9;border-radius:99px;padding:1px 7px}
+.battle-av{width:66px;height:75px;display:block;max-width:100%}
+.battle-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
+.battle-chips i{font-style:normal;font-size:10.5px;font-weight:800;line-height:1;padding:3px 5px;border-radius:99px;
+ background:rgba(255,255,255,.82);color:#4b287c;white-space:nowrap}
+.battle-chips i.on{background:#7b3ff0;color:#fff}
+.battle-stage{display:block;width:100%;height:auto;aspect-ratio:7/4;border-radius:19px;border:2px solid var(--battle-border);
+ box-shadow:0 4px 0 rgba(90,51,166,.14);background:#2a1258;margin:8px 0}
+.battle-skip{min-height:42px}
+.battle-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.battle-tab{min-height:44px;border:2px solid var(--battle-border);border-radius:14px;background:#fff;color:var(--battle-ink);
+ font-family:inherit;font-weight:800;font-size:13px;line-height:1.2;cursor:pointer;padding:6px 8px}
+.battle-tab.on{background:linear-gradient(105deg,#7b3ff0,#4169e1);border-color:#7b3ff0;color:#fff}
+.battle-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.battle-torcida{border:2px solid #ffc8e2;border-radius:19px;padding:12px;margin:10px 0;
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,236,246,.97));box-shadow:0 4px 0 rgba(90,51,166,.11)}
+.battle-flores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+.battle-flores .btn{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:50px;margin:0;padding:7px 6px;font-size:13px}
+.battle-flores .btn small{font-size:11.5px;font-weight:800;opacity:.85}
+.battle-bonus{font-style:normal;font-weight:800;font-size:11px;color:#c2337f;background:#ffe3f1;border-radius:99px;padding:1px 6px}
+.battle-fas{text-align:center;font-weight:800;font-size:12.5px;color:#c2337f;margin:8px 0 0}
+.battle-error.ok{color:#2c7a3f}
+.battle-def .btns{margin-top:9px}.battle-def .btn{min-height:42px}
+.battle-rank{border:2px solid var(--battle-border);border-radius:19px;padding:12px;margin:10px 0;
+ background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,246,221,.97));box-shadow:0 4px 0 rgba(90,51,166,.11)}
+.battle-rank ol{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.battle-rank li{display:grid;grid-template-columns:30px 40px minmax(0,1fr) auto;align-items:center;gap:8px;
+ padding:4px 10px;border:1px solid #eadfb4;border-radius:13px;background:#fff;font-size:12.5px;color:#4b287c}
+.battle-rank li b{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle-rank li small{font-weight:800;color:#8a5a00;white-space:nowrap}
+.battle-med{text-align:center;font-weight:800;font-size:15px}
+.battle-av.battle-av-s{width:40px;height:45px}
+.battle-rank-eu{margin:8px 0 0;text-align:center;font-size:12px;font-weight:800;color:#73579d}
+/* 4º pódio do Idol⭐News! (Idol⭐Battle!) */
+html body .jornalp .jnpodios>.jnpodio:nth-child(4){--g1:#ffb347;--g2:#ff6fb5}
+.battle-placar{display:inline-block;margin-left:4px;padding:1px 9px;border-radius:99px;background:#7b3ff0;color:#fff;font-size:13px}
+.battle-round.win{border-color:#a8d94a;background:#f6ffe2}
+.battle-round strong{font-size:14px}
+.battle-status small{font-weight:700;opacity:.85}
+.battle-idol b{max-width:100%;overflow-wrap:anywhere;font-size:12px;text-align:center}
+.battle-hint{font-size:11.5px;text-align:center;line-height:1.5;margin:8px 0;color:#73579d;font-weight:700}
+.battle-slot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);align-items:center;
+ gap:8px;margin:6px 0;padding:7px 10px;border:1px solid #e2d8fa;border-radius:14px;background:#fff;
+ font-size:12px;font-weight:800;color:var(--battle-ink)}
+.battle-slot select{min-width:0;width:100%;border:2px solid #d7c0ff;background:#f8f4ff;
+ border-radius:10px;padding:8px;color:#452579;font:inherit;min-height:42px;cursor:pointer}
+.battle-slot select:focus-visible,.battlep button:focus-visible{outline:3px solid #9365e9;outline-offset:2px}
+.battle-start{min-height:50px;width:100%;max-width:340px;font-size:16px}
+.battle-error{color:#b52972;text-align:center;font-weight:800}
+.battle-result-grid{display:grid;gap:7px;margin:9px 0}
+.battle-round{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+ border:1px solid #d6c5f3;background:white;border-radius:11px;padding:7px 10px;font-size:12px;color:#4b287c}
+.battle-resultado{text-align:center}.battle-resultado .btn{min-height:42px;margin:3px}
+.battlep [hidden]{display:none!important}
+@media(max-width:340px){.battlep .battle-slot{grid-template-columns:1fr;gap:3px}}
+@media(max-width:420px){
+ .battlep .battle-trio{gap:5px}.battlep .battle-idol{padding:9px 2px}}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) .battlep{--battle-ink:#432675}}
+/* Cores de texto firmes dentro dos cartões claros (o tema escuro do Hub clareava os parágrafos). */
+html body .battlep p.battle-hint{color:#73579d}
+html body .battlep p.battle-fas{color:#c2337f}
+html body .battlep p.battle-error{color:#b52972}
+html body .battlep p.battle-error.ok{color:#2c7a3f}
+html body .battlep p.battle-rank-eu{color:#73579d}
+html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
+/* Ícones desenhados (sem emoji) */
+.battle-ic{width:1.05em;height:1.05em;flex:none;vertical-align:-.17em;margin-right:.3em}
+.battle-chips i .battle-ic{margin-right:.14em;width:.95em;height:.95em}
+.battle-flores small .battle-ic{margin-right:.12em}
+.battle-fas .battle-ic,.battle-placar .battle-ic{margin-right:.28em}
+.battle-fdot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(60,42,143,.16)}
+.battle-bonus .battle-fdot{width:8px;height:8px;margin-right:3px;box-shadow:none;vertical-align:0}
+.battle-med{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#efe6ff;color:#5a33a6;font-size:12.5px}
+.battle-med.m1{background:#ffe08a;color:#7a5200}.battle-med.m2{background:#e3e8f1;color:#4d5a70}.battle-med.m3{background:#f6cfa8;color:#7a4416}
+.battle-rank h3 .battle-ic{color:#e8a400}.battle-rank li small .battle-ic,.battle-rank-eu .battle-ic{color:#e8a400;margin-right:.2em}
+
+
+/* Acabamento: menos caixa dentro de caixa, chips numa linha só, escalação compacta */
+.battle-rival,.battle-escalar,.battle-resultado,.battle-torcida,.battle-rank{box-shadow:none;border-width:1.5px;padding:12px 10px}
+.battle-rival{background:linear-gradient(180deg,#fff,#f7f1ff)}
+.battle-escalar{background:linear-gradient(180deg,#fff,#f3f7ff)}
+.battle-idol{border:0;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.9),0 2px 0 rgba(90,51,166,.10);padding:8px 3px 9px}
+.battle-chips{flex-wrap:nowrap;gap:2px;max-width:100%}
+.battle-chips i{padding:3px 4px;font-size:10px}
+.battle-slot{grid-template-columns:auto minmax(0,1fr);padding:5px 6px 5px 12px;margin:5px 0;border-radius:12px}
+.battle-slot select{min-height:44px;padding:6px 8px;font-size:13px}
+.battle-status{padding:8px 12px;margin:6px 0 10px}
+.battle-hint{margin:8px 4px 4px}
+.battlep .btns:has(.battle-start){margin:14px 0 6px;display:flex;justify-content:center}
+.battle-chips i.oculto{background:#2c1a5e;color:#ffe14d;letter-spacing:.02em}

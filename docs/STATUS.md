@@ -1,5 +1,7 @@
 # STATUS — TsuLiPa⭐World
 
+> **Atenção (14/11/2026):** o texto abaixo é o retrato de 31/10/2026 (PR #49) e está desatualizado. O estado atual, com o quadro de feito / falta, está no topo de [`RETOMADA.md`](RETOMADA.md).
+
 Atualizado em 31/10/2026. Atualize este arquivo no mesmo envio de qualquer mudança.
 
 ## Liberação da PR #49 — estado verificado em 31/10/2026

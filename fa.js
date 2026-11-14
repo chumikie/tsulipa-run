@@ -33,6 +33,7 @@ function faCartaoHtml(){
 }
 function faAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  if($('faTit')) $('faTit').textContent = '💌 ' + tr('Pedido de fã');   // título completo por qualquer caminho (missões, Camarim, Gacha)
   var dono = faContaDono(), sessao = typeof contaSessaoToken === 'number' ? contaSessaoToken : null;
   var dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   faDadosConta = dono; faDadosDia = dia;

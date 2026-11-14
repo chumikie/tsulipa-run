@@ -3,6 +3,19 @@
    Os dados vêm da consulta album_cards (proposta para o Supabase: docs/ALBUM_CARDS_SUPABASE.md).
    Enquanto ela não existir no banco, o álbum mostra os espaços e avisa que começa em breve.
    Este arquivo só declara funções e tabelas. */
+// Microtextos do resumo em todos os seis idiomas do site.
+var ALBUM_RESUMO_TR = {
+  pt:['Cards repetidos','Próxima meta','faltam'],
+  en:['Duplicate cards','Next milestone','remaining'],
+  es:['Cards repetidos','Próxima meta','faltan'],
+  id:['Kartu duplikat','Target berikutnya','kurang'],
+  th:['การ์ดซ้ำ','เป้าหมายถัดไป','เหลืออีก'],
+  ja:['重複カード','次の目標','あと']
+};
+function albumResumoTexto(i){
+  var l=typeof LANG==='string'&&ALBUM_RESUMO_TR[LANG]?LANG:'pt';
+  return ALBUM_RESUMO_TR[l][i];
+}
 var ALBUM_POR_PAGINA = 9;
 var albumPag = 0, albumDados = null, albumPronto = false;
 function albumIdols(){
@@ -11,6 +24,7 @@ function albumIdols(){
 }
 function albumAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  if($('albumTit')) $('albumTit').textContent = '📖 ' + tr('Álbum de cards');   // título completo por qualquer caminho (missões, Camarim, Gacha)
   albumOv.hidden = false; albumOv.scrollTop = 0; albumPag = 0; albumDados = null; albumPronto = false;
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
   albumUI();
@@ -25,10 +39,25 @@ function albumUI(){
   // quem saiu no álbum mas não está mais na vitrine continua com o seu espaço
   Object.keys(tenho).forEach(function(n){ if(nomes.indexOf(n) < 0) nomes.push(n); });
   var total = nomes.length, achados = nomes.filter(function(n){ return tenho[n]; }).length;
+  // Contagem informativa baseada exclusivamente em album_cards(). Repetidos não
+  // são moeda nem "pó de estrela" enquanto não existir regra de servidor aprovada.
+  var repetidos = Object.keys(tenho).reduce(function(n, nick){
+    var vezes = Number(tenho[nick].vezes);
+    return n + (Number.isFinite(vezes) ? Math.max(0, Math.floor(vezes) - 1) : 0);
+  }, 0);
+  var proximaMeta = ALBUM_METAS.find(function(m){ return m[0] > achados; });
   var pags = Math.max(1, Math.ceil(total / ALBUM_POR_PAGINA)); albumPag = Math.min(albumPag, pags - 1);
   var pg = nomes.slice(albumPag * ALBUM_POR_PAGINA, (albumPag + 1) * ALBUM_POR_PAGINA), lista = [];
   var h = '<p class="albumprog"><b>' + achados + '</b> / ' + total + ' ' + escHtml(tr('Idols no seu álbum')) + '</p>' +
     '<div class="albumbarra" aria-hidden="true"><i style="width:' + (total ? Math.round(achados / total * 100) : 0) + '%"></i></div>';
+  h += albumMetasHtml(achados);
+  if(albumPronto){
+    h += '<p class="albumresumo" aria-live="polite">🃏 ' + achados + ' / ' + total +
+      ' · ' + escHtml(albumResumoTexto(0)) + ': <b>' + repetidos + '</b>' +
+      (proximaMeta ? ' · ' + escHtml(albumResumoTexto(1)) + ': ' +
+        proximaMeta[0] + ' (' + escHtml(albumResumoTexto(2)) + ' ' + (proximaMeta[0] - achados) + ')' : '') +
+      '</p>';
+  }
   if(albumDados === null) h += '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   else if(!albumPronto) h += '<p class="albumaviso">🛠️ ' + escHtml(tr('O álbum começa a guardar seus cards em breve. Por enquanto, veja quem falta!')) + '</p>';
   h += '<div class="albumgrade">' + pg.map(function(n){
@@ -42,5 +71,20 @@ function albumUI(){
   corpo.innerHTML = h;
   cardsMem.album = lista;
   lista.forEach(function(c, i){ var cv = $('albumCv' + i); if(cv && c.card) try{ gachaCardDesenhar(cv, cardsDados(c)); }catch(e){} });
+}
+// metas de coleção (só visuais): 5, 15, 30 e 50 Idols. A primeira vez que alcança uma, comemora uma vez neste aparelho.
+var ALBUM_METAS = [[5, '🌱'], [15, '🌸'], [30, '💎'], [50, '👑']];
+function albumMetasHtml(achados){
+  if(!albumPronto) return '';
+  var visto = 0; try{ visto = +localStorage.getItem('tw_album_meta') || 0; }catch(e){}
+  var nova = 0;
+  var h = '<div class="albummetas">' + ALBUM_METAS.map(function(m){
+    var ok = achados >= m[0]; if(ok && m[0] > visto) nova = m[0];
+    return '<span class="albummeta' + (ok ? ' ok' : '') + '" title="' + m[0] + ' Idols"><i>' + m[1] + '</i><b>' + m[0] + '</b></span>';
+  }).join('') + '</div>';
+  if(nova){ try{ localStorage.setItem('tw_album_meta', String(nova)); }catch(e){}
+    h += '<p class="albummetanova">✨ ' + escHtml(tr('Nova meta do álbum: {n} Idols!').replace('{n}', nova)) + '</p>';
+    if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
+  return h;
 }
 function albumPagina(d){ albumPag = Math.max(0, albumPag + d); albumUI(); if(sfx && sfx.card) try{ sfx.card(); }catch(e){} }

@@ -49,8 +49,6 @@ const env={
   window:{ktShowAdmissionPending:false},
   krT:0,
   krBots:bots,
-  krHomolAtivo:false,
-  krHomolConectado:false,
   krDemoCantor:null,
   krDemoFila:[],
   krLoungeCastRef:null,
@@ -111,12 +109,9 @@ const singer=env.krLoungeActors[0];singer.no_mic=true;
 env.krT+=1;env.krLoungeUpdate(1);
 assert.equal(env.krLoungeActors.indexOf(singer),-1,'a singer takes priority over autonomous walking');
 
-// Homologation remains isolated: autonomous movement is cleared and cannot restart.
-env.krHomolAtivo=true;
+// (o antigo modo de homologação foi retirado: a sala é sempre solo)
 for(let i=0;i<12&&env.krLoungeActors.length;i++){env.krT+=1;env.krLoungeUpdate(60);}
-assert.equal(env.krLoungeActors.length,0,'homologation finishes existing return routes');
-assert(env.krBots.every(b=>!b._ktLoungeWalking),'homologation releases every walker after reaching a sofa');
-env.krHomolAtivo=false;env.krEu.no_mic=true;env.kt.active=()=>true;env.krDemoCantor=null;env.krLoungeActors.length=0;
+env.krEu.no_mic=true;env.kt.active=()=>true;env.krDemoCantor=null;env.krLoungeActors.length=0;
 env.krLoungeUpdate(1);
 assert(env.krBots.every((b,i)=>b.no_mic||(b.x===env.KR_SOFA_SLOTS[i][0]&&b.y===env.KR_SOFA_SLOTS[i][1])),'every non-singer returns to their sofa during a presentation');
 env.krEu.no_mic=false;env.kt.active=()=>false;
@@ -160,7 +155,7 @@ assert(html.includes('if(py>=315&&py<=500&&krPlanearDestino(px,py))e.preventDefa
 assert(html.includes('if(krMeuRetornoAt>0&&krT>=krMeuRetornoAt&&!krEu.no_mic)krPlanearRetornoMicrofone();'),'the room clock triggers the five-second return');
 assert(html.includes('if(krMeuVoltandoAoMic&&!krMoveQueue.length&&Math.hypot(krEu.x-KR_MIC_HOME_X,krEu.y-KR_MIC_HOME_Y)<=3'),'return state clears only after arrival at the microphone');
 assert(html.includes('if(!krEu.plateia&&krEuNoMicrofone())ktPedestal(x,KR_MIC_HOME_X,KR_MIC_HOME_Y);'),'microphone pedestal stays fixed at the stage while the Idol walks away');
-assert(html.includes('function krLoungeSoloPermitido(){return !krHomolAtivo&&!krHomolConectado;}'),'autonomous lounge remains gated out of homologation');
+assert(html.includes('function krLoungeSoloPermitido(){return true;}')&&!html.includes('krHomol'),'sala solo: o modo antigo de homologação foi retirado');
 assert(autoMic.includes('function create(deps)')&&autoMic.includes('function beginSinger(bot,automatic)')&&html.includes('window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({'),'the page binds the route controller to its local room state');
 assert(autoMic.includes('s.admissionPending||s.returnAt>0||s.returning||s.moveQueueLength||!s.playerAtMic'),'NPC waits through admission, mandatory return and the player turn');
 assert(html.includes('window.ktShowAdmissionPending=true')&&html.includes('window.ktShowAdmissionPending=false'),'player admission remains pending until confirm, cancel or failed gate');
@@ -169,4 +164,4 @@ assert(polaroid.includes('function open(person,index,opener){')&&polaroid.includ
 assert(polaroid.includes('deps.drawIdol(ctx,char,260,470,7.8')&&polaroid.includes('EXPRESSIONS[posterIndex]')&&polaroid.includes('deps.getTime()'),'the enlarged portrait uses the injected existing avatar renderer and room clock');
 assert(polaroid.includes('posterDialog.showModal()'),'the enlarged portrait is presented in an accessible dialog');
 assert(html.includes('window.KaraokeRoomPolaroid=window.KaraokeRoomPolaroid.create({')&&html.includes('window.KaraokeRoomPolaroid.open(KR_ROOM_POSTER_DRAW[photo],photo,document.activeElement)'),'wall Polaroids receive page-private avatar dependencies before their pointer hit target is used');
-console.log('✓ Karaoke lounge: single clear-aisle walker, sofa occupancy, random NPC mic guard, interactive Polaroids, homologation and player turn protections');
+console.log('✓ Karaoke lounge: single clear-aisle walker, sofa occupancy, random NPC mic guard, interactive Polaroids, and player turn protections');

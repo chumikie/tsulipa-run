@@ -5,6 +5,8 @@
    tudo na mesma ordem de antes (estado do jogo, laço, listeners, invólucros da Temporada 2 e inicialização continuam lá). */
 var LANG='pt';
 function tr(k){var d=DICT[LANG];return (d&&d[k])||k}
+// Algum idioma carregado traduz este texto? (só o idioma escolhido é baixado)
+function twTemTraducao(k){if(DICT.id&&DICT.id[k])return true;for(var l in DICT){if(DICT[l]&&DICT[l][k])return true;}return false;}
 function applyLang(){
   document.documentElement.lang=LANG==='id'?'id':LANG==='ja'?'ja':LANG==='th'?'th':LANG==='es'?'es':LANG==='en'?'en':'pt-BR';
   var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,L=[];
@@ -16,7 +18,7 @@ function applyLang(){
   L.forEach(function(node){
     var raw=node.__pt!==undefined?node.__pt:node.nodeValue, k=raw.trim();
     if(node.__pt===undefined){
-      if(DICT.en[k]||DICT.es[k]||DICT.th[k]||DICT.ja[k]||(DICT.id&&DICT.id[k]))node.__pt=raw;
+      if(twTemTraducao(k))node.__pt=raw;
       else return;
     }
     var d=DICT[LANG], v=d&&d[k];
@@ -27,7 +29,7 @@ function applyLang(){
       if(!e.hasAttribute(a))return;
       var key='data-pt-'+a;
       if(!e.hasAttribute(key)){
-        if(DICT.en[e.getAttribute(a)]||DICT.es[e.getAttribute(a)]||DICT.ja[e.getAttribute(a)]||DICT.th[e.getAttribute(a)]||(DICT.id&&DICT.id[e.getAttribute(a)]))e.setAttribute(key,e.getAttribute(a));
+        if(twTemTraducao(e.getAttribute(a)))e.setAttribute(key,e.getAttribute(a));
         else return;
       }
       var o=e.getAttribute(key),d=DICT[LANG];

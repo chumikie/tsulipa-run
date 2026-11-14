@@ -3331,6 +3331,56 @@ function soraDrawThailandScene(ctx){
   
   f.restore();
 }
+// Céu por estação (hemisfério sul, horário de Brasília) e pelo tema do momento: só partículas de fundo,
+// discretas, sem hitbox nem efeito no jogo. Teste: sora-jump.html?estacao=primavera|verao|outono|inverno|halloween|natal
+function soraEstacao(){
+  try{ var q = new URLSearchParams(location.search).get('estacao'); if(/^(primavera|verao|outono|inverno|halloween|natal)$/.test(q || '')) return q; }catch(e){}
+  var tema = typeof temaAtual === 'function' ? temaAtual() : '';
+  if(tema === 'halloween' || tema === 'natal') return tema;
+  var md = 0;
+  try{ var p = new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',month:'numeric',day:'numeric'}).formatToParts(new Date());
+    var mm = +p.find(function(o){ return o.type === 'month'; }).value, dd = +p.find(function(o){ return o.type === 'day'; }).value; md = mm * 100 + dd;
+  }catch(e){ var dt = new Date(); md = (dt.getMonth() + 1) * 100 + dt.getDate(); }
+  if(md >= 922 && md <= 1220) return 'primavera';
+  if(md >= 1221 || md <= 319) return 'verao';
+  if(md >= 320 && md <= 620) return 'outono';
+  return 'inverno';
+}
+var SORA_ESTACAO = soraEstacao(), soraEstacaoAvisou = false;
+var SORA_ESTACAO_TXT = {
+  pt:{primavera:'🌸 Céu de primavera',verao:'☀️ Céu de verão',outono:'🍂 Céu de outono',inverno:'❄️ Céu de inverno',halloween:'🎃 Céu de Halloween',natal:'🎄 Céu de Natal'},
+  en:{primavera:'🌸 Spring sky',verao:'☀️ Summer sky',outono:'🍂 Autumn sky',inverno:'❄️ Winter sky',halloween:'🎃 Halloween sky',natal:'🎄 Christmas sky'},
+  es:{primavera:'🌸 Cielo de primavera',verao:'☀️ Cielo de verano',outono:'🍂 Cielo de otoño',inverno:'❄️ Cielo de invierno',halloween:'🎃 Cielo de Halloween',natal:'🎄 Cielo de Navidad'},
+  id:{primavera:'🌸 Langit musim semi',verao:'☀️ Langit musim panas',outono:'🍂 Langit musim gugur',inverno:'❄️ Langit musim dingin',halloween:'🎃 Langit Halloween',natal:'🎄 Langit Natal'},
+  th:{primavera:'🌸 ท้องฟ้าฤดูใบไม้ผลิ',verao:'☀️ ท้องฟ้าฤดูร้อน',outono:'🍂 ท้องฟ้าฤดูใบไม้ร่วง',inverno:'❄️ ท้องฟ้าฤดูหนาว',halloween:'🎃 ท้องฟ้าฮาโลวีน',natal:'🎄 ท้องฟ้าคริสต์มาส'},
+  ja:{primavera:'🌸 春の空',verao:'☀️ 夏の空',outono:'🍂 秋の空',inverno:'❄️ 冬の空',halloween:'🎃 ハロウィンの空',natal:'🎄 クリスマスの空'}
+};
+function soraDrawEstacao(x, zone){
+  if(zone && /^(fuji|rio|rural|thailand)$/.test(zone.id)) return;   // as paisagens especiais têm o próprio clima
+  var e = SORA_ESTACAO, n = e === 'verao' ? 16 : 22;
+  if(!soraEstacaoAvisou && soraFrame > 40 && typeof soraMsg === 'function'){   // um aviso por visita: "Céu de outono 🍂"
+    soraEstacaoAvisou = true; var Lg = (typeof LANG === 'string' && SORA_ESTACAO_TXT[LANG]) ? LANG : 'pt'; soraMsg(SORA_ESTACAO_TXT[Lg][e], 110); }
+  x.save(); x.scale(1.4, 1.4); x.translate(0, 0);
+  for(var i = 0; i < n; i++){
+    var sp = .35 + (i % 4) * .12, f = soraFrame;
+    var W1 = SW / 1.4, H1 = SH / 1.4;
+    var px = ((i * 97 + Math.sin(f * .02 + i) * 18) % (W1 + 40) + W1 + 40) % (W1 + 40) - 20;
+    var py = ((i * 131 + f * sp - soraCamY * .05) % (H1 + 40) + H1 + 40) % (H1 + 40) - 20;
+    if(e === 'halloween'){ px = ((i * 97 + f * sp * 1.2) % (W1 + 60)) - 30; py = ((i * 131 - soraCamY * .05) % H1 + H1) % H1; }
+    x.save(); x.translate(px, py); x.rotate(f * .02 * (i % 2 ? 1 : -1) + i);
+    if(e === 'primavera'){ x.globalAlpha = .55; x.fillStyle = i % 2 ? '#ffb3d6' : '#ffd6ea'; x.beginPath(); x.ellipse(0, 0, 4.5, 2.6, 0, 0, Math.PI * 2); x.fill(); }
+    else if(e === 'outono'){ x.globalAlpha = .6; x.fillStyle = ['#f5a623','#e8603c','#d9822b'][i % 3]; x.beginPath(); x.ellipse(0, 0, 5.5, 2.8, 0, 0, Math.PI * 2); x.fill(); x.fillRect(-.5, 2, 1, 3); }
+    else if(e === 'inverno' || e === 'natal'){ x.globalAlpha = .7; x.fillStyle = '#ffffff'; x.beginPath(); x.arc(0, 0, 1.6 + (i % 3) * .7, 0, Math.PI * 2); x.fill();
+      if(e === 'natal' && i % 6 === 0){ x.globalAlpha = .85; x.fillStyle = i % 12 ? '#e8457a' : '#5ccf3a'; x.fillRect(-3, -3, 6, 6); x.fillStyle = '#ffd23f'; x.fillRect(-.7, -3, 1.4, 6); } }
+    else if(e === 'verao'){ var a = .25 + .45 * Math.abs(Math.sin(f * .05 + i)); x.globalAlpha = a; x.fillStyle = i % 3 ? '#fff3a0' : '#ffb35c';
+      x.beginPath(); x.moveTo(0, -4); x.lineTo(1, -1); x.lineTo(4, 0); x.lineTo(1, 1); x.lineTo(0, 4); x.lineTo(-1, 1); x.lineTo(-4, 0); x.lineTo(-1, -1); x.closePath(); x.fill(); }
+    else if(e === 'halloween'){ x.rotate(-(f * .02 * (i % 2 ? 1 : -1) + i)); x.globalAlpha = .8;
+      if(i % 3){ var w = Math.sin(f * .25 + i) * 2.5; x.fillStyle = '#1d1238'; x.beginPath(); x.ellipse(0, 0, 2.6, 2, 0, 0, Math.PI * 2); x.moveTo(-1, 0); x.quadraticCurveTo(-5, -3 - w, -8, 0); x.quadraticCurveTo(-5, -1, -1, 1); x.moveTo(1, 0); x.quadraticCurveTo(5, -3 - w, 8, 0); x.quadraticCurveTo(5, -1, 1, 1); x.fill(); }
+      else { x.fillStyle = '#ff9a3c'; x.beginPath(); x.ellipse(0, 0, 4.5, 3.6, 0, 0, Math.PI * 2); x.fill(); x.fillStyle = '#5ccf3a'; x.fillRect(-.6, -5, 1.2, 2); } }
+    x.restore();
+  }
+  x.restore();
+}
 function soraDraw(){
   if(!soraCtx) return;
   var x = soraCtx;
@@ -3377,6 +3427,8 @@ function soraDraw(){
     }
   }
   x.globalAlpha = 1; x.restore();
+
+  soraDrawEstacao(x, zone);
 
   // Sakura agora é específica da fase japonesa: flores nas árvores ficam presas aos galhos;
   // no ar passam apenas pétalas individuais, com movimento de vento e sem hitbox.

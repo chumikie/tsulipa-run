@@ -58,6 +58,13 @@ function petLifePoseUI(){
     b.disabled = !!petGame || !!petAnim || petView !== 'room';
   });
 }
+// Deformação só visual do assento; acompanha a transição já existente,
+ // inclusive ao levantar ou trocar a pose rapidamente.
+function petLifeSofaApoio(visual){
+  if(!visual || visual.sit <= .001)return null;
+  var q=petLifeQuadril(visual), t=Math.min(1,Math.max(0,visual.sit));
+  return {x:Math.max(73,Math.min(126,q.x)), afunda:t*3, alfa:t*.21};
+}
 function petLifeSofa(x, frente, visual){
   x.save();
   if(!frente){
@@ -66,6 +73,16 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    var apoio=petLifeSofaApoio(visual);
+    if(apoio){
+      // Sombra e dobra curtas na almofada, atrás do avatar, sem alterar o quadril.
+      x.save();x.globalAlpha=apoio.alfa;x.fillStyle='#9a67ac';
+      x.beginPath();x.ellipse(apoio.x,176+apoio.afunda,27,3.8,0,0,7);x.fill();
+      x.strokeStyle='#fff6fd';x.lineWidth=1.2;x.beginPath();
+      x.moveTo(apoio.x-25,170+apoio.afunda);
+      x.quadraticCurveTo(apoio.x,174+apoio.afunda,apoio.x+25,170+apoio.afunda);x.stroke();
+      x.restore();
+    }
     x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
   }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
@@ -450,13 +467,11 @@ function petMakeBg(){
   x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(200, 177, 22, 3, 0, 0, 7); x.fill();
   x.fillStyle = '#84539d'; x.fillRect(184, 147, 3, 30); x.fillRect(213, 147, 3, 30);
   x.fillStyle = '#bd82c1'; RR(182, 162, 36, 3.5, 1.5); x.fill();
-  x.fillStyle = '#ff9fd0'; x.fillRect(189, 154, 5, 8); x.fillStyle = '#9fd3ff'; x.fillRect(195, 156, 5, 6);
-  x.fillStyle = '#ffe37a'; x.fillRect(201, 155, 4, 7);
+  x.fillStyle = '#ff9fd0'; x.fillRect(186, 154, 4, 8); x.fillStyle = '#9fd3ff'; x.fillRect(191, 156, 4, 6);
+  x.fillStyle = '#ffe37a'; RR(197, 152, 7, 10, 2); x.fill();
+  x.fillStyle = '#9b30d9'; x.fillRect(207, 153, 8, 9);
+  x.fillStyle = '#fff4c9'; x.font = '7px sans-serif'; x.fillText('★', 211, 160);
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
-  x.fillStyle = '#ffe4a4'; RR(186, 126, 12, 17, 2); x.fill();
-  x.fillStyle = '#e6b952'; x.fillRect(190, 137, 4, 6);
-  x.fillStyle = '#9b30d9'; x.fillRect(201, 130, 13, 12);
-  x.fillStyle = '#fff4c9'; x.font = '10px sans-serif'; x.fillText('★', 207.5, 139);
   x.restore();
 
   petDesenharJanela(x, petLuzFase());
@@ -682,7 +697,7 @@ function petPhoneMarca(){
 // existe (recordes, pet). Fãs com nomes inventados; nada vai ao servidor nem ao save.
 var petPhoneCartaAberta = '';
 var petCartasLidasSessao = [];   // como o resto do celular: só na memória da aba, sem save
-var PET_CARTA_FAS = ['Nana','Kiko','Lulu','Momo','Rafi','Yumi','Toto','Pipo','Mel','Juju','Cacau','Lili','Koko','Duda','Nino','Mimi','Bubu','Fifi','Gigi','Biba'];
+var PET_CARTA_FAS = ['Usamado','Homina','Sayami','Kyorin','Hanoka','Mayoka','Minarei','Makohan','Amimi','Chibiko','Usahana','Rinako','Lucimi','Kyomami','Sakuhime','Pichiru','Kururun','Purinne','Momorin','Kiraho'];
 var PET_CARTA_SELOS = ['🌸','🍓','🐰','⭐','🎀','🌙','🍰','💐'];
 var PET_CARTA_TEXTOS = {
   rec:'Vi seu recorde de {b} no Center⭐Run! Treinei a semana inteira para chegar perto. 😳',
@@ -823,6 +838,7 @@ function petPhoneMomentosLimpar(){
   if(ampliada)ampliada.removeAttribute('src');
   if(download)download.removeAttribute('href');
   petPhoneMomentos.forEach(petPhoneMomentoSoltar);
+  petVidaFotoCache = null; petVidaFotoUrl = '';
   petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = ''; petPhoneMomentoSelecionado = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
@@ -850,6 +866,7 @@ function petPhoneMomentoGuardar(tipo, url){
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
   petPhoneMomentosLimitar();
+  if(typeof TWVidaCidade!=='undefined')TWVidaCidade.registrar('foto',{id:entrada.id});
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
@@ -871,6 +888,7 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
   petPhoneMomentos.push({tipo:tipo,rotulo:'Karaoke⭐Time!',url:url,miniUrl:miniUrl,blobUrl:true,
     bytes:blob.size+(mini ? mini.size : 0),dono:dono,id:String(Date.now())+'-'+String(Math.random()).slice(2,8)});
   petPhoneMomentosLimitar();
+  if(typeof TWVidaCidade!=='undefined')TWVidaCidade.registrar('foto',{id:petPhoneMomentos[petPhoneMomentos.length-1].id});
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
@@ -1081,7 +1099,7 @@ function petPhoneChatContatos(){
   if(!Array.isArray(memorias)) return contatos;
   var vistos = Object.create(null);
   memorias.slice(0,8).forEach(function(m){
-    if(!m || typeof HS_NOMES === 'undefined' || HS_NOMES.indexOf(m.nome) < 0 || vistos[m.nome] ||
+    if(!m || typeof HS_NOMES === 'undefined' || (HS_NOMES.indexOf(m.nome) < 0 && !(typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(m.nome) >= 0)) || vistos[m.nome] ||
       typeof HS_PRESENTES === 'undefined' || !Number.isInteger(m.pres) || !HS_PRESENTES[m.pres]) return;
     vistos[m.nome] = true;
     var cor = m.c && typeof m.c.hair === 'string' && /^#[0-9a-fA-F]{6}$/.test(m.c.hair) ? m.c.hair : '#b778d1';
@@ -1461,6 +1479,8 @@ function petLifeAbrir(k){
 }
 function petLifeTap(lx, ly){
   if(!petOpen || petView !== 'room' || petGame) return false;
+  var lembranca = petVidaLembrancaToque(lx, ly);
+  if(lembranca && petVidaLembrancaAbrir(lembranca)) return true;
   var k = petLifeHit(lx, ly);
   return k ? petLifeAbrir(k) : false;
 }
@@ -1660,6 +1680,117 @@ function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
     cor:jeito === 'tsu' ? '#ffdb81' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
     u:u, alfa:alfa };
 }
+var PET_VIDA_PRATELEIRA = {flor:{x:190,r:9},foto:{x:208,r:10},y:144};
+function petVidaLembrancaToque(lx, ly){
+  var y = PET_VIDA_PRATELEIRA.y;
+  if(ly < y-26 || ly >= y || typeof TWVidaCidade === 'undefined' ||
+    typeof TWVidaCidade.objetosCamarim !== 'function') return '';
+  var local = lx - petArrumoDx('estante');
+  var item = TWVidaCidade.objetosCamarim().find(function(a){
+    var p = PET_VIDA_PRATELEIRA[a.tipo];
+    return Math.abs(local-p.x) < p.r;
+  });
+  return item ? (item.tipo === 'flor' ? 'jardim' : 'foto') : '';
+}
+function petVidaLembrancaAbrir(acao){
+  if(!petOpen || petView !== 'room' || petGame || !contaJ || !petAtivo()) return false;
+  if(acao === 'jardim'){
+    if(typeof window.bloomAbrir !== 'function') return false;
+    var fechar = $('petX');
+    if(fechar) fechar.click();
+    window.bloomAbrir();
+    return true;
+  }
+  if(acao !== 'foto') return false;
+  var momento = petCartaFotoMomento();
+  if(!petPhoneAbrir('fotos')) return false;
+  petPhoneFotosAbaAbrir('momentos');
+  if(momento) petPhoneMomentoAbrir(momento.id);
+  return true;
+}
+// As lembranças ocupam a prateleira superior e acompanham o móvel.
+var petVidaFotoCache = null, petVidaFotoUrl = '';
+var petVidaRetornoInicio = -1000;
+function petVidaFotoAtual(){
+  petPhoneMomentosConferir();
+  var momento = petPhoneContaChave() ? petCartaFotoMomento() : null;
+  var url = momento && (momento.miniUrl || momento.url) || '';
+  if(!/^(blob:|data:image\/png;base64,)/.test(url)) url = '';
+  if(url !== petVidaFotoUrl){
+    petVidaFotoUrl = url;petVidaFotoCache = null;
+    if(url){petVidaFotoCache = new Image();petVidaFotoCache.src = url;}
+  }
+  return petVidaFotoCache && petVidaFotoCache.complete && petVidaFotoCache.naturalWidth
+    ? petVidaFotoCache : null;
+}
+function petVidaOlharLembranca(t, inicio, livre){
+  if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
+    !TWVidaCidade.objetosCamarim().length) return 0;
+  var fase = (t-inicio) % 720;
+  if(fase < 180 || fase >= 290) return 0;
+  var u = (fase-180)/110;
+  return Math.sin(u*Math.PI)*.022;
+}
+// O Pet acompanha o olhar do Idol para as lembranças: Pucchi se inclina mais e quase para,
+// curioso; Koali acompanha de leve, sem interromper o balanço calmo. Vale em Conviver e no
+// retorno ao Camarim; respeita sono, cuidados e movimento reduzido (olhar chega 0 nesses casos).
+function petVidaPetAtencao(k, cfg, olhar, podeReagir){
+  if(!olhar || !podeReagir) return null;
+  var u = Math.min(1, Math.abs(olhar)/.022);
+  k = petRecepcaoJeito(k, cfg);
+  return k === 'pati' ? {freio:.85*u, inclina:1.6} :
+    k === 'lirika' ? {freio:.45*u, inclina:.55} : {freio:.65*u, inclina:.8};
+}
+// Reage somente à lembrança real da sessão e ao olhar já permitido do Idol.
+ // A fotografia não ganha brilho sem uma imagem voluntária da própria conta.
+function petVidaLembrancaReacao(olhar){
+  if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
+    typeof TWVidaCidade.objetosCamarim !== 'function')return null;
+  var itens=TWVidaCidade.objetosCamarim();
+  var foto=itens.some(function(a){return a.tipo==='foto';}) && !!petVidaFotoAtual();
+  var flor=itens.some(function(a){return a.tipo==='flor';});
+  var tipo=foto?'foto':flor?'flor':'';
+  if(!tipo)return null;
+  return {tipo:tipo,
+    x:PET_VIDA_PRATELEIRA[tipo].x+petArrumoDx('estante'),
+    y:PET_VIDA_PRATELEIRA.y-(tipo==='foto'?27:25),
+    alfa:Math.min(.58,olhar*25)};
+}
+function petVidaLembrancaBrilho(x,olhar){
+  var a=petVidaLembrancaReacao(olhar);
+  if(!a)return;
+  x.save();x.globalAlpha=a.alfa;x.strokeStyle=a.tipo==='foto'?'#ffe6a3':'#ffacd9';x.lineWidth=1.8;
+  x.beginPath();x.moveTo(a.x,a.y-4);x.lineTo(a.x,a.y+4);
+  x.moveTo(a.x-4,a.y);x.lineTo(a.x+4,a.y);x.stroke();x.restore();
+}
+function petVidaLembrancaCenario(x){
+  if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
+  var objetos=TWVidaCidade.objetosCamarim();
+  if(!objetos.length)return false;
+  var fotoReal=petVidaFotoAtual();
+  var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
+  objetos.forEach(function(a){
+    x.save();x.translate(PET_VIDA_PRATELEIRA[a.tipo].x+dx,PET_VIDA_PRATELEIRA.y);
+    if(a.tipo==='flor'){
+      x.fillStyle='#e5b2dd';x.beginPath();x.moveTo(-7,-9);x.lineTo(7,-9);
+      x.lineTo(5,0);x.lineTo(-5,0);x.closePath();x.fill();
+      x.strokeStyle='#6da679';x.lineWidth=1.7;x.beginPath();x.moveTo(0,-9);x.lineTo(0,-17);x.stroke();
+      if(typeof window.bloomDesenharFlor === 'function') window.bloomDesenharFlor(x,a.flor,0,-19,6);
+      else{x.fillStyle='#ffb5d6';x.beginPath();x.arc(0,-19,5,0,Math.PI*2);x.fill();}
+    }else if(a.tipo==='foto'){
+      x.rotate(-.04);x.fillStyle='#fff';x.fillRect(-9,-22,18,21);
+      x.fillStyle='#e2caff';x.fillRect(-6,-19,12,13);
+      if(fotoReal){
+        var escala=Math.min(12/fotoReal.naturalWidth,13/fotoReal.naturalHeight);
+        var fw=fotoReal.naturalWidth*escala,fh=fotoReal.naturalHeight*escala;
+        x.drawImage(fotoReal,-fw/2,-19+(13-fh)/2,fw,fh);
+      }else{x.fillStyle='#9e76d9';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-9);}
+      x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-9,-22,18,21);
+    }
+    x.restore();
+  });
+  return true;
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI || petBgFase !== petLuzFase()) petMakeBg();
@@ -1680,8 +1811,9 @@ function petDrawRoom(){
   petLuzAmbiente(x);   // manhã clara, fim de tarde alaranjado, noite com abajur
   petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
-  petLifeSofa(x, false);
+  petVidaLembrancaCenario(x);
   var poseDesenho = petLifePoseDesenho(petT), pose = poseDesenho.sit > .001 ? poseDesenho : null;
+  petLifeSofa(x, false, pose);
   if(!petLifePose && !pose) petLifeSofa(x, true); // em pé, o sofá inteiro fica atrás do Idol
   var mood = petMood(p), sleepy = p.dorme || p.energia < 25, happy = mood[1] === 'Feliz!';
 
@@ -1699,6 +1831,13 @@ function petDrawRoom(){
   var idolBrincando = petIdolAcompanhaBrinquedo(petData.ativo, p.cfg, petT,
     !petLifePose && !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
     petRecepcaoFrames <= 0 && petCharT <= 0 && petLove <= 0 && petSmile <= 0);
+
+  var retornoLembranca = !petLifePose && petT-petVidaRetornoInicio < 290;
+  var olharLembranca = petVidaOlharLembranca(petT,
+    retornoLembranca ? petVidaRetornoInicio : petLifePoseInicio,
+    (petLifePose === 'conviver' || retornoLembranca) && !sleepy && !petAnim && !petLifePhoneOlhar &&
+    !petArrumando && !petEmote && !amizade && !idolBrincando && petHop <= 0 && petCharT <= 0 &&
+    petRecepcaoFrames <= 0 && petLove <= 0 && p.fome >= 25 && p.humor >= 25);
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
   // expr 2 reutiliza os olhos fechados/sorriso do avatar, sem trocar olhos ou rosto salvos.
@@ -1728,12 +1867,14 @@ function petDrawRoom(){
       if(idadeOlhar >= 30 && idadeOlhar < 100) g.rotate(Math.sin((idadeOlhar-30)/70*Math.PI)*.018);
     }
     if(idolBrincando) g.rotate(idolBrincando.inclina);
+    if(olharLembranca) g.rotate(olharLembranca);
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
     if(pose) petLifeLerCorColo(x, quadril);
   } finally { g = og; }
   if(pose) petLifeSofa(x, true, pose);   // sentado: almofada na frente do colo e pés no chão
+  petVidaLembrancaBrilho(x,olharLembranca);
   if(idolBrincando){ x.save(); x.globalAlpha = idolBrincando.alfa * .8;
     x.fillStyle = idolBrincando.cor; x.font = '13px sans-serif'; x.textAlign = 'center';
     x.fillText(idolBrincando.sinal, 125 + 49 * idolBrincando.u,
@@ -1760,6 +1901,13 @@ function petDrawRoom(){
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
+  // Enquanto o Idol olha as lembranças (Conviver ou retorno ao Camarim), o Pet desacelera
+  // o passeio para observar junto. Só visual: sem timer, save, som ou recompensa.
+  var atencaoLembranca = petVidaPetAtencao(petData.ativo, p.cfg, olharLembranca, podeReagir);
+  if(atencaoLembranca){
+    jeito.x *= 1-atencaoLembranca.freio; jeito.y *= 1-atencaoLembranca.freio;
+    passeio.x *= 1-atencaoLembranca.freio; passeio.y *= 1-atencaoLembranca.freio;
+  }
   jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0) +
     (companhia ? companhia.x : 0); jeito.y += passeio.y;
   if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
@@ -1768,13 +1916,14 @@ function petDrawRoom(){
   petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
-  if((companhia && companhia.inclina) || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
+  if((companhia && companhia.inclina) || atencaoLembranca || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
     x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
     var inclinacao = companhia ? companhia.inclina : 0;
     if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
       var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
       if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
     }
+    if(atencaoLembranca) inclinacao -= olharLembranca * atencaoLembranca.inclina;
     x.rotate(inclinacao);
     x.translate(-PET_X,-(PET_FLOOR - 12 * PET_SC));
   }
@@ -1887,6 +2036,7 @@ function petOpenUI(){
   petView = petData ? 'room' : 'col';
   petShow();
   petRecepcaoFrames = petData ? 90 : 0;
+  petVidaRetornoInicio = petT;
   if(!petOpen){ petOpen = true; petAnimLigar(); }
 }
 function petClose(){

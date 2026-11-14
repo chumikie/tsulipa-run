@@ -10,6 +10,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const pet = read('pet.js'), html = read('index.html'), css = read('pet.css');
 const hub = read('hub.js'), karaokePhoto = read('karaoke-photo.js'), karaokeCss = read('karaoke-photo.css');
 const logic = pet.slice(pet.indexOf('function petLifeHit('), pet.indexOf('function petIdleJeito('));
+const lembrancas = pet.slice(pet.indexOf('var PET_VIDA_PRATELEIRA'), pet.indexOf('function petDrawRoom('));
 const shopClose = read('shop.js').match(/function shopFechar\(\)\{[^\n]+\}/)[0];
 const albumClose = read('album.js').match(/function albumFechar\(\)\{[^\n]+\}/)[0];
 const perfilClose = read('perfil.js').slice(read('perfil.js').indexOf('function perfFechar(){'), read('perfil.js').indexOf('function perfMontar(){'));
@@ -59,6 +60,9 @@ function fakeRoom(signedIn = true){
     albumAbrir(){ calls.push('albumAbrir'); }
   };
   vm.runInNewContext(logic, ctx, {filename:'petLifeML1'});
+  ctx.window=ctx;
+  ctx.petArrumoDx=()=>0;
+  vm.runInContext(lembrancas, ctx, {filename:'petVidaLembrancas'});
   ctx.shopOv = {hidden:false}; ctx.albumOv = {hidden:false};
   ctx.perfOv = {hidden:false}; ctx.perfPedido=0; ctx.perfMontou=false;
   ctx.perfIconeConta = () => {};
@@ -102,6 +106,39 @@ test('ML1: ações no camarim só navegam para telas existentes com backend simu
   assert.equal(album.ctx.petLifeAbrir('album'), true);
   assert.deepEqual(album.calls, ['petClose','hubMostrar','albumAbrir']);
   assert.match(album.nodes.albumTit.textContent, /Álbum de cards/);
+});
+
+test('Camarim: lembranças acompanham a estante e abrem os destinos existentes', () => {
+  const {ctx,calls,nodes} = fakeRoom();
+  ctx.petArrumoDx=k=>k==='estante'?35:0;
+  ctx.TWVidaCidade={objetosCamarim:()=>[{tipo:'flor',flor:'tulipa'},{tipo:'foto'}]};
+  nodes.petX={click(){calls.push('fecharCamarim');}};
+  ctx.bloomAbrir=()=>calls.push('bloomAbrir');
+  assert.equal(ctx.petLifeTap(190,123),false,'o lugar antigo não aciona o vaso');
+  assert.equal(ctx.petLifeTap(225,130),true);
+  assert.deepEqual(calls.splice(0),['fecharCamarim','bloomAbrir']);
+  ctx.petCartaFotoMomento=()=>({id:'foto-da-conta'});
+  ctx.petPhoneMomentoAbrir=id=>calls.push(id);
+  assert.equal(ctx.petLifeTap(243,132),true);
+  assert.equal(ctx.petPhoneTela,'fotos');
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.ok(calls.includes('foto-da-conta'));
+  assert.ok(!calls.some(c=>c.startsWith('rpc:')));
+  ctx.TWVidaCidade.objetosCamarim=()=>[];
+  assert.equal(ctx.petVidaLembrancaToque(243,132),'');
+  assert.equal(ctx.petLifeTap(230,146),true,'abaixo da lembrança ainda abre a estante');
+  assert.equal(nodes.petLifeEstante.hidden,false);
+});
+
+test('Camarim: porta-retratos sem foto local abre só a galeria', () => {
+  const {ctx,calls} = fakeRoom();
+  ctx.TWVidaCidade={objetosCamarim:()=>[{tipo:'foto'}]};
+  ctx.petPhoneMomentoAbrir=()=>assert.fail('nenhuma foto da sessão para ampliar');
+  assert.equal(ctx.petLifeTap(208,132),true);
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.ok(!calls.some(c=>c.startsWith('rpc:')));
+  ctx.contaJ=null;
+  assert.equal(ctx.petVidaLembrancaAbrir('foto'),false);
 });
 
 test('ML1: bloqueia minijogo, ausência de Pet e acesso sem login sem criar saves', () => {
@@ -932,4 +969,43 @@ test('ML1.1: origem Hub fica preservada e navegação comum não é sequestrada'
   assert.match(logic, /contaRpc\('missoes'\)/, 'somente consulta de leitura da Agenda');
   assert.equal(/contaRpc\('(?!missoes')/.test(logic), false, 'nenhuma RPC de escrita adicionada');
   assert.match(html, /id="petPhone"/);
+});
+
+
+test('ML1: sofá reage ao peso sem mover o quadril ou acrescentar estado persistido', () => {
+  const fn=pet.slice(pet.indexOf('function petLifeSofaApoio('),pet.indexOf('function petLifeSofa('));
+  const contexto={petLifeQuadril:v=>({x:v.x,y:v.y})};
+  vm.runInNewContext(fn,contexto);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:0}),null);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:.5}).afunda,1.5);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:1}).afunda,3);
+  assert.equal(contexto.petLifeSofaApoio({x:140,y:170,sit:1}).x,126,'não afunda além do encosto');
+  assert.match(pet,/petLifeSofa\(x, false, pose\)/,'o assento recebe a mesma pose desenhada');
+});
+
+test('ML1: olhar responde somente à lembrança disponível e acompanha a estante', () => {
+  const {ctx}=fakeRoom();
+  ctx.petArrumoDx=k=>k==='estante'?26:0;
+  ctx.TWVidaCidade={objetosCamarim:()=>[]};
+  ctx.petVidaFotoAtual=()=>null;
+  assert.equal(ctx.petVidaLembrancaReacao(.02),null,'não inventa lembrança');
+  ctx.TWVidaCidade.objetosCamarim=()=>[{tipo:'flor',flor:'tulipa'}];
+  let r=ctx.petVidaLembrancaReacao(.02);
+  assert.equal(r.tipo,'flor');
+  assert.equal(r.x,216,'acompanha a posição atual da estante');
+  ctx.TWVidaCidade.objetosCamarim=()=>[{tipo:'foto'}];
+  assert.equal(ctx.petVidaLembrancaReacao(.02),null,'foto não salva não ganha brilho');
+  ctx.petVidaFotoAtual=()=>({naturalWidth:100,naturalHeight:60});
+  r=ctx.petVidaLembrancaReacao(.02);
+  assert.equal(r.tipo,'foto');
+  assert.equal(r.x,234);
+  assert.equal(ctx.petVidaLembrancaReacao(0),null,'movimento reduzido ou cuidado bloqueia o gesto');
+  assert.equal(ctx.petVidaOlharLembranca(220,0,false),0,'cuidados têm prioridade');
+  ctx.petLifeMovimentoReduzido=()=>!!(ctx.window.matchMedia && ctx.window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  ctx.window.matchMedia=()=>({matches:true});
+  assert.equal(ctx.petVidaOlharLembranca(220,0,true),0,'reduzir movimento desliga o gesto');
+  ctx.window.matchMedia=()=>({matches:false});
+  assert.ok(ctx.petVidaOlharLembranca(220,0,true)>0);
+  assert.doesNotMatch(pet.slice(pet.indexOf('function petVidaLembrancaReacao('),pet.indexOf('function petVidaLembrancaCenario(')),
+    /requestAnimationFrame|setInterval|setTimeout|localStorage|petSave\(|contaRpc/);
 });

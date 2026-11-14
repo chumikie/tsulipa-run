@@ -1,0 +1,112 @@
+/* Vida de Idol⭐: camada de presença e lembranças, sem novos loops/salvamentos. */
+#twVidaCidade[hidden],#twVidaCamarim[hidden],.tw-vida-foto[hidden]{display:none!important}
+#hub .tw-vida-cidade{
+ border:2px solid rgba(173,128,236,.5);
+ background:linear-gradient(140deg,rgba(255,248,255,.98),rgba(235,242,255,.96));
+ box-shadow:0 5px 0 rgba(123,63,240,.12);border-radius:22px;color:#4a2978;
+ padding:14px 16px;margin:12px 0;
+}
+#hub .tw-vida-cidade h2{
+ margin:0 0 4px;font:400 clamp(15px,3.8vw,20px)/1.4 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;
+ color:#7943bf;text-align:left;
+}
+#hub .tw-vida-cidade h3{
+ margin:12px 0 7px;font:400 13px/1.5 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;color:#6c43aa;
+}
+#hub .tw-vida-cidade h3 small{font:800 11px/1.4 "M PLUS Rounded 1c",sans-serif;color:#9162bc}
+#hub .tw-vida-sub{font:700 12px/1.6 "M PLUS Rounded 1c",sans-serif;color:#71548c;margin:2px 0 9px}
+#hub .tw-vida-presenca{display:flex;align-items:center;gap:10px;border-radius:14px;padding:11px 13px;
+ background:#fff;border:1px solid #e4d6f7;font:800 12px/1.5 "M PLUS Rounded 1c",sans-serif;min-height:50px}
+#hub .tw-vida-presenca-emoji{display:inline-block;flex:none;font-size:27px;transform-origin:center bottom;
+ animation:twVidaRespiro 4.8s ease-in-out infinite}
+#hub .tw-vida-capitulos{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#hub .tw-vida-capitulos li{padding:8px 7px;border:1px dashed #d1c1e7;border-radius:12px;background:#f9f5ff;
+ color:#857096;font:800 11px/1.45 "M PLUS Rounded 1c",sans-serif;min-width:0}
+#hub .tw-vida-capitulos li.feito{background:#edfbed;border-color:#a3d6a8;color:#347a50;border-style:solid}
+#twVidaCamarim{border-radius:16px;padding:10px 11px;margin:8px auto 11px;background:linear-gradient(120deg,#fff6fc,#f0eaff);
+ border:2px solid #dec7f9;max-width:520px;text-align:center;color:#5a397b;box-shadow:0 3px 0 rgba(117,66,172,.13)}
+#twVidaCamarim .tw-vida-mem-titulo{display:block;font:400 13px/1.4 "Mochiy Pop One",sans-serif;margin:2px 0 8px}
+#twVidaCamarim .tw-vida-objetos{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+#twVidaCamarim .tw-vida-objetos button{display:flex;gap:5px;align-items:center;justify-content:center;
+ min-height:42px;padding:7px 10px;flex:1 1 92px;max-width:170px;
+ background:#fff;border:2px solid #d7baf4;border-radius:13px;
+ color:#57388a;font:800 11px/1.35 "M PLUS Rounded 1c",sans-serif;cursor:pointer}
+#twVidaCamarim .tw-vida-objetos button:hover{border-color:#9a62dc;background:#f9f1ff}
+#twVidaCamarim .tw-vida-objetos button:focus-visible{outline:3px solid #7549c9;outline-offset:2px}
+#twVidaCamarim .tw-vida-mem-itens{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:8px 0 0}
+#twVidaCamarim .tw-vida-mem-itens span{border-radius:999px;padding:4px 8px;background:#fff;
+ font:700 11px/1.4 "M PLUS Rounded 1c",sans-serif;color:#704aa0}
+#twVidaCamarim .tw-vida-sub{display:block;font-size:11px;line-height:1.45;margin:7px auto;color:#725d90}
+#twVidaCamarim .tw-vida-foto{margin:8px auto 0;max-width:100px;padding:6px 6px 13px;background:white;
+ box-shadow:0 3px 9px rgba(63,35,95,.15);transform:rotate(-2deg)}
+#twVidaCamarim .tw-vida-foto img{display:block;width:100%;height:auto;max-height:112px;object-fit:contain}
+.tw-vida-diario{border:1px solid #dfd0ef;border-radius:15px;padding:10px;margin:9px 0;background:#faf5ff;color:#57387e}
+.tw-vida-diario>b{display:block;font:400 13px/1.45 "Mochiy Pop One",sans-serif}
+.tw-vida-diario ol{padding-left:25px;margin:6px 0;display:grid;gap:5px;font-size:12px}
+.tw-vida-diario small{color:#806a95;font-size:11px}
+@keyframes twVidaRespiro{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+@media(max-width:390px){#hub .tw-vida-capitulos{grid-template-columns:1fr}#twVidaCamarim .tw-vida-objetos button{padding:6px}}
+@media(prefers-reduced-motion:reduce){#hub .tw-vida-presenca-emoji{animation:none!important}}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) #hub .tw-vida-cidade{
+ background:linear-gradient(145deg,#342458,#33295f);color:#f4e7ff;border-color:#805eae}
+ html:not([data-theme="light"]) #hub .tw-vida-cidade h2,
+ html:not([data-theme="light"]) #hub .tw-vida-cidade h3,
+ html:not([data-theme="light"]) #hub .tw-vida-sub{color:#f2dcff}
+ html:not([data-theme="light"]) #hub .tw-vida-presenca{background:#433067;color:#fff;border-color:#795b9e}
+ html:not([data-theme="light"]) #hub .tw-vida-capitulos li{background:#40305e;color:#d3c0e9;border-color:#776491}
+ html:not([data-theme="light"]) #hub .tw-vida-capitulos li.feito{background:#235743;color:#e4ffed;border-color:#74b897}}
+
+/* Epílogo após dois ou três capítulos realmente realizados. */
+#hub .tw-vida-elo,.tw-vida-diario .tw-vida-elo{margin:10px 0 7px;padding:10px 12px;
+ border-radius:13px;border-left:4px solid #b58bdf;background:rgba(239,222,255,.65);
+ color:#5d3a85;font:700 12px/1.6 "M PLUS Rounded 1c",sans-serif}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) #hub .tw-vida-elo,
+ html:not([data-theme="light"]) .tw-vida-diario .tw-vida-elo{background:#483368;color:#f4e6ff;border-color:#c9a5fb}}
+
+/* Camarim — mesmos alvos de toque, molduras e contraste dos cards recentes. */
+#twVidaCamarim .tw-vida-objetos button{
+ min-height:48px;border-radius:15px;box-shadow:0 3px 0 rgba(115,65,175,.16);
+ transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+#twVidaCamarim .tw-vida-objetos button:active{
+ transform:translateY(2px);box-shadow:0 1px 0 rgba(115,65,175,.16);
+}
+#twVidaCamarim .tw-vida-foto{
+ position:relative;max-width:116px;padding:7px 7px 16px;border:2px solid #fff;
+ border-radius:5px;background:#fff;box-shadow:0 4px 0 rgba(123,63,240,.10),0 9px 18px rgba(63,35,95,.18);
+}
+#twVidaCamarim .tw-vida-foto:after{
+ content:"✦";position:absolute;right:9px;bottom:0;color:#d98fc0;font-size:11px;
+}
+#twVidaCamarim .tw-vida-foto img{max-height:116px;border-radius:2px}
+@media(max-width:360px){
+ #twVidaCamarim .tw-vida-objetos button{flex-basis:104px;min-width:0}
+ #twVidaCamarim .tw-vida-objetos button span{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+}
+@media(prefers-color-scheme:dark){
+ html:not([data-theme="light"]) #twVidaCamarim{
+  background:linear-gradient(120deg,#38264f,#302651);border-color:#8960ae;color:#f7e6ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-objetos button{
+  background:#483362;border-color:#9670bc;color:#fff1ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-objetos button:hover{
+  background:#5a4078;border-color:#c49de8;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-mem-itens span{
+  background:#493666;color:#f8e9ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-sub{color:#ebd8ff}
+}
+@media(prefers-reduced-motion:reduce){
+ #twVidaCamarim .tw-vida-objetos button{transition:none}
+}
+/* Cantinho de lembranças compacto, no fim do Camarim (fechado por padrão) */
+#twVidaCamarim{padding:4px 11px;margin:10px auto 4px}
+#twVidaCamarim summary.tw-vida-mem-titulo{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;margin:0;cursor:pointer;list-style:none}
+#twVidaCamarim summary.tw-vida-mem-titulo::-webkit-details-marker{display:none}
+#twVidaCamarim summary.tw-vida-mem-titulo::after{content:"▾";font-size:12px;opacity:.7;transition:transform .2s}
+#twVidaCamarim details[open] summary.tw-vida-mem-titulo::after{transform:rotate(180deg)}
+#twVidaCamarim summary small{font:800 11px "M PLUS Rounded 1c",sans-serif;background:#9b30d9;color:#fff;border-radius:99px;padding:1px 7px}
+#twVidaCamarim details>:last-child{margin-bottom:8px}
+#twVidaCamarim .tw-vida-objetos{margin-top:8px}

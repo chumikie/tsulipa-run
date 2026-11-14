@@ -21,12 +21,12 @@
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=9"></script>
 <script src="./tw-avatar-roupa.js?v=9"></script>
-<meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
+<meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TsuLiPa⭐World">
 <meta property="og:title" content="TsuLiPa⭐World">
-<meta property="og:description" content="Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time! todo dia, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
+<meta property="og:description" content="Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta property="og:url" content="https://tsulipa-world.vercel.app/">
 <meta property="og:image" content="https://tsulipa-world.vercel.app/og.jpg?v=14">
 <meta property="og:image:width" content="1200">
@@ -34,7 +34,7 @@
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TsuLiPa⭐World">
-<meta name="twitter:description" content="Corra, pule, cante e cuide do seu pet com o TsuLiPa: Center⭐Run!, Sora⭐Jump!, Karaoke⭐Time!, Backstage⭐Pet!, Star⭐Gacha! e Moon⭐Duo!">
+<meta name="twitter:description" content="Corra, cante, plante, fotografe e batalhe com o TsuLiPa: Center⭐Run!, Karaoke⭐Time!, Backstage⭐Pet!, Bloom⭐Garden!, Photo⭐Studio!, Idol⭐Battle! e mais.">
 <meta name="twitter:image" content="https://tsulipa-world.vercel.app/og.jpg?v=14">
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
@@ -74,9 +74,9 @@
 .buscares em{font-size:12px;color:var(--sub)}
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
-<link rel="stylesheet" href="./album.css?v=2">
+<link rel="stylesheet" href="./album.css?v=3">
 <link rel="stylesheet" href="./fa.css?v=3">
-<link rel="stylesheet" href="./handshake.css?v=1">
+<link rel="stylesheet" href="./handshake.css?v=4">
 <link rel="stylesheet" href="./cafe.css?v=1">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
@@ -163,7 +163,10 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=1"><'+'/script>');</script>
+<link rel="stylesheet" href="./hub-polish.css?v=37">
+<link rel="stylesheet" href="./battle.css?v=7">
+<link rel="stylesheet" href="./vida-cidade.css?v=3">
+<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=3"><'+'/script>');</script>
 </head>
 <body>
 <header>
@@ -294,7 +297,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   </div>
 </div>
 <p class="hint">Toque rápido = pulo curto; segure = pulo alto. "O esforço com certeza será recompensado!" ✨</p>
-<div class="links"><a class="btn alt lk" href="https://brs48-collect.vercel.app/" target="_blank" rel="noopener noreferrer">BRS48 Collect ↗</a><a class="btn alt lk" href="https://www.youtube.com/@BRS48" target="_blank" rel="noopener noreferrer">YouTube do BRS48 ↗</a><a class="btn alt lk" href="https://brs48.blogspot.com/" target="_blank" rel="noopener noreferrer">Blog do BRS48 ↗</a></div>
+
 <div class="oshi-sel" role="group" aria-label="Tema do Oshi">
   <button type="button" data-oshi="" aria-pressed="true" title="Padrão">☀️</button>
   <button type="button" data-oshi="tsu" aria-pressed="false" title="Tsu">🎤</button>
@@ -368,17 +371,21 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n.js?v=13"></script>
+<script src="./tw-i18n-base.js?v=1"></script>
+<script>/* Só o idioma escolhido é baixado (o português já vem no próprio site). Fonte: tw-i18n.js → tools/i18n/dividir.js */
+(function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
+if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=1"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=10"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=20"></script>
-<script src="./perfil.js?v=12"></script>
+<script src="./pet.js?v=28"></script>
+<script src="./perfil.js?v=13"></script>
 <script src="./gacha.js?v=3"></script>
-<script src="./album.js?v=3"></script>
+<script src="./album.js?v=6"></script>
+<script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
@@ -400,16 +407,29 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
   }, { passive:true });
 })();
 </script>
-<script src="./handshake.js?v=9"></script>
-<script src="./cafe.js?v=10"></script>
+<script src="./handshake.js?v=12"></script>
+<script src="./cafe.js?v=13"></script>
+<script src="./cafe-gorjeta.js?v=1"></script>
+<script src="./cafe-vip.js?v=1"></script>
+<script src="./cafe-duplo.js?v=2"></script>
 <script src="./duo.js?v=2"></script>
+<script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=19"></script>
+<script src="./hub-layout.js?v=3"></script>
+<script src="./mapa-textos.js?v=3"></script>
+<script src="./tw-mapa.js?v=45"></script>
+<script src="./bloom.js?v=6"></script>
+<script src="./flores.js?v=1"></script>
 <script src="./shop.js?v=6"></script>
-<script src="./jornal.js?v=13"></script>
+<script src="./jornal.js?v=14"></script>
+<script src="./studio.js?v=4"></script>
+<script src="./battle.js?v=9"></script>
+<script src="./hub-novos.js?v=1"></script>
 <script src="./banner.js?v=5"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
+<script src="./vida-cidade.js?v=6"></script>
 <script>
 /* ================================================================
    ⚠️⚠️⚠️ CHAVES DE SAVE E DO BANCO — NUNCA RENOMEAR ⚠️⚠️⚠️
@@ -838,6 +858,12 @@ function twSelecionarIdioma(novo){
     refreshAcc();
     if(!$('lbmw').hidden)showLb($('lbm'));
     if(!$('over').hidden)showLb($('lbo'));
+  }
+  // EN/ES/TH/JA chegam em arquivos próprios (tw-i18n-base.js): baixa o idioma e só então troca.
+  if(window.TW_I18N_PRONTO&&!window.TW_I18N_PRONTO(novo)){
+    var btn=document.querySelector('.lang button[data-l="'+novo+'"]');if(btn)btn.disabled=true;
+    window.TW_I18N_BAIXAR(novo).then(function(){if(btn)btn.disabled=false;aplicar();}).catch(function(e){if(btn)btn.disabled=false;console.warn(e);});
+    return;
   }
   if(novo==='id'&&!window.TW_ID_PREVIEW_DATA){
     var idBtn=document.querySelector('.lang button[data-l="id"]');
@@ -2066,11 +2092,6 @@ document.body.appendChild(hubOv);
     }
   },true);
 })();
-setTimeout(function twBrPreparar(){   // bandeirinha do Brasil no banner: abre o site do BRS48
-  var lugar = hubOv.querySelector('.tw-tv-float'); if(!lugar || $('twBrAbrir')) return;
-  lugar.insertAdjacentHTML('beforeend', '<a class="tw-br-launch" id="twBrAbrir" href="https://www.youtube.com/c/BRS48" target="_blank" rel="noopener" title="BRS48" aria-label="' + escHtml(tr('Abrir o site do BRS48')) + '">' +
-    '<svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="3" fill="#1fa64a"/><path d="M14 2.4 25.6 10 14 17.6 2.4 10z" fill="#ffd23f"/><circle cx="14" cy="10" r="4.6" fill="#2b4fc4"/><path d="M9.6 9.1q4.4-1.6 8.8 1.4" stroke="#fff" stroke-width="1" fill="none"/></svg></a>');
-}, 0);
 setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME e os textos vêm mais abaixo)
   if(typeof TW_KARAOKE_TIME === 'undefined' || TW_KARAOKE_TIME !== true) return;
   var lugar = hubOv.querySelector('.tw-tv-float'); if(!lugar) return;
@@ -3481,6 +3502,9 @@ applyLang();
 </script>
 <script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
+<script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
+   traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */
+window.addEventListener('load',function(){try{if(typeof LANG==='string'&&LANG!=='pt'&&typeof twSelecionarIdioma==='function')twSelecionarIdioma(LANG);}catch(e){}});</script>
 </body>
 </html>
 

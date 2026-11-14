@@ -46,7 +46,7 @@ function jornalMontar(d){
   vida += jornalTrioHtml();
   comunidade += jornalFeitosHtml(d);
   comunidade += jornalAtividadeHtml();
-  comunidade += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + '</div>';
+  comunidade += '<h4 class="jntopt">🏆 Top Idols ' + escHtml(tr('da semana')) + '</h4><div class="jnpodios">' + jornalPodio('🏁 <span translate="no">Center⭐Run!</span>', d.center, tr('pts')) + jornalPodio('☁️ <span translate="no">Sora⭐Jump!</span>', d.sora, 'm') + jornalPodio('🎤 <span translate="no">Karaoke⭐Time!</span>', d.karaoke, tr('pts')) + (Array.isArray(d.arena) ? jornalPodio('🏟️ <span translate="no">Idol⭐Battle!</span>', d.arena, '🏆') : '') + '</div>';
   if(combo || prec) comunidade += '<section class="jnbloco"><h4>🌟 ' + escHtml(tr('Destaques do Karaoke')) + '</h4><ul>' +
     (combo ? '<li>' + escHtml(tr('Maior combo')) + ': <b>' + escHtml(combo.nick) + '</b> (' + jornalNum(combo.score) + ')</li>' : '') +
     (prec ? '<li>' + escHtml(tr('Melhor precisão')) + ': <b>' + escHtml(prec.nick) + '</b> (' + String(prec.score).replace('.', ',') + '%)</li>' : '') + '</ul></section>';
@@ -624,7 +624,10 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
   var cen = _supabase ? _supabase.rpc('top_scores', { periodo:'week' }).then(function(r){ return r.error ? null : (r.data || []).map(function(x){ return { nick:x.name, score:x.score }; }); }) : Promise.resolve(null);
   var sor = _supabase ? _supabase.rpc('sora_ranking', { p_period:'week' }).then(function(r){ return r.error ? null : (r.data || []).map(function(x){ return { nick:x.nick, score:x.score }; }); }) : Promise.resolve(null);
   var kar = contaJ ? contaRpc('kt_ranking').then(function(k){ return k && Array.isArray(k.score) ? k.score.map(function(x){ return { nick:x.nick, score:x.score }; }) : null; }) : Promise.resolve(null);
-  return Promise.all([cen.catch(function(){ return null; }), sor.catch(function(){ return null; }), kar.catch(function(){ return null; })]).then(function(r){
+  // Top da Arena (vitórias da semana no Idol⭐Battle!): só aparece quando o servidor já tem o ranking.
+  var are = contaJ ? contaRpc('battle_ranking').then(function(b){ return b && b.ok && Array.isArray(b.top) ? b.top.map(function(x){ return { nick:x.nick, score:x.score }; }) : null; }) : Promise.resolve(null);
+  return Promise.all([cen.catch(function(){ return null; }), sor.catch(function(){ return null; }), kar.catch(function(){ return null; }), are.catch(function(){ return null; })]).then(function(r){
+    if(r[3]) d.arena = r[3];
     if(r[0] && r[0].length >= (d.center || []).length) d.center = r[0];
     if(r[1] && r[1].length >= (d.sora || []).length) d.sora = r[1];
     if(r[2] && r[2].length >= (d.karaoke || []).length) d.karaoke = r[2];

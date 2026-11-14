@@ -331,8 +331,10 @@ function hsFim(){
   hsFinalizarNoServidor(args).then(function(r){
     if(r && (r.ok || r.erro==='pontos')) try{ localStorage.removeItem('tw_hs_pendente'); }catch(e){}
     if(hs!==atual) return;
-    if(r && r.ok) hsReceberPremio(r,atual);
-    else { atual.premio={erro:r&&r.erro||'servidor'}; hsUI(); }
+    if(r && r.ok){
+      hsReceberPremio(r,atual);
+      if(window.TWVidaCidade)window.TWVidaCidade.registrar('handshake',{id:args.p_sessao});
+    }else { atual.premio={erro:r&&r.erro||'servidor'}; hsUI(); }
   }).catch(function(){ if(hs===atual){atual.premio={erro:'servidor'};hsUI();} });
 }
 function hsLoop(ms){

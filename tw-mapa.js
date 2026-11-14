@@ -455,7 +455,15 @@
     harajuku:{porta:0,k:'cafe'},palco:{porta:0,k:'handshake'},
     fofo:{porta:2,k:'bloom'},ceu:{porta:2,k:'studio'},arena:{porta:1,k:'battle'}
   };
-  function objetoRua(x,y,dir,k,sc,pele){
+  // O objeto acompanha a etapa realmente confirmada do Bloom⭐Garden!.
+  // Os demais passeantes mantêm apenas o adereço estático de cenário.
+  function tipoObjetoRua(k,registro,dono){
+    if(k!=='bloom'||!dono||!registro)return k;
+    if(registro.tipo==='bloom_plantar')return 'semente';
+    if(registro.tipo==='bloom_colher')return 'flor';
+    return k;
+  }
+  function objetoRua(x,y,dir,k,sc,pele,temLembranca,tm){
     // drawChar desenha a mão em (27, 31), para um avatar de largura 30.
     ctx.save();ctx.translate(x+dir*12*sc,y-13*sc);ctx.scale(dir*.82,.82);
     ctx.save();
@@ -472,6 +480,21 @@
       ctx.beginPath();ctx.moveTo(10,-3);ctx.lineTo(20,-10);ctx.lineTo(22,-6);ctx.stroke();
       ctx.beginPath();ctx.arc(-10,-1,6,Math.PI/2,Math.PI*1.5);ctx.stroke();
       ctx.fillStyle='#fff5b7';ctx.fillRect(-1,-10,3,4);
+    }else if(k==='semente'){ // pacotinho para a etapa de plantio
+      ctx.translate(13,-4);
+      ctx.fillStyle='#ffedcc';rr(-10,-10,19,21,4);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#db9a67';rr(-10,-10,19,5,3);ctx.fill();
+      ctx.strokeStyle='#3a9f76';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(-1,4);ctx.lineTo(-1,-3);ctx.lineTo(-5,-6);ctx.moveTo(-1,-3);ctx.lineTo(4,-7);ctx.stroke();
+    }else if(k==='flor'){ // flor recém-colhida, sem alterar o inventário
+      ctx.translate(12,-7);
+      ctx.strokeStyle='#379774';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(0,-10);ctx.stroke();
+      ctx.fillStyle='#ffc4de';
+      for(var petala=0;petala<5;petala++){
+        var ang=petala*Math.PI*2/5;
+        ctx.beginPath();ctx.arc(Math.cos(ang)*6,-10+Math.sin(ang)*6,4.5,0,7);ctx.fill();
+      }
+      ctx.fillStyle='#ffe891';ctx.beginPath();ctx.arc(0,-10,3.6,0,7);ctx.fill();
     }else if(k==='studio'){ // câmera
       ctx.translate(11,-3);
       ctx.fillStyle='#d9b9fc';rr(-13,-8,27,20,4);ctx.fill();ctx.stroke();
@@ -490,6 +513,26 @@
       ctx.beginPath();ctx.ellipse(7,-11,7,9,.3,0,Math.PI*2);ctx.fill();ctx.stroke();
     }
     ctx.restore();
+    // Pequenos sinais visuais apenas no objeto do jogador e após atividade
+    // confirmada. Aproveitam o relógio do mapa: sem timer, áudio ou save.
+    if(temLembranca&&!reduzMov){
+      ctx.save();ctx.globalAlpha=.35+.5*Math.max(0,Math.sin(tm*3));
+      if(k==='cafe'){
+        ctx.strokeStyle='#fff7ed';ctx.lineWidth=1.8;
+        for(var vapor=0;vapor<2;vapor++){
+          ctx.beginPath();ctx.moveTo(6+vapor*7,-25);
+          ctx.quadraticCurveTo(2+vapor*7,-31,8+vapor*7,-38);ctx.stroke();
+        }
+      }else if(k==='bloom'){
+        ctx.fillStyle='#a9eaff';
+        for(var gota=0;gota<2;gota++){
+          ctx.beginPath();ctx.ellipse(29+gota*5,-14+gota*8,2,3,-.2,0,7);ctx.fill();
+        }
+      }else if(k==='flor'||k==='semente'){
+        ctx.fillStyle='#fff0a3';ctx.beginPath();ctx.arc(17,-25,2.7,0,7);ctx.fill();
+      }
+      ctx.restore();
+    }
     // Os dedos ficam à frente da alça, da base ou do cabo.
     ctx.fillStyle=pele;ctx.beginPath();ctx.ellipse(0,0,3,2.5,0,0,Math.PI*2);ctx.fill();
     ctx.restore();
@@ -539,7 +582,8 @@
         if(segurando){
           ctx.save();
           ctx.globalAlpha=reduzMov?1:Math.min(1,q.pausa*5,(PARA-q.pausa)*5);
-          objetoRua(q.x,q.y,q.dir,objeto.k,sc,c.skin);
+          var tipoSegurado=tipoObjetoRua(objeto.k,registro,p.dono);
+          objetoRua(q.x,q.y,q.dir,tipoSegurado,sc,c.skin,!!p.dono&&!!registro,tm);
           ctx.restore();
         }
         if(!q.mov)parados.push(q);

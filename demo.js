@@ -2,7 +2,7 @@
    Serve para testar SEM LOGIN, com uma conta de mentira ("Demo", ★500):
    Pedido de fã, Troca de cards, Festival de Unidades, Ensaio de trio, Álbum,
    Idol⭐Battle! (rival do dia, Top da Arena, Arena dos Idols, Torcida de flores),
-   Pó de estrela do Gacha, Pedido de cena do Moon⭐Duo! (★5), Bloom⭐Garden!, Photo⭐Studio! (pauta, prêmio, mural), Happy⭐Cafe! (partida verificada, cliente VIP,
+   giro e pó de estrela do Gacha, Pedido de cena do Moon⭐Duo! (★5), Bloom⭐Garden!, Photo⭐Studio! (pauta, prêmio, mural), Happy⭐Cafe! (partida verificada, cliente VIP,
    bônus do dia) e Handshake⭐Event! (8 rodadas, cor do lightstick, prêmio do dia).
    As regras e os limites copiam as funções de supabase/sql/aplicado/ (5 partidas, 3 desafios,
    1 rega por dia, ★5 uma vez por dia...). O botão "+1 dia" da faixa avança o dia simulado.
@@ -52,7 +52,7 @@
       torcidaDia: '', torcidaFlor: null,
       fotoPremioDia: '', mural: null, proxId: 100,
       cafeRuns: {}, cafeSessoes: {}, cafeReceitas: {}, hsSessoes: {}, hsPremio: null, bonusDia: {}, tickets: 0,
-      album: null, po: 0, gpoReq: {}, duoLog: []
+      album: null, po: 0, gpoReq: {}, duoLog: [], gachaDia: '', gachaRes: null
     };
     // álbum de mentira: os 9 primeiros Idols da vitrine, com 1 a 3 cópias (os de 2+ podem virar pó)
     function album(){ if(!D.album || !Object.keys(D.album).length){ D.album = {}; idols().slice(0, 9).forEach(function(p, i){ D.album[p.nick] = i % 3 + 1; }); } return D.album; }
@@ -396,6 +396,22 @@
       if(n === 'studio_capa'){
         c = mural().filter(function(x){ return x.coracoes > 0; }).sort(function(x, y){ return y.coracoes - x.coracoes; })[0];
         return c ? { id:c.id, nick:c.nick, avatar:c.avatar, escolhas:c.escolhas, estrelas:c.estrelas, dia:c.dia, coracoes:c.coracoes, fechada:false } : null;
+      }
+      /* ---- Star⭐Gacha! — giro do dia (mesmas chances de gacha_girar em 20261113_gacha_po_garantia.sql) ---- */
+      if(n === 'gacha_hoje') return D.gachaDia === D.dia ? D.gachaRes : { ok:true, tipo:null };
+      if(n === 'gacha_girar'){
+        if(D.gachaDia === D.dia) return { ok:false, erro:'hoje' };
+        var sr = Math.random(), tp, vl, cardIdol = null, outros = idols().filter(function(x){ return baixo(x.nick) !== 'demo'; });
+        if(sr < .40){ if(outros.length){ tp = 'card'; cardIdol = outros[sorteio(outros.length)]; vl = cardIdol.nick; } else { tp = 'nada'; vl = String(sorteio(8)); } }
+        else if(sr < .80){ tp = 'estrelas'; vl = String(5 + sorteio(11)); }
+        else if(sr < .92){ tp = 'estrelas'; vl = String(20 + sorteio(21)); }
+        else if(sr < .95){ tp = 'bonus'; vl = ['ima', 'escudo', 'fever'][sorteio(3)]; }
+        else { tp = 'ticket'; vl = '1'; D.tickets++; }
+        if(tp === 'card'){ album(); D.album[cardIdol.nick] = (D.album[cardIdol.nick] || 0) + 1; }
+        var gr = { ok:true, tipo:tp, valor:vl, stars:tp === 'estrelas' ? mudaSaldo(+vl) : saldo(), tickets:tp === 'ticket' ? D.tickets : undefined,
+          card:cardIdol ? { nick:cardIdol.nick, avatar:cardIdol.avatar, best:cardIdol.best || 0 } : null };
+        D.gachaDia = D.dia; D.gachaRes = gr;
+        return gr;
       }
       /* ---- Pó de estrela do Gacha (20261113_gacha_po_garantia.sql) ---- */
       if(n === 'gacha_po_status' || n === 'gacha_converter_repetido' || n === 'gacha_resgatar_card'){

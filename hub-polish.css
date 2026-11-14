@@ -581,3 +581,8 @@ html body .trform .btn{align-self:center;min-height:48px}
   html:not([data-theme="light"]) .bloomcard .btn.alt,html:not([data-theme="light"]) .bloomlote .btn.alt,
   html:not([data-theme="light"]) .tritem .btn.alt{background:#eef3ff;color:#3c2a8f;border-color:#fff;box-shadow:0 5px 0 #c3b3ef,0 8px 15px rgba(0,0,0,.18)}
 }
+/* Títulos das janelas e logo da abertura cabem a 320 px (antes "Handshake⭐Event!" cortava e "World" quebrava o "d") */
+@media(max-width:360px){
+  html body .ov .tw-modal-title{font-size:clamp(15px,5.2vw,22px);padding-left:38px;padding-right:38px;white-space:nowrap}
+}
+@media(max-width:360px){html body .hublogo{font-size:clamp(28px,9.4vw,34px);white-space:nowrap}}

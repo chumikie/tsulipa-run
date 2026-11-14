@@ -116,7 +116,13 @@ function jogar(){
  if(!servidor){
    rodadas=treinoShow();ocupado=false;render();desenharPolaroid();return;
  }
- contaRpc('battle_jogar',{p_unit:unit.slice()}).then(function(r){
+ // O servidor aceita uma chave de idempotência por partida para evitar
+ // dois giros se a rede repetir a mesma requisição.
+ if(!window.crypto||typeof window.crypto.randomUUID!=='function'){
+   msg=trB('error');ocupado=false;render();return;
+ }
+ var requisicao=window.crypto.randomUUID();
+ contaRpc('battle_jogar',{p_unit:unit.slice(),p_requisicao:requisicao}).then(function(r){
    if(!r||!r.ok||!Array.isArray(r.rodadas)||r.rodadas.length!==3)throw Error('invalid result');
    rodadas=r.rodadas;estado.tentativas=Number(r.tentativas);estado.ultimo_premio=Number(r.premio)||0;
    if(estado.ultimo_premio===5&&typeof r.stars==='number'&&typeof starT!=='undefined'){

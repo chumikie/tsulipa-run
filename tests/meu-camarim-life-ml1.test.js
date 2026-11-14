@@ -970,3 +970,41 @@ test('ML1.1: origem Hub fica preservada e navegação comum não é sequestrada'
   assert.equal(/contaRpc\('(?!missoes')/.test(logic), false, 'nenhuma RPC de escrita adicionada');
   assert.match(html, /id="petPhone"/);
 });
+
+
+test('ML1: sofá reage ao peso sem mover o quadril ou acrescentar estado persistido', () => {
+  const fn=pet.slice(pet.indexOf('function petLifeSofaApoio('),pet.indexOf('function petLifeSofa('));
+  const contexto={petLifeQuadril:v=>({x:v.x,y:v.y})};
+  vm.runInNewContext(fn,contexto);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:0}),null);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:.5}).afunda,1.5);
+  assert.equal(contexto.petLifeSofaApoio({x:90,y:170,sit:1}).afunda,3);
+  assert.equal(contexto.petLifeSofaApoio({x:140,y:170,sit:1}).x,126,'não afunda além do encosto');
+  assert.match(pet,/petLifeSofa\(x, false, pose\)/,'o assento recebe a mesma pose desenhada');
+});
+
+test('ML1: olhar responde somente à lembrança disponível e acompanha a estante', () => {
+  const {ctx}=fakeRoom();
+  ctx.petArrumoDx=k=>k==='estante'?26:0;
+  ctx.TWVidaCidade={objetosCamarim:()=>[]};
+  ctx.petVidaFotoAtual=()=>null;
+  assert.equal(ctx.petVidaLembrancaReacao(.02),null,'não inventa lembrança');
+  ctx.TWVidaCidade.objetosCamarim=()=>[{tipo:'flor',flor:'tulipa'}];
+  let r=ctx.petVidaLembrancaReacao(.02);
+  assert.equal(r.tipo,'flor');
+  assert.equal(r.x,216,'acompanha a posição atual da estante');
+  ctx.TWVidaCidade.objetosCamarim=()=>[{tipo:'foto'}];
+  assert.equal(ctx.petVidaLembrancaReacao(.02),null,'foto não salva não ganha brilho');
+  ctx.petVidaFotoAtual=()=>({naturalWidth:100,naturalHeight:60});
+  r=ctx.petVidaLembrancaReacao(.02);
+  assert.equal(r.tipo,'foto');
+  assert.equal(r.x,234);
+  assert.equal(ctx.petVidaLembrancaReacao(0),null,'movimento reduzido ou cuidado bloqueia o gesto');
+  assert.equal(ctx.petVidaOlharLembranca(220,0,false),0,'cuidados têm prioridade');
+  ctx.window.matchMedia=()=>({matches:true});
+  assert.equal(ctx.petVidaOlharLembranca(220,0,true),0,'reduzir movimento desliga o gesto');
+  ctx.window.matchMedia=()=>({matches:false});
+  assert.ok(ctx.petVidaOlharLembranca(220,0,true)>0);
+  assert.doesNotMatch(pet.slice(pet.indexOf('function petVidaLembrancaReacao('),pet.indexOf('function petVidaLembrancaCenario(')),
+    /requestAnimationFrame|setInterval|setTimeout|localStorage|petSave\(|contaRpc/);
+});

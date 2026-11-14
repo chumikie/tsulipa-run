@@ -1430,6 +1430,8 @@ function perfDiarioHtml(d, meu){
     try{ var rh = +localStorage.getItem('tw_handshake_recorde') || 0; if(rh) itens.push(['🤝', tr('Recorde no Handshake⭐Event!'), n(rh) + ' ' + tr('pts')]); }catch(e){}
   }
   var hoje = perfDiarioHojeHtml(meu);
-  if(!itens.length) return hoje + '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
-  return hoje + '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
+  // Memórias da visita: só aparecem no próprio perfil, nunca são salvas no Diário.
+  var memoria = meu && window.TWVidaCidade ? window.TWVidaCidade.diarioHtml() : '';
+  if(!itens.length) return hoje + memoria + '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
+  return hoje + memoria + '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
 }

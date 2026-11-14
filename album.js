@@ -24,6 +24,7 @@ function albumIdols(){
 }
 function albumAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  if($('albumTit')) $('albumTit').textContent = '📖 ' + tr('Álbum de cards');   // título completo por qualquer caminho (missões, Camarim, Gacha)
   albumOv.hidden = false; albumOv.scrollTop = 0; albumPag = 0; albumDados = null; albumPronto = false;
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
   albumUI();

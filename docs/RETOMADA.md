@@ -20,6 +20,8 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Camarim: o Cantinho de lembranças saiu do meio dos cuidados do pet. Agora fica no fim, fechado, e só mostra as lembranças e o vasinho. A foto e os cards já estão no Celular e na Estante, e o vaso e o porta-retratos já aparecem no desenho do quarto.
 - Idol⭐Battle!: abas em negrito (a regra `font` estava inválida), título igual aos outros jogos, menos caixa dentro de caixa, atributos numa linha só, escalação compacta e botão "Começar show!" largo.
 - Photo⭐Studio!: a foto fica menor (cabe com as opções à vista), as opções ficam em grade regular e o "Clicar!" fica preso no rodapé.
+- Jogos antigos: Álbum, Troca e Pedido de fã agora mostram o título completo por qualquer caminho (pelas missões aparecia só o emoji). Campos da Troca e busca do Duo com o mesmo desenho dos outros campos. Perfil a 320 px com a foto em cima. Pó de estrela em duas colunas.
+- Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 
 ### Teste sem login (modo demonstração)

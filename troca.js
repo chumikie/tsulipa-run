@@ -9,6 +9,7 @@ function trocaNome(chave){   // a chave é o nick em minúsculas; mostra como es
 function trocaRepetidos(){ return (albumDados || []).filter(function(c){ return c && c.card && c.card.nick && +c.vezes >= 2; }).map(function(c){ return c.card.nick; }); }
 function trocaAbrir(){
   if(!contaJ){ contaEntrar(); return; }
+  if($('trocaTit')) $('trocaTit').textContent = '🔁 ' + tr('Troca de cards');   // título completo por qualquer caminho (missões, Camarim, Gacha)
   trocaOv.hidden = false; trocaOv.scrollTop = 0; trocaLista = null; trocaUI();
   contaRpc('minhas_trocas').then(function(L){ trocaLista = Array.isArray(L) ? L : []; trocaUI(); }).catch(function(){ trocaLista = 'erro'; trocaUI(); });
 }

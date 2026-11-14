@@ -39,3 +39,7 @@ button.albumslot{cursor:zoom-in}
 .gpoconf p{margin:0 0 6px}.gpoconf .btns{margin:0;gap:8px}
 html[data-theme="dark"] .gpo{background:linear-gradient(160deg,#2a2146,#231b3d);color:#eee6ff}
 html[data-theme="dark"] .gpochip,html[data-theme="dark"] .gpoconf,html[data-theme="dark"] .gporesg select{background:#1d1733;color:#eee6ff;border-color:#4a3c7a}
+/* Pó de estrela: repetidos em duas colunas regulares */
+.gporep{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.gpochip{min-height:44px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){.gpochip i{display:none}.gpochip{overflow:visible;text-overflow:clip}}

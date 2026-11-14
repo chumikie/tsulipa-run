@@ -562,3 +562,17 @@ html body .studiop .stgrupo>b{margin:12px 0 6px}
 .stgrupo .stchip{flex:1 1 calc(33.333% - 6px);min-width:0}
 .stgrupo>div:has(>.stchip:nth-child(4)):not(:has(>.stchip:nth-child(5)))>.stchip{flex-basis:calc(50% - 6px)}
 .stgrupo .stchip .stsw{flex:none}
+
+/* ===== Acabamento dos jogos antigos e do mapa (14/11) ===== */
+/* Campos de formulário com o mesmo desenho em todos os jogos (Troca, Duo, Battle) */
+html body .trform{gap:10px;padding:12px;border:1.5px solid #e2d4ff;background:linear-gradient(180deg,#fff,#f7f2ff)}
+html body .trform label{align-items:stretch;text-align:left;color:#3c2a8f;font-size:12.5px;letter-spacing:.01em}
+html body .trform input,html body .trform select,html body #duoBusca.duobusca{
+  min-height:46px;box-sizing:border-box;width:100%;border:2px solid #d7c0ff;background:#f8f4ff;color:#3c2a8f;
+  border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;font-weight:700;text-align:left}
+html body #duoBusca.duobusca{text-align:center;margin:4px 0 10px}
+html body .trform input:focus-visible,html body .trform select:focus-visible,html body #duoBusca.duobusca:focus-visible{
+  outline:3px solid #ff6fb5;outline-offset:2px;border-color:#9b30d9;background:#fff}
+html body .trform .btn{align-self:center;min-height:48px}
+/* Mapa da cidade: ao rolar até ele, não fica embaixo da barra fixa do jogador */
+#twMapa,#hubCards,#hubMenu>section{scroll-margin-top:84px}

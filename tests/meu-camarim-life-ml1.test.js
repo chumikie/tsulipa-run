@@ -10,6 +10,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const pet = read('pet.js'), html = read('index.html'), css = read('pet.css');
 const hub = read('hub.js'), karaokePhoto = read('karaoke-photo.js'), karaokeCss = read('karaoke-photo.css');
 const logic = pet.slice(pet.indexOf('function petLifeHit('), pet.indexOf('function petIdleJeito('));
+const lembrancas = pet.slice(pet.indexOf('var PET_VIDA_PRATELEIRA'), pet.indexOf('function petDrawRoom('));
 const shopClose = read('shop.js').match(/function shopFechar\(\)\{[^\n]+\}/)[0];
 const albumClose = read('album.js').match(/function albumFechar\(\)\{[^\n]+\}/)[0];
 const perfilClose = read('perfil.js').slice(read('perfil.js').indexOf('function perfFechar(){'), read('perfil.js').indexOf('function perfMontar(){'));
@@ -59,6 +60,9 @@ function fakeRoom(signedIn = true){
     albumAbrir(){ calls.push('albumAbrir'); }
   };
   vm.runInNewContext(logic, ctx, {filename:'petLifeML1'});
+  ctx.window=ctx;
+  ctx.petArrumoDx=()=>0;
+  vm.runInContext(lembrancas, ctx, {filename:'petVidaLembrancas'});
   ctx.shopOv = {hidden:false}; ctx.albumOv = {hidden:false};
   ctx.perfOv = {hidden:false}; ctx.perfPedido=0; ctx.perfMontou=false;
   ctx.perfIconeConta = () => {};
@@ -102,6 +106,39 @@ test('ML1: ações no camarim só navegam para telas existentes com backend simu
   assert.equal(album.ctx.petLifeAbrir('album'), true);
   assert.deepEqual(album.calls, ['petClose','hubMostrar','albumAbrir']);
   assert.match(album.nodes.albumTit.textContent, /Álbum de cards/);
+});
+
+test('Camarim: lembranças acompanham a estante e abrem os destinos existentes', () => {
+  const {ctx,calls,nodes} = fakeRoom();
+  ctx.petArrumoDx=k=>k==='estante'?35:0;
+  ctx.TWVidaCidade={objetosCamarim:()=>[{tipo:'flor',flor:'tulipa'},{tipo:'foto'}]};
+  nodes.petX={click(){calls.push('fecharCamarim');}};
+  ctx.bloomAbrir=()=>calls.push('bloomAbrir');
+  assert.equal(ctx.petLifeTap(190,123),false,'o lugar antigo não aciona o vaso');
+  assert.equal(ctx.petLifeTap(225,130),true);
+  assert.deepEqual(calls.splice(0),['fecharCamarim','bloomAbrir']);
+  ctx.petCartaFotoMomento=()=>({id:'foto-da-conta'});
+  ctx.petPhoneMomentoAbrir=id=>calls.push(id);
+  assert.equal(ctx.petLifeTap(243,132),true);
+  assert.equal(ctx.petPhoneTela,'fotos');
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.ok(calls.includes('foto-da-conta'));
+  assert.ok(!calls.some(c=>c.startsWith('rpc:')));
+  ctx.TWVidaCidade.objetosCamarim=()=>[];
+  assert.equal(ctx.petVidaLembrancaToque(243,132),'');
+  assert.equal(ctx.petLifeTap(230,146),true,'abaixo da lembrança ainda abre a estante');
+  assert.equal(nodes.petLifeEstante.hidden,false);
+});
+
+test('Camarim: porta-retratos sem foto local abre só a galeria', () => {
+  const {ctx,calls} = fakeRoom();
+  ctx.TWVidaCidade={objetosCamarim:()=>[{tipo:'foto'}]};
+  ctx.petPhoneMomentoAbrir=()=>assert.fail('nenhuma foto da sessão para ampliar');
+  assert.equal(ctx.petLifeTap(208,132),true);
+  assert.equal(ctx.petPhoneFotosAba,'momentos');
+  assert.ok(!calls.some(c=>c.startsWith('rpc:')));
+  ctx.contaJ=null;
+  assert.equal(ctx.petVidaLembrancaAbrir('foto'),false);
 });
 
 test('ML1: bloqueia minijogo, ausência de Pet e acesso sem login sem criar saves', () => {

@@ -395,6 +395,7 @@
   // Resumo para o card do Hub (hub-novos.js): quantos canteiros pedem rega ou colheita, do último estado carregado.
   window.bloomResumo = function(){ return st ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };
   window.bloomSondar = sondar;
+  window.bloomDesenharFlor = function(ctx, flor, x, y, raio){ cabeca(ctx, flor, x, y, raio, 0, false); };
   window.BLOOM_TR = T;
   // Liga depois do login: quando o hub se redesenha, pergunta ao servidor uma única vez.
   var sondado = false;

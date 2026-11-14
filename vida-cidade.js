@@ -229,13 +229,8 @@ function render(){
 }
 function atualizar(){if(typeof document!=='undefined'&&!document.hidden)render();}
 function agir(acao){
- if(acao==='jardim'){
-   if(typeof window.bloomAbrir!=='function')return;
-   var fechar=document.getElementById('petX');if(fechar&&typeof fechar.click==='function')fechar.click();
-   window.bloomAbrir();
- }else if(acao==='foto'){
-   var foto=document.querySelector('#petLifeNav [data-life="celular"]');
-   if(foto)foto.click();
+ if(acao==='jardim'||acao==='foto'){
+   if(typeof petVidaLembrancaAbrir==='function')petVidaLembrancaAbrir(acao);
  }else if(acao==='cards'){
    var cards=document.querySelector('#petLifeNav [data-life="estante"]');
    if(cards)cards.click();

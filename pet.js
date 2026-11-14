@@ -450,13 +450,11 @@ function petMakeBg(){
   x.fillStyle = 'rgba(88,44,112,.16)'; x.beginPath(); x.ellipse(200, 177, 22, 3, 0, 0, 7); x.fill();
   x.fillStyle = '#84539d'; x.fillRect(184, 147, 3, 30); x.fillRect(213, 147, 3, 30);
   x.fillStyle = '#bd82c1'; RR(182, 162, 36, 3.5, 1.5); x.fill();
-  x.fillStyle = '#ff9fd0'; x.fillRect(189, 154, 5, 8); x.fillStyle = '#9fd3ff'; x.fillRect(195, 156, 5, 6);
-  x.fillStyle = '#ffe37a'; x.fillRect(201, 155, 4, 7);
+  x.fillStyle = '#ff9fd0'; x.fillRect(186, 154, 4, 8); x.fillStyle = '#9fd3ff'; x.fillRect(191, 156, 4, 6);
+  x.fillStyle = '#ffe37a'; RR(197, 152, 7, 10, 2); x.fill();
+  x.fillStyle = '#9b30d9'; x.fillRect(207, 153, 8, 9);
+  x.fillStyle = '#fff4c9'; x.font = '7px sans-serif'; x.fillText('★', 211, 160);
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
-  x.fillStyle = '#ffe4a4'; RR(186, 126, 12, 17, 2); x.fill();
-  x.fillStyle = '#e6b952'; x.fillRect(190, 137, 4, 6);
-  x.fillStyle = '#9b30d9'; x.fillRect(201, 130, 13, 12);
-  x.fillStyle = '#fff4c9'; x.font = '10px sans-serif'; x.fillText('★', 207.5, 139);
   x.restore();
 
   petDesenharJanela(x, petLuzFase());
@@ -1463,6 +1461,8 @@ function petLifeAbrir(k){
 }
 function petLifeTap(lx, ly){
   if(!petOpen || petView !== 'room' || petGame) return false;
+  var lembranca = petVidaLembrancaToque(lx, ly);
+  if(lembranca && petVidaLembrancaAbrir(lembranca)) return true;
   var k = petLifeHit(lx, ly);
   return k ? petLifeAbrir(k) : false;
 }
@@ -1662,32 +1662,55 @@ function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
     cor:jeito === 'tsu' ? '#ffdb81' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
     u:u, alfa:alfa };
 }
-// Lembrança de cena na estante JÁ EXISTENTE. Apenas Canvas 2D do Camarim,
- // sem novo recurso, foto persistida, download automático ou timer.
+var PET_VIDA_PRATELEIRA = {flor:{x:190,r:9},foto:{x:208,r:10},y:144};
+function petVidaLembrancaToque(lx, ly){
+  var y = PET_VIDA_PRATELEIRA.y;
+  if(ly < y-26 || ly >= y || typeof TWVidaCidade === 'undefined' ||
+    typeof TWVidaCidade.objetosCamarim !== 'function') return '';
+  var local = lx - petArrumoDx('estante');
+  var item = TWVidaCidade.objetosCamarim().find(function(a){
+    var p = PET_VIDA_PRATELEIRA[a.tipo];
+    return Math.abs(local-p.x) < p.r;
+  });
+  return item ? (item.tipo === 'flor' ? 'jardim' : 'foto') : '';
+}
+function petVidaLembrancaAbrir(acao){
+  if(!petOpen || petView !== 'room' || petGame || !contaJ || !petAtivo()) return false;
+  if(acao === 'jardim'){
+    if(typeof window.bloomAbrir !== 'function') return false;
+    var fechar = $('petX');
+    if(fechar) fechar.click();
+    window.bloomAbrir();
+    return true;
+  }
+  if(acao !== 'foto') return false;
+  var momento = petCartaFotoMomento();
+  if(!petPhoneAbrir('fotos')) return false;
+  petPhoneFotosAbaAbrir('momentos');
+  if(momento) petPhoneMomentoAbrir(momento.id);
+  return true;
+}
+// As lembranças ocupam a prateleira superior e acompanham o móvel.
 function petVidaLembrancaCenario(x){
-  if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetoCamarim!=='function')return false;
-  var objetos=typeof TWVidaCidade.objetosCamarim==='function'
-    ?TWVidaCidade.objetosCamarim():[TWVidaCidade.objetoCamarim()].filter(Boolean);
+  if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
+  var objetos=TWVidaCidade.objetosCamarim();
   if(!objetos.length)return false;
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
   objetos.forEach(function(a){
-  x.save();x.translate((a.tipo==='flor'?190:214)+dx,a.tipo==='flor'?116:113);
-  if(a.tipo==='flor'){ // vasinho na prateleira
-    x.fillStyle='#e5b2dd';x.beginPath();x.moveTo(-7,7);x.lineTo(7,7);
-    x.lineTo(5,19);x.lineTo(-5,19);x.closePath();x.fill();
-    x.strokeStyle='#6da679';x.lineWidth=1.7;x.beginPath();x.moveTo(0,7);x.lineTo(0,-3);x.stroke();
-    var cores={sakura:'#ff9ad8',tulipa:'#ed8cb7',girassol:'#ffe16b',lunar:'#b7a6ff'};
-    x.fillStyle=cores[a.flor]||'#ffb5d6';
-    for(var i=0;i<5;i++){var z=i*Math.PI*2/5;x.beginPath();
-      x.arc(Math.cos(z)*4,Math.sin(z)*4-5,3.1,0,Math.PI*2);x.fill();}
-    x.fillStyle='#fff3ad';x.beginPath();x.arc(0,-5,2,0,Math.PI*2);x.fill();
-  }else if(a.tipo==='foto'){ // mini porta-retratos, não duplica a fotografia real
-    x.save();x.rotate(-.08);x.fillStyle='#fff';x.fillRect(-10,-9,20,25);
-    x.fillStyle='#e2caff';x.fillRect(-7,-6,14,15);
-    x.fillStyle='#9e76d9';x.font='12px sans-serif';x.textAlign='center';x.fillText('★',0,5);
-    x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-10,-9,20,25);x.restore();
-  }
-  x.restore();
+    x.save();x.translate(PET_VIDA_PRATELEIRA[a.tipo].x+dx,PET_VIDA_PRATELEIRA.y);
+    if(a.tipo==='flor'){
+      x.fillStyle='#e5b2dd';x.beginPath();x.moveTo(-7,-9);x.lineTo(7,-9);
+      x.lineTo(5,0);x.lineTo(-5,0);x.closePath();x.fill();
+      x.strokeStyle='#6da679';x.lineWidth=1.7;x.beginPath();x.moveTo(0,-9);x.lineTo(0,-17);x.stroke();
+      if(typeof window.bloomDesenharFlor === 'function') window.bloomDesenharFlor(x,a.flor,0,-19,6);
+      else{x.fillStyle='#ffb5d6';x.beginPath();x.arc(0,-19,5,0,Math.PI*2);x.fill();}
+    }else if(a.tipo==='foto'){
+      x.rotate(-.04);x.fillStyle='#fff';x.fillRect(-9,-22,18,21);
+      x.fillStyle='#e2caff';x.fillRect(-6,-19,12,13);
+      x.fillStyle='#9e76d9';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-9);
+      x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-9,-22,18,21);
+    }
+    x.restore();
   });
   return true;
 }
@@ -1711,7 +1734,7 @@ function petDrawRoom(){
   petLuzAmbiente(x);   // manhã clara, fim de tarde alaranjado, noite com abajur
   petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
-  petVidaLembrancaCenario(x); // foto ou flor já confirmada, na estante (nunca em save)
+  petVidaLembrancaCenario(x);
   petLifeSofa(x, false);
   var poseDesenho = petLifePoseDesenho(petT), pose = poseDesenho.sit > .001 ? poseDesenho : null;
   if(!petLifePose && !pose) petLifeSofa(x, true); // em pé, o sofá inteiro fica atrás do Idol

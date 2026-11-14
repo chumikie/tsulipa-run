@@ -481,7 +481,8 @@
       var registro=window.TWVidaCidade&&typeof window.TWVidaCidade.sinalCena==='function'
         ?window.TWVidaCidade.sinalCena(cena):null;
       var objeto=PORTA_OBJETO[cena],parados=[];
-      passeantes().map(function(p,i){var q=reduzMov?{x:PORTAS[i%3]+(i>2?60:0),dir:1,mov:0,porta:i%3,volta:0}:posRua(i,tm);
+      passeantes().map(function(p,i){var fixo=(i===0&&registro&&objeto)?objeto.porta:i%3;
+        var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
         q.p=p;q.i=i;q.y=738+(i%3)*8;return q;/* abaixo das placas */})
         .sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){

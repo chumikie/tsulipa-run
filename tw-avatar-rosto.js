@@ -15,7 +15,7 @@
   // Peças do rosto à escolha. '' = o desenho de sempre (o mais simpático, padrão de todo mundo).
   var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno', 'estrela', 'cilios', 'gotinha'];
   var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho', 'lingua', 'triangulo', 'biquinho'];
-  var ENFEITES = ['laco', 'tiara', 'flor'];
+  var ENFEITES = ['tiara'];   // laço e flor já existiam como Item (Laço azul, Hibisco, Flor de cerejeira)
   var BOCHECHAS = ['', 'sem', 'forte', 'sardas', 'estrelinha'];
   var SOBRANCELHAS = ['', 'fina', 'cheia', 'arqueada', 'preocupada', 'decidida'];
   var TINTA = '#223', PUPILA = '#112';
@@ -132,33 +132,17 @@
     }
   }
 
-  // Acessórios de cabeça novos (c.hat): laço, tiara de estrela e flor no cabelo. Coordenadas do rosto (cabeça: topo em y+0).
+  // Acessório de cabeça novo (c.hat): Arco estelar (aro dourado com estrela). Coordenadas do rosto (cabeça: topo em y+0).
   function enfeite(g, c, x, y, h){
     if(ENFEITES.indexOf(h) < 0) return;
     g.save();
-    if(h === 'laco'){   // laço grande do lado direito, levemente inclinado
-      g.translate(x + 22.5, y + 2.6); g.rotate(.32);
-      g.fillStyle = '#ff4f9a';
-      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(-7.5, -6.5, -7.6, 1); g.quadraticCurveTo(-6.6, 4.6, 0, 0); g.fill();
-      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(7.5, -6.5, 7.6, 1); g.quadraticCurveTo(6.6, 4.6, 0, 0); g.fill();
-      g.beginPath(); g.moveTo(-.8, .8); g.lineTo(-3.6, 6.8); g.lineTo(-1.6, 6.4); g.lineTo(.2, 1.4); g.closePath(); g.fill();
-      g.beginPath(); g.moveTo(.8, .8); g.lineTo(3.4, 6.6); g.lineTo(1.5, 6.4); g.lineTo(-.2, 1.4); g.closePath(); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.4)'; E(g, -4.6, -1.6, 1.8, .9, -.5); E(g, 4.4, -1.8, 1.6, .8, .5);
-      g.fillStyle = '#d6337a'; E(g, 0, .4, 1.7, 1.6);
-    } else if(h === 'tiara'){   // aro dourado com estrela no meio
+    if(h === 'tiara'){   // aro dourado com estrela no meio
       g.strokeStyle = '#f5c518'; g.lineWidth = 1.3; g.beginPath(); g.arc(x + 15, y + 11, 11.4, Math.PI * 1.08, Math.PI * 1.92); g.stroke();
       g.fillStyle = '#ffe14d'; g.strokeStyle = '#e0a800'; g.lineWidth = .5; g.beginPath();
       for(var k = 0; k < 10; k++){ var r = k % 2 ? 1.6 : 3.6, an = -Math.PI / 2 + k * Math.PI / 5; g.lineTo(x + 15 + Math.cos(an) * r, y - .6 + Math.sin(an) * r); }
       g.closePath(); g.fill(); g.stroke();
       g.fillStyle = 'rgba(255,255,255,.7)'; E(g, x + 14.2, y - 1.6, .7, .5);
       g.fillStyle = '#ff6fb5'; E(g, x + 8.6, y + 2.2, .9, .9); g.fillStyle = '#4dd8ff'; E(g, x + 21.4, y + 2.2, .9, .9);
-    } else {   // flor rosa acima da orelha esquerda, com folhinha
-      var fx = x + 5.2, fy = y + 6.6;
-      g.fillStyle = '#5bbf6a'; E(g, fx + 3.2, fy + 2.8, 2.4, 1.1, .6);
-      g.fillStyle = '#ff9ccd';
-      for(var p = 0; p < 5; p++){ var a = -Math.PI / 2 + p * Math.PI * 2 / 5; E(g, fx + Math.cos(a) * 2.2, fy + Math.sin(a) * 2.2, 1.7, 1.7); }
-      g.fillStyle = '#ffe14d'; E(g, fx, fy, 1.25, 1.25);
-      g.fillStyle = 'rgba(255,255,255,.55)'; E(g, fx - 1.6, fy - 1.9, .6, .45);
     }
     g.restore();
   }

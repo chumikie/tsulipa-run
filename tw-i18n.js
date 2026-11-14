@@ -132,7 +132,7 @@ window.TW_DICT={
   "Audição":"Audition",
   "Bagunça":"Messy",
   "Paciência do cliente":"Customer patience",
-  "Tiara de estrela":"Star tiara","Flor no cabelo":"Hair flower","Cílios":"Lashes","Gotinha":"Droplet","Linguinha":"Tongue out","Triângulo":"Triangle","Biquinho":"Pout",
+  "Arco estelar":"Star headband","Cílios":"Lashes","Gotinha":"Droplet","Linguinha":"Tongue out","Triângulo":"Triangle","Biquinho":"Pout",
   "Cores":"Colors","Sobrancelha":"Eyebrows","Fina":"Thin","Cheia":"Full","Arqueada":"Arched","Preocupada":"Worried","Decidida":"Determined","Feliz":"Happy","Chorinho":"Teary","Apaixonado":"In love","Concentrado":"Focused","Girar":"Turn around","Partes":"Parts","Expressões":"Expressions","Prévia do visual":"Look preview",
   "Penteado":"Hairstyle","Rosto":"Face","Pele":"Skin","Cor dos olhos":"Eye color","Sortear":"Shuffle","Desfazer":"Undo",
   "Forma dos olhos":"Eye shape","Brilhante":"Sparkly","Pontinho":"Dot","Gatinho":"Cat-eye","Sereno":"Calm","Clássico":"Classic","Boca":"Mouth","Clássica":"Classic","Gatinho ω":"Kitty ω","Aberta":"Open","Dentinho":"Little fang","Bochecha":"Cheeks","Rosadinha":"Rosy","Corada":"Blushing","Sardas":"Freckles",
@@ -721,7 +721,7 @@ window.TW_DICT={
   "Audição":"Audición",
   "Bagunça":"Despeinado",
   "Paciência do cliente":"Paciencia del cliente",
-  "Tiara de estrela":"Tiara de estrella","Flor no cabelo":"Flor en el pelo","Cílios":"Pestañas","Gotinha":"Gotita","Linguinha":"Lengüita","Triângulo":"Triángulo","Biquinho":"Puchero",
+  "Arco estelar":"Diadema estelar","Cílios":"Pestañas","Gotinha":"Gotita","Linguinha":"Lengüita","Triângulo":"Triángulo","Biquinho":"Puchero",
   "Cores":"Colores","Sobrancelha":"Cejas","Fina":"Fina","Cheia":"Gruesa","Arqueada":"Arqueada","Preocupada":"Preocupada","Decidida":"Decidida","Feliz":"Feliz","Chorinho":"Lagrimita","Apaixonado":"Enamorado","Concentrado":"Concentrado","Girar":"Girar","Partes":"Partes","Expressões":"Expresiones","Prévia do visual":"Vista previa",
   "Penteado":"Peinado","Rosto":"Cara","Pele":"Piel","Cor dos olhos":"Color de ojos","Sortear":"Sortear","Desfazer":"Deshacer",
   
@@ -1311,7 +1311,7 @@ window.TW_DICT={
   "Audição":"ออดิชั่น",
   "Bagunça":"ยุ่ง",
   "Paciência do cliente":"ความอดทนของลูกค้า",
-  "Tiara de estrela":"มงกุฎดาว","Flor no cabelo":"ดอกไม้ติดผม","Cílios":"ขนตา","Gotinha":"หยดน้ำ","Linguinha":"แลบลิ้น","Triângulo":"สามเหลี่ยม","Biquinho":"ปากจู๋",
+  "Arco estelar":"ที่คาดผมดาว","Cílios":"ขนตา","Gotinha":"หยดน้ำ","Linguinha":"แลบลิ้น","Triângulo":"สามเหลี่ยม","Biquinho":"ปากจู๋",
   "Cores":"สี","Sobrancelha":"คิ้ว","Fina":"บาง","Cheia":"หนา","Arqueada":"โค้ง","Preocupada":"กังวล","Decidida":"มุ่งมั่น","Feliz":"มีความสุข","Chorinho":"น้ำตาซึม","Apaixonado":"ตกหลุมรัก","Concentrado":"ตั้งใจ","Girar":"หมุน","Partes":"ส่วนต่างๆ","Expressões":"สีหน้า","Prévia do visual":"ตัวอย่างลุค",
   "Penteado":"ทรงผม","Rosto":"ใบหน้า","Pele":"สีผิว","Cor dos olhos":"สีตา","Sortear":"สุ่ม","Desfazer":"ย้อนกลับ",
   
@@ -1901,7 +1901,7 @@ window.TW_DICT={
   "Audição":"オーディション",
   "Bagunça":"ラフ",
   "Paciência do cliente":"お客さんのがまん",
-  "Tiara de estrela":"スターティアラ","Flor no cabelo":"花かざり","Cílios":"まつげ","Gotinha":"しずく","Linguinha":"ぺろっ","Triângulo":"さんかく","Biquinho":"むっ",
+  "Arco estelar":"スターカチューシャ","Cílios":"まつげ","Gotinha":"しずく","Linguinha":"ぺろっ","Triângulo":"さんかく","Biquinho":"むっ",
   "Cores":"カラー","Sobrancelha":"まゆげ","Fina":"ほそめ","Cheia":"ふとめ","Arqueada":"アーチ","Preocupada":"こまり眉","Decidida":"キリッ","Feliz":"にこにこ","Chorinho":"うるうる","Apaixonado":"ラブラブ","Concentrado":"がんばる","Girar":"くるっと","Partes":"パーツ","Expressões":"ひょうじょう","Prévia do visual":"プレビュー",
   "Penteado":"ヘア","Rosto":"かお","Pele":"はだ","Cor dos olhos":"目の色","Sortear":"おまかせ","Desfazer":"もどす",
   

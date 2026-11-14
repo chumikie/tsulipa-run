@@ -92,6 +92,7 @@ Esta leva é mais curta: os seis jogos já foram trabalhados em PRs anteriores, 
 - **Forte:** subida vertical com cenários e segredo do disco voador.
 - **Falta:** o prêmio de 500 m do PR #74 depende de anti-cheat (tempo mínimo realista e validação no servidor).
 - **Melhoria:** fechar o anti-cheat e aplicar o PR #74; depois, cenários por estação ligados ao tema do momento.
+- **Feito (13/11):** céu por estação (primavera, verão, outono, inverno no hemisfério sul, horário de Brasília) e pelo tema (Halloween, Natal): pétalas, brilhos, folhas, neve, morceguinhos — só fundo, sem efeito no jogo. Teste: `sora-jump.html?estacao=outono`.
 
 ## Backstage⭐Pet!
 - **Forte:** necessidades que caem com o tempo, pets dos membros e pet montável, sincronização na nuvem.

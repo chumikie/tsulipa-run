@@ -62,7 +62,7 @@ bl('# Happy⭐Cafe!', 1100, 700, .62)
 bl('# Star⭐Gacha!', 1240, 712, .62)
 bl('# Zipper⭐Shop!', 1375, 700, .62)
 
-# ---------- 🏡 Vila das Flores: casa · pet · Bloom⭐Garden! ----------
+# ---------- 🏡 Vila das Tulipas: casa · pet · Bloom⭐Garden! ----------
 bl('# Backstage⭐Pet!', 275, 700, .66)
 bl('# Minha casa (Meu Perfil)', 430, 705, .7)
 # horta cercadinha do Bloom⭐Garden! (jogo existe; pede login para plantar)
@@ -141,7 +141,7 @@ def bairro(x, y, nome, c1, c2, icones):
         A(f"<circle cx='{ix}' cy='{y+36}' r='14' fill='#fff'/><circle cx='{ix}' cy='{y+36}' r='11.5' fill='{c2}'/>" + sinal)
 bairro(800, 498, 'Star Stage', '#8b52ff', '#6630dc', ['hubhandshake', 'hubrun', 'tw-hubgame-karaoke'])
 bairro(1238, 758, 'Rua das Vitrines', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
-bairro(360, 752, 'Vila das Flores', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', 'bloom'])
+bairro(360, 752, 'Vila das Tulipas', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', 'bloom'])
 bairro(800, 730, 'Praça Central', '#6fb6ff', '#4a78ef', ['hubfa', 'hubenc', 'hubjornal'])
 bairro(1040, 885, 'Star Arena', '#ffb35c', '#e0532f', ['battle'])
 bairro(1330, 300, 'Jardim das Nuvens', '#72c6ff', '#4a78ef', ['tw-hubgame-sora', 'hubduo', 'studio'])

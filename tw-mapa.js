@@ -19,7 +19,7 @@
     arena:'mapa-rua-arena.svg',ceu:'mapa-rua-ceu.svg'
   };
   var ROTULOS_BAIRROS={
-    palco:'Star Stage',harajuku:'Rua das Vitrines',fofo:'Vila das Flores',
+    palco:'Star Stage',harajuku:'Rua das Vitrines',fofo:'Vila das Tulipas',
     praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
   };
   var BAIRROS_EMOJI={palco:'🎤',harajuku:'🛍️',fofo:'🌷',praca:'⛲',arena:'🏟️',ceu:'☁️'};
@@ -45,7 +45,7 @@
     'Pedido de fã':{en:'Fan request',es:'Pedido de fan',id:'Permintaan fan',th:'คำขอแฟน',ja:'ファンのお願い'},
     'Encontro do dia':{en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日のミーティング'},
     'Rua das Vitrines':{en:'Showcase Street',es:'Calle de las Vitrinas',id:'Jalan Etalase',th:'ถนนร้านค้า',ja:'ショーウィンドウ通り'},
-    'Vila das Flores':{en:'Flower Village',es:'Villa de las Flores',id:'Desa Bunga',th:'หมู่บ้านดอกไม้',ja:'お花の村'},
+    'Vila das Tulipas':{en:'Tulip Village',es:'Villa de los Tulipanes',id:'Desa Tulip',th:'หมู่บ้านทิวลิป',ja:'チューリップ村'},
     'Praça Central':{en:'Central Square',es:'Plaza Central',id:'Alun-alun Pusat',th:'จัตุรัสกลาง',ja:'セントラル広場'},
     'Jardim das Nuvens':{en:'Cloud Garden',es:'Jardín de las Nubes',id:'Taman Awan',th:'สวนเมฆ',ja:'雲の庭'},
     'Entrar':{en:'Enter',es:'Entrar',id:'Masuk',th:'เข้าไป',ja:'入る'},
@@ -259,7 +259,7 @@
       });return achado;
     }
     var ids=BAIRROS[cena].lugares,centros=[300,800,1300],achado=null;
-    // Bloom⭐Garden!: a horta da Vila das Flores abre o jardim quando o servidor já tem o jogo
+    // Bloom⭐Garden!: a horta da Vila das Tulipas abre o jardim quando o servidor já tem o jogo
     if(cena==='fofo'&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
       return {id:'bloom',bloom:true,box:[1100,280,1500,640]};
     // Photo⭐Studio! e Idol⭐Battle!: com login usa RPCs, sem login só treino.
@@ -664,7 +664,7 @@
   function detalhes(tm){
     if(reduzMov)return;
     ctx.save();
-    if(cena==='fofo'||cena==='ceu'){   // pétalas (Vila das Flores) / floquinhos de nuvem (Jardim das Nuvens)
+    if(cena==='fofo'||cena==='ceu'){   // pétalas (Vila das Tulipas) / floquinhos de nuvem (Jardim das Nuvens)
       for(var i=0;i<16;i++){var sp=18+(i*7)%14,x=((i*233+tm*sp)%1700)-50,y=((i*97+tm*(22+(i*5)%11))%700)+20,r=tm*(1+(i%3)*.4)+i;
         ctx.save();ctx.translate(x+Math.sin(tm+i)*14,y);ctx.rotate(r);ctx.globalAlpha=.75;
         ctx.fillStyle=cena==='fofo'?(i%2?'#ffb3d6':'#ffd6ea'):'#ffffff';ctx.beginPath();ctx.ellipse(0,0,cena==='fofo'?7:6,cena==='fofo'?4:6,0,0,7);ctx.fill();ctx.restore();}

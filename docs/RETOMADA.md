@@ -54,7 +54,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Merge da #88:** é o que coloca tudo isso no site; o merge é do dono.
 - **#89 (Café: Dois no balcão):** o banco está aplicado, mas o front não entrou na #88.
 - **#74 (tela do prêmio do Sora):** rascunho; o SQL dele não deve ser aplicado, porque foi substituído pela versão com anti-cheat.
-- **Nomes provisórios:** "Rua das Vitrines" e "Vila das Flores" aguardam confirmação do dono.
+- **Nomes:** "Vila das Tulipas" confirmado (14/11, antes Vila das Flores). "Rua das Vitrines" ainda provisório.
 - **Casa decorável:** ainda em dúvida.
 - **Ideias não iniciadas:** calibração de atraso no Karaoke e o pet ajudando no jardim.
 - **Camarim em 320 px:** botões com 44 px e rótulo embaixo do emoji (CSS feito; não conferido em aparelho).

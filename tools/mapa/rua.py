@@ -5,7 +5,7 @@ random.seed(5)
 CENAS = {
  'palco': ('🎤 Star Stage', ['# Handshake⭐Event!', '# Center⭐Run!', '# Karaoke⭐Time!'], '#7b3ff0'),
  'harajuku': ('🛍️ Rua das Vitrines', ['# Happy⭐Cafe!', '# Star⭐Gacha!', '# Zipper⭐Shop!'], '#7b3ff0'),
- 'fofo': ('🏡 Vila das Flores', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
+ 'fofo': ('🏡 Vila das Tulipas', ['# Backstage⭐Pet!', '# Minha casa (Meu Perfil)', None], '#f08a52'),
  'praca': ('⛲ Praça Central', ['# Pedido de fã', None, '# Idol⭐News!'], '#4169e1'),
  'arena': ('🏟️ Star Arena', [None, None, None], '#9b30d9'),
  'ceu': ('☁️ Jardim das Nuvens', ['# Sora⭐Jump!', '# Moon⭐Duo!', None], '#4169e1')

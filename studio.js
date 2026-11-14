@@ -227,7 +227,12 @@
     try{ if(typeof perfDesenharIdol === 'function') corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, e.quadro || 'inteiro'); }catch(er){}
     if(e.objeto !== 'balao' && e.objeto !== 'nenhum' && corpo){
       // A mão esquerda fica livre no V e no aceno; no coração vai ao peito.
-      var mao = e.pose === 'coracao' ? [10.3,28.5] : [3,31];
+      // Acessório junto do retrato: em close ele fica na borda inferior,
+      // em meio corpo ao lado do tronco, em corpo inteiro perto da mão.
+      var quadro = e.quadro || 'inteiro';
+      var mao = quadro === 'rosto' ? [27,6] :
+                quadro === 'meio' ? [27,19] :
+                e.pose === 'coracao' ? [10.3,28.5] : [3,31];
       x.save(); x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
       x.scale(corpo.scale, corpo.scale); x.rotate(-.18);
       x.lineCap = 'round'; x.lineWidth = 1.5;
@@ -249,7 +254,7 @@
         x.font = '9px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
         x.fillText(FLORES[e.objeto.slice(5)] || '',0,-11);
       }
-      x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(0,0,2,1.5,0,0,7); x.fill();
+      if(quadro === 'inteiro'){ x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(0,0,2,1.5,0,0,7); x.fill(); }
       x.restore();
     }
     luz(x, W, H, e.luz);

@@ -1,9 +1,9 @@
--- Idol⭐Battle! v1 — REVISÃO SOMENTE. NÃO EXECUTAR NO SUPABASE SEM AUTORIZAÇÃO.
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_idol_battle_v1).
+-- Idol⭐Battle! v1 (docs/IDOL_BATTLE_PROPOSTA.md). Aplicado como migração única, sem begin/commit.
 -- Requisitos verificados por leitura em 13/11/2026: public.players, public.gacha,
 -- public.card_movimentos, private.cards_qtd(uuid,text), private.kt_scores,
 -- public.coracoes, public.recados, public.star_log, public.hoje_br().
 -- Uma partida é somente um rival diário, 3 rodadas, 5 tentativas/dia e ★5 na 1ª vitória.
-begin;
 
 create table if not exists private.battle_partidas (
   player_id uuid not null references public.players(id) on delete cascade,
@@ -134,7 +134,10 @@ begin
  if (select count(distinct lower(btrim(x.value))) from jsonb_array_elements_text(p_unit) x)<>3
     then return jsonb_build_object('ok',false,'erro','unit'); end if;
  v_rival:=private.battle_rival_dia(v_dia);
- v_pos:=mod(abs(hashtext('ordem_battle:'||v_dia::text)::bigint),3);
+ -- Ordem do rival sorteada por partida no servidor (random()), nunca derivada de
+ -- dados públicos: assim ninguém calcula a ordem antes de jogar. O resultado fica
+ -- gravado em battle_partidas, então a repetição da mesma requisição continua idempotente.
+ v_pos:=floor(random()*3)::int;
  for v_i in 0..2 loop
    v_nick:=btrim(p_unit->>v_i);
    if v_nick is null or length(v_nick)>48 then return jsonb_build_object('ok',false,'erro','unit'); end if;
@@ -158,8 +161,8 @@ begin
    v_op:=v_rival->mod(v_i+v_pos,3);
    v_eu:=(v_a->>(array['canto','danca','carisma'])[v_i+1])::int;
    v_eles:=(v_op->>(array['canto','danca','carisma'])[v_i+1])::int;
-   -- ±1 com semente do servidor: desempate moderado, sem aceitar scores do cliente.
-   v_sorte:=mod(abs(hashtext(v_uid::text||v_dia::text||(v_tentativas+1)::text||v_i::text)::bigint),3)::int-1;
+   -- "Dia bom/dia ruim": ±1 sorteado no servidor (random()), imprevisível para o cliente.
+   v_sorte:=floor(random()*3)::int-1;
    v_eu:=greatest(1,least(11,v_eu+v_sorte));
    v_venceu:=v_eu>v_eles;
    if v_venceu then v_vitorias:=v_vitorias+1; end if;
@@ -188,4 +191,3 @@ revoke all on function public.battle_status() from public,anon;
 revoke all on function public.battle_jogar(jsonb,uuid) from public,anon;
 grant execute on function public.battle_status() to authenticated;
 grant execute on function public.battle_jogar(jsonb,uuid) to authenticated;
-commit;

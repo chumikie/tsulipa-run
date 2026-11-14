@@ -9,6 +9,11 @@ begin
    raise exception 'anon não pode jogar'; end if;
  if (select has_function_privilege('anon','public.battle_status()','execute')) then
    raise exception 'anon não pode consultar estado'; end if;
+ if not has_function_privilege('authenticated','public.battle_jogar(jsonb,uuid)','execute') then
+   raise exception 'authenticated precisa jogar'; end if;
+ if has_function_privilege('authenticated','private.battle_atributos(uuid)','execute')
+   or has_function_privilege('authenticated','private.battle_rival_dia(date)','execute') then
+   raise exception 'funções privadas expostas'; end if;
  perform set_config('request.jwt.claim.sub','',true);
  if public.battle_status()->>'erro'<>'sem_conta' then raise exception 'sem login'; end if;
  perform set_config('request.jwt.claim.sub',b::text,true);
@@ -29,6 +34,11 @@ begin
  r:=public.battle_jogar('["Bia","Cecilia","Duda"]'::jsonb,'00000000-0000-0000-0000-000000000012');
  if r->>'ok'<>'true' or jsonb_array_length(r->'rodadas')<>3 then
    raise exception 'partida válida não retorna 3 rodadas: %',r; end if;
+ if (select count(distinct x->>'rival') from jsonb_array_elements(r->'rodadas') x)<>3 then
+   raise exception 'cada rival deve entrar em exatamente uma rodada: %',r; end if;
+ if exists(select 1 from jsonb_array_elements(r->'rodadas') x
+   where (x->>'eu')::int not between 1 and 11 or (x->>'eles')::int not between 1 and 10) then
+   raise exception 'pontuação fora da escala: %',r; end if;
  r2:=public.battle_jogar('["Bia","Cecilia","Duda"]'::jsonb,'00000000-0000-0000-0000-000000000012');
  if r2<>r then raise exception 'retry não é idempotente'; end if;
  if (select count(*) from private.battle_partidas where player_id=a)<>1 then
@@ -51,6 +61,13 @@ begin
  r:=public.battle_jogar('["Tsu","Lirika","Pati"]'::jsonb,
   '00000000-0000-0000-0000-000000000111');
  if r->>'ok'<>'true' then raise exception 'starter falhou: %',r; end if;
+ -- Conta bloqueada não joga, não consulta e não aparece como card nem rival.
+ update public.players set bloqueado=true where id=b;
+ if public.battle_status()->>'erro'<>'sem_conta' or
+    public.battle_jogar('["Tsu","Lirika","Pati"]'::jsonb,'00000000-0000-0000-0000-000000000112')->>'erro'<>'sem_conta'
+   then raise exception 'conta bloqueada jogou'; end if;
+ if private.battle_rival_dia('2026-11-14')::text like '%Bia%' then raise exception 'bloqueada virou rival'; end if;
+ update public.players set bloqueado=false where id=b;
  perform set_config('request.jwt.claim.sub',a::text,true);
  update private.dia_teste set dia='2026-11-15';
  if public.battle_status()->>'tentativas'<>'0' then raise exception 'limite não resetou'; end if;

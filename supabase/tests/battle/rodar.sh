@@ -8,6 +8,6 @@ docker exec "$container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
 docker exec "$container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE ${db};"
 q(){ docker exec -i "$container" psql -X -U postgres -d "$db" -v ON_ERROR_STOP=1; }
 q < "$root/supabase/tests/battle/setup.sql"
-q < "$root/supabase/sql/proposta/20261114_idol_battle_v1_REVIEW_ONLY.sql"
+q < "$root/supabase/sql/aplicado/20261114_idol_battle_v1.sql"
 q < "$root/supabase/tests/battle/checks.sql"
 echo "OK Idol⭐Battle! v1 em PostgreSQL isolado"

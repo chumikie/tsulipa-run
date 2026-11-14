@@ -1,6 +1,6 @@
 # Idol⭐Battle! — proposta (Fase 4, 3º jogo novo) · 14/11/2026
 
-Status: **APROVADO pelo dono em 14/11/2026. Frontend da v1 implementado na PR #88**, com treino sem conta e sem prêmios, escalação, três rodadas, rival e polaroid PNG. O **SQL da v1 está SOMENTE COMO PROPOSTA**, em `supabase/sql/proposta/20261114_idol_battle_v1_REVIEW_ONLY.sql`. Testado em PostgreSQL isolado no CI (#43540809411), sem aplicar em produção. Até autorização e aplicação do SQL, o jogo NÃO concede ★ nem realiza partidas oficiais. A v2 (units salvas e desafio assíncrono) continua futura.
+Status: **v1 APLICADA em produção em 14/11/2026, com o OK do dono** — SQL em `supabase/sql/aplicado/20261114_idol_battle_v1.sql`, front (`battle.js`) na PR #88. Sem conta continua sendo treino sem prêmio. Falta testar com conta real. A v2 (units salvas e desafio assíncrono) continua futura.
 
 ## Ideia em uma frase
 Um **show de palco por turnos** na Star Arena: você escala uma **unit de 3 cards** do seu Álbum (os cards do Star⭐Gacha!) e disputa 3 rodadas — **Canto, Dança e Carisma** — contra uma unit rival. Ganha quem levar 2 das 3 rodadas.
@@ -49,4 +49,10 @@ Cada card é um Idol de verdade do site. Os atributos (1 a 10) saem do que essa 
 - RPCs propostas: `battle_status()` e `battle_jogar(p_unit jsonb,p_requisicao uuid)`. O cliente não calcula estrelas; usa um UUID de idempotência por partida.
 - Segurança: o servidor calcula atributos por percentis de histórico de Karaoke/Center/carisma, verifica posse com `private.cards_qtd`, trava o jogador, limita cinco tentativas/dia, premia ★5 só na primeira vitória e tem RLS no histórico privado.
 - Teste PostgreSQL descartável: `supabase/tests/battle/rodar.sh`; cobre ausência de conta, starter, cartas reais, rejeição de cards inventados/repetidos, 3 rodadas, idempotência, limite e ★5 máximo por dia. O CI do mapa também exercita a interface no Chromium (desktop e celular, tema escuro).
-- **Pendente:** revisão final de segurança do SQL e autorização específica para aplicar em produção; login real e recompensa real ainda NÃO foram testados. Não iniciar merge/publicação enquanto esta condição estiver pendente.
+- **Pendente:** login real e recompensa real ainda NÃO foram testados.
+
+## Revisão de segurança — 14/11/2026 (sessão de retomada)
+- Esquema de produção conferido só por leitura de catálogo: colunas, `private.cards_qtd(uuid,text)`, `public.hoje_br()` e nick único (`lower(nick)`) batem com o SQL. Nenhuma tabela/função `battle*` existe ainda em produção.
+- Ajuste no SQL proposto: a **ordem do rival** e a **sorte ±1** eram derivadas de `hashtext()` sobre dados públicos (dia, id, tentativa) e podiam ser calculadas antes de jogar. Agora usam `random()` no servidor, por partida; o resultado gravado mantém a idempotência.
+- Testes isolados ampliados (`supabase/tests/battle/checks.sql`): grants de `authenticated`/funções privadas, cada rival em exatamente uma rodada, escala das pontuações e conta bloqueada (não joga, não consulta, não vira rival). Rodado 3× em PostgreSQL 16 local descartável + 87 testes JS.
+- **Aplicado em 14/11/2026** (migração `20261114_idol_battle_v1`). Conferido em produção por leitura: anon sem acesso, authenticated só nas duas RPCs, funções privadas fechadas, RLS ligada sem políticas, 0 partidas. Não testado: conta real, ★5 real, iPhone físico.

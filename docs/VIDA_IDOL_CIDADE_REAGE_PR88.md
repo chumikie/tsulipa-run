@@ -42,3 +42,11 @@ Verificação rápida: `node tests/vida-cidade.test.js` e `node tests/run-all.js
 - O Hub e o Diário mostram uma ligação narrativa após **dois capítulos** e um encerramento com três capítulos concluídos, com textos em pt/en/es/id/th/ja e somente para ações confirmadas.
 - Quando nada mudou, o painel mantém os mesmos botões e o foco no celular; na troca de conta, remove os elementos anteriores do DOM e não escreve dados locais.
 - Teste integrado de lembranças simultâneas, isolamento por conta e narrativa em `tests/vida-cenas.test.js`; iPhone físico continua pendente.
+
+## Reencontro na Praça Central — 14/11/2026
+
+O Happy⭐Cafe! registra um reencontro visual apenas após resposta `r.ok && r.confirmado && r.certo===true` de atendimento correto. O fã precisa existir na memória do Handshake da própria conta; o nome, presente e aparência são conferidos novamente. Modo treino, atendimento incorreto ou troca de conta não criam reencontros.
+
+A Praça Central exibe no máximo **um fã NPC conhecido**, com sua aparência do Handshake e uma etiqueta 💌 durante as pausas. Usa o mesmo Canvas e loop de passeantes existentes, sem editar RPCs, saves, prêmios, ranking ou relações. Uma nova lembrança substitui a anterior da sessão.
+
+A revisão estática preserva `click` nativo, rolagem e preferências de movimento reduzido. **Safari em iPhone físico segue sem teste real**; Chromium móvel simulado não equivale a Safari.

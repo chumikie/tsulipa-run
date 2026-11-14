@@ -5,24 +5,24 @@
 (function(){
 'use strict';
 var TIPOS={
- cafe:{icone:'☕',cap:1},handshake:{icone:'🤝',cap:1},
+ cafe:{icone:'☕',cap:1},handshake:{icone:'🤝',cap:1},reencontro:{icone:'💌',cap:1},
  bloom_plantar:{icone:'🌱',cap:0},bloom_regar:{icone:'💧',cap:0},bloom_colher:{icone:'🌷',cap:0},
  studio_clique:{icone:'📸',cap:2},studio_publicar:{icone:'📰',cap:2},
  foto:{icone:'🖼️',cap:2},battle:{icone:'🎤',cap:1}
 };
 var T={
  pt:{tit:'🌸 A cidade se lembra',sub:'Pequenos acontecimentos da sua visita',vazio:'Seu próximo encontro pode virar uma lembrança.',cam:'Cantinho de lembranças',vazioCam:'Seu Camarim vai ganhar detalhes das suas atividades.',foto:'Porta-retratos',vaso:'Vasinho do jardim',cards:'Estante de cards',cap:'Minha pequena história',etapas:['Cuidar do nosso cantinho','Encontrar alguém na cidade','Guardar o momento'],novo:'Uma lembrança chegou ao seu mundo!',agora:'Seu Pet acompanha a rotina do Idol.',manha:'A cidade desperta para mais um dia.',tarde:'A tarde trouxe movimento às ruas.',noite:'As luzes da cidade estão acesas.',diario:'Memórias desta visita',nota:'Lembranças temporárias, sem mudar seu Diário salvo.',
-   cafe:'Seu Idol terminou um atendimento no Happy⭐Cafe!.',handshake:'Seu Idol reencontrou fãs no Handshake⭐Event!.',bloom_plantar:'Uma sementinha ganhou lugar no Bloom⭐Garden!.',bloom_regar:'Seu Idol cuidou de um canteiro.',bloom_colher:'Uma flor foi colhida no jardim.',studio_clique:'Uma foto foi confirmada no Photo⭐Studio!.',studio_publicar:'Uma foto entrou no Mural do Photo⭐Studio!.',foto:'Uma foto foi guardada voluntariamente no TsuPhone.',battle:'Seu Idol concluiu uma batalha oficial.'},
+   cafe:'Seu Idol terminou um atendimento no Happy⭐Cafe!.',reencontro:'Você reencontrou {nome} no Happy⭐Cafe!.',handshake:'Seu Idol reencontrou fãs no Handshake⭐Event!.',bloom_plantar:'Uma sementinha ganhou lugar no Bloom⭐Garden!.',bloom_regar:'Seu Idol cuidou de um canteiro.',bloom_colher:'Uma flor foi colhida no jardim.',studio_clique:'Uma foto foi confirmada no Photo⭐Studio!.',studio_publicar:'Uma foto entrou no Mural do Photo⭐Studio!.',foto:'Uma foto foi guardada voluntariamente no TsuPhone.',battle:'Seu Idol concluiu uma batalha oficial.'},
  en:{tit:'🌸 The town remembers',sub:'Little moments from this visit',vazio:'Your next encounter may become a memory.',cam:'Memory corner',vazioCam:'Your dressing room will reflect what you do.',foto:'Photo frame',vaso:'Garden vase',cards:'Card shelf',cap:'My little story',etapas:['Care for our corner','Meet someone in town','Keep the moment'],novo:'A new memory has arrived!',agora:'Your pet accompanies your Idol.',manha:'The town is waking up.',tarde:'The streets are lively this afternoon.',noite:'The town lights are glowing.',diario:'Memories from this visit',nota:'Temporary memories; your saved Diary stays unchanged.',
-   cafe:'Your Idol finished a shift at Happy⭐Cafe!.',handshake:'Your Idol met fans at Handshake⭐Event!.',bloom_plantar:'A little seed was planted at Bloom⭐Garden!.',bloom_regar:'Your Idol watered a flowerbed.',bloom_colher:'A flower was picked in the garden.',studio_clique:'A photo was verified at Photo⭐Studio!.',studio_publicar:'A photo joined the Photo⭐Studio! wall.',foto:'A photo was saved voluntarily in TsuPhone.',battle:'Your Idol completed an official battle.'},
+   cafe:'Your Idol finished a shift at Happy⭐Cafe!.',reencontro:'You met {nome} again at Happy⭐Cafe!.',handshake:'Your Idol met fans at Handshake⭐Event!.',bloom_plantar:'A little seed was planted at Bloom⭐Garden!.',bloom_regar:'Your Idol watered a flowerbed.',bloom_colher:'A flower was picked in the garden.',studio_clique:'A photo was verified at Photo⭐Studio!.',studio_publicar:'A photo joined the Photo⭐Studio! wall.',foto:'A photo was saved voluntarily in TsuPhone.',battle:'Your Idol completed an official battle.'},
  es:{tit:'🌸 La ciudad recuerda',sub:'Pequeños momentos de esta visita',vazio:'Tu próximo encuentro puede ser un recuerdo.',cam:'Rincón de recuerdos',vazioCam:'Tu camerino mostrará tus actividades.',foto:'Portarretratos',vaso:'Florero del jardín',cards:'Estante de cards',cap:'Mi pequeña historia',etapas:['Cuidar nuestro rincón','Encontrar a alguien','Guardar el momento'],novo:'¡Llegó un recuerdo nuevo!',agora:'Tu mascota acompaña al Idol.',manha:'La ciudad despierta.',tarde:'La ciudad está llena de vida.',noite:'Las luces de la ciudad brillan.',diario:'Recuerdos de esta visita',nota:'Recuerdos temporales, sin cambiar el diario guardado.',
-   cafe:'Tu Idol terminó una atención en Happy⭐Cafe!.',handshake:'Tu Idol encontró fans en Handshake⭐Event!.',bloom_plantar:'Una semilla llegó a Bloom⭐Garden!.',bloom_regar:'Tu Idol regó una planta.',bloom_colher:'Se recogió una flor del jardín.',studio_clique:'Una foto fue verificada en Photo⭐Studio!.',studio_publicar:'Una foto llegó al mural de Photo⭐Studio!.',foto:'Guardaste una foto en TsuPhone.',battle:'Tu Idol terminó una batalla oficial.'},
+   cafe:'Tu Idol terminó una atención en Happy⭐Cafe!.',reencontro:'Te reencontraste con {nome} en Happy⭐Cafe!.',handshake:'Tu Idol encontró fans en Handshake⭐Event!.',bloom_plantar:'Una semilla llegó a Bloom⭐Garden!.',bloom_regar:'Tu Idol regó una planta.',bloom_colher:'Se recogió una flor del jardín.',studio_clique:'Una foto fue verificada en Photo⭐Studio!.',studio_publicar:'Una foto llegó al mural de Photo⭐Studio!.',foto:'Guardaste una foto en TsuPhone.',battle:'Tu Idol terminó una batalla oficial.'},
  id:{tit:'🌸 Kota mengingat',sub:'Kenangan kecil dari kunjungan ini',vazio:'Pertemuan berikutnya bisa jadi kenangan.',cam:'Sudut kenangan',vazioCam:'Ruang ganti akan menampilkan kegiatanmu.',foto:'Bingkai foto',vaso:'Vas taman',cards:'Rak kartu',cap:'Cerita kecilku',etapas:['Merawat tempat kita','Bertemu seseorang','Menyimpan momen'],novo:'Kenangan baru datang!',agora:'Pet menemani Idol-mu.',manha:'Kota mulai bangun.',tarde:'Jalanan ramai sore ini.',noite:'Lampu kota menyala.',diario:'Kenangan kunjungan ini',nota:'Kenangan sementara, tanpa mengubah buku harian.',
-   cafe:'Idol selesai melayani di Happy⭐Cafe!.',handshake:'Idol bertemu penggemar di Handshake⭐Event!.',bloom_plantar:'Benih ditanam di Bloom⭐Garden!.',bloom_regar:'Idol menyiram tanaman.',bloom_colher:'Bunga dipetik dari taman.',studio_clique:'Foto diverifikasi di Photo⭐Studio!.',studio_publicar:'Foto masuk ke mural Photo⭐Studio!.',foto:'Foto disimpan di TsuPhone.',battle:'Idol menuntaskan Battle resmi.'},
+   cafe:'Idol selesai melayani di Happy⭐Cafe!.',reencontro:'Kamu bertemu lagi dengan {nome} di Happy⭐Cafe!.',handshake:'Idol bertemu penggemar di Handshake⭐Event!.',bloom_plantar:'Benih ditanam di Bloom⭐Garden!.',bloom_regar:'Idol menyiram tanaman.',bloom_colher:'Bunga dipetik dari taman.',studio_clique:'Foto diverifikasi di Photo⭐Studio!.',studio_publicar:'Foto masuk ke mural Photo⭐Studio!.',foto:'Foto disimpan di TsuPhone.',battle:'Idol menuntaskan Battle resmi.'},
  th:{tit:'🌸 เมืองจดจำ',sub:'ความทรงจำเล็ก ๆ ในครั้งนี้',vazio:'การพบกันครั้งหน้าอาจกลายเป็นความทรงจำ',cam:'มุมความทรงจำ',vazioCam:'ห้องแต่งตัวจะแสดงเรื่องราวของคุณ',foto:'กรอบรูป',vaso:'แจกันดอกไม้',cards:'ชั้นการ์ด',cap:'เรื่องราวเล็ก ๆ',etapas:['ดูแลพื้นที่ของเรา','พบใครบางคน','เก็บช่วงเวลาดี ๆ'],novo:'มีความทรงจำใหม่!',agora:'สัตว์เลี้ยงอยู่เป็นเพื่อนไอดอล',manha:'เมืองตื่นรับวันใหม่',tarde:'บ่ายนี้เมืองคึกคัก',noite:'ไฟเมืองส่องสว่าง',diario:'ความทรงจำครั้งนี้',nota:'ชั่วคราว ไม่แก้ไขไดอารีที่บันทึกไว้',
-   cafe:'ไอดอลให้บริการที่ Happy⭐Cafe! สำเร็จ',handshake:'ไอดอลพบแฟน ๆ ที่ Handshake⭐Event!',bloom_plantar:'ปลูกเมล็ดใน Bloom⭐Garden! แล้ว',bloom_regar:'ไอดอลรดน้ำต้นไม้แล้ว',bloom_colher:'เก็บดอกไม้จากสวนแล้ว',studio_clique:'ยืนยันภาพที่ Photo⭐Studio! แล้ว',studio_publicar:'ลงรูปบนผนัง Photo⭐Studio! แล้ว',foto:'บันทึกรูปไว้ใน TsuPhone แล้ว',battle:'ไอดอลจบการแข่งขันอย่างเป็นทางการแล้ว'},
+   cafe:'ไอดอลให้บริการที่ Happy⭐Cafe! สำเร็จ',reencontro:'คุณพบ {nome} อีกครั้งที่ Happy⭐Cafe!',handshake:'ไอดอลพบแฟน ๆ ที่ Handshake⭐Event!',bloom_plantar:'ปลูกเมล็ดใน Bloom⭐Garden! แล้ว',bloom_regar:'ไอดอลรดน้ำต้นไม้แล้ว',bloom_colher:'เก็บดอกไม้จากสวนแล้ว',studio_clique:'ยืนยันภาพที่ Photo⭐Studio! แล้ว',studio_publicar:'ลงรูปบนผนัง Photo⭐Studio! แล้ว',foto:'บันทึกรูปไว้ใน TsuPhone แล้ว',battle:'ไอดอลจบการแข่งขันอย่างเป็นทางการแล้ว'},
  ja:{tit:'🌸 街の思い出',sub:'今回の訪問で生まれた小さな出来事',vazio:'次の出会いが思い出になるかも。',cam:'思い出コーナー',vazioCam:'活動の思い出が楽屋に増えていきます。',foto:'フォトフレーム',vaso:'お花の花瓶',cards:'カード棚',cap:'私の小さな物語',etapas:['お部屋を大切に','街で誰かと出会う','瞬間を残す'],novo:'新しい思い出が届いた！',agora:'ペットがアイドルに寄り添っています。',manha:'街が目覚める朝。',tarde:'午後の街はにぎやか。',noite:'街の灯りがともる夜。',diario:'今回の訪問の思い出',nota:'一時的な記録です。保存済みの日記は変わりません。',
-   cafe:'Happy⭐Cafe!で接客を終えました。',handshake:'Handshake⭐Event!でファンに会いました。',bloom_plantar:'Bloom⭐Garden!に種をまきました。',bloom_regar:'アイドルが花壇に水をあげました。',bloom_colher:'お庭で花を摘みました。',studio_clique:'Photo⭐Studio!で写真を確認しました。',studio_publicar:'Photo⭐Studio!の掲示板に写真を投稿しました。',foto:'TsuPhoneに写真を保存しました。',battle:'公式バトルを終えました。'}
+   cafe:'Happy⭐Cafe!で接客を終えました。',reencontro:'Happy⭐Cafe!で{name}にまた会えました。',handshake:'Handshake⭐Event!でファンに会いました。',bloom_plantar:'Bloom⭐Garden!に種をまきました。',bloom_regar:'アイドルが花壇に水をあげました。',bloom_colher:'お庭で花を摘みました。',studio_clique:'Photo⭐Studio!で写真を確認しました。',studio_publicar:'Photo⭐Studio!の掲示板に写真を投稿しました。',foto:'TsuPhoneに写真を保存しました。',battle:'公式バトルを終えました。'}
 };
 var entradas=[],dono='',visto={},versao=0;
 function lingua(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
@@ -49,9 +49,26 @@ function registrar(tipo,info){
  info=info&&typeof info==='object'?info:{};
  var codigo=String(info.id||'').slice(0,90),dedupe=tipo+'|'+codigo;
  if(codigo&&visto[dedupe])return false;
+ // Validar novamente os fãs NPCs usando a memória já existente do Handshake.
+ var fa=null,visual=null;
+ if(tipo==='reencontro'){
+  if(!codigo||typeof hsMemChave!=='function'||typeof hsMemLer!=='function'
+      ||info.conta!==hsMemChave())return false;
+  fa=hsMemLer().find(function(m){return m&&m.nome===info.nome&&m.pres===info.pres;});
+  if(!fa)return false;
+  visual={};
+  ['hair','hair2','skin','outcol','legcol'].forEach(function(k){
+    var valor=fa.c&&fa.c[k];
+    if(typeof valor==='string'&&/^#[0-9a-f]{6}$/i.test(valor))visual[k]=valor;
+  });
+  ['back','front','det','out','gl','hat'].forEach(function(k){
+    var valor=fa.c&&fa.c[k];
+    if(typeof valor==='string'&&valor.length<=16)visual[k]=valor;
+  });
+ }
  if(codigo)visto[dedupe]=true;
  entradas.push({tipo:tipo,icone:TIPOS[tipo].icone,cap:TIPOS[tipo].cap,
-   // Guardar apenas o nome da flor permitido, nunca IDs de conta, imagens ou dados de fãs.
+   nome:fa?fa.nome:'',visual:visual,
    flor:/^(sakura|tulipa|girassol|lunar)$/.test(info.flor)?info.flor:''});
  if(entradas.length>8)entradas.shift();
  versao++;
@@ -63,14 +80,14 @@ function capitulos(){conferir();return [0,1,2].map(function(n){return entradas.s
 // A cena consulta um resumo sem nomes, fotos ou identificadores do jogador.
  // Nada acontece antes de uma ação confirmada por servidor ou foto voluntária.
 var CENAS={
- harajuku:['cafe'],palco:['handshake'],fofo:['bloom_plantar','bloom_regar','bloom_colher'],
+ harajuku:['cafe'],palco:['handshake'],praca:['reencontro'],fofo:['bloom_plantar','bloom_regar','bloom_colher'],
  ceu:['studio_clique','studio_publicar'],arena:['battle']
 };
 function sinalCena(bairro){
  if(!conferir()||!CENAS[bairro])return null;
  for(var i=entradas.length-1;i>=0;i--){
    var e=entradas[i];
-   if(CENAS[bairro].indexOf(e.tipo)>=0)return {tipo:e.tipo,flor:e.flor};
+   if(CENAS[bairro].indexOf(e.tipo)>=0)return {tipo:e.tipo,flor:e.flor,nome:e.nome,visual:e.visual};
  }
  return null;
 }
@@ -121,7 +138,7 @@ function historiaHtml(){
  var frases=HISTORIA[lingua()]||HISTORIA.pt;
  return '<p class="tw-vida-elo">✦ '+escapar(frases[qtd])+'</p>';
 }
-function relato(e){return e.icone+' '+t(e.tipo);}
+function relato(e){return e.icone+' '+t(e.tipo).replace('{nome}',e.nome||'');}
 function fase(){var agora=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'2-digit',hour12:false}).format(new Date());
  var h=Number(agora)%24;return h<12?'manha':h<18?'tarde':'noite';}
 function capitulosHtml(){var feitos=capitulos(),copy=T[lingua()];

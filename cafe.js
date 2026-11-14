@@ -192,6 +192,14 @@ function cfEscolher(tipo, i){
   if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
   cfUI();
 }
+// O reencontro não altera perguntas, recompensas nem a memória do Handshake.
+function cfCidadeReencontro(f,conta,comprovante){
+ if(!f||!f.hsLembranca||!comprovante||!window.TWVidaCidade)return;
+ window.TWVidaCidade.registrar('reencontro',{
+   id:String(comprovante).slice(0,90)+'/'+f.nome,
+   nome:f.nome,pres:f.pres,conta:conta
+ });
+}
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
   var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
@@ -208,6 +216,7 @@ function cfServir(saiu){
       atual.verificacaoPendente=false;
       if(r && r.ok && r.confirmado){
         if(r.certo === true && certo && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
+        if(r.certo===true&&certo)cfCidadeReencontro(faAtendido,contaAtendimento,args.p_sessao);
         atual.pontos=+r.pontos||0;atual.vidas=+r.vidas;atual.perfeitos=+r.perfeitos;
         atual.combo=+r.combo||0;
         if(r.certo){
@@ -230,6 +239,7 @@ function cfServir(saiu){
       p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}}).then(function(r){
       if(r && r.ok && r.confirmado){
         if(certo && r.certo !== false && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
+        if(certo&&r.certo===true)cfCidadeReencontro(faAtendido,contaAtendimento,atualLegado.servidor&&atualLegado.servidor.sessao);
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         atualLegado.provaEstado='confirmado';
         if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();

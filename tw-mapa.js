@@ -413,6 +413,15 @@
       hubIdolsDados.idols.slice(0,3).forEach(function(p,i){var av=p&&(p.av||p.avatar);if(av&&typeof av==='object')l.push({
         av:av,rua:trajetoRua(i+1),u0:.06,u1:.94,fase:(i+1)*.27
       });});}catch(e){}
+    // No máximo um fã NPC conhecido na Praça Central, somente após
+    // atendimento confirmado pelo Café nesta sessão e mesma conta.
+    if(cena==='praca'&&window.TWVidaCidade&&typeof window.TWVidaCidade.sinalCena==='function'){
+      var fa=window.TWVidaCidade.sinalCena('praca');
+      if(fa&&fa.tipo==='reencontro'&&fa.visual&&fa.nome){
+        l.push({av:{c:fa.visual,pose:'tchau',expr:3},dono:false,
+          nomeFa:fa.nome,rua:trajetoRua(1),u0:.06,u1:.94,fase:.38});
+      }
+    }
     return l;
   }
   // Na rua, cada Idol passeia de porta em porta (Café → Gacha → Shop…), para um pouco na frente de cada
@@ -493,6 +502,16 @@
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=q.mov?'':(p.av.pose||'');drawChar(c,0,0,q.mov?1:0,+p.av.expr||2,false);});
         ctx.restore();
         if(!q.mov)parados.push(q);
+        if(p.nomeFa&&!q.mov){
+          // Identificação simples, sem links, sem DOM novo e sem alterar hitboxes.
+          var etiqueta=('💌 '+p.nomeFa).slice(0,28);
+          ctx.save();ctx.font='13px "M PLUS Rounded 1c",sans-serif';
+          var largura=Math.min(150,ctx.measureText(etiqueta).width+22);
+          ctx.fillStyle='rgba(255,247,255,.96)';ctx.strokeStyle='#bfa4ed';ctx.lineWidth=2;
+          rr(q.x-largura/2,q.y-101,largura,26,11);ctx.fill();ctx.stroke();
+          ctx.fillStyle='#674190';ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(etiqueta,q.x,q.y-88);ctx.restore();
+        }
         if(!q.mov&&objeto&&q.porta===objeto.porta&&
           ((p.dono&&registro)||(q.i===1&&!p.dono))){
           objetoRua(q.x,q.y,q.dir,objeto.k);

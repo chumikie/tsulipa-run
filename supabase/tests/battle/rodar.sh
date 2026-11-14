@@ -10,7 +10,7 @@ q(){ docker exec -i "$container" psql -X -U postgres -d "$db" -v ON_ERROR_STOP=1
 q < "$root/supabase/tests/battle/setup.sql"
 q < "$root/supabase/sql/aplicado/20261114_idol_battle_v1.sql"
 q < "$root/supabase/tests/battle/checks.sql"
-# Top da Arena (ranking semanal): proposta, ainda não aplicada em produção.
-q < "$root/supabase/sql/proposta/20261114_idol_battle_ranking_REVIEW_ONLY.sql"
+# Top da Arena (ranking semanal), aplicado em 14/11/2026.
+q < "$root/supabase/sql/aplicado/20261114_idol_battle_ranking.sql"
 q < "$root/supabase/tests/battle/checks_ranking.sql"
 echo "OK Idol⭐Battle! v1 em PostgreSQL isolado"

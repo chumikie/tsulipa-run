@@ -40,7 +40,7 @@ assert.match(src,/prefers-reduced-motion/);
 assert.match(src,/function fimDoShow\(/);
 assert.ok(!/Math\.random/.test(src),'o cliente não sorteia nada');
 // Top da Arena: leitura opcional; proposta de SQL só lê, sem prêmio e sem expor ids.
-const rankSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_ranking_REVIEW_ONLY.sql'),'utf8');
+const rankSql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/20261114_idol_battle_ranking.sql'),'utf8');
 assert.match(src,/contaRpc\('battle_ranking'\)/);
 assert.match(rankSql,/create or replace function public\.battle_ranking\(\) returns jsonb/i);
 assert.match(rankSql,/language sql stable security definer set search_path to ''/i);

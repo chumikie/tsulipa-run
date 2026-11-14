@@ -1,5 +1,5 @@
--- Idol⭐Battle! — Top da Arena (ranking semanal de vitórias). REVISÃO SOMENTE.
--- NÃO EXECUTAR NO SUPABASE SEM AUTORIZAÇÃO DO DONO.
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_idol_battle_ranking).
+-- Idol⭐Battle! — Top da Arena (ranking semanal de vitórias).
 -- Só leitura: conta as vitórias da semana (domingo 00h de Brasília, igual ao Top Idols)
 -- em private.battle_partidas. Não cria prêmio, não altera battle_status/battle_jogar.
 -- Mostra apenas nick, vitórias e partidas; contas bloqueadas ficam fora.

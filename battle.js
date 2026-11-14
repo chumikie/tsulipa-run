@@ -270,22 +270,28 @@ function jogar(){
 }
 
 /* ---------- Show no palco ---------- */
+// Sons do próprio jogo (sfx respeita o mudo); se não existirem, o show segue em silêncio.
+var showSom=-1;
+function som(k){try{if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
  pararShow();
  if(calmo()||typeof requestAnimationFrame!=='function'){fimDoShow();return;}
- fase='show';showT0=agora();render();
+ fase='show';showT0=agora();showSom=-1;render();
  (function quadro(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;
    var t=agora()-showT0;
    if(t>=DUR*3+.15){fimDoShow();return;}
+   var ri=Math.min(2,Math.floor(t/DUR));
+   if(ri>showSom&&t-ri*DUR>1.3){showSom=ri;som(rodadas[ri].ganhou?'star':'hit');}
    desenharPalco(t);showRaf=requestAnimationFrame(quadro);
  })();
 }
 function fimDoShow(){
  if(!rodadas)return;
  pararShow();fase='fim';render();desenharPalco(-1);desenharPolaroid();
+ som(rodadas.filter(function(r){return r.ganhou;}).length>=2?'rank':'over');
  var st=ov.querySelector('#battleStage');
  if(st){var w=rodadas.filter(function(r){return r.ganhou;}).length;st.setAttribute('aria-label','Idol⭐Battle! '+w+' × '+(3-w));}
 }
@@ -404,6 +410,7 @@ function desenharPolaroid(){
 }
 function salvar(){
  var cv=ov&&ov.querySelector('#battleFoto');if(!cv||!rodadas)return;
+ som('photo');
  var a=document.createElement('a');a.download='idol-battle-'+String(estado.dia||hoje())+'.png';a.href=cv.toDataURL('image/png');
  document.body.appendChild(a);a.click();a.remove();
 }

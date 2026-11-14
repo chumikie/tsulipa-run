@@ -978,6 +978,13 @@ function perfMontUI(){
   [['chat', 'hat'], ['cgl', 'gl']].forEach(function(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], p[1]==='hat'&&CU.det==='tulipa'?'tulipa':(CU[p[1]]||'')) + '</select></label>'; });
   h += '<label>' + escHtml(rotulo('acc')) + ' <select data-m="acc">' + opts('acc', CU.det==='torrada'?'torrada':accSel) + '</select></label>';
   box.innerHTML = h;
+  // Estúdio do charmaker (prévia, expressões, abas e miniaturas) também aqui no Perfil e na Zipper⭐Shop!
+  if(window.TW_CHARMAKER && typeof TW_CHARMAKER.montar === 'function') TW_CHARMAKER.montar(box, function(campo){
+    perfMontou = true; perfProva = '';
+    if(typeof perfFotoAtual === 'function') perfFotoAtual();
+    if((campo === 'out' || campo === '*') && typeof perfLojaUI === 'function') perfLojaUI();
+    if(campo === 'hat' || campo === 'det' || campo === '*') perfMontUI();
+  });
 }
 function perfMontMudou(campo, v){
   if(campo === 'acc'){

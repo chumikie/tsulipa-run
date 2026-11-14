@@ -1,4 +1,45 @@
-# Retomada — onde paramos (13/11/2026)
+# Retomada — onde paramos (14/11/2026)
+
+## Quadro geral — feito / falta (14/11/2026)
+
+Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
+
+**Onde está o trabalho:** tudo na branch `visual/layout-hud` (PR #88 → `main`). Ela já inclui o #87 (fechado), o #86 e a antiga branch `feat/mapa-mobile-leitura-20261114`.
+
+### Concluído (código pronto na #88, banco aplicado)
+- **Fases 0 a 2:** registro de lugares, mapa da cidade e raio-X dos jogos.
+- **Mapa em 2 níveis:** os 6 passos, mais o Mapa Vivo (textos traduzidos, Idols e pets passeando, missões no mapa, placas acesas à noite).
+- **Fase 3, jogos atuais:** hora extra e cor do lightstick no Handshake, Café VIP e gorjeta, pó de estrela e garantia no Gacha, Pedido de cena do Moon⭐Duo! com ★5, anti-cheat do Sora 500 m, metas do Álbum, bônus do dia.
+- **Fase 4, jogos novos:** Bloom⭐Garden! (v1, flores com uso e redesenho), Photo⭐Studio! (v1 e Mural), Idol⭐Battle! (v1, ranking, Arena e Torcida de flores), todos com card no Hub.
+- **Vida de Idol e Camarim:** cidade que reage, lembranças, foto da sessão, sofá e o Pet olhando as lembranças (também no retorno ao Camarim).
+- **Hub:** barra do jogador, destaque do dia, navegação no celular.
+- **Karaoke⭐Time!:** traduções em `kt-traducoes.js` (`karaoke-time.html` com 404 KB; limite 450 KB).
+- **CI:** a sala do Karaoke roda em três máquinas paralelas (job `browser-karaoke-room`); um envio novo cancela a verificação antiga.
+
+### Teste sem login (modo demonstração)
+- Abrir a prévia com `?demo=1` no fim do endereço: `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/?demo=1`.
+- Cria a conta de mentira "Demo" (★500) e simula no navegador Battle (rival do dia, Top da Arena, Arena, Torcida), Jardim e Photo Studio, com os mesmos limites do servidor. O botão **+1 dia** da faixa avança o dia simulado (regas, limites diários, prêmio do dia seguinte).
+- Nada é gravado e tudo some ao recarregar. Nunca liga em `tsulipa-world.vercel.app` (teste: `tests/demo-jogos.test.js`).
+- **Ainda não simulados:** Café, Handshake, pó do Gacha e Pedido de cena do Duo (esses continuam precisando de login).
+- O modo demonstração prova telas, fluxos e limites. **Não prova** que as estrelas reais são creditadas.
+
+### Pronto, mas sem validação real
+- Conta real: partida oficial do Battle (limite de 5 e ★5), Arena, Jardim, converter e resgatar no Gacha.
+- iPhone físico e Safari.
+- Login com Google na prévia.
+
+### Não concluído
+- **Merge da #88:** é o que coloca tudo isso no site; o merge é do dono.
+- **#89 (Café: Dois no balcão):** o banco está aplicado, mas o front não entrou na #88.
+- **#74 (tela do prêmio do Sora):** rascunho; o SQL dele não deve ser aplicado, porque foi substituído pela versão com anti-cheat.
+- **Nomes provisórios:** "Rua das Vitrines" e "Vila das Flores" aguardam confirmação do dono.
+- **Casa decorável:** ainda em dúvida.
+- **Ideias não iniciadas:** calibração de atraso no Karaoke e o pet ajudando no jardim.
+- **Camarim em 320 px:** botões Comer, Banho, Dormir e Brincar com 27 px de altura (pequenos para o dedo).
+- **Limpeza:** apagar as branches já mergeadas.
+
+---
+
 
 Este arquivo é para continuar o trabalho em outra sessão (por exemplo, no Claude Code). Leia este arquivo, `docs/RAIOX_JOGOS.md` e `docs/MAPA_DO_CODIGO.md` antes de mexer em qualquer coisa.
 

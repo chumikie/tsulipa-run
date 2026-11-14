@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 13/11/2026 com o OK do dono (migração 20261113_flores_e_caderno).
 -- Flores do Bloom⭐Garden! com uso + Caderno do Café salvo na conta.
 -- 1) jardim_usar_flor: gasta 1 flor colhida para levar à mesa do Handshake (o jogo dá mais Hype no
 --    começo; a pontuação continua sendo a conferida pelo servidor, sem fórmula nova).

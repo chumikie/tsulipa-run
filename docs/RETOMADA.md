@@ -117,6 +117,10 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Cliente (`handshake.js`): depois do presente, escolher a cor (6 botões). O jeito do fã passa a valer: tímido mostra o texto por menos tempo, animado repete.
 - Mexe no coração do jogo e em 2 funções em uso: fazer com teste isolado e OK do dono.
 
+## Flores com uso + Caderno na conta — APLICADO (13/11, noite, OK do dono)
+- `20261113_flores_e_caderno`: `jardim_usar_flor` (gasta 1 flor para levar à mesa do Handshake; o front dá +Hype: Sakura 10, Tulipa 15, Girassol 20, Flor-lunar 30) e `cafe_caderno` (só leitura das receitas comprovadas).
+- Front: `flores.js` (PR #88). Testes: `supabase/tests/flores/rodar.sh`, `tests/flores.test.js`.
+
 ## Próximo passo
 Na PR #88 falta o QA em iPhone físico e a confirmação visual/autorização para merge; os dois nomes provisórios (Rua das Vitrines e Vila das Flores) ainda aguardam decisão. Depois:
 Fase 3, começando pelo Gacha: álbum com coleções, repetidos virando pó de estrela e garantia de prêmio. Isso mexe no banco (precisa do OK do dono antes de aplicar o SQL).

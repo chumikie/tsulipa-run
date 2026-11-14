@@ -18,7 +18,7 @@ insert into public.players(id) values ('00000000-0000-0000-0000-00000000000a'),(
 insert into private.cafe_receitas_comprovadas(user_id,base,enf) values ('00000000-0000-0000-0000-00000000000a',2,1),('00000000-0000-0000-0000-00000000000a',0,3),('00000000-0000-0000-0000-00000000000b',4,0);
 SQL
 $P -f ../../sql/aplicado/20261113_bloom_garden.sql >/dev/null
-$P -f ../../sql/proposta/20261113_flores_e_caderno.sql >/dev/null
+$P -f ../../sql/aplicado/20261113_flores_e_caderno.sql >/dev/null
 A=00000000-0000-0000-0000-00000000000a
 $P -c "insert into private.jardim_flores(user_id,flor,qtd) values('$A','tulipa',2)" >/dev/null
 r(){ $P -c "select set_config('request.jwt.claim.sub','$1',false);" -c "$2" | tail -1; }

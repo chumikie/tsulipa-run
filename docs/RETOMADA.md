@@ -41,6 +41,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Fãs e clientes com nomes em estilo mangá (Usamado, Sayami, Hanoka…); os nomes antigos continuam valendo nas lembranças já salvas.
 - **Traduções por idioma (código mais leve):** a página carrega `tw-i18n-base.js` e só o idioma escolhido (`i18n/en|es|th|ja.js`). A fonte continua sendo `tw-i18n.js`: depois de editar, rodar `node tools/i18n/dividir.js` (o teste `i18n-dividido` acusa se esquecer). Trocar de idioma baixa o arquivo e monta o dicionário na mesma ordem de antes (conferido: igual ao site antigo nos 4 idiomas).
 - Karaoke⭐Time!: saiu o modo de homologação antigo (`?homol=1`); o show automático dos outros Idols continua.
+- Traduções: quem abre o site já em outro idioma vê tudo traduzido (antes ficavam "Audição" e itens do Center Run em português); diário do Idol⭐News! (51 frases) e "Quepe (Capitão)" traduzidos em EN/ES/TH/JA; "Star⭐Gacha!" não vira mais "Gachapon" (nomes dos jogos não se traduzem); leitor de tela da TV no idioma certo.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

@@ -875,7 +875,7 @@ function hubMontar(){
   var tvOpenLabels = window.TW_I18N.locale.tvOpenLabels;;
   var tvCloseLabels = window.TW_I18N.locale.tvCloseLabels;;
   if(tvTitle)tvTitle.textContent='📺 TsuLiPa⭐TV!';
-  if(tvOpen)tvOpen.setAttribute('aria-label',tvOpenLabels[LANG]||tvOpenLabels.pt);
+  if(tvOpen){tvOpen.setAttribute('aria-label',tvOpenLabels[LANG]||tvOpenLabels.pt);var tvSr=tvOpen.querySelector('.tw-rank-visually-hidden');if(tvSr)tvSr.textContent=tvOpenLabels[LANG]||tvOpenLabels.pt;}
   if(tvClose)tvClose.setAttribute('aria-label',tvCloseLabels[LANG]||tvCloseLabels.pt);
   $('hubNovT').textContent = '✨ ' + tr('Novidades');
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');

@@ -3502,6 +3502,9 @@ applyLang();
 </script>
 <script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
+<script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
+   traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */
+window.addEventListener('load',function(){try{if(typeof LANG==='string'&&LANG!=='pt'&&typeof twSelecionarIdioma==='function')twSelecionarIdioma(LANG);}catch(e){}});</script>
 </body>
 </html>
 

@@ -20,7 +20,7 @@ create table private.jardim_flores(user_id uuid, flor text, qtd int, primary key
 insert into public.players(id,stars) values ('00000000-0000-0000-0000-00000000000a',10);
 insert into private.jardim_flores values ('00000000-0000-0000-0000-00000000000a','tulipa',1);
 SQL
-$P -f ../../sql/proposta/20261114_photo_studio.sql >/dev/null
+$P -f ../../sql/aplicado/20261114_photo_studio.sql >/dev/null
 A=00000000-0000-0000-0000-00000000000a
 r(){ $P -c "select set_config('request.jwt.claim.sub','$1',false);" -c "$2" | tail -1; }
 ok(){ [ "$1" = "$2" ] && echo "  ok: $3" || { echo "FALHOU: $3 (veio '$1')"; exit 1; }; }

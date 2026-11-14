@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_photo_studio).
 -- Photo⭐Studio! v1 (docs/PHOTO_STUDIO_PROPOSTA.md, aprovado pelo dono em 14/11/2026).
 -- Pauta do dia igual para todo mundo (sorteio determinístico pela data de Brasília), conferência das
 -- escolhas no servidor (1–3 estrelas) e ★5/dia na 1ª foto com 3 estrelas (trava private.bonus_jogo_dia,

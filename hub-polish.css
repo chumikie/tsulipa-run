@@ -302,6 +302,83 @@ html body #hub .tw-mapa-bairros[hidden]{display:none!important}
   html body #hub .tw-mapa-bairros button span:last-child{overflow-wrap:anywhere}
   html body #hub .tw-mapa[data-cena="mundo"] .tw-mapa-dica{display:none}
 }
+/* Mapa Vivo⭐ — linguagem visual coerente com os painéis e botões do Hub.
+   Não altera a proporção dos SVGs, a navegação nem a área de toque. */
+html body #hub .tw-mapa{
+ --mapa-lilas:var(--b1,#7b3ff0);--mapa-rosa:#ff6fb5;
+ --mapa-tinta:#4d3379;--mapa-borda:rgba(123,63,240,.25);
+}
+html body #hub .tw-mapa-botao{
+ border-radius:22px;border-color:rgba(255,255,255,.94);
+ background-image:linear-gradient(100deg,rgba(107,62,198,.90),rgba(244,104,169,.78)),
+   url(./mapa-mundo.svg?v=4);
+ background-size:auto,150% auto;
+ box-shadow:inset 0 2px 0 rgba(255,255,255,.20),0 5px 0 #5d3cab,0 14px 26px -10px rgba(49,26,124,.46);
+}
+html body #hub .tw-mapa-txt b{
+ font-family:var(--tw-modal-font,"Mochiy Pop One","M PLUS Rounded 1c",sans-serif);
+ letter-spacing:.01em;line-height:1.3;text-wrap:balance;
+}
+html body #hub .tw-mapa-txt small{
+ font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;letter-spacing:.01em;
+}
+html body #hub .tw-mapa-rolo{
+ border-color:rgba(255,255,255,.98);
+ outline:2px solid var(--mapa-borda);outline-offset:1px;
+ box-shadow:0 5px 0 rgba(115,72,189,.26),0 18px 35px -18px rgba(43,26,100,.5);
+}
+html body #hub .tw-mapa-voltar,html body #hub .tw-mapa-zoom{
+ font-family:var(--tw-modal-font,"Mochiy Pop One",sans-serif);
+ border:2px solid white;border-radius:999px;
+ transition:transform .16s ease,box-shadow .16s ease;
+}
+html body #hub .tw-mapa-voltar:hover,html body #hub .tw-mapa-zoom:hover{
+ transform:translateY(-2px);
+}
+html body #hub .tw-mapa-voltar:active,html body #hub .tw-mapa-zoom:active{
+ transform:translateY(1px);
+}
+html body #hub .tw-mapa-bairros button{
+ font-family:var(--tw-modal-font,"Mochiy Pop One","M PLUS Rounded 1c",sans-serif);
+ color:var(--mapa-tinta);border:2px solid var(--mapa-borda);
+ background:linear-gradient(165deg,#fff,#f6efff);
+ box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(91,51,160,.15);
+ transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+html body #hub .tw-mapa-bairros button:hover{
+ background:linear-gradient(165deg,#fff,#eedeff);border-color:#b89bfa;transform:translateY(-1px);
+}
+html body #hub .tw-mapa-bairros button:active{transform:translateY(1px)}
+html body #hub .tw-mapa-bairros [data-tw-bairro="palco"]{border-left:5px solid #8d60ef}
+html body #hub .tw-mapa-bairros [data-tw-bairro="harajuku"]{border-left:5px solid #ff79ba}
+html body #hub .tw-mapa-bairros [data-tw-bairro="fofo"]{border-left:5px solid #64c5a6}
+html body #hub .tw-mapa-bairros [data-tw-bairro="praca"]{border-left:5px solid #7cb5f8}
+html body #hub .tw-mapa-bairros [data-tw-bairro="arena"]{border-left:5px solid #f1a756}
+html body #hub .tw-mapa-bairros [data-tw-bairro="ceu"]{border-left:5px solid #9bb6f5}
+html body #hub .tw-mapa-dica{
+ background:linear-gradient(140deg,rgba(106,65,179,.94),rgba(69,45,139,.95));
+ border:1px solid rgba(255,255,255,.7);
+ font-family:var(--tw-modal-font,"Mochiy Pop One",sans-serif);
+}
+@media (max-width:760px){
+ html body #hub .tw-mapa{gap:9px}
+ html body #hub .tw-mapa-bairros button{min-height:48px;line-height:1.4;font-size:11px}
+ html body #hub .tw-mapa-voltar{min-height:42px}
+}
+@media (prefers-reduced-motion:reduce){
+ html body #hub .tw-mapa-botao,html body #hub .tw-mapa-voltar,
+ html body #hub .tw-mapa-zoom,html body #hub .tw-mapa-bairros button{transition:none;animation:none}
+}
+@media(prefers-color-scheme:dark){
+ html:not([data-theme="light"]) body #hub .tw-mapa-rolo{
+  outline-color:rgba(198,171,255,.35);box-shadow:0 4px 0 rgba(36,23,82,.65);
+ }
+ html:not([data-theme="light"]) body #hub .tw-mapa-bairros button{
+  background:linear-gradient(160deg,#2d235b,#473274);color:#fff;
+  border-color:#8870b7;box-shadow:0 3px 0 rgba(17,12,37,.45);
+ }
+}
+
 /* ===== Moon⭐Duo!: pedido de cena do dia (duo-pedido.js) ===== */
 .duo-pedido{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:16px;color:#fff;
  background:linear-gradient(110deg,#5a43c9,#9b6bff);border:2px solid rgba(255,255,255,.8);box-shadow:0 4px 0 rgba(44,29,120,.45)}

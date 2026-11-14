@@ -62,10 +62,10 @@ bl('# Happy⭐Cafe!', 1100, 700, .62)
 bl('# Star⭐Gacha!', 1240, 712, .62)
 bl('# Zipper⭐Shop!', 1375, 700, .62)
 
-# ---------- 🏡 Bairro Fofo: casa · pet · horta (Bloom⭐Garden!, em breve) ----------
+# ---------- 🏡 Vila das Flores: casa · pet · Bloom⭐Garden! ----------
 bl('# Backstage⭐Pet!', 275, 700, .66)
 bl('# Minha casa (Meu Perfil)', 430, 705, .7)
-# horta cercadinha esperando o Bloom⭐Garden!
+# horta cercadinha do Bloom⭐Garden! (jogo existe; pede login para plantar)
 gx, gy = 560, 820
 A(f"<ellipse cx='{gx}' cy='{gy+8}' rx='78' ry='22' fill='#5a3a7a' opacity='.14'/><ellipse cx='{gx}' cy='{gy}' rx='74' ry='24' fill='#c98d55'/><ellipse cx='{gx}' cy='{gy-3}' rx='66' ry='19' fill='#a8723f'/>")
 for k in range(5):
@@ -75,7 +75,7 @@ for k in range(13):
     t = k / 12 * math.pi
     fx = gx - 82 * math.cos(t); fy = gy + 26 * math.sin(t)
     A(f"<rect x='{fx-3:.0f}' y='{fy-14:.0f}' width='6' height='16' rx='3' fill='#fff7ea'/>")
-A(f"<g transform='translate({gx+70},{gy-40})'><rect x='-3' y='0' width='6' height='40' rx='3' fill='#b97a45'/><rect x='-40' y='-22' width='80' height='26' rx='8' fill='#fff' /><text x='0' y='-4' text-anchor='middle' font-family='Mochiy Pop One' font-size='12' fill='#f08a52'>em breve</text></g>")
+A(f"<g transform='translate({gx+70},{gy-40})'><rect x='-3' y='0' width='6' height='40' rx='3' fill='#b97a45'/><rect x='-40' y='-22' width='80' height='26' rx='8' fill='#fff' /><text x='0' y='-4' text-anchor='middle' font-family='Mochiy Pop One' font-size='12' fill='#f08a52'>Jardim</text></g>")
 
 # ---------- ⛲ Praça Central: fonte (Encontro), banca (News), correio (Pedido de fã) ----------
 px, py = PRACA
@@ -89,7 +89,7 @@ A(f"<circle cx='{px}' cy='{py-46}' r='10' fill='{grad('fonte', '#fff3a0', '#ffc2
 bl('# Idol⭐News!', 965, 640, .7)
 bl('# Pedido de fã', 655, 655, .8)
 
-# ---------- 🏟️ Arena (Idol⭐Battle!, em breve) ----------
+# ---------- 🏟️ Arena: Idol⭐Battle! em treino, sem prêmio até ativar servidor ----------
 ax, ay = 1040, 830
 A(f"<ellipse cx='{ax}' cy='{ay+8}' rx='100' ry='30' fill='#5a3a7a' opacity='.16'/><ellipse cx='{ax}' cy='{ay}' rx='94' ry='30' fill='{grad('arenab', '#8b52ff', '#6630dc')}'/><ellipse cx='{ax}' cy='{ay-6}' rx='80' ry='22' fill='{grad('arena', '#ffe08a', '#ffad4d')}'/>")
 A(f"<ellipse cx='{ax}' cy='{ay-6}' rx='54' ry='13' fill='none' stroke='#fff' stroke-width='3' opacity='.7'/>")
@@ -133,12 +133,17 @@ def bairro(x, y, nome, c1, c2, icones):
     n = len(icones)
     for i, k in enumerate(icones):
         ix = x - (n - 1) * 17 + i * 34
-        A(f"<circle cx='{ix}' cy='{y+36}' r='14' fill='#fff'/><circle cx='{ix}' cy='{y+36}' r='11.5' fill='{c2}'/>" + (ic(k, ix, y + 36, 17) if k else f"<text x='{ix}' y='{y+41}' text-anchor='middle' font-size='13' fill='#fff' font-family='Mochiy Pop One'>?</text>"))
+        if k in ('bloom', 'studio', 'battle'):
+            em = {'bloom':'🌷', 'studio':'📸', 'battle':'🎤'}[k]
+            sinal = f"<text x='{ix}' y='{y+42}' text-anchor='middle' font-size='17' fill='#fff'>{em}</text>"
+        else:
+            sinal = ic(k, ix, y + 36, 17) if k else ''
+        A(f"<circle cx='{ix}' cy='{y+36}' r='14' fill='#fff'/><circle cx='{ix}' cy='{y+36}' r='11.5' fill='{c2}'/>" + sinal)
 bairro(800, 498, 'Star Stage', '#8b52ff', '#6630dc', ['hubhandshake', 'hubrun', 'tw-hubgame-karaoke'])
 bairro(1238, 758, 'Rua das Vitrines', '#ff8cc6', '#b83a9e', ['hubcafe', 'hubgacha', 'hubloja'])
-bairro(360, 752, 'Vila das Flores', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', None])
+bairro(360, 752, 'Vila das Flores', '#ffb56b', '#f08a52', ['hubpet', 'hubperf', 'bloom'])
 bairro(800, 730, 'Praça Central', '#6fb6ff', '#4a78ef', ['hubfa', 'hubenc', 'hubjornal'])
-bairro(1040, 885, 'Star Arena', '#ffb35c', '#e0532f', [None])
-bairro(1330, 300, 'Jardim das Nuvens', '#72c6ff', '#4a78ef', ['tw-hubgame-sora', 'hubduo', None])
+bairro(1040, 885, 'Star Arena', '#ffb35c', '#e0532f', ['battle'])
+bairro(1330, 300, 'Jardim das Nuvens', '#72c6ff', '#4a78ef', ['tw-hubgame-sora', 'hubduo', 'studio'])
 salvar('mundo2', W, H)
 print('ok')

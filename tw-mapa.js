@@ -618,6 +618,15 @@
           var px=q.x-q.dir*(q.mov?40:30),hop=q.mov?-Math.abs(Math.sin(tm*8+q.i+1.3))*6:0;
           ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(px,q.y+2,8,1.8,0,0,7);ctx.fill();
           perfDesenharPetEm(ctx,pet,px,q.y-14+hop,sc*.5,frame);
+          // O Pet também reconhece a pausa do Idol diante do fã conhecido.
+          // Não sugere amizade nova nem altera estado: só aparece durante o reencontro.
+          if(reencontro&&q===meuIdol&&!reconhecendo&&!despedindo){
+            ctx.save();
+            ctx.globalAlpha=reduzMov?1:Math.max(0,Math.min(1,meuIdol.pausa*2,(PARA-meuIdol.pausa)*2));
+            ctx.font='17px "Mochiy Pop One",sans-serif';ctx.textAlign='center';ctx.fillStyle='#ed78ad';
+            ctx.fillText('♡',px+(q.dir<0?-12:12),q.y-45);
+            ctx.restore();
+          }
         }
       });
       // Um encontro é só um aceno entre avatares que já estão no passeio:

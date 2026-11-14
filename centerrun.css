@@ -235,3 +235,41 @@ body:not(.jogando) #sb{display:none!important}
 #cust:not([hidden]) ~ #cust_roupa label:has(#cbaixo),
 #cust:not([hidden]) ~ #cust_roupa label:has(#chat),
 #cust:not([hidden]) ~ #cust_roupa label:has(#cgl){display:none}
+
+/* O mesmo estúdio dentro do Montar Idol (Perfil e Zipper⭐Shop!): prévia grande fixa no topo do editor, expressões, abas de partes e miniaturas */
+.cmestudio .cmprev{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);align-items:center;gap:8px;padding:8px;margin:-2px -2px 2px;
+  border-radius:16px;background:var(--card);box-shadow:0 8px 18px -12px rgba(60,20,120,.45)}
+.cmestudio .cmcv{display:block;width:100%;height:auto;aspect-ratio:440/360;border-radius:14px;grid-row:1/3}
+.cmestudio .cmexpr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.cmestudio .cmexpr button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid transparent;background:var(--chip);font-size:16px;line-height:1;cursor:pointer}
+.cmestudio .cmexpr button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+.cmestudio .cmexpr button[data-girar]{font-size:15px;font-weight:800;color:var(--b1)}
+.cmestudio .cmprev .custacoes{margin-top:0;flex-wrap:wrap;gap:5px}
+.cmestudio .cmprev .custacoes .btn{font-size:12px;padding:6px 10px;min-height:34px}
+@media(max-width:360px){.cmestudio .cmprev{gap:6px;padding:6px}.cmestudio .cmexpr{gap:3px}
+  .cmestudio .cmexpr button{width:27px;height:27px;font-size:13px}.cmestudio .cmprev .custacoes .btn{padding:6px 8px}}
+.cmestudio .cmabas{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin}
+.cmestudio .cmabas button{flex:0 0 auto;min-height:36px;border:0;border-radius:99px;padding:7px 12px;font:inherit;font-size:12.5px;font-weight:800;
+  background:var(--card);color:var(--b1);cursor:pointer;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--b1) 22%,transparent)}
+.cmestudio .cmabas button[aria-selected="true"]{background:var(--b1);color:#fff;box-shadow:none}
+.cmestudio .cmgrade{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+.cmestudio .cmmini{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;padding:4px 2px 5px;border-radius:14px;border:2px solid transparent;
+  background:var(--card);color:var(--ink);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.cmestudio .cmmini canvas{width:60px;height:60px;border-radius:10px;background:linear-gradient(#ffffff,#f1e9ff)}
+.cmestudio .cmmini span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmestudio .cmmini[aria-pressed="true"]{border-color:var(--b1);box-shadow:0 0 0 3px color-mix(in srgb,var(--b1) 20%,transparent)}
+.cmestudio .cmmini:disabled{opacity:.45;cursor:default}
+.cmestudio .cmabas button:focus-visible,.cmestudio .cmmini:focus-visible,.cmestudio .cmexpr button:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+@media(max-width:360px){.cmestudio .cmgrade{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))}.cmestudio .cmmini canvas{width:54px;height:54px}}
+.cmestudio .cmmini{position:relative}
+.cmestudio .cmtranca{position:absolute;top:4px;right:6px;font-style:normal;font-size:13px}
+.cmestudio{display:flex;flex-direction:column;gap:8px;width:100%;margin:0 0 10px;text-align:left}
+.cmestudio .cmprev{position:relative}
+.cmestudio .custacoes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+/* com o estúdio, os campos que viraram miniaturas saem da lista (cores, pele e Item continuam) */
+.perfmont.cmativo label:has(select[data-m="back"]),.perfmont.cmativo label:has(select[data-m="front"]),
+.perfmont.cmativo label:has(select[data-m="det"]),.perfmont.cmativo label:has(select[data-m="sobrancelha"]),
+.perfmont.cmativo label:has(select[data-m="boca"]),.perfmont.cmativo label:has(select[data-m="bochecha"]),
+.perfmont.cmativo label:has(select[data-m="baixo"]),.perfmont.cmativo label:has(select[data-m="hat"]),
+.perfmont.cmativo label:has(select[data-m="gl"]),
+.perfmont.cmativo select[data-m="olho"],.perfmont.cmativo select[data-m="mecha"],.perfmont.cmativo select[data-m="out"]{display:none}

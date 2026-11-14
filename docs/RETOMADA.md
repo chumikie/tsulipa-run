@@ -30,6 +30,9 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Idol⭐Battle!: cada rival esconde um atributo (?), o mesmo para todo mundo no dia (só na tela; o servidor ainda envia o valor).
 - Happy⭐Cafe!: o pedido aparece em letra grande abaixo da cena.
 - Photo⭐Studio!: o resultado diz o que faltou na pauta (as estrelas ficam só na polaroid).
+- **Banco (14/11, OK do dono):** missões do dia com `jardim` e `battle` (nível 1) e `foto` (nível 2). SQL em `supabase/sql/aplicado/20261114_missoes_jogos_novos.sql`. O Hub abre o jogo certo pela missão e atualiza depois de jogar; o modo demonstração simula essas missões.
+- Privacidade (6 idiomas, 14/11): Battle, Photo Studio (Mural só ao publicar) e banner com trios. A opção de não aparecer continua valendo só para Moon⭐Duo! e outdoors (decisão do dono: o jogo é de inclusão).
+- Descrição do site (Google e compartilhamento) cita os jogos novos.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

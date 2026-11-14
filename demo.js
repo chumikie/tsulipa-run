@@ -52,7 +52,7 @@
       torcidaDia: '', torcidaFlor: null,
       fotoPremioDia: '', mural: null, proxId: 100,
       cafeRuns: {}, cafeSessoes: {}, cafeReceitas: {}, hsSessoes: {}, hsPremio: null, bonusDia: {}, tickets: 0,
-      album: null, po: 0, gpoReq: {}, duoLog: [], gachaDia: '', gachaRes: null
+      album: null, po: 0, gpoReq: {}, duoLog: [], gachaDia: '', gachaRes: null, misFeitas: {}
     };
     // álbum de mentira: os 9 primeiros Idols da vitrine, com 1 a 3 cópias (os de 2+ podem virar pó)
     function album(){ if(!D.album || !Object.keys(D.album).length){ D.album = {}; idols().slice(0, 9).forEach(function(p, i){ D.album[p.nick] = i % 3 + 1; }); } return D.album; }
@@ -152,7 +152,7 @@
         if(!SEMENTE[a.p_semente]) return { ok:false, erro:'semente' };
         if(D.canteiros[i]) return { ok:false, erro:'ocupado' };
         if(saldo() < SEMENTE[a.p_semente][0]) return { ok:false, erro:'estrelas' };
-        D.canteiros[i] = { semente:a.p_semente, regas:0, ultima:'' };
+        D.canteiros[i] = { semente:a.p_semente, regas:0, ultima:'', plantado:D.dia };
         return { ok:true, stars:mudaSaldo(-SEMENTE[a.p_semente][0]), preco:SEMENTE[a.p_semente][0] };
       }
       if(n === 'jardim_regar'){
@@ -396,6 +396,23 @@
       if(n === 'studio_capa'){
         c = mural().filter(function(x){ return x.coracoes > 0; }).sort(function(x, y){ return y.coracoes - x.coracoes; })[0];
         return c ? { id:c.id, nick:c.nick, avatar:c.avatar, escolhas:c.escolhas, estrelas:c.estrelas, dia:c.dia, coracoes:c.coracoes, fechada:false } : null;
+      }
+      /* ---- Missões do dia (20261114_missoes_jogos_novos.sql): os jogos que a demonstração simula ---- */
+      if(n === 'missoes' || n === 'resgatar_missao'){
+        var prog = {
+          duo:D.duoLog.filter(function(x){ return x.dia === D.dia; }).length,
+          jardim:Object.keys(D.canteiros).filter(function(k){ var q = D.canteiros[k]; return q.ultima === D.dia || q.plantado === D.dia; }).length,
+          battle:D.partidas.filter(function(x){ return x.dia === D.dia; }).length,
+          foto:D.fotoPremioDia === D.dia ? 1 : 0 };
+        var lista = [['duo', 1, 5], ['jardim', 1, 10], ['battle', 1, 10], ['foto', 1, 15]].map(function(m){
+          return { k:m[0], meta:m[1], premio:m[2], prog:Math.min(prog[m[0]], m[1]), feito:!!D.misFeitas[D.dia + '|' + m[0]] }; });
+        if(n === 'missoes') return lista;
+        var it = lista.filter(function(m){ return m.k === a.p_k; })[0];
+        if(!it) return { ok:false, erro:'missao' };
+        if(it.feito) return { ok:false, erro:'feito' };
+        if(it.prog < it.meta) return { ok:false, erro:'falta' };
+        D.misFeitas[D.dia + '|' + it.k] = true;
+        return { ok:true, stars:mudaSaldo(it.premio), premio:it.premio };
       }
       /* ---- Star⭐Gacha! — giro do dia (mesmas chances de gacha_girar em 20261113_gacha_po_garantia.sql) ---- */
       if(n === 'gacha_hoje') return D.gachaDia === D.dia ? D.gachaRes : { ok:true, tipo:null };

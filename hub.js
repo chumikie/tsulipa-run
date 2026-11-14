@@ -29,7 +29,8 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   estrelas150:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas300:['⭐', 'Pegue {n} estrelas nas corridas'],
   estrelas50:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas100:['🌟', 'Chegue a {n} estrelas nas corridas hoje'],
   pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati'],
-  handshake:['🤝', 'Acerte um presente no Handshake⭐Event!'], cafe:['🧋', 'Sirva um pedido perfeito no Happy⭐Cafe!']
+  handshake:['🤝', 'Acerte um presente no Handshake⭐Event!'], cafe:['🧋', 'Sirva um pedido perfeito no Happy⭐Cafe!'],
+  jardim:['🌷', 'Regue ou plante um canteiro no Bloom⭐Garden!'], battle:['🏟️', 'Faça uma partida no Idol⭐Battle!'], foto:['📸', 'Tire a foto perfeita do dia no Photo⭐Studio!']
 };
 var HUB_NOVIDADES = [["🗓️", "Evento da semana no Idol⭐News!: um tema novo toda segunda, com bônus no Happy⭐Cafe! e no Handshake⭐Event!"], ["📔", "Diário de carreira e Estante de troféus no Perfil, com insígnias dos jogos novos"], ["📰", "Idol⭐News!: Top 5, Fotos do dia, Festival de Unidades e Ensaio de trio"], ["💌", "Pedido de fã: um pedido especial por dia"], ["🐾", "Seu pet passeia no Café e no Handshake… e às vezes pega um docinho!"], ["🤝", "Handshake⭐Event!: lembre o presente favorito de cada fã na fila"], ["🧋", "Happy⭐Cafe!: monte shakes, frappés e docinhos para os fãs e complete o Caderno de receitas"], ["🎴", "Álbum de cards e Troca de cards com outros Idols"], ["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: o que os jogos novos guardam, trocas de cards e como funciona o clima do Hoje"], ["🌏", "Jogo em português, inglês, espanhol, indonésio, tailandês e japonês"]];
 // Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
@@ -378,6 +379,8 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
 }
 // Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
 var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+// Jogos novos abrem pela própria função (os cards deles não têm data-ir).
+var HUB_AGENDA_ABRIR = {jardim:'bloomAbrir',battle:'battleAbrir',foto:'studioAbrir'};
 // O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
 var hubAgendaFoco = '', hubAgendaFocoConta = '', hubAgendaFocoDia = '';
 function hubAgendaFocoAtual(){
@@ -514,6 +517,8 @@ function hubAgendaUI(){
     var rota = ehPedido ? HUB_AGENDA_FA_ROTAS[m.pedidoTipo] : !pronta ? HUB_AGENDA_ROTAS[m.k] : '';
     var cards = $('hubCards'), destino = rota && cards && cards.querySelector('[data-ir="' + rota + '"]');
     if(destino && typeof destino.click === 'function'){ destino.click(); return; }
+    var abrirNovo = !ehPedido && !pronta && HUB_AGENDA_ABRIR[m.k];
+    if(abrirNovo && typeof window[abrirNovo] === 'function'){ window[abrirNovo](); return; }
     if(ehPedido){ faAbrir(); return; }
     var painel = $('hubMisPainel');
     if(painel && typeof painel.scrollIntoView === 'function') painel.scrollIntoView({behavior:'smooth',block:'center'});

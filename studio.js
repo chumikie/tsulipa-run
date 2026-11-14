@@ -94,7 +94,7 @@
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:esc_}).then(function(r){
         if(r && r.ok){
-          if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_clique',{id:pauta&&pauta.dia});
+          if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_clique',{id:pauta&&pauta.dia});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
           foto.estrelas = +r.estrelas || n; foto.verificada = true; foto.premio = +r.premio || 0;
           if(foto.premio && typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           msg = foto.premio ? t('premio') : '';

@@ -60,6 +60,16 @@ async function teste(page,dir,label){
   await page.locator('.tw-mapa-botao').click();
   await page.locator('#twMapa canvas').waitFor({state:'visible'});
   await page.waitForFunction(()=>document.querySelector('#twMapa canvas').height===1000);
+  // Contrato visual: três jogos já existem no front. A arte regenerada não
+  // deve mostrar nenhuma reserva antiga "Em breve"/"?" em mundo ou rua.
+  const rotulos=await page.evaluate(()=>window.TW_MAPA_TEXTOS);
+  for(const bairro of ['mundo','fofo','arena','ceu']){
+    assert.ok(Array.isArray(rotulos[bairro]),'textos do mapa disponíveis: '+bairro);
+    assert.ok(rotulos[bairro].every(t=>!/^\\s*(em breve|\\?)\\s*$/i.test(t.t)),
+      'sem Em breve nem ? no bairro '+bairro);
+  }
+  for(const bairro of ['fofo','arena','ceu'])
+    assert.ok(rotulos[bairro].some(t=>t.t==='Entrar'),'entrada do jogo real na rua '+bairro);
   await page.screenshot({path:path.join(__dirname,'qa-mundo-'+label+'.png'),fullPage:false});
   if(label.includes('320')||label.includes('390')){
     const medida=await page.locator('.tw-mapa-rolo').evaluate(el=>{

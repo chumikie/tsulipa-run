@@ -12,7 +12,7 @@ const ctx={window:{},document:{addEventListener(){},createElement:()=>({})}};ctx
 const T=ctx.STUDIO_TR;assert.deepEqual(Object.keys(T).sort(),['en','es','id','ja','pt','th']);
 for(const l in T)for(const k in T.pt)assert.ok(T[l][k]&&String(T[l][k]).trim(),l+'.'+k);
 const rpcs=[...new Set([...js.matchAll(/contaRpc\('([a-z_]+)'/g)].map(m=>m[1]))].sort();
-assert.deepEqual(rpcs,['jardim_estado','studio_clique','studio_pauta']);
+assert.deepEqual(rpcs,['jardim_estado','studio_capa','studio_clique','studio_curtir','studio_mural','studio_pauta','studio_publicar']);
 assert.ok(!/fetch\(|XMLHttpRequest|upload/i.test(js),'nenhuma imagem sai do aparelho');
 assert.ok(!/stars\s*=\s*stars\s*\+\s*(?!5)/.test(sql)&&/stars=stars\+5/.test(sql),'prêmio de ★5 no servidor');
 console.log('OK: Photo⭐Studio! v1 (listas = servidor, 6 idiomas, sem upload)');

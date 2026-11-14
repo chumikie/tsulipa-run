@@ -152,7 +152,7 @@
     var h = '<p class="stdica">' + esc(t('dicaMural')) + '</p>';
     if(!mural.length) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
     h += '<div class="stmural">' + mural.map(function(m, i){
-      return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption><b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' + '⭐'.repeat(+m.estrelas || 1) +
+      return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption><b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' +
         '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
     }).join('') + '</div>';
     box.innerHTML = h;

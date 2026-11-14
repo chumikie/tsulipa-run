@@ -20,7 +20,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Abrir a prévia com `?demo=1` no fim do endereço: `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/?demo=1`.
 - Cria a conta de mentira "Demo" (★500) e simula no navegador Battle (rival do dia, Top da Arena, Arena, Torcida), Jardim, Photo Studio, Café (partida verificada, cliente VIP, bônus ★10 do dia) e Handshake (8 rodadas, cor do lightstick, prêmio do dia), com os mesmos limites do servidor. O botão **+1 dia** da faixa avança o dia simulado (regas, limites diários, prêmio do dia seguinte).
 - Nada é gravado e tudo some ao recarregar. Nunca liga em `tsulipa-world.vercel.app` (teste: `tests/demo-jogos.test.js`).
-- **Ainda não simulados:** pó do Gacha e Pedido de cena do Duo (esses continuam precisando de login).
+- Também simula o pó do Gacha (converter e resgatar, no Álbum) e o Moon⭐Duo! com o Pedido de cena (★5 uma vez por dia).
 - No Handshake do modo demonstração o prêmio do dia é sempre ticket (no servidor é ticket ou mimo do pet), para não mexer no save do pet do aparelho.
 - O modo demonstração prova telas, fluxos e limites. **Não prova** que as estrelas reais são creditadas.
 
@@ -36,7 +36,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Nomes provisórios:** "Rua das Vitrines" e "Vila das Flores" aguardam confirmação do dono.
 - **Casa decorável:** ainda em dúvida.
 - **Ideias não iniciadas:** calibração de atraso no Karaoke e o pet ajudando no jardim.
-- **Camarim em 320 px:** botões Comer, Banho, Dormir e Brincar com 27 px de altura (pequenos para o dedo).
+- **Camarim em 320 px:** botões com 44 px e rótulo embaixo do emoji (CSS feito; não conferido em aparelho).
 - **Limpeza:** apagar as branches já mergeadas.
 
 ---

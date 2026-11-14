@@ -2,7 +2,7 @@
    Serve para testar SEM LOGIN, com uma conta de mentira ("Demo", ★500):
    Pedido de fã, Troca de cards, Festival de Unidades, Ensaio de trio, Álbum,
    Idol⭐Battle! (rival do dia, Top da Arena, Arena dos Idols, Torcida de flores),
-   Bloom⭐Garden!, Photo⭐Studio! (pauta, prêmio, mural), Happy⭐Cafe! (partida verificada, cliente VIP,
+   Pó de estrela do Gacha, Pedido de cena do Moon⭐Duo! (★5), Bloom⭐Garden!, Photo⭐Studio! (pauta, prêmio, mural), Happy⭐Cafe! (partida verificada, cliente VIP,
    bônus do dia) e Handshake⭐Event! (8 rodadas, cor do lightstick, prêmio do dia).
    As regras e os limites copiam as funções de supabase/sql/aplicado/ (5 partidas, 3 desafios,
    1 rega por dia, ★5 uma vez por dia...). O botão "+1 dia" da faixa avança o dia simulado.
@@ -51,8 +51,11 @@
       minhaUnit: null, meusFas: 0, desafios: [], fasAlheios: {},
       torcidaDia: '', torcidaFlor: null,
       fotoPremioDia: '', mural: null, proxId: 100,
-      cafeRuns: {}, cafeSessoes: {}, cafeReceitas: {}, hsSessoes: {}, hsPremio: null, bonusDia: {}, tickets: 0
+      cafeRuns: {}, cafeSessoes: {}, cafeReceitas: {}, hsSessoes: {}, hsPremio: null, bonusDia: {}, tickets: 0,
+      album: null, po: 0, gpoReq: {}, duoLog: []
     };
+    // álbum de mentira: os 9 primeiros Idols da vitrine, com 1 a 3 cópias (os de 2+ podem virar pó)
+    function album(){ if(!D.album){ D.album = {}; idols().slice(0, 9).forEach(function(p, i){ D.album[p.nick] = i % 3 + 1; }); } return D.album; }
     function novoId(){ try{ return crypto.randomUUID(); }catch(e){ return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); } }
     function semanaJogo(){ return Math.floor((Math.floor(Date.parse(D.dia + 'T00:00:00Z') / 864e5) + 3) / 7) % 5; }   // mesma conta do servidor
     function sorteio(n){ return Math.floor(Math.random() * n); }
@@ -394,6 +397,51 @@
         c = mural().filter(function(x){ return x.coracoes > 0; }).sort(function(x, y){ return y.coracoes - x.coracoes; })[0];
         return c ? { id:c.id, nick:c.nick, avatar:c.avatar, escolhas:c.escolhas, estrelas:c.estrelas, dia:c.dia, coracoes:c.coracoes, fechada:false } : null;
       }
+      /* ---- Pó de estrela do Gacha (20261113_gacha_po_garantia.sql) ---- */
+      if(n === 'gacha_po_status' || n === 'gacha_converter_repetido' || n === 'gacha_resgatar_card'){
+        album();
+        if(n === 'gacha_po_status') return { ok:true, po:D.po, custo_troca:5,
+          repetidos:Object.keys(D.album).filter(function(k){ return D.album[k] >= 2; }).sort().map(function(k){ return { nick:k, vezes:D.album[k] }; }),
+          faltando:idols().map(function(x){ return x.nick; }).filter(function(k){ return !(D.album[k] > 0); }).sort().slice(0, 80).map(function(k){ return { nick:k }; }) };
+        if(!a.p_nick || !a.p_requisicao) return { ok:false, erro:'parametros' };
+        var feito = D.gpoReq[a.p_requisicao];
+        if(feito) return feito.rpc !== n || feito.nick !== a.p_nick ? { ok:false, erro:'requisicao_reutilizada' } : feito.r;
+        var k = a.p_nick, res;
+        if(n === 'gacha_converter_repetido'){
+          if(!(D.album[k] >= 2)) return { ok:false, erro:'sem_repetido' };
+          D.album[k]--; D.po++; res = { ok:true, po:D.po, convertido:k.toLowerCase() };
+        } else {
+          if(!idols().some(function(x){ return x.nick === k; })) return { ok:false, erro:'card_indisponivel' };
+          if(D.album[k] > 0) return { ok:false, erro:'ja_possui' };
+          if(D.po < 5) return { ok:false, erro:'po_insuficiente' };
+          D.po -= 5; D.album[k] = 1; res = { ok:true, po:D.po, card:{ nick:k } };
+        }
+        D.gpoReq[a.p_requisicao] = { rpc:n, nick:k, r:{ ok:true, repetido:true, po:D.po, card:res.card, convertido:res.convertido } };
+        return res;
+      }
+      if(n === 'album_cards'){
+        album();
+        return idols().filter(function(p){ return D.album[p.nick] > 0; }).map(function(p){ return { card:{ nick:p.nick, avatar:p.avatar, best:p.best }, tipo:'card', vezes:D.album[p.nick] }; });
+      }
+      /* ---- Moon⭐Duo!: registro e prêmio do Pedido de cena (20261113_duo_pedido_premio.sql) ---- */
+      if(n === 'duo_sugestoes') return idols().slice(0, 6).map(function(p){ return { nick:p.nick, best:p.best || 0 }; });
+      if(n === 'duo_avisos_pendentes') return [];
+      if(n === 'duo_convidado'){
+        var g = idols().filter(function(p){ return baixo(p.nick) === baixo(a && a.p_nick); })[0];
+        if(baixo(a && a.p_nick) === 'demo') return { erro:'eu' };
+        return g ? { nick:g.nick, avatar:g.avatar, best:g.best || 0, oshi:null, pet:null } : { erro:'sem_perfil' };
+      }
+      if(n === 'duo_registrar'){
+        if(a && a.p_cena) D.duoLog.push({ dia:D.dia, cena:String(a.p_cena) });
+        return { ok:true, contou:true };
+      }
+      if(n === 'duo_pedido_premio'){
+        if(!/^[a-z0-9]{1,16}$/.test(String(a && a.p_cena || ''))) return { ok:false, erro:'cena' };
+        if(!D.duoLog.some(function(x){ return x.dia === D.dia && x.cena === a.p_cena; })) return { ok:false, erro:'sem_duo' };
+        if(D.bonusDia['duo:' + D.dia]) return { ok:true, estrelas:0, ja:true };
+        D.bonusDia['duo:' + D.dia] = true;
+        return { ok:true, estrelas:5, stars:mudaSaldo(5) };
+      }
       return undefined;
     }
     window.TW_DEMO_ESTADO = D;   // para conferir pelo console
@@ -421,7 +469,6 @@
       if(novo !== undefined) return Promise.resolve(novo);
       if(n === 'pedido_fa_hoje') return Promise.resolve({ ok:true, tipo:'corridas3', meta:3, progresso:ent ? 3 : 3, feito:true, resgatado:ent, cartas:cartas });
       if(n === 'entregar_pedido_fa'){ ent = true; cartas++; return Promise.resolve({ ok:true, cartas:cartas }); }
-      if(n === 'album_cards') return Promise.resolve(idols().slice(0, 9).map(function(p, i){ return { card:{ nick:p.nick, avatar:p.avatar, best:p.best }, tipo:'card', vezes:i % 3 + 1 }; }));
       if(n === 'meu_perfil') return Promise.resolve({ nick:'Demo', corridas:42, centers:3, best:10854, pos_geral:3, desde:'2026-05-02', coracoes:9, insignias:['estreia:1'], cards:[], avatar:{},
         por_personagem:{ Idol:10854, Tsu:3442 }, ultimas:[{ score:2362, char:'Idol', created_at:'2026-10-31T12:00:00Z' }, { score:3992, char:'Idol', created_at:'2026-10-30T12:00:00Z' }], melhores:[{ score:10854, char:'Idol', created_at:'2026-10-28T12:00:00Z' }] });
       if(n === 'sora_my_profile') return Promise.resolve({ ultimas:[{ score:76, at:'2026-11-02' }, { score:398, at:'2026-11-01' }], melhores:[{ score:1079, at:'2026-10-31' }] });

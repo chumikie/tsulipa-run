@@ -8,9 +8,16 @@ const { execFileSync } = require('node:child_process');
 const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
-// PR #66 inclui outras funcionalidades além da extração i18n. A main antiga não é
-// um baseline visual equivalente; mudanças deliberadas geravam falso positivo.
-// Avançar este marco só após aprovar as novas capturas de referência.
+// Estratégia (14/11/2026, escolhida com o dono): a página inicial muda de propósito a cada PR
+// (HUD, cards e jogos novos), então exigir texto e layout IDÊNTICOS à referência dava vermelho
+// permanente. A referência continua sendo usada, com regras que valem mesmo quando a página muda:
+//   FALHA  1) idioma aplicado; 2) erro de JavaScript que a referência não tinha;
+//          3) rolagem lateral nova; 4) blocos principais mudando de aberto/fechado ou sumindo;
+//          5) texto que a referência mostrava traduzido voltando a aparecer em português.
+//   AVISO  texto novo que aparece igual em português e em outro idioma (possível tradução faltando).
+// Tudo o que mudou (linhas a mais/a menos, blocos reposicionados) vai para report.json e capturas:
+// mudança de posição ou de texto NÃO reprova sozinha — precisa ser olhada no relatório.
+// Avançar o marco só após aprovar as novas capturas de referência.
 const baseSha = process.env.VISUAL_BASE_SHA || 'e95e7775849c49fc452c1f107778d5b11a926bc0';
 const output = path.resolve(process.argv[2] || '/tmp/i18n-visual-captures');
 fs.mkdirSync(output, { recursive: true });
@@ -108,6 +115,53 @@ async function capture(port, version, language, width, height) {
   await context.close();
   return { snapshot, errors, screenshot:path.basename(screenshot) };
 }
+function linhas(texto) {
+  return new Set(String(texto || '').split('\n').map(linha => linha.trim()).filter(Boolean));
+}
+function menos(a, b) { return [...a].filter(item => !b.has(item)); }
+// Linhas sem palavras (números, ★, emojis) não contam como "português".
+function temPalavra(linha) { return /\p{L}{3,}/u.test(linha); }
+function fechado(node) { return !!node.hidden || node.display === 'none'; }
+function conferir(viewport, capturas) {
+  const [width, height] = viewport, falhas = [], avisos = [], resumo = {};
+  const antesPt = linhas(capturas.pt.before.snapshot.visibleText);
+  const depoisPt = linhas(capturas.pt.after.snapshot.visibleText);
+  for (const language of Object.keys(capturas)) {
+    const { before, after } = capturas[language], onde = language + ' ' + width + 'x' + height;
+    const a = after.snapshot, b = before.snapshot;
+    // 1) idioma aplicado
+    if (a.language !== b.language) falhas.push(onde + ': <html lang> é "' + a.language + '", esperado "' + b.language + '"');
+    // 2) erros de JavaScript novos
+    const errosNovos = after.errors.filter(erro => !before.errors.includes(erro));
+    if (errosNovos.length) falhas.push(onde + ': erros de JavaScript novos: ' + errosNovos.join(' | '));
+    // 3) rolagem lateral nova
+    const larguraAntes = Math.max(b.documentSize[0], b.bodySize[0]), larguraDepois = Math.max(a.documentSize[0], a.bodySize[0]);
+    if (larguraDepois > width && larguraDepois > larguraAntes)
+      falhas.push(onde + ': rolagem lateral nova (' + larguraDepois + 'px numa tela de ' + width + 'px)');
+    // 4) blocos principais: continuar existindo e manter aberto/fechado
+    const depoisNodes = new Map(a.nodes), mudouPosicao = [];
+    for (const [selector, antes] of b.nodes) {
+      const depois = depoisNodes.get(selector);
+      if (!antes) continue;
+      if (!depois) { falhas.push(onde + ': ' + selector + ' sumiu da página'); continue; }
+      if (fechado(depois) !== fechado(antes))
+        falhas.push(onde + ': ' + selector + ' mudou de ' + (fechado(antes) ? 'fechado' : 'aberto') + ' para ' + (fechado(depois) ? 'fechado' : 'aberto'));
+      if (JSON.stringify(depois.rect) !== JSON.stringify(antes.rect)) mudouPosicao.push({ selector, antes:antes.rect, depois:depois.rect });
+    }
+    // 5) tradução que regrediu: a linha só existia no português da referência e agora aparece neste idioma
+    const antesL = linhas(b.visibleText), depoisL = linhas(a.visibleText);
+    let regrediu = [], semTraducao = [];
+    if (language !== 'pt') {
+      regrediu = [...depoisL].filter(linha => antesPt.has(linha) && !antesL.has(linha) && temPalavra(linha));
+      if (regrediu.length) falhas.push(onde + ': texto que já era traduzido voltou em português: ' + regrediu.join(' | '));
+      // aviso: texto NOVO igual ao português (pode ser nome próprio; por isso não reprova)
+      semTraducao = [...depoisL].filter(linha => depoisPt.has(linha) && !antesPt.has(linha) && !antesL.has(linha) && temPalavra(linha));
+      if (semTraducao.length) avisos.push(onde + ': texto novo igual ao português (conferir tradução): ' + semTraducao.join(' | '));
+    }
+    resumo[language] = { linhasNovas:menos(depoisL, antesL), linhasRemovidas:menos(antesL, depoisL), mudouPosicao, regrediu, semTraducao };
+  }
+  return { falhas, avisos, resumo };
+}
 async function main() {
   try {
     execFileSync('git',['fetch','--no-tags','--depth=1','origin',baseSha],{cwd:root,stdio:'inherit'});
@@ -117,21 +171,30 @@ async function main() {
     const beforePort = await listen(beforeServer);
     const afterPort = await listen(afterServer);
     browser = await chromium.launch({ headless:true, args:['--no-sandbox'] });
-    const report = { baseSha, languages:['pt','en','es','th','ja'], viewports:[[1280,900],[390,844]], captures:[] };
+    const report = { baseSha, languages:['pt','en','es','th','ja'], viewports:[[1280,900],[390,844]], captures:[], checks:[] };
+    const falhas = [], avisos = [];
     for (const [width,height] of report.viewports) {
+      const capturas = {};
       for (const language of report.languages) {
         const before = await capture(beforePort,'before',language,width,height);
         const after = await capture(afterPort,'after',language,width,height);
-        assert.deepEqual(after.snapshot,before.snapshot,
-          'homepage text/layout changed after dictionary extraction: '+language+' '+width+'x'+height);
-        assert.deepEqual(after.errors,before.errors,
-          'browser errors changed after dictionary extraction: '+language+' '+width+'x'+height);
+        capturas[language] = { before, after };
         report.captures.push({ language, viewport:[width,height], before, after });
-        console.log('✓ '+language+' '+width+'x'+height+' — text and layout unchanged; before/after captures saved');
+      }
+      const resultado = conferir([width,height], capturas);
+      report.checks.push({ viewport:[width,height], ...resultado });
+      falhas.push(...resultado.falhas); avisos.push(...resultado.avisos);
+      for (const language of report.languages) {
+        const r = resultado.resumo[language], onde = language+' '+width+'x'+height;
+        console.log((resultado.falhas.some(f => f.startsWith(onde+':')) ? '✗ ' : '✓ ')+onde+
+          ' — +'+r.linhasNovas.length+' / -'+r.linhasRemovidas.length+' linhas de texto, '+r.mudouPosicao.length+' blocos reposicionados');
       }
     }
     fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2));
     console.log('Saved '+report.captures.length+' screenshot pairs to '+output);
+    // No GitHub Actions os avisos viram anotações amarelas na PR; não bloqueiam.
+    for (const aviso of avisos) console.log((process.env.GITHUB_ACTIONS ? '::warning title=Tradução a conferir::' : 'AVISO: ')+aviso);
+    assert.deepEqual(falhas, [], 'regressões na página inicial em relação à referência '+baseSha.slice(0,7));
   } finally {
     if (browser) await browser.close();
     if (beforeServer) await new Promise(resolve=>beforeServer.close(resolve));

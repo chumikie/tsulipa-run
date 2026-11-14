@@ -137,7 +137,7 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 ## Próximo passo (antes do merge)
 1. Battle aplicado em 14/11: falta testar com conta real (partida oficial, limite de 5 e ★5).
 2. Conferir o mapa e os jogos no iPhone físico, login e pequenos fluxos integrados.
-3. O CI geral continua vermelho no teste antigo `tests/i18n-visual.browser.cjs`, que compara a homepage contra um layout anterior. Atualizar a estratégia de comparação sem silenciar regressões.
+3. Teste da página inicial (`tests/i18n-visual.browser.cjs`) refeito em 14/11 (escolha delegada pelo dono): em vez de exigir texto/layout idênticos à referência `e95e777`, reprova idioma errado, erro de JS novo, rolagem lateral nova, bloco principal mudando de aberto/fechado e tradução que voltou ao português; texto novo igual ao português vira aviso; o resto vai para `report.json`. **Atenção:** mudança de posição ou de texto não reprova mais sozinha — olhar o relatório/capturas do CI.
 4. Atualizar a prévia da PR #88 e só então propor merge; os nomes provisórios Rua das Vitrines e Vila das Flores aguardam confirmação.
 
 

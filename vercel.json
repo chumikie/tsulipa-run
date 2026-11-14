@@ -37,5 +37,16 @@
       "destination": "/",
       "permanent": false
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.+\\.js|.+\\.css|.+\\.svg|.+\\.png|.+\\.webp|.+\\.woff2)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=604800"
+        }
+      ]
+    }
   ]
 }

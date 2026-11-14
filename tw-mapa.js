@@ -85,6 +85,7 @@
       if(cena==='mundo'){entrarRua(l.id);return;}
       if(l.voltar){voltarAoMundo();return;}
       if(l.bloom){window.bloomAbrir();return;}
+      if(l.studio){window.studioAbrir();return;}
       var c=card(l);if(c&&!c.disabled)c.click();
     });
     sec.querySelector('.tw-mapa-voltar').addEventListener('click',voltarAoMundo);
@@ -260,6 +261,9 @@
     // Bloom⭐Garden!: a horta da Vila das Flores abre o jardim quando o servidor já tem o jogo
     if(cena==='fofo'&&window.TW_BLOOM_ON&&typeof window.bloomAbrir==='function'&&x>=1100&&x<=1500&&y>=280&&y<=640)
       return {id:'bloom',bloom:true,box:[1100,280,1500,640]};
+    // Photo⭐Studio!: o estúdio do Jardim das Nuvens (com conta; o treino sem conta abre pela própria janela)
+    if(cena==='ceu'&&studioLigado()&&x>=1100&&x<=1500&&y>=280&&y<=640)
+      return {id:'studio',studio:true,box:[1100,280,1500,640]};
     ids.forEach(function(id,i){if(!id)return;var l=TW_LUGARES.find(function(v){return v.id===id;});
       if(!l)return;var b=[centros[i]-200,280,centros[i]+200,640];
       if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3]&&card(l))achado={id:l.id,card:l.card,box:b};
@@ -280,9 +284,13 @@
     });
     ctx.restore();
   }
+  function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function'&&typeof contaJ!=='undefined'&&contaJ);}
   function textosCena(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
     T.forEach(function(t){
       // com o Bloom⭐Garden! ligado, a placa "Em breve" da horta vira convite
+      if(studioLigado()&&/^em breve$/i.test(t.t)&&cena==='ceu'&&t.x>1100){
+        var S=window.STUDIO_TR,SL=S&&(S[lang()]||S.pt);t=Object.assign({},t,{t:'📸 '+(SL?SL.pauta:'Pauta do dia')});
+      }
       if(window.TW_BLOOM_ON&&/^em breve$/i.test(t.t)&&(cena==='fofo'||(cena==='mundo'&&t.x<700))){
         var B=window.BLOOM_TR,L=B&&(B[lang()]||B.pt);
         t=Object.assign({},t,cena==='mundo'?{t:'Bloom★Garden!',s:t.s*.8}:{t:'🌱 '+(L?L.plantar:'Plantar')});

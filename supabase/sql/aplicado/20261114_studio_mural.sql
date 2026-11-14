@@ -1,3 +1,4 @@
+-- APLICADO EM PRODUÇÃO em 14/11/2026 com o OK do dono (migração 20261114_studio_mural).
 -- Photo⭐Studio! v2 — Mural da revista (aprovado pelo dono: público, com corações).
 -- Guarda só as ESCOLHAS da foto (cenário, pose, luz, enquadramento, objeto); cada aparelho redesenha
 -- com o visual atual da pessoa (players.avatar). Nenhuma imagem é enviada. 1 publicação por pessoa por dia;

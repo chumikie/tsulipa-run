@@ -20,7 +20,7 @@ insert into public.players(id,nick,avatar) values ('00000000-0000-0000-0000-0000
 update public.players set bloqueado=true where nick='Duda';
 SQL
 $P -f ../../sql/aplicado/20261114_photo_studio.sql >/dev/null
-$P -f ../../sql/proposta/20261114_studio_mural.sql >/dev/null
+$P -f ../../sql/aplicado/20261114_studio_mural.sql >/dev/null
 A=00000000-0000-0000-0000-00000000000a; B=00000000-0000-0000-0000-00000000000b; C=00000000-0000-0000-0000-00000000000c
 r(){ $P -c "select set_config('request.jwt.claim.sub','$1',false);" -c "$2" | tail -1; }
 ok(){ [ "$1" = "$2" ] && echo "  ok: $3" || { echo "FALHOU: $3 (veio '$1')"; exit 1; }; }

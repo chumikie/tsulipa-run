@@ -2,7 +2,7 @@
 
 Status: **aprovado pelo dono em 14/11** (nome, ★5/dia, mural público com corações na v2). **v1 implementada no PR #88** (`studio.js`); SQL `supabase/sql/aplicado/20261114_photo_studio.sql` testado isolado (`supabase/tests/studio/`); **aplicado em produção em 14/11** (OK do dono).
 
-**v2 (Mural + Capa no Idol⭐News!) implementada no PR #88**; SQL `supabase/sql/proposta/20261114_studio_mural.sql` testado isolado (`supabase/tests/studio-mural/`), esperando o OK para aplicar.
+**v2 (Mural + Capa no Idol⭐News!) implementada no PR #88**; SQL `supabase/sql/aplicado/20261114_studio_mural.sql` testado isolado (`supabase/tests/studio-mural/`); **aplicado em produção em 14/11** (OK do dono).
 
 ## Ideia em uma frase
 Todo dia a revista Idol⭐News! publica uma **pauta de ensaio** (igual para todo mundo). Você monta a foto no estúdio do Jardim das Nuvens — cenário, pose, luz, enquadramento e objetos — e o fotógrafo dá de 1 a 3 estrelas conforme a foto atende a pauta. A foto vira uma polaroid para salvar.

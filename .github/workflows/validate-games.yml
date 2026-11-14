@@ -6,6 +6,11 @@ on:
   push:
     branches: [main]
 
+# Um envio novo na mesma PR cancela a verificação antiga, que já não interessa.
+concurrency:
+  group: validate-games-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   static-validation:
     runs-on: ubuntu-latest
@@ -95,11 +100,6 @@ jobs:
         env:
           NODE_PATH: /tmp/karaoke-playwright/node_modules
         run: node tests/admin-idol.browser.cjs /tmp/admin-idol-browser
-      - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
-        env:
-          NODE_PATH: /tmp/karaoke-playwright/node_modules
-          QA_WIDTHS: 320,375,390,430,844,1440
-        run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
       - name: Verify profile accessories across hairstyles and viewports in Chromium
         if: always()
         env:
@@ -126,10 +126,38 @@ jobs:
           path: /tmp/profile-accessories-browser
           if-no-files-found: warn
           retention-days: 5
+  # A sala do Karaoke no celular era o passo lento (4 a 10 min em série, seis larguras).
+  # As larguras são independentes, então cada dupla roda na sua própria máquina, em paralelo.
+  # Não juntar na mesma máquina: o teste mede tempo de animação e falha com a CPU dividida.
+  browser-karaoke-room:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        larguras: ['320,1440', '375,844', '390,430']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix /tmp/karaoke-playwright --no-save playwright
+          /tmp/karaoke-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify mobile room, autonomous mic and Polaroid portrait in Chromium
+        env:
+          NODE_PATH: /tmp/karaoke-playwright/node_modules
+          QA_WIDTHS: ${{ matrix.larguras }}
+        run: node tests/karaoke-mobile.browser.cjs /tmp/karaoke-room-browser
+      - name: Nome do artefato sem vírgula
+        if: always()
+        id: nome
+        run: echo "larguras=$(echo '${{ matrix.larguras }}' | tr ',' '-')" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: karaoke-room-browser-captures
+          name: karaoke-room-browser-captures-${{ steps.nome.outputs.larguras }}
           path: /tmp/karaoke-room-browser
           if-no-files-found: warn
           retention-days: 5

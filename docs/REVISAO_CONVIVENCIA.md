@@ -27,3 +27,5 @@ As verificações automatizadas usam dados simulados. A reversão da interface n
 - Em movimento reduzido, o objeto permanece estático; sem novos timers, saves, pontuações, RPCs, inventário ou sons.
 - Botões de lembranças do Camarim com alvos de 48 px e moldura Polaroid; contraste revisado no tema escuro, incluindo 320 px.
 - Os testes com Canvas simulado validam as três ações do Jardim. Safari e login real continuam pendentes.
+
+- Na Praça, quando um fã conhecido está próximo e há Pet visível, o Pet demonstra atenção durante a pausa. Fora do encontro, não aparece reação adicional; com movimento reduzido, o símbolo fica estático.

@@ -95,7 +95,7 @@
     var atalhos=sec.querySelector('.tw-mapa-bairros');
     if(atalhos){
       atalhos.innerHTML=Object.keys(BAIRROS).map(function(id){
-        return '<button type="button" data-tw-bairro="'+id+'"><span aria-hidden="true">'+BAIRROS_EMOJI[id]+'</span><span>'+ROTULOS_BAIRROS[id]+'</span></button>';
+        return '<button type="button" data-tw-bairro="'+id+'"><span aria-hidden="true">'+BAIRROS_EMOJI[id]+'</span><span data-tw-rotulo="'+id+'">'+rotulo(id)+'</span></button>';
       }).join('');
       var marcar=function(e){var b=e.target&&e.target.closest&&e.target.closest('[data-tw-bairro]');
         var alvo=b&&cena==='mundo'?BAIRROS[b.getAttribute('data-tw-bairro')]:null;if(alvo!==hover){hover=alvo;desenhar();}};

@@ -521,3 +521,24 @@ html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
 @media(max-width:699px){#hub #hubCards .tw-hubnovo-bloom{grid-column:1/-1}}
 
+
+/* Mapa Vivo⭐ — lote pequeno de legibilidade e toque móvel, após PR #88.
+   Mantém o panorama, as áreas clicáveis do Canvas e a navegação do Hub. */
+html body #hub .tw-mapa-botao:focus-visible{
+  outline:3px solid #d7ff82;outline-offset:3px;
+}
+@media(max-width:760px){
+  html body #hub .tw-mapa-bairros button{
+    min-height:52px;padding:9px 12px;font-size:12.5px;line-height:1.35;
+  }
+  html body #hub .tw-mapa-bairros button span:first-child{
+    min-width:22px;text-align:center;font-size:19px;
+  }
+  html body #hub .tw-mapa-voltar,
+  html body #hub .tw-mapa-zoom{
+    min-height:48px;padding:10px 16px;
+  }
+}
+@media(max-width:360px){
+  html body #hub .tw-mapa-bairros button{font-size:12px;padding:9px 8px;}
+}

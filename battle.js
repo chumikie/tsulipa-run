@@ -237,9 +237,11 @@ function salvarUnit(){
 function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
-   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><select data-battle-slot="'+i+'">'+
+   var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
+   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection"><select data-battle-slot="'+i+'">'+
     estado.cards.map(function(c){return '<option value="'+esc(c.nick)+'"'+(unit[i]===c.nick?' selected':'')+'>'+esc(c.nick)+
-     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select></label>';
+     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select>'+
+     '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></label>';
  }
  return h;
 }
@@ -325,7 +327,9 @@ function render(){
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
  if(fase==='show'){
-   area.innerHTML='<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
+   area.innerHTML='<div class="battle-showhud"><b id="battleLiveRodada">'+esc(nomeRound(0))+' · 1/3</b><span>'+esc(trB('my'))+' × '+esc(trB('other'))+'</span></div>'+
+    '<div class="battle-showtrack" aria-hidden="true"><i id="battleShowFill"></i></div>'+
+    '<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
    return;
  }
  var max=Number(estado.max_tentativas)||5,usadas=Number(estado.tentativas)||0;
@@ -429,6 +433,11 @@ function comecarShow(){
    var t=agora()-showT0;
    if(t>=DUR*3+.15){fimDoShow();return;}
    var ri=Math.min(2,Math.floor(t/DUR));
+   var live=ov.querySelector('#battleLiveRodada'),progresso=ov.querySelector('#battleShowFill');
+   if(live&&live.getAttribute('data-ri')!==String(ri)){
+     live.setAttribute('data-ri',String(ri));live.textContent=nomeRound(ri)+' · '+(ri+1)+'/3';
+   }
+   if(progresso)progresso.style.width=Math.min(100,t/(DUR*3)*100).toFixed(1)+'%';
    if(ri>showSom&&t-ri*DUR>1.3){showSom=ri;som(rodadas[ri].ganhou?'star':'hit');
      // quem usa leitor de tela acompanha o placar de cada rodada (a área é aria-live)
      var nr=ov.querySelector('#battleNarra'),rr=rodadas[ri];
@@ -455,6 +464,14 @@ function fundoPalco(x,cor,t){
    x.globalAlpha=.3;x.fillStyle=lg;x.beginPath();x.moveTo(h[0]+(h[1]+bal)*300-14,0);x.lineTo(h[0]+(h[1]+bal)*300+14,0);
    x.lineTo(h[0]+78,250);x.lineTo(h[0]-78,250);x.closePath();x.fill();
  });
+ x.restore();
+ // Painel de luz em barras: movimento pequeno, sem imagens externas ou timers novos.
+ x.save();x.fillStyle=cor;
+ for(var eq=0;eq<17;eq++){
+   var pulsoLuz=.5+.5*Math.sin(t*3.3+eq*.83),altura=12+Math.round(pulsoLuz*34);
+   x.globalAlpha=.12+pulsoLuz*.09;
+   x.fillRect(48+eq*27,178-altura,13,altura);
+ }
  x.restore();
  // estrelinhas do telão
  x.fillStyle='rgba(255,255,255,.75)';

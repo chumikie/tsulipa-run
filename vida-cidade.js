@@ -69,6 +69,7 @@ function registrar(tipo,info){
  if(codigo)visto[dedupe]=true;
  entradas.push({tipo:tipo,icone:TIPOS[tipo].icone,cap:TIPOS[tipo].cap,
    nome:fa?fa.nome:'',visual:visual,
+   jeito:fa&&/^(timido|animado|fofo)$/.test(fa.jeito)?fa.jeito:(fa?'fofo':''),
    flor:/^(sakura|tulipa|girassol|lunar)$/.test(info.flor)?info.flor:''});
  if(entradas.length>8)entradas.shift();
  versao++;
@@ -87,7 +88,7 @@ function sinalCena(bairro){
  if(!conferir()||!CENAS[bairro])return null;
  for(var i=entradas.length-1;i>=0;i--){
    var e=entradas[i];
-   if(CENAS[bairro].indexOf(e.tipo)>=0)return {tipo:e.tipo,flor:e.flor,nome:e.nome,visual:e.visual};
+   if(CENAS[bairro].indexOf(e.tipo)>=0)return {tipo:e.tipo,flor:e.flor,nome:e.nome,visual:e.visual,jeito:e.jeito};
  }
  return null;
 }

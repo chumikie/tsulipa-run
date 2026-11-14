@@ -50,3 +50,10 @@ O Happy⭐Cafe! registra um reencontro visual apenas após resposta `r.ok && r.c
 A Praça Central exibe no máximo **um fã NPC conhecido**, com sua aparência do Handshake e uma etiqueta 💌 durante as pausas. Usa o mesmo Canvas e loop de passeantes existentes, sem editar RPCs, saves, prêmios, ranking ou relações. Uma nova lembrança substitui a anterior da sessão.
 
 A revisão estática preserva `click` nativo, rolagem e preferências de movimento reduzido. **Safari em iPhone físico segue sem teste real**; Chromium móvel simulado não equivale a Safari.
+
+## Personalidade dos fãs na Praça Central — 14/11/2026
+
+- O reencontro confirmado preserva o `jeito` do fã da memória do Handshake: `timido`, `animado` ou `fofo`.
+- Na Praça, o tímido desvia o olhar e mostra reticências; o animado acena com ♪; o fofo usa pose de coração e ♥. Só um gesto aparece durante cada pausa, sem criar animações próprias ou balões duplicados.
+- `prefers-reduced-motion` mantém o símbolo estático. Nenhum campo de identidade de fã é incluído em `estado()`, e a memória continua isolada pela conta e pelo dia.
+- Testes em `tests/vida-cenas.test.js`: personalidades, fallback, privacidade, interface e movimento reduzido. Sem SQL, saves, recompensas, merge ou deploy. Safari físico ainda pendente.

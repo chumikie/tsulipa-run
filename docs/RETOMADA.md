@@ -16,6 +16,12 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Karaoke⭐Time!:** traduções em `kt-traducoes.js` (`karaoke-time.html` com 404 KB; limite 450 KB).
 - **CI:** a sala do Karaoke roda em três máquinas paralelas (job `browser-karaoke-room`); um envio novo cancela a verificação antiga.
 
+### Acabamento visual (14/11, tarde)
+- Camarim: o Cantinho de lembranças saiu do meio dos cuidados do pet. Agora fica no fim, fechado, e só mostra as lembranças e o vasinho. A foto e os cards já estão no Celular e na Estante, e o vaso e o porta-retratos já aparecem no desenho do quarto.
+- Idol⭐Battle!: abas em negrito (a regra `font` estava inválida), título igual aos outros jogos, menos caixa dentro de caixa, atributos numa linha só, escalação compacta e botão "Começar show!" largo.
+- Photo⭐Studio!: a foto fica menor (cabe com as opções à vista), as opções ficam em grade regular e o "Clicar!" fica preso no rodapé.
+- Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
+
 ### Teste sem login (modo demonstração)
 - Abrir a prévia com `?demo=1` no fim do endereço: `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/?demo=1`.
 - Cria a conta de mentira "Demo" (★500) e simula no navegador Battle (rival do dia, Top da Arena, Arena, Torcida), Jardim, Photo Studio, Café (partida verificada, cliente VIP, bônus ★10 do dia) e Handshake (8 rodadas, cor do lightstick, prêmio do dia), com os mesmos limites do servidor. O botão **+1 dia** da faixa avança o dia simulado (regas, limites diários, prêmio do dia seguinte).

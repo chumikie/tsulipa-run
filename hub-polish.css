@@ -548,3 +548,17 @@ html body #hub #hubCards .hubcard.tw-hubnovo-bloom{--art:url("data:image/svg+xml
 html body #hub #hubCards .hubcard.tw-hubnovo-studio{--art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%20120%27%3E%3Cpath%20d%3D%27M18%2035H40L47%2023H77L84%2035H104V99H18Z%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%279%27%20stroke-linejoin%3D%27round%27%2F%3E%3Ccircle%20cx%3D%2761%27%20cy%3D%2766%27%20r%3D%2722%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%279%27%2F%3E%3Ccircle%20cx%3D%2794%27%20cy%3D%2745%27%20r%3D%274%27%20fill%3D%27white%27%2F%3E%3C%2Fsvg%3E")}
 
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%20120%27%3E%3Cpath%20d%3D%27M36%2020H84V53Q84%2080%2060%2080Q36%2080%2036%2053ZM54%2078H66V98H85V108H35V98H54Z%27%20fill%3D%27white%27%2F%3E%3Cpath%20d%3D%27M36%2030H18V45Q18%2064%2039%2064M84%2030H102V45Q102%2064%2081%2064%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%278%27%2F%3E%3C%2Fsvg%3E")}
+
+/* Photo⭐Studio! — acabamento: foto cabe com as opções à vista, chips de largura uniforme */
+#studioCv{width:auto;max-width:100%;height:min(44dvh,420px);aspect-ratio:auto}
+.studiop .stgrupo{margin:4px 0}
+html body .studiop .stgrupo>b{margin:12px 0 6px}
+.stgrupo>div,.stgrupo>div:has(>.stchip:nth-child(4)):not(:has(>.stchip:nth-child(5))){display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.stgrupo .stchip{flex:0 1 auto;min-width:92px;min-height:44px;padding:6px 12px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.stgrupo .stchip .stsw{margin-right:2px}
+.studiop .btns:has(.stclique){position:sticky;bottom:-1px;margin:12px -6px 0;padding:10px 6px 8px;
+  background:linear-gradient(180deg,rgba(248,243,255,0),rgba(248,243,255,.96) 35%);z-index:2}
+.stclique{width:100%;max-width:320px;min-height:52px}
+.stgrupo .stchip{flex:1 1 calc(33.333% - 6px);min-width:0}
+.stgrupo>div:has(>.stchip:nth-child(4)):not(:has(>.stchip:nth-child(5)))>.stchip{flex-basis:calc(50% - 6px)}
+.stgrupo .stchip .stsw{flex:none}

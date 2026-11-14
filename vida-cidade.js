@@ -161,9 +161,10 @@ function montar(){
  var room=document.getElementById('petRoom'),mem=document.getElementById('twVidaCamarim');
  if(room&&!mem){
   mem=document.createElement('section');mem.id='twVidaCamarim';mem.className='tw-vida-camarim';
-  var info=document.getElementById('petNm');
-  var target=info&&info.closest('.petinfo');
-  if(target)room.insertBefore(mem,target);else room.appendChild(mem);
+  // Fica no fim do Camarim, depois dos cuidados do pet: o vaso e o porta-retratos já aparecem
+  // (e abrem) no próprio desenho do quarto, e o Celular/Estante já guardam fotos e cards.
+  var dica=room.querySelector('.pethint');
+  if(dica&&dica.nextSibling)room.insertBefore(mem,dica.nextSibling);else room.appendChild(mem);
  }
 }
 function imagemMomento(){
@@ -206,14 +207,13 @@ function render(){
     var lembrar=entradas.slice(-3).reverse();
     var colheita=objetosCamarim().find(function(e){return e.tipo==='flor';});
     var emojiFlor=colheita?({sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'🌙'}[colheita.flor]||'🌷'):'🌱';
-    mem.innerHTML='<b class="tw-vida-mem-titulo">🌷 '+escapar(t('cam'))+'</b>'+
-     '<div class="tw-vida-objetos" role="group">'+
-     '<button type="button" data-vida-acao="jardim" title="'+escapar(t('vaso'))+'">'+emojiFlor+' <span>'+escapar(t('vaso'))+'</span></button>'+
-     '<button type="button" data-vida-acao="foto" title="'+escapar(t('foto'))+'">🖼️ <span>'+escapar(t('foto'))+'</span></button>'+
-     '<button type="button" data-vida-acao="cards" title="'+escapar(t('cards'))+'">🃏 <span>'+escapar(t('cards'))+'</span></button></div>'+
+    var aberto=!!(mem.querySelector('details')&&mem.querySelector('details').open);
+    mem.innerHTML='<details'+(aberto?' open':'')+'><summary class="tw-vida-mem-titulo">🌷 '+escapar(t('cam'))+
+     (lembrar.length?' <small>'+lembrar.length+'</small>':'')+'</summary>'+
      (lembrar.length?'<p class="tw-vida-mem-itens">'+lembrar.map(function(e){return '<span>'+escapar(relato(e))+'</span>';}).join('')+'</p>':
        '<small class="tw-vida-sub">'+escapar(t('vazioCam'))+'</small>')+
-     '<figure class="tw-vida-foto" hidden><img alt="'+escapar(t('foto'))+'" loading="lazy"></figure>';
+     (colheita?'<div class="tw-vida-objetos" role="group"><button type="button" data-vida-acao="jardim" title="'+escapar(t('vaso'))+'">'+emojiFlor+' <span>'+escapar(t('vaso'))+'</span></button></div>':'')+
+     '<figure class="tw-vida-foto" hidden><img alt="'+escapar(t('foto'))+'" loading="lazy"></figure></details>';
     mem.dataset.twVidaAssinatura=assinatura;
    }
    // Se uma URL blob: foi revogada no TsuPhone, não manter a miniatura antiga.

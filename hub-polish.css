@@ -382,3 +382,19 @@ html body #hub .tw-mapa.mexeu .tw-mapa-dica{display:none!important}
 .stres{text-align:center;font-weight:800;font-size:16px;color:#3c2a8f;margin:6px 0}
 .stmsg{text-align:center;font-weight:800;color:#b83a9e;margin:6px 0}
 .stdica{text-align:center;font-size:12px;font-weight:700;color:#7b62b8}
+/* Photo⭐Studio! v2: abas, mural e capa no Idol⭐News! */
+.stabas{display:flex;gap:8px;justify-content:center;margin:6px 0}
+.stabas:empty{display:none}
+.stabab{font:inherit;font-weight:800;font-size:14px;color:#3c2a8f;background:#fff;border:2px solid #e2d4ff;border-radius:999px;padding:7px 16px;min-height:40px;cursor:pointer}
+.stabab.on{background:#7b3ff0;border-color:#7b3ff0;color:#fff}
+.stmural{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.stpost{margin:0;background:#fff;border-radius:12px;padding:6px;box-shadow:0 3px 0 rgba(123,63,240,.12);text-align:center}
+.stpost canvas{width:100%;height:auto;display:block;border-radius:6px}
+.stpost figcaption{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;margin-top:4px;font-size:12px;color:#3c2a8f}
+.stcoracao{font:inherit;font-weight:800;font-size:13px;border:2px solid #f2c6e0;background:#fff;border-radius:999px;padding:3px 10px;min-height:34px;cursor:pointer;color:#b83a9e}
+.stcoracao.on{background:#ffe3f1;border-color:#ff6fb5}
+.stcoracao:disabled{cursor:default}
+.jncapa{text-align:center}
+.jncapa canvas{width:min(70%,260px);height:auto;border-radius:8px;box-shadow:0 6px 16px rgba(60,30,120,.25);transform:rotate(-2deg);margin:6px auto;display:block}
+@media(min-width:700px){.stmural{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.studiop [hidden]{display:none!important}

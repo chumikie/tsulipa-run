@@ -42,4 +42,4 @@ html[data-theme="dark"] .gpochip,html[data-theme="dark"] .gpoconf,html[data-them
 /* Pó de estrela: repetidos em duas colunas regulares */
 .gporep{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .gpochip{min-height:44px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:380px){.gpochip i{display:none}.gpochip{overflow:visible;text-overflow:clip}}
+@media (max-width:420px){.gpochip i{display:none}.gpochip{overflow:visible;text-overflow:clip}}

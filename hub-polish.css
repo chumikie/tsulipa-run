@@ -576,3 +576,8 @@ html body .trform input:focus-visible,html body .trform select:focus-visible,htm
 html body .trform .btn{align-self:center;min-height:48px}
 /* Mapa da cidade: ao rolar até ele, não fica embaixo da barra fixa do jogador */
 #twMapa,#hubCards,#hubMenu>section{scroll-margin-top:84px}
+/* Tema escuro: botões secundários dentro de cartões claros (Jardim, Troca) continuam claros e legíveis */
+@media (prefers-color-scheme:dark){
+  html:not([data-theme="light"]) .bloomcard .btn.alt,html:not([data-theme="light"]) .bloomlote .btn.alt,
+  html:not([data-theme="light"]) .tritem .btn.alt{background:#eef3ff;color:#3c2a8f;border-color:#fff;box-shadow:0 5px 0 #c3b3ef,0 8px 15px rgba(0,0,0,.18)}
+}

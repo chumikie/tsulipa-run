@@ -157,3 +157,21 @@ body:not(.jogando) #sb{display:none!important}
 .oshi-sel button:active { transform:scale(0.9); }
 .oshi-sel button[aria-pressed="true"] { border-color:var(--b1); box-shadow:0 0 0 2px var(--card) inset, 0 0 0 3px var(--b1) inset; }
 
+
+/* Center⭐Run!: personalização da roupa em linhas alinhadas (rótulo à esquerda, campo à direita) */
+#cust_roupa.cust{display:grid;grid-template-columns:1fr;gap:6px;max-width:340px;margin:4px auto 12px;padding:10px;border-radius:16px;
+  background:color-mix(in srgb,var(--chip) 70%,transparent);font-size:12.5px;font-weight:800;color:var(--b1)}
+#cust_roupa.cust label{display:grid;grid-template-columns:92px minmax(0,1fr) auto;align-items:center;gap:6px;white-space:normal;text-align:left;line-height:1.15}
+#cust_roupa.cust label:not(:has(select)){grid-template-columns:92px auto}
+#cust_roupa.cust select{grid-column:2;height:40px;min-width:0;width:100%;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);
+  background:var(--card);color:var(--ink);padding:0 8px;font-size:13px;font-weight:700}
+#cust_roupa.cust input[type=color]{width:40px;height:40px;padding:3px;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);background:var(--card);cursor:pointer}
+#cust_roupa.cust .cbr{display:none}
+#cust_roupa.cust select:focus-visible,#cust_roupa.cust input:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+/* Idiomas: "日本語" não quebra em duas linhas a 320 px */
+.lang{flex-wrap:wrap}.lang button{white-space:nowrap;min-height:32px}
+@media(max-width:360px){.lang{gap:3px}.lang button{padding:4px 7px}}
+@media(max-width:360px){
+  #cust_roupa.cust label,#cust_roupa.cust label:not(:has(select)){grid-template-columns:minmax(0,1fr) auto;row-gap:3px}
+  #cust_roupa.cust select{grid-column:1}
+}

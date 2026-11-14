@@ -21,6 +21,9 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Idol⭐Battle!: abas em negrito (a regra `font` estava inválida), título igual aos outros jogos, menos caixa dentro de caixa, atributos numa linha só, escalação compacta e botão "Começar show!" largo.
 - Photo⭐Studio!: a foto fica menor (cabe com as opções à vista), as opções ficam em grade regular e o "Clicar!" fica preso no rodapé.
 - Jogos antigos: Álbum, Troca e Pedido de fã agora mostram o título completo por qualquer caminho (pelas missões aparecia só o emoji). Campos da Troca e busca do Duo com o mesmo desenho dos outros campos. Perfil a 320 px com a foto em cima. Pó de estrela em duas colunas.
+- Conferido com as fontes reais (as de `kt-fonts.css`) e no tema escuro. No escuro, os botões secundários do Jardim e da Troca ficam claros dentro dos cartões claros.
+- Karaoke⭐Time! (dentro do site): a 320 px as 4 ferramentas da sala cabem numa linha. Os atalhos de teclado já somem em celular (regra antiga `hover:none`).
+- Center⭐Run!: personalização da roupa em linhas alinhadas (a 320 px o rótulo fica em cima); "日本語" não quebra mais.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

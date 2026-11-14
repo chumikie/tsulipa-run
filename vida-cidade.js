@@ -28,7 +28,18 @@ var entradas=[],dono='',visto={};
 function lingua(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 function t(k){return T[lingua()][k]||T.pt[k]||k;}
 function escapar(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function diaBR(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+// As ruas redesenham em ciclos curtos: não criar Intl.DateTimeFormat a cada quadro.
+var formatoDia=new Intl.DateTimeFormat('en-CA',
+  {timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'});
+var diaCache='',diaCacheQuando=0;
+function diaBR(){
+ var agora=Date.now();
+ if(!diaCache||agora>=diaCacheQuando||agora<diaCacheQuando-15000){
+   diaCache=formatoDia.format(new Date(agora));
+   diaCacheQuando=agora+15000;
+ }
+ return diaCache;
+}
 function chave(){var c=typeof contaJ!=='undefined'?contaJ:null;
  return c&&String(c.id||c.nick||'').slice(0,128)||'';}
 function conferir(){var atual=chave(),escopo=atual?atual+'@'+diaBR():'';

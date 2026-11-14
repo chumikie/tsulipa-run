@@ -471,7 +471,7 @@ function perfHaloTextura(x, cx, cy, r, cor){
   x.fillStyle = fallback; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
 }
 // zoom = true: só o rostinho (foto redonda do perfil) · t = quadro da animação (0 = parado)
-function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
+function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
   av = av || {}; t = t || 0;
   var vis = typeof av.visual === 'string' ? av.visual : '', rk = PERF_RANKVIS[vis] || 0, c = perfChar(av), pet = zoom ? null : perfPetDoAvatar(av);
   if(/^#[0-9a-f]{6}$/i.test(av.cor || '')) c.luz = av.cor;   // lightstick na cor do perfil
@@ -479,6 +479,13 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
   var big = vis === 'mega' && !zoom, sc, chao, tx, ty;
   if(zoom){ sc = H2 / 46; tx = W2 / 2 - 15 * sc; ty = H2 * .5 - 10 * sc; chao = ty + 44 * sc; }   // rostinho: da coroa até os ombros
   else { sc = H2 / (big ? 68 : 82); chao = H2 * (big ? .95 : .9); tx = W2 / 2 - 15 * sc - (pet ? 10 * sc : 0); ty = chao - 44 * sc; }
+  if(camera){
+    var base = camera === 'rosto' ? 46 : camera === 'meio' ? 60 : 78;
+    sc = Math.min(H2 * .88 / base, W2 * .82 / (pet ? 76 : camera === 'rosto' ? 44 : camera === 'meio' ? 50 : 58));
+    tx = W2 / 2 - (pet ? 25 : 17) * sc;
+    ty = H2 * .06 + 22 * sc;
+    chao = ty + 44 * sc;
+  }
   var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;
   var cx = tx + 15 * sc, cy = ty + 22 * sc + bob, i, gira = t * .012, pulso = t ? 1 + .05 * Math.sin(t * .08) : 1;
   // sombra no chão
@@ -534,6 +541,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t){
     x.fillStyle = 'rgba(30,10,60,.2)'; x.beginPath(); x.ellipse(px, chao, 9 * sc, 1.8 * sc, 0, 0, 7); x.fill();
     perfDesenharPetEm(x, pet, px, py, ps, t);
   }
+  return {x:tx, y:ty + bob, scale:sc, skin:c.skin};
 }
 function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado em círculo (zoom = rostinho)
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;

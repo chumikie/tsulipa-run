@@ -24,10 +24,11 @@
         if(b.dataset.hud==='perfil'){var c=card('perfil');if(c)c.click();}
         else if(b.dataset.hud==='entrar'&&typeof contaEntrar==='function')contaEntrar();});}
     var logado=typeof contaJ!=='undefined'&&contaJ, nick=logado?(contaJ.nick||contaJ.nome||''):'';
-    var chave=[nick,stars,best,LANG,!!logado].join('|'); if(el.dataset.k===chave) return; el.dataset.k=chave;
+    var saldo=+starT||0;
+    var chave=[nick,saldo,best,LANG,!!logado].join('|'); if(el.dataset.k===chave) return; el.dataset.k=chave;
     el.innerHTML='<button type="button" class="tw-hud-eu" data-hud="perfil"><canvas width="64" height="64" aria-hidden="true"></canvas>'+
       '<span class="tw-hud-txt"><b>'+esc(nick||t('vis'))+'</b><small>'+esc(rankNome())+'</small></span></button>'+
-      '<span class="tw-hud-stats"><span class="tw-hud-st" title="★">★ '+esc((+stars||0).toLocaleString())+'</span>'+
+      '<span class="tw-hud-stats"><span class="tw-hud-st" title="★">★ '+esc(saldo.toLocaleString())+'</span>'+
       '<span class="tw-hud-st tw-hud-rec" title="🏆">🏆 '+esc((+best||0).toLocaleString())+'</span></span>'+
       (logado?'':'<button type="button" class="tw-hud-entrar" data-hud="entrar">'+esc(t('entrar'))+'</button>');
     try{if(typeof perfFotoRedonda==='function'&&typeof hubAv==='function')perfFotoRedonda(el.querySelector('canvas'),hubAv(),true);}catch(e){}

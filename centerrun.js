@@ -1126,7 +1126,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(!charPose){ g.fillRect(x+1,y+24,4,9);g.fillRect(x+25,y+24,4,9); }   // com pose, os braços vêm depois das roupas (V2.1.2)
+  if(!charPose){ g.fillRect(x+1,y+24,4,7);g.fillRect(x+25,y+24,4,7);E(x+3,y+31,2,2);E(x+27,y+31,2,2); }   // com pose, os braços vêm depois das roupas (V2.1.2)
   if(!charPose&&TWR){TWR.bracos(g,x,y);g.fillStyle=c.skin;}   // V3.1: luz contínua na pele
 
   // Mangas bufantes por cima dos braços
@@ -1282,7 +1282,8 @@ if(hacc==='coala'){
     g.fillStyle='#223'; g.fillRect(x+14,y+24,3,1);
   }
 
-  g.fillStyle='rgba(255,111,181,.5)';g.fillRect(x+7,y+22,4,2);g.fillRect(x+21,y+22,4,2);
+  g.fillStyle='rgba(255,111,181,.32)';E(x+9,y+23,2.6,1.5);E(x+23,y+23,2.6,1.5);
+  g.fillStyle='rgba(255,180,205,.22)';E(x+8.5,y+22.6,1.4,.6);E(x+22.5,y+22.6,1.4,.6);
 
   if(d==='torrada'){ // a ponta fica entre os lábios, com o pão pendendo para fora
     g.save();g.translate(x+15.5,y+24);g.rotate(-.24);

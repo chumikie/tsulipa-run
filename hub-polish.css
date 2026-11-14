@@ -556,7 +556,7 @@ html body .studiop .stgrupo>b{margin:12px 0 6px}
 .stgrupo>div,.stgrupo>div:has(>.stchip:nth-child(4)):not(:has(>.stchip:nth-child(5))){display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .stgrupo .stchip{flex:0 1 auto;min-width:92px;min-height:44px;padding:6px 12px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
 .stgrupo .stchip .stsw{margin-right:2px}
-.studiop .btns:has(.stclique){position:sticky;bottom:-1px;margin:12px -6px 0;padding:10px 6px 8px;
+.studiop .btns:has(.stclique){position:relative;margin:12px -6px 0;padding:10px 6px 8px;
   background:linear-gradient(180deg,rgba(248,243,255,0),rgba(248,243,255,.96) 35%);z-index:2}
 .stclique{width:100%;max-width:320px;min-height:52px}
 .stgrupo .stchip{flex:1 1 calc(33.333% - 6px);min-width:0}
@@ -588,3 +588,7 @@ html body .trform .btn{align-self:center;min-height:48px}
 @media(max-width:360px){html body .hublogo{font-size:clamp(28px,9.4vw,34px);white-space:nowrap}}
 html body .studiop .stfalta{margin:2px auto 8px;padding:6px 12px;max-width:340px;border-radius:12px;background:#fff7e0;border:2px solid #ffe08a;color:#6b4a00;font-size:13px;font-weight:800;text-align:center}
 html body .studiop .stfalta.ok{background:#eaffde;border-color:#5ccf3a;color:#2c7a12}
+
+/* Estúdio: controles completos abaixo da fotografia. */
+#studioCv{height:auto;width:min(100%,320px);max-height:none;aspect-ratio:480/680}
+.studiop #studioCorpo{padding-bottom:env(safe-area-inset-bottom,12px)}

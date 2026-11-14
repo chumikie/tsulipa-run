@@ -129,6 +129,12 @@ async function teste(page,dir,label){
       await page.waitForFunction(()=>{const b=document.getElementById('battleOv');return b&&!b.hidden;});
       assert.match(await page.locator('#battleCorpo').innerText(),/Treino sem prêmio/,
         'arena acessível mas sem premiação até ativar RPC');
+      await page.locator('[data-battle="jogar"]').click();
+      await page.waitForFunction(()=>!!document.querySelector('#battleCorpo .battle-resultado'));
+      assert.equal(await page.locator('.battle-round').count(),3,'três rodadas jogáveis no treino');
+      assert.match(await page.locator('.battle-resultado').innerText(),/Sem recompensa/,
+        'o treino nunca promete estrelas');
+      await page.screenshot({path:path.join(__dirname,'qa-battle-'+label+'.png'),fullPage:false});
       await page.locator('[data-battle="fechar"]').click();
     }else{
       const calls=await page.evaluate(()=>window.abridos.slice(-1));

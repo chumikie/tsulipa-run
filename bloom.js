@@ -85,7 +85,7 @@
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
-        if(nome === 'jardim_regar') chuva.push({c:args.p_canteiro, t0:performance.now()});
+        if(nome === 'jardim_regar'){ chuva.push({c:args.p_canteiro, t0:performance.now()}); crescer(args.p_canteiro); }
         if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); som('colher'); }
         else { if(nome === 'jardim_plantar') for(var j = 0; j < 8; j++) festa.push({c:args.p_canteiro, i:Math.round(j * 14 / 8), t0:performance.now(), k:'broto'}); som(nome === 'jardim_regar' ? 'regar' : 'plantar'); }
       } else msg = r && r.erro === 'estrelas' ? t('estrelas') : t('erro');
@@ -118,7 +118,7 @@
         if(!r || !r.ok) return;
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(r.flor && SEM[r.flor]){ colhidas.push(t(r.flor)); for(var k = 0; k < 14; k++) festa.push({c:i, i:k, t0:performance.now(), k:r.flor}); }
-        else if(nome === 'jardim_regar') chuva.push({c:i, t0:performance.now()});
+        else if(nome === 'jardim_regar'){ chuva.push({c:i, t0:performance.now()}); crescer(i); }
       });
     });
     fila.then(function(){
@@ -188,6 +188,20 @@
   // ---------- o jardim desenhado ----------
   var COR = {sakura:['#ffc9e0','#ff93c0','#e85a94'], tulipa:['#ffa3ba','#f26a93','#d63d72'], girassol:['#ffe270','#f8b62a','#7a4a2b'], lunar:['#e8dbff','#ab8ef6','#fff3b8'], broto:['#b6ff3b','#6fcf5a','#3f9a46']};
   var chuva = [];
+  // Crescimento visível: depois das gotinhas, a planta sai da altura de antes e cresce até a nova, com "+1".
+  var cresce = {};
+  function crescer(i){ if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return; var c = canteiro(i); if(c) cresce[i] = {de:+c.regas || 0, t0:performance.now() + 450}; }
+  function regasNaTela(i, c){
+    var g = cresce[i]; if(!g) return c;
+    var u = (performance.now() - g.t0) / 1300;
+    if(u >= 1.6){ delete cresce[i]; return c; }
+    if(+c.regas <= g.de && u < 0) return c;
+    var e = Math.max(0, Math.min(1, u)); e = 1 - Math.pow(1 - e, 3);
+    var alvo = +c.regas || 0, de = Math.min(g.de, alvo);
+    var copia = {}; for(var k in c) copia[k] = c[k];
+    copia.regas = de + (alvo - de) * e;
+    return copia;
+  }
   function desenhar(){
     var cv = ov && ov.querySelector('#bloomCv'); if(!cv) return;
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, tm = performance.now() / 1000, hz = H * .46;
@@ -228,7 +242,10 @@
       var cx = 100 + i * 173, by = H * .82, c = canteiro(i);
       caixote(x, cx, by, !!(c && c.regado_hoje), i, escolha === i);
       if(c && noite && c.semente === 'lunar' && pronta(c)){ var hl = x.createRadialGradient(cx, by - 124, 4, cx, by - 124, 70); hl.addColorStop(0, 'rgba(232,219,255,.7)'); hl.addColorStop(1, 'rgba(232,219,255,0)'); x.fillStyle = hl; x.fillRect(cx - 70, by - 194, 140, 140); }
-      if(c) planta(x, cx, by - 16, c, tm, 1.22);
+      if(c) planta(x, cx, by - 16, regasNaTela(i, c), tm, 1.22);
+      if(c && cresce[i]){ var ug = (performance.now() - cresce[i].t0) / 1300;
+        if(ug > 0 && ug < 1.4){ x.save(); x.globalAlpha = Math.max(0, Math.min(1, ug * 3, (1.4 - ug) * 2.5)); x.fillStyle = '#2f9d5b'; x.strokeStyle = '#fff'; x.lineWidth = 4;
+          x.font = '700 22px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.strokeText('+1 🌱', cx, by - 150 - ug * 30); x.fillText('+1 🌱', cx, by - 150 - ug * 30); x.restore(); } }
       balao(x, cx, by, i, c, tm);
     }
     bichinhos(x, W, hz, tm, noite);
@@ -418,7 +435,7 @@
     cabeca(x, k, tx, ty, r + Math.sin(tm * 2.2 + cx) * .8 * e, tm, hora() >= 19 || hora() < 6);
   }
   function rr(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length) anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length || Object.keys(cresce).length) anim = requestAnimationFrame(f); })(); }
   window.bloomAbrir = abrir;
   // Resumo para o card do Hub (hub-novos.js): quantos canteiros pedem rega ou colheita, do último estado carregado.
   window.bloomResumo = function(){ return st ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };

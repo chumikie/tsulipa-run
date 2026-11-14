@@ -80,7 +80,16 @@
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
+    var toque=null,arrastou=false;
+    cv.addEventListener('pointerdown',function(e){toque={x:e.clientX,y:e.clientY};arrastou=false;},{passive:true});
+    cv.addEventListener('pointermove',function(e){
+      if(toque&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10)arrastou=true;
+    },{passive:true});
+    cv.addEventListener('pointercancel',function(){toque=null;arrastou=true;});
+    cv.addEventListener('pointerup',function(){toque=null;});
     cv.addEventListener('click',function(e){
+      if(arrastou){arrastou=false;return;}
+      if(!mapaAtivo()||mergulho)return;
       var l=achar(e);if(!l)return;
       if(cena==='mundo'){entrarRua(l.id);return;}
       if(l.voltar){voltarAoMundo();return;}
@@ -119,7 +128,7 @@
     });
     // Só intercepta Esc enquanto a rua do mapa está efetivamente aberta.
     document.addEventListener('keydown',function(e){
-      if(!e||e.key!=='Escape'||e.defaultPrevented||!mapaAtivo()||cena==='mundo')return;
+      if(!e||e.key!=='Escape'||e.defaultPrevented||!mapaAtivo()||(cena==='mundo'&&!mergulho))return;
       var alvo=e.target;
       if(alvo&&(/^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName||'')||alvo.isContentEditable))return;
       var jogo=document.getElementById('twPreviewJogo');
@@ -135,7 +144,7 @@
       if(hash==='#center-run'||hash==='#karaoke')return;
       var rua=e&&e.state&&e.state[CHAVE_RUA_HIST];
       if(rua&&CENAS_RUA[rua]){if(cena!==rua)mostrarCena(rua);}
-      else if(cena!=='mundo')mostrarCena('mundo');
+      else if(cena!=='mundo'||mergulho)mostrarCena('mundo');
     });
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
@@ -152,7 +161,7 @@
     else if(sec.parentNode!==cards)cards.appendChild(sec);}
   function abrir(sim,inicio){
     // Fechar o acordeão nunca deixa uma rua oculta presa no histórico.
-    if(!sim&&aberto&&cena!=='mundo')voltarAoMundo();
+    if(!sim&&aberto&&(cena!=='mundo'||mergulho))voltarAoMundo();
     aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
@@ -184,7 +193,7 @@
     return aberto&&(!menu||!menu.hidden)&&(!hub||!hub.hidden)&&!!document.getElementById('twMapa');
   }
   function entrarRua(destino){
-    if(cena!=='mundo'||!CENAS_RUA[destino])return;
+    if(!mapaAtivo()||mergulho||cena!=='mundo'||!CENAS_RUA[destino])return;
     // Cada visita cria apenas uma entrada extra; Voltar retorna ao mundo.
     try{
       var h=window.history;
@@ -201,12 +210,13 @@
   var mergulho=null;
   function mergulhar(destino){
     if(reduzMov||!ctx||!BAIRROS[destino]){mostrarCena(destino);return;}
-    mergulho={id:destino,t0:performance.now()};desenhar();
-    setTimeout(function(){if(mergulho&&mergulho.id===destino){mergulho=null;mostrarCena(destino);}},420);
+    var transicao={id:destino,t0:performance.now()};
+    mergulho=transicao;desenhar();
+    setTimeout(function(){if(mergulho===transicao){mostrarCena(destino);}},420);
   }
   function voltarAoMundo(){
-    if(cena==='mundo')return;
-    var rua=cena,sec=document.getElementById('twMapa');
+    if(cena==='mundo'&&!mergulho)return;
+    var rua=mergulho?mergulho.id:cena,sec=document.getElementById('twMapa');
     var voltar=sec&&sec.querySelector('.tw-mapa-voltar');
     mostrarCena('mundo');
     if(voltar&&document.activeElement===voltar){
@@ -221,7 +231,7 @@
   }
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
-    cena=destino;hover=null;centrado=false;
+    mergulho=null;cena=destino;hover=null;centrado=false;
     W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
     if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';}
     var sec=document.getElementById('twMapa');

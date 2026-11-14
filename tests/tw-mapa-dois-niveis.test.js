@@ -98,7 +98,9 @@ const state = {
  state:'idle',pw:null,dpw:null,rankI:0,sash:false,accSel:'',frame:0,charPose:''
 };
 state.window.window=state.window;
-vm.runInNewContext(js,state,{filename:'tw-mapa.js'});
+// Hook exclusivo do teste para exercitar a transição sem executar o desenho animado.
+const navigationCode=js.replace(/\}\)\(\);\s*$/, "window.testMapTransition=function(){reduzMov=false;desenhar=function(){};};})();");
+vm.runInNewContext(navigationCode,state,{filename:'tw-mapa.js'});
 assert.ok(drew.sources[0].includes('mapa-mundo.svg'));
 assert.ok(drew.characters>=3,'trio desenhado no mundo');
 assert.ok(drew.night>0,'iluminação noturna de Brasília');
@@ -170,3 +172,31 @@ assert.equal(canvas.height,1000,'reabre no mundo, sem rua oculta');
 // Os Idols da vitrine chegam com o visual em `avatar` (formato real de vitrine_idols).
 assert.match(js,/p\.av\|\|p\.avatar/,'passeantes aceitam o formato real da vitrine');
 console.log('OK: mundo/ruas, avatares, pets, alertas, horário BR, card original, Esc e history');
+
+// Arrastar o mapa não deve visitar o bairro sob o ponto onde o dedo foi solto.
+const beforeDrag=pushes;
+eventHandlers['canvas:pointerdown']({clientX:760,clientY:420});
+eventHandlers['canvas:pointermove']({clientX:800,clientY:420});
+eventHandlers['canvas:pointerup']();
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+assert.equal(pushes,beforeDrag,'arrasto não abre bairro');
+state.window.testMapTransition();
+const pending=[];
+state.setTimeout=(fn,ms)=>{if(ms===420)pending.push(fn);return pending.length;};
+eventHandlers['canvas:pointerdown']({clientX:800,clientY:420});
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+assert.equal(pushes,beforeDrag+1,'duplo toque durante a transição cria só uma entrada');
+historico.back();
+pending.shift()();
+assert.equal(canvas.height,1000,'transição cancelada não reabre a rua depois de Voltar');
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+eventHandlers['abrir:click']();
+assert.equal(historico.state.twWorldRuaV1,undefined,'fechar durante a transição consome seu histórico');
+pending.shift()();
+assert.equal(canvas.height,1000,'transição cancelada mantém o mundo fechado');
+eventHandlers['abrir:click']();
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+pending.shift()();
+assert.equal(canvas.height,760,'uma nova visita continua funcionando após os cancelamentos');
+console.log('OK: arrasto, duplo toque, cancelamento por Voltar e fechar, nova visita');

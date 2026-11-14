@@ -34,6 +34,31 @@
       rosa:'ピンク背景',cortina:'窓',nuvens:'くも',neon:'ネオン',normal:'ふつう',v:'ピース',coracao:'ハート',tchau:'バイバイ',suave:'やわらか',neon_l:'ネオン',por:'夕焼け',rosto:'顔',meio:'上半身',inteiro:'全身',nenhum:'なし',balao:'風船',microfone:'マイク',lightstick:'ペンライト',flor:'花',
       t_luz:'ライト撮影',t_quadro:'雑誌のポートレート',t_objeto:'小物の表紙'}
   };
+  // Tema da semana: muda todo domingo 0h de Brasília (mesma régua da música da semana). Só um selo local no mural.
+  var TEMAS = [
+    ['neon', function(e){ return e.fundo === 'neon' || e.luz === 'neon'; }],
+    ['ceu', function(e){ return e.fundo === 'nuvens'; }],
+    ['sol', function(e){ return e.luz === 'por'; }],
+    ['flores', function(e){ return String(e.objeto || '').indexOf('flor_') === 0; }],
+    ['palco', function(e){ return e.objeto === 'microfone' || e.objeto === 'lightstick'; }],
+    ['close', function(e){ return e.quadro === 'rosto'; }],
+    ['fofura', function(e){ return e.pose === 'coracao'; }]
+  ];
+  var T_TEMA = {
+    pt:{rot:'Tema da semana',dica:'Fotos no tema ganham um selo no mural.',ok:'Sua cena está no tema!',selo:'No tema',neon:'Noite neon',ceu:'Dia de céu azul',sol:'Pôr do sol',flores:'Semana das flores',palco:'Clima de palco',close:'Close de revista',fofura:'Fofura máxima'},
+    en:{rot:'Theme of the week',dica:'Photos on theme get a badge on the board.',ok:'Your scene matches the theme!',selo:'On theme',neon:'Neon night',ceu:'Blue sky day',sol:'Sunset',flores:'Flower week',palco:'Stage vibes',close:'Magazine close-up',fofura:'Max cuteness'},
+    es:{rot:'Tema de la semana',dica:'Las fotos en el tema ganan un sello en el mural.',ok:'¡Tu escena está en el tema!',selo:'En el tema',neon:'Noche neón',ceu:'Día de cielo azul',sol:'Atardecer',flores:'Semana de las flores',palco:'Ambiente de escenario',close:'Primer plano de revista',fofura:'Ternura máxima'},
+    id:{rot:'Tema minggu ini',dica:'Foto sesuai tema dapat lencana di papan.',ok:'Adeganmu sesuai tema!',selo:'Sesuai tema',neon:'Malam neon',ceu:'Hari langit biru',sol:'Senja',flores:'Minggu bunga',palco:'Suasana panggung',close:'Close-up majalah',fofura:'Super imut'},
+    th:{rot:'ธีมประจำสัปดาห์',dica:'รูปที่ตรงธีมจะได้ตราบนบอร์ด',ok:'ฉากของคุณตรงธีมแล้ว!',selo:'ตรงธีม',neon:'คืนนีออน',ceu:'วันฟ้าใส',sol:'พระอาทิตย์ตก',flores:'สัปดาห์ดอกไม้',palco:'บรรยากาศเวที',close:'โคลสอัปนิตยสาร',fofura:'น่ารักสุดๆ'},
+    ja:{rot:'今週のテーマ',dica:'テーマに合った写真は掲示板でバッジがつくよ。',ok:'シーンがテーマにぴったり！',selo:'テーマ',neon:'ネオンナイト',ceu:'青空の日',sol:'夕やけ',flores:'お花ウィーク',palco:'ステージ気分',close:'雑誌風アップ',fofura:'かわいさMAX'}
+  };
+  function temaSemana(){ var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5); return TEMAS[((sem % TEMAS.length) + TEMAS.length) % TEMAS.length]; }
+  function tt(k){ var d = T_TEMA[L()] || T_TEMA.pt; return d[k] || T_TEMA.pt[k] || k; }
+  function noTema(e){ try{ return !!(e && temaSemana()[1](e)); }catch(_){ return false; } }
+  function temaHtml(atual){
+    var tm = temaSemana(), ok = atual && noTema(atual);
+    return '<div class="sttema' + (ok ? ' ok' : '') + '"><b>🗓️ ' + esc(tt('rot')) + ': ' + esc(tt(tm[0])) + '</b><span>' + esc(ok ? '✨ ' + tt('ok') : tt('dica')) + '</span></div>';
+  }
   function L(){ return typeof LANG === 'string' && T[LANG] ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k] || k; }
   function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return FLORES[k] + ' ' + ((B && (B[L()] || B.pt)[k]) || t('flor')); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
@@ -87,9 +112,11 @@
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
+    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
-      if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
+      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
+      else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:esc_}).then(function(r){
@@ -121,7 +148,7 @@
     var ac = acertos(), d = pauta && pauta.detalhe;
     ov.querySelector('#studioPauta').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
       [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]]
-        .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' : '';
+        .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' + temaHtml(esc_) : temaHtml(esc_);
     var c = ov.querySelector('#studioCorpo'), hh = '';
     if(msg) hh += '<p class="stmsg" aria-live="polite">' + esc(msg) + '</p>';
     if(fase === 'foto'){
@@ -164,10 +191,10 @@
   function muralUI(){
     var box = ov && ov.querySelector('#studioMural'); if(!box || box.hidden) return;
     if(mural === null){ box.innerHTML = '<p class="perfcarr">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>'; return; }
-    var h = '<p class="stdica">' + esc(t('dicaMural')) + '</p>';
+    var h = temaHtml(null) + '<p class="stdica">' + esc(t('dicaMural')) + '</p>';
     if(!mural.length) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
     h += '<div class="stmural">' + mural.map(function(m, i){
-      return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption><b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' +
+      return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption>' + (noTema(m.escolhas) ? '<em class="stselo">✨ ' + esc(tt('selo')) + '</em>' : '') + '<b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' +
         '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
     }).join('') + '</div>';
     box.innerHTML = h;
@@ -227,7 +254,12 @@
     try{ if(typeof perfDesenharIdol === 'function') corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, e.quadro || 'inteiro'); }catch(er){}
     if(e.objeto !== 'balao' && e.objeto !== 'nenhum' && corpo){
       // A mão esquerda fica livre no V e no aceno; no coração vai ao peito.
-      var mao = e.pose === 'coracao' ? [10.3,28.5] : [3,31];
+      // Acessório junto do retrato: em close ele fica na borda inferior,
+      // em meio corpo ao lado do tronco, em corpo inteiro perto da mão.
+      var quadro = e.quadro || 'inteiro';
+      var mao = quadro === 'rosto' ? [25,22] :
+                quadro === 'meio' ? [27,27] :
+                e.pose === 'coracao' ? [10.3,28.5] : [3,31];
       x.save(); x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
       x.scale(corpo.scale, corpo.scale); x.rotate(-.18);
       x.lineCap = 'round'; x.lineWidth = 1.5;
@@ -249,10 +281,23 @@
         x.font = '9px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
         x.fillText(FLORES[e.objeto.slice(5)] || '',0,-11);
       }
-      x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(0,0,2,1.5,0,0,7); x.fill();
+      if(quadro === 'inteiro'){ x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(0,0,2,1.5,0,0,7); x.fill(); }
       x.restore();
     }
     luz(x, W, H, e.luz);
+  }
+  // Foto perfeita: estrelinhas que piscam em volta da polaroid (paradas com "reduzir movimento").
+  var calmo = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function brilhos(x, W, H, s){
+    var P = [[.1,.08],[.88,.12],[.06,.6],[.93,.52],[.18,.9],[.82,.86],[.5,.04]];
+    x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
+    P.forEach(function(q, i){
+      var a = calmo ? .8 : .35 + .65 * Math.abs(Math.sin(s * 2.4 + i * 1.3)), r = (calmo ? 1 : .8 + .4 * Math.sin(s * 3 + i)) * W * .028;
+      x.globalAlpha = a; x.fillStyle = i % 2 ? '#ffd23f' : '#ff6fb5';
+      x.beginPath(); for(var k = 0; k < 8; k++){ var ang = k * Math.PI / 4, rr = k % 2 ? r * .38 : r; x.lineTo(W * q[0] + Math.cos(ang) * rr, H * q[1] + Math.sin(ang) * rr); }
+      x.closePath(); x.fill();
+    });
+    x.restore();
   }
   function desenhar(){
     var cv = ov && ov.querySelector('#studioCv'); if(!cv) return;
@@ -262,6 +307,7 @@
       x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
       x.save(); x.beginPath(); x.rect(24, 24, W - 48, (W - 48) * 1.25); x.clip(); x.translate(24, 24); cena(x, W - 48, (W - 48) * 1.25, foto.escolhas, foto.t0 / 1000, foto.avatar); x.restore();
       var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
+      if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
       x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif'; x.fillText('⭐'.repeat(foto.estrelas) + '☆'.repeat(3 - foto.estrelas), W / 2, H - 76);
       x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
       x.fillText('Photo⭐Studio! · ' + (pauta ? t('t_' + pauta.detalhe.tipo) : '') + ' · ' + hojeBR().split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);
@@ -300,5 +346,6 @@
     window.jornalAbasIniciar = function(){ var r = abasOrig.apply(this, arguments); try{ capaNews(); }catch(e){} return r; };
   }
   window.studioAbrir = abrir;
+  window.TW_STUDIO_TEMA = { atual:function(){ return temaSemana()[0]; }, noTema:noTema };
   window.STUDIO_TR = T;
 })();

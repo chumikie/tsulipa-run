@@ -73,15 +73,21 @@
     laco();
   }
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} }
+  // Som do jogo (jogos-trilha.js); sem ele, os bipes de antes.
+  function som(k){
+    if(typeof twJogoSom === 'function') return twJogoSom(k);
+    if(k === 'colher'){ if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} return; }
+    if(typeof beep === 'function') try{ beep(k === 'regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}
+  }
   function acao(nome, args){
     ocupado = true; msg = ''; escolha = -1; idolIr(args && args.p_canteiro); ui();
     rpc(nome, args).then(function(r){
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
-        if(nome === 'jardim_regar') chuva.push({c:args.p_canteiro, t0:performance.now()});
-        if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
-        else if(typeof beep === 'function') try{ beep(nome === 'jardim_regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}
+        if(nome === 'jardim_regar'){ chuva.push({c:args.p_canteiro, t0:performance.now()}); crescer(args.p_canteiro); }
+        if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); som('colher'); }
+        else { if(nome === 'jardim_plantar') for(var j = 0; j < 8; j++) festa.push({c:args.p_canteiro, i:Math.round(j * 14 / 8), t0:performance.now(), k:'broto'}); som(nome === 'jardim_regar' ? 'regar' : 'plantar'); }
       } else msg = r && r.erro === 'estrelas' ? t('estrelas') : t('erro');
       return rpc('jardim_estado').then(function(e){ if(e && e.ok) st = e; });
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
@@ -112,12 +118,12 @@
         if(!r || !r.ok) return;
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(r.flor && SEM[r.flor]){ colhidas.push(t(r.flor)); for(var k = 0; k < 14; k++) festa.push({c:i, i:k, t0:performance.now(), k:r.flor}); }
-        else if(nome === 'jardim_regar') chuva.push({c:i, t0:performance.now()});
+        else if(nome === 'jardim_regar'){ chuva.push({c:i, t0:performance.now()}); crescer(i); }
       });
     });
     fila.then(function(){
-      if(colhidas.length){ msg = t('colhido') + ' ' + colhidas.join(' · '); if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
-      else if(typeof beep === 'function') try{ beep(880, .07, 'triangle', .04); }catch(e){}
+      if(colhidas.length){ msg = t('colhido') + ' ' + colhidas.join(' · '); som('colher'); }
+      else som('regar');
       return rpc('jardim_estado').then(function(e){ if(e && e.ok) st = e; });
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); laco(); });
   }
@@ -151,7 +157,7 @@
     h += '<ul class="bloomgrid">';
     for(var i = 0; i < 4; i++){
       var c = canteiro(i), florida = pronta(c);
-      h += '<li class="bloomcard' + (!c ? ' vazio' : florida ? ' florida' : '') + (escolha === i ? ' sel' : '') + '">' +
+      h += '<li class="bloomcard' + (!c ? ' vazio' : florida ? ' florida' : '') + (escolha === i ? ' sel' : '') + '" data-flor="' + esc(c ? c.semente : '') + '">' +
         icone(c ? c.semente : '', c ? Math.min(1, (+c.regas || 0) / Math.max(1, +c.precisa || 1)) : -1) +
         '<div class="bloomtxt"><small>' + esc(t('cant')) + ' ' + (i + 1) + '</small><b>' + esc(c ? t(c.semente) : t('vazio')) + '</b>' +
         (c ? (florida ? '<em>' + esc(t('pronta')) + '</em>' : pontos(c) + '<span class="bloomsr">' + esc(t('dia', c.regas, c.precisa)) + '</span>') : '') + '</div>';
@@ -180,8 +186,22 @@
     }
   }
   // ---------- o jardim desenhado ----------
-  var COR = {sakura:['#ffc9e0','#ff93c0','#e85a94'], tulipa:['#ffa3ba','#f26a93','#d63d72'], girassol:['#ffe270','#f8b62a','#7a4a2b'], lunar:['#e8dbff','#ab8ef6','#fff3b8']};
+  var COR = {sakura:['#ffc9e0','#ff93c0','#e85a94'], tulipa:['#ffa3ba','#f26a93','#d63d72'], girassol:['#ffe270','#f8b62a','#7a4a2b'], lunar:['#e8dbff','#ab8ef6','#fff3b8'], broto:['#b6ff3b','#6fcf5a','#3f9a46']};
   var chuva = [];
+  // Crescimento visível: depois das gotinhas, a planta sai da altura de antes e cresce até a nova, com "+1".
+  var cresce = {};
+  function crescer(i){ if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return; var c = canteiro(i); if(c) cresce[i] = {de:+c.regas || 0, t0:performance.now() + 450}; }
+  function regasNaTela(i, c){
+    var g = cresce[i]; if(!g) return c;
+    var u = (performance.now() - g.t0) / 1300;
+    if(u >= 1.6){ delete cresce[i]; return c; }
+    if(+c.regas <= g.de && u < 0) return c;
+    var e = Math.max(0, Math.min(1, u)); e = 1 - Math.pow(1 - e, 3);
+    var alvo = +c.regas || 0, de = Math.min(g.de, alvo);
+    var copia = {}; for(var k in c) copia[k] = c[k];
+    copia.regas = de + (alvo - de) * e;
+    return copia;
+  }
   function desenhar(){
     var cv = ov && ov.querySelector('#bloomCv'); if(!cv) return;
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, tm = performance.now() / 1000, hz = H * .46;
@@ -222,7 +242,10 @@
       var cx = 100 + i * 173, by = H * .82, c = canteiro(i);
       caixote(x, cx, by, !!(c && c.regado_hoje), i, escolha === i);
       if(c && noite && c.semente === 'lunar' && pronta(c)){ var hl = x.createRadialGradient(cx, by - 124, 4, cx, by - 124, 70); hl.addColorStop(0, 'rgba(232,219,255,.7)'); hl.addColorStop(1, 'rgba(232,219,255,0)'); x.fillStyle = hl; x.fillRect(cx - 70, by - 194, 140, 140); }
-      if(c) planta(x, cx, by - 16, c, tm, 1.22);
+      if(c) planta(x, cx, by - 16, regasNaTela(i, c), tm, 1.22);
+      if(c && cresce[i]){ var ug = (performance.now() - cresce[i].t0) / 1300;
+        if(ug > 0 && ug < 1.4){ x.save(); x.globalAlpha = Math.max(0, Math.min(1, ug * 3, (1.4 - ug) * 2.5)); x.fillStyle = '#2f9d5b'; x.strokeStyle = '#fff'; x.lineWidth = 4;
+          x.font = '700 22px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.strokeText('+1 🌱', cx, by - 150 - ug * 30); x.fillText('+1 🌱', cx, by - 150 - ug * 30); x.restore(); } }
       balao(x, cx, by, i, c, tm);
     }
     bichinhos(x, W, hz, tm, noite);
@@ -239,6 +262,28 @@
   // Enfeites fixos atrás dos canteiros: plaquinha do jardim e regador.
   function enfeites(x, W, H, hz, tm, noite){
     var i;
+    // Caminho de pedrinhas em perspectiva, por baixo do Idol e dos canteiros.
+    x.save();
+    var caminho=x.createLinearGradient(0,hz,0,H);
+    caminho.addColorStop(0,noite?'#8b89a1':'#eee3d4');
+    caminho.addColorStop(1,noite?'#aca5ad':'#fff4df');
+    x.fillStyle=caminho;
+    x.beginPath();x.moveTo(W*.49,hz+2);x.bezierCurveTo(W*.46,hz+67,W*.32,H-42,W*.28,H);
+    x.lineTo(W*.75,H);x.bezierCurveTo(W*.68,H-55,W*.54,hz+62,W*.53,hz+2);x.closePath();x.fill();
+    x.strokeStyle=noite?'rgba(250,240,255,.16)':'rgba(255,255,255,.64)';x.lineWidth=3;
+    for(i=0;i<6;i++){
+      var yy=hz+18+i*34,larg=12+i*6,xx=W*.51+Math.sin(i*.95)*9;
+      x.beginPath();x.ellipse(xx,yy,larg,4+i*1.4,-.1,0,Math.PI*2);x.stroke();
+    }
+    // Flores miúdas e arbustos laterais dão profundidade sem cobrir as ações.
+    for(i=0;i<18;i++){
+      var lado=i%2,px=(lado?W-18:18)+(lado?-1:1)*(i%3)*11;
+      var py=hz+18+(i*31)%(H-hz-26),tamanho=4+(i%3)*2;
+      x.fillStyle=noite?'#478c7a':'#60bf80';x.beginPath();x.ellipse(px,py,tamanho*2,tamanho,0,0,Math.PI*2);x.fill();
+      x.fillStyle=(i%3===0?'#ffd5ef':i%3===1?'#fff2aa':'#d5c7ff');
+      x.beginPath();x.arc(px,py-3,tamanho*.4,0,Math.PI*2);x.fill();
+    }
+    x.restore();
     // plaquinha
     var px = 44, py = hz + 44;
     x.fillStyle = '#a96a36'; rr(x, px - 3, py - 4, 6, 34, 3); x.fill();
@@ -390,7 +435,7 @@
     cabeca(x, k, tx, ty, r + Math.sin(tm * 2.2 + cx) * .8 * e, tm, hora() >= 19 || hora() < 6);
   }
   function rr(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length) anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length || Object.keys(cresce).length) anim = requestAnimationFrame(f); })(); }
   window.bloomAbrir = abrir;
   // Resumo para o card do Hub (hub-novos.js): quantos canteiros pedem rega ou colheita, do último estado carregado.
   window.bloomResumo = function(){ return st ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };

@@ -168,6 +168,34 @@ body:not(.jogando) #sb{display:none!important}
 #cust_roupa.cust input[type=color]{width:40px;height:40px;padding:3px;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);background:var(--card);cursor:pointer}
 #cust_roupa.cust .cbr{display:none}
 #cust_roupa.cust select:focus-visible,#cust_roupa.cust input:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+/* Editor do "Você" no mesmo molde da roupa: blocos Penteado / Rosto / Roupa com título */
+#cust.cust{display:grid;grid-template-columns:1fr;gap:6px;max-width:340px;margin:4px auto 12px;padding:10px;border-radius:16px;
+  background:color-mix(in srgb,var(--chip) 70%,transparent);font-size:12.5px;font-weight:800;color:var(--b1)}
+#cust.cust label{display:grid;grid-template-columns:92px minmax(0,1fr) auto;align-items:center;gap:6px;white-space:normal;text-align:left;line-height:1.15}
+#cust.cust label:not(:has(select)){grid-template-columns:92px auto}
+#cust.cust select{grid-column:2;height:40px;min-width:0;width:100%;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);
+  background:var(--card);color:var(--ink);padding:0 8px;font-size:13px;font-weight:700}
+#cust.cust input[type=color]{width:40px;height:40px;padding:3px;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);background:var(--card);cursor:pointer}
+#cust.cust .cbr{display:none}
+#cust.cust select:focus-visible,#cust.cust input:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+#cust.cust[hidden]{display:none}
+#cust.cust,#cust_roupa.cust{position:relative}
+.cust .custt{margin:2px 0 2px;font:400 14px/1.2 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;color:var(--b1);text-align:left;display:flex;gap:6px;align-items:center}
+.cust .custt:not(:first-child){margin-top:8px;padding-top:8px;border-top:2px dashed color-mix(in srgb,var(--b1) 22%,transparent)}
+.cust .custlinha{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:6px;text-align:left}
+.cust .custlinha #skins{display:flex;flex-wrap:wrap;gap:3px}
+.cust .custlinha .sw{width:24px;height:24px;margin:0}
+.cust .custpaleta{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-start;padding-left:98px;margin-top:-2px}
+.cust .custpaleta .sw{width:24px;height:24px;margin:0}
+.cust .custacoes{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.cust .custacoes .btn{display:inline-flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap;font-size:13px;padding:8px 14px;min-height:40px}
+.cust .custacoes .btn:disabled{opacity:.45;cursor:default}
+@media(max-width:360px){
+  #cust.cust label,#cust.cust label:not(:has(select)),.cust .custlinha{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}
+  #cust.cust select{grid-column:1}
+  .cust .custlinha{grid-template-columns:1fr}
+  .cust .custpaleta{padding-left:0}
+}
 /* Idiomas: "日本語" não quebra em duas linhas a 320 px */
 .lang{flex-wrap:wrap}.lang button{white-space:nowrap;min-height:32px}
 @media(max-width:360px){.lang{gap:3px}.lang button{padding:4px 7px}}
@@ -175,3 +203,35 @@ body:not(.jogando) #sb{display:none!important}
   #cust_roupa.cust label,#cust_roupa.cust label:not(:has(select)){grid-template-columns:minmax(0,1fr) auto;row-gap:3px}
   #cust_roupa.cust select{grid-column:1}
 }
+/* Charmaker estilo Charat: prévia grande fixa no topo do editor, expressões, abas de partes e miniaturas */
+#cust.cust .cmprev{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);align-items:center;gap:8px;padding:8px;margin:-2px -2px 2px;
+  border-radius:16px;background:var(--card);box-shadow:0 8px 18px -12px rgba(60,20,120,.45)}
+#cust.cust #cmCv{display:block;width:100%;height:auto;aspect-ratio:440/360;border-radius:14px;grid-row:1/3}
+#cust.cust .cmexpr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+#cust.cust .cmexpr button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid transparent;background:var(--chip);font-size:16px;line-height:1;cursor:pointer}
+#cust.cust .cmexpr button[aria-pressed="true"]{border-color:var(--b1);background:var(--card)}
+#cust.cust .cmexpr button[data-girar]{font-size:15px;font-weight:800;color:var(--b1)}
+#cust.cust .cmprev .custacoes{margin-top:0;flex-wrap:wrap;gap:5px}
+#cust.cust .cmprev .custacoes .btn{font-size:12px;padding:6px 10px;min-height:34px}
+@media(max-width:360px){#cust.cust .cmprev{gap:6px;padding:6px}#cust.cust .cmexpr{gap:3px}
+  #cust.cust .cmexpr button{width:27px;height:27px;font-size:13px}#cust.cust .cmprev .custacoes .btn{padding:6px 8px}}
+#cust.cust .cmabas{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin}
+#cust.cust .cmabas button{flex:0 0 auto;min-height:36px;border:0;border-radius:99px;padding:7px 12px;font:inherit;font-size:12.5px;font-weight:800;
+  background:var(--card);color:var(--b1);cursor:pointer;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--b1) 22%,transparent)}
+#cust.cust .cmabas button[aria-selected="true"]{background:var(--b1);color:#fff;box-shadow:none}
+#cust.cust .cmgrade{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+#cust.cust .cmmini{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;padding:4px 2px 5px;border-radius:14px;border:2px solid transparent;
+  background:var(--card);color:var(--ink);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+#cust.cust .cmmini canvas{width:60px;height:60px;border-radius:10px;background:linear-gradient(#ffffff,#f1e9ff)}
+#cust.cust .cmmini span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#cust.cust .cmmini[aria-pressed="true"]{border-color:var(--b1);box-shadow:0 0 0 3px color-mix(in srgb,var(--b1) 20%,transparent)}
+#cust.cust .cmmini:disabled{opacity:.45;cursor:default}
+#cust.cust .cmabas button:focus-visible,#cust.cust .cmmini:focus-visible,#cust.cust .cmexpr button:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+@media(max-width:360px){#cust.cust .cmgrade{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))}#cust.cust .cmmini canvas{width:54px;height:54px}}
+#cust.cust .cmmini{position:relative}
+#cust.cust .cmtranca{position:absolute;top:4px;right:6px;font-style:normal;font-size:13px}
+/* Você: roupa, parte de baixo, acessório e óculos são escolhidos pelas miniaturas; ficam só as cores e o Item */
+#cust:not([hidden]) ~ #cust_roupa #cout,
+#cust:not([hidden]) ~ #cust_roupa label:has(#cbaixo),
+#cust:not([hidden]) ~ #cust_roupa label:has(#chat),
+#cust:not([hidden]) ~ #cust_roupa label:has(#cgl){display:none}

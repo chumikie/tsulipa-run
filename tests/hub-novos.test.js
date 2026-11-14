@@ -23,3 +23,8 @@ assert.ok(!/contaRpc|localStorage|_supabase/.test(src),'sem RPC, save ou acesso 
 const idx=fs.readFileSync(path.join(raiz,'index.html'),'utf8');
 assert.ok(idx.indexOf('hub-novos.js')>idx.indexOf('battle.js?v=')&&idx.indexOf('hub-novos.js')>idx.indexOf('hub.js?v='),'carrega depois do hub e dos jogos');
 console.log('OK: jogos novos no Hub — seis idiomas, três cards, aviso do jardim, sem RPC');
+
+// Os nove jogos ficam em ordem alfabética na grade e no HTML (Center⭐Run! antes, em linha inteira).
+{const novos=fs.readFileSync(path.join(__dirname,'..','hub-novos.js'),'utf8');
+ assert.ok(novos.includes("var ORDEM = ['bloom','handshake','cafe','battle','karaoke','duo','studio','sora','gacha'];"),'ordem alfabética dos jogos');
+ assert.ok(novos.includes('cards(); ordenar();'),'reordena depois de criar os cards novos');}

@@ -10,7 +10,7 @@ const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const source=fs.readFileSync(path.join(root,'tw-avatar-hair.js'),'utf8');
 const cuts=['onduladom','onduladom2','onduladof'];
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-hair.js?v=9"></script>'),name+' loads original 2D hair');
+ assert(html.includes('<script src="./tw-avatar-hair.js?v=12"></script>'),name+' loads original 2D hair');
  for(const hook of ['back','top','fringe','bicolor'])assert(html.includes('TWAvatarHair.'+hook+'('),name+' retains '+hook+' render layer');
  assert(html.includes("b==='onduladof'?9:14"),name+' keeps female waves above Pixie length');
  assert(html.includes("b==='onduladom'||b==='onduladom2'?7"),name+' keeps male waves short');
@@ -60,7 +60,7 @@ assert.equal(hair.back(g,{hair:'#fff'},0,0,'chanel',E,T),false);
  // Sora Jump has an independent drawChar renderer. Its player character and
  // partner sprites must use the same shared base/top/fringe layers as Profile
  // and Karaoke, rather than silently falling back to the old duplicated hair.
- assert(sora.includes('<script src="./tw-avatar-hair.js?v=9"></script>'),'Sora Jump loads the shared hair renderer');
+ assert(sora.includes('<script src="./tw-avatar-hair.js?v=12"></script>'),'Sora Jump loads the shared hair renderer');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists');

@@ -219,9 +219,9 @@ html body .jornalp .jnpodios>.jnpodio .jnvazio::before{content:"🎤 ";}
 /* ===== Mapa da cidade (tw-mapa.js) ===== */
 html body #hub .tw-mapa{display:flex;flex-direction:column;gap:10px;width:100%;max-width:none;margin:2px 0 4px}
 /* o mapa ganha a sua linha no fim do "Meu mundo" (a grade do hub usa áreas nomeadas, em index2-skin.css) */
-html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm" "profile profile" "pet loja" "mapa mapa" "tj tj" "run run" "hand cafe" "karaoke duo" "sora gacha"}
+html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm" "profile profile" "pet loja" "mapa mapa" "tj tj" "run run" "bloom hand" "cafe battle" "karaoke duo" "studio sora" "gacha gacha"}
 html body #hub #hubCards #twMapa{grid-area:mapa}
-@media(min-width:700px){html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm tm" "profile pet loja" "mapa mapa mapa" "tj tj tj" "run run run" "hand cafe karaoke" "duo sora gacha"}}
+@media(min-width:700px){html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm tm" "profile pet loja" "mapa mapa mapa" "tj tj tj" "run run run" "bloom hand cafe" "battle karaoke duo" "studio sora gacha"}}
 html body #hub .tw-mapa-botao{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border-radius:20px;cursor:pointer;text-align:left;color:#fff;
  border:3px solid #fff;overflow:hidden;isolation:isolate;
  background:linear-gradient(100deg,rgba(74,156,240,.92),rgba(52,201,173,.88)),url(./mapa-mundo.svg?v=2) center 58%/150% auto no-repeat;
@@ -519,7 +519,6 @@ html body .studiop .stgrupo>b{font-size:12px;letter-spacing:.03em;color:#8b7bb8;
 html body #hub #hubCards .hubcard.tw-hubnovo-bloom{--hc1:#7edb9c;--hc2:#2fa57a}
 html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
-@media(max-width:699px){#hub #hubCards .tw-hubnovo-bloom{grid-column:1/-1}}
 
 
 /* Mapa Vivo⭐ — lote pequeno de legibilidade e toque móvel, após PR #88.
@@ -592,3 +591,44 @@ html body .studiop .stfalta.ok{background:#eaffde;border-color:#5ccf3a;color:#2c
 /* Estúdio: controles completos abaixo da fotografia. */
 #studioCv{height:auto;width:min(100%,320px);max-height:none;aspect-ratio:480/680}
 .studiop #studioCorpo{padding-bottom:env(safe-area-inset-bottom,12px)}
+
+
+/* Refinamento Photo / Battle / Bloom — 14/11. Apenas apresentação; sem novas RPCs. */
+.battle-slot .battle-selection{display:grid;gap:5px;min-width:0}
+.battle-slot .battle-selection select{width:100%;min-width:0}
+.battle-power{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;min-width:0}
+.battle-power::before{content:"";height:7px;background:#e9e1f8;border-radius:999px;grid-area:1/1}
+.battle-power i{grid-area:1/1;z-index:1;display:block;height:7px;max-width:100%;border-radius:999px;
+ background:linear-gradient(90deg,#ff78bd,#9e6eff);box-shadow:inset 0 0 0 1px rgba(90,51,166,.07)}
+.battle-power b{grid-area:1/2;min-width:32px;text-align:right;font-size:11px;color:#6847a5}
+.battle-showhud{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:5px 12px;
+ padding:8px 10px 5px;color:#513183;font-size:12px;font-weight:800}
+.battle-showhud b{color:#7b3ff0}
+.battle-showtrack{height:6px;margin:2px 10px 8px;border-radius:999px;overflow:hidden;background:#ebe1fa}
+.battle-showtrack i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff6fb5,#7b3ff0,#4dd8ff);border-radius:inherit}
+.bloomcard{--bloom-accent:#a98bf5;position:relative;overflow:hidden;
+ background:linear-gradient(160deg,#fff 60%,#f7f3ff 100%);
+ border-color:color-mix(in srgb,var(--bloom-accent) 27%,#f5efff)}
+.bloomcard[data-flor="sakura"]{--bloom-accent:#ed73b1}
+.bloomcard[data-flor="tulipa"]{--bloom-accent:#e8457a}
+.bloomcard[data-flor="girassol"]{--bloom-accent:#e6a11e}
+.bloomcard[data-flor="lunar"]{--bloom-accent:#9671df}
+.bloomcard.florida{background:linear-gradient(150deg,#fff 32%,#fff1fa 100%);border-color:var(--bloom-accent)}
+.bloomcard::before{content:"";position:absolute;right:-18px;top:-22px;width:95px;height:95px;border-radius:50%;
+ background:radial-gradient(circle,var(--bloom-accent),transparent 69%);opacity:.11;pointer-events:none}
+.bloomcard>*{position:relative}
+.bloomcard .bloomdots u.on{background:var(--bloom-accent)}
+.bloomcard .bloomtxt em{color:#9e327c}
+.bloomcard.florida .bloomic{filter:drop-shadow(0 3px 5px rgba(155,73,148,.18))}
+.bloomcard .btn:focus-visible,.bloomseed:focus-visible{outline:3px solid #7b3ff0;outline-offset:2px}
+@media (max-width:420px){
+  .battle-slot{gap:6px}
+  .battle-slot .battle-selection select{font-size:12px}
+  .battle-showhud{font-size:11.5px}
+  .bloomcard{padding:9px}
+}
+/* Photo⭐Studio!: tema da semana (selo local no mural) */
+html body .sttema{display:flex;flex-direction:column;gap:2px;background:#f0e9ff;border:2px dashed #c9b2ff;border-radius:14px;padding:7px 10px;margin:6px 0;color:#4c2a92;text-align:center;font-size:12.5px;font-weight:700}
+html body .sttema b{font-size:13px}
+html body .sttema.ok{background:#ecffe0;border-color:#9be27a;color:#2f6b1d}
+html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-radius:999px;background:#ffe14d;color:#5a3b00;font-style:normal;font-weight:800;font-size:11px}

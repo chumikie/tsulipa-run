@@ -33,13 +33,23 @@
         (aviso ? '<em class="hubalerta">!</em>' : '') + '</button>');
     });
   }
+  // Todos os jogos em ordem alfabética (o Center⭐Run! fica antes, em linha inteira).
+  // A ordem do HTML acompanha a grade, para teclado e leitor de tela seguirem a mesma sequência.
+  var ORDEM = ['bloom','handshake','cafe','battle','karaoke','duo','studio','sora','gacha'];
+  function ordenar(){
+    var box = document.getElementById('hubCards'); if(!box || !box.querySelector) return;
+    ORDEM.forEach(function(k){
+      var c = box.querySelector('[data-twnovo="' + k + '"]') || box.querySelector('[data-ir="' + k + '"]');
+      if(c) box.appendChild(c);
+    });
+  }
   // Mesmo padrão do bloom.js: embrulha o redesenho do Hub em vez de editar o hub.js.
   var orig = window.hubCardsUI;
-  if(typeof orig === 'function') window.hubCardsUI = function(){ var r = orig.apply(this, arguments); try{ cards(); }catch(e){} return r; };
+  if(typeof orig === 'function') window.hubCardsUI = function(){ var r = orig.apply(this, arguments); try{ cards(); ordenar(); }catch(e){} return r; };
   document.addEventListener('click', function(e){
     var b = e.target && e.target.closest && e.target.closest('[data-twnovo]'); if(!b) return;
     var j = JOGOS.filter(function(x){ return x.k === b.getAttribute('data-twnovo'); })[0];
     if(j && typeof window[j.abrir] === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx && sfx.card) sfx.card(); }catch(_){} window[j.abrir](); }
   });
-  window.TW_HUB_NOVOS = {txt:TXT, jogos:JOGOS.map(function(j){ return j.k; })};
+  window.TW_HUB_NOVOS = {txt:TXT, jogos:JOGOS.map(function(j){ return j.k; }), ordem:ORDEM};
 })();

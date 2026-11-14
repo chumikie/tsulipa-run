@@ -17,7 +17,7 @@ function bannerEstilo(av){
   if(baixo === 'bermuda') return 'A';
   if(baixo === 'saia') return 'B';
   if(corte === '' || corte === 'pixie') return 'A';
-  if(['longo', 'marias', 'rabo', 'chanel'].indexOf(corte) >= 0) return 'B';
+  if(['longo', 'marias', 'rabo', 'chanel', 'lateral', 'trancas', 'princesa', 'hime'].indexOf(corte) >= 0) return 'B';   // coque fica neutro
   return '';
 }
 function bannerMontarTrio(pool, padrao){   // pool já embaralhado; segue o padrão, completa com neutros e depois com qualquer um

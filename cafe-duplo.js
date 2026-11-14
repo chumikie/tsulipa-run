@@ -98,7 +98,7 @@
     var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('cfCv'), ms) : 1; cfT += d;
     if(cf && cf.fase === 'pedido'){
       esperando().forEach(function(e){ if(cfT - e.t0 > e.limite) servir(e.lado, true); });
-      cf.fila.forEach(function(e){ var bar = $('cfPac' + e.lado); if(bar && e.estado === 'espera') bar.style.width = Math.max(0, 100 - (cfT - e.t0) / e.limite * 100) + '%'; });
+      cf.fila.forEach(function(e){ var bar = $('cfPac' + e.lado); if(bar && e.estado === 'espera'){ var pc = Math.max(0, 100 - (cfT - e.t0) / e.limite * 100); if(typeof cfPacienciaUI === 'function') cfPacienciaUI(bar, pc, $('cfPacEmo' + e.lado)); else bar.style.width = pc + '%'; } });
       var antes = cf.fila.length;
       cf.fila = cf.fila.filter(function(e){ return !(e.estado === 'reacao' && cfT - e.tR > 90); });
       if(cf.fila.length !== antes){
@@ -124,7 +124,7 @@
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += '<div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.filter(function(q){ return q.lado === l; })[0];
-      return '<div class="cfduplo-p' + (e ? '' : ' vazio') + '"><small>' + (l ? '➡ ' : '⬅ ') + (e ? escHtml(e.cli.nome) : '…') + '</small><div class="hstempo"><i id="cfPac' + l + '" style="width:' + (e && e.estado === 'espera' ? 100 : 0) + '%"></i></div></div>';
+      return '<div class="cfduplo-p' + (e ? '' : ' vazio') + '"><small>' + (l ? '➡ ' : '⬅ ') + (e ? escHtml(e.cli.nome) : '…') + '</small><div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo' + l + '" aria-hidden="true">😊</b><i id="cfPac' + l + '" style="width:' + (e && e.estado === 'espera' ? 100 : 0) + '%"></i></div></div>';
     }).join('') + '</div>';
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)');
     var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0;

@@ -45,6 +45,14 @@ var torcida=null;                       // v3: flor levada hoje para a torcida (
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
 var modo='dia',arena=null,alvo=null,msgOk=false; // v2: Arena dos Idols (units salvas); alvo = unit desafiada
 function lang(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
+// Lightsticks no ritmo (só diversão local durante o show; o placar é sempre o do servidor).
+var T_RITMO={pt:['📣 Agitar lightstick','Lightsticks no ritmo: {n}/{t}','A plateia foi à loucura!','Boa torcida!','Toque na batida do anel na próxima vez!'],
+ en:['📣 Wave lightstick','Lightsticks on the beat: {n}/{t}','The crowd went wild!','Nice cheering!','Tap with the ring\'s beat next time!'],
+ es:['📣 Agitar lightstick','Lightsticks al ritmo: {n}/{t}','¡El público enloqueció!','¡Buena porra!','¡La próxima vez toca al ritmo del anillo!'],
+ id:['📣 Goyang lightstick','Lightstick sesuai ketukan: {n}/{t}','Penonton jadi heboh!','Sorakan bagus!','Lain kali ketuk mengikuti cincin!'],
+ th:['📣 โบกแท่งไฟ','โบกตรงจังหวะ: {n}/{t}','คนดูกรี๊ดกันใหญ่!','เชียร์ได้ดี!','ครั้งหน้าแตะตามจังหวะวงแหวนนะ!'],
+ ja:['📣 ペンライトをふる','リズムにあわせて: {n}/{t}','会場が大もりあがり！','ナイス応援！','つぎは輪っかのリズムでタップしてね！']};
+Object.keys(T_RITMO).forEach(function(l){if(!T[l])return;var v=T_RITMO[l];T[l].agitar=v[0];T[l].ritmo=v[1];T[l].ritmoTop=v[2];T[l].ritmoOk=v[3];T[l].ritmoPouco=v[4];});
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
 function esc(x){return typeof escHtml==='function'?escHtml(String(x)):String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function logado(){return typeof contaJ!=='undefined'&&!!contaJ&&typeof contaRpc==='function';}
@@ -128,11 +136,15 @@ function montar(){
   '<canvas id="battleStage" class="battle-stage" width="'+SW*2+'" height="'+SH*2+'" role="img" hidden></canvas>'+
   '<div id="battleCorpo" aria-live="polite"></div><canvas id="battleFoto" width="1120" height="840" hidden></canvas></div>';
  document.body.appendChild(ov);
+ // tocar no palco (ou apertar espaço) durante o show também agita o lightstick
+ ov.addEventListener('pointerdown',function(e){if(fase==='show'&&e.target&&e.target.id==='battleStage'){e.preventDefault();agitar();}});
+ document.addEventListener('keydown',function(e){if(fase==='show'&&ov&&!ov.hidden&&(e.key===' '||e.key==='Enter')&&!(e.target&&e.target.closest&&e.target.closest('button,select,input'))){e.preventDefault();agitar();}});
  ov.addEventListener('click',function(e){
    if(e.target===ov){fechar();return;}
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;
    var a=b.getAttribute('data-battle');
    if(a==='fechar'){fechar();return;}
+   if(a==='agitar'){agitar();return;}
    if(a==='pular'){fimDoShow();return;}
    if(ocupado)return;
    if(a==='jogar'){jogar();return;}
@@ -155,7 +167,7 @@ function montar(){
 }
 function abrir(){
  montar();ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
- rodadas=null;ocupado=false;msg='';servidor=false;fase='escalar';ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
+ rodadas=null;ritmo=null;ocupado=false;msg='';servidor=false;fase='escalar';ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
  // Os visuais dos cards vêm da vitrine que o Hub já usa (sem consulta nova só para o Battle).
  try{if(typeof hubIdolsCarregar==='function'&&!(typeof hubIdolsDados!=='undefined'&&hubIdolsDados)&&logado())hubIdolsCarregar();}catch(e){}
  if(logado()){
@@ -237,9 +249,11 @@ function salvarUnit(){
 function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
-   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><select data-battle-slot="'+i+'">'+
+   var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
+   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection"><select data-battle-slot="'+i+'">'+
     estado.cards.map(function(c){return '<option value="'+esc(c.nick)+'"'+(unit[i]===c.nick?' selected':'')+'>'+esc(c.nick)+
-     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select></label>';
+     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select>'+
+     '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></label>';
  }
  return h;
 }
@@ -325,7 +339,9 @@ function render(){
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
  if(fase==='show'){
-   area.innerHTML='<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
+   area.innerHTML='<div class="battle-showhud"><b id="battleLiveRodada">'+esc(nomeRound(0))+' · 1/3</b><span>'+esc(trB('my'))+' × '+esc(trB('other'))+'</span></div>'+
+    '<div class="battle-showtrack" aria-hidden="true"><i id="battleShowFill"></i></div>'+
+    '<p class="battle-sr" id="battleNarra"></p><div class="btns"><button type="button" class="btn battle-agitar" data-battle="agitar">'+esc(trB('agitar'))+'</button><button type="button" class="btn alt battle-skip" data-battle="pular">'+esc(trB('skip'))+'</button></div>';
    return;
  }
  var max=Number(estado.max_tentativas)||5,usadas=Number(estado.tentativas)||0;
@@ -342,6 +358,7 @@ function render(){
    texto+='<section class="battle-resultado"><h3>'+esc(cab)+' <span class="battle-placar">'+wins+' × '+losses+'</span></h3>';
    texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
       '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span></div>';}).join('')+'</div>';
+   texto+=ritmoResultado();
    texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
    '<button type="button" class="btn alt" data-battle="salvar">'+esc(trB('save'))+'</button> '+
    (emArena?'<button type="button" class="btn" data-battle="voltar">'+esc(trB('backArena'))+'</button></section>':
@@ -417,18 +434,54 @@ function jogar(){
 /* ---------- Show no palco ---------- */
 // Sons do próprio jogo (sfx respeita o mudo); se não existirem, o show segue em silêncio.
 var showSom=-1;
-function som(k){try{if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
+var SOM_NOVO={star:'ponto',hit:'perdeu',rank:'vitoria',over:'perdeu',photo:'flash'};
+function som(k){try{if(typeof twJogoSom==='function'&&SOM_NOVO[k])return twJogoSom(SOM_NOVO[k]);if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
+var ritmo=null,BATIDA=.5,BAT0=.25;
+function batidas(){return Math.floor((DUR*3-BAT0)/BATIDA)+1;}
+function agitar(){
+ if(fase!=='show'||!ritmo)return;
+ var t=agora()-showT0,b=Math.round((t-BAT0)/BATIDA),d=Math.abs(t-(BAT0+b*BATIDA));
+ if(b<0||b>=batidas())return;
+ if(d<.14&&!ritmo.pegas[b]){ritmo.pegas[b]=d<.07?2:1;ritmo.n++;ritmo.festa.push({t:t,b:ritmo.pegas[b]});
+   try{if(typeof twJogoSom==='function')twJogoSom('toque');}catch(e){}}
+ else ritmo.erros++;
+ var bt=ov&&ov.querySelector('[data-battle="agitar"]');if(bt){bt.classList.remove('pulsa');void bt.offsetWidth;bt.classList.add('pulsa');}
+}
+function ritmoDesenhar(x,t){
+ if(!ritmo)return;
+ var fase2=((t-BAT0)%BATIDA+BATIDA)%BATIDA/BATIDA,perto=Math.min(fase2,1-fase2),cx=SW/2,cy=SH-36;
+ x.save();x.strokeStyle='rgba(255,255,255,'+(.85-perto).toFixed(2)+')';x.lineWidth=4;
+ x.beginPath();x.arc(cx,cy,10+(1-fase2)*26,0,Math.PI*2);x.stroke();   // anel que fecha na batida
+ x.fillStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,.55)';x.beginPath();x.arc(cx,cy,9,0,Math.PI*2);x.fill();
+ ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // lightsticks que sobem a cada acerto
+   for(var k=0;k<(f.b===2?7:4);k++){var px=60+((k*97+Math.round(f.t*50))%(SW-120)),py=SH-30-u*120-(k%3)*8;
+     x.globalAlpha=1-u;x.strokeStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d'][k%4];x.lineWidth=5;x.lineCap='round';
+     x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.sin(u*9+k)*7,py-16);x.stroke();}
+   return true;});
+ x.globalAlpha=1;x.font=fonte(14);x.textAlign='right';contorno(x,'📣 '+ritmo.n+'/'+batidas(),SW-12,SH-12,'#fff');
+ x.restore();
+}
+function ritmoResultado(){
+ if(!ritmo||(!ritmo.n&&!ritmo.erros))return '';
+ var tot=batidas(),pc=ritmo.n/tot,frase=pc>=.75?trB('ritmoTop'):pc>=.35?trB('ritmoOk'):trB('ritmoPouco');
+ return '<p class="battle-ritmo">'+esc(trB('ritmo').replace('{n}',ritmo.n).replace('{t}',tot))+' · '+esc(frase)+'</p>';
+}
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
  pararShow();
  if(calmo()||typeof requestAnimationFrame!=='function'){fimDoShow();return;}
- fase='show';showT0=agora();showSom=-1;render();
+ fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[]};render();
  (function quadro(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;
    var t=agora()-showT0;
    if(t>=DUR*3+.15){fimDoShow();return;}
    var ri=Math.min(2,Math.floor(t/DUR));
+   var live=ov.querySelector('#battleLiveRodada'),progresso=ov.querySelector('#battleShowFill');
+   if(live&&live.getAttribute('data-ri')!==String(ri)){
+     live.setAttribute('data-ri',String(ri));live.textContent=nomeRound(ri)+' · '+(ri+1)+'/3';
+   }
+   if(progresso)progresso.style.width=Math.min(100,t/(DUR*3)*100).toFixed(1)+'%';
    if(ri>showSom&&t-ri*DUR>1.3){showSom=ri;som(rodadas[ri].ganhou?'star':'hit');
      // quem usa leitor de tela acompanha o placar de cada rodada (a área é aria-live)
      var nr=ov.querySelector('#battleNarra'),rr=rodadas[ri];
@@ -455,6 +508,14 @@ function fundoPalco(x,cor,t){
    x.globalAlpha=.3;x.fillStyle=lg;x.beginPath();x.moveTo(h[0]+(h[1]+bal)*300-14,0);x.lineTo(h[0]+(h[1]+bal)*300+14,0);
    x.lineTo(h[0]+78,250);x.lineTo(h[0]-78,250);x.closePath();x.fill();
  });
+ x.restore();
+ // Painel de luz em barras: movimento pequeno, sem imagens externas ou timers novos.
+ x.save();x.fillStyle=cor;
+ for(var eq=0;eq<17;eq++){
+   var pulsoLuz=.5+.5*Math.sin(t*3.3+eq*.83),altura=12+Math.round(pulsoLuz*34);
+   x.globalAlpha=.12+pulsoLuz*.09;
+   x.fillRect(48+eq*27,178-altura,13,altura);
+ }
  x.restore();
  // estrelinhas do telão
  x.fillStyle='rgba(255,255,255,.75)';
@@ -529,7 +590,12 @@ function desenharPalco(t){
  if(veredito){
    var wx=r.ganhou?mx:rx,s=1+Math.max(0,.5-(u-1.3))*1.2;
    x.save();x.translate(wx,88);x.scale(s,s);x.font=fonte(24);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
+   // Faíscas saindo de quem venceu a rodada (o show inteiro já some com "reduzir movimento").
+   var ef=u-1.3;if(ef>=0&&ef<.9){x.save();for(var k=0;k<12;k++){var an=k/12*Math.PI*2+i*.4,rr=26+ef*110;
+     x.globalAlpha=1-ef/.9;x.fillStyle=k%3===0?'#b6ff3b':k%3===1?'#fff3a8':'#ff6fb5';
+     x.beginPath();x.arc(wx+Math.cos(an)*rr,150+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
  }
+ if(fase==='show')ritmoDesenhar(x,tt);
 }
 function desenharPolaroid(){
  var cv=ov&&ov.querySelector('#battleFoto');if(!cv||!rodadas)return;

@@ -3,7 +3,7 @@
 'use strict';
 window.TWAvatarItems={
  capitao:function(g,x,y){   // quepe militar: copa larga e achatada, faixa dourada, cordão, pala preta e insígnia de estrela
-    g.save();
+    g.save();g.translate(0,2.2);   // assenta na cabeça (antes ficava pousado acima do cabelo)
     var capShade=g.createLinearGradient(x+5,y-8,x+25,y+6);capShade.addColorStop(0,'#1a1a25');capShade.addColorStop(.48,'#090b12');capShade.addColorStop(1,'#03040a');
     g.fillStyle=capShade;g.strokeStyle='rgba(255,231,178,.58)';g.lineWidth=.7;
     g.beginPath();g.moveTo(x+5,y+2.5);g.lineTo(x+0.5,y-4.5);g.quadraticCurveTo(x+15,y-11,x+29.5,y-4.5);g.lineTo(x+25,y+2.5);g.closePath();g.fill();g.stroke();

@@ -18,9 +18,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
-<script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script>
-<script src="./tw-avatar-roupa.js?v=9"></script>
+<script src="./tw-avatar-items.js?v=3"></script>
+<script src="./tw-avatar-hair.js?v=12"></script>
+<script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -40,7 +40,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=2">
+<link rel="stylesheet" href="./centerrun.css?v=8">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -77,7 +77,7 @@
 <link rel="stylesheet" href="./album.css?v=3">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=4">
-<link rel="stylesheet" href="./cafe.css?v=1">
+<link rel="stylesheet" href="./cafe.css?v=2">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -155,7 +155,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </style>
 <link rel="stylesheet" href="./tw-index2-preview.css?v=1" id="tw-index2-preview-css">
 <style id="twAntiFlash">body>*{visibility:hidden!important}</style><script>setTimeout(function(){var s=document.getElementById('twAntiFlash');if(s)s.remove();},6000);</script>
-<link rel="stylesheet" href="./index2-skin.css?v=6">
+<link rel="stylesheet" href="./index2-skin.css?v=7">
 <link rel="stylesheet" href="./karaoke-tickets.css?v=1">
 <link rel="stylesheet" href="./index2-launch-ui.css?v=11">
 <link rel="stylesheet" href="./tw-weekly-podium.css?v=9">
@@ -163,8 +163,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=38">
-<link rel="stylesheet" href="./battle.css?v=7">
+<link rel="stylesheet" href="./hub-polish.css?v=40">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=3"><'+'/script>');</script>
 </head>
@@ -172,7 +171,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <header>
   <a href="/" class="logo" title="Página inicial">
     <i>
-      <img class="tw-ico" src="icon-192.png?v=5" width="38" height="38" alt="" aria-hidden="true">
+      <img class="tw-ico" src="icon-76.png?v=1" width="38" height="38" alt="" aria-hidden="true">
     </i>
     <div><b translate="no">TsuLiPa<span class="st">⭐</span>World</b><small>ツリパ⭐ワールド</small></div>
   </a>
@@ -220,13 +219,21 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <div class="chars" id="chars"></div>
       
       <div class="cust" id="cust" hidden>
+        <div class="cmprev">
+          <canvas id="cmCv" width="440" height="360" role="img" aria-label="Prévia do visual"></canvas>
+          <div class="cmexpr" id="cmExpr" role="group" aria-label="Expressões"></div>
+          <div class="custacoes"><button type="button" class="btn alt" id="custSortear">🎲 <span>Sortear</span></button><button type="button" class="btn alt" id="custDesfazer" disabled>↩ <span>Desfazer</span></button></div>
+        </div>
+        <div class="cmabas" id="cmAbas" role="tablist" aria-label="Partes"></div>
+        <div class="cmgrade" id="cmGrade" role="tabpanel"></div>
+        <h4 class="custt"><span aria-hidden="true">🎨</span> <span>Cores</span></h4>
         <label>Cabelo <input type="color" id="chair" value="#ff7eb6"></label>
-        <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
-        <i class="cbr"></i>
-        <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
-        <i class="cbr"></i>
-        <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option></select></label>
-        <label>Detalhe <select id="cdet">
+        <div class="custpaleta" id="hairsw" role="group" aria-label="Cabelo"></div>
+        <div class="cmlista" hidden>
+          <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option><option value="lateral" data-twh="Rabo lateral">Rabo lateral</option><option value="trancas" data-twh="Tranças">Tranças</option><option value="coque" data-twh="Coque">Coque</option><option value="princesa" data-twh="Princesa">Princesa</option><option value="hime" data-twh="Hime">Hime</option></select></label>
+          <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select></label>
+          <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option><option value="cortina" data-twh="Cortina">Cortina</option><option value="curta" data-twh="Curtinha">Curtinha</option><option value="pontas" data-twh="Pontinhas">Pontinhas</option><option value="cacheada" data-twh="Cacheada">Cacheada</option></select></label>
+          <label>Detalhe <select id="cdet">
           <option value="" data-r="0">Nenhum</option>
           <option value="coques" data-r="0">Coques</option>
           <option value="gato" data-r="0" data-twh="Gato">Gato</option>
@@ -234,12 +241,20 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="olheiras" data-r="0" data-twh="Olheiras">Olheiras</option>
           <option value="chifres" data-r="0">Chifres</option>
         </select></label>
-        <i class="cbr"></i>
-        <span id="skins"></span>
+        </div>
+        <label>Mecha <input type="color" id="cstr" value="#4dd8ff"></label>
+        <div class="custlinha"><span>Pele</span><span id="skins"></span></div>
         <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
+        <div class="cmlista" hidden>
+          <label>Olhos <select id="colho"><option value="">Clássico</option><option value="redondo">Redondo</option><option value="brilhante">Brilhante</option><option value="pontinho">Pontinho</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option><option value="estrela">Estrela</option><option value="cilios">Cílios</option><option value="gotinha">Gotinha</option></select></label>
+          <label>Sobrancelha <select id="csobr"><option value="">Nenhuma</option><option value="fina">Fina</option><option value="cheia">Cheia</option><option value="arqueada">Arqueada</option><option value="preocupada">Preocupada</option><option value="decidida">Decidida</option></select></label>
+          <label>Boca <select id="cboca"><option value="">Clássica</option><option value="sorriso">Sorriso</option><option value="gato">Gatinho ω</option><option value="aberta">Aberta</option><option value="dentinho">Dentinho</option><option value="lingua">Linguinha</option><option value="triangulo">Triângulo</option><option value="biquinho">Biquinho</option></select></label>
+          <label>Bochecha <select id="cbochecha"><option value="">Rosadinha</option><option value="sem">Sem</option><option value="forte">Corada</option><option value="sardas">Sardas</option><option value="estrelinha">Estrelinha</option></select></label>
+        </div>
       </div>
 
-        <div class="cust" id="cust_roupa">
+      <div class="cust" id="cust_roupa">
+        <h4 class="custt"><span aria-hidden="true">👗</span> <span>Roupa</span></h4>
         <label>Roupa <select id="cout">
           <option value="" data-r="0">Trainee</option>
           <option value="seifuku" data-r="450">Debut (Team)</option>
@@ -260,6 +275,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="boina" data-r="1000">Boina (Senbatsu)</option>
           <option value="bandaid" data-r="2800">Band-aid (tCenter)</option>
 		  <option value="coala" data-r="3900">Tiara (wCenter)</option><option value="capitao" data-r="15000">Quepe (Capitão)</option>
+          <option value="tiara" data-r="0">Arco estelar</option>
         </select></label>
         <label>Óculos <select id="cgl">
           <option value="" data-r="0">Sem</option>
@@ -379,10 +395,10 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=11"></script>
+<script src="./centerrun.js?v=17"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=28"></script>
-<script src="./perfil.js?v=14"></script>
+<script src="./perfil.js?v=16"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -408,25 +424,35 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 })();
 </script>
 <script src="./handshake.js?v=12"></script>
-<script src="./cafe.js?v=13"></script>
+<script src="./cafe.js?v=16"></script>
 <script src="./cafe-gorjeta.js?v=1"></script>
 <script src="./cafe-vip.js?v=1"></script>
-<script src="./cafe-duplo.js?v=2"></script>
+<script src="./cafe-duplo.js?v=3"></script>
 <script src="./duo.js?v=2"></script>
 <script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
 <script src="./hub.js?v=19"></script>
 <script src="./hub-layout.js?v=4"></script>
 <script src="./mapa-textos.js?v=3"></script>
-<script src="./tw-mapa.js?v=47"></script>
-<script src="./bloom.js?v=6"></script>
+<script src="./tw-mapa.js?v=49"></script>
+<script src="./bloom.js?v=8"></script>
 <script src="./flores.js?v=1"></script>
 <script src="./shop.js?v=6"></script>
 <script src="./jornal.js?v=14"></script>
-<script src="./studio.js?v=5"></script>
-<script src="./battle.js?v=9"></script>
-<script src="./hub-novos.js?v=1"></script>
-<script src="./banner.js?v=5"></script>
+<script src="./studio.js?v=7"></script>
+<script>
+/* Idol⭐Battle! sob demanda: o CSS e o JS (≈60 KB) só baixam no primeiro toque.
+   O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
+(function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
+  if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=8'),arq('script','./battle.js?v=11')]);
+    p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
+  window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
+</script>
+<script src="./jogos-trilha.js?v=1"></script>
+<script src="./hub-novos.js?v=2"></script>
+<script src="./charmaker.js?v=7"></script>
+<script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
@@ -1547,8 +1573,8 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
 PERF_OSHI_TIMES.forEach(function(t){ t[1].forEach(function(m){ PERF_OSHI[perfOshiKey(m[0])] = [m[1], m[0], m[2]]; }); });
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_TSL = ['#9b30d9', '#5cc72c', '#4169e1'];   // roxo Tsu, verde Lirika, azul Pati
-var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'' };
-var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat'];
+var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'', olho:'', boca:'', bochecha:'', sobrancelha:'' };
+var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat', 'olho', 'boca', 'bochecha', 'sobrancelha'];
 
 var PERF_DICT = window.TW_I18N.tables.PERF_DICT;;
 var PERF_DICT2 = window.TW_I18N.tables.PERF_DICT2;;

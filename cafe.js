@@ -97,7 +97,21 @@ function cfPedido(r, n){
   if(typeof eventoAtual === 'function' && r() < .5){ var ev = eventoAtual(); p.base = ev.base; if(p.doce >= 0) p.doce = ev.doce; }   // pedido da semana
   return p;
 }
+// Barra de paciência mais expressiva: cor de verde a vermelho, rostinho que muda e pulso no fim (só visual).
+function cfPacienciaUI(bar, pc, emo){
+  bar.style.width = pc + '%';
+  bar.style.background = 'hsl(' + Math.round(pc * 1.25) + ',82%,' + (pc < 25 ? 56 : 52) + '%)';
+  var box = bar.parentNode, cara = pc > 60 ? '😊' : pc > 30 ? '😐' : '😟';
+  emo = emo || (box && box.querySelector('b'));
+  if(emo && emo.textContent !== cara) emo.textContent = cara;
+  if(box){ box.classList.toggle('cfpac-fim', pc < 25); var v = String(Math.round(pc)); if(box.getAttribute('aria-valuenow') !== v && Math.round(pc) % 10 === 0) box.setAttribute('aria-valuenow', v); }
+}
 function cfPaciencia(){ return cf && cf.servidor && cf.servidor.limite_segundos ? cf.servidor.limite_segundos * 60 : Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
+// Som do Café: o de jogos-trilha.js quando existe; senão o do Center⭐Run!.
+function cfSom(novo, antigo){
+  if(typeof twJogoSom === 'function') return twJogoSom(novo);
+  if(typeof sfx !== 'undefined' && sfx && sfx[antigo]) try{ sfx[antigo](); }catch(e){}
+}
 function cfAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
@@ -189,7 +203,7 @@ function cfEscolher(tipo, i){
   cf.monta[tipo] = cf.monta[tipo] === i && tipo === 'doce' ? -1 : i;
   if(tipo === 'doce') cf.doceT = cfT;
   cf.aviso = '';
-  if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
+  cfSom('toque','card');
   cfUI();
 }
 // O reencontro não altera perguntas, recompensas nem a memória do Handshake.
@@ -263,11 +277,11 @@ function cfServir(saiu){
         cf.conq.push('📒 '+tr('Caderno completo'));
     }
     for(var k=0;k<6;k++)cf.hearts.push({x:.2+Math.random()*.2,y:.55,v:.004+Math.random()*.004,t:0,e:['💖','☕','✨'][k%3]});
-    if(sfx&&sfx.star)try{sfx.star();}catch(e){}
+    cfSom('servir','star');
   }else{
     cf.combo=0;cf.vidas--;
     cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
-    if(sfx&&sfx.hit)try{sfx.hit();}catch(e){}
+    cfSom('perdeu','hit');
   }
   if(typeof eventoPetReagir==='function')eventoPetReagir('cafe',cfT,false,certo?(cf.combo>=3?'combo':'acerto'):'erro');
   cf.ok=certo;cf.fase='reacao';cf.t0=cfT;cfUI();
@@ -306,7 +320,7 @@ function cfLoop(ms){
     var dt = cfT - cf.t0;
     if(cf.fase === 'pedido' && cf.cli && cf.cli.vaiRoubar && !cf.cli.roubou && cf.monta.doce >= 0 && cfT - cf.doceT > 45 && typeof eventoPet === 'function' && eventoPet()){   // o pet pega o docinho!
       var pt = eventoPet(); cf.cli.roubou = true; cf.monta.doce = -1; cf.rouboT = cfT; cf.aviso = '🐾 ' + tr('{p} pegou o docinho! Coloque outro.').replace('{p}', pt.nome || tr('Seu pet')); cfUI(); }
-    if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) bar.style.width = Math.max(0, 100 - dt / cfPaciencia() * 100) + '%'; }
+    if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) cfPacienciaUI(bar, Math.max(0, 100 - dt / cfPaciencia() * 100)); }
     else if(cf.fase === 'reacao' && dt > 90 && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
   }
   if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
@@ -486,7 +500,7 @@ function cfUI(){
         (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
     }
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
-    h += '<div class="hstempo"><i id="cfPac" style="width:100%"></i></div>';
+    h += '<div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo" aria-hidden="true">😊</b><i id="cfPac" style="width:100%"></i></div>';
     if(cf.fase === 'pedido' && cf.assinatura && !cf.assinaturaUsada && cf.cli &&
        cf.cli.pedido.base === cf.assinatura.base && cf.cli.pedido.enf === cf.assinatura.enf &&
        (cf.monta.base !== cf.assinatura.base || cf.monta.enf !== cf.assinatura.enf)){

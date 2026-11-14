@@ -17,7 +17,8 @@ JS = r"""
  const linhas=[
   ['Cortes', ['','pixie','onduladom','onduladom2','onduladof','chanel','longo','marias','rabo','cacheado'].map(b=>({back:b,front:'bagunca',hair:'#7b3ff0'}))],
   ['Franjas', ['bagunca','reta','lateral','espetada','arcoiris','ondulada','risca','repicada'].map(f=>({back:'longo',front:f,hair:'#ff6fb5'}))],
-  ['Olhos', ['','brilhante','gatinho','sereno','classico'].flatMap(o=>[{olho:o,eye:'#4169e1',back:'chanel'},{olho:o,eye:'#7a3b1e',expr:3,back:'chanel'}])],
+  ['Olhos', ['','redondo','brilhante','pontinho','gatinho','sereno'].flatMap(o=>[{olho:o,eye:'#4169e1',back:'chanel'},{olho:o,eye:'#7a3b1e',expr:3,back:'chanel'}])],
+  ['Bocas e bochechas', ['','sorriso','gato','aberta','dentinho'].flatMap(b=>[{boca:b,back:'rabo'},{boca:b,expr:2,back:'rabo'}]).concat(['sem','forte','sardas','estrelinha'].map(k=>({bochecha:k,back:'marias'})))],
   ['Roupas', ['','seifuku','estrelado','y2k','zipper','sweet','citypop'].flatMap(o=>[{out:o,baixo:'saia',back:'chanel'},{out:o,baixo:'bermuda',back:''}])],
   ['Expressões e poses', [0,1,2,3,4,5,6].map(e=>({expr:e,back:'rabo'})).concat(['v','tchau','coracao'].map(p=>({pose:p,back:'marias'})))],
   ['Peles, detalhes, acessórios', ['#ffe0c7','#f1c27d','#c68642','#8d5524','#5a3825'].map(s=>({skin:s,back:'cacheado',hair:'#2a1a12'})).concat(['coques','gato','elfo','chifres','tulipa'].map(d=>({det:d,back:'longo'})),['presilhas','fones','boina','coala','capitao','palha'].map(h=>({hat:h,back:''})),[{gl:'redonda'},{gl:'quadrada'},{legcol:'#ffffff'},{legcol:'#ff9ccd'}])]

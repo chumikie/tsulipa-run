@@ -8,15 +8,20 @@ const raiz = path.join(__dirname, '..');
 const ler = f => fs.readFileSync(path.join(raiz, f), 'utf8');
 const ctx = {}; vm.runInNewContext(ler('tw-avatar-rosto.js'), ctx);
 const R = ctx.TWAvatarRosto;
-assert.deepEqual(Array.from(R.formas), ['', 'brilhante', 'gatinho', 'sereno', 'classico']);
-assert.equal(R.forma({olho:'xyz'}), '', 'forma desconhecida vira o padrão');
-// Clássico devolve false: o drawChar desenha os olhos de pixel de antes.
-assert.equal(R.rosto({}, {olho:'classico'}, 0, 0, 0), false);
-// Expressões fora de 0/2/3 continuam no desenho antigo.
-const g = new Proxy({}, {get:(t, k) => k === 'createLinearGradient' ? () => ({addColorStop(){}}) : () => {}, set:() => true});
+assert.deepEqual(Array.from(R.olhos), ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno']);
+assert.deepEqual(Array.from(R.bocas), ['', 'sorriso', 'gato', 'aberta', 'dentinho']);
+assert.deepEqual(Array.from(R.bochechas), ['', 'sem', 'forte', 'sardas', 'estrelinha']);
+assert.equal(R.forma({olho:'xyz'}), '', 'forma desconhecida vira o padrão (o rosto de antes)');
+// O padrão repete o rosto de antes pixel por pixel: mesmos retângulos do drawChar antigo.
+const feitos = [];
+const g = new Proxy({}, {get:(t, k) => k === 'createLinearGradient' ? () => ({addColorStop(){}}) : (k === 'fillRect' ? (...a) => feitos.push(a.join(',')) : () => {}), set:() => true});
 assert.equal(R.rosto(g, {eye:'#123456'}, 0, 0, 0), true);
+for (const r of ['10,17,3,1', '18,17,3,1', '10,18,3,4', '18,18,3,4', '11,19,2,2', '19,19,2,2', '14,24,3,1']) assert.ok(feitos.includes(r), 'retângulo do rosto clássico ' + r);
 assert.equal(R.rosto(g, {}, 0, 0, 1), false);
 assert.equal(R.rosto(g, {}, 0, 0, 5), false);
+// Bochecha vazia chama o desenho próprio de cada página.
+let chamou = false; R.bochecha(g, {}, 0, 0, () => { chamou = true; }); assert.ok(chamou);
+chamou = false; R.bochecha(g, {bochecha:'sem'}, 0, 0, () => { chamou = true; }); assert.ok(!chamou);
 // Sem escolha de saia/bermuda, Zipper, Sweet e Estrelado continuam como eram.
 for (const o of ['zipper', 'sweet', 'estrelado']) assert.equal(R.baixoEspecial(g, {}, 0, 0, o, '#fff', () => {}), false, o);
 assert.equal(R.baixoEspecial(g, {baixo:'bermuda'}, 0, 0, 'zipper', '#fff', () => {}), true);
@@ -29,5 +34,6 @@ for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) {
   assert.match(s, /TWAvatarRosto\.elfo\(g,c,x,y\)/, f + ': orelha de elfo');
 }
 for (const f of ['index.html', 'karaoke-time.html', 'sora-jump.html']) assert.ok(ler(f).includes('tw-avatar-rosto.js?v='), f + ' carrega o módulo');
-assert.match(ler('index.html'), /<select id="colho">/);
+for (const id of ['colho', 'cboca', 'cbochecha']) assert.ok(ler('index.html').includes('<select id="' + id + '">'), id);
+for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) assert.match(ler(f), /TWAvatarRosto\.bochecha\(g,c,x,y,bochechaPadrao\)/, f + ': bochecha');
 console.log('avatar-rosto ok');

@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
-<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=1"></script>
+<script src="./tw-avatar-hair.js?v=9"></script><script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=2"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -969,7 +969,8 @@ if(hacc==='coala'){
     g.fillStyle='#223'; g.fillRect(x+14,y+24,3,1);
   }
 
-  g.fillStyle='rgba(255,111,181,.5)';g.fillRect(x+7,y+22,4,2);g.fillRect(x+21,y+22,4,2);
+  function bochechaPadrao(){g.fillStyle='rgba(255,111,181,.5)';g.fillRect(x+7,y+22,4,2);g.fillRect(x+21,y+22,4,2);}
+  if(typeof TWAvatarRosto!=='undefined')TWAvatarRosto.bochecha(g,c,x,y,bochechaPadrao);else bochechaPadrao();   // bochecha à escolha (tw-avatar-rosto.js)
 
 	if(c.gl){
   g.strokeStyle='#222'; g.lineWidth=1.2; g.beginPath();

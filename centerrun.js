@@ -49,7 +49,7 @@ var CH=[
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
 function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT;if(window.ktTickets&&window.ktTickets.renderBadge)window.ktTickets.renderBadge();}
-var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cbaixo:'baixo',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl',colho:'olho'};
+var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cbaixo:'baixo',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl',colho:'olho',cboca:'boca',cbochecha:'bochecha'};
 function dk(){
   return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 }
@@ -148,6 +148,8 @@ function pick(i){
   if ($('cfront')) $('cfront').value = source.front || 'bagunca';
   if ($('cdet')) $('cdet').value = source.det || '';
   if ($('colho')) $('colho').value = source.olho || '';
+  if ($('cboca')) $('cboca').value = source.boca || '';
+  if ($('cbochecha')) $('cbochecha').value = source.bochecha || '';
   
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
   refreshAcc();   // V2.1.3: itens por personagem
@@ -1290,8 +1292,8 @@ if(hacc==='coala'){
     g.fillStyle='#223'; g.fillRect(x+14,y+24,3,1);
   }
 
-  g.fillStyle='rgba(255,111,181,.32)';E(x+9,y+23,2.6,1.5);E(x+23,y+23,2.6,1.5);
-  g.fillStyle='rgba(255,180,205,.22)';E(x+8.5,y+22.6,1.4,.6);E(x+22.5,y+22.6,1.4,.6);
+  function bochechaPadrao(){g.fillStyle='rgba(255,111,181,.32)';E(x+9,y+23,2.6,1.5);E(x+23,y+23,2.6,1.5);g.fillStyle='rgba(255,180,205,.22)';E(x+8.5,y+22.6,1.4,.6);E(x+22.5,y+22.6,1.4,.6);}
+  if(typeof TWAvatarRosto!=='undefined')TWAvatarRosto.bochecha(g,c,x,y,bochechaPadrao);else bochechaPadrao();   // bochecha à escolha (tw-avatar-rosto.js)
 
   if(d==='torrada'){ // a ponta fica entre os lábios, com o pão pendendo para fora
     g.save();g.translate(x+15.5,y+24);g.rotate(-.24);

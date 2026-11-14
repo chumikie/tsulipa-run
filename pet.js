@@ -1662,6 +1662,30 @@ function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
     cor:jeito === 'tsu' ? '#ffdb81' : jeito === 'lirika' ? '#b8f2ba' : '#b7ddff',
     u:u, alfa:alfa };
 }
+// Lembrança de cena na estante JÁ EXISTENTE. Apenas Canvas 2D do Camarim,
+ // sem novo recurso, foto persistida, download automático ou timer.
+function petVidaLembrancaCenario(x){
+  if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetoCamarim!=='function')return false;
+  var a=TWVidaCidade.objetoCamarim();if(!a)return false;
+  var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
+  x.save();x.translate(193+dx,124);
+  if(a.tipo==='flor'){ // vasinho na prateleira
+    x.fillStyle='#e5b2dd';x.beginPath();x.moveTo(-7,7);x.lineTo(7,7);
+    x.lineTo(5,19);x.lineTo(-5,19);x.closePath();x.fill();
+    x.strokeStyle='#6da679';x.lineWidth=1.7;x.beginPath();x.moveTo(0,7);x.lineTo(0,-3);x.stroke();
+    var cores={sakura:'#ff9ad8',tulipa:'#ed8cb7',girassol:'#ffe16b',lunar:'#b7a6ff'};
+    x.fillStyle=cores[a.flor]||'#ffb5d6';
+    for(var i=0;i<5;i++){var z=i*Math.PI*2/5;x.beginPath();
+      x.arc(Math.cos(z)*4,Math.sin(z)*4-5,3.1,0,Math.PI*2);x.fill();}
+    x.fillStyle='#fff3ad';x.beginPath();x.arc(0,-5,2,0,Math.PI*2);x.fill();
+  }else if(a.tipo==='foto'){ // mini porta-retratos, não duplica a fotografia real
+    x.save();x.rotate(-.08);x.fillStyle='#fff';x.fillRect(-10,-9,20,25);
+    x.fillStyle='#e2caff';x.fillRect(-7,-6,14,15);
+    x.fillStyle='#9e76d9';x.font='12px sans-serif';x.textAlign='center';x.fillText('★',0,5);
+    x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-10,-9,20,25);x.restore();
+  }
+  x.restore();return true;
+}
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;
   if(!petBg || petBgOshi !== OSHI || petBgFase !== petLuzFase()) petMakeBg();
@@ -1682,6 +1706,7 @@ function petDrawRoom(){
   petLuzAmbiente(x);   // manhã clara, fim de tarde alaranjado, noite com abajur
   petArrumoDesenhar(x);
   petRoomBack(x, p);   // tema da temporada + brilho de estágio (V2.1)
+  petVidaLembrancaCenario(x); // foto ou flor já confirmada, na estante (nunca em save)
   petLifeSofa(x, false);
   var poseDesenho = petLifePoseDesenho(petT), pose = poseDesenho.sit > .001 ? poseDesenho : null;
   if(!petLifePose && !pose) petLifeSofa(x, true); // em pé, o sofá inteiro fica atrás do Idol

@@ -48,6 +48,32 @@ function registrar(tipo,info){
 }
 function estado(){conferir();return entradas.map(function(e){return {tipo:e.tipo,icone:e.icone,cap:e.cap,flor:e.flor};});}
 function capitulos(){conferir();return [0,1,2].map(function(n){return entradas.some(function(e){return e.cap===n;});});}
+// A cena consulta um resumo sem nomes, fotos ou identificadores do jogador.
+ // Nada acontece antes de uma ação confirmada por servidor ou foto voluntária.
+var CENAS={
+ harajuku:['cafe'],palco:['handshake'],fofo:['bloom_plantar','bloom_regar','bloom_colher'],
+ ceu:['studio_clique','studio_publicar'],arena:['battle']
+};
+function sinalCena(bairro){
+ if(!conferir()||!CENAS[bairro])return null;
+ for(var i=entradas.length-1;i>=0;i--){
+   var e=entradas[i];
+   if(CENAS[bairro].indexOf(e.tipo)>=0)return {tipo:e.tipo,flor:e.flor};
+ }
+ return null;
+}
+function objetoCamarim(){
+ if(!conferir())return null;
+ // A flor ou fotografia já existente vira um adereço VISUAL na estante.
+ for(var i=entradas.length-1;i>=0;i--){
+   var e=entradas[i];
+   if(e.tipo==='bloom_colher')return {tipo:'flor',flor:e.flor};
+   if(e.tipo==='foto'||e.tipo==='studio_clique'||e.tipo==='studio_publicar')
+     return {tipo:'foto'};
+ }
+ return null;
+}
+
 function relato(e){return e.icone+' '+t(e.tipo);}
 function fase(){var agora=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'2-digit',hour12:false}).format(new Date());
  var h=Number(agora)%24;return h<12?'manha':h<18?'tarde':'noite';}
@@ -151,6 +177,7 @@ function iniciar(){
  document.addEventListener('visibilitychange',function(){if(!document.hidden)atualizar();});
 }
 window.TWVidaCidade={registrar:registrar,estado:estado,capitulos:capitulos,diarioHtml:diarioHtml,atualizar:atualizar,
+ sinalCena:sinalCena,objetoCamarim:objetoCamarim,
  idiomas:Object.keys(T),tipos:Object.keys(TIPOS)};
 if(typeof document!=='undefined'){
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar);

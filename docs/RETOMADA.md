@@ -139,3 +139,10 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 2. Conferir o mapa e os jogos no iPhone físico, login e pequenos fluxos integrados.
 3. O CI geral continua vermelho no teste antigo `tests/i18n-visual.browser.cjs`, que compara a homepage contra um layout anterior. Atualizar a estratégia de comparação sem silenciar regressões.
 4. Atualizar a prévia da PR #88 e só então propor merge; os nomes provisórios Rua das Vitrines e Vila das Flores aguardam confirmação.
+
+
+## Vida de Idol⭐ — Cidade que Reage (primeira sequência, PR #88)
+- Implementadas cinco melhorias leves de continuidade: reações do Hub apenas após atividades confirmadas, lembranças da sessão no Camarim, atalhos em objetos já existentes, presença visual discreta por horário e três capítulos opcionais do Diário.
+- Novos arquivos `vida-cidade.js`, `vida-cidade.css`, `tests/vida-cidade.test.js` e documentação `docs/VIDA_IDOL_CIDADE_REAGE_PR88.md`.
+- Sem novas RPCs, SQL, saves, recompensas, alterações nos itens originais ou cópias de fotos. Memórias limitadas à sessão e isoladas por conta.
+- Ainda não foram criados NPCs novos caminhando nas ruas nem uma narrativa persistente. Próxima fase depende de QA visual real no iPhone e decisão artística.

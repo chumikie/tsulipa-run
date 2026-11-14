@@ -29,3 +29,11 @@ As verificações automatizadas usam dados simulados. A reversão da interface n
 - Os testes com Canvas simulado validam as três ações do Jardim. Safari e login real continuam pendentes.
 
 - Na Praça, quando um fã conhecido está próximo e há Pet visível, o Pet demonstra atenção durante a pausa. Fora do encontro, não aparece reação adicional; com movimento reduzido, o símbolo fica estático.
+
+## ML1.8-C — sofá e lembranças mais naturais (14/11)
+
+- **Sofá:** a almofada mostra uma sombra/dobra discreta no ponto em que o quadril se apoia ao sentar, descansar ou conviver. A compressão segue a mesma interpolação de 24 quadros e desaparece ao levantar, sem modificar posição, pernas ou roupa do Idol.
+- **Lembranças:** durante o olhar já existente, a flor ou fotografia real da sessão recebe um reflexo breve. A decoração acompanha o deslocamento atual da estante.
+- **Privacidade:** fotografia só recebe reflexo se a imagem local voluntária da conta estiver disponível; sem a imagem, não é simulada outra foto. A função de foto mantém o cache e a limpeza existentes.
+- **Prioridades:** sono, cuidados, telefone, minijogos, arrumação e movimento reduzido mantêm suas restrições; nenhum timer, save, som, RPC, SQL ou recompensa.
+- **Testes:** asserts específicos para compressão, limites do sofá, movimento reduzido, ausência de fotos e estante deslocada. Teste visual no Safari/iPhone físico e login real seguem pendentes.

@@ -39,6 +39,8 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Jardim das Nuvens: Sora⭐Jump! com degraus de nuvem até a estrela e trampolim; Photo⭐Studio! com câmera no telhado, toldo, varal de polaroids e porta com "Entrar".
 - Happy⭐Cafe! "Dois no balcão" (ex-#89) entrou na #88; o modo demonstração simula os dois pedidos.
 - Fãs e clientes com nomes em estilo mangá (Usamado, Sayami, Hanoka…); os nomes antigos continuam valendo nas lembranças já salvas.
+- **Traduções por idioma (código mais leve):** a página carrega `tw-i18n-base.js` e só o idioma escolhido (`i18n/en|es|th|ja.js`). A fonte continua sendo `tw-i18n.js`: depois de editar, rodar `node tools/i18n/dividir.js` (o teste `i18n-dividido` acusa se esquecer). Trocar de idioma baixa o arquivo e monta o dicionário na mesma ordem de antes (conferido: igual ao site antigo nos 4 idiomas).
+- Karaoke⭐Time!: saiu o modo de homologação antigo (`?homol=1`); o show automático dos outros Idols continua.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

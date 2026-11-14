@@ -1221,17 +1221,20 @@ function drawChar(c,x,y,run,expr,isPartner){
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
   
-  if(hacc==='boina'){g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+15,y+2,11,4,-0.15,0,7);g.fill();g.fillStyle='#111';g.fillRect(x+14,y-4,2,2);}
-  if(hacc==='palha'){ // palha leve sobre o cabelo: aba fina, copa curva e fita floral TsuLiPa
-    g.fillStyle='#e7bf74';g.beginPath();g.ellipse(x+15,y+4.5,14.6,2.75,-.06,0,7);g.fill();
-    g.fillStyle='#f7dc9b';g.beginPath();g.moveTo(x+8,y+3);g.lineTo(x+9,y-5);g.quadraticCurveTo(x+10,y-8,x+15,y-8);g.quadraticCurveTo(x+20,y-8,x+21,y-5);g.lineTo(x+22,y+3);g.closePath();g.fill();
-    g.strokeStyle='#e2b970';g.lineWidth=.55;g.beginPath();g.moveTo(x+9,y-5);g.quadraticCurveTo(x+15,y-7.5,x+21,y-5);g.stroke();
-    g.fillStyle='#9b30d9';g.fillRect(x+8.4,y+.4,13.2,1.65);
-    g.fillStyle='#b6ff3b';g.fillRect(x+13,y+.4,3,1.65);g.fillStyle='#4169e1';g.fillRect(x+17,y+.4,3,1.65);
-    g.fillStyle='#f9df9d';g.beginPath();g.ellipse(x+15,y+4.4,15.2,2.25,-.06,0,7);g.fill();
-    g.strokeStyle='rgba(172,121,55,.48)';g.lineWidth=.6;g.beginPath();g.ellipse(x+15,y+4.4,15.2,2.25,-.06,0,7);g.stroke();
-    g.strokeStyle='rgba(177,130,59,.35)';g.lineWidth=.45;g.beginPath();g.moveTo(x+7,y-2);g.lineTo(x+20,y-2);g.moveTo(x+10,y-4);g.lineTo(x+19,y-4);g.stroke();
-    g.fillStyle='#9b30d9';E(x+22,y+2.8,1.9,1.45);g.fillStyle='#fff3b2';E(x+22,y+2.8,.7,.7);
+  if(hacc==='boina'){   // boina assentada e inclinada, com sombra embaixo, brilho e o cabinho
+    g.fillStyle='#b81f3a';g.beginPath();g.ellipse(x+15.6,y+5,12,2.6,-.12,0,7);g.fill();
+    g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+16.2,y+3.2,12.8,4.9,-.16,0,7);g.fill();
+    g.fillStyle='rgba(255,255,255,.26)';g.beginPath();g.ellipse(x+11.8,y+1.4,4.2,1.2,-.22,0,7);g.fill();
+    g.fillStyle='#2a1a1a';g.beginPath();g.ellipse(x+16.2,y-1.9,1.1,1.7,.15,0,7);g.fill();}
+  if(hacc==='palha'){ // chapéu de palha que veste a cabeça: copa cobrindo o topo, aba na altura da testa e fita TsuLiPa
+    g.fillStyle='#e7bf74';g.beginPath();g.ellipse(x+15,y+7.4,16.6,3.2,-.05,0,7);g.fill();                      // aba (parte de trás)
+    g.fillStyle='#f7dc9b';g.beginPath();g.moveTo(x+4.6,y+7);g.quadraticCurveTo(x+4.2,y-3.6,x+15,y-4);g.quadraticCurveTo(x+25.8,y-3.6,x+25.4,y+7);g.closePath();g.fill();   // copa
+    g.strokeStyle='rgba(177,130,59,.4)';g.lineWidth=.5;g.beginPath();g.moveTo(x+7,y-.4);g.quadraticCurveTo(x+15,y-2.6,x+23,y-.4);g.moveTo(x+5.6,y+2.2);g.quadraticCurveTo(x+15,y+.4,x+24.4,y+2.2);g.stroke();   // trama
+    g.fillStyle='#9b30d9';g.fillRect(x+4.9,y+4,20.2,2);g.fillStyle='#b6ff3b';g.fillRect(x+12,y+4,3,2);g.fillStyle='#4169e1';g.fillRect(x+16,y+4,3,2);   // fita
+    g.fillStyle='#f9df9d';g.beginPath();g.ellipse(x+15,y+7.6,16,2.3,-.05,0,7);g.fill();                         // aba (frente)
+    g.strokeStyle='rgba(172,121,55,.5)';g.lineWidth=.6;g.beginPath();g.ellipse(x+15,y+7.6,16,2.3,-.05,0,7);g.stroke();
+    g.fillStyle='rgba(255,255,255,.3)';g.beginPath();g.ellipse(x+10,y-.6,3.6,1.1,-.3,0,7);g.fill();             // brilho da copa
+    g.fillStyle='#9b30d9';g.beginPath();g.ellipse(x+22.6,y+5,1.9,1.5,0,0,7);g.fill();g.fillStyle='#fff3b2';g.beginPath();g.ellipse(x+22.6,y+5,.7,.7,0,0,7);g.fill();   // florzinha
   }
   if(hacc==='presilhas'){g.strokeStyle='#ff3d5e';g.lineWidth=1.5;g.beginPath();g.moveTo(x+7,y+7);g.lineTo(x+11,y+11);g.moveTo(x+11,y+7);g.lineTo(x+7,y+11);g.stroke();g.strokeStyle='#4dd8ff';g.beginPath();g.moveTo(x+9,y+5);g.lineTo(x+13,y+9);g.moveTo(x+13,y+5);g.lineTo(x+9,y+9);g.stroke();}
   if(hacc==='fones'){g.strokeStyle='#111';g.lineWidth=1.5;g.beginPath();g.arc(x+15,y+12,14,Math.PI,0);g.stroke();g.fillStyle='#e02a4a';E(x+1,y+15,3,5);E(x+29,y+15,3,5);}

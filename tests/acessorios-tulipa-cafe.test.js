@@ -28,7 +28,7 @@ test('desenhos Canvas 2D respeitam camada do cabelo e paleta TsuLiPa + perfil', 
   assert.match(html, /E\(fx-3\.5,fy\+2\.8,2\.6,1\.25,-\.55\)/);
   assert.match(html, /g\.translate\(x\+15\.5,y\+24\);g\.rotate\(-\.24\)/);
   assert.match(html, /boca segura a ponta do pão/);
-  assert.match(html, /g\.ellipse\(x\+15,y\+4\.4,15\.2,2\.25/);
+  assert.match(html, /g\.ellipse\(x\+15,y\+7\.6,16,2\.3,-\.05/);   // aba da frente, na altura da testa
   assert.ok(html.indexOf("if(d==='torrada')") > html.indexOf("if(expr===1)"), 'torrada fica sobre a boca');
   assert.ok(html.indexOf("if(hacc==='palha')") > html.indexOf('TWAvatarHair.bicolor'), 'chapéu sobre o cabelo');
   assert.match(html, /id="perfLojaAcessorios"/);

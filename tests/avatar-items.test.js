@@ -10,7 +10,7 @@ const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const original=fs.readFileSync(path.join(root,'tw-avatar-items.js'),'utf8');
 
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-items.js?v=2"></script>'),name+': carregar os desenhos compartilhados');
+ assert(html.includes('<script src="./tw-avatar-items.js?v=3"></script>'),name+': carregar os desenhos compartilhados');
  assert(html.includes("if(hacc==='capitao') TWAvatarItems.capitao(g,x,y)"),name+': desenhar chapéu somente quando selecionado');
  assert(html.includes("if(A==='estrela') TWAvatarItems.estrela(g,x,y)"),name+': desenhar estrela somente quando selecionada');
  for(const key of ['boina','presilhas','fones','coala','hibisco','sakura']){
@@ -48,7 +48,7 @@ assert(calls.some(c=>c[0]==='createRadialGradient'),'estrela mantém sombreado o
 
  // Sora Jump's independent renderer must also display the shared Captain cap
  // and Star clip without replacing its existing accessories.
- assert(sora.includes('<script src="./tw-avatar-items.js?v=2"></script>'),'Sora Jump loads the shared avatar items');
+ assert(sora.includes('<script src="./tw-avatar-items.js?v=3"></script>'),'Sora Jump loads the shared avatar items');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists for avatar items');

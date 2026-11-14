@@ -81,11 +81,11 @@
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     var toque=null,arrastou=false;
-    cv.addEventListener('pointerdown',function(e){toque={x:e.clientX,y:e.clientY};arrastou=false;},{passive:true});
+    cv.addEventListener('pointerdown',function(e){toque={x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
     cv.addEventListener('pointermove',function(e){
-      if(toque&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10)arrastou=true;
+      if(toque&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
     },{passive:true});
-    cv.addEventListener('pointercancel',function(){toque=null;arrastou=true;});
+    cv.addEventListener('pointercancel',function(){toque=null;arrastou=true;hover=null;desenhar();});
     cv.addEventListener('pointerup',function(){toque=null;});
     cv.addEventListener('click',function(e){
       if(arrastou){arrastou=false;return;}
@@ -318,7 +318,7 @@
     var tm=performance.now()/1000;
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
-    ceu(tm); // mesmo horário de Brasília no mundo e nas ruas
+    ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
     else{detalhes(tm);andar(tm);alertasRua(tm);}
@@ -332,9 +332,12 @@
       if(!anim)requestAnimationFrame(desenhar);return;
     }
     if(hover&&!hover.voltar){
-      var b=hover.box;ctx.save();ctx.fillStyle='rgba(255,255,255,.2)';
-      ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=4;ctx.setLineDash([14,10]);
-      rr(b[0],b[1],b[2]-b[0],b[3]-b[1],18);ctx.fill();ctx.stroke();ctx.restore();
+      var b=hover.box,cor=CORES_BAIRROS[cena==='mundo'?hover.id:cena]||'#a88bea';
+      ctx.save();ctx.fillStyle='rgba(255,255,255,.12)';
+      ctx.strokeStyle=cor;ctx.lineWidth=6;
+      rr(b[0]+3,b[1]+3,b[2]-b[0]-6,b[3]-b[1]-6,24);ctx.fill();ctx.stroke();
+      ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2;
+      rr(b[0]+9,b[1]+9,b[2]-b[0]-18,b[3]-b[1]-18,19);ctx.stroke();ctx.restore();
     }
   }
   // Indicadores consultam o DOM; abrir o jogo continua sendo click() no card original.
@@ -732,11 +735,37 @@
     }
     ctx.restore();
   }
+  // Luz suave nas bordas e reflexos no chão, antes dos nomes e personagens.
+  var CORES_BAIRROS={palco:'#b58aff',harajuku:'#ff9bc5',fofo:'#8ad5b0',praca:'#89c9ed',arena:'#ffc18b',ceu:'#b8b8ff'};
+  function atmosfera(tm){
+    ctx.save();
+    var noite=horaBR()<6||horaBR()>=19;
+    var borda=ctx.createRadialGradient(W*.5,H*.45,W*.22,W*.5,H*.45,W*.68);
+    borda.addColorStop(0,'rgba(49,30,90,0)');
+    borda.addColorStop(1,noite?'rgba(27,22,71,.22)':'rgba(66,42,109,.10)');
+    ctx.fillStyle=borda;ctx.fillRect(0,0,W,H);
+    if(cena!=='mundo'){
+      var cor=CORES_BAIRROS[cena]||'#b58aff';
+      [300,800,1300].forEach(function(px,i){
+        // Reflexo baixo: mantém as fachadas, placas e passantes legíveis.
+        ctx.save();ctx.translate(px,590);ctx.scale(1,.22);
+        var r=105+(reduzMov?0:Math.sin(tm*.65+i)*5);
+        var luz=ctx.createRadialGradient(0,0,3,0,0,r);
+        luz.addColorStop(0,cor);luz.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.globalAlpha=noite?.30:.12;ctx.fillStyle=luz;ctx.fillRect(-r,-r,r*2,r*2);
+        ctx.restore();
+      });
+    }
+    ctx.restore();
+  }
   // hora do dia em Brasília: dia, entardecer e noite (janelas acesas)
   var LUZES_MUNDO=[[575,425],[800,390],[1035,425],[1238,655],[360,665],[800,640],[1330,220]];
   var LUZES_RUA=[[300,440],[800,440],[1300,440],[550,570],[1050,570]];
+  var horaCache=-1,horaCacheEm=0;
   function horaBR(){if(typeof window.TW_MAPA_HORA==='number')return window.TW_MAPA_HORA;
-    try{return +new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'numeric',hourCycle:'h23'}).format(new Date());}catch(e){return new Date().getHours();}}
+    var agora=Date.now();if(horaCache>=0&&agora-horaCacheEm<60000)return horaCache;
+    try{horaCache=+new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'numeric',hourCycle:'h23'}).format(new Date());}catch(e){horaCache=new Date().getHours();}
+    horaCacheEm=agora;return horaCache;}
   function ceu(tm){
     var h=horaBR();if(h>=6&&h<17)return;
     ctx.save();

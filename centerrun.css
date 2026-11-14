@@ -228,3 +228,10 @@ body:not(.jogando) #sb{display:none!important}
 #cust.cust .cmmini:disabled{opacity:.45;cursor:default}
 #cust.cust .cmabas button:focus-visible,#cust.cust .cmmini:focus-visible,#cust.cust .cmexpr button:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
 @media(max-width:360px){#cust.cust .cmgrade{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))}#cust.cust .cmmini canvas{width:54px;height:54px}}
+#cust.cust .cmmini{position:relative}
+#cust.cust .cmtranca{position:absolute;top:4px;right:6px;font-style:normal;font-size:13px}
+/* Você: roupa, parte de baixo, acessório e óculos são escolhidos pelas miniaturas; ficam só as cores e o Item */
+#cust:not([hidden]) ~ #cust_roupa #cout,
+#cust:not([hidden]) ~ #cust_roupa label:has(#cbaixo),
+#cust:not([hidden]) ~ #cust_roupa label:has(#chat),
+#cust:not([hidden]) ~ #cust_roupa label:has(#cgl){display:none}

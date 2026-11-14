@@ -75,7 +75,9 @@
     {id:'cback', campo:'back', nome:'Corte'}, {id:'cfront', campo:'front', nome:'Franja'},
     {id:'cstk', campo:'mecha', nome:'Mecha'}, {id:'cdet', campo:'det', nome:'Detalhe'},
     {id:'colho', campo:'olho', nome:'Olhos'}, {id:'csobr', campo:'sobrancelha', nome:'Sobrancelha'},
-    {id:'cboca', campo:'boca', nome:'Boca'}, {id:'cbochecha', campo:'bochecha', nome:'Bochecha'}
+    {id:'cboca', campo:'boca', nome:'Boca'}, {id:'cbochecha', campo:'bochecha', nome:'Bochecha'},
+    {id:'cout', campo:'out', nome:'Roupa'}, {id:'cbaixo', campo:'baixo', nome:'Parte de baixo'},
+    {id:'chat', campo:'hat', nome:'Acessório'}, {id:'cgl', campo:'gl', nome:'Óculos'}
   ];
   var EXPR = [[0, '🙂', 'Normal'], [2, '😆', 'Feliz'], [3, '😉', 'Piscadinha'], [4, '😮', 'Surpresa'], [5, '😢', 'Chorinho'], [6, '😍', 'Apaixonado'], [1, '😣', 'Concentrado']];
   var aba = 0, expr = 0, virado = false, pedido = 0, pedidoMini = 0;
@@ -102,7 +104,8 @@
   }
   function miniaturas(){
     var box = $('cmGrade'), c = cu(), p = PARTES[aba], sel = p && $(p.id); if(!box || !c || !sel) return;
-    var atual = p.campo === 'mecha' ? (c.mecha || (c.streak ? 'uma' : '')) : (c[p.campo] || '');
+    try{ if(window.TWAvatarHair && TWAvatarHair.rotular) TWAvatarHair.rotular(); }catch(_){}
+    var atual = p.campo === 'mecha' ? (c.mecha || (c.streak ? 'uma' : '')) : p.campo === 'hat' && c.det === 'tulipa' ? 'tulipa' : (c[p.campo] || '');
     box.setAttribute('aria-labelledby', 'cmAba' + aba);
     box.innerHTML = '';
     [].forEach.call(sel.options, function(o){
@@ -113,9 +116,12 @@
       var nome = document.createElement('span'); nome.textContent = o.textContent.replace(/^🔒\s*/, '');
       b.appendChild(cv); b.appendChild(nome);
       var mod = JSON.parse(JSON.stringify(c)); mod[p.campo] = o.value; if(p.campo === 'mecha') mod.streak = !!o.value;
+      if(p.campo === 'hat'){ if(o.value === 'tulipa'){ mod.det = 'tulipa'; mod.hat = ''; } else if(mod.det === 'tulipa') mod.det = ''; }
+      if(o.disabled){ var tr2 = document.createElement('i'); tr2.className = 'cmtranca'; tr2.textContent = '🔒'; tr2.setAttribute('aria-hidden', 'true'); b.appendChild(tr2); }
       // corte: do topo à cintura (dá para ver curto × longo); franja/mecha/detalhe: a cabeça; rosto: zoom no rosto
-      var rosto = /^(olho|sobrancelha|boca|bochecha)$/.test(p.campo), corte = p.campo === 'back',
-          S = rosto ? 6.2 : corte ? 2.6 : 4.4, meio = rosto ? 19 : corte ? 16 : 12.5;
+      var rosto = /^(olho|sobrancelha|boca|bochecha|gl)$/.test(p.campo), corte = p.campo === 'back', corpo = p.campo === 'out' || p.campo === 'baixo',
+          chapeu = p.campo === 'hat',
+          S = rosto ? 6.2 : corte ? 2.6 : corpo ? 2.35 : chapeu ? 3.9 : 4.4, meio = rosto ? 19 : corte ? 16 : corpo ? 19.5 : chapeu ? 9.5 : 12.5;
       pintar(cv, mod, S, 66 - 15 * S, 66 - meio * S, 0, false);
       b.addEventListener('click', function(){ if(b.disabled) return; trocar(p.id, o.value); });
       box.appendChild(b);

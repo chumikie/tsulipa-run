@@ -15,8 +15,8 @@ JS = r"""
 ()=>{
  const S=5,CW=200,CH=290;
  const linhas=[
-  ['Cortes', ['','pixie','onduladom','onduladom2','onduladof','chanel','longo','marias','rabo','cacheado'].map(b=>({back:b,front:'bagunca',hair:'#7b3ff0'}))],
-  ['Franjas', ['bagunca','reta','lateral','espetada','arcoiris','ondulada','risca','repicada'].map(f=>({back:'longo',front:f,hair:'#ff6fb5'}))],
+  ['Cortes', ['','pixie','onduladom','onduladom2','onduladof','chanel','longo','marias','rabo','cacheado','lateral','trancas','coque','princesa','hime'].map(b=>({back:b,front:'bagunca',hair:'#7b3ff0'}))],
+  ['Franjas', ['bagunca','reta','lateral','espetada','arcoiris','ondulada','risca','repicada','cortina','curta','pontas','cacheada'].map(f=>({back:'longo',front:f,hair:'#ff6fb5'})).concat([{back:'hime',front:'reta',hair:'#2a1a12'},{back:'coque',front:'cortina',mecha:'uma',streak:true,hair2:'#4dd8ff'}])],
   ['Olhos', ['','redondo','brilhante','pontinho','gatinho','sereno'].flatMap(o=>[{olho:o,eye:'#4169e1',back:'chanel'},{olho:o,eye:'#7a3b1e',expr:3,back:'chanel'}])],
   ['Bocas e bochechas', ['','sorriso','gato','aberta','dentinho'].flatMap(b=>[{boca:b,back:'rabo'},{boca:b,expr:2,back:'rabo'}]).concat(['sem','forte','sardas','estrelinha'].map(k=>({bochecha:k,back:'marias'})))],
   ['Roupas', ['','seifuku','estrelado','y2k','zipper','sweet','citypop'].flatMap(o=>[{out:o,baixo:'saia',back:'chanel'},{out:o,baixo:'bermuda',back:''}])],

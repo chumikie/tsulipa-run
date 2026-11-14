@@ -15,7 +15,15 @@ for (const id of ['chair', 'cback', 'cfront', 'cstk', 'cstr', 'cdet', 'skins', '
 for (const id of ['cmCv', 'cmExpr', 'cmAbas', 'cmGrade']) assert.ok(bloco.includes('id="' + id + '"'), id);
 assert.equal((bloco.match(/<div class="cmlista" hidden>/g) || []).length, 2);
 assert.match(js, /var PARTES = \[/);
-for (const c of ['back', 'front', 'mecha', 'det', 'olho', 'sobrancelha', 'boca', 'bochecha']) assert.ok(js.includes("campo:'" + c + "'"), c);
+for (const c of ['back', 'front', 'mecha', 'det', 'olho', 'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'hat', 'gl']) assert.ok(js.includes("campo:'" + c + "'"), c);
+// Cortes e franjas novos existem no menu e no módulo de cabelo (com nomes nos 4 idiomas).
+const hair = fs.readFileSync(path.join(raiz, 'tw-avatar-hair.js'), 'utf8');
+for (const v of ['lateral', 'trancas', 'coque', 'princesa', 'hime']) { assert.ok(html.includes('<option value="' + v + '"'), 'corte ' + v); assert.ok(hair.includes("b==='" + v + "'"), 'desenho ' + v); }
+for (const v of ['cortina', 'curta', 'pontas', 'cacheada']) { assert.ok(html.includes('<option value="' + v + '"'), 'franja ' + v); assert.ok(hair.includes("f==='" + v + "'"), 'desenho ' + v); }
+for (const nome of ['Tranças', 'Coque', 'Hime', 'Cortina', 'Pontinhas']) assert.equal((hair.match(new RegExp('\\b' + nome + ':', 'g')) || []).length, 4, nome + ' traduzido');
+// Você: roupa, baixo, acessório e óculos pelas miniaturas; os campos de cor e o Item continuam visíveis.
+const css = fs.readFileSync(path.join(raiz, 'centerrun.css'), 'utf8');
+assert.match(css, /#cust:not\(\[hidden\]\) ~ #cust_roupa #cout,/);
 assert.match(js, /b\.disabled = o\.disabled/, 'miniatura trancada fica desabilitada');
 assert.ok(html.includes('<span>Roupa</span>'), 'título do bloco de roupa');
 assert.ok(bloco.includes('id="custSortear"') && bloco.includes('id="custDesfazer" disabled'));

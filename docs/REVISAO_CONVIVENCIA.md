@@ -37,3 +37,10 @@ As verificações automatizadas usam dados simulados. A reversão da interface n
 - **Privacidade:** fotografia só recebe reflexo se a imagem local voluntária da conta estiver disponível; sem a imagem, não é simulada outra foto. A função de foto mantém o cache e a limpeza existentes.
 - **Prioridades:** sono, cuidados, telefone, minijogos, arrumação e movimento reduzido mantêm suas restrições; nenhum timer, save, som, RPC, SQL ou recompensa.
 - **Testes:** asserts específicos para compressão, limites do sofá, movimento reduzido, ausência de fotos e estante deslocada. Teste visual no Safari/iPhone físico e login real seguem pendentes.
+
+## ML1.8-D — Pet acompanha o olhar às lembranças (14/11)
+
+- **Retorno ao Camarim:** o Pet agora se inclina junto com o Idol ao olhar as lembranças também fora de "Conviver" (antes só reagia em Conviver).
+- **Passeio:** o balanço ocioso e o passinho até o brinquedo desaceleram durante a observação e retomam suavemente.
+- **Jeitos:** Pucchi quase para e se inclina mais (curioso); Koali acompanha de leve; Chu fica no meio-termo.
+- **Sem efeitos colaterais:** nenhum timer, save, som, RPC, SQL ou recompensa; sono, cuidados, telefone e movimento reduzido continuam bloqueando a reação.

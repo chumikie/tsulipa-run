@@ -1731,6 +1731,16 @@ function petVidaOlharLembranca(t, inicio, livre){
   var u = (fase-180)/110;
   return Math.sin(u*Math.PI)*.022;
 }
+// O Pet acompanha o olhar do Idol para as lembranças: Pucchi se inclina mais e quase para,
+// curioso; Koali acompanha de leve, sem interromper o balanço calmo. Vale em Conviver e no
+// retorno ao Camarim; respeita sono, cuidados e movimento reduzido (olhar chega 0 nesses casos).
+function petVidaPetAtencao(k, cfg, olhar, podeReagir){
+  if(!olhar || !podeReagir) return null;
+  var u = Math.min(1, Math.abs(olhar)/.022);
+  k = petRecepcaoJeito(k, cfg);
+  return k === 'pati' ? {freio:.85*u, inclina:1.6} :
+    k === 'lirika' ? {freio:.45*u, inclina:.55} : {freio:.65*u, inclina:.8};
+}
 // Reage somente à lembrança real da sessão e ao olhar já permitido do Idol.
  // A fotografia não ganha brilho sem uma imagem voluntária da própria conta.
 function petVidaLembrancaReacao(olhar){
@@ -1891,6 +1901,13 @@ function petDrawRoom(){
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
   var surpresa = petSurpresaAntes(petData.ativo, p.cfg, petT, livre);
+  // Enquanto o Idol olha as lembranças (Conviver ou retorno ao Camarim), o Pet desacelera
+  // o passeio para observar junto. Só visual: sem timer, save, som ou recompensa.
+  var atencaoLembranca = petVidaPetAtencao(petData.ativo, p.cfg, olharLembranca, podeReagir);
+  if(atencaoLembranca){
+    jeito.x *= 1-atencaoLembranca.freio; jeito.y *= 1-atencaoLembranca.freio;
+    passeio.x *= 1-atencaoLembranca.freio; passeio.y *= 1-atencaoLembranca.freio;
+  }
   jeito.x += passeio.x + (amizade ? amizade.x : 0) + (toqueIdol ? toqueIdol.x : 0) +
     (companhia ? companhia.x : 0); jeito.y += passeio.y;
   if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
@@ -1899,14 +1916,14 @@ function petDrawRoom(){
   petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
   x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
-  if((companhia && companhia.inclina) || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
+  if((companhia && companhia.inclina) || atencaoLembranca || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
     x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
     var inclinacao = companhia ? companhia.inclina : 0;
     if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
       var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
       if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
     }
-    inclinacao -= olharLembranca * (petRecepcaoJeito(petData.ativo,p.cfg) === 'pati' ? 1.6 : .8);
+    if(atencaoLembranca) inclinacao -= olharLembranca * atencaoLembranca.inclina;
     x.rotate(inclinacao);
     x.translate(-PET_X,-(PET_FLOOR - 12 * PET_SC));
   }

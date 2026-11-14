@@ -24,7 +24,7 @@ var T={
  ja:{tit:'🌸 街の思い出',sub:'今回の訪問で生まれた小さな出来事',vazio:'次の出会いが思い出になるかも。',cam:'思い出コーナー',vazioCam:'活動の思い出が楽屋に増えていきます。',foto:'フォトフレーム',vaso:'お花の花瓶',cards:'カード棚',cap:'私の小さな物語',etapas:['お部屋を大切に','街で誰かと出会う','瞬間を残す'],novo:'新しい思い出が届いた！',agora:'ペットがアイドルに寄り添っています。',manha:'街が目覚める朝。',tarde:'午後の街はにぎやか。',noite:'街の灯りがともる夜。',diario:'今回の訪問の思い出',nota:'一時的な記録です。保存済みの日記は変わりません。',
    cafe:'Happy⭐Cafe!で接客を終えました。',handshake:'Handshake⭐Event!でファンに会いました。',bloom_plantar:'Bloom⭐Garden!に種をまきました。',bloom_regar:'アイドルが花壇に水をあげました。',bloom_colher:'お庭で花を摘みました。',studio_clique:'Photo⭐Studio!で写真を確認しました。',studio_publicar:'Photo⭐Studio!の掲示板に写真を投稿しました。',foto:'TsuPhoneに写真を保存しました。',battle:'公式バトルを終えました。'}
 };
-var entradas=[],dono='',visto={};
+var entradas=[],dono='',visto={},versao=0;
 function lingua(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 function t(k){return T[lingua()][k]||T.pt[k]||k;}
 function escapar(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -43,7 +43,7 @@ function diaBR(){
 function chave(){var c=typeof contaJ!=='undefined'?contaJ:null;
  return c&&String(c.id||c.nick||'').slice(0,128)||'';}
 function conferir(){var atual=chave(),escopo=atual?atual+'@'+diaBR():'';
- if(escopo!==dono){dono=escopo;entradas=[];visto={};}return !!atual;}
+ if(escopo!==dono){dono=escopo;entradas=[];visto={};versao++;}return !!atual;}
 function registrar(tipo,info){
  if(!TIPOS[tipo]||!conferir())return false;
  info=info&&typeof info==='object'?info:{};
@@ -54,6 +54,7 @@ function registrar(tipo,info){
    // Guardar apenas o nome da flor permitido, nunca IDs de conta, imagens ou dados de fãs.
    flor:/^(sakura|tulipa|girassol|lunar)$/.test(info.flor)?info.flor:''});
  if(entradas.length>8)entradas.shift();
+ versao++;
  atualizar();
  return true;
 }
@@ -85,6 +86,41 @@ function objetoCamarim(){
  return null;
 }
 
+// A estante pode guardar até duas lembranças independentes, sem imagens duplicadas.
+function objetosCamarim(){
+ if(!conferir())return [];
+ var flor=null,foto=false;
+ for(var i=entradas.length-1;i>=0;i--){
+   var e=entradas[i];
+   if(!flor&&e.tipo==='bloom_colher')flor={tipo:'flor',flor:e.flor};
+   if(e.tipo==='foto'||e.tipo==='studio_clique'||e.tipo==='studio_publicar')foto=true;
+   if(flor&&foto)break;
+ }
+ var itens=[];
+ if(flor)itens.push(flor);
+ if(foto)itens.push({tipo:'foto'});
+ return itens;
+}
+var HISTORIA={
+ pt:['','','O dia já reúne dois pequenos momentos. Cada escolha deixa a cidade um pouco mais sua.',
+   'Você cuidou de algo, encontrou pessoas e guardou uma lembrança. Hoje já tem uma pequena história!'],
+ en:['','','Two little moments already belong to today. Each choice makes this town feel more like yours.',
+   'You cared for something, met people and kept a memory. Today has a little story of its own!'],
+ es:['','','Hoy ya reúne dos pequeños momentos. Cada elección hace que la ciudad sea más tuya.',
+   'Cuidaste algo, encontraste personas y guardaste un recuerdo. ¡Hoy ya tiene su propia historia!'],
+ id:['','','Dua momen kecil sudah terjadi hari ini. Setiap pilihan membuat kota ini terasa semakin milikmu.',
+   'Kamu merawat sesuatu, bertemu orang, dan menyimpan kenangan. Hari ini punya kisah kecil sendiri!'],
+ th:['','','วันนี้มีช่วงเวลาดี ๆ แล้วสองครั้ง ทุกการเลือกทำให้เมืองนี้เป็นของคุณมากขึ้น',
+   'คุณได้ดูแลบางสิ่ง พบผู้คน และเก็บความทรงจำ วันนี้มีเรื่องราวเล็ก ๆ แล้ว!'],
+ ja:['','','今日の小さな出来事が二つつながったよ。選ぶたびに、この街があなたの街になっていく。',
+   '何かを大切にして、人に出会って、思い出を残した。今日は小さな物語ができたね！']
+};
+function historiaHtml(){
+ var qtd=capitulos().filter(Boolean).length;
+ if(qtd<2)return '';
+ var frases=HISTORIA[lingua()]||HISTORIA.pt;
+ return '<p class="tw-vida-elo">✦ '+escapar(frases[qtd])+'</p>';
+}
 function relato(e){return e.icone+' '+t(e.tipo);}
 function fase(){var agora=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',hour:'2-digit',hour12:false}).format(new Date());
  var h=Number(agora)%24;return h<12?'manha':h<18?'tarde':'noite';}
@@ -96,7 +132,7 @@ function diarioHtml(){
  if(!conferir()||!entradas.length)return '';
  return '<section class="tw-vida-diario"><b>🌸 '+escapar(t('diario'))+'</b><ol>'+
    entradas.slice(-3).reverse().map(function(e){return '<li>'+escapar(relato(e))+'</li>';}).join('')+
-   '</ol><small>'+escapar(t('nota'))+'</small></section>';
+   '</ol>'+historiaHtml()+'<small>'+escapar(t('nota'))+'</small></section>';
 }
 function montar(){
  var rec=document.getElementById('hubRec'),el=document.getElementById('twVidaCidade');
@@ -127,34 +163,49 @@ function render(){
  if(typeof document==='undefined'||!document.getElementById)return;
  conferir();montar();
  var city=document.getElementById('twVidaCidade'),mem=document.getElementById('twVidaCamarim');
+ // Redesenhar o HTML apenas quando há uma ação nova, outra conta, idioma ou fase do dia.
+ // Um rerender habitual do Hub não pode derrubar foco ou refazer miniaturas no iPhone.
+ var assinatura=dono+'|'+versao+'|'+lingua()+'|'+fase();
  if(city){
   city.hidden=!dono;
-  if(dono){
+  if(!dono){city.textContent='';city.dataset.twVidaAssinatura='';}
+  else if(city.dataset.twVidaAssinatura!==assinatura){
    var atual=entradas[entradas.length-1],cl=capitulos();
    city.innerHTML='<h2>'+escapar(t('tit'))+'</h2><p class="tw-vida-sub">'+escapar(t('sub'))+'</p>'+
     '<div class="tw-vida-presenca" role="status"><span class="tw-vida-presenca-emoji" aria-hidden="true">'+
     (atual?atual.icone:'🐾')+'</span><span>'+escapar(atual?relato(atual):t('agora')+' '+t(fase()))+'</span></div>'+
     '<h3>📔 '+escapar(t('cap'))+' <small>'+cl.filter(Boolean).length+'/3</small></h3>'+
-    capitulosHtml()+
+    capitulosHtml()+historiaHtml()+
     (entradas.length?'<p class="tw-vida-sub">'+escapar(t('nota'))+'</p>':'');
+   city.dataset.twVidaAssinatura=assinatura;
   }
  }
  if(mem){
   mem.hidden=!dono;
-  if(dono){
-   var lembrar=entradas.slice(-3).reverse();
-   var colheita=lembrar.find(function(e){return e.tipo==='bloom_colher'&&e.flor;});
-   var emojiFlor=colheita?({sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'🌙'}[colheita.flor]||'🌱'):'🌱';
-   mem.innerHTML='<b class="tw-vida-mem-titulo">🌷 '+escapar(t('cam'))+'</b>'+
+  if(!dono){mem.textContent='';mem.dataset.twVidaAssinatura='';}
+  else{
+   if(mem.dataset.twVidaAssinatura!==assinatura){
+    var lembrar=entradas.slice(-3).reverse();
+    var colheita=objetosCamarim().find(function(e){return e.tipo==='flor';});
+    var emojiFlor=colheita?({sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'🌙'}[colheita.flor]||'🌷'):'🌱';
+    mem.innerHTML='<b class="tw-vida-mem-titulo">🌷 '+escapar(t('cam'))+'</b>'+
      '<div class="tw-vida-objetos" role="group">'+
      '<button type="button" data-vida-acao="jardim" title="'+escapar(t('vaso'))+'">'+emojiFlor+' <span>'+escapar(t('vaso'))+'</span></button>'+
      '<button type="button" data-vida-acao="foto" title="'+escapar(t('foto'))+'">🖼️ <span>'+escapar(t('foto'))+'</span></button>'+
      '<button type="button" data-vida-acao="cards" title="'+escapar(t('cards'))+'">🃏 <span>'+escapar(t('cards'))+'</span></button></div>'+
      (lembrar.length?'<p class="tw-vida-mem-itens">'+lembrar.map(function(e){return '<span>'+escapar(relato(e))+'</span>';}).join('')+'</p>':
-        '<small class="tw-vida-sub">'+escapar(t('vazioCam'))+'</small>')+
+       '<small class="tw-vida-sub">'+escapar(t('vazioCam'))+'</small>')+
      '<figure class="tw-vida-foto" hidden><img alt="'+escapar(t('foto'))+'" loading="lazy"></figure>';
-   var img=imagemMomento(),el=mem.querySelector('.tw-vida-foto');
-   if(img&&el){el.hidden=false;el.querySelector('img').src=img;}
+    mem.dataset.twVidaAssinatura=assinatura;
+   }
+   // Se uma URL blob: foi revogada no TsuPhone, não manter a miniatura antiga.
+   var url=imagemMomento(),fig=mem.querySelector('.tw-vida-foto');
+   if(fig){
+    var img=fig.querySelector('img');
+    fig.hidden=!url;
+    if(img&&url&&img.getAttribute('src')!==url)img.src=url;
+    if(img&&!url&&img.hasAttribute('src'))img.removeAttribute('src');
+   }
   }
  }
 }
@@ -188,7 +239,7 @@ function iniciar(){
  document.addEventListener('visibilitychange',function(){if(!document.hidden)atualizar();});
 }
 window.TWVidaCidade={registrar:registrar,estado:estado,capitulos:capitulos,diarioHtml:diarioHtml,atualizar:atualizar,
- sinalCena:sinalCena,objetoCamarim:objetoCamarim,
+ sinalCena:sinalCena,objetoCamarim:objetoCamarim,objetosCamarim:objetosCamarim,historiaHtml:historiaHtml,
  idiomas:Object.keys(T),tipos:Object.keys(TIPOS)};
 if(typeof document!=='undefined'){
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar);

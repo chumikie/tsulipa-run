@@ -1666,9 +1666,12 @@ function petIdolAcompanhaBrinquedo(k, cfg, t, livre){
  // sem novo recurso, foto persistida, download automático ou timer.
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetoCamarim!=='function')return false;
-  var a=TWVidaCidade.objetoCamarim();if(!a)return false;
+  var objetos=typeof TWVidaCidade.objetosCamarim==='function'
+    ?TWVidaCidade.objetosCamarim():[TWVidaCidade.objetoCamarim()].filter(Boolean);
+  if(!objetos.length)return false;
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
-  x.save();x.translate(193+dx,124);
+  objetos.forEach(function(a){
+  x.save();x.translate((a.tipo==='flor'?190:214)+dx,a.tipo==='flor'?116:113);
   if(a.tipo==='flor'){ // vasinho na prateleira
     x.fillStyle='#e5b2dd';x.beginPath();x.moveTo(-7,7);x.lineTo(7,7);
     x.lineTo(5,19);x.lineTo(-5,19);x.closePath();x.fill();
@@ -1684,7 +1687,9 @@ function petVidaLembrancaCenario(x){
     x.fillStyle='#9e76d9';x.font='12px sans-serif';x.textAlign='center';x.fillText('★',0,5);
     x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-10,-9,20,25);x.restore();
   }
-  x.restore();return true;
+  x.restore();
+  });
+  return true;
 }
 function petDrawRoom(){
   var p = petAtivo(); if(!p) return;

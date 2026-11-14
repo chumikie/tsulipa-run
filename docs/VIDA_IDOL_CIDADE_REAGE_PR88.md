@@ -35,3 +35,10 @@ Verificação rápida: `node tests/vida-cidade.test.js` e `node tests/run-all.js
 - **Foco no celular:** nenhuma rotina de animação, timer ou polling adicional; objetos são desenhados no mesmo ciclo Canvas já ativo. O resumo de atividades armazena apenas 8 ocorrências temporárias e evita recriar `Intl.DateTimeFormat` a cada quadro.
 - **Testes:** `tests/vida-cenas.test.js` verifica privacidade, sinais confirmados, conexão dos objetos com Canvas e respeito ao movimento reduzido; `tests/vida-cidade.test.js` mantém os testes do Diário. O workflow “Mapa 2 níveis” passou em Chromium (execução #43543832441) e executou as provas mobile. QA de aparelho físico ainda pendente.
 - **Futuro (não implementado):** animação mais fiel de mãos segurando objetos nos minijogos, reencontro com nome/persona de fãs conhecidos e interação dentro dos prédios, somente após projeto artístico e testes móveis, sem mexer no servidor.
+
+## Acabamento do Camarim e Diário — 14/11/2026
+
+- Uma **flor e um porta-retratos** podem ficar visíveis simultaneamente no Canvas do Camarim quando ambos foram conquistados nesta visita; preservados o posicionamento da estante e a foto original do TsuPhone.
+- O Hub e o Diário mostram uma ligação narrativa após **dois capítulos** e um encerramento com três capítulos concluídos, com textos em pt/en/es/id/th/ja e somente para ações confirmadas.
+- Quando nada mudou, o painel mantém os mesmos botões e o foco no celular; na troca de conta, remove os elementos anteriores do DOM e não escreve dados locais.
+- Teste integrado de lembranças simultâneas, isolamento por conta e narrativa em `tests/vida-cenas.test.js`; iPhone físico continua pendente.

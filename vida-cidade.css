@@ -55,3 +55,10 @@
  html:not([data-theme="light"]) #hub .tw-vida-presenca{background:#433067;color:#fff;border-color:#795b9e}
  html:not([data-theme="light"]) #hub .tw-vida-capitulos li{background:#40305e;color:#d3c0e9;border-color:#776491}
  html:not([data-theme="light"]) #hub .tw-vida-capitulos li.feito{background:#235743;color:#e4ffed;border-color:#74b897}}
+
+/* Epílogo após dois ou três capítulos realmente realizados. */
+#hub .tw-vida-elo,.tw-vida-diario .tw-vida-elo{margin:10px 0 7px;padding:10px 12px;
+ border-radius:13px;border-left:4px solid #b58bdf;background:rgba(239,222,255,.65);
+ color:#5d3a85;font:700 12px/1.6 "M PLUS Rounded 1c",sans-serif}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) #hub .tw-vida-elo,
+ html:not([data-theme="light"]) .tw-vida-diario .tw-vida-elo{background:#483368;color:#f4e6ff;border-color:#c9a5fb}}

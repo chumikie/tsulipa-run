@@ -26,3 +26,12 @@ O histórico limita-se a oito acontecimentos **na memória da aba**, isolados po
 Esta é a **primeira camada de continuidade**, não um simulador integral de NPCs. Ainda não há fãs passeando fisicamente entre os prédios, móveis arrastáveis novos, nem roteiros com ramificações persistidas. Reusar primeiro os personagens e rotinas existentes; depois avaliar cada extensão com testes móveis. Evitar escrita de dados e alterações na economia.
 
 Verificação rápida: `node tests/vida-cidade.test.js` e `node tests/run-all.js`. O CI visual antigo do Karaoke ainda compara o Hub com uma versão anterior e não deve ser confundido com os novos testes.
+
+## Refinamento de cenário — 14/11/2026
+
+- **Ruas:** `tw-mapa.js` reutiliza exclusivamente os avatares já existentes no passeio. Quando ficam parados numa porta, exibem objetos vetoriais pequenos de contexto (bandeja de café, regador, câmera, lightstick ou microfone); o objeto do avatar do jogador exige uma atividade confirmada na mesma área. Um outro passeante já presente no passeio pode segurar um objeto decorativo, sem representar resultado de conta real.
+- **Encontros espontâneos:** quando dois avatares já desenhados param realmente próximos, o mapa mostra um gesto visual curto (♡), limitado a um por rua; sem afirmar relação real, adicionar personagens, mover os avatares ou registrar encontros.
+- **Camarim:** `pet.js` usa a estante original (respeitando seu deslocamento em Arrumar) para exibir uma flor ou uma moldura após acontecimentos da própria sessão. Não duplica PNG e não altera `petBg` persistido.
+- **Foco no celular:** nenhuma rotina de animação, timer ou polling adicional; objetos são desenhados no mesmo ciclo Canvas já ativo. O resumo de atividades armazena apenas 8 ocorrências temporárias e evita recriar `Intl.DateTimeFormat` a cada quadro.
+- **Testes:** `tests/vida-cenas.test.js` verifica privacidade, sinais confirmados, conexão dos objetos com Canvas e respeito ao movimento reduzido; `tests/vida-cidade.test.js` mantém os testes do Diário. O workflow “Mapa 2 níveis” passou em Chromium (execução #43543832441) e executou as provas mobile. QA de aparelho físico ainda pendente.
+- **Futuro (não implementado):** animação mais fiel de mãos segurando objetos nos minijogos, reencontro com nome/persona de fãs conhecidos e interação dentro dos prédios, somente após projeto artístico e testes móveis, sem mexer no servidor.

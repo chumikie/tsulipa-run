@@ -131,6 +131,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"Card trades start soon!",
   "Audição":"Audition",
   "Bagunça":"Messy",
+  "Penteado":"Hairstyle","Rosto":"Face","Pele":"Skin","Cor dos olhos":"Eye color","Sortear":"Shuffle","Desfazer":"Undo",
   "Forma dos olhos":"Eye shape","Brilhante":"Sparkly","Pontinho":"Dot","Gatinho":"Cat-eye","Sereno":"Calm","Clássico":"Classic","Boca":"Mouth","Clássica":"Classic","Gatinho ω":"Kitty ω","Aberta":"Open","Dentinho":"Little fang","Bochecha":"Cheeks","Rosadinha":"Rosy","Corada":"Blushing","Sardas":"Freckles",
   "BAIXAR":"DOWNLOAD",
   "Bala":"Candy",
@@ -716,6 +717,8 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"¡Los intercambios de cartas empiezan pronto!",
   "Audição":"Audición",
   "Bagunça":"Despeinado",
+  "Penteado":"Peinado","Rosto":"Cara","Pele":"Piel","Cor dos olhos":"Color de ojos","Sortear":"Sortear","Desfazer":"Deshacer",
+  
   "Forma dos olhos":"Forma de los ojos","Brilhante":"Brillante","Pontinho":"Puntito","Gatinho":"Gatuno","Sereno":"Sereno","Clássico":"Clásico","Boca":"Boca","Clássica":"Clásica","Gatinho ω":"Gatito ω","Aberta":"Abierta","Dentinho":"Colmillito","Bochecha":"Mejillas","Rosadinha":"Rosadita","Corada":"Sonrojada","Sardas":"Pecas",
   "BAIXAR":"DESCARGAR",
   "Bala":"Caramelo",
@@ -1301,6 +1304,8 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"การแลกการ์ดจะเริ่มเร็ว ๆ นี้!",
   "Audição":"ออดิชั่น",
   "Bagunça":"ยุ่ง",
+  "Penteado":"ทรงผม","Rosto":"ใบหน้า","Pele":"สีผิว","Cor dos olhos":"สีตา","Sortear":"สุ่ม","Desfazer":"ย้อนกลับ",
+  
   "Forma dos olhos":"ทรงตา","Brilhante":"วิบวับ","Pontinho":"ตาจุด","Gatinho":"ตาแมว","Sereno":"สงบ","Clássico":"คลาสสิก","Boca":"ปาก","Clássica":"คลาสสิก","Gatinho ω":"ปากแมว ω","Aberta":"อ้าปาก","Dentinho":"เขี้ยวเล็ก","Bochecha":"แก้ม","Rosadinha":"ชมพูอ่อน","Corada":"แก้มแดง","Sardas":"กระ",
   "BAIXAR":"ดาวน์โหลด",
   "Bala":"ลูกอม",
@@ -1886,6 +1891,8 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"カード交換はもうすぐスタート!",
   "Audição":"オーディション",
   "Bagunça":"ラフ",
+  "Penteado":"ヘア","Rosto":"かお","Pele":"はだ","Cor dos olhos":"目の色","Sortear":"おまかせ","Desfazer":"もどす",
+  
   "Forma dos olhos":"目のかたち","Brilhante":"キラキラ","Pontinho":"てんてん","Gatinho":"ネコ目","Sereno":"おだやか","Clássico":"クラシック","Boca":"くち","Clássica":"クラシック","Gatinho ω":"ねこ口 ω","Aberta":"あーん","Dentinho":"八重歯","Bochecha":"ほっぺ","Rosadinha":"ほんのりピンク","Corada":"ぽっ","Sardas":"そばかす",
   "BAIXAR":"ダウンロード",
   "Bala":"キャンディ",

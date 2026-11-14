@@ -961,7 +961,7 @@ function perfMontUI(){
   function rotulo(id){ var el = $(id), lb = el && el.closest('label'); if(!lb) return ''; var t = ''; [].forEach.call(lb.childNodes, function(n){ if(n.nodeType === 3) t += n.nodeValue; }); return t.trim(); }
   function opts(id, cur){ return [].map.call($(id).options, function(o){ return '<option value="' + escHtml(o.value) + '"' + (o.disabled ? ' disabled' : '') + (o.value === cur ? ' selected' : '') + '>' + escHtml(o.textContent) + '</option>'; }).join(''); }
   function sel(p){ h += '<label>' + escHtml(rotulo(p[0])) + ' <select data-m="' + p[1] + '">' + opts(p[0], CU[p[1]] || '') + '</select></label>'; }
-  h += '<label>' + escHtml(rotulo('chair')) + ' <input type="color" data-m="hair" value="' + escHtml(CU.hair) + '"></label>';
+  h += '<label>' + escHtml(tr('Cabelo')) + ' <input type="color" data-m="hair" value="' + escHtml(CU.hair) + '"></label>';   // no editor do menu o rótulo virou "Cor", dentro do bloco Penteado
   sel(['cback', 'back']);
   h += '<i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cstk')) + ' <select data-m="mecha">' + opts('cstk', CU.mecha||(CU.streak?'uma':'')) + '</select> <input type="color" data-m="hair2" value="' + escHtml(CU.hair2) + '"></label>';
@@ -969,7 +969,9 @@ function perfMontUI(){
   sel(['cfront', 'front']); sel(['cdet', 'det']);
   h += '<i class="cbr"></i>';
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
-  h += '<label>' + escHtml(rotulo('ceye')) + ' <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label><i class="cbr"></i>';
+  h += '<label>' + escHtml(rotulo('ceye')) + ' <select data-m="olho">' + opts('colho', CU.olho || '') + '</select> <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label>';
+  sel(['cboca', 'boca']); sel(['cbochecha', 'bochecha']);   // rosto à escolha (tw-avatar-rosto.js)
+  h += '<i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
   h += '<label>' + escHtml(tr('Parte de baixo')) + ' <select data-m="baixo" title="' + escHtml(tr('Vale para Trainee, Cheeky, Seifuku e City Pop')) + '">' + [['', tr('Padrão da roupa')], ['saia', tr('Saia')], ['bermuda', tr('Bermuda')]].map(function(o){ return '<option value="' + o[0] + '"' + ((CU.baixo || '') === o[0] ? ' selected' : '') + '>' + escHtml(o[1]) + '</option>'; }).join('') + '</select></label>';
   h += '<label>' + escHtml(tr('Meias')) + ' <input type="color" data-m="legcol" value="' + escHtml(CU.legcol || '#1c1c30') + '" title="' + escHtml(tr('Cor das meias ou botas')) + '"></label>';

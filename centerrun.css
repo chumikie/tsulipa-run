@@ -168,6 +168,34 @@ body:not(.jogando) #sb{display:none!important}
 #cust_roupa.cust input[type=color]{width:40px;height:40px;padding:3px;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);background:var(--card);cursor:pointer}
 #cust_roupa.cust .cbr{display:none}
 #cust_roupa.cust select:focus-visible,#cust_roupa.cust input:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+/* Editor do "Você" no mesmo molde da roupa: blocos Penteado / Rosto / Roupa com título */
+#cust.cust{display:grid;grid-template-columns:1fr;gap:6px;max-width:340px;margin:4px auto 12px;padding:10px;border-radius:16px;
+  background:color-mix(in srgb,var(--chip) 70%,transparent);font-size:12.5px;font-weight:800;color:var(--b1)}
+#cust.cust label{display:grid;grid-template-columns:92px minmax(0,1fr) auto;align-items:center;gap:6px;white-space:normal;text-align:left;line-height:1.15}
+#cust.cust label:not(:has(select)){grid-template-columns:92px auto}
+#cust.cust select{grid-column:2;height:40px;min-width:0;width:100%;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);
+  background:var(--card);color:var(--ink);padding:0 8px;font-size:13px;font-weight:700}
+#cust.cust input[type=color]{width:40px;height:40px;padding:3px;border-radius:12px;border:2px solid color-mix(in srgb,var(--b1) 30%,transparent);background:var(--card);cursor:pointer}
+#cust.cust .cbr{display:none}
+#cust.cust select:focus-visible,#cust.cust input:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+#cust.cust[hidden]{display:none}
+#cust.cust,#cust_roupa.cust{position:relative}
+.cust .custt{margin:2px 0 2px;font:400 14px/1.2 "Mochiy Pop One","M PLUS Rounded 1c",sans-serif;color:var(--b1);text-align:left;display:flex;gap:6px;align-items:center}
+.cust .custt:not(:first-child){margin-top:8px;padding-top:8px;border-top:2px dashed color-mix(in srgb,var(--b1) 22%,transparent)}
+.cust .custlinha{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:6px;text-align:left}
+.cust .custlinha #skins{display:flex;flex-wrap:wrap;gap:3px}
+.cust .custlinha .sw{width:24px;height:24px;margin:0}
+.cust .custpaleta{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-start;padding-left:98px;margin-top:-2px}
+.cust .custpaleta .sw{width:24px;height:24px;margin:0}
+.cust .custacoes{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.cust .custacoes .btn{display:inline-flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap;font-size:13px;padding:8px 14px;min-height:40px}
+.cust .custacoes .btn:disabled{opacity:.45;cursor:default}
+@media(max-width:360px){
+  #cust.cust label,#cust.cust label:not(:has(select)),.cust .custlinha{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}
+  #cust.cust select{grid-column:1}
+  .cust .custlinha{grid-template-columns:1fr}
+  .cust .custpaleta{padding-left:0}
+}
 /* Idiomas: "日本語" não quebra em duas linhas a 320 px */
 .lang{flex-wrap:wrap}.lang button{white-space:nowrap;min-height:32px}
 @media(max-width:360px){.lang{gap:3px}.lang button{padding:4px 7px}}

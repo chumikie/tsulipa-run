@@ -40,7 +40,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=2">
+<link rel="stylesheet" href="./centerrun.css?v=4">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -219,11 +219,11 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <div class="chars" id="chars"></div>
       
       <div class="cust" id="cust" hidden>
-        <label>Cabelo <input type="color" id="chair" value="#ff7eb6"></label>
+        <h4 class="custt"><span aria-hidden="true">💇</span> <span>Penteado</span></h4>
+        <label>Cor <input type="color" id="chair" value="#ff7eb6"></label>
+        <div class="custpaleta" id="hairsw" role="group" aria-label="Cor"></div>
         <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
-        <i class="cbr"></i>
         <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
-        <i class="cbr"></i>
         <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option></select></label>
         <label>Detalhe <select id="cdet">
           <option value="" data-r="0">Nenhum</option>
@@ -233,15 +233,16 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="olheiras" data-r="0" data-twh="Olheiras">Olheiras</option>
           <option value="chifres" data-r="0">Chifres</option>
         </select></label>
-        <i class="cbr"></i>
-        <span id="skins"></span>
-        <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
-        <label>Forma dos olhos <select id="colho"><option value="">Clássico</option><option value="redondo">Redondo</option><option value="brilhante">Brilhante</option><option value="pontinho">Pontinho</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option></select></label>
+        <h4 class="custt"><span aria-hidden="true">😊</span> <span>Rosto</span></h4>
+        <div class="custlinha"><span>Pele</span><span id="skins"></span></div>
+        <label>Olhos <select id="colho"><option value="">Clássico</option><option value="redondo">Redondo</option><option value="brilhante">Brilhante</option><option value="pontinho">Pontinho</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option></select> <input type="color" id="ceye" value="#5a3b2e" aria-label="Cor dos olhos"></label>
         <label>Boca <select id="cboca"><option value="">Clássica</option><option value="sorriso">Sorriso</option><option value="gato">Gatinho ω</option><option value="aberta">Aberta</option><option value="dentinho">Dentinho</option></select></label>
         <label>Bochecha <select id="cbochecha"><option value="">Rosadinha</option><option value="sem">Sem</option><option value="forte">Corada</option><option value="sardas">Sardas</option><option value="estrelinha">Estrelinha</option></select></label>
+        <div class="custacoes"><button type="button" class="btn alt" id="custSortear">🎲 <span>Sortear</span></button><button type="button" class="btn alt" id="custDesfazer" disabled>↩ <span>Desfazer</span></button></div>
       </div>
 
         <div class="cust" id="cust_roupa">
+        <h4 class="custt"><span aria-hidden="true">👗</span> <span>Roupa</span></h4>
         <label>Roupa <select id="cout">
           <option value="" data-r="0">Trainee</option>
           <option value="seifuku" data-r="450">Debut (Team)</option>
@@ -384,7 +385,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=14"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=28"></script>
-<script src="./perfil.js?v=14"></script>
+<script src="./perfil.js?v=15"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -437,6 +438,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./jogos-trilha.js?v=1"></script>
 <script src="./hub-novos.js?v=2"></script>
+<script src="./charmaker.js?v=1"></script>
 <script src="./banner.js?v=5"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>

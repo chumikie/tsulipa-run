@@ -1001,6 +1001,7 @@ test('ML1: olhar responde somente à lembrança disponível e acompanha a estant
   assert.equal(r.x,234);
   assert.equal(ctx.petVidaLembrancaReacao(0),null,'movimento reduzido ou cuidado bloqueia o gesto');
   assert.equal(ctx.petVidaOlharLembranca(220,0,false),0,'cuidados têm prioridade');
+  ctx.petLifeMovimentoReduzido=()=>!!(ctx.window.matchMedia && ctx.window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   ctx.window.matchMedia=()=>({matches:true});
   assert.equal(ctx.petVidaOlharLembranca(220,0,true),0,'reduzir movimento desliga o gesto');
   ctx.window.matchMedia=()=>({matches:false});

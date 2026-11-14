@@ -301,13 +301,30 @@
         ru.rodadas++; if(!certoC) ru.vidas--; ru.pontos += pts; ru.combo = comboC; ru.comboMax = Math.max(ru.comboMax, comboC); if(certoC) ru.perfeitos++;
         return { ok:true, confirmado:true, repetido:false, certo:certoC, pontos_etapa:pts, pontos:ru.pontos, rodadas:ru.rodadas, vidas:ru.vidas, combo:comboC, perfeitos:ru.perfeitos };
       }
+      /* ---- Happy⭐Cafe! — Dois no balcão (20261113_cafe_dois_no_balcao.sql): até 2 pedidos abertos, servidos em qualquer ordem ---- */
+      if(n === 'cafe_run_pedidos'){
+        var rp = D.cafeRuns[a.p_run];
+        if(!rp) return { ok:false, erro:'run' };
+        if(rp.fim || rp.vidas <= 0) return { ok:false, erro:'run_fechado' };
+        var doRun = Object.keys(D.cafeSessoes).filter(function(k){ return D.cafeSessoes[k].run === a.p_run; });
+        var abertos = doRun.filter(function(k){ return !D.cafeSessoes[k].concluido; }).length, criados = doRun.length;
+        while(abertos < 2 && criados < 12){
+          var pd2 = { base:sorteio(5), cob:criados >= 2 || Math.random() < .4 ? sorteio(3) : -1, enf:sorteio(4), doce:criados >= 4 && Math.random() < .6 ? sorteio(4) : -1 };
+          var id2 = novoId();
+          D.cafeSessoes[id2] = { run:a.p_run, pedido:pd2, etapa:criados + 1, limite:Math.max(7, 15 - Math.ceil(criados * .75)) + 4, criado:Date.now(), concluido:false };
+          rp.ultimo = id2; abertos++; criados++;
+        }
+        return { ok:true, pedidos:Object.keys(D.cafeSessoes).filter(function(k){ var q = D.cafeSessoes[k]; return q.run === a.p_run && !q.concluido; })
+          .map(function(k){ var q = D.cafeSessoes[k]; return { sessao:k, pedido:q.pedido, rodada:q.etapa, limite_segundos:q.limite }; }) };
+      }
+      if(n === 'cafe_run_etapa2') return demoNovos('cafe_run_etapa', a);
       if(n === 'cafe_run_finalizar'){
         var rf = D.cafeRuns[a.p_run];
         if(!rf) return { ok:false, erro:'run' };
         var jaFim = rf.fim;
         if(!rf.fim){
           if(rf.vidas > 0 && rf.rodadas < 12) return { ok:false, erro:'incompleto' };
-          if(rf.ultimo && D.cafeSessoes[rf.ultimo] && !D.cafeSessoes[rf.ultimo].concluido) return { ok:false, erro:'pedido_pendente' };
+          if(Object.keys(D.cafeSessoes).some(function(k){ var q = D.cafeSessoes[k]; return q.run === a.p_run && !q.concluido && rf.vidas > 0; })) return { ok:false, erro:'pedido_pendente' };
           rf.fim = true; bonusDoDia('cafe', rf.pontos);
         }
         return { ok:true, confirmado:true, repetido:jaFim, run_id:a.p_run, pontos_verificados:rf.pontos, rodadas:rf.rodadas, perfeitos:rf.perfeitos, combo_max:rf.comboMax };

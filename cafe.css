@@ -49,3 +49,9 @@
 @media(max-width:360px){.btns.cfacoes{flex-wrap:nowrap;gap:6px}.btns.cfacoes .btn.sec{font-size:11.5px;padding:6px 8px}.btns.cfacoes #cfServir{font-size:15px;padding:8px 10px}}
 .cfpedidotxt{margin:6px 0 4px;padding:8px 12px;border-radius:14px;background:#fff;border:2px solid #ffc8e2;color:#3c2a8f;font-size:14px;font-weight:800;line-height:1.35;text-align:center;box-shadow:0 3px 0 rgba(255,111,181,.18)}
 .cfpedidotxt b{color:#d2447f;margin-right:2px}
+/* Dois no balcão: os dois "Servir" lado a lado, "Recomeçar copo" compacto (cabe a 320 px) */
+.btns.cfacoes.cfduplo-acoes{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:stretch}
+.btns.cfacoes.cfduplo-acoes .btn{max-width:none;min-width:0;padding:8px 8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btns.cfacoes.cfduplo-acoes .btn.sec{font-size:12px;padding:6px 8px}
+@media(max-width:360px){.btns.cfacoes.cfduplo-acoes .btn{font-size:12.5px;padding:6px 5px}.btns.cfacoes.cfduplo-acoes .btn.sec{font-size:11px}}
+@media(max-width:360px){.btns.cfacoes.cfduplo-acoes .btn.sec{font-size:0;padding:6px 10px}.btns.cfacoes.cfduplo-acoes .btn.sec::before{content:"🗑️";font-size:17px}}

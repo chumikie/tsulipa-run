@@ -85,7 +85,9 @@
       foto = {estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:esc_}).then(function(r){
-        if(r && r.ok){ foto.estrelas = +r.estrelas || n; foto.verificada = true; foto.premio = +r.premio || 0;
+        if(r && r.ok){
+          if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_clique',{id:pauta&&pauta.dia});
+          foto.estrelas = +r.estrelas || n; foto.verificada = true; foto.premio = +r.premio || 0;
           if(foto.premio && typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           msg = foto.premio ? t('premio') : '';
         } else msg = t('erro');
@@ -130,7 +132,9 @@
   function publicar(){
     if(!foto || !logado()) return; ocupado = true; ui();
     contaRpc('studio_publicar', {p:foto.escolhas}).then(function(r){
-      if(r && r.ok){ publicou = true; msg = t('publicado'); mural = null; }
+      if(r && r.ok){
+        if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
+        publicou = true; msg = t('publicado'); mural = null; }
       else if(r && r.erro === 'ja_publicou'){ publicou = true; msg = t('ja'); }
       else msg = t('erro');
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });

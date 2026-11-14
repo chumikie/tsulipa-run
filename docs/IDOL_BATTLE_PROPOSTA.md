@@ -60,3 +60,6 @@ Cada card é um Idol de verdade do site. Os atributos (1 a 10) saem do que essa 
 ## Top da Arena — aplicado em 14/11/2026
 Ranking semanal de vitórias (item "Prêmio e economia"): `battle_ranking()` só de leitura, mostrado na janela do Battle e como 4º pódio do Idol⭐News!. Detalhes e estado em `docs/RETOMADA.md`.
 
+## v2 Arena dos Idols — proposta de 14/11/2026 (SQL não aplicado)
+Units salvas e desafio assíncrono, sem ★, com "fãs da arena" para a defesa. Regras, arquivos e estado em `docs/RETOMADA.md`.
+

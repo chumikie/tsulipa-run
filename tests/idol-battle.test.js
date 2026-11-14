@@ -47,4 +47,16 @@ assert.match(rankSql,/language sql stable security definer set search_path to ''
 assert.match(rankSql,/revoke all on function public\.battle_ranking\(\) from public,anon/i);
 assert.ok(!/insert into|update public|delete from|stars/i.test(rankSql),'ranking é só leitura');
 assert.match(fs.readFileSync(path.join(root,'jornal.js'),'utf8'),/Array\.isArray\(d\.arena\)/);
+// Arena dos Idols (v2): proposta sem ★; o cliente só envia nick do alvo, a própria unit e o UUID.
+const arenaSql=fs.readFileSync(path.join(root,'supabase/sql/proposta/20261114_idol_battle_v2_arena_REVIEW_ONLY.sql'),'utf8');
+assert.match(src,/contaRpc\('battle_arena'\)/);
+assert.match(src,/contaRpc\('battle_desafiar',\{p_alvo:desafiado\.nick,p_unit:unit\.slice\(\),p_requisicao:requisicao\}\)/);
+assert.match(src,/contaRpc\('battle_unit_salvar',\{p_unit:unit\.slice\(\)\}\)/);
+assert.ok(!/stars|star_log/i.test(arenaSql),'a arena nunca mexe em estrelas');
+assert.match(arenaSql,/unique \(desafiante,alvo,dia\)/i);
+assert.match(arenaSql,/v_feitos>=3/);
+assert.match(arenaSql,/enable row level security/i);
+for(const f of ['battle_unit_salvar\\(jsonb\\)','battle_arena\\(\\)','battle_desafiar\\(text,jsonb,uuid\\)'])
+  assert.match(arenaSql,new RegExp('revoke all on function public\\.'+f+' from public,anon','i'));
+assert.match(arenaSql,/revoke all on function private\.battle_unit_resolver\(uuid,jsonb\) from public,anon,authenticated/i);
 console.log('OK: Battle v1 — treino seguro, 6 idiomas, contrato RPC, limites e acesso pelo mapa');

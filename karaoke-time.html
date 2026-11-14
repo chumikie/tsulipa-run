@@ -231,14 +231,6 @@ html.kt-no-site .krwrap{padding-top:0!important}
     
   </section>  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música ou uma voz.</p>
 </section>
-<section hidden inert class="kr-mic-queue" id="krMicQueue" aria-label="Fila do microfone em ensaio">
-<div class="kr-mic-queue-head"><strong id="krMicQueueTitle">🎤 Próximas 3 pessoas</strong><small id="krMicQueueState">🧪 Fila de simulação</small></div>
-<ol class="kr-mic-queue-list" id="krMicQueueList"><li>1. Livre</li><li>2. Livre</li><li>3. Livre</li></ol>
-<div class="kr-mic-queue-controls">
-<button type="button" class="krb" id="krMicQueueMe">🎤 Pedir minha vez</button>
-<button type="button" class="krb" id="krMicQueueBot">🧪 Simular pedido de outro Idol</button>
-</div><small class="kr-mic-queue-help" id="krMicQueueHelp">Esta fila é apenas um ensaio local e não reserva o microfone para contas reais.</small>
-</section>
 <section class="kr-rhythm" id="krRhythm" hidden aria-label="Ensaio de ritmo">
 <div class="kr-rhythm-head"><h2>🎤 Karaoke⭐Time! · Rhythm</h2><span id="krRhythmPhase"></span></div>
 <small class="kr-rhythm-notice" id="krRhythmNotice">🧪 Ensaio local: sem participantes reais, moedas ou insígnias.</small>
@@ -1168,36 +1160,8 @@ function krHandBusy(person){
 }
 /* Ensaio usa a sala original; resultados locais, sem rede ou moedas. */
 var krRhythmRun=null,krRhythmLastSecond=-1;
-var krDemoFila=[],krDemoCantor=null,krDemoBotSegundo=-1;
-var KR_DEMO_QUEUE_LIMIT=3;
-var KR_DEMO_QUEUE_LABELS={
- pt:['🎤 Próximas 3 pessoas','🧪 Fila local','Livre','Pedir minha vez','Sair da fila','🧪 Simular pedido de outro Idol','Fila lotada! Aguarde alguém cantar ou desistir.','Você está na posição ','Está na sua vez!','Já está na fila','As vagas são fictícias: nenhum jogador real foi notificado.','Aguardando próximo cantor...'],
- en:['🎤 Next 3 singers','🧪 Local queue','Free','Request a turn','Leave queue','🧪 Simulate another Idol','Queue full! Wait for a singer or withdrawal.','Your position: ','Your turn!','Already queued','This is a mock queue: no real player was notified.','Waiting for the next singer...'],
- es:['🎤 Próximos 3 Idols','🧪 Fila local','Libre','Pedir mi turno','Salir de la fila','🧪 Simular otro Idol','¡Fila llena! Espera un turno libre.','Tu posición: ','¡Tu turno!','Ya estás en la fila','Esta fila es simulada. No hay reservas reales.','Esperando cantante...'],
- th:['🎤 นักร้อง 3 คนถัดไป','🧪 คิวจำลอง','ว่าง','ขอคิว','ออกจากคิว','🧪 จำลองคนต่อไป','คิวเต็มแล้ว!','คิวของคุณ: ','ถึงคิวแล้ว!','อยู่ในคิวแล้ว','นี่เป็นคิวจำลอง ไม่มีผู้เล่นจริง','รอนักร้องคนถัดไป...'],
- ja:['🎤 次の３人','🧪 ローカル順番待ち','空席','順番を予約','列から出る','🧪 ほかのアイドルを試す','順番待ちは満員です！','あなたの順番: ','あなたの番です！','すでに予約済み','これはローカル練習です。実際の予約はありません。','次の歌い手を待っています']
-};
-if(LANG==='id')KR_DEMO_QUEUE_LABELS.id=window.TW_ID_PREVIEW_DATA.karaoke.queue;
-function krDemoTr(){return KR_DEMO_QUEUE_LABELS[LANG]||KR_DEMO_QUEUE_LABELS.pt;}
+var krDemoFila=[]/* fila de pedidos removida (sala solo): fica sempre vazia */,krDemoCantor=null,krDemoBotSegundo=-1;
 function krDemoFree(){return !krRhythmRun&&!krDemoCantor&&!krEu.no_mic&&!window.ktShowAdmissionPending&&!krMeuRetornoAt&&!krMeuVoltandoAoMic&&!krMoveQueue.length&&krEuNoMicrofone();}
-function krDemoQueueRender(){
-  var L=krDemoTr(),mine=krDemoFila.indexOf('__self');
-  $('krMicQueueTitle').textContent=L[0];$('krMicQueueState').textContent=
-    L[1]+' · '+krDemoFila.length+'/'+KR_DEMO_QUEUE_LIMIT+
-    (krDemoCantor?' · 🎤 '+krDemoCantor.bot.nick:'');
-  var list=$('krMicQueueList');
-  list.innerHTML=Array.from({length:KR_DEMO_QUEUE_LIMIT},function(_,i){
-    var id=krDemoFila[i],who=id==='__self'?nick:id;
-    return '<li'+(id==='__self'?' class="myturn"':'')+'><span>'+(i+1)+'.</span> '+
-       (id?'💖 '+escHtml(who):'<span class="muted">'+escHtml(L[2])+'</span>')+'</li>';
-  }).join('');
-  $('krMicQueueMe').textContent=krEu.no_mic?'🎤 '+tr('Soltar microfone'):
-    mine>=0?'💌 '+L[4]: '🎤 '+L[3];
-  $('krMicQueueMe').disabled=false;
-  $('krMicQueueBot').textContent=L[5];
-  $('krMicQueueBot').disabled=krDemoFila.length>=KR_DEMO_QUEUE_LIMIT||!krSt.aberta;
-  $('krMicQueueHelp').textContent=L[10];
-}
 function krDemoBotEnd(){if(window.krLoungeAutoMicController)window.krLoungeAutoMicController.finishSinger();}
 function krDemoBotStartNext(){
   if(!krSt.aberta||!krDemoFree())return;
@@ -1211,32 +1175,6 @@ function krDemoBotStartNext(){
   }
   krUI();
 }
-function krDemoRequest(id){
-  if(krHomolConectado)return;
-  var L=krDemoTr();
-  if(!krSt.aberta)return;
-  if(id==='__self'&&krEu.no_mic){krRhythmStop('abandoned');return;}
-  if(id==='__self'&&krDemoFila.indexOf(id)>=0){
-    krDemoFila=krDemoFila.filter(function(v){return v!==id;});
-    krAviso('💌 '+L[4]);krUI();return;
-  }
-  if(krDemoFila.indexOf(id)>=0||(krDemoCantor&&krDemoCantor.bot.nick===id)){
-    krAviso(L[9]);return;
-  }
-  if(krDemoFila.length>=KR_DEMO_QUEUE_LIMIT){krAviso('🎤 '+L[6]);return;}
-  krDemoFila.push(id);
-  if(krDemoFree())krDemoBotStartNext();
-  else{if(id==='__self')krAviso('💜 '+L[7]+krDemoFila.length+'/3');
-    krUI();}
-}
-function krDemoRequestBot(){
-  if(krDemoFila.length>=KR_DEMO_QUEUE_LIMIT){krAviso('🎤 '+krDemoTr()[6]);return;}
-  var eligible=krBots.filter(function(b){return !b.no_mic&&(!krDemoCantor||krDemoCantor.bot!==b)&&
-    !b._ktLoungeWalking&&krDemoFila.indexOf(b.nick)<0&&krLoungePodePassear(b);});
-  if(!eligible.length){krAviso('🎤 '+tr('Ninguém está livre para cantar agora.'));return;}
-  var bot=krLoungeEscolherVariado(eligible);
-  krDemoRequest(bot.nick);
-}
 function krDemoBotTick(dt){
  if(!krDemoCantor)return;
  if(krDemoCantor.phase!=='singing'){if(window.krLoungeAutoMicController)window.krLoungeAutoMicController.updateMovement(dt);return;}
@@ -1245,8 +1183,6 @@ function krDemoBotTick(dt){
  if(sec===0){if(kt&&kt.active())kt.end(true);else krDemoBotEnd();return;}
  if(sec!==krDemoBotSegundo){krDemoBotSegundo=sec;krUI();}
 }
-$('krMicQueueMe').onclick=function(){krDemoRequest('__self');};
-$('krMicQueueBot').onclick=krDemoRequestBot;
 
 var KR_RHYTHM_LANG={
  pt:['Preparando o palco','Toque quando a estrela cruzar a linha!','Aplausos!','Ensaio encerrado','TOCAR NA BATIDA!','🧪 Ensaio local: sem participantes reais, moedas ou insígnias.','Resultado do ensaio','Ensaio interrompido','Espere a estrela!'],
@@ -1805,7 +1741,7 @@ function ktCaixaSomViva(x,X,Y,W,H,t){
 function ktEstrelinha(x,cx,cy,r,cor){x.fillStyle=cor;x.beginPath();x.moveTo(cx,cy-r);x.quadraticCurveTo(cx+r*.18,cy-r*.18,cx+r,cy);x.quadraticCurveTo(cx+r*.18,cy+r*.18,cx,cy+r);x.quadraticCurveTo(cx-r*.18,cy+r*.18,cx-r,cy);x.quadraticCurveTo(cx-r*.18,cy-r*.18,cx,cy-r);x.fill();}
 function krAviso(msg){var el=$('krAviso');el.textContent=msg||'';el.hidden=!msg;clearTimeout(el._t);if(msg)el._t=setTimeout(function(){el.hidden=true;},5000);}
 function krRenderHubCard(){var slot=$('hubCardSlot');if(!slot)return;var cls='hubcard'+(krSt.aberta?' aberta':krSt.faltam10?' abrindo':'');var ico=krSt.aberta?'🎤':'🔒';var txt=krSt.aberta?'🟢 '+tr('Aberta · {n}/11').replace('{n}',krSt.ocupadas):krSt.faltam10?'✨ '+tr('Abrindo em {t}').replace('{t}','09:59'):tr('Abre em {t}').replace('{t}','3d 04h 12min');var sab=(!krSt.aberta&&krSt.sabado)?'<div class="hubsab">👀 '+escHtml(tr('Amanhã ao meio-dia! O quarteto da semana já foi sorteado 👀'))+'</div>':'';slot.innerHTML='<button type="button" class="'+cls+'" id="hubCardPreviewBtn"><i>'+ico+'</i><b translate="no">Karaoke⭐Time!</b><small>'+escHtml(txt)+'</small>'+sab+'</button>';$('hubCardPreviewBtn').onclick=function(){$('hubPrev').hidden=true;$('krHubBtn').setAttribute('aria-pressed','false');};}
-function krUI(){$('krVolta').textContent='← '+tr('Início');krRenderHubCard();var mq=$('krMicQueue');if(mq)mq.setAttribute('aria-label',tr('Fila do microfone em ensaio'));$('krStatusTxt').textContent='♪ Jogo de ritmo · solo';$('krRelogio').textContent='★ Seu show · 60 segundos';var mod=$('krModal'),mbox=$('krModalBox');if(!krSt.aberta){mod.hidden=false;var subLock=krSt.sabado?'👀 '+tr('Amanhã ao meio-dia! O quarteto da semana já foi sorteado 👀'):krSt.faltam10?'✨ '+tr('Abrindo em {t}').replace('{t}','09:59'):tr('Abre em {t}').replace('{t}','3d 04h 12min');mbox.innerHTML='<div style="font-size:46px">'+(krSt.faltam10?'✨':'🔒')+'</div><h2>Karaoke⭐Time!</h2><p>'+escHtml(tr('Simulação: sala fechada'))+'<br><b style="color:var(--pink);font-size:16px">'+escHtml(subLock)+'</b></p><button type="button" class="btn" id="krDestrancarBtn">🟢 Simular Sala Aberta</button>';$('krDestrancarBtn').onclick=function(){krSt.aberta=true;krSt.sabado=false;krSt.faltam10=false;krUI();};return;}if(krEu.vagaPronta){mod.hidden=false;mbox.innerHTML='<div style="font-size:46px">🎉</div><h2>'+escHtml(tr('Sua vaga abriu! Confirme em {s}s').replace('{s}',krEu.vagaS))+'</h2><p>Você é a 1ª pessoa da fila! Confirme para ocupar uma das 9 vagas (simulação).</p><button type="button" class="btn" id="krConfBtn">'+escHtml(tr('ENTRAR NA SALA'))+'</button>';$('krConfBtn').onclick=function(){krEu.vagaPronta=false;krEu.fila=0;krUI();beep(1047,.12,'triangle',.05);};return;}if(krEu.fila>0){mod.hidden=false;mbox.innerHTML='<div style="font-size:46px">⏳</div><h2>'+escHtml(tr('Sala cheia! Você é a {n}ª pessoa da fila.').replace('{n}',krEu.fila))+'</h2><p>Assim que abrir uma vaga, você terá 30 segundos para confirmar.</p><button type="button" class="btn alt" id="krSairFilaBtn">'+escHtml(tr('Sair da fila'))+'</button>';$('krSairFilaBtn').onclick=function(){krEu.fila=0;krUI();};return;}mod.hidden=true;var bar=$('krBar');if(krEu.plateia){bar.innerHTML='<p class="krsub" style="width:100%;text-align:center;margin-bottom:4px">'+escHtml(tr('Modo plateia (celular): assista ao show e mande emojis! Para andar e cantar, entre pelo computador 💻'))+'</p>'+krHtmlEmojis();return;}var h='';h+='<div class="krgrp"><button type="button" class="krb" id="krMicBtn" aria-pressed="'+(krEu.no_mic||krDemoFila.indexOf('__self')>=0)+'">🎤 '+escHtml(krEu.no_mic?'Encerrar show':'Jogar ritmo')+(krEu.no_mic?' ('+Math.ceil(krEu.micT/60)+'s)':'')+'</button>';if(krEu.no_mic)h+=KR_CANTO.map(function(c){return '<button type="button" class="krb" data-canto="'+c[0]+'" aria-pressed="'+(krEu.canto===c[0])+'">'+c[1]+' '+c[2]+'</button>';}).join('');h+='</div><div class="krgrp"><b>💃 '+escHtml(tr('Dançar'))+'</b>'+KR_DANCAS.map(function(d){return '<button type="button" class="krb" data-danca="'+d[0]+'" aria-pressed="'+(krEu.danca===d[0])+'">'+d[1]+(d[0]?' '+d[2]:'')+'</button>';}).join('')+'</div><div class="krgrp"><b>🍹 '+escHtml(tr('Drinks'))+'</b>'+KR_DRINKS.map(function(dr){return '<button type="button" class="krb" data-drink="'+dr[0]+'" aria-pressed="'+(krEu.drink===dr[0])+'">'+dr[1]+' '+dr[2]+'</button>';}).join('')+(krEu.drink?'<button type="button" class="krb" id="krBrindarBtn">🥂 '+escHtml(tr('Brindar! 🥂'))+'</button>':'')+'</div><div class="krgrp"><b>😊</b>'+[['2','😊'],['3','😉'],['0','👀'],['6','😍']].map(function(ex){return '<button type="button" class="krb" data-expr="'+ex[0]+'" aria-pressed="'+(String(krEu.expr)===ex[0])+'">'+ex[1]+'</button>';}).join('')+'</div><div class="krgrp"><b>🎀 '+escHtml(tr('Itens da sala'))+'</b>'+[['mic','🎤 '+tr('Mic sem fio')],['pandeiro','🌙 '+tr('Pandeiro com fitinhas')],['antena','⭐ '+tr('Antenas de estrela')],['look','👓 '+tr('Óculos coração/estrela')]].map(function(v){var on=v[0]==='antena'?krEu.antenaSala:v[0]==='look'?krEu.lookSala:krEu.itemSala===v[0];return '<button type="button" class="krb" data-sala-item="'+v[0]+'" aria-pressed="'+on+'">'+v[1]+'</button>';}).join('')+'</div><div class="krgrp"><b>🍡 '+escHtml(tr('Snacks'))+'</b>'+KR_SNACKS.map(function(v){return '<button type="button" class="krb" data-snack="'+v[0]+'" aria-pressed="'+(krEu.snackSala===v[0])+'">'+v[1]+' '+v[2]+'</button>';}).join('')+'</div><p class="krsub" style="width:100%;text-align:center;font-size:10px">'+escHtml(tr('Escolha abaixo para equipar'))+'. '+escHtml(tr('Itens de mão são exclusivos: escolha 1 de cada vez.'))+'</p>'+krHtmlEmojis();bar.innerHTML=h;}
+function krUI(){$('krVolta').textContent='← '+tr('Início');krRenderHubCard();$('krStatusTxt').textContent='♪ Jogo de ritmo · solo';$('krRelogio').textContent='★ Seu show · 60 segundos';var mod=$('krModal'),mbox=$('krModalBox');if(!krSt.aberta){mod.hidden=false;var subLock=krSt.sabado?'👀 '+tr('Amanhã ao meio-dia! O quarteto da semana já foi sorteado 👀'):krSt.faltam10?'✨ '+tr('Abrindo em {t}').replace('{t}','09:59'):tr('Abre em {t}').replace('{t}','3d 04h 12min');mbox.innerHTML='<div style="font-size:46px">'+(krSt.faltam10?'✨':'🔒')+'</div><h2>Karaoke⭐Time!</h2><p>'+escHtml(tr('Simulação: sala fechada'))+'<br><b style="color:var(--pink);font-size:16px">'+escHtml(subLock)+'</b></p><button type="button" class="btn" id="krDestrancarBtn">🟢 Simular Sala Aberta</button>';$('krDestrancarBtn').onclick=function(){krSt.aberta=true;krSt.sabado=false;krSt.faltam10=false;krUI();};return;}if(krEu.vagaPronta){mod.hidden=false;mbox.innerHTML='<div style="font-size:46px">🎉</div><h2>'+escHtml(tr('Sua vaga abriu! Confirme em {s}s').replace('{s}',krEu.vagaS))+'</h2><p>Você é a 1ª pessoa da fila! Confirme para ocupar uma das 9 vagas (simulação).</p><button type="button" class="btn" id="krConfBtn">'+escHtml(tr('ENTRAR NA SALA'))+'</button>';$('krConfBtn').onclick=function(){krEu.vagaPronta=false;krEu.fila=0;krUI();beep(1047,.12,'triangle',.05);};return;}if(krEu.fila>0){mod.hidden=false;mbox.innerHTML='<div style="font-size:46px">⏳</div><h2>'+escHtml(tr('Sala cheia! Você é a {n}ª pessoa da fila.').replace('{n}',krEu.fila))+'</h2><p>Assim que abrir uma vaga, você terá 30 segundos para confirmar.</p><button type="button" class="btn alt" id="krSairFilaBtn">'+escHtml(tr('Sair da fila'))+'</button>';$('krSairFilaBtn').onclick=function(){krEu.fila=0;krUI();};return;}mod.hidden=true;var bar=$('krBar');if(krEu.plateia){bar.innerHTML='<p class="krsub" style="width:100%;text-align:center;margin-bottom:4px">'+escHtml(tr('Modo plateia (celular): assista ao show e mande emojis! Para andar e cantar, entre pelo computador 💻'))+'</p>'+krHtmlEmojis();return;}var h='';h+='<div class="krgrp"><button type="button" class="krb" id="krMicBtn" aria-pressed="'+(krEu.no_mic||krDemoFila.indexOf('__self')>=0)+'">🎤 '+escHtml(krEu.no_mic?'Encerrar show':'Jogar ritmo')+(krEu.no_mic?' ('+Math.ceil(krEu.micT/60)+'s)':'')+'</button>';if(krEu.no_mic)h+=KR_CANTO.map(function(c){return '<button type="button" class="krb" data-canto="'+c[0]+'" aria-pressed="'+(krEu.canto===c[0])+'">'+c[1]+' '+c[2]+'</button>';}).join('');h+='</div><div class="krgrp"><b>💃 '+escHtml(tr('Dançar'))+'</b>'+KR_DANCAS.map(function(d){return '<button type="button" class="krb" data-danca="'+d[0]+'" aria-pressed="'+(krEu.danca===d[0])+'">'+d[1]+(d[0]?' '+d[2]:'')+'</button>';}).join('')+'</div><div class="krgrp"><b>🍹 '+escHtml(tr('Drinks'))+'</b>'+KR_DRINKS.map(function(dr){return '<button type="button" class="krb" data-drink="'+dr[0]+'" aria-pressed="'+(krEu.drink===dr[0])+'">'+dr[1]+' '+dr[2]+'</button>';}).join('')+(krEu.drink?'<button type="button" class="krb" id="krBrindarBtn">🥂 '+escHtml(tr('Brindar! 🥂'))+'</button>':'')+'</div><div class="krgrp"><b>😊</b>'+[['2','😊'],['3','😉'],['0','👀'],['6','😍']].map(function(ex){return '<button type="button" class="krb" data-expr="'+ex[0]+'" aria-pressed="'+(String(krEu.expr)===ex[0])+'">'+ex[1]+'</button>';}).join('')+'</div><div class="krgrp"><b>🎀 '+escHtml(tr('Itens da sala'))+'</b>'+[['mic','🎤 '+tr('Mic sem fio')],['pandeiro','🌙 '+tr('Pandeiro com fitinhas')],['antena','⭐ '+tr('Antenas de estrela')],['look','👓 '+tr('Óculos coração/estrela')]].map(function(v){var on=v[0]==='antena'?krEu.antenaSala:v[0]==='look'?krEu.lookSala:krEu.itemSala===v[0];return '<button type="button" class="krb" data-sala-item="'+v[0]+'" aria-pressed="'+on+'">'+v[1]+'</button>';}).join('')+'</div><div class="krgrp"><b>🍡 '+escHtml(tr('Snacks'))+'</b>'+KR_SNACKS.map(function(v){return '<button type="button" class="krb" data-snack="'+v[0]+'" aria-pressed="'+(krEu.snackSala===v[0])+'">'+v[1]+' '+v[2]+'</button>';}).join('')+'</div><p class="krsub" style="width:100%;text-align:center;font-size:10px">'+escHtml(tr('Escolha abaixo para equipar'))+'. '+escHtml(tr('Itens de mão são exclusivos: escolha 1 de cada vez.'))+'</p>'+krHtmlEmojis();bar.innerHTML=h;}
 function krHtmlEmojis(){return '<div class="krgrp">'+KR_EMOJIS.map(function(em){return '<button type="button" class="krb kremo" data-emo="'+em+'">'+em+'</button>';}).join('')+'<button type="button" class="krb" data-capture title="'+escHtml(tr('Salvar foto da sala'))+'" aria-label="'+escHtml(tr('Salvar foto da sala'))+'">📸 '+escHtml(tr('Salvar foto da sala'))+'</button></div>';}
 $('krVolta').onclick=function(){ktCloseRoom();};
 $('krLangs').addEventListener('click',function(e){var b=e.target.closest('[data-l]');if(!b)return;LANG=b.dataset.l;[].forEach.call($('krLangs').children,function(x){x.setAttribute('aria-pressed',x===b);});krUI();krRhythmRender();if(typeof ktDecor!=='undefined'&&ktDecor)ktDecor.refresh();});$('krHubBtn').onclick=function(){var on=!$('hubPrev').hidden;$('hubPrev').hidden=on;this.setAttribute('aria-pressed',!on);krRenderHubCard();};$('krDevToggle').onclick=function(){var on=!$('krDev').hidden;$('krDev').hidden=on;this.setAttribute('aria-pressed',!on);};

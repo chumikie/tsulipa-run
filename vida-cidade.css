@@ -62,3 +62,42 @@
  color:#5d3a85;font:700 12px/1.6 "M PLUS Rounded 1c",sans-serif}
 @media(prefers-color-scheme:dark){html:not([data-theme="light"]) #hub .tw-vida-elo,
  html:not([data-theme="light"]) .tw-vida-diario .tw-vida-elo{background:#483368;color:#f4e6ff;border-color:#c9a5fb}}
+
+/* Camarim — mesmos alvos de toque, molduras e contraste dos cards recentes. */
+#twVidaCamarim .tw-vida-objetos button{
+ min-height:48px;border-radius:15px;box-shadow:0 3px 0 rgba(115,65,175,.16);
+ transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+#twVidaCamarim .tw-vida-objetos button:active{
+ transform:translateY(2px);box-shadow:0 1px 0 rgba(115,65,175,.16);
+}
+#twVidaCamarim .tw-vida-foto{
+ position:relative;max-width:116px;padding:7px 7px 16px;border:2px solid #fff;
+ border-radius:5px;background:#fff;box-shadow:0 4px 0 rgba(123,63,240,.10),0 9px 18px rgba(63,35,95,.18);
+}
+#twVidaCamarim .tw-vida-foto:after{
+ content:"✦";position:absolute;right:9px;bottom:0;color:#d98fc0;font-size:11px;
+}
+#twVidaCamarim .tw-vida-foto img{max-height:116px;border-radius:2px}
+@media(max-width:360px){
+ #twVidaCamarim .tw-vida-objetos button{flex-basis:104px;min-width:0}
+ #twVidaCamarim .tw-vida-objetos button span{overflow-wrap:anywhere}
+}
+@media(prefers-color-scheme:dark){
+ html:not([data-theme="light"]) #twVidaCamarim{
+  background:linear-gradient(120deg,#38264f,#302651);border-color:#8960ae;color:#f7e6ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-objetos button{
+  background:#483362;border-color:#9670bc;color:#fff1ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-objetos button:hover{
+  background:#5a4078;border-color:#c49de8;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-mem-itens span{
+  background:#493666;color:#f8e9ff;
+ }
+ html:not([data-theme="light"]) #twVidaCamarim .tw-vida-sub{color:#ebd8ff}
+}
+@media(prefers-reduced-motion:reduce){
+ #twVidaCamarim .tw-vida-objetos button{transition:none}
+}

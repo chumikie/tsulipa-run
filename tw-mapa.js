@@ -409,8 +409,9 @@
       var av=hubAv();if(av)l.push({av:av,rua:trajetoRua(0),u0:.06,u1:.94,fase:0,dono:true});
     }}catch(e){}
     try{if(typeof hubIdolsDados!=='undefined'&&hubIdolsDados&&Array.isArray(hubIdolsDados.idols))
-      hubIdolsDados.idols.slice(0,3).forEach(function(p,i){if(p&&p.av)l.push({
-        av:p.av,rua:trajetoRua(i+1),u0:.06,u1:.94,fase:(i+1)*.27
+      // a vitrine (vitrine_idols) entrega o visual em `avatar`; `av` fica aceito por compatibilidade
+      hubIdolsDados.idols.slice(0,3).forEach(function(p,i){var av=p&&(p.av||p.avatar);if(av&&typeof av==='object')l.push({
+        av:av,rua:trajetoRua(i+1),u0:.06,u1:.94,fase:(i+1)*.27
       });});}catch(e){}
     return l;
   }

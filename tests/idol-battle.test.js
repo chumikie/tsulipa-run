@@ -34,4 +34,9 @@ assert.match(sql,/enable row level security/i);
 assert.match(sql,/revoke all on function public\.battle_jogar\(jsonb,uuid\) from public,anon/i);
 assert.match(mapa,/if\(l\.battle\)\{window\.battleAbrir\(\);return;\}/);
 assert.match(mapa,/function battleLigado\(/);
+// Show no palco: só encena o resultado pronto; respeita "reduzir movimento" e permite pular.
+assert.match(src,/data-battle="pular"/);
+assert.match(src,/prefers-reduced-motion/);
+assert.match(src,/function fimDoShow\(/);
+assert.ok(!/Math\.random/.test(src),'o cliente não sorteia nada');
 console.log('OK: Battle v1 — treino seguro, 6 idiomas, contrato RPC, limites e acesso pelo mapa');

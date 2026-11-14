@@ -146,3 +146,12 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Novos arquivos `vida-cidade.js`, `vida-cidade.css`, `tests/vida-cidade.test.js` e documentação `docs/VIDA_IDOL_CIDADE_REAGE_PR88.md`.
 - Sem novas RPCs, SQL, saves, recompensas, alterações nos itens originais ou cópias de fotos. Memórias limitadas à sessão e isoladas por conta.
 - Ainda não foram criados NPCs novos caminhando nas ruas nem uma narrativa persistente. Próxima fase depende de QA visual real no iPhone e decisão artística.
+
+## Idol⭐Battle! — show no palco (14/11/2026, só front, PR #88)
+- `battle.js?v=3` / `battle.css?v=2`: as 3 rodadas agora são encenadas num palco em canvas (holofotes, plateia com lightsticks, placar subindo, ★ WIN ★), com botão **Pular** e sem animação quando "reduzir movimento" está ligado. O show só encena o resultado que já veio do servidor; o cliente não sorteia nada.
+- Rivais e a sua unit aparecem com o visual real do Idol (mesmo `drawChar` do jogo, dados da vitrine); quem não está na vitrine vira um medalhão com a inicial. Atributos 🎤💃💖 visíveis nos rivais e nos seus cards; `×N` marca cards repetidos.
+- Escalação: sugestão inicial com a melhor soma; escolher um Idol já usado em outra rodada troca os dois de lugar.
+- Aviso de ★5 do dia (em aberto / já conquistada), polaroid nova com a unit no palco e o placar.
+- Treino sem conta ficou vencível: a ordem escolhida decide (antes era impossível ganhar).
+- **Correção no mapa (`tw-mapa.js?v=39`)**: os Idols da vitrine não passeavam nas ruas porque o código lia `p.av`, mas a vitrine entrega `p.avatar`. Agora aceita os dois.
+- Conferido em Chromium local (390×844, 320×640 escuro, 1280×800 com movimento reduzido) com o `index.html` inteiro e com resposta de servidor simulada; 87 testes JS OK. **Não testado: conta real, iPhone físico, Safari.**

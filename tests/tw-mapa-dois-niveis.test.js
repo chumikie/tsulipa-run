@@ -89,7 +89,7 @@ const state = {
  localStorage:{getItem:()=>null,setItem(){}},
  hubAv:()=>({expr:2}),perfChar:()=>({}),drawChar:()=>{drew.characters++;},
  perfCharContorno(_ctx,_x,_y,_size,cb){cb();},
- hubIdolsDados:{idols:[{av:{expr:2}},{av:{expr:2}}]},
+ hubIdolsDados:{idols:[{avatar:{expr:2}},{av:{expr:2}}]},
  perfPetDoAvatar:()=>({k:'chu'}),
  perfDesenharPetEm:()=>{drew.pets++;},
  HUB_TRIO:[['a','',0,'chu',2],['b','',0,'chu',2],['c','',0,'chu',2]],
@@ -167,4 +167,6 @@ assert.equal(historico.state.twWorldRuaV1,undefined,'histórico de rua consumido
 eventHandlers['abrir:click']();
 assert.equal(roll.hidden,false,'abrir novamente o mapa');
 assert.equal(canvas.height,1000,'reabre no mundo, sem rua oculta');
+// Os Idols da vitrine chegam com o visual em `avatar` (formato real de vitrine_idols).
+assert.match(js,/p\.av\|\|p\.avatar/,'passeantes aceitam o formato real da vitrine');
 console.log('OK: mundo/ruas, avatares, pets, alertas, horário BR, card original, Esc e history');

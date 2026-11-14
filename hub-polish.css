@@ -219,9 +219,9 @@ html body .jornalp .jnpodios>.jnpodio .jnvazio::before{content:"🎤 ";}
 /* ===== Mapa da cidade (tw-mapa.js) ===== */
 html body #hub .tw-mapa{display:flex;flex-direction:column;gap:10px;width:100%;max-width:none;margin:2px 0 4px}
 /* o mapa ganha a sua linha no fim do "Meu mundo" (a grade do hub usa áreas nomeadas, em index2-skin.css) */
-html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm" "profile profile" "pet loja" "mapa mapa" "tj tj" "run run" "hand cafe" "karaoke duo" "sora gacha"}
+html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm" "profile profile" "pet loja" "mapa mapa" "tj tj" "run run" "bloom hand" "cafe battle" "karaoke duo" "studio sora" "gacha gacha"}
 html body #hub #hubCards #twMapa{grid-area:mapa}
-@media(min-width:700px){html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm tm" "profile pet loja" "mapa mapa mapa" "tj tj tj" "run run run" "hand cafe karaoke" "duo sora gacha"}}
+@media(min-width:700px){html body #hub #hubCards:has(#twMapa){grid-template-areas:"tm tm tm" "profile pet loja" "mapa mapa mapa" "tj tj tj" "run run run" "bloom hand cafe" "battle karaoke duo" "studio sora gacha"}}
 html body #hub .tw-mapa-botao{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border-radius:20px;cursor:pointer;text-align:left;color:#fff;
  border:3px solid #fff;overflow:hidden;isolation:isolate;
  background:linear-gradient(100deg,rgba(74,156,240,.92),rgba(52,201,173,.88)),url(./mapa-mundo.svg?v=2) center 58%/150% auto no-repeat;
@@ -519,7 +519,6 @@ html body .studiop .stgrupo>b{font-size:12px;letter-spacing:.03em;color:#8b7bb8;
 html body #hub #hubCards .hubcard.tw-hubnovo-bloom{--hc1:#7edb9c;--hc2:#2fa57a}
 html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
-@media(max-width:699px){#hub #hubCards .tw-hubnovo-bloom{grid-column:1/-1}}
 
 
 /* Mapa Vivo⭐ — lote pequeno de legibilidade e toque móvel, após PR #88.

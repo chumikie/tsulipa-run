@@ -32,6 +32,6 @@ const order=['class="hubblocot hubbt-mundo"','class="hubcard hubperf"','class="h
 let previous=-1;
 for(const marker of order){const at=hub.indexOf(marker);assert(at>previous,'Meu Mundo must precede Jogos in accessible DOM order: '+marker);previous=at;}
 assert(hub.includes("['handshake','cafe','karaoke','duo','sora','gacha']"),'games are placed alphabetically after the special full-width Center Run');
-assert(skin.includes('grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "hand cafe" "karaoke duo" "sora gacha"'),'mobile grid places Meu Mundo above Jogos');
-assert(skin.includes('grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "hand cafe karaoke" "duo sora gacha"'),'desktop grid places Meu Mundo above Jogos');
+assert(skin.includes('grid-template-areas:"tm tm" "profile profile" "pet loja" "tj tj" "run run" "bloom hand" "cafe battle" "karaoke duo" "studio sora" "gacha gacha"'),'mobile grid places Meu Mundo above Jogos');
+assert(skin.includes('grid-template-areas:"tm tm tm" "profile pet loja" "tj tj tj" "run run run" "bloom hand cafe" "battle karaoke duo" "studio sora gacha"'),'desktop grid places Meu Mundo above Jogos');
 console.log('✓ Meu Mundo precedes Jogos; daily missions remain after Idol search and before the gallery.');

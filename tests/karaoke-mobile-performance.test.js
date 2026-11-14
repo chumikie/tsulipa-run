@@ -328,7 +328,7 @@ assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv
 assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
 assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
 assert(!html.includes('kt-library-tabs')&&!html.includes('data-kt-library-view=')&&!html.includes('data-kt-library-panel='),'Music previews and character voices stay together on one simple library page without tabs or hidden panels');
-const libraryStart=html.indexOf('id="ktAudioLibrary"'),libraryEnd=html.indexOf('id="krMicQueue"',libraryStart),libraryMarkup=html.slice(libraryStart,libraryEnd);
+const libraryStart=html.indexOf('id="ktAudioLibrary"'),libraryEnd=html.indexOf('id="krRhythm"',libraryStart),libraryMarkup=html.slice(libraryStart,libraryEnd);
 const songOrder=[...libraryMarkup.matchAll(/data-kt-song-select="([^"]+)"/g)].map(match=>match[1]);
 assert.deepEqual(songOrder,['tema','corrida','duo','gacha','normal','chill','fast'],'The seven music cards follow the exact requested order in one continuous list');
 assert(!libraryMarkup.includes('Músicas do jogo')&&!libraryMarkup.includes('Músicas novas')&&libraryMarkup.includes('Vozes dos personagens'),'Songs have no separate category subheadings while the character-voice section remains distinct');

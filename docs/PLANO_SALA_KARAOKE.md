@@ -38,3 +38,8 @@ Nada foi cortado ainda. Os números são **estimativas** (linhas que citam cada 
 - O CI tem 3 máquinas só para a sala (`browser-karaoke-room`): os testes de passeio e microfone automático saem junto com o código.
 - Saves `brs48cr_*` e chaves `kt_*` não mudam.
 - Tudo numa branch nova, com PR separado da #88.
+
+## Decisão do dono (14/11)
+- **Sai:** a fila de pedidos do microfone (já estava escondida; código e textos removidos, ~5 KB).
+- **Fica:** passeio, conversas e personalidades dos jogadores, para a sala continuar viva mesmo offline.
+- Microfone automático dos NPCs e modo homologação: ainda sem decisão, continuam.

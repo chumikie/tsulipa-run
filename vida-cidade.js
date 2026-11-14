@@ -106,9 +106,11 @@ function render(){
   mem.hidden=!dono;
   if(dono){
    var lembrar=entradas.slice(-3).reverse();
+   var colheita=lembrar.find(function(e){return e.tipo==='bloom_colher'&&e.flor;});
+   var emojiFlor=colheita?({sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'🌙'}[colheita.flor]||'🌱'):'🌱';
    mem.innerHTML='<b class="tw-vida-mem-titulo">🌷 '+escapar(t('cam'))+'</b>'+
      '<div class="tw-vida-objetos" role="group">'+
-     '<button type="button" data-vida-acao="jardim" title="'+escapar(t('vaso'))+'">🌱 <span>'+escapar(t('vaso'))+'</span></button>'+
+     '<button type="button" data-vida-acao="jardim" title="'+escapar(t('vaso'))+'">'+emojiFlor+' <span>'+escapar(t('vaso'))+'</span></button>'+
      '<button type="button" data-vida-acao="foto" title="'+escapar(t('foto'))+'">🖼️ <span>'+escapar(t('foto'))+'</span></button>'+
      '<button type="button" data-vida-acao="cards" title="'+escapar(t('cards'))+'">🃏 <span>'+escapar(t('cards'))+'</span></button></div>'+
      (lembrar.length?'<p class="tw-vida-mem-itens">'+lembrar.map(function(e){return '<span>'+escapar(relato(e))+'</span>';}).join('')+'</p>':
@@ -141,10 +143,11 @@ function iniciar(){
      agir(b.getAttribute('data-vida-acao'));
  });
  // Atualização quando o usuário entra na cidade; sem polling ou loops novos.
- if(typeof window.hubMostrar==='function'){
-  var original=window.hubMostrar;
-  window.hubMostrar=function(){var res=original.apply(this,arguments);atualizar();return res;};
- }
+ ['hubMostrar','hubCardsUI'].forEach(function(nome){
+   if(typeof window[nome]!=='function')return;
+   var original=window[nome];
+   window[nome]=function(){var res=original.apply(this,arguments);atualizar();return res;};
+ });
  document.addEventListener('visibilitychange',function(){if(!document.hidden)atualizar();});
 }
 window.TWVidaCidade={registrar:registrar,estado:estado,capitulos:capitulos,diarioHtml:diarioHtml,atualizar:atualizar,

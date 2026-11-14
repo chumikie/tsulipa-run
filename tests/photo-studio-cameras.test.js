@@ -28,9 +28,10 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
   assert.ok(frames[0].scale > frames[1].scale && frames[1].scale > frames[2].scale,
     'close-up > half-body > full-body');
   const cut = frames.map(frame => (540 - frame.y) / frame.scale);
-  assert.ok(cut[0] < 14, 'portrait ends around the shoulders');
-  assert.ok(cut[1] > 24 && cut[1] < 35, 'half-body ends around the waist');
-  assert.ok(cut[2] > 52, 'full-body fits through the shoes');
+  // Medidas do desenho na tela: boca ≈17, ombros ≈22, bermuda ≈33, pés ≈42, sombra ≈46.
+  assert.ok(cut[0] > 20 && cut[0] < 31, 'portrait ends around the shoulders');
+  assert.ok(cut[1] > 34 && cut[1] < 44, 'half-body ends around the shorts');
+  assert.ok(cut[2] > 46, 'full-body fits through the shoes and shadow');
 });
 
 test('Studio photo and mural reuse the same camera and props renderer', () => {

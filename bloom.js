@@ -73,6 +73,12 @@
     laco();
   }
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} }
+  // Som do jogo (jogos-trilha.js); sem ele, os bipes de antes.
+  function som(k){
+    if(typeof twJogoSom === 'function') return twJogoSom(k);
+    if(k === 'colher'){ if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} return; }
+    if(typeof beep === 'function') try{ beep(k === 'regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}
+  }
   function acao(nome, args){
     ocupado = true; msg = ''; escolha = -1; idolIr(args && args.p_canteiro); ui();
     rpc(nome, args).then(function(r){
@@ -80,8 +86,8 @@
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
         if(nome === 'jardim_regar') chuva.push({c:args.p_canteiro, t0:performance.now()});
-        if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
-        else if(typeof beep === 'function') try{ beep(nome === 'jardim_regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}
+        if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); som('colher'); }
+        else { if(nome === 'jardim_plantar') for(var j = 0; j < 8; j++) festa.push({c:args.p_canteiro, i:Math.round(j * 14 / 8), t0:performance.now(), k:'broto'}); som(nome === 'jardim_regar' ? 'regar' : 'plantar'); }
       } else msg = r && r.erro === 'estrelas' ? t('estrelas') : t('erro');
       return rpc('jardim_estado').then(function(e){ if(e && e.ok) st = e; });
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
@@ -116,8 +122,8 @@
       });
     });
     fila.then(function(){
-      if(colhidas.length){ msg = t('colhido') + ' ' + colhidas.join(' · '); if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }
-      else if(typeof beep === 'function') try{ beep(880, .07, 'triangle', .04); }catch(e){}
+      if(colhidas.length){ msg = t('colhido') + ' ' + colhidas.join(' · '); som('colher'); }
+      else som('regar');
       return rpc('jardim_estado').then(function(e){ if(e && e.ok) st = e; });
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); laco(); });
   }
@@ -180,7 +186,7 @@
     }
   }
   // ---------- o jardim desenhado ----------
-  var COR = {sakura:['#ffc9e0','#ff93c0','#e85a94'], tulipa:['#ffa3ba','#f26a93','#d63d72'], girassol:['#ffe270','#f8b62a','#7a4a2b'], lunar:['#e8dbff','#ab8ef6','#fff3b8']};
+  var COR = {sakura:['#ffc9e0','#ff93c0','#e85a94'], tulipa:['#ffa3ba','#f26a93','#d63d72'], girassol:['#ffe270','#f8b62a','#7a4a2b'], lunar:['#e8dbff','#ab8ef6','#fff3b8'], broto:['#b6ff3b','#6fcf5a','#3f9a46']};
   var chuva = [];
   function desenhar(){
     var cv = ov && ov.querySelector('#bloomCv'); if(!cv) return;

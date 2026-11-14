@@ -421,7 +421,8 @@ function jogar(){
 /* ---------- Show no palco ---------- */
 // Sons do próprio jogo (sfx respeita o mudo); se não existirem, o show segue em silêncio.
 var showSom=-1;
-function som(k){try{if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
+var SOM_NOVO={star:'ponto',hit:'perdeu',rank:'vitoria',over:'perdeu',photo:'flash'};
+function som(k){try{if(typeof twJogoSom==='function'&&SOM_NOVO[k])return twJogoSom(SOM_NOVO[k]);if(typeof sfx!=='undefined'&&sfx&&typeof sfx[k]==='function')sfx[k]();}catch(e){}}
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
@@ -546,6 +547,10 @@ function desenharPalco(t){
  if(veredito){
    var wx=r.ganhou?mx:rx,s=1+Math.max(0,.5-(u-1.3))*1.2;
    x.save();x.translate(wx,88);x.scale(s,s);x.font=fonte(24);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
+   // Faíscas saindo de quem venceu a rodada (o show inteiro já some com "reduzir movimento").
+   var ef=u-1.3;if(ef>=0&&ef<.9){x.save();for(var k=0;k<12;k++){var an=k/12*Math.PI*2+i*.4,rr=26+ef*110;
+     x.globalAlpha=1-ef/.9;x.fillStyle=k%3===0?'#b6ff3b':k%3===1?'#fff3a8':'#ff6fb5';
+     x.beginPath();x.arc(wx+Math.cos(an)*rr,150+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
  }
 }
 function desenharPolaroid(){

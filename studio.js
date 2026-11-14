@@ -87,9 +87,11 @@
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
+    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
-      if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
+      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
+      else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:esc_}).then(function(r){
@@ -259,6 +261,19 @@
     }
     luz(x, W, H, e.luz);
   }
+  // Foto perfeita: estrelinhas que piscam em volta da polaroid (paradas com "reduzir movimento").
+  var calmo = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function brilhos(x, W, H, s){
+    var P = [[.1,.08],[.88,.12],[.06,.6],[.93,.52],[.18,.9],[.82,.86],[.5,.04]];
+    x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
+    P.forEach(function(q, i){
+      var a = calmo ? .8 : .35 + .65 * Math.abs(Math.sin(s * 2.4 + i * 1.3)), r = (calmo ? 1 : .8 + .4 * Math.sin(s * 3 + i)) * W * .028;
+      x.globalAlpha = a; x.fillStyle = i % 2 ? '#ffd23f' : '#ff6fb5';
+      x.beginPath(); for(var k = 0; k < 8; k++){ var ang = k * Math.PI / 4, rr = k % 2 ? r * .38 : r; x.lineTo(W * q[0] + Math.cos(ang) * rr, H * q[1] + Math.sin(ang) * rr); }
+      x.closePath(); x.fill();
+    });
+    x.restore();
+  }
   function desenhar(){
     var cv = ov && ov.querySelector('#studioCv'); if(!cv) return;
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, tm = performance.now() / 1000;
@@ -267,6 +282,7 @@
       x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
       x.save(); x.beginPath(); x.rect(24, 24, W - 48, (W - 48) * 1.25); x.clip(); x.translate(24, 24); cena(x, W - 48, (W - 48) * 1.25, foto.escolhas, foto.t0 / 1000, foto.avatar); x.restore();
       var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
+      if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
       x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif'; x.fillText('⭐'.repeat(foto.estrelas) + '☆'.repeat(3 - foto.estrelas), W / 2, H - 76);
       x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
       x.fillText('Photo⭐Studio! · ' + (pauta ? t('t_' + pauta.detalhe.tipo) : '') + ' · ' + hojeBR().split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);

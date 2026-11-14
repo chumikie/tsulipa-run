@@ -98,6 +98,11 @@ function cfPedido(r, n){
   return p;
 }
 function cfPaciencia(){ return cf && cf.servidor && cf.servidor.limite_segundos ? cf.servidor.limite_segundos * 60 : Math.max(420, 900 - cf.atendidos * 45); }   // em quadros (~60/s)
+// Som do Café: o de jogos-trilha.js quando existe; senão o do Center⭐Run!.
+function cfSom(novo, antigo){
+  if(typeof twJogoSom === 'function') return twJogoSom(novo);
+  if(typeof sfx !== 'undefined' && sfx && sfx[antigo]) try{ sfx[antigo](); }catch(e){}
+}
 function cfAbrir(){
   if(typeof eventoPetResetar === 'function') eventoPetResetar('cafe');
   cfOv.hidden = false; cfOv.scrollTop = 0;
@@ -189,7 +194,7 @@ function cfEscolher(tipo, i){
   cf.monta[tipo] = cf.monta[tipo] === i && tipo === 'doce' ? -1 : i;
   if(tipo === 'doce') cf.doceT = cfT;
   cf.aviso = '';
-  if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
+  cfSom('toque','card');
   cfUI();
 }
 // O reencontro não altera perguntas, recompensas nem a memória do Handshake.
@@ -263,11 +268,11 @@ function cfServir(saiu){
         cf.conq.push('📒 '+tr('Caderno completo'));
     }
     for(var k=0;k<6;k++)cf.hearts.push({x:.2+Math.random()*.2,y:.55,v:.004+Math.random()*.004,t:0,e:['💖','☕','✨'][k%3]});
-    if(sfx&&sfx.star)try{sfx.star();}catch(e){}
+    cfSom('servir','star');
   }else{
     cf.combo=0;cf.vidas--;
     cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
-    if(sfx&&sfx.hit)try{sfx.hit();}catch(e){}
+    cfSom('perdeu','hit');
   }
   if(typeof eventoPetReagir==='function')eventoPetReagir('cafe',cfT,false,certo?(cf.combo>=3?'combo':'acerto'):'erro');
   cf.ok=certo;cf.fase='reacao';cf.t0=cfT;cfUI();

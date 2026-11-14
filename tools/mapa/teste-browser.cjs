@@ -9,7 +9,7 @@ const http=require('node:http');
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const raiz=path.resolve(__dirname,'../..');
-const docs=new Set(['tw-mapa.js','mapa-textos.js','hub-polish.css','kt-fonts.css',
+const docs=new Set(['tw-mapa.js','mapa-textos.js','hub-polish.css','battle.js','battle.css','kt-fonts.css',
   'mapa-mundo.svg','mapa-rua-palco.svg','mapa-rua-harajuku.svg',
   'mapa-rua-fofo.svg','mapa-rua-praca.svg','mapa-rua-arena.svg','mapa-rua-ceu.svg']);
 const mime={'css':'text/css','js':'text/javascript','svg':'image/svg+xml'};
@@ -18,7 +18,7 @@ const jogoMock=Array.from(new Set(['run','karaoke','sora','loja','gacha',
   '<button type="button" data-ir="'+id+'" onclick="window.abridos.push(this.dataset.ir)">'+id+'</button>').join('');
 const html=`<!doctype html><html lang="pt" data-theme="light"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="/kt-fonts.css"><link rel="stylesheet" href="/hub-polish.css">
+<link rel="stylesheet" href="/kt-fonts.css"><link rel="stylesheet" href="/hub-polish.css"><link rel="stylesheet" href="/battle.css">
 <style>body{margin:0;padding:16px;background:#f9efff;color:#452b73}
 html[data-theme=dark] body{background:#18142d;color:white}
 #hub{max-width:1280px;margin:auto}#hubCards{display:block!important}
@@ -31,8 +31,10 @@ html[data-theme=dark] body{background:#18142d;color:white}
 <button class="hubfa">Pedido</button><button class="hubenc">Encontro</button>
 <button class="hubjornal">Notícias</button></div>
 <div id="hubCards">${jogoMock}<div class="hubbt-jogos">Jogos</div></div></div>
-<script>window.abridos=[];window.TW_MAPA_HORA=14;</script>
-<script src="/tw-mapa.js"></script></body></html>`;
+<script>window.abridos=[];window.TW_MAPA_HORA=14;
+ window.TW_BLOOM_ON=true;window.bloomAbrir=function(){window.abridos.push('bloom');};
+ window.TW_STUDIO_ON=true;window.studioAbrir=function(){window.abridos.push('studio');};</script>
+<script src="/mapa-textos.js"></script><script src="/tw-mapa.js"></script><script src="/battle.js"></script></body></html>`;
 const server=http.createServer((req,res)=>{
   const filename=decodeURIComponent((req.url||'/').split('?')[0]).replace(/^\//,'');
   if(filename===''){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(html);return;}
@@ -115,23 +117,28 @@ async function teste(page,dir,label){
     await page.locator('.tw-mapa-voltar').click();
     await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
   }
-  // Slots apenas decorativos: nenhum clique em Bloom, Photo ou Battle abre um jogo.
+  // A integração dos três jogos usa pontos reais do mapa, sem criar cards.
   for(const [bairro,x,y,areaX,areaY] of [
-    ['fofo',360,690,1300,490],
-    ['arena',1035,870,800,490],
+    ['fofo',360,690,1300,490],['arena',1035,870,800,490],
     ['ceu',1330,230,1300,490]
   ]){
     await dispararCliqueMapa(page,x,y);
     await page.waitForFunction(id=>document.querySelector('#twMapa').dataset.cena===id,bairro);
-    const antes=(await page.evaluate(()=>window.abridos)).length;
     await dispararCliqueMapa(page,areaX,areaY);
-    assert.equal((await page.evaluate(()=>window.abridos)).length,antes,
-      'reserva de '+bairro+' não dispara cards');
+    if(bairro==='arena'){
+      await page.waitForFunction(()=>{const b=document.getElementById('battleOv');return b&&!b.hidden;});
+      assert.match(await page.locator('#battleCorpo').innerText(),/Treino sem prêmio/,
+        'arena acessível mas sem premiação até ativar RPC');
+      await page.locator('[data-battle="fechar"]').click();
+    }else{
+      const calls=await page.evaluate(()=>window.abridos.slice(-1));
+      assert.equal(calls[0],bairro==='fofo'?'bloom':'studio','bairro abre o jogo correto');
+    }
     await page.locator('.tw-mapa-voltar').click();
     await page.waitForFunction(()=>document.querySelector('#twMapa').dataset.cena==='mundo');
   }
   assert.deepEqual(errors,[],'sem erros de JavaScript no navegador');
-  console.log('OK '+label+' mundo/rua, cards, rolagem, Esc, history, reservas; scrollWidth='+scroll.w);
+  console.log('OK '+label+' mundo/rua, cards, rolagem, Esc, history, jogos integrados; scrollWidth='+scroll.w);
 }
 (async()=>{
   for(const [arquivo,marca] of [['mapa-rua-fofo.svg','bloom-garden'],

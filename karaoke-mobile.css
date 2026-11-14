@@ -61,12 +61,11 @@
   width:44px;height:44px;min-width:44px;min-height:44px;
  }
 }
-/* 320 px: as quatro ferramentas da sala cabem numa linha (antes a câmera caía sozinha embaixo). */
+/* 320 px: ferramentas mais compactas para caberem numa linha quando der (se não couber, quebram dentro da faixa). */
 @media(max-width:360px){
- html.kt-no-site .kt-room-tools{flex-wrap:nowrap;gap:4px;padding:4px}
+ html.kt-no-site .kt-room-tools{gap:4px;padding:4px}
  html.kt-no-site .kt-room-tools>*{flex:0 1 auto;min-width:0}
  html.kt-no-site .kt-room-tools #ktPause{min-width:0;padding:8px 8px}
  html.kt-no-site .kt-room-tools .kt-calibration summary{padding:6px 7px;font-size:9.5px}
  html.kt-no-site .kt-room-tools .kt-calibration[open]{flex:1 0 100%}
- html.kt-no-site .kt-room-tools:has(.kt-calibration[open]){flex-wrap:wrap}
 }

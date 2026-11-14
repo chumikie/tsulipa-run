@@ -187,3 +187,8 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - Antes de aplicar, `battle_jogar`/`battle_desafiar` de produção tinham o md5 das versões aplicadas; depois, as 5 funções têm o md5 do que foi testado; anon sem acesso, RLS ligada, 0 linhas.
 - Conferido em Chromium com servidor simulado. **Não testado: conta real, iPhone.**
 
+## Bloom⭐Garden! redesenhado + jogos novos no Hub (14/11/2026, só front, PR #88)
+- **Jardim (`bloom.js?v=4`, `hub-polish.css?v=34`)**: cena refeita à mão no canvas — cada flor tem o seu desenho (sakura com pétalas entalhadas, tulipa em taça, girassol com coroa e miolo, flor-lunar em estrela) e fases (semente, broto, botão, flor); caixotes de madeira, colinas, cerquinha, sol/lua pela hora de Brasília, gotas na rega e pétalas na colheita. Sem emoji como ícone: gota, broto e flor são desenhados. Canteiros em cartões 2×2 com miniatura da planta e bolinhas de progresso; sementes e "Suas flores" com a flor desenhada. Mesmas 4 RPCs.
+- **Hub (`hub-novos.js?v=1`, teste `tests/hub-novos.test.js`)**: Bloom⭐Garden!, Photo⭐Studio! e Idol⭐Battle! ganham cards na lista de Jogos, no molde dos outros (embrulha `hubCardsUI`, não edita `hub.js`). O card do jardim avisa quando há rega ou colheita. Sem conta, os três seguem a regra atual do Hub (cadeado → login); o treino sem conta do Studio e do Battle continua pelo mapa.
+- Conferido em Chromium (390×844 e 1280×900) com servidor simulado. **Não testado: conta real, iPhone, Safari.**
+

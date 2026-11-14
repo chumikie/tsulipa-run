@@ -422,30 +422,55 @@ html:not([data-theme="dark"]) body .ov .tw-window.tw-window-surface{
 html body #hub .tw-mapa .tw-mapa-dica{position:static;transform:none;align-self:center;width:max-content;max-width:100%;margin:8px auto 0;white-space:normal;text-align:center}
 html body #hub .tw-mapa.mexeu .tw-mapa-dica{display:none!important}
 
-/* Bloom⭐Garden! (bloom.js) */
+/* Bloom⭐Garden! (bloom.js) — cartões claros com tinta firme (valem também no tema escuro) */
 .bloomov{z-index:22}
 .bloomp{max-width:640px;position:relative}
 .bloomp h2{margin:4px 0 2px;color:var(--b1);padding:0 44px}
-#bloomCv{display:block;width:100%;height:auto;border-radius:16px;margin:8px 0;box-shadow:0 3px 0 rgba(123,63,240,.12)}
-.bloomsub,.bloomdica{margin:4px 0;font-size:13px;font-weight:700;color:#7b62b8;text-align:center}
-.bloomsub b{color:#e8a400}
-.bloommsg{margin:6px 0;font-weight:800;font-size:14px;color:#b83a9e;text-align:center}
-.bloomlista{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:8px}
-.bloomlista li{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:8px 10px;color:#3c2a8f;box-shadow:0 3px 0 rgba(123,63,240,.1);font-size:14px}
-.bloomlista li>span{flex:1 1 140px;font-weight:700}
-.bloomlista select{font:inherit;min-height:38px;border-radius:10px;border:2px solid #d9c7fb;background:#fff;color:#3c2a8f;padding:4px 6px;max-width:100%}
-.bloomlista .btn{padding:7px 14px;min-height:38px}
-.bloomlista em{font-style:normal;font-weight:800;color:#3fae62}
-.bloomp h3{margin:12px 0 4px;color:var(--b1);text-align:center}
-#bloomCv{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.bloompick{background:#fff;border:2px solid #d9c7fb;border-radius:16px;padding:10px;margin:8px 0;text-align:center;box-shadow:0 3px 0 rgba(123,63,240,.1)}
-.bloompick>b{display:block;color:#3c2a8f;font-size:14px;margin-bottom:8px}
-.bloompick>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.bloompick .btn{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;padding:7px 6px;margin:0;font-size:13.5px}
-.bloompick .btn small{font-size:11.5px;font-weight:800;opacity:.85}
-.bloompick .btn[disabled]{opacity:.45}
+.bloomp h3{margin:16px 0 8px;color:var(--b1);text-align:center;font-size:16px}
+#bloomCv{display:block;width:100%;height:auto;aspect-ratio:9/5;border-radius:20px;margin:10px 0 12px;cursor:pointer;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;box-shadow:0 0 0 3px #fff,0 0 0 5px #eadcff,0 6px 0 3px rgba(123,63,240,.12)}
+.bloomsvg{width:1.05em;height:1.05em;flex:none;vertical-align:-.16em;margin-right:.38em}
+.bloomtopo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 8px}
+html body .bloomp .bloomsub{margin:0;font-size:13px;font-weight:700;line-height:1.35;color:#6f5aa8;text-align:left}
+.bloomstar{flex:none;background:#fff6d6;color:#9a6a00;border:2px solid #ffe08a;border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+html body .bloomp .bloommsg{margin:8px 0;padding:8px 12px;border-radius:14px;background:#fff0f8;border:2px solid #ffd0e6;font-weight:800;font-size:13.5px;color:#a8327f;text-align:center}
+html body .bloomp .bloomdica{margin:10px 4px 0;font-size:12px;font-weight:700;line-height:1.45;color:#7b6aa6;text-align:center}
+.bloomsr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bloomgrid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.bloomcard{display:grid;grid-template-columns:46px minmax(0,1fr);grid-template-areas:"ic tx" "bt bt";align-items:center;gap:8px 9px;background:#fff;
+  border:2px solid #eadcff;border-radius:18px;padding:10px;box-shadow:0 4px 0 rgba(123,63,240,.09)}
+.bloomcard.florida{border-color:#ffc8e2;background:linear-gradient(180deg,#fff,#fff5fa)}
+.bloomcard.sel{border-color:#ffd84a;box-shadow:0 0 0 3px rgba(255,216,74,.35),0 4px 0 rgba(123,63,240,.09)}
+.bloomic{grid-area:ic;width:46px;height:46px;display:block}
+.bloomtxt{grid-area:tx;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+html body .bloomp .bloomtxt small{font-size:10.5px;font-weight:800;letter-spacing:.02em;color:#9a8cc4}
+html body .bloomp .bloomtxt b{font-size:14px;color:#3c2a8f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body .bloomp .bloomtxt em{font-style:normal;font-size:11.5px;font-weight:800;color:#d2447f}
+.bloomdots{display:flex;gap:4px;margin-top:2px}
+.bloomdots u{width:9px;height:9px;border-radius:50%;background:#e8e2f6;text-decoration:none}
+.bloomdots u.on{background:#4db8ff}
+html body .bloomp .bloomcard .btn{grid-area:bt;width:100%;min-height:42px;margin:0;padding:8px 10px;font-size:13.5px;display:flex;align-items:center;justify-content:center}
+html body .bloomp .bloomok{grid-area:bt;min-height:42px;display:flex;align-items:center;justify-content:center;border-radius:999px;background:#eefaf0;
+  color:#2f8a4c;font-size:12.5px;font-weight:800}
+.bloomlote{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+html body .bloomp .bloomlote .btn{flex:1 1 150px;min-height:44px;margin:0;display:flex;align-items:center;justify-content:center;font-size:13.5px}
+.bloompick{background:#fff;border:2px solid #ffd84a;border-radius:18px;padding:12px;margin:0 0 10px;text-align:center;box-shadow:0 4px 0 rgba(123,63,240,.09)}
+html body .bloomp .bloompick>b{display:block;color:#3c2a8f;font-size:14px;margin-bottom:10px}
+.bloompick>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.bloomseed{display:grid;grid-template-columns:40px minmax(0,1fr);grid-template-areas:"ic nm" "ic pr";align-items:center;column-gap:8px;text-align:left;
+  background:#faf7ff;border:2px solid #e3d6ff;border-radius:14px;padding:8px;min-height:56px;font:inherit;cursor:pointer;color:#3c2a8f}
+.bloomseed .bloomic{width:40px;height:40px}
+.bloomseed span{grid-area:nm;font-weight:800;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bloomseed small{grid-area:pr;font-weight:800;font-size:11.5px;color:#9a6a00}
+.bloomseed:active{transform:translateY(1px)}
+.bloomseed[disabled]{opacity:.45;cursor:default}
 .bloomnao{margin-top:8px;background:none;border:0;color:#7b62b8;font:inherit;font-weight:800;font-size:12.5px;text-decoration:underline;cursor:pointer;min-height:36px;padding:4px 12px}
-.bloomlote{margin:8px 0}.bloomlote .btn{min-height:44px}
+.bloomvasos{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.bloomvasos span{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;background:#fff;border:2px solid #eadcff;border-radius:16px;padding:8px 8px 7px}
+.bloomvasos .bloomic{width:44px;height:44px}
+html body .bloomp .bloomvasos b{font-size:14px;color:#3c2a8f}
+html body .bloomp .bloomvasos small{font-size:11px;font-weight:800;color:#8b7bb8}
+@media (max-width:340px){.bloomgrid,.bloompick>div{grid-template-columns:1fr}}
 .bloomflores{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}
 .bloomflores span{background:#fff;border-radius:999px;padding:5px 10px;font-weight:800;color:#3c2a8f;box-shadow:0 2px 0 rgba(123,63,240,.12)}
 
@@ -484,3 +509,9 @@ html body #hub .tw-mapa.mexeu .tw-mapa-dica{display:none!important}
 .jncapa canvas{width:min(70%,260px);height:auto;border-radius:8px;box-shadow:0 6px 16px rgba(60,30,120,.25);transform:rotate(-2deg);margin:6px auto;display:block}
 @media(min-width:700px){.stmural{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .studiop [hidden]{display:none!important}
+/* Jogos novos no Hub (hub-novos.js): entram depois da grade nomeada, no mesmo molde dos outros cards. */
+html body #hub #hubCards .hubcard.tw-hubnovo-bloom{--hc1:#7edb9c;--hc2:#2fa57a}
+html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
+html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
+@media(max-width:699px){#hub #hubCards .tw-hubnovo-bloom{grid-column:1/-1}}
+

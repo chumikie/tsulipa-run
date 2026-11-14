@@ -91,6 +91,13 @@ def main():
         arq = RAIZ / nome
         if arq.exists():
             dados[cena] = extrair(arq)
+            # O letreiro Sora vinha com coordenada acima de 3.000 por uma
+            # transformação aninhada na fachada. Textos fora de 1600x760
+            # somem no Canvas: reencaixa apenas esse letreiro à primeira loja.
+            if cena == 'ceu':
+                for item in dados[cena]:
+                    if 'Sora' in item['t'] and not 0 <= item['x'] <= 1600:
+                        item.update(x=324.6, y=652.1, s=36.9, a='m', r=0)
     js = ('/* Gerado por tools/mapa/textos.py — não editar à mão. Textos do mapa desenhados no canvas. */\n'
           'window.TW_MAPA_TEXTOS=' + json.dumps(dados, ensure_ascii=False, separators=(',', ':')) + ';\n')
     (RAIZ / 'mapa-textos.js').write_text(js, encoding='utf-8')

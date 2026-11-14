@@ -20,7 +20,7 @@
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=9"></script>
-<script src="./tw-avatar-roupa.js?v=9"></script>
+<script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=1"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -236,6 +236,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         <i class="cbr"></i>
         <span id="skins"></span>
         <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
+        <label>Forma <select id="colho"><option value="">Redondo</option><option value="brilhante">Brilhante</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option><option value="classico">Clássico</option></select></label>
       </div>
 
         <div class="cust" id="cust_roupa">
@@ -378,7 +379,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=12"></script>
+<script src="./centerrun.js?v=13"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=28"></script>
 <script src="./perfil.js?v=14"></script>
@@ -1555,8 +1556,8 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
 PERF_OSHI_TIMES.forEach(function(t){ t[1].forEach(function(m){ PERF_OSHI[perfOshiKey(m[0])] = [m[1], m[0], m[2]]; }); });
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_TSL = ['#9b30d9', '#5cc72c', '#4169e1'];   // roxo Tsu, verde Lirika, azul Pati
-var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'' };
-var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat'];
+var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'', olho:'' };
+var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat', 'olho'];
 
 var PERF_DICT = window.TW_I18N.tables.PERF_DICT;;
 var PERF_DICT2 = window.TW_I18N.tables.PERF_DICT2;;

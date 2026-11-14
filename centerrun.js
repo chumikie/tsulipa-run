@@ -49,7 +49,7 @@ var CH=[
 var RANKS=[[0,'Audição'],[150,'Kenkyuusei'],[450,'Team'],[1000,'Senbatsu'],[1800,'Quad Center'],[2800,'tCenter'],[3900,'wCenter'],[5000,'Center'],[10000,'Solo Center'],[15000,'Capitão'],[30000,'Eternal Ace'],[50000,'Kami-Oshi']];
 var sel=0,best=0,state='menu',muted=false,overTimer=null;
 function setBest(){bestEl.textContent=tr('Recorde')+': '+best+' · ★ '+starT;if(window.ktTickets&&window.ktTickets.renderBadge)window.ktTickets.renderBadge();}
-var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cbaixo:'baixo',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl'};
+var CF={chair:'hair',cstr:'hair2',ceye:'eye',cout:'out',coutcol:'outcol',cleg:'legcol',cbaixo:'baixo',cback:'back',cfront:'front',cdet:'det',chat:'hat',cgl:'gl',colho:'olho'};
 function dk(){
   return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
 }
@@ -147,6 +147,7 @@ function pick(i){
   if ($('cback')) $('cback').value = source.back || '';
   if ($('cfront')) $('cfront').value = source.front || 'bagunca';
   if ($('cdet')) $('cdet').value = source.det || '';
+  if ($('colho')) $('colho').value = source.olho || '';
   
   try{localStorage.setItem('brs48cr_char',i)}catch(e){}
   refreshAcc();   // V2.1.3: itens por personagem
@@ -1019,10 +1020,10 @@ function drawChar(c,x,y,run,expr,isPartner){
     else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
   else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas  
   else if(TWAvatarHair.back(g,c,x,y,b,E,T)){}
-  else if(b==='cacheado'){[[15,3],[4,8],[26,8],[1,17],[29,17],[3,26],[27,26]].forEach(function(p){E(x+p[0],y+p[1]+6,8,8)})}
+  else if(b==='cacheado'){[[15,3,8],[4,8,8],[26,8,8],[1.5,16,7.5],[28.5,16,7.5],[3.5,23,5.8],[26.5,23,5.8]].forEach(function(p){E(x+p[0],y+p[1]+6,p[2],p[2])})}   // cachos menores embaixo: não viram capa sobre os braços
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
-  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));
+  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
   var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||(PX&&PX.k==='alien'))?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
@@ -1053,9 +1054,11 @@ function drawChar(c,x,y,run,expr,isPartner){
     
     // Saia aberta na frente (duas abas laterais) — por baixo do top (V2.1.3)
     g.fillStyle=corDaRoupa;
+    if(!(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.baixoEspecial(g,c,x,y,'zipper',corDaRoupa,T))){   // bermuda escolhida troca as abas da saia
     T([x+4, y+30, x+12, y+30, x+2, y+42]); // Aba caindo para a esquerda
     T([x+26, y+30, x+18, y+30, x+28, y+42]); // Aba caindo para a direita
     if(typeof TWAvatarRoupa!=='undefined')TWAvatarRoupa.parte(g,x,y,'zipper-saia');
+    }
     
     // Top branco
     g.fillStyle='#fff'; g.fillRect(x+5, y+22, 20, 10);
@@ -1077,11 +1080,13 @@ function drawChar(c,x,y,run,expr,isPartner){
 } else if(roupa==='sweet'){
     // --- INÍCIO DO LOOK VALENTINE (SWEET) ---
     g.fillStyle = corDaRoupa;
+    if(!(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.baixoEspecial(g,c,x,y,'sweet',corDaRoupa,T))){   // bermuda escolhida troca a saia rodada
     T([x + 2, y + 33, x + 28, y + 33, x + 34, y + 43, x - 2, y + 43]); // Saia Rodada (por baixo do vestido, V2.1.3)
     if(typeof TWAvatarRoupa!=='undefined')TWAvatarRoupa.parte(g,x,y,'sweet-saia');
     g.fillStyle = '#ffffff';   // Babado de chantilly
     T([x - 1.2, y + 41, x + 31.2, y + 41, x + 34, y + 43, x - 2, y + 43]);
     for (var cq = 0; cq < 9; cq++) { g.beginPath(); g.arc(x - 0.4 + cq * 4, y + 43, 2, 0, Math.PI); g.fill(); }
+    }
 
     g.fillStyle = corDaRoupa; 
     g.fillRect(x + 4, y + 22, 22, 12); // Base do vestido
@@ -1156,7 +1161,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(d==='coques'){g.fillStyle=H;E(x+4,y+3,6,6);E(x+26,y+3,6,6);g.fillStyle='#2a5bd7';g.fillRect(x+1,y+6,7,3);g.fillRect(x+22,y+6,7,3)}
   g.fillStyle=c.skin;E(x+15,y+17,11,11);
   if(TWR){TWR.rosto(g,x,y);g.fillStyle=c.skin;}
-  if(d==='elfo'){T([x+4,y+17,x-3,y+10,x+5,y+21]);T([x+26,y+17,x+33,y+10,x+25,y+21])}
+  if(d==='elfo'){if(typeof TWAvatarRosto!=='undefined')TWAvatarRosto.elfo(g,c,x,y);else{T([x+4,y+17,x-3,y+10,x+5,y+21]);T([x+26,y+17,x+33,y+10,x+25,y+21])}}
   if(d==='olheiras'){g.fillStyle='rgba(130,70,90,0.3)'; g.beginPath(); g.ellipse(x+11.5, y+22.5, 3, 1.2, 0, 0, 7); g.ellipse(x+19.5, y+22.5, 3, 1.2, 0, 0, 7); g.fill();}
   
   if(hacc==='bandaid'){g.fillStyle='#d97706'; g.fillRect(x+6, y+21, 7, 4); g.fillStyle='#fcd34d'; g.fillRect(x+6.5, y+21.5, 6, 3); g.fillStyle='#fff'; g.fillRect(x+8, y+22, 3, 2);}
@@ -1180,6 +1185,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(f==='reta')g.fillRect(x+3,y+8,24,6);
   else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
   else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
+  else if(f==='arcoiris'&&typeof TWAvatarRosto!=='undefined')TWAvatarRosto.arcoiris(g,x,y);
   else if(f==='arcoiris'){
     g.fillRect(x+3,y+6,24,8);
     var cols = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'];
@@ -1254,7 +1260,8 @@ if(hacc==='coala'){
   }
 	
   if(hacc==='capitao') TWAvatarItems.capitao(g,x,y);
-  if(expr===1){
+  if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.rosto(g,c,x,y,expr)){   // olhos, boca e piscadinha novos (tw-avatar-rosto.js)
+  } else if(expr===1){
     g.strokeStyle='#223'; g.lineWidth=1.5; g.beginPath();
     g.moveTo(x+9,y+18); g.lineTo(x+12,y+20); g.lineTo(x+9,y+22);
     g.moveTo(x+22,y+18); g.lineTo(x+19,y+20); g.lineTo(x+22,y+22);
@@ -2738,9 +2745,11 @@ function roupaEstrelado(c, x, y, cor, E, T){
   g.fillStyle = '#ff9ccd'; g.fillRect(x + 9, y + 38, 5, 5.5); g.fillRect(x + 17, y + 38, 5, 5.5);   // polainas listradas
   g.fillStyle = '#ffe14d'; g.fillRect(x + 9, y + 39.6, 5, 1); g.fillRect(x + 17, y + 39.6, 5, 1);
   g.fillStyle = '#4dd8ff'; g.fillRect(x + 9, y + 41.4, 5, .9); g.fillRect(x + 17, y + 41.4, 5, .9);
+  if(!(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.baixoEspecial(g,c,x,y,'estrelado',cor,T))){   // saia escolhida troca a bermuda balonê
   g.fillStyle = az; T([x + 5, y + 31, x + 25, y + 31, x + 27, y + 38, x + 3, y + 38]); if(typeof TWAvatarRoupa!=='undefined')TWAvatarRoupa.parte(g,x,y,'estrelado-baixo');                  // bermuda balonê
   g.fillStyle = '#a5d8ff'; g.fillRect(x + 3, y + 37.4, 24, 1.2);
   g.fillStyle = '#fff'; for(i = 0; i < 5; i++){ E(x + 6 + i * 4.6, y + 35.4, 1.7, 1.1); E(x + 7.3 + i * 4.6, y + 34.9, 1.3, 1); }   // nuvenzinhas na barra
+  }
   g.fillStyle = az; g.fillRect(x + 4, y + 22, 22, 10); if(typeof TWAvatarRoupa!=='undefined')TWAvatarRoupa.parte(g,x,y,'estrelado-tronco');                                                      // jaqueta
   ['#ff6fb5', '#ffe14d', '#4dd8ff'].forEach(function(cc, j){ g.fillStyle = cc; T([x + 4, y + 27.4 + j * 1.5, x + 26, y + 24.4 + j * 1.5, x + 26, y + 25.8 + j * 1.5, x + 4, y + 28.8 + j * 1.5]); });   // faixa arco-íris
   g.fillStyle = '#fff'; T([x + 10, y + 22, x + 15, y + 22, x + 12.5, y + 24.6]); T([x + 20, y + 22, x + 15, y + 22, x + 17.5, y + 24.6]);   // gola

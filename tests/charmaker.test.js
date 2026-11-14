@@ -10,8 +10,13 @@ const i = html.indexOf('<div class="cust" id="cust" hidden>'), f = html.indexOf(
 assert.ok(i > 0 && f > i, 'editor do Você antes do bloco de roupa');
 const bloco = html.slice(i, f);
 // Todos os campos de antes continuam com o mesmo id (a lógica de save é por id).
-for (const id of ['chair', 'cback', 'cfront', 'cstk', 'cstr', 'cdet', 'skins', 'colho', 'ceye', 'cboca', 'cbochecha']) assert.ok(bloco.includes('id="' + id + '"'), id);
-for (const t of ['Penteado', 'Rosto']) assert.ok(bloco.includes('<span>' + t + '</span>'), t);
+for (const id of ['chair', 'cback', 'cfront', 'cstk', 'cstr', 'cdet', 'skins', 'colho', 'csobr', 'ceye', 'cboca', 'cbochecha']) assert.ok(bloco.includes('id="' + id + '"'), id);
+// Estilo Charat: prévia, expressões, abas e grade de miniaturas; os <select> ficam escondidos, mas existem.
+for (const id of ['cmCv', 'cmExpr', 'cmAbas', 'cmGrade']) assert.ok(bloco.includes('id="' + id + '"'), id);
+assert.equal((bloco.match(/<div class="cmlista" hidden>/g) || []).length, 2);
+assert.match(js, /var PARTES = \[/);
+for (const c of ['back', 'front', 'mecha', 'det', 'olho', 'sobrancelha', 'boca', 'bochecha']) assert.ok(js.includes("campo:'" + c + "'"), c);
+assert.match(js, /b\.disabled = o\.disabled/, 'miniatura trancada fica desabilitada');
 assert.ok(html.includes('<span>Roupa</span>'), 'título do bloco de roupa');
 assert.ok(bloco.includes('id="custSortear"') && bloco.includes('id="custDesfazer" disabled'));
 assert.ok(html.indexOf('charmaker.js?v=') > html.indexOf('hub-novos.js?v='), 'carrega depois do editor existir');

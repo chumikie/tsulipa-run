@@ -131,6 +131,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"Card trades start soon!",
   "Audição":"Audition",
   "Bagunça":"Messy",
+  "Cores":"Colors","Sobrancelha":"Eyebrows","Fina":"Thin","Cheia":"Full","Arqueada":"Arched","Preocupada":"Worried","Decidida":"Determined","Feliz":"Happy","Chorinho":"Teary","Apaixonado":"In love","Concentrado":"Focused","Girar":"Turn around","Partes":"Parts","Expressões":"Expressions","Prévia do visual":"Look preview",
   "Penteado":"Hairstyle","Rosto":"Face","Pele":"Skin","Cor dos olhos":"Eye color","Sortear":"Shuffle","Desfazer":"Undo",
   "Forma dos olhos":"Eye shape","Brilhante":"Sparkly","Pontinho":"Dot","Gatinho":"Cat-eye","Sereno":"Calm","Clássico":"Classic","Boca":"Mouth","Clássica":"Classic","Gatinho ω":"Kitty ω","Aberta":"Open","Dentinho":"Little fang","Bochecha":"Cheeks","Rosadinha":"Rosy","Corada":"Blushing","Sardas":"Freckles",
   "BAIXAR":"DOWNLOAD",
@@ -717,6 +718,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"¡Los intercambios de cartas empiezan pronto!",
   "Audição":"Audición",
   "Bagunça":"Despeinado",
+  "Cores":"Colores","Sobrancelha":"Cejas","Fina":"Fina","Cheia":"Gruesa","Arqueada":"Arqueada","Preocupada":"Preocupada","Decidida":"Decidida","Feliz":"Feliz","Chorinho":"Lagrimita","Apaixonado":"Enamorado","Concentrado":"Concentrado","Girar":"Girar","Partes":"Partes","Expressões":"Expresiones","Prévia do visual":"Vista previa",
   "Penteado":"Peinado","Rosto":"Cara","Pele":"Piel","Cor dos olhos":"Color de ojos","Sortear":"Sortear","Desfazer":"Deshacer",
   
   "Forma dos olhos":"Forma de los ojos","Brilhante":"Brillante","Pontinho":"Puntito","Gatinho":"Gatuno","Sereno":"Sereno","Clássico":"Clásico","Boca":"Boca","Clássica":"Clásica","Gatinho ω":"Gatito ω","Aberta":"Abierta","Dentinho":"Colmillito","Bochecha":"Mejillas","Rosadinha":"Rosadita","Corada":"Sonrojada","Sardas":"Pecas",
@@ -1304,6 +1306,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"การแลกการ์ดจะเริ่มเร็ว ๆ นี้!",
   "Audição":"ออดิชั่น",
   "Bagunça":"ยุ่ง",
+  "Cores":"สี","Sobrancelha":"คิ้ว","Fina":"บาง","Cheia":"หนา","Arqueada":"โค้ง","Preocupada":"กังวล","Decidida":"มุ่งมั่น","Feliz":"มีความสุข","Chorinho":"น้ำตาซึม","Apaixonado":"ตกหลุมรัก","Concentrado":"ตั้งใจ","Girar":"หมุน","Partes":"ส่วนต่างๆ","Expressões":"สีหน้า","Prévia do visual":"ตัวอย่างลุค",
   "Penteado":"ทรงผม","Rosto":"ใบหน้า","Pele":"สีผิว","Cor dos olhos":"สีตา","Sortear":"สุ่ม","Desfazer":"ย้อนกลับ",
   
   "Forma dos olhos":"ทรงตา","Brilhante":"วิบวับ","Pontinho":"ตาจุด","Gatinho":"ตาแมว","Sereno":"สงบ","Clássico":"คลาสสิก","Boca":"ปาก","Clássica":"คลาสสิก","Gatinho ω":"ปากแมว ω","Aberta":"อ้าปาก","Dentinho":"เขี้ยวเล็ก","Bochecha":"แก้ม","Rosadinha":"ชมพูอ่อน","Corada":"แก้มแดง","Sardas":"กระ",
@@ -1891,6 +1894,7 @@ window.TW_DICT={
   "As trocas de cards começam em breve!":"カード交換はもうすぐスタート!",
   "Audição":"オーディション",
   "Bagunça":"ラフ",
+  "Cores":"カラー","Sobrancelha":"まゆげ","Fina":"ほそめ","Cheia":"ふとめ","Arqueada":"アーチ","Preocupada":"こまり眉","Decidida":"キリッ","Feliz":"にこにこ","Chorinho":"うるうる","Apaixonado":"ラブラブ","Concentrado":"がんばる","Girar":"くるっと","Partes":"パーツ","Expressões":"ひょうじょう","Prévia do visual":"プレビュー",
   "Penteado":"ヘア","Rosto":"かお","Pele":"はだ","Cor dos olhos":"目の色","Sortear":"おまかせ","Desfazer":"もどす",
   
   "Forma dos olhos":"目のかたち","Brilhante":"キラキラ","Pontinho":"てんてん","Gatinho":"ネコ目","Sereno":"おだやか","Clássico":"クラシック","Boca":"くち","Clássica":"クラシック","Gatinho ω":"ねこ口 ω","Aberta":"あーん","Dentinho":"八重歯","Bochecha":"ほっぺ","Rosadinha":"ほんのりピンク","Corada":"ぽっ","Sardas":"そばかす",

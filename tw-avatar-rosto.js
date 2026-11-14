@@ -5,6 +5,7 @@
      c.olho = '' | 'redondo' | 'brilhante' | 'pontinho' | 'gatinho' | 'sereno'
      c.boca = '' | 'sorriso' | 'gato' | 'aberta' | 'dentinho'
      c.bochecha = '' | 'sem' | 'forte' | 'sardas' | 'estrelinha'
+     c.sobrancelha = '' (nenhuma) | 'fina' | 'cheia' | 'arqueada' | 'preocupada' | 'decidida'
      Os olhos novos são só formas cheias (sem traços), para não aparecer linha solta em tamanho pequeno.
    - Sapatos por cima da ponta das pernas (tênis claro com perna escura; sapatilha escura com perna clara).
    - Saia/bermuda também para Zipper, Sweet e Estrelado.
@@ -15,6 +16,7 @@
   var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno'];
   var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho'];
   var BOCHECHAS = ['', 'sem', 'forte', 'sardas', 'estrelinha'];
+  var SOBRANCELHAS = ['', 'fina', 'cheia', 'arqueada', 'preocupada', 'decidida'];
   var TINTA = '#223', PUPILA = '#112';
 
   function hex(c, padrao){ return typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : padrao; }
@@ -100,6 +102,23 @@
     }
   }
 
+  // Sobrancelhas: forma cheia (sem traço), na cor do cabelo um pouco mais escura, logo abaixo da franja.
+  // yi/yo = altura da ponta de dentro/fora; arco = curva do meio; esp = espessura.
+  function escurecer(c, n){ return '#' + c.replace(/^#/, '').replace(/../g, function(p){ return ('0' + Math.max(0, parseInt(p, 16) - n).toString(16)).substr(-2); }); }
+  function sobrancelha(g, c, x, y, expr){
+    var t = escolha(SOBRANCELHAS, c && c.sobrancelha); if(!t) return;
+    var F = {fina:[15.2, 15.2, .9, .62], cheia:[15, 15, .6, 1.25], arqueada:[15.4, 15.6, 1.5, .8], preocupada:[14.2, 15.6, .4, .95], decidida:[15.8, 14.5, .4, 1.05]}[t];
+    var sobe = expr === 4 ? -.9 : expr === 5 ? -.3 : 0, yi = F[0] + sobe, yo = F[1] + sobe, arco = F[2], esp = F[3];
+    if(expr === 5 && t !== 'preocupada'){ yi -= .7; }   // chorinho: as pontas de dentro sobem
+    g.save(); g.fillStyle = escurecer(hex(c && c.hair, '#4b2b1a'), 70); g.globalAlpha = .92;
+    [[13.2, 9.4], [16.8, 20.6]].forEach(function(p){
+      var xi = x + p[0], xo = x + p[1], xm = (xi + xo) / 2, ym = y + (yi + yo) / 2 - arco;
+      g.beginPath(); g.moveTo(xo, y + yo); g.quadraticCurveTo(xm, ym, xi, y + yi);
+      g.lineTo(xi, y + yi + esp); g.quadraticCurveTo(xm, ym + esp * 1.15, xo, y + yo + esp * .55); g.closePath(); g.fill();
+    });
+    g.restore();
+  }
+
   // Sapatos na ponta das pernas (o pé fica sempre em y+44, correndo ou parado).
   function pes(g, c, x, y){
     var perna = hex(c && c.legcol, '#1c1c30'), claro = luma(perna) < .5,
@@ -161,5 +180,5 @@
     });
     g.fillStyle = pele;
   }
-  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo };
+  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), sobrancelhas:SOBRANCELHAS.slice(), sobrancelha:sobrancelha, forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo };
 })(typeof window !== 'undefined' ? window : this);

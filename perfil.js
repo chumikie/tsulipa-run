@@ -970,7 +970,7 @@ function perfMontUI(){
   h += '<i class="cbr"></i>';
   h += '<span class="perfskins">' + SK.map(function(sk){ return '<button type="button" class="sw" data-m="skin" data-v="' + sk + '" style="background:' + sk + '" aria-label="' + escHtml(tr('Tom de pele')) + '" aria-pressed="' + (sk === CU.skin) + '"></button>'; }).join('') + '</span>';
   h += '<label>' + escHtml(rotulo('ceye')) + ' <select data-m="olho">' + opts('colho', CU.olho || '') + '</select> <input type="color" data-m="eye" value="' + escHtml(CU.eye) + '"></label>';
-  sel(['cboca', 'boca']); sel(['cbochecha', 'bochecha']);   // rosto à escolha (tw-avatar-rosto.js)
+  sel(['csobr', 'sobrancelha']); sel(['cboca', 'boca']); sel(['cbochecha', 'bochecha']);   // rosto à escolha (tw-avatar-rosto.js)
   h += '<i class="cbr"></i>';
   h += '<label>' + escHtml(rotulo('cout')) + ' <select data-m="out">' + opts('cout', CU.out || '') + '</select> <input type="color" data-m="outcol" value="' + escHtml(CU.outcol || '#ffffff') + '"></label>';
   h += '<label>' + escHtml(tr('Parte de baixo')) + ' <select data-m="baixo" title="' + escHtml(tr('Vale para Trainee, Cheeky, Seifuku e City Pop')) + '">' + [['', tr('Padrão da roupa')], ['saia', tr('Saia')], ['bermuda', tr('Bermuda')]].map(function(o){ return '<option value="' + o[0] + '"' + ((CU.baixo || '') === o[0] ? ' selected' : '') + '>' + escHtml(o[1]) + '</option>'; }).join('') + '</select></label>';

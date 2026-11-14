@@ -20,7 +20,7 @@
 <script src="./tw-motion-lifecycle.js?v=2"></script>
 <script src="./tw-avatar-items.js?v=2"></script>
 <script src="./tw-avatar-hair.js?v=9"></script>
-<script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=2"></script>
+<script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=3"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -40,7 +40,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=4">
+<link rel="stylesheet" href="./centerrun.css?v=7">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -219,13 +219,21 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <div class="chars" id="chars"></div>
       
       <div class="cust" id="cust" hidden>
-        <h4 class="custt"><span aria-hidden="true">💇</span> <span>Penteado</span></h4>
-        <label>Cor <input type="color" id="chair" value="#ff7eb6"></label>
-        <div class="custpaleta" id="hairsw" role="group" aria-label="Cor"></div>
-        <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
-        <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select> <input type="color" id="cstr" value="#4dd8ff"></label>
-        <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option></select></label>
-        <label>Detalhe <select id="cdet">
+        <div class="cmprev">
+          <canvas id="cmCv" width="440" height="360" role="img" aria-label="Prévia do visual"></canvas>
+          <div class="cmexpr" id="cmExpr" role="group" aria-label="Expressões"></div>
+          <div class="custacoes"><button type="button" class="btn alt" id="custSortear">🎲 <span>Sortear</span></button><button type="button" class="btn alt" id="custDesfazer" disabled>↩ <span>Desfazer</span></button></div>
+        </div>
+        <div class="cmabas" id="cmAbas" role="tablist" aria-label="Partes"></div>
+        <div class="cmgrade" id="cmGrade" role="tabpanel"></div>
+        <h4 class="custt"><span aria-hidden="true">🎨</span> <span>Cores</span></h4>
+        <label>Cabelo <input type="color" id="chair" value="#ff7eb6"></label>
+        <div class="custpaleta" id="hairsw" role="group" aria-label="Cabelo"></div>
+        <div class="cmlista" hidden>
+          <label>Corte <select id="cback"><option value="">Curto</option><option value="pixie">Pixie</option><option value="onduladom" data-twh="Ondulado">Ondulado</option><option value="onduladom2" data-twh="Bicolor">Bicolor</option><option value="onduladof" data-twh="Repicado">Repicado</option><option value="chanel">Chanel</option><option value="longo">Longo</option><option value="marias">Marias</option><option value="rabo">Rabo</option><option value="cacheado">Cacheado</option></select></label>
+          <label>Mecha <select id="cstk"><option value="" data-twh="Nenhuma">Nenhuma</option><option value="uma" data-twh="Uma">Uma</option><option value="dupla" data-twh="Dupla">Dupla</option><option value="luzes" data-twh="Luzes">Luzes</option><option value="escondida" data-twh="Escondida">Escondida</option><option value="antena" data-twh="Antena">Antena</option><option value="coracao" data-twh="Coração">Coração</option></select></label>
+          <label>Franja <select id="cfront"><option value="bagunca">Bagunça</option><option value="reta">Reta</option><option value="lateral">Lateral</option><option value="espetada">Espetada</option><option value="arcoiris">Arco-íris</option><option value="ondulada" data-twh="Rebelde">Rebelde</option><option value="risca" data-twh="Risca">Risca</option><option value="repicada" data-twh="Repicada">Repicada</option></select></label>
+          <label>Detalhe <select id="cdet">
           <option value="" data-r="0">Nenhum</option>
           <option value="coques" data-r="0">Coques</option>
           <option value="gato" data-r="0" data-twh="Gato">Gato</option>
@@ -233,15 +241,19 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="olheiras" data-r="0" data-twh="Olheiras">Olheiras</option>
           <option value="chifres" data-r="0">Chifres</option>
         </select></label>
-        <h4 class="custt"><span aria-hidden="true">😊</span> <span>Rosto</span></h4>
+        </div>
+        <label>Mecha <input type="color" id="cstr" value="#4dd8ff"></label>
         <div class="custlinha"><span>Pele</span><span id="skins"></span></div>
-        <label>Olhos <select id="colho"><option value="">Clássico</option><option value="redondo">Redondo</option><option value="brilhante">Brilhante</option><option value="pontinho">Pontinho</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option></select> <input type="color" id="ceye" value="#5a3b2e" aria-label="Cor dos olhos"></label>
-        <label>Boca <select id="cboca"><option value="">Clássica</option><option value="sorriso">Sorriso</option><option value="gato">Gatinho ω</option><option value="aberta">Aberta</option><option value="dentinho">Dentinho</option></select></label>
-        <label>Bochecha <select id="cbochecha"><option value="">Rosadinha</option><option value="sem">Sem</option><option value="forte">Corada</option><option value="sardas">Sardas</option><option value="estrelinha">Estrelinha</option></select></label>
-        <div class="custacoes"><button type="button" class="btn alt" id="custSortear">🎲 <span>Sortear</span></button><button type="button" class="btn alt" id="custDesfazer" disabled>↩ <span>Desfazer</span></button></div>
+        <label>Olhos <input type="color" id="ceye" value="#5a3b2e"></label>
+        <div class="cmlista" hidden>
+          <label>Olhos <select id="colho"><option value="">Clássico</option><option value="redondo">Redondo</option><option value="brilhante">Brilhante</option><option value="pontinho">Pontinho</option><option value="gatinho">Gatinho</option><option value="sereno">Sereno</option></select></label>
+          <label>Sobrancelha <select id="csobr"><option value="">Nenhuma</option><option value="fina">Fina</option><option value="cheia">Cheia</option><option value="arqueada">Arqueada</option><option value="preocupada">Preocupada</option><option value="decidida">Decidida</option></select></label>
+          <label>Boca <select id="cboca"><option value="">Clássica</option><option value="sorriso">Sorriso</option><option value="gato">Gatinho ω</option><option value="aberta">Aberta</option><option value="dentinho">Dentinho</option></select></label>
+          <label>Bochecha <select id="cbochecha"><option value="">Rosadinha</option><option value="sem">Sem</option><option value="forte">Corada</option><option value="sardas">Sardas</option><option value="estrelinha">Estrelinha</option></select></label>
+        </div>
       </div>
 
-        <div class="cust" id="cust_roupa">
+      <div class="cust" id="cust_roupa">
         <h4 class="custt"><span aria-hidden="true">👗</span> <span>Roupa</span></h4>
         <label>Roupa <select id="cout">
           <option value="" data-r="0">Trainee</option>
@@ -382,10 +394,10 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=14"></script>
+<script src="./centerrun.js?v=15"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=28"></script>
-<script src="./perfil.js?v=15"></script>
+<script src="./perfil.js?v=16"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -438,7 +450,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./jogos-trilha.js?v=1"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=1"></script>
+<script src="./charmaker.js?v=4"></script>
 <script src="./banner.js?v=5"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
@@ -1560,8 +1572,8 @@ var PERF_LOJA = [   // roupas que só existem na lojinha (chave no servidor: rou
 PERF_OSHI_TIMES.forEach(function(t){ t[1].forEach(function(m){ PERF_OSHI[perfOshiKey(m[0])] = [m[1], m[0], m[2]]; }); });
 var PERF_RANKVIS = { rank_center:7, rank_solo:8, rank_capitao:9, rank_ace:10, rank_kami:11 };
 var PERF_TSL = ['#9b30d9', '#5cc72c', '#4169e1'];   // roxo Tsu, verde Lirika, azul Pati
-var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'', olho:'', boca:'', bochecha:'' };
-var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat', 'olho', 'boca', 'bochecha'];
+var PERF_BASE = { n:'Idol', img:'#ff7eb6', hair:'#ff7eb6', hair2:'#4dd8ff', streak:false, skin:'#f1c9a5', eye:'#5a3b2e', back:'chanel', front:'lateral', det:'', gl:'', out:'', outcol:'#ffffff', legcol:'#1c1c30', baixo:'', hat:'', olho:'', boca:'', bochecha:'', sobrancelha:'' };
+var PERF_CAMPOS = ['hair', 'hair2', 'streak', 'mecha', 'skin', 'eye', 'back', 'front', 'det', 'gl', 'out', 'outcol', 'legcol', 'baixo', 'hat', 'olho', 'boca', 'bochecha', 'sobrancelha'];
 
 var PERF_DICT = window.TW_I18N.tables.PERF_DICT;;
 var PERF_DICT2 = window.TW_I18N.tables.PERF_DICT2;;

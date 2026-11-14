@@ -11,6 +11,7 @@ const R = ctx.TWAvatarRosto;
 assert.deepEqual(Array.from(R.olhos), ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno']);
 assert.deepEqual(Array.from(R.bocas), ['', 'sorriso', 'gato', 'aberta', 'dentinho']);
 assert.deepEqual(Array.from(R.bochechas), ['', 'sem', 'forte', 'sardas', 'estrelinha']);
+assert.deepEqual(Array.from(R.sobrancelhas), ['', 'fina', 'cheia', 'arqueada', 'preocupada', 'decidida']);
 assert.equal(R.forma({olho:'xyz'}), '', 'forma desconhecida vira o padrão (o rosto de antes)');
 // O padrão repete o rosto de antes pixel por pixel: mesmos retângulos do drawChar antigo.
 const feitos = [];
@@ -35,5 +36,5 @@ for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) {
 }
 for (const f of ['index.html', 'karaoke-time.html', 'sora-jump.html']) assert.ok(ler(f).includes('tw-avatar-rosto.js?v='), f + ' carrega o módulo');
 for (const id of ['colho', 'cboca', 'cbochecha']) assert.ok(ler('index.html').includes('<select id="' + id + '">'), id);
-for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) assert.match(ler(f), /TWAvatarRosto\.bochecha\(g,c,x,y,bochechaPadrao\)/, f + ': bochecha');
+for (const f of ['centerrun.js', 'karaoke-time.html', 'sora-jump.html']) assert.match(ler(f), /TWAvatarRosto\.sobrancelha\(g,c,x,y,expr\);TWAvatarRosto\.bochecha\(g,c,x,y,bochechaPadrao\)/, f + ': bochecha');
 console.log('avatar-rosto ok');

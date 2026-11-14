@@ -109,3 +109,10 @@ html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
 .battle-hint{margin:8px 4px 4px}
 .battlep .btns:has(.battle-start){margin:14px 0 6px;display:flex;justify-content:center}
 .battle-chips i.oculto{background:#2c1a5e;color:#ffe14d;letter-spacing:.02em}
+
+/* Lightsticks no ritmo durante o show */
+.battle-agitar{min-height:46px;font-size:15px;touch-action:manipulation}
+.battle-agitar.pulsa{animation:battlepulso .18s ease-out}
+@keyframes battlepulso{from{transform:scale(.94)}to{transform:scale(1)}}
+.battle-ritmo{margin:8px 0 4px;font-weight:800;color:#7b3ff0}
+@media (prefers-reduced-motion:reduce){.battle-agitar.pulsa{animation:none}}

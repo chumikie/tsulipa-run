@@ -1,25 +1,7 @@
--- APLICADO no Supabase de produção em 14/11/2026 (OK do dono na conversa).
--- Missões do dia passam a incluir os jogos novos:
---   jardim (nível 1): regar ou plantar um canteiro hoje no Bloom⭐Garden!
---   battle (nível 1): fazer uma partida do dia no Idol⭐Battle!
---   foto   (nível 2): tirar a foto perfeita do dia (3 estrelas) no Photo⭐Studio!
--- Tudo é conferido em tabelas privadas que só as funções do servidor escrevem.
-CREATE OR REPLACE FUNCTION public.missoes_lista()
-RETURNS TABLE(k text,nivel integer,meta integer,premio integer,fam text)
-LANGUAGE sql IMMUTABLE SET search_path TO '' AS $$
-  SELECT * FROM (VALUES
-   ('corra2',1,2,10,'corrida'),('coracao',1,1,10,'coracao'),('recado',1,1,10,'recado'),
-   ('mini',1,1,10,'mini'),('pet',1,1,10,'pet'),
-   ('handshake',1,1,10,'evento'),('cafe',1,1,10,'evento'),
-   ('jardim',1,1,10,'jardim'),('battle',1,1,10,'battle'),
-   ('corra3',2,3,15,'corrida'),('estrelas50',2,50,15,'estrela'),
-   ('pontos2000',2,2000,15,'ponto'),('tsulipa',2,3,15,'tsulipa'),
-   ('foto',2,1,15,'foto'),
-   ('corra5',3,5,20,'corrida'),('pontos5000',3,5000,20,'ponto'),
-   ('estrelas100',3,100,20,'estrela')
-  ) AS v(k,nivel,meta,premio,fam)
-$$;
-
+-- APLICADO no Supabase de produção em 14/11/2026 (OK do dono na conversa): só a CONTAGEM das missões novos.
+--   jardim: regar ou plantar um canteiro hoje · battle: uma partida do dia · foto: a foto perfeita do dia
+-- A LISTA (missoes_lista) com essas missões NÃO está aplicada: o site oficial ainda não tem os jogos.
+-- Ela está em supabase/sql/proposta/20261114_missoes_lista_jogos_novos.sql — aplicar logo depois do merge da #88.
 CREATE OR REPLACE FUNCTION public.missoes_progresso(p_id uuid,p_k text,p_dia date)
 RETURNS integer LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
   WITH l AS (

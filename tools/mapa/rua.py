@@ -122,18 +122,26 @@ A(f"<rect x='0' y='648' width='{W}' height='6' fill='#e2c597'/>")
 def predio(cab, cx):
     A(f"<g transform='translate({cx},566) scale(2.05)'>"); bloco(cab, 0, 0); A('</g>')
 def sora_ilha(cx):
-    # Sora⭐Jump!: ilha flutuante (o bloco do mapa usa outra âncora, então é desenhada aqui na mesma escala)
-    A(f"<g transform='translate({cx},566) scale(2.05)'>")
-    x, y = 0, -85
-    A(f"<ellipse cx='{x}' cy='-2' rx='70' ry='10' fill='#5a3a7a' opacity='.12'/>")
-    A(f"<path d='M{x-110},{y} Q{x},{y+120} {x+110},{y} Z' fill='#b98552'/>")
-    A(f"<path d='M{x-110},{y} Q{x},{y+100} {x+110},{y} Z' fill='#d6a06a'/>")
-    A(f"<ellipse cx='{x}' cy='{y}' rx='112' ry='30' fill='#bff2c6' stroke='#6cc79a' stroke-width='4'/>")
-    G['arvore'](x - 50, y + 4, .6); G['arvore'](x + 56, y + 2, .5, '#ffb3d6', '#ffd6ea')
-    A(f"<rect x='{x-2}' y='{y-70}' width='5' height='70' fill='#8d6ad8'/><path d='M{x+3},{y-70} l40,12 l-40,12 z' fill='#72c6ff' stroke='#4a78ef' stroke-width='3'/>")
-    for (dx, dy, sc) in [(-70, 60, .3), (-30, 82, .26), (20, 96, .24)]:
-        G['cloud'](x + dx, y + dy, sc)
-    G['placa'](x, y - 104, 'Sora⭐Jump!', '#72c6ff', '#4a78ef', 'tw-hubgame-sora')
+    # Sora⭐Jump!: degraus de nuvem subindo até uma estrela, com trampolim na nuvem de baixo
+    A(f"<g transform='translate({cx},566) scale(1.7)'>")
+    A("<ellipse cx='0' cy='-2' rx='80' ry='9' fill='#5a3a7a' opacity='.12'/>")
+    def nuvem_degrau(x, y, w):
+        A(f"<ellipse cx='{x}' cy='{y+7}' rx='{w}' ry='9' fill='#9bc3ec' opacity='.35'/>")
+        A(f"<path d='M{x-w},{y+4} C{x-w-10},{y-6} {x-w+6},{y-20} {x-w*.55:.1f},{y-16} C{x-w*.45:.1f},{y-32} {x-w*.05:.1f},{y-34} {x+w*.12:.1f},{y-22} C{x+w*.35:.1f},{y-34} {x+w*.8:.1f},{y-26} {x+w*.75:.1f},{y-12} C{x+w+8},{y-12} {x+w+6},{y+6} {x+w-6},{y+6} Z' fill='#fff5fc' stroke='#ffd0e6' stroke-width='2.5'/>")
+        A(f"<path d='M{x-w*.6:.1f},{y-12} q{w*.2:.1f},-12 {w*.45:.1f},-6' stroke='#eaf4ff' stroke-width='4' fill='none' stroke-linecap='round'/>")
+    nuvem_degrau(0, -4, 82)
+    # trampolim rosa na nuvem de baixo
+    A("<rect x='-46' y='-30' width='44' height='8' rx='4' fill='#ff6fb5'/><path d='M-40,-22 l-4,14 M-8,-22 l4,14' stroke='#b98bff' stroke-width='4' stroke-linecap='round'/>")
+    A("<path d='M-42,-30 q18,-10 36,0' stroke='#ffd0e6' stroke-width='3' fill='none'/>")
+    nuvem_degrau(40, -58, 40)
+    nuvem_degrau(-18, -104, 34)
+    nuvem_degrau(36, -150, 30)
+    # estrela no topo, com brilho
+    A("<circle cx='36' cy='-190' r='26' fill='#fff3a8' opacity='.45' filter='url(#glow)'/>")
+    A("<path d='M36,-210 l6.5,13 14.5,2 -10.5,10 2.5,14.5 -13,-7 -13,7 2.5,-14.5 -10.5,-10 14.5,-2 z' fill='#ffd84a' stroke='#f5b400' stroke-width='2' stroke-linejoin='round'/>")
+    for (gx, gy, gs) in ((-40, -140, 5), (70, -110, 4), (-60, -70, 4), (10, -175, 3)):
+        G['sparkle'](gx, gy, gs, '#ffffff')
+    G['placa'](0, -232, 'Sora⭐Jump!', '#72c6ff', '#4a78ef', 'tw-hubgame-sora')
     A('</g>')
 for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
     if cab and 'Sora' in cab:
@@ -169,7 +177,8 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
         identificador = 'bloom-garden' if flor else 'photo-studio'
         legenda = 'Bloom★Garden!' if flor else 'Photo★Studio!'
         cor = '#68bc88' if flor else '#7b3ff0'
-        A(f"<g data-reserva='{identificador}'><title>{legenda} — Entrar</title>")
+        escala = '' if flor else f" transform='translate({cx},558) scale(1.28) translate({-cx},-558)'"
+        A(f"<g data-reserva='{identificador}'{escala}><title>{legenda} — Entrar</title>")
         A(f"<ellipse cx='{cx}' cy='565' rx='166' ry='20' fill='#553280' opacity='.12'/>")
         A(f"<rect x='{cx-165}' y='410' width='330' height='145' rx='24' fill='#fff7f0' stroke='#fff' stroke-width='4'/>")
         A(f"<rect x='{cx-151}' y='421' width='302' height='15' rx='7' fill='{cor}' opacity='.28'/>")
@@ -179,15 +188,31 @@ for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
                 A(f"<ellipse cx='{bx}' cy='510' rx='38' ry='17' fill='#bf8e61'/>")
                 A(f"<path d='M{bx},508 v-22 m0,8 q-25,-20 -24,-4 q15,12 24,4 m0,-6 q25,-20 24,-4 q-15,12 -24,4' fill='#77d39e' stroke='#61b77e' stroke-width='2'/>")
         else:
-            # Moldura fotográfica e visor: símbolo original, sem usar personagem.
-            A(f"<rect x='{cx-58}' y='453' width='116' height='71' rx='12' fill='#e8dcff' stroke='#b998ff' stroke-width='4'/>")
-            A(f"<circle cx='{cx}' cy='489' r='24' fill='#fff' stroke='#b998ff' stroke-width='4'/>")
-            A(f"<circle cx='{cx}' cy='489' r='11' fill='#ff6fb5'/>")
-            A(f"<circle cx='{cx+37}' cy='465' r='5' fill='#fff'/>")
-        A(f"<rect x='{cx-133}' y='374' width='266' height='49' rx='23' fill='#fff' stroke='{cor}' stroke-width='3'/>")
-        A(f"<text x='{cx}' y='406' text-anchor='middle' font-family='Mochiy Pop One' font-size='19' fill='{cor}'>{legenda}</text>")
-        A(f"<rect x='{cx-87}' y='531' width='174' height='27' rx='13' fill='#ff6fb5'/>")
-        A(f"<text x='{cx}' y='550' text-anchor='middle' font-family='Mochiy Pop One' font-size='14' fill='#fff'>Entrar</text>")
+            # Photo⭐Studio!: estúdio com câmera no telhado, toldo listrado e varal de polaroids na vitrine
+            A(f"<rect x='{cx-150}' y='432' width='300' height='124' rx='16' fill='{grad('studio_parede', '#f3eaff', '#e2d1ff')}'/>")
+            G['listras'](cx-158, 426, 316, 22, '#ff9bc8', '#ffffff', 12)
+            G['babado'](cx-150, 450, 300, '#ff9bc8', 8)
+            # câmera grande no telhado
+            A(f"<rect x='{cx-58}' y='352' width='116' height='70' rx='16' fill='{grad('studio_cam', '#b98bff', '#7b3ff0')}'/>")
+            A(f"<rect x='{cx-40}' y='340' width='34' height='16' rx='5' fill='#9b78e6'/><circle cx='{cx+36}' cy='366' r='7' fill='#ffe14d'/>")
+            A(f"<circle cx='{cx}' cy='387' r='25' fill='#fff' stroke='#e2d1ff' stroke-width='4'/><circle cx='{cx}' cy='387' r='14' fill='#3c2a8f'/><circle cx='{cx-5}' cy='382' r='4' fill='#fff'/>")
+            # vitrine com varal de polaroids
+            G['vidro'](cx-132, 466, 150, 68, '#e3f4ff')
+            A(f"<path d='M{cx-126},476 Q{cx-57},490 {cx+12},476' stroke='#c98d55' stroke-width='2' fill='none'/>")
+            for k3, (px3, py3) in enumerate(((cx-112, 482), (cx-80, 488), (cx-48, 489), (cx-16, 484))):
+                A(f"<rect x='{px3}' y='{py3}' width='22' height='26' rx='2' fill='#fff' transform='rotate({(-6, 4, -3, 6)[k3]} {px3+11} {py3+13})'/>")
+                A(f"<rect x='{px3+3}' y='{py3+3}' width='16' height='14' fill='{('#ffb3d6', '#bfe9ff', '#d7f7c9', '#ffe08a')[k3]}' transform='rotate({(-6, 4, -3, 6)[k3]} {px3+11} {py3+13})'/>")
+            # porta com estrela
+            A(f"<path d='M{cx+48},556 V500 a28,28 0 0 1 56,0 V556 Z' fill='{grad('studio_porta', '#ff7cbc', '#e2569b')}'/><circle cx='{cx+92}' cy='528' r='3.5' fill='#ffe14d'/>")
+            G['sparkle'](cx+76, 486, 7, '#fff')
+            G['madeira'](cx-156, 548, 312, 10)
+        ly0 = 374 if flor else 288            # no Studio a plaquinha fica acima da câmera
+        ex0 = cx if flor else cx + 76           # no Studio o "Entrar" fica na porta
+        ew = 174 if flor else 92
+        A(f"<rect x='{cx-133}' y='{ly0}' width='266' height='49' rx='23' fill='#fff' stroke='{cor}' stroke-width='3'/>")
+        A(f"<text x='{cx}' y='{ly0+32}' text-anchor='middle' font-family='Mochiy Pop One' font-size='19' fill='{cor}'>{legenda}</text>")
+        A(f"<rect x='{ex0-ew/2:.0f}' y='{531 if flor else 506}' width='{ew}' height='27' rx='13' fill='#ff6fb5' stroke='#fff' stroke-width='{0 if flor else 3}'/>")
+        A(f"<text x='{ex0}' y='{550 if flor else 525}' text-anchor='middle' font-family='Mochiy Pop One' font-size='14' fill='#fff'>Entrar</text>")
         A("</g>")
 
 # enfeites de cada bairro nos vãos entre os lugares (x ≈ 550 e 1050) e nas pontas

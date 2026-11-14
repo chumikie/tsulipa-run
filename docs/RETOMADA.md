@@ -36,6 +36,9 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Links do BRS48 retirados (14/11): rodapé do Hub, botões do menu do Center⭐Run! e bandeirinha do Brasil no banner; item correspondente saiu da Privacidade.
 - Ruas do mapa com identidade própria (`tools/mapa/rua.py`): Star Stage à noite com holofotes e janelas acesas; Galeria do Brilho com letreiros neon e varal de luzes; Vila das Tulipas com colinas e campo de tulipas; Praça com árvores, bancos, canteiros e fonte maior; Star Arena com arquibancada, torres de luz e pódios; Jardim das Nuvens só de céu, com arco-íris. A ilha do Sora⭐Jump! não aparecia na rua (bug do desenho) e agora aparece.
 - Ruas vivas (tw-mapa.js, desligado com "reduzir movimento"): estrelas piscando (Stage, Arena, Céu), holofotes varrendo o Stage, neon pulsando e luzinhas na Galeria do Brilho, torcida com lightsticks e torres de luz na Arena, fonte da Praça com gotas nos jatos e ondinhas, cachoeira do mapa com água descendo e névoa. Fonte da rua com jatos ligados à água; telhado da casinha (Meu Perfil) liso, sem as fileiras de bolinhas.
+- Jardim das Nuvens: Sora⭐Jump! com degraus de nuvem até a estrela e trampolim; Photo⭐Studio! com câmera no telhado, toldo, varal de polaroids e porta com "Entrar".
+- Happy⭐Cafe! "Dois no balcão" (ex-#89) entrou na #88; o modo demonstração simula os dois pedidos.
+- Fãs e clientes com nomes em estilo mangá (Usamado, Sayami, Hanoka…); os nomes antigos continuam valendo nas lembranças já salvas.
 - Mapa da cidade: ao rolar até ele, não fica mais embaixo da barra fixa do jogador.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 

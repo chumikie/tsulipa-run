@@ -113,15 +113,24 @@ function refreshAll(){
  cssNodes.forEach(function(state){if(!cssIO)state.inView=rectVisible(state.el);applyCss(state);});
  gates.forEach(function(g){if(!g.observed)g.inView=rectVisible(g.el);g.refresh();});
 }
-var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
+var pendingMutations=[],mutationFrame=0;
+function flushMutations(){
+ mutationFrame=0;
+ var records=pendingMutations;pendingMutations=[];
+ var inspected=new Set();
  records.forEach(function(rec){
-  if(rec.type==='attributes'){inspectCss(rec.target);if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}}
+  if(rec.type==='attributes'){if(!inspected.has(rec.target)){inspected.add(rec.target);inspectCss(rec.target);}if(rec.target.tagName==='IFRAME'&&rec.attributeName==='src'){disconnectFrame(rec.target);connectFrame(rec.target);}}
   else{
    for(var i=0;i<rec.removedNodes.length;i++)cleanup(rec.removedNodes[i]);
    for(var j=0;j<rec.addedNodes.length;j++)scan(rec.addedNodes[j]);
   }
  });
  refreshAll();
+}
+var mutationObserver=('MutationObserver' in w)?new MutationObserver(function(records){
+ // Agrupa mutações do mesmo quadro: não recalcula toda a página em cada microtarefa.
+ pendingMutations.push.apply(pendingMutations,records);
+ if(!mutationFrame)mutationFrame=w.requestAnimationFrame(flushMutations);
 }):null;
 function startScan(){
  scan(d.documentElement);

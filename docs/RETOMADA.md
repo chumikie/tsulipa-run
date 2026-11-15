@@ -1,3 +1,16 @@
+## Correção de abertura — 15/11/2026 (PR de correção, ainda não publicada)
+
+Base conferida: `f257624`, merge da #95; Vercel READY no mesmo commit. O relato é tela que abre e não responde a toques. No Chrome remoto, os dois modos abriram como visitante; houve timeout inicial de inspeção no modo novo, seguido de interação normal. **Não foi possível reproduzir conclusivamente o congelamento do iPhone.**
+
+- Observadores de animação passam a agrupar mutações por frame, com inspeção única por alvo, em vez de refazer a visibilidade de toda a página em cada microtarefa.
+- Moldura do celular: corrige duas inscrições no mesmo alvo (a segunda apagava `subtree` e `hidden` da primeira); só altera `hidden` quando muda, evitando realimentação.
+- A abertura decorativa não captura toques. Cópia do palco usa o limite móvel de 30 fps já existente.
+- JS/CSS revalidam cache; imagens continuam com cache. Versões dos scripts/CSS alterados foram incrementadas. Caches já gravados pela versão anterior só expiram pela política antiga; URLs novas resolvem os arquivos alterados nesta rodada.
+- OG novo com arte vetorial original do mapa (`og-world.png`) no site e README. Para a prévia do link **do próprio GitHub**, Settings → Social preview ainda precisa receber essa imagem (é independente das metas do site).
+- Nenhuma mudança no banco, recompensas ou chaves de saves. Visual novo continua disponível e opt-in.
+- Testes locais: `node tests/run-all.js`; regressão nova executa batching e transições de visibilidade em VM.
+- Não testados: correção em navegador, iPhone/Safari e login real. Não esperar CI; merge/publicação continuam com o dono.
+
 # Retomada — onde paramos (15/11/2026)
 
 ## Quadro geral — feito / falta (15/11/2026)

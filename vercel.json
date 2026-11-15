@@ -41,7 +41,16 @@
   ],
   "headers": [
     {
-      "source": "/(.+\\.js|.+\\.css|.+\\.svg|.+\\.png|.+\\.webp|.+\\.woff2)",
+      "source": "/(.+\\.js|.+\\.css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.+\\.svg|.+\\.png|.+\\.webp|.+\\.woff2)",
       "headers": [
         {
           "key": "Cache-Control",

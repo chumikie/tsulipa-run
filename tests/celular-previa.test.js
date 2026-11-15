@@ -98,7 +98,7 @@ test('rodada 4: moldura no menu do Center Run e no salão do Karaoke, sem atrapa
 });
 
 test('rodada 5 (prints do iPhone): moldura em janelas criadas na hora, telas embutidas, vitrine sem pontos e logo sem quebrar', () => {
-  assert.match(js, /attributeFilter:\['class'\], childList:true/, 'janela criada por jogo que carrega depois também ganha a moldura');
+  assert.match(js, /attributeFilter:\['hidden','class'\], childList:true/, 'janela criada por jogo que carrega depois também ganha a moldura');
   assert.match(js, /var EMB = \{mapa:\['#twMapa', 'mapa'\], missoes:\['#hubMisPainel', 'mis'\], busca:\['\.hubbusca', 'busca'\], nov:\['\.hubnov', 'nov'\]\}/);
   assert.match(js, /if\(a === 'mapa' \|\| a === 'missoes' \|\| a === 'busca' \|\| a === 'nov'\)\{ ir\('emb:' \+ a\); return; \}/, 'nada abre mais o site antigo');
   const vit = js.slice(js.indexOf('function idols(){'), js.indexOf('function idolsDesenhar('));

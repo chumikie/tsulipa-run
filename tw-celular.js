@@ -224,6 +224,7 @@
     palcoRaf = 0;
     var dst = $id('twcPalcoCv'), src = $id('hubCv'), h = $id('hub');
     if(!dst || !src || !h || h.hidden || classico || document.hidden) return;
+    if(window.TWMotionLifecycle && !window.TWMotionLifecycle.render30Due(dst)){ palcoRaf = requestAnimationFrame(palcoQuadro); return; }
     try{
       if(dst.width !== src.width || dst.height !== src.height){ dst.width = src.width; dst.height = src.height; }
       var x = dst.getContext('2d'); x.clearRect(0, 0, dst.width, dst.height); x.drawImage(src, 0, 0);
@@ -1283,7 +1284,7 @@
     document.body.classList.toggle('tw-cel-cr', ctx === 'cr');
     document.body.classList.toggle('tw-cel-kt', ctx === 'kt');
     if(on && (mold.hidden || mold.dataset.k !== nick() + '|' + LANG)){ mold.dataset.k = nick() + '|' + LANG; molduraDesenhar(); }
-    mold.hidden = !on;
+    if(mold.hidden !== !on) mold.hidden = !on;
   }
   function molduraClique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !mold.contains(b)) return;
@@ -1314,8 +1315,8 @@
     document.body.appendChild(mold);
     mold.addEventListener('click', molduraClique);
     var agenda = function(){ if(!moldRaf) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(agenda);
-    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden']});
-    ob.observe(document.body, {attributes:true, attributeFilter:['class'], childList:true});   // body.jogando (Center⭐Run! correndo) e janelas criadas na hora (jogos que carregam depois)
+    // Uma única inscrição: observe() no mesmo alvo substitui a configuração anterior.
+    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden','class'], childList:true});   // body.jogando (Center⭐Run! correndo) e janelas criadas na hora (jogos que carregam depois)
     setInterval(function(){ if(cel) agenda(); }, 1500);   // rede de segurança: alguma janela que abriu sem avisar
     ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});   // html.tw-kt-arena (show do Karaoke)
   }

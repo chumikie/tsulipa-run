@@ -40,7 +40,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=11">
+<link rel="stylesheet" href="./centerrun.css?v=12">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -217,7 +217,11 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
 		
       <div class="chars" id="chars"></div>
-      
+
+      <!-- JOGAR vem primeiro (15/11/2026): montar o visual fica recolhido aqui e também no Perfil e na Zipper Shop -->
+      <button class="btn" id="play">JOGAR</button>
+      <button type="button" class="sec custtoggle" id="custToggle" aria-expanded="false" aria-controls="custBox">✏️ <span>Montar visual</span></button>
+      <div class="custbox" id="custBox" hidden>
       <div class="cust" id="cust" hidden>
         <div class="cmprev">
           <canvas id="cmCv" width="440" height="360" role="img" aria-label="Prévia do visual"></canvas>
@@ -285,10 +289,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         </select></label>
         <label>Item <select id="acc"></select><b id="newb" class="nb" hidden>✨ NOVO!</b></label>
       </div>
-      
+      </div>
 <div class="cust" id="tstw" hidden><label>Modo teste <select id="tst"><option value="0">Audição (0)</option><option value="150">Kenkyuusei (150)</option><option value="450">Team (450)</option><option value="1000">Senbatsu (1000)</option><option value="1800">Quad Center (1800)</option><option value="2800">tCenter (2800)</option><option value="3900">wCenter (3900)</option><option value="5000">Center (5000)</option><option value="10000">Solo Center (10000)</option><option value="15000">Capitão (15000)</option><option value="30000">Eternal Ace (30000)</option><option value="50000">Kami-Oshi (50000)</option></select></label> <label>Parceiras <select id="tstP"><option value="0">0</option><option value="1">1 (dupla)</option><option value="2">2 (trio)</option><option value="3">3 (quarteto, só com Você)</option></select></label></div>
 
-      <button class="btn" id="play">JOGAR</button>
 
       <div><button class="sec" id="seelb">Ver ranking</button></div>
 
@@ -3163,6 +3166,14 @@ start = function(e){
   s2ShowSlideButton();
 };
 // Os handlers foram ligados antes do wrapper: devem chamar a versão atualizada.
+(function(){   // "✏️ Montar visual": recolhido por padrão para o JOGAR ficar à vista; a escolha fica no aparelho
+  var bt = $('custToggle'), box = $('custBox'); if(!bt || !box) return;
+  function aplicar(aberto){ box.hidden = !aberto; bt.setAttribute('aria-expanded', String(aberto)); bt.classList.toggle('on', aberto);
+    if(aberto && window.TW_CHARMAKER && typeof TW_CHARMAKER.atualizar === 'function') try{ TW_CHARMAKER.atualizar(); }catch(e){} }
+  var ini = false; try{ ini = localStorage.getItem('brs48cr_montar_aberto') === '1'; }catch(e){}
+  aplicar(ini);
+  bt.addEventListener('click', function(){ var ab = box.hidden; aplicar(ab); try{ localStorage.setItem('brs48cr_montar_aberto', ab ? '1' : '0'); }catch(e){} if(typeof beep === 'function') beep(ab ? 988 : 660, .05, 'triangle', .04); if(ab) box.scrollIntoView({behavior:'smooth', block:'nearest'}); });
+})();
 $('play').onclick = start;
 $('again').onclick = start;
 // JOGAR antes de a corrida terminar de baixar: espera ela chegar e começa (nunca joga com a corrida pela metade)

@@ -709,3 +709,39 @@ body.tw-cel .twc .twc-ficha-blog{display:flex;align-items:center;justify-content
  body.tw-cel .twc .twc-ficha-dados{padding-inline:10px}
  body.tw-cel .twc .twc-logo-abre{font-size:clamp(24px,8vw,32px)!important}
 }
+
+/* A8.1 — apresentação do mapa de amizades; canvas e zonas de toque intactos. */
+body.tw-cel .twc .twc-amigos{
+  min-width:0;box-sizing:border-box;padding:clamp(10px,3vw,18px);
+  border:1px solid var(--osh-line);border-radius:22px;
+  background:var(--osh-paper);
+  box-shadow:0 5px 18px color-mix(in srgb,var(--osh-ink) 9%,transparent);
+}
+body.tw-cel .twc .twc-amigos h2{
+  margin:2px 4px 14px;font-size:clamp(16px,4.4vw,21px);line-height:1.35;
+  color:var(--osh-ink);overflow-wrap:anywhere;
+}
+body.tw-cel .twc .twc-amigos-c{
+  min-width:0;overflow:hidden;border-radius:18px;
+  border:1px solid color-mix(in srgb,var(--osh-line) 75%,transparent);
+  background:#fff7ff;
+}
+body.tw-cel .twc .twc-amigos-c canvas{display:block;width:100%;height:auto;max-width:100%}
+body.tw-cel .twc .twc-amigos-dica{
+  margin:12px 4px 2px;gap:8px;font-size:clamp(12px,3.4vw,14px);
+  line-height:1.5;text-align:center;color:var(--osh-sub);
+}
+@media (max-width:699px){
+ body.tw-cel .twc .twc-amigos{padding:10px;border-radius:18px}
+ body.tw-cel .twc .twc-amigos h2{margin:4px 6px 10px}
+ body.tw-cel .twc .twc-amigos-c{border-radius:14px}
+}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos{
+   background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important;
+   box-shadow:0 5px 18px rgba(0,0,0,.18);
+ }
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos h2{color:var(--osh-night-ink)!important}
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-dica{color:var(--osh-night-sub)!important}
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-c{border-color:var(--osh-night-line)}
+}

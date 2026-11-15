@@ -55,7 +55,7 @@ test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca most
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
   assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
-  assert.match(html, /tw-mapa\.js\?v=56/);
+  assert.match(html, /tw-mapa\.js\?v=57/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {
@@ -121,7 +121,7 @@ test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV 
 
 test('rodada 7: mapa sem trio duplicado, membros em atividade nos lugares, rolagem preservada e rua menos ampliada', () => {
   assert.match(mapa, /var VISITA_CONTAS=\['tsu','lirika','patiliri'\]/);
-  assert.match(mapa, /idols\.filter\(function\(p\)\{return p&&visitaContaTrio\(p\.nick\)<0;\}\)\.slice\(0,3\)/, 'as contas do trio não passeiam junto com a visita');
+  assert.match(mapa, /hubIdolsDados\.idols\.forEach\(function\(p\)\{if\(p&&p\.nick&&visitaContaTrio\(p\.nick\)<0&&/, 'as contas do trio não passeiam junto com a visita');
   assert.match(mapa, /if\(p\.oshi\)\{var pd=visitaPorta\(p\.oshiK\);[\s\S]{0,260}ativo:visitaAtividade\(p\.oshiK\)\};\}/, 'quem visita fica ativo na frente de um lugar');
   assert.match(mapa, /POSES_ATIVAS=\{mic:\['mic'/);
   assert.match(mapa, /,S=1\.05;/, 'gatinho menor');
@@ -132,4 +132,24 @@ test('rodada 7: mapa sem trio duplicado, membros em atividade nos lugares, rolag
   const d = js.slice(js.indexOf('function desenhar(){'), js.indexOf('function ir(v)'));
   assert.ok(d.indexOf('tela.scrollTop = rolagem') > d.indexOf('embutir(v.slice(4))'), 'a rolagem volta depois de trazer o mapa');
   assert.match(css, /\.twc-emb-mapa \.tw-mapa:not\(\[data-cena="mundo"\]\) canvas\{width:max\(100%,720px\)/);
+});
+
+test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, online agora, lugares por dentro, pais, manutenção e Montar Idol em vitrine', () => {
+  const pres = ler('tw-presenca.js'), sql = ler('supabase/migrations/20261115200000_presenca_online.sql'), cm = ler('charmaker.js'), mapaJs = ler('tw-mapa.js');
+  const chaves = (pres.match(/^\s{4}(\w+):\{pt:/gm) || []).map(l => l.trim().split(':')[0]).filter(k => !['online', 'falar', 'so'].includes(k));
+  const servidor = sql.match(/p_frase in \(([^)]+)\)/)[1].replace(/'/g, '').split(',').map(x => x.trim());
+  assert.deepEqual(chaves.sort(), servidor.sort(), 'a lista do aparelho é a mesma que o servidor aceita (sem chat livre)');
+  for (const k of chaves) for (const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.match(pres, new RegExp(k + ':\\{[^}]*' + l + ":['\"]"), k + ' em ' + l);
+  assert.match(sql, /grant execute on function public\.presenca_ping\(text, text\) to authenticated;/, 'só conta logada diz que está online');
+  assert.match(sql, /revoke all on public\.presenca from anon, authenticated;/, 'tabela fechada: só pelas funções');
+  assert.match(html, /tw-presenca\.js\?v=1/);
+  assert.match(js, /window\.twMapaEntrar = function\(id\)/);
+  assert.match(mapaJs, /if\(typeof window\.twMapaEntrar==='function'&&window\.twMapaEntrar\(l\.id\)\)return;/, 'o mapa abre o lado de dentro antes do lugar');
+  assert.match(mapaJs, /window\.twMapaCena=function\(\)/);
+  assert.match(mapaJs, /function mundoGente\(tm\)/, 'mapa geral com Idols nas calçadas');
+  assert.match(js, /function telaPais\(\)/);
+  assert.match(js, /if\(falhaDeRede\(err\)\)\{ falhas\+\+; if\(falhas >= 3\) manutMostrar\(\); \}/, 'manutenção só depois de 3 falhas de rede seguidas');
+  assert.match(cm, /var PASSOS = \[\[0, '💇', 'Visual'/, 'Montar Idol em 3 passos');
+  assert.match(cm, /if\(celLigado\(\)\)\{ redoma\(cv, c\); return; \}/, 'redoma só no visual de celular');
+  assert.match(cm, /if\(podeProvar\)\{ st\.prova = /, 'provar peça trancada só na prévia (não salva nem compra)');
 });

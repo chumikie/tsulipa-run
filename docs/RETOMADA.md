@@ -110,6 +110,14 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - A tela pulava para o topo a cada ação no mapa: o `posicionar()` do mapa puxava o mapa de volta para o hub clássico a cada `hubCardsUI`. Agora ele não mexe no mapa enquanto o mapa está dentro do celular, e a rolagem é restaurada depois de reembutir.
   - Rua menos ampliada no celular (720 px de largura em vez de 1080).
   - Gatinhos redesenhados no jeito dos Idols: cabeção quadradinho, corpo de pãozinho, cores chapadas, contorno único e rostinho simples, sem bigodes nem degradê. Continuam piscando, mexendo a orelha e o rabo, pulando ao toque e dormindo à noite.
+- Rodada 8 (15/11), ideias do BarbieGirls/Zwinky com arte nossa:
+  - Montar Idol em vitrine (só com o celular ligado, `charmaker.js`): o Idol aparece numa redoma desenhada no canvas, e as partes viram 3 passos-móveis (1 Visual/penteadeira, 2 Roupa/guarda-roupa, 3 Acessórios/prateleira). Peça trancada pode ser **provada** na redoma (👀): só na prévia, sem salvar nem comprar.
+  - Frases prontas (`tw-presenca.js`): 8 chaves fixas (oi, lindo, jogar, dancar, amei, parabens, valeu, tchau), traduzidas no aparelho. O servidor só aceita essas chaves, então não existe chat livre. Ficam no Mapa e no lado de dentro dos lugares. O seu balão aparece na hora; os dos outros, para quem está online na mesma rua.
+  - Idols online agora: pílula verde no Início e no Mapa. **Supabase (OK do dono no chat, 15/11)**: tabela `public.presenca` (RLS ligada, sem políticas, acesso só pelas funções), `presenca_ping(p_rua, p_frase)` (só logado; no máximo 1 frase a cada 4 s) e `presenca_agora(p_rua)` (todos; conta quem apareceu nos últimos 3 min e lista até 8 pessoas na rua, com frase dos últimos 15 s). Migração: `supabase/migrations/20261115200000_presenca_online.sql`. Quem está online numa rua passeia lá primeiro, com o nome em cima.
+  - Lado de dentro dos lugares: tocar no Café, na Zipper⭐Shop! ou no Star⭐Gacha! (na rua do mapa) abre uma sala desenhada com quem está por ali, com os balões das frases. O botão grande abre o lugar de verdade (`window.twMapaEntrar`).
+  - Mapa geral vivo: até 6 Idols (online e vitrine, sem as contas do trio) andam pelas calçadas (`mundoGente`, `CALCADAS`).
+  - Cantinho dos pais: tela nos Ajustes, nos 6 idiomas, com link para a privacidade.
+  - Manutenção fofa: depois de 3 falhas de rede seguidas no `contaRpc` (ou ao ficar offline), uma folha com o trio e cones avisa que o progresso está guardado, com os botões "Jogar Center⭐Run!" e "Tentar de novo". Aparece uma vez por sessão.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

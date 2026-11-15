@@ -55,6 +55,26 @@
   var ARTIGO = {Tsu:'o', Lirika:'a', Pati:'o'};
   function L(){ return (typeof LANG === 'string' && T[LANG]) ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k]; }
+  // Textos da rodada BarbieGirls/Zwinky (15/11): frases, interiores, Cantinho dos pais e manutenção
+  var T2 = {
+    falar:{pt:'💬 Falar',en:'💬 Say',es:'💬 Decir',id:'💬 Bilang',th:'💬 พูด',ja:'💬 ひとこと'},
+    entrarEm:{pt:'Entrar: {n}',en:'Go in: {n}',es:'Entrar: {n}',id:'Masuk: {n}',th:'เข้า: {n}',ja:'入る：{n}'},
+    dentroSub:{pt:'Quem passa por aqui agora',en:"Who's hanging out here now",es:'Quién está aquí ahora',id:'Siapa yang ada di sini',th:'ใครอยู่ที่นี่ตอนนี้',ja:'いまここにいるアイドル'},
+    pais:{pt:'Cantinho dos pais',en:"Parents' corner",es:'Rincón de los padres',id:'Pojok orang tua',th:'มุมผู้ปกครอง',ja:'保護者のみなさまへ'},
+    paisSub:{pt:'Como o TsuLiPa⭐World cuida de quem joga',en:'How TsuLiPa⭐World looks after players',es:'Cómo TsuLiPa⭐World cuida a quien juega',id:'Cara TsuLiPa⭐World menjaga pemain',th:'TsuLiPa⭐World ดูแลผู้เล่นอย่างไร',ja:'TsuLiPa⭐Worldの安心のしくみ'},
+    pais1:{pt:'É um jogo de fã, gratuito, sem compras com dinheiro de verdade e sem anúncios.',en:'A free fan game: no real-money purchases and no ads.',es:'Un juego de fans gratis: sin compras con dinero real y sin anuncios.',id:'Game penggemar gratis: tanpa pembelian uang asli dan tanpa iklan.',th:'เกมแฟนเมดฟรี ไม่มีการซื้อด้วยเงินจริง และไม่มีโฆษณา',ja:'無料のファンゲームです。課金も広告もありません。'},
+    pais2:{pt:'Entrar com o Google é opcional: só guarda estrelas, visual e progresso na nuvem. Não pedimos endereço, telefone nem fotos.',en:'Google sign-in is optional: it only keeps stars, look and progress in the cloud. We never ask for address, phone or photos.',es:'Entrar con Google es opcional: solo guarda estrellas, look y progreso. No pedimos dirección, teléfono ni fotos.',id:'Masuk dengan Google opsional: hanya menyimpan bintang, tampilan, dan progres. Kami tidak meminta alamat, telepon, atau foto.',th:'การเข้าสู่ระบบด้วย Google เป็นทางเลือก ใช้เก็บดาว ลุค และความคืบหน้าเท่านั้น เราไม่ขอที่อยู่ เบอร์โทร หรือรูปถ่าย',ja:'Googleログインは任意で、スター・見た目・進み具合を保存するだけです。住所・電話番号・写真はたずねません。'},
+    pais3:{pt:'Não existe chat livre: os balões são frases prontas e gentis, escolhidas numa lista.',en:'There is no free chat: bubbles are kind, ready-made phrases picked from a list.',es:'No hay chat libre: los globos son frases amables ya hechas, elegidas de una lista.',id:'Tidak ada obrolan bebas: balon hanya berisi kalimat ramah dari daftar.',th:'ไม่มีแชทอิสระ บอลลูนเป็นประโยคน่ารักที่เลือกจากรายการเท่านั้น',ja:'自由なチャットはありません。ふきだしはリストから選ぶやさしい定型文だけです。'},
+    pais4:{pt:'O nome de Idol é público; a moderação pode esconder nomes e perfis que desrespeitem alguém.',en:'Idol names are public; moderators can hide names and profiles that are disrespectful.',es:'El nombre de Idol es público; la moderación puede ocultar nombres y perfiles irrespetuosos.',id:'Nama Idol bersifat publik; moderator bisa menyembunyikan nama dan profil yang tidak sopan.',th:'ชื่อไอดอลเป็นสาธารณะ ผู้ดูแลสามารถซ่อนชื่อและโปรไฟล์ที่ไม่สุภาพได้',ja:'アイドル名は公開されます。失礼な名前やプロフィールは運営が非表示にできます。'},
+    pais5:{pt:'A conta pode ser apagada a qualquer momento no perfil. O jogo é de inclusão: todo mundo é bem-vindo em tudo.',en:'The account can be deleted any time from the profile. Everyone is welcome in everything.',es:'La cuenta se puede borrar cuando quieras desde el perfil. Todo el mundo es bienvenido en todo.',id:'Akun bisa dihapus kapan saja dari profil. Semua orang diterima di semua hal.',th:'ลบบัญชีได้ทุกเมื่อจากหน้าโปรไฟล์ ทุกคนได้รับการต้อนรับในทุกอย่าง',ja:'アカウントはプロフィールからいつでも削除できます。だれでもすべてに参加できます。'},
+    paisPriv:{pt:'Privacidade e segurança',en:'Privacy and safety',es:'Privacidad y seguridad',id:'Privasi dan keamanan',th:'ความเป็นส่วนตัวและความปลอดภัย',ja:'プライバシーと安全'},
+    manutT:{pt:'Estamos arrumando o palco!',en:"We're setting up the stage!",es:'¡Estamos preparando el escenario!',id:'Kami sedang menata panggung!',th:'กำลังจัดเวทีอยู่นะ!',ja:'ステージを準備中！'},
+    manutTxt:{pt:'O servidor deu uma pausinha. Seu progresso está guardado. Enquanto isso, dá para jogar o Center⭐Run! normalmente.',en:'The server is taking a little break. Your progress is safe. Meanwhile you can still play Center⭐Run!.',es:'El servidor está en una pausita. Tu progreso está guardado. Mientras tanto puedes jugar Center⭐Run!.',id:'Server sedang istirahat sebentar. Progresmu aman. Sementara itu kamu tetap bisa main Center⭐Run!.',th:'เซิร์ฟเวอร์พักแป๊บนึง ความคืบหน้าของคุณยังอยู่ครบ ระหว่างนี้เล่น Center⭐Run! ได้ตามปกติ',ja:'サーバーがひと休み中です。進み具合は保存されています。そのあいだもCenter⭐Run!は遊べます。'},
+    semNet:{pt:'Sem internet agora',en:'No internet right now',es:'Sin internet ahora',id:'Tidak ada internet',th:'ตอนนี้ไม่มีอินเทอร์เน็ต',ja:'いまインターネットにつながっていません'},
+    tentar:{pt:'Tentar de novo',en:'Try again',es:'Intentar de nuevo',id:'Coba lagi',th:'ลองอีกครั้ง',ja:'もう一度'},
+    jogarRun:{pt:'Jogar Center⭐Run!',en:'Play Center⭐Run!',es:'Jugar Center⭐Run!',id:'Main Center⭐Run!',th:'เล่น Center⭐Run!',ja:'Center⭐Run!であそぶ'}
+  };
+  function t2(k, n){ var d = T2[k]; var s2 = d ? (d[L()] || d.pt) : k; return n != null ? s2.replace('{n}', n) : s2; }
   function tt(s){ return typeof tr === 'function' ? tr(s) : s; }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(String(s)) : String(s).replace(/[&<>"']/g, function(c){ return '&#' + c.charCodeAt(0) + ';'; }); }
   function logado(){ return typeof contaJ !== 'undefined' && !!contaJ; }
@@ -217,7 +237,7 @@
       return '';
     }
     if(!L.length) return '';
-    return '<section class="twc-idols" aria-labelledby="twcIdolsT"><h2 id="twcIdolsT">' + esc(t('idols')) + '</h2><div class="twc-idols-fila">' + L.slice(0, 20).map(function(p, i){
+    return '<section class="twc-idols" aria-labelledby="twcIdolsT"><h2 id="twcIdolsT">' + esc(t('idols')) + '</h2><span class="twc-online" data-twc-online hidden></span><div class="twc-idols-fila">' + L.slice(0, 20).map(function(p, i){
       return '<button type="button" class="lbn twc-idol-b" data-nick="' + esc(p.nick) + '"><canvas data-idol="' + i + '" width="96" height="96" aria-hidden="true"></canvas><span translate="no">' + esc(p.nick) + '</span></button>';
     }).join('') + '</div></section>';
   }
@@ -354,6 +374,7 @@
       '<section class="twc-card"><h2>' + esc(nick()) + '</h2>' + (logado()
         ? '<button type="button" class="twc-btn twc-btn-claro" data-a="sair">' + esc(sairPend ? t('sairOk') : t('sair')) + '</button>'
         : '<button type="button" class="twc-btn" data-a="entrar">' + esc(t('entrar')) + ' · Google</button>') + '</section>' +
+      '<button type="button" class="twc-btn twc-btn-claro" data-v="pais">🌷 ' + esc(t2('pais')) + '</button>' +
       '<button type="button" class="twc-btn twc-btn-claro" data-a="classico">' + esc(t('classico')) + '</button>' +
       '</div>';
   }
@@ -377,8 +398,125 @@
      enquanto ela está aberta e devolvidas ao sair. Tudo continua dentro do #hub, então nada deixa de funcionar. */
   var EMB = {mapa:['#twMapa', 'mapa'], missoes:['#hubMisPainel', 'mis'], busca:['.hubbusca', 'busca'], nov:['.hubnov', 'nov']}, embAtual = null;
   function telaEmb(k){
-    return faixa(esc(t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '"><div id="twcEmbSlot"></div></div>';
+    return faixa(esc(t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
+      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
+  /* ---------- frases prontas (sem chat livre) ---------- */
+  function frasesHtml(){
+    var P = window.TW_PRESENCA; if(!P) return '';
+    return '<section class="twc-frases" aria-labelledby="twcFrasesT"><h2 id="twcFrasesT">' + esc(t2('falar')) + '</h2><div class="twc-frases-l">' +
+      P.frases.map(function(k){ return '<button type="button" data-frase="' + k + '">' + esc(P.texto(k)) + '</button>'; }).join('') + '</div>' +
+      (logado() ? '' : '<p class="twc-frases-dica">' + esc(P.ui('so')) + '</p>') + '</section>';
+  }
+
+  /* ---------- entrar nos lugares (ideia do BarbieGirls, arte nossa): o Café, a Zipper⭐Shop! e o Star⭐Gacha! têm um
+     "lado de dentro" com quem está online nessa rua (e a vitrine) passeando, com os balões das frases prontas.
+     O botão grande abre o lugar de verdade (o mesmo card do hub, com as mesmas regras). ---------- */
+  var DENTRO = {cafe:{cor:['#ffe9d6', '#f7c9a4', '#c98a5a'], ico:'cafe', nome:'Café'}, loja:{cor:['#f3e6ff', '#e2ccff', '#9a6fd6'], ico:'loja', nome:'Zipper⭐Shop!'},
+    gacha:{cor:['#e5f6ff', '#c3e7ff', '#5a9fd6'], ico:'gacha', nome:'Star⭐Gacha!'}};
+  window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
+  function telaDentro(id){
+    var d = DENTRO[id], c = card(id), nome = c ? titulo(c) : d.nome;
+    return faixa(esc(nome), t2('dentroSub')) + '<div class="twc-pag twc-dentro"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
+      '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>' + frasesHtml() + '</div>';
+  }
+  var dentroRaf = 0;
+  function dentroLigar(){ if(!dentroRaf) dentroRaf = requestAnimationFrame(dentroQuadro); }
+  function dentroQuadro(ms){
+    dentroRaf = 0;
+    var cv = $id('twcDentroCv'), v = topo(); if(!cv || v.indexOf('dentro:') !== 0 || document.hidden) return;
+    try{ dentroDesenhar(cv, v.slice(7), ms / 1000); }catch(e){ return; }
+    dentroRaf = requestAnimationFrame(dentroQuadro);
+  }
+  function dentroGente(){
+    var L2 = [], vistos = {}, P = window.TW_PRESENCA, me = '';
+    try{ me = logado() ? String(contaJ.nick).toLowerCase() : ''; }catch(e){}
+    var trio = ['tsu', 'lirika', 'patiliri'];
+    (P && P.lista ? P.lista : []).concat(typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols : []).forEach(function(p){
+      var n = p && String(p.nick || '').toLowerCase(); if(!n || vistos[n] || n === me || trio.indexOf(n) >= 0 || !p.avatar) return; vistos[n] = 1; L2.push(p); });
+    return L2.slice(0, 4);
+  }
+  function dentroDesenhar(cv, id, s){
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height, d = DENTRO[id] || DENTRO.cafe, chao = H - 70;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+    x.fillStyle = d.cor[0]; x.fillRect(0, 0, W, chao - 40);                                   // parede
+    x.fillStyle = 'rgba(255,255,255,.55)'; for(var i = 0; i < W; i += 40) x.fillRect(i, 0, 18, chao - 40);   // listras
+    x.fillStyle = d.cor[1]; x.fillRect(0, chao - 40, W, H);                                    // piso
+    x.fillStyle = 'rgba(255,255,255,.35)'; for(var j = 0; j < W; j += 64) x.fillRect(j, chao - 40, 2, H);
+    x.fillStyle = d.cor[2]; x.fillRect(0, chao - 44, W, 6);                                    // rodapé
+    // móveis de cada lugar (formas simples, cores chapadas)
+    function caixa(a, b, w, h, r, cor){ x.fillStyle = cor; x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.fill(); }
+    if(id === 'cafe'){
+      caixa(30, chao - 150, 190, 110, 14, '#fff'); caixa(30, chao - 150, 190, 26, 12, '#ff9cc8');                  // balcão
+      ['#ffb3d6', '#fff3a8', '#b6ff3b'].forEach(function(c2, k){ caixa(52 + k * 56, chao - 176, 34, 26, 8, c2); x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(69 + k * 56, chao - 178, 6, 0, 7); x.fill(); });   // cupcakes
+      caixa(380, chao - 96, 220, 60, 22, '#8fd3ff'); caixa(390, chao - 120, 200, 34, 16, '#b7e4ff');                // sofá
+      caixa(300, chao - 70, 64, 10, 5, '#fff'); x.fillStyle = '#c98a5a'; x.fillRect(328, chao - 60, 8, 34);          // mesinha
+      caixa(250, 34, 140, 70, 12, '#fff'); x.fillStyle = '#c98a5a'; x.font = '22px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('MENU ♡', 320, 78);
+    } else if(id === 'loja'){
+      x.strokeStyle = '#9a6fd6'; x.lineWidth = 6; x.beginPath(); x.moveTo(36, chao - 190); x.lineTo(236, chao - 190); x.stroke();      // arara
+      ['#ff6fb5', '#7b3ff0', '#4169e1', '#b6ff3b', '#ffd23f'].forEach(function(c2, k){ caixa(46 + k * 38, chao - 186, 30, 74, 8, c2); });
+      caixa(470, chao - 230, 120, 190, 60, '#fff'); caixa(482, chao - 218, 96, 166, 48, '#d8ecff');                 // espelho
+      x.fillStyle = 'rgba(255,255,255,.8)'; x.fillRect(500, chao - 196, 10, 60);
+      caixa(270, chao - 64, 150, 30, 14, '#ffc2e2');                                                                 // tapete-passarela
+    } else {
+      caixa(40, chao - 220, 150, 190, 24, '#ff6fb5'); x.fillStyle = '#e8f6ff'; x.beginPath(); x.arc(115, chao - 160, 52, 0, 7); x.fill();   // máquina
+      ['#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1', '#fff'].forEach(function(c2, k){ x.fillStyle = c2; x.beginPath(); x.arc(90 + (k % 3) * 24, chao - 172 + Math.floor(k / 3) * 26 + Math.sin(s * 2 + k) * 2, 11, 0, 7); x.fill(); });
+      caixa(95, chao - 92, 40, 30, 8, '#fff'); caixa(440, 40, 150, 150, 18, '#fff'); x.font = '60px sans-serif'; x.textAlign = 'center'; x.fillText('⭐', 515, 140);
+    }
+    // gente: quem está online nesta rua (com os balões das frases) + vitrine + você
+    var P = window.TW_PRESENCA, gente = dentroGente(), eu = typeof hubAv === 'function' ? hubAv() : null, lugares = [250, 360, 470, 580, 140];
+    var todos = gente.map(function(p, k){ return {av:p.avatar, nick:p.nick, fala:p.frase ? {frase:p.frase, em:(+p.frase_em || 0) * 1000} : null, x:lugares[k]}; });
+    if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:lugares[todos.length] || 140, eu:true});
+    todos.forEach(function(g, k){
+      var cw = 104, ch = 112, px = g.x - cw / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
+      var av = {}; for(var q in g.av) av[q] = g.av[q];
+      av.pose = ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5];
+      x.fillStyle = 'rgba(40,10,70,.16)'; x.beginPath(); x.ellipse(g.x, chao + 4, 22, 5, 0, 0, 7); x.fill();
+      x.save(); x.translate(px, chao - ch + 8 - pulo);
+      try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, cw, ch, av, false, false, fr); }catch(e){}
+      x.restore();
+      if(g.nick){ x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(120, x.measureText(g.nick).width + 16);
+        caixa(g.x - tw / 2, chao + 12, tw, 20, 10, 'rgba(123,63,240,.9)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 27, tw - 8); }
+      if(g.eu){ x.fillStyle = '#b6ff3b'; x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillText('★', g.x, chao - ch + 4 - pulo); }
+      var fl = g.fala; if(fl && fl.frase && P && Date.now() - fl.em < (g.eu ? 8000 : 12000)){
+        var tx = P.texto(fl.frase); x.font = 'bold 16px "M PLUS Rounded 1c",sans-serif'; var lg = Math.min(220, x.measureText(tx).width + 24), by = chao - 118 - pulo;
+        caixa(g.x - lg / 2 - 2.5, by - 2.5, lg + 5, 35, 16, '#c9b3ff'); caixa(g.x - lg / 2, by, lg, 30, 14, '#fff'); x.fillStyle = '#fff'; x.beginPath(); x.moveTo(g.x - 6, by + 29); x.lineTo(g.x, by + 38); x.lineTo(g.x + 6, by + 29); x.fill();
+        x.fillStyle = '#5b2bb5'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(tx, g.x, by + 15.5, lg - 12); x.textBaseline = 'alphabetic'; }
+    });
+  }
+
+  /* ---------- Cantinho dos pais ---------- */
+  function telaPais(){
+    return faixa(esc(t2('pais')), t2('paisSub')) + '<div class="twc-pag twc-pais"><section class="twc-card"><ul>' +
+      ['pais1', 'pais2', 'pais3', 'pais4', 'pais5'].map(function(k, i){ return '<li><span aria-hidden="true">' + ['🎀', '☁️', '💬', '🛡️', '🌈'][i] + '</span>' + esc(t2(k)) + '</li>'; }).join('') +
+      '</ul><a class="twc-btn twc-btn-claro" href="./privacidade.html" target="_blank" rel="noopener">' + esc(t2('paisPriv')) + '</a></section></div>';
+  }
+
+  /* ---------- manutenção fofa: quando o servidor (ou a internet) cai, um aviso com o trio em vez de erro seco ---------- */
+  var falhas = 0, manutVista = false;
+  function manutMostrar(){
+    if(!cel || !folha || manutVista || !folha.hidden || tutI >= 0) return;
+    manutVista = true;
+    var off = typeof navigator !== 'undefined' && navigator.onLine === false;
+    folha.innerHTML = '<div class="twc-folha-caixa twc-manut" role="dialog" aria-modal="true" aria-labelledby="twcManutT">' +
+      '<div class="twc-manut-palco" aria-hidden="true"><span class="twc-cone">🚧</span>' + MEMBROS.map(function(m, k){ return '<canvas data-membro="' + k + '" width="96" height="96"></canvas>'; }).join('') + '<span class="twc-cone">🚧</span></div>' +
+      '<h2 id="twcManutT">' + esc(off ? t2('semNet') : t2('manutT')) + '</h2><p>' + esc(t2('manutTxt')) + '</p>' +
+      '<button type="button" class="twc-btn" data-f="manutRun">' + esc(t2('jogarRun')) + '</button><button type="button" class="twc-btn twc-btn-claro" data-f="manutTentar">' + esc(t2('tentar')) + '</button>' +
+      brilhos([[10, 10, 12], [88, 12, 10, 'l']]) + '</div>';
+    folha.hidden = false;
+    [].slice.call(folha.querySelectorAll('canvas[data-membro]')).forEach(function(cv){ var av = membroAv(+cv.getAttribute('data-membro')); try{ if(av && typeof perfFotoRedonda === 'function') perfFotoRedonda(cv, av, true); }catch(e){} });
+  }
+  function falhaDeRede(err){ var m = String(err && (err.message || err.code || err) || ''); return /sem_supabase|fetch|network|load failed|timeout|50[234]|ECONN/i.test(m); }
+  if(typeof window.contaRpc === 'function' && !window.contaRpc.twcManut){
+    var rpcOrig = window.contaRpc;
+    window.contaRpc = function(){
+      return rpcOrig.apply(this, arguments).then(function(r){ falhas = 0; return r; }, function(err){
+        if(falhaDeRede(err)){ falhas++; if(falhas >= 3) manutMostrar(); }
+        throw err; });
+    };
+    window.contaRpc.twcManut = true;
+  }
+  if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
   function embutir(k){
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot'); if(!el || !slot) return;
     if(embAtual && embAtual.el !== el) devolver();
@@ -441,7 +579,7 @@
     vitrineDevolver();
     var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
     tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
-      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
+      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'pais' ? telaPais() : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
@@ -449,6 +587,8 @@
     if(v === 'abre') vitrineTrazer();
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
+    if(v.indexOf('dentro:') === 0) dentroLigar();
+    if(window.TW_PRESENCA) try{ window.TW_PRESENCA.contadorUI(); }catch(e){}
     if(v === 'inicio') setTimeout(tutTalvez, 400);
   }
   function ir(v){ if(classico) sairClassico(); if(topo() !== v) pilha.push(v); som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
@@ -497,9 +637,12 @@
     if(b.dataset.f){ var f = b.dataset.f;
       if(f === 'tutOk'){ tutI++; som(); if(tutI > 2) tutFim(); else tutMostrar(); return; }
       if(f === 'tutPular'){ tutFim(); return; }
+      if(f === 'manutTentar'){ fecharFolha(); falhas = 0; manutVista = false; if(typeof hubIdolsCarregar === 'function') try{ hubIdolsEm = 0; hubIdolsCarregar(); }catch(e){} if(window.TW_PRESENCA) window.TW_PRESENCA.atualizar(); return; }
+      if(f === 'manutRun'){ fecharFolha(); abrirCard('run'); return; }
       fecharFolha(); if(f === 'entrar' && typeof contaEntrar === 'function') contaEntrar(); return; }
     if(b.dataset.n){ var n = b.dataset.n; if(n === 'voltar') voltar(); else if(n === 'inicio') inicio(); else if(topo() === 'menu' && !classico) voltar(); else ir('menu'); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
+    if(b.dataset.frase){ if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.filtro !== undefined){ album.filtro = b.dataset.filtro; som(); desenhar(); return; }
     if(b.dataset.cardz) return;   // o zoom do card é do próprio jogo (gacha)
     if(b.dataset.l){   // idioma: o mesmo botão do menu do Center Run (salva e traduz o jogo todo; o hub se refaz e o celular junto)
@@ -571,6 +714,7 @@
     if(m === 'menu'){ ir('menu'); return; }
     if(m === 'inicio'){ inicio(); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
+    if(b.dataset.frase){ if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.ir){ abrirCard(b.dataset.ir); }
   }
   function molduraMontar(){

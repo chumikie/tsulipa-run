@@ -354,3 +354,58 @@ body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal .tw-rank-tv{width:min(1
 /* Mapa no celular: a rua aparece menos ampliada (nada gigante), ainda arrastável para os lados */
 html body.tw-cel #hub .twc-emb-mapa .tw-mapa:not([data-cena="mundo"]) .tw-mapa-rolo{height:auto!important;overflow-y:hidden!important}
 html body.tw-cel #hub .twc-emb-mapa .tw-mapa:not([data-cena="mundo"]) canvas{width:max(100%,720px)!important;max-width:none!important;height:auto!important}
+/* Montar Idol em vitrine: redoma (desenhada no canvas) + 3 passos como móveis */
+body.tw-cel .cmestudio .cmprev,body.tw-cel #cust.cust .cmprev{grid-template-columns:minmax(0,54%) minmax(0,1fr)}
+body.tw-cel .cmprova{grid-column:1/-1;margin:2px 0 0;padding:5px 10px;border-radius:99px;background:#fff0f8;color:#c2367f;font:800 11.5px/1.3 "M PLUS Rounded 1c",sans-serif;text-align:center}
+body.tw-cel .cmprova[hidden]{display:none}
+.cmpassos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 8px}
+.cmpasso{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:78px;padding:16px 4px 8px;border:3px solid #fff;border-radius:18px 18px 10px 10px;
+  font:400 12px/1.2 "Mochiy Pop One",sans-serif;color:#5b2bb5;cursor:pointer;box-shadow:0 4px 0 rgba(123,63,240,.18);transition:transform .15s}
+.cmpasso i{font-style:normal;font-size:24px;line-height:1}
+.cmpasso em{position:absolute;top:-10px;left:50%;transform:translateX(-50%);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;
+  background:#ff6fb5;color:#fff;font:400 12px/1 "Mochiy Pop One",sans-serif;font-style:normal;box-shadow:0 0 0 3px #fff}
+/* penteadeira (espelho redondo), guarda-roupa (duas portas) e prateleira (tábuas) */
+.cmpasso0{background:radial-gradient(circle at 50% 34%,#e9f6ff 0 17px,#ffc2e2 18px 21px,transparent 22px),linear-gradient(#ffe3f1,#ffc9e5)}
+.cmpasso1{background:linear-gradient(90deg,transparent calc(50% - 1.5px),#b796f0 calc(50% - 1.5px) calc(50% + 1.5px),transparent calc(50% + 1.5px)),linear-gradient(#f0e7ff,#dccbff)}
+.cmpasso2{background:repeating-linear-gradient(180deg,transparent 0 22px,#86d6b9 22px 25px),linear-gradient(#eafff6,#c9f3e2)}
+.cmpasso[aria-pressed="true"]{transform:translateY(-3px);border-color:#ff6fb5;box-shadow:0 6px 0 rgba(255,111,181,.35)}
+.cmpasso:focus-visible{outline:3px solid #7b3ff0;outline-offset:2px}
+body.tw-cel .cmabas button[hidden]{display:none!important}
+body.tw-cel .cmmini.cmprovar{border-style:dashed!important;border-color:#ffb3d9!important}
+body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;border-color:#ff6fb5!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cmpasso{border-color:#3d2a6b;color:#f2e9ff}
+  :root:not([data-theme="light"]) .cmpasso0{background:radial-gradient(circle at 50% 34%,#3a4a6b 0 17px,#c2367f 18px 21px,transparent 22px),linear-gradient(#4a2147,#3a1a3f)}
+  :root:not([data-theme="light"]) .cmpasso1{background:linear-gradient(90deg,transparent calc(50% - 1.5px),#7b5cc0 calc(50% - 1.5px) calc(50% + 1.5px),transparent calc(50% + 1.5px)),linear-gradient(#33265a,#281d4a)}
+  :root:not([data-theme="light"]) .cmpasso2{background:repeating-linear-gradient(180deg,transparent 0 22px,#2f8a6a 22px 25px),linear-gradient(#1d3b35,#173029)}}
+/* Idols online agora */
+.twc-online{display:inline-flex;align-items:center;gap:6px;margin:0 14px 6px;padding:4px 11px;border-radius:99px;background:#eafff2;color:#1f7a4a;font:800 12px/1.2 "M PLUS Rounded 1c",sans-serif}
+.twc-online[hidden]{display:none}
+.twc-online i{width:9px;height:9px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.25);animation:twcPisca 1.6s ease-in-out infinite}
+.twc-online b{font-weight:900}
+.twc-emb-mapa>.twc-online{margin:0 0 8px}
+@keyframes twcPisca{50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.twc-online i{animation:none}}
+/* frases prontas */
+.twc-frases{margin-top:12px;padding:12px;border-radius:22px;background:rgba(255,255,255,.8);border:2px solid #fff;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+.twc-frases h2{margin:0 0 8px;font:400 15px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
+.twc-frases-l{display:flex;flex-wrap:wrap;gap:7px}
+.twc .twc-frases-l button{min-height:40px;padding:7px 13px;border:2px solid #e2d4ff;border-radius:99px;background:#fff;color:#5b2bb5;font:800 13px/1.2 "M PLUS Rounded 1c",sans-serif;cursor:pointer;transition:transform .15s}
+.twc .twc-frases-l button:active,.twc .twc-frases-l button.twc-falou{transform:scale(.94);background:#ffe3f1;border-color:#ff6fb5}
+.twc-frases-dica{margin:8px 0 0;font-size:12px;font-weight:700;color:var(--twc-sub)}
+/* lado de dentro dos lugares */
+.twc-dentro-cena{border-radius:24px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 0 rgba(70,35,140,.2)}
+.twc-dentro-cena canvas{display:block;width:100%;height:auto}
+.twc .twc-dentro-ir{display:block;width:100%;margin-top:12px}
+/* Cantinho dos pais */
+.twc-pais ul{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:10px}
+.twc-pais li{display:flex;gap:10px;align-items:flex-start;font-weight:700;line-height:1.45}
+.twc-pais li span{flex:none;font-size:20px;line-height:1.2}
+.twc-pais a.twc-btn{display:block;text-align:center;text-decoration:none}
+/* manutenção fofa */
+.twc-manut-palco{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin:4px 0 10px}
+.twc-manut-palco canvas{width:58px;height:58px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
+.twc-manut-palco canvas:nth-child(3){transform:translateY(-8px)}
+.twc-cone{font-size:30px;line-height:1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-frases{background:rgba(42,29,74,.75);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc .twc-frases-l button{background:#2a1d4a;border-color:#4b3585;color:#f2e9ff}
+  :root:not([data-theme="light"]) .twc-online{background:#163a2a;color:#9ff0c4}}

@@ -62,6 +62,29 @@ var JN_CAPS = [
       [[0, {pt:'Boas-vindas ao TsuLiPa⭐World!',en:'Welcome to TsuLiPa⭐World!',es:'¡Bienvenidas y bienvenidos a TsuLiPa⭐World!',id:'Selamat datang di TsuLiPa⭐World!',th:'ยินดีต้อนรับสู่ TsuLiPa⭐World!',ja:'TsuLiPa⭐Worldへようこそ！'}]]]
   ]]
 ];
+/* Temporada 1 — estrutura editorial, ainda não publicada.
+   Não ligar a interface antes de roteiro, arte e seis traduções aprovados. */
+var JN_T1_PUBLICADA = false;
+var JN_T1 = {
+  id:'bastidores-de-um-sonho',
+  titulo:'Bastidores de um Sonho',
+  publicada:JN_T1_PUBLICADA,
+  episodios:[
+    {id:'convite-misterioso',data:'2026-11-16',pronto:false},
+    {id:'ensaio-impossivel',data:'2026-11-23',pronto:false},
+    {id:'lembranca-lirika',data:'2026-11-30',pronto:false},
+    {id:'plano-pati',data:'2026-12-07',pronto:false},
+    {id:'quando-luz-apaga',data:'2026-12-14',pronto:false},
+    {id:'palco-nosso',data:'2026-12-21',pronto:false}
+  ]
+};
+function jnT1HojeBrasilia(agora){
+  return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(agora || new Date());
+}
+function jnT1Disponivel(i,agora){
+  var ep=JN_T1.episodios[i];
+  return !!(JN_T1_PUBLICADA && ep && ep.pronto && ep.data <= jnT1HojeBrasilia(agora));
+}
 var jnCapSel = -1;
 function jnCapL(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
 function jnCapT(o, n){ var s = o ? (o[jnCapL()] || o.pt) : ''; return n != null ? s.replace('{n}', n).replace('{d}', n) : s; }

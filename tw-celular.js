@@ -1093,7 +1093,8 @@
     slot.appendChild(box); box.classList.add('mini');
     if(typeof hubIV !== 'undefined') hubIV.cw = 0;
     var L0 = typeof hubIV !== 'undefined' && hubIV.L && hubIV.L[0];
-    // Não forçar hubIdolsUI durante a montagem: ele pode acionar atualizações do hub em cascata.
+    // Inicializa a vitrine apenas quando vazia, sem inscrever hubIdolsUI em redraws.
+    if(typeof hubIdolsUI === 'function' && (box.hidden || !box.children.length)) try{ hubIdolsUI(); }catch(e){}
     if(typeof hubIdolsLigar === 'function') try{ hubIdolsLigar(); }catch(e){}
   }
   // o Tsu, a Lirika e o Pati entram na fila da vitrine (só com o celular ligado); sem pontuação

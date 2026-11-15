@@ -31,3 +31,18 @@ test('Karaoke⭐Time!: HUD de Live só lê o estado do show', () => {
   const ops = new Proxy({}, { get: (o, k) => k === 'createLinearGradient' ? () => ({ addColorStop(){} }) : k === 'measureText' ? () => ({ width: 10 }) : (typeof k === 'string' ? (o[k] !== undefined ? o[k] : () => {}) : undefined), set: (o, k, v) => { o[k] = v; return true; } });
   A.draw(ops, 390, 844, { now: 1e4, notes: [{ lane: 1, at: 10200, done: false }], fall: 1700, title: 'X', flash: [0, 0, 0, 0], feedback: 'PERFECT', feedbackUntil: 10300, combo: 12, score: 999, acc: 90, start: 0, durationMs: 60000, paused: false, resumeUntil: 0, perfect: 45, good: 100, prep: '' });
 });
+
+test('Karaoke⭐Time!: sala como MUSIC LIST só com o celular ligado, usando o seletor e o botão de sempre', () => {
+  const lista = fs.readFileSync(path.join(root, 'karaoke-lista.js'), 'utf8');
+  const html = fs.readFileSync(path.join(root, 'karaoke-time.html'), 'utf8');
+  assert.match(html, /<script src="\.\/karaoke-lista\.js\?v=\d+"><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\/karaoke-lista\.css\?v=\d+">/);
+  assert.match(lista, /root\.parent\.TW_CELULAR_LIGADO/, 'desligado, a sala fica como sempre');
+  assert.match(lista, /sel\.options/, 'as capas vêm das trilhas do próprio seletor');
+  assert.match(lista, /var s = \$\('ktStart'\); if\(s && !s\.disabled\) s\.click\(\)/, 'Cantar usa o botão de sempre (tentativas e regras iguais)');
+  assert.ok(!/localStorage|ktMeta\.complete|\.score\s*=/.test(lista), 'não mexe em save nem pontos');
+  const sb = { window: {}, document: { readyState: 'loading', documentElement: { classList: { contains: () => false } }, addEventListener(){} } }; sb.window = sb;
+  vm.runInNewContext(lista, sb);
+  const tx = sb.KaraokeLista.txt, base = Object.keys(tx.pt).sort();
+  ['en', 'es', 'id', 'th', 'ja'].forEach(l => assert.deepEqual(Object.keys(tx[l]).sort(), base, l));
+});

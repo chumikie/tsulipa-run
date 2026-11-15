@@ -657,3 +657,11 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   :root:not([data-theme="light"]) .twc .twc-porta-txt b{color:#f0e5ff}
   :root:not([data-theme="light"]) .twc .twc-porta-txt small{color:#d1bdf4}
 }
+
+/* Auditoria A5-Oshi: seleção acompanha o tema; contraste preservado no escuro. */
+.twc .twc-chips button[aria-pressed="true"]{background:var(--twc-f1);border-color:var(--twc-f2);color:#fff!important;box-shadow:0 3px 0 color-mix(in srgb,var(--twc-f1) 65%,#1a1033)}
+.twc .twc-nav-b[aria-current="page"]{color:var(--twc-f1)!important}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-chips button[aria-pressed="true"]{background:var(--twc-f1);border-color:var(--twc-f2);color:#fff!important}
+  :root:not([data-theme="light"]) .twc .twc-nav-b[aria-current="page"]{color:#f3e8ff!important;text-decoration:underline;text-decoration-color:var(--twc-f2);text-underline-offset:4px}
+}

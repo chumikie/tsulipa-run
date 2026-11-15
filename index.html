@@ -396,7 +396,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=17"></script>
+<script src="./centerrun.js?v=21"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=28"></script>
 <script src="./perfil.js?v=18"></script>
@@ -438,7 +438,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./duo.js?v=3"></script>
 <script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=22"></script>
+<script src="./hub.js?v=23"></script>
 <script src="./hub-layout.js?v=4"></script>
 <script src="./mapa-textos.js?v=3"></script>
 <script src="./tw-mapa.js?v=50"></script>
@@ -802,7 +802,7 @@ try {
 
 reset();
 state='menu';
-twIndex2StartBaseLoop();
+twIndex2StartBaseLoop(true);
 
 
 var menuTitleEl = document.getElementById('menu-title');
@@ -834,7 +834,7 @@ document.addEventListener('keydown',function(e){
 });
 document.getElementById('stage').addEventListener('pointerdown',function(e){
   if(e.target.closest('button')||e.target.closest('.ov'))return;
-  jump();
+  if(typeof jump==='function')jump();
 });
 document.getElementById('play').onclick=start;
 document.getElementById('again').onclick=start;
@@ -852,7 +852,7 @@ document.addEventListener('visibilitychange',function(){
 window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
-$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
+$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();if(typeof jump==='function')jump()});
 var twIdCarregamento=null, twIdiomaEscolhaToken=0;
 function twIntegrarDicionariosId(){
   var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
@@ -3051,12 +3051,15 @@ var S2_BONUS_LABELS = window.TW_I18N.locale.S2_BONUS_LABELS;;
 
 
 
-var _s2OrigJump = jump;
+var _s2OrigJump;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigJump = jump;
 jump = function(){
   // Durante o bônus, o comando rende ★ se correto E anima o pulo de verdade.
   if(s2Challenge && s2Challenge.active) s2BonusAction('jump');
   _s2OrigJump();
 };
+});
 
 s2SetupUI();
 
@@ -3105,7 +3108,9 @@ document.addEventListener('keyup', function(e){
 
 // Temporada 2: na Rua da cidade a corrida usa o spawn original (plateia, duplas de caixas…);
 // nos outros cenários, os obstáculos próprios + a mesma plateia que vai se formando.
-var _s2OrigSpawn = spawn;
+var _s2OrigSpawn;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigSpawn = spawn;
 spawn = function(){
   // Corredor seguro e cortina: sem obstáculos que impeçam a passagem.
   if((s2Challenge && s2Challenge.active) || s2Curtain){
@@ -3118,10 +3123,13 @@ spawn = function(){
   var x0 = nextX; s2SpawnStage();
   if(!desafio && typeof fans !== 'undefined') s2Plateia(x0, nextX - x0);
 };
+});
 
 // Desenho dos obstáculos: cabo, caixa de som e lightstick mantêm o visual original do jogo;
 // os novos da Temporada 2 usam o desenho abaixo.
-var _s2OrigObs = obsDesenhar;
+var _s2OrigObs;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigObs = obsDesenhar;
 obsDesenhar = function(o){
   if(o.k === 'cable' || o.k === 'speaker' || o.k === 'stick'){
     _s2OrigObs(o);
@@ -3130,6 +3138,7 @@ obsDesenhar = function(o){
   }
   s2ObsNovo(o);
 };
+});
 
 
 
@@ -3150,8 +3159,19 @@ start = function(e){
 // Os handlers foram ligados antes do wrapper: devem chamar a versão atualizada.
 $('play').onclick = start;
 $('again').onclick = start;
+// JOGAR antes de a corrida terminar de baixar: espera ela chegar e começa (nunca joga com a corrida pela metade)
+(function(){ var semCorrida = start;
+  start = function(e){
+    if(TW_CORRIDA_PRONTA) return semCorrida.apply(this, arguments);
+    if(e && e.preventDefault) e.preventDefault();
+    twCorridaCarregar().then(function(){ start(e); }).catch(function(){});
+  };
+  $('play').onclick = start; $('again').onclick = start;
+})();
 
-var _origEnd = end;
+var _origEnd;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origEnd = end;
 end = function(){
   if($('sb')) $('sb').style.display = 'none';
   // Se estava na Corrida do Dia, salva no ranking da Corrida do Dia
@@ -3172,8 +3192,11 @@ end = function(){
   // O chorinho da colisão fica só no jogo (s2HitEmotion); o cartão e o pôster do Fim do show
   // mantêm a expressão de exprFinal (feliz, piscadinha ou tristinha conforme a pontuação).
 };
+});
 
-var _origUpdate = update;
+var _origUpdate;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origUpdate = update;
 update = function(dt){
   s2StageFrames += dt;
   if(s2SlideTimer > 0){
@@ -3353,6 +3376,7 @@ update = function(dt){
     }
   }
 };
+});
 
 // Empacota drawChar para pose de deslizar e draw() para cenários da Temporada 2
 var _origDrawChar = drawChar;
@@ -3370,12 +3394,15 @@ drawChar = function(c, x, y, run, expr, isPartner){
   _origDrawChar(c, x, y, run, expr, isPartner);
 };
 
-var _origDraw = draw;
+var _origDraw;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origDraw = draw;
 draw = function(){
   _origDraw();
   if(typeof temaAtual === 'function' && temaAtual() === 'halloween')s2DrawSeasonOverlay();
   s2DrawForeground();
 };
+});
 
 // Suporte à aba "Dia Fixo" (daily_run) no showLb
 var _origShowLb = showLb;

@@ -959,6 +959,7 @@ function hubFechar(){
   buscaCancelarTodas();
   var micModal=$('twMicModal');if(micModal&&!micModal.hidden)twMicFechar(true);
   hubVozParar();
+  window.twCorridaQuer = true;   // saiu do Hub para o palco: a corrida (centerrun-corrida.js) baixa já
   hubOv.hidden = true; twRankStop(); document.body.classList.remove('hubon'); hubMusicaParar(); sitePartUI();
   twIndex2ResumeBaseFrames();sync();
   var v = $('hubVolta'); if(v) v.textContent = '← ' + tr('Início');

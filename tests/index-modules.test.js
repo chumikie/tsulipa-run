@@ -16,7 +16,7 @@ const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const noIndex = new Set([...html.matchAll(/^function ([A-Za-z_$][\w$]*)\s*\(/gm)].map((m) => m[1]));
 const iMain = html.indexOf("window.TW_JOGOS_SEM_LOGIN = false;");
 const MODULOS = [
-  { js: "centerrun.js", css: "centerrun.css", tem: ["drawChar", "saveCu", "cenaCartazes"], cssTem: [/\.cust \{/, /\.oshi-sel \{/] },
+  { js: "centerrun.js", css: "centerrun.css", tem: ["drawChar", "saveCu", "twCorridaCarregar", "twCorridaAoCarregar"], cssTem: [/\.cust \{/, /\.oshi-sel \{/] },
   { js: "pet.js", css: "pet.css", tem: ["petOpenUI", "petPay", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
@@ -56,3 +56,22 @@ for (const m of MODULOS) {
   console.log("✓ " + m.js + " (" + declarados.length + " declarações, nada executa ao carregar)" + (m.css ? " e " + m.css : ""));
 }
 assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src="./pet.js?v='), "pet-sync.js continua antes (sincronização não foi duplicada)");
+// Corrida sob demanda (15/11/2026): centerrun-corrida.js só declara, não repete nada e não carrega na abertura.
+{
+  const src = fs.readFileSync(path.join(root, "centerrun-corrida.js"), "utf8");
+  const acessos = [], sandbox = new Proxy({}, {
+    has: (t, k) => typeof k === "string" && !(k in t) ? (acessos.push(k), false) : k in t,
+    get: (t, k) => t[k], set: (t, k, v) => { t[k] = v; return true; }, defineProperty: (t, k, d) => Reflect.defineProperty(t, k, d)
+  });
+  vm.runInContext(src, vm.createContext(sandbox), { filename: "centerrun-corrida.js" });
+  assert.deepEqual(acessos.filter((k) => !["undefined", "NaN", "Infinity"].includes(k)), [], "centerrun-corrida.js não executa nada ao carregar");
+  const decl = Object.keys(sandbox);
+  ["loop", "draw", "update", "spawn", "jump", "end", "makeCard", "cenaCartazes"].forEach((n) => assert(decl.includes(n), "centerrun-corrida.js deve declarar " + n));
+  const dup = decl.filter((n) => noIndex.has(n) || vistos.has(n));
+  assert.deepEqual(dup, [], "declarações duplicadas da corrida: " + dup.join(", "));
+  assert(!/<script src="\.\/centerrun-corrida\.js/.test(html), "a corrida não carrega na abertura");
+  const cr = fs.readFileSync(path.join(root, "centerrun.js"), "utf8");
+  assert(/TW_CORRIDA_ARQ='\.\/centerrun-corrida\.js\?v=\d+'/.test(cr), "centerrun.js aponta a versão da corrida");
+  console.log("✓ centerrun-corrida.js (" + decl.length + " declarações, sob demanda)");
+}
+

@@ -75,6 +75,14 @@
     if(md === '11-13') m.push({k:'brs48', nome:tx(NOMES.brs48), ic:'coroa', cor:'#ff6fb5'});
     var nc = Math.round((Date.UTC(y, +d.slice(5, 7) - 1, +d.slice(8, 10)) - Date.UTC(2026, 9, 27)) / 864e5);   // quadrinho: um capítulo toda terça
     if(nc >= 0 && nc % 7 === 0 && nc / 7 < 6) m.push({k:'cap', nome:tx(NOMES.cap).replace('{n}', nc / 7 + 1), ic:'news', cor:'#ff6fb5'});
+    // Temporada 1: nenhuma marca visível até episódios, arte e seis idiomas estarem prontos.
+    // Datas fixas em Brasília; a série histórica de terça permanece acima, intacta.
+    var t1Datas=['2026-11-16','2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21'];
+    var t1Indice=t1Datas.indexOf(d);
+    if(t1Indice>=0 && typeof JN_T1 !== 'undefined' && JN_T1.publicada &&
+       JN_T1.episodios[t1Indice] && JN_T1.episodios[t1Indice].pronto){
+      m.push({k:'capT1',nome:'Bastidores de um Sonho · '+(t1Indice+1),ic:'news',cor:'#9b30d9'});
+    }
     return m;
   }
   function doMes(mo){ return mo === 5 ? {k:'mesLirika', nome:tx(NOMES.mesLirika), cor:'#4fa81a'} : mo === 8 ? {k:'geracao', nome:tx(NOMES.geracao), cor:'#7b3ff0'} : null; }

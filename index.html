@@ -395,7 +395,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script>/* Só o idioma escolhido é baixado (o português já vem no próprio site). Fonte: tw-i18n.js → tools/i18n/dividir.js */
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=1"><'+'/script>');})();</script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=3"><'+'/script>');</script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=4"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
@@ -879,7 +879,7 @@ function twCarregarIdiomaId(){
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js?v=3';
+    script.src='./translations/id/preview-data.js?v=4';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);

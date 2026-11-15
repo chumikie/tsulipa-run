@@ -41,7 +41,7 @@ test('ID disponível sob demanda nos três jogos, com os outros idiomas',()=>{
   assert.match(hub,/hubIdolsTituloUI\(\);/);
   assert.match(read('centerrun.js'),/DICT\.id&&DICT\.id\[k\]/);
   for(const lang of ['pt','es','en','th','ja'])assert.match(read('index.html'),new RegExp('data-l="'+lang+'"'));
-  assert.equal(catalog.karaoke.rows.length,202);
+  assert.equal(catalog.karaoke.rows.length,203);   // 203: + "Ajustar timing" (15/11/2026)
   assert.equal(catalog.karaoke.patterns.length,6);
   assert.equal(Object.keys(catalog.sora).length,147);
 });

@@ -409,3 +409,14 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-frases{background:rgba(42,29,74,.75);border-color:#3d2a6b}
   :root:not([data-theme="light"]) .twc .twc-frases-l button{background:#2a1d4a;border-color:#4b3585;color:#f2e9ff}
   :root:not([data-theme="light"]) .twc-online{background:#163a2a;color:#9ff0c4}}
+/* visitante: selo "Treino" (joga sem conta, prêmio só entrando) e legenda dos cadeados */
+.twc-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.twc-treino{display:inline-block;margin-top:2px;padding:1px 7px;border-radius:99px;background:#fff3c4;color:#8a5a00;font:800 10px/1.5 "M PLUS Rounded 1c",sans-serif;font-style:normal}
+.twc-jogo .twc-treino{margin:0 4px 0 0;flex:none}
+.twc-legenda{margin:12px 4px 0;font-size:12.5px;font-weight:700;color:var(--twc-sub);line-height:1.5}
+.twc-legenda span{display:inline-flex;vertical-align:-2px;color:var(--twc-roxo-e)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-treino{background:#4a3a10;color:#ffe08a}}
+/* auditoria: o "+" das estrelas tinha 34 px; a área de toque agora tem 44 px sem mudar o desenho */
+.twc-st-mais{position:relative}
+.twc-st-mais::after{content:"";position:absolute;inset:-5px}
+.twc-lv{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

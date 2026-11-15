@@ -319,6 +319,19 @@
   // o nome do jogo é redesenhado por cima para continuar legível.
   function nomesDasPortas(){var T=window.TW_MAPA_TEXTOS&&window.TW_MAPA_TEXTOS[cena];if(!T)return;
     T.forEach(function(t){if(t.y>600)texto(t);});
+    cadeadosPortas();
+  }
+  // Visitante: cadeadinho nas portas dos lugares que pedem conta (mesma regra do hub e do visual de celular)
+  var PEDE_CONTA={pet:1,gacha:1,loja:1,duo:1,sora:1,karaoke:1,bloom:1};
+  function cadeadosPortas(){
+    if(typeof contaJ!=='undefined'&&contaJ)return;
+    var ids=(BAIRROS[cena]&&BAIRROS[cena].lugares)||[];
+    ids.forEach(function(id,i){if(!id||!PEDE_CONTA[id]||(window.TW_JOGOS_SEM_LOGIN&&(id==='sora'||id==='karaoke')))return;
+      var x=PORTAS[i]+92,y=300;ctx.save();
+      ctx.fillStyle='#fff';ctx.strokeStyle='#7b3ff0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,20,0,7);ctx.fill();ctx.stroke();
+      ctx.strokeStyle='#7b3ff0';ctx.lineWidth=3.2;ctx.beginPath();ctx.arc(x,y-3,6,Math.PI,0);ctx.stroke();
+      ctx.fillStyle='#7b3ff0';rr(x-9,y-3,18,13,3);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y+3,2.2,0,7);ctx.fill();
+      ctx.restore();});
   }
   function studioLigado(){return !!(window.TW_STUDIO_ON&&typeof window.studioAbrir==='function');}
   function battleLigado(){return !!(window.TW_BATTLE_ON&&typeof window.battleAbrir==='function');}

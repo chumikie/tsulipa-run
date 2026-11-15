@@ -47,7 +47,10 @@ test('pede conta nos mesmos jogos que o clique do card no hub', () => {
   const corpo = html.slice(ini, html.indexOf('\n  }\n', ini));
   const depois = corpo.slice(corpo.indexOf('else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN'));
   const pedem = [...depois.matchAll(/ir === '([a-z]+)'/g)].map(m => m[1]);
-  assert.deepEqual([...new Set(pedem)].sort(), Object.keys(c.pedeLogin).sort());
+  // + Bloom (o próprio módulo abre o login) e Álbum (lê os cards da conta): no celular eles mostram o cadeado e a folha de login
+  assert.deepEqual([...new Set(pedem.concat(['bloom', 'album']))].sort(), Object.keys(c.pedeLogin).sort());
+  assert.match(js, /var TREINO = \{battle:1, cafe:1, handshake:1, studio:1\};/, 'jogos que abrem em treino ganham o selo, não o cadeado');
+  assert.match(mapa, /function cadeadosPortas\(\)/, 'cadeado nas portas do mapa para visitante');
   assert.match(js, /c\.click\(\);\s+\/\/ o mesmo caminho do hub/, 'abre pelo próprio card (sem regra nova)');
 });
 
@@ -55,7 +58,7 @@ test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca most
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
   assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
-  assert.match(html, /tw-mapa\.js\?v=57/);
+  assert.match(html, /tw-mapa\.js\?v=58/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {

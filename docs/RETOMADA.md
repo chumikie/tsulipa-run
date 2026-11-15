@@ -91,6 +91,13 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - **Sala do Karaoke como MUSIC LIST** (`karaoke-lista.js` / `.css`, só com o celular ligado: lê `parent.TW_CELULAR_LIGADO`). Aba laranja "MÚSICAS" com as tentativas do dia, capas em grade desenhadas por CSS a partir das opções do `#ktSong` (com selo da música da semana), detalhe da escolhida (BPM, ★, recorde pessoal), "Ouvir" usando a prévia de sempre e "Cantar" apertando o `#ktStart`. A sala vira um palco compacto (máx. 560 px, como a janela do Battle) em qualquer aparelho. O título antigo, o seletor e o logo do site somem dentro da sala; o cartão de tentativas só reaparece se houver show para recuperar.
 - **Som das músicas do Karaoke** (só timbre: partitura, notas da pista e relógio iguais, então os recordes continuam valendo). Mixer com compressor suave, eco no tempo da música (1,5 passo), filtro nas ondas quadradas, esquerda/direita, bumbo com queda de tom, caixa e chimbal de ruído fixo (sem sorteio), virada antes do refrão e acorde final. Pedido do dono: energia no estilo hi-NRG das trilhas dance de jogos dos anos 2000 (sem copiar melodia): palmas em camadas no 2 e no 4, chimbal aberto no contratempo, arpejo de sintetizador em semicolcheias e baixo em oitavas no pop. Testes: `karaoke-som.test.js`, com aparelho de som falso; a prévia foi conferida no Chromium. **Não ouvido por ninguém ainda.**
 - O idioma dentro do Karaoke vem de `?lang=` / `brs48cr_lang`: o `LANG` do Karaoke fica dentro do script dele, então `karaoke-lista.js` e `karaoke-arena.js` leem do mesmo lugar.
+- Rodada 5, a partir dos prints no iPhone do dono:
+  - A moldura não aparecia nas janelas criadas na hora (jogos que carregam depois, como o Handshake). Agora o observador também vê janelas novas no `body`, com uma conferência a cada 1,5 s de segurança.
+  - As janelas viraram tela cheia (sem caixinha cortada).
+  - Logo sem quebrar linha.
+  - A vitrine "Idols do TsuLiPa⭐World" voltou ao Início, só com rosto e nome (sem pontos); tocar abre o perfil (`.lbn`).
+  - Mapa, Missões, Procurar Idol e Novidades abrem como telas do celular: a mesma seção do hub é levada para a tela e devolvida ao sair (`EMB`), então os cliques e as regras são os mesmos.
+  - A barra antiga "Visitante · ★ · Entrar" (`#twHud`) fica escondida com o celular ligado.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

@@ -315,3 +315,30 @@ body.tw-cel-cr #menu{padding-top:calc(84px + env(safe-area-inset-top))!important
 body.tw-cel-cr #hubVolta,body.tw-cel-kt #twPreviewVoltar{display:none!important}
 body.tw-cel-kt #twPreviewJogo{padding-top:calc(76px + env(safe-area-inset-top))!important;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;box-sizing:border-box}
 body.tw-cel-kt #twPreviewHeaderSlot{display:none!important}   /* o logo do site não se repete dentro da sala */
+
+/* ---- rodada 5 (prints do iPhone) ---- */
+/* logo sem quebrar linha */
+.twc .twc-hublogo{white-space:nowrap;font-size:clamp(24px,8.4vw,52px)!important;max-width:100%}
+.twc-logo-abre{white-space:nowrap;font-size:clamp(28px,9.6vw,68px)!important}
+/* vitrine de Idols */
+.twc-idols{position:relative;padding:12px 0 8px;border-radius:22px;background:rgba(255,255,255,.7);border:2px solid #fff;box-shadow:0 3px 0 rgba(123,63,240,.12)}
+.twc-idols h2{margin:0 14px 8px;font:400 15px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
+.twc-idols-fila{display:flex;gap:10px;overflow-x:auto;padding:2px 14px 6px;scroll-snap-type:x proximity;scrollbar-width:none}
+.twc-idols-fila::-webkit-scrollbar{display:none}
+.twc .twc-idol-b{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:66px;padding:0;border:0;background:none;color:var(--twc-ink)!important;text-decoration:none!important;scroll-snap-align:start}
+.twc-idol-b canvas{width:58px;height:58px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
+.twc-idol-b span{max-width:66px;font-size:11px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* telas embutidas (Mapa, Missões, Procurar, Novidades) */
+.twc-emb #twcEmbSlot>*{margin:0!important;width:100%!important;max-width:none!important;box-sizing:border-box}
+.twc-emb-mapa .tw-mapa-botao{display:none!important}
+.twc-emb .hubpainel,.twc-emb .hubnov{background:#fff!important;border:2px solid #f1ebff!important;border-radius:22px!important;box-shadow:0 4px 12px rgba(80,40,160,.10)!important;padding:12px!important}
+body.tw-cel #twHud{display:none!important}
+/* janelas do jogo em tela cheia, sem caixinha cortada */
+body.tw-cel .tw-window-overlay:not([hidden]){overflow-y:auto!important;-webkit-overflow-scrolling:touch;padding:calc(76px + env(safe-area-inset-top)) 0 calc(92px + env(safe-area-inset-bottom))!important}
+body.tw-cel .tw-window-overlay>.panel.tw-window-surface{width:100%!important;max-width:760px!important;max-height:none!important;overflow:visible!important;margin:0 auto!important;
+  min-height:calc(100dvh - 168px - env(safe-area-inset-top) - env(safe-area-inset-bottom));box-sizing:border-box}
+@media (max-width:760px){body.tw-cel .tw-window-overlay>.panel.tw-window-surface{border-radius:0!important;border-left:0!important;border-right:0!important}}
+@media (min-width:900px){body.tw-cel .tw-window-overlay:not([hidden]){padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
+  body.tw-cel .tw-window-overlay>.panel.tw-window-surface{max-height:none!important;border-radius:26px!important}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-idols{background:rgba(42,29,74,.7);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-emb .hubpainel,:root:not([data-theme="light"]) .twc-emb .hubnov{background:#2a1d4a!important;border-color:#3d2a6b!important}}

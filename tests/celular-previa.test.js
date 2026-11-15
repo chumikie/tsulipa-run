@@ -93,3 +93,14 @@ test('rodada 4: moldura no menu do Center Run e no salão do Karaoke, sem atrapa
   assert.match(js, /!document\.body\.classList\.contains\('jogando'\)/);
   assert.match(js, /ctx === 'kt' \? \$id\('twPreviewVoltar'\) : ctx === 'cr' \? \$id\('hubVolta'\)/, 'sai pelo próprio Início de cada tela');
 });
+
+test('rodada 5 (prints do iPhone): moldura em janelas criadas na hora, telas embutidas, vitrine sem pontos e logo sem quebrar', () => {
+  assert.match(js, /attributeFilter:\['class'\], childList:true/, 'janela criada por jogo que carrega depois também ganha a moldura');
+  assert.match(js, /var EMB = \{mapa:\['#twMapa', 'mapa'\], missoes:\['#hubMisPainel', 'mis'\], busca:\['\.hubbusca', 'busca'\], nov:\['\.hubnov', 'nov'\]\}/);
+  assert.match(js, /if\(a === 'mapa' \|\| a === 'missoes' \|\| a === 'busca' \|\| a === 'nov'\)\{ ir\('emb:' \+ a\); return; \}/, 'nada abre mais o site antigo');
+  const vit = js.slice(js.indexOf('function idols(){'), js.indexOf('function idolsDesenhar('));
+  assert.ok(!/best/.test(vit), 'a vitrine não mostra pontuação');
+  assert.match(vit, /class="lbn twc-idol-b" data-nick=/, 'tocar abre o perfil pelo mesmo caminho do site');
+  assert.match(css, /\.twc \.twc-hublogo\{white-space:nowrap/);
+  assert.match(css, /body\.tw-cel \.tw-window-overlay>\.panel\.tw-window-surface\{width:100%!important;max-width:760px!important;max-height:none!important/);
+});

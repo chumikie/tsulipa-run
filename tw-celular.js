@@ -73,6 +73,10 @@
     vipGanhou:{pt:'Passe VIP liberado!',en:'VIP pass unlocked!',es:'¡Pase VIP liberado!',id:'Tiket VIP terbuka!',th:'ปลดล็อกบัตร VIP แล้ว!',ja:'VIPパスゲット！'},
     vipRecepcao:{pt:'O trio preparou um cantinho especial para receber você. Cumprimente cada Idol ou toque no palco para ver as reações!',en:'The trio prepared a special welcome for you. Greet an Idol or tap the stage to see their reactions!',es:'¡El trío preparó una bienvenida especial! Saluda a un Idol o toca el escenario para ver sus reacciones.',id:'Trio menyiapkan sambutan spesial! Sapa Idol atau sentuh panggung untuk melihat reaksinya.',th:'ทั้งสามคนเตรียมต้อนรับคุณเป็นพิเศษ! ทักทายไอดอลหรือแตะเวทีเพื่อดูปฏิกิริยา',ja:'3人があなたをお出迎え！アイドルにあいさつするか、ステージをタップしてみてね。'},
     vipCumprimentar:{pt:'Cumprimentar o trio',en:'Greet the trio',es:'Saludar al trío',id:'Sapa trio',th:'ทักทายทั้งสามคน',ja:'3人にあいさつ'},
+    vipPoseTitulo:{pt:'Pose da lembrança',en:'Keepsake pose',es:'Pose del recuerdo',id:'Pose kenangan',th:'ท่าโพสที่ระลึก',ja:'記念写真のポーズ'},
+    vipPoseV:{pt:'Paz ✌',en:'Peace ✌',es:'Paz ✌',id:'Peace ✌',th:'สันติภาพ ✌',ja:'ピース ✌'},
+    vipPoseCoracao:{pt:'Coração ♡',en:'Heart ♡',es:'Corazón ♡',id:'Hati ♡',th:'หัวใจ ♡',ja:'ハート ♡'},
+    vipPoseTchau:{pt:'Aceno 👋',en:'Wave 👋',es:'Saludo 👋',id:'Lambaian 👋',th:'โบกมือ 👋',ja:'手を振る 👋'},
     vipDica:{pt:'Toque nos Idols para descobrir suas reações. A foto é uma lembrança voluntária.',en:'Tap the Idols to see their reactions. The photo is an optional keepsake.',es:'Toca a los Idols para ver sus reacciones. La foto es un recuerdo opcional.',id:'Sentuh Idol untuk melihat reaksinya. Foto adalah kenang-kenangan opsional.',th:'แตะไอดอลเพื่อดูปฏิกิริยา การถ่ายรูปเป็นทางเลือก',ja:'アイドルをタップすると反応するよ。写真は自由に保存できる思い出だよ。'},
     vipFoto:{pt:'Foto VIP (PNG)',en:'VIP photo (PNG)',es:'Foto VIP (PNG)',id:'Foto VIP (PNG)',th:'รูป VIP (PNG)',ja:'VIP写真（PNG）'},
     treino:{pt:'Treino',en:'Practice',es:'Práctica',id:'Latihan',th:'ฝึกซ้อม',ja:'練習'},
@@ -563,11 +567,13 @@
     gacha:{cor:['#ecf8ff', '#c9e8ff', '#5a9fd6', '#d6efff', '#a9d4f5'], ico:'gacha', nome:'Star⭐Gacha!'},
     vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f', '#5a2470', '#4a1a52'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
+  var vipPose = ''; // apenas nesta sessão, sem persistência ou efeito em outros interiores
   function telaDentro(id){
     var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
     var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto"><span class="twc-btn-ic" aria-hidden="true">' + ico('studio', 20) + '</span>' + esc(t2('vipFoto')) + '</button>'
       : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
     return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
+      (id === 'vip' ? '<fieldset class="twc-vip-poses"><legend>' + esc(t2('vipPoseTitulo')) + '</legend>' + [['v','vipPoseV'],['coracao','vipPoseCoracao'],['tchau','vipPoseTchau']].map(function(p){ return '<button type="button" class="twc-vip-pose" data-a="vipPose" data-pose="' + p[0] + '" aria-pressed="' + (vipPose === p[0]) + '">' + esc(t2(p[1])) + '</button>'; }).join('') + '</fieldset>' : '') +
       (id === 'vip' ? '<section class="twc-vip-boas" aria-label="' + esc(t2('vip')) + '"><p>' + esc(t2('vipRecepcao')) + '</p><button type="button" class="twc-btn twc-btn-claro twc-vip-ola" data-a="vipOla">' + esc(t2('vipCumprimentar')) + '</button><small>' + esc(t2('vipDica')) + '</small></section>' : '') + botao + frasesHtml() + '</div>';
   }
   var dentroRaf = 0;
@@ -698,7 +704,7 @@
       if(tocado) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 30;
       dentroUltimos.push({x:g.x, k:k, nick:g.nick, eu:!!g.eu, membro:g.membro ? MEMBROS.findIndex(function(m){ return m[1] === g.nick; }) : -1});
       var av = {}; for(var q in g.av) av[q] = g.av[q];
-      av.pose = tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5];
+      av.pose = id === 'vip' && vipPose ? vipPose : (tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5]);
       x.save(); x.translate(px, chao - CH + 14 - pulo); x.scale(ES, ES);
       try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, cw, ch, av, false, false, fr); }catch(e){}
       x.restore();
@@ -1194,6 +1200,15 @@
         var membrosVip = dentroUltimos.filter(function(g){ return g.membro >= 0; });
         if(membrosVip.length){ var escolhido = membrosVip[Math.floor(Date.now() / 2500) % membrosVip.length]; dentroReage = {k:escolhido.k,t0:Date.now()}; som(); }
       }
+      return;
+    }
+    if(a === 'vipPose'){ // A8.4-B: seleção efêmera, somente dentro do VIP
+      if(topo() !== 'dentro:vip') return;
+      var p = el && el.getAttribute('data-pose');
+      if(['v','coracao','tchau'].indexOf(p) < 0) return;
+      vipPose = p;
+      var botoes = document.querySelectorAll('.twc-vip-pose');
+      [].forEach.call(botoes,function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-pose') === p)); });
       return;
     }
     if(a === 'vipFoto'){ vipFoto(); return; }

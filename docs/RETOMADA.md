@@ -108,7 +108,8 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - As contas oficiais do trio são `tsu`, `lirika` e `patiliri`. No mapa elas não passeiam como jogadores, porque o membro aparece pela visita (antes a Lirika ficava duplicada). Na vitrine, essas três contas vão juntas para a frente.
   - Quem visita uma rua fica em atividade na frente de um lugar: canta (microfone/lightstick com notinhas) no Star Stage, em cima do palco; faz coraçãozinho nas lojas, no café e no gacha; acena nos outros lugares (`POSES_ATIVAS`, `LUGAR_ATIVO`).
   - A tela pulava para o topo a cada ação no mapa: o `posicionar()` do mapa puxava o mapa de volta para o hub clássico a cada `hubCardsUI`. Agora ele não mexe no mapa enquanto o mapa está dentro do celular, e a rolagem é restaurada depois de reembutir.
-  - Rua menos ampliada no celular (720 px de largura em vez de 1080) e gatinho menor (escala 1,15 em vez de 1,7).
+  - Rua menos ampliada no celular (720 px de largura em vez de 1080).
+  - Gatinhos redesenhados no jeito dos Idols: cabeção quadradinho, corpo de pãozinho, cores chapadas, contorno único e rostinho simples, sem bigodes nem degradê. Continuam piscando, mexendo a orelha e o rabo, pulando ao toque e dormindo à noite.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

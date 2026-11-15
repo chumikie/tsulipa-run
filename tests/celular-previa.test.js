@@ -124,7 +124,10 @@ test('rodada 7: mapa sem trio duplicado, membros em atividade nos lugares, rolag
   assert.match(mapa, /idols\.filter\(function\(p\)\{return p&&visitaContaTrio\(p\.nick\)<0;\}\)\.slice\(0,3\)/, 'as contas do trio não passeiam junto com a visita');
   assert.match(mapa, /if\(p\.oshi\)\{var pd=visitaPorta\(p\.oshiK\);[\s\S]{0,260}ativo:visitaAtividade\(p\.oshiK\)\};\}/, 'quem visita fica ativo na frente de um lugar');
   assert.match(mapa, /POSES_ATIVAS=\{mic:\['mic'/);
-  assert.match(mapa, /ctx\.scale\(1\.15,1\.15\)/, 'gatinho menor');
+  assert.match(mapa, /,S=1\.05;/, 'gatinho menor');
+  const gato = mapa.slice(mapa.indexOf('function gatoDesenhar('), mapa.indexOf('// Peixinhos koi'));
+  assert.ok(!/bigode|createLinearGradient/.test(gato), 'gatinho redesenhado: chapado, sem bigodes nem degradê');
+  assert.match(gato, /rr\(-17,-46,34,28,11\)/, 'cabeção quadradinho no jeito dos Idols');
   assert.match(mapa, /if\(sec\.closest&&sec\.closest\('#twCel'\)\)return;/, 'o hub não puxa o mapa de volta enquanto ele está no celular');
   const d = js.slice(js.indexOf('function desenhar(){'), js.indexOf('function ir(v)'));
   assert.ok(d.indexOf('tela.scrollTop = rolagem') > d.indexOf('embutir(v.slice(4))'), 'a rolagem volta depois de trazer o mapa');

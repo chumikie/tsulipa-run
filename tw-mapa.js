@@ -650,12 +650,82 @@
   function meuIdolPerto(x,raio){for(var i=0;i<ultimos.length;i++){var o=ultimos[i];if(o.dono&&Math.abs(o.x-x)<raio)return o;}return null;}
   // Bichinhos de chão (arte original): cachorrinho na Star Arena e coelhinho na Vila das Tulipas.
   // Ficam atrás dos Idols, respondem ao toque e ao seu Idol chegando perto. "Reduzir movimento" deixa tudo parado.
-  var CHAO={arena:'cachorro',fofo:'coelho'},chaoPos={};
+  var CHAO={arena:'cachorro',fofo:'coelho',praca:'pombo',ceu:'ovelha'},chaoPos={};
   function desenharChao(tm){
     var tipo=CHAO[cena];if(!tipo)return;
     var h=new Date().getHours(),noite=h>=21||h<6;
     if(tipo==='cachorro'){var perto=meuIdolPerto(330,150);chaoPos[cena]={x:330,y:705};cachorroDesenhar(tm,330,705,pulos['cachorro'],noite,perto);}
-    else{var c=coelhoPos(tm);chaoPos[cena]={x:c.x,y:c.y};coelhoDesenhar(tm,c,pulos['coelho']);}
+    else if(tipo==='coelho'){var c=coelhoPos(tm);chaoPos[cena]={x:c.x,y:c.y};coelhoDesenhar(tm,c,pulos['coelho']);}
+    else if(tipo==='pombo'){var pb=andarilho(pomboEstado,tm,600,1020,712,38,1.6);chaoPos[cena]={x:pb.x,y:pb.y};pomboDesenhar(tm,pb,pulos['pombo']);}
+    else{var ov=meuIdolPerto(300,150);chaoPos[cena]={x:300,y:706};ovelhaDesenhar(tm,300,706,pulos['ovelha'],noite,ov);}
+  }
+  // Quem passeia sozinho (pombinho): anda até um ponto, para um pouco, escolhe outro; vira para o seu Idol quando ele chega.
+  var pomboEstado={x:820,alvo:820,dir:1,t:0,parado:0,pausa:0};
+  function andarilho(e,tm,xmin,xmax,y,vel,espera){
+    var dt=Math.min(.1,Math.max(0,tm-(e.t||tm)));e.t=tm;
+    var perto=meuIdolPerto(e.x,160),andando=false;
+    if(perto){e.dir=perto.x<e.x?-1:1;e.parado=tm;}
+    else if(!reduzMov&&tm-e.parado>espera){
+      if(Math.abs(e.alvo-e.x)<4){e.alvo=xmin+Math.random()*(xmax-xmin);e.parado=tm;}
+      else{e.dir=e.alvo>e.x?1:-1;e.x+=e.dir*Math.min(Math.abs(e.alvo-e.x),vel*dt);andando=true;}
+    }
+    return {x:e.x,y:y,dir:e.dir,andando:andando,perto:perto};
+  }
+  // Pombinho da Praça: gordinho, anda balançando a cabeça e cisca quando para; tocado, bate as asas.
+  function pomboDesenhar(tm,c,pt){
+    var voo=pt!=null&&tm-pt<1.2?Math.sin(Math.min(1,(tm-pt)/1.2)*Math.PI)*34:0,
+        passo=c.andando&&!reduzMov?Math.sin(tm*10):0,cisca=!c.andando&&!c.perto&&!reduzMov&&(tm%2.6)<.5?Math.sin((tm%2.6)/.5*Math.PI):0,
+        asa=voo>0&&!reduzMov?Math.sin(tm*24)*.9:0,pisca=!reduzMov&&(tm%3.9)<.12,CONT='#6f6a8e';
+    ctx.save();ctx.translate(c.x,c.y);ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(0,11,16-voo*.2,3.5,0,0,7);ctx.fill();
+    ctx.translate(0,-voo-Math.abs(passo)*1.5);ctx.scale(c.dir*1.6,1.6);ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.strokeStyle='#ff9f6b';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(-2,6);ctx.lineTo(-2-passo*2,11);ctx.moveTo(3,6);ctx.lineTo(3+passo*2,11);ctx.stroke();
+    function corpo(){ctx.beginPath();ctx.ellipse(0,0,11,8.5,0,0,7);ctx.moveTo(-9,-1);ctx.lineTo(-17,-5);ctx.lineTo(-15,3);ctx.closePath();}
+    ctx.save();ctx.translate(7,-7+cisca*7);ctx.rotate(cisca*.6);
+    ctx.strokeStyle=CONT;ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(0,0,6.2,0,7);ctx.stroke();
+    ctx.restore();
+    ctx.strokeStyle=CONT;ctx.lineWidth=2.4;corpo();ctx.stroke();ctx.fillStyle='#c9c4e6';corpo();ctx.fill();
+    ctx.fillStyle='#e9e6fa';ctx.beginPath();ctx.ellipse(2,3,6.5,4.2,0,0,7);ctx.fill();
+    ctx.save();ctx.translate(-2,-2);ctx.rotate(-.2-asa);ctx.fillStyle='#a9a2d4';ctx.beginPath();ctx.ellipse(-4,0,8,4.4,0,0,7);ctx.fill();
+    ctx.fillStyle='#8f88c4';ctx.fillRect(-9,-1,3,1.2);ctx.fillRect(-6,-1.4,3,1.2);ctx.restore();
+    ctx.save();ctx.translate(7,-7+cisca*7);ctx.rotate(cisca*.6);
+    ctx.fillStyle='#c9c4e6';ctx.beginPath();ctx.arc(0,0,6.2,0,7);ctx.fill();
+    ctx.fillStyle='#9fe0c8';ctx.beginPath();ctx.ellipse(-2,4.5,4.5,2,0,0,7);ctx.fill();   // pescoço furta-cor
+    ctx.fillStyle='#ffb36b';ctx.beginPath();ctx.moveTo(5.5,-1.2);ctx.lineTo(9.5,.4);ctx.lineTo(5.5,1.6);ctx.closePath();ctx.fill();
+    if(pisca){ctx.strokeStyle='#2a1a2a';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(2,-1.5,1.6,.15*Math.PI,.85*Math.PI);ctx.stroke();}
+    else{ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(2,-1.5,1.6,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(1.5,-2,.6,0,7);ctx.fill();}
+    ctx.fillStyle='rgba(255,111,181,.5)';ctx.beginPath();ctx.ellipse(1,2,1.8,1.1,0,0,7);ctx.fill();
+    ctx.restore();ctx.restore();
+    if(pt!=null&&tm-pt<1.8)balao(c.x-14,c.y-80-voo,'♡',Math.min(1,(1.8-(tm-pt))*2));
+    else if(c.perto&&(tm%3.4)<1.4)balao(c.x-14,c.y-80,'♪',Math.min(1,Math.sin((tm%3.4)/1.4*Math.PI)*2));
+  }
+  // Ovelhinha de nuvem do Jardim das Nuvens: fofa, balança; tocada, quica soltando nuvenzinhas; à noite dorme.
+  function ovelhaDesenhar(tm,gx,gy,pt,noite,perto){
+    var up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.5)*Math.PI))*22:0,feliz=pt!=null&&tm-pt<1.8||!!perto,dormindo=noite&&!feliz,
+        bal=reduzMov?0:Math.sin(tm*(feliz?4:1.6))*(dormindo?.02:.06),pisca=!reduzMov&&!dormindo&&(tm%4.1)<.12,CONT='#b9b3dd';
+    ctx.save();ctx.translate(gx,gy);ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(0,15,26-up*.3,5,0,0,7);ctx.fill();
+    ctx.translate(0,-up);ctx.rotate(bal);ctx.scale(1.6,1.6);ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.fillStyle='#8c84b8';[-9,-3,5,11].forEach(function(px){ctx.beginPath();ctx.ellipse(px,10,2.4,3.2,0,0,7);ctx.fill();});
+    var bolas=[[-12,-2,8],[-4,-8,9],[6,-7,9],[13,0,8],[6,5,9],[-6,5,9]];
+    ctx.strokeStyle=CONT;ctx.lineWidth=2.6;bolas.forEach(function(b){ctx.beginPath();ctx.arc(b[0],b[1],b[2],0,7);ctx.stroke();});
+    ctx.fillStyle='#ffffff';bolas.forEach(function(b){ctx.beginPath();ctx.arc(b[0],b[1],b[2],0,7);ctx.fill();});
+    ctx.fillStyle='rgba(185,179,221,.35)';ctx.beginPath();ctx.arc(-2,4,8,0,Math.PI);ctx.fill();
+    // carinha lilás com orelhinhas
+    ctx.fillStyle='#d7cff5';ctx.strokeStyle=CONT;ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.ellipse(-17,-6,5,2.6,-.5,0,7);ctx.fill();ctx.stroke();ctx.beginPath();ctx.ellipse(-3,-9,5,2.6,.5,0,7);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.ellipse(-10,-3,8,7,0,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#ffffff';[[-14,-11,3],[-10,-12.5,3.4],[-6,-11,3]].forEach(function(b){ctx.beginPath();ctx.arc(b[0],b[1],b[2],0,7);ctx.fill();});   // franjinha de nuvem
+    ctx.fillStyle='rgba(255,111,181,.5)';ctx.beginPath();ctx.ellipse(-15,0,1.8,1.1,0,0,7);ctx.ellipse(-5,0,1.8,1.1,0,0,7);ctx.fill();
+    ctx.strokeStyle='#3a2a4a';ctx.lineWidth=1.4;
+    if(dormindo||pisca){ctx.beginPath();ctx.arc(-13,-4,1.8,.15*Math.PI,.85*Math.PI);ctx.moveTo(-5.2,-4);ctx.arc(-7,-4,1.8,.15*Math.PI,.85*Math.PI);ctx.stroke();}
+    else{[-13,-7].forEach(function(ex){ctx.fillStyle='#2a1a3a';ctx.beginPath();ctx.arc(ex,-4,1.7,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex-.5,-4.6,.6,0,7);ctx.fill();});}
+    ctx.strokeStyle='#5a4a6a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(-11,0,1.3,.1,Math.PI-.1);ctx.moveTo(-7.4,0);ctx.arc(-8.7,0,1.3,.1,Math.PI-.1);ctx.stroke();
+    if(dormindo&&!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='12px "Mochiy Pop One",sans-serif';
+      for(var z=0;z<2;z++){var fz=((tm*.7+z*.5)%1);ctx.globalAlpha=Math.sin(fz*Math.PI)*.8;ctx.fillText('z',4+z*5+fz*5,-18-fz*12);}ctx.globalAlpha=1;}
+    ctx.restore();
+    if(pt!=null&&tm-pt<1.4&&!reduzMov){var u=(tm-pt)/1.4;ctx.save();ctx.globalAlpha=1-u;ctx.fillStyle='#ffffff';
+      [[-1,1],[1,1],[0,1.3]].forEach(function(d,i){var nx=gx+d[0]*(20+u*50)+(i===2?0:0),ny=gy-20-u*40*d[1];ctx.beginPath();ctx.arc(nx,ny,8,0,7);ctx.arc(nx+8,ny+2,6,0,7);ctx.arc(nx-8,ny+2,6,0,7);ctx.fill();});ctx.restore();}
+    if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-92,'♡',Math.min(1,(1.8-(tm-pt))*2));
+    else if(perto&&(tm%3.2)<1.4)balao(gx-14,gy-92,'♪',Math.min(1,Math.sin((tm%3.2)/1.4*Math.PI)*2));
   }
   function cachorroDesenhar(tm,gx,gy,pt,noite,perto){
     var up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*20:(perto&&!reduzMov?Math.abs(Math.sin(tm*5))*5:0),

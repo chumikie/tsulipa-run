@@ -39,6 +39,22 @@ assert.equal(frameQueue.length,1,'eventos do hub agrupados numa frame');
 frameQueue.shift()();assert.equal(draws,1,'uma reconstrução por frame');
 redrawScope.agendarRedesenho();frameQueue.shift()();assert.equal(draws,2,'atualização seguinte não fica bloqueada');
 redrawScope.cel=null;redrawScope.agendarRedesenho();assert.equal(frameQueue.length,0,'sem redraw após desmontagem');
+// Abertura montada não pode reconstruir canvases e vitrine em cada atualização do Hub.
+const guardStart=mobile.indexOf('    var comecou = typeof hubComecou');
+const guardEnd=mobile.indexOf('    var rolagem',guardStart);
+assert(guardStart>0 && guardEnd>guardStart,'guarda da abertura presente');
+const openingGuard=new Function('hubComecou','topo','pilha','tela','$id',
+  mobile.slice(guardStart,guardEnd)+";return 'continua';");
+let openingLookups=0;
+assert.equal(openingGuard(false,()=> 'inicio',['inicio'],{getAttribute:()=> 'abre'},()=>{
+  openingLookups++;return {};
+}),undefined,'abertura já montada não redesenha');
+assert.equal(openingLookups,1);
+assert.equal(openingGuard(true,()=> 'inicio',['inicio'],{getAttribute:()=> 'inicio'},()=>null),
+  'continua','outras telas continuam atualizando');
+assert(mobile.includes('try{ vitrineDevolver(); }catch(e){}'),'fallback devolve vitrine antes de remover celular');
+assert(!mobile.includes("(part ? part.innerHTML : '')"),'partículas do hub não são clonadas');
+assert(!mobile.includes("'hubTemaUI', 'hubIdolsUI'"),'vitrine não pode gerar redraw recursivo');
 const config=JSON.parse(read('vercel.json'));
 assert(config.headers.some(r=>r.source.includes('js')&&r.headers.some(h=>h.value==='public, max-age=0, must-revalidate')));
 console.log('✓ Abertura: mutações agrupadas, moldura estável, toques livres e scripts revalidados');

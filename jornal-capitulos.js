@@ -79,7 +79,9 @@ var JN_T1 = {
   ]
 };
 function jnT1HojeBrasilia(agora){
-  return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(agora || new Date());
+  var partes=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(agora || new Date());
+  var valores={}; partes.forEach(function(p){ valores[p.type]=p.value; });
+  return valores.year+'-'+valores.month+'-'+valores.day;
 }
 function jnT1Disponivel(i,agora){
   var ep=JN_T1.episodios[i];

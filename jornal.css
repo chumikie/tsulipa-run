@@ -85,3 +85,19 @@
 .jnatividade ul{margin:4px 0;padding-left:18px}
 .jnatividade li{margin:6px 0;line-height:1.5}
 @media(max-width:390px){.jnababotao{font-size:12px;padding:8px 5px}}
+/* História em capítulos (jornal-capitulos.js) */
+.jncaps{background:linear-gradient(135deg,#fff7fd,#f4edff)!important;border:1px solid #ead9ff}
+.jncapabas{display:flex;gap:7px;overflow-x:auto;padding:12px 8px 8px;scrollbar-width:thin}
+.jncapaba{flex:none;position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:66px;padding:8px 10px;border-radius:14px;border:2px solid #e2d2ff;background:#fff;color:#5b2bb5;font:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(90,40,160,.12)}
+.jncapaba b{font:800 13px "M PLUS Rounded 1c",sans-serif}
+.jncapaba small{font:700 11px "M PLUS Rounded 1c",sans-serif;color:#8a7aa8}
+.jncapaba em{position:absolute;top:-8px;right:-6px;padding:1px 7px;border-radius:999px;background:#ff6fb5;color:#fff;font:800 10px "M PLUS Rounded 1c",sans-serif;font-style:normal}
+.jncapaba:disabled{opacity:.6;cursor:default;box-shadow:none}
+.jncapon{background:linear-gradient(180deg,#9b30d9,#7b3ff0);border-color:#7b3ff0;color:#fff}
+.jncapon small{color:#f0e6ff}
+.jncaptit{margin:6px 0 10px;font:400 16px "Mochiy Pop One",sans-serif;color:#5b2bb5}
+.jncaptit small{display:block;margin-top:2px;font:800 12px "M PLUS Rounded 1c",sans-serif;color:#8a7aa8}
+.jncapquadros{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:760px){.jncapquadros{grid-template-columns:repeat(3,1fr)}}
+.jncapq{margin:0}
+.jncapq canvas{display:block;width:100%;height:auto;border-radius:20px;box-shadow:0 4px 12px rgba(90,40,160,.16)}

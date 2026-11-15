@@ -90,6 +90,19 @@
     {id:'cout', campo:'out', nome:'Roupa'}, {id:'cbaixo', campo:'baixo', nome:'Parte de baixo'},
     {id:'chat', campo:'hat', nome:'Acessório'}, {id:'cgl', campo:'gl', nome:'Óculos'}
   ];
+  /* Visual de celular (15/11, ideia do BarbieGirls com arte nossa): o Idol fica numa redoma sobre um pedestal e as partes
+     viram 3 passos — 1 Visual (penteadeira), 2 Roupa (guarda-roupa), 3 Acessórios (prateleira). Peça trancada pode ser
+     PROVADA na redoma (só na prévia: nada é salvo nem comprado). */
+  var PASSOS = [[0, '💇', 'Visual', [0, 1, 2, 3, 4, 5, 6, 7]], [1, '👗', 'Roupa', [8, 9]], [2, '🎀', 'Acessórios', [10, 11]]];
+  var TXT_CEL = {
+    Visual:{pt:'Visual',en:'Look',es:'Look',id:'Tampilan',th:'ลุค',ja:'ルック'},
+    Roupa:{pt:'Roupa',en:'Outfit',es:'Ropa',id:'Baju',th:'ชุด',ja:'服'},
+    'Acessórios':{pt:'Acessórios',en:'Accessories',es:'Accesorios',id:'Aksesori',th:'เครื่องประดับ',ja:'アクセ'},
+    provando:{pt:'Provando 👀 (não salva) · toque de novo para tirar',en:'Trying on 👀 (not saved) · tap again to remove',es:'Probando 👀 (no se guarda) · toca otra vez para quitar',
+      id:'Mencoba 👀 (tidak disimpan) · ketuk lagi untuk melepas',th:'กำลังลอง 👀 (ไม่บันทึก) · แตะอีกครั้งเพื่อถอด',ja:'試着中 👀（保存されません）· もう一度タップで外す'},
+    provar:{pt:'Provar',en:'Try on',es:'Probar',id:'Coba',th:'ลอง',ja:'試着'}};
+  function celLigado(){ return !!window.TW_CELULAR_LIGADO; }
+  function tc(k){ var l = typeof LANG === 'string' ? LANG : 'pt', d = TXT_CEL[k]; return d ? (d[l] || d.pt) : k; }
   var EXPR = [[0, '🙂', 'Normal'], [2, '😆', 'Feliz'], [3, '😉', 'Piscadinha'], [4, '😮', 'Surpresa'], [5, '😢', 'Chorinho'], [6, '😍', 'Apaixonado'], [1, '😣', 'Concentrado']];
   /* Favoritos: 3 visuais guardados neste aparelho (chave nova brs48cr_favs). Tocar num espaço cheio veste o
      visual; 💾 guarda o visual atual naquele espaço. Ao vestir, peças que não estão liberadas são ignoradas.
@@ -123,6 +136,8 @@
   }
   var ESTADOS = {}, INSTANCIAS = [];
   function T(t){ return typeof tr === 'function' ? tr(t) : t; }
+  function aplicar(mod, campo, v){ mod[campo] = v; if(campo === 'mecha') mod.streak = !!v;
+    if(campo === 'hat'){ if(v === 'tulipa'){ mod.det = 'tulipa'; mod.hat = ''; } else if(mod.det === 'tulipa') mod.det = ''; } }
   // Desenha um personagem do editor num canvas qualquer (mesmo drawChar do jogo).
   function pintar(cv, c, S, tx, ty, ex, espelho){
     if(typeof perfChar !== 'function' || typeof drawChar !== 'function' || typeof perfCharContorno !== 'function') return false;
@@ -138,17 +153,44 @@
      el: {cv, expr, abas, grade}; chave: guarda aba/expressão entre redesenhos; visivel(): se está na tela;
      aoMudar(campo): avisa a tela dona (ex.: o Perfil refaz a foto). */
   function Estudio(el, chave, visivel, aoMudar, mudar){
-    var st = ESTADOS[chave] || (ESTADOS[chave] = {aba:0, expr:0, virado:false});
+    var st = ESTADOS[chave] || (ESTADOS[chave] = {aba:0, expr:0, virado:false, passo:0, prova:null});
     var pedido = 0, pedidoMini = 0, eu = {};
     function prev(){
       var cv = el.cv, c = cu(); if(!cv || !c || !visivel()) return;
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, S = 6.3, chao = H - 28;
       x.clearRect(0, 0, W, H);
+      if(celLigado()){ redoma(cv, c); return; }
       var bg = x.createRadialGradient(W / 2, H * .45, 10, W / 2, H * .5, W * .6);
       bg.addColorStop(0, '#ffffff'); bg.addColorStop(1, 'rgba(232,220,255,.9)');
       x.fillStyle = bg; x.fillRect(0, 0, W, H);
       x.fillStyle = 'rgba(155,48,217,.12)'; x.beginPath(); x.ellipse(W / 2, chao, 100, 16, 0, 0, Math.PI * 2); x.fill();
       pintar(cv, c, S, W / 2 - 15 * S, chao - 44 * S, st.expr, st.virado);
+    }
+    // A redoma: pedestal com degrau, o Idol em pé e o vidro por cima (com reflexos e brilhinhos)
+    function redoma(cv, c){
+      var x = cv.getContext('2d'), W = cv.width, H = cv.height, cx = W / 2, topo = H - 66, S = 5.2;
+      var f = x.createLinearGradient(0, 0, 0, H); f.addColorStop(0, '#fff4fb'); f.addColorStop(1, '#ffd9ee');
+      x.fillStyle = f; x.fillRect(0, 0, W, H);
+      // pedestal (dois degraus)
+      x.fillStyle = '#e04f9c'; x.beginPath(); x.ellipse(cx, H - 22, 128, 17, 0, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#ff8cc6'; x.fillRect(cx - 128, H - 46, 256, 24); x.beginPath(); x.ellipse(cx, H - 46, 128, 17, 0, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#ffd0e8'; x.beginPath(); x.ellipse(cx, H - 46, 118, 13, 0, 0, Math.PI * 2); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath(); x.ellipse(cx - 40, H - 49, 34, 4, 0, 0, Math.PI * 2); x.fill();
+      var mod = c; if(st.prova){ mod = JSON.parse(JSON.stringify(c)); aplicar(mod, st.prova.campo, st.prova.valor); }
+      pintar(cv, mod, S, cx - 15 * S, topo - 44 * S + 18, st.expr, st.virado);
+      // vidro
+      var R = 118, base = H - 48;
+      x.save(); x.beginPath(); x.moveTo(cx - R, base); x.lineTo(cx - R, 140); x.arc(cx, 140, R, Math.PI, 0); x.lineTo(cx + R, base);
+      x.fillStyle = 'rgba(214,236,255,.16)'; x.fill(); x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 4; x.stroke();
+      x.strokeStyle = 'rgba(186,140,255,.55)'; x.lineWidth = 1.5; x.stroke();
+      x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 7; x.lineCap = 'round';
+      x.beginPath(); x.arc(cx, 140, R - 16, Math.PI * 1.08, Math.PI * 1.32); x.stroke();
+      x.beginPath(); x.moveTo(cx - R + 16, 160); x.lineTo(cx - R + 16, 210); x.stroke();
+      x.restore();
+      x.fillStyle = '#fff'; [[cx + 78, 66, 7], [cx - 96, 108, 5], [cx + 100, 196, 4]].forEach(function(b){
+        x.save(); x.translate(b[0], b[1]); x.beginPath(); for(var i = 0; i < 8; i++){ var r = i % 2 ? b[2] * .35 : b[2], a = i * Math.PI / 4; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.closePath(); x.fill(); x.restore(); });
+      var dica = el.cv && el.cv.parentNode && el.cv.parentNode.querySelector('.cmprova');
+      if(dica){ dica.hidden = !st.prova; dica.textContent = tc('provando'); }
     }
     function miniaturas(){
       var box = el.grade, c = cu(), p = PARTES[st.aba], sel = p && $(p.id); if(!box || !c || !sel || !visivel()) return;
@@ -158,31 +200,51 @@
       box.innerHTML = '';
       [].forEach.call(sel.options, function(o){
         var b = document.createElement('button'); b.type = 'button'; b.className = 'cmmini';
-        b.setAttribute('aria-pressed', String(o.value === atual)); b.disabled = o.disabled;
+        var podeProvar = o.disabled && celLigado();
+        b.setAttribute('aria-pressed', String(podeProvar ? !!(st.prova && st.prova.campo === p.campo && st.prova.valor === o.value) : o.value === atual)); b.disabled = o.disabled && !podeProvar;
+        if(podeProvar) b.classList.add('cmprovar');
         b.setAttribute('aria-label', o.textContent);
         var cv = document.createElement('canvas'); cv.width = 132; cv.height = 132; cv.setAttribute('aria-hidden', 'true');
         var nome = document.createElement('span'); nome.textContent = o.textContent.replace(/^🔒\s*/, '');
         b.appendChild(cv); b.appendChild(nome);
         var mod = JSON.parse(JSON.stringify(c)); mod[p.campo] = o.value; if(p.campo === 'mecha') mod.streak = !!o.value;
         if(p.campo === 'hat'){ if(o.value === 'tulipa'){ mod.det = 'tulipa'; mod.hat = ''; } else if(mod.det === 'tulipa') mod.det = ''; }
-        if(o.disabled){ var tr2 = document.createElement('i'); tr2.className = 'cmtranca'; tr2.textContent = '🔒'; tr2.setAttribute('aria-hidden', 'true'); b.appendChild(tr2); }
+        if(o.disabled){ var tr2 = document.createElement('i'); tr2.className = 'cmtranca'; tr2.textContent = podeProvar ? '👀' : '🔒'; tr2.setAttribute('aria-hidden', 'true'); b.appendChild(tr2);
+          if(podeProvar) b.setAttribute('aria-label', tc('provar') + ': ' + o.textContent.replace(/^🔒\s*/, '')); }
         // corte: do topo à cintura (dá para ver curto × longo); franja/mecha/detalhe: a cabeça; rosto: zoom no rosto
         var rosto = /^(olho|sobrancelha|boca|bochecha|gl)$/.test(p.campo), corte = p.campo === 'back', corpo = p.campo === 'out' || p.campo === 'baixo',
             chapeu = p.campo === 'hat',
             S = rosto ? 6.2 : corte ? 2.6 : corpo ? 2.35 : chapeu ? 3.4 : 4.4, meio = rosto ? 19 : corte ? 16 : corpo ? 19.5 : chapeu ? 8.5 : 12.5;
         pintar(cv, mod, S, 66 - 15 * S, 66 - meio * S, 0, false);
-        b.addEventListener('click', function(){ if(b.disabled) return; if(mudar) mudar(p.campo, o.value); else trocar(p.id, o.value); atualizarTudo(); });
+        b.addEventListener('click', function(){
+          if(b.disabled) return;
+          if(podeProvar){ st.prova = st.prova && st.prova.campo === p.campo && st.prova.valor === o.value ? null : {campo:p.campo, valor:o.value}; eu.atualizar(); return; }
+          st.prova = null;
+          if(mudar) mudar(p.campo, o.value); else trocar(p.id, o.value); atualizarTudo(); });
         box.appendChild(b);
       });
     }
+    function passosUI(){   // só no visual de celular: os 3 móveis (penteadeira, guarda-roupa, prateleira)
+      var box = el.abas; if(!box || !celLigado()) return;
+      var nav = box.previousElementSibling && box.previousElementSibling.classList.contains('cmpassos') ? box.previousElementSibling : null;
+      if(!nav){ nav = document.createElement('div'); nav.className = 'cmpassos'; nav.setAttribute('role', 'group'); box.parentNode.insertBefore(nav, box);
+        PASSOS.forEach(function(g){ var b = document.createElement('button'); b.type = 'button'; b.className = 'cmpasso cmpasso' + g[0]; b.dataset.passo = g[0];
+          b.innerHTML = '<em>' + (g[0] + 1) + '</em><i aria-hidden="true">' + g[1] + '</i><span>' + tc(g[2]) + '</span>';
+          b.addEventListener('click', function(){ st.passo = g[0]; st.aba = g[3][0]; passosUI(); miniaturas(); });
+          nav.appendChild(b); }); }
+      var g = PASSOS[st.passo] || PASSOS[0]; if(g[3].indexOf(st.aba) < 0){ st.passo = PASSOS.filter(function(q){ return q[3].indexOf(st.aba) >= 0; })[0][0]; g = PASSOS[st.passo]; }
+      [].forEach.call(nav.children, function(b){ b.setAttribute('aria-pressed', String(+b.dataset.passo === st.passo)); });
+      [].forEach.call(box.children, function(b, i){ b.hidden = g[3].indexOf(i) < 0; b.setAttribute('aria-selected', String(i === st.aba)); });
+    }
     function abas(){
-      var box = el.abas; if(!box || box.childElementCount) return;
+      var box = el.abas; if(!box || box.childElementCount){ passosUI(); return; }
       PARTES.forEach(function(p, i){
         var b = document.createElement('button'); b.type = 'button'; b.id = chave + 'Aba' + i; b.setAttribute('role', 'tab');
         b.textContent = T(p.nome); b.setAttribute('aria-selected', String(i === st.aba));
         b.addEventListener('click', function(){ st.aba = i; [].forEach.call(box.children, function(x, k){ x.setAttribute('aria-selected', String(k === i)); }); miniaturas(); });
         box.appendChild(b);
       });
+      passosUI();
     }
     function expressoes(){
       var box = el.expr; if(!box || box.childElementCount) return;
@@ -238,7 +300,7 @@
     if(!raiz || !$('cmCv')) return null;
     var velho = raiz.querySelector(':scope > .cmestudio'); if(velho) velho.remove();
     var chave = 'cm' + (raiz.id || 'x'), box = document.createElement('div'); box.className = 'cmestudio';
-    box.innerHTML = '<div class="cmprev"><canvas class="cmcv" width="440" height="360" role="img" aria-label="' + T('Prévia do visual') + '"></canvas>' +
+    box.innerHTML = '<div class="cmprev"><canvas class="cmcv" width="440" height="360" role="img" aria-label="' + T('Prévia do visual') + '"></canvas><p class="cmprova" role="status" hidden></p>' +
       '<div class="cmexpr" role="group" aria-label="' + T('Expressões') + '"></div>' +
       '<div class="custacoes"><button type="button" class="btn alt" data-cm="sortear">🎲 <span>' + T('Sortear') + '</span></button><button type="button" class="btn alt" data-cm="desfazer"' + (anterior ? '' : ' disabled') + '>↩ <span>' + T('Desfazer') + '</span></button></div></div>' +
       '<div class="cmfavs" role="group" aria-label="' + T('Favoritos') + '"></div><div class="cmabas" role="tablist" aria-label="' + T('Partes') + '"></div><div class="cmgrade" role="tabpanel"></div>';

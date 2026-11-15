@@ -18,7 +18,7 @@ const expectedTables = {
  PET_DICT5:{en:6,es:6,th:6,ja:6}, PET_DICT6:{en:2,es:2,th:2,ja:2},
  PET_DICT7:{en:5,es:5,th:5,ja:5}, PET_DICT8:{en:31,es:31,th:31,ja:31},
  PET_DICT10:{en:8,es:8,th:8,ja:8}, PET_DICT11:{en:102,es:102,th:102,ja:102}, PET_FALAS_TR:{en:82,es:82,th:82,ja:82},
- CONTA_DICT:{en:17,es:17,th:17,ja:17}, PERF_DICT:{en:60,es:60,th:60,ja:60},
+ CONTA_DICT:{en:22,es:22,th:22,ja:22}, PERF_DICT:{en:60,es:60,th:60,ja:60},
  PERF_DICT2:{en:62,es:62,th:62,ja:62}, PERF_ADMIN_DICT:{en:18,es:15,th:14,ja:14},
  ADM_DICT:{en:27,es:27,th:27,ja:27}, HUB_DICT:{en:64,es:64,th:64,ja:64},
  EXTRA_DICT_GACHA:{en:20,es:15,th:15,ja:15},

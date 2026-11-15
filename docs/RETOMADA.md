@@ -70,7 +70,96 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - **Indonésio:** chaves novas (Montar visual, Favoritos, Tema…) em `translations/id/TW_DICT.json`; depois de mexer, rode `node translations/id/build-preview-catalog.cjs` e suba `preview-data.js?v=`.
 - **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
 
-### Falta validar (o dono testa)
+### Visita surpresa no mapa (15/11, PR nova)
+- A cada 8 minutos, cada rua sorteia pelo relógio (igual para todo mundo) se o Tsu, a Lirika ou o Pati passeiam por lá (~45% das vezes), com o visual do palco (`HUB_TRIO`), etiqueta "⭐ Nome" por cima das placas e frase própria ao toque (6 idiomas, `VISITA_FALAS`).
+- Quem está logado como Tsu, Lirika ou Pati (apelido da conta, sem diferenciar maiúsculas) nunca encontra a si mesmo: o sorteio passa para outro membro. O trio no palco do mapa-múndi continua como sempre.
+- Os bichinhos de chão reagem a quem visita como reagem ao seu Idol. Para testes: `TW_MAPA_DEBUG=true` expõe `TW_MAPA_VISITAS`.
+
+### Visual de celular — prévia (15/11, mesma PR)
+- Ideia de um amigo + esqueleto do Link! Like!: o início vira um "celular de Idol". Barra de cima (você, estrelas, ⚙️), barra de baixo (Voltar · Menu · Início), telas Início, Menu, Jogos e Ajustes. Arquivos: `tw-celular.js` e `tw-celular.css`.
+- **Desligado por padrão.** Liga com `?celular=1` ou no ⚙️ do início clássico ("📱 Visual novo (prévia)"); desliga com `?celular=0` ou em Ajustes → "Voltar ao visual clássico". Fica salvo em `brs48cr_celular`. Desligado, nenhum dos dois arquivos é baixado.
+- Nada de regra nova: cada ícone chama o mesmo card do hub clássico, que continua montado por baixo (login, cadeados, prêmios e sons iguais). Missões, busca, novidades e mapa abrem o hub clássico rolado até a parte certa, com a barra de baixo para voltar.
+- O TsuLiPa continua lá: logo animado, tema do momento, partículas da temporada e o palco do Tsu, da Lirika e do Pati (cópia do `hubCv`; o toque chega ao hub e o trio reage). A cor da faixa e do botão Menu segue o tema do Oshi.
+- Sem conta, os jogos que pedem login mostram cadeado e o aviso "Entre para jogar" antes do login do Google (era o "Karaoke não abre" no tablet).
+- Tablet: duas colunas a partir de 900 px; banners e lista de jogos em duas colunas a partir de 720 px. `tw-mapa.js` expõe `twMapaVisitaAgora()` para a faixa "Agora no mapa".
+- Rodada 2 (comparando com prints do Link! Like!): o Início ficou só com o palco (com um selinho de quem passeia no mapa), um destaque "Pra hoje" e os 8 apps. Pet, ranking e o "Pra hoje" completo foram para o Menu. Os painéis ficaram brancos, os títulos viraram abas brancas e as ações usam botão amarelo. A cor segue o tema do Oshi.
+- Bolinhas do Tsu, da Lirika e do Pati desenhadas pelo jogo (`HUB_TRIO_DRAW_CHARS` + `perfFotoRedonda`). Álbum novo: grade de cards com filtro por Oshi (Todos, Tsu, Lirika, Pati e Outros, pelo `card.oshi`). Ele lê só `album_cards`; o toque abre o zoom de card do Gacha, e "Ver metas e trocar cards" abre o álbum clássico.
+- Falta a lista de músicas do Karaoke com capa e "quem canta": o seletor fica dentro de `karaoke-time.html` (iframe) e não existe o dado de quem canta cada música.
+
+- Rodada 3: a **moldura do celular** vale para toda janela `.tw-window-overlay` (Perfil, Pet, Loja, Gacha, Idol News, Álbum, Café, Handshake, Battle, Bloom, Studio, Moon Duo, Trocas, Encontro, Fã). A janela abre entre a barra de cima e a de baixo, no painel branco. Voltar clica no ✕ da própria janela; Menu e Início fecham as janelas e voltam ao celular. Center Run, Karaoke e Sora seguem em tela cheia, como a Live deles.
+- A moldura também aparece no menu do Center⭐Run! (antes de correr) e no salão do Karaoke⭐Time! (antes do show). Correndo (`body.jogando`) ou cantando (`html.tw-kt-arena`), as barras saem. Voltar usa o próprio "← Início" de cada tela (`#hubVolta` / `#twPreviewVoltar`), que fica escondido.
+- **Sala do Karaoke como MUSIC LIST** (`karaoke-lista.js` / `.css`, só com o celular ligado: lê `parent.TW_CELULAR_LIGADO`). Aba laranja "MÚSICAS" com as tentativas do dia, capas em grade desenhadas por CSS a partir das opções do `#ktSong` (com selo da música da semana), detalhe da escolhida (BPM, ★, recorde pessoal), "Ouvir" usando a prévia de sempre e "Cantar" apertando o `#ktStart`. A sala vira um palco compacto (máx. 560 px, como a janela do Battle) em qualquer aparelho. O título antigo, o seletor e o logo do site somem dentro da sala; o cartão de tentativas só reaparece se houver show para recuperar.
+- **Som das músicas do Karaoke** (só timbre: partitura, notas da pista e relógio iguais, então os recordes continuam valendo). Mixer com compressor suave, eco no tempo da música (1,5 passo), filtro nas ondas quadradas, esquerda/direita, bumbo com queda de tom, caixa e chimbal de ruído fixo (sem sorteio), virada antes do refrão e acorde final. Pedido do dono: energia no estilo hi-NRG das trilhas dance de jogos dos anos 2000 (sem copiar melodia): palmas em camadas no 2 e no 4, chimbal aberto no contratempo, arpejo de sintetizador em semicolcheias e baixo em oitavas no pop. Testes: `karaoke-som.test.js`, com aparelho de som falso; a prévia foi conferida no Chromium. **Não ouvido por ninguém ainda.**
+- O idioma dentro do Karaoke vem de `?lang=` / `brs48cr_lang`: o `LANG` do Karaoke fica dentro do script dele, então `karaoke-lista.js` e `karaoke-arena.js` leem do mesmo lugar.
+- Rodada 5, a partir dos prints no iPhone do dono:
+  - A moldura não aparecia nas janelas criadas na hora (jogos que carregam depois, como o Handshake). Agora o observador também vê janelas novas no `body`, com uma conferência a cada 1,5 s de segurança.
+  - As janelas viraram tela cheia (sem caixinha cortada).
+  - Logo sem quebrar linha.
+  - A vitrine "Idols do TsuLiPa⭐World" voltou ao Início, só com rosto e nome (sem pontos); tocar abre o perfil (`.lbn`).
+  - Mapa, Missões, Procurar Idol e Novidades abrem como telas do celular: a mesma seção do hub é levada para a tela e devolvida ao sair (`EMB`), então os cliques e as regras são os mesmos.
+  - A barra antiga "Visitante · ★ · Entrar" (`#twHud`) fica escondida com o celular ligado.
+- Rodada 6 (15/11):
+  - A vitrine antiga (luzes, confete, lightsticks) foi para a tela de abertura, antes do "Toque para começar". As contas do Tsu, da Lirika e do Pati desfilam juntas na frente da fila; os bonecos do trio (`twcTrioVitrine`) só entram quando a lista não carrega, para ninguém aparecer duas vezes. Sem pontuação no visual de celular. Ao começar, a vitrine volta ao hub clássico (`vitrineDevolver`).
+  - A bolinha da vitrine do Início não corta mais o anel.
+  - Todos os atalhos do Menu foram conferidos no iPhone 13 emulado. Missões, Procurar e Novidades abrem embutidos; Álbum e Ajustes são telas próprias; Perfil, Zipper Shop, Gacha e Idol News abrem como janelas em tela cheia com a moldura. A TsuLiPa⭐TV! agora também ganha a moldura, fica entre as barras e fecha pelo Voltar/Início.
+  - Correção: sem vitrine (RPC falhando), cada redesenho pedia a vitrine de novo e o navegador travava. Agora pede no máximo uma vez por minuto.
+  - O teste `tw-mapa-dois-niveis` falhava só no horário em que havia visita surpresa (faltava `measureText` no canvas falso).
+- Rodada 7 (15/11, prints do mapa no iPhone):
+  - As contas oficiais do trio são `tsu`, `lirika` e `patiliri`. No mapa elas não passeiam como jogadores, porque o membro aparece pela visita (antes a Lirika ficava duplicada). Na vitrine, essas três contas vão juntas para a frente.
+  - Quem visita uma rua fica em atividade na frente de um lugar: canta (microfone/lightstick com notinhas) no Star Stage, em cima do palco; faz coraçãozinho nas lojas, no café e no gacha; acena nos outros lugares (`POSES_ATIVAS`, `LUGAR_ATIVO`).
+  - A tela pulava para o topo a cada ação no mapa: o `posicionar()` do mapa puxava o mapa de volta para o hub clássico a cada `hubCardsUI`. Agora ele não mexe no mapa enquanto o mapa está dentro do celular, e a rolagem é restaurada depois de reembutir.
+  - Rua menos ampliada no celular (720 px de largura em vez de 1080).
+  - Gatinhos redesenhados no jeito dos Idols: cabeção quadradinho, corpo de pãozinho, cores chapadas, contorno único e rostinho simples, sem bigodes nem degradê. Continuam piscando, mexendo a orelha e o rabo, pulando ao toque e dormindo à noite.
+- Rodada 8 (15/11), ideias do BarbieGirls/Zwinky com arte nossa:
+  - Montar Idol em vitrine (só com o celular ligado, `charmaker.js`): o Idol aparece numa redoma desenhada no canvas, e as partes viram 3 passos-móveis (1 Visual/penteadeira, 2 Roupa/guarda-roupa, 3 Acessórios/prateleira). Peça trancada pode ser **provada** na redoma (👀): só na prévia, sem salvar nem comprar.
+  - Frases prontas (`tw-presenca.js`): 8 chaves fixas (oi, lindo, jogar, dancar, amei, parabens, valeu, tchau), traduzidas no aparelho. O servidor só aceita essas chaves, então não existe chat livre. Ficam no Mapa e no lado de dentro dos lugares. O seu balão aparece na hora; os dos outros, para quem está online na mesma rua.
+  - Idols online agora: pílula verde no Início e no Mapa. **Supabase (OK do dono no chat, 15/11)**: tabela `public.presenca` (RLS ligada, sem políticas, acesso só pelas funções), `presenca_ping(p_rua, p_frase)` (só logado; no máximo 1 frase a cada 4 s) e `presenca_agora(p_rua)` (todos; conta quem apareceu nos últimos 3 min e lista até 8 pessoas na rua, com frase dos últimos 15 s). Migração: `supabase/migrations/20261115200000_presenca_online.sql`. Quem está online numa rua passeia lá primeiro, com o nome em cima.
+  - Lado de dentro dos lugares: tocar no Café, na Zipper⭐Shop! ou no Star⭐Gacha! (na rua do mapa) abre uma sala desenhada com quem está por ali, com os balões das frases. O botão grande abre o lugar de verdade (`window.twMapaEntrar`).
+  - Mapa geral vivo: até 6 Idols (online e vitrine, sem as contas do trio) andam pelas calçadas (`mundoGente`, `CALCADAS`).
+  - Cantinho dos pais: tela nos Ajustes, nos 6 idiomas, com link para a privacidade.
+  - Manutenção fofa: depois de 3 falhas de rede seguidas no `contaRpc` (ou ao ficar offline), uma folha com o trio e cones avisa que o progresso está guardado, com os botões "Jogar Center⭐Run!" e "Tentar de novo". Aparece uma vez por sessão.
+- Rodada 9 (15/11):
+  - Cadeados para visitante: Bloom e Álbum entraram na lista (`PEDE_LOGIN`); Battle, Café, Handshake e Studio mostram o selo "Treino" (jogam sem conta, sem prêmio). As portas do mapa que pedem conta ganham um cadeadinho (`cadeadosPortas`).
+  - Cantinho dos pais revisado contra o código e a privacidade ("sem chat ao vivo", recados com filtro, e-mail privado, aniversário opcional). A privacidade ganhou o item "Idols online e frases prontas" nos 6 idiomas (15/11/2026).
+  - Auditoria (iPhone claro, iPhone escuro em inglês, iPad, iPhone SE em japonês, 11 telas): sem erros nem estouro de tela; ajustes no "+" das estrelas (área de toque de 44 px), no rank cortado e na caixinha vazia do Karaoke.
+  - Humor do Idol (`tw-humor.js`, local em `brs48cr_humor_v1`): 4 barrinhas (Energia, Diversão, Brilho, Amizade). Sobem quando uma partida termina (RPC de fim de partida com conta, ou ao abrir o jogo para visitante) e baixam devagar com o tempo; a Energia descansa sozinha.
+  - Desejo do dia: um por dia (sorteio pela data e pelo nome), só entre o que a pessoa consegue cumprir (visitante recebe jogos de treino, mapa ou frase). Cumprir dá +15 nas barrinhas, conta a série de dias e libera o passe do Camarim VIP de hoje.
+  - Diamantinho: gira em cima do SEU Idol no mapa e no card de humor (verde, amarelo ou rosa, conforme a média).
+  - Camarim VIP: aberto para todo mundo todo dia, sem dinheiro (é só cumprir o desejo do dia). É uma sala com tapete vermelho, espelho de lâmpadas e o trio; o botão "Foto VIP" baixa um Polaroid em PNG.
+  - Nada disso mexe em estrelas, ranking ou Supabase.
+- Rodada 10 (15/11):
+  - Fichinhas do trio (tela `trio`, aberta pelo chip "♡ Fichinhas" do palco ou pelo atalho "TsuLiPa ♡" do Menu). Os dados vêm dos perfis oficiais em brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html, só com o que o blog informa e sem ano de nascimento. A tela tem o mapa de amizades: unit TsuLiPa e Gekokujou, dupla NeByura (Tsu + Pati) e os pets Chu, Koali e Pucchi.
+  - Abertura animada: 3 camadas em parallax (seguem o dedo, o mouse e a inclinação quando o navegador deixa) e o trio de corpo inteiro flutuando. Tela de carregamento só logo depois de abrir a página (mínimo de 0,9 s e máximo de 4 s). "Reduzir movimento" deixa tudo parado.
+  - TsuPhone: novo app "Humor" (barrinhas, desejo, série, recados do trio, prêmios e a foto VIP salva em JPEG pequeno, `brs48cr_vip_foto_v1`). Ao cumprir o desejo, um membro do trio manda um recado (o Tsu e o Pati no masculino, a Lirika no feminino).
+  - Camarim: prêmios desenhados sem imagem nova (`petPremiosDesejo`): troféu na estante com 3 dias seguidos, lâmpadas VIP no espelho com 7 dias seguidos e tapete vermelho depois da foto VIP. `pet-sala.js?v=3`.
+  - Tour de camarim (visitar o camarim de outros Idols e deixar coração): **precisa de RPC nova no Supabase, esperando o OK do dono**.
+- Rodada 11 (15/11), refino pedido pelo dono ("tudo novo no nível atual do site, sem emojis baratos e sem erros"):
+  - O mapa de amizades virou canvas animado (`amigosDesenhar`): o trio de corpo inteiro com `perfDesenharIdol`, os pets de verdade (Chu, Koali e Pucchi, com `drawPet`), fitas nas cores dos membros, pílulas "unit TsuLiPa", "Gekokujou" e "dupla NeByura", holofotes e brilhinhos. Sem animação com "reduzir movimento".
+  - Fichas no estilo cartão de perfil: topo na cor do membro com listras, boneco de corpo inteiro, chips de geração e time, linhas com ícones desenhados (bolo, alfinete, régua, paleta, pata, coração), pet desenhado e frase em balão.
+  - Emojis trocados por ícones desenhados no card de humor (desejo, série, VIP), no aviso, no Cantinho dos pais, na manutenção (cone em SVG) e no app Humor do TsuPhone.
+  - Salas por dentro redesenhadas: Café com vitrine, balcão de madeira, sofá com almofadas e luminárias; Zipper⭐Shop com arara de vestidos, saias e jaquetas, espelho de lâmpadas e prateleiras; Gacha com máquina de cápsulas, manivela e placa neon; VIP com cortinas de veludo. Os Idols ficaram maiores e o diamantinho aparece em cima de você.
+  - Auditoria de novo (4 aparelhos, 14 telas): sem erros e sem nada saindo da tela.
+- Rodada 12 (15/11), pedidos do dono depois de ver o Link! Like! (sem "Live do mês" e sem "Disputa antes da live"):
+  - Cantinho dos pais saiu (o público é adulto). Nos Ajustes ficou só o link de Privacidade e segurança.
+  - Mapa de amizades: os três lado a lado na mesma altura, a Lirika no meio (ninguém "acima"). Saiu o Gekokujou; entrou "Os três entraram juntos: Draft 1st Generation · ago/2021". Tocar num membro: pulinho, fala com a voz de verdade (`HUB_FALAS` + `hubVozTocar`) e corações; tocar num pet: pulo e o som dele (`petVoice`).
+  - Salas por dentro: Idols maiores (escala 1,72) e reação ao toque (pulo, pose e corações; no VIP, a voz do membro). Um carinho conta na barra de amizade no máximo a cada 30 s.
+  - Calendário "o ano do TsuLiPa" (`tw-calendario.js?v=1`, só leitura): começa em 27/10/2026 (primeiro cadastro no servidor, em plena temporada de Halloween). Marca o lançamento e o aniversário do jogo, os aniversários do Tsu (05/09) e do Pati (23/09), maio como o mês da Lirika (o blog não tem o dia), agosto como o mês da Draft 1st Generation, o aniversário do BRS48 (13/11), os temas de data do jogo, o evento da semana e os capítulos do quadrinho. As falas do dia mudam com a data. Card "Dia N do TsuLiPa⭐World" no início e atalho no menu. Falta: as datas reais do Unit Festival, para marcar a semana do festival.
+  - História em capítulos no Idol⭐News! (`jornal-capitulos.js?v=1`, aba Vida das Idols): 6 capítulos de 3 quadros, desenhados com os bonecos do jogo e balões nas 6 línguas. Um capítulo novo toda terça desde 27/10 (hoje há 3; o 4º chega em 17/11).
+  - Idol⭐Battle! (`battle.js?v=14`): cada card tem uma habilidade (Nota Alta, Passo Duplo ou Piscadinha, pelo melhor atributo). Ela dispara quando a torcida fecha 3 batidas seguidas na rodada daquele card: faixa no palco, a carta brilha e sobem corações (+5, ou +8 se combina com a rodada). Contador "Corações da torcida" no show e no resultado. É festa da torcida: o placar e o prêmio continuam sendo só os do servidor.
+  - Tour de camarins (menu do celular): lista de camarins (`camarim_tour`), o camarim de outro Idol desenhado com o próprio desenho do Backstage⭐Pet! (decoração, pet ativo e o Idol), e 1 coração por dia em cada camarim (`camarim_coracao`). Migration `camarim_tour` aplicada.
+  - Missões do dia: entram "Cantar no Karaoke⭐Time!" e "Pule de nuvem em nuvem no Sora⭐Jump!" (nível 1, ★10), com progresso do servidor. Migration `missoes_karaoke_sora` aplicada.
+- Rodada 13 (15/11):
+  - Login: o "Escolha seu nome de Idol" não tinha saída. Um amigo entrou com outra conta do Google (criada em 08/11 e sem nome), tentou o nome da conta dele e só recebia "em uso". Agora o aviso mostra qual conta Google entrou, explica o "em uso" e tem "Usar outra conta Google" (abre a escolha de conta) e "Agora não" (sai e volta como visitante). `conta.js?v=3`.
+  - Idol⭐Battle! (`battle.js?v=15`): a faixa de HABILIDADE ganhou o acabamento do site (aro branco, brilho de vidro, raios girando, selo amarelo, pastilha de corações, reflexo passando na carta) e o contador de corações virou uma medalha no estilo dos medidores.
+  - Tela inicial limpa (pedido do Pati): só o palco, o "Pra hoje" e 6 portas grandes: Jogos (abre a lista), Missões (menu com Missões do dia, Pedido de fã e Meta dos Teams), Mapa, Idol⭐News!, Camarim e Calendário. O humor, o card do calendário e a vitrine de Idols foram para o Menu. Saiu o atalho repetido "Meu Perfil" do Menu (o perfil fica no topo).
+- Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
+- Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
+
+### Formato de Live no Battle e no Karaoke (15/11, mesma PR)
+- Inspirado na tela de Live do Link! Like!, com desenho próprio. Só visual: nenhuma regra, prêmio ou SQL mudou.
+- `battle.js?v=12` / `battle.css?v=9`: o palco do show ficou 560×520. Tem arco de progresso com as 3 apresentações e estrelas (verde = ganhou, rosa = perdeu), placar de BRILHO (os pontos do servidor × 1000), salão com telão de arco-íris, guirlanda de flores e chão de madeira, a unit inteira no palco, o card de quem se apresenta entrando pela direita, os medidores Você · Combo · Rival e a "mão" com os 3 cards (o da vez sobe e brilha). O Combo conta os acertos seguidos do lightstick no ritmo que já existia (o anel que fecha na batida); errar a batida zera.
+- `karaoke-arena.js?v=3`: durante o seu show, um arco com 4 trechos e estrelas mostra o progresso da música, um placar ★ fica abaixo do arco, e embaixo ficam os medidores Precisão · Combo (enche a cada 10 e muda de cor) · Música. Saem corações dos botões a cada acerto, e o véu ficou mais claro para a sala da semana aparecer. As pistas desceram um pouco para caber o arco.
+
 - Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
 - Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.
 - Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
@@ -78,6 +167,8 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
 - iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
 - Ouvir os sons (não testados por ouvido).
+- Battle e Karaoke em formato de Live: jogar de verdade no celular (o Karaoke só foi conferido num desenho de teste com estado simulado).
+- Visual de celular: iPad/Safari e Android de verdade, logado (missões, Sair, pet), e se o palco copiado pesa em tablet antigo.
 - Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
 
 ### Ideias na fila (escolha do dono)

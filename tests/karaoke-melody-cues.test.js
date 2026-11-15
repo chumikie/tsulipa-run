@@ -15,6 +15,7 @@ const ctx = vm.createContext({
   performance:{now:()=>1234},
   muted:false,
   hz:m=>440*Math.pow(2,(m-69)/12),
+  ktPreviewRouting:false,ktMix:()=>({}),ruido(){},ktBumbo(){},
   voice:(frequency,duration,time,volume,type)=>calls.push({frequency,duration,time,volume,type}),
 });
 vm.runInContext(songSource[0]+'\n'+html.slice(beatStart,beatEnd),ctx);
@@ -25,7 +26,8 @@ ctx.run = {song,audioOrigin:10,audioReady:true,audioClock:true,step,auto:false,c
 ctx.beat(0);
 const t = 10;
 assert(calls.length > 0, 'primeiro beat emite música');
-assert(calls.every(call=>call.time===t), 'lead, bateria e destaque usam o mesmo instante do AudioContext');
+// o arpejo de sintetizador (sawtooth) é decorativo e corre em semicolcheias; todo o resto bate junto com a nota
+assert(calls.filter(call=>call.type!=='sawtooth').every(call=>call.time===t), 'lead, bateria e destaque usam o mesmo instante do AudioContext');
 assert(calls.some(call=>call.volume===.025 && call.type==='triangle'), 'nota visível recebe ataque audível próprio');
 const countWithNote = calls.length;
 
@@ -43,7 +45,7 @@ assert(calls.some(call=>call.volume===.022 && call.type==='triangle'), 'segunda 
 calls.length=0;
 ctx.run.cuesByStep={7:[{idx:7,lane:2}]};
 ctx.beat(7);
-assert(calls.every(call=>Math.abs(call.time-(t+7*step/1000))<.00001),'ataques agendados no passo musical exato');
+assert(calls.filter(call=>call.type!=='sawtooth').every(call=>Math.abs(call.time-(t+7*step/1000))<.00001),'ataques agendados no passo musical exato');
 
 assert(html.includes('run.cuesByStep[n.idx]'),'cada ataque usa o idx do mapa de notas');
 assert(html.includes('noteMap:2'),'formato de salvamento de partidas mantido');

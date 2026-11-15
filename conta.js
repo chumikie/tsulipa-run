@@ -53,6 +53,7 @@ function contaAviso(t){
 function contaSessao(sess){
   contaAuthPronta=true;
   var userId=sess&&sess.user&&sess.user.id?String(sess.user.id):'';
+  contaAuthEmail=sess&&sess.user&&sess.user.email?String(sess.user.email):'';
   if(userId===contaAuthUserId)return;
   contaAuthUserId=userId;
   var token=++contaSessaoToken;
@@ -90,6 +91,9 @@ function contaPedirNome(token){
   $('contaTxt').textContent = tr('Ele aparece no ranking e não pode ser igual ao de outra pessoa.');
   $('contaOk').textContent = tr('CONFIRMAR');
   $('contaNome').value = nick || ''; $('contaErro').hidden = true;
+  var qm = $('contaQuem'); if(qm){ qm.textContent = contaAuthEmail ? tr('Conta Google: {e}').replace('{e}', contaAuthEmail) : ''; qm.hidden = !contaAuthEmail; }
+  if($('contaOutra')) $('contaOutra').textContent = tr('Usar outra conta Google');
+  if($('contaDepois')) $('contaDepois').textContent = tr('Agora não');
   contaOv.hidden = false; twTimeoutVisivel(contaOv,function(){return !contaOv.hidden;},function(){var input=$('contaNome');if(input)input.focus();},50);
 }
 function contaInicioCorrida(){

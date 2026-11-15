@@ -30,7 +30,8 @@ var HUB_MIS = {   // textos das missões (as regras ficam no servidor: missoes_l
   estrelas50:['⭐', 'Pegue {n} estrelas nas corridas'], estrelas100:['🌟', 'Chegue a {n} estrelas nas corridas hoje'],
   pontos2000:['🎤', 'Faça {n} pontos em uma corrida'], pontos5000:['👑', 'Faça {n} pontos em uma corrida'], tsulipa:['💜', 'Corra com Tsu, Lirika e Pati'],
   handshake:['🤝', 'Acerte um presente no Handshake⭐Event!'], cafe:['🧋', 'Sirva um pedido perfeito no Happy⭐Cafe!'],
-  jardim:['🌷', 'Regue ou plante um canteiro no Bloom⭐Garden!'], battle:['🏟️', 'Faça uma partida no Idol⭐Battle!'], foto:['📸', 'Tire a foto perfeita do dia no Photo⭐Studio!']
+  jardim:['🌷', 'Regue ou plante um canteiro no Bloom⭐Garden!'], battle:['🏟️', 'Faça uma partida no Idol⭐Battle!'], foto:['📸', 'Tire a foto perfeita do dia no Photo⭐Studio!'],
+  karaoke:['🎤', 'Cantar no Karaoke⭐Time!'], sora:['☁️', 'Pule de nuvem em nuvem no Sora⭐Jump!']
 };
 var HUB_NOVIDADES = [["🗓️", "Evento da semana no Idol⭐News!: um tema novo toda segunda, com bônus no Happy⭐Cafe! e no Handshake⭐Event!"], ["📔", "Diário de carreira e Estante de troféus no Perfil, com insígnias dos jogos novos"], ["📰", "Idol⭐News!: Top 5, Fotos do dia, Festival de Unidades e Ensaio de trio"], ["💌", "Pedido de fã: um pedido especial por dia"], ["🐾", "Seu pet passeia no Café e no Handshake… e às vezes pega um docinho!"], ["🤝", "Handshake⭐Event!: lembre o presente favorito de cada fã na fila"], ["🧋", "Happy⭐Cafe!: monte shakes, frappés e docinhos para os fãs e complete o Caderno de receitas"], ["🎴", "Álbum de cards e Troca de cards com outros Idols"], ["🎉", "Lançamento oficial do TsuLiPa⭐World! Obrigada por jogar com a gente 💜"], ["🏁", "Center⭐Run!: corra pelo palco, pegue estrelas e microfones… e tente pegar o Center!"], ["🎤", "Karaoke⭐Time!: cante no ritmo com uma plateia nova todo dia"], ["☁️", "Sora⭐Jump!: pule de nuvem em nuvem e entre no Top Idols da semana"], ["🐾", "Backstage⭐Pet!: adote, cuide, vista e brinque com seu pet"], ["🎰", "Star⭐Gacha!: 1 giro por dia com estrelas e cards de outros jogadores"], ["🌙", "Moon⭐Duo! e Encontro do dia: cenas fofas com outros Idols"], ["💖", "Perfil com Montar Idol, Estúdio, lojinha, corações, recados e insígnias"], ["🎯", "Missões do dia, rankings da semana e algumas surpresas pra descobrir ✨"], ["🔒", "Privacidade e segurança atualizadas: o que os jogos novos guardam, trocas de cards e como funciona o clima do Hoje"], ["🌏", "Jogo em português, inglês, espanhol, indonésio, tailandês e japonês"]];
 // Sequência de boas-vindas exclusiva da INDEX2: a página principal conserva o tutorial original.
@@ -378,7 +379,7 @@ function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca 
   return HUB_MUSICAS[((sem % 5) + 5) % 5];
 }
 // Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
-var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet'};
+var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet',karaoke:'karaoke',sora:'sora'};
 // Jogos novos abrem pela própria função (os cards deles não têm data-ir).
 var HUB_AGENDA_ABRIR = {jardim:'bloomAbrir',battle:'battleAbrir',foto:'studioAbrir'};
 // O compromisso é uma preferência da sessão: nunca entra no save nem modifica a missão.
@@ -1366,7 +1367,7 @@ function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
   hubIdolsEm = Date.now();
   contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); if(typeof petPhoneJornalVitrinePronta === 'function') petPhoneJornalVitrinePronta(); })
-    .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
+    .catch(function(){ hubIdolsEm = 0; if(window.TW_CELULAR_LIGADO){ hubIdolsUI(); return; } var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsTituloUI(){
   var title=$('hubIdolsT');if(!title)return;
@@ -1377,11 +1378,20 @@ function hubIdolsTituloUI(){
 function hubIdolsUI(){
   var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
-  if(!L.length){ box.hidden = true; hubIdolsParar(); return; }
+  // No visual de celular, as contas do Tsu, da Lirika e do Pati desfilam juntas na frente da fila.
+  // Os bonecos do trio só entram quando a lista não carrega (assim ninguém aparece duas vezes).
+  if(window.TW_CELULAR_LIGADO && L.length){
+    var ordemTrio = function(p){ var n = ['tsu', 'lirika', 'patiliri'].indexOf(String(p.nick || '').trim().toLowerCase()); return n < 0 ? 9 : n; };   // contas oficiais do trio
+    L = L.map(function(p, i){ return [ordemTrio(p), i, p]; }).sort(function(a, b){ return a[0] - b[0] || a[1] - b[1]; }).map(function(x){ return x[2]; });
+  }
+  var trio = [];
+  try{ trio = !L.length && typeof window.twcTrioVitrine === 'function' ? window.twcTrioVitrine() || [] : []; }catch(e){ trio = []; }
+  if(!L.length && !trio.length){ box.hidden = true; hubIdolsParar(); return; }
   hubIdolsTituloUI();
+  hubIV.L = trio.concat(L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; }));
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
-  $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
-  hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });
+  var semNota = !!window.TW_CELULAR_LIGADO;
+  $('hubIdolsLista').innerHTML = hubIV.L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + (semNota || p.trio ? '' : ' · ★ ' + p.best) + '</button>'; }).join('');
   box.hidden = false; hubIdolsTam(); hubIdolsLigar(); if(typeof twRankRender==='function')twRankRender();
 }
 function hubIdolsLugar(){
@@ -1518,9 +1528,9 @@ function hubIdolsDesenhar(s, dt, calmo){
     // nome e recorde
     x.font = '900 11px "M PLUS Rounded 1c",sans-serif';
     var nm = p.nick.length > 11 ? p.nick.slice(0, 10) + '…' : p.nick, tw = x.measureText(nm).width + 16, nx = px + cw / 2;
-    x.fillStyle = 'rgba(255,255,255,.95)'; hubIdolsPilula(x, nx - tw / 2, chao + 9, tw, 16, 8); x.fill();
-    x.fillStyle = '#5b2bb5'; x.fillText(nm, nx, chao + 21);
-    x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe14d'; x.fillText('★ ' + p.best, nx, chao + 36);
+    x.fillStyle = p.trio ? p.cor : 'rgba(255,255,255,.95)'; hubIdolsPilula(x, nx - tw / 2, chao + 9, tw, 16, 8); x.fill();
+    x.fillStyle = p.trio ? '#fff' : '#5b2bb5'; x.fillText(nm, nx, chao + 21);
+    if(!p.trio && !window.TW_CELULAR_LIGADO){ x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe14d'; x.fillText('★ ' + p.best, nx, chao + 36); }
   }
 }
 function hubIdolsReage(p, i){   // pulinho + musiquinha (cada Idol num tom diferente)

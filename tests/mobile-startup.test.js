@@ -23,6 +23,12 @@ ctx='';scope.molduraAtualizar();assert.equal(writes,2);assert.equal(hidden,true)
 assert.equal((mobile.match(/ob\.observe\(document\.body/g)||[]).length,1,'uma inscrição preserva hidden + class + subtree');
 assert(!/function carregamento\(|carregamento\(\);|ov\.className = 'twc-carrega'/.test(mobile),'início não cria nem espera splash decorativa');
 for(const file of ['index.html','tw-celular.css']) assert(read(file).includes('.twc-carrega{display:none!important;pointer-events:none}'),file+': script antigo em cache não pode cobrir o início');
+// Falha de inicialização do celular nunca deve ocultar o hub clássico nem apagar saves.
+assert(mobile.includes("function falhaInicializacao(erro)"),'fallback de inicialização presente');
+assert(mobile.includes("document.body.classList.remove('tw-cel', 'tw-cel-classico'"),'fallback libera hub clássico');
+assert(mobile.includes("window.TW_CELULAR_LIGADO = false;"),'fallback desativa modo celular');
+assert(mobile.includes("}catch(e){ falhaInicializacao(e); }"),'montagem protegida contra exceções');
+assert(mobile.indexOf("desenhar();\n    document.body.classList.add('tw-cel');") > 0,'hub clássico só é ocultado após primeiro desenho');
 const config=JSON.parse(read('vercel.json'));
 assert(config.headers.some(r=>r.source.includes('js')&&r.headers.some(h=>h.value==='public, max-age=0, must-revalidate')));
 console.log('✓ Abertura: mutações agrupadas, moldura estável, toques livres e scripts revalidados');

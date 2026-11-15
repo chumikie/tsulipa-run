@@ -25,6 +25,16 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Studio, tema da semana (banco mudou, com OK):** publicar no mural uma foto no tema dá ★3, uma vez por semana. Arquivo `supabase/sql/aplicado/20261115_studio_tema_semana.sql` (já aplicado). Tema e semana iguais aos do site (domingo 0h de Brasília). No `?demo=1` a regra é simulada.
 - Teste do Meu Camarim aceita a fala da Lirika que alterna por data.
 
+### Análise do site (14/11, depois da #94)
+- **Abertura:** 83 arquivos, ~1,9 MB sem compressão (~0,6 MB comprimido pela Vercel). No computador local, pronto em ~0,8 s (desktop) e ~1,0 s (celular). Console sem erros; nenhum botão sem nome; 1 alvo de toque abaixo de 24 px no celular.
+- **Maiores na abertura:** pet.js 235 KB, centerrun.js 218 KB, index.html 218 KB, perfil.js 115 KB, hub.js 108 KB, mapa-mundo.svg 95 KB.
+- **Próximos ganhos, do mais fácil ao mais trabalhoso:**
+  1. `favicon.svg` (36 KB, quase não comprime): trocar por um ícone pequeno, como foi feito no ícone do topo (52→3 KB).
+  2. Happy⭐Cafe!, Handshake⭐Event! e Dois carregarem sob demanda, igual ao Battle e ao Studio (~140 KB a menos na abertura).
+  3. Center Run (`centerrun.js`) só carregar ao tocar em jogar: o Hub é a primeira tela (~218 KB a menos), mas mexe no fluxo principal; testar bem.
+  4. `perfil.js` sob demanda (abre só no Perfil/Montar Idol).
+  5. Dividir `pet.js` (petPhone e petDraw são usados na abertura; o resto pode esperar).
+
 ### Falta validar (o dono testa)
 - Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.

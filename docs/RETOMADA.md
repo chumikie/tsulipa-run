@@ -1,20 +1,42 @@
-# Retomada — onde paramos (14/11/2026)
+# Retomada — onde paramos (15/11/2026)
 
-## Quadro geral — feito / falta (14/11/2026)
+## Quadro geral — feito / falta (15/11/2026)
 
 Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 
-**Onde está o trabalho:** tudo na branch `visual/layout-hud` (PR #88 → `main`). Ela já inclui o #87 (fechado), o #86 e a antiga branch `feat/mapa-mobile-leitura-20261114`.
+**Onde está o trabalho:** tudo publicado na `main` (Vercel ok). Últimos merges: #88 (14/11), #91, #92 (jogos novos, mapa vivo, charmaker, site mais leve) e #93 (charmaker no Perfil e na Zipper Shop). **Não há PR de trabalho aberto.** Para continuar, crie uma branch nova a partir da `main` e abra um PR novo (sempre um só PR por rodada de trabalho; o dono não gosta de PRs paralelos).
 
-### Concluído (código pronto na #88, banco aplicado)
-- **Fases 0 a 2:** registro de lugares, mapa da cidade e raio-X dos jogos.
-- **Mapa em 2 níveis:** os 6 passos, mais o Mapa Vivo (textos traduzidos, Idols e pets passeando, missões no mapa, placas acesas à noite).
-- **Fase 3, jogos atuais:** hora extra e cor do lightstick no Handshake, Café VIP e gorjeta, pó de estrela e garantia no Gacha, Pedido de cena do Moon⭐Duo! com ★5, anti-cheat do Sora 500 m, metas do Álbum, bônus do dia.
-- **Fase 4, jogos novos:** Bloom⭐Garden! (v1, flores com uso e redesenho), Photo⭐Studio! (v1 e Mural), Idol⭐Battle! (v1, ranking, Arena e Torcida de flores), todos com card no Hub.
-- **Vida de Idol e Camarim:** cidade que reage, lembranças, foto da sessão, sofá e o Pet olhando as lembranças (também no retorno ao Camarim).
-- **Hub:** barra do jogador, destaque do dia, navegação no celular.
-- **Karaoke⭐Time!:** traduções em `kt-traducoes.js` (`karaoke-time.html` com 404 KB; limite 450 KB).
-- **CI:** a sala do Karaoke roda em três máquinas paralelas (job `browser-karaoke-room`); um envio novo cancela a verificação antiga.
+### Publicado em 14–15/11 (#92 e #93) — só front, banco sem mudança
+- **Charmaker (editor do Você), estilo Charat:** prévia grande presa no topo com 7 expressões e ↔ girar; abas com miniaturas desenhadas (Corte, Franja, Mecha, Detalhe, Olhos, Sobrancelha, Boca, Bochecha, Roupa, Parte de baixo, Acessório, Óculos); 🎲 Sortear (nunca muda a pele, respeita trancas) e ↩ Desfazer; paleta de 12 cores de cabelo. Arquivo `charmaker.js`; os `<select>` antigos continuam escondidos e cada toque dispara o mesmo evento (save, trancas e Perfil iguais).
+- **O mesmo estúdio no Montar Idol** do Perfil e da Zipper Shop (`TW_CHARMAKER.montar`). Ali tudo grava sempre no Você via `perfMontMudou` e o sortear é direto, sem trocar o personagem selecionado no Center Run.
+- **Rosto à escolha** (`tw-avatar-rosto.js`, usado pelas três cópias do `drawChar`: Center Run, Karaoke, Sora Jump). O padrão é o rosto clássico de antes, pixel por pixel (decisão do dono: o olhar antigo é mais simpático). Campos novos em `c`: `olho`, `boca`, `bochecha`, `sobrancelha` (`salvar_avatar` guarda o objeto inteiro, sem migração). Olhos novos são só formas cheias, sem traços.
+- **Corpo e itens:** sapatos; saia/bermuda também em Zipper, Sweet e Estrelado; Cacheado menor embaixo; franja Arco-íris com bicos; orelha de elfo na cor da pele; 5 cortes (Rabo lateral, Tranças, Coque, Princesa, Hime) e 4 franjas (Cortina, Curtinha, Pontinhas, Cacheada) em `tw-avatar-hair.js`; acessório novo **Arco estelar** (o laço e a flor foram retirados porque já existiam como Item: Laço azul, Hibisco, Flor de cerejeira); Quepe, Chapéu de palha e Boina assentados na cabeça.
+- **Ferramenta:** `tools/avatar/folha.py` gera a folha de auditoria do avatar (comparar antes/depois).
+- **Mapa vivo:** Idols das ruas em 1,75× com estrelinha no seu Idol; tocar no chão leva o seu Idol até lá; passeantes pulam e respondem; borboletas, gatinho e passarinhos reagem; perto da fonte da Praça, "Desejo feito!". Tudo local.
+- **Jogos novos:** trilha sintetizada por jogo (`jogos-trilha.js`) e efeitos; Jardim com a planta crescendo na rega; Café com paciência colorida e rostinho (normal e Dois no balcão); Battle com lightsticks no ritmo durante o show; Studio com tema da semana e selo no mural; câmeras do Studio medidas no desenho real. Prêmios e regras continuam no servidor.
+- **Página inicial:** 9 jogos em ordem alfabética (3×3 no computador; Star⭐Gacha! em faixa no celular).
+- **Site mais leve:** Idol⭐Battle! carrega sob demanda; ícone do topo de 52 KB para 3 KB; cache de 1 h para JS/CSS/imagens no `vercel.json`.
+
+### Falta validar (o dono testa)
+- Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
+- iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
+- Ouvir os sons (não testados por ouvido).
+- Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
+
+### Ideias na fila (escolha do dono)
+- Prêmio de verdade para o tema da semana do Studio ou os lightsticks do Battle (mexe no servidor: precisa de OK).
+- Backstage⭐Pet! combinando com o visual novo do Idol.
+- Guardar 3 visuais favoritos no charmaker.
+- Dividir `pet.js` (235 KB) e `centerrun.js` (216 KB) para carregar menos.
+
+### Armadilhas conhecidas
+- `hub-polish.css`: depois do marcador "Mapa Vivo⭐" não pode ter `display:none`, `transform:scale`, `touch-action`, `animation:` nem `transition:` (teste `mapa-mobile-leitura`).
+- Um robô regera os SVGs do mapa a cada push com um commit "[skip ci]": faça `git fetch` + `rebase` antes de enviar.
+- Ao mudar `tw-i18n.js`, rode `node tools/i18n/dividir.js`. Antes de criar uma chave, confira se ela já existe (chave repetida sobrescreve a tradução de outro lugar).
+- O `drawChar` existe em três cópias: peças novas vão para os módulos compartilhados (`tw-avatar-*.js`), não para uma cópia só.
+- Antes de criar acessório ou item novo, confira a lista de Itens (`ACC`) e da loja.
+
+## Diário anterior (14/11/2026)
 
 ### Acabamento visual (14/11, tarde)
 - Camarim: o Cantinho de lembranças saiu do meio dos cuidados do pet. Agora fica no fim, fechado, e só mostra as lembranças e o vasinho. A foto e os cards já estão no Celular e na Estante, e o vaso e o porta-retratos já aparecem no desenho do quarto.
@@ -46,7 +68,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 
 ### Teste sem login (modo demonstração)
-- Abrir a prévia com `?demo=1` no fim do endereço: `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/?demo=1`.
+- Abrir o site local (`python3 -m http.server` na raiz) com `?demo=1` no fim do endereço. As prévias de branch da Vercel estão desligadas no `vercel.json` e no domínio oficial o modo demonstração não liga.
 - Cria a conta de mentira "Demo" (★500) e simula no navegador Battle (rival do dia, Top da Arena, Arena, Torcida), Jardim, Photo Studio, Café (partida verificada, cliente VIP, bônus ★10 do dia) e Handshake (8 rodadas, cor do lightstick, prêmio do dia), com os mesmos limites do servidor. O botão **+1 dia** da faixa avança o dia simulado (regas, limites diários, prêmio do dia seguinte).
 - Nada é gravado e tudo some ao recarregar. Nunca liga em `tsulipa-world.vercel.app` (teste: `tests/demo-jogos.test.js`).
 - Também simula o pó do Gacha (converter e resgatar, no Álbum) e o Moon⭐Duo! com o Pedido de cena (★5 uma vez por dia).
@@ -58,7 +80,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - iPhone físico e Safari.
 - Login com Google na prévia.
 
-### Não concluído
+### Não concluído (estado de 14/11, antes dos merges — histórico)
 - **Merge da #88:** é o que coloca tudo isso no site; o merge é do dono.
 - **#89 (Café: Dois no balcão):** o banco está aplicado, mas o front não entrou na #88.
 - **#74 (tela do prêmio do Sora):** rascunho; o SQL dele não deve ser aplicado, porque foi substituído pela versão com anti-cheat.

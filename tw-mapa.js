@@ -454,9 +454,13 @@
     diamantes.forEach(function(d){
       var gi=reduzMov?1:Math.cos(tm*2.4),w=11*Math.max(.25,Math.abs(gi)),y=d.y-(reduzMov?0:Math.sin(tm*2)*3);
       ctx.save();ctx.translate(d.x,y);
+      // Cristal Oshi: facetas e estrela central, preservando âncora e cor do humor.
       ctx.fillStyle=d.cor;ctx.strokeStyle='rgba(30,10,60,.55)';ctx.lineWidth=2;
       ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w,0);ctx.lineTo(0,9);ctx.lineTo(-w,0);ctx.closePath();ctx.fill();ctx.stroke();
-      ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w*.45,-2);ctx.lineTo(0,-1);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.30)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(-w,0);ctx.lineTo(0,9);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.42)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w,0);ctx.lineTo(0,-2);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.48)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,9);ctx.moveTo(-w,0);ctx.lineTo(w,0);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.86)';ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(1.4,-5);ctx.lineTo(4,-4);ctx.lineTo(1.4,-3);ctx.lineTo(0,1);ctx.lineTo(-1.4,-3);ctx.lineTo(-4,-4);ctx.lineTo(-1.4,-5);ctx.closePath();ctx.fill();
       ctx.restore();
     });
   }

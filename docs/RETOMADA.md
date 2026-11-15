@@ -39,6 +39,12 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Armadilha:** peça do Handshake/Café que outro arquivo leia na abertura vai para `jogos-base.js`, nunca fica duplicada (o `var` do jogo zeraria o valor). O teste `jogos-sob-demanda` confere.
 - **Não deu para fazer rápido:** Dois (muito código dele direto no `index.html`), Perfil (`perfil.js` é a biblioteca de desenho dos Idols, usada por 15+ arquivos), Center Run (`centerrun.js` tem ~130 peças usadas por outros arquivos: `drawChar`, `starT`, `setBest`…) e `pet.js`. Os quatro pedem primeiro separar a parte compartilhada em arquivos próprios; é uma reforma maior, para uma rodada só dela.
 
+### Medição de código parado (15/11, cobertura do Chrome na abertura)
+- 1271 KB de JS carregados, ~935 KB não executados na abertura. Maiores: `pet.js` (13% usado), `centerrun.js` (20%), `perfil.js` (19%), `hub.js` (33%), `jornal.js` (14%), `duo.js` (11%).
+- **Por que não dá para só "carregar depois":** a análise de dependências (`/tmp`, script de grafo) mostra que só 5 KB do `centerrun.js` e 0 KB do `pet.js` são usados apenas por eles mesmos; o resto é chamado pelo código direto no `index.html` (laço da corrida, telas, aviso de login). Tirar da abertura exige antes mudar o `index.html` para o laço da corrida e o pet só começarem ao serem abertos.
+- **Também avaliados e deixados:** módulos do karaokê no Idol⭐News! (`KaraokeRoomViews`, `KaraokeNewsPhoto`: sem eles a foto da janela some sem erro), `admin.js` (19 KB, ligado em muitos pontos), Dois (código espalhado por ~250 linhas do `index.html`).
+- **Se quiser seguir:** reforma própria em etapas: (1) laço e telas da corrida para uma função de início chamada ao tocar em jogar; (2) o mesmo para o pet; (3) só então separar arquivos. Cada etapa numa PR, testando a corrida inteira.
+
 ### Falta validar (o dono testa)
 - Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
 - Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).

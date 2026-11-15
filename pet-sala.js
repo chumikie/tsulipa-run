@@ -1130,7 +1130,7 @@ function petPhoneRender(){
     return;
   }
   if(petPhoneTela === 'humor' && typeof window !== 'undefined' && window.TW_HUMOR){   // app Humor (tw-humor.js): barrinhas, desejo, série, recados do trio e a foto VIP
-    corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>💎 ' + escHtml(window.TW_HUMOR.t('app')) + '</h2></header>' + window.TW_HUMOR.appHtml();
+    corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + escHtml(window.TW_HUMOR.t('app')) + '</h2></header>' + window.TW_HUMOR.appHtml();
     window.TW_HUMOR.mensagensLidas();
     return;
   }

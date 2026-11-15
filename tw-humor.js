@@ -13,7 +13,7 @@
     brilho:{pt:'Brilho',en:'Sparkle',es:'Brillo',id:'Kilau',th:'ประกาย',ja:'キラキラ'},
     amizade:{pt:'Amizade',en:'Friendship',es:'Amistad',id:'Pertemanan',th:'มิตรภาพ',ja:'なかよし'},
     desejo:{pt:'Desejo do dia',en:'Wish of the day',es:'Deseo del día',id:'Keinginan hari ini',th:'ความปรารถนาประจำวัน',ja:'きょうのおねがい'},
-    feito:{pt:'Desejo cumprido! ✨',en:'Wish granted! ✨',es:'¡Deseo cumplido! ✨',id:'Keinginan terkabul! ✨',th:'สมหวังแล้ว! ✨',ja:'おねがいかなった！✨'},
+    feito:{pt:'Desejo cumprido!',en:'Wish granted!',es:'¡Deseo cumplido!',id:'Keinginan terkabul!',th:'สมหวังแล้ว!',ja:'おねがいかなった！'},
     serie:{pt:'{n} dia(s) seguido(s)',en:'{n}-day streak',es:'{n} día(s) seguido(s)',id:'{n} hari berturut-turut',th:'ติดต่อกัน {n} วัน',ja:'{n}日れんぞく'},
     ir:{pt:'Ir',en:'Go',es:'Ir',id:'Ayo',th:'ไป',ja:'いく'},
     dica:{pt:'Jogar enche as barrinhas; a Energia volta sozinha descansando.',en:'Playing fills the bars; Energy comes back by resting.',es:'Jugar llena las barras; la Energía vuelve descansando.',id:'Bermain mengisi bar; Energi pulih sendiri saat istirahat.',th:'เล่นเกมเพื่อเติมแถบ พลังงานจะฟื้นเองเมื่อพัก',ja:'あそぶとバーがたまります。げんきは休むともどります。'},
@@ -144,29 +144,49 @@
     var st = document.createElement('style'); st.id = 'twHumorAppCss';
     st.textContent = '.twh-app{display:grid;gap:12px;padding:4px 2px 14px;font-family:"M PLUS Rounded 1c",sans-serif}' +
       '.twh-box{background:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 2px 0 rgba(123,63,240,.12)}' +
-      '.twh-box h3{margin:0 0 8px;font:400 13px "Mochiy Pop One",sans-serif;color:#7b3ff0}' +
+      '.twh-box h3{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px;font:400 13px "Mochiy Pop One",sans-serif;color:#7b3ff0}.twh-ic{flex:none}' +
+      '.twh-serie{display:inline-flex;align-items:center;gap:3px;margin-left:auto;padding:2px 8px;border-radius:99px;background:#ffe3f1;color:#c2367f;font:800 11px "M PLUS Rounded 1c",sans-serif}' +
+      '.twh-av{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#fff;font:400 12px "Mochiy Pop One",sans-serif;font-style:normal;box-shadow:0 0 0 2px #fff,0 2px 0 2px rgba(60,30,120,.12)}' +
+      '.twh-d{padding:8px 10px;border-radius:12px;background:#fff4fb;border:2px dashed #e2ccff;font-weight:800}.twh-ok{border-style:solid;border-color:#9be15d;background:#f4ffe6}' +
+      '.twh-p{display:flex;align-items:center;gap:8px}.twh-pi{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#f6f0ff}' +
       '.twh-b{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:6px;margin:5px 0;font-weight:800;font-size:12px;color:#6b5a8e}' +
       '.twh-b i{display:block;height:9px;border-radius:9px;background:#efe7ff;overflow:hidden}.twh-b b{display:block;height:100%;border-radius:9px}' +
       '.twh-d{display:flex;gap:8px;align-items:center;font-weight:800}.twh-d span{font-size:24px}' +
-      '.twh-r{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:13px;line-height:1.4}.twh-r em{font-style:normal;font-size:18px}' +
+      '.twh-r{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:13px;line-height:1.4}' +
       '.twh-r small{display:block;color:#9a86c8;font-weight:800}.twh-p{margin:4px 0;font-size:12.5px;font-weight:700}.twh-p.off{opacity:.45}' +
       '.twh-foto img{display:block;width:100%;border-radius:6px;box-shadow:0 3px 10px rgba(60,30,120,.2)}.twh-foto a{display:inline-block;margin-top:8px;font-weight:800;color:#7b3ff0}';
     document.head.appendChild(st);
   }
+  // ícones pequenos desenhados (o app segue o visual do TsuPhone, sem emojis)
+  var SVG = {
+    diamante:'<path d="M12 3l6 7-6 11L6 10z" fill="currentColor" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    carta:'<rect x="3" y="6" width="18" height="13" rx="3" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M4 8l8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    presente:'<rect x="4" y="10" width="16" height="10" rx="2" fill="currentColor"/><rect x="3" y="7" width="18" height="4" rx="1.5" fill="currentColor"/><path d="M12 7v13" stroke="#fff" stroke-width="2"/><path d="M12 7c-2-3-6-3-5 0M12 7c2-3 6-3 5 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    trofeu:'<path d="M7 4h10v5a5 5 0 01-10 0z" fill="currentColor"/><path d="M7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4M12 14v4M8 20h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    luzes:'<circle cx="5" cy="7" r="2.4" fill="currentColor"/><circle cx="12" cy="5" r="2.4" fill="currentColor"/><circle cx="19" cy="7" r="2.4" fill="currentColor"/><circle cx="5" cy="15" r="2.4" fill="currentColor"/><circle cx="19" cy="15" r="2.4" fill="currentColor"/><rect x="8" y="9" width="8" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>',
+    tapete:'<path d="M8 4h8l4 16H4z" fill="currentColor"/><path d="M12 4v16" stroke="#fff" stroke-width="1.6" opacity=".5"/>',
+    coroa:'<path d="M3 18h18l1-11-5.5 4.5L12 5l-4.5 6.5L2 7z" fill="currentColor"/>',
+    chama:'<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-3.6-2.8-5.6-3.6-9.3-1.9 1.4-2.8 3.2-2.6 5.4-1.4-.9-2.2-2.3-2.3-4C7.7 9 5.5 11.4 5.5 14.8 5.5 18.4 8 21 12 21z" fill="currentColor"/>',
+    coracao:'<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="currentColor"/>',
+    cadeado:'<rect x="5" y="11" width="14" height="9" rx="2.5" fill="currentColor"/><path d="M8 11V8a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/>',
+    estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="currentColor"/>'
+  };
+  function svg(k, cor, tam){ return '<svg class="twh-ic" viewBox="0 0 24 24" width="' + (tam || 18) + '" height="' + (tam || 18) + '" style="color:' + cor + '" aria-hidden="true">' + (SVG[k] || SVG.estrela) + '</svg>'; }
   function appHtml(){
     ler(); estiloApp();
     var e = H.estado(), d = H.desejo(), pr = H.premios(), f = fotoVip(), L2 = lang();
     var cores = {energia:'#7be35a', diversao:'#ff6fb5', brilho:'#ffd23f', amizade:'#4169e1'};
     var rec = (est.recados || []).map(function(r){ var q = RECADOS[r.k] || RECADOS[0], m = q[2][r.m] || q[2][0];
-      return '<div class="twh-r"><em aria-hidden="true">' + q[1] + '</em><span><small>' + esc(q[0]) + ' · ' + esc(r.dia.split('-').reverse().slice(0, 2).join('/')) + '</small>' + esc(m[L2] || m.pt) + '</span></div>'; }).join('');
+      return '<div class="twh-r"><em class="twh-av" style="background:' + ['#9b30d9', '#4fa81a', '#4169e1'][r.k] + '" aria-hidden="true">' + esc(q[0].charAt(0)) + '</em><span><small>' + esc(q[0]) + ' · ' + esc(r.dia.split('-').reverse().slice(0, 2).join('/')) + '</small>' + esc(m[L2] || m.pt) + '</span></div>'; }).join('');
     return '<div class="twh-app">' +
-      '<section class="twh-box"><h3>💎 ' + esc(t('humor')) + (e.serie ? ' · 🔥 ' + esc(t('serie', e.serie)) : '') + '</h3>' +
+      '<section class="twh-box"><h3>' + svg('diamante', e.cor) + esc(t('humor')) + (e.serie ? '<span class="twh-serie">' + svg('chama', '#ff6f3d', 14) + esc(t('serie', e.serie)) + '</span>' : '') + '</h3>' +
         BARRAS.map(function(b){ return '<div class="twh-b"><span>' + esc(t(b)) + '</span><i><b style="width:' + e[b] + '%;background:' + cores[b] + '"></b></i></div>'; }).join('') + '</section>' +
-      '<section class="twh-box"><h3>' + esc(t('desejo')) + '</h3><div class="twh-d"><span aria-hidden="true">' + d.icone + '</span>' + esc(d.feito ? t('feito') : d.texto) + '</div></section>' +
-      '<section class="twh-box"><h3>💌 ' + esc(t('recados')) + '</h3>' + (rec || '<p class="twh-p">' + esc(t('semRecado')) + '</p>') + '</section>' +
-      '<section class="twh-box"><h3>🎁 ' + esc(t('premios')) + '</h3>' +
-        [['trofeu', '🏆', 'pTrofeu'], ['espelho', '✨', 'pEspelho'], ['tapete', '🟥', 'pTapete']].map(function(p){ return '<p class="twh-p' + (pr[p[0]] ? '' : ' off') + '">' + (pr[p[0]] ? p[1] : '🔒') + ' ' + esc(t(p[2])) + '</p>'; }).join('') + '</section>' +
-      (f ? '<section class="twh-box twh-foto"><h3>👑 ' + esc(t('fotoVip')) + '</h3><img src="' + f.url + '" alt="' + esc(t('fotoVip')) + '"><a href="' + f.url + '" download="tsulipa-camarim-vip.jpg">' + esc(t('baixar')) + '</a></section>' : '') +
+      '<section class="twh-box"><h3>' + svg('estrela', '#ff6fb5') + esc(t('desejo')) + '</h3><div class="twh-d' + (d.feito ? ' twh-ok' : '') + '">' + esc(d.feito ? t('feito') : d.texto) + '</div></section>' +
+      '<section class="twh-box"><h3>' + svg('carta', '#ff6fb5') + esc(t('recados')) + '</h3>' + (rec || '<p class="twh-p">' + esc(t('semRecado')) + '</p>') + '</section>' +
+      '<section class="twh-box"><h3>' + svg('presente', '#7b3ff0') + esc(t('premios')) + '</h3>' +
+        [['trofeu', 'trofeu', 'pTrofeu', '#e0a400'], ['espelho', 'luzes', 'pEspelho', '#ffb300'], ['tapete', 'tapete', 'pTapete', '#c2185b']].map(function(p){
+          return '<p class="twh-p' + (pr[p[0]] ? '' : ' off') + '"><span class="twh-pi">' + svg(pr[p[0]] ? p[1] : 'cadeado', pr[p[0]] ? p[3] : '#b9a7dc', 16) + '</span>' + esc(t(p[2])) + '</p>'; }).join('') + '</section>' +
+      (f ? '<section class="twh-box twh-foto"><h3>' + svg('coroa', '#e0a400') + esc(t('fotoVip')) + '</h3><img src="' + f.url + '" alt="' + esc(t('fotoVip')) + '"><a href="' + f.url + '" download="tsulipa-camarim-vip.jpg">' + esc(t('baixar')) + '</a></section>' : '') +
       '</div>';
   }
 

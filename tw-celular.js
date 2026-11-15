@@ -57,7 +57,7 @@
   function t(k){ return T[L()][k] || T.pt[k]; }
   // Textos da rodada BarbieGirls/Zwinky (15/11): frases, interiores, Cantinho dos pais e manutenção
   var T2 = {
-    falar:{pt:'💬 Falar',en:'💬 Say',es:'💬 Decir',id:'💬 Bilang',th:'💬 พูด',ja:'💬 ひとこと'},
+    falar:{pt:'Falar',en:'Say',es:'Decir',id:'Bilang',th:'พูด',ja:'ひとこと'},
     entrarEm:{pt:'Entrar: {n}',en:'Go in: {n}',es:'Entrar: {n}',id:'Masuk: {n}',th:'เข้า: {n}',ja:'入る：{n}'},
     dentroSub:{pt:'Quem passa por aqui agora',en:"Who's hanging out here now",es:'Quién está aquí ahora',id:'Siapa yang ada di sini',th:'ใครอยู่ที่นี่ตอนนี้',ja:'いまここにいるアイドル'},
     pais:{pt:'Cantinho dos pais',en:"Parents' corner",es:'Rincón de los padres',id:'Pojok orang tua',th:'มุมผู้ปกครอง',ja:'保護者のみなさまへ'},
@@ -119,6 +119,19 @@
     voltar:'<path d="M9 7L4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 0 10h-2"/>', menu:'<path d="M5 8h14M5 12h14M5 16h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
     casa:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/>', cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
     estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    bolo:'<path d="M4 20h16M5 20v-7h14v7"/><path d="M5 15c2 1.5 4 1.5 7 0s5-1.5 7 0"/><path d="M12 13V9"/><path d="M12 6.5c.8-.8.8-1.7 0-2.5-.8.8-.8 1.7 0 2.5z"/>',
+    pin:'<path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>',
+    regua:'<path d="M4 17L17 4l3 3L7 20z"/><path d="M8 13l1.5 1.5M11 10l1.5 1.5M14 7l1.5 1.5"/>',
+    paleta:'<path d="M12 3a9 9 0 100 18c1.4 0 2-1 1.6-2-.5-1.2.3-2.4 1.6-2.4H17a4 4 0 004-4c0-5.2-4-9.6-9-9.6z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+    pata:'<circle cx="7" cy="9" r="1.8"/><circle cx="12" cy="6.5" r="1.8"/><circle cx="17" cy="9" r="1.8"/><path d="M12 12c-3 0-5.5 3-5.5 5.2 0 1.6 1.5 2.3 3 1.8 1.6-.5 3.4-.5 5 0 1.5.5 3-.2 3-1.8C17.5 15 15 12 12 12z"/>',
+    coracao:'<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/>',
+    aspas:'<path d="M5 17c0-4 1.5-7 4.5-8.5M14 17c0-4 1.5-7 4.5-8.5"/><circle cx="7" cy="16" r="2"/><circle cx="16" cy="16" r="2"/>',
+    coroa:'<path d="M4 18h16l1-10-5 4-4-6-4 6-5-4z"/>',
+    chama:'<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-3.6-2.8-5.6-3.6-9.3-1.9 1.4-2.8 3.2-2.6 5.4-1.4-.9-2.2-2.3-2.3-4C7.7 9 5.5 11.4 5.5 14.8 5.5 18.4 8 21 12 21z"/>',
+    fala:'<path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2h-7l-5 4v-4H5a2 2 0 01-2-2V7a2 2 0 012-2z"/>',
+    escudo:'<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    nuvem:'<path d="M7 18h10a4 4 0 00.6-8 6 6 0 00-11.4 1.6A3.3 3.3 0 007 18z"/>',
+    arcoiris:'<path d="M3 18a9 9 0 0118 0"/><path d="M6.5 18a5.5 5.5 0 0111 0"/><path d="M10 18a2 2 0 014 0"/>',
     trio:'<circle cx="12" cy="7" r="3.2"/><circle cx="6" cy="15" r="3.2"/><circle cx="18" cy="15" r="3.2"/><path d="M9.6 9.4L7.8 12.3M14.4 9.4l1.8 2.9M9.2 15h5.6"/>'
   };
   function ico(k, tam){ return '<svg class="twc-ico" width="' + (tam || 28) + '" height="' + (tam || 28) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[k] || P.estrela) + '</svg>'; }
@@ -459,29 +472,30 @@
     var barras = H.barras.map(function(b){ var v = e[b];
       return '<div class="twc-hb twc-hb-' + b + '"><span>' + esc(H.t(b)) + '</span><i role="progressbar" aria-label="' + esc(H.t(b)) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + v + '"><b style="width:' + v + '%"></b></i></div>'; }).join('');
     return '<section class="twc-humor" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
-      (e.serie > 0 ? '<em class="twc-serie">🔥 ' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
+      (e.serie > 0 ? '<em class="twc-serie"><span aria-hidden="true">' + ico('chama', 14) + '</span>' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
       '<div class="twc-hbs">' + barras + '</div>' +
       (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') +
-      '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico" aria-hidden="true">' + d.icone + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
+      '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(d.ev)] || 'rosa') + '" aria-hidden="true">' + ico(d.feito ? 'check' : desejoIco(d.ev), 22) + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
         (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>') + '</div>' +
-      '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span aria-hidden="true">👑</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
+      '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span class="twc-vip-coroa" aria-hidden="true">' + ico('coroa', 24) + '</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
         (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>';
   }
+  function desejoIco(ev){ return ev === 'frase' ? 'fala' : ev; }
   function desejoIr(ev){
     if(ev === 'mapa' || ev === 'frase'){ ir('emb:mapa'); return; }
     if(ev === 'battle' && typeof window.battleAbrir === 'function' && !card('battle')){ window.battleAbrir(); return; }
     if(ev === 'studio' && typeof window.studioAbrir === 'function' && !card('studio')){ window.studioAbrir(); return; }
     abrirCard(ev);
   }
-  function toast(txt){
+  function toast(txt, icone){
     if(!cel) return; var el = $id('twcToast');
     if(!el){ el = document.createElement('div'); el.id = 'twcToast'; el.className = 'twc-toast'; el.setAttribute('role', 'status'); cel.appendChild(el); }
-    el.textContent = txt; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
+    el.innerHTML = (icone ? '<span class="twc-toast-ic" aria-hidden="true">' + ico(icone, 22) + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
     clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
   }
   if(window.TW_HUMOR) window.TW_HUMOR.ouvir(function(tipo){
     if(tipo === 'desejo'){ var rq = window.TW_HUMOR.ultimoRecado();
-      toast('👑 ' + window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou') + (rq && logado() ? '\n' + window.TW_HUMOR.t('novoRecado', rq) : ''));
+      toast(window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou') + (rq && logado() ? '\n' + window.TW_HUMOR.t('novoRecado', rq).replace(/^📱\s*/, '') : ''), 'coroa');
       if(typeof petBg !== 'undefined') try{ petBg = null; }catch(e){} try{ if(typeof beep === 'function'){ beep(784, .08, 'triangle', .05); setTimeout(function(){ beep(1175, .12, 'triangle', .05); }, 110); } }catch(e){} }
     if(cel && !classico && topo() === 'inicio') agendaDesenho();
   });
@@ -504,7 +518,7 @@
   /* ---------- frases prontas (sem chat livre) ---------- */
   function frasesHtml(){
     var P = window.TW_PRESENCA; if(!P) return '';
-    return '<section class="twc-frases" aria-labelledby="twcFrasesT"><h2 id="twcFrasesT">' + esc(t2('falar')) + '</h2><div class="twc-frases-l">' +
+    return '<section class="twc-frases" aria-labelledby="twcFrasesT"><h2 id="twcFrasesT"><span aria-hidden="true">' + ico('fala', 18) + '</span>' + esc(t2('falar').replace(/^💬\s*/, '')) + '</h2><div class="twc-frases-l">' +
       P.frases.map(function(k){ return '<button type="button" data-frase="' + k + '">' + esc(P.texto(k)) + '</button>'; }).join('') + '</div>' +
       (logado() ? '' : '<p class="twc-frases-dica">' + esc(P.ui('so')) + '</p>') + '</section>';
   }
@@ -512,13 +526,14 @@
   /* ---------- entrar nos lugares (ideia do BarbieGirls, arte nossa): o Café, a Zipper⭐Shop! e o Star⭐Gacha! têm um
      "lado de dentro" com quem está online nessa rua (e a vitrine) passeando, com os balões das frases prontas.
      O botão grande abre o lugar de verdade (o mesmo card do hub, com as mesmas regras). ---------- */
-  var DENTRO = {cafe:{cor:['#ffe9d6', '#f7c9a4', '#c98a5a'], ico:'cafe', nome:'Café'}, loja:{cor:['#f3e6ff', '#e2ccff', '#9a6fd6'], ico:'loja', nome:'Zipper⭐Shop!'},
-    gacha:{cor:['#e5f6ff', '#c3e7ff', '#5a9fd6'], ico:'gacha', nome:'Star⭐Gacha!'},
-    vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f'], ico:'estrela', nome:'Camarim VIP'}};
+  // cores: [parede em cima, piso em cima, rodameio, parede embaixo, piso embaixo]
+  var DENTRO = {cafe:{cor:['#fff3e6', '#f2c49c', '#c98a5a', '#ffe1c7', '#dca47a'], ico:'cafe', nome:'Café'}, loja:{cor:['#f6ecff', '#e7d4ff', '#9a6fd6', '#ead9ff', '#cdb1f5'], ico:'loja', nome:'Zipper⭐Shop!'},
+    gacha:{cor:['#ecf8ff', '#c9e8ff', '#5a9fd6', '#d6efff', '#a9d4f5'], ico:'gacha', nome:'Star⭐Gacha!'},
+    vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f', '#5a2470', '#4a1a52'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
   function telaDentro(id){
     var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
-    var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto">📸 ' + esc(t2('vipFoto')) + '</button>'
+    var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto"><span class="twc-btn-ic" aria-hidden="true">' + ico('studio', 20) + '</span>' + esc(t2('vipFoto')) + '</button>'
       : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
     return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
       botao + frasesHtml() + '</div>';
@@ -540,61 +555,125 @@
     return L2.slice(0, 4);
   }
   function dentroDesenhar(cv, id, s){
-    var x = cv.getContext('2d'), W = cv.width, H = cv.height, d = DENTRO[id] || DENTRO.cafe, chao = H - 70;
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height, d = DENTRO[id] || DENTRO.cafe, chao = H - 70, PISO = chao - 40;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
-    x.fillStyle = d.cor[0]; x.fillRect(0, 0, W, chao - 40);                                   // parede
-    x.fillStyle = 'rgba(255,255,255,.55)'; for(var i = 0; i < W; i += 40) x.fillRect(i, 0, 18, chao - 40);   // listras
-    x.fillStyle = d.cor[1]; x.fillRect(0, chao - 40, W, H);                                    // piso
-    x.fillStyle = 'rgba(255,255,255,.35)'; for(var j = 0; j < W; j += 64) x.fillRect(j, chao - 40, 2, H);
-    x.fillStyle = d.cor[2]; x.fillRect(0, chao - 44, W, 6);                                    // rodapé
-    // móveis de cada lugar (formas simples, cores chapadas)
-    function caixa(a, b, w, h, r, cor){ x.fillStyle = cor; x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.fill(); }
-    if(id === 'cafe'){
-      caixa(30, chao - 150, 190, 110, 14, '#fff'); caixa(30, chao - 150, 190, 26, 12, '#ff9cc8');                  // balcão
-      ['#ffb3d6', '#fff3a8', '#b6ff3b'].forEach(function(c2, k){ caixa(52 + k * 56, chao - 176, 34, 26, 8, c2); x.fillStyle = '#ff6fb5'; x.beginPath(); x.arc(69 + k * 56, chao - 178, 6, 0, 7); x.fill(); });   // cupcakes
-      caixa(380, chao - 96, 220, 60, 22, '#8fd3ff'); caixa(390, chao - 120, 200, 34, 16, '#b7e4ff');                // sofá
-      caixa(300, chao - 70, 64, 10, 5, '#fff'); x.fillStyle = '#c98a5a'; x.fillRect(328, chao - 60, 8, 34);          // mesinha
-      caixa(250, 34, 140, 70, 12, '#fff'); x.fillStyle = '#c98a5a'; x.font = '22px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('MENU ♡', 320, 78);
-    } else if(id === 'loja'){
-      x.strokeStyle = '#9a6fd6'; x.lineWidth = 6; x.beginPath(); x.moveTo(36, chao - 190); x.lineTo(236, chao - 190); x.stroke();      // arara
-      ['#ff6fb5', '#7b3ff0', '#4169e1', '#b6ff3b', '#ffd23f'].forEach(function(c2, k){ caixa(46 + k * 38, chao - 186, 30, 74, 8, c2); });
-      caixa(470, chao - 230, 120, 190, 60, '#fff'); caixa(482, chao - 218, 96, 166, 48, '#d8ecff');                 // espelho
-      x.fillStyle = 'rgba(255,255,255,.8)'; x.fillRect(500, chao - 196, 10, 60);
-      caixa(270, chao - 64, 150, 30, 14, '#ffc2e2');                                                                 // tapete-passarela
-    } else if(id === 'vip'){   // Camarim VIP: tapete vermelho, espelho dourado com lâmpadas, cordão de veludo e holofote
-      var hol = x.createRadialGradient(W / 2, 0, 10, W / 2, 120, 330); hol.addColorStop(0, 'rgba(255,240,180,.45)'); hol.addColorStop(1, 'rgba(255,240,180,0)');
-      x.fillStyle = hol; x.fillRect(0, 0, W, chao);
-      caixa(250, 30, 140, 150, 70, '#ffd23f'); caixa(262, 42, 116, 126, 58, '#e9dcff');
-      for(var lb = 0; lb < 10; lb++){ var an = Math.PI + lb / 9 * Math.PI; x.fillStyle = (Math.floor(s * 3) + lb) % 2 ? '#fff6c4' : '#ffe57a'; x.beginPath(); x.arc(320 + Math.cos(an) * 80, 105 + Math.sin(an) * 82, 6, 0, 7); x.fill(); }
-      x.fillStyle = '#c2185b'; x.beginPath(); x.moveTo(250, H); x.lineTo(390, H); x.lineTo(360, chao - 40); x.lineTo(280, chao - 40); x.closePath(); x.fill();
-      x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(318, chao - 40, 4, H);
-      [[70, '#ffd23f'], [570, '#ffd23f']].forEach(function(pp){ x.fillStyle = pp[1]; x.fillRect(pp[0] - 4, chao - 110, 8, 76); x.beginPath(); x.arc(pp[0], chao - 112, 9, 0, 7); x.fill(); });
-      x.strokeStyle = '#b0124f'; x.lineWidth = 7; x.beginPath(); x.moveTo(70, chao - 96); x.quadraticCurveTo(150, chao - 60, 230, chao - 96); x.moveTo(410, chao - 96); x.quadraticCurveTo(490, chao - 60, 570, chao - 96); x.stroke();
-      x.fillStyle = '#ffd23f'; x.font = '40px sans-serif'; x.textAlign = 'center';
-      for(var st2 = 0; st2 < 6; st2++){ x.globalAlpha = .4 + .6 * Math.abs(Math.sin(s * 1.5 + st2)); x.fillText('✦', 40 + st2 * 112, 40 + (st2 % 2) * 30); } x.globalAlpha = 1;
-    } else {
-      caixa(40, chao - 220, 150, 190, 24, '#ff6fb5'); x.fillStyle = '#e8f6ff'; x.beginPath(); x.arc(115, chao - 160, 52, 0, 7); x.fill();   // máquina
-      ['#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1', '#fff'].forEach(function(c2, k){ x.fillStyle = c2; x.beginPath(); x.arc(90 + (k % 3) * 24, chao - 172 + Math.floor(k / 3) * 26 + Math.sin(s * 2 + k) * 2, 11, 0, 7); x.fill(); });
-      caixa(95, chao - 92, 40, 30, 8, '#fff'); caixa(440, 40, 150, 150, 18, '#fff'); x.font = '60px sans-serif'; x.textAlign = 'center'; x.fillText('⭐', 515, 140);
+    // kit de desenho no mesmo jeito do mapa: formas arredondadas, degradê suave e contorno branco + sombra de contato
+    function forma(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+    function caixa(a, b, w, h, r, cor, cor2, contorno){
+      forma(a, b, w, h, r);
+      if(cor2){ var gg = x.createLinearGradient(0, b, 0, b + h); gg.addColorStop(0, cor); gg.addColorStop(1, cor2); x.fillStyle = gg; } else x.fillStyle = cor;
+      x.fill(); if(contorno !== false){ x.strokeStyle = contorno || 'rgba(255,255,255,.9)'; x.lineWidth = 3; x.stroke(); }
     }
+    function sombra(cx, cy, rx){ x.fillStyle = 'rgba(60,20,90,.14)'; x.beginPath(); x.ellipse(cx, cy, rx, rx * .16, 0, 0, 7); x.fill(); }
+    function brilho(a, b, r){ x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); for(var i = 0; i < 8; i++){ var rr2 = i % 2 ? r * .35 : r, an = i * Math.PI / 4; x.lineTo(a + Math.cos(an) * rr2, b + Math.sin(an) * rr2); } x.closePath(); x.fill(); }
+    // parede com listras + rodameio, janela com céu e varal de luzinhas
+    var pg = x.createLinearGradient(0, 0, 0, PISO); pg.addColorStop(0, d.cor[0]); pg.addColorStop(1, d.cor[3] || d.cor[0]);
+    x.fillStyle = pg; x.fillRect(0, 0, W, PISO);
+    x.fillStyle = 'rgba(255,255,255,' + (id === 'vip' ? '.05' : '.45') + ')'; for(var i = 0; i < W; i += 44) x.fillRect(i, 0, 20, PISO);
+    var pv = x.createLinearGradient(0, PISO, 0, H); pv.addColorStop(0, d.cor[1]); pv.addColorStop(1, d.cor[4] || d.cor[1]);
+    x.fillStyle = pv; x.fillRect(0, PISO, W, H - PISO);
+    x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 2; for(var j = -H; j < W; j += 58){ x.beginPath(); x.moveTo(j, H); x.lineTo(j + 70, PISO); x.stroke(); }
+    x.fillStyle = d.cor[2]; x.fillRect(0, PISO - 6, W, 8); x.fillStyle = 'rgba(255,255,255,.5)'; x.fillRect(0, PISO - 6, W, 2);
+    if(id !== 'vip'){
+      caixa(W - 150, 28, 118, 92, 14, '#cfeeff', '#eaf7ff'); x.fillStyle = '#fff'; x.fillRect(W - 92, 30, 4, 88); x.fillRect(W - 148, 72, 114, 4);
+      x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(W - 120, 56, 18, 7, 0, 0, 7); x.ellipse(W - 60, 96, 14, 5, 0, 0, 7); x.fill();
+      x.strokeStyle = 'rgba(123,63,240,.35)'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 16); x.quadraticCurveTo(W / 2, 46, W, 16); x.stroke();
+      ['#ff6fb5', '#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1'].forEach(function(c2, k){ for(var q = k; q < 16; q += 5){ var lx = 20 + q * 40, ly = 16 + Math.sin(lx / W * Math.PI) * 26;
+        x.fillStyle = c2; x.globalAlpha = .55 + .45 * Math.abs(Math.sin(s * 2 + q)); x.beginPath(); x.arc(lx, ly + 7, 5.5, 0, 7); x.fill(); x.globalAlpha = 1; } });
+    }
+    if(id === 'cafe'){
+      // vitrine de doces + balcão de madeira, quadro de menu e luminárias
+      caixa(250, 44, 150, 86, 14, '#3a2a35', '#2e2029', '#c98a5a'); x.fillStyle = '#fff8e6'; x.font = '400 20px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('MENU ♡', 325, 76);
+      x.fillStyle = 'rgba(255,255,255,.75)'; x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillText('shake · frappé · cupcake', 325, 102);
+      [140, 520].forEach(function(lx){ x.strokeStyle = '#c98a5a'; x.lineWidth = 2; x.beginPath(); x.moveTo(lx, 0); x.lineTo(lx, 40); x.stroke();
+        var lg = x.createRadialGradient(lx, 52, 4, lx, 70, 90); lg.addColorStop(0, 'rgba(255,236,170,.55)'); lg.addColorStop(1, 'rgba(255,236,170,0)'); x.fillStyle = lg; x.fillRect(lx - 90, 40, 180, 150);
+        x.fillStyle = '#ff9cc8'; x.beginPath(); x.moveTo(lx - 18, 56); x.lineTo(lx + 18, 56); x.lineTo(lx + 10, 40); x.lineTo(lx - 10, 40); x.closePath(); x.fill(); });
+      sombra(140, PISO + 2, 120);
+      caixa(30, chao - 160, 220, 52, 14, '#e8f6ff', '#cde9ff'); [['#ffb3d6', '#ff6fb5'], ['#fff3a8', '#ffd23f'], ['#d8ffb0', '#7be35a'], ['#e2ccff', '#9b5cff']].forEach(function(c2, k){
+        var cx2 = 62 + k * 52; caixa(cx2 - 15, chao - 140, 30, 22, 6, c2[0], null, false); x.fillStyle = c2[1]; x.beginPath(); x.arc(cx2, chao - 142, 13, Math.PI, 0); x.fill();
+        x.fillStyle = '#ff3d6e'; x.beginPath(); x.arc(cx2, chao - 158, 4, 0, 7); x.fill(); });
+      caixa(30, chao - 110, 220, 70, 16, '#d9a173', '#b97c50'); x.fillStyle = 'rgba(255,255,255,.25)'; x.fillRect(40, chao - 84, 200, 3); x.fillRect(40, chao - 64, 200, 3);
+      sombra(500, PISO + 6, 130);
+      caixa(390, chao - 104, 230, 64, 26, '#8fd3ff', '#5fb8f0'); caixa(400, chao - 132, 210, 44, 20, '#b7e4ff', '#8fd3ff');
+      [430, 505, 580].forEach(function(px2){ caixa(px2 - 26, chao - 126, 52, 30, 14, '#ffd0e8', '#ffb3d6'); });
+      sombra(325, PISO + 30, 40); x.fillStyle = '#c98a5a'; x.fillRect(321, chao - 62, 8, 52); caixa(290, chao - 70, 70, 12, 6, '#fff');
+      caixa(306, chao - 92, 14, 22, 5, '#ff9cc8', null, false); caixa(330, chao - 88, 14, 18, 5, '#b6ff3b', null, false);
+    } else if(id === 'loja'){
+      // arara com roupas de verdade (vestido, saia, jaqueta), espelho de camarim e prateleira de sapatos/bolsas
+      sombra(140, PISO + 2, 120);
+      x.strokeStyle = '#b39ad9'; x.lineWidth = 6; x.lineCap = 'round'; x.beginPath(); x.moveTo(36, chao - 200); x.lineTo(246, chao - 200); x.moveTo(44, chao - 200); x.lineTo(44, chao - 34); x.moveTo(238, chao - 200); x.lineTo(238, chao - 34); x.stroke();
+      [['#ff6fb5', 'vestido'], ['#7b3ff0', 'jaqueta'], ['#4169e1', 'saia'], ['#b6ff3b', 'vestido'], ['#ffd23f', 'jaqueta']].forEach(function(r2, k){
+        var cx2 = 70 + k * 38; x.strokeStyle = '#8f7bb0'; x.lineWidth = 2; x.beginPath(); x.arc(cx2, chao - 194, 5, Math.PI, 0); x.stroke();
+        x.fillStyle = r2[0]; x.strokeStyle = '#fff'; x.lineWidth = 2.5; x.beginPath();
+        if(r2[1] === 'vestido'){ x.moveTo(cx2 - 9, chao - 188); x.lineTo(cx2 + 9, chao - 188); x.lineTo(cx2 + 18, chao - 112); x.lineTo(cx2 - 18, chao - 112); }
+        else if(r2[1] === 'saia'){ x.moveTo(cx2 - 11, chao - 172); x.lineTo(cx2 + 11, chao - 172); x.lineTo(cx2 + 17, chao - 132); x.lineTo(cx2 - 17, chao - 132); }
+        else { x.moveTo(cx2 - 15, chao - 188); x.lineTo(cx2 + 15, chao - 188); x.lineTo(cx2 + 15, chao - 128); x.lineTo(cx2 - 15, chao - 128); }
+        x.closePath(); x.fill(); x.stroke(); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(cx2 - 1, chao - 186, 2, 50); });
+      sombra(530, PISO + 4, 70);
+      caixa(470, chao - 236, 120, 196, 60, '#fff', '#f3eaff', '#d9c6ff'); caixa(482, chao - 224, 96, 172, 48, '#dff1ff', '#c8e2ff', false);
+      x.fillStyle = 'rgba(255,255,255,.75)'; x.beginPath(); x.moveTo(500, chao - 200); x.lineTo(516, chao - 200); x.lineTo(498, chao - 150); x.lineTo(492, chao - 160); x.closePath(); x.fill();
+      for(var lb = 0; lb < 8; lb++){ var an2 = Math.PI + lb / 7 * Math.PI; x.fillStyle = (Math.floor(s * 2) + lb) % 2 ? '#fff6c4' : '#ffe57a'; x.beginPath(); x.arc(530 + Math.cos(an2) * 66, chao - 176 + Math.sin(an2) * 66, 5, 0, 7); x.fill(); }
+      caixa(300, chao - 150, 130, 10, 5, '#d9c6ff'); caixa(300, chao - 100, 130, 10, 5, '#d9c6ff');
+      caixa(310, chao - 172, 34, 22, 8, '#ff6fb5'); x.strokeStyle = '#ff6fb5'; x.lineWidth = 3; x.beginPath(); x.arc(327, chao - 172, 10, Math.PI, 0); x.stroke();
+      caixa(360, chao - 168, 54, 18, 9, '#4169e1'); caixa(312, chao - 120, 40, 20, 10, '#ffd23f'); caixa(366, chao - 118, 44, 18, 9, '#b6ff3b');
+      sombra(345, chao - 26, 90); caixa(255, chao - 46, 180, 26, 13, '#ffc2e2', '#ff9cc8');
+    } else if(id === 'gacha'){
+      // máquina de gacha de verdade: cúpula com cápsulas que pulam, corpo, manivela e saída
+      sombra(130, PISO + 4, 100);
+      caixa(56, chao - 120, 148, 112, 22, '#ff6fb5', '#d94a93'); caixa(90, chao - 82, 80, 30, 12, '#fff', '#ffe3f1', false);
+      x.fillStyle = '#7b3ff0'; x.beginPath(); x.arc(130, chao - 98, 13, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 4; x.beginPath(); x.moveTo(130, chao - 98); x.lineTo(130 + Math.cos(s * 1.5) * 11, chao - 98 + Math.sin(s * 1.5) * 11); x.stroke();
+      var dg = x.createRadialGradient(110, chao - 200, 10, 130, chao - 170, 82); dg.addColorStop(0, 'rgba(255,255,255,.95)'); dg.addColorStop(1, 'rgba(210,236,255,.55)');
+      x.fillStyle = dg; x.beginPath(); x.arc(130, chao - 172, 70, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 4; x.stroke();
+      x.save(); x.beginPath(); x.arc(130, chao - 172, 66, 0, 7); x.clip();
+      ['#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1', '#ff6fb5', '#fff', '#ffb300', '#5eead4'].forEach(function(c2, k){
+        var cx2 = 90 + (k % 4) * 26 + (k > 3 ? 13 : 0), cy2 = chao - 140 - Math.floor(k / 4) * 26 + Math.sin(s * 3 + k) * 3;
+        x.fillStyle = c2; x.beginPath(); x.arc(cx2, cy2, 12, Math.PI, 0); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(cx2, cy2, 12, 0, Math.PI); x.fill();
+        x.strokeStyle = 'rgba(60,30,120,.18)'; x.lineWidth = 1.5; x.beginPath(); x.arc(cx2, cy2, 12, 0, 7); x.stroke(); });
+      x.restore(); x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath(); x.ellipse(98, chao - 206, 14, 8, -.6, 0, 7); x.fill();
+      caixa(96, chao - 248, 68, 18, 9, '#7b3ff0'); x.fillStyle = '#fff'; x.font = '400 11px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('GACHA', 130, chao - 235);
+      caixa(240, 40, 170, 64, 18, '#2a1d4a', '#1d1433', '#ffd23f'); x.font = '400 22px "Mochiy Pop One",sans-serif'; x.fillStyle = '#ffd23f'; x.textAlign = 'center';
+      x.shadowColor = '#ffd23f'; x.shadowBlur = 12 + 6 * Math.sin(s * 3); x.fillText('★ STAR ★', 325, 80); x.shadowBlur = 0;
+      caixa(420, chao - 150, 190, 10, 5, '#d9c6ff'); caixa(420, chao - 96, 190, 10, 5, '#d9c6ff');
+      for(var cp = 0; cp < 6; cp++){ var c3 = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1', '#ffb300'][cp], px3 = 440 + (cp % 3) * 60, py3 = cp < 3 ? chao - 162 : chao - 108;
+        x.fillStyle = c3; x.beginPath(); x.arc(px3, py3, 11, Math.PI, 0); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(px3, py3, 11, 0, Math.PI); x.fill(); }
+    } else if(id === 'vip'){   // Camarim VIP: cortinas de veludo, holofote, espelho de lâmpadas, tapete vermelho e cordão
+      var hol = x.createRadialGradient(W / 2, 0, 10, W / 2, 140, 340); hol.addColorStop(0, 'rgba(255,240,180,.5)'); hol.addColorStop(1, 'rgba(255,240,180,0)');
+      x.fillStyle = hol; x.fillRect(0, 0, W, PISO);
+      [[0, 1], [W, -1]].forEach(function(cc){ var cg = x.createLinearGradient(cc[0], 0, cc[0] + cc[1] * 110, 0); cg.addColorStop(0, '#8a1250'); cg.addColorStop(1, '#c2185b');
+        x.fillStyle = cg; x.beginPath(); x.moveTo(cc[0], 0); x.lineTo(cc[0] + cc[1] * 120, 0); x.quadraticCurveTo(cc[0] + cc[1] * 60, PISO * .55, cc[0] + cc[1] * 95, PISO + 10); x.lineTo(cc[0], PISO + 10); x.closePath(); x.fill();
+        x.strokeStyle = 'rgba(255,255,255,.18)'; x.lineWidth = 3; for(var fz = 1; fz < 4; fz++){ x.beginPath(); x.moveTo(cc[0] + cc[1] * fz * 26, 0); x.quadraticCurveTo(cc[0] + cc[1] * fz * 18, PISO * .55, cc[0] + cc[1] * fz * 22, PISO); x.stroke(); } });
+      x.fillStyle = '#ffd23f'; x.fillRect(0, 0, W, 10);
+      caixa(250, 30, 140, 150, 70, '#ffd23f', '#e0a400'); caixa(262, 42, 116, 126, 58, '#efe6ff', '#d9ecff', false);
+      x.fillStyle = 'rgba(255,255,255,.7)'; x.beginPath(); x.moveTo(282, 70); x.lineTo(298, 70); x.lineTo(280, 120); x.lineTo(274, 110); x.closePath(); x.fill();
+      for(var lb2 = 0; lb2 < 10; lb2++){ var an = Math.PI + lb2 / 9 * Math.PI; x.fillStyle = (Math.floor(s * 3) + lb2) % 2 ? '#fff6c4' : '#ffe57a'; x.beginPath(); x.arc(320 + Math.cos(an) * 80, 105 + Math.sin(an) * 82, 6, 0, 7); x.fill(); }
+      var tp = x.createLinearGradient(0, PISO, 0, H); tp.addColorStop(0, '#c2185b'); tp.addColorStop(1, '#e91e63');
+      x.fillStyle = tp; x.beginPath(); x.moveTo(240, H); x.lineTo(400, H); x.lineTo(362, PISO); x.lineTo(278, PISO); x.closePath(); x.fill();
+      x.fillStyle = '#ffd23f'; x.fillRect(240, H - 6, 160, 6);
+      [[70, -1], [570, 1]].forEach(function(pp){ x.fillStyle = '#ffd23f'; x.fillRect(pp[0] - 4, chao - 110, 8, 76); x.beginPath(); x.arc(pp[0], chao - 112, 9, 0, 7); x.fill(); caixa(pp[0] - 14, chao - 38, 28, 8, 4, '#e0a400', null, false); });
+      x.strokeStyle = '#b0124f'; x.lineWidth = 8; x.lineCap = 'round'; x.beginPath(); x.moveTo(70, chao - 96); x.quadraticCurveTo(150, chao - 58, 228, chao - 96); x.moveTo(412, chao - 96); x.quadraticCurveTo(490, chao - 58, 570, chao - 96); x.stroke();
+      [[110, 60, 9], [530, 70, 8], [200, 150, 6], [450, 160, 7], [320, 24, 6]].forEach(function(b2, k){ var r3 = b2[2] * (.6 + .4 * Math.abs(Math.sin(s * 1.6 + k))); x.fillStyle = '#fff6c4'; x.beginPath(); for(var i3 = 0; i3 < 8; i3++){ var rr3 = i3 % 2 ? r3 * .35 : r3, a3 = i3 * Math.PI / 4; x.lineTo(b2[0] + Math.cos(a3) * rr3, b2[1] + Math.sin(a3) * rr3); } x.closePath(); x.fill(); });
+    }
+    if(id !== 'vip') [[60, 150, 6], [W - 40, 160, 5], [W / 2, 30, 5]].forEach(function(b3, k){ brilho(b3[0], b3[1], b3[2] * (.6 + .4 * Math.abs(Math.sin(s * 1.4 + k)))); });
     // gente: quem está online nesta rua (com os balões das frases) + vitrine + você
     var P = window.TW_PRESENCA, gente = id === 'vip' ? [] : dentroGente(), eu = typeof hubAv === 'function' ? hubAv() : null, lugares = [250, 360, 470, 580, 140];
     var todos = gente.map(function(p, k){ return {av:p.avatar, nick:p.nick, fala:p.frase ? {frase:p.frase, em:(+p.frase_em || 0) * 1000} : null, x:lugares[k]}; });
     if(id === 'vip') todos = MEMBROS.map(function(m, k){ var av = membroAv(k); return av ? {av:av.c ? {c:av.c, pose:'', expr:av.expr} : av, nick:m[1], x:[150, 490, 590][k], membro:true} : null; }).filter(Boolean);
     if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:id === 'vip' ? 320 : lugares[todos.length] || 140, eu:true});
     todos.forEach(function(g, k){
-      var cw = 104, ch = 112, px = g.x - cw / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
+      var cw = 104, ch = 112, ES = 1.3, px = g.x - cw * ES / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
       var av = {}; for(var q in g.av) av[q] = g.av[q];
       av.pose = ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5];
       x.fillStyle = 'rgba(40,10,70,.16)'; x.beginPath(); x.ellipse(g.x, chao + 4, 22, 5, 0, 0, 7); x.fill();
-      x.save(); x.translate(px, chao - ch + 8 - pulo);
+      x.save(); x.translate(px, chao - ch * ES + 12 - pulo); x.scale(ES, ES);
       try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, cw, ch, av, false, false, fr); }catch(e){}
       x.restore();
       if(g.nick){ x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(120, x.measureText(g.nick).width + 16);
         caixa(g.x - tw / 2, chao + 12, tw, 20, 10, 'rgba(123,63,240,.9)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 27, tw - 8); }
-      if(g.eu){ x.fillStyle = '#b6ff3b'; x.font = '18px sans-serif'; x.textAlign = 'center'; x.fillText('★', g.x, chao - ch + 4 - pulo); }
+      if(g.eu && window.TW_HUMOR){   // o diamantinho do humor em cima de você (igual ao mapa)
+        var dc = window.TW_HUMOR.cor(), gi = Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - 108 - pulo - Math.sin(s * 2) * 3;
+        x.fillStyle = dc; x.strokeStyle = 'rgba(30,10,60,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(g.x, dy - 16); x.lineTo(g.x + dw, dy); x.lineTo(g.x, dy + 7); x.lineTo(g.x - dw, dy); x.closePath(); x.fill(); x.stroke(); }
       var fl = g.fala; if(fl && fl.frase && P && Date.now() - fl.em < (g.eu ? 8000 : 12000)){
-        var tx = P.texto(fl.frase); x.font = 'bold 16px "M PLUS Rounded 1c",sans-serif'; var lg = Math.min(220, x.measureText(tx).width + 24), by = chao - 118 - pulo;
+        var tx = P.texto(fl.frase); x.font = 'bold 16px "M PLUS Rounded 1c",sans-serif'; var lg = Math.min(220, x.measureText(tx).width + 24), by = chao - 142 - pulo;
         caixa(g.x - lg / 2 - 2.5, by - 2.5, lg + 5, 35, 16, '#c9b3ff'); caixa(g.x - lg / 2, by, lg, 30, 14, '#fff'); x.fillStyle = '#fff'; x.beginPath(); x.moveTo(g.x - 6, by + 29); x.lineTo(g.x, by + 38); x.lineTo(g.x + 6, by + 29); x.fill();
         x.fillStyle = '#5b2bb5'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(tx, g.x, by + 15.5, lg - 12); x.textBaseline = 'alphabetic'; }
     });
@@ -606,7 +685,7 @@
     {k:0, nome:'Miniwa Tsumiki', jp:'御庭つみき', apelido:'Tsu (つ)', aniv:'05/09', local:'Paraíba, Brasil', altura:'1,80 m', time:'Team S · Sub-Captain', cor:['#9b30d9', 'Violeta'],
       pet:['🐈', 'Chu'], frase:'Oiê! Sou o Tsu, membro da primeira geração draft do BRS48!', blog:'https://brs48.blogspot.com/2021/08/tsu.html',
       gostos:{pt:'Ouvir música, preparar frango de vários jeitos, pudim, BNK48 e AKB48',en:'Listening to music, cooking chicken many ways, pudding, BNK48 and AKB48',es:'Escuchar música, cocinar pollo de mil formas, flan, BNK48 y AKB48',id:'Dengar musik, masak ayam berbagai cara, puding, BNK48 dan AKB48',th:'ฟังเพลง ทำไก่หลายแบบ พุดดิ้ง BNK48 และ AKB48',ja:'音楽をきくこと、いろんなチキン料理、プリン、BNK48とAKB48'}},
-    {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#7cc400', 'Verde Limão'],
+    {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#4fa81a', 'Verde Limão'],
       pet:['🐨', 'Koali'], frase:'Shiroma Lirika desu, yoroshiku onegaishima~su!', blog:'https://brs48.blogspot.com/2021/08/lirika.html',
       gostos:{pt:'Verde, capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',en:'Green, capoeira, =LOVE (Youkoso! Ikorabu Numa) and IZ*ONE',es:'El verde, la capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',id:'Hijau, capoeira, =LOVE (Youkoso! Ikorabu Numa) dan IZ*ONE',th:'สีเขียว คาโปเอร่า =LOVE (Youkoso! Ikorabu Numa) และ IZ*ONE',ja:'みどり、カポエイラ、=LOVE（ようこそ！イコラブ沼）、IZ*ONE'}},
     {k:2, nome:'Patiliri Kriyl', jp:'パチリリ・クリイル', apelido:'Pati (パチ)', aniv:'23/09', local:'São Paulo, Brasil', altura:'', time:'Team S', cor:['#4169e1', 'Azul Real'],
@@ -634,42 +713,113 @@
   function telaTrio(){
     var cards = FICHAS.map(function(f){
       var m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
-      var lin = function(r, v){ return v ? '<div><dt>' + esc(tf(r)) + '</dt><dd>' + v + '</dd></div>' : ''; };
-      return '<article class="twc-ficha" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '"><header><canvas data-membro="' + f.k + '" width="120" height="120" aria-hidden="true"></canvas>' +
-        '<span><h2 id="twcF' + f.k + '">' + esc(m[1]) + ' <small lang="ja">' + esc(f.jp) + '</small></h2><b>' + esc(f.nome) + '</b></span></header>' +
-        '<dl>' + lin('aniv', esc(aniv)) + lin('local', esc(f.local)) + lin('altura', esc(f.altura)) + lin('time', esc(f.time)) + lin('geracao', 'Draft 1st Generation') +
-        lin('cor', '<i class="twc-ficha-cor" aria-hidden="true"></i>' + esc(f.cor[1])) + lin('pet', esc(f.pet[0] + ' ' + f.pet[1])) + lin('gosta', esc(f.gostos[L()] || f.gostos.pt)) + '</dl>' +
-        '<blockquote lang="pt">“' + esc(f.frase) + '”</blockquote><a class="twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
+      var lin = function(ic, r, v, extra){ return v ? '<div class="twc-ficha-l"><span class="twc-ficha-ic" aria-hidden="true">' + ico(ic, 16) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
+      return '<article class="twc-ficha" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '">' +
+        '<header class="twc-ficha-topo"><span class="twc-ficha-luz" aria-hidden="true"></span><canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
+          '<span class="twc-ficha-nome"><small class="twc-ficha-gen">Draft 1st Generation</small><h2 id="twcF' + f.k + '" translate="no">' + esc(m[1]) + '</h2>' +
+          '<b lang="ja">' + esc(f.jp) + '</b><span class="twc-ficha-real" translate="no">' + esc(f.nome) + '</span>' +
+          '<span class="twc-ficha-chips"><em>' + esc(f.time) + '</em></span></span></header>' +
+        '<dl class="twc-ficha-dados">' + lin('bolo', 'aniv', esc(aniv)) + lin('pin', 'local', esc(f.local)) + lin('regua', 'altura', esc(f.altura)) +
+          lin('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') +
+          lin('pata', 'pet', esc(f.pet[1]), '<canvas class="twc-ficha-pet" data-pet="' + MEMBROS[f.k][0] + '" width="72" height="72" aria-hidden="true"></canvas>') +
+          lin('coracao', 'gosta', esc(f.gostos[L()] || f.gostos.pt)) + '</dl>' +
+        '<blockquote class="twc-ficha-frase" lang="pt"><span aria-hidden="true">' + ico('aspas', 18) + '</span>' + esc(f.frase) + '</blockquote>' +
+        '<a class="twc-btn twc-btn-claro twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
     }).join('');
-    // mapa de amizades: o trio em triângulo (unit TsuLiPa e Gekokujou), a dupla NeByura (Tsu + Pati) e cada pet ao lado do seu Idol
-    var mapa = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2><div class="twc-amigos-c">' +
-      '<svg viewBox="0 0 320 260" aria-hidden="true"><g stroke-width="4" stroke-linecap="round" fill="none">' +
-        '<line x1="160" y1="58" x2="62" y2="200" stroke="#c9a7ff"/><line x1="160" y1="58" x2="258" y2="200" stroke="#c9a7ff"/><line x1="62" y1="200" x2="258" y2="200" stroke="#c9a7ff"/>' +
-        '<path d="M160 58 Q300 90 258 200" stroke="#ff6fb5" stroke-dasharray="2 9"/>' +
-        '<line x1="160" y1="58" x2="226" y2="22" stroke="#ffd0e8" stroke-width="3"/><line x1="62" y1="200" x2="18" y2="246" stroke="#ffd0e8" stroke-width="3"/><line x1="258" y1="200" x2="302" y2="246" stroke="#ffd0e8" stroke-width="3"/></g>' +
-        '<text x="160" y="150" text-anchor="middle" class="twc-amigos-t">♡ ' + esc(tf('unitTrio')) + '</text><text x="160" y="170" text-anchor="middle" class="twc-amigos-s">' + esc(tf('gekoku')) + '</text>' +
-        '<text x="314" y="104" text-anchor="end" class="twc-amigos-s twc-amigos-rosa">' + esc(tf('dupla')) + '</text></svg>' +
-      [[0, 50, 22], [1, 19, 77], [2, 81, 77]].map(function(p){ return '<span class="twc-amigo" style="left:' + p[1] + '%;top:' + p[2] + '%"><canvas data-membro="' + p[0] + '" width="96" height="96" aria-hidden="true"></canvas><b>' + esc(MEMBROS[p[0]][1]) + '</b></span>'; }).join('') +
-      [[0, 71, 8], [1, 6, 94], [2, 94, 94]].map(function(p){ var f = FICHAS[p[0]]; return '<span class="twc-amigo-pet" style="left:' + p[1] + '%;top:' + p[2] + '%" title="' + esc(f.pet[1]) + '">' + f.pet[0] + '<small>' + esc(f.pet[1]) + '</small></span>'; }).join('') +
-      '</div></section>';
+    var mapa = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
+      '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="480" role="img" aria-label="' +
+        esc(tf('mapaAmigos') + ': ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div></section>';
     return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio">' + mapa + '<div class="twc-fichas">' + cards + '</div></div>';
+  }
+  // mapa de amizades desenhado com os bonecos e os pets de verdade do jogo (perfDesenharIdol + drawPet)
+  var amigosRaf = 0;
+  function amigosLigar(){ if(!amigosRaf) amigosRaf = requestAnimationFrame(amigosQuadro); }
+  function amigosQuadro(ms){
+    amigosRaf = 0; var cv = $id('twcAmigosCv'); if(!cv || topo() !== 'trio' || document.hidden) return;
+    var reduz = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try{ amigosDesenhar(cv, reduz ? 0 : ms / 1000); }catch(e){ return; }
+    if(!reduz) amigosRaf = requestAnimationFrame(amigosQuadro);
+  }
+  function amigosDesenhar(cv, s){
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+    function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+    // fundo: palquinho lilás com holofotes, bolinhas e chão brilhante
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f3e9ff'); g.addColorStop(.62, '#ffe6f4'); g.addColorStop(1, '#fff4fb');
+    rr(0, 0, W, H, 34); x.fillStyle = g; x.fill(); x.save(); rr(0, 0, W, H, 34); x.clip();
+    x.fillStyle = 'rgba(155,48,217,.07)'; for(var bx = 0; bx < W; bx += 34) for(var by = 0; by < H; by += 34){ x.beginPath(); x.arc(bx + (by / 34 % 2) * 17, by, 2.2, 0, 7); x.fill(); }
+    [[120, '#ffd0e8'], [340, '#e2ccff'], [560, '#cfe6ff']].forEach(function(h, k){
+      var a = Math.sin(s * .7 + k) * .08; x.save(); x.translate(h[0], -20); x.rotate(a);
+      var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, h[1]); lg.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = lg; x.globalAlpha = .75; x.beginPath(); x.moveTo(-18, 0); x.lineTo(18, 0); x.lineTo(110, 380); x.lineTo(-110, 380); x.closePath(); x.fill(); x.restore(); });
+    var fl = x.createRadialGradient(W / 2, H - 40, 20, W / 2, H - 40, 330); fl.addColorStop(0, 'rgba(255,255,255,.95)'); fl.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = fl; x.beginPath(); x.ellipse(W / 2, H - 46, 330, 70, 0, 0, 7); x.fill();
+    // posições: Tsu em cima, Lirika à esquerda, Pati à direita (pés no chão)
+    var P = [{x:340, y:206, pet:[478, 146]}, {x:150, y:420, pet:[58, 368]}, {x:530, y:420, pet:[628, 368]}];
+    var peito = P.map(function(p){ return [p.x, p.y - 92]; });
+    // fitas (trio = três fitas nas cores das duas pontas; NeByura = fita rosa pontilhada por fora)
+    function fita(a, b, c1, c2, larg, curva){
+      var gr = x.createLinearGradient(a[0], a[1], b[0], b[1]); gr.addColorStop(0, c1); gr.addColorStop(1, c2);
+      x.save(); x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = larg + 8; x.beginPath(); x.moveTo(a[0], a[1]);
+      if(curva) x.quadraticCurveTo(curva[0], curva[1], b[0], b[1]); else x.lineTo(b[0], b[1]); x.stroke();
+      x.strokeStyle = gr; x.lineWidth = larg; x.stroke(); x.restore();
+    }
+    var cor = MEMBROS.map(function(m){ return m[2]; });
+    fita(peito[0], peito[1], cor[0], cor[1], 10); fita(peito[0], peito[2], cor[0], cor[2], 10); fita(peito[1], peito[2], cor[1], cor[2], 10);
+    x.save(); x.setLineDash([2, 16]); x.lineCap = 'round'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 8; x.beginPath(); x.moveTo(peito[0][0] + 30, peito[0][1] - 10);
+    x.quadraticCurveTo(650, 110, peito[2][0] + 40, peito[2][1] - 24); x.stroke(); x.restore();
+    // pílulas das relações
+    function pilula(px, py, txt, fundo, letra, tam){
+      x.font = '400 ' + (tam || 17) + 'px "Mochiy Pop One",sans-serif'; var w = x.measureText(txt).width + 30, h = (tam || 17) + 16;
+      x.save(); x.shadowColor = 'rgba(90,40,160,.22)'; x.shadowBlur = 10; x.shadowOffsetY = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.fillStyle = fundo; x.fill(); x.restore();
+      x.strokeStyle = '#fff'; x.lineWidth = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.stroke();
+      x.fillStyle = letra; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, px, py + 1);
+    }
+    pilula(W / 2, 286, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 19);
+    pilula(W / 2, peito[1][1] + 2, tf('gekoku'), '#fff', '#7b3ff0', 15);
+    pilula(606, 236, tf('dupla'), '#ff6fb5', '#fff', 15);
+    // o trio de corpo inteiro (com sombra) e os pets do lado
+    P.forEach(function(p, k){
+      var av = membroAv(k); if(!av) return; var pulo = Math.max(0, Math.sin(s * 2.2 + k * 2.1)) * 6;
+      x.fillStyle = 'rgba(70,30,120,.16)'; x.beginPath(); x.ellipse(p.x, p.y + 4, 46, 9, 0, 0, 7); x.fill();
+      x.save(); x.translate(p.x - 78, p.y - 168 + 6 - pulo); x.scale(1.5, 1.5);
+      try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = ['nyan', 'mic', 'v'][k]; perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
+      x.restore();
+      pilula(p.x, p.y + 26, MEMBROS[k][1], cor[k], '#fff', 16);
+      if(typeof drawPet === 'function'){ x.fillStyle = 'rgba(70,30,120,.14)'; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 34, 26, 6, 0, 0, 7); x.fill();
+        try{ drawPet(x, MEMBROS[k][0], p.pet[0], p.pet[1], 1.9, s * 60 + k * 20, 'feliz'); }catch(e){}
+        x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = cor[k]; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(FICHAS[k].pet[1], p.pet[0], p.pet[1] + 58); }
+    });
+    // brilhinhos
+    x.fillStyle = '#fff'; [[60, 60], [610, 70], [300, 40], [420, 300], [250, 330], [640, 260]].forEach(function(b, k){
+      var r = 5 + 3 * Math.abs(Math.sin(s * 1.6 + k)); x.save(); x.translate(b[0], b[1]); x.beginPath();
+      for(var i2 = 0; i2 < 8; i2++){ var rr2 = i2 % 2 ? r * .35 : r, an = i2 * Math.PI / 4; x.lineTo(Math.cos(an) * rr2, Math.sin(an) * rr2); } x.closePath(); x.fill(); x.restore(); });
+    x.restore();
+  }
+  function trioPintar(){
+    [].slice.call(cel.querySelectorAll('canvas.twc-ficha-pet[data-pet]')).forEach(function(cv){
+      var xx = cv.getContext('2d'); xx.clearRect(0, 0, cv.width, cv.height); try{ if(typeof drawPet === 'function') drawPet(xx, cv.getAttribute('data-pet'), 36, 34, 1.15, 0, 'feliz'); }catch(e){} });
+    flutuantes(); amigosLigar();
   }
 
   /* ---------- Cantinho dos pais ---------- */
   function telaPais(){
     return faixa(esc(t2('pais')), t2('paisSub')) + '<div class="twc-pag twc-pais"><section class="twc-card"><ul>' +
-      ['pais1', 'pais2', 'pais3', 'pais4', 'pais5'].map(function(k, i){ return '<li><span aria-hidden="true">' + ['🎀', '☁️', '💬', '🛡️', '🌈'][i] + '</span>' + esc(t2(k)) + '</li>'; }).join('') +
+      ['pais1', 'pais2', 'pais3', 'pais4', 'pais5'].map(function(k, i){ return '<li><span class="twc-pais-ic twc-g-' + ['rosa', 'ceu', 'roxo', 'uva', 'lima'][i] + '" aria-hidden="true">' + ico(['coracao', 'nuvem', 'fala', 'escudo', 'arcoiris'][i], 18) + '</span><span>' + esc(t2(k)) + '</span></li>'; }).join('') +
       '</ul><a class="twc-btn twc-btn-claro" href="./privacidade.html" target="_blank" rel="noopener">' + esc(t2('paisPriv')) + '</a></section></div>';
   }
 
   /* ---------- manutenção fofa: quando o servidor (ou a internet) cai, um aviso com o trio em vez de erro seco ---------- */
   var falhas = 0, manutVista = false;
+  // conezinho de obra desenhado (sem emoji): laranja com faixas brancas e base roxa
+  var CONE = '<svg class="twc-cone" viewBox="0 0 40 48" width="34" height="41"><path d="M16 4h8l10 34H6z" fill="#ff8a3d" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M13.2 16h13.6l1.9 7H11.3zM10 28.5h20l1.6 5.5H8.4z" fill="#fff"/><rect x="2" y="38" width="36" height="7" rx="3.5" fill="#7b3ff0" stroke="#fff" stroke-width="2"/></svg>';
   function manutMostrar(){
     if(!cel || !folha || manutVista || !folha.hidden || tutI >= 0) return;
     manutVista = true;
     var off = typeof navigator !== 'undefined' && navigator.onLine === false;
     folha.innerHTML = '<div class="twc-folha-caixa twc-manut" role="dialog" aria-modal="true" aria-labelledby="twcManutT">' +
-      '<div class="twc-manut-palco" aria-hidden="true"><span class="twc-cone">🚧</span>' + MEMBROS.map(function(m, k){ return '<canvas data-membro="' + k + '" width="96" height="96"></canvas>'; }).join('') + '<span class="twc-cone">🚧</span></div>' +
+      '<div class="twc-manut-palco" aria-hidden="true">' + CONE + MEMBROS.map(function(m, k){ return '<canvas data-membro="' + k + '" width="96" height="96"></canvas>'; }).join('') + CONE + '</div>' +
       '<h2 id="twcManutT">' + esc(off ? t2('semNet') : t2('manutT')) + '</h2><p>' + esc(t2('manutTxt')) + '</p>' +
       '<button type="button" class="twc-btn" data-f="manutRun">' + esc(t2('jogarRun')) + '</button><button type="button" class="twc-btn twc-btn-claro" data-f="manutTentar">' + esc(t2('tentar')) + '</button>' +
       brilhos([[10, 10, 12], [88, 12, 10, 'l']]) + '</div>';
@@ -758,6 +908,7 @@
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v.indexOf('dentro:') === 0) dentroLigar();
+    if(v === 'trio') trioPintar();
     if(window.TW_PRESENCA) try{ window.TW_PRESENCA.contadorUI(); }catch(e){}
     if(v === 'inicio') setTimeout(tutTalvez, 400);
   }
@@ -795,8 +946,8 @@
     if(a === 'vip'){
       if(window.TW_HUMOR && window.TW_HUMOR.vipHoje()){ ir('dentro:vip'); return; }
       var dz = window.TW_HUMOR ? window.TW_HUMOR.desejo() : null;
-      folha.innerHTML = '<div class="twc-folha-caixa" role="dialog" aria-modal="true" aria-labelledby="twcVipT"><p class="twc-folha-ico" aria-hidden="true">👑</p><h2 id="twcVipT">' + esc(t2('vip')) + '</h2><p>' + esc(t2('vipComo')) + '</p>' +
-        (dz ? '<p class="twc-folha-desejo">' + dz.icone + ' <b>' + esc(dz.texto) + '</b></p><button type="button" class="twc-btn" data-f="desejoIr" data-ev="' + esc(dz.ev) + '">' + esc(window.TW_HUMOR.t('ir')) + '</button>' : '') +
+      folha.innerHTML = '<div class="twc-folha-caixa" role="dialog" aria-modal="true" aria-labelledby="twcVipT"><p class="twc-folha-ico twc-vip-selo" aria-hidden="true">' + ico('coroa', 34) + '</p><h2 id="twcVipT">' + esc(t2('vip')) + '</h2><p>' + esc(t2('vipComo')) + '</p>' +
+        (dz ? '<p class="twc-folha-desejo"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(dz.ev)] || 'rosa') + '" aria-hidden="true">' + ico(desejoIco(dz.ev), 20) + '</span><b>' + esc(dz.texto) + '</b></p><button type="button" class="twc-btn" data-f="desejoIr" data-ev="' + esc(dz.ev) + '">' + esc(window.TW_HUMOR.t('ir')) + '</button>' : '') +
         '<button type="button" class="twc-btn twc-btn-claro" data-f="fechar">' + esc(t('agoraNao')) + '</button></div>';
       folha.hidden = false; return;
     }

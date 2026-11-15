@@ -133,6 +133,12 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - TsuPhone: novo app "Humor" (barrinhas, desejo, série, recados do trio, prêmios e a foto VIP salva em JPEG pequeno, `brs48cr_vip_foto_v1`). Ao cumprir o desejo, um membro do trio manda um recado (o Tsu e o Pati no masculino, a Lirika no feminino).
   - Camarim: prêmios desenhados sem imagem nova (`petPremiosDesejo`): troféu na estante com 3 dias seguidos, lâmpadas VIP no espelho com 7 dias seguidos e tapete vermelho depois da foto VIP. `pet-sala.js?v=3`.
   - Tour de camarim (visitar o camarim de outros Idols e deixar coração): **precisa de RPC nova no Supabase, esperando o OK do dono**.
+- Rodada 11 (15/11), refino pedido pelo dono ("tudo novo no nível atual do site, sem emojis baratos e sem erros"):
+  - O mapa de amizades virou canvas animado (`amigosDesenhar`): o trio de corpo inteiro com `perfDesenharIdol`, os pets de verdade (Chu, Koali e Pucchi, com `drawPet`), fitas nas cores dos membros, pílulas "unit TsuLiPa", "Gekokujou" e "dupla NeByura", holofotes e brilhinhos. Sem animação com "reduzir movimento".
+  - Fichas no estilo cartão de perfil: topo na cor do membro com listras, boneco de corpo inteiro, chips de geração e time, linhas com ícones desenhados (bolo, alfinete, régua, paleta, pata, coração), pet desenhado e frase em balão.
+  - Emojis trocados por ícones desenhados no card de humor (desejo, série, VIP), no aviso, no Cantinho dos pais, na manutenção (cone em SVG) e no app Humor do TsuPhone.
+  - Salas por dentro redesenhadas: Café com vitrine, balcão de madeira, sofá com almofadas e luminárias; Zipper⭐Shop com arara de vestidos, saias e jaquetas, espelho de lâmpadas e prateleiras; Gacha com máquina de cápsulas, manivela e placa neon; VIP com cortinas de veludo. Os Idols ficaram maiores e o diamantinho aparece em cima de você.
+  - Auditoria de novo (4 aparelhos, 14 telas): sem erros e sem nada saindo da tela.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

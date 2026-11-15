@@ -399,7 +399,7 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 /* Cantinho dos pais */
 .twc-pais ul{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:10px}
 .twc-pais li{display:flex;gap:10px;align-items:flex-start;font-weight:700;line-height:1.45}
-.twc-pais li span{flex:none;font-size:20px;line-height:1.2}
+.twc-pais li>span:not(.twc-pais-ic){flex:1;min-width:0}
 .twc-pais a.twc-btn{display:block;text-align:center;text-decoration:none}
 /* manutenção fofa */
 .twc-manut-palco{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin:4px 0 10px}
@@ -462,40 +462,43 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   :root:not([data-theme="light"]) .twc-desejo{background:linear-gradient(120deg,#3a1f4a,#2a1d4a);border-color:#5b3f99}
   :root:not([data-theme="light"]) .twc-desejo-ok{background:linear-gradient(120deg,#22401f,#3a1f4a);border-color:#7be35a}
   :root:not([data-theme="light"]) .twc-folha-desejo{background:#3a1f4a}}
-/* Fichinhas do trio + mapa de amizades (dados do blog oficial do BRS48) */
-.twc-fichas-chip{position:absolute;top:10px;right:10px;z-index:2;min-height:36px;padding:6px 12px;border:2px solid #fff;border-radius:99px;background:rgba(255,111,181,.92);color:#fff;font:800 12.5px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 3px 0 rgba(120,30,90,.25)}
+/* Fichinhas do trio + mapa de amizades (dados do blog oficial do BRS48) — cartões no estilo do palco do jogo */
+.twc-fichas-chip{position:absolute;top:10px;right:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:6px 13px;border:2.5px solid #fff;border-radius:99px;
+  background:linear-gradient(120deg,#ff6fb5,#c2367f);color:#fff;font:400 12.5px 'Mochiy Pop One',sans-serif;cursor:pointer;box-shadow:0 4px 0 rgba(120,30,90,.28),0 6px 14px rgba(194,54,127,.25)}
 .twc-fichas-chip::after{content:"";position:absolute;inset:-6px}
-.twc-amigos{padding:14px;border-radius:24px;background:rgba(255,255,255,.86);border:2px solid #fff;box-shadow:0 4px 0 rgba(123,63,240,.12)}
-.twc-amigos h2,.twc-ficha h2{margin:0 0 8px;font:400 16px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
-.twc-amigos-c{position:relative;width:min(100%,360px);margin:0 auto;aspect-ratio:320/260}
-.twc-amigos-c svg{position:absolute;inset:0;width:100%;height:100%}
-.twc-amigos-t{font:400 13px 'Mochiy Pop One',sans-serif;fill:#7b3ff0}
-.twc-amigos-s{font:800 11px "M PLUS Rounded 1c",sans-serif;fill:#9a86c8}
-.twc-amigos-rosa{fill:#ff6fb5}
-.twc-amigo{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
-.twc-amigo canvas{width:64px;height:64px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
-.twc-amigo b{font:800 12px "M PLUS Rounded 1c",sans-serif;background:#fff;padding:1px 8px;border-radius:99px;color:#5b2bb5}
-.twc-amigo-pet{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;font-size:24px;line-height:1}
-.twc-amigo-pet small{font:800 10px "M PLUS Rounded 1c",sans-serif;color:#9a86c8}
-.twc-fichas{display:grid;gap:12px;margin-top:12px}
+.twc-amigos{padding:14px 14px 16px;border-radius:28px;background:rgba(255,255,255,.9);border:3px solid #fff;box-shadow:0 6px 0 rgba(123,63,240,.14),0 10px 24px rgba(123,63,240,.12)}
+.twc-amigos h2{margin:2px 4px 10px;font:400 17px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
+.twc-amigos-c{width:100%;border-radius:24px;overflow:hidden}
+.twc-amigos-c canvas{display:block;width:100%;height:auto}
+.twc-fichas{display:grid;gap:16px;margin-top:16px}
 @media (min-width:760px){.twc-fichas{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.twc-ficha{padding:14px;border-radius:24px;background:#fff;border:3px solid var(--fc);box-shadow:0 5px 0 color-mix(in srgb,var(--fc) 35%,transparent)}
-.twc-ficha header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.twc-ficha header canvas{flex:none;width:68px;height:68px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--fc)}
-.twc-ficha h2{margin:0;color:var(--fc)}
-.twc-ficha h2 small{font:700 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
-.twc-ficha header span{flex:1;min-width:0;text-align:left}
-.twc-ficha header b{display:block;font-weight:800;font-size:13px}
-.twc-ficha dl{margin:0;display:grid;gap:5px}
-.twc-ficha dl div{display:grid;grid-template-columns:92px 1fr;gap:6px;font-size:13px;line-height:1.4}
+.twc-ficha{position:relative;overflow:hidden;border-radius:28px;background:#fff;border:3px solid #fff;box-shadow:0 6px 0 color-mix(in srgb,var(--fc) 40%,transparent),0 12px 26px color-mix(in srgb,var(--fc) 22%,transparent)}
+.twc-ficha-topo{position:relative;display:flex;align-items:flex-end;gap:6px;min-height:150px;padding:14px 14px 12px 4px;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.16) 0 10px,transparent 10px 22px),linear-gradient(150deg,color-mix(in srgb,var(--fc) 55%,#fff),var(--fc));color:#fff}
+.twc-ficha-luz{position:absolute;left:-10px;bottom:-30px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,0) 68%)}
+.twc-ficha-idol{position:relative;flex:none;width:128px;height:auto;margin-bottom:-12px;filter:drop-shadow(0 6px 6px rgba(40,10,80,.25))}
+.twc-ficha-nome{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding-bottom:4px;text-shadow:0 2px 0 rgba(40,10,80,.18)}
+.twc-ficha-gen{align-self:flex-start;padding:2px 9px;border-radius:99px;background:rgba(255,255,255,.28);font:800 10.5px "M PLUS Rounded 1c",sans-serif;letter-spacing:.02em}
+.twc-ficha h2{margin:2px 0 0;font:400 clamp(28px,8vw,36px)/1 'Mochiy Pop One',sans-serif;color:#fff}
+.twc-ficha-nome b{font:800 14px "M PLUS Rounded 1c",sans-serif}
+.twc-ficha-real{font:700 12.5px "M PLUS Rounded 1c",sans-serif;opacity:.95}
+.twc-ficha-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.twc-ficha-chips em{font-style:normal;padding:3px 10px;border-radius:99px;background:#fff;color:var(--fc);font:800 11.5px "M PLUS Rounded 1c",sans-serif;text-shadow:none;box-shadow:0 2px 0 rgba(40,10,80,.12)}
+.twc-ficha-dados{margin:0;padding:14px 14px 4px;display:grid;gap:8px}
+.twc-ficha-l{display:grid;grid-template-columns:30px 88px 1fr;align-items:center;gap:8px;font-size:13.5px;line-height:1.4}
+.twc-ficha-ic{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--fc) 14%,#fff);color:var(--fc)}
 .twc-ficha dt{font-weight:800;color:var(--twc-sub)}
-.twc-ficha dd{margin:0;font-weight:700}
-.twc-ficha-cor{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--fc);margin-right:6px;vertical-align:-1px}
-.twc-ficha blockquote{margin:10px 0 8px;padding:8px 12px;border-radius:14px;background:color-mix(in srgb,var(--fc) 12%,#fff);font-weight:800;font-size:13px;line-height:1.45}
-.twc-ficha-blog{font-weight:800;font-size:12.5px;color:var(--fc)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-amigos{background:rgba(42,29,74,.8);border-color:#3d2a6b}
-  :root:not([data-theme="light"]) .twc-ficha{background:#241a40}
-  :root:not([data-theme="light"]) .twc-ficha blockquote{background:color-mix(in srgb,var(--fc) 22%,#241a40)}}
+.twc-ficha dd{margin:0;font-weight:800;display:flex;align-items:center;gap:6px;min-width:0}
+.twc-ficha-cor{flex:none;width:16px;height:16px;border-radius:50%;background:var(--fc);box-shadow:0 0 0 3px #fff,0 0 0 4.5px color-mix(in srgb,var(--fc) 40%,transparent)}
+.twc-ficha-pet{flex:none;width:40px;height:40px;margin:-6px 0}
+.twc-ficha-frase{position:relative;margin:10px 14px 12px;padding:12px 14px 12px 44px;border-radius:18px;background:color-mix(in srgb,var(--fc) 10%,#fff);border:2px solid color-mix(in srgb,var(--fc) 30%,#fff);font-weight:800;font-size:13.5px;line-height:1.5}
+.twc-ficha-frase>span{position:absolute;left:12px;top:11px;color:var(--fc)}
+.twc .twc-ficha-blog{display:block;margin:0 14px 16px;text-align:center;text-decoration:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-amigos{background:rgba(42,29,74,.85);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-ficha{background:#221838;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-ficha-ic{background:color-mix(in srgb,var(--fc) 25%,#221838)}
+  :root:not([data-theme="light"]) .twc-ficha-frase{background:color-mix(in srgb,var(--fc) 18%,#221838);border-color:color-mix(in srgb,var(--fc) 40%,#221838)}
+  :root:not([data-theme="light"]) .twc-ficha-cor{box-shadow:0 0 0 3px #221838,0 0 0 4.5px color-mix(in srgb,var(--fc) 50%,transparent)}}
 /* abertura animada: camadas em parallax (seguem o dedo/inclinação de leve) e o trio flutuando */
 .twc-abre{overflow:hidden;--mx:0;--my:0}
 .twc-px{position:absolute;inset:-40px;pointer-events:none;z-index:0}
@@ -527,3 +530,21 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 @keyframes twcCarrega{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){.twc-px i,.twc-fl,.twc-carrega-trio canvas,.twc-carrega-barra b{animation:none!important}.twc-px i{transform:none}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-carrega{background:linear-gradient(160deg,#1c1433,#2a1540 60%,#14203a)}}
+/* refinamento: ícones desenhados no lugar dos emojis (humor, VIP, aviso, Cantinho dos pais, manutenção) */
+.twc-desejo-ico{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:14px;color:#fff;font-size:0;box-shadow:0 3px 0 rgba(40,10,80,.15)}
+.twc-desejo-ok .twc-desejo-ico{background:linear-gradient(140deg,#9be15d,#5cc236)!important}
+.twc-serie{display:inline-flex;align-items:center;gap:4px}
+.twc-serie span{display:inline-flex;color:#ff6f3d}
+.twc .twc-vip-coroa{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#ffe57a,#ffb300);color:#7a2d6b;font-size:0;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.twc .twc-vip-coroa .twc-ico{fill:#fff6c4}
+.twc-vip-selo{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 6px!important;border-radius:22px;background:linear-gradient(140deg,#ffe57a,#ffb300);color:#7a2d6b}
+.twc-vip-selo .twc-ico{fill:#fff6c4}
+.twc-folha-desejo{display:flex;align-items:center;gap:10px;text-align:left}
+.twc-toast{display:flex;align-items:center;gap:10px;text-align:left;width:max-content}
+.twc-toast-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(140deg,#ffe57a,#ffb300);color:#7a2d6b}
+.twc-toast-ic .twc-ico{fill:#fff6c4}
+.twc-btn-ic{display:inline-flex;vertical-align:-4px;margin-right:6px}
+.twc-frases h2{display:flex;align-items:center;gap:6px}
+.twc-pais li{align-items:center}
+.twc-pais-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:13px;color:#fff;font-size:0!important;box-shadow:0 3px 0 rgba(40,10,80,.15)}
+.twc-cone{flex:none;filter:drop-shadow(0 3px 0 rgba(40,10,80,.15))}

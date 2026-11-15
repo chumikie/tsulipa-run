@@ -399,7 +399,10 @@
           escolhas:{ fundo:p.fundo, pose:p.pose, luz:p.luz, quadro:p.quadro, objeto:p.objeto }, coracoes:0, curti:false, minha:true };
         try{ r.avatar = (contaJ && contaJ.avatar) || null; }catch(e){}
         D.mural.push(r);
-        return { ok:true, id:r.id, estrelas:est };
+        // tema da semana (20261115_studio_tema_semana.sql): ★3 uma vez por semana
+        var tema = window.TW_STUDIO_TEMA, semana = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5), pt = 0;
+        if(tema && tema.noTema(r.escolhas) && D.fotoTemaSemana !== semana){ D.fotoTemaSemana = semana; mudaSaldo(3); pt = 3; }
+        return { ok:true, id:r.id, estrelas:est, tema:tema ? tema.atual() : '', premio_tema:pt, stars:pt ? saldo() : null };
       }
       if(n === 'studio_mural') return mural().slice().sort(function(x, y){ return y.coracoes - x.coracoes || (x.criado < y.criado ? 1 : -1); })
         .map(function(x){ return Object.assign({}, x); });

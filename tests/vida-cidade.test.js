@@ -34,7 +34,7 @@ assert.deepEqual(Array.from(vida.capitulos()),[false,false,false]);
 ctx.contaJ=null;
 assert.equal(vida.registrar('cafe',{id:'run-1'}),false,'sem conta não registra ato confirmado');
 assert.equal(vida.diarioHtml(),'');
-const sources=['cafe.js','handshake.js','bloom.js','studio.js','battle.js','pet.js','perfil.js'].map(f=>fs.readFileSync(path.join(raiz,f),'utf8'));
+const D=require('./fonte-dividida.js');const sources=['cafe.js','handshake.js','bloom.js','studio.js','battle.js','pet.js','perfil.js'].map(f=>D.DIVIDIDOS[f]?D(f,D.DIVIDIDOS[f]):fs.readFileSync(path.join(raiz,f),'utf8'));
 for(const [i,patt] of [
  [0,/registrar\('cafe'/],[1,/registrar\('handshake'/],[2,/registrar\('bloom_'/],
  [3,/registrar\('studio_clique'/],[3,/registrar\('studio_publicar'/],

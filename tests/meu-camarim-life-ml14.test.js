@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const pet = read('pet.js'), html = read('index.html'), css = read('pet.css');
+const pet = require('./pet-fonte.js')(), html = read('index.html'), css = read('pet.css');
 const fatia = (a, b) => pet.slice(pet.indexOf(a), pet.indexOf(b));
 const vontade = fatia('// Balão de vontade (inspirado no The Sims)', '// Afinidade visual por atividade');
 const cartas = fatia('// O celular leva o nome do jogador', 'function petPhoneAgendaHtml(');

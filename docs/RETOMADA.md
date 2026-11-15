@@ -1,20 +1,97 @@
-# Retomada — onde paramos (14/11/2026)
+# Retomada — onde paramos (15/11/2026)
 
-## Quadro geral — feito / falta (14/11/2026)
+## Quadro geral — feito / falta (15/11/2026)
 
 Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 
-**Onde está o trabalho:** tudo na branch `visual/layout-hud` (PR #88 → `main`). Ela já inclui o #87 (fechado), o #86 e a antiga branch `feat/mapa-mobile-leitura-20261114`.
+**Onde está o trabalho:** tudo publicado na `main` (Vercel ok). Últimos merges: #88 (14/11), #91, #92 (jogos novos, mapa vivo, charmaker, site mais leve) e #93 (charmaker no Perfil e na Zipper Shop). **Não há PR de trabalho aberto.** Para continuar, crie uma branch nova a partir da `main` e abra um PR novo (sempre um só PR por rodada de trabalho; o dono não gosta de PRs paralelos).
 
-### Concluído (código pronto na #88, banco aplicado)
-- **Fases 0 a 2:** registro de lugares, mapa da cidade e raio-X dos jogos.
-- **Mapa em 2 níveis:** os 6 passos, mais o Mapa Vivo (textos traduzidos, Idols e pets passeando, missões no mapa, placas acesas à noite).
-- **Fase 3, jogos atuais:** hora extra e cor do lightstick no Handshake, Café VIP e gorjeta, pó de estrela e garantia no Gacha, Pedido de cena do Moon⭐Duo! com ★5, anti-cheat do Sora 500 m, metas do Álbum, bônus do dia.
-- **Fase 4, jogos novos:** Bloom⭐Garden! (v1, flores com uso e redesenho), Photo⭐Studio! (v1 e Mural), Idol⭐Battle! (v1, ranking, Arena e Torcida de flores), todos com card no Hub.
-- **Vida de Idol e Camarim:** cidade que reage, lembranças, foto da sessão, sofá e o Pet olhando as lembranças (também no retorno ao Camarim).
-- **Hub:** barra do jogador, destaque do dia, navegação no celular.
-- **Karaoke⭐Time!:** traduções em `kt-traducoes.js` (`karaoke-time.html` com 404 KB; limite 450 KB).
-- **CI:** a sala do Karaoke roda em três máquinas paralelas (job `browser-karaoke-room`); um envio novo cancela a verificação antiga.
+### Publicado em 14–15/11 (#92 e #93) — só front, banco sem mudança
+- **Charmaker (editor do Você), estilo Charat:** prévia grande presa no topo com 7 expressões e ↔ girar; abas com miniaturas desenhadas (Corte, Franja, Mecha, Detalhe, Olhos, Sobrancelha, Boca, Bochecha, Roupa, Parte de baixo, Acessório, Óculos); 🎲 Sortear (nunca muda a pele, respeita trancas) e ↩ Desfazer; paleta de 12 cores de cabelo. Arquivo `charmaker.js`; os `<select>` antigos continuam escondidos e cada toque dispara o mesmo evento (save, trancas e Perfil iguais).
+- **O mesmo estúdio no Montar Idol** do Perfil e da Zipper Shop (`TW_CHARMAKER.montar`). Ali tudo grava sempre no Você via `perfMontMudou` e o sortear é direto, sem trocar o personagem selecionado no Center Run.
+- **Rosto à escolha** (`tw-avatar-rosto.js`, usado pelas três cópias do `drawChar`: Center Run, Karaoke, Sora Jump). O padrão é o rosto clássico de antes, pixel por pixel (decisão do dono: o olhar antigo é mais simpático). Campos novos em `c`: `olho`, `boca`, `bochecha`, `sobrancelha` (`salvar_avatar` guarda o objeto inteiro, sem migração). Olhos novos são só formas cheias, sem traços.
+- **Corpo e itens:** sapatos; saia/bermuda também em Zipper, Sweet e Estrelado; Cacheado menor embaixo; franja Arco-íris com bicos; orelha de elfo na cor da pele; 5 cortes (Rabo lateral, Tranças, Coque, Princesa, Hime) e 4 franjas (Cortina, Curtinha, Pontinhas, Cacheada) em `tw-avatar-hair.js`; acessório novo **Arco estelar** (o laço e a flor foram retirados porque já existiam como Item: Laço azul, Hibisco, Flor de cerejeira); Quepe, Chapéu de palha e Boina assentados na cabeça.
+- **Ferramenta:** `tools/avatar/folha.py` gera a folha de auditoria do avatar (comparar antes/depois).
+- **Mapa vivo:** Idols das ruas em 1,75× com estrelinha no seu Idol; tocar no chão leva o seu Idol até lá; passeantes pulam e respondem; borboletas, gatinho e passarinhos reagem; perto da fonte da Praça, "Desejo feito!". Tudo local.
+- **Jogos novos:** trilha sintetizada por jogo (`jogos-trilha.js`) e efeitos; Jardim com a planta crescendo na rega; Café com paciência colorida e rostinho (normal e Dois no balcão); Battle com lightsticks no ritmo durante o show; Studio com tema da semana e selo no mural; câmeras do Studio medidas no desenho real. Prêmios e regras continuam no servidor.
+- **Página inicial:** 9 jogos em ordem alfabética (3×3 no computador; Star⭐Gacha! em faixa no celular).
+- **Site mais leve:** Idol⭐Battle! carrega sob demanda; ícone do topo de 52 KB para 3 KB; cache de 1 h para JS/CSS/imagens no `vercel.json`.
+
+### Na PR #94 (15/11) — aberta, merge do dono
+- **Acessibilidade:** botões pequenos com área de toque de 28 px; nomes para leitor de tela na busca, no Dois e nas cores do Perfil.
+- **Celular:** idioma e tema atrás do botão ⚙️ no topo do Hub; "Pra hoje" subiu ~100 px na primeira tela.
+- **Mais leve:** Photo⭐Studio! carrega sob demanda (como o Battle); a capa do Idol News chama o Studio quando precisa.
+- **Charmaker:** 3 visuais favoritos (`brs48cr_favs`), com 💾 para guardar e toque para vestir; peças bloqueadas são puladas; tem desfazer.
+- **Studio, tema da semana (banco mudou, com OK):** publicar no mural uma foto no tema dá ★3, uma vez por semana. Arquivo `supabase/sql/aplicado/20261115_studio_tema_semana.sql` (já aplicado). Tema e semana iguais aos do site (domingo 0h de Brasília). No `?demo=1` a regra é simulada.
+- Teste do Meu Camarim aceita a fala da Lirika que alterna por data.
+
+### Análise do site (14/11, depois da #94)
+- **Abertura:** 83 arquivos, ~1,9 MB sem compressão (~0,6 MB comprimido pela Vercel). No computador local, pronto em ~0,8 s (desktop) e ~1,0 s (celular). Console sem erros; nenhum botão sem nome; 1 alvo de toque abaixo de 24 px no celular.
+- **Maiores na abertura:** pet.js 235 KB, centerrun.js 218 KB, index.html 218 KB, perfil.js 115 KB, hub.js 108 KB, mapa-mundo.svg 95 KB.
+- **Próximos ganhos, do mais fácil ao mais trabalhoso:**
+  1. ~~`favicon.svg`~~ e 2. ~~Happy⭐Cafe! e Handshake⭐Event! sob demanda~~: feitos (ver "Rodada de peso"). Dois ficou de fora.
+  3–5. Center Run, Perfil e pet: feitos na "Reforma de peso".
+
+### Rodada de peso (15/11, PR #94)
+- **Feito:** `favicon.svg` 36→12 KB (imagem interna de 128 para 64 px, sem perder cor). Handshake⭐Event! e Happy⭐Cafe! sob demanda: `jogos-base.js` (5 KB) carrega na abertura com o que o Hub, o pet, a Vida na Cidade, o Idol⭐News! e o evento leem; o jogo (handshake, cafe, cafe-gorjeta, cafe-vip, cafe-duplo e flores, nessa ordem) baixa no primeiro toque. Abertura: 83→78 arquivos, 1907→1761 KB.
+- **Armadilha:** peça do Handshake/Café que outro arquivo leia na abertura vai para `jogos-base.js`, nunca fica duplicada (o `var` do jogo zeraria o valor). O teste `jogos-sob-demanda` confere.
+- **Não deu para fazer rápido:** Dois (muito código dele direto no `index.html`), Perfil (`perfil.js` é a biblioteca de desenho dos Idols, usada por 15+ arquivos), Center Run (`centerrun.js` tem ~130 peças usadas por outros arquivos: `drawChar`, `starT`, `setBest`…) e `pet.js`. Os quatro pedem primeiro separar a parte compartilhada em arquivos próprios; é uma reforma maior, para uma rodada só dela.
+
+### Medição de código parado (15/11, cobertura do Chrome na abertura)
+- 1271 KB de JS carregados, ~935 KB não executados na abertura. Maiores: `pet.js` (13% usado), `centerrun.js` (20%), `perfil.js` (19%), `hub.js` (33%), `jornal.js` (14%), `duo.js` (11%).
+- **Por que não dá para só "carregar depois":** a análise de dependências (`/tmp`, script de grafo) mostra que só 5 KB do `centerrun.js` e 0 KB do `pet.js` são usados apenas por eles mesmos; o resto é chamado pelo código direto no `index.html` (laço da corrida, telas, aviso de login). Tirar da abertura exige antes mudar o `index.html` para o laço da corrida e o pet só começarem ao serem abertos.
+- **Também avaliados e deixados:** módulos do karaokê no Idol⭐News! (`KaraokeRoomViews`, `KaraokeNewsPhoto`: sem eles a foto da janela some sem erro), `admin.js` (19 KB, ligado em muitos pontos), Dois (código espalhado por ~250 linhas do `index.html`).
+- **Se quiser seguir:** reforma própria em etapas: (1) laço e telas da corrida para uma função de início chamada ao tocar em jogar; (2) o mesmo para o pet; (3) só então separar arquivos. Cada etapa numa PR, testando a corrida inteira.
+
+### Reforma de peso (15/11, PR #94): corrida, pet e Perfil sob demanda
+Abertura: **1907 KB → 1460 KB** (Handshake/Café 146 KB + corrida 100 KB + pet 160 KB + Perfil 37 KB).
+Como foi feito: cobertura do Chrome função por função (o que roda fora de cada parte vs. dentro dela) + parser do TypeScript
+(`/opt/npm-tools/node_modules/typescript`) para cortar cada função exatamente, sem quebrar nada no meio.
+
+| Base (abertura) | Parte sob demanda | Baixa quando |
+|---|---|---|
+| `centerrun.js` (personagens, tradução, cartões, ranking) | `centerrun-corrida.js` (laço, cenário, obstáculos, fim de jogo, polaroid) | sai do Hub para o palco (`hubFechar` marca `twCorridaQuer`), toca JOGAR ou abre link direto |
+| `pet.js` (desenho do pet, humor, lembranças, fotos guardadas) | `pet-sala.js` (quarto, celular, agenda, camarim, minijogo, adoção) | abre o pet ou o 📸 da corrida |
+| `perfil.js` (biblioteca de desenho dos Idols, login, loja) | `perfil-tela.js` (abas, diário, recados, insígnias, estúdio de foto) | abre um Perfil (junto com os dados, no `perfAbrir`) |
+
+**Regras para mexer daqui em diante (armadilhas):**
+- Mudou um arquivo sob demanda? Suba a versão dentro da base: `TW_CORRIDA_ARQ`, `PET_SALA_ARQ`, `PERF_TELA_ARQ`.
+- Código da abertura (inclusive o `index.html`) **não pode** chamar função da parte sob demanda sem esperar: use `twCorridaAoCarregar` / `petSalaAoCarregar` / `perfTelaCarregar().then(...)`, ou `typeof f === 'function'` quando for só desenhar uma tela que ainda não existe. Também vale para função passada como valor (`addEventListener(t, f)`, `x.onclick = f`).
+- Os invólucros da Temporada 2 no `index.html` (`jump`, `spawn`, `obsDesenhar`, `end`, `update`, `draw`) entram via `twCorridaAoCarregar`; os de `petPhUI` e `petClose`, via `petSalaAoCarregar`.
+- No `pet.js` e no `perfil.js`, cada `//→nome` marca onde a função estava; na parte ela vem depois de `//←nome`. `tests/fonte-dividida.js` remonta a ordem original para os testes que recortam por posição. Função nova: escreva na base, a não ser que só a própria parte use.
+- `tests/index-modules.test.js` confere que as partes não executam nada ao carregar, não repetem declarações e não estão em `<script src>` do `index.html`.
+
+### Também na #94 (15/11)
+- **Mapa:** gatinho malhado (Galeria do Brilho) e de smoking (Star Stage) com coleira, piscando, dormindo à noite e soltando corações ao toque; passarinhos e borboletas redesenhados; peixinhos koi na fonte da Praça.
+- **Mapa, mais vida:** cachorrinho shiba na Star Arena e coelhinho na Vila das Tulipas (atrás dos Idols, tocáveis, dormem à noite); gatos, cachorrinho e coelhinho reagem quando o seu Idol passa perto (`meuIdolPerto`, usa as posições do quadro anterior, nada é salvo).
+- **Mapa, mais bichinhos:** pombinho na Praça (anda, cisca, bate as asas) e ovelhinha de nuvem no Jardim das Nuvens (quica soltando nuvens); agora toda rua tem um bichinho de chão que reage ao seu Idol.
+- **Backstage⭐Pet!:** o Idol no quarto mostra o rosto do charmaker (olhos, sobrancelha, boca) e sorri "^^" de vez em quando; antes ficava sempre "^^" quando o pet estava feliz.
+- **Traduções em dia (15/11):** 62 textos que apareciam em português nos outros idiomas (Café, Handshake, Hub, álbum, moderação, insígnias da Temporada 2 e do Sora, título do logo) + "Ajustar timing" no Karaoke (linha 203; o teste do indonésio confere 203). Como achar os próximos: (1) textos literais de `tr()` comparados com `TW_DICT` em cada idioma; (2) `tr` interceptado com o site em inglês/japonês, navegando nas telas (pega `tr(variavel)`, como os nomes das insígnias). Sobram só nomes próprios (grupos, músicas, poses).
+- **Indonésio:** chaves novas (Montar visual, Favoritos, Tema…) em `translations/id/TW_DICT.json`; depois de mexer, rode `node translations/id/build-preview-catalog.cjs` e suba `preview-data.js?v=`.
+- **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
+
+### Falta validar (o dono testa)
+- Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
+- Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.
+- Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
+- Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).
+- Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
+- iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
+- Ouvir os sons (não testados por ouvido).
+- Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
+
+### Ideias na fila (escolha do dono)
+- **Prêmio dos lightsticks do Battle — proposta pronta, NÃO aplicada:** `supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`. ★2 uma vez por dia para 9 de 12 batidas no show de uma batalha real dos últimos 10 min. Limite: a nota vem do aparelho (por isso o prêmio é pequeno). Precisa do OK do dono; depois, ligar no `battle.js` e no `demo.js` (passos no topo do arquivo).
+- Dois sob demanda: **avaliado e deixado** (15/11). Sairiam ~40 KB (~12 KB comprimido) do `duo.js`, `duo-pedido.js` e do bloco no `index.html`, mas o bloco acrescenta traduções e troca `perfPoseAtras` (desenho de pose de todo o site), e loja, câmera, login e Perfil usam partes do Dois na abertura. Ganho pequeno para o risco.
+
+### Armadilhas conhecidas
+- `hub-polish.css`: depois do marcador "Mapa Vivo⭐" não pode ter `display:none`, `transform:scale`, `touch-action`, `animation:` nem `transition:` (teste `mapa-mobile-leitura`).
+- Um robô regera os SVGs do mapa a cada push com um commit "[skip ci]": faça `git fetch` + `rebase` antes de enviar.
+- Ao mudar `tw-i18n.js`, rode `node tools/i18n/dividir.js`. Antes de criar uma chave, confira se ela já existe (chave repetida sobrescreve a tradução de outro lugar).
+- O `drawChar` existe em três cópias: peças novas vão para os módulos compartilhados (`tw-avatar-*.js`), não para uma cópia só.
+- Antes de criar acessório ou item novo, confira a lista de Itens (`ACC`) e da loja.
+
+## Diário anterior (14/11/2026)
 
 ### Acabamento visual (14/11, tarde)
 - Camarim: o Cantinho de lembranças saiu do meio dos cuidados do pet. Agora fica no fim, fechado, e só mostra as lembranças e o vasinho. A foto e os cards já estão no Celular e na Estante, e o vaso e o porta-retratos já aparecem no desenho do quarto.
@@ -46,7 +123,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - Conferido em Chrome local a 390 e 320 px, sem as fontes do Google. Falta ver no iPhone.
 
 ### Teste sem login (modo demonstração)
-- Abrir a prévia com `?demo=1` no fim do endereço: `https://tsulipa-world-git-visual-layout-hud-tsu-li-pa.vercel.app/?demo=1`.
+- Abrir o site local (`python3 -m http.server` na raiz) com `?demo=1` no fim do endereço. As prévias de branch da Vercel estão desligadas no `vercel.json` e no domínio oficial o modo demonstração não liga.
 - Cria a conta de mentira "Demo" (★500) e simula no navegador Battle (rival do dia, Top da Arena, Arena, Torcida), Jardim, Photo Studio, Café (partida verificada, cliente VIP, bônus ★10 do dia) e Handshake (8 rodadas, cor do lightstick, prêmio do dia), com os mesmos limites do servidor. O botão **+1 dia** da faixa avança o dia simulado (regas, limites diários, prêmio do dia seguinte).
 - Nada é gravado e tudo some ao recarregar. Nunca liga em `tsulipa-world.vercel.app` (teste: `tests/demo-jogos.test.js`).
 - Também simula o pó do Gacha (converter e resgatar, no Álbum) e o Moon⭐Duo! com o Pedido de cena (★5 uma vez por dia).
@@ -58,7 +135,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - iPhone físico e Safari.
 - Login com Google na prévia.
 
-### Não concluído
+### Não concluído (estado de 14/11, antes dos merges — histórico)
 - **Merge da #88:** é o que coloca tudo isso no site; o merge é do dono.
 - **#89 (Café: Dois no balcão):** o banco está aplicado, mas o front não entrou na #88.
 - **#74 (tela do prêmio do Sora):** rascunho; o SQL dele não deve ser aplicado, porque foi substituído pela versão com anti-cheat.

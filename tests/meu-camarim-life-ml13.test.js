@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const root = path.join(__dirname, '..');
-const pet = fs.readFileSync(path.join(root, 'pet.js'), 'utf8');
+const pet = require('./pet-fonte.js')();
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'pet.css'), 'utf8');
 const logic = pet.slice(pet.indexOf('var petLifePose ='), pet.indexOf('var petData ='));

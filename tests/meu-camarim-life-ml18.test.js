@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const pet = fs.readFileSync(path.join(__dirname, '..', 'pet.js'), 'utf8');
+const pet = require('./pet-fonte.js')();
 const roupa = require('../tw-avatar-roupa.js');
 const logic = pet.slice(pet.indexOf('var petLifePose ='), pet.indexOf('var petData ='));
 

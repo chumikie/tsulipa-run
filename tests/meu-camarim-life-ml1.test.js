@@ -7,7 +7,7 @@ const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const pet = read('pet.js'), html = read('index.html'), css = read('pet.css');
+const pet = require('./pet-fonte.js')(), html = read('index.html'), css = read('pet.css');
 const hub = read('hub.js'), karaokePhoto = read('karaoke-photo.js'), karaokeCss = read('karaoke-photo.css');
 const logic = pet.slice(pet.indexOf('function petLifeHit('), pet.indexOf('function petIdleJeito('));
 const lembrancas = pet.slice(pet.indexOf('var PET_VIDA_PRATELEIRA'), pet.indexOf('function petDrawRoom('));
@@ -325,7 +325,7 @@ test('ML1.2-B: sem memória de fãs, Chat acolhe sem inventar contatos ou altera
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-conversa="fan:/);
   assert.equal(ctx.petPhoneChatAbrir('fan:Desconhecido'),false);
   assert.equal(ctx.petPhoneChatAbrir('idol:lirika'),true);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/pequenas lembranças|lembranças dos fãs/i);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/pequenas lembranças|lembranças dos fãs|reencontros no Café/i);
   assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
   for(const k of ['terminar_corrida','iniciar_corrida','petSave(','star_log','localStorage']){
     assert.equal(logic.includes(k),false,'sem alterações econômicas ou persistência: '+k);

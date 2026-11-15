@@ -20,7 +20,7 @@ for (const name of names) {
     });
   }
 }
-if (karaoke.rows.length !== 202 || karaoke.rows.some((value) => typeof value !== 'string')) throw Error('Cobertura incompleta do Karaoke');
+if (karaoke.rows.length !== 203 || karaoke.rows.some((value) => typeof value !== 'string')) throw Error('Cobertura incompleta do Karaoke');
 const sora = [...read('sora-dict-core.json').translations, ...read('sora-dict-world-and-ui.json').translations];
 if (sora.length !== 147) throw Error('Cobertura incompleta do Sora');
 const karaokeHtml = fs.readFileSync(path.join(base, '..', '..', 'kt-traducoes.js'), 'utf8');

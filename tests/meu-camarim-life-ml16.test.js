@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const pet = read('pet.js'), shop = read('shop.js'), html = read('index.html'), perfil = read('perfil.js'), cr = read('centerrun.js');
+const pet = require('./pet-fonte.js')(), shop = read('shop.js'), html = read('index.html'), perfil = read('perfil.js'), cr = read('centerrun.js');
 const fatia = (s, a, b) => s.slice(s.indexOf(a), s.indexOf(b));
 
 test('ML1.6: luz do horário de Brasília em quatro fases, só no desenho', () => {

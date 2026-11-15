@@ -13,8 +13,10 @@ function extract(file,first,last){
 }
 const source=[
   extract('conta.js','function contaInicioCorrida(){','function contaGasto('),
-  extract('centerrun.js','function end(){','function hit('),
-  extract('index.html','var _origEnd = end;','var _origUpdate = update;')
+  extract('centerrun-corrida.js','function end(){','function hit('),
+  // o invólucro da Temporada 2 entra quando a corrida carrega (twCorridaAoCarregar); aqui ela já está carregada
+  'function twCorridaAoCarregar(f){f();}',
+  extract('index.html','var _origEnd;','var _origUpdate;')
 ].join('\n');
 const flush=()=>new Promise(r=>setImmediate(r));
 

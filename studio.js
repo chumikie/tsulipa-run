@@ -45,12 +45,12 @@
     ['fofura', function(e){ return e.pose === 'coracao'; }]
   ];
   var T_TEMA = {
-    pt:{rot:'Tema da semana',dica:'Fotos no tema ganham um selo no mural.',ok:'Sua cena está no tema!',selo:'No tema',neon:'Noite neon',ceu:'Dia de céu azul',sol:'Pôr do sol',flores:'Semana das flores',palco:'Clima de palco',close:'Close de revista',fofura:'Fofura máxima'},
-    en:{rot:'Theme of the week',dica:'Photos on theme get a badge on the board.',ok:'Your scene matches the theme!',selo:'On theme',neon:'Neon night',ceu:'Blue sky day',sol:'Sunset',flores:'Flower week',palco:'Stage vibes',close:'Magazine close-up',fofura:'Max cuteness'},
-    es:{rot:'Tema de la semana',dica:'Las fotos en el tema ganan un sello en el mural.',ok:'¡Tu escena está en el tema!',selo:'En el tema',neon:'Noche neón',ceu:'Día de cielo azul',sol:'Atardecer',flores:'Semana de las flores',palco:'Ambiente de escenario',close:'Primer plano de revista',fofura:'Ternura máxima'},
-    id:{rot:'Tema minggu ini',dica:'Foto sesuai tema dapat lencana di papan.',ok:'Adeganmu sesuai tema!',selo:'Sesuai tema',neon:'Malam neon',ceu:'Hari langit biru',sol:'Senja',flores:'Minggu bunga',palco:'Suasana panggung',close:'Close-up majalah',fofura:'Super imut'},
-    th:{rot:'ธีมประจำสัปดาห์',dica:'รูปที่ตรงธีมจะได้ตราบนบอร์ด',ok:'ฉากของคุณตรงธีมแล้ว!',selo:'ตรงธีม',neon:'คืนนีออน',ceu:'วันฟ้าใส',sol:'พระอาทิตย์ตก',flores:'สัปดาห์ดอกไม้',palco:'บรรยากาศเวที',close:'โคลสอัปนิตยสาร',fofura:'น่ารักสุดๆ'},
-    ja:{rot:'今週のテーマ',dica:'テーマに合った写真は掲示板でバッジがつくよ。',ok:'シーンがテーマにぴったり！',selo:'テーマ',neon:'ネオンナイト',ceu:'青空の日',sol:'夕やけ',flores:'お花ウィーク',palco:'ステージ気分',close:'雑誌風アップ',fofura:'かわいさMAX'}
+    pt:{rot:'Tema da semana',dica:'Publique no mural uma foto no tema: ★3 uma vez por semana.',premio:'+★{n} pelo tema da semana!',ok:'Sua cena está no tema!',selo:'No tema',neon:'Noite neon',ceu:'Dia de céu azul',sol:'Pôr do sol',flores:'Semana das flores',palco:'Clima de palco',close:'Close de revista',fofura:'Fofura máxima'},
+    en:{rot:'Theme of the week',dica:'Post an on-theme photo to the board: ★3 once a week.',premio:'+★{n} for the theme of the week!',ok:'Your scene matches the theme!',selo:'On theme',neon:'Neon night',ceu:'Blue sky day',sol:'Sunset',flores:'Flower week',palco:'Stage vibes',close:'Magazine close-up',fofura:'Max cuteness'},
+    es:{rot:'Tema de la semana',dica:'Publica en el mural una foto en el tema: ★3 una vez por semana.',premio:'¡+★{n} por el tema de la semana!',ok:'¡Tu escena está en el tema!',selo:'En el tema',neon:'Noche neón',ceu:'Día de cielo azul',sol:'Atardecer',flores:'Semana de las flores',palco:'Ambiente de escenario',close:'Primer plano de revista',fofura:'Ternura máxima'},
+    id:{rot:'Tema minggu ini',dica:'Unggah foto sesuai tema ke papan: ★3 seminggu sekali.',premio:'+★{n} untuk tema minggu ini!',ok:'Adeganmu sesuai tema!',selo:'Sesuai tema',neon:'Malam neon',ceu:'Hari langit biru',sol:'Senja',flores:'Minggu bunga',palco:'Suasana panggung',close:'Close-up majalah',fofura:'Super imut'},
+    th:{rot:'ธีมประจำสัปดาห์',dica:'โพสต์รูปที่ตรงธีมบนบอร์ด: รับ ★3 สัปดาห์ละครั้ง',premio:'+★{n} จากธีมประจำสัปดาห์!',ok:'ฉากของคุณตรงธีมแล้ว!',selo:'ตรงธีม',neon:'คืนนีออน',ceu:'วันฟ้าใส',sol:'พระอาทิตย์ตก',flores:'สัปดาห์ดอกไม้',palco:'บรรยากาศเวที',close:'โคลสอัปนิตยสาร',fofura:'น่ารักสุดๆ'},
+    ja:{rot:'今週のテーマ',dica:'テーマに合った写真を掲示板に投稿すると、週に1回★3！',premio:'今週のテーマで★{n}！',ok:'シーンがテーマにぴったり！',selo:'テーマ',neon:'ネオンナイト',ceu:'青空の日',sol:'夕やけ',flores:'お花ウィーク',palco:'ステージ気分',close:'雑誌風アップ',fofura:'かわいさMAX'}
   };
   function temaSemana(){ var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5); return TEMAS[((sem % TEMAS.length) + TEMAS.length) % TEMAS.length]; }
   function tt(k){ var d = T_TEMA[L()] || T_TEMA.pt; return d[k] || T_TEMA.pt[k] || k; }
@@ -172,7 +172,13 @@
     contaRpc('studio_publicar', {p:foto.escolhas}).then(function(r){
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
-        publicou = true; msg = t('publicado'); mural = null; }
+        publicou = true; mural = null;
+        // tema da semana: ★3 uma vez por semana (o servidor confere o tema; studio_publicar)
+        if(+r.premio_tema > 0){
+          msg = t('publicado') + ' ' + tt('premio').replace('{n}', r.premio_tema);
+          if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
+          try{ if(typeof twJogoSom === 'function') twJogoSom('vitoria'); }catch(e){}
+        } else msg = t('publicado'); }
       else if(r && r.erro === 'ja_publicou'){ publicou = true; msg = t('ja'); }
       else msg = t('erro');
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
@@ -341,7 +347,8 @@
       try{ polaroid(sec.querySelector('canvas'), c.escolhas, c.avatar || {}, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa')); }catch(e){}
     }).catch(function(){});
   }
-  if(typeof window.jornalAbasIniciar === 'function'){
+  window.studioCapaNews = capaNews;   // o carregador sob demanda chama isto quando o Idol⭐News! abre antes do Studio
+  if(typeof window.jornalAbasIniciar === 'function' && !window.TW_STUDIO_SOB_DEMANDA){
     var abasOrig = window.jornalAbasIniciar;
     window.jornalAbasIniciar = function(){ var r = abasOrig.apply(this, arguments); try{ capaNews(); }catch(e){} return r; };
   }

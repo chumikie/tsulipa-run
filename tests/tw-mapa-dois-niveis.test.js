@@ -26,7 +26,7 @@ const ctx = new Proxy({}, {
       key === 'save' || key === 'restore' || key === 'fill' || key === 'stroke' ||
       key === 'beginPath' || key === 'arc' || key === 'ellipse' || key === 'translate' ||
       key === 'scale' || key === 'arcTo' || key === 'closePath' || key === 'moveTo' ||
-      key === 'lineTo' || key === 'setLineDash' || key === 'quadraticCurveTo') return () => {};
+      key === 'lineTo' || key === 'setLineDash' || key === 'quadraticCurveTo' || key === 'bezierCurveTo' || key === 'rotate') return () => {};
     return target[key];
   },
   set(target,key,value) {target[key]=value; return true;}

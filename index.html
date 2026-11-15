@@ -12,7 +12,7 @@
 -->
 <html lang="pt-BR">
 <head>
-<link rel="icon" href="favicon.svg?v=5" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=6" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png?v=5" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
 <meta charset="utf-8">
@@ -40,7 +40,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=9">
+<link rel="stylesheet" href="./centerrun.css?v=12">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -59,7 +59,7 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=5">
+<link rel="stylesheet" href="./hub.css?v=9">
 <link rel="stylesheet" href="./shop.css?v=5">
 <link rel="stylesheet" href="./jornal.css?v=10">
 <style>
@@ -165,7 +165,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
 <link rel="stylesheet" href="./hub-polish.css?v=40">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
-<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=3"><'+'/script>');</script>
+<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=4"><'+'/script>');</script>
 </head>
 <body>
 <header>
@@ -217,13 +217,18 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
 		
       <div class="chars" id="chars"></div>
-      
+
+      <!-- JOGAR vem primeiro (15/11/2026): montar o visual fica recolhido aqui e também no Perfil e na Zipper Shop -->
+      <button class="btn" id="play">JOGAR</button>
+      <button type="button" class="sec custtoggle" id="custToggle" aria-expanded="false" aria-controls="custBox">✏️ <span>Montar visual</span></button>
+      <div class="custbox" id="custBox" hidden>
       <div class="cust" id="cust" hidden>
         <div class="cmprev">
           <canvas id="cmCv" width="440" height="360" role="img" aria-label="Prévia do visual"></canvas>
           <div class="cmexpr" id="cmExpr" role="group" aria-label="Expressões"></div>
           <div class="custacoes"><button type="button" class="btn alt" id="custSortear">🎲 <span>Sortear</span></button><button type="button" class="btn alt" id="custDesfazer" disabled>↩ <span>Desfazer</span></button></div>
         </div>
+        <div class="cmfavs" id="cmFavs" role="group" aria-label="Favoritos"></div>
         <div class="cmabas" id="cmAbas" role="tablist" aria-label="Partes"></div>
         <div class="cmgrade" id="cmGrade" role="tabpanel"></div>
         <h4 class="custt"><span aria-hidden="true">🎨</span> <span>Cores</span></h4>
@@ -284,10 +289,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
         </select></label>
         <label>Item <select id="acc"></select><b id="newb" class="nb" hidden>✨ NOVO!</b></label>
       </div>
-      
+      </div>
 <div class="cust" id="tstw" hidden><label>Modo teste <select id="tst"><option value="0">Audição (0)</option><option value="150">Kenkyuusei (150)</option><option value="450">Team (450)</option><option value="1000">Senbatsu (1000)</option><option value="1800">Quad Center (1800)</option><option value="2800">tCenter (2800)</option><option value="3900">wCenter (3900)</option><option value="5000">Center (5000)</option><option value="10000">Solo Center (10000)</option><option value="15000">Capitão (15000)</option><option value="30000">Eternal Ace (30000)</option><option value="50000">Kami-Oshi (50000)</option></select></label> <label>Parceiras <select id="tstP"><option value="0">0</option><option value="1">1 (dupla)</option><option value="2">2 (trio)</option><option value="3">3 (quarteto, só com Você)</option></select></label></div>
 
-      <button class="btn" id="play">JOGAR</button>
 
       <div><button class="sec" id="seelb">Ver ranking</button></div>
 
@@ -391,14 +395,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <script>/* Só o idioma escolhido é baixado (o português já vem no próprio site). Fonte: tw-i18n.js → tools/i18n/dividir.js */
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=1"><'+'/script>');})();</script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=2"><'+'/script>');</script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=4"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=17"></script>
+<script src="./centerrun.js?v=21"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=28"></script>
-<script src="./perfil.js?v=17"></script>
+<script src="./pet.js?v=30"></script>
+<script src="./perfil.js?v=19"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -423,23 +427,37 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   }, { passive:true });
 })();
 </script>
-<script src="./handshake.js?v=12"></script>
-<script src="./cafe.js?v=16"></script>
-<script src="./cafe-gorjeta.js?v=1"></script>
-<script src="./cafe-vip.js?v=1"></script>
-<script src="./cafe-duplo.js?v=3"></script>
-<script src="./duo.js?v=2"></script>
+<script src="./jogos-base.js?v=1"></script>
+<script>
+/* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
+   A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
+   as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
+(function(){var p=null,ARQ=['./handshake.js?v=13','./cafe.js?v=17','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=3','./flores.js?v=2'];
+  function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
+  function carregar(){if(!p)p=ARQ.reduce(function(c,u){return c.then(function(){return um(u);});},Promise.resolve()).catch(function(e){p=null;throw e;});return p;}
+  function atalho(nome){var f=function(){var a=arguments;carregar().then(function(){if(window[nome]!==f)window[nome].apply(window,a);}).catch(function(){});};return f;}
+  window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
+</script>
+<script src="./duo.js?v=3"></script>
 <script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=19"></script>
+<script src="./hub.js?v=23"></script>
 <script src="./hub-layout.js?v=4"></script>
 <script src="./mapa-textos.js?v=3"></script>
-<script src="./tw-mapa.js?v=49"></script>
+<script src="./tw-mapa.js?v=52"></script>
 <script src="./bloom.js?v=8"></script>
-<script src="./flores.js?v=1"></script>
 <script src="./shop.js?v=6"></script>
 <script src="./jornal.js?v=14"></script>
-<script src="./studio.js?v=7"></script>
+<script>
+/* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
+   A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=9';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+  function atalho(){var a=arguments;carregar().then(function(){if(window.studioAbrir!==atalho)window.studioAbrir.apply(window,a);}).catch(function(){});}
+  window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
+  function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
+    window.jornalAbasIniciar=function(){var r=orig.apply(this,arguments);carregar().then(function(){if(window.studioCapaNews)window.studioCapaNews();}).catch(function(){});return r;};window.jornalAbasIniciar.twStudio=1;}
+  ligarJornal();window.addEventListener('DOMContentLoaded',ligarJornal);})();
+</script>
 <script>
 /* Idol⭐Battle! sob demanda: o CSS e o JS (≈60 KB) só baixam no primeiro toque.
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
@@ -451,7 +469,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./jogos-trilha.js?v=1"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=9"></script>
+<script src="./charmaker.js?v=11"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=2"></script>
 <script src="./admin.js?v=1"></script>
@@ -787,7 +805,7 @@ try {
 
 reset();
 state='menu';
-twIndex2StartBaseLoop();
+twIndex2StartBaseLoop(true);
 
 
 var menuTitleEl = document.getElementById('menu-title');
@@ -819,7 +837,7 @@ document.addEventListener('keydown',function(e){
 });
 document.getElementById('stage').addEventListener('pointerdown',function(e){
   if(e.target.closest('button')||e.target.closest('.ov'))return;
-  jump();
+  if(typeof jump==='function')jump();
 });
 document.getElementById('play').onclick=start;
 document.getElementById('again').onclick=start;
@@ -837,7 +855,7 @@ document.addEventListener('visibilitychange',function(){
 window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
-$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();jump()});
+$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();if(typeof jump==='function')jump()});
 var twIdCarregamento=null, twIdiomaEscolhaToken=0;
 function twIntegrarDicionariosId(){
   var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
@@ -861,7 +879,7 @@ function twCarregarIdiomaId(){
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js?v=2';
+    script.src='./translations/id/preview-data.js?v=4';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);
@@ -1079,14 +1097,14 @@ petCv.addEventListener('pointermove', function(e){
   petArrumoMover((e.clientX - r.left) * 360 / r.width, (e.clientY - r.top) * 220 / r.height);
   e.preventDefault();
 });
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, petArrumoSoltar); });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, function(e){ return petArrumoSoltar.call(this, e); }); });
 
 // ---------- Abrir / fechar ----------
 
-$('petBtn').onclick = function(e){ e.preventDefault(); ac(); petOpenUI(); };
-$('petX').onclick = petClose;
+$('petBtn').onclick = function(e){ e.preventDefault(); ac(); petSalaCarregar().then(function(){ petOpenUI(); }).catch(function(){}); };   // a sala do pet baixa no primeiro toque
+$('petX').onclick = function(){ return petClose.apply(this, arguments); };
 $('petWindowClose').onclick = function(){ $('petX').click(); };
-$('petGo').onclick = petAdopt;
+$('petGo').onclick = function(){ return petAdopt.apply(this, arguments); };
 document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape'){ if(petPhoneOpen) petPhoneVoltar(); else petClose(); } });
 $('petPhone').addEventListener('click', function(e){
   var b = e.target.closest('button[data-phone]'); if(!b || b.disabled) return;
@@ -2070,7 +2088,7 @@ var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
 hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><div class="hubin">' +
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : i < 10 ? ' class="c1"' : i < 11 ? ' class="c2"' : ' class="c3"') + '>' + ch + '</span>'; }).join('') + '</h1>' +
-  '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
+  '<p class="hubsub">ツリパ⭐ワールド</p><button type="button" class="hubcfgbtn" id="hubCfgBtn" aria-expanded="false" aria-controls="hubCfg" aria-label="Idioma e tema">⚙️</button><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
 
@@ -2089,7 +2107,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
   '<p class="tw-rank-week-note" id="twRankWeekNote"></p>'+
   '<div class="tw-rank-columns" id="twRankColumns"></div></section>' +
-  '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off"><div id="hubBuscaRes" class="buscares"></div></section>' +
+  '<section class="hubpainel hubbusca"><input id="hubBusca" maxlength="12" autocomplete="off" aria-label="Procurar Idol pelo nome"><div id="hubBuscaRes" class="buscares"></div></section>' +
   '<section class="hubpainel hub-missoes-mundo" id="hubMisPainel"><h2 id="hubMisT"></h2><div id="hubMis"></div></section>' +
   '<details class="hubpainel hubnov"><summary id="hubNovT"></summary><ul id="hubNov"></ul></details>' +
   '<div class="siterodape"><div class="hublinks hublinks-rodape" id="hubLinks"></div><p class="sitedir" data-dir="1"></p><img class="logotsl footlogo" alt="TsuLiPa"></div>' +
@@ -2388,15 +2406,15 @@ var hsOv = document.createElement('div');
 hsOv.className = 'ov hsov tw-window-overlay'; hsOv.id = 'hsOv'; hsOv.hidden = true;
 hsOv.innerHTML = '<div class="panel hsp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="hsTit"><button type="button" class="perfx tw-window-control tw-window-close" id="hsX">✕</button><h2 class="tw-modal-title" id="hsTit" translate="no">🤝 Handshake<span class="tw-modal-star">⭐</span>Event!</h2><small class="tw-modal-jp" lang="ja">握手会</small><canvas id="hsCv" width="640" height="360" aria-hidden="true"></canvas><div id="hsCorpo"></div></div>';
 document.body.appendChild(hsOv);
-$('hsX').onclick = hsFechar;
-hsOv.addEventListener('click', hsClique);
+$('hsX').onclick = function(e){ if(typeof hsFechar === 'function') hsFechar(e); };
+hsOv.addEventListener('click', function(e){ if(typeof hsClique === 'function') hsClique(e); });
 // Happy⭐Cafe! (cafe.js)
 var cfOv = document.createElement('div');
 cfOv.className = 'ov hsov cfov tw-window-overlay'; cfOv.id = 'cfOv'; cfOv.hidden = true;
 cfOv.innerHTML = '<div class="panel hsp cfp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="cfTit"><button type="button" class="perfx tw-window-control tw-window-close" id="cfX">✕</button><h2 class="tw-modal-title" id="cfTit" translate="no">🧋 Happy<span class="tw-modal-star">⭐</span>Cafe!</h2><small class="tw-modal-jp" lang="ja">ハッピー・カフェ</small><canvas id="cfCv" width="640" height="360" aria-hidden="true"></canvas><div id="cfCorpo"></div></div>';
 document.body.appendChild(cfOv);
-$('cfX').onclick = cfFechar;
-cfOv.addEventListener('click', cfClique);
+$('cfX').onclick = function(e){ if(typeof cfFechar === 'function') cfFechar(e); };
+cfOv.addEventListener('click', function(e){ if(typeof cfClique === 'function') cfClique(e); });
 hubOv.addEventListener('click', function(e){ if(typeof recClique === 'function' && e.target.closest && e.target.closest('#hubRec')) recClique(e); });
 // Pedidos de fã (fa.js)
 var faOv = document.createElement('div');
@@ -2696,6 +2714,8 @@ petPhExprVal = function(padrao){   // "Auto": sorteia uma expressão por foto (a
   if(agora - phAutoT > 400){ var pool = [2, 3, 0, 2, 3, 2, 3, 1].concat([4, 5, 6].filter(function(n){ return lojaTem('expr_' + n); })); phAutoV = pool[Math.floor(Math.random() * pool.length)]; }
   phAutoT = agora; return phAutoV;
 };
+// a sala do pet chega depois (pet-sala.js): isto entra quando ela carregar
+petSalaAoCarregar(function(){
 petPhUI = function(){
   function grp(label, campo, lista, cur){
     return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
@@ -2706,6 +2726,7 @@ petPhUI = function(){
   }
   petPhBox.innerHTML = (petPhMode === 'share' ? '' : grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame)) + grp('Pose', 'pose', PET_PH_POSES, petPhPose) + grp('Expressão', 'expr', PET_PH_EXPRS, petPhExpr) + '<p class="perfmsg" id="phLojaMsg" hidden></p>';
 };
+});
 petPhBox.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-trava]'); if(!b) return;
   e.stopPropagation(); e.preventDefault();
@@ -2911,8 +2932,11 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
 window.TW_I18N.rows.encounterLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 // ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------
+// a sala do pet chega depois (pet-sala.js): isto entra quando ela carregar
+petSalaAoCarregar(function(){
 if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose;
 $('petWindowClose').onclick = function(){ $('petX').click(); }; }
+});
 
 // o gacha e o Moon⭐Duo! tocam a música deles no lugar da música da tela de início
 var ovHubTocarOrig = hubMusicaTocar;
@@ -3036,12 +3060,15 @@ var S2_BONUS_LABELS = window.TW_I18N.locale.S2_BONUS_LABELS;;
 
 
 
-var _s2OrigJump = jump;
+var _s2OrigJump;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigJump = jump;
 jump = function(){
   // Durante o bônus, o comando rende ★ se correto E anima o pulo de verdade.
   if(s2Challenge && s2Challenge.active) s2BonusAction('jump');
   _s2OrigJump();
 };
+});
 
 s2SetupUI();
 
@@ -3090,7 +3117,9 @@ document.addEventListener('keyup', function(e){
 
 // Temporada 2: na Rua da cidade a corrida usa o spawn original (plateia, duplas de caixas…);
 // nos outros cenários, os obstáculos próprios + a mesma plateia que vai se formando.
-var _s2OrigSpawn = spawn;
+var _s2OrigSpawn;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigSpawn = spawn;
 spawn = function(){
   // Corredor seguro e cortina: sem obstáculos que impeçam a passagem.
   if((s2Challenge && s2Challenge.active) || s2Curtain){
@@ -3103,10 +3132,13 @@ spawn = function(){
   var x0 = nextX; s2SpawnStage();
   if(!desafio && typeof fans !== 'undefined') s2Plateia(x0, nextX - x0);
 };
+});
 
 // Desenho dos obstáculos: cabo, caixa de som e lightstick mantêm o visual original do jogo;
 // os novos da Temporada 2 usam o desenho abaixo.
-var _s2OrigObs = obsDesenhar;
+var _s2OrigObs;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_s2OrigObs = obsDesenhar;
 obsDesenhar = function(o){
   if(o.k === 'cable' || o.k === 'speaker' || o.k === 'stick'){
     _s2OrigObs(o);
@@ -3115,6 +3147,7 @@ obsDesenhar = function(o){
   }
   s2ObsNovo(o);
 };
+});
 
 
 
@@ -3133,10 +3166,29 @@ start = function(e){
   s2ShowSlideButton();
 };
 // Os handlers foram ligados antes do wrapper: devem chamar a versão atualizada.
+(function(){   // "✏️ Montar visual": recolhido por padrão para o JOGAR ficar à vista; a escolha fica no aparelho
+  var bt = $('custToggle'), box = $('custBox'); if(!bt || !box) return;
+  function aplicar(aberto){ box.hidden = !aberto; bt.setAttribute('aria-expanded', String(aberto)); bt.classList.toggle('on', aberto);
+    if(aberto && window.TW_CHARMAKER && typeof TW_CHARMAKER.atualizar === 'function') try{ TW_CHARMAKER.atualizar(); }catch(e){} }
+  var ini = false; try{ ini = localStorage.getItem('brs48cr_montar_aberto') === '1'; }catch(e){}
+  aplicar(ini);
+  bt.addEventListener('click', function(){ var ab = box.hidden; aplicar(ab); try{ localStorage.setItem('brs48cr_montar_aberto', ab ? '1' : '0'); }catch(e){} if(typeof beep === 'function') beep(ab ? 988 : 660, .05, 'triangle', .04); if(ab) box.scrollIntoView({behavior:'smooth', block:'nearest'}); });
+})();
 $('play').onclick = start;
 $('again').onclick = start;
+// JOGAR antes de a corrida terminar de baixar: espera ela chegar e começa (nunca joga com a corrida pela metade)
+(function(){ var semCorrida = start;
+  start = function(e){
+    if(TW_CORRIDA_PRONTA) return semCorrida.apply(this, arguments);
+    if(e && e.preventDefault) e.preventDefault();
+    twCorridaCarregar().then(function(){ start(e); }).catch(function(){});
+  };
+  $('play').onclick = start; $('again').onclick = start;
+})();
 
-var _origEnd = end;
+var _origEnd;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origEnd = end;
 end = function(){
   if($('sb')) $('sb').style.display = 'none';
   // Se estava na Corrida do Dia, salva no ranking da Corrida do Dia
@@ -3157,8 +3209,11 @@ end = function(){
   // O chorinho da colisão fica só no jogo (s2HitEmotion); o cartão e o pôster do Fim do show
   // mantêm a expressão de exprFinal (feliz, piscadinha ou tristinha conforme a pontuação).
 };
+});
 
-var _origUpdate = update;
+var _origUpdate;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origUpdate = update;
 update = function(dt){
   s2StageFrames += dt;
   if(s2SlideTimer > 0){
@@ -3338,6 +3393,7 @@ update = function(dt){
     }
   }
 };
+});
 
 // Empacota drawChar para pose de deslizar e draw() para cenários da Temporada 2
 var _origDrawChar = drawChar;
@@ -3355,12 +3411,15 @@ drawChar = function(c, x, y, run, expr, isPartner){
   _origDrawChar(c, x, y, run, expr, isPartner);
 };
 
-var _origDraw = draw;
+var _origDraw;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
+twCorridaAoCarregar(function(){
+_origDraw = draw;
 draw = function(){
   _origDraw();
   if(typeof temaAtual === 'function' && temaAtual() === 'halloween')s2DrawSeasonOverlay();
   s2DrawForeground();
 };
+});
 
 // Suporte à aba "Dia Fixo" (daily_run) no showLb
 var _origShowLb = showLb;
@@ -3403,8 +3462,8 @@ applyLang();
   duoAnim=sl(duoAnim,$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
   aniverAnim=sl(aniverAnim,$('aniverFx'),!aniverOv.hidden,aniverLoop);
   encAnim=sl(encAnim,$('encCv'),!!encDados,encLoop);
-  petRaf=sl(petRaf,$('petov'),!!petOpen,petLoop);
-  perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
+  petRaf=sl(petRaf,$('petov'),!!petOpen,typeof petLoop==='function'?petLoop:null);
+  perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio')&&typeof perfAnimar==='function',typeof perfAnimar==='function'?perfAnimar:null);
   if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
   twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));
  }

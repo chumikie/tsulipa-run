@@ -7,7 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const pet = read('pet.js'), css = read('pet.css');
+const pet = require('./pet-fonte.js')(), css = read('pet.css');
 const capa = pet.slice(pet.indexOf('var PET_CAPA_W'), pet.indexOf('// Quatro ícones originais do Idol⭐Touch'));
 const fundo = pet.slice(pet.indexOf('function petMakeBg('), pet.indexOf('// Áreas pequenas e explícitas'));
 

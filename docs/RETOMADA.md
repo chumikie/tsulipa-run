@@ -63,6 +63,8 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 
 ### Também na #94 (15/11)
 - **Mapa:** gatinho malhado (Galeria do Brilho) e de smoking (Star Stage) com coleira, piscando, dormindo à noite e soltando corações ao toque; passarinhos e borboletas redesenhados; peixinhos koi na fonte da Praça.
+- **Mapa, mais vida:** cachorrinho shiba na Star Arena e coelhinho na Vila das Tulipas (atrás dos Idols, tocáveis, dormem à noite); gatos, cachorrinho e coelhinho reagem quando o seu Idol passa perto (`meuIdolPerto`, usa as posições do quadro anterior, nada é salvo).
+- **Indonésio:** chaves novas (Montar visual, Favoritos, Tema…) em `translations/id/TW_DICT.json`; depois de mexer, rode `node translations/id/build-preview-catalog.cjs` e suba `preview-data.js?v=`.
 - **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
 
 ### Falta validar (o dono testa)
@@ -78,7 +80,7 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 ### Ideias na fila (escolha do dono)
 - Prêmio de verdade para os lightsticks do Battle (mexe no servidor: precisa de OK).
 - Backstage⭐Pet! combinando com o visual novo do Idol.
-- Dividir `pet.js` (235 KB) e `centerrun.js` (216 KB) para carregar menos.
+- Dois sob demanda (último jogo que baixa na abertura; o código dele está espalhado no `index.html`).
 
 ### Armadilhas conhecidas
 - `hub-polish.css`: depois do marcador "Mapa Vivo⭐" não pode ter `display:none`, `transform:scale`, `touch-action`, `animation:` nem `transition:` (teste `mapa-mobile-leitura`).

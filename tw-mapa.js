@@ -327,7 +327,7 @@
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);idols(tm);alertasMundo(tm);}
-    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);andar(tm);nomesDasPortas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
+    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);andar(tm);nomesDasPortas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
@@ -577,9 +577,9 @@
   // Pisca, mexe a orelha e o rabo; tocado, pula e solta corações; à noite dorme.
   var GATOS={harajuku:{pelo:'#ffb35c',escuro:'#e8863a',contorno:'#a85a24',claro:'#fff3e0',listra:'#e8863a',olho:'#3a2a2a',coleira:'#ff6fb5',pingente:'sino',bigode:'rgba(90,58,42,.55)'},
     palco:{pelo:'#3b3346',escuro:'#2a2433',contorno:'#17121f',claro:'#f4f0fa',listra:'',olho:'#ffd23f',coleira:'#ffd23f',pingente:'estrela',bigode:'rgba(244,240,250,.75)'}};
-  function gatoDesenhar(tm,gx,gy,pt,noite){
+  function gatoDesenhar(tm,gx,gy,pt,noite,perto){
     var G=GATOS[cena]||GATOS.harajuku,up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*18:0,
-        dormindo=noite&&pt==null,cauda=reduzMov?0:Math.sin(tm*2.2)*(dormindo?.15:.5),
+        dormindo=noite&&pt==null&&!perto,cauda=reduzMov?0:Math.sin(tm*2.2)*(dormindo?.15:.5),
         pisca=!reduzMov&&!dormindo&&(tm%4.2)<.13,orelha=!reduzMov&&!dormindo&&(tm%6.5)<.28?-.22:0,
         cab=dormindo?3:(reduzMov?0:Math.sin(tm*1.1)*.6);
     ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);
@@ -630,6 +630,7 @@
       for(var z=0;z<2;z++){var fz=((tm*.7+z*.5)%1);ctx.globalAlpha=Math.sin(fz*Math.PI)*.8;ctx.fillText('z',8+z*6+fz*6,-36-fz*18);}ctx.globalAlpha=1;}
     ctx.restore();
     if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-100,'♡',Math.min(1,(1.8-(tm-pt))*2));
+    else if(perto&&(tm%3.2)<1.4)balao(gx-14,gy-100,'♡',Math.min(1,Math.sin((tm%3.2)/1.4*Math.PI)*2));   // seu Idol chegou perto
   }
   // Peixinhos koi na fonte da Praça: nadam em volta do repuxo, meio submersos.
   function peixesFonte(tm){
@@ -645,10 +646,91 @@
         ctx.ellipse(8,-6,3+((tm*.8+k)%3)*14,1.2+((tm*.8+k)%3)*4,0,0,7);ctx.stroke();}
       ctx.restore();}
   }
+  // Seu Idol passeando perto de um ponto (usa as posições do quadro anterior; nada é salvo).
+  function meuIdolPerto(x,raio){for(var i=0;i<ultimos.length;i++){var o=ultimos[i];if(o.dono&&Math.abs(o.x-x)<raio)return o;}return null;}
+  // Bichinhos de chão (arte original): cachorrinho na Star Arena e coelhinho na Vila das Tulipas.
+  // Ficam atrás dos Idols, respondem ao toque e ao seu Idol chegando perto. "Reduzir movimento" deixa tudo parado.
+  var CHAO={arena:'cachorro',fofo:'coelho'},chaoPos={};
+  function desenharChao(tm){
+    var tipo=CHAO[cena];if(!tipo)return;
+    var h=new Date().getHours(),noite=h>=21||h<6;
+    if(tipo==='cachorro'){var perto=meuIdolPerto(330,150);chaoPos[cena]={x:330,y:705};cachorroDesenhar(tm,330,705,pulos['cachorro'],noite,perto);}
+    else{var c=coelhoPos(tm);chaoPos[cena]={x:c.x,y:c.y};coelhoDesenhar(tm,c,pulos['coelho']);}
+  }
+  function cachorroDesenhar(tm,gx,gy,pt,noite,perto){
+    var up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*20:(perto&&!reduzMov?Math.abs(Math.sin(tm*5))*5:0),
+        feliz=pt!=null&&tm-pt<1.8||!!perto,dormindo=noite&&!feliz,
+        rabo=reduzMov?0:Math.sin(tm*(feliz?16:5))*(dormindo?.05:.35),pisca=!reduzMov&&!dormindo&&(tm%3.7)<.12;
+    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(0,15+up/1.7,25,5,0,0,7);ctx.fill();
+    var PELO='#f2a65a',CLARO='#fff4e2',CONT='#a65a22';
+    function silhueta(){ctx.beginPath();ctx.ellipse(4,2,19,13,0,0,7);ctx.moveTo(12,-16);ctx.arc(-4,-16,14,0,7);}
+    function orelhas(){ctx.beginPath();ctx.moveTo(-16,-24);ctx.lineTo(-15,-38);ctx.lineTo(-6,-28);ctx.closePath();ctx.moveTo(2,-28);ctx.lineTo(9,-38);ctx.lineTo(10,-24);ctx.closePath();}
+    // rabo enrolado (shiba) que abana
+    ctx.save();ctx.translate(20,-4);ctx.rotate(rabo);ctx.strokeStyle=CONT;ctx.lineWidth=9;ctx.beginPath();ctx.arc(5,-5,7,Math.PI*.9,Math.PI*2.4);ctx.stroke();
+    ctx.strokeStyle=PELO;ctx.lineWidth=6;ctx.stroke();ctx.strokeStyle=CLARO;ctx.lineWidth=3;ctx.beginPath();ctx.arc(5,-5,7,Math.PI*1.9,Math.PI*2.3);ctx.stroke();ctx.restore();
+    ctx.strokeStyle=CONT;ctx.lineWidth=3.2;silhueta();ctx.stroke();orelhas();ctx.stroke();
+    ctx.fillStyle=PELO;silhueta();ctx.fill();orelhas();ctx.fill();
+    ctx.fillStyle='#ffc9a3';ctx.beginPath();ctx.moveTo(-14,-27);ctx.lineTo(-13.5,-34);ctx.lineTo(-8.5,-29);ctx.closePath();ctx.moveTo(3.5,-29);ctx.lineTo(8,-34);ctx.lineTo(8.5,-27);ctx.closePath();ctx.fill();
+    ctx.fillStyle=CLARO;ctx.beginPath();ctx.ellipse(-4,-10,10,7,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(-2,4,9,9,0,0,7);ctx.fill();
+    ctx.beginPath();ctx.ellipse(-11,-20,2.6,1.6,0,0,7);ctx.ellipse(3,-20,2.6,1.6,0,0,7);ctx.fill();   // pintinhas de sobrancelha
+    ctx.strokeStyle=CONT;ctx.lineWidth=1.6;[-9,4].forEach(function(px){ctx.fillStyle=CLARO;ctx.beginPath();ctx.ellipse(px,13,5.5,3.6,0,0,7);ctx.fill();ctx.stroke();});
+    // coleira azul com plaquinha de estrela (troféus da Arena)
+    ctx.strokeStyle='#4169e1';ctx.lineWidth=3.2;ctx.beginPath();ctx.arc(-4,-16,13.5,Math.PI*.28,Math.PI*.72);ctx.stroke();
+    ctx.fillStyle='#ffd23f';ctx.strokeStyle='#b8860b';ctx.lineWidth=1;ctx.beginPath();
+    for(var q=0;q<10;q++){var an=-Math.PI/2+q*Math.PI/5,rr=q%2?1.8:4;ctx.lineTo(-4+Math.cos(an)*rr,-.5+Math.sin(an)*rr);}ctx.closePath();ctx.fill();ctx.stroke();
+    // rosto
+    ctx.fillStyle='rgba(255,111,181,.45)';ctx.beginPath();ctx.ellipse(-14,-12,3.2,2,0,0,7);ctx.ellipse(6,-12,3.2,2,0,0,7);ctx.fill();
+    ctx.strokeStyle='#3a2a2a';ctx.lineWidth=1.8;
+    if(dormindo||pisca){ctx.beginPath();ctx.arc(-10,-17,3,.15*Math.PI,.85*Math.PI);ctx.moveTo(5,-17);ctx.arc(2,-17,3,.15*Math.PI,.85*Math.PI);ctx.stroke();}
+    else{[-10,2].forEach(function(ex){ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(ex,-17,2.6,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex-.9,-18,.9,0,7);ctx.fill();});}
+    ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.ellipse(-4,-12.5,2.4,1.7,0,0,7);ctx.fill();
+    ctx.strokeStyle='#5a3a2a';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(-4,-11);ctx.lineTo(-4,-9.5);ctx.arc(-5.5,-9.5,1.5,0,Math.PI);ctx.moveTo(-1,-9.5);ctx.arc(-2.5,-9.5,1.5,0,Math.PI);ctx.stroke();
+    if(feliz&&!dormindo){ctx.fillStyle='#ff7aa8';ctx.beginPath();ctx.ellipse(-4,-6.8,2,2.6,0,0,7);ctx.fill();}   // linguinha de alegria
+    if(dormindo&&!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='16px "Mochiy Pop One",sans-serif';
+      for(var z=0;z<2;z++){var fz=((tm*.7+z*.5)%1);ctx.globalAlpha=Math.sin(fz*Math.PI)*.8;ctx.fillText('z',8+z*6+fz*6,-36-fz*18);}ctx.globalAlpha=1;}
+    ctx.restore();
+    if(pt!=null&&tm-pt<1.8)balao(gx-16,gy-104,'♡!',Math.min(1,(1.8-(tm-pt))*2));
+    else if(perto&&(tm%3.2)<1.4)balao(gx-16,gy-104,'♪',Math.min(1,Math.sin((tm%3.2)/1.4*Math.PI)*2));
+  }
+  // Coelhinho: pula entre as floreiras da direita, para e olha para o seu Idol quando ele chega perto.
+  var coelhoEstado={x:1240,alvo:1240,dir:1,pulo:0,t:0,parado:0};
+  function coelhoPos(tm){
+    var e=coelhoEstado,dt=Math.min(.1,Math.max(0,tm-(e.t||tm)));e.t=tm;
+    var perto=meuIdolPerto(e.x,170);
+    if(perto){e.dir=perto.x<e.x?-1:1;e.parado=tm;}
+    else if(!reduzMov&&tm-e.parado>1.2){
+      if(Math.abs(e.alvo-e.x)<4)e.alvo=1090+Math.random()*400;
+      e.dir=e.alvo>e.x?1:-1;e.x+=e.dir*Math.min(Math.abs(e.alvo-e.x),55*dt);
+    }
+    var andando=!perto&&!reduzMov&&Math.abs(e.alvo-e.x)>=4&&tm-e.parado>1.2;
+    return {x:e.x,y:718,dir:e.dir,hop:andando?Math.abs(Math.sin(tm*7))*14:0,perto:perto};
+  }
+  function coelhoDesenhar(tm,c,pt){
+    var up=c.hop+(pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.5)*Math.PI))*30:0),
+        orelha=c.perto&&!reduzMov?Math.sin(tm*8)*.18:0,pisca=!reduzMov&&(tm%4.4)<.12,
+        BRANCO='#fffafc',CONT='#b98aa6';
+    ctx.save();ctx.translate(c.x,c.y);ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(0,12,20-up*.3,4,0,0,7);ctx.fill();
+    ctx.translate(0,-up);ctx.scale(c.dir*1.6,1.6);ctx.lineJoin='round';ctx.lineCap='round';
+    function orelhas(){[[-4,-.25+orelha],[3,.2-orelha]].forEach(function(o){ctx.save();ctx.translate(o[0],-17);ctx.rotate(o[1]);ctx.moveTo(4,0);ctx.ellipse(0,-10,4,10,0,0,7);ctx.restore();});}
+    function corpo(){ctx.beginPath();ctx.ellipse(-2,2,14,10,0,0,7);ctx.moveTo(15,-8);ctx.arc(5,-9,10,0,7);ctx.moveTo(-12,0);ctx.arc(-16,0,5,0,7);}
+    ctx.strokeStyle=CONT;ctx.lineWidth=3;corpo();ctx.stroke();ctx.beginPath();orelhas();ctx.stroke();
+    ctx.fillStyle=BRANCO;corpo();ctx.fill();ctx.beginPath();orelhas();ctx.fill();
+    ctx.fillStyle='#ffb3cf';[[-4,-.25+orelha],[3,.2-orelha]].forEach(function(o){ctx.save();ctx.translate(o[0],-17);ctx.rotate(o[1]);ctx.beginPath();ctx.ellipse(0,-10,2,7,0,0,7);ctx.fill();ctx.restore();});
+    ctx.fillStyle='rgba(255,111,181,.5)';ctx.beginPath();ctx.ellipse(10,-6,2.6,1.6,0,0,7);ctx.fill();
+    ctx.strokeStyle='#3a2a3a';ctx.lineWidth=1.6;
+    if(pisca){ctx.beginPath();ctx.arc(8,-10,2.4,.15*Math.PI,.85*Math.PI);ctx.stroke();}
+    else{ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(8,-10,2.3,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(7.3,-10.8,.8,0,7);ctx.fill();}
+    ctx.fillStyle='#ff8fbf';ctx.beginPath();ctx.ellipse(14.6,-7.6,1.6,1.2,0,0,7);ctx.fill();
+    ctx.fillStyle=BRANCO;ctx.strokeStyle=CONT;ctx.lineWidth=1.4;ctx.beginPath();ctx.ellipse(4,9,4.6,3,0,0,7);ctx.fill();ctx.stroke();
+    ctx.restore();
+    if(pt!=null&&tm-pt<1.8)balao(c.x-14,c.y-90,'♡',Math.min(1,(1.8-(tm-pt))*2));
+    else if(c.perto&&(tm%3.4)<1.4)balao(c.x-14,c.y-90,'✿',Math.min(1,Math.sin((tm%3.4)/1.4*Math.PI)*2));
+  }
   function desenharBichos(tm){
     var tipo=BICHOS[cena];if(!tipo)return;
     if(tipo==='gato'){
-      var h=new Date().getHours();gatoDesenhar(tm,cena==='palco'?560:550,700,pulos['gato'],h>=21||h<6);return;
+      var h=new Date().getHours(),gx0=cena==='palco'?560:550;gatoDesenhar(tm,gx0,700,pulos['gato'],h>=21||h<6,meuIdolPerto(gx0,130));return;
     }
     if(cena==='praca')peixesFonte(tm);
     var n=tipo==='passaro'?3:4;
@@ -703,6 +785,8 @@
     if(tipo==='gato'){var gx=cena==='palco'?560:550;if(Math.abs(x-gx)<70&&Math.abs(y-680)<60){pulos['gato']=tm;somMapa('toque');if(!reduzMov)toques.push({x:gx-10,y:640,t0:tm,dur:.9,sim:['♡','❤','✦']});desenhar();return;}}
     else if(tipo){var n=tipo==='passaro'?3:4;for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm);
       if(Math.hypot(b.x-x,b.y-y)<60){bichoAssustado[cena+k]=tm;somMapa('toque');if(!reduzMov)toques.push({x:b.x,y:b.y,t0:tm,dur:.8,sim:['♡','✦']});desenhar();return;}}}
+    var ch=CHAO[cena],cp=chaoPos[cena];
+    if(ch&&cp&&Math.abs(x-cp.x)<60&&y>cp.y-70&&y<cp.y+30){pulos[ch]=tm;somMapa('toque');if(!reduzMov)toques.push({x:cp.x,y:cp.y-60,t0:tm,dur:.9,sim:['♡','❤','✦']});desenhar();return;}
     // 3) fonte da Praça: espirra água e faz um desejo
     if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){somMapa('regar');
       toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});desenhar();return;}

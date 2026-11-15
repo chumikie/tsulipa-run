@@ -87,6 +87,7 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Falta a lista de músicas do Karaoke com capa e "quem canta": o seletor fica dentro de `karaoke-time.html` (iframe) e não existe o dado de quem canta cada música.
 
 - Rodada 3: a **moldura do celular** vale para toda janela `.tw-window-overlay` (Perfil, Pet, Loja, Gacha, Idol News, Álbum, Café, Handshake, Battle, Bloom, Studio, Moon Duo, Trocas, Encontro, Fã). A janela abre entre a barra de cima e a de baixo, no painel branco. Voltar clica no ✕ da própria janela; Menu e Início fecham as janelas e voltam ao celular. Center Run, Karaoke e Sora seguem em tela cheia, como a Live deles.
+- A moldura também aparece no menu do Center⭐Run! (antes de correr) e no salão do Karaoke⭐Time! (antes do show). Correndo (`body.jogando`) ou cantando (`html.tw-kt-arena`), as barras saem. Voltar usa o próprio "← Início" de cada tela (`#hubVolta` / `#twPreviewVoltar`), que fica escondido.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

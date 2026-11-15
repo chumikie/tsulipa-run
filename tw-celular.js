@@ -451,6 +451,10 @@
       x.click();
     }
   }
+  function sairDoJogo(ctx){   // usa o próprio "← Início" de cada tela, que já sabe limpar o endereço e a música
+    var b = ctx === 'kt' ? $id('twPreviewVoltar') : ctx === 'cr' ? $id('hubVolta') : null;
+    if(b) b.click();
+  }
   function voltarAoHub(){ var h = $id('hub'); if(h && h.hidden && typeof hubMostrar === 'function') hubMostrar(); }
   function molduraDesenhar(){
     var nav2 = '<button type="button" class="twc-nav-b" data-m="voltar">' + ico('voltar', 26) + '<span>' + esc(t('voltar')) + '</span></button>' +
@@ -459,20 +463,36 @@
     mold.innerHTML = '<div class="twc-moldura-topo">' + barraTopo() + '</div><nav class="twc-nav twc-moldura-nav" aria-label="TsuLiPa⭐World">' + nav2 + '</nav>';
     [].slice.call(mold.querySelectorAll('canvas[data-av]')).forEach(function(cv){ try{ if(typeof perfFotoRedonda === 'function' && typeof hubAv === 'function') perfFotoRedonda(cv, hubAv(), true); }catch(e){} });
   }
+  // Onde a moldura aparece: numa janela do jogo, no menu do Center⭐Run! (antes de correr) e no salão do
+  // Karaoke⭐Time! (antes do show). Correndo ou cantando, as barras saem, como na Live do Link! Like!.
+  function contexto(){
+    if(janelas().length) return 'janela';
+    var h = $id('hub'), menu = $id('menu'), kt = $id('twPreviewJogo');
+    if(kt && !kt.hidden && kt.getAttribute('data-jogo') === 'karaoke' && !document.documentElement.classList.contains('tw-kt-arena')) return 'kt';
+    if(h && h.hidden && menu && !menu.hidden && !document.body.classList.contains('jogando') && (!kt || kt.hidden)) return 'cr';
+    return '';
+  }
   function molduraAtualizar(){
     moldRaf = 0;
     if(!mold) return;
-    var on = !!cel && janelas().length > 0;
-    document.body.classList.toggle('tw-cel-janela', on);
+    var ctx = cel ? contexto() : '', on = !!ctx;
+    document.body.classList.toggle('tw-cel-janela', ctx === 'janela');
+    document.body.classList.toggle('tw-cel-cr', ctx === 'cr');
+    document.body.classList.toggle('tw-cel-kt', ctx === 'kt');
     if(on && (mold.hidden || mold.dataset.k !== nick() + '|' + LANG)){ mold.dataset.k = nick() + '|' + LANG; molduraDesenhar(); }
     mold.hidden = !on;
   }
   function molduraClique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !mold.contains(b)) return;
     var m = b.dataset.m;
-    if(m === 'voltar'){ var j = janelas(), x = j.length && j[j.length - 1].querySelector('.tw-window-close'); if(x) x.click(); som(); return; }
-    // tudo o mais sai da janela e segue no celular
-    fecharJanelas(); voltarAoHub();
+    var ctx = contexto();
+    if(m === 'voltar'){
+      if(ctx === 'janela'){ var j = janelas(), x = j[j.length - 1].querySelector('.tw-window-close'); if(x) x.click(); }
+      else sairDoJogo(ctx);
+      som(); return;
+    }
+    // tudo o mais sai da janela (ou do jogo) e segue no celular
+    fecharJanelas(); sairDoJogo(contexto()); voltarAoHub();
     if(m === 'menu'){ ir('menu'); return; }
     if(m === 'inicio'){ inicio(); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
@@ -483,8 +503,10 @@
     mold = document.createElement('div'); mold.id = 'twcMoldura'; mold.className = 'twc twc-moldura'; mold.hidden = true;
     document.body.appendChild(mold);
     mold.addEventListener('click', molduraClique);
-    new MutationObserver(function(){ if(!moldRaf) moldRaf = requestAnimationFrame(molduraAtualizar); })
-      .observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden']});
+    var agenda = function(){ if(!moldRaf) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(agenda);
+    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden']});
+    ob.observe(document.body, {attributes:true, attributeFilter:['class']});              // body.jogando (Center⭐Run! correndo)
+    ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});   // html.tw-kt-arena (show do Karaoke)
   }
 
   /* ---------- boas-vindas do celular (3 telas, uma vez por aparelho; o tutorial clássico fica para o visual antigo) ---------- */
@@ -511,7 +533,7 @@
     window.TW_CELULAR_LIGADO = false; limparEndereco(); fecharFolha();
     if(cel){ cel.remove(); cel = null; }
     if(mold){ mold.hidden = true; }
-    document.body.classList.remove('tw-cel', 'tw-cel-classico', 'tw-cel-janela');
+    document.body.classList.remove('tw-cel', 'tw-cel-classico', 'tw-cel-janela', 'tw-cel-cr', 'tw-cel-kt');
     classico = false; pilha = ['inicio'];
     if(typeof hubCfgUI === 'function') hubCfgUI();
   }

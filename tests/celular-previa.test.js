@@ -87,3 +87,9 @@ test('rodada 3: moldura nas janelas, boas-vindas do celular e modo escuro', () =
   assert.match(css, /body\.tw-cel #hubTut\{display:none!important\}/);
   assert.match(css, /@media \(prefers-color-scheme:dark\)\{\s*:root:not\(\[data-theme="light"\]\) \.twc\{/);
 });
+
+test('rodada 4: moldura no menu do Center Run e no salão do Karaoke, sem atrapalhar a corrida nem o show', () => {
+  assert.match(js, /document\.documentElement\.classList\.contains\('tw-kt-arena'\)\) return 'kt'/);
+  assert.match(js, /!document\.body\.classList\.contains\('jogando'\)/);
+  assert.match(js, /ctx === 'kt' \? \$id\('twPreviewVoltar'\) : ctx === 'cr' \? \$id\('hubVolta'\)/, 'sai pelo próprio Início de cada tela');
+});

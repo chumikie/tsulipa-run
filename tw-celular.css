@@ -309,3 +309,8 @@ body.tw-cel #hubTut{display:none!important}
   :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-modal-title{color:#e6d6ff!important;text-shadow:none!important}
 }
 .twc .twc-lv,.twc .twc-etiqueta,.twc .twc-novo:not(.twc-novo-cad){color:#2a1d4a!important}
+
+/* menu do Center⭐Run! e salão do Karaoke⭐Time! dentro da moldura (as barras saem ao correr ou cantar) */
+body.tw-cel-cr #menu{padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(100px + env(safe-area-inset-bottom))!important;align-items:flex-start!important}
+body.tw-cel-cr #hubVolta,body.tw-cel-kt #twPreviewVoltar{display:none!important}
+body.tw-cel-kt #twPreviewJogo{padding-top:calc(76px + env(safe-area-inset-top))!important;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;box-sizing:border-box}

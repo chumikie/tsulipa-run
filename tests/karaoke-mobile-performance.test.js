@@ -87,7 +87,7 @@ const overlayEnd=main.indexOf('\nfunction ',overlayStart+12);
 assert(overlayStart>=0&&overlayEnd>overlayStart,'The overlay resolver should remain inspectable');
 const overlay=main.slice(overlayStart,overlayEnd);
 assert(overlay.includes('if(!twOverlayTopDirty)return twOverlayTopCache;')&&!overlay.includes('Array.prototype.slice.call')&&!overlay.includes('.sort(')&&!overlay.includes('.filter('),'Overlay resolution should not allocate and sort a fresh array each animation frame');
-assert(main.includes("new MutationObserver(function(){twOverlayInvalidar();sync();})")&&main.includes("attributeFilter:['hidden','class','open']"),'Overlay cache must be invalidated when UI panels change');
+assert(main.includes("new MutationObserver(schedule)")&&main.includes("attributeFilter:['hidden','class','open']"),'Overlay cache must be invalidated when UI panels change');
 const start=html.indexOf('var lista=krMontarListaRenderSala(andando),x=');
 const end=html.indexOf('for(i=krTrilha.length-1;i>=0;i--)',start);
 assert(start>=0&&end>start,'Karaoke room tile rendering block must exist');

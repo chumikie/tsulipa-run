@@ -1,12 +1,17 @@
 # TsuLiPa⭐World
 
-Jogo de fã do TsuLiPa (BRS48): **Center⭐Run!**, **Backstage⭐Pet!**, **Meu Perfil**, **Star⭐Gacha!**, **Sora⭐Jump!**, **Moon⭐Duo!** e **Karaoke⭐Time!** (jogo solo de ritmo, com ranking semanal online; não existe sala online).
+[![TsuLiPa World: crie, cante, jogue e conviva](og-world.png)](https://tsulipa-world.vercel.app/)
+
+Mundo de Idols do TsuLiPa (BRS48): personalize seu Idol, cuide do pet, visite a cidade e o camarim, cante no **Karaoke⭐Time!**, corra no **Center⭐Run!**, cultive o **Bloom⭐Garden!**, fotografe no **Photo⭐Studio!** e dispute o **Idol⭐Battle!** Grátis e sem anúncios.
 
 Site publicado: https://tsulipa-world.vercel.app/
 
+O visual de celular continua em prévia: `?celular=1` ativa; `?celular=0` retorna ao clássico sem apagar saves. O OG do site usa `og-world.png`, composto com o mapa original; fonte em `tools/og/gerar.cjs`. A imagem de compartilhamento do próprio repositório é uma configuração separada em Settings → Social preview.
+
+
 ## Comece aqui
 
-- [docs/STATUS.md](docs/STATUS.md): estado de hoje, mapa dos arquivos, o que falta e as regras.
+- [docs/RETOMADA.md](docs/RETOMADA.md): retomada atual, pendências e regras.
 - [docs/PR58_STATUS.md](docs/PR58_STATUS.md): tudo o que a PR #58 traz e o checklist antes de publicar.
 - [supabase/sql/README.md](supabase/sql/README.md): o que está aplicado no banco.
 - Documentos antigos ficam em [docs/historico/](docs/historico/) só para consulta.

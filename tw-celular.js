@@ -1095,7 +1095,7 @@
     var L0 = typeof hubIV !== 'undefined' && hubIV.L && hubIV.L[0];
     // Inicializa a vitrine apenas quando vazia, sem inscrever hubIdolsUI em redraws.
     if(typeof hubIdolsUI === 'function' && (box.hidden || !box.children.length)) try{ hubIdolsUI(); }catch(e){}
-    if(typeof hubIdolsLigar === 'function') try{ hubIdolsLigar(); }catch(e){}
+    if(typeof hubIdolsLigar === 'function' && !box.twcLigada){ try{ hubIdolsLigar(); box.twcLigada = true; }catch(e){} }
   }
   // o Tsu, a Lirika e o Pati entram na fila da vitrine (só com o celular ligado); sem pontuação
   window.twcTrioVitrine = function(){
@@ -1128,7 +1128,13 @@
     var v = comecou ? topo() : 'abre', chave = v + '|' + pilha.length;
     // A abertura é estática entre toques: não desmontar/recriar seus canvases,
     // nem retirar/reinserir a vitrine dos Idols em atualizações de login e missões.
-    if(v === 'abre' && tela && tela.getAttribute('data-tela') === 'abre' && $id('twcAbreVitrine')) return;
+    if(v === 'abre' && tela && tela.getAttribute('data-tela') === 'abre' && $id('twcAbreVitrine')){
+      // O hub clássico pode mover a vitrine de volta; recoloque-a sem destruir a abertura.
+      requestAnimationFrame(function(){
+        if(cel && tela && tela.getAttribute('data-tela') === 'abre') vitrineTrazer();
+      });
+      return;
+    }
     var rolagem = chave === ultimaTela ? tela.scrollTop : 0; ultimaTela = chave;
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);

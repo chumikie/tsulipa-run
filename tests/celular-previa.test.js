@@ -1,0 +1,67 @@
+'use strict';
+// Visual de celular (prévia): só carrega com a chave ligada, fala os 6 idiomas e segue a mesma regra de login dos cards do hub.
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const root = path.join(__dirname, '..');
+const ler = f => fs.readFileSync(path.join(root, f), 'utf8');
+const html = ler('index.html'), js = ler('tw-celular.js'), css = ler('tw-celular.css'), mapa = ler('tw-mapa.js');
+
+function carregar(){
+  const sandbox = { window: {}, document: { readyState: 'loading', addEventListener(){} }, setInterval(){}, requestAnimationFrame(){} };
+  sandbox.window = sandbox;
+  vm.runInNewContext(js, sandbox, { filename: 'tw-celular.js' });
+  return sandbox.TW_CELULAR;
+}
+
+test('desligado por padrão: o index só baixa o tw-celular com brs48cr_celular ou ?celular=1', () => {
+  const i = html.indexOf("var k='brs48cr_celular'");
+  assert.ok(i > 0, 'loader da prévia no index');
+  const bloco = html.slice(i, html.indexOf('</script>', i));
+  assert.match(bloco, /get\('celular'\)/);
+  assert.match(bloco, /q==='0'\)localStorage\.removeItem\(k\)/, '?celular=0 desliga');
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
+  assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
+  const tx = bloco.match(/var TX=\{([^}]*)\}/)[1];
+  ['pt','en','es','id','th','ja'].forEach(l => assert.match(tx, new RegExp('\\b' + l + ":'"), 'botão do ⚙️ em ' + l));
+});
+
+test('todos os textos existem nos 6 idiomas', () => {
+  const c = carregar(); assert.ok(c, 'expõe TW_CELULAR');
+  const base = Object.keys(c.txt.pt).sort();
+  ['en','es','id','th','ja'].forEach(l => {
+    assert.deepEqual(Object.keys(c.txt[l]).sort(), base, l + ' com as mesmas chaves');
+    base.forEach(k => assert.ok(String(c.txt[l][k]).trim(), l + '.' + k + ' preenchido'));
+  });
+  ['mapaAgora'].forEach(k => Object.keys(c.txt).forEach(l => assert.ok(c.txt[l][k].includes('{quem}') && c.txt[l][k].includes('{rua}'), l + '.' + k)));
+  assert.ok(Object.keys(c.txt).every(l => c.txt[l].jogosSub.includes('{n}')));
+  assert.match(js, /ARTIGO = \{Tsu:'o', Lirika:'a', Pati:'o'\}/, 'o Tsu, a Lirika, o Pati');
+});
+
+test('pede conta nos mesmos jogos que o clique do card no hub', () => {
+  const c = carregar();
+  const ini = html.indexOf("if((b = t.closest('.hubcard'))){");
+  const corpo = html.slice(ini, html.indexOf('\n  }\n', ini));
+  const depois = corpo.slice(corpo.indexOf('else if(!contaJ && !(window.TW_JOGOS_SEM_LOGIN'));
+  const pedem = [...depois.matchAll(/ir === '([a-z]+)'/g)].map(m => m[1]);
+  assert.deepEqual([...new Set(pedem)].sort(), Object.keys(c.pedeLogin).sort());
+  assert.match(js, /c\.click\(\);\s+\/\/ o mesmo caminho do hub/, 'abre pelo próprio card (sem regra nova)');
+});
+
+test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca mostra a própria conta', () => {
+  assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
+  assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
+  assert.match(mapa, /return VISITA_NOMES\[k\]\.toLowerCase\(\)===eu\?-1:k;/);
+  assert.match(html, /tw-mapa\.js\?v=54/);
+});
+
+test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {
+  assert.ok(!/role="button"|onclick=/.test(js), 'sem div clicável');
+  assert.match(css, /prefers-reduced-motion:reduce\)\{\s*\.twc \*/);
+  assert.match(css, /\.twc-nav-b\{[^}]*min-height:60px/);
+  assert.match(css, /body\.tw-cel \.tw-nav,body\.tw-cel #twNav\{display:none!important\}/);
+  assert.match(css, /@media \(min-width:900px\)/, 'tablet deitado em duas colunas');
+});

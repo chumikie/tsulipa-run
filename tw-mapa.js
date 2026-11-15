@@ -58,6 +58,10 @@
     rua:{pt:'Rua: ',en:'Street: ',es:'Calle: ',id:'Jalan: ',th:'ถนน: ',ja:'通り: '}};
   function ui(k){return UI[k][lang()]||UI[k].pt;}
   function rotulo(id){return nome(ROTULOS_BAIRROS[id]);}
+  // a tela de celular (tw-celular.js) conta no início quem está passeando agora
+  window.twMapaVisitaAgora=function(){var ruas=Object.keys(CENAS_RUA);
+    for(var i=0;i<ruas.length;i++){var k=visitaQuem(ruas[i]);if(k>=0)return {quem:VISITA_NOMES[k],k:k,rua:ruas[i],nome:rotulo(ruas[i])};}
+    return null;};
   var DICA={pt:'👆 Arraste para passear',en:'👆 Drag to explore',es:'👆 Arrastra para pasear',id:'👆 Geser untuk jalan-jalan',th:'👆 ลากเพื่อเดินเล่น',ja:'👆 ドラッグでおさんぽ'};
   var PASSEIA={pt:'Passear pela cidade',en:'Stroll around town',es:'Pasear por la ciudad',id:'Jalan-jalan keliling kota',th:'เดินเล่นในเมือง',ja:'まちをおさんぽ'};
   var FECHA={pt:'Fechar o mapa',en:'Close the map',es:'Cerrar el mapa',id:'Tutup peta',th:'ปิดแผนที่',ja:'マップを閉じる'};
@@ -445,13 +449,18 @@
     ja:['やっほー！ここで会えてうれしい！💜','えへへ、みーつけた！💚','今日も一緒に輝こう！💙']};
   function visitaEu(){try{var n=(typeof contaJ!=='undefined'&&contaJ&&contaJ.nick)||'';return String(n).trim().toLowerCase();}catch(e){return '';}}
   function visitaSorteio(rua,fatia){var h=2166136261,t=rua+'|'+fatia;for(var i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)/4294967296;}
-  function visitaOshi(rua){
-    if(rua==='mundo'||typeof HUB_TRIO==='undefined'||typeof HUB_TRIO_DRAW_CHARS==='undefined'||typeof CH==='undefined')return null;
+  // quem visita a rua agora (0 Tsu, 1 Lirika, 2 Pati) ou -1; nunca a própria conta
+  function visitaQuem(rua){
+    if(rua==='mundo')return -1;
     var fatia=Math.floor(Date.now()/(VISITA_MIN*60000)),r=visitaSorteio(rua,fatia);
-    if(r>=VISITA_CHANCE)return null;
+    if(r>=VISITA_CHANCE)return -1;
     var eu=visitaEu(),k=Math.floor(visitaSorteio(rua+'#quem',fatia)*3);
     for(var t=0;t<3&&VISITA_NOMES[k].toLowerCase()===eu;t++)k=(k+1)%3;
-    if(VISITA_NOMES[k].toLowerCase()===eu)return null;
+    return VISITA_NOMES[k].toLowerCase()===eu?-1:k;
+  }
+  function visitaOshi(rua){
+    if(rua==='mundo'||typeof HUB_TRIO==='undefined'||typeof HUB_TRIO_DRAW_CHARS==='undefined'||typeof CH==='undefined')return null;
+    var k=visitaQuem(rua);if(k<0)return null;
     var m=HUB_TRIO[k],c=HUB_TRIO_DRAW_CHARS[k],base=CH[m[0]];if(!c||!base)return null;
     c.out=base.out;c.outcol=base.outcol;
     return {av:{c:c,pose:'',expr:m[4]},oshi:VISITA_NOMES[k],oshiK:k,oshiPose:m[1],oshiChar:c,rua:trajetoRua(4),u0:.06,u1:.94,fase:.62};

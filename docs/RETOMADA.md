@@ -75,6 +75,14 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Quem está logado como Tsu, Lirika ou Pati (apelido da conta, sem diferenciar maiúsculas) nunca encontra a si mesmo: o sorteio passa para outro membro. O trio no palco do mapa-múndi continua como sempre.
 - Os bichinhos de chão reagem a quem visita como reagem ao seu Idol. Para testes: `TW_MAPA_DEBUG=true` expõe `TW_MAPA_VISITAS`.
 
+### Visual de celular — prévia (15/11, mesma PR)
+- Ideia de um amigo + esqueleto do Link! Like!: o início vira um "celular de Idol". Barra de cima (você, estrelas, ⚙️), barra de baixo (Voltar · Menu · Início), telas Início, Menu, Jogos e Ajustes. Arquivos: `tw-celular.js` e `tw-celular.css`.
+- **Desligado por padrão.** Liga com `?celular=1` ou no ⚙️ do início clássico ("📱 Visual novo (prévia)"); desliga com `?celular=0` ou em Ajustes → "Voltar ao visual clássico". Fica salvo em `brs48cr_celular`. Desligado, nenhum dos dois arquivos é baixado.
+- Nada de regra nova: cada ícone chama o mesmo card do hub clássico, que continua montado por baixo (login, cadeados, prêmios e sons iguais). Missões, busca, novidades e mapa abrem o hub clássico rolado até a parte certa, com a barra de baixo para voltar.
+- O TsuLiPa continua lá: logo animado, tema do momento, partículas da temporada e o palco do Tsu, da Lirika e do Pati (cópia do `hubCv`; o toque chega ao hub e o trio reage). A cor da faixa e do botão Menu segue o tema do Oshi.
+- Sem conta, os jogos que pedem login mostram cadeado e o aviso "Entre para jogar" antes do login do Google (era o "Karaoke não abre" no tablet).
+- Tablet: duas colunas a partir de 900 px; banners e lista de jogos em duas colunas a partir de 720 px. `tw-mapa.js` expõe `twMapaVisitaAgora()` para a faixa "Agora no mapa".
+
 ### Falta validar (o dono testa)
 - Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
 - Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.
@@ -83,6 +91,7 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
 - iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
 - Ouvir os sons (não testados por ouvido).
+- Visual de celular: iPad/Safari e Android de verdade, logado (missões, Sair, pet), e se o palco copiado pesa em tablet antigo.
 - Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
 
 ### Ideias na fila (escolha do dono)

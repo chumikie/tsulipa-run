@@ -1414,7 +1414,7 @@
   setInterval(function(){
     var h = $id('hub'); if(!cel || !h || h.hidden) return;
     var s = $id('twcEstrelas'); if(s && s.textContent !== estrelas()) s.textContent = estrelas();
-    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; desenhar(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
+    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
   window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar};

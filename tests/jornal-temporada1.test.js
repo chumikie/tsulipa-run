@@ -27,3 +27,28 @@ test('calendario preserva seis terças e bloqueia marcas novas',()=>{
   assert.match(cal,/JN_T1\.episodios\[t1Indice\]\.pronto/);
   assert.match(source,/var JN_CAPS_INICIO = Date\.UTC\(2026, 9, 27\)/);
 });
+
+test('piloto possui cinco quadros e seis idiomas completos',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ const langs=['pt','en','es','id','th','ja'];
+ assert.equal(ctx.JN_T1_PILOTO.panels.length,5);
+ for(const lang of langs){
+   const t=ctx.jnT1PilotoTexto(lang);
+   assert.ok(t.titulo.length>3);
+   assert.equal(t.quadros.length,5);
+   for(const q of t.quadros){
+     assert.ok(q.narracao.length>10);
+     assert.ok(q.falas.length>=1);
+     assert.ok(q.falas.every(f=>f.texto.length>5));
+   }
+ }
+ assert.equal(ctx.jnT1PilotoHtml(),'','piloto permanece invisível');
+ assert.equal(ctx.JN_T1.episodios[0].pronto,false);
+ assert.equal(ctx.JN_T1_PUBLICADA,false);
+});
+test('piloto reutiliza renderer Canvas histórico sem alterar o leitor',()=>{
+ assert.match(source,/jnCapDesenhar\(canvas,p\)/);
+ assert.match(source,/function jornalCapsUI\(\)/);
+ assert.match(source,/function jnT1PilotoHtml\(\)/);
+ assert.match(source,/<figcaption>/);
+});

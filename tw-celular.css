@@ -685,3 +685,27 @@ body.tw-cel .twc :is(.twc-card h2,.twc-porta-txt b){color:var(--twc-f1)}
   :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay:not([hidden]){background:linear-gradient(170deg,var(--osh-night),var(--osh-night-paper))!important}
   :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay>.panel.tw-window-surface{background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important}
 }
+
+/* A7 — acabamento localizado: fichas e abertura, sem afetar outros jogos. */
+body.tw-cel .twc .twc-ficha{border-radius:24px;box-shadow:0 4px 0 color-mix(in srgb,var(--fc) 35%,transparent),0 10px 22px rgba(0,0,0,.13)}
+body.tw-cel .twc .twc-ficha-dados{gap:11px;padding:16px 16px 8px}
+body.tw-cel .twc .twc-ficha-l{grid-template-columns:30px minmax(82px,32%) minmax(0,1fr);gap:9px;align-items:start}
+body.tw-cel .twc .twc-ficha-l dt{padding-top:5px}
+body.tw-cel .twc .twc-ficha-l dd{padding-top:3px;overflow-wrap:anywhere;line-height:1.45}
+body.tw-cel .twc .twc-ficha-frase{margin:12px 16px 14px}
+body.tw-cel .twc .twc-ficha-blog{display:flex;align-items:center;justify-content:center;min-height:48px;box-sizing:border-box;width:calc(100% - 32px);margin:0 16px 18px;padding:10px 14px;border-radius:16px;line-height:1.3;overflow-wrap:anywhere}
+@media (max-width:699px){
+ body.tw-cel .twc .twc-abre{padding:clamp(24px,5vh,48px) 16px;gap:8px}
+ body.tw-cel .twc .twc-logo-abre{font-size:clamp(26px,8.6vw,44px)!important;max-width:100%;line-height:1.18;white-space:nowrap}
+ body.tw-cel .twc .twc-abre .twc-hubsub{margin-bottom:8px}
+ body.tw-cel .twc .twc-abre-vitrine{margin:8px 0 14px}
+ body.tw-cel .twc .twc-fl{width:clamp(58px,17vw,86px)}
+ body.tw-cel .twc .twc-fl0{top:7%;left:5%}
+ body.tw-cel .twc .twc-fl1{top:14%;right:5%}
+ body.tw-cel .twc .twc-fl2{top:2%;left:50%;margin-left:-29px;width:clamp(50px,14vw,70px)}
+}
+@media (max-width:350px){
+ body.tw-cel .twc .twc-ficha-l{grid-template-columns:28px minmax(68px,29%) minmax(0,1fr);gap:6px;font-size:12px}
+ body.tw-cel .twc .twc-ficha-dados{padding-inline:10px}
+ body.tw-cel .twc .twc-logo-abre{font-size:clamp(24px,8vw,32px)!important}
+}

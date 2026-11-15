@@ -1340,9 +1340,20 @@
     if(typeof hubCfgUI === 'function') hubCfgUI();
   }
   function ligar(){ window.TW_CELULAR_LIGADO = true; pilha = ['inicio']; classico = false; montar(); }
+  // Se a interface nova falhar, o hub clássico deve continuar acessível.
+  // Não tocar em saves, conta, inventário ou dados do servidor.
+  function falhaInicializacao(erro){
+    try{ if(cel){ cel.remove(); cel = null; } }catch(e){}
+    tela = nav = folha = null;
+    try{ if(mold) mold.hidden = true; }catch(e){}
+    document.body.classList.remove('tw-cel', 'tw-cel-classico', 'tw-cel-janela', 'tw-cel-cr', 'tw-cel-kt');
+    window.TW_CELULAR_LIGADO = false;
+    try{ localStorage.removeItem(CHAVE); }catch(e){}
+    try{ console.error('[TsuLiPa] Visual novo indisponível; mantendo hub clássico.', erro); }catch(e){}
+  }
   function montar(){
-    var h = $id('hub'); if(!h || cel) return;
-    document.body.classList.add('tw-cel');
+    var h = $id('hub'); if(!h || cel || !window.TW_CELULAR_LIGADO) return;
+    try{
     molduraMontar();
     cel = document.createElement('div'); cel.id = 'twCel'; cel.className = 'twc';
     cel.innerHTML = '<div class="twc-tela" id="twcTela"></div><nav class="twc-nav" id="twcNav" aria-label="TsuLiPa⭐World"></nav><div class="twc-folha" id="twcFolha" hidden></div>';
@@ -1358,6 +1369,8 @@
     });
     montar.tecla = true;
     desenhar();
+    document.body.classList.add('tw-cel');
+    }catch(e){ falhaInicializacao(e); }
   }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
   ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){

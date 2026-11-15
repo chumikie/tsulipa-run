@@ -1093,7 +1093,7 @@
     slot.appendChild(box); box.classList.add('mini');
     if(typeof hubIV !== 'undefined') hubIV.cw = 0;
     var L0 = typeof hubIV !== 'undefined' && hubIV.L && hubIV.L[0];
-    if(typeof hubIdolsUI === 'function' && (box.hidden || !(L0 && L0.trio))) try{ hubIdolsUI(); }catch(e){}
+    // Não forçar hubIdolsUI durante a montagem: ele pode acionar atualizações do hub em cascata.
     if(typeof hubIdolsLigar === 'function') try{ hubIdolsLigar(); }catch(e){}
   }
   // o Tsu, a Lirika e o Pati entram na fila da vitrine (só com o celular ligado); sem pontuação
@@ -1308,6 +1308,10 @@
       for(var i=0;i<records.length;i++){
         var el=records[i].target;
         if(el && el.nodeType === 1 && el.closest && el.closest('#twCel,#twcMoldura')) continue;
+        if(el === document.body && records[i].type === 'childList'){
+          var nodes=[].slice.call(records[i].addedNodes).concat([].slice.call(records[i].removedNodes));
+          if(nodes.length && nodes.every(function(n){ return n.id === 'twCel' || n.id === 'twcMoldura'; })) continue;
+        }
         if(el === document.body && records[i].attributeName === 'class') continue;
         agenda(); return;
       }
@@ -1391,7 +1395,7 @@
     });
   }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
-  ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){
+  ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI'].forEach(function(nome){
     var f = window[nome]; if(typeof f !== 'function') return;
     window[nome] = function(){ var r = f.apply(this, arguments); agendarRedesenho(); return r; };
   });

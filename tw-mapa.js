@@ -885,7 +885,7 @@
   }
   function coelhoDesenhar(tm,c,pt){
     // A8.2: somente desenho. Posição, hitbox, movimento e reações seguem inalterados.
-    var toque=pt!=null?Math.max(0,Math.sin(Math.min(1,Math.max(0,(tm-pt)/.5))*Math.PI))*30:0,
+    var toque=!reduzMov&&pt!=null?Math.max(0,Math.sin(Math.min(1,Math.max(0,(tm-pt)/.5))*Math.PI))*30:0,
         up=c.hop+toque, ar=Math.min(1,up/44),
         orelha=c.perto&&!reduzMov?Math.sin(tm*8)*.18:0,
         pisca=!reduzMov&&(tm%4.4)<.12,

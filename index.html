@@ -402,7 +402,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=21"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=29"></script>
-<script src="./perfil.js?v=18"></script>
+<script src="./perfil.js?v=19"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -3463,7 +3463,7 @@ applyLang();
   aniverAnim=sl(aniverAnim,$('aniverFx'),!aniverOv.hidden,aniverLoop);
   encAnim=sl(encAnim,$('encCv'),!!encDados,encLoop);
   petRaf=sl(petRaf,$('petov'),!!petOpen,typeof petLoop==='function'?petLoop:null);
-  perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
+  perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio')&&typeof perfAnimar==='function',typeof perfAnimar==='function'?perfAnimar:null);
   if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
   twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));
  }

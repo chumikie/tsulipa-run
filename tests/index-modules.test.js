@@ -93,4 +93,23 @@ assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src
   decl.forEach((n) => assert(base.includes("\n//→" + n), "pet.js marca o lugar de " + n));
   console.log("✓ pet-sala.js (" + decl.length + " declarações, sob demanda)");
 }
+// Tela do Perfil sob demanda (15/11/2026): perfil-tela.js só declara, não repete nada e não carrega na abertura.
+{
+  const src = fs.readFileSync(path.join(root, "perfil-tela.js"), "utf8");
+  const acessos = [], sandbox = new Proxy({}, {
+    has: (t, k) => typeof k === "string" && !(k in t) ? (acessos.push(k), false) : k in t,
+    get: (t, k) => t[k], set: (t, k, v) => { t[k] = v; return true; }, defineProperty: (t, k, d) => Reflect.defineProperty(t, k, d)
+  });
+  vm.runInContext(src, vm.createContext(sandbox), { filename: "perfil-tela.js" });
+  assert.deepEqual(acessos.filter((k) => !["undefined", "NaN", "Infinity"].includes(k)), [], "perfil-tela.js não executa nada ao carregar");
+  const decl = Object.keys(sandbox);
+  ["perfMontar", "perfAbaMostrar", "perfGenUI"].forEach((n) => assert(decl.includes(n), "perfil-tela.js deve declarar " + n));
+  const dup = decl.filter((n) => noIndex.has(n) || vistos.has(n));
+  assert.deepEqual(dup, [], "declarações duplicadas da tela do Perfil: " + dup.join(", "));
+  assert(!/<script src="\.\/perfil-tela\.js/.test(html), "a tela do Perfil não carrega na abertura");
+  const base = fs.readFileSync(path.join(root, "perfil.js"), "utf8");
+  assert(/PERF_TELA_ARQ='\.\/perfil-tela\.js\?v=\d+'/.test(base) && /perfTelaCarregar\(\)\]\)/.test(base), "perfAbrir espera a tela chegar junto com os dados");
+  decl.forEach((n) => assert(base.includes("\n//→" + n), "perfil.js marca o lugar de " + n));
+  console.log("✓ perfil-tela.js (" + decl.length + " declarações, sob demanda)");
+}
 

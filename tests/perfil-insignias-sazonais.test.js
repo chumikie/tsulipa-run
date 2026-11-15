@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const perfil = fs.readFileSync(path.join(__dirname, '..', 'perfil.js'), 'utf8');
+const perfil = require('./fonte-dividida.js')('perfil.js', 'perfil-tela.js');   // perfil.js + perfil-tela.js na ordem original
 function recorte(inicio, fim) {
   const a = perfil.indexOf(inicio), b = perfil.indexOf(fim, a + inicio.length);
   assert.ok(a >= 0 && b > a, 'trecho do perfil encontrado: ' + inicio);

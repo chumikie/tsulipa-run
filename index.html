@@ -59,7 +59,7 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=6">
+<link rel="stylesheet" href="./hub.css?v=9">
 <link rel="stylesheet" href="./shop.css?v=5">
 <link rel="stylesheet" href="./jornal.css?v=10">
 <style>
@@ -431,7 +431,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./duo.js?v=3"></script>
 <script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=20"></script>
+<script src="./hub.js?v=21"></script>
 <script src="./hub-layout.js?v=4"></script>
 <script src="./mapa-textos.js?v=3"></script>
 <script src="./tw-mapa.js?v=49"></script>
@@ -2070,7 +2070,7 @@ var hubOv = document.createElement('div');
 hubOv.id = 'hub'; hubOv.className = 'hub'; hubOv.hidden = true;
 hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><div class="hubin">' +
   '<h1 class="hublogo" translate="no" aria-label="TsuLiPa World">' + 'TsuLiPa⭐World'.split('').map(function(ch, i){ return '<span style="animation-delay:' + (i * .07).toFixed(2) + 's"' + (ch === '⭐' ? ' class="st"' : i < 3 ? ' class="c1"' : i < 5 ? ' class="c2"' : i < 7 ? ' class="c3"' : i < 10 ? ' class="c1"' : i < 11 ? ' class="c2"' : ' class="c3"') + '>' + ch + '</span>'; }).join('') + '</h1>' +
-  '<p class="hubsub">ツリパ⭐ワールド</p><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
+  '<p class="hubsub">ツリパ⭐ワールド</p><button type="button" class="hubcfgbtn" id="hubCfgBtn" aria-expanded="false" aria-controls="hubCfg" aria-label="Idioma e tema">⚙️</button><div class="hubcfg" id="hubCfg"></div><p class="hubtema" id="hubTema" hidden></p>' +
   '<canvas id="hubCv" width="640" height="340" aria-hidden="true"></canvas>' +
   '<section class="hubidols" id="hubIdols" hidden><h2 id="hubIdolsT"></h2><canvas id="hubIdolsCv" aria-hidden="true"></canvas><div class="hubidolslista" id="hubIdolsLista"></div></section>' +
 

@@ -1620,7 +1620,11 @@ function petDrawRoom(){
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
   // expr 2 reutiliza os olhos fechados/sorriso do avatar, sem trocar olhos ou rosto salvos.
-  var expr = petLifePose === 'descansar' ? 2 : (petSmile > 0 || petCharT > 0 || happy || amizade || idolBrincando || petLifePose === 'conviver') ? 2 : 0;
+  // Rosto do charmaker à vista: feliz ou em "Conviver", o Idol mostra olhos/sobrancelha/boca escolhidos e sorri "^^"
+  // de vez em quando (≈20% do tempo); carinho, brincadeira, amizade e descanso continuam com o "^^".
+  var sorrisoDaVez = !petLifeMovimentoReduzido() && (petT % 300) < 60;
+  var expr = petLifePose === 'descansar' ? 2 : (petSmile > 0 || petCharT > 0 || amizade || idolBrincando ||
+    ((happy || petLifePose === 'conviver') && sorrisoDaVez)) ? 2 : 0;
   var chop = petCharT > 0 ? Math.sin((24 - petCharT) / 24 * Math.PI) * 12 : 0;
   var og = g;
   try{

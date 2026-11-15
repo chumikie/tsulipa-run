@@ -1372,10 +1372,21 @@
     document.body.classList.add('tw-cel');
     }catch(e){ falhaInicializacao(e); }
   }
+  // Vários eventos do hub podem ocorrer na mesma frame (login, estrelas, missões).
+  // Um único desenho por frame evita reconstruir toda a tela repetidamente.
+  var redesenhoRaf = 0;
+  function agendarRedesenho(){
+    if(!cel || redesenhoRaf) return;
+    redesenhoRaf = requestAnimationFrame(function(){
+      redesenhoRaf = 0;
+      if(!cel) return;
+      try{ desenhar(); }catch(e){ falhaInicializacao(e); }
+    });
+  }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
   ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){
     var f = window[nome]; if(typeof f !== 'function') return;
-    window[nome] = function(){ var r = f.apply(this, arguments); try{ if(cel) desenhar(); }catch(e){} return r; };
+    window[nome] = function(){ var r = f.apply(this, arguments); agendarRedesenho(); return r; };
   });
   // Estrelas e visita do mapa mudam sozinhas: atualiza só esses textos (sem refazer a tela e perder o foco).
   setInterval(function(){

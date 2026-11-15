@@ -1129,14 +1129,14 @@
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
     vitrineDevolver();
-    var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
-    tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
+    // Não clonar a árvore animada do hub a cada navegação: custo alto de DOM no iPhone.
+    tela.innerHTML =
       (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
     avatares(); bolinhas(); idolsDesenhar(); if(v === 'album') cartasDesenhar(); if(v.indexOf('emb:') === 0) embutir(v.slice(4)); else devolver();
-    if(v === 'abre'){ vitrineTrazer(); flutuantes(); }
+    if(v === 'abre'){ flutuantes(); requestAnimationFrame(function(){ if(cel && tela && tela.getAttribute('data-tela') === 'abre') vitrineTrazer(); }); }
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v.indexOf('dentro:') === 0){ dentroLigar(); var dcv = $id('twcDentroCv'); if(dcv && !dcv.twc){ dcv.twc = true; dcv.addEventListener('click', dentroClique); } }
@@ -1303,11 +1303,18 @@
     mold = document.createElement('div'); mold.id = 'twcMoldura'; mold.className = 'twc twc-moldura'; mold.hidden = true;
     document.body.appendChild(mold);
     mold.addEventListener('click', molduraClique);
-    var agenda = function(){ if(!moldRaf) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(agenda);
-    // Uma única inscrição: observe() no mesmo alvo substitui a configuração anterior.
-    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden','class'], childList:true});   // body.jogando (Center⭐Run! correndo) e janelas criadas na hora (jogos que carregam depois)
-    setInterval(function(){ if(cel) agenda(); }, 1500);   // rede de segurança: alguma janela que abriu sem avisar
-    ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});   // html.tw-kt-arena (show do Karaoke)
+    var agenda = function(){ if(!moldRaf && cel) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(function(records){
+      // Ignora mudanças no próprio celular/moldura: evitam feedback de desenho e piscadas.
+      for(var i=0;i<records.length;i++){
+        var el=records[i].target;
+        if(el && el.nodeType === 1 && el.closest && el.closest('#twCel,#twcMoldura')) continue;
+        if(el === document.body && records[i].attributeName === 'class') continue;
+        agenda(); return;
+      }
+    });
+    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden','class'], childList:true});
+    setInterval(function(){ if(cel) agenda(); }, 1500);
+    ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});
   }
 
   /* ---------- boas-vindas do celular (3 telas, uma vez por aparelho; o tutorial clássico fica para o visual antigo) ---------- */

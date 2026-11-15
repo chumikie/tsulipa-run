@@ -612,3 +612,14 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-folha-op b{font:800 15px "M PLUS Rounded 1c",sans-serif}
 .twc-folha-op small{font:700 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
 .twc-folha-op>svg{color:var(--twc-roxo)}
+
+/* Auditoria mobile A1: legibilidade e alvos de toque, sem alterar a abertura ou o Canvas. */
+@media (max-width:699px){
+  .twc-app-nome{font-size:13px;line-height:1.25}
+  .twc-porta-txt small{font-size:13px;line-height:1.4}
+  .twc .twc-calnav{width:44px;height:44px}
+  .twc .twc-folha-op{min-height:48px;box-sizing:border-box}
+}
+@media (prefers-reduced-motion:reduce){
+  .twc-fl,.twc-brilho,.twc-vivo,.twc-dot{animation:none!important}
+}

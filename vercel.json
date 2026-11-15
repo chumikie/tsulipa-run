@@ -3,6 +3,7 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
+      "feat/visitas-oshi-20261115": true,
       "**": false
     }
   },

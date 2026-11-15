@@ -13,7 +13,8 @@
     // Celular: faixa de até 480 px. Computador (tela larga e deitada): pistas largas, ocupando quase metade da tela.
     var largo = W >= 900 && W > H * 1.2;
     var lw = largo ? Math.min(170, Math.floor(W * .46 / 4)) : Math.min(118, Math.floor(Math.min(W - 20, 480) / 4));
-    return { lw:lw, left:Math.round((W - lw * 4) / 2), top:Math.max(150, H * .17), target:Math.round(H - Math.max(86, Math.min(150, H * .15))), W:W, H:H };
+    // Em cima fica o arco de progresso (como o da Live do Link! Like!); embaixo, os medidores redondos.
+    return { lw:lw, left:Math.round((W - lw * 4) / 2), top:Math.round(Math.max(200, H * .24)), target:Math.round(H - Math.max(130, Math.min(190, H * .21))), W:W, H:H };
   }
   function pista(px){
     if(!geo || !ligada) return -1;
@@ -52,6 +53,56 @@
     }
     return on;
   }
+  /* HUD no formato de Live (inspirado no Link! Like!): arco de progresso com estrelas, placar,
+     e medidores redondos de Precisão, Voltagem (o combo) e Progresso. Só lê o estado do show. */
+  var TX = {pt:['PRECISÃO','VOLTAGEM','MÚSICA','Pausado'], en:['ACCURACY','VOLTAGE','SONG','Paused'], es:['PRECISIÓN','VOLTAJE','CANCIÓN','En pausa'],
+            id:['AKURASI','VOLTASE','LAGU','Jeda'], th:['ความแม่น','โวลเทจ','เพลง','หยุดชั่วคราว'], ja:['せいかく','ボルテージ','きょく','一時停止']};
+  function tx(i){ var l = typeof root.LANG === 'string' && TX[root.LANG] ? root.LANG : 'pt'; return TX[l][i]; }
+  function estrela(x, cx, cy, r, cor){ x.beginPath(); for(var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * .45 : r; x.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); } x.closePath(); x.fillStyle = cor; x.fill(); }
+  function coracao(x, cx, cy, r, cor, a){
+    if(a <= 0) return; x.save(); x.globalAlpha = a; x.fillStyle = cor; x.translate(cx, cy); x.beginPath(); x.moveTo(0, r * .9);
+    x.bezierCurveTo(-r * 1.4, -r * .1, -r * .7, -r * 1.1, 0, -r * .35); x.bezierCurveTo(r * .7, -r * 1.1, r * 1.4, -r * .1, 0, r * .9); x.fill(); x.restore();
+  }
+  function medidor(x, cx, cy, r, frac, cor, txt, rot){
+    x.save(); x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.arc(cx, cy, r + 6, 0, Math.PI * 2); x.fill();
+    x.lineWidth = r * .42; x.strokeStyle = '#2b1d4a'; x.beginPath(); x.arc(cx, cy, r * .72, 0, Math.PI * 2); x.stroke();
+    x.strokeStyle = cor; x.beginPath(); x.arc(cx, cy, r * .72, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0, Math.min(1, frac))); x.stroke();
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '900 ' + Math.round(r * .6) + 'px "M PLUS Rounded 1c",sans-serif';
+    x.lineJoin = 'round'; x.lineWidth = 4; x.strokeStyle = '#2b1d4a'; x.strokeText(txt, cx, cy + 1); x.fillStyle = '#fff'; x.fillText(txt, cx, cy + 1);
+    x.textBaseline = 'alphabetic'; x.font = '900 10px "M PLUS Rounded 1c",sans-serif'; x.lineWidth = 4; x.strokeStyle = 'rgba(30,12,70,.8)';
+    x.strokeText(rot, cx, cy - r - 10); x.fillStyle = '#fff'; x.fillText(rot, cx, cy - r - 10); x.restore();
+  }
+  function hud(x, W, H, g, s, prog, now){
+    // arco: corda sobre as pistas, com 4 trechos coloridos e uma estrela no fim de cada um
+    var a0 = g.left + 14, a1 = g.left + g.lw * 4 - 14, meio = (a0 + a1) / 2, c = (a1 - a0) / 2, sag = 34, topoY = g.top - 92;
+    var r = (c * c + sag * sag) / (2 * sag), cy = topoY + r;
+    var ini = Math.atan2(g.top - 92 + sag - cy, a0 - meio), fim = Math.atan2(g.top - 92 + sag - cy, a1 - meio);
+    x.save(); x.lineCap = 'round'; x.lineWidth = 20; x.strokeStyle = 'rgba(255,255,255,.92)'; x.beginPath(); x.arc(meio, cy, r, ini, fim); x.stroke();
+    x.lineCap = 'butt'; x.lineWidth = 11;
+    for(var i = 0; i < 4; i++){
+      var aa = ini + (fim - ini) * i / 4 + .003, bb = ini + (fim - ini) * (i + 1) / 4 - .003, cheio = Math.max(0, Math.min(1, prog * 4 - i));
+      x.strokeStyle = 'rgba(90,60,150,.25)'; x.beginPath(); x.arc(meio, cy, r, aa, bb); x.stroke();
+      if(cheio > 0){ x.strokeStyle = CORES[i]; x.beginPath(); x.arc(meio, cy, r, aa, aa + (bb - aa) * cheio); x.stroke(); }
+    }
+    for(var k = 1; k <= 4; k++){
+      var an = ini + (fim - ini) * k / 4, ex = meio + Math.cos(an) * r, ey = cy + Math.sin(an) * r, aceso = prog >= k / 4 - .001;
+      x.fillStyle = '#fff'; x.strokeStyle = aceso ? '#ffb347' : 'rgba(150,120,210,.6)'; x.lineWidth = 3; x.beginPath(); x.arc(ex, ey, 13, 0, Math.PI * 2); x.fill(); x.stroke();
+      estrela(x, ex, ey + 1, 8, aceso ? '#ffcf1f' : '#e6dcff');
+    }
+    // placar logo abaixo do arco
+    var pts = String(Math.max(0, Math.round(s.score || 0))).padStart(6, '0'), bw = 150, by = topoY + 14;
+    rr(x, meio - bw / 2, by, bw, 38, 11); x.fillStyle = 'rgba(43,29,74,.92)'; x.fill(); x.lineWidth = 3; x.strokeStyle = '#ffb347'; x.stroke();
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '900 21px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#fff'; x.fillText('★ ' + pts, meio, by + 20);
+    x.textBaseline = 'alphabetic'; x.font = '800 11px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.92)';
+    x.fillText('♪ ' + s.title, meio, by + 54, Math.min(W - 24, g.lw * 4));
+    x.restore();
+    // medidores embaixo: Precisão · Voltagem (combo, enche a cada 10 e muda de cor) · Música (quanto já tocou)
+    var my = H - Math.max(40, Math.min(58, H * .065)), rad = Math.max(22, Math.min(30, H * .034)), dx = Math.min(g.lw * 1.4, 140);
+    var nivel = Math.floor((s.combo || 0) / 10), cores = ['#ff9bd0', '#8cc8ff', '#8fe3b4', '#ffd36e'];
+    medidor(x, W / 2 - dx, my, rad * .85, (s.acc || 0) / 100, '#8cc8ff', (s.acc || 0) + '%', tx(0));
+    medidor(x, W / 2, my, rad, ((s.combo || 0) % 10) / 10 || (s.combo ? 1 : 0), cores[nivel % 4], String(s.combo || 0), tx(1));
+    medidor(x, W / 2 + dx, my, rad * .85, prog, '#ffd36e', Math.round(prog * 100) + '%', tx(2));
+  }
   function desenhar(x, W, H, s){
     x.clearRect(0, 0, W, H);
     if(!s) return;
@@ -59,7 +110,7 @@
     var now = s.now, speed = (g.target - g.top) / s.fall, perfectPx = s.perfect * speed, goodPx = s.good * speed, pad = Math.min(g.lw * .4, 40);
     // Véu suave: a sala continua visível atrás das pistas.
     var veu = x.createLinearGradient(0, 0, 0, H);
-    veu.addColorStop(0, 'rgba(18,8,44,.38)'); veu.addColorStop(.55, 'rgba(18,8,44,.2)'); veu.addColorStop(1, 'rgba(18,8,44,.55)');
+    veu.addColorStop(0, 'rgba(18,8,44,.26)'); veu.addColorStop(.55, 'rgba(18,8,44,.1)'); veu.addColorStop(1, 'rgba(18,8,44,.5)');
     x.fillStyle = veu; x.fillRect(0, 0, W, H);
     for(var i = 0; i < 4; i++){
       var lx = g.left + i * g.lw, cx = lx + g.lw / 2, aceso = s.flash[i] > now;
@@ -89,12 +140,8 @@
       x.fillStyle = 'rgba(255,255,255,.85)'; rr(x, cx - nw / 2 + 6, y - nh / 2 + 3, nw * .4, 3, 2); x.fill();
       x.restore();
     });
-    // Nome da música e barra de progresso.
-    x.textAlign = 'center'; x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.92)';
-    x.fillText('♪ ' + s.title + '  ·  ★ ' + (s.score || 0).toLocaleString('pt-BR') + '  ·  ' + (s.acc || 0) + '%', W / 2, g.top - 30, W - 24);
     var prog = Math.max(0, Math.min(1, (now - s.start) / s.durationMs));
-    x.fillStyle = 'rgba(255,255,255,.25)'; rr(x, g.left, g.top - 22, g.lw * 4, 5, 3); x.fill();
-    x.fillStyle = '#ff9bd0'; rr(x, g.left, g.top - 22, g.lw * 4 * prog, 5, 3); x.fill();
+    hud(x, W, H, g, s, prog, now);
     // Retorno do acerto acima dos botões e combo grande no meio da pista.
     if(s.feedbackUntil > now && now >= s.start && s.feedback){
       var k = 1 - (s.feedbackUntil - now) / 520, esc = 1 + Math.max(0, .25 - k) * 1.2, perf = /^PERFECT/.test(s.feedback), miss = /^MISS/.test(s.feedback);
@@ -102,6 +149,10 @@
       x.save(); x.translate(W / 2, g.target - pad - 46); x.scale(esc, esc);
       x.font = '900 ' + (perf ? 30 : 24) + 'px "M PLUS Rounded 1c",sans-serif'; x.lineWidth = 6; x.strokeStyle = 'rgba(30,12,70,.55)';
       x.strokeText(txt, 0, 0); x.fillStyle = perf ? '#fff3a6' : miss ? '#ffb3c8' : '#c8f5ff'; x.fillText(txt, 0, 0); x.restore();
+    }
+    if(s.feedbackUntil > now && now >= s.start && s.feedback && !/^MISS/.test(s.feedback)){
+      var uu = 1 - (s.feedbackUntil - now) / 520;
+      for(var c = 0; c < 5; c++) coracao(x, g.left + g.lw * (.5 + (c * 0.83) % 4), g.target - pad - uu * (90 + c * 18), 8 + c % 3 * 2, ['#ff9bd0', '#ffd36e', '#8cc8ff'][c % 3], 1 - uu);
     }
     if(s.combo >= 3){
       var cy = g.top + (g.target - g.top) * .34;
@@ -114,7 +165,7 @@
     if(now < s.start || s.paused){
       x.fillStyle = 'rgba(18,8,44,.45)'; x.fillRect(0, 0, W, H); x.fillStyle = '#fff';
       if(s.paused && s.resumeUntil){ x.font = '900 64px "M PLUS Rounded 1c",sans-serif'; x.fillText(String(Math.max(1, Math.ceil((s.resumeUntil - performance.now()) / 1000))), W / 2, H * .45); }
-      else if(s.paused){ x.font = '900 34px "M PLUS Rounded 1c",sans-serif'; x.fillText('☾ Pausado', W / 2, H * .45); }
+      else if(s.paused){ x.font = '900 34px "M PLUS Rounded 1c",sans-serif'; x.fillText('☾ ' + tx(3), W / 2, H * .45); }
       else {
         x.font = '900 64px "M PLUS Rounded 1c",sans-serif'; x.fillText(String(Math.max(1, Math.ceil((s.start - now) / 1000))), W / 2, H * .42);
         x.font = '800 15px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffd1ea'; x.fillText(s.prep || '', W / 2, H * .42 + 34, W - 30);

@@ -37,13 +37,15 @@ function rotulo(x,i,txt,cx,y,px,cor){
  icoCanvas(x,i,cx-total/2+ic/2,y-px*.36,ic,cor);
  contorno(x,txt,cx-total/2+ic+px*.3+w/2,y,cor);
 }
-var SW=560,SH=320,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
+var SW=560,SH=520,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
 var fase='escalar',showT0=0,showRaf=0; // escalar → show → fim
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
 var modo='dia',arena=null,alvo=null,msgOk=false; // v2: Arena dos Idols (units salvas); alvo = unit desafiada
+var T_LIVE={pt:['BRILHO','Voltagem'],en:['SHINE','Voltage'],es:['BRILLO','Voltaje'],id:['KILAU','Voltase'],th:['ประกาย','โวลเทจ'],ja:['キラキラ','ボルテージ']};
+Object.keys(T_LIVE).forEach(function(l){if(!T[l])return;T[l].brilho=T_LIVE[l][0];T[l].voltagem=T_LIVE[l][1];});
 function lang(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 // Lightsticks no ritmo (só diversão local durante o show; o placar é sempre o do servidor).
 var T_RITMO={pt:['📣 Agitar lightstick','Lightsticks no ritmo: {n}/{t}','A plateia foi à loucura!','Boa torcida!','Toque na batida do anel na próxima vez!'],
@@ -449,16 +451,17 @@ function agitar(){
 }
 function ritmoDesenhar(x,t){
  if(!ritmo)return;
- var fase2=((t-BAT0)%BATIDA+BATIDA)%BATIDA/BATIDA,perto=Math.min(fase2,1-fase2),cx=SW/2,cy=SH-36;
- x.save();x.strokeStyle='rgba(255,255,255,'+(.85-perto).toFixed(2)+')';x.lineWidth=4;
- x.beginPath();x.arc(cx,cy,10+(1-fase2)*26,0,Math.PI*2);x.stroke();   // anel que fecha na batida
- x.fillStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,.55)';x.beginPath();x.arc(cx,cy,9,0,Math.PI*2);x.fill();
- ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // lightsticks que sobem a cada acerto
-   for(var k=0;k<(f.b===2?7:4);k++){var px=60+((k*97+Math.round(f.t*50))%(SW-120)),py=SH-30-u*120-(k%3)*8;
-     x.globalAlpha=1-u;x.strokeStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d'][k%4];x.lineWidth=5;x.lineCap='round';
-     x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.sin(u*9+k)*7,py-16);x.stroke();}
+ // Voltagem: o anel que fecha na batida fica no centro, e o número é quantas vezes a torcida acertou o ritmo
+ var fase2=((t-BAT0)%BATIDA+BATIDA)%BATIDA/BATIDA,perto=Math.min(fase2,1-fase2),cx=SW/2,cy=SH-118,tot=batidas();
+ medidor(x,cx,cy,34,ritmo.n/tot,'#ffd23f',String(ritmo.n),trB('voltagem'));
+ x.save();x.strokeStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,'+(.9-perto).toFixed(2)+')';x.lineWidth=4;
+ x.beginPath();x.arc(cx,cy,42+(1-fase2)*22,0,Math.PI*2);x.stroke();   // anel que fecha na batida
+ ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // corações e lightsticks que sobem a cada acerto
+   for(var k=0;k<(f.b===2?7:4);k++){var px=60+((k*97+Math.round(f.t*50))%(SW-120)),py=SH-150-u*140-(k%3)*8;
+     if(k%2)coracao(x,px,py,8,['#ff6fb5','#ffd23f'][k%4>1?1:0],1-u);
+     else{x.globalAlpha=1-u;x.strokeStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d'][k%4];x.lineWidth=5;x.lineCap='round';
+       x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.sin(u*9+k)*7,py-16);x.stroke();}}
    return true;});
- x.globalAlpha=1;x.font=fonte(14);x.textAlign='right';contorno(x,'📣 '+ritmo.n+'/'+batidas(),SW-12,SH-12,'#fff');
  x.restore();
 }
 function ritmoResultado(){
@@ -497,55 +500,136 @@ function fimDoShow(){
  var st=ov.querySelector('#battleStage');
  if(st){var w=rodadas.filter(function(r){return r.ganhou;}).length;st.setAttribute('aria-label','Idol⭐Battle! '+w+' × '+(3-w));}
 }
-function fundoPalco(x,cor,t){
- var g=x.createLinearGradient(0,0,0,SH);g.addColorStop(0,'#241050');g.addColorStop(.6,'#55249c');g.addColorStop(1,'#2a1258');
- x.fillStyle=g;x.fillRect(0,0,SW,SH);
- // holofotes
- x.save();x.globalCompositeOperation='lighter';
- [[150,-.18],[410,.18]].forEach(function(h,i){
-   var bal=Math.sin(t*1.3+i*2)*.07,lg=x.createLinearGradient(h[0],0,h[0],250);
-   lg.addColorStop(0,cor);lg.addColorStop(1,'rgba(255,255,255,0)');
-   x.globalAlpha=.3;x.fillStyle=lg;x.beginPath();x.moveTo(h[0]+(h[1]+bal)*300-14,0);x.lineTo(h[0]+(h[1]+bal)*300+14,0);
-   x.lineTo(h[0]+78,250);x.lineTo(h[0]-78,250);x.closePath();x.fill();
- });
- x.restore();
- // Painel de luz em barras: movimento pequeno, sem imagens externas ou timers novos.
- x.save();x.fillStyle=cor;
- for(var eq=0;eq<17;eq++){
-   var pulsoLuz=.5+.5*Math.sin(t*3.3+eq*.83),altura=12+Math.round(pulsoLuz*34);
-   x.globalAlpha=.12+pulsoLuz*.09;
-   x.fillRect(48+eq*27,178-altura,13,altura);
- }
- x.restore();
- // estrelinhas do telão
- x.fillStyle='rgba(255,255,255,.75)';
- for(var i=0;i<16;i++){var px=(i*97+31)%SW,py=18+(i*53)%110,r=1+((i*7)%3)*.45,a=.35+.4*Math.abs(Math.sin(t*1.7+i));
-   x.globalAlpha=a;x.beginPath();x.arc(px,py,r,0,Math.PI*2);x.fill();}
- x.globalAlpha=1;
- // palco
- var pg=x.createLinearGradient(0,222,0,262);pg.addColorStop(0,'#ffd9f0');pg.addColorStop(1,'#c79bf2');
- x.fillStyle=pg;x.beginPath();x.ellipse(SW/2,244,238,26,0,0,Math.PI*2);x.fill();
- x.strokeStyle='rgba(255,255,255,.8)';x.lineWidth=2;x.beginPath();x.ellipse(SW/2,244,238,26,0,0,Math.PI*2);x.stroke();
- // plateia com lightsticks
- for(var k=0;k<15;k++){
-   var cx=18+k*37.5,cy=SH+6-(k%2)*7;
-   x.fillStyle='#160a36';x.beginPath();x.arc(cx,cy-20,13,0,Math.PI*2);x.fill();x.fillRect(cx-16,cy-12,32,30);
-   var ang=Math.sin(t*4+k*1.3)*.32,lx=cx+11+Math.sin(ang)*20,ly=cy-22-Math.cos(ang)*20;
-   x.strokeStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d'][k%4];x.lineWidth=3.2;x.lineCap='round';
-   x.beginPath();x.moveTo(cx+11,cy-20);x.lineTo(lx,ly);x.stroke();
-   x.save();x.globalAlpha=.35;x.fillStyle=x.strokeStyle;x.beginPath();x.arc(lx,ly,6,0,Math.PI*2);x.fill();x.restore();
- }
-}
-function pontos(x,ate){
+/* Palco no formato de Live (inspirado no Link! Like!, com desenho próprio do TsuLiPa):
+   arco de progresso com estrelas no topo, placar de Brilho, cenário de salão com telão, guirlanda de flores
+   e chão de madeira, a unit inteira no palco, o card de quem se apresenta entrando pela lateral,
+   medidores redondos (você · Voltagem da torcida · rival) e a "mão" com os 3 cards da unit.
+   Tudo só ENCENA o resultado que já veio do servidor: nada aqui decide ponto ou prêmio. */
+var ARCO={cx:SW/2,cy:700,r:680};
+function arcoAng(p){var a0=Math.acos((SW/2-40)/ARCO.r);return Math.PI+a0+(Math.PI-2*a0)*p;}   // p 0→1 da esquerda para a direita
+function arcoXY(p,dr){var a=arcoAng(p),r=ARCO.r+(dr||0);return [ARCO.cx+Math.cos(a)*r,ARCO.cy+Math.sin(a)*r];}
+function arcoProgresso(x,prog,feitas){
+ x.save();x.lineCap='round';
+ x.strokeStyle='rgba(255,255,255,.95)';x.lineWidth=22;x.beginPath();x.arc(ARCO.cx,ARCO.cy,ARCO.r,arcoAng(0),arcoAng(1));x.stroke();
  for(var i=0;i<3;i++){
-   var cx=SW/2-24+i*24,r=rodadas[i];
-   x.beginPath();x.arc(cx,54,7.5,0,Math.PI*2);
-   x.fillStyle=i<ate?(r.ganhou?'#b6ff3b':'#ff6fb5'):'rgba(255,255,255,.28)';x.fill();
-   x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=1.4;x.stroke();
+   var a=arcoAng(i/3)+.004,b=arcoAng((i+1)/3)-.004,cheio=Math.max(0,Math.min(1,prog*3-i));
+   x.lineCap='butt';x.lineWidth=13;x.strokeStyle='rgba(120,90,180,.22)';x.beginPath();x.arc(ARCO.cx,ARCO.cy,ARCO.r,a,b);x.stroke();
+   if(cheio>0){x.strokeStyle=COR[i];x.beginPath();x.arc(ARCO.cx,ARCO.cy,ARCO.r,a,a+(b-a)*cheio);x.stroke();
+     // tracinhos como os do medidor deles
+     x.strokeStyle='rgba(255,255,255,.45)';x.lineWidth=2;
+     for(var s=0;s<cheio*14;s++){var an=a+(b-a)*(s/14),p1=[ARCO.cx+Math.cos(an)*(ARCO.r-6),ARCO.cy+Math.sin(an)*(ARCO.r-6)],p2=[ARCO.cx+Math.cos(an)*(ARCO.r+6),ARCO.cy+Math.sin(an)*(ARCO.r+6)];
+       x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(p2[0],p2[1]);x.stroke();}
+     x.lineWidth=13;}
  }
+ // estrela no fim de cada apresentação: acesa (verde) se ganhou, rosa se perdeu
+ for(var k=0;k<3;k++){
+   var q=arcoXY((k+1)/3,-1),r0=rodadas[k],feita=k<feitas;
+   x.fillStyle='#fff';x.strokeStyle=feita?(r0.ganhou?'#7cc400':'#ff6fb5'):'#d9c8ff';x.lineWidth=3;
+   x.beginPath();x.arc(q[0],q[1],15,0,Math.PI*2);x.fill();x.stroke();
+   estrela(x,q[0],q[1]+1,9,feita?(r0.ganhou?'#ffcf1f':'#ff9ccc'):'#e6dcff');
+ }
+ x.restore();
 }
+function estrela(x,cx,cy,r,cor){
+ x.save();x.fillStyle=cor;x.beginPath();
+ for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr);}
+ x.closePath();x.fill();x.restore();
+}
+function rrect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+function placarBrilho(x,valor){
+ var txt=String(Math.max(0,Math.round(valor))).padStart(6,'0');
+ x.save();rrect(x,SW/2-74,42,148,46,12);x.fillStyle='#2b1d4a';x.fill();x.strokeStyle='#ffb347';x.lineWidth=3;x.stroke();
+ x.font=fonte(22);x.textAlign='center';x.textBaseline='middle';x.fillStyle='#fff';x.fillText(txt,SW/2,60);
+ x.font=fonte(10);x.fillStyle='#ff9ccc';x.fillText(trB('brilho'),SW/2,79);
+ x.restore();
+}
+function fundoPalco(x,cor,t){
+ // parede do salão
+ var g=x.createLinearGradient(0,0,0,SH);g.addColorStop(0,'#fbf6ff');g.addColorStop(.45,'#e9dcff');g.addColorStop(1,'#d6c3fb');
+ x.fillStyle=g;x.fillRect(0,0,SW,SH);
+ // faixas diagonais suaves (ornamento do fundo)
+ x.save();x.globalAlpha=.18;x.fillStyle=cor;
+ [[380,40],[430,18]].forEach(function(f){x.beginPath();x.moveTo(f[0],0);x.lineTo(f[0]+f[1],0);x.lineTo(f[0]+f[1]-200,SH);x.lineTo(f[0]-200,SH);x.closePath();x.fill();});
+ x.restore();
+ // telão com arco-íris de giz e estrelinhas
+ rrect(x,70,118,420,170,16);x.fillStyle='#d8b98c';x.fill();
+ rrect(x,78,126,404,154,10);var tg=x.createLinearGradient(0,126,0,280);tg.addColorStop(0,'#2d1b5e');tg.addColorStop(1,'#3e2a7c');x.fillStyle=tg;x.fill();
+ x.save();rrect(x,78,126,404,154,10);x.clip();
+ ['#ff8fb8','#ffc56b','#fff38a','#a6ef6b','#7fd3ff','#b69bff'].forEach(function(c,i){
+   x.strokeStyle=c;x.globalAlpha=.55;x.lineWidth=7;x.lineCap='round';x.beginPath();x.arc(SW/2,292,118-i*9,Math.PI*1.08,Math.PI*1.92);x.stroke();});
+ x.globalAlpha=1;
+ for(var s=0;s<11;s++){var px=96+(s*71)%370,py=140+(s*37)%110,a=.35+.55*Math.abs(Math.sin(t*1.6+s));estrela(x,px,py,4+(s%3),'rgba(255,255,255,'+a.toFixed(2)+')');}
+ x.restore();
+ // guirlanda de flores com bandeirinhas
+ x.save();x.strokeStyle='#7cc46a';x.lineWidth=3;x.beginPath();x.moveTo(40,112);x.quadraticCurveTo(SW/2,148,SW-40,112);x.stroke();
+ for(var b=0;b<12;b++){var u=(b+.5)/12,bx=40+(SW-80)*u,by=112+Math.sin(u*Math.PI)*18;
+   x.fillStyle=['#ff6fb5','#4dd8ff','#ffe14d','#b6ff3b'][b%4];x.beginPath();x.moveTo(bx-9,by);x.lineTo(bx+9,by);x.lineTo(bx,by+15);x.closePath();x.fill();}
+ for(var f=0;f<7;f++){var v=f/6,fx=40+(SW-80)*v,fy=112+Math.sin(v*Math.PI)*18,fc=['#ff5d8f','#4a7dff','#ffd23f','#7b3ff0','#ff8a3d','#3cb043','#ff6fb5'][f];
+   for(var p=0;p<6;p++){var an=p/6*Math.PI*2+t*.4;x.fillStyle=fc;x.beginPath();x.arc(fx+Math.cos(an)*7,fy+Math.sin(an)*7,6,0,Math.PI*2);x.fill();}
+   x.fillStyle='#fff6d0';x.beginPath();x.arc(fx,fy,4.5,0,Math.PI*2);x.fill();}
+ x.restore();
+ // chão de madeira em perspectiva
+ var fg=x.createLinearGradient(0,300,0,SH);fg.addColorStop(0,'#e9b97c');fg.addColorStop(1,'#c98a4b');
+ x.fillStyle=fg;x.fillRect(0,300,SW,SH-300);
+ x.save();x.strokeStyle='rgba(120,70,30,.28)';x.lineWidth=1.5;
+ for(var l=-8;l<=8;l++){x.beginPath();x.moveTo(SW/2+l*16,300);x.lineTo(SW/2+l*70,SH);x.stroke();}
+ [318,342,372,410,456].forEach(function(y){x.beginPath();x.moveTo(0,y);x.lineTo(SW,y);x.stroke();});
+ x.restore();
+ // holofotes na cor da apresentação
+ x.save();x.globalCompositeOperation='lighter';
+ [[150,-.18],[410,.18]].forEach(function(h,i){var bal=Math.sin(t*1.3+i*2)*.07,lg=x.createLinearGradient(h[0],0,h[0],380);
+   lg.addColorStop(0,cor);lg.addColorStop(1,'rgba(255,255,255,0)');x.globalAlpha=.16;x.fillStyle=lg;x.beginPath();
+   x.moveTo(h[0]+(h[1]+bal)*300-14,0);x.lineTo(h[0]+(h[1]+bal)*300+14,0);x.lineTo(h[0]+90,380);x.lineTo(h[0]-90,380);x.closePath();x.fill();});
+ x.restore();
+}
+function coracao(x,cx,cy,r,cor,a){
+ x.save();x.globalAlpha=a;x.fillStyle=cor;x.translate(cx,cy);x.beginPath();x.moveTo(0,r*.9);
+ x.bezierCurveTo(-r*1.4,-r*.1,-r*.7,-r*1.1,0,-r*.35);x.bezierCurveTo(r*.7,-r*1.1,r*1.4,-r*.1,0,r*.9);x.fill();
+ x.globalAlpha=a*.6;x.fillStyle='#fff';x.beginPath();x.arc(-r*.38,-r*.38,r*.2,0,Math.PI*2);x.fill();x.restore();
+}
+function coracoes(x,t,quantos){   // corações que sobem do chão (posições fixas: nada sorteado)
+ for(var k=0;k<quantos;k++){var ciclo=1.6,u=((t+k*.37)%ciclo)/ciclo,cx=60+(k*113)%(SW-120)+Math.sin(u*6+k)*10,cy=372-u*170;
+   coracao(x,cx,cy,9+(k%3)*2,['#c9b3ff','#9ec9ff','#ffb3d9'][k%3],(1-u)*.8);}
+}
+function cartaMini(x,nick,i,cx,cy,w,h,o){   // card da unit desenhado no próprio palco
+ o=o||{};var c=cardDe(nick)||{nick:nick},v=valor(c,i);
+ x.save();x.translate(cx,cy);if(o.ang)x.rotate(o.ang);
+ if(o.brilho){x.shadowColor=o.brilho;x.shadowBlur=18;}
+ rrect(x,-w/2,-h/2,w,h,8);x.fillStyle='#fff';x.fill();x.shadowBlur=0;
+ rrect(x,-w/2+3,-h/2+3,w-6,h-6,6);var g=x.createLinearGradient(0,-h/2,0,h/2);g.addColorStop(0,COR[i]);g.addColorStop(1,'#7b3ff0');x.fillStyle=g;x.fill();
+ x.save();rrect(x,-w/2+3,-h/2+3,w-6,h-6,6);x.clip();
+ x.globalAlpha=.35;x.fillStyle='#fff';for(var d=-2;d<4;d++){x.beginPath();x.moveTo(-w/2+d*w/3,-h/2);x.lineTo(-w/2+d*w/3+10,-h/2);x.lineTo(-w/2+d*w/3-30,h/2);x.lineTo(-w/2+d*w/3-40,h/2);x.fill();}
+ x.globalAlpha=1;desenharIdol(x,nick,true,0,h/2-h*.14,h/62,o.t||0,{semPose:true});x.restore();
+ // número do atributo no canto (como o custo das cartas deles) e o nome embaixo
+ x.fillStyle='#fff';x.beginPath();x.arc(-w/2+11,-h/2+11,10,0,Math.PI*2);x.fill();
+ x.font=fonte(12);x.textAlign='center';x.textBaseline='middle';x.fillStyle='#432675';x.fillText(String(v||'?'),-w/2+11,-h/2+12);
+ x.font=fonte(Math.max(9,Math.round(w/7)));x.textBaseline='alphabetic';contorno(x,nomeCurto(nick,8),0,h/2-6,'#fff');
+ if(o.apagado){rrect(x,-w/2,-h/2,w,h,8);x.fillStyle='rgba(40,20,80,.35)';x.fill();}
+ x.restore();
+}
+function medidor(x,cx,cy,r,frac,cor,txt,rot){
+ x.save();
+ x.fillStyle='#fff';x.beginPath();x.arc(cx,cy,r+7,0,Math.PI*2);x.fill();
+ x.strokeStyle='#2b1d4a';x.lineWidth=r*.42;x.beginPath();x.arc(cx,cy,r*.72,0,Math.PI*2);x.stroke();
+ x.strokeStyle=cor;x.lineCap='butt';x.beginPath();x.arc(cx,cy,r*.72,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(0,Math.min(1,frac)));x.stroke();
+ x.font=fonte(Math.round(r*.62));x.textAlign='center';x.textBaseline='middle';x.fillStyle='#fff';
+ x.lineJoin='round';x.strokeStyle='#2b1d4a';x.lineWidth=4;x.strokeText(txt,cx,cy+1);x.fillText(txt,cx,cy+1);
+ x.font=fonte(11);x.textBaseline='alphabetic';contorno(x,rot,cx,cy-r-12,'#fff');
+ x.restore();
+}
+function maoDeCards(x,ativo,feitas,tt){   // a "mão" com os 3 cards da unit; o da vez sobe e brilha
+ x.save();var fy=SH-6;rrect(x,-10,SH-82,SW+20,90,22);x.fillStyle='rgba(43,29,74,.82)';x.fill();x.restore();
+ unit.forEach(function(n,i){
+   var sel=i===ativo,cx=SW/2+(i-1)*96,cy=SH-44-(sel?14:0)+(sel?Math.sin(tt*4)*2:0);
+   cartaMini(x,n,i,cx,cy,64,90,{ang:(i-1)*.08,brilho:sel?'#b6ff3b':null,apagado:i<feitas&&!rodadas[i].ganhou,t:tt});
+ });
+}
+function pontos(x,ate){arcoProgresso(x,ate/3,ate);}
 function contorno(x,txt,px,py,cor){
  x.lineJoin='round';x.strokeStyle='rgba(30,10,70,.85)';x.lineWidth=5;x.strokeText(txt,px,py);x.fillStyle=cor||'#fff';x.fillText(txt,px,py);
+}
+function brilhoAte(tt){   // placar de Brilho: soma dos seus pontos já mostrados (o mesmo número que veio do servidor)
+ var s=0;for(var k=0;k<3;k++){var u=tt-k*DUR;if(u<=.4)break;s+=Number(rodadas[k].eu||0)*Math.min(1,(u-.4)/.8);}return s*1000;
 }
 function desenharPalco(t){
  var cv=ov&&ov.querySelector('#battleStage'),x=cv&&cv.getContext&&cv.getContext('2d');if(!x||!rodadas)return;
@@ -555,46 +639,56 @@ function desenharPalco(t){
  if(fim){
    var wins=rodadas.filter(function(r){return r.ganhou;}).length,venceu=wins>=2;
    fundoPalco(x,venceu?'#ffe14d':'#b8a3ff',0);
-   if(venceu)for(var k=0;k<34;k++){x.fillStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d','#fff'][k%5];
-     x.save();x.translate((k*89+40)%SW,60+(k*47)%150);x.rotate(k);x.fillRect(-3,-1.5,6,3);x.restore();}
-   unit.forEach(function(n,i){desenharIdol(x,n,true,SW/2+(i-1)*112,240-(i===1?0:4),2.5,0,{expr:venceu?3:null});
-     x.font=fonte(15);contorno(x,nomeCurto(n,10),SW/2+(i-1)*112,272);});
-   x.font=fonte(24);contorno(x,venceu?trB('win'):trB('lose'),SW/2,32,venceu?'#fff3a8':'#fff');
-   pontos(x,3);
-   x.font=fonte(22);contorno(x,wins+' × '+(3-wins),SW/2,92);
+   if(venceu)for(var k=0;k<34;k++){x.fillStyle=['#ff6fb5','#b6ff3b','#4dd8ff','#ffe14d','#7b3ff0'][k%5];
+     x.save();x.translate((k*89+40)%SW,120+(k*47)%170);x.rotate(k);x.fillRect(-3,-1.5,6,3);x.restore();}
+   coracoes(x,1.2,venceu?9:3);
+   unit.forEach(function(n,i){desenharIdol(x,n,true,SW/2+(i-1)*130,372-(i===1?0:6),3,0,{expr:venceu?3:null});
+     x.font=fonte(15);contorno(x,nomeCurto(n,10),SW/2+(i-1)*130,400);});
+   arcoProgresso(x,1,3);
+   placarBrilho(x,brilhoAte(DUR*3));
+   x.font=fonte(30);contorno(x,venceu?trB('win'):trB('lose'),SW/2,150,venceu?'#fff3a8':'#fff');
+   x.font=fonte(24);contorno(x,wins+' × '+(3-wins),SW/2,186);
+   maoDeCards(x,-1,3,0);
    return;
  }
  var i=Math.min(2,Math.floor(tt/DUR)),u=tt-i*DUR,r=rodadas[i];
  fundoPalco(x,COR[i],tt);
- x.font=fonte(24);rotulo(x,i,nomeRound(i)+'  '+(i+1)+'/3',SW/2,32,24);
- pontos(x,i);
+ arcoProgresso(x,Math.min(1,tt/(DUR*3)),i);
+ placarBrilho(x,brilhoAte(tt));
+ x.font=fonte(15);rotulo(x,i,nomeRound(i)+'  '+(i+1)+'/3',SW/2,168,15,'#fff');
+ // o resto da unit dança atrás, e a dupla da rodada fica na frente
+ unit.forEach(function(n,k){if(k===i)return;var bx=k===(i+1)%3?62:268;
+   desenharIdol(x,n,true,bx,322,1.7,tt+k,{bob:-Math.abs(Math.sin(tt*6+k))*3});});
  var entra=Math.min(1,u/.35),e=1-Math.pow(1-entra,3);
  var conta=Math.max(0,Math.min(1,(u-.4)/.8)),veredito=u>1.3;
- var mx=170-(1-e)*220,rx=390+(1-e)*220;
+ var mx=170-(1-e)*220,rx=400+(1-e)*220;
  var pulo=function(ganhou){return veredito?(ganhou?-Math.abs(Math.sin((u-1.3)*9))*10:0):-Math.abs(Math.sin(tt*7))*3;};
- desenharIdol(x,r.meu||unit[i],true,mx,238,2.6,tt,{bob:pulo(r.ganhou),apagado:veredito&&!r.ganhou,expr:veredito&&r.ganhou?3:null,semPose:!veredito});
- desenharIdol(x,r.rival,false,rx,238,2.6,tt,{bob:pulo(!r.ganhou),apagado:veredito&&r.ganhou,vira:true,expr:veredito&&!r.ganhou?3:null,semPose:!veredito});
- x.font=fonte(16);
- contorno(x,nomeCurto(r.meu||unit[i]),mx,272);
- contorno(x,nomeCurto(r.rival),rx,272);
- x.font=fonte(13);
- contorno(x,trB('my'),mx,100,'#ffd9f0');
- contorno(x,trB('other'),rx,100,'#d9f3ff');
+ desenharIdol(x,r.meu||unit[i],true,mx,372,2.8,tt,{bob:pulo(r.ganhou),apagado:veredito&&!r.ganhou,expr:veredito&&r.ganhou?3:null,semPose:!veredito});
+ desenharIdol(x,r.rival,false,rx,372,2.8,tt,{bob:pulo(!r.ganhou),apagado:veredito&&r.ganhou,vira:true,expr:veredito&&!r.ganhou?3:null,semPose:!veredito});
+ x.font=fonte(14);contorno(x,nomeCurto(r.meu||unit[i]),mx,392);contorno(x,nomeCurto(r.rival),rx,392,'#d9f3ff');
+ coracoes(x,tt,u>.4?6:2);
  if(u>.4){
    var a=Math.round(Number(r.eu||0)*conta),b=Math.round(Number(r.eles||0)*conta);
-   x.font=fonte(veredito&&r.ganhou?58:48);contorno(x,String(a),SW/2-46,182,veredito&&r.ganhou?'#fff3a8':'#fff');
-   x.font=fonte(veredito&&!r.ganhou?58:48);contorno(x,String(b),SW/2+46,182,veredito&&!r.ganhou?'#fff3a8':'#fff');
-   x.font=fonte(22);contorno(x,':',SW/2,172);
+   x.font=fonte(veredito&&r.ganhou?54:44);contorno(x,String(a),SW/2-48,222,veredito&&r.ganhou?'#fff3a8':'#fff');
+   x.font=fonte(veredito&&!r.ganhou?54:44);contorno(x,String(b),SW/2+48,222,veredito&&!r.ganhou?'#fff3a8':'#fff');
+   x.font=fonte(22);contorno(x,':',SW/2,212);
  }
- if(u>.4&&Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]){x.fillStyle=FLOR[torcida.hoje][0];x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(SW/2-62,131,6.5,0,Math.PI*2);x.fill();x.stroke();x.font=fonte(15);contorno(x,'+1',SW/2-42,136,'#ffd9f0');}
+ if(u>.4&&Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]){x.fillStyle=FLOR[torcida.hoje][0];x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(SW/2-62,166,6.5,0,Math.PI*2);x.fill();x.stroke();x.font=fonte(15);contorno(x,'+1',SW/2-42,171,'#ffd9f0');}
  if(veredito){
    var wx=r.ganhou?mx:rx,s=1+Math.max(0,.5-(u-1.3))*1.2;
-   x.save();x.translate(wx,88);x.scale(s,s);x.font=fonte(24);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
-   // Faíscas saindo de quem venceu a rodada (o show inteiro já some com "reduzir movimento").
-   var ef=u-1.3;if(ef>=0&&ef<.9){x.save();for(var k=0;k<12;k++){var an=k/12*Math.PI*2+i*.4,rr=26+ef*110;
-     x.globalAlpha=1-ef/.9;x.fillStyle=k%3===0?'#b6ff3b':k%3===1?'#fff3a8':'#ff6fb5';
-     x.beginPath();x.arc(wx+Math.cos(an)*rr,150+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
+   x.save();x.translate(wx,262);x.scale(s,s);x.font=fonte(22);contorno(x,'★ WIN ★',0,0,'#fff3a8');x.restore();
+   var ef=u-1.3;if(ef>=0&&ef<.9){x.save();for(var k2=0;k2<12;k2++){var an=k2/12*Math.PI*2+i*.4,rr=26+ef*110;
+     x.globalAlpha=1-ef/.9;x.fillStyle=k2%3===0?'#b6ff3b':k2%3===1?'#fff3a8':'#ff6fb5';
+     x.beginPath();x.arc(wx+Math.cos(an)*rr,320+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
  }
+ // medidores: os seus pontos da rodada · Voltagem (a torcida no ritmo) · os pontos do rival
+ var maxR=Math.max(1,Number(r.eu||0),Number(r.eles||0));
+ medidor(x,58,SH-118,30,Number(r.eu||0)*conta/maxR,'#ff6fb5',String(Math.round(Number(r.eu||0)*conta)),trB('my'));
+ medidor(x,SW-58,SH-118,30,Number(r.eles||0)*conta/maxR,'#4dd8ff',String(Math.round(Number(r.eles||0)*conta)),trB('other'));
+ maoDeCards(x,i,i,tt);
+ // o card de quem se apresenta entra deslizando pela direita (o "corte" das cartas)
+ if(u<1.15){var ent=u<.3?u/.3:u>.85?Math.max(0,1-(u-.85)/.3):1,ez=1-Math.pow(1-ent,3);
+   cartaMini(x,r.meu||unit[i],i,SW+60-ez*130,250,92,128,{brilho:'#ff6fb5',t:tt});}
  if(fase==='show')ritmoDesenhar(x,tt);
 }
 function desenharPolaroid(){

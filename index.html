@@ -463,7 +463,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=8'),arq('script','./battle.js?v=11')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=9'),arq('script','./battle.js?v=12')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>

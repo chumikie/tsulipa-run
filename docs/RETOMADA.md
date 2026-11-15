@@ -86,7 +86,11 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Bolinhas do Tsu, da Lirika e do Pati desenhadas pelo jogo (`HUB_TRIO_DRAW_CHARS` + `perfFotoRedonda`). Álbum novo: grade de cards com filtro por Oshi (Todos, Tsu, Lirika, Pati e Outros, pelo `card.oshi`). Ele lê só `album_cards`; o toque abre o zoom de card do Gacha, e "Ver metas e trocar cards" abre o álbum clássico.
 - Falta a lista de músicas do Karaoke com capa e "quem canta": o seletor fica dentro de `karaoke-time.html` (iframe) e não existe o dado de quem canta cada música.
 
-### Falta validar (o dono testa)
+### Formato de Live no Battle e no Karaoke (15/11, mesma PR)
+- Inspirado na tela de Live do Link! Like!, com desenho próprio. Só visual: nenhuma regra, prêmio ou SQL mudou.
+- `battle.js?v=12` / `battle.css?v=9`: o palco do show ficou 560×520. Tem arco de progresso com as 3 apresentações e estrelas (verde = ganhou, rosa = perdeu), placar de BRILHO (os pontos do servidor × 1000), salão com telão de arco-íris, guirlanda de flores e chão de madeira, a unit inteira no palco, o card de quem se apresenta entrando pela direita, os medidores Você · Voltagem · Rival e a "mão" com os 3 cards (o da vez sobe e brilha). A Voltagem é o lightstick no ritmo que já existia (o anel que fecha na batida).
+- `karaoke-arena.js?v=3`: durante o seu show, um arco com 4 trechos e estrelas mostra o progresso da música, um placar ★ fica abaixo do arco, e embaixo ficam os medidores Precisão · Voltagem (o combo, que enche a cada 10 e muda de cor) · Música. Saem corações dos botões a cada acerto, e o véu ficou mais claro para a sala da semana aparecer. As pistas desceram um pouco para caber o arco.
+
 - Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
 - Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.
 - Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
@@ -94,6 +98,7 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
 - iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
 - Ouvir os sons (não testados por ouvido).
+- Battle e Karaoke em formato de Live: jogar de verdade no celular (o Karaoke só foi conferido num desenho de teste com estado simulado).
 - Visual de celular: iPad/Safari e Android de verdade, logado (missões, Sair, pet), e se o palco copiado pesa em tablet antigo.
 - Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
 

@@ -25,7 +25,7 @@
 .battle-chips i{font-style:normal;font-size:10.5px;font-weight:800;line-height:1;padding:3px 5px;border-radius:99px;
  background:rgba(255,255,255,.82);color:#4b287c;white-space:nowrap}
 .battle-chips i.on{background:#7b3ff0;color:#fff}
-.battle-stage{display:block;width:100%;height:auto;aspect-ratio:7/4;border-radius:19px;border:2px solid var(--battle-border);
+.battle-stage{display:block;width:100%;height:auto;aspect-ratio:560/520;border-radius:19px;border:2px solid var(--battle-border);
  box-shadow:0 4px 0 rgba(90,51,166,.14);background:#2a1258;margin:8px 0}
 .battle-skip{min-height:42px}
 .battle-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
@@ -116,3 +116,4 @@ html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
 @keyframes battlepulso{from{transform:scale(.94)}to{transform:scale(1)}}
 .battle-ritmo{margin:8px 0 4px;font-weight:800;color:#7b3ff0}
 @media (prefers-reduced-motion:reduce){.battle-agitar.pulsa{animation:none}}
+.battle-showtrack{display:none}

@@ -476,19 +476,8 @@
     window.addEventListener('pointermove', function(e){ if(naAbre()) pxMover(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1); }, {passive:true});
     window.addEventListener('deviceorientation', function(e){ if(naAbre() && e.gamma != null) pxMover(e.gamma / 30, (e.beta - 45) / 30); }, {passive:true});
   }
-  // tela de carregamento (só na primeira abertura da página): logo, o trio pulando e uma barrinha
-  function carregamento(){
-    if(carregamento.feito || !cel) return; carregamento.feito = true;
-    var ov = document.createElement('div'); ov.className = 'twc-carrega'; ov.setAttribute('role', 'status'); ov.setAttribute('aria-label', 'Loading');
-    ov.innerHTML = '<p class="twc-carrega-logo" translate="no">TsuLiPa<span>⭐</span>World</p><div class="twc-carrega-trio">' +
-      MEMBROS.map(function(m, k){ return '<canvas data-membro="' + k + '" width="96" height="96" style="--d:' + (k * .18) + 's"></canvas>'; }).join('') +
-      '</div><i class="twc-carrega-barra"><b></b></i>';
-    cel.appendChild(ov);
-    [].slice.call(ov.querySelectorAll('canvas[data-membro]')).forEach(function(cv){ var av = membroAv(+cv.getAttribute('data-membro')); try{ if(av && typeof perfFotoRedonda === 'function') perfFotoRedonda(cv, av, true); }catch(e){} });
-    var t0 = Date.now();
-    function pronto(){ return document.readyState === 'complete' && Date.now() - t0 > 900; }
-    (function espera(){ if(pronto() || Date.now() - t0 > 4000){ ov.classList.add('twc-carrega-fim'); setTimeout(function(){ ov.remove(); }, 450); } else setTimeout(espera, 120); })();
-  }
+  // A abertura já está pronta quando montar() roda. Não cobrir a interface
+  // com uma espera decorativa dependente de timers ou do evento load.
   function barraBaixo(){
     var v = topo(), noMenu = v === 'menu' && !classico, raiz = pilha.length < 2 && !classico;
     return '<button type="button" class="twc-nav-b" data-n="voltar"' + (raiz ? ' disabled' : '') + '>' + ico('voltar', 26) + '<span>' + esc(t('voltar')) + '</span></button>' +
@@ -1147,7 +1136,7 @@
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
     avatares(); bolinhas(); idolsDesenhar(); if(v === 'album') cartasDesenhar(); if(v.indexOf('emb:') === 0) embutir(v.slice(4)); else devolver();
-    if(v === 'abre'){ vitrineTrazer(); flutuantes(); if(typeof performance !== 'undefined' && performance.now() < 6000) carregamento(); }
+    if(v === 'abre'){ vitrineTrazer(); flutuantes(); }
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v.indexOf('dentro:') === 0){ dentroLigar(); var dcv = $id('twcDentroCv'); if(dcv && !dcv.twc){ dcv.twc = true; dcv.addEventListener('click', dentroClique); } }
@@ -1369,7 +1358,6 @@
     });
     montar.tecla = true;
     desenhar();
-    if(naAbre() && typeof performance !== 'undefined' && performance.now() < 6000) carregamento();   // só logo depois de abrir a página
   }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
   ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){

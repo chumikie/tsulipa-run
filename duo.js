@@ -200,7 +200,7 @@ function duoEscolhaUI(msg){
   if(!contaJ){ $('duoEscolha').innerHTML = '<p class="duodica">' + escHtml(tr('Entre com Google para usar o Moon⭐Duo!')) + '</p><div class="btns"><button type="button" class="btn" id="duoEntrar">' + escHtml(tr('Entrar com Google')) + '</button></div>'; return; }
   $('duoEscolha').innerHTML = (msg ? '<p class="perfmsg">' + escHtml(msg) + '</p>' : '') +
     '<p class="duodica">' + escHtml(tr('Escolha com quem fazer a dupla:')) + '</p>' +
-    '<input class="nick duobusca" id="duoBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '">' +
+    '<input class="nick duobusca" id="duoBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '" aria-label="' + escHtml(tr('Procurar Idol pelo nome')) + '">' +
     '<div class="duosug" id="duoRes"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
   contaRpc('duo_sugestoes').then(function(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = Array.isArray(L) && L.length ? L.map(duoNickBtn).join('') : '<p class="perfcarr">✧</p>'; }).catch(function(){});
 }

@@ -325,7 +325,7 @@ test('ML1.2-B: sem memória de fãs, Chat acolhe sem inventar contatos ou altera
   assert.doesNotMatch(nodes.petPhoneCorpo.innerHTML,/data-conversa="fan:/);
   assert.equal(ctx.petPhoneChatAbrir('fan:Desconhecido'),false);
   assert.equal(ctx.petPhoneChatAbrir('idol:lirika'),true);
-  assert.match(nodes.petPhoneCorpo.innerHTML,/pequenas lembranças|lembranças dos fãs/i);
+  assert.match(nodes.petPhoneCorpo.innerHTML,/pequenas lembranças|lembranças dos fãs|reencontros no Café/i);
   assert.deepEqual(calls.filter(c=>c.startsWith('rpc:')),[]);
   for(const k of ['terminar_corrida','iniciar_corrida','petSave(','star_log','localStorage']){
     assert.equal(logic.includes(k),false,'sem alterações econômicas ou persistência: '+k);

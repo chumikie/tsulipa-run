@@ -881,6 +881,7 @@ function hubMontar(){
   $('hubNov').innerHTML = HUB_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('');
   $('hubPriv').textContent = '🔐 ' + tr('Privacidade e segurança');
   $('hubBusca').placeholder = '🔍 ' + tr('Procurar Idol pelo nome');
+  $('hubBusca').setAttribute('aria-label', tr('Procurar Idol pelo nome'));   // o placeholder some ao digitar; o rótulo fica
   $('hubLinks').innerHTML = '';   // links do BRS48 retirados do site (14/11/2026)
   hubTemaUI(); hubCardsUI(); hubMisUI(); hubCfgUI(); twRankRender();
   hubIdolsTituloUI();

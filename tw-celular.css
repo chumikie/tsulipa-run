@@ -650,3 +650,10 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-title{color:#e6d6ff!important;text-shadow:none!important}
   :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-close{background:#2a1d4a!important;color:#f3e8ff!important;border-color:#685394!important;box-shadow:0 3px 0 #140b2e!important}
 }
+
+/* Auditoria A4: contraste de textos das portas no modo escuro.
+   A regra base usa roxo escuro (#5a2bc4) mesmo sobre o cartão escuro. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-porta-txt b{color:#f0e5ff}
+  :root:not([data-theme="light"]) .twc .twc-porta-txt small{color:#d1bdf4}
+}

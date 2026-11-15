@@ -20,6 +20,7 @@ const drew = { characters: 0, pets: 0, text: [], night: 0, sources: [] };
 const ctx = new Proxy({}, {
   get(target, key) {
     if (key === 'createRadialGradient') return () => ({addColorStop() {}});
+    if (key === 'measureText') return (s) => ({width: String(s).length * 8});   // etiqueta de visita (depende do relógio)
     if (key === 'fillText') return (s) => drew.text.push(String(s));
     if (key === 'fillRect') return () => { if (ctx.globalCompositeOperation === 'multiply') drew.night++; };
     if (key === 'setTransform' || key === 'clearRect' || key === 'drawImage' ||

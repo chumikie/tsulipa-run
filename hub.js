@@ -1366,7 +1366,7 @@ function hubIdolsCarregar(){
   if(Date.now() - hubIdolsEm < 5 * 60e3 && hubIdolsDados){ hubIdolsUI(); return; }   // recarrega no máximo a cada 5 min
   hubIdolsEm = Date.now();
   contaRpc('vitrine_idols').then(function(d){ hubIdolsDados = d && Array.isArray(d.idols) ? d : null; hubIdolsUI(); if(typeof petPhoneJornalVitrinePronta === 'function') petPhoneJornalVitrinePronta(); })
-    .catch(function(){ hubIdolsEm = 0; var b = $('hubIdols'); if(b) b.hidden = true; });
+    .catch(function(){ hubIdolsEm = 0; if(window.TW_CELULAR_LIGADO){ hubIdolsUI(); return; } var b = $('hubIdols'); if(b) b.hidden = true; });
 }
 function hubIdolsTituloUI(){
   var title=$('hubIdolsT');if(!title)return;
@@ -1377,11 +1377,14 @@ function hubIdolsTituloUI(){
 function hubIdolsUI(){
   var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
-  if(!L.length){ box.hidden = true; hubIdolsParar(); return; }
+  var trio = [];   // no visual de celular, o Tsu, a Lirika e o Pati desfilam juntos na frente da fila
+  try{ trio = typeof window.twcTrioVitrine === 'function' ? window.twcTrioVitrine() || [] : []; }catch(e){ trio = []; }
+  if(!L.length && !trio.length){ box.hidden = true; hubIdolsParar(); return; }
   hubIdolsTituloUI();
+  hubIV.L = trio.concat(L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; }));
   // lista escondida para teclado e leitor de tela (o palco em si é um canvas)
-  $('hubIdolsLista').innerHTML = L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + ' · ★ ' + (+p.best || 0) + '</button>'; }).join('');
-  hubIV.L = L.map(function(p, i){ return { nick:p.nick, best:+p.best || 0, av:p.avatar, fase:(i * 1.7) % 5, ex:+p.avatar.expr, reage:-9 }; });
+  var semNota = !!window.TW_CELULAR_LIGADO;
+  $('hubIdolsLista').innerHTML = hubIV.L.map(function(p, i){ return '<button type="button" data-hireage="' + i + '">' + escHtml(p.nick) + (semNota || p.trio ? '' : ' · ★ ' + p.best) + '</button>'; }).join('');
   box.hidden = false; hubIdolsTam(); hubIdolsLigar(); if(typeof twRankRender==='function')twRankRender();
 }
 function hubIdolsLugar(){
@@ -1518,9 +1521,9 @@ function hubIdolsDesenhar(s, dt, calmo){
     // nome e recorde
     x.font = '900 11px "M PLUS Rounded 1c",sans-serif';
     var nm = p.nick.length > 11 ? p.nick.slice(0, 10) + '…' : p.nick, tw = x.measureText(nm).width + 16, nx = px + cw / 2;
-    x.fillStyle = 'rgba(255,255,255,.95)'; hubIdolsPilula(x, nx - tw / 2, chao + 9, tw, 16, 8); x.fill();
-    x.fillStyle = '#5b2bb5'; x.fillText(nm, nx, chao + 21);
-    x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe14d'; x.fillText('★ ' + p.best, nx, chao + 36);
+    x.fillStyle = p.trio ? p.cor : 'rgba(255,255,255,.95)'; hubIdolsPilula(x, nx - tw / 2, chao + 9, tw, 16, 8); x.fill();
+    x.fillStyle = p.trio ? '#fff' : '#5b2bb5'; x.fillText(nm, nx, chao + 21);
+    if(!p.trio && !window.TW_CELULAR_LIGADO){ x.font = '800 10px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe14d'; x.fillText('★ ' + p.best, nx, chao + 36); }
   }
 }
 function hubIdolsReage(p, i){   // pulinho + musiquinha (cada Idol num tom diferente)

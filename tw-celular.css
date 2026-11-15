@@ -323,10 +323,10 @@ body.tw-cel-kt #twPreviewHeaderSlot{display:none!important}   /* o logo do site 
 /* vitrine de Idols */
 .twc-idols{position:relative;padding:12px 0 8px;border-radius:22px;background:rgba(255,255,255,.7);border:2px solid #fff;box-shadow:0 3px 0 rgba(123,63,240,.12)}
 .twc-idols h2{margin:0 14px 8px;font:400 15px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
-.twc-idols-fila{display:flex;gap:10px;overflow-x:auto;padding:2px 14px 6px;scroll-snap-type:x proximity;scrollbar-width:none}
+.twc-idols-fila{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:7px 14px 8px;scroll-snap-type:x proximity;scrollbar-width:none}
 .twc-idols-fila::-webkit-scrollbar{display:none}
-.twc .twc-idol-b{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:66px;padding:0;border:0;background:none;color:var(--twc-ink)!important;text-decoration:none!important;scroll-snap-align:start}
-.twc-idol-b canvas{width:58px;height:58px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
+.twc .twc-idol-b{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:70px;min-height:0;overflow:visible;padding:0;border:0;background:none;color:var(--twc-ink)!important;text-decoration:none!important;scroll-snap-align:start}
+.twc-idol-b canvas{flex:none;width:58px;height:58px;margin:5px 0 0;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
 .twc-idol-b span{max-width:66px;font-size:11px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* telas embutidas (Mapa, Missões, Procurar, Novidades) */
 .twc-emb #twcEmbSlot>*{margin:0!important;width:100%!important;max-width:none!important;box-sizing:border-box}
@@ -342,3 +342,12 @@ body.tw-cel .tw-window-overlay>.panel.tw-window-surface{width:100%!important;max
   body.tw-cel .tw-window-overlay>.panel.tw-window-surface{max-height:none!important;border-radius:26px!important}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-idols{background:rgba(42,29,74,.7);border-color:#3d2a6b}
   :root:not([data-theme="light"]) .twc-emb .hubpainel,:root:not([data-theme="light"]) .twc-emb .hubnov{background:#2a1d4a!important;border-color:#3d2a6b!important}}
+
+/* abertura: a vitrine antiga com luzes, confete e lightsticks (o Tsu, a Lirika e o Pati desfilam na frente) */
+.twc-abre-vitrine{width:min(100%,560px);margin:4px 0 14px}
+.twc-abre-vitrine:empty{display:none}
+.twc-abre-vitrine .hubidols{margin:0!important;visibility:visible}
+.twc-abre-vitrine .hubidols #hubIdolsCv{display:block;width:100%;height:clamp(150px,24vh,200px)}
+/* TsuLiPa⭐TV! dentro do celular: entre as barras, maior e sem o véu escuro por cima de tudo */
+body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal{z-index:45;padding:calc(84px + env(safe-area-inset-top)) 14px calc(100px + env(safe-area-inset-bottom));background:rgba(123,63,240,.18)}
+body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,400px)}

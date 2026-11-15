@@ -80,8 +80,8 @@ test('rodada 2: Início enxuto, bolinhas do trio pelo próprio jogo e Álbum com
 });
 
 test('rodada 3: moldura nas janelas, boas-vindas do celular e modo escuro', () => {
-  assert.match(js, /querySelectorAll\('\.tw-window-overlay'\)/, 'a moldura vale para todas as janelas do jogo');
-  assert.match(js, /querySelector\('\.tw-window-close'\); if\(x\) x\.click\(\)/, 'Voltar fecha pelo ✕ da própria janela');
+  assert.match(js, /querySelectorAll\('\.tw-window-overlay[,']/, 'a moldura vale para todas as janelas do jogo');
+  assert.match(js, /querySelector\('\.tw-window-close,\.tw-rank-tv-close'\); if\(x\) x\.click\(\)/, 'Voltar fecha pelo ✕ da própria janela');
   assert.match(js, /var TUT_CHAVE = 'tw_cel_tut_v1'/);
   assert.ok(!/brs48cr_[a-z_]*tut/.test(js), 'marcador do tutorial não é chave de save');
   assert.match(css, /body\.tw-cel #hubTut\{display:none!important\}/);
@@ -103,4 +103,16 @@ test('rodada 5 (prints do iPhone): moldura em janelas criadas na hora, telas emb
   assert.match(vit, /class="lbn twc-idol-b" data-nick=/, 'tocar abre o perfil pelo mesmo caminho do site');
   assert.match(css, /\.twc \.twc-hublogo\{white-space:nowrap/);
   assert.match(css, /body\.tw-cel \.tw-window-overlay>\.panel\.tw-window-surface\{width:100%!important;max-width:760px!important;max-height:none!important/);
+});
+
+test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV na moldura e sem pedir a vitrine a cada redesenho', () => {
+  const hub = ler('hub.js');
+  assert.match(js, /'<div class="twc-abre-vitrine" id="twcAbreVitrine"><\/div>'/, 'a vitrine antiga entra na tela de abertura');
+  assert.match(js, /if\(v === 'abre'\) vitrineTrazer\(\);/);
+  assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
+  assert.match(hub, /hubIV\.L = trio\.concat\(/, 'o Tsu, a Lirika e o Pati desfilam juntos na frente da fila');
+  assert.match(hub, /if\(!p\.trio && !window\.TW_CELULAR_LIGADO\)\{[^}]*'★ ' \+ p\.best/, 'sem pontuação no visual de celular');
+  assert.match(js, /Date\.now\(\) - idolsPedido > 60e3/, 'não entra em laço pedindo a vitrine');
+  assert.match(js, /'\.tw-window-overlay,#twRankTvModal'/, 'a TsuLiPa⭐TV! ganha a moldura');
+  assert.match(css, /\.twc-idols-fila\{[^}]*padding:7px 14px 8px/, 'o anel da bolinha não corta');
 });

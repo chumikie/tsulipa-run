@@ -209,9 +209,13 @@
   }
 
   /* ---------- vitrine de Idols (quem joga), só rosto e nome; tocar abre o perfil (o mesmo .lbn do site) ---------- */
+  var idolsPedido = 0;
   function idols(){
     var L = (typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols)) ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : null;
-    if(!L){ if(typeof hubIdolsCarregar === 'function') try{ hubIdolsCarregar(); }catch(e){} return ''; }
+    if(!L){   // pede a vitrine no máximo uma vez por minuto (sem isso, cada redesenho pedia de novo)
+      if(typeof hubIdolsCarregar === 'function' && Date.now() - idolsPedido > 60e3){ idolsPedido = Date.now(); try{ hubIdolsCarregar(); }catch(e){} }
+      return '';
+    }
     if(!L.length) return '';
     return '<section class="twc-idols" aria-labelledby="twcIdolsT"><h2 id="twcIdolsT">' + esc(t('idols')) + '</h2><div class="twc-idols-fila">' + L.slice(0, 20).map(function(p, i){
       return '<button type="button" class="lbn twc-idol-b" data-nick="' + esc(p.nick) + '"><canvas data-idol="' + i + '" width="96" height="96" aria-hidden="true"></canvas><span translate="no">' + esc(p.nick) + '</span></button>';
@@ -357,6 +361,7 @@
     return '<div class="twc-abre">' + brilhos([[14, 18, 14], [82, 24, 12, 'l'], [24, 70, 10, 'r'], [76, 66, 14], [50, 12, 9, 'l']]) +
       (function(){ var lg = document.querySelector('#hub .hubin .hublogo'); return lg ? '<h1 class="hublogo twc-hublogo twc-logo-abre" translate="no" aria-label="TsuLiPa World">' + lg.innerHTML + '</h1>' : '<h1 class="twc-logo" translate="no">TsuLiPa<span>⭐</span>World</h1>'; })() +
       '<p class="hubsub twc-hubsub" lang="ja">ツリパ⭐ワールド</p>' +
+      '<div class="twc-abre-vitrine" id="twcAbreVitrine"></div>' +
       '<button type="button" class="twc-comecar" data-a="comecar"><i class="twc-varre" aria-hidden="true"></i><span>' + esc(tt('TOQUE PARA COMEÇAR')) + '</span></button></div>';
   }
   function barraBaixo(){
@@ -385,6 +390,36 @@
     if(k === 'nov') el.open = true;
     if(k === 'busca'){ var i = $id('hubBusca'); if(i) setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){} }, 80); }
   }
+  /* ---------- a vitrine antiga (luzes, confete, lightsticks) na tela de abertura, com o Tsu, a Lirika e o Pati desfilando juntos ---------- */
+  function vitrineDevolver(){
+    var box = $id('hubIdols'), cv = $id('hubCv');
+    if(!box || !cv || !cel || !cel.contains(box)) return;
+    cv.parentNode.insertBefore(box, cv.nextSibling);
+    if(typeof hubIV !== 'undefined') hubIV.cw = 0;
+  }
+  function vitrineTrazer(){
+    var box = $id('hubIdols'), slot = $id('twcAbreVitrine');
+    if(!box || !slot || box.parentNode === slot) return;
+    slot.appendChild(box); box.classList.add('mini');
+    if(typeof hubIV !== 'undefined') hubIV.cw = 0;
+    var L0 = typeof hubIV !== 'undefined' && hubIV.L && hubIV.L[0];
+    if(typeof hubIdolsUI === 'function' && (box.hidden || !(L0 && L0.trio))) try{ hubIdolsUI(); }catch(e){}
+    if(typeof hubIdolsLigar === 'function') try{ hubIdolsLigar(); }catch(e){}
+  }
+  // o Tsu, a Lirika e o Pati entram na fila da vitrine (só com o celular ligado); sem pontuação
+  window.twcTrioVitrine = function(){
+    if(!window.TW_CELULAR_LIGADO) return [];
+    return MEMBROS.map(function(m, i){ var av = membroAv(i); return av ? {nick:m[1], best:0, av:av, fase:i * .4, ex:+av.expr || 0, reage:-9, trio:true, cor:m[2]} : null; }).filter(Boolean);
+  };
+  if(typeof window.hubIdolsLugar === 'function' && !window.hubIdolsLugar.twc){
+    var lugarOrig = window.hubIdolsLugar;
+    window.hubIdolsLugar = function(){
+      var r = lugarOrig.apply(this, arguments);
+      if(cel && !classico && typeof hubComecou !== 'undefined' && !hubComecou) vitrineTrazer();
+      return r;
+    };
+    window.hubIdolsLugar.twc = true;
+  }
   function devolver(){
     if(!embAtual) return;
     var e = embAtual; embAtual = null;
@@ -403,6 +438,7 @@
     var rolagem = chave === ultimaTela ? tela.scrollTop : 0; ultimaTela = chave;
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
+    vitrineDevolver();
     var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
     tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
       (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
@@ -411,6 +447,7 @@
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
     avatares(); bolinhas(); idolsDesenhar(); if(v === 'album') cartasDesenhar(); if(v.indexOf('emb:') === 0) embutir(v.slice(4)); else devolver();
+    if(v === 'abre') vitrineTrazer();
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v === 'inicio') setTimeout(tutTalvez, 400);
   }
@@ -478,13 +515,14 @@
      Voltar fecha a janela pelo botão ✕ dela (o jogo cuida do resto, como sempre); Menu e Início voltam ao celular. */
   var mold = null, moldRaf = 0;
   function janelas(){
-    return [].slice.call(document.querySelectorAll('.tw-window-overlay')).filter(function(o){ return !o.hidden && o.getClientRects().length > 0; })
+    // a TsuLiPa⭐TV! também conta como janela (ganha a moldura e fecha pelo Voltar / Início)
+    return [].slice.call(document.querySelectorAll('.tw-window-overlay,#twRankTvModal')).filter(function(o){ return !o.hidden && o.getClientRects().length > 0; })
       .sort(function(a, b){ return (parseInt(getComputedStyle(a).zIndex, 10) || 0) - (parseInt(getComputedStyle(b).zIndex, 10) || 0); });
   }
   function fecharJanelas(){
     for(var n = 0; n < 6; n++){
       var j = janelas(), topoJ = j[j.length - 1]; if(!topoJ) return;
-      var x = topoJ.querySelector('.tw-window-close'); if(!x) return;
+      var x = topoJ.querySelector('.tw-window-close,.tw-rank-tv-close'); if(!x) return;
       x.click();
     }
   }
@@ -524,7 +562,7 @@
     var m = b.dataset.m;
     var ctx = contexto();
     if(m === 'voltar'){
-      if(ctx === 'janela'){ var j = janelas(), x = j[j.length - 1].querySelector('.tw-window-close'); if(x) x.click(); }
+      if(ctx === 'janela'){ var j = janelas(), x = j[j.length - 1].querySelector('.tw-window-close,.tw-rank-tv-close'); if(x) x.click(); }
       else sairDoJogo(ctx);
       som(); return;
     }
@@ -569,6 +607,7 @@
   function desligar(){
     try{ localStorage.removeItem(CHAVE); }catch(e){}
     window.TW_CELULAR_LIGADO = false; limparEndereco(); fecharFolha();
+    devolver(); vitrineDevolver();
     if(cel){ cel.remove(); cel = null; }
     if(mold){ mold.hidden = true; }
     document.body.classList.remove('tw-cel', 'tw-cel-classico', 'tw-cel-janela', 'tw-cel-cr', 'tw-cel-kt');

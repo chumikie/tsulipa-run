@@ -127,6 +127,12 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - Diamantinho: gira em cima do SEU Idol no mapa e no card de humor (verde, amarelo ou rosa, conforme a média).
   - Camarim VIP: aberto para todo mundo todo dia, sem dinheiro (é só cumprir o desejo do dia). É uma sala com tapete vermelho, espelho de lâmpadas e o trio; o botão "Foto VIP" baixa um Polaroid em PNG.
   - Nada disso mexe em estrelas, ranking ou Supabase.
+- Rodada 10 (15/11):
+  - Fichinhas do trio (tela `trio`, aberta pelo chip "♡ Fichinhas" do palco ou pelo atalho "TsuLiPa ♡" do Menu). Os dados vêm dos perfis oficiais em brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html, só com o que o blog informa e sem ano de nascimento. A tela tem o mapa de amizades: unit TsuLiPa e Gekokujou, dupla NeByura (Tsu + Pati) e os pets Chu, Koali e Pucchi.
+  - Abertura animada: 3 camadas em parallax (seguem o dedo, o mouse e a inclinação quando o navegador deixa) e o trio de corpo inteiro flutuando. Tela de carregamento só logo depois de abrir a página (mínimo de 0,9 s e máximo de 4 s). "Reduzir movimento" deixa tudo parado.
+  - TsuPhone: novo app "Humor" (barrinhas, desejo, série, recados do trio, prêmios e a foto VIP salva em JPEG pequeno, `brs48cr_vip_foto_v1`). Ao cumprir o desejo, um membro do trio manda um recado (o Tsu e o Pati no masculino, a Lirika no feminino).
+  - Camarim: prêmios desenhados sem imagem nova (`petPremiosDesejo`): troféu na estante com 3 dias seguidos, lâmpadas VIP no espelho com 7 dias seguidos e tapete vermelho depois da foto VIP. `pet-sala.js?v=3`.
+  - Tour de camarim (visitar o camarim de outros Idols e deixar coração): **precisa de RPC nova no Supabase, esperando o OK do dono**.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

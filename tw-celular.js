@@ -118,11 +118,12 @@
     check:'<path d="M5 12l4 4 10-10"/>', seta:'<path d="M9 6l6 6-6 6"/>', mais:'<path d="M12 6v12M6 12h12"/>',
     voltar:'<path d="M9 7L4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 0 10h-2"/>', menu:'<path d="M5 8h14M5 12h14M5 16h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
     casa:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/>', cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
-    estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>'
+    estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    trio:'<circle cx="12" cy="7" r="3.2"/><circle cx="6" cy="15" r="3.2"/><circle cx="18" cy="15" r="3.2"/><path d="M9.6 9.4L7.8 12.3M14.4 9.4l1.8 2.9M9.2 15h5.6"/>'
   };
   function ico(k, tam){ return '<svg class="twc-ico" width="' + (tam || 28) + '" height="' + (tam || 28) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[k] || P.estrela) + '</svg>'; }
   var COR = {run:'roxo', karaoke:'rosa', sora:'azul', duo:'noite', cafe:'cafe', handshake:'rosa2', bloom:'verde', studio:'ceu', battle:'uva', pet:'uva', gacha:'rosa',
-             loja:'verde', perfil:'roxo', mapa:'ceu', news:'noite', album:'azul', todos:'lima', tv:'roxo'};
+             loja:'verde', perfil:'roxo', mapa:'ceu', news:'noite', album:'azul', todos:'lima', tv:'roxo', trio:'rosa'};
   // brilhinhos (posições fixas, decorativos)
   var BRILHO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 5.4 2.6 7.6 9 9-6.4 1.4-8.3 3.6-9 9-.7-5.4-2.6-7.6-9-9 6.4-1.4 8.3-3.6 9-9z"/></svg>';
   function brilhos(lista){ return lista.map(function(b, i){ return '<i class="twc-brilho twc-b' + (b[3] || 'w') + '" style="left:' + b[0] + '%;top:' + b[1] + '%;width:' + b[2] + 'px;height:' + b[2] + 'px;animation-delay:' + (i * .55).toFixed(2) + 's" aria-hidden="true">' + BRILHO + '</i>'; }).join(''); }
@@ -206,6 +207,7 @@
       '<h1 class="hublogo twc-hublogo" translate="no" aria-label="TsuLiPa World">' + (logo ? logo.innerHTML : 'TsuLiPa⭐World') + '</h1>' +
       (tema && !tema.hidden && tema.textContent ? '<p class="twc-tema">' + esc(tema.textContent) + '</p>' : '') +
       '<div class="twc-palco-moldura"><canvas id="twcPalcoCv" width="640" height="340" role="img" aria-label="' + esc(rot) + '"></canvas>' +
+      '<button type="button" class="twc-fichas-chip" data-v="trio">♡ ' + esc(tf('fichas')) + '</button>' +
       // quem passeia no mapa agora vira um selinho no canto do palco (com a bolinha do membro)
       '<button type="button" class="twc-selo" data-a="mapa">' + (v ? '<canvas class="twc-bola-mini" data-membro="' + v.k + '" width="64" height="64" aria-hidden="true"></canvas>' : '<i class="twc-vivo" aria-hidden="true"></i>') +
       '<span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 16) + '</button></div></section>';
@@ -305,7 +307,7 @@
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
     var at = [['missoes', t('mis'), 'data-a="missoes"'], ['perfil', tt('Meu Perfil'), 'data-ir="perfil"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
-              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
+              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
@@ -395,11 +397,44 @@
       '</div>';
   }
   function telaInicial(){   // antes do "Toque para começar" (libera o som do aparelho)
-    return '<div class="twc-abre">' + brilhos([[14, 18, 14], [82, 24, 12, 'l'], [24, 70, 10, 'r'], [76, 66, 14], [50, 12, 9, 'l']]) +
+    // abertura animada (ideia do site Loveez, arte nossa): 3 camadas em parallax + o trio flutuando em volta do logo
+    var px = '<div class="twc-px" aria-hidden="true"><i class="twc-px1"></i><i class="twc-px2"></i><i class="twc-px3"></i></div>' +
+      '<div class="twc-flutua" aria-hidden="true">' + [[0, 'twc-fl0'], [1, 'twc-fl1'], [2, 'twc-fl2']].map(function(f){ return '<canvas class="twc-fl ' + f[1] + '" data-idol="' + f[0] + '" width="208" height="224"></canvas>'; }).join('') + '</div>';
+    return '<div class="twc-abre">' + px + brilhos([[14, 18, 14], [82, 24, 12, 'l'], [24, 70, 10, 'r'], [76, 66, 14], [50, 12, 9, 'l']]) +
       (function(){ var lg = document.querySelector('#hub .hubin .hublogo'); return lg ? '<h1 class="hublogo twc-hublogo twc-logo-abre" translate="no" aria-label="TsuLiPa World">' + lg.innerHTML + '</h1>' : '<h1 class="twc-logo" translate="no">TsuLiPa<span>⭐</span>World</h1>'; })() +
       '<p class="hubsub twc-hubsub" lang="ja">ツリパ⭐ワールド</p>' +
       '<div class="twc-abre-vitrine" id="twcAbreVitrine"></div>' +
       '<button type="button" class="twc-comecar" data-a="comecar"><i class="twc-varre" aria-hidden="true"></i><span>' + esc(tt('TOQUE PARA COMEÇAR')) + '</span></button></div>';
+  }
+  // o trio de corpo inteiro nas camadas da abertura (o movimento é só CSS; "reduzir movimento" deixa parado)
+  function flutuantes(){
+    [].slice.call(cel.querySelectorAll('canvas[data-idol]')).forEach(function(cv){
+      var av = membroAv(+cv.getAttribute('data-idol')); if(!av || typeof perfDesenharIdol !== 'function') return;
+      var x = cv.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.scale(2, 2);
+      try{ perfDesenharIdol(x, 104, 112, av, false, false, 0); }catch(e){}
+    });
+  }
+  // parallax: o dedo/mouse (e a inclinação do aparelho, quando o navegador deixa) mexe as camadas de leve
+  function naAbre(){ return !!(cel && tela && tela.getAttribute('data-tela') === 'abre'); }
+  var pxRaf = 0, pxAlvo = [0, 0];
+  function pxMover(x, y){ pxAlvo = [Math.max(-1, Math.min(1, x)), Math.max(-1, Math.min(1, y))];
+    if(pxRaf || !cel) return; pxRaf = requestAnimationFrame(function(){ pxRaf = 0; if(!cel) return; cel.style.setProperty('--mx', pxAlvo[0].toFixed(3)); cel.style.setProperty('--my', pxAlvo[1].toFixed(3)); }); }
+  if(typeof window.addEventListener === 'function'){
+    window.addEventListener('pointermove', function(e){ if(naAbre()) pxMover(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1); }, {passive:true});
+    window.addEventListener('deviceorientation', function(e){ if(naAbre() && e.gamma != null) pxMover(e.gamma / 30, (e.beta - 45) / 30); }, {passive:true});
+  }
+  // tela de carregamento (só na primeira abertura da página): logo, o trio pulando e uma barrinha
+  function carregamento(){
+    if(carregamento.feito || !cel) return; carregamento.feito = true;
+    var ov = document.createElement('div'); ov.className = 'twc-carrega'; ov.setAttribute('role', 'status'); ov.setAttribute('aria-label', 'Loading');
+    ov.innerHTML = '<p class="twc-carrega-logo" translate="no">TsuLiPa<span>⭐</span>World</p><div class="twc-carrega-trio">' +
+      MEMBROS.map(function(m, k){ return '<canvas data-membro="' + k + '" width="96" height="96" style="--d:' + (k * .18) + 's"></canvas>'; }).join('') +
+      '</div><i class="twc-carrega-barra"><b></b></i>';
+    cel.appendChild(ov);
+    [].slice.call(ov.querySelectorAll('canvas[data-membro]')).forEach(function(cv){ var av = membroAv(+cv.getAttribute('data-membro')); try{ if(av && typeof perfFotoRedonda === 'function') perfFotoRedonda(cv, av, true); }catch(e){} });
+    var t0 = Date.now();
+    function pronto(){ return document.readyState === 'complete' && Date.now() - t0 > 900; }
+    (function espera(){ if(pronto() || Date.now() - t0 > 4000){ ov.classList.add('twc-carrega-fim'); setTimeout(function(){ ov.remove(); }, 450); } else setTimeout(espera, 120); })();
   }
   function barraBaixo(){
     var v = topo(), noMenu = v === 'menu' && !classico, raiz = pilha.length < 2 && !classico;
@@ -445,7 +480,9 @@
     clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
   }
   if(window.TW_HUMOR) window.TW_HUMOR.ouvir(function(tipo){
-    if(tipo === 'desejo'){ toast('👑 ' + window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou')); try{ if(typeof beep === 'function'){ beep(784, .08, 'triangle', .05); setTimeout(function(){ beep(1175, .12, 'triangle', .05); }, 110); } }catch(e){} }
+    if(tipo === 'desejo'){ var rq = window.TW_HUMOR.ultimoRecado();
+      toast('👑 ' + window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou') + (rq && logado() ? '\n' + window.TW_HUMOR.t('novoRecado', rq) : ''));
+      if(typeof petBg !== 'undefined') try{ petBg = null; }catch(e){} try{ if(typeof beep === 'function'){ beep(784, .08, 'triangle', .05); setTimeout(function(){ beep(1175, .12, 'triangle', .05); }, 110); } }catch(e){} }
     if(cel && !classico && topo() === 'inicio') agendaDesenho();
   });
   var desenhoPend = 0;
@@ -457,6 +494,11 @@
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
     x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
     try{ var a = document.createElement('a'); a.href = o.toDataURL('image/png'); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+    // guarda uma cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
+    try{ var mini = document.createElement('canvas'), k = 360 / W; mini.width = 360; mini.height = Math.round(Hh * k);
+      mini.getContext('2d').drawImage(o, 0, 0, mini.width, mini.height);
+      if(window.TW_HUMOR) window.TW_HUMOR.guardarFotoVip(mini.toDataURL('image/jpeg', .82)); }catch(e){}
+    if(typeof petBg !== 'undefined') try{ petBg = null; }catch(e){}
   }
 
   /* ---------- frases prontas (sem chat livre) ---------- */
@@ -558,6 +600,61 @@
     });
   }
 
+  /* ---------- Fichinhas do trio (dados do perfil oficial no blog do BRS48, Draft 1st Generation) + mapa de amizades ----------
+     Fonte: brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html. Só o que o blog informa (sem ano de nascimento). */
+  var FICHAS = [
+    {k:0, nome:'Miniwa Tsumiki', jp:'御庭つみき', apelido:'Tsu (つ)', aniv:'05/09', local:'Paraíba, Brasil', altura:'1,80 m', time:'Team S · Sub-Captain', cor:['#9b30d9', 'Violeta'],
+      pet:['🐈', 'Chu'], frase:'Oiê! Sou o Tsu, membro da primeira geração draft do BRS48!', blog:'https://brs48.blogspot.com/2021/08/tsu.html',
+      gostos:{pt:'Ouvir música, preparar frango de vários jeitos, pudim, BNK48 e AKB48',en:'Listening to music, cooking chicken many ways, pudding, BNK48 and AKB48',es:'Escuchar música, cocinar pollo de mil formas, flan, BNK48 y AKB48',id:'Dengar musik, masak ayam berbagai cara, puding, BNK48 dan AKB48',th:'ฟังเพลง ทำไก่หลายแบบ พุดดิ้ง BNK48 และ AKB48',ja:'音楽をきくこと、いろんなチキン料理、プリン、BNK48とAKB48'}},
+    {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#7cc400', 'Verde Limão'],
+      pet:['🐨', 'Koali'], frase:'Shiroma Lirika desu, yoroshiku onegaishima~su!', blog:'https://brs48.blogspot.com/2021/08/lirika.html',
+      gostos:{pt:'Verde, capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',en:'Green, capoeira, =LOVE (Youkoso! Ikorabu Numa) and IZ*ONE',es:'El verde, la capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',id:'Hijau, capoeira, =LOVE (Youkoso! Ikorabu Numa) dan IZ*ONE',th:'สีเขียว คาโปเอร่า =LOVE (Youkoso! Ikorabu Numa) และ IZ*ONE',ja:'みどり、カポエイラ、=LOVE（ようこそ！イコラブ沼）、IZ*ONE'}},
+    {k:2, nome:'Patiliri Kriyl', jp:'パチリリ・クリイル', apelido:'Pati (パチ)', aniv:'23/09', local:'São Paulo, Brasil', altura:'', time:'Team S', cor:['#4169e1', 'Azul Real'],
+      pet:['👑', 'Pucchi'], frase:'Conte com o Pati pra deixar seu dia mais feliz!! Beijinhos e Patchau!!', blog:'https://brs48.blogspot.com/2021/08/pati.html',
+      gostos:{pt:'Cantar, dançar e desenhar, criar looks, mahou shoujo e animes de idol',en:'Singing, dancing and drawing, putting looks together, magical girls and idol anime',es:'Cantar, bailar y dibujar, crear looks, mahou shoujo y animes de idols',id:'Menyanyi, menari, menggambar, bikin outfit, mahou shoujo dan anime idol',th:'ร้องเพลง เต้น วาดรูป จัดลุค มาโฮโชโจ และอนิเมะไอดอล',ja:'歌・ダンス・お絵かき、コーデづくり、魔法少女とアイドルアニメ'}}];
+  var TF = {
+    trio:{pt:'TsuLiPa',en:'TsuLiPa',es:'TsuLiPa',id:'TsuLiPa',th:'TsuLiPa',ja:'TsuLiPa'},
+    fichas:{pt:'Fichinhas',en:'Profiles',es:'Fichas',id:'Profil',th:'โปรไฟล์',ja:'プロフィール'},
+    trioSub:{pt:'Fichinhas do Tsu, da Lirika e do Pati',en:'Profiles of Tsu, Lirika and Pati',es:'Fichas de Tsu, Lirika y Pati',id:'Profil Tsu, Lirika, dan Pati',th:'โปรไฟล์ของ Tsu, Lirika และ Pati',ja:'Tsu・Lirika・Patiのプロフィール'},
+    aniv:{pt:'Aniversário',en:'Birthday',es:'Cumpleaños',id:'Ulang tahun',th:'วันเกิด',ja:'誕生日'},
+    local:{pt:'De',en:'From',es:'De',id:'Dari',th:'จาก',ja:'出身'},
+    altura:{pt:'Altura',en:'Height',es:'Altura',id:'Tinggi',th:'ส่วนสูง',ja:'身長'},
+    time:{pt:'Time',en:'Team',es:'Equipo',id:'Tim',th:'ทีม',ja:'チーム'},
+    geracao:{pt:'Geração',en:'Generation',es:'Generación',id:'Generasi',th:'รุ่น',ja:'期'},
+    cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
+    gosta:{pt:'Gosta de',en:'Likes',es:'Le gusta',id:'Suka',th:'ชอบ',ja:'すきなもの'},
+    pet:{pt:'Pet',en:'Pet',es:'Mascota',id:'Hewan',th:'สัตว์เลี้ยง',ja:'ペット'},
+    blog:{pt:'Perfil no blog oficial',en:'Profile on the official blog',es:'Perfil en el blog oficial',id:'Profil di blog resmi',th:'โปรไฟล์ในบล็อกทางการ',ja:'公式ブログのプロフィール'},
+    mapaAmigos:{pt:'Mapa de amizades',en:'Friendship map',es:'Mapa de amistades',id:'Peta pertemanan',th:'แผนผังมิตรภาพ',ja:'なかよしマップ'},
+    unitTrio:{pt:'unit TsuLiPa',en:'TsuLiPa unit',es:'unit TsuLiPa',id:'unit TsuLiPa',th:'ยูนิต TsuLiPa',ja:'ユニットTsuLiPa'},
+    dupla:{pt:'dupla NeByura',en:'NeByura duo',es:'dúo NeByura',id:'duo NeByura',th:'ดูโอ NeByura',ja:'デュオNeByura'},
+    gekoku:{pt:'Gekokujou',en:'Gekokujou',es:'Gekokujou',id:'Gekokujou',th:'Gekokujou',ja:'下剋上'}
+  };
+  function tf(k){ var d = TF[k]; return d ? (d[L()] || d.pt) : k; }
+  function telaTrio(){
+    var cards = FICHAS.map(function(f){
+      var m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
+      var lin = function(r, v){ return v ? '<div><dt>' + esc(tf(r)) + '</dt><dd>' + v + '</dd></div>' : ''; };
+      return '<article class="twc-ficha" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '"><header><canvas data-membro="' + f.k + '" width="120" height="120" aria-hidden="true"></canvas>' +
+        '<span><h2 id="twcF' + f.k + '">' + esc(m[1]) + ' <small lang="ja">' + esc(f.jp) + '</small></h2><b>' + esc(f.nome) + '</b></span></header>' +
+        '<dl>' + lin('aniv', esc(aniv)) + lin('local', esc(f.local)) + lin('altura', esc(f.altura)) + lin('time', esc(f.time)) + lin('geracao', 'Draft 1st Generation') +
+        lin('cor', '<i class="twc-ficha-cor" aria-hidden="true"></i>' + esc(f.cor[1])) + lin('pet', esc(f.pet[0] + ' ' + f.pet[1])) + lin('gosta', esc(f.gostos[L()] || f.gostos.pt)) + '</dl>' +
+        '<blockquote lang="pt">“' + esc(f.frase) + '”</blockquote><a class="twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
+    }).join('');
+    // mapa de amizades: o trio em triângulo (unit TsuLiPa e Gekokujou), a dupla NeByura (Tsu + Pati) e cada pet ao lado do seu Idol
+    var mapa = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2><div class="twc-amigos-c">' +
+      '<svg viewBox="0 0 320 260" aria-hidden="true"><g stroke-width="4" stroke-linecap="round" fill="none">' +
+        '<line x1="160" y1="58" x2="62" y2="200" stroke="#c9a7ff"/><line x1="160" y1="58" x2="258" y2="200" stroke="#c9a7ff"/><line x1="62" y1="200" x2="258" y2="200" stroke="#c9a7ff"/>' +
+        '<path d="M160 58 Q300 90 258 200" stroke="#ff6fb5" stroke-dasharray="2 9"/>' +
+        '<line x1="160" y1="58" x2="226" y2="22" stroke="#ffd0e8" stroke-width="3"/><line x1="62" y1="200" x2="18" y2="246" stroke="#ffd0e8" stroke-width="3"/><line x1="258" y1="200" x2="302" y2="246" stroke="#ffd0e8" stroke-width="3"/></g>' +
+        '<text x="160" y="150" text-anchor="middle" class="twc-amigos-t">♡ ' + esc(tf('unitTrio')) + '</text><text x="160" y="170" text-anchor="middle" class="twc-amigos-s">' + esc(tf('gekoku')) + '</text>' +
+        '<text x="314" y="104" text-anchor="end" class="twc-amigos-s twc-amigos-rosa">' + esc(tf('dupla')) + '</text></svg>' +
+      [[0, 50, 22], [1, 19, 77], [2, 81, 77]].map(function(p){ return '<span class="twc-amigo" style="left:' + p[1] + '%;top:' + p[2] + '%"><canvas data-membro="' + p[0] + '" width="96" height="96" aria-hidden="true"></canvas><b>' + esc(MEMBROS[p[0]][1]) + '</b></span>'; }).join('') +
+      [[0, 71, 8], [1, 6, 94], [2, 94, 94]].map(function(p){ var f = FICHAS[p[0]]; return '<span class="twc-amigo-pet" style="left:' + p[1] + '%;top:' + p[2] + '%" title="' + esc(f.pet[1]) + '">' + f.pet[0] + '<small>' + esc(f.pet[1]) + '</small></span>'; }).join('') +
+      '</div></section>';
+    return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio">' + mapa + '<div class="twc-fichas">' + cards + '</div></div>';
+  }
+
   /* ---------- Cantinho dos pais ---------- */
   function telaPais(){
     return faixa(esc(t2('pais')), t2('paisSub')) + '<div class="twc-pag twc-pais"><section class="twc-card"><ul>' +
@@ -652,12 +749,12 @@
     vitrineDevolver();
     var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
     tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
-      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'pais' ? telaPais() : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
+      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'pais' ? telaPais() : v === 'trio' ? telaTrio() : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
     avatares(); bolinhas(); idolsDesenhar(); if(v === 'album') cartasDesenhar(); if(v.indexOf('emb:') === 0) embutir(v.slice(4)); else devolver();
-    if(v === 'abre') vitrineTrazer();
+    if(v === 'abre'){ vitrineTrazer(); flutuantes(); if(typeof performance !== 'undefined' && performance.now() < 6000) carregamento(); }
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v.indexOf('dentro:') === 0) dentroLigar();
@@ -864,6 +961,7 @@
     });
     montar.tecla = true;
     desenhar();
+    if(naAbre() && typeof performance !== 'undefined' && performance.now() < 6000) carregamento();   // só logo depois de abrir a página
   }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
   ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){

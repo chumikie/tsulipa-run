@@ -413,6 +413,7 @@ function petMakeBg(){
 
   petDesenharJanela(x, petLuzFase());
   petDesenharAbajur(x, false);
+  petPremiosDesejo(x, ac);   // móveis ganhos cumprindo desejos do dia (tw-humor.js)
 
   // Arara de roupas com os figurinos nas cores do TsuLiPa
   x.strokeStyle = '#b9a3d6'; x.lineWidth = 3;
@@ -427,6 +428,30 @@ function petMakeBg(){
   x.fillStyle = 'rgba(255,255,255,.45)'; x.beginPath(); x.ellipse(PET_X, PET_FLOOR + 4, 46, 9, 0, 0, 7); x.fill();
   x.strokeStyle = ac; x.globalAlpha = .4; x.lineWidth = 2; x.stroke(); x.globalAlpha = 1;
   petBg = c; petBgOshi = OSHI; petBgFase = petLuzFase();
+}
+//←petPremiosDesejo
+// Prêmios do Desejo do dia no camarim (desenhados aqui, sem imagem nova): 3 dias seguidos = troféu na estante;
+// 7 dias = lâmpadas douradas de camarim VIP no espelho; foto no Camarim VIP = tapetinho vermelho.
+function petPremiosDesejo(x, ac){
+  var P = typeof window !== 'undefined' && window.TW_HUMOR && window.TW_HUMOR.premios ? window.TW_HUMOR.premios() : null; if(!P) return;
+  if(P.espelho){
+    for(var i = 0; i < 12; i++){ var t = i / 11, bx, by;
+      if(t < .5){ bx = 30 + t * 2 * 108; by = 40; } else { bx = 30 + (i % 2 ? 0 : 108); by = 46 + (t - .5) * 2 * 86; }
+      x.fillStyle = '#ffd23f'; x.beginPath(); x.arc(bx, by, 3.2, 0, 7); x.fill(); x.fillStyle = '#fff6c4'; x.beginPath(); x.arc(bx - .8, by - .8, 1.2, 0, 7); x.fill(); }
+  }
+  if(P.trofeu){
+    var dx = typeof petArrumoDx === 'function' ? petArrumoDx('estante') : 0;
+    x.save(); x.translate(dx, 0);
+    x.fillStyle = '#d4a017'; x.fillRect(196, 140, 8, 3); x.fillRect(199, 135, 2, 6);
+    x.fillStyle = '#ffd23f'; x.beginPath(); x.moveTo(193, 125); x.lineTo(207, 125); x.lineTo(204, 134); x.lineTo(196, 134); x.closePath(); x.fill();
+    x.strokeStyle = '#ffd23f'; x.lineWidth = 1.4; x.beginPath(); x.arc(193, 128, 3, Math.PI * .5, Math.PI * 1.5); x.moveTo(207, 125); x.arc(207, 128, 3, -Math.PI * .5, Math.PI * .5); x.stroke();
+    x.fillStyle = '#fff'; x.font = '6px sans-serif'; x.textAlign = 'center'; x.fillText('★', 200, 132);
+    x.restore();
+  }
+  if(P.tapete){
+    x.fillStyle = 'rgba(194,24,91,.85)'; x.beginPath(); x.moveTo(98, 220); x.lineTo(262, 220); x.lineTo(232, 184); x.lineTo(128, 184); x.closePath(); x.fill();
+    x.fillStyle = 'rgba(255,215,63,.8)'; x.fillRect(128, 184, 104, 2);
+  }
 }
 //←petLifeHit
 // Áreas pequenas e explícitas: o espelho fica acima do hitbox do Idol e
@@ -523,7 +548,7 @@ function petPhoneIcon(c, tipo){
     x.closePath();x.fillStyle=fill;x.fill();
   }
   var cor={agenda:['#ffe0f0','#ff6fb5'],chat:['#cbefff','#4169e1'],
-    fotos:['#e8d5ff','#9b30d9'],cartas:['#ffe4d6','#ff6fb5']}[tipo];
+    fotos:['#e8d5ff','#9b30d9'],cartas:['#ffe4d6','#ff6fb5'],humor:['#e6ffd9','#7be35a']}[tipo];
   if(!cor){x.restore();return;}
   var bg=x.createLinearGradient(6,5,57,60);
   bg.addColorStop(0,'#fff');bg.addColorStop(.53,cor[0]);bg.addColorStop(1,'#d7eaff');
@@ -549,6 +574,12 @@ function petPhoneIcon(c, tipo){
     star(4,-8,5,'#ffe16a');x.restore();
     star(48,16,8,'#ffcf48');
     x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.moveTo(48,5);x.lineTo(48,27);x.moveTo(37,16);x.lineTo(59,16);x.stroke();
+  }else if(tipo==='humor'){   // app Humor: diamantinho + barrinhas
+    var dc=(typeof window!=='undefined'&&window.TW_HUMOR&&window.TW_HUMOR.cor())||'#7be35a';
+    x.fillStyle=dc;x.strokeStyle='#5a4a7a';x.lineWidth=2;x.beginPath();x.moveTo(24,10);x.lineTo(34,27);x.lineTo(24,36);x.lineTo(14,27);x.closePath();x.fill();x.stroke();
+    x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.moveTo(24,10);x.lineTo(28,26);x.lineTo(24,26);x.closePath();x.fill();
+    [['#b6ff3b',22],['#ff6fb5',16],['#ffd23f',19],['#4169e1',13]].forEach(function(b,i){box(38,14+i*9,22,5,2.5,'#fff');box(38,14+i*9,b[1],5,2.5,b[0]);});
+    star(47,50,7,'#ffdf5f');
   }else if(tipo==='cartas'){
     x.save();x.translate(31,34);x.rotate(.08);
     box(-21,-14,42,29,5,'#fff','#e9a5c9',2);
@@ -1089,13 +1120,18 @@ function petPhoneRender(){
   if(petPhoneTela === 'home'){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneCapa" width="520" height="280" aria-hidden="true"></canvas>' +
       '<strong>✦ ' + escHtml(tr('Meu Idol')) + ' · ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
-      '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['cartas',nomes[3]]].map(function(a){
-        var novas = a[0] === 'cartas' ? petCartasNovas() : 0;
+      '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['cartas',nomes[3]]].concat(typeof window !== 'undefined' && window.TW_HUMOR ? [['humor', window.TW_HUMOR.t('app')]] : []).map(function(a){
+        var novas = a[0] === 'cartas' ? petCartasNovas() : a[0] === 'humor' ? window.TW_HUMOR.mensagensNovas() : 0;
         return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b>' +
           (novas ? '<i class="petphone-badge" aria-label="' + escHtml(tr('{n} cartas novas').split('{n}').join(novas)) + '">' + novas + '</i>' : '') + '</button>';
       }).join('') + '</div>';
     petPhoneCapaDesenhar();
     petPhoneIcones(corpo);
+    return;
+  }
+  if(petPhoneTela === 'humor' && typeof window !== 'undefined' && window.TW_HUMOR){   // app Humor (tw-humor.js): barrinhas, desejo, série, recados do trio e a foto VIP
+    corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>💎 ' + escHtml(window.TW_HUMOR.t('app')) + '</h2></header>' + window.TW_HUMOR.appHtml();
+    window.TW_HUMOR.mensagensLidas();
     return;
   }
   var idx = {agenda:0,chat:1,fotos:2,cartas:3}[petPhoneTela];
@@ -1130,7 +1166,7 @@ function petPhoneAbrir(tela){
   petLifePhoneOlhar = true;
   try{ petDrawRoom(); } finally { petLifePhoneOlhar = false; }
   if(tela === 'perfil') tela = 'cartas';   // a antiga tela Perfil virou Cartas (o Perfil abre por lá)
-  petPhoneTela = ['agenda','chat','fotos','cartas'].indexOf(tela) >= 0 ? tela : 'home';
+  petPhoneTela = ['agenda','chat','fotos','cartas'].concat(typeof window !== 'undefined' && window.TW_HUMOR ? ['humor'] : []).indexOf(tela) >= 0 ? tela : 'home';
   $('petPhone').hidden = false; petPhoneOpen = true;
   $('petPhoneHora').textContent = new Date().toLocaleTimeString(LANG === 'pt' ? 'pt-BR' : undefined,{hour:'2-digit',minute:'2-digit'});
   petPhoneMarca();
@@ -1172,7 +1208,7 @@ function petPhoneVoltar(){
 //←petPhoneTelaAbrir
 function petPhoneTelaAbrir(k){
   if(k === 'perfil') k = 'cartas';
-  if(!petPhoneOpen || ['agenda','chat','fotos','cartas'].indexOf(k) < 0) return false;
+  if(!petPhoneOpen || ['agenda','chat','fotos','cartas'].concat(typeof window !== 'undefined' && window.TW_HUMOR ? ['humor'] : []).indexOf(k) < 0) return false;
   if(k === 'chat') petPhoneChatConversa = '';
   if(k === 'cartas') petPhoneCartaAberta = '';
   if(k === 'fotos'){petPhoneFotosAba = 'camera';petPhoneMomentoSelecionado = '';}

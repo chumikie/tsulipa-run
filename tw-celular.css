@@ -453,7 +453,7 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc .twc-cad-vip{position:static;flex:none}
 @keyframes twcVipBrilha{50%{filter:brightness(1.12)}}
 .twc-folha-desejo{padding:10px;border-radius:14px;background:#fff4fb}
-.twc-toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:60;max-width:min(92vw,420px);padding:12px 18px;border-radius:18px;
+.twc-toast{white-space:pre-line;position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:60;max-width:min(92vw,420px);padding:12px 18px;border-radius:18px;
   background:linear-gradient(120deg,#7b3ff0,#ff6fb5);color:#fff;font:800 14px "M PLUS Rounded 1c",sans-serif;text-align:center;box-shadow:0 8px 24px rgba(70,30,140,.35);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .twc-toast-on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.twc-diam,.twc .twc-vip-on{animation:none}}
@@ -462,3 +462,68 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   :root:not([data-theme="light"]) .twc-desejo{background:linear-gradient(120deg,#3a1f4a,#2a1d4a);border-color:#5b3f99}
   :root:not([data-theme="light"]) .twc-desejo-ok{background:linear-gradient(120deg,#22401f,#3a1f4a);border-color:#7be35a}
   :root:not([data-theme="light"]) .twc-folha-desejo{background:#3a1f4a}}
+/* Fichinhas do trio + mapa de amizades (dados do blog oficial do BRS48) */
+.twc-fichas-chip{position:absolute;top:10px;right:10px;z-index:2;min-height:36px;padding:6px 12px;border:2px solid #fff;border-radius:99px;background:rgba(255,111,181,.92);color:#fff;font:800 12.5px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 3px 0 rgba(120,30,90,.25)}
+.twc-fichas-chip::after{content:"";position:absolute;inset:-6px}
+.twc-amigos{padding:14px;border-radius:24px;background:rgba(255,255,255,.86);border:2px solid #fff;box-shadow:0 4px 0 rgba(123,63,240,.12)}
+.twc-amigos h2,.twc-ficha h2{margin:0 0 8px;font:400 16px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
+.twc-amigos-c{position:relative;width:min(100%,360px);margin:0 auto;aspect-ratio:320/260}
+.twc-amigos-c svg{position:absolute;inset:0;width:100%;height:100%}
+.twc-amigos-t{font:400 13px 'Mochiy Pop One',sans-serif;fill:#7b3ff0}
+.twc-amigos-s{font:800 11px "M PLUS Rounded 1c",sans-serif;fill:#9a86c8}
+.twc-amigos-rosa{fill:#ff6fb5}
+.twc-amigo{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.twc-amigo canvas{width:64px;height:64px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
+.twc-amigo b{font:800 12px "M PLUS Rounded 1c",sans-serif;background:#fff;padding:1px 8px;border-radius:99px;color:#5b2bb5}
+.twc-amigo-pet{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;font-size:24px;line-height:1}
+.twc-amigo-pet small{font:800 10px "M PLUS Rounded 1c",sans-serif;color:#9a86c8}
+.twc-fichas{display:grid;gap:12px;margin-top:12px}
+@media (min-width:760px){.twc-fichas{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.twc-ficha{padding:14px;border-radius:24px;background:#fff;border:3px solid var(--fc);box-shadow:0 5px 0 color-mix(in srgb,var(--fc) 35%,transparent)}
+.twc-ficha header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.twc-ficha header canvas{flex:none;width:68px;height:68px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--fc)}
+.twc-ficha h2{margin:0;color:var(--fc)}
+.twc-ficha h2 small{font:700 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-ficha header span{flex:1;min-width:0;text-align:left}
+.twc-ficha header b{display:block;font-weight:800;font-size:13px}
+.twc-ficha dl{margin:0;display:grid;gap:5px}
+.twc-ficha dl div{display:grid;grid-template-columns:92px 1fr;gap:6px;font-size:13px;line-height:1.4}
+.twc-ficha dt{font-weight:800;color:var(--twc-sub)}
+.twc-ficha dd{margin:0;font-weight:700}
+.twc-ficha-cor{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--fc);margin-right:6px;vertical-align:-1px}
+.twc-ficha blockquote{margin:10px 0 8px;padding:8px 12px;border-radius:14px;background:color-mix(in srgb,var(--fc) 12%,#fff);font-weight:800;font-size:13px;line-height:1.45}
+.twc-ficha-blog{font-weight:800;font-size:12.5px;color:var(--fc)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-amigos{background:rgba(42,29,74,.8);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-ficha{background:#241a40}
+  :root:not([data-theme="light"]) .twc-ficha blockquote{background:color-mix(in srgb,var(--fc) 22%,#241a40)}}
+/* abertura animada: camadas em parallax (seguem o dedo/inclinação de leve) e o trio flutuando */
+.twc-abre{overflow:hidden;--mx:0;--my:0}
+.twc-px{position:absolute;inset:-40px;pointer-events:none;z-index:0}
+.twc-px i{position:absolute;inset:0;background-repeat:repeat}
+.twc-px1{background-image:radial-gradient(circle,rgba(201,179,255,.55) 1.6px,transparent 2px);background-size:46px 46px;transform:translate(calc(var(--mx) * -8px),calc(var(--my) * -8px));animation:twcDeriva 40s linear infinite}
+.twc-px2{background-image:radial-gradient(circle,rgba(255,179,217,.6) 3px,transparent 3.6px),radial-gradient(circle,rgba(182,255,59,.45) 2px,transparent 2.6px);background-size:120px 140px,90px 110px;background-position:0 0,40px 60px;
+  transform:translate(calc(var(--mx) * -18px),calc(var(--my) * -18px));animation:twcDeriva 26s linear infinite reverse}
+.twc-px3{background-image:radial-gradient(ellipse 60px 26px at 50% 50%,rgba(255,255,255,.75),transparent 70%);background-size:260px 220px;background-position:30px 80px;
+  transform:translate(calc(var(--mx) * -32px),calc(var(--my) * -32px));animation:twcNuvem 50s linear infinite}
+@keyframes twcDeriva{to{background-position:46px 92px,160px 280px}}
+@keyframes twcNuvem{to{background-position:290px 80px}}
+.twc-abre>*:not(.twc-px):not(.twc-flutua){position:relative;z-index:2}
+.twc-flutua{position:absolute;inset:0;pointer-events:none;z-index:1}
+.twc-fl{position:absolute;width:clamp(74px,22vw,120px);height:auto;filter:drop-shadow(0 8px 10px rgba(80,40,150,.22))}
+.twc-fl0{left:3%;top:9%;--fx:calc(var(--mx) * 22px);--fy:calc(var(--my) * 22px);animation:twcFlutua 5.2s ease-in-out infinite}
+.twc-fl1{right:3%;top:15%;--fx:calc(var(--mx) * 14px);--fy:calc(var(--my) * 14px);animation:twcFlutua 6s ease-in-out -2s infinite}
+.twc-fl2{left:50%;margin-left:-34px;top:1%;width:clamp(58px,16vw,90px);--fx:calc(var(--mx) * 28px);--fy:calc(var(--my) * 28px);animation:twcFlutua 5.6s ease-in-out -1s infinite}
+@keyframes twcFlutua{0%,100%{transform:translate(var(--fx),var(--fy)) translateY(0) rotate(-3deg)}50%{transform:translate(var(--fx),var(--fy)) translateY(-14px) rotate(3deg)}}
+/* tela de carregamento */
+.twc-carrega{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(160deg,#f7f0ff,#ffe3f1 60%,#e6f2ff);transition:opacity .45s}
+.twc-carrega-fim{opacity:0;pointer-events:none}
+.twc-carrega-logo{margin:0;font:400 clamp(28px,8vw,44px) 'Mochiy Pop One',sans-serif;color:#7b3ff0;white-space:nowrap}
+.twc-carrega-logo span{color:#ffd23f}
+.twc-carrega-trio{display:flex;gap:10px}
+.twc-carrega-trio canvas{width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff;animation:twcPula .9s ease-in-out var(--d) infinite}
+@keyframes twcPula{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px)}}
+.twc-carrega-barra{display:block;width:min(60vw,240px);height:10px;border-radius:99px;background:#fff;overflow:hidden;box-shadow:inset 0 0 0 2px #e2ccff}
+.twc-carrega-barra b{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,#7b3ff0,#ff6fb5,#b6ff3b);animation:twcCarrega 1.1s ease-in-out infinite}
+@keyframes twcCarrega{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){.twc-px i,.twc-fl,.twc-carrega-trio canvas,.twc-carrega-barra b{animation:none!important}.twc-px i{transform:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-carrega{background:linear-gradient(160deg,#1c1433,#2a1540 60%,#14203a)}}

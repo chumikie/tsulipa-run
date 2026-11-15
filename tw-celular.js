@@ -273,6 +273,50 @@
 
   /* ---------- Início: palco, um destaque e os apps ---------- */
   function pendencias(){ return [].slice.call(document.querySelectorAll('#hubCards .hubcard')).filter(alerta); }
+  /* ---------- Tela inicial limpa (pedido do Pati): o palco e poucas "portas" grandes; cada porta abre o seu cantinho ---------- */
+  var TP = {
+    jogosSub:{pt:'Todos os jogos',en:'All games',es:'Todos los juegos',id:'Semua game',th:'เกมทั้งหมด',ja:'ぜんぶのゲーム'},
+    misPorta:{pt:'Missões',en:'Missions',es:'Misiones',id:'Misi',th:'ภารกิจ',ja:'ミッション'},
+    misSub:{pt:'Do dia, fãs e Teams',en:'Daily, fans and Teams',es:'Del día, fans y Teams',id:'Harian, fans, dan Teams',th:'รายวัน แฟน และทีม',ja:'デイリー・ファン・チーム'},
+    mapaSub:{pt:'Passeie e diga oi',en:'Stroll and say hi',es:'Pasea y saluda',id:'Jalan-jalan dan menyapa',th:'เดินเล่นและทักทาย',ja:'おさんぽしてあいさつ'},
+    newsSub:{pt:'Fotos, quadrinhos e Top',en:'Photos, comics and Top',es:'Fotos, cómics y Top',id:'Foto, komik, dan Top',th:'รูป การ์ตูน และท็อป',ja:'写真・マンガ・ランキング'},
+    camarim:{pt:'Camarim',en:'Dressing room',es:'Camerino',id:'Ruang ganti',th:'ห้องแต่งตัว',ja:'楽屋'},
+    camarimSub:{pt:'Seu pet e a decoração',en:'Your pet and decor',es:'Tu mascota y la decoración',id:'Hewan dan dekorasi',th:'สัตว์เลี้ยงและการตกแต่ง',ja:'ペットとインテリア'},
+    folhaMis:{pt:'O que você quer fazer?',en:'What do you want to do?',es:'¿Qué quieres hacer?',id:'Mau ngapain?',th:'อยากทำอะไร?',ja:'なにをする？'},
+    misDia:{pt:'Missões do dia',en:'Daily missions',es:'Misiones del día',id:'Misi harian',th:'ภารกิจประจำวัน',ja:'デイリーミッション'},
+    misDiaSub:{pt:'Ganhe estrelas hoje',en:'Earn stars today',es:'Gana estrellas hoy',id:'Dapat bintang hari ini',th:'รับดาวได้วันนี้',ja:'今日スターをもらおう'},
+    fa:{pt:'Pedido de fã',en:'Fan request',es:'Pedido de fan',id:'Permintaan fans',th:'คำขอจากแฟน',ja:'ファンのおねがい'},
+    faSub:{pt:'Um fã pediu algo pra você',en:'A fan asked you for something',es:'Un fan te pidió algo',id:'Ada fans yang minta sesuatu',th:'แฟนขออะไรบางอย่าง',ja:'ファンからのおねがい'},
+    meta:{pt:'Meta dos Teams',en:'Teams goal',es:'Meta de los Teams',id:'Target Teams',th:'เป้าหมายทีม',ja:'チーム目標'},
+    metaSub:{pt:'Jogue junto com o seu Team',en:'Play together with your Team',es:'Juega junto con tu Team',id:'Main bareng Team-mu',th:'เล่นร่วมกับทีมของคุณ',ja:'チームといっしょにプレイ'}
+  };
+  function tp(k){ var d = TP[k]; return d ? (d[L()] || d.pt) : k; }
+  function porta(k, ico2, tit, sub, attrs, cor, c){
+    return '<button type="button" class="twc-porta twc-porta-' + k + '" ' + attrs + '><span class="twc-porta-ico twc-g-' + cor + '">' + ico(ico2, 34) + badge(c) + '</span>' +
+      '<span class="twc-porta-txt"><b>' + esc(tit) + '</b><small>' + esc(sub) + '</small></span>' + brilhos([[84, 16, 9, 'l']]) + '</button>';
+  }
+  function portas(){
+    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
+    var feitas = mis ? mis.filter(function(m){ return m.feito; }).length : 0;
+    var C = window.TW_CAL, dn = C ? C.diaN(C.hoje()) : 0, pet = card('pet');
+    var nj = 0; try{ nj = jogosNaTela().length; }catch(e){}
+    return '<section class="twc-portas" aria-label="' + esc(t('menu')) + '">' +
+      porta('jogos', 'run', t('jogos'), nj ? nj + ' · ' + tp('jogosSub') : tp('jogosSub'), 'data-v="jogos"', 'rosa') +
+      porta('missoes', 'missoes', tp('misPorta'), mis && mis.length ? feitas + '/' + mis.length + ' · ' + tp('misSub') : tp('misSub'), 'data-a="portaMis"', 'lima', !!(mis && feitas < mis.length)) +
+      porta('mapa', 'mapa', t('mapa'), tp('mapaSub'), 'data-a="mapa"', 'azul') +
+      porta('news', 'news', 'Idol⭐News!', tp('newsSub'), 'data-a="news"', 'roxo') +
+      porta('camarim', 'pata', tp('camarim'), tp('camarimSub'), 'data-ir="pet"', 'rosa', pet) +
+      porta('cal', 'cal', tc('cal'), dn >= 1 ? tc('diaN', dn) : tc('calSub'), 'data-v="cal"', 'sol') + '</section>';
+  }
+  function folhaMissoes(){
+    folha.innerHTML = '<div class="twc-folha-caixa twc-folha-portas" role="dialog" aria-modal="true" aria-labelledby="twcMisT"><span class="twc-folha-ico twc-g-lima">' + ico('missoes', 28) + '</span>' +
+      '<h2 id="twcMisT">' + esc(tp('folhaMis')) + '</h2>' +
+      [['misDia', 'missoes', 'lima', 'misDia'], ['fa', 'coracao', 'rosa', 'fa'], ['meta', 'trio', 'azul', 'meta']].map(function(o){
+        return '<button type="button" class="twc-folha-op" data-f="' + o[3] + '"><span class="twc-linha-ico twc-g-' + o[2] + '">' + ico(o[1], 20) + '</span><span><b>' + esc(tp(o[0])) + '</b><small>' + esc(tp(o[0] + 'Sub')) + '</small></span>' + ico('seta', 16) + '</button>';
+      }).join('') + '<button type="button" class="twc-btn twc-btn-claro" data-f="fechar">' + esc(t('agoraNao')) + '</button></div>';
+    folha.hidden = false;
+  }
+
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -287,7 +331,7 @@
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
     return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + destaque + calHojeHtml() + humorHtml() + '<section class="twc-apps" aria-label="' + esc(t('jogos')) + '">' + grade + '</section>' + idols() + '</div></div>';
+      '<div class="twc-lado">' + destaque + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -313,7 +357,7 @@
     if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
-    var at = [['missoes', t('mis'), 'data-a="missoes"'], ['perfil', tt('Meu Perfil'), 'data-ir="perfil"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
+    var at = [['missoes', t('mis'), 'data-a="missoes"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
               ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['cal', tc('cal'), 'data-v="cal"'], ['pata', tt2('tour'), 'data-v="tour"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
@@ -325,7 +369,8 @@
       '<section class="twc-card twc-hoje" aria-labelledby="twcHojeT"><div class="twc-card-cab"><h2 id="twcHojeT">' + esc(t('hoje')) + '</h2>' +
         (mis && mis.length ? '<span class="twc-prog"><span class="twc-barra" aria-hidden="true"><i style="width:' + pc + '%"></i></span><small>' + feitas + '/' + mis.length + '</small></span>' : '') + '</div>' +
         linhas.join('') + '</section></div>' +
-      '<div class="twc-banners">' + bs.join('') + '</div>' +
+      calHojeHtml() + humorHtml() +
+      '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
         return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + badge(c) + cadeado(a[0]) + '</button>';
@@ -1142,6 +1187,7 @@
     if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
     if(a === 'vipFoto'){ vipFoto(); return; }
+    if(a === 'portaMis'){ som(); folhaMissoes(); return; }
     if(a === 'vip'){
       if(window.TW_HUMOR && window.TW_HUMOR.vipHoje()){ ir('dentro:vip'); return; }
       var dz = window.TW_HUMOR ? window.TW_HUMOR.desejo() : null;
@@ -1168,6 +1214,9 @@
       if(f === 'tutPular'){ tutFim(); return; }
       if(f === 'manutTentar'){ fecharFolha(); falhas = 0; manutVista = false; if(typeof hubIdolsCarregar === 'function') try{ hubIdolsEm = 0; hubIdolsCarregar(); }catch(e){} if(window.TW_PRESENCA) window.TW_PRESENCA.atualizar(); return; }
       if(f === 'manutRun'){ fecharFolha(); abrirCard('run'); return; }
+      if(f === 'misDia'){ fecharFolha(); acao('missoes'); return; }
+      if(f === 'fa'){ fecharFolha(); if(!logado()){ pedirLogin(tp('fa')); return; } if(typeof faAbrir === 'function') faAbrir(); return; }
+      if(f === 'meta'){ fecharFolha(); if(typeof window.jornalAbrir === 'function') window.jornalAbrir('comunidade'); return; }
       if(f === 'desejoIr'){ var evd = b.dataset.ev; fecharFolha(); desejoIr(evd); return; }
       fecharFolha(); if(f === 'entrar' && typeof contaEntrar === 'function') contaEntrar(); return; }
     if(b.dataset.n){ var n = b.dataset.n; if(n === 'voltar') voltar(); else if(n === 'inicio') inicio(); else if(topo() === 'menu' && !classico) voltar(); else ir('menu'); return; }

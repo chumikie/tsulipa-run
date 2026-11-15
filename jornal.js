@@ -636,8 +636,8 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
     return d;
   });
 }
-function jornalAbrir(){
-  jornalAba = 'vida'; jornalAtividadeCarregada = false;
+function jornalAbrir(aba){
+  jornalAba = aba === 'comunidade' ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();

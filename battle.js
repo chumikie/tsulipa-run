@@ -458,7 +458,7 @@ function agitar(){
  if(b<0||b>=batidas())return;
  if(d<.14&&!ritmo.pegas[b]){ritmo.pegas[b]=d<.07?2:1;ritmo.n++;ritmo.combo=(ritmo.combo||0)+1;ritmo.festa.push({t:t,b:ritmo.pegas[b]});
    try{if(typeof twJogoSom==='function')twJogoSom('toque');}catch(e){}
-   ritmo.cor+=ritmo.pegas[b];
+   ritmo.cor+=ritmo.pegas[b];ritmo.ultCor=t;
    var ri=Math.min(2,Math.floor(t/DUR)),cd=cardDe(unit[ri]);
    if(ritmo.combo>=3&&!ritmo.sk[ri]&&cd){var hb=habilidade(cd),ganho=5+(hb===ri?3:0);
      ritmo.sk[ri]={t:t,h:hb,g:ganho,match:hb===ri};ritmo.skN++;ritmo.cor+=ganho;
@@ -473,19 +473,43 @@ function ritmoDesenhar(x,t){
  medidor(x,cx,cy,34,cb?(cb%10)/10||1:0,['#ffd23f','#b6ff3b','#4dd8ff','#ff6fb5'][Math.floor(cb/10)%4],String(cb),trB('combo'));
  x.save();x.strokeStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,'+(.9-perto).toFixed(2)+')';x.lineWidth=4;
  x.beginPath();x.arc(cx,cy,42+(1-fase2)*22,0,Math.PI*2);x.stroke();   // anel que fecha na batida
- // contador de corações da torcida (ao lado do Combo)
- x.save();x.font=fonte(16);var ct='♥ '+(ritmo.cor||0),cw=x.measureText(ct).width+24;var hx0=Math.max(48,cw/2+8),hy0=SH-34;rrect(x,hx0-cw/2,hy0-15,cw,30,15);x.fillStyle='rgba(255,255,255,.95)';x.fill();
- x.fillStyle='#ff4f9a';x.textAlign='center';x.textBaseline='middle';x.fillText(ct,hx0,hy0+1);x.font=fonte(10);x.textBaseline='alphabetic';contorno(x,trB('coracoes'),Math.max(64,hx0),hy0-22,'#fff');x.restore();
- // habilidade disparada: a carta da vez brilha, faixa com o nome e uma chuva de corações saindo dela
- [0,1,2].forEach(function(ri){var k=ritmo.sk[ri];if(!k)return;var u=(t-k.t)/1.4;if(u<0||u>1)return;
-   var hx=SW/2+(ri-1)*96,hy=SH-60,cor=COR[k.h];
-   x.save();x.globalAlpha=Math.min(1,(1-u)*3);x.strokeStyle=cor;x.lineWidth=6;x.shadowColor=cor;x.shadowBlur=22;rrect(x,hx-36,hy-62,72,98,10);x.stroke();x.restore();
-   for(var q=0;q<10;q++){var an=-Math.PI/2+(q-4.5)*.22,dd=20+u*150;coracao(x,hx+Math.cos(an)*dd,hy-40+Math.sin(an)*dd,6+(q%3)*2,q%2?cor:'#ff6fb5',1-u);}
-   var e2=Math.min(1,u/.15),sc=.6+.4*(1-Math.pow(1-e2,3));
-   x.save();x.globalAlpha=Math.min(1,(1-u)*3);x.translate(SW/2,300);x.scale(sc,sc);
-   var g=x.createLinearGradient(-170,0,170,0);g.addColorStop(0,cor);g.addColorStop(1,'#7b3ff0');rrect(x,-170,-30,340,60,30);x.fillStyle=g;x.fill();x.strokeStyle='#fff';x.lineWidth=4;x.stroke();
-   x.textAlign='center';x.font=fonte(13);contorno(x,trB('skill')+' '+(k.match?'· '+trB('skMatch'):''),0,-8,'#fff3a8');
-   x.font=fonte(20);contorno(x,'✦ '+trB('sk'+k.h)+'  +'+k.g+' ♥',0,18,'#fff');x.restore();});
+ // contador de corações da torcida: medalha no mesmo acabamento dos medidores (aro branco, fundo escuro, coração com brilho)
+ x.save();var hv=ritmo.cor||0,hx0=62,hy0=SH-38,pul=ritmo.ultCor&&t-ritmo.ultCor<.25?1+(.25-(t-ritmo.ultCor))*.8:1;
+ x.font=fonte(17);var cw=Math.max(70,x.measureText(String(hv)).width+58);
+ x.shadowColor='rgba(20,5,50,.45)';x.shadowBlur=8;x.shadowOffsetY=3;rrect(x,hx0-cw/2,hy0-17,cw,34,17);x.fillStyle='#fff';x.fill();x.shadowBlur=0;x.shadowOffsetY=0;
+ rrect(x,hx0-cw/2+4,hy0-13,cw-8,26,13);var gp=x.createLinearGradient(0,hy0-13,0,hy0+13);gp.addColorStop(0,'#3b2470');gp.addColorStop(1,'#2b1d4a');x.fillStyle=gp;x.fill();
+ x.save();x.translate(hx0-cw/2+19,hy0+1);x.scale(pul,pul);coracao(x,0,0,10,'#ff4f9a',1);x.restore();
+ x.textAlign='center';x.textBaseline='middle';x.fillStyle='#fff';x.fillText(String(hv),hx0+10,hy0+1);
+ x.font=fonte(10);x.textBaseline='alphabetic';contorno(x,trB('coracoes'),hx0,hy0-22,'#ffd6ec');x.restore();
+ // habilidade disparada: raios de luz, faixa brilhante com o nome, a carta da vez com reflexo passando e corações saindo dela
+ [0,1,2].forEach(function(ri){var k=ritmo.sk[ri];if(!k)return;var u=(t-k.t)/1.5;if(u<0||u>1)return;
+   var hx=SW/2+(ri-1)*96,hy=SH-44,cor=COR[k.h],al=Math.min(1,(1-u)*3.5,u*12),e2=Math.min(1,u/.14),sc=.55+.45*(1-Math.pow(1-e2,3))+(e2>=1?Math.sin(Math.min(1,(u-.14)/.12)*Math.PI)*.06:0);
+   // carta: aura colorida + faixa de reflexo diagonal atravessando
+   x.save();x.globalAlpha=al;x.shadowColor=cor;x.shadowBlur=26;x.strokeStyle='#fff';x.lineWidth=4;rrect(x,hx-35,hy-48,70,96,10);x.stroke();
+   x.shadowBlur=0;x.strokeStyle=cor;x.lineWidth=3;rrect(x,hx-39,hy-52,78,104,12);x.stroke();
+   rrect(x,hx-32,hy-45,64,90,8);x.clip();var sw=-60+u*3*140;x.globalAlpha=al*.55;var gs=x.createLinearGradient(hx+sw-20,0,hx+sw+20,0);gs.addColorStop(0,'rgba(255,255,255,0)');gs.addColorStop(.5,'#fff');gs.addColorStop(1,'rgba(255,255,255,0)');
+   x.fillStyle=gs;x.beginPath();x.moveTo(hx+sw-20,hy+50);x.lineTo(hx+sw+10,hy-50);x.lineTo(hx+sw+30,hy-50);x.lineTo(hx+sw,hy+50);x.fill();x.restore();
+   for(var q=0;q<12;q++){var an=-Math.PI/2+(q-5.5)*.2,dd=24+u*170;coracao(x,hx+Math.cos(an)*dd,hy-46+Math.sin(an)*dd,6+(q%3)*2.5,q%3===0?'#fff3a8':q%2?cor:'#ff6fb5',Math.max(0,1-u*1.1));}
+   x.save();x.globalAlpha=al;x.translate(SW/2,300);
+   // raios girando atrás da faixa
+   x.save();x.rotate(t*.8);for(var r2=0;r2<12;r2++){x.rotate(Math.PI/6);var gr=x.createLinearGradient(0,0,0,-150);gr.addColorStop(0,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,0)');
+     x.fillStyle=gr;x.beginPath();x.moveTo(-9,0);x.lineTo(9,0);x.lineTo(26,-150);x.lineTo(-26,-150);x.closePath();x.fill();}x.restore();
+   x.scale(sc,sc);
+   // faixa: sombra, aro branco grosso, degradê da cor do card e brilho de vidro na metade de cima
+   x.shadowColor='rgba(30,10,70,.45)';x.shadowBlur=14;x.shadowOffsetY=5;rrect(x,-178,-36,356,72,36);x.fillStyle='#fff';x.fill();x.shadowBlur=0;x.shadowOffsetY=0;
+   rrect(x,-171,-29,342,58,29);var g=x.createLinearGradient(-171,0,171,0);g.addColorStop(0,cor);g.addColorStop(.55,'#9b30d9');g.addColorStop(1,'#7b3ff0');x.fillStyle=g;x.fill();
+   x.save();rrect(x,-171,-29,342,58,29);x.clip();var gl=x.createLinearGradient(0,-29,0,4);gl.addColorStop(0,'rgba(255,255,255,.55)');gl.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=gl;x.fillRect(-171,-29,342,30);
+     x.globalAlpha=.25;x.fillStyle='#fff';for(var d=0;d<7;d++){var dx=-171+((d*60+u*400)%400)-30;x.beginPath();x.moveTo(dx,29);x.lineTo(dx+14,29);x.lineTo(dx+44,-29);x.lineTo(dx+30,-29);x.fill();}x.restore();
+   // etiqueta "HABILIDADE!" em cima, como um selo
+   x.font=fonte(12);var et=trB('skill'),ew=x.measureText(et).width+26;rrect(x,-ew/2,-50,ew,24,12);x.fillStyle='#ffd23f';x.fill();x.strokeStyle='#fff';x.lineWidth=3;x.stroke();
+   x.fillStyle='#5a2d00';x.textAlign='center';x.textBaseline='middle';x.fillText(et,0,-37);
+   estrela(x,-150,-2,11,'#fff3a8');estrela(x,150,-2,11,'#fff3a8');
+   x.textBaseline='alphabetic';x.font=fonte(21);contorno(x,trB('sk'+k.h),-18,9,'#fff');
+   // +corações numa pastilha branca à direita
+   x.font=fonte(15);var pt='+'+k.g,pw=x.measureText(pt).width+34;rrect(x,98-pw/2,-14,pw,28,14);x.fillStyle='#fff';x.fill();
+   coracao(x,98-pw/2+13,1,7,'#ff4f9a',1);x.fillStyle='#ff4f9a';x.textAlign='left';x.textBaseline='middle';x.fillText(pt,98-pw/2+23,1);
+   if(k.match){x.font=fonte(11);x.textAlign='center';x.textBaseline='alphabetic';contorno(x,trB('skMatch'),0,-60,'#fff3a8');}
+   x.restore();});
  ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // corações e lightsticks que sobem a cada acerto
    for(var k=0;k<(f.b===2?7:4);k++){var px=60+((k*97+Math.round(f.t*50))%(SW-120)),py=SH-150-u*140-(k%3)*8;
      if(k%2)coracao(x,px,py,8,['#ff6fb5','#ffd23f'][k%4>1?1:0],1-u);

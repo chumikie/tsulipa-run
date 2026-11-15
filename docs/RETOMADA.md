@@ -64,6 +64,8 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 ### Também na #94 (15/11)
 - **Mapa:** gatinho malhado (Galeria do Brilho) e de smoking (Star Stage) com coleira, piscando, dormindo à noite e soltando corações ao toque; passarinhos e borboletas redesenhados; peixinhos koi na fonte da Praça.
 - **Mapa, mais vida:** cachorrinho shiba na Star Arena e coelhinho na Vila das Tulipas (atrás dos Idols, tocáveis, dormem à noite); gatos, cachorrinho e coelhinho reagem quando o seu Idol passa perto (`meuIdolPerto`, usa as posições do quadro anterior, nada é salvo).
+- **Mapa, mais bichinhos:** pombinho na Praça (anda, cisca, bate as asas) e ovelhinha de nuvem no Jardim das Nuvens (quica soltando nuvens); agora toda rua tem um bichinho de chão que reage ao seu Idol.
+- **Backstage⭐Pet!:** o Idol no quarto mostra o rosto do charmaker (olhos, sobrancelha, boca) e sorri "^^" de vez em quando; antes ficava sempre "^^" quando o pet estava feliz.
 - **Indonésio:** chaves novas (Montar visual, Favoritos, Tema…) em `translations/id/TW_DICT.json`; depois de mexer, rode `node translations/id/build-preview-catalog.cjs` e suba `preview-data.js?v=`.
 - **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
 
@@ -78,9 +80,8 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
 
 ### Ideias na fila (escolha do dono)
-- Prêmio de verdade para os lightsticks do Battle (mexe no servidor: precisa de OK).
-- Backstage⭐Pet! combinando com o visual novo do Idol.
-- Dois sob demanda (último jogo que baixa na abertura; o código dele está espalhado no `index.html`).
+- **Prêmio dos lightsticks do Battle — proposta pronta, NÃO aplicada:** `supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`. ★2 uma vez por dia para 9 de 12 batidas no show de uma batalha real dos últimos 10 min. Limite: a nota vem do aparelho (por isso o prêmio é pequeno). Precisa do OK do dono; depois, ligar no `battle.js` e no `demo.js` (passos no topo do arquivo).
+- Dois sob demanda: **avaliado e deixado** (15/11). Sairiam ~40 KB (~12 KB comprimido) do `duo.js`, `duo-pedido.js` e do bloco no `index.html`, mas o bloco acrescenta traduções e troca `perfPoseAtras` (desenho de pose de todo o site), e loja, câmera, login e Perfil usam partes do Dois na abertura. Ganho pequeno para o risco.
 
 ### Armadilhas conhecidas
 - `hub-polish.css`: depois do marcador "Mapa Vivo⭐" não pode ter `display:none`, `transform:scale`, `touch-action`, `animation:` nem `transition:` (teste `mapa-mobile-leitura`).

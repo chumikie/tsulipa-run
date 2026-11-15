@@ -754,3 +754,11 @@ body.tw-cel .twc .twc-vip-boas .twc-vip-ola{display:block;width:100%;min-height:
 body.tw-cel .twc .twc-vip-boas small{display:block;color:var(--osh-sub);font-size:12px;line-height:1.45}
 @media (max-width:359px){body.tw-cel .twc .twc-vip-boas{padding:10px}body.tw-cel .twc .twc-vip-boas p{font-size:13px}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas{background:var(--osh-night-paper);border-color:var(--osh-night-line)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas p{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas small{color:var(--osh-night-sub)}}
+
+/* A8.4-B — escolha de pose local, sem modificar o canvas nem o download. */
+body.tw-cel .twc .twc-vip-poses{display:flex;flex-wrap:wrap;gap:8px;min-width:0;margin:12px 0 0;padding:10px;border:1px solid var(--osh-line);border-radius:16px;background:var(--osh-paper)}
+body.tw-cel .twc .twc-vip-poses legend{padding:0 6px;font-size:13px;font-weight:800;color:var(--osh-ink)}
+body.tw-cel .twc .twc-vip-pose{flex:1 1 100px;min-height:44px;padding:8px 10px;border:2px solid var(--osh-line);border-radius:13px;background:var(--osh-paper);color:var(--osh-ink);font:700 13px/1.35 "M PLUS Rounded 1c",sans-serif;cursor:pointer}
+body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 12%,var(--osh-paper));box-shadow:inset 0 0 0 1px var(--twc-f1)}
+body.tw-cel .twc .twc-vip-pose:focus-visible{outline:3px solid var(--twc-f1);outline-offset:2px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses,:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose{background:var(--osh-night-paper);border-color:var(--osh-night-line);color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses legend{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 20%,var(--osh-night-paper))}}

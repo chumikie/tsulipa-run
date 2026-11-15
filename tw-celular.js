@@ -71,6 +71,9 @@
     vipFechado:{pt:'Cumpra o desejo do dia para entrar',en:"Grant today's wish to get in",es:'Cumple el deseo del día para entrar',id:'Penuhi keinginan hari ini untuk masuk',th:'ทำความปรารถนาวันนี้ให้สำเร็จเพื่อเข้า',ja:'きょうのおねがいをかなえると入れます'},
     vipComo:{pt:'O Camarim VIP abre para todo mundo, todo dia: é só cumprir o desejo do dia do seu Idol. Lá dentro, o TsuLiPa tira uma foto com você!',en:"The VIP Dressing Room opens for everyone, every day: just grant your Idol's wish of the day. Inside, TsuLiPa takes a photo with you!",es:'El Camerino VIP abre para todos, todos los días: solo cumple el deseo del día de tu Idol. ¡Adentro, TsuLiPa se toma una foto contigo!',id:'Ruang Rias VIP terbuka untuk semua orang setiap hari: cukup penuhi keinginan Idol-mu hari ini. Di dalam, TsuLiPa foto bareng kamu!',th:'ห้อง VIP เปิดให้ทุกคนทุกวัน แค่ทำความปรารถนาประจำวันของไอดอลให้สำเร็จ ข้างในมี TsuLiPa รอถ่ายรูปกับคุณ!',ja:'VIP楽屋はだれでも毎日入れます。アイドルの「きょうのおねがい」をかなえるだけ。中でTsuLiPaがいっしょに写真をとってくれるよ！'},
     vipGanhou:{pt:'Passe VIP liberado!',en:'VIP pass unlocked!',es:'¡Pase VIP liberado!',id:'Tiket VIP terbuka!',th:'ปลดล็อกบัตร VIP แล้ว!',ja:'VIPパスゲット！'},
+    vipRecepcao:{pt:'O trio preparou um cantinho especial para receber você. Cumprimente cada Idol ou toque no palco para ver as reações!',en:'The trio prepared a special welcome for you. Greet an Idol or tap the stage to see their reactions!',es:'¡El trío preparó una bienvenida especial! Saluda a un Idol o toca el escenario para ver sus reacciones.',id:'Trio menyiapkan sambutan spesial! Sapa Idol atau sentuh panggung untuk melihat reaksinya.',th:'ทั้งสามคนเตรียมต้อนรับคุณเป็นพิเศษ! ทักทายไอดอลหรือแตะเวทีเพื่อดูปฏิกิริยา',ja:'3人があなたをお出迎え！アイドルにあいさつするか、ステージをタップしてみてね。'},
+    vipCumprimentar:{pt:'Cumprimentar o trio',en:'Greet the trio',es:'Saludar al trío',id:'Sapa trio',th:'ทักทายทั้งสามคน',ja:'3人にあいさつ'},
+    vipDica:{pt:'Toque nos Idols para descobrir suas reações. A foto é uma lembrança voluntária.',en:'Tap the Idols to see their reactions. The photo is an optional keepsake.',es:'Toca a los Idols para ver sus reacciones. La foto es un recuerdo opcional.',id:'Sentuh Idol untuk melihat reaksinya. Foto adalah kenang-kenangan opsional.',th:'แตะไอดอลเพื่อดูปฏิกิริยา การถ่ายรูปเป็นทางเลือก',ja:'アイドルをタップすると反応するよ。写真は自由に保存できる思い出だよ。'},
     vipFoto:{pt:'Foto VIP (PNG)',en:'VIP photo (PNG)',es:'Foto VIP (PNG)',id:'Foto VIP (PNG)',th:'รูป VIP (PNG)',ja:'VIP写真（PNG）'},
     treino:{pt:'Treino',en:'Practice',es:'Práctica',id:'Latihan',th:'ฝึกซ้อม',ja:'練習'},
     legCad:{pt:'pede conta para abrir',en:'needs an account',es:'necesita cuenta',id:'perlu akun',th:'ต้องมีบัญชี',ja:'アカウントが必要'},
@@ -565,7 +568,7 @@
     var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto"><span class="twc-btn-ic" aria-hidden="true">' + ico('studio', 20) + '</span>' + esc(t2('vipFoto')) + '</button>'
       : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
     return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
-      botao + frasesHtml() + '</div>';
+      (id === 'vip' ? '<section class="twc-vip-boas" aria-label="' + esc(t2('vip')) + '"><p>' + esc(t2('vipRecepcao')) + '</p><button type="button" class="twc-btn twc-btn-claro twc-vip-ola" data-a="vipOla">' + esc(t2('vipCumprimentar')) + '</button><small>' + esc(t2('vipDica')) + '</small></section>' : '') + botao + frasesHtml() + '</div>';
   }
   var dentroRaf = 0;
   function dentroLigar(){ if(!dentroRaf) dentroRaf = requestAnimationFrame(dentroQuadro); }
@@ -1186,6 +1189,13 @@
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
     if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
+    if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas
+      if(topo() === 'dentro:vip' && dentroUltimos.length){
+        var membrosVip = dentroUltimos.filter(function(g){ return g.membro >= 0; });
+        if(membrosVip.length){ var escolhido = membrosVip[Math.floor(Date.now() / 2500) % membrosVip.length]; dentroReage = {k:escolhido.k,t0:Date.now()}; som(); }
+      }
+      return;
+    }
     if(a === 'vipFoto'){ vipFoto(); return; }
     if(a === 'portaMis'){ som(); folhaMissoes(); return; }
     if(a === 'vip'){

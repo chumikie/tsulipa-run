@@ -119,7 +119,7 @@
   /* ---------- estado ---------- */
   var cel, tela, nav, folha, pilha = ['inicio'], classico = false, sairPend = 0, ultimaTela = '';
   function topo(){ return pilha[pilha.length - 1]; }
-  function rankNome(){ try{ return (typeof RANKS !== 'undefined' && typeof rankOf === 'function') ? RANKS[rankOf(+best || 0)][1] : ''; }catch(e){ return ''; } }
+  function rankNome(){ try{ return (typeof RANKS !== 'undefined' && typeof rankOf === 'function') ? tt(RANKS[rankOf(+best || 0)][1]) : ''; }catch(e){ return ''; } }   // "Audição" → "Audition"...
   function nick(){ return logado() ? (contaJ.nick || contaJ.nome || '') : t('vis'); }
   function estrelas(){ var n = +(typeof starT !== 'undefined' ? starT : 0) || 0; try{ return n.toLocaleString(); }catch(e){ return String(n); } }
   function recorde(){ var n = +(typeof best !== 'undefined' ? best : 0) || 0; try{ return n.toLocaleString(); }catch(e){ return String(n); } }

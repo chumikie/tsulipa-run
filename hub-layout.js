@@ -11,7 +11,7 @@
   function esc(s){return typeof escHtml==='function'?escHtml(String(s)):String(s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';});}
   function hub(){return document.getElementById('hub');}
   function card(k){var c=document.getElementById('hubCards');return c&&c.querySelector('[data-ir="'+k+'"]');}
-  function rankNome(){try{return (typeof RANKS!=='undefined'&&typeof rankOf==='function')?RANKS[rankOf(+best||0)][1]:'';}catch(e){return '';}}
+  function rankNome(){try{var n=(typeof RANKS!=='undefined'&&typeof rankOf==='function')?RANKS[rankOf(+best||0)][1]:'';return n&&typeof tr==='function'?tr(n):n;}catch(e){return '';}}
 
   /* 1) barra fixa com você */
   function hudUI(){

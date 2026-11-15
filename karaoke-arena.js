@@ -54,9 +54,9 @@
     return on;
   }
   /* HUD no formato de Live (inspirado no Link! Like!): arco de progresso com estrelas, placar,
-     e medidores redondos de Precisão, Voltagem (o combo) e Progresso. Só lê o estado do show. */
-  var TX = {pt:['PRECISÃO','VOLTAGEM','MÚSICA','Pausado'], en:['ACCURACY','VOLTAGE','SONG','Paused'], es:['PRECISIÓN','VOLTAJE','CANCIÓN','En pausa'],
-            id:['AKURASI','VOLTASE','LAGU','Jeda'], th:['ความแม่น','โวลเทจ','เพลง','หยุดชั่วคราว'], ja:['せいかく','ボルテージ','きょく','一時停止']};
+     e medidores redondos de Precisão, Combo e Progresso. Só lê o estado do show. */
+  var TX = {pt:['PRECISÃO','COMBO','MÚSICA','Pausado'], en:['ACCURACY','COMBO','SONG','Paused'], es:['PRECISIÓN','COMBO','CANCIÓN','En pausa'],
+            id:['AKURASI','KOMBO','LAGU','Jeda'], th:['ความแม่น','คอมโบ','เพลง','หยุดชั่วคราว'], ja:['せいかく','コンボ','きょく','一時停止']};
   function tx(i){ var l = typeof root.LANG === 'string' && TX[root.LANG] ? root.LANG : 'pt'; return TX[l][i]; }
   function estrela(x, cx, cy, r, cor){ x.beginPath(); for(var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * .45 : r; x.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); } x.closePath(); x.fillStyle = cor; x.fill(); }
   function coracao(x, cx, cy, r, cor, a){
@@ -96,7 +96,7 @@
     x.textBaseline = 'alphabetic'; x.font = '800 11px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = 'rgba(255,255,255,.92)';
     x.fillText('♪ ' + s.title, meio, by + 54, Math.min(W - 24, g.lw * 4));
     x.restore();
-    // medidores embaixo: Precisão · Voltagem (combo, enche a cada 10 e muda de cor) · Música (quanto já tocou)
+    // medidores embaixo: Precisão · Combo (enche a cada 10 e muda de cor) · Música (quanto já tocou)
     var my = H - Math.max(40, Math.min(58, H * .065)), rad = Math.max(22, Math.min(30, H * .034)), dx = Math.min(g.lw * 1.4, 140);
     var nivel = Math.floor((s.combo || 0) / 10), cores = ['#ff9bd0', '#8cc8ff', '#8fe3b4', '#ffd36e'];
     medidor(x, W / 2 - dx, my, rad * .85, (s.acc || 0) / 100, '#8cc8ff', (s.acc || 0) + '%', tx(0));
@@ -154,13 +154,7 @@
       var uu = 1 - (s.feedbackUntil - now) / 520;
       for(var c = 0; c < 5; c++) coracao(x, g.left + g.lw * (.5 + (c * 0.83) % 4), g.target - pad - uu * (90 + c * 18), 8 + c % 3 * 2, ['#ff9bd0', '#ffd36e', '#8cc8ff'][c % 3], 1 - uu);
     }
-    if(s.combo >= 3){
-      var cy = g.top + (g.target - g.top) * .34;
-      x.save(); x.globalAlpha = .85; x.font = '900 ' + (s.combo >= 20 ? 44 : 36) + 'px "M PLUS Rounded 1c",sans-serif';
-      x.fillStyle = 'rgba(255,255,255,.9)'; x.strokeStyle = 'rgba(123,63,240,.5)'; x.lineWidth = 5;
-      x.strokeText(String(s.combo), W / 2, cy); x.fillText(String(s.combo), W / 2, cy);
-      x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillText('COMBO', W / 2, cy + 18); x.restore();
-    }
+    // O combo mora no medidor redondo de baixo (não repete no meio da pista).
     // Contagem, pausa e retomada no centro.
     if(now < s.start || s.paused){
       x.fillStyle = 'rgba(18,8,44,.45)'; x.fillRect(0, 0, W, H); x.fillStyle = '#fff';

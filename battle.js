@@ -44,8 +44,8 @@ var ranking=null;                       // Top da Arena (só aparece se o servid
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
 var modo='dia',arena=null,alvo=null,msgOk=false; // v2: Arena dos Idols (units salvas); alvo = unit desafiada
-var T_LIVE={pt:['BRILHO','Voltagem'],en:['SHINE','Voltage'],es:['BRILLO','Voltaje'],id:['KILAU','Voltase'],th:['ประกาย','โวลเทจ'],ja:['キラキラ','ボルテージ']};
-Object.keys(T_LIVE).forEach(function(l){if(!T[l])return;T[l].brilho=T_LIVE[l][0];T[l].voltagem=T_LIVE[l][1];});
+var T_LIVE={pt:['BRILHO','Combo'],en:['SHINE','Combo'],es:['BRILLO','Combo'],id:['KILAU','Combo'],th:['ประกาย','คอมโบ'],ja:['キラキラ','コンボ']};
+Object.keys(T_LIVE).forEach(function(l){if(!T[l])return;T[l].brilho=T_LIVE[l][0];T[l].combo=T_LIVE[l][1];});
 function lang(){return typeof LANG==='string'&&T[LANG]?LANG:'pt';}
 // Lightsticks no ritmo (só diversão local durante o show; o placar é sempre o do servidor).
 var T_RITMO={pt:['📣 Agitar lightstick','Lightsticks no ritmo: {n}/{t}','A plateia foi à loucura!','Boa torcida!','Toque na batida do anel na próxima vez!'],
@@ -444,16 +444,16 @@ function agitar(){
  if(fase!=='show'||!ritmo)return;
  var t=agora()-showT0,b=Math.round((t-BAT0)/BATIDA),d=Math.abs(t-(BAT0+b*BATIDA));
  if(b<0||b>=batidas())return;
- if(d<.14&&!ritmo.pegas[b]){ritmo.pegas[b]=d<.07?2:1;ritmo.n++;ritmo.festa.push({t:t,b:ritmo.pegas[b]});
+ if(d<.14&&!ritmo.pegas[b]){ritmo.pegas[b]=d<.07?2:1;ritmo.n++;ritmo.combo=(ritmo.combo||0)+1;ritmo.festa.push({t:t,b:ritmo.pegas[b]});
    try{if(typeof twJogoSom==='function')twJogoSom('toque');}catch(e){}}
- else ritmo.erros++;
+ else{ritmo.erros++;ritmo.combo=0;}
  var bt=ov&&ov.querySelector('[data-battle="agitar"]');if(bt){bt.classList.remove('pulsa');void bt.offsetWidth;bt.classList.add('pulsa');}
 }
 function ritmoDesenhar(x,t){
  if(!ritmo)return;
- // Voltagem: o anel que fecha na batida fica no centro, e o número é quantas vezes a torcida acertou o ritmo
- var fase2=((t-BAT0)%BATIDA+BATIDA)%BATIDA/BATIDA,perto=Math.min(fase2,1-fase2),cx=SW/2,cy=SH-118,tot=batidas();
- medidor(x,cx,cy,34,ritmo.n/tot,'#ffd23f',String(ritmo.n),trB('voltagem'));
+ // Combo: o anel que fecha na batida fica no centro, e o número é quantos acertos seguidos no ritmo (errar a batida zera)
+ var fase2=((t-BAT0)%BATIDA+BATIDA)%BATIDA/BATIDA,perto=Math.min(fase2,1-fase2),cx=SW/2,cy=SH-118,cb=ritmo.combo||0;
+ medidor(x,cx,cy,34,cb?(cb%10)/10||1:0,['#ffd23f','#b6ff3b','#4dd8ff','#ff6fb5'][Math.floor(cb/10)%4],String(cb),trB('combo'));
  x.save();x.strokeStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,'+(.9-perto).toFixed(2)+')';x.lineWidth=4;
  x.beginPath();x.arc(cx,cy,42+(1-fase2)*22,0,Math.PI*2);x.stroke();   // anel que fecha na batida
  ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // corações e lightsticks que sobem a cada acerto
@@ -503,7 +503,7 @@ function fimDoShow(){
 /* Palco no formato de Live (inspirado no Link! Like!, com desenho próprio do TsuLiPa):
    arco de progresso com estrelas no topo, placar de Brilho, cenário de salão com telão, guirlanda de flores
    e chão de madeira, a unit inteira no palco, o card de quem se apresenta entrando pela lateral,
-   medidores redondos (você · Voltagem da torcida · rival) e a "mão" com os 3 cards da unit.
+   medidores redondos (você · Combo da torcida · rival) e a "mão" com os 3 cards da unit.
    Tudo só ENCENA o resultado que já veio do servidor: nada aqui decide ponto ou prêmio. */
 var ARCO={cx:SW/2,cy:700,r:680};
 function arcoAng(p){var a0=Math.acos((SW/2-40)/ARCO.r);return Math.PI+a0+(Math.PI-2*a0)*p;}   // p 0→1 da esquerda para a direita
@@ -681,7 +681,7 @@ function desenharPalco(t){
      x.globalAlpha=1-ef/.9;x.fillStyle=k2%3===0?'#b6ff3b':k2%3===1?'#fff3a8':'#ff6fb5';
      x.beginPath();x.arc(wx+Math.cos(an)*rr,320+Math.sin(an)*rr*.7,3.4*(1-ef/.9)+1.2,0,Math.PI*2);x.fill();}x.restore();}
  }
- // medidores: os seus pontos da rodada · Voltagem (a torcida no ritmo) · os pontos do rival
+ // medidores: os seus pontos da rodada · Combo (a torcida no ritmo) · os pontos do rival
  var maxR=Math.max(1,Number(r.eu||0),Number(r.eles||0));
  medidor(x,58,SH-118,30,Number(r.eu||0)*conta/maxR,'#ff6fb5',String(Math.round(Number(r.eu||0)*conta)),trB('my'));
  medidor(x,SW-58,SH-118,30,Number(r.eles||0)*conta/maxR,'#4dd8ff',String(Math.round(Number(r.eles||0)*conta)),trB('other'));

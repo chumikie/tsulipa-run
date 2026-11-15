@@ -87,6 +87,31 @@ function jnT1Disponivel(i,agora){
   var ep=JN_T1.episodios[i];
   return !!(JN_T1_PUBLICADA && ep && ep.pronto && ep.data <= jnT1HojeBrasilia(agora));
 }
+/* A8 — roteiro e arte do episódio piloto. Não conectado ao leitor público. */
+var JN_T1_PILOTO = {"id":"convite-misterioso","title":{"pt":"O Convite Misterioso","en":"The Mysterious Invitation","es":"La invitación misteriosa","id":"Undangan Misterius","th":"คำเชิญปริศนา","ja":"謎の招待状"},"panels":[["basico",[[0,"tchau"]],{"pt":"Uma carta lilás aparece debaixo da porta do camarim.","en":"A lilac envelope slips under the dressing-room door.","es":"Un sobre lila aparece bajo la puerta del camerino.","id":"Amplop ungu muda muncul di bawah pintu ruang ganti.","th":"ซองจดหมายสีม่วงอ่อนโผล่มาใต้ประตูห้องแต่งตัว","ja":"楽屋のドアの下に薄紫の封筒が届いた。"},[[0,{"pt":"Gente... alguém pediu uma apresentação secreta?","en":"Guys... did someone request a secret show?","es":"Oigan... ¿alguien pidió una actuación secreta?","id":"Teman-teman... ada yang meminta pertunjukan rahasia?","th":"ทุกคน... มีใครขอการแสดงลับเหรอ?","ja":"ねえ…誰かが秘密のライブを頼んだの？"}]]],["basico",[[1,"coracao"],[2,"v"]],{"pt":"No envelope, apenas uma estrela desenhada à mão.","en":"Inside is only a hand-drawn star.","es":"Dentro solo hay una estrella dibujada a mano.","id":"Di dalamnya hanya ada bintang yang digambar tangan.","th":"ข้างในมีเพียงรูปดาวที่วาดด้วยมือ","ja":"中には手描きの星がひとつだけ。"},[[1,{"pt":"Não tem assinatura. Mas esse desenho parece familiar.","en":"No signature. But that drawing looks familiar.","es":"No tiene firma. Pero ese dibujo me resulta familiar.","id":"Tidak ada tanda tangan. Tapi gambar ini terasa familier.","th":"ไม่มีลายเซ็น แต่รูปนี้ดูคุ้นจัง","ja":"差出人はないけど、この絵、見覚えがある。"}],[2,{"pt":"Será um mapa do tesouro?","en":"Could it be a treasure map?","es":"¿Será un mapa del tesoro?","id":"Jangan-jangan peta harta karun?","th":"หรือว่าจะเป็นแผนที่สมบัติ?","ja":"宝の地図だったりして？"}]]],["noite",[[0,"v"],[1,"tchau"],[2,"coracao"]],{"pt":"Atrás da carta há três palavras: 'Onde tudo começou'.","en":"On the back: three words — 'Where it all began'.","es":"Al dorso: tres palabras — «Donde todo comenzó».","id":"Di belakangnya tertulis: 'Tempat semuanya bermula'.","th":"ด้านหลังเขียนว่า 'จุดที่ทุกอย่างเริ่มต้น'","ja":"裏には「すべてが始まった場所」とある。"},[[0,{"pt":"Então precisamos lembrar do nosso primeiro ensaio!","en":"Then we need to remember our first rehearsal!","es":"¡Entonces recordemos nuestro primer ensayo!","id":"Kalau begitu, kita harus ingat latihan pertama kita!","th":"งั้นเราต้องนึกถึงการซ้อมครั้งแรก!","ja":"じゃあ、初めての練習を思い出そう！"}]]],["palco",[[2,"banzai"],[1,"mic"]],{"pt":"Pati corre até o palco vazio. Lirika percebe uma luz acesa.","en":"Pati runs to the empty stage. Lirika spots a light still on.","es":"Pati corre al escenario vacío. Lirika ve una luz encendida.","id":"Pati berlari ke panggung kosong. Lirika melihat lampu menyala.","th":"ปาติวิ่งไปยังเวทีว่าง ลิริกะเห็นไฟที่ยังเปิดอยู่","ja":"パティは誰もいないステージへ。リリカは灯りに気づく。"},[[2,{"pt":"Se for uma surpresa, eu quero estar na primeira fila!","en":"If it's a surprise, I want a front-row seat!","es":"¡Si es una sorpresa, quiero estar en primera fila!","id":"Kalau ini kejutan, aku mau duduk paling depan!","th":"ถ้าเป็นเซอร์ไพรส์ ฉันขอแถวหน้าเลย!","ja":"サプライズなら最前列がいい！"}],[1,{"pt":"Espera... tem outra carta ali.","en":"Wait... there's another envelope.","es":"Espera... hay otro sobre.","id":"Tunggu... ada amplop lain.","th":"เดี๋ยว... มีจดหมายอีกซอง","ja":"待って…もう一通あるよ。"}]]],["palco",[[0,"coracao"],[1,"v"],[2,"tchau"]],{"pt":"A segunda carta diz: 'Tragam uma lembrança. Segunda-feira nos vemos aqui.'","en":"The second note reads: 'Bring a memory. See you here on Monday.'","es":"La segunda nota dice: «Traigan un recuerdo. Nos vemos aquí el lunes».","id":"Surat kedua berbunyi: 'Bawa satu kenangan. Sampai jumpa di sini hari Senin.'","th":"จดหมายฉบับที่สองเขียนว่า 'นำความทรงจำมาด้วย แล้วพบกันที่นี่วันจันทร์'","ja":"二通目には「思い出を持って、月曜日にここで会おう」と。"},[[0,{"pt":"Combinado. Mas quem está preparando isso?","en":"Deal. But who's planning all this?","es":"De acuerdo. Pero ¿quién está preparando todo esto?","id":"Setuju. Tapi siapa yang merencanakan semua ini?","th":"ตกลง! แต่ใครเป็นคนเตรียมทั้งหมดนี้นะ?","ja":"約束だね。でも誰が準備してるんだろう？"}]]]]};
+function jnT1PilotoTexto(lang){
+  var idioma=/^(pt|en|es|id|th|ja)$/.test(lang)?lang:'pt';
+  return {titulo:JN_T1_PILOTO.title[idioma],quadros:JN_T1_PILOTO.panels.map(function(p,i){
+    return {numero:i+1,narracao:p[2][idioma],falas:p[3].map(function(f){return {personagem:['Tsu','Lirika','Pati'][f[0]],texto:f[1][idioma]};})};
+  })};
+}
+function jnT1PilotoDesenhar(canvas,indice){
+  // Reutiliza fundo, avatares oficiais e o renderer estático existente.
+  if(!canvas || indice<0 || indice>=JN_T1_PILOTO.panels.length) return false;
+  var p=JN_T1_PILOTO.panels[indice];
+  jnCapDesenhar(canvas,p);
+  return true;
+}
+function jnT1PilotoHtml(){
+  // Não chamar até a publicação editorial da temporada estar autorizada.
+  if(!jnT1Disponivel(0)) return '';
+  var t=jnT1PilotoTexto(jnCapL());
+  return '<section class="jn-t1" aria-label="'+escHtml(t.titulo)+'"><h4>'+escHtml(t.titulo)+'</h4>'+
+    t.quadros.map(function(q){
+      return '<figure><canvas width="480" height="320" role="img" aria-label="'+escHtml(q.narracao)+'"></canvas><figcaption><p>'+escHtml(q.narracao)+'</p>'+
+      q.falas.map(function(f){return '<p><strong>'+escHtml(f.personagem)+':</strong> '+escHtml(f.texto)+'</p>';}).join('')+'</figcaption></figure>';
+    }).join('')+'</section>';
+}
 var jnCapSel = -1;
 function jnCapL(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
 function jnCapT(o, n){ var s = o ? (o[jnCapL()] || o.pt) : ''; return n != null ? s.replace('{n}', n).replace('{d}', n) : s; }

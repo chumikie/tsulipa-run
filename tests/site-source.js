@@ -7,6 +7,6 @@ const MODULOS = ["centerrun.js", "centerrun-corrida.js", "pet.js", "perfil.js", 
 module.exports = function siteSource(){
   const root = path.join(__dirname, "..");
   return [fs.readFileSync(path.join(root, "index.html"), "utf8")]
-    .concat(MODULOS.map((f) => fs.readFileSync(path.join(root, f), "utf8"))).join("\n");
+    .concat(MODULOS.map((f) => f === "pet.js" ? require("./pet-fonte.js")() : fs.readFileSync(path.join(root, f), "utf8"))).join("\n");   // pet.js + pet-sala.js na ordem original
 };
 module.exports.MODULOS = MODULOS;

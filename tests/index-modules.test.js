@@ -17,7 +17,7 @@ const noIndex = new Set([...html.matchAll(/^function ([A-Za-z_$][\w$]*)\s*\(/gm)
 const iMain = html.indexOf("window.TW_JOGOS_SEM_LOGIN = false;");
 const MODULOS = [
   { js: "centerrun.js", css: "centerrun.css", tem: ["drawChar", "saveCu", "twCorridaCarregar", "twCorridaAoCarregar"], cssTem: [/\.cust \{/, /\.oshi-sel \{/] },
-  { js: "pet.js", css: "pet.css", tem: ["petOpenUI", "petPay", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
+  { js: "pet.js", css: "pet.css", tem: ["petSalaCarregar", "petDrawCustom", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
   { js: "duo.js", css: "duo.css", tem: ["duoAbrir", "duoRender", "duoComprar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] },
@@ -73,5 +73,24 @@ assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src
   const cr = fs.readFileSync(path.join(root, "centerrun.js"), "utf8");
   assert(/TW_CORRIDA_ARQ='\.\/centerrun-corrida\.js\?v=\d+'/.test(cr), "centerrun.js aponta a versão da corrida");
   console.log("✓ centerrun-corrida.js (" + decl.length + " declarações, sob demanda)");
+}
+// Sala do pet sob demanda (15/11/2026): pet-sala.js só declara, não repete nada e não carrega na abertura.
+{
+  const src = fs.readFileSync(path.join(root, "pet-sala.js"), "utf8");
+  const acessos = [], sandbox = new Proxy({}, {
+    has: (t, k) => typeof k === "string" && !(k in t) ? (acessos.push(k), false) : k in t,
+    get: (t, k) => t[k], set: (t, k, v) => { t[k] = v; return true; }, defineProperty: (t, k, d) => Reflect.defineProperty(t, k, d)
+  });
+  vm.runInContext(src, vm.createContext(sandbox), { filename: "pet-sala.js" });
+  assert.deepEqual(acessos.filter((k) => !["undefined", "NaN", "Infinity"].includes(k)), [], "pet-sala.js não executa nada ao carregar");
+  const decl = Object.keys(sandbox);
+  ["petOpenUI", "petPay", "petPhoneAbrir", "petLifeAbrir", "petAdopt", "petClose"].forEach((n) => assert(decl.includes(n), "pet-sala.js deve declarar " + n));
+  const dup = decl.filter((n) => noIndex.has(n) || vistos.has(n));
+  assert.deepEqual(dup, [], "declarações duplicadas da sala do pet: " + dup.join(", "));
+  assert(!/<script src="\.\/pet-sala\.js/.test(html), "a sala do pet não carrega na abertura");
+  const base = fs.readFileSync(path.join(root, "pet.js"), "utf8");
+  assert(/PET_SALA_ARQ='\.\/pet-sala\.js\?v=\d+'/.test(base), "pet.js aponta a versão da sala");
+  decl.forEach((n) => assert(base.includes("\n//→" + n), "pet.js marca o lugar de " + n));
+  console.log("✓ pet-sala.js (" + decl.length + " declarações, sob demanda)");
 }
 

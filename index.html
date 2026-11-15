@@ -398,7 +398,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=21"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=28"></script>
+<script src="./pet.js?v=29"></script>
 <script src="./perfil.js?v=18"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
@@ -1094,14 +1094,14 @@ petCv.addEventListener('pointermove', function(e){
   petArrumoMover((e.clientX - r.left) * 360 / r.width, (e.clientY - r.top) * 220 / r.height);
   e.preventDefault();
 });
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, petArrumoSoltar); });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, function(e){ return petArrumoSoltar.call(this, e); }); });
 
 // ---------- Abrir / fechar ----------
 
-$('petBtn').onclick = function(e){ e.preventDefault(); ac(); petOpenUI(); };
-$('petX').onclick = petClose;
+$('petBtn').onclick = function(e){ e.preventDefault(); ac(); petSalaCarregar().then(function(){ petOpenUI(); }).catch(function(){}); };   // a sala do pet baixa no primeiro toque
+$('petX').onclick = function(){ return petClose.apply(this, arguments); };
 $('petWindowClose').onclick = function(){ $('petX').click(); };
-$('petGo').onclick = petAdopt;
+$('petGo').onclick = function(){ return petAdopt.apply(this, arguments); };
 document.addEventListener('keydown', function(e){ if(petOpen && $('shr').hidden && e.code === 'Escape'){ if(petPhoneOpen) petPhoneVoltar(); else petClose(); } });
 $('petPhone').addEventListener('click', function(e){
   var b = e.target.closest('button[data-phone]'); if(!b || b.disabled) return;
@@ -2711,6 +2711,8 @@ petPhExprVal = function(padrao){   // "Auto": sorteia uma expressão por foto (a
   if(agora - phAutoT > 400){ var pool = [2, 3, 0, 2, 3, 2, 3, 1].concat([4, 5, 6].filter(function(n){ return lojaTem('expr_' + n); })); phAutoV = pool[Math.floor(Math.random() * pool.length)]; }
   phAutoT = agora; return phAutoV;
 };
+// a sala do pet chega depois (pet-sala.js): isto entra quando ela carregar
+petSalaAoCarregar(function(){
 petPhUI = function(){
   function grp(label, campo, lista, cur){
     return '<div><span>' + escHtml(tr(label)) + '</span>' + lista.map(function(o){
@@ -2721,6 +2723,7 @@ petPhUI = function(){
   }
   petPhBox.innerHTML = (petPhMode === 'share' ? '' : grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame)) + grp('Pose', 'pose', PET_PH_POSES, petPhPose) + grp('Expressão', 'expr', PET_PH_EXPRS, petPhExpr) + '<p class="perfmsg" id="phLojaMsg" hidden></p>';
 };
+});
 petPhBox.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-trava]'); if(!b) return;
   e.stopPropagation(); e.preventDefault();
@@ -2926,8 +2929,11 @@ if(typeof hubMontar === 'function'){ var encHubOrig = hubMontar; hubMontar = fun
 window.TW_I18N.rows.encounterLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 // ---------- Camarim aberto pela tela de início: aparece por cima dela e volta para ela ----------
+// a sala do pet chega depois (pet-sala.js): isto entra quando ela carregar
+petSalaAoCarregar(function(){
 if(typeof petClose === 'function'){ var petCloseOrig = petClose; petClose = function(){ var r = petCloseOrig.apply(this, arguments); if(petVeioHub){ petVeioHub = false; hubMostrar(); } return r; }; $('petX').onclick = petClose;
 $('petWindowClose').onclick = function(){ $('petX').click(); }; }
+});
 
 // o gacha e o Moon⭐Duo! tocam a música deles no lugar da música da tela de início
 var ovHubTocarOrig = hubMusicaTocar;
@@ -3445,7 +3451,7 @@ applyLang();
   duoAnim=sl(duoAnim,$('duoCv'),!!duoGu&&!$('duoPalco').hidden,duoLoop);
   aniverAnim=sl(aniverAnim,$('aniverFx'),!aniverOv.hidden,aniverLoop);
   encAnim=sl(encAnim,$('encCv'),!!encDados,encLoop);
-  petRaf=sl(petRaf,$('petov'),!!petOpen,petLoop);
+  petRaf=sl(petRaf,$('petov'),!!petOpen,typeof petLoop==='function'?petLoop:null);
   perfAnimId=sl(perfAnimId,$('perfGenCv'),!!perfMeu&&(perfAba==='montar'||perfAba==='estudio'),perfAnimar);
   if(hubIV&&hubIV.vis&&twAnimacaoVisivel(hubOv))hubIdolsLigar();else hubIdolsParar();
   twPreviewEnviarVisibilidadeIframe(!!twPreviewJogoAnterior&&twAnimacaoVisivel($('twPreviewJogo')));

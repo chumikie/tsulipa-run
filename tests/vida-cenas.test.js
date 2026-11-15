@@ -8,7 +8,7 @@ const root=path.join(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const src=read('vida-cidade.js');
 const mapa=read('tw-mapa.js');
-const pet=read('pet.js');
+const pet=require('./pet-fonte.js')();
 const ctx={console,Date,Intl,LANG:'pt',contaJ:{id:'idol-a',nick:'A'},document:{
   readyState:'loading',hidden:false,addEventListener(){},getElementById(){return null;}
 }};

@@ -5,20 +5,6 @@
    do próprio catálogo do jogo (cabelos, cortes, franjas, roupas, acessórios). Recorde no aparelho.
    Prêmio diário (ticket do Karaoke ou item do pet, nunca estrelas): RPC handshake_premio,
    proposta em supabase/sql/proposta/20261103200000_handshake_premio.sql. Este arquivo só declara funções e tabelas. */
-// Nomes dos fãs/clientes em estilo mangá (sílabas misturadas, nomes inventados).
-var HS_NOMES = ['Usamado', 'Homina', 'Sayami', 'Kyorin', 'Hanoka', 'Mayoka', 'Minarei', 'Makohan', 'Amimi', 'Chibiko', 'Usahana', 'Rinako', 'Lucimi', 'Kyomami', 'Sakuhime', 'Pichiru', 'Kururun', 'Purinne', 'Momorin', 'Kiraho', 'Nyamomo', 'Reiyu', 'Homika', 'Madomi', 'Hanorei', 'Mamiyu', 'Ritako', 'Minaka', 'Sayaren', 'Lunami'];
-// Nomes antigos: continuam valendo para as lembranças que já estão salvas nos aparelhos.
-var HS_NOMES_ANTIGOS = ['Nana', 'Kiko', 'Lulu', 'Momo', 'Rafi', 'Yumi', 'Toto', 'Pipo', 'Mel', 'Juju', 'Cacau', 'Lili', 'Koko', 'Duda', 'Nino', 'Mimi', 'Teté', 'Bubu', 'Fifi', 'Gigi', 'Zezé', 'Biba', 'Tuca', 'Dodô', 'Lalá', 'Chico', 'Pururu', 'Nunu', 'Kaká', 'Pepê'];
-var HS_PRESENTES = [   // [emoji, nome, grupo]: as opções erradas vêm de preferência do mesmo grupo (fica mais difícil)
-  ['🍓', 'Morango', 'doce'], ['🍰', 'Bolo', 'doce'], ['🍬', 'Bala', 'doce'], ['🧁', 'Cupcake', 'doce'], ['🍙', 'Onigiri', 'doce'],
-  ['🎀', 'Laço', 'fofo'], ['🧸', 'Ursinho', 'fofo'], ['💌', 'Cartinha', 'fofo'], ['🌸', 'Flor', 'fofo'],
-  ['🌙', 'Lua', 'brilho'], ['💎', 'Joia', 'brilho'], ['🎵', 'Música', 'brilho'], ['⭐', 'Estrelinha', 'brilho'], ['🌈', 'Arco-íris', 'brilho']];
-// Jeitos dos fãs: muda como se apresentam e como reagem
-var HS_JEITOS = {
-  animado: { oi:['Aaah, é você! Eu sou {n}!', 'Oi oi! Sou {n}!'], fav:'Eu AMO {p}!', ok:['Você lembrou! 💖', 'Aaaah! Vou contar pra todo mundo!'], erro:['Ah… era {p}! 🥲'] },
-  timido:  { oi:['É-é um prazer… sou {n}.', 'Oi… eu sou {n}.'], fav:'Eu gosto de {p}…', ok:['Você lembrou de mim… 🥹', 'O-obrigado!'], erro:['Tudo bem… era {p}.'] },
-  fofo:    { oi:['Oiê! Me chamo {n}!', 'Olá! Sou {n}!'], fav:'Meu favorito: {p}!', ok:['Que fofo! 💕', 'Yay! Acertou!'], erro:['Hehe, era {p}!'] }
-};
 var HS_JEITO_LISTA = ['animado', 'timido', 'fofo'];
 // Segundo detalhe (da 3ª rodada em diante): a cor do lightstick do fã. As cores vêm do servidor
 // (handshake_iniciar.cores); presente E cor certos valem +50 também na pontuação verificada.
@@ -40,11 +26,6 @@ var HS_RECORDE_KEY = 'tw_handshake_recorde';
 var hs = null, hsAnim = 0, hsT = 0;
 function hsSorteio(seed){ var s = (seed >>> 0) || 1; return function(){ s = (s * 1103515245 + 12345) >>> 0; return (s >>> 8) / 16777216; }; }
 function hsOpcoes(id){ var el = $(id); return el ? [].map.call(el.options, function(o){ return o.value; }) : ['']; }
-function hsNomesLivres(){   // nunca usa um nome igual ao de um jogador real
-  var reais = {}; ((typeof hubIdolsDados !== 'undefined' && hubIdolsDados && hubIdolsDados.idols) || []).forEach(function(p){ reais[String(p.nick).toLowerCase()] = 1; });
-  if(contaJ && contaJ.nick) reais[String(contaJ.nick).toLowerCase()] = 1;
-  return HS_NOMES.filter(function(n){ return !reais[n.toLowerCase()]; });
-}
 // Visita⭐Surpresa!: aparição visual rara, sem memória, RPC nova ou presença online.
 function hsVisitaDono(){
   if(typeof contaJ === 'undefined' || !contaJ || !contaJ.nick) return '';
@@ -92,22 +73,6 @@ function hsFa(r, nome){   // um fã com visual sorteado do catálogo que já exi
   var jeito = um(HS_JEITO_LISTA), J = HS_JEITOS[jeito];
   return { nome:nome, c:c, pres:Math.floor(r() * HS_PRESENTES.length), pose:um(['v', 'tchau', 'coracao', '']), expr:jeito === 'timido' ? 0 : um([2, 3, 6]), jeito:jeito, oi:um(J.oi) };
 }
-// Pequenas lembranças de fãs NPCs (somente neste aparelho e nesta conta; nunca dão prêmios).
-// Preserva o visual do fã para que o reencontro no Café seja reconhecível.
-var HS_MEMORIA_CHAVE = 'tw_hs_memorias_v1:';
-function hsMemChave(){
-  var id = typeof contaJ !== 'undefined' && contaJ && (contaJ.id || contaJ.nick);
-  return id ? HS_MEMORIA_CHAVE + String(id) : '';
-}
-function hsMemLer(){
-  var chave = hsMemChave(); if(!chave) return [];
-  try{
-    var lista = JSON.parse(localStorage.getItem(chave) || '[]');
-    return Array.isArray(lista) ? lista.filter(function(m){
-      return m && (HS_NOMES.indexOf(m.nome) >= 0 || (typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(m.nome) >= 0)) && Number.isInteger(m.pres) && m.pres >= 0 && m.pres < HS_PRESENTES.length;
-    }).slice(0, 8) : [];
-  }catch(e){ return []; }
-}
 function hsMemGuardar(f){
   var chave = hsMemChave();
   if(!chave || !f || !(HS_NOMES.indexOf(f.nome) >= 0 || (typeof HS_NOMES_ANTIGOS !== 'undefined' && HS_NOMES_ANTIGOS.indexOf(f.nome) >= 0)) || !Number.isInteger(f.pres)) return;
@@ -119,8 +84,6 @@ function hsMemGuardar(f){
     lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
   }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
 }
-// A visita bem atendida no Café abre um reencontro transitório, sem alterar memórias salvas.
-var hsCafePendente = null;
 function hsCafeConfirmar(f, contaOrigem){
   var chave = hsMemChave();
   if(!chave || chave !== contaOrigem || !f || !f.hsLembranca) return;
@@ -526,10 +489,6 @@ function hsClique(e){
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
   var bc = e.target.closest && e.target.closest('[data-hscor]'); if(bc){ hsResponderCor(+bc.dataset.hscor); return; }
   if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }
-}
-function hsHubHtml(){
-  var feito = false; try{ feito = localStorage.getItem('tw_hs_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
-  return '<button type="button" class="hubcard hubhandshake' + (feito ? '' : ' tw-alert-pink') + '" data-ir="handshake">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🤝</i><b translate="no">Handshake⭐Event!</b><small class="tw-hubgame-jp" lang="ja">握手会</small><small>' + escHtml(tr('Lembre o presente de cada fã!')) + '</small></button>';
 }
 
 /* Acabamento artístico compartilhado pelos dois balcões, sem alterar posições ou atendimento. */

@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const fonte = nome => fs.readFileSync(path.join(__dirname, '..', nome), 'utf8');
-const handshake = fonte('handshake.js'), cafe = fonte('cafe.js'), jornal = fonte('jornal.js');
+const handshake = fonte('handshake.js'), base = fonte('jogos-base.js'), cafe = fonte('cafe.js'), jornal = fonte('jornal.js');
 function trecho(src, inicio, fim){
   const a = src.indexOf(inicio), b = src.indexOf(fim, a + inicio.length);
   assert.ok(a >= 0 && b > a, 'trecho deve existir: ' + inicio);
@@ -21,7 +21,8 @@ test('Handshake guarda apenas lembrança local de fã fictício, limitada e isol
     localStorage:{getItem:k=>dados.get(k)||null,setItem:(k,v)=>dados.set(k,v)}
   };
   vm.createContext(ctx);
-  vm.runInContext(trecho(handshake, 'var HS_MEMORIA_CHAVE =', 'function hsRecorde()'), ctx);
+  vm.runInContext(trecho(base, 'var HS_MEMORIA_CHAVE =', 'var hsCafePendente'), ctx);   // lembranças: base carregada na abertura
+  vm.runInContext(trecho(handshake, 'function hsMemGuardar(', 'function hsRecorde()'), ctx);
   vm.runInContext("hsMemGuardar({nome:'Momo',pres:1,jeito:'fofo',c:{hair:'#ff88aa',out:'uniforme'}})", ctx);
   assert.equal(ctx.hsMemLer().length, 1);
   assert.equal(ctx.hsMemLer()[0].nome, 'Momo');

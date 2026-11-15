@@ -3,7 +3,6 @@
    em camadas (base → cobertura → enfeite) e às vezes um docinho. Monte, sirva antes da paciência acabar.
    Prêmios só visuais: cada pedido perfeito libera um cartão de receita no Caderno do café (salvo no aparelho).
    Não dá estrelas e não usa o teto de ★50 do pet. */
-var CF_BASES = [['☕', 'Café gelado', '#8a5a3b'], ['🍵', 'Matcha latte', '#9fd18b'], ['🍫', 'Chocolate', '#6b3b2a'], ['🍓', 'Frappé de morango', '#ff9cc4'], ['🫐', 'Shake de mirtilo', '#a99cff']];
 var CF_COBERTURAS = [['🍦', 'Chantilly', '#fffaf2'], ['🍯', 'Caramelo', '#f0a73a'], ['🌈', 'Granulado', '#ffe0f0']];
 var CF_ENFEITES = [['💗', 'Coração'], ['⭐', 'Estrelinha'], ['🍒', 'Cereja'], ['🎀', 'Laço de biscoito']];
 var CF_DOCES = [['🍪', 'Cookie'], ['🟫', 'Brownie'], ['🥐', 'Croissant'], ['🧇', 'Waffle']];
@@ -41,12 +40,6 @@ function cfSelecionarAssinatura(chave){
   if(base >= CF_BASES.length || enf >= CF_ENFEITES.length || !cfLer(CF_RECEITAS_KEY, {})[base + '-' + enf]) return;
   cf.assinatura = {base:base,enf:enf};
   cfUI();
-}
-// Só consulta as lembranças já existentes do Handshake; a visita escolhida não é salva.
-function cfVisitasMemorias(){
-  if(typeof hsMemLer !== 'function' || typeof hsNomesLivres !== 'function') return [];
-  var livres = hsNomesLivres();
-  return hsMemLer().filter(function(m){ return livres.indexOf(m.nome) >= 0; });
 }
 function cfVisitaOpcoes(){
   var memorias = cfVisitasMemorias();
@@ -561,10 +554,6 @@ function cfClique(e){
   if(b){ var p = b.dataset.cf.split(':'); cfEscolher(p[0], +p[1]); return; }
   if(e.target.closest && e.target.closest('#cfServir')){ cfServir(false); return; }
   if(e.target.closest && e.target.closest('#cfJogar')){ cfIniciarSeguro(); }
-}
-function cfHubHtml(){
-  var feito = false; try{ feito = localStorage.getItem('tw_cf_dia') === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }catch(e){}
-  return '<button type="button" class="hubcard hubcafe' + (feito ? '' : ' tw-alert-pink') + '" data-ir="cafe">' + (feito ? '' : '<em class="hubalerta" aria-hidden="true">!</em>') + '<i>🧋</i><b translate="no">Happy⭐Cafe!</b><small class="tw-hubgame-jp" lang="ja">ハッピー・カフェ</small><small>' + escHtml(tr('Monte shakes e frappés para os fãs!')) + '</small></button>';
 }
 
 

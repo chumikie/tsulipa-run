@@ -29,13 +29,18 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Abertura:** 83 arquivos, ~1,9 MB sem compressão (~0,6 MB comprimido pela Vercel). No computador local, pronto em ~0,8 s (desktop) e ~1,0 s (celular). Console sem erros; nenhum botão sem nome; 1 alvo de toque abaixo de 24 px no celular.
 - **Maiores na abertura:** pet.js 235 KB, centerrun.js 218 KB, index.html 218 KB, perfil.js 115 KB, hub.js 108 KB, mapa-mundo.svg 95 KB.
 - **Próximos ganhos, do mais fácil ao mais trabalhoso:**
-  1. `favicon.svg` (36 KB, quase não comprime): trocar por um ícone pequeno, como foi feito no ícone do topo (52→3 KB).
-  2. Happy⭐Cafe!, Handshake⭐Event! e Dois carregarem sob demanda, igual ao Battle e ao Studio (~140 KB a menos na abertura).
+  1. ~~`favicon.svg`~~ e 2. ~~Happy⭐Cafe! e Handshake⭐Event! sob demanda~~: feitos (ver "Rodada de peso"). Dois ficou de fora.
   3. Center Run (`centerrun.js`) só carregar ao tocar em jogar: o Hub é a primeira tela (~218 KB a menos), mas mexe no fluxo principal; testar bem.
   4. `perfil.js` sob demanda (abre só no Perfil/Montar Idol).
   5. Dividir `pet.js` (petPhone e petDraw são usados na abertura; o resto pode esperar).
 
+### Rodada de peso (15/11, PR #94)
+- **Feito:** `favicon.svg` 36→12 KB (imagem interna de 128 para 64 px, sem perder cor). Handshake⭐Event! e Happy⭐Cafe! sob demanda: `jogos-base.js` (5 KB) carrega na abertura com o que o Hub, o pet, a Vida na Cidade, o Idol⭐News! e o evento leem; o jogo (handshake, cafe, cafe-gorjeta, cafe-vip, cafe-duplo e flores, nessa ordem) baixa no primeiro toque. Abertura: 83→78 arquivos, 1907→1761 KB.
+- **Armadilha:** peça do Handshake/Café que outro arquivo leia na abertura vai para `jogos-base.js`, nunca fica duplicada (o `var` do jogo zeraria o valor). O teste `jogos-sob-demanda` confere.
+- **Não deu para fazer rápido:** Dois (muito código dele direto no `index.html`), Perfil (`perfil.js` é a biblioteca de desenho dos Idols, usada por 15+ arquivos), Center Run (`centerrun.js` tem ~130 peças usadas por outros arquivos: `drawChar`, `starT`, `setBest`…) e `pet.js`. Os quatro pedem primeiro separar a parte compartilhada em arquivos próprios; é uma reforma maior, para uma rodada só dela.
+
 ### Falta validar (o dono testa)
+- Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
 - Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
 - iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.

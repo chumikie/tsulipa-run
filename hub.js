@@ -889,7 +889,7 @@ function hubMontar(){
   hubBuddyAtualizar();
 }
 // Celular: idioma e tema ficam recolhidos num ⚙️ ao lado do logo (sobra espaço para o "Pra hoje" e os jogos).
-document.addEventListener('click', function(e){
+if(typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('#hubCfgBtn'); if(!b) return;
   var cfg = $('hubCfg'), aberto = b.getAttribute('aria-expanded') !== 'true';
   b.setAttribute('aria-expanded', String(aberto)); if(cfg) cfg.classList.toggle('aberto', aberto);

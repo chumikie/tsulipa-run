@@ -29,6 +29,16 @@ assert(mobile.includes("document.body.classList.remove('tw-cel', 'tw-cel-classic
 assert(mobile.includes("window.TW_CELULAR_LIGADO = false;"),'fallback desativa modo celular');
 assert(mobile.includes("}catch(e){ falhaInicializacao(e); }"),'montagem protegida contra exceções');
 assert(mobile.indexOf("desenhar();\n    document.body.classList.add('tw-cel');") > 0,'hub clássico só é ocultado após primeiro desenho');
+// Executa o agendador de redraw isoladamente: sete eventos do hub em uma frame = um desenho.
+const frameQueue=[];let draws=0, active=true;
+const redrawScope={cel:{},redesenhoRaf:0,requestAnimationFrame:fn=>{frameQueue.push(fn);return frameQueue.length;},
+ desenhar:()=>draws++,falhaInicializacao:e=>{throw e;}};
+vm.runInNewContext(mobile.slice(mobile.indexOf('  function agendarRedesenho(){'),mobile.indexOf('  // Refaz junto com o hub')),redrawScope);
+for(let i=0;i<7;i++)redrawScope.agendarRedesenho();
+assert.equal(frameQueue.length,1,'eventos do hub agrupados numa frame');
+frameQueue.shift()();assert.equal(draws,1,'uma reconstrução por frame');
+redrawScope.agendarRedesenho();frameQueue.shift()();assert.equal(draws,2,'atualização seguinte não fica bloqueada');
+redrawScope.cel=null;redrawScope.agendarRedesenho();assert.equal(frameQueue.length,0,'sem redraw após desmontagem');
 const config=JSON.parse(read('vercel.json'));
 assert(config.headers.some(r=>r.source.includes('js')&&r.headers.some(h=>h.value==='public, max-age=0, must-revalidate')));
 console.log('✓ Abertura: mutações agrupadas, moldura estável, toques livres e scripts revalidados');

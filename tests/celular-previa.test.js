@@ -22,7 +22,7 @@ test('desligado por padrão: o index só baixa o tw-celular com brs48cr_celular 
   const bloco = html.slice(i, html.indexOf('</script>', i));
   assert.match(bloco, /get\('celular'\)/);
   assert.match(bloco, /q==='0'\)localStorage\.removeItem\(k\)/, '?celular=0 desliga');
-  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
   assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
   const tx = bloco.match(/var TX=\{([^}]*)\}/)[1];
@@ -150,7 +150,7 @@ test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, onli
   assert.match(mapaJs, /if\(typeof window\.twMapaEntrar==='function'&&window\.twMapaEntrar\(l\.id\)\)return;/, 'o mapa abre o lado de dentro antes do lugar');
   assert.match(mapaJs, /window\.twMapaCena=function\(\)/);
   assert.match(mapaJs, /function mundoGente\(tm\)/, 'mapa geral com Idols nas calçadas');
-  assert.match(js, /function telaPais\(\)/);
+  assert.ok(!/function telaPais\(\)/.test(js), 'Cantinho dos pais saiu (o público é adulto)');
   assert.match(js, /if\(falhaDeRede\(err\)\)\{ falhas\+\+; if\(falhas >= 3\) manutMostrar\(\); \}/, 'manutenção só depois de 3 falhas de rede seguidas');
   assert.match(cm, /var PASSOS = \[\[0, '💇', 'Visual'/, 'Montar Idol em 3 passos');
   assert.match(cm, /if\(celLigado\(\)\)\{ redoma\(cv, c\); return; \}/, 'redoma só no visual de celular');
@@ -160,13 +160,15 @@ test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, onli
 test('rodada 11 (refino): mapa de amizades e fichas com os bonecos e pets de verdade, sem emojis nos ícones novos', () => {
   const trio = js.slice(js.indexOf('  function telaTrio(){'), js.indexOf('  /* ---------- Cantinho dos pais'));
   assert.match(trio, /drawPet\(x, MEMBROS\[k\]\[0\]/, 'pets do jogo (Chu, Koali, Pucchi) desenhados com drawPet no mapa de amizades');
+  assert.match(trio, /AMIGOS_POS = \[\{k:0, x:150, y:350.*\{k:1, x:340, y:350.*\{k:2, x:530, y:350/, 'os três na mesma altura, a Lirika no meio');
+  assert.ok(!/gekoku/.test(js), 'Gekokujou saiu do mapa; entra a mesma geração');
+  assert.match(trio, /hubVozTocar\(f\[0\]\)/, 'tocar num membro toca a voz de verdade');
+  assert.match(trio, /petVoice\(null, MEMBROS\[k\]\[0\]\)/, 'tocar num pet faz o som dele');
   assert.match(trio, /perfDesenharIdol\(x, 104, 112, a2/, 'o trio de corpo inteiro no mapa');
   assert.match(trio, /canvas class="twc-ficha-pet" data-pet=/, 'pet desenhado também na ficha');
   assert.ok(!/['"](🐈|🐨|👑)['"]/.test(trio), 'sem emoji de pet');
   const humor = js.slice(js.indexOf('  function humorHtml(){'), js.indexOf('  function desejoIco('));
   assert.ok(!/[👑🔥]/u.test(humor), 'humor e VIP com ícones desenhados');
-  const pais = js.slice(js.indexOf('  function telaPais(){'), js.indexOf('  /* ---------- manutenção fofa'));
-  assert.ok(!/🎀|☁️|💬|🛡️|🌈/u.test(pais), 'Cantinho dos pais com ícones desenhados');
   assert.ok(!/🚧/u.test(js), 'cones de manutenção desenhados em SVG');
   assert.match(js, /cor:\['#fff3e6', '#f2c49c', '#c98a5a', '#ffe1c7', '#dca47a'\]/, 'salas por dentro com parede e piso em degradê');
 });

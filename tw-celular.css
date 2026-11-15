@@ -396,11 +396,6 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-dentro-cena{border-radius:24px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 0 rgba(70,35,140,.2)}
 .twc-dentro-cena canvas{display:block;width:100%;height:auto}
 .twc .twc-dentro-ir{display:block;width:100%;margin-top:12px}
-/* Cantinho dos pais */
-.twc-pais ul{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:10px}
-.twc-pais li{display:flex;gap:10px;align-items:flex-start;font-weight:700;line-height:1.45}
-.twc-pais li>span:not(.twc-pais-ic){flex:1;min-width:0}
-.twc-pais a.twc-btn{display:block;text-align:center;text-decoration:none}
 /* manutenção fofa */
 .twc-manut-palco{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin:4px 0 10px}
 .twc-manut-palco canvas{width:58px;height:58px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #d9c6ff}
@@ -545,6 +540,65 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-toast-ic .twc-ico{fill:#fff6c4}
 .twc-btn-ic{display:inline-flex;vertical-align:-4px;margin-right:6px}
 .twc-frases h2{display:flex;align-items:center;gap:6px}
-.twc-pais li{align-items:center}
-.twc-pais-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:13px;color:#fff;font-size:0!important;box-shadow:0 3px 0 rgba(40,10,80,.15)}
 .twc-cone{flex:none;filter:drop-shadow(0 3px 0 rgba(40,10,80,.15))}
+.twc .twc-btn-link{display:flex;align-items:center;justify-content:center;text-decoration:none}
+.twc-amigos-dica{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 0;font:800 12.5px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-amigos-dica span{display:inline-flex;color:#ff6fb5}
+.twc-amigos-c canvas{cursor:pointer;touch-action:manipulation}
+/* O ano do TsuLiPa: calendário */
+.twc .twc-calhoje{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:12px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.twc-caldata{flex:none;display:grid;place-items:center;width:56px;height:60px;border-radius:16px;background:linear-gradient(180deg,var(--c),color-mix(in srgb,var(--c) 70%,#ff6fb5));color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 60%,#2a1060)}
+.twc-caldata small{max-width:52px;overflow:hidden;font:800 11px "M PLUS Rounded 1c",sans-serif;text-transform:uppercase;letter-spacing:.04em;line-height:1;margin-top:6px}
+.twc-caldata b{font:400 24px "Mochiy Pop One",sans-serif;line-height:1;margin-bottom:6px}
+.twc-calhoje-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.twc-calhoje-t em{font:800 12px "M PLUS Rounded 1c",sans-serif;font-style:normal;color:var(--twc-roxo-e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.twc-calhoje-ir{flex:none;color:var(--twc-roxo)}
+.twc-calfala{display:flex;align-items:flex-start;gap:10px;margin-top:12px}
+.twc-calfala canvas{flex:none;width:48px;height:48px;border-radius:50%;background:#f3e9ff;box-shadow:0 0 0 3px #fff,0 3px 8px rgba(90,40,160,.18)}
+.twc-calfala p{position:relative;margin:0;padding:9px 12px;border-radius:4px 16px 16px 16px;background:#f6efff;font:700 13.5px/1.4 "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-calfala p b{display:block;font:400 12px "Mochiy Pop One",sans-serif;color:var(--twc-roxo);margin-bottom:2px}
+.twc-calfala-mini{margin-top:0;gap:8px;align-items:center}
+.twc-calfala-mini canvas{width:34px;height:34px}
+.twc .twc-calfala-mini p{padding:6px 10px;font-size:12.5px;line-height:1.35;white-space:normal}
+.twc-calfala-mini p b{display:inline;margin-right:6px}
+.twc-calcab{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.twc-calcab h2{margin:0;font:400 18px "Mochiy Pop One",sans-serif;color:var(--twc-roxo-e)}
+.twc .twc-calnav{width:40px;height:40px;border-radius:50%;border:2px solid var(--twc-borda);background:#fff;color:var(--twc-roxo);font:900 24px/1 sans-serif;cursor:pointer;box-shadow:0 3px 0 rgba(90,40,160,.14)}
+.twc .twc-calnav:disabled{opacity:.35;cursor:default}
+.twc-calfaixa{display:flex;align-items:center;gap:6px;margin:10px 0 0;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c);font:800 12.5px "M PLUS Rounded 1c",sans-serif}
+.twc-calgrade{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+.twc-calsem{text-align:center;font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub);text-transform:uppercase;padding-bottom:2px}
+.twc .twc-cald{position:relative;aspect-ratio:1;min-height:38px;border-radius:12px;border:0;background:#faf6ff;color:#3c2a6a;font:inherit;cursor:pointer;display:grid;place-items:center;padding:0}
+.twc .twc-cald b{font:800 14px "M PLUS Rounded 1c",sans-serif}
+.twc .twc-cald-v{background:none;cursor:default}
+.twc .twc-cald-tema{background:color-mix(in srgb,var(--t) 16%,#fff);box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--t) 55%,#fff)}
+.twc .twc-cald-antes{opacity:.38}
+.twc .twc-cald-hoje{background:linear-gradient(180deg,#9b30d9,#7b3ff0);color:#fff;box-shadow:0 3px 0 #4a1aa0}
+.twc .twc-cald-sel{outline:3px solid #ff6fb5;outline-offset:1px}
+.twc .twc-cald i{position:absolute;top:-4px;right:-4px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--c);color:#fff;box-shadow:0 0 0 2px #fff}
+.twc-callegenda{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px}
+.twc-callegenda span{display:inline-flex;align-items:center;gap:5px}
+.twc-callegenda i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--c);color:#fff}
+.twc-callegenda .twc-callg-tema{border-radius:5px;background:#ffe0ef;box-shadow:inset 0 -3px 0 #ff9ccd}
+.twc-caldia h2{margin:0;font:400 17px "Mochiy Pop One",sans-serif;color:var(--twc-roxo-e)}
+.twc-caldn{display:block;margin-top:2px;font:800 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-calitens{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.twc-calitens li{display:flex;align-items:center;gap:9px;font:800 13.5px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-calitens li span{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:var(--c);color:#fff}
+.twc-calitens small{color:var(--twc-sub);font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-calfala p{background:#2f2350;color:#efe6ff}:root:not([data-theme="light"]) .twc .twc-cald:not(.twc-cald-hoje):not(.twc-cald-v){background:#2a2045;color:#efe6ff}}
+/* Tour de camarins */
+.twc-tour-msg{margin:24px 8px;text-align:center;font:800 14px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-tour-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.twc .twc-tour-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;cursor:pointer;font:inherit;color:inherit;border-top:5px solid var(--c)}
+.twc-tour-item canvas{width:64px;height:64px;border-radius:50%;background:#f3e9ff;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--c)}
+.twc-tour-item b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 13px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-tour-item small{font:800 12px "M PLUS Rounded 1c",sans-serif;color:#ff4f9a}
+.twc-tour-cena{padding:10px;border-top:6px solid var(--c)}
+.twc-tour-cena canvas{display:block;width:100%;height:auto;border-radius:18px;background:#f3e9ff}
+.twc-tour-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.twc-tour-cor{flex:none;white-space:nowrap}.twc-tour-cor b{font:400 20px "Mochiy Pop One",sans-serif;color:#ff4f9a}
+.twc .twc-tour-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#ff6fb5,#e8458f);color:#fff!important;border:0}
+.twc .twc-tour-btn:disabled{background:#f1e6ff;color:var(--twc-roxo)!important;opacity:1}
+.twc .twc-cald{min-width:0}
+@media (max-width:360px){.twc-calgrade{gap:3px}.twc .twc-cald{min-height:0;border-radius:10px}.twc .twc-cald b{font-size:12.5px}.twc .twc-cald i{width:16px;height:16px;top:-3px;right:-3px}.twc-calmes{padding-left:10px!important;padding-right:10px!important}}

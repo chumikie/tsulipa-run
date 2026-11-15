@@ -55,7 +55,19 @@ var T_RITMO={pt:['📣 Agitar lightstick','Lightsticks no ritmo: {n}/{t}','A pla
  th:['📣 โบกแท่งไฟ','โบกตรงจังหวะ: {n}/{t}','คนดูกรี๊ดกันใหญ่!','เชียร์ได้ดี!','ครั้งหน้าแตะตามจังหวะวงแหวนนะ!'],
  ja:['📣 ペンライトをふる','リズムにあわせて: {n}/{t}','会場が大もりあがり！','ナイス応援！','つぎは輪っかのリズムでタップしてね！']};
 Object.keys(T_RITMO).forEach(function(l){if(!T[l])return;var v=T_RITMO[l];T[l].agitar=v[0];T[l].ritmo=v[1];T[l].ritmoTop=v[2];T[l].ritmoOk=v[3];T[l].ritmoPouco=v[4];});
+// Habilidades dos cards (como as skills das cartas nas lives): cada card tem uma, ligada ao seu melhor atributo.
+// Disparam quando a torcida fecha 3 batidas seguidas na rodada daquele card e enchem o contador de corações.
+// É a festa da torcida: o placar e o prêmio continuam sendo só os do servidor.
+var T_SKILL={pt:['Nota Alta','Passo Duplo','Piscadinha','HABILIDADE!','Corações da torcida','Habilidades: {n}/3 · Corações da torcida: {c}','Combina com a rodada: +3 ♥'],
+ en:['High Note','Double Step','Little Wink','SKILL!','Crowd hearts','Skills: {n}/3 · Crowd hearts: {c}','Matches the round: +3 ♥'],
+ es:['Nota Alta','Paso Doble','Guiñito','¡HABILIDAD!','Corazones del público','Habilidades: {n}/3 · Corazones del público: {c}','Combina con la ronda: +3 ♥'],
+ id:['Nada Tinggi','Langkah Ganda','Kedipan','SKILL!','Hati penonton','Skill: {n}/3 · Hati penonton: {c}','Cocok dengan babak: +3 ♥'],
+ th:['โน้ตสูง','สเต็ปคู่','ขยิบตา','สกิล!','หัวใจจากคนดู','สกิล: {n}/3 · หัวใจจากคนดู: {c}','เข้ากับรอบ: +3 ♥'],
+ ja:['ハイノート','ダブルステップ','ウインク','スキル！','ファンのハート','スキル: {n}/3 · ファンのハート: {c}','ラウンドにぴったり: +3 ♥']};
+Object.keys(T_SKILL).forEach(function(l){if(!T[l])return;var v=T_SKILL[l];T[l].sk0=v[0];T[l].sk1=v[1];T[l].sk2=v[2];T[l].skill=v[3];T[l].coracoes=v[4];T[l].skillRes=v[5];T[l].skMatch=v[6];});
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
+function habilidade(c){   // 0 Nota Alta (canto) · 1 Passo Duplo (dança) · 2 Piscadinha (carisma); empate fica com o primeiro
+ var m=0;for(var i=1;i<3;i++)if(valor(c,i)>valor(c,m))m=i;return m;}
 function esc(x){return typeof escHtml==='function'?escHtml(String(x)):String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function logado(){return typeof contaJ!=='undefined'&&!!contaJ&&typeof contaRpc==='function';}
 function calmo(){try{return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){return false;}}
@@ -324,7 +336,7 @@ function chips(c,destaque,esconde){
 function idolHtml(c,meu,rotulo,destaque,esconde){
  return '<div class="battle-idol">'+(rotulo?'<small>'+rotulo+'</small>':'')+
    '<canvas class="battle-av" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="'+(meu?1:0)+'" aria-hidden="true"></canvas>'+
-   '<b>'+esc(c.nick)+'</b>'+chips(c,destaque,esconde)+
+   '<b>'+esc(c.nick)+'</b>'+chips(c,destaque,esconde)+(meu?'<small class="battle-skill" style="--c:'+COR[habilidade(c)]+'">✦ '+esc(trB('sk'+habilidade(c)))+'</small>':'')+
    (meu&&Number(c.qtd)>1?'<em title="'+esc(trB('copies'))+'">×'+Math.min(99,Number(c.qtd))+'</em>':'')+'</div>';
 }
 function desenharMiniaturas(){
@@ -445,7 +457,12 @@ function agitar(){
  var t=agora()-showT0,b=Math.round((t-BAT0)/BATIDA),d=Math.abs(t-(BAT0+b*BATIDA));
  if(b<0||b>=batidas())return;
  if(d<.14&&!ritmo.pegas[b]){ritmo.pegas[b]=d<.07?2:1;ritmo.n++;ritmo.combo=(ritmo.combo||0)+1;ritmo.festa.push({t:t,b:ritmo.pegas[b]});
-   try{if(typeof twJogoSom==='function')twJogoSom('toque');}catch(e){}}
+   try{if(typeof twJogoSom==='function')twJogoSom('toque');}catch(e){}
+   ritmo.cor+=ritmo.pegas[b];
+   var ri=Math.min(2,Math.floor(t/DUR)),cd=cardDe(unit[ri]);
+   if(ritmo.combo>=3&&!ritmo.sk[ri]&&cd){var hb=habilidade(cd),ganho=5+(hb===ri?3:0);
+     ritmo.sk[ri]={t:t,h:hb,g:ganho,match:hb===ri};ritmo.skN++;ritmo.cor+=ganho;
+     try{if(typeof twJogoSom==='function')twJogoSom('ponto');}catch(e){}}}
  else{ritmo.erros++;ritmo.combo=0;}
  var bt=ov&&ov.querySelector('[data-battle="agitar"]');if(bt){bt.classList.remove('pulsa');void bt.offsetWidth;bt.classList.add('pulsa');}
 }
@@ -456,6 +473,19 @@ function ritmoDesenhar(x,t){
  medidor(x,cx,cy,34,cb?(cb%10)/10||1:0,['#ffd23f','#b6ff3b','#4dd8ff','#ff6fb5'][Math.floor(cb/10)%4],String(cb),trB('combo'));
  x.save();x.strokeStyle=perto<.14?'#b6ff3b':'rgba(255,255,255,'+(.9-perto).toFixed(2)+')';x.lineWidth=4;
  x.beginPath();x.arc(cx,cy,42+(1-fase2)*22,0,Math.PI*2);x.stroke();   // anel que fecha na batida
+ // contador de corações da torcida (ao lado do Combo)
+ x.save();x.font=fonte(16);var ct='♥ '+(ritmo.cor||0),cw=x.measureText(ct).width+24;var hx0=Math.max(48,cw/2+8),hy0=SH-34;rrect(x,hx0-cw/2,hy0-15,cw,30,15);x.fillStyle='rgba(255,255,255,.95)';x.fill();
+ x.fillStyle='#ff4f9a';x.textAlign='center';x.textBaseline='middle';x.fillText(ct,hx0,hy0+1);x.font=fonte(10);x.textBaseline='alphabetic';contorno(x,trB('coracoes'),Math.max(64,hx0),hy0-22,'#fff');x.restore();
+ // habilidade disparada: a carta da vez brilha, faixa com o nome e uma chuva de corações saindo dela
+ [0,1,2].forEach(function(ri){var k=ritmo.sk[ri];if(!k)return;var u=(t-k.t)/1.4;if(u<0||u>1)return;
+   var hx=SW/2+(ri-1)*96,hy=SH-60,cor=COR[k.h];
+   x.save();x.globalAlpha=Math.min(1,(1-u)*3);x.strokeStyle=cor;x.lineWidth=6;x.shadowColor=cor;x.shadowBlur=22;rrect(x,hx-36,hy-62,72,98,10);x.stroke();x.restore();
+   for(var q=0;q<10;q++){var an=-Math.PI/2+(q-4.5)*.22,dd=20+u*150;coracao(x,hx+Math.cos(an)*dd,hy-40+Math.sin(an)*dd,6+(q%3)*2,q%2?cor:'#ff6fb5',1-u);}
+   var e2=Math.min(1,u/.15),sc=.6+.4*(1-Math.pow(1-e2,3));
+   x.save();x.globalAlpha=Math.min(1,(1-u)*3);x.translate(SW/2,300);x.scale(sc,sc);
+   var g=x.createLinearGradient(-170,0,170,0);g.addColorStop(0,cor);g.addColorStop(1,'#7b3ff0');rrect(x,-170,-30,340,60,30);x.fillStyle=g;x.fill();x.strokeStyle='#fff';x.lineWidth=4;x.stroke();
+   x.textAlign='center';x.font=fonte(13);contorno(x,trB('skill')+' '+(k.match?'· '+trB('skMatch'):''),0,-8,'#fff3a8');
+   x.font=fonte(20);contorno(x,'✦ '+trB('sk'+k.h)+'  +'+k.g+' ♥',0,18,'#fff');x.restore();});
  ritmo.festa=ritmo.festa.filter(function(f){var u=(t-f.t)/1.1;if(u>1)return false;   // corações e lightsticks que sobem a cada acerto
    for(var k=0;k<(f.b===2?7:4);k++){var px=60+((k*97+Math.round(f.t*50))%(SW-120)),py=SH-150-u*140-(k%3)*8;
      if(k%2)coracao(x,px,py,8,['#ff6fb5','#ffd23f'][k%4>1?1:0],1-u);
@@ -467,14 +497,15 @@ function ritmoDesenhar(x,t){
 function ritmoResultado(){
  if(!ritmo||(!ritmo.n&&!ritmo.erros))return '';
  var tot=batidas(),pc=ritmo.n/tot,frase=pc>=.75?trB('ritmoTop'):pc>=.35?trB('ritmoOk'):trB('ritmoPouco');
- return '<p class="battle-ritmo">'+esc(trB('ritmo').replace('{n}',ritmo.n).replace('{t}',tot))+' · '+esc(frase)+'</p>';
+ return '<p class="battle-ritmo">'+esc(trB('ritmo').replace('{n}',ritmo.n).replace('{t}',tot))+' · '+esc(frase)+'</p>'+
+   '<p class="battle-ritmo battle-skillres">'+esc(trB('skillRes').replace('{n}',ritmo.skN||0).replace('{c}',ritmo.cor||0))+'</p>';
 }
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
  pararShow();
  if(calmo()||typeof requestAnimationFrame!=='function'){fimDoShow();return;}
- fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[]};render();
+ fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
  (function quadro(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;
    var t=agora()-showT0;

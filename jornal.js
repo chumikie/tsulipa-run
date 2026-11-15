@@ -43,6 +43,7 @@ function jornalMontar(d){
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
   vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   vida += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
+  if(typeof jornalCapsHtml === 'function') vida += jornalCapsHtml();
   vida += jornalTrioHtml();
   comunidade += jornalFeitosHtml(d);
   comunidade += jornalAtividadeHtml();
@@ -97,6 +98,7 @@ function jornalAbasIniciar(){
     });
   });
   jornalTrocarAba(jornalAba);
+  if(typeof jornalCapsUI === 'function') try{ jornalCapsUI(); }catch(e){}
 }
 // Atividade individual: somente o dono da sessão vê o resultado de missoes().
 // Não usa localStorage nem publica dados de Handshake/Café de outras contas.

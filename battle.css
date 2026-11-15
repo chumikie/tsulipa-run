@@ -117,3 +117,6 @@ html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
 .battle-ritmo{margin:8px 0 4px;font-weight:800;color:#7b3ff0}
 @media (prefers-reduced-motion:reduce){.battle-agitar.pulsa{animation:none}}
 .battle-showtrack{display:none}
+/* habilidade de cada card (dispara no ritmo durante o show) */
+.battle-skill{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--c) 22%,#fff);color:#432675;font:800 11px "M PLUS Rounded 1c",sans-serif;white-space:nowrap}
+.battle-skillres{margin-top:2px}

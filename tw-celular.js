@@ -538,7 +538,9 @@
   var desenhoPend = 0;
   function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
   function vipFoto(){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
-    var cv = $id('twcDentroCv'); if(!cv) return;
+    var cv = $id('twcDentroCv'); if(!cv || topo() !== 'dentro:vip') return;
+    // A pose escolhida precisa estar no Canvas antes da captura, mesmo em toques rápidos.
+    try{ dentroDesenhar(cv, 'vip', performance.now() / 1000); }catch(e){}
     var W = cv.width + 40, Hh = cv.height + 110, o = document.createElement('canvas'); o.width = W; o.height = Hh;
     var x = o.getContext('2d'); x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, Hh); x.drawImage(cv, 20, 20);
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
@@ -568,6 +570,7 @@
     vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f', '#5a2470', '#4a1a52'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
   var vipPose = ''; // apenas nesta sessão, sem persistência ou efeito em outros interiores
+  var vipReduzMov = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function telaDentro(id){
     var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
     var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto"><span class="twc-btn-ic" aria-hidden="true">' + ico('studio', 20) + '</span>' + esc(t2('vipFoto')) + '</button>'
@@ -699,9 +702,9 @@
     if(id === 'vip') todos = MEMBROS.map(function(m, k){ var av = membroAv(k); return av ? {av:av.c ? {c:av.c, pose:'', expr:av.expr} : av, nick:m[1], x:[118, 462, 578][k], membro:true} : null; }).filter(Boolean);
     if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:id === 'vip' ? 320 : lugares[todos.length] || 140, eu:true});
     todos.forEach(function(g, k){
-      var cw = 104, ch = 112, px = g.x - cw * ES / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
+      var cw = 104, ch = 112, px = g.x - cw * ES / 2, pulo = id === 'vip' && vipReduzMov ? 0 : Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
       var tocado = rg && rg.k === k, rt = tocado ? (agora - rg.t0) / 1000 : 0;
-      if(tocado) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 30;
+      if(tocado && !(id === 'vip' && vipReduzMov)) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 30;
       dentroUltimos.push({x:g.x, k:k, nick:g.nick, eu:!!g.eu, membro:g.membro ? MEMBROS.findIndex(function(m){ return m[1] === g.nick; }) : -1});
       var av = {}; for(var q in g.av) av[q] = g.av[q];
       av.pose = id === 'vip' && vipPose ? vipPose : (tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5]);
@@ -711,7 +714,7 @@
       if(g.nick){ x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(120, x.measureText(g.nick).width + 16);
         caixa(g.x - tw / 2, chao + 12, tw, 20, 10, 'rgba(123,63,240,.9)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 27, tw - 8); }
       if(g.eu && window.TW_HUMOR){   // o diamantinho do humor em cima de você (igual ao mapa)
-        var dc = window.TW_HUMOR.cor(), gi = Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - CH + 62 - pulo - Math.sin(s * 2) * 3;
+        var dc = window.TW_HUMOR.cor(), gi = vipReduzMov ? 1 : Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - CH + 62 - pulo - (vipReduzMov ? 0 : Math.sin(s * 2) * 3);
         x.fillStyle = dc; x.strokeStyle = 'rgba(30,10,60,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(g.x, dy - 16); x.lineTo(g.x + dw, dy); x.lineTo(g.x, dy + 7); x.lineTo(g.x - dw, dy); x.closePath(); x.fill(); x.stroke();
         x.fillStyle='rgba(255,255,255,.3)';x.beginPath();x.moveTo(g.x,dy-16);x.lineTo(g.x-dw,dy);x.lineTo(g.x,dy+7);x.closePath();x.fill();
         x.strokeStyle='rgba(255,255,255,.48)';x.lineWidth=1;x.beginPath();x.moveTo(g.x,dy-16);x.lineTo(g.x,dy+7);x.moveTo(g.x-dw,dy);x.lineTo(g.x+dw,dy);x.stroke();

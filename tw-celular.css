@@ -762,3 +762,9 @@ body.tw-cel .twc .twc-vip-pose{flex:1 1 100px;min-height:44px;padding:8px 10px;b
 body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 12%,var(--osh-paper));box-shadow:inset 0 0 0 1px var(--twc-f1)}
 body.tw-cel .twc .twc-vip-pose:focus-visible{outline:3px solid var(--twc-f1);outline-offset:2px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses,:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose{background:var(--osh-night-paper);border-color:var(--osh-night-line);color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses legend{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 20%,var(--osh-night-paper))}}
+
+/* A8.4-C — Cristal Oshi facetado; a cor segue vindo de TW_HUMOR.estado().cor. */
+body.tw-cel .twc .twc-diam{position:relative;isolation:isolate;overflow:hidden;border-radius:2px;background:var(--c);clip-path:polygon(50% 0,100% 61%,50% 100%,0 61%);box-shadow:inset 2px 0 0 rgba(255,255,255,.2);animation:twcGira 3.4s ease-in-out infinite}
+body.tw-cel .twc .twc-diam::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,rgba(255,255,255,.38) 0 35%,transparent 35% 55%,rgba(40,15,75,.13) 55%);clip-path:polygon(50% 0,100% 61%,50% 100%,0 61%)}
+body.tw-cel .twc .twc-diam::after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.85);font:10px/1 sans-serif}
+@media (prefers-reduced-motion:reduce){body.tw-cel .twc .twc-diam{animation:none!important;transform:none!important}}

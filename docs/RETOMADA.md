@@ -17,16 +17,24 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Página inicial:** 9 jogos em ordem alfabética (3×3 no computador; Star⭐Gacha! em faixa no celular).
 - **Site mais leve:** Idol⭐Battle! carrega sob demanda; ícone do topo de 52 KB para 3 KB; cache de 1 h para JS/CSS/imagens no `vercel.json`.
 
+### Na PR #94 (15/11) — aberta, merge do dono
+- **Acessibilidade:** botões pequenos com área de toque de 28 px; nomes para leitor de tela na busca, no Dois e nas cores do Perfil.
+- **Celular:** idioma e tema atrás do botão ⚙️ no topo do Hub; "Pra hoje" subiu ~100 px na primeira tela.
+- **Mais leve:** Photo⭐Studio! carrega sob demanda (como o Battle); a capa do Idol News chama o Studio quando precisa.
+- **Charmaker:** 3 visuais favoritos (`brs48cr_favs`), com 💾 para guardar e toque para vestir; peças bloqueadas são puladas; tem desfazer.
+- **Studio, tema da semana (banco mudou, com OK):** publicar no mural uma foto no tema dá ★3, uma vez por semana. Arquivo `supabase/sql/aplicado/20261115_studio_tema_semana.sql` (já aplicado). Tema e semana iguais aos do site (domingo 0h de Brasília). No `?demo=1` a regra é simulada.
+- Teste do Meu Camarim aceita a fala da Lirika que alterna por data.
+
 ### Falta validar (o dono testa)
+- Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.
 - iPhone/Safari: prévia do charmaker presa no topo; trilhas dos jogos novos.
 - Ouvir os sons (não testados por ouvido).
 - Apagar as branches antigas no GitHub (o proxy não deixa apagar daqui).
 
 ### Ideias na fila (escolha do dono)
-- Prêmio de verdade para o tema da semana do Studio ou os lightsticks do Battle (mexe no servidor: precisa de OK).
+- Prêmio de verdade para os lightsticks do Battle (mexe no servidor: precisa de OK).
 - Backstage⭐Pet! combinando com o visual novo do Idol.
-- Guardar 3 visuais favoritos no charmaker.
 - Dividir `pet.js` (235 KB) e `centerrun.js` (216 KB) para carregar menos.
 
 ### Armadilhas conhecidas

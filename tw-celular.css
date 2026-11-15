@@ -665,3 +665,23 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   :root:not([data-theme="light"]) .twc .twc-chips button[aria-pressed="true"]{background:var(--twc-f1);border-color:var(--twc-f2);color:#fff!important}
   :root:not([data-theme="light"]) .twc .twc-nav-b[aria-current="page"]{color:#f3e8ff!important;text-decoration:underline;text-decoration-color:var(--twc-f2);text-underline-offset:4px}
 }
+
+/* A6 — tema completo do Oshi, apenas no visual mobile; sem alterar Canvas ou saves.
+   Padrão azul-noite; as demais paletas acompanham data-oshi existente. */
+body.tw-cel{--osh-bg:#e8edf9;--osh-paper:#f8faff;--osh-line:#c5d3ec;--osh-ink:#1c3157;--osh-sub:#415a7c;--osh-night:#101d37;--osh-night-paper:#1b2d4b;--osh-night-line:#3b547a;--osh-night-ink:#e6f0ff;--osh-night-sub:#c1d2ec}
+:root[data-oshi="tsu"] body.tw-cel{--osh-bg:#f0e7ff;--osh-paper:#fdfaff;--osh-line:#dcc8fa;--osh-ink:#3e2465;--osh-sub:#665084;--osh-night:#1d1238;--osh-night-paper:#2a1d4a;--osh-night-line:#584078;--osh-night-ink:#f3e8ff;--osh-night-sub:#d5c3ef}
+:root[data-oshi="lirika"] body.tw-cel{--osh-bg:#e4f5eb;--osh-paper:#f7fdf9;--osh-line:#b9dfc8;--osh-ink:#184b35;--osh-sub:#3b6b55;--osh-night:#102a24;--osh-night-paper:#1b3a30;--osh-night-line:#386a54;--osh-night-ink:#e3f8eb;--osh-night-sub:#b9dec9}
+:root[data-oshi="pati"] body.tw-cel{--osh-bg:#e5efff;--osh-paper:#f8fbff;--osh-line:#bdd2f5;--osh-ink:#183b72;--osh-sub:#45648e;--osh-night:#101f3e;--osh-night-paper:#1c3155;--osh-night-line:#395b91;--osh-night-ink:#e6efff;--osh-night-sub:#bfd4f7}
+body.tw-cel .twc{--twc-ink:var(--osh-ink);--twc-sub:var(--osh-sub);--twc-borda:var(--osh-line);--twc-sombra:var(--osh-line);--twc-roxo-e:var(--twc-f1)}
+body.tw-cel .twc-tela{background:radial-gradient(color-mix(in srgb,var(--osh-line) 35%,transparent) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,var(--osh-paper),var(--osh-bg));background-attachment:local,fixed}
+body.tw-cel .twc :is(.twc-topo,.twc-card,.twc-faixa,.twc-eu,.twc-cfg,.twc-filtros,.twc-folha-caixa){background:var(--osh-paper);border-color:var(--osh-line)}
+body.tw-cel .twc :is(.twc-apps,.twc-nav){background:color-mix(in srgb,var(--osh-paper) 90%,transparent);border-color:var(--osh-line)}
+body.tw-cel .twc :is(.twc-card h2,.twc-porta-txt b){color:var(--twc-f1)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) body.tw-cel .twc{--twc-ink:var(--osh-night-ink);--twc-sub:var(--osh-night-sub);--twc-borda:var(--osh-night-line);--twc-sombra:var(--osh-night)}
+  :root:not([data-theme="light"]) body.tw-cel .twc-tela{background:radial-gradient(rgba(255,255,255,.05) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,var(--osh-night),var(--osh-night-paper))}
+  :root:not([data-theme="light"]) body.tw-cel .twc :is(.twc-topo,.twc-card,.twc-faixa,.twc-eu,.twc-cfg,.twc-filtros,.twc-folha-caixa,.twc-nav,.twc-apps){background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important}
+  :root:not([data-theme="light"]) body.tw-cel .twc :is(.twc-card h2,.twc-porta-txt b,.twc-faixa h1){color:var(--osh-night-ink)!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay:not([hidden]){background:linear-gradient(170deg,var(--osh-night),var(--osh-night-paper))!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay>.panel.tw-window-surface{background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important}
+}

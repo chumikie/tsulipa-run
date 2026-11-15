@@ -1126,6 +1126,9 @@
     if(!cel) return;
     var comecou = typeof hubComecou !== 'undefined' ? hubComecou : true;
     var v = comecou ? topo() : 'abre', chave = v + '|' + pilha.length;
+    // A abertura é estática entre toques: não desmontar/recriar seus canvases,
+    // nem retirar/reinserir a vitrine dos Idols em atualizações de login e missões.
+    if(v === 'abre' && tela && tela.getAttribute('data-tela') === 'abre' && $id('twcAbreVitrine')) return;
     var rolagem = chave === ultimaTela ? tela.scrollTop : 0; ultimaTela = chave;
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
@@ -1355,6 +1358,7 @@
   // Se a interface nova falhar, o hub clássico deve continuar acessível.
   // Não tocar em saves, conta, inventário ou dados do servidor.
   function falhaInicializacao(erro){
+    try{ vitrineDevolver(); }catch(e){}
     try{ if(cel){ cel.remove(); cel = null; } }catch(e){}
     tela = nav = folha = null;
     try{ if(mold) mold.hidden = true; }catch(e){}

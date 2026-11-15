@@ -91,6 +91,36 @@
     {id:'chat', campo:'hat', nome:'Acessório'}, {id:'cgl', campo:'gl', nome:'Óculos'}
   ];
   var EXPR = [[0, '🙂', 'Normal'], [2, '😆', 'Feliz'], [3, '😉', 'Piscadinha'], [4, '😮', 'Surpresa'], [5, '😢', 'Chorinho'], [6, '😍', 'Apaixonado'], [1, '😣', 'Concentrado']];
+  /* Favoritos: 3 visuais guardados neste aparelho (chave nova brs48cr_favs). Tocar num espaço cheio veste o
+     visual; 💾 guarda o visual atual naquele espaço. Ao vestir, peças que não estão liberadas são ignoradas.
+     A cor da pele não entra: ela só muda quando a pessoa escolhe. */
+  var FAV_CHAVE = 'brs48cr_favs', FAV_CAMPOS = ['hair', 'hair2', 'eye', 'outcol', 'legcol', 'back', 'front', 'mecha', 'streak', 'det', 'olho',
+    'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl', 'hat'];
+  function favLer(){ try{ var v = JSON.parse(localStorage.getItem(FAV_CHAVE) || '[]'); return Array.isArray(v) ? v.slice(0, 3) : []; }catch(_){ return []; } }
+  function favGravar(l){ try{ localStorage.setItem(FAV_CHAVE, JSON.stringify(l.slice(0, 3))); }catch(_){} }
+  function favGuardar(i){
+    var c = cu(); if(!c) return; var l = favLer(), f = {};
+    FAV_CAMPOS.forEach(function(k){ f[k] = c[k] == null ? (k === 'streak' ? false : '') : c[k]; });   // vazio vira '' para voltar exatamente igual
+    while(l.length < i) l.push(null); l[i] = f; favGravar(l);
+  }
+  function favVestir(i, aoMudar){
+    var c = cu(), f = favLer()[i]; if(!c || !f) return;
+    anterior = JSON.parse(JSON.stringify(c));
+    FAV_CAMPOS.forEach(function(k){
+      if(f[k] === undefined) return;
+      if(f[k] === null) f[k] = '';
+      var id = CAMPO_ID[k];
+      if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')) return;   // peça trancada agora: fica a atual
+      c[k] = f[k];
+    });
+    if(c.det === 'tulipa') c.hat = '';
+    c.img = c.hair; c.streak = !!c.mecha;
+    if(typeof saveCu === 'function') saveCu();
+    if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);
+    depois(); atualizarTudo();
+    if(aoMudar) try{ aoMudar('*'); }catch(_){}
+    try{ if(typeof sfx !== 'undefined' && sfx && sfx.card) sfx.card(); }catch(_){}
+  }
   var ESTADOS = {}, INSTANCIAS = [];
   function T(t){ return typeof tr === 'function' ? tr(t) : t; }
   // Desenha um personagem do editor num canvas qualquer (mesmo drawChar do jogo).
@@ -172,6 +202,24 @@
       if(!pedido) pedido = requestAnimationFrame(function(){ pedido = 0; prev(); });
       clearTimeout(pedidoMini); pedidoMini = setTimeout(miniaturas, 120);
     };
+    function favoritos(){
+      var box = el.favs; if(!box || !visivel()) return;
+      var l = favLer(); box.innerHTML = '<span class="cmfavt">⭐ ' + T('Favoritos') + '</span>';
+      for(var i = 0; i < 3; i++) (function(i){
+        var f = l[i], w = document.createElement('div'); w.className = 'cmfav';
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'cmfavvestir';
+        if(f){ var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96; cv.setAttribute('aria-hidden', 'true'); b.appendChild(cv);
+          b.setAttribute('aria-label', T('Vestir favorito') + ' ' + (i + 1)); pintar(cv, Object.assign({}, cu(), f), 3.2, 48 - 15 * 3.2, 48 - 13 * 3.2, 0, false);
+          b.addEventListener('click', function(){ favVestir(i, aoMudar); });
+        } else { b.textContent = '＋'; b.disabled = true; b.setAttribute('aria-label', T('Espaço vazio') + ' ' + (i + 1)); }
+        var g = document.createElement('button'); g.type = 'button'; g.className = 'cmfavguardar'; g.textContent = '💾';
+        g.setAttribute('aria-label', T('Guardar visual atual no espaço') + ' ' + (i + 1));
+        g.addEventListener('click', function(){ favGuardar(i); favoritos(); });
+        w.appendChild(b); w.appendChild(g); box.appendChild(w);
+      })(i);
+    }
+    var atualizarBase = eu.atualizar;
+    eu.atualizar = function(){ atualizarBase(); clearTimeout(eu.tf); eu.tf = setTimeout(favoritos, 140); };
     eu.vivo = function(){ return !!(el.cv && el.cv.isConnected); };
     abas(); expressoes(); eu.atualizar();
     return eu;
@@ -180,7 +228,7 @@
   var atualizar = atualizarTudo;
   function estudio(){
     var cust = $('cust'); if(!cust || !$('cmCv')) return;
-    INSTANCIAS.push(Estudio({cv:$('cmCv'), expr:$('cmExpr'), abas:$('cmAbas'), grade:$('cmGrade')}, 'cm', function(){ return !cust.hidden; }));
+    INSTANCIAS.push(Estudio({cv:$('cmCv'), expr:$('cmExpr'), abas:$('cmAbas'), grade:$('cmGrade'), favs:$('cmFavs')}, 'cm', function(){ return !cust.hidden; }));
     ['cust', 'cust_roupa'].forEach(function(id){ var e = $(id); if(e && !e.dataset.cmOuvindo){ e.dataset.cmOuvindo = '1'; e.addEventListener('input', atualizarTudo, true); e.addEventListener('change', atualizarTudo, true); e.addEventListener('click', atualizarTudo, true); } });
     // a aba do Você abre por pick(3): redesenha quando o editor aparece
     if(typeof MutationObserver === 'function' && !cust.dataset.cmObs){ cust.dataset.cmObs = '1'; new MutationObserver(function(){ if(!cust.hidden) atualizarTudo(); }).observe(cust, {attributes:true, attributeFilter:['hidden']}); }
@@ -193,11 +241,11 @@
     box.innerHTML = '<div class="cmprev"><canvas class="cmcv" width="440" height="360" role="img" aria-label="' + T('Prévia do visual') + '"></canvas>' +
       '<div class="cmexpr" role="group" aria-label="' + T('Expressões') + '"></div>' +
       '<div class="custacoes"><button type="button" class="btn alt" data-cm="sortear">🎲 <span>' + T('Sortear') + '</span></button><button type="button" class="btn alt" data-cm="desfazer"' + (anterior ? '' : ' disabled') + '>↩ <span>' + T('Desfazer') + '</span></button></div></div>' +
-      '<div class="cmabas" role="tablist" aria-label="' + T('Partes') + '"></div><div class="cmgrade" role="tabpanel"></div>';
+      '<div class="cmfavs" role="group" aria-label="' + T('Favoritos') + '"></div><div class="cmabas" role="tablist" aria-label="' + T('Partes') + '"></div><div class="cmgrade" role="tabpanel"></div>';
     raiz.insertBefore(box, raiz.firstChild); raiz.classList.add('cmativo');
     box.querySelector('[data-cm="sortear"]').addEventListener('click', function(){ sortear(true); if(aoMudar) try{ aoMudar('*'); }catch(_){} });
     box.querySelector('[data-cm="desfazer"]').addEventListener('click', function(){ desfazer(); if(aoMudar) try{ aoMudar('*'); }catch(_){} });
-    var i = Estudio({cv:box.querySelector('.cmcv'), expr:box.querySelector('.cmexpr'), abas:box.querySelector('.cmabas'), grade:box.querySelector('.cmgrade')},
+    var i = Estudio({cv:box.querySelector('.cmcv'), expr:box.querySelector('.cmexpr'), abas:box.querySelector('.cmabas'), grade:box.querySelector('.cmgrade'), favs:box.querySelector('.cmfavs')},
       chave, function(){ return box.isConnected && box.offsetParent !== null; }, aoMudar,
       typeof perfMontMudou === 'function' ? function(campo, v){ perfMontMudou(campo, v); } : null);   // grava sempre no Você
     INSTANCIAS.push(i);
@@ -212,5 +260,5 @@
     if(d && !d.dataset.ligado){ d.dataset.ligado = '1'; d.addEventListener('click', desfazer); }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar };
+  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:favLer };
 })();

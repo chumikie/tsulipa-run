@@ -273,3 +273,14 @@ body:not(.jogando) #sb{display:none!important}
 .perfmont.cmativo label:has(select[data-m="baixo"]),.perfmont.cmativo label:has(select[data-m="hat"]),
 .perfmont.cmativo label:has(select[data-m="gl"]),
 .perfmont.cmativo select[data-m="olho"],.perfmont.cmativo select[data-m="mecha"],.perfmont.cmativo select[data-m="out"]{display:none}
+
+/* Favoritos do charmaker: 3 espaços (vestir com um toque, 💾 guarda o visual atual) */
+.cmfavs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.cmfavs .cmfavt{flex:1 0 100%;text-align:center;font-weight:800;font-size:12.5px;color:var(--b1)}
+.cmfavs .cmfav{display:flex;align-items:center;gap:2px}
+.cmfavs .cmfavvestir{width:44px;height:44px;padding:0;border-radius:14px;border:2px dashed color-mix(in srgb,var(--b1) 35%,transparent);background:var(--card);
+  font-size:20px;color:var(--b1);cursor:pointer;overflow:hidden}
+.cmfavs .cmfavvestir:not(:disabled){border-style:solid}
+.cmfavs .cmfavvestir canvas{width:40px;height:40px;display:block;margin:auto}
+.cmfavs .cmfavvestir:disabled{cursor:default;opacity:.6}
+.cmfavs .cmfavguardar{width:28px;height:28px;padding:0;border:0;border-radius:50%;background:var(--chip);font-size:14px;cursor:pointer}

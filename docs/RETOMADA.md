@@ -30,9 +30,7 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Maiores na abertura:** pet.js 235 KB, centerrun.js 218 KB, index.html 218 KB, perfil.js 115 KB, hub.js 108 KB, mapa-mundo.svg 95 KB.
 - **Próximos ganhos, do mais fácil ao mais trabalhoso:**
   1. ~~`favicon.svg`~~ e 2. ~~Happy⭐Cafe! e Handshake⭐Event! sob demanda~~: feitos (ver "Rodada de peso"). Dois ficou de fora.
-  3. Center Run (`centerrun.js`) só carregar ao tocar em jogar: o Hub é a primeira tela (~218 KB a menos), mas mexe no fluxo principal; testar bem.
-  4. `perfil.js` sob demanda (abre só no Perfil/Montar Idol).
-  5. Dividir `pet.js` (petPhone e petDraw são usados na abertura; o resto pode esperar).
+  3–5. Center Run, Perfil e pet: feitos na "Reforma de peso".
 
 ### Rodada de peso (15/11, PR #94)
 - **Feito:** `favicon.svg` 36→12 KB (imagem interna de 128 para 64 px, sem perder cor). Handshake⭐Event! e Happy⭐Cafe! sob demanda: `jogos-base.js` (5 KB) carrega na abertura com o que o Hub, o pet, a Vida na Cidade, o Idol⭐News! e o evento leem; o jogo (handshake, cafe, cafe-gorjeta, cafe-vip, cafe-duplo e flores, nessa ordem) baixa no primeiro toque. Abertura: 83→78 arquivos, 1907→1761 KB.
@@ -45,7 +43,31 @@ Comece por aqui. O resto do arquivo é o diário detalhado de cada etapa.
 - **Também avaliados e deixados:** módulos do karaokê no Idol⭐News! (`KaraokeRoomViews`, `KaraokeNewsPhoto`: sem eles a foto da janela some sem erro), `admin.js` (19 KB, ligado em muitos pontos), Dois (código espalhado por ~250 linhas do `index.html`).
 - **Se quiser seguir:** reforma própria em etapas: (1) laço e telas da corrida para uma função de início chamada ao tocar em jogar; (2) o mesmo para o pet; (3) só então separar arquivos. Cada etapa numa PR, testando a corrida inteira.
 
+### Reforma de peso (15/11, PR #94): corrida, pet e Perfil sob demanda
+Abertura: **1907 KB → 1460 KB** (Handshake/Café 146 KB + corrida 100 KB + pet 160 KB + Perfil 37 KB).
+Como foi feito: cobertura do Chrome função por função (o que roda fora de cada parte vs. dentro dela) + parser do TypeScript
+(`/opt/npm-tools/node_modules/typescript`) para cortar cada função exatamente, sem quebrar nada no meio.
+
+| Base (abertura) | Parte sob demanda | Baixa quando |
+|---|---|---|
+| `centerrun.js` (personagens, tradução, cartões, ranking) | `centerrun-corrida.js` (laço, cenário, obstáculos, fim de jogo, polaroid) | sai do Hub para o palco (`hubFechar` marca `twCorridaQuer`), toca JOGAR ou abre link direto |
+| `pet.js` (desenho do pet, humor, lembranças, fotos guardadas) | `pet-sala.js` (quarto, celular, agenda, camarim, minijogo, adoção) | abre o pet ou o 📸 da corrida |
+| `perfil.js` (biblioteca de desenho dos Idols, login, loja) | `perfil-tela.js` (abas, diário, recados, insígnias, estúdio de foto) | abre um Perfil (junto com os dados, no `perfAbrir`) |
+
+**Regras para mexer daqui em diante (armadilhas):**
+- Mudou um arquivo sob demanda? Suba a versão dentro da base: `TW_CORRIDA_ARQ`, `PET_SALA_ARQ`, `PERF_TELA_ARQ`.
+- Código da abertura (inclusive o `index.html`) **não pode** chamar função da parte sob demanda sem esperar: use `twCorridaAoCarregar` / `petSalaAoCarregar` / `perfTelaCarregar().then(...)`, ou `typeof f === 'function'` quando for só desenhar uma tela que ainda não existe. Também vale para função passada como valor (`addEventListener(t, f)`, `x.onclick = f`).
+- Os invólucros da Temporada 2 no `index.html` (`jump`, `spawn`, `obsDesenhar`, `end`, `update`, `draw`) entram via `twCorridaAoCarregar`; os de `petPhUI` e `petClose`, via `petSalaAoCarregar`.
+- No `pet.js` e no `perfil.js`, cada `//→nome` marca onde a função estava; na parte ela vem depois de `//←nome`. `tests/fonte-dividida.js` remonta a ordem original para os testes que recortam por posição. Função nova: escreva na base, a não ser que só a própria parte use.
+- `tests/index-modules.test.js` confere que as partes não executam nada ao carregar, não repetem declarações e não estão em `<script src>` do `index.html`.
+
+### Também na #94 (15/11)
+- **Mapa:** gatinho malhado (Galeria do Brilho) e de smoking (Star Stage) com coleira, piscando, dormindo à noite e soltando corações ao toque; passarinhos e borboletas redesenhados; peixinhos koi na fonte da Praça.
+- **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
+
 ### Falta validar (o dono testa)
+- Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
+- Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.
 - Handshake e Café no celular com internet lenta: o primeiro toque espera o download (~120 KB).
 - Conta real: publicar foto no tema da semana e ver +★3 (só uma vez na semana).
 - Conta real: salvar um visual com as peças novas pelo Montar Idol e recarregar.

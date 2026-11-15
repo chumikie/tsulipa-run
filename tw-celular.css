@@ -623,3 +623,17 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 @media (prefers-reduced-motion:reduce){
   .twc-fl,.twc-brilho,.twc-vivo,.twc-dot{animation:none!important}
 }
+
+/* Auditoria mobile A2: hierarquia visual e alinhamento, sem tocar na abertura. */
+@media (max-width:699px){
+  .twc-topo-in{gap:6px;padding-inline:10px}
+  .twc-eu{min-width:0;padding-right:8px;gap:7px}
+  .twc-eu-txt{flex:1;min-width:0}
+  .twc-st{min-width:0;max-width:38vw;box-sizing:border-box}
+  .twc-st b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .twc-nav-b{min-width:0;padding-inline:4px;font-size:12px}
+  .twc-nav-meio{flex:none;width:84px}
+  .twc-card,.twc .twc-porta{min-width:0;box-sizing:border-box}
+  .twc .twc-porta-txt{width:100%;overflow-wrap:anywhere}
+  body.tw-cel .tw-window-overlay .tw-window-close{min-width:44px;min-height:44px;box-sizing:border-box}
+}

@@ -637,3 +637,16 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
   .twc .twc-porta-txt{width:100%;overflow-wrap:anywhere}
   body.tw-cel .tw-window-overlay .tw-window-close{min-width:44px;min-height:44px;box-sizing:border-box}
 }
+
+/* Auditoria A3: janelas legíveis e roláveis em telas estreitas. Mantém o overlay como área de rolagem. */
+@media (max-width:760px){
+  body.tw-cel .tw-window-overlay:not([hidden]){box-sizing:border-box;min-width:0;overscroll-behavior-y:contain}
+  body.tw-cel .tw-window-overlay>.panel.tw-window-surface{min-width:0;box-sizing:border-box}
+  body.tw-cel .tw-window-overlay .tw-modal-title,
+  body.tw-cel .tw-window-overlay .tw-window-title{overflow-wrap:anywhere}
+  body.tw-cel .tw-window-overlay .tw-window-close{flex-shrink:0}
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-title{color:#e6d6ff!important;text-shadow:none!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-close{background:#2a1d4a!important;color:#f3e8ff!important;border-color:#685394!important;box-shadow:0 3px 0 #140b2e!important}
+}

@@ -8,32 +8,38 @@
   'use strict';
   var CHAVE = 'brs48cr_celular';
   var T = {
-    pt:{vis:'Visitante', ini:'Início', menu:'Menu', voltar:'Voltar', jogos:'Jogos', todos:'Todos os jogos', hoje:'Pra hoje', emdia:'Tudo em dia por hoje!',
+    pt:{rankVazio:'Jogue o Center Run para entrar no ranking', todosAlbum:'Todos', outros:'Outros', albumSub:'Seus cards do Star⭐Gacha!', albumVazio:'Nenhum card aqui ainda. Gire o Star⭐Gacha!', albumCompleto:'Ver metas e trocar cards', filtro:'Filtrar por Oshi',
+        vis:'Visitante', ini:'Início', menu:'Menu', voltar:'Voltar', jogos:'Jogos', todos:'Todos os jogos', hoje:'Pra hoje', emdia:'Tudo em dia por hoje!',
         mis:'Missões do dia', rank:'Ranking da semana', tv:'Ver na TV', mapa:'Mapa', mapaAgora:'Agora no mapa: {quem} · {rua}', mapaVazio:'Passeie pelo mapa da cidade',
         menuSub:'Tudo do TsuLiPa⭐World', jogosSub:'{n} jogos · escolha um', ajustes:'Ajustes', ajustesSub:'Idioma, tema e conta', classico:'Voltar ao visual clássico',
         loginT:'Entre para jogar', loginTxt:'Este jogo salva o seu progresso na sua conta. Entre com o Google para jogar.', agoraNao:'Agora não', entrar:'Entrar', sair:'Sair', sairOk:'Toque de novo para sair',
         album:'Álbum', busca:'Procurar Idol', nov:'Novidades', estrelas:'Ganhar estrelas', perfil:'Seu perfil', previa:'Visual novo (prévia)'},
-    en:{vis:'Visitor', ini:'Home', menu:'Menu', voltar:'Back', jogos:'Games', todos:'All games', hoje:'For today', emdia:"You're all set for today!",
+    en:{rankVazio:'Play Center Run to join the ranking', todosAlbum:'All', outros:'Others', albumSub:'Your Star⭐Gacha! cards', albumVazio:'No cards here yet. Spin the Star⭐Gacha!', albumCompleto:'See goals and trade cards', filtro:'Filter by Oshi',
+        vis:'Visitor', ini:'Home', menu:'Menu', voltar:'Back', jogos:'Games', todos:'All games', hoje:'For today', emdia:"You're all set for today!",
         mis:'Daily missions', rank:'Weekly ranking', tv:'Watch on TV', mapa:'Map', mapaAgora:'On the map now: {quem} · {rua}', mapaVazio:'Stroll around the city map',
         menuSub:'Everything in TsuLiPa⭐World', jogosSub:'{n} games · pick one', ajustes:'Settings', ajustesSub:'Language, theme and account', classico:'Back to the classic look',
         loginT:'Sign in to play', loginTxt:'This game saves your progress to your account. Sign in with Google to play.', agoraNao:'Not now', entrar:'Sign in', sair:'Sign out', sairOk:'Tap again to sign out',
         album:'Album', busca:'Find an Idol', nov:"What's new", estrelas:'Get stars', perfil:'Your profile', previa:'New look (preview)'},
-    es:{vis:'Visitante', ini:'Inicio', menu:'Menú', voltar:'Volver', jogos:'Juegos', todos:'Todos los juegos', hoje:'Para hoy', emdia:'¡Todo listo por hoy!',
+    es:{rankVazio:'Juega Center Run para entrar al ranking', todosAlbum:'Todos', outros:'Otros', albumSub:'Tus cards de Star⭐Gacha!', albumVazio:'Aún no hay cards aquí. ¡Gira el Star⭐Gacha!', albumCompleto:'Ver metas e intercambiar cards', filtro:'Filtrar por Oshi',
+        vis:'Visitante', ini:'Inicio', menu:'Menú', voltar:'Volver', jogos:'Juegos', todos:'Todos los juegos', hoje:'Para hoy', emdia:'¡Todo listo por hoy!',
         mis:'Misiones del día', rank:'Ranking de la semana', tv:'Ver en la TV', mapa:'Mapa', mapaAgora:'Ahora en el mapa: {quem} · {rua}', mapaVazio:'Pasea por el mapa de la ciudad',
         menuSub:'Todo de TsuLiPa⭐World', jogosSub:'{n} juegos · elige uno', ajustes:'Ajustes', ajustesSub:'Idioma, tema y cuenta', classico:'Volver al estilo clásico',
         loginT:'Entra para jugar', loginTxt:'Este juego guarda tu progreso en tu cuenta. Entra con Google para jugar.', agoraNao:'Ahora no', entrar:'Entrar', sair:'Salir', sairOk:'Toca otra vez para salir',
         album:'Álbum', busca:'Buscar Idol', nov:'Novedades', estrelas:'Ganar estrellas', perfil:'Tu perfil', previa:'Estilo nuevo (vista previa)'},
-    id:{vis:'Pengunjung', ini:'Beranda', menu:'Menu', voltar:'Kembali', jogos:'Game', todos:'Semua game', hoje:'Untuk hari ini', emdia:'Semua beres untuk hari ini!',
+    id:{rankVazio:'Main Center Run untuk masuk peringkat', todosAlbum:'Semua', outros:'Lainnya', albumSub:'Kartu Star⭐Gacha! milikmu', albumVazio:'Belum ada kartu di sini. Putar Star⭐Gacha!', albumCompleto:'Lihat target dan tukar kartu', filtro:'Saring menurut Oshi',
+        vis:'Pengunjung', ini:'Beranda', menu:'Menu', voltar:'Kembali', jogos:'Game', todos:'Semua game', hoje:'Untuk hari ini', emdia:'Semua beres untuk hari ini!',
         mis:'Misi harian', rank:'Peringkat minggu ini', tv:'Tonton di TV', mapa:'Peta', mapaAgora:'Di peta sekarang: {quem} · {rua}', mapaVazio:'Jalan-jalan di peta kota',
         menuSub:'Semua isi TsuLiPa⭐World', jogosSub:'{n} game · pilih satu', ajustes:'Pengaturan', ajustesSub:'Bahasa, tema, dan akun', classico:'Kembali ke tampilan klasik',
         loginT:'Masuk untuk bermain', loginTxt:'Game ini menyimpan progresmu di akunmu. Masuk dengan Google untuk bermain.', agoraNao:'Nanti saja', entrar:'Masuk', sair:'Keluar', sairOk:'Ketuk lagi untuk keluar',
         album:'Album', busca:'Cari Idol', nov:'Yang baru', estrelas:'Dapatkan bintang', perfil:'Profilmu', previa:'Tampilan baru (pratinjau)'},
-    th:{vis:'ผู้เยี่ยมชม', ini:'หน้าแรก', menu:'เมนู', voltar:'กลับ', jogos:'เกม', todos:'เกมทั้งหมด', hoje:'สำหรับวันนี้', emdia:'วันนี้ครบหมดแล้ว!',
+    th:{rankVazio:'เล่น Center Run เพื่อติดอันดับ', todosAlbum:'ทั้งหมด', outros:'อื่น ๆ', albumSub:'การ์ด Star⭐Gacha! ของคุณ', albumVazio:'ยังไม่มีการ์ดที่นี่ ลองหมุน Star⭐Gacha!', albumCompleto:'ดูเป้าหมายและแลกการ์ด', filtro:'กรองตามโอชิ',
+        vis:'ผู้เยี่ยมชม', ini:'หน้าแรก', menu:'เมนู', voltar:'กลับ', jogos:'เกม', todos:'เกมทั้งหมด', hoje:'สำหรับวันนี้', emdia:'วันนี้ครบหมดแล้ว!',
         mis:'ภารกิจประจำวัน', rank:'อันดับประจำสัปดาห์', tv:'ดูทางทีวี', mapa:'แผนที่', mapaAgora:'ตอนนี้บนแผนที่: {quem} · {rua}', mapaVazio:'เดินเล่นในแผนที่เมือง',
         menuSub:'ทุกอย่างใน TsuLiPa⭐World', jogosSub:'{n} เกม · เลือกหนึ่งเกม', ajustes:'ตั้งค่า', ajustesSub:'ภาษา ธีม และบัญชี', classico:'กลับไปหน้าตาแบบเดิม',
         loginT:'เข้าสู่ระบบเพื่อเล่น', loginTxt:'เกมนี้บันทึกความคืบหน้าไว้ในบัญชีของคุณ เข้าสู่ระบบด้วย Google เพื่อเล่น', agoraNao:'ไว้ก่อน', entrar:'เข้าสู่ระบบ', sair:'ออกจากระบบ', sairOk:'แตะอีกครั้งเพื่อออก',
         album:'อัลบั้ม', busca:'ค้นหาไอดอล', nov:'มีอะไรใหม่', estrelas:'รับดาว', perfil:'โปรไฟล์ของคุณ', previa:'หน้าตาใหม่ (ทดลอง)'},
-    ja:{vis:'ゲスト', ini:'ホーム', menu:'メニュー', voltar:'もどる', jogos:'ゲーム', todos:'すべてのゲーム', hoje:'きょうのおすすめ', emdia:'きょうはぜんぶ完了！',
+    ja:{rankVazio:'Center Runを遊んでランキングに参加しよう', todosAlbum:'全員', outros:'その他', albumSub:'あなたのStar⭐Gacha!カード', albumVazio:'まだカードがありません。Star⭐Gacha!を回そう！', albumCompleto:'目標とカード交換を見る', filtro:'推しで絞り込む',
+        vis:'ゲスト', ini:'ホーム', menu:'メニュー', voltar:'もどる', jogos:'ゲーム', todos:'すべてのゲーム', hoje:'きょうのおすすめ', emdia:'きょうはぜんぶ完了！',
         mis:'デイリーミッション', rank:'今週のランキング', tv:'テレビで見る', mapa:'マップ', mapaAgora:'いまマップに：{quem}・{rua}', mapaVazio:'街のマップをおさんぽしよう',
         menuSub:'TsuLiPa⭐Worldのすべて', jogosSub:'{n}本のゲーム・ひとつ選んでね', ajustes:'設定', ajustesSub:'言語・テーマ・アカウント', classico:'クラシック表示にもどす',
         loginT:'ログインして遊ぼう', loginTxt:'このゲームは進みぐあいをアカウントに保存します。Googleでログインして遊んでね。', agoraNao:'あとで', entrar:'ログイン', sair:'ログアウト', sairOk:'もう一度タップでログアウト',
@@ -153,11 +159,14 @@
   function palco(){
     var logo = document.querySelector('#hub .hubin .hublogo'), tema = $id('hubTema'), cv = $id('hubCv');
     var rot = cv ? (cv.getAttribute('aria-label') || 'TsuLiPa') : 'TsuLiPa';
+    var v = null; try{ v = typeof window.twMapaVisitaAgora === 'function' ? window.twMapaVisitaAgora() : null; }catch(e){ v = null; }
     return '<section class="twc-palco">' + brilhos([[6, 8, 14], [90, 6, 12, 'l'], [94, 40, 10, 'r'], [4, 46, 9, 'l']]) +
       '<h1 class="hublogo twc-hublogo" translate="no" aria-label="TsuLiPa World">' + (logo ? logo.innerHTML : 'TsuLiPa⭐World') + '</h1>' +
-      '<p class="hubsub twc-hubsub" lang="ja">ツリパ⭐ワールド</p>' +
       (tema && !tema.hidden && tema.textContent ? '<p class="twc-tema">' + esc(tema.textContent) + '</p>' : '') +
-      '<div class="twc-palco-moldura"><canvas id="twcPalcoCv" width="640" height="340" role="img" aria-label="' + esc(rot) + '"></canvas></div></section>';
+      '<div class="twc-palco-moldura"><canvas id="twcPalcoCv" width="640" height="340" role="img" aria-label="' + esc(rot) + '"></canvas>' +
+      // quem passeia no mapa agora vira um selinho no canto do palco (com a bolinha do membro)
+      '<button type="button" class="twc-selo" data-a="mapa">' + (v ? '<canvas class="twc-bola-mini" data-membro="' + v.k + '" width="64" height="64" aria-hidden="true"></canvas>' : '<i class="twc-vivo" aria-hidden="true"></i>') +
+      '<span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 16) + '</button></div></section>';
   }
   var palcoRaf = 0;
   function palcoQuadro(){
@@ -177,18 +186,30 @@
     var fx = (e.clientX - a.left) / a.width, fy = (e.clientY - a.top) / a.height;
     src.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, clientX:b.left + fx * b.width, clientY:b.top + fy * b.height}));
   }
-  function telaInicio(){
-    var alertas = [].slice.call(document.querySelectorAll('#hubCards .hubcard')).filter(alerta).slice(0, 3);
-    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
-    var feitas = mis ? mis.filter(function(m){ return m.feito; }).length : 0;
-    var linhas = alertas.map(function(c){
-      return '<button type="button" class="twc-linha" data-ir="' + esc(chaveDe(c)) + '"><span class="twc-linha-ico twc-g-' + (COR[chaveDe(c)] || 'roxo') + '">' + ico(chaveDe(c), 18) + '</span><span class="twc-linha-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' + ico('seta', 18) + '</button>';
+
+  /* ---------- bolinhas do Tsu, da Lirika e do Pati (desenhadas pelo próprio jogo, como as do Link! Like!) ---------- */
+  var MEMBROS = [['tsu', 'Tsu', '#9b30d9'], ['lirika', 'Lirika', '#3cb043'], ['pati', 'Pati', '#4169e1']];
+  function membroAv(k){
+    if(typeof HUB_TRIO === 'undefined' || typeof HUB_TRIO_DRAW_CHARS === 'undefined' || typeof CH === 'undefined' || !HUB_TRIO[k]) return null;
+    var m = HUB_TRIO[k], c = JSON.parse(JSON.stringify(HUB_TRIO_DRAW_CHARS[k])), base = CH[m[0]];
+    if(base){ c.out = base.out; c.outcol = base.outcol; }
+    return {c:c, pose:'', expr:m[4], fundo:'basico'};
+  }
+  function bolinhas(){
+    [].slice.call(cel.querySelectorAll('canvas[data-membro]')).forEach(function(cv){
+      var av = membroAv(+cv.getAttribute('data-membro'));
+      try{ if(av && typeof perfFotoRedonda === 'function') perfFotoRedonda(cv, av, true); }catch(e){}
     });
-    if(mis && mis.length) linhas.push('<button type="button" class="twc-linha" data-a="missoes"><span class="twc-linha-ico twc-g-lima">' + ico('missoes', 18) + '</span><span class="twc-linha-txt"><b>' + esc(t('mis')) + '</b><small>' + feitas + '/' + mis.length + '</small></span>' + ico('seta', 18) + '</button>');
-    if(!linhas.length) linhas.push('<p class="twc-emdia">' + ico('check', 18) + ' ' + esc(t('emdia')) + '</p>');
-    var pc = mis && mis.length ? Math.round(feitas / mis.length * 100) : 0;
-    var pi = []; try{ pi = typeof hubPetInfo === 'function' ? hubPetInfo() : []; }catch(e){ pi = []; }
-    var petC = card('pet'), petEmo = (petC && petC.querySelector('i')) ? petC.querySelector('i').textContent : '';
+  }
+
+  /* ---------- Início: palco, um destaque e os apps ---------- */
+  function pendencias(){ return [].slice.call(document.querySelectorAll('#hubCards .hubcard')).filter(alerta); }
+  function telaInicio(){
+    var al = pendencias(), d = al[0];
+    var destaque = d
+      ? '<button type="button" class="twc-destaque" data-ir="' + esc(chaveDe(d)) + '"><em class="twc-etiqueta">' + esc(t('hoje')) + '</em><span class="twc-linha-ico twc-g-' + (COR[chaveDe(d)] || 'roxo') + '">' + ico(chaveDe(d), 18) + '</span>' +
+        '<span class="twc-destaque-txt"><b translate="no">' + esc(titulo(d)) + '</b><small>' + esc(descricao(d)) + '</small></span>' + (al.length > 1 ? '<em class="twc-mais" aria-label="' + esc('+' + (al.length - 1)) + '">+' + (al.length - 1) + '</em>' : '') + ico('seta', 18) + '</button>'
+      : '<p class="twc-destaque twc-destaque-ok">' + ico('check', 18) + ' ' + esc(t('emdia')) + '</p>';
     var grade = [['run'], ['karaoke'], ['sora'], ['pet'], ['mapa', 'a'], ['news', 'a'], ['gacha'], ['todos', 'v']].map(function(g){
       var k = g[0];
       if(g[1] === 'a') return app(k, k === 'news' ? 'Idol News' : t('mapa'), 'data-a="' + k + '"');
@@ -196,27 +217,28 @@
       var c = card(k); if(!c) return '';
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() +
-      '<button type="button" class="twc-ticker" data-a="mapa"><i class="twc-vivo" aria-hidden="true"></i><span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 18) + '</button>' +
-      '<section class="twc-card twc-hoje" aria-labelledby="twcHojeT"><div class="twc-card-cab"><h2 id="twcHojeT">' + esc(t('hoje')) + '</h2>' +
-        (mis && mis.length ? '<span class="twc-prog"><span class="twc-barra" aria-hidden="true"><i style="width:' + pc + '%"></i></span><small>' + feitas + '/' + mis.length + '</small></span>' : '') + '</div>' +
-        linhas.join('') + brilhos([[94, -4, 16, 'r']]) + '</section></div>' +
-      '<div class="twc-lado"><div class="twc-duas">' +
-        '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
-          (petEmo ? '<span class="twc-idol-pet" aria-hidden="true">' + esc(petEmo) + '</span>' : '') + '<b>' + esc(pi[0] || 'Backstage⭐Pet!') + '</b>' + badge(petC) + brilhos([[10, 10, 11], [80, 40, 9]]) + '</button>' +
-        '<button type="button" class="twc-card twc-rank" data-a="tv"><span class="twc-rank-t">' + ico('trofeu', 20) + '<b>' + esc(t('rank')) + '</b></span><span class="twc-rank-n">' + esc(recorde()) + '</span><small>' + esc(tt('Recorde')) + ' · ' + esc(t('tv')) + '</small>' + brilhos([[78, 64, 10, 'l'], [70, 12, 8]]) + '</button>' +
-      '</div>' +
-      '<section class="twc-apps" aria-label="' + esc(t('jogos')) + '">' + grade + '</section>' +
-      '</div></div>';
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
+      '<div class="twc-lado">' + destaque + '<section class="twc-apps" aria-label="' + esc(t('jogos')) + '">' + grade + '</section></div></div>';
   }
+
+  /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
   function banner(k, tit, linha, botao, attrs, fita, extra){
-    return '<button type="button" class="twc-banner twc-g-' + (COR[k] || 'roxo') + '" ' + attrs + '><i class="twc-varre" aria-hidden="true"></i>' + (fita ? '<em class="twc-fita">' + esc(fita) + '</em>' : '') +
-      '<span class="twc-banner-txt"><b translate="no">' + esc(tit) + '</b><small>' + esc(linha) + '</small>' + (extra || '') + '</span><span class="twc-banner-btn">' + esc(botao) + '</span>' +
-      brilhos([[70, 14, 10], [62, 70, 8, 'l']]) + '</button>';
+    return '<button type="button" class="twc-banner" ' + attrs + '><span class="twc-banner-ico twc-g-' + (COR[k] || 'roxo') + '">' + ico(k, 26) + '</span>' + (fita ? '<em class="twc-fita">' + esc(fita) + '</em>' : '') +
+      '<span class="twc-banner-txt"><b translate="no">' + esc(tit) + '</b><small>' + esc(linha) + '</small>' + (extra || '') + '</span><span class="twc-amarelo">' + esc(botao) + '</span></button>';
   }
   function telaMenu(){
     var run = card('run'), kar = card('karaoke'), gac = card('gacha');
     var musica = ''; try{ musica = typeof hubMusicaSemana === 'function' ? hubMusicaSemana()[1] : ''; }catch(e){}
+    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
+    var feitas = mis ? mis.filter(function(m){ return m.feito; }).length : 0, pc = mis && mis.length ? Math.round(feitas / mis.length * 100) : 0;
+    var linhas = pendencias().slice(0, 4).map(function(c){
+      return '<button type="button" class="twc-linha" data-ir="' + esc(chaveDe(c)) + '"><span class="twc-linha-ico twc-g-' + (COR[chaveDe(c)] || 'roxo') + '">' + ico(chaveDe(c), 18) + '</span><span class="twc-linha-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' + ico('seta', 18) + '</button>';
+    });
+    if(mis && mis.length) linhas.push('<button type="button" class="twc-linha" data-a="missoes"><span class="twc-linha-ico twc-g-lima">' + ico('missoes', 18) + '</span><span class="twc-linha-txt"><b>' + esc(t('mis')) + '</b><small>' + feitas + '/' + mis.length + '</small></span>' + ico('seta', 18) + '</button>');
+    if(!linhas.length) linhas.push('<p class="twc-emdia">' + ico('check', 18) + ' ' + esc(t('emdia')) + '</p>');
+    var pi = []; try{ pi = typeof hubPetInfo === 'function' ? hubPetInfo() : []; }catch(e){ pi = []; }
+    var petC = card('pet'), petEmo = (petC && petC.querySelector('i')) ? petC.querySelector('i').textContent : '';
+    var rec = +(typeof best !== 'undefined' ? best : 0) || 0;
     var bs = [];
     if(run) bs.push(banner('run', titulo(run), tt('Recorde') + ': ' + recorde(), tt('Jogar'), 'data-ir="run"'));
     if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
@@ -224,12 +246,68 @@
     bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
     var at = [['missoes', t('mis'), 'data-a="missoes"'], ['perfil', tt('Meu Perfil'), 'data-ir="perfil"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
               ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
-    if(typeof window.albumAbrir !== 'function') at = at.filter(function(a){ return a[0] !== 'album'; });
-    return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu"><div class="twc-banners">' + bs.join('') + '</div>' +
+    return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
+      '<div class="twc-menu-topo"><div class="twc-duas">' +
+        '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
+          (petEmo ? '<span class="twc-idol-pet" aria-hidden="true">' + esc(petEmo) + '</span>' : '') + '<b>' + esc(pi[0] || 'Backstage⭐Pet!') + '</b>' + badge(petC) + '</button>' +
+        '<button type="button" class="twc-card twc-rank" data-a="tv"><span class="twc-rank-t">' + ico('trofeu', 20) + '<b>' + esc(t('rank')) + '</b></span>' +
+          (rec ? '<span class="twc-rank-n">' + esc(recorde()) + '</span><small>' + esc(tt('Recorde')) + ' · ' + esc(t('tv')) + '</small>' : '<small class="twc-rank-vazio">' + esc(t('rankVazio')) + '</small><small>' + esc(t('tv')) + '</small>') + '</button>' +
+      '</div>' +
+      '<section class="twc-card twc-hoje" aria-labelledby="twcHojeT"><div class="twc-card-cab"><h2 id="twcHojeT">' + esc(t('hoje')) + '</h2>' +
+        (mis && mis.length ? '<span class="twc-prog"><span class="twc-barra" aria-hidden="true"><i style="width:' + pc + '%"></i></span><small>' + feitas + '/' + mis.length + '</small></span>' : '') + '</div>' +
+        linhas.join('') + '</section></div>' +
+      '<div class="twc-banners">' + bs.join('') + '</div>' +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
         return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + badge(c) + cadeado(a[0]) + '</button>';
       }).join('') + '</section></div>';
+  }
+
+  /* ---------- Álbum: grade de cards com filtro pelas bolinhas (como a tela de cartas do Link! Like!) ---------- */
+  // Lê só album_cards (a mesma consulta do álbum clássico). O filtro usa o Oshi gravado em cada card.
+  var album = {dados:null, erro:false, filtro:'', carregando:false};
+  function semAcento(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
+  function albumCarregar(){
+    if(album.carregando || typeof contaRpc !== 'function') return;
+    album.carregando = true;
+    contaRpc('album_cards').then(function(L){ album.dados = Array.isArray(L) ? L : []; album.erro = false; })
+      .catch(function(){ album.dados = []; album.erro = true; })
+      .then(function(){ album.carregando = false; if(cel && topo() === 'album') desenhar(); });
+  }
+  function albumGrupo(c){ var o = semAcento(c && c.card && c.card.oshi); return o === 'tsu' || o === 'lirika' || o === 'pati' ? o : 'outros'; }
+  function telaAlbum(){
+    if(album.dados === null) albumCarregar();
+    var tenho = {}, lista = [];
+    (album.dados || []).forEach(function(c){ var n = c && c.card && c.card.nick; if(n && !tenho[n]){ tenho[n] = c; lista.push(c); } });
+    var nomes = []; try{ nomes = typeof albumIdols === 'function' ? albumIdols() : []; }catch(e){ nomes = []; }
+    Object.keys(tenho).forEach(function(n){ if(nomes.indexOf(n) < 0) nomes.push(n); });
+    var total = Math.max(nomes.length, lista.length);
+    var f = album.filtro, mostrar = f ? lista.filter(function(c){ return albumGrupo(c) === f; }) : lista;
+    var faltam = f ? [] : nomes.filter(function(n){ return !tenho[n]; });
+    if(typeof cardsMem !== 'undefined') cardsMem.twcAlbum = mostrar;   // o toque abre o mesmo zoom de card do jogo (salvar como imagem incluso)
+    var filtros = [['', '<span class="twc-bola-todos">' + ico('todos', 22) + '</span>', t('todosAlbum')]].concat(MEMBROS.map(function(m, i){ return [m[0], '<canvas class="twc-bola" data-membro="' + i + '" width="96" height="96" aria-hidden="true" style="--cor:' + m[2] + '"></canvas>', m[1]]; }))
+      .concat([['outros', '<span class="twc-bola-todos twc-bola-outros">' + ico('estrela', 22) + '</span>', t('outros')]]);
+    var corpo;
+    if(album.dados === null) corpo = '<p class="twc-vazio">' + esc(tt('Carregando...')) + '</p>';
+    else if(!mostrar.length && !faltam.length) corpo = '<p class="twc-vazio">' + esc(album.erro ? tt('O álbum começa a guardar seus cards em breve. Por enquanto, veja quem falta!') : t('albumVazio')) + '</p>';
+    else corpo = '<div class="twc-cartas">' + mostrar.map(function(c, i){
+        return '<button type="button" class="twc-carta" data-cardz="twcAlbum|' + i + '" aria-label="' + esc(tt('Ver card') + ': ' + c.card.nick) + '"><canvas data-carta="' + i + '" width="360" height="504" aria-hidden="true"></canvas>' + (+c.vezes > 1 ? '<em class="twc-vezes">×' + (+c.vezes) + '</em>' : '') + '<small translate="no">' + esc(c.card.nick) + '</small></button>';
+      }).join('') + faltam.map(function(n){ return '<span class="twc-carta twc-carta-falta"><span class="twc-carta-q" aria-hidden="true">?</span><small translate="no">' + esc(n) + '</small></span>'; }).join('') + '</div>';
+    return faixa(esc(t('album')), t('albumSub'), lista.length + ' / ' + total) + '<div class="twc-pag twc-album">' +
+      '<div class="twc-album-corpo"><nav class="twc-filtros" aria-label="' + esc(t('filtro')) + '">' + filtros.map(function(x){
+        return '<button type="button" class="twc-filtro" data-filtro="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '<span>' + esc(x[2]) + '</span></button>';
+      }).join('') + '</nav><section class="twc-card twc-album-grade" aria-live="polite">' + corpo + '</section></div>' +
+      (typeof window.albumAbrir === 'function' ? '<button type="button" class="twc-btn twc-btn-claro" data-a="albumCompleto">' + esc(t('albumCompleto')) + '</button>' : '') + '</div>';
+  }
+  var cartasRaf = 0;
+  function cartasDesenhar(){   // em lotes de 4, para não travar o celular com muitos cards
+    cancelAnimationFrame(cartasRaf);
+    var lista = typeof cardsMem !== 'undefined' ? (cardsMem.twcAlbum || []) : [], i = 0;
+    var cvs = [].slice.call(cel.querySelectorAll('canvas[data-carta]'));
+    (function lote(){
+      for(var n = 0; n < 4 && i < cvs.length; n++, i++){ var cv = cvs[i], c = lista[+cv.getAttribute('data-carta')]; try{ if(c && c.card && typeof gachaCardDesenhar === 'function') gachaCardDesenhar(cv, cardsDados(c)); }catch(e){} }
+      if(i < cvs.length) cartasRaf = requestAnimationFrame(lote);
+    })();
   }
   function telaJogos(){
     var ks = jogosNaTela();
@@ -281,12 +359,12 @@
     tela.setAttribute('data-tela', v);
     var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
     tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
-      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : telaInicio()));
+      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : telaInicio()));
     tela.scrollTop = rolagem;
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
-    avatares();
+    avatares(); bolinhas(); if(v === 'album') cartasDesenhar();
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
   }
   function ir(v){ if(classico) sairClassico(); if(topo() !== v) pilha.push(v); som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
@@ -322,7 +400,8 @@
     if(a === 'nov') return classicoEm('.hubnov', function(d){ d.open = true; });
     if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
-    if(a === 'album'){ if(typeof window.albumAbrir === 'function') window.albumAbrir(); return; }
+    if(a === 'album'){ if(!logado()){ pedirLogin(t('album')); return; } album.dados = null; ir('album'); return; }
+    if(a === 'albumCompleto'){ if(typeof window.albumAbrir === 'function') window.albumAbrir(); return; }
     if(a === 'entrar'){ if(typeof contaEntrar === 'function') contaEntrar(); return; }
     if(a === 'sair'){
       if(sairPend){ sairPend = 0; if(typeof contaSair === 'function') contaSair(); return; }
@@ -337,6 +416,8 @@
     if(b.dataset.f){ var f = b.dataset.f; fecharFolha(); if(f === 'entrar' && typeof contaEntrar === 'function') contaEntrar(); return; }
     if(b.dataset.n){ var n = b.dataset.n; if(n === 'voltar') voltar(); else if(n === 'inicio') inicio(); else if(topo() === 'menu' && !classico) voltar(); else ir('menu'); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
+    if(b.dataset.filtro !== undefined){ album.filtro = b.dataset.filtro; som(); desenhar(); return; }
+    if(b.dataset.cardz) return;   // o zoom do card é do próprio jogo (gacha)
     if(b.dataset.l){   // idioma: o mesmo botão do menu do Center Run (salva e traduz o jogo todo; o hub se refaz e o celular junto)
       var lb = document.querySelector('.lang button[data-l="' + b.dataset.l + '"]'); if(lb) lb.click(); som(); return;
     }
@@ -383,7 +464,7 @@
   setInterval(function(){
     var h = $id('hub'); if(!cel || !h || h.hidden) return;
     var s = $id('twcEstrelas'); if(s && s.textContent !== estrelas()) s.textContent = estrelas();
-    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx) v.textContent = tx; }
+    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; desenhar(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
   window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar};

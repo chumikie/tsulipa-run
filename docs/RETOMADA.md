@@ -82,6 +82,9 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - O TsuLiPa continua lá: logo animado, tema do momento, partículas da temporada e o palco do Tsu, da Lirika e do Pati (cópia do `hubCv`; o toque chega ao hub e o trio reage). A cor da faixa e do botão Menu segue o tema do Oshi.
 - Sem conta, os jogos que pedem login mostram cadeado e o aviso "Entre para jogar" antes do login do Google (era o "Karaoke não abre" no tablet).
 - Tablet: duas colunas a partir de 900 px; banners e lista de jogos em duas colunas a partir de 720 px. `tw-mapa.js` expõe `twMapaVisitaAgora()` para a faixa "Agora no mapa".
+- Rodada 2 (comparando com prints do Link! Like!): o Início ficou só com o palco (com um selinho de quem passeia no mapa), um destaque "Pra hoje" e os 8 apps. Pet, ranking e o "Pra hoje" completo foram para o Menu. Os painéis ficaram brancos, os títulos viraram abas brancas e as ações usam botão amarelo. A cor segue o tema do Oshi.
+- Bolinhas do Tsu, da Lirika e do Pati desenhadas pelo jogo (`HUB_TRIO_DRAW_CHARS` + `perfFotoRedonda`). Álbum novo: grade de cards com filtro por Oshi (Todos, Tsu, Lirika, Pati e Outros, pelo `card.oshi`). Ele lê só `album_cards`; o toque abre o zoom de card do Gacha, e "Ver metas e trocar cards" abre o álbum clássico.
+- Falta a lista de músicas do Karaoke com capa e "quem canta": o seletor fica dentro de `karaoke-time.html` (iframe) e não existe o dado de quem canta cada música.
 
 ### Falta validar (o dono testa)
 - Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).

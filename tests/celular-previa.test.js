@@ -65,3 +65,16 @@ test('acessível e leve: botões de verdade, alvo de toque, sem animação para 
   assert.match(css, /body\.tw-cel \.tw-nav,body\.tw-cel #twNav\{display:none!important\}/);
   assert.match(css, /@media \(min-width:900px\)/, 'tablet deitado em duas colunas');
 });
+
+test('rodada 2: Início enxuto, bolinhas do trio pelo próprio jogo e Álbum com filtro por Oshi', () => {
+  const ini = js.slice(js.indexOf('function telaInicio(){'), js.indexOf('function banner('));
+  assert.ok(!/twc-hoje|twc-rank|twc-idol/.test(ini), 'Pra hoje completo, ranking e pet saíram do Início (estão no Menu)');
+  assert.match(ini, /palco\(\)/, 'o palco do trio continua no Início');
+  assert.match(js, /perfFotoRedonda\(cv, av, true\)/, 'bolinhas desenhadas com o mesmo desenho do perfil');
+  assert.match(js, /HUB_TRIO_DRAW_CHARS\[k\]/);
+  assert.match(js, /contaRpc\('album_cards'\)/, 'o Álbum lê só a consulta que já existe');
+  assert.match(js, /o === 'tsu' \|\| o === 'lirika' \|\| o === 'pati' \? o : 'outros'/);
+  assert.match(js, /cardsMem\.twcAlbum = mostrar/, 'o toque abre o zoom de card do próprio jogo');
+  assert.match(js, /if\(!logado\(\)\)\{ pedirLogin\(t\('album'\)\)/, 'sem conta, o Álbum avisa antes');
+  assert.match(css, /\.twc-amarelo\{/);
+});

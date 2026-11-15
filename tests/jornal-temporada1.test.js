@@ -105,3 +105,29 @@ test('episodio 3 usa renderizador existente sem mudar leitor historico',()=>{
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep3Html\(\)/);
 });
+
+test('episodio 4 tem cinco quadros e textos completos em seis idiomas',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ assert.equal(ctx.JN_T1_EP4.id,'plano-pati');
+ assert.equal(ctx.JN_T1_EP4.panels.length,5);
+ for(const lang of ['pt','en','es','id','th','ja']){
+  const t=ctx.jnT1Ep4Texto(lang);
+  assert.ok(t.titulo.length>3);
+  assert.equal(t.quadros.length,5);
+  for(const q of t.quadros){
+   assert.ok(q.narracao.length>10);
+   assert.ok(q.falas.length>=1);
+   assert.ok(q.falas.every(f=>f.texto.length>5));
+  }
+ }
+ assert.equal(ctx.JN_T1_PUBLICADA,false);
+ assert.equal(ctx.JN_T1.episodios[3].pronto,false);
+ assert.equal(ctx.jnT1Ep4Html(),'');
+ assert.equal(ctx.jnT1Disponivel(3,new Date('2027-01-01T12:00:00Z')),false);
+});
+test('episodio 4 reutiliza Canvas historico e preserva leitor',()=>{
+ assert.match(source,/function jnT1Ep4Desenhar\(canvas,indice\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP4\.panels\[indice\]\)/);
+ assert.match(source,/function jornalCapsUI\(\)/);
+ assert.match(source,/function jnT1Ep4Html\(\)/);
+});

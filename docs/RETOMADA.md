@@ -70,6 +70,11 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - **Indonésio:** chaves novas (Montar visual, Favoritos, Tema…) em `translations/id/TW_DICT.json`; depois de mexer, rode `node translations/id/build-preview-catalog.cjs` e suba `preview-data.js?v=`.
 - **Center Run:** JOGAR e Corrida do dia logo depois da escolha do personagem; o estúdio de visual fica recolhido em "✏️ Montar visual" (lembra aberto/fechado em `brs48cr_montar_aberto`).
 
+### Visita surpresa no mapa (15/11, PR nova)
+- A cada 8 minutos, cada rua sorteia pelo relógio (igual para todo mundo) se o Tsu, a Lirika ou o Pati passeiam por lá (~45% das vezes), com o visual do palco (`HUB_TRIO`), etiqueta "⭐ Nome" por cima das placas e frase própria ao toque (6 idiomas, `VISITA_FALAS`).
+- Quem está logado como Tsu, Lirika ou Pati (apelido da conta, sem diferenciar maiúsculas) nunca encontra a si mesmo: o sorteio passa para outro membro. O trio no palco do mapa-múndi continua como sempre.
+- Os bichinhos de chão reagem a quem visita como reagem ao seu Idol. Para testes: `TW_MAPA_DEBUG=true` expõe `TW_MAPA_VISITAS`.
+
 ### Falta validar (o dono testa)
 - Celular de verdade com internet lenta: primeira entrada no Center Run, no pet e no Perfil (espera o download).
 - Uma corrida longa (Temporada 2 passando de cenário, UFO, gigante, Fever) com a corrida sob demanda: testei partidas curtas.

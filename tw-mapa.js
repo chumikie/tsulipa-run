@@ -573,41 +573,111 @@
     var cx=[420,900,1260][k%3],t=tm*(0.5+k*.07);
     return {x:cx+Math.sin(t)*150+Math.sin(t*2.3)*40+extra*180,y:600+Math.cos(t*1.7)*60-extra*140,dir:Math.cos(t)>=0?1:-1};
   }
+  // Gatinho da rua (arte original): malhado laranja na Galeria do Brilho, smoking preto na Star Stage.
+  // Pisca, mexe a orelha e o rabo; tocado, pula e solta corações; à noite dorme.
+  var GATOS={harajuku:{pelo:'#ffb35c',escuro:'#e8863a',contorno:'#a85a24',claro:'#fff3e0',listra:'#e8863a',olho:'#3a2a2a',coleira:'#ff6fb5',pingente:'sino',bigode:'rgba(90,58,42,.55)'},
+    palco:{pelo:'#3b3346',escuro:'#2a2433',contorno:'#17121f',claro:'#f4f0fa',listra:'',olho:'#ffd23f',coleira:'#ffd23f',pingente:'estrela',bigode:'rgba(244,240,250,.75)'}};
+  function gatoDesenhar(tm,gx,gy,pt,noite){
+    var G=GATOS[cena]||GATOS.harajuku,up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*18:0,
+        dormindo=noite&&pt==null,cauda=reduzMov?0:Math.sin(tm*2.2)*(dormindo?.15:.5),
+        pisca=!reduzMov&&!dormindo&&(tm%4.2)<.13,orelha=!reduzMov&&!dormindo&&(tm%6.5)<.28?-.22:0,
+        cab=dormindo?3:(reduzMov?0:Math.sin(tm*1.1)*.6);
+    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);
+    ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(2,15+up/1.7,26,5,0,0,7);ctx.fill();
+    function rabo(){ctx.beginPath();ctx.moveTo(16,8);ctx.bezierCurveTo(34,10,36,-6,30+cauda*10,-20);}
+    function orelhas(){ctx.beginPath();ctx.moveTo(-15,-25+cab);ctx.lineTo(-16,-39+cab);ctx.lineTo(-5,-30+cab);ctx.closePath();
+      ctx.save();ctx.translate(7,-30+cab);ctx.rotate(orelha);ctx.moveTo(-6,2);ctx.lineTo(4,-9);ctx.lineTo(5,5);ctx.closePath();ctx.restore();}
+    // contorno (uma passada só, fica limpo) e depois o pelo por cima
+    ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle=G.contorno;
+    ctx.lineWidth=9.5;rabo();ctx.stroke();ctx.lineWidth=3.2;
+    ctx.beginPath();ctx.ellipse(3,1,20,15,0,0,7);ctx.stroke();ctx.beginPath();ctx.arc(-3,-17+cab,15,0,7);ctx.stroke();orelhas();ctx.stroke();
+    ctx.strokeStyle=G.pelo;ctx.lineWidth=6.5;rabo();ctx.stroke();
+    ctx.strokeStyle=G.claro;ctx.lineWidth=6.5;ctx.beginPath();ctx.moveTo(31.5+cauda*10,-16);ctx.lineTo(30+cauda*10,-20);ctx.stroke();
+    ctx.fillStyle=G.pelo;ctx.beginPath();ctx.ellipse(3,1,20,15,0,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(-3,-17+cab,15,0,7);ctx.fill();orelhas();ctx.fill();
+    ctx.fillStyle='#ffb3cf';ctx.beginPath();ctx.moveTo(-13.5,-27+cab);ctx.lineTo(-14.5,-35+cab);ctx.lineTo(-8,-30+cab);ctx.closePath();
+    ctx.save();ctx.translate(7,-30+cab);ctx.rotate(orelha);ctx.moveTo(-3,1);ctx.lineTo(2,-6);ctx.lineTo(3,3);ctx.closePath();ctx.restore();ctx.fill();
+    if(G.listra){ctx.strokeStyle=G.listra;ctx.lineWidth=2;ctx.beginPath();
+      ctx.moveTo(-6,-30+cab);ctx.lineTo(-5,-25+cab);ctx.moveTo(-2,-31+cab);ctx.lineTo(-2,-26+cab);ctx.moveTo(2,-30+cab);ctx.lineTo(1,-25+cab);
+      ctx.moveTo(14,-9);ctx.quadraticCurveTo(17,-3,15,3);ctx.moveTo(19,-6);ctx.quadraticCurveTo(22,0,20,6);ctx.stroke();}
+    // peito, focinho e patinhas claros
+    ctx.fillStyle=G.claro;ctx.beginPath();ctx.ellipse(-3,3,9,10,0,0,7);ctx.fill();
+    ctx.beginPath();ctx.ellipse(-3,-11+cab,7.5,5.2,0,0,7);ctx.fill();
+    ctx.strokeStyle=G.contorno;ctx.lineWidth=1.6;
+    [-9,3].forEach(function(px){ctx.fillStyle=G.claro;ctx.beginPath();ctx.ellipse(px,13,5.5,3.6,0,0,7);ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(px-1.5,11.5);ctx.lineTo(px-1.5,14);ctx.moveTo(px+1.5,11.5);ctx.lineTo(px+1.5,14);ctx.stroke();});
+    // coleira com sininho (ou estrela no gato do palco)
+    ctx.strokeStyle=G.coleira;ctx.lineWidth=3.2;ctx.beginPath();ctx.arc(-3,-17+cab,13.5,Math.PI*.28,Math.PI*.72);ctx.stroke();
+    ctx.save();ctx.translate(-3,-3+cab*.5);ctx.rotate(reduzMov?0:Math.sin(tm*3)*.12);
+    if(G.pingente==='estrela'){ctx.fillStyle='#ffd23f';ctx.strokeStyle='#b8860b';ctx.lineWidth=1;ctx.beginPath();
+      for(var q=0;q<10;q++){var an=-Math.PI/2+q*Math.PI/5,rr=q%2?1.8:4.2;ctx.lineTo(Math.cos(an)*rr,2.5+Math.sin(an)*rr);}ctx.closePath();ctx.fill();ctx.stroke();}
+    else{ctx.fillStyle='#ffd23f';ctx.strokeStyle='#b8860b';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,2.6,3.4,0,7);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#8a5a10';ctx.fillRect(-.5,3.2,1,1.8);ctx.fillStyle='rgba(255,255,255,.8)';ctx.beginPath();ctx.arc(-1.1,1.6,.9,0,7);ctx.fill();}
+    ctx.restore();
+    // rosto: bochechas, olhos (piscam), nariz, boquinha "ω" e bigodes
+    ctx.fillStyle='rgba(255,111,181,.45)';ctx.beginPath();ctx.ellipse(-13,-12+cab,3.2,2,0,0,7);ctx.ellipse(7,-12+cab,3.2,2,0,0,7);ctx.fill();
+    ctx.strokeStyle=G.olho==='#ffd23f'?'#f4f0fa':'#3a2a2a';ctx.lineWidth=1.8;
+    if(dormindo||pisca){ctx.beginPath();ctx.arc(-9,-18+cab,3,.15*Math.PI,.85*Math.PI);ctx.moveTo(6,-18+cab);ctx.arc(3,-18+cab,3,.15*Math.PI,.85*Math.PI);ctx.stroke();}
+    else{[-9,3].forEach(function(ex){ctx.fillStyle=G.olho;ctx.beginPath();ctx.ellipse(ex,-18+cab,2.9,3.6,0,0,7);ctx.fill();
+      ctx.fillStyle='#1a1222';ctx.beginPath();ctx.ellipse(ex,-17.6+cab,1.5,2.6,0,0,7);ctx.fill();
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex-.9,-19.4+cab,1,0,7);ctx.fill();});}
+    ctx.fillStyle='#ff7aa8';ctx.beginPath();ctx.moveTo(-4.6,-13.4+cab);ctx.lineTo(-1.4,-13.4+cab);ctx.lineTo(-3,-11.6+cab);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#5a3a2a';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(-4.5,-10.6+cab,1.5,.1,Math.PI-.1);ctx.moveTo(-0,-10.6+cab);ctx.arc(-1.5,-10.6+cab,1.5,.1,Math.PI-.1);ctx.stroke();
+    ctx.strokeStyle=G.bigode;ctx.lineWidth=.9;ctx.beginPath();
+    ctx.moveTo(-10,-11+cab);ctx.lineTo(-19,-13+cab);ctx.moveTo(-10,-9.5+cab);ctx.lineTo(-19,-8.5+cab);
+    ctx.moveTo(4,-11+cab);ctx.lineTo(13,-13+cab);ctx.moveTo(4,-9.5+cab);ctx.lineTo(13,-8.5+cab);ctx.stroke();
+    if(dormindo&&!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='16px "Mochiy Pop One",sans-serif';
+      for(var z=0;z<2;z++){var fz=((tm*.7+z*.5)%1);ctx.globalAlpha=Math.sin(fz*Math.PI)*.8;ctx.fillText('z',8+z*6+fz*6,-36-fz*18);}ctx.globalAlpha=1;}
+    ctx.restore();
+    if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-100,'♡',Math.min(1,(1.8-(tm-pt))*2));
+  }
+  // Peixinhos koi na fonte da Praça: nadam em volta do repuxo, meio submersos.
+  function peixesFonte(tm){
+    var cores=[['#ff8a3d','#fff6ec'],['#fff6ec','#ff6fb5']];
+    for(var k=0;k<2;k++){var t=(reduzMov?k*3:tm*.55)+k*Math.PI,x=800+Math.cos(t)*104,y=566+Math.sin(t)*17,dir=-Math.sin(t)>=0?1:-1,
+        ab=reduzMov?0:Math.sin(tm*8+k)*.35,fundo=Math.sin(t)<0;
+      ctx.save();ctx.translate(x,y);ctx.scale(dir*1.6,1.6);ctx.globalAlpha=fundo?.55:.85;
+      ctx.fillStyle=cores[k][0];ctx.beginPath();ctx.moveTo(-8,0);ctx.lineTo(-15,-5+ab*6);ctx.lineTo(-14,5+ab*6);ctx.closePath();ctx.fill();
+      ctx.beginPath();ctx.ellipse(0,0,9,4.6,0,0,7);ctx.fill();
+      ctx.fillStyle=cores[k][1];ctx.beginPath();ctx.ellipse(2,-1.4,3.4,2,0,0,7);ctx.ellipse(-4,1,2.4,1.6,0,0,7);ctx.fill();
+      ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(6,-1,1,0,7);ctx.fill();
+      if(!reduzMov&&(tm*.8+k)%3<.6){ctx.globalAlpha=.6*(1-((tm*.8+k)%3)/.6);ctx.strokeStyle='#ffffff';ctx.lineWidth=1;ctx.beginPath();
+        ctx.ellipse(8,-6,3+((tm*.8+k)%3)*14,1.2+((tm*.8+k)%3)*4,0,0,7);ctx.stroke();}
+      ctx.restore();}
+  }
   function desenharBichos(tm){
     var tipo=BICHOS[cena];if(!tipo)return;
     if(tipo==='gato'){
-      var gx=cena==='palco'?560:550,gy=700,noite=new Date().getHours()>=21||new Date().getHours()<6,
-          pt=pulos['gato'],up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*18:0,
-          cauda=reduzMov?0:Math.sin(tm*2.2)*.5;
-      ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);
-      ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(0,14+up,26,5,0,0,7);ctx.fill();
-      ctx.strokeStyle='#f6a04d';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(18,6);
-      ctx.quadraticCurveTo(38,0,34+cauda*10,-18);ctx.stroke();
-      ctx.fillStyle='#ffb35c';ctx.beginPath();ctx.ellipse(0,2,24,14,0,0,7);ctx.fill();
-      ctx.beginPath();ctx.arc(-18,-10,13,0,7);ctx.fill();
-      ctx.beginPath();ctx.moveTo(-29,-16);ctx.lineTo(-27,-31);ctx.lineTo(-18,-21);ctx.closePath();ctx.fill();
-      ctx.beginPath();ctx.moveTo(-15,-21);ctx.lineTo(-7,-30);ctx.lineTo(-6,-14);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#fff3e0';ctx.beginPath();ctx.ellipse(-20,-6,7,5,0,0,7);ctx.fill();
-      ctx.strokeStyle='#5a3a2a';ctx.lineWidth=2;
-      if(noite&&pt==null){ctx.beginPath();ctx.moveTo(-26,-12);ctx.lineTo(-21,-12);ctx.moveTo(-15,-12);ctx.lineTo(-10,-12);ctx.stroke();
-        if(!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='16px "Mochiy Pop One",sans-serif';ctx.globalAlpha=.4+.4*Math.sin(tm*2);ctx.fillText('z',2,-34-((tm*12)%14));}}
-      else{ctx.fillStyle='#3a2a2a';ctx.beginPath();ctx.arc(-23,-12,2.3,0,7);ctx.arc(-13,-12,2.3,0,7);ctx.fill();}
-      ctx.restore();
-      if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-92,'♪',Math.min(1,(1.8-(tm-pt))*2));
-      return;
+      var h=new Date().getHours();gatoDesenhar(tm,cena==='palco'?560:550,700,pulos['gato'],h>=21||h<6);return;
     }
+    if(cena==='praca')peixesFonte(tm);
     var n=tipo==='passaro'?3:4;
     for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm),tam=tipo==='passaro'?1.6:2;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.dir*tam,tam);
-      if(tipo==='borboleta'){var asa=reduzMov?1:Math.abs(Math.sin(tm*9+k)),cor=['#ff8fc8','#ffd36b','#b98bff','#7fd3ff'][k];
-        ctx.fillStyle=cor;ctx.globalAlpha=.92;
-        ctx.beginPath();ctx.ellipse(-6*asa,-5,8*asa+1,7,-.4,0,7);ctx.ellipse(6*asa,-5,8*asa+1,7,.4,0,7);ctx.fill();
-        ctx.beginPath();ctx.ellipse(-5*asa,5,5*asa+1,5,.3,0,7);ctx.ellipse(5*asa,5,5*asa+1,5,-.3,0,7);ctx.fill();
-        ctx.fillStyle='#5a3a7a';ctx.fillRect(-1.3,-8,2.6,16);}
-      else{var bat=reduzMov?0:Math.sin(tm*10+k)*7;
-        ctx.fillStyle=['#7fd3ff','#ffb3d6','#fff3a8'][k];ctx.beginPath();ctx.ellipse(0,0,13,9,0,0,7);ctx.fill();
-        ctx.beginPath();ctx.arc(11,-5,7,0,7);ctx.fill();ctx.fillStyle='#ffb35c';ctx.beginPath();ctx.moveTo(17,-6);ctx.lineTo(24,-4);ctx.lineTo(17,-2);ctx.fill();
-        ctx.fillStyle='#3a2a4a';ctx.beginPath();ctx.arc(13,-7,1.6,0,7);ctx.fill();
-        ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.moveTo(-4,-2);ctx.lineTo(4,-2);ctx.lineTo(-2,-14-bat);ctx.closePath();ctx.fill();}
+      ctx.lineJoin='round';ctx.lineCap='round';
+      if(tipo==='borboleta'){
+        var C=[['#ff8fc8','#ffd1ea','#c9478d'],['#ffd36b','#fff1b8','#c9921a'],['#b98bff','#e6dbff','#6e44c9'],['#7fd3ff','#dcf4ff','#2f8fca']][k],
+            asa=reduzMov?1:.22+.78*Math.abs(Math.sin(tm*9+k));
+        ctx.save();ctx.scale(asa,1);ctx.strokeStyle=C[2];ctx.lineWidth=1.1;
+        [-1,1].forEach(function(l){
+          ctx.fillStyle=C[0];ctx.beginPath();ctx.ellipse(l*7,-5,8,7,l*.45,0,7);ctx.fill();ctx.stroke();
+          ctx.beginPath();ctx.ellipse(l*5.5,5,5.2,4.6,-l*.35,0,7);ctx.fill();ctx.stroke();
+          ctx.fillStyle=C[1];ctx.beginPath();ctx.ellipse(l*8,-6,3.6,3,l*.45,0,7);ctx.fill();
+          ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(l*11,-9,1.3,0,7);ctx.arc(l*6,5.5,1.1,0,7);ctx.fill();});
+        ctx.restore();
+        ctx.fillStyle='#4a2f66';ctx.beginPath();ctx.ellipse(0,0,1.6,8,0,0,7);ctx.fill();
+        ctx.strokeStyle='#4a2f66';ctx.lineWidth=.9;ctx.beginPath();ctx.moveTo(-.5,-7.5);ctx.quadraticCurveTo(-3,-13,-5,-14);ctx.moveTo(.5,-7.5);ctx.quadraticCurveTo(3,-13,5,-14);ctx.stroke();
+        ctx.fillStyle='#4a2f66';ctx.beginPath();ctx.arc(-5,-14,1.1,0,7);ctx.arc(5,-14,1.1,0,7);ctx.fill();}
+      else{
+        var P=[['#7fd3ff','#3d9fd8'],['#ffb3d6','#e07aa8'],['#fff3a8','#d9b43a']][k],bat=reduzMov?0:Math.sin(tm*10+k),
+            corpo=function(){ctx.beginPath();ctx.ellipse(0,0,12,9.5,0,0,7);ctx.moveTo(16,-6);ctx.arc(10,-6,6.5,0,7);
+              ctx.moveTo(-10,-2);ctx.lineTo(-19,-7);ctx.lineTo(-17,2);ctx.closePath();};
+        ctx.strokeStyle=P[1];ctx.lineWidth=2.4;corpo();ctx.stroke();ctx.fillStyle=P[0];corpo();ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.ellipse(3,3.5,7,4.5,.15,0,7);ctx.fill();
+        ctx.save();ctx.translate(-1,-3);ctx.rotate(-.35-bat*.75);ctx.fillStyle=P[1];ctx.beginPath();ctx.ellipse(-6,0,8,4.4,0,0,7);ctx.fill();
+        ctx.fillStyle=P[0];ctx.beginPath();ctx.ellipse(-5,-.6,5.4,2.6,0,0,7);ctx.fill();ctx.restore();
+        ctx.fillStyle='#ffa94d';ctx.strokeStyle='#d9772a';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(15.5,-7.5);ctx.lineTo(21.5,-5.5);ctx.lineTo(15.5,-3.5);ctx.closePath();ctx.fill();ctx.stroke();
+        ctx.fillStyle='#2a1a3a';ctx.beginPath();ctx.arc(12,-8,1.9,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(11.4,-8.7,.7,0,7);ctx.fill();
+        ctx.fillStyle='rgba(255,111,181,.55)';ctx.beginPath();ctx.ellipse(10.5,-3.6,2.2,1.3,0,0,7);ctx.fill();}
       ctx.restore();}
   }
   function desenharToques(tm){
@@ -630,7 +700,7 @@
     if(q){pulos[q.i]=tm;somMapa('ponto');if(!reduzMov)toques.push({x:q.x,y:q.y-50*ESCALA_RUA,t0:tm,dur:.9,sim:q.dono?['❤','♡']:['♪','✦','❤']});desenhar();return;}
     // 2) bichinhos
     var tipo=BICHOS[cena];
-    if(tipo==='gato'){var gx=cena==='palco'?560:550;if(Math.abs(x-gx)<70&&Math.abs(y-680)<60){pulos['gato']=tm;somMapa('toque');desenhar();return;}}
+    if(tipo==='gato'){var gx=cena==='palco'?560:550;if(Math.abs(x-gx)<70&&Math.abs(y-680)<60){pulos['gato']=tm;somMapa('toque');if(!reduzMov)toques.push({x:gx-10,y:640,t0:tm,dur:.9,sim:['♡','❤','✦']});desenhar();return;}}
     else if(tipo){var n=tipo==='passaro'?3:4;for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm);
       if(Math.hypot(b.x-x,b.y-y)<60){bichoAssustado[cena+k]=tm;somMapa('toque');if(!reduzMov)toques.push({x:b.x,y:b.y,t0:tm,dur:.8,sim:['♡','✦']});desenhar();return;}}}
     // 3) fonte da Praça: espirra água e faz um desejo

@@ -341,7 +341,8 @@
       try{ polaroid(sec.querySelector('canvas'), c.escolhas, c.avatar || {}, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa')); }catch(e){}
     }).catch(function(){});
   }
-  if(typeof window.jornalAbasIniciar === 'function'){
+  window.studioCapaNews = capaNews;   // o carregador sob demanda chama isto quando o Idol⭐News! abre antes do Studio
+  if(typeof window.jornalAbasIniciar === 'function' && !window.TW_STUDIO_SOB_DEMANDA){
     var abasOrig = window.jornalAbasIniciar;
     window.jornalAbasIniciar = function(){ var r = abasOrig.apply(this, arguments); try{ capaNews(); }catch(e){} return r; };
   }

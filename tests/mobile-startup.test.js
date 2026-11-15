@@ -43,18 +43,24 @@ redrawScope.cel=null;redrawScope.agendarRedesenho();assert.equal(frameQueue.leng
 const guardStart=mobile.indexOf('    var comecou = typeof hubComecou');
 const guardEnd=mobile.indexOf('    var rolagem',guardStart);
 assert(guardStart>0 && guardEnd>guardStart,'guarda da abertura presente');
-const openingGuard=new Function('hubComecou','topo','pilha','tela','$id',
+const openingGuard=new Function('hubComecou','topo','pilha','tela','$id','requestAnimationFrame','cel','vitrineTrazer',
   mobile.slice(guardStart,guardEnd)+";return 'continua';");
-let openingLookups=0;
-assert.equal(openingGuard(false,()=> 'inicio',['inicio'],{getAttribute:()=> 'abre'},()=>{
+let openingLookups=0, openingFrames=[], idolMoves=0;
+const openingTela={getAttribute:()=> 'abre'};
+assert.equal(openingGuard(false,()=> 'inicio',['inicio'],openingTela,()=>{
   openingLookups++;return {};
-}),undefined,'abertura já montada não redesenha');
+},fn=>openingFrames.push(fn),{},()=>idolMoves++),undefined,'abertura já montada não redesenha');
 assert.equal(openingLookups,1);
-assert.equal(openingGuard(true,()=> 'inicio',['inicio'],{getAttribute:()=> 'inicio'},()=>null),
+assert.equal(openingFrames.length,1,'vitrine reagendada sem recriar a abertura');
+openingFrames.shift()();
+assert.equal(idolMoves,1,'vitrine pode ser devolvida ao slot');
+assert.equal(openingGuard(true,()=> 'inicio',['inicio'],{getAttribute:()=> 'inicio'},()=>null,
+  fn=>openingFrames.push(fn),{},()=>idolMoves++),
   'continua','outras telas continuam atualizando');
 assert(mobile.includes('try{ vitrineDevolver(); }catch(e){}'),'fallback devolve vitrine antes de remover celular');
 assert(!mobile.includes("(part ? part.innerHTML : '')"),'partículas do hub não são clonadas');
 assert(!mobile.includes("'hubTemaUI', 'hubIdolsUI'"),'vitrine não pode gerar redraw recursivo');
+assert(mobile.includes('!box.twcLigada'),'vitrine não deve reiniciar listeners em cada refresh');
 const config=JSON.parse(read('vercel.json'));
 assert(config.headers.some(r=>r.source.includes('js')&&r.headers.some(h=>h.value==='public, max-age=0, must-revalidate')));
 console.log('✓ Abertura: mutações agrupadas, moldura estável, toques livres e scripts revalidados');

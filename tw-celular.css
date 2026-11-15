@@ -745,3 +745,12 @@ body.tw-cel .twc .twc-amigos-dica{
  :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-dica{color:var(--osh-night-sub)!important}
  :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-c{border-color:var(--osh-night-line)}
 }
+
+/* A8.4-A — recepção VIP: conteúdo leve fora do Canvas, sem alterar a foto. */
+body.tw-cel .twc .twc-dentro-vip .twc-dentro-cena{border:2px solid var(--osh-line);border-radius:20px;box-shadow:0 5px 18px color-mix(in srgb,var(--osh-ink) 12%,transparent)}
+body.tw-cel .twc .twc-vip-boas{margin:12px 0 0;padding:14px;border:1px solid var(--osh-line);border-radius:18px;background:var(--osh-paper);text-align:center}
+body.tw-cel .twc .twc-vip-boas p{margin:0 0 10px;color:var(--osh-ink);font-size:14px;line-height:1.5;font-weight:700}
+body.tw-cel .twc .twc-vip-boas .twc-vip-ola{display:block;width:100%;min-height:44px;margin:0 0 8px}
+body.tw-cel .twc .twc-vip-boas small{display:block;color:var(--osh-sub);font-size:12px;line-height:1.45}
+@media (max-width:359px){body.tw-cel .twc .twc-vip-boas{padding:10px}body.tw-cel .twc .twc-vip-boas p{font-size:13px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas{background:var(--osh-night-paper);border-color:var(--osh-night-line)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas p{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas small{color:var(--osh-night-sub)}}

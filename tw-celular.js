@@ -72,6 +72,13 @@
     manutTxt:{pt:'O servidor deu uma pausinha. Seu progresso está guardado. Enquanto isso, dá para jogar o Center⭐Run! normalmente.',en:'The server is taking a little break. Your progress is safe. Meanwhile you can still play Center⭐Run!.',es:'El servidor está en una pausita. Tu progreso está guardado. Mientras tanto puedes jugar Center⭐Run!.',id:'Server sedang istirahat sebentar. Progresmu aman. Sementara itu kamu tetap bisa main Center⭐Run!.',th:'เซิร์ฟเวอร์พักแป๊บนึง ความคืบหน้าของคุณยังอยู่ครบ ระหว่างนี้เล่น Center⭐Run! ได้ตามปกติ',ja:'サーバーがひと休み中です。進み具合は保存されています。そのあいだもCenter⭐Run!は遊べます。'},
     semNet:{pt:'Sem internet agora',en:'No internet right now',es:'Sin internet ahora',id:'Tidak ada internet',th:'ตอนนี้ไม่มีอินเทอร์เน็ต',ja:'いまインターネットにつながっていません'},
     tentar:{pt:'Tentar de novo',en:'Try again',es:'Intentar de nuevo',id:'Coba lagi',th:'ลองอีกครั้ง',ja:'もう一度'},
+    vip:{pt:'Camarim VIP',en:'VIP Dressing Room',es:'Camerino VIP',id:'Ruang Rias VIP',th:'ห้องแต่งตัว VIP',ja:'VIP楽屋'},
+    vipSub:{pt:'Seu passe de hoje: foto com o TsuLiPa!',en:"Today's pass: a photo with TsuLiPa!",es:'Tu pase de hoy: ¡foto con TsuLiPa!',id:'Tiket hari ini: foto bareng TsuLiPa!',th:'บัตรผ่านวันนี้: ถ่ายรูปกับ TsuLiPa!',ja:'きょうのパス：TsuLiPaと写真！'},
+    vipAberto:{pt:'Aberto para você hoje ✨',en:'Open for you today ✨',es:'Abierto para ti hoy ✨',id:'Terbuka untukmu hari ini ✨',th:'เปิดให้คุณวันนี้ ✨',ja:'きょうは入れるよ ✨'},
+    vipFechado:{pt:'Cumpra o desejo do dia para entrar',en:"Grant today's wish to get in",es:'Cumple el deseo del día para entrar',id:'Penuhi keinginan hari ini untuk masuk',th:'ทำความปรารถนาวันนี้ให้สำเร็จเพื่อเข้า',ja:'きょうのおねがいをかなえると入れます'},
+    vipComo:{pt:'O Camarim VIP abre para todo mundo, todo dia: é só cumprir o desejo do dia do seu Idol. Lá dentro, o TsuLiPa tira uma foto com você!',en:"The VIP Dressing Room opens for everyone, every day: just grant your Idol's wish of the day. Inside, TsuLiPa takes a photo with you!",es:'El Camerino VIP abre para todos, todos los días: solo cumple el deseo del día de tu Idol. ¡Adentro, TsuLiPa se toma una foto contigo!',id:'Ruang Rias VIP terbuka untuk semua orang setiap hari: cukup penuhi keinginan Idol-mu hari ini. Di dalam, TsuLiPa foto bareng kamu!',th:'ห้อง VIP เปิดให้ทุกคนทุกวัน แค่ทำความปรารถนาประจำวันของไอดอลให้สำเร็จ ข้างในมี TsuLiPa รอถ่ายรูปกับคุณ!',ja:'VIP楽屋はだれでも毎日入れます。アイドルの「きょうのおねがい」をかなえるだけ。中でTsuLiPaがいっしょに写真をとってくれるよ！'},
+    vipGanhou:{pt:'Passe VIP liberado!',en:'VIP pass unlocked!',es:'¡Pase VIP liberado!',id:'Tiket VIP terbuka!',th:'ปลดล็อกบัตร VIP แล้ว!',ja:'VIPパスゲット！'},
+    vipFoto:{pt:'Foto VIP (PNG)',en:'VIP photo (PNG)',es:'Foto VIP (PNG)',id:'Foto VIP (PNG)',th:'รูป VIP (PNG)',ja:'VIP写真（PNG）'},
     treino:{pt:'Treino',en:'Practice',es:'Práctica',id:'Latihan',th:'ฝึกซ้อม',ja:'練習'},
     legCad:{pt:'pede conta para abrir',en:'needs an account',es:'necesita cuenta',id:'perlu akun',th:'ต้องมีบัญชี',ja:'アカウントが必要'},
     legTreino:{pt:'joga sem conta, mas prêmio e ranking só entrando',en:'play without an account; prizes and rankings need one',es:'juega sin cuenta; premios y ranking necesitan una',id:'main tanpa akun; hadiah dan peringkat perlu akun',th:'เล่นได้โดยไม่มีบัญชี แต่รางวัลและอันดับต้องเข้าสู่ระบบ',ja:'アカウントなしで遊べます。ごほうびとランキングはログインが必要'},
@@ -145,6 +152,7 @@
   function abrirCard(k){
     var c = card(k); if(!c) return;
     if(precisaEntrar(k)){ pedirLogin(titulo(c)); return; }
+    if(window.TW_HUMOR) try{ window.TW_HUMOR.abriu(k); }catch(e){}
     c.click();   // o mesmo caminho do hub: sons, cadeados, prêmios e telas continuam iguais
   }
   var JOGOS = ['run', 'karaoke', 'sora', 'battle', 'duo', 'cafe', 'handshake', 'studio', 'bloom', 'pet'];
@@ -270,7 +278,7 @@
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
     return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + destaque + '<section class="twc-apps" aria-label="' + esc(t('jogos')) + '">' + grade + '</section>' + idols() + '</div></div>';
+      '<div class="twc-lado">' + destaque + humorHtml() + '<section class="twc-apps" aria-label="' + esc(t('jogos')) + '">' + grade + '</section>' + idols() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -409,6 +417,48 @@
     return faixa(esc(t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
       (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
+  /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
+  function humorHtml(){
+    var H = window.TW_HUMOR; if(!H) return '';
+    var e = H.estado(), d = H.desejo(), vip = H.vipHoje();
+    var barras = H.barras.map(function(b){ var v = e[b];
+      return '<div class="twc-hb twc-hb-' + b + '"><span>' + esc(H.t(b)) + '</span><i role="progressbar" aria-label="' + esc(H.t(b)) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + v + '"><b style="width:' + v + '%"></b></i></div>'; }).join('');
+    return '<section class="twc-humor" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
+      (e.serie > 0 ? '<em class="twc-serie">🔥 ' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
+      '<div class="twc-hbs">' + barras + '</div>' +
+      (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') +
+      '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico" aria-hidden="true">' + d.icone + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
+        (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>') + '</div>' +
+      '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span aria-hidden="true">👑</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
+        (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>';
+  }
+  function desejoIr(ev){
+    if(ev === 'mapa' || ev === 'frase'){ ir('emb:mapa'); return; }
+    if(ev === 'battle' && typeof window.battleAbrir === 'function' && !card('battle')){ window.battleAbrir(); return; }
+    if(ev === 'studio' && typeof window.studioAbrir === 'function' && !card('studio')){ window.studioAbrir(); return; }
+    abrirCard(ev);
+  }
+  function toast(txt){
+    if(!cel) return; var el = $id('twcToast');
+    if(!el){ el = document.createElement('div'); el.id = 'twcToast'; el.className = 'twc-toast'; el.setAttribute('role', 'status'); cel.appendChild(el); }
+    el.textContent = txt; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
+    clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
+  }
+  if(window.TW_HUMOR) window.TW_HUMOR.ouvir(function(tipo){
+    if(tipo === 'desejo'){ toast('👑 ' + window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou')); try{ if(typeof beep === 'function'){ beep(784, .08, 'triangle', .05); setTimeout(function(){ beep(1175, .12, 'triangle', .05); }, 110); } }catch(e){} }
+    if(cel && !classico && topo() === 'inicio') agendaDesenho();
+  });
+  var desenhoPend = 0;
+  function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
+  function vipFoto(){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
+    var cv = $id('twcDentroCv'); if(!cv) return;
+    var W = cv.width + 40, Hh = cv.height + 110, o = document.createElement('canvas'); o.width = W; o.height = Hh;
+    var x = o.getContext('2d'); x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, Hh); x.drawImage(cv, 20, 20);
+    x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
+    x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
+    try{ var a = document.createElement('a'); a.href = o.toDataURL('image/png'); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+  }
+
   /* ---------- frases prontas (sem chat livre) ---------- */
   function frasesHtml(){
     var P = window.TW_PRESENCA; if(!P) return '';
@@ -421,12 +471,15 @@
      "lado de dentro" com quem está online nessa rua (e a vitrine) passeando, com os balões das frases prontas.
      O botão grande abre o lugar de verdade (o mesmo card do hub, com as mesmas regras). ---------- */
   var DENTRO = {cafe:{cor:['#ffe9d6', '#f7c9a4', '#c98a5a'], ico:'cafe', nome:'Café'}, loja:{cor:['#f3e6ff', '#e2ccff', '#9a6fd6'], ico:'loja', nome:'Zipper⭐Shop!'},
-    gacha:{cor:['#e5f6ff', '#c3e7ff', '#5a9fd6'], ico:'gacha', nome:'Star⭐Gacha!'}};
+    gacha:{cor:['#e5f6ff', '#c3e7ff', '#5a9fd6'], ico:'gacha', nome:'Star⭐Gacha!'},
+    vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
   function telaDentro(id){
-    var d = DENTRO[id], c = card(id), nome = c ? titulo(c) : d.nome;
-    return faixa(esc(nome), t2('dentroSub')) + '<div class="twc-pag twc-dentro"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
-      '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>' + frasesHtml() + '</div>';
+    var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
+    var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto">📸 ' + esc(t2('vipFoto')) + '</button>'
+      : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
+    return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
+      botao + frasesHtml() + '</div>';
   }
   var dentroRaf = 0;
   function dentroLigar(){ if(!dentroRaf) dentroRaf = requestAnimationFrame(dentroQuadro); }
@@ -466,15 +519,27 @@
       caixa(470, chao - 230, 120, 190, 60, '#fff'); caixa(482, chao - 218, 96, 166, 48, '#d8ecff');                 // espelho
       x.fillStyle = 'rgba(255,255,255,.8)'; x.fillRect(500, chao - 196, 10, 60);
       caixa(270, chao - 64, 150, 30, 14, '#ffc2e2');                                                                 // tapete-passarela
+    } else if(id === 'vip'){   // Camarim VIP: tapete vermelho, espelho dourado com lâmpadas, cordão de veludo e holofote
+      var hol = x.createRadialGradient(W / 2, 0, 10, W / 2, 120, 330); hol.addColorStop(0, 'rgba(255,240,180,.45)'); hol.addColorStop(1, 'rgba(255,240,180,0)');
+      x.fillStyle = hol; x.fillRect(0, 0, W, chao);
+      caixa(250, 30, 140, 150, 70, '#ffd23f'); caixa(262, 42, 116, 126, 58, '#e9dcff');
+      for(var lb = 0; lb < 10; lb++){ var an = Math.PI + lb / 9 * Math.PI; x.fillStyle = (Math.floor(s * 3) + lb) % 2 ? '#fff6c4' : '#ffe57a'; x.beginPath(); x.arc(320 + Math.cos(an) * 80, 105 + Math.sin(an) * 82, 6, 0, 7); x.fill(); }
+      x.fillStyle = '#c2185b'; x.beginPath(); x.moveTo(250, H); x.lineTo(390, H); x.lineTo(360, chao - 40); x.lineTo(280, chao - 40); x.closePath(); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.18)'; x.fillRect(318, chao - 40, 4, H);
+      [[70, '#ffd23f'], [570, '#ffd23f']].forEach(function(pp){ x.fillStyle = pp[1]; x.fillRect(pp[0] - 4, chao - 110, 8, 76); x.beginPath(); x.arc(pp[0], chao - 112, 9, 0, 7); x.fill(); });
+      x.strokeStyle = '#b0124f'; x.lineWidth = 7; x.beginPath(); x.moveTo(70, chao - 96); x.quadraticCurveTo(150, chao - 60, 230, chao - 96); x.moveTo(410, chao - 96); x.quadraticCurveTo(490, chao - 60, 570, chao - 96); x.stroke();
+      x.fillStyle = '#ffd23f'; x.font = '40px sans-serif'; x.textAlign = 'center';
+      for(var st2 = 0; st2 < 6; st2++){ x.globalAlpha = .4 + .6 * Math.abs(Math.sin(s * 1.5 + st2)); x.fillText('✦', 40 + st2 * 112, 40 + (st2 % 2) * 30); } x.globalAlpha = 1;
     } else {
       caixa(40, chao - 220, 150, 190, 24, '#ff6fb5'); x.fillStyle = '#e8f6ff'; x.beginPath(); x.arc(115, chao - 160, 52, 0, 7); x.fill();   // máquina
       ['#ffd23f', '#7b3ff0', '#b6ff3b', '#4169e1', '#fff'].forEach(function(c2, k){ x.fillStyle = c2; x.beginPath(); x.arc(90 + (k % 3) * 24, chao - 172 + Math.floor(k / 3) * 26 + Math.sin(s * 2 + k) * 2, 11, 0, 7); x.fill(); });
       caixa(95, chao - 92, 40, 30, 8, '#fff'); caixa(440, 40, 150, 150, 18, '#fff'); x.font = '60px sans-serif'; x.textAlign = 'center'; x.fillText('⭐', 515, 140);
     }
     // gente: quem está online nesta rua (com os balões das frases) + vitrine + você
-    var P = window.TW_PRESENCA, gente = dentroGente(), eu = typeof hubAv === 'function' ? hubAv() : null, lugares = [250, 360, 470, 580, 140];
+    var P = window.TW_PRESENCA, gente = id === 'vip' ? [] : dentroGente(), eu = typeof hubAv === 'function' ? hubAv() : null, lugares = [250, 360, 470, 580, 140];
     var todos = gente.map(function(p, k){ return {av:p.avatar, nick:p.nick, fala:p.frase ? {frase:p.frase, em:(+p.frase_em || 0) * 1000} : null, x:lugares[k]}; });
-    if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:lugares[todos.length] || 140, eu:true});
+    if(id === 'vip') todos = MEMBROS.map(function(m, k){ var av = membroAv(k); return av ? {av:av.c ? {c:av.c, pose:'', expr:av.expr} : av, nick:m[1], x:[150, 490, 590][k], membro:true} : null; }).filter(Boolean);
+    if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:id === 'vip' ? 320 : lugares[todos.length] || 140, eu:true});
     todos.forEach(function(g, k){
       var cw = 104, ch = 112, px = g.x - cw / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
       var av = {}; for(var q in g.av) av[q] = g.av[q];
@@ -629,6 +694,15 @@
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
     if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
+    if(a === 'vipFoto'){ vipFoto(); return; }
+    if(a === 'vip'){
+      if(window.TW_HUMOR && window.TW_HUMOR.vipHoje()){ ir('dentro:vip'); return; }
+      var dz = window.TW_HUMOR ? window.TW_HUMOR.desejo() : null;
+      folha.innerHTML = '<div class="twc-folha-caixa" role="dialog" aria-modal="true" aria-labelledby="twcVipT"><p class="twc-folha-ico" aria-hidden="true">👑</p><h2 id="twcVipT">' + esc(t2('vip')) + '</h2><p>' + esc(t2('vipComo')) + '</p>' +
+        (dz ? '<p class="twc-folha-desejo">' + dz.icone + ' <b>' + esc(dz.texto) + '</b></p><button type="button" class="twc-btn" data-f="desejoIr" data-ev="' + esc(dz.ev) + '">' + esc(window.TW_HUMOR.t('ir')) + '</button>' : '') +
+        '<button type="button" class="twc-btn twc-btn-claro" data-f="fechar">' + esc(t('agoraNao')) + '</button></div>';
+      folha.hidden = false; return;
+    }
     if(a === 'album'){ if(!logado()){ pedirLogin(t('album')); return; } album.dados = null; ir('album'); return; }
     if(a === 'albumCompleto'){ if(typeof window.albumAbrir === 'function') window.albumAbrir(); return; }
     if(a === 'entrar'){ if(typeof contaEntrar === 'function') contaEntrar(); return; }
@@ -647,10 +721,13 @@
       if(f === 'tutPular'){ tutFim(); return; }
       if(f === 'manutTentar'){ fecharFolha(); falhas = 0; manutVista = false; if(typeof hubIdolsCarregar === 'function') try{ hubIdolsEm = 0; hubIdolsCarregar(); }catch(e){} if(window.TW_PRESENCA) window.TW_PRESENCA.atualizar(); return; }
       if(f === 'manutRun'){ fecharFolha(); abrirCard('run'); return; }
+      if(f === 'desejoIr'){ var evd = b.dataset.ev; fecharFolha(); desejoIr(evd); return; }
       fecharFolha(); if(f === 'entrar' && typeof contaEntrar === 'function') contaEntrar(); return; }
     if(b.dataset.n){ var n = b.dataset.n; if(n === 'voltar') voltar(); else if(n === 'inicio') inicio(); else if(topo() === 'menu' && !classico) voltar(); else ir('menu'); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
-    if(b.dataset.frase){ if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
+    if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
+    if(b.dataset.frase){ if(window.TW_HUMOR && !logado()) window.TW_HUMOR.evento('frase');
+      if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.filtro !== undefined){ album.filtro = b.dataset.filtro; som(); desenhar(); return; }
     if(b.dataset.cardz) return;   // o zoom do card é do próprio jogo (gacha)
     if(b.dataset.l){   // idioma: o mesmo botão do menu do Center Run (salva e traduz o jogo todo; o hub se refaz e o celular junto)
@@ -722,7 +799,9 @@
     if(m === 'menu'){ ir('menu'); return; }
     if(m === 'inicio'){ inicio(); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
-    if(b.dataset.frase){ if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
+    if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
+    if(b.dataset.frase){ if(window.TW_HUMOR && !logado()) window.TW_HUMOR.evento('frase');
+      if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.ir){ abrirCard(b.dataset.ir); }
   }
   function molduraMontar(){

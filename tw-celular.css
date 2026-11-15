@@ -420,3 +420,45 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-st-mais{position:relative}
 .twc-st-mais::after{content:"";position:absolute;inset:-5px}
 .twc-lv{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Humor do Idol (barrinhas), Desejo do dia e passe do Camarim VIP */
+.twc-humor{margin:12px 0;padding:14px;border-radius:24px;background:rgba(255,255,255,.86);border:2px solid #fff;box-shadow:0 4px 0 rgba(123,63,240,.12)}
+.twc-humor-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.twc-humor h2{margin:0;flex:1;font:400 15px 'Mochiy Pop One',sans-serif;color:var(--twc-f2)}
+.twc-diam{flex:none;width:18px;height:26px;background:var(--c);clip-path:polygon(50% 0,100% 62%,50% 100%,0 62%);filter:drop-shadow(0 2px 0 rgba(30,10,60,.25));animation:twcGira 2.6s linear infinite}
+@keyframes twcGira{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.3)}}
+.twc-serie{font:800 11.5px "M PLUS Rounded 1c",sans-serif;font-style:normal;color:#c2367f;background:#ffe3f1;padding:3px 9px;border-radius:99px}
+.twc-hbs{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.twc-hb span{display:block;font:800 11.5px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub);margin-bottom:3px}
+.twc-hb i{display:block;height:10px;border-radius:99px;background:#efe7ff;overflow:hidden}
+.twc-hb b{display:block;height:100%;border-radius:99px;transition:width .6s}
+.twc-hb-energia b{background:linear-gradient(90deg,#7be35a,#b6ff3b)}
+.twc-hb-diversao b{background:linear-gradient(90deg,#ff9cc8,#ff6fb5)}
+.twc-hb-brilho b{background:linear-gradient(90deg,#ffe57a,#ffd23f)}
+.twc-hb-amizade b{background:linear-gradient(90deg,#8fc8ff,#4169e1)}
+.twc-humor-dica{margin:8px 0 0;font-size:12px;font-weight:700;color:#c2367f}
+.twc-desejo{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:18px;background:linear-gradient(120deg,#fff4fb,#f3ecff);border:2px dashed #e2ccff}
+.twc-desejo-ok{border-style:solid;border-color:#b6ff3b;background:linear-gradient(120deg,#f4ffe6,#fff4fb)}
+.twc-desejo-ico{font-size:26px;line-height:1}
+.twc-desejo-txt{flex:1;min-width:0}
+.twc-desejo-txt small{display:block;font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-desejo-txt b{display:block;font-weight:800;line-height:1.3}
+.twc .twc-desejo-ir{flex:none;min-height:40px;padding:6px 16px;width:auto}
+.twc .twc-vip{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:10px 14px;min-height:52px;border:0;border-radius:18px;cursor:pointer;text-align:left;
+  background:linear-gradient(120deg,#3a1a5c,#7a2d6b);color:#fff3c4;box-shadow:0 4px 0 rgba(58,26,92,.35);position:relative}
+.twc .twc-vip>span:first-child{font-size:24px}
+.twc .twc-vip>span:nth-child(2){flex:1}
+.twc .twc-vip b{display:block;font:400 14px 'Mochiy Pop One',sans-serif;color:#ffd23f}
+.twc .twc-vip small{display:block;font-weight:700;font-size:12px;color:#ffe9f6}
+.twc .twc-vip-on{background:linear-gradient(120deg,#7a2d6b,#c2185b,#ffb300);animation:twcVipBrilha 3s ease-in-out infinite}
+.twc .twc-cad-vip{position:static;flex:none}
+@keyframes twcVipBrilha{50%{filter:brightness(1.12)}}
+.twc-folha-desejo{padding:10px;border-radius:14px;background:#fff4fb}
+.twc-toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:60;max-width:min(92vw,420px);padding:12px 18px;border-radius:18px;
+  background:linear-gradient(120deg,#7b3ff0,#ff6fb5);color:#fff;font:800 14px "M PLUS Rounded 1c",sans-serif;text-align:center;box-shadow:0 8px 24px rgba(70,30,140,.35);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.twc-toast-on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.twc-diam,.twc .twc-vip-on{animation:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-humor{background:rgba(42,29,74,.8);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-hb i{background:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-desejo{background:linear-gradient(120deg,#3a1f4a,#2a1d4a);border-color:#5b3f99}
+  :root:not([data-theme="light"]) .twc-desejo-ok{background:linear-gradient(120deg,#22401f,#3a1f4a);border-color:#7be35a}
+  :root:not([data-theme="light"]) .twc-folha-desejo{background:#3a1f4a}}

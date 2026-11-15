@@ -242,6 +242,7 @@
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
     mergulho=null;cena=destino;hover=null;centrado=false;
+    if(destino!=='mundo'&&window.TW_HUMOR)try{window.TW_HUMOR.evento('mapa');}catch(e){}   // passear conta para o humor e o desejo do dia
     W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
     if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';}
     var sec=document.getElementById('twMapa');
@@ -349,7 +350,7 @@
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);}
-    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
+    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
@@ -447,7 +448,18 @@
   // ---------- Visita surpresa dos membros (15/11/2026) ----------
   // A cada 8 minutos, cada rua sorteia (pelo relógio, igual para todo mundo) se um membro do TsuLiPa passeia por lá.
   // Quem está logado como Tsu, Lirika ou Pati nunca encontra a si mesmo: o sorteio passa para outro membro.
-  var visitaEtiquetas=[],falas=[];
+  var visitaEtiquetas=[],falas=[],diamantes=[];
+  // Diamantinho do humor (ideia do The Sims) girando em cima do SEU Idol: verde = feliz, amarelo = ok, rosa = precisa de carinho
+  function desenharDiamantes(tm){
+    diamantes.forEach(function(d){
+      var gi=reduzMov?1:Math.cos(tm*2.4),w=11*Math.max(.25,Math.abs(gi)),y=d.y-(reduzMov?0:Math.sin(tm*2)*3);
+      ctx.save();ctx.translate(d.x,y);
+      ctx.fillStyle=d.cor;ctx.strokeStyle='rgba(30,10,60,.55)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w,0);ctx.lineTo(0,9);ctx.lineTo(-w,0);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w*.45,-2);ctx.lineTo(0,-1);ctx.closePath();ctx.fill();
+      ctx.restore();
+    });
+  }
   // balões das frases prontas (e o nome de quem está online), por cima de tudo
   function desenharFalas(){
     falas.forEach(function(f){
@@ -1014,7 +1026,7 @@
         fa.x=900;fa.y=756;fa.mov=0;fa.dir=-1;
         if(reencontro)meuIdol.dir=1;
       }
-      ultimos=[];visitaEtiquetas=[];falas=[];
+      ultimos=[];visitaEtiquetas=[];falas=[];diamantes=[];
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
         var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
@@ -1055,6 +1067,7 @@
             ctx.fillStyle=q.ativo==='mic'?(nn?'#ffd23f':'#ff6fb5'):'#ff6fb5';
             ctx.fillText(q.ativo==='mic'?(nn?'♫':'♪'):'♥',q.x+(nn?28:-28)*q.dir+Math.sin(fn*6)*5,q.y-44*sc-6-fn*40+bob);}
           ctx.restore();}
+        if(p.dono&&window.TW_HUMOR)diamantes.push({x:q.x,y:q.y-44*sc-14+bob,cor:window.TW_HUMOR.cor()});
         var fl=p.dono?(window.TW_PRESENCA&&window.TW_PRESENCA.minha):p.fala;
         if(fl&&fl.frase&&Date.now()-fl.em<(p.dono?8000:12000)&&window.TW_PRESENCA)falas.push({x:q.x,y:q.y-44*sc-38+bob,t:window.TW_PRESENCA.texto(fl.frase)});
         if(p.online&&!p.dono)falas.push({x:q.x,y:q.y-44*sc-26+bob,t:p.nick,nome:true});   // nome de quem está online, logo acima da cabeça

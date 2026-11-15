@@ -22,7 +22,7 @@ test('desligado por padrão: o index só baixa o tw-celular com brs48cr_celular 
   const bloco = html.slice(i, html.indexOf('</script>', i));
   assert.match(bloco, /get\('celular'\)/);
   assert.match(bloco, /q==='0'\)localStorage\.removeItem\(k\)/, '?celular=0 desliga');
-  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
   assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
   const tx = bloco.match(/var TX=\{([^}]*)\}/)[1];
@@ -58,7 +58,7 @@ test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca most
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
   assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
-  assert.match(html, /tw-mapa\.js\?v=58/);
+  assert.match(html, /tw-mapa\.js\?v=59/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {

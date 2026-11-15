@@ -3,7 +3,7 @@
 // com o visual do palco, e nunca aparecem para a própria conta.
 const assert=require('assert'),fs=require('fs'),path=require('path'),vm=require('vm');
 const js=fs.readFileSync(path.join(__dirname,'..','tw-mapa.js'),'utf8');
-const ini=js.indexOf('  var visitaEtiquetas=[],falas=[];'),fim=js.indexOf('  function passeantes(registro){');
+const ini=js.indexOf('  var visitaEtiquetas=[],falas=[],diamantes=[];'),fim=js.indexOf('  function passeantes(registro){');
 assert.ok(ini>0&&fim>ini,'bloco da visita');
 const bloco=js.slice(ini,fim);
 function rodar(nick,agora){

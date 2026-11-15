@@ -118,6 +118,15 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - Mapa geral vivo: até 6 Idols (online e vitrine, sem as contas do trio) andam pelas calçadas (`mundoGente`, `CALCADAS`).
   - Cantinho dos pais: tela nos Ajustes, nos 6 idiomas, com link para a privacidade.
   - Manutenção fofa: depois de 3 falhas de rede seguidas no `contaRpc` (ou ao ficar offline), uma folha com o trio e cones avisa que o progresso está guardado, com os botões "Jogar Center⭐Run!" e "Tentar de novo". Aparece uma vez por sessão.
+- Rodada 9 (15/11):
+  - Cadeados para visitante: Bloom e Álbum entraram na lista (`PEDE_LOGIN`); Battle, Café, Handshake e Studio mostram o selo "Treino" (jogam sem conta, sem prêmio). As portas do mapa que pedem conta ganham um cadeadinho (`cadeadosPortas`).
+  - Cantinho dos pais revisado contra o código e a privacidade ("sem chat ao vivo", recados com filtro, e-mail privado, aniversário opcional). A privacidade ganhou o item "Idols online e frases prontas" nos 6 idiomas (15/11/2026).
+  - Auditoria (iPhone claro, iPhone escuro em inglês, iPad, iPhone SE em japonês, 11 telas): sem erros nem estouro de tela; ajustes no "+" das estrelas (área de toque de 44 px), no rank cortado e na caixinha vazia do Karaoke.
+  - Humor do Idol (`tw-humor.js`, local em `brs48cr_humor_v1`): 4 barrinhas (Energia, Diversão, Brilho, Amizade). Sobem quando uma partida termina (RPC de fim de partida com conta, ou ao abrir o jogo para visitante) e baixam devagar com o tempo; a Energia descansa sozinha.
+  - Desejo do dia: um por dia (sorteio pela data e pelo nome), só entre o que a pessoa consegue cumprir (visitante recebe jogos de treino, mapa ou frase). Cumprir dá +15 nas barrinhas, conta a série de dias e libera o passe do Camarim VIP de hoje.
+  - Diamantinho: gira em cima do SEU Idol no mapa e no card de humor (verde, amarelo ou rosa, conforme a média).
+  - Camarim VIP: aberto para todo mundo todo dia, sem dinheiro (é só cumprir o desejo do dia). É uma sala com tapete vermelho, espelho de lâmpadas e o trio; o botão "Foto VIP" baixa um Polaroid em PNG.
+  - Nada disso mexe em estrelas, ranking ou Supabase.
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

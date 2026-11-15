@@ -29,13 +29,13 @@ html.kt-lista .krtop,html.kt-lista .kt-song-choice,html.kt-lista #ktStart,html.k
 .ktl-ouvir{border:2px solid #ece4ff;background:#fff;color:#5a2bc4}
 .ktl-cantar{border:0;color:#fff;background:linear-gradient(#9b5cff,#6a35e0);box-shadow:0 4px 0 #4a1fb0,inset 0 2px 0 rgba(255,255,255,.3);font-family:'Mochiy Pop One',sans-serif!important;font-weight:400!important;font-size:18px!important}
 .ktl-cantar:disabled{opacity:.5;cursor:default}
-@media (min-width:720px){.ktl-grade{grid-template-columns:repeat(7,minmax(0,1fr));max-height:none}.ktl-detalhe{grid-template-columns:120px minmax(0,1fr) 280px}.ktl-arte-g{width:120px}.ktl-acoes{grid-column:auto;grid-template-columns:1fr 1.6fr}}
+@media (min-width:720px){.ktl-grade{grid-template-columns:repeat(5,minmax(0,1fr));max-height:340px}}
 html.kt-lista[data-theme="dark"] .ktl{background:#2a1d4a;border-color:#3d2a6b;color:#f3e8ff;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 html.kt-lista[data-theme="dark"] :is(.ktl-capa,.ktl-ouvir){background:#21153e;border-color:#3d2a6b;color:#f3e8ff;box-shadow:none}
 html.kt-lista[data-theme="dark"] .ktl-info h3{color:#e6d6ff}html.kt-lista[data-theme="dark"] .ktl-info p{color:#c9b6f0}
 
 /* a sala vira um palco compacto, do mesmo tamanho em qualquer aparelho */
-html.kt-lista #krPalco{max-width:640px;margin-left:auto!important;margin-right:auto!important}
-html.kt-lista .ktl{order:4;margin:12px auto;max-width:640px;box-sizing:border-box}
+html.kt-lista #krPalco{max-width:560px;margin-left:auto!important;margin-right:auto!important}
+html.kt-lista .ktl{order:4;margin:12px auto;max-width:560px;box-sizing:border-box}
 /* as tentativas do dia já aparecem na aba MÚSICAS; o cartão antigo só volta se houver show para recuperar */
 html.kt-lista #ktAvailability:not(:has(#ktDeliveryRetry:not([hidden]))):not(:has(#ktDeliveryRecovery:not([hidden]))){display:none!important}

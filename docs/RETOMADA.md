@@ -86,6 +86,10 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
 - Bolinhas do Tsu, da Lirika e do Pati desenhadas pelo jogo (`HUB_TRIO_DRAW_CHARS` + `perfFotoRedonda`). Álbum novo: grade de cards com filtro por Oshi (Todos, Tsu, Lirika, Pati e Outros, pelo `card.oshi`). Ele lê só `album_cards`; o toque abre o zoom de card do Gacha, e "Ver metas e trocar cards" abre o álbum clássico.
 - Falta a lista de músicas do Karaoke com capa e "quem canta": o seletor fica dentro de `karaoke-time.html` (iframe) e não existe o dado de quem canta cada música.
 
+- Rodada 3: a **moldura do celular** vale para toda janela `.tw-window-overlay` (Perfil, Pet, Loja, Gacha, Idol News, Álbum, Café, Handshake, Battle, Bloom, Studio, Moon Duo, Trocas, Encontro, Fã). A janela abre entre a barra de cima e a de baixo, no painel branco. Voltar clica no ✕ da própria janela; Menu e Início fecham as janelas e voltam ao celular. Center Run, Karaoke e Sora seguem em tela cheia, como a Live deles.
+- Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
+- Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
+
 ### Formato de Live no Battle e no Karaoke (15/11, mesma PR)
 - Inspirado na tela de Live do Link! Like!, com desenho próprio. Só visual: nenhuma regra, prêmio ou SQL mudou.
 - `battle.js?v=12` / `battle.css?v=9`: o palco do show ficou 560×520. Tem arco de progresso com as 3 apresentações e estrelas (verde = ganhou, rosa = perdeu), placar de BRILHO (os pontos do servidor × 1000), salão com telão de arco-íris, guirlanda de flores e chão de madeira, a unit inteira no palco, o card de quem se apresenta entrando pela direita, os medidores Você · Combo · Rival e a "mão" com os 3 cards (o da vez sobe e brilha). O Combo conta os acertos seguidos do lightstick no ritmo que já existia (o anel que fecha na batida); errar a batida zera.

@@ -266,3 +266,46 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 .twc-selo{position:static;width:100%;min-height:46px;margin:0;padding:6px 12px 6px 8px;border:0;border-top:2px solid #f1ebff;border-radius:0;box-shadow:none;background:#fff}
 .twc-filtro{gap:7px}
 .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(--twc-f1))}
+
+/* ---- moldura do celular nas janelas do jogo (Perfil, Pet, Loja, Gacha, Idol News, Café, Handshake, Battle...) ---- */
+.twc-moldura[hidden]{display:none!important}
+.twc-moldura-topo{position:fixed;top:0;left:0;right:0;z-index:50}
+.twc-moldura .twc-topo{position:static}
+body.tw-cel .tw-window-overlay:not([hidden]){align-items:flex-start!important;justify-content:center!important;
+  padding:calc(82px + env(safe-area-inset-top)) 10px calc(100px + env(safe-area-inset-bottom))!important;
+  background:radial-gradient(rgba(123,63,240,.07) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,#fdfcff,#efe6ff)!important}
+body.tw-cel .tw-window-overlay>.panel.tw-window-surface{--tw-modal-surface:#fff;background:#fff!important;border:2px solid #f1ebff!important;
+  box-shadow:0 6px 20px rgba(80,40,160,.12),inset 0 -4px 0 #f6f1ff!important;border-radius:26px!important;max-height:calc(100dvh - 196px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;margin:0 auto!important}
+body.tw-cel .tw-window-overlay .tw-modal-title,body.tw-cel .tw-window-overlay .tw-window-title{color:#5a2bc4!important;-webkit-text-stroke:0!important;text-shadow:0 2px 0 #ece4ff!important}
+body.tw-cel .tw-window-overlay .tw-window-close{background:#fff!important;color:#5a2bc4!important;border:2px solid #ece4ff!important;box-shadow:0 3px 0 #e2d7fd!important}
+@media (min-width:900px){body.tw-cel .tw-window-overlay:not([hidden]){padding-bottom:calc(110px + env(safe-area-inset-bottom))!important}
+  body.tw-cel .tw-window-overlay>.panel.tw-window-surface{max-height:calc(100dvh - 206px)!important}}
+
+/* tutorial do celular (o clássico fica escondido enquanto o celular estiver ligado) */
+body.tw-cel #hubTut{display:none!important}
+.twc-tut{align-items:center}
+.twc-tut-pontos{display:flex;gap:6px;margin:2px 0 4px}
+.twc-tut-pontos i{width:8px;height:8px;border-radius:50%;background:#e0d3ff}
+.twc-tut-pontos i.on{width:22px;border-radius:99px;background:var(--twc-f2)}
+
+/* ---- modo escuro (segue o aparelho, como o resto do site) ---- */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc{--twc-ink:#f3e8ff;--twc-sub:#c9b6f0;--twc-borda:#3d2a6b;--twc-sombra:#140b2e}
+  :root:not([data-theme="light"]) .twc-tela{background:#1a1033;background:radial-gradient(rgba(255,255,255,.05) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,#1d1238,#2a1650)}
+  :root:not([data-theme="light"]) .twc-topo{background:rgba(29,18,56,.95);box-shadow:0 2px 12px rgba(0,0,0,.35)}
+  :root:not([data-theme="light"]) :is(.twc-eu,.twc-st,.twc-cfg,.twc-card,.twc-faixa,.twc-banner,.twc-atalho,.twc-destaque,.twc-filtros,.twc-app-ico,.twc-selo,.twc-btn-claro,.twc-folha-caixa,.twc-nav){background:#2a1d4a!important;border-color:#3d2a6b!important;color:var(--twc-ink)!important;box-shadow:0 4px 12px rgba(0,0,0,.3)!important}
+  :root:not([data-theme="light"]) .twc-app-ico{color:#d9c6ff!important}
+  :root:not([data-theme="light"]) .twc-app-ico.twc-g-lima{background:linear-gradient(150deg,#b6ff3b,#7cc400)!important;color:#1d3a00!important}
+  :root:not([data-theme="light"]) .twc-apps{background:rgba(42,29,74,.6);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) :is(.twc-banner-txt b,.twc-faixa h1,.twc-card h2,.twc-folha-caixa h2){color:#e6d6ff!important;text-shadow:none!important;-webkit-text-stroke:0!important}
+  :root:not([data-theme="light"]) :is(.twc-linha-txt b,.twc-destaque-txt b,.twc-atalho span,.twc-app-nome,.twc-eu-txt b,.twc-st b,.twc-selo span,.twc-filtro,.twc-carta){color:var(--twc-ink)!important}
+  :root:not([data-theme="light"]) :is(.twc-linha,.twc-emdia){border-color:#3d2a6b!important}
+  :root:not([data-theme="light"]) .twc-chips button{background:#21153e;border-color:#3d2a6b;color:var(--twc-ink)!important}
+  :root:not([data-theme="light"]) .twc-nav-b{color:#d9c6ff!important}
+  :root:not([data-theme="light"]) .twc-tema{background:rgba(42,29,74,.9);color:var(--twc-ink)}
+  :root:not([data-theme="light"]) .twc-bola-todos{background:#21153e}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay:not([hidden]){background:radial-gradient(rgba(255,255,255,.05) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,#1d1238,#2a1650)!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay>.panel.tw-window-surface{background:var(--card,#2a1d4a)!important;border-color:#3d2a6b!important;box-shadow:0 6px 20px rgba(0,0,0,.35)!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-modal-title{color:#e6d6ff!important;text-shadow:none!important}
+}
+.twc .twc-lv,.twc .twc-etiqueta,.twc .twc-novo:not(.twc-novo-cad){color:#2a1d4a!important}

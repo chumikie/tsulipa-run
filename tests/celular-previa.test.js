@@ -78,3 +78,12 @@ test('rodada 2: Início enxuto, bolinhas do trio pelo próprio jogo e Álbum com
   assert.match(js, /if\(!logado\(\)\)\{ pedirLogin\(t\('album'\)\)/, 'sem conta, o Álbum avisa antes');
   assert.match(css, /\.twc-amarelo\{/);
 });
+
+test('rodada 3: moldura nas janelas, boas-vindas do celular e modo escuro', () => {
+  assert.match(js, /querySelectorAll\('\.tw-window-overlay'\)/, 'a moldura vale para todas as janelas do jogo');
+  assert.match(js, /querySelector\('\.tw-window-close'\); if\(x\) x\.click\(\)/, 'Voltar fecha pelo ✕ da própria janela');
+  assert.match(js, /var TUT_CHAVE = 'tw_cel_tut_v1'/);
+  assert.ok(!/brs48cr_[a-z_]*tut/.test(js), 'marcador do tutorial não é chave de save');
+  assert.match(css, /body\.tw-cel #hubTut\{display:none!important\}/);
+  assert.match(css, /@media \(prefers-color-scheme:dark\)\{\s*:root:not\(\[data-theme="light"\]\) \.twc\{/);
+});

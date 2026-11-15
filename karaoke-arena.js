@@ -57,7 +57,8 @@
      e medidores redondos de Precisão, Combo e Progresso. Só lê o estado do show. */
   var TX = {pt:['PRECISÃO','COMBO','MÚSICA','Pausado'], en:['ACCURACY','COMBO','SONG','Paused'], es:['PRECISIÓN','COMBO','CANCIÓN','En pausa'],
             id:['AKURASI','KOMBO','LAGU','Jeda'], th:['ความแม่น','คอมโบ','เพลง','หยุดชั่วคราว'], ja:['せいかく','コンボ','きょく','一時停止']};
-  function tx(i){ var l = typeof root.LANG === 'string' && TX[root.LANG] ? root.LANG : 'pt'; return TX[l][i]; }
+  function idioma(){ var l = ''; try{ l = new URLSearchParams(location.search).get('lang') || localStorage.getItem('brs48cr_lang') || ''; }catch(e){} return l; }   // igual ao Karaoke (LANG fica dentro do script dele)
+  function tx(i){ var l = TX[idioma()] ? idioma() : 'pt'; return TX[l][i]; }
   function estrela(x, cx, cy, r, cor){ x.beginPath(); for(var i = 0; i < 10; i++){ var a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * .45 : r; x.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); } x.closePath(); x.fillStyle = cor; x.fill(); }
   function coracao(x, cx, cy, r, cor, a){
     if(a <= 0) return; x.save(); x.globalAlpha = a; x.fillStyle = cor; x.translate(cx, cy); x.beginPath(); x.moveTo(0, r * .9);

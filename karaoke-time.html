@@ -140,7 +140,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=2"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=6">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
-<script src="./karaoke-arena.js?v=4"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
+<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -1378,28 +1378,61 @@ function ktPrepararRelogioAudio(target,prepareMs,elapsed,onReady){
 }
 function silence(){voices.forEach(function(o){try{o.stop();}catch(e){}});voices.clear();}
 var ktPreviewRouting=false;
-function voice(freq,dur,time,vol,type){if(muted||!AC)return;var t=Math.max(AC.currentTime,time),o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(ktPreviewRouting?previewPlayer.output(AC):AC.destination);voices.add(o);o.onended=function(){voices.delete(o);o.disconnect();g.disconnect();};o.start(t);o.stop(t+dur+.02);}
+/* Som das músicas (15/11/2026): mesma partitura e mesmo relógio; só o timbre melhorou.
+   Mixer com compressor suave e eco no tempo da música, filtro nas ondas quadradas (menos "bip"),
+   esquerda/direita, bateria com ruído (caixa e chimbal), virada antes do refrão e acorde final. */
+var ktMixer=null,ktRuidoBuf=null;
+function ktMix(){if(ktMixer&&ktMixer.ctx===AC)return ktMixer;var m={ctx:AC,in:AC.destination,eco:null,d:null};
+ try{var comp=AC.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=14;comp.ratio.value=3;comp.attack.value=.004;comp.release.value=.22;
+  m.in=AC.createGain();m.in.gain.value=1.1;m.in.connect(comp);comp.connect(AC.destination);
+  m.eco=AC.createGain();m.eco.gain.value=.2;m.d=AC.createDelay(1);m.d.delayTime.value=.3;var fb=AC.createGain(),lp=AC.createBiquadFilter();fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=2300;
+  m.eco.connect(m.d);m.d.connect(lp);lp.connect(fb);fb.connect(m.d);lp.connect(m.in);}catch(e){m.in=AC.destination;m.eco=null;m.d=null;}
+ ktMixer=m;return m;}
+function voice(freq,dur,time,vol,type,pan,eco){if(muted||!AC)return;var t=Math.max(AC.currentTime,time),o=AC.createOscillator(),g=AC.createGain(),extra=[],no=g,mx=ktPreviewRouting?null:ktMix();o.type=type||'sine';o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);
+ try{if(o.type==='square'||o.type==='sawtooth'){var f=AC.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(Math.min(4200,Math.max(900,freq*5)),t);f.Q.value=.7;no.connect(f);no=f;extra.push(f);}
+  if(pan&&AC.createStereoPanner){var pn=AC.createStereoPanner();pn.pan.value=Math.max(-1,Math.min(1,pan));no.connect(pn);no=pn;extra.push(pn);}}catch(e){}
+ no.connect(ktPreviewRouting?previewPlayer.output(AC):mx.in);if(eco&&mx&&mx.eco)no.connect(mx.eco);
+ voices.add(o);o.onended=function(){voices.delete(o);o.disconnect();g.disconnect();extra.forEach(function(n){n.disconnect();});};o.start(t);o.stop(t+dur+.02);}
+function ruido(time,dur,vol,hp,pan){if(muted||!AC)return;
+ if(!ktRuidoBuf||ktRuidoBuf.sampleRate!==AC.sampleRate){var n=Math.floor(AC.sampleRate*.5),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0),sd=12345;for(var i=0;i<n;i++){sd=(sd*1103515245+12345)&0x7fffffff;d[i]=sd/0x3fffffff-1;}ktRuidoBuf=b;}   /* ruído fixo: nada sorteado */
+ var t=Math.max(AC.currentTime,time),src=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain(),no=g,pn=null;src.buffer=ktRuidoBuf;f.type='highpass';f.frequency.value=hp||2000;
+ g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(f);f.connect(g);
+ try{if(pan&&AC.createStereoPanner){pn=AC.createStereoPanner();pn.pan.value=pan;g.connect(pn);no=pn;}}catch(e){}
+ no.connect(ktPreviewRouting?previewPlayer.output(AC):ktMix().in);voices.add(src);src.onended=function(){voices.delete(src);src.disconnect();f.disconnect();g.disconnect();if(pn)pn.disconnect();};src.start(t,(time*7.3)%.3);src.stop(t+dur+.02);}
+function ktBumbo(time,vol){if(muted||!AC)return;var t=Math.max(AC.currentTime,time),o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(46,t+.12);
+ g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+.24);o.connect(g);g.connect(ktPreviewRouting?previewPlayer.output(AC):ktMix().in);voices.add(o);o.onended=function(){voices.delete(o);o.disconnect();g.disconnect();};o.start(t);o.stop(t+.26);}
 function beat(i,target){var playback=target||run;if(!playback||!AC||!playback.audioReady||!playback.audioClock||AC.state!=='running')return;var c=playback.song,t=playback.audioOrigin+i*playback.step/1000;if(t<AC.currentTime-.05)return;
 var p=i%8,len=c.mel.length,step=playback.step/1000,volta=Math.floor(i/len),up=volta>=2?2:0,chord=c.ch[Math.floor(i/(8/c.cpb))%c.ch.length].map(function(n){return n+up;}),root=chord[0];while(root>52)root-=12;
 /* A partir da 3ª volta, o refrão sobe um tom; pistas ficam fixas. */
 if(playback===run&&i%len===0&&volta===2&&!playback.auto){playback.feedback='Refrão! ✨';playback.feedbackUntil=performance.now()+(t-AC.currentTime)*1000+1200;}
 var st=c.style,soft=st==='ballad'||st==='box';
 /* bateria */
-if(st==='dance'||st==='run'){if(p%2===0){voice(62,.16,t,.07,'sine');voice(124,.04,t,.025,'triangle');}}else if(p===0||(!soft&&p===4)){voice(62,.16,t,.06,'sine');voice(124,.04,t,.02,'triangle');}
-if(!soft&&(p===2||p===6)){voice(196,.08,t,.03,'triangle');voice(2200,.05,t,.012,'square');}
-if(soft&&p===4)voice(1800,.03,t,.008,'triangle');
-if(st==='dance'&&p%2===1)voice(5200,.05,t,.011,'square');else if(!soft||p%2===0)voice(4600,.022,t,soft?.004:.007,'square');
+if(!ktPreviewRouting){var mxd=ktMix();if(mxd.d){var alvoEco=Math.min(.6,step*1.5);if(Math.abs(mxd.d.delayTime.value-alvoEco)>.005)mxd.d.delayTime.setValueAtTime(alvoEco,AC.currentTime);}}   /* eco no tempo da música */
+var vira=volta===1&&(i%len)>=len-4;   /* virada de bateria antes do refrão subir de tom */
+if(st==='dance'||st==='run'){if(p%2===0)ktBumbo(t,.11);}else if(p===0||(!soft&&p===4))ktBumbo(t,.095);
+if(!soft&&(p===2||p===6)){voice(196,.07,t,.022,'triangle',-.08);ruido(t,.13,.05,1500,-.08);}
+if(vira&&!soft){ruido(t,.07,.03+.008*((i%len)-(len-4)),1800,.15);ruido(t+step*.5,.06,.028,2200,-.15);}
+if(soft&&p===4)ruido(t,.05,.012,3000,.2);
+/* Energia de pista no estilo hi-NRG (inspirado nas trilhas dance de jogos dos anos 2000, sem copiar melodia nenhuma):
+   palmas em camadas no 2 e no 4, chimbal aberto no contratempo e arpejo de sintetizador em semicolcheias. */
+var nrg=st==='dance'||st==='run'||st==='pop';
+if(nrg&&(p===2||p===6)){ruido(t,.09,.03,1100,.12);ruido(t+.011,.08,.024,1300,-.12);ruido(t+.023,.12,.028,1000,0);}
+if(st==='dance'||st==='run'){if(p%2===1)ruido(t,.11,.03,6500,.32);else ruido(t,.025,.012,9000,.32);}
+else if(!soft||p%2===0)ruido(t,.03,soft?.008:.016,8000,.3);
+if(nrg){for(var aq=0;aq<2;aq++){var na=chord[(p*2+aq)%chord.length]+(aq?24:12);voice(hz(na),step*.42,t+aq*step/2,st==='pop'?.006:.009,'sawtooth',aq?.35:-.35,true);}}
 /* baixo */
 if(st==='dance'){voice(hz(root+(p%2?12:0)),step*.9,t,.05,'triangle');}
 else if(st==='run'){voice(hz(root+(p===3||p===7?7:0)),step*.85,t,.05,'triangle');}
 else if(soft){if(p===0||p===4)voice(hz(root),step*3.6,t,.045,'triangle');}
+else if(st==='pop')voice(hz(root+(p%2?12:0)),step*.85,t,.045,'triangle');
 else if(p%2===0)voice(hz(root),step*1.8,t,.05,'triangle');
 /* harmonia */
-if(p%(8/c.cpb)===0)chord.forEach(function(n){voice(hz(n),step*(8/c.cpb)*.95,t,soft?.011:.009,'sine');});
+if(p%(8/c.cpb)===0)chord.forEach(function(n,k){voice(hz(n),step*(8/c.cpb)*.95,t,soft?.011:.009,'sine',(k-1)*.4,true);});
 if(soft)voice(hz(chord[p%chord.length]+12),step*.9,t,st==='box'?.011:.007,'sine');
 else if(st==='pop'&&p%2===1)voice(hz(chord[(p>>1)%chord.length]+12),step*.6,t,.006,'triangle');
 /* Brilho acompanha ataques melódicos; pausas nunca viram notas. */
-var m=c.mel[i%len];if(m>=0){m+=up;var d=step*(c.mel[(i+1)%len]<0?1.7:.95),cues=playback.cuesByStep&&playback.cuesByStep[i];voice(hz(m),d,t,c.lead==='square'?.034:.048,c.lead);voice(hz(m+12),d*.6,t,st==='box'?.012:.006,'sine');if(volta===1&&p%2===0)voice(hz(m+19),d*.5,t,.005,'sine');if(volta>=2)voice(hz(m+7),d*.8,t,.007,'triangle');if(cues&&cues.length){voice(hz(m+12),Math.min(.20,d*.45),t,.025,'triangle');if(cues.length>1)voice(hz(chord[1]+12),step*.72,t,.022,'triangle');}}}
+var m=c.mel[i%len];if(m>=0){m+=up;var d=step*(c.mel[(i+1)%len]<0?1.7:.95),cues=playback.cuesByStep&&playback.cuesByStep[i];voice(hz(m),d,t,c.lead==='square'?.04:.048,c.lead,0,true);voice(hz(m+12),d*.6,t,st==='box'?.012:.006,'sine');if(volta===1&&p%2===0)voice(hz(m+19),d*.5,t,.005,'sine');if(volta>=2)voice(hz(m+7),d*.8,t,.007,'triangle');if(cues&&cues.length){voice(hz(m+12),Math.min(.20,d*.45),t,.025,'triangle');if(cues.length>1)voice(hz(chord[1]+12),step*.72,t,.022,'triangle');}}
+if(playback.total&&i===playback.total-1&&!ktPreviewRouting){chord.concat([root+12]).forEach(function(n,k){voice(hz(n+12),1.6,t+step,.022,'triangle',(k-1.5)*.3,true);});ktBumbo(t+step,.1);ruido(t+step,.7,.025,5000,.2);}   /* acorde final, em vez de cortar seco */}
 /* Relógio de áudio único, já descontando a latência de saída. */
 function kNow(){if(run&&run.audioClock&&AC&&AC.state==='running'&&run.audioOrigin)return run.start+(AC.currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();return performance.now();}
 function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||AC.state!=='running')return;/* Antecedencia no relogio nativo do audio, sem aplicar a latencia outra vez. */var elapsed=(AC.currentTime-run.audioOrigin)*1000;while(run.audioStep<run.total&&run.audioStep*run.step<elapsed+220)beat(run.audioStep++);}
@@ -3223,5 +3256,5 @@ if(ktNoSite()){
 </script><script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-mobile.js?v=1"></script>
 <script src="./karaoke-photo.js?v=1"></script>
-<script src="./karaoke-lista.js?v=4"></script>
+<script src="./karaoke-lista.js?v=5"></script>
 </body></html>

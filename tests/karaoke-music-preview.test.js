@@ -15,7 +15,7 @@ const keys=['normal','fast','chill','tema','corrida','gacha','duo'];
 assert.deepEqual(Object.keys(songs).sort(),keys.slice().sort(),'preview uses seven existing tracks');
 const beatStart=html.indexOf('function beat(i,target){'),beatEnd=html.indexOf('/* Relógio de áudio único',beatStart);
 assert(beatStart>=0&&beatEnd>beatStart,'shared beat renderer accepts independent playback target');
-const calls=[],sandbox={AC:{state:'running',currentTime:0},run:null,performance:{now:()=>0},hz:m=>440*Math.pow(2,(m-69)/12),voice:(frequency,duration,time,volume,type)=>calls.push({frequency,duration,time,volume,type})};
+const calls=[],sandbox={AC:{state:'running',currentTime:0},run:null,performance:{now:()=>0},hz:m=>440*Math.pow(2,(m-69)/12),ktPreviewRouting:false,ktMix:()=>({}),ruido(){},ktBumbo(){},voice:(frequency,duration,time,volume,type)=>calls.push({frequency,duration,time,volume,type})};
 vm.createContext(sandbox);vm.runInContext(html.slice(beatStart,beatEnd)+'\nthis.previewBeat=beat;',sandbox,{timeout:1000});
 for(const key of keys){
  calls.length=0;const song=songs[key],step=60000/song.bpm/2,preview={song,step,audioOrigin:0,audioReady:true,audioClock:true,cuesByStep:{}};

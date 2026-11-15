@@ -40,7 +40,7 @@ test('Karaoke⭐Time!: sala como MUSIC LIST só com o celular ligado, usando o s
   assert.match(lista, /root\.parent\.TW_CELULAR_LIGADO/, 'desligado, a sala fica como sempre');
   assert.match(lista, /sel\.options/, 'as capas vêm das trilhas do próprio seletor');
   assert.match(lista, /var s = \$\('ktStart'\); if\(s && !s\.disabled\) s\.click\(\)/, 'Cantar usa o botão de sempre (tentativas e regras iguais)');
-  assert.ok(!/localStorage|ktMeta\.complete|\.score\s*=/.test(lista), 'não mexe em save nem pontos');
+  assert.ok(!/localStorage\.setItem|ktMeta\.complete|\.score\s*=/.test(lista), 'não mexe em save nem pontos');
   const sb = { window: {}, document: { readyState: 'loading', documentElement: { classList: { contains: () => false } }, addEventListener(){} } }; sb.window = sb;
   vm.runInNewContext(lista, sb);
   const tx = sb.KaraokeLista.txt, base = Object.keys(tx.pt).sort();

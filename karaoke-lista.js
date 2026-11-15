@@ -16,7 +16,8 @@
     th:{musicas:'เพลง', semana:'เพลงประจำสัปดาห์', ouvir:'ฟัง', cantar:'ร้อง', shows:'โชว์วันนี้', escolha:'เลือกเพลง'},
     ja:{musicas:'MUSIC LIST', semana:'今週の曲', ouvir:'きく', cantar:'うたう', shows:'きょうのショー', escolha:'曲をえらんでね'}
   };
-  function t(k){ var l = typeof root.LANG === 'string' && TX[root.LANG] ? root.LANG : 'pt'; return TX[l][k]; }
+  function idioma(){ var l = ''; try{ l = new URLSearchParams(location.search).get('lang') || localStorage.getItem('brs48cr_lang') || ''; }catch(e){} return l; }   // igual ao Karaoke (LANG fica dentro do script dele)
+  function t(k){ var l = TX[idioma()] ? idioma() : 'pt'; return TX[l][k]; }
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return '&#' + c.charCodeAt(0) + ';'; }); }
   // capa desenhada pelo jogo: cada trilha tem o seu degradê (nada de imagem de fora)
@@ -40,7 +41,7 @@
     var bloqueado = !!(sel && sel.disabled), cont = $('ktLimitCount'), pips = $('ktLimitPips');
     var rec = $('ktSongRecord');
     // só refaz quando algo que aparece mudou (o motor do karaoke mexe nesses textos o tempo todo)
-    var assinatura = [atual, sem, bloqueado, cont && cont.textContent, pips && pips.textContent, rec && rec.textContent, lista.length, root.LANG].join('|');
+    var assinatura = [atual, sem, bloqueado, cont && cont.textContent, pips && pips.textContent, rec && rec.textContent, lista.length, idioma()].join('|');
     if(assinatura === box.getAttribute('data-k')) return; box.setAttribute('data-k', assinatura);
     box.innerHTML =
       '<div class="ktl-cab"><h2 class="ktl-aba">' + esc(t('musicas')) + '</h2>' +

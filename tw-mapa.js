@@ -162,6 +162,7 @@
   var aberto=false;
   // no fim do "Meu mundo": logo antes do título Jogos (o hub refaz os cards, então reposiciona sempre)
   function posicionar(){var sec=document.getElementById('twMapa'),cards=document.getElementById('hubCards');if(!sec||!cards)return;
+    if(sec.closest&&sec.closest('#twCel'))return;   // aberto dentro do visual de celular: fica lá (puxar de volta fazia a tela pular para o topo)
     var jg=cards.querySelector('.hubbt-jogos');if(jg){if(sec.nextElementSibling!==jg)cards.insertBefore(sec,jg);}
     else if(sec.parentNode!==cards)cards.appendChild(sec);}
   function abrir(sim,inicio){
@@ -447,6 +448,13 @@
     id:['Hai! Senang ketemu kamu di sini! 💜','Hehe, ketemu kamu! 💚','Ayo bersinar hari ini! 💙'],
     th:['สวัสดี! ดีใจที่เจอที่นี่นะ! 💜','อิอิ เจอตัวแล้ว! 💚','วันนี้มาเปล่งประกายกัน! 💙'],
     ja:['やっほー！ここで会えてうれしい！💜','えへへ、みーつけた！💚','今日も一緒に輝こう！💙']};
+  var VISITA_CONTAS=['tsu','lirika','patiliri'];   // contas oficiais do trio (0 Tsu, 1 Lirika, 2 Pati)
+  function visitaContaTrio(n){return VISITA_CONTAS.indexOf(String(n||'').trim().toLowerCase());}
+  // Quem está em visita fica "trabalhando" na frente de um lugar da rua: canta no palco, faz coraçãozinho nas lojas...
+  var POSES_ATIVAS={mic:['mic','luz','mic','banzai'],loja:['coracao','v','tchau','coracao'],oi:['tchau','coracao','v','tchau']};
+  var LUGAR_ATIVO={run:'mic',karaoke:'mic',duo:'mic',sora:'mic',battle:'mic',loja:'loja',gacha:'loja',cafe:'loja',shop:'loja'};
+  function visitaPorta(k){var ids=(BAIRROS[cena]&&BAIRROS[cena].lugares)||[];if(ids[k])return k;for(var i=0;i<3;i++)if(ids[(k+i)%3])return (k+i)%3;return 1;}
+  function visitaAtividade(k){var ids=(BAIRROS[cena]&&BAIRROS[cena].lugares)||[];return LUGAR_ATIVO[ids[visitaPorta(k)]]||(cena==='arena'?'mic':'oi');}
   function visitaEu(){try{var n=(typeof contaJ!=='undefined'&&contaJ&&contaJ.nick)||'';return String(n).trim().toLowerCase();}catch(e){return '';}}
   function visitaSorteio(rua,fatia){var h=2166136261,t=rua+'|'+fatia;for(var i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)/4294967296;}
   // quem visita a rua agora (0 Tsu, 1 Lirika, 2 Pati) ou -1; nunca a própria conta
@@ -455,8 +463,9 @@
     var fatia=Math.floor(Date.now()/(VISITA_MIN*60000)),r=visitaSorteio(rua,fatia);
     if(r>=VISITA_CHANCE)return -1;
     var eu=visitaEu(),k=Math.floor(visitaSorteio(rua+'#quem',fatia)*3);
-    for(var t=0;t<3&&VISITA_NOMES[k].toLowerCase()===eu;t++)k=(k+1)%3;
-    return VISITA_NOMES[k].toLowerCase()===eu?-1:k;
+    var euK=visitaContaTrio(eu);if(euK<0)euK=VISITA_NOMES.map(function(n){return n.toLowerCase();}).indexOf(eu);
+    if(k===euK)k=(k+1)%3;
+    return k;
   }
   function visitaOshi(rua){
     if(rua==='mundo'||typeof HUB_TRIO==='undefined'||typeof HUB_TRIO_DRAW_CHARS==='undefined'||typeof CH==='undefined')return null;
@@ -472,7 +481,8 @@
     }}catch(e){}
     try{if(typeof hubIdolsDados!=='undefined'&&hubIdolsDados&&Array.isArray(hubIdolsDados.idols))
       // a vitrine (vitrine_idols) entrega o visual em `avatar`; `av` fica aceito por compatibilidade
-      hubIdolsDados.idols.slice(0,3).forEach(function(p,i){var av=p&&(p.av||p.avatar);if(av&&typeof av==='object')l.push({
+      // As contas do Tsu, da Lirika e do Pati não passeiam como jogadores: eles aparecem pela visita (sem duplicar).
+      hubIdolsDados.idols.filter(function(p){return p&&visitaContaTrio(p.nick)<0;}).slice(0,3).forEach(function(p,i){var av=p&&(p.av||p.avatar);if(av&&typeof av==='object')l.push({
         av:av,rua:trajetoRua(i+1),u0:.06,u1:.94,fase:(i+1)*.27
       });});}catch(e){}
     // Visita surpresa: de vez em quando o Tsu, a Lirika ou o Pati passeiam pela rua (com o visual do palco).
@@ -627,8 +637,8 @@
         dormindo=noite&&pt==null&&!perto,cauda=reduzMov?0:Math.sin(tm*2.2)*(dormindo?.15:.5),
         pisca=!reduzMov&&!dormindo&&(tm%4.2)<.13,orelha=!reduzMov&&!dormindo&&(tm%6.5)<.28?-.22:0,
         cab=dormindo?3:(reduzMov?0:Math.sin(tm*1.1)*.6);
-    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);
-    ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(2,15+up/1.7,26,5,0,0,7);ctx.fill();
+    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.15,1.15);   // menor (era 1.7): na tela do celular parecia gigante
+    ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(2,15+up/1.15,26,5,0,0,7);ctx.fill();
     function rabo(){ctx.beginPath();ctx.moveTo(16,8);ctx.bezierCurveTo(34,10,36,-6,30+cauda*10,-20);}
     function orelhas(){ctx.beginPath();ctx.moveTo(-15,-25+cab);ctx.lineTo(-16,-39+cab);ctx.lineTo(-5,-30+cab);ctx.closePath();
       ctx.save();ctx.translate(7,-30+cab);ctx.rotate(orelha);ctx.moveTo(-6,2);ctx.lineTo(4,-9);ctx.lineTo(5,5);ctx.closePath();ctx.restore();}
@@ -674,8 +684,8 @@
     if(dormindo&&!reduzMov){ctx.fillStyle='#7b3ff0';ctx.font='16px "Mochiy Pop One",sans-serif';
       for(var z=0;z<2;z++){var fz=((tm*.7+z*.5)%1);ctx.globalAlpha=Math.sin(fz*Math.PI)*.8;ctx.fillText('z',8+z*6+fz*6,-36-fz*18);}ctx.globalAlpha=1;}
     ctx.restore();
-    if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-100,'♡',Math.min(1,(1.8-(tm-pt))*2));
-    else if(perto&&(tm%3.2)<1.4)balao(gx-14,gy-100,'♡',Math.min(1,Math.sin((tm%3.2)/1.4*Math.PI)*2));   // seu Idol chegou perto
+    if(pt!=null&&tm-pt<1.8)balao(gx-14,gy-72,'♡',Math.min(1,(1.8-(tm-pt))*2));
+    else if(perto&&(tm%3.2)<1.4)balao(gx-14,gy-72,'♡',Math.min(1,Math.sin((tm%3.2)/1.4*Math.PI)*2));   // seu Idol chegou perto
   }
   // Peixinhos koi na fonte da Praça: nadam em volta do repuxo, meio submersos.
   function peixesFonte(tm){
@@ -776,7 +786,7 @@
     var up=pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.45)*Math.PI))*20:(perto&&!reduzMov?Math.abs(Math.sin(tm*5))*5:0),
         feliz=pt!=null&&tm-pt<1.8||!!perto,dormindo=noite&&!feliz,
         rabo=reduzMov?0:Math.sin(tm*(feliz?16:5))*(dormindo?.05:.35),pisca=!reduzMov&&!dormindo&&(tm%3.7)<.12;
-    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.7,1.7);ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.save();ctx.translate(gx,gy-up);ctx.scale(1.15,1.15);   // menor (era 1.7): na tela do celular parecia gigantectx.lineJoin='round';ctx.lineCap='round';
     ctx.fillStyle='rgba(30,10,60,.18)';ctx.beginPath();ctx.ellipse(0,15+up/1.7,25,5,0,0,7);ctx.fill();
     var PELO='#f2a65a',CLARO='#fff4e2',CONT='#a65a22';
     function silhueta(){ctx.beginPath();ctx.ellipse(4,2,19,13,0,0,7);ctx.moveTo(12,-16);ctx.arc(-4,-16,14,0,7);}
@@ -953,7 +963,10 @@
         if(p.dono&&registro&&cena==='praca')fixo=1;
         var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
         if(p.dono&&meuPasseio)q=passeioDoToque(q,tm);
-        q.p=p;q.i=i;q.y=744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
+        var noPalco=false;
+        if(p.oshi){var pd=visitaPorta(p.oshiK);noPalco=cena==='palco'&&pd===1;   // no Star Stage, quem visita a porta do meio canta em cima do palco, no microfone
+          q={x:noPalco?800:PORTAS[pd]+(pd===2?-95:95),dir:pd===2?-1:1,mov:0,porta:pd,volta:0,pausa:1,ativo:visitaAtividade(p.oshiK)};}
+        q.p=p;q.i=i;q.y=noPalco?474:744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
       });
       var fa=rua.find(function(q){return q.p.nomeFa;});
       var meuIdol=rua.find(function(q){return q.p.dono;});
@@ -974,6 +987,7 @@
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
           ((p.dono&&registro)||(q.i===1&&!p.dono));
         var pose=q.mov||segurando?'':(p.oshi?p.oshiPose:(p.av.pose||''));
+        if(q.ativo){var lp=POSES_ATIVAS[q.ativo];pose=lp[reduzMov?0:Math.floor(tm/2.6+(p.oshiK||0))%lp.length];}
         if(reencontro&&q===meuIdol)pose=reconhecendo?'':'tchau';
         if(p.nomeFa){
           if(!reencontro||reconhecendo)pose='';
@@ -999,6 +1013,12 @@
           ctx.restore();
         }
         if(!q.mov)parados.push(q);
+        if(q.ativo&&!reduzMov){   // notinhas (cantando) ou coraçõezinhos subindo
+          ctx.save();ctx.font='22px "Mochiy Pop One",sans-serif';ctx.textAlign='center';
+          for(var nn=0;nn<2;nn++){var fn=(tm*.6+nn*.5)%1;ctx.globalAlpha=Math.sin(fn*Math.PI)*.9;
+            ctx.fillStyle=q.ativo==='mic'?(nn?'#ffd23f':'#ff6fb5'):'#ff6fb5';
+            ctx.fillText(q.ativo==='mic'?(nn?'♫':'♪'):'♥',q.x+(nn?28:-28)*q.dir+Math.sin(fn*6)*5,q.y-44*sc-6-fn*40+bob);}
+          ctx.restore();}
         if(p.oshi)visitaEtiquetas.push({x:q.x,y:q.y-44*sc-42+bob,nome:p.oshi,k:p.oshiK});   // desenhada por cima das placas
         if(p.nomeFa&&!q.mov){
           // Identificação simples, sem links, sem DOM novo e sem alterar hitboxes.

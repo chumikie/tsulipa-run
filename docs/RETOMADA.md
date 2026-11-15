@@ -104,6 +104,11 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - Todos os atalhos do Menu foram conferidos no iPhone 13 emulado. Missões, Procurar e Novidades abrem embutidos; Álbum e Ajustes são telas próprias; Perfil, Zipper Shop, Gacha e Idol News abrem como janelas em tela cheia com a moldura. A TsuLiPa⭐TV! agora também ganha a moldura, fica entre as barras e fecha pelo Voltar/Início.
   - Correção: sem vitrine (RPC falhando), cada redesenho pedia a vitrine de novo e o navegador travava. Agora pede no máximo uma vez por minuto.
   - O teste `tw-mapa-dois-niveis` falhava só no horário em que havia visita surpresa (faltava `measureText` no canvas falso).
+- Rodada 7 (15/11, prints do mapa no iPhone):
+  - As contas oficiais do trio são `tsu`, `lirika` e `patiliri`. No mapa elas não passeiam como jogadores, porque o membro aparece pela visita (antes a Lirika ficava duplicada). Na vitrine, essas três contas vão juntas para a frente.
+  - Quem visita uma rua fica em atividade na frente de um lugar: canta (microfone/lightstick com notinhas) no Star Stage, em cima do palco; faz coraçãozinho nas lojas, no café e no gacha; acena nos outros lugares (`POSES_ATIVAS`, `LUGAR_ATIVO`).
+  - A tela pulava para o topo a cada ação no mapa: o `posicionar()` do mapa puxava o mapa de volta para o hub clássico a cada `hubCardsUI`. Agora ele não mexe no mapa enquanto o mapa está dentro do celular, e a rolagem é restaurada depois de reembutir.
+  - Rua menos ampliada no celular (720 px de largura em vez de 1080) e gatinho menor (escala 1,15 em vez de 1,7).
 - Boas-vindas do celular: 3 telas, uma vez por aparelho (marcador `tw_cel_tut_v1`, não é save). O tutorial clássico fica escondido enquanto o celular estiver ligado.
 - Modo escuro: segue o aparelho (`prefers-color-scheme`), como o resto do site.
 

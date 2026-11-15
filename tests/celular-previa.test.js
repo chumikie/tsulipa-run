@@ -54,8 +54,8 @@ test('pede conta nos mesmos jogos que o clique do card no hub', () => {
 test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca mostra a própria conta', () => {
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
-  assert.match(mapa, /return VISITA_NOMES\[k\]\.toLowerCase\(\)===eu\?-1:k;/);
-  assert.match(html, /tw-mapa\.js\?v=54/);
+  assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
+  assert.match(html, /tw-mapa\.js\?v=55/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {
@@ -112,9 +112,21 @@ test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV 
   assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
   assert.match(hub, /hubIV\.L = trio\.concat\(/);
   assert.match(hub, /trio = !L\.length && typeof window\.twcTrioVitrine/, 'os bonecos do trio só entram sem lista (sem duplicar as contas deles)');
-  assert.match(hub, /n\.indexOf\('tsu'\) === 0 \? 0 : n\.indexOf\('lirika'\) === 0 \? 1 : n\.indexOf\('pati'\) === 0 \? 2 : 9/, 'as contas do trio desfilam juntas na frente');
+  assert.match(hub, /\['tsu', 'lirika', 'patiliri'\]\.indexOf\(/, 'as contas oficiais do trio desfilam juntas na frente');
   assert.match(hub, /if\(!p\.trio && !window\.TW_CELULAR_LIGADO\)\{[^}]*'★ ' \+ p\.best/, 'sem pontuação no visual de celular');
   assert.match(js, /Date\.now\(\) - idolsPedido > 60e3/, 'não entra em laço pedindo a vitrine');
   assert.match(js, /'\.tw-window-overlay,#twRankTvModal'/, 'a TsuLiPa⭐TV! ganha a moldura');
   assert.match(css, /\.twc-idols-fila\{[^}]*padding:7px 14px 8px/, 'o anel da bolinha não corta');
+});
+
+test('rodada 7: mapa sem trio duplicado, membros em atividade nos lugares, rolagem preservada e rua menos ampliada', () => {
+  assert.match(mapa, /var VISITA_CONTAS=\['tsu','lirika','patiliri'\]/);
+  assert.match(mapa, /idols\.filter\(function\(p\)\{return p&&visitaContaTrio\(p\.nick\)<0;\}\)\.slice\(0,3\)/, 'as contas do trio não passeiam junto com a visita');
+  assert.match(mapa, /if\(p\.oshi\)\{var pd=visitaPorta\(p\.oshiK\);[\s\S]{0,260}ativo:visitaAtividade\(p\.oshiK\)\};\}/, 'quem visita fica ativo na frente de um lugar');
+  assert.match(mapa, /POSES_ATIVAS=\{mic:\['mic'/);
+  assert.match(mapa, /ctx\.scale\(1\.15,1\.15\)/, 'gatinho menor');
+  assert.match(mapa, /if\(sec\.closest&&sec\.closest\('#twCel'\)\)return;/, 'o hub não puxa o mapa de volta enquanto ele está no celular');
+  const d = js.slice(js.indexOf('function desenhar(){'), js.indexOf('function ir(v)'));
+  assert.ok(d.indexOf('tela.scrollTop = rolagem') > d.indexOf('embutir(v.slice(4))'), 'a rolagem volta depois de trazer o mapa');
+  assert.match(css, /\.twc-emb-mapa \.tw-mapa:not\(\[data-cena="mundo"\]\) canvas\{width:max\(100%,720px\)/);
 });

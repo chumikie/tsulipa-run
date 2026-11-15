@@ -351,3 +351,6 @@ body.tw-cel .tw-window-overlay>.panel.tw-window-surface{width:100%!important;max
 /* TsuLiPa⭐TV! dentro do celular: entre as barras, maior e sem o véu escuro por cima de tudo */
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal{z-index:45;padding:calc(84px + env(safe-area-inset-top)) 14px calc(100px + env(safe-area-inset-bottom));background:rgba(123,63,240,.18)}
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,400px)}
+/* Mapa no celular: a rua aparece menos ampliada (nada gigante), ainda arrastável para os lados */
+html body.tw-cel #hub .twc-emb-mapa .tw-mapa:not([data-cena="mundo"]) .tw-mapa-rolo{height:auto!important;overflow-y:hidden!important}
+html body.tw-cel #hub .twc-emb-mapa .tw-mapa:not([data-cena="mundo"]) canvas{width:max(100%,720px)!important;max-width:none!important;height:auto!important}

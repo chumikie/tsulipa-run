@@ -79,3 +79,29 @@ test('episodio 2 reutiliza Canvas e nao altera leitor historico',()=>{
  assert.match(source,/function jnT1Ep2Html\(\)/);
  assert.match(source,/<figcaption>/);
 });
+
+test('episodio 3 possui cinco quadros, seis idiomas e bloqueio editorial',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ assert.equal(ctx.JN_T1_EP3.id,'lembranca-lirika');
+ assert.equal(ctx.JN_T1_EP3.panels.length,5);
+ for(const lang of ['pt','en','es','id','th','ja']){
+  const t=ctx.jnT1Ep3Texto(lang);
+  assert.ok(t.titulo.length>3);
+  assert.equal(t.quadros.length,5);
+  for(const q of t.quadros){
+   assert.ok(q.narracao.length>10);
+   assert.ok(q.falas.length>=1);
+   assert.ok(q.falas.every(f=>f.texto.length>5));
+  }
+ }
+ assert.equal(ctx.JN_T1_PUBLICADA,false);
+ assert.equal(ctx.JN_T1.episodios[2].pronto,false);
+ assert.equal(ctx.jnT1Ep3Html(),'');
+ assert.equal(ctx.jnT1Disponivel(2,new Date('2026-12-31T12:00:00Z')),false);
+});
+test('episodio 3 usa renderizador existente sem mudar leitor historico',()=>{
+ assert.match(source,/function jnT1Ep3Desenhar\(canvas,indice\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP3\.panels\[indice\]\)/);
+ assert.match(source,/function jornalCapsUI\(\)/);
+ assert.match(source,/function jnT1Ep3Html\(\)/);
+});

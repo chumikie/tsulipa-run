@@ -99,7 +99,7 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - Mapa, Missões, Procurar Idol e Novidades abrem como telas do celular: a mesma seção do hub é levada para a tela e devolvida ao sair (`EMB`), então os cliques e as regras são os mesmos.
   - A barra antiga "Visitante · ★ · Entrar" (`#twHud`) fica escondida com o celular ligado.
 - Rodada 6 (15/11):
-  - A vitrine antiga (luzes, confete, lightsticks) foi para a tela de abertura, antes do "Toque para começar". O Tsu, a Lirika e o Pati desfilam juntos na frente da fila (`twcTrioVitrine`), sem pontuação no visual de celular. Ao começar, a vitrine volta ao hub clássico (`vitrineDevolver`).
+  - A vitrine antiga (luzes, confete, lightsticks) foi para a tela de abertura, antes do "Toque para começar". As contas do Tsu, da Lirika e do Pati desfilam juntas na frente da fila; os bonecos do trio (`twcTrioVitrine`) só entram quando a lista não carrega, para ninguém aparecer duas vezes. Sem pontuação no visual de celular. Ao começar, a vitrine volta ao hub clássico (`vitrineDevolver`).
   - A bolinha da vitrine do Início não corta mais o anel.
   - Todos os atalhos do Menu foram conferidos no iPhone 13 emulado. Missões, Procurar e Novidades abrem embutidos; Álbum e Ajustes são telas próprias; Perfil, Zipper Shop, Gacha e Idol News abrem como janelas em tela cheia com a moldura. A TsuLiPa⭐TV! agora também ganha a moldura, fica entre as barras e fecha pelo Voltar/Início.
   - Correção: sem vitrine (RPC falhando), cada redesenho pedia a vitrine de novo e o navegador travava. Agora pede no máximo uma vez por minuto.

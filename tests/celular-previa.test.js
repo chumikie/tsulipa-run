@@ -110,7 +110,9 @@ test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV 
   assert.match(js, /'<div class="twc-abre-vitrine" id="twcAbreVitrine"><\/div>'/, 'a vitrine antiga entra na tela de abertura');
   assert.match(js, /if\(v === 'abre'\) vitrineTrazer\(\);/);
   assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
-  assert.match(hub, /hubIV\.L = trio\.concat\(/, 'o Tsu, a Lirika e o Pati desfilam juntos na frente da fila');
+  assert.match(hub, /hubIV\.L = trio\.concat\(/);
+  assert.match(hub, /trio = !L\.length && typeof window\.twcTrioVitrine/, 'os bonecos do trio só entram sem lista (sem duplicar as contas deles)');
+  assert.match(hub, /n\.indexOf\('tsu'\) === 0 \? 0 : n\.indexOf\('lirika'\) === 0 \? 1 : n\.indexOf\('pati'\) === 0 \? 2 : 9/, 'as contas do trio desfilam juntas na frente');
   assert.match(hub, /if\(!p\.trio && !window\.TW_CELULAR_LIGADO\)\{[^}]*'★ ' \+ p\.best/, 'sem pontuação no visual de celular');
   assert.match(js, /Date\.now\(\) - idolsPedido > 60e3/, 'não entra em laço pedindo a vitrine');
   assert.match(js, /'\.tw-window-overlay,#twRankTvModal'/, 'a TsuLiPa⭐TV! ganha a moldura');

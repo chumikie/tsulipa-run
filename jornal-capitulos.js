@@ -536,6 +536,22 @@ var JN_T0_DIR = [
 var JN_T0_ANO = {draft:['#2a1660', '#7b3ff0', '#ff6fb5'], '2021':['#3a1a6e', '#ffb627', '#ffe680'], '2023':['#101a4a', '#4dd8ff', '#ff6fb5'],
   '2025':['#0d3a5c', '#29c5f6', '#ffd23f'], '2026':['#2a1450', '#c79bff', '#ffb3d9'], world:['#3a1470', '#ff6fb5', '#b6ff3b']};
 JN_CAPS.forEach(function(c, i){ (c[2] || []).forEach(function(q, k){ var d = JN_T0_DIR[i] && JN_T0_DIR[i][k]; if(d) q.jnT0 = d; }); });
+/* Acabamento no estilo do site: moldura branca com contorno lilás (como os cards), narração em cartão claro com a faixa
+   roxo→rosa do TsuLiPa⭐World, balões com sombra suave e texto na tinta roxa do site. */
+var JN_TINTA = '#4a2a7a';
+function jnNarracao(x, rr, W, nl, lh){
+  var nh = nl.length * lh + 14;
+  x.save(); x.shadowColor = 'rgba(80,40,160,.18)'; x.shadowBlur = 8; x.shadowOffsetY = 2; rr(10, 10, W - 20, nh, 14); x.fillStyle = 'rgba(255,255,255,.94)'; x.fill(); x.restore();
+  rr(10, 10, W - 20, nh, 14); x.strokeStyle = '#e2d7fd'; x.lineWidth = 2; x.stroke();
+  var fx = x.createLinearGradient(0, 10, 0, 10 + nh); fx.addColorStop(0, '#9b30d9'); fx.addColorStop(1, '#ff6fb5'); x.fillStyle = fx; rr(16, 16, 5, nh - 12, 2.5); x.fill();
+  x.fillStyle = '#5b2bb5'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 30, 17 + k * lh); });
+  return nh;
+}
+function jnBalaoFundo(x, rr, bx, by, bw, bh, corM){
+  x.save(); x.shadowColor = 'rgba(80,40,160,.22)'; x.shadowBlur = 8; x.shadowOffsetY = 3; rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.restore();
+  rr(bx, by, bw, bh, 16); x.strokeStyle = corM; x.lineWidth = 2.5; x.stroke();
+}
+function jnMoldura(x, rr, W, H){ x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 6; rr(3, 3, W - 6, H - 6, 19); x.stroke(); x.strokeStyle = '#e2d7fd'; x.lineWidth = 2; rr(1, 1, W - 2, H - 2, 21); x.stroke(); }
 function jnT0Brilho(x, a, b, r, c){ x.fillStyle = c || 'rgba(255,255,255,.9)'; x.beginPath(); for(var i = 0; i < 8; i++){ var rr2 = i % 2 ? r * .35 : r, an = i * Math.PI / 4; x.lineTo(a + Math.cos(an) * rr2, b + Math.sin(an) * rr2); } x.closePath(); x.fill(); }
 function jnT0Lua(x, a, b, r){ x.save(); x.shadowColor = 'rgba(255,240,180,.8)'; x.shadowBlur = 18; x.fillStyle = '#fff6c4'; x.beginPath(); x.arc(a, b, r, 0, 7); x.fill(); x.restore();
   x.fillStyle = 'rgba(0,0,0,.0)'; x.globalCompositeOperation = 'source-over'; x.fillStyle = 'rgba(230,214,150,.55)'; [[-.3, -.2, .18], [.25, .2, .14], [.05, .35, .09]].forEach(function(c){ x.beginPath(); x.arc(a + c[0] * r, b + c[1] * r, c[2] * r, 0, 7); x.fill(); }); }
@@ -660,6 +676,22 @@ function jnT0Cena(x, W, H, d, camada, falaX, chao){
     if(d.cena === 'espelho'){ return; }
   }
 }
+// boneco de costas (para reflexos): mesmas proporções chibi do jogo, sem rosto — cabelo, coques/orelhas, camisa e saia
+function jnT0Costas(x, cx, chao, es, c){
+  var cab = c.hair || '#222', u = es;
+  x.save(); x.translate(cx, chao);
+  x.fillStyle = 'rgba(40,10,70,.18)'; x.beginPath(); x.ellipse(0, 0, 18 * u, 4 * u, 0, 0, 7); x.fill();
+  x.fillStyle = '#f1c9a5'; x.fillRect(-9 * u, -16 * u, 6 * u, 15 * u); x.fillRect(3 * u, -16 * u, 6 * u, 15 * u);   // pernas
+  x.fillStyle = '#fff'; x.fillRect(-11 * u, -4 * u, 9 * u, 4 * u); x.fillRect(2 * u, -4 * u, 9 * u, 4 * u);       // meias
+  x.fillStyle = '#3a3a6a'; x.beginPath(); x.moveTo(-15 * u, -30 * u); x.lineTo(15 * u, -30 * u); x.lineTo(19 * u, -15 * u); x.lineTo(-19 * u, -15 * u); x.closePath(); x.fill();   // saia
+  x.fillStyle = '#f7f4ff'; x.beginPath(); x.moveTo(-16 * u, -52 * u); x.lineTo(16 * u, -52 * u); x.lineTo(17 * u, -29 * u); x.lineTo(-17 * u, -29 * u); x.closePath(); x.fill();   // camisa
+  x.fillStyle = '#f1c9a5'; x.fillRect(-21 * u, -50 * u, 6 * u, 16 * u); x.fillRect(15 * u, -50 * u, 6 * u, 16 * u);   // braços
+  x.fillStyle = cab; x.beginPath(); x.moveTo(-26 * u, -50 * u); x.quadraticCurveTo(-28 * u, -92 * u, 0, -94 * u); x.quadraticCurveTo(28 * u, -92 * u, 26 * u, -50 * u); x.closePath(); x.fill();   // cabeça de costas (só cabelo)
+  if(c.det === 'coques'){ x.beginPath(); x.arc(-20 * u, -90 * u, 10 * u, 0, 7); x.arc(20 * u, -90 * u, 10 * u, 0, 7); x.fill(); x.fillStyle = '#2f6fe0'; x.fillRect(-14 * u, -86 * u, 4 * u, 4 * u); x.fillRect(10 * u, -86 * u, 4 * u, 4 * u); }
+  else if(c.det === 'gato'){ x.beginPath(); x.moveTo(-22 * u, -80 * u); x.lineTo(-18 * u, -104 * u); x.lineTo(-6 * u, -88 * u); x.closePath(); x.moveTo(22 * u, -80 * u); x.lineTo(18 * u, -104 * u); x.lineTo(6 * u, -88 * u); x.closePath(); x.fill(); }
+  x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.ellipse(-8 * u, -82 * u, 8 * u, 4 * u, -.4, 0, 7); x.fill();   // brilho do cabelo
+  x.restore();
+}
 function jnT0Desenhar(cv, p, d){
   var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
@@ -678,9 +710,10 @@ function jnT0Desenhar(cv, p, d){
     var av = jnCapAv(g[0], g[1]); if(!av) return; var cx = xs[i] * W; onde[g[0]] = cx;
     if(d.expr && d.expr[g[0]] != null) av.expr = d.expr[g[0]];
     var vira = d.vira && d.vira.indexOf(g[0]) >= 0;
-    if(d.cena === 'espelho'){   // o reflexo no espelho, mais clarinho, do lado de lá
-      x.save(); x.beginPath(); x.rect(30, 40, 220, H - 120); x.clip(); x.globalAlpha = .45; x.translate(140, 0); x.scale(-1, 1); x.translate(-140, 0);
-      x.translate(140 - 52 * 2.1, H - 70 - 112 * 2.1 + 8); x.scale(2.1, 2.1); try{ perfDesenharIdol(x, 104, 112, av, false, false, 30); }catch(e){} x.restore();
+    if(d.cena === 'espelho'){   // ela está de frente para nós, então o espelho atrás mostra as COSTAS: cabelo, coques e uniforme
+      x.save(); x.beginPath(); x.rect(30, 40, 220, H - 120); x.clip(); x.globalAlpha = .5;
+      jnT0Costas(x, 150, H - 84, 1.45, av.c || {});
+      x.restore();
     }
     if(cam !== 'close'){ x.fillStyle = 'rgba(40,10,70,.18)'; x.beginPath(); x.ellipse(cx, chao - 4, 30 * ES / 1.6, 6, 0, 0, 7); x.fill(); }
     x.save();
@@ -693,21 +726,19 @@ function jnT0Desenhar(cv, p, d){
   try{ jnT0Cena(x, W, H, d, 'frente', falaX, chao); }catch(e){}
   var topo = 12;
   if(p[2]){   // narração
-    x.font = '800 15px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 60), nh = nl.length * 19 + 14;
-    rr(10, 10, W - 20, nh, 10); x.fillStyle = '#fff6c4'; x.fill(); x.strokeStyle = '#3c2a6a'; x.lineWidth = 2.5; x.stroke();
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * 19); });
+    x.font = '800 15px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 70), nh = jnNarracao(x, rr, W, nl, 19);
     topo = 10 + nh + 10;
   }
   falas.forEach(function(f, i){   // balão: no close, ao lado do rosto; na conversa, um de cada lado; o rabinho aponta para quem fala
     var cx = onde[f[0]] != null ? onde[f[0]] : W / 2;
     x.font = '800 16px "M PLUS Rounded 1c",sans-serif'; var bl = linhas(jnCapT(f[1]), cam === 'close' ? 170 : 190), bw = Math.max.apply(null, bl.map(function(l){ return x.measureText(l).width; })) + 28, bh = bl.length * 20 + 14;
     var bx, by = topo;
-    if(cam === 'close'){ bx = cx > W / 2 ? Math.max(10, cx - 110 - bw) : Math.min(W - bw - 10, cx + 110); by = Math.max(topo, 70); }
+    if(cam === 'close'){ bx = cx > W / 2 ? Math.max(10, cx - 110 - bw) : Math.min(W - bw - 10, cx + 110); by = d.cena === 'espelho' ? topo + 6 : Math.max(topo, 70); }   // no espelho o balão sobe para mostrar o reflexo
     else if(falas.length > 1){ bx = i ? Math.min(W - bw - 10, Math.max(W / 2 + 6, cx - bw / 2)) : Math.max(10, Math.min(W / 2 - 6 - bw, cx - bw / 2)); by = topo + (i ? 10 : 0); }
     else bx = Math.max(10, Math.min(W - bw - 10, cx - bw / 2));
     var cab = topoCab[f[0]] != null ? topoCab[f[0]] : H / 2;
     if(cam !== 'close' && by + bh + 18 > cab) by = Math.max(topo, cab - bh - 20);   // nunca em cima do rosto
-    rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[f[0]]; x.lineWidth = 3; x.stroke();
+    jnBalaoFundo(x, rr, bx, by, bw, bh, cor[f[0]]); x.lineWidth = 2.5;
     var tx, ty, px2, py2;
     if(cam === 'close'){ ty = by + bh / 2; tx = cx > bx ? bx + bw : bx; px2 = tx + (cx > bx ? 18 : -18); py2 = ty + 10;
       x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx, ty - 9); x.lineTo(px2, py2); x.lineTo(tx, ty + 9); x.closePath(); x.fill(); x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx, ty - 9); x.lineTo(px2, py2); x.lineTo(tx, ty + 9); x.stroke();
@@ -715,10 +746,10 @@ function jnT0Desenhar(cv, p, d){
     else { tx = Math.max(bx + 18, Math.min(bx + bw - 18, cx)); var dx = cx > tx ? 10 : cx < tx ? -10 : 0;
       x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx - 9, by + bh - 2); x.lineTo(tx + dx, by + bh + 16); x.lineTo(tx + 9, by + bh - 2); x.closePath(); x.fill();
       x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx - 9, by + bh); x.lineTo(tx + dx, by + bh + 16); x.lineTo(tx + 9, by + bh); x.stroke(); }
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * 20); });
+    x.fillStyle = JN_TINTA; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * 20); });
   });
   x.restore();
-  x.strokeStyle = '#3c2a6a'; x.lineWidth = 4; rr(2, 2, W - 4, H - 4, 20); x.stroke();
+  jnMoldura(x, rr, W, H);
 }
 function jnCapDesenhar(cv, p, temporada){
   if(!temporada && p && p.jnT0) return jnT0Desenhar(cv, p, p.jnT0);   // temporada 0: direção de cena própria
@@ -744,8 +775,7 @@ function jnCapDesenhar(cv, p, temporada){
   var topoFala = p[2] ? 64 : 14;
   if(p[2]){   // narração: caixinha amarela no canto, como nos mangás
     var nlh = temporada ? 17 : 19; x.font = '800 ' + (temporada ? 14 : 15) + 'px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 60), nh = nl.length * nlh + 14;
-    rr(10, 10, W - 20, nh, 10); x.fillStyle = '#fff6c4'; x.fill(); x.strokeStyle = '#3c2a6a'; x.lineWidth = 2.5; x.stroke();
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * nlh); });
+    nl = linhas(jnCapT(p[2]), W - 70); nh = jnNarracao(x, rr, W, nl, nlh);
     topoFala = 10 + nh + 10;
   }
   var proximaFalaY = topoFala;
@@ -756,14 +786,14 @@ function jnCapDesenhar(cv, p, temporada){
     if(p[3].length > 1 && i) by = topoFala + 6;
     if(temporada && p[3].length === 2){by = topoFala; bx = i ? Math.max(W / 2 + 4, Math.min(W - bw - 8, cx - bw / 2)) : Math.max(8, Math.min(W / 2 - 4 - bw, cx - bw / 2));}
     else if(temporada){by = proximaFalaY;proximaFalaY += bh + 8;}
-    rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[f[0]]; x.lineWidth = 3; x.stroke();
+    jnBalaoFundo(x, rr, bx, by, bw, bh, cor[f[0]]); x.lineWidth = 2.5;
     var tx = Math.max(bx + 18, Math.min(bx + bw - 18, cx));
     x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx - 9, by + bh - 2); x.lineTo(tx + (cx > tx ? 10 : cx < tx ? -10 : 0), by + bh + 16); x.lineTo(tx + 9, by + bh - 2); x.closePath(); x.fill();
     x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx - 9, by + bh); x.lineTo(tx + (cx > tx ? 10 : cx < tx ? -10 : 0), by + bh + 16); x.lineTo(tx + 9, by + bh); x.stroke();
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * flh); });
+    x.fillStyle = JN_TINTA; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * flh); });
   });
   x.restore();
-  x.strokeStyle = '#3c2a6a'; x.lineWidth = 4; rr(2, 2, W - 4, H - 4, 20); x.stroke();
+  jnMoldura(x, rr, W, H);
 }
 
 /* Tocar num quadro do quadrinho abre ele grande, na largura toda da tela (em 320px o quadro na página fica pequeno demais para ler).

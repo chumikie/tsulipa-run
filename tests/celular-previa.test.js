@@ -174,3 +174,14 @@ test('rodada 11 (refino): mapa de amizades e fichas com os bonecos e pets de ver
   assert.ok(!/🚧/u.test(js), 'cones de manutenção desenhados em SVG');
   assert.match(js, /cor:\['#fff3e6', '#f2c49c', '#c98a5a', '#ffe1c7', '#dca47a'\]/, 'salas por dentro com parede e piso em degradê');
 });
+
+test('mapa de amizades: laços com fatos do blog oficial e fichas sem a capoeira', () => {
+  const js = require('fs').readFileSync(require('path').join(__dirname, '..', 'tw-celular.js'), 'utf8');
+  assert.match(js, /var LACOS = \[/);
+  assert.match(js, /Promovidos ao Team S no mesmo dia: 26\/02\/2023/, 'Tsu e Lirika: promoção no mesmo dia (blog)');
+  assert.match(js, /A mesma oshi: Imamura Maria/, 'Lirika e Pati: mesma oshi (blog)');
+  assert.match(js, /Oshi graduada em comum: Itano Tomomi/, 'Tsu e Pati: oshi graduada em comum (blog)');
+  assert.match(js, /if\(b\.dataset\.laco != null\)\{ amigosSel = \+b\.dataset\.laco;/, 'escolher o laço redesenha o mapa');
+  assert.ok(!/capopeira/i.test(js), 'Lirika: só K-pop, IZ*ONE, =LOVE…, sem a capoeira');
+  assert.match(js, /\['id', 'Bahasa Indonesia'\]/, 'nome nativo do idioma indonésio');
+});

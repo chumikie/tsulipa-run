@@ -820,3 +820,27 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
   :root:not([data-theme="light"]) .twc-f2-gosta li{background:#2a2045;color:#efe6ff}
 }
 @media (max-width:360px){.twc-f2-palco .twc-ficha-idol{width:120px;height:130px}.twc-f2-pet{left:94px;width:46px;height:46px}.twc-f2-nome h2{font-size:28px}.twc-f2-grade{grid-template-columns:1fr}}
+/* Mapa de amizades: escolha do laço e cartão com os fatos */
+.twc-lacos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 10px}
+.twc .twc-laco{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:16px;border:2px solid var(--twc-borda,#e9dcff);background:#fff;color:#3c2a6a;font:inherit;cursor:pointer;text-align:left;box-shadow:0 3px 0 rgba(90,40,160,.12);min-width:0}
+.twc .twc-laco b{font:800 12.5px/1.2 "M PLUS Rounded 1c",sans-serif;min-width:0}
+.twc .twc-laco.on{background:linear-gradient(150deg,#ff8cc6,#c2367f);color:#fff;border-color:#fff;box-shadow:0 4px 0 #8f1f5c}
+.twc-laco-rostos{display:inline-flex;flex:none}
+.twc-laco-rostos canvas{width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--fc),0 0 0 3.5px #fff}
+.twc-laco-rostos canvas+canvas{margin-left:-9px}
+.twc-laco-card{padding:12px 14px;border-radius:18px;background:color-mix(in srgb,var(--fc) 9%,#fff);border:2px solid color-mix(in srgb,var(--fc) 30%,#fff)}
+.twc-laco-card h3{display:flex;align-items:center;gap:7px;margin:0 0 8px;font:400 15px "Mochiy Pop One",sans-serif;color:var(--fc)}
+.twc-laco-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.twc-laco-card ul li{position:relative;padding-left:18px;font:800 13px/1.4 "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-laco-card ul li::before{content:"♥";position:absolute;left:0;top:0;color:var(--fc)}
+.twc-laco-sub{margin:12px 0 6px;font:800 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-laco-linha{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.twc-laco-linha li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 22%,#fff)}
+.twc-laco-linha b{flex:none;min-width:58px;padding:2px 8px;border-radius:99px;background:var(--fc);color:#fff;font:800 11.5px "M PLUS Rounded 1c",sans-serif;text-align:center}
+.twc-laco-linha span{font:800 13px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-laco:not(.on){background:#2a2045;color:#efe6ff;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-laco-card{background:color-mix(in srgb,var(--fc) 16%,#221838);border-color:color-mix(in srgb,var(--fc) 40%,#221838)}
+  :root:not([data-theme="light"]) .twc-laco-card ul li,:root:not([data-theme="light"]) .twc-laco-linha span{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-laco-linha li{background:#2a2045}
+}

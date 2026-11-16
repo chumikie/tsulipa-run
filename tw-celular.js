@@ -118,6 +118,7 @@
     check:'<path d="M5 12l4 4 10-10"/>', seta:'<path d="M9 6l6 6-6 6"/>', mais:'<path d="M12 6v12M6 12h12"/>',
     voltar:'<path d="M9 7L4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 0 10h-2"/>', menu:'<path d="M5 8h14M5 12h14M5 16h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
     casa:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/>', cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    nota:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
     estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
     bolo:'<path d="M4 20h16M5 20v-7h14v7"/><path d="M5 15c2 1.5 4 1.5 7 0s5-1.5 7 0"/><path d="M12 13V9"/><path d="M12 6.5c.8-.8.8-1.7 0-2.5-.8.8-.8 1.7 0 2.5z"/>',
     pin:'<path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>',
@@ -444,7 +445,7 @@
     }).join('') + '</div>' + (logado() ? '' : '<p class="twc-legenda"><span aria-hidden="true">' + ico('cadeado', 13) + '</span> ' + esc(t2('legCad')) + ' · <b>' + esc(t2('treino')) + '</b>: ' + esc(t2('legTreino')) + '</p>') + '</div>';
   }
   function telaAjustes(){
-    var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
+    var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Bahasa Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
     var OS = [['', '☀️', tt('Padrão')], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
     var oshi = typeof OSHI === 'string' ? OSHI : '';
     return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' +
@@ -911,13 +912,13 @@
   var FICHAS = [
     {k:0, nome:'Miniwa Tsumiki', jp:'御庭つみき', apelido:'Tsu (つ)', aniv:'05/09', local:'Paraíba, Brasil', altura:'1,80 m', time:'Team S · Sub-Captain', cor:['#9b30d9', 'Violeta'],
       pet:['🐈', 'Chu'], frase:'Oiê! Sou o Tsu, membro da primeira geração draft do BRS48!', blog:'https://brs48.blogspot.com/2021/08/tsu.html',
-      gostos:{pt:'Ouvir música, pudim, BNK48 e AKB48',en:'Listening to music, pudding, BNK48 and AKB48',es:'Escuchar música, flan, BNK48 y AKB48',id:'Dengar musik, puding, BNK48 dan AKB48',th:'ฟังเพลง พุดดิ้ง BNK48 และ AKB48',ja:'音楽をきくこと、プリン、BNK48とAKB48'}},
+      gostos:{pt:'Ouvir música, pudim, cozinhar frango, playlists dos anos 60, dias de chuva, BNK48, AKB48, Oh My Girl',en:'Listening to music, pudding, cooking chicken, 1960s playlists, rainy days, BNK48, AKB48, Oh My Girl',es:'Escuchar música, flan, cocinar pollo, playlists de los 60, días de lluvia, BNK48, AKB48, Oh My Girl',id:'Dengar musik, puding, masak ayam, playlist tahun 60-an, hari hujan, BNK48, AKB48, Oh My Girl',th:'ฟังเพลง, พุดดิ้ง, ทำไก่, เพลย์ลิสต์ยุค 60, วันฝนตก, BNK48, AKB48, Oh My Girl',ja:'音楽をきくこと、プリン、チキン料理、60年代のプレイリスト、雨の日、BNK48、AKB48、Oh My Girl'}, audicao:'Twinkle Twinkle (Secret)', oshis:'Chiba Erii'},
     {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#4fa81a', 'Verde Limão'],
       pet:['🐨', 'Koali'], frase:'Shiroma Lirika desu, yoroshiku onegaishima~su!', blog:'https://brs48.blogspot.com/2021/08/lirika.html',
-      gostos:{pt:'Verde, K-pop (capopeira), =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',en:'Green, K-pop fan (capopeira), =LOVE (Youkoso! Ikorabu Numa) and IZ*ONE',es:'El verde, el K-pop (capopeira), =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',id:'Hijau, K-pop (capopeira), =LOVE (Youkoso! Ikorabu Numa) dan IZ*ONE',th:'สีเขียว เคป็อป (capopeira) =LOVE (Youkoso! Ikorabu Numa) และ IZ*ONE',ja:'みどり、K-POP（capopeira）、=LOVE（ようこそ！イコラブ沼）、IZ*ONE'}},
+      gostos:{pt:'Verde, K-pop, IZ*ONE, =LOVE, idols japonesas, falar japonês',en:'Green, K-pop, IZ*ONE, =LOVE, Japanese idols, speaking Japanese',es:'El verde, K-pop, IZ*ONE, =LOVE, idols japonesas, hablar japonés',id:'Hijau, K-pop, IZ*ONE, =LOVE, idol Jepang, berbahasa Jepang',th:'สีเขียว, เคป็อป, IZ*ONE, =LOVE, ไอดอลญี่ปุ่น, พูดภาษาญี่ปุ่น',ja:'緑、K-POP、IZ*ONE、=LOVE、日本のアイドル、日本語'}, audicao:'Oogoe Diamond (AKB48)', oshis:'Imamura Maria'},
     {k:2, nome:'Patiliri Kriyl', jp:'パチリリ・クリイル', apelido:'Pati (パチ)', aniv:'23/09', local:'São Paulo, Brasil', altura:'', time:'Team S', cor:['#4169e1', 'Azul Real'],
       pet:['👑', 'Pucchi'], frase:'Conte com o Pati pra deixar seu dia mais feliz!! Beijinhos e Patchau!!', blog:'https://brs48.blogspot.com/2021/08/pati.html',
-      gostos:{pt:'Cantar, dançar e desenhar, criar looks, mahou shoujo e animes de idol',en:'Singing, dancing and drawing, putting looks together, magical girls and idol anime',es:'Cantar, bailar y dibujar, crear looks, mahou shoujo y animes de idols',id:'Menyanyi, menari, menggambar, bikin outfit, mahou shoujo dan anime idol',th:'ร้องเพลง เต้น วาดรูป จัดลุค มาโฮโชโจ และอนิเมะไอดอล',ja:'歌・ダンス・お絵かき、コーデづくり、魔法少女とアイドルアニメ'}}];
+      gostos:{pt:'Cantar, dançar, desenhar, criar looks, sapatos, bolsas, mahou shoujo, animes de idol, stream de joguinhos, músicas do AKB48',en:'Singing, dancing, drawing, putting looks together, shoes, bags, magical girls, idol anime, game streams, AKB48 songs',es:'Cantar, bailar, dibujar, crear looks, zapatos, bolsos, mahou shoujo, animes de idols, streams de juegos, canciones de AKB48',id:'Menyanyi, menari, menggambar, bikin outfit, sepatu, tas, mahou shoujo, anime idol, streaming game, lagu AKB48',th:'ร้องเพลง, เต้น, วาดรูป, แต่งตัว, รองเท้า, กระเป๋า, สาวน้อยเวทมนตร์, อนิเมะไอดอล, สตรีมเกม, เพลง AKB48',ja:'歌、ダンス、お絵かき、コーデ、くつ、バッグ、魔法少女、アイドルアニメ、ゲーム配信、AKB48の曲'}, audicao:'Dear... (iDOLM@STER)', oshis:'Imamura Maria · Shitao Miu · Oguri Yui'}];
   var TF = {
     trio:{pt:'TsuLiPa',en:'TsuLiPa',es:'TsuLiPa',id:'TsuLiPa',th:'TsuLiPa',ja:'TsuLiPa'},
     fichas:{pt:'Fichinhas',en:'Profiles',es:'Fichas',id:'Profil',th:'โปรไฟล์',ja:'プロフィール'},
@@ -928,6 +929,9 @@
     time:{pt:'Time',en:'Team',es:'Equipo',id:'Tim',th:'ทีม',ja:'チーム'},
     geracao:{pt:'Geração',en:'Generation',es:'Generación',id:'Generasi',th:'รุ่น',ja:'期'},
     cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
+    unitFest:{pt:'A unit TsuLiPa no Unit Festival',en:'The TsuLiPa unit at Unit Festival',es:'La unit TsuLiPa en el Unit Festival',id:'Unit TsuLiPa di Unit Festival',th:'ยูนิต TsuLiPa ใน Unit Festival',ja:'Unit FestivalのTsuLiPa'},
+    audicao:{pt:'Música da audição',en:'Audition song',es:'Canción de la audición',id:'Lagu audisi',th:'เพลงออดิชัน',ja:'オーディション曲'},
+    oshis:{pt:'Oshis',en:'Oshis',es:'Oshis',id:'Oshi',th:'โอชิ',ja:'推し'},
     gosta:{pt:'Gosta de',en:'Likes',es:'Le gusta',id:'Suka',th:'ชอบ',ja:'すきなもの'},
     pet:{pt:'Pet',en:'Pet',es:'Mascota',id:'Hewan',th:'สัตว์เลี้ยง',ja:'ペット'},
     amizades:{pt:'Amizades',en:'Friendship',es:'Amistades',id:'Persahabatan',th:'มิตรภาพ',ja:'なかよし'},
@@ -940,6 +944,29 @@
     toque:{pt:'Toque no Tsu, na Lirika, no Pati ou nos pets',en:'Tap Tsu, Lirika, Pati or the pets',es:'Toca a Tsu, Lirika, Pati o las mascotas',id:'Ketuk Tsu, Lirika, Pati, atau hewannya',th:'แตะ Tsu, Lirika, Pati หรือสัตว์เลี้ยง',ja:'Tsu・Lirika・Patiやペットをタップしてね'}
   };
   function tf(k){ var d = TF[k]; return d ? (d[L()] || d.pt) : k; }
+  // Laços do trio — fatos dos perfis oficiais (brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html) e da NeByura.
+  var amigosSel = 3;
+  function T6(pt, en, es, id, th, ja){ return {pt:pt, en:en, es:es, id:id, th:th, ja:ja}; }
+  var LACOS = [
+    {par:[0, 1], nome:T6('Tsu & Lirika','Tsu & Lirika','Tsu y Lirika','Tsu & Lirika','Tsu & Lirika','Tsu＆Lirika'), ic:'estrela', fatos:[
+      T6('Entraram juntos como kenkyuusei em agosto de 2021','Joined together as kenkyuusei in August 2021','Entraron juntos como kenkyuusei en agosto de 2021','Masuk bersama sebagai kenkyuusei pada Agustus 2021','เข้ามาเป็นเค็นคิวเซย์พร้อมกันในเดือนสิงหาคม 2021','2021年8月にいっしょに研究生として加入'),
+      T6('Promovidos ao Team S no mesmo dia: 26/02/2023','Promoted to Team S on the same day: 26/02/2023','Ascendidos al Team S el mismo día: 26/02/2023','Naik ke Team S di hari yang sama: 26/02/2023','ได้เลื่อนขึ้น Team S วันเดียวกัน: 26/02/2023','同じ日にTeam Sへ昇格：2023/02/26'),
+      T6('Dividem a unit Gekokujou','Share the unit Gekokujou','Comparten la unit Gekokujou','Satu unit di Gekokujou','อยู่ยูนิต Gekokujou ด้วยกัน','ユニット「下剋上」もいっしょ')]},
+    {par:[1, 2], nome:T6('Lirika & Pati','Lirika & Pati','Lirika y Pati','Lirika & Pati','Lirika & Pati','Lirika＆Pati'), ic:'coracao', fatos:[
+      T6('A mesma oshi: Imamura Maria (a kami-oshi do Pati)','Same oshi: Imamura Maria (Pati’s kami-oshi)','La misma oshi: Imamura Maria (la kami-oshi de Pati)','Oshi yang sama: Imamura Maria (kami-oshi Pati)','โอชิคนเดียวกัน: Imamura Maria (คามิโอชิของ Pati)','同じ推し：今村麻莉愛（Patiの神推し）'),
+      T6('Oshi graduada em comum: Honda Hitomi','A graduated oshi in common: Honda Hitomi','Una oshi graduada en común: Honda Hitomi','Oshi yang sudah lulus yang sama: Honda Hitomi','โอชิที่จบการศึกษาเหมือนกัน: Honda Hitomi','卒業した推しも同じ：本田仁美'),
+      T6('Os dois são de São Paulo','Both are from São Paulo','Los dos son de São Paulo','Keduanya dari São Paulo','ทั้งคู่มาจากเซาเปาลู','ふたりともサンパウロ出身')]},
+    {par:[0, 2], nome:T6('Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu y Pati · NeByura','Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu＆Pati・NeByura'), ic:'nota', fatos:[
+      T6('Dupla NeByura: 1º EP “NEBYURA” no início de 2026','Duo NeByura: 1st EP “NEBYURA” in early 2026','Dúo NeByura: 1.er EP “NEBYURA” a inicios de 2026','Duo NeByura: EP pertama “NEBYURA” awal 2026','ดูโอ NeByura: EP แรก “NEBYURA” ต้นปี 2026','デュオNeByura：1st EP「NEBYURA」（2026年はじめ）'),
+      T6('Os dois amam o AKB48','Both love AKB48','A los dos les encanta AKB48','Keduanya suka AKB48','ทั้งคู่รัก AKB48','ふたりともAKB48が大好き'),
+      T6('Oshi graduada em comum: Itano Tomomi','A graduated oshi in common: Itano Tomomi','Una oshi graduada en común: Itano Tomomi','Oshi yang sudah lulus yang sama: Itano Tomomi','โอชิที่จบการศึกษาเหมือนกัน: Itano Tomomi','卒業した推しも同じ：板野友美'),
+      T6('Aniversários em setembro: 05/09 e 23/09','Birthdays in September: 05/09 and 23/09','Cumpleaños en septiembre: 05/09 y 23/09','Ulang tahun di bulan September: 05/09 dan 23/09','วันเกิดเดือนกันยายน: 05/09 และ 23/09','誕生日はどちらも9月：9/5と9/23')]},
+    {par:[0, 1, 2], nome:T6('Os três · TsuLiPa','The three · TsuLiPa','Los tres · TsuLiPa','Bertiga · TsuLiPa','ทั้งสาม · TsuLiPa','3人・TsuLiPa'), ic:'trio', fatos:[
+      T6('Draft 1st Generation, agosto de 2021','Draft 1st Generation, August 2021','Draft 1st Generation, agosto de 2021','Draft 1st Generation, Agustus 2021','Draft 1st Generation สิงหาคม 2021','ドラフト1期生（2021年8月）'),
+      T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
+      linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024–25', 'Secret Base · Dream Splash'], ['2026', "I can't stop the loneliness"]]}
+  ];
+  function t6(o){ return o ? (o[L()] || o.pt) : ''; }
   // Fichinhas em abas (uma Idol por vez, sem rolar 2.500px): foto de cada um no topo, palco com o boneco e o pet,
   // dados em blocos, "gosta de" em chips, a frase oficial em balão com a voz de verdade, e o mapa de amizades numa aba própria.
   var trioAba = 0;
@@ -952,14 +979,21 @@
     var corpo;
     if(trioAba === 3){
       corpo = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
-        '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="480" role="img" aria-label="' +
+        '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="410" role="img" aria-label="' +
           esc(tf('mapaAmigos') + ': ' + tf('mesmaGeracao') + ' · ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div>' +
+        '<div class="twc-lacos" role="tablist" aria-label="' + esc(tf('mapaAmigos')) + '">' + [3, 0, 1, 2].map(function(i){ var lc = LACOS[i];
+          return '<button type="button" role="tab" class="twc-laco' + (amigosSel === i ? ' on' : '') + '" data-laco="' + i + '" aria-selected="' + (amigosSel === i) + '"><span class="twc-laco-rostos" aria-hidden="true">' +
+            lc.par.map(function(k){ return '<canvas data-membro="' + k + '" width="64" height="64" style="--fc:' + FICHAS[k].cor[0] + '"></canvas>'; }).join('') + '</span><b>' + esc(t6(lc.nome)) + '</b></button>'; }).join('') + '</div>' +
+        (function(){ var lc = LACOS[amigosSel];
+          return '<div class="twc-laco-card" role="tabpanel" style="--fc:' + (lc.par.length === 2 ? FICHAS[lc.par[1]].cor[0] : '#7b3ff0') + '"><h3>' + ico(lc.ic, 18) + esc(t6(lc.nome)) + '</h3><ul>' +
+            lc.fatos.map(function(f){ return '<li>' + esc(t6(f)) + '</li>'; }).join('') + '</ul>' +
+            (lc.linha ? '<p class="twc-laco-sub">' + esc(tf('unitFest')) + '</p><ol class="twc-laco-linha">' + lc.linha.map(function(l){ return '<li><b>' + esc(l[0]) + '</b><span translate="no">' + esc(l[1]) + '</span></li>'; }).join('') + '</ol>' : '') + '</div>'; })() +
         '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
         '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
     } else {
       var f = FICHAS[trioAba], m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
       var bloco = function(ic, r, v, extra){ return v ? '<div class="twc-f2-bloco"><span class="twc-f2-ic" aria-hidden="true">' + ico(ic, 18) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
-      var gostos = String(f.gostos[L()] || f.gostos.pt).split(/,\s*|\s+e\s+|\s+and\s+|\s+y\s+|\s+dan\s+|、/).filter(Boolean);
+      var gostos = String(f.gostos[L()] || f.gostos.pt).split(/,\s*|、/).filter(Boolean);
       corpo = '<article class="twc-f2" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '" role="tabpanel">' +
         '<header class="twc-f2-palco"><span class="twc-f2-luz" aria-hidden="true"></span>' +
           '<canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
@@ -969,7 +1003,7 @@
         '<div class="twc-f2-fala"><blockquote lang="pt">' + esc(f.frase) + '</blockquote>' +
           '<button type="button" class="twc-f2-voz" data-triovoz="' + f.k + '" aria-label="' + esc(tf('ouvir')) + '">' + ico('fala', 18) + '<span>' + esc(tf('ouvir')) + '</span></button></div>' +
         '<dl class="twc-f2-grade">' + bloco('bolo', 'aniv', esc(aniv)) + bloco('pin', 'local', esc(f.local)) + bloco('regua', 'altura', esc(f.altura)) +
-          bloco('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') + bloco('pata', 'pet', esc(f.pet[1])) + '</dl>' +
+          bloco('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') + bloco('pata', 'pet', esc(f.pet[1])) + bloco('nota', 'audicao', esc(f.audicao)) + bloco('estrela', 'oshis', esc(f.oshis)) + '</dl>' +
         '<section class="twc-f2-gosta"><h3>' + ico('coracao', 16) + esc(tf('gosta')) + '</h3><ul>' + gostos.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></section>' +
         '<a class="twc-btn twc-btn-claro twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
     }
@@ -1024,19 +1058,28 @@
       x.strokeStyle = '#fff'; x.lineWidth = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.stroke();
       x.fillStyle = letra; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, px, py + 1);
     }
-    // arco de cima: a unit TsuLiPa (fita nas três cores, passando por cima dos três)
-    var arco = x.createLinearGradient(110, 0, 570, 0); arco.addColorStop(0, cor[0]); arco.addColorStop(.5, '#7cc400'); arco.addColorStop(1, cor[2]);
-    x.save(); x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 18; x.beginPath(); x.moveTo(110, 168); x.quadraticCurveTo(340, 30, 570, 168); x.stroke();
-    x.strokeStyle = arco; x.lineWidth = 10; x.stroke(); x.restore();
-    pilula(W / 2, 92, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 19);
-    // embaixo: a dupla NeByura (Tsu + Pati), fita rosa pontilhada por baixo
-    x.save(); x.setLineDash([2, 15]); x.lineCap = 'round'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 8; x.beginPath(); x.moveTo(150, 392); x.quadraticCurveTo(340, 470, 530, 392); x.stroke(); x.restore();
-    pilula(W / 2, 432, tf('dupla'), '#ff6fb5', '#fff', 15);
-    // faixa da geração: os três entraram juntos
-    pilula(W / 2, 30, tf('mesmaGeracao'), '#fff', '#7b3ff0', 14);
+    var laco = LACOS[amigosSel] || LACOS[3], noLaco = function(k){ return laco.par.indexOf(k) >= 0; };
+    if(laco.par.length === 3){
+      // os três: fita da unit TsuLiPa nas três cores passando por cima, e a faixa da geração
+      var arco = x.createLinearGradient(110, 0, 570, 0); arco.addColorStop(0, cor[0]); arco.addColorStop(.5, '#7cc400'); arco.addColorStop(1, cor[2]);
+      x.save(); x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 18; x.beginPath(); x.moveTo(110, 168); x.quadraticCurveTo(340, 30, 570, 168); x.stroke();
+      x.strokeStyle = arco; x.lineWidth = 10; x.stroke(); x.restore();
+      pilula(W / 2, 92, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 19);
+      pilula(W / 2, 30, tf('mesmaGeracao'), '#fff', '#7b3ff0', 14);
+    } else {
+      // um laço: fita brilhante entre os dois, com corações passando de um para o outro
+      var A = AMIGOS_POS[laco.par[0]], B = AMIGOS_POS[laco.par[1]], cxm = (A.x + B.x) / 2, topo2 = 70 + Math.abs(B.x - A.x) * -.05;
+      var fit = x.createLinearGradient(A.x, 0, B.x, 0); fit.addColorStop(0, cor[laco.par[0]]); fit.addColorStop(1, cor[laco.par[1]]);
+      x.save(); x.lineCap = 'round'; x.shadowColor = 'rgba(255,111,181,.6)'; x.shadowBlur = 16; x.strokeStyle = '#fff'; x.lineWidth = 20;
+      x.beginPath(); x.moveTo(A.x, 170); x.quadraticCurveTo(cxm, topo2, B.x, 170); x.stroke(); x.shadowBlur = 0; x.strokeStyle = fit; x.lineWidth = 11; x.stroke(); x.restore();
+      for(var hc = 0; hc < 4; hc++){ var tt = (s * .35 + hc / 4) % 1, hx = (1 - tt) * (1 - tt) * A.x + 2 * (1 - tt) * tt * cxm + tt * tt * B.x, hy = (1 - tt) * (1 - tt) * 170 + 2 * (1 - tt) * tt * topo2 + tt * tt * 170;
+        x.save(); x.font = '22px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.globalAlpha = Math.sin(tt * Math.PI); x.lineWidth = 4; x.strokeStyle = '#fff'; x.strokeText('♥', hx, hy); x.fillStyle = '#ff4f9a'; x.fillText('♥', hx, hy); x.restore(); }
+      pilula(cxm, topo2 + 40, t6(laco.nome), '#ff6fb5', '#fff', 16);
+    }
     var rg = amigosReage && agora - amigosReage.t0 < 2400 ? amigosReage : null, rt = rg ? (agora - rg.t0) / 1000 : 0;
     AMIGOS_POS.forEach(function(p, k){
       var av = membroAv(k); if(!av) return;
+      x.save(); if(!noLaco(k)) x.globalAlpha = .28;   // quem não está no laço escolhido fica apagadinho
       var pulo = Math.max(0, Math.sin(s * 2.2 + k * 2.1)) * 5;
       if(rg && rg.tipo === 'm' && rg.k === k) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 34;
       x.fillStyle = 'rgba(70,30,120,.16)'; x.beginPath(); x.ellipse(p.x, p.y + 4, 46, 9, 0, 0, 7); x.fill();
@@ -1048,6 +1091,7 @@
       if(typeof drawPet === 'function'){ x.fillStyle = 'rgba(70,30,120,.14)'; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 28, 22, 5, 0, 0, 7); x.fill();
         try{ drawPet(x, MEMBROS[k][0], p.pet[0], p.pet[1] - pp, 1.55, s * 60 + k * 20, 'feliz'); }catch(e){} }
       x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = cor[k]; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(FICHAS[k].pet[1], p.pet[0], p.pet[1] + 48);
+      x.restore();
     });
     // reação: balão com a fala de verdade e coraçõezinhos subindo
     if(rg){
@@ -1272,6 +1316,7 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
     if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
     if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
@@ -1352,6 +1397,7 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
     if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
     if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }

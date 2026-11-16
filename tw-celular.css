@@ -844,3 +844,15 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
   :root:not([data-theme="light"]) .twc-laco-card ul li,:root:not([data-theme="light"]) .twc-laco-linha span{color:#efe6ff}
   :root:not([data-theme="light"]) .twc-laco-linha li{background:#2a2045}
 }
+.twc-laco-sub svg{vertical-align:-2px;margin-right:5px;color:var(--fc)}
+.twc-laco-mus{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:6px!important;margin:0;padding:0;list-style:none}
+.twc-laco-mus li{display:flex;flex-direction:column;padding:6px 10px!important;border-radius:12px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 25%,#fff)}
+.twc-laco-mus li::before{content:none!important}
+.twc-laco-mus b{font:800 12.5px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-laco-mus small{font:700 10.5px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-laco-mais{margin-top:8px}
+.twc-laco-mais summary{cursor:pointer;font:800 12.5px "M PLUS Rounded 1c",sans-serif;color:var(--fc);margin-bottom:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-laco-mus li{background:#2a2045}:root:not([data-theme="light"]) .twc-laco-mus b{color:#efe6ff}}
+.twc-laco-sub{display:flex;align-items:center}
+.twc .twc-laco-mus{display:grid!important;grid-template-columns:1fr 1fr}
+.twc-laco-mus li{min-width:0}.twc-laco-mus b,.twc-laco-mus small{overflow-wrap:anywhere}

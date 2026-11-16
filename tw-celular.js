@@ -929,6 +929,8 @@
     time:{pt:'Time',en:'Team',es:'Equipo',id:'Tim',th:'ทีม',ja:'チーム'},
     geracao:{pt:'Geração',en:'Generation',es:'Generación',id:'Generasi',th:'รุ่น',ja:'期'},
     cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
+    cantaram:{pt:'{n} músicas que cantaram juntos',en:'{n} songs they sang together',es:'{n} canciones que cantaron juntos',id:'{n} lagu yang dinyanyikan bersama',th:'{n} เพลงที่ร้องด้วยกัน',ja:'いっしょに歌った曲：{n}曲'},
+    verTodas:{pt:'Ver mais {n}',en:'See {n} more',es:'Ver {n} más',id:'Lihat {n} lagi',th:'ดูอีก {n}',ja:'あと{n}曲を見る'},
     unitFest:{pt:'A unit TsuLiPa no Unit Festival',en:'The TsuLiPa unit at Unit Festival',es:'La unit TsuLiPa en el Unit Festival',id:'Unit TsuLiPa di Unit Festival',th:'ยูนิต TsuLiPa ใน Unit Festival',ja:'Unit FestivalのTsuLiPa'},
     audicao:{pt:'Música da audição',en:'Audition song',es:'Canción de la audición',id:'Lagu audisi',th:'เพลงออดิชัน',ja:'オーディション曲'},
     oshis:{pt:'Oshis',en:'Oshis',es:'Oshis',id:'Oshi',th:'โอชิ',ja:'推し'},
@@ -951,20 +953,30 @@
     {par:[0, 1], nome:T6('Tsu & Lirika','Tsu & Lirika','Tsu y Lirika','Tsu & Lirika','Tsu & Lirika','Tsu＆Lirika'), ic:'estrela', fatos:[
       T6('Entraram juntos como kenkyuusei em agosto de 2021','Joined together as kenkyuusei in August 2021','Entraron juntos como kenkyuusei en agosto de 2021','Masuk bersama sebagai kenkyuusei pada Agustus 2021','เข้ามาเป็นเค็นคิวเซย์พร้อมกันในเดือนสิงหาคม 2021','2021年8月にいっしょに研究生として加入'),
       T6('Promovidos ao Team S no mesmo dia: 26/02/2023','Promoted to Team S on the same day: 26/02/2023','Ascendidos al Team S el mismo día: 26/02/2023','Naik ke Team S di hari yang sama: 26/02/2023','ได้เลื่อนขึ้น Team S วันเดียวกัน: 26/02/2023','同じ日にTeam Sへ昇格：2023/02/26'),
-      T6('Dividem a unit Gekokujou','Share the unit Gekokujou','Comparten la unit Gekokujou','Satu unit di Gekokujou','อยู่ยูนิต Gekokujou ด้วยกัน','ユニット「下剋上」もいっしょ')]},
+      T6('Os dois cantaram Oshibe to Meshibe to Yoru no Chouchou, cada um num dueto','Both sang Oshibe to Meshibe to Yoru no Chouchou, each in a duet','Los dos cantaron Oshibe to Meshibe to Yoru no Chouchou, cada uno en un dúo','Keduanya menyanyikan Oshibe to Meshibe to Yoru no Chouchou, masing-masing dalam duet','ทั้งคู่ร้อง Oshibe to Meshibe to Yoru no Chouchou คนละดูเอ็ต','ふたりとも「おしべとめしべと夜の蝶々」をそれぞれデュエットで')],
+      musicas:[['Pan Pan Papa Pan', 'Sherbet Pink · B-side'], ['Gattsuki Girls', 'Teacher Teacher · B-side'], ['Oshibe to Meshibe to Yoru no Chouchou', 'Tsu + Deki · Lirika + Corbeau']]},
     {par:[1, 2], nome:T6('Lirika & Pati','Lirika & Pati','Lirika y Pati','Lirika & Pati','Lirika & Pati','Lirika＆Pati'), ic:'coracao', fatos:[
       T6('A mesma oshi: Imamura Maria (a kami-oshi do Pati)','Same oshi: Imamura Maria (Pati’s kami-oshi)','La misma oshi: Imamura Maria (la kami-oshi de Pati)','Oshi yang sama: Imamura Maria (kami-oshi Pati)','โอชิคนเดียวกัน: Imamura Maria (คามิโอชิของ Pati)','同じ推し：今村麻莉愛（Patiの神推し）'),
       T6('Oshi graduada em comum: Honda Hitomi','A graduated oshi in common: Honda Hitomi','Una oshi graduada en común: Honda Hitomi','Oshi yang sudah lulus yang sama: Honda Hitomi','โอชิที่จบการศึกษาเหมือนกัน: Honda Hitomi','卒業した推しも同じ：本田仁美'),
-      T6('Os dois são de São Paulo','Both are from São Paulo','Los dos son de São Paulo','Keduanya dari São Paulo','ทั้งคู่มาจากเซาเปาลู','ふたりともサンパウロ出身')]},
+      T6('Os dois são de São Paulo','Both are from São Paulo','Los dos son de São Paulo','Keduanya dari São Paulo','ทั้งคู่มาจากเซาเปาลู','ふたりともサンパウロ出身')],
+      musicas:[['Underground', 'Unit Festival 2025 · Next Station'], ['Show (Ado)', 'Halloween 2023 · Onegai My Kouhai'], ['Treinando Para Te Amar', 'Request Hour 2023']]},
     {par:[0, 2], nome:T6('Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu y Pati · NeByura','Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu＆Pati・NeByura'), ic:'nota', fatos:[
       T6('Dupla NeByura: 1º EP “NEBYURA” no início de 2026','Duo NeByura: 1st EP “NEBYURA” in early 2026','Dúo NeByura: 1.er EP “NEBYURA” a inicios de 2026','Duo NeByura: EP pertama “NEBYURA” awal 2026','ดูโอ NeByura: EP แรก “NEBYURA” ต้นปี 2026','デュオNeByura：1st EP「NEBYURA」（2026年はじめ）'),
       T6('Os dois amam o AKB48','Both love AKB48','A los dos les encanta AKB48','Keduanya suka AKB48','ทั้งคู่รัก AKB48','ふたりともAKB48が大好き'),
       T6('Oshi graduada em comum: Itano Tomomi','A graduated oshi in common: Itano Tomomi','Una oshi graduada en común: Itano Tomomi','Oshi yang sudah lulus yang sama: Itano Tomomi','โอชิที่จบการศึกษาเหมือนกัน: Itano Tomomi','卒業した推しも同じ：板野友美'),
-      T6('Aniversários em setembro: 05/09 e 23/09','Birthdays in September: 05/09 and 23/09','Cumpleaños en septiembre: 05/09 y 23/09','Ulang tahun di bulan September: 05/09 dan 23/09','วันเกิดเดือนกันยายน: 05/09 และ 23/09','誕生日はどちらも9月：9/5と9/23')]},
+      T6('Aniversários em setembro: 05/09 e 23/09','Birthdays in September: 05/09 and 23/09','Cumpleaños en septiembre: 05/09 y 23/09','Ulang tahun di bulan September: 05/09 dan 23/09','วันเกิดเดือนกันยายน: 05/09 และ 23/09','誕生日はどちらも9月：9/5と9/23')],
+      musicas:[['Touch You', 'Unit Festival 2021 · High T'], ['Nante Bohemian', 'Unit Festival 2023 · Bohemian'], ['Big Bang Bolleyball', 'Unit Festival 2025 · Cerulean Nights'], ["C'mon join us", 'Unit Festival 2026 · Boyzfroms'],
+        ['Dancing High', 'Sayonara no Imi · B-side (Tsu center)'], ['Bad∞End∞Night', 'Halloween 2022'], ['Natsu no Owari no Amaoto ga', 'Birthday Units 2022'], ['Nagori Zakura', '1000º vídeo'],
+        ['Teacher Teacher', 'A-side'], ['10nen Zakura', 'A-side'], ['Sayonara no Imi', 'A-side'], ['Poison Girl', 'Special single'], ['Mikaeri Bijin', 'Special single · B-side'],
+        ['Você é uma Melodia', '10nen Zakura · B-side'], ['Dead end', 'Sayonara no Imi · B-side'], ['Meu Verso de Paixão', 'Sayonara no Imi · B-side'], ['Amanojaku Batta', 'Sayonara no Imi · B-side'],
+        ['Sugaring Off Party!', 'Outono 2022'], ['Daqui 10 Anos', 'BRS48 · 10 anos'], ['So Long', 'Ano Novo 2026'], ['ANTI', '3rd Album'], ['Madonna no sentaku', '3rd Album'],
+        ['NO WAY MAN', 'Request Hour 2023'], ['Ruby', 'Request Hour 2023'], ['Wink wa 3kai', 'Gekokujou 1st Mini Concert']]},
     {par:[0, 1, 2], nome:T6('Os três · TsuLiPa','The three · TsuLiPa','Los tres · TsuLiPa','Bertiga · TsuLiPa','ทั้งสาม · TsuLiPa','3人・TsuLiPa'), ic:'trio', fatos:[
       T6('Draft 1st Generation, agosto de 2021','Draft 1st Generation, August 2021','Draft 1st Generation, agosto de 2021','Draft 1st Generation, Agustus 2021','Draft 1st Generation สิงหาคม 2021','ドラフト1期生（2021年8月）'),
       T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
-      linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024–25', 'Secret Base · Dream Splash'], ['2026', "I can't stop the loneliness"]]}
+      linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024', 'Secret Base'], ['2025', 'Dream Splash / Binetsu kara Mystery'], ['2026', "I can't stop the loneliness"]],
+      musicas:[['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
+        ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Zipper', '1st Draft Audition Concert'], ['Kyun', 'A-side'], ['Neko Allergy', 'Tsu Talks Senbatsu'], ['26 Estados e 1 Distrito', 'BRS48 · 6 anos'], ['Kibou ni tsuite', 'Request Hour 2023']]}
   ];
   function t6(o){ return o ? (o[L()] || o.pt) : ''; }
   // Fichinhas em abas (uma Idol por vez, sem rolar 2.500px): foto de cada um no topo, palco com o boneco e o pet,
@@ -987,7 +999,10 @@
         (function(){ var lc = LACOS[amigosSel];
           return '<div class="twc-laco-card" role="tabpanel" style="--fc:' + (lc.par.length === 2 ? FICHAS[lc.par[1]].cor[0] : '#7b3ff0') + '"><h3>' + ico(lc.ic, 18) + esc(t6(lc.nome)) + '</h3><ul>' +
             lc.fatos.map(function(f){ return '<li>' + esc(t6(f)) + '</li>'; }).join('') + '</ul>' +
-            (lc.linha ? '<p class="twc-laco-sub">' + esc(tf('unitFest')) + '</p><ol class="twc-laco-linha">' + lc.linha.map(function(l){ return '<li><b>' + esc(l[0]) + '</b><span translate="no">' + esc(l[1]) + '</span></li>'; }).join('') + '</ol>' : '') + '</div>'; })() +
+            (lc.linha ? '<p class="twc-laco-sub">' + esc(tf('unitFest')) + '</p><ol class="twc-laco-linha">' + lc.linha.map(function(l){ return '<li><b>' + esc(l[0]) + '</b><span translate="no">' + esc(l[1]) + '</span></li>'; }).join('') + '</ol>' : '') +
+            (lc.musicas ? (function(){ var mus = function(m){ return '<li><b translate="no">' + esc(m[0]) + '</b><small translate="no">' + esc(m[1]) + '</small></li>'; }, vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
+              return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', lc.musicas.length)) + '</p><ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
+                (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : ''); })() : '') + '</div>'; })() +
         '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
         '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
     } else {

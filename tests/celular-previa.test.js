@@ -187,3 +187,11 @@ test('mapa de amizades: laços com fatos do blog oficial e fichas sem a capoeira
   assert.ok(js.includes('BNK48, AKB48, Dal Shabet') && !/Oh My Girl/.test(js), 'Tsu: Dal Shabet no lugar de Oh My Girl');
   assert.match(js, /arco de lâmpadas \(letreiro de show\)/, 'mapa de amizades desenhado como palco de show');
 });
+
+test('laços: músicas que as duplas cantaram juntas (blog oficial)', () => {
+  const js = require('fs').readFileSync(require('path').join(__dirname, '..', 'tw-celular.js'), 'utf8');
+  assert.match(js, /\['Underground', 'Unit Festival 2025 · Next Station'\]/, 'Lirika & Pati');
+  assert.match(js, /\['Pan Pan Papa Pan', 'Sherbet Pink · B-side'\]/, 'Tsu & Lirika');
+  assert.match(js, /\['Touch You', 'Unit Festival 2021 · High T'\]/, 'Tsu & Pati');
+  assert.ok(!/Dividem a unit Gekokujou/.test(js), 'Gekokujou é dos três, não só do Tsu e da Lirika');
+});

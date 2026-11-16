@@ -107,7 +107,69 @@ function jnT1Ep6Texto(lang){
 }
 /* Prévia interna: conserva o desenho oficial, mas limita texto no Canvas.
    O texto integral permanece no figcaption acessível, sem truncamento. */
-function jnT1DesenharSeguro(canvas,p){
+/* Objetos narrativos desenhados sobre o Canvas existente, apenas na temporada privada.
+   Cartão no canto inferior direito: não interfere com os balões superiores. */
+var JN_T1_OBJETOS=[
+ ['carta','estrela','carta','estrela','carta'],
+ ['foto','foto','sino','foto','caixa'],
+ ['foto','estrela','foto','foto','caixa'],
+ ['caixa','carta','fitas','gravador','gravador'],
+ ['gravador','estrela','lanterna','gravador','carta'],
+ ['carta','caixa','fitas','gravador','foto']
+];
+function jnT1ObjetoDesenhar(canvas,episodio,quadro){
+ var tipo=JN_T1_OBJETOS[episodio] && JN_T1_OBJETOS[episodio][quadro];
+ if(!tipo || !canvas || !canvas.getContext) return false;
+ var c=canvas.getContext('2d'); if(!c) return false;
+ var W=canvas.width,H=canvas.height,esc=Math.min(W/480,H/320);
+ c.save(); c.translate(W-91*esc,H-89*esc);c.scale(esc,esc);
+ c.fillStyle='rgba(255,250,255,.94)';c.strokeStyle='#6d478b';c.lineWidth=2;
+ c.beginPath();c.roundRect(0,0,80,76,12);c.fill();c.stroke();
+ c.translate(14,11);c.lineJoin='round';c.lineCap='round';
+ if(tipo==='carta'){
+  c.fillStyle='#fff1d2';c.strokeStyle='#8e639f';c.lineWidth=2;
+  c.fillRect(3,11,49,36);c.strokeRect(3,11,49,36);
+  c.beginPath();c.moveTo(3,11);c.lineTo(27,30);c.lineTo(52,11);c.stroke();
+ }else if(tipo==='estrela'){
+  c.fillStyle='#bd8bff';c.strokeStyle='#7340a6';c.beginPath();
+  for(var j=0;j<10;j++){var a=-Math.PI/2+j*Math.PI/5,r=j%2?13:27;
+   var xx=27+Math.cos(a)*r,yy=27+Math.sin(a)*r;
+   if(!j)c.moveTo(xx,yy);else c.lineTo(xx,yy);}
+  c.closePath();c.fill();c.stroke();
+ }else if(tipo==='caixa'){
+  c.fillStyle='#639cde';c.strokeStyle='#30598f';
+  c.fillRect(4,23,48,29);c.strokeRect(4,23,48,29);
+  c.fillStyle='#9dc8ff';c.fillRect(0,15,56,11);c.strokeRect(0,15,56,11);
+  c.fillStyle='#e4c4ff';c.fillRect(24,15,8,37);
+ }else if(tipo==='foto'){
+  c.fillStyle='#fff';c.strokeStyle='#6d478b';c.lineWidth=2;
+  c.fillRect(5,4,48,52);c.strokeRect(5,4,48,52);
+  c.fillStyle='#b6d7ff';c.fillRect(10,9,38,33);
+  c.fillStyle='#7dba8c';c.beginPath();c.moveTo(10,42);c.lineTo(23,24);c.lineTo(32,33);c.lineTo(41,20);c.lineTo(48,42);c.fill();
+  c.fillStyle='#b688ec';c.beginPath();c.arc(42,16,4,0,Math.PI*2);c.fill();
+ }else if(tipo==='gravador'){
+  c.fillStyle='#b9bad7';c.strokeStyle='#54516e';
+  c.beginPath();c.roundRect(1,12,54,39,6);c.fill();c.stroke();
+  c.fillStyle='#fff';c.fillRect(7,17,42,14);
+  c.fillStyle='#706d94';c.beginPath();c.arc(15,24,5,0,Math.PI*2);c.arc(40,24,5,0,Math.PI*2);c.fill();
+  c.fillStyle='#ff80a5';c.beginPath();c.arc(28,43,4,0,Math.PI*2);c.fill();
+ }else if(tipo==='fitas'){
+  c.strokeStyle='#a168c5';c.lineWidth=6;
+  c.beginPath();c.moveTo(4,8);c.bezierCurveTo(54,10,5,33,49,53);c.stroke();
+  c.strokeStyle='#ff9ebc';c.beginPath();c.moveTo(48,8);c.bezierCurveTo(2,18,54,34,7,52);c.stroke();
+ }else if(tipo==='lanterna'){
+  c.fillStyle='#ffca67';c.strokeStyle='#8b6598';c.lineWidth=2;
+  c.beginPath();c.moveTo(18,14);c.lineTo(38,14);c.lineTo(35,29);c.lineTo(33,53);c.lineTo(23,53);c.lineTo(21,29);c.closePath();c.fill();c.stroke();
+  c.fillStyle='#fff5b2';c.beginPath();c.ellipse(28,14,12,5,0,0,Math.PI*2);c.fill();c.stroke();
+ }else if(tipo==='sino'){
+  c.fillStyle='#eec45e';c.strokeStyle='#886d41';c.lineWidth=2;
+  c.beginPath();c.moveTo(15,44);c.quadraticCurveTo(22,35,22,20);c.quadraticCurveTo(28,5,34,20);
+  c.quadraticCurveTo(34,35,42,44);c.closePath();c.fill();c.stroke();
+  c.beginPath();c.arc(28,48,5,0,Math.PI*2);c.fill();c.stroke();
+ }
+ c.restore();return true;
+}
+function jnT1DesenharSeguro(canvas,p,episodio,quadro){
  if(!canvas || !canvas.getContext || !p) return false;
  var ctx=canvas.getContext('2d'); if(!ctx) return false;
  function curto(valor,largura,linhas,tamanho){
@@ -142,6 +204,7 @@ function jnT1DesenharSeguro(canvas,p){
  var nar=p[2]?{pt:curto(p[2],canvas.width-65,2,15)}:null;
  var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],185,2,16)}];});
  jnCapDesenhar(canvas,[p[0],p[1],nar,falas]);
+ if(typeof episodio==='number' && typeof quadro==='number') jnT1ObjetoDesenhar(canvas,episodio,quadro);
  return true;
 }
 /* Chamado somente após inserir o HTML autorizado no leitor; não altera o leitor antigo. */
@@ -157,7 +220,7 @@ function jnT1PintarQuadros(root,episodio){
 }
 function jnT1Ep6Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP6.panels.length) return false;
- jnT1DesenharSeguro(canvas,JN_T1_EP6.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP6.panels[indice],5,indice);
  return true;
 }
 function jnT1Ep6Html(){
@@ -175,7 +238,7 @@ function jnT1Ep5Texto(lang){
 }
 function jnT1Ep5Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP5.panels.length) return false;
- jnT1DesenharSeguro(canvas,JN_T1_EP5.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP5.panels[indice],4,indice);
  return true;
 }
 function jnT1Ep5Html(){
@@ -193,7 +256,7 @@ function jnT1Ep4Texto(lang){
 }
 function jnT1Ep4Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP4.panels.length) return false;
- jnT1DesenharSeguro(canvas,JN_T1_EP4.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP4.panels[indice],3,indice);
  return true;
 }
 function jnT1Ep4Html(){
@@ -211,7 +274,7 @@ function jnT1Ep3Texto(lang){
 }
 function jnT1Ep3Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP3.panels.length) return false;
- jnT1DesenharSeguro(canvas,JN_T1_EP3.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP3.panels[indice],2,indice);
  return true;
 }
 function jnT1Ep3Html(){
@@ -229,7 +292,7 @@ function jnT1Ep2Texto(lang){
 }
 function jnT1Ep2Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP2.panels.length) return false;
- jnT1DesenharSeguro(canvas,JN_T1_EP2.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP2.panels[indice],1,indice);
  return true;
 }
 function jnT1Ep2Html(){
@@ -249,7 +312,7 @@ function jnT1PilotoDesenhar(canvas,indice){
   // Reutiliza fundo, avatares oficiais e o renderer estático existente.
   if(!canvas || indice<0 || indice>=JN_T1_PILOTO.panels.length) return false;
   var p=JN_T1_PILOTO.panels[indice];
-  jnT1DesenharSeguro(canvas,p);
+  jnT1DesenharSeguro(canvas,p,0,indice);
   return true;
 }
 function jnT1PilotoHtml(){

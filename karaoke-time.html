@@ -138,7 +138,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 .kt-ja-subtitle{display:block;margin:2px 0 4px;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
 </style>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
-<link rel="stylesheet" href="./karaoke-mobile.css?v=2"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=7">
+<link rel="stylesheet" href="./karaoke-mobile.css?v=2"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=8">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3">
 <script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
@@ -219,6 +219,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
   <div class="kt-preview-controls"><button type="button" class="kt-library-action" id="ktPreviewToggle" disabled>▶ Ouvir</button><button type="button" class="kt-library-action" id="ktPreviewStop" disabled>Parar</button><time id="ktPreviewTime">00:00 / 00:59</time><label class="kt-preview-volume" title="Volume">♫<input id=ktPreviewVolume type=range min=0 max=100 value=70 aria-label=Volume></label></div>
   <progress id="ktPreviewProgress" class="kt-preview-progress" max="59000" value="0">0%</progress>
 </div>
+<div class="kt-library-launch"><button type="button" class="btn kt-library-start" id="ktLibraryStart" data-kt-library-start="1">🎤 Jogar ritmo</button></div>
   </section>
   <section class="kt-library-panel kt-library-voices" aria-label="Vozes dos personagens">
     <h3 class="kt-library-section-title">♡ Vozes dos personagens<small class="kt-ja-subtitle" lang="ja">キャラクターの声</small></h3>
@@ -229,7 +230,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
       <button type="button" class="kt-library-head" data-kt-voice-group="pati" aria-label="Ouvir Pati" aria-pressed="false"><canvas class="kt-library-face" width="88" height="96" aria-hidden="true"></canvas><b>Pati</b><small data-kt-voice-caption="pati">Toque para falar</small></button>
     </div>
     
-  </section>  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música ou uma voz.</p>
+  </section>  <p class="kt-audio-status" id="ktAudioStatus" role="status" aria-live="polite">Escolha uma música para ouvir.</p>
 </section>
 <section class="kr-rhythm" id="krRhythm" hidden aria-label="Ensaio de ritmo">
 <div class="kr-rhythm-head"><h2>🎤 Karaoke⭐Time! · Rhythm</h2><span id="krRhythmPhase"></span></div>
@@ -3028,7 +3029,19 @@ var ktAudioVitrine=(function(){
   }
   function syncTracks(){
     if(!root)return;var selector=$('ktSong');if(!selector)return;
-    [].forEach.call(root.querySelectorAll('[data-kt-song-select]'),function(button){button.setAttribute('aria-pressed',button.dataset.ktSongSelect===selector.value?'true':'false');});
+    [].forEach.call(root.querySelectorAll('[data-kt-song-select]'),function(button){
+      var selected=button.dataset.ktSongSelect===selector.value;
+      button.setAttribute('aria-pressed',selected?'true':'false');
+      button.disabled=!!selector.disabled;
+      var track=button.closest('.kt-library-track');
+      if(track)track.classList.toggle('kt-song-selected',selected);
+    });
+  }
+  function syncLibraryStart(){
+    var original=$('ktStart'),button=$('ktLibraryStart');
+    if(!original||!button)return;
+    button.disabled=!!original.disabled;
+    button.textContent=original.textContent;
   }
   function speakGroup(group,button){
     if(!Object.prototype.hasOwnProperty.call(voiceLines,group))return;
@@ -3121,6 +3134,12 @@ var ktAudioVitrine=(function(){
   window.addEventListener('pagehide',stopHeadAnimation);
   var songSelector=$('ktSong');if(songSelector)songSelector.addEventListener('change',syncTracks);
   if(root)root.addEventListener('click',function(event){
+    var libraryStart=event.target.closest&&event.target.closest('[data-kt-library-start]');
+    if(libraryStart&&root.contains(libraryStart)){
+      var originalStart=$('ktStart');
+      if(originalStart&&!originalStart.disabled)originalStart.click();
+      return;
+    }
     var voiceChoice=event.target.closest&&event.target.closest('[data-kt-voice-group]');
     if(voiceChoice&&root.contains(voiceChoice)){speakGroup(voiceChoice.dataset.ktVoiceGroup,voiceChoice);return;}
     var songPreview=event.target.closest&&event.target.closest('[data-kt-song-preview]');
@@ -3141,7 +3160,14 @@ var ktAudioVitrine=(function(){
   });
   document.addEventListener('visibilitychange',function(){if(document.hidden){if(player)stop('');stopHeadAnimation();}else if(headsVisible)startHeadAnimation();});
   window.addEventListener('pagehide',function(){stopHeadAnimation();if(headObserver)headObserver.disconnect();stop('');});
-  refresh();syncTracks();observeHeads();
+  var originalStart=$('ktStart');
+  if(originalStart&&typeof MutationObserver==='function')
+    new MutationObserver(syncLibraryStart).observe(originalStart,{attributes:true,attributeFilter:['disabled'],childList:true,characterData:true,subtree:true});
+  if(songSelector&&typeof MutationObserver==='function')
+    new MutationObserver(syncTracks).observe(songSelector,{attributes:true,attributeFilter:['disabled']});
+  refresh();syncTracks();syncLibraryStart();observeHeads();
+  if(root&&songSelector&&document.documentElement.classList.contains('kt-no-site'))
+    document.documentElement.classList.add('kt-library-ready');
   return {play:play,stop:function(){stop('');},refresh:refresh,speakGroup:speakGroup};
 })();
 
@@ -3256,5 +3282,5 @@ if(ktNoSite()){
 </script><script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-mobile.js?v=1"></script>
 <script src="./karaoke-photo.js?v=1"></script>
-<script src="./karaoke-lista.js?v=5"></script>
+
 </body></html>

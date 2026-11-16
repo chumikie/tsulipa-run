@@ -56,3 +56,16 @@ test('o celular mostra o calendário e o card do dia', () => {
   assert.match(js, /porta\('cal', 'cal', tc\('cal'\)/, 'calendário tem porta no Início (o Menu não repete)');
   assert.ok(!/telaPais|data-v="pais"/.test(js), 'sem Cantinho dos pais');
 });
+
+test('aniversários dos jogadores no calendário (sem o trio, que já tem os oficiais)', () => {
+  const C = carregar();
+  C.jogadores([{nick:'Caio', aniver:'11-20'}, {nick:'Duda', aniver:'11-20'}, {nick:'Tsu', aniver:'09-05'}, {nick:'X', aniver:'2026-11-20'}]);
+  const m = C.marcas('2026-11-20');
+  assert.strictEqual(m.map(x => x.k).join(), 'anivJog');
+  assert.match(m[0].nome, /Caio, Duda/);
+  assert.strictEqual(C.marcas('2027-09-05').map(x => x.k).join(), 'anivTsu', 'a conta do Tsu não duplica o aniversário oficial');
+  assert.match(C.fala('2026-11-20').txt, /Caio, Duda/, 'fala do dia parabeniza');
+  const priv = fs.readFileSync(path.join(__dirname, '..', 'privacidade.html'), 'utf8');
+  assert.match(priv, /aparece no Calendário do jogo para todo mundo/);
+  assert.ok(!/nunca a data/.test(priv), 'privacidade não promete mais esconder a data');
+});

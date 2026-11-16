@@ -763,7 +763,8 @@
     ant:{pt:'Mês anterior',en:'Previous month',es:'Mes anterior',id:'Bulan sebelumnya',th:'เดือนก่อน',ja:'前の月'},
     prox:{pt:'Próximo mês',en:'Next month',es:'Mes siguiente',id:'Bulan berikutnya',th:'เดือนถัดไป',ja:'次の月'},
     abrir:{pt:'Ver o calendário',en:'Open the calendar',es:'Ver el calendario',id:'Lihat kalender',th:'ดูปฏิทิน',ja:'カレンダーを見る'},
-    legAniv:{pt:'Aniversários',en:'Birthdays',es:'Cumpleaños',id:'Ulang tahun',th:'วันเกิด',ja:'誕生日'},
+    legAniv:{pt:'Tsu, Lirika e Pati',en:'Tsu, Lirika and Pati',es:'Tsu, Lirika y Pati',id:'Tsu, Lirika, dan Pati',th:'Tsu, Lirika และ Pati',ja:'Tsu・Lirika・Pati'},
+    legJog:{pt:'Idols jogadores',en:'Player Idols',es:'Idols jugadores',id:'Idol pemain',th:'ไอดอลผู้เล่น',ja:'プレイヤーのアイドル'},
     legJogo:{pt:'TsuLiPa⭐World',en:'TsuLiPa⭐World',es:'TsuLiPa⭐World',id:'TsuLiPa⭐World',th:'TsuLiPa⭐World',ja:'TsuLiPa⭐World'},
     legTema:{pt:'Tema de data',en:'Seasonal theme',es:'Tema de fecha',id:'Tema musiman',th:'ธีมตามเทศกาล',ja:'季節のテーマ'}
   };
@@ -779,14 +780,21 @@
     return '<div class="twc-calfala ' + (cls || '') + '"><canvas data-membro="' + f.quem + '" width="96" height="96" aria-hidden="true"></canvas><p><b>' + esc(MEMBROS[f.quem][1]) + '</b>' + esc(f.txt) + '</p></div>';
   }
   function calHojeHtml(){
-    var C = window.TW_CAL; if(!C) return '';
+    var C = window.TW_CAL; if(!C) return ''; calAniversarios();
     var h = C.hoje(), n = C.diaN(h), te = C.tema(h), mk = C.marcas(h), mes = C.doMes(+h.slice(5, 7)), ev = mk[0] || (te ? {nome:te.nome, cor:te.cor} : mes);
     return '<button type="button" class="twc-card twc-calhoje" data-v="cal" aria-label="' + esc(tc('abrir')) + '">' +
       '<span class="twc-caldata" style="--c:' + (ev && ev.cor || '#7b3ff0') + '"><small>' + esc(mesCurto(+h.slice(5, 7))) + '</small><b>' + (+h.slice(8, 10)) + '</b></span>' +
       '<span class="twc-calhoje-t"><em>' + esc(n >= 1 ? tc('diaN', n) : tc('antes')) + (ev ? ' · ' + esc(ev.nome) : '') + '</em>' + falaHtml(C.fala(h), 'twc-calfala-mini') + '</span>' +
       '<span class="twc-calhoje-ir" aria-hidden="true">' + ico('cal', 20) + '</span></button>';
   }
+  var calAnivPedido = 0;
+  function calAniversarios(){   // aniversários dos jogadores (dia e mês), uma vez a cada 10 minutos
+    if(calAnivPedido && Date.now() - calAnivPedido < 6e5) return; calAnivPedido = Date.now();
+    if(typeof contaRpc !== 'function' || !window.TW_CAL || !window.TW_CAL.jogadores) return;
+    contaRpc('calendario_aniversarios').then(function(r){ window.TW_CAL.jogadores(r); if(topo() === 'cal' || topo() === 'menu') desenhar(); }).catch(function(){ calAnivPedido = 0; });
+  }
   function telaCal(){
+    calAniversarios();
     if(typeof jnT1Disponivel !== 'function' && typeof window.jornalCapsCarregar === 'function') window.jornalCapsCarregar(function(){ if(topo() === 'cal') desenhar(); });   // marcas da temporada vêm com os quadrinhos
     var C = window.TW_CAL; if(!C) return faixa(esc(tc('cal')), tc('calSub')) + '<div class="twc-pag"></div>';
     var h = C.hoje(); if(!calMes) calMes = h.slice(0, 7); if(!calSel) calSel = calMes === h.slice(0, 7) ? h : calMes + '-01';
@@ -812,7 +820,7 @@
         '<button type="button" class="twc-calnav" data-calmes="1"' + (calMes >= lim[1] ? ' disabled' : '') + ' aria-label="' + esc(tc('prox')) + '">›</button></div>' +
         (mes ? '<p class="twc-calfaixa" style="--c:' + mes.cor + '">' + ico(mes.k === 'mesLirika' ? 'bolo' : 'trio', 15) + esc(mes.nome) + '</p>' : '') +
         '<div class="twc-calgrade" role="group" aria-label="' + esc(nomeMes(y, m)) + '">' + sem.map(function(x){ return '<span class="twc-calsem" aria-hidden="true">' + esc(x) + '</span>'; }).join('') + cel2.join('') + '</div>' +
-        '<p class="twc-legenda twc-callegenda"><span><i style="--c:#9b30d9">' + ico('bolo', 12) + '</i>' + esc(tc('legAniv')) + '</span><span><i style="--c:#7b3ff0">' + ico('estrela', 12) + '</i>' + esc(tc('legJogo')) + '</span><span><i class="twc-callg-tema"></i>' + esc(tc('legTema')) + '</span></p>' +
+        '<p class="twc-legenda twc-callegenda"><span><i style="--c:#9b30d9">' + ico('bolo', 12) + '</i>' + esc(tc('legAniv')) + '</span><span><i style="--c:#ff8a3d">' + ico('bolo', 12) + '</i>' + esc(tc('legJog')) + '</span><span><i style="--c:#7b3ff0">' + ico('estrela', 12) + '</i>' + esc(tc('legJogo')) + '</span><span><i class="twc-callg-tema"></i>' + esc(tc('legTema')) + '</span></p>' +
       '</section>' +
       '<section class="twc-card twc-caldia" id="twcCalDia" aria-live="polite"><h2>' + esc(dataCurta(sd)) + (sd === h ? ' · ' + esc(tc('hoje')) : '') + '</h2>' +
         '<small class="twc-caldn">' + esc(sn >= 1 ? tc('diaN', sn) : tc('antes')) + '</small>' +

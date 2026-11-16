@@ -35,6 +35,9 @@
                  [2, {pt:'Aniversário do BRS48 chegando!! Conte com o Pati pro bolo!!',en:"BRS48's anniversary is here!! Count on Pati for the cake!!",es:'¡¡Llega el aniversario de BRS48!! ¡¡Cuenta con el Pati para el pastel!!',id:'Ulang tahun BRS48 datang!! Andalkan Pati buat kuenya!!',th:'วันครบรอบ BRS48 มาแล้ว!! เค้กให้ปาติจัดการ!!',ja:'BRS48の記念日がきたよ！！ケーキはPatiにまかせて！！'}]],
     cap:[[1, {pt:'Capítulo novo da nossa história no Idol⭐News!~',en:'A new chapter of our story in Idol⭐News!~',es:'¡Capítulo nuevo de nuestra historia en Idol⭐News!~',id:'Bab baru cerita kami di Idol⭐News!~',th:'ตอนใหม่ของเรื่องเราใน Idol⭐News!~',ja:'Idol⭐News!にわたしたちの新しいお話〜'}],
          [2, {pt:'Saiu capítulo novo do quadrinho!! Corre pro Idol⭐News!!',en:'New comic chapter is out!! Run to Idol⭐News!!',es:'¡¡Salió un capítulo nuevo del cómic!! ¡¡Corre a Idol⭐News!!',id:'Bab komik baru keluar!! Cepat ke Idol⭐News!!',th:'การ์ตูนตอนใหม่มาแล้ว!! รีบไป Idol⭐News!!',ja:'マンガの新しい話が出たよ！！Idol⭐News!へ急いで！！'}]],
+    anivJog:[[0, {pt:'Hoje é aniversário de {p}! Parabéns, Idol!',en:"Today is {p}'s birthday! Happy birthday, Idol!",es:'¡Hoy es el cumpleaños de {p}! ¡Felicidades, Idol!',id:'Hari ini ulang tahun {p}! Selamat, Idol!',th:'วันนี้วันเกิดของ {p}! สุขสันต์วันเกิดนะไอดอล!',ja:'今日は{p}の誕生日！おめでとう、アイドル！'}],
+             [1, {pt:'Otanjoubi omedetou, {p}~! Passa no perfil pra deixar um coração!',en:'Otanjoubi omedetou, {p}~! Stop by the profile and leave a heart!',es:'¡Otanjoubi omedetou, {p}~! ¡Pasa por el perfil y deja un corazón!',id:'Otanjoubi omedetou, {p}~! Mampir ke profil dan beri hati!',th:'Otanjoubi omedetou, {p}~! แวะไปให้หัวใจที่โปรไฟล์นะ!',ja:'{p}、おたんじょうびおめでとう〜！プロフィールにハートを送ってね！'}],
+             [2, {pt:'Parabéns, {p}!! Hoje a festa é sua!!',en:'Happy birthday, {p}!! Today the party is yours!!',es:'¡¡Feliz cumple, {p}!! ¡¡Hoy la fiesta es tuya!!',id:'Selamat ulang tahun, {p}!! Hari ini pestamu!!',th:'สุขสันต์วันเกิด {p}!! วันนี้ปาร์ตี้เป็นของคุณ!!',ja:'{p}、おめでとう！！今日はあなたが主役！！'}]],
     natal:[[2, {pt:'Feliz Natal!! Conte com o Pati pra deixar seu dia mais feliz!!',en:'Merry Christmas!! Count on Pati to make your day happier!!',es:'¡¡Feliz Navidad!! ¡¡Cuenta con el Pati para alegrar tu día!!',id:'Selamat Natal!! Andalkan Pati buat bikin harimu lebih bahagia!!',th:'สุขสันต์วันคริสต์มาส!! ให้ปาติทำให้วันของคุณสดใส!!',ja:'メリークリスマス！！Patiがあなたの一日をもっと楽しくするよ！！'}]],
     anonovo:[[1, {pt:'Feliz ano novo! Akemashite omedetou~!',en:'Happy new year! Akemashite omedetou~!',es:'¡Feliz año nuevo! ¡Akemashite omedetou~!',id:'Selamat tahun baru! Akemashite omedetou~!',th:'สวัสดีปีใหม่! Akemashite omedetou~!',ja:'あけましておめでとう〜！'}]],
     tema:[[0, {pt:'{t} no TsuLiPa⭐World! Bora jogar com a roupa do tema?',en:'{t} in TsuLiPa⭐World! Play in the theme outfit?',es:'¡{t} en TsuLiPa⭐World! ¿Jugamos con la ropa del tema?',id:'{t} di TsuLiPa⭐World! Main pakai baju tema?',th:'{t} ใน TsuLiPa⭐World! เล่นด้วยชุดธีมกัน?',ja:'TsuLiPa⭐Worldは{t}！テーマの衣装で遊ぼう？'}],
@@ -51,6 +54,7 @@
     anivPati:{pt:'Aniversário do Pati',en:"Pati's birthday",es:'Cumpleaños de Pati',id:'Ulang tahun Pati',th:'วันเกิด Pati',ja:'Patiの誕生日'},
     mesLirika:{pt:'Mês do aniversário da Lirika',en:"Lirika's birthday month",es:'Mes del cumpleaños de Lirika',id:'Bulan ulang tahun Lirika',th:'เดือนเกิดของ Lirika',ja:'Lirikaの誕生月'},
     brs48:{pt:'Aniversário do BRS48 (2015)',en:"BRS48's anniversary (2015)",es:'Aniversario de BRS48 (2015)',id:'Ulang tahun BRS48 (2015)',th:'วันครบรอบ BRS48 (2015)',ja:'BRS48 記念日（2015）'},
+    anivJog:{pt:'Aniversário de {p}',en:"{p}'s birthday",es:'Cumpleaños de {p}',id:'Ulang tahun {p}',th:'วันเกิดของ {p}',ja:'{p}の誕生日'},
     capEstreia:{pt:'Estreia dos quadrinhos no Idol⭐News! (capítulos 1 a 3)',en:'Comics premiere in Idol⭐News! (chapters 1–3)',es:'Estreno de los cómics en Idol⭐News! (capítulos 1 a 3)',id:'Perdana komik di Idol⭐News! (bab 1–3)',th:'เปิดตัวการ์ตูนใน Idol⭐News! (ตอนที่ 1–3)',ja:'Idol⭐News!でマンガ連載スタート（第1〜3話）'},
     cap:{pt:'Capítulo {n} do quadrinho no Idol⭐News!',en:'Comic chapter {n} in Idol⭐News!',es:'Capítulo {n} del cómic en Idol⭐News!',id:'Bab {n} komik di Idol⭐News!',th:'การ์ตูนตอนที่ {n} ใน Idol⭐News!',ja:'Idol⭐News!のマンガ第{n}話'},
     geracao:{pt:'Mês da Draft 1st Generation (2021)',en:'Draft 1st Generation month (2021)',es:'Mes de la Draft 1st Generation (2021)',id:'Bulan Draft 1st Generation (2021)',th:'เดือน Draft 1st Generation (2021)',ja:'ドラフト1期生の月（2021）'}
@@ -68,8 +72,14 @@
     var a = partes(d), w = Math.floor((Math.floor(Date.UTC(a.y, a.m - 1, a.d) / 864e5) + 3) / 7), e = EVENTOS[w % EVENTOS.length];
     return {k:e[0], nome:trT(e[2]), cor:e[6]};
   }
+  // Aniversários dos jogadores (só MM-DD, sem ano) — vêm do servidor (calendario_aniversarios). As contas do trio
+  // ficam de fora: o Tsu, a Lirika e o Pati já têm os aniversários oficiais acima.
+  var JOGADORES = [];
+  function jogadores(lista){ JOGADORES = (Array.isArray(lista) ? lista : []).filter(function(p){ return p && p.nick && /^\d\d-\d\d$/.test(p.aniver || '') && ['tsu', 'lirika', 'patiliri'].indexOf(String(p.nick).toLowerCase()) < 0; }); }
   function marcas(d){   // o que acontece no dia: lista de {k, nome, ic, cor}
     var md = d.slice(5), y = +d.slice(0, 4), m = [];
+    var anv = JOGADORES.filter(function(p){ return p.aniver === md; }).map(function(p){ return p.nick; });
+    if(anv.length) m.push({k:'anivJog', nome:tx(NOMES.anivJog).replace('{p}', anv.length > 3 ? anv.slice(0, 3).join(', ') + ' +' + (anv.length - 3) : anv.join(', ')), ic:'bolo', cor:'#ff8a3d', quem:anv});
     if(md === '10-27' && d >= INICIO) m.push({k:y === 2026 ? 'lanc' : 'anivJogo', nome:tx(NOMES[y === 2026 ? 'lanc' : 'anivJogo']), ic:'estrela', cor:'#7b3ff0'});
     if(md === '09-05') m.push({k:'anivTsu', nome:tx(NOMES.anivTsu), ic:'bolo', cor:'#9b30d9'});
     if(md === '09-23') m.push({k:'anivPati', nome:tx(NOMES.anivPati), ic:'bolo', cor:'#4169e1'});
@@ -100,8 +110,8 @@
     else if(te){ lista = F.tema; t2 = te.nome; }
     else if(mes && h % 3 === 0) lista = F[mes.k];
     else lista = F.dia;
-    var e = lista[h % lista.length];
-    return {quem:e[0], txt:tx(e[1]).replace('{t}', t2).replace('{n}', Math.max(1, diaN(d)))};
+    var e = lista[h % lista.length], pj = mk.length && mk[0].k === 'anivJog' ? mk[0].quem.slice(0, 3).join(', ') : '';
+    return {quem:e[0], txt:tx(e[1]).replace('{t}', t2).replace('{n}', Math.max(1, diaN(d))).replace('{p}', pj)};
   }
-  window.TW_CAL = {inicio:INICIO, hoje:hoje, diaN:diaN, marcas:marcas, doMes:doMes, tema:temaDe, semana:semanaDe, fala:fala, partes:partes, p2:p2};
+  window.TW_CAL = {jogadores:jogadores, inicio:INICIO, hoje:hoje, diaN:diaN, marcas:marcas, doMes:doMes, tema:temaDe, semana:semanaDe, fala:fala, partes:partes, p2:p2};
 })();

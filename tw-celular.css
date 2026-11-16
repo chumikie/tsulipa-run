@@ -856,3 +856,10 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
 .twc-laco-sub{display:flex;align-items:center}
 .twc .twc-laco-mus{display:grid!important;grid-template-columns:1fr 1fr}
 .twc-laco-mus li{min-width:0}.twc-laco-mus b,.twc-laco-mus small{overflow-wrap:anywhere}
+/* calendário no modo escuro: textos que eram roxo-escuro sobre o fundo escuro */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc-calitens li,:root:not([data-theme="light"]) .twc-callegenda span,:root:not([data-theme="light"]) .twc-caldia h2,:root:not([data-theme="light"]) .twc-calcab h2{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-calitens small,:root:not([data-theme="light"]) .twc-caldn{color:#c9b8ec}
+  :root:not([data-theme="light"]) .twc-calfala p{background:#2f2350;color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-calfala p b{color:#d7b8ff}
+}

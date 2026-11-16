@@ -638,7 +638,7 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
 }
 /* Os quadrinhos (capítulos antigos + Temporada 1, ~100 KB nos 6 idiomas) só baixam quando alguém abre o Idol⭐News!
    ou o Calendário — antes eles pesavam na abertura de todo mundo. */
-var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=10', jornalCapsFila = null;
+var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=11', jornalCapsFila = null;
 function jornalCapsCarregar(cb){
   if(typeof jornalCapsUI === 'function'){ if(cb) cb(); return; }
   if(jornalCapsFila){ if(cb) jornalCapsFila.push(cb); return; }

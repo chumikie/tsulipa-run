@@ -38,7 +38,7 @@ var JN_CAPS = [
       [[1, {pt:'Kirei~!',en:'Kirei~!',es:'¡Kirei~!',id:'Kirei~!',th:'Kirei~!',ja:'きれい〜！'}]]]
   ]],
   [{pt:'Dois verões',en:'Two summers',es:'Dos veranos',id:'Dua musim panas',th:'สองฤดูร้อน',ja:'ふたつの夏'}, 'Unit Festival 2024 · 2025', [
-    ['ceu', [[1, 'tchau']], {pt:'Dois verões, duas músicas: Secret Base e Dream Splash.',en:'Two summers, two songs: Secret Base and Dream Splash.',es:'Dos veranos, dos canciones: Secret Base y Dream Splash.',id:'Dua musim panas, dua lagu: Secret Base dan Dream Splash.',th:'สองฤดูร้อน สองเพลง: Secret Base และ Dream Splash',ja:'ふたつの夏、Secret BaseとDream Splash。'},
+    ['ceu', [[1, 'tchau']], {pt:'Dois verões, duas músicas: Secret Base e Splash Dream.',en:'Two summers, two songs: Secret Base and Splash Dream.',es:'Dos veranos, dos canciones: Secret Base y Splash Dream.',id:'Dua musim panas, dua lagu: Secret Base dan Splash Dream.',th:'สองฤดูร้อน สองเพลง: Secret Base และ Splash Dream',ja:'ふたつの夏、Secret BaseとSplash Dream。'},
       [[1, {pt:'Verão com vocês é o melhor!',en:'Summer with you two is the best!',es:'¡El verano con ustedes es lo mejor!',id:'Musim panas bareng kalian paling seru!',th:'ฤดูร้อนกับพวกเธอดีที่สุด!',ja:'ふたりとの夏がいちばん！'}]]],
     ['ceu', [[2, 'coracao'], [0, 'v']], null,
       [[2, {pt:'A gente se vê no próximo festival?',en:'See you at the next festival?',es:'¿Nos vemos en el próximo festival?',id:'Ketemu di festival berikutnya?',th:'เจอกันเทศกาลหน้านะ?',ja:'次のフェスでも会える？'}], [0, {pt:'Prometido!',en:'Promise!',es:'¡Prometido!',id:'Janji!',th:'สัญญา!',ja:'約束！'}]]],
@@ -529,7 +529,7 @@ var JN_T0_DIR = [
   [{cena:'audicao', cam:'medio', expr:{0:2}}, {cena:'sala', cam:'medio', vira:[2], expr:{1:3, 2:2}}, {cena:'palco', ano:'draft', placa:'DRAFT 1st GEN', expr:{0:2, 2:1}}],
   [{cena:'sala', noite:1, cam:'geral', expr:{0:2}}, {cena:'espelho', cam:'close', foco:1, expr:{1:0}}, {cena:'palco', ano:'2021', placa:'POLYRHYTHM', expr:{0:2, 2:1}}],
   [{cena:'cidade', cam:'close', foco:2, expr:{2:3}}, {cena:'cidade', neon:'PLASTIC LOVE', cam:'medio', vira:[1], expr:{0:2}}, {cena:'palco', ano:'2023', placa:'PLASTIC LOVE', neve:1, expr:{1:3}}],
-  [{cena:'praia', cam:'medio', expr:{1:2}}, {cena:'praia', tarde:1, cam:'medio', vira:[0], expr:{2:2, 0:2}}, {cena:'palco', ano:'2025', placa:'DREAM SPLASH', agua:1, expr:{0:1}}],
+  [{cena:'praia', cam:'medio', expr:{1:2}}, {cena:'praia', tarde:1, cam:'medio', vira:[0], expr:{2:2, 0:2}}, {cena:'palco', ano:'2025', placa:'SPLASH DREAM', agua:1, expr:{0:1}}],
   [{cena:'janela', cam:'close', foco:0, expr:{0:5}}, {cena:'longe', cam:'medio', expr:{1:5, 2:2}}, {cena:'palco', ano:'2026', placa:'ENDLESS DAYDREAM', expr:{2:2}}],
   [{cena:'abobora', cam:'medio', expr:{2:4}}, {cena:'portao', cam:'geral', vira:[0], expr:{1:1, 0:2}}, {cena:'palco', ano:'world', placa:'TsuLiPa⭐World', confete:1, expr:{0:2, 1:2, 2:1}}]
 ];

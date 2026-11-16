@@ -564,3 +564,24 @@ function jnCapDesenhar(cv, p, temporada){
   x.restore();
   x.strokeStyle = '#3c2a6a'; x.lineWidth = 4; rr(2, 2, W - 4, H - 4, 20); x.stroke();
 }
+
+/* Tocar num quadro do quadrinho abre ele grande, na largura toda da tela (em 320px o quadro na página fica pequeno demais para ler).
+   Vale para os capítulos antigos e para a temporada. Fecha tocando de novo, no ✕ ou com Esc. */
+var JN_ZOOM_TX = {fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'とじる'},dica:{pt:'Toque no quadro para ampliar',en:'Tap a panel to enlarge',es:'Toca la viñeta para ampliar',id:'Ketuk panel untuk memperbesar',th:'แตะช่องเพื่อขยาย',ja:'コマをタップで拡大'}};
+function jnQuadroZoom(cv){
+  if(!cv || typeof document === 'undefined') return;
+  var url; try{ url = cv.toDataURL('image/png'); }catch(e){ return; }
+  // celular em pé: o quadro deita (gira 90°) para usar a altura da tela — fica ~2,5× maior
+  var gira = typeof innerWidth === 'number' && innerWidth < innerHeight && innerWidth < 600;
+  var ov = document.createElement('div'); ov.className = 'jnzoom' + (gira ? ' jnzoom-gira' : ''); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', cv.getAttribute('aria-label') || '');
+  var leg = '', fig = cv.closest && cv.closest('figure'), cap = fig && fig.querySelector('figcaption'); if(cap) leg = cap.innerHTML;
+  ov.innerHTML = '<button type="button" class="jnzoomx" aria-label="' + escHtml(jnCapT(JN_ZOOM_TX.fechar)) + '">✕</button><img alt="" src="' + url + '">' + (leg ? '<div class="jnzoomleg">' + leg + '</div>' : '');
+  var antes = document.activeElement;
+  function fechar(){ ov.remove(); document.removeEventListener('keydown', tecla); try{ antes && antes.focus && antes.focus(); }catch(e){} }
+  function tecla(e){ if(e.key === 'Escape') fechar(); }
+  ov.addEventListener('click', fechar); document.addEventListener('keydown', tecla);
+  document.body.appendChild(ov); try{ ov.querySelector('.jnzoomx').focus(); }catch(e){}
+}
+if(typeof document !== 'undefined') document.addEventListener('click', function(e){
+  var cv = e.target && e.target.closest && e.target.closest('.jncapq canvas, .jn-t1 canvas'); if(cv) jnQuadroZoom(cv);
+});

@@ -109,3 +109,12 @@
 .jn-t1 figcaption{margin-top:6px;padding:0 4px;font:700 12.5px/1.45 "M PLUS Rounded 1c",sans-serif;color:#5c4a7d;overflow-wrap:anywhere}
 .jn-t1 figcaption p{margin:2px 0}
 @media (min-width:760px){.jn-t1{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}.jn-t1 h4{grid-column:1/-1}}
+/* quadro ampliado (toque no quadrinho) */
+.jncapq canvas,.jn-t1 canvas{cursor:zoom-in}
+.jnzoom{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;background:rgba(24,10,48,.92);cursor:zoom-out;overflow:auto}
+.jnzoom img{display:block;width:100%;max-width:min(960px,100%);max-height:78vh;object-fit:contain;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.jnzoomleg{max-width:min(720px,100%);color:#f3e9ff;font:700 14px/1.45 "M PLUS Rounded 1c",sans-serif}
+.jnzoomleg p{margin:3px 0}
+.jnzoomx{position:fixed;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:#7b3ff0;color:#fff;font:900 18px sans-serif;cursor:pointer}
+.jnzoom-gira img{width:min(94vh,141vw,960px);height:auto;max-width:none;max-height:none;transform:rotate(90deg);flex:none}
+.jnzoom-gira .jnzoomleg{display:none}

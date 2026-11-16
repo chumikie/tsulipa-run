@@ -770,3 +770,5 @@ body.tw-cel .twc .twc-diam::after{content:"✦";position:absolute;inset:0;displa
 @media (prefers-reduced-motion:reduce){body.tw-cel .twc .twc-diam{animation:none!important;transform:none!important}}
 /* auditoria 16/11: a superfície de papel do Oshi (body.tw-cel .twc :is(.twc-card…)) apagava o fundo roxo do Ranking e deixava o texto branco ilegível */
 body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(--twc-f1));border-color:#fff}
+/* auditoria 16/11: descrições dos jogos em até 2 linhas (antes cortavam em 1, sobretudo em japonês) */
+.twc .twc-linha-txt small,.twc .twc-jogo-txt small,.twc .twc-destaque-txt small{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}

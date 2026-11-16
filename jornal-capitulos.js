@@ -1,11 +1,11 @@
 /* Idol⭐News! — "História em capítulos": quadrinhos curtos do TsuLiPa (Tsu, Lirika e Pati), desenhados no Canvas
    com os mesmos bonecos do jogo. Inspirados na história real do trio no BRS48 (Draft 1st Generation, ago/2021, e as
-   músicas da unit TsuLiPa em cada Unit Festival); as falas são de brincadeira. Um capítulo novo toda terça-feira,
-   a partir do lançamento do TsuLiPa⭐World (27/10/2026). Só leitura: nada vai para o servidor. */
-var JN_CAPS_INICIO = Date.UTC(2026, 9, 27);
+   músicas da unit TsuLiPa em cada Unit Festival); as falas são de brincadeira. Um capítulo novo todo domingo,
+   a partir da estreia junto com o Calendário (15/11/2026). Só leitura: nada vai para o servidor. */
+var JN_CAPS_INICIO = Date.UTC(2026, 10, 15);   // estreia junto com o Calendário
 var JN_CAPS_TX = {
   sec:{pt:'História em capítulos',en:'Story in chapters',es:'Historia en capítulos',id:'Cerita bersambung',th:'เรื่องราวเป็นตอน',ja:'連載ストーリー'},
-  dica:{pt:'Quadrinhos do TsuLiPa inspirados na história real do trio; as falas são de brincadeira. Capítulo novo toda terça!',en:"TsuLiPa comics inspired by the trio's real story; the lines are just for fun. A new chapter every Tuesday!",es:'Cómics de TsuLiPa inspirados en la historia real del trío; los diálogos son de broma. ¡Capítulo nuevo cada martes!',id:'Komik TsuLiPa yang terinspirasi kisah nyata trio ini; dialognya cuma bercanda. Bab baru setiap Selasa!',th:'การ์ตูน TsuLiPa จากเรื่องจริงของทั้งสาม บทพูดเป็นแค่ความสนุก ตอนใหม่ทุกวันอังคาร!',ja:'TsuLiPaの実話から生まれたマンガ（セリフはお遊び）。毎週火曜に新しい話！'},
+  dica:{pt:'Quadrinhos do TsuLiPa inspirados na história real do trio; as falas são de brincadeira. Capítulo novo todo domingo!',en:"TsuLiPa comics inspired by the trio's real story; the lines are just for fun. A new chapter every Sunday!",es:'Cómics de TsuLiPa inspirados en la historia real del trío; los diálogos son de broma. ¡Capítulo nuevo cada domingo!',id:'Komik TsuLiPa yang terinspirasi kisah nyata trio ini; dialognya cuma bercanda. Bab baru setiap Minggu!',th:'การ์ตูน TsuLiPa จากเรื่องจริงของทั้งสาม บทพูดเป็นแค่ความสนุก ตอนใหม่ทุกวันอาทิตย์!',ja:'TsuLiPaの実話から生まれたマンガ（セリフはお遊び）。毎週日曜に新しい話！'},
   cap:{pt:'Cap. {n}',en:'Ch. {n}',es:'Cap. {n}',id:'Bab {n}',th:'ตอน {n}',ja:'第{n}話'},
   em:{pt:'Chega em {d}',en:'Arrives on {d}',es:'Llega el {d}',id:'Tiba {d}',th:'มาวันที่ {d}',ja:'{d}に公開'},
   novo:{pt:'Novo!',en:'New!',es:'¡Nuevo!',id:'Baru!',th:'ใหม่!',ja:'NEW!'},
@@ -467,10 +467,8 @@ function jnT1PilotoHtml(){
 var jnCapSel = -1;
 function jnCapL(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
 function jnCapT(o, n){ var s = o ? (o[jnCapL()] || o.pt) : ''; return n != null ? s.replace('{n}', n).replace('{d}', n) : s; }
-// Os quadrinhos estrearam em 15/11/2026 (PR #95) com os capítulos 1 a 3 juntos; do 4 em diante, um por terça (17/11, 24/11, 01/12).
-// Nada aparece "liberado" em semanas antes de a seção existir.
-var JN_CAPS_ESTREIA = '2026-11-15', JN_CAPS_TERCA4 = Date.UTC(2026, 10, 17);
-function jnCapData(i){ return i < 3 ? JN_CAPS_ESTREIA : new Date(JN_CAPS_TERCA4 + (i - 3) * 7 * 864e5).toISOString().slice(0, 10); }
+// Os quadrinhos estreiam junto com o Calendário, em 15/11/2026: um capítulo por domingo, em ordem (1 em 15/11, 2 em 22/11 … 6 em 20/12).
+function jnCapData(i){ return new Date(JN_CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); }   // domingos
 function jnCapsLiberados(){   // quantos capítulos já chegaram (horário de Brasília)
   var hoje = new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), n = 0;
   for(var i = 0; i < JN_CAPS.length; i++) if(jnCapData(i) <= hoje) n = i + 1;

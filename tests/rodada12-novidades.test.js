@@ -23,10 +23,9 @@ test('Idol⭐News!: história em capítulos, um por terça desde o lançamento',
   const caps = vm.runInContext('JN_CAPS', ctx);
   assert.strictEqual(caps.length, 6);
   caps.forEach(c => { assert.strictEqual(c[2].length, 3, 'três quadros por capítulo'); c[2].forEach(q => q[3].forEach(f => ['pt', 'en', 'es', 'id', 'th', 'ja'].forEach(l => assert.ok(f[1][l], 'fala em ' + l)))); });
-  assert.strictEqual(vm.runInContext('jnCapData(0)', ctx), '2026-11-15', 'estreia com 1 a 3');
-  assert.strictEqual(vm.runInContext('jnCapData(2)', ctx), '2026-11-15');
-  assert.strictEqual(vm.runInContext('jnCapData(3)', ctx), '2026-11-17');
-  assert.strictEqual(vm.runInContext('jnCapData(5)', ctx), '2026-12-01');
+  assert.strictEqual(vm.runInContext('jnCapData(0)', ctx), '2026-11-15', 'capítulo 1 na estreia');
+  assert.strictEqual(vm.runInContext('jnCapData(1)', ctx), '2026-11-22', 'um por semana, em ordem');
+  assert.strictEqual(vm.runInContext('jnCapData(5)', ctx), '2026-12-20');
   assert.match(ler('jornal.js'), /vida \+= jornalCapsHtml\(\)/);
   assert.ok(!/<script src="\.\/jornal-capitulos\.js/.test(ler('index.html')), 'quadrinhos fora da abertura');
   assert.match(ler('jornal.js'), /JORNAL_CAPS_ARQ = '\.\/jornal-capitulos\.js\?v=\d+'/, 'baixam quando o Idol News abre');

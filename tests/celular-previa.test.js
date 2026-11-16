@@ -111,7 +111,7 @@ test('rodada 5 (prints do iPhone): moldura em janelas criadas na hora, telas emb
 test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV na moldura e sem pedir a vitrine a cada redesenho', () => {
   const hub = ler('hub.js');
   assert.match(js, /'<div class="twc-abre-vitrine" id="twcAbreVitrine"><\/div>'/, 'a vitrine antiga entra na tela de abertura');
-  assert.match(js, /if\(v === 'abre'\)\{ vitrineTrazer\(\); flutuantes\(\);/);
+  assert.match(js, /if\(v === 'abre'\)\{ flutuantes\(\); requestAnimationFrame\(function\(\)\{ if\(cel && tela && tela\.getAttribute\('data-tela'\) === 'abre'\) vitrineTrazer\(\); \}\); \}/);
   assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
   assert.match(hub, /hubIV\.L = trio\.concat\(/);
   assert.match(hub, /trio = !L\.length && typeof window\.twcTrioVitrine/, 'os bonecos do trio só entram sem lista (sem duplicar as contas deles)');

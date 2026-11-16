@@ -768,3 +768,5 @@ body.tw-cel .twc .twc-diam{position:relative;isolation:isolate;overflow:hidden;b
 body.tw-cel .twc .twc-diam::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,rgba(255,255,255,.38) 0 35%,transparent 35% 55%,rgba(40,15,75,.13) 55%);clip-path:polygon(50% 0,100% 61%,50% 100%,0 61%)}
 body.tw-cel .twc .twc-diam::after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.85);font:10px/1 sans-serif}
 @media (prefers-reduced-motion:reduce){body.tw-cel .twc .twc-diam{animation:none!important;transform:none!important}}
+/* auditoria 16/11: a superfície de papel do Oshi (body.tw-cel .twc :is(.twc-card…)) apagava o fundo roxo do Ranking e deixava o texto branco ilegível */
+body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(--twc-f1));border-color:#fff}

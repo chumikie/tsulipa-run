@@ -1496,8 +1496,10 @@ function hubIdolsDesenhar(s, dt, calmo){
   var chao = hubIdolsFundo(x, W, H, calmo ? 0 : s, calmo ? 0 : dt);
   var anel = Math.max(n, Math.ceil((W + HUB_IV_CEL) / HUB_IV_CEL)) * HUB_IV_CEL, ini = Math.floor(hubIV.x / HUB_IV_CEL);
   var fr = s * 60;   // o desenho do Idol conta o tempo em quadros (60 por segundo)
-  for(var k = ini - 1; k * HUB_IV_CEL - hubIV.x < W + HUB_IV_CEL; k++){
-    var i = ((k % n) + n) % n, p = L[i], px = k * HUB_IV_CEL - hubIV.x;
+  // Poucos Idols (ex.: só o trio) cabem na tela: ficam parados e centralizados, sem repetir ninguém no carrossel.
+  var fixo = n * HUB_IV_CEL <= W, off = (W - n * HUB_IV_CEL) / 2;
+  for(var k = fixo ? 0 : ini - 1; fixo ? k < n : k * HUB_IV_CEL - hubIV.x < W + HUB_IV_CEL; k++){
+    var i = ((k % n) + n) % n, p = L[i], px = fixo ? off + k * HUB_IV_CEL : k * HUB_IV_CEL - hubIV.x;
     if(px < -HUB_IV_CEL) continue;
     var acao = HUB_IV_ACOES[Math.floor((calmo ? 0 : s / 4) + p.fase) % HUB_IV_ACOES.length];
     var av = {}; for(var q in p.av) av[q] = p.av[q];

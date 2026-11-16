@@ -232,7 +232,7 @@ test('objetos narrativos são ilustrados em todos os 30 quadros sem ativar tempo
  }
  assert.equal(ctx.JN_T1_PUBLICADA,false);
  assert.ok(ctx.JN_T1.episodios.every(e=>!e.pronto));
- assert.match(source,/jnT1ObjetoDesenhar\(canvas,episodio,quadro\)/);
+ assert.match(source,/jnT1ObjetoDesenhar\(canvas,episodio,quadro,p\[1\]\.length>=3\)/);
  assert.doesNotMatch(source,/\.roundRect\(/);
 });
 test('objeto não desenha sem contexto e leitor continua privado',()=>{
@@ -243,6 +243,21 @@ test('objeto não desenha sem contexto e leitor continua privado',()=>{
 
 test('balões da temporada empilham sem mudar posicionamento histórico',()=>{
  assert.match(source,/function jnCapDesenhar\(cv, p, temporada\)/);
- assert.match(source,/if\(temporada\)\{by = proximaFalaY;proximaFalaY \+= bh \+ 8;\}/);
+ assert.match(source,/if\(temporada && p\[3\]\.length === 2\)\{by = topoFala; bx = i \?/);
+ assert.match(source,/else if\(temporada\)\{by = proximaFalaY;proximaFalaY \+= bh \+ 8;\}/);
  assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\],true\)/);
+});
+
+test('leitor da temporada fica inerte bloqueado e o texto não é cortado no meio da frase', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'jornal-capitulos.js'), 'utf8');
+  assert.match(src, /function jnT1LeitorUI\(box\)/);
+  assert.match(src, /for\(var i = 0; i < 6; i\+\+\) if\(jnT1Disponivel\(i\)\) lib\.push\(i\);\n  if\(!lib\.length\) return false;/, 'sem episódio liberado, não acrescenta nada');
+  assert.match(src, /jnT1LeitorUI\(box\);\n\}/, 'ligado ao fim do leitor histórico');
+  assert.match(src, /curto\(f\[1\],196,4,15\)/, 'falas com até 4 linhas na mesma fonte do desenho');
+  assert.match(src, /curto\(p\[2\],canvas\.width-60,3,14\)/, 'narração com até 3 linhas');
+  assert.match(src, /new Intl\.Segmenter\(jnCapL\(\),\{granularity:'word'\}\)/, 'quebra de TH/JA por palavra');
+  assert.match(src, /var JN_T1_PUBLICADA = false;/);
+  assert.ok(!/pronto:true/.test(src), 'nenhum episódio marcado como pronto');
+  const css = require('fs').readFileSync(require('path').join(__dirname, '..', 'jornal.css'), 'utf8');
+  assert.match(css, /\.jn-t1 canvas\{display:block;width:100%;max-width:100%;height:auto;/, 'quadro fluido, sem rolagem lateral');
 });

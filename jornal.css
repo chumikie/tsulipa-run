@@ -101,3 +101,11 @@
 @media (min-width:760px){.jncapquadros{grid-template-columns:repeat(3,1fr)}}
 .jncapq{margin:0}
 .jncapq canvas{display:block;width:100%;height:auto;border-radius:20px;box-shadow:0 4px 12px rgba(90,40,160,.16)}
+/* Temporada 1 (só aparece quando liberada): quadros fluidos, legenda acessível com o texto integral */
+.jnt1leitor{margin-top:16px;padding-top:12px;border-top:2px dashed #e2d2ff}
+.jn-t1 h4{margin:4px 0 10px;font:400 16px "Mochiy Pop One",sans-serif;color:#5b2bb5}
+.jn-t1 figure{margin:0 0 12px;min-width:0}
+.jn-t1 canvas{display:block;width:100%;max-width:100%;height:auto;border-radius:20px;box-shadow:0 4px 12px rgba(90,40,160,.16)}
+.jn-t1 figcaption{margin-top:6px;padding:0 4px;font:700 12.5px/1.45 "M PLUS Rounded 1c",sans-serif;color:#5c4a7d;overflow-wrap:anywhere}
+.jn-t1 figcaption p{margin:2px 0}
+@media (min-width:760px){.jn-t1{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}.jn-t1 h4{grid-column:1/-1}}

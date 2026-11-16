@@ -117,12 +117,12 @@ var JN_T1_OBJETOS=[
  ['gravador','estrela','lanterna','gravador','carta'],
  ['carta','caixa','fitas','gravador','foto']
 ];
-function jnT1ObjetoDesenhar(canvas,episodio,quadro){
+function jnT1ObjetoDesenhar(canvas,episodio,quadro,cantinho){
  var tipo=JN_T1_OBJETOS[episodio] && JN_T1_OBJETOS[episodio][quadro];
  if(!tipo || !canvas || !canvas.getContext) return false;
  var c=canvas.getContext('2d'); if(!c) return false;
- var W=canvas.width,H=canvas.height,esc=Math.min(W/480,H/320);
- c.save(); c.translate(W-91*esc,H-89*esc);c.scale(esc,esc);
+ var W=canvas.width,H=canvas.height,base=Math.min(W/480,H/320),esc=base*(cantinho?.56:1);
+ c.save(); c.translate(W-(cantinho?52:91)*base,H-(cantinho?48:89)*base);c.scale(esc,esc);
  c.fillStyle='rgba(255,250,255,.94)';c.strokeStyle='#6d478b';c.lineWidth=2;
  c.beginPath();c.moveTo(12,0);c.arcTo(80,0,80,76,12);c.arcTo(80,76,0,76,12);c.arcTo(0,76,0,0,12);c.arcTo(0,0,80,0,12);c.closePath();c.fill();c.stroke();
  c.translate(14,11);c.lineJoin='round';c.lineCap='round';
@@ -179,8 +179,11 @@ function jnT1DesenharSeguro(canvas,p,episodio,quadro){
   // Divide também palavras sem espaços (JA/TH), evitando estouro horizontal.
   function encaixar(palavra){
    if(ctx.measureText(palavra).width<=largura) return [palavra];
-   var pedacos=[],at='';
-   Array.from(palavra).forEach(function(c){
+   var pedacos=[],at='',unidades;
+   // Quebra por palavra/grafema (Intl.Segmenter) para não separar acentos e marcas tonais do tailandês.
+   try{ unidades=Array.from(new Intl.Segmenter(jnCapL(),{granularity:'word'}).segment(palavra),function(x){return x.segment;}); }catch(e){ unidades=null; }
+   if(!unidades) try{ unidades=Array.from(new Intl.Segmenter(jnCapL(),{granularity:'grapheme'}).segment(palavra),function(x){return x.segment;}); }catch(e){ unidades=Array.from(palavra); }
+   unidades.forEach(function(c){
     if(at && ctx.measureText(at+c).width>largura){pedacos.push(at);at=c;}else at+=c;
    });
    if(at)pedacos.push(at);return pedacos;
@@ -201,10 +204,11 @@ function jnT1DesenharSeguro(canvas,p,episodio,quadro){
   }
   ctx.restore();return ret.join(' ');
  }
- var nar=p[2]?{pt:curto(p[2],canvas.width-65,2,15)}:null;
- var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],185,2,16)}];});
+ var nar=p[2]?{pt:curto(p[2],canvas.width-60,3,14)}:null;
+ // Falas até 4 linhas: as falas-chave da história não perdem o fim (texto integral segue na legenda HTML).
+ var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],196,4,15)}];});
  jnCapDesenhar(canvas,[p[0],p[1],nar,falas],true);
- if(typeof episodio==='number' && typeof quadro==='number') jnT1ObjetoDesenhar(canvas,episodio,quadro);
+ if(typeof episodio==='number' && typeof quadro==='number') jnT1ObjetoDesenhar(canvas,episodio,quadro,p[1].length>=3);
  return true;
 }
 /* Chamado somente após inserir o HTML autorizado no leitor; não altera o leitor antigo. */
@@ -354,6 +358,26 @@ function jornalCapsUI(){
     }).join('') + '</div>' : '');
   [].forEach.call(box.querySelectorAll('[data-jncap]'), function(b){ b.addEventListener('click', function(){ jnCapSel = +b.getAttribute('data-jncap'); if(typeof beep === 'function') try{ beep(988, .05, 'triangle', .04); }catch(e){} jornalCapsUI(); }); });
   [].forEach.call(box.querySelectorAll('.jncapq canvas'), function(cv, k){ try{ jnCapDesenhar(cv, q[k]); }catch(e){} });
+  jnT1LeitorUI(box);
+}
+/* Leitor da Temporada 1, inerte enquanto bloqueada: só mostra episódios que jnT1Disponivel libera
+   (JN_T1_PUBLICADA + pronto + data de Brasília). Com tudo bloqueado não acrescenta nada à página. */
+var jnT1Sel = -1;
+function jnT1LeitorUI(box){
+  if(!box || typeof jnT1Disponivel !== 'function') return false;
+  var htmlDe = [jnT1PilotoHtml, jnT1Ep2Html, jnT1Ep3Html, jnT1Ep4Html, jnT1Ep5Html, jnT1Ep6Html], lib = [];
+  for(var i = 0; i < 6; i++) if(jnT1Disponivel(i)) lib.push(i);
+  if(!lib.length) return false;
+  if(lib.indexOf(jnT1Sel) < 0) jnT1Sel = lib[lib.length - 1];
+  var t = [jnT1PilotoTexto, jnT1Ep2Texto, jnT1Ep3Texto, jnT1Ep4Texto, jnT1Ep5Texto, jnT1Ep6Texto];
+  var sec = document.createElement('div'); sec.className = 'jnt1leitor';
+  sec.innerHTML = '<h5 class="jncaptit">' + escHtml(JN_T1.titulo) + '</h5><div class="jncapabas">' + lib.map(function(i){
+      return '<button type="button" class="jncapaba' + (i === jnT1Sel ? ' jncapon' : '') + '" data-jnt1="' + i + '"' + (i === jnT1Sel ? ' aria-pressed="true"' : '') + '><b>' + escHtml(jnCapT(JN_CAPS_TX.cap, i + 1)) + '</b><small>' + escHtml(t[i](jnCapL()).titulo) + '</small></button>';
+    }).join('') + '</div>' + htmlDe[jnT1Sel]();
+  box.appendChild(sec);
+  [].forEach.call(sec.querySelectorAll('[data-jnt1]'), function(b){ b.addEventListener('click', function(){ jnT1Sel = +b.getAttribute('data-jnt1'); jornalCapsUI(); }); });
+  try{ jnT1PintarQuadros(sec, jnT1Sel); }catch(e){}
+  return true;
 }
 function jnCapAv(k, pose){   // o boneco oficial do membro (os mesmos do banner do início)
   if(typeof HUB_TRIO === 'undefined' || typeof HUB_TRIO_DRAW_CHARS === 'undefined' || typeof CH === 'undefined' || !HUB_TRIO[k]) return null;
@@ -378,23 +402,24 @@ function jnCapDesenhar(cv, p, temporada){
   });
   var topoFala = p[2] ? 64 : 14;
   if(p[2]){   // narração: caixinha amarela no canto, como nos mangás
-    x.font = '800 15px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 60), nh = nl.length * 19 + 14;
+    var nlh = temporada ? 17 : 19; x.font = '800 ' + (temporada ? 14 : 15) + 'px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 60), nh = nl.length * nlh + 14;
     rr(10, 10, W - 20, nh, 10); x.fillStyle = '#fff6c4'; x.fill(); x.strokeStyle = '#3c2a6a'; x.lineWidth = 2.5; x.stroke();
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * 19); });
+    x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * nlh); });
     topoFala = 10 + nh + 10;
   }
   var proximaFalaY = topoFala;
   p[3].forEach(function(f, i){   // balões de fala com rabinho apontando para quem fala
     var cx = onde[f[0]] != null ? onde[f[0]] : W / 2;
-    x.font = '800 16px "M PLUS Rounded 1c",sans-serif'; var bl = linhas(jnCapT(f[1]), 190), bw = Math.max.apply(null, bl.map(function(l){ return x.measureText(l).width; })) + 26, bh = bl.length * 20 + 14;
+    var flh = temporada ? 18 : 20; x.font = '800 ' + (temporada ? 15 : 16) + 'px "M PLUS Rounded 1c",sans-serif'; var bl = linhas(jnCapT(f[1]), temporada ? 196 : 190), bw = Math.max.apply(null, bl.map(function(l){ return x.measureText(l).width; })) + 26, bh = bl.length * flh + 14;
     var bx = Math.max(8, Math.min(W - bw - 8, cx - bw / 2 + (p[3].length > 1 ? (i ? 30 : -30) : 0))), by = topoFala + (p[3].length > 1 && i ? 8 : 0);
     if(p[3].length > 1 && i) by = topoFala + 6;
-    if(temporada){by = proximaFalaY;proximaFalaY += bh + 8;}
+    if(temporada && p[3].length === 2){by = topoFala; bx = i ? Math.max(W / 2 + 4, Math.min(W - bw - 8, cx - bw / 2)) : Math.max(8, Math.min(W / 2 - 4 - bw, cx - bw / 2));}
+    else if(temporada){by = proximaFalaY;proximaFalaY += bh + 8;}
     rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[f[0]]; x.lineWidth = 3; x.stroke();
     var tx = Math.max(bx + 18, Math.min(bx + bw - 18, cx));
     x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx - 9, by + bh - 2); x.lineTo(tx + (cx > tx ? 10 : cx < tx ? -10 : 0), by + bh + 16); x.lineTo(tx + 9, by + bh - 2); x.closePath(); x.fill();
     x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx - 9, by + bh); x.lineTo(tx + (cx > tx ? 10 : cx < tx ? -10 : 0), by + bh + 16); x.lineTo(tx + 9, by + bh); x.stroke();
-    x.fillStyle = '#3c2a6a'; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * 20); });
+    x.fillStyle = '#3c2a6a'; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * flh); });
   });
   x.restore();
   x.strokeStyle = '#3c2a6a'; x.lineWidth = 4; rr(2, 2, W - 4, H - 4, 20); x.stroke();

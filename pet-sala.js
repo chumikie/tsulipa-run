@@ -207,15 +207,31 @@ function petDesenharJanela(x, fase){
   x.restore();
 }
 //←petArrumoLer
+// Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
+var petArrumoPersistivel = true;
 function petArrumoLer(){
   if(petArrumo) return petArrumo;
-  try{ petArrumo = JSON.parse(localStorage.getItem(PET_ARRUMO_KEY) || 'null'); }catch(e){ petArrumo = null; }
-  if(!petArrumo || petArrumo.v !== 1) petArrumo = {v:1, chao:{}, parede:{}};
-  petArrumo.chao = petArrumo.chao || {}; petArrumo.parede = petArrumo.parede || {};
+  var bruto = null;
+  try{ bruto = localStorage.getItem(PET_ARRUMO_KEY); }
+  catch(e){ petArrumoPersistivel = false; }
+  if(bruto){
+    try{
+      var salvo = JSON.parse(bruto);
+      if(salvo && salvo.v === 1 && salvo.chao && typeof salvo.chao === 'object' &&
+          !Array.isArray(salvo.chao) && salvo.parede && typeof salvo.parede === 'object' &&
+          !Array.isArray(salvo.parede)) petArrumo = salvo;
+      else petArrumoPersistivel = false;
+    }catch(e){ petArrumoPersistivel = false; }
+  }
+  if(!petArrumo) petArrumo = {v:1, chao:{}, parede:{}};
   return petArrumo;
 }
 //←petArrumoSalvar
-function petArrumoSalvar(){ try{ localStorage.setItem(PET_ARRUMO_KEY, JSON.stringify(petArrumoLer())); }catch(e){} }
+function petArrumoSalvar(){
+  if(!petArrumoPersistivel) return;
+  try{ localStorage.setItem(PET_ARRUMO_KEY, JSON.stringify(petArrumoLer())); }
+  catch(e){ petArrumoPersistivel = false; }
+}
 //←petArrumoX
 function petArrumoX(k){
   var m = PET_MOVEIS[k], v = petArrumoLer().chao[k];
@@ -284,7 +300,11 @@ function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no to
   if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';
 }
 //←petArrumoPadrao
-function petArrumoPadrao(){ petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null; }
+function petArrumoPadrao(){
+  // Reposição padrão é uma ação explícita; não sobrescrever dados ilegíveis.
+  if(!petArrumoPersistivel) return;
+  petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null;
+}
 //←petArrumoDesenhar
 function petArrumoDesenhar(x){   // contornos tracejados só enquanto arruma
   if(!petArrumando) return;
@@ -2578,7 +2598,10 @@ function petDecorMenuUI(m){
 //←petDecorClick
 function petDecorClick(k){
   if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
-  if(k === 'arrumar-padrao'){ petArrumoPadrao(); petUI(); return; }
+  if(k === 'arrumar-padrao'){
+    if(typeof window.confirm === 'function' && !window.confirm(tr('Restaurar posições padrão dos móveis e quadros?'))) return;
+    petArrumoPadrao(); petUI(); return;
+  }
   var it=petFind(PET_DECOR,k);if(!it||!petData)return;
   var d=petData.decor,comprar=!(k in d);
   return petPay(comprar ? it[2] : 0).then(function(ok){

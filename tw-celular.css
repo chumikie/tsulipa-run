@@ -907,3 +907,19 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
 .twc .twc-hj-aniv-mais{border:1.5px dashed #ffd27a;background:#fffaf0}
 .twc .twc-hj-aniv-mais .twc-hj-ico{width:28px;height:28px;border-radius:9px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc .twc-hj-ver{background:#2a1d4a;color:#c9f58a!important}:root:not([data-theme="light"]) .twc .twc-hj-aniv-mais{background:#3a2a20;border-color:#8a6a2a}}
+
+/* Refinamento do montador no celular: navegação legível e favoritos sem ícones emoji. */
+body.tw-cel .cmpassos{gap:10px;margin:14px 0 12px}
+body.tw-cel .cmpasso,body.tw-cel .cmpasso0,body.tw-cel .cmpasso1,body.tw-cel .cmpasso2{min-height:66px;padding:12px 8px 10px;gap:5px;justify-content:center;border:1px solid rgba(170,127,226,.38);border-radius:16px;background:var(--card,#322153);box-shadow:none;color:inherit;transform:none}
+body.tw-cel .cmpasso em{position:static;transform:none;display:block;width:auto;height:auto;background:none!important;border:0!important;box-shadow:none!important;font-size:11px;font-style:normal;font-weight:800;letter-spacing:.14em;opacity:.7;color:inherit}
+body.tw-cel .cmpasso span{font-size:13px;font-weight:800;line-height:1.25;text-align:center}
+body.tw-cel .cmpasso[aria-pressed="true"]{border:2px solid #c27aff;background:rgba(161,83,236,.16);box-shadow:inset 0 -3px 0 rgba(194,122,255,.32)}
+body.tw-cel .cmfavs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px;align-items:stretch}
+body.tw-cel .cmfavs .cmfavt{grid-column:1/-1;flex:none;text-align:left;font-size:14px;margin-bottom:2px}
+body.tw-cel .cmfavs .cmfav{display:flex;min-width:0;flex-direction:column;align-items:stretch;gap:6px}
+body.tw-cel .cmfavs .cmfavvestir{width:100%;height:64px;min-width:0;border-radius:13px;display:grid;place-items:center;font-size:24px}
+body.tw-cel .cmfavs .cmfavguardar{width:100%;height:34px;border-radius:10px;background:rgba(161,83,236,.16);border:1px solid rgba(170,127,226,.38);color:inherit;font:800 12px/1.2 inherit;cursor:pointer}
+body.tw-cel .cmfavs .cmfavguardar:focus-visible,body.tw-cel .cmpasso:focus-visible{outline:3px solid #d4a3ff;outline-offset:2px}
+body.tw-cel .cmgrade{gap:9px!important}
+body.tw-cel .cmabas{gap:8px!important;margin-bottom:9px}
+@media(max-width:380px){body.tw-cel .cmpasso span{font-size:12px}body.tw-cel .cmfavs{gap:7px}}

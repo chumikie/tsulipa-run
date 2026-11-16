@@ -22,7 +22,7 @@ test('fronteira da data usa horario de Brasilia',()=>{
   assert.equal(ctx.jnT1HojeBrasilia(new Date('2026-11-16T03:00:00Z')),'2026-11-16');
 });
 test('calendario preserva seis terças e bloqueia marcas novas',()=>{
-  assert.match(cal,/nc % 7 === 0 && nc \/ 7 < 6/);
+  assert.match(cal,/nc % 7 === 0 && nc \/ 7 < 3/);
   assert.match(cal,/jnT1Disponivel\(t1Indice\)/);
   assert.match(cal,/nomesT1/);
   assert.match(source,/var JN_CAPS_INICIO = Date\.UTC\(2026, 9, 27\)/);

@@ -51,6 +51,7 @@
     anivPati:{pt:'Aniversário do Pati',en:"Pati's birthday",es:'Cumpleaños de Pati',id:'Ulang tahun Pati',th:'วันเกิด Pati',ja:'Patiの誕生日'},
     mesLirika:{pt:'Mês do aniversário da Lirika',en:"Lirika's birthday month",es:'Mes del cumpleaños de Lirika',id:'Bulan ulang tahun Lirika',th:'เดือนเกิดของ Lirika',ja:'Lirikaの誕生月'},
     brs48:{pt:'Aniversário do BRS48 (2015)',en:"BRS48's anniversary (2015)",es:'Aniversario de BRS48 (2015)',id:'Ulang tahun BRS48 (2015)',th:'วันครบรอบ BRS48 (2015)',ja:'BRS48 記念日（2015）'},
+    capEstreia:{pt:'Estreia dos quadrinhos no Idol⭐News! (capítulos 1 a 3)',en:'Comics premiere in Idol⭐News! (chapters 1–3)',es:'Estreno de los cómics en Idol⭐News! (capítulos 1 a 3)',id:'Perdana komik di Idol⭐News! (bab 1–3)',th:'เปิดตัวการ์ตูนใน Idol⭐News! (ตอนที่ 1–3)',ja:'Idol⭐News!でマンガ連載スタート（第1〜3話）'},
     cap:{pt:'Capítulo {n} do quadrinho no Idol⭐News!',en:'Comic chapter {n} in Idol⭐News!',es:'Capítulo {n} del cómic en Idol⭐News!',id:'Bab {n} komik di Idol⭐News!',th:'การ์ตูนตอนที่ {n} ใน Idol⭐News!',ja:'Idol⭐News!のマンガ第{n}話'},
     geracao:{pt:'Mês da Draft 1st Generation (2021)',en:'Draft 1st Generation month (2021)',es:'Mes de la Draft 1st Generation (2021)',id:'Bulan Draft 1st Generation (2021)',th:'เดือน Draft 1st Generation (2021)',ja:'ドラフト1期生の月（2021）'}
   };
@@ -73,8 +74,10 @@
     if(md === '09-05') m.push({k:'anivTsu', nome:tx(NOMES.anivTsu), ic:'bolo', cor:'#9b30d9'});
     if(md === '09-23') m.push({k:'anivPati', nome:tx(NOMES.anivPati), ic:'bolo', cor:'#4169e1'});
     if(md === '11-13') m.push({k:'brs48', nome:tx(NOMES.brs48), ic:'coroa', cor:'#ff6fb5'});
-    var nc = Math.round((Date.UTC(y, +d.slice(5, 7) - 1, +d.slice(8, 10)) - Date.UTC(2026, 9, 27)) / 864e5);   // quadrinho: um capítulo toda terça
-    if(nc >= 0 && nc % 7 === 0 && nc / 7 < 6) m.push({k:'cap', nome:tx(NOMES.cap).replace('{n}', nc / 7 + 1), ic:'news', cor:'#ff6fb5'});
+    // quadrinhos: estreia em 15/11/2026 (capítulos 1 a 3) e depois um por terça (4 em 17/11, 5 em 24/11, 6 em 01/12)
+    if(d === '2026-11-15') m.push({k:'cap', nome:tx(NOMES.capEstreia), ic:'news', cor:'#ff6fb5'});
+    var nc = Math.round((Date.UTC(y, +d.slice(5, 7) - 1, +d.slice(8, 10)) - Date.UTC(2026, 10, 17)) / 864e5);
+    if(nc >= 0 && nc % 7 === 0 && nc / 7 < 3) m.push({k:'cap', nome:tx(NOMES.cap).replace('{n}', nc / 7 + 4), ic:'news', cor:'#ff6fb5'});
     // Temporada 1: nenhuma marca visível até episódios, arte e seis idiomas estarem prontos.
     // Datas fixas em Brasília; a série histórica de terça permanece acima, intacta.
     var t1Datas=['2026-11-16','2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21'];

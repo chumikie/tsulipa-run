@@ -467,7 +467,10 @@ function jnT1PilotoHtml(){
 var jnCapSel = -1;
 function jnCapL(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
 function jnCapT(o, n){ var s = o ? (o[jnCapL()] || o.pt) : ''; return n != null ? s.replace('{n}', n).replace('{d}', n) : s; }
-function jnCapData(i){ return new Date(JN_CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); }   // terças-feiras
+// Os quadrinhos estrearam em 15/11/2026 (PR #95) com os capítulos 1 a 3 juntos; do 4 em diante, um por terça (17/11, 24/11, 01/12).
+// Nada aparece "liberado" em semanas antes de a seção existir.
+var JN_CAPS_ESTREIA = '2026-11-15', JN_CAPS_TERCA4 = Date.UTC(2026, 10, 17);
+function jnCapData(i){ return i < 3 ? JN_CAPS_ESTREIA : new Date(JN_CAPS_TERCA4 + (i - 3) * 7 * 864e5).toISOString().slice(0, 10); }
 function jnCapsLiberados(){   // quantos capítulos já chegaram (horário de Brasília)
   var hoje = new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), n = 0;
   for(var i = 0; i < JN_CAPS.length; i++) if(jnCapData(i) <= hoje) n = i + 1;

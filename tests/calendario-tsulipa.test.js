@@ -20,8 +20,11 @@ test('o calendário começa no lançamento (27/10/2026) e marca aniversários e 
   assert.strictEqual(C.inicio, '2026-10-27');
   assert.strictEqual(C.diaN('2026-10-27'), 1);
   assert.strictEqual(C.diaN('2026-11-15'), 20);
-  assert.strictEqual(C.marcas('2026-10-27').map(m => m.k).join(), 'lanc,cap');
-  assert.strictEqual(C.marcas('2026-11-17').map(m => m.k).join(), 'cap', 'capítulo do quadrinho toda terça');
+  assert.strictEqual(C.marcas('2026-10-27').map(m => m.k).join(), 'lanc', 'nada de quadrinho antes de a seção existir');
+  ['2026-11-03', '2026-11-10'].forEach(d => assert.ok(!C.marcas(d).some(m => m.k === 'cap'), 'sem capítulo em ' + d));
+  assert.strictEqual(C.marcas('2026-11-15').map(m => m.k).join(), 'cap', 'estreia dos quadrinhos (1 a 3)');
+  assert.strictEqual(C.marcas('2026-11-17').map(m => m.k).join(), 'cap', 'capítulo 4 na terça');
+  assert.strictEqual(C.marcas('2026-12-01').map(m => m.k).join(), 'cap', 'capítulo 6');
   assert.strictEqual(C.marcas('2026-12-08').map(m => m.k).join(), '', 'só 6 capítulos');
   assert.strictEqual(C.marcas('2027-10-27').map(m => m.k).join(), 'anivJogo');
   assert.strictEqual(C.marcas('2027-09-05').map(m => m.k).join(), 'anivTsu');

@@ -79,9 +79,11 @@
     // Datas fixas em Brasília; a série histórica de terça permanece acima, intacta.
     var t1Datas=['2026-11-16','2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21'];
     var t1Indice=t1Datas.indexOf(d);
-    if(t1Indice>=0 && typeof JN_T1 !== 'undefined' && JN_T1.publicada &&
-       JN_T1.episodios[t1Indice] && JN_T1.episodios[t1Indice].pronto){
-      m.push({k:'capT1',nome:'Bastidores de um Sonho · '+(t1Indice+1),ic:'news',cor:'#9b30d9'});
+    if(t1Indice>=0 && typeof JN_T1 !== 'undefined' &&
+       typeof jnT1Disponivel === 'function' && jnT1Disponivel(t1Indice)){
+      var nomesT1={pt:'Bastidores de um Sonho',en:'Behind the Dream',es:'Detrás de un sueño',
+        id:'Di Balik Sebuah Mimpi',th:'เบื้องหลังความฝัน',ja:'夢の舞台裏'};
+      m.push({k:'capT1',nome:tx(nomesT1)+' · '+(t1Indice+1),ic:'news',cor:'#9b30d9'});
     }
     return m;
   }
@@ -90,7 +92,7 @@
   function fala(d){   // a fala do dia: {quem, txt}
     d = d || hoje();
     var mk = marcas(d), te = temaDe(d), mes = doMes(+d.slice(5, 7)), h = hash(d), lista, t2 = '';
-    if(mk.length) lista = F[mk[0].k];
+    if(mk.length) lista = F[mk[0].k] || F.cap;
     else if(te && F[te.k]) lista = F[te.k];
     else if(te){ lista = F.tema; t2 = te.nome; }
     else if(mes && h % 3 === 0) lista = F[mes.k];

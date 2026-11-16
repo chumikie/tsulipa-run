@@ -29,7 +29,7 @@ const MOTOR = `(function(w){
  w.TW_I18N_BAIXAR=function(l){
   if(w.TW_I18N_PRONTO(l))return Promise.resolve();
   if(baixando[l])return baixando[l];
-  baixando[l]=new Promise(function(ok,erro){var s=document.createElement('script');s.src='./i18n/'+l+'.js?v=1';
+  baixando[l]=new Promise(function(ok,erro){var s=document.createElement('script');s.src='./i18n/'+l+'.js?v=2';
    s.onload=function(){pronto[l]?ok():erro(new Error('idioma '+l));};s.onerror=function(){baixando[l]=null;erro(new Error('idioma '+l));};document.head.appendChild(s);});
   return baixando[l];
  };

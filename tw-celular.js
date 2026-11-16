@@ -951,12 +951,12 @@
     blog:{pt:'Perfil no blog oficial',en:'Profile on the official blog',es:'Perfil en el blog oficial',id:'Profil di blog resmi',th:'โปรไฟล์ในบล็อกทางการ',ja:'公式ブログのプロフィール'},
     mapaAmigos:{pt:'Mapa de amizades',en:'Friendship map',es:'Mapa de amistades',id:'Peta pertemanan',th:'แผนผังมิตรภาพ',ja:'なかよしマップ'},
     unitTrio:{pt:'unit TsuLiPa',en:'TsuLiPa unit',es:'unit TsuLiPa',id:'unit TsuLiPa',th:'ยูนิต TsuLiPa',ja:'ユニットTsuLiPa'},
-    dupla:{pt:'dupla NeByura',en:'NeByura duo',es:'dúo NeByura',id:'duo NeByura',th:'ดูโอ NeByura',ja:'デュオNeByura'},
+    dupla:{pt:'dupla NeByur✰',en:'NeByur✰ duo',es:'dúo NeByur✰',id:'duo NeByur✰',th:'ดูโอ NeByur✰',ja:'デュオNeByur✰'},
     mesmaGeracao:{pt:'Os três entraram juntos: Draft 1st Generation · ago/2021',en:'All three joined together: Draft 1st Generation · Aug 2021',es:'Los tres entraron juntos: Draft 1st Generation · ago/2021',id:'Bertiga masuk bersama: Draft 1st Generation · Agu 2021',th:'ทั้งสามเข้ามาพร้อมกัน: Draft 1st Generation · ส.ค. 2021',ja:'3人いっしょに加入：ドラフト1期生・2021年8月'},
     toque:{pt:'Toque no Tsu, na Lirika, no Pati ou nos pets',en:'Tap Tsu, Lirika, Pati or the pets',es:'Toca a Tsu, Lirika, Pati o las mascotas',id:'Ketuk Tsu, Lirika, Pati, atau hewannya',th:'แตะ Tsu, Lirika, Pati หรือสัตว์เลี้ยง',ja:'Tsu・Lirika・Patiやペットをタップしてね'}
   };
   function tf(k){ var d = TF[k]; return d ? (d[L()] || d.pt) : k; }
-  // Laços do trio — fatos dos perfis oficiais (brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html) e da NeByura.
+  // Laços do trio — fatos dos perfis oficiais (brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html) e da NeByur✰.
   var amigosSel = 3;
   function T6(pt, en, es, id, th, ja){ return {pt:pt, en:en, es:es, id:id, th:th, ja:ja}; }
   var LACOS = [
@@ -970,7 +970,7 @@
       T6('Oshi graduada em comum: Honda Hitomi','A graduated oshi in common: Honda Hitomi','Una oshi graduada en común: Honda Hitomi','Oshi yang sudah lulus yang sama: Honda Hitomi','โอชิที่จบการศึกษาเหมือนกัน: Honda Hitomi','卒業した推しも同じ：本田仁美'),
       T6('Os dois são de São Paulo','Both are from São Paulo','Los dos son de São Paulo','Keduanya dari São Paulo','ทั้งคู่มาจากเซาเปาลู','ふたりともサンパウロ出身')],
       musicas:[['Samishii Nettaigyo (Wink)', 'TsuLiPa · 1st Single Zipper (2026)'], ['Underground', 'Unit Festival 2025 · Next Station'], ['Show (Ado)', 'Halloween 2023 · Onegai My Kouhai'], ['Treinando Para Te Amar', 'Request Hour 2023']]},
-    {par:[0, 2], nome:T6('Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu y Pati · NeByura','Tsu & Pati · NeByura','Tsu & Pati · NeByura','Tsu＆Pati・NeByura'), ic:'nota', fatos:[
+    {par:[0, 2], nome:T6('Tsu & Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu y Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu＆Pati・NeByur✰'), ic:'nota', fatos:[
       T6('Unit NeByur✰: estreou com o single “Me Beija!” em 04/04/2026','Unit NeByur✰: debuted with the single “Me Beija!” on 04/04/2026','Unit NeByur✰: debutó con el single “Me Beija!” el 04/04/2026','Unit NeByur✰: debut dengan single “Me Beija!” pada 04/04/2026','ยูนิต NeByur✰: เดบิวต์ด้วยซิงเกิล “Me Beija!” 04/04/2026','ユニットNeByur✰：2026/04/04シングル「Me Beija!」でデビュー'),
       T6('Os dois amam o AKB48','Both love AKB48','A los dos les encanta AKB48','Keduanya suka AKB48','ทั้งคู่รัก AKB48','ふたりともAKB48が大好き'),
       T6('Oshi graduada em comum: Itano Tomomi','A graduated oshi in common: Itano Tomomi','Una oshi graduada en común: Itano Tomomi','Oshi yang sudah lulus yang sama: Itano Tomomi','โอชิที่จบการศึกษาเหมือนกัน: Itano Tomomi','卒業した推しも同じ：板野友美'),
@@ -1044,7 +1044,7 @@
     return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio"><div class="twc-trio-abas" role="tablist" aria-label="' + esc(tf('trio')) + '">' + abas + '</div>' + corpo + '</div>';
   }
   // mapa de amizades desenhado com os bonecos e os pets de verdade do jogo (perfDesenharIdol + drawPet).
-  // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByura.
+  // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByur✰.
   // Tocar num membro: pulinho, fala com a voz de verdade (as mesmas do palco) e coraçõezinhos; tocar num pet: o pet pula e faz o som dele.
   var amigosRaf = 0, amigosReage = null, amigosX = [150, 340, 530], amigosAl = [1, 1, 1], amigosPosAtual = null;
   var AMIGOS_POS = [{k:0, x:150, y:350, pet:[226, 330]}, {k:1, x:340, y:350, pet:[416, 330]}, {k:2, x:530, y:350, pet:[606, 330]}];

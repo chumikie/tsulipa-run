@@ -608,7 +608,7 @@ var PET_DECOR = [   // chaves antigas mantidas: quem já comprou continua com o 
   ['zipper',  'Pôster ツリパ',       0, 148, 36, 48, 39.5, 'poster',   -.03],
   ['banner',  'Quadro ポリリズム',    60, 205, 34, 30, 38.2, 'quadro',    0],
   ['brs48',   'Pôster OUR STORY',  120, 243, 34, 41, 35,   'poster',    .03],
-  ['nebyura', 'Pôster NeByura',     80, 151, 85, 27, 35.5, 'quadro',    0],
+  ['nebyura', 'Pôster NeByur✰',     80, 151, 85, 27, 35.5, 'quadro',    0],
   ['campo',   'Pôster SECRET BASE', 80, 189, 84, 27, 34.1, 'polaroid', -.06],
   ['doces',   'Quadro Valentine',  100, 226, 87, 52, 33,   'quadro',    0]
 ];

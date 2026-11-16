@@ -2432,10 +2432,10 @@ window.TW_I18N.tables.PET_DICT4 = {
 
 // PET_DICT5
 window.TW_I18N.tables.PET_DICT5 = {   // nomes dos itens do mural (nomes de música não se traduzem)
-  en: {"Pôster NeByura":"NeByura Poster","Pôster OUR STORY":"OUR STORY Poster","Pôster SECRET BASE":"SECRET BASE Poster","Pôster ツリパ":"ツリパ Poster","Quadro Valentine":"Valentine Frame","Quadro ポリリズム":"ポリリズム Frame"},
-  es: {"Pôster NeByura":"Póster NeByura","Pôster OUR STORY":"Póster OUR STORY","Pôster SECRET BASE":"Póster SECRET BASE","Pôster ツリパ":"Póster ツリパ","Quadro Valentine":"Cuadro Valentine","Quadro ポリリズム":"Cuadro ポリリズム"},
-  th: {"Pôster NeByura":"โปสเตอร์ NeByura","Pôster OUR STORY":"โปสเตอร์ OUR STORY","Pôster SECRET BASE":"โปสเตอร์ SECRET BASE","Pôster ツリパ":"โปสเตอร์ ツリパ","Quadro Valentine":"กรอบรูป Valentine","Quadro ポリリズム":"กรอบรูป ポリリズム"},
-  ja: {"Pôster NeByura":"NeByuraのポスター","Pôster OUR STORY":"OUR STORYのポスター","Pôster SECRET BASE":"SECRET BASEのポスター","Pôster ツリパ":"ツリパのポスター","Quadro Valentine":"Valentineの額","Quadro ポリリズム":"ポリリズムの額"}};
+  en: {"Pôster NeByur✰":"NeByur✰ Poster","Pôster OUR STORY":"OUR STORY Poster","Pôster SECRET BASE":"SECRET BASE Poster","Pôster ツリパ":"ツリパ Poster","Quadro Valentine":"Valentine Frame","Quadro ポリリズム":"ポリリズム Frame"},
+  es: {"Pôster NeByur✰":"Póster NeByur✰","Pôster OUR STORY":"Póster OUR STORY","Pôster SECRET BASE":"Póster SECRET BASE","Pôster ツリパ":"Póster ツリパ","Quadro Valentine":"Cuadro Valentine","Quadro ポリリズム":"Cuadro ポリリズム"},
+  th: {"Pôster NeByur✰":"โปสเตอร์ NeByur✰","Pôster OUR STORY":"โปสเตอร์ OUR STORY","Pôster SECRET BASE":"โปสเตอร์ SECRET BASE","Pôster ツリパ":"โปสเตอร์ ツリパ","Quadro Valentine":"กรอบรูป Valentine","Quadro ポリリズム":"กรอบรูป ポリリズム"},
+  ja: {"Pôster NeByur✰":"NeByur✰のポスター","Pôster OUR STORY":"OUR STORYのポスター","Pôster SECRET BASE":"SECRET BASEのポスター","Pôster ツリパ":"ツリパのポスター","Quadro Valentine":"Valentineの額","Quadro ポリリズム":"ポリリズムの額"}};
 
 // PET_DICT6
 window.TW_I18N.tables.PET_DICT6 = {
@@ -2970,7 +2970,7 @@ window.TW_I18N.tables.EXTRA_DICT_AVATAR = {
     "Pixie": "Pixie",
     "Pôster ジッパー": "Poster ジッパー",
     "Presente do Pet! 🎁": "Pet Gift! 🎁",
-    "Quadro NeByura": "NeByura Frame",
+    "Quadro NeByur✰": "NeByur✰ Frame",
     "Quadro ツリパ ZIPPER": "Frame ツリパ ZIPPER",
     "Solo Center": "Solo Center",
     "Tiramisu": "Tiramisu",
@@ -2995,7 +2995,7 @@ window.TW_I18N.tables.EXTRA_DICT_AVATAR = {
     "Pixie": "Pixie",
     "Pôster ジッパー": "Póster ジッパー",
     "Presente do Pet! 🎁": "¡Regalo de la Mascota! 🎁",
-    "Quadro NeByura": "Cuadro NeByura",
+    "Quadro NeByur✰": "Cuadro NeByur✰",
     "Quadro ツリパ ZIPPER": "Cuadro ツリパ ZIPPER",
     "Solo Center": "Solo Center",
     "Tiramisu": "Tiramisú",
@@ -3020,7 +3020,7 @@ window.TW_I18N.tables.EXTRA_DICT_AVATAR = {
     "Pixie": "พิกซี่",
     "Pôster ジッパー": "โปสเตอร์ ジッパー",
     "Presente do Pet! 🎁": "ของขวัญจากสัตว์เลี้ยง! 🎁",
-    "Quadro NeByura": "กรอบรูป NeByura",
+    "Quadro NeByur✰": "กรอบรูป NeByur✰",
     "Quadro ツリパ ZIPPER": "กรอบรูป ツリパ ZIPPER",
     "Solo Center": "โซโล่เซ็นเตอร์",
     "Tiramisu": "ทิรามิสุ",
@@ -3042,7 +3042,7 @@ window.TW_I18N.tables.EXTRA_DICT_AVATAR = {
     "Pixie": "ピクシー",
     "Pôster ジッパー": "ポスター「ジッパー」",
     "Presente do Pet! 🎁": "ペットからのプレゼント！ 🎁",
-    "Quadro NeByura": "フレーム「NeByura」",
+    "Quadro NeByur✰": "フレーム「NeByur✰」",
     "Quadro ツリパ ZIPPER": "フレーム「ツリパ ZIPPER」",
     "Solo Center": "ソロセンター",
     "Tirar Foto": "写真を撮る",

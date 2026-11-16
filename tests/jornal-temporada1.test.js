@@ -205,7 +205,7 @@ test('30 quadros em seis idiomas com atores e poses válidas',()=>{
 });
 test('Canvas privado não altera função histórica e conserva texto completo no HTML',()=>{
  assert.match(source,/function jnT1DesenharSeguro\(canvas,p,episodio,quadro\)/);
- assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\],true\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas,cena\],true\)/);
  assert.match(source,/function jnCapDesenhar\(cv, p, temporada\)/);
  assert.match(source,/figcaption/);
 });
@@ -245,7 +245,7 @@ test('balões da temporada empilham sem mudar posicionamento histórico',()=>{
  assert.match(source,/function jnCapDesenhar\(cv, p, temporada\)/);
  assert.match(source,/if\(temporada && p\[3\]\.length === 2\)\{by = topoFala; bx = i \?/);
  assert.match(source,/else if\(temporada\)\{by = proximaFalaY;proximaFalaY \+= bh \+ 8;\}/);
- assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\],true\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas,cena\],true\)/);
 });
 
 test('leitor da temporada fica inerte bloqueado e o texto não é cortado no meio da frase', () => {
@@ -260,4 +260,17 @@ test('leitor da temporada fica inerte bloqueado e o texto não é cortado no mei
   assert.ok(!/pronto:true/.test(src), 'nenhum episódio marcado como pronto');
   const css = require('fs').readFileSync(require('path').join(__dirname, '..', 'jornal.css'), 'utf8');
   assert.match(css, /\.jn-t1 canvas\{display:block;width:100%;max-width:100%;height:auto;/, 'quadro fluido, sem rolagem lateral');
+});
+
+test('direção de cena: 30 quadros com cenário/pistas/reações e o leitor histórico intocado', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'jornal-capitulos.js'), 'utf8');
+  const vm = require('vm'); const ctx = { window:{}, LANG:'pt', Intl, Date, JSON, Math }; vm.createContext(ctx); vm.runInContext(src, ctx);
+  const cena = vm.runInContext('JN_T1_CENA', ctx);
+  assert.equal(cena.length, 6); cena.forEach(e => assert.equal(e.length, 5));
+  const n = cena.flat().filter(c => (c.d && c.d.length) || (c.pr && c.pr.length) || c.luz || (c.fx && c.fx.length)).length;
+  assert.equal(n, 30, 'todo quadro tem alguma direção de cena');
+  assert.equal(cena[4][1].luz, 'escuro', 'ep. 5: as luzes se apagam');
+  assert.equal(cena[4][2].luz, 'lanterna', 'ep. 5: a lanterna acende');
+  assert.match(src, /var cenaT1 = temporada && p\[4\] && typeof jnT1Cenario === 'function' \? p\[4\] : null;/, 'só a temporada usa a cena');
+  assert.match(src, /if\(temporada && n > 1\)\{ var incl/, 'inclinação só na temporada');
 });

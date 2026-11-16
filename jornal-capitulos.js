@@ -203,7 +203,7 @@ function jnT1DesenharSeguro(canvas,p,episodio,quadro){
  }
  var nar=p[2]?{pt:curto(p[2],canvas.width-65,2,15)}:null;
  var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],185,2,16)}];});
- jnCapDesenhar(canvas,[p[0],p[1],nar,falas]);
+ jnCapDesenhar(canvas,[p[0],p[1],nar,falas],true);
  if(typeof episodio==='number' && typeof quadro==='number') jnT1ObjetoDesenhar(canvas,episodio,quadro);
  return true;
 }
@@ -361,7 +361,7 @@ function jnCapAv(k, pose){   // o boneco oficial do membro (os mesmos do banner 
   if(base){ c.out = base.out; c.outcol = base.outcol; }
   return {c:c, pose:pose || '', expr:m[4]};
 }
-function jnCapDesenhar(cv, p){
+function jnCapDesenhar(cv, p, temporada){
   var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
   function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
@@ -383,11 +383,13 @@ function jnCapDesenhar(cv, p){
     x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * 19); });
     topoFala = 10 + nh + 10;
   }
+  var proximaFalaY = topoFala;
   p[3].forEach(function(f, i){   // balões de fala com rabinho apontando para quem fala
     var cx = onde[f[0]] != null ? onde[f[0]] : W / 2;
     x.font = '800 16px "M PLUS Rounded 1c",sans-serif'; var bl = linhas(jnCapT(f[1]), 190), bw = Math.max.apply(null, bl.map(function(l){ return x.measureText(l).width; })) + 26, bh = bl.length * 20 + 14;
     var bx = Math.max(8, Math.min(W - bw - 8, cx - bw / 2 + (p[3].length > 1 ? (i ? 30 : -30) : 0))), by = topoFala + (p[3].length > 1 && i ? 8 : 0);
     if(p[3].length > 1 && i) by = topoFala + 6;
+    if(temporada){by = proximaFalaY;proximaFalaY += bh + 8;}
     rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[f[0]]; x.lineWidth = 3; x.stroke();
     var tx = Math.max(bx + 18, Math.min(bx + bw - 18, cx));
     x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx - 9, by + bh - 2); x.lineTo(tx + (cx > tx ? 10 : cx < tx ? -10 : 0), by + bh + 16); x.lineTo(tx + 9, by + bh - 2); x.closePath(); x.fill();

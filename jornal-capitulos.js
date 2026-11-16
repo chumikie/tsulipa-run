@@ -105,9 +105,48 @@ function jnT1Ep6Texto(lang){
   return {numero:i+1,narracao:p[2][idioma],falas:p[3].map(function(f){return {personagem:['Tsu','Lirika','Pati'][f[0]],texto:f[1][idioma]};})};
  })};
 }
+/* Prévia interna: conserva o desenho oficial, mas limita texto no Canvas.
+   O texto integral permanece no figcaption acessível, sem truncamento. */
+function jnT1DesenharSeguro(canvas,p){
+ if(!canvas || !canvas.getContext || !p) return false;
+ var ctx=canvas.getContext('2d'); if(!ctx) return false;
+ function curto(valor,largura,linhas,tamanho){
+  var texto=jnCapT(valor); ctx.save();
+  ctx.font='800 '+tamanho+'px "M PLUS Rounded 1c",sans-serif';
+  var palavras=String(texto).split(/\s+/), partes=[],linha='';
+  // Divide também palavras sem espaços (JA/TH), evitando estouro horizontal.
+  function encaixar(palavra){
+   if(ctx.measureText(palavra).width<=largura) return [palavra];
+   var pedacos=[],at='';
+   Array.from(palavra).forEach(function(c){
+    if(at && ctx.measureText(at+c).width>largura){pedacos.push(at);at=c;}else at+=c;
+   });
+   if(at)pedacos.push(at);return pedacos;
+  }
+  palavras.forEach(function(palavra){
+   encaixar(palavra).forEach(function(pedaco){
+    var tentativa=linha?linha+' '+pedaco:pedaco;
+    if(linha && ctx.measureText(tentativa).width>largura){partes.push(linha);linha=pedaco;}
+    else linha=tentativa;
+   });
+  });
+  if(linha)partes.push(linha);
+  var reduz=partes.length>linhas,ret=partes.slice(0,linhas);
+  if(reduz && ret.length){
+   var fim=ret.length-1;
+   while(ret[fim] && ctx.measureText(ret[fim]+'…').width>largura)ret[fim]=ret[fim].slice(0,-1);
+   ret[fim]+='…';
+  }
+  ctx.restore();return ret.join(' ');
+ }
+ var nar=p[2]?{pt:curto(p[2],canvas.width-65,2,15)}:null;
+ var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],185,2,16)}];});
+ jnCapDesenhar(canvas,[p[0],p[1],nar,falas]);
+ return true;
+}
 function jnT1Ep6Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP6.panels.length) return false;
- jnCapDesenhar(canvas,JN_T1_EP6.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP6.panels[indice]);
  return true;
 }
 function jnT1Ep6Html(){
@@ -125,7 +164,7 @@ function jnT1Ep5Texto(lang){
 }
 function jnT1Ep5Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP5.panels.length) return false;
- jnCapDesenhar(canvas,JN_T1_EP5.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP5.panels[indice]);
  return true;
 }
 function jnT1Ep5Html(){
@@ -143,7 +182,7 @@ function jnT1Ep4Texto(lang){
 }
 function jnT1Ep4Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP4.panels.length) return false;
- jnCapDesenhar(canvas,JN_T1_EP4.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP4.panels[indice]);
  return true;
 }
 function jnT1Ep4Html(){
@@ -161,7 +200,7 @@ function jnT1Ep3Texto(lang){
 }
 function jnT1Ep3Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP3.panels.length) return false;
- jnCapDesenhar(canvas,JN_T1_EP3.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP3.panels[indice]);
  return true;
 }
 function jnT1Ep3Html(){
@@ -179,7 +218,7 @@ function jnT1Ep2Texto(lang){
 }
 function jnT1Ep2Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP2.panels.length) return false;
- jnCapDesenhar(canvas,JN_T1_EP2.panels[indice]);
+ jnT1DesenharSeguro(canvas,JN_T1_EP2.panels[indice]);
  return true;
 }
 function jnT1Ep2Html(){
@@ -199,7 +238,7 @@ function jnT1PilotoDesenhar(canvas,indice){
   // Reutiliza fundo, avatares oficiais e o renderer estático existente.
   if(!canvas || indice<0 || indice>=JN_T1_PILOTO.panels.length) return false;
   var p=JN_T1_PILOTO.panels[indice];
-  jnCapDesenhar(canvas,p);
+  jnT1DesenharSeguro(canvas,p);
   return true;
 }
 function jnT1PilotoHtml(){

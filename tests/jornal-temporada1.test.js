@@ -157,3 +157,32 @@ test('episodio 5 reutiliza Canvas historico e preserva leitor',()=>{
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep5Html\(\)/);
 });
+
+test('episodio final tem cinco quadros e seis idiomas completos',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ assert.equal(ctx.JN_T1_EP6.id,'palco-nosso');
+ assert.equal(ctx.JN_T1_EP6.panels.length,5);
+ for(const lang of ['pt','en','es','id','th','ja']){
+  const t=ctx.jnT1Ep6Texto(lang);
+  assert.ok(t.titulo.length>3);
+  assert.equal(t.quadros.length,5);
+  for(const q of t.quadros){
+   assert.ok(q.narracao.length>10);
+   assert.ok(q.falas.length>=1);
+   assert.ok(q.falas.every(f=>f.texto.length>5));
+  }
+ }
+ assert.equal(ctx.JN_T1_PUBLICADA,false);
+ assert.equal(ctx.JN_T1.episodios[5].pronto,false);
+ assert.equal(ctx.jnT1Ep6Html(),'');
+ assert.equal(ctx.jnT1Disponivel(5,new Date('2027-01-01T12:00:00Z')),false);
+});
+test('seis episodios continuam privados e capitulos historicos intactos',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ assert.equal(ctx.JN_CAPS.length,6);
+ assert.equal(ctx.JN_T1.episodios.length,6);
+ assert.ok(ctx.JN_T1.episodios.every(e=>e.pronto===false));
+ assert.equal(ctx.JN_T1_PUBLICADA,false);
+ assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP6\.panels\[indice\]\)/);
+ assert.match(source,/function jornalCapsUI\(\)/);
+});

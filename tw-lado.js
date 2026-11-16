@@ -24,27 +24,30 @@
     if(c.back === 'chanel'){ g.beginPath(); g.moveTo(x + 8, y - 2); g.quadraticCurveTo(x - .5, y + 4, x + 1.5, y + 17); g.lineTo(x + 2, y + 21); g.lineTo(x + 13, y + 21); g.lineTo(x + 13, y + 8); g.closePath(); g.fill(); }   // chanel curto, reto
     else if(c.back === 'pixie'){ T([x + 5, y + 2, x + 1, y + 12, x + 3.6, y + 13, x + 2.4, y + 19, x + 7.5, y + 15.5, x + 9, y + 18.5, x + 11, y + 10]); }
     else { g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + 1.5, y + 4, x + 2.6, y + 13.5); g.quadraticCurveTo(x + 4, y + 18.4, x + 8.5, y + 18); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); E(x + 4.5, y + 15.8, 2.2, 2.2); }
-    // ---------- perna de lá, corpo, perna de cá ----------
-    var pe = Math.sin((t || 0) * .25) * .5;
-    g.fillStyle = escuro(perna, 14); g.fillRect(x + 15.6, y + 36 + pe, 5, 8 - pe);
-    g.fillStyle = '#e4ddf3'; E(x + 19.6, y + 44, 3.6, 1.8);
-    g.fillStyle = '#2e3566';
-    if(c.baixo === 'saia'){ T([x + 8, y + 32, x + 22.5, y + 32, x + 24.8, y + 38.6, x + 6, y + 38.6]); g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(x + 12, y + 33, 1, 5.4); g.fillRect(x + 17.4, y + 33, 1, 5.4); }
-    else T([x + 8, y + 32, x + 22.5, y + 32, x + 23.2, y + 38, x + 7.6, y + 38]);
-    g.fillStyle = perna; g.fillRect(x + 10.8, y + (c.baixo === 'saia' ? 38.4 : 37.8) - pe, 5.2, 6 + pe);
-    g.fillStyle = '#fff'; E(x + 14.8, y + 44, 4, 1.9);
-    // camisa (frente mais clara, costas na sombra) e gravata na beirada da frente
-    var cam = g.createLinearGradient(x + 8, 0, x + 23, 0); cam.addColorStop(0, '#dfe6f5'); cam.addColorStop(1, '#ffffff');
-    g.fillStyle = cam; g.beginPath(); g.moveTo(x + 9, y + 22); g.lineTo(x + 21.2, y + 22); g.quadraticCurveTo(x + 23.6, y + 27, x + 22.8, y + 32.4); g.lineTo(x + 7.8, y + 32.4); g.quadraticCurveTo(x + 7, y + 27, x + 9, y + 22); g.fill();
-    g.fillStyle = '#1b2a5e'; T([x + 20.9, y + 23.6, x + 22.4, y + 23.6, x + 22.7, y + 30, x + 21.4, y + 31.4, x + 20.4, y + 30]); g.fillStyle = '#14204a'; g.fillRect(x + 20.4, y + 22, 2.4, 1.8);
-    // braço de cá: manga + mão (a mesma cor de pele)
-    g.fillStyle = '#f3f0fb'; E(x + 14.4, y + 25, 3.7, 3.7);
-    g.fillStyle = S; g.fillRect(x + 12.9, y + 27.2, 3.2, 4.6); E(x + 14.6, y + 32.2, 2.1, 1.9);
-    // pescoço
-    g.fillStyle = SD; g.fillRect(x + 12.4, y + 18, 5.2, 5);
+    // ---------- pernas curtas e tênis branco com listra rosa (iguais aos da frente) ----------
+    var pe = Math.sin((t || 0) * .25) * .4;
+    function tenis(px, py, longe){ g.fillStyle = longe ? '#d9d3ea' : '#ffffff'; g.beginPath(); g.moveTo(px, py); g.lineTo(px + 5.6, py); g.quadraticCurveTo(px + 8.6, py + .2, px + 8.4, py + 2.4); g.lineTo(px + 8.4, py + 3.2); g.lineTo(px - .4, py + 3.2); g.closePath(); g.fill();
+      g.fillStyle = longe ? '#d77aa8' : '#ff6fb5'; g.fillRect(px + .6, py + 1.3, 6.4, .8); }
+    g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4, y + 38 + pe, 4.6, 4.6 - pe); tenis(x + 14.6, y + 41.4, true);
+    // saia ou bermuda: o mesmo cinza-azulado com degradê e pregas da frente
+    var sg = g.createLinearGradient(0, y + 33, 0, y + 40); sg.addColorStop(0, '#7d86aa'); sg.addColorStop(1, '#464d70'); g.fillStyle = sg;
+    if(c.baixo === 'saia'){ T([x + 7.6, y + 33, x + 22.6, y + 33, x + 25, y + 40, x + 5.4, y + 40]); g.fillStyle = 'rgba(255,255,255,.18)'; [10.4, 14.2, 18].forEach(function(px){ g.fillRect(x + px, y + 34, .8, 5.6); }); }
+    else { T([x + 7.6, y + 33, x + 22.6, y + 33, x + 23.4, y + 39, x + 7.2, y + 39]); g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(x + 15, y + 34.5, .8, 4.2); }
+    g.fillStyle = perna; g.fillRect(x + 10.6, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pe, 4.8, 4 + pe); tenis(x + 9.8, y + 41.8, false);
+    // camisa: larga como a da frente, branca com sombra embaixo e nas costas; gola e gravata na beirada da frente
+    var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, '#ffffff'); cam.addColorStop(1, '#e3e7f3');
+    g.fillStyle = cam; g.beginPath(); g.moveTo(x + 7.4, y + 23); g.quadraticCurveTo(x + 7.4, y + 21, x + 10, y + 21); g.lineTo(x + 21, y + 21); g.quadraticCurveTo(x + 23.6, y + 21, x + 23.6, y + 24);
+    g.lineTo(x + 23.6, y + 34); g.lineTo(x + 7, y + 34); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(120,130,170,.18)'; g.fillRect(x + 7, y + 22, 3, 12);   // costas na sombra
+    g.fillStyle = '#1b2a5e'; T([x + 21.6, y + 24, x + 23.2, y + 24, x + 23.5, y + 30.4, x + 22.3, y + 31.8, x + 21.2, y + 30.4]);
+    g.fillStyle = '#14204a'; T([x + 21, y + 21.6, x + 23.6, y + 21.6, x + 23.4, y + 24.2, x + 21.3, y + 24.2]);
+    // ombro arredondado (a mesma faixa de manga da frente, vista de lado) e o braço descendo
+    var mg = g.createLinearGradient(0, y + 21, 0, y + 27); mg.addColorStop(0, '#ffffff'); mg.addColorStop(1, '#e8ebf5'); g.fillStyle = mg;
+    g.beginPath(); g.ellipse(x + 15, y + 24.2, 5, 3.6, 0, 0, 7); g.fill();
+    var bg = g.createLinearGradient(0, y + 26, 0, y + 34); bg.addColorStop(0, S); bg.addColorStop(1, SD); g.fillStyle = bg;
+    g.beginPath(); g.moveTo(x + 12.8, y + 26.4); g.lineTo(x + 17.2, y + 26.4); g.lineTo(x + 17, y + 32.6); g.quadraticCurveTo(x + 15, y + 34.6, x + 13, y + 32.6); g.closePath(); g.fill();
     // ---------- cabeça: crânio (o mesmo círculo da frente) + bochecha e queixo para a frente + narizinho ----------
-    g.fillStyle = S; E(x + 14.6, y + 13, 11, 11); E(x + 19.8, y + 16.4, 6.6, 6.4);
-    T([x + 25.2, y + 13.4, x + 27, y + 15.6, x + 25.4, y + 16.4]);
+    g.fillStyle = S; E(x + 14.6, y + 13, 11, 11); E(x + 18.6, y + 17.2, 7.4, 6.6);   // crânio da frente + bochecha cheia (perfil chibi, sem nariz)
         g.fillStyle = 'rgba(255,120,150,.32)'; E(x + 20.6, y + 18.6, 2.4, 1.3);                   // bochecha
     // olho: a mesma peça de pixel da frente (sobrancelha, íris, pupila, dois brilhos)
     var e = +expr || 0, x0 = x + 19.6;
@@ -57,13 +60,14 @@
       g.fillStyle = '#fff'; g.fillRect(x0, y + 14, 1, 2); g.fillRect(x0 + 2, y + 17, 1, 1); }
     // boca: o tracinho de sempre (ou o sorrisinho cheio), na beirada do rosto
     g.fillStyle = TINTA;
-    if(e === 2 || e === 3 || e === 1 || e === 6){ g.beginPath(); g.moveTo(x + 21.4, y + 19.4); g.arc(x + 22.6, y + 19.4, 1.9, 0, Math.PI * .85); g.closePath(); g.fill(); }
-    else if(e === 4){ E(x + 23, y + 20.2, .9, 1.1); }
-    else g.fillRect(x + 22, y + 20, 2.4, 1);
+    if(e === 2 || e === 3 || e === 1 || e === 6){ g.beginPath(); g.moveTo(x + 21, y + 19.6); g.arc(x + 22.2, y + 19.6, 1.8, 0, Math.PI * .85); g.closePath(); g.fill(); }
+    else if(e === 4){ E(x + 22.6, y + 20.4, .9, 1.1); }
+    else g.fillRect(x + 21.4, y + 20.2, 2.4, 1);
     // ---------- cabelo de cima: a mesma calota (centro 15,8 raio 12) recortada pela franja ----------
     g.fillStyle = hg; g.beginPath(); g.moveTo(x + 26.4, y + 10);
     g.arc(x + 14.6, y + 8, 12, -.17, Math.PI, true);   // da testa, por cima, até a nuca
-    g.lineTo(x + 2.6, y + 7.5 + sl); g.lineTo(x + 13.4, y + 7.5 + sl); g.quadraticCurveTo(x + 12.4, y + 11.5, x + 13.6, y + 9.6);
+    var nuca = Math.max(7.5 + sl, c.back === 'chanel' ? 21 : 20.5);
+    g.lineTo(x + 2.6, y + nuca - 2); g.quadraticCurveTo(x + 3, y + nuca, x + 6, y + nuca); g.lineTo(x + 10.4, y + nuca); g.lineTo(x + 13.4, y + 7.5 + sl); g.quadraticCurveTo(x + 12.4, y + 11.5, x + 13.6, y + 9.6);
     if(c.front === 'bagunca'){   // mechas da Tsu caindo na testa
       g.quadraticCurveTo(x + 13.4, y + 13.8, x + 15.6, y + 15.4); g.quadraticCurveTo(x + 16.4, y + 11, x + 18.8, y + 8.6); g.quadraticCurveTo(x + 20.4, y + 12.6, x + 23.6, y + 13.4); g.quadraticCurveTo(x + 23.8, y + 10.2, x + 26.4, y + 10);
     } else g.lineTo(x + 26.4, y + 10);   // franja reta, na mesma altura da frente

@@ -23,8 +23,8 @@ test('fronteira da data usa horario de Brasilia',()=>{
 });
 test('calendario preserva seis terças e bloqueia marcas novas',()=>{
   assert.match(cal,/nc % 7 === 0 && nc \/ 7 < 6/);
-  assert.match(cal,/JN_T1\.publicada/);
-  assert.match(cal,/JN_T1\.episodios\[t1Indice\]\.pronto/);
+  assert.match(cal,/jnT1Disponivel\(t1Indice\)/);
+  assert.match(cal,/nomesT1/);
   assert.match(source,/var JN_CAPS_INICIO = Date\.UTC\(2026, 9, 27\)/);
 });
 
@@ -47,7 +47,7 @@ test('piloto possui cinco quadros e seis idiomas completos',()=>{
  assert.equal(ctx.JN_T1_PUBLICADA,false);
 });
 test('piloto reutiliza renderer Canvas histórico sem alterar o leitor',()=>{
- assert.match(source,/jnCapDesenhar\(canvas,p\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,p\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1PilotoHtml\(\)/);
  assert.match(source,/<figcaption>/);
@@ -74,7 +74,7 @@ test('episodio 2 tem cinco quadros, seis traducoes e permanece oculto',()=>{
 });
 test('episodio 2 reutiliza Canvas e nao altera leitor historico',()=>{
  assert.match(source,/function jnT1Ep2Desenhar\(canvas,indice\)/);
- assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP2\.panels\[indice\]\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,JN_T1_EP2\.panels\[indice\]\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep2Html\(\)/);
  assert.match(source,/<figcaption>/);
@@ -101,7 +101,7 @@ test('episodio 3 possui cinco quadros, seis idiomas e bloqueio editorial',()=>{
 });
 test('episodio 3 usa renderizador existente sem mudar leitor historico',()=>{
  assert.match(source,/function jnT1Ep3Desenhar\(canvas,indice\)/);
- assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP3\.panels\[indice\]\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,JN_T1_EP3\.panels\[indice\]\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep3Html\(\)/);
 });
@@ -127,7 +127,7 @@ test('episodio 4 tem cinco quadros e textos completos em seis idiomas',()=>{
 });
 test('episodio 4 reutiliza Canvas historico e preserva leitor',()=>{
  assert.match(source,/function jnT1Ep4Desenhar\(canvas,indice\)/);
- assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP4\.panels\[indice\]\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,JN_T1_EP4\.panels\[indice\]\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep4Html\(\)/);
 });
@@ -153,7 +153,7 @@ test('episodio 5 tem cinco quadros, seis idiomas e continua indisponivel',()=>{
 });
 test('episodio 5 reutiliza Canvas historico e preserva leitor',()=>{
  assert.match(source,/function jnT1Ep5Desenhar\(canvas,indice\)/);
- assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP5\.panels\[indice\]\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,JN_T1_EP5\.panels\[indice\]\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
  assert.match(source,/function jnT1Ep5Html\(\)/);
 });
@@ -183,6 +183,29 @@ test('seis episodios continuam privados e capitulos historicos intactos',()=>{
  assert.equal(ctx.JN_T1.episodios.length,6);
  assert.ok(ctx.JN_T1.episodios.every(e=>e.pronto===false));
  assert.equal(ctx.JN_T1_PUBLICADA,false);
- assert.match(source,/jnCapDesenhar\(canvas,JN_T1_EP6\.panels\[indice\]\)/);
+ assert.match(source,/jnT1DesenharSeguro\(canvas,JN_T1_EP6\.panels\[indice\]\)/);
  assert.match(source,/function jornalCapsUI\(\)/);
+});
+
+test('30 quadros em seis idiomas com atores e poses válidas',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ const eps=[ctx.JN_T1_PILOTO,ctx.JN_T1_EP2,ctx.JN_T1_EP3,ctx.JN_T1_EP4,ctx.JN_T1_EP5,ctx.JN_T1_EP6];
+ assert.equal(eps.reduce((sum,e)=>sum+e.panels.length,0),30);
+ for(const ep of eps){
+  for(const p of ep.panels){
+   assert.ok(p[1].length>=1&&p[1].length<=3);
+   assert.ok(p[1].every(g=>Number.isInteger(g[0])&&g[0]>=0&&g[0]<=2));
+   assert.ok(p[3].every(f=>p[1].some(g=>g[0]===f[0])),'fala de personagem visível');
+   for(const lang of ['pt','en','es','id','th','ja']){
+    assert.ok(p[2][lang]&&p[2][lang].trim().length>10);
+    assert.ok(p[3].every(f=>f[1][lang]&&f[1][lang].trim().length>5));
+   }
+  }
+ }
+});
+test('Canvas privado não altera função histórica e conserva texto completo no HTML',()=>{
+ assert.match(source,/function jnT1DesenharSeguro\(canvas,p\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\]\)/);
+ assert.match(source,/function jnCapDesenhar\(cv, p\)/);
+ assert.match(source,/figcaption/);
 });

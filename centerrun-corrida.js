@@ -845,7 +845,10 @@ function draw(){
   
   g.fillStyle=P2[2];g.fillRect(0,GY-16,W,16);
   drawCity(far,farW,dist*.15,GY-10,P2[2],P2[4].replace('rgb(','rgba(').replace(')',',.25)'));
+  // profundidade (16/11/2026): névoa na cor do céu sobre a cidade de longe — o fundo fica mais apagado e a cena ganha distância
+  var nev=g.createLinearGradient(0,GY-220,0,GY);nev.addColorStop(0,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,0));nev.addColorStop(1,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,.42));g.fillStyle=nev;g.fillRect(0,GY-220,W,220);
   drawCity(near,nearW,dist*.35,GY,P2[3],P2[5].replace('rgb(','rgba(').replace(')',',.48)'));
+  var nev2=g.createLinearGradient(0,GY-90,0,GY);nev2.addColorStop(0,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,0));nev2.addColorStop(1,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,.16));g.fillStyle=nev2;g.fillRect(0,GY-90,W,90);   // um pouco de névoa também na de perto
   g.fillStyle=P2[3];g.fillRect(0,GY-8,W,8);
   if(typeof cenaCartazes === 'function') cenaCartazes(P2);   // V2.1.3: cartazes do BRS48 e do TsuLiPa
   cenaMultidao(P2);   // multidão que cresce com a pontuação (V2.2) — agora ATRÁS dos arbustos

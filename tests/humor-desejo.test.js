@@ -96,3 +96,28 @@ test('passeio conta só ao chegar após caminhar; reduzir movimento também func
     c.meuPasseio={x0:100,x1:105,t0:0,ida};c.passeioDoToque({},ida+.001);assert.equal(eventos.length,1);
   }
 });
+
+test('clique real do TsuPhone abre Humor, mostra ajuda em seis idiomas e volta',()=>{
+  const index=fs.readFileSync(__dirname+'/../index.html','utf8'),sala=fs.readFileSync(__dirname+'/../pet-sala.js','utf8');
+  for(const lang of ['pt','en','es','id','th','ja']){
+    const c=carregar(true,T0),s=c.sb;let clique;
+    const corpo={innerHTML:''},phone={addEventListener:(nome,fn)=>{clique=fn;}};
+    s.$=id=>id==='petPhone'?phone:corpo;s.LANG=lang;s.petPhoneOpen=true;s.petPhoneTela='home';
+    s.PET_PHONE_APPS={pt:[]};s.escHtml=x=>String(x);s.petPhoneSom=()=>{};
+    s.document.getElementById=()=>null;s.document.createElement=()=>({});s.document.head={appendChild(){}};
+    s.petPhoneVoltar=()=>{s.petPhoneTela='home';};
+    vm.runInNewContext(sala.slice(sala.indexOf('function petPhoneRender(){'),sala.indexOf('//←petPhoneSom')),s);
+    vm.runInNewContext(sala.slice(sala.indexOf('function petPhoneTelaAbrir(k){'),sala.indexOf('//←petPhoneAgendaCarregar')),s);
+    const inicio=index.indexOf("$('petPhone').addEventListener('click'");
+    vm.runInNewContext(index.slice(inicio,index.indexOf("document.addEventListener('visibilitychange'",inicio)),s);
+    const click=k=>clique({target:{closest:()=>({dataset:{phone:k}})}});
+    const antes=c.H.desejo();click('humor');
+    assert.equal(s.petPhoneTela,'humor',lang);assert.match(corpo.innerHTML,/class="twh-app"/);
+    assert.equal((corpo.innerHTML.match(/role="meter"/g)||[]).length,4);
+    for(const key of ['intro','como','regra','efeitos','corGuia','energiaAjuda','diversaoAjuda','brilhoAjuda','amizadeAjuda']){
+      assert.notEqual(c.H.t(key),key);assert.ok(corpo.innerHTML.includes(c.H.t(key)),lang+' '+key);
+    }
+    assert.equal(c.H.desejo().feito,antes.feito,'ler não cumpre desejo');assert.equal(c.H.vipHoje(),false);
+    click('voltar');assert.equal(s.petPhoneTela,'home');
+  }
+});

@@ -258,17 +258,24 @@
     var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.expr = 2; av.fundo = '';
     if(e.objeto === 'balao') objeto(x, W, H, e.objeto, tm);
     var corpo;
-    try{ if(typeof perfDesenharIdol === 'function') corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, e.quadro || 'inteiro'); }catch(er){}
+    // Margem editorial: o retrato não deve preencher a foto até cortar cabelo e acessórios.
+    var quadro = e.quadro || 'inteiro';
+    var escalaFoto = quadro === 'rosto' ? .77 : quadro === 'meio' ? .86 : .92;
+    try{
+      if(typeof perfDesenharIdol === 'function'){
+        x.save(); x.translate(W * (1 - escalaFoto) / 2, H * (1 - escalaFoto) / 2); x.scale(escalaFoto, escalaFoto);
+        try{ corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro); } finally { x.restore(); }
+      }
+    }catch(er){}
+
     if(e.objeto !== 'balao' && e.objeto !== 'nenhum' && corpo){
-      // A mão esquerda fica livre no V e no aceno; no coração vai ao peito.
-      // Acessório junto do retrato: em close ele fica na borda inferior,
-      // em meio corpo ao lado do tronco, em corpo inteiro perto da mão.
-      var quadro = e.quadro || 'inteiro';
-      var mao = quadro === 'rosto' ? [25,22] :
-                quadro === 'meio' ? [27,27] :
-                e.pose === 'coracao' ? [10.3,28.5] : [3,31];
-      x.save(); x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
-      x.scale(corpo.scale, corpo.scale); x.rotate(-.18);
+      // Objeto em escala fotográfica, não na escala ampliada do rosto.
+      // Uma âncora própria evita tulipas e microfones gigantes sobre o rosto.
+      var tamanho = Math.min(W / 44, H / 57);
+      var px = W * (quadro === 'rosto' ? .79 : .75);
+      var py = H * (quadro === 'rosto' ? .76 : quadro === 'meio' ? .72 : .69);
+      x.save(); x.translate(px, py);
+      x.scale(tamanho, tamanho); x.rotate(-.18);
       x.lineCap = 'round'; x.lineWidth = 1.5;
       x.strokeStyle = e.objeto.indexOf('flor_') === 0 ? '#43956d' : '#49375f';
       x.beginPath(); x.moveTo(0,2); x.lineTo(0,-9); x.stroke();
@@ -288,7 +295,7 @@
         x.font = '9px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
         x.fillText(FLORES[e.objeto.slice(5)] || '',0,-11);
       }
-      if(quadro === 'inteiro'){ x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(0,0,2,1.5,0,0,7); x.fill(); }
+
       x.restore();
     }
     luz(x, W, H, e.luz);

@@ -54,6 +54,8 @@
     anivPati:{pt:'Aniversário do Pati',en:"Pati's birthday",es:'Cumpleaños de Pati',id:'Ulang tahun Pati',th:'วันเกิด Pati',ja:'Patiの誕生日'},
     mesLirika:{pt:'Mês do aniversário da Lirika',en:"Lirika's birthday month",es:'Mes del cumpleaños de Lirika',id:'Bulan ulang tahun Lirika',th:'เดือนเกิดของ Lirika',ja:'Lirikaの誕生月'},
     brs48:{pt:'Aniversário do BRS48 (2015)',en:"BRS48's anniversary (2015)",es:'Aniversario de BRS48 (2015)',id:'Ulang tahun BRS48 (2015)',th:'วันครบรอบ BRS48 (2015)',ja:'BRS48 記念日（2015）'},
+    singleTsulipa:{pt:'{n} ano(s) do 1º single da TsuLiPa, “Zipper”',en:'{n} year(s) of TsuLiPa’s 1st single “Zipper”',es:'{n} año(s) del 1.er single de TsuLiPa, “Zipper”',id:'{n} tahun single pertama TsuLiPa “Zipper”',th:'{n} ปีซิงเกิลแรกของ TsuLiPa “Zipper”',ja:'TsuLiPa 1stシングル「Zipper」{n}周年'},
+    singleNebyur:{pt:'{n} ano(s) da estreia da NeByur✰, “Me Beija!”',en:'{n} year(s) since NeByur✰’s debut “Me Beija!”',es:'{n} año(s) del debut de NeByur✰, “Me Beija!”',id:'{n} tahun debut NeByur✰ “Me Beija!”',th:'{n} ปีเดบิวต์ NeByur✰ “Me Beija!”',ja:'NeByur✰デビュー「Me Beija!」{n}周年'},
     anivJog:{pt:'Aniversário de {p}',en:"{p}'s birthday",es:'Cumpleaños de {p}',id:'Ulang tahun {p}',th:'วันเกิดของ {p}',ja:'{p}の誕生日'},
     cap:{pt:'Capítulo {n} do quadrinho no Idol⭐News!',en:'Comic chapter {n} in Idol⭐News!',es:'Capítulo {n} del cómic en Idol⭐News!',id:'Bab {n} komik di Idol⭐News!',th:'การ์ตูนตอนที่ {n} ใน Idol⭐News!',ja:'Idol⭐News!のマンガ第{n}話'},
     geracao:{pt:'Mês da Draft 1st Generation (2021)',en:'Draft 1st Generation month (2021)',es:'Mes de la Draft 1st Generation (2021)',id:'Bulan Draft 1st Generation (2021)',th:'เดือน Draft 1st Generation (2021)',ja:'ドラフト1期生の月（2021）'}
@@ -83,6 +85,8 @@
     if(md === '09-05') m.push({k:'anivTsu', nome:tx(NOMES.anivTsu), ic:'bolo', cor:'#9b30d9'});
     if(md === '09-23') m.push({k:'anivPati', nome:tx(NOMES.anivPati), ic:'bolo', cor:'#4169e1'});
     if(md === '11-13') m.push({k:'brs48', nome:tx(NOMES.brs48), ic:'coroa', cor:'#ff6fb5'});
+    if(md === '01-25' && y >= 2027) m.push({k:'singleTsulipa', nome:tx(NOMES.singleTsulipa).replace('{n}', y - 2026), ic:'nota', cor:'#7b3ff0'});
+    if(md === '04-04' && y >= 2027) m.push({k:'singleNebyur', nome:tx(NOMES.singleNebyur).replace('{n}', y - 2026), ic:'nota', cor:'#4169e1'});
     // quadrinhos: um capítulo por domingo, em ordem, desde a estreia junto com o Calendário (1 em 15/11 … 6 em 20/12)
     var nc = Math.round((Date.UTC(y, +d.slice(5, 7) - 1, +d.slice(8, 10)) - Date.UTC(2026, 10, 15)) / 864e5);
     if(nc >= 0 && nc % 7 === 0 && nc / 7 < 6) m.push({k:'cap', nome:tx(NOMES.cap).replace('{n}', nc / 7 + 1), ic:'news', cor:'#ff6fb5'});

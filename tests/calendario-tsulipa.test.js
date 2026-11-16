@@ -70,3 +70,9 @@ test('aniversários dos jogadores no calendário (sem o trio, que já tem os ofi
   assert.match(priv, /aparece no Calendário do jogo para todo mundo/);
   assert.ok(!/nunca a data/.test(priv), 'privacidade não promete mais esconder a data');
 });
+
+test('lançamentos das units no calendário a partir de 2027', () => {
+  const C = carregar();
+  assert.strictEqual(C.marcas('2027-01-25').map(m => m.k).join(), 'singleTsulipa');
+  assert.strictEqual(C.marcas('2027-04-04').map(m => m.k).join(), 'singleNebyur');
+});

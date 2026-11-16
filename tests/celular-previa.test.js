@@ -193,7 +193,10 @@ test('laços: músicas que as duplas cantaram juntas (blog oficial)', () => {
   assert.match(js, /\['Underground', 'Unit Festival 2025 · Next Station'\]/, 'Lirika & Pati');
   assert.match(js, /\['Pan Pan Papa Pan', 'Sherbet Pink · B-side'\]/, 'Tsu & Lirika');
   assert.match(js, /\['Valentine Kiss', 'Want You! Want You! · TsuLiPa'\], \['Phoenix Dance'/, 'Phoenix Dance é dos três (confirmado pelo dono)');
-  assert.match(js, /musicas:\[\['Wish You Hapiness!!', 'Ano Novo 2023 · TsuLiPa'\]/, 'Wish You Hapiness!! só Tsu & Pati');
+  assert.match(js, /\['Wish You Hapiness!!', 'Ano Novo 2023 · TsuLiPa'\]/, 'Wish You Hapiness!! só Tsu & Pati');
+  assert.match(js, /\['Wagamama na Nagareboshi', 'TsuLiPa · 1st Single Zipper \(2026\)'\]/, 'Tsu & Lirika no 1st Single');
+  assert.match(js, /\['Samishii Nettaigyo \(Wink\)', 'TsuLiPa · 1st Single Zipper \(2026\)'\]/, 'Lirika & Pati no 1st Single');
+  assert.match(js, /\['Me Beija!', 'NeByur✰ · 1st Single \(04\/04\/2026\)'\]/, 'NeByur✰');
   assert.match(js, /tot = lc\.musicas\.length \+ \(duo \? trio\.length : 0\)/, 'total da dupla inclui as músicas do trio');
   assert.match(js, /alvoX\[lacoM\.par\[0\]\] = 235/, 'na dupla, os dois vão para o centro e o terceiro sai de cena');
   assert.ok(!/fita brilhante entre os dois/.test(js), 'sem a fita e os ♥ de texto na dupla');

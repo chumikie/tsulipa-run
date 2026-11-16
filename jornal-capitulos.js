@@ -124,7 +124,7 @@ function jnT1ObjetoDesenhar(canvas,episodio,quadro){
  var W=canvas.width,H=canvas.height,esc=Math.min(W/480,H/320);
  c.save(); c.translate(W-91*esc,H-89*esc);c.scale(esc,esc);
  c.fillStyle='rgba(255,250,255,.94)';c.strokeStyle='#6d478b';c.lineWidth=2;
- c.beginPath();c.roundRect(0,0,80,76,12);c.fill();c.stroke();
+ c.beginPath();c.moveTo(12,0);c.arcTo(80,0,80,76,12);c.arcTo(80,76,0,76,12);c.arcTo(0,76,0,0,12);c.arcTo(0,0,80,0,12);c.closePath();c.fill();c.stroke();
  c.translate(14,11);c.lineJoin='round';c.lineCap='round';
  if(tipo==='carta'){
   c.fillStyle='#fff1d2';c.strokeStyle='#8e639f';c.lineWidth=2;
@@ -149,7 +149,7 @@ function jnT1ObjetoDesenhar(canvas,episodio,quadro){
   c.fillStyle='#b688ec';c.beginPath();c.arc(42,16,4,0,Math.PI*2);c.fill();
  }else if(tipo==='gravador'){
   c.fillStyle='#b9bad7';c.strokeStyle='#54516e';
-  c.beginPath();c.roundRect(1,12,54,39,6);c.fill();c.stroke();
+  c.beginPath();c.moveTo(7,12);c.arcTo(55,12,55,51,6);c.arcTo(55,51,1,51,6);c.arcTo(1,51,1,12,6);c.arcTo(1,12,55,12,6);c.closePath();c.fill();c.stroke();
   c.fillStyle='#fff';c.fillRect(7,17,42,14);
   c.fillStyle='#706d94';c.beginPath();c.arc(15,24,5,0,Math.PI*2);c.arc(40,24,5,0,Math.PI*2);c.fill();
   c.fillStyle='#ff80a5';c.beginPath();c.arc(28,43,4,0,Math.PI*2);c.fill();

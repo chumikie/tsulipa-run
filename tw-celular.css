@@ -347,7 +347,7 @@ body.tw-cel .tw-window-overlay>.panel.tw-window-surface{width:100%!important;max
 .twc-abre-vitrine{width:min(100%,560px);margin:4px 0 14px}
 .twc-abre-vitrine:empty{display:none}
 .twc-abre-vitrine .hubidols{margin:0!important;visibility:visible}
-.twc-abre-vitrine .hubidols #hubIdolsCv{display:block;width:100%;height:clamp(150px,24vh,200px)}
+.twc-abre-vitrine .hubidols #hubIdolsCv{display:block;width:100%;height:clamp(110px,16vh,148px)}   /* mesma proporção do clássico: cabem mais Idols */
 /* TsuLiPa⭐TV! dentro do celular: entre as barras, maior e sem o véu escuro por cima de tudo */
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal{z-index:45;padding:calc(84px + env(safe-area-inset-top)) 14px calc(100px + env(safe-area-inset-bottom));background:rgba(123,63,240,.18)}
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,400px)}
@@ -772,3 +772,51 @@ body.tw-cel .twc .twc-diam::after{content:"✦";position:absolute;inset:0;displa
 body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(--twc-f1));border-color:#fff}
 /* auditoria 16/11: descrições dos jogos em até 2 linhas (antes cortavam em 1, sobretudo em japonês) */
 .twc .twc-linha-txt small,.twc .twc-jogo-txt small,.twc .twc-destaque-txt small{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+/* Fichinhas 16/11: botão com os três rostinhos e página em abas (uma Idol por vez) */
+.twc .twc-fichas-chip{gap:7px;padding:4px 14px 4px 5px;font-size:13px;background:linear-gradient(120deg,#ff7fbf,#c2367f 70%,#9b30d9);box-shadow:0 4px 0 rgba(120,30,90,.3),0 8px 18px rgba(194,54,127,.3),inset 0 2px 0 rgba(255,255,255,.35)}
+.twc-fichas-rostos{display:inline-flex}
+.twc-fichas-rostos canvas{width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--fc),0 0 0 3.5px #fff}
+.twc-fichas-rostos canvas+canvas{margin-left:-8px}
+.twc-trio-abas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+.twc .twc-trio-aba{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px 9px;border-radius:20px;border:2px solid var(--twc-borda,#e9dcff);background:#fff;color:#3c2a6a;font:inherit;cursor:pointer;
+  box-shadow:0 3px 0 rgba(90,40,160,.12);transition:transform .12s}
+.twc .twc-trio-aba canvas{width:52px;height:52px;border-radius:50%;background:#f3e9ff;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--fc)}
+.twc .twc-trio-aba b{font:800 12.5px "M PLUS Rounded 1c",sans-serif;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twc .twc-trio-aba.on{background:linear-gradient(180deg,var(--fc,#ff6fb5),color-mix(in srgb,var(--fc,#ff6fb5) 70%,#2a1060));color:#fff;border-color:#fff;transform:translateY(-2px);box-shadow:0 5px 0 color-mix(in srgb,var(--fc,#ff6fb5) 55%,#2a1060)}
+.twc-trio-aba-ic{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#ff9cc9,#ff4f9a);color:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #ff6fb5}
+.twc-f2{position:relative;overflow:hidden;border-radius:28px;background:#fff;border:3px solid #fff;box-shadow:0 6px 0 color-mix(in srgb,var(--fc) 30%,transparent),0 12px 26px rgba(60,20,110,.16)}
+.twc-f2-palco{position:relative;display:flex;align-items:flex-end;gap:6px;min-height:190px;padding:12px 14px 0;overflow:hidden;
+  background:radial-gradient(circle at 25% 85%,rgba(255,255,255,.55),transparent 45%),repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 12px,transparent 12px 24px),linear-gradient(160deg,color-mix(in srgb,var(--fc) 70%,#fff),var(--fc) 60%,color-mix(in srgb,var(--fc) 70%,#1d0c40))}
+.twc-f2-luz{position:absolute;left:-10%;top:-40%;width:60%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:rotate(18deg);pointer-events:none}
+.twc-f2-palco .twc-ficha-idol{position:relative;width:148px;height:160px;flex:none;filter:drop-shadow(0 6px 6px rgba(20,5,50,.3))}
+.twc-f2-pet{position:absolute;left:118px;bottom:8px;width:56px;height:56px;filter:drop-shadow(0 3px 3px rgba(20,5,50,.3))}
+.twc-f2-nome{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0 0 16px;color:#fff;min-width:0}
+.twc-f2-nome small{padding:2px 9px;border-radius:99px;background:rgba(255,255,255,.25);font:800 10.5px "M PLUS Rounded 1c",sans-serif;letter-spacing:.03em}
+.twc-f2-nome h2{margin:2px 0 0;font:400 34px/1 "Mochiy Pop One",sans-serif;color:#fff;text-shadow:0 3px 0 rgba(20,5,50,.25)}
+.twc-f2-nome b{font:800 14px "M PLUS Rounded 1c",sans-serif;opacity:.95}
+.twc-f2-nome span{font:700 12px "M PLUS Rounded 1c",sans-serif;opacity:.9}
+.twc-f2-nome em{margin-top:4px;padding:3px 10px;border-radius:99px;background:#fff;color:var(--fc);font:800 11.5px "M PLUS Rounded 1c",sans-serif;font-style:normal}
+.twc-f2-fala{display:flex;align-items:center;gap:10px;margin:14px 14px 0}
+.twc-f2-fala blockquote{position:relative;flex:1;margin:0;padding:11px 14px;border-radius:6px 18px 18px 18px;background:color-mix(in srgb,var(--fc) 12%,#fff);color:#3c2a6a;font:800 13.5px/1.45 "M PLUS Rounded 1c",sans-serif;border:2px solid color-mix(in srgb,var(--fc) 35%,#fff)}
+.twc .twc-f2-voz{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:58px;padding:8px 4px;border-radius:16px;border:2px solid #fff;background:var(--fc);color:#fff;font:800 11px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--fc) 55%,#1d0c40)}
+.twc .twc-f2-voz.fala{animation:twcF2Voz .5s ease}
+@keyframes twcF2Voz{30%{transform:scale(1.12) rotate(-4deg)}60%{transform:scale(.96) rotate(3deg)}}
+.twc-f2-grade{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px;padding:0}
+.twc-f2-bloco{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:10px 11px;border-radius:16px;background:color-mix(in srgb,var(--fc) 8%,#fff);border:2px solid color-mix(in srgb,var(--fc) 18%,#fff)}
+.twc-f2-ic{grid-row:1/3;display:grid;place-items:center;width:32px;height:32px;border-radius:11px;background:var(--fc);color:#fff}
+.twc-f2-bloco dt{font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-f2-bloco dd{margin:0;display:flex;align-items:center;gap:5px;font:800 13.5px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a;min-width:0;overflow-wrap:anywhere}
+.twc-f2-gosta{margin:0 14px 12px}
+.twc-f2-gosta h3{display:flex;align-items:center;gap:6px;margin:0 0 8px;font:800 13px "M PLUS Rounded 1c",sans-serif;color:var(--fc)}
+.twc-f2-gosta ul{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.twc-f2-gosta li{padding:6px 11px;border-radius:99px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 35%,#fff);color:#3c2a6a;font:800 12.5px "M PLUS Rounded 1c",sans-serif}
+.twc-f2 .twc-ficha-blog{margin:0 14px 14px;display:flex;justify-content:center}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-trio-aba:not(.on){background:#2a2045;color:#efe6ff;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-f2{background:#221838;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-f2-fala blockquote{background:color-mix(in srgb,var(--fc) 20%,#221838);color:#efe6ff;border-color:color-mix(in srgb,var(--fc) 45%,#221838)}
+  :root:not([data-theme="light"]) .twc-f2-bloco{background:color-mix(in srgb,var(--fc) 14%,#221838);border-color:color-mix(in srgb,var(--fc) 30%,#221838)}
+  :root:not([data-theme="light"]) .twc-f2-bloco dd{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-f2-gosta li{background:#2a2045;color:#efe6ff}
+}
+@media (max-width:360px){.twc-f2-palco .twc-ficha-idol{width:120px;height:130px}.twc-f2-pet{left:94px;width:46px;height:46px}.twc-f2-nome h2{font-size:28px}.twc-f2-grade{grid-template-columns:1fr}}

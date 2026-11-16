@@ -221,7 +221,9 @@
       '<h1 class="hublogo twc-hublogo" translate="no" aria-label="TsuLiPa World">' + (logo ? logo.innerHTML : 'TsuLiPa⭐World') + '</h1>' +
       (tema && !tema.hidden && tema.textContent ? '<p class="twc-tema">' + esc(tema.textContent) + '</p>' : '') +
       '<div class="twc-palco-moldura"><canvas id="twcPalcoCv" width="640" height="340" role="img" aria-label="' + esc(rot) + '"></canvas>' +
-      '<button type="button" class="twc-fichas-chip" data-v="trio">♡ ' + esc(tf('fichas')) + '</button>' +
+      '<button type="button" class="twc-fichas-chip" data-v="trio"><span class="twc-fichas-rostos" aria-hidden="true">' +
+        [0, 1, 2].map(function(k){ return '<canvas data-membro="' + k + '" width="64" height="64" style="--fc:' + FICHAS[k].cor[0] + '"></canvas>'; }).join('') +
+        '</span><span>' + esc(tf('fichas')) + '</span></button>' +
       // quem passeia no mapa agora vira um selinho no canto do palco (com a bolinha do membro)
       '<button type="button" class="twc-selo" data-a="mapa">' + (v ? '<canvas class="twc-bola-mini" data-membro="' + v.k + '" width="64" height="64" aria-hidden="true"></canvas>' : '<i class="twc-vivo" aria-hidden="true"></i>') +
       '<span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 16) + '</button></div></section>';
@@ -365,8 +367,9 @@
     if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
-    var at = [['missoes', t('mis'), 'data-a="missoes"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
-              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['cal', tc('cal'), 'data-v="cal"'], ['pata', tt2('tour'), 'data-v="tour"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
+    // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
+              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
@@ -926,6 +929,8 @@
     cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
     gosta:{pt:'Gosta de',en:'Likes',es:'Le gusta',id:'Suka',th:'ชอบ',ja:'すきなもの'},
     pet:{pt:'Pet',en:'Pet',es:'Mascota',id:'Hewan',th:'สัตว์เลี้ยง',ja:'ペット'},
+    amizades:{pt:'Amizades',en:'Friendship',es:'Amistades',id:'Persahabatan',th:'มิตรภาพ',ja:'なかよし'},
+    ouvir:{pt:'Ouvir',en:'Listen',es:'Escuchar',id:'Dengar',th:'ฟัง',ja:'きく'},
     blog:{pt:'Perfil no blog oficial',en:'Profile on the official blog',es:'Perfil en el blog oficial',id:'Profil di blog resmi',th:'โปรไฟล์ในบล็อกทางการ',ja:'公式ブログのプロフィール'},
     mapaAmigos:{pt:'Mapa de amizades',en:'Friendship map',es:'Mapa de amistades',id:'Peta pertemanan',th:'แผนผังมิตรภาพ',ja:'なかよしマップ'},
     unitTrio:{pt:'unit TsuLiPa',en:'TsuLiPa unit',es:'unit TsuLiPa',id:'unit TsuLiPa',th:'ยูนิต TsuLiPa',ja:'ユニットTsuLiPa'},
@@ -934,28 +939,40 @@
     toque:{pt:'Toque no Tsu, na Lirika, no Pati ou nos pets',en:'Tap Tsu, Lirika, Pati or the pets',es:'Toca a Tsu, Lirika, Pati o las mascotas',id:'Ketuk Tsu, Lirika, Pati, atau hewannya',th:'แตะ Tsu, Lirika, Pati หรือสัตว์เลี้ยง',ja:'Tsu・Lirika・Patiやペットをタップしてね'}
   };
   function tf(k){ var d = TF[k]; return d ? (d[L()] || d.pt) : k; }
+  // Fichinhas em abas (uma Idol por vez, sem rolar 2.500px): foto de cada um no topo, palco com o boneco e o pet,
+  // dados em blocos, "gosta de" em chips, a frase oficial em balão com a voz de verdade, e o mapa de amizades numa aba própria.
+  var trioAba = 0;
   function telaTrio(){
-    var cards = FICHAS.map(function(f){
-      var m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
-      var lin = function(ic, r, v, extra){ return v ? '<div class="twc-ficha-l"><span class="twc-ficha-ic" aria-hidden="true">' + ico(ic, 16) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
-      return '<article class="twc-ficha" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '">' +
-        '<header class="twc-ficha-topo"><span class="twc-ficha-luz" aria-hidden="true"></span><canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
-          '<span class="twc-ficha-nome"><small class="twc-ficha-gen">Draft 1st Generation</small><h2 id="twcF' + f.k + '" translate="no">' + esc(m[1]) + '</h2>' +
-          '<b lang="ja">' + esc(f.jp) + '</b><span class="twc-ficha-real" translate="no">' + esc(f.nome) + '</span>' +
-          '<span class="twc-ficha-chips"><em>' + esc(f.time) + '</em></span></span></header>' +
-        '<dl class="twc-ficha-dados">' + lin('bolo', 'aniv', esc(aniv)) + lin('pin', 'local', esc(f.local)) + lin('regua', 'altura', esc(f.altura)) +
-          lin('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') +
-          lin('pata', 'pet', esc(f.pet[1]), '<canvas class="twc-ficha-pet" data-pet="' + MEMBROS[f.k][0] + '" width="72" height="72" aria-hidden="true"></canvas>') +
-          lin('coracao', 'gosta', esc(f.gostos[L()] || f.gostos.pt)) + '</dl>' +
-        '<blockquote class="twc-ficha-frase" lang="pt"><span aria-hidden="true">' + ico('aspas', 18) + '</span>' + esc(f.frase) + '</blockquote>' +
+    var abas = MEMBROS.map(function(m, k){
+      return '<button type="button" role="tab" class="twc-trio-aba' + (trioAba === k ? ' on' : '') + '" data-trioaba="' + k + '" aria-selected="' + (trioAba === k) + '" style="--fc:' + FICHAS[k].cor[0] + '">' +
+        '<canvas data-membro="' + k + '" width="96" height="96" aria-hidden="true"></canvas><b translate="no">' + esc(m[1]) + '</b></button>';
+    }).join('') + '<button type="button" role="tab" class="twc-trio-aba twc-trio-aba-amigos' + (trioAba === 3 ? ' on' : '') + '" data-trioaba="3" aria-selected="' + (trioAba === 3) + '">' +
+      '<span class="twc-trio-aba-ic" aria-hidden="true">' + ico('coracao', 26) + '</span><b>' + esc(tf('amizades')) + '</b></button>';
+    var corpo;
+    if(trioAba === 3){
+      corpo = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
+        '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="480" role="img" aria-label="' +
+          esc(tf('mapaAmigos') + ': ' + tf('mesmaGeracao') + ' · ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div>' +
+        '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
+        '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
+    } else {
+      var f = FICHAS[trioAba], m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
+      var bloco = function(ic, r, v, extra){ return v ? '<div class="twc-f2-bloco"><span class="twc-f2-ic" aria-hidden="true">' + ico(ic, 18) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
+      var gostos = String(f.gostos[L()] || f.gostos.pt).split(/,\s*|\s+e\s+|\s+and\s+|\s+y\s+|\s+dan\s+|、/).filter(Boolean);
+      corpo = '<article class="twc-f2" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '" role="tabpanel">' +
+        '<header class="twc-f2-palco"><span class="twc-f2-luz" aria-hidden="true"></span>' +
+          '<canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
+          '<canvas class="twc-ficha-pet twc-f2-pet" data-pet="' + m[0] + '" width="72" height="72" aria-hidden="true"></canvas>' +
+          '<div class="twc-f2-nome"><small>Draft 1st Generation</small><h2 id="twcF' + f.k + '" translate="no">' + esc(m[1]) + '</h2>' +
+            '<b lang="ja">' + esc(f.jp) + '</b><span translate="no">' + esc(f.nome) + '</span><em>' + esc(f.time) + '</em></div></header>' +
+        '<div class="twc-f2-fala"><blockquote lang="pt">' + esc(f.frase) + '</blockquote>' +
+          '<button type="button" class="twc-f2-voz" data-triovoz="' + f.k + '" aria-label="' + esc(tf('ouvir')) + '">' + ico('fala', 18) + '<span>' + esc(tf('ouvir')) + '</span></button></div>' +
+        '<dl class="twc-f2-grade">' + bloco('bolo', 'aniv', esc(aniv)) + bloco('pin', 'local', esc(f.local)) + bloco('regua', 'altura', esc(f.altura)) +
+          bloco('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') + bloco('pata', 'pet', esc(f.pet[1])) + '</dl>' +
+        '<section class="twc-f2-gosta"><h3>' + ico('coracao', 16) + esc(tf('gosta')) + '</h3><ul>' + gostos.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></section>' +
         '<a class="twc-btn twc-btn-claro twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
-    }).join('');
-    var mapa = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
-      '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="480" role="img" aria-label="' +
-        esc(tf('mapaAmigos') + ': ' + tf('mesmaGeracao') + ' · ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div>' +
-      '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
-      '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
-    return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio">' + mapa + '<div class="twc-fichas">' + cards + '</div></div>';
+    }
+    return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio"><div class="twc-trio-abas" role="tablist" aria-label="' + esc(tf('trio')) + '">' + abas + '</div>' + corpo + '</div>';
   }
   // mapa de amizades desenhado com os bonecos e os pets de verdade do jogo (perfDesenharIdol + drawPet).
   // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByura.
@@ -1254,6 +1271,8 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
+    if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
@@ -1332,6 +1351,8 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
+    if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }

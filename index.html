@@ -167,7 +167,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=40">
+<link rel="stylesheet" href="./hub-polish.css?v=41">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=4"><'+'/script>');</script>
 </head>
@@ -405,7 +405,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=21"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=31"></script>
+<script src="./pet.js?v=32"></script>
 <script src="./perfil.js?v=19"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
@@ -448,7 +448,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./hub.js?v=27"></script>
 <script src="./hub-layout.js?v=5"></script>
 <script src="./mapa-textos.js?v=3"></script>
-<script src="./tw-mapa.js?v=59"></script>
+<script src="./tw-mapa.js?v=60"></script>
 <script src="./bloom.js?v=8"></script>
 <script src="./shop.js?v=6"></script>
 <script src="./jornal.js?v=16"></script>
@@ -484,12 +484,12 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 (function(){var k='brs48cr_celular',q=null,on=false;try{q=new URLSearchParams(location.search).get('celular');}catch(e){}
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.removeItem(k);on=localStorage.getItem(k)==='1';}catch(e){on=q==='1';}
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=20"><script src="./tw-humor.js?v=3"><'+'/script><script src="./tw-calendario.js?v=1"><'+'/script><script src="./tw-celular.js?v=19"><'+'/script><script src="./tw-presenca.js?v=1"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=20"><script src="./tw-humor.js?v=3"><'+'/script><script src="./tw-calendario.js?v=2"><'+'/script><script src="./tw-celular.js?v=20"><'+'/script><script src="./tw-presenca.js?v=1"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
   var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=20';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=3';hm.async=false;document.body.appendChild(hm);
-  var ca=document.createElement('script');ca.src='./tw-calendario.js?v=1';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=19';s.async=false;document.body.appendChild(s);
+  var ca=document.createElement('script');ca.src='./tw-calendario.js?v=2';ca.async=false;document.body.appendChild(ca);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=20';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=1';document.body.appendChild(p);}
 var TX={pt:'📱 Visual novo (prévia)',en:'📱 New look (preview)',es:'📱 Estilo nuevo (vista previa)',id:'📱 Tampilan baru (pratinjau)',th:'📱 หน้าตาใหม่ (ทดลอง)',ja:'📱 新しい表示（お試し）'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;

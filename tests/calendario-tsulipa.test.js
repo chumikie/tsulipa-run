@@ -50,6 +50,6 @@ test('o celular mostra o calendário e o card do dia', () => {
   assert.match(js, /function telaCal\(\)/);
   assert.match(js, /function calHojeHtml\(\)/);
   assert.match(js, /v === 'cal' \? telaCal\(\)/);
-  assert.match(js, /\['cal', tc\('cal'\), 'data-v="cal"'\]/);
+  assert.match(js, /porta\('cal', 'cal', tc\('cal'\)/, 'calendário tem porta no Início (o Menu não repete)');
   assert.ok(!/telaPais|data-v="pais"/.test(js), 'sem Cantinho dos pais');
 });

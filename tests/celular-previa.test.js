@@ -58,7 +58,7 @@ test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca most
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
   assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
-  assert.match(html, /tw-mapa\.js\?v=59/);
+  assert.match(html, /tw-mapa\.js\?v=\d+/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {
@@ -115,7 +115,7 @@ test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV 
   assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
   assert.match(hub, /hubIV\.L = trio\.concat\(/);
   assert.match(hub, /trio = !L\.length && typeof window\.twcTrioVitrine/, 'os bonecos do trio só entram sem lista (sem duplicar as contas deles)');
-  assert.match(hub, /\['tsu', 'lirika', 'patiliri'\]\.indexOf\(/, 'as contas oficiais do trio desfilam juntas na frente');
+  assert.ok(!/\['tsu', 'lirika', 'patiliri'\]\.indexOf\(/.test(hub), 'vitrine na ordem sorteada do servidor, como no clássico (o trio não fica sempre na frente)');
   assert.match(hub, /if\(!p\.trio && !window\.TW_CELULAR_LIGADO\)\{[^}]*'★ ' \+ p\.best/, 'sem pontuação no visual de celular');
   assert.match(js, /Date\.now\(\) - idolsPedido > 60e3/, 'não entra em laço pedindo a vitrine');
   assert.match(js, /'\.tw-window-overlay,#twRankTvModal'/, 'a TsuLiPa⭐TV! ganha a moldura');
@@ -165,7 +165,9 @@ test('rodada 11 (refino): mapa de amizades e fichas com os bonecos e pets de ver
   assert.match(trio, /hubVozTocar\(f\[0\]\)/, 'tocar num membro toca a voz de verdade');
   assert.match(trio, /petVoice\(null, MEMBROS\[k\]\[0\]\)/, 'tocar num pet faz o som dele');
   assert.match(trio, /perfDesenharIdol\(x, 104, 112, a2/, 'o trio de corpo inteiro no mapa');
-  assert.match(trio, /canvas class="twc-ficha-pet" data-pet=/, 'pet desenhado também na ficha');
+  assert.match(trio, /canvas class="twc-ficha-pet[^"]*" data-pet=/, 'pet desenhado também na ficha');
+  assert.match(trio, /data-trioaba="' \+ k \+ '"/, 'fichinhas em abas, uma Idol por vez');
+  assert.match(js, /if\(b\.dataset\.triovoz != null\)/, 'botão Ouvir toca a voz de verdade');
   assert.ok(!/['"](🐈|🐨|👑)['"]/.test(trio), 'sem emoji de pet');
   const humor = js.slice(js.indexOf('  function humorHtml(){'), js.indexOf('  function desejoIco('));
   assert.ok(!/[👑🔥]/u.test(humor), 'humor e VIP com ícones desenhados');

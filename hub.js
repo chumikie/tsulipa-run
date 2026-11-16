@@ -1378,12 +1378,8 @@ function hubIdolsTituloUI(){
 function hubIdolsUI(){
   var box = $('hubIdols'); if(!box) return;
   var L = hubIdolsDados ? hubIdolsDados.idols.filter(function(p){ return p && p.nick && p.avatar; }) : [];
-  // No visual de celular, as contas do Tsu, da Lirika e do Pati desfilam juntas na frente da fila.
+  // Ordem como no visual clássico: a que o servidor manda (sorteada), sem fixar o trio na frente.
   // Os bonecos do trio só entram quando a lista não carrega (assim ninguém aparece duas vezes).
-  if(window.TW_CELULAR_LIGADO && L.length){
-    var ordemTrio = function(p){ var n = ['tsu', 'lirika', 'patiliri'].indexOf(String(p.nick || '').trim().toLowerCase()); return n < 0 ? 9 : n; };   // contas oficiais do trio
-    L = L.map(function(p, i){ return [ordemTrio(p), i, p]; }).sort(function(a, b){ return a[0] - b[0] || a[1] - b[1]; }).map(function(x){ return x[2]; });
-  }
   var trio = [];
   try{ trio = !L.length && typeof window.twcTrioVitrine === 'function' ? window.twcTrioVitrine() || [] : []; }catch(e){ trio = []; }
   if(!L.length && !trio.length){ box.hidden = true; hubIdolsParar(); return; }

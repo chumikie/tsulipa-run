@@ -69,7 +69,7 @@
   function abrir(){
     if(typeof contaJ === 'undefined' || !contaJ){ if(typeof contaEntrar === 'function') contaEntrar(); return; }
     montarOv(); ov.hidden = false; msg = ''; escolha = -1; ui();
-    rpc('jardim_estado').then(function(r){ if(r && r.ok){ st = r; window.TW_BLOOM_ON = true; } ui(); }).catch(function(){ msg = t('erro'); ui(); });
+    rpc('jardim_estado').then(function(r){ if(r && r.ok){ st = r; window.TW_BLOOM_ON = true; } else msg = t('erro'); ui(); }).catch(function(){ msg = t('erro'); ui(); });   // resposta sem ok não fica em "Carregando..." para sempre
     laco();
   }
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} }
@@ -140,7 +140,7 @@
     if(!ov) return;
     ov.querySelector('#bloomTit').textContent = t('tit');
     var corpo = ov.querySelector('#bloomCorpo'), dis = ocupado ? ' disabled' : '';
-    if(!st){ corpo.innerHTML = '<p class="perfcarr">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>' + (msg ? '<p class="bloommsg">' + esc(msg) + '</p>' : ''); desenhar(); return; }
+    if(!st){ corpo.innerHTML = (msg ? '' : '<p class="perfcarr">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>') + (msg ? '<p class="bloommsg">' + esc(msg) + '</p>' : ''); desenhar(); return; }
     var h = '<div class="bloomtopo"><p class="bloomsub">' + esc(t('sub')) + '</p><span class="bloomstar" aria-label="★ ' + (+st.stars || 0) + '">★ ' + (+st.stars || 0) + '</span></div>';
     if(msg) h += '<p class="bloommsg" aria-live="polite">' + esc(msg) + '</p>';
     if(escolha >= 0 && !canteiro(escolha)){

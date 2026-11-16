@@ -19,7 +19,8 @@ function perfAniverHtml(d){
   for(var i = 1; i <= 31; i++) dias += '<option value="' + i + '"' + (+a[1] === i ? ' selected' : '') + '>' + i + '</option>';
   PERF_MESES.forEach(function(m, i){ meses += '<option value="' + (i + 1) + '"' + (+a[0] === i + 1 ? ' selected' : '') + '>' + escHtml(tr(m)) + '</option>'; });
   return '<label>🎂 ' + escHtml(tr('Aniversário')) + ' <span class="perfaniv-sel"><select id="perfAnivDia"' + (trava ? ' disabled' : '') + '>' + dias + '</select><select id="perfAnivMes"' + (trava ? ' disabled' : '') + '>' + meses + '</select></span></label>' +
-    '<small class="perfaniv-nota">' + escHtml(tr(trava ? 'Dá para trocar de novo em {data}.' : 'Só dia e mês, sem o ano. No seu dia, seu perfil vira festa! Dá para trocar 1 vez por ano.')).replace('{data}', escHtml(perfData(d.aniver_livre))) + '</small>';
+    '<small class="perfaniv-nota">' + escHtml(tr(trava ? 'Dá para trocar de novo em {data}.' : 'Só dia e mês, sem o ano. No seu dia, seu perfil vira festa! Dá para trocar 1 vez por ano.')).replace('{data}', escHtml(perfData(d.aniver_livre))) +
+      ' ' + escHtml(({pt:'O dia aparece no Calendário do jogo para todo mundo.',en:'The day shows in the game Calendar for everyone.',es:'El día aparece en el Calendario del juego para todos.',id:'Tanggalnya tampil di Kalender game untuk semua orang.',th:'วันนี้จะแสดงในปฏิทินของเกมให้ทุกคนเห็น',ja:'日付はゲームのカレンダーにみんなに表示されます。'})[typeof LANG === 'string' ? LANG : 'pt'] || '') + '</small>';
 }
 //←perfMontar
 function perfMontar(){

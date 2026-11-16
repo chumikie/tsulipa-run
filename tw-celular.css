@@ -312,6 +312,8 @@ body.tw-cel #hubTut{display:none!important}
 
 /* menu do Center⭐Run! e salão do Karaoke⭐Time! dentro da moldura (as barras saem ao correr ou cantar) */
 body.tw-cel-cr #menu{padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(100px + env(safe-area-inset-bottom))!important;align-items:flex-start!important}
+/* no celular o idioma fica nos Ajustes: a tela do Center⭐Run sobe e o JOGAR aparece sem rolar */
+body.tw-cel-cr #menu .lang,body.tw-cel-cr #menu .kaomoji-deco{display:none!important}
 body.tw-cel-cr #hubVolta,body.tw-cel-kt #twPreviewVoltar{display:none!important}
 body.tw-cel-kt #twPreviewJogo{padding-top:calc(76px + env(safe-area-inset-top))!important;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;box-sizing:border-box}
 body.tw-cel-kt #twPreviewHeaderSlot{display:none!important}   /* o logo do site não se repete dentro da sala */
@@ -347,7 +349,7 @@ body.tw-cel .tw-window-overlay>.panel.tw-window-surface{width:100%!important;max
 .twc-abre-vitrine{width:min(100%,560px);margin:4px 0 14px}
 .twc-abre-vitrine:empty{display:none}
 .twc-abre-vitrine .hubidols{margin:0!important;visibility:visible}
-.twc-abre-vitrine .hubidols #hubIdolsCv{display:block;width:100%;height:clamp(150px,24vh,200px)}
+.twc-abre-vitrine .hubidols #hubIdolsCv{display:block;width:100%;height:clamp(110px,16vh,148px)}   /* mesma proporção do clássico: cabem mais Idols */
 /* TsuLiPa⭐TV! dentro do celular: entre as barras, maior e sem o véu escuro por cima de tudo */
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal{z-index:45;padding:calc(84px + env(safe-area-inset-top)) 14px calc(100px + env(safe-area-inset-bottom));background:rgba(123,63,240,.18)}
 body.tw-cel:not(.tw-cel-classico) #hub .tw-rank-tv-modal .tw-rank-tv{width:min(100%,400px)}
@@ -612,3 +614,297 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-folha-op b{font:800 15px "M PLUS Rounded 1c",sans-serif}
 .twc-folha-op small{font:700 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
 .twc-folha-op>svg{color:var(--twc-roxo)}
+
+/* Auditoria mobile A1: legibilidade e alvos de toque, sem alterar a abertura ou o Canvas. */
+@media (max-width:699px){
+  .twc-app-nome{font-size:13px;line-height:1.25}
+  .twc-porta-txt small{font-size:13px;line-height:1.4}
+  .twc .twc-calnav{width:44px;height:44px}
+  .twc .twc-folha-op{min-height:48px;box-sizing:border-box}
+}
+@media (prefers-reduced-motion:reduce){
+  .twc-fl,.twc-brilho,.twc-vivo,.twc-dot{animation:none!important}
+}
+
+/* Auditoria mobile A2: hierarquia visual e alinhamento, sem tocar na abertura. */
+@media (max-width:699px){
+  .twc-topo-in{gap:6px;padding-inline:10px}
+  .twc-eu{min-width:0;padding-right:8px;gap:7px}
+  .twc-eu-txt{flex:1;min-width:0}
+  .twc-st{min-width:0;max-width:38vw;box-sizing:border-box}
+  .twc-st b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .twc-nav-b{min-width:0;padding-inline:4px;font-size:12px}
+  .twc-nav-meio{flex:none;width:84px}
+  .twc-card,.twc .twc-porta{min-width:0;box-sizing:border-box}
+  .twc .twc-porta-txt{width:100%;overflow-wrap:anywhere}
+  body.tw-cel .tw-window-overlay .tw-window-close{min-width:44px;min-height:44px;box-sizing:border-box}
+}
+
+/* Auditoria A3: janelas legíveis e roláveis em telas estreitas. Mantém o overlay como área de rolagem. */
+@media (max-width:760px){
+  body.tw-cel .tw-window-overlay:not([hidden]){box-sizing:border-box;min-width:0;overscroll-behavior-y:contain}
+  body.tw-cel .tw-window-overlay>.panel.tw-window-surface{min-width:0;box-sizing:border-box}
+  body.tw-cel .tw-window-overlay .tw-modal-title,
+  body.tw-cel .tw-window-overlay .tw-window-title{overflow-wrap:anywhere}
+  body.tw-cel .tw-window-overlay .tw-window-close{flex-shrink:0}
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-title{color:#e6d6ff!important;text-shadow:none!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay .tw-window-close{background:#2a1d4a!important;color:#f3e8ff!important;border-color:#685394!important;box-shadow:0 3px 0 #140b2e!important}
+}
+
+/* Auditoria A4: contraste de textos das portas no modo escuro.
+   A regra base usa roxo escuro (#5a2bc4) mesmo sobre o cartão escuro. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-porta-txt b{color:#f0e5ff}
+  :root:not([data-theme="light"]) .twc .twc-porta-txt small{color:#d1bdf4}
+}
+
+/* Auditoria A5-Oshi: seleção acompanha o tema; contraste preservado no escuro. */
+.twc .twc-chips button[aria-pressed="true"]{background:var(--twc-f1);border-color:var(--twc-f2);color:#fff!important;box-shadow:0 3px 0 color-mix(in srgb,var(--twc-f1) 65%,#1a1033)}
+.twc .twc-nav-b[aria-current="page"]{color:var(--twc-f1)!important}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-chips button[aria-pressed="true"]{background:var(--twc-f1);border-color:var(--twc-f2);color:#fff!important}
+  :root:not([data-theme="light"]) .twc .twc-nav-b[aria-current="page"]{color:#f3e8ff!important;text-decoration:underline;text-decoration-color:var(--twc-f2);text-underline-offset:4px}
+}
+
+/* A6 — tema completo do Oshi, apenas no visual mobile; sem alterar Canvas ou saves.
+   Padrão azul-noite; as demais paletas acompanham data-oshi existente. */
+body.tw-cel{--osh-bg:#e8edf9;--osh-paper:#f8faff;--osh-line:#c5d3ec;--osh-ink:#1c3157;--osh-sub:#415a7c;--osh-night:#101d37;--osh-night-paper:#1b2d4b;--osh-night-line:#3b547a;--osh-night-ink:#e6f0ff;--osh-night-sub:#c1d2ec}
+:root[data-oshi="tsu"] body.tw-cel{--osh-bg:#f0e7ff;--osh-paper:#fdfaff;--osh-line:#dcc8fa;--osh-ink:#3e2465;--osh-sub:#665084;--osh-night:#1d1238;--osh-night-paper:#2a1d4a;--osh-night-line:#584078;--osh-night-ink:#f3e8ff;--osh-night-sub:#d5c3ef}
+:root[data-oshi="lirika"] body.tw-cel{--osh-bg:#e4f5eb;--osh-paper:#f7fdf9;--osh-line:#b9dfc8;--osh-ink:#184b35;--osh-sub:#3b6b55;--osh-night:#102a24;--osh-night-paper:#1b3a30;--osh-night-line:#386a54;--osh-night-ink:#e3f8eb;--osh-night-sub:#b9dec9}
+:root[data-oshi="pati"] body.tw-cel{--osh-bg:#e5efff;--osh-paper:#f8fbff;--osh-line:#bdd2f5;--osh-ink:#183b72;--osh-sub:#45648e;--osh-night:#101f3e;--osh-night-paper:#1c3155;--osh-night-line:#395b91;--osh-night-ink:#e6efff;--osh-night-sub:#bfd4f7}
+body.tw-cel .twc{--twc-ink:var(--osh-ink);--twc-sub:var(--osh-sub);--twc-borda:var(--osh-line);--twc-sombra:var(--osh-line);--twc-roxo-e:var(--twc-f1)}
+body.tw-cel .twc-tela{background:radial-gradient(color-mix(in srgb,var(--osh-line) 35%,transparent) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,var(--osh-paper),var(--osh-bg));background-attachment:local,fixed}
+body.tw-cel .twc :is(.twc-topo,.twc-card,.twc-faixa,.twc-eu,.twc-cfg,.twc-filtros,.twc-folha-caixa){background:var(--osh-paper);border-color:var(--osh-line)}
+body.tw-cel .twc :is(.twc-apps,.twc-nav){background:color-mix(in srgb,var(--osh-paper) 90%,transparent);border-color:var(--osh-line)}
+body.tw-cel .twc :is(.twc-card h2,.twc-porta-txt b){color:var(--twc-f1)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) body.tw-cel .twc{--twc-ink:var(--osh-night-ink);--twc-sub:var(--osh-night-sub);--twc-borda:var(--osh-night-line);--twc-sombra:var(--osh-night)}
+  :root:not([data-theme="light"]) body.tw-cel .twc-tela{background:radial-gradient(rgba(255,255,255,.05) 1.2px,transparent 1.4px) 0 0/18px 18px,linear-gradient(170deg,var(--osh-night),var(--osh-night-paper))}
+  :root:not([data-theme="light"]) body.tw-cel .twc :is(.twc-topo,.twc-card,.twc-faixa,.twc-eu,.twc-cfg,.twc-filtros,.twc-folha-caixa,.twc-nav,.twc-apps){background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important}
+  :root:not([data-theme="light"]) body.tw-cel .twc :is(.twc-card h2,.twc-porta-txt b,.twc-faixa h1){color:var(--osh-night-ink)!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay:not([hidden]){background:linear-gradient(170deg,var(--osh-night),var(--osh-night-paper))!important}
+  :root:not([data-theme="light"]) body.tw-cel .tw-window-overlay>.panel.tw-window-surface{background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important}
+}
+
+/* A7 — acabamento localizado: fichas e abertura, sem afetar outros jogos. */
+body.tw-cel .twc .twc-ficha{border-radius:24px;box-shadow:0 4px 0 color-mix(in srgb,var(--fc) 35%,transparent),0 10px 22px rgba(0,0,0,.13)}
+body.tw-cel .twc .twc-ficha-dados{gap:11px;padding:16px 16px 8px}
+body.tw-cel .twc .twc-ficha-l{grid-template-columns:30px minmax(82px,32%) minmax(0,1fr);gap:9px;align-items:start}
+body.tw-cel .twc .twc-ficha-l dt{padding-top:5px}
+body.tw-cel .twc .twc-ficha-l dd{padding-top:3px;overflow-wrap:anywhere;line-height:1.45}
+body.tw-cel .twc .twc-ficha-frase{margin:12px 16px 14px}
+body.tw-cel .twc .twc-ficha-blog{display:flex;align-items:center;justify-content:center;min-height:48px;box-sizing:border-box;width:calc(100% - 32px);margin:0 16px 18px;padding:10px 14px;border-radius:16px;line-height:1.3;overflow-wrap:anywhere}
+@media (max-width:699px){
+ body.tw-cel .twc .twc-abre{padding:clamp(24px,5vh,48px) 16px;gap:8px}
+ body.tw-cel .twc .twc-logo-abre{font-size:clamp(26px,8.6vw,44px)!important;max-width:100%;line-height:1.18;white-space:nowrap}
+ body.tw-cel .twc .twc-abre .twc-hubsub{margin-bottom:8px}
+ body.tw-cel .twc .twc-abre-vitrine{margin:8px 0 14px}
+ body.tw-cel .twc .twc-fl{width:clamp(58px,17vw,86px)}
+ body.tw-cel .twc .twc-fl0{top:7%;left:5%}
+ body.tw-cel .twc .twc-fl1{top:14%;right:5%}
+ body.tw-cel .twc .twc-fl2{top:2%;left:50%;margin-left:-29px;width:clamp(50px,14vw,70px)}
+}
+@media (max-width:350px){
+ body.tw-cel .twc .twc-ficha-l{grid-template-columns:28px minmax(68px,29%) minmax(0,1fr);gap:6px;font-size:12px}
+ body.tw-cel .twc .twc-ficha-dados{padding-inline:10px}
+ body.tw-cel .twc .twc-logo-abre{font-size:clamp(24px,8vw,32px)!important}
+}
+
+/* A8.1 — apresentação do mapa de amizades; canvas e zonas de toque intactos. */
+body.tw-cel .twc .twc-amigos{
+  min-width:0;box-sizing:border-box;padding:clamp(10px,3vw,18px);
+  border:1px solid var(--osh-line);border-radius:22px;
+  background:var(--osh-paper);
+  box-shadow:0 5px 18px color-mix(in srgb,var(--osh-ink) 9%,transparent);
+}
+body.tw-cel .twc .twc-amigos h2{
+  margin:2px 4px 14px;font-size:clamp(16px,4.4vw,21px);line-height:1.35;
+  color:var(--osh-ink);overflow-wrap:anywhere;
+}
+body.tw-cel .twc .twc-amigos-c{
+  min-width:0;overflow:hidden;border-radius:18px;
+  border:1px solid color-mix(in srgb,var(--osh-line) 75%,transparent);
+  background:#fff7ff;
+}
+body.tw-cel .twc .twc-amigos-c canvas{display:block;width:100%;height:auto;max-width:100%}
+body.tw-cel .twc .twc-amigos-dica{
+  margin:12px 4px 2px;gap:8px;font-size:clamp(12px,3.4vw,14px);
+  line-height:1.5;text-align:center;color:var(--osh-sub);
+}
+@media (max-width:699px){
+ body.tw-cel .twc .twc-amigos{padding:10px;border-radius:18px}
+ body.tw-cel .twc .twc-amigos h2{margin:4px 6px 10px}
+ body.tw-cel .twc .twc-amigos-c{border-radius:14px}
+}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos{
+   background:var(--osh-night-paper)!important;border-color:var(--osh-night-line)!important;
+   box-shadow:0 5px 18px rgba(0,0,0,.18);
+ }
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos h2{color:var(--osh-night-ink)!important}
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-dica{color:var(--osh-night-sub)!important}
+ :root:not([data-theme="light"]) body.tw-cel .twc .twc-amigos-c{border-color:var(--osh-night-line)}
+}
+
+/* A8.4-A — recepção VIP: conteúdo leve fora do Canvas, sem alterar a foto. */
+body.tw-cel .twc .twc-dentro-vip .twc-dentro-cena{border:2px solid var(--osh-line);border-radius:20px;box-shadow:0 5px 18px color-mix(in srgb,var(--osh-ink) 12%,transparent)}
+body.tw-cel .twc .twc-vip-boas{margin:12px 0 0;padding:14px;border:1px solid var(--osh-line);border-radius:18px;background:var(--osh-paper);text-align:center}
+body.tw-cel .twc .twc-vip-boas p{margin:0 0 10px;color:var(--osh-ink);font-size:14px;line-height:1.5;font-weight:700}
+body.tw-cel .twc .twc-vip-boas .twc-vip-ola{display:block;width:100%;min-height:44px;margin:0 0 8px}
+body.tw-cel .twc .twc-vip-boas small{display:block;color:var(--osh-sub);font-size:12px;line-height:1.45}
+@media (max-width:359px){body.tw-cel .twc .twc-vip-boas{padding:10px}body.tw-cel .twc .twc-vip-boas p{font-size:13px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas{background:var(--osh-night-paper);border-color:var(--osh-night-line)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas p{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-boas small{color:var(--osh-night-sub)}}
+
+/* A8.4-B — escolha de pose local, sem modificar o canvas nem o download. */
+body.tw-cel .twc .twc-vip-poses{display:flex;flex-wrap:wrap;gap:8px;min-width:0;margin:12px 0 0;padding:10px;border:1px solid var(--osh-line);border-radius:16px;background:var(--osh-paper)}
+body.tw-cel .twc .twc-vip-poses legend{padding:0 6px;font-size:13px;font-weight:800;color:var(--osh-ink)}
+body.tw-cel .twc .twc-vip-pose{flex:1 1 100px;min-height:44px;padding:8px 10px;border:2px solid var(--osh-line);border-radius:13px;background:var(--osh-paper);color:var(--osh-ink);font:700 13px/1.35 "M PLUS Rounded 1c",sans-serif;cursor:pointer}
+body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 12%,var(--osh-paper));box-shadow:inset 0 0 0 1px var(--twc-f1)}
+body.tw-cel .twc .twc-vip-pose:focus-visible{outline:3px solid var(--twc-f1);outline-offset:2px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses,:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose{background:var(--osh-night-paper);border-color:var(--osh-night-line);color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-poses legend{color:var(--osh-night-ink)}:root:not([data-theme="light"]) body.tw-cel .twc .twc-vip-pose[aria-pressed="true"]{border-color:var(--twc-f1);background:color-mix(in srgb,var(--twc-f1) 20%,var(--osh-night-paper))}}
+
+/* A8.4-C — Cristal Oshi facetado; a cor segue vindo de TW_HUMOR.estado().cor. */
+body.tw-cel .twc .twc-diam{position:relative;isolation:isolate;overflow:hidden;border-radius:2px;background:var(--c);clip-path:polygon(50% 0,100% 61%,50% 100%,0 61%);box-shadow:inset 2px 0 0 rgba(255,255,255,.2);animation:twcGira 3.4s ease-in-out infinite}
+body.tw-cel .twc .twc-diam::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,rgba(255,255,255,.38) 0 35%,transparent 35% 55%,rgba(40,15,75,.13) 55%);clip-path:polygon(50% 0,100% 61%,50% 100%,0 61%)}
+body.tw-cel .twc .twc-diam::after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.85);font:10px/1 sans-serif}
+@media (prefers-reduced-motion:reduce){body.tw-cel .twc .twc-diam{animation:none!important;transform:none!important}}
+/* auditoria 16/11: a superfície de papel do Oshi (body.tw-cel .twc :is(.twc-card…)) apagava o fundo roxo do Ranking e deixava o texto branco ilegível */
+body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(--twc-f1));border-color:#fff}
+/* auditoria 16/11: descrições dos jogos em até 2 linhas (antes cortavam em 1, sobretudo em japonês) */
+.twc .twc-linha-txt small,.twc .twc-jogo-txt small,.twc .twc-destaque-txt small{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+/* Fichinhas 16/11: botão com os três rostinhos e página em abas (uma Idol por vez) */
+.twc .twc-fichas-chip{gap:7px;padding:4px 14px 4px 5px;font-size:13px;background:linear-gradient(120deg,#ff7fbf,#c2367f 70%,#9b30d9);box-shadow:0 4px 0 rgba(120,30,90,.3),0 8px 18px rgba(194,54,127,.3),inset 0 2px 0 rgba(255,255,255,.35)}
+.twc-fichas-rostos{display:inline-flex}
+.twc-fichas-rostos canvas{width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--fc),0 0 0 3.5px #fff}
+.twc-fichas-rostos canvas+canvas{margin-left:-8px}
+.twc-trio-abas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+.twc .twc-trio-aba{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px 9px;border-radius:20px;border:2px solid var(--twc-borda,#e9dcff);background:#fff;color:#3c2a6a;font:inherit;cursor:pointer;
+  box-shadow:0 3px 0 rgba(90,40,160,.12);transition:transform .12s}
+.twc .twc-trio-aba canvas{width:52px;height:52px;border-radius:50%;background:#f3e9ff;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--fc)}
+.twc .twc-trio-aba b{font:800 12.5px "M PLUS Rounded 1c",sans-serif;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twc .twc-trio-aba.on{background:linear-gradient(180deg,var(--fc,#ff6fb5),color-mix(in srgb,var(--fc,#ff6fb5) 70%,#2a1060));color:#fff;border-color:#fff;transform:translateY(-2px);box-shadow:0 5px 0 color-mix(in srgb,var(--fc,#ff6fb5) 55%,#2a1060)}
+.twc-trio-aba-ic{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#ff9cc9,#ff4f9a);color:#fff;box-shadow:0 0 0 3px #fff,0 0 0 5px #ff6fb5}
+.twc-f2{position:relative;overflow:hidden;border-radius:28px;background:#fff;border:3px solid #fff;box-shadow:0 6px 0 color-mix(in srgb,var(--fc) 30%,transparent),0 12px 26px rgba(60,20,110,.16)}
+.twc-f2-palco{position:relative;display:flex;align-items:flex-end;gap:6px;min-height:190px;padding:12px 14px 0;overflow:hidden;
+  background:radial-gradient(circle at 25% 85%,rgba(255,255,255,.55),transparent 45%),repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 12px,transparent 12px 24px),linear-gradient(160deg,color-mix(in srgb,var(--fc) 70%,#fff),var(--fc) 60%,color-mix(in srgb,var(--fc) 70%,#1d0c40))}
+.twc-f2-luz{position:absolute;left:-10%;top:-40%;width:60%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:rotate(18deg);pointer-events:none}
+.twc-f2-palco .twc-ficha-idol{position:relative;width:148px;height:160px;flex:none;filter:drop-shadow(0 6px 6px rgba(20,5,50,.3))}
+.twc-f2-pet{position:absolute;left:118px;bottom:8px;width:56px;height:56px;filter:drop-shadow(0 3px 3px rgba(20,5,50,.3))}
+.twc-f2-nome{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0 0 16px;color:#fff;min-width:0}
+.twc-f2-nome small{padding:2px 9px;border-radius:99px;background:rgba(255,255,255,.25);font:800 10.5px "M PLUS Rounded 1c",sans-serif;letter-spacing:.03em}
+.twc-f2-nome h2{margin:2px 0 0;font:400 34px/1 "Mochiy Pop One",sans-serif;color:#fff;text-shadow:0 3px 0 rgba(20,5,50,.25)}
+.twc-f2-nome b{font:800 14px "M PLUS Rounded 1c",sans-serif;opacity:.95}
+.twc-f2-nome span{font:700 12px "M PLUS Rounded 1c",sans-serif;opacity:.9}
+.twc-f2-nome em{margin-top:4px;padding:3px 10px;border-radius:99px;background:#fff;color:var(--fc);font:800 11.5px "M PLUS Rounded 1c",sans-serif;font-style:normal}
+.twc-f2-fala{display:flex;align-items:center;gap:10px;margin:14px 14px 0}
+.twc-f2-fala blockquote{position:relative;flex:1;margin:0;padding:11px 14px;border-radius:6px 18px 18px 18px;background:color-mix(in srgb,var(--fc) 12%,#fff);color:#3c2a6a;font:800 13.5px/1.45 "M PLUS Rounded 1c",sans-serif;border:2px solid color-mix(in srgb,var(--fc) 35%,#fff)}
+.twc .twc-f2-voz{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:58px;padding:8px 4px;border-radius:16px;border:2px solid #fff;background:var(--fc);color:#fff;font:800 11px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--fc) 55%,#1d0c40)}
+.twc .twc-f2-voz.fala{animation:twcF2Voz .5s ease}
+@keyframes twcF2Voz{30%{transform:scale(1.12) rotate(-4deg)}60%{transform:scale(.96) rotate(3deg)}}
+.twc-f2-grade{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px;padding:0}
+.twc-f2-bloco{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:10px 11px;border-radius:16px;background:color-mix(in srgb,var(--fc) 8%,#fff);border:2px solid color-mix(in srgb,var(--fc) 18%,#fff)}
+.twc-f2-ic{grid-row:1/3;display:grid;place-items:center;width:32px;height:32px;border-radius:11px;background:var(--fc);color:#fff}
+.twc-f2-bloco dt{font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-f2-bloco dd{margin:0;display:flex;align-items:center;gap:5px;font:800 13.5px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a;min-width:0;overflow-wrap:anywhere}
+.twc-f2-gosta{margin:0 14px 12px}
+.twc-f2-gosta h3{display:flex;align-items:center;gap:6px;margin:0 0 8px;font:800 13px "M PLUS Rounded 1c",sans-serif;color:var(--fc)}
+.twc-f2-gosta ul{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.twc-f2-gosta li{padding:6px 11px;border-radius:99px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 35%,#fff);color:#3c2a6a;font:800 12.5px "M PLUS Rounded 1c",sans-serif}
+.twc-f2 .twc-ficha-blog{margin:0 14px 14px;display:flex;justify-content:center}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-trio-aba:not(.on){background:#2a2045;color:#efe6ff;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-f2{background:#221838;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-f2-fala blockquote{background:color-mix(in srgb,var(--fc) 20%,#221838);color:#efe6ff;border-color:color-mix(in srgb,var(--fc) 45%,#221838)}
+  :root:not([data-theme="light"]) .twc-f2-bloco{background:color-mix(in srgb,var(--fc) 14%,#221838);border-color:color-mix(in srgb,var(--fc) 30%,#221838)}
+  :root:not([data-theme="light"]) .twc-f2-bloco dd{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-f2-gosta li{background:#2a2045;color:#efe6ff}
+}
+@media (max-width:360px){.twc-f2-palco .twc-ficha-idol{width:120px;height:130px}.twc-f2-pet{left:94px;width:46px;height:46px}.twc-f2-nome h2{font-size:28px}.twc-f2-grade{grid-template-columns:1fr}}
+/* Mapa de amizades: escolha do laço e cartão com os fatos */
+.twc-lacos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 10px}
+.twc .twc-laco{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:16px;border:2px solid var(--twc-borda,#e9dcff);background:#fff;color:#3c2a6a;font:inherit;cursor:pointer;text-align:left;box-shadow:0 3px 0 rgba(90,40,160,.12);min-width:0}
+.twc .twc-laco b{font:800 12.5px/1.2 "M PLUS Rounded 1c",sans-serif;min-width:0}
+.twc .twc-laco.on{background:linear-gradient(150deg,#ff8cc6,#c2367f);color:#fff;border-color:#fff;box-shadow:0 4px 0 #8f1f5c}
+.twc-laco-rostos{display:inline-flex;flex:none}
+.twc-laco-rostos canvas{width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--fc),0 0 0 3.5px #fff}
+.twc-laco-rostos canvas+canvas{margin-left:-9px}
+.twc-laco-card{padding:12px 14px;border-radius:18px;background:color-mix(in srgb,var(--fc) 9%,#fff);border:2px solid color-mix(in srgb,var(--fc) 30%,#fff)}
+.twc-laco-card h3{display:flex;align-items:center;gap:7px;margin:0 0 8px;font:400 15px "Mochiy Pop One",sans-serif;color:var(--fc)}
+.twc-laco-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.twc-laco-card ul li{position:relative;padding-left:18px;font:800 13px/1.4 "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-laco-card ul li::before{content:"♥";position:absolute;left:0;top:0;color:var(--fc)}
+.twc-laco-sub{margin:12px 0 6px;font:800 12px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-laco-linha{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.twc-laco-linha li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 22%,#fff)}
+.twc-laco-linha b{flex:none;min-width:58px;padding:2px 8px;border-radius:99px;background:var(--fc);color:#fff;font:800 11.5px "M PLUS Rounded 1c",sans-serif;text-align:center}
+.twc-laco-linha span{font:800 13px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc .twc-laco:not(.on){background:#2a2045;color:#efe6ff;border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-laco-card{background:color-mix(in srgb,var(--fc) 16%,#221838);border-color:color-mix(in srgb,var(--fc) 40%,#221838)}
+  :root:not([data-theme="light"]) .twc-laco-card ul li,:root:not([data-theme="light"]) .twc-laco-linha span{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-laco-linha li{background:#2a2045}
+}
+.twc-laco-sub svg{vertical-align:-2px;margin-right:5px;color:var(--fc)}
+.twc-laco-mus{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:6px!important;margin:0;padding:0;list-style:none}
+.twc-laco-mus li{display:flex;flex-direction:column;padding:6px 10px!important;border-radius:12px;background:#fff;border:2px solid color-mix(in srgb,var(--fc) 25%,#fff)}
+.twc-laco-mus li::before{content:none!important}
+.twc-laco-mus b{font:800 12.5px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
+.twc-laco-mus small{font:700 10.5px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-laco-mais{margin-top:8px}
+.twc-laco-mais summary{cursor:pointer;font:800 12.5px "M PLUS Rounded 1c",sans-serif;color:var(--fc);margin-bottom:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-laco-mus li{background:#2a2045}:root:not([data-theme="light"]) .twc-laco-mus b{color:#efe6ff}}
+.twc-laco-sub{display:flex;align-items:center}
+.twc .twc-laco-mus{display:grid!important;grid-template-columns:1fr 1fr}
+.twc-laco-mus li{min-width:0}.twc-laco-mus b,.twc-laco-mus small{overflow-wrap:anywhere}
+/* calendário no modo escuro: textos que eram roxo-escuro sobre o fundo escuro */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc-calitens li,:root:not([data-theme="light"]) .twc-callegenda span,:root:not([data-theme="light"]) .twc-caldia h2,:root:not([data-theme="light"]) .twc-calcab h2{color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-calitens small,:root:not([data-theme="light"]) .twc-caldn{color:#c9b8ec}
+  :root:not([data-theme="light"]) .twc-calfala p{background:#2f2350;color:#efe6ff}
+  :root:not([data-theme="light"]) .twc-calfala p b{color:#d7b8ff}
+}
+/* ---------- Hoje: a lista do dia com progresso (16/11/2026) ---------- */
+.twc-hj{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:22px;background:#fff;border:2px solid var(--twc-borda);box-shadow:0 4px 12px rgba(80,40,160,.10)}
+.twc-hj-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px}
+.twc-hj-cab h2{margin:0;font:400 20px "Mochiy Pop One",sans-serif;color:var(--twc-roxo-e)}
+.twc-hj .twc-barra{width:96px;height:10px}
+.twc-hj-tudo{margin:0;padding:8px 12px;border-radius:14px;background:linear-gradient(120deg,#f4ffe6,#fff4fb);font-weight:800;font-size:13px;color:#3c6b00;text-align:center}
+.twc-hj-it{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:linear-gradient(120deg,#fbf8ff,#fff6fb);border:1.5px solid #f1ebff}
+.twc-hj-ok{background:linear-gradient(120deg,#f6ffea,#fbfff4);border-color:#d9f7a8}
+.twc-hj-ok .twc-hj-ico{background:linear-gradient(150deg,#8ad400,#4f9a00)!important}
+.twc-hj-ico{width:34px;height:34px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff}
+.twc-hj-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.twc-hj-txt b{font-weight:800;font-size:14px;line-height:1.25;color:var(--twc-ink)}
+.twc-hj-txt small{font:700 12px/1.3 "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-hj-ok .twc-hj-txt b{color:#3c6b00}
+.twc-hj-bts{display:flex;flex-direction:column;gap:6px;flex:none}
+.twc .twc-hj-bt{flex:none;min-height:40px;min-width:64px;padding:6px 14px;border:0;border-radius:999px;cursor:pointer;font:800 13px "M PLUS Rounded 1c",sans-serif;color:#fff!important;
+  background:linear-gradient(150deg,#9b5cff,#5a2bc4);box-shadow:0 3px 0 rgba(90,43,196,.35)}
+.twc .twc-hj-bt-claro{background:#fff;color:var(--twc-roxo-e)!important;border:2px solid #e2d7fd;box-shadow:none}
+.twc .twc-hj-vip{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:5px;min-height:32px;padding:4px 10px;border:0;border-radius:999px;cursor:pointer;
+  font:800 11.5px "M PLUS Rounded 1c",sans-serif;background:#efe8ff;color:#5b4a80!important}
+.twc .twc-hj-vip-on{background:linear-gradient(120deg,#3a1a5c,#7a2d6b);color:#fff3c4!important;box-shadow:0 2px 0 rgba(58,26,92,.35)}
+.twc .twc-hj-vip em{font-style:normal;padding:1px 8px;border-radius:99px;background:#ffd23f;color:#3a1a5c}
+.twc .twc-hj-mais{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border:0;border-radius:14px;background:none;cursor:pointer;text-align:left;color:var(--twc-roxo-e)!important}
+.twc .twc-hj-mais small{font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc .twc-hj-mais b{flex:1;font-weight:800;font-size:13px}
+.twc .twc-hj-mais em{font-style:normal;font-weight:800;font-size:12px;padding:1px 8px;border-radius:99px;background:#ffe3f1;color:#c2367f}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc-hj{background:var(--card,#2a1d4a);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-hj-cab h2{color:#e6d6ff}
+  :root:not([data-theme="light"]) .twc-hj-it{background:#33245a;border-color:#45327a}
+  :root:not([data-theme="light"]) .twc-hj-ok{background:#2c3a2a;border-color:#4f7a2a}
+  :root:not([data-theme="light"]) .twc-hj-txt b{color:#f3ecff}:root:not([data-theme="light"]) .twc-hj-ok .twc-hj-txt b{color:#c9f58a}
+  :root:not([data-theme="light"]) .twc-hj-txt small{color:#c7b6ee}
+  :root:not([data-theme="light"]) .twc-hj-tudo{background:#2c3a2a;color:#c9f58a}
+  :root:not([data-theme="light"]) .twc .twc-hj-bt-claro{background:#2a1d4a;color:#e6d6ff!important;border-color:#5b3f99}
+  :root:not([data-theme="light"]) .twc .twc-hj-vip{background:#3d2a6b;color:#e6d6ff!important}
+  :root:not([data-theme="light"]) .twc .twc-hj-mais,:root:not([data-theme="light"]) .twc .twc-hj-mais b{color:#e6d6ff!important}}
+.twc .twc-hj-bt.lbn{text-decoration:none!important}
+.twc-hj-tudo{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.twc .twc-hj-ver{min-height:32px;padding:3px 12px;border:0;border-radius:999px;background:#fff;color:#3c6b00!important;font:800 12px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 0 0 1.5px #c9f58a inset}
+.twc .twc-hj-aniv-mais{border:1.5px dashed #ffd27a;background:#fffaf0}
+.twc .twc-hj-aniv-mais .twc-hj-ico{width:28px;height:28px;border-radius:9px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc .twc-hj-ver{background:#2a1d4a;color:#c9f58a!important}:root:not([data-theme="light"]) .twc .twc-hj-aniv-mais{background:#3a2a20;border-color:#8a6a2a}}

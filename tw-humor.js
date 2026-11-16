@@ -58,6 +58,7 @@
   var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_finalizar:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
     handshake_premio:'handshake', battle_jogar:'battle', battle_desafiar:'battle', studio_publicar:'studio', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
     jardim_plantar:'bloom', duo_registrar:'duo', gacha_girar:'gacha', dar_coracao:'coracao'};
+  var DESCOBERTA = {battle:1, studio:1, bloom:1};
   var TREINO_VISITANTE = {run:1, cafe:1, battle:1, studio:1, handshake:1, mapa:1, frase:1};
 
   function lang(){ return typeof LANG === 'string' ? LANG : 'pt'; }
@@ -93,6 +94,8 @@
     var dia = hoje();
     if(est.desejo && est.desejo.dia === dia && (est.desejo.logado === logado())) return est.desejo;
     var lista = DESEJOS.filter(disponivel); if(!lista.length) lista = DESEJOS;
+    // descoberta: os jogos menos jogados (Battle, Studio e Bloom) têm o dobro de chance de virar o desejo do dia
+    lista = lista.concat(lista.filter(function(x){ return DESCOBERTA[x[1]]; }));
     var d = lista[hash(dia + '|' + nickSemente()) % lista.length];
     est.desejo = {dia:dia, k:d[0], ev:d[1], feito:false, logado:logado()}; salvar();
     return est.desejo;

@@ -291,3 +291,6 @@ body:not(.jogando) #sb{display:none!important}
 .custtoggle.on{background:rgba(123,63,240,.18)}
 .custbox{margin-top:8px}
 
+
+/* fim do show: o botão de som não fica por cima do cartão (16/11/2026) */
+body:has(#over:not([hidden])) #mute{opacity:0;pointer-events:none}

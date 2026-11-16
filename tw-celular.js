@@ -71,6 +71,13 @@
     vipFechado:{pt:'Cumpra o desejo do dia para entrar',en:"Grant today's wish to get in",es:'Cumple el deseo del día para entrar',id:'Penuhi keinginan hari ini untuk masuk',th:'ทำความปรารถนาวันนี้ให้สำเร็จเพื่อเข้า',ja:'きょうのおねがいをかなえると入れます'},
     vipComo:{pt:'O Camarim VIP abre para todo mundo, todo dia: é só cumprir o desejo do dia do seu Idol. Lá dentro, o TsuLiPa tira uma foto com você!',en:"The VIP Dressing Room opens for everyone, every day: just grant your Idol's wish of the day. Inside, TsuLiPa takes a photo with you!",es:'El Camerino VIP abre para todos, todos los días: solo cumple el deseo del día de tu Idol. ¡Adentro, TsuLiPa se toma una foto contigo!',id:'Ruang Rias VIP terbuka untuk semua orang setiap hari: cukup penuhi keinginan Idol-mu hari ini. Di dalam, TsuLiPa foto bareng kamu!',th:'ห้อง VIP เปิดให้ทุกคนทุกวัน แค่ทำความปรารถนาประจำวันของไอดอลให้สำเร็จ ข้างในมี TsuLiPa รอถ่ายรูปกับคุณ!',ja:'VIP楽屋はだれでも毎日入れます。アイドルの「きょうのおねがい」をかなえるだけ。中でTsuLiPaがいっしょに写真をとってくれるよ！'},
     vipGanhou:{pt:'Passe VIP liberado!',en:'VIP pass unlocked!',es:'¡Pase VIP liberado!',id:'Tiket VIP terbuka!',th:'ปลดล็อกบัตร VIP แล้ว!',ja:'VIPパスゲット！'},
+    vipRecepcao:{pt:'O trio preparou um cantinho especial para receber você. Cumprimente cada Idol ou toque no palco para ver as reações!',en:'The trio prepared a special welcome for you. Greet an Idol or tap the stage to see their reactions!',es:'¡El trío preparó una bienvenida especial! Saluda a un Idol o toca el escenario para ver sus reacciones.',id:'Trio menyiapkan sambutan spesial! Sapa Idol atau sentuh panggung untuk melihat reaksinya.',th:'ทั้งสามคนเตรียมต้อนรับคุณเป็นพิเศษ! ทักทายไอดอลหรือแตะเวทีเพื่อดูปฏิกิริยา',ja:'3人があなたをお出迎え！アイドルにあいさつするか、ステージをタップしてみてね。'},
+    vipCumprimentar:{pt:'Cumprimentar o trio',en:'Greet the trio',es:'Saludar al trío',id:'Sapa trio',th:'ทักทายทั้งสามคน',ja:'3人にあいさつ'},
+    vipPoseTitulo:{pt:'Pose da lembrança',en:'Keepsake pose',es:'Pose del recuerdo',id:'Pose kenangan',th:'ท่าโพสที่ระลึก',ja:'記念写真のポーズ'},
+    vipPoseV:{pt:'Paz ✌',en:'Peace ✌',es:'Paz ✌',id:'Peace ✌',th:'สันติภาพ ✌',ja:'ピース ✌'},
+    vipPoseCoracao:{pt:'Coração ♡',en:'Heart ♡',es:'Corazón ♡',id:'Hati ♡',th:'หัวใจ ♡',ja:'ハート ♡'},
+    vipPoseTchau:{pt:'Aceno 👋',en:'Wave 👋',es:'Saludo 👋',id:'Lambaian 👋',th:'โบกมือ 👋',ja:'手を振る 👋'},
+    vipDica:{pt:'Toque nos Idols para descobrir suas reações. A foto é uma lembrança voluntária.',en:'Tap the Idols to see their reactions. The photo is an optional keepsake.',es:'Toca a los Idols para ver sus reacciones. La foto es un recuerdo opcional.',id:'Sentuh Idol untuk melihat reaksinya. Foto adalah kenang-kenangan opsional.',th:'แตะไอดอลเพื่อดูปฏิกิริยา การถ่ายรูปเป็นทางเลือก',ja:'アイドルをタップすると反応するよ。写真は自由に保存できる思い出だよ。'},
     vipFoto:{pt:'Foto VIP (PNG)',en:'VIP photo (PNG)',es:'Foto VIP (PNG)',id:'Foto VIP (PNG)',th:'รูป VIP (PNG)',ja:'VIP写真（PNG）'},
     treino:{pt:'Treino',en:'Practice',es:'Práctica',id:'Latihan',th:'ฝึกซ้อม',ja:'練習'},
     legCad:{pt:'pede conta para abrir',en:'needs an account',es:'necesita cuenta',id:'perlu akun',th:'ต้องมีบัญชี',ja:'アカウントが必要'},
@@ -111,6 +118,7 @@
     check:'<path d="M5 12l4 4 10-10"/>', seta:'<path d="M9 6l6 6-6 6"/>', mais:'<path d="M12 6v12M6 12h12"/>',
     voltar:'<path d="M9 7L4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 0 10h-2"/>', menu:'<path d="M5 8h14M5 12h14M5 16h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
     casa:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/>', cadeado:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    nota:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
     estrela:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
     bolo:'<path d="M4 20h16M5 20v-7h14v7"/><path d="M5 15c2 1.5 4 1.5 7 0s5-1.5 7 0"/><path d="M12 13V9"/><path d="M12 6.5c.8-.8.8-1.7 0-2.5-.8.8-.8 1.7 0 2.5z"/>',
     pin:'<path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>',
@@ -139,7 +147,7 @@
   function $id(id){ return document.getElementById(id); }
   function card(k){ var c = $id('hubCards'); return c && (c.querySelector('[data-ir="' + k + '"]') || c.querySelector('[data-twnovo="' + k + '"]')); }
   function chaveDe(c){ return c.getAttribute('data-ir') || c.getAttribute('data-twnovo') || ''; }
-  function alerta(c){ return !!(c && (c.classList.contains('tw-alert-pink') || c.querySelector('.hubalerta:not([hidden])'))); }
+  function alerta(c){ return !!(c && c.classList && (c.classList.contains('tw-alert-pink') || c.querySelector('.hubalerta:not([hidden])'))); }
   function titulo(c){ var b = c && c.querySelector('b'); return b ? b.textContent.trim() : ''; }
   function descricao(c){
     if(!c) return '';
@@ -194,7 +202,7 @@
     return '<div class="twc-faixa"><span><h1>' + tit + '</h1><small>' + esc(sub) + '</small></span>' + (chip ? '<em>' + esc(chip) + '</em>' : '') +
       brilhos([[52, 18, 12], [66, 62, 9, 'l'], [80, 22, 10, 'r']]) + '</div>';
   }
-  function badge(c){ return alerta(c) ? '<em class="twc-dot" aria-hidden="true">!</em>' : ''; }
+  function badge(c){ return (c === true || alerta(c)) ? '<em class="twc-dot" aria-hidden="true">!</em>' : ''; }   // c: card do hub ou true (ex.: missão pendente)
   function cadeado(k){ return precisaEntrar(k) ? '<em class="twc-cad" aria-hidden="true">' + ico('cadeado', 13) + '</em><span class="twc-sr"> (' + esc(t2('legCad')) + ')</span>' : ''; }
   function app(k, nome, attrs, c){
     return '<button type="button" class="twc-app" ' + attrs + '><span class="twc-app-ico twc-g-' + (COR[k] || 'roxo') + '">' + ico(k, 30) + badge(c) + cadeado(k) + '</span><span class="twc-app-nome" translate="no">' + esc(nome) + '</span>' + seloTreino(k) + '</button>';
@@ -214,7 +222,9 @@
       '<h1 class="hublogo twc-hublogo" translate="no" aria-label="TsuLiPa World">' + (logo ? logo.innerHTML : 'TsuLiPa⭐World') + '</h1>' +
       (tema && !tema.hidden && tema.textContent ? '<p class="twc-tema">' + esc(tema.textContent) + '</p>' : '') +
       '<div class="twc-palco-moldura"><canvas id="twcPalcoCv" width="640" height="340" role="img" aria-label="' + esc(rot) + '"></canvas>' +
-      '<button type="button" class="twc-fichas-chip" data-v="trio">♡ ' + esc(tf('fichas')) + '</button>' +
+      '<button type="button" class="twc-fichas-chip" data-v="trio"><span class="twc-fichas-rostos" aria-hidden="true">' +
+        [0, 1, 2].map(function(k){ return '<canvas data-membro="' + k + '" width="64" height="64" style="--fc:' + FICHAS[k].cor[0] + '"></canvas>'; }).join('') +
+        '</span><span>' + esc(tf('fichas')) + '</span></button>' +
       // quem passeia no mapa agora vira um selinho no canto do palco (com a bolinha do membro)
       '<button type="button" class="twc-selo" data-a="mapa">' + (v ? '<canvas class="twc-bola-mini" data-membro="' + v.k + '" width="64" height="64" aria-hidden="true"></canvas>' : '<i class="twc-vivo" aria-hidden="true"></i>') +
       '<span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 16) + '</button></div></section>';
@@ -318,6 +328,103 @@
     folha.hidden = false;
   }
 
+  /* ---------- Hoje: uma lista só, com progresso (desejo → Camarim VIP, missões, capítulo de domingo, aniversário) ---------- */
+  var THJ = {
+    tit:{pt:'Hoje',en:'Today',es:'Hoy',id:'Hari ini',th:'วันนี้',ja:'きょう'},
+    vip:{pt:'Prêmio: Camarim VIP',en:'Reward: VIP Dressing Room',es:'Premio: Camerino VIP',id:'Hadiah: Ruang Rias VIP',th:'รางวัล: ห้องแต่งตัว VIP',ja:'ごほうび：VIP楽屋'},
+    vipOk:{pt:'Camarim VIP liberado!',en:'VIP Dressing Room unlocked!',es:'¡Camerino VIP liberado!',id:'Ruang Rias VIP terbuka!',th:'ปลดล็อกห้องแต่งตัว VIP แล้ว!',ja:'VIP楽屋オープン！'},
+    entrar:{pt:'Entrar',en:'Go in',es:'Entrar',id:'Masuk',th:'เข้าไป',ja:'入る'},
+    mis:{pt:'Missões do dia',en:'Daily missions',es:'Misiones del día',id:'Misi harian',th:'ภารกิจประจำวัน',ja:'デイリーミッション'},
+    misOk:{pt:'Todas cumpridas!',en:'All done!',es:'¡Todas cumplidas!',id:'Semua selesai!',th:'ทำครบแล้ว!',ja:'ぜんぶクリア！'},
+    misFalta:{pt:'{f} de {n} cumpridas',en:'{f} of {n} done',es:'{f} de {n} cumplidas',id:'{f} dari {n} selesai',th:'ทำแล้ว {f} จาก {n}',ja:'{n}こ中{f}こクリア'},
+    ver:{pt:'Ver',en:'See',es:'Ver',id:'Lihat',th:'ดู',ja:'見る'},
+    ler:{pt:'Ler',en:'Read',es:'Leer',id:'Baca',th:'อ่าน',ja:'読む'},
+    cap:{pt:'Capítulo {n} do quadrinho',en:'Comic chapter {n}',es:'Capítulo {n} del cómic',id:'Bab {n} komik',th:'การ์ตูนตอนที่ {n}',ja:'マンガ第{n}話'},
+    capNovo:{pt:'Novo no Idol⭐News!',en:'New in Idol⭐News!',es:'¡Nuevo en Idol⭐News!',id:'Baru di Idol⭐News!',th:'ใหม่ใน Idol⭐News!',ja:'Idol⭐News!に新着！'},
+    capLido:{pt:'Lido ✓',en:'Read ✓',es:'Leído ✓',id:'Sudah dibaca ✓',th:'อ่านแล้ว ✓',ja:'読んだ ✓'},
+    aniv:{pt:'Aniversário de {p}!',en:"It's {p}'s birthday!",es:'¡Cumpleaños de {p}!',id:'Ulang tahun {p}!',th:'วันเกิดของ {p}!',ja:'{p}のおたんじょうび！'},
+    anivSub:{pt:'Mande um coração ou deixe um recado no perfil',en:'Send a heart or leave a note on the profile',es:'Manda un corazón o deja un mensaje en el perfil',id:'Kirim hati atau tinggalkan pesan di profil',th:'ส่งหัวใจหรือฝากข้อความในโปรไฟล์',ja:'ハートを送るか、プロフィールにメッセージを残そう'},
+    anivEu:{pt:'Feliz aniversário, {p}! 🎂',en:'Happy birthday, {p}! 🎂',es:'¡Feliz cumpleaños, {p}! 🎂',id:'Selamat ulang tahun, {p}! 🎂',th:'สุขสันต์วันเกิด {p}! 🎂',ja:'おたんじょうびおめでとう、{p}！🎂'},
+    anivEuSub:{pt:'O TsuLiPa⭐World inteiro está comemorando com você',en:'All of TsuLiPa⭐World is celebrating with you',es:'Todo TsuLiPa⭐World celebra contigo',id:'Seluruh TsuLiPa⭐World merayakan bersamamu',th:'ทั้ง TsuLiPa⭐World ฉลองไปกับคุณ',ja:'TsuLiPa⭐Worldのみんながおいわいしてるよ'},
+    coracao:{pt:'♡ Coração',en:'♡ Heart',es:'♡ Corazón',id:'♡ Hati',th:'♡ หัวใจ',ja:'♡ ハート'},
+    deu:{pt:'Coração enviado!',en:'Heart sent!',es:'¡Corazón enviado!',id:'Hati terkirim!',th:'ส่งหัวใจแล้ว!',ja:'ハートを送ったよ！'},
+    perfil:{pt:'Perfil',en:'Profile',es:'Perfil',id:'Profil',th:'โปรไฟล์',ja:'プロフ'},
+    trio:{pt:'Fichinha',en:'Profile card',es:'Fichita',id:'Kartu profil',th:'การ์ดโปรไฟล์',ja:'プロフィール'},
+    maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
+    maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
+    verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
+    tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
+    erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
+  };
+  function thj(k, o){ var d = THJ[k], s2 = d ? (d[L()] || d.pt) : k; if(o) for(var q in o) s2 = s2.split('{' + q + '}').join(o[q]); return s2; }
+  var CAPS_INICIO = Date.UTC(2026, 10, 15);   // quadrinhos: um por domingo desde 15/11 (o mesmo de jornal-capitulos.js)
+  function capHoje(){   // {n, data} do capítulo mais recente já liberado (horário de Brasília), ou null
+    var C = window.TW_CAL, h = C ? C.hoje() : new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), r = null;
+    for(var i = 0; i < 6; i++){ var d = new Date(CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); if(d <= h) r = {n:i + 1, data:d}; }
+    return r;
+  }
+  function capLido(){ try{ return +localStorage.getItem('tw_cap_lido') || 0; }catch(e){ return 0; } }
+  function capMarcarLido(){ var c = capHoje(); if(c && c.n > capLido()) try{ localStorage.setItem('tw_cap_lido', String(c.n)); }catch(e){} }
+  function anivDados(){ try{ var o = JSON.parse(localStorage.getItem('tw_aniv_cor') || 'null'), h = window.TW_CAL ? window.TW_CAL.hoje() : ''; return o && o.dia === h ? o : {dia:h, nicks:[]}; }catch(e){ return {dia:'', nicks:[]}; } }
+  function anivDei(nick){ return anivDados().nicks.indexOf(String(nick).toLowerCase()) >= 0; }
+  function anivGuardar(nick){ var o = anivDados(); if(o.nicks.indexOf(nick.toLowerCase()) < 0) o.nicks.push(nick.toLowerCase()); try{ localStorage.setItem('tw_aniv_cor', JSON.stringify(o)); }catch(e){} }
+  function anivCoracao(nick, b){
+    if(!logado()){ pedirLogin(thj('coracao')); return; }
+    b.disabled = true;
+    contaRpc('dar_coracao', {p_nick:nick}).then(function(r){
+      if(r && (r.ok || r.ok === false && !r.erro)){ anivGuardar(nick); som(); carinho(); toast(thj('deu'), 'coracao'); if(window.TW_HUMOR) try{ window.TW_HUMOR.evento('coracao'); }catch(e){} desenhar(); }
+      else if(r && r.erro === 'proprio'){ anivGuardar(nick); desenhar(); }
+      else { b.disabled = false; toast(thj('erro')); }
+    }).catch(function(){ b.disabled = false; toast(thj('erro')); });
+  }
+  var hojeAberto = false, hojeAnivTodos = false;
+  function hojeHtml(){
+    var itens = [], feitos = 0, H = window.TW_HUMOR, C = window.TW_CAL;
+    function linha(ok, cor, icone, tit, sub, botao, extra){
+      itens.push('<div class="twc-hj-it' + (ok ? ' twc-hj-ok' : '') + '"><span class="twc-hj-ico twc-g-' + cor + '" aria-hidden="true">' + ico(ok ? 'check' : icone, 18) + '</span>' +
+        '<span class="twc-hj-txt"><b>' + tit + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + (extra || '') + '</span>' + (botao || '') + '</div>');
+      if(ok) feitos++;
+    }
+    // 1. desejo do dia → Camarim VIP
+    if(H){ var d = H.desejo(), vip = H.vipHoje();
+      linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
+        d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>',
+        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
+    // 2. missões do dia (com conta)
+    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
+    if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
+      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
+    // 3. capítulo do domingo (aparece na semana em que saiu)
+    var cp = capHoje(), hj = C ? C.hoje() : '';
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
+    if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
+      mk.forEach(function(m){
+        if(m.k === 'anivJog') (m.quem || []).filter(function(nk, i){ return hojeAnivTodos || i === 0 || nk.toLowerCase() === eu; }).forEach(function(nk){
+          if(nk.toLowerCase() === eu){ linha(true, 'sol', 'bolo', esc(thj('anivEu', {p:nk})), esc(thj('anivEuSub'))); return; }
+          var dei = anivDei(nk);
+          linha(dei, 'sol', 'bolo', esc(thj('aniv', {p:nk})), esc(dei ? thj('deu') : thj('anivSub')),
+            '<span class="twc-hj-bts">' + (dei ? '' : '<button type="button" class="twc-hj-bt" data-anivcor="' + esc(nk) + '">' + esc(thj('coracao')) + '</button>') +
+            '<button type="button" class="twc-hj-bt twc-hj-bt-claro lbn" data-nick="' + esc(nk) + '">' + esc(thj('perfil')) + '</button></span>');
+        });
+        var resto = m.k === 'anivJog' && !hojeAnivTodos ? (m.quem || []).length - 1 - ((m.quem || []).slice(1).some(function(nk){ return nk.toLowerCase() === eu; }) ? 1 : 0) : 0;
+        if(resto > 0) itens.push('<button type="button" class="twc-hj-mais twc-hj-aniv-mais" data-hjaniv="1"><span class="twc-hj-ico twc-g-sol" aria-hidden="true">' + ico('bolo', 16) + '</span><b>' + esc(resto === 1 ? thj('maisAniv1') : thj('maisAniv', {n:resto})) + '</b>' + ico('seta', 16) + '</button>');
+        if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
+      });
+    }
+    var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
+    var pc = Math.round(feitos / tot * 100);
+    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
+      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
+    return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
+      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
+      (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
+      (feitos === tot && !hojeAberto ? '' : itens.join('')) + extra + '</section>';   // tudo feito: a lista recolhe (abre no "Ver lista")
+  }
+
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -331,8 +438,9 @@
       var c = card(k); if(!c) return '';
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
+    var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + destaque + portas() + '</div></div>';
+      '<div class="twc-lado">' + (hjHtml || destaque) + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -343,13 +451,6 @@
   function telaMenu(){
     var run = card('run'), kar = card('karaoke'), gac = card('gacha');
     var musica = ''; try{ musica = typeof hubMusicaSemana === 'function' ? hubMusicaSemana()[1] : ''; }catch(e){}
-    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
-    var feitas = mis ? mis.filter(function(m){ return m.feito; }).length : 0, pc = mis && mis.length ? Math.round(feitas / mis.length * 100) : 0;
-    var linhas = pendencias().slice(0, 4).map(function(c){
-      return '<button type="button" class="twc-linha" data-ir="' + esc(chaveDe(c)) + '"><span class="twc-linha-ico twc-g-' + (COR[chaveDe(c)] || 'roxo') + '">' + ico(chaveDe(c), 18) + '</span><span class="twc-linha-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' + ico('seta', 18) + '</button>';
-    });
-    if(mis && mis.length) linhas.push('<button type="button" class="twc-linha" data-a="missoes"><span class="twc-linha-ico twc-g-lima">' + ico('missoes', 18) + '</span><span class="twc-linha-txt"><b>' + esc(t('mis')) + '</b><small>' + feitas + '/' + mis.length + '</small></span>' + ico('seta', 18) + '</button>');
-    if(!linhas.length) linhas.push('<p class="twc-emdia">' + ico('check', 18) + ' ' + esc(t('emdia')) + '</p>');
     var pi = []; try{ pi = typeof hubPetInfo === 'function' ? hubPetInfo() : []; }catch(e){ pi = []; }
     var petC = card('pet'), petEmo = (petC && petC.querySelector('i')) ? petC.querySelector('i').textContent : '';
     var rec = +(typeof best !== 'undefined' ? best : 0) || 0;
@@ -357,20 +458,17 @@
     if(run) bs.push(banner('run', titulo(run), tt('Recorde') + ': ' + recorde(), tt('Jogar'), 'data-ir="run"'));
     if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
-    bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
-    var at = [['missoes', t('mis'), 'data-a="missoes"'], ['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
-              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['cal', tc('cal'), 'data-v="cal"'], ['pata', tt2('tour'), 'data-v="tour"'], ['ajustes', t('ajustes'), 'data-v="ajustes"']];
+    // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
+    // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
+              ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
           (petEmo ? '<span class="twc-idol-pet" aria-hidden="true">' + esc(petEmo) + '</span>' : '') + '<b>' + esc(pi[0] || 'Backstage⭐Pet!') + '</b>' + badge(petC) + '</button>' +
         '<button type="button" class="twc-card twc-rank" data-a="tv"><span class="twc-rank-t">' + ico('trofeu', 20) + '<b>' + esc(t('rank')) + '</b></span>' +
           (rec ? '<span class="twc-rank-n">' + esc(recorde()) + '</span><small>' + esc(tt('Recorde')) + ' · ' + esc(t('tv')) + '</small>' : '<small class="twc-rank-vazio">' + esc(t('rankVazio')) + '</small><small>' + esc(t('tv')) + '</small>') + '</button>' +
-      '</div>' +
-      '<section class="twc-card twc-hoje" aria-labelledby="twcHojeT"><div class="twc-card-cab"><h2 id="twcHojeT">' + esc(t('hoje')) + '</h2>' +
-        (mis && mis.length ? '<span class="twc-prog"><span class="twc-barra" aria-hidden="true"><i style="width:' + pc + '%"></i></span><small>' + feitas + '/' + mis.length + '</small></span>' : '') + '</div>' +
-        linhas.join('') + '</section></div>' +
-      calHojeHtml() + humorHtml() +
+      '</div></div>' + humorHtml(true) +
       '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
@@ -434,7 +532,7 @@
     }).join('') + '</div>' + (logado() ? '' : '<p class="twc-legenda"><span aria-hidden="true">' + ico('cadeado', 13) + '</span> ' + esc(t2('legCad')) + ' · <b>' + esc(t2('treino')) + '</b>: ' + esc(t2('legTreino')) + '</p>') + '</div>';
   }
   function telaAjustes(){
-    var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
+    var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Bahasa Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
     var OS = [['', '☀️', tt('Padrão')], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
     var oshi = typeof OSHI === 'string' ? OSHI : '';
     return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' +
@@ -495,7 +593,7 @@
       (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
   /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
-  function humorHtml(){
+  function humorHtml(semDesejo){   // semDesejo: o desejo do dia e o VIP já aparecem no "Hoje" do Início
     var H = window.TW_HUMOR; if(!H) return '';
     var e = H.estado(), d = H.desejo(), vip = H.vipHoje();
     var barras = H.barras.map(function(b){ var v = e[b];
@@ -503,11 +601,11 @@
     return '<section class="twc-humor" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
       (e.serie > 0 ? '<em class="twc-serie"><span aria-hidden="true">' + ico('chama', 14) + '</span>' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
       '<div class="twc-hbs">' + barras + '</div>' +
-      (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') +
+      (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') + (semDesejo ? '</section>' :
       '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(d.ev)] || 'rosa') + '" aria-hidden="true">' + ico(d.feito ? 'check' : desejoIco(d.ev), 22) + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
         (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>') + '</div>' +
       '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span class="twc-vip-coroa" aria-hidden="true">' + ico('coroa', 24) + '</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
-        (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>';
+        (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>');
   }
   function desejoIco(ev){ return ev === 'frase' ? 'fala' : ev; }
   function desejoIr(ev){
@@ -531,7 +629,9 @@
   var desenhoPend = 0;
   function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
   function vipFoto(){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
-    var cv = $id('twcDentroCv'); if(!cv) return;
+    var cv = $id('twcDentroCv'); if(!cv || topo() !== 'dentro:vip') return;
+    // A pose escolhida precisa estar no Canvas antes da captura, mesmo em toques rápidos.
+    try{ dentroDesenhar(cv, 'vip', performance.now() / 1000); }catch(e){}
     var W = cv.width + 40, Hh = cv.height + 110, o = document.createElement('canvas'); o.width = W; o.height = Hh;
     var x = o.getContext('2d'); x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, Hh); x.drawImage(cv, 20, 20);
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
@@ -560,12 +660,15 @@
     gacha:{cor:['#ecf8ff', '#c9e8ff', '#5a9fd6', '#d6efff', '#a9d4f5'], ico:'gacha', nome:'Star⭐Gacha!'},
     vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f', '#5a2470', '#4a1a52'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
+  var vipPose = ''; // apenas nesta sessão, sem persistência ou efeito em outros interiores
+  var vipReduzMov = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function telaDentro(id){
     var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
     var botao = id === 'vip' ? '<button type="button" class="twc-btn twc-dentro-ir" data-a="vipFoto"><span class="twc-btn-ic" aria-hidden="true">' + ico('studio', 20) + '</span>' + esc(t2('vipFoto')) + '</button>'
       : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
     return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
-      botao + frasesHtml() + '</div>';
+      (id === 'vip' ? '<fieldset class="twc-vip-poses"><legend>' + esc(t2('vipPoseTitulo')) + '</legend>' + [['v','vipPoseV'],['coracao','vipPoseCoracao'],['tchau','vipPoseTchau']].map(function(p){ return '<button type="button" class="twc-vip-pose" data-a="vipPose" data-pose="' + p[0] + '" aria-pressed="' + (vipPose === p[0]) + '">' + esc(t2(p[1])) + '</button>'; }).join('') + '</fieldset>' : '') +
+      (id === 'vip' ? '<section class="twc-vip-boas" aria-label="' + esc(t2('vip')) + '"><p>' + esc(t2('vipRecepcao')) + '</p><button type="button" class="twc-btn twc-btn-claro twc-vip-ola" data-a="vipOla">' + esc(t2('vipCumprimentar')) + '</button><small>' + esc(t2('vipDica')) + '</small></section>' : '') + botao + frasesHtml() + '</div>';
   }
   var dentroRaf = 0;
   function dentroLigar(){ if(!dentroRaf) dentroRaf = requestAnimationFrame(dentroQuadro); }
@@ -678,8 +781,9 @@
       var tp = x.createLinearGradient(0, PISO, 0, H); tp.addColorStop(0, '#c2185b'); tp.addColorStop(1, '#e91e63');
       x.fillStyle = tp; x.beginPath(); x.moveTo(240, H); x.lineTo(400, H); x.lineTo(362, PISO); x.lineTo(278, PISO); x.closePath(); x.fill();
       x.fillStyle = '#ffd23f'; x.fillRect(240, H - 6, 160, 6);
-      [[70, -1], [570, 1]].forEach(function(pp){ x.fillStyle = '#ffd23f'; x.fillRect(pp[0] - 4, chao - 110, 8, 76); x.beginPath(); x.arc(pp[0], chao - 112, 9, 0, 7); x.fill(); caixa(pp[0] - 14, chao - 38, 28, 8, 4, '#e0a400', null, false); });
-      x.strokeStyle = '#b0124f'; x.lineWidth = 8; x.lineCap = 'round'; x.beginPath(); x.moveTo(70, chao - 96); x.quadraticCurveTo(150, chao - 58, 228, chao - 96); x.moveTo(412, chao - 96); x.quadraticCurveTo(490, chao - 58, 570, chao - 96); x.stroke();
+      [[22, -1], [618, 1]].forEach(function(pp){   // pedestais nas bordas: ninguém fica colado neles
+       x.fillStyle = '#ffd23f'; x.fillRect(pp[0] - 4, chao - 110, 8, 76); x.beginPath(); x.arc(pp[0], chao - 112, 9, 0, 7); x.fill(); caixa(pp[0] - 14, chao - 38, 28, 8, 4, '#e0a400', null, false); });
+      x.strokeStyle = '#b0124f'; x.lineWidth = 8; x.lineCap = 'round'; x.beginPath(); x.moveTo(22, chao - 96); x.quadraticCurveTo(118, chao - 58, 214, chao - 96); x.moveTo(426, chao - 96); x.quadraticCurveTo(522, chao - 58, 618, chao - 96); x.stroke();
       [[110, 60, 9], [530, 70, 8], [200, 150, 6], [450, 160, 7], [320, 24, 6]].forEach(function(b2, k){ var r3 = b2[2] * (.6 + .4 * Math.abs(Math.sin(s * 1.6 + k))); x.fillStyle = '#fff6c4'; x.beginPath(); for(var i3 = 0; i3 < 8; i3++){ var rr3 = i3 % 2 ? r3 * .35 : r3, a3 = i3 * Math.PI / 4; x.lineTo(b2[0] + Math.cos(a3) * rr3, b2[1] + Math.sin(a3) * rr3); } x.closePath(); x.fill(); });
     }
     if(id !== 'vip') [[60, 150, 6], [W - 40, 160, 5], [W / 2, 30, 5]].forEach(function(b3, k){ brilho(b3[0], b3[1], b3[2] * (.6 + .4 * Math.abs(Math.sin(s * 1.4 + k)))); });
@@ -687,23 +791,26 @@
     var P = window.TW_PRESENCA, gente = id === 'vip' ? [] : dentroGente(), eu = typeof hubAv === 'function' ? hubAv() : null, lugares = [215, 335, 455, 570, 100], ES = 1.72, CH = 112 * ES, agora = Date.now(), rg = dentroReage && agora - dentroReage.t0 < 2200 ? dentroReage : null;
     dentroUltimos = [];
     var todos = gente.map(function(p, k){ return {av:p.avatar, nick:p.nick, fala:p.frase ? {frase:p.frase, em:(+p.frase_em || 0) * 1000} : null, x:lugares[k]}; });
-    if(id === 'vip') todos = MEMBROS.map(function(m, k){ var av = membroAv(k); return av ? {av:av.c ? {c:av.c, pose:'', expr:av.expr} : av, nick:m[1], x:[118, 462, 578][k], membro:true} : null; }).filter(Boolean);
+    if(id === 'vip') todos = MEMBROS.map(function(m, k){ var av = membroAv(k); return av ? {av:av.c ? {c:av.c, pose:'', expr:av.expr} : av, nick:m[1], x:[180, 455, 562][k], membro:true} : null; }).filter(Boolean);
     if(eu) todos.push({av:eu, nick:'', fala:P && P.minha, x:id === 'vip' ? 320 : lugares[todos.length] || 140, eu:true});
     todos.forEach(function(g, k){
-      var cw = 104, ch = 112, px = g.x - cw * ES / 2, pulo = Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
+      var cw = 104, ch = 112, px = g.x - cw * ES / 2, pulo = id === 'vip' && vipReduzMov ? 0 : Math.max(0, Math.sin(s * 2.4 + k * 1.7)) * 4, fr = s * 60 + k * 37;
       var tocado = rg && rg.k === k, rt = tocado ? (agora - rg.t0) / 1000 : 0;
-      if(tocado) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 30;
+      if(tocado && !(id === 'vip' && vipReduzMov)) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 30;
       dentroUltimos.push({x:g.x, k:k, nick:g.nick, eu:!!g.eu, membro:g.membro ? MEMBROS.findIndex(function(m){ return m[1] === g.nick; }) : -1});
       var av = {}; for(var q in g.av) av[q] = g.av[q];
-      av.pose = tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5];
+      av.pose = id === 'vip' && vipPose ? vipPose : (tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5]);
       x.save(); x.translate(px, chao - CH + 14 - pulo); x.scale(ES, ES);
       try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, cw, ch, av, false, false, fr); }catch(e){}
       x.restore();
-      if(g.nick){ x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(120, x.measureText(g.nick).width + 16);
-        caixa(g.x - tw / 2, chao + 12, tw, 20, 10, 'rgba(123,63,240,.9)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 27, tw - 8); }
+      if(g.nick){ x.font = '800 19px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(140, x.measureText(g.nick).width + 22);   // legível no celular
+        caixa(g.x - tw / 2, chao + 10, tw, 28, 14, 'rgba(123,63,240,.92)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 31, tw - 8); }
       if(g.eu && window.TW_HUMOR){   // o diamantinho do humor em cima de você (igual ao mapa)
-        var dc = window.TW_HUMOR.cor(), gi = Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - CH + 62 - pulo - Math.sin(s * 2) * 3;
-        x.fillStyle = dc; x.strokeStyle = 'rgba(30,10,60,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(g.x, dy - 16); x.lineTo(g.x + dw, dy); x.lineTo(g.x, dy + 7); x.lineTo(g.x - dw, dy); x.closePath(); x.fill(); x.stroke(); }
+        var dc = window.TW_HUMOR.cor(), gi = vipReduzMov ? 1 : Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - CH + 62 - pulo - (vipReduzMov ? 0 : Math.sin(s * 2) * 3);
+        x.fillStyle = dc; x.strokeStyle = 'rgba(30,10,60,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(g.x, dy - 16); x.lineTo(g.x + dw, dy); x.lineTo(g.x, dy + 7); x.lineTo(g.x - dw, dy); x.closePath(); x.fill(); x.stroke();
+        x.fillStyle='rgba(255,255,255,.3)';x.beginPath();x.moveTo(g.x,dy-16);x.lineTo(g.x-dw,dy);x.lineTo(g.x,dy+7);x.closePath();x.fill();
+        x.strokeStyle='rgba(255,255,255,.48)';x.lineWidth=1;x.beginPath();x.moveTo(g.x,dy-16);x.lineTo(g.x,dy+7);x.moveTo(g.x-dw,dy);x.lineTo(g.x+dw,dy);x.stroke();
+        x.fillStyle='rgba(255,255,255,.88)';x.beginPath();x.moveTo(g.x,dy-7);x.lineTo(g.x+3,dy-3);x.lineTo(g.x,dy+1);x.lineTo(g.x-3,dy-3);x.closePath();x.fill(); }
       var fl = g.fala; if(fl && fl.frase && P && Date.now() - fl.em < (g.eu ? 8000 : 12000)){
         var tx = P.texto(fl.frase); x.font = 'bold 16px "M PLUS Rounded 1c",sans-serif'; var lg = Math.min(220, x.measureText(tx).width + 24), by = chao - CH + 22 - pulo;
         caixa(g.x - lg / 2 - 2.5, by - 2.5, lg + 5, 35, 16, '#c9b3ff'); caixa(g.x - lg / 2, by, lg, 30, 14, '#fff'); x.fillStyle = '#fff'; x.beginPath(); x.moveTo(g.x - 6, by + 29); x.lineTo(g.x, by + 38); x.lineTo(g.x + 6, by + 29); x.fill();
@@ -744,7 +851,8 @@
     ant:{pt:'Mês anterior',en:'Previous month',es:'Mes anterior',id:'Bulan sebelumnya',th:'เดือนก่อน',ja:'前の月'},
     prox:{pt:'Próximo mês',en:'Next month',es:'Mes siguiente',id:'Bulan berikutnya',th:'เดือนถัดไป',ja:'次の月'},
     abrir:{pt:'Ver o calendário',en:'Open the calendar',es:'Ver el calendario',id:'Lihat kalender',th:'ดูปฏิทิน',ja:'カレンダーを見る'},
-    legAniv:{pt:'Aniversários',en:'Birthdays',es:'Cumpleaños',id:'Ulang tahun',th:'วันเกิด',ja:'誕生日'},
+    legAniv:{pt:'Tsu, Lirika e Pati',en:'Tsu, Lirika and Pati',es:'Tsu, Lirika y Pati',id:'Tsu, Lirika, dan Pati',th:'Tsu, Lirika และ Pati',ja:'Tsu・Lirika・Pati'},
+    legJog:{pt:'Idols jogadores',en:'Player Idols',es:'Idols jugadores',id:'Idol pemain',th:'ไอดอลผู้เล่น',ja:'プレイヤーのアイドル'},
     legJogo:{pt:'TsuLiPa⭐World',en:'TsuLiPa⭐World',es:'TsuLiPa⭐World',id:'TsuLiPa⭐World',th:'TsuLiPa⭐World',ja:'TsuLiPa⭐World'},
     legTema:{pt:'Tema de data',en:'Seasonal theme',es:'Tema de fecha',id:'Tema musiman',th:'ธีมตามเทศกาล',ja:'季節のテーマ'}
   };
@@ -760,14 +868,22 @@
     return '<div class="twc-calfala ' + (cls || '') + '"><canvas data-membro="' + f.quem + '" width="96" height="96" aria-hidden="true"></canvas><p><b>' + esc(MEMBROS[f.quem][1]) + '</b>' + esc(f.txt) + '</p></div>';
   }
   function calHojeHtml(){
-    var C = window.TW_CAL; if(!C) return '';
+    var C = window.TW_CAL; if(!C) return ''; calAniversarios();
     var h = C.hoje(), n = C.diaN(h), te = C.tema(h), mk = C.marcas(h), mes = C.doMes(+h.slice(5, 7)), ev = mk[0] || (te ? {nome:te.nome, cor:te.cor} : mes);
     return '<button type="button" class="twc-card twc-calhoje" data-v="cal" aria-label="' + esc(tc('abrir')) + '">' +
       '<span class="twc-caldata" style="--c:' + (ev && ev.cor || '#7b3ff0') + '"><small>' + esc(mesCurto(+h.slice(5, 7))) + '</small><b>' + (+h.slice(8, 10)) + '</b></span>' +
       '<span class="twc-calhoje-t"><em>' + esc(n >= 1 ? tc('diaN', n) : tc('antes')) + (ev ? ' · ' + esc(ev.nome) : '') + '</em>' + falaHtml(C.fala(h), 'twc-calfala-mini') + '</span>' +
       '<span class="twc-calhoje-ir" aria-hidden="true">' + ico('cal', 20) + '</span></button>';
   }
+  var calAnivPedido = 0;
+  function calAniversarios(){   // aniversários dos jogadores (dia e mês), uma vez a cada 10 minutos
+    if(calAnivPedido && Date.now() - calAnivPedido < 6e5) return; calAnivPedido = Date.now();
+    if(typeof contaRpc !== 'function' || !window.TW_CAL || !window.TW_CAL.jogadores) return;
+    contaRpc('calendario_aniversarios').then(function(r){ window.TW_CAL.jogadores(r); if(topo() === 'cal' || topo() === 'menu') desenhar(); }).catch(function(){ calAnivPedido = 0; });
+  }
   function telaCal(){
+    calAniversarios();
+    if(typeof jnT1Disponivel !== 'function' && typeof window.jornalCapsCarregar === 'function') window.jornalCapsCarregar(function(){ if(topo() === 'cal') desenhar(); });   // marcas da temporada vêm com os quadrinhos
     var C = window.TW_CAL; if(!C) return faixa(esc(tc('cal')), tc('calSub')) + '<div class="twc-pag"></div>';
     var h = C.hoje(); if(!calMes) calMes = h.slice(0, 7); if(!calSel) calSel = calMes === h.slice(0, 7) ? h : calMes + '-01';
     var y = +calMes.slice(0, 4), m = +calMes.slice(5, 7), lim = calLimites(), dias = new Date(Date.UTC(y, m, 0)).getUTCDate(), w0 = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
@@ -792,7 +908,7 @@
         '<button type="button" class="twc-calnav" data-calmes="1"' + (calMes >= lim[1] ? ' disabled' : '') + ' aria-label="' + esc(tc('prox')) + '">›</button></div>' +
         (mes ? '<p class="twc-calfaixa" style="--c:' + mes.cor + '">' + ico(mes.k === 'mesLirika' ? 'bolo' : 'trio', 15) + esc(mes.nome) + '</p>' : '') +
         '<div class="twc-calgrade" role="group" aria-label="' + esc(nomeMes(y, m)) + '">' + sem.map(function(x){ return '<span class="twc-calsem" aria-hidden="true">' + esc(x) + '</span>'; }).join('') + cel2.join('') + '</div>' +
-        '<p class="twc-legenda twc-callegenda"><span><i style="--c:#9b30d9">' + ico('bolo', 12) + '</i>' + esc(tc('legAniv')) + '</span><span><i style="--c:#7b3ff0">' + ico('estrela', 12) + '</i>' + esc(tc('legJogo')) + '</span><span><i class="twc-callg-tema"></i>' + esc(tc('legTema')) + '</span></p>' +
+        '<p class="twc-legenda twc-callegenda"><span><i style="--c:#9b30d9">' + ico('bolo', 12) + '</i>' + esc(tc('legAniv')) + '</span><span><i style="--c:#ff8a3d">' + ico('bolo', 12) + '</i>' + esc(tc('legJog')) + '</span><span><i style="--c:#7b3ff0">' + ico('estrela', 12) + '</i>' + esc(tc('legJogo')) + '</span><span><i class="twc-callg-tema"></i>' + esc(tc('legTema')) + '</span></p>' +
       '</section>' +
       '<section class="twc-card twc-caldia" id="twcCalDia" aria-live="polite"><h2>' + esc(dataCurta(sd)) + (sd === h ? ' · ' + esc(tc('hoje')) : '') + '</h2>' +
         '<small class="twc-caldn">' + esc(sn >= 1 ? tc('diaN', sn) : tc('antes')) + '</small>' +
@@ -892,13 +1008,13 @@
   var FICHAS = [
     {k:0, nome:'Miniwa Tsumiki', jp:'御庭つみき', apelido:'Tsu (つ)', aniv:'05/09', local:'Paraíba, Brasil', altura:'1,80 m', time:'Team S · Sub-Captain', cor:['#9b30d9', 'Violeta'],
       pet:['🐈', 'Chu'], frase:'Oiê! Sou o Tsu, membro da primeira geração draft do BRS48!', blog:'https://brs48.blogspot.com/2021/08/tsu.html',
-      gostos:{pt:'Ouvir música, preparar frango de vários jeitos, pudim, BNK48 e AKB48',en:'Listening to music, cooking chicken many ways, pudding, BNK48 and AKB48',es:'Escuchar música, cocinar pollo de mil formas, flan, BNK48 y AKB48',id:'Dengar musik, masak ayam berbagai cara, puding, BNK48 dan AKB48',th:'ฟังเพลง ทำไก่หลายแบบ พุดดิ้ง BNK48 และ AKB48',ja:'音楽をきくこと、いろんなチキン料理、プリン、BNK48とAKB48'}},
+      gostos:{pt:'Ouvir música, pudim, cozinhar frango, playlists dos anos 60, dias de chuva, BNK48, AKB48, Dal Shabet',en:'Listening to music, pudding, cooking chicken, 1960s playlists, rainy days, BNK48, AKB48, Dal Shabet',es:'Escuchar música, flan, cocinar pollo, playlists de los 60, días de lluvia, BNK48, AKB48, Dal Shabet',id:'Dengar musik, puding, masak ayam, playlist tahun 60-an, hari hujan, BNK48, AKB48, Dal Shabet',th:'ฟังเพลง, พุดดิ้ง, ทำไก่, เพลย์ลิสต์ยุค 60, วันฝนตก, BNK48, AKB48, Dal Shabet',ja:'音楽をきくこと、プリン、チキン料理、60年代のプレイリスト、雨の日、BNK48、AKB48、Dal Shabet'}, audicao:'Twinkle Twinkle (Secret)', oshis:'Chiba Erii'},
     {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#4fa81a', 'Verde Limão'],
       pet:['🐨', 'Koali'], frase:'Shiroma Lirika desu, yoroshiku onegaishima~su!', blog:'https://brs48.blogspot.com/2021/08/lirika.html',
-      gostos:{pt:'Verde, capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',en:'Green, capoeira, =LOVE (Youkoso! Ikorabu Numa) and IZ*ONE',es:'El verde, la capoeira, =LOVE (Youkoso! Ikorabu Numa) e IZ*ONE',id:'Hijau, capoeira, =LOVE (Youkoso! Ikorabu Numa) dan IZ*ONE',th:'สีเขียว คาโปเอร่า =LOVE (Youkoso! Ikorabu Numa) และ IZ*ONE',ja:'みどり、カポエイラ、=LOVE（ようこそ！イコラブ沼）、IZ*ONE'}},
+      gostos:{pt:'Verde, K-pop, IZ*ONE, =LOVE, idols japonesas, falar japonês',en:'Green, K-pop, IZ*ONE, =LOVE, Japanese idols, speaking Japanese',es:'El verde, K-pop, IZ*ONE, =LOVE, idols japonesas, hablar japonés',id:'Hijau, K-pop, IZ*ONE, =LOVE, idol Jepang, berbahasa Jepang',th:'สีเขียว, เคป็อป, IZ*ONE, =LOVE, ไอดอลญี่ปุ่น, พูดภาษาญี่ปุ่น',ja:'緑、K-POP、IZ*ONE、=LOVE、日本のアイドル、日本語'}, audicao:'Oogoe Diamond (AKB48)', oshis:'Imamura Maria'},
     {k:2, nome:'Patiliri Kriyl', jp:'パチリリ・クリイル', apelido:'Pati (パチ)', aniv:'23/09', local:'São Paulo, Brasil', altura:'', time:'Team S', cor:['#4169e1', 'Azul Real'],
       pet:['👑', 'Pucchi'], frase:'Conte com o Pati pra deixar seu dia mais feliz!! Beijinhos e Patchau!!', blog:'https://brs48.blogspot.com/2021/08/pati.html',
-      gostos:{pt:'Cantar, dançar e desenhar, criar looks, mahou shoujo e animes de idol',en:'Singing, dancing and drawing, putting looks together, magical girls and idol anime',es:'Cantar, bailar y dibujar, crear looks, mahou shoujo y animes de idols',id:'Menyanyi, menari, menggambar, bikin outfit, mahou shoujo dan anime idol',th:'ร้องเพลง เต้น วาดรูป จัดลุค มาโฮโชโจ และอนิเมะไอดอล',ja:'歌・ダンス・お絵かき、コーデづくり、魔法少女とアイドルアニメ'}}];
+      gostos:{pt:'Cantar, dançar, desenhar, criar looks, sapatos, bolsas, mahou shoujo, animes de idol, stream de joguinhos, músicas do AKB48',en:'Singing, dancing, drawing, putting looks together, shoes, bags, magical girls, idol anime, game streams, AKB48 songs',es:'Cantar, bailar, dibujar, crear looks, zapatos, bolsos, mahou shoujo, animes de idols, streams de juegos, canciones de AKB48',id:'Menyanyi, menari, menggambar, bikin outfit, sepatu, tas, mahou shoujo, anime idol, streaming game, lagu AKB48',th:'ร้องเพลง, เต้น, วาดรูป, แต่งตัว, รองเท้า, กระเป๋า, สาวน้อยเวทมนตร์, อนิเมะไอดอล, สตรีมเกม, เพลง AKB48',ja:'歌、ダンス、お絵かき、コーデ、くつ、バッグ、魔法少女、アイドルアニメ、ゲーム配信、AKB48の曲'}, audicao:'Dear... (iDOLM@STER)', oshis:'Imamura Maria · Shitao Miu · Oguri Yui'}];
   var TF = {
     trio:{pt:'TsuLiPa',en:'TsuLiPa',es:'TsuLiPa',id:'TsuLiPa',th:'TsuLiPa',ja:'TsuLiPa'},
     fichas:{pt:'Fichinhas',en:'Profiles',es:'Fichas',id:'Profil',th:'โปรไฟล์',ja:'プロフィール'},
@@ -909,43 +1025,116 @@
     time:{pt:'Time',en:'Team',es:'Equipo',id:'Tim',th:'ทีม',ja:'チーム'},
     geracao:{pt:'Geração',en:'Generation',es:'Generación',id:'Generasi',th:'รุ่น',ja:'期'},
     cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
+    cantaram:{pt:'{n} músicas que cantaram juntos',en:'{n} songs they sang together',es:'{n} canciones que cantaron juntos',id:'{n} lagu yang dinyanyikan bersama',th:'{n} เพลงที่ร้องด้วยกัน',ja:'いっしょに歌った曲：{n}曲'},
+    soDois:{pt:'{n} só os dois',en:'{n} just the two of them',es:'{n} solo los dos',id:'{n} hanya berdua',th:'{n} เพลงแค่สองคน',ja:'ふたりだけで{n}曲'},
+    comTrio:{pt:'Também com {q}: {n} músicas do trio',en:'Also with {q}: {n} trio songs',es:'También con {q}: {n} canciones del trío',id:'Juga bersama {q}: {n} lagu trio',th:'กับ {q} ด้วย: {n} เพลงของทั้งสาม',ja:'{q}もいっしょ：3人の曲{n}曲'},
+    verTodas:{pt:'Ver mais {n}',en:'See {n} more',es:'Ver {n} más',id:'Lihat {n} lagi',th:'ดูอีก {n}',ja:'あと{n}曲を見る'},
+    unitFest:{pt:'A unit TsuLiPa no Unit Festival',en:'The TsuLiPa unit at Unit Festival',es:'La unit TsuLiPa en el Unit Festival',id:'Unit TsuLiPa di Unit Festival',th:'ยูนิต TsuLiPa ใน Unit Festival',ja:'Unit FestivalのTsuLiPa'},
+    audicao:{pt:'Música da audição',en:'Audition song',es:'Canción de la audición',id:'Lagu audisi',th:'เพลงออดิชัน',ja:'オーディション曲'},
+    oshis:{pt:'Oshis',en:'Oshis',es:'Oshis',id:'Oshi',th:'โอชิ',ja:'推し'},
     gosta:{pt:'Gosta de',en:'Likes',es:'Le gusta',id:'Suka',th:'ชอบ',ja:'すきなもの'},
     pet:{pt:'Pet',en:'Pet',es:'Mascota',id:'Hewan',th:'สัตว์เลี้ยง',ja:'ペット'},
+    amizades:{pt:'Amizades',en:'Friendship',es:'Amistades',id:'Persahabatan',th:'มิตรภาพ',ja:'なかよし'},
+    ouvir:{pt:'Ouvir',en:'Listen',es:'Escuchar',id:'Dengar',th:'ฟัง',ja:'きく'},
     blog:{pt:'Perfil no blog oficial',en:'Profile on the official blog',es:'Perfil en el blog oficial',id:'Profil di blog resmi',th:'โปรไฟล์ในบล็อกทางการ',ja:'公式ブログのプロフィール'},
     mapaAmigos:{pt:'Mapa de amizades',en:'Friendship map',es:'Mapa de amistades',id:'Peta pertemanan',th:'แผนผังมิตรภาพ',ja:'なかよしマップ'},
     unitTrio:{pt:'unit TsuLiPa',en:'TsuLiPa unit',es:'unit TsuLiPa',id:'unit TsuLiPa',th:'ยูนิต TsuLiPa',ja:'ユニットTsuLiPa'},
-    dupla:{pt:'dupla NeByura',en:'NeByura duo',es:'dúo NeByura',id:'duo NeByura',th:'ดูโอ NeByura',ja:'デュオNeByura'},
+    dupla:{pt:'dupla NeByur✰',en:'NeByur✰ duo',es:'dúo NeByur✰',id:'duo NeByur✰',th:'ดูโอ NeByur✰',ja:'デュオNeByur✰'},
     mesmaGeracao:{pt:'Os três entraram juntos: Draft 1st Generation · ago/2021',en:'All three joined together: Draft 1st Generation · Aug 2021',es:'Los tres entraron juntos: Draft 1st Generation · ago/2021',id:'Bertiga masuk bersama: Draft 1st Generation · Agu 2021',th:'ทั้งสามเข้ามาพร้อมกัน: Draft 1st Generation · ส.ค. 2021',ja:'3人いっしょに加入：ドラフト1期生・2021年8月'},
     toque:{pt:'Toque no Tsu, na Lirika, no Pati ou nos pets',en:'Tap Tsu, Lirika, Pati or the pets',es:'Toca a Tsu, Lirika, Pati o las mascotas',id:'Ketuk Tsu, Lirika, Pati, atau hewannya',th:'แตะ Tsu, Lirika, Pati หรือสัตว์เลี้ยง',ja:'Tsu・Lirika・Patiやペットをタップしてね'}
   };
   function tf(k){ var d = TF[k]; return d ? (d[L()] || d.pt) : k; }
+  // Laços do trio — fatos dos perfis oficiais (brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html) e da NeByur✰.
+  var amigosSel = 3;
+  function T6(pt, en, es, id, th, ja){ return {pt:pt, en:en, es:es, id:id, th:th, ja:ja}; }
+  var LACOS = [
+    {par:[0, 1], nome:T6('Tsu & Lirika','Tsu & Lirika','Tsu y Lirika','Tsu & Lirika','Tsu & Lirika','Tsu＆Lirika'), ic:'estrela', fatos:[
+      T6('Entraram juntos como kenkyuusei em agosto de 2021','Joined together as kenkyuusei in August 2021','Entraron juntos como kenkyuusei en agosto de 2021','Masuk bersama sebagai kenkyuusei pada Agustus 2021','เข้ามาเป็นเค็นคิวเซย์พร้อมกันในเดือนสิงหาคม 2021','2021年8月にいっしょに研究生として加入'),
+      T6('Promovidos ao Team S no mesmo dia: 26/02/2023','Promoted to Team S on the same day: 26/02/2023','Ascendidos al Team S el mismo día: 26/02/2023','Naik ke Team S di hari yang sama: 26/02/2023','ได้เลื่อนขึ้น Team S วันเดียวกัน: 26/02/2023','同じ日にTeam Sへ昇格：2023/02/26'),
+      T6('Os dois cantaram Oshibe to Meshibe to Yoru no Chouchou, cada um num dueto','Both sang Oshibe to Meshibe to Yoru no Chouchou, each in a duet','Los dos cantaron Oshibe to Meshibe to Yoru no Chouchou, cada uno en un dúo','Keduanya menyanyikan Oshibe to Meshibe to Yoru no Chouchou, masing-masing dalam duet','ทั้งคู่ร้อง Oshibe to Meshibe to Yoru no Chouchou คนละดูเอ็ต','ふたりとも「おしべとめしべと夜の蝶々」をそれぞれデュエットで')],
+      musicas:[['Wagamama na Nagareboshi', 'TsuLiPa · 1st Single Zipper (2026)'], ['Pan Pan Papa Pan', 'Sherbet Pink · B-side'], ['Gattsuki Girls', 'Teacher Teacher · B-side']]},
+    {par:[1, 2], nome:T6('Lirika & Pati','Lirika & Pati','Lirika y Pati','Lirika & Pati','Lirika & Pati','Lirika＆Pati'), ic:'coracao', fatos:[
+      T6('A mesma oshi: Imamura Maria (a kami-oshi do Pati)','Same oshi: Imamura Maria (Pati’s kami-oshi)','La misma oshi: Imamura Maria (la kami-oshi de Pati)','Oshi yang sama: Imamura Maria (kami-oshi Pati)','โอชิคนเดียวกัน: Imamura Maria (คามิโอชิของ Pati)','同じ推し：今村麻莉愛（Patiの神推し）'),
+      T6('Oshi graduada em comum: Honda Hitomi','A graduated oshi in common: Honda Hitomi','Una oshi graduada en común: Honda Hitomi','Oshi yang sudah lulus yang sama: Honda Hitomi','โอชิที่จบการศึกษาเหมือนกัน: Honda Hitomi','卒業した推しも同じ：本田仁美'),
+      T6('Os dois são de São Paulo','Both are from São Paulo','Los dos son de São Paulo','Keduanya dari São Paulo','ทั้งคู่มาจากเซาเปาลู','ふたりともサンパウロ出身')],
+      musicas:[['Samishii Nettaigyo (Wink)', 'TsuLiPa · 1st Single Zipper (2026)'], ['Underground', 'Unit Festival 2025 · Next Station'], ['Show (Ado)', 'Halloween 2023 · Onegai My Kouhai'], ['Treinando Para Te Amar', 'Request Hour 2023']]},
+    {par:[0, 2], nome:T6('Tsu & Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu y Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu & Pati · NeByur✰','Tsu＆Pati・NeByur✰'), ic:'nota', fatos:[
+      T6('Unit NeByur✰: estreou com o single “Me Beija!” em 04/04/2026','Unit NeByur✰: debuted with the single “Me Beija!” on 04/04/2026','Unit NeByur✰: debutó con el single “Me Beija!” el 04/04/2026','Unit NeByur✰: debut dengan single “Me Beija!” pada 04/04/2026','ยูนิต NeByur✰: เดบิวต์ด้วยซิงเกิล “Me Beija!” 04/04/2026','ユニットNeByur✰：2026/04/04シングル「Me Beija!」でデビュー'),
+      T6('Os dois amam o AKB48','Both love AKB48','A los dos les encanta AKB48','Keduanya suka AKB48','ทั้งคู่รัก AKB48','ふたりともAKB48が大好き'),
+      T6('Oshi graduada em comum: Itano Tomomi','A graduated oshi in common: Itano Tomomi','Una oshi graduada en común: Itano Tomomi','Oshi yang sudah lulus yang sama: Itano Tomomi','โอชิที่จบการศึกษาเหมือนกัน: Itano Tomomi','卒業した推しも同じ：板野友美'),
+      T6('Aniversários em setembro: 05/09 e 23/09','Birthdays in September: 05/09 and 23/09','Cumpleaños en septiembre: 05/09 y 23/09','Ulang tahun di bulan September: 05/09 dan 23/09','วันเกิดเดือนกันยายน: 05/09 และ 23/09','誕生日はどちらも9月：9/5と9/23')],
+      musicas:[['Me Beija!', 'NeByur✰ · 1st Single (04/04/2026)'], ['Ódio', 'NeByur✰ · pré-estreia'], ['Wish You Hapiness!!', 'Ano Novo 2023 · TsuLiPa'], ['Touch You', 'Unit Festival 2021 · High T'], ['Nante Bohemian', 'Unit Festival 2023 · Bohemian'], ['Big Bang Bolleyball', 'Unit Festival 2025 · Cerulean Nights'], ["C'mon join us", 'Unit Festival 2026 · Boyzfroms'],
+        ['Dancing High', 'Sayonara no Imi · B-side (Tsu center)'], ['Bad∞End∞Night', 'Halloween 2022'], ['Natsu no Owari no Amaoto ga', 'Birthday Units 2022'], ['Nagori Zakura', '1000º vídeo'],
+        ['Teacher Teacher', 'A-side'], ['10nen Zakura', 'A-side'], ['Sayonara no Imi', 'A-side'], ['Poison Girl', 'Special single'], ['Mikaeri Bijin', 'Special single · B-side'],
+        ['Você é uma Melodia', '10nen Zakura · B-side'], ['Dead end', 'Sayonara no Imi · B-side'], ['Meu Verso de Paixão', 'Sayonara no Imi · B-side'], ['Amanojaku Batta', 'Sayonara no Imi · B-side'],
+        ['Sugaring Off Party!', 'Outono 2022'], ['Daqui 10 Anos', 'BRS48 · 10 anos'], ['So Long', 'Ano Novo 2026'], ['ANTI', '3rd Album'], ['Madonna no sentaku', '3rd Album'],
+        ['NO WAY MAN', 'Request Hour 2023'], ['Ruby', 'Request Hour 2023'], ['Wink wa 3kai', 'Gekokujou 1st Mini Concert']]},
+    {par:[0, 1, 2], nome:T6('Os três · TsuLiPa','The three · TsuLiPa','Los tres · TsuLiPa','Bertiga · TsuLiPa','ทั้งสาม · TsuLiPa','3人・TsuLiPa'), ic:'trio', fatos:[
+      T6('Draft 1st Generation, agosto de 2021 · o primeiro ensaio juntos foi Zipper, em maio de 2021','Draft 1st Generation, August 2021 · their first rehearsal together was Zipper, May 2021','Draft 1st Generation, agosto de 2021 · su primer ensayo juntos fue Zipper, en mayo de 2021','Draft 1st Generation, Agustus 2021 · latihan pertama bersama: Zipper, Mei 2021','Draft 1st Generation สิงหาคม 2021 · ซ้อมด้วยกันครั้งแรกคือ Zipper เดือนพฤษภาคม 2021','ドラフト1期生（2021年8月）・はじめての練習は2021年5月の「Zipper」'),
+      T6('1º single da TsuLiPa: “Zipper”, em 25/01/2026 (com a Zipper regravada)','TsuLiPa’s 1st single: “Zipper”, 25/01/2026 (with Zipper re-recorded)','1.er single de TsuLiPa: “Zipper”, 25/01/2026 (con Zipper regrabada)','Single pertama TsuLiPa: “Zipper”, 25/01/2026 (Zipper direkam ulang)','ซิงเกิลแรกของ TsuLiPa: “Zipper” 25/01/2026 (อัดเพลง Zipper ใหม่)','TsuLiPaの1stシングル「Zipper」（2026/01/25・Zipperを再録）'),
+      T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
+      linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024', 'Secret Base'], ['2025', 'Splash Dream / Binetsu kara Mystery'], ['2026', "I can't stop the loneliness"]],
+      musicas:[['Zipper', '1st Draft Audition Concert (2021) · 1st Single TsuLiPa (2026)'], ['Hitonatsu no Dekigoto', 'TsuLiPa · 1st Single Zipper (2026)'], ['STAY WITH ME ~Mayonaka no Door~', 'TsuLiPa · 1st Single Zipper (2026)'],
+        ['Amor Grilado', 'NeByur✰ · Me Beija! (2026) · TsuLiPa'], ['Te Deixar', 'NeByur✰ · Me Beija! (2026)'], ['Cheeky Cheeky', 'TsuLiPa · pré-estreia'], ['Polyrhythm', 'Unit Festival 2021'], ['Plastic Love', 'Unit Festival 2023'], ['Secret Base', 'Unit Festival 2024'], ['Splash Dream / Binetsu kara Mystery', 'Unit Festival 2025'], ["I can't stop the loneliness", 'Unit Festival 2026'],
+        ['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Phoenix Dance', 'Summer Love Sounds Good · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
+        ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Kyun', 'A-side'], ['Yume wa Nigenai', 'Shekarashika! · B-side'], ['Yume wa Nigenai (PT)', '10nen Zakura · B-side'],
+        ['Bokutachi wa Tatakawanai', '3rd Album ANTI'], ['Neko Allergy', 'Tsu Talks Senbatsu'], ['26 Estados e 1 Distrito', 'BRS48 · 6 anos'], ['Kibou ni Tsuite', 'Request Hour 2023']]}
+  ];
+  function t6(o){ return o ? (o[L()] || o.pt) : ''; }
+  // Fichinhas em abas (uma Idol por vez, sem rolar 2.500px): foto de cada um no topo, palco com o boneco e o pet,
+  // dados em blocos, "gosta de" em chips, a frase oficial em balão com a voz de verdade, e o mapa de amizades numa aba própria.
+  var trioAba = 0;
   function telaTrio(){
-    var cards = FICHAS.map(function(f){
-      var m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
-      var lin = function(ic, r, v, extra){ return v ? '<div class="twc-ficha-l"><span class="twc-ficha-ic" aria-hidden="true">' + ico(ic, 16) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
-      return '<article class="twc-ficha" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '">' +
-        '<header class="twc-ficha-topo"><span class="twc-ficha-luz" aria-hidden="true"></span><canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
-          '<span class="twc-ficha-nome"><small class="twc-ficha-gen">Draft 1st Generation</small><h2 id="twcF' + f.k + '" translate="no">' + esc(m[1]) + '</h2>' +
-          '<b lang="ja">' + esc(f.jp) + '</b><span class="twc-ficha-real" translate="no">' + esc(f.nome) + '</span>' +
-          '<span class="twc-ficha-chips"><em>' + esc(f.time) + '</em></span></span></header>' +
-        '<dl class="twc-ficha-dados">' + lin('bolo', 'aniv', esc(aniv)) + lin('pin', 'local', esc(f.local)) + lin('regua', 'altura', esc(f.altura)) +
-          lin('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') +
-          lin('pata', 'pet', esc(f.pet[1]), '<canvas class="twc-ficha-pet" data-pet="' + MEMBROS[f.k][0] + '" width="72" height="72" aria-hidden="true"></canvas>') +
-          lin('coracao', 'gosta', esc(f.gostos[L()] || f.gostos.pt)) + '</dl>' +
-        '<blockquote class="twc-ficha-frase" lang="pt"><span aria-hidden="true">' + ico('aspas', 18) + '</span>' + esc(f.frase) + '</blockquote>' +
+    var abas = MEMBROS.map(function(m, k){
+      return '<button type="button" role="tab" class="twc-trio-aba' + (trioAba === k ? ' on' : '') + '" data-trioaba="' + k + '" aria-selected="' + (trioAba === k) + '" style="--fc:' + FICHAS[k].cor[0] + '">' +
+        '<canvas data-membro="' + k + '" width="96" height="96" aria-hidden="true"></canvas><b translate="no">' + esc(m[1]) + '</b></button>';
+    }).join('') + '<button type="button" role="tab" class="twc-trio-aba twc-trio-aba-amigos' + (trioAba === 3 ? ' on' : '') + '" data-trioaba="3" aria-selected="' + (trioAba === 3) + '">' +
+      '<span class="twc-trio-aba-ic" aria-hidden="true">' + ico('coracao', 26) + '</span><b>' + esc(tf('amizades')) + '</b></button>';
+    var corpo;
+    if(trioAba === 3){
+      corpo = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
+        '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="410" role="img" aria-label="' +
+          esc(tf('mapaAmigos') + ': ' + tf('mesmaGeracao') + ' · ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div>' +
+        '<div class="twc-lacos" role="tablist" aria-label="' + esc(tf('mapaAmigos')) + '">' + [3, 0, 1, 2].map(function(i){ var lc = LACOS[i];
+          return '<button type="button" role="tab" class="twc-laco' + (amigosSel === i ? ' on' : '') + '" data-laco="' + i + '" aria-selected="' + (amigosSel === i) + '"><span class="twc-laco-rostos" aria-hidden="true">' +
+            lc.par.map(function(k){ return '<canvas data-membro="' + k + '" width="64" height="64" style="--fc:' + FICHAS[k].cor[0] + '"></canvas>'; }).join('') + '</span><b>' + esc(t6(lc.nome)) + '</b></button>'; }).join('') + '</div>' +
+        (function(){ var lc = LACOS[amigosSel];
+          return '<div class="twc-laco-card" role="tabpanel" style="--fc:' + (lc.par.length === 2 ? FICHAS[lc.par[1]].cor[0] : '#7b3ff0') + '"><h3>' + ico(lc.ic, 18) + esc(t6(lc.nome)) + '</h3><ul>' +
+            lc.fatos.map(function(f){ return '<li>' + esc(t6(f)) + '</li>'; }).join('') + '</ul>' +
+            (lc.linha ? '<p class="twc-laco-sub">' + esc(tf('unitFest')) + '</p><ol class="twc-laco-linha">' + lc.linha.map(function(l){ return '<li><b>' + esc(l[0]) + '</b><span translate="no">' + esc(l[1]) + '</span></li>'; }).join('') + '</ol>' : '') +
+            (lc.musicas ? (function(){ var mus = function(m){ return '<li><b translate="no">' + esc(m[0]) + '</b><small translate="no">' + esc(m[1]) + '</small></li>'; };
+              var trio = LACOS[3].musicas, duo = lc.par.length === 2, tot = lc.musicas.length + (duo ? trio.length : 0), vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
+              var terceiro = duo ? MEMBROS[[0, 1, 2].filter(function(k){ return lc.par.indexOf(k) < 0; })[0]][1] : '';
+              return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', tot)) + (duo ? ' · ' + esc(tf('soDois').replace('{n}', lc.musicas.length)) : '') + '</p>' +
+                '<ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
+                (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : '') +
+                (duo ? '<details class="twc-laco-mais"><summary>' + esc(tf('comTrio').replace('{q}', terceiro).replace('{n}', trio.length)) + '</summary><ul class="twc-laco-mus">' + trio.map(mus).join('') + '</ul></details>' : '');
+            })() : '') + '</div>'; })() +
+        '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
+        '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
+    } else {
+      var f = FICHAS[trioAba], m = MEMBROS[f.k], aniv = typeof f.aniv === 'string' ? f.aniv : (f.aniv[L()] || f.aniv.pt);
+      var bloco = function(ic, r, v, extra){ return v ? '<div class="twc-f2-bloco"><span class="twc-f2-ic" aria-hidden="true">' + ico(ic, 18) + '</span><dt>' + esc(tf(r)) + '</dt><dd>' + (extra || '') + v + '</dd></div>' : ''; };
+      var gostos = String(f.gostos[L()] || f.gostos.pt).split(/,\s*|、/).filter(Boolean);
+      corpo = '<article class="twc-f2" style="--fc:' + f.cor[0] + '" aria-labelledby="twcF' + f.k + '" role="tabpanel">' +
+        '<header class="twc-f2-palco"><span class="twc-f2-luz" aria-hidden="true"></span>' +
+          '<canvas class="twc-ficha-idol" data-idol="' + f.k + '" width="208" height="224" aria-hidden="true"></canvas>' +
+          '<canvas class="twc-ficha-pet twc-f2-pet" data-pet="' + m[0] + '" width="72" height="72" aria-hidden="true"></canvas>' +
+          '<div class="twc-f2-nome"><small>Draft 1st Generation</small><h2 id="twcF' + f.k + '" translate="no">' + esc(m[1]) + '</h2>' +
+            '<b lang="ja">' + esc(f.jp) + '</b><span translate="no">' + esc(f.nome) + '</span><em>' + esc(f.time) + '</em></div></header>' +
+        '<div class="twc-f2-fala"><blockquote lang="pt">' + esc(f.frase) + '</blockquote>' +
+          '<button type="button" class="twc-f2-voz" data-triovoz="' + f.k + '" aria-label="' + esc(tf('ouvir')) + '">' + ico('fala', 18) + '<span>' + esc(tf('ouvir')) + '</span></button></div>' +
+        '<dl class="twc-f2-grade">' + bloco('bolo', 'aniv', esc(aniv)) + bloco('pin', 'local', esc(f.local)) + bloco('regua', 'altura', esc(f.altura)) +
+          bloco('paleta', 'cor', esc(f.cor[1]), '<i class="twc-ficha-cor" aria-hidden="true"></i>') + bloco('pata', 'pet', esc(f.pet[1])) + bloco('nota', 'audicao', esc(f.audicao)) + bloco('estrela', 'oshis', esc(f.oshis)) + '</dl>' +
+        '<section class="twc-f2-gosta"><h3>' + ico('coracao', 16) + esc(tf('gosta')) + '</h3><ul>' + gostos.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></section>' +
         '<a class="twc-btn twc-btn-claro twc-ficha-blog" href="' + f.blog + '" target="_blank" rel="noopener">' + esc(tf('blog')) + ' ↗</a></article>';
-    }).join('');
-    var mapa = '<section class="twc-amigos" aria-labelledby="twcAmigosT"><h2 id="twcAmigosT">' + esc(tf('mapaAmigos')) + '</h2>' +
-      '<div class="twc-amigos-c"><canvas id="twcAmigosCv" width="680" height="480" role="img" aria-label="' +
-        esc(tf('mapaAmigos') + ': ' + tf('mesmaGeracao') + ' · ' + tf('unitTrio') + ' (Tsu, Lirika, Pati) · ' + tf('dupla') + ' (Tsu, Pati) · ' + tf('pet') + ': Chu, Koali, Pucchi') + '"></canvas></div>' +
-      '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
-      '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
-    return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio">' + mapa + '<div class="twc-fichas">' + cards + '</div></div>';
+    }
+    return faixa(esc(tf('trio')), tf('trioSub')) + '<div class="twc-pag twc-trio"><div class="twc-trio-abas" role="tablist" aria-label="' + esc(tf('trio')) + '">' + abas + '</div>' + corpo + '</div>';
   }
   // mapa de amizades desenhado com os bonecos e os pets de verdade do jogo (perfDesenharIdol + drawPet).
-  // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByura.
+  // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByur✰.
   // Tocar num membro: pulinho, fala com a voz de verdade (as mesmas do palco) e coraçõezinhos; tocar num pet: o pet pula e faz o som dele.
-  var amigosRaf = 0, amigosReage = null;
+  var amigosRaf = 0, amigosReage = null, amigosX = [150, 340, 530], amigosAl = [1, 1, 1], amigosPosAtual = null;
   var AMIGOS_POS = [{k:0, x:150, y:350, pet:[226, 330]}, {k:1, x:340, y:350, pet:[416, 330]}, {k:2, x:530, y:350, pet:[606, 330]}];
   function amigosLigar(){ if(!amigosRaf) amigosRaf = requestAnimationFrame(amigosQuadro); }
   function amigosQuadro(ms){
@@ -960,73 +1149,122 @@
       var L2 = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[k] : null;
       if(L2){ var f = L2[Math.floor(Math.random() * (L2.length - 1))]; txt = f[1];
         try{ if(typeof hubVozTocar === 'function') hubVozTocar(f[0]); }catch(e){} }
-    } else { try{ if(typeof petVoice === 'function') petVoice(null, MEMBROS[k][0]); }catch(e){} }
+    } else { txt = (FICHAS[k] && FICHAS[k].pet ? FICHAS[k].pet[1] : '') + ' ♡';   // o nome do pet aparece no balão ao tocar
+      try{ if(typeof petVoice === 'function') petVoice(null, MEMBROS[k][0]); }catch(e){} }
     amigosReage = {tipo:tipo, k:k, t0:agora, txt:txt};
     carinho();
     amigosLigar();
   }
   function amigosClique(e){
     var cv = e.currentTarget, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-    for(var i = 0; i < 3; i++){ var a = AMIGOS_POS[i];
+    for(var i = 0; i < 3; i++){ var a = (amigosPosAtual || AMIGOS_POS)[i]; if(a.a != null && a.a < .5) continue;
       if(Math.hypot(px - a.pet[0], py - a.pet[1]) < 42){ amigosTocar('p', i); return; }
       if(Math.abs(px - a.x) < 58 && py > a.y - 175 && py < a.y + 12){ amigosTocar('m', i); return; } }
   }
   function amigosDesenhar(cv, s, ms){
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, agora = ms != null ? ms : (typeof performance !== 'undefined' ? performance.now() : 0);
+    var lacoM = LACOS[amigosSel] || LACOS[3], alvoX = [150, 340, 530], alvoA = [1, 1, 1];
+    if(lacoM.par.length === 2){ alvoX[lacoM.par[0]] = 235; alvoX[lacoM.par[1]] = 445; [0, 1, 2].forEach(function(k){ if(lacoM.par.indexOf(k) < 0) alvoA[k] = 0; }); }
+    var reduzM = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for(var km = 0; km < 3; km++){ amigosX[km] += reduzM ? alvoX[km] - amigosX[km] : (alvoX[km] - amigosX[km]) * .16; amigosAl[km] += reduzM ? alvoA[km] - amigosAl[km] : (alvoA[km] - amigosAl[km]) * .18; }
+    var POS = [0, 1, 2].map(function(k){ return {k:k, x:amigosX[k], y:350, pet:[amigosX[k] + 76, 330], a:amigosAl[k]}; }); amigosPosAtual = POS;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
     function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
-    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f3e9ff'); g.addColorStop(.6, '#ffe6f4'); g.addColorStop(1, '#fff4fb');
+    // Cena de palco à noite: céu com nebulosas nas cores do trio, arco de lâmpadas de letreiro, refletores e piso com LED
+    var cor = MEMBROS.map(function(m){ return m[2]; }), lacoAt = LACOS[amigosSel] || LACOS[3];
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1a0b3d'); g.addColorStop(.55, '#3b1a7a'); g.addColorStop(1, '#6b2a8f');
     rr(0, 0, W, H, 34); x.fillStyle = g; x.fill(); x.save(); rr(0, 0, W, H, 34); x.clip();
-    x.fillStyle = 'rgba(155,48,217,.07)'; for(var bx = 0; bx < W; bx += 34) for(var by = 0; by < H; by += 34){ x.beginPath(); x.arc(bx + (by / 34 % 2) * 17, by, 2.2, 0, 7); x.fill(); }
-    AMIGOS_POS.forEach(function(p, k){
-      var a = Math.sin(s * .7 + k) * .06; x.save(); x.translate(p.x, -30); x.rotate(a);
-      var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, ['#e9d0ff', '#e2ffd0', '#cfe0ff'][k]); lg.addColorStop(1, 'rgba(255,255,255,0)');
-      x.fillStyle = lg; x.globalAlpha = .8; x.beginPath(); x.moveTo(-16, 0); x.lineTo(16, 0); x.lineTo(88, 390); x.lineTo(-88, 390); x.closePath(); x.fill(); x.restore(); });
-    var fl = x.createRadialGradient(W / 2, H - 120, 20, W / 2, H - 120, 330); fl.addColorStop(0, 'rgba(255,255,255,.95)'); fl.addColorStop(1, 'rgba(255,255,255,0)');
-    x.fillStyle = fl; x.beginPath(); x.ellipse(W / 2, 352, 330, 46, 0, 0, 7); x.fill();
-    var cor = MEMBROS.map(function(m){ return m[2]; });
+    [[110, 90, cor[0]], [340, 60, '#7cc400'], [570, 90, cor[2]]].forEach(function(n){ var ng = x.createRadialGradient(n[0], n[1], 10, n[0], n[1], 220); ng.addColorStop(0, n[2] + '66'); ng.addColorStop(1, n[2] + '00'); x.fillStyle = ng; x.fillRect(0, 0, W, H); });
+    for(var e = 0; e < 46; e++){ var ex = (e * 137.5) % W, ey = (e * 61.3) % 300, tw = .35 + .65 * Math.abs(Math.sin(s * 1.3 + e)); x.globalAlpha = tw * .9; x.fillStyle = e % 7 ? '#fff' : '#ffe58a'; x.beginPath(); x.arc(ex, ey, e % 5 ? 1.3 : 2.2, 0, 7); x.fill(); }
+    x.globalAlpha = 1;
+    // arco de lâmpadas (letreiro de show) atrás do trio
+    x.save(); x.lineWidth = 10; x.strokeStyle = 'rgba(255,255,255,.12)'; x.beginPath(); x.ellipse(W / 2, 330, 300, 270, 0, Math.PI, 2 * Math.PI); x.stroke();
+    for(var lb = 0; lb <= 30; lb++){ var an = Math.PI + lb / 30 * Math.PI, bx2 = W / 2 + Math.cos(an) * 300, by2 = 330 + Math.sin(an) * 270, on = (Math.floor(s * 4) + lb) % 3 !== 0;
+      var gb = x.createRadialGradient(bx2, by2, 1, bx2, by2, 10); gb.addColorStop(0, on ? 'rgba(255,240,180,.95)' : 'rgba(255,240,180,.35)'); gb.addColorStop(1, 'rgba(255,240,180,0)'); x.fillStyle = gb; x.beginPath(); x.arc(bx2, by2, 10, 0, 7); x.fill();
+      x.fillStyle = on ? '#fff6d0' : '#a98fd6'; x.beginPath(); x.arc(bx2, by2, 3.4, 0, 7); x.fill(); }
+    x.restore();
+    // refletores: um cone na cor de cada membro (quem não está no laço fica com a luz apagada)
+    POS.forEach(function(p, k){
+      var aceso = lacoAt.par.indexOf(k) >= 0; if(p.a < .05) return; var ang = Math.sin(s * .7 + k) * .05;
+      x.save(); x.translate(p.x, -20); x.rotate(ang); var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, cor[k] + (aceso ? 'aa' : '22')); lg.addColorStop(1, cor[k] + '00');
+      x.fillStyle = lg; x.beginPath(); x.moveTo(-14, 0); x.lineTo(14, 0); x.lineTo(92, 380); x.lineTo(-92, 380); x.closePath(); x.fill(); x.restore(); });
+    // piso do palco com reflexo e a faixa de LED na borda
+    var pg = x.createLinearGradient(0, 330, 0, H); pg.addColorStop(0, '#4a2496'); pg.addColorStop(1, '#1f0d4a'); x.fillStyle = pg; x.fillRect(0, 330, W, H - 330);
+    x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 2; for(var fl2 = -6; fl2 <= 6; fl2++){ x.beginPath(); x.moveTo(W / 2 + fl2 * 40, 330); x.lineTo(W / 2 + fl2 * 120, H); x.stroke(); }
+    var led = x.createLinearGradient(0, 0, W, 0); ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#9b30d9', '#ff6fb5'].forEach(function(c2, i2){ led.addColorStop(i2 / 5, c2); });
+    x.fillStyle = led; x.fillRect(0, 327, W, 5); x.globalAlpha = .35; x.fillRect(0, 332, W, 8); x.globalAlpha = 1;
+
     function pilula(px, py, txt, fundo, letra, tam){
       x.font = '400 ' + (tam || 17) + 'px "Mochiy Pop One",sans-serif'; var w = x.measureText(txt).width + 30, h = (tam || 17) + 16;
-      x.save(); x.shadowColor = 'rgba(90,40,160,.22)'; x.shadowBlur = 10; x.shadowOffsetY = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.fillStyle = fundo; x.fill(); x.restore();
+      x.save(); x.shadowColor = 'rgba(255,111,181,.55)'; x.shadowBlur = 14; x.shadowOffsetY = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.fillStyle = fundo; x.fill(); x.restore();
+      x.save(); rr(px - w / 2, py - h / 2, w, h, h / 2); x.clip(); x.fillStyle = 'rgba(255,255,255,.28)'; x.fillRect(px - w / 2, py - h / 2, w, h / 2); x.restore();
       x.strokeStyle = '#fff'; x.lineWidth = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.stroke();
       x.fillStyle = letra; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, px, py + 1);
     }
-    // arco de cima: a unit TsuLiPa (fita nas três cores, passando por cima dos três)
-    var arco = x.createLinearGradient(110, 0, 570, 0); arco.addColorStop(0, cor[0]); arco.addColorStop(.5, '#7cc400'); arco.addColorStop(1, cor[2]);
-    x.save(); x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 18; x.beginPath(); x.moveTo(110, 168); x.quadraticCurveTo(340, 30, 570, 168); x.stroke();
-    x.strokeStyle = arco; x.lineWidth = 10; x.stroke(); x.restore();
-    pilula(W / 2, 92, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 19);
-    // embaixo: a dupla NeByura (Tsu + Pati), fita rosa pontilhada por baixo
-    x.save(); x.setLineDash([2, 15]); x.lineCap = 'round'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 8; x.beginPath(); x.moveTo(150, 392); x.quadraticCurveTo(340, 470, 530, 392); x.stroke(); x.restore();
-    pilula(W / 2, 432, tf('dupla'), '#ff6fb5', '#fff', 15);
-    // faixa da geração: os três entraram juntos
-    pilula(W / 2, 30, tf('mesmaGeracao'), '#fff', '#7b3ff0', 14);
+    var laco = LACOS[amigosSel] || LACOS[3], noLaco = function(k){ return laco.par.indexOf(k) >= 0; };
+    if(laco.par.length === 3){
+      // os três: fita da unit TsuLiPa nas três cores passando por cima, e a faixa da geração
+      var arco = x.createLinearGradient(110, 0, 570, 0); arco.addColorStop(0, cor[0]); arco.addColorStop(.5, '#7cc400'); arco.addColorStop(1, cor[2]);
+      x.save(); x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = 18; x.beginPath(); x.moveTo(110, 168); x.quadraticCurveTo(340, 30, 570, 168); x.stroke();
+      x.strokeStyle = arco; x.lineWidth = 10; x.stroke(); x.restore();
+      pilula(W / 2, 96, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 24);
+      pilula(W / 2, 32, tf('mesmaGeracao'), '#fff', '#7b3ff0', 18);
+    } else {
+      // dupla: os dois lado a lado no centro, um holofote só sobre eles e um selo de coração entre os dois
+      var cA = cor[laco.par[0]], cB = cor[laco.par[1]], mx = (POS[laco.par[0]].x + POS[laco.par[1]].x) / 2, pul = 1 + Math.sin(s * 3) * .05;
+      x.save(); var hz = x.createRadialGradient(mx, 352, 20, mx, 352, 230); hz.addColorStop(0, 'rgba(255,240,250,.55)'); hz.addColorStop(1, 'rgba(255,240,250,0)');
+      x.fillStyle = hz; x.beginPath(); x.ellipse(mx, 352, 230, 40, 0, 0, 7); x.fill();
+      var cone = x.createLinearGradient(0, 0, 0, 360); cone.addColorStop(0, 'rgba(255,245,255,.45)'); cone.addColorStop(1, 'rgba(255,245,255,0)');
+      x.fillStyle = cone; x.beginPath(); x.moveTo(mx - 24, 0); x.lineTo(mx + 24, 0); x.lineTo(mx + 210, 360); x.lineTo(mx - 210, 360); x.closePath(); x.fill(); x.restore();
+      x.save(); x.translate(mx, 236); x.scale(pul, pul);
+      function cor2(r){ x.beginPath(); x.moveTo(0, r * .95); x.bezierCurveTo(-r * 1.5, -r * .1, -r * .75, -r * 1.25, 0, -r * .45); x.bezierCurveTo(r * .75, -r * 1.25, r * 1.5, -r * .1, 0, r * .95); x.closePath(); }
+      x.shadowColor = 'rgba(255,111,181,.8)'; x.shadowBlur = 22; x.fillStyle = '#fff'; cor2(31); x.fill(); x.shadowBlur = 0;
+      var hg = x.createLinearGradient(-26, -26, 26, 26); hg.addColorStop(0, cA); hg.addColorStop(.5, '#ff6fb5'); hg.addColorStop(1, cB); x.fillStyle = hg; cor2(25); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.ellipse(-9, -10, 6, 3.5, -.6, 0, 7); x.fill();
+      [[-46, -18, 7], [44, -26, 5], [36, 22, 4], [-40, 24, 4]].forEach(function(b, n){ var r = b[2] * (.6 + .4 * Math.abs(Math.sin(s * 2.4 + n))); x.fillStyle = '#fff6c4';
+        x.beginPath(); x.moveTo(b[0], b[1] - r); x.quadraticCurveTo(b[0], b[1], b[0] + r, b[1]); x.quadraticCurveTo(b[0], b[1], b[0], b[1] + r); x.quadraticCurveTo(b[0], b[1], b[0] - r, b[1]); x.quadraticCurveTo(b[0], b[1], b[0], b[1] - r); x.fill(); });
+      x.restore();
+      pilula(W / 2, 40, t6(laco.nome), '#ff6fb5', '#fff', 24);
+    }
     var rg = amigosReage && agora - amigosReage.t0 < 2400 ? amigosReage : null, rt = rg ? (agora - rg.t0) / 1000 : 0;
-    AMIGOS_POS.forEach(function(p, k){
+    POS.forEach(function(p, k){
       var av = membroAv(k); if(!av) return;
+      if(p.a < .03) return; x.save(); x.globalAlpha = p.a;   // na dupla, o terceiro sai de cena
       var pulo = Math.max(0, Math.sin(s * 2.2 + k * 2.1)) * 5;
       if(rg && rg.tipo === 'm' && rg.k === k) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 34;
-      x.fillStyle = 'rgba(70,30,120,.16)'; x.beginPath(); x.ellipse(p.x, p.y + 4, 46, 9, 0, 0, 7); x.fill();
+      // pódio redondo na cor do membro, com aro de luz
+      var pdg = x.createLinearGradient(0, p.y - 12, 0, p.y + 22); pdg.addColorStop(0, '#ffffff'); pdg.addColorStop(.25, cor[k]); pdg.addColorStop(1, '#1f0d4a');
+      x.fillStyle = pdg; x.beginPath(); x.ellipse(p.x, p.y + 12, 64, 16, 0, 0, Math.PI); x.lineTo(p.x - 64, p.y - 2); x.ellipse(p.x, p.y - 2, 64, 16, 0, Math.PI, 0, true); x.closePath(); x.fill();
+      var tg = x.createRadialGradient(p.x, p.y - 4, 4, p.x, p.y - 2, 64); tg.addColorStop(0, '#fff'); tg.addColorStop(1, cor[k]); x.fillStyle = tg; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 2.5; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.stroke();
       x.save(); x.translate(p.x - 78, p.y - 168 + 6 - pulo); x.scale(1.5, 1.5);
-      try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = rg && rg.tipo === 'm' && rg.k === k ? ['coracao', 'tchau', 'v'][k] : ['nyan', 'mic', 'v'][k]; perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
+      var deLado = laco.par.length === 2 && noLaco(k) && window.TW_LADO && !(rg && rg.tipo === 'm' && rg.k === k);   // na dupla, os dois de perfil, um virado para o outro
+      try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = rg && rg.tipo === 'm' && rg.k === k ? ['coracao', 'tchau', 'v'][k] : ['nyan', 'mic', 'v'][k]; if(!deLado) perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
       x.restore();
-      pilula(p.x, p.y + 24, MEMBROS[k][1], cor[k], '#fff', 16);
+      if(deLado) try{ window.TW_LADO.desenhar(x, p.x, p.y - 11 - pulo, 2.05, av, s * 60, p.x > mx); }catch(e){}
+      // faixa com o nome (fita com pontas recortadas)
+      x.font = '400 22px "Mochiy Pop One",sans-serif'; var nw2 = x.measureText(MEMBROS[k][1]).width + 30, ny = p.y + 38;   // legível no celular (o canvas aparece ~metade)
+      x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.moveTo(p.x - nw2 / 2 - 12, ny - 9); x.lineTo(p.x - nw2 / 2, ny - 9); x.lineTo(p.x - nw2 / 2, ny + 15); x.lineTo(p.x - nw2 / 2 - 12, ny + 15); x.lineTo(p.x - nw2 / 2 - 6, ny + 2); x.closePath(); x.fill();
+      x.beginPath(); x.moveTo(p.x + nw2 / 2 + 12, ny - 9); x.lineTo(p.x + nw2 / 2, ny - 9); x.lineTo(p.x + nw2 / 2, ny + 15); x.lineTo(p.x + nw2 / 2 + 12, ny + 15); x.lineTo(p.x + nw2 / 2 + 6, ny + 2); x.closePath(); x.fill();
+      var fg = x.createLinearGradient(0, ny - 17, 0, ny + 17); fg.addColorStop(0, cor[k]); fg.addColorStop(1, '#2a1060'); rr(p.x - nw2 / 2, ny - 17, nw2, 34, 8); x.fillStyle = fg; x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2.5; x.stroke();
+      x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(MEMBROS[k][1], p.x, ny + 1);
       var pp = 0; if(rg && rg.tipo === 'p' && rg.k === k) pp = Math.max(0, Math.sin(Math.min(1, rt / .45) * Math.PI)) * 30;
-      if(typeof drawPet === 'function'){ x.fillStyle = 'rgba(70,30,120,.14)'; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 28, 22, 5, 0, 0, 7); x.fill();
+      if(typeof drawPet === 'function'){ var cg = x.createLinearGradient(0, p.pet[1] + 20, 0, p.pet[1] + 36); cg.addColorStop(0, '#ffd1e8'); cg.addColorStop(1, '#ff8cc6');
+        x.fillStyle = cg; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 28, 26, 8, 0, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke();   // almofadinha do pet
         try{ drawPet(x, MEMBROS[k][0], p.pet[0], p.pet[1] - pp, 1.55, s * 60 + k * 20, 'feliz'); }catch(e){} }
-      x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = cor[k]; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(FICHAS[k].pet[1], p.pet[0], p.pet[1] + 48);
+      x.restore();
     });
     // reação: balão com a fala de verdade e coraçõezinhos subindo
     if(rg){
-      var alvo = AMIGOS_POS[rg.k], bxp = rg.tipo === 'm' ? alvo.x : alvo.pet[0], byp = rg.tipo === 'm' ? alvo.y - 196 : alvo.pet[1] - 46, al = Math.min(1, (2.4 - rt) * 2);
+      var alvo = POS[rg.k], bxp = rg.tipo === 'm' ? alvo.x : alvo.pet[0], byp = rg.tipo === 'm' ? alvo.y - 176 : alvo.pet[1] - 46, al = Math.min(1, (2.4 - rt) * 2);
       x.save(); x.globalAlpha = al;
       for(var h = 0; h < 5; h++){ var ft = (rt * .9 + h * .2) % 1; x.fillStyle = [cor[rg.k], '#ff6fb5', '#ffd23f'][h % 3]; x.font = '20px sans-serif'; x.textAlign = 'center';
         x.globalAlpha = al * Math.sin(ft * Math.PI); x.fillText('♥', bxp + (h - 2) * 18 + Math.sin(rt * 5 + h) * 6, byp + 30 - ft * 60); }
       x.globalAlpha = al;
-      if(rg.txt){ x.font = '800 17px "M PLUS Rounded 1c",sans-serif'; var lw = Math.min(260, x.measureText(rg.txt).width + 28), bxx = Math.max(lw / 2 + 8, Math.min(W - lw / 2 - 8, bxp));
-        rr(bxx - lw / 2, byp - 36, lw, 34, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[rg.k]; x.lineWidth = 3; x.stroke();
+      if(rg.txt){ x.font = '800 22px "M PLUS Rounded 1c",sans-serif'; var lw = Math.min(W - 24, x.measureText(rg.txt).width + 32), bxx = Math.max(lw / 2 + 8, Math.min(W - lw / 2 - 8, bxp));
+        rr(bxx - lw / 2, byp - 44, lw, 42, 18); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[rg.k]; x.lineWidth = 3; x.stroke();
         x.fillStyle = '#fff'; x.beginPath(); x.moveTo(bxp - 7, byp - 3); x.lineTo(bxp, byp + 8); x.lineTo(bxp + 7, byp - 3); x.closePath(); x.fill();
-        x.fillStyle = '#4a2a7a'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(rg.txt, bxx, byp - 18, lw - 14); }
+        x.fillStyle = '#4a2a7a'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(rg.txt, bxx, byp - 22, lw - 18); }
       x.restore();
     }
     x.fillStyle = '#fff'; [[50, 70], [630, 80], [250, 150], [430, 150], [40, 300], [650, 260]].forEach(function(b, k){
@@ -1070,7 +1308,10 @@
   }
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
   function embutir(k){
-    var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot'); if(!el || !slot) return;
+    var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
+    if(!el && k === 'mapa' && typeof window.twMapaCarregar === 'function'){   // o mapa baixa depois da abertura: se ainda não chegou, pede e tenta de novo
+      window.twMapaCarregar(); var tent = 0; (function espera(){ if(topo() !== 'emb:mapa') return; if(document.querySelector(EMB.mapa[0])){ embutir('mapa'); return; } if(++tent < 40) setTimeout(espera, 150); })(); return; }
+    if(!el || !slot) return;
     if(embAtual && embAtual.el !== el) devolver();
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
     slot.appendChild(el);
@@ -1093,8 +1334,9 @@
     slot.appendChild(box); box.classList.add('mini');
     if(typeof hubIV !== 'undefined') hubIV.cw = 0;
     var L0 = typeof hubIV !== 'undefined' && hubIV.L && hubIV.L[0];
-    if(typeof hubIdolsUI === 'function' && (box.hidden || !(L0 && L0.trio))) try{ hubIdolsUI(); }catch(e){}
-    if(typeof hubIdolsLigar === 'function') try{ hubIdolsLigar(); }catch(e){}
+    // Inicializa a vitrine apenas quando vazia, sem inscrever hubIdolsUI em redraws.
+    if(typeof hubIdolsUI === 'function' && (box.hidden || !box.children.length)) try{ hubIdolsUI(); }catch(e){}
+    if(typeof hubIdolsLigar === 'function' && !box.twcLigada){ try{ hubIdolsLigar(); box.twcLigada = true; }catch(e){} }
   }
   // o Tsu, a Lirika e o Pati entram na fila da vitrine (só com o celular ligado); sem pontuação
   window.twcTrioVitrine = function(){
@@ -1125,18 +1367,27 @@
     if(!cel) return;
     var comecou = typeof hubComecou !== 'undefined' ? hubComecou : true;
     var v = comecou ? topo() : 'abre', chave = v + '|' + pilha.length;
+    // A abertura é estática entre toques: não desmontar/recriar seus canvases,
+    // nem retirar/reinserir a vitrine dos Idols em atualizações de login e missões.
+    if(v === 'abre' && tela && tela.getAttribute('data-tela') === 'abre' && $id('twcAbreVitrine')){
+      // O hub clássico pode mover a vitrine de volta; recoloque-a sem destruir a abertura.
+      requestAnimationFrame(function(){
+        if(cel && tela && tela.getAttribute('data-tela') === 'abre') vitrineTrazer();
+      });
+      return;
+    }
     var rolagem = chave === ultimaTela ? tela.scrollTop : 0; ultimaTela = chave;
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
     vitrineDevolver();
-    var part = $id('hubPart');   // as partículas do tema do momento (neve, pétalas, corações...) caem no celular também
-    tela.innerHTML = '<div class="hubpart twc-part" aria-hidden="true">' + (part ? part.innerHTML : '') + '</div>' +
+    // Não clonar a árvore animada do hub a cada navegação: custo alto de DOM no iPhone.
+    tela.innerHTML =
       (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
     avatares(); bolinhas(); idolsDesenhar(); if(v === 'album') cartasDesenhar(); if(v.indexOf('emb:') === 0) embutir(v.slice(4)); else devolver();
-    if(v === 'abre'){ vitrineTrazer(); flutuantes(); }
+    if(v === 'abre'){ flutuantes(); requestAnimationFrame(function(){ if(cel && tela && tela.getAttribute('data-tela') === 'abre') vitrineTrazer(); }); }
     tela.scrollTop = rolagem;   // depois de trazer o mapa/painel de volta (antes, a tela encolhia e voltava ao topo)
     var pc = $id('twcPalcoCv'); if(pc){ pc.addEventListener('click', palcoToque); palcoLigar(); }
     if(v.indexOf('dentro:') === 0){ dentroLigar(); var dcv = $id('twcDentroCv'); if(dcv && !dcv.twc){ dcv.twc = true; dcv.addEventListener('click', dentroClique); } }
@@ -1174,8 +1425,24 @@
   function acao(a, el){
     if(a === 'comecar'){ if(typeof hubComecar === 'function') hubComecar(); return; }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
-    if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
+    if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
+    if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas
+      if(topo() === 'dentro:vip' && dentroUltimos.length){
+        var membrosVip = dentroUltimos.filter(function(g){ return g.membro >= 0; });
+        if(membrosVip.length){ var escolhido = membrosVip[Math.floor(Date.now() / 2500) % membrosVip.length]; dentroReage = {k:escolhido.k,t0:Date.now()}; som(); }
+      }
+      return;
+    }
+    if(a === 'vipPose'){ // A8.4-B: seleção efêmera, somente dentro do VIP
+      if(topo() !== 'dentro:vip') return;
+      var p = el && el.getAttribute('data-pose');
+      if(['v','coracao','tchau'].indexOf(p) < 0) return;
+      vipPose = p;
+      var botoes = document.querySelectorAll('.twc-vip-pose');
+      [].forEach.call(botoes,function(b){ b.setAttribute('aria-pressed',String(b.getAttribute('data-pose') === p)); });
+      return;
+    }
     if(a === 'vipFoto'){ vipFoto(); return; }
     if(a === 'portaMis'){ som(); folhaMissoes(); return; }
     if(a === 'vip'){
@@ -1213,6 +1480,12 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
+    if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
+    if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
+    if(b.dataset.anivcor){ anivCoracao(b.dataset.anivcor, b); return; }
+    if(b.dataset.hjaniv){ hojeAnivTodos = true; som(); desenhar(); return; }
+    if(b.dataset.hjver){ hojeAberto = !hojeAberto; som(); desenhar(); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
@@ -1291,6 +1564,9 @@
     if(b.dataset.v){ ir(b.dataset.v); return; }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
+    if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
+    if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
+    if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
@@ -1303,11 +1579,22 @@
     mold = document.createElement('div'); mold.id = 'twcMoldura'; mold.className = 'twc twc-moldura'; mold.hidden = true;
     document.body.appendChild(mold);
     mold.addEventListener('click', molduraClique);
-    var agenda = function(){ if(!moldRaf) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(agenda);
-    // Uma única inscrição: observe() no mesmo alvo substitui a configuração anterior.
-    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden','class'], childList:true});   // body.jogando (Center⭐Run! correndo) e janelas criadas na hora (jogos que carregam depois)
-    setInterval(function(){ if(cel) agenda(); }, 1500);   // rede de segurança: alguma janela que abriu sem avisar
-    ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});   // html.tw-kt-arena (show do Karaoke)
+    var agenda = function(){ if(!moldRaf && cel) moldRaf = requestAnimationFrame(molduraAtualizar); }, ob = new MutationObserver(function(records){
+      // Ignora mudanças no próprio celular/moldura: evitam feedback de desenho e piscadas.
+      for(var i=0;i<records.length;i++){
+        var el=records[i].target;
+        if(el && el.nodeType === 1 && el.closest && el.closest('#twCel,#twcMoldura')) continue;
+        if(el === document.body && records[i].type === 'childList'){
+          var nodes=[].slice.call(records[i].addedNodes).concat([].slice.call(records[i].removedNodes));
+          if(nodes.length && nodes.every(function(n){ return n.id === 'twCel' || n.id === 'twcMoldura'; })) continue;
+        }
+        if(el === document.body && records[i].attributeName === 'class') continue;
+        agenda(); return;
+      }
+    });
+    ob.observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden','class'], childList:true});
+    setInterval(function(){ if(cel) agenda(); }, 1500);
+    ob.observe(document.documentElement, {attributes:true, attributeFilter:['class']});
   }
 
   /* ---------- boas-vindas do celular (3 telas, uma vez por aparelho; o tutorial clássico fica para o visual antigo) ---------- */
@@ -1330,7 +1617,7 @@
   /* ---------- montar ---------- */
   // Ligar e desligar na hora, sem recarregar a página (o hub clássico nunca deixou de estar montado por baixo).
   function desligar(){
-    try{ localStorage.removeItem(CHAVE); }catch(e){}
+    try{ localStorage.setItem(CHAVE, '0'); }catch(e){}   // escolheu o clássico: fica assim até ligar de novo
     window.TW_CELULAR_LIGADO = false; limparEndereco(); fecharFolha();
     devolver(); vitrineDevolver();
     if(cel){ cel.remove(); cel = null; }
@@ -1340,9 +1627,21 @@
     if(typeof hubCfgUI === 'function') hubCfgUI();
   }
   function ligar(){ window.TW_CELULAR_LIGADO = true; pilha = ['inicio']; classico = false; montar(); }
+  // Se a interface nova falhar, o hub clássico deve continuar acessível.
+  // Não tocar em saves, conta, inventário ou dados do servidor.
+  function falhaInicializacao(erro){
+    try{ vitrineDevolver(); }catch(e){}
+    try{ if(cel){ cel.remove(); cel = null; } }catch(e){}
+    tela = nav = folha = null;
+    try{ if(mold) mold.hidden = true; }catch(e){}
+    document.body.classList.remove('tw-cel', 'tw-cel-classico', 'tw-cel-janela', 'tw-cel-cr', 'tw-cel-kt');
+    window.TW_CELULAR_LIGADO = false;
+    try{ localStorage.removeItem(CHAVE); }catch(e){}
+    try{ console.error('[TsuLiPa] Visual novo indisponível; mantendo hub clássico.', erro); }catch(e){}
+  }
   function montar(){
-    var h = $id('hub'); if(!h || cel) return;
-    document.body.classList.add('tw-cel');
+    var h = $id('hub'); if(!h || cel || !window.TW_CELULAR_LIGADO) return;
+    try{
     molduraMontar();
     cel = document.createElement('div'); cel.id = 'twCel'; cel.className = 'twc';
     cel.innerHTML = '<div class="twc-tela" id="twcTela"></div><nav class="twc-nav" id="twcNav" aria-label="TsuLiPa⭐World"></nav><div class="twc-folha" id="twcFolha" hidden></div>';
@@ -1358,17 +1657,30 @@
     });
     montar.tecla = true;
     desenhar();
+    document.body.classList.add('tw-cel');
+    }catch(e){ falhaInicializacao(e); }
+  }
+  // Vários eventos do hub podem ocorrer na mesma frame (login, estrelas, missões).
+  // Um único desenho por frame evita reconstruir toda a tela repetidamente.
+  var redesenhoRaf = 0;
+  function agendarRedesenho(){
+    if(!cel || redesenhoRaf) return;
+    redesenhoRaf = requestAnimationFrame(function(){
+      redesenhoRaf = 0;
+      if(!cel) return;
+      try{ desenhar(); }catch(e){ falhaInicializacao(e); }
+    });
   }
   // Refaz junto com o hub (idioma, login, estrelas, alertas, missões, "Toque para começar").
-  ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI', 'hubIdolsUI'].forEach(function(nome){
+  ['hubMontar', 'hubCardsUI', 'hubComecar', 'hubMisUI', 'hubMostrar', 'hubTemaUI'].forEach(function(nome){
     var f = window[nome]; if(typeof f !== 'function') return;
-    window[nome] = function(){ var r = f.apply(this, arguments); try{ if(cel) desenhar(); }catch(e){} return r; };
+    window[nome] = function(){ var r = f.apply(this, arguments); agendarRedesenho(); return r; };
   });
   // Estrelas e visita do mapa mudam sozinhas: atualiza só esses textos (sem refazer a tela e perder o foco).
   setInterval(function(){
     var h = $id('hub'); if(!cel || !h || h.hidden) return;
     var s = $id('twcEstrelas'); if(s && s.textContent !== estrelas()) s.textContent = estrelas();
-    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; desenhar(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
+    var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
   window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar};

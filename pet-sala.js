@@ -577,7 +577,10 @@ function petPhoneIcon(c, tipo){
   }else if(tipo==='humor'){   // app Humor: diamantinho + barrinhas
     var dc=(typeof window!=='undefined'&&window.TW_HUMOR&&window.TW_HUMOR.cor())||'#7be35a';
     x.fillStyle=dc;x.strokeStyle='#5a4a7a';x.lineWidth=2;x.beginPath();x.moveTo(24,10);x.lineTo(34,27);x.lineTo(24,36);x.lineTo(14,27);x.closePath();x.fill();x.stroke();
-    x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.moveTo(24,10);x.lineTo(28,26);x.lineTo(24,26);x.closePath();x.fill();
+    // Cristal Oshi: facetas estáticas no ícone do Humor (sem custo de animação).
+    x.fillStyle='rgba(255,255,255,.3)';x.beginPath();x.moveTo(24,10);x.lineTo(14,27);x.lineTo(24,36);x.closePath();x.fill();
+    x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=1;x.beginPath();x.moveTo(24,10);x.lineTo(24,36);x.moveTo(14,27);x.lineTo(34,27);x.stroke();
+    x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.moveTo(24,20);x.lineTo(27,26);x.lineTo(24,31);x.lineTo(21,26);x.closePath();x.fill();
     [['#b6ff3b',22],['#ff6fb5',16],['#ffd23f',19],['#4169e1',13]].forEach(function(b,i){box(38,14+i*9,22,5,2.5,'#fff');box(38,14+i*9,b[1],5,2.5,b[0]);});
     star(47,50,7,'#ffdf5f');
   }else if(tipo==='cartas'){

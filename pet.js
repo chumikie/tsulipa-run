@@ -608,7 +608,7 @@ var PET_DECOR = [   // chaves antigas mantidas: quem já comprou continua com o 
   ['zipper',  'Pôster ツリパ',       0, 148, 36, 48, 39.5, 'poster',   -.03],
   ['banner',  'Quadro ポリリズム',    60, 205, 34, 30, 38.2, 'quadro',    0],
   ['brs48',   'Pôster OUR STORY',  120, 243, 34, 41, 35,   'poster',    .03],
-  ['nebyura', 'Pôster NeByura',     80, 151, 85, 27, 35.5, 'quadro',    0],
+  ['nebyura', 'Pôster NeByur✰',     80, 151, 85, 27, 35.5, 'quadro',    0],
   ['campo',   'Pôster SECRET BASE', 80, 189, 84, 27, 34.1, 'polaroid', -.06],
   ['doces',   'Quadro Valentine',  100, 226, 87, 52, 33,   'quadro',    0]
 ];
@@ -1116,7 +1116,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=4',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=5',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

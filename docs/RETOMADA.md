@@ -1,3 +1,40 @@
+## Rodada 16/11/2026 (tarde) — PR #98, versão v3.0
+
+**Entrou**
+- **Visual de celular é o padrão nos telefones** (toque + lado menor ≤ 600 px) quando a pessoa não escolheu; Ajustes → "Voltar ao visual clássico" grava `brs48cr_celular='0'`. Computador e tablet seguem no clássico (botão 📱 no ⚙️). O clássico fica no histórico do git (marcar `v3-classico` depois do merge).
+- **Correção grave:** o selo de missão pendente (`badge(true)`) quebrava o visual novo para quem tinha conta e missão por fazer — voltava sozinho ao clássico (o bug também estava na `main`).
+- **"Hoje" no Início (celular):** desejo do dia → Camarim VIP, missões, capítulo de domingo (lido ao abrir o News, `tw_cap_lido`), aniversários do dia com ♡ Coração (`dar_coracao`) e Perfil; 1 aniversário + "+N" que abre; com tudo feito a lista recolhe ("Ver lista").
+- **Menu** sem repetição (sem TV repetida, News, Hoje/Calendário/desejo/VIP — moram no Início); "TsuLiPa ♡" → "Fichinhas".
+- **Teams:** barra até a meta só com 2+ jogando na semana; os outros aparecem como convite.
+- **Descoberta:** desejo do dia com o dobro de chance para Battle/Studio/Bloom; missões (migration `missoes_descoberta`, a partir de 17/11): nível 1 alterna jardim/battle em dias pares, nível 2 é a foto do Studio a cada 3 dias.
+- **Quadrinhos da temporada 0** (6 capítulos das músicas dos Unit Festivals): direção de cena por quadro (`JN_T0_DIR` → `jnT0Desenhar`): cenários próprios (audição, sala com espelho e reflexo, cidade city pop com neon, praia/pôr do sol, quarto, tela dividida dia/noite, Halloween, portão do World), palco por festival com plateia de lightsticks e faixa da música, câmera geral/médio/close, expressões existentes, balão nunca sobre rosto, lua/sol no lado sem balão. Falas, datas e Temporada 1 intactas.
+- **Desenhos:** palco de amizades e Camarim VIP com textos legíveis no celular; VIP equilibrado; Battle/Studio em treino também no clássico; JOGAR do Center⭐Run visível no celular; Bloom mostra erro em vez de "Carregando..." eterno; Studio "Pose V ✌".
+- **Peso:** `tw-mapa.js` (~100 KB) baixa depois da abertura (`twMapaCarregar`); o Mapa no celular pede e espera se tocar antes.
+- Temporada 1 continua trancada; datas movidas para os domingos 27/12/2026 → 31/01/2027 (depois dos capítulos comuns).
+
+**Falta:** aparelho/login reais; ok do Pati; merge do dono; dia do aniversário da Lirika (a ficha só diz "maio"); avisar jogadores que o aniversário (dia/mês) é público no Calendário; Temporada 1 (refino visual + revisão nativa + autorização); áudio e sala do pet não testados aqui.
+
+## Auditoria geral — 16/11/2026 (branch `fix/recuperacao-visual-celular-20261115`, PR #98)
+
+**Estado:** a `main` tem tudo até a #97 (o "site não abre no iPhone" era a tela de carregamento decorativa cobrindo o início; a #97 tirou). A PR #98 leva 70+ commits: recuperação visual do celular, Temporada 1 trancada e as correções abaixo. Prévia: `tsulipa-world-git-fix-recuperacao-visual-celul-f18405-tsu-li-pa.vercel.app/?celular=1`.
+
+**Corrigido nesta auditoria**
+- Arquivos alterados sem trocar `?v=` (tw-celular, tw-calendario, tw-mapa, hub-polish, pet-sala): o celular misturava arquivo velho e novo até o F5. Teste novo `cache-versoes` reprova quando isso volta.
+- `jornal-capitulos.js` (100 KB, Temporada 1 nos 6 idiomas) carregava na abertura de todo mundo; agora baixa quando o Idol⭐News! ou o Calendário abre (`jornalCapsCarregar`). Abertura clássica 1.792 → 1.693 KB.
+- Vitrine: sem Idol repetido quando poucos cabem; proporção e ordem sorteada iguais ao clássico.
+- Menu: Ranking legível (a superfície de papel do Oshi apagava o roxo); sem atalhos que já têm porta no Início ou na engrenagem.
+- Fichinhas em abas, com Ouvir; quadrinho ampliado ao tocar; descrições em 2 linhas.
+- Temporada 1: falas sem corte, balões lado a lado, pistas redesenhadas, direção de cena nos 30 quadros, leitor inerte, CSS fluido.
+
+**Conferido sem erro:** sintaxe de todos os .js; arquivos referenciados no index existem; abertura clássica (iPhone, Galaxy, desktop) e celular sem erro de script; Sora, Karaoke e privacidade abrem; Handshake, Café, News, Battle, Gacha, Loja, Dois e Perfil abrem e fecham. Testes 110/110.
+
+**Falta (precisa de aparelho, conta ou decisão do dono)**
+- Aparelho real (iPhone/Safari, Android) e login real em tudo da #98.
+- Ligar o visual de celular para todos (depois do ok do Pati).
+- Temporada 1: revisão nativa das traduções e autorização; personagens ainda em poses prontas (andar/virar/abraçar pede poses novas no `perfDesenharIdol`).
+- Peso: abertura ainda ~230 KB acima do pós-reforma (1.460 KB); próximos candidatos: `tw-mapa.js` (101 KB) sob demanda e o bloco do Dois no `index.html`.
+- Prêmio dos lightsticks do Battle (SQL proposto, não aplicado); PRs antigas #72 e #74 (fechar ou registrar).
+
 ## Correção de abertura — 15/11/2026 (PR de correção, ainda não publicada)
 
 Base conferida: `f257624`, merge da #95; Vercel READY no mesmo commit. O relato é tela que abre e não responde a toques. No Chrome remoto, os dois modos abriram como visitante; houve timeout inicial de inspeção no modo novo, seguido de interação normal. **Não foi possível reproduzir conclusivamente o congelamento do iPhone.**
@@ -141,13 +178,13 @@ Como foi feito: cobertura do Chrome função por função (o que roda fora de ca
   - Camarim VIP: aberto para todo mundo todo dia, sem dinheiro (é só cumprir o desejo do dia). É uma sala com tapete vermelho, espelho de lâmpadas e o trio; o botão "Foto VIP" baixa um Polaroid em PNG.
   - Nada disso mexe em estrelas, ranking ou Supabase.
 - Rodada 10 (15/11):
-  - Fichinhas do trio (tela `trio`, aberta pelo chip "♡ Fichinhas" do palco ou pelo atalho "TsuLiPa ♡" do Menu). Os dados vêm dos perfis oficiais em brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html, só com o que o blog informa e sem ano de nascimento. A tela tem o mapa de amizades: unit TsuLiPa e Gekokujou, dupla NeByura (Tsu + Pati) e os pets Chu, Koali e Pucchi.
+  - Fichinhas do trio (tela `trio`, aberta pelo chip "♡ Fichinhas" do palco ou pelo atalho "TsuLiPa ♡" do Menu). Os dados vêm dos perfis oficiais em brs48.blogspot.com/2021/08/{tsu,lirika,pati}.html, só com o que o blog informa e sem ano de nascimento. A tela tem o mapa de amizades: unit TsuLiPa e Gekokujou, dupla NeByur✰ (Tsu + Pati) e os pets Chu, Koali e Pucchi.
   - Abertura animada: 3 camadas em parallax (seguem o dedo, o mouse e a inclinação quando o navegador deixa) e o trio de corpo inteiro flutuando. Tela de carregamento só logo depois de abrir a página (mínimo de 0,9 s e máximo de 4 s). "Reduzir movimento" deixa tudo parado.
   - TsuPhone: novo app "Humor" (barrinhas, desejo, série, recados do trio, prêmios e a foto VIP salva em JPEG pequeno, `brs48cr_vip_foto_v1`). Ao cumprir o desejo, um membro do trio manda um recado (o Tsu e o Pati no masculino, a Lirika no feminino).
   - Camarim: prêmios desenhados sem imagem nova (`petPremiosDesejo`): troféu na estante com 3 dias seguidos, lâmpadas VIP no espelho com 7 dias seguidos e tapete vermelho depois da foto VIP. `pet-sala.js?v=3`.
   - Tour de camarim (visitar o camarim de outros Idols e deixar coração): **precisa de RPC nova no Supabase, esperando o OK do dono**.
 - Rodada 11 (15/11), refino pedido pelo dono ("tudo novo no nível atual do site, sem emojis baratos e sem erros"):
-  - O mapa de amizades virou canvas animado (`amigosDesenhar`): o trio de corpo inteiro com `perfDesenharIdol`, os pets de verdade (Chu, Koali e Pucchi, com `drawPet`), fitas nas cores dos membros, pílulas "unit TsuLiPa", "Gekokujou" e "dupla NeByura", holofotes e brilhinhos. Sem animação com "reduzir movimento".
+  - O mapa de amizades virou canvas animado (`amigosDesenhar`): o trio de corpo inteiro com `perfDesenharIdol`, os pets de verdade (Chu, Koali e Pucchi, com `drawPet`), fitas nas cores dos membros, pílulas "unit TsuLiPa", "Gekokujou" e "dupla NeByur✰", holofotes e brilhinhos. Sem animação com "reduzir movimento".
   - Fichas no estilo cartão de perfil: topo na cor do membro com listras, boneco de corpo inteiro, chips de geração e time, linhas com ícones desenhados (bolo, alfinete, régua, paleta, pata, coração), pet desenhado e frase em balão.
   - Emojis trocados por ícones desenhados no card de humor (desejo, série, VIP), no aviso, no Cantinho dos pais, na manutenção (cone em SVG) e no app Humor do TsuPhone.
   - Salas por dentro redesenhadas: Café com vitrine, balcão de madeira, sofá com almofadas e luminárias; Zipper⭐Shop com arara de vestidos, saias e jaquetas, espelho de lâmpadas e prateleiras; Gacha com máquina de cápsulas, manivela e placa neon; VIP com cortinas de veludo. Os Idols ficaram maiores e o diamantinho aparece em cima de você.

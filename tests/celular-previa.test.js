@@ -16,13 +16,16 @@ function carregar(){
   return sandbox.TW_CELULAR;
 }
 
-test('desligado por padrão: o index só baixa o tw-celular com brs48cr_celular ou ?celular=1', () => {
+test('padrão nos telefones: o index liga sozinho em telefone, respeita a escolha guardada e ?celular=0|1', () => {
   const i = html.indexOf("var k='brs48cr_celular'");
   assert.ok(i > 0, 'loader da prévia no index');
   const bloco = html.slice(i, html.indexOf('</script>', i));
   assert.match(bloco, /get\('celular'\)/);
-  assert.match(bloco, /q==='0'\)localStorage\.removeItem\(k\)/, '?celular=0 desliga');
-  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.match(bloco, /q==='0'\)localStorage\.setItem\(k,'0'\)/, '?celular=0 guarda o clássico');
+  assert.match(bloco, /fone=matchMedia\('\(pointer:coarse\)'\)\.matches&&Math\.min\(screen\.width,screen\.height\)<=600/, 'telefone = toque + tela pequena');
+  assert.match(bloco, /on=pref==='1'\|\|\(pref!=='0'&&fone\)/, 'escolha guardada vence; sem escolha, telefone liga');
+  assert.match(js, /function desligar\(\)\{\n    try\{ localStorage\.setItem\(CHAVE, '0'\); \}/, 'Visual clássico fica guardado');
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-lado\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
   assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
   const tx = bloco.match(/var TX=\{([^}]*)\}/)[1];
@@ -58,7 +61,7 @@ test('visita do mapa: a tela de celular usa o mesmo sorteio do mapa e nunca most
   assert.match(mapa, /window\.twMapaVisitaAgora=function\(\)/);
   assert.match(mapa, /function visitaOshi\(rua\)\{[\s\S]{0,260}var k=visitaQuem\(rua\);if\(k<0\)return null;/);
   assert.match(mapa, /var euK=visitaContaTrio\(eu\);[\s\S]{0,140}if\(k===euK\)k=\(k\+1\)%3;/, 'quem entra como Tsu, Lirika ou Patiliri nunca encontra a si mesmo');
-  assert.match(html, /tw-mapa\.js\?v=59/);
+  assert.match(html, /tw-mapa\.js\?v=\d+/);
 });
 
 test('acessível e leve: botões de verdade, alvo de toque, sem animação para quem pediu menos movimento', () => {
@@ -111,11 +114,11 @@ test('rodada 5 (prints do iPhone): moldura em janelas criadas na hora, telas emb
 test('rodada 6: vitrine com luzes na abertura (trio desfilando, sem pontos), TV na moldura e sem pedir a vitrine a cada redesenho', () => {
   const hub = ler('hub.js');
   assert.match(js, /'<div class="twc-abre-vitrine" id="twcAbreVitrine"><\/div>'/, 'a vitrine antiga entra na tela de abertura');
-  assert.match(js, /if\(v === 'abre'\)\{ vitrineTrazer\(\); flutuantes\(\);/);
+  assert.match(js, /if\(v === 'abre'\)\{ flutuantes\(\); requestAnimationFrame\(function\(\)\{ if\(cel && tela && tela\.getAttribute\('data-tela'\) === 'abre'\) vitrineTrazer\(\); \}\); \}/);
   assert.match(js, /devolver\(\); vitrineDevolver\(\);/, 'desligar o celular devolve tudo ao hub clássico');
   assert.match(hub, /hubIV\.L = trio\.concat\(/);
   assert.match(hub, /trio = !L\.length && typeof window\.twcTrioVitrine/, 'os bonecos do trio só entram sem lista (sem duplicar as contas deles)');
-  assert.match(hub, /\['tsu', 'lirika', 'patiliri'\]\.indexOf\(/, 'as contas oficiais do trio desfilam juntas na frente');
+  assert.ok(!/\['tsu', 'lirika', 'patiliri'\]\.indexOf\(/.test(hub), 'vitrine na ordem sorteada do servidor, como no clássico (o trio não fica sempre na frente)');
   assert.match(hub, /if\(!p\.trio && !window\.TW_CELULAR_LIGADO\)\{[^}]*'★ ' \+ p\.best/, 'sem pontuação no visual de celular');
   assert.match(js, /Date\.now\(\) - idolsPedido > 60e3/, 'não entra em laço pedindo a vitrine');
   assert.match(js, /'\.tw-window-overlay,#twRankTvModal'/, 'a TsuLiPa⭐TV! ganha a moldura');
@@ -165,10 +168,60 @@ test('rodada 11 (refino): mapa de amizades e fichas com os bonecos e pets de ver
   assert.match(trio, /hubVozTocar\(f\[0\]\)/, 'tocar num membro toca a voz de verdade');
   assert.match(trio, /petVoice\(null, MEMBROS\[k\]\[0\]\)/, 'tocar num pet faz o som dele');
   assert.match(trio, /perfDesenharIdol\(x, 104, 112, a2/, 'o trio de corpo inteiro no mapa');
-  assert.match(trio, /canvas class="twc-ficha-pet" data-pet=/, 'pet desenhado também na ficha');
+  assert.match(trio, /canvas class="twc-ficha-pet[^"]*" data-pet=/, 'pet desenhado também na ficha');
+  assert.match(trio, /data-trioaba="' \+ k \+ '"/, 'fichinhas em abas, uma Idol por vez');
+  assert.match(js, /if\(b\.dataset\.triovoz != null\)/, 'botão Ouvir toca a voz de verdade');
   assert.ok(!/['"](🐈|🐨|👑)['"]/.test(trio), 'sem emoji de pet');
   const humor = js.slice(js.indexOf('  function humorHtml(){'), js.indexOf('  function desejoIco('));
   assert.ok(!/[👑🔥]/u.test(humor), 'humor e VIP com ícones desenhados');
   assert.ok(!/🚧/u.test(js), 'cones de manutenção desenhados em SVG');
   assert.match(js, /cor:\['#fff3e6', '#f2c49c', '#c98a5a', '#ffe1c7', '#dca47a'\]/, 'salas por dentro com parede e piso em degradê');
+});
+
+test('mapa de amizades: laços com fatos do blog oficial e fichas sem a capoeira', () => {
+  const js = require('fs').readFileSync(require('path').join(__dirname, '..', 'tw-celular.js'), 'utf8');
+  assert.match(js, /var LACOS = \[/);
+  assert.match(js, /Promovidos ao Team S no mesmo dia: 26\/02\/2023/, 'Tsu e Lirika: promoção no mesmo dia (blog)');
+  assert.match(js, /A mesma oshi: Imamura Maria/, 'Lirika e Pati: mesma oshi (blog)');
+  assert.match(js, /Oshi graduada em comum: Itano Tomomi/, 'Tsu e Pati: oshi graduada em comum (blog)');
+  assert.match(js, /if\(b\.dataset\.laco != null\)\{ amigosSel = \+b\.dataset\.laco;/, 'escolher o laço redesenha o mapa');
+  assert.ok(!/capopeira/i.test(js), 'Lirika: só K-pop, IZ*ONE, =LOVE…, sem a capoeira');
+  assert.match(js, /\['id', 'Bahasa Indonesia'\]/, 'nome nativo do idioma indonésio');
+  assert.ok(js.includes('BNK48, AKB48, Dal Shabet') && !/Oh My Girl/.test(js), 'Tsu: Dal Shabet no lugar de Oh My Girl');
+  assert.match(js, /arco de lâmpadas \(letreiro de show\)/, 'mapa de amizades desenhado como palco de show');
+});
+
+test('laços: músicas que as duplas cantaram juntas (blog oficial)', () => {
+  const js = require('fs').readFileSync(require('path').join(__dirname, '..', 'tw-celular.js'), 'utf8');
+  assert.match(js, /\['Underground', 'Unit Festival 2025 · Next Station'\]/, 'Lirika & Pati');
+  assert.match(js, /\['Pan Pan Papa Pan', 'Sherbet Pink · B-side'\]/, 'Tsu & Lirika');
+  assert.match(js, /\['Valentine Kiss', 'Want You! Want You! · TsuLiPa'\], \['Phoenix Dance'/, 'Phoenix Dance é dos três (confirmado pelo dono)');
+  assert.match(js, /\['Wish You Hapiness!!', 'Ano Novo 2023 · TsuLiPa'\]/, 'Wish You Hapiness!! só Tsu & Pati');
+  assert.match(js, /\['Wagamama na Nagareboshi', 'TsuLiPa · 1st Single Zipper \(2026\)'\]/, 'Tsu & Lirika no 1st Single');
+  assert.match(js, /\['Samishii Nettaigyo \(Wink\)', 'TsuLiPa · 1st Single Zipper \(2026\)'\]/, 'Lirika & Pati no 1st Single');
+  assert.match(js, /\['Me Beija!', 'NeByur✰ · 1st Single \(04\/04\/2026\)'\]/, 'NeByur✰');
+  assert.match(js, /tot = lc\.musicas\.length \+ \(duo \? trio\.length : 0\)/, 'total da dupla inclui as músicas do trio');
+  assert.match(js, /alvoX\[lacoM\.par\[0\]\] = 235/, 'na dupla, os dois vão para o centro e o terceiro sai de cena');
+  assert.ok(!/fita brilhante entre os dois/.test(js), 'sem a fita e os ♥ de texto na dupla');
+  assert.match(js, /\['Touch You', 'Unit Festival 2021 · High T'\]/, 'Tsu & Pati');
+  assert.ok(!/Dividem a unit Gekokujou/.test(js), 'Gekokujou é dos três, não só do Tsu e da Lirika');
+});
+
+test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times só com 2+ ativos', () => {
+  assert.match(js, /function hojeHtml\(\)/, 'card Hoje');
+  assert.match(js, /\(hjHtml \|\| destaque\)/, 'Hoje no Início no lugar do destaque');
+  ['data-desejo=', 'data-a="vip"', 'data-a="missoes"', 'data-a="news"', 'data-anivcor=', 'data-v="trio"'].forEach(a => assert.ok(js.includes(a), 'Hoje tem ' + a));
+  assert.match(js, /contaRpc\('dar_coracao', \{p_nick:nick\}\)/, 'coração de aniversário usa a RPC de sempre');
+  assert.match(js, /capMarcarLido\(\); if\(typeof window\.jornalAbrir/, 'abrir o News marca o capítulo como lido');
+  assert.ok(!/\['tv', 'TsuLiPa TV', 'data-a="tv"'\]/.test(js), 'TV não se repete no Menu');
+  assert.ok(!/bs\.push\(banner\('news'/.test(js), 'News fica só na porta do Início');
+  assert.match(js, /function badge\(c\)\{ return \(c === true \|\| alerta\(c\)\)/, 'selo aceita true (missão pendente) sem quebrar o visual');
+  assert.match(js, /function alerta\(c\)\{ return !!\(c && c\.classList/, 'alerta não quebra com valor que não é card');
+  const jn = ler('jornal.js');
+  assert.match(jn, /\(\+t\.ativos \|\| 0\) >= 2/, 'barra dos Teams só com 2 ou mais jogando');
+  ['um', 'zero', 'regra'].forEach(k => ['pt','en','es','id','th','ja'].forEach(l => assert.match(jn, new RegExp(k + ':\\{[^}]*\\b' + l + ":'"), 'Times ' + k + ' ' + l)));
+  const hm = ler('tw-humor.js');
+  assert.match(hm, /var DESCOBERTA = \{battle:1, studio:1, bloom:1\};/, 'desejo puxa os jogos menos jogados');
+  const sql = ler('supabase/migrations/20261116200000_missoes_descoberta.sql');
+  assert.match(sql, /fam in \('jardim', 'battle'\)/); assert.match(sql, /k = 'foto'/); assert.match(sql, /date '2026-11-17'/);
 });

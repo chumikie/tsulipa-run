@@ -22,7 +22,7 @@
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=12"></script>
-<script src="./tw-avatar-roupa.js?v=9"></script><script src="./tw-avatar-rosto.js?v=6"></script>
+<script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -44,7 +44,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=12">
+<link rel="stylesheet" href="./centerrun.css?v=13">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -65,7 +65,7 @@
 </style>
 <link rel="stylesheet" href="./hub.css?v=9">
 <link rel="stylesheet" href="./shop.css?v=5">
-<link rel="stylesheet" href="./jornal.css?v=11">
+<link rel="stylesheet" href="./jornal.css?v=14">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -167,7 +167,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=40">
+<link rel="stylesheet" href="./hub-polish.css?v=41">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=4"><'+'/script>');</script>
 </head>
@@ -395,18 +395,18 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n-base.js?v=1"></script>
+<script src="./tw-i18n-base.js?v=2"></script>
 <script>/* Só o idioma escolhido é baixado (o português já vem no próprio site). Fonte: tw-i18n.js → tools/i18n/dividir.js */
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
-if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=1"><'+'/script>');})();</script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=4"><'+'/script>');</script>
+if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=2"><'+'/script>');})();</script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=5"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=21"></script>
+<script src="./centerrun.js?v=24"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=31"></script>
-<script src="./perfil.js?v=19"></script>
+<script src="./pet.js?v=33"></script>
+<script src="./perfil.js?v=20"></script>
 <script src="./gacha.js?v=3"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -445,18 +445,20 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./duo.js?v=3"></script>
 <script src="./duo-pedido.js?v=2"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=26"></script>
+<script src="./hub.js?v=27"></script>
 <script src="./hub-layout.js?v=5"></script>
 <script src="./mapa-textos.js?v=3"></script>
-<script src="./tw-mapa.js?v=59"></script>
-<script src="./bloom.js?v=8"></script>
+<script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
+   (twMapaVisitaAgora, twMapaCena, TW_MAPA_HORA…) já confere se ele existe; o painel aparece assim que ele chega. */
+(function(){function c(){if(window.TW_MAPA_PEDIDO)return;window.TW_MAPA_PEDIDO=1;var s=document.createElement('script');s.src='./tw-mapa.js?v=60';document.body.appendChild(s);}
+window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else window.addEventListener('load',function(){(window.requestIdleCallback||setTimeout)(c,{timeout:1200});});})();</script>
+<script src="./bloom.js?v=9"></script>
 <script src="./shop.js?v=6"></script>
-<script src="./jornal.js?v=16"></script>
-<script src="./jornal-capitulos.js?v=1"></script>
+<script src="./jornal.js?v=25"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=9';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=10';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;carregar().then(function(){if(window.studioAbrir!==atalho)window.studioAbrir.apply(window,a);}).catch(function(){});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
@@ -476,22 +478,26 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=12"></script>
 <script src="./banner.js?v=6"></script>
-<script src="./conta.js?v=3"></script>
+<script src="./conta.js?v=4"></script>
 <script src="./admin.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
-<script>/* Visual de celular (prévia, 15/11/2026): ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular.
-   Desligado (o padrão), nada do tw-celular.* é baixado. No ⚙️ do início clássico há um botão para ligar na hora. */
-(function(){var k='brs48cr_celular',q=null,on=false;try{q=new URLSearchParams(location.search).get('celular');}catch(e){}
-try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.removeItem(k);on=localStorage.getItem(k)==='1';}catch(e){on=q==='1';}
+<script>/* Visual de celular (padrão nos telefones desde 16/11/2026): ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular
+   ('1' ligado, '0' clássico). Sem escolha guardada, liga sozinho em telefone (toque + tela pequena). No computador e no tablet
+   continua o clássico, com o botão no ⚙️ para ligar na hora; no celular, Ajustes → Visual clássico volta ao antigo. */
+(function(){var k='brs48cr_celular',q=null,on=false,pref=null,fone=false;try{q=new URLSearchParams(location.search).get('celular');}catch(e){}
+try{fone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=600;}catch(e){}
+try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
+on=pref==='1'||(pref!=='0'&&fone);
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=18"><script src="./tw-humor.js?v=3"><'+'/script><script src="./tw-calendario.js?v=1"><'+'/script><script src="./tw-celular.js?v=19"><'+'/script><script src="./tw-presenca.js?v=1"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=27"><script src="./tw-humor.js?v=4"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-lado.js?v=1"><'+'/script><script src="./tw-celular.js?v=36"><'+'/script><script src="./tw-presenca.js?v=1"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=18';document.head.appendChild(l);
-  var hm=document.createElement('script');hm.src='./tw-humor.js?v=3';hm.async=false;document.body.appendChild(hm);
-  var ca=document.createElement('script');ca.src='./tw-calendario.js?v=1';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=19';s.async=false;document.body.appendChild(s);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=27';document.head.appendChild(l);
+  var hm=document.createElement('script');hm.src='./tw-humor.js?v=4';hm.async=false;document.body.appendChild(hm);
+  var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
+  var ld=document.createElement('script');ld.src='./tw-lado.js?v=1';ld.async=false;document.body.appendChild(ld);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=36';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=1';document.body.appendChild(p);}
-var TX={pt:'📱 Visual novo (prévia)',en:'📱 New look (preview)',es:'📱 Estilo nuevo (vista previa)',id:'📱 Tampilan baru (pratinjau)',th:'📱 หน้าตาใหม่ (ทดลอง)',ja:'📱 新しい表示（お試し）'};
+var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
   var b=c.querySelector('[data-twcel]');if(window.TW_CELULAR_LIGADO){if(b)b.parentNode.remove();return r;}
   if(!b){c.insertAdjacentHTML('beforeend','<span><button type="button" data-twcel="1"></button></span>');b=c.querySelector('[data-twcel]');}
@@ -903,7 +909,7 @@ function twCarregarIdiomaId(){
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js?v=4';
+    script.src='./translations/id/preview-data.js?v=5';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);
@@ -3037,7 +3043,8 @@ hubMostrar();
   var cv = $('hubIdolsCv'); if(!cv) return;
   cv.addEventListener('click', function(e){
     var n = hubIV.L.length; if(!n) return;
-    var r = cv.getBoundingClientRect(), k = Math.floor(((e.clientX - r.left) / (hubIV.k || 1) + hubIV.x) / HUB_IV_CEL), p = hubIV.L[((k % n) + n) % n];
+    var r = cv.getBoundingClientRect(), lx = (e.clientX - r.left) / (hubIV.k || 1), fixo = n * HUB_IV_CEL <= hubIV.w;
+    var k = fixo ? Math.floor((lx - (hubIV.w - n * HUB_IV_CEL) / 2) / HUB_IV_CEL) : Math.floor((lx + hubIV.x) / HUB_IV_CEL), p = fixo ? (k >= 0 && k < n ? hubIV.L[k] : null) : hubIV.L[((k % n) + n) % n];   // mesma conta do desenho (parado e centralizado quando cabem todos)
     if(p) hubIdolsReage(p, hubIV.L.indexOf(p));
   });
   $('hubIdolsLista').addEventListener('click', function(e){ var b = e.target.closest('[data-hireage]'); if(b){ var p = hubIV.L[+b.dataset.hireage]; if(p) hubIdolsReage(p, +b.dataset.hireage); } });
@@ -3528,7 +3535,7 @@ applyLang();
     var logado = !!(window.contaJ);
     var cards = document.querySelectorAll('#hub #hubCards .hubcard');
     cards.forEach(function(card){
-      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun';
+      var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun' || card.dataset.twnovo === 'battle' || card.dataset.twnovo === 'studio';   // Battle e Studio têm treino sem conta (igual ao visual do celular)
       // 🧪 Temporário: Sora⭐Jump! e Karaoke⭐Time! ficam abertos sem login.
       if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) isFree = true;
       var lockEl = card.querySelector('.tw-profile-lock');
@@ -3555,7 +3562,7 @@ applyLang();
     if(!card || window.contaJ) return;
     // 🧪 Temporário: sem cadeado nos jogos especiais liberados para teste.
     if(window.TW_JOGOS_SEM_LOGIN && (card.dataset.ir === 'sora' || card.dataset.ir === 'karaoke')) return;
-    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun';
+    var isFree = card.classList.contains('hubrun') || card.classList.contains('hubperf') || card.classList.contains('hubhandshake') || card.classList.contains('hubcafe') || card.id === 'hubPerf' || card.id === 'hubRun' || card.dataset.twnovo === 'battle' || card.dataset.twnovo === 'studio';   // Battle e Studio têm treino sem conta (igual ao visual do celular)
     if(!isFree){
       e.stopImmediatePropagation();
       e.preventDefault();

@@ -4,6 +4,7 @@
     "deploymentEnabled": {
       "main": true,
       "feat/visitas-oshi-20261115": true,
+      "fix/recuperacao-visual-celular-20261115": true,
       "**": false
     }
   },

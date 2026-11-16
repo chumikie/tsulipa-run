@@ -454,9 +454,13 @@
     diamantes.forEach(function(d){
       var gi=reduzMov?1:Math.cos(tm*2.4),w=11*Math.max(.25,Math.abs(gi)),y=d.y-(reduzMov?0:Math.sin(tm*2)*3);
       ctx.save();ctx.translate(d.x,y);
+      // Cristal Oshi: facetas e estrela central, preservando âncora e cor do humor.
       ctx.fillStyle=d.cor;ctx.strokeStyle='rgba(30,10,60,.55)';ctx.lineWidth=2;
       ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w,0);ctx.lineTo(0,9);ctx.lineTo(-w,0);ctx.closePath();ctx.fill();ctx.stroke();
-      ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w*.45,-2);ctx.lineTo(0,-1);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.30)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(-w,0);ctx.lineTo(0,9);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.42)';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(w,0);ctx.lineTo(0,-2);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.48)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,9);ctx.moveTo(-w,0);ctx.lineTo(w,0);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.86)';ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(1.4,-5);ctx.lineTo(4,-4);ctx.lineTo(1.4,-3);ctx.lineTo(0,1);ctx.lineTo(-1.4,-3);ctx.lineTo(-4,-4);ctx.lineTo(-1.4,-5);ctx.closePath();ctx.fill();
       ctx.restore();
     });
   }
@@ -880,22 +884,40 @@
     return {x:e.x,y:718,dir:e.dir,hop:andando?Math.abs(Math.sin(tm*7))*14:0,perto:perto};
   }
   function coelhoDesenhar(tm,c,pt){
-    var up=c.hop+(pt!=null?Math.max(0,Math.sin(Math.min(1,(tm-pt)/.5)*Math.PI))*30:0),
-        orelha=c.perto&&!reduzMov?Math.sin(tm*8)*.18:0,pisca=!reduzMov&&(tm%4.4)<.12,
+    // A8.2: somente desenho. Posição, hitbox, movimento e reações seguem inalterados.
+    var toque=!reduzMov&&pt!=null?Math.max(0,Math.sin(Math.min(1,Math.max(0,(tm-pt)/.5))*Math.PI))*30:0,
+        up=c.hop+toque, ar=Math.min(1,up/44),
+        orelha=c.perto&&!reduzMov?Math.sin(tm*8)*.18:0,
+        pisca=!reduzMov&&(tm%4.4)<.12,
         BRANCO='#fffafc',CONT='#b98aa6';
-    ctx.save();ctx.translate(c.x,c.y);ctx.fillStyle='rgba(30,10,60,.16)';ctx.beginPath();ctx.ellipse(0,12,20-up*.3,4,0,0,7);ctx.fill();
-    ctx.translate(0,-up);ctx.scale(c.dir*1.6,1.6);ctx.lineJoin='round';ctx.lineCap='round';
-    function orelhas(){[[-4,-.25+orelha],[3,.2-orelha]].forEach(function(o){ctx.save();ctx.translate(o[0],-17);ctx.rotate(o[1]);ctx.moveTo(4,0);ctx.ellipse(0,-10,4,10,0,0,7);ctx.restore();});}
-    function corpo(){ctx.beginPath();ctx.ellipse(-2,2,14,10,0,0,7);ctx.moveTo(15,-8);ctx.arc(5,-9,10,0,7);ctx.moveTo(-12,0);ctx.arc(-16,0,5,0,7);}
-    ctx.strokeStyle=CONT;ctx.lineWidth=3;corpo();ctx.stroke();ctx.beginPath();orelhas();ctx.stroke();
-    ctx.fillStyle=BRANCO;corpo();ctx.fill();ctx.beginPath();orelhas();ctx.fill();
-    ctx.fillStyle='#ffb3cf';[[-4,-.25+orelha],[3,.2-orelha]].forEach(function(o){ctx.save();ctx.translate(o[0],-17);ctx.rotate(o[1]);ctx.beginPath();ctx.ellipse(0,-10,2,7,0,0,7);ctx.fill();ctx.restore();});
-    ctx.fillStyle='rgba(255,111,181,.5)';ctx.beginPath();ctx.ellipse(10,-6,2.6,1.6,0,0,7);ctx.fill();
+    ctx.save();ctx.translate(c.x,c.y);
+    // A sombra permanece no solo e encolhe discretamente durante o salto.
+    ctx.fillStyle='rgba(30,10,60,'+(.16-ar*.07)+')';
+    ctx.beginPath();ctx.ellipse(0,12,Math.max(12,21-up*.17),4-ar,0,0,Math.PI*2);ctx.fill();
+    ctx.translate(0,-up);ctx.scale(c.dir*1.6,1.6);
+    ctx.lineJoin='round';ctx.lineCap='round';
+    function elipse(x,y,rx,ry){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.stroke();}
+    // Orelhas: cada elipse é um caminho independente, sem linhas entre elas.
+    [[-4,-.25+orelha],[3,.2-orelha]].forEach(function(o){
+      ctx.save();ctx.translate(o[0],-17);ctx.rotate(o[1]);
+      ctx.fillStyle=BRANCO;ctx.strokeStyle=CONT;ctx.lineWidth=2;
+      elipse(0,-10,4.2,10.5);
+      ctx.fillStyle='#ffb3cf';ctx.beginPath();ctx.ellipse(0,-10,2,7,0,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    });
+    // Silhueta: corpo, cauda e cabeça com contornos limpos.
+    ctx.fillStyle=BRANCO;ctx.strokeStyle=CONT;ctx.lineWidth=2.2;
+    elipse(-3,2,13.5,9.5);
+    elipse(-15,0,4.5,4.8);
+    elipse(5,-9,10,10);
+    // Patas apoiadas na base do corpo, sem modificar o ponto de contato.
+    ctx.lineWidth=1.3;
+    elipse(-7,9,5,2.8);elipse(5,9,4.8,2.8);
+    ctx.fillStyle='rgba(255,111,181,.45)';ctx.beginPath();ctx.ellipse(10,-6,2.6,1.6,0,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='#3a2a3a';ctx.lineWidth=1.6;
     if(pisca){ctx.beginPath();ctx.arc(8,-10,2.4,.15*Math.PI,.85*Math.PI);ctx.stroke();}
-    else{ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(8,-10,2.3,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(7.3,-10.8,.8,0,7);ctx.fill();}
-    ctx.fillStyle='#ff8fbf';ctx.beginPath();ctx.ellipse(14.6,-7.6,1.6,1.2,0,0,7);ctx.fill();
-    ctx.fillStyle=BRANCO;ctx.strokeStyle=CONT;ctx.lineWidth=1.4;ctx.beginPath();ctx.ellipse(4,9,4.6,3,0,0,7);ctx.fill();ctx.stroke();
+    else{ctx.fillStyle='#2a1a2a';ctx.beginPath();ctx.arc(8,-10,2.3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(7.3,-10.8,.8,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#ff8fbf';ctx.beginPath();ctx.ellipse(14.6,-7.6,1.6,1.2,0,0,Math.PI*2);ctx.fill();
     ctx.restore();
     if(pt!=null&&tm-pt<1.8)balao(c.x-14,c.y-90,'♡',Math.min(1,(1.8-(tm-pt))*2));
     else if(c.perto&&(tm%3.4)<1.4)balao(c.x-14,c.y-90,'✿',Math.min(1,Math.sin((tm%3.4)/1.4*Math.PI)*2));

@@ -144,6 +144,17 @@ function jnT1DesenharSeguro(canvas,p){
  jnCapDesenhar(canvas,[p[0],p[1],nar,falas]);
  return true;
 }
+/* Chamado somente após inserir o HTML autorizado no leitor; não altera o leitor antigo. */
+function jnT1PintarQuadros(root,episodio){
+ if(!jnT1Disponivel(episodio) || !root || !root.querySelectorAll) return false;
+ var desenhar=[jnT1PilotoDesenhar,jnT1Ep2Desenhar,jnT1Ep3Desenhar,
+              jnT1Ep4Desenhar,jnT1Ep5Desenhar,jnT1Ep6Desenhar][episodio];
+ if(typeof desenhar!=='function') return false;
+ var telas=root.querySelectorAll('.jn-t1 canvas');
+ if(telas.length!==5) return false;
+ [].forEach.call(telas,function(cv,i){desenhar(cv,i);});
+ return true;
+}
 function jnT1Ep6Desenhar(canvas,indice){
  if(!canvas || indice<0 || indice>=JN_T1_EP6.panels.length) return false;
  jnT1DesenharSeguro(canvas,JN_T1_EP6.panels[indice]);

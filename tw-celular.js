@@ -938,6 +938,8 @@
     geracao:{pt:'Geração',en:'Generation',es:'Generación',id:'Generasi',th:'รุ่น',ja:'期'},
     cor:{pt:'Cor',en:'Color',es:'Color',id:'Warna',th:'สี',ja:'カラー'},
     cantaram:{pt:'{n} músicas que cantaram juntos',en:'{n} songs they sang together',es:'{n} canciones que cantaron juntos',id:'{n} lagu yang dinyanyikan bersama',th:'{n} เพลงที่ร้องด้วยกัน',ja:'いっしょに歌った曲：{n}曲'},
+    soDois:{pt:'{n} só os dois',en:'{n} just the two of them',es:'{n} solo los dos',id:'{n} hanya berdua',th:'{n} เพลงแค่สองคน',ja:'ふたりだけで{n}曲'},
+    comTrio:{pt:'Também com {q}: {n} músicas do trio',en:'Also with {q}: {n} trio songs',es:'También con {q}: {n} canciones del trío',id:'Juga bersama {q}: {n} lagu trio',th:'กับ {q} ด้วย: {n} เพลงของทั้งสาม',ja:'{q}もいっしょ：3人の曲{n}曲'},
     verTodas:{pt:'Ver mais {n}',en:'See {n} more',es:'Ver {n} más',id:'Lihat {n} lagi',th:'ดูอีก {n}',ja:'あと{n}曲を見る'},
     unitFest:{pt:'A unit TsuLiPa no Unit Festival',en:'The TsuLiPa unit at Unit Festival',es:'La unit TsuLiPa en el Unit Festival',id:'Unit TsuLiPa di Unit Festival',th:'ยูนิต TsuLiPa ใน Unit Festival',ja:'Unit FestivalのTsuLiPa'},
     audicao:{pt:'Música da audição',en:'Audition song',es:'Canción de la audición',id:'Lagu audisi',th:'เพลงออดิชัน',ja:'オーディション曲'},
@@ -962,7 +964,7 @@
       T6('Entraram juntos como kenkyuusei em agosto de 2021','Joined together as kenkyuusei in August 2021','Entraron juntos como kenkyuusei en agosto de 2021','Masuk bersama sebagai kenkyuusei pada Agustus 2021','เข้ามาเป็นเค็นคิวเซย์พร้อมกันในเดือนสิงหาคม 2021','2021年8月にいっしょに研究生として加入'),
       T6('Promovidos ao Team S no mesmo dia: 26/02/2023','Promoted to Team S on the same day: 26/02/2023','Ascendidos al Team S el mismo día: 26/02/2023','Naik ke Team S di hari yang sama: 26/02/2023','ได้เลื่อนขึ้น Team S วันเดียวกัน: 26/02/2023','同じ日にTeam Sへ昇格：2023/02/26'),
       T6('Os dois cantaram Oshibe to Meshibe to Yoru no Chouchou, cada um num dueto','Both sang Oshibe to Meshibe to Yoru no Chouchou, each in a duet','Los dos cantaron Oshibe to Meshibe to Yoru no Chouchou, cada uno en un dúo','Keduanya menyanyikan Oshibe to Meshibe to Yoru no Chouchou, masing-masing dalam duet','ทั้งคู่ร้อง Oshibe to Meshibe to Yoru no Chouchou คนละดูเอ็ต','ふたりとも「おしべとめしべと夜の蝶々」をそれぞれデュエットで')],
-      musicas:[['Pan Pan Papa Pan', 'Sherbet Pink · B-side'], ['Gattsuki Girls', 'Teacher Teacher · B-side'], ['Oshibe to Meshibe to Yoru no Chouchou', 'Tsu + Deki · Lirika + Corbeau']]},
+      musicas:[['Pan Pan Papa Pan', 'Sherbet Pink · B-side'], ['Gattsuki Girls', 'Teacher Teacher · B-side']]},
     {par:[1, 2], nome:T6('Lirika & Pati','Lirika & Pati','Lirika y Pati','Lirika & Pati','Lirika & Pati','Lirika＆Pati'), ic:'coracao', fatos:[
       T6('A mesma oshi: Imamura Maria (a kami-oshi do Pati)','Same oshi: Imamura Maria (Pati’s kami-oshi)','La misma oshi: Imamura Maria (la kami-oshi de Pati)','Oshi yang sama: Imamura Maria (kami-oshi Pati)','โอชิคนเดียวกัน: Imamura Maria (คามิโอชิของ Pati)','同じ推し：今村麻莉愛（Patiの神推し）'),
       T6('Oshi graduada em comum: Honda Hitomi','A graduated oshi in common: Honda Hitomi','Una oshi graduada en común: Honda Hitomi','Oshi yang sudah lulus yang sama: Honda Hitomi','โอชิที่จบการศึกษาเหมือนกัน: Honda Hitomi','卒業した推しも同じ：本田仁美'),
@@ -973,7 +975,7 @@
       T6('Os dois amam o AKB48','Both love AKB48','A los dos les encanta AKB48','Keduanya suka AKB48','ทั้งคู่รัก AKB48','ふたりともAKB48が大好き'),
       T6('Oshi graduada em comum: Itano Tomomi','A graduated oshi in common: Itano Tomomi','Una oshi graduada en común: Itano Tomomi','Oshi yang sudah lulus yang sama: Itano Tomomi','โอชิที่จบการศึกษาเหมือนกัน: Itano Tomomi','卒業した推しも同じ：板野友美'),
       T6('Aniversários em setembro: 05/09 e 23/09','Birthdays in September: 05/09 and 23/09','Cumpleaños en septiembre: 05/09 y 23/09','Ulang tahun di bulan September: 05/09 dan 23/09','วันเกิดเดือนกันยายน: 05/09 และ 23/09','誕生日はどちらも9月：9/5と9/23')],
-      musicas:[['Touch You', 'Unit Festival 2021 · High T'], ['Nante Bohemian', 'Unit Festival 2023 · Bohemian'], ['Big Bang Bolleyball', 'Unit Festival 2025 · Cerulean Nights'], ["C'mon join us", 'Unit Festival 2026 · Boyzfroms'],
+      musicas:[['Phoenix Dance', 'Summer Love Sounds Good · TsuLiPa'], ['Wish You Hapiness!!', 'Ano Novo 2023 · TsuLiPa'], ['Touch You', 'Unit Festival 2021 · High T'], ['Nante Bohemian', 'Unit Festival 2023 · Bohemian'], ['Big Bang Bolleyball', 'Unit Festival 2025 · Cerulean Nights'], ["C'mon join us", 'Unit Festival 2026 · Boyzfroms'],
         ['Dancing High', 'Sayonara no Imi · B-side (Tsu center)'], ['Bad∞End∞Night', 'Halloween 2022'], ['Natsu no Owari no Amaoto ga', 'Birthday Units 2022'], ['Nagori Zakura', '1000º vídeo'],
         ['Teacher Teacher', 'A-side'], ['10nen Zakura', 'A-side'], ['Sayonara no Imi', 'A-side'], ['Poison Girl', 'Special single'], ['Mikaeri Bijin', 'Special single · B-side'],
         ['Você é uma Melodia', '10nen Zakura · B-side'], ['Dead end', 'Sayonara no Imi · B-side'], ['Meu Verso de Paixão', 'Sayonara no Imi · B-side'], ['Amanojaku Batta', 'Sayonara no Imi · B-side'],
@@ -983,8 +985,10 @@
       T6('Draft 1st Generation, agosto de 2021','Draft 1st Generation, August 2021','Draft 1st Generation, agosto de 2021','Draft 1st Generation, Agustus 2021','Draft 1st Generation สิงหาคม 2021','ドラフト1期生（2021年8月）'),
       T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
       linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024', 'Secret Base'], ['2025', 'Dream Splash / Binetsu kara Mystery'], ['2026', "I can't stop the loneliness"]],
-      musicas:[['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
-        ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Zipper', '1st Draft Audition Concert'], ['Kyun', 'A-side'], ['Neko Allergy', 'Tsu Talks Senbatsu'], ['26 Estados e 1 Distrito', 'BRS48 · 6 anos'], ['Kibou ni tsuite', 'Request Hour 2023']]}
+      musicas:[['Polyrhythm', 'Unit Festival 2021'], ['Plastic Love', 'Unit Festival 2023'], ['Secret Base', 'Unit Festival 2024'], ['Dream Splash / Binetsu kara Mystery', 'Unit Festival 2025'], ["I can't stop the loneliness", 'Unit Festival 2026'],
+        ['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
+        ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Kyun', 'A-side'], ['Yume wa Nigenai', 'Shekarashika! · B-side'], ['Yume wa Nigenai (PT)', '10nen Zakura · B-side'],
+        ['Bokutachi wa Tatakawanai', '3rd Album ANTI'], ['Neko Allergy', 'Tsu Talks Senbatsu'], ['26 Estados e 1 Distrito', 'BRS48 · 6 anos'], ['Zipper', '1st Draft Audition Concert'], ['Kibou ni Tsuite', 'Request Hour 2023']]}
   ];
   function t6(o){ return o ? (o[L()] || o.pt) : ''; }
   // Fichinhas em abas (uma Idol por vez, sem rolar 2.500px): foto de cada um no topo, palco com o boneco e o pet,
@@ -1008,9 +1012,14 @@
           return '<div class="twc-laco-card" role="tabpanel" style="--fc:' + (lc.par.length === 2 ? FICHAS[lc.par[1]].cor[0] : '#7b3ff0') + '"><h3>' + ico(lc.ic, 18) + esc(t6(lc.nome)) + '</h3><ul>' +
             lc.fatos.map(function(f){ return '<li>' + esc(t6(f)) + '</li>'; }).join('') + '</ul>' +
             (lc.linha ? '<p class="twc-laco-sub">' + esc(tf('unitFest')) + '</p><ol class="twc-laco-linha">' + lc.linha.map(function(l){ return '<li><b>' + esc(l[0]) + '</b><span translate="no">' + esc(l[1]) + '</span></li>'; }).join('') + '</ol>' : '') +
-            (lc.musicas ? (function(){ var mus = function(m){ return '<li><b translate="no">' + esc(m[0]) + '</b><small translate="no">' + esc(m[1]) + '</small></li>'; }, vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
-              return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', lc.musicas.length)) + '</p><ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
-                (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : ''); })() : '') + '</div>'; })() +
+            (lc.musicas ? (function(){ var mus = function(m){ return '<li><b translate="no">' + esc(m[0]) + '</b><small translate="no">' + esc(m[1]) + '</small></li>'; };
+              var trio = LACOS[3].musicas, duo = lc.par.length === 2, tot = lc.musicas.length + (duo ? trio.length : 0), vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
+              var terceiro = duo ? MEMBROS[[0, 1, 2].filter(function(k){ return lc.par.indexOf(k) < 0; })[0]][1] : '';
+              return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', tot)) + (duo ? ' · ' + esc(tf('soDois').replace('{n}', lc.musicas.length)) : '') + '</p>' +
+                '<ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
+                (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : '') +
+                (duo ? '<details class="twc-laco-mais"><summary>' + esc(tf('comTrio').replace('{q}', terceiro).replace('{n}', trio.length)) + '</summary><ul class="twc-laco-mus">' + trio.map(mus).join('') + '</ul></details>' : '');
+            })() : '') + '</div>'; })() +
         '<p class="twc-amigos-dica"><span aria-hidden="true">' + ico('coracao', 14) + '</span>' + esc(tf('toque')) + '</p>' +
         '<div class="twc-sr">' + MEMBROS.map(function(m, k){ return '<button type="button" data-amigo="' + k + '">' + esc(m[1]) + '</button>'; }).join('') + '</div></section>';
     } else {
@@ -1035,7 +1044,7 @@
   // mapa de amizades desenhado com os bonecos e os pets de verdade do jogo (perfDesenharIdol + drawPet).
   // Os três lado a lado, na mesma altura (a Lirika no meio, ninguém "acima"): mesma geração, unit TsuLiPa e a dupla NeByura.
   // Tocar num membro: pulinho, fala com a voz de verdade (as mesmas do palco) e coraçõezinhos; tocar num pet: o pet pula e faz o som dele.
-  var amigosRaf = 0, amigosReage = null;
+  var amigosRaf = 0, amigosReage = null, amigosX = [150, 340, 530], amigosAl = [1, 1, 1], amigosPosAtual = null;
   var AMIGOS_POS = [{k:0, x:150, y:350, pet:[226, 330]}, {k:1, x:340, y:350, pet:[416, 330]}, {k:2, x:530, y:350, pet:[606, 330]}];
   function amigosLigar(){ if(!amigosRaf) amigosRaf = requestAnimationFrame(amigosQuadro); }
   function amigosQuadro(ms){
@@ -1057,12 +1066,17 @@
   }
   function amigosClique(e){
     var cv = e.currentTarget, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-    for(var i = 0; i < 3; i++){ var a = AMIGOS_POS[i];
+    for(var i = 0; i < 3; i++){ var a = (amigosPosAtual || AMIGOS_POS)[i]; if(a.a != null && a.a < .5) continue;
       if(Math.hypot(px - a.pet[0], py - a.pet[1]) < 42){ amigosTocar('p', i); return; }
       if(Math.abs(px - a.x) < 58 && py > a.y - 175 && py < a.y + 12){ amigosTocar('m', i); return; } }
   }
   function amigosDesenhar(cv, s, ms){
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, agora = ms != null ? ms : (typeof performance !== 'undefined' ? performance.now() : 0);
+    var lacoM = LACOS[amigosSel] || LACOS[3], alvoX = [150, 340, 530], alvoA = [1, 1, 1];
+    if(lacoM.par.length === 2){ alvoX[lacoM.par[0]] = 235; alvoX[lacoM.par[1]] = 445; [0, 1, 2].forEach(function(k){ if(lacoM.par.indexOf(k) < 0) alvoA[k] = 0; }); }
+    var reduzM = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for(var km = 0; km < 3; km++){ amigosX[km] += reduzM ? alvoX[km] - amigosX[km] : (alvoX[km] - amigosX[km]) * .16; amigosAl[km] += reduzM ? alvoA[km] - amigosAl[km] : (alvoA[km] - amigosAl[km]) * .18; }
+    var POS = [0, 1, 2].map(function(k){ return {k:k, x:amigosX[k], y:350, pet:[amigosX[k] + 76, 330], a:amigosAl[k]}; }); amigosPosAtual = POS;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
     function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
     // Cena de palco à noite: céu com nebulosas nas cores do trio, arco de lâmpadas de letreiro, refletores e piso com LED
@@ -1079,8 +1093,8 @@
       x.fillStyle = on ? '#fff6d0' : '#a98fd6'; x.beginPath(); x.arc(bx2, by2, 3.4, 0, 7); x.fill(); }
     x.restore();
     // refletores: um cone na cor de cada membro (quem não está no laço fica com a luz apagada)
-    AMIGOS_POS.forEach(function(p, k){
-      var aceso = lacoAt.par.indexOf(k) >= 0, ang = Math.sin(s * .7 + k) * .05;
+    POS.forEach(function(p, k){
+      var aceso = lacoAt.par.indexOf(k) >= 0; if(p.a < .05) return; var ang = Math.sin(s * .7 + k) * .05;
       x.save(); x.translate(p.x, -20); x.rotate(ang); var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, cor[k] + (aceso ? 'aa' : '22')); lg.addColorStop(1, cor[k] + '00');
       x.fillStyle = lg; x.beginPath(); x.moveTo(-14, 0); x.lineTo(14, 0); x.lineTo(92, 380); x.lineTo(-92, 380); x.closePath(); x.fill(); x.restore(); });
     // piso do palco com reflexo e a faixa de LED na borda
@@ -1105,19 +1119,26 @@
       pilula(W / 2, 92, '♡ ' + tf('unitTrio'), '#7b3ff0', '#fff', 19);
       pilula(W / 2, 30, tf('mesmaGeracao'), '#fff', '#7b3ff0', 14);
     } else {
-      // um laço: fita brilhante entre os dois, com corações passando de um para o outro
-      var A = AMIGOS_POS[laco.par[0]], B = AMIGOS_POS[laco.par[1]], cxm = (A.x + B.x) / 2, topo2 = 70 + Math.abs(B.x - A.x) * -.05;
-      var fit = x.createLinearGradient(A.x, 0, B.x, 0); fit.addColorStop(0, cor[laco.par[0]]); fit.addColorStop(1, cor[laco.par[1]]);
-      x.save(); x.lineCap = 'round'; x.shadowColor = 'rgba(255,111,181,.6)'; x.shadowBlur = 16; x.strokeStyle = '#fff'; x.lineWidth = 20;
-      x.beginPath(); x.moveTo(A.x, 170); x.quadraticCurveTo(cxm, topo2, B.x, 170); x.stroke(); x.shadowBlur = 0; x.strokeStyle = fit; x.lineWidth = 11; x.stroke(); x.restore();
-      for(var hc = 0; hc < 4; hc++){ var tt = (s * .35 + hc / 4) % 1, hx = (1 - tt) * (1 - tt) * A.x + 2 * (1 - tt) * tt * cxm + tt * tt * B.x, hy = (1 - tt) * (1 - tt) * 170 + 2 * (1 - tt) * tt * topo2 + tt * tt * 170;
-        x.save(); x.font = '22px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.globalAlpha = Math.sin(tt * Math.PI); x.lineWidth = 4; x.strokeStyle = '#fff'; x.strokeText('♥', hx, hy); x.fillStyle = '#ff4f9a'; x.fillText('♥', hx, hy); x.restore(); }
-      pilula(cxm, topo2 + 40, t6(laco.nome), '#ff6fb5', '#fff', 16);
+      // dupla: os dois lado a lado no centro, um holofote só sobre eles e um selo de coração entre os dois
+      var cA = cor[laco.par[0]], cB = cor[laco.par[1]], mx = (POS[laco.par[0]].x + POS[laco.par[1]].x) / 2, pul = 1 + Math.sin(s * 3) * .05;
+      x.save(); var hz = x.createRadialGradient(mx, 352, 20, mx, 352, 230); hz.addColorStop(0, 'rgba(255,240,250,.55)'); hz.addColorStop(1, 'rgba(255,240,250,0)');
+      x.fillStyle = hz; x.beginPath(); x.ellipse(mx, 352, 230, 40, 0, 0, 7); x.fill();
+      var cone = x.createLinearGradient(0, 0, 0, 360); cone.addColorStop(0, 'rgba(255,245,255,.45)'); cone.addColorStop(1, 'rgba(255,245,255,0)');
+      x.fillStyle = cone; x.beginPath(); x.moveTo(mx - 24, 0); x.lineTo(mx + 24, 0); x.lineTo(mx + 210, 360); x.lineTo(mx - 210, 360); x.closePath(); x.fill(); x.restore();
+      x.save(); x.translate(mx, 236); x.scale(pul, pul);
+      function cor2(r){ x.beginPath(); x.moveTo(0, r * .95); x.bezierCurveTo(-r * 1.5, -r * .1, -r * .75, -r * 1.25, 0, -r * .45); x.bezierCurveTo(r * .75, -r * 1.25, r * 1.5, -r * .1, 0, r * .95); x.closePath(); }
+      x.shadowColor = 'rgba(255,111,181,.8)'; x.shadowBlur = 22; x.fillStyle = '#fff'; cor2(31); x.fill(); x.shadowBlur = 0;
+      var hg = x.createLinearGradient(-26, -26, 26, 26); hg.addColorStop(0, cA); hg.addColorStop(.5, '#ff6fb5'); hg.addColorStop(1, cB); x.fillStyle = hg; cor2(25); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.ellipse(-9, -10, 6, 3.5, -.6, 0, 7); x.fill();
+      [[-46, -18, 7], [44, -26, 5], [36, 22, 4], [-40, 24, 4]].forEach(function(b, n){ var r = b[2] * (.6 + .4 * Math.abs(Math.sin(s * 2.4 + n))); x.fillStyle = '#fff6c4';
+        x.beginPath(); x.moveTo(b[0], b[1] - r); x.quadraticCurveTo(b[0], b[1], b[0] + r, b[1]); x.quadraticCurveTo(b[0], b[1], b[0], b[1] + r); x.quadraticCurveTo(b[0], b[1], b[0] - r, b[1]); x.quadraticCurveTo(b[0], b[1], b[0], b[1] - r); x.fill(); });
+      x.restore();
+      pilula(W / 2, 40, t6(laco.nome), '#ff6fb5', '#fff', 17);
     }
     var rg = amigosReage && agora - amigosReage.t0 < 2400 ? amigosReage : null, rt = rg ? (agora - rg.t0) / 1000 : 0;
-    AMIGOS_POS.forEach(function(p, k){
+    POS.forEach(function(p, k){
       var av = membroAv(k); if(!av) return;
-      x.save(); if(!noLaco(k)) x.globalAlpha = .28;   // quem não está no laço escolhido fica apagadinho
+      if(p.a < .03) return; x.save(); x.globalAlpha = p.a;   // na dupla, o terceiro sai de cena
       var pulo = Math.max(0, Math.sin(s * 2.2 + k * 2.1)) * 5;
       if(rg && rg.tipo === 'm' && rg.k === k) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 34;
       // pódio redondo na cor do membro, com aro de luz
@@ -1143,7 +1164,7 @@
     });
     // reação: balão com a fala de verdade e coraçõezinhos subindo
     if(rg){
-      var alvo = AMIGOS_POS[rg.k], bxp = rg.tipo === 'm' ? alvo.x : alvo.pet[0], byp = rg.tipo === 'm' ? alvo.y - 196 : alvo.pet[1] - 46, al = Math.min(1, (2.4 - rt) * 2);
+      var alvo = POS[rg.k], bxp = rg.tipo === 'm' ? alvo.x : alvo.pet[0], byp = rg.tipo === 'm' ? alvo.y - 196 : alvo.pet[1] - 46, al = Math.min(1, (2.4 - rt) * 2);
       x.save(); x.globalAlpha = al;
       for(var h = 0; h < 5; h++){ var ft = (rt * .9 + h * .2) % 1; x.fillStyle = [cor[rg.k], '#ff6fb5', '#ffd23f'][h % 3]; x.font = '20px sans-serif'; x.textAlign = 'center';
         x.globalAlpha = al * Math.sin(ft * Math.PI); x.fillText('♥', bxp + (h - 2) * 18 + Math.sin(rt * 5 + h) * 6, byp + 30 - ft * 60); }

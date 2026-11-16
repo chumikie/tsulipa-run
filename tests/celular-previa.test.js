@@ -192,6 +192,10 @@ test('laços: músicas que as duplas cantaram juntas (blog oficial)', () => {
   const js = require('fs').readFileSync(require('path').join(__dirname, '..', 'tw-celular.js'), 'utf8');
   assert.match(js, /\['Underground', 'Unit Festival 2025 · Next Station'\]/, 'Lirika & Pati');
   assert.match(js, /\['Pan Pan Papa Pan', 'Sherbet Pink · B-side'\]/, 'Tsu & Lirika');
+  assert.match(js, /\['Phoenix Dance', 'Summer Love Sounds Good · TsuLiPa'\]/, 'Tsu & Pati: TsuLiPa sem a Lirika na lista dela');
+  assert.match(js, /tot = lc\.musicas\.length \+ \(duo \? trio\.length : 0\)/, 'total da dupla inclui as músicas do trio');
+  assert.match(js, /alvoX\[lacoM\.par\[0\]\] = 235/, 'na dupla, os dois vão para o centro e o terceiro sai de cena');
+  assert.ok(!/fita brilhante entre os dois/.test(js), 'sem a fita e os ♥ de texto na dupla');
   assert.match(js, /\['Touch You', 'Unit Festival 2021 · High T'\]/, 'Tsu & Pati');
   assert.ok(!/Dividem a unit Gekokujou/.test(js), 'Gekokujou é dos três, não só do Tsu e da Lirika');
 });

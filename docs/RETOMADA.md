@@ -1,3 +1,19 @@
+## Rodada 16/11/2026 (tarde) — PR #98, versão v3.0
+
+**Entrou**
+- **Visual de celular é o padrão nos telefones** (toque + lado menor ≤ 600 px) quando a pessoa não escolheu; Ajustes → "Voltar ao visual clássico" grava `brs48cr_celular='0'`. Computador e tablet seguem no clássico (botão 📱 no ⚙️). O clássico fica no histórico do git (marcar `v3-classico` depois do merge).
+- **Correção grave:** o selo de missão pendente (`badge(true)`) quebrava o visual novo para quem tinha conta e missão por fazer — voltava sozinho ao clássico (o bug também estava na `main`).
+- **"Hoje" no Início (celular):** desejo do dia → Camarim VIP, missões, capítulo de domingo (lido ao abrir o News, `tw_cap_lido`), aniversários do dia com ♡ Coração (`dar_coracao`) e Perfil; 1 aniversário + "+N" que abre; com tudo feito a lista recolhe ("Ver lista").
+- **Menu** sem repetição (sem TV repetida, News, Hoje/Calendário/desejo/VIP — moram no Início); "TsuLiPa ♡" → "Fichinhas".
+- **Teams:** barra até a meta só com 2+ jogando na semana; os outros aparecem como convite.
+- **Descoberta:** desejo do dia com o dobro de chance para Battle/Studio/Bloom; missões (migration `missoes_descoberta`, a partir de 17/11): nível 1 alterna jardim/battle em dias pares, nível 2 é a foto do Studio a cada 3 dias.
+- **Quadrinhos da temporada 0** (6 capítulos das músicas dos Unit Festivals): direção de cena por quadro (`JN_T0_DIR` → `jnT0Desenhar`): cenários próprios (audição, sala com espelho e reflexo, cidade city pop com neon, praia/pôr do sol, quarto, tela dividida dia/noite, Halloween, portão do World), palco por festival com plateia de lightsticks e faixa da música, câmera geral/médio/close, expressões existentes, balão nunca sobre rosto, lua/sol no lado sem balão. Falas, datas e Temporada 1 intactas.
+- **Desenhos:** palco de amizades e Camarim VIP com textos legíveis no celular; VIP equilibrado; Battle/Studio em treino também no clássico; JOGAR do Center⭐Run visível no celular; Bloom mostra erro em vez de "Carregando..." eterno; Studio "Pose V ✌".
+- **Peso:** `tw-mapa.js` (~100 KB) baixa depois da abertura (`twMapaCarregar`); o Mapa no celular pede e espera se tocar antes.
+- Temporada 1 continua trancada; datas movidas para os domingos 27/12/2026 → 31/01/2027 (depois dos capítulos comuns).
+
+**Falta:** aparelho/login reais; ok do Pati; merge do dono; dia do aniversário da Lirika (a ficha só diz "maio"); avisar jogadores que o aniversário (dia/mês) é público no Calendário; Temporada 1 (refino visual + revisão nativa + autorização); áudio e sala do pet não testados aqui.
+
 ## Auditoria geral — 16/11/2026 (branch `fix/recuperacao-visual-celular-20261115`, PR #98)
 
 **Estado:** a `main` tem tudo até a #97 (o "site não abre no iPhone" era a tela de carregamento decorativa cobrindo o início; a #97 tirou). A PR #98 leva 70+ commits: recuperação visual do celular, Temporada 1 trancada e as correções abaixo. Prévia: `tsulipa-world-git-fix-recuperacao-visual-celul-f18405-tsu-li-pa.vercel.app/?celular=1`.

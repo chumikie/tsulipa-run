@@ -903,3 +903,8 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
   :root:not([data-theme="light"]) .twc .twc-hj-vip{background:#3d2a6b;color:#e6d6ff!important}
   :root:not([data-theme="light"]) .twc .twc-hj-mais,:root:not([data-theme="light"]) .twc .twc-hj-mais b{color:#e6d6ff!important}}
 .twc .twc-hj-bt.lbn{text-decoration:none!important}
+.twc-hj-tudo{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.twc .twc-hj-ver{min-height:32px;padding:3px 12px;border:0;border-radius:999px;background:#fff;color:#3c6b00!important;font:800 12px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 0 0 1.5px #c9f58a inset}
+.twc .twc-hj-aniv-mais{border:1.5px dashed #ffd27a;background:#fffaf0}
+.twc .twc-hj-aniv-mais .twc-hj-ico{width:28px;height:28px;border-radius:9px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc .twc-hj-ver{background:#2a1d4a;color:#c9f58a!important}:root:not([data-theme="light"]) .twc .twc-hj-aniv-mais{background:#3a2a20;border-color:#8a6a2a}}

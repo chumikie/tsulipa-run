@@ -350,6 +350,10 @@
     deu:{pt:'Coração enviado!',en:'Heart sent!',es:'¡Corazón enviado!',id:'Hati terkirim!',th:'ส่งหัวใจแล้ว!',ja:'ハートを送ったよ！'},
     perfil:{pt:'Perfil',en:'Profile',es:'Perfil',id:'Profil',th:'โปรไฟล์',ja:'プロフ'},
     trio:{pt:'Fichinha',en:'Profile card',es:'Fichita',id:'Kartu profil',th:'การ์ดโปรไฟล์',ja:'プロフィール'},
+    maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
+    maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
+    verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
     erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
@@ -375,6 +379,7 @@
       else { b.disabled = false; toast(thj('erro')); }
     }).catch(function(){ b.disabled = false; toast(thj('erro')); });
   }
+  var hojeAberto = false, hojeAnivTodos = false;
   function hojeHtml(){
     var itens = [], feitos = 0, H = window.TW_HUMOR, C = window.TW_CAL;
     function linha(ok, cor, icone, tit, sub, botao, extra){
@@ -398,23 +403,26 @@
     // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){
-        if(m.k === 'anivJog') (m.quem || []).slice(0, 3).forEach(function(nk){
+        if(m.k === 'anivJog') (m.quem || []).filter(function(nk, i){ return hojeAnivTodos || i === 0 || nk.toLowerCase() === eu; }).forEach(function(nk){
           if(nk.toLowerCase() === eu){ linha(true, 'sol', 'bolo', esc(thj('anivEu', {p:nk})), esc(thj('anivEuSub'))); return; }
           var dei = anivDei(nk);
           linha(dei, 'sol', 'bolo', esc(thj('aniv', {p:nk})), esc(dei ? thj('deu') : thj('anivSub')),
             '<span class="twc-hj-bts">' + (dei ? '' : '<button type="button" class="twc-hj-bt" data-anivcor="' + esc(nk) + '">' + esc(thj('coracao')) + '</button>') +
             '<button type="button" class="twc-hj-bt twc-hj-bt-claro lbn" data-nick="' + esc(nk) + '">' + esc(thj('perfil')) + '</button></span>');
         });
+        var resto = m.k === 'anivJog' && !hojeAnivTodos ? (m.quem || []).length - 1 - ((m.quem || []).slice(1).some(function(nk){ return nk.toLowerCase() === eu; }) ? 1 : 0) : 0;
+        if(resto > 0) itens.push('<button type="button" class="twc-hj-mais twc-hj-aniv-mais" data-hjaniv="1"><span class="twc-hj-ico twc-g-sol" aria-hidden="true">' + ico('bolo', 16) + '</span><b>' + esc(resto === 1 ? thj('maisAniv1') : thj('maisAniv', {n:resto})) + '</b>' + ico('seta', 16) + '</button>');
         if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
       });
     }
-    var tot = itens.length; if(!tot) return '';
+    var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
     var pc = Math.round(feitos / tot * 100);
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
-      (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + '</p>' : '') + itens.join('') + extra + '</section>';
+      (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
+      (feitos === tot && !hojeAberto ? '' : itens.join('')) + extra + '</section>';   // tudo feito: a lista recolhe (abre no "Ver lista")
   }
 
   function telaInicio(){
@@ -1298,7 +1306,10 @@
   }
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
   function embutir(k){
-    var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot'); if(!el || !slot) return;
+    var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
+    if(!el && k === 'mapa' && typeof window.twMapaCarregar === 'function'){   // o mapa baixa depois da abertura: se ainda não chegou, pede e tenta de novo
+      window.twMapaCarregar(); var tent = 0; (function espera(){ if(topo() !== 'emb:mapa') return; if(document.querySelector(EMB.mapa[0])){ embutir('mapa'); return; } if(++tent < 40) setTimeout(espera, 150); })(); return; }
+    if(!el || !slot) return;
     if(embAtual && embAtual.el !== el) devolver();
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
     slot.appendChild(el);
@@ -1471,6 +1482,8 @@
     if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
     if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
     if(b.dataset.anivcor){ anivCoracao(b.dataset.anivcor, b); return; }
+    if(b.dataset.hjaniv){ hojeAnivTodos = true; som(); desenhar(); return; }
+    if(b.dataset.hjver){ hojeAberto = !hojeAberto; som(); desenhar(); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }

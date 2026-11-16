@@ -55,6 +55,7 @@
   P.falar = function(k){
     if(!FRASES[k]) return;
     P.minha = {frase:k, em:Date.now()};
+    if(k==='oi' && window.TW_HUMOR) window.TW_HUMOR.treino('frase');
     ping(k).then(function(){ setTimeout(atualizar, 400); });
   };
   P.atualizar = atualizar; P.contadorUI = contadorUI;

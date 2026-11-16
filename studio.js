@@ -118,6 +118,7 @@
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
+      if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:esc_}).then(function(r){
         if(r && r.ok){

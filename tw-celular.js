@@ -168,7 +168,6 @@
   function abrirCard(k){
     var c = card(k); if(!c) return;
     if(precisaEntrar(k)){ pedirLogin(titulo(c)); return; }
-    if(window.TW_HUMOR) try{ window.TW_HUMOR.abriu(k); }catch(e){}
     c.click();   // o mesmo caminho do hub: sons, cadeados, prêmios e telas continuam iguais
   }
   var JOGOS = ['run', 'karaoke', 'sora', 'battle', 'duo', 'cafe', 'handshake', 'studio', 'bloom', 'pet'];
@@ -1489,7 +1488,7 @@
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
-    if(b.dataset.frase){ if(window.TW_HUMOR && !logado()) window.TW_HUMOR.evento('frase');
+    if(b.dataset.frase){
       if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.filtro !== undefined){ album.filtro = b.dataset.filtro; som(); desenhar(); return; }
     if(b.dataset.cardz) return;   // o zoom do card é do próprio jogo (gacha)
@@ -1570,7 +1569,7 @@
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
-    if(b.dataset.frase){ if(window.TW_HUMOR && !logado()) window.TW_HUMOR.evento('frase');
+    if(b.dataset.frase){
       if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.ir){ abrirCard(b.dataset.ir); }
   }

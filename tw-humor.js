@@ -54,9 +54,9 @@
   // o que cada jogo faz nas barrinhas: [energia, diversão, brilho, amizade]
   var EFEITO = {run:[-8, 16, 10, 0], karaoke:[-8, 14, 16, 4], sora:[-7, 18, 6, 0], cafe:[4, 12, 4, 8], battle:[-9, 12, 18, 4], studio:[-3, 10, 14, 6],
     handshake:[-5, 10, 8, 16], bloom:[8, 8, 4, 6], duo:[-3, 12, 6, 16], pet:[4, 8, 2, 12], gacha:[0, 10, 6, 0], mapa:[2, 6, 0, 6], frase:[0, 4, 2, 12], coracao:[0, 2, 2, 10]};
-  // RPCs que querem dizer "jogou de verdade" (só com conta). Visitante conta pela abertura do jogo.
-  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_finalizar:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
-    handshake_premio:'handshake', battle_jogar:'battle', battle_desafiar:'battle', studio_publicar:'studio', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
+  // Ações confirmadas pelo servidor. Visitantes usam o resultado local da ação, nunca a abertura.
+  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_etapa:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
+    handshake_premio:'handshake', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
     jardim_plantar:'bloom', duo_registrar:'duo', gacha_girar:'gacha', dar_coracao:'coracao'};
   var DESCOBERTA = {battle:1, studio:1, bloom:1};
   var TREINO_VISITANTE = {run:1, cafe:1, battle:1, studio:1, handshake:1, mapa:1, frase:1};
@@ -109,7 +109,7 @@
     ler();
     var ef = EFEITO[ev]; if(ef){ var k = fraco ? .5 : 1; BARRAS.forEach(function(b, i){ est[b] = limita(est[b] + ef[i] * k); }); }
     var d = desejoHoje(), cumpriu = false;
-    if(!d.feito && d.ev === ev){
+    if(!fraco && !d.feito && d.ev === ev){
       d.feito = true; cumpriu = true;
       est.serie = est.ultimo === ontem() ? (+est.serie || 0) + 1 : (est.ultimo === hoje() ? +est.serie || 1 : 1);
       est.ultimo = hoje(); est.vip = hoje(); est.maxSerie = Math.max(+est.maxSerie || 0, est.serie);
@@ -193,20 +193,25 @@
       '</div>';
   }
 
-  // ganchos: RPCs que terminam partidas (conta) e a abertura de jogos (visitante, efeito pela metade)
+  // Só confirma ações com sucesso explícito e na mesma sessão que iniciou a chamada.
   if(typeof window.contaRpc === 'function' && !window.contaRpc.twHumor){
     var orig = window.contaRpc;
     window.contaRpc = function(nome, args){
+      var dono = typeof contaJ !== 'undefined' ? contaJ : null;
+      var sessao = typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : null;
       var p = orig.apply(this, arguments);
-      try{ p.then(function(r){ if(r && r.ok === false) return;
+      try{ p.then(function(r){
+        if(!r || r.ok !== true || dono !== (typeof contaJ !== 'undefined' ? contaJ : null) ||
+          sessao !== (typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : null)) return;
+        if((nome === 'cafe_run_etapa' || nome === 'cafe_concluir') && (r.confirmado !== true || r.certo !== true)) return;
         if(RPC_JOGO[nome]) evento(RPC_JOGO[nome]);
-        else if(nome === 'presenca_ping' && args && args.p_frase) evento('frase'); }, function(){}); }catch(e){}
+        else if(nome === 'presenca_ping' && args && args.p_frase === 'oi') evento('frase'); }, function(){}); }catch(e){}
       return p;
     };
     window.contaRpc.twHumor = true;
     if(orig.twcManut) window.contaRpc.twcManut = true;
   }
-  H.abriu = function(jogo){ if(!logado() || !RPC_JOGO_INVERSO[jogo]) evento(jogo, true); };
-  var RPC_JOGO_INVERSO = {}; Object.keys(RPC_JOGO).forEach(function(k){ RPC_JOGO_INVERSO[RPC_JOGO[k]] = 1; });
+  H.abriu = function(){}; // Compatibilidade: navegar não altera humor, desejo ou passe VIP.
+  H.treino = function(jogo){ if(!logado()) evento(jogo); };
   ler();
 })();

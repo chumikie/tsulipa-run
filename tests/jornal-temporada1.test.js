@@ -205,8 +205,8 @@ test('30 quadros em seis idiomas com atores e poses válidas',()=>{
 });
 test('Canvas privado não altera função histórica e conserva texto completo no HTML',()=>{
  assert.match(source,/function jnT1DesenharSeguro\(canvas,p,episodio,quadro\)/);
- assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\]\)/);
- assert.match(source,/function jnCapDesenhar\(cv, p\)/);
+ assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\],true\)/);
+ assert.match(source,/function jnCapDesenhar\(cv, p, temporada\)/);
  assert.match(source,/figcaption/);
 });
 
@@ -239,4 +239,10 @@ test('objeto não desenha sem contexto e leitor continua privado',()=>{
  const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
  assert.equal(ctx.jnT1ObjetoDesenhar(null,0,0),false);
  assert.equal(ctx.jnT1PintarQuadros({querySelectorAll(){throw Error('não deve consultar')}},0),false);
+});
+
+test('balões da temporada empilham sem mudar posicionamento histórico',()=>{
+ assert.match(source,/function jnCapDesenhar\(cv, p, temporada\)/);
+ assert.match(source,/if\(temporada\)\{by = proximaFalaY;proximaFalaY \+= bh \+ 8;\}/);
+ assert.match(source,/jnCapDesenhar\(canvas,\[p\[0\],p\[1\],nar,falas\],true\)/);
 });

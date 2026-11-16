@@ -25,7 +25,7 @@ test('padrão nos telefones: o index liga sozinho em telefone, respeita a escolh
   assert.match(bloco, /fone=matchMedia\('\(pointer:coarse\)'\)\.matches&&Math\.min\(screen\.width,screen\.height\)<=600/, 'telefone = toque + tela pequena');
   assert.match(bloco, /on=pref==='1'\|\|\(pref!=='0'&&fone\)/, 'escolha guardada vence; sem escolha, telefone liga');
   assert.match(js, /function desligar\(\)\{\n    try\{ localStorage\.setItem\(CHAVE, '0'\); \}/, 'Visual clássico fica guardado');
-  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-lado\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
   assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
   const tx = bloco.match(/var TX=\{([^}]*)\}/)[1];

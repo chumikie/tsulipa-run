@@ -1238,8 +1238,10 @@
       var tg = x.createRadialGradient(p.x, p.y - 4, 4, p.x, p.y - 2, 64); tg.addColorStop(0, '#fff'); tg.addColorStop(1, cor[k]); x.fillStyle = tg; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.fill();
       x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 2.5; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.stroke();
       x.save(); x.translate(p.x - 78, p.y - 168 + 6 - pulo); x.scale(1.5, 1.5);
-      try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = rg && rg.tipo === 'm' && rg.k === k ? ['coracao', 'tchau', 'v'][k] : ['nyan', 'mic', 'v'][k]; perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
+      var deLado = laco.par.length === 2 && noLaco(k) && window.TW_LADO && !(rg && rg.tipo === 'm' && rg.k === k);   // na dupla, os dois de perfil, um virado para o outro
+      try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = rg && rg.tipo === 'm' && rg.k === k ? ['coracao', 'tchau', 'v'][k] : ['nyan', 'mic', 'v'][k]; if(!deLado) perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
       x.restore();
+      if(deLado) try{ window.TW_LADO.desenhar(x, p.x, p.y - 11 - pulo, 2.05, av, s * 60, p.x > mx); }catch(e){}
       // faixa com o nome (fita com pontas recortadas)
       x.font = '400 22px "Mochiy Pop One",sans-serif'; var nw2 = x.measureText(MEMBROS[k][1]).width + 30, ny = p.y + 38;   // legível no celular (o canvas aparece ~metade)
       x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.moveTo(p.x - nw2 / 2 - 12, ny - 9); x.lineTo(p.x - nw2 / 2, ny - 9); x.lineTo(p.x - nw2 / 2, ny + 15); x.lineTo(p.x - nw2 / 2 - 12, ny + 15); x.lineTo(p.x - nw2 / 2 - 6, ny + 2); x.closePath(); x.fill();

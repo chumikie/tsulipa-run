@@ -1310,7 +1310,15 @@
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
     if(!el && k === 'mapa' && typeof window.twMapaCarregar === 'function'){   // o mapa baixa depois da abertura: se ainda não chegou, pede e tenta de novo
       window.twMapaCarregar(); var tent = 0; (function espera(){ if(topo() !== 'emb:mapa') return; if(document.querySelector(EMB.mapa[0])){ embutir('mapa'); return; } if(++tent < 40) setTimeout(espera, 150); })(); return; }
-    if(!el || !slot) return;
+    if(!slot) return;
+    if(k === 'nov'){
+      // Reutilizar as notícias reais sem retirar a seção original do Hub.
+      var origem=document.getElementById('hubNov');
+      var conteudo=origem ? origem.innerHTML : '';
+      slot.innerHTML='<section class="hubpainel hubnov twc-novidades-conteudo" aria-label="'+esc(t('nov'))+'"><ul>'+conteudo+'</ul></section>';
+      return;
+    }
+    if(!el) return;
     if(embAtual && embAtual.el !== el) devolver();
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
     slot.appendChild(el);

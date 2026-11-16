@@ -147,7 +147,7 @@
   function $id(id){ return document.getElementById(id); }
   function card(k){ var c = $id('hubCards'); return c && (c.querySelector('[data-ir="' + k + '"]') || c.querySelector('[data-twnovo="' + k + '"]')); }
   function chaveDe(c){ return c.getAttribute('data-ir') || c.getAttribute('data-twnovo') || ''; }
-  function alerta(c){ return !!(c && (c.classList.contains('tw-alert-pink') || c.querySelector('.hubalerta:not([hidden])'))); }
+  function alerta(c){ return !!(c && c.classList && (c.classList.contains('tw-alert-pink') || c.querySelector('.hubalerta:not([hidden])'))); }
   function titulo(c){ var b = c && c.querySelector('b'); return b ? b.textContent.trim() : ''; }
   function descricao(c){
     if(!c) return '';
@@ -202,7 +202,7 @@
     return '<div class="twc-faixa"><span><h1>' + tit + '</h1><small>' + esc(sub) + '</small></span>' + (chip ? '<em>' + esc(chip) + '</em>' : '') +
       brilhos([[52, 18, 12], [66, 62, 9, 'l'], [80, 22, 10, 'r']]) + '</div>';
   }
-  function badge(c){ return alerta(c) ? '<em class="twc-dot" aria-hidden="true">!</em>' : ''; }
+  function badge(c){ return (c === true || alerta(c)) ? '<em class="twc-dot" aria-hidden="true">!</em>' : ''; }   // c: card do hub ou true (ex.: missão pendente)
   function cadeado(k){ return precisaEntrar(k) ? '<em class="twc-cad" aria-hidden="true">' + ico('cadeado', 13) + '</em><span class="twc-sr"> (' + esc(t2('legCad')) + ')</span>' : ''; }
   function app(k, nome, attrs, c){
     return '<button type="button" class="twc-app" ' + attrs + '><span class="twc-app-ico twc-g-' + (COR[k] || 'roxo') + '">' + ico(k, 30) + badge(c) + cadeado(k) + '</span><span class="twc-app-nome" translate="no">' + esc(nome) + '</span>' + seloTreino(k) + '</button>';
@@ -328,6 +328,95 @@
     folha.hidden = false;
   }
 
+  /* ---------- Hoje: uma lista só, com progresso (desejo → Camarim VIP, missões, capítulo de domingo, aniversário) ---------- */
+  var THJ = {
+    tit:{pt:'Hoje',en:'Today',es:'Hoy',id:'Hari ini',th:'วันนี้',ja:'きょう'},
+    vip:{pt:'Prêmio: Camarim VIP',en:'Reward: VIP Dressing Room',es:'Premio: Camerino VIP',id:'Hadiah: Ruang Rias VIP',th:'รางวัล: ห้องแต่งตัว VIP',ja:'ごほうび：VIP楽屋'},
+    vipOk:{pt:'Camarim VIP liberado!',en:'VIP Dressing Room unlocked!',es:'¡Camerino VIP liberado!',id:'Ruang Rias VIP terbuka!',th:'ปลดล็อกห้องแต่งตัว VIP แล้ว!',ja:'VIP楽屋オープン！'},
+    entrar:{pt:'Entrar',en:'Go in',es:'Entrar',id:'Masuk',th:'เข้าไป',ja:'入る'},
+    mis:{pt:'Missões do dia',en:'Daily missions',es:'Misiones del día',id:'Misi harian',th:'ภารกิจประจำวัน',ja:'デイリーミッション'},
+    misOk:{pt:'Todas cumpridas!',en:'All done!',es:'¡Todas cumplidas!',id:'Semua selesai!',th:'ทำครบแล้ว!',ja:'ぜんぶクリア！'},
+    misFalta:{pt:'{f} de {n} cumpridas',en:'{f} of {n} done',es:'{f} de {n} cumplidas',id:'{f} dari {n} selesai',th:'ทำแล้ว {f} จาก {n}',ja:'{n}こ中{f}こクリア'},
+    ver:{pt:'Ver',en:'See',es:'Ver',id:'Lihat',th:'ดู',ja:'見る'},
+    ler:{pt:'Ler',en:'Read',es:'Leer',id:'Baca',th:'อ่าน',ja:'読む'},
+    cap:{pt:'Capítulo {n} do quadrinho',en:'Comic chapter {n}',es:'Capítulo {n} del cómic',id:'Bab {n} komik',th:'การ์ตูนตอนที่ {n}',ja:'マンガ第{n}話'},
+    capNovo:{pt:'Novo no Idol⭐News!',en:'New in Idol⭐News!',es:'¡Nuevo en Idol⭐News!',id:'Baru di Idol⭐News!',th:'ใหม่ใน Idol⭐News!',ja:'Idol⭐News!に新着！'},
+    capLido:{pt:'Lido ✓',en:'Read ✓',es:'Leído ✓',id:'Sudah dibaca ✓',th:'อ่านแล้ว ✓',ja:'読んだ ✓'},
+    aniv:{pt:'Aniversário de {p}!',en:"It's {p}'s birthday!",es:'¡Cumpleaños de {p}!',id:'Ulang tahun {p}!',th:'วันเกิดของ {p}!',ja:'{p}のおたんじょうび！'},
+    anivSub:{pt:'Mande um coração ou deixe um recado no perfil',en:'Send a heart or leave a note on the profile',es:'Manda un corazón o deja un mensaje en el perfil',id:'Kirim hati atau tinggalkan pesan di profil',th:'ส่งหัวใจหรือฝากข้อความในโปรไฟล์',ja:'ハートを送るか、プロフィールにメッセージを残そう'},
+    anivEu:{pt:'Feliz aniversário, {p}! 🎂',en:'Happy birthday, {p}! 🎂',es:'¡Feliz cumpleaños, {p}! 🎂',id:'Selamat ulang tahun, {p}! 🎂',th:'สุขสันต์วันเกิด {p}! 🎂',ja:'おたんじょうびおめでとう、{p}！🎂'},
+    anivEuSub:{pt:'O TsuLiPa⭐World inteiro está comemorando com você',en:'All of TsuLiPa⭐World is celebrating with you',es:'Todo TsuLiPa⭐World celebra contigo',id:'Seluruh TsuLiPa⭐World merayakan bersamamu',th:'ทั้ง TsuLiPa⭐World ฉลองไปกับคุณ',ja:'TsuLiPa⭐Worldのみんながおいわいしてるよ'},
+    coracao:{pt:'♡ Coração',en:'♡ Heart',es:'♡ Corazón',id:'♡ Hati',th:'♡ หัวใจ',ja:'♡ ハート'},
+    deu:{pt:'Coração enviado!',en:'Heart sent!',es:'¡Corazón enviado!',id:'Hati terkirim!',th:'ส่งหัวใจแล้ว!',ja:'ハートを送ったよ！'},
+    perfil:{pt:'Perfil',en:'Profile',es:'Perfil',id:'Profil',th:'โปรไฟล์',ja:'プロフ'},
+    trio:{pt:'Fichinha',en:'Profile card',es:'Fichita',id:'Kartu profil',th:'การ์ดโปรไฟล์',ja:'プロフィール'},
+    tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
+    erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
+  };
+  function thj(k, o){ var d = THJ[k], s2 = d ? (d[L()] || d.pt) : k; if(o) for(var q in o) s2 = s2.split('{' + q + '}').join(o[q]); return s2; }
+  var CAPS_INICIO = Date.UTC(2026, 10, 15);   // quadrinhos: um por domingo desde 15/11 (o mesmo de jornal-capitulos.js)
+  function capHoje(){   // {n, data} do capítulo mais recente já liberado (horário de Brasília), ou null
+    var C = window.TW_CAL, h = C ? C.hoje() : new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10), r = null;
+    for(var i = 0; i < 6; i++){ var d = new Date(CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); if(d <= h) r = {n:i + 1, data:d}; }
+    return r;
+  }
+  function capLido(){ try{ return +localStorage.getItem('tw_cap_lido') || 0; }catch(e){ return 0; } }
+  function capMarcarLido(){ var c = capHoje(); if(c && c.n > capLido()) try{ localStorage.setItem('tw_cap_lido', String(c.n)); }catch(e){} }
+  function anivDados(){ try{ var o = JSON.parse(localStorage.getItem('tw_aniv_cor') || 'null'), h = window.TW_CAL ? window.TW_CAL.hoje() : ''; return o && o.dia === h ? o : {dia:h, nicks:[]}; }catch(e){ return {dia:'', nicks:[]}; } }
+  function anivDei(nick){ return anivDados().nicks.indexOf(String(nick).toLowerCase()) >= 0; }
+  function anivGuardar(nick){ var o = anivDados(); if(o.nicks.indexOf(nick.toLowerCase()) < 0) o.nicks.push(nick.toLowerCase()); try{ localStorage.setItem('tw_aniv_cor', JSON.stringify(o)); }catch(e){} }
+  function anivCoracao(nick, b){
+    if(!logado()){ pedirLogin(thj('coracao')); return; }
+    b.disabled = true;
+    contaRpc('dar_coracao', {p_nick:nick}).then(function(r){
+      if(r && (r.ok || r.ok === false && !r.erro)){ anivGuardar(nick); som(); carinho(); toast(thj('deu'), 'coracao'); if(window.TW_HUMOR) try{ window.TW_HUMOR.evento('coracao'); }catch(e){} desenhar(); }
+      else if(r && r.erro === 'proprio'){ anivGuardar(nick); desenhar(); }
+      else { b.disabled = false; toast(thj('erro')); }
+    }).catch(function(){ b.disabled = false; toast(thj('erro')); });
+  }
+  function hojeHtml(){
+    var itens = [], feitos = 0, H = window.TW_HUMOR, C = window.TW_CAL;
+    function linha(ok, cor, icone, tit, sub, botao, extra){
+      itens.push('<div class="twc-hj-it' + (ok ? ' twc-hj-ok' : '') + '"><span class="twc-hj-ico twc-g-' + cor + '" aria-hidden="true">' + ico(ok ? 'check' : icone, 18) + '</span>' +
+        '<span class="twc-hj-txt"><b>' + tit + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + (extra || '') + '</span>' + (botao || '') + '</div>');
+      if(ok) feitos++;
+    }
+    // 1. desejo do dia → Camarim VIP
+    if(H){ var d = H.desejo(), vip = H.vipHoje();
+      linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
+        d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>',
+        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
+    // 2. missões do dia (com conta)
+    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
+    if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
+      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
+    // 3. capítulo do domingo (aparece na semana em que saiu)
+    var cp = capHoje(), hj = C ? C.hoje() : '';
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
+    if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
+      mk.forEach(function(m){
+        if(m.k === 'anivJog') (m.quem || []).slice(0, 3).forEach(function(nk){
+          if(nk.toLowerCase() === eu){ linha(true, 'sol', 'bolo', esc(thj('anivEu', {p:nk})), esc(thj('anivEuSub'))); return; }
+          var dei = anivDei(nk);
+          linha(dei, 'sol', 'bolo', esc(thj('aniv', {p:nk})), esc(dei ? thj('deu') : thj('anivSub')),
+            '<span class="twc-hj-bts">' + (dei ? '' : '<button type="button" class="twc-hj-bt" data-anivcor="' + esc(nk) + '">' + esc(thj('coracao')) + '</button>') +
+            '<button type="button" class="twc-hj-bt twc-hj-bt-claro lbn" data-nick="' + esc(nk) + '">' + esc(thj('perfil')) + '</button></span>');
+        });
+        if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
+      });
+    }
+    var tot = itens.length; if(!tot) return '';
+    var pc = Math.round(feitos / tot * 100);
+    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
+      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
+    return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
+      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
+      (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + '</p>' : '') + itens.join('') + extra + '</section>';
+  }
+
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -341,8 +430,9 @@
       var c = card(k); if(!c) return '';
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
+    var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + destaque + portas() + '</div></div>';
+      '<div class="twc-lado">' + (hjHtml || destaque) + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -353,13 +443,6 @@
   function telaMenu(){
     var run = card('run'), kar = card('karaoke'), gac = card('gacha');
     var musica = ''; try{ musica = typeof hubMusicaSemana === 'function' ? hubMusicaSemana()[1] : ''; }catch(e){}
-    var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
-    var feitas = mis ? mis.filter(function(m){ return m.feito; }).length : 0, pc = mis && mis.length ? Math.round(feitas / mis.length * 100) : 0;
-    var linhas = pendencias().slice(0, 4).map(function(c){
-      return '<button type="button" class="twc-linha" data-ir="' + esc(chaveDe(c)) + '"><span class="twc-linha-ico twc-g-' + (COR[chaveDe(c)] || 'roxo') + '">' + ico(chaveDe(c), 18) + '</span><span class="twc-linha-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' + ico('seta', 18) + '</button>';
-    });
-    if(mis && mis.length) linhas.push('<button type="button" class="twc-linha" data-a="missoes"><span class="twc-linha-ico twc-g-lima">' + ico('missoes', 18) + '</span><span class="twc-linha-txt"><b>' + esc(t('mis')) + '</b><small>' + feitas + '/' + mis.length + '</small></span>' + ico('seta', 18) + '</button>');
-    if(!linhas.length) linhas.push('<p class="twc-emdia">' + ico('check', 18) + ' ' + esc(t('emdia')) + '</p>');
     var pi = []; try{ pi = typeof hubPetInfo === 'function' ? hubPetInfo() : []; }catch(e){ pi = []; }
     var petC = card('pet'), petEmo = (petC && petC.querySelector('i')) ? petC.querySelector('i').textContent : '';
     var rec = +(typeof best !== 'undefined' ? best : 0) || 0;
@@ -367,21 +450,17 @@
     if(run) bs.push(banner('run', titulo(run), tt('Recorde') + ': ' + recorde(), tt('Jogar'), 'data-ir="run"'));
     if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
-    bs.push(banner('news', 'Idol⭐News!', tt('Os destaques da semana'), tt('Abrir'), 'data-a="news"'));
     // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
+    // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
     var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
-              ['tv', 'TsuLiPa TV', 'data-a="tv"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', 'TsuLiPa ♡', 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
+              ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
           (petEmo ? '<span class="twc-idol-pet" aria-hidden="true">' + esc(petEmo) + '</span>' : '') + '<b>' + esc(pi[0] || 'Backstage⭐Pet!') + '</b>' + badge(petC) + '</button>' +
         '<button type="button" class="twc-card twc-rank" data-a="tv"><span class="twc-rank-t">' + ico('trofeu', 20) + '<b>' + esc(t('rank')) + '</b></span>' +
           (rec ? '<span class="twc-rank-n">' + esc(recorde()) + '</span><small>' + esc(tt('Recorde')) + ' · ' + esc(t('tv')) + '</small>' : '<small class="twc-rank-vazio">' + esc(t('rankVazio')) + '</small><small>' + esc(t('tv')) + '</small>') + '</button>' +
-      '</div>' +
-      '<section class="twc-card twc-hoje" aria-labelledby="twcHojeT"><div class="twc-card-cab"><h2 id="twcHojeT">' + esc(t('hoje')) + '</h2>' +
-        (mis && mis.length ? '<span class="twc-prog"><span class="twc-barra" aria-hidden="true"><i style="width:' + pc + '%"></i></span><small>' + feitas + '/' + mis.length + '</small></span>' : '') + '</div>' +
-        linhas.join('') + '</section></div>' +
-      calHojeHtml() + humorHtml() +
+      '</div></div>' + humorHtml(true) +
       '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
@@ -506,7 +585,7 @@
       (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
   /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
-  function humorHtml(){
+  function humorHtml(semDesejo){   // semDesejo: o desejo do dia e o VIP já aparecem no "Hoje" do Início
     var H = window.TW_HUMOR; if(!H) return '';
     var e = H.estado(), d = H.desejo(), vip = H.vipHoje();
     var barras = H.barras.map(function(b){ var v = e[b];
@@ -514,11 +593,11 @@
     return '<section class="twc-humor" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
       (e.serie > 0 ? '<em class="twc-serie"><span aria-hidden="true">' + ico('chama', 14) + '</span>' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
       '<div class="twc-hbs">' + barras + '</div>' +
-      (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') +
+      (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') + (semDesejo ? '</section>' :
       '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(d.ev)] || 'rosa') + '" aria-hidden="true">' + ico(d.feito ? 'check' : desejoIco(d.ev), 22) + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
         (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>') + '</div>' +
       '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span class="twc-vip-coroa" aria-hidden="true">' + ico('coroa', 24) + '</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
-        (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>';
+        (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>');
   }
   function desejoIco(ev){ return ev === 'frase' ? 'fala' : ev; }
   function desejoIr(ev){
@@ -1333,7 +1412,7 @@
   function acao(a, el){
     if(a === 'comecar'){ if(typeof hubComecar === 'function') hubComecar(); return; }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
-    if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
+    if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
     if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas
       if(topo() === 'dentro:vip' && dentroUltimos.length){
@@ -1391,6 +1470,7 @@
     if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
     if(b.dataset.trioaba != null){ trioAba = +b.dataset.trioaba; som(); desenhar(); return; }
     if(b.dataset.triovoz != null){ var Lv = typeof HUB_FALAS !== 'undefined' ? HUB_FALAS[+b.dataset.triovoz] : null; try{ if(Lv && typeof hubVozTocar === 'function') hubVozTocar(Lv[Math.floor(Math.random() * (Lv.length - 1))][0]); else som(); }catch(e){} b.classList.remove('fala'); void b.offsetWidth; b.classList.add('fala'); return; }
+    if(b.dataset.anivcor){ anivCoracao(b.dataset.anivcor, b); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
     if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
@@ -1522,7 +1602,7 @@
   /* ---------- montar ---------- */
   // Ligar e desligar na hora, sem recarregar a página (o hub clássico nunca deixou de estar montado por baixo).
   function desligar(){
-    try{ localStorage.removeItem(CHAVE); }catch(e){}
+    try{ localStorage.setItem(CHAVE, '0'); }catch(e){}   // escolheu o clássico: fica assim até ligar de novo
     window.TW_CELULAR_LIGADO = false; limparEndereco(); fecharFolha();
     devolver(); vitrineDevolver();
     if(cel){ cel.remove(); cel = null; }

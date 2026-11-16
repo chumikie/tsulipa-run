@@ -16,12 +16,15 @@ function carregar(){
   return sandbox.TW_CELULAR;
 }
 
-test('desligado por padrão: o index só baixa o tw-celular com brs48cr_celular ou ?celular=1', () => {
+test('padrão nos telefones: o index liga sozinho em telefone, respeita a escolha guardada e ?celular=0|1', () => {
   const i = html.indexOf("var k='brs48cr_celular'");
   assert.ok(i > 0, 'loader da prévia no index');
   const bloco = html.slice(i, html.indexOf('</script>', i));
   assert.match(bloco, /get\('celular'\)/);
-  assert.match(bloco, /q==='0'\)localStorage\.removeItem\(k\)/, '?celular=0 desliga');
+  assert.match(bloco, /q==='0'\)localStorage\.setItem\(k,'0'\)/, '?celular=0 guarda o clássico');
+  assert.match(bloco, /fone=matchMedia\('\(pointer:coarse\)'\)\.matches&&Math\.min\(screen\.width,screen\.height\)<=600/, 'telefone = toque + tela pequena');
+  assert.match(bloco, /on=pref==='1'\|\|\(pref!=='0'&&fone\)/, 'escolha guardada vence; sem escolha, telefone liga');
+  assert.match(js, /function desligar\(\)\{\n    try\{ localStorage\.setItem\(CHAVE, '0'\); \}/, 'Visual clássico fica guardado');
   assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
   assert.ok(html.indexOf("var k='brs48cr_celular'") < html.indexOf('window.TW_JOGOS_SEM_LOGIN = false;'), 'carrega antes do script principal (embrulha o hub a tempo)');
@@ -202,4 +205,23 @@ test('laços: músicas que as duplas cantaram juntas (blog oficial)', () => {
   assert.ok(!/fita brilhante entre os dois/.test(js), 'sem a fita e os ♥ de texto na dupla');
   assert.match(js, /\['Touch You', 'Unit Festival 2021 · High T'\]/, 'Tsu & Pati');
   assert.ok(!/Dividem a unit Gekokujou/.test(js), 'Gekokujou é dos três, não só do Tsu e da Lirika');
+});
+
+test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times só com 2+ ativos', () => {
+  assert.match(js, /function hojeHtml\(\)/, 'card Hoje');
+  assert.match(js, /\(hjHtml \|\| destaque\)/, 'Hoje no Início no lugar do destaque');
+  ['data-desejo=', 'data-a="vip"', 'data-a="missoes"', 'data-a="news"', 'data-anivcor=', 'data-v="trio"'].forEach(a => assert.ok(js.includes(a), 'Hoje tem ' + a));
+  assert.match(js, /contaRpc\('dar_coracao', \{p_nick:nick\}\)/, 'coração de aniversário usa a RPC de sempre');
+  assert.match(js, /capMarcarLido\(\); if\(typeof window\.jornalAbrir/, 'abrir o News marca o capítulo como lido');
+  assert.ok(!/\['tv', 'TsuLiPa TV', 'data-a="tv"'\]/.test(js), 'TV não se repete no Menu');
+  assert.ok(!/bs\.push\(banner\('news'/.test(js), 'News fica só na porta do Início');
+  assert.match(js, /function badge\(c\)\{ return \(c === true \|\| alerta\(c\)\)/, 'selo aceita true (missão pendente) sem quebrar o visual');
+  assert.match(js, /function alerta\(c\)\{ return !!\(c && c\.classList/, 'alerta não quebra com valor que não é card');
+  const jn = ler('jornal.js');
+  assert.match(jn, /\(\+t\.ativos \|\| 0\) >= 2/, 'barra dos Teams só com 2 ou mais jogando');
+  ['um', 'zero', 'regra'].forEach(k => ['pt','en','es','id','th','ja'].forEach(l => assert.match(jn, new RegExp(k + ':\\{[^}]*\\b' + l + ":'"), 'Times ' + k + ' ' + l)));
+  const hm = ler('tw-humor.js');
+  assert.match(hm, /var DESCOBERTA = \{battle:1, studio:1, bloom:1\};/, 'desejo puxa os jogos menos jogados');
+  const sql = ler('supabase/migrations/20261116200000_missoes_descoberta.sql');
+  assert.match(sql, /fam in \('jardim', 'battle'\)/); assert.match(sql, /k = 'foto'/); assert.match(sql, /date '2026-11-17'/);
 });

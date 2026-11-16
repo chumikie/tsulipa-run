@@ -865,3 +865,41 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
   :root:not([data-theme="light"]) .twc-calfala p{background:#2f2350;color:#efe6ff}
   :root:not([data-theme="light"]) .twc-calfala p b{color:#d7b8ff}
 }
+/* ---------- Hoje: a lista do dia com progresso (16/11/2026) ---------- */
+.twc-hj{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:22px;background:#fff;border:2px solid var(--twc-borda);box-shadow:0 4px 12px rgba(80,40,160,.10)}
+.twc-hj-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px}
+.twc-hj-cab h2{margin:0;font:400 20px "Mochiy Pop One",sans-serif;color:var(--twc-roxo-e)}
+.twc-hj .twc-barra{width:96px;height:10px}
+.twc-hj-tudo{margin:0;padding:8px 12px;border-radius:14px;background:linear-gradient(120deg,#f4ffe6,#fff4fb);font-weight:800;font-size:13px;color:#3c6b00;text-align:center}
+.twc-hj-it{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:linear-gradient(120deg,#fbf8ff,#fff6fb);border:1.5px solid #f1ebff}
+.twc-hj-ok{background:linear-gradient(120deg,#f6ffea,#fbfff4);border-color:#d9f7a8}
+.twc-hj-ok .twc-hj-ico{background:linear-gradient(150deg,#8ad400,#4f9a00)!important}
+.twc-hj-ico{width:34px;height:34px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff}
+.twc-hj-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.twc-hj-txt b{font-weight:800;font-size:14px;line-height:1.25;color:var(--twc-ink)}
+.twc-hj-txt small{font:700 12px/1.3 "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc-hj-ok .twc-hj-txt b{color:#3c6b00}
+.twc-hj-bts{display:flex;flex-direction:column;gap:6px;flex:none}
+.twc .twc-hj-bt{flex:none;min-height:40px;min-width:64px;padding:6px 14px;border:0;border-radius:999px;cursor:pointer;font:800 13px "M PLUS Rounded 1c",sans-serif;color:#fff!important;
+  background:linear-gradient(150deg,#9b5cff,#5a2bc4);box-shadow:0 3px 0 rgba(90,43,196,.35)}
+.twc .twc-hj-bt-claro{background:#fff;color:var(--twc-roxo-e)!important;border:2px solid #e2d7fd;box-shadow:none}
+.twc .twc-hj-vip{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:5px;min-height:32px;padding:4px 10px;border:0;border-radius:999px;cursor:pointer;
+  font:800 11.5px "M PLUS Rounded 1c",sans-serif;background:#efe8ff;color:#5b4a80!important}
+.twc .twc-hj-vip-on{background:linear-gradient(120deg,#3a1a5c,#7a2d6b);color:#fff3c4!important;box-shadow:0 2px 0 rgba(58,26,92,.35)}
+.twc .twc-hj-vip em{font-style:normal;padding:1px 8px;border-radius:99px;background:#ffd23f;color:#3a1a5c}
+.twc .twc-hj-mais{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border:0;border-radius:14px;background:none;cursor:pointer;text-align:left;color:var(--twc-roxo-e)!important}
+.twc .twc-hj-mais small{font:800 11px "M PLUS Rounded 1c",sans-serif;color:var(--twc-sub)}
+.twc .twc-hj-mais b{flex:1;font-weight:800;font-size:13px}
+.twc .twc-hj-mais em{font-style:normal;font-weight:800;font-size:12px;padding:1px 8px;border-radius:99px;background:#ffe3f1;color:#c2367f}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twc-hj{background:var(--card,#2a1d4a);border-color:#3d2a6b}
+  :root:not([data-theme="light"]) .twc-hj-cab h2{color:#e6d6ff}
+  :root:not([data-theme="light"]) .twc-hj-it{background:#33245a;border-color:#45327a}
+  :root:not([data-theme="light"]) .twc-hj-ok{background:#2c3a2a;border-color:#4f7a2a}
+  :root:not([data-theme="light"]) .twc-hj-txt b{color:#f3ecff}:root:not([data-theme="light"]) .twc-hj-ok .twc-hj-txt b{color:#c9f58a}
+  :root:not([data-theme="light"]) .twc-hj-txt small{color:#c7b6ee}
+  :root:not([data-theme="light"]) .twc-hj-tudo{background:#2c3a2a;color:#c9f58a}
+  :root:not([data-theme="light"]) .twc .twc-hj-bt-claro{background:#2a1d4a;color:#e6d6ff!important;border-color:#5b3f99}
+  :root:not([data-theme="light"]) .twc .twc-hj-vip{background:#3d2a6b;color:#e6d6ff!important}
+  :root:not([data-theme="light"]) .twc .twc-hj-mais,:root:not([data-theme="light"]) .twc .twc-hj-mais b{color:#e6d6ff!important}}
+.twc .twc-hj-bt.lbn{text-decoration:none!important}

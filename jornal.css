@@ -118,3 +118,8 @@
 .jnzoomx{position:fixed;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:#7b3ff0;color:#fff;font:900 18px sans-serif;cursor:pointer}
 .jnzoom-gira img{width:min(94vh,141vw,960px);height:auto;max-width:none;max-height:none;transform:rotate(90deg);flex:none}
 .jnzoom-gira .jnzoomleg{display:none}
+/* Teams com menos de 2 jogando: convite em vez de barra (16/11/2026) */
+.jntimeconv{display:flex;flex-direction:column;gap:4px;margin:6px 0 2px;padding:10px 12px;border-radius:14px;background:rgba(123,63,240,.07);border:1.5px dashed rgba(123,63,240,.28)}
+.jntimeconv p{margin:0;font-size:13px;font-weight:700;color:#3c2a8f}.jntimeconv small{font-size:11.5px;font-weight:700;color:#7a68b8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .jntimeconv{background:rgba(155,48,217,.14);border-color:rgba(200,170,255,.3)}
+  :root:not([data-theme="light"]) .jntimeconv p{color:#e6d6ff}:root:not([data-theme="light"]) .jntimeconv small{color:#bba8e8}}

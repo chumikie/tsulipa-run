@@ -726,13 +726,25 @@ function jornalTimesUI(){
   if(jornalTimes === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   var L = jornalTimes && Array.isArray(jornalTimes.times) ? jornalTimes.times : [];
   if(!L.length){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('A meta dos Teams começa em breve: escolha o seu Team no perfil e jogue Center⭐Run! e Karaoke⭐Time! para encher a barra.')) + '</p>'; return; }
+  // Barra só para Team com 2 ou mais jogando na semana: com 1 pessoa a meta de 300 desanima. Os outros aparecem como convite.
+  var cheios = L.filter(function(t){ return (+t.ativos || 0) >= 2; }), quase = L.filter(function(t){ return (+t.ativos || 0) < 2; });
+  var conv = quase.length ? '<div class="jntimeconv">' + quase.map(function(t){ var info = jornalTimeInfo(t.codigo), n = +t.ativos || 0;
+      return '<p><b style="color:' + info.cor + '">' + escHtml(info.nome) + '</b> · ' + escHtml(jornalTimesT(n === 1 ? 'um' : 'zero')) + '</p>'; }).join('') + '<small>' + escHtml(jornalTimesT('regra')) + '</small></div>' : '';
+  if(!cheios.length){ box.innerHTML = conv; return; }
+  L = cheios;
   box.innerHTML = '<p class="jndica">' + escHtml(tr('Como funciona: cada Team tem uma meta de 300 pontos por membro que jogou nesta semana. Os pontos são as estrelas ganhas no Center⭐Run! + 10 por show do Karaoke⭐Time!. Bateu a meta, o Team ganha a coroa 👑.')) + '</p>' + L.map(function(t, i){
     var info = jornalTimeInfo(t.codigo), meta = Math.max(1, +t.meta || 1), pts = +t.pontos || 0, pc = Math.min(100, Math.round(pts / meta * 100)), ok = pts >= meta;
     return '<div class="jntime"><div class="jntimel"><b style="color:' + info.cor + '">' + (i + 1) + 'º ' + escHtml(info.nome) + (ok ? ' 👑' : '') + '</b><small>' + jornalNum(pts) + ' / ' + jornalNum(meta) + '</small></div>' +
       '<div class="albumbarra jntimeb"><i style="width:' + pc + '%;background:' + info.cor + '"></i></div>' +
       '<small class="jntimed">' + escHtml(tr('Pontos: ⭐ {e} + 🎤 {s} shows × 10 · Meta: 300 × {a} que jogaram')).replace('{e}', jornalNum(t.estrelas)).replace('{s}', jornalNum(t.shows)).replace('{a}', Math.max(1, +t.ativos || 0)) + '</small></div>';
-  }).join('');
+  }).join('') + conv;
 }
+var JORNAL_TIMES_TX = {
+  um:{pt:'1 Idol jogando esta semana. Chame mais alguém do Team!',en:'1 Idol playing this week. Invite someone else from the Team!',es:'1 Idol jugando esta semana. ¡Llama a alguien más del Team!',id:'1 Idol main minggu ini. Ajak anggota Team lainnya!',th:'มีไอดอลเล่น 1 คนในสัปดาห์นี้ ชวนเพื่อนในทีมมาเพิ่มสิ!',ja:'今週プレイ中のアイドルは1人。チームのだれかをさそおう！'},
+  zero:{pt:'Ninguém jogou ainda esta semana. Que tal começar?',en:'Nobody has played yet this week. How about starting?',es:'Nadie ha jugado esta semana. ¿Empiezas tú?',id:'Belum ada yang main minggu ini. Mau mulai?',th:'ยังไม่มีใครเล่นในสัปดาห์นี้ เริ่มเลยไหม?',ja:'今週はまだだれもプレイしていないよ。はじめてみる？'},
+  regra:{pt:'A barra da meta aparece quando 2 ou mais Idols do Team jogam na semana.',en:'The goal bar shows up when 2 or more Idols from the Team play that week.',es:'La barra de la meta aparece cuando 2 o más Idols del Team juegan en la semana.',id:'Bar target muncul saat 2 Idol atau lebih dari Team bermain minggu itu.',th:'แถบเป้าหมายจะขึ้นเมื่อไอดอลในทีมเล่นตั้งแต่ 2 คนขึ้นไปในสัปดาห์',ja:'チームのアイドルが週に2人以上プレイすると目標バーが出るよ。'}
+};
+function jornalTimesT(k){ var d = JORNAL_TIMES_TX[k], l = typeof LANG === 'string' ? LANG : 'pt'; return d ? (d[l] || d.pt) : k; }
 function jornalTimesCarregar(){
   jornalTimes = null; jornalTimesUI();
   contaRpc('times_semana').then(function(d){ jornalTimes = d || {}; jornalTimesUI(); }).catch(function(){ jornalTimes = {}; jornalTimesUI(); });

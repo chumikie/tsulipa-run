@@ -5,7 +5,6 @@ body.tw-cel .tw-nav,body.tw-cel #twNav{display:none!important}
 body.tw-cel #hub{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 body.tw-cel:not(.tw-cel-classico) #hub>.hubin>:not(#hubTut),body.tw-cel:not(.tw-cel-classico) #hub>.hubpart{visibility:hidden}
 body.tw-cel #hubTut{z-index:60}
-body.tw-cel .hubbuddy{z-index:45;bottom:calc(96px + env(safe-area-inset-bottom))}
 body.tw-cel.tw-cel-classico .twc-tela{display:none}
 
 .twc{--twc-ink:#2a1d4a;--twc-sub:#5b4a80;--twc-roxo:#7b3ff0;--twc-roxo-e:#5a2bc4;--twc-lima:#b6ff3b;--twc-borda:#ece4ff;--twc-sombra:#e2d7fd;

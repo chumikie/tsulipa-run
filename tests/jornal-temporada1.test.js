@@ -209,3 +209,16 @@ test('Canvas privado não altera função histórica e conserva texto completo n
  assert.match(source,/function jnCapDesenhar\(cv, p\)/);
  assert.match(source,/figcaption/);
 });
+
+test('gancho de pintura privado não toca Canvas com temporada bloqueada',()=>{
+ const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+ let consultas=0;
+ const root={querySelectorAll(){consultas++;return [];}};
+ for(let i=0;i<6;i++)assert.equal(ctx.jnT1PintarQuadros(root,i),false);
+ assert.equal(consultas,0);
+});
+test('calendario exige gate temporal e protege falas da temporada',()=>{
+ assert.match(cal,/jnT1Disponivel\(t1Indice\)/);
+ assert.match(cal,/F\[mk\[0\]\.k\] \|\| F\.cap/);
+ assert.match(cal,/nomesT1/);
+});

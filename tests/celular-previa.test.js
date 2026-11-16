@@ -184,4 +184,6 @@ test('mapa de amizades: laços com fatos do blog oficial e fichas sem a capoeira
   assert.match(js, /if\(b\.dataset\.laco != null\)\{ amigosSel = \+b\.dataset\.laco;/, 'escolher o laço redesenha o mapa');
   assert.ok(!/capopeira/i.test(js), 'Lirika: só K-pop, IZ*ONE, =LOVE…, sem a capoeira');
   assert.match(js, /\['id', 'Bahasa Indonesia'\]/, 'nome nativo do idioma indonésio');
+  assert.ok(js.includes('BNK48, AKB48, Dal Shabet') && !/Oh My Girl/.test(js), 'Tsu: Dal Shabet no lugar de Oh My Girl');
+  assert.match(js, /arco de lâmpadas \(letreiro de show\)/, 'mapa de amizades desenhado como palco de show');
 });

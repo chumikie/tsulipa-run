@@ -912,7 +912,7 @@
   var FICHAS = [
     {k:0, nome:'Miniwa Tsumiki', jp:'御庭つみき', apelido:'Tsu (つ)', aniv:'05/09', local:'Paraíba, Brasil', altura:'1,80 m', time:'Team S · Sub-Captain', cor:['#9b30d9', 'Violeta'],
       pet:['🐈', 'Chu'], frase:'Oiê! Sou o Tsu, membro da primeira geração draft do BRS48!', blog:'https://brs48.blogspot.com/2021/08/tsu.html',
-      gostos:{pt:'Ouvir música, pudim, cozinhar frango, playlists dos anos 60, dias de chuva, BNK48, AKB48, Oh My Girl',en:'Listening to music, pudding, cooking chicken, 1960s playlists, rainy days, BNK48, AKB48, Oh My Girl',es:'Escuchar música, flan, cocinar pollo, playlists de los 60, días de lluvia, BNK48, AKB48, Oh My Girl',id:'Dengar musik, puding, masak ayam, playlist tahun 60-an, hari hujan, BNK48, AKB48, Oh My Girl',th:'ฟังเพลง, พุดดิ้ง, ทำไก่, เพลย์ลิสต์ยุค 60, วันฝนตก, BNK48, AKB48, Oh My Girl',ja:'音楽をきくこと、プリン、チキン料理、60年代のプレイリスト、雨の日、BNK48、AKB48、Oh My Girl'}, audicao:'Twinkle Twinkle (Secret)', oshis:'Chiba Erii'},
+      gostos:{pt:'Ouvir música, pudim, cozinhar frango, playlists dos anos 60, dias de chuva, BNK48, AKB48, Dal Shabet',en:'Listening to music, pudding, cooking chicken, 1960s playlists, rainy days, BNK48, AKB48, Dal Shabet',es:'Escuchar música, flan, cocinar pollo, playlists de los 60, días de lluvia, BNK48, AKB48, Dal Shabet',id:'Dengar musik, puding, masak ayam, playlist tahun 60-an, hari hujan, BNK48, AKB48, Dal Shabet',th:'ฟังเพลง, พุดดิ้ง, ทำไก่, เพลย์ลิสต์ยุค 60, วันฝนตก, BNK48, AKB48, Dal Shabet',ja:'音楽をきくこと、プリン、チキン料理、60年代のプレイリスト、雨の日、BNK48、AKB48、Dal Shabet'}, audicao:'Twinkle Twinkle (Secret)', oshis:'Chiba Erii'},
     {k:1, nome:'Shiroma Lirika', jp:'城間りりか', apelido:'Lirika (りりか)', aniv:{pt:'maio',en:'May',es:'mayo',id:'Mei',th:'พฤษภาคม',ja:'5月'}, local:'São Paulo, Brasil', altura:'1,40 m', time:'Team S', cor:['#4fa81a', 'Verde Limão'],
       pet:['🐨', 'Koali'], frase:'Shiroma Lirika desu, yoroshiku onegaishima~su!', blog:'https://brs48.blogspot.com/2021/08/lirika.html',
       gostos:{pt:'Verde, K-pop, IZ*ONE, =LOVE, idols japonesas, falar japonês',en:'Green, K-pop, IZ*ONE, =LOVE, Japanese idols, speaking Japanese',es:'El verde, K-pop, IZ*ONE, =LOVE, idols japonesas, hablar japonés',id:'Hijau, K-pop, IZ*ONE, =LOVE, idol Jepang, berbahasa Jepang',th:'สีเขียว, เคป็อป, IZ*ONE, =LOVE, ไอดอลญี่ปุ่น, พูดภาษาญี่ปุ่น',ja:'緑、K-POP、IZ*ONE、=LOVE、日本のアイドル、日本語'}, audicao:'Oogoe Diamond (AKB48)', oshis:'Imamura Maria'},
@@ -1042,19 +1042,34 @@
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, agora = ms != null ? ms : (typeof performance !== 'undefined' ? performance.now() : 0);
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
     function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
-    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f3e9ff'); g.addColorStop(.6, '#ffe6f4'); g.addColorStop(1, '#fff4fb');
+    // Cena de palco à noite: céu com nebulosas nas cores do trio, arco de lâmpadas de letreiro, refletores e piso com LED
+    var cor = MEMBROS.map(function(m){ return m[2]; }), lacoAt = LACOS[amigosSel] || LACOS[3];
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1a0b3d'); g.addColorStop(.55, '#3b1a7a'); g.addColorStop(1, '#6b2a8f');
     rr(0, 0, W, H, 34); x.fillStyle = g; x.fill(); x.save(); rr(0, 0, W, H, 34); x.clip();
-    x.fillStyle = 'rgba(155,48,217,.07)'; for(var bx = 0; bx < W; bx += 34) for(var by = 0; by < H; by += 34){ x.beginPath(); x.arc(bx + (by / 34 % 2) * 17, by, 2.2, 0, 7); x.fill(); }
+    [[110, 90, cor[0]], [340, 60, '#7cc400'], [570, 90, cor[2]]].forEach(function(n){ var ng = x.createRadialGradient(n[0], n[1], 10, n[0], n[1], 220); ng.addColorStop(0, n[2] + '66'); ng.addColorStop(1, n[2] + '00'); x.fillStyle = ng; x.fillRect(0, 0, W, H); });
+    for(var e = 0; e < 46; e++){ var ex = (e * 137.5) % W, ey = (e * 61.3) % 300, tw = .35 + .65 * Math.abs(Math.sin(s * 1.3 + e)); x.globalAlpha = tw * .9; x.fillStyle = e % 7 ? '#fff' : '#ffe58a'; x.beginPath(); x.arc(ex, ey, e % 5 ? 1.3 : 2.2, 0, 7); x.fill(); }
+    x.globalAlpha = 1;
+    // arco de lâmpadas (letreiro de show) atrás do trio
+    x.save(); x.lineWidth = 10; x.strokeStyle = 'rgba(255,255,255,.12)'; x.beginPath(); x.ellipse(W / 2, 330, 300, 270, 0, Math.PI, 2 * Math.PI); x.stroke();
+    for(var lb = 0; lb <= 30; lb++){ var an = Math.PI + lb / 30 * Math.PI, bx2 = W / 2 + Math.cos(an) * 300, by2 = 330 + Math.sin(an) * 270, on = (Math.floor(s * 4) + lb) % 3 !== 0;
+      var gb = x.createRadialGradient(bx2, by2, 1, bx2, by2, 10); gb.addColorStop(0, on ? 'rgba(255,240,180,.95)' : 'rgba(255,240,180,.35)'); gb.addColorStop(1, 'rgba(255,240,180,0)'); x.fillStyle = gb; x.beginPath(); x.arc(bx2, by2, 10, 0, 7); x.fill();
+      x.fillStyle = on ? '#fff6d0' : '#a98fd6'; x.beginPath(); x.arc(bx2, by2, 3.4, 0, 7); x.fill(); }
+    x.restore();
+    // refletores: um cone na cor de cada membro (quem não está no laço fica com a luz apagada)
     AMIGOS_POS.forEach(function(p, k){
-      var a = Math.sin(s * .7 + k) * .06; x.save(); x.translate(p.x, -30); x.rotate(a);
-      var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, ['#e9d0ff', '#e2ffd0', '#cfe0ff'][k]); lg.addColorStop(1, 'rgba(255,255,255,0)');
-      x.fillStyle = lg; x.globalAlpha = .8; x.beginPath(); x.moveTo(-16, 0); x.lineTo(16, 0); x.lineTo(88, 390); x.lineTo(-88, 390); x.closePath(); x.fill(); x.restore(); });
-    var fl = x.createRadialGradient(W / 2, H - 120, 20, W / 2, H - 120, 330); fl.addColorStop(0, 'rgba(255,255,255,.95)'); fl.addColorStop(1, 'rgba(255,255,255,0)');
-    x.fillStyle = fl; x.beginPath(); x.ellipse(W / 2, 352, 330, 46, 0, 0, 7); x.fill();
-    var cor = MEMBROS.map(function(m){ return m[2]; });
+      var aceso = lacoAt.par.indexOf(k) >= 0, ang = Math.sin(s * .7 + k) * .05;
+      x.save(); x.translate(p.x, -20); x.rotate(ang); var lg = x.createLinearGradient(0, 0, 0, 380); lg.addColorStop(0, cor[k] + (aceso ? 'aa' : '22')); lg.addColorStop(1, cor[k] + '00');
+      x.fillStyle = lg; x.beginPath(); x.moveTo(-14, 0); x.lineTo(14, 0); x.lineTo(92, 380); x.lineTo(-92, 380); x.closePath(); x.fill(); x.restore(); });
+    // piso do palco com reflexo e a faixa de LED na borda
+    var pg = x.createLinearGradient(0, 330, 0, H); pg.addColorStop(0, '#4a2496'); pg.addColorStop(1, '#1f0d4a'); x.fillStyle = pg; x.fillRect(0, 330, W, H - 330);
+    x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 2; for(var fl2 = -6; fl2 <= 6; fl2++){ x.beginPath(); x.moveTo(W / 2 + fl2 * 40, 330); x.lineTo(W / 2 + fl2 * 120, H); x.stroke(); }
+    var led = x.createLinearGradient(0, 0, W, 0); ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#9b30d9', '#ff6fb5'].forEach(function(c2, i2){ led.addColorStop(i2 / 5, c2); });
+    x.fillStyle = led; x.fillRect(0, 327, W, 5); x.globalAlpha = .35; x.fillRect(0, 332, W, 8); x.globalAlpha = 1;
+
     function pilula(px, py, txt, fundo, letra, tam){
       x.font = '400 ' + (tam || 17) + 'px "Mochiy Pop One",sans-serif'; var w = x.measureText(txt).width + 30, h = (tam || 17) + 16;
-      x.save(); x.shadowColor = 'rgba(90,40,160,.22)'; x.shadowBlur = 10; x.shadowOffsetY = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.fillStyle = fundo; x.fill(); x.restore();
+      x.save(); x.shadowColor = 'rgba(255,111,181,.55)'; x.shadowBlur = 14; x.shadowOffsetY = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.fillStyle = fundo; x.fill(); x.restore();
+      x.save(); rr(px - w / 2, py - h / 2, w, h, h / 2); x.clip(); x.fillStyle = 'rgba(255,255,255,.28)'; x.fillRect(px - w / 2, py - h / 2, w, h / 2); x.restore();
       x.strokeStyle = '#fff'; x.lineWidth = 3; rr(px - w / 2, py - h / 2, w, h, h / 2); x.stroke();
       x.fillStyle = letra; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, px, py + 1);
     }
@@ -1082,15 +1097,25 @@
       x.save(); if(!noLaco(k)) x.globalAlpha = .28;   // quem não está no laço escolhido fica apagadinho
       var pulo = Math.max(0, Math.sin(s * 2.2 + k * 2.1)) * 5;
       if(rg && rg.tipo === 'm' && rg.k === k) pulo += Math.max(0, Math.sin(Math.min(1, rt / .5) * Math.PI)) * 34;
-      x.fillStyle = 'rgba(70,30,120,.16)'; x.beginPath(); x.ellipse(p.x, p.y + 4, 46, 9, 0, 0, 7); x.fill();
+      // pódio redondo na cor do membro, com aro de luz
+      var pdg = x.createLinearGradient(0, p.y - 12, 0, p.y + 22); pdg.addColorStop(0, '#ffffff'); pdg.addColorStop(.25, cor[k]); pdg.addColorStop(1, '#1f0d4a');
+      x.fillStyle = pdg; x.beginPath(); x.ellipse(p.x, p.y + 12, 64, 16, 0, 0, Math.PI); x.lineTo(p.x - 64, p.y - 2); x.ellipse(p.x, p.y - 2, 64, 16, 0, Math.PI, 0, true); x.closePath(); x.fill();
+      var tg = x.createRadialGradient(p.x, p.y - 4, 4, p.x, p.y - 2, 64); tg.addColorStop(0, '#fff'); tg.addColorStop(1, cor[k]); x.fillStyle = tg; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 2.5; x.beginPath(); x.ellipse(p.x, p.y - 2, 64, 16, 0, 0, 7); x.stroke();
       x.save(); x.translate(p.x - 78, p.y - 168 + 6 - pulo); x.scale(1.5, 1.5);
       try{ var a2 = {}; for(var q in av) a2[q] = av[q]; a2.pose = rg && rg.tipo === 'm' && rg.k === k ? ['coracao', 'tchau', 'v'][k] : ['nyan', 'mic', 'v'][k]; perfDesenharIdol(x, 104, 112, a2, false, false, s * 60); }catch(e){}
       x.restore();
-      pilula(p.x, p.y + 24, MEMBROS[k][1], cor[k], '#fff', 16);
+      // faixa com o nome (fita com pontas recortadas)
+      x.font = '400 15px "Mochiy Pop One",sans-serif'; var nw2 = x.measureText(MEMBROS[k][1]).width + 34, ny = p.y + 36;
+      x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.moveTo(p.x - nw2 / 2 - 12, ny - 9); x.lineTo(p.x - nw2 / 2, ny - 9); x.lineTo(p.x - nw2 / 2, ny + 13); x.lineTo(p.x - nw2 / 2 - 12, ny + 13); x.lineTo(p.x - nw2 / 2 - 6, ny + 2); x.closePath(); x.fill();
+      x.beginPath(); x.moveTo(p.x + nw2 / 2 + 12, ny - 9); x.lineTo(p.x + nw2 / 2, ny - 9); x.lineTo(p.x + nw2 / 2, ny + 13); x.lineTo(p.x + nw2 / 2 + 12, ny + 13); x.lineTo(p.x + nw2 / 2 + 6, ny + 2); x.closePath(); x.fill();
+      var fg = x.createLinearGradient(0, ny - 13, 0, ny + 13); fg.addColorStop(0, cor[k]); fg.addColorStop(1, '#2a1060'); rr(p.x - nw2 / 2, ny - 13, nw2, 26, 6); x.fillStyle = fg; x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2.5; x.stroke();
+      x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(MEMBROS[k][1], p.x, ny + 1);
       var pp = 0; if(rg && rg.tipo === 'p' && rg.k === k) pp = Math.max(0, Math.sin(Math.min(1, rt / .45) * Math.PI)) * 30;
-      if(typeof drawPet === 'function'){ x.fillStyle = 'rgba(70,30,120,.14)'; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 28, 22, 5, 0, 0, 7); x.fill();
+      if(typeof drawPet === 'function'){ var cg = x.createLinearGradient(0, p.pet[1] + 20, 0, p.pet[1] + 36); cg.addColorStop(0, '#ffd1e8'); cg.addColorStop(1, '#ff8cc6');
+        x.fillStyle = cg; x.beginPath(); x.ellipse(p.pet[0], p.pet[1] + 28, 26, 8, 0, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke();   // almofadinha do pet
         try{ drawPet(x, MEMBROS[k][0], p.pet[0], p.pet[1] - pp, 1.55, s * 60 + k * 20, 'feliz'); }catch(e){} }
-      x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = cor[k]; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(FICHAS[k].pet[1], p.pet[0], p.pet[1] + 48);
+      x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe6f4'; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(FICHAS[k].pet[1], p.pet[0], p.pet[1] + 52);
       x.restore();
     });
     // reação: balão com a fala de verdade e coraçõezinhos subindo

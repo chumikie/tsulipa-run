@@ -283,6 +283,7 @@ function end(){
   var enviarOnline=!!(_supabase&&contaJ&&!isTestGame&&(nick||'').trim().toLowerCase()!=='tsuadmin');
   var refresh=function(){showLb($('lbo'));if(!$('lbmw').hidden)showLb($('lbm'))};
   if(enviarOnline)contaFimCorrida(s,stars,CH[sel].n,refresh);
+  if(!isTestGame && s>0 && window.TW_HUMOR) window.TW_HUMOR.treino('run');
   
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();

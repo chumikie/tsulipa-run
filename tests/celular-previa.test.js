@@ -148,7 +148,7 @@ test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, onli
   for (const k of chaves) for (const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.match(pres, new RegExp(k + ':\\{[^}]*' + l + ":['\"]"), k + ' em ' + l);
   assert.match(sql, /grant execute on function public\.presenca_ping\(text, text\) to authenticated;/, 'só conta logada diz que está online');
   assert.match(sql, /revoke all on public\.presenca from anon, authenticated;/, 'tabela fechada: só pelas funções');
-  assert.match(html, /tw-presenca\.js\?v=1/);
+  assert.match(html, /tw-presenca\.js\?v=\d+/);
   assert.match(js, /window\.twMapaEntrar = function\(id\)/);
   assert.match(mapaJs, /if\(typeof window\.twMapaEntrar==='function'&&window\.twMapaEntrar\(l\.id\)\)return;/, 'o mapa abre o lado de dentro antes do lugar');
   assert.match(mapaJs, /window\.twMapaCena=function\(\)/);

@@ -241,8 +241,7 @@
   }
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
-    mergulho=null;cena=destino;hover=null;centrado=false;
-    if(destino!=='mundo'&&window.TW_HUMOR)try{window.TW_HUMOR.evento('mapa');}catch(e){}   // passear conta para o humor e o desejo do dia
+    mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
     W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
     if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';}
     var sec=document.getElementById('twMapa');
@@ -1009,6 +1008,7 @@
     if(t<0||t>m.ida+MEU_PARA+1.2){meuPasseio=null;return q;}
     if(t<m.ida){var u=t/m.ida;u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,volta:0};}
     if(t<m.ida+MEU_PARA){
+      if(!m.humor && Math.abs(m.x1-m.x0)>=40){m.humor=true;if(window.TW_HUMOR)window.TW_HUMOR.evento('mapa');}
       // Parou perto da fonte da Praça: joga uma moedinha e faz um desejo.
       if(cena==='praca'&&!m.desejo&&Math.abs(m.x1-800)<190){m.desejo=1;somMapa('regar');
         toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});}

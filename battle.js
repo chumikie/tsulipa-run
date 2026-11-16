@@ -549,7 +549,8 @@ function comecarShow(){
  })();
 }
 function fimDoShow(){
- if(!rodadas)return;
+ if(!rodadas || fase==='fim')return;
+ if(window.TW_HUMOR) window.TW_HUMOR.evento('battle');
  pararShow();fase='fim';render();desenharPalco(-1);desenharPolaroid();
  som(rodadas.filter(function(r){return r.ganhou;}).length>=2?'rank':'over');
  var st=ov.querySelector('#battleStage');

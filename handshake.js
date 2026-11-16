@@ -287,7 +287,9 @@ function hsIniciarSeguro(){
 function hsFim(){
   var atual=hs;
   if(!atual || atual.fase==='fim') return;
-  atual.fase='fim'; var rec=hsRecorde(); atual.novo=atual.pontos>rec;
+  atual.fase='fim';
+  if(atual.total>0 && window.TW_HUMOR) window.TW_HUMOR.treino('handshake');
+  var rec=hsRecorde(); atual.novo=atual.pontos>rec;
   if(typeof recRegistrarLocal === 'function') recRegistrarLocal('hand',atual.pontos);
   if(!contaJ && atual.novo) try{ localStorage.setItem(HS_RECORDE_KEY,atual.pontos); }catch(e){}
   hsUI();

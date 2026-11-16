@@ -809,7 +809,6 @@ function perfLojaTem(k){
 function perfIconeConta(){
   var cv = $('contaAv');
   if(cv) perfFotoRedonda(cv, perfMeuAv && !perfMeuAv.auto ? perfMeuAv : perfAvAtual(), true);
-  if(typeof hubBuddyAtualizar==='function')hubBuddyAtualizar();
 }
 var perfEntrou = false, perfSyncOn = false, perfSnap = '', perfNuvemPre = null;
 var perfSyncEstado = 'idle';
@@ -950,7 +949,7 @@ function perfAoEntrar(){   // chamado no fim do contaAplicar (uma vez por págin
     if(typeof hubAoEntrar === 'function') hubAoEntrar();   // tela de início: missões e insígnias novas
   }).catch(function(){if(token!==contaSessaoToken||!contaJ||contaJ.nick!==dono)return;perfEntrou=false;perfSyncEstado='error';petSyncEstadoUI();});
 }
-function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof hubBuddyLimpar==='function')hubBuddyLimpar();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
+function perfSair(){ perfSyncOn=false;perfEntrou=false;perfMeuAv=null;perfGenAv=null;perfSync.cancelTimers();if(typeof insCancelar==='function')insCancelar();if(!perfOv.hidden)perfFechar();}
 function perfAplicarNuvem(n, nick){
   try{
     if(n.pet) localStorage.setItem('brs48cr_pet', JSON.stringify(n.pet));

@@ -1,43 +1,34 @@
-/* Sala do Karaoke⭐Time! como "MUSIC LIST" (só com o visual de celular ligado: html.kt-lista). */
-html.kt-lista .krtop,html.kt-lista .kt-song-choice,html.kt-lista #ktStart,html.kt-lista #krRelogio{display:none!important}
-.ktl{margin:6px auto 12px;max-width:760px;padding:12px 12px 14px;border-radius:26px;background:#fff;border:2px solid #f1ebff;box-shadow:0 6px 18px rgba(80,40,160,.12),inset 0 -4px 0 #f6f1ff;color:#2a1d4a;font-family:'M PLUS Rounded 1c',sans-serif;text-align:left}
-.ktl button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.ktl button:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
-.ktl-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.ktl-aba{margin:0 0 0 -12px;padding:6px 26px 6px 16px;border-radius:0 999px 999px 0;background:linear-gradient(90deg,#ff8a3d,#ffa94d);color:#fff;font:400 20px 'Mochiy Pop One',sans-serif;letter-spacing:1px;box-shadow:0 3px 0 #d96a1f;text-shadow:0 2px 0 rgba(150,60,0,.35)}
-.ktl-pt{display:flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:#fff7e0;border:2px solid #ffd36e;font-size:12px;font-weight:800;color:#6a4500}
-.ktl-pt i{font-style:normal;color:#f5b400;letter-spacing:1px}
-.ktl-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:300px;overflow-y:auto;padding:4px 2px 8px;scrollbar-width:thin}
-.ktl-capa{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 6px;border-radius:16px;border:2px solid #f1ebff;background:#fff;color:#2a1d4a;box-shadow:0 3px 0 #e8defc;min-width:0}
-.ktl-capa[aria-selected="true"]{border-color:#f5b400;box-shadow:0 0 0 3px #ffe08a,0 3px 0 #e8defc}
-.ktl-capa:disabled{opacity:.55;cursor:default}
-.ktl-arte{position:relative;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
-.ktl-arte::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(120deg,rgba(255,255,255,.18) 0 10px,transparent 10px 26px)}
-.ktl-arte i{position:relative;font-style:normal;font-size:clamp(26px,8vw,40px);filter:drop-shadow(0 3px 2px rgba(0,0,0,.2))}
-.ktl-arte em{position:absolute;top:4px;left:4px;right:4px;font-style:normal;font-size:9.5px;font-weight:800;padding:2px 5px;border-radius:999px;background:#fff;color:#c2367f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ktl-nome{font-size:12px;font-weight:800;line-height:1.15;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ktl-capa small{font-size:10.5px;color:#f5b400;font-weight:800}
-.ktl-detalhe{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px 12px;align-items:center;margin-top:8px;padding-top:12px;border-top:2px dashed #ece4ff}
-.ktl-arte-g{width:96px;border-radius:16px}
-.ktl-arte-g i{font-size:48px}
-.ktl-info h3{margin:2px 0;font:400 18px 'Mochiy Pop One',sans-serif;color:#5a2bc4}
-.ktl-info p{margin:0;font-size:12.5px;font-weight:700;color:#5b4a80}
-.ktl-rec{margin-top:4px!important;color:#8a5a00!important}
-.ktl-sem{display:inline-block;font-style:normal;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:#ffe1f0;color:#9c2460}
-.ktl-acoes{grid-column:1/-1;display:grid;grid-template-columns:1fr 2fr;gap:10px}
-.ktl-ouvir,.ktl-cantar{min-height:50px;border-radius:16px;font-size:15px!important;font-weight:800!important}
-.ktl-ouvir{border:2px solid #ece4ff;background:#fff;color:#5a2bc4}
-.ktl-cantar{border:0;color:#fff;background:linear-gradient(#9b5cff,#6a35e0);box-shadow:0 4px 0 #4a1fb0,inset 0 2px 0 rgba(255,255,255,.3);font-family:'Mochiy Pop One',sans-serif!important;font-weight:400!important;font-size:18px!important}
-.ktl-cantar:disabled{opacity:.5;cursor:default}
-@media (min-width:720px){.ktl-grade{grid-template-columns:repeat(5,minmax(0,1fr));max-height:340px}}
-html.kt-lista[data-theme="dark"] .ktl{background:#2a1d4a;border-color:#3d2a6b;color:#f3e8ff;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-html.kt-lista[data-theme="dark"] :is(.ktl-capa,.ktl-ouvir){background:#21153e;border-color:#3d2a6b;color:#f3e8ff;box-shadow:none}
-html.kt-lista[data-theme="dark"] .ktl-info h3{color:#e6d6ff}html.kt-lista[data-theme="dark"] .ktl-info p{color:#c9b6f0}
-
-/* a sala vira um palco compacto, do mesmo tamanho em qualquer aparelho */
-html.kt-lista #krPalco{max-width:560px;margin-left:auto!important;margin-right:auto!important}
-html.kt-lista .ktl{order:4;margin:12px auto;max-width:560px;box-sizing:border-box}
-/* as tentativas do dia já aparecem na aba MÚSICAS; o cartão antigo só volta se houver show para recuperar */
-html.kt-lista #ktAvailability:not(:has(#ktDeliveryRetry:not([hidden]))):not(:has(#ktDeliveryRecovery:not([hidden]))){display:none!important}
-/* auditoria: fora do show, a caixinha de "Perfeito!/Bom!" vazia aparecia como um retângulo tracejado sem nada */
-html.kt-lista .kt-timing-readout:empty{border-color:transparent;background:none}
+/* Karaoke⭐Time!: biblioteca única no site integrado.
+   O seletor #ktSong e o botão #ktStart continuam no DOM para o motor do jogo;
+   fora do site, a tela independente mantém o painel de vozes. */
+html.kt-no-site.kt-library-ready .kt-song-choice,
+html.kt-no-site.kt-library-ready .kt-library-voices{display:none!important}
+html.kt-no-site.kt-library-ready .kt-audio-library{margin-top:16px}
+html.kt-no-site.kt-library-ready .kt-library-panel .kt-library-tracks{gap:10px}
+html.kt-no-site.kt-library-ready .kt-library-track{
+  border-radius:14px;
+  transition:border-color .16s ease,background .16s ease,box-shadow .16s ease;
+}
+html.kt-no-site.kt-library-ready .kt-library-track.kt-song-selected{
+  border-color:var(--pink,#ff6fb5);
+  background:linear-gradient(115deg,rgba(255,111,181,.13),rgba(123,63,240,.08));
+  box-shadow:inset 0 0 0 1px var(--pink,#ff6fb5);
+}
+html.kt-no-site.kt-library-ready .kt-library-launch{display:flex;justify-content:center;margin-top:12px}
+html.kt-no-site.kt-library-ready .kt-library-start{
+  box-sizing:border-box;width:min(100%,380px);min-height:46px;
+  padding:10px 16px;border-radius:14px;
+  font-weight:900;touch-action:manipulation;
+}
+html.kt-no-site.kt-library-ready .kt-library-start:disabled{opacity:.5;cursor:not-allowed}
+html.kt-no-site.kt-library-ready .kt-library-start:focus-visible,
+html.kt-no-site.kt-library-ready .kt-library-action:focus-visible{outline:3px solid var(--pink,#ff6fb5);outline-offset:2px}
+@media(max-width:560px){
+ html.kt-no-site.kt-library-ready .kt-preview-player{grid-template-columns:minmax(0,1fr)}
+ html.kt-no-site.kt-library-ready .kt-preview-controls{justify-content:flex-start}
+ html.kt-no-site.kt-library-ready .kt-preview-controls time{min-width:64px}
+ html.kt-no-site.kt-library-ready .kt-library-action{min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){
+ html.kt-no-site.kt-library-ready .kt-library-track{transition:none}
+}

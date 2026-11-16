@@ -255,6 +255,7 @@ function cfServir(saiu){
     }).catch(function(){atualLegado.provaEstado='pendente';if(cf===atualLegado)cfUI();});
   }
   if(certo){
+    if(window.TW_HUMOR) window.TW_HUMOR.treino('cafe');
     cf.combo++; cf.perfeitos++;
     var semana=typeof eventoAtual==='function' && p.base===eventoAtual().base;
     cf.pontos+=(semana?50:0)+Math.round((100+resto*100+(p.cob>=0?30:0)+(p.doce>=0?40:0))*(1+Math.min(cf.combo-1,5)*.1));

@@ -7,6 +7,17 @@
   var CHAVE = 'brs48cr_humor_v1';
   var BARRAS = ['energia', 'diversao', 'brilho', 'amizade'];
   var TX = {
+    intro:{"pt": "O Humor acompanha o ritmo do seu Idol. Varie as atividades e dê tempo para descansar.", "en": "Mood follows your Idol’s daily rhythm. Try different activities and make time to rest.", "es": "El Ánimo acompaña el ritmo de tu Idol. Varía las actividades y deja tiempo para descansar.", "id": "Mood mengikuti keseharian Idol-mu. Coba beragam aktivitas dan luangkan waktu untuk istirahat.", "th": "อารมณ์เปลี่ยนตามกิจกรรมของไอดอล ลองทำกิจกรรมหลากหลายและพักบ้าง", "ja": "きぶんはアイドルの毎日のリズム。いろいろ遊んで、休む時間もとろう。"},
+    como:{"pt": "Como cuidar do Humor", "en": "How to care for your mood", "es": "Cómo cuidar el Ánimo", "id": "Cara menjaga Mood", "th": "ดูแลอารมณ์อย่างไร", "ja": "きぶんのととのえ方"},
+    energiaAjuda:{"pt": "Volta com o tempo de descanso. Café e Jardim também ajudam.", "en": "Recovers with rest over time. The Café and Garden help too.", "es": "Se recupera descansando. El Café y el Jardín también ayudan.", "id": "Pulih seiring waktu saat istirahat. Kafe dan Taman juga membantu.", "th": "ฟื้นเมื่อได้พัก คาเฟ่และสวนช่วยได้เช่นกัน", "ja": "時間をおいて休むと回復。カフェやお庭も役立つよ。"},
+    diversaoAjuda:{"pt": "Sobe quando você joga e realiza atividades.", "en": "Rises when you play and complete activities.", "es": "Sube cuando juegas y realizas actividades.", "id": "Naik saat bermain dan melakukan aktivitas.", "th": "เพิ่มเมื่อเล่นเกมและทำกิจกรรม", "ja": "ゲームや活動をすると上がるよ。"},
+    brilhoAjuda:{"pt": "Cantar, fazer shows e tirar fotos ajudam seu Idol a brilhar.", "en": "Singing, performing and taking photos help your Idol shine.", "es": "Cantar, dar shows y tomar fotos ayudan a tu Idol a brillar.", "id": "Bernyanyi, tampil, dan berfoto membuat Idol-mu bersinar.", "th": "ร้องเพลง แสดงโชว์ และถ่ายรูปช่วยให้ไอดอลเปล่งประกาย", "ja": "歌やライブ、写真でアイドルをかがやかせよう。"},
+    amizadeAjuda:{"pt": "Encontros, cuidados e interações fazem essa barrinha subir.", "en": "Meetings, care and interactions raise this bar.", "es": "Los encuentros, cuidados e interacciones hacen subir esta barra.", "id": "Pertemuan, perawatan, dan interaksi menaikkan bar ini.", "th": "การพบปะ ดูแล และพูดคุยช่วยเพิ่มแถบนี้", "ja": "出会いやおせわ、交流で上がるよ。"},
+    regra:{"pt": "O desejo só conta quando você realiza a ação. Abrir a tela não basta. Cumpri-lo libera o Camarim VIP de hoje.", "en": "A wish counts only when you perform the action. Opening its screen is not enough. Completing it unlocks today’s VIP Room.", "es": "El deseo cuenta al realizar la acción, no solo al abrir la pantalla. Cumplirlo abre el Camerino VIP de hoy.", "id": "Keinginan terpenuhi setelah aksinya dilakukan, bukan hanya membuka layar. Selesaikan untuk membuka Ruang VIP hari ini.", "th": "ต้องทำกิจกรรมจริงจึงจะสมหวัง แค่เปิดหน้าไม่พอ ทำสำเร็จเพื่อเปิดห้อง VIP วันนี้", "ja": "画面を開くだけでは達成にならないよ。実際に行動すると、きょうのVIP楽屋が開きます。"},
+    vipSim:{"pt": "Camarim VIP liberado hoje", "en": "VIP Room unlocked today", "es": "Camerino VIP abierto hoy", "id": "Ruang VIP terbuka hari ini", "th": "ห้อง VIP เปิดแล้ววันนี้", "ja": "きょうのVIP楽屋は開いています"},
+    vipNao:{"pt": "Camarim VIP: cumpra o desejo de hoje", "en": "VIP Room: complete today’s wish", "es": "Camerino VIP: cumple el deseo de hoy", "id": "Ruang VIP: penuhi keinginan hari ini", "th": "ห้อง VIP: ทำความปรารถนาวันนี้ให้สำเร็จ", "ja": "VIP楽屋：きょうのおねがいをかなえよう"},
+    efeitos:{"pt": "O cristal mostra a média das quatro barrinhas. Elas não mudam seus pontos, estrelas ou acesso aos jogos. Este progresso fica neste aparelho.", "en": "The crystal shows the average of the four bars. They do not change your scores, stars or access to games. This progress stays on this device.", "es": "El cristal muestra el promedio de las cuatro barras. No cambian tus puntos, estrellas ni acceso a los juegos. Este progreso queda en este dispositivo.", "id": "Kristal menunjukkan rata-rata empat bar. Bar tidak mengubah skor, bintang, atau akses game. Progres ini tersimpan di perangkat ini.", "th": "คริสตัลแสดงค่าเฉลี่ยของทั้งสี่แถบ ไม่เปลี่ยนคะแนน ดาว หรือสิทธิ์เข้าเกม ความคืบหน้านี้อยู่ในอุปกรณ์นี้", "ja": "クリスタルは4本のバーの平均。スコアやスター、ゲームへのアクセスは変わりません。この進みぐあいはこの端末に保存されます。"},
+    corGuia:{"pt": "Verde: 60–100 · Amarelo: 35–59 · Rosa: abaixo de 35.", "en": "Green: 60–100 · Yellow: 35–59 · Pink: below 35.", "es": "Verde: 60–100 · Amarillo: 35–59 · Rosa: menos de 35.", "id": "Hijau: 60–100 · Kuning: 35–59 · Merah muda: di bawah 35.", "th": "เขียว: 60–100 · เหลือง: 35–59 · ชมพู: ต่ำกว่า 35", "ja": "緑：60〜100・黄：35〜59・ピンク：35未満。"},
     humor:{pt:'Humor do seu Idol',en:"Your Idol's mood",es:'Ánimo de tu Idol',id:'Mood Idol-mu',th:'อารมณ์ไอดอลของคุณ',ja:'アイドルのきぶん'},
     energia:{pt:'Energia',en:'Energy',es:'Energía',id:'Energi',th:'พลังงาน',ja:'げんき'},
     diversao:{pt:'Diversão',en:'Fun',es:'Diversión',id:'Seru',th:'ความสนุก',ja:'たのしさ'},
@@ -54,9 +65,9 @@
   // o que cada jogo faz nas barrinhas: [energia, diversão, brilho, amizade]
   var EFEITO = {run:[-8, 16, 10, 0], karaoke:[-8, 14, 16, 4], sora:[-7, 18, 6, 0], cafe:[4, 12, 4, 8], battle:[-9, 12, 18, 4], studio:[-3, 10, 14, 6],
     handshake:[-5, 10, 8, 16], bloom:[8, 8, 4, 6], duo:[-3, 12, 6, 16], pet:[4, 8, 2, 12], gacha:[0, 10, 6, 0], mapa:[2, 6, 0, 6], frase:[0, 4, 2, 12], coracao:[0, 2, 2, 10]};
-  // RPCs que querem dizer "jogou de verdade" (só com conta). Visitante conta pela abertura do jogo.
-  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_finalizar:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
-    handshake_premio:'handshake', battle_jogar:'battle', battle_desafiar:'battle', studio_publicar:'studio', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
+  // Ações confirmadas pelo servidor. Visitantes usam o resultado local da ação, nunca a abertura.
+  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_etapa:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
+    handshake_premio:'handshake', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
     jardim_plantar:'bloom', duo_registrar:'duo', gacha_girar:'gacha', dar_coracao:'coracao'};
   var DESCOBERTA = {battle:1, studio:1, bloom:1};
   var TREINO_VISITANTE = {run:1, cafe:1, battle:1, studio:1, handshake:1, mapa:1, frase:1};
@@ -109,7 +120,7 @@
     ler();
     var ef = EFEITO[ev]; if(ef){ var k = fraco ? .5 : 1; BARRAS.forEach(function(b, i){ est[b] = limita(est[b] + ef[i] * k); }); }
     var d = desejoHoje(), cumpriu = false;
-    if(!d.feito && d.ev === ev){
+    if(!fraco && !d.feito && d.ev === ev){
       d.feito = true; cumpriu = true;
       est.serie = est.ultimo === ontem() ? (+est.serie || 0) + 1 : (est.ultimo === hoje() ? +est.serie || 1 : 1);
       est.ultimo = hoje(); est.vip = hoje(); est.maxSerie = Math.max(+est.maxSerie || 0, est.serie);
@@ -146,14 +157,15 @@
     if(document.getElementById('twHumorAppCss')) return;
     var st = document.createElement('style'); st.id = 'twHumorAppCss';
     st.textContent = '.twh-app{display:grid;gap:12px;padding:4px 2px 14px;font-family:"M PLUS Rounded 1c",sans-serif}' +
-      '.twh-box{background:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 2px 0 rgba(123,63,240,.12)}' +
-      '.twh-box h3{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px;font:400 13px "Mochiy Pop One",sans-serif;color:#7b3ff0}.twh-ic{flex:none}' +
+      '.twh-box{background:var(--card,#fff);color:var(--ink,#342450);border-radius:16px;padding:12px;box-shadow:0 2px 0 rgba(123,63,240,.12);min-width:0;overflow-wrap:anywhere}' +
+      '.twh-box h3{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px;font:400 13px "Mochiy Pop One",sans-serif;color:var(--ink,#7b3ff0)}.twh-ic{flex:none}' +
       '.twh-serie{display:inline-flex;align-items:center;gap:3px;margin-left:auto;padding:2px 8px;border-radius:99px;background:#ffe3f1;color:#c2367f;font:800 11px "M PLUS Rounded 1c",sans-serif}' +
       '.twh-av{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#fff;font:400 12px "Mochiy Pop One",sans-serif;font-style:normal;box-shadow:0 0 0 2px #fff,0 2px 0 2px rgba(60,30,120,.12)}' +
       '.twh-d{padding:8px 10px;border-radius:12px;background:#fff4fb;border:2px dashed #e2ccff;font-weight:800}.twh-ok{border-style:solid;border-color:#9be15d;background:#f4ffe6}' +
       '.twh-p{display:flex;align-items:center;gap:8px}.twh-pi{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#f6f0ff}' +
-      '.twh-b{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:6px;margin:5px 0;font-weight:800;font-size:12px;color:#6b5a8e}' +
+      '.twh-b{display:grid;grid-template-columns:minmax(0,76px) minmax(0,1fr) auto;align-items:center;gap:6px;margin:5px 0;font-weight:800;font-size:12px;color:var(--sub,#6b5a8e)}' +
       '.twh-b i{display:block;height:9px;border-radius:9px;background:#efe7ff;overflow:hidden}.twh-b b{display:block;height:100%;border-radius:9px}' +
+      '.twh-intro,.twh-ajuda{font-size:13px;line-height:1.6;margin:8px 0;color:var(--ink,#342450)}.twh-guia summary{cursor:pointer;min-height:44px;display:list-item;padding:12px 0;font-weight:800}.twh-guia summary:focus-visible{outline:2px solid var(--ink,#7b3ff0);outline-offset:2px}.twh-num{font-size:12px;font-variant-numeric:tabular-nums}.twh-vip{font-weight:800;margin:10px 0 0;color:var(--ink,#342450)}.twh-d{color:#342450}.twh-b i{background:var(--chip,#efe7ff)}' +
       '.twh-d{display:flex;gap:8px;align-items:center;font-weight:800}.twh-d span{font-size:24px}' +
       '.twh-r{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:13px;line-height:1.4}' +
       '.twh-r small{display:block;color:#9a86c8;font-weight:800}.twh-p{margin:4px 0;font-size:12.5px;font-weight:700}.twh-p.off{opacity:.45}' +
@@ -181,10 +193,10 @@
     var cores = {energia:'#7be35a', diversao:'#ff6fb5', brilho:'#ffd23f', amizade:'#4169e1'};
     var rec = (est.recados || []).map(function(r){ var q = RECADOS[r.k] || RECADOS[0], m = q[2][r.m] || q[2][0];
       return '<div class="twh-r"><em class="twh-av" style="background:' + ['#9b30d9', '#4fa81a', '#4169e1'][r.k] + '" aria-hidden="true">' + esc(q[0].charAt(0)) + '</em><span><small>' + esc(q[0]) + ' · ' + esc(r.dia.split('-').reverse().slice(0, 2).join('/')) + '</small>' + esc(m[L2] || m.pt) + '</span></div>'; }).join('');
-    return '<div class="twh-app">' +
+    return '<div class="twh-app"><p class="twh-intro">' + esc(t('intro')) + '</p>' +
       '<section class="twh-box"><h3>' + svg('diamante', e.cor) + esc(t('humor')) + (e.serie ? '<span class="twh-serie">' + svg('chama', '#ff6f3d', 14) + esc(t('serie', e.serie)) + '</span>' : '') + '</h3>' +
-        BARRAS.map(function(b){ return '<div class="twh-b"><span>' + esc(t(b)) + '</span><i><b style="width:' + e[b] + '%;background:' + cores[b] + '"></b></i></div>'; }).join('') + '</section>' +
-      '<section class="twh-box"><h3>' + svg('estrela', '#ff6fb5') + esc(t('desejo')) + '</h3><div class="twh-d' + (d.feito ? ' twh-ok' : '') + '">' + esc(d.feito ? t('feito') : d.texto) + '</div></section>' +
+        BARRAS.map(function(b){ return '<div class="twh-b"><span>' + esc(t(b)) + '</span><i role="meter" aria-label="' + esc(t(b)) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + e[b] + '"><b style="width:' + e[b] + '%;background:' + cores[b] + '"></b></i><span class="twh-num" aria-hidden="true">' + e[b] + '/100</span></div>'; }).join('') + '<details class="twh-guia"><summary>' + esc(t('como')) + '</summary>' + BARRAS.map(function(b){return '<p class="twh-ajuda"><strong>' + esc(t(b)) + '</strong> · ' + esc(t(b+'Ajuda')) + '</p>';}).join('') + '<p class="twh-ajuda">' + esc(t('efeitos')) + '</p><p class="twh-ajuda">' + esc(t('corGuia')) + '</p></details></section>' +
+      '<section class="twh-box"><h3>' + svg('estrela', '#ff6fb5') + esc(t('desejo')) + '</h3><div class="twh-d' + (d.feito ? ' twh-ok' : '') + '">' + esc(d.texto) + '</div><p class="twh-vip">' + esc(t(H.vipHoje() ? 'vipSim' : 'vipNao')) + '</p><p class="twh-ajuda">' + esc(d.feito ? t('feito') : t('regra')) + '</p></section>' +
       '<section class="twh-box"><h3>' + svg('carta', '#ff6fb5') + esc(t('recados')) + '</h3>' + (rec || '<p class="twh-p">' + esc(t('semRecado')) + '</p>') + '</section>' +
       '<section class="twh-box"><h3>' + svg('presente', '#7b3ff0') + esc(t('premios')) + '</h3>' +
         [['trofeu', 'trofeu', 'pTrofeu', '#e0a400'], ['espelho', 'luzes', 'pEspelho', '#ffb300'], ['tapete', 'tapete', 'pTapete', '#c2185b']].map(function(p){
@@ -193,20 +205,25 @@
       '</div>';
   }
 
-  // ganchos: RPCs que terminam partidas (conta) e a abertura de jogos (visitante, efeito pela metade)
+  // Só confirma ações com sucesso explícito e na mesma sessão que iniciou a chamada.
   if(typeof window.contaRpc === 'function' && !window.contaRpc.twHumor){
     var orig = window.contaRpc;
     window.contaRpc = function(nome, args){
+      var dono = typeof contaJ !== 'undefined' ? contaJ : null;
+      var sessao = typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : null;
       var p = orig.apply(this, arguments);
-      try{ p.then(function(r){ if(r && r.ok === false) return;
+      try{ p.then(function(r){
+        if(!r || r.ok !== true || dono !== (typeof contaJ !== 'undefined' ? contaJ : null) ||
+          sessao !== (typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : null)) return;
+        if((nome === 'cafe_run_etapa' || nome === 'cafe_concluir') && (r.confirmado !== true || r.certo !== true)) return;
         if(RPC_JOGO[nome]) evento(RPC_JOGO[nome]);
-        else if(nome === 'presenca_ping' && args && args.p_frase) evento('frase'); }, function(){}); }catch(e){}
+        else if(nome === 'presenca_ping' && args && args.p_frase === 'oi') evento('frase'); }, function(){}); }catch(e){}
       return p;
     };
     window.contaRpc.twHumor = true;
     if(orig.twcManut) window.contaRpc.twcManut = true;
   }
-  H.abriu = function(jogo){ if(!logado() || !RPC_JOGO_INVERSO[jogo]) evento(jogo, true); };
-  var RPC_JOGO_INVERSO = {}; Object.keys(RPC_JOGO).forEach(function(k){ RPC_JOGO_INVERSO[RPC_JOGO[k]] = 1; });
+  H.abriu = function(){}; // Compatibilidade: navegar não altera humor, desejo ou passe VIP.
+  H.treino = function(jogo){ if(!logado()) evento(jogo); };
   ler();
 })();

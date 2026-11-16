@@ -26,7 +26,8 @@ test('Idol⭐News!: história em capítulos, um por terça desde o lançamento',
   assert.strictEqual(vm.runInContext('jnCapData(0)', ctx), '2026-10-27');
   assert.strictEqual(vm.runInContext('jnCapData(3)', ctx), '2026-11-17');
   assert.match(ler('jornal.js'), /vida \+= jornalCapsHtml\(\)/);
-  assert.match(ler('index.html'), /jornal-capitulos\.js\?v=\d+/);
+  assert.ok(!/<script src="\.\/jornal-capitulos\.js/.test(ler('index.html')), 'quadrinhos fora da abertura');
+  assert.match(ler('jornal.js'), /JORNAL_CAPS_ARQ = '\.\/jornal-capitulos\.js\?v=\d+'/, 'baixam quando o Idol News abre');
 });
 
 test('Tour de camarins: RPCs do servidor e o seu camarim volta intacto depois de desenhar o dos outros', () => {

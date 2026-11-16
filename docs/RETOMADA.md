@@ -1,3 +1,24 @@
+## Auditoria geral — 16/11/2026 (branch `fix/recuperacao-visual-celular-20261115`, PR #98)
+
+**Estado:** a `main` tem tudo até a #97 (o "site não abre no iPhone" era a tela de carregamento decorativa cobrindo o início; a #97 tirou). A PR #98 leva 70+ commits: recuperação visual do celular, Temporada 1 trancada e as correções abaixo. Prévia: `tsulipa-world-git-fix-recuperacao-visual-celul-f18405-tsu-li-pa.vercel.app/?celular=1`.
+
+**Corrigido nesta auditoria**
+- Arquivos alterados sem trocar `?v=` (tw-celular, tw-calendario, tw-mapa, hub-polish, pet-sala): o celular misturava arquivo velho e novo até o F5. Teste novo `cache-versoes` reprova quando isso volta.
+- `jornal-capitulos.js` (100 KB, Temporada 1 nos 6 idiomas) carregava na abertura de todo mundo; agora baixa quando o Idol⭐News! ou o Calendário abre (`jornalCapsCarregar`). Abertura clássica 1.792 → 1.693 KB.
+- Vitrine: sem Idol repetido quando poucos cabem; proporção e ordem sorteada iguais ao clássico.
+- Menu: Ranking legível (a superfície de papel do Oshi apagava o roxo); sem atalhos que já têm porta no Início ou na engrenagem.
+- Fichinhas em abas, com Ouvir; quadrinho ampliado ao tocar; descrições em 2 linhas.
+- Temporada 1: falas sem corte, balões lado a lado, pistas redesenhadas, direção de cena nos 30 quadros, leitor inerte, CSS fluido.
+
+**Conferido sem erro:** sintaxe de todos os .js; arquivos referenciados no index existem; abertura clássica (iPhone, Galaxy, desktop) e celular sem erro de script; Sora, Karaoke e privacidade abrem; Handshake, Café, News, Battle, Gacha, Loja, Dois e Perfil abrem e fecham. Testes 110/110.
+
+**Falta (precisa de aparelho, conta ou decisão do dono)**
+- Aparelho real (iPhone/Safari, Android) e login real em tudo da #98.
+- Ligar o visual de celular para todos (depois do ok do Pati).
+- Temporada 1: revisão nativa das traduções e autorização; personagens ainda em poses prontas (andar/virar/abraçar pede poses novas no `perfDesenharIdol`).
+- Peso: abertura ainda ~230 KB acima do pós-reforma (1.460 KB); próximos candidatos: `tw-mapa.js` (101 KB) sob demanda e o bloco do Dois no `index.html`.
+- Prêmio dos lightsticks do Battle (SQL proposto, não aplicado); PRs antigas #72 e #74 (fechar ou registrar).
+
 ## Correção de abertura — 15/11/2026 (PR de correção, ainda não publicada)
 
 Base conferida: `f257624`, merge da #95; Vercel READY no mesmo commit. O relato é tela que abre e não responde a toques. No Chrome remoto, os dois modos abriram como visitante; houve timeout inicial de inspeção no modo novo, seguido de interação normal. **Não foi possível reproduzir conclusivamente o congelamento do iPhone.**

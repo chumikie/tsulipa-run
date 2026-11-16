@@ -786,6 +786,7 @@
       '<span class="twc-calhoje-ir" aria-hidden="true">' + ico('cal', 20) + '</span></button>';
   }
   function telaCal(){
+    if(typeof jnT1Disponivel !== 'function' && typeof window.jornalCapsCarregar === 'function') window.jornalCapsCarregar(function(){ if(topo() === 'cal') desenhar(); });   // marcas da temporada vêm com os quadrinhos
     var C = window.TW_CAL; if(!C) return faixa(esc(tc('cal')), tc('calSub')) + '<div class="twc-pag"></div>';
     var h = C.hoje(); if(!calMes) calMes = h.slice(0, 7); if(!calSel) calSel = calMes === h.slice(0, 7) ? h : calMes + '-01';
     var y = +calMes.slice(0, 4), m = +calMes.slice(5, 7), lim = calLimites(), dias = new Date(Date.UTC(y, m, 0)).getUTCDate(), w0 = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();

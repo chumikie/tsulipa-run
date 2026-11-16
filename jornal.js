@@ -636,7 +636,20 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
     return d;
   });
 }
+/* Os quadrinhos (capítulos antigos + Temporada 1, ~100 KB nos 6 idiomas) só baixam quando alguém abre o Idol⭐News!
+   ou o Calendário — antes eles pesavam na abertura de todo mundo. */
+var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=4', jornalCapsFila = null;
+function jornalCapsCarregar(cb){
+  if(typeof jornalCapsUI === 'function'){ if(cb) cb(); return; }
+  if(jornalCapsFila){ if(cb) jornalCapsFila.push(cb); return; }
+  jornalCapsFila = cb ? [cb] : [];
+  var sc = document.createElement('script'); sc.src = JORNAL_CAPS_ARQ; sc.async = true;
+  sc.onload = sc.onerror = function(){ var f = jornalCapsFila || []; jornalCapsFila = null; f.forEach(function(fn){ try{ fn(); }catch(e){} }); };
+  document.head.appendChild(sc);
+}
+window.jornalCapsCarregar = jornalCapsCarregar;
 function jornalAbrir(aba){
+  if(typeof jornalCapsUI !== 'function'){ jornalCapsCarregar(function(){ jornalAbrir(aba); }); }
   jornalAba = aba === 'comunidade' ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';

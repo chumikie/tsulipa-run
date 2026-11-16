@@ -521,7 +521,207 @@ function jnCapAv(k, pose){   // o boneco oficial do membro (os mesmos do banner 
   if(base){ c.out = base.out; c.outcol = base.outcol; }
   return {c:c, pose:pose || '', expr:m[4]};
 }
+/* Temporada 0 (os 6 capítulos das músicas dos Unit Festivals): direção de cena por quadro, desenhada no Canvas.
+   cena: cenário próprio (com profundidade e luz); cam: 'geral' | 'medio' | 'close' (close = foco num membro, cortado no peito);
+   expr: expressões já existentes dos bonecos {membro: n} (0 neutra, 1 animada, 2 sorriso, 3 piscadinha, 4 surpresa, 5 emoção);
+   vira: membros que olham para o outro lado (espelhados); placa: o letreiro do palco; ano: a paleta do festival. */
+var JN_T0_DIR = [
+  [{cena:'audicao', cam:'medio', expr:{0:2}}, {cena:'sala', cam:'medio', vira:[2], expr:{1:3, 2:2}}, {cena:'palco', ano:'draft', placa:'DRAFT 1st GEN', expr:{0:2, 2:1}}],
+  [{cena:'sala', noite:1, cam:'geral', expr:{0:2}}, {cena:'espelho', cam:'close', foco:1, expr:{1:0}}, {cena:'palco', ano:'2021', placa:'POLYRHYTHM', expr:{0:2, 2:1}}],
+  [{cena:'cidade', cam:'close', foco:2, expr:{2:3}}, {cena:'cidade', neon:'PLASTIC LOVE', cam:'medio', vira:[1], expr:{0:2}}, {cena:'palco', ano:'2023', placa:'PLASTIC LOVE', neve:1, expr:{1:3}}],
+  [{cena:'praia', cam:'medio', expr:{1:2}}, {cena:'praia', tarde:1, cam:'medio', vira:[0], expr:{2:2, 0:2}}, {cena:'palco', ano:'2025', placa:'DREAM SPLASH', agua:1, expr:{0:1}}],
+  [{cena:'janela', cam:'close', foco:0, expr:{0:5}}, {cena:'longe', cam:'medio', expr:{1:5, 2:2}}, {cena:'palco', ano:'2026', placa:'ENDLESS DAYDREAM', expr:{2:2}}],
+  [{cena:'abobora', cam:'medio', expr:{2:4}}, {cena:'portao', cam:'geral', vira:[0], expr:{1:1, 0:2}}, {cena:'palco', ano:'world', placa:'TsuLiPa⭐World', confete:1, expr:{0:2, 1:2, 2:1}}]
+];
+var JN_T0_ANO = {draft:['#2a1660', '#7b3ff0', '#ff6fb5'], '2021':['#3a1a6e', '#ffb627', '#ffe680'], '2023':['#101a4a', '#4dd8ff', '#ff6fb5'],
+  '2025':['#0d3a5c', '#29c5f6', '#ffd23f'], '2026':['#2a1450', '#c79bff', '#ffb3d9'], world:['#3a1470', '#ff6fb5', '#b6ff3b']};
+JN_CAPS.forEach(function(c, i){ (c[2] || []).forEach(function(q, k){ var d = JN_T0_DIR[i] && JN_T0_DIR[i][k]; if(d) q.jnT0 = d; }); });
+function jnT0Brilho(x, a, b, r, c){ x.fillStyle = c || 'rgba(255,255,255,.9)'; x.beginPath(); for(var i = 0; i < 8; i++){ var rr2 = i % 2 ? r * .35 : r, an = i * Math.PI / 4; x.lineTo(a + Math.cos(an) * rr2, b + Math.sin(an) * rr2); } x.closePath(); x.fill(); }
+function jnT0Lua(x, a, b, r){ x.save(); x.shadowColor = 'rgba(255,240,180,.8)'; x.shadowBlur = 18; x.fillStyle = '#fff6c4'; x.beginPath(); x.arc(a, b, r, 0, 7); x.fill(); x.restore();
+  x.fillStyle = 'rgba(0,0,0,.0)'; x.globalCompositeOperation = 'source-over'; x.fillStyle = 'rgba(230,214,150,.55)'; [[-.3, -.2, .18], [.25, .2, .14], [.05, .35, .09]].forEach(function(c){ x.beginPath(); x.arc(a + c[0] * r, b + c[1] * r, c[2] * r, 0, 7); x.fill(); }); }
+// lado do céu sem balão: a lua, o sol e os letreiros vão para o lado oposto a quem fala
+function jnT0Cena(x, W, H, d, camada, falaX, chao){
+  var lado = falaX == null ? 1 : (falaX > W / 2 ? 0 : 1), cx = lado ? W - 70 : 70, i, g;
+  if(camada === 'fundo'){
+    if(d.cena === 'audicao'){   // audição: cortina escura, um holofote só e o número de inscrição no chão
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1d0f3d'); g.addColorStop(1, '#3a1a6e'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      for(i = 0; i < W; i += 34){ x.fillStyle = i % 68 ? 'rgba(120,40,160,.35)' : 'rgba(90,20,130,.45)'; x.fillRect(i, 0, 20, H - 70); }
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(255,246,196,.65)'); g.addColorStop(1, 'rgba(255,246,196,.05)');
+      x.fillStyle = g; x.beginPath(); x.moveTo(W / 2 - 26, 0); x.lineTo(W / 2 + 26, 0); x.lineTo(W / 2 + 130, H); x.lineTo(W / 2 - 130, H); x.closePath(); x.fill();
+      x.fillStyle = '#2a1450'; x.fillRect(0, H - 70, W, 70); x.fillStyle = 'rgba(255,246,196,.35)'; x.beginPath(); x.ellipse(W / 2, H - 20, 120, 16, 0, 0, 7); x.fill();
+      x.fillStyle = '#ffd23f'; x.font = '400 15px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('AUDITION', W / 2 + (lado ? 150 : -150), H - 32);
+      return;
+    }
+    if(d.cena === 'sala' || d.cena === 'espelho'){   // sala de ensaio: parede lilás, espelho grande, barra e piso de madeira
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, d.noite ? '#3b2a6e' : '#efe6ff'); g.addColorStop(1, d.noite ? '#5a3d8f' : '#fde9f5'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      var ex = d.cena === 'espelho' ? 30 : 110, ew = d.cena === 'espelho' ? 220 : 260;
+      x.fillStyle = d.noite ? 'rgba(180,200,255,.18)' : 'rgba(220,235,255,.85)'; x.strokeStyle = '#c9b3ff'; x.lineWidth = 5; x.fillRect(ex, 40, ew, H - 120); x.strokeRect(ex, 40, ew, H - 120);
+      x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.moveTo(ex + 20, 40); x.lineTo(ex + 50, 40); x.lineTo(ex + 10, H - 80); x.lineTo(ex, H - 80); x.lineTo(ex, H - 120); x.closePath(); x.fill();
+      if(d.noite){ var wx = lado ? W - 110 : 20, wy = 54; x.fillStyle = '#1a1240'; x.fillRect(wx, wy, 90, 84); x.strokeStyle = '#fff'; x.lineWidth = 4; x.strokeRect(wx, wy, 90, 84); x.beginPath(); x.moveTo(wx + 45, wy); x.lineTo(wx + 45, wy + 84); x.moveTo(wx, wy + 42); x.lineTo(wx + 90, wy + 42); x.stroke(); jnT0Lua(x, wx + 66, wy + 20, 12); jnT0Brilho(x, wx + 20, wy + 18, 4); jnT0Brilho(x, wx + 28, wy + 66, 3); }
+      x.strokeStyle = '#d9a86c'; x.lineWidth = 6; x.beginPath(); x.moveTo(0, H - 116); x.lineTo(W, H - 116); x.stroke();
+      g = x.createLinearGradient(0, H - 80, 0, H); g.addColorStop(0, '#e7b98a'); g.addColorStop(1, '#c98a5a'); x.fillStyle = g; x.fillRect(0, H - 80, W, 80);
+      x.strokeStyle = 'rgba(120,70,30,.25)'; x.lineWidth = 2; for(i = -4; i < 12; i++){ x.beginPath(); x.moveTo(W / 2 + i * 40, H - 80); x.lineTo(W / 2 + i * 80, H); x.stroke(); }
+      return;
+    }
+    if(d.cena === 'cidade'){   // cidade à noite, clima city pop: céu roxo, prédios com janelas acesas e letreiro neon
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1b0f45'); g.addColorStop(.6, '#5a1f7a'); g.addColorStop(1, '#ff6fb5'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      for(i = 0; i < 26; i++) jnT0Brilho(x, (i * 97) % W, 12 + (i * 53) % 110, 2 + i % 3, 'rgba(255,255,255,.75)');
+      if(!d.neon) jnT0Lua(x, cx, 82, 18);
+      var pr = [[0, 150, 70], [60, 110, 60], [116, 170, 54], [166, 130, 70], [232, 96, 50], [278, 160, 64], [338, 120, 58], [392, 150, 50], [438, 105, 60]];
+      pr.forEach(function(b, k){ x.fillStyle = k % 2 ? '#2a1458' : '#33186a'; x.fillRect(b[0], b[1], b[2], H - b[1]);
+        for(var jy = b[1] + 12; jy < H - 30; jy += 18) for(var jx = b[0] + 8; jx < b[0] + b[2] - 8; jx += 14){ if(((jx * 7 + jy * 3 + k) % 5) < 2){ x.fillStyle = (jx + jy) % 3 ? '#ffd27a' : '#ffb3d9'; x.fillRect(jx, jy, 6, 8); } } });
+      if(d.neon){ var nx = lado ? W - 120 : 120; x.save(); x.shadowColor = '#ff6fb5'; x.shadowBlur = 16; x.strokeStyle = '#ffb3d9'; x.lineWidth = 3; x.strokeRect(nx - 82, 84, 164, 34);
+        x.fillStyle = '#fff0f8'; x.font = '400 17px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(d.neon, nx, 102); x.restore(); x.textBaseline = 'alphabetic'; }
+      g = x.createLinearGradient(0, H - 46, 0, H); g.addColorStop(0, '#2a1458'); g.addColorStop(1, '#12082e'); x.fillStyle = g; x.fillRect(0, H - 46, W, 46);
+      x.fillStyle = 'rgba(255,111,181,.35)'; x.fillRect(0, H - 46, W, 3);
+      return;
+    }
+    if(d.cena === 'praia'){   // verão: céu, mar, sol (ou pôr do sol), areia e um guarda-sol
+      g = x.createLinearGradient(0, 0, 0, H * .62); if(d.tarde){ g.addColorStop(0, '#ff9a8b'); g.addColorStop(1, '#ffd27a'); } else { g.addColorStop(0, '#6ec6ff'); g.addColorStop(1, '#c9f0ff'); }
+      x.fillStyle = g; x.fillRect(0, 0, W, H * .62);
+      var sx = d.tarde ? W / 2 : cx, sy = d.tarde ? H * .56 : 70; x.save(); x.shadowColor = d.tarde ? '#ff7a59' : '#fff3a0'; x.shadowBlur = 26; x.fillStyle = d.tarde ? '#ff8a5c' : '#ffe14d'; x.beginPath(); x.arc(sx, sy, d.tarde ? 30 : 24, 0, 7); x.fill(); x.restore();
+      if(!d.tarde){ x.fillStyle = '#fff'; [[W / 2 - 40, 40], [W / 2 + 20, 70]].forEach(function(n){ x.beginPath(); x.arc(n[0], n[1], 14, 0, 7); x.arc(n[0] + 16, n[1] - 6, 16, 0, 7); x.arc(n[0] + 34, n[1], 13, 0, 7); x.fill(); }); }
+      g = x.createLinearGradient(0, H * .58, 0, H * .78); g.addColorStop(0, d.tarde ? '#d9628a' : '#2aa6e0'); g.addColorStop(1, d.tarde ? '#9b4ab0' : '#5fd0f5'); x.fillStyle = g; x.fillRect(0, H * .58, W, H * .2);
+      x.strokeStyle = 'rgba(255,255,255,.6)'; x.lineWidth = 2; for(i = 0; i < 4; i++){ x.beginPath(); x.moveTo(20 + i * 120, H * .66 + (i % 2) * 8); x.quadraticCurveTo(50 + i * 120, H * .63 + (i % 2) * 8, 80 + i * 120, H * .66 + (i % 2) * 8); x.stroke(); }
+      if(d.tarde){ x.fillStyle = 'rgba(255,200,120,.45)'; x.fillRect(sx - 30, H * .6, 60, 4); x.fillRect(sx - 18, H * .65, 36, 3); }
+      g = x.createLinearGradient(0, H * .76, 0, H); g.addColorStop(0, '#ffe3a8'); g.addColorStop(1, '#f2c27a'); x.fillStyle = g; x.fillRect(0, H * .76, W, H * .24);
+      if(!d.tarde){ var gx = lado ? W - 50 : 50; x.strokeStyle = '#fff'; x.lineWidth = 4; x.beginPath(); x.moveTo(gx, H * .9); x.lineTo(gx + (lado ? -14 : 14), H * .5); x.stroke();
+      x.fillStyle = '#ff6fb5'; x.beginPath(); x.moveTo(gx + (lado ? -14 : 14) - 52, H * .52); x.quadraticCurveTo(gx + (lado ? -14 : 14), H * .3, gx + (lado ? -14 : 14) + 52, H * .52); x.closePath(); x.fill();
+      x.fillStyle = '#fff'; x.beginPath(); x.moveTo(gx + (lado ? -14 : 14) - 18, H * .52); x.quadraticCurveTo(gx + (lado ? -14 : 14), H * .36, gx + (lado ? -14 : 14) + 18, H * .52); x.closePath(); x.fill(); }
+      return;
+    }
+    if(d.cena === 'janela'){   // quarto à noite: janela grande com a lua do lado sem balão, luzinhas e um caderno de letra
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#2a1d5c'); g.addColorStop(1, '#4a2f86'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      var jx2 = lado ? W - 210 : 20; x.fillStyle = '#140b38'; x.fillRect(jx2, 26, 190, 170); for(i = 0; i < 14; i++) jnT0Brilho(x, jx2 + 14 + (i * 37) % 170, 40 + (i * 29) % 140, 2 + i % 3);
+      jnT0Lua(x, jx2 + 130, 80, 26); x.strokeStyle = '#e6d6ff'; x.lineWidth = 6; x.strokeRect(jx2, 26, 190, 170); x.beginPath(); x.moveTo(jx2 + 95, 26); x.lineTo(jx2 + 95, 196); x.stroke();
+      ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#c79bff'].forEach(function(c, k){ x.fillStyle = c; x.beginPath(); x.arc(30 + k * 100, 16 + (k % 2) * 6, 5, 0, 7); x.fill(); });
+      x.strokeStyle = 'rgba(255,255,255,.4)'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(0, 14); x.quadraticCurveTo(W / 2, 30, W, 14); x.stroke();
+      return;
+    }
+    if(d.cena === 'longe'){   // "mesmo longe": a tela dividida na diagonal, um lado de dia e o outro de noite
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffd6ec'); g.addColorStop(1, '#fff3c4'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      x.save(); x.beginPath(); x.moveTo(W * .56, 0); x.lineTo(W, 0); x.lineTo(W, H); x.lineTo(W * .44, H); x.closePath(); x.clip();
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1b1450'); g.addColorStop(1, '#3d2a8a'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      for(i = 0; i < 12; i++) jnT0Brilho(x, W * .6 + (i * 41) % (W * .38), 20 + (i * 37) % 160, 2 + i % 3);
+      jnT0Lua(x, W - 60, 150, 16); x.restore();
+      x.fillStyle = '#ffe14d'; x.save(); x.shadowColor = '#fff3a0'; x.shadowBlur = 20; x.beginPath(); x.arc(56, 150, 20, 0, 7); x.fill(); x.restore();
+      x.strokeStyle = '#fff'; x.lineWidth = 6; x.beginPath(); x.moveTo(W * .56, 0); x.lineTo(W * .44, H); x.stroke();
+      x.fillStyle = 'rgba(60,20,100,.12)'; x.fillRect(0, H - 40, W, 40);
+      return;
+    }
+    if(d.cena === 'abobora'){   // Halloween: céu roxo-laranja, lua do lado sem balão, cerquinha e abóboras nas bordas
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#2a1450'); g.addColorStop(.7, '#7a2d6b'); g.addColorStop(1, '#ff8a3d'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      jnT0Lua(x, cx, 60, 30);
+      [[cx + (lado ? -60 : 60), 120], [cx + (lado ? -20 : 20), 150]].forEach(function(m){ x.fillStyle = '#1a0a2e'; x.beginPath(); x.moveTo(m[0], m[1]); x.quadraticCurveTo(m[0] - 9, m[1] - 9, m[0] - 18, m[1] - 2); x.quadraticCurveTo(m[0] - 9, m[1] - 2, m[0], m[1] + 4); x.quadraticCurveTo(m[0] + 9, m[1] - 2, m[0] + 18, m[1] - 2); x.quadraticCurveTo(m[0] + 9, m[1] - 9, m[0], m[1]); x.fill(); });
+      x.fillStyle = '#1a0a2e'; x.fillRect(0, H - 70, W, 6); for(i = 10; i < W; i += 36){ x.beginPath(); x.moveTo(i - 5, H - 40); x.lineTo(i - 5, H - 90); x.lineTo(i, H - 98); x.lineTo(i + 5, H - 90); x.lineTo(i + 5, H - 40); x.fill(); }
+      x.fillStyle = '#3a1f2a'; x.fillRect(0, H - 40, W, 40);
+      return;
+    }
+    if(d.cena === 'portao'){   // véspera da abertura: o portão do TsuLiPa⭐World com bandeirinhas (abaixo dos balões, acima das cabeças)
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#c9a8ff'); g.addColorStop(1, '#ffd6ec'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      var gy = 44; x.fillStyle = '#7b3ff0'; x.fillRect(W / 2 - 170, gy + 30, 18, H - gy - 70); x.fillRect(W / 2 + 152, gy + 30, 18, H - gy - 70);
+      x.fillStyle = '#fff'; x.beginPath(); x.moveTo(W / 2 - 180, gy + 46); x.quadraticCurveTo(W / 2, gy + 6, W / 2 + 180, gy + 46); x.lineTo(W / 2 + 180, gy + 72); x.quadraticCurveTo(W / 2, gy + 32, W / 2 - 180, gy + 72); x.closePath(); x.fill(); x.strokeStyle = '#7b3ff0'; x.lineWidth = 3; x.stroke();
+      x.fillStyle = '#7b3ff0'; x.font = '400 15px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('TsuLiPa⭐World · 27/10', W / 2, gy + 40); x.textBaseline = 'alphabetic';
+      for(i = 0; i < 10; i++){ var bx2 = W / 2 - 160 + i * 34, by2 = gy + 78 + Math.sin(i / 9 * Math.PI) * 10; x.fillStyle = ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#9b30d9'][i % 5]; x.beginPath(); x.moveTo(bx2, by2); x.lineTo(bx2 + 22, by2); x.lineTo(bx2 + 11, by2 + 16); x.closePath(); x.fill(); }
+      x.fillStyle = 'rgba(255,255,255,.55)'; x.fillRect(W / 2 - 152, gy + 100, 304, H - gy - 140);
+      x.fillStyle = '#e8d5ff'; x.fillRect(0, H - 40, W, 40);
+      return;
+    }
+    if(d.cena === 'palco'){   // palco do festival: telão com o nome da música, feixes de luz na cor do ano e piso de LED
+      var pal = JN_T0_ANO[d.ano] || JN_T0_ANO.draft;
+      g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, pal[0]); g.addColorStop(1, '#12082e'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      [[.15, pal[1]], [.38, pal[2]], [.62, pal[1]], [.85, pal[2]]].forEach(function(f){ x.save(); g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, f[1] + 'aa'); g.addColorStop(1, f[1] + '00'); x.fillStyle = g;
+        x.beginPath(); x.moveTo(f[0] * W - 10, 0); x.lineTo(f[0] * W + 10, 0); x.lineTo(f[0] * W + 70, H); x.lineTo(f[0] * W - 70, H); x.closePath(); x.fill(); x.restore(); });
+      g = x.createLinearGradient(0, H - 70, 0, H); g.addColorStop(0, '#3a1a6e'); g.addColorStop(1, '#12082e'); x.fillStyle = g; x.fillRect(0, H - 70, W, 70);
+      var led = x.createLinearGradient(0, 0, W, 0); ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#9b30d9'].forEach(function(c, k){ led.addColorStop(k / 4, c); }); x.fillStyle = led; x.fillRect(0, H - 72, W, 4);
+      // faixa da frente do palco com a música e o festival (fica entre os pés do trio e a plateia, sem cobrir ninguém)
+      x.fillStyle = 'rgba(10,4,30,.55)'; x.fillRect(0, H - 40, W, 40);
+      if(d.neve) for(i = 0; i < 30; i++){ x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.arc((i * 71) % W, (i * 43) % (H - 90), 1.5 + i % 3, 0, 7); x.fill(); }
+      return;
+    }
+  } else {   // camada da frente (na frente dos bonecos)
+    if(d.cena === 'palco'){   // plateia de costas com lightsticks nas cores do trio: dá profundidade ao palco
+      var cores = ['#9b30d9', '#3cb043', '#4169e1', '#ff6fb5'];
+      for(i = 0; i < 14; i++){ var hx = 12 + i * 35 + (i % 2) * 8, hy = H + 12 + (i % 3) * 4, c2 = cores[i % 4];
+        x.save(); x.translate(hx + 14, hy - 30); x.rotate((i % 2 ? -.35 : .3)); x.shadowColor = c2; x.shadowBlur = 14; x.fillStyle = c2; x.fillRect(-3, -34, 6, 30); x.fillStyle = '#fff'; x.fillRect(-3, -34, 6, 8); x.restore();
+        x.fillStyle = '#1a0a2e'; x.beginPath(); x.arc(hx, hy - 8, 15, Math.PI, 0); x.fill(); x.fillRect(hx - 22, hy - 8, 44, 20); }
+      // nome da música e do festival na frente do palco, por cima da plateia (sempre legível)
+      var pal2 = JN_T0_ANO[d.ano] || JN_T0_ANO.draft, sub2 = d.ano === 'draft' ? 'BRS48 · 2021' : d.ano === 'world' ? '27/10/2026' : 'UNIT FESTIVAL ' + d.ano, txt2 = d.placa + '  ·  ' + sub2;
+      x.save(); x.font = '400 14px "Mochiy Pop One",sans-serif'; var pw = Math.min(W - 30, x.measureText(txt2).width + 36);
+      x.beginPath(); x.moveTo(W / 2 - pw / 2 + 14, H - 36); x.arcTo(W / 2 + pw / 2, H - 36, W / 2 + pw / 2, H - 8, 14); x.arcTo(W / 2 + pw / 2, H - 8, W / 2 - pw / 2, H - 8, 14); x.arcTo(W / 2 - pw / 2, H - 8, W / 2 - pw / 2, H - 36, 14); x.arcTo(W / 2 - pw / 2, H - 36, W / 2 + pw / 2, H - 36, 14); x.closePath();
+      x.fillStyle = 'rgba(18,8,46,.92)'; x.fill(); x.strokeStyle = pal2[1]; x.lineWidth = 2.5; x.stroke();
+      x.shadowColor = pal2[2]; x.shadowBlur = 8; x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt2, W / 2, H - 21, pw - 20); x.restore(); x.textBaseline = 'alphabetic';
+      if(d.confete) for(i = 0; i < 36; i++){ x.fillStyle = ['#ff6fb5', '#ffd23f', '#b6ff3b', '#4dd8ff', '#c79bff'][i % 5]; x.save(); x.translate((i * 89) % W, 20 + (i * 47) % (H - 120)); x.rotate(i); x.fillRect(-4, -2, 8, 4); x.restore(); }
+      if(d.agua) for(i = 0; i < 22; i++){ x.fillStyle = 'rgba(160,230,255,.8)'; x.beginPath(); var ax = (i * 67) % W, ay = H - 90 - (i * 29) % 120; x.moveTo(ax, ay - 6); x.quadraticCurveTo(ax + 5, ay + 2, ax, ay + 5); x.quadraticCurveTo(ax - 5, ay + 2, ax, ay - 6); x.fill(); }
+      return;
+    }
+    if(d.cena === 'abobora'){ [[34, H - 30, 26], [W - 40, H - 26, 30], [W - 92, H - 18, 18]].forEach(function(a){ x.fillStyle = '#ff8a1f'; x.beginPath(); x.ellipse(a[0], a[1], a[2], a[2] * .8, 0, 0, 7); x.fill(); x.strokeStyle = 'rgba(160,60,0,.5)'; x.lineWidth = 2; x.beginPath(); x.ellipse(a[0], a[1], a[2] * .45, a[2] * .8, 0, 0, 7); x.stroke(); x.fillStyle = '#4f9a00'; x.fillRect(a[0] - 2, a[1] - a[2] * .8 - 8, 5, 9);
+      x.fillStyle = '#ffe14d'; x.beginPath(); x.moveTo(a[0] - 10, a[1] - 4); x.lineTo(a[0] - 4, a[1] - 10); x.lineTo(a[0] - 1, a[1] - 3); x.fill(); x.beginPath(); x.moveTo(a[0] + 10, a[1] - 4); x.lineTo(a[0] + 4, a[1] - 10); x.lineTo(a[0] + 1, a[1] - 3); x.fill(); }); return; }
+    if(d.cena === 'espelho'){ return; }
+  }
+}
+function jnT0Desenhar(cv, p, d){
+  var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+  function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+  function linhas(txt, larg){ var ps = String(txt).split(' '), L = [], at = ''; ps.forEach(function(w){ var t = at ? at + ' ' + w : w; if(x.measureText(t).width > larg && at){ L.push(at); at = w; } else at = t; }); if(at) L.push(at); return L; }
+  x.save(); rr(0, 0, W, H, 22); x.clip();
+  var gente = p[1], n = gente.length, cam = d.cam || 'geral', palco = d.cena === 'palco';
+  var ES = cam === 'close' ? 3.1 : n === 1 ? (cam === 'medio' ? 2.35 : 2.1) : n === 2 ? (cam === 'medio' ? 2.05 : 1.9) : (palco ? 1.5 : 1.6);
+  var xs = n === 1 ? [cam === 'close' ? .64 : .5] : n === 2 ? [.3, .7] : [.2, .5, .8];
+  var chao = cam === 'close' ? H + 44 : palco ? H - 44 : d.cena === 'praia' ? H - 14 : H - 10;
+  var falas = p[3], falaX = falas.length ? falas.reduce(function(a, f){ var i = gente.findIndex(function(g){ return g[0] === f[0]; }); return a + (i >= 0 ? xs[i] * W : W / 2); }, 0) / falas.length : null;
+  if(cam === 'close') falaX = xs[0] > .5 ? W * .2 : W * .8;   // no close o balão fica do lado oposto ao rosto
+  try{ jnT0Cena(x, W, H, d, 'fundo', falaX, chao); }catch(e){}
+  var onde = {}, topoCab = {};
+  gente.forEach(function(g, i){
+    var av = jnCapAv(g[0], g[1]); if(!av) return; var cx = xs[i] * W; onde[g[0]] = cx;
+    if(d.expr && d.expr[g[0]] != null) av.expr = d.expr[g[0]];
+    var vira = d.vira && d.vira.indexOf(g[0]) >= 0;
+    if(d.cena === 'espelho'){   // o reflexo no espelho, mais clarinho, do lado de lá
+      x.save(); x.beginPath(); x.rect(30, 40, 220, H - 120); x.clip(); x.globalAlpha = .45; x.translate(140, 0); x.scale(-1, 1); x.translate(-140, 0);
+      x.translate(140 - 52 * 2.1, H - 70 - 112 * 2.1 + 8); x.scale(2.1, 2.1); try{ perfDesenharIdol(x, 104, 112, av, false, false, 30); }catch(e){} x.restore();
+    }
+    if(cam !== 'close'){ x.fillStyle = 'rgba(40,10,70,.18)'; x.beginPath(); x.ellipse(cx, chao - 4, 30 * ES / 1.6, 6, 0, 0, 7); x.fill(); }
+    x.save();
+    if(vira){ x.translate(cx, 0); x.scale(-1, 1); x.translate(-cx, 0); }
+    x.translate(cx - 52 * ES, chao - 112 * ES + 8); x.scale(ES, ES);
+    try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, 104, 112, av, false, false, 30 + i * 17); }catch(e){}
+    x.restore();
+    topoCab[g[0]] = chao - 112 * ES + 8 + 28 * ES;   // ~altura do alto da cabeça
+  });
+  try{ jnT0Cena(x, W, H, d, 'frente', falaX, chao); }catch(e){}
+  var topo = 12;
+  if(p[2]){   // narração
+    x.font = '800 15px "M PLUS Rounded 1c",sans-serif'; var nl = linhas(jnCapT(p[2]), W - 60), nh = nl.length * 19 + 14;
+    rr(10, 10, W - 20, nh, 10); x.fillStyle = '#fff6c4'; x.fill(); x.strokeStyle = '#3c2a6a'; x.lineWidth = 2.5; x.stroke();
+    x.fillStyle = '#3c2a6a'; x.textAlign = 'left'; x.textBaseline = 'top'; nl.forEach(function(l, k){ x.fillText(l, 22, 17 + k * 19); });
+    topo = 10 + nh + 10;
+  }
+  falas.forEach(function(f, i){   // balão: no close, ao lado do rosto; na conversa, um de cada lado; o rabinho aponta para quem fala
+    var cx = onde[f[0]] != null ? onde[f[0]] : W / 2;
+    x.font = '800 16px "M PLUS Rounded 1c",sans-serif'; var bl = linhas(jnCapT(f[1]), cam === 'close' ? 170 : 190), bw = Math.max.apply(null, bl.map(function(l){ return x.measureText(l).width; })) + 28, bh = bl.length * 20 + 14;
+    var bx, by = topo;
+    if(cam === 'close'){ bx = cx > W / 2 ? Math.max(10, cx - 110 - bw) : Math.min(W - bw - 10, cx + 110); by = Math.max(topo, 70); }
+    else if(falas.length > 1){ bx = i ? Math.min(W - bw - 10, Math.max(W / 2 + 6, cx - bw / 2)) : Math.max(10, Math.min(W / 2 - 6 - bw, cx - bw / 2)); by = topo + (i ? 10 : 0); }
+    else bx = Math.max(10, Math.min(W - bw - 10, cx - bw / 2));
+    var cab = topoCab[f[0]] != null ? topoCab[f[0]] : H / 2;
+    if(cam !== 'close' && by + bh + 18 > cab) by = Math.max(topo, cab - bh - 20);   // nunca em cima do rosto
+    rr(bx, by, bw, bh, 16); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = cor[f[0]]; x.lineWidth = 3; x.stroke();
+    var tx, ty, px2, py2;
+    if(cam === 'close'){ ty = by + bh / 2; tx = cx > bx ? bx + bw : bx; px2 = tx + (cx > bx ? 18 : -18); py2 = ty + 10;
+      x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx, ty - 9); x.lineTo(px2, py2); x.lineTo(tx, ty + 9); x.closePath(); x.fill(); x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx, ty - 9); x.lineTo(px2, py2); x.lineTo(tx, ty + 9); x.stroke();
+      x.fillStyle = '#fff'; x.fillRect(tx + (cx > bx ? -3 : 0), ty - 7, 3, 14); }
+    else { tx = Math.max(bx + 18, Math.min(bx + bw - 18, cx)); var dx = cx > tx ? 10 : cx < tx ? -10 : 0;
+      x.fillStyle = '#fff'; x.beginPath(); x.moveTo(tx - 9, by + bh - 2); x.lineTo(tx + dx, by + bh + 16); x.lineTo(tx + 9, by + bh - 2); x.closePath(); x.fill();
+      x.strokeStyle = cor[f[0]]; x.beginPath(); x.moveTo(tx - 9, by + bh); x.lineTo(tx + dx, by + bh + 16); x.lineTo(tx + 9, by + bh); x.stroke(); }
+    x.fillStyle = '#3c2a6a'; x.textAlign = 'center'; x.textBaseline = 'top'; bl.forEach(function(l, k){ x.fillText(l, bx + bw / 2, by + 8 + k * 20); });
+  });
+  x.restore();
+  x.strokeStyle = '#3c2a6a'; x.lineWidth = 4; rr(2, 2, W - 4, H - 4, 20); x.stroke();
+}
 function jnCapDesenhar(cv, p, temporada){
+  if(!temporada && p && p.jnT0) return jnT0Desenhar(cv, p, p.jnT0);   // temporada 0: direção de cena própria
   var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
   function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }

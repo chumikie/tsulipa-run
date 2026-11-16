@@ -274,3 +274,11 @@ test('direção de cena: 30 quadros com cenário/pistas/reações e o leitor his
   assert.match(src, /var cenaT1 = temporada && p\[4\] && typeof jnT1Cenario === 'function' \? p\[4\] : null;/, 'só a temporada usa a cena');
   assert.match(src, /if\(temporada && n > 1\)\{ var incl/, 'inclinação só na temporada');
 });
+test('temporada 0: direção de cena em todos os 18 quadros, sem mexer nos dados nem na Temporada 1',()=>{
+  const ctx={Intl,Date};vm.createContext(ctx);vm.runInContext(source,ctx);
+  assert.equal(ctx.JN_T0_DIR.length,6);
+  ctx.JN_CAPS.forEach((c,i)=>{assert.equal(c[2].length,3);c[2].forEach((q,k)=>{assert.ok(q.jnT0&&q.jnT0.cena,'cap '+(i+1)+' quadro '+(k+1));assert.ok(['geral','medio','close'].includes(q.jnT0.cam||'geral'));});});
+  assert.match(source,/if\(!temporada && p && p\.jnT0\) return jnT0Desenhar\(cv, p, p\.jnT0\);/,'só a temporada 0 usa a direção nova');
+  assert.ok(source.includes('if(cam !== \'close\' && by + bh + 18 > cab) by = Math.max(topo, cab - bh - 20);'),'balão nunca em cima do rosto');
+  assert.equal(ctx.JN_T1_PUBLICADA,false);
+});

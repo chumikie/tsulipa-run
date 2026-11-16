@@ -158,8 +158,8 @@ function contaRecuperarCorridas(preferida){
     if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
     if(typeof r.best==='number'&&r.best>best){best=r.best;try{localStorage.setItem('brs48cr_best',best);}catch(e){}setBest();}
     atualizar(r.limite_diario===true?
-      (r.creditadas>0?String(r.creditadas)+' '+tr('estrelas')+' · ':'')+tr('Limite diário do Center⭐Run! atingido (100 estrelas)'):
-      String(r.creditadas||0)+' '+tr('estrelas'));
+      (r.creditadas>0?String(r.creditadas)+' '+(typeof trEstrelas==='function'?trEstrelas(r.creditadas):tr('estrelas'))+' · ':'')+tr('Limite diário do Center⭐Run! atingido (100 estrelas)'):
+      String(r.creditadas||0)+' '+(typeof trEstrelas==='function'?trEstrelas(r.creditadas||0):tr('estrelas')));
     contaUltimaRun.ok=true;
     quartetoTalvez();hubAposCorrida();
     if(!feedback&&typeof showLb==='function'){try{showLb($('lbo'));}catch(e){}}
@@ -280,4 +280,11 @@ function gisEntrar(){
     s.onerror = function(){ _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); };
     document.head.appendChild(s);
   });
+}
+
+/* "1 estrela" no singular (o dicionário só tem "estrelas"), usado no fim do Center⭐Run e nos avisos de estrelas */
+function trEstrelas(n){
+  if(+n !== 1) return typeof tr === 'function' ? tr('estrelas') : 'estrelas';
+  var l = typeof LANG === 'string' ? LANG : 'pt';
+  return ({pt:'estrela', en:'star', es:'estrella', id:'bintang', th:'ดาว', ja:'星'})[l] || 'estrela';
 }

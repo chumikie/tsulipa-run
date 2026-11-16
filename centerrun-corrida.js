@@ -275,7 +275,7 @@ function end(){
   // Este acabamento é opcional: se refreshAcc falhar, a confirmação online não pode parar.
   var novosItens='';
   try{novosItens=newItems(ob,s)}catch(err){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: acabamento dos itens indisponível',err);}
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+tr('estrelas'))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+novosItens
+  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+(typeof trEstrelas==='function'?trEstrelas(stars):tr('estrelas')))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+novosItens
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
 
   // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos

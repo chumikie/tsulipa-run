@@ -122,7 +122,8 @@ function jnT1ObjetoDesenhar(canvas,episodio,quadro,cantinho){
  var tipo=JN_T1_OBJETOS[episodio] && JN_T1_OBJETOS[episodio][quadro];
  if(!tipo || !canvas || !canvas.getContext) return false;
  var c=canvas.getContext('2d'); if(!c) return false;
- var W=canvas.width,H=canvas.height,base=Math.min(W/480,H/320),esc=base*(cantinho?.54:1);
+ var escala=canvas.__jnZoomScale||1,W=canvas.width/escala,H=canvas.height/escala,base=Math.min(W/480,H/320),esc=base*(cantinho?.54:1);
+ c.save(); c.setTransform(escala,0,0,escala,0,0);
  function lg(y0,y1,a,b){var g=c.createLinearGradient(0,y0,0,y1);g.addColorStop(0,a);g.addColorStop(1,b);return g;}
  function rr(x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
  function estrela(cx,cy,R,r,pontas){c.beginPath();for(var j=0;j<pontas*2;j++){var a=-Math.PI/2+j*Math.PI/pontas,rr2=j%2?r:R;var xx=cx+Math.cos(a)*rr2,yy=cy+Math.sin(a)*rr2;if(!j)c.moveTo(xx,yy);else c.lineTo(xx,yy);}c.closePath();}
@@ -136,7 +137,7 @@ function jnT1ObjetoDesenhar(canvas,episodio,quadro,cantinho){
  c.lineWidth=3;c.strokeStyle='#fff';c.beginPath();c.arc(0,0,44,0,Math.PI*2);c.stroke();
  c.lineWidth=1.5;c.strokeStyle='rgba(155,48,217,.35)';c.beginPath();c.arc(0,0,40,0,Math.PI*2);c.stroke();
  jnT1Item(c,tipo);
- c.restore();return true;
+ c.restore();c.restore();return true;
 }
 function jnT1Item(c,tipo){   // desenha a pista centrada em (0,0), ~60px, sem a aura
  function lg(y0,y1,a,b){var g=c.createLinearGradient(0,y0,0,y1);g.addColorStop(0,a);g.addColorStop(1,b);return g;}
@@ -337,7 +338,7 @@ function jnT1DesenharSeguro(canvas,p,episodio,quadro){
   }
   ctx.restore();return ret.join(' ');
  }
- var nar=p[2]?{pt:curto(p[2],canvas.width-60,3,14)}:null;
+ var nar=p[2]?{pt:curto(p[2],canvas.width/(canvas.__jnZoomScale||1)-60,3,14)}:null;
  // Falas até 4 linhas: as falas-chave da história não perdem o fim (texto integral segue na legenda HTML).
  var falas=p[3].map(function(f){return [f[0],{pt:curto(f[1],196,4,15)}];});
  var cena=(typeof episodio==='number' && JN_T1_CENA[episodio])?JN_T1_CENA[episodio][quadro]:null;
@@ -683,8 +684,8 @@ function jnT0Cena(x, W, H, d, camada, falaX, chao){
   }
 }
 function jnT0Desenhar(cv, p, d){
-  var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
-  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+  var x = cv.getContext('2d'), escala=cv.__jnZoomScale||1, W = cv.width/escala, H = cv.height/escala, cor = ['#9b30d9', '#3cb043', '#4169e1'];
+  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,cv.width,cv.height); x.setTransform(escala,0,0,escala,0,0);
   function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
   function linhas(txt, larg){ var ps = String(txt).split(' '), L = [], at = ''; ps.forEach(function(w){ var t = at ? at + ' ' + w : w; if(x.measureText(t).width > larg && at){ L.push(at); at = w; } else at = t; }); if(at) L.push(at); return L; }
   x.save(); rr(0, 0, W, H, 22); x.clip();
@@ -738,8 +739,8 @@ function jnT0Desenhar(cv, p, d){
 }
 function jnCapDesenhar(cv, p, temporada){
   if(!temporada && p && p.jnT0) return jnT0Desenhar(cv, p, p.jnT0);   // temporada 0: direção de cena própria
-  var x = cv.getContext('2d'), W = cv.width, H = cv.height, cor = ['#9b30d9', '#3cb043', '#4169e1'];
-  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+  var x = cv.getContext('2d'), escala=cv.__jnZoomScale||1, W = cv.width/escala, H = cv.height/escala, cor = ['#9b30d9', '#3cb043', '#4169e1'];
+  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,cv.width,cv.height); x.setTransform(escala,0,0,escala,0,0);
   function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
   function linhas(txt, larg){ var ps = String(txt).split(' '), L = [], at = ''; ps.forEach(function(w){ var t = at ? at + ' ' + w : w; if(x.measureText(t).width > larg && at){ L.push(at); at = w; } else at = t; }); if(at) L.push(at); return L; }
   x.save(); rr(0, 0, W, H, 22); x.clip();
@@ -786,7 +787,22 @@ function jnCapDesenhar(cv, p, temporada){
 var JN_ZOOM_TX = {fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'とじる'},dica:{pt:'Toque no quadro para ampliar',en:'Tap a panel to enlarge',es:'Toca la viñeta para ampliar',id:'Ketuk panel untuk memperbesar',th:'แตะช่องเพื่อขยาย',ja:'コマをタップで拡大'}};
 function jnQuadroZoom(cv){
   if(!cv || typeof document === 'undefined') return;
-  var url; try{ url = cv.toDataURL('image/png'); }catch(e){ return; }
+  var url;
+   try{
+     // Redesenhar os vetores na abertura, sem ampliar o bitmap 480x320.
+     var hi=document.createElement('canvas');hi.width=960;hi.height=640;hi.__jnZoomScale=2;
+     if(cv.closest('.jn-t1')){
+       var lista=[JN_T1_PILOTO,JN_T1_EP2,JN_T1_EP3,JN_T1_EP4,JN_T1_EP5,JN_T1_EP6];
+       var idx=Array.prototype.indexOf.call(cv.closest('.jn-t1').querySelectorAll('canvas'),cv);
+       if(!lista[jnT1Sel] || !lista[jnT1Sel].panels[idx]) throw new Error('Painel indisponível');
+       jnT1DesenharSeguro(hi,lista[jnT1Sel].panels[idx],jnT1Sel,idx);
+     }else{
+       var idx0=Array.prototype.indexOf.call(cv.closest('.jncapquadros').querySelectorAll('canvas'),cv);
+       var cap=JN_CAPS[jnCapSel];if(!cap || !cap[2][idx0]) throw new Error('Painel indisponível');
+       jnCapDesenhar(hi,cap[2][idx0]);
+     }
+     url=hi.toDataURL('image/png');
+   }catch(e){try{url=cv.toDataURL('image/png');}catch(erro){return;}}
   // celular em pé: o quadro deita (gira 90°) para usar a altura da tela — fica ~2,5× maior
   var gira = typeof innerWidth === 'number' && innerWidth < innerHeight && innerWidth < 600;
   var ov = document.createElement('div'); ov.className = 'jnzoom' + (gira ? ' jnzoom-gira' : ''); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', cv.getAttribute('aria-label') || '');

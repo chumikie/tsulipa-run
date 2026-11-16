@@ -93,7 +93,7 @@
   /* Visual de celular (15/11, ideia do BarbieGirls com arte nossa): o Idol fica numa redoma sobre um pedestal e as partes
      viram 3 passos — 1 Visual (penteadeira), 2 Roupa (guarda-roupa), 3 Acessórios (prateleira). Peça trancada pode ser
      PROVADA na redoma (só na prévia: nada é salvo nem comprado). */
-  var PASSOS = [[0, '💇', 'Visual', [0, 1, 2, 3, 4, 5, 6, 7]], [1, '👗', 'Roupa', [8, 9]], [2, '🎀', 'Acessórios', [10, 11]]];
+  var PASSOS = [[0, '', 'Visual', [0, 1, 2, 3, 4, 5, 6, 7]], [1, '', 'Roupa', [8, 9]], [2, '', 'Acessórios', [10, 11]]];
   var TXT_CEL = {
     Visual:{pt:'Visual',en:'Look',es:'Look',id:'Tampilan',th:'ลุค',ja:'ルック'},
     Roupa:{pt:'Roupa',en:'Outfit',es:'Ropa',id:'Baju',th:'ชุด',ja:'服'},
@@ -229,7 +229,7 @@
       var nav = box.previousElementSibling && box.previousElementSibling.classList.contains('cmpassos') ? box.previousElementSibling : null;
       if(!nav){ nav = document.createElement('div'); nav.className = 'cmpassos'; nav.setAttribute('role', 'group'); box.parentNode.insertBefore(nav, box);
         PASSOS.forEach(function(g){ var b = document.createElement('button'); b.type = 'button'; b.className = 'cmpasso cmpasso' + g[0]; b.dataset.passo = g[0];
-          b.innerHTML = '<em>' + (g[0] + 1) + '</em><i aria-hidden="true">' + g[1] + '</i><span>' + tc(g[2]) + '</span>';
+          b.innerHTML = '<em aria-hidden="true">' + ('0' + (g[0] + 1)) + '</em><span>' + tc(g[2]) + '</span>';
           b.addEventListener('click', function(){ st.passo = g[0]; st.aba = g[3][0]; passosUI(); miniaturas(); });
           nav.appendChild(b); }); }
       var g = PASSOS[st.passo] || PASSOS[0]; if(g[3].indexOf(st.aba) < 0){ st.passo = PASSOS.filter(function(q){ return q[3].indexOf(st.aba) >= 0; })[0][0]; g = PASSOS[st.passo]; }
@@ -266,7 +266,7 @@
     };
     function favoritos(){
       var box = el.favs; if(!box || !visivel()) return;
-      var l = favLer(); box.innerHTML = '<span class="cmfavt">⭐ ' + T('Favoritos') + '</span>';
+      var l = favLer(); box.innerHTML = '<span class="cmfavt">' + T('Favoritos') + '</span>';
       for(var i = 0; i < 3; i++) (function(i){
         var f = l[i], w = document.createElement('div'); w.className = 'cmfav';
         var b = document.createElement('button'); b.type = 'button'; b.className = 'cmfavvestir';
@@ -274,7 +274,7 @@
           b.setAttribute('aria-label', T('Vestir favorito') + ' ' + (i + 1)); pintar(cv, Object.assign({}, cu(), f), 3.2, 48 - 15 * 3.2, 48 - 13 * 3.2, 0, false);
           b.addEventListener('click', function(){ favVestir(i, aoMudar); });
         } else { b.textContent = '＋'; b.disabled = true; b.setAttribute('aria-label', T('Espaço vazio') + ' ' + (i + 1)); }
-        var g = document.createElement('button'); g.type = 'button'; g.className = 'cmfavguardar'; g.textContent = '💾';
+        var g = document.createElement('button'); g.type = 'button'; g.className = 'cmfavguardar'; g.textContent = T('Salvar');
         g.setAttribute('aria-label', T('Guardar visual atual no espaço') + ' ' + (i + 1));
         g.addEventListener('click', function(){ favGuardar(i); favoritos(); });
         w.appendChild(b); w.appendChild(g); box.appendChild(w);

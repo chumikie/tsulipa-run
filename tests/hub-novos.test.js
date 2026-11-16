@@ -28,3 +28,7 @@ console.log('OK: jogos novos no Hub — seis idiomas, três cards, aviso do jard
 {const novos=fs.readFileSync(path.join(__dirname,'..','hub-novos.js'),'utf8');
  assert.ok(novos.includes("var ORDEM = ['bloom','handshake','cafe','battle','karaoke','duo','studio','sora','gacha'];"),'ordem alfabética dos jogos');
  assert.ok(novos.includes('cards(); ordenar();'),'reordena depois de criar os cards novos');}
+
+// Battle e Studio têm treino sem conta: no clássico também abrem sem cadeado (igual ao visual do celular).
+{const idx=fs.readFileSync(path.join(raiz,'index.html'),'utf8');
+ assert.equal((idx.match(/card\.dataset\.twnovo === 'battle' \|\| card\.dataset\.twnovo === 'studio'/g)||[]).length,2,'cadeado e clique liberam Battle e Studio para visitante');}

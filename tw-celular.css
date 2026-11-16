@@ -312,6 +312,8 @@ body.tw-cel #hubTut{display:none!important}
 
 /* menu do Center⭐Run! e salão do Karaoke⭐Time! dentro da moldura (as barras saem ao correr ou cantar) */
 body.tw-cel-cr #menu{padding-top:calc(84px + env(safe-area-inset-top))!important;padding-bottom:calc(100px + env(safe-area-inset-bottom))!important;align-items:flex-start!important}
+/* no celular o idioma fica nos Ajustes: a tela do Center⭐Run sobe e o JOGAR aparece sem rolar */
+body.tw-cel-cr #menu .lang,body.tw-cel-cr #menu .kaomoji-deco{display:none!important}
 body.tw-cel-cr #hubVolta,body.tw-cel-kt #twPreviewVoltar{display:none!important}
 body.tw-cel-kt #twPreviewJogo{padding-top:calc(76px + env(safe-area-inset-top))!important;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;box-sizing:border-box}
 body.tw-cel-kt #twPreviewHeaderSlot{display:none!important}   /* o logo do site não se repete dentro da sala */

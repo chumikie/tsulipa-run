@@ -70,12 +70,12 @@ var JN_T1 = {
   titulo:'Bastidores de um Sonho',
   publicada:JN_T1_PUBLICADA,
   episodios:[
-    {id:'convite-misterioso',data:'2026-11-16',pronto:false},
-    {id:'ensaio-impossivel',data:'2026-11-23',pronto:false},
-    {id:'lembranca-lirika',data:'2026-11-30',pronto:false},
-    {id:'plano-pati',data:'2026-12-07',pronto:false},
-    {id:'quando-luz-apaga',data:'2026-12-14',pronto:false},
-    {id:'palco-nosso',data:'2026-12-21',pronto:false}
+    {id:'convite-misterioso',data:'2026-12-27',pronto:false},
+    {id:'ensaio-impossivel',data:'2027-01-03',pronto:false},
+    {id:'lembranca-lirika',data:'2027-01-10',pronto:false},
+    {id:'plano-pati',data:'2027-01-17',pronto:false},
+    {id:'quando-luz-apaga',data:'2027-01-24',pronto:false},
+    {id:'palco-nosso',data:'2027-01-31',pronto:false}
   ]
 };
 function jnT1HojeBrasilia(agora){

@@ -91,7 +91,7 @@
     var nc = Math.round((Date.UTC(y, +d.slice(5, 7) - 1, +d.slice(8, 10)) - Date.UTC(2026, 10, 15)) / 864e5);
     if(nc >= 0 && nc % 7 === 0 && nc / 7 < 6) m.push({k:'cap', nome:tx(NOMES.cap).replace('{n}', nc / 7 + 1), ic:'news', cor:'#ff6fb5'});
     // Datas fixas em Brasília; a série dos capítulos de domingo permanece acima, intacta.
-    var t1Datas=['2026-11-16','2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21'];
+    var t1Datas=(typeof JN_T1 !== 'undefined' && JN_T1.episodios) ? JN_T1.episodios.map(function(e){ return e.data; }) : [];   // datas vêm do próprio quadrinho
     var t1Indice=t1Datas.indexOf(d);
     if(t1Indice>=0 && typeof JN_T1 !== 'undefined' &&
        typeof jnT1Disponivel === 'function' && jnT1Disponivel(t1Indice)){

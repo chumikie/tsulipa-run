@@ -154,14 +154,14 @@
   // Chanel e longo: as costas continuam o degradê do topo. A cabeça fica 4px acima (translate), por isso 'topo' desloca a régua.
   function cabelo(g, H, HD, y, b, topo){
     if(b !== 'chanel' && b !== 'longo') return null;
-    var L = b === 'longo' ? 41 : 31, d = topo ? 4 : 0, gr = g.createLinearGradient(0, y + 1 + d, 0, y + L + d);
+    var L = b === 'longo' ? 41 : 25, d = topo ? 4 : 0, gr = g.createLinearGradient(0, y + 1 + d, 0, y + L + d);
     gr.addColorStop(0, H); gr.addColorStop(19 / (L - 1), HD); gr.addColorStop(1, escuro(H, 82));
     return gr;
   }
   function costas(g, x, y, b){   // contorno: sai da cabeça (centro y+8 antes do translate) e desce pelas laterais
     g.beginPath(); g.moveTo(x + 3, y + 8); g.arc(x + 15, y + 8, 12, Math.PI, 0);
     if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
-    else { g.quadraticCurveTo(x + 32, y + 30, x + 25, y + 31); g.lineTo(x + 5, y + 31); g.quadraticCurveTo(x - 2, y + 30, x + 3, y + 8); }
+    else { g.quadraticCurveTo(x + 30.5, y + 21, x + 26.5, y + 25); g.lineTo(x + 3.5, y + 25); g.quadraticCurveTo(x - .5, y + 21, x + 3, y + 8); }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
   }
   // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê).

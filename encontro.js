@@ -1,9 +1,9 @@
 /* Encontro do dia — um membro (ou dupla/trio) aparece dançando com uma mensagem, 1 vez por dia.
    Extraído do index.html em 02/11/2026 (refatoração da PR #62, Etapa 5), sem mudar nada: mesmo nome, mesmo código.
-   Este arquivo só DECLARA funções e tabelas fixas; carrega antes do script principal do index.html, que executa
+   Desde 17/11/2026 só baixa quando o Encontro abre (encontro-base.js chama); o dia, o sorteio guardado e o botão ficaram no
+   encontro-base.js. Este arquivo só DECLARA funções e tabelas fixas; antes carregava antes do script principal do index.html, que executa
    tudo na mesma ordem de antes (janela, botão do Encontro, estado, listeners e inicialização continuam lá). */
-var ENC_KEY = 'brs48cr_enc';   // chave nova (não renomeia nenhuma antiga): { dia, nick, avatar, fala }
-var encDados = null, encAnim = 0, encT = 0, encRenderGrupo = [], encRenderOrdem = [];
+
 var ENC_POSES = ['v','tchau','banzai','coracao','luz','mic'];
 var ENC_POS_SOLO = [.5], ENC_POS_DUPLA = [.3,.7], ENC_POS_TRIO = [.5,.2,.8];
 function encPrepararRender(d){
@@ -21,15 +21,7 @@ function encPrepararRender(d){
   for(var j=1;j<encRenderGrupo.length;j++)encRenderOrdem.push(j);
   if(encRenderGrupo.length)encRenderOrdem.push(0);
   encPos=encRenderGrupo.length===3?ENC_POS_TRIO:encRenderGrupo.length===2?ENC_POS_DUPLA:ENC_POS_SOLO;
-}
-function encHoje(){ return dk(); }   // dia de hoje no horário de Brasília (AAAA-MM-DD)
-function encDono(){ return contaJ && contaJ.nick ? String(contaJ.nick).toLowerCase() : ''; }   // de quem é o encontro guardado ('' = sem login)
-function encLer(){ try{ var j = JSON.parse(localStorage.getItem(ENC_KEY) || 'null'); return j && j.dia === encHoje() && (j.dono || '') === encDono() ? j : null; }catch(e){ return null; } }
-function encOrdem(d){   // da esquerda para a direita, como aparecem no palco: trio = extra 1, principal, extra 2
-  var ex = (Array.isArray(d.extras) ? d.extras : []).filter(function(o){ return o && o.nick; });
-  return ex.length >= 2 ? [ex[0], d, ex[1]] : [d].concat(ex);
-}
-function encNomes(d){ return encOrdem(d).map(function(o){ return o.nick; }).join(' & '); }   // dupla/trio: todos os nomes, na ordem do palco
+}   // dupla/trio: todos os nomes, na ordem do palco
 function encCorDe(o){   // cor do perfil (lightstick); sem ela, a do cabelo
   var a = (o && o.avatar) || {}, c = a.c || {};
   return [a.cor, c.luz, c.hair].filter(function(v){ return /^#[0-9a-f]{6}$/i.test(v || ''); })[0] || '#ff6fb5';
@@ -39,13 +31,6 @@ function encCoracao(h){   // mesmo coração colorido do Karaoke⭐Time!
   if(dd < .12) return l > .75 ? '🤍' : l < .25 ? '🖤' : '💜';
   var hue = mx === r ? ((g - b) / dd + (g < b ? 6 : 0)) * 60 : mx === g ? ((b - r) / dd + 2) * 60 : ((r - g) / dd + 4) * 60;
   return hue < 15 || hue >= 345 ? '❤️' : hue < 40 ? '🧡' : hue < 70 ? '💛' : hue < 165 ? '💚' : hue < 250 ? '💙' : hue < 290 ? '💜' : '💗';
-}
-function encBtnUI(){
-  var feito = encLer();
-  encBtn.innerHTML = feito
-    ? '🌟 ' + escHtml(tr('Encontro de hoje')) + ': <b>' + escHtml(encNomes(feito)) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('ver de novo')) + '</small>'
-    : '🌟 <b>' + escHtml(tr('Encontro do dia')) + '</b><small class="tw-hubgame-jp" lang="ja">今日の出会い</small><small>' + escHtml(tr('Quem vai aparecer hoje?')) + '</small>';
-  encBtn.classList.toggle('feito', !!feito);
 }
 function encMostrar(d){
   encDados = d; encT = 0; encPrepararRender(d);

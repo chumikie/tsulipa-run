@@ -1,3 +1,8 @@
+## Rodada 17/11/2026 (noite) — #110 e #111 na `main`; Encontro do dia sob demanda
+**`main`:** `24dc00e` (merge da #111 por cima da #110 `59c9a4f`, os dois a pedido do dono). Vercel: publicação concluída no `24dc00e` (status do commit). Antes do merge, o CI da #110 pegou o teste de navegador do Montar o Idol (o `admin.js` agora só baixa para admin) e o teste foi ajustado (`35d0134`).
+- **Encontro do dia sob demanda** (branch `perf/encontro-sob-demanda`): `encontro-base.js` (2,6 KB, abertura) fica com o dia de Brasília, o encontro já sorteado e o botão do "Hoje"; `encontro.js` (10 KB, a cena: desenho, dança, toques e foto) baixa quando o Encontro abre. `encMostrar`/`encAbrirNovo` da base pedem a cena e abrem em seguida. Código igual.
+- Conferido no navegador (visual novo e clássico): abertura sem a cena; botão no "Hoje"; abrir baixa a cena, desenha e responde ao toque; reabrir o encontro do dia; sem erro. Teste em `index-modules.test.js`.
+
 ## Mesma PR #110 — moderação só para admin (17/11/2026, 18h15)
 - `admin-base.js` (3 KB, abertura): `perfAdmin`, `contaAdmin`, "Liberar tudo" (`admLivre`, que embrulha `perfTem`/`lojaTem` para todo mundo), `admItens` (nomes dos itens nos recados de presente do `hub.js`), `hubIdolsDados`/`hubIdolsEm` (lista de Idols usada por 12 arquivos) e o estado `admIdol` (os ouvintes do Perfil o leem em todo toque).
 - `admin.js` (21 KB): painel e ferramentas de moderação; baixa quando o `perfil.js` recebe `admin: true` da conta. Até chegar, os substitutos da base devolvem HTML vazio ou guardam a ação e a rodam quando ele chega. Quem não é admin nunca baixa. O servidor continua conferindo `eh_admin()`.

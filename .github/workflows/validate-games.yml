@@ -180,6 +180,10 @@ jobs:
         env:
           NODE_PATH: /tmp/telas-playwright/node_modules
         run: node tests/telas.browser.cjs /tmp/telas-browser
+      - name: Jogar 10 s de Center Run com o Você de chapéu
+        env:
+          NODE_PATH: /tmp/telas-playwright/node_modules
+        run: node tests/corrida.browser.cjs /tmp/telas-browser/corrida
       - uses: actions/upload-artifact@v4
         if: always()
         with:

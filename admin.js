@@ -151,6 +151,16 @@ function admCorrida(){
     h += '<ul class="admbarras">' + (d.obstaculos || []).map(function(o){ return barra(tr(ADM_OBST[o.k] || o.k || '?'), o.n, d.total, 'v' + (o.vel || 0)); }).join('') + '</ul>';
     if((d.metas || []).length) h += '<p class="perfdica">🎯 ' + escHtml(tr('Metas cumpridas')) + '</p><ul class="admbarras">' +
       d.metas.map(function(m){ return barra(tr(ADM_META[m.k] || m.k), m.ok, m.n, m.ok + '/' + m.n + ' · ' + pc(m.ok, m.n)); }).join('') + '</ul>';
+    // o que ajustar, quando já há corridas suficientes (30+): obstáculo que derruba demais e meta fácil/difícil demais
+    var dicas = [];
+    if(d.total >= 30){
+      (d.obstaculos || []).forEach(function(o){ if(o.n / d.total > .35) dicas.push(tr('Muita gente cai em') + ' ' + tr(ADM_OBST[o.k] || o.k) + ' (' + pc(o.n, d.total) + '): ' + tr('abrir mais espaço antes dele ou avisar mais cedo.')); });
+      if(d.no_ar / d.total > .4) dicas.push(tr('Muitas batidas no ar') + ' (' + pc(d.no_ar, d.total) + '): ' + tr('os pulos estão terminando em cima de obstáculos; afastar os padrões.'));
+      (d.metas || []).forEach(function(m){ if(m.n < 10) return; var r = m.ok / m.n, nome = tr(ADM_META[m.k] || m.k);
+        if(r < .2) dicas.push(tr('Meta difícil demais') + ': ' + nome + ' (' + pc(m.ok, m.n) + '). ' + tr('Baixar o alvo.'));
+        else if(r > .9) dicas.push(tr('Meta fácil demais') + ': ' + nome + ' (' + pc(m.ok, m.n) + '). ' + tr('Subir o alvo.')); });
+    }
+    h += '<p class="perfdica">💡 ' + (d.total < 30 ? escHtml(tr('Com 30 corridas ou mais, aparecem aqui as sugestões de ajuste.')) : dicas.length ? dicas.map(escHtml).join('<br>💡 ') : escHtml(tr('Tudo equilibrado por enquanto.'))) + '</p>';
     box.innerHTML = h;
   }).catch(function(){});
 }

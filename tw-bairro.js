@@ -116,6 +116,15 @@
       fim:{pt:'Uma piscadinha fez a Nuvem sorrir, e o arco-íris voltou mais brilhante.', en:'A wink made the Cloud smile, and the rainbow came back brighter.', es:'Un guiño hizo sonreír a la Nube, y el arcoíris volvió más brillante.', id:'Kedipan membuat si Awan tersenyum, dan pelangi kembali lebih terang.', th:'ขยิบตาทำให้เมฆยิ้ม และรุ้งก็กลับมาสดใสกว่าเดิม', ja:'ウインクで雲がにっこり。にじがもっと明るくもどったよ。'}}
   };
   // falas do trio no Chat (o Tsu e o Pati no masculino; a Lirika no feminino, como no resto do site)
+  // Sem os bicos (BICOS = false), o gesto de uma rua se aprende jogando os jogos dela 2 vezes (os 2 pontos do antigo nível 1)
+  var SEM_BICO = {
+    sub:{pt:'Gestos e a bagunça da semana', en:'Gestures and the week’s mischief', es:'Gestos y el lío de la semana', id:'Gestur dan kekacauan minggu ini', th:'ท่าทางและความวุ่นวายประจำสัปดาห์', ja:'ジェスチャーと今週のさわぎ'},
+    aprenda:{pt:'Aprenda jogando {j} ({r}).', en:'Learn it by playing {j} ({r}).', es:'Apréndelo jugando {j} ({r}).', id:'Pelajari dengan bermain {j} ({r}).', th:'เรียนได้โดยเล่น {j} ({r})', ja:'{j}をあそぶと覚えるよ（{r}）。'},
+    ruas:{pt:'Ruas e gestos', en:'Streets and gestures', es:'Calles y gestos', id:'Jalan dan gestur', th:'ถนนและท่าทาง', ja:'通りとジェスチャー'},
+    semGesto:{pt:'Jogue 2 vezes os jogos de uma rua para aprender o gesto dela.', en:'Play a street’s games twice to learn its gesture.', es:'Juega 2 veces los juegos de una calle para aprender su gesto.', id:'Mainkan game satu jalan 2 kali untuk mempelajari gesturnya.', th:'เล่นเกมของถนนนั้น 2 ครั้งเพื่อเรียนท่าทาง', ja:'通りのゲームを2回あそぶと、その通りのジェスチャーを覚えるよ。'},
+    jogue:{pt:'Jogue {j}', en:'Play {j}', es:'Juega {j}', id:'Main {j}', th:'เล่น {j}', ja:'{j}をあそぼう'},
+    dica:{pt:'Cada rua ensina um gesto. {Re}, vale jogar {j}.', en:'Every street teaches a gesture. At {r}, play {j}.', es:'Cada calle enseña un gesto. {Re} vale jugar {j}.', id:'Setiap jalan mengajarkan satu gestur. Di {r}, mainkan {j}.', th:'ทุกถนนสอนท่าทางหนึ่งท่า ที่ {r} ลองเล่น {j}', ja:'通りごとにジェスチャーを教えてくれるよ。{r}では{j}をあそんでね。'}
+  };
   var FALA = {
     bag:{pt:'{q} {f}! Acho que um gesto resolve: {g}.', en:'{q} {f}! I think a gesture will fix it: {g}.', es:'¡{q} {f}! Creo que un gesto lo resuelve: {g}.', id:'{q} {f}! Kurasa satu gestur bisa membereskannya: {g}.', th:'{q} {f}! น่าจะแก้ได้ด้วยท่านี้: {g}', ja:'{q}が{f}！ジェスチャーで解決できそう：{g}。'},
     bagOk:{pt:'Você resolveu a bagunça! {fim}', en:'You solved the mischief! {fim}', es:'¡Resolviste el lío! {fim}', id:'Kamu membereskan kekacauan! {fim}', th:'คุณแก้ความวุ่นวายได้แล้ว! {fim}', ja:'さわぎを解決したね！{fim}'},
@@ -127,7 +136,7 @@
 
   function L(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
   function tx(o){ return o ? (o[L()] || o.pt) : ''; }
-  function t(k, v){ var s = tx(TX[k]) || k; if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
+  function t(k, v){ var s = tx(!BICOS && SEM_BICO[k] ? SEM_BICO[k] : TX[k]) || k; if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
   function f(o, v){ var s = tx(o); if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]; }); }
   function hoje(){ return new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }   // horário de Brasília
@@ -140,6 +149,8 @@
     var de = (RUA_DE[L()] || {})[r] || ruaNome(r), em = (RUA_EM[L()] || {})[r] || ruaNome(r), o = {r:ruaNome(r), rd:de, re:em, Re:em.charAt(0).toUpperCase() + em.slice(1)};
     if(extra) for(var k in extra) o[k] = extra[k]; return o;
   }
+  // Bicos do dia: a contagem continua por baixo, mas nada aparece até a usuária liberar (17/11: "deixar os bicos para depois")
+  var BICOS = false;
   function bicoNome(r){ return tx(BICO_NOME[r]); }
   function gestoNome(r){ return tx(GESTO_NOME[r]); }
 
@@ -186,18 +197,19 @@
     var depois = nivelDe(est.pts[r]), subiu = depois > antes;
     if(subiu) est.ultimo = {rua:r, n:depois, dia:h};
     salvar(); avisar({tipo:subiu ? 'nivel' : 'ponto', rua:r, nivel:depois});
-    if(subiu) toast('✨ ' + t('subiu', {n:depois, b:bicoNome(r)}) + ' · ' + premioTxt(r, depois));
+    if(subiu && BICOS) toast('✨ ' + t('subiu', {n:depois, b:bicoNome(r)}) + ' · ' + premioTxt(r, depois));
     return {rua:r, nivel:depois, subiu:subiu};
   }
   function premioTxt(r, n){ return n === 1 ? t('p1') : n === 2 ? t('p2', {g:gestoNome(r)}) : t('p3', vr(r)); }
-  function gestosAprendidos(){ return ORDEM.filter(function(r){ return bico(r).nivel >= 2; }); }
+  function sabeGesto(r){ return BICOS ? bico(r).nivel >= 2 : bico(r).nivel >= 1; }   // sem bicos: 2 partidas na rua (nível 1 por baixo)
+  function gestosAprendidos(){ return ORDEM.filter(sabeGesto); }
 
   /* ---------- bagunça da semana ---------- */
   function bagunca(){
     ler(); var sem = domingo(hoje()), i = ((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6;
     var r = ORDEM[i], g = ORDEM[(i + 2) % 6], b = BAG[r], st = est.bag[sem] || {};
     return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok,
-      sabe:bico(g).nivel >= 2, domingo:hoje() === sem};
+      sabe:sabeGesto(g), domingo:hoje() === sem};
   }
   function resolver(){
     var b = bagunca(); if(b.ok || !b.sabe) return false;
@@ -231,11 +243,11 @@
     ler(); var out = [];
     if(id === 'idol:tsu'){
       var b = bagunca();
-      out.push(b.ok ? f(FALA.bagOk, {fim:b.fim}) : f(FALA.bag, {q:b.quem, f:b.fez, g:gestoNome(b.gesto)}) + (b.sabe ? '' : ' ' + t('aprenda', vr(b.gesto))));
+      out.push(b.ok ? f(FALA.bagOk, {fim:b.fim}) : f(FALA.bag, {q:b.quem, f:b.fez, g:gestoNome(b.gesto)}) + (b.sabe ? '' : ' ' + t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)}))));
     } else if(id === 'idol:lirika'){
       var u = est.ultimo;
-      if(u && RUAS[u.rua] && diasEntre(u.dia, hoje()) <= 3) out.push(f(FALA.subiu, {n:u.n, b:bicoNome(u.rua), p:premioTxt(u.rua, u.n)}));
-      else { var r = menorRua(); out.push(f(FALA.dica, vr(r, {j:jogosTxt(r)}))); }
+      if(BICOS && u && RUAS[u.rua] && diasEntre(u.dia, hoje()) <= 3) out.push(f(FALA.subiu, {n:u.n, b:bicoNome(u.rua), p:premioTxt(u.rua, u.n)}));
+      else { var r = menorRua(); out.push(f(BICOS ? FALA.dica : SEM_BICO.dica, vr(r, {j:jogosTxt(r)}))); }
     } else if(id === 'idol:pati'){
       var g = guia();
       out.push(g.ativo ? f(FALA.guia, {d:g.dia, r:g.hojeAbriu.map(ruaNome).join(' + ')}) : f(FALA.estrela, vr(menorRua(true))));
@@ -337,7 +349,7 @@
       '<canvas id="twBairroCv" width="480" height="200" aria-hidden="true"></canvas>' +
       '<p><b>' + esc(b.quem) + '</b> ' + esc(b.fez) + '.</p>' +
       (b.ok ? '<p class="twb-ok">✓ ' + esc(t('resolvida')) + '</p><p>' + esc(b.fim) + '</p>' :
-        '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto)))) + '</p>' +
+        '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)})))) + '</p>' +
         '<button type="button" class="twb-bt" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(RUAS[b.gesto].gesto.emoji + ' ' + t('fazer')) + '</button>') +
       (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>';
     var ap = gestosAprendidos();
@@ -346,10 +358,11 @@
     h += '<section class="twb-box"><h3>' + esc(t('ruas')) + '</h3><div class="twb-ruas">' + ORDEM.map(function(r){
       var k = bico(r), aberta = !g.ativo || g.abertas.indexOf(r) >= 0, pc = k.nivel >= 3 ? 100 : Math.round((k.pts - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) / (k.prox - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) * 100);
       return '<article class="twb-rua' + (aberta ? '' : ' twb-off') + '" style="--twb-c:' + RUAS[r].cor + '"><b>' + esc(RUAS[r].emoji + ' ' + ruaNome(r)) + (aberta ? '' : ' · ' + esc(t('emBreve'))) + '</b>' +
-        '<small>' + esc(bicoNome(r)) + ' · ' + esc(k.nivel ? t('nivel', {n:k.nivel}) : t('novato')) + '</small>' +
+        (BICOS ? '<small>' + esc(bicoNome(r)) + ' · ' + esc(k.nivel ? t('nivel', {n:k.nivel}) : t('novato')) + '</small>' +
         '<div class="twb-niv" aria-hidden="true">' + [1, 2, 3].map(function(n){ return '<i class="' + (k.nivel >= n ? 'on' : '') + '"></i>'; }).join('') + '</div>' +
         '<div class="twb-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc + '"><i style="width:' + pc + '%"></i></div>' +
-        '<small>' + esc(k.nivel >= 3 ? t('max') : k.hoje >= POR_DIA ? t('hojeCheio') : t('falta', {f:k.falta, n:k.nivel + 1})) + '</small>' +
+        '<small>' + esc(k.nivel >= 3 ? t('max') : k.hoje >= POR_DIA ? t('hojeCheio') : t('falta', {f:k.falta, n:k.nivel + 1})) + '</small>' : 
+        '<small>' + esc(RUAS[r].gesto.emoji + ' ' + gestoNome(r)) + (sabeGesto(r) ? ' ✓' : '') + '</small>' + (sabeGesto(r) ? '' : '<small>' + esc(t('jogue', {j:jogosTxt(r)})) + '</small>')) +
         '<div class="twb-pr">' + [1, 2, 3].map(function(n){ return '<span class="' + (k.nivel >= n ? 'on' : '') + '">' + esc(premioTxt(r, n)) + '</span>'; }).join('') + '</div>' +
         '<small>' + esc(t('conta', {j:jogosTxt(r)})) + '</small>' + (k.nivel < 3 ? botaoJogo(r) : '') + '</article>';
     }).join('') + '</div><p class="twb-regra">' + esc(t('regra')) + '</p></section>';
@@ -444,7 +457,7 @@
   function resumo(){
     var b = bagunca(), r = menorRua(true), k = bico(r);
     return {ok:b.ok, tit:t('bagTit') + ' · ' + ruaNome(b.rua), sub:b.ok ? t('resolvida') : b.quem + ' ' + b.fez,
-      bico:t('hjBico', {b:bicoNome(r), s:k.nivel >= 3 ? t('max') : t('falta', {f:k.falta, n:k.nivel + 1})}), bt:t('ver')};
+      bico:BICOS ? t('hjBico', {b:bicoNome(r), s:k.nivel >= 3 ? t('max') : t('falta', {f:k.falta, n:k.nivel + 1})}) : '', bt:t('ver')};
   }
 
   // conta junto com o Humor (só jogos confirmados ou treino de visitante; "fraco" não conta)

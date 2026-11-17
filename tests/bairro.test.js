@@ -79,11 +79,11 @@ test('bagunça da semana: roda as 6 ruas aos domingos e pede o gesto de outra ru
   assert.equal(sab.semana, '2026-11-15'); assert.equal(dom.semana, '2026-11-22');
 });
 
-test('resolver só com o gesto aprendido (nível 2 na rua do gesto)', () => {
+test('resolver só com o gesto aprendido (2 partidas na rua do gesto, enquanto os bicos estão desligados)', () => {
   const { B, store } = carregar({ conta:'Sami', best:1 });
   const b = B.bagunca();
   assert.equal(B.resolver(), false, 'sem o gesto, não resolve');
-  const s = JSON.parse(store.brs48cr_bairro_v1); s['c:sami'].pts[b.gesto] = 6; store.brs48cr_bairro_v1 = JSON.stringify(s);
+  const s = JSON.parse(store.brs48cr_bairro_v1); s['c:sami'].pts[b.gesto] = 2; store.brs48cr_bairro_v1 = JSON.stringify(s);
   const c = carregar({ conta:'Sami', best:1, store });
   assert.equal(c.B.bagunca().sabe, true);
   assert.equal(c.B.resolver(), true);
@@ -133,7 +133,16 @@ test('textos nos 6 idiomas e concordância em português', () => {
     ['en:', 'es:', 'id:', 'th:', 'ja:'].forEach(l => assert.ok(b.indexOf(l) >= 0, 'falta ' + l + ' em ' + b.slice(0, 60)));
   });
   const { B } = carregar({ conta:'Sami', best:1, agora:Date.UTC(2026, 10, 18, 15) });   // semana da Praça → gesto do Jardim das Nuvens
-  assert.match(B.falas('idol:tsu')[0], /no bico do Jardim das Nuvens/);
+  assert.match(B.falas('idol:tsu')[0], /Aprenda jogando .*\(Jardim das Nuvens\)/, 'sem bicos: o gesto se aprende jogando os jogos da rua');
+  assert.doesNotMatch(B.falas('idol:tsu')[0], /bico/i);
   const en = carregar({ conta:'Sami', best:1, lang:'en', agora:Date.UTC(2026, 10, 18, 15) }).B;
-  assert.match(en.falas('idol:tsu')[0], /Cloud Garden side job/);
+  assert.match(en.falas('idol:tsu')[0], /Learn it by playing .*\(Cloud Garden\)/);
+});
+
+test('bicos desligados (17/11): nada de bico na tela, no resumo do Início nem nas falas', () => {
+  const { B } = carregar({ conta:'Sami', best:1 });
+  assert.equal(B.resumo().bico, '', 'o Início não mostra a linha do bico');
+  const src = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'tw-bairro.js'), 'utf8');
+  assert.match(src, /var BICOS = false;/);
+  assert.match(src, /if\(subiu && BICOS\) toast/);
 });

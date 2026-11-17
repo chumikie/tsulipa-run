@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
+const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8')+'\n'+fs.readFileSync(path.join(root,'karaoke-biblioteca.js'),'utf8'); // biblioteca em arquivo próprio desde 17/11/2026
 const css=fs.readFileSync(path.join(root,'karaoke-lista.css'),'utf8');
 assert(html.includes('<script src="./karaoke-lista.js?v=6'), 'restaurar a grade visual aprovada');
 assert(css.includes('html.kt-lista.kt-no-site #ktAudioLibrary{display:none'), 'ocultar biblioteca antiga sem remover o motor de prévia');

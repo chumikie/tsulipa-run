@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   var FUNDOS = ['rosa','cortina','nuvens','neon'], POSES = ['normal','v','coracao','tchau'], LUZES = ['suave','neon','por'],
-      QUADROS = ['rosto','meio','inteiro'], OBJ = ['nenhum','balao','microfone','lightstick'], FLORES = {sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'⭐'};
+      QUADROS = ['rosto','meio','inteiro'], OBJ = ['nenhum','balao','microfone','lightstick'], FLORES = ['sakura','tulipa','girassol','lunar'];
   var EMO = {rosa:'🎀',cortina:'🪟',nuvens:'☁️',neon:'💜',normal:'🙂',v:'✌️',coracao:'🫰',tchau:'👋',suave:'🕯️',neon_l:'🌈',por:'🌇',rosto:'🙂',meio:'👕',inteiro:'🧍',nenhum:'✖',balao:'🎈',microfone:'🎤',lightstick:'🪄'};
   var T = {
     pt:{tit:'Photo⭐Studio!',aba1:'Estúdio',aba2:'Mural',publicar:'Publicar no mural',publicado:'Publicada no mural da semana!',ja:'Você já publicou uma foto hoje.',vazio:'Ninguém publicou ainda esta semana. Seja a primeira foto!',capa:'Capa da semana',parcial:'líder até agora',sua:'sua foto',dicaMural:'Uma foto por dia. Dê ❤️ nas fotos de que mais gostar: a mais curtida vira a Capa do Idol⭐News!',pauta:'Pauta do dia',fundo:'Cenário',pose:'Pose',luz:'Luz',quadro:'Enquadramento',objeto:'Objeto',clique:'📸 Clicar!',outra:'Tirar outra',salvar:'Salvar foto',
@@ -61,7 +61,7 @@
   }
   function L(){ return typeof LANG === 'string' && T[LANG] ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k] || k; }
-  function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return FLORES[k] + ' ' + ((B && (B[L()] || B.pt)[k]) || t('flor')); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
+  function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return (B && (B[L()] || B.pt)[k]) || t('flor'); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
   // Sem emoji nos botões: cenário, luz e flores ganham uma amostra de cor desenhada; o resto é só o nome.
   var AMOSTRA = {fundo:{rosa:'linear-gradient(160deg,#ffe3f1,#ffb3d6)',cortina:'linear-gradient(160deg,#dff1ff,#fff 55%,#bfe0ff)',nuvens:'linear-gradient(180deg,#9fd4ff,#fff)',neon:'linear-gradient(135deg,#7b3ff0,#ff6fb5)'},
     luz:{suave:'radial-gradient(circle at 35% 35%,#fff,#ffe9b8)',neon:'linear-gradient(135deg,#ff5fd2,#4dd8ff)',por:'linear-gradient(180deg,#ffb35c,#ff7fa8)'},
@@ -159,7 +159,7 @@
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
         '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button><button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
-      var objs = OBJ.concat(Object.keys(FLORES).filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
+      var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
       hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
         '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
@@ -220,7 +220,11 @@
   }
   window.studioPolaroid = polaroid;
   // ---------- desenho ----------
-  function meuAv(){ try{ if(typeof lookAtual === 'function') return lookAtual(); }catch(e){} try{ if(typeof hubAv === 'function') return hubAv(); }catch(e){} return {}; }
+  function meuAv(){ try{ if(typeof lookAtual === 'function'){
+    var av = lookAtual();
+    if(typeof perfMeuAv !== 'undefined' && perfMeuAv && perfMeuAv.expr != null) av.expr = perfMeuAv.expr;
+    return av;
+  } }catch(e){} try{ if(typeof hubAv === 'function') return hubAv(); }catch(e){} return {}; }
   function fundo(x, W, H, f, tm){
     var g;
     if(f === 'rosa'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffd6ea'); g.addColorStop(.75, '#ffeef6'); g.addColorStop(1, '#f7c5dd'); x.fillStyle = g; x.fillRect(0, 0, W, H);
@@ -242,61 +246,63 @@
     else { x.globalCompositeOperation = 'screen'; g = x.createRadialGradient(W * .3, H * .2, 10, W * .3, H * .2, W * .9); g.addColorStop(0, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
     x.restore();
   }
-  function objeto(x, W, H, o, tm){
-    if(o === 'nenhum') return;
-    x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
-    if(o === 'balao'){ [['#ff6fb5', .16, .2], ['#ffd23f', .26, .14], ['#4dd8ff', .12, .1]].forEach(function(b, i){ var bx = W * b[1], by = H * b[2] + Math.sin(tm * 1.5 + i) * H / 120;
+  function baloes(x, W, H, tm){
+    x.save();
+    [['#ff6fb5', .16, .2], ['#ffd23f', .26, .14], ['#4dd8ff', .12, .1]].forEach(function(b, i){ var bx = W * b[1], by = H * b[2] + Math.sin(tm * 1.5 + i) * H / 120;
       x.strokeStyle = 'rgba(80,60,120,.5)'; x.lineWidth = 2; x.beginPath(); x.moveTo(bx, by + H * .057); x.quadraticCurveTo(bx + W * .021, H * .45, W * .3, H * .62); x.stroke();
-      x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, W * .054, H * .053, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx - W / 60, by - H / 60, W / 80, H * .015, -.4, 0, 7); x.fill(); }); }
-    else { var e = o === 'microfone' ? '🎤' : o === 'lightstick' ? '🪄' : FLORES[o.slice(5)] || '';
-      x.font = Math.round(H * .12) + 'px sans-serif'; x.fillText(e, W * .74, H * .64 + Math.sin(tm * 2) * 3);
-      if(o === 'lightstick'){ var gl = x.createRadialGradient(W * .74, H * .6, 4, W * .74, H * .6, 70); gl.addColorStop(0, 'rgba(255,111,181,.45)'); gl.addColorStop(1, 'rgba(255,111,181,0)'); x.fillStyle = gl; x.fillRect(W * .74 - 70, H * .6 - 70, 140, 140); } }
+      x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, W * .054, H * .053, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx - W / 60, by - H / 60, W / 80, H * .015, -.4, 0, 7); x.fill(); });
+    x.restore();
+  }
+  function objetoNaMao(x, item, pose, corpo, cor){
+    // Na paz e no aceno, a mão esquerda segura o objeto e a direita continua livre.
+    var mao = pose === 'coracao' ? [20,28.5,.48] :
+      pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
+    x.save();
+    x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
+    x.scale(corpo.scale, corpo.scale);
+    x.rotate(mao[2]);
+    x.lineCap = 'round';
+    if(item.indexOf('flor_') === 0){
+      var especie = item.slice(5);
+      x.strokeStyle = '#44845a'; x.lineWidth = .68;
+      x.beginPath(); x.moveTo(-.3,2.3); x.quadraticCurveTo(.7,-2.7,0,-6); x.stroke();
+      x.fillStyle = '#64a974'; x.beginPath(); x.moveTo(.28,-2);
+      x.quadraticCurveTo(1,-4.3,2.7,-4.5); x.quadraticCurveTo(2.4,-2.6,.28,-2); x.fill();
+      // Mesmas pétalas do canteiro, na escala da mão do Idol.
+      if(typeof window.bloomDesenharFlor === 'function'){
+        x.save(); x.translate(0,-6.6); x.scale(.14,.14);
+        window.bloomDesenharFlor(x, especie, 0, 0, especie === 'girassol' ? 22 : 19);
+        x.restore();
+      }
+    } else {
+      var mic = item === 'microfone';
+      x.strokeStyle = '#49375f'; x.lineWidth = 1.55;
+      x.beginPath(); x.moveTo(0,1.6); x.lineTo(0,-4.4); x.stroke();
+      if(mic){
+        x.fillStyle = '#746980'; x.beginPath(); x.ellipse(0,-5.3,1.85,2.15,0,0,7); x.fill();
+        x.strokeStyle = '#ded6e4'; x.lineWidth = .46;
+        x.beginPath(); x.moveTo(-1.3,-5.3); x.lineTo(1.3,-5.3); x.stroke();
+      } else {
+        x.strokeStyle = cor || '#ef83bb'; x.lineWidth = 2.4;
+        x.beginPath(); x.moveTo(0,-2.8); x.lineTo(0,-7.6); x.stroke();
+        x.strokeStyle = '#fff4fa'; x.lineWidth = .55;
+        x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
+      }
+    }
+    x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(-.25,0,1.34,.86,-.18,0,7); x.fill();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){
     fundo(x, W, H, e.fundo, tm);
-    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.expr = 2; av.fundo = '';
-    if(e.objeto === 'balao') objeto(x, W, H, e.objeto, tm);
+    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
+    if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
-    // Margem editorial: o retrato não deve preencher a foto até cortar cabelo e acessórios.
     var quadro = e.quadro || 'inteiro';
-    var escalaFoto = quadro === 'rosto' ? .77 : quadro === 'meio' ? .86 : .92;
-    try{
-      if(typeof perfDesenharIdol === 'function'){
-        x.save(); x.translate(W * (1 - escalaFoto) / 2, H * (1 - escalaFoto) / 2); x.scale(escalaFoto, escalaFoto);
-        try{ corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro); } finally { x.restore(); }
-      }
-    }catch(er){}
-
-    if(e.objeto !== 'balao' && e.objeto !== 'nenhum' && corpo){
-      // Objeto em escala fotográfica, não na escala ampliada do rosto.
-      // Uma âncora própria evita tulipas e microfones gigantes sobre o rosto.
-      var tamanho = Math.min(W / 44, H / 57);
-      var px = W * (quadro === 'rosto' ? .79 : .75);
-      var py = H * (quadro === 'rosto' ? .76 : quadro === 'meio' ? .72 : .69);
-      x.save(); x.translate(px, py);
-      x.scale(tamanho, tamanho); x.rotate(-.18);
-      x.lineCap = 'round'; x.lineWidth = 1.5;
-      x.strokeStyle = e.objeto.indexOf('flor_') === 0 ? '#43956d' : '#49375f';
-      x.beginPath(); x.moveTo(0,2); x.lineTo(0,-9); x.stroke();
-      if(e.objeto === 'microfone'){
-        var metal = x.createLinearGradient(-3,-12,3,-7);
-        metal.addColorStop(0,'#faf6ff'); metal.addColorStop(1,'#827591');
-        x.fillStyle = metal; x.beginPath(); x.ellipse(0,-10,3,3.7,0,0,7); x.fill();
-        x.strokeStyle = '#685970'; x.lineWidth = .45;
-        [-11,-9].forEach(function(y){x.beginPath();x.moveTo(-2,y);x.lineTo(2,y);x.stroke();});
-      }else if(e.objeto === 'lightstick'){
-        x.shadowColor = av.cor || '#ff80c0'; x.shadowBlur = 9;
-        x.strokeStyle = av.cor || '#ff80c0'; x.lineWidth = 3;
-        x.beginPath(); x.moveTo(0,-5); x.lineTo(0,-13); x.stroke(); x.shadowBlur = 0;
-        x.strokeStyle = '#fff4fa'; x.lineWidth = .8;
-        x.beginPath(); x.moveTo(-.5,-6); x.lineTo(-.5,-12); x.stroke();
-      }else{
-        x.font = '9px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-        x.fillText(FLORES[e.objeto.slice(5)] || '',0,-11);
-      }
-
-      x.restore();
+    if(typeof perfDesenharIdol === 'function'){
+      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro);
+    }
+    if(corpo && e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'){
+      objetoNaMao(x, e.objeto, av.pose, corpo, av.cor);
     }
     luz(x, W, H, e.luz);
   }

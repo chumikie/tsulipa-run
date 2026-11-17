@@ -699,7 +699,7 @@ function petCartaComFoto(lista){
   if(!nomes.length) nomes = PET_CARTA_FAS;
   var h = petCartaHash(m.id), pet = petAtivo();
   lista.unshift({id:'foto:' + m.id, dia:petCartaDia(0), tema:'foto', momento:m.id, rotulo:m.rotulo,
-    texto:tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet).split('{p}').join(pet ? pet.nome : ''),
+    texto:(m.tipo === 'karaoke' ? PET_CARTA_PALCO[LANG] || PET_CARTA_PALCO.pt : tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet)).split('{p}').join(m.nomePet || (pet ? pet.nome : '')),
     fa:nomes[(h >>> 3) % nomes.length], selo:'📸', nova:petCartasLidas().indexOf('foto:' + m.id) < 0});
 }
 //←petCartaFotoRender
@@ -1437,12 +1437,18 @@ function petDecorReacao(x, k, cfg, t, ativo){
   if(!alvo) return false;
   var u = (fase - 350) / 140, alfa = Math.min(1, u * 8, (1 - u) * 8);
   var it = alvo.item, jeito = alvo.jeito;
-  var origemX = it[3] + it[5] / 2, origemY = it[4] + it[6] / 2;
+  var pos = petArrumoQuadro(it);
+  var origemX = pos[0] + it[5] - 2, origemY = pos[1] + 2;
   var passo = jeito === 'tsu' ? Math.abs(Math.sin(u * 13)) * 5 :
     jeito === 'pati' ? Math.sin(u * 11) * 3 : 0;
   x.save(); x.globalAlpha = alfa; x.textAlign = 'center';
   x.fillStyle = jeito === 'lirika' ? '#b8f2ba' : jeito === 'pati' ? '#b7ddff' : '#ffe47c';
   x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
+  // Reflexo na moldura acompanha o quadro enquanto a faísca viaja até o Pet.
+  x.save(); x.translate(origemX, origemY); x.scale(1 - .5*u, 1 - .5*u);
+  x.beginPath(); x.moveTo(0,-5); x.lineTo(1.3,-1.3); x.lineTo(4.5,0);
+  x.lineTo(1.3,1.3); x.lineTo(0,5); x.lineTo(-1.3,1.3); x.lineTo(-4.5,0); x.lineTo(-1.3,-1.3);
+  x.closePath(); x.fill(); x.restore();
   x.fillText('✦', origemX + (PET_X - 18 - origemX) * u,
     origemY + (PET_FLOOR - 60 - origemY) * u - passo);
   if(jeito === 'pati' && petPreferenciaAtividade(k,cfg,'explorar')){ x.font = '11px sans-serif';

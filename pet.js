@@ -219,6 +219,14 @@ var PET_CARTA_TEXTOS = {
 //→petCartaRecorde
 //→petCartasLista
 // Carta com foto: quando um Momento é guardado na sessão, um fã responde com a polaroid.
+var PET_CARTA_PALCO = {
+  pt:'Guardei sua foto do karaokê. Dá até vontade de cantar junto quando vejo esse palco!',
+  en:'I kept your karaoke photo. Seeing that stage makes me want to sing along!',
+  es:'Guardé tu foto del karaoke. ¡Al ver ese escenario me dan ganas de cantar contigo!',
+  id:'Kusimpan foto karaokemu. Melihat panggung itu bikin aku ingin ikut nyanyi!',
+  th:'ฉันเก็บรูปคาราโอเกะของเธอไว้แล้ว พอเห็นเวทีนั้นก็อยากร้องตามเลย!',
+  ja:'カラオケの写真、大事にしてるよ。あのステージを見ると私も一緒に歌いたくなる！'
+};
 var PET_CARTA_FOTO_TEXTOS = {
   pet:'Que foto fofa de você com {p}! Já virou o fundo do meu celular. 📸',
   center:'Vi sua foto do Center⭐Run! e guardei no meu mural de fã. 🏁',
@@ -284,6 +292,7 @@ function petPhoneMomentoGuardar(tipo, url){
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
   var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐')}[tipo];
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
+  if(tipo === 'pet') entrada.nomePet = petAtivo().nome;
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
   petPhoneMomentosLimitar();
@@ -1119,7 +1128,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=10',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=11',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

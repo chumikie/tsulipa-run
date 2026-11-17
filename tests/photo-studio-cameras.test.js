@@ -39,5 +39,5 @@ test('Studio photo and mural reuse the same camera and props renderer', () => {
   assert.match(source, /perfDesenharIdol\(x, W, H, av, false, false, tm \* 60, (?:e\.)?quadro/);
   assert.match(source, /function polaroid\(/);
   assert.match(source, /cena\(x, fw, fh, e, 1, av\)/);
-  assert.match(source, /quadro === 'meio'/);
+  assert.match(source, /objetoNaMao\(x, e.objeto, av.pose, corpo/);
 });

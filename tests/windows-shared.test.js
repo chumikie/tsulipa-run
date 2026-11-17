@@ -16,7 +16,7 @@ vm.runInNewContext(source,{window:frame,document:{addEventListener:()=>{},docume
 assert.equal(value,'35px');media.matches=true;update();assert.equal(value,'24px');cleanup();
 console.log('Shared windows: loading, legacy cleanup, palette, host/iframe type and resize cleanup passed');
 
-const karaoke=read('karaoke-time.html'),karaokePopup=read('karaoke-popup.css');
+const karaoke=read('karaoke-time.html')+'\n'+read('karaoke-palco-desenho.js'),karaokePopup=read('karaoke-popup.css');
 assert(karaokePopup.includes('.tw-preview-game[data-karaoke-tela]{background:transparent!important;background-image:none!important}'),'Karaoke screen inherits the external page background');
 assert(karaoke.includes('html.tw-karaoke-embed.kt-no-site body.tw-game-karaoke{background:transparent!important}'),'Embedded body must not paint a second background');
 // 17/11/2026: o placar saiu da parede da sala (karaokê box: cardápio de músicas no lugar); o ranking da semana fica logo abaixo

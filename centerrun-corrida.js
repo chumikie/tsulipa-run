@@ -31,6 +31,8 @@ function getPartner(currentSel) {
   window.lastPartnerPicked = chosen;
   return chosen;
 }
+// padrões: [tipo, espaço antes] — sempre com espaço para pousar e pular de novo
+var CR_PADROES = [[['cable', 190]], [['stick', 210], ['cable', 210]], [['cable', 190]], [['speaker', 240]]];
 function spawn(){
   var t=s2Rand(),o;
   if(t<.4) o={k:'cable',w:56,h:12};
@@ -40,8 +42,18 @@ function spawn(){
     o={k:'stick',w:24,h:42,pal:q2<.65?['#9b30d9','#b6ff3b','#4169e1']:q2<.85?['#4169e1','#ffe14d','#34d399']:['#ff6fb5','#4dd8ff','#ffe14d']};
   }
   o.x=nextX; o.y=GY-o.h; obs.push(o);
+  // 17/11: de vez em quando, um padrão montado à mão no lugar do sorteio puro (ritmo que dá para ler e aprender)
+  var crPadrao = false;
+  if(frame > 1800 && s2Rand() < .14){
+    crPadrao = true;
+    var pad = CR_PADROES[Math.floor(s2Rand() * CR_PADROES.length)], px = o.x + o.w;
+    for(var pi2 = 0; pi2 < pad.length; pi2++){ var pp = pad[pi2], o3 = {k:pp[0], w:pp[0] === 'cable' ? 56 : pp[0] === 'speaker' ? 36 : 24, h:pp[0] === 'cable' ? 12 : pp[0] === 'speaker' ? 48 : 42};
+      if(o3.k === 'stick') o3.pal = ['#9b30d9', '#b6ff3b', '#4169e1'];
+      o3.x = px + pp[1] + sp * 6; o3.y = GY - o3.h; obs.push(o3); px = o3.x + o3.w; }
+    nextX = px - o.w;
+  }
 
-  if(s2Rand()<(frame>5400?Math.min(.3,(frame-5400)/12000):0)){
+  if(!crPadrao && s2Rand()<(frame>5400?Math.min(.3,(frame-5400)/12000):0)){
     var o2={k:'speaker',w:36,h:48,x:o.x+o.w+s2Rnd(55,95)};
     o2.y=GY-48; obs.push(o2);
     nextX+=o2.w+s2Rnd(80,140);
@@ -96,8 +108,10 @@ function jump(){
   if(state==='menu'||state==='over'||paused)return;
   if(pw && pw.k==='alien')return;
   held=true;
-  if(!P.air){P.vy=-12.5;P.air=true;sfx.jump()}
+  if(!P.air){P.vy=-12.5;P.air=true;sfx.jump();crPuloGuardado=0}
+  else crPuloGuardado=9;   // 17/11: toque um pouco antes de pousar fica guardado e o pulo sai ao encostar no chão (~150 ms)
 }
+var crPuloGuardado=0,crPuloSegura=0;
 function celebDraw(){
   if(state !== 'over') return;
   var og = g, ch = CH[sel], pu = .5 + .5 * Math.sin(ct * .05);
@@ -325,7 +339,7 @@ function hit(a,b){
            (a.y + a.h > b.y + myTop) &&
            (a.y < b.y + b.h);
   }
-  var mx = 4, my = 4;
+  var mx = 6, my = 4;   // 17/11: 2 px a mais de folga na lateral (raspar de leve não conta)
   return (a.x + a.w - mx > b.x) &&
          (a.x + mx < b.x + b.w) &&
          (a.y + a.h - my > b.y) &&
@@ -451,15 +465,20 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
     P.y += (targetY - P.y) * 0.12 * dt;
     P.vy = 0; P.air = true;
   } else {
-    if(!held && P.vy < -1.5) P.vy *= 0.82;
-    P.vy += ((held && P.vy < 0) ? .5 : .85) * dt;
+    var crSegurando = held || crPuloSegura > 0;   // pulo guardado conta como toque curto segurado (não vira pulinho)
+    if(!crSegurando && P.vy < -1.5) P.vy *= 0.82;
+    P.vy += ((crSegurando && P.vy < 0) ? .5 : .85) * dt;
+    if(crPuloSegura > 0) crPuloSegura = Math.max(0, crPuloSegura - dt);
     P.y += P.vy * dt;
     if(P.y >= GY - P.h){
       P.y = GY - P.h;
       P.vy = 0;
       P.air = false;
+      if(crPuloGuardado > 0 && state === 'play' && !paused){ P.vy = -12.5; P.air = true; sfx.jump(); crPuloSegura = 8; }   // pulo guardado
+      crPuloGuardado = 0;
     }
   }
+  if(crPuloGuardado > 0) crPuloGuardado = Math.max(0, crPuloGuardado - dt);
 
   obs.forEach(function(o){o.x-=sp*dt});items.forEach(function(o){o.x-=sp*dt});nextX-=sp*dt;
 	fans.forEach(function(f){ f.x -= sp*dt });
@@ -889,6 +908,7 @@ function draw(){
     else if(o.k==='speaker'){g.fillStyle='#111827';g.fillRect(o.x,o.y,o.w,o.h);g.strokeStyle='#5a6b9a';g.lineWidth=2;g.strokeRect(o.x+1,o.y+1,o.w-2,o.h-2);g.fillStyle='#3a4a7a';g.beginPath();g.arc(o.x+o.w/2,o.y+17,9,0,7);g.fill();g.beginPath();g.arc(o.x+o.w/2,o.y+36,5,0,7);g.fill()}
     else{var c=o.pal;for(var i=0;i<3;i++){var lx=o.x+i*9+2;g.fillStyle='#ddd';g.fillRect(lx,o.y+16,5,o.h-16);g.fillStyle=c[i];g.shadowColor=c[i];g.shadowBlur=10;g.fillRect(lx-1,o.y+(i%2)*4,7,18);g.shadowBlur=0}}
   });
+  crAvisoObstaculo();   // 17/11: o próximo obstáculo avisa na beirada antes de entrar na tela
   items.forEach(function(it){var bob=Math.sin(frame*.12+it.x*.05)*3,cx=it.x+9,cy=it.y+9+bob;
 	
     // --- AURA DE DESTAQUE (morango e microfone): anel pulsante + brilho + estrelinhas girando ---
@@ -1422,6 +1442,22 @@ function cenaCartazes(P2){
   }
 }
 function obsRR(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
+// 17/11: aviso do próximo obstáculo — brilho rosa no chão, na beirada direita, e um "!" na altura dele, que
+// fica mais forte conforme ele chega (≈ meio segundo antes de aparecer). Só o mais próximo; some no Fever/Gigante.
+function crAvisoObstaculo(){
+  if(state !== 'play' || (pw && (pw.k === 'gigante' || pw.k === 'alien'))) return;
+  for(var i = 0; i < obs.length; i++){
+    var o = obs[i]; if(o.x <= W - 4 || o.x > W + 210) continue;
+    var perto = 1 - (o.x - W) / 210, a = (.25 + .45 * perto) * (.7 + .3 * Math.sin(frame * .45));
+    var gr = g.createRadialGradient(W, GY, 2, W, GY, 46 + 24 * perto); gr.addColorStop(0, 'rgba(255,111,181,' + a.toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,111,181,0)');
+    g.fillStyle = gr; g.fillRect(W - 72, GY - 64, 72, 86);
+    var cy = Math.max(24, Math.min(GY - 12, o.y - 4));
+    g.save(); g.globalAlpha = Math.min(1, .35 + perto); g.fillStyle = '#ff6fb5'; g.shadowColor = '#ff6fb5'; g.shadowBlur = 8;
+    g.beginPath(); if(g.roundRect) g.roundRect(W - 22, cy - 9, 16, 18, 6); else g.rect(W - 22, cy - 9, 16, 18); g.fill(); g.shadowBlur = 0;
+    g.fillStyle = '#fff'; g.font = 'bold 13px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('!', W - 14, cy + .5); g.restore();
+    break;
+  }
+}
 function obsDesenhar(o){
   var x = o.x, y = o.y, w = o.w, h = o.h, i;
   g.save();

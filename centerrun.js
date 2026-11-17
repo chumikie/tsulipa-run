@@ -380,6 +380,12 @@ function drawChar(c,x,y,run,expr,isPartner){
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
+  // 17/11: correndo, o trio aparece DE PERFIL (tw-lado.js). Só o visual fixo do Tsu, da Lirika e do Pati, sem roupa de rank
+  // nem acessório na mão (esses continuam de frente); o "Você" segue de frente, porque o perfil não desenha todo o guarda-roupa.
+  if (state === 'play' && window.TW_LADO && TW_LADO.corre && OF === 0 && !(PX && PX.k === 'alien') &&
+      (isPartner || !A) && (c === CH[0] || c === CH[1] || c === CH[2])) {
+    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT); return; } catch (e) {}   // no ar (run 0): passada aberta
+  }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
@@ -1732,7 +1738,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=4',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=5',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

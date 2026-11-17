@@ -9,7 +9,8 @@
   var TINTA = '#223', PUPILA = '#112';
   function escuro(hex, d){ return '#' + String(hex || '#333333').replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.max(0, parseInt(cc, 16) - d).toString(16)).substr(-2); }); }
   function claro(hex, d){ return '#' + String(hex || '#333333').replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.min(255, parseInt(cc, 16) + d).toString(16)).substr(-2); }); }
-  function lado(g, c, x, y, expr, t){
+  function lado(g, c, x, y, expr, t, run){
+    var corre = typeof run === 'number', passo = corre ? run : 0;   // 17/11: correndo no Center⭐Run (passada e braço)
     var H = c.hair || '#333', HD = escuro(H, 60), HL = claro(H, 70), S = c.skin || '#f1c9a5', SD = escuro(S, 26);
     var perna = typeof c.legcol === 'string' && /^#[0-9a-f]{6}$/i.test(c.legcol) ? c.legcol : '#1c1c30';
     var sl = c.back === 'chanel' ? 16.6 : c.back === 'pixie' ? 5 : 10;   // chanel: lateral até a altura do corte da frente   // costeleta: a mesma régua do drawChar
@@ -31,12 +32,16 @@
       g.lineTo(px + 4.4, py); g.quadraticCurveTo(px + 7.6, py + .4, px + 7.8, py + 2.2); g.quadraticCurveTo(px + 7.8, py + 3.1, px + 6.8, py + 3.1); g.closePath(); g.fill();
       g.fillStyle = longe ? '#cfc6e4' : '#ece7f6'; g.fillRect(px + .6, py + 2.6, 7, .55);   // solado
       g.fillStyle = longe ? '#d77aa8' : '#ff6fb5'; g.beginPath(); g.ellipse(px + 3.9, py + 1.35, 2.4, .42, 0, 0, 7); g.fill(); }
-    g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4, y + 38 + pe, 4.6, 4.6 - pe); tenis(x + 14.6, y + 41.4, true);
+    if(corre){   // perna de lá vai para trás quando a de cá vai para a frente
+      var pl = -passo * 2.6, sobe = Math.max(0, passo) * 1.4;
+      g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4 + pl, y + 38 - Math.max(0, -passo) * 1.4, 4.6, 4.6); tenis(x + 14.6 + pl, y + 41.4 - Math.max(0, -passo) * 1.4, true);
+    } else { g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4, y + 38 + pe, 4.6, 4.6 - pe); tenis(x + 14.6, y + 41.4, true); }
     // saia ou bermuda: o mesmo cinza-azulado com degradê e pregas da frente
     var sg = g.createLinearGradient(0, y + 33, 0, y + 40); sg.addColorStop(0, '#7d86aa'); sg.addColorStop(1, '#464d70'); g.fillStyle = sg;
     if(c.baixo === 'saia'){ T([x + 7.6, y + 33, x + 22.6, y + 33, x + 25, y + 40, x + 5.4, y + 40]); g.fillStyle = 'rgba(255,255,255,.18)'; [10.4, 14.2, 18].forEach(function(px){ g.fillRect(x + px, y + 34, .8, 5.6); }); }
     else { T([x + 7.6, y + 33, x + 22.6, y + 33, x + 23.4, y + 39, x + 7.2, y + 39]); g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(x + 15, y + 34.5, .8, 4.2); }
-    g.fillStyle = perna; g.fillRect(x + 10.6, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pe, 4.8, 4 + pe); tenis(x + 9.8, y + 41.8, false);
+    if(corre){ var pf = passo * 2.6, pfy = Math.max(0, passo) * 1.4; g.fillStyle = perna; g.fillRect(x + 10.6 + pf, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pfy, 4.8, 4); tenis(x + 9.8 + pf, y + 41.8 - pfy, false); }
+    else { g.fillStyle = perna; g.fillRect(x + 10.6, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pe, 4.8, 4 + pe); tenis(x + 9.8, y + 41.8, false); }
     // camisa: larga como a da frente, branca com sombra embaixo e nas costas; gola e gravata na beirada da frente
     var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, '#ffffff'); cam.addColorStop(1, '#e3e7f3');
     g.fillStyle = cam; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.quadraticCurveTo(x + 9.4, y + 21, x + 11.6, y + 21); g.lineTo(x + 19.8, y + 21); g.quadraticCurveTo(x + 22.2, y + 21, x + 22.4, y + 24);
@@ -48,7 +53,9 @@
     var mg = g.createLinearGradient(0, y + 21, 0, y + 27); mg.addColorStop(0, '#ffffff'); mg.addColorStop(1, '#e8ebf5'); g.fillStyle = mg;
     g.beginPath(); g.ellipse(x + 15.2, y + 24.2, 4.1, 3.3, 0, 0, 7); g.fill();
     var bg = g.createLinearGradient(0, y + 26, 0, y + 34); bg.addColorStop(0, S); bg.addColorStop(1, SD); g.fillStyle = bg;
+    if(corre){ g.save(); g.translate(x + 15.2, y + 26); g.rotate(-passo * .55); g.translate(-(x + 15.2), -(y + 26)); }
     g.beginPath(); g.moveTo(x + 13.4, y + 26.4); g.lineTo(x + 17, y + 26.4); g.lineTo(x + 16.9, y + 32.6); g.quadraticCurveTo(x + 15.2, y + 34.4, x + 13.5, y + 32.6); g.closePath(); g.fill();
+    if(corre) g.restore();
     // ---------- cabeça: crânio (o mesmo círculo da frente) + bochecha e queixo para a frente + narizinho ----------
     g.fillStyle = S; E(x + 14.6, y + 13, 11, 11); E(x + 18.6, y + 17.2, 7.4, 6.6);   // crânio da frente + bochecha cheia (perfil chibi, sem nariz)
         g.fillStyle = 'rgba(255,120,150,.32)'; E(x + 20.6, y + 18.6, 2.4, 1.3);                   // bochecha
@@ -94,5 +101,19 @@
     if(typeof perfCharContorno === 'function') perfCharContorno(x, tx, ty, ES, function(){ lado(g, c, 0, 0, av.expr, t); });
     x.restore();
   }
-  window.TW_LADO = {desenhar:desenhar, partes:lado};
+  // Correndo no Center⭐Run! (17/11): desenha no contexto do jogo, na grade 30×44 em (x, y) como o drawChar,
+  // com o contorno de 1 px nas cores do boneco de frente (OUT: branco, ou rosa no Fever / lilás no Ímã).
+  var corOff = null, silOff = null;
+  function corre(g2, c, x, y, expr, t, run, OUT){
+    var Q = 3, w = 36 * Q, h = 58 * Q;
+    if(!corOff){ corOff = document.createElement('canvas'); corOff.width = w; corOff.height = h; silOff = document.createElement('canvas'); silOff.width = w; silOff.height = h; }
+    var o = corOff.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.clearRect(0, 0, w, h); o.setTransform(Q, 0, 0, Q, 3 * Q, 10 * Q);
+    lado(o, c, 0, 0, expr, t, run);
+    var s2 = silOff.getContext('2d'); s2.setTransform(1, 0, 0, 1, 0, 0); s2.clearRect(0, 0, w, h); s2.globalCompositeOperation = 'source-over'; s2.drawImage(corOff, 0, 0);
+    s2.globalCompositeOperation = 'source-in'; s2.fillStyle = (OUT && OUT[0]) || '#fff'; s2.fillRect(0, 0, w, h); s2.globalCompositeOperation = 'source-over';
+    var X = x - 3, Y = y - 10, k;
+    for(k = 0; k < 8; k++){ var a = k * Math.PI / 4; g2.drawImage(silOff, X + Math.cos(a) * 1.1, Y + Math.sin(a) * 1.1, 36, 58); }
+    g2.drawImage(corOff, X, Y, 36, 58);
+  }
+  window.TW_LADO = {desenhar:desenhar, partes:lado, corre:corre};
 })();

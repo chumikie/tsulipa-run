@@ -13,6 +13,13 @@
    Teto: 3×, e 2× para canvas grandes (> 150 mil pixels lógicos, ex.: Center⭐Run e Sora⭐Jump, que redesenham a cada quadro). */
 (function(){
   'use strict';
+  // Freio (17/11): ?nitidez=0 desliga (fica guardado no aparelho em tw_nitidez), ?nitidez=1 liga de novo.
+  // Desligado, nada aqui é instalado e os desenhos voltam a ser como antes.
+  try{
+    var q = new URLSearchParams(location.search).get('nitidez');
+    if(q === '0' || q === '1') localStorage.setItem('tw_nitidez', q);
+    if(localStorage.getItem('tw_nitidez') === '0'){ window.TW_NITIDEZ = {escala:function(){ return 1; }, preparar:function(){ return 1; }, desligada:true}; return; }
+  }catch(e){}
   var P = window.HTMLCanvasElement && HTMLCanvasElement.prototype, C = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
   if(!P || !C || P.__twNitidez) return;
   P.__twNitidez = true;

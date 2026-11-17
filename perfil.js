@@ -1065,7 +1065,7 @@ function perfTelaCarregar(){
    Só para canvas com largura no CSS (width:100%) e que não são lidos de volta (getImageData/drawImage do próprio).
    Chamado no começo de cada desenho; só refaz quando o degrau de 0,25 muda. Teto de 3×. */
 function twNitido(cv){
-  if(!cv || !cv.getContext) return cv;
+  if(!cv || !cv.getContext || (window.TW_NITIDEZ && TW_NITIDEZ.desligada)) return cv;   // freio: ?nitidez=0 desliga também esta
   var st = cv.__twN, P = window.HTMLCanvasElement && HTMLCanvasElement.prototype;
   if(!st){
     var dw = P && Object.getOwnPropertyDescriptor(P, 'width'), dh = P && Object.getOwnPropertyDescriptor(P, 'height');

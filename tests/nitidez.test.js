@@ -15,4 +15,7 @@ assert.match(js,/k:0\}/,'escala começa em zero (calcula na primeira vez)');
 assert.match(fs.readFileSync(path.join(root,'perfil.js'),'utf8'),/var ks = x\.canvas && x\.canvas\.__twA \? 1 : k;/,'contorno do boneco não dobra a sombra');
 assert.match(fs.readFileSync(path.join(root,'centerrun.js'),'utf8'),/cv\.width=W;cv\.height=H;g=cv\.getContext\('2d'\);/,'Center⭐Run pede o pincel no tamanho atual');
 assert.match(sora,/soraCtx = soraCv\.getContext\('2d', \{ alpha: false \}\);/,'Sora⭐Jump pede o pincel ao começar');
+
+assert.match(js,/localStorage\.getItem\('tw_nitidez'\) === '0'/,'freio: ?nitidez=0 desliga e fica guardado');
+assert.match(fs.readFileSync(path.join(root,'perfil.js'),'utf8'),/TW_NITIDEZ\.desligada\)\) return cv;/,'o freio desliga também o twNitido');
 console.log('✓ nitidez automática');

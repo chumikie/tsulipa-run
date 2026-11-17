@@ -370,33 +370,56 @@
     desenharCena(b);
   }
   // cena da bagunça: o seu Idol (com o gesto, se já resolveu) e o bichinho, sobre a cor da rua
-  function desenharCena(b){
+  function desenharCena(b, t){
     var cv = ov && ov.querySelector('#twBairroCv'); if(!cv) return;
-    if(typeof window.twNitido === 'function') window.twNitido(cv);
-    var x = cv.getContext('2d'), W = cv.width, H = cv.height, c = RUAS[b.rua].cor;
-    var gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#fff6fd'); gr.addColorStop(1, c + '55');
-    x.fillStyle = gr; x.fillRect(0, 0, W, H);
-    x.fillStyle = c + '33'; x.fillRect(0, H - 34, W, 34);
-    for(var i = 0; i < 14; i++){ x.fillStyle = 'rgba(255,255,255,.7)'; x.beginPath(); x.arc((i * 73 + 20) % W, 18 + (i * 37) % 90, 2 + i % 3, 0, 7); x.fill(); }
+    if(typeof window.twNitido === 'function' && !cv.__twN) window.twNitido(cv);
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height, c = RUAS[b.rua].cor, ok = b.ok, Bi = window.TW_BICHOS;
+    t = t || 0;
+    // cenário da rua (tw-bichos.js): antes a bagunça, depois tudo arrumado; sem o arquivo, o fundo simples de antes
+    if(!(Bi && Bi.cena(x, b.rua, W, H, ok, t))){
+      var gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#fff6fd'); gr.addColorStop(1, c + '55');
+      x.fillStyle = gr; x.fillRect(0, 0, W, H); x.fillStyle = c + '33'; x.fillRect(0, H - 34, W, 34);
+    }
     try{
       if(typeof perfDesenharIdol === 'function'){
         var av = typeof hubAv === 'function' ? hubAv() : (typeof perfAvAtual === 'function' ? perfAvAtual({}) : null);
         if(av){
           av.pet = null; av.fundo = '';
-          var gs = RUAS[b.gesto].gesto; av.pose = b.ok ? gs.pose : ''; av.expr = b.ok ? gs.expr : 0;
-          x.save(); x.translate(-W * .2, 0); perfDesenharIdol(x, W, H, av, false, 0, 0); x.restore();
+          var gs = RUAS[b.gesto].gesto; av.pose = ok ? gs.pose : ''; av.expr = ok ? gs.expr : 0;
+          x.save(); x.translate(-W * .22, 0); perfDesenharIdol(x, W, H, av, false, 0, 0); x.restore();
         }
       }
     }catch(e){}
-    var bx = W * .72, by = H * .62, ok = b.ok;
-    if(b.bicho === 'nuvem') nuvem(x, bx, by - 20, ok);
-    else if(typeof window.twMapaBicho === 'function') window.twMapaBicho(b.bicho, x, bx, by + (b.bicho === 'gato' ? 30 : 0), b.bicho === 'gato' ? 1.6 : 1.5, 0);
-    else if(typeof window.twMapaCarregar === 'function' && !desenharCena.pediu){   // o mapa baixa depois da abertura
-      desenharCena.pediu = true; try{ window.twMapaCarregar(); }catch(e){}
-      setTimeout(function(){ if(ov && !ov.hidden) desenharCena(bagunca()); }, 1500);
+    // o bicho: no mesmo traço dos personagens (tw-bichos.js); a borboleta voa perto da tulipa, a nuvem fica no céu
+    var ES = 2.75, bx = W * .63, chao = H - 16, bicho = b.bicho;
+    if(bicho === 'passaro') bx = W * .55;   // ao lado da fonte, não na frente
+    if(bicho === 'borboleta'){ bx = ok ? W * .66 : W * .76; chao = H - 40; }
+    if(bicho === 'nuvem'){ bx = ok ? W * .88 : W * .74; chao = ok ? H * .62 : H * .78; }
+    var feito = Bi && Bi.desenhar(x, bicho, bx, chao, ES, ok ? 'feliz' : 'travesso', t);
+    if(!feito){
+      if(bicho === 'nuvem') nuvem(x, bx, chao - 40, ok);
+      else if(typeof window.twMapaBicho === 'function') window.twMapaBicho(bicho, x, bx, chao, 1.5, 0);
     }
-    if(ok) coracao(x, W * .84, H * .24, 14, '#ff4fa3');
-    else { x.save(); x.font = 'bold 30px system-ui, sans-serif'; x.textAlign = 'center'; x.fillStyle = c; x.fillText('?!', W * .87, H * .3); x.restore(); }
+    // balãozinho: "!" na cor da rua antes, coração depois
+    var topo = chao - 44 * ES + (bicho === 'nuvem' ? 34 : bicho === 'borboleta' ? 20 : 40), bb = bx + 30;
+    if(ok) coracao(x, bb + 4, topo - 6 + Math.sin(t * .15) * 2, 11, '#ff4fa3');
+    else { x.save(); x.fillStyle = '#fff'; x.strokeStyle = c; x.lineWidth = 2.5; x.beginPath(); if(x.roundRect) x.roundRect(bb - 12, topo - 26, 26, 22, 10); else x.rect(bb - 12, topo - 26, 26, 22); x.fill(); x.stroke();
+      x.beginPath(); x.moveTo(bb - 4, topo - 4.5); x.lineTo(bb - 9, topo + 4); x.lineTo(bb + 3, topo - 4.5); x.fill(); x.fillStyle = c; x.font = '900 17px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('!', bb + 1, topo - 14.5); x.restore(); }
+    cenaAnimar();
+  }
+  // movimento leve (asas, pulinho, gotas) enquanto o painel está aberto; parado com "reduzir movimento"
+  var cenaRaf = 0, cenaT = 0;
+  function cenaAnimar(){
+    if(cenaRaf || desenharCena.rodando || !window.TW_BICHOS || typeof requestAnimationFrame !== 'function') return;
+    try{ if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+    var ultimo = 0;
+    function passo(agora){
+      cenaRaf = 0;
+      if(!ov || ov.hidden || !ov.querySelector('#twBairroCv')) return;
+      if(agora - ultimo >= 50){ ultimo = agora; cenaT += 1.5; desenharCena.rodando = true; try{ desenharCena(bagunca(), cenaT); }catch(e){} desenharCena.rodando = false; }
+      cenaRaf = requestAnimationFrame(passo);
+    }
+    cenaRaf = requestAnimationFrame(passo);
   }
   function coracao(x, cx, cy, r, cor){
     x.save(); x.fillStyle = cor; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath();

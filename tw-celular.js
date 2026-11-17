@@ -567,8 +567,9 @@
   }
   function telaInicial(){   // antes do "Toque para começar" (libera o som do aparelho)
     // abertura animada (ideia do site Loveez, arte nossa): 3 camadas em parallax + o trio flutuando em volta do logo
+    // na ordem do nome: Tsu à esquerda, Lirika no centro (um pouco mais alta), Pati à direita
     var px = '<div class="twc-px" aria-hidden="true"><i class="twc-px1"></i><i class="twc-px2"></i><i class="twc-px3"></i></div>' +
-      '<div class="twc-flutua" aria-hidden="true">' + [[0, 'twc-fl0'], [1, 'twc-fl1'], [2, 'twc-fl2']].map(function(f){ return '<canvas class="twc-fl ' + f[1] + '" data-idol="' + f[0] + '" width="208" height="224"></canvas>'; }).join('') + '</div>';
+      '<div class="twc-flutua" aria-hidden="true">' + [[0, 'twc-fl0'], [1, 'twc-fl2'], [2, 'twc-fl1']].map(function(f){ return '<canvas class="twc-fl ' + f[1] + '" data-idol="' + f[0] + '" width="208" height="224"></canvas>'; }).join('') + '</div>';
     return '<div class="twc-abre">' + px + brilhos([[14, 18, 14], [82, 24, 12, 'l'], [24, 70, 10, 'r'], [76, 66, 14], [50, 12, 9, 'l']]) +
       (function(){ var lg = document.querySelector('#hub .hubin .hublogo'); return lg ? '<h1 class="hublogo twc-hublogo twc-logo-abre" translate="no" aria-label="TsuLiPa World">' + lg.innerHTML + '</h1>' : '<h1 class="twc-logo" translate="no">TsuLiPa<span>⭐</span>World</h1>'; })() +
       '<p class="hubsub twc-hubsub" lang="ja">ツリパ⭐ワールド</p>' +

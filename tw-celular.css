@@ -515,9 +515,9 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-abre>*:not(.twc-px):not(.twc-flutua){position:relative;z-index:2}
 .twc-flutua{position:absolute;inset:0;pointer-events:none;z-index:1}
 .twc-fl{position:absolute;width:clamp(74px,22vw,120px);height:auto;filter:drop-shadow(0 8px 10px rgba(80,40,150,.22))}
-.twc-fl0{left:3%;top:9%;--fx:calc(var(--mx) * 22px);--fy:calc(var(--my) * 22px);animation:twcFlutua 5.2s ease-in-out infinite}
-.twc-fl1{right:3%;top:15%;--fx:calc(var(--mx) * 14px);--fy:calc(var(--my) * 14px);animation:twcFlutua 6s ease-in-out -2s infinite}
-.twc-fl2{left:50%;margin-left:-34px;top:1%;width:clamp(58px,16vw,90px);--fx:calc(var(--mx) * 28px);--fy:calc(var(--my) * 28px);animation:twcFlutua 5.6s ease-in-out -1s infinite}
+.twc-fl0{left:4%;top:11%;--fx:calc(var(--mx) * 22px);--fy:calc(var(--my) * 22px);animation:twcFlutua 5.2s ease-in-out infinite}
+.twc-fl1{right:4%;top:11%;--fx:calc(var(--mx) * 14px);--fy:calc(var(--my) * 14px);animation:twcFlutua 6s ease-in-out -2s infinite}
+.twc-fl2{left:50%;margin-left:calc(clamp(74px,22vw,120px) * -.5);top:3%;--fx:calc(var(--mx) * 28px);--fy:calc(var(--my) * 28px);animation:twcFlutua 5.6s ease-in-out -1s infinite}
 @keyframes twcFlutua{0%,100%{transform:translate(var(--fx),var(--fy)) translateY(0) rotate(-3deg)}50%{transform:translate(var(--fx),var(--fy)) translateY(-14px) rotate(3deg)}}
 /* Compatibilidade com scripts antigos em cache: a espera decorativa não cobre o início. */
 .twc-carrega{display:none!important;pointer-events:none}
@@ -707,9 +707,9 @@ body.tw-cel .twc .twc-ficha-blog{display:flex;align-items:center;justify-content
  body.tw-cel .twc .twc-abre .twc-hubsub{margin-bottom:8px}
  body.tw-cel .twc .twc-abre-vitrine{margin:8px 0 14px}
  body.tw-cel .twc .twc-fl{width:clamp(58px,17vw,86px)}
- body.tw-cel .twc .twc-fl0{top:7%;left:5%}
- body.tw-cel .twc .twc-fl1{top:14%;right:5%}
- body.tw-cel .twc .twc-fl2{top:2%;left:50%;margin-left:-29px;width:clamp(50px,14vw,70px)}
+ body.tw-cel .twc .twc-fl0{top:9%;left:5%}
+ body.tw-cel .twc .twc-fl1{top:9%;right:5%}
+ body.tw-cel .twc .twc-fl2{top:2%;left:50%;margin-left:calc(clamp(58px,17vw,86px) * -.5)}
 }
 @media (max-width:350px){
  body.tw-cel .twc .twc-ficha-l{grid-template-columns:28px minmax(68px,29%) minmax(0,1fr);gap:6px;font-size:12px}

@@ -3,7 +3,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
 const assert=require('node:assert/strict');
-const html=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time.html'),'utf8');
+const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const baseCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time-base.css'),'utf8');
 const mobile=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.js'),'utf8');
 const mobileCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.css'),'utf8');
@@ -199,7 +199,7 @@ assert(!main.includes('function twKaraokeHorario(')&&!main.includes('karaoke-day
 
 const curPalStart=main.indexOf('function curPal()'),curPalEnd=main.indexOf('\nfunction GLc()',curPalStart);
 assert(main.includes("var CURPAL_CACHE=['','','','','','','',''];")&&main.slice(curPalStart,curPalEnd).includes('k<a.length')&&curPalStart>=0&&curPalEnd>curPalStart&&!main.slice(curPalStart,curPalEnd).includes('.map('),'Main background palette should reuse a fixed color buffer instead of building nested arrays each frame');
-const hubDrawStart=main.indexOf('function hubDesenhar()'),hubDrawEnd=main.indexOf('\nfunction ',hubDrawStart+16);
+const hubDrawStart=main.indexOf('function hubDesenhar('),hubDrawEnd=main.indexOf('\nfunction ',hubDrawStart+16);
 assert(main.includes('var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map')&&hubDrawStart>=0&&hubDrawEnd>hubDrawStart&&!main.slice(hubDrawStart,hubDrawEnd).includes('JSON.parse(JSON.stringify(CH[m[0]]))'),'Hub trio should reuse its three avatar render objects instead of deep-cloning them every frame');
 
 
@@ -318,9 +318,11 @@ assert(hubScene.includes('var beams = hubIdolsBeamTexturas(chao + 10)')&&hubScen
 assert(hubScene.includes('Math.sin(s * .8 + i * 2.1) * .5')&&hubScene.includes('x.rotate(ang)'),'Caching Hub spotlight artwork must preserve the per-frame movement of all three beams');
 assert(hubScene.includes('if(beams)')&&hubScene.includes('var lg = x.createLinearGradient(0, 0, 0, chao + 10)'),'Hub spotlights should retain a direct CanvasGradient fallback when an offscreen canvas context is unavailable');
 
-const audienceAudioStart=html.indexOf('var ktAudioVitrine=(function(){');
+// A vitrine de áudio (biblioteca, prévias e vozes) saiu para karaoke-biblioteca.js em 17/11/2026; a sala só a cria.
+const audienceAudioStart=html.indexOf('var ktAudioVitrine=window.KaraokeBiblioteca.criar({$:$,tr:tr,lang:LANG,avatar:KaraokeAvatar,CH:CH,');
 const audienceAudioEnd=html.indexOf('var ktBaseUI=krUI;',audienceAudioStart);
-const audienceAudio=html.slice(audienceAudioStart,audienceAudioEnd);
+const audienceAudio=fs.readFileSync(path.join(__dirname,'..','karaoke-biblioteca.js'),'utf8');
+assert(html.includes('<script src="./karaoke-biblioteca.js?v=')&&html.indexOf('karaoke-biblioteca.js')<audienceAudioStart&&!html.includes('function speakGroup(')&&audienceAudio.includes('window.KaraokeBiblioteca={criar:criar};'),'Library code lives only in karaoke-biblioteca.js, loaded before the room script');
 assert(!html.includes('var ktFaixa=(function(){')&&!html.includes('id="ktFaixaCv"'),'The duplicate lower audience carousel and its independent animation loop should be removed');
 assert(html.includes('id="ktAudience"')&&html.includes('id="ktSong"')&&html.includes('id="ktStart"'),'Removing the lower crowd strip must keep the room audience, song selector and rhythm-game start control');
 assert(html.includes('id="ktAudioLibrary"')&&audienceAudioStart>=0&&audienceAudioEnd>audienceAudioStart,'The lower Karaoke section should become an audio showcase');
@@ -344,7 +346,7 @@ assert(baseCss.includes('@keyframes kt-idol-jump')&&baseCss.includes('@keyframes
 assert(audienceAudio.includes("play(id,true)")&&audienceAudio.includes('button.dataset.ktReaction=')&&audienceAudio.includes('button.dataset.ktReactionUntil='),'Tapping a character cycles an existing voice clip and triggers a per-character emoji reaction');
 assert(!html.includes('class="kt-audio-groups"')&&!html.includes('class="kt-audio-group"'),'The former long audio showcase groups should not remain in the page');
 assert(['normal','fast','chill','tema','corrida','gacha','duo'].every(key=>html.includes('data-kt-song-best="'+key+'"')),'Each of the seven music cards should show its own personal-best slot');
-assert(audienceAudio.includes('ktMeta.personalSongs()')&&audienceAudio.includes("tr('Seu recorde pessoal')")&&audienceAudio.includes("tr('Sem recorde ainda')"),'The compact track cards should read only the current player personal records');
+assert(audienceAudio.includes('M.personalSongs()')&&audienceAudio.includes("tr('Seu recorde pessoal')")&&audienceAudio.includes("tr('Sem recorde ainda')"),'The compact track cards should read only the current player personal records');
 assert(html.includes("rules.personalSongs(c.day,c.id)")&&html.includes("songs[active.song]=row"),'Best songs are keyed by player and exact selected song, not a shared leaderboard');
 
 const rhythmTrackKeys=['normal','fast','chill','tema','corrida','gacha','duo'];
@@ -354,7 +356,7 @@ assert(audienceAudio.includes("selector.dispatchEvent(new Event('change',{bubble
 const availableVoiceFiles=['tsu-1','tsu-2','tsu-3','tsu-4','tsu-5','lirika-1','lirika-2','lirika-3','lirika-4','lirika-5','pati-1','pati-2','pati-3','pati-4','pati-5'];
 assert(availableVoiceFiles.every(id=>audienceAudio.includes("'"+id+"':1")),'All 15 character voice clips remain available; the Encounter clip is intentionally excluded');
 assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');
-assert(audienceAudio.includes("if(muted){if(status)status.textContent=tr('O som está desativado.")&&html.includes("if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}"),'Audio previews should respect the page-wide mute control and stop both standalone music and voice playback');
+assert(audienceAudio.includes("if(o.muted()){if(status)status.textContent=tr('O som está desativado.")&&html.includes('muted:function(){return muted;}')&&html.includes("if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}"),'Audio previews should respect the page-wide mute control and stop both standalone music and voice playback');
 assert(audienceAudio.includes("addEventListener('ended'")&&audienceAudio.includes("addEventListener('error'")&&audienceAudio.includes("addEventListener('visibilitychange'")&&audienceAudio.includes("addEventListener('pagehide'"),'The shared audio preview player must release audio on end, error, page hide and visibility loss');
 assert(html.includes("function start(mode){if(run)return;previewPlayer.stop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();")&&html.includes("ktAudioVitrine.stop();kt.stopPreview(false);kt.allowExit();"),'Starting a rhythm show or leaving the room must stop both audio preview players');
 assert(audienceAudio.includes("old.removeAttribute('src');old.load();")&&audienceAudio.includes("if(player&&playingId===id&&!restart){stop("),'The audio showcase should reuse one player and release the previous audio before switching previews');

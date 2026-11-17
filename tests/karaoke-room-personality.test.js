@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const Personality=require('../karaoke-room-personality.js');
-const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const names=['Momo','Nene','Lirika','Pati','Nanamaru','Hiruru','Fuji','Acádia','Kiko','Hana'];
 const cast=names.map((nick,i)=>({nick,playerId:'npc-'+i}));
 const personality=Personality.create({random:()=>.2});

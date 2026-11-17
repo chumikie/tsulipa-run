@@ -5,7 +5,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
+const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8')+'\n'+fs.readFileSync(path.join(root,'karaoke-ranking.js'),'utf8'); // ranking saiu para karaoke-ranking.js (17/11/2026)
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 const start=html.indexOf('var KaraokeShowRules=(function(){'),end=html.indexOf('/* Um conceito por dia de Brasília',start);

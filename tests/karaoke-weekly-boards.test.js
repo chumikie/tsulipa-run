@@ -6,7 +6,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
+const html=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8')+'\n'+fs.readFileSync(path.join(root,'karaoke-ranking.js'),'utf8'); // ranking saiu para karaoke-ranking.js (17/11/2026)
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 const sql=fs.readFileSync(path.join(root,'supabase/sql/aplicado/karaoke_quadros_semana.sql'),'utf8');
@@ -35,3 +35,8 @@ assert(index.includes("quadros:function(){return contaRpc('kt_quadros_semana');}
 assert(/NÃO APLICAR SEM AUTORIZAÇÃO/.test(sql)&&sql.includes('Depende de supabase/sql/aplicado/karaoke_musica_da_semana.sql'),'SQL marcado como proposta e com dependência');
 assert(!/var lead=b\.score&&b\.score\[0\],k=/.test(html),'contador da medalha não reaproveita a variável da música');
 console.log('✓ Karaoke: quadros Pontuação, Mais shows na semana, Quem mais evoluiu e medalha da música da semana');
+// Divisão do karaoke-time.html (17/11/2026): o ranking mora no karaoke-ranking.js, carregado antes do script da sala.
+{const so=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8'),rk=fs.readFileSync(path.join(root,'karaoke-ranking.js'),'utf8');
+assert(/<script src="\.\/karaoke-ranking\.js\?v=\d+"><\/script>/.test(so)&&so.indexOf('karaoke-ranking.js')<so.indexOf('var ktMeta=(function(){'),'karaoke-ranking.js carregado antes da sala');
+assert(so.includes("var ranking=window.KaraokeRanking.criar({$:$,tr:tr,rules:rules,context:context,avatar:KaraokeAvatar});")&&so.includes("window.ktMetaRefresh=function(){ranking.reset();renderBoards();controls();};"),'sala usa o módulo de ranking');
+assert(!so.includes('function ktRankLi(')&&!so.includes('function renderSongWeek(')&&rk.includes('function ktRankLi(')&&rk.includes('window.KaraokeRanking={criar:criar};'),'código do ranking só em um lugar');}

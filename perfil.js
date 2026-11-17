@@ -994,7 +994,7 @@ function perfAvatarAuto(){
   contaRpc('meu_perfil').then(function(d){
     if(!d||!contaJ||contaJ.nick!==dono) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
-    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; perfGuardarCor(d.cor);
+    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; if(perfAdmin && typeof admCarregar === 'function') admCarregar();   // ferramentas de moderação (admin.js) só para admin perfGuardarCor(d.cor);
     if(d.aniver_hoje && typeof aniverFesta === 'function')twTimeoutVisivel(document.documentElement,function(){return !!contaJ&&contaJ.nick===dono;},aniverFesta,1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;
@@ -1077,8 +1077,11 @@ function twNitido(cv){
     }catch(e){ cv.__twN = null; return cv; }
   }
   if(!st.w || !st.h) return cv;
-  var z = window.devicePixelRatio || 1, vis = cv.clientWidth || st.w;
-  var k = Math.min(3, Math.max(1, Math.ceil(Math.max(z, z * vis / st.w) * 4) / 4));
+  // Pixels reais pelo tamanho NA TELA × zoom. (Até 17/11 era "pelo menos o zoom": num celular 2,6× o Café/Gacha/Handshake,
+  // que aparecem com ~390 px, eram pintados a 1760 px de largura — 2,5× mais pixels que a tela mostra, a cada quadro.)
+  // Teto igual ao do tw-nitidez.js: 2× para palcos grandes (> 150 mil pixels lógicos), 3× para os pequenos.
+  var z = window.devicePixelRatio || 1, vis = cv.clientWidth || st.w, teto = st.w * st.h > 150000 ? 2 : 3;
+  var k = Math.min(teto, Math.max(1, Math.ceil(z * vis / st.w * 4) / 4));
   if(k !== st.k){
     st.k = k; st.dw.set.call(cv, Math.round(st.w * k)); st.dh.set.call(cv, Math.round(st.h * k));
     try{ cv.getContext('2d').setTransform(k, 0, 0, k, 0, 0); }catch(e){}

@@ -1,3 +1,63 @@
+## Mesma PR #110 — moderação só para admin (17/11/2026, 18h15)
+- `admin-base.js` (3 KB, abertura): `perfAdmin`, `contaAdmin`, "Liberar tudo" (`admLivre`, que embrulha `perfTem`/`lojaTem` para todo mundo), `admItens` (nomes dos itens nos recados de presente do `hub.js`), `hubIdolsDados`/`hubIdolsEm` (lista de Idols usada por 12 arquivos) e o estado `admIdol` (os ouvintes do Perfil o leem em todo toque).
+- `admin.js` (21 KB): painel e ferramentas de moderação; baixa quando o `perfil.js` recebe `admin: true` da conta. Até chegar, os substitutos da base devolvem HTML vazio ou guardam a ação e a rodam quando ele chega. Quem não é admin nunca baixa. O servidor continua conferindo `eh_admin()`.
+- Conferido no navegador: sem admin, o `admin.js` não baixa; uma ação de moderação chamada antes dele chegar roda quando chega; "Liberar tudo" responde. Teste em `index-modules.test.js`.
+
+## Mesma PR #110 — Moon⭐Duo! sob demanda (17/11/2026, 18h)
+- **Abertura:** `duo-base.js` (10 KB) com o que o resto do site usa do Duo: estado, falas (Encontro do dia), fundo dos cenários (Perfil e Idol⭐News!), aviso de dupla (`conta.js`), recado das estrelas (`hub.js`) e a lojinha (`perfLoja2UI`, `lojaItem`, `lojaTem`, `lojaComprar`, `lookAtual` — Perfil, Loja e Photo⭐Studio!). O `duo.css` continua na abertura porque o aviso de dupla usa os estilos dele.
+- **Quando o Duo abre:** `duo.js` (33 KB, o jogo), `duo-tela.js` (7,5 KB, poses e telas que estavam no `index.html`) e `duo-pedido.js` (6 KB). `duoAbrir` da base pede os três e abre em seguida; o embrulho do `duoFechar` (música) é guardado e devolvido quando o `duo.js` chega. Código igual, só mudou de arquivo. `index.html`: 234 → 227 KB; abertura ~47 KB menor.
+- Conferido no navegador (visual novo e clássico): abertura sem o jogo do Duo; abrir baixa e mostra a janela; fechar/reabrir; fundo do Duo no Perfil desenhando; sem erro. Testes: `index-modules` (base + jogo sob demanda sem nada repetido), `site-source.js` inclui os arquivos novos.
+- A #111 (prévia de link, outra sessão) mexe só nas metatags do `index.html`; não conflita.
+
+## Mesma PR #110 — correção do show e `tw-bairro.js` dividido (17/11/2026, 17h30)
+- **CI do `440be98` falhou** (`browser-karaoke-room`, o NPC no microfone): ao mover o show, duas atribuições a variáveis da sala (`krRhythmRun`, `krRhythmLastSecond`) ficaram escritas direto em `karaoke-show.js` e viraram globais novas. A ferramenta de mover não via o lado esquerdo de `x=` (no acorn-walk é "VariablePattern"). Agora passam por `D.nome(valor)`; os outros três arquivos novos foram conferidos (nenhuma escrita solta). Corrigido em `30ab892`.
+- **`tw-bairro-tela.js` (18 KB, novo):** painel "Vida no bairro", cena da bagunça, toast e pergunta/véus do guia no Mapa. Baixa só ao abrir o painel, num toque que precise dela ou quando o Mapa monta numa conta que está nos dias guiados. **O núcleo (`tw-bairro.js`, 54 → 38 KB) continua na abertura**: ele conta as partidas pelo Humor, alimenta o "Hoje" e as falas do trio no Chat; adiar o arquivo inteiro faria partidas deixarem de contar para o gesto da bagunça. `guiaPergunta` segue respondendo na hora (decide pelo núcleo). Conferido no Android simulado: conta que já joga não baixa a tela na abertura; tocar em "Vida no bairro" baixa e abre o painel com a cena, sem erro.
+
+## Mesma PR #110 — passo 4: `karaoke-show.js` (17/11/2026, 17h)
+- O show de ritmo (sons sintetizados, notas, acertos, combo, pausa, retomada e fim do show; o antigo `var kt=(function(){…})()`) foi para `karaoke-show.js` (36 KB). A sala cria com `KaraokeShow.criar({…})`; os 35 nomes que o show usa da sala chegam como leitura na hora (`D.nome()`), porque alguns são trocados depois de criado (ex.: `krUI`). Nenhum deles é reescrito pelo show.
+- **Prova de que só mudou de lugar:** `tests/karaoke-fonte.js` remonta o HTML antigo a partir dos dois arquivos e o resultado é idêntico byte a byte ao commit anterior. Os 13 testes que extraíam trechos do show do HTML usam esse ajudante; teste novo `karaoke-show-arquivo.test.js`.
+- `karaoke-time.html`: 403 KB (início do dia) → 321 KB. **Plano da #109 concluído** (ranking, biblioteca, enfeites, show).
+- Conferido aqui: 119 testes rápidos e um show aberto no Android simulado (sem erro, foto inteira). Testes de navegador ficam para o CI.
+
+## Mesma PR #110 — Karaoke dividido (passos 2 e 3) e mais leve no show do celular (17/11/2026, fim da tarde)
+
+**Arquivos novos** (código igual, só mudou de lugar; o que vem da sala chega por parâmetro):
+- `karaoke-biblioteca.js`: biblioteca de trilhas, prévias, vozes do trio e cabecinhas (`KaraokeBiblioteca.criar({$,tr,lang,avatar,CH,kt(),meta(),muted()})`).
+- `karaoke-palco-desenho.js`: 25 funções de desenho dos enfeites (plantas, mesa e copos, caixas de som, armário, neon, pandeiro de parede, monitores, brilhos, `ktRR`/`ktCoracao`/`ktEstrela`…). Movidas por análise da árvore do código: cada valor da sala vira `D.nome()`. **Conferido com relógio e sorteio congelados: 60 quadros idênticos pixel a pixel.** `meuChar`, `ktMicCor` e `ktCorMembro` (leem o jogo) ficaram na sala.
+- `karaoke-time.html`: 403 → 355 KB. Falta o passo 4 do plano (`karaoke-show.js`: ritmo, notas, combo e fim do show).
+
+**Leveza** (Android simulado, 412 px a 2,6×, mediana de 3; Chrome sem placa de vídeo):
+| | antes | depois |
+|---|---|---|
+| Sala parada | 25 qps, CPU 101% | 34 qps, CPU 84% |
+| Show | 19 qps, CPU 101% | 34 qps |
+- **Camadas lentas** (`KaraokePalco.camada`): janela, mesa, enfeites e plantas mexem devagar (a samambaia leva ~7 s para balançar); são redesenhados a cada 100 ms num canvas guardado e copiados nos outros quadros. Mesma resolução e transformação da sala; chave nova (paleta, VIP, vista da janela) redesenha na hora. Se o aparelho já está mais lento que a camada, ela desenha direto (sem cópia extra). Com `KaraokePalco.camada.ms=0` a diferença para o desenho direto é só o suavizado do texto da placa da janela.
+- **Show no celular:** a sala vira fundo em tela cheia (`object-fit:cover`) e só ~1/3 da largura aparece. Escondendo a sala, o show ia de 21 para 58 qps, então ela era o peso. Agora (`krCorteSala`) só a faixa visível (com margem) é pintada e Idols inteiros fora dela não são desenhados (o balão de fala continua). "Ver sala inteira", computador e tablet deitado pintam tudo. **Foto no meio do show:** espera um quadro inteiro antes de copiar (reserva de 400 ms) — conferido: foto com a sala 100% preenchida.
+- **PC:** igual antes e depois neste Chrome (9–10 qps, canvas 1920×1080 pintado pelo processador). Precisa de computador real para medir.
+- Teste novo: `tests/karaoke-palco-desenho.test.js`. Navegador: `karaoke-mobile.browser.cjs` (5 larguras), `telas.browser.cjs` e `corrida.browser.cjs` passando.
+
+## Mesma PR #110 — coluna larga no PC e primeira parte do Karaoke separada (17/11/2026, tarde)
+
+- **Coluna do visual novo no PC grande:** a largura virou a variável `--twc-col` (`tw-celular.css`): 980 px como antes, **1240 px a partir de 1500 px** e **1360 px a partir de 1800 px**. Topo, faixa de título e páginas seguem a mesma variável (nada mais tem 980 px fixo). Em telas ≥ 1500 px o **Calendário** vira duas colunas (mês | dia escolhido) e o **Mapa** não passa da altura da tela (`min(--twc-col, (100vh − 360px) × 1,6)`), para os balões de "Falar" continuarem à vista. Abaixo de 1500 px nada muda. Conferido em 1920×1080, 1536×864 e 1366×768: sem erro e sem rolagem lateral.
+- **`karaoke-ranking.js?v=1` (passo 1 do plano da #109):** saíram do `karaoke-time.html` o ranking da semana (Pontuação, Mais shows, Quem mais evoluiu), a música da semana, as abas, a linha "Você" e o `ktBoardsAgora`/placar da sala. **Código igual, só mudou de arquivo:** o `ktMeta` chama `KaraokeRanking.criar({$,tr,rules,context,avatar})` e usa `render()`/`reset()`. O `KaraokeShowRules` (regras e contas do ranking) continua no HTML. `karaoke-time.html`: 403 → 398 KB. Conferido na sala a 390 e 1366 px, vazio e com ranking online de mentira: medalhas, "Você" em 9º, 👑 do líder na música da semana, rostinhos desenhados, troca de aba e `ktMetaRefresh`.
+- **Próximos passos do plano:** ~~`karaoke-biblioteca.js`~~ e ~~`karaoke-palco-desenho.js`~~ (feitos, ver acima) → ~~`karaoke-show.js`~~ (feito). O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
+
+## Auditoria de leveza — 17/11/2026 (noite), depois de #105–#109 no ar
+
+Base: `main` em `d47971a`. Medido no Chrome sem tela com o modo demonstração, em Android (412 px, 2,6×), tablet Android (800×1280 e 1280×800, 2×) e PC (1920 e 1366). **Atenção ao ler os números:** esse Chrome desenha sem placa de vídeo, então canvas animado pesa muito mais que num aparelho real. Vale a comparação antes/depois e entre telas, não o valor absoluto.
+
+**Achado e corrigido**
+- **Palco do Início desenhado 2× por quadro:** no visual novo, o `hubLoop` desenhava o `hubCv` (que nem aparece) e o `tw-celular.js` copiava a imagem inteira para o `twcPalcoCv` a cada quadro. A cópia obrigava a pintar o `hubCv` na hora: **~80% do processador parado no Início**. Agora o `hubLoop` desenha direto no palco (`hubDesenhar(alvo)` + `twcPalcoAlvo()`); com o palco fora da tela ou coberto, não desenha nada. Clássico igual a antes (desenha no `hubCv`). Script parado no Início: 96% → 12%; Menu e Jogos: 15% → 7–9% (60 qps).
+- **`twNitido` (perfil.js) pintava demais no celular:** a conta era "pelo menos o zoom" → Café, Gacha, Handshake, Loja e Montar Idol saíam a 1760 px de largura para aparecer com ~390 px (2,5× mais pixels que a tela mostra). Agora é só tamanho na tela × zoom, com o mesmo teto do `tw-nitidez.js` (2× para palcos grandes). Café 17 → 52 qps, Gacha 9 → 27 qps (Android simulado). Mesma correção no quarto do Pet (`petFitCanvas`).
+- **Mapa com pixels demais no celular:** 1600×1000 lógicos em ~380 px. O `tw-nitidez.js` agora também **baixa** a resolução de canvas enormes (≥ 600 mil pixels lógicos) mostrados com menos de 80% deles na tela (nunca abaixo de 0,5×). Mapa no Android: 14 → 59 qps.
+- **Freio do palco do Início** (igual ao do Center⭐Run): se o palco passar de ~45 ms por quadro, cai de 2× para 1,5× e depois para 1×; o aparelho guarda em `tw_palco_nitidez`. Aparelho que aguenta não perde nitidez. `TW_NITIDEZ.limitado(cv)` diz quando um canvas foi freado de propósito (o `telas.browser.cjs` aceita).
+- O palco novo do Início sempre recebe um primeiro desenho, mesmo com uma janela por cima (nunca fica em branco).
+- Testes `karaoke-mobile-performance` e `validate-games` procuravam `function hubDesenhar()` literal: agora `function hubDesenhar(`.
+
+**Conferido sem erro:** 117/117 testes; `corrida.browser.cjs` e `telas.browser.cjs`; 17 telas × 5 aparelhos (sem erro de script, sem rolagem lateral); partida começada em Center⭐Run, Café, Handshake, Gacha, Sora, Karaoke (pergunta antes de gastar tentativa), Battle, Bloom, Studio e Duo.
+**Peso da abertura (visual novo):** 89 arquivos, 2,2 MB (~750 KB comprimido). Maiores: `index.html` 229 KB, `tw-celular.js` 193, `centerrun.js` 112, `tw-mapa.js` 106 (baixa depois da abertura), `hub.js` 103, `tw-celular.css` 97, `mapa-mundo.svg` 95.
+**Falta (precisa de aparelho real):** medir no Android de verdade (processador e bateria no Início, Café, Gacha e Karaoke); o Karaoke continua o mais pesado no teste (canvas 960×540 cheio de personagens, 26 qps no Android simulado). **Ideias:** ~~coluna mais larga no PC ≥ 1500 px~~ (feito, ver acima); dividir o `karaoke-time.html` (passo 1 feito, ver acima); ~~`tw-bairro.js` sob demanda~~ (tela separada, ver acima).
+
 ## Rodada 17/11/2026 — visual novo também no computador e no tablet
 
 **Entrou** (branch `feat/visual-novo-computador`, PR draft)

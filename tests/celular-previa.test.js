@@ -230,8 +230,20 @@ test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times
 
 test('faixa de título acompanha a coluna em telas largas (computador)', () => {
   const regra = css.match(/\.twc-faixa\{[^}]*\}/)[0];
-  // O recuo esquerdo alinha o título à coluna de 980 px; a largura precisa somar esse recuo,
+  // O recuo esquerdo alinha o título à coluna (--twc-col); a largura precisa somar esse recuo,
   // senão em 1920 px o título vira uma coluna de ~70 px colada na esquerda (relato de 17/11/2026).
-  assert.match(regra, /padding:10px 16px 10px max\(20px,calc\(\(100% - 980px\)\/2 \+ 20px\)\)/);
-  assert.match(regra, /width:min\(calc\(560px \+ max\(0px,\(100% - 980px\)\/2\)\),86%\)/);
+  assert.match(regra, /padding:10px 16px 10px max\(20px,calc\(\(100% - var\(--twc-col\)\)\/2 \+ 20px\)\)/);
+  assert.match(regra, /width:min\(calc\(560px \+ max\(0px,\(100% - var\(--twc-col\)\)\/2\)\),86%\)/);
+});
+
+test('coluna do visual novo cresce no PC grande (≥1500 px) e o resto segue a mesma variável', () => {
+  assert.match(css, /\.twc\{[^}]*--twc-col:980px/);
+  assert.match(css, /@media \(min-width:1500px\)\{\.twc\{--twc-col:1240px\}\}/);
+  assert.match(css, /@media \(min-width:1800px\)\{\.twc\{--twc-col:1360px\}\}/);
+  assert.match(css, /\.twc-topo-in\{[^}]*max-width:var\(--twc-col\)/);
+  assert.match(css, /\.twc-pag\{max-width:var\(--twc-col\)/);
+  assert.doesNotMatch(css.replace(/--twc-col:980px/, ''), /980px/);
+  // Mapa não passa da altura da tela e o Calendário vira duas colunas na coluna larga.
+  assert.match(css, /\.twc-pag\.twc-emb-mapa\{max-width:min\(var\(--twc-col\),calc\(\(100vh - 360px\)\*1\.6\)\)\}/);
+  assert.match(css, /\.twc-pag\.twc-cal\{display:grid;grid-template-columns:minmax\(0,1\.4fr\) minmax\(0,1fr\)/);
 });

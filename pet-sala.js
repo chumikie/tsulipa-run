@@ -363,7 +363,7 @@ function petFitCanvas(){
   // e, desenhado em 360 × zoom, ficava ampliado ~2× e borrado (relato de 17/11/2026). Degraus de 0,25 evitam
   // refazer o fundo a cada pixel de redimensionamento; teto de 3× para não pesar.
   var z = window.devicePixelRatio || 1, vis = petCv.clientWidth || 360;
-  var d = Math.min(3, Math.max(1, Math.ceil(Math.max(z, z * vis / 360) * 4) / 4));
+  var d = Math.min(3, Math.max(1, Math.ceil(z * vis / 360 * 4) / 4));   // só o tamanho na tela × zoom (sem "pelo menos o zoom")
   if(d !== petDpr || petCv.width !== Math.round(360 * d)){ petDpr = d; petCv.width = Math.round(360 * d); petCv.height = Math.round(220 * d); petBg = null; }
 }
 //←petMakeBg

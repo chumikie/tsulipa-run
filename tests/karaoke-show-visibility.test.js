@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
-const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const fn=html.slice(html.indexOf('function krRoomPodeAnimar(){'),html.indexOf('function krIrAoPalco(){'));
 assert(html.includes('function krShowAtivo(){'),'existe o teste de show em andamento');
 const listenerStart=html.indexOf("window.addEventListener('message',function(e){\n if(e.source!==parent||!e.data)return;");

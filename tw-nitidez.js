@@ -29,13 +29,18 @@
   var toURL = P.toDataURL, toBlob = P.toBlob, getImg = C.getImageData;
 
   var PEQUENO = 120000;   // canvas até ~350 × 350 lógicos
+  // Canvas ENORMES mostrados bem menores (ex.: o Mapa, 1600 × 1000 lógicos em ~380 px no celular) também se ajustam,
+  // para baixo: pintar 1,6 milhão de pixels por quadro para a tela mostrar 0,6 milhão só gasta bateria (17/11).
+  // Nunca abaixo de 0,5×; só a partir de 600 mil pixels lógicos e quando a tela mostra menos de 80% deles.
+  var ENORME = 600000;
+  function minimo(st){ return st.w * st.h >= ENORME ? .5 : 1; }
   function estado(cv){ return cv.__twA; }
   function precisa(cv, st){
     var z = window.devicePixelRatio || 1, vis = cv.clientWidth;
     if(!vis) return st.k || (st.w * st.h <= PEQUENO ? Math.min(3, Math.ceil(z * 4) / 4) : 1);   // ainda sem tamanho na tela
     var k = Math.ceil(z * vis / st.w * 4) / 4;
     var teto = st.max || (st.w * st.h > 150000 ? 2 : 3);   // st.max: teto pedido pelo jogo (celular que não aguenta)
-    return Math.min(teto, Math.max(1, k));
+    return Math.min(teto, Math.max(minimo(st), k));
   }
   function aplicar(cv, st, ctx){
     var k = precisa(cv, st);
@@ -50,7 +55,7 @@
     if(!w || !h) return null;
     // sem tamanho na tela ainda (desenhado logo ao ser criado): os pequenos já nascem na densidade do aparelho
     if(!vis){ if(w * h > PEQUENO || z <= 1.05) return null; }
-    else if(z * vis / w <= 1.05){ return null; }     // já está na resolução certa (ou maior): não mexe
+    else if(z * vis / w <= 1.05 && !(w * h >= ENORME && z * vis / w < .8)){ return null; }   // já está na resolução certa: não mexe
     var st = cv.__twA = {w:w, h:h, k:0};
     try{
       Object.defineProperty(cv, 'width', {configurable:true, get:function(){ return st.w; }, set:function(v){ st.w = Math.max(0, Math.floor(+v || 0)); st.k = 0; aplicar(cv, st); }});
@@ -65,7 +70,7 @@
     }
     return ctx;
   };
-  function kDe(ctx){ var st = ctx && ctx.canvas && ctx.canvas.__twA; return st && st.k > 1 ? st.k : 1; }
+  function kDe(ctx){ var st = ctx && ctx.canvas && ctx.canvas.__twA; return st && st.k && st.k !== 1 ? st.k : 1; }
   C.setTransform = function(a, b, c, d, e, f){
     var k = kDe(this);
     if(k !== 1 && typeof a === 'number') return setT.call(this, a * k, b * k, c * k, d * k, e * k, f * k);
@@ -79,7 +84,7 @@
   });
   C.drawImage = function(img){
     var st = img && img.__twA;
-    if(st && st.k > 1){
+    if(st && st.k && st.k !== 1){
       var a = arguments, k = st.k;
       if(a.length === 3) return drawImg.call(this, img, 0, 0, st.w * k, st.h * k, a[1], a[2], st.w, st.h);
       if(a.length === 5) return drawImg.call(this, img, 0, 0, st.w * k, st.h * k, a[1], a[2], a[3], a[4]);
@@ -91,12 +96,12 @@
     var st = cv.__twA, o = document.createElement('canvas'); dW.set.call(o, st.w); dH.set.call(o, st.h);
     var x = getCtx.call(o, '2d'); x.imageSmoothingQuality = 'high'; drawImg.call(x, cv, 0, 0, st.w * st.k, st.h * st.k, 0, 0, st.w, st.h); return o;
   }
-  P.toDataURL = function(){ var st = this.__twA; if(st && st.k > 1) return toURL.apply(copiaLogica(this), arguments); return toURL.apply(this, arguments); };
-  if(toBlob) P.toBlob = function(){ var st = this.__twA; if(st && st.k > 1) return toBlob.apply(copiaLogica(this), arguments); return toBlob.apply(this, arguments); };
+  P.toDataURL = function(){ var st = this.__twA; if(st && st.k && st.k !== 1) return toURL.apply(copiaLogica(this), arguments); return toURL.apply(this, arguments); };
+  if(toBlob) P.toBlob = function(){ var st = this.__twA; if(st && st.k && st.k !== 1) return toBlob.apply(copiaLogica(this), arguments); return toBlob.apply(this, arguments); };
   // quem lê pixels de volta continua na resolução lógica: na primeira leitura, a escala é desfeita para sempre
   C.getImageData = function(){
     var cv = this.canvas, st = cv && cv.__twA;
-    if(st && st.k > 1){ var o = copiaLogica(cv); cv.__twA = false; delete cv.width; delete cv.height; dW.set.call(cv, st.w); dH.set.call(cv, st.h); drawImg.call(this, o, 0, 0); }
+    if(st && st.k && st.k !== 1){ var o = copiaLogica(cv); cv.__twA = false; delete cv.width; delete cv.height; dW.set.call(cv, st.w); dH.set.call(cv, st.h); drawImg.call(this, o, 0, 0); }
     return getImg.apply(this, arguments);
   };
   // preparar(cv): para canvas pequenos desenhados ANTES de entrar na página (miniaturas, fotos redondas):
@@ -120,5 +125,7 @@
   function limitar(cv, n){ var st = cv && cv.__twA; if(!st) return false; st.max = n ? Math.max(1, +n) : 0; st.k = 0; try{ aplicar(cv, st); }catch(e){} return true; }
   // adotar(cv): para canvas grande que nasceu escondido (ex.: o Mapa) e só agora apareceu na tela
   function adotarAgora(cv){ if(!cv || cv.__twA || cv.__twA === false || !cv.isConnected) return false; var st = adotar(cv); if(!st) return false; aplicar(cv, st); return true; }
-  window.TW_NITIDEZ = {escala:function(cv){ var st = cv && cv.__twA; return st ? st.k : 1; }, preparar:preparar, limitar:limitar, adotar:adotarAgora};
+  // limitado(cv): o canvas foi freado de propósito (aparelho lento: Center⭐Run, palco do Início) — os testes aceitam
+  window.TW_NITIDEZ = {escala:function(cv){ var st = cv && cv.__twA; return st ? st.k : 1; }, preparar:preparar, limitar:limitar, adotar:adotarAgora,
+    limitado:function(cv){ var st = cv && cv.__twA; return !!(st && st.max); }};
 })();

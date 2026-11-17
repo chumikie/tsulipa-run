@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const flow = html.match(/var ktFlow=\(function\(\)\{[\s\S]*?\n\}\)\(\);/);
 const diagnostic = html.match(/var KR_RHYTHM_TOUCH_DIAGNOSTIC=\{[\s\S]*?\n\};/);
 assert(flow && diagnostic, 'Fluxo da confirmação e diagnóstico presente');

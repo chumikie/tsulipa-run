@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const resume = html.match(/function finishResume\(\)\{[^\n]+\}\nfunction pause\(value\)\{[^\n]+\}/);
 const tick = html.match(/function tick\(\)\{[\s\S]*?\}\nfunction hit\(/);
 const keyhandler = [...html.matchAll(/document\.addEventListener\('keydown',function\(e\)\{[\s\S]*?\n\}\);/g)]

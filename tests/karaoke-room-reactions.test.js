@@ -4,13 +4,16 @@ const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8')
 function block(from,to){const a=html.indexOf(from),b=html.indexOf(to,a);assert(a>=0&&b>a);return html.slice(a,b);}
 const pets=block('var ktPets=','var ktMicBalanco=');
 const faces=block('function ktPetRosto(','var ktPets=');
-const drums=block('var ktPandeiro=','function ktMesaKaraoke(');
+const drums=block('var ktPandeiro=','/* Karaokê box (17/11/2026)');
+// O desenho do pandeiro de parede mora em karaoke-palco-desenho.js desde 17/11/2026: a sala o cria com KaraokePalco.criar(D).
+const palco=fs.readFileSync(path.join(__dirname,'..','karaoke-palco-desenho.js'),'utf8');
+const palcoUse=";var ktPalcoT=window.KaraokePalco.criar({ktPandeiro:function(){return ktPandeiro;},ktPandeiroExtra:function(){return ktPandeiroExtra;},ktCaixaPulso:function(){return {};},KT_OL:function(){return 'rgba(28,14,58,.14)';},KT_INK:function(){return '#33245a';},nick:function(){return '';},krEu:function(){return {};},krBots:function(){return [];},meuChar:function(){return {};},ktCorMembro:function(){return '#fff';}});var ktPandeiroParede=ktPalcoT.ktPandeiroParede;";
 function setup(){
  let now=1000;const audio=[];
  const env={Math,performance:{now:()=>now},krWhimsicalReducedMotion:false,muted:false,
   krBots:[[160,400],[232,470],[332,470],[432,470],[532,470],[632,470],[732,470],[800,400]].map(([x,y],i)=>({x,y,nick:'Idol '+i})),
   krBolhas:[],ac:()=>null,beep:(...args)=>audio.push(['beep',...args]),krRuido:(...args)=>audio.push(['noise',...args]),ktEstrelinha:()=>{}};
- vm.createContext(env);vm.runInContext(faces+pets+drums,env);
+ env.window=env;env.document={createElement:()=>({getContext:()=>null})};vm.createContext(env);vm.runInContext(faces+pets+drums+'\n'+palco+palcoUse,env);
  return {env,audio,time:n=>{now=n;}};
 }
 for(const fps of [30,60,120])for(const i of [0,1,2]){

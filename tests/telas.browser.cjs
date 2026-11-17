@@ -53,7 +53,7 @@ async function rodar(browser,base,nome,opcoes){
     const r=await p.evaluate(()=>{
       const P=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,'width'),borrados=[];
       document.querySelectorAll('canvas').forEach(c=>{const R=c.getBoundingClientRect();if(R.width<60||R.height<40||R.bottom<0||R.top>innerHeight||getComputedStyle(c).visibility==='hidden')return;
-        const q=P.get.call(c)/(R.width*devicePixelRatio),teto=window.TW_NITIDEZ&&TW_NITIDEZ.escala(c)>=2;if(q<0.9&&!teto)borrados.push((c.id||c.className||'canvas')+' '+q.toFixed(2));});
+        const q=P.get.call(c)/(R.width*devicePixelRatio),teto=window.TW_NITIDEZ&&(TW_NITIDEZ.escala(c)>=2||(TW_NITIDEZ.limitado&&TW_NITIDEZ.limitado(c)));if(q<0.9&&!teto)borrados.push((c.id||c.className||'canvas')+' '+q.toFixed(2));});
       const tela=document.getElementById('twcTela')||document.body,slot=document.getElementById('twcEmbSlot');
       const texto=(slot||tela).innerText.trim().length,graficos=(slot||tela).querySelectorAll('canvas,img,svg').length;
       return {borrados,texto,graficos};

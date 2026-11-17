@@ -19,7 +19,7 @@
 <!-- Mesmo com JS/CSS anterior em cache, nunca mostrar a espera decorativa. -->
 <style id="twSemEsperaDecorativa">.twc-carrega{display:none!important;pointer-events:none}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-nitidez.js?v=8"></script>
+<script src="./tw-nitidez.js?v=9"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script>
@@ -408,8 +408,8 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=31"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=35"></script>
-<script src="./perfil.js?v=26"></script>
+<script src="./pet.js?v=36"></script>
+<script src="./perfil.js?v=27"></script>
 <script src="./gacha.js?v=4"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -445,10 +445,9 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function atalho(nome){var f=function(){var a=arguments;carregar().then(function(){if(window[nome]!==f)window[nome].apply(window,a);}).catch(function(){});};return f;}
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo.js?v=5"></script>
-<script src="./duo-pedido.js?v=2"></script>
+<script src="./duo-base.js?v=1"></script>
 <script src="./encontro.js?v=1"></script>
-<script src="./hub.js?v=28"></script>
+<script src="./hub.js?v=29"></script>
 <script src="./hub-layout.js?v=5"></script>
 <script src="./mapa-textos.js?v=3"></script>
 <script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
@@ -482,7 +481,7 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
 <script src="./charmaker.js?v=15"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=5"></script>
-<script src="./admin.js?v=3"></script>
+<script src="./admin-base.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
@@ -492,14 +491,14 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=36"><script src="./tw-humor.js?v=8"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=4"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=48"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=37"><script src="./tw-humor.js?v=8"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=5"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=49"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=36';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=37';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=8';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
-  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=4';vb.async=false;document.body.appendChild(vb);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=5';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=48';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=49';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
@@ -2553,113 +2552,7 @@ duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-win
 document.body.appendChild(duoOv);
 
 
-// poses só do Moon⭐Duo! (pegam carona no "V" e trocam os braços aqui)
-var DUO_POSE_FN = {
-  dmao: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 30); duoMao(x + 37, y + 30.5, c); },
-  dhigh: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 34.5, y + 12); g.fillStyle = c.skin; g.beginPath(); g.arc(x + 35.5, y + 10.5, 3, 0, 7); g.fill(); },
-  dguarda: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 33, y + 15.5); duoMao(x + 33.6, y + 14.8, c); },
-  dsegura: function(c, x, y){ duoBraco(x + 3, y + 26, x + 11, y + 28.5); duoBraco(x + 27, y + 26, x + 19, y + 28.5); g.fillStyle = c.skin; g.fillRect(x + 1, y + 24, 4, 3); g.fillRect(x + 25, y + 24, 4, 3); },
-  dselfie: function(c, x, y){
-    duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 13.5);
-    g.fillStyle = '#ff6fb5'; g.fillRect(x + 34, y + 5, 6.5, 10.5); g.fillStyle = '#2a2438'; g.fillRect(x + 34.8, y + 5.8, 4.9, 8.9);
-    g.fillStyle = 'rgba(255,255,255,.5)'; g.fillRect(x + 35.3, y + 6.3, 1.2, 4); duoMao(x + 36.5, y + 14, c);
-  },
-  dseis: function(c, x, y){   // "six seven": mãos para cima, uma sobe e a outra desce
-    var d = Math.sin(frame * .22) * 3.2;
-    [[3, -2.5, d], [27, 32.5, -d]].forEach(function(b){
-      duoBraco(x + b[0], y + 25.5, x + b[1], y + 21 + b[2]);
-      g.fillStyle = c.skin; g.beginPath(); g.ellipse(x + b[1], y + 19.6 + b[2], 3.6, 1.6, 0, 0, 7); g.fill();
-    });
-  },
-  dneon: function(c, x, y){   // braço apontando para o alto, a outra mão na cintura
-    duoBraco(x + 3, y + 25.5, x - 1, y + 29.5); duoBraco(x - 1, y + 29.5, x + 4, y + 32.5);
-    duoBraco(x + 27, y + 25.5, x + 36, y + 13);
-    g.save(); g.shadowColor = '#4dd8ff'; g.shadowBlur = 6; g.strokeStyle = c.skin; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x + 36.5, y + 12.5); g.lineTo(x + 39.5, y + 8.5); g.stroke(); g.restore();
-    duoMao(x + 36.6, y + 12.6, c);
-  }
-};
-var duoPoseAtrasOrig = perfPoseAtras;
-perfPoseAtras = function(c, x, y){
-  if(duoPoseForce && DUO_POSE_FN[duoPoseForce]){
-    charPose = duoPoseForce;
-    g.save(); g.fillStyle = c.skin; try{ DUO_POSE_FN[duoPoseForce](c, x, y); }catch(e){} g.restore();
-    g.fillStyle = c.skin; return true;
-  }
-  return duoPoseAtrasOrig(c, x, y);
-};
-
-// ---------- desenho ----------
-
-// ---------- telas ----------
-duoOv.addEventListener('input',function(e){
-  if(e.target.id!=='duoBusca')return;
-  duoBuscaCancelar();
-  var inp=e.target,q=inp.value.trim(),seq=duoBuscaSeq;
-  if(q.length<2){$('duoRes').innerHTML='';return;}
-  duoBuscaT=setTimeout(function(){
-    duoBuscaT=0;
-    if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q)return;
-    contaRpc('buscar_perfis',{p_q:q}).then(function(L){
-      var box=$('duoRes');
-      if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q||!box||!box.isConnected)return;
-      box.innerHTML=Array.isArray(L)&&L.length?L.filter(function(p){return !contaJ||p.nick.toLowerCase()!==contaJ.nick.toLowerCase();}).map(duoNickBtn).join(''):'<p class="perfcarr">'+escHtml(tr('Ninguém com esse nome.'))+'</p>';
-    }).catch(function(){});
-  },280);
-});
-duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.stopPropagation(); });
-$('duoCv').addEventListener('click', function(e){
-  if(!duoGu) return;
-  var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-  var inf = duoInfo(), G = duoGeo(duoMeuAv(), duoT), U = G.sc, chao = cv.height * .9, gap = inf[5] * U, sxE = cv.width / 2 - gap / 2, sxG = cv.width / 2 + gap / 2;
-  if(py < chao - 52 * U || py > chao + 10) return;
-  if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
-  else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
-});
-// ---------- Painel organizado em abas: Cena · Cenário · Expressões · Presente ----------
-duoOv.addEventListener('click', function(e){
-  var t = e.target, b;
-  if(t.id === 'duoX'){ duoFechar(); return; }
-  if((b = t.closest('[data-dtrava]'))){ duoTravaUI(b.dataset.dtrava); return; }
-  if((b = t.closest('[data-dcomprar]'))){ duoComprar(b.dataset.dcomprar, b); return; }
-  if(t.id === 'duoEntrar'){ contaEntrar(); return; }
-  if(t.id === 'duoTrocar'){ duoGu = null; duoEscolhaUI(); return; }
-  if((b = t.closest('[data-dnick]'))){ duoCarregar(b.dataset.dnick); return; }
-  if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
-  if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; $('duoPresBox').hidden = true; duoPalcoUI(); duoTemaGuardarUI(duoFundo); beep(988, .05, 'triangle', .04); return; }
-  if((b = t.closest('[data-dexeu]'))){ duoExEu = b.dataset.dexeu; duoPalcoUI(); return; }
-  if((b = t.closest('[data-dexgu]'))){ duoExGu = b.dataset.dexgu; duoPalcoUI(); return; }
-  if((b = t.closest('[data-dtab]'))){ duoTab = b.dataset.dtab; $('duoPresBox').hidden = true; duoTabUI(); beep(880, .04, 'triangle', .04); return; }
-  if((b = t.closest('[data-demo]'))){ duoPresEmo = b.dataset.demo; duoPresUI(); return; }
-  if((b = t.closest('[data-dqt]'))){ duoPresQt = +b.dataset.dqt; duoPresUI(); return; }
-  if(t.id === 'duoPresOk'){
-    t.disabled = true;
-    contaRpc('duo_presente', { p_nick: duoGu.nick, p_emoji: duoPresEmo, p_estrelas: duoPresQt }).then(function(r){
-      t.disabled = false;
-      if(r && r.ok){
-        if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(er){} setBest(); }
-        duoTab = 'cena'; duoTabUI(); duoMsg(duoPresEmo + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', duoGu.nick));
-        duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', duoPresEmo), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
-        [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .14, 'triangle', .04, i * .08); });
-      } else duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
-    }).catch(function(){ t.disabled = false; duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
-    return;
-  }
-  if(t.id === 'duoPng' || t.id === 'duoPngSem'){   // PNG com o cenário ou transparente (sem fundo)
-    var cv = document.createElement('canvas'); cv.width = 960; cv.height = 600;
-    try{ duoRender(cv.getContext('2d'), 960, 600, t.id === 'duoPng', false); }catch(er){}
-    t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
-    if(sfx.card) sfx.card();
-  }
-  if(t.id === 'duoPhone'){
-    // Guarda apenas após toque explícito, usando a cena e os bloqueios já validados pelo Moon⭐Duo!.
-    if(!duoGu || !contaJ || !petAtivo()){ duoMsg(petPhoneMomentoTexto(2));return; }
-    var foto = document.createElement('canvas'); foto.width = 960;foto.height = 600;
-    var png = '';
-    try{duoRender(foto.getContext('2d'), 960, 600, true, false);png=foto.toDataURL('image/png');}catch(er){}
-    duoMsg(petPhoneMomentoTexto(petPhoneMomentoGuardar('duo',png) ? 1 : 2));
-  }
-});
-
+// poses, desenho, telas e abas do Moon⭐Duo!: em duo-tela.js (baixa quando o Duo abre, 17/11/2026)
 // ---------- Traduções do Moon⭐Duo! ----------
 window.TW_I18N.rows.moonDuoLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 

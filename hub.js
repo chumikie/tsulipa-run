@@ -134,8 +134,8 @@ function hubTrioReage(i){
   HUB_REAGE = { i:i, t0:hubT, txt:f[1], emo:[0,1,2,3,4].map(function(n){ return { e:n % 2 ? f[2] : HUB_TRIO_EMO[i][n % 3], dx:(n - 2) * 9 + (Math.random() * 6 - 3), v:.5 + Math.random() * .5 }; }) };
   hubVozTocar(f[0]);
 }   // [personagem, pose, posição, pet, expressão]
-function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do momento (e com a roupa do tema)
-  var cv = $('hubCv'); if(!cv) return;
+function hubDesenhar(alvo){   // o TsuLiPa (trio) com os pets, no fundo do tema do momento (e com a roupa do tema)
+  var cv = alvo || $('hubCv'); if(!cv) return;   // alvo: o palco do Início no visual novo (desenha direto lá, sem cópia)
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = hubT || 1, roupa = HUB_ROUPA_TEMA[temaAtual()] || '';
   var sc = H2 / 96, chao = H2 * .9;
   var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame;
@@ -209,7 +209,12 @@ function hubDesenhar(){   // o TsuLiPa (trio) com os pets, no fundo do tema do m
 }
 function hubLoop(ms){
   hubAnim = 0; if(!twAnimacaoVisivel(hubOv)) return;
-  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1,hubPrevT=hubT;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2))) hubDesenhar();
+  var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('hubCv'),ms):1,hubPrevT=hubT;hubT+=delta; if((mobile30&&TWMotionLifecycle.render30Due($('hubCv'),ms))||(!mobile30&&Math.floor((hubT+1e-6)/2)>Math.floor((hubPrevT+1e-6)/2))){
+    // Visual novo (17/11): desenha direto no palco do Início; com o palco fora da tela, não desenha (o hubCv não aparece).
+    // Antes o hubCv era desenhado e depois copiado inteiro a cada quadro: ~80% do processador parado no Início.
+    var alvo = typeof window.twcPalcoAlvo === 'function' ? window.twcPalcoAlvo() : null;
+    if(alvo !== false) hubDesenhar(alvo || undefined);
+  };
   hubAnim = requestAnimationFrame(hubLoop);
 }
 function hubPetInfo(){   // como está o pet ativo (sem mexer no save): [texto, precisa de atenção]

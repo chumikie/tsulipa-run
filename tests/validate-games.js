@@ -193,8 +193,8 @@ assert(translations.includes("Ranking temporariamente indisponível")&&
        translations.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
        !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
   "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
-const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar(){"))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
-const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar("),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar("))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
+const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar("));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
 assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
        lab.includes("var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});")&&
@@ -331,7 +331,7 @@ assert(preview.includes("contaRpc('kt_run_start'")&&preview.includes("contaRpc('
        preview.includes("card.classList.toggle('tw-alert-pink',pendente)")&&preview.includes("sub.textContent = w[5]"),
   "Karaoke Time: ponte do ranking online e barra própria no Top Idols");
 assert(kTime.includes("window.ktOnline.gate(function(info){window.ktShowAdmissionPending=false;kt.start('confirmed',info);},useTicket)")&&kTime.includes("window.ktOnline.finish(result)")&&
-       kTime.includes("window.ktOnline.boards()||rules.boards(c.day)"),
+       read("karaoke-ranking.js").includes("window.ktOnline.boards()||rules.boards(c.day)"),
   "Karaoke Time: shows passam pelo servidor quando há conta");
 assert(kTime.includes("init:apply,live:live,")&&preview.includes("plateia:function(){return contaRpc('vitrine_idols')"),
   "Karaoke Time: dentro do site a plateia vem das contas do site, não da foto de 30/10");

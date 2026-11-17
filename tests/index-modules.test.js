@@ -20,7 +20,7 @@ const MODULOS = [
   { js: "pet.js", css: "pet.css", tem: ["petSalaCarregar", "petDrawCustom", "PET_FOOD"], cssTem: [/\.petacts\{/, /#petCam\{/] },
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
-  { js: "duo.js", css: "duo.css", tem: ["duoAbrir", "duoRender", "duoComprar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] },
+  { js: "duo-base.js", css: "duo.css", tem: ["duoAbrir", "duoFechar", "lojaItem", "perfLoja2UI", "DUO_FALAS", "duoFundoDesenhar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] },
   { js: "encontro.js", css: "encontro.css", tem: ["encMostrar", "encCena", "ENC_EMO"], cssTem: [/#encCv\{/, /\.enchero\{/] },
   { js: "hub.js", css: "hub.css", tem: ["hubMostrar", "hubCardsUI", "twRankRender"], cssTem: [/\.hubidols\{/, /\.hubcfg\{/] },
   { js: "conta.js", css: null, tem: ["contaEntrar", "contaUI"], cssTem: [] }
@@ -112,4 +112,28 @@ assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src
   decl.forEach((n) => assert(base.includes("\n//→" + n), "perfil.js marca o lugar de " + n));
   console.log("✓ perfil-tela.js (" + decl.length + " declarações, sob demanda)");
 }
-
+// Moon⭐Duo! sob demanda (17/11/2026): duo.js, duo-tela.js e duo-pedido.js baixam quando o Duo abre (duo-base.js chama).
+{
+  const base = fs.readFileSync(path.join(root, "duo-base.js"), "utf8"), jogo = fs.readFileSync(path.join(root, "duo.js"), "utf8");
+  for (const f of ["duo.js", "duo-tela.js", "duo-pedido.js"]) assert(!html.includes('<script src="./' + f + '?v='), f + " não carrega na abertura");
+  assert(/arqs = \['\.\/duo\.js\?v=\d+', '\.\/duo-tela\.js\?v=\d+', '\.\/duo-pedido\.js\?v=\d+'\]/.test(base), "duo-base.js baixa os três, nessa ordem");
+  const acessos = [];
+  const sandbox = new Proxy({}, { has: (t, k) => typeof k === "string" && !(k in t) ? (acessos.push(k), false) : k in t, get: (t, k) => t[k], set: (t, k, v) => { t[k] = v; return true; }, defineProperty: (t, k, d) => Reflect.defineProperty(t, k, d) });
+  vm.runInContext(jogo, vm.createContext(sandbox), { filename: "duo.js" });
+  assert.deepEqual(acessos.filter((k) => !["undefined", "NaN", "Infinity"].includes(k)), [], "duo.js só declara");
+  const substitutos = ["duoAbrir", "duoFechar", "duoLoop"];   // duo-base.js tem substitutos que o duo.js troca ao chegar
+  const dup = Object.keys(sandbox).filter((n) => !substitutos.includes(n) && (noIndex.has(n) || vistos.has(n) || new RegExp("^(?:function " + n.replace(/\$/g, "\\$") + "\\b|var " + n.replace(/\$/g, "\\$") + "\\b)", "m").test(base)));
+  assert.deepEqual(dup, [], "duo.js não repete nada: " + dup.join(", "));
+  assert(base.includes("if(window.duoFechar !== embrulho){ duoFecharJogo = window.duoFechar; window.duoFechar = embrulho; }"), "o embrulho do duoFechar (música) sobrevive à chegada do duo.js");
+  console.log("✓ Moon⭐Duo! sob demanda: duo.js (" + Object.keys(sandbox).length + " declarações), duo-tela.js e duo-pedido.js");
+}
+// Moderação só para admin (17/11/2026): admin-base.js na abertura; admin.js baixa quando o Perfil confirma a conta admin.
+{
+  const base = fs.readFileSync(path.join(root, "admin-base.js"), "utf8"), adm = fs.readFileSync(path.join(root, "admin.js"), "utf8"), perfil = fs.readFileSync(path.join(root, "perfil.js"), "utf8");
+  assert(html.includes('<script src="./admin-base.js?v=') && !html.includes('<script src="./admin.js?v='), "admin.js fora da abertura");
+  for (const n of ["perfAdmin", "contaAdmin", "admLivre", "admLivreBtn", "admItens", "hubIdolsDados", "ADM_LIVRE_KEY", "admIdol"]) assert(new RegExp("^(?:var|function) " + n + "\\b", "m").test(base) && !new RegExp("^(?:var|function) " + n + "\\b", "m").test(adm), n + " só no admin-base.js");
+  assert(/s\.src = '\.\/admin\.js\?v=\d+'/.test(base) && perfil.includes("perfAdmin = !!d.admin; if(perfAdmin && typeof admCarregar === 'function') admCarregar();"), "admin.js baixa quando a conta é admin");
+  for (const n of ["admPainel", "admExtra", "admContasUI", "admIdolPrev", "admIdolPng", "admRoupaPng", "admVisualRoupa", "admAcao", "admBarraHtml", "admOpts", "admIdolFormHtml", "admCamarimOpts"]) assert(base.includes(n) && new RegExp("^function " + n + "\\(", "m").test(adm), n + ": substituto na base e o de verdade no admin.js");
+  assert(/^var hubIdolsDados = null, hubIdolsEm = 0;/m.test(base), "hubIdolsEm junto");
+  console.log("✓ Moderação sob demanda: admin-base.js na abertura, admin.js só para admin");
+}

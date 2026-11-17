@@ -55,7 +55,7 @@ function scenario(failAt){
   ok.ctx.end();await flush();
   assert.equal(ok.calls.filter(x=>x.name==='iniciar_corrida').length,1);
   assert.equal(ok.calls.filter(x=>x.name==='terminar_corrida').length,1);
-  assert(ok.elements.get('res').innerHTML.includes('2300 pontos'));
+  assert(ok.elements.get('res').innerHTML.includes('<strong>2300</strong> <span>pontos</span>'));
   ok.ctx.end();await flush();
   assert.equal(ok.calls.filter(x=>x.name==='terminar_corrida').length,1,'duplicate end never sends twice');
 
@@ -100,6 +100,6 @@ function scenario(failAt){
   await flush();
   assert.equal(early.calls.filter(x=>x.name==='terminar_corrida').length,1,
     'item drawing failure must not prevent online finalization');
-  assert(early.elements.get('res').innerHTML.includes('2300 pontos'));
+  assert(early.elements.get('res').innerHTML.includes('<strong>2300</strong> <span>pontos</span>'));
   console.log('✓ Center Run: finalization precedes optional UI and is sent only once');
 })().catch(e=>{console.error(e);process.exitCode=1;});

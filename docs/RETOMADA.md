@@ -1,3 +1,35 @@
+## Rodada 17/11/2026 — visual novo também no computador e no tablet
+
+**Entrou** (branch `feat/visual-novo-computador`, PR draft)
+- **Padrão em todos os aparelhos** (pedido do dono): sem escolha guardada, o visual novo abre em telefone, tablet e computador (`on=pref!=='0'` no `index.html`). Quem tocou em Ajustes → "Voltar ao visual clássico" (`brs48cr_celular='0'`) continua no clássico; `?celular=0|1` segue valendo.
+- **Faixa de título quebrada em telas largas:** o recuo esquerdo (que alinha o título à coluna de 980 px) crescia com a janela, mas a faixa ficava presa em 560 px; em 1920 px o título virava uma coluna de ~70 px colada na esquerda (print do dono, tela do Mapa). Agora a largura soma o recuo: `min(calc(560px + max(0px,(100% - 980px)/2)),86%)`. Celular igual a antes.
+- Versões: `tw-celular.css?v=33`, `tw-celular.js?v=44`. Teste novo em `celular-previa.test.js` para a largura da faixa.
+- **Conferido no Chrome sem tela** (sem `?celular=1`, com `?demo=1`): 1920×1080, 2560×1440, 1366×768, tablet 1024×768 e iPhone 13; Início, Menu, Jogos, Calendário, Mapa, Missões e Perfil, sem erro de script; escolha do clássico respeitada ao recarregar.
+
+- **Nitidez no computador** (relato do dono: "qualidade muito inferior"): no visual novo as janelas ficam ~708 px no computador e os palcos desenhados em 640 px (ou o quarto do Pet em 360) eram ampliados; com zoom do Windows a 150% chegavam a 60% da nitidez.
+  - `twNitido(cv)` (em `perfil.js`): dá ao canvas pixels reais pelo tamanho na tela × zoom (degraus de 0,25, teto 3×) e uma escala por baixo; `cv.width/height` continuam respondendo o tamanho lógico, então o desenho e os toques do jogo não mudam. Ligado na Loja, Gacha, Café, Handshake e na prévia do Montar Idol. **Só usar em canvas com largura no CSS e que não seja lido de volta** (getImageData/drawImage dele mesmo).
+  - Quarto do Pet: `petFitCanvas` passa a usar o tamanho na tela (era só o zoom) e é conferido a cada quadro.
+  - `perfCharContorno` desenha o boneco na resolução real do destino (antes, sempre na lógica e ampliado); sem escala, igual a antes.
+  - Medido (1280 px, zoom 100% e 150%): Pet, Loja, Gacha, Café e Handshake de 0,5–0,9 para ≥ 1,0. Ainda abaixo de 1 com zoom 150%: o palco do Início (0,87, cópia do `hubCv`).
+- **Celular com o nome do Idol:** "SamiPhone" também no aviso de recado do Humor, na dica da câmera do Camarim e no "guardar foto" do Karaoke (já valia na marca e em Momentos). Sem conta: TsuPhone.
+- **Karaoke com bloco vazio enorme abaixo dos rankings:** a altura avisada ao site era `documentElement.scrollHeight`, que nunca fica menor que o iframe; depois de crescer uma vez não encolhia (~760 px vazios no celular). Agora mede o `body`. O teste de navegador da sala fixa o hub clássico (é o que ele mede); o lobby novo tem os próprios testes.
+- Teste novo: `tests/visual-computador.test.js`.
+
+### Vida no bairro (mesma PR, 17/11 tarde) — ideias do The Urbz escolhidas pelo dono
+Módulo novo `tw-bairro.js?v=1` (carrega com o visual novo, logo depois do `tw-humor.js`). **Tudo neste aparelho** (`brs48cr_bairro_v1`, separado por conta), **nada de estrela, ranking ou servidor**. Conta só o que o Humor já conta: jogo confirmado pelo servidor (ou treino de visitante), nunca abrir janela; o `tw-humor.js` agora passa o jogo aos ouvintes (`avisar(tipo, ev, fraco)`).
+- **Bico da rua (3 níveis):** os jogos de cada rua do Mapa contam pontos (Star Stage: Run/Karaoke/Handshake · Galeria: Café/Gacha · Vila: Bloom · Praça: frases, corações, passeios · Arena: Battle · Jardim: Sora/Duo/Studio). Níveis em 2, 6 e 15 pontos, **no máximo 4 por rua por dia** (anda com os dias). Prêmios só de enfeite: nível 1 selo da rua, nível 2 um **gesto**, nível 3 o título "Estrela da rua".
+- **Gestos** = poses grátis + expressões que o desenho base já tem (V, Coração, Tchau × sorriso/piscadinha/surpresa/apaixonado/olhar). Nenhuma arte nova, nenhuma pose paga liberada.
+- **Bagunça da semana:** troca no domingo 0h de Brasília (junto com o Karaoke), roda as 6 ruas: Passarinho Distraído (Praça), Gatinho Paparazzi (Arena), Nuvem Resmungona (Jardim), Pombinho Maestro (Star Stage), Coelhinha Gulosa (Galeria), Borboleta Sapeca (Vila). Resolve com o gesto do bico de **outra** rua (nível 2), uma vez por semana; a cena mostra o seu Idol fazendo o gesto. Os bichos são os mesmos desenhos do Mapa (`twMapaBicho` em `tw-mapa.js`; borboleta e passarinho foram separados em `voadorDesenhar`, desenho igual); a nuvem é desenhada no próprio módulo. Se a semana acaba sem resolver, "os vizinhos resolveram juntos" (sem castigo).
+- **Mensagens no *Nick*Phone:** o Chat do celular do Camarim ganha uma fala do trio a mais (Tsu: bagunça e pista do gesto; Lirika: nível novo ou dica de bico; Pati: guia ou "Estrela da rua"), com número de novas no app Chat e em cada contato; lida ao abrir a conversa.
+- **Primeiros dias guiados:** só em conta nova (sem recorde nem histórico do Humor neste aparelho). Dia 1 Star Stage + Praça, dia 2 Galeria, dia 3 Vila, dia 4 Jardim, dia 5 Arena. **Nada é trancado:** rua apagada ganha véu "em breve" no Mapa e, ao tocar, pergunta Entrar / Ver tudo agora / Depois.
+- **Onde aparece:** linha "Bagunça da semana" no Hoje do Início (com o bico mais perto de subir), atalho "Vida no bairro" no Menu, janela própria (moldura igual às dos jogos, `z-index` 22), véu do guia no Mapa e Chat do celular. No clássico não aparece (o Humor também não).
+- Textos nos 6 idiomas no próprio módulo (com "do/da", "no/na" em português e espanhol). Peso: 45 KB (17 KB comprimido), só no visual novo.
+- Teste novo `tests/bairro.test.js` (contagem, limite diário, rotação, gesto, guia, falas, idiomas, sem moeda/servidor). Conferido no Chrome sem tela (iPhone 13 e 1440 px), as 6 bagunças semana a semana, guia no Mapa, Chat do DemoPhone; sem erro de script; clássico intacto.
+- **Não testado:** conta real (o bico conta com os RPCs confirmados de verdade), iPhone/Android físicos. **Ideias para depois:** roupa como prêmio do nível 3 (precisa do servidor, porque a loja é validada lá), o capítulo de domingo do Idol⭐News! contando o fim da bagunça, levar o progresso para a conta (SQL, com o ChatGPT e OK do dono).
+- Palco do Início continua 0,87 de nitidez com zoom 150%: é cópia do `hubCv`; resolver pede mudar o tamanho do hub (também usado no clássico) — deixado para outra rodada.
+
+**Falta:** conferir em computador real (Windows/Chrome) e no iPad; merge do dono.
+
 ## Rodada 16/11/2026 (tarde) — PR #98, versão v3.0
 
 **Entrou**

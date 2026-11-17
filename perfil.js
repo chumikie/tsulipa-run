@@ -419,17 +419,21 @@ function perfFundo(x, W2, H2, f, cor, t){
   }
 }
 function perfCharContorno(x, tx, ty, sc, desenha){
-  var ux = -42, uy = -28, uw = 130, uh = 80, w = Math.ceil(uw * sc), h = Math.ceil(uh * sc);
+  // k = escala que o canvas de destino já usa (zoom do aparelho, twNitido, petDpr). O boneco é desenhado no
+  // auxiliar com essa resolução; antes saía na resolução lógica e era ampliado (borrado no computador). Sem escala, k = 1.
+  var k = 1; try{ var mt = x.getTransform && x.getTransform(); if(mt) k = Math.min(4, Math.max(1, Math.hypot(mt.a, mt.b))); }catch(e){}
+  var ux = -42, uy = -28, uw = 130, uh = 80, w = Math.ceil(uw * sc * k), h = Math.ceil(uh * sc * k);
   if(!perfCvC) perfCvC = document.createElement('canvas');
   var cv = perfCvC;
   if(cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
   var og = g, cx2 = cv.getContext('2d'), wasPortrait = perfCharPortrait;
   cx2.setTransform(1, 0, 0, 1, 0, 0); cx2.clearRect(0, 0, w, h);
-  try{ perfCharPortrait = true; g = cx2; g.save(); g.scale(sc, sc); g.translate(-ux, -uy); desenha(); g.restore(); }
+  try{ perfCharPortrait = true; g = cx2; g.save(); g.scale(sc * k, sc * k); g.translate(-ux, -uy); desenha(); g.restore(); }
   finally{ perfCharPortrait = wasPortrait; g = og; charPose = ''; perfAntena = ''; }
   x.save();
-  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
-  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5; x.drawImage(cv, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  // shadowBlur não segue a escala do contexto: multiplicar por k mantém o mesmo contorno de sempre.
+  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.restore();
 }
 function perfPetDoAvatar(av){   // pet guardado no avatar (só chaves conhecidas)
@@ -1038,4 +1042,32 @@ function perfTelaCarregar(){
     e.onload=ok;e.onerror=function(){perfTelaP=null;er(new Error('perfil'));};document.head.appendChild(e);})
     .then(function(){PERF_TELA_PRONTA=true;});
   return perfTelaP;
+}
+
+/* Nitidez dos palcos em canvas (17/11/2026). Os jogos desenham num canvas de tamanho fixo (ex.: 640 × 420) com
+   coordenadas fixas; no computador o canvas aparece maior que isso e com zoom do Windows (125–150%), então ficava
+   ampliado e borrado. twNitido(cv) dá ao canvas mais pixels reais e uma escala por baixo, sem o jogo perceber:
+   cv.width / cv.height continuam respondendo o tamanho lógico de antes (o jogo e os toques usam esse valor).
+   Só para canvas com largura no CSS (width:100%) e que não são lidos de volta (getImageData/drawImage do próprio).
+   Chamado no começo de cada desenho; só refaz quando o degrau de 0,25 muda. Teto de 3×. */
+function twNitido(cv){
+  if(!cv || !cv.getContext) return cv;
+  var st = cv.__twN, P = window.HTMLCanvasElement && HTMLCanvasElement.prototype;
+  if(!st){
+    var dw = P && Object.getOwnPropertyDescriptor(P, 'width'), dh = P && Object.getOwnPropertyDescriptor(P, 'height');
+    if(!dw || !dh || !dw.set || !dh.set) return cv;
+    st = cv.__twN = { w:dw.get.call(cv), h:dh.get.call(cv), k:1, dw:dw, dh:dh };
+    try{
+      Object.defineProperty(cv, 'width', { configurable:true, get:function(){ return st.w; }, set:function(v){ st.w = Math.max(0, Math.floor(+v || 0)); st.k = 0; twNitido(cv); } });
+      Object.defineProperty(cv, 'height', { configurable:true, get:function(){ return st.h; }, set:function(v){ st.h = Math.max(0, Math.floor(+v || 0)); st.k = 0; twNitido(cv); } });
+    }catch(e){ cv.__twN = null; return cv; }
+  }
+  if(!st.w || !st.h) return cv;
+  var z = window.devicePixelRatio || 1, vis = cv.clientWidth || st.w;
+  var k = Math.min(3, Math.max(1, Math.ceil(Math.max(z, z * vis / st.w) * 4) / 4));
+  if(k !== st.k){
+    st.k = k; st.dw.set.call(cv, Math.round(st.w * k)); st.dh.set.call(cv, Math.round(st.h * k));
+    try{ cv.getContext('2d').setTransform(k, 0, 0, k, 0, 0); }catch(e){}
+  }
+  return cv;
 }

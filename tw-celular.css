@@ -58,7 +58,9 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 
 /* faixa de título inclinada (Link! Like!) */
 .twc-faixa{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 16px 10px max(20px,calc((100% - 980px)/2 + 20px));
-  width:min(560px,86%);box-sizing:border-box;border-radius:0 40px 40px 0;background:#fff;border:2px solid #fff;box-shadow:0 4px 14px rgba(80,40,160,.10),inset 0 -3px 0 #f1ebff;z-index:1}
+  /* A largura soma o recuo que alinha o título à coluna de 980 px; sem isso, em telas largas (≥1500 px) o recuo
+     comia a faixa e o título virava uma coluna de 70 px colada na esquerda. No celular continua min(560px,86%). */
+  width:min(calc(560px + max(0px,(100% - 980px)/2)),86%);box-sizing:border-box;border-radius:0 40px 40px 0;background:#fff;border:2px solid #fff;box-shadow:0 4px 14px rgba(80,40,160,.10),inset 0 -3px 0 #f1ebff;z-index:1}
 .twc-faixa span{display:flex;flex-direction:column;gap:1px;min-width:0}
 .twc-faixa h1{margin:0;font:400 23px 'Mochiy Pop One',sans-serif;letter-spacing:.5px;outline:0;color:var(--twc-f2);-webkit-text-stroke:.5px #fff;text-shadow:0 2px 0 color-mix(in srgb,var(--twc-f2) 20%,#fff)}
 .twc-faixa small{font-size:12px;font-weight:700;color:var(--twc-sub)}

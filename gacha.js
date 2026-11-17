@@ -86,7 +86,7 @@ function gachaAbrir(){ gachaAgora = false;   // abre por cima da tela de início
   if(typeof gachaCardsCarregar === 'function') gachaCardsCarregar(); gachaOv.hidden = false; gachaT = 0; gachaGiro = -1; gachaUI(); gachaCardUI(); if(!gachaAnim) gachaAnim = requestAnimationFrame(gachaLoop); gachaConferir(); if(hubComecou) hubMusicaTocar(); }
 function gachaFechar(){ gachaOv.hidden = true; hubMostrar(); }
 function gachaDesenhar(){
-  var cv = $('gachaCv'), x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;
+  var cv = $('gachaCv'); if(typeof twNitido === 'function') twNitido(cv); var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;
   x.clearRect(0, 0, W2, H2);
   perfFundo(x, W2, H2, 'temporada', '#ff6fb5', t);
   var bx = W2 * .62, chao = H2 * .9;

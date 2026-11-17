@@ -19,7 +19,10 @@
  };
  var dialog,image,print,share,keep,download,frameDownload,back,close,status,active=null,host=null;
  function text(i){var lang=window.KT_LANG?window.KT_LANG():document.documentElement.lang.split('-')[0];return (labels[lang]||labels.pt)[i];}
- function keepText(i){var lang=window.KT_LANG?window.KT_LANG():document.documentElement.lang.split('-')[0];return (keepLabels[lang]||keepLabels.pt)[i];}
+ function keepText(i){var lang=window.KT_LANG?window.KT_LANG():document.documentElement.lang.split('-')[0],s=(keepLabels[lang]||keepLabels.pt)[i];
+  // "SamiPhone": o nome vem da página do site (petPhoneNome); o Karaoke avulso continua TsuPhone.
+  try{var nm=window.parent&&window.parent!==window&&window.parent.petPhoneNome;if(typeof nm==='function')s=String(s).split('TsuPhone').join(nm());}catch(e){}
+  return s;}
  function position(){
   if(!dialog)return;
   var top=0,bottom=window.innerHeight;

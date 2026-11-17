@@ -925,3 +925,8 @@ body.tw-cel .cmfavs .cmfavguardar:focus-visible,body.tw-cel .cmpasso:focus-visib
 body.tw-cel .cmgrade{gap:9px!important}
 body.tw-cel .cmabas{gap:8px!important;margin-bottom:9px}
 @media(max-width:380px){body.tw-cel .cmpasso span{font-size:12px}body.tw-cel .cmfavs{gap:7px}}
+/* Novidades (17/11): cada novidade separada, em vez de um paredão de texto */
+body.tw-cel .twc-novidades-conteudo ul{display:flex;flex-direction:column;gap:8px;padding:0;margin:0;line-height:1.45}
+body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;background:rgba(155,48,217,.07);font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.tw-cel .twc-novidades-conteudo li{background:rgba(194,122,255,.10)}}
+:root[data-theme="dark"] body.tw-cel .twc-novidades-conteudo li{background:rgba(194,122,255,.10)}

@@ -120,3 +120,17 @@ html body .battlep .battle-resultado>p:not([class]){color:#5a3f8a}
 /* habilidade de cada card (dispara no ritmo durante o show) */
 .battle-skill{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--c) 22%,#fff);color:#432675;font:800 11px "M PLUS Rounded 1c",sans-serif;white-space:nowrap}
 .battle-skillres{margin-top:2px}
+
+/* 17/11 · mesmo formato dos outros jogos: largura de janela de jogo (não de página), seções sem caixa dupla,
+   escalação com seletor no estilo do site em vez do select cinza do navegador */
+.battlep{max-width:480px}
+.battle-rival,.battle-escalar{border:0;background:none;padding:4px 0;margin:6px 0 12px}
+.battlep .battle-rival h3,.battlep .battle-escalar h3{display:table;margin:0 auto 9px;padding:3px 14px;border-radius:99px;
+ background:linear-gradient(105deg,#7b3ff0,#9b30d9);color:#fff;font-size:13px;line-height:1.5}
+.battle-idol{border-radius:18px}
+.battle-slot{background:linear-gradient(180deg,#fff,#faf6ff);border:1.5px solid #e6dbff}
+.battle-slot select{appearance:none;-webkit-appearance:none;border-radius:99px;border:2px solid #d7c0ff;font-weight:800;
+ padding:6px 34px 6px 14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237b3ff0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
+.battle-slot select:hover{border-color:#b896ff}
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]) body .battlep .battle-rival>p.battle-hint,html:not([data-theme="light"]) body .battlep .battle-escalar>p.battle-hint{color:#d6c4ff}}
+html[data-theme="dark"] body .battlep .battle-rival>p.battle-hint,html[data-theme="dark"] body .battlep .battle-escalar>p.battle-hint{color:#d6c4ff}

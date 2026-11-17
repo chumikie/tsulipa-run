@@ -65,7 +65,7 @@
 </style>
 <link rel="stylesheet" href="./hub.css?v=10">
 <link rel="stylesheet" href="./shop.css?v=5">
-<link rel="stylesheet" href="./jornal.css?v=14">
+<link rel="stylesheet" href="./jornal.css?v=15">
 <style>
 
 .hubaviso[hidden],.admform[hidden]{display:none}
@@ -470,7 +470,7 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=10'),arq('script','./battle.js?v=16')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=12'),arq('script','./battle.js?v=17')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
@@ -489,9 +489,9 @@ try{fone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.he
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref==='1'||(pref!=='0'&&fone);
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=30"><script src="./tw-humor.js?v=6"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-lado.js?v=1"><'+'/script><script src="./tw-celular.js?v=41"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=31"><script src="./tw-humor.js?v=6"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-lado.js?v=1"><'+'/script><script src="./tw-celular.js?v=41"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=30';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=31';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=6';hm.async=false;document.body.appendChild(hm);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
   var ld=document.createElement('script');ld.src='./tw-lado.js?v=1';ld.async=false;document.body.appendChild(ld);

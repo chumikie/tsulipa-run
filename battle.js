@@ -344,7 +344,7 @@ function desenharMiniaturas(){
  for(var i=0;i<L.length;i++){
    var cv=L[i],x=cv.getContext&&cv.getContext('2d');if(!x)continue;
    x.clearRect(0,0,cv.width,cv.height);
-   desenharIdol(x,cv.getAttribute('data-battle-av'),cv.getAttribute('data-meu')==='1',cv.width/2,cv.height-12,2.9,t,{});
+   desenharIdol(x,cv.getAttribute('data-battle-av'),cv.getAttribute('data-meu')==='1',cv.width/2,cv.height-8,2.6,t,{});
  }
 }
 function render(){

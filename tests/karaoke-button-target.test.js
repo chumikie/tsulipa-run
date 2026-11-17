@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const source = html.match(/var KT_HIT_WINDOWS=\{perfect:45,good:100\},KT_NOTE_PX_PER_MS=\.21,KT_NOTE_HALF_HEIGHT=4;[\s\S]*?\n return top\+travel\*Math\.pow\(progress,3\);\}/);
 const songs = html.match(/var songs=\{[\s\S]*?\n\};/);
 assert(source && songs, 'Uma única janela de acerto alimenta movimento e julgamento');

@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-const html = fs.readFileSync(require('node:path').join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const songsSource = html.match(/var songs=\{[\s\S]*?\n\};/);
 const lanesSource = html.match(/Object\.keys\(songs\)\.forEach\(function\(k\)\{[^\n]+/);
 const mapSource = html.match(/function makeNoteMap\(song,total,step,start\)\{[\s\S]*?\n \}return notes;\}/);

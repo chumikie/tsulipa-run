@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 
 function trecho(ini, fim){ const a = html.indexOf(ini), b = html.indexOf(fim, a); assert.ok(a > 0 && b > a, ini); return html.slice(a, b); }
 function audioFalso(){

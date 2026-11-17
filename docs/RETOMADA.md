@@ -1,3 +1,9 @@
+## Mesma PR #110 — passo 4: `karaoke-show.js` (17/11/2026, 17h)
+- O show de ritmo (sons sintetizados, notas, acertos, combo, pausa, retomada e fim do show; o antigo `var kt=(function(){…})()`) foi para `karaoke-show.js` (36 KB). A sala cria com `KaraokeShow.criar({…})`; os 35 nomes que o show usa da sala chegam como leitura na hora (`D.nome()`), porque alguns são trocados depois de criado (ex.: `krUI`). Nenhum deles é reescrito pelo show.
+- **Prova de que só mudou de lugar:** `tests/karaoke-fonte.js` remonta o HTML antigo a partir dos dois arquivos e o resultado é idêntico byte a byte ao commit anterior. Os 13 testes que extraíam trechos do show do HTML usam esse ajudante; teste novo `karaoke-show-arquivo.test.js`.
+- `karaoke-time.html`: 403 KB (início do dia) → 321 KB. **Plano da #109 concluído** (ranking, biblioteca, enfeites, show).
+- Conferido aqui: 119 testes rápidos e um show aberto no Android simulado (sem erro, foto inteira). Testes de navegador ficam para o CI.
+
 ## Mesma PR #110 — Karaoke dividido (passos 2 e 3) e mais leve no show do celular (17/11/2026, fim da tarde)
 
 **Arquivos novos** (código igual, só mudou de lugar; o que vem da sala chega por parâmetro):
@@ -19,7 +25,7 @@
 
 - **Coluna do visual novo no PC grande:** a largura virou a variável `--twc-col` (`tw-celular.css`): 980 px como antes, **1240 px a partir de 1500 px** e **1360 px a partir de 1800 px**. Topo, faixa de título e páginas seguem a mesma variável (nada mais tem 980 px fixo). Em telas ≥ 1500 px o **Calendário** vira duas colunas (mês | dia escolhido) e o **Mapa** não passa da altura da tela (`min(--twc-col, (100vh − 360px) × 1,6)`), para os balões de "Falar" continuarem à vista. Abaixo de 1500 px nada muda. Conferido em 1920×1080, 1536×864 e 1366×768: sem erro e sem rolagem lateral.
 - **`karaoke-ranking.js?v=1` (passo 1 do plano da #109):** saíram do `karaoke-time.html` o ranking da semana (Pontuação, Mais shows, Quem mais evoluiu), a música da semana, as abas, a linha "Você" e o `ktBoardsAgora`/placar da sala. **Código igual, só mudou de arquivo:** o `ktMeta` chama `KaraokeRanking.criar({$,tr,rules,context,avatar})` e usa `render()`/`reset()`. O `KaraokeShowRules` (regras e contas do ranking) continua no HTML. `karaoke-time.html`: 403 → 398 KB. Conferido na sala a 390 e 1366 px, vazio e com ranking online de mentira: medalhas, "Você" em 9º, 👑 do líder na música da semana, rostinhos desenhados, troca de aba e `ktMetaRefresh`.
-- **Próximos passos do plano:** ~~`karaoke-biblioteca.js`~~ e ~~`karaoke-palco-desenho.js`~~ (feitos, ver acima) → `karaoke-show.js`. O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
+- **Próximos passos do plano:** ~~`karaoke-biblioteca.js`~~ e ~~`karaoke-palco-desenho.js`~~ (feitos, ver acima) → ~~`karaoke-show.js`~~ (feito). O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
 
 ## Auditoria de leveza — 17/11/2026 (noite), depois de #105–#109 no ar
 

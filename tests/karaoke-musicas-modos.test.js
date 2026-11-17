@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const M=require('../karaoke-musicas-modos.js');
-const html=fs.readFileSync(path.join(__dirname,'..','karaoke-time.html'),'utf8');
+const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 
 const chaves=M.lista.map(m=>m.key);
 assert.deepEqual(chaves,['kawaii','tensa','dificil','alien','unit','sora','vitrine'],'sete trilhas novas, na ordem escolhida');

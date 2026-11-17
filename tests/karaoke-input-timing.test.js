@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'karaoke-time.html'), 'utf8');
+const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const inputClock = html.match(/function ktInputTime\(now,event,perfNow\)\{[^\n]+/);
 const probe = html.match(/function ktTimingProbe\(notes,lane,now,offset\)\{[\s\S]*?closestDelta:closestDelta\};\}/);
 assert(inputClock && probe, 'Funções de timestamp de entrada e diagnóstico presentes');

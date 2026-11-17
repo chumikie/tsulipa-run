@@ -1366,8 +1366,17 @@
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
   function embutir(k){
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
-    if(!el && k === 'mapa' && typeof window.twMapaCarregar === 'function'){   // o mapa baixa depois da abertura: se ainda não chegou, pede e tenta de novo
-      window.twMapaCarregar(); var tent = 0; (function espera(){ if(topo() !== 'emb:mapa') return; if(document.querySelector(EMB.mapa[0])){ embutir('mapa'); return; } if(++tent < 40) setTimeout(espera, 150); })(); return; }
+    if(slot && !el && k === 'mapa'){
+      slot.textContent = TW_CARGA.texto(0);
+      function atual(){ return topo() === 'emb:mapa' && $id('twcEmbSlot') === slot; }
+      function falhou(){ if(atual()) TW_CARGA.erro(slot, function(){ embutir('mapa'); }); }
+      window.twMapaCarregar().then(function(){
+        if(!atual()) return;
+        if(document.querySelector(EMB.mapa[0])){ slot.replaceChildren(); embutir('mapa'); }
+        else falhou();
+      }, falhou);
+      return;
+    }
     if(!slot) return;
     if(k === 'nov'){ novidadesMontar(slot); return; }
     if(!el) return;
@@ -1381,7 +1390,7 @@
     if(k === 'busca'){ var i = $id('hubBusca'); if(i) setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){} }, 80); }
   }
   /* ---------- Novidades (17/11): os posts do Idol⭐News! com data e selo "novo", e embaixo a lista fixa do que tem no site ---------- */
-  var NOV_VISTO = 'tw_nov_visto', novPosts = null;
+  var NOV_VISTO = 'tw_nov_visto', novPosts = null, novFalhou = false;
   function novVisto(){ try{ return +localStorage.getItem(NOV_VISTO) || 0; }catch(e){ return 0; } }
   function novidadesHtml(){
     var visto = novVisto(), h = '';
@@ -1402,13 +1411,31 @@
   function novTemNovo(){ if(novPosts === null){ novBuscar(); return false; } var v = novVisto(); return novPosts.some(function(p){ var ms = new Date(p.criado).getTime(); return ms > v; }); }
   function novBuscar(){
     if(novPosts !== null || typeof window.contaRpc !== 'function') return; novPosts = [];
-    window.contaRpc('news_posts').then(function(L){ novPosts = Array.isArray(L) ? L.slice(0, 8) : []; try{ if(topo() === 'emb:nov'){ var s2 = $id('twcEmbSlot'); if(s2) novidadesMontar(s2); } else if(novTemNovo()) novPontos(); }catch(e){} }).catch(function(){});
+    window.contaRpc('news_posts').then(function(lista){
+      if(!Array.isArray(lista)) throw new Error('news_posts');
+      novPosts = lista.slice(0, 8);
+      novFalhou = false;
+    }).catch(function(){ novFalhou = true; }).then(function(){
+      var slot = $id('twcEmbSlot');
+      if(topo() === 'emb:nov' && slot) novidadesMontar(slot);
+      else if(novTemNovo()) novPontos();
+    });
   }
   function novPontos(){   // só acrescenta o ponto, sem redesenhar a tela (não mexe na rolagem)
     [cel && cel.querySelector('.twc-nav-menu:not(.twc-aberto)'), cel && cel.querySelector('.twc-atalho[data-a="nov"]')].forEach(function(b){ if(b && !b.querySelector('.twc-dot')) b.insertAdjacentHTML('beforeend', '<em class="twc-dot" aria-hidden="true">!</em>'); });
   }
   function novidadesMontar(slot){
     slot.innerHTML = '<section class="hubpainel hubnov twc-novidades-conteudo" aria-label="' + esc(t('nov')) + '">' + novidadesHtml() + '</section>';
+    if(novFalhou){
+      var aviso = document.createElement('div');
+      slot.firstElementChild.prepend(aviso);
+      TW_CARGA.erro(aviso, function(){
+        novFalhou = false;
+        novPosts = null;
+        aviso.textContent = TW_CARGA.texto(0);
+        novBuscar();
+      });
+    }
     novBuscar();
     // marca como visto logo depois de mostrar: o selo "novo" fica nesta visita e some na próxima
     if(novPosts && novPosts.length) setTimeout(function(){ try{ localStorage.setItem(NOV_VISTO, String(Date.now())); }catch(e){} }, 1500);

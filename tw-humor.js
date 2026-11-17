@@ -84,14 +84,22 @@
   function hash(s){ var h = 2166136261; for(var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function limita(v){ return Math.max(5, Math.min(100, Math.round(v))); }
 
-  var est;
+  // O formato antigo é compartilhado e não identifica o proprietário.
+  // Conservar os dados originais sem atribuí-los a quem entrar primeiro.
+  function chavePessoal(base){
+    if(!logado()) return base + ':visitante';
+    var uid = typeof contaAuthUserId === 'string' && contaAuthUserId || contaJ.id;
+    return base + (uid ? ':id:' + uid : ':nick:' + nickSemente());
+  }
+  var est, donoLido;
   function ler(){
-    try{ est = JSON.parse(localStorage.getItem(CHAVE) || 'null'); }catch(e){ est = null; }
+    donoLido = chavePessoal(CHAVE);
+    try{ est = JSON.parse(localStorage.getItem(donoLido) || 'null'); }catch(e){ est = null; }
     if(!est || typeof est !== 'object') est = {energia:80, diversao:55, brilho:50, amizade:50, ts:Date.now(), serie:0, ultimo:'', vip:'', desejo:null};
     BARRAS.forEach(function(b){ if(typeof est[b] !== 'number') est[b] = 50; });
     passarTempo();
   }
-  function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(est)); }catch(e){} }
+  function salvar(){ try{ localStorage.setItem(chavePessoal(CHAVE), JSON.stringify(est)); }catch(e){} }
   function passarTempo(){   // o tempo passa: a energia descansa, o resto baixa devagarzinho
     var h = Math.max(0, Math.min(48, (Date.now() - (+est.ts || Date.now())) / 36e5));
     est.energia = limita(est.energia + h * 10); est.diversao = limita(est.diversao - h * 5);
@@ -117,7 +125,7 @@
   function media(){ return (est.energia + est.diversao + est.brilho + est.amizade) / 4; }
   function cor(){ var m = media(); return m >= 60 ? '#7be35a' : m >= 35 ? '#ffd23f' : '#ff6fb5'; }
 
-  var ouvintes = [], ultimoRecado = '';
+  var ouvintes = [];
   // ouvintes recebem (tipo, jogo, fraco): o tw-bairro.js usa o jogo para contar o bico da rua
   function avisar(tipo, ev, fraco){ ouvintes.forEach(function(f){ try{ f(tipo, ev, fraco); }catch(e){} }); }
   function evento(ev, fraco){
@@ -130,7 +138,7 @@
       est.ultimo = hoje(); est.vip = hoje(); est.maxSerie = Math.max(+est.maxSerie || 0, est.serie);
       var hm = hash(hoje() + '|recado'), quem = RECADOS[hm % 3], fala = quem[2][(hm >>> 3) % quem[2].length];
       est.recados = [{dia:hoje(), k:hm % 3, m:(hm >>> 3) % quem[2].length, lido:false}].concat(est.recados || []).slice(0, 7);
-      ultimoRecado = quem[0];
+      est.ultimoRecado = quem[0];
       BARRAS.forEach(function(b){ est[b] = limita(est[b] + 15); });
     }
     salvar(); avisar(cumpriu ? 'desejo' : 'humor', ev, !!fraco);
@@ -139,23 +147,23 @@
   var H = window.TW_HUMOR = {
     barras:BARRAS, t:t,
     estado:function(){ ler(); return {energia:est.energia, diversao:est.diversao, brilho:est.brilho, amizade:est.amizade, media:media(), cor:cor(), serie:+est.serie || 0}; },
-    cor:function(){ if(!est) ler(); return cor(); },
+    cor:function(){ if(!est || donoLido !== chavePessoal(CHAVE)) ler(); return cor(); },
     desejo:function(){ ler(); var d = desejoHoje(), def = DESEJOS.filter(function(x){ return x[0] === d.k; })[0] || DESEJOS[0];
       return {k:d.k, ev:d.ev, icone:def[2], texto:def[3][lang()] || def[3].pt, feito:!!d.feito, serie:+est.serie || 0}; },
     vipHoje:function(){ ler(); return est.vip === hoje(); },
     cansado:function(){ ler(); return est.energia < 25; },
     evento:evento,
-    ultimoRecado:function(){ return ultimoRecado; },
+    ultimoRecado:function(){ ler(); return est.ultimoRecado || ''; },
     mensagensNovas:function(){ ler(); return (est.recados || []).filter(function(r){ return !r.lido; }).length; },
     mensagensLidas:function(){ ler(); (est.recados || []).forEach(function(r){ r.lido = true; }); salvar(); },
     premios:function(){ ler(); return {trofeu:(+est.maxSerie || +est.serie || 0) >= 3, espelho:(+est.maxSerie || +est.serie || 0) >= 7, tapete:!!fotoVip()}; },
-    guardarFotoVip:function(url){ try{ localStorage.setItem(CHAVE_FOTO, JSON.stringify({dia:hoje(), url:url})); }catch(e){} avisar('foto'); },
+    guardarFotoVip:function(url){ try{ localStorage.setItem(chavePessoal(CHAVE_FOTO), JSON.stringify({dia:hoje(), url:url})); }catch(e){} avisar('foto'); },
     appHtml:appHtml,
     ouvir:function(f){ ouvintes.push(f); }
   };
 
   var CHAVE_FOTO = 'brs48cr_vip_foto_v1';
-  function fotoVip(){ try{ var f = JSON.parse(localStorage.getItem(CHAVE_FOTO) || 'null'); return f && /^data:image\/(jpeg|png)/.test(f.url) ? f : null; }catch(e){ return null; } }
+  function fotoVip(){ try{ var f = JSON.parse(localStorage.getItem(chavePessoal(CHAVE_FOTO)) || 'null'); return f && /^data:image\/(jpeg|png)/.test(f.url) ? f : null; }catch(e){ return null; } }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function estiloApp(){
     if(document.getElementById('twHumorAppCss')) return;

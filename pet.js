@@ -57,6 +57,8 @@ var PET_MOVEIS = {   // centro padrão, largura e limites no chão (entre o sof�
 };
 var petArrumo = null, petArrumando = false, petArrastando = null;
 //→petArrumoPersistivel
+//→petArrumoDono
+//→petArrumoChave
 //→petArrumoLer
 //→petArrumoSalvar
 //→petArrumoX

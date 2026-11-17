@@ -208,7 +208,10 @@ function petDesenharJanela(x, fase){
 }
 //←petArrumoPersistivel
 // Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
-var petArrumoPersistivel = true, petArrumoDono = '';
+var petArrumoPersistivel = true;
+//←petArrumoDono
+var petArrumoDono = '';
+//←petArrumoChave
 function petArrumoChave(){
   if(typeof contaJ === 'undefined' || !contaJ) return PET_ARRUMO_KEY + ':visitante';
   var id = typeof contaAuthUserId === 'string' && contaAuthUserId || contaJ.id;

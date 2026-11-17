@@ -325,16 +325,24 @@ function perfEnfeites(x, W2, H2, cores, n, seed, t, alfa){   // ✦ e ♡ espalh
   }
   x.restore();
 }
+// tema escuro do site (botão de tema ou o do aparelho): usado pelos fundos desenhados que seguem o tema
+function perfTemaEscuro(){
+  try{ var th = document.documentElement.getAttribute('data-theme'); if(th) return th === 'dark';
+    return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; }
+}
 function perfFundo(x, W2, H2, f, cor, t){
   if(!f) return;
   if(f==='cafe'){ duoFundoDesenhar(x,W2,H2,'cafe',t||0,cor); return; } // reutiliza a arte do Moon⭐Duo!
   var u = W2 / 320, gr, i;
   t = t || 0;
   if(f === 'basico'){   // pastel nas cores do TsuLiPa (roxo → verde → azul), com bolinhas
-    perfFundoGradiente(x, W2, H2, 'perfil:basico', false, [[0, '#f1e3ff'], [.5, '#e9fbe0'], [1, '#e1ecff']]);
+    // 17/11: no modo escuro o fundo básico segue o tema (noite nas mesmas cores), em vez do pastel claro fixo
+    var escuroB = perfTemaEscuro();
+    if(escuroB) perfFundoGradiente(x, W2, H2, 'perfil:basico-escuro', false, [[0, '#2c1656'], [.5, '#1c3030'], [1, '#1a2556']]);
+    else perfFundoGradiente(x, W2, H2, 'perfil:basico', false, [[0, '#f1e3ff'], [.5, '#e9fbe0'], [1, '#e1ecff']]);
     for(i = 0; i < 42; i++){
       var col = i % 7, lin = Math.floor(i / 7);
-      x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], .16);
+      x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], escuroB ? .28 : .16);
       x.beginPath(); x.arc(col * W2 / 7 + (lin % 2) * W2 / 14 + W2 / 28, lin * H2 / 6 + H2 / 12, 6 * u, 0, 7); x.fill();
     }
     perfEnfeites(x, W2, H2, PERF_TSL.concat('#ff6fb5'), 7, 2, t, .5);
@@ -432,8 +440,10 @@ function perfCharContorno(x, tx, ty, sc, desenha){
   finally{ perfCharPortrait = wasPortrait; g = og; charPose = ''; perfAntena = ''; }
   x.save();
   // shadowBlur não segue a escala do contexto: multiplicar por k mantém o mesmo contorno de sempre.
-  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
-  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  // (canvas ajustado pelo tw-nitidez.js já corrige a sombra sozinho: aí não multiplica de novo)
+  var ks = x.canvas && x.canvas.__twA ? 1 : k;
+  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5 * ks; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5 * ks; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.restore();
 }
 function perfPetDoAvatar(av){   // pet guardado no avatar (só chaves conhecidas)
@@ -547,12 +557,16 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
   return {x:tx, y:ty + bob, scale:sc, skin:c.skin};
 }
 function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado em círculo (zoom = rostinho)
+  // 17/11: o rascunho nasce na escala do destino (tw-nitidez.js), senão a foto sai ampliada e borrada
+  var kn = window.TW_NITIDEZ ? TW_NITIDEZ.preparar(cv) : 1;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;
-  var tmp = document.createElement('canvas'); tmp.width = W2; tmp.height = H2;
+  if(window.TW_NITIDEZ) kn = TW_NITIDEZ.escala(cv) || kn;
+  var tmp = document.createElement('canvas'); tmp.width = Math.round(W2 * kn); tmp.height = Math.round(H2 * kn);
   if(av && !av.fundo){ av = JSON.parse(JSON.stringify(av)); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
-  perfDesenharIdol(tmp.getContext('2d'), W2, H2, av, true, zoom !== false);
+  var tx2 = tmp.getContext('2d'); tx2.scale(kn, kn);
+  perfDesenharIdol(tx2, W2, H2, av, true, zoom !== false);
   x.clearRect(0, 0, W2, H2);
-  x.save(); x.beginPath(); x.arc(W2 / 2, H2 / 2, W2 / 2, 0, 7); x.clip(); x.drawImage(tmp, 0, 0); x.restore();
+  x.save(); x.beginPath(); x.arc(W2 / 2, H2 / 2, W2 / 2, 0, 7); x.clip(); x.drawImage(tmp, 0, 0, W2, H2); x.restore();
 }
 function perfPoseInfo(k){ for(var i = 0; i < PERF_POSES.length; i++) if(PERF_POSES[i][0] === k) return PERF_POSES[i]; return null; }
 // Parte de trás (antes da cabeça): chamada no começo do petPoseArms. Devolve true se a pose é uma das novas.
@@ -1051,7 +1065,7 @@ function perfTelaCarregar(){
    Só para canvas com largura no CSS (width:100%) e que não são lidos de volta (getImageData/drawImage do próprio).
    Chamado no começo de cada desenho; só refaz quando o degrau de 0,25 muda. Teto de 3×. */
 function twNitido(cv){
-  if(!cv || !cv.getContext) return cv;
+  if(!cv || !cv.getContext || (window.TW_NITIDEZ && TW_NITIDEZ.desligada)) return cv;   // freio: ?nitidez=0 desliga também esta
   var st = cv.__twN, P = window.HTMLCanvasElement && HTMLCanvasElement.prototype;
   if(!st){
     var dw = P && Object.getOwnPropertyDescriptor(P, 'width'), dh = P && Object.getOwnPropertyDescriptor(P, 'height');

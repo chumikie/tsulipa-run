@@ -161,3 +161,29 @@ jobs:
           path: /tmp/karaoke-room-browser
           if-no-files-found: warn
           retention-days: 5
+
+  # Telas principais do site (Início, Jogos, Fichinhas, News, Novidades, Álbum, Mapa, Perfil, Gacha, Loja)
+  # no celular e no computador: falha com erro de JavaScript, tela vazia ou desenho borrado.
+  browser-telas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix /tmp/telas-playwright --no-save playwright
+          /tmp/telas-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Abrir as telas principais no celular e no computador
+        env:
+          NODE_PATH: /tmp/telas-playwright/node_modules
+        run: node tests/telas.browser.cjs /tmp/telas-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: telas-browser-captures
+          path: /tmp/telas-browser
+          if-no-files-found: warn
+          retention-days: 5

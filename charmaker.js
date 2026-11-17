@@ -206,6 +206,7 @@
         if(podeProvar) b.classList.add('cmprovar');
         b.setAttribute('aria-label', o.textContent);
         var cv = document.createElement('canvas'); cv.width = 132; cv.height = 132; cv.setAttribute('aria-hidden', 'true');
+        if(window.TW_NITIDEZ) TW_NITIDEZ.preparar(cv);   // 17/11: miniatura nasce na densidade do aparelho (era borrada)
         var nome = document.createElement('span'); nome.textContent = o.textContent.replace(/^🔒\s*/, '');
         b.appendChild(cv); b.appendChild(nome);
         var mod = JSON.parse(JSON.stringify(c)); mod[p.campo] = o.value; if(p.campo === 'mecha') mod.streak = !!o.value;

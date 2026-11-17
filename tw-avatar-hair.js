@@ -20,7 +20,25 @@ function franjaBicolor(T,x,y){
  T([x+3,y+9,x+12,y+5,x+12,y+11,x+8,y+12,x+4,y+16]);                              // lado curto, penteado para fora
  T([x+11,y+5,x+27,y+7,x+27,y+17,x+25,y+14,x+22,y+20,x+19,y+13,x+15,y+19,x+13,y+11]); // mecha longa varrendo sobre o olho
 }
+// Espetada (17/11/2026): pontas curvas que acompanham a cabeça (em vez de triângulos retos que achatavam o topo)
+// e franja recortada na testa, como as outras. Só preenchimento (o arquivo não usa traço).
+function espetada(g,x,y){
+ g.beginPath();g.moveTo(x+3,y+12);
+ g.quadraticCurveTo(x+1.8,y+7,x+2.6,y+2.6);g.quadraticCurveTo(x+5,y+3.6,x+7,y+3.4);
+ g.quadraticCurveTo(x+6.6,y-.2,x+8.2,y-2.6);g.quadraticCurveTo(x+10.2,y-.2,x+11.6,y+1);
+ g.quadraticCurveTo(x+12.8,y-2.4,x+15,y-4.6);g.quadraticCurveTo(x+17.2,y-2.4,x+18.4,y+1);
+ g.quadraticCurveTo(x+19.8,y-.2,x+21.8,y-2.6);g.quadraticCurveTo(x+23.4,y-.2,x+23,y+3.4);
+ g.quadraticCurveTo(x+25,y+3.6,x+27.4,y+2.6);g.quadraticCurveTo(x+28.2,y+7,x+27,y+12);
+ // recorte da franja na testa: pontas que descem
+ g.quadraticCurveTo(x+25.6,y+12.4,x+24.4,y+14.4);g.quadraticCurveTo(x+23,y+11.6,x+21,y+11.2);
+ g.quadraticCurveTo(x+19.8,y+13.2,x+18.4,y+15);g.quadraticCurveTo(x+17,y+11.8,x+15,y+11.4);
+ g.quadraticCurveTo(x+13,y+11.8,x+11.6,y+15);g.quadraticCurveTo(x+10.2,y+13.2,x+9,y+11.2);
+ g.quadraticCurveTo(x+7,y+11.6,x+5.6,y+14.4);g.quadraticCurveTo(x+4.4,y+12.4,x+3,y+12);
+ g.closePath();g.fill();
+ g.save();g.globalAlpha*=.22;g.fillStyle='#fff';g.beginPath();g.ellipse(x+12.6,y+2.4,3.2,1,-.4,0,7);g.fill();g.restore();
+}
 function franja(T,x,y,f,g){
+ if(f==='espetada'&&g){espetada(g,x,y);return true;}
  if(f==='ondulada')T([x+3,y+10,x+8,y+5,x+14,y+7,x+20,y+3,x+27,y+8,x+29,y+13,x+24,y+16,x+20,y+14,x+17,y+21,x+13,y+15,x+9,y+19,x+7,y+13,x+3,y+14]);
  else if(f==='risca')franjaBicolor(T,x,y);
  else if(f==='cortina'||f==='curta'){}   // desenhadas em frente(): mostram a testa, que precisa da cor da pele

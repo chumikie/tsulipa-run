@@ -69,3 +69,19 @@
  html.kt-no-site .kt-room-tools .kt-calibration summary{padding:6px 7px;font-size:9.5px}
  html.kt-no-site .kt-room-tools .kt-calibration[open]{flex:1 0 100%}
 }
+/* 17/11 · Sala em tela cheia no celular: a sala ocupa a tela (corte centrado, sem achatar), com Trilha/Jogar
+   flutuando em cima e Som/Pausar/Timing/Foto flutuando embaixo. "Ver sala inteira" volta à sala completa. */
+@media(max-width:620px){
+ html.kt-no-site #krPalco.kt-room-mobile{position:relative;border-radius:22px;overflow:hidden}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-room-viewport{aspect-ratio:auto;height:max(400px,calc(100dvh - 20px))}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile #krCv{height:100%!important;width:auto!important;aspect-ratio:16/9;left:50%;transform:translateX(-50%)}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls{position:absolute;z-index:11;top:8px;left:8px;right:8px;margin:0;padding:6px;border-radius:20px;
+  background:rgba(34,10,40,.58);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 18px rgba(10,2,20,.35)}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls .kt-toolbar{padding:0}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls #ktHint{display:none}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-room-tools{position:absolute;z-index:11;left:50%;bottom:12px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 16px);
+  justify-content:center;padding:5px 8px;border:1px solid rgba(255,255,255,.16);border-radius:99px;background:rgba(34,10,40,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+ html.kt-no-site body.kt-mobile-overview #krPalco.kt-room-mobile .kt-rhythm-controls{margin:0 0 6px}
+}
+@media(max-width:620px){html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls #ktTimingFeedback:empty{display:none}}
+@media(max-width:620px){html.kt-no-site #krPalco .kt-room-tools .kt-room-ranks{width:44px;height:44px;min-width:44px;padding:0;border-radius:50%;font-size:20px;display:grid;place-items:center}}

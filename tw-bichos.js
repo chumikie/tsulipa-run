@@ -179,5 +179,7 @@
   };
   function cena(x, rua, W, H, ok, t){ var f = CENA[rua]; if(!f) return false; x.save(); f(x, W, H, ok, t || 0); x.restore(); return true; }
 
-  window.TW_BICHOS = {desenhar:desenhar, cena:cena, tipos:Object.keys(B)};
+  // sem contorno (bandos pequenos no Mapa: mais leve, desenhado direto no canvas)
+  function simples(x, tipo, cx, chao, ES, humor, t){ var f = B[tipo]; if(!f) return false; x.save(); x.translate(cx - 15 * ES, chao - 44 * ES); x.scale(ES, ES); f(x, humor, t || 0); x.restore(); return true; }
+  window.TW_BICHOS = {desenhar:desenhar, simples:simples, cena:cena, tipos:Object.keys(B)};
 })();

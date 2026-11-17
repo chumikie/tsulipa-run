@@ -364,7 +364,7 @@
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);guiaVeus();}
-    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
+    else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);desenharBichoSemana(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
@@ -803,6 +803,23 @@
     }
     return {x:e.x,y:y,dir:e.dir,andando:andando,perto:perto};
   }
+  // Bagunça da semana (tw-bairro.js + tw-bichos.js, 17/11): o bicho da semana passeia na rua dele, com "!" enquanto
+  // a bagunça não foi resolvida e coração depois; olha para o seu Idol quando ele chega perto; tocado, abre a Vida no bairro.
+  var semanaEstado={x:820,alvo:820,dir:-1,parado:0,t:0},semanaPos=null,semanaCache={t:-9,b:null};
+  function bagSemana(tm){if(tm-semanaCache.t>2){semanaCache.t=tm;try{semanaCache.b=window.TW_BAIRRO&&TW_BAIRRO.bagunca?TW_BAIRRO.bagunca():null;}catch(e){semanaCache.b=null;}}return semanaCache.b;}
+  function desenharBichoSemana(tm){
+    semanaPos=null;var Bi=window.TW_BICHOS,b=bagSemana(tm);if(!Bi||!b||b.rua!==cena)return;
+    var voa=b.bicho==='borboleta'||b.bicho==='nuvem',ES=ESCALA_RUA*.95,yb=b.bicho==='nuvem'?470:b.bicho==='borboleta'?640:728;
+    var p=andarilho(semanaEstado,tm,380,1220,yb,voa?44:30,2.2),pulo=p.andando&&!voa?Math.abs(Math.sin(tm*7))*5:0;
+    ctx.save();if(p.dir<0){ctx.translate(p.x,0);ctx.scale(-1,1);ctx.translate(-p.x,0);}
+    Bi.desenhar(ctx,b.bicho,p.x,p.y-pulo,ES,b.ok?'feliz':'travesso',reduzMov?0:tm*20);ctx.restore();
+    var topo=p.y-44*ES+(b.bicho==='nuvem'?30:b.bicho==='borboleta'?18:36)*ES/2.5-pulo,bx=p.x+26*ES/2.5,cor=b.ok?'#ff4fa3':'#9b30d9';
+    ctx.save();ctx.translate(bx,topo-10+(reduzMov?0:Math.sin(tm*2.4)*3));ctx.fillStyle='#fff';ctx.strokeStyle=cor;ctx.lineWidth=3;
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(-15,-28,30,26,12);else ctx.rect(-15,-28,30,26);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-5,-3);ctx.lineTo(-10,7);ctx.lineTo(4,-3);ctx.fill();
+    ctx.fillStyle=cor;ctx.font='900 20px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.ok?'♥':'!',0,-14.5);ctx.restore();
+    semanaPos={x:p.x,y:p.y,h:44*ES};
+  }
   // Pombinho da Praça: gordinho, anda balançando a cabeça e cisca quando para; tocado, bate as asas.
   function pomboDesenhar(tm,c,pt){
     var voo=pt!=null&&tm-pt<1.2?Math.sin(Math.min(1,(tm-pt)/1.2)*Math.PI)*34:0,
@@ -954,7 +971,10 @@
     }
     if(cena==='praca')peixesFonte(tm);
     var n=tipo==='passaro'?3:4;
-    for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm),tam=tipo==='passaro'?1.6:2;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.dir*tam,tam);
+    var Bi=window.TW_BICHOS;
+    for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm),tam=tipo==='passaro'?1.6:2;ctx.save();
+      if(tipo==='borboleta'&&Bi&&Bi.simples){ctx.translate(b.x,b.y);ctx.scale(b.dir,1);Bi.simples(ctx,'borboleta',0,22*1.4,1.4,'feliz',(reduzMov?k*9:tm*20)+k*7);ctx.restore();continue;}   // 17/11: a borboleta nova, no traço dos Idols
+      ctx.translate(b.x,b.y);ctx.scale(b.dir*tam,tam);
       voadorDesenhar(tipo,k,tm);
       ctx.restore();}
   }
@@ -1008,6 +1028,8 @@
   var FALA_TOQUE={pt:'✨ Desejo feito!',en:'✨ Wish made!',es:'✨ ¡Deseo pedido!',id:'✨ Harapan dibuat!',th:'✨ ขอพรแล้ว!',ja:'✨ ねがいごと!'};
   function tocarRua(x,y){
     var tm=performance.now()/1000;
+    if(semanaPos&&Math.abs(x-semanaPos.x)<30*ESCALA_RUA&&y<=semanaPos.y+10&&y>=semanaPos.y-semanaPos.h-30){   // o bicho da Bagunça da semana: abre a Vida no bairro
+      somMapa('toque');try{if(window.TW_BAIRRO&&TW_BAIRRO.abrir)TW_BAIRRO.abrir();}catch(e){}return;}
     // 1) passeante tocado: pula e responde (o seu Idol responde com coração)
     var q=null;ultimos.forEach(function(o){if(Math.abs(o.x-x)<22*ESCALA_RUA&&y<=o.y+8&&y>=o.y-52*ESCALA_RUA)q=o;});
     if(q&&q.oshi){pulos[q.i]=tm;somMapa('ponto');var fl=(VISITA_FALAS[lang()]||VISITA_FALAS.pt)[q.oshiK]||'💜';

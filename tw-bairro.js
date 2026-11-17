@@ -62,6 +62,7 @@
     depois:{pt:'Depois', en:'Later', es:'Después', id:'Nanti', th:'ทีหลัง', ja:'あとで'},
     emBreve:{pt:'em breve', en:'soon', es:'pronto', id:'segera', th:'เร็ว ๆ นี้', ja:'もうすぐ'},
     ver:{pt:'Ver', en:'View', es:'Ver', id:'Lihat', th:'ดู', ja:'見る'},
+    faltaAprender:{pt:'Falta aprender o gesto', en:'Gesture not learned yet', es:'Falta aprender el gesto', id:'Gestur belum dipelajari', th:'ยังไม่ได้เรียนท่าทางนี้', ja:'ジェスチャーをまだ覚えていないよ'},
     hjBico:{pt:'Bico: {b} · {s}', en:'Side job: {b} · {s}', es:'Trabajito: {b} · {s}', id:'Kerja sambilan: {b} · {s}', th:'งานพิเศษ: {b} · {s}', ja:'おしごと：{b}・{s}'},
     subiu:{pt:'Nível {n} no bico {b}!', en:'Level {n} in {b}!', es:'¡Nivel {n} en {b}!', id:'Level {n} di {b}!', th:'ระดับ {n} ใน {b}!', ja:'{b}でレベル{n}！'},
     fechar:{pt:'Fechar', en:'Close', es:'Cerrar', id:'Tutup', th:'ปิด', ja:'閉じる'}
@@ -280,7 +281,7 @@
       '.twb-bag{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.twb-bag canvas{width:100%;height:auto;border-radius:14px;display:block}' +
       '.twb-bag p{margin:0;font-size:.92rem;line-height:1.35}.twb-bag .twb-ok{font-weight:800;color:#2fb36b}' +
       '.twb-bt{border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:800;background:linear-gradient(135deg,#9b30d9,#ff4fa3);color:#fff;cursor:pointer;justify-self:start}' +
-      '.twb-bt[disabled]{opacity:.45;cursor:default}.twb-bt-claro{background:#fff;color:#7a2bbf;border:1.5px solid rgba(155,48,217,.3)}' +
+      '.twb-bt[disabled]{opacity:.45;cursor:default}.twb-bt.twb-bt-falta{opacity:1;background:#f1ebff;color:#6b3fc4;border:1.5px dashed rgba(123,63,240,.45);box-shadow:none}' + '.twb-bt-claro{background:#fff;color:#7a2bbf;border:1.5px solid rgba(155,48,217,.3)}' +
       '.twb-ruas{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}' +
       '.twb-rua{border-radius:16px;padding:10px 12px;background:#fff;border:1.5px solid var(--twb-c);position:relative}' +
       'html.dark .twb-rua,body.dark .twb-rua{background:rgba(255,255,255,.06)}' +
@@ -343,15 +344,16 @@
     ov.querySelector('#twBairroTit').textContent = t('tit');
     ov.querySelector('#twBairroSub').textContent = t('sub');
     var g = guia(), b = bagunca(), h = '';
-    if(g.ativo) h += '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
+    var guiaH = '';   // 17/11: a bagunça (a cena) vem primeiro; o guia dos primeiros dias depois
+    if(g.ativo) guiaH = '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
       esc(t('guiaTxt', {r:(g.amanha.length ? g.amanha.map(ruaNome).join(' + ') : '—')})) + '</p><button type="button" class="twb-bt twb-bt-claro" data-twb="pular">' + esc(t('pular')) + '</button></section>';
     h += '<section class="twb-box twb-bag"><h3>' + esc(t('bagTit')) + ' · ' + esc(ruaNome(b.rua)) + '</h3>' +
       '<canvas id="twBairroCv" width="480" height="200" aria-hidden="true"></canvas>' +
       '<p><b>' + esc(b.quem) + '</b> ' + esc(b.fez) + '.</p>' +
       (b.ok ? '<p class="twb-ok">✓ ' + esc(t('resolvida')) + '</p><p>' + esc(b.fim) + '</p>' :
         '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)})))) + '</p>' +
-        '<button type="button" class="twb-bt" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(RUAS[b.gesto].gesto.emoji + ' ' + t('fazer')) + '</button>') +
-      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>';
+        '<button type="button" class="twb-bt' + (b.sabe ? '' : ' twb-bt-falta') + '" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(b.sabe ? RUAS[b.gesto].gesto.emoji + ' ' + t('fazer') : '🔒 ' + t('faltaAprender')) + '</button>') +
+      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>' + guiaH;
     var ap = gestosAprendidos();
     h += '<section class="twb-box"><h3>' + esc(t('gestos')) + '</h3>' + (ap.length ? '<div class="twb-gestos">' + ap.map(function(r){
       return '<span>' + esc(RUAS[r].gesto.emoji + ' ' + gestoNome(r)) + '</span>'; }).join('') + '</div>' : '<p class="twb-regra" style="text-align:left;margin:0">' + esc(t('semGesto')) + '</p>') + '</section>';

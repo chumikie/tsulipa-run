@@ -3278,7 +3278,11 @@ if(ktNoSite()){
  $('ktPopup').setAttribute('open','');
  var ktAlturaUlt=0,ktAlturaObserver=null,ktAlturaFallbackObserver=null;
  var ktAvisaAltura=function(){
-  var h=Math.ceil(document.documentElement.scrollHeight);
+  // Altura do CONTEÚDO (body), não do documento: documentElement.scrollHeight nunca fica menor que o próprio iframe,
+  // então depois de crescer uma vez (lobby carregando) o iframe não encolhia e sobrava um bloco vazio enorme
+  // abaixo dos rankings (17/11/2026, ~760 px no celular). O body encolhe junto com o conteúdo.
+  var b=document.body,cs=getComputedStyle(b),mb=parseFloat(cs.marginBottom)||0,r=b.getBoundingClientRect();
+  var h=Math.ceil(Math.max(b.scrollHeight+(parseFloat(cs.marginTop)||0),r.bottom+(window.scrollY||0))+mb);
   if(Math.abs(h-ktAlturaUlt)<4)return;
   ktAlturaUlt=h;
   try{parent.postMessage({type:'tw-kt-altura',h:h},location.origin);}catch(_){}
@@ -3360,6 +3364,6 @@ if(ktNoSite()){
 })();
 </script><script src="./tw-windows.js?v=1"></script>
 <script src="./karaoke-mobile.js?v=4"></script>
-<script src="./karaoke-photo.js?v=1"></script>
+<script src="./karaoke-photo.js?v=2"></script>
 <script src="./karaoke-lista.js?v=6"></script>
 </body></html>

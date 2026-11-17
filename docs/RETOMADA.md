@@ -6,6 +6,15 @@
 - Versões: `tw-celular.css?v=33`, `tw-celular.js?v=44`. Teste novo em `celular-previa.test.js` para a largura da faixa.
 - **Conferido no Chrome sem tela** (sem `?celular=1`, com `?demo=1`): 1920×1080, 2560×1440, 1366×768, tablet 1024×768 e iPhone 13; Início, Menu, Jogos, Calendário, Mapa, Missões e Perfil, sem erro de script; escolha do clássico respeitada ao recarregar.
 
+- **Nitidez no computador** (relato do dono: "qualidade muito inferior"): no visual novo as janelas ficam ~708 px no computador e os palcos desenhados em 640 px (ou o quarto do Pet em 360) eram ampliados; com zoom do Windows a 150% chegavam a 60% da nitidez.
+  - `twNitido(cv)` (em `perfil.js`): dá ao canvas pixels reais pelo tamanho na tela × zoom (degraus de 0,25, teto 3×) e uma escala por baixo; `cv.width/height` continuam respondendo o tamanho lógico, então o desenho e os toques do jogo não mudam. Ligado na Loja, Gacha, Café, Handshake e na prévia do Montar Idol. **Só usar em canvas com largura no CSS e que não seja lido de volta** (getImageData/drawImage dele mesmo).
+  - Quarto do Pet: `petFitCanvas` passa a usar o tamanho na tela (era só o zoom) e é conferido a cada quadro.
+  - `perfCharContorno` desenha o boneco na resolução real do destino (antes, sempre na lógica e ampliado); sem escala, igual a antes.
+  - Medido (1280 px, zoom 100% e 150%): Pet, Loja, Gacha, Café e Handshake de 0,5–0,9 para ≥ 1,0. Ainda abaixo de 1 com zoom 150%: o palco do Início (0,87, cópia do `hubCv`).
+- **Celular com o nome do Idol:** "SamiPhone" também no aviso de recado do Humor, na dica da câmera do Camarim e no "guardar foto" do Karaoke (já valia na marca e em Momentos). Sem conta: TsuPhone.
+- **Karaoke com bloco vazio enorme abaixo dos rankings:** a altura avisada ao site era `documentElement.scrollHeight`, que nunca fica menor que o iframe; depois de crescer uma vez não encolhia (~760 px vazios no celular). Agora mede o `body`. O teste de navegador da sala fixa o hub clássico (é o que ele mede); o lobby novo tem os próprios testes.
+- Teste novo: `tests/visual-computador.test.js`.
+
 **Falta:** conferir em computador real (Windows/Chrome) e no iPad; merge do dono.
 
 ## Rodada 16/11/2026 (tarde) — PR #98, versão v3.0

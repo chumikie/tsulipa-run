@@ -157,6 +157,7 @@
     var pedido = 0, pedidoMini = 0, eu = {};
     function prev(){
       var cv = el.cv, c = cu(); if(!cv || !c || !visivel()) return;
+      if(typeof twNitido === 'function') twNitido(cv);   // prévia nítida no computador (17/11/2026)
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, S = 6.3, chao = H - 28;
       x.clearRect(0, 0, W, H);
       if(celLigado()){ redoma(cv, c); return; }

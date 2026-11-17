@@ -548,7 +548,7 @@ test('ML1.2-C.2-B: fontes Pet/Center/Duo sem misturar Karaoke e Jornal', () => {
   assert.match(html,/\? 'center' : ''\)/,'Center ativa botão apenas após foto');
   assert.match(html,/\? 'pet' : ''\)/,'Backstage ativa botão apenas após foto');
   assert.match(html,/id="duoPhone"/,'Moon tem ação explícita');
-  assert.match(html,/petPhoneMomentoGuardar\('duo',png\)/,'Moon usa foto local da cena já montada');
+  assert.match(read('duo-tela.js'),/petPhoneMomentoGuardar\('duo',png\)/,'Moon usa foto local da cena já montada (telas do Duo em duo-tela.js desde 17/11/2026)');
   assert.match(html,/window\.addEventListener\('pagehide',petPhoneMomentosLimpar\)/);
 });
 

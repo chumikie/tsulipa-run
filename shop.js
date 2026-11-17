@@ -155,7 +155,7 @@ function shopLoop(ms){
   shopAnim = requestAnimationFrame(shopLoop);
 }
 function shopDesenhar(){
-  var cv = $('shopCv'); if(!cv) return;
+  var cv = $('shopCv'); if(!cv) return; if(typeof twNitido === 'function') twNitido(cv);
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = shopT, i, chao = H2 * .9, a = shopAtendente();
   x.clearRect(0, 0, W2, H2);
   if(typeof KaraokeRoomViews === 'object' && KaraokeRoomViews){   // a rua de Harajuku ao fundo

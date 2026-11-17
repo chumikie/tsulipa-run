@@ -134,6 +134,10 @@ async function waitForRoomMode(frame, expectMobile){
    if(photoQA)await photoQA.install(context);
    await context.addInitScript(()=>{
     localStorage.setItem('brs48cr_tut','1');localStorage.setItem('brs48cr_nick','QA Idol');
+    // Esta prova mede a sala dentro do hub CLÁSSICO (aviso de tentativas, ranking logo abaixo). Desde 17/11/2026 o
+    // visual novo é o padrão em todo aparelho e troca esse lobby pela lista "Músicas" (testada em karaoke-lista);
+    // então a escolha do clássico fica explícita aqui, como Ajustes → "Voltar ao visual clássico".
+    localStorage.setItem('brs48cr_celular','0');
     var probe=window.__qaPaintProbe={calls:0,methods:[]};
     try{
      var proto=CanvasRenderingContext2D.prototype;

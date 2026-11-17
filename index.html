@@ -407,9 +407,9 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=26"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=34"></script>
-<script src="./perfil.js?v=21"></script>
-<script src="./gacha.js?v=3"></script>
+<script src="./pet.js?v=35"></script>
+<script src="./perfil.js?v=22"></script>
+<script src="./gacha.js?v=4"></script>
 <script src="./album.js?v=6"></script>
 <script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
@@ -438,7 +438,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=14','./cafe.js?v=18','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=3','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=15','./cafe.js?v=19','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=3','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   function carregar(){if(!p)p=ARQ.reduce(function(c,u){return c.then(function(){return um(u);});},Promise.resolve()).catch(function(e){p=null;throw e;});return p;}
   function atalho(nome){var f=function(){var a=arguments;carregar().then(function(){if(window[nome]!==f)window[nome].apply(window,a);}).catch(function(){});};return f;}
@@ -452,10 +452,10 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./mapa-textos.js?v=3"></script>
 <script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
    (twMapaVisitaAgora, twMapaCena, TW_MAPA_HORA…) já confere se ele existe; o painel aparece assim que ele chega. */
-(function(){function c(){if(window.TW_MAPA_PEDIDO)return;window.TW_MAPA_PEDIDO=1;var s=document.createElement('script');s.src='./tw-mapa.js?v=61';document.body.appendChild(s);}
+(function(){function c(){if(window.TW_MAPA_PEDIDO)return;window.TW_MAPA_PEDIDO=1;var s=document.createElement('script');s.src='./tw-mapa.js?v=62';document.body.appendChild(s);}
 window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else window.addEventListener('load',function(){(window.requestIdleCallback||setTimeout)(c,{timeout:1200});});})();</script>
 <script src="./bloom.js?v=9"></script>
-<script src="./shop.js?v=6"></script>
+<script src="./shop.js?v=7"></script>
 <script src="./jornal.js?v=26"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
@@ -478,26 +478,26 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
 </script>
 <script src="./jogos-trilha.js?v=1"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=13"></script>
+<script src="./charmaker.js?v=14"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=4"></script>
 <script src="./admin.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
-<script>/* Visual de celular (padrão nos telefones desde 16/11/2026): ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular
-   ('1' ligado, '0' clássico). Sem escolha guardada, liga sozinho em telefone (toque + tela pequena). No computador e no tablet
-   continua o clássico, com o botão no ⚙️ para ligar na hora; no celular, Ajustes → Visual clássico volta ao antigo. */
-(function(){var k='brs48cr_celular',q=null,on=false,pref=null,fone=false;try{q=new URLSearchParams(location.search).get('celular');}catch(e){}
-try{fone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=600;}catch(e){}
+<script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
+   ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
+   Sem escolha guardada, liga em qualquer aparelho (telefone, tablet e computador). Ajustes → "Voltar ao visual clássico"
+   grava '0' e é respeitado; no clássico, o ⚙️ liga de novo. */
+(function(){var k='brs48cr_celular',q=null,on=false,pref=null;try{q=new URLSearchParams(location.search).get('celular');}catch(e){}
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
-on=pref==='1'||(pref!=='0'&&fone);
+on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=32"><script src="./tw-humor.js?v=6"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-lado.js?v=2"><'+'/script><script src="./tw-celular.js?v=43"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=33"><script src="./tw-humor.js?v=8"><'+'/script><script src="./tw-bairro.js?v=1"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=45"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=32';document.head.appendChild(l);
-  var hm=document.createElement('script');hm.src='./tw-humor.js?v=6';hm.async=false;document.body.appendChild(hm);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=33';document.head.appendChild(l);
+  var hm=document.createElement('script');hm.src='./tw-humor.js?v=8';hm.async=false;document.body.appendChild(hm);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=1';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var ld=document.createElement('script');ld.src='./tw-lado.js?v=2';ld.async=false;document.body.appendChild(ld);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=43';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=45';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;

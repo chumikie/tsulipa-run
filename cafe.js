@@ -395,7 +395,7 @@ function cfClienteReencontro(c, dt, fase){
     alfa:alfa, reencontro:true};
 }
 function cfDesenhar(){
-  var cv = $('cfCv'); if(!cv) return;
+  var cv = $('cfCv'); if(!cv) return; if(typeof twNitido === 'function') twNitido(cv);
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = cfT;
   // parede listrada pastel + varal de luzinhas + quadro do cardápio
   for(var i = 0; i < 16; i++){ x.fillStyle = i % 2 ? '#ffe3f1' : '#fff3f9'; x.fillRect(i * W2 / 16, 0, W2 / 16 + 1, H2); }

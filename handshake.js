@@ -341,7 +341,7 @@ function hsSuperfaGesto(f, dt, fase){
     alfa:alfa};
 }
 function hsDesenhar(){
-  var cv = $('hsCv'); if(!cv) return;
+  var cv = $('hsCv'); if(!cv) return; if(typeof twNitido === 'function') twNitido(cv);
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = hsT;
   x.clearRect(0, 0, W2, H2);
   try{ perfFundo(x, W2, H2, 'palco', '#ff6fb5', t); }catch(e){}

@@ -64,6 +64,17 @@
     return null;};
   // rua aberta agora (para "Idols online" e frases prontas); '' com o mapa fechado ou no meio da transição
   window.twMapaCena=function(){return aberto&&!mergulho?cena:'';};
+  // Desenha um bichinho do mapa (mesma arte) em outro canvas: a bagunça da semana (tw-bairro.js) usa.
+  window.twMapaBicho=function(tipo,c2,x,y,esc,tm){
+    if(!c2)return false;var o=ctx;ctx=c2;tm=tm||0;
+    try{ctx.save();ctx.translate(x,y);ctx.scale(esc||1,esc||1);ctx.lineJoin='round';ctx.lineCap='round';
+      if(tipo==='gato')gatoDesenhar(tm,0,0,null,false,true);
+      else if(tipo==='pombo')pomboDesenhar(tm,{x:0,y:0,dir:-1,andando:false,perto:true},null);
+      else if(tipo==='coelho')coelhoDesenhar(tm,{x:0,y:0,dir:-1,hop:0,perto:true},null);
+      else if(tipo==='passaro'){ctx.scale(-1.6,1.6);voadorDesenhar(tipo,1,tm);}
+      else if(tipo==='borboleta'){ctx.scale(2.6,2.6);voadorDesenhar(tipo,0,tm||Math.PI/18);}   // tm=π/18: asas abertas no desenho parado
+      else return false;
+      return true;}catch(e){return false;}finally{try{ctx.restore();}catch(e){}ctx=o;}};
   var DICA={pt:'👆 Arraste para passear',en:'👆 Drag to explore',es:'👆 Arrastra para pasear',id:'👆 Geser untuk jalan-jalan',th:'👆 ลากเพื่อเดินเล่น',ja:'👆 ドラッグでおさんぽ'};
   var PASSEIA={pt:'Passear pela cidade',en:'Stroll around town',es:'Pasear por la ciudad',id:'Jalan-jalan keliling kota',th:'เดินเล่นในเมือง',ja:'まちをおさんぽ'};
   var FECHA={pt:'Fechar o mapa',en:'Close the map',es:'Cerrar el mapa',id:'Tutup peta',th:'ปิดแผนที่',ja:'マップを閉じる'};
@@ -115,6 +126,7 @@
       atalhos.innerHTML=Object.keys(BAIRROS).map(function(id){
         return '<button type="button" data-tw-bairro="'+id+'"><span aria-hidden="true">'+BAIRROS_EMOJI[id]+'</span><span data-tw-rotulo="'+id+'">'+rotulo(id)+'</span></button>';
       }).join('');
+      if(window.TW_BAIRRO&&typeof window.TW_BAIRRO.guiaMarcar==='function')window.TW_BAIRRO.guiaMarcar(atalhos);
       var marcar=function(e){var b=e.target&&e.target.closest&&e.target.closest('[data-tw-bairro]');
         var alvo=b&&cena==='mundo'?BAIRROS[b.getAttribute('data-tw-bairro')]:null;if(alvo!==hover){hover=alvo;desenhar();}};
       ['pointerover','focusin'].forEach(function(ev){atalhos.addEventListener(ev,marcar);});
@@ -202,8 +214,11 @@
     // O menu permanece montado enquanto um minijogo esconde o Hub.
     return aberto&&(!menu||!menu.hidden)&&(!hub||!hub.hidden)&&!!document.getElementById('twMapa');
   }
-  function entrarRua(destino){
+  function entrarRua(destino,forcar){
     if(!mapaAtivo()||mergulho||cena!=='mundo'||!CENAS_RUA[destino])return;
+    // Primeiros dias guiados (tw-bairro.js): rua que ainda não acendeu pergunta antes; nunca tranca.
+    if(!forcar&&window.TW_BAIRRO&&typeof window.TW_BAIRRO.guiaPergunta==='function'&&
+      window.TW_BAIRRO.guiaPergunta(destino,function(){entrarRua(destino,true);}))return;
     // Cada visita cria apenas uma entrada extra; Voltar retorna ao mundo.
     try{
       var h=window.history;
@@ -348,7 +363,7 @@
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
-    if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);}
+    if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);guiaVeus();}
     else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
     if(mergulho&&cena==='mundo'){
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
@@ -367,6 +382,17 @@
       ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2;
       rr(b[0]+9,b[1]+9,b[2]-b[0]-18,b[3]-b[1]-18,19);ctx.stroke();ctx.restore();
     }
+  }
+  // Primeiros dias guiados (tw-bairro.js): rua que ainda não acendeu ganha um véu claro e o selo "em breve".
+  // Só aparência: tocar continua entrando (o tw-bairro pergunta antes, sem trancar).
+  function guiaVeus(){
+    var B=window.TW_BAIRRO;if(!B||typeof B.guia!=='function')return;var g;try{g=B.guia();}catch(e){return;}if(!g||!g.ativo)return;
+    var txt='✨ '+(B.t?B.t('emBreve'):'em breve');
+    Object.keys(BAIRROS).forEach(function(id){if(g.abertas.indexOf(id)>=0)return;var b=BAIRROS[id].box,w=b[2]-b[0],h=b[3]-b[1];
+      ctx.save();ctx.fillStyle='rgba(255,255,255,.55)';rr(b[0]+4,b[1]+4,w-8,h-8,26);ctx.fill();
+      ctx.font='26px "Mochiy Pop One",sans-serif';var tw=ctx.measureText?ctx.measureText(txt).width:120,cx=b[0]+w/2,cy=b[1]+h/2;
+      ctx.fillStyle='#fff';ctx.strokeStyle='#b98bff';ctx.lineWidth=3;rr(cx-tw/2-16,cy-24,tw+32,48,24);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#6e44c9';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,cx,cy+1);ctx.restore();});
   }
   // Indicadores consultam o DOM; abrir o jogo continua sendo click() no card original.
   function indicador(x,y,tipo,tm,numero){
@@ -929,6 +955,11 @@
     if(cena==='praca')peixesFonte(tm);
     var n=tipo==='passaro'?3:4;
     for(var k=0;k<n;k++){var b=posBicho(k,reduzMov?k*2.1:tm),tam=tipo==='passaro'?1.6:2;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.dir*tam,tam);
+      voadorDesenhar(tipo,k,tm);
+      ctx.restore();}
+  }
+  // borboleta ou passarinho na origem (o chamador já fez translate/scale); desenho igual ao de sempre
+  function voadorDesenhar(tipo,k,tm){
       ctx.lineJoin='round';ctx.lineCap='round';
       if(tipo==='borboleta'){
         var C=[['#ff8fc8','#ffd1ea','#c9478d'],['#ffd36b','#fff1b8','#c9921a'],['#b98bff','#e6dbff','#6e44c9'],['#7fd3ff','#dcf4ff','#2f8fca']][k],
@@ -954,7 +985,6 @@
         ctx.fillStyle='#ffa94d';ctx.strokeStyle='#d9772a';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(15.5,-7.5);ctx.lineTo(21.5,-5.5);ctx.lineTo(15.5,-3.5);ctx.closePath();ctx.fill();ctx.stroke();
         ctx.fillStyle='#2a1a3a';ctx.beginPath();ctx.arc(12,-8,1.9,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(11.4,-8.7,.7,0,7);ctx.fill();
         ctx.fillStyle='rgba(255,111,181,.55)';ctx.beginPath();ctx.ellipse(10.5,-3.6,2.2,1.3,0,0,7);ctx.fill();}
-      ctx.restore();}
   }
   function desenharToques(tm){
     toques=toques.filter(function(t){var u=(tm-t.t0)/(t.dur||1);if(u>1||u<0)return false;ctx.save();

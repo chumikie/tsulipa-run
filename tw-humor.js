@@ -73,7 +73,10 @@
   var TREINO_VISITANTE = {run:1, cafe:1, battle:1, studio:1, handshake:1, mapa:1, frase:1};
 
   function lang(){ return typeof LANG === 'string' ? LANG : 'pt'; }
-  function t(k, n){ var d = TX[k], s = d ? (d[lang()] || d.pt) : k; return n != null ? s.replace('{n}', n) : s; }
+  function t(k, n){ var d = TX[k], s = d ? (d[lang()] || d.pt) : k;
+    // O celular leva o nome do Idol de quem joga ("SamiPhone"); sem conta, TsuPhone (petPhoneNome, pet.js).
+    try{ if(typeof petPhoneNome === 'function') s = s.split('TsuPhone').join(petPhoneNome()); }catch(e){}
+    return n != null ? s.replace('{n}', n) : s; }
   function hoje(){ var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function ontem(){ var d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function logado(){ return typeof contaJ !== 'undefined' && !!contaJ; }
@@ -115,7 +118,8 @@
   function cor(){ var m = media(); return m >= 60 ? '#7be35a' : m >= 35 ? '#ffd23f' : '#ff6fb5'; }
 
   var ouvintes = [], ultimoRecado = '';
-  function avisar(tipo){ ouvintes.forEach(function(f){ try{ f(tipo); }catch(e){} }); }
+  // ouvintes recebem (tipo, jogo, fraco): o tw-bairro.js usa o jogo para contar o bico da rua
+  function avisar(tipo, ev, fraco){ ouvintes.forEach(function(f){ try{ f(tipo, ev, fraco); }catch(e){} }); }
   function evento(ev, fraco){
     ler();
     var ef = EFEITO[ev]; if(ef){ var k = fraco ? .5 : 1; BARRAS.forEach(function(b, i){ est[b] = limita(est[b] + ef[i] * k); }); }
@@ -129,7 +133,7 @@
       ultimoRecado = quem[0];
       BARRAS.forEach(function(b){ est[b] = limita(est[b] + 15); });
     }
-    salvar(); avisar(cumpriu ? 'desejo' : 'humor');
+    salvar(); avisar(cumpriu ? 'desejo' : 'humor', ev, !!fraco);
   }
 
   var H = window.TW_HUMOR = {

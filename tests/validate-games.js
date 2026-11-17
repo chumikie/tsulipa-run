@@ -193,8 +193,8 @@ assert(translations.includes("Ranking temporariamente indisponível")&&
        translations.includes("อันดับไม่พร้อมใช้งานชั่วคราว")&&
        !lab.includes("Karaoke: em preparação")&&!lab.includes("Karaoke: in preparation"),
   "Weekly TV ranking status must reflect the active Karaoke Time backend in all five locales");
-const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar(){"),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar(){"))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
-const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar(){"));
+const seasonalDraw=lab.slice(lab.indexOf("function hubDesenhar("),lab.indexOf("function hubLoop(",lab.indexOf("function hubDesenhar("))   /* era "hubLoop()", que não existe mais (hubLoop(ms)): o recorte ia até o fim do arquivo */);
+const voiceSource=lab.slice(lab.indexOf("function hubTrioReage("),lab.indexOf("function hubDesenhar("));
 const sfxSource=lab.slice(lab.indexOf("var sfx="),lab.indexOf("var mel=",lab.indexOf("var sfx=")));
 assert(seasonalDraw.includes("HUB_ROUPA_TEMA[temaAtual()]")&&
        lab.includes("var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});")&&

@@ -28,7 +28,7 @@ function canvasFalso(w, h, cssW){
 
 test('twNitido: mais pixels reais, mesmo tamanho lógico para o jogo', () => {
   const src = funcao(ler('perfil.js'), 'twNitido');
-  for(const [dpr, css, kEsperado] of [[1, 708, 1.25], [1.5, 708, 1.75], [1, 400, 1], [2, 2000, 3]]){
+  for(const [dpr, css, kEsperado] of [[1, 708, 1.25], [1.5, 708, 1.75], [1, 400, 1], [2, 2000, 2]]){
     const { cv, Cv, real } = canvasFalso(640, 420, css);
     const sb = { window:{ devicePixelRatio:dpr }, HTMLCanvasElement:Cv, Math, Object };
     sb.window.HTMLCanvasElement = Cv;

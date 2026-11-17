@@ -231,17 +231,51 @@
       '<button type="button" class="twc-selo" data-a="mapa">' + (v ? '<canvas class="twc-bola-mini" data-membro="' + v.k + '" width="64" height="64" aria-hidden="true"></canvas>' : '<i class="twc-vivo" aria-hidden="true"></i>') +
       '<span id="twcVisita">' + esc(visita()) + '</span>' + ico('seta', 16) + '</button></div></section>';
   }
+  // O palco do Início é desenhado direto pelo hubLoop (hub.js) através de twcPalcoAlvo(): uma cena por quadro.
+  // (Até 17/11 o hubCv era desenhado e copiado aqui a cada quadro, o que dobrava o trabalho e travava o Início.)
+  // Devolve: o canvas do palco quando ele está visível; false = visual novo ligado mas palco fora da tela (não desenhar);
+  // null = visual clássico (o hub desenha no hubCv, como sempre).
+  var palcoVis = {t:0, v:false, el:null};
+  window.twcPalcoAlvo = function(){
+    if(!cel || classico) return null;
+    var dst = $id('twcPalcoCv'), h = $id('hub');
+    if(!dst || !dst.isConnected || !h || h.hidden || document.hidden) return false;
+    var agora = Date.now();
+    if(palcoVis.el !== dst || agora - palcoVis.t > 400){
+      palcoVis.el = dst; palcoVis.t = agora;
+      try{ palcoVis.v = window.TWMotionLifecycle ? window.TWMotionLifecycle.isVisible(dst) : !!dst.offsetParent; }catch(e){ palcoVis.v = !!dst.offsetParent; }
+    }
+    if(!palcoVis.v) return false;
+    var src = $id('hubCv');
+    if(src && (dst.width !== src.width || dst.height !== src.height)){ dst.width = src.width; dst.height = src.height; }
+    palcoFreio(dst);
+    return dst;
+  };
+  // Freio do palco (17/11), igual ao do Center⭐Run (centerrun-corrida.js): o palco deveria trocar de quadro a cada ~33 ms;
+  // se a mediana passar de 45 ms, o aparelho não está aguentando → menos pixels no palco (2× → 1,5× → 1×), e o aparelho
+  // guarda o nível (tw_palco_nitidez) para o próximo Início já abrir leve. Aparelho que aguenta não perde nitidez.
+  var palcoDes = {el:null, ult:0, ms:[], teto:0};
+  function palcoFreio(dst){
+    var N = window.TW_NITIDEZ; if(!N || !N.limitar || N.desligada) return;
+    if(!palcoDes.teto){ var sv = 0; try{ sv = +localStorage.getItem('tw_palco_nitidez') || 0; }catch(e){} palcoDes.teto = sv || 9; }
+    if(palcoDes.el !== dst){ palcoDes.el = dst; palcoDes.ult = 0; palcoDes.ms = []; if(palcoDes.teto < 9) N.limitar(dst, palcoDes.teto); }
+    if(palcoDes.teto <= 1) return;
+    var agora = performance.now(), d = palcoDes.ult ? agora - palcoDes.ult : 0; palcoDes.ult = agora;
+    if(d <= 0 || d > 400) return;                     // pausa, troca de tela ou aba escondida: não conta
+    palcoDes.ms.push(d); if(palcoDes.ms.length < 75) return;
+    var o = palcoDes.ms.slice().sort(function(a, b){ return a - b; }), med = o[o.length >> 1]; palcoDes.ms = [];
+    if(med <= 45) return;
+    var k = N.escala(dst), novo = k > 1.5 ? 1.5 : 1; if(k <= 1) return;
+    palcoDes.teto = novo; N.limitar(dst, novo); try{ localStorage.setItem('tw_palco_nitidez', String(novo)); }catch(e){}
+  }
   var palcoRaf = 0;
-  function palcoQuadro(){
+  function palcoQuadro(){   // primeiro quadro logo que o Início é montado (sem esperar o próximo passo do hubLoop)
     palcoRaf = 0;
-    var dst = $id('twcPalcoCv'), src = $id('hubCv'), h = $id('hub');
-    if(!dst || !src || !h || h.hidden || classico || document.hidden) return;
-    if(window.TWMotionLifecycle && !window.TWMotionLifecycle.render30Due(dst)){ palcoRaf = requestAnimationFrame(palcoQuadro); return; }
-    try{
-      if(dst.width !== src.width || dst.height !== src.height){ dst.width = src.width; dst.height = src.height; }
-      var x = dst.getContext('2d'); x.clearRect(0, 0, dst.width, dst.height); x.drawImage(src, 0, 0);
-    }catch(e){ return; }
-    palcoRaf = requestAnimationFrame(palcoQuadro);
+    var dst = $id('twcPalcoCv'); if(!dst || classico || typeof hubDesenhar !== 'function') return;
+    palcoVis.t = 0;
+    // sempre um primeiro desenho, mesmo com uma janela por cima: o palco novo nunca fica em branco nem na resolução errada
+    var src = $id('hubCv'); if(src && (dst.width !== src.width || dst.height !== src.height)){ dst.width = src.width; dst.height = src.height; }
+    try{ palcoFreio(dst); hubDesenhar(dst); }catch(e){}
   }
   function palcoLigar(){ if(!palcoRaf) palcoRaf = requestAnimationFrame(palcoQuadro); }
   function palcoToque(e){   // repassa o toque para o canvas do hub, no mesmo ponto proporcional

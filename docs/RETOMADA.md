@@ -1,3 +1,19 @@
+## Auditoria de leveza — 17/11/2026 (noite), depois de #105–#109 no ar
+
+Base: `main` em `d47971a`. Medido no Chrome sem tela com o modo demonstração, em Android (412 px, 2,6×), tablet Android (800×1280 e 1280×800, 2×) e PC (1920 e 1366). **Atenção ao ler os números:** esse Chrome desenha sem placa de vídeo, então canvas animado pesa muito mais que num aparelho real. Vale a comparação antes/depois e entre telas, não o valor absoluto.
+
+**Achado e corrigido**
+- **Palco do Início desenhado 2× por quadro:** no visual novo, o `hubLoop` desenhava o `hubCv` (que nem aparece) e o `tw-celular.js` copiava a imagem inteira para o `twcPalcoCv` a cada quadro. A cópia obrigava a pintar o `hubCv` na hora: **~80% do processador parado no Início**. Agora o `hubLoop` desenha direto no palco (`hubDesenhar(alvo)` + `twcPalcoAlvo()`); com o palco fora da tela ou coberto, não desenha nada. Clássico igual a antes (desenha no `hubCv`). Script parado no Início: 96% → 12%; Menu e Jogos: 15% → 7–9% (60 qps).
+- **`twNitido` (perfil.js) pintava demais no celular:** a conta era "pelo menos o zoom" → Café, Gacha, Handshake, Loja e Montar Idol saíam a 1760 px de largura para aparecer com ~390 px (2,5× mais pixels que a tela mostra). Agora é só tamanho na tela × zoom, com o mesmo teto do `tw-nitidez.js` (2× para palcos grandes). Café 17 → 52 qps, Gacha 9 → 27 qps (Android simulado). Mesma correção no quarto do Pet (`petFitCanvas`).
+- **Mapa com pixels demais no celular:** 1600×1000 lógicos em ~380 px. O `tw-nitidez.js` agora também **baixa** a resolução de canvas enormes (≥ 600 mil pixels lógicos) mostrados com menos de 80% deles na tela (nunca abaixo de 0,5×). Mapa no Android: 14 → 59 qps.
+- **Freio do palco do Início** (igual ao do Center⭐Run): se o palco passar de ~45 ms por quadro, cai de 2× para 1,5× e depois para 1×; o aparelho guarda em `tw_palco_nitidez`. Aparelho que aguenta não perde nitidez. `TW_NITIDEZ.limitado(cv)` diz quando um canvas foi freado de propósito (o `telas.browser.cjs` aceita).
+- O palco novo do Início sempre recebe um primeiro desenho, mesmo com uma janela por cima (nunca fica em branco).
+- Testes `karaoke-mobile-performance` e `validate-games` procuravam `function hubDesenhar()` literal: agora `function hubDesenhar(`.
+
+**Conferido sem erro:** 117/117 testes; `corrida.browser.cjs` e `telas.browser.cjs`; 17 telas × 5 aparelhos (sem erro de script, sem rolagem lateral); partida começada em Center⭐Run, Café, Handshake, Gacha, Sora, Karaoke (pergunta antes de gastar tentativa), Battle, Bloom, Studio e Duo.
+**Peso da abertura (visual novo):** 89 arquivos, 2,2 MB (~750 KB comprimido). Maiores: `index.html` 229 KB, `tw-celular.js` 193, `centerrun.js` 112, `tw-mapa.js` 106 (baixa depois da abertura), `hub.js` 103, `tw-celular.css` 97, `mapa-mundo.svg` 95.
+**Falta (precisa de aparelho real):** medir no Android de verdade (processador e bateria no Início, Café, Gacha e Karaoke); o Karaoke continua o mais pesado no teste (canvas 960×540 cheio de personagens, 26 qps no Android simulado). **Ideias:** coluna mais larga no PC ≥ 1500 px; dividir o `karaoke-time.html` (plano na #109); `tw-bairro.js` (45 KB) sob demanda.
+
 ## Rodada 17/11/2026 — visual novo também no computador e no tablet
 
 **Entrou** (branch `feat/visual-novo-computador`, PR draft)

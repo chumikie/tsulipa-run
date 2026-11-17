@@ -101,13 +101,10 @@ assert(html.includes('function krMontarListaRenderSala(andando){'),'Room members
 assert(html.includes('function krMeuCharSala(){'),'The local avatar clone should be cached between frames');
 assert(!loop.includes('var lista=krBots.concat(krEu.plateia?[]:')&&!loop.includes('meuChar()'),'The room loop should not rebuild the player list or deep-clone the local avatar per frame');
 assert(!loop.includes('Object.assign({},j,{pose:busy?')&&!loop.includes('drinkCopy=Object.assign'),'Accessory and drink positioning should not clone each character object');
-assert(html.includes('var krTilesPisados=new Uint8Array(90);'),'The 15×6 typed buffer should be allocated once outside the animation loop');
-assert(block.includes('krTilesPisados.fill(0);'),'The reusable occupancy buffer should be reset once per frame');
-assert(block.includes('for(var oi=0;oi<lista.length;oi++){var j=lista[oi],ix0='),'Occupancy should be calculated once per visible character without allocating a callback');
-assert(block.includes('krTilesPisados[ix*6+iy]=1'),'Character occupancy should mark logical tiles');
-assert(block.includes('var tileIndex=0;for(var gx=100;gx<860;gx+=54)for(var gy=315;gy<515;gy+=36)'),'The existing 15×6 visual tile grid should remain intact');
-assert(block.includes('pisou=krTilesPisados[tileIndex++]===1'),'Tile rendering should read precomputed occupancy');
-assert(!block.includes('lista.some(function(j){return Math.abs(j.x-(gx+25))<38'),'Avoid scanning all characters for every tile');
+// Karaokê box (17/11/2026): o piso de ladrilhos que acendiam virou carpete, desenhado uma vez e guardado em cache.
+assert(block.includes('krDesenharCarpete(x,W2,H2);'),'The room floor should be the cached carpet');
+assert(/function krDesenharCarpete\(x,W,H\)\{\n if\(!krCarpeteCache/.test(html),'The carpet pattern should only be rebuilt when the canvas size changes');
+assert(!block.includes('for(var gx=100;gx<860;gx+=54)'),'No per-frame tile grid in the room loop');
 assert(html.includes('if(krHandBusy(bot))')&&html.includes('krAgendarLoop()'),'Keep the existing room animation and busy-hand flow');
 // Static wall panels and shelf are cached instead of rebuilt on every room frame.
 assert(html.includes('var krDecorWallCache=null;'),'Wall background cache should be persistent');

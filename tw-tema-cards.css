@@ -1,0 +1,11 @@
+/* TsuLiPa⭐World · cards no tema (17/11/2026)
+   Os cards dos jogos seguem o tema: cor do Oshi (--b1) sobre o fundo do tema (--card), no claro e no escuro —
+   a mesma regra do Idol⭐Battle. Vale para o Happy⭐Cafe!, o Handshake⭐Event!, o Photo⭐Studio!, o Bloom⭐Garden! e o Idol⭐News!.
+   Acertos/erros (verde/vermelho) e flores já floridas mantêm a cor própria. Carregado depois dos CSS dos jogos. */
+html body :is(.jnmanchete,.jnpodio,.jnbloco,.jnfoto3,.jnpostar,.jndiario,.jndiariolista li,.jnfeitos,.jnababotao,.jnatividade,.jncaps,.jncapaba,.jnpost,.cfop,.cfcaderno,.cfrec,.cfassinatura,.cfassinatura-opcao,.cfpedidotxt,.hstempo,.hsop:not(.certo):not(.errado),#hsOv .hsresumo span,.hsflores,.hsflor,.stpauta,.stpauta i:not(.ok),.stchip,.stabab,.stpost,.stcoracao,.sttema,.stfalta,.bloommsg,.bloomcard:not(.florida),.bloompick,.bloomseed,.bloomvasos span,.bloomflores span,.bloomstar){
+ background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 9%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 20%,var(--card,#fff)))!important;
+ border-color:color-mix(in srgb,var(--b1,#7b3ff0) 26%,transparent)!important;color:var(--ink,#12365e)!important}
+html body :is(.jnmanchete,.jnpodio,.jnbloco,.jnfoto3,.jnpostar,.jndiario,.jndiariolista li,.jnfeitos,.jnababotao,.jnatividade,.jncaps,.jncapaba,.jnpost,.cfop,.cfcaderno,.cfrec,.cfassinatura,.cfassinatura-opcao,.cfpedidotxt,.hstempo,.hsop:not(.certo):not(.errado),#hsOv .hsresumo span,.hsflores,.hsflor,.stpauta,.stpauta i:not(.ok),.stchip,.stabab,.stpost,.stcoracao,.sttema,.stfalta,.bloommsg,.bloomcard:not(.florida),.bloompick,.bloomseed,.bloomvasos span,.bloomflores span,.bloomstar) :is(p,h3,h4,h5,h6,small,li,b,strong,label,time,figcaption,em,i,dt,dd):not([class*="pill"]):not([class*="tag"]):not([class*="badge"]){color:inherit}
+html body :is(.cfop.on,.cfassinatura-opcao.on,.hsflor.on,.stchip.on,.stcoracao.on,.jnababotao[aria-selected="true"],.jncapaba[aria-selected="true"],.jncapaba.on){
+ background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 26%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 42%,var(--card,#fff)))!important;
+ border-color:var(--b1,#7b3ff0)!important;color:var(--ink,#12365e)!important;box-shadow:0 3px 0 color-mix(in srgb,var(--b1,#7b3ff0) 30%,transparent)}

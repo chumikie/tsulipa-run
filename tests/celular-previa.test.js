@@ -155,7 +155,7 @@ test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, onli
   assert.match(mapaJs, /function mundoGente\(tm\)/, 'mapa geral com Idols nas calçadas');
   assert.ok(!/function telaPais\(\)/.test(js), 'Cantinho dos pais saiu (o público é adulto)');
   assert.match(js, /if\(falhaDeRede\(err\)\)\{ falhas\+\+; if\(falhas >= 3\) manutMostrar\(\); \}/, 'manutenção só depois de 3 falhas de rede seguidas');
-  assert.match(cm, /var PASSOS = \[\[0, '💇', 'Visual'/, 'Montar Idol em 3 passos');
+  assert.match(cm, /var PASSOS = \[\[0, '[^']*', 'Visual'/, 'Montar Idol em 3 passos');
   assert.match(cm, /if\(celLigado\(\)\)\{ redoma\(cv, c\); return; \}/, 'redoma só no visual de celular');
   assert.match(cm, /if\(podeProvar\)\{ st\.prova = /, 'provar peça trancada só na prévia (não salva nem compra)');
 });

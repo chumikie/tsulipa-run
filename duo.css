@@ -62,3 +62,4 @@
 #duoTabC>b{margin-bottom:8px;color:var(--b1)}
 .duotrava{margin-bottom:8px}
 .duotrava[hidden],#duoPresBox[hidden]{display:none!important}.duotabc{text-align:left}.duotabc .duoexrow small{text-align:left}
+.duocena{display:block;width:100%;height:auto;aspect-ratio:1120/400;border-radius:20px;margin:6px 0 10px;box-shadow:0 4px 0 rgba(90,51,166,.16)}

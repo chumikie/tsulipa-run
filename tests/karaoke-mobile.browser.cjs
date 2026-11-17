@@ -227,14 +227,14 @@ async function waitForRoomMode(frame, expectMobile){
     if(width>620)assert(Math.abs(idle.canvas.w-idle.scene.w)<1&&Math.abs(idle.canvas.h-idle.scene.h)<1,'Desktop canvas fits the room');
     for(const r of idle.controls)assert(r.x>=0&&r.right<=width+1,r.id+' fits the viewport');
     if(width<=620){
-     // Celular em pé (02/11/2026, aprovado pela dona): recorte médio, centro de 720 dos 960 px
-     // lógicos (120 por lado). As pontas da plateia podem ficar em parte cortadas, mas o centro
-     // de cada Idol e o do jogador continuam sempre visíveis.
-     assert(Math.abs(idle.crop.left-120)<.1&&Math.abs(idle.crop.right-840)<.1,'Portrait crop keeps the central 720 logical pixels');
+     // Celular em pé (17/11/2026, pedido da dona): a sala ocupa a tela, com corte centrado que se arrasta para os lados
+     // (substitui o recorte fixo de 720 px de 02/11). Ferramentas e Trilha/Jogar flutuam por cima da imagem.
+     assert(Math.abs(idle.crop.left+idle.crop.right-960)<2,'Portrait crop starts centred: '+JSON.stringify(idle.crop));
+     assert(idle.crop.right-idle.crop.left>=300,'Portrait crop still shows a good part of the room: '+JSON.stringify(idle.crop));
+     assert(idle.roomView.h<=700,'Room height does not follow the iframe height (no growth loop): '+idle.roomView.h);
      const bounds=await frame.locator('body').evaluate(()=>window.qaRoomState());
-     for(const b of bounds.members)assert(b.x>=idle.crop.left&&b.x<=idle.crop.right,'Every member stays visible (at least its centre)');
-     assert(120>=idle.crop.left&&840<=idle.crop.right,'Walking limits keep the player centre visible');
-     for(const r of idle.tools)assert(r.bottom<=idle.roomView.y+.1&&r.x>=idle.scene.x&&r.right<=idle.scene.right,'Tools occupy their own band above the picture');
+     for(const b of bounds.members)assert(b.x>=0&&b.x<=960,'Every member is in the room (reachable by dragging)');
+     for(const r of idle.tools)assert(r.y>=idle.roomView.y-.1&&r.bottom<=idle.roomView.bottom+.1&&r.x>=idle.scene.x&&r.right<=idle.scene.right,'Tools float inside the picture');
      const soundTool=idle.tools[0],cameraTool=idle.tools[1];assert(soundTool.right<=cameraTool.x||cameraTool.right<=soundTool.x||soundTool.bottom<=cameraTool.y||cameraTool.bottom<=soundTool.y,'Sound and camera controls never overlap, even when the tools wrap');
      assert.equal(idle.bannerOpacity,'1','Mobile attempts remain visible after fade timer');
      assert(idle.weekly.y-idle.banner.bottom<=12,'No blank block before ranking');
@@ -244,10 +244,10 @@ async function waitForRoomMode(frame, expectMobile){
    await p.screenshot({path:path.join(out,engine+'-'+width+'-idle.png'),fullPage:true});
    if(!baseline){
     const poster=frame.locator('#ktPosterDialog'),portrait=frame.locator('#ktPosterPortrait'),posterColors=[];
-    for(let posterIndex=0;posterIndex<6;posterIndex++){
+    for(let posterIndex=0;posterIndex<2;posterIndex++){   // 17/11: duas polaroids (a sala tirou excesso)
      const posterClick=await frame.locator('body').evaluate(()=>{var index=window.__qaPosterIndex||0;window.__qaPosterIndex=index+1;return window.qaRoomControllers.openPoster(index);});
      assert.equal(posterClick.opened,true,'wall Polaroid '+(posterIndex+1)+' opens through the real canvas pointer event: '+JSON.stringify(posterClick));
-     assert.equal(posterClick.posterCount,6,'the room exposes all six wall Polaroids');
+     assert.equal(posterClick.posterCount,2,'the room exposes its two wall Polaroids');
      await poster.waitFor({state:'visible'});try{await frame.locator('#ktPosterSave').waitFor({state:'visible',timeout:8000});}catch(error){const exportState=await frame.locator('body').evaluate(()=>({open:!!document.getElementById('ktPosterDialog')?.open,link:(function(){var a=document.getElementById('ktPosterSave');return a?{hidden:a.hidden,href:a.getAttribute('href'),download:a.download}:null;})(),canvas:(function(){var c=document.getElementById('ktPosterPortrait');return c?{width:c.width,height:c.height}:null;})()}));assert.fail('Polaroid PNG link did not appear after toBlob/fallback: '+JSON.stringify({posterIndex,exportState,errors:errors.slice(-8),cause:String(error&&error.message||error)}));}
      const visual=await poster.evaluate(dialog=>{
       const backdrop=getComputedStyle(dialog,'::backdrop'),canvas=dialog.querySelector('#ktPosterPortrait'),ctx=canvas.getContext('2d');
@@ -266,7 +266,7 @@ async function waitForRoomMode(frame, expectMobile){
      }
      await frame.locator('#ktPosterClose').click();await poster.waitFor({state:'hidden'});
     }
-    assert.equal(new Set(posterColors).size,6,'each of the six Polaroids paints its own color palette');
+    assert.equal(new Set(posterColors).size,2,'each of the two Polaroids paints its own color palette');
     if(process.env.QA_POLAROID_ONLY){results.push({engine,width,polaroidOnly:true,posterColors});console.log(engine,width,'Polaroid-only six portraits + PNG download + close/reopen passed');await context.close();continue;}
     const prep=await frame.locator('body').evaluate(()=>window.qaRoomControllers.prepareAutoMic());
     let atMic=false,lastRoomState=null;
@@ -403,7 +403,7 @@ async function waitForRoomMode(frame, expectMobile){
     await p.setViewportSize({width,height:900});
     await waitForRoomMode(frame,true);
     const mobileAgain=await metrics(frame);
-    assert(Math.abs(mobileAgain.crop.left-120)<.1,'Resize back restores mobile crop');
+    assert(Math.abs(mobileAgain.crop.left+mobileAgain.crop.right-960)<2&&mobileAgain.crop.left>0,'Resize back restores the centred mobile crop: '+JSON.stringify(mobileAgain.crop));
     assert.equal(await frame.locator('.kt-room-tools #krMute').count(),1,'No duplicate sound button after resize');
    }
    await p.locator('#twPreviewVoltar').click();

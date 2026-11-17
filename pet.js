@@ -56,6 +56,7 @@ var PET_MOVEIS = {   // centro padrão, largura e limites no chão (entre o sof�
   abajur:  {cx:279, w:24, min:170, max:282}
 };
 var petArrumo = null, petArrumando = false, petArrastando = null;
+//→petArrumoPersistivel
 //→petArrumoLer
 //→petArrumoSalvar
 //→petArrumoX
@@ -1116,7 +1117,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=5',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=6',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

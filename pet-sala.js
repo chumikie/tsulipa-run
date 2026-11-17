@@ -206,9 +206,10 @@ function petDesenharJanela(x, fase){
   x.fillStyle = '#e9b8d3'; x.fillRect(L - 4, T + H + 3, W + 8, 3);                // peitoril
   x.restore();
 }
-//←petArrumoLer
+//←petArrumoPersistivel
 // Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
 var petArrumoPersistivel = true;
+//←petArrumoLer
 function petArrumoLer(){
   if(petArrumo) return petArrumo;
   var bruto = null;

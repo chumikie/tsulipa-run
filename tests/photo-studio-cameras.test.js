@@ -36,7 +36,7 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
 
 test('Studio photo and mural reuse the same camera and props renderer', () => {
   const source = fs.readFileSync(path.join(root, 'studio.js'), 'utf8');
-  assert.match(source, /perfDesenharIdol\(x, W, H, av, false, false, tm \* 60, e\.quadro/);
+  assert.match(source, /perfDesenharIdol\(x, W, H, av, false, false, tm \* 60, (?:e\.)?quadro/);
   assert.match(source, /function polaroid\(/);
   assert.match(source, /cena\(x, fw, fh, e, 1, av\)/);
   assert.match(source, /quadro === 'meio'/);

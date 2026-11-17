@@ -254,7 +254,7 @@ test('leitor da temporada fica inerte bloqueado e o texto não é cortado no mei
   assert.match(src, /for\(var i = 0; i < 6; i\+\+\) if\(jnT1Disponivel\(i\)\) lib\.push\(i\);\n  if\(!lib\.length\) return false;/, 'sem episódio liberado, não acrescenta nada');
   assert.match(src, /jnT1LeitorUI\(box\);\n\}/, 'ligado ao fim do leitor histórico');
   assert.match(src, /curto\(f\[1\],196,4,15\)/, 'falas com até 4 linhas na mesma fonte do desenho');
-  assert.match(src, /curto\(p\[2\],canvas\.width-60,3,14\)/, 'narração com até 3 linhas');
+  assert.match(src, /curto\(p\[2\],canvas\.width(?:\/\(canvas\.__jnZoomScale\|\|1\))?-60,3,14\)/, 'narração com até 3 linhas');
   assert.match(src, /new Intl\.Segmenter\(jnCapL\(\),\{granularity:'word'\}\)/, 'quebra de TH/JA por palavra');
   assert.match(src, /var JN_T1_PUBLICADA = false;/);
   assert.ok(!/pronto:true/.test(src), 'nenhum episódio marcado como pronto');

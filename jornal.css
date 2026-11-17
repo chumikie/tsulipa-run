@@ -34,7 +34,7 @@
 .jnfotobtn:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 @media (min-width:600px){.jnfotos{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* Novidades e Top Idols agora ficam só no Idol⭐News! */
-#hub .hubnov{display:none!important}
+#hub .hubnov:not(.twc-novidades-conteudo){display:none!important}
 #hub #twRankHall{display:none!important}
 .jntopt{margin:14px 0 0;color:var(--b1)}
 .jornalp .jnbloco,.jornalp .jnpodio,.jornalp .jnmanchete{color:#3c2a8f}

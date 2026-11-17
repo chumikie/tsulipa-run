@@ -487,3 +487,13 @@ O mapa de 1 nível ficou lotado. Novo modelo:
 - **Idol⭐Battle! (`battle.js?v=9`, `battle.css?v=7`)**: sem emoji como ícone — microfone, sapatilha, coração e troféu são desenhados e usados tanto no HTML (SVG) quanto no palco e na polaroid (Path2D); flores da torcida viram bolinhas de cor; pódio do ranking com medalhas numeradas; títulos de seção só com texto. Nenhuma regra ou RPC mudou.
 - Conferido em Chromium (390×844). **Não testado: conta real, iPhone, Safari.**
 
+
+## Rodada 17/11/2026 (PR #104 · v3 oficial)
+- Visual de celular oficial nos telefones (sem "prévia"); passos do Montar Idol e tutorial corrigidos.
+- Novidades (celular): posts do Idol⭐News! (`news_posts`) com data e selo "novo" (`tw_nov_visto`); a lista fixa fica embaixo.
+- Idol⭐Battle: 480px, cena unit × rival no topo (`cenaDesenhar`), escolha por cards (`data-battle="slot"`), caixas escuras no modo escuro.
+- Moon⭐Duo: cena da lua (`duoCenaDesenhar`); sugestões com reserva Tsu/Lirika.
+- Karaoke⭐Time! como karaokê box: parede capitonê, carpete (cache), sofá de veludo, mesa de madeira com pandeiro/maracas/tablet/controle,
+  molduras de madeira, cardápio de músicas no lugar do placar (ranking logo abaixo + botão 🏆 no celular), 2 polaroids em vez de 6.
+  No celular a sala ocupa a tela, com Trilha/Jogar flutuando em cima e Som/Pausar/Timing/Foto/🏆 embaixo.
+- Idol⭐News! continua com cartões claros ("papel") no modo escuro — decisão em aberto.

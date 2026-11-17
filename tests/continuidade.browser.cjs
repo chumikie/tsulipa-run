@@ -33,7 +33,10 @@ const path = require('node:path');
     },uid);
     const estado = () => page.evaluate(() => [TW_HUMOR.desejo().feito,TW_HUMOR.vipHoje(),TW_HUMOR.premios().tapete]);
     await conta('A');
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      await petSalaCarregar();
+      petArrumoLer().parede.zipper = [95,48];
+      petArrumoSalvar();
       TW_HUMOR.evento(TW_HUMOR.desejo().ev);
       TW_HUMOR.guardarFotoVip('data:image/png;base64,AA==');
     });
@@ -41,10 +44,12 @@ const path = require('node:path');
     for(const id of ['', 'B']){
       await conta(id);
       assert.deepEqual(await estado(),[false,false,false]);
+      assert.equal(await page.evaluate(() => Boolean(petArrumoLer().parede.zipper)),false);
     }
     await page.reload();
     await conta('A');
     assert.deepEqual(await estado(),[true,true,true]);
+    assert.deepEqual(await page.evaluate(async () => { await petSalaCarregar(); return petArrumoLer().parede.zipper; }),[95,48]);
     assert.equal(await page.evaluate(() => twMapaCarregar().then(()=>true,()=>false)),false);
     const antes = tentativas;
     mapaFalha = false;

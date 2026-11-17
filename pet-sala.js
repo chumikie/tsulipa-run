@@ -208,12 +208,27 @@ function petDesenharJanela(x, fase){
 }
 //←petArrumoPersistivel
 // Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
-var petArrumoPersistivel = true;
+var petArrumoPersistivel = true, petArrumoDono = '';
+function petArrumoChave(){
+  if(typeof contaJ === 'undefined' || !contaJ) return PET_ARRUMO_KEY + ':visitante';
+  var id = typeof contaAuthUserId === 'string' && contaAuthUserId || contaJ.id;
+  return PET_ARRUMO_KEY + (id ? ':id:' + id : ':nick:' + contaJ.nick);
+}
 //←petArrumoLer
 function petArrumoLer(){
-  if(petArrumo) return petArrumo;
+  var chave = petArrumoChave();
+  if(petArrumo && chave === petArrumoDono) return petArrumo;
+  if(petArrumoDono && chave !== petArrumoDono){
+    petArrastando = null;
+    petArrumando = false;
+    petBg = null;
+  }
+  petArrumoDono = chave;
+  petArrumo = null;
+  petArrumoPersistivel = true;
   var bruto = null;
-  try{ bruto = localStorage.getItem(PET_ARRUMO_KEY); }
+  try{ bruto = localStorage.getItem(chave);
+    if(bruto === null) bruto = localStorage.getItem(PET_ARRUMO_KEY); }
   catch(e){ petArrumoPersistivel = false; }
   if(bruto){
     try{
@@ -229,8 +244,8 @@ function petArrumoLer(){
 }
 //←petArrumoSalvar
 function petArrumoSalvar(){
-  if(!petArrumoPersistivel) return;
-  try{ localStorage.setItem(PET_ARRUMO_KEY, JSON.stringify(petArrumoLer())); }
+  if(!petArrumoPersistivel || petArrumoDono !== petArrumoChave()) return;
+  try{ localStorage.setItem(petArrumoDono, JSON.stringify(petArrumoLer())); }
   catch(e){ petArrumoPersistivel = false; }
 }
 //←petArrumoX
@@ -271,8 +286,8 @@ function petArrumoPegar(lx, ly){
 }
 //←petArrumoMover
 function petArrumoMover(lx, ly){
-  var a = petArrastando; if(!a) return;
   var A = petArrumoLer();
+  var a = petArrastando; if(!a) return;
   if(a.tipo === 'chao'){
     var m = PET_MOVEIS[a.k], cx = Math.round(Math.max(m.min, Math.min(m.max, lx + a.dx)));
     if(petArrumoLivre(a.k, cx)) A.chao[a.k] = cx;
@@ -302,6 +317,7 @@ function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no to
 }
 //←petArrumoPadrao
 function petArrumoPadrao(){
+  petArrumoLer();
   // Reposição padrão é uma ação explícita; não sobrescrever dados ilegíveis.
   if(!petArrumoPersistivel) return;
   petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null;

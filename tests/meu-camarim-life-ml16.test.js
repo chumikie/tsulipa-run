@@ -42,7 +42,7 @@ test('ML1.6: móveis só deslizam no chão, sem sobrepor, e ficam só no aparelh
   ctx.petArrumoMover(999, 140);                        // limite entre o sofá e a arara
   assert.ok(ctx.petArrumoX('mesa') <= ctx.PET_MOVEIS.mesa.max);
   ctx.petArrumoSalvar();
-  assert.ok(store.tw_camarim_arrumacao, 'chave própria');
+  assert.ok(store['tw_camarim_arrumacao:visitante'], 'chave própria');
   assert.doesNotMatch(fatia(pet, 'var PET_ARRUMO_KEY', 'function petArrumoDesenhar('), /petSave\(|contaRpc\(|brs48cr_pet/, 'fora do save sincronizado do Pet');
   assert.match(pet, /x\.translate\(petArrumoDx\('mesa'\), 0\)/);
   assert.match(pet, /x\.translate\(petArrumoDx\('estante'\), 0\)/);
@@ -99,4 +99,23 @@ test('Perfil aberto pela vitrine/busca volta para a página principal, não para
 test('ML1.7: celular tem som ao abrir, fechar, trocar de app, voltar, tocar e abrir carta', () => {
   for(const k of ['abrir', 'fechar', 'app', 'voltar', 'toque', 'carta']) assert.match(pet, new RegExp("petPhoneSom\\('" + k + "'\\)"), k);
   assert.match(pet, /if\(typeof beep !== 'function' \|\| !PET_PHONE_SONS\[k\]\) return;/, 'usa o beep do jogo (que respeita o mudo)');
+});
+
+test('arrumação antiga continua visível e as próprias mudanças sobrevivem à troca de conta e recarga', () => {
+  const original = JSON.stringify({v:1, chao:{}, parede:{zipper:[80,45]}});
+  const store = {tw_camarim_arrumacao:original};
+  const c = arrumo(store);
+  c.contaJ = {id:'A'};
+  c.petArrumoLer().parede.zipper = [100,60];
+  c.petArrumoSalvar();
+  c.contaJ = {id:'B'};
+  assert.deepEqual(Array.from(c.petArrumoLer().parede.zipper), [80,45]);
+  c.petArrumoLer().parede.zipper = [150,55];
+  c.petArrumoSalvar();
+  c.contaJ = null;
+  assert.deepEqual(Array.from(c.petArrumoLer().parede.zipper), [80,45]);
+  const voltou = arrumo(store);
+  voltou.contaJ = {id:'A'};
+  assert.deepEqual(Array.from(voltou.petArrumoLer().parede.zipper), [100,60]);
+  assert.equal(store.tw_camarim_arrumacao, original);
 });

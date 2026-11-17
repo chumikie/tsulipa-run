@@ -2322,6 +2322,10 @@ var twPreviewHeaderPrincipal=document.querySelector('body > header');
       if(twPreviewJogoAnterior==='sora'){twRankRefreshAfterSora();if(window.TW_HUMOR)window.TW_HUMOR.evento('sora');}
       return;
     }
+    if(e.data&&e.data.type==='TW_SORA_STARS'){   // prêmio dos 500 m confirmado pelo servidor: o saldo do topo acompanha
+      var dd=Math.round(+e.data.delta);if(twPreviewJogoAnterior==='sora'&&dd>0&&dd<=100){starT+=dd;try{localStorage.setItem('brs48cr_st',starT);}catch(e3){}setBest();}
+      return;
+    }
     if(e.data&&e.data.type==='TW_SORA_WEEKLY_SCORE'){
       if(twPreviewJogoAnterior==='sora')twRankRecordLocal(e.data.score);
       return;

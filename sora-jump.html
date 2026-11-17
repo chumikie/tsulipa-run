@@ -1365,6 +1365,10 @@ var SORA_DICT = {
     "UFO travesso!": "Mischievous UFO!",
     "Suba 500 metros no Sora⭐Jump!": "Climb 500 meters in Sora⭐Jump!",
     "Missão concluída! +25 ★": "Mission complete! +25 ★",
+    "Conferindo o prêmio dos 500 m…": "Checking your 500 m prize…",
+    "Prêmio dos 500 m de hoje já recebido. Volte amanhã!": "Today's 500 m prize already collected. Come back tomorrow!",
+    "Essa subida foi rápida demais para o prêmio. Tente de novo com calma!": "That climb was too fast for the prize. Try again calmly!",
+    "Não deu para conferir o prêmio agora.": "Couldn't check the prize right now.",
     "Histórico & Insígnias": "History & Badges"
   },
   es: {
@@ -1388,6 +1392,10 @@ var SORA_DICT = {
     "UFO travesso!": "¡UFO travieso!",
     "Suba 500 metros no Sora⭐Jump!": "¡Sube 500 metros en Sora⭐Jump!",
     "Missão concluída! +25 ★": "¡Misión cumplida! +25 ★",
+    "Conferindo o prêmio dos 500 m…": "Comprobando el premio de 500 m…",
+    "Prêmio dos 500 m de hoje já recebido. Volte amanhã!": "Ya recibiste el premio de 500 m de hoy. ¡Vuelve mañana!",
+    "Essa subida foi rápida demais para o prêmio. Tente de novo com calma!": "Esa subida fue demasiado rápida para el premio. ¡Inténtalo de nuevo con calma!",
+    "Não deu para conferir o prêmio agora.": "No se pudo comprobar el premio ahora.",
     "Histórico & Insígnias": "Historial e Insignias"
   },
   th: {
@@ -1411,6 +1419,10 @@ var SORA_DICT = {
     "UFO travesso!": "UFO จอมซน!",
     "Suba 500 metros no Sora⭐Jump!": "ขึ้นไปให้ถึง 500 เมตรใน Sora⭐Jump!",
     "Missão concluída! +25 ★": "ภารกิจสำเร็จ! +25 ★",
+    "Conferindo o prêmio dos 500 m…": "กำลังตรวจรางวัล 500 ม.…",
+    "Prêmio dos 500 m de hoje já recebido. Volte amanhã!": "วันนี้รับรางวัล 500 ม. แล้ว กลับมาใหม่พรุ่งนี้นะ!",
+    "Essa subida foi rápida demais para o prêmio. Tente de novo com calma!": "ขึ้นเร็วเกินไปสำหรับรางวัล ลองใหม่ช้า ๆ นะ!",
+    "Não deu para conferir o prêmio agora.": "ตรวจรางวัลไม่ได้ในตอนนี้",
     "Histórico & Insígnias": "ประวัติและเหรียญตรา"
   },
   ja: {
@@ -1434,6 +1446,10 @@ var SORA_DICT = {
     "UFO travesso!": "いたずらUFO！",
     "Suba 500 metros no Sora⭐Jump!": "Sora⭐Jump!で500m登ろう！",
     "Missão concluída! +25 ★": "ミッション達成！ +25 ★",
+    "Conferindo o prêmio dos 500 m…": "500mのごほうびを確認中…",
+    "Prêmio dos 500 m de hoje já recebido. Volte amanhã!": "今日の500mのごほうびは受け取りずみ。また明日！",
+    "Essa subida foi rápida demais para o prêmio. Tente de novo com calma!": "速すぎてごほうびの対象外。ゆっくりもう一度！",
+    "Não deu para conferir o prêmio agora.": "いまはごほうびを確認できませんでした。",
     "Histórico & Insígnias": "履歴＆バッジ"
   }
 };
@@ -1728,6 +1744,26 @@ function soraOnlineBeginRun(){
   });
   return soraOnlineRunStartPromise;
 }
+// 17/11: o prêmio diário dos 500 m é do servidor (★25, uma vez por dia, partida de 20 s ou mais e média de até 25 m/s).
+// logado (mesmo se o início da partida não chegou ao servidor): quem decide é o servidor, nunca a missão local
+function soraOnlinePremioPendente(){ return !!(SORA_ONLINE_RANKING_ENABLED && soraOnlineUserId); }
+function soraPremioMostrar(d, score){
+  var el = $('soraMisBonus'); if(!el || !(score >= 500) || el.getAttribute('data-ok')) return; el.setAttribute('data-ok', '1');
+  var txt;
+  if(d && d.ok === true && d.stars_credited > 0){
+    txt = '🎯 ' + tr('Missão concluída! +25 ★');
+    starT += d.stars_credited; try{ window.__TW_TEST_STORAGE.setItem('brs48cr_st', starT); }catch(e){}
+    try{ if(typeof setBest === 'function') setBest(); }catch(e){}
+    try{ if(parent !== window) parent.postMessage({type:'TW_SORA_STARS', delta:d.stars_credited}, location.origin); }catch(e){}
+  }else if(d && d.ok === true && d.reward_claimed_today){
+    txt = '✓ ' + tr('Prêmio dos 500 m de hoje já recebido. Volte amanhã!');
+  }else if(d && d.ok === true){
+    txt = '☁️ ' + tr('Essa subida foi rápida demais para o prêmio. Tente de novo com calma!');
+  }else{
+    txt = '☁️ ' + tr('Não deu para conferir o prêmio agora.');
+  }
+  el.textContent = txt;
+}
 function soraOnlineFinishRun(score){
   var owner=soraOnlineRunOwnerId,generation=soraOnlineRunGeneration;
   if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId)return;
@@ -1740,6 +1776,7 @@ function soraOnlineFinishRun(score){
     if(result && result.error) throw result.error;
     if(result && result.data && result.data.ok === false)
       console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
+    soraPremioMostrar(result && result.data, score);
     if(result && result.data && result.data.ok === true && result.data.ranked === true &&
        parent !== window && new URLSearchParams(location.search).get('embed') === 'index2'){
       try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
@@ -1754,6 +1791,7 @@ function soraOnlineFinishRun(score){
     if(soraState === 'over') soraRenderLb();
   }).catch(function(error){
     console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
+    soraPremioMostrar(null, score);
   });
 }
 function soraOnlineAbortRun(){
@@ -4026,7 +4064,11 @@ function soraEndGame(){
 
   // Missão diária: "Suba 500 metros no Sora⭐Jump!"
   var misBonus = '';
-  if(!isTestScene && h >= 500){
+  // 17/11: logado, quem confirma o +25 ★ é o servidor (sora_run_finish); aqui só fica o "conferindo" até a resposta chegar.
+  var misServidor = !isTestScene && h >= 500 && soraOnlinePremioPendente();
+  if(misServidor) misBonus = '<span id="soraMisBonus">🎯 ' + escHtml(tr('Conferindo o prêmio dos 500 m…')) + '</span>';
+  if(misServidor) setTimeout(function(){ soraPremioMostrar(null, h); }, soraOnlineRunStartPromise ? 15000 : 50);   // sem resposta em 15 s, não fica "conferindo" para sempre
+  if(!isTestScene && h >= 500 && !misServidor){
     try{
       var md = window.__TW_TEST_STORAGE.getItem(MIS_DIA_KEY);
       if(md !== dk()){

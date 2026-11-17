@@ -1,8 +1,8 @@
 /* Modo admin (moderação) — painel, ferramentas, Montar o Idol, avisos, missões e "Liberar tudo".
    Extraído do index.html em 02/11/2026 (refatoração, Etapa 6), sem mudar nada: mesmo nome, mesmo código.
+   Desde 17/11/2026 só baixa para quem é admin (admin-base.js chama); o que roda para todo mundo ficou no admin-base.js.
    Só DECLARA funções e tabelas fixas; o servidor confere eh_admin() em todas as RPCs de admin. */
-var perfAdmin = false;
-function contaAdmin(){ return !!(contaJ && perfAdmin); }
+
 function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
   var temPets = Array.isArray(d.pets) && d.pets.length > 0;
   return '<div class="admbarra"><b>🛡️ ' + escHtml(tr('Moderação')) + (d.bloqueado ? ' · ⛔ ' + escHtml(tr('Conta bloqueada')) : '') + '</b>' +
@@ -17,13 +17,6 @@ function admBarraHtml(d){   // barra da moderação no perfil de outra pessoa
     '<div class="admform" id="admForm" hidden></div></div>';
 }
 function admAcao(acao, alvo, valor){ return contaRpc('admin_acao', { p_acao:acao, p_alvo:String(alvo), p_valor: valor === undefined ? null : String(valor) }); }
-function admItens(){   // tudo o que se compra no servidor: visuais, poses, fundos e roupas
-  return PERF_VIS.filter(function(o){ return o[0]; }).map(function(o){ return [o[0], perfRot(o)]; })
-    .concat(PERF_POSES.filter(function(o){ return o[3]; }).map(function(o){ return ['pose_' + o[0], '🧍 ' + perfRot(o)]; }))
-    .concat(typeof LOJA_EXTRA !== 'undefined' ? LOJA_EXTRA.map(function(o){ return [o[0], o[1] + ' ' + tr(o[2])]; }) : [])
-    .concat(PERF_FUNDOS.filter(function(o){ return o[3]; }).map(function(o){ return ['fundo_' + o[0], '🖼️ ' + perfRot(o)]; }))
-    .concat(PERF_LOJA.map(function(o){ return ['roupa_' + o[0], '👗 ' + perfRot(o)]; }));
-}
 function admOpts(L){ return L.map(function(o){ return '<option value="' + escHtml(o[0]) + '">' + escHtml(o[1]) + '</option>'; }).join(''); }
 function admVisualRoupa(f, alvoVisual){   // reserva: só a roupa (funciona antes da função nova do banco)
   contaRpc('admin_visual_info', { p_nick: alvoVisual }).then(function(r){
@@ -35,8 +28,6 @@ function admVisualRoupa(f, alvoVisual){   // reserva: só a roupa (funciona ante
     if(perfAtual && perfAtual.nick===alvoVisual) f.innerHTML='<p class="perfmsg">' + escHtml(tr('Não foi possível carregar o visual. Tente novamente.')) + '</p>';
   });
 }
-// Montar o Idol de um membro (admin): visual completo, com as mesmas regras de liberação da roupa.
-var admIdol=null;
 function admIdolFormHtml(r){
   var c=r.c||{},best=+r.best_idol||0,owned=Array.isArray(r.visuais)?r.visuais:[],hex=function(v,d){return /^#[0-9a-f]{6}$/i.test(v||'')?v:d;};
   admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||'',baixo:c.baixo==='saia'||c.baixo==='bermuda'?c.baixo:'',legcol:hex(c.legcol,'#1c1c30')}};
@@ -204,9 +195,3 @@ function admExtra(){   // presente para todos, aviso da tela de início e histó
     if(window.ktTickets)window.ktTickets.renderAdmin();
   }).catch(function(){});
 }
-// O servidor confere eh_admin() em admin_missoes_completar e libera o salvar_avatar só para a moderação.
-var ADM_LIVRE_KEY = 'brs48cr_admlivre';
-function admLivre(){ var v = false; try{ v = localStorage.getItem(ADM_LIVRE_KEY) === '1'; }catch(e){} return v && typeof contaAdmin === 'function' && contaAdmin(); }
-function admLivreBtn(){ var on = admLivre();
-  return '<button type="button" class="btn' + (on ? '' : ' alt') + '" id="admLivre" aria-pressed="' + on + '">' + (on ? '🔓 ' : '🔒 ') + escHtml(tr(on ? 'Liberar tudo: ligado' : 'Liberar tudo: desligado')) + '</button>'; }
-var hubIdolsDados = null, hubIdolsEm = 0;

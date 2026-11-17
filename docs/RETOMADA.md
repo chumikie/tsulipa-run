@@ -1,3 +1,8 @@
+## Mesma PR #110 — moderação só para admin (17/11/2026, 18h15)
+- `admin-base.js` (3 KB, abertura): `perfAdmin`, `contaAdmin`, "Liberar tudo" (`admLivre`, que embrulha `perfTem`/`lojaTem` para todo mundo), `admItens` (nomes dos itens nos recados de presente do `hub.js`), `hubIdolsDados`/`hubIdolsEm` (lista de Idols usada por 12 arquivos) e o estado `admIdol` (os ouvintes do Perfil o leem em todo toque).
+- `admin.js` (21 KB): painel e ferramentas de moderação; baixa quando o `perfil.js` recebe `admin: true` da conta. Até chegar, os substitutos da base devolvem HTML vazio ou guardam a ação e a rodam quando ele chega. Quem não é admin nunca baixa. O servidor continua conferindo `eh_admin()`.
+- Conferido no navegador: sem admin, o `admin.js` não baixa; uma ação de moderação chamada antes dele chegar roda quando chega; "Liberar tudo" responde. Teste em `index-modules.test.js`.
+
 ## Mesma PR #110 — Moon⭐Duo! sob demanda (17/11/2026, 18h)
 - **Abertura:** `duo-base.js` (10 KB) com o que o resto do site usa do Duo: estado, falas (Encontro do dia), fundo dos cenários (Perfil e Idol⭐News!), aviso de dupla (`conta.js`), recado das estrelas (`hub.js`) e a lojinha (`perfLoja2UI`, `lojaItem`, `lojaTem`, `lojaComprar`, `lookAtual` — Perfil, Loja e Photo⭐Studio!). O `duo.css` continua na abertura porque o aviso de dupla usa os estilos dele.
 - **Quando o Duo abre:** `duo.js` (33 KB, o jogo), `duo-tela.js` (7,5 KB, poses e telas que estavam no `index.html`) e `duo-pedido.js` (6 KB). `duoAbrir` da base pede os três e abre em seguida; o embrulho do `duoFechar` (música) é guardado e devolvido quando o `duo.js` chega. Código igual, só mudou de arquivo. `index.html`: 234 → 227 KB; abertura ~47 KB menor.

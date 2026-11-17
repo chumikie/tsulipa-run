@@ -127,3 +127,13 @@ assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src
   assert(base.includes("if(window.duoFechar !== embrulho){ duoFecharJogo = window.duoFechar; window.duoFechar = embrulho; }"), "o embrulho do duoFechar (música) sobrevive à chegada do duo.js");
   console.log("✓ Moon⭐Duo! sob demanda: duo.js (" + Object.keys(sandbox).length + " declarações), duo-tela.js e duo-pedido.js");
 }
+// Moderação só para admin (17/11/2026): admin-base.js na abertura; admin.js baixa quando o Perfil confirma a conta admin.
+{
+  const base = fs.readFileSync(path.join(root, "admin-base.js"), "utf8"), adm = fs.readFileSync(path.join(root, "admin.js"), "utf8"), perfil = fs.readFileSync(path.join(root, "perfil.js"), "utf8");
+  assert(html.includes('<script src="./admin-base.js?v=') && !html.includes('<script src="./admin.js?v='), "admin.js fora da abertura");
+  for (const n of ["perfAdmin", "contaAdmin", "admLivre", "admLivreBtn", "admItens", "hubIdolsDados", "ADM_LIVRE_KEY", "admIdol"]) assert(new RegExp("^(?:var|function) " + n + "\\b", "m").test(base) && !new RegExp("^(?:var|function) " + n + "\\b", "m").test(adm), n + " só no admin-base.js");
+  assert(/s\.src = '\.\/admin\.js\?v=\d+'/.test(base) && perfil.includes("perfAdmin = !!d.admin; if(perfAdmin && typeof admCarregar === 'function') admCarregar();"), "admin.js baixa quando a conta é admin");
+  for (const n of ["admPainel", "admExtra", "admContasUI", "admIdolPrev", "admIdolPng", "admRoupaPng", "admVisualRoupa", "admAcao", "admBarraHtml", "admOpts", "admIdolFormHtml", "admCamarimOpts"]) assert(base.includes(n) && new RegExp("^function " + n + "\\(", "m").test(adm), n + ": substituto na base e o de verdade no admin.js");
+  assert(/^var hubIdolsDados = null, hubIdolsEm = 0;/m.test(base), "hubIdolsEm junto");
+  console.log("✓ Moderação sob demanda: admin-base.js na abertura, admin.js só para admin");
+}

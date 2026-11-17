@@ -994,7 +994,7 @@ function perfAvatarAuto(){
   contaRpc('meu_perfil').then(function(d){
     if(!d||!contaJ||contaJ.nick!==dono) return;
     perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : []; perfLojaSincronizar();
-    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; perfGuardarCor(d.cor);
+    perfMeuAv = d.avatar || null; perfIconeConta(); perfAdmin = !!d.admin; if(perfAdmin && typeof admCarregar === 'function') admCarregar();   // ferramentas de moderação (admin.js) só para admin perfGuardarCor(d.cor);
     if(d.aniver_hoje && typeof aniverFesta === 'function')twTimeoutVisivel(document.documentElement,function(){return !!contaJ&&contaJ.nick===dono;},aniverFesta,1500);   // 🎂 ★50 + card especial, 1 vez por ano
     if(typeof bestcNuvem === 'function') bestcNuvem(d.por_personagem);   // recorde de cada personagem (itens por personagem)
     if(d.avatar && !d.avatar.auto) return;

@@ -417,6 +417,11 @@
         if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
       });
     }
+    // 5. Vida no bairro (tw-bairro.js): a bagunça da semana e o bico que está mais perto de subir
+    var B = window.TW_BAIRRO;
+    if(B){ try{ var rb = B.resumo();
+      linha(rb.ok, 'uva', 'pin', esc(rb.tit), esc(rb.sub), '<button type="button" class="twc-hj-bt" data-bairro="abrir">' + esc(rb.bt) + '</button>',
+        '<small class="twc-hj-bico">' + esc(rb.bico) + '</small>'); }catch(e){} }
     var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
     var pc = Math.round(feitos / tot * 100);
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
@@ -464,6 +469,7 @@
     // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
     var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
+    if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
@@ -622,6 +628,10 @@
     el.innerHTML = (icone ? '<span class="twc-toast-ic" aria-hidden="true">' + ico(icone, 22) + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
     clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
   }
+  window.twcToast = function(txt){ toast(txt, 'estrela'); };   // usado pelo tw-bairro.js (nível novo no bico da rua)
+  // Vida no bairro (tw-bairro.js): ponto, nível, bagunça e guia redesenham o Início
+  (function ligaBairro(n){ if(window.TW_BAIRRO){ window.TW_BAIRRO.ouvir(function(){ if(cel && !classico && topo() === 'inicio') agendaDesenho(); }); }
+    else if(n < 40 && typeof setTimeout === 'function') setTimeout(function(){ ligaBairro(n + 1); }, 250); })(0);
   if(window.TW_HUMOR) window.TW_HUMOR.ouvir(function(tipo){
     if(tipo === 'desejo'){ var rq = window.TW_HUMOR.ultimoRecado();
       toast(window.TW_HUMOR.t('feito') + ' ' + t2('vipGanhou') + (rq && logado() ? '\n' + window.TW_HUMOR.t('novoRecado', rq).replace(/^📱\s*/, '') : ''), 'coroa');

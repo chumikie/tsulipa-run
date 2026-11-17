@@ -118,7 +118,8 @@
   function cor(){ var m = media(); return m >= 60 ? '#7be35a' : m >= 35 ? '#ffd23f' : '#ff6fb5'; }
 
   var ouvintes = [], ultimoRecado = '';
-  function avisar(tipo){ ouvintes.forEach(function(f){ try{ f(tipo); }catch(e){} }); }
+  // ouvintes recebem (tipo, jogo, fraco): o tw-bairro.js usa o jogo para contar o bico da rua
+  function avisar(tipo, ev, fraco){ ouvintes.forEach(function(f){ try{ f(tipo, ev, fraco); }catch(e){} }); }
   function evento(ev, fraco){
     ler();
     var ef = EFEITO[ev]; if(ef){ var k = fraco ? .5 : 1; BARRAS.forEach(function(b, i){ est[b] = limita(est[b] + ef[i] * k); }); }
@@ -132,7 +133,7 @@
       ultimoRecado = quem[0];
       BARRAS.forEach(function(b){ est[b] = limita(est[b] + 15); });
     }
-    salvar(); avisar(cumpriu ? 'desejo' : 'humor');
+    salvar(); avisar(cumpriu ? 'desejo' : 'humor', ev, !!fraco);
   }
 
   var H = window.TW_HUMOR = {

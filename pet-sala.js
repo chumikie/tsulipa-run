@@ -1048,18 +1048,19 @@ function petPhoneChatMensagens(c){
   var p=petAtivo(), nomePet = p && p.nome || tr('seu Pet');
   var hora=new Date().getHours(), saudacao=tr(hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite');
   var v=petPhoneChatVariante(c), preocupado=p && Number.isFinite(p.humor) && p.humor<40;
+  var bairro = typeof window !== 'undefined' && window.TW_BAIRRO ? window.TW_BAIRRO.falas(c.id) : [];   // bagunça, bico e guia (tw-bairro.js)
   if(c.id === 'idol:tsu') return [tr('{s}, {n}! ⭐').replace('{s}',saudacao).replace('{n}',contaJ && contaJ.nick || tr('Idol')),
     tr(preocupado ? '{p} parece precisar de carinho. Que tal uma pausa no camarim? 🐾' :
       ['O camarim está uma graça! Já deu carinho para {p} hoje?',
        '{p} está por perto? Hora de descansar um pouquinho antes do show! 🐾',
-       'Um show fica melhor depois de brincar com {p}! ✨'][v]).replace('{p}',nomePet)];
+       'Um show fica melhor depois de brincar com {p}! ✨'][v]).replace('{p}',nomePet)].concat(bairro);
   if(c.id === 'idol:lirika') return [tr('{s}, Idol. 🌷').replace('{s}',saudacao),
     tr(['As lembranças dos fãs no Happy⭐Cafe! e no Handshake deixam os encontros especiais.',
      'Guardar as lembranças dos fãs também é cuidar da nossa história. 🌷',
-     'Os reencontros no Café e no Handshake merecem carinho, mesmo nos dias calmos. 💌'][v])];
+     'Os reencontros no Café e no Handshake merecem carinho, mesmo nos dias calmos. 💌'][v])].concat(bairro);
   return [tr('{s}! 🎀').replace('{s}',saudacao), tr(['Já passou no espelho do camarim? Quero ver seu próximo look de show! ✨',
     'Se você mudou o visual hoje, me conta depois! O espelho te espera. 💄',
-    'Um laço, uma cor nova… que tal escolher um look para o próximo show? 👑'][v])];
+    'Um laço, uma cor nova… que tal escolher um look para o próximo show? 👑'][v])].concat(bairro);
 }
 //←petPhoneChatReacao
 function petPhoneChatReacao(c,opcao){
@@ -1098,7 +1099,7 @@ function petPhoneChatHtml(){
     petPhoneChatConversa = '';
     var lista = contatos.map(function(c){
       return '<button type="button" class="petphone-chat-contato" data-phone="chat-abrir" data-conversa="'+escHtml(c.id)+'">'+
-        petPhoneChatAvatarHtml(c)+'<span class="petphone-chat-contato-texto"><b>'+escHtml(c.nome)+
+        petPhoneChatAvatarHtml(c)+(typeof window !== 'undefined' && window.TW_BAIRRO && window.TW_BAIRRO.novaDe(c.id) ? '<i class="petphone-badge" aria-label="'+escHtml(tr('Nova'))+'">1</i>' : '')+'<span class="petphone-chat-contato-texto"><b>'+escHtml(c.nome)+
         '</b><small>'+escHtml(c.papel)+'</small></span><span aria-hidden="true">›</span></button>';
     }).join('');
     var temFas = contatos.some(function(c){return c.tipo === 'fan';});
@@ -1125,7 +1126,7 @@ function petPhoneChatAbrir(id){
   if(!petPhoneOpen || petPhoneTela !== 'chat') return false;
   petPhoneChatSincronizar();
   if(!petPhoneChatContatos().some(function(c){return c.id === id;})) return false;
-  petPhoneChatConversa = id;petPhoneRender();petPhoneSom('toque');
+  petPhoneChatConversa = id;if(typeof window !== 'undefined' && window.TW_BAIRRO)window.TW_BAIRRO.lida(id);petPhoneRender();petPhoneSom('toque');
   var corpo = $('petPhoneCorpo');if(corpo)corpo.scrollTop = 0;
   return true;
 }
@@ -1149,7 +1150,7 @@ function petPhoneRender(){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneCapa" width="520" height="280" aria-hidden="true"></canvas>' +
       '<strong>✦ ' + escHtml(tr('Meu Idol')) + ' · ' + escHtml(contaJ && contaJ.nick || '') + '</strong><span>🐾 ' + escHtml(petAtivo() && petAtivo().nome || '') + '</span></div>' +
       '<div class="petphone-apps">' + [['agenda',nomes[0]],['chat',nomes[1]],['fotos',nomes[2]],['cartas',nomes[3]]].concat(typeof window !== 'undefined' && window.TW_HUMOR ? [['humor', window.TW_HUMOR.t('app')]] : []).map(function(a){
-        var novas = a[0] === 'cartas' ? petCartasNovas() : a[0] === 'humor' ? window.TW_HUMOR.mensagensNovas() : 0;
+        var novas = a[0] === 'cartas' ? petCartasNovas() : a[0] === 'humor' ? window.TW_HUMOR.mensagensNovas() : a[0] === 'chat' && window.TW_BAIRRO ? window.TW_BAIRRO.novas() : 0;
         return '<button type="button" data-phone="' + a[0] + '"><canvas data-phone-icon="' + a[0] + '" width="128" height="128" aria-hidden="true"></canvas><b>' + escHtml(a[1]) + '</b>' +
           (novas ? '<i class="petphone-badge" aria-label="' + escHtml(tr('{n} cartas novas').split('{n}').join(novas)) + '">' + novas + '</i>' : '') + '</button>';
       }).join('') + '</div>';

@@ -42,7 +42,7 @@
  function panLivre(){return mobile.matches&&!document.body.classList.contains('kt-mobile-overview')&&!document.body.classList.contains('kt-playing');}
  function panAplicar(){var L=Math.max(0,(canvas.getBoundingClientRect().width-viewport.getBoundingClientRect().width)/2);pan=Math.max(-L,Math.min(L,pan));canvas.style.setProperty('--kt-pan',pan+'px');}
  viewport.addEventListener('pointerdown',function(e){
-  if(repassando||e.target!==canvas||!panLivre())return;
+  if(repassando||e.target!==canvas||e.pointerType==='mouse'||!panLivre())return;   // mouse clica direto; arrastar é no toque
   e.stopPropagation();drag={x:e.clientX,y:e.clientY,p:pan,id:e.pointerId,tipo:e.pointerType,moveu:false};
  },true);
  viewport.addEventListener('pointermove',function(e){

@@ -209,7 +209,7 @@ function mk(){
 }
 function layout(){
   var pt=window.matchMedia&&matchMedia('(max-width:700px) and (orientation:portrait)').matches;
-  W=pt?380:720;H=pt?506:380;GY=H-80;SC=Math.max(.65,W/720);K=GY/300;cv.width=W;cv.height=H;
+  W=pt?380:720;H=pt?506:380;GY=H-80;SC=Math.max(.65,W/720);K=GY/300;cv.width=W;cv.height=H;g=cv.getContext('2d');   /* 17/11: pede o pincel de novo para a nitidez automática (tw-nitidez.js) valer no tamanho atual */
   var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'760px';
   mk();
 }

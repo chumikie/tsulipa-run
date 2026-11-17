@@ -432,8 +432,10 @@ function perfCharContorno(x, tx, ty, sc, desenha){
   finally{ perfCharPortrait = wasPortrait; g = og; charPose = ''; perfAntena = ''; }
   x.save();
   // shadowBlur não segue a escala do contexto: multiplicar por k mantém o mesmo contorno de sempre.
-  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
-  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5 * k; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  // (canvas ajustado pelo tw-nitidez.js já corrige a sombra sozinho: aí não multiplica de novo)
+  var ks = x.canvas && x.canvas.__twA ? 1 : k;
+  x.shadowColor = 'rgba(64,24,120,.32)'; x.shadowBlur = 9 * sc / 3.5 * ks; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
+  x.shadowColor = 'rgba(64,24,120,.55)'; x.shadowBlur = 2.2 * sc / 3.5 * ks; x.drawImage(cv, 0, 0, w, h, tx + ux * sc, ty + uy * sc, uw * sc, uh * sc);
   x.restore();
 }
 function perfPetDoAvatar(av){   // pet guardado no avatar (só chaves conhecidas)
@@ -547,12 +549,16 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
   return {x:tx, y:ty + bob, scale:sc, skin:c.skin};
 }
 function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado em círculo (zoom = rostinho)
+  // 17/11: o rascunho nasce na escala do destino (tw-nitidez.js), senão a foto sai ampliada e borrada
+  var kn = window.TW_NITIDEZ ? TW_NITIDEZ.preparar(cv) : 1;
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;
-  var tmp = document.createElement('canvas'); tmp.width = W2; tmp.height = H2;
+  if(window.TW_NITIDEZ) kn = TW_NITIDEZ.escala(cv) || kn;
+  var tmp = document.createElement('canvas'); tmp.width = Math.round(W2 * kn); tmp.height = Math.round(H2 * kn);
   if(av && !av.fundo){ av = JSON.parse(JSON.stringify(av)); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
-  perfDesenharIdol(tmp.getContext('2d'), W2, H2, av, true, zoom !== false);
+  var tx2 = tmp.getContext('2d'); tx2.scale(kn, kn);
+  perfDesenharIdol(tx2, W2, H2, av, true, zoom !== false);
   x.clearRect(0, 0, W2, H2);
-  x.save(); x.beginPath(); x.arc(W2 / 2, H2 / 2, W2 / 2, 0, 7); x.clip(); x.drawImage(tmp, 0, 0); x.restore();
+  x.save(); x.beginPath(); x.arc(W2 / 2, H2 / 2, W2 / 2, 0, 7); x.clip(); x.drawImage(tmp, 0, 0, W2, H2); x.restore();
 }
 function perfPoseInfo(k){ for(var i = 0; i < PERF_POSES.length; i++) if(PERF_POSES[i][0] === k) return PERF_POSES[i]; return null; }
 // Parte de trás (antes da cabeça): chamada no começo do petPoseArms. Devolve true se a pose é uma das novas.

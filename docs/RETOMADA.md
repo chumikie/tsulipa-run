@@ -1,3 +1,9 @@
+## Mesma PR #110 — coluna larga no PC e primeira parte do Karaoke separada (17/11/2026, tarde)
+
+- **Coluna do visual novo no PC grande:** a largura virou a variável `--twc-col` (`tw-celular.css`): 980 px como antes, **1240 px a partir de 1500 px** e **1360 px a partir de 1800 px**. Topo, faixa de título e páginas seguem a mesma variável (nada mais tem 980 px fixo). Em telas ≥ 1500 px o **Calendário** vira duas colunas (mês | dia escolhido) e o **Mapa** não passa da altura da tela (`min(--twc-col, (100vh − 360px) × 1,6)`), para os balões de "Falar" continuarem à vista. Abaixo de 1500 px nada muda. Conferido em 1920×1080, 1536×864 e 1366×768: sem erro e sem rolagem lateral.
+- **`karaoke-ranking.js?v=1` (passo 1 do plano da #109):** saíram do `karaoke-time.html` o ranking da semana (Pontuação, Mais shows, Quem mais evoluiu), a música da semana, as abas, a linha "Você" e o `ktBoardsAgora`/placar da sala. **Código igual, só mudou de arquivo:** o `ktMeta` chama `KaraokeRanking.criar({$,tr,rules,context,avatar})` e usa `render()`/`reset()`. O `KaraokeShowRules` (regras e contas do ranking) continua no HTML. `karaoke-time.html`: 403 → 398 KB. Conferido na sala a 390 e 1366 px, vazio e com ranking online de mentira: medalhas, "Você" em 9º, 👑 do líder na música da semana, rostinhos desenhados, troca de aba e `ktMetaRefresh`.
+- **Próximos passos do plano:** `karaoke-biblioteca.js` (biblioteca, player e vozes) → `karaoke-palco-desenho.js` → `karaoke-show.js`. O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
+
 ## Auditoria de leveza — 17/11/2026 (noite), depois de #105–#109 no ar
 
 Base: `main` em `d47971a`. Medido no Chrome sem tela com o modo demonstração, em Android (412 px, 2,6×), tablet Android (800×1280 e 1280×800, 2×) e PC (1920 e 1366). **Atenção ao ler os números:** esse Chrome desenha sem placa de vídeo, então canvas animado pesa muito mais que num aparelho real. Vale a comparação antes/depois e entre telas, não o valor absoluto.
@@ -12,7 +18,7 @@ Base: `main` em `d47971a`. Medido no Chrome sem tela com o modo demonstração, 
 
 **Conferido sem erro:** 117/117 testes; `corrida.browser.cjs` e `telas.browser.cjs`; 17 telas × 5 aparelhos (sem erro de script, sem rolagem lateral); partida começada em Center⭐Run, Café, Handshake, Gacha, Sora, Karaoke (pergunta antes de gastar tentativa), Battle, Bloom, Studio e Duo.
 **Peso da abertura (visual novo):** 89 arquivos, 2,2 MB (~750 KB comprimido). Maiores: `index.html` 229 KB, `tw-celular.js` 193, `centerrun.js` 112, `tw-mapa.js` 106 (baixa depois da abertura), `hub.js` 103, `tw-celular.css` 97, `mapa-mundo.svg` 95.
-**Falta (precisa de aparelho real):** medir no Android de verdade (processador e bateria no Início, Café, Gacha e Karaoke); o Karaoke continua o mais pesado no teste (canvas 960×540 cheio de personagens, 26 qps no Android simulado). **Ideias:** coluna mais larga no PC ≥ 1500 px; dividir o `karaoke-time.html` (plano na #109); `tw-bairro.js` (45 KB) sob demanda.
+**Falta (precisa de aparelho real):** medir no Android de verdade (processador e bateria no Início, Café, Gacha e Karaoke); o Karaoke continua o mais pesado no teste (canvas 960×540 cheio de personagens, 26 qps no Android simulado). **Ideias:** ~~coluna mais larga no PC ≥ 1500 px~~ (feito, ver acima); dividir o `karaoke-time.html` (passo 1 feito, ver acima); `tw-bairro.js` (45 KB) sob demanda.
 
 ## Rodada 17/11/2026 — visual novo também no computador e no tablet
 

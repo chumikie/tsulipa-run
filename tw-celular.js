@@ -1,9 +1,9 @@
-/* TsuLiPa⭐World · visual de celular (prévia, 15/11/2026).
+/* TsuLiPa⭐World · visual de celular — o visual oficial da v3 nos telefones (prévia em 15/11, oficial em 17/11/2026).
    Ideia do amigo + esqueleto do Link! Like!: a tela de início vira um celular de Idol — barra de cima
    (você e as estrelas), barra de baixo (Voltar · Menu · Início), widgets do dia e um app por jogo.
-   Só carrega com a prévia ligada (chave brs48cr_celular ou ?celular=1). Não cria regra nova:
+   Liga sozinho em telefone; no computador, pela chave brs48cr_celular ou ?celular=1. Não cria regra nova:
    cada ícone chama o mesmo card do hub antigo, que continua montado por baixo (login, cadeados,
-   sons e prêmios seguem iguais). Desligar a prévia volta tudo ao visual clássico. */
+   sons e prêmios seguem iguais). Ajustes → "Voltar ao visual clássico" volta ao antigo. */
 (function(){
   'use strict';
   var CHAVE = 'brs48cr_celular';
@@ -14,42 +14,42 @@
         mis:'Missões do dia', rank:'Ranking da semana', tv:'Ver na TV', mapa:'Mapa', mapaAgora:'Agora no mapa: {quem} · {rua}', mapaVazio:'Passeie pelo mapa da cidade',
         menuSub:'Tudo do TsuLiPa⭐World', jogosSub:'{n} jogos · escolha um', ajustes:'Ajustes', ajustesSub:'Idioma, tema e conta', classico:'Voltar ao visual clássico',
         loginT:'Entre para jogar', loginTxt:'Este jogo salva o seu progresso na sua conta. Entre com o Google para jogar.', agoraNao:'Agora não', entrar:'Entrar', sair:'Sair', sairOk:'Toque de novo para sair',
-        album:'Álbum', busca:'Procurar Idol', nov:'Novidades', estrelas:'Ganhar estrelas', perfil:'Seu perfil', previa:'Visual novo (prévia)'},
+        album:'Álbum', busca:'Procurar Idol', nov:'Novidades', estrelas:'Ganhar estrelas', perfil:'Seu perfil'},
     en:{idols:'TsuLiPa⭐World Idols', tut1:'This is your Idol phone!', tut1b:'You and your stars are at the top. At the bottom: Back, Menu and Home, on every screen.', tut2:'Each app is a game', tut2b:'A red dot means something new. A lock means sign in with Google.', tut3:'The Menu holds the rest', tut3b:'For today, ranking, pet, album, Idol News and settings. Want the old look? It is in Settings.', tutOk:'Next', tutFim:"Let's go!", tutPular:'Skip',
         rankVazio:'Play Center Run to join the ranking', todosAlbum:'All', outros:'Others', albumSub:'Your Star⭐Gacha! cards', albumVazio:'No cards here yet. Spin the Star⭐Gacha!', albumCompleto:'See goals and trade cards', filtro:'Filter by Oshi',
         vis:'Visitor', ini:'Home', menu:'Menu', voltar:'Back', jogos:'Games', todos:'All games', hoje:'For today', emdia:"You're all set for today!",
         mis:'Daily missions', rank:'Weekly ranking', tv:'Watch on TV', mapa:'Map', mapaAgora:'On the map now: {quem} · {rua}', mapaVazio:'Stroll around the city map',
         menuSub:'Everything in TsuLiPa⭐World', jogosSub:'{n} games · pick one', ajustes:'Settings', ajustesSub:'Language, theme and account', classico:'Back to the classic look',
         loginT:'Sign in to play', loginTxt:'This game saves your progress to your account. Sign in with Google to play.', agoraNao:'Not now', entrar:'Sign in', sair:'Sign out', sairOk:'Tap again to sign out',
-        album:'Album', busca:'Find an Idol', nov:"What's new", estrelas:'Get stars', perfil:'Your profile', previa:'New look (preview)'},
+        album:'Album', busca:'Find an Idol', nov:"What's new", estrelas:'Get stars', perfil:'Your profile'},
     es:{idols:'Idols de TsuLiPa⭐World', tut1:'¡Este es tu celular de Idol!', tut1b:'Arriba estás tú con tus estrellas. Abajo: Volver, Menú e Inicio, en todas las pantallas.', tut2:'Cada app es un juego', tut2b:'El punto rojo avisa que hay novedad. El candado pide entrar con Google.', tut3:'El Menú guarda el resto', tut3b:'Para hoy, ranking, mascota, álbum, Idol News y ajustes. ¿Quieres el estilo anterior? Está en Ajustes.', tutOk:'Siguiente', tutFim:'¡Vamos!', tutPular:'Saltar',
         rankVazio:'Juega Center Run para entrar al ranking', todosAlbum:'Todos', outros:'Otros', albumSub:'Tus cards de Star⭐Gacha!', albumVazio:'Aún no hay cards aquí. ¡Gira el Star⭐Gacha!', albumCompleto:'Ver metas e intercambiar cards', filtro:'Filtrar por Oshi',
         vis:'Visitante', ini:'Inicio', menu:'Menú', voltar:'Volver', jogos:'Juegos', todos:'Todos los juegos', hoje:'Para hoy', emdia:'¡Todo listo por hoy!',
         mis:'Misiones del día', rank:'Ranking de la semana', tv:'Ver en la TV', mapa:'Mapa', mapaAgora:'Ahora en el mapa: {quem} · {rua}', mapaVazio:'Pasea por el mapa de la ciudad',
         menuSub:'Todo de TsuLiPa⭐World', jogosSub:'{n} juegos · elige uno', ajustes:'Ajustes', ajustesSub:'Idioma, tema y cuenta', classico:'Volver al estilo clásico',
         loginT:'Entra para jugar', loginTxt:'Este juego guarda tu progreso en tu cuenta. Entra con Google para jugar.', agoraNao:'Ahora no', entrar:'Entrar', sair:'Salir', sairOk:'Toca otra vez para salir',
-        album:'Álbum', busca:'Buscar Idol', nov:'Novedades', estrelas:'Ganar estrellas', perfil:'Tu perfil', previa:'Estilo nuevo (vista previa)'},
+        album:'Álbum', busca:'Buscar Idol', nov:'Novedades', estrelas:'Ganar estrellas', perfil:'Tu perfil'},
     id:{idols:'Idol TsuLiPa⭐World', tut1:'Ini ponsel Idol-mu!', tut1b:'Di atas ada kamu dan bintangmu. Di bawah: Kembali, Menu, dan Beranda, di setiap layar.', tut2:'Setiap aplikasi adalah game', tut2b:'Titik merah berarti ada yang baru. Gembok berarti masuk dengan Google.', tut3:'Menu menyimpan sisanya', tut3b:'Untuk hari ini, peringkat, hewan, album, Idol News, dan pengaturan. Mau tampilan lama? Ada di Pengaturan.', tutOk:'Lanjut', tutFim:'Ayo!', tutPular:'Lewati',
         rankVazio:'Main Center Run untuk masuk peringkat', todosAlbum:'Semua', outros:'Lainnya', albumSub:'Kartu Star⭐Gacha! milikmu', albumVazio:'Belum ada kartu di sini. Putar Star⭐Gacha!', albumCompleto:'Lihat target dan tukar kartu', filtro:'Saring menurut Oshi',
         vis:'Pengunjung', ini:'Beranda', menu:'Menu', voltar:'Kembali', jogos:'Game', todos:'Semua game', hoje:'Untuk hari ini', emdia:'Semua beres untuk hari ini!',
         mis:'Misi harian', rank:'Peringkat minggu ini', tv:'Tonton di TV', mapa:'Peta', mapaAgora:'Di peta sekarang: {quem} · {rua}', mapaVazio:'Jalan-jalan di peta kota',
         menuSub:'Semua isi TsuLiPa⭐World', jogosSub:'{n} game · pilih satu', ajustes:'Pengaturan', ajustesSub:'Bahasa, tema, dan akun', classico:'Kembali ke tampilan klasik',
         loginT:'Masuk untuk bermain', loginTxt:'Game ini menyimpan progresmu di akunmu. Masuk dengan Google untuk bermain.', agoraNao:'Nanti saja', entrar:'Masuk', sair:'Keluar', sairOk:'Ketuk lagi untuk keluar',
-        album:'Album', busca:'Cari Idol', nov:'Yang baru', estrelas:'Dapatkan bintang', perfil:'Profilmu', previa:'Tampilan baru (pratinjau)'},
+        album:'Album', busca:'Cari Idol', nov:'Yang baru', estrelas:'Dapatkan bintang', perfil:'Profilmu'},
     th:{idols:'ไอดอลของ TsuLiPa⭐World', tut1:'นี่คือมือถือไอดอลของคุณ!', tut1b:'ด้านบนคือคุณและดาวของคุณ ด้านล่าง: กลับ เมนู และหน้าแรก ในทุกหน้าจอ', tut2:'แต่ละแอปคือเกมหนึ่งเกม', tut2b:'จุดแดงแปลว่ามีของใหม่ แม่กุญแจแปลว่าต้องเข้าสู่ระบบด้วย Google', tut3:'เมนูเก็บทุกอย่างที่เหลือ', tut3b:'สำหรับวันนี้ อันดับ สัตว์เลี้ยง อัลบั้ม Idol News และการตั้งค่า อยากได้หน้าตาแบบเดิม? อยู่ในการตั้งค่า', tutOk:'ถัดไป', tutFim:'ไปกันเลย!', tutPular:'ข้าม',
         rankVazio:'เล่น Center Run เพื่อติดอันดับ', todosAlbum:'ทั้งหมด', outros:'อื่น ๆ', albumSub:'การ์ด Star⭐Gacha! ของคุณ', albumVazio:'ยังไม่มีการ์ดที่นี่ ลองหมุน Star⭐Gacha!', albumCompleto:'ดูเป้าหมายและแลกการ์ด', filtro:'กรองตามโอชิ',
         vis:'ผู้เยี่ยมชม', ini:'หน้าแรก', menu:'เมนู', voltar:'กลับ', jogos:'เกม', todos:'เกมทั้งหมด', hoje:'สำหรับวันนี้', emdia:'วันนี้ครบหมดแล้ว!',
         mis:'ภารกิจประจำวัน', rank:'อันดับประจำสัปดาห์', tv:'ดูทางทีวี', mapa:'แผนที่', mapaAgora:'ตอนนี้บนแผนที่: {quem} · {rua}', mapaVazio:'เดินเล่นในแผนที่เมือง',
         menuSub:'ทุกอย่างใน TsuLiPa⭐World', jogosSub:'{n} เกม · เลือกหนึ่งเกม', ajustes:'ตั้งค่า', ajustesSub:'ภาษา ธีม และบัญชี', classico:'กลับไปหน้าตาแบบเดิม',
         loginT:'เข้าสู่ระบบเพื่อเล่น', loginTxt:'เกมนี้บันทึกความคืบหน้าไว้ในบัญชีของคุณ เข้าสู่ระบบด้วย Google เพื่อเล่น', agoraNao:'ไว้ก่อน', entrar:'เข้าสู่ระบบ', sair:'ออกจากระบบ', sairOk:'แตะอีกครั้งเพื่อออก',
-        album:'อัลบั้ม', busca:'ค้นหาไอดอล', nov:'มีอะไรใหม่', estrelas:'รับดาว', perfil:'โปรไฟล์ของคุณ', previa:'หน้าตาใหม่ (ทดลอง)'},
+        album:'อัลบั้ม', busca:'ค้นหาไอดอล', nov:'มีอะไรใหม่', estrelas:'รับดาว', perfil:'โปรไฟล์ของคุณ'},
     ja:{idols:'TsuLiPa⭐Worldのアイドル', tut1:'これがあなたのアイドルケータイ！', tut1b:'上にはあなたとスター。下には「もどる・メニュー・ホーム」がどの画面にもあります。', tut2:'アプリひとつがゲームひとつ', tut2b:'赤い点はお知らせ。カギはGoogleでログインが必要です。', tut3:'のこりはメニューに', tut3b:'きょうのおすすめ、ランキング、ペット、アルバム、Idol News、設定。前の表示がいい？設定にあります。', tutOk:'つぎへ', tutFim:'はじめよう！', tutPular:'スキップ',
         rankVazio:'Center Runを遊んでランキングに参加しよう', todosAlbum:'全員', outros:'その他', albumSub:'あなたのStar⭐Gacha!カード', albumVazio:'まだカードがありません。Star⭐Gacha!を回そう！', albumCompleto:'目標とカード交換を見る', filtro:'推しで絞り込む',
         vis:'ゲスト', ini:'ホーム', menu:'メニュー', voltar:'もどる', jogos:'ゲーム', todos:'すべてのゲーム', hoje:'きょうのおすすめ', emdia:'きょうはぜんぶ完了！',
         mis:'デイリーミッション', rank:'今週のランキング', tv:'テレビで見る', mapa:'マップ', mapaAgora:'いまマップに：{quem}・{rua}', mapaVazio:'街のマップをおさんぽしよう',
         menuSub:'TsuLiPa⭐Worldのすべて', jogosSub:'{n}本のゲーム・ひとつ選んでね', ajustes:'設定', ajustesSub:'言語・テーマ・アカウント', classico:'クラシック表示にもどす',
         loginT:'ログインして遊ぼう', loginTxt:'このゲームは進みぐあいをアカウントに保存します。Googleでログインして遊んでね。', agoraNao:'あとで', entrar:'ログイン', sair:'ログアウト', sairOk:'もう一度タップでログアウト',
-        album:'アルバム', busca:'アイドルをさがす', nov:'おしらせ', estrelas:'スターをもらう', perfil:'あなたのプロフィール', previa:'新しい表示（お試し）'}
+        album:'アルバム', busca:'アイドルをさがす', nov:'おしらせ', estrelas:'スターをもらう', perfil:'あなたのプロフィール'}
   };
   // artigo certo no português: o Tsu, a Lirika, o Pati
   var ARTIGO = {Tsu:'o', Lirika:'a', Pati:'o'};

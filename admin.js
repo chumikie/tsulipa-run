@@ -108,7 +108,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
     if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
-    h += '<div id="admResumo"></div>';
+    h += '<div id="admResumo"></div><div id="admCorrida"></div>';
     h += '<h3>👥 ' + escHtml(tr('Todas as contas')) + ' <span id="admContasN"></span></h3><input class="nick admbusca" id="admBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '"><div class="admcontas" id="admContas"><p class="perfcarr">…</p></div>';
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
@@ -122,7 +122,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
-    admExtra(); admResumo(); admContas();
+    admExtra(); admResumo(); admCorrida(); admContas();
   }).catch(function(){});
 }
 function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐Duo!, missões e aniversários)
@@ -133,6 +133,25 @@ function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐
       n('🌙', 'Cenas no Moon⭐Duo!', d.duo) + n('🎁', 'Presentes do Moon⭐Duo!', d.duo_pres) + n('🎯', 'Missões feitas', d.missoes) + n('⭐', 'Estrelas ganhas', d.estrelas) + n('🙈', 'Fora do Moon⭐Duo!', d.fora_duo) + '</div>' +
       '<p class="perfdica">🎂 ' + escHtml(tr('Aniversariantes de hoje')) + ': ' + (d.aniver.length ? d.aniver.map(function(k){ return '<button type="button" class="lbn" data-nick="' + escHtml(k) + '">' + escHtml(k) + '</button>'; }).join(', ') : '—') + '</p>' +
       '<p class="perfdica">🌙 ' + escHtml(tr('Mais escolhidos no Moon⭐Duo! (7 dias)')) + ': ' + (d.duo_top.length ? d.duo_top.map(function(t){ return '<button type="button" class="lbn" data-nick="' + escHtml(t.nick) + '">' + escHtml(t.nick) + '</button> (' + t.n + ')'; }).join(', ') : '—') + '</p>';
+  }).catch(function(){});
+}
+// 🏁 Center⭐Run: onde as corridas terminam e como vão as metas curtas (últimos 7 dias, de runs.causa/meta)
+var ADM_OBST = {cable:'Cabo', case:'Case', cone:'Cone', mala:'Mala', escada:'Escada', alien:'Alien', fita:'Fita', balde:'Balde', arara:'Arara', carrinho:'Carrinho', esteira:'Esteira', lanterna:'Lanterna', colchonete:'Colchonete', garrafinha:'Garrafinha', caixaluz:'Caixa de luz', camtrilho:'Câmera no trilho', faplaca:'Fã com placa', x:'Outro'};
+var ADM_META = {estrelas:'Pegar estrelas', pulos:'Pular', pontos:'Fazer pontos', carta:'Pegar carta'};
+function admCorrida(){
+  contaRpc('admin_corrida_telemetria', {p_dias:7}).then(function(d){
+    var box = $('admCorrida'); if(!box || !d || !d.ok) return;
+    function pc(a, b){ return b ? Math.round(a / b * 100) + '%' : '—'; }
+    function barra(rot, n, tot, extra){ var w = tot ? Math.max(3, Math.round(n / tot * 100)) : 0;
+      return '<li><span>' + escHtml(rot) + '</span><i style="--w:' + w + '%"></i><b>' + n + '</b>' + (extra ? '<small>' + escHtml(extra) + '</small>' : '') + '</li>'; }
+    var h = '<h3>🏁 ' + escHtml(tr('Center⭐Run: por que as corridas acabam (7 dias)')) + '</h3>';
+    if(!d.total){ box.innerHTML = h + '<p class="perfcarr">' + escHtml(tr('Ainda sem corridas registradas.')) + '</p>'; return; }
+    h += '<div class="admnums"><span>🏁 ' + escHtml(tr('Corridas')) + ': <b>' + d.total + '</b></span><span>🦘 ' + escHtml(tr('Bateu no ar')) + ': <b>' + pc(d.no_ar, d.total) + '</b></span>' +
+      '<span>🧩 ' + escHtml(tr('Em sequência')) + ': <b>' + pc(d.padrao, d.total) + '</b></span><span>💨 ' + escHtml(tr('Velocidade')) + ': <b>' + (d.vel_media || 0) + '</b></span></div>';
+    h += '<ul class="admbarras">' + (d.obstaculos || []).map(function(o){ return barra(tr(ADM_OBST[o.k] || o.k || '?'), o.n, d.total, 'v' + (o.vel || 0)); }).join('') + '</ul>';
+    if((d.metas || []).length) h += '<p class="perfdica">🎯 ' + escHtml(tr('Metas cumpridas')) + '</p><ul class="admbarras">' +
+      d.metas.map(function(m){ return barra(tr(ADM_META[m.k] || m.k), m.ok, m.n, m.ok + '/' + m.n + ' · ' + pc(m.ok, m.n)); }).join('') + '</ul>';
+    box.innerHTML = h;
   }).catch(function(){});
 }
 var admContasL = [];

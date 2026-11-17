@@ -355,6 +355,7 @@
     maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
     maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
     verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
@@ -423,13 +424,19 @@
       linha(rb.ok, 'uva', 'pin', esc(rb.tit), esc(rb.sub), '<button type="button" class="twc-hj-bt" data-bairro="abrir">' + esc(rb.bt) + '</button>',
         '<small class="twc-hj-bico">' + esc(rb.bico) + '</small>'); }catch(e){} }
     var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
-    var pc = Math.round(feitos / tot * 100);
+    var pc = Math.round(feitos / tot * 100), lista;
+    if(feitos === tot) lista = hojeAberto ? itens.join('') : '';   // tudo feito: a lista recolhe (abre no "Ver lista")
+    else if(hojeAberto) lista = itens.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
+    else {   // Início curto: só as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
+      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }), sobra = itens.length - Math.min(2, pend.length);
+      lista = pend.slice(0, 2).join('') + (sobra > 0 ? '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>' : '');
+    }
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      (feitos === tot && !hojeAberto ? '' : itens.join('')) + extra + '</section>';   // tudo feito: a lista recolhe (abre no "Ver lista")
+      lista + extra + '</section>';
   }
 
   function telaInicio(){
@@ -446,8 +453,9 @@
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + (hjHtml || destaque) + portas() + '</div></div>';
+    // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */

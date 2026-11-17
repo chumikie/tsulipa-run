@@ -45,7 +45,7 @@ function crTelemetriaAnotar(o){
   try{
     var vel = typeof sp === 'number' ? Math.round(sp) : 0;
     window.crTelemetria = {causa:(o && o.k || 'x') + ':' + (P.air ? 'ar' : 'chao') + ':v' + vel + (o && o.padrao ? ':pad' : ''),
-      meta:crMeta ? crMeta.k + ':' + (crMeta.feita ? 'ok' : crMetaProgresso() + '/' + crMeta.alvo) : ''};
+      meta:crMeta ? crMeta.k + ':' + (crMeta.feita ? 'ok' : crMetaProgresso() + '-' + crMeta.alvo) : ''};
   }catch(e){}
 }
 // ---------- Metas curtas (17/11): uma por corrida, no topo da tela; cumprida, vale +★5 na hora ----------

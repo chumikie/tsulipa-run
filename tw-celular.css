@@ -261,7 +261,9 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 @media (min-width:900px){
   .twc-tela{padding-bottom:110px}
   .twc-inicio{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start;padding-top:20px}
-  .twc-inicio>.twc-lado:last-child{padding-top:64px}
+  .twc-inicio{grid-template-areas:"palco hoje" "portas hoje"}
+  .twc-ini-palco{grid-area:palco}.twc-ini-portas{grid-area:portas}
+  .twc-ini-hoje{grid-area:hoje;padding-top:64px;position:sticky;top:12px}
   .twc-inicio .twc-apps{gap:22px 10px;padding:20px 10px}
   .twc-inicio .twc-app-ico{width:84px;height:84px;border-radius:26px}
 }
@@ -908,6 +910,9 @@ body.tw-cel .twc .twc-rank{background:linear-gradient(160deg,var(--twc-f2),var(-
 .twc .twc-hj-bt.lbn{text-decoration:none!important}
 .twc-hj-tudo{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .twc .twc-hj-ver{min-height:32px;padding:3px 12px;border:0;border-radius:999px;background:#fff;color:#3c6b00!important;font:800 12px "M PLUS Rounded 1c",sans-serif;cursor:pointer;box-shadow:0 0 0 1.5px #c9f58a inset}
+.twc .twc-hj-ver-bx{display:block;margin:8px auto 2px;color:#5b2bc4!important;box-shadow:0 0 0 1.5px #d9c8ff inset}
+:root[data-theme="dark"] .twc .twc-hj-ver-bx{background:#2a1d4a;color:#d9c8ff!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc .twc-hj-ver-bx{background:#2a1d4a;color:#d9c8ff!important}}
 .twc .twc-hj-aniv-mais{border:1.5px dashed #ffd27a;background:#fffaf0}
 .twc .twc-hj-aniv-mais .twc-hj-ico{width:28px;height:28px;border-radius:9px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc .twc-hj-ver{background:#2a1d4a;color:#c9f58a!important}:root:not([data-theme="light"]) .twc .twc-hj-aniv-mais{background:#3a2a20;border-color:#8a6a2a}}

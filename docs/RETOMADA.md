@@ -1,8 +1,25 @@
+## Mesma PR #110 — Karaoke dividido (passos 2 e 3) e mais leve no show do celular (17/11/2026, fim da tarde)
+
+**Arquivos novos** (código igual, só mudou de lugar; o que vem da sala chega por parâmetro):
+- `karaoke-biblioteca.js`: biblioteca de trilhas, prévias, vozes do trio e cabecinhas (`KaraokeBiblioteca.criar({$,tr,lang,avatar,CH,kt(),meta(),muted()})`).
+- `karaoke-palco-desenho.js`: 25 funções de desenho dos enfeites (plantas, mesa e copos, caixas de som, armário, neon, pandeiro de parede, monitores, brilhos, `ktRR`/`ktCoracao`/`ktEstrela`…). Movidas por análise da árvore do código: cada valor da sala vira `D.nome()`. **Conferido com relógio e sorteio congelados: 60 quadros idênticos pixel a pixel.** `meuChar`, `ktMicCor` e `ktCorMembro` (leem o jogo) ficaram na sala.
+- `karaoke-time.html`: 403 → 355 KB. Falta o passo 4 do plano (`karaoke-show.js`: ritmo, notas, combo e fim do show).
+
+**Leveza** (Android simulado, 412 px a 2,6×, mediana de 3; Chrome sem placa de vídeo):
+| | antes | depois |
+|---|---|---|
+| Sala parada | 25 qps, CPU 101% | 34 qps, CPU 84% |
+| Show | 19 qps, CPU 101% | 34 qps |
+- **Camadas lentas** (`KaraokePalco.camada`): janela, mesa, enfeites e plantas mexem devagar (a samambaia leva ~7 s para balançar); são redesenhados a cada 100 ms num canvas guardado e copiados nos outros quadros. Mesma resolução e transformação da sala; chave nova (paleta, VIP, vista da janela) redesenha na hora. Se o aparelho já está mais lento que a camada, ela desenha direto (sem cópia extra). Com `KaraokePalco.camada.ms=0` a diferença para o desenho direto é só o suavizado do texto da placa da janela.
+- **Show no celular:** a sala vira fundo em tela cheia (`object-fit:cover`) e só ~1/3 da largura aparece. Escondendo a sala, o show ia de 21 para 58 qps, então ela era o peso. Agora (`krCorteSala`) só a faixa visível (com margem) é pintada e Idols inteiros fora dela não são desenhados (o balão de fala continua). "Ver sala inteira", computador e tablet deitado pintam tudo. **Foto no meio do show:** espera um quadro inteiro antes de copiar (reserva de 400 ms) — conferido: foto com a sala 100% preenchida.
+- **PC:** igual antes e depois neste Chrome (9–10 qps, canvas 1920×1080 pintado pelo processador). Precisa de computador real para medir.
+- Teste novo: `tests/karaoke-palco-desenho.test.js`. Navegador: `karaoke-mobile.browser.cjs` (5 larguras), `telas.browser.cjs` e `corrida.browser.cjs` passando.
+
 ## Mesma PR #110 — coluna larga no PC e primeira parte do Karaoke separada (17/11/2026, tarde)
 
 - **Coluna do visual novo no PC grande:** a largura virou a variável `--twc-col` (`tw-celular.css`): 980 px como antes, **1240 px a partir de 1500 px** e **1360 px a partir de 1800 px**. Topo, faixa de título e páginas seguem a mesma variável (nada mais tem 980 px fixo). Em telas ≥ 1500 px o **Calendário** vira duas colunas (mês | dia escolhido) e o **Mapa** não passa da altura da tela (`min(--twc-col, (100vh − 360px) × 1,6)`), para os balões de "Falar" continuarem à vista. Abaixo de 1500 px nada muda. Conferido em 1920×1080, 1536×864 e 1366×768: sem erro e sem rolagem lateral.
 - **`karaoke-ranking.js?v=1` (passo 1 do plano da #109):** saíram do `karaoke-time.html` o ranking da semana (Pontuação, Mais shows, Quem mais evoluiu), a música da semana, as abas, a linha "Você" e o `ktBoardsAgora`/placar da sala. **Código igual, só mudou de arquivo:** o `ktMeta` chama `KaraokeRanking.criar({$,tr,rules,context,avatar})` e usa `render()`/`reset()`. O `KaraokeShowRules` (regras e contas do ranking) continua no HTML. `karaoke-time.html`: 403 → 398 KB. Conferido na sala a 390 e 1366 px, vazio e com ranking online de mentira: medalhas, "Você" em 9º, 👑 do líder na música da semana, rostinhos desenhados, troca de aba e `ktMetaRefresh`.
-- **Próximos passos do plano:** `karaoke-biblioteca.js` (biblioteca, player e vozes) → `karaoke-palco-desenho.js` → `karaoke-show.js`. O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
+- **Próximos passos do plano:** ~~`karaoke-biblioteca.js`~~ e ~~`karaoke-palco-desenho.js`~~ (feitos, ver acima) → `karaoke-show.js`. O ganho de leveza de verdade vem do passo 3 (desenho da sala), que é onde está o peso medido (26 qps no Android simulado).
 
 ## Auditoria de leveza — 17/11/2026 (noite), depois de #105–#109 no ar
 

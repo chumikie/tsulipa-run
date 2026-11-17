@@ -271,12 +271,16 @@ window.KaraokePalco={criar:criar,camada:camada,camadas:camadas};
    quantas vezes por segundo a animação lenta anda (ex.: 15 em vez de 30). */
 var camadas={};
 function camada(nome,x,ms,desenhar,chave){
+  if(camada.desligada){desenhar(x);return;}if(camada.ms!=null)ms=camada.ms;/* teste: KaraokePalco.camada.ms=0 redesenha todo quadro */
   var cv=x.canvas,c=camadas[nome],agora=performance.now(),m=x.getTransform?x.getTransform():null;
   if(!c){c=camadas[nome]={cv:document.createElement('canvas'),t:-1e9,chave:null,n:0};c.x=c.cv.getContext('2d');}
   if(!c.x||!m){desenhar(x);return;}
+  /* Aparelho lento (quadro mais demorado que a camada): ela seria refeita todo quadro e a cópia só somaria custo; desenha direto. */
+  var gap=agora-(c.u||-1e9);c.u=agora;if(gap>=ms*.9&&gap<1000){c.lento=(c.lento||0)+1;}else c.lento=0;
+  if(c.lento>=3){c.t=-1e9;desenhar(x);return;}
   var mk=m.a+','+m.b+','+m.c+','+m.d+','+m.e+','+m.f+'|'+(chave==null?'':chave);
   if(c.cv.width!==cv.width||c.cv.height!==cv.height){c.cv.width=cv.width;c.cv.height=cv.height;c.t=-1e9;}
   if(agora-c.t>=ms||mk!==c.chave){c.t=agora;c.chave=mk;c.n++;c.x.setTransform(1,0,0,1,0,0);c.x.clearRect(0,0,c.cv.width,c.cv.height);c.x.setTransform(m);desenhar(c.x);}
-  x.save();x.setTransform(1,0,0,1,0,0);x.globalAlpha=1;x.globalCompositeOperation='source-over';x.shadowBlur=0;x.shadowColor='rgba(0,0,0,0)';x.filter='none';x.drawImage(c.cv,0,0);x.restore();
+  x.save();x.setTransform(1,0,0,1,0,0);if(x.globalAlpha!==1)x.globalAlpha=1;if(x.globalCompositeOperation!=='source-over')x.globalCompositeOperation='source-over';if(x.shadowBlur)x.shadowBlur=0;if(x.filter&&x.filter!=='none')x.filter='none';x.drawImage(c.cv,0,0);x.restore();
 }
 })();

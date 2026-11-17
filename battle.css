@@ -169,3 +169,17 @@ html[data-theme="dark"] body .battlep .battle-rank li small{color:#ffd76a}
 html[data-theme="dark"] body .battlep .battle-round.win{background:rgba(182,255,59,.12);border-color:#a8d94a}
 html[data-theme="dark"] body .battlep p.battle-hint,html[data-theme="dark"] body .battlep p.battle-rank-eu,html[data-theme="dark"] body .battlep .battle-resultado>p:not([class]){color:#d6c4ff!important}
 html[data-theme="dark"] body .battlep p.battle-fas{color:#ff9fcf!important}
+
+/* 17/11 · os cards seguem o tema: cor do Oshi (--b1) sobre o fundo do tema (--card), no claro e no escuro */
+html body .battlep .battle-idol,html body .battlep .battle-pick{
+ background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 12%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 26%,var(--card,#fff)));
+ color:var(--ink,#4b287c);border-color:color-mix(in srgb,var(--b1,#7b3ff0) 22%,transparent)}
+html body .battlep .battle-idol{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--b1,#7b3ff0) 18%,transparent),0 2px 0 color-mix(in srgb,var(--b1,#7b3ff0) 18%,transparent)}
+html body .battlep .battle-idol small,html body .battlep .battle-pick small{color:color-mix(in srgb,var(--b1,#7b3ff0) 55%,var(--ink,#4b287c))}
+html body .battlep .battle-idol b,html body .battlep .battle-pick b{color:var(--ink,#4b287c)}
+html body .battlep .battle-chips i{background:color-mix(in srgb,var(--card,#fff) 82%,transparent);color:var(--ink,#4b287c)}
+html body .battlep .battle-chips i.on{background:var(--b1,#7b3ff0);color:#fff}
+html body .battlep .battle-chips i.oculto{background:color-mix(in srgb,var(--b1,#7b3ff0) 70%,#000);color:#ffe14d}
+html body .battlep .battle-pick.on{border-color:var(--b1,#7b3ff0);background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 24%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 40%,var(--card,#fff)));box-shadow:0 3px 0 color-mix(in srgb,var(--b1,#7b3ff0) 30%,transparent)}
+html body .battlep .battle-pick.on small{color:var(--ink,#4b287c)}
+html body .battlep .battle-rival h3,html body .battlep .battle-escalar h3{background:var(--b1,#7b3ff0)}

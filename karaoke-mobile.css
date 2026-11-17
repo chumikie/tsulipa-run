@@ -74,7 +74,8 @@
 @media(max-width:620px){
  html.kt-no-site #krPalco.kt-room-mobile{position:relative;border-radius:22px;overflow:hidden}
  html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-room-viewport{aspect-ratio:auto;height:max(400px,calc(100dvh - 20px))}
- html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile #krCv{height:100%!important;width:auto!important;aspect-ratio:16/9;left:50%;transform:translateX(-50%)}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile #krCv{height:100%!important;width:auto!important;aspect-ratio:16/9;left:50%;transform:translateX(calc(-50% + var(--kt-pan,0px)));touch-action:pan-y}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-room-viewport{touch-action:pan-y}
  html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls{position:absolute;z-index:11;top:8px;left:8px;right:8px;margin:0;padding:6px;border-radius:20px;
   background:rgba(34,10,40,.58);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 18px rgba(10,2,20,.35)}
  html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls .kt-toolbar{padding:0}
@@ -85,3 +86,8 @@
 }
 @media(max-width:620px){html.kt-no-site body:not(.kt-mobile-overview) #krPalco.kt-room-mobile .kt-rhythm-controls #ktTimingFeedback:empty{display:none}}
 @media(max-width:620px){html.kt-no-site #krPalco .kt-room-tools .kt-room-ranks{width:44px;height:44px;min-width:44px;padding:0;border-radius:50%;font-size:20px;display:grid;place-items:center}}
+@media(max-width:620px){
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco .kt-room-tools .kt-calibration:not([open]) .kt-cal-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco .kt-room-tools .kt-calibration:not([open]) summary{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}
+ html.kt-no-site body:not(.kt-mobile-overview) #krPalco .kt-room-tools{flex-wrap:nowrap}
+}

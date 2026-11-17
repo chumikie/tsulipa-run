@@ -16,8 +16,9 @@ const server=http.createServer((req,res)=>{
       const marker='var admIdol=null;';
       const hook="window.__qaAdminIdol={setRpc:function(fn){contaRpc=fn;perfAbrir=function(){};},mount:function(raw){perfAtual={nick:raw.nick};perfOv.hidden=false;var f=document.getElementById('admForm');if(!f){f=document.createElement('div');f.id='admForm';perfOv.appendChild(f);}f.hidden=false;f.innerHTML=admIdolFormHtml(raw);admIdolPrev();}};\n";
       const html=data.toString();
-      assert(html.includes(marker),'Admin Idol injection point moved');
-      data=Buffer.from(html.replace(marker,hook+marker));
+      // admin.js baixa só para admin desde 17/11/2026 e o 'var admIdol=null;' ficou no admin-base.js: o gancho vai no fim do admin.js
+      assert(html.includes('function admIdolPrev(')&&fs.readFileSync(path.join(root,'admin-base.js'),'utf8').includes(marker),'Admin Idol injection point moved');
+      data=Buffer.from(html+'\n'+hook);
     }
     res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
     res.end(data);
@@ -58,6 +59,7 @@ async function main(){
     const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
     await page.route(new RegExp('^https?://(?!127[.]0[.]0[.]1)'),route=>route.abort());
     await page.goto('http://127.0.0.1:'+server.address().port+'/index.html',{waitUntil:'domcontentloaded'});
+    await page.evaluate(()=>new Promise(r=>{perfAdmin=true;admDepois(r);}));   // admin.js só baixa para admin (17/11/2026)
     await page.evaluate(setup);
     await page.evaluate(()=>window.__qaOpenIdol());
     const form=page.locator('#admForm');
@@ -79,6 +81,7 @@ async function main(){
     assert.equal(saved.auto,true);
     // A fresh document re-reads the mock backend; no stale JS state survives.
     await page.reload({waitUntil:'domcontentloaded'});
+    await page.evaluate(()=>new Promise(r=>{perfAdmin=true;admDepois(r);}));   // admin.js só baixa para admin (17/11/2026)
     await page.evaluate(setup);
     await page.evaluate(()=>window.__qaOpenIdol());
     const after=await page.locator('#admIdolCv').evaluate(cv=>cv.toDataURL());

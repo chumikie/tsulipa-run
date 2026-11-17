@@ -106,11 +106,19 @@ window.TWAvatarHair={
   }
   if(b==='trancas'){   // duas tranças caindo à frente dos ombros
    g.beginPath();g.moveTo(x+2,y+13);g.quadraticCurveTo(x-1,y+24,x+4,y+25);g.lineTo(x+26,y+25);g.quadraticCurveTo(x+31,y+24,x+28,y+13);g.fill();
+   // 17/11: trança de verdade — gomos entrelaçados que se encostam e afinam, na cor do cabelo com brilho, em vez de contas soltas
+   var HB=c.hair||'#ff7eb6';
    [[-1,1],[31,-1]].forEach(function(t){
-    for(var k=0;k<5;k++){var by=y+16+k*4.3,bx=x+t[0]+(k%2?t[1]*.9:0);E(bx,by,3.3,2.6,(k%2?-.35:.35)*t[1]);}
-    g.save();g.fillStyle='rgba(0,0,0,.14)';for(var k2=0;k2<5;k2++)g.fillRect(x+t[0]-2.6,y+17.8+k2*4.3,5.2,.6);
-    g.fillStyle='#ff6fb5';E(x+t[0],y+37.6,2.2,1.4);g.restore();
-    T([x+t[0]-1.8,y+38.4,x+t[0]+1.8,y+38.4,x+t[0],y+42]);
+    g.save();
+    for(var k=0;k<7;k++){var by=y+16+k*3.05,rx=3.9-k*.22,ry=2.2-k*.08,lado=k%2?1:-1,bx=x+t[0]+lado*.75*t[1];
+     var gg=g.createLinearGradient(bx-rx,by-ry,bx+rx,by+ry);gg.addColorStop(0,clarear(HB,18));gg.addColorStop(1,escurecer(HB,45));
+     g.fillStyle=gg;g.beginPath();g.ellipse(bx,by,rx,ry,lado*.62*t[1],0,7);g.fill();
+     g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=.45;g.beginPath();g.ellipse(bx,by,rx,ry,lado*.62*t[1],Math.PI*.1,Math.PI*.9);g.stroke();
+     g.fillStyle='rgba(255,255,255,.22)';g.beginPath();g.ellipse(bx-lado*.8,by-.9,rx*.45,ry*.3,lado*.62*t[1],0,7);g.fill();}
+    var px=x+t[0],py=y+16+7*3.05;
+    g.fillStyle='#ff6fb5';g.beginPath();g.ellipse(px,py-.6,2.3,1.3,0,0,7);g.fill();
+    g.fillStyle=escurecer(HB,30);g.beginPath();g.moveTo(px-1.9,py+.2);g.quadraticCurveTo(px,py+5,px+1.9,py+.2);g.closePath();g.fill();
+    g.restore();
    });
    return true;
   }
@@ -184,10 +192,12 @@ window.TWAvatarHair={
    g.restore();
   }
   if(b==='coque'){   // coque alto com elástico, na luz do cabelo
-   var cg=g.createLinearGradient(0,y-11,0,y+1);cg.addColorStop(0,clarear(H,25));cg.addColorStop(1,HD);
-   g.fillStyle=cg;oval(g,x+15,y-4.6,6.4,5.4);
-   g.fillStyle='rgba(255,255,255,.28)';g.beginPath();g.ellipse(x+12.8,y-6.6,2.4,1.2,-.35,0,7);g.fill();
-   g.fillStyle='#7b3ff0';g.fillRect(x+10.6,y-.4,8.8,1.7);
+   var cg=g.createLinearGradient(0,y-8,0,y+3);cg.addColorStop(0,clarear(H,25));cg.addColorStop(1,HD);
+   // 17/11: o coque assenta na cabeça (antes flutuava com um vão em cima): base que encosta no topo e elástico em arco
+   g.fillStyle=HD;oval(g,x+15,y+1.6,6.2,2.6);
+   g.fillStyle=cg;oval(g,x+15,y-2.2,6.6,5.4);
+   g.fillStyle='rgba(255,255,255,.28)';g.beginPath();g.ellipse(x+12.6,y-4.4,2.5,1.2,-.35,0,7);g.fill();
+   g.strokeStyle='#ff6fb5';g.lineWidth=1.6;g.lineCap='round';g.beginPath();g.ellipse(x+15,y+2,5.6,1.6,0,Math.PI*.05,Math.PI*.95);g.stroke();
   }
  },
  bicolor:function(g,c,x,y,b){

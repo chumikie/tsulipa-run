@@ -31,6 +31,46 @@ function getPartner(currentSel) {
   window.lastPartnerPicked = chosen;
   return chosen;
 }
+// Textos das metas e do fim (17/11), com tradução própria aqui (as tabelas do tw-i18n têm contagem fixa)
+var CR_TXT={
+ en:{'Meta cumprida!':'Goal complete!','Pegue {n} estrelas':'Grab {n} stars','Passe de {n} pontos':'Pass {n} points','Pule {n} obstáculos':'Jump {n} obstacles','Pegue uma carta':'Grab a card','Meta':'Goal','Estrelas':'Stars','Faltam {n} pontos para {r}':'{n} points to {r}'},
+ es:{'Meta cumprida!':'¡Meta cumplida!','Pegue {n} estrelas':'Atrapa {n} estrellas','Passe de {n} pontos':'Supera {n} puntos','Pule {n} obstáculos':'Salta {n} obstáculos','Pegue uma carta':'Atrapa una carta','Meta':'Meta','Estrelas':'Estrellas','Faltam {n} pontos para {r}':'Faltan {n} puntos para {r}'},
+ id:{'Meta cumprida!':'Target selesai!','Pegue {n} estrelas':'Ambil {n} bintang','Passe de {n} pontos':'Lewati {n} poin','Pule {n} obstáculos':'Lompati {n} rintangan','Pegue uma carta':'Ambil satu kartu','Meta':'Target','Estrelas':'Bintang','Faltam {n} pontos para {r}':'{n} poin lagi menuju {r}'},
+ th:{'Meta cumprida!':'ทำเป้าหมายสำเร็จ!','Pegue {n} estrelas':'เก็บดาว {n} ดวง','Passe de {n} pontos':'ทำคะแนนเกิน {n}','Pule {n} obstáculos':'กระโดดข้ามสิ่งกีดขวาง {n} ครั้ง','Pegue uma carta':'เก็บการ์ด 1 ใบ','Meta':'เป้าหมาย','Estrelas':'ดาว','Faltam {n} pontos para {r}':'อีก {n} คะแนนถึง {r}'},
+ ja:{'Meta cumprida!':'目標クリア！','Pegue {n} estrelas':'スターを{n}個とろう','Passe de {n} pontos':'{n}点をこえよう','Pule {n} obstáculos':'障害物を{n}回とびこえよう','Pegue uma carta':'カードを1枚とろう','Meta':'目標','Estrelas':'スター','Faltam {n} pontos para {r}':'{r}まであと{n}点'}};
+function crTr(k){ var l = typeof LANG !== 'undefined' ? LANG : 'pt', d = CR_TXT[l]; return (d && d[k]) || tr(k); }
+// ---------- Metas curtas (17/11): uma por corrida, no topo da tela; cumprida, vale +★5 na hora ----------
+// O bônus entra nas estrelas da corrida (stars), que o servidor valida no fim com o mesmo limite de sempre (tempo e teto diário).
+var CR_METAS = [
+  {k:'estrelas', alvo:15, txt:'Pegue {n} estrelas'},
+  {k:'pontos', alvo:1500, txt:'Passe de {n} pontos'},
+  {k:'pulos', alvo:12, txt:'Pule {n} obstáculos'},
+  {k:'carta', alvo:1, txt:'Pegue uma carta'}
+], CR_META_PREMIO = 5, crMeta = null;
+function crMetaNova(){ var m = CR_METAS[Math.floor(Math.random() * CR_METAS.length)]; crMeta = {k:m.k, alvo:m.alvo, txt:m.txt, feita:false, cartas:0, pulos:0, brilho:0, frame0:frame}; }
+function crMetaProgresso(){
+  if(!crMeta) return 0;
+  var v = crMeta.k === 'estrelas' ? stars : crMeta.k === 'pontos' ? Math.floor(score) : crMeta.k === 'pulos' ? crMeta.pulos : crMeta.cartas;
+  return Math.min(crMeta.alvo, v);
+}
+function crMetaConferir(){
+  if(!crMeta || crMeta.feita || state !== 'play' || isTestGame) return;
+  if(crMetaProgresso() >= crMeta.alvo){
+    crMeta.feita = true; crMeta.brilho = 120; stars += CR_META_PREMIO;
+    toast = '🎯 ' + crTr('Meta cumprida!') + ' +★' + CR_META_PREMIO; toastT = 120;
+    try{ if(sfx && sfx.rank) sfx.rank(); }catch(e){}
+  }
+}
+function crMetaDesenhar(){
+  if(!crMeta || state !== 'play' || isTestGame) return;
+  var txt = crTr(crMeta.txt).replace('{n}', crMeta.alvo), prog = crMetaProgresso(), fim = crMeta.feita;
+  var rot = (fim ? '✓ ' : '🎯 ') + txt + (crMeta.alvo > 1 && !fim ? '  ' + prog + '/' + crMeta.alvo : '') + (fim ? '  +★' + CR_META_PREMIO : '');
+  g.save(); g.font = '700 12px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W - 230, g.measureText(rot).width + 26), x0 = W / 2 - w / 2 + 50, y0 = 10;
+  if(crMeta.brilho > 0){ crMeta.brilho--; g.shadowColor = '#b6ff3b'; g.shadowBlur = 14; }
+  g.fillStyle = fim ? 'rgba(78,154,0,.85)' : 'rgba(23,12,37,.72)'; g.beginPath(); if(g.roundRect) g.roundRect(x0, y0, w, 24, 12); else g.rect(x0, y0, w, 24); g.fill(); g.shadowBlur = 0;
+  if(!fim && crMeta.alvo > 1){ g.fillStyle = 'rgba(255,111,181,.85)'; g.beginPath(); if(g.roundRect) g.roundRect(x0 + 4, y0 + 19, (w - 8) * prog / crMeta.alvo, 3, 1.5); else g.rect(x0 + 4, y0 + 19, (w - 8) * prog / crMeta.alvo, 3); g.fill(); }
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(rot, x0 + w / 2, y0 + 11.5, w - 12); g.restore();
+}
 // padrões: [tipo, espaço antes] — sempre com espaço para pousar e pular de novo
 var CR_PADROES = [[['cable', 190]], [['stick', 210], ['cable', 210]], [['cable', 190]], [['speaker', 240]]];
 function spawn(){
@@ -271,6 +311,9 @@ function celeb(t){
   celebRaf = requestAnimationFrame(celeb);
 }
 function end(){
+  var crT = typeof crTr === 'function' ? crTr : tr;
+  var cm = typeof crMeta !== 'undefined' ? crMeta : null;
+  if(cm) cm.acabou = true;
   if(state==='over')return;
   state='over';sfx.over();sync();shake=14;
   document.body.classList.remove('jogando');
@@ -289,7 +332,14 @@ function end(){
   // Este acabamento é opcional: se refreshAcc falhar, a confirmação online não pode parar.
   var novosItens='';
   try{novosItens=newItems(ob,s)}catch(err){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: acabamento dos itens indisponível',err);}
-  $('res').innerHTML='<strong>'+s+' '+tr('pontos')+'</strong><br>★ '+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+(typeof trEstrelas==='function'?trEstrelas(stars):tr('estrelas')))+'<br>'+tr('Posição')+': '+tr(RANKS[rId][1])+(nb?' · '+tr('novo recorde!'):'')+novosItens
+  // 17/11: fim em um quadro só — pontos, estrelas, posição, a meta da corrida e quanto falta para a próxima posição
+  var crProx=RANKS[rId+1],crFalta=crProx?Math.max(1,crProx[0]-s):0;
+  var crMetaTxt=(cm&&!isTestGame)?(cm.feita?'✓ '+crT('Meta cumprida!')+' +★'+CR_META_PREMIO:crT(cm.txt).replace('{n}',cm.alvo)+(cm.alvo>1?' · '+crMetaProgresso()+'/'+cm.alvo:'')):'';
+  $('res').innerHTML='<div class="crfim"><div class="crfim-pts"><strong>'+s+'</strong> <span>'+tr('pontos')+'</span>'+(nb?'<em>'+tr('novo recorde!')+'</em>':'')+'</div>'
+    +'<div class="crfim-grade"><div><small>★ '+crT('Estrelas')+'</small><b>'+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+(typeof trEstrelas==='function'?trEstrelas(stars):tr('estrelas')))+'</b></div>'
+    +'<div><small>'+tr('Posição')+'</small><b>'+tr(RANKS[rId][1])+'</b></div>'
+    +(crMetaTxt?'<div class="crfim-meta'+(cm.feita?' ok':'')+'"><small>🎯 '+crT('Meta')+'</small><b>'+crMetaTxt+'</b></div>':'')+'</div>'
+    +(crProx?'<p class="crfim-prox">'+crT('Faltam {n} pontos para {r}').replace('{n}',crFalta).replace('{r}',tr(crProx[1]))+'</p>':'')+'</div>'+novosItens
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
 
   // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos
@@ -489,6 +539,9 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
       if(d<260){ it.x += (dx/d)*9*dt; it.y += (dy/d)*9*dt; }
     }
   });
+  if(state==='play' && (!crMeta || crMeta.acabou || crMeta.frame0 > frame)) crMetaNova();   // corrida nova (o frame volta a 0 no começo)
+  if(crMeta && state==='play') for(var mo=0; mo<obs.length; mo++){ var ob=obs[mo]; if(!ob.passou && ob.x+ob.w < P.x){ ob.passou=true; crMeta.pulos++; } }
+  crMetaConferir();
   obs=obs.filter(function(o){return o.x>-90});items=items.filter(function(o){return o.x>-40&&!o.got});
   if(nextX<W+40)spawn();
   
@@ -524,6 +577,7 @@ items.forEach(function(it){
         score+=CFG.UFO_BONUS; pops.push({x:it.x,y:it.y,t:0,s:'+'+CFG.UFO_BONUS});
         pw={k:'alien',t:CFG.UFO_FRAMES};abducted=true;wasAbducted=true; toast=tr('Kimi wa Alien!'); toastT=110; sfx.ufo();
       } else if(it.k==='card'){
+        if(crMeta) crMeta.cartas++;
         score+=100;pops.push({x:it.x,y:it.y,t:0,s:'+100'});sfx.card();
         if(!pw || (pw.k!=='alien' && pw.k!=='gigante')){
             if(it.ct==='plain'){toast=tr('Card! +100')}else{pw={k:it.ct,t:480};toast=pw.k==='fever'?tr('Fever! Estrelas em dobro'):tr('Ímã de estrelas!')}
@@ -870,6 +924,7 @@ function draw(){
   drawCity(near,nearW,dist*.35,GY,P2[3],P2[5].replace('rgb(','rgba(').replace(')',',.48)'));
   var nev2=g.createLinearGradient(0,GY-90,0,GY);nev2.addColorStop(0,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,0));nev2.addColorStop(1,cenaMix(cenaRGB(P2[1]),cenaRGB(P2[1]),0,.16));g.fillStyle=nev2;g.fillRect(0,GY-90,W,90);   // um pouco de névoa também na de perto
   g.fillStyle=P2[3];g.fillRect(0,GY-8,W,8);
+  crLuzesPalco();   // 17/11: canhões de luz que varrem o céu e batem no compasso (mais fortes no Fever)
   if(typeof cenaCartazes === 'function') cenaCartazes(P2);   // V2.1.3: cartazes do BRS48 e do TsuLiPa
   cenaMultidao(P2);   // multidão que cresce com a pontuação (V2.2) — agora ATRÁS dos arbustos
   drawBushes(dist*.62);
@@ -1084,6 +1139,7 @@ g.save();
   g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
   g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
   if(pw&&state==='play'){g.textAlign='right';g.fillStyle='#ffe14d';g.fillText((pw.k==='fever'?tr('Fever '):pw.k==='alien'?tr('Abdução '):pw.k==='gigante'?tr('Mega '):pw.k==='unit'?tr('Unit ✨ '):tr('Ímã '))+Math.ceil(pw.t/60)+'s',W-16,72)}
+  crMetaDesenhar();
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
 }
 function loop(t){
@@ -1442,6 +1498,23 @@ function cenaCartazes(P2){
   }
 }
 function obsRR(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
+// 17/11: luzes de palco entre a cidade e a plateia — dois canhões que varrem devagar e pulsam a cada batida
+// (120 BPM = uma batida a cada 30 quadros). Cores do trio; no Fever ficam mais fortes e rosadas.
+function crLuzesPalco(){
+  if(state === 'menu') return;
+  var bat = (frame % 30) / 30, pulso = Math.pow(1 - bat, 3), fever = !!(pw && pw.k === 'fever');
+  var base = (fever ? .2 : .1) + pulso * (fever ? .2 : .1), cores = fever ? ['255,111,181', '255,111,181'] : ['155,48,217', '65,105,225'];
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for(var i = 0; i < 2; i++){
+    var ox = i ? W * .82 : W * .18, ang = Math.sin(frame * .012 + i * 2.1) * .55 + (i ? -.35 : .35), len = GY + 40;
+    var tx = ox + Math.sin(ang) * len, ty = GY + 10, larg = 70 + pulso * 26;
+    var gr = g.createLinearGradient(ox, -10, tx, ty); gr.addColorStop(0, 'rgba(' + cores[i] + ',' + (base * 1.6).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + cores[i] + ',0)');
+    g.fillStyle = gr; g.beginPath(); g.moveTo(ox - 6, -10); g.lineTo(ox + 6, -10); g.lineTo(tx + larg, ty); g.lineTo(tx - larg, ty); g.closePath(); g.fill();
+    var pool = g.createRadialGradient(tx, GY - 4, 4, tx, GY - 4, larg * 1.2); pool.addColorStop(0, 'rgba(' + cores[i] + ',' + (base * 1.4).toFixed(3) + ')'); pool.addColorStop(1, 'rgba(' + cores[i] + ',0)');
+    g.fillStyle = pool; g.fillRect(tx - larg * 1.3, GY - 40, larg * 2.6, 50);
+  }
+  g.restore();
+}
 // 17/11: aviso do próximo obstáculo — brilho rosa no chão, na beirada direita, e um "!" na altura dele, que
 // fica mais forte conforme ele chega (≈ meio segundo antes de aparecer). Só o mais próximo; some no Fever/Gigante.
 function crAvisoObstaculo(){

@@ -9,13 +9,14 @@
   var TINTA = '#223', PUPILA = '#112';
   function escuro(hex, d){ return '#' + String(hex || '#333333').replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.max(0, parseInt(cc, 16) - d).toString(16)).substr(-2); }); }
   function claro(hex, d){ return '#' + String(hex || '#333333').replace(/^#/, '').replace(/../g, function(cc){ return ('0' + Math.min(255, parseInt(cc, 16) + d).toString(16)).substr(-2); }); }
-  function lado(g, c, x, y, expr, t, run){
+  function lado(g, c, x, y, expr, t, run, A){
     var corre = typeof run === 'number', passo = corre ? run : 0;   // 17/11: correndo no Center⭐Run (passada e braço)
     var H = c.hair || '#333', HD = escuro(H, 60), HL = claro(H, 70), S = c.skin || '#f1c9a5', SD = escuro(S, 26);
     var perna = typeof c.legcol === 'string' && /^#[0-9a-f]{6}$/i.test(c.legcol) ? c.legcol : '#1c1c30';
-    var sl = c.back === 'chanel' ? 16.6 : c.back === 'pixie' ? 5 : 10;   // chanel: lateral até a altura do corte da frente   // costeleta: a mesma régua do drawChar
+    var sl = c.back === 'chanel' || c.back === 'longo' || c.back === 'onduladof' ? 16.6 : c.back === 'onduladom' || c.back === 'onduladom2' ? 13 : c.back === 'pixie' ? 5 : 10;   // chanel: lateral até a altura do corte da frente   // costeleta: a mesma régua do drawChar
     function E(cx, cy, rx, ry, r){ g.beginPath(); g.ellipse(cx, cy, rx, ry, r || 0, 0, 7); g.fill(); }
     function T(p){ g.beginPath(); g.moveTo(p[0], p[1]); for(var i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1]); g.closePath(); g.fill(); }
+    var vt = corre ? -1.6 - Math.sin((t || 0) * .5) * .7 : 0;   // vento da corrida: as pontas vão para trás
     var hg = g.createLinearGradient(0, y + 1, 0, y + 20); hg.addColorStop(0, H); hg.addColorStop(1, HD);
     // ---------- do lado de lá (mais escuro): coque e orelha de gato de trás ----------
     if(c.det === 'coques'){ g.fillStyle = HD; E(x + 20, y - 2, 5.4, 5.4); g.fillStyle = '#1f47b0'; g.save(); g.translate(x + 19.6, y + 2.8); g.rotate(.15); g.fillRect(-3, -1.2, 6, 2.4); g.restore(); }
@@ -24,7 +25,15 @@
     g.fillStyle = hg;
     if(c.back === 'chanel'){ g.beginPath(); g.moveTo(x + 8, y - 2); g.quadraticCurveTo(x - .8, y + 4, x + 1.2, y + 18); g.lineTo(x + 1.6, y + 24.4); g.lineTo(x + 13, y + 24.4); g.lineTo(x + 13, y + 8); g.closePath(); g.fill(); }   // chanel curto, reto
     else if(c.back === 'pixie'){ T([x + 5, y + 2, x + 1, y + 12, x + 3.6, y + 13, x + 2.4, y + 19, x + 7.5, y + 15.5, x + 9, y + 18.5, x + 11, y + 10]); }
+    else if(c.back === 'longo'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1, y + 18); g.quadraticCurveTo(x + .4 + vt * .5, y + 30, x + 2.4 + vt, y + 37); g.quadraticCurveTo(x + 6.4 + vt, y + 39.2, x + 10.5, y + 37); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
+    else if(c.back === 'onduladof'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1.4, y + 14); g.quadraticCurveTo(x - 1.2 + vt * .3, y + 19, x + 1.2 + vt * .5, y + 23); g.quadraticCurveTo(x - 1 + vt * .7, y + 28, x + 2 + vt, y + 33);
+      g.quadraticCurveTo(x + 6 + vt, y + 35.6, x + 10, y + 32); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
+    else if(c.back === 'onduladom' || c.back === 'onduladom2'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1.4, y + 13); g.quadraticCurveTo(x - .8 + vt * .3, y + 18, x + 1.6 + vt * .5, y + 22.5); g.quadraticCurveTo(x + 5, y + 26, x + 9.5, y + 22); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
+    else if(c.back === 'cacheado'){ g.fillStyle = HD; E(x + 3 + vt * .4, y + 24, 4.6, 4.6); g.fillStyle = hg; [[6, 2, 7], [2.4, 9.5, 6.4], [2 + vt * .3, 17, 6], [6.5, 21, 5]].forEach(function(p){ E(x + p[0], y + p[1], p[2], p[2]); }); }
     else { g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + 1.5, y + 4, x + 2.6, y + 13.5); g.quadraticCurveTo(x + 4, y + 18.4, x + 8.5, y + 18); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); E(x + 4.5, y + 15.8, 2.2, 2.2); }
+    if(c.back === 'rabo'){ var rs = corre ? Math.sin((t || 0) * .5) * 1.2 : 0; g.fillStyle = hg; g.beginPath(); g.moveTo(x + 5, y + .5); g.quadraticCurveTo(x - 5 + vt, y + 2 + rs, x - 5 + vt, y + 14 + rs);
+      g.quadraticCurveTo(x - 4.4 + vt, y + 21 + rs, x - 1 + vt, y + 25 + rs); g.quadraticCurveTo(x - .6, y + 14, x + 5.4, y + 7); g.closePath(); g.fill(); g.fillStyle = '#e0457b'; E(x + 4.6, y + 3.4, 1.9, 2.8, -.4); }
+    if(c.back === 'marias'){ g.fillStyle = HD; E(x + 1.6 + vt * .4, y + 16, 3.6, 8.6, .32); g.fillStyle = hg; E(x + 3.4 + vt * .5, y + 17, 4.4, 9.8, .24); E(x + 3 + vt * .7, y + 25.4, 3, 6.4, .3); g.fillStyle = '#e0457b'; E(x + 6, y + 8.4, 2.2, 1.7, .5); }
     // ---------- pernas curtas e tênis branco com listra rosa (iguais aos da frente) ----------
     var pe = Math.sin((t || 0) * .25) * .4;
     function tenis(px, py, longe){   // o mesmo tênis da frente visto de lado: cano baixo arredondado e bico redondo
@@ -92,7 +101,38 @@
     // ---------- do lado de cá, por cima: coque e orelha de gato ----------
     if(c.det === 'coques'){ g.fillStyle = H; E(x + 6.4, y - 1.8, 6, 6); g.fillStyle = HL; g.globalAlpha = .45; E(x + 4.6, y - 4, 2, 1.2, -.5); g.globalAlpha = 1; g.fillStyle = '#2a5bd7'; g.save(); g.translate(x + 7.6, y + 3.6); g.rotate(-.18); g.fillRect(-3.6, -1.4, 7.2, 2.8); g.restore(); }
     if(c.det === 'gato'){ g.fillStyle = H; T([x + 3, y + 5, x + 6, y - 8, x + 13, y]); g.fillStyle = 'rgba(255,150,190,.8)'; T([x + 6, y + 2, x + 7, y - 4, x + 10, y]); }
+    if(c.hat && CHAPEU[c.hat]) CHAPEU[c.hat](g, x, y, E);
+    if(A && ACESSORIO[A]) ACESSORIO[A](g, x, y, E);
   }
+  // ---------- chapéus vistos de lado (17/11): cabeça centrada em (14.6, 8), raio 12, olhando para a direita ----------
+  function flor(g, E, cx, cy, r, pc, cc){ g.fillStyle = pc; for(var k = 0; k < 5; k++){ var a = k * 1.2566 - 1.57; E(cx + Math.cos(a) * r, cy + Math.sin(a) * r, r * .8, r * .8); } g.fillStyle = cc; E(cx, cy, r * .55, r * .55); }
+  var CHAPEU = {
+    boina:function(g, x, y, E){ g.fillStyle = '#b81f3a'; E(x + 13.6, y + 1, 12.4, 2.8, -.2); g.fillStyle = '#e02a4a'; E(x + 12.6, y - 1, 12.2, 4.8, -.24);
+      g.fillStyle = 'rgba(255,255,255,.26)'; E(x + 9, y - 3.4, 4, 1.1, -.3); g.fillStyle = '#2a1a1a'; E(x + 13.4, y - 6, 1, 1.6, -.1); },
+    palha:function(g, x, y, E){ g.fillStyle = '#e7bf74'; E(x + 14.6, y + 2.6, 17.4, 2.8, -.08);
+      g.fillStyle = '#f7dc9b'; g.beginPath(); g.moveTo(x + 4, y + 2.4); g.quadraticCurveTo(x + 4, y - 7.6, x + 14.6, y - 8); g.quadraticCurveTo(x + 25.2, y - 7.6, x + 25.2, y + 2.4); g.closePath(); g.fill();
+      g.fillStyle = '#9b30d9'; g.fillRect(x + 4.2, y - .6, 20.8, 2); g.fillStyle = '#b6ff3b'; g.fillRect(x + 12, y - .6, 3, 2); g.fillStyle = '#4169e1'; g.fillRect(x + 16, y - .6, 3, 2);
+      g.fillStyle = '#f9df9d'; E(x + 15.4, y + 2.8, 17, 1.7, -.08); g.fillStyle = 'rgba(255,255,255,.3)'; E(x + 10, y - 5, 3.4, 1, -.3);
+      g.fillStyle = '#9b30d9'; E(x + 6.4, y + .4, 1.9, 1.5); g.fillStyle = '#fff3b2'; E(x + 6.4, y + .4, .7, .7); },
+    capitao:function(g, x, y, E){ g.fillStyle = '#0b0d15'; g.beginPath(); g.moveTo(x + 3.6, y + 3.4); g.lineTo(x + 1.4, y - 4); g.quadraticCurveTo(x + 14, y - 9.4, x + 26.8, y - 4.6); g.lineTo(x + 25.4, y + 3.4); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.1)'; E(x + 13.6, y - 5.6, 11, 1.8); g.fillStyle = '#e7b94e'; g.fillRect(x + 3.8, y + .6, 21.4, 2.6);
+      g.fillStyle = '#16181f'; g.beginPath(); g.moveTo(x + 23, y + 2.6); g.quadraticCurveTo(x + 30, y + 3, x + 31.4, y + 5.6); g.quadraticCurveTo(x + 27, y + 6, x + 22.6, y + 4.6); g.closePath(); g.fill();
+      g.fillStyle = '#ffe27a'; E(x + 22.8, y - .6, 1.4, 1.4); },
+    fones:function(g, x, y, E){ g.strokeStyle = '#111'; g.lineWidth = 1.6; g.beginPath(); g.arc(x + 13.6, y + 8.6, 13, Math.PI * 1.2, Math.PI * 1.92); g.stroke(); g.fillStyle = '#e02a4a'; E(x + 11.4, y + 12.6, 3.4, 4.6); g.fillStyle = '#ff6f8a'; E(x + 11, y + 11.4, 1.4, 1.8); },
+    coala:function(g, x, y, E){ g.fillStyle = '#5b6474'; E(x + 18, y - 4, 4.6, 4.6); g.strokeStyle = '#1e293b'; g.lineWidth = 1.5; g.beginPath(); g.arc(x + 14.6, y + 8, 12.2, Math.PI * 1.15, Math.PI * 1.9); g.stroke();
+      g.fillStyle = '#8b95a7'; E(x + 8.6, y - 3.4, 5.6, 5.6); g.fillStyle = '#fbcfe8'; E(x + 8.6, y - 3.4, 2.8, 2.8); g.fillStyle = 'rgba(255,255,255,.5)'; E(x + 7.6, y - 4.8, 1.4, 1.4); g.fillStyle = '#38bdf8'; E(x + 13.6, y - 4.4, 2.2, 1.6); },
+    presilhas:function(g, x, y){ g.lineWidth = 1.5; g.strokeStyle = '#ff3d5e'; g.beginPath(); g.moveTo(x + 6, y + 5); g.lineTo(x + 10, y + 9); g.moveTo(x + 10, y + 5); g.lineTo(x + 6, y + 9); g.stroke();
+      g.strokeStyle = '#4dd8ff'; g.beginPath(); g.moveTo(x + 8, y + 1.6); g.lineTo(x + 12, y + 5.6); g.moveTo(x + 12, y + 1.6); g.lineTo(x + 8, y + 5.6); g.stroke(); },
+    bandaid:function(g, x, y){ g.fillStyle = '#d97706'; g.fillRect(x + 18.6, y + 19.4, 6, 3.4); g.fillStyle = '#fcd34d'; g.fillRect(x + 19, y + 19.8, 5.2, 2.6); g.fillStyle = '#fff'; g.fillRect(x + 20.4, y + 20.3, 2.4, 1.6); }
+  };
+  // ---------- acessórios de cabelo do lado de cá (os mesmos da frente) ----------
+  var ACESSORIO = {
+    laco:function(g, x, y, E){ g.fillStyle = '#2a5bd7'; g.beginPath(); g.moveTo(x + 7, y + 3); g.lineTo(x + 2.6, y - 1); g.lineTo(x + 3, y + 7); g.closePath(); g.fill(); g.beginPath(); g.moveTo(x + 7, y + 3); g.lineTo(x + 11.6, y - 1); g.lineTo(x + 11.2, y + 7); g.closePath(); g.fill(); g.fillStyle = '#173a9a'; E(x + 7, y + 3, 2, 2); },
+    estrela:function(g, x, y){ g.fillStyle = '#ffd23f'; g.beginPath(); for(var k = 0; k < 10; k++){ var a = k * Math.PI / 5 - Math.PI / 2, r = k % 2 ? 1.6 : 3.8; g.lineTo(x + 8 + Math.cos(a) * r, y + 4 + Math.sin(a) * r); } g.closePath(); g.fill(); g.fillStyle = 'rgba(255,255,255,.6)'; g.fillRect(x + 7, y + 2.6, 1.2, 1.2); },
+    hibisco:function(g, x, y, E){ flor(g, E, x + 8, y + 3, 3.2, '#ff3d5e', '#ffd23f'); },
+    sakura:function(g, x, y, E){ flor(g, E, x + 8, y + 3, 3, '#ffc4d8', '#e85a8a'); },
+    mic:function(g, x, y, E){ g.fillStyle = '#222'; E(x + 11.4, y + 12.6, 2.6, 3); g.strokeStyle = '#222'; g.lineWidth = 1.1; g.beginPath(); g.moveTo(x + 12.4, y + 14.6); g.quadraticCurveTo(x + 15, y + 21.4, x + 22.4, y + 21.6); g.stroke(); g.fillStyle = '#ff4f9a'; E(x + 23.2, y + 21.4, 1.9, 1.9); }
+  };
   // Desenha no canvas x (contexto 2D): cx = meio do boneco, chao = linha dos pés, ES = escala; com o contorno branco do jogo.
   function desenhar(x, cx, chao, ES, av, t, olhaEsquerda){
     var c = av && av.c ? av.c : av; if(!c) return;
@@ -106,16 +146,18 @@
   // Correndo no Center⭐Run! (17/11): desenha no contexto do jogo, na grade 30×44 em (x, y) como o drawChar,
   // com o contorno de 1 px nas cores do boneco de frente (OUT: branco, ou rosa no Fever / lilás no Ímã).
   var corOff = null, silOff = null;
-  function corre(g2, c, x, y, expr, t, run, OUT){
-    var Q = 3, w = 36 * Q, h = 58 * Q;
+  function corre(g2, c, x, y, expr, t, run, OUT, A){
+    var Q = 3, w = 44 * Q, h = 58 * Q;
     if(!corOff){ corOff = document.createElement('canvas'); corOff.width = w; corOff.height = h; silOff = document.createElement('canvas'); silOff.width = w; silOff.height = h; }
-    var o = corOff.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.clearRect(0, 0, w, h); o.setTransform(Q, 0, 0, Q, 3 * Q, 10 * Q);
-    lado(o, c, 0, 0, expr, t, run);
+    var o = corOff.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.clearRect(0, 0, w, h); o.setTransform(Q, 0, 0, Q, 11 * Q, 10 * Q);
+    lado(o, c, 0, 0, expr, t, run, A);
     var s2 = silOff.getContext('2d'); s2.setTransform(1, 0, 0, 1, 0, 0); s2.clearRect(0, 0, w, h); s2.globalCompositeOperation = 'source-over'; s2.drawImage(corOff, 0, 0);
     s2.globalCompositeOperation = 'source-in'; s2.fillStyle = (OUT && OUT[0]) || '#fff'; s2.fillRect(0, 0, w, h); s2.globalCompositeOperation = 'source-over';
-    var X = x - 3, Y = y - 10, k;
-    for(k = 0; k < 8; k++){ var a = k * Math.PI / 4; g2.drawImage(silOff, X + Math.cos(a) * 1.1, Y + Math.sin(a) * 1.1, 36, 58); }
-    g2.drawImage(corOff, X, Y, 36, 58);
+    var X = x - 11, Y = y - 10, k;
+    for(k = 0; k < 8; k++){ var a = k * Math.PI / 4; g2.drawImage(silOff, X + Math.cos(a) * 1.1, Y + Math.sin(a) * 1.1, 44, 58); }
+    g2.drawImage(corOff, X, Y, 44, 58);
   }
-  window.TW_LADO = {desenhar:desenhar, partes:lado, corre:corre};
+  // o Center⭐Run pergunta antes: chapéu ou acessório sem versão de lado continua de frente
+  function sabe(c, A){ return (!c || !c.hat || !!CHAPEU[c.hat]) && (!A || !!ACESSORIO[A]); }
+  window.TW_LADO = {desenhar:desenhar, partes:lado, corre:corre, sabe:sabe};
 })();

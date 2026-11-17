@@ -384,10 +384,10 @@ function drawChar(c,x,y,run,expr,isPartner){
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
   // 17/11: correndo, o trio aparece DE PERFIL (tw-lado.js). Só o visual fixo do Tsu, da Lirika e do Pati, sem roupa de rank
-  // nem acessório na mão (esses continuam de frente). O "Você" também, com as cores de cabelo/pele/olhos/roupa, quando está sem chapéu.
+  // O "Você" também, com as cores de cabelo/pele/olhos/roupa, o corte (longo, rabo, marias, cacheado), o chapéu e o acessório.
   if (state === 'play' && window.TW_LADO && TW_LADO.corre && OF === 0 && !(PX && PX.k === 'alien') &&
-      (isPartner || !A) && (c === CH[0] || c === CH[1] || c === CH[2] || (c === CH[3] && !c.hat))) {   // o Você também, sem chapéu (o perfil não desenha chapéu)
-    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT); return; } catch (e) {}   // no ar (run 0): passada aberta
+      (c === CH[0] || c === CH[1] || c === CH[2] || c === CH[3]) && (!TW_LADO.sabe || TW_LADO.sabe(c, A))) {   // o Você também: cortes longos, chapéu e acessório de lado; o que não tem versão de lado fica de frente
+    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT, A); return; } catch (e) {}   // no ar (run 0): passada aberta
   }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}

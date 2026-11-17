@@ -7,6 +7,9 @@ assert(tag>0&&cria>tag,'karaoke-show.js carregado antes da sala criar o show');
 assert(!html.includes('var kt=(function(){')&&!html.includes('function inputClock(')&&show.includes('window.KaraokeShow={criar:criar};'),'código do show num lugar só');
 // Tudo que o show lê da sala é lido na hora (krUI, por exemplo, é trocado depois que o show é criado).
 assert(/krUI:function\(\)\{return krUI;\}/.test(html)&&/muted:function\(\)\{return muted;\}/.test(html)&&/AC:function\(\)\{return AC;\}/.test(html),'dependências passadas como leitura na hora');
+// O que o show grava na sala passa pela sala (fora dela, "krRhythmRun=..." criaria uma global nova e a sala não veria o treino).
+assert(show.includes('D.krRhythmRun(run)')&&show.includes('D.krRhythmRun(null)')&&show.includes('D.krRhythmLastSecond(secs)')&&!/(?<![\w.$])(krRhythmRun|krRhythmLastSecond)=/.test(show),'escritas na sala por D.nome(valor)');
+assert(html.includes('krRhythmRun:function(v){if(arguments.length)krRhythmRun=v;return krRhythmRun;}'),'sala aceita a escrita');
 // O ajudante dos testes remonta o HTML antigo e falha se o show usar algo que a sala não passa.
 assert(require('./karaoke-fonte.js')().includes('var kt=(function(){'),'remontagem do HTML antigo funciona');
 console.log('✓ Karaoke: show de ritmo em karaoke-show.js, criado pela sala com dependências lidas na hora');

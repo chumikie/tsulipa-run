@@ -19,7 +19,7 @@ for pair in "2026-11-01 duo" "2026-11-08 normal" "2026-11-15 fast" "2026-11-22 g
 done
 # show de 60 s: cria a corrida um minuto no passado e termina
 show(){ local p="$1" song="$2" score="$3" extra=""; [[ "$song" != "-" ]] && extra=",p_song=>'$song'"
-  local run; run="$(q -c "insert into private.kt_runs(player_id,started_at) values('$(id "$p")', clock_timestamp()-interval '60 seconds') returning id;" | head -1)"
+  local run; run="$(q -c "insert into private.kt_runs(player_id,started_at) values('$(id "$p")', clock_timestamp()-interval '60 seconds') returning id;" | sed -n 1p)"
   q -c "set role authenticated; set request.jwt.claim.sub='$(id "$p")'; select public.kt_run_finish(p_run=>'$run',p_score=>$score,p_hits=>10,p_attempts=>10,p_combo=>10,p_notes=>10$extra)::text;" | tail -1; }
 expect "$(show 1 duo 1200)" '"ranked":true' 'música da semana aceita'
 expect "$(show 2 duo 1300)" '"ranked":true' 'outra conta'

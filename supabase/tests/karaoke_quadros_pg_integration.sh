@@ -15,7 +15,7 @@ id(){ printf '60000000-0000-4000-8000-%012d' "$1"; }
 expect(){ local o f; o="$(printf '%s' "$1" | tr -d '[:space:]')"; f="$(printf '%s' "$2" | tr -d '[:space:]')"
   if [[ "$o" != *"$f"* ]]; then echo "FAIL $3: falta $2 em $1" >&2; exit 1; fi; echo "ok - $3"; }
 show(){ local p="$1" score="$2" run
-  run="$(q -c "insert into private.kt_runs(player_id,started_at) values('$(id "$p")', clock_timestamp()-interval '60 seconds') returning id;" | head -1)"
+  run="$(q -c "insert into private.kt_runs(player_id,started_at) values('$(id "$p")', clock_timestamp()-interval '60 seconds') returning id;" | sed -n 1p)"
   q -c "set role authenticated; set request.jwt.claim.sub='$(id "$p")'; select public.kt_run_finish(p_run=>'$run',p_score=>$score,p_hits=>10,p_attempts=>10,p_combo=>10,p_notes=>10,p_song=>'duo')::text;" | tail -1; }
 # semana passada (25/10): P1 fez 1300, P2 fez 700, P3 fez 900
 q -c "insert into private.kt_scores(player_id,week_start,score,score_at) values ('$(id 1)','2026-10-25',1300,now()),('$(id 2)','2026-10-25',700,now()),('$(id 3)','2026-10-25',900,now());" >/dev/null

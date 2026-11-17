@@ -2,7 +2,11 @@
 const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
 const r=f=>fs.readFileSync(path.join(__dirname,'..',f),'utf8');
 const cr=r('centerrun.js'),co=r('centerrun-corrida.js'),conta=r('conta.js'),lado=r('tw-lado.js'),sql=r('supabase/migrations/20261117230000_corrida_telemetria.sql');
-assert.match(cr,/c === CH\[3\] && !c\.hat/,'o Você corre de perfil quando está sem chapéu');
+assert.match(cr,/c === CH\[3\]\) && \(!TW_LADO\.sabe \|\| TW_LADO\.sabe\(c, A\)\)/,'o Você corre de perfil com chapéu e acessório que o perfil sabe desenhar');
+{ const lado=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','tw-lado.js'),'utf8');
+  for(const k of ['boina','palha','capitao','fones','coala','presilhas','bandaid']) assert.match(lado,new RegExp('\\b'+k+':function'),'chapéu de lado: '+k);
+  for(const k of ['laco','estrela','hibisco','sakura','mic']) assert.match(lado,new RegExp('\\b'+k+':function'),'acessório de lado: '+k);
+  for(const k of ['longo','onduladof','onduladom','rabo','marias','cacheado']) assert.match(lado,new RegExp("c\\.back === '"+k+"'"),'corte de lado: '+k); }
 assert.match(lado,/var corCam = \(c\.out && /,'a camisa do perfil usa a cor da roupa');
 assert.match(co,/s2DrawSceneryBg\(\);\n    crLuzesPalco\(\);/,'luzes também nos palcos da Temporada 2');
 assert.match(co,/crTelemetriaAnotar\(obs\[i\]\);end\(\);return;/,'anota o que causou a batida');

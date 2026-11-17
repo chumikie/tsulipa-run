@@ -355,6 +355,7 @@
     maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
     maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
     verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
@@ -421,15 +422,23 @@
     var B = window.TW_BAIRRO;
     if(B){ try{ var rb = B.resumo();
       linha(rb.ok, 'uva', 'pin', esc(rb.tit), esc(rb.sub), '<button type="button" class="twc-hj-bt" data-bairro="abrir">' + esc(rb.bt) + '</button>',
-        '<small class="twc-hj-bico">' + esc(rb.bico) + '</small>'); }catch(e){} }
+        rb.bico ? '<small class="twc-hj-bico">' + esc(rb.bico) + '</small>' : ''); }catch(e){} }
     var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
-    var pc = Math.round(feitos / tot * 100);
+    var pc = Math.round(feitos / tot * 100), lista;
+    // o "Também hoje" (outros eventos) entra na lista do "Ver tudo": um lugar só para tudo do dia
+    var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
+    if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
+    else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
+      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2), sobra = todos.length - pend.length;
+      if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
+      else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
+    }
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      (feitos === tot && !hojeAberto ? '' : itens.join('')) + extra + '</section>';   // tudo feito: a lista recolhe (abre no "Ver lista")
+      lista + '</section>';
   }
 
   function telaInicio(){
@@ -446,8 +455,9 @@
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado">' + palco() + '</div>' +
-      '<div class="twc-lado">' + (hjHtml || destaque) + portas() + '</div></div>';
+    // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -557,8 +567,9 @@
   }
   function telaInicial(){   // antes do "Toque para começar" (libera o som do aparelho)
     // abertura animada (ideia do site Loveez, arte nossa): 3 camadas em parallax + o trio flutuando em volta do logo
+    // na ordem do nome: Tsu à esquerda, Lirika no centro (um pouco mais alta), Pati à direita
     var px = '<div class="twc-px" aria-hidden="true"><i class="twc-px1"></i><i class="twc-px2"></i><i class="twc-px3"></i></div>' +
-      '<div class="twc-flutua" aria-hidden="true">' + [[0, 'twc-fl0'], [1, 'twc-fl1'], [2, 'twc-fl2']].map(function(f){ return '<canvas class="twc-fl ' + f[1] + '" data-idol="' + f[0] + '" width="208" height="224"></canvas>'; }).join('') + '</div>';
+      '<div class="twc-flutua" aria-hidden="true">' + [[0, 'twc-fl0'], [1, 'twc-fl2'], [2, 'twc-fl1']].map(function(f){ return '<canvas class="twc-fl ' + f[1] + '" data-idol="' + f[0] + '" width="208" height="224"></canvas>'; }).join('') + '</div>';
     return '<div class="twc-abre">' + px + brilhos([[14, 18, 14], [82, 24, 12, 'l'], [24, 70, 10, 'r'], [76, 66, 14], [50, 12, 9, 'l']]) +
       (function(){ var lg = document.querySelector('#hub .hubin .hublogo'); return lg ? '<h1 class="hublogo twc-hublogo twc-logo-abre" translate="no" aria-label="TsuLiPa World">' + lg.innerHTML + '</h1>' : '<h1 class="twc-logo" translate="no">TsuLiPa<span>⭐</span>World</h1>'; })() +
       '<p class="hubsub twc-hubsub" lang="ja">ツリパ⭐ワールド</p>' +

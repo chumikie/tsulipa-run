@@ -45,7 +45,7 @@ function crTelemetriaAnotar(o){
   try{
     var vel = typeof sp === 'number' ? Math.round(sp) : 0;
     window.crTelemetria = {causa:(o && o.k || 'x') + ':' + (P.air ? 'ar' : 'chao') + ':v' + vel + (o && o.padrao ? ':pad' : ''),
-      meta:crMeta ? crMeta.k + ':' + (crMeta.feita ? 'ok' : crMetaProgresso() + '/' + crMeta.alvo) : ''};
+      meta:crMeta ? crMeta.k + ':' + (crMeta.feita ? 'ok' : crMetaProgresso() + '-' + crMeta.alvo) : ''};
   }catch(e){}
 }
 // ---------- Metas curtas (17/11): uma por corrida, no topo da tela; cumprida, vale +★5 na hora ----------
@@ -89,7 +89,7 @@ function crMetaDesenhar(){
   if(!crMeta || state !== 'play' || isTestGame) return;
   var txt = crTr(crMeta.txt).replace('{n}', crMeta.alvo), prog = crMetaProgresso(), fim = crMeta.feita;
   var rot = (fim ? '✓ ' : '🎯 ') + txt + (crMeta.alvo > 1 && !fim ? '  ' + prog + '/' + crMeta.alvo : '') + (fim ? '  +★' + CR_META_PREMIO : '');
-  g.save(); g.font = '700 12px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W - 230, g.measureText(rot).width + 26), x0 = W / 2 - w / 2 + 50, y0 = 10;
+  g.save(); g.font = '700 12px "M PLUS Rounded 1c",sans-serif'; var pt = W < 500, w = Math.min(pt ? W - 20 : W - 230, g.measureText(rot).width + 26), x0 = pt ? 10 : W / 2 - w / 2 + 50, y0 = pt ? 92 : 10;   // celular em pé: abaixo do placar, longe dos botões de pausa/câmera/som
   if(crMeta.brilho > 0){ crMeta.brilho--; g.shadowColor = '#b6ff3b'; g.shadowBlur = 14; }
   g.fillStyle = fim ? 'rgba(78,154,0,.85)' : 'rgba(23,12,37,.72)'; g.beginPath(); if(g.roundRect) g.roundRect(x0, y0, w, 24, 12); else g.rect(x0, y0, w, 24); g.fill(); g.shadowBlur = 0;
   if(!fim && crMeta.alvo > 1){ g.fillStyle = 'rgba(255,111,181,.85)'; g.beginPath(); if(g.roundRect) g.roundRect(x0 + 4, y0 + 19, (w - 8) * prog / crMeta.alvo, 3, 1.5); else g.rect(x0 + 4, y0 + 19, (w - 8) * prog / crMeta.alvo, 3); g.fill(); }
@@ -1167,11 +1167,26 @@ g.save();
   crMetaDesenhar();
   if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
 }
+// Celular que não aguenta (17/11): mede a corrida e, se ficar abaixo de ~45 quadros por segundo, pede menos pixels
+// ao canvas do jogo (2× → 1,5× → 1×). O aparelho guarda o nível (tw_cr_nitidez) para a próxima corrida já começar leve.
+var crDes={ms:[],n:0,teto:0};
+function crDesempenho(ms){
+  var N=window.TW_NITIDEZ;if(!N||!N.limitar||N.desligada||typeof cv==='undefined')return;
+  if(!crDes.teto){var sv=0;try{sv=+localStorage.getItem('tw_cr_nitidez')||0;}catch(e){}crDes.teto=sv||9;if(sv)N.limitar(cv,sv);}
+  if(crDes.teto<=1)return;
+  if(++crDes.n<90)return;                         // os primeiros ~1,5 s têm carga de arquivos e desenhos novos
+  crDes.ms.push(ms);if(crDes.ms.length<150)return;
+  var o=crDes.ms.slice().sort(function(a,b){return a-b;}),med=o[o.length>>1];crDes.ms=[];
+  if(med<=22)return;                               // ~45 qps ou mais: está bem
+  var k=N.escala(cv),novo=k>1.5?1.5:1;if(k<=1)return;
+  crDes.teto=novo;N.limitar(cv,novo);try{localStorage.setItem('tw_cr_nitidez',String(novo));}catch(e){}
+}
 function loop(t){
   twIndex2BaseRaf=0;
   if(twIndex2BaseFramesPaused()){last=0;return;}
   var rawDt = last ? (t - last) / 16.667 : 1;
   var dt = Math.max(0.1, Math.min(rawDt, 2.5));
+  if(state==='play'&&!paused&&rawDt<20)crDesempenho(rawDt*16.667);
   last=t;
   if(state==='play'&&!paused)update(dt);
   else if(state==='over'&&shake>0)frame+=dt;

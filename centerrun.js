@@ -384,10 +384,10 @@ function drawChar(c,x,y,run,expr,isPartner){
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
   // 17/11: correndo, o trio aparece DE PERFIL (tw-lado.js). Só o visual fixo do Tsu, da Lirika e do Pati, sem roupa de rank
-  // nem acessório na mão (esses continuam de frente). O "Você" também, com as cores de cabelo/pele/olhos/roupa, quando está sem chapéu.
+  // O "Você" também, com as cores de cabelo/pele/olhos/roupa, o corte (longo, rabo, marias, cacheado), o chapéu e o acessório.
   if (state === 'play' && window.TW_LADO && TW_LADO.corre && OF === 0 && !(PX && PX.k === 'alien') &&
-      (isPartner || !A) && (c === CH[0] || c === CH[1] || c === CH[2] || (c === CH[3] && !c.hat))) {   // o Você também, sem chapéu (o perfil não desenha chapéu)
-    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT); return; } catch (e) {}   // no ar (run 0): passada aberta
+      (c === CH[0] || c === CH[1] || c === CH[2] || c === CH[3]) && (!TW_LADO.sabe || TW_LADO.sabe(c, A))) {   // o Você também: cortes longos, chapéu e acessório de lado; o que não tem versão de lado fica de frente
+    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT, A); return; } catch (e) {}   // no ar (run 0): passada aberta
   }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
@@ -1506,7 +1506,11 @@ function s2SyncProfile(){
   if(!contaJ || typeof contaRpc !== 'function') return;
   var earned = S2_INS.filter(function(x){ return !!s2Save.badges[x[0]]; }).map(function(x){ return x[0]; });
   if(!earned.length) return;
-  contaRpc('sincronizar_insignias_jogos', { p_insignias: earned }).catch(function(){});
+  var chave = (contaJ.nick || '') + '|' + earned.join(',');   // 17/11: só envia quando muda (antes ia a cada salvamento da corrida)
+  if(s2SyncProfile.ultimo === chave) return;
+  s2SyncProfile.ultimo = chave;
+  var pr = contaRpc('sincronizar_insignias_jogos', { p_insignias: earned });
+  if(pr && pr.catch) pr.catch(function(){ s2SyncProfile.ultimo = ''; });
 }
 function s2Persist(){
   try{ window.__TW_TEST_STORAGE.setItem(S2_KEY, JSON.stringify(s2Save)); }catch(e){}
@@ -1741,7 +1745,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=7',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=10',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

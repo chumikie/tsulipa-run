@@ -62,6 +62,7 @@
     depois:{pt:'Depois', en:'Later', es:'Después', id:'Nanti', th:'ทีหลัง', ja:'あとで'},
     emBreve:{pt:'em breve', en:'soon', es:'pronto', id:'segera', th:'เร็ว ๆ นี้', ja:'もうすぐ'},
     ver:{pt:'Ver', en:'View', es:'Ver', id:'Lihat', th:'ดู', ja:'見る'},
+    faltaAprender:{pt:'Falta aprender o gesto', en:'Gesture not learned yet', es:'Falta aprender el gesto', id:'Gestur belum dipelajari', th:'ยังไม่ได้เรียนท่าทางนี้', ja:'ジェスチャーをまだ覚えていないよ'},
     hjBico:{pt:'Bico: {b} · {s}', en:'Side job: {b} · {s}', es:'Trabajito: {b} · {s}', id:'Kerja sambilan: {b} · {s}', th:'งานพิเศษ: {b} · {s}', ja:'おしごと：{b}・{s}'},
     subiu:{pt:'Nível {n} no bico {b}!', en:'Level {n} in {b}!', es:'¡Nivel {n} en {b}!', id:'Level {n} di {b}!', th:'ระดับ {n} ใน {b}!', ja:'{b}でレベル{n}！'},
     fechar:{pt:'Fechar', en:'Close', es:'Cerrar', id:'Tutup', th:'ปิด', ja:'閉じる'}
@@ -116,6 +117,15 @@
       fim:{pt:'Uma piscadinha fez a Nuvem sorrir, e o arco-íris voltou mais brilhante.', en:'A wink made the Cloud smile, and the rainbow came back brighter.', es:'Un guiño hizo sonreír a la Nube, y el arcoíris volvió más brillante.', id:'Kedipan membuat si Awan tersenyum, dan pelangi kembali lebih terang.', th:'ขยิบตาทำให้เมฆยิ้ม และรุ้งก็กลับมาสดใสกว่าเดิม', ja:'ウインクで雲がにっこり。にじがもっと明るくもどったよ。'}}
   };
   // falas do trio no Chat (o Tsu e o Pati no masculino; a Lirika no feminino, como no resto do site)
+  // Sem os bicos (BICOS = false), o gesto de uma rua se aprende jogando os jogos dela 2 vezes (os 2 pontos do antigo nível 1)
+  var SEM_BICO = {
+    sub:{pt:'Gestos e a bagunça da semana', en:'Gestures and the week’s mischief', es:'Gestos y el lío de la semana', id:'Gestur dan kekacauan minggu ini', th:'ท่าทางและความวุ่นวายประจำสัปดาห์', ja:'ジェスチャーと今週のさわぎ'},
+    aprenda:{pt:'Aprenda jogando {j} ({r}).', en:'Learn it by playing {j} ({r}).', es:'Apréndelo jugando {j} ({r}).', id:'Pelajari dengan bermain {j} ({r}).', th:'เรียนได้โดยเล่น {j} ({r})', ja:'{j}をあそぶと覚えるよ（{r}）。'},
+    ruas:{pt:'Ruas e gestos', en:'Streets and gestures', es:'Calles y gestos', id:'Jalan dan gestur', th:'ถนนและท่าทาง', ja:'通りとジェスチャー'},
+    semGesto:{pt:'Jogue 2 vezes os jogos de uma rua para aprender o gesto dela.', en:'Play a street’s games twice to learn its gesture.', es:'Juega 2 veces los juegos de una calle para aprender su gesto.', id:'Mainkan game satu jalan 2 kali untuk mempelajari gesturnya.', th:'เล่นเกมของถนนนั้น 2 ครั้งเพื่อเรียนท่าทาง', ja:'通りのゲームを2回あそぶと、その通りのジェスチャーを覚えるよ。'},
+    jogue:{pt:'Jogue {j}', en:'Play {j}', es:'Juega {j}', id:'Main {j}', th:'เล่น {j}', ja:'{j}をあそぼう'},
+    dica:{pt:'Cada rua ensina um gesto. {Re}, vale jogar {j}.', en:'Every street teaches a gesture. At {r}, play {j}.', es:'Cada calle enseña un gesto. {Re} vale jugar {j}.', id:'Setiap jalan mengajarkan satu gestur. Di {r}, mainkan {j}.', th:'ทุกถนนสอนท่าทางหนึ่งท่า ที่ {r} ลองเล่น {j}', ja:'通りごとにジェスチャーを教えてくれるよ。{r}では{j}をあそんでね。'}
+  };
   var FALA = {
     bag:{pt:'{q} {f}! Acho que um gesto resolve: {g}.', en:'{q} {f}! I think a gesture will fix it: {g}.', es:'¡{q} {f}! Creo que un gesto lo resuelve: {g}.', id:'{q} {f}! Kurasa satu gestur bisa membereskannya: {g}.', th:'{q} {f}! น่าจะแก้ได้ด้วยท่านี้: {g}', ja:'{q}が{f}！ジェスチャーで解決できそう：{g}。'},
     bagOk:{pt:'Você resolveu a bagunça! {fim}', en:'You solved the mischief! {fim}', es:'¡Resolviste el lío! {fim}', id:'Kamu membereskan kekacauan! {fim}', th:'คุณแก้ความวุ่นวายได้แล้ว! {fim}', ja:'さわぎを解決したね！{fim}'},
@@ -127,7 +137,7 @@
 
   function L(){ return (typeof LANG === 'string' && /^(pt|en|es|id|th|ja)$/.test(LANG)) ? LANG : 'pt'; }
   function tx(o){ return o ? (o[L()] || o.pt) : ''; }
-  function t(k, v){ var s = tx(TX[k]) || k; if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
+  function t(k, v){ var s = tx(!BICOS && SEM_BICO[k] ? SEM_BICO[k] : TX[k]) || k; if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
   function f(o, v){ var s = tx(o); if(v) for(var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]; }); }
   function hoje(){ return new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10); }   // horário de Brasília
@@ -140,6 +150,8 @@
     var de = (RUA_DE[L()] || {})[r] || ruaNome(r), em = (RUA_EM[L()] || {})[r] || ruaNome(r), o = {r:ruaNome(r), rd:de, re:em, Re:em.charAt(0).toUpperCase() + em.slice(1)};
     if(extra) for(var k in extra) o[k] = extra[k]; return o;
   }
+  // Bicos do dia: a contagem continua por baixo, mas nada aparece até a usuária liberar (17/11: "deixar os bicos para depois")
+  var BICOS = false;
   function bicoNome(r){ return tx(BICO_NOME[r]); }
   function gestoNome(r){ return tx(GESTO_NOME[r]); }
 
@@ -186,18 +198,19 @@
     var depois = nivelDe(est.pts[r]), subiu = depois > antes;
     if(subiu) est.ultimo = {rua:r, n:depois, dia:h};
     salvar(); avisar({tipo:subiu ? 'nivel' : 'ponto', rua:r, nivel:depois});
-    if(subiu) toast('✨ ' + t('subiu', {n:depois, b:bicoNome(r)}) + ' · ' + premioTxt(r, depois));
+    if(subiu && BICOS) toast('✨ ' + t('subiu', {n:depois, b:bicoNome(r)}) + ' · ' + premioTxt(r, depois));
     return {rua:r, nivel:depois, subiu:subiu};
   }
   function premioTxt(r, n){ return n === 1 ? t('p1') : n === 2 ? t('p2', {g:gestoNome(r)}) : t('p3', vr(r)); }
-  function gestosAprendidos(){ return ORDEM.filter(function(r){ return bico(r).nivel >= 2; }); }
+  function sabeGesto(r){ return BICOS ? bico(r).nivel >= 2 : bico(r).nivel >= 1; }   // sem bicos: 2 partidas na rua (nível 1 por baixo)
+  function gestosAprendidos(){ return ORDEM.filter(sabeGesto); }
 
   /* ---------- bagunça da semana ---------- */
   function bagunca(){
     ler(); var sem = domingo(hoje()), i = ((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6;
     var r = ORDEM[i], g = ORDEM[(i + 2) % 6], b = BAG[r], st = est.bag[sem] || {};
     return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok,
-      sabe:bico(g).nivel >= 2, domingo:hoje() === sem};
+      sabe:sabeGesto(g), domingo:hoje() === sem};
   }
   function resolver(){
     var b = bagunca(); if(b.ok || !b.sabe) return false;
@@ -231,11 +244,11 @@
     ler(); var out = [];
     if(id === 'idol:tsu'){
       var b = bagunca();
-      out.push(b.ok ? f(FALA.bagOk, {fim:b.fim}) : f(FALA.bag, {q:b.quem, f:b.fez, g:gestoNome(b.gesto)}) + (b.sabe ? '' : ' ' + t('aprenda', vr(b.gesto))));
+      out.push(b.ok ? f(FALA.bagOk, {fim:b.fim}) : f(FALA.bag, {q:b.quem, f:b.fez, g:gestoNome(b.gesto)}) + (b.sabe ? '' : ' ' + t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)}))));
     } else if(id === 'idol:lirika'){
       var u = est.ultimo;
-      if(u && RUAS[u.rua] && diasEntre(u.dia, hoje()) <= 3) out.push(f(FALA.subiu, {n:u.n, b:bicoNome(u.rua), p:premioTxt(u.rua, u.n)}));
-      else { var r = menorRua(); out.push(f(FALA.dica, vr(r, {j:jogosTxt(r)}))); }
+      if(BICOS && u && RUAS[u.rua] && diasEntre(u.dia, hoje()) <= 3) out.push(f(FALA.subiu, {n:u.n, b:bicoNome(u.rua), p:premioTxt(u.rua, u.n)}));
+      else { var r = menorRua(); out.push(f(BICOS ? FALA.dica : SEM_BICO.dica, vr(r, {j:jogosTxt(r)}))); }
     } else if(id === 'idol:pati'){
       var g = guia();
       out.push(g.ativo ? f(FALA.guia, {d:g.dia, r:g.hojeAbriu.map(ruaNome).join(' + ')}) : f(FALA.estrela, vr(menorRua(true))));
@@ -268,7 +281,7 @@
       '.twb-bag{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.twb-bag canvas{width:100%;height:auto;border-radius:14px;display:block}' +
       '.twb-bag p{margin:0;font-size:.92rem;line-height:1.35}.twb-bag .twb-ok{font-weight:800;color:#2fb36b}' +
       '.twb-bt{border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:800;background:linear-gradient(135deg,#9b30d9,#ff4fa3);color:#fff;cursor:pointer;justify-self:start}' +
-      '.twb-bt[disabled]{opacity:.45;cursor:default}.twb-bt-claro{background:#fff;color:#7a2bbf;border:1.5px solid rgba(155,48,217,.3)}' +
+      '.twb-bt[disabled]{opacity:.45;cursor:default}.twb-bt.twb-bt-falta{opacity:1;background:#f1ebff;color:#6b3fc4;border:1.5px dashed rgba(123,63,240,.45);box-shadow:none}' + '.twb-bt-claro{background:#fff;color:#7a2bbf;border:1.5px solid rgba(155,48,217,.3)}' +
       '.twb-ruas{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}' +
       '.twb-rua{border-radius:16px;padding:10px 12px;background:#fff;border:1.5px solid var(--twb-c);position:relative}' +
       'html.dark .twb-rua,body.dark .twb-rua{background:rgba(255,255,255,.06)}' +
@@ -331,25 +344,27 @@
     ov.querySelector('#twBairroTit').textContent = t('tit');
     ov.querySelector('#twBairroSub').textContent = t('sub');
     var g = guia(), b = bagunca(), h = '';
-    if(g.ativo) h += '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
+    var guiaH = '';   // 17/11: a bagunça (a cena) vem primeiro; o guia dos primeiros dias depois
+    if(g.ativo) guiaH = '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
       esc(t('guiaTxt', {r:(g.amanha.length ? g.amanha.map(ruaNome).join(' + ') : '—')})) + '</p><button type="button" class="twb-bt twb-bt-claro" data-twb="pular">' + esc(t('pular')) + '</button></section>';
     h += '<section class="twb-box twb-bag"><h3>' + esc(t('bagTit')) + ' · ' + esc(ruaNome(b.rua)) + '</h3>' +
       '<canvas id="twBairroCv" width="480" height="200" aria-hidden="true"></canvas>' +
       '<p><b>' + esc(b.quem) + '</b> ' + esc(b.fez) + '.</p>' +
       (b.ok ? '<p class="twb-ok">✓ ' + esc(t('resolvida')) + '</p><p>' + esc(b.fim) + '</p>' :
-        '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto)))) + '</p>' +
-        '<button type="button" class="twb-bt" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(RUAS[b.gesto].gesto.emoji + ' ' + t('fazer')) + '</button>') +
-      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>';
+        '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)})))) + '</p>' +
+        '<button type="button" class="twb-bt' + (b.sabe ? '' : ' twb-bt-falta') + '" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(b.sabe ? RUAS[b.gesto].gesto.emoji + ' ' + t('fazer') : '🔒 ' + t('faltaAprender')) + '</button>') +
+      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>' + guiaH;
     var ap = gestosAprendidos();
     h += '<section class="twb-box"><h3>' + esc(t('gestos')) + '</h3>' + (ap.length ? '<div class="twb-gestos">' + ap.map(function(r){
       return '<span>' + esc(RUAS[r].gesto.emoji + ' ' + gestoNome(r)) + '</span>'; }).join('') + '</div>' : '<p class="twb-regra" style="text-align:left;margin:0">' + esc(t('semGesto')) + '</p>') + '</section>';
     h += '<section class="twb-box"><h3>' + esc(t('ruas')) + '</h3><div class="twb-ruas">' + ORDEM.map(function(r){
       var k = bico(r), aberta = !g.ativo || g.abertas.indexOf(r) >= 0, pc = k.nivel >= 3 ? 100 : Math.round((k.pts - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) / (k.prox - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) * 100);
       return '<article class="twb-rua' + (aberta ? '' : ' twb-off') + '" style="--twb-c:' + RUAS[r].cor + '"><b>' + esc(RUAS[r].emoji + ' ' + ruaNome(r)) + (aberta ? '' : ' · ' + esc(t('emBreve'))) + '</b>' +
-        '<small>' + esc(bicoNome(r)) + ' · ' + esc(k.nivel ? t('nivel', {n:k.nivel}) : t('novato')) + '</small>' +
+        (BICOS ? '<small>' + esc(bicoNome(r)) + ' · ' + esc(k.nivel ? t('nivel', {n:k.nivel}) : t('novato')) + '</small>' +
         '<div class="twb-niv" aria-hidden="true">' + [1, 2, 3].map(function(n){ return '<i class="' + (k.nivel >= n ? 'on' : '') + '"></i>'; }).join('') + '</div>' +
         '<div class="twb-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc + '"><i style="width:' + pc + '%"></i></div>' +
-        '<small>' + esc(k.nivel >= 3 ? t('max') : k.hoje >= POR_DIA ? t('hojeCheio') : t('falta', {f:k.falta, n:k.nivel + 1})) + '</small>' +
+        '<small>' + esc(k.nivel >= 3 ? t('max') : k.hoje >= POR_DIA ? t('hojeCheio') : t('falta', {f:k.falta, n:k.nivel + 1})) + '</small>' : 
+        '<small>' + esc(RUAS[r].gesto.emoji + ' ' + gestoNome(r)) + (sabeGesto(r) ? ' ✓' : '') + '</small>' + (sabeGesto(r) ? '' : '<small>' + esc(t('jogue', {j:jogosTxt(r)})) + '</small>')) +
         '<div class="twb-pr">' + [1, 2, 3].map(function(n){ return '<span class="' + (k.nivel >= n ? 'on' : '') + '">' + esc(premioTxt(r, n)) + '</span>'; }).join('') + '</div>' +
         '<small>' + esc(t('conta', {j:jogosTxt(r)})) + '</small>' + (k.nivel < 3 ? botaoJogo(r) : '') + '</article>';
     }).join('') + '</div><p class="twb-regra">' + esc(t('regra')) + '</p></section>';
@@ -357,33 +372,56 @@
     desenharCena(b);
   }
   // cena da bagunça: o seu Idol (com o gesto, se já resolveu) e o bichinho, sobre a cor da rua
-  function desenharCena(b){
+  function desenharCena(b, t){
     var cv = ov && ov.querySelector('#twBairroCv'); if(!cv) return;
-    if(typeof window.twNitido === 'function') window.twNitido(cv);
-    var x = cv.getContext('2d'), W = cv.width, H = cv.height, c = RUAS[b.rua].cor;
-    var gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#fff6fd'); gr.addColorStop(1, c + '55');
-    x.fillStyle = gr; x.fillRect(0, 0, W, H);
-    x.fillStyle = c + '33'; x.fillRect(0, H - 34, W, 34);
-    for(var i = 0; i < 14; i++){ x.fillStyle = 'rgba(255,255,255,.7)'; x.beginPath(); x.arc((i * 73 + 20) % W, 18 + (i * 37) % 90, 2 + i % 3, 0, 7); x.fill(); }
+    if(typeof window.twNitido === 'function' && !cv.__twN) window.twNitido(cv);
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height, c = RUAS[b.rua].cor, ok = b.ok, Bi = window.TW_BICHOS;
+    t = t || 0;
+    // cenário da rua (tw-bichos.js): antes a bagunça, depois tudo arrumado; sem o arquivo, o fundo simples de antes
+    if(!(Bi && Bi.cena(x, b.rua, W, H, ok, t))){
+      var gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#fff6fd'); gr.addColorStop(1, c + '55');
+      x.fillStyle = gr; x.fillRect(0, 0, W, H); x.fillStyle = c + '33'; x.fillRect(0, H - 34, W, 34);
+    }
     try{
       if(typeof perfDesenharIdol === 'function'){
         var av = typeof hubAv === 'function' ? hubAv() : (typeof perfAvAtual === 'function' ? perfAvAtual({}) : null);
         if(av){
           av.pet = null; av.fundo = '';
-          var gs = RUAS[b.gesto].gesto; av.pose = b.ok ? gs.pose : ''; av.expr = b.ok ? gs.expr : 0;
-          x.save(); x.translate(-W * .2, 0); perfDesenharIdol(x, W, H, av, false, 0, 0); x.restore();
+          var gs = RUAS[b.gesto].gesto; av.pose = ok ? gs.pose : ''; av.expr = ok ? gs.expr : 0;
+          x.save(); x.translate(-W * .22, 0); perfDesenharIdol(x, W, H, av, false, 0, 0); x.restore();
         }
       }
     }catch(e){}
-    var bx = W * .72, by = H * .62, ok = b.ok;
-    if(b.bicho === 'nuvem') nuvem(x, bx, by - 20, ok);
-    else if(typeof window.twMapaBicho === 'function') window.twMapaBicho(b.bicho, x, bx, by + (b.bicho === 'gato' ? 30 : 0), b.bicho === 'gato' ? 1.6 : 1.5, 0);
-    else if(typeof window.twMapaCarregar === 'function' && !desenharCena.pediu){   // o mapa baixa depois da abertura
-      desenharCena.pediu = true; try{ window.twMapaCarregar(); }catch(e){}
-      setTimeout(function(){ if(ov && !ov.hidden) desenharCena(bagunca()); }, 1500);
+    // o bicho: no mesmo traço dos personagens (tw-bichos.js); a borboleta voa perto da tulipa, a nuvem fica no céu
+    var ES = 2.75, bx = W * .63, chao = H - 16, bicho = b.bicho;
+    if(bicho === 'passaro') bx = W * .55;   // ao lado da fonte, não na frente
+    if(bicho === 'borboleta'){ bx = ok ? W * .66 : W * .76; chao = H - 40; }
+    if(bicho === 'nuvem'){ bx = ok ? W * .88 : W * .74; chao = ok ? H * .62 : H * .78; }
+    var feito = Bi && Bi.desenhar(x, bicho, bx, chao, ES, ok ? 'feliz' : 'travesso', t);
+    if(!feito){
+      if(bicho === 'nuvem') nuvem(x, bx, chao - 40, ok);
+      else if(typeof window.twMapaBicho === 'function') window.twMapaBicho(bicho, x, bx, chao, 1.5, 0);
     }
-    if(ok) coracao(x, W * .84, H * .24, 14, '#ff4fa3');
-    else { x.save(); x.font = 'bold 30px system-ui, sans-serif'; x.textAlign = 'center'; x.fillStyle = c; x.fillText('?!', W * .87, H * .3); x.restore(); }
+    // balãozinho: "!" na cor da rua antes, coração depois
+    var topo = chao - 44 * ES + (bicho === 'nuvem' ? 34 : bicho === 'borboleta' ? 20 : 40), bb = bx + 30;
+    if(ok) coracao(x, bb + 4, topo - 6 + Math.sin(t * .15) * 2, 11, '#ff4fa3');
+    else { x.save(); x.fillStyle = '#fff'; x.strokeStyle = c; x.lineWidth = 2.5; x.beginPath(); if(x.roundRect) x.roundRect(bb - 12, topo - 26, 26, 22, 10); else x.rect(bb - 12, topo - 26, 26, 22); x.fill(); x.stroke();
+      x.beginPath(); x.moveTo(bb - 4, topo - 4.5); x.lineTo(bb - 9, topo + 4); x.lineTo(bb + 3, topo - 4.5); x.fill(); x.fillStyle = c; x.font = '900 17px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('!', bb + 1, topo - 14.5); x.restore(); }
+    cenaAnimar();
+  }
+  // movimento leve (asas, pulinho, gotas) enquanto o painel está aberto; parado com "reduzir movimento"
+  var cenaRaf = 0, cenaT = 0;
+  function cenaAnimar(){
+    if(cenaRaf || desenharCena.rodando || !window.TW_BICHOS || typeof requestAnimationFrame !== 'function') return;
+    try{ if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+    var ultimo = 0;
+    function passo(agora){
+      cenaRaf = 0;
+      if(!ov || ov.hidden || !ov.querySelector('#twBairroCv')) return;
+      if(agora - ultimo >= 50){ ultimo = agora; cenaT += 1.5; desenharCena.rodando = true; try{ desenharCena(bagunca(), cenaT); }catch(e){} desenharCena.rodando = false; }
+      cenaRaf = requestAnimationFrame(passo);
+    }
+    cenaRaf = requestAnimationFrame(passo);
   }
   function coracao(x, cx, cy, r, cor){
     x.save(); x.fillStyle = cor; x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath();
@@ -444,7 +482,7 @@
   function resumo(){
     var b = bagunca(), r = menorRua(true), k = bico(r);
     return {ok:b.ok, tit:t('bagTit') + ' · ' + ruaNome(b.rua), sub:b.ok ? t('resolvida') : b.quem + ' ' + b.fez,
-      bico:t('hjBico', {b:bicoNome(r), s:k.nivel >= 3 ? t('max') : t('falta', {f:k.falta, n:k.nivel + 1})}), bt:t('ver')};
+      bico:BICOS ? t('hjBico', {b:bicoNome(r), s:k.nivel >= 3 ? t('max') : t('falta', {f:k.falta, n:k.nivel + 1})}) : '', bt:t('ver')};
   }
 
   // conta junto com o Humor (só jogos confirmados ou treino de visitante; "fraco" não conta)

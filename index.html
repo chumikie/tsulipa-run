@@ -19,11 +19,11 @@
 <!-- Mesmo com JS/CSS anterior em cache, nunca mostrar a espera decorativa. -->
 <style id="twSemEsperaDecorativa">.twc-carrega{display:none!important;pointer-events:none}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-nitidez.js?v=6"></script>
+<script src="./tw-nitidez.js?v=8"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script>
-<script src="./tw-lado.js?v=2"></script>
+<script src="./tw-lado.js?v=3"></script>
 <script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
@@ -55,7 +55,7 @@
 .conta-perfil{display:inline-flex;align-items:center;gap:6px;border:0;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;border-radius:99px;padding:3px 12px 3px 3px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(123,63,240,.35)}
 .conta-perfil canvas{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px #fff}
 </style>
-<link rel="stylesheet" href="./admin.css?v=1">
+<link rel="stylesheet" href="./admin.css?v=2">
 <style>
 .perfapagar{margin:16px 0 4px;padding:10px 12px;border-radius:14px;border:2px dashed rgba(255,79,154,.45);background:rgba(255,79,154,.06);text-align:left}
 .perfapagar summary{cursor:pointer;font-weight:800;color:#d6336c;text-align:center}
@@ -171,7 +171,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
 <link rel="stylesheet" href="./hub-polish.css?v=41">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
-<link rel="stylesheet" href="./tw-tema-cards.css?v=1">
+<link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=4"><'+'/script>');</script>
 </head>
 <body>
@@ -406,7 +406,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=28"></script>
+<script src="./centerrun.js?v=31"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=35"></script>
 <script src="./perfil.js?v=26"></script>
@@ -453,7 +453,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./mapa-textos.js?v=3"></script>
 <script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
    (twMapaVisitaAgora, twMapaCena, TW_MAPA_HORA…) já confere se ele existe; o painel aparece assim que ele chega. */
-(function(){function c(){if(window.TW_MAPA_PEDIDO)return;window.TW_MAPA_PEDIDO=1;var s=document.createElement('script');s.src='./tw-mapa.js?v=62';document.body.appendChild(s);}
+(function(){function c(){if(window.TW_MAPA_PEDIDO)return;window.TW_MAPA_PEDIDO=1;var s=document.createElement('script');s.src='./tw-mapa.js?v=64';document.body.appendChild(s);}
 window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else window.addEventListener('load',function(){(window.requestIdleCallback||setTimeout)(c,{timeout:1200});});})();</script>
 <script src="./bloom.js?v=9"></script>
 <script src="./shop.js?v=7"></script>
@@ -482,7 +482,7 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
 <script src="./charmaker.js?v=15"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=5"></script>
-<script src="./admin.js?v=1"></script>
+<script src="./admin.js?v=3"></script>
 <script src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
@@ -492,13 +492,14 @@ window.twMapaCarregar=c;if(document.readyState==='complete')setTimeout(c,0);else
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=33"><script src="./tw-humor.js?v=8"><'+'/script><script src="./tw-bairro.js?v=1"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=45"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=36"><script src="./tw-humor.js?v=8"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=4"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=48"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=33';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=36';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=8';hm.async=false;document.body.appendChild(hm);
-  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=1';vb.async=false;document.body.appendChild(vb);
+  var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=4';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=45';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=48';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;

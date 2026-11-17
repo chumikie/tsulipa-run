@@ -139,7 +139,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 </style>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=9"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=9">
-<link rel="stylesheet" href="./karaoke-photo.css?v=3">
+<link rel="stylesheet" href="./karaoke-photo.css?v=3"><link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
@@ -3242,11 +3242,12 @@ if(ktNoSite()){
  background:rgba(90,65,145,.22);order:3;
 }
 .kt-room-closed #ktAvailability{visibility:hidden}
+#ktTimingFeedback:empty{visibility:hidden}   /* o "Perfeito/Bom" do ritmo: sem caixinha tracejada vazia fora do show */
 @media(prefers-reduced-motion:reduce){#krPalco #ktAvailability{transition:none}}
 </style><script id="ktStarsBanner">
 (function(){
  var banner=document.getElementById('ktAvailability'),room=document.getElementById('krPalco');
- var mobile=window.matchMedia('(max-width:620px)'),timer;
+ var mobile=window.matchMedia('(max-width:620px), (pointer:coarse) and (max-width:1366px)'),timer;   // 17/11: tablet com toque também (o cartão por cima do palco tapava os personagens)
  function wake(){
   clearTimeout(timer);banner.classList.remove('kt-banner-faded');
   timer=setTimeout(function(){banner.classList.add('kt-banner-faded');},4500);

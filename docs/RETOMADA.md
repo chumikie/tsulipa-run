@@ -1,3 +1,13 @@
+## Rodada 17/11/2026 — visual novo também no computador e no tablet
+
+**Entrou** (branch `feat/visual-novo-computador`, PR draft)
+- **Padrão em todos os aparelhos** (pedido do dono): sem escolha guardada, o visual novo abre em telefone, tablet e computador (`on=pref!=='0'` no `index.html`). Quem tocou em Ajustes → "Voltar ao visual clássico" (`brs48cr_celular='0'`) continua no clássico; `?celular=0|1` segue valendo.
+- **Faixa de título quebrada em telas largas:** o recuo esquerdo (que alinha o título à coluna de 980 px) crescia com a janela, mas a faixa ficava presa em 560 px; em 1920 px o título virava uma coluna de ~70 px colada na esquerda (print do dono, tela do Mapa). Agora a largura soma o recuo: `min(calc(560px + max(0px,(100% - 980px)/2)),86%)`. Celular igual a antes.
+- Versões: `tw-celular.css?v=33`, `tw-celular.js?v=44`. Teste novo em `celular-previa.test.js` para a largura da faixa.
+- **Conferido no Chrome sem tela** (sem `?celular=1`, com `?demo=1`): 1920×1080, 2560×1440, 1366×768, tablet 1024×768 e iPhone 13; Início, Menu, Jogos, Calendário, Mapa, Missões e Perfil, sem erro de script; escolha do clássico respeitada ao recarregar.
+
+**Falta:** conferir em computador real (Windows/Chrome) e no iPad; merge do dono.
+
 ## Rodada 16/11/2026 (tarde) — PR #98, versão v3.0
 
 **Entrou**

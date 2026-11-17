@@ -1,7 +1,7 @@
 /* TsuLiPa⭐World · visual de celular — o visual oficial da v3 nos telefones (prévia em 15/11, oficial em 17/11/2026).
    Ideia do amigo + esqueleto do Link! Like!: a tela de início vira um celular de Idol — barra de cima
    (você e as estrelas), barra de baixo (Voltar · Menu · Início), widgets do dia e um app por jogo.
-   Liga sozinho em telefone; no computador, pela chave brs48cr_celular ou ?celular=1. Não cria regra nova:
+   Liga sozinho em qualquer aparelho (desde 17/11/2026), a não ser que a chave brs48cr_celular seja "0" (?celular=0). Não cria regra nova:
    cada ícone chama o mesmo card do hub antigo, que continua montado por baixo (login, cadeados,
    sons e prêmios seguem iguais). Ajustes → "Voltar ao visual clássico" volta ao antigo. */
 (function(){

@@ -16,14 +16,14 @@ function carregar(){
   return sandbox.TW_CELULAR;
 }
 
-test('padrão nos telefones: o index liga sozinho em telefone, respeita a escolha guardada e ?celular=0|1', () => {
+test('padrão em todos os aparelhos: o index liga sozinho, respeita a escolha guardada e ?celular=0|1', () => {
   const i = html.indexOf("var k='brs48cr_celular'");
   assert.ok(i > 0, 'loader da prévia no index');
   const bloco = html.slice(i, html.indexOf('</script>', i));
   assert.match(bloco, /get\('celular'\)/);
   assert.match(bloco, /q==='0'\)localStorage\.setItem\(k,'0'\)/, '?celular=0 guarda o clássico');
-  assert.match(bloco, /fone=matchMedia\('\(pointer:coarse\)'\)\.matches&&Math\.min\(screen\.width,screen\.height\)<=600/, 'telefone = toque + tela pequena');
-  assert.match(bloco, /on=pref==='1'\|\|\(pref!=='0'&&fone\)/, 'escolha guardada vence; sem escolha, telefone liga');
+  assert.match(bloco, /on=pref!=='0';/, 'só a escolha guardada do clássico (0) desliga; sem escolha, liga em qualquer aparelho');
+  assert.doesNotMatch(bloco, /pointer:coarse/, 'computador e tablet não ficam mais de fora');
   assert.match(js, /function desligar\(\)\{\n    try\{ localStorage\.setItem\(CHAVE, '0'\); \}/, 'Visual clássico fica guardado');
   assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-lado\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
@@ -224,4 +224,12 @@ test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times
   assert.match(hm, /var DESCOBERTA = \{battle:1, studio:1, bloom:1\};/, 'desejo puxa os jogos menos jogados');
   const sql = ler('supabase/migrations/20261116200000_missoes_descoberta.sql');
   assert.match(sql, /fam in \('jardim', 'battle'\)/); assert.match(sql, /k = 'foto'/); assert.match(sql, /date '2026-11-17'/);
+});
+
+test('faixa de título acompanha a coluna em telas largas (computador)', () => {
+  const regra = css.match(/\.twc-faixa\{[^}]*\}/)[0];
+  // O recuo esquerdo alinha o título à coluna de 980 px; a largura precisa somar esse recuo,
+  // senão em 1920 px o título vira uma coluna de ~70 px colada na esquerda (relato de 17/11/2026).
+  assert.match(regra, /padding:10px 16px 10px max\(20px,calc\(\(100% - 980px\)\/2 \+ 20px\)\)/);
+  assert.match(regra, /width:min\(calc\(560px \+ max\(0px,\(100% - 980px\)\/2\)\),86%\)/);
 });

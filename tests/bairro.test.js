@@ -146,3 +146,31 @@ test('bicos desligados (17/11): nada de bico na tela, no resumo do Início nem n
   assert.match(src, /var BICOS = false;/);
   assert.match(src, /if\(subiu && BICOS\) toast/);
 });
+
+test('tela do bairro em tw-bairro-tela.js: baixa só quando precisa; núcleo conta desde a abertura (17/11)', () => {
+  const { B, sb, humor } = carregar({ conta:'Sami', best:500 });
+  const scripts = [];
+  sb.document.createElement = tag => { const e = { tag, appendChild(){}, addEventListener(){}, setAttribute(){}, classList:{ toggle(){} }, style:{}, remove(){} }; return e; };
+  sb.document.head.appendChild = e => { scripts.push(e.src); };
+  humor('cafe');
+  assert.equal(B.bico('harajuku').pts, 1, 'conta sem a tela carregada');
+  assert.equal(scripts.length, 0, 'abrir o site não baixa a tela');
+  assert.equal(B.guiaPergunta('palco', () => {}), false, 'rua aberta: não pergunta (resposta na hora, como antes)');
+  assert.equal(scripts.length, 0);
+  const aberta = B.guia().abertas, fechada = B.ORDEM.find(r => aberta.indexOf(r) < 0);
+  if(fechada){ assert.equal(B.guiaPergunta(fechada, () => {}), true, 'rua apagada: pergunta (e baixa a tela)'); assert.equal(scripts.length, 1); }
+  B.abrir(); B.abrir();
+  assert(scripts.length <= 1 && /tw-bairro-tela\.js\?v=\d+/.test(scripts[0] || (B.preparar(), scripts[0])), 'um pedido só do arquivo da tela');
+  // a tela se apresenta e os pedidos que esperavam rodam
+  const feito = [];
+  B._tela({ abrir:() => feito.push('abrir'), fechar(){}, toast:m => feito.push('toast'), guiaPergunta:() => feito.push('perg'), guiaMarcar:() => feito.push('marcar') });
+  assert(feito.filter(x => x === 'abrir').length === 2, 'os dois toques em abrir rodam quando a tela chega');
+  B.guiaMarcar(); assert.equal(feito[feito.length - 1], 'marcar', 'com a tela pronta, chama direto');
+  { const v = carregar({ conta:'Sami', best:500 }), pedidos = [];
+    v.sb.document.head.appendChild = e => pedidos.push(e.src);
+    if(!v.B.guia().ativo){ v.B.guiaMarcar(); assert.equal(pedidos.length, 0, 'conta fora dos dias guiados: o Mapa montando não baixa a tela'); } }
+  // o arquivo da tela lê só o que o núcleo entrega
+  const TELA = fs.readFileSync('tw-bairro-tela.js', 'utf8');
+  assert(TELA.includes('B._tela({abrir:abrir, fechar:fechar, toast:toast, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar});') && !SRC.includes('function desenharCena(') && TELA.includes('function desenharCena('), 'tela num lugar só');
+  for(const k of ['resolver','pularGuia','ler','bico','bagunca','guia','ruaAberta','t','esc']) assert.equal(typeof B._k[k], 'function', '_k.' + k);
+});

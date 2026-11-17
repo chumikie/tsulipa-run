@@ -325,16 +325,24 @@ function perfEnfeites(x, W2, H2, cores, n, seed, t, alfa){   // ✦ e ♡ espalh
   }
   x.restore();
 }
+// tema escuro do site (botão de tema ou o do aparelho): usado pelos fundos desenhados que seguem o tema
+function perfTemaEscuro(){
+  try{ var th = document.documentElement.getAttribute('data-theme'); if(th) return th === 'dark';
+    return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; }
+}
 function perfFundo(x, W2, H2, f, cor, t){
   if(!f) return;
   if(f==='cafe'){ duoFundoDesenhar(x,W2,H2,'cafe',t||0,cor); return; } // reutiliza a arte do Moon⭐Duo!
   var u = W2 / 320, gr, i;
   t = t || 0;
   if(f === 'basico'){   // pastel nas cores do TsuLiPa (roxo → verde → azul), com bolinhas
-    perfFundoGradiente(x, W2, H2, 'perfil:basico', false, [[0, '#f1e3ff'], [.5, '#e9fbe0'], [1, '#e1ecff']]);
+    // 17/11: no modo escuro o fundo básico segue o tema (noite nas mesmas cores), em vez do pastel claro fixo
+    var escuroB = perfTemaEscuro();
+    if(escuroB) perfFundoGradiente(x, W2, H2, 'perfil:basico-escuro', false, [[0, '#2c1656'], [.5, '#1c3030'], [1, '#1a2556']]);
+    else perfFundoGradiente(x, W2, H2, 'perfil:basico', false, [[0, '#f1e3ff'], [.5, '#e9fbe0'], [1, '#e1ecff']]);
     for(i = 0; i < 42; i++){
       var col = i % 7, lin = Math.floor(i / 7);
-      x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], .16);
+      x.fillStyle = perfRgba(PERF_TSL[(col + lin) % 3], escuroB ? .28 : .16);
       x.beginPath(); x.arc(col * W2 / 7 + (lin % 2) * W2 / 14 + W2 / 28, lin * H2 / 6 + H2 / 12, 6 * u, 0, 7); x.fill();
     }
     perfEnfeites(x, W2, H2, PERF_TSL.concat('#ff6fb5'), 7, 2, t, .5);

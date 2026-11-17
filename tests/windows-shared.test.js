@@ -19,7 +19,8 @@ console.log('Shared windows: loading, legacy cleanup, palette, host/iframe type 
 const karaoke=read('karaoke-time.html'),karaokePopup=read('karaoke-popup.css');
 assert(karaokePopup.includes('.tw-preview-game[data-karaoke-tela]{background:transparent!important;background-image:none!important}'),'Karaoke screen inherits the external page background');
 assert(karaoke.includes('html.tw-karaoke-embed.kt-no-site body.tw-game-karaoke{background:transparent!important}'),'Embedded body must not paint a second background');
-assert(karaoke.includes('for(var i=0;i<3;i++){var row=rows[i]||null')&&karaoke.includes("tr('Em breve')"),'Weekly scoreboard must keep three numbered positions and coming-soon placeholders');
+// 17/11/2026: o placar saiu da parede da sala (karaokê box: cardápio de músicas no lugar); o ranking da semana fica logo abaixo
+assert(!karaoke.includes('function ktPlacar(')&&karaoke.includes('krDesenharCardapioMusicas(x,t)')&&karaoke.includes('id="ktWeeklyRanks"'),'Wall scoreboard replaced by the song menu; weekly ranking stays below the room');
 assert(karaoke.includes('function ktMonitorSomViva')&&karaoke.includes("caixaToque('left')")&&karaoke.includes("caixaToque('right')"),'Both small monitors have their own speaker interaction');
 assert(karaoke.includes("ktCaixaPulso.alvo=alvo||'grande'")&&karaoke.includes('py>=350&&py<=464'),'Large speaker hit-zone excludes the plant above it');
 assert(!karaoke.slice(karaoke.indexOf('function ktCaixaSomViva'),karaoke.indexOf('function ktEstrelinha')).includes('x.scale(sc,sc)'),'Large speaker cabinet is not scaled away from the plant');

@@ -155,6 +155,8 @@ function contaRecuperarCorridas(preferida){
       throw Error(r&&r.erro||'corrida_nao_confirmada');
     }
     contaCorridaRetirar(p);definitiva=true;
+    // 17/11: onde se perdeu (tipo do obstáculo, no ar/no chão, velocidade, meta) — só depois da corrida confirmada
+    try{if(typeof window!=='undefined'&&window.crTelemetria){var tl=window.crTelemetria;window.crTelemetria=null;var tp=contaRpc('corrida_telemetria',{p_run:p.id,p_causa:tl.causa,p_meta:tl.meta});if(tp&&tp.catch)tp.catch(function(){});}}catch(e){}
     if(typeof r.stars==='number'){starT=r.stars;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
     if(typeof r.best==='number'&&r.best>best){best=r.best;try{localStorage.setItem('brs48cr_best',best);}catch(e){}setBest();}
     atualizar(r.limite_diario===true?

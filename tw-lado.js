@@ -43,12 +43,14 @@
     if(corre){ var pf = passo * 2.6, pfy = Math.max(0, passo) * 1.4; g.fillStyle = perna; g.fillRect(x + 10.6 + pf, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pfy, 4.8, 4); tenis(x + 9.8 + pf, y + 41.8 - pfy, false); }
     else { g.fillStyle = perna; g.fillRect(x + 10.6, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pe, 4.8, 4 + pe); tenis(x + 9.8, y + 41.8, false); }
     // camisa: larga como a da frente, branca com sombra embaixo e nas costas; gola e gravata na beirada da frente
-    var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, '#ffffff'); cam.addColorStop(1, '#e3e7f3');
+    // 17/11: o "Você" no Center⭐Run usa a cor da roupa do avatar (sem gravata quando não é o uniforme)
+    var corCam = (c.out && /^#[0-9a-f]{6}$/i.test(c.outcol || '')) ? c.outcol : '#ffffff';
+    var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, corCam); cam.addColorStop(1, corCam === '#ffffff' ? '#e3e7f3' : escuro(corCam, 34));
     g.fillStyle = cam; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.quadraticCurveTo(x + 9.4, y + 21, x + 11.6, y + 21); g.lineTo(x + 19.8, y + 21); g.quadraticCurveTo(x + 22.2, y + 21, x + 22.4, y + 24);
     g.lineTo(x + 23.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();
     g.fillStyle = 'rgba(120,130,170,.18)'; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.lineTo(x + 11.6, y + 23); g.lineTo(x + 10.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();   // costas na sombra
-    g.fillStyle = '#1b2a5e'; T([x + 20.8, y + 24, x + 22.4, y + 24, x + 22.9, y + 30.4, x + 21.7, y + 31.8, x + 20.6, y + 30.4]);
-    g.fillStyle = '#14204a'; T([x + 20.2, y + 21.6, x + 22.6, y + 21.6, x + 22.5, y + 24.2, x + 20.5, y + 24.2]);
+    if(!c.out){ g.fillStyle = '#1b2a5e'; T([x + 20.8, y + 24, x + 22.4, y + 24, x + 22.9, y + 30.4, x + 21.7, y + 31.8, x + 20.6, y + 30.4]);
+    g.fillStyle = '#14204a'; T([x + 20.2, y + 21.6, x + 22.6, y + 21.6, x + 22.5, y + 24.2, x + 20.5, y + 24.2]); }
     // ombro arredondado (a mesma faixa de manga da frente, vista de lado) e o braço descendo
     var mg = g.createLinearGradient(0, y + 21, 0, y + 27); mg.addColorStop(0, '#ffffff'); mg.addColorStop(1, '#e8ebf5'); g.fillStyle = mg;
     g.beginPath(); g.ellipse(x + 15.2, y + 24.2, 4.1, 3.3, 0, 0, 7); g.fill();

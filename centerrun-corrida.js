@@ -33,12 +33,21 @@ function getPartner(currentSel) {
 }
 // Textos das metas e do fim (17/11), com tradução própria aqui (as tabelas do tw-i18n têm contagem fixa)
 var CR_TXT={
- en:{'Meta cumprida!':'Goal complete!','Pegue {n} estrelas':'Grab {n} stars','Passe de {n} pontos':'Pass {n} points','Pule {n} obstáculos':'Jump {n} obstacles','Pegue uma carta':'Grab a card','Meta':'Goal','Estrelas':'Stars','Faltam {n} pontos para {r}':'{n} points to {r}'},
- es:{'Meta cumprida!':'¡Meta cumplida!','Pegue {n} estrelas':'Atrapa {n} estrellas','Passe de {n} pontos':'Supera {n} puntos','Pule {n} obstáculos':'Salta {n} obstáculos','Pegue uma carta':'Atrapa una carta','Meta':'Meta','Estrelas':'Estrellas','Faltam {n} pontos para {r}':'Faltan {n} puntos para {r}'},
- id:{'Meta cumprida!':'Target selesai!','Pegue {n} estrelas':'Ambil {n} bintang','Passe de {n} pontos':'Lewati {n} poin','Pule {n} obstáculos':'Lompati {n} rintangan','Pegue uma carta':'Ambil satu kartu','Meta':'Target','Estrelas':'Bintang','Faltam {n} pontos para {r}':'{n} poin lagi menuju {r}'},
- th:{'Meta cumprida!':'ทำเป้าหมายสำเร็จ!','Pegue {n} estrelas':'เก็บดาว {n} ดวง','Passe de {n} pontos':'ทำคะแนนเกิน {n}','Pule {n} obstáculos':'กระโดดข้ามสิ่งกีดขวาง {n} ครั้ง','Pegue uma carta':'เก็บการ์ด 1 ใบ','Meta':'เป้าหมาย','Estrelas':'ดาว','Faltam {n} pontos para {r}':'อีก {n} คะแนนถึง {r}'},
- ja:{'Meta cumprida!':'目標クリア！','Pegue {n} estrelas':'スターを{n}個とろう','Passe de {n} pontos':'{n}点をこえよう','Pule {n} obstáculos':'障害物を{n}回とびこえよう','Pegue uma carta':'カードを1枚とろう','Meta':'目標','Estrelas':'スター','Faltam {n} pontos para {r}':'{r}まであと{n}点'}};
+ en:{'Meta cumprida!':'Goal complete!','Pegue {n} estrelas':'Grab {n} stars','Passe de {n} pontos':'Pass {n} points','Pule {n} obstáculos':'Jump {n} obstacles','Pegue uma carta':'Grab a card','Meta':'Goal','Estrelas':'Stars','Faltam {n} pontos para {r}':'{n} points to {r}','{n} dias seguidos':'{n} days in a row'},
+ es:{'Meta cumprida!':'¡Meta cumplida!','Pegue {n} estrelas':'Atrapa {n} estrellas','Passe de {n} pontos':'Supera {n} puntos','Pule {n} obstáculos':'Salta {n} obstáculos','Pegue uma carta':'Atrapa una carta','Meta':'Meta','Estrelas':'Estrellas','Faltam {n} pontos para {r}':'Faltan {n} puntos para {r}','{n} dias seguidos':'{n} días seguidos'},
+ id:{'Meta cumprida!':'Target selesai!','Pegue {n} estrelas':'Ambil {n} bintang','Passe de {n} pontos':'Lewati {n} poin','Pule {n} obstáculos':'Lompati {n} rintangan','Pegue uma carta':'Ambil satu kartu','Meta':'Target','Estrelas':'Bintang','Faltam {n} pontos para {r}':'{n} poin lagi menuju {r}','{n} dias seguidos':'{n} hari berturut-turut'},
+ th:{'Meta cumprida!':'ทำเป้าหมายสำเร็จ!','Pegue {n} estrelas':'เก็บดาว {n} ดวง','Passe de {n} pontos':'ทำคะแนนเกิน {n}','Pule {n} obstáculos':'กระโดดข้ามสิ่งกีดขวาง {n} ครั้ง','Pegue uma carta':'เก็บการ์ด 1 ใบ','Meta':'เป้าหมาย','Estrelas':'ดาว','Faltam {n} pontos para {r}':'อีก {n} คะแนนถึง {r}','{n} dias seguidos':'ติดต่อกัน {n} วัน'},
+ ja:{'Meta cumprida!':'目標クリア！','Pegue {n} estrelas':'スターを{n}個とろう','Passe de {n} pontos':'{n}点をこえよう','Pule {n} obstáculos':'障害物を{n}回とびこえよう','Pegue uma carta':'カードを1枚とろう','Meta':'目標','Estrelas':'スター','Faltam {n} pontos para {r}':'{r}まであと{n}点','{n} dias seguidos':'{n}日連続'}};
 function crTr(k){ var l = typeof LANG !== 'undefined' ? LANG : 'pt', d = CR_TXT[l]; return (d && d[k]) || tr(k); }
+// ---------- Onde se perde (17/11): tipo do obstáculo, se estava no ar, velocidade e se era padrão montado ----------
+// Vai para runs.causa/meta pela corrida_telemetria, só depois que o servidor confirma a corrida (conta.js).
+function crTelemetriaAnotar(o){
+  try{
+    var vel = typeof sp === 'number' ? Math.round(sp) : 0;
+    window.crTelemetria = {causa:(o && o.k || 'x') + ':' + (P.air ? 'ar' : 'chao') + ':v' + vel + (o && o.padrao ? ':pad' : ''),
+      meta:crMeta ? crMeta.k + ':' + (crMeta.feita ? 'ok' : crMetaProgresso() + '/' + crMeta.alvo) : ''};
+  }catch(e){}
+}
 // ---------- Metas curtas (17/11): uma por corrida, no topo da tela; cumprida, vale +★5 na hora ----------
 // O bônus entra nas estrelas da corrida (stars), que o servidor valida no fim com o mesmo limite de sempre (tempo e teto diário).
 var CR_METAS = [
@@ -57,9 +66,24 @@ function crMetaConferir(){
   if(!crMeta || crMeta.feita || state !== 'play' || isTestGame) return;
   if(crMetaProgresso() >= crMeta.alvo){
     crMeta.feita = true; crMeta.brilho = 120; stars += CR_META_PREMIO;
-    toast = '🎯 ' + crTr('Meta cumprida!') + ' +★' + CR_META_PREMIO; toastT = 120;
+    var seq = crMetaSequencia(); crMeta.seq = seq.n; crMeta.extra = seq.extra; if(seq.extra) stars += seq.extra;
+    toast = '🎯 ' + crTr('Meta cumprida!') + ' +★' + (CR_META_PREMIO + seq.extra) + (seq.n > 1 ? ' · 🔥 ' + crTr('{n} dias seguidos').replace('{n}', seq.n) : ''); toastT = 140;
     try{ if(sfx && sfx.rank) sfx.rank(); }catch(e){}
   }
+}
+// Sequência (17/11): a primeira meta cumprida de cada dia conta; dias seguidos dão +★1 por dia a mais (até +★4).
+// Guardado no aparelho (tw_cr_meta_seq); o bônus entra nas estrelas da corrida, que o servidor valida como sempre.
+function crMetaSequencia(){
+  var r = {n:1, extra:0};
+  try{
+    var d = new Date(), hoje = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), on = new Date(d.getTime() - 864e5);
+    var ontem = on.getFullYear() + '-' + (on.getMonth() + 1) + '-' + on.getDate();
+    var st = JSON.parse(localStorage.getItem('tw_cr_meta_seq') || 'null') || {};
+    if(st.dia === hoje){ r.n = st.n || 1; return r; }          // já contou hoje: sem bônus de novo
+    r.n = st.dia === ontem ? (st.n || 0) + 1 : 1; r.extra = Math.min(4, r.n - 1);
+    localStorage.setItem('tw_cr_meta_seq', JSON.stringify({dia:hoje, n:r.n}));
+  }catch(e){}
+  return r;
 }
 function crMetaDesenhar(){
   if(!crMeta || state !== 'play' || isTestGame) return;
@@ -89,7 +113,7 @@ function spawn(){
     var pad = CR_PADROES[Math.floor(s2Rand() * CR_PADROES.length)], px = o.x + o.w;
     for(var pi2 = 0; pi2 < pad.length; pi2++){ var pp = pad[pi2], o3 = {k:pp[0], w:pp[0] === 'cable' ? 56 : pp[0] === 'speaker' ? 36 : 24, h:pp[0] === 'cable' ? 12 : pp[0] === 'speaker' ? 48 : 42};
       if(o3.k === 'stick') o3.pal = ['#9b30d9', '#b6ff3b', '#4169e1'];
-      o3.x = px + pp[1] + sp * 6; o3.y = GY - o3.h; obs.push(o3); px = o3.x + o3.w; }
+      o3.x = px + pp[1] + sp * 6; o3.y = GY - o3.h; o3.padrao = true; obs.push(o3); px = o3.x + o3.w; }
     nextX = px - o.w;
   }
 
@@ -334,7 +358,7 @@ function end(){
   try{novosItens=newItems(ob,s)}catch(err){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: acabamento dos itens indisponível',err);}
   // 17/11: fim em um quadro só — pontos, estrelas, posição, a meta da corrida e quanto falta para a próxima posição
   var crProx=RANKS[rId+1],crFalta=crProx?Math.max(1,crProx[0]-s):0;
-  var crMetaTxt=(cm&&!isTestGame)?(cm.feita?'✓ '+crT('Meta cumprida!')+' +★'+CR_META_PREMIO:crT(cm.txt).replace('{n}',cm.alvo)+(cm.alvo>1?' · '+crMetaProgresso()+'/'+cm.alvo:'')):'';
+  var crMetaTxt=(cm&&!isTestGame)?(cm.feita?'✓ '+crT('Meta cumprida!')+' +★'+(CR_META_PREMIO+(cm.extra||0))+(cm.seq>1?' · 🔥 '+crT('{n} dias seguidos').replace('{n}',cm.seq):''):crT(cm.txt).replace('{n}',cm.alvo)+(cm.alvo>1?' · '+crMetaProgresso()+'/'+cm.alvo:'')):'';
   $('res').innerHTML='<div class="crfim"><div class="crfim-pts"><strong>'+s+'</strong> <span>'+tr('pontos')+'</span>'+(nb?'<em>'+tr('novo recorde!')+'</em>':'')+'</div>'
     +'<div class="crfim-grade"><div><small>★ '+crT('Estrelas')+'</small><b>'+(esperaEstrelas?'<span id="cr-recompensa">'+tr('Aguardando validação do servidor')+'</span>':stars+' '+(typeof trEstrelas==='function'?trEstrelas(stars):tr('estrelas')))+'</b></div>'
     +'<div><small>'+tr('Posição')+'</small><b>'+tr(RANKS[rId][1])+'</b></div>'
@@ -562,7 +586,7 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
     for(var i=0;i<obs.length;i++){
       if(hit(pb,obs[i])){
         if(shield){shield--;inv=90;sfx.hit();shake=8;toast=tr('Escudo usado!');toastT=80;break}
-        end();return;
+        crTelemetriaAnotar(obs[i]);end();return;
       }
     }
   }
@@ -911,6 +935,7 @@ function draw(){
     g.save();
     if(shake>0){g.translate(rnd(-shake,shake)/2,rnd(-shake,shake)/2);shake-=1;}
     s2DrawSceneryBg();
+    crLuzesPalco();   // 17/11: as luzes de palco também nos palcos da Temporada 2
     s2DrawSceneryFloor();
   } else {
   var P2=curPal(),sk=g.createLinearGradient(0,0,0,GY);sk.addColorStop(0,P2[0]);sk.addColorStop(1,P2[1]);g.fillStyle=sk;g.fillRect(0,0,W,H);for(var si=0;si<36;si++){g.globalAlpha=.25+.25*Math.sin(frame*.04+si*1.7);g.fillStyle='#fff';g.fillRect((si*97)%W,(si*53)%Math.max(40,GY-170)+8,2,2)}g.globalAlpha=1;
@@ -1498,11 +1523,15 @@ function cenaCartazes(P2){
   }
 }
 function obsRR(x0, y0, w, h, r){ g.beginPath(); g.moveTo(x0 + r, y0); g.arcTo(x0 + w, y0, x0 + w, y0 + h, r); g.arcTo(x0 + w, y0 + h, x0, y0 + h, r); g.arcTo(x0, y0 + h, x0, y0, r); g.arcTo(x0, y0, x0 + w, y0, r); g.closePath(); }
-// 17/11: luzes de palco entre a cidade e a plateia — dois canhões que varrem devagar e pulsam a cada batida
-// (120 BPM = uma batida a cada 30 quadros). Cores do trio; no Fever ficam mais fortes e rosadas.
+// 17/11: luzes de palco entre a cidade e a plateia — dois canhões que varrem devagar e pulsam na batida da trilha
+// que está tocando (sem som, 120 BPM = uma batida a cada 30 quadros). Cores do trio; no Fever ficam mais fortes e rosadas.
 function crLuzesPalco(){
   if(state === 'menu') return;
-  var bat = (frame % 30) / 30, pulso = Math.pow(1 - bat, 3), fever = !!(pw && pw.k === 'fever');
+  // na batida da trilha que está tocando (baixo a cada 2 passos); sem som, o compasso fixo de 120 BPM
+  var agoraB = performance.now(), batMs = (typeof crPassoMs === 'number' ? crPassoMs : 190) * 2, bat;
+  if(typeof crBatidaT === 'number' && crBatidaT && agoraB - crBatidaT < batMs * 3) bat = Math.min(1, (agoraB - crBatidaT) / batMs);
+  else bat = (frame % 30) / 30;
+  var pulso = Math.pow(1 - bat, 3), fever = !!(pw && pw.k === 'fever');
   var base = (fever ? .2 : .1) + pulso * (fever ? .2 : .1), cores = fever ? ['255,111,181', '255,111,181'] : ['155,48,217', '65,105,225'];
   g.save(); g.globalCompositeOperation = 'lighter';
   for(var i = 0; i < 2; i++){

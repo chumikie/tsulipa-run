@@ -234,6 +234,7 @@ function twJogoEmPopup(){   // Sora/Karaoke abertos: so vale a musica do jogo de
 function music(on){
   clearInterval(mt);if(!on)return;
   var k=curT||'menu',ms={menu:260,tense:150,hard:120,alien:130,kawaii:100,unit:130,pet:340,petSono:560}[k]||190;
+  crPassoMs=ms;   // 17/11: as luzes de palco do Center⭐Run pulsam nesta batida (crBatidaT)
   mt=setInterval(function(){
     if(muted||paused||document.hidden||(typeof hubOv!=='undefined'&&typeof hubTelaAberta==='function'&&hubTelaAberta())){clearInterval(mt);mt=null;return;}
     if(twJogoEmPopup()){clearInterval(mt);mt=null;curT='';return;}   // o jogo do pop-up cuida do proprio som
@@ -245,9 +246,11 @@ function music(on){
   beep(N[bi%16],.14, k==='kawaii'?'triangle':'square',.018);
   if(bi%2===0 && k!=='kawaii') beep(bass[(bi/2)%8|0],.25,'triangle',.04);
 }
+    if(bi%2===0)crBatidaT=performance.now();
     bi++;
   },ms);
 }
+var crBatidaT=0,crPassoMs=190;
 function sync(){var k=state!=='play'?(typeof petMusicK==='function'?petMusicK():'menu'):(pw&&pw.k==='gigante'?'kawaii':pw&&pw.k==='alien'?'alien':pw&&pw.k==='unit'?'unit':rankI>=9?'hard':rankI>=7?'tense':'s'+(Math.floor(frame/3600)%4));if(k!==curT)curT=k;if(muted||paused||document.hidden||twJogoEmPopup()||(typeof hubOv!=='undefined'&&typeof hubTelaAberta==='function'&&hubTelaAberta())){clearInterval(mt);mt=null;return;}if(!mt)music(true);}
 var ct = 0; 
 var paused=false,abducted=false,wasAbducted=false;
@@ -381,9 +384,9 @@ function drawChar(c,x,y,run,expr,isPartner){
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
   // 17/11: correndo, o trio aparece DE PERFIL (tw-lado.js). Só o visual fixo do Tsu, da Lirika e do Pati, sem roupa de rank
-  // nem acessório na mão (esses continuam de frente); o "Você" segue de frente, porque o perfil não desenha todo o guarda-roupa.
+  // nem acessório na mão (esses continuam de frente). O "Você" também, com as cores de cabelo/pele/olhos/roupa, quando está sem chapéu.
   if (state === 'play' && window.TW_LADO && TW_LADO.corre && OF === 0 && !(PX && PX.k === 'alien') &&
-      (isPartner || !A) && (c === CH[0] || c === CH[1] || c === CH[2])) {
+      (isPartner || !A) && (c === CH[0] || c === CH[1] || c === CH[2] || (c === CH[3] && !c.hat))) {   // o Você também, sem chapéu (o perfil não desenha chapéu)
     try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT); return; } catch (e) {}   // no ar (run 0): passada aberta
   }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
@@ -1738,7 +1741,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=6',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=7',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

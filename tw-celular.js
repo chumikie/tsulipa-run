@@ -473,7 +473,7 @@
       '</div></div>' + humorHtml(true) +
       '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
-        var c = a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
+        var c = a[0] === 'nov' ? novTemNovo() : a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
         return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + badge(c) + cadeado(a[0]) + '</button>';
       }).join('') + '</section></div>';
   }
@@ -582,7 +582,7 @@
     var v = topo(), noMenu = v === 'menu' && !classico, raiz = pilha.length < 2 && !classico;
     return '<button type="button" class="twc-nav-b" data-n="voltar"' + (raiz ? ' disabled' : '') + '>' + ico('voltar', 26) + '<span>' + esc(t('voltar')) + '</span></button>' +
       '<span class="twc-nav-meio"><button type="button" class="twc-nav-menu' + (noMenu ? ' twc-aberto' : '') + '" data-n="menu" aria-label="' + esc(noMenu ? t('ini') : t('menu')) + '" aria-expanded="' + noMenu + '">' + ico(noMenu ? 'x' : 'menu', 28) +
-        (!noMenu && document.querySelector('#hubCards .hubcard.tw-alert-pink') ? '<em class="twc-dot" aria-hidden="true">!</em>' : '') + brilhos([[-6, -6, 13, 'l']]) + '</button></span>' +
+        (!noMenu && (document.querySelector('#hubCards .hubcard.tw-alert-pink') || novTemNovo()) ? '<em class="twc-dot" aria-hidden="true">!</em>' : '') + brilhos([[-6, -6, 13, 'l']]) + '</button></span>' +
       '<button type="button" class="twc-nav-b" data-n="inicio"' + (v === 'inicio' && !classico ? ' aria-current="page"' : '') + '>' + ico('casa', 26) + '<span>' + esc(t('ini')) + '</span></button>';
   }
 
@@ -1343,12 +1343,18 @@
     if(lista) h += '<details class="twc-nov-tem"' + (novPosts && novPosts.length ? '' : ' open') + '><summary>' + esc(t2('novTem')) + '</summary><ul>' + lista + '</ul></details>';
     return h;
   }
+  // ponto vermelho no Menu e no atalho Novidades quando há post do Idol⭐News! mais novo que a última visita
+  function novTemNovo(){ if(novPosts === null){ novBuscar(); return false; } var v = novVisto(); return novPosts.some(function(p){ var ms = new Date(p.criado).getTime(); return ms > v; }); }
+  function novBuscar(){
+    if(novPosts !== null || typeof window.contaRpc !== 'function') return; novPosts = [];
+    window.contaRpc('news_posts').then(function(L){ novPosts = Array.isArray(L) ? L.slice(0, 8) : []; try{ if(topo() === 'emb:nov'){ var s2 = $id('twcEmbSlot'); if(s2) novidadesMontar(s2); } else if(novTemNovo()) novPontos(); }catch(e){} }).catch(function(){});
+  }
+  function novPontos(){   // só acrescenta o ponto, sem redesenhar a tela (não mexe na rolagem)
+    [cel && cel.querySelector('.twc-nav-menu:not(.twc-aberto)'), cel && cel.querySelector('.twc-atalho[data-a="nov"]')].forEach(function(b){ if(b && !b.querySelector('.twc-dot')) b.insertAdjacentHTML('beforeend', '<em class="twc-dot" aria-hidden="true">!</em>'); });
+  }
   function novidadesMontar(slot){
     slot.innerHTML = '<section class="hubpainel hubnov twc-novidades-conteudo" aria-label="' + esc(t('nov')) + '">' + novidadesHtml() + '</section>';
-    if(novPosts === null && typeof window.contaRpc === 'function'){
-      novPosts = [];
-      window.contaRpc('news_posts').then(function(L){ novPosts = Array.isArray(L) ? L.slice(0, 8) : []; if(topo() === 'emb:nov'){ var s2 = $id('twcEmbSlot'); if(s2) novidadesMontar(s2); } }).catch(function(){});
-    }
+    novBuscar();
     // marca como visto logo depois de mostrar: o selo "novo" fica nesta visita e some na próxima
     if(novPosts && novPosts.length) setTimeout(function(){ try{ localStorage.setItem(NOV_VISTO, String(Date.now())); }catch(e){} }, 1500);
   }

@@ -82,7 +82,10 @@
     treino:{pt:'Treino',en:'Practice',es:'Práctica',id:'Latihan',th:'ฝึกซ้อม',ja:'練習'},
     legCad:{pt:'pede conta para abrir',en:'needs an account',es:'necesita cuenta',id:'perlu akun',th:'ต้องมีบัญชี',ja:'アカウントが必要'},
     legTreino:{pt:'joga sem conta, mas prêmio e ranking só entrando',en:'play without an account; prizes and rankings need one',es:'juega sin cuenta; premios y ranking necesitan una',id:'main tanpa akun; hadiah dan peringkat perlu akun',th:'เล่นได้โดยไม่มีบัญชี แต่รางวัลและอันดับต้องเข้าสู่ระบบ',ja:'アカウントなしで遊べます。ごほうびとランキングはログインが必要'},
-    jogarRun:{pt:'Jogar Center⭐Run!',en:'Play Center⭐Run!',es:'Jugar Center⭐Run!',id:'Main Center⭐Run!',th:'เล่น Center⭐Run!',ja:'Center⭐Run!であそぶ'}
+    jogarRun:{pt:'Jogar Center⭐Run!',en:'Play Center⭐Run!',es:'Jugar Center⭐Run!',id:'Main Center⭐Run!',th:'เล่น Center⭐Run!',ja:'Center⭐Run!であそぶ'},
+    novNovo:{pt:'novo',en:'new',es:'nuevo',id:'baru',th:'ใหม่',ja:'NEW'},
+    novTem:{pt:'O que tem no TsuLiPa⭐World',en:"What's in TsuLiPa⭐World",es:'Qué hay en TsuLiPa⭐World',id:'Isi TsuLiPa⭐World',th:'มีอะไรใน TsuLiPa⭐World',ja:'TsuLiPa⭐Worldにあるもの'},
+    novPosts:{pt:'Do Idol⭐News!',en:'From Idol⭐News!',es:'De Idol⭐News!',id:'Dari Idol⭐News!',th:'จาก Idol⭐News!',ja:'Idol⭐News!より'}
   };
   function t2(k, n){ var d = T2[k]; var s2 = d ? (d[L()] || d.pt) : k; return n != null ? s2.replace('{n}', n) : s2; }
   function tt(s){ return typeof tr === 'function' ? tr(s) : s; }
@@ -1311,13 +1314,7 @@
     if(!el && k === 'mapa' && typeof window.twMapaCarregar === 'function'){   // o mapa baixa depois da abertura: se ainda não chegou, pede e tenta de novo
       window.twMapaCarregar(); var tent = 0; (function espera(){ if(topo() !== 'emb:mapa') return; if(document.querySelector(EMB.mapa[0])){ embutir('mapa'); return; } if(++tent < 40) setTimeout(espera, 150); })(); return; }
     if(!slot) return;
-    if(k === 'nov'){
-      // Reutilizar as notícias reais sem retirar a seção original do Hub.
-      var origem=document.getElementById('hubNov');
-      var conteudo=origem ? origem.innerHTML : '';
-      slot.innerHTML='<section class="hubpainel hubnov twc-novidades-conteudo" aria-label="'+esc(t('nov'))+'"><ul>'+conteudo+'</ul></section>';
-      return;
-    }
+    if(k === 'nov'){ novidadesMontar(slot); return; }
     if(!el) return;
     if(embAtual && embAtual.el !== el) devolver();
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
@@ -1327,6 +1324,33 @@
     if(k === 'missoes' && typeof hubMisCarregar === 'function' && logado() && !(typeof hubMisDados !== 'undefined' && hubMisDados)) hubMisCarregar();
     if(k === 'nov') el.open = true;
     if(k === 'busca'){ var i = $id('hubBusca'); if(i) setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){} }, 80); }
+  }
+  /* ---------- Novidades (17/11): os posts do Idol⭐News! com data e selo "novo", e embaixo a lista fixa do que tem no site ---------- */
+  var NOV_VISTO = 'tw_nov_visto', novPosts = null;
+  function novVisto(){ try{ return +localStorage.getItem(NOV_VISTO) || 0; }catch(e){ return 0; } }
+  function novidadesHtml(){
+    var visto = novVisto(), h = '';
+    if(novPosts && novPosts.length){
+      h += '<h3 class="twc-nov-tit">' + esc(t2('novPosts')) + '</h3><div class="twc-nov-posts">' + novPosts.map(function(p){
+        var d = new Date(p.criado), ms = d.getTime(), dt = isNaN(ms) ? '' : ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2);
+        var img = /^data:image\/jpeg;base64,/.test(p.imagem || '') ? '<img src="' + p.imagem + '" alt="" loading="lazy">' : '';
+        return '<article class="twc-nov-post">' + img + '<div><p class="twc-nov-meta">' + (dt ? '<time>' + dt + '</time>' : '') +
+          (ms > visto ? '<span class="twc-nov-novo">' + esc(t2('novNovo')) + '</span>' : '') + '</p><h4>' + esc(p.titulo || '') + '</h4>' +
+          (p.legenda ? '<p>' + esc(p.legenda) + '</p>' : '') + '</div></article>';
+      }).join('') + '</div>';
+    }
+    var origem = document.getElementById('hubNov'), lista = origem ? origem.innerHTML : '';
+    if(lista) h += '<details class="twc-nov-tem"' + (novPosts && novPosts.length ? '' : ' open') + '><summary>' + esc(t2('novTem')) + '</summary><ul>' + lista + '</ul></details>';
+    return h;
+  }
+  function novidadesMontar(slot){
+    slot.innerHTML = '<section class="hubpainel hubnov twc-novidades-conteudo" aria-label="' + esc(t('nov')) + '">' + novidadesHtml() + '</section>';
+    if(novPosts === null && typeof window.contaRpc === 'function'){
+      novPosts = [];
+      window.contaRpc('news_posts').then(function(L){ novPosts = Array.isArray(L) ? L.slice(0, 8) : []; if(topo() === 'emb:nov'){ var s2 = $id('twcEmbSlot'); if(s2) novidadesMontar(s2); } }).catch(function(){});
+    }
+    // marca como visto logo depois de mostrar: o selo "novo" fica nesta visita e some na próxima
+    if(novPosts && novPosts.length) setTimeout(function(){ try{ localStorage.setItem(NOV_VISTO, String(Date.now())); }catch(e){} }, 1500);
   }
   /* ---------- a vitrine antiga (luzes, confete, lightsticks) na tela de abertura, com o Tsu, a Lirika e o Pati desfilando juntos ---------- */
   function vitrineDevolver(){

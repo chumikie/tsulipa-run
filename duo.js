@@ -198,13 +198,35 @@ function duoPalcoUI(){
 function duoEscolhaUI(msg){
   $('duoPalco').hidden = true; $('duoEscolha').hidden = false; duoTexto();
   if(!contaJ){ $('duoEscolha').innerHTML = '<p class="duodica">' + escHtml(tr('Entre com Google para usar o Moon⭐Duo!')) + '</p><div class="btns"><button type="button" class="btn" id="duoEntrar">' + escHtml(tr('Entrar com Google')) + '</button></div>'; return; }
-  $('duoEscolha').innerHTML = (msg ? '<p class="perfmsg">' + escHtml(msg) + '</p>' : '') +
+  $('duoEscolha').innerHTML = (msg ? '<p class="perfmsg">' + escHtml(msg) + '</p>' : '') + DUO_CENA_HTML +
     '<p class="duodica">' + escHtml(tr('Escolha com quem fazer a dupla:')) + '</p>' +
     '<input class="nick duobusca" id="duoBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '" aria-label="' + escHtml(tr('Procurar Idol pelo nome')) + '">' +
     '<div class="duosug" id="duoRes"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
-  contaRpc('duo_sugestoes').then(function(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = Array.isArray(L) && L.length ? L.map(duoNickBtn).join('') : '<p class="perfcarr">✧</p>'; }).catch(function(){});
+  duoCenaDesenhar();
+  // sem sugestões (ou sem rede), nunca um espaço vazio: o Tsu e a Lirika, que sempre topam uma dupla
+  function duoSugMostrar(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = (Array.isArray(L) && L.length ? L : DUO_SUG_RESERVA).map(duoNickBtn).join(''); }
+  contaRpc('duo_sugestoes').then(duoSugMostrar).catch(function(){ duoSugMostrar(null); });
 }
-function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick="' + escHtml(p.nick) + '">🌙 ' + escHtml(p.nick) + ' <small>' + (+p.best || 0) + '</small></button>'; }
+var DUO_SUG_RESERVA = [{nick:'Tsu'}, {nick:'Lirika'}];
+// Cena no topo da escolha (17/11): você sob a lua, e um lugar vago com "?" esperando a dupla
+var DUO_CENA_HTML = '<canvas class="duocena" id="duoCena" width="1120" height="400" aria-hidden="true"></canvas>';
+function duoCenaDesenhar(){
+  var cv = $('duoCena'), x = cv && cv.getContext && cv.getContext('2d'); if(!x) return;
+  var W2 = cv.width, H2 = cv.height, i, ceu = x.createLinearGradient(0, 0, 0, H2); ceu.addColorStop(0, '#1d1556'); ceu.addColorStop(.7, '#3b2c86'); ceu.addColorStop(1, '#5a3aa6');
+  x.fillStyle = ceu; x.fillRect(0, 0, W2, H2);
+  for(i = 0; i < 26; i++) duoEstrela(x, (i * 197 + 40) % W2, 20 + (i * 83) % (H2 * .55), 3 + (i % 4) * 2, i % 5 ? 'rgba(255,255,255,.75)' : '#ffe14d', i);
+  var lua = x.createRadialGradient(W2 / 2, 120, 10, W2 / 2, 120, 150); lua.addColorStop(0, 'rgba(255,243,168,.5)'); lua.addColorStop(1, 'rgba(255,243,168,0)'); x.fillStyle = lua; x.fillRect(0, 0, W2, H2);
+  var m = document.createElement('canvas'); m.width = m.height = 140; var mx = m.getContext('2d'); mx.fillStyle = '#fff3a8'; mx.beginPath(); mx.arc(70, 70, 62, 0, 7); mx.fill(); mx.globalCompositeOperation = 'destination-out'; mx.beginPath(); mx.arc(98, 52, 56, 0, 7); mx.fill(); x.drawImage(m, W2 / 2 - 70, 48);
+  var chao = H2 - 26, piso = x.createLinearGradient(0, chao - 40, 0, H2); piso.addColorStop(0, 'rgba(255,111,181,0)'); piso.addColorStop(1, 'rgba(255,111,181,.35)'); x.fillStyle = piso; x.fillRect(0, chao - 40, W2, H2);
+  x.fillStyle = 'rgba(255,255,255,.14)'; x.beginPath(); x.ellipse(W2 * .3, chao, 130, 18, 0, 0, 7); x.ellipse(W2 * .7, chao, 130, 18, 0, 0, 7); x.fill();
+  try{ x.save(); x.translate(W2 * .3, chao); x.scale(.74, .74); duoIdolEm(x, duoMeuAv(), 0, 0, 'v', 2, 0, false); x.restore(); }catch(e){ x.restore(); }
+  // o lugar da dupla: contorno tracejado de coração com "?"
+  x.save(); x.setLineDash([10, 9]); x.lineWidth = 5; x.strokeStyle = 'rgba(255,255,255,.6)'; x.beginPath();
+  var cx = W2 * .7, cy = chao - 150, r = 70; x.moveTo(cx, cy + r * .95); x.bezierCurveTo(cx - r * 1.5, cy - r * .1, cx - r * .75, cy - r * 1.15, cx, cy - r * .35); x.bezierCurveTo(cx + r * .75, cy - r * 1.15, cx + r * 1.5, cy - r * .1, cx, cy + r * .95); x.stroke(); x.restore();
+  x.font = '400 64px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff'; x.fillText('?', cx, cy - 4);
+  duoCoracao(x, W2 / 2, chao - 70, 18, '#ff6fb5');
+}
+function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick="' + escHtml(p.nick) + '">🌙 ' + escHtml(p.nick) + (p.best != null ? ' <small>' + (+p.best || 0) + '</small>' : '') + '</button>'; }
 var duoBuscaT=0,duoBuscaSeq=0;
 function duoBuscaCancelar(){clearTimeout(duoBuscaT);duoBuscaT=0;duoBuscaSeq++;}
 var duoLoadSeq=0;

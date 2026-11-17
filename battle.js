@@ -161,6 +161,7 @@ function montar(){
    if(a==='agitar'){agitar();return;}
    if(a==='pular'){fimDoShow();return;}
    if(ocupado)return;
+   if(a==='slot'){var si=Number(b.getAttribute('data-slot')),sv=b.getAttribute('data-nick'),sj=unit.indexOf(sv);if(sj>=0&&sj!==si)unit[sj]=unit[si];unit[si]=sv;render();return;}
    if(a==='jogar'){jogar();return;}
    if(a==='outra'||a==='voltar'){rodadas=null;msg='';msgOk=false;fase='escalar';if(a==='voltar'||modo==='arena'){alvo=null;carregarArena();}render();return;}
    if(a==='tab-dia'||a==='tab-arena'){modo=a==='tab-arena'&&arena?'arena':'dia';alvo=null;rodadas=null;msg='';msgOk=false;fase='escalar';render();return;}
@@ -264,10 +265,11 @@ function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
    var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
-   h+='<label class="battle-slot"><span>'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection"><select data-battle-slot="'+i+'">'+
-    estado.cards.map(function(c){return '<option value="'+esc(c.nick)+'"'+(unit[i]===c.nick?' selected':'')+'>'+esc(c.nick)+
-     ' · '+valor(c,i)+'/10</option>';}).join('')+'</select>'+
-     '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></label>';
+   // 17/11: escolher tocando no card do Idol (em vez do select do navegador); quem já está em outra rodada troca de lugar
+   h+='<div class="battle-slot" role="group" aria-label="'+esc(nomeRound(i))+'"><span class="battle-slot-tit">'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection">'+
+    '<span class="battle-picks">'+estado.cards.map(function(c){var on=unit[i]===c.nick;return '<button type="button" class="battle-pick'+(on?' on':'')+'" data-battle="slot" data-slot="'+i+'" data-nick="'+esc(c.nick)+'" aria-pressed="'+on+'">'+
+     '<canvas class="battle-av battle-av-p" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="1" aria-hidden="true"></canvas><b>'+esc(c.nick)+'</b><small>'+valor(c,i)+'/10</small></button>';}).join('')+'</span>'+
+     '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></div>';
  }
  return h;
 }
@@ -339,6 +341,18 @@ function idolHtml(c,meu,rotulo,destaque,esconde){
    '<b>'+esc(c.nick)+'</b>'+chips(c,destaque,esconde)+(meu?'<small class="battle-skill" style="--c:'+COR[habilidade(c)]+'">✦ '+esc(trB('sk'+habilidade(c)))+'</small>':'')+
    (meu&&Number(c.qtd)>1?'<em title="'+esc(trB('copies'))+'">×'+Math.min(99,Number(c.qtd))+'</em>':'')+'</div>';
 }
+// Cena no topo (17/11), como o balcão do Happy⭐Cafe: a sua unit de um lado, a rival do outro, no palco do Battle
+function cenaDesenhar(){
+ var cv=ov&&ov.querySelector('#battleCena'),x=cv&&cv.getContext&&cv.getContext('2d');if(!x||!estado)return;
+ var k=cv.width/SW,H=cv.height/k,top=140,chao=top+H-16,riv=(modo==='arena'&&alvo?alvo.idols:estado.rival)||[];
+ x.setTransform(k,0,0,k,0,-top*k);x.clearRect(0,top,SW,H);
+ try{fundoPalco(x,'#b8a3ff',0);}catch(e){}
+ var piso=x.createLinearGradient(0,chao-30,0,top+H);piso.addColorStop(0,'rgba(123,63,240,0)');piso.addColorStop(1,'rgba(123,63,240,.28)');x.fillStyle=piso;x.fillRect(0,chao-30,SW,top+H-chao+30);
+ unit.forEach(function(n,i){desenharIdol(x,n,true,50+i*66,chao-(i===1?8:0),2.05,0,{});});
+ riv.forEach(function(c,i){desenharIdol(x,c&&c.nick,false,SW-50-i*66,chao-(i===1?8:0),2.05,0,{vira:true});});
+ x.textAlign='center';x.textBaseline='alphabetic';x.font=fonte(34);contorno(x,'VS',SW/2,top+H/2+22,'#fff3a8');
+ x.setTransform(1,0,0,1,0,0);
+}
 function desenharMiniaturas(){
  var L=ov.querySelectorAll('[data-battle-av]'),t=agora();
  for(var i=0;i<L.length;i++){
@@ -346,6 +360,7 @@ function desenharMiniaturas(){
    x.clearRect(0,0,cv.width,cv.height);
    desenharIdol(x,cv.getAttribute('data-battle-av'),cv.getAttribute('data-meu')==='1',cv.width/2,cv.height-8,2.6,t,{});
  }
+ cenaDesenhar();
 }
 function render(){
  if(!ov||ov.hidden||!estado)return;
@@ -379,6 +394,7 @@ function render(){
    '<button type="button" class="btn" data-battle="outra"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>');
    area.innerHTML=texto+(emArena?'':rankingHtml());desenharMiniaturas();return;
  }
+ texto+='<canvas class="battle-cena" id="battleCena" width="1120" height="380" aria-hidden="true"></canvas>';
  texto+='<section class="battle-rival"><h3>'+(emArena?esc(trB('vsUnit').replace('{n}',alvo.nick)):esc(trB('daily')))+'</h3><div class="battle-trio">'+
    (emArena?alvo.idols:estado.rival).map(function(c){return idolHtml(c,false,'',-1,oculto(c));}).join('')+
    '</div><p class="battle-hint">'+esc(trB('rivalHint'))+'</p></section>';

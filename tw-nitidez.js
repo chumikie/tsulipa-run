@@ -18,7 +18,7 @@
   try{
     var q = new URLSearchParams(location.search).get('nitidez');
     if(q === '0' || q === '1') localStorage.setItem('tw_nitidez', q);
-    if(localStorage.getItem('tw_nitidez') === '0'){ window.TW_NITIDEZ = {escala:function(){ return 1; }, preparar:function(){ return 1; }, limitar:function(){ return false; }, desligada:true}; return; }
+    if(localStorage.getItem('tw_nitidez') === '0'){ window.TW_NITIDEZ = {escala:function(){ return 1; }, preparar:function(){ return 1; }, limitar:function(){ return false; }, adotar:function(){ return false; }, desligada:true}; return; }
   }catch(e){}
   var P = window.HTMLCanvasElement && HTMLCanvasElement.prototype, C = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
   if(!P || !C || P.__twNitidez) return;
@@ -118,5 +118,7 @@
   }
   // limitar(cv, n): o jogo pede menos pixels nesse canvas (ex.: 1,5×) quando o aparelho está lento; null volta ao normal
   function limitar(cv, n){ var st = cv && cv.__twA; if(!st) return false; st.max = n ? Math.max(1, +n) : 0; st.k = 0; try{ aplicar(cv, st); }catch(e){} return true; }
-  window.TW_NITIDEZ = {escala:function(cv){ var st = cv && cv.__twA; return st ? st.k : 1; }, preparar:preparar, limitar:limitar};
+  // adotar(cv): para canvas grande que nasceu escondido (ex.: o Mapa) e só agora apareceu na tela
+  function adotarAgora(cv){ if(!cv || cv.__twA || cv.__twA === false || !cv.isConnected) return false; var st = adotar(cv); if(!st) return false; aplicar(cv, st); return true; }
+  window.TW_NITIDEZ = {escala:function(cv){ var st = cv && cv.__twA; return st ? st.k : 1; }, preparar:preparar, limitar:limitar, adotar:adotarAgora};
 })();

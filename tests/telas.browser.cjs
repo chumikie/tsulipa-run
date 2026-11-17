@@ -1,5 +1,5 @@
 /* Telas principais do TsuLiPa⭐World num navegador de verdade (17/11/2026).
-   Abre o visual novo no celular (390 px, 3×) e no computador (1280 px, 1,25×), visita Início, Jogos, Fichinhas,
+   Abre o visual novo no celular (390 px, 3×), no computador (1280 px, 1,25×) e num tablet Android em pé e deitado, visita Início, Jogos, Fichinhas,
    Idol⭐News, Novidades, Álbum, Mapa, Perfil, Gacha e Loja, e falha se aparecer:
    - erro de JavaScript na página;
    - tela vazia (o caso da tela Novidades que ficou em branco);
@@ -84,8 +84,12 @@ async function rodar(browser,base,nome,opcoes){
   try{
     falhas=falhas.concat(await rodar(browser,base,'celular',{viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true}));
     falhas=falhas.concat(await rodar(browser,base,'computador',{viewport:{width:1280,height:800},deviceScaleFactor:1.25}));
+    // tablets Android (Galaxy Tab, Xiaomi Pad e parecidos): em pé e deitado, com toque
+    const ua='Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+    falhas=falhas.concat(await rodar(browser,base,'tablet-em-pe',{viewport:{width:800,height:1280},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
+    falhas=falhas.concat(await rodar(browser,base,'tablet-deitado',{viewport:{width:1280,height:800},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
   }finally{await browser.close();server.close();}
   fs.writeFileSync(path.join(out,'resultado.txt'),falhas.length?falhas.join('\n'):'ok');
   assert.equal(falhas.length,0,'Telas com problema:\n'+falhas.join('\n'));
-  console.log('✓ telas principais: sem erro, sem tela vazia, sem desenho borrado (celular e computador)');
+  console.log('✓ telas principais: sem erro, sem tela vazia, sem desenho borrado (celular, computador e tablet em pé/deitado)');
 })().catch(e=>{console.error(e.message||e);process.exit(1);});

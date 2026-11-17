@@ -258,7 +258,7 @@
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
     mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
     W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
-    if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';}
+    if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';try{if(window.TW_NITIDEZ&&TW_NITIDEZ.adotar)TW_NITIDEZ.adotar(cv);}catch(e){}}   // 17/11: nítido em tablet (nasce escondido; entra na nitidez quando aparece)
     var sec=document.getElementById('twMapa');
     if(sec){var voltar=sec.querySelector('.tw-mapa-voltar');
       if(voltar)voltar.hidden=destino==='mundo';
@@ -359,6 +359,7 @@
   function desenhar(){
     if(!ctx||!arte||!arte.complete||!arte.naturalWidth)return;
     var tm=performance.now()/1000;
+    if(cv&&!cv.__twA&&cv.__twTent!==cv.clientWidth&&window.TW_NITIDEZ&&TW_NITIDEZ.adotar){cv.__twTent=cv.clientWidth;try{TW_NITIDEZ.adotar(cv);}catch(e){}}   // tablet: entra na nitidez quando o tamanho na tela muda
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas

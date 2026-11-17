@@ -1506,7 +1506,11 @@ function s2SyncProfile(){
   if(!contaJ || typeof contaRpc !== 'function') return;
   var earned = S2_INS.filter(function(x){ return !!s2Save.badges[x[0]]; }).map(function(x){ return x[0]; });
   if(!earned.length) return;
-  contaRpc('sincronizar_insignias_jogos', { p_insignias: earned }).catch(function(){});
+  var chave = (contaJ.nick || '') + '|' + earned.join(',');   // 17/11: só envia quando muda (antes ia a cada salvamento da corrida)
+  if(s2SyncProfile.ultimo === chave) return;
+  s2SyncProfile.ultimo = chave;
+  var pr = contaRpc('sincronizar_insignias_jogos', { p_insignias: earned });
+  if(pr && pr.catch) pr.catch(function(){ s2SyncProfile.ultimo = ''; });
 }
 function s2Persist(){
   try{ window.__TW_TEST_STORAGE.setItem(S2_KEY, JSON.stringify(s2Save)); }catch(e){}

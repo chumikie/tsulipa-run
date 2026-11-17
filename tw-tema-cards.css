@@ -9,9 +9,10 @@ html body :is(.jnmanchete,.jnpodio,.jnbloco,.jnfoto3,.jnpostar,.jndiario,.jndiar
 html body :is(.cfop.on,.cfassinatura-opcao.on,.hsflor.on,.stchip.on,.stcoracao.on,.jnababotao[aria-selected="true"],.jncapaba[aria-selected="true"],.jncapaba.on){
  background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 26%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 42%,var(--card,#fff)))!important;
  border-color:var(--b1,#7b3ff0)!important;color:var(--ink,#12365e)!important;box-shadow:0 3px 0 color-mix(in srgb,var(--b1,#7b3ff0) 30%,transparent)}
-/* Karaokê⭐Time! (17/11): o saguão embaixo do palco segue a mesma regra — cor do Oshi sobre o card do tema, opaco
+/* Karaokê⭐Time! (17/11): o saguão embaixo do palco segue a mesma regra (o cartão dos shows só quando fica embaixo do palco;
+   por cima do palco, no computador, ele continua translúcido e some sozinho) — cor do Oshi sobre o card do tema, opaco
    (o iframe é transparente: o cartão não pode depender do que está atrás). O palco e os botões dele não mudam. */
-html.tw-karaoke-embed :is(.kt-availability,.kt-rank-card,.kt-audio-library,.kt-library-panel,.kt-preview-player){
+html.tw-karaoke-embed :is(.kt-availability.kt-banner-mobile,.kt-rank-card,.kt-audio-library,.kt-library-panel,.kt-preview-player){
  background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 9%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 18%,var(--card,#fff)))!important;
  border:1.5px solid color-mix(in srgb,var(--b1,#7b3ff0) 28%,transparent)!important;color:var(--ink,#12365e)!important;
  box-shadow:0 4px 0 color-mix(in srgb,var(--b1,#7b3ff0) 16%,transparent)!important;border-radius:20px}
@@ -21,4 +22,4 @@ html.tw-karaoke-embed :is(.kt-audio-clip,.kt-library-head,.kt-library-action,[da
 html.tw-karaoke-embed :is(.kt-audio-clip.kt-song-selected,.kt-library-head[aria-pressed="true"],.kt-library-head.is-speaking,[data-kt-rank][aria-pressed="true"]){
  background:linear-gradient(160deg,color-mix(in srgb,var(--b1,#7b3ff0) 26%,var(--card,#fff)),color-mix(in srgb,var(--b1,#7b3ff0) 40%,var(--card,#fff)))!important;
  border-color:var(--b1,#7b3ff0)!important;color:var(--ink,#12365e)!important}
-html.tw-karaoke-embed :is(.kt-availability,.kt-rank-card,.kt-audio-library) :is(small,p,.kt-rank-vaga){color:inherit}
+html.tw-karaoke-embed :is(.kt-availability.kt-banner-mobile,.kt-rank-card,.kt-audio-library) :is(small,p,.kt-rank-vaga){color:inherit}

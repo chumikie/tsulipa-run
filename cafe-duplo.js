@@ -10,6 +10,10 @@
   'use strict';
   if(typeof cfIniciarSeguro !== 'function' || typeof cfUI !== 'function' || typeof cfLoop !== 'function') return;
   var orig = { iniciar:cfIniciarSeguro, ui:cfUI, loop:cfLoop };
+  var ESCOLHA = {
+    pt:'Escolha um fã para ver a comanda',en:'Choose a fan to see their order',es:'Elige un fan para ver su pedido',
+    id:'Pilih penggemar untuk melihat pesanannya',th:'เลือกแฟนเพื่อดูออเดอร์',ja:'ファンを選んで注文を見る'
+  };
   var LADOS = [.2, .44];   // centro de cada cliente (fração da largura do canvas)
 
   function vazio(){ return { base:-1, cob:-1, enf:-1, doce:-1 }; }
@@ -55,9 +59,11 @@
     if(!cf || !cf.duplo || cf.fase !== 'pedido') return;
     var e = cf.fila.filter(function(q){ return q.lado === lado && q.estado === 'espera'; })[0]; if(!e) return;
     var p = e.cli.pedido, m = cf.monta;
+    if(cf.alvoBalcao === e) cf.alvoBalcao = null;
     var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
     var resto = Math.max(0, 1 - (cfT - e.t0) / e.limite);
     cf.atendidos++;
+    cf.ultimoAtendimento = e;
     e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
     if(e.sv && cf.modoServidor === 'novo'){
       e.confirmacao = 0;
@@ -67,7 +73,7 @@
         e.confirmacao = r && r.ok && r.confirmado ? (r.certo === true ? 1 : 2) : 3;
         if(r && r.ok && r.confirmado){
           atual.pontos = +r.pontos || 0; atual.vidas = +r.vidas; atual.perfeitos = +r.perfeitos || atual.perfeitos; atual.combo = +r.combo || 0;
-          if(r.certo){ atual.provaEstado = 'confirmado'; try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(er){} }
+          if(r.certo){ atual.provaEstado = 'confirmado'; cfConsultarMissao(atual); try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(er){} }
           else if(atual.provaEstado !== 'confirmado') atual.provaEstado = 'sem_comprovacao';
           if(!!r.certo !== e.ok){ e.ok = !!r.certo; }
         } else virarTreino();
@@ -123,19 +129,24 @@
     if(cf.fase !== 'pedido' && cf.fase !== 'preparando') return orig.ui();
     var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>👥 2</span></div>';
     if(cf.fase === 'preparando'){ corpo.innerHTML = h + '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>'; return; }
-    if(cf.atendidos === 0) h += '<p class="hsdica cfduplo-dica">👥 ' + escHtml(tr('Dois no balcão! Monte o copo e escolha para quem servir. Quem está com pouca paciência vai primeiro!')) + '</p>';
+    var alvo = cf.alvoBalcao;
+    h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
+      var e = cf.fila.find(function(q){ return q.lado === l; });
+      var espera = e && e.estado === 'espera';
+      return '<div class="cfduplo-p' + (e && e === alvo ? ' cf-atendendo' : '') + '">' +
+        '<button type="button" data-cfd-cliente="' + l + '" aria-pressed="' + Boolean(e && e === alvo) + '"' +
+        (espera ? '' : ' disabled') + '>' + (e ? escHtml(e.cli.nome) : '—') + '</button>' +
+        cfBarraPedido(l,espera ? 1-(cfT-e.t0)/e.limite : 0) + '</div>';
+    }).join('') + '</div><p class="cfpedidotxt" aria-live="polite">' + (alvo ?
+      '<b>'+escHtml(alvo.cli.nome)+'</b> · '+escHtml(cfPedidoIlustrativo(alvo.cli.pedido).replace(/^☕ /,'')) :
+      escHtml(ESCOLHA[LANG] || ESCOLHA.pt)) + '</p></section>';
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
-    h += '<div class="cfduplo-pac">' + [0, 1].map(function(l){
-      var e = cf.fila.filter(function(q){ return q.lado === l; })[0];
-      return '<div class="cfduplo-p' + (e ? '' : ' vazio') + '"><small>' + (l ? '➡ ' : '⬅ ') + (e ? escHtml(e.cli.nome) : '…') + '</small><div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo' + l + '" aria-hidden="true">😊</b><i id="cfPac' + l + '" style="width:' + (e && e.estado === 'espera' ? 100 : 0) + '%"></i></div>' +
-        (e && e.estado === 'reacao' ? cfConfirmacaoHtml(e.confirmacao) : '') + '</div>';
-    }).join('') + '</div>';
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)');
-    var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0;
-    h += '<div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button>' + [0, 1].map(function(l){
-      var e = cf.fila.filter(function(q){ return q.lado === l && q.estado === 'espera'; })[0];
-      return '<button type="button" class="btn" data-cfd-servir="' + l + '"' + (!e || !pronto ? ' disabled' : '') + '>🛎️ ' + (l ? '' : '⬅ ') + escHtml(e ? e.cli.nome : tr('Servir')) + (l ? ' ➡' : '') + '</button>';
-    }).join('') + '</div>';
+    var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0, ultimo = cf.ultimoAtendimento;
+    h += '<div class="cf-rodape"><div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' +
+      escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" data-cfd-servir="' + (alvo ? alvo.lado : '') + '"' +
+      (!alvo || !pronto ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
+      cfRetornoPedido(ultimo ? ultimo.confirmacao : null,ultimo && ultimo.cli.nome) + '</div>';
     corpo.innerHTML = h;
   }
 
@@ -176,6 +187,7 @@
     cf = { fase:'preparando', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:vazio(), t0:cfT, fala:'', novas:[], hearts:[],
       servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:escolhida, assinaturaUsada:false, faEspecial:visita,
       duplo:true, fila:[], criados:0, buscando:false, verificando:0, doceT:0, rouboT:-999 };
+    cf.dono = contaJ; cf.sessao = typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken;
     hsVisitaPreparar(cf);
     if(!contaJ){ cf.modoServidor = 'treino'; preencher(); return; }
     var atual = cf; cfUI();
@@ -197,7 +209,14 @@
   window.cfLoop = function(ms){ if(cf && cf.duplo) return loopDuplo(ms); return orig.loop(ms); };
   // servir para o fã da esquerda/direita (o resto dos cliques continua no cfClique do café)
   document.addEventListener('click', function(ev){
-    var b = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cfd-servir]'); if(!b || b.disabled) return;
-    ev.stopPropagation(); servir(+b.dataset.cfdServir, false);
+    var b = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cfd-cliente], #cfOv [data-cfd-servir]');
+    if(!b || b.disabled || !cf || !cf.duplo || cf.fase !== 'pedido') return;
+    ev.stopPropagation();
+    if(b.dataset.cfdCliente != null){
+      cf.alvoBalcao = esperando().find(function(e){return e.lado === +b.dataset.cfdCliente;}) || null;
+      cfUI();
+      var foco = $('cfCorpo').querySelector('[data-cfd-cliente="'+b.dataset.cfdCliente+'"]');
+      if(foco) foco.focus({preventScroll:true});
+    }else if(cf.alvoBalcao && cf.alvoBalcao.lado === +b.dataset.cfdServir) servir(cf.alvoBalcao.lado,false);
   }, true);
 })();

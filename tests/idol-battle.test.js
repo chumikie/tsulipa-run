@@ -93,7 +93,7 @@ const executar = src.replace(/\}\)\(\);\s*$/, `
   servidor=true; estado.tentativas=estado.max_tentativas; unit=estado.cards.map(function(c){return c.nick;});
   rodadas=treinoShow(); fase='fim';
   desenharMiniaturas=desenharPalco=desenharPolaroid=som=function(){};
-  window.revancheTeste={estado:estado,original:rodadas,get atuais(){return rodadas;}};
+  window.revancheTeste={estado:estado,original:rodadas,get atuais(){return rodadas;},virada:viradaRevanche};
 })();`);
 vm.runInNewContext(executar,local);
 const acao = (nome, campos={}) => controles.click({target:{closest:()=>({
@@ -111,3 +111,10 @@ assert.equal(jogo.atuais[1].meu,jogo.original[0].meu);
 for(let i=0;i<3;i++)acao('proxima-rodada');
 assert.match(areas['#battleCorpo'].innerHTML,/Antes/);
 assert.equal(jogo.estado.tentativas,jogo.estado.max_tentativas);
+
+const rondaAnterior=jogo.original[0];
+const troca={...rondaAnterior,meu:'Nova Idol',eu:rondaAnterior.eu > rondaAnterior.eles ? 0 : rondaAnterior.eles+1,
+  ganhou:!(rondaAnterior.eu > rondaAnterior.eles)};
+assert.match(jogo.virada(troca,0),/battle-virada.+Nova Idol|battle-virada.*Nova Idol/);
+assert.equal(jogo.virada({...troca,meu:rondaAnterior.meu},0),'');
+assert.equal(jogo.virada({...troca,ganhou:rondaAnterior.eu > rondaAnterior.eles},0),'');

@@ -66,7 +66,7 @@
   var EFEITO = {run:[-8, 16, 10, 0], karaoke:[-8, 14, 16, 4], sora:[-7, 18, 6, 0], cafe:[4, 12, 4, 8], battle:[-9, 12, 18, 4], studio:[-3, 10, 14, 6],
     handshake:[-5, 10, 8, 16], bloom:[8, 8, 4, 6], duo:[-3, 12, 6, 16], pet:[4, 8, 2, 12], gacha:[0, 10, 6, 0], mapa:[2, 6, 0, 6], frase:[0, 4, 2, 12], coracao:[0, 2, 2, 10]};
   // Ações confirmadas pelo servidor. Visitantes usam o resultado local da ação, nunca a abertura.
-  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_etapa:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
+  var RPC_JOGO = {terminar_corrida:'run', kt_run_finish:'karaoke', sora_run_finish:'sora', cafe_run_etapa:'cafe', cafe_run_etapa2:'cafe', cafe_concluir:'cafe', handshake_run_finish:'handshake',
     handshake_premio:'handshake', studio_clique:'studio', jardim_regar:'bloom', jardim_colher:'bloom',
     jardim_plantar:'bloom', duo_registrar:'duo', gacha_girar:'gacha', dar_coracao:'coracao'};
   var DESCOBERTA = {battle:1, studio:1, bloom:1};
@@ -144,7 +144,45 @@
     salvar(); avisar(cumpriu ? 'desejo' : 'humor', ev, !!fraco);
   }
 
+  var DESTINOS = {
+    karaoke:'Karaoke⭐Time!',run:'Center⭐Run!',sora:'Sora⭐Jump!',cafe:'Happy⭐Cafe!',
+    battle:'Idol⭐Battle!',studio:'Photo⭐Studio!',handshake:'Handshake⭐Event!',bloom:'Bloom⭐Garden!'
+  };
+  var ROTA_TR = {
+    pt:['Ir ao {lugar}','Abrir mapa'],en:['Go to {lugar}','Open map'],es:['Ir a {lugar}','Abrir mapa'],
+    id:['Ke {lugar}','Buka peta'],th:['ไปที่ {lugar}','เปิดแผนที่'],ja:['{lugar}へ行く','マップを開く']
+  };
+  function rotuloRota(ev){
+    var texto = ROTA_TR[lang()] || ROTA_TR.pt;
+    return DESTINOS[ev] ? texto[0].replace('{lugar}',DESTINOS[ev]) : texto[1];
+  }
+  function rotaDesejo(botao){
+    var d = H.desejo();
+    if(d.feito || !window.petPhoneOpen || typeof window.petClose !== 'function') return false;
+    if(d.ev === 'mapa' || d.ev === 'frase'){
+      if(typeof window.twMapaCarregar !== 'function') return false;
+      window.twMapaCarregar().then(function(){
+        var atual = H.desejo(), mapa = document.getElementById('twMapa');
+        if(!mapa || !botao || !botao.isConnected || !window.petPhoneOpen || atual.feito || atual.ev !== d.ev) return;
+        window.petClose();
+        var expansor = mapa.querySelector('.tw-mapa-botao[aria-expanded="false"]');
+        if(expansor) expansor.click();
+        mapa.scrollIntoView({block:'start'});
+      }).catch(function(){});
+      return true;
+    }
+    if(!DESTINOS[d.ev]) return false;
+    var card = document.querySelector('#hubCards [data-ir="' + d.ev + '"]');
+    var abrir = {bloom:window.bloomAbrir,studio:window.studioAbrir,battle:window.battleAbrir,
+      cafe:window.cfAbrir,handshake:window.hsAbrir}[d.ev];
+    if((!card || card.disabled) && typeof abrir !== 'function') return false;
+    window.petClose();
+    if(typeof abrir === 'function' && (d.ev === 'bloom' || d.ev === 'studio' || d.ev === 'battle' || !card || card.disabled)) abrir();
+    else card.click();
+    return true;
+  }
   var H = window.TW_HUMOR = {
+    rotuloRota:rotuloRota, rotaDesejo:rotaDesejo,
     barras:BARRAS, t:t,
     estado:function(){ ler(); return {energia:est.energia, diversao:est.diversao, brilho:est.brilho, amizade:est.amizade, media:media(), cor:cor(), serie:+est.serie || 0}; },
     cor:function(){ if(!est || donoLido !== chavePessoal(CHAVE)) ler(); return cor(); },
@@ -208,7 +246,8 @@
     return '<div class="twh-app"><p class="twh-intro">' + esc(t('intro')) + '</p>' +
       '<section class="twh-box"><h3>' + svg('diamante', e.cor) + esc(t('humor')) + (e.serie ? '<span class="twh-serie">' + svg('chama', '#ff6f3d', 14) + esc(t('serie', e.serie)) + '</span>' : '') + '</h3>' +
         BARRAS.map(function(b){ return '<div class="twh-b"><span>' + esc(t(b)) + '</span><i role="meter" aria-label="' + esc(t(b)) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + e[b] + '"><b style="width:' + e[b] + '%;background:' + cores[b] + '"></b></i><span class="twh-num" aria-hidden="true">' + e[b] + '/100</span></div>'; }).join('') + '<details class="twh-guia"><summary>' + esc(t('como')) + '</summary>' + BARRAS.map(function(b){return '<p class="twh-ajuda"><strong>' + esc(t(b)) + '</strong> · ' + esc(t(b+'Ajuda')) + '</p>';}).join('') + '<p class="twh-ajuda">' + esc(t('efeitos')) + '</p><p class="twh-ajuda">' + esc(t('corGuia')) + '</p></details></section>' +
-      '<section class="twh-box"><h3>' + svg('estrela', '#ff6fb5') + esc(t('desejo')) + '</h3><div class="twh-d' + (d.feito ? ' twh-ok' : '') + '">' + esc(d.texto) + '</div><p class="twh-vip">' + esc(t(H.vipHoje() ? 'vipSim' : 'vipNao')) + '</p><p class="twh-ajuda">' + esc(d.feito ? t('feito') : t('regra')) + '</p></section>' +
+      '<section class="twh-box"><h3>' + svg('estrela', '#ff6fb5') + esc(t('desejo')) + '</h3><div class="twh-d' + (d.feito ? ' twh-ok' : '') + '">' + esc(d.texto) + '</div><p class="twh-vip">' + esc(t(H.vipHoje() ? 'vipSim' : 'vipNao')) + '</p><p class="twh-ajuda">' + esc(d.feito ? t('feito') : t('regra')) + '</p>' +
+        (d.feito ? '' : '<button type="button" class="btn" data-phone="desejo-ir">' + esc(rotuloRota(d.ev)) + '</button>') + '</section>' +
       '<section class="twh-box"><h3>' + svg('carta', '#ff6fb5') + esc(t('recados')) + '</h3>' + (rec || '<p class="twh-p">' + esc(t('semRecado')) + '</p>') + '</section>' +
       '<section class="twh-box"><h3>' + svg('presente', '#7b3ff0') + esc(t('premios')) + '</h3>' +
         [['trofeu', 'trofeu', 'pTrofeu', '#e0a400'], ['espelho', 'luzes', 'pEspelho', '#ffb300'], ['tapete', 'tapete', 'pTapete', '#c2185b']].map(function(p){
@@ -227,7 +266,7 @@
       try{ p.then(function(r){
         if(!r || r.ok !== true || dono !== (typeof contaJ !== 'undefined' ? contaJ : null) ||
           sessao !== (typeof contaSessaoToken !== 'undefined' ? contaSessaoToken : null)) return;
-        if((nome === 'cafe_run_etapa' || nome === 'cafe_concluir') && (r.confirmado !== true || r.certo !== true)) return;
+        if((nome === 'cafe_run_etapa' || nome === 'cafe_run_etapa2' || nome === 'cafe_concluir') && (r.confirmado !== true || r.certo !== true)) return;
         if(RPC_JOGO[nome]) evento(RPC_JOGO[nome]);
         else if(nome === 'presenca_ping' && args && args.p_frase === 'oi') evento('frase'); }, function(){}); }catch(e){}
       return p;

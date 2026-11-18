@@ -197,7 +197,10 @@ console.log('OK Vida de Idol⭐: objetos no Canvas, encontros por proximidade e 
 
 // A foto só é decodificada quando muda e sai do quadro ao perder o dono ou a origem.
 let momentoFoto={url:'data:image/png;base64,AAAA'}, contaFoto='idol-a', criadas=0;
+const quadroStorage=new Map();
 const fotoCtx={
+  contaJ:{id:'idol-a'}, petData:{ativo:'tsu'},
+  localStorage:{getItem:k=>quadroStorage.get(k) ?? null,setItem:(k,v)=>quadroStorage.set(k,v)},
   Image:class {constructor(){criadas++;this.complete=true;this.naturalWidth=100;this.naturalHeight=60;}},
   petPhoneMomentosConferir(){},
   petPhoneContaChave:()=>contaFoto,
@@ -217,14 +220,25 @@ assert.ok(fotoCtx.petVidaFotoAtual());
 contaFoto='';
 assert.equal(fotoCtx.petVidaFotoAtual(),null);
 
-// A seleção vence a foto mais recente e é validada pelo dono antes do desenho.
+
+// O quadro é relido de uma nova sessão e isolado por conta e Pet.
 contaFoto='idol-a';
-fotoCtx.petPhoneFotoChave=()=>contaFoto;
-fotoCtx.petPhoneMomentos=[{id:'ensaio',dono:'idol-a',url:'blob:ensaio'},{id:'nova',dono:'idol-a',url:'blob:nova'}];
-momentoFoto=fotoCtx.petPhoneMomentos[1];
-fotoCtx.petVidaFotoFixada='ensaio';
-assert.equal(fotoCtx.petVidaFotoAtual().src,'blob:ensaio');
-contaFoto='idol-b';
-assert.equal(fotoCtx.petVidaFotoAtual(),null);
-contaFoto='idol-a';
-assert.equal(fotoCtx.petVidaFotoAtual(),null,'retirar a fotografia não reexibe a mais recente');
+const chave=fotoCtx.petVidaQuadroCampo();
+const mini='data:image/jpeg;base64,AAAA';
+assert.equal(fotoCtx.petVidaQuadroSalvar(chave,{id:'1234-456789',url:mini}),true);
+momentoFoto=null;
+const recarregado={...fotoCtx};
+vm.runInNewContext(pet.slice(pet.indexOf('var petVidaFotoCache'),pet.indexOf('function petVidaOlharLembranca(')),recarregado);
+assert.equal(recarregado.petVidaFotoAtual().src,mini);
+recarregado.contaJ={id:'idol-b'};
+assert.equal(recarregado.petVidaFotoAtual(),null);
+assert.equal(recarregado.petVidaQuadroSalvar(chave,{id:'',url:''}),false);
+recarregado.contaJ={id:'idol-a'};
+recarregado.petData={ativo:'pati'};
+assert.equal(recarregado.petVidaFotoAtual(),null);
+recarregado.petData={ativo:'tsu'};
+assert.equal(recarregado.petVidaFotoAtual().src,mini);
+assert.equal(recarregado.petVidaQuadroSalvar(chave,{id:'',url:''}),true);
+momentoFoto={url:'blob:foto-local'};
+assert.equal(recarregado.petVidaFotoAtual(),null,'retirar a fotografia não reexibe a mais recente');
+assert.equal(quadroStorage.get(chave),'');

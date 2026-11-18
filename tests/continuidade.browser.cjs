@@ -115,7 +115,9 @@ const path = require('node:path');
     }
     await page.locator('#studioX').click();
 
-    await conta('');
+    // A dica de ingrediente pertence ao modo de um cliente. A conta simulada
+    // recebe a resposta sem cafe_run_iniciar e exercita esse fallback.
+    await conta('B');
     await page.evaluate(() => cfAbrir());
     await page.locator('#cfJogar').waitFor();
     await page.locator('#cfJogar').click();
@@ -128,6 +130,7 @@ const path = require('node:path');
     await page.getByText('Era sem cobertura! O resto ficou lindo.').waitFor();
 
     await page.evaluate(() => cfFechar());
+    await conta('');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.evaluate(() => battleAbrir());
     await page.locator('[data-battle="jogar"]').click();

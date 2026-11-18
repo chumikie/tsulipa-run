@@ -479,7 +479,7 @@ function perfHaloTextura(x, cx, cy, r, cor){
   x.fillStyle = fallback; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
 }
 // zoom = true: só o rostinho (foto redonda do perfil) · t = quadro da animação (0 = parado)
-function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
+function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
   av = av || {}; t = t || 0;
   var vis = typeof av.visual === 'string' ? av.visual : '', rk = PERF_RANKVIS[vis] || 0, c = perfChar(av), pet = zoom ? null : perfPetDoAvatar(av);
   if(/^#[0-9a-f]{6}$/i.test(av.cor || '')) c.luz = av.cor;   // lightstick na cor do perfil
@@ -491,8 +491,8 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera){
     // Medido na tela (unidades a partir de tx/ty): cabelo y≈-5,5, boca ≈17, ombros ≈22, bermuda ≈33,
     // pés ≈42 e sombra ≈46; largura x≈0..30. Cada enquadramento mostra uma faixa desse mesmo desenho:
     // rosto = cabelo até o peito · meio = até o quadril · inteiro = dos pés à cabeça (com o Pet).
-    var faixa = camera === 'rosto' ? [-7, 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
-    var largura = camera === 'rosto' ? 30 : camera === 'meio' ? 36 : (pet ? 76 : 44);
+    var faixa = camera === 'rosto' ? [-7, comFlor ? 31 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
+    var largura = camera === 'rosto' ? (comFlor ? 34 : 30) : camera === 'meio' ? 36 : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
     var aceno = av.pose === 'tchau' || av.pose === 'v';

@@ -19,11 +19,11 @@ const historico={
 const drew = { characters: 0, pets: 0, text: [], night: 0, sources: [] };
 const ctx = new Proxy({}, {
   get(target, key) {
-    if (key === 'createRadialGradient') return () => ({addColorStop() {}});
+    if (key === 'createRadialGradient' || key === 'createLinearGradient') return () => ({addColorStop() {}});
     if (key === 'measureText') return (s) => ({width: String(s).length * 8});   // etiqueta de visita (depende do relógio)
     if (key === 'fillText') return (s) => drew.text.push(String(s));
     if (key === 'fillRect') return () => { if (ctx.globalCompositeOperation === 'multiply') drew.night++; };
-    if (key === 'setTransform' || key === 'clearRect' || key === 'drawImage' ||
+    if (key === 'strokeRect' || key === 'setTransform' || key === 'clearRect' || key === 'drawImage' ||
       key === 'save' || key === 'restore' || key === 'fill' || key === 'stroke' ||
       key === 'beginPath' || key === 'arc' || key === 'ellipse' || key === 'translate' ||
       key === 'scale' || key === 'arcTo' || key === 'closePath' || key === 'moveTo' ||

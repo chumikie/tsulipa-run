@@ -58,10 +58,13 @@
     var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
     var resto = Math.max(0, 1 - (cfT - e.t0) / e.limite);
     cf.atendidos++;
+    e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
     if(e.sv && cf.modoServidor === 'novo'){
+      e.confirmacao = 0;
       var atual = cf; atual.verificando = (atual.verificando || 0) + 1;
       contaRpc('cafe_run_etapa2', { p_sessao:e.sv.sessao, p_monta:{ base:m.base, cob:m.cob, enf:m.enf, doce:m.doce }, p_saiu:!!saiu }).then(function(r){
-        if(cf !== atual) return; atual.verificando--;
+        if(cf !== atual) return; atual.verificando--; e.tR = Math.max(e.tR,cfT - 30);
+        e.confirmacao = r && r.ok && r.confirmado ? (r.certo === true ? 1 : 2) : 3;
         if(r && r.ok && r.confirmado){
           atual.pontos = +r.pontos || 0; atual.vidas = +r.vidas; atual.perfeitos = +r.perfeitos || atual.perfeitos; atual.combo = +r.combo || 0;
           if(r.certo){ atual.provaEstado = 'confirmado'; try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(er){} }
@@ -69,7 +72,7 @@
           if(!!r.certo !== e.ok){ e.ok = !!r.certo; }
         } else virarTreino();
         cfUI();
-      }).catch(function(){ if(cf === atual){ atual.verificando--; atual.provaEstado = 'pendente'; virarTreino(); cfUI(); } });
+      }).catch(function(){ if(cf === atual){ atual.verificando--; e.tR = Math.max(e.tR,cfT - 30); e.confirmacao = 3; virarTreino(); atual.provaEstado = 'pendente'; cfUI(); } });
     }
     var px = LADOS[e.lado];
     if(certo){
@@ -100,7 +103,7 @@
       esperando().forEach(function(e){ if(cfT - e.t0 > e.limite) servir(e.lado, true); });
       cf.fila.forEach(function(e){ var bar = $('cfPac' + e.lado); if(bar && e.estado === 'espera'){ var pc = Math.max(0, 100 - (cfT - e.t0) / e.limite * 100); if(typeof cfPacienciaUI === 'function') cfPacienciaUI(bar, pc, $('cfPacEmo' + e.lado)); else bar.style.width = pc + '%'; } });
       var antes = cf.fila.length;
-      cf.fila = cf.fila.filter(function(e){ return !(e.estado === 'reacao' && cfT - e.tR > 90); });
+      cf.fila = cf.fila.filter(function(e){ return !(e.estado === 'reacao' && e.confirmacao !== 0 && cfT - e.tR > 90); });
       if(cf.fila.length !== antes){
         if(cf.vidas <= 0){ if(!cf.verificando) cfFim(); }
         else if(cf.criados >= 12 && !esperando().length && !cf.fila.length){ if(!cf.verificando) cfFim(); }
@@ -124,7 +127,8 @@
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += '<div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.filter(function(q){ return q.lado === l; })[0];
-      return '<div class="cfduplo-p' + (e ? '' : ' vazio') + '"><small>' + (l ? '➡ ' : '⬅ ') + (e ? escHtml(e.cli.nome) : '…') + '</small><div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo' + l + '" aria-hidden="true">😊</b><i id="cfPac' + l + '" style="width:' + (e && e.estado === 'espera' ? 100 : 0) + '%"></i></div></div>';
+      return '<div class="cfduplo-p' + (e ? '' : ' vazio') + '"><small>' + (l ? '➡ ' : '⬅ ') + (e ? escHtml(e.cli.nome) : '…') + '</small><div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo' + l + '" aria-hidden="true">😊</b><i id="cfPac' + l + '" style="width:' + (e && e.estado === 'espera' ? 100 : 0) + '%"></i></div>' +
+        (e && e.estado === 'reacao' ? cfConfirmacaoHtml(e.confirmacao) : '') + '</div>';
     }).join('') + '</div>';
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)');
     var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0;

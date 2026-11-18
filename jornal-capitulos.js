@@ -511,15 +511,15 @@ var JN_BAG_TX = {
   valeu:{pt:'Valeu, {n}!',en:'Thanks, {n}!',es:'¡Gracias, {n}!',id:'Makasih, {n}!',th:'ขอบคุณนะ {n}!',ja:'{n}、ありがとう！'},
   prox:{pt:'Semana que vem tem outra!',en:'Another one next week!',es:'¡La próxima semana hay otro!',id:'Minggu depan ada lagi!',th:'สัปดาห์หน้ามีอีกนะ!',ja:'来週もまたあるよ！'},
   dica:{pt:'A bagunça desta semana já começou: aprenda o gesto jogando nas ruas e resolva em Vida no bairro.',en:"This week's mischief has already started: learn the gesture by playing on the streets and solve it in Neighborhood life.",es:'El lío de esta semana ya empezó: aprende el gesto jugando en las calles y resuélvelo en Vida en el barrio.',id:'Kekacauan minggu ini sudah dimulai: pelajari gesturnya dengan bermain di jalan dan selesaikan di Kehidupan di lingkungan.',th:'ความวุ่นวายของสัปดาห์นี้เริ่มแล้ว: เรียนท่าด้วยการเล่นตามถนน แล้วไปแก้ที่ชีวิตในย่าน',ja:'今週のさわぎはもう始まってるよ：通りで遊んでジェスチャーを覚えて、「まちのくらし」で解決しよう。'},
-  previa:{pt:'Prévia (semana atual)',en:'Preview (this week)',es:'Vista previa (esta semana)',id:'Pratinjau (minggu ini)',th:'ตัวอย่าง (สัปดาห์นี้)',ja:'プレビュー（今週）'}
+  previa:{pt:'Prévia (semana atual)',en:'Preview (this week)',es:'Vista previa (esta semana)',id:'Pratinjau (minggu ini)',th:'ตัวอย่าง (สัปดาห์นี้)',ja:'プレビュー（今週）'},
+  guardar:{pt:'Guardar foto',en:'Save photo',es:'Guardar foto',id:'Simpan foto',th:'บันทึกรูป',ja:'写真を保存'}
 };
 var JN_BAG_MEMBRO = ['Tsu', 'Lirika', 'Pati'];
 function jnBagT(o, v){ var s = jnCapT(o); for(var k in v) s = s.split('{' + k + '}').join(v[k]); return s; }
 function jnBagDados(){
   var B = typeof window !== 'undefined' && window.TW_BAIRRO;
   if(!B || typeof B.desfecho !== 'function' || !window.TW_BICHOS) return null;
-  var previa = false; try{ previa = /[?&]bagunca_previa=1\b/.test(location.search); }catch(e){}
-  try{ var d = B.desfecho(previa ? 'atual' : undefined); if(d) d.previa = previa; return d; }catch(e){ return null; }
+  try{ return B.desfecho() || null; }catch(e){ return null; }   // a prévia (?bagunca_previa=1) é decidida no tw-bairro.js
 }
 function jnBagNick(){ return (typeof contaJ !== 'undefined' && contaJ && contaJ.nick) ? contaJ.nick : 'Idol'; }
 function jnBagTextos(d){   // [narração, [[quem, fala], ...]] de cada quadro; quem: 0-2 trio, 'eu' o seu Idol
@@ -530,8 +530,9 @@ function jnBagTextos(d){   // [narração, [[quem, fala], ...]] de cada quadro; 
     [d.fim, [[d.membro, d.ok ? jnBagT(JN_BAG_TX.valeu, {n:jnBagNick()}) : jnCapT(JN_BAG_TX.prox)]]]
   ];
 }
-function jnBagDesenhar(cv, k){
+function jnBagDesenhar(cv, k, t){
   var d = jnBagDados(); if(!d) return;
+  t = t || 0;
   var Bi = window.TW_BICHOS, x = cv.getContext('2d'), escala = cv.__jnZoomScale || 1, W = cv.width / escala, H = cv.height / escala, cor = ['#9b30d9', '#3cb043', '#4169e1'], txt = jnBagTextos(d)[k];
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.setTransform(escala, 0, 0, escala, 0, 0);
   function rr(a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
@@ -548,7 +549,7 @@ function jnBagDesenhar(cv, k){
   }
   var arrumado = k === 2, chao = H - 8;
   x.save(); rr(0, 0, W, H, 22); x.clip();
-  var cena = false; try{ cena = Bi.cena(x, d.rua, W, H, arrumado, 0); }catch(e){}
+  var cena = false; try{ cena = Bi.cena(x, d.rua, W, H, arrumado, t); }catch(e){}
   if(!cena){ var gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#fff6fd'); gr.addColorStop(1, '#f3e9ff'); x.fillStyle = gr; x.fillRect(0, 0, W, H); }
   // quem aparece: no 1º o membro do trio espantado; no 2º quem resolveu, fazendo o gesto; no 3º quem resolveu e o membro comemorando
   var gente = [];
@@ -569,9 +570,9 @@ function jnBagDesenhar(cv, k){
   var BE = 2.6, bx = W * .74, bchao = chao - 6, bicho = d.bicho;
   if(bicho === 'borboleta'){ bx = arrumado ? W * .7 : W * .78; bchao = chao - 50; }
   if(bicho === 'nuvem'){ bx = arrumado ? W * .86 : W * .76; bchao = arrumado ? H * .6 : H * .74; }
-  try{ Bi.desenhar(x, bicho, bx, bchao, BE, arrumado ? 'feliz' : 'travesso', 0); }catch(e){}
+  try{ Bi.desenhar(x, bicho, bx, bchao, BE, arrumado ? 'feliz' : 'travesso', t); }catch(e){}
   var topo = bchao - 44 * BE + (bicho === 'nuvem' ? 34 : bicho === 'borboleta' ? 20 : 40), hb = bx + 28;
-  if(arrumado){ x.save(); x.fillStyle = '#ff4fa3'; x.translate(hb, topo - 8); x.beginPath(); x.moveTo(0, 4); x.bezierCurveTo(-11, -6, -5, -14, 0, -7); x.bezierCurveTo(5, -14, 11, -6, 0, 4); x.fill(); x.restore(); }
+  if(arrumado){ x.save(); x.fillStyle = '#ff4fa3'; x.translate(hb, topo - 8 + Math.sin(t * .15) * 2); x.beginPath(); x.moveTo(0, 4); x.bezierCurveTo(-11, -6, -5, -14, 0, -7); x.bezierCurveTo(5, -14, 11, -6, 0, 4); x.fill(); x.restore(); }
   else { x.save(); x.fillStyle = '#fff'; x.strokeStyle = '#ff4fa3'; x.lineWidth = 2.5; rr(hb - 12, topo - 28, 26, 22, 10); x.fill(); x.stroke(); x.fillStyle = '#ff4fa3'; x.font = '900 17px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('!', hb + 1, topo - 17); x.restore(); }
   // narração (caixinha amarela) e balões, no mesmo desenho dos capítulos
   var topoFala = 14;
@@ -589,6 +590,41 @@ function jnBagDesenhar(cv, k){
   x.restore();
   jnMoldura(x, rr, W, H);
 }
+/* Movimento leve nos quadros (18/11): os bichos batem asa, piscam e pulam enquanto o desfecho está à vista.
+   Desenha a 10 quadros por segundo (o mesmo passo do painel do bairro), para quase não pesar; para quando sai
+   da tela, quando a aba fica escondida ou com "reduzir movimento" ligado. */
+var jnBagRaf = 0, jnBagRelogio = 0;   // relógio da animação (jnBagT é o texto traduzido: nomes diferentes de propósito)
+function jnBagAnimar(sec){
+  if(jnBagRaf || typeof requestAnimationFrame !== 'function') return;
+  try{ if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+  var cvs = [].slice.call(sec.querySelectorAll('canvas[data-jnbag]')); if(!cvs.length) return;
+  var ultimo = 0;
+  function visivel(){
+    if(!sec.isConnected || (typeof document !== 'undefined' && document.hidden)) return false;
+    var M = window.TWMotionLifecycle;
+    if(M && typeof M.isVisible === 'function') return M.isVisible(sec);
+    try{ var r = sec.getBoundingClientRect(); return r.bottom > 0 && r.top < (window.innerHeight || 0); }catch(e){ return true; }
+  }
+  function passo(agora){
+    jnBagRaf = 0;
+    if(!sec.isConnected) return;
+    if(visivel() && agora - ultimo >= 100){ ultimo = agora; jnBagRelogio += 3; cvs.forEach(function(cv, k){ try{ jnBagDesenhar(cv, k, jnBagRelogio); }catch(e){} }); }
+    jnBagRaf = requestAnimationFrame(passo);
+  }
+  jnBagRaf = requestAnimationFrame(passo);
+}
+function jnBagPodeGuardar(){
+  return typeof petPhoneMomentoGuardar === 'function' && typeof contaJ !== 'undefined' && contaJ && typeof petAtivo === 'function' && petAtivo();
+}
+/* Guarda o último quadro (a rua arrumada) em Momentos⭐ do TsuPhone, como o Camarim e o Moon⭐Duo!.
+   Redesenha em 960×640 para a foto não sair do tamanho do quadrinho da página. */
+function jnBagGuardar(bt){
+  if(!jnBagPodeGuardar()) return;
+  var png = '';
+  try{ var hi = document.createElement('canvas'); hi.width = 960; hi.height = 640; hi.__jnZoomScale = 2; jnBagDesenhar(hi, 2); png = hi.toDataURL('image/png'); }catch(e){}
+  var ok = !!png && petPhoneMomentoGuardar('bairro', png);
+  bt.disabled = ok; bt.textContent = (ok ? '✓ ' : '') + (typeof petPhoneMomentoTexto === 'function' ? petPhoneMomentoTexto(ok ? 1 : 2) : jnCapT(JN_BAG_TX.guardar));
+}
 function jnBagUI(box){
   var d = jnBagDados(); if(!box || !d) return false;
   var T = jnBagTextos(d), dd = d.semana.slice(8) + '/' + d.semana.slice(5, 7);
@@ -598,9 +634,16 @@ function jnBagUI(box){
     '<div class="jncapquadros jnbagq">' + T.map(function(q, k){
       var alt = q[0] + ' ' + q[1].map(function(f){ return (f[0] === 'eu' ? jnBagNick() : JN_BAG_MEMBRO[f[0]]) + ': ' + f[1]; }).join(' ');
       return '<figure class="jncapq"><canvas width="480" height="320" data-jnbag="' + k + '" role="img" aria-label="' + escHtml(jnCapT(JN_CAPS_TX.quadro, k + 1) + ': ' + alt) + '"></canvas></figure>';
-    }).join('') + '</div><p class="jnbagdica">' + escHtml(jnCapT(JN_BAG_TX.dica)) + '</p>';
+    }).join('') + '</div>' +
+    (jnBagPodeGuardar() ? '<button type="button" class="jnbagfoto" data-jnbagfoto="1">💗 ' + escHtml(jnCapT(JN_BAG_TX.guardar)) + '</button>' : '') +
+    '<p class="jnbagdica">' + escHtml(jnCapT(JN_BAG_TX.dica)) + '</p>';
   box.insertBefore(sec, box.firstChild);
+  var bt = sec.querySelector('[data-jnbagfoto]');
+  if(bt) bt.addEventListener('click', function(){ jnBagGuardar(bt); });
+  if(!d.previa && window.TW_BAIRRO && typeof TW_BAIRRO.desfechoVisto === 'function') try{ TW_BAIRRO.desfechoVisto(); }catch(e){}
   [].forEach.call(sec.querySelectorAll('canvas'), function(cv, k){ try{ jnBagDesenhar(cv, k); }catch(e){} });
+  if(jnBagRaf){ cancelAnimationFrame(jnBagRaf); jnBagRaf = 0; }
+  jnBagAnimar(sec);
   return true;
 }
 /* Leitor da Temporada 1, inerte enquanto bloqueada: só mostra episódios que jnT1Disponivel libera

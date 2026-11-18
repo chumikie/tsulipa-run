@@ -51,11 +51,11 @@
 | Sistema | Estado | Próximo passo |
 |---|---|---|
 | Mapa (2 níveis) | Ruas vivas: visitas surpresa do trio, bichinhos, Idols online com frases prontas, salas por dentro | — |
-| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; desfecho no Idol⭐News! todo domingo; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos |
+| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **caderninho dos 6 bichos** (selo por rua, título ao completar); desfecho no Idol⭐News! todo domingo, avisado no "Hoje", no painel e por recado do bicho no Chat; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos |
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
 | Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
-| Idol⭐News! | Pódios; capítulos do trio (um por domingo); **"Bagunça da semana · como terminou"** no topo dos capítulos a partir de 22/11 (3 quadros: o bicho apronta, quem resolveu faz o gesto — você ou o trio com os vizinhos —, a rua arrumada; prévia `?bagunca_previa=1`); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
+| Idol⭐News! | Pódios; capítulos do trio (um por domingo); **"Bagunça da semana · como terminou"** no topo dos capítulos a partir de 22/11 (3 quadros com movimento leve: o bicho apronta, quem resolveu faz o gesto — você ou o trio com os vizinhos —, a rua arrumada; "Guardar foto" manda o último quadro para Momentos⭐; prévia `?bagunca_previa=1`); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
 | Calendário, Fichinhas, Álbum | Só leitura | Dia do aniversário da Lirika (ficha diz só "maio") |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
 | Admin | Moderação, telemetria, Montar Idol; ferramentas baixam só para admin (#110) | — |

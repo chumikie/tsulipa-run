@@ -27,6 +27,13 @@
       '.twb-barra{height:6px;border-radius:3px;background:rgba(0,0,0,.08);overflow:hidden;margin:4px 0}.twb-barra i{display:block;height:100%;background:var(--twb-c)}' +
       '.twb-pr{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.twb-pr span{font-size:.72rem;border-radius:999px;padding:2px 8px;background:rgba(0,0,0,.05)}.twb-pr span.on{background:var(--twb-c);color:#fff}' +
       '.twb-rua .twb-bt{padding:6px 12px;font-size:.82rem;margin-top:4px}' +
+      '.twb-cad-sub{margin:0 0 8px;font-size:.88rem}.twb-cad-tit{font-style:normal;font-size:.78rem;font-weight:900;color:#fff;background:linear-gradient(135deg,#9b30d9,#ff4fa3);border-radius:999px;padding:2px 10px}' +
+      '.twb-cads{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}' +
+      '.twb-cad-i{margin:0;border-radius:14px;padding:6px 4px;text-align:center;background:#fff;border:1.5px dashed rgba(0,0,0,.14)}' +
+      '.twb-cad-i.on{border-style:solid;border-color:var(--twb-c);background:color-mix(in srgb,var(--twb-c) 9%,#fff)}' +
+      'html.dark .twb-cad-i,body.dark .twb-cad-i{background:rgba(255,255,255,.06)}html.dark .twb-cad-i.on,body.dark .twb-cad-i.on{background:rgba(255,255,255,.12)}' +
+      '.twb-cad-i canvas{width:72px;height:72px;display:block;margin:0 auto}.twb-cad-i b{display:block;font-size:.76rem;line-height:1.2}.twb-cad-i small{font-size:.7rem;opacity:.75}' +
+      '.twb-fim{display:inline-flex;gap:6px;align-items:center}.twb-fim i{font-style:normal;font-size:.72rem;font-weight:900;color:#fff;background:#ff4fa3;border-radius:999px;padding:2px 8px}' +
       '.twb-gestos{display:flex;flex-wrap:wrap;gap:6px}.twb-gestos span{border-radius:999px;padding:4px 10px;background:rgba(155,48,217,.1);font-size:.85rem;font-weight:700}' +
       '.twb-guia{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.twb-guia p{margin:0;flex:1 1 220px;font-size:.9rem}' +
       '.twb-regra{font-size:.76rem;opacity:.7;text-align:center;margin:8px 0 0}' +
@@ -53,6 +60,7 @@
       else if(a === 'resolver'){ if(resolver()) ui(); }
       else if(a === 'pular'){ pularGuia(); ui(); }
       else if(a === 'jogar') jogar(b.getAttribute('data-j'));
+      else if(a === 'news'){ fechar(); if(typeof window.jornalAbrir === 'function') window.jornalAbrir('vida'); }
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
@@ -80,7 +88,7 @@
     if(!ov) return; ler();
     ov.querySelector('#twBairroTit').textContent = t('tit');
     ov.querySelector('#twBairroSub').textContent = t('sub');
-    var g = guia(), b = bagunca(), h = '';
+    var g = guia(), b = bagunca(), h = '', df = typeof B.desfecho === 'function' ? B.desfecho() : null;
     var guiaH = '';   // 17/11: a bagunça (a cena) vem primeiro; o guia dos primeiros dias depois
     if(g.ativo) guiaH = '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
       esc(t('guiaTxt', {r:(g.amanha.length ? g.amanha.map(ruaNome).join(' + ') : '—')})) + '</p><button type="button" class="twb-bt twb-bt-claro" data-twb="pular">' + esc(t('pular')) + '</button></section>';
@@ -90,10 +98,24 @@
       (b.ok ? '<p class="twb-ok">✓ ' + esc(t('resolvida')) + '</p><p>' + esc(b.fim) + '</p>' :
         '<p>' + esc(t('precisa', {g:RUAS[b.gesto].gesto.emoji + ' ' + gestoNome(b.gesto)})) + '.' + (b.sabe ? '' : ' ' + esc(t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)})))) + '</p>' +
         '<button type="button" class="twb-bt' + (b.sabe ? '' : ' twb-bt-falta') + '" data-twb="resolver"' + (b.sabe ? '' : ' disabled') + '>' + esc(b.sabe ? RUAS[b.gesto].gesto.emoji + ' ' + t('fazer') : '🔒 ' + t('faltaAprender')) + '</button>') +
-      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') + '</section>' + guiaH;
+      (baguncaPassada() ? '<p class="twb-regra">' + esc(t('vizinhos')) + '</p>' : '') +
+      // 18/11: a semana que acabou tem desfecho no Idol⭐News! (3 quadros); o botão leva direto até lá
+      (df ? '<button type="button" class="twb-bt twb-bt-claro twb-fim' + (df.visto ? '' : ' twb-fim-novo') + '" data-twb="news">' + esc(t('verFim')) + (df.visto ? '' : ' <i>' + esc(t('novoSelo')) + '</i>') + '</button>' : '') +
+      '</section>' + guiaH;
     var ap = gestosAprendidos();
     h += '<section class="twb-box"><h3>' + esc(t('gestos')) + '</h3>' + (ap.length ? '<div class="twb-gestos">' + ap.map(function(r){
       return '<span>' + esc(RUAS[r].gesto.emoji + ' ' + gestoNome(r)) + '</span>'; }).join('') + '</div>' : '<p class="twb-regra" style="text-align:left;margin:0">' + esc(t('semGesto')) + '</p>') + '</section>';
+    // caderninho: os 6 bichos, um por rua, com selo em quem você já ajudou (18/11)
+    if(typeof B.caderno === 'function'){
+      var cd = B.caderno();
+      h += '<section class="twb-box twb-cad"><h3>' + esc(t('cadTit')) + (cd.completo ? ' <em class="twb-cad-tit">' + esc(cd.titulo) + '</em>' : '') + '</h3>' +
+        '<p class="twb-cad-sub">' + esc(cd.completo ? t('cadGanhou', {t:cd.titulo}) : t('cadSub', {n:cd.feitos, t:cd.total})) + '</p>' +
+        '<div class="twb-cads">' + cd.itens.map(function(i){
+          return '<figure class="twb-cad-i' + (i.ok ? ' on' : '') + '" style="--twb-c:' + RUAS[i.rua].cor + '">' +
+            '<canvas width="96" height="96" data-bicho="' + esc(i.bicho) + '" data-ok="' + (i.ok ? '1' : '') + '" role="img" aria-label="' + esc(i.quem + ' · ' + i.ruaNome + (i.ok ? ' ✓' : '')) + '"></canvas>' +
+            '<figcaption><b>' + esc(i.quem) + '</b><small>' + esc(i.ok ? i.ruaNome : t('cadFalta')) + '</small></figcaption></figure>';
+        }).join('') + '</div></section>';
+    }
     h += '<section class="twb-box"><h3>' + esc(t('ruas')) + '</h3><div class="twb-ruas">' + ORDEM.map(function(r){
       var k = bico(r), aberta = !g.ativo || g.abertas.indexOf(r) >= 0, pc = k.nivel >= 3 ? 100 : Math.round((k.pts - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) / (k.prox - (k.nivel ? NIVEIS[k.nivel - 1] : 0)) * 100);
       return '<article class="twb-rua' + (aberta ? '' : ' twb-off') + '" style="--twb-c:' + RUAS[r].cor + '"><b>' + esc(RUAS[r].emoji + ' ' + ruaNome(r)) + (aberta ? '' : ' · ' + esc(t('emBreve'))) + '</b>' +
@@ -106,7 +128,21 @@
         '<small>' + esc(t('conta', {j:jogosTxt(r)})) + '</small>' + (k.nivel < 3 ? botaoJogo(r) : '') + '</article>';
     }).join('') + '</div><p class="twb-regra">' + esc(t('regra')) + '</p></section>';
     ov.querySelector('#twBairroCorpo').innerHTML = h;
+    cadernoDesenhar();
     desenharCena(b);
+  }
+  // caderninho: cada bichinho num quadradinho — feliz com selo, cinza enquanto você não ajudou
+  function cadernoDesenhar(){
+    var Bi = window.TW_BICHOS; if(!ov || !Bi) return;
+    [].forEach.call(ov.querySelectorAll('.twb-cads canvas'), function(cv){
+      if(typeof window.twNitido === 'function' && !cv.__twN) window.twNitido(cv);
+      var x = cv.getContext('2d'), W = cv.width, H = cv.height, ok = !!cv.getAttribute('data-ok');
+      x.clearRect(0, 0, W, H);
+      if(!ok){ x.save(); x.globalAlpha = .4; }
+      try{ Bi.desenhar(x, cv.getAttribute('data-bicho'), W / 2, H - 10, 1.25, ok ? 'feliz' : 'travesso', 0); }catch(e){}
+      if(!ok) x.restore();
+      else coracao(x, W - 16, 16, 8, '#ff4fa3');
+    });
   }
   // cena da bagunça: o seu Idol (com o gesto, se já resolveu) e o bichinho, sobre a cor da rua
   function desenharCena(b, t){

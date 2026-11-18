@@ -392,6 +392,8 @@
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    desf:{pt:'Como terminou a bagunça da semana?',en:"How did the week's mischief end?",es:'¿Cómo terminó el lío de la semana?',id:'Bagaimana akhir kekacauan minggu ini?',th:'ความวุ่นวายประจำสัปดาห์จบยังไง?',ja:'今週のさわぎはどうなった？'},
+    desfSub:{pt:'{q} · {r} · no Idol⭐News!',en:'{q} · {r} · in Idol⭐News!',es:'{q} · {r} · en Idol⭐News!',id:'{q} · {r} · di Idol⭐News!',th:'{q} · {r} · ใน Idol⭐News!',ja:'{q}・{r}・Idol⭐News!で'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
     erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
   };
@@ -437,6 +439,11 @@
     var cp = capHoje(), hj = C ? C.hoje() : '';
     if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
       linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    // 3b. desfecho da bagunça da semana (Vida no bairro → Idol⭐News!), a partir do domingo
+    var B4 = window.TW_BAIRRO;
+    if(B4 && typeof B4.desfecho === 'function'){ try{ var df = B4.desfecho();
+      if(df) linha(df.visto, 'uva', 'news', esc(thj('desf')), esc(thj('desfSub', {q:df.quem, r:df.ruaNome})),
+        df.visto ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }catch(e){} }
     // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){

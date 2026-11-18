@@ -1,57 +1,37 @@
-# Mapa do código da página inicial (index.html + módulos)
+# Mapa do código da página inicial
 
-> **Retrato de 02/11/2026.** Desde então várias partes passaram a baixar sob demanda (corrida, pet, perfil, Duo, admin, bairro, Encontro, Karaoke dividido). A lista atual está em [`RETOMADA.md`](RETOMADA.md#arquivos-sob-demanda-leveza).
+Referência técnica atualizada em 18/11/2026. O estado do projeto e as pendências ficam em [RETOMADA.md](RETOMADA.md). A extração original dos módulos está descrita em [REFATORACAO_INDEX.md](REFATORACAO_INDEX.md).
 
-Resultado da refatoração da PR #62 (02/11/2026). O `index.html` passou de ~876 KB para ~218 KB sem mudar nada
-na tela: os blocos grandes foram para arquivos próprios. Método e conferências de cada etapa:
-`docs/REFATORACAO_INDEX.md`.
+## Ordem de carregamento
 
-## Como a página carrega (ordem importa)
+1. O `<head>` de `index.html` carrega os utilitários de nitidez, movimento e avatar, além dos estilos. Preserve a ordem das folhas e dos blocos de CSS inline ao alterar a cascata.
+2. Antes do script principal entram o cliente Supabase, `pet-sync.js`, `tw-i18n-base.js` e o arquivo do idioma ativo quando ele tem traduções separadas. Em seguida vêm os módulos de cada área e as funções que solicitam os arquivos adicionais.
+3. O visual novo é o padrão. Quando ativo, o HTML carrega `tw-celular.css`, `tw-humor.js`, `tw-bichos.js`, `tw-bairro.js`, `tw-calendario.js`, `tw-celular.js` e `tw-presenca.js`. Em Ajustes, o visual clássico também pode carregar esse conjunto ao voltar para o visual novo.
+4. O script principal inicializa o estado e liga os eventos das janelas. No fim do HTML entram `tw-windows.js` e `karaoke-tickets.js`. O Mapa começa a baixar após o evento `load`, usando um intervalo ocioso quando o navegador oferece essa opção.
 
-1. `<head>`: `centerrun.css` (base do site + Center⭐Run) → `pet.css` → `perfil.css` → `hub.css` → `gacha.css`
-   → `duo.css` → `encontro.css`, intercalados com os `<style>` que sobraram no `index.html` (regras mistas e admin),
-   na mesma ordem de cascata de antes.
-2. Scripts compartilhados: `tw-motion-lifecycle.js`, `tw-avatar-items.js`, `tw-avatar-hair.js`, Supabase,
-   `pet-sync.js`, `tw-i18n.js` (traduções).
-3. **Módulos (só declaram funções e tabelas fixas, não executam nada ao carregar):**
-   `centerrun.js` → `pet.js` → `perfil.js` → `gacha.js` → `duo.js` → `encontro.js` → `hub.js` → `conta.js` → `admin.js`.
-4. **Script principal do `index.html`**: cria o estado, monta as janelas, liga os eventos e inicia tudo, na mesma
-   ordem de antes (por isso ele pode chamar funções dos módulos em qualquer ponto).
-5. Depois: `tw-index2-ux-fixes` (inline), `tw-windows.js`, `karaoke-tickets.js`.
+## Onde alterar cada área
 
-## Onde fica cada coisa
+| Área | Arquivos e responsabilidades |
+|---|---|
+| Estrutura, estilos e janelas | `index.html` reúne o HTML, a inicialização e os eventos compartilhados. `tw-windows.js` trata das janelas. `centerrun.css` inclui estilos compartilhados e cada área tem sua própria folha. |
+| Início e visual novo | `hub.js` monta cards, missões, vitrine e palco. `hub-layout.js` organiza o hub. `tw-celular.js` e `tw-celular.css` montam a interface do TsuPhone e suas páginas. |
+| Center⭐Run! | `centerrun.js` mantém entrada, estado compartilhado e desenho de personagens. `centerrun-corrida.js` reúne a execução da corrida e é solicitado ao entrar no jogo. |
+| Backstage⭐Pet! | `pet.js` mantém estado, alertas e entrada. `pet-sala.js` monta a sala, ações e minijogos ao abrir o Pet ou pedir a foto da corrida. `pet-sync.js` concentra a sincronização com a conta. |
+| Perfil, Montar Idol e conta | `perfil.js` mantém estado e integração com a conta. `perfil-tela.js` carrega ao abrir o Perfil. `charmaker.js` reúne o editor. `conta.js` trata do login e das operações da conta. |
+| Star⭐Gacha!, álbum e loja | `gacha.js`, `gacha-po.js` e `album.js` tratam dos giros, do pó e das coleções. `shop.js` reúne a loja. |
+| Handshake⭐Event! e Happy⭐Cafe! | `jogos-base.js` oferece dados usados no Início, no Pet e no jornal. O primeiro acesso a qualquer um dos jogos baixa, em ordem, `handshake.js`, `cafe.js`, `cafe-gorjeta.js`, `cafe-vip.js`, `cafe-duplo.js` e `flores.js`. |
+| Moon⭐Duo! | `duo-base.js` mantém estado, cenários e funções compartilhadas com outras telas. Ao abrir o Duo, a base carrega `duo.js`, `duo-tela.js` e `duo-pedido.js`. |
+| Encontro do dia | `encontro-base.js` determina o dia em Brasília, sorteia o encontro e expõe o botão do Hoje. Ao abrir o Encontro, `encontro.js` desenha a cena, anima a dança e trata dos toques e da foto. |
+| Mapa e Vida no bairro | `mapa-textos.js` reúne textos e `tw-mapa.js` monta o Mapa. `tw-bairro.js` mantém a lógica da semana e alimenta o Hoje e o Chat. `tw-bairro-tela.js` carrega ao abrir o painel ou quando uma ação guiada precisa dele. |
+| Idol⭐News! e Calendário | `jornal.js` monta o jornal, incluindo pódios e novidades. `jornal-capitulos.js` baixa ao abrir o jornal ou o Calendário. `tw-calendario.js` monta a agenda no visual novo. |
+| Bloom⭐Garden!, Photo⭐Studio! e Idol⭐Battle! | `bloom.js` mantém o jardim. `studio.js` baixa ao abrir o Studio ou quando o jornal precisa montar a capa. `battle.js` e `battle.css` baixam ao abrir o Battle. |
+| Administração | `admin-base.js` mantém o estado e os dados compartilhados. `perfil.js` solicita `admin.js` quando a conta retorna com permissão de admin. |
+| Karaoke⭐Time! | `karaoke-time.html` é a página da sala. Ela carrega `karaoke-ranking.js` (classificação e música da semana), `karaoke-biblioteca.js` (trilhas e prévias), `karaoke-palco-desenho.js` (desenho dos enfeites) e `karaoke-show.js` (show de ritmo) junto dos demais scripts da sala. |
 
-| Arquivo | O que tem | Tamanho |
-|---|---|---|
-| `index.html` | Estrutura da página, estado de cada área, montagem das janelas, eventos, inicialização, ponte com o Karaoke⭐Time!/Sora⭐Jump! e regras de CSS mistas | ~218 KB |
-| `centerrun.js` / `centerrun.css` | Center⭐Run!: personagens (`drawChar`), corrida, cenário vivo, ranking local, foto/photocard, PNG do avatar, temas da temporada, easter eggs, outdoors, obstáculos, Temporada 2 · CSS: base visual do site inteiro | ~218 KB |
-| `pet.js` / `pet.css` | Backstage⭐Pet!: camarim, ações, câmera, coleção, Meu Pet, sons, conversa, estágios, minijogos, temas do camarim | ~118 KB |
-| `perfil.js` / `perfil.css` | Perfil público e pessoal, Estúdio de foto, Montar Idol, lojinha, nuvem, presente diário | ~107 KB |
-| `hub.js` / `hub.css` | Tela de início: cards, missões, Top Idols, TsuLiPa⭐TV, insígnia nova, busca, música, vitrine | ~83 KB |
-| `duo.js` / `duo.css` | Moon⭐Duo!: desenho da cena, telas, abas, lojinha, itens travados, aviso | ~39 KB |
-| `gacha.js` / `gacha.css` | Star⭐Gacha!: giro, card do Idol, últimos cards, zoom | ~16 KB |
-| `conta.js` | Login com Google, caixa de login, carregar/importar a conta, estrelas e ranking no servidor, modo teste com parceiras, apagar conta (LGPD) | ~13 KB |
-| `admin.js` / `admin.css` | Modo admin (moderação): painel, ferramentas, Montar o Idol, avisos, missões e "Liberar tudo"; o servidor confere `eh_admin()` | ~19 KB |
-| `encontro.js` / `encontro.css` | Encontro do dia: cena, halo, emojis, ordem do trio, prêmio | ~11 KB |
-| `pet-sync.js` | Sincronização do pet com a nuvem (única camada; não duplicar) | — |
-| `tw-i18n.js` | Traduções (en/es/th/ja) usadas pela página inicial | ~238 KB |
+## Ao editar
 
-## O que ainda mora no index.html (de propósito)
-
-- **Estado e ordem de execução:** variáveis com valor inicial calculado (`document.createElement`, `localStorage`…),
-  `addEventListener`, `setInterval`, invólucros da Temporada 2 (`reset = function…`) e as chamadas de início
-  (`hubMostrar()`, `petAlertLigar()`…). Mover isso mudaria a ordem em que as coisas acontecem.
-- **Tabelas lidas antes da própria declaração** (ex.: `PERF_LOJA`, `PERF_POSES`, `LOJA_EXTRA`): se fossem para um
-  módulo, passariam a existir mais cedo do que antes.
-- Pequenos restos sem dono claro (aniversário do jogador, rodapé, botão de som das janelas, look atual no servidor,
-  acessórios comprados, frases da temporada dos pets): poucos e ligados a várias áreas.
-
-## Como mexer daqui pra frente
-
-- **Função nova de uma área:** declare no módulo da área (ex.: `pet.js`). Nada no módulo pode executar ao carregar;
-  quem chama é o script principal ou um evento. O teste `tests/index-modules.test.js` acusa se o módulo executar algo.
-- **Estado ou evento novo:** no script principal do `index.html`, perto do resto da área.
-- **CSS novo:** no `.css` da área. Regra que mistura áreas fica no `<style>` do `index.html`.
-- **Mudou um arquivo?** Suba o `?v=` dele no `index.html` (cache do navegador).
-- **Testes de texto** leem `index.html` + módulos com `tests/site-source.js` (lista `MODULOS`). Arquivo novo entra lá.
-- Antes de enviar: `node tests/run-all.js`.
+- Preserve na base o estado e as funções que o restante da página usa antes de abrir a área. Declarações repetidas na parte sob demanda podem sobrescrever o estado já inicializado. `tests/index-modules.test.js` verifica as divisões.
+- Atualize o `?v=` no ponto que carrega o arquivo alterado. Para uma parte sob demanda, procure o endereço no módulo que a solicita, além das referências diretas no HTML.
+- Ao alterar traduções da página inicial, edite `tw-i18n.js` e rode `node tools/i18n/dividir.js` para atualizar os arquivos servidos.
+- Ao mover código entre módulos, confira a ordem usada pelos testes de leitura em `tests/site-source.js`.
+- Rode `node tests/run-all.js` antes de enviar.

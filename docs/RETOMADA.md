@@ -19,9 +19,9 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `32cfd97` (18/11, manhã), publicada na Vercel. Últimos merges: #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke).
-- **PRs abertas:** #112 (Encontro do dia sob demanda + esta reorganização dos documentos), em draft.
-- **CI (7 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `browser-karaoke-room` ×3.
+- **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke).
+- **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
 **Ideia:** um mundo de Idols do TsuLiPa (BRS48). Você monta o seu Idol, joga, ganha estrelas, cuida do pet, decora o camarim, passeia pela cidade e convive com outros jogadores por recados, corações, frases prontas e fotos, sem chat livre.
@@ -54,7 +54,7 @@
 | Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **bicos escondidos** desde a #109 | Capítulo de domingo no Idol⭐News! fechando a bagunça; decidir quando liberar os bicos |
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
-| Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado | Cena sob demanda na #112 |
+| Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
 | Idol⭐News! | Pódios, capítulos (um por terça); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
 | Calendário, Fichinhas, Álbum | Só leitura | Dia do aniversário da Lirika (ficha diz só "maio") |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
@@ -67,7 +67,10 @@
 | `pet.js` | `pet-sala.js` | Ao abrir o pet ou o 📸 da corrida |
 | `perfil.js` | `perfil-tela.js` | Ao abrir um Perfil |
 | `jogos-base.js` | Handshake e Café | Ao abrir o jogo |
-| — | `battle.js`, Photo⭐Studio!, `jornal-capitulos.js`, `tw-mapa.js` | Ao abrir (o Mapa logo depois da abertura) |
+| — | `battle.js` e `battle.css` | Ao abrir o Battle |
+| — | `studio.js` | Ao abrir o Studio ou montar a capa do jornal |
+| `jornal.js` | `jornal-capitulos.js` | Ao abrir o jornal ou o Calendário |
+| `mapa-textos.js` | `tw-mapa.js` | Logo depois da abertura |
 | `tw-bairro.js` | `tw-bairro-tela.js` | Ao abrir o painel, ou no Mapa nos dias guiados |
 | `duo-base.js` | `duo.js`, `duo-tela.js`, `duo-pedido.js` | Ao abrir o Duo |
 | `admin-base.js` | `admin.js` | Quando o Perfil confirma conta admin |
@@ -97,10 +100,8 @@
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Merge da #112.
-- Capítulo de domingo da bagunça.
+- Merge da PR do capítulo de domingo; conferir o primeiro desfecho de verdade no domingo 22/11.
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
-- Atualizar `MAPA_DO_CODIGO.md`, que é de 02/11 e não conhece as divisões.
 
 **Nunca testado de verdade:** login real em todos os fluxos novos, iPhone/Android físicos, sons ouvidos.
 
@@ -115,6 +116,7 @@
 ## Documentos
 - **Vivos:**
   - este arquivo;
+  - [`MAPA_DO_CODIGO.md`](MAPA_DO_CODIGO.md): pontos de entrada, módulos e carregamento;
   - [`../supabase/sql/README.md`](../supabase/sql/README.md): o que está aplicado no banco;
   - [`ECONOMIA_ESTRELAS.md`](ECONOMIA_ESTRELAS.md): retrato de 13/11.
 - **Propostas e planos:**
@@ -124,7 +126,6 @@
   - `PROPOSTA_MUSICA_DA_SEMANA.md`;
   - `PLANO_SALA_KARAOKE.md`.
 - **Referência com data** (pode estar defasada):
-  - `MAPA_DO_CODIGO.md` (02/11);
   - `REFATORACAO_INDEX.md` (02/11);
   - `RAIOX_JOGOS.md` (13/11; as notas são anteriores às melhorias de 13–18/11);
   - `qa/`.

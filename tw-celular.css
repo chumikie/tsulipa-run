@@ -143,6 +143,8 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 .twc-chips button[aria-pressed="true"]{background:var(--twc-roxo);border-color:var(--twc-roxo);color:#fff!important;box-shadow:0 3px 0 #4a1fb0}
 .twc-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;padding:10px 16px;border-radius:999px;border:3px solid #fff;font-size:15px;font-weight:800;color:#fff!important;
   background:linear-gradient(100deg,#7b3ff0,#9b30d9 50%,#c2367f);box-shadow:0 4px 0 #4a1fb0;box-sizing:border-box}
+.twc-estreia{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:8px;margin:0 0 10px}
+.twc-estreia .twc-btn{text-align:center;line-height:1.2}
 .twc-btn-claro{background:#fff;border:2px solid var(--twc-borda);color:var(--twc-roxo-e)!important;box-shadow:0 3px 0 var(--twc-sombra)}
 
 /* abertura (antes do "Toque para começar") */

@@ -166,6 +166,8 @@
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
       if(a === 'mural-retry'){ carregarMural(); return; }
+      if(a === 'duo' && logado() && typeof duoAbrir === 'function'){ fechar(); duoAbrir(); return; }
+      if(a === 'momentos' && foto && foto.guardada){ studioMomentos(); return; }
       if(a === 'publicar'){ publicar(); return; }
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
@@ -214,6 +216,7 @@
   function clicar(){
     var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
+    if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
     if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       if(sess !== sessao) return;
@@ -226,6 +229,7 @@
       // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
+      if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', true);
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
@@ -271,6 +275,19 @@
       foto.guardada = true; msg = MOMENTOS[L()][1]; ui();
     }catch(e){ msg = t('erro'); ui(); }
   }
+  function studioMomentos(){
+    if(!logado() || typeof petAtivo !== 'function' || !petAtivo()) return;
+    var dono = donoFoto(), sess = sessao;
+    TW_CARGA.abrir('Backstage⭐Pet!', petSalaCarregar, function(){
+      if(!sessaoAtiva(sess, dono)) return;
+      petVeioHub = true;
+      petOpenUI();
+      if(petOpen && petPhoneAbrir('fotos')){
+        petPhoneFotosAbaAbrir('momentos');
+        fechar();
+      }
+    });
+  }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
       return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + '<span>' + esc(nomeOpc(tipo, v)) + '</span><i class="stcheck" aria-hidden="true">✓</i></button>'; }).join('') + '</div></div>';
@@ -297,7 +314,7 @@
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';

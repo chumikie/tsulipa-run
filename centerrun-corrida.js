@@ -340,6 +340,7 @@ function end(){
   if(cm) cm.acabou = true;
   if(state==='over')return;
   state='over';sfx.over();sync();shake=14;
+  if(!isTestGame && window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('run', true);
   document.body.classList.remove('jogando');
   $('jb').style.display='none';
   $('pause').style.display='none';

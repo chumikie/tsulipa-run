@@ -77,6 +77,38 @@ async function rodar(browser,base,nome,opcoes){
   return falhas;
 }
 
+async function conferirEstreia(browser, base){
+  for(const jogo of ['run', 'studio']){
+    const ctx = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+    try{
+      await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/, r => r.abort());
+      const page = await ctx.newPage();
+      await page.addInitScript(() => localStorage.setItem('tw_cel_tut_v1', '1'));
+      await page.goto(base + '/index.html');
+      await page.addScriptTag({content:FALSO});
+      await page.evaluate(() => __instalarFalso());
+      if(await page.locator('[data-f="manutTentar"]').isVisible()) await page.locator('[data-f="manutTentar"]').click();
+      await page.locator('[data-a="comecar"]').click();
+      const botao = page.locator('[data-estreia="' + jogo + '"]');
+      const pos = await botao.boundingBox();
+      assert.ok(pos && pos.y >= 0 && pos.y + pos.height <= 844);
+      await botao.click();
+      if(jogo === 'run'){
+        await page.locator('#nick').fill('Estreia');
+        await page.locator('#play').click();
+      }else{
+        await page.locator('#studioOv [data-st="clique"]').click();
+      }
+      await page.waitForFunction(() => TW_CELULAR.estreiaMedidas().conclusaoMs !== null, null, {timeout:25000});
+      const medidas = await page.evaluate(() => TW_CELULAR.estreiaMedidas());
+      assert.equal(medidas.atividade, jogo);
+      assert.ok(medidas.escolhaMs >= 0 && medidas.inicioMs >= medidas.escolhaMs && medidas.conclusaoMs >= medidas.inicioMs);
+      if(jogo === 'studio') await page.locator('#studioOv [data-st="salvar"]').waitFor();
+    }finally{ await ctx.close(); }
+  }
+  console.log('✓ estreia: visitante conclui corrida e foto, com tempos de escolha, início e conclusão');
+}
+
 async function conferirCafe(browser,base){
   const ctx=await browser.newContext({viewport:{width:320,height:640},isMobile:true,hasTouch:true});
   try{
@@ -135,6 +167,7 @@ async function conferirCafe(browser,base){
   const base='http://127.0.0.1:'+server.address().port,browser=await chromium.launch();
   let falhas=[];
   try{
+    await conferirEstreia(browser,base);
     await conferirCafe(browser,base);
     falhas=falhas.concat(await rodar(browser,base,'celular',{viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true}));
     falhas=falhas.concat(await rodar(browser,base,'computador',{viewport:{width:1280,height:800},deviceScaleFactor:1.25}));

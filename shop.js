@@ -72,6 +72,7 @@ function shopLookEstado(){
 function shopLookHtml(){
   return '<div class="shoplook" id="shopLook" role="status" aria-live="polite"></div>' +
     '<div class="btns"><button type="button" class="btn" id="shopLookFoto">📸 ' + escHtml(tr('Foto do Look do dia')) + '</button></div>' +
+    '<button type="button" class="btn alt" id="shopLookStudio" hidden>Photo⭐Studio!</button>' +
     '<p class="perfmsg" id="shopLookMsg" hidden></p>';
 }
 function shopLookUI(){
@@ -82,6 +83,13 @@ function shopLookUI(){
     escHtml(tr('As meias no mesmo tom completam o look.')) + '</span><em>' +
     escHtml(e.completo ? '✨ ' + tr('Look completo!') : e.combina ? '💖 ' + tr('Combina com o tema!') : '🪞 ' + tr('Escolha a cor da roupa em Montar Idol.')) + '</em>';
   if(bt) bt.disabled = !e.combina;
+  var studio = $('shopLookStudio'); if(studio) studio.hidden = !e.combina || !!perfProva;
+}
+function shopLookStudio(){
+  if(perfProva || !shopLookEstado().combina || typeof studioAbrir !== 'function') return;
+  petLifeCancelar('espelho');
+  shopFechar();
+  studioAbrir();
 }
 function shopLookFoto(){
   var e = shopLookEstado(), msg = $('shopLookMsg'); if(!e.combina) return;

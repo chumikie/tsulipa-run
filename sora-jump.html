@@ -4029,6 +4029,18 @@ function soraStartGame(){
   if($('soraOverBox')) $('soraOverBox').hidden = true;
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;   // sem botão "Início" sobre a tela durante a partida
 }
+function soraMetaIntermediaria(h){
+  var textos = {
+    pt:['Próxima meta', 'Meta alcançada'],
+    en:['Next milestone', 'Milestone reached'],
+    es:['Próxima meta', 'Meta alcanzada'],
+    id:['Target berikutnya', 'Target tercapai'],
+    th:['เป้าหมายถัดไป', 'ถึงเป้าหมายแล้ว'],
+    ja:['次の目標', '目標達成']
+  };
+  var tMeta = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
+  return h < 100 ? tMeta[0] + ' · 100 m' : h < 250 ? tMeta[0] + ' · 250 m' : tMeta[1] + ' · 250 m';
+}
 function soraEndGame(){
   soraMusicStop();
   soraState = 'over';
@@ -4098,6 +4110,7 @@ function soraEndGame(){
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
+      (!isTestScene && h < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(h)) + '</p>' : '') +
       (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';
@@ -4254,7 +4267,7 @@ function soraSetupUI(){
             '<div class="sora-eyebrow">✦ Kawaii sky adventure ✦</div>' +
             '<div style="font-size:27px;line-height:1.1;filter:drop-shadow(0 0 12px rgba(255,160,220,.38))">☁️ 🌸 ⭐</div>' +
             '<p class="sora-menu-copy">' + escHtml(tr('Pule de nuvem em nuvem, reúna estrelas e deixe o céu surpreender você!')) + '</p>' +
-            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
+            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + (soraBest < 500 ? escHtml(soraMetaIntermediaria(soraBest)) + '<br>' : '') + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
             '<div class="sora-test-profile" id="soraTestProfileCard">' +
               '<div class="sora-test-profile-side"><canvas id="soraTestCharPreview" width=48 height=60></canvas><div><b id="soraTestCharName">Personagem</b><small>' + escHtml(tr('Sua idol')) + '</small></div></div>' +
               '<div class="sora-test-profile-side pet-side"><canvas id="soraTestPetPreview" width=60 height=58></canvas><div><b id="soraTestPetName">Pet</b><small>' + escHtml(tr('Companheiro')) + '</small></div></div>' +

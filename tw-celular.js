@@ -475,6 +475,41 @@
       lista + '</section>';
   }
 
+  var ESTREIA_TR = {
+    pt:['Jogar uma corrida', 'Montar uma foto de estreia'],
+    en:['Play a run', 'Make your debut photo'],
+    es:['Jugar una carrera', 'Crear tu foto de debut'],
+    id:['Main lari', 'Buat foto debutmu'],
+    th:['ลงแข่งวิ่ง', 'สร้างภาพเดบิวต์ของคุณ'],
+    ja:['ランに挑戦', 'デビュー写真を撮る']
+  };
+  var estreia = null;
+  function estreiaHtml(){
+    if(logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
+    if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
+    var textos = ESTREIA_TR[L()];
+    return '<div class="twc-estreia">' +
+      '<button type="button" class="twc-btn" data-estreia="run">' + esc(textos[0]) + '</button>' +
+      '<button type="button" class="twc-btn twc-btn-claro" data-estreia="studio">' + esc(textos[1]) + '</button></div>';
+  }
+  function estreiaEtapa(jogo, concluiu){
+    if(!estreia || !estreia.tentativa || estreia.tentativa.jogo !== jogo || logado() || estreia.concluiu !== null) return;
+    var tentativa = estreia.tentativa, agora = performance.now();
+    if(!concluiu && tentativa.comecou === null) tentativa.comecou = agora;
+    if(concluiu && tentativa.comecou !== null) estreia.concluiu = agora;
+  }
+  function estreiaMedidas(){
+    if(!estreia) return null;
+    var tentativa = estreia.tentativa;
+    function desdeInicio(instante){ return instante === null ? null : Math.round(instante - estreia.inicio); }
+    return {
+      atividade:tentativa ? tentativa.jogo : null,
+      escolhaMs:tentativa ? desdeInicio(tentativa.escolheu) : null,
+      inicioMs:tentativa ? desdeInicio(tentativa.comecou) : null,
+      conclusaoMs:desdeInicio(estreia.concluiu)
+    };
+  }
+
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -490,7 +525,7 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + '</div>' +
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + palco() + '</div>' +
       '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
   }
 
@@ -562,6 +597,7 @@
       '<div class="twc-album-corpo"><nav class="twc-filtros" aria-label="' + esc(t('filtro')) + '">' + filtros.map(function(x){
         return '<button type="button" class="twc-filtro" data-filtro="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '<span>' + esc(x[2]) + '</span></button>';
       }).join('') + '</nav><section class="twc-card twc-album-grade" aria-live="polite">' + corpo + '</section></div>' +
+      (card('battle') ? '<button type="button" class="twc-btn" data-ir="battle">Idol⭐Battle! · ' + esc(albumBattleTexto()) + '</button>' : '') +
       (typeof window.albumAbrir === 'function' ? '<button type="button" class="twc-btn twc-btn-claro" data-a="albumCompleto">' + esc(t('albumCompleto')) + '</button>' : '') + '</div>';
   }
   var cartasRaf = 0;
@@ -1617,6 +1653,11 @@
       var lb = document.querySelector('.lang button[data-l="' + b.dataset.l + '"]'); if(lb) lb.click(); som(); return;
     }
     if(b.dataset.o !== undefined){ if(typeof applyOshi === 'function') applyOshi(b.dataset.o); if(typeof hubCfgUI === 'function') hubCfgUI(); som(); desenhar(); return; }
+    if(b.dataset.estreia && estreia && !logado()){
+      estreia.tentativa = {jogo:b.dataset.estreia, escolheu:performance.now(), comecou:null};
+      abrirCard(b.dataset.estreia);
+      return;
+    }
     if(b.dataset.a){ acao(b.dataset.a, b); return; }
     if(b.dataset.ir){ abrirCard(b.dataset.ir); }
   }
@@ -1803,5 +1844,5 @@
     var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
-  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar};
+  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

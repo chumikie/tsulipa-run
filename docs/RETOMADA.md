@@ -20,7 +20,7 @@
 
 ## Onde está
 - **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke).
+- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke) e #118 (estreia no TsuPhone, continuidade de atividades e mapa do código).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -100,7 +100,7 @@
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Merge da PR do capítulo de domingo; conferir o primeiro desfecho de verdade no domingo 22/11.
+- Validar a #117, incluindo a versão de cache do Jornal. O piloto do bairro e a matriz física do Karaoke estão em [docs/qa](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
 
 **Nunca testado de verdade:** login real em todos os fluxos novos, iPhone/Android físicos, sons ouvidos.

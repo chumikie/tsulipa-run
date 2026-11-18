@@ -268,7 +268,7 @@ function petPhoneMomentosLimpar(){
   if(ampliada)ampliada.removeAttribute('src');
   if(download)download.removeAttribute('href');
   petPhoneMomentos.forEach(petPhoneMomentoSoltar);
-  petVidaFotoCache = null; petVidaFotoUrl = '';
+  petVidaFotoCache = null; petVidaFotoUrl = ''; petVidaFotoFixada = null;
   petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = ''; petPhoneMomentoSelecionado = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
@@ -324,10 +324,12 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
+//→PET_FOTO_QUADRO
 //→petPhoneMomentosHtml
 //→petPhoneMomentosRender
 //→petPhoneMomentoAbrir
 //→petPhoneMomentoVoltar
+//→petPhoneMomentoQuadro
 //→petPhoneFotoHtml
 //→petPhoneJornalLimpar
 //→petPhoneJornalHtml
@@ -442,14 +444,16 @@ function petVidaLembrancaAbrir(acao){
     return true;
   }
   if(acao !== 'foto') return false;
-  var momento = petCartaFotoMomento();
+  petPhoneMomentosConferir();
+  var momento = petVidaFotoFixada === null ? petCartaFotoMomento() :
+    petPhoneMomentos.find(function(f){return f.id === petVidaFotoFixada && f.dono === petPhoneFotoChave();});
   if(!petPhoneAbrir('fotos')) return false;
   petPhoneFotosAbaAbrir('momentos');
   if(momento) petPhoneMomentoAbrir(momento.id);
   return true;
 }
 // As lembranças ocupam a prateleira superior e acompanham o móvel.
-var petVidaFotoCache = null, petVidaFotoUrl = '';
+var petVidaFotoCache = null, petVidaFotoUrl = '', petVidaFotoFixada = null;
 var petVidaRetornoInicio = -1000;
 //→petVidaFotoAtual
 //→petVidaOlharLembranca
@@ -1130,7 +1134,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=13',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=14',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

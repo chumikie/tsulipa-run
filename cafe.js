@@ -127,7 +127,9 @@ function cfNovoClienteLocal(){
       memorias.find(function(m){ return m.nome === visita.nome && m.pres === visita.pres; }) : null;
     if(!lembranca){
       var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
-      lembranca = memorias[((dia % memorias.length) + memorias.length) % memorias.length];
+      var hoje = new Date(dia * 864e5).toISOString().slice(0,10);
+      lembranca = memorias.find(function(m){ return m.dia === hoje; }) ||
+        memorias[((dia % memorias.length) + memorias.length) % memorias.length];
     }
     f.nome = lembranca.nome; f.pres = lembranca.pres;
     if(lembranca.c && typeof lembranca.c === 'object') for(var parte in lembranca.c){
@@ -492,6 +494,14 @@ function cfBotoes(tipo, lista, tit){
     return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
   }).join('') + '</div></div>';
 }
+var CF_FALA_REENCONTRO = {
+  pt:'Você lembrou do meu presente! Hoje vim experimentar sua receita.',
+  en:'You remembered my gift! I came to try your recipe today.',
+  es:'¡Te acordaste de mi regalo! Hoy vine a probar tu receta.',
+  id:'Kamu ingat hadiahku! Hari ini aku datang untuk mencoba resepmu.',
+  th:'คุณจำของขวัญของฉันได้! วันนี้ฉันมาลองสูตรของคุณ',
+  ja:'プレゼントを覚えてくれてたね！今日はあなたのレシピを味わいに来たよ。'
+};
 function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   var rec = cfLer(CF_RECEITAS_KEY, {}), nRec = Object.keys(rec).length, totRec = CF_BASES.length * CF_ENFEITES.length;
@@ -509,7 +519,7 @@ function cfUI(){
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
       h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +
-        escHtml(tr('Você lembrou do meu presente naquele dia!')) + ' ' +
+        escHtml(CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + ' ' +
         (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
     }
     if(cf.fase === 'reacao' && cf.detalhePedido) h += '<p class="cfpedidotxt" role="status">' + escHtml(cf.detalhePedido) + '</p>';

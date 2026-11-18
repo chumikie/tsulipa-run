@@ -39,6 +39,7 @@ function rotulo(x,i,txt,cx,y,px,cor){
 }
 var SW=560,SH=520,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
+var revanche=null;
 var fase='escalar',showT0=0,showRaf=0,rodadaCalma=0;
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
@@ -72,6 +73,14 @@ var SHOW_CALMO = {
  id:['Ronde berikutnya','Lihat hasil','Pemenang: {n}'],
  th:['รอบถัดไป','ดูผล','ผู้ชนะ: {n}'],
  ja:['次のラウンド','結果を見る','勝者：{n}']
+};
+var REVANCHE_TR = {
+ pt:['Testar outra ordem','Troque os Idols de posição e enfrente o mesmo trio em treino.','Antes'],
+ en:['Try another order','Swap your Idols and face the same trio in practice.','Before'],
+ es:['Probar otro orden','Cambia el orden de tus Idols y practica contra el mismo trío.','Antes'],
+ id:['Coba urutan lain','Tukar posisi Idol dan lawan trio yang sama dalam latihan.','Sebelumnya'],
+ th:['ลองสลับลำดับ','สลับตำแหน่งไอดอลแล้วซ้อมกับคู่แข่งทีมเดิม','ก่อนหน้า'],
+ ja:['別の順番を試す','アイドルの順番を入れ替え、同じ３人を相手に練習しよう。','前回']
 };
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
 function habilidade(c){   // 0 Nota Alta (canto) · 1 Passo Duplo (dança) · 2 Piscadinha (carisma); empate fica com o primeiro
@@ -185,6 +194,13 @@ function montar(){
    if(a==='abrir-slot'){var so=Number(b.getAttribute('data-slot'));slotAberto=slotAberto===so?-1:so;render();var sl=ov.querySelector('.battle-slot');if(sl&&sl.scrollIntoView)try{sl.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}return;}
    if(a==='ir-gacha'){fechar();if(typeof gachaAbrir==='function')setTimeout(gachaAbrir,60);return;}
    if(a==='jogar'){jogar();return;}
+   if(a==='revanche' && fase==='fim' && rodadas && !naArena()){
+     revanche=rodadas.map(function(r,i){ return Object.assign({},r,{eu:valor(cardDe(r.meu),i)}); });
+     rodadas=null; fase='escalar'; slotAberto=-1; msg=''; render();
+     ov.querySelector('[data-battle="abrir-slot"]').focus();
+     return;
+   }
+   if(a==='sair-revanche'){ abrir(); return; }
    if(a==='outra'||a==='voltar'){rodadas=null;msg='';msgOk=false;fase='escalar';if(a==='voltar'||modo==='arena'){alvo=null;carregarArena();}render();return;}
    if(a==='tab-dia'||a==='tab-arena'){modo=a==='tab-arena'&&arena?'arena':'dia';alvo=null;rodadas=null;msg='';msgOk=false;fase='escalar';render();return;}
    if(a==='desafiar'){var n=b.getAttribute('data-nick');alvo=(arena&&arena.lista||[]).find(function(x){return x.nick===n;})||null;msg='';msgOk=false;render();return;}
@@ -204,7 +220,7 @@ function montar(){
 }
 function abrir(){
  montar();ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
- rodadas=null;ritmo=null;ocupado=false;msg='';servidor=false;fase='escalar';slotAberto=-1;ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
+ rodadas=null;revanche=null;ritmo=null;ocupado=false;msg='';servidor=false;fase='escalar';slotAberto=-1;ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
  // Os visuais dos cards vêm da vitrine que o Hub já usa (sem consulta nova só para o Battle).
  try{if(typeof hubIdolsCarregar==='function'&&!(typeof hubIdolsDados!=='undefined'&&hubIdolsDados)&&logado())hubIdolsCarregar();}catch(e){}
  if(logado()){
@@ -250,7 +266,7 @@ function levarFlor(k){
  }).catch(function(){msg=trB('error');msgOk=false;carregarTorcida();}).then(function(){ocupado=false;render();});
 }
 function torcidaHtml(){
- if(!torcida||!servidor)return '';
+ if(revanche||!torcida||!servidor)return '';
  var h='<section class="battle-torcida"><h3>'+esc(trB('cheerTitle'))+'</h3>';
  if(torcida.hoje&&FLOR[torcida.hoje]){
    var i=FLOR[torcida.hoje][1];
@@ -298,7 +314,7 @@ function slotsHtml(){
  return h;
 }
 function abasHtml(){
- if(!servidor||!arena)return '';
+ if(revanche||!servidor||!arena)return '';
  return '<div class="battle-tabs" role="tablist">'+[['dia','',trB('tabDaily')],['arena','',trB('tabArena')]].map(function(t){
    var on=(modo==='arena')===(t[0]==='arena');
    return '<button type="button" role="tab" aria-selected="'+on+'" class="battle-tab'+(on?' on':'')+'" data-battle="tab-'+t[0]+'">'+t[1]+esc(t[2])+'</button>';}).join('')+'</div>';
@@ -409,11 +425,11 @@ function render(){
    return;
  }
  var max=Number(estado.max_tentativas)||5,usadas=Number(estado.tentativas)||0;
- var limite=servidor&&usadas>=max,emArena=naArena();
+ var limite=!revanche&&servidor&&usadas>=max,emArena=naArena(), textoRevanche=REVANCHE_TR[lang()] || REVANCHE_TR.pt;
  if(emArena&&fase==='escalar'&&!alvo){area.innerHTML=abasHtml()+lobbyHtml();desenharMiniaturas();return;}
  if(emArena)limite=(Number(arena.desafios)||0)>=(Number(arena.max_desafios)||3);
- var texto=(fase==='escalar'?abasHtml():'')+(emArena?arenaStatusHtml():'<div class="battle-status'+(servidor?' real':' treino')+'">'+
-  (servidor?'★ '+esc(trB('used'))+': '+Math.max(0,max-usadas)+' / '+max+
+ var texto=(fase==='escalar'?abasHtml():'')+(emArena?arenaStatusHtml():'<div class="battle-status'+(servidor&&!revanche?' real':' treino')+'">'+
+  (servidor&&!revanche?'★ '+esc(trB('used'))+': '+Math.max(0,max-usadas)+' / '+max+
      '<br><small>'+esc(estado.premiado?trB('prizeDone'):trB('prizeOpen'))+'</small>':
     esc(trB('practice'))+(logado()?'':' '+esc(trB('guest'))))+'</div>');
  if(fase==='fim'&&rodadas){
@@ -421,12 +437,14 @@ function render(){
    var cab=wins>losses?trB('win'):trB('lose');
    texto+='<section class="battle-resultado"><h3>'+esc(cab)+' <span class="battle-placar">'+wins+' × '+losses+'</span></h3>';
    texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
-      '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span></div>';}).join('')+'</div>';
+      '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span>'+
+      (revanche ? '<small>'+esc(textoRevanche[2])+' · '+esc(revanche[i].meu)+' '+Number(revanche[i].eu||0)+' : '+Number(revanche[i].eles||0)+'</small>' : '')+'</div>';}).join('')+'</div>';
    texto+=ritmoResultado();
-   texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
+   texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(!revanche&&servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
    '<button type="button" class="btn alt" data-battle="salvar">'+esc(trB('save'))+'</button> '+
+   (!emArena?'<button type="button" class="btn alt" data-battle="revanche">'+esc(textoRevanche[0])+'</button> ':'')+
    (emArena?'<button type="button" class="btn" data-battle="voltar">'+esc(trB('backArena'))+'</button></section>':
-   '<button type="button" class="btn" data-battle="outra"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>');
+   '<button type="button" class="btn" data-battle="'+(revanche?'sair-revanche':'outra')+'"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>');
    area.innerHTML=texto+(emArena?'':rankingHtml());desenharMiniaturas();return;
  }
  texto+='<canvas class="battle-cena" id="battleCena" width="1120" height="380" aria-hidden="true"></canvas>';
@@ -439,10 +457,12 @@ function render(){
    '</div><p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
    (estado.starter?'<div class="btns battle-semcards"><button type="button" class="btn alt" data-battle="ir-gacha">'+esc(trB('toGacha'))+'</button></div>':'');
  texto+=slotsHtml()+'</section>'+torcidaHtml();
+ if(revanche)texto+='<p class="battle-hint">'+esc(textoRevanche[1])+'</p>';
  if(msg)texto+='<p class="battle-error">'+esc(msg)+'</p>';
  texto+='<div class="btns"><button type="button" class="btn battle-start" data-battle="jogar"'+(limite||ocupado?' disabled':'')+'>'+
     esc(limite?(emArena?trB('arenaLimit'):trB('locked')):ocupado?trB('loading'):trB('play'))+'</button>'+
-    (emArena?' <button type="button" class="btn alt" data-battle="voltar">'+esc(trB('backArena'))+'</button>':'')+'</div>';
+    (revanche?' <button type="button" class="btn alt" data-battle="sair-revanche">'+esc(trB('tabDaily'))+'</button>':
+      emArena?' <button type="button" class="btn alt" data-battle="voltar">'+esc(trB('backArena'))+'</button>':'')+'</div>';
  area.innerHTML=texto+(emArena?'':rankingHtml());
  desenharMiniaturas();
 }
@@ -451,6 +471,10 @@ function treinoShow(){
  return unit.map(function(n,i){
    var eu=cardDe(n)||DEFAULT[i];
    var rival=other[(i+1)%3],a=valor(eu,i),b=valor(rival,i);
+   if(revanche){
+     var anterior=revanche[i];
+     return {tipo:ATR[i],meu:n,rival:anterior.rival,eu:a,eles:Number(anterior.eles)||0,ganhou:a>Number(anterior.eles)};
+   }
    return {tipo:ATR[i],meu:n,rival:rival.nick,eu:a,eles:b,ganhou:a>b};
  });
 }
@@ -460,7 +484,7 @@ function jogar(){
    msg=trB('choose');render();return;
  }
  ocupado=true;msg='';render();
- if(!servidor){
+ if(!servidor||revanche){
    rodadas=treinoShow();ocupado=false;comecarShow();return;
  }
  // O servidor aceita uma chave de idempotência por partida para evitar
@@ -607,7 +631,7 @@ function comecarShow(){
 }
 function fimDoShow(){
  if(!rodadas || fase==='fim')return;
- if(window.TW_HUMOR) window.TW_HUMOR.evento('battle');
+ if(!revanche && window.TW_HUMOR) window.TW_HUMOR.evento('battle');
  pararShow();fase='fim';render();desenharPalco(-1);desenharPolaroid();
  som(rodadas.filter(function(r){return r.ganhou;}).length>=2?'rank':'over');
  var st=ov.querySelector('#battleStage');

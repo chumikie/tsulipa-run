@@ -75,3 +75,39 @@ for(const [orig,n] of [[sql,'battle_jogar('],[v2Sql,'battle_desafiar(']]){
   assert.ok(b.every(l=>a.includes(l)),n+' não muda nenhuma outra linha');
 }
 console.log('OK: Battle v1 — treino seguro, 6 idiomas, contrato RPC, limites e acesso pelo mapa');
+
+// A revanche pode partir do resultado oficial com o limite diário já atingido.
+const controles = {}, areas = {};
+const overlay = {hidden:false, addEventListener(k,f){controles[k]=f;}, querySelector(k){
+  return areas[k] ||= {innerHTML:'',focus(){},setAttribute(){}};
+}};
+const local = {
+  LANG:'pt', performance, matchMedia:()=>({matches:true}), cancelAnimationFrame(){},
+  contaJ:{id:'a'}, contaRpc(){assert.fail('revanche deve ser local');},
+  TW_HUMOR:{evento(){assert.fail('revanche não concede progresso');}},
+  document:{createElement:()=>overlay,body:{appendChild(){}},addEventListener(){}}
+};
+local.window=local;
+const executar = src.replace(/\}\)\(\);\s*$/, `
+  montar(); ov.hidden=false; estado=treino();
+  servidor=true; estado.tentativas=estado.max_tentativas; unit=estado.cards.map(function(c){return c.nick;});
+  rodadas=treinoShow(); fase='fim';
+  desenharMiniaturas=desenharPalco=desenharPolaroid=som=function(){};
+  window.revancheTeste={estado:estado,original:rodadas,get atuais(){return rodadas;}};
+})();`);
+vm.runInNewContext(executar,local);
+const acao = (nome, campos={}) => controles.click({target:{closest:()=>({
+  getAttribute:k=> k==='data-battle' ? nome : campos[k]
+})}});
+const jogo=local.revancheTeste;
+acao('revanche');
+const botao=areas['#battleCorpo'].innerHTML.match(/<button[^>]*data-battle="jogar"[^>]*>/)[0];
+assert.doesNotMatch(botao,/disabled/);
+acao('slot',{'data-slot':'0','data-nick':jogo.original[1].meu});
+acao('jogar');
+assert.deepEqual(jogo.atuais.map(r=>[r.rival,r.eles]),jogo.original.map(r=>[r.rival,r.eles]));
+assert.equal(jogo.atuais[0].meu,jogo.original[1].meu);
+assert.equal(jogo.atuais[1].meu,jogo.original[0].meu);
+for(let i=0;i<3;i++)acao('proxima-rodada');
+assert.match(areas['#battleCorpo'].innerHTML,/Antes/);
+assert.equal(jogo.estado.tentativas,jogo.estado.max_tentativas);

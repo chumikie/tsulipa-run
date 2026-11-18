@@ -408,7 +408,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=31"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=40"></script>
+<script src="./pet.js?v=41"></script>
 <script src="./perfil.js?v=28"></script>
 <script src="./gacha.js?v=4"></script>
 <script src="./album.js?v=6"></script>
@@ -441,7 +441,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=15','./cafe.js?v=20','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=3','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=15','./cafe.js?v=21','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=3','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -507,7 +507,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=15'),arq('script','./battle.js?v=20')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=15'),arq('script','./battle.js?v=21')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
@@ -1181,6 +1181,7 @@ $('petPhone').addEventListener('click', function(e){
   else if(k === 'voltar') petPhoneVoltar();
   else if(k === 'fotos-aba') petPhoneFotosAbaAbrir(b.dataset.aba);
   else if(k === 'momento-abrir') petPhoneMomentoAbrir(b.dataset.momento);
+  else if(k === 'momento-quadro') petPhoneMomentoQuadro();
   else if(k === 'momento-voltar') petPhoneMomentoVoltar();
   else if(k === 'jornal-foto') petPhoneJornalAbrir(Number(b.dataset.foto));
   else if(k === 'jornal-voltar') petPhoneJornalVoltar();

@@ -796,6 +796,12 @@ function petPhoneFotoLimpar(){
   petPhoneFotoUrl = ''; petPhoneFotoDono = ''; petPhoneFotoErro = '';
 }
 //←petPhoneMomentosHtml
+//←PET_FOTO_QUADRO
+var PET_FOTO_QUADRO = {
+  pt:['Colocar no Camarim','Retirar do porta-retrato'],en:['Put in the dressing room','Remove from the frame'],
+  es:['Colocar en el camerino','Quitar del portarretrato'],id:['Taruh di ruang ganti','Lepas dari bingkai'],
+  th:['วางในห้องแต่งตัว','นำออกจากกรอบรูป'],ja:['楽屋に飾る','写真立てから外す']
+};
 function petPhoneMomentosHtml(){
   petPhoneMomentosConferir();
   var escolhida = petPhoneMomentos.find(function(f){ return f.id === petPhoneMomentoSelecionado && f.dono === petPhoneFotoChave(); });
@@ -803,6 +809,8 @@ function petPhoneMomentosHtml(){
   if(escolhida) return '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid petphone-momento-' + escolhida.tipo + '">' +
     '<img id="petPhoneMomentoImagem" alt="' + escHtml(escolhida.rotulo) + '"><figcaption>✦ ' + escHtml(escolhida.rotulo) + ' ✦</figcaption></figure>' +
     '<a id="petPhoneMomentoBaixar" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a>' +
+    '<button type="button" data-phone="momento-quadro">' +
+    escHtml((PET_FOTO_QUADRO[LANG] || PET_FOTO_QUADRO.pt)[petVidaFotoFixada === escolhida.id ? 1 : 0]) + '</button>' +
     '<button type="button" data-phone="momento-voltar">‹ ' + escHtml(petPhoneMomentoTexto(8)) + '</button>' +
     '<p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
   if(!petPhoneMomentos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
@@ -838,6 +846,24 @@ function petPhoneMomentoAbrir(id){
   petPhoneMomentoSelecionado=id;petPhoneRender();
   var corpo=$('petPhoneCorpo');if(corpo)corpo.scrollTop=0;
   var voltar=document.querySelector('#petPhoneCorpo [data-phone="momento-voltar"]');if(voltar)voltar.focus();
+  return true;
+}
+//←petPhoneMomentoQuadro
+function petPhoneMomentoQuadro(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return false;
+  petPhoneMomentosConferir();
+  var dono = petPhoneFotoChave(), id = petPhoneMomentoSelecionado;
+  if(!petPhoneContaChave() || !petPhoneMomentos.some(function(f){return f.id === id && f.dono === dono;})) return false;
+  if(petVidaFotoFixada === id){
+    petVidaFotoFixada = '';
+    petPhoneRender();
+    var botao = document.querySelector('[data-phone="momento-quadro"]');
+    if(botao) botao.focus();
+  }else{
+    petVidaFotoFixada = id;
+    petVidaRetornoInicio = petT;
+    petPhoneFechar();
+  }
   return true;
 }
 //←petPhoneMomentoVoltar
@@ -1599,6 +1625,7 @@ function petVidaLembrancaToque(lx, ly){
   if(ly < y-26 || ly >= y || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function') return '';
   var local = lx - petArrumoDx('estante');
+  if(petVidaFotoFixada && Math.abs(local-PET_VIDA_PRATELEIRA.foto.x) < PET_VIDA_PRATELEIRA.foto.r) return 'foto';
   var item = TWVidaCidade.objetosCamarim().find(function(a){
     var p = PET_VIDA_PRATELEIRA[a.tipo];
     return Math.abs(local-p.x) < p.r;
@@ -1609,6 +1636,12 @@ function petVidaLembrancaToque(lx, ly){
 function petVidaFotoAtual(){
   petPhoneMomentosConferir();
   var momento = petPhoneContaChave() ? petCartaFotoMomento() : null;
+  if(petVidaFotoFixada === '') momento = null;
+  if(petVidaFotoFixada){
+    var dono = petPhoneFotoChave();
+    momento = petPhoneMomentos.find(function(f){return f.id === petVidaFotoFixada && f.dono === dono;});
+    if(!momento) petVidaFotoFixada = '';
+  }
   var url = momento && (momento.miniUrl || momento.url) || '';
   if(!/^(blob:|data:image\/png;base64,)/.test(url)) url = '';
   if(url !== petVidaFotoUrl){
@@ -1621,7 +1654,7 @@ function petVidaFotoAtual(){
 //←petVidaOlharLembranca
 function petVidaOlharLembranca(t, inicio, livre){
   if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
-    !TWVidaCidade.objetosCamarim().length) return 0;
+    !TWVidaCidade.objetosCamarim().length && !petVidaFotoFixada) return 0;
   var fase = (t-inicio) % 720;
   if(fase < 180 || fase >= 290) return 0;
   var u = (fase-180)/110;
@@ -1645,7 +1678,7 @@ function petVidaLembrancaReacao(olhar){
   if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function')return null;
   var itens=TWVidaCidade.objetosCamarim();
-  var foto=itens.some(function(a){return a.tipo==='foto';}) && !!petVidaFotoAtual();
+  var foto=(petVidaFotoFixada || itens.some(function(a){return a.tipo==='foto';})) && !!petVidaFotoAtual();
   var flor=itens.some(function(a){return a.tipo==='flor';});
   var tipo=foto?'foto':flor?'flor':'';
   if(!tipo)return null;
@@ -1666,6 +1699,7 @@ function petVidaLembrancaBrilho(x,olhar){
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
+  if(petVidaFotoFixada && !objetos.some(function(a){return a.tipo==='foto';})) objetos = objetos.concat({tipo:'foto'});
   if(!objetos.length)return false;
   var fotoReal=petVidaFotoAtual();
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;

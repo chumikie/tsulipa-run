@@ -20,7 +20,7 @@
 
 ## Onde está
 - **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **PRs abertas:** `feat/news-capitulo-bagunca` (capítulo de domingo da bagunça no Idol⭐News!), em draft.
+- **PRs abertas:** #117 (capítulo de domingo da bagunça no Idol⭐News!), em draft.
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje

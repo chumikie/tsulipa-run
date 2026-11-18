@@ -210,7 +210,7 @@ function petDesenharJanela(x, fase){
 // Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
 var petArrumoPersistivel = true;
 //←petArrumoDono
-var petArrumoDono = '';
+var petArrumoDono = '', petArrumoAnterior = null;
 //←petArrumoChave
 function petArrumoChave(){
   if(typeof contaJ === 'undefined' || !contaJ) return PET_ARRUMO_KEY + ':visitante';
@@ -223,6 +223,7 @@ function petArrumoLer(){
   if(petArrumo && chave === petArrumoDono) return petArrumo;
   if(petArrumoDono && chave !== petArrumoDono){
     petArrastando = null;
+    petArrumoAnterior = null;
     petArrumando = false;
     petBg = null;
   }
@@ -301,20 +302,36 @@ function petArrumoMover(lx, ly){
 }
 //←petArrumoAbaixo
 function petArrumoAbaixo(lx, ly){
+  var A = petArrumoLer();
   if(!petArrumando) return false;
   petArrastando = petArrumoPegar(lx, ly);
-  if(petArrastando) beep(880, .04, 'triangle', .03);
+  if(petArrastando){
+    var a = petArrastando, valor = A[a.tipo][a.k];
+    a.antes = valor === undefined ? undefined : JSON.parse(JSON.stringify(valor));
+    a.dono = petArrumoDono;
+    beep(880, .04, 'triangle', .03);
+  }
   return true;   // no modo arrumar, o toque não vira carinho nem abre objetos
 }
 //←petArrumoSoltar
 function petArrumoSoltar(){
-  if(!petArrastando) return false;
-  petArrastando = null; petArrumoSalvar(); beep(660, .05, 'triangle', .03);
+  var A = petArrumoLer(), a = petArrastando;
+  if(!a) return false;
+  petArrastando = null;
+  if(a.dono === petArrumoDono && JSON.stringify(a.antes) !== JSON.stringify(A[a.tipo][a.k])){
+    petArrumoAnterior = {tipo:a.tipo, k:a.k, antes:a.antes, dono:a.dono};
+    petArrumoSalvar();
+    if(typeof document !== 'undefined'){
+      var b = document.querySelector('[data-k="arrumar-desfazer"]'); if(b) b.disabled = false;
+    }
+  }
+  beep(660, .05, 'triangle', .03);
   return true;
 }
 //←petArrumoModo
 function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no toque
-  petArrumando = !!on; petArrastando = null;
+  petArrumoLer();
+  petArrumando = !!on; petArrastando = null; petArrumoAnterior = null;
   if(!on) petArrumoSalvar();
   if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';
 }
@@ -323,6 +340,7 @@ function petArrumoPadrao(){
   petArrumoLer();
   // Reposição padrão é uma ação explícita; não sobrescrever dados ilegíveis.
   if(!petArrumoPersistivel) return;
+  petArrumoAnterior = null;
   petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null;
 }
 //←petArrumoDesenhar
@@ -698,8 +716,20 @@ function petCartaComFoto(lista){
   var nomes = typeof hsNomesLivres === 'function' ? hsNomesLivres() : PET_CARTA_FAS;
   if(!nomes.length) nomes = PET_CARTA_FAS;
   var h = petCartaHash(m.id), pet = petAtivo();
+  var textoStudio = '';
+  if(m.tipo === 'studio'){
+    var flores = {
+      pt:['Amei sua foto no Studio!','O ramo de sakura ficou lindo na sua foto!','A tulipa rosa ficou linda na sua foto!','O girassol ficou lindo na sua foto!','A flor lunar ficou linda na sua foto!'],
+      en:['I loved your Studio photo!','The cherry blossoms look lovely in your photo!','The pink tulip looks lovely in your photo!','The sunflower looks lovely in your photo!','The lunar flower looks lovely in your photo!'],
+      es:['¡Me encantó tu foto del Studio!','¡El ramo de sakura quedó precioso en tu foto!','¡El tulipán rosa quedó precioso en tu foto!','¡El girasol quedó precioso en tu foto!','¡La flor lunar quedó preciosa en tu foto!'],
+      id:['Aku suka foto Studiomu!','Bunga sakura terlihat cantik di fotomu!','Tulip pink terlihat cantik di fotomu!','Bunga matahari terlihat cantik di fotomu!','Bunga bulan terlihat cantik di fotomu!'],
+      th:['ชอบรูปในสตูดิโอของเธอจัง!','ซากุระในรูปของเธอสวยจัง!','ทิวลิปสีชมพูในรูปของเธอสวยจัง!','ทานตะวันในรูปของเธอสวยจัง!','ดอกไม้จันทราในรูปของเธอสวยจัง!'],
+      ja:['スタジオの写真、素敵だったよ！','桜が写真にぴったりだったよ！','ピンクのチューリップが写真にぴったりだったよ！','ひまわりが写真にぴったりだったよ！','月の花が写真にぴったりだったよ！']
+    };
+    textoStudio = (flores[LANG] || flores.pt)[['sakura','tulipa','girassol','lunar'].indexOf(m.especie) + 1];
+  }
   lista.unshift({id:'foto:' + m.id, dia:petCartaDia(0), tema:'foto', momento:m.id, rotulo:m.rotulo,
-    texto:(m.tipo === 'karaoke' ? PET_CARTA_PALCO[LANG] || PET_CARTA_PALCO.pt : tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet)).split('{p}').join(m.nomePet || (pet ? pet.nome : '')),
+    texto:(textoStudio || (m.tipo === 'karaoke' ? PET_CARTA_PALCO[LANG] || PET_CARTA_PALCO.pt : tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet))).split('{p}').join(m.nomePet || (pet ? pet.nome : '')),
     fa:nomes[(h >>> 3) % nomes.length], selo:'📸', nova:petCartasLidas().indexOf('foto:' + m.id) < 0});
 }
 //←petCartaFotoRender
@@ -2614,8 +2644,10 @@ function petDecorMenuUI(m){
   var d = petData.decor || {};
   m.hidden = false;
   if(petArrumando){
+    var undo = {pt:'Desfazer último movimento',en:'Undo last move',es:'Deshacer último movimiento',id:'Urungkan gerakan terakhir',th:'เลิกทำการย้ายล่าสุด',ja:'最後の移動を元に戻す'};
     m.innerHTML = '<p class="petarrumo-dica">✋ ' + escHtml(tr('Arraste os móveis pelo chão e os quadros pela parede.')) + '</p>' +
       '<button type="button" data-k="arrumar-pronto">✅ <b>' + escHtml(tr('Pronto, arrumado!')) + '</b></button>' +
+      '<button type="button" data-k="arrumar-desfazer"' + (petArrumoAnterior ? '' : ' disabled') + '>↶ <b>' + escHtml(undo[LANG] || undo.pt) + '</b></button>' +
       '<button type="button" data-k="arrumar-padrao">↺ <b>' + escHtml(tr('Arrumação original')) + '</b></button>';
     return;
   }
@@ -2630,6 +2662,12 @@ function petDecorMenuUI(m){
 //←petDecorClick
 function petDecorClick(k){
   if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
+  if(k === 'arrumar-desfazer'){
+    var A = petArrumoLer(), a = petArrumoAnterior;
+    if(!petArrumando || petArrastando || !a || a.dono !== petArrumoDono) return;
+    if(a.antes === undefined) delete A[a.tipo][a.k]; else A[a.tipo][a.k] = a.antes;
+    petArrumoAnterior = null; petBg = null; petArrumoSalvar(); petUI(); return;
+  }
   if(k === 'arrumar-padrao'){
     if(typeof window.confirm === 'function' && !window.confirm(tr('Restaurar posições padrão dos móveis e quadros?'))) return;
     petArrumoPadrao(); petUI(); return;

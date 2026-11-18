@@ -46,7 +46,9 @@ begin
     if pet->>'k' = 'meu' and pg_catalog.jsonb_typeof(cfg) = 'object' then
       cv := '{}'::jsonb;
       foreach k in array array['orelha','olhos','acc'] loop
-        if pg_catalog.jsonb_typeof(cfg->k) = 'string' and (cfg->>k) ~ '^[A-Za-z0-9_-]{0,32}$' then cv := cv || pg_catalog.jsonb_build_object(k,cfg->k); end if;
+        if (k='orelha' and cfg->>k in ('gato','coala','coroa','coelho','nenhuma'))
+          or (k='olhos' and cfg->>k in ('redondo','brilho','feliz','sono'))
+          or (k='acc' and cfg->>k in ('','laco','estrela','anel','oculos','flor')) then cv := cv || pg_catalog.jsonb_build_object(k,cfg->k); end if;
       end loop;
       if pg_catalog.jsonb_typeof(cfg->'cor') = 'string' and (cfg->>'cor') ~* '^#[0-9a-f]{6}$' then cv := cv || pg_catalog.jsonb_build_object('cor',cfg->'cor'); end if;
       if pg_catalog.jsonb_typeof(cfg->'bochecha') = 'boolean' then cv := cv || pg_catalog.jsonb_build_object('bochecha',cfg->'bochecha'); end if;
@@ -129,7 +131,7 @@ begin
       insert into public.star_log(user_id,delta,reason) values(v_uid,3,'bonus_foto_tema');
     end if;
   end if;
-  return pg_catalog.json_build_object('ok',true,'id',v_id,'estrelas',greatest(1,v_ac),'tema',v_tema,'premio_tema',v_premio,'stars',v_stars);
+  return pg_catalog.json_build_object('ok',true,'id',v_id,'estrelas',greatest(1,v_ac),'tema',v_tema,'premio_tema',v_premio,'retrato_guardado',v_retrato is not null,'stars',v_stars);
 end $function$;
 
 create or replace function public.studio_mural()

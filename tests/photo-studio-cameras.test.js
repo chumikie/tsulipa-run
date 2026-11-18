@@ -75,5 +75,7 @@ test('Memórias Eternas: retrato conserva cabelo, roupa, expressão e fase do cl
   const mal=R.limpar({v:1,tempo:0,avatar:{c:{hair:'<script>',out:{x:1},det:'ok',streak:'false'},a:'https://x.invalid',expr:99,pet:{k:'meu',cfg:{cor:'bad',nome:'secret'}}}});
   assert.equal(JSON.stringify(mal.avatar),'{"c":{"det":"ok"},"pet":{"k":"meu","cfg":{}}}');
   assert.match(s,/p\.retrato = capturada\.retrato/);
+  assert.match(s,/r\.retrato_guardado !== true/);
+  assert.doesNotMatch(s,/foto\.avatar = foto\.retrato\.avatar/);
   assert.match(s,/retratoPost\(c, false\)/);
 });

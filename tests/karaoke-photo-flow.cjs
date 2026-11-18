@@ -22,6 +22,8 @@ exports.install=async function(context){
 exports.verify=async function(p,frame,width,out){
  const state=()=>frame.locator('body').evaluate(()=>window.qaRoomState());
  const camera=frame.locator('#ktFoto'),dialog=frame.locator('#ktPhotoDialog'),img=frame.locator('#ktPhotoImage');
+ const sala=await (await camera.elementHandle()).ownerFrame();
+ const esperarRetomada=()=>sala.waitForFunction(()=>!window.qaRoomState().paused,null,{timeout:8000});
  await camera.evaluate(()=>{
   const photo=window.KaraokeRoomPhoto, capture=photo.capture;
   photo.capture=function(source,options){
@@ -98,7 +100,7 @@ exports.verify=async function(p,frame,width,out){
  const event=p.waitForEvent('download');await frame.locator('#ktPhotoDownload').click();const file=await event;
  const bytes=fs.readFileSync(await file.path());assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),shared.hash,'Download and native sharing use the same frozen PNG');
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('solicitado'),'Download status does not falsely claim a saved photo');
- await close();assert.equal((await state()).paused,false,'Returning resumes a show that was playing');
+ await close();await esperarRetomada();
  assert.equal((await state()).session,session);
  assert(await camera.evaluate(b=>document.activeElement===b),'Closing restores focus to the camera');
  assert(await frame.locator('body').evaluate((body,u)=>window.__qaPhotoRevoked.includes(u),capture.url),'Closing releases the photo object URL');
@@ -108,11 +110,11 @@ exports.verify=async function(p,frame,width,out){
  assert(await frame.locator('#ktPhotoHint').isVisible());
  await p.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});await p.waitForTimeout(60);
  assert.equal(await p.locator('#twPreviewJogo').evaluate(el=>el.hidden),false,'Escape closes only the photo, not Karaoke');
- assert.equal((await state()).paused,false);
+ await esperarRetomada();
  // A player who had manually paused remains paused after returning from a photo.
  await frame.locator('#ktPause').click();assert((await state()).paused);
- await open();await close();assert((await state()).paused,'A pre-paused show is not resumed');
- await frame.locator('#ktPause').click();
+ await open();await close();await p.waitForTimeout(3300);assert((await state()).paused,'A pre-paused show is not resumed');
+ await frame.locator('#ktPause').click();await esperarRetomada();
  // A late encoder callback must not reopen the image or leak a URL after Back.
  await frame.locator('body').evaluate(()=>{
   window.__qaPhotoToBlob=HTMLCanvasElement.prototype.toBlob;
@@ -120,7 +122,7 @@ exports.verify=async function(p,frame,width,out){
  });
  const created=await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length);
  await camera.click();await dialog.waitFor({state:'visible'});await close();await p.waitForTimeout(1000);
- assert.equal(await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length),created,'Late encoding is discarded after close');
+ assert.equal(await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length),created,'Late encoding is discarded after close');await esperarRetomada();
  await frame.locator('body').evaluate(()=>{
   HTMLCanvasElement.prototype.toBlob=function(cb){cb(null);};
  });
@@ -128,7 +130,7 @@ exports.verify=async function(p,frame,width,out){
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('Não consegui preparar'),'Encoding failure is visible');
  assert.equal(await frame.locator('#ktPhotoDownload').isVisible(),false);
  await close();await frame.locator('body').evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.__qaPhotoToBlob;});
- assert.equal((await state()).paused,false);assert.equal((await state()).session,session);
+ await esperarRetomada();assert.equal((await state()).session,session);
  return {exactPixels:true,frozen:true,width:1920,height:1080,downloadMatchesShare:true,cancelAndErrorFallback:true,focusAndEscape:true,pauseRestored:true,lateEncodingDiscarded:true};
 };
 exports.standalone=async function(browser,origin,fonts,out){

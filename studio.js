@@ -73,6 +73,15 @@
   }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
+  var sessao = 0;
+  var MOMENTOS = {
+    pt:['Guardar em Momentos','Guardada em Momentos!'],en:['Keep in Moments','Saved to Moments!'],
+    es:['Guardar en Momentos','¡Guardada en Momentos!'],id:['Simpan di Momen','Tersimpan di Momen!'],
+    th:['เก็บในโมเมนต์','เก็บในโมเมนต์แล้ว!'],ja:['思い出に保存','思い出に保存しました！']
+  };
+  function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : ''; }
+  function podeGuardar(){ return foto && !foto.guardada && logado() && foto.dono === donoFoto() &&
+    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoGuardar === 'function'; }
   window.TW_STUDIO_ON = true;
   function hojeBR(){ return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
   function h(s){ var x = 0; for(var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; }
@@ -98,12 +107,13 @@
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
+      else if(a === 'guardar') guardar();
       else if(esc_.hasOwnProperty(a)){ esc_[a] = v; ui(); if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){} }
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
   function abrir(){
-    montarOv(); ov.hidden = false; aba = 'estudio'; publicou = false; fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
+    montarOv(); sessao++; ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false; fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
     if(logado()){
       contaRpc('studio_pauta').then(function(r){ if(r && r.ok){ pauta = r; servidor = true; ui(); } }).catch(function(){});
       contaRpc('jardim_estado').then(function(r){ if(r && r.ok){ flores = r.flores || {}; ui(); } }).catch(function(){});
@@ -111,28 +121,62 @@
   }
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
+    var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
+      if(sess !== sessao) return;
+      if(dono !== donoFoto()){ fase = 'monta'; ocupado = false; ui(); return; }
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
-      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
+      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
+      var capturada = foto;
+      try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
-      contaRpc('studio_clique', {p:esc_}).then(function(r){
+      contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
+        if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
           if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_clique',{id:pauta&&pauta.dia});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
           foto.estrelas = +r.estrelas || n; foto.verificada = true; foto.premio = +r.premio || 0;
           if(foto.premio && typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           msg = foto.premio ? t('premio') : '';
         } else msg = t('erro');
-      }).catch(function(){ msg = t('erro'); }).then(function(){ fase = 'foto'; ocupado = false; ui(); });
+      }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } else fase = 'foto'; ocupado = false; ui(); });
     }, 1900);
   }
+  function capturarCena(f){
+    var cv = document.createElement('canvas'); cv.width = 432; cv.height = 540;
+    cena(cv.getContext('2d'), cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    f.cena = cv;
+  }
+  function polaroidLimpa(f){
+    if(f.polaroid) return f.polaroid;
+    var cv = document.createElement('canvas'); cv.width = 480; cv.height = 680;
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height;
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.drawImage(f.cena, 24, 24);
+    x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif';
+    x.fillText('⭐'.repeat(f.estrelas) + '☆'.repeat(3 - f.estrelas), W / 2, H - 76);
+    x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
+    x.fillText('Photo⭐Studio! · ' + f.legenda + ' · ' + f.dia.split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);
+    f.polaroid = cv; return cv;
+  }
+  function fotoUrl(f){
+    if(!f.url) f.url = polaroidLimpa(f).toDataURL('image/png');
+    return f.url;
+  }
   function salvar(){
-    var cv = ov && ov.querySelector('#studioCv'); if(!cv) return;
-    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + hojeBR() + '.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+    if(!foto || fase !== 'foto' || foto.dono !== donoFoto()) return;
+    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = fotoUrl(foto); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+  }
+  function guardar(){
+    if(!podeGuardar() || fase !== 'foto') return;
+    try{
+      var especie = foto.escolhas.objeto.indexOf('flor_') === 0 ? foto.escolhas.objeto.slice(5) : '';
+      if(!petPhoneMomentoGuardar('studio', fotoUrl(foto), especie)) throw Error('momento');
+      foto.guardada = true; msg = MOMENTOS[L()][1]; ui();
+    }catch(e){ msg = t('erro'); ui(); }
   }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
@@ -157,7 +201,7 @@
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button><button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
@@ -169,7 +213,7 @@
   }
   // ---------- Mural da revista (v2) ----------
   function publicar(){
-    if(!foto || !logado()) return; ocupado = true; ui();
+    if(!foto || !logado() || foto.dono !== donoFoto()) return; ocupado = true; ui();
     contaRpc('studio_publicar', {p:foto.escolhas}).then(function(r){
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
@@ -324,13 +368,9 @@
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, tm = performance.now() / 1000;
     x.save(); x.clearRect(0, 0, W, H);
     if(fase === 'foto' && foto){   // polaroid: moldura branca, foto, estrelas e data
-      x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-      x.save(); x.beginPath(); x.rect(24, 24, W - 48, (W - 48) * 1.25); x.clip(); x.translate(24, 24); cena(x, W - 48, (W - 48) * 1.25, foto.escolhas, foto.t0 / 1000, foto.avatar); x.restore();
+      x.drawImage(polaroidLimpa(foto), 0, 0);
       var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
       if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
-      x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif'; x.fillText('⭐'.repeat(foto.estrelas) + '☆'.repeat(3 - foto.estrelas), W / 2, H - 76);
-      x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
-      x.fillText('Photo⭐Studio! · ' + (pauta ? t('t_' + pauta.detalhe.tipo) : '') + ' · ' + hojeBR().split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);
     } else {
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);

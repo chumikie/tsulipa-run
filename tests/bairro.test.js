@@ -293,3 +293,14 @@ test('o desfecho aparece no Hoje, no painel do bairro e dá foto em Momentos⭐ 
   // 5. ver o desfecho no News marca como visto (mas não na prévia)
   assert(jn.includes("if(!d.previa && window.TW_BAIRRO && typeof TW_BAIRRO.desfechoVisto === 'function')"), 'marca visto fora da prévia');
 });
+
+test('"Hoje": nada usa variável antes de existir (a data e o "Também hoje") — 18/11', () => {
+  const cel = fs.readFileSync('tw-celular.js', 'utf8');
+  const ini = cel.indexOf('function hojeHtml(){'), corpo = cel.slice(ini, cel.indexOf('\n  function ', ini + 10));
+  // a data de hoje é calculada antes dos aniversários, que a usam (quebrou ao reordenar o Hoje)
+  assert(corpo.indexOf("var hj = C ? C.hoje() : '';") < corpo.indexOf('C.marcas(hj)'), 'hj existe antes dos aniversários');
+  assert(corpo.indexOf("var hj =") === corpo.lastIndexOf("var hj ="), 'uma declaração só de hj');
+  // o "Também hoje" é montado antes de entrar na lista (antes vinha depois: a lista saía "undefined" com tudo cumprido)
+  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('var todos = extra ?'), 'extra pronto antes de ser usado');
+  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('lista = hojeAberto ? todos.join(\'\') : extra;'), 'extra pronto antes da lista recolhida');
+});

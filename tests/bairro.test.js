@@ -271,8 +271,9 @@ test('o desfecho aparece no Hoje, no painel do bairro e dá foto em Momentos⭐ 
   const jn = fs.readFileSync('jornal-capitulos.js', 'utf8'), pet = fs.readFileSync('pet.js', 'utf8');
   // 1. linha no "Hoje" do Início, logo depois do capítulo de domingo
   assert(cel.includes("if(B4 && typeof B4.desfecho === 'function')") && cel.includes("data-a=\"news\""), 'linha do desfecho no Hoje');
-  assert(cel.indexOf('// 3b. desfecho da bagunça') > cel.indexOf('// 3. capítulo do domingo'), 'depois do capítulo');
-  assert(cel.indexOf('// 3b. desfecho da bagunça') < cel.indexOf('// 4. aniversários'), 'antes dos aniversários');
+  // ordem revista em 18/11: o que acaba hoje (desejo, missões, aniversários) antes do que fica a semana (capítulo, desfecho, bagunça)
+  const ordem = ['// 1. desejo do dia', '// 2. missões do dia', '// 3. aniversários do dia', '// 4. leitura da semana', '// 5. desfecho da bagunça', '// 6. Vida no bairro'].map(m => cel.indexOf(m));
+  assert(ordem.every(i => i > 0) && ordem.every((v, i) => !i || v > ordem[i - 1]), 'ordem do Hoje: acaba hoje primeiro, leitura da semana depois');
   for(const k of ['desf', 'desfSub']){
     const i = cel.indexOf('\n    ' + k + ':{'), bloco = cel.slice(i, cel.indexOf('},', i));
     assert(i > 0, k + ' existe');

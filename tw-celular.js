@@ -419,6 +419,9 @@
     }).catch(function(){ b.disabled = false; toast(thj('erro')); });
   }
   var hojeAberto = false, hojeAnivTodos = false;
+  /* Ordem do "Hoje" (revista em 18/11/2026): primeiro o que acaba hoje e você consegue fazer agora — desejo do dia,
+     missões e aniversários (o coração só vale no dia) — e depois o que fica a semana inteira: capítulo, desfecho da
+     bagunça e a bagunça em si. A tela curta mostra as 2 primeiras pendências; o resto abre no "Ver tudo". */
   function hojeHtml(){
     var itens = [], feitos = 0, H = window.TW_HUMOR, C = window.TW_CAL;
     function linha(ok, cor, icone, tit, sub, botao, extra){
@@ -435,16 +438,7 @@
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
       linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
-    // 3. capítulo do domingo (aparece na semana em que saiu)
-    var cp = capHoje(), hj = C ? C.hoje() : '';
-    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
-      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
-    // 3b. desfecho da bagunça da semana (Vida no bairro → Idol⭐News!), a partir do domingo
-    var B4 = window.TW_BAIRRO;
-    if(B4 && typeof B4.desfecho === 'function'){ try{ var df = B4.desfecho();
-      if(df) linha(df.visto, 'uva', 'news', esc(thj('desf')), esc(thj('desfSub', {q:df.quem, r:df.ruaNome})),
-        df.visto ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }catch(e){} }
-    // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
+    // 3. aniversários do dia (passam à meia-noite): jogadores (coração + perfil) e o trio (fichinha)
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){
         if(m.k === 'anivJog') (m.quem || []).filter(function(nk, i){ return hojeAnivTodos || i === 0 || nk.toLowerCase() === eu; }).forEach(function(nk){
@@ -459,7 +453,16 @@
         if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
       });
     }
-    // 5. Vida no bairro (tw-bairro.js): a bagunça da semana e o bico que está mais perto de subir
+    // 4. leitura da semana: capítulo de domingo
+    var cp = capHoje(), hj = C ? C.hoje() : '';
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    // 5. desfecho da bagunça da semana (Vida no bairro → Idol⭐News!), a partir do domingo
+    var B4 = window.TW_BAIRRO;
+    if(B4 && typeof B4.desfecho === 'function'){ try{ var df = B4.desfecho();
+      if(df) linha(df.visto, 'uva', 'news', esc(thj('desf')), esc(thj('desfSub', {q:df.quem, r:df.ruaNome})),
+        df.visto ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }catch(e){} }
+    // 6. Vida no bairro (tw-bairro.js): a bagunça da semana e o bico que está mais perto de subir
     var B = window.TW_BAIRRO;
     if(B){ try{ var rb = B.resumo();
       linha(rb.ok, 'uva', 'pin', esc(rb.tit), esc(rb.sub), '<button type="button" class="twc-hj-bt" data-bairro="abrir">' + esc(rb.bt) + '</button>',

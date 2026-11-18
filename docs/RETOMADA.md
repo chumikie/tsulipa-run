@@ -35,10 +35,10 @@
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106) | — |
-| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Medir em celular real |
+| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); **zona de acerto maior** (BOM ±150, PERFECT ±55) e **"Medir sozinho"** no Ajustar timing (8 batidas, toque junto, calcula o atraso do aparelho) | Medir em celular real |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
-| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115) | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
-| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo | — |
+| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115) | Levar flor do Bloom (como no Handshake): **precisa do banco**, proposta em `supabase/sql/proposta/20261118_flor_no_cafe.sql` |
+| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes, "jeito" valendo e flor do Bloom na mesa (desde 13/11) | — |
 | Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; cards usados no Battle | — |
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
 | Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio (#113–#114) | — |
@@ -93,6 +93,7 @@
 - Atualizar as instruções do Projeto no claude.ai: ainda falam da PR #58.
 
 **Banco (ChatGPT, com autorização)**
+- Flor do Bloom no Café: `supabase/sql/proposta/20261118_flor_no_cafe.sql` (uma linha: aceitar `p_uso='cafe'`). Sem isso, a parte do site não faz sentido.
 - Prêmio dos lightsticks do Battle (`supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`).
 - Roupa como prêmio do nível 3 do bairro.
 

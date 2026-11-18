@@ -51,7 +51,10 @@ function makeNoteMap(song,total,step,start){var notes=[],heard=0,lastLane=-1,str
   if((volta>=2||progress>=.5)&&i%8===0&&Math.floor(i/8)%2===0){var pair=lane<=1?lane+2:lane-2;notes.push({lane:pair,at:at,done:false,idx:i});}
  }return notes;}
 /* Janelas de julgamento coincidem com centro e halo visual. */
-var KT_HIT_WINDOWS={perfect:45,good:100},KT_NOTE_PX_PER_MS=.21,KT_NOTE_HALF_HEIGHT=4;
+/* Zona de acerto (18/11/2026, a pedido do dono: "mais acessível"): BOM foi de ±100 para ±150 ms e PERFECT de ±45
+   para ±55 ms. O halo desenhado na pista sai destes mesmos números, então o que se vê continua sendo o que vale.
+   O teto de pontos não mudou (PERFECT ainda pede precisão); quem errava por pouco agora faz BOM em vez de MISS. */
+var KT_HIT_WINDOWS={perfect:55,good:150},KT_NOTE_PX_PER_MS=.21,KT_NOTE_HALF_HEIGHT=4;
 function ktNoteY(delta,fall,top,target){var halo=KT_HIT_WINDOWS.good*KT_NOTE_PX_PER_MS;
  if(delta>=-KT_HIT_WINDOWS.good)return target+delta*KT_NOTE_PX_PER_MS;
  var duration=Math.max(1,fall-KT_HIT_WINDOWS.good),travel=Math.max(1,target-halo-top),progress=Math.max(0,Math.min(1,(delta+fall)/duration));
@@ -167,6 +170,40 @@ var previewPlayer=window.KaraokeMusicPreview.create({
 });
 function checkpoint(){if(run&&!run.practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta())D.ktMeta().checkpoint(run);}
 function adjustOffset(ms){if(run)run.offsetMs=ms;}
+/* Calibração automática (18/11/2026): 8 batidas de metrônomo; a pessoa toca junto. A diferença entre o toque e a
+   batida OUVIDA (o horário agendado no relógio do áudio, já sem a latência de saída) é o atraso do aparelho.
+   Usa a mediana dos toques e ignora a primeira batida, que serve só para a pessoa pegar o ritmo. */
+var cal = null;
+var KT_CAL = {batidas:8, passo:700, espera:1200, longe:340};
+function calibrarComecar(){
+  if(run || !D.AC() || D.muted()) return null;
+  var AC = D.AC(), origemAC = AC.currentTime, origemPerf = performance.now(), lat = ktOutputLatencyMs();
+  cal = {quando:[], toques:[]};
+  for(var i = 0; i < KT_CAL.batidas; i++){
+    var t = origemAC + (KT_CAL.espera + i * KT_CAL.passo) / 1000;
+    voice(i % 4 === 0 ? 1320 : 880, .07, t, i % 4 === 0 ? .06 : .045, 'triangle');
+    /* O som agendado em AC.currentTime só chega ao ouvido "lat" ms depois, então a batida é OUVIDA mais tarde.
+       Somando a latência aqui, a conta fica igual à que o hit() faz durante a música (kNow() desconta a mesma lat). */
+    cal.quando.push(origemPerf + (t - origemAC) * 1000 + lat);
+  }
+  return {batidas:KT_CAL.batidas, passo:KT_CAL.passo, comeca:cal.quando[0] - performance.now(), dura:cal.quando[KT_CAL.batidas - 1] + KT_CAL.passo - performance.now()};
+}
+function calibrarToque(event){
+  if(!cal) return null;
+  var agora = ktInputTime(performance.now(), event, performance.now()), melhor = Infinity;
+  cal.quando.forEach(function(q, i){ if(i === 0) return; var d = agora - q; if(Math.abs(d) < Math.abs(melhor)) melhor = d; });
+  if(!isFinite(melhor) || Math.abs(melhor) > KT_CAL.longe) return {n:cal.toques.length, fora:true};
+  cal.toques.push(melhor);
+  return {n:cal.toques.length, delta:melhor};
+}
+function calibrarFim(){
+  if(!cal) return null;
+  var v = cal.toques.slice().sort(function(a, b){ return a - b; }); cal = null;
+  if(v.length < 4) return {poucos:true, n:v.length};
+  var meio = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
+  return {n:v.length, offset:Math.round(meio / 10) * 10, media:Math.round(meio)};
+}
+function calibrarAtiva(){ return !!cal; }
 function react(type,message){
  var now=performance.now();if(now-lastReaction<420)return;lastReaction=now;
  var event=type==='MISS'?'miss':type==='COMBO'?'combo':type==='FINISH'?'finish':type==='GOOD'?'hit':'hit';
@@ -229,7 +266,7 @@ document.addEventListener('keydown',function(e){
 });
 window.addEventListener('pagehide',function(){previewPlayer.stop(false);if(run){pause(true);checkpoint();}});
 document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);if(run)pause(true);}});
-return {start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,previewSong:previewPlayer.play,pausePreview:previewPlayer.pause,resumePreview:previewPlayer.resume,stopPreview:previewPlayer.stop,togglePreview:previewPlayer.toggle,previewState:previewPlayer.state,paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt,own:own,arena:arena};
+return {start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,calibrarComecar:calibrarComecar,calibrarToque:calibrarToque,calibrarFim:calibrarFim,calibrarAtiva:calibrarAtiva,previewSong:previewPlayer.play,pausePreview:previewPlayer.pause,resumePreview:previewPlayer.resume,stopPreview:previewPlayer.stop,togglePreview:previewPlayer.toggle,previewState:previewPlayer.state,paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt,own:own,arena:arena};
 }
 window.KaraokeShow={criar:criar};
 })();

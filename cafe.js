@@ -139,7 +139,7 @@ function cfNovoClienteLocal(){
   if(cf.atendidos > 0 && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
   f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
-  cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
+  cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = ''; cf.detalhePedido = '';
   cfUI();
 }
 function cfNovoCliente(){
@@ -207,6 +207,23 @@ function cfCidadeReencontro(f,conta,comprovante){
    nome:f.nome,pres:f.pres,conta:conta
  });
 }
+function cfDetalhePedido(pedido, montado){
+  var ingredientes = {base:CF_BASES, cob:CF_COBERTURAS, enf:CF_ENFEITES, doce:CF_DOCES};
+  var diferentes = Object.keys(ingredientes).filter(function(tipo){ return pedido[tipo] !== montado[tipo]; });
+  if(diferentes.length !== 1) return '';
+  var tipo = diferentes[0], item = ingredientes[tipo][pedido[tipo]];
+  var textos = {
+    pt:['Era {item}! O resto ficou lindo.','sem cobertura','sem docinho'],
+    en:['I asked for {item}! The rest looks lovely.','no topping','no sweet'],
+    es:['¡Pedí {item}! El resto quedó precioso.','sin cobertura','sin un dulce'],
+    id:['Aku pesan {item}! Selebihnya bagus sekali.','tanpa topping','tanpa kudapan'],
+    th:['ฉันสั่ง {item}! ที่เหลือดูดีมาก','แบบไม่ใส่ท็อปปิง','แบบไม่มีขนม'],
+    ja:['注文は「{item}」だったよ！ほかはばっちり。','トッピングなし','お菓子なし']
+  };
+  var idioma = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
+  var nome = item ? tr(item[1]) : tipo === 'cob' ? idioma[1] : idioma[2];
+  return idioma[0].replace('{item}', nome);
+}
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
   var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
@@ -232,6 +249,7 @@ function cfServir(saiu){
         }else if(atual.provaEstado!=='confirmado') atual.provaEstado='sem_comprovacao';
         if(!!r.certo!==atual.ok){
           atual.ok=!!r.certo;
+          atual.detalhePedido='';
           atual.fala=tr(r.certo?'Pedido confirmado! 💖':'Pedido não confirmado pelo servidor. 🥲');
         }
       }else{atual.modoServidor='treino';atual.provaEstado='sem_comprovacao';}
@@ -274,6 +292,7 @@ function cfServir(saiu){
     cfSom('servir','star');
   }else{
     cf.combo=0;cf.vidas--;
+    cf.detalhePedido = saiu ? '' : cfDetalhePedido(p, m);
     cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
     cfSom('perdeu','hit');
   }
@@ -315,7 +334,7 @@ function cfLoop(ms){
     if(cf.fase === 'pedido' && cf.cli && cf.cli.vaiRoubar && !cf.cli.roubou && cf.monta.doce >= 0 && cfT - cf.doceT > 45 && typeof eventoPet === 'function' && eventoPet()){   // o pet pega o docinho!
       var pt = eventoPet(); cf.cli.roubou = true; cf.monta.doce = -1; cf.rouboT = cfT; cf.aviso = '🐾 ' + tr('{p} pegou o docinho! Coloque outro.').replace('{p}', pt.nome || tr('Seu pet')); cfUI(); }
     if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) cfPacienciaUI(bar, Math.max(0, 100 - dt / cfPaciencia() * 100)); }
-    else if(cf.fase === 'reacao' && dt > 90 && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
+    else if(cf.fase === 'reacao' && dt > (cf.detalhePedido ? 150 : 90) && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
   }
   if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
   cfAnim = requestAnimationFrame(cfLoop);
@@ -493,6 +512,7 @@ function cfUI(){
         escHtml(tr('Você lembrou do meu presente naquele dia!')) + ' ' +
         (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
     }
+    if(cf.fase === 'reacao' && cf.detalhePedido) h += '<p class="cfpedidotxt" role="status">' + escHtml(cf.detalhePedido) + '</p>';
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += '<div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo" aria-hidden="true">😊</b><i id="cfPac" style="width:100%"></i></div>';
     if(cf.fase === 'pedido' && cf.assinatura && !cf.assinaturaUsada && cf.cli &&

@@ -73,13 +73,24 @@
   }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
-  var sessao = 0;
+  var sessao = 0, donoSessao = null, muralCarregando = false, muralErro = false, escolheuObjeto = false;
+  var MURAL_REDE = {
+    pt:['Não foi possível atualizar o Mural.','Tentar novamente'],
+    en:['Could not refresh the board.','Try again'],
+    es:['No se pudo actualizar el mural.','Reintentar'],
+    id:['Papan tidak dapat diperbarui.','Coba lagi'],
+    th:['อัปเดตบอร์ดไม่สำเร็จ','ลองอีกครั้ง'],
+    ja:['掲示板を更新できませんでした。','再試行']
+  };
+  function sessaoAtiva(sess, dono){
+    return sess === sessao && ov && !ov.hidden && dono === donoFoto();
+  }
   var MOMENTOS = {
     pt:['Guardar em Momentos','Guardada em Momentos!'],en:['Keep in Moments','Saved to Moments!'],
     es:['Guardar en Momentos','¡Guardada en Momentos!'],id:['Simpan di Momen','Tersimpan di Momen!'],
     th:['เก็บในโมเมนต์','เก็บในโมเมนต์แล้ว!'],ja:['思い出に保存','思い出に保存しました！']
   };
-  function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : ''; }
+  function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : (logado() && (contaJ.id || contaJ.nick)) || ''; }
   var HISTORICO = {
     pt:'Publicada! O figurino histórico ainda não foi confirmado pelo servidor.',
     en:'Posted! The server has not confirmed the historical look yet.',
@@ -150,26 +161,47 @@
     document.body.appendChild(ov);
     ov.addEventListener('click', function(e){
       if(e.target === ov || e.target.id === 'studioX'){ fechar(); return; }
+      if(donoSessao !== donoFoto()){ fechar(); return; }
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
+      if(a === 'mural-retry'){ carregarMural(); return; }
       if(a === 'publicar'){ publicar(); return; }
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
       else if(a === 'guardar') guardar();
-      else if(esc_.hasOwnProperty(a)){ esc_[a] = v; ui(); if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){} }
+      else if(esc_.hasOwnProperty(a)){ if(a === 'objeto') escolheuObjeto = true; esc_[a] = v; ui(); if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){} }
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
-  function abrir(){
-    montarOv(); sessao++; ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false; fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
+  function abrir(atalho){
+    montarOv();
+    var sess = ++sessao, dono = donoFoto();
+    var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
+    if(dono !== donoSessao){
+      mural = null;
+      esc_.objeto = 'nenhum';
+    }
+    donoSessao = dono;
+    muralCarregando = muralErro = false;
+    flores = {}; escolheuObjeto = false;
+    if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
+    ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
+    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
     if(logado()){
-      contaRpc('studio_pauta').then(function(r){ if(r && r.ok){ pauta = r; servidor = true; ui(); } }).catch(function(){});
-      contaRpc('jardim_estado').then(function(r){ if(r && r.ok){ flores = r.flores || {}; ui(); } }).catch(function(){});
+      contaRpc('studio_pauta').then(function(r){
+        if(sessaoAtiva(sess, dono) && r && r.ok){ pauta = r; servidor = true; ui(); }
+      }).catch(function(){});
+      contaRpc('jardim_estado').then(function(r){
+        if(!sessaoAtiva(sess, dono) || !r || !r.ok) return;
+        flores = r.flores || {};
+        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto) esc_.objeto = 'flor_' + flor;
+        ui();
+      }).catch(function(){});
     }
   }
-  function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
+  function fechar(){ sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
     var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
@@ -274,7 +306,7 @@
       if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
-        publicou = true; mural = null;
+        publicou = true;
         // tema da semana: ★3 uma vez por semana (o servidor confere o tema; studio_publicar)
         if(+r.premio_tema > 0){
           msg = t('publicado') + ' ' + tt('premio').replace('{n}', r.premio_tema);
@@ -287,24 +319,44 @@
     }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } ocupado = false; ui(); });
   }
   function carregarMural(){
-    if(!logado()) return; mural = mural || null; muralUI();
-    contaRpc('studio_mural').then(function(L){ mural = Array.isArray(L) ? L : []; muralUI(); }).catch(function(){ mural = []; msg = t('erro'); muralUI(); });
+    if(!logado() || muralCarregando) return;
+    var sess = sessao, dono = donoFoto();
+    muralCarregando = true; muralErro = false; muralUI();
+    contaRpc('studio_mural').then(function(lista){
+      if(!sessaoAtiva(sess, dono)) return;
+      if(Array.isArray(lista)) mural = lista;
+      else muralErro = true;
+    }).catch(function(){
+      if(sessaoAtiva(sess, dono)) muralErro = true;
+    }).then(function(){
+      if(!sessaoAtiva(sess, dono)) return;
+      muralCarregando = false; muralUI();
+    });
   }
   function curtir(id, b){
-    if(!id) return; if(b) b.disabled = true;
+    if(!id || muralCarregando) return;
+    var sess = sessao, dono = donoFoto();
+    if(b) b.disabled = true;
     contaRpc('studio_curtir', {p_id:id}).then(function(r){
+      if(!sessaoAtiva(sess, dono)) return;
       if(r && r.ok && mural){ mural.forEach(function(m){ if(+m.id === id){ m.coracoes = +r.coracoes; m.curti = true; } }); if(typeof beep === 'function') try{ beep(1319, .06, 'triangle', .04); }catch(e){} }
       muralUI();
-    }).catch(function(){ muralUI(); });
+    }).catch(function(){ if(sessaoAtiva(sess, dono)) muralUI(); });
   }
   function muralUI(){
     var box = ov && ov.querySelector('#studioMural'); if(!box || box.hidden) return;
-    if(mural === null){ box.innerHTML = '<p class="perfcarr">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>'; return; }
     var h = temaHtml(null) + '<p class="stdica">' + esc(t('dicaMural')) + '</p>';
-    if(!mural.length) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
-    h += '<div class="stmural">' + mural.map(function(m, i){
+    if(muralErro){
+      var rede = MURAL_REDE[L()];
+      h += '<p class="stmsg" role="status">' + esc(rede[0]) + '</p>' +
+        '<button type="button" class="btn alt" data-st="mural-retry">' + esc(rede[1]) + '</button>';
+    } else if(muralCarregando || mural === null){
+      h += '<p class="perfcarr" role="status">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>';
+    }
+    if(mural && !mural.length && !muralCarregando && !muralErro) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
+    h += '<div class="stmural">' + (mural || []).map(function(m, i){
       return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption>' + (noTema(m.escolhas) ? '<em class="stselo">✨ ' + esc(tt('selo')) + '</em>' : '') + '<b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' +
-        '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
+        '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha || muralCarregando ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
     }).join('') + '</div>';
     box.innerHTML = h;
     [].forEach.call(box.querySelectorAll('canvas[data-stpost]'), function(cv){ var m = mural[+cv.getAttribute('data-stpost')];
@@ -447,7 +499,7 @@
     }
     x.restore();
   }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
   // Capa da semana no Idol⭐News! (aba Jogadores e eventos): a foto mais curtida do mural
   function capaNews(){
     var painel = document.getElementById('jnAbaComunidade'); if(!painel || !logado() || document.getElementById('jnCapaStudio')) return;

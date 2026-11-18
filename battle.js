@@ -39,7 +39,7 @@ function rotulo(x,i,txt,cx,y,px,cor){
 }
 var SW=560,SH=520,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
-var fase='escalar',showT0=0,showRaf=0; // escalar → show → fim
+var fase='escalar',showT0=0,showRaf=0,rodadaCalma=0;
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
@@ -65,6 +65,14 @@ var T_SKILL={pt:['Nota Alta','Passo Duplo','Piscadinha','HABILIDADE!','Coraçõe
  th:['โน้ตสูง','สเต็ปคู่','ขยิบตา','สกิล!','หัวใจจากคนดู','สกิล: {n}/3 · หัวใจจากคนดู: {c}','เข้ากับรอบ: +3 ♥'],
  ja:['ハイノート','ダブルステップ','ウインク','スキル！','ファンのハート','スキル: {n}/3 · ファンのハート: {c}','ラウンドにぴったり: +3 ♥']};
 Object.keys(T_SKILL).forEach(function(l){if(!T[l])return;var v=T_SKILL[l];T[l].sk0=v[0];T[l].sk1=v[1];T[l].sk2=v[2];T[l].skill=v[3];T[l].coracoes=v[4];T[l].skillRes=v[5];T[l].skMatch=v[6];});
+var SHOW_CALMO = {
+ pt:['Próxima rodada','Ver resultado','Venceu: {n}'],
+ en:['Next round','See results','Winner: {n}'],
+ es:['Siguiente ronda','Ver resultado','Victoria: {n}'],
+ id:['Ronde berikutnya','Lihat hasil','Pemenang: {n}'],
+ th:['รอบถัดไป','ดูผล','ผู้ชนะ: {n}'],
+ ja:['次のラウンド','結果を見る','勝者：{n}']
+};
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
 function habilidade(c){   // 0 Nota Alta (canto) · 1 Passo Duplo (dança) · 2 Piscadinha (carisma); empate fica com o primeiro
  var m=0;for(var i=1;i<3;i++)if(valor(c,i)>valor(c,m))m=i;return m;}
@@ -158,6 +166,18 @@ function montar(){
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;
    var a=b.getAttribute('data-battle');
    if(a==='fechar'){fechar();return;}
+   if(a==='proxima-rodada' && fase==='show-calmo'){
+     if(rodadaCalma + 1 === rodadas.length){
+       fimDoShow();
+       var resultado = ov.querySelector('.battle-resultado h3');
+       if(resultado){ resultado.tabIndex = -1; resultado.focus(); }
+     } else {
+       rodadaCalma++;
+       render();
+       ov.querySelector('[data-battle="proxima-rodada"]').focus();
+     }
+     return;
+   }
    if(a==='agitar'){agitar();return;}
    if(a==='pular'){fimDoShow();return;}
    if(ocupado)return;
@@ -205,7 +225,7 @@ function carregarRanking(){
  if(!logado())return;
  contaRpc('battle_ranking').then(function(r){
    if(!r||!r.ok||!Array.isArray(r.top))return;
-   ranking=r;if(ov&&!ov.hidden&&fase!=='show')render();
+   ranking=r;if(ov&&!ov.hidden&&(fase==='escalar'||fase==='fim'))render();
  }).catch(function(){});
 }
 // Torcida de flores (v3). Sem a função no servidor a seção não aparece e nada muda.
@@ -371,6 +391,17 @@ function render(){
  ov.querySelector('#battleSub').textContent=trB('subtitle');
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
+ if(fase==='show-calmo'){
+   var i = rodadaCalma, r = rodadas[i], textoCalmo = SHOW_CALMO[lang()] || SHOW_CALMO.pt;
+   var meu = r.meu || unit[i], rival = r.rival || '?';
+   area.innerHTML = '<div class="battle-showhud" role="status"><b>' + esc(nomeRound(i)) + ' · ' +
+     (i + 1) + '/' + rodadas.length + '</b><span>' + esc(textoCalmo[2].replace('{n}', r.ganhou ? meu : rival)) + '</span></div>' +
+     '<p class="battle-ritmo">' + esc(meu) + ' ' + Number(r.eu || 0) + ' × ' + Number(r.eles || 0) + ' ' + esc(rival) + '</p>' +
+     '<div class="btns"><button type="button" class="btn" data-battle="proxima-rodada">' +
+     esc(textoCalmo[i + 1 === rodadas.length ? 1 : 0]) + '</button></div>';
+   desenharPalco(i * DUR + DUR - .08);
+   return;
+ }
  if(fase==='show'){
    area.innerHTML='<div class="battle-showhud"><b id="battleLiveRodada">'+esc(nomeRound(0))+' · 1/3</b><span>'+esc(trB('my'))+' × '+esc(trB('other'))+'</span></div>'+
     '<div class="battle-showtrack" aria-hidden="true"><i id="battleShowFill"></i></div>'+
@@ -550,7 +581,11 @@ function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
  pararShow();
- if(calmo()||typeof requestAnimationFrame!=='function'){fimDoShow();return;}
+ if(calmo()||typeof requestAnimationFrame!=='function'){
+   fase='show-calmo'; rodadaCalma=0; ritmo=null; render();
+   ov.querySelector('[data-battle="proxima-rodada"]').focus();
+   return;
+ }
  fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
  (function quadro(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;

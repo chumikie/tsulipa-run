@@ -21,7 +21,7 @@ const MODULOS = [
   { js: "perfil.js", css: "perfil.css", tem: ["perfAbrir", "perfDesenharIdol", "PERF_VIS"], cssTem: [/\.perfp\{/, /\.perfov\{/] },
   { js: "gacha.js", css: "gacha.css", tem: ["gachaAbrir", "gachaCardDesenhar", "cardsHtml", "GACHA_SORTE"], cssTem: [/#gachaCv\{/, /\.cardmini\{/] },
   { js: "duo-base.js", css: "duo.css", tem: ["duoAbrir", "duoFechar", "lojaItem", "perfLoja2UI", "DUO_FALAS", "duoFundoDesenhar"], cssTem: [/#duoCv\{/, /\.duotabs\{/] },
-  { js: "encontro.js", css: "encontro.css", tem: ["encMostrar", "encCena", "ENC_EMO"], cssTem: [/#encCv\{/, /\.enchero\{/] },
+  { js: "encontro-base.js", css: "encontro.css", tem: ["encMostrar", "encAbrirNovo", "encBtnUI", "encHoje", "encLer"], cssTem: [/#encCv\{/, /\.enchero\{/] },
   { js: "hub.js", css: "hub.css", tem: ["hubMostrar", "hubCardsUI", "twRankRender"], cssTem: [/\.hubidols\{/, /\.hubcfg\{/] },
   { js: "conta.js", css: null, tem: ["contaEntrar", "contaUI"], cssTem: [] }
 ];
@@ -136,4 +136,17 @@ assert(html.indexOf('<script src="./pet-sync.js?v=') < html.indexOf('<script src
   for (const n of ["admPainel", "admExtra", "admContasUI", "admIdolPrev", "admIdolPng", "admRoupaPng", "admVisualRoupa", "admAcao", "admBarraHtml", "admOpts", "admIdolFormHtml", "admCamarimOpts"]) assert(base.includes(n) && new RegExp("^function " + n + "\\(", "m").test(adm), n + ": substituto na base e o de verdade no admin.js");
   assert(/^var hubIdolsDados = null, hubIdolsEm = 0;/m.test(base), "hubIdolsEm junto");
   console.log("✓ Moderação sob demanda: admin-base.js na abertura, admin.js só para admin");
+}
+// Encontro do dia sob demanda (17/11/2026): encontro.js (a cena) baixa quando o Encontro abre.
+{
+  const base = fs.readFileSync(path.join(root, "encontro-base.js"), "utf8"), cena = fs.readFileSync(path.join(root, "encontro.js"), "utf8");
+  assert(!html.includes('<script src="./encontro.js?v=') && /s\.src = '\.\/encontro\.js\?v=\d+'/.test(base), "encontro.js fora da abertura, pedido pelo encontro-base.js");
+  const acessos = [];
+  const sandbox = new Proxy({}, { has: (t, k) => typeof k === "string" && !(k in t) ? (acessos.push(k), false) : k in t, get: (t, k) => t[k], set: (t, k, v) => { t[k] = v; return true; }, defineProperty: (t, k, d) => Reflect.defineProperty(t, k, d) });
+  vm.runInContext(cena, vm.createContext(sandbox), { filename: "encontro.js" });
+  assert.deepEqual(acessos.filter((k) => !["undefined", "NaN", "Infinity"].includes(k)), [], "encontro.js só declara");
+  const dup = Object.keys(sandbox).filter((n) => !["encMostrar", "encAbrirNovo", "encLoop"].includes(n) && (noIndex.has(n) || vistos.has(n)));
+  assert.deepEqual(dup, [], "encontro.js não repete nada: " + dup.join(", "));
+  for (const n of ["encMostrar", "encAbrirNovo", "encLoop"]) assert(new RegExp("^function " + n + "\\(", "m").test(base) && new RegExp("^function " + n + "\\(", "m").test(cena), n + ": substituto na base e o de verdade no encontro.js");
+  console.log("✓ Encontro do dia sob demanda: encontro.js (" + Object.keys(sandbox).length + " declarações)");
 }

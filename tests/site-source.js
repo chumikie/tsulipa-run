@@ -3,7 +3,7 @@
 "use strict";
 const fs = require("node:fs");
 const path = require("node:path");
-const MODULOS = ["centerrun.js", "centerrun-corrida.js", "pet.js", "perfil.js", "gacha.js", "duo-base.js", "duo.js", "duo-tela.js", "duo-pedido.js", "encontro.js", "hub.js", "recordes.js", "conta.js", "admin-base.js", "admin.js", "centerrun.css", "pet.css", "perfil.css", "gacha.css", "duo.css", "encontro.css", "hub.css", "admin.css"];   // na ordem em que o index.html carrega
+const MODULOS = ["centerrun.js", "centerrun-corrida.js", "pet.js", "perfil.js", "gacha.js", "duo-base.js", "duo.js", "duo-tela.js", "duo-pedido.js", "encontro.js", "encontro-base.js", "hub.js", "recordes.js", "conta.js", "admin-base.js", "admin.js", "centerrun.css", "pet.css", "perfil.css", "gacha.css", "duo.css", "encontro.css", "hub.css", "admin.css"];   // na ordem em que o index.html carrega
 module.exports = function siteSource(){
   const root = path.join(__dirname, "..");
   return [fs.readFileSync(path.join(root, "index.html"), "utf8")]

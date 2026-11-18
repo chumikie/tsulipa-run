@@ -2,7 +2,7 @@
 
 ## Pastas (02/11/2026)
 
-- `aplicado/`: scripts que **já estão no banco de produção** (confirmados abaixo ou pelo ChatGPT na `docs/PR58_STATUS.md`). Servem de registro; não reaplicar sem conferir.
+- `aplicado/`: scripts que **já estão no banco de produção** (confirmados abaixo ou pelo ChatGPT na `docs/historico/status/PR58_STATUS.md`). Servem de registro; não reaplicar sem conferir.
 - `proposta/`: **não aplicados**. Só com autorização da dona e revisão do ChatGPT.
 - `historico/`: a antiga sala online do Karaoke⭐Day! (aposentada) e os testes do laboratório `karaoke_lab_3a*`. **Nunca executar em produção.**
 - Ainda na raiz, **estado a confirmar com o ChatGPT** antes de mover: `admin_corrida_contadores.sql`, `fechar_funcoes_internas.sql`, `gacha_sem_card_proprio.sql`, `karaoke_tickets_REVIEW_ONLY.sql`, `sora_jump_online_ranking.sql`, `sora_jump_tv_profile_integration.sql`, e o pacote do limite de 100 estrelas do Center⭐Run! (`center_run_daily_100_*`, `README-`, `RUNBOOK-` e `CHECKLIST-center-run-100.md`; a versão aplicada é a migração `supabase/migrations/20261101234420_center_run_daily_100.sql`).

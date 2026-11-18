@@ -1,5 +1,7 @@
 # Mapa do código da página inicial (index.html + módulos)
 
+> **Retrato de 02/11/2026.** Desde então várias partes passaram a baixar sob demanda (corrida, pet, perfil, Duo, admin, bairro, Encontro, Karaoke dividido). A lista atual está em [`RETOMADA.md`](RETOMADA.md#arquivos-sob-demanda-leveza).
+
 Resultado da refatoração da PR #62 (02/11/2026). O `index.html` passou de ~876 KB para ~218 KB sem mudar nada
 na tela: os blocos grandes foram para arquivos próprios. Método e conferências de cada etapa:
 `docs/REFATORACAO_INDEX.md`.

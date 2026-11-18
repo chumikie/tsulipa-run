@@ -1,5 +1,7 @@
 # Raio-X dos jogos — Fase 2 (13/11/2026)
 
+> **Retrato de 13/11/2026.** Várias melhorias sugeridas aqui já foram feitas (Café Dois no balcão, Handshake com hora extra e dois detalhes, Gacha com pó de estrela e garantia…). Estado atual de cada jogo: [`RETOMADA.md`](RETOMADA.md).
+
 Notas de 1 a 5. Critérios: **Profundidade** (decisão, progressão, motivo para voltar), **Integração** (conversa com o resto do mundo), **Técnica** (celular, servidor, código), **Sensação** (som, animação, resultado).
 
 Primeira leva: Café, Handshake e Gacha, os candidatos a "muito básicos". Os outros jogos entram na segunda leva.

@@ -22,12 +22,18 @@ exports.install=async function(context){
 exports.verify=async function(p,frame,width,out){
  const state=()=>frame.locator('body').evaluate(()=>window.qaRoomState());
  const camera=frame.locator('#ktFoto'),dialog=frame.locator('#ktPhotoDialog'),img=frame.locator('#ktPhotoImage');
- await camera.evaluate(button=>{
-  button.addEventListener('click',()=>{
+ await camera.evaluate(()=>{
+  const photo=window.KaraokeRoomPhoto, capture=photo.capture;
+  photo.capture=function(source,options){
    const c=document.createElement('canvas');c.width=1920;c.height=1080;
-   c.getContext('2d').drawImage(document.getElementById('krCv'),0,0,1920,1080);
-   window.__qaExpectedPhoto=c.toDataURL('image/png');
-  },true);
+   const ctx=c.getContext('2d');ctx.drawImage(source,0,0,1920,1080);
+   const result=capture.call(this,source,options);
+   if(result){
+    window.__qaExpectedPhoto=c.toDataURL('image/png');
+    window.__qaFullPhoto=[8,1911].every(x=>ctx.getImageData(x,540,1,1).data[3]===255);
+   }
+   return result;
+  };
  });
  async function open(){await camera.click();await img.waitFor({state:'visible'});await img.evaluate(i=>i.decode());}
  async function close(){await frame.locator('#ktPhotoBack').click();await dialog.waitFor({state:'hidden'});await p.waitForTimeout(60);}
@@ -44,9 +50,9 @@ exports.verify=async function(p,frame,width,out){
  assert(framedFile.suggestedFilename().includes('_polaroid.png'),'Framed image has a distinct filename');
  const capture=await img.evaluate(i=>{
   const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);
-  return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto};
+  return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto,full:window.__qaFullPhoto};
  });
- assert.equal(capture.w,1920);assert.equal(capture.h,1080);assert(capture.same,'Preview matches the exact pixels at the camera click');
+ assert.equal(capture.w,1920);assert.equal(capture.h,1080);assert(capture.same,'Preview matches the complete frame handed to the camera');assert(capture.full,'Both sides of the room are opaque in the photo');
  await p.waitForTimeout(450);
  assert(await img.evaluate(i=>{
   const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);

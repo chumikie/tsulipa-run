@@ -2255,7 +2255,16 @@ function krMusicaLigar(){if(krRhythmRun||krMus||muted||!krRoomPodeAnimar())retur
   if(bar===3&&p>=12){krRuido(.04,.03*k,3000);if(p===15)beep(hz(ac4[3]+24),.15,'sine',.012*k,.03);}
   step++;},100);}
 function krMusicaParar(){if(krMus){clearInterval(krMus);krMus=null;}}document.addEventListener('pointerdown',function(){ac();krMusicaLigar();},{once:true});
-function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)return;if(ja!==true&&krFotoEspera)return;if(ja!==true&&!krFotoEspera&&krCorteSala(cv)){var krFotoFeita=false,krFotoVai=function(){if(krFotoFeita)return;krFotoFeita=true;krFotoEspera=null;krSalvarFotoSala(true);};krFotoEspera=krFotoVai;setTimeout(krFotoVai,400);return;}
+function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)return;if(ja!==true&&krFotoEspera)return;if(ja!==true&&krCorteSala(cv)){
+  var krFotoVai=function(){krSalvarFotoSala(true);};
+  krFotoEspera=krFotoVai;
+  setTimeout(function(){
+    if(krFotoEspera!==krFotoVai)return;
+    krFotoEspera=null;
+    krAviso('Não consegui preparar a foto neste navegador.');
+  },400);
+  return;
+ }
  var photo=window.KaraokeRoomPhoto,resume=false;
  if(!photo){krAviso('Não consegui preparar a foto neste navegador.');return;}
  photo.capture(cv,{opener:$('ktFoto'),

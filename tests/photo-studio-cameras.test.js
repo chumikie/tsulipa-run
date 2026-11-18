@@ -41,3 +41,16 @@ test('Studio photo and mural reuse the same camera and props renderer', () => {
   assert.match(source, /cena\(x, fw, fh, e, 1, av\)/);
   assert.match(source, /objetoNaMao\(x, e.objeto, av.pose, corpo/);
 });
+
+test('Studio saves and keeps a single clean PNG, independent of the animated visible canvas', () => {
+  const s = fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  assert.match(s,/capturarCena\(capturada\)/);
+  assert.match(s,/a\.href = fotoUrl\(foto\)/);
+  assert.match(s,/petPhoneMomentoGuardar\('studio', fotoUrl\(foto\), especie\)/);
+  assert.doesNotMatch(s.slice(s.indexOf('function polaroidLimpa('),s.indexOf('function chips(')),/brilhos\(/);
+  let conversions = 0;
+  const ctx = {polaroidLimpa:() => ({toDataURL:() => {conversions++;return 'cleanPNG';}})};
+  vm.runInNewContext(s.slice(s.indexOf('function fotoUrl('),s.indexOf('function salvar(')),ctx);
+  const f = {};
+  assert.equal(ctx.fotoUrl(f),'cleanPNG');assert.equal(ctx.fotoUrl(f),'cleanPNG');assert.equal(conversions,1);
+});

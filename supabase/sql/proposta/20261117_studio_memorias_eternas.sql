@@ -34,7 +34,9 @@ begin
       vis := vis || pg_catalog.jsonb_build_object(k,a->k); end if;
   end loop;
   if pg_catalog.jsonb_typeof(a->'cor') = 'string' and (a->>'cor') ~* '^#[0-9a-f]{6}$' then vis := vis || pg_catalog.jsonb_build_object('cor',a->'cor'); end if;
-  if pg_catalog.jsonb_typeof(a->'expr') = 'number' and (a->>'expr')::numeric in (0,1,2,3,4,5,6) then vis := vis || pg_catalog.jsonb_build_object('expr',a->'expr'); end if;
+  if pg_catalog.jsonb_typeof(a->'expr') = 'number' then
+    if (a->>'expr')::numeric in (0,1,2,3,4,5,6) then vis := vis || pg_catalog.jsonb_build_object('expr',a->'expr'); end if;
+  end if;
   pet := a->'pet';
   if pg_catalog.jsonb_typeof(pet) = 'object' and pet->>'k' in ('tsu','lirika','pati','meu') then
     pv := pg_catalog.jsonb_build_object('k',pet->'k');
@@ -63,7 +65,7 @@ create or replace function public.studio_publicar(p jsonb)
  set search_path to ''
 as $function$
 declare v_uid uuid := auth.uid(); v_dia date := public.hoje_br(); pa jsonb; v_ac int := 0; v_id bigint;
-  v_e jsonb; v_retrato jsonb; v_tema text; v_ini date; v_premio int := 0; v_stars int;
+  v_e jsonb; v_retrato jsonb; v_dono public.players; v_sku text; v_req integer; v_acc text; v_tema text; v_ini date; v_premio int := 0; v_stars int;
 begin
   if v_uid is null or not exists(select 1 from public.players where id=v_uid and not coalesce(bloqueado,false)) then
     return pg_catalog.json_build_object('ok',false,'erro','sem_conta'); end if;
@@ -81,6 +83,34 @@ begin
   if p ? 'retrato' then
     v_retrato := private.studio_retrato_limpo(p->'retrato');
     if v_retrato is null then return pg_catalog.json_build_object('ok',false,'erro','retrato'); end if;
+    -- Dados de desenho do cliente não são prova de posse. Consultar a conta autenticada,
+    -- sem alterar seu avatar ou sincronizar inventário; mesma exceção admin de salvar_avatar.
+    select * into v_dono from public.players where id=v_uid;
+    if not coalesce(public.eh_admin(),false) then
+      v_sku := coalesce(v_retrato#>>'{avatar,visual}','');
+      if v_sku <> '' and not (v_sku = any(coalesce(v_dono.visuais,array[]::text[]))) then
+        return pg_catalog.json_build_object('ok',false,'erro','visual_nao_comprado'); end if;
+      foreach v_sku in array array[
+        'roupa_' || coalesce(v_retrato#>>'{avatar,c,out}',''),
+        'det_' || coalesce(v_retrato#>>'{avatar,c,det}',''),
+        'hat_' || coalesce(v_retrato#>>'{avatar,c,hat}',''),
+        'expr_' || coalesce(v_retrato#>>'{avatar,expr}','')
+      ] loop
+        if (select preco from public.visual_preco(v_sku)) is not null
+          and not (v_sku = any(coalesce(v_dono.visuais,array[]::text[]))) then
+          return pg_catalog.json_build_object('ok',false,'erro','visual_nao_comprado'); end if;
+      end loop;
+      -- Acessórios de rank ACC (centerrun.js); não comprovar rank por dados do navegador.
+      v_acc := coalesce(v_retrato#>>'{avatar,a}','');
+      v_req := case v_acc when '' then 0 when 'laco' then 450 when 'mic' then 1000
+        when 'hibisco' then 1800 when 'sakura' then 2800 when 'tiaraS' then 3900
+        when 'tiaraO' then 5000 when 'estrela' then 10000 else null end;
+      if v_req is null or coalesce(v_dono.best,0) < v_req then
+        return pg_catalog.json_build_object('ok',false,'erro','visual_nao_comprado'); end if;
+    end if;
+    if coalesce(v_retrato#>>'{avatar,pet,k}','') <> '' and
+      not coalesce((v_dono.nuvem_pet->'pets') ? (v_retrato#>>'{avatar,pet,k}'),false) then
+      return pg_catalog.json_build_object('ok',false,'erro','pet'); end if;
   end if;
   pa := private.studio_pauta_de(v_dia);
   if v_e->>'fundo' = pa->>'fundo' then v_ac := v_ac + 1; end if;

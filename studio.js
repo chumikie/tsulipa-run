@@ -408,16 +408,21 @@
       x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, W * .054, H * .053, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx - W / 60, by - H / 60, W / 80, H * .015, -.4, 0, 7); x.fill(); });
     x.restore();
   }
-  function objetoNaMao(x, item, pose, corpo, cor){
+  function objetoNaMao(x, item, pose, corpo, cor, quadro){
     // Na paz e no aceno, a mão esquerda segura o objeto e a direita continua livre.
     var mao = pose === 'coracao' ? [20,28.5,.48] :
       pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
+    var flor = item.indexOf('flor_') === 0, angulo = mao[2];
+    // Em retratos próximos, incline a haste para dentro sem mover a mão da pose.
+    if(flor && quadro !== 'inteiro' && pose !== 'coracao'){
+      angulo = mao[0] < 15 ? .46 : -.46;
+    }
     x.save();
     x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
     x.scale(corpo.scale, corpo.scale);
-    x.rotate(mao[2]);
+    x.rotate(angulo);
     x.lineCap = 'round';
-    if(item.indexOf('flor_') === 0){
+    if(flor){
       var especie = item.slice(5);
       x.strokeStyle = '#44845a'; x.lineWidth = .68;
       x.beginPath(); x.moveTo(-.3,2.3); x.quadraticCurveTo(.7,-2.7,0,-6); x.stroke();
@@ -452,12 +457,12 @@
     var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
-    var quadro = e.quadro || 'inteiro';
+    var quadro = e.quadro || 'inteiro', comFlor = String(e.objeto || '').indexOf('flor_') === 0;
     if(typeof perfDesenharIdol === 'function'){
-      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro);
+      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comFlor);
     }
     if(corpo && e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'){
-      objetoNaMao(x, e.objeto, av.pose, corpo, av.cor);
+      objetoNaMao(x, e.objeto, av.pose, corpo, av.cor, quadro);
     }
     luz(x, W, H, e.luz);
   }

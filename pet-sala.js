@@ -802,19 +802,35 @@ var PET_FOTO_QUADRO = {
   es:['Colocar en el camerino','Quitar del portarretrato'],id:['Taruh di ruang ganti','Lepas dari bingkai'],
   th:['วางในห้องแต่งตัว','นำออกจากกรอบรูป'],ja:['楽屋に飾る','写真立てから外す']
 };
+//←PET_QUADRO_ESTADO_TR
+var PET_QUADRO_ESTADO_TR = {
+  pt:['Foto no porta-retrato','Não foi possível guardar a foto neste aparelho.'],
+  en:['Photo in the frame','Could not save the photo on this device.'],
+  es:['Foto en el portarretrato','No se pudo guardar la foto en este dispositivo.'],
+  id:['Foto di bingkai','Foto tidak dapat disimpan di perangkat ini.'],
+  th:['รูปในกรอบ','บันทึกรูปไว้ในอุปกรณ์นี้ไม่ได้'],
+  ja:['写真立ての写真','この端末に写真を保存できませんでした。']
+};
 function petPhoneMomentosHtml(){
   petPhoneMomentosConferir();
   var escolhida = petPhoneMomentos.find(function(f){ return f.id === petPhoneMomentoSelecionado && f.dono === petPhoneFotoChave(); });
   if(petPhoneMomentoSelecionado && !escolhida) petPhoneMomentoSelecionado = '';
+  var quadro = petVidaQuadroLer(), botoes = PET_FOTO_QUADRO[LANG] || PET_FOTO_QUADRO.pt;
+  if(quadro && quadro.url) petPhoneMomentosDono = petPhoneFotoChave();
+  var texto = PET_QUADRO_ESTADO_TR[LANG] || PET_QUADRO_ESTADO_TR.pt;
+  var erro = '<p id="petQuadroAviso" class="petphone-photo-erro" role="status"></p>';
+  var exposta = quadro && quadro.url ? '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid">' +
+    '<img id="petPhoneQuadroImagem" alt="' + escHtml(texto[0]) + '"><figcaption>' + escHtml(texto[0]) + '</figcaption></figure>' +
+    '<button type="button" data-phone="momento-quadro">' + escHtml(botoes[1]) + '</button>' + erro + '</section>' : '';
   if(escolhida) return '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid petphone-momento-' + escolhida.tipo + '">' +
     '<img id="petPhoneMomentoImagem" alt="' + escHtml(escolhida.rotulo) + '"><figcaption>✦ ' + escHtml(escolhida.rotulo) + ' ✦</figcaption></figure>' +
     '<a id="petPhoneMomentoBaixar" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a>' +
     '<button type="button" data-phone="momento-quadro">' +
-    escHtml((PET_FOTO_QUADRO[LANG] || PET_FOTO_QUADRO.pt)[petVidaFotoFixada === escolhida.id ? 1 : 0]) + '</button>' +
+    escHtml(botoes[quadro && quadro.id === escolhida.id ? 1 : 0]) + '</button>' + erro +
     '<button type="button" data-phone="momento-voltar">‹ ' + escHtml(petPhoneMomentoTexto(8)) + '</button>' +
     '<p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
-  if(!petPhoneMomentos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
-  return '<section class="petphone-momentos"><div class="petphone-momentos-grid">' + petPhoneMomentos.slice().reverse().map(function(f){
+  if(!petPhoneMomentos.length) return exposta || '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
+  return exposta + '<section class="petphone-momentos"><div class="petphone-momentos-grid">' + petPhoneMomentos.slice().reverse().map(function(f){
     return '<article class="petphone-momento petphone-momento-' + f.tipo + '"><button type="button" class="petphone-momento-ver" data-phone="momento-abrir" data-momento="' + f.id + '" aria-label="' + escHtml(petPhoneMomentoTexto(7) + ': ' + f.rotulo) + '">' +
       '<span class="petphone-momento-print"><img data-momento-id="' + f.id + '" alt="' + escHtml(f.rotulo) + '" loading="lazy"></span><b>✦ ' + escHtml(f.rotulo) + '</b></button>' +
       '<a data-momento-baixar="' + f.id + '" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a></article>';
@@ -831,6 +847,8 @@ function petPhoneMomentosRender(){
     if(baixar){baixar.href=escolhida.url;baixar.download='tsulipa-'+escolhida.tipo+'-'+escolhida.id+'.png';}
     return;
   }
+  var imagemQuadro = $('petPhoneQuadroImagem'), quadro = petVidaQuadroLer();
+  if(imagemQuadro && quadro && quadro.url) imagemQuadro.src = quadro.url;
   petPhoneMomentos.forEach(function(f){
     var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
     var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
@@ -849,22 +867,46 @@ function petPhoneMomentoAbrir(id){
   return true;
 }
 //←petPhoneMomentoQuadro
-function petPhoneMomentoQuadro(){
+async function petPhoneMomentoQuadro(botao){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return false;
   petPhoneMomentosConferir();
-  var dono = petPhoneFotoChave(), id = petPhoneMomentoSelecionado;
-  if(!petPhoneContaChave() || !petPhoneMomentos.some(function(f){return f.id === id && f.dono === dono;})) return false;
-  if(petVidaFotoFixada === id){
-    petVidaFotoFixada = '';
-    petPhoneRender();
-    var botao = document.querySelector('[data-phone="momento-quadro"]');
-    if(botao) botao.focus();
-  }else{
-    petVidaFotoFixada = id;
-    petVidaRetornoInicio = petT;
-    petPhoneFechar();
+  var chave = petVidaQuadroCampo(), dono = petPhoneFotoChave(), id = petPhoneMomentoSelecionado;
+  var quadro = petVidaQuadroLer();
+  var momento = petPhoneMomentos.find(function(f){return f.id === id && f.dono === dono;});
+  if(!chave) return false;
+  if(quadro && quadro.url && (!id || quadro.id === id)){
+    if(petVidaQuadroSalvar(chave,{id:'',url:''})){
+      petPhoneRender();
+      var foco = document.querySelector('#petPhoneCorpo [data-phone="momento-quadro"], #petPhoneCorpo [data-phone="voltar"]');
+      if(foco) foco.focus();
+      return true;
+    }
+  }else if(momento){
+    botao.disabled = true;
+    try{
+      var imagem = new Image();
+      await new Promise(function(resolve,reject){
+        imagem.onload = resolve; imagem.onerror = reject; imagem.src = momento.miniUrl || momento.url;
+      });
+      if(!botao.isConnected || !petPhoneOpen || petPhoneMomentoSelecionado !== id || petPhoneFotoChave() !== dono) return false;
+      var escala = Math.min(1,184/imagem.naturalWidth,224/imagem.naturalHeight);
+      var cv = document.createElement('canvas');
+      cv.width = Math.max(1,Math.round(imagem.naturalWidth*escala));
+      cv.height = Math.max(1,Math.round(imagem.naturalHeight*escala));
+      var x = cv.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0,0,cv.width,cv.height);
+      x.drawImage(imagem,0,0,cv.width,cv.height);
+      if(petVidaQuadroSalvar(chave,{id:id,url:cv.toDataURL('image/jpeg',.8)})){
+        petVidaRetornoInicio = petT;
+        petPhoneFechar();
+        return true;
+      }
+    }catch(e){}
+    finally{if(botao.isConnected) botao.disabled = false;}
   }
-  return true;
+  var aviso = $('petQuadroAviso'), textos = PET_QUADRO_ESTADO_TR[LANG] || PET_QUADRO_ESTADO_TR.pt;
+  if(botao.isConnected && aviso) aviso.textContent = textos[1];
+  return false;
 }
 //←petPhoneMomentoVoltar
 function petPhoneMomentoVoltar(){
@@ -1625,7 +1667,8 @@ function petVidaLembrancaToque(lx, ly){
   if(ly < y-26 || ly >= y || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function') return '';
   var local = lx - petArrumoDx('estante');
-  if(petVidaFotoFixada && Math.abs(local-PET_VIDA_PRATELEIRA.foto.x) < PET_VIDA_PRATELEIRA.foto.r) return 'foto';
+  var quadro = petVidaQuadroLer();
+  if(quadro && quadro.url && Math.abs(local-PET_VIDA_PRATELEIRA.foto.x) < PET_VIDA_PRATELEIRA.foto.r) return 'foto';
   var item = TWVidaCidade.objetosCamarim().find(function(a){
     var p = PET_VIDA_PRATELEIRA[a.tipo];
     return Math.abs(local-p.x) < p.r;
@@ -1635,15 +1678,10 @@ function petVidaLembrancaToque(lx, ly){
 //←petVidaFotoAtual
 function petVidaFotoAtual(){
   petPhoneMomentosConferir();
-  var momento = petPhoneContaChave() ? petCartaFotoMomento() : null;
-  if(petVidaFotoFixada === '') momento = null;
-  if(petVidaFotoFixada){
-    var dono = petPhoneFotoChave();
-    momento = petPhoneMomentos.find(function(f){return f.id === petVidaFotoFixada && f.dono === dono;});
-    if(!momento) petVidaFotoFixada = '';
-  }
-  var url = momento && (momento.miniUrl || momento.url) || '';
-  if(!/^(blob:|data:image\/png;base64,)/.test(url)) url = '';
+  var quadro = petVidaQuadroLer();
+  var momento = quadro === null && petPhoneContaChave() ? petCartaFotoMomento() : null;
+  var url = quadro ? quadro.url : momento && (momento.miniUrl || momento.url) || '';
+  if(!/^(blob:|data:image\/(png|jpeg);base64,)/.test(url)) url = '';
   if(url !== petVidaFotoUrl){
     petVidaFotoUrl = url;petVidaFotoCache = null;
     if(url){petVidaFotoCache = new Image();petVidaFotoCache.src = url;}
@@ -1654,7 +1692,7 @@ function petVidaFotoAtual(){
 //←petVidaOlharLembranca
 function petVidaOlharLembranca(t, inicio, livre){
   if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
-    !TWVidaCidade.objetosCamarim().length && !petVidaFotoFixada) return 0;
+    (!TWVidaCidade.objetosCamarim().length && !(petVidaQuadroLer() || {}).url)) return 0;
   var fase = (t-inicio) % 720;
   if(fase < 180 || fase >= 290) return 0;
   var u = (fase-180)/110;
@@ -1678,7 +1716,7 @@ function petVidaLembrancaReacao(olhar){
   if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function')return null;
   var itens=TWVidaCidade.objetosCamarim();
-  var foto=(petVidaFotoFixada || itens.some(function(a){return a.tipo==='foto';})) && !!petVidaFotoAtual();
+  var foto=((petVidaQuadroLer() || {}).url || itens.some(function(a){return a.tipo==='foto';})) && !!petVidaFotoAtual();
   var flor=itens.some(function(a){return a.tipo==='flor';});
   var tipo=foto?'foto':flor?'flor':'';
   if(!tipo)return null;
@@ -1699,7 +1737,7 @@ function petVidaLembrancaBrilho(x,olhar){
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
-  if(petVidaFotoFixada && !objetos.some(function(a){return a.tipo==='foto';})) objetos = objetos.concat({tipo:'foto'});
+  if((petVidaQuadroLer() || {}).url && !objetos.some(function(a){return a.tipo==='foto';})) objetos = objetos.concat({tipo:'foto'});
   if(!objetos.length)return false;
   var fotoReal=petVidaFotoAtual();
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;

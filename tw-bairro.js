@@ -161,7 +161,7 @@
   function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(todos)); }catch(e){} }
   function veterano(){
     try{ if(typeof best !== 'undefined' && +best > 0) return true; }catch(e){}
-    try{ var h = JSON.parse(localStorage.getItem('brs48cr_humor_v1') || 'null'); if(h && ((+h.maxSerie || 0) > 0 || (h.recados || []).length)) return true; }catch(e){}
+    if(window.TW_HUMOR && typeof window.TW_HUMOR.estado === 'function' && window.TW_HUMOR.estado().serie > 0) return true;
     return false;
   }
   function ler(){

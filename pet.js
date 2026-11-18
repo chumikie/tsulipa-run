@@ -57,6 +57,9 @@ var PET_MOVEIS = {   // centro padrão, largura e limites no chão (entre o sof�
 };
 var petArrumo = null, petArrumando = false, petArrastando = null;
 //→petArrumoPersistivel
+//→petArrumoDono
+//→petArrumoAnterior
+//→petArrumoChave
 //→petArrumoLer
 //→petArrumoSalvar
 //→petArrumoX
@@ -217,6 +220,14 @@ var PET_CARTA_TEXTOS = {
 //→petCartaRecorde
 //→petCartasLista
 // Carta com foto: quando um Momento é guardado na sessão, um fã responde com a polaroid.
+var PET_CARTA_PALCO = {
+  pt:'Guardei sua foto do karaokê. Dá até vontade de cantar junto quando vejo esse palco!',
+  en:'I kept your karaoke photo. Seeing that stage makes me want to sing along!',
+  es:'Guardé tu foto del karaoke. ¡Al ver ese escenario me dan ganas de cantar contigo!',
+  id:'Kusimpan foto karaokemu. Melihat panggung itu bikin aku ingin ikut nyanyi!',
+  th:'ฉันเก็บรูปคาราโอเกะของเธอไว้แล้ว พอเห็นเวทีนั้นก็อยากร้องตามเลย!',
+  ja:'カラオケの写真、大事にしてるよ。あのステージを見ると私も一緒に歌いたくなる！'
+};
 var PET_CARTA_FOTO_TEXTOS = {
   pet:'Que foto fofa de você com {p}! Já virou o fundo do meu celular. 📸',
   center:'Vi sua foto do Center⭐Run! e guardei no meu mural de fã. 🏁',
@@ -255,9 +266,11 @@ function petPhoneMomentosLimpar(){
   }
   var ampliada=$('petPhoneMomentoImagem'),download=$('petPhoneMomentoBaixar');
   if(ampliada)ampliada.removeAttribute('src');
+  var quadro=$('petPhoneQuadroImagem');
+  if(quadro)quadro.removeAttribute('src');
   if(download)download.removeAttribute('href');
   petPhoneMomentos.forEach(petPhoneMomentoSoltar);
-  petVidaFotoCache = null; petVidaFotoUrl = '';
+  petVidaFotoCache = null; petVidaFotoUrl = ''; petVidaQuadroEstado = null; petVidaQuadroChave = null;
   petPhoneMomentos = []; petPhoneMomentosDono = ''; petPhoneMomentoFonte = ''; petPhoneMomentoFonteDono = ''; petPhoneMomentoSelecionado = '';
   var botao = $('shPhone'); if(botao) botao.hidden = true;
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
@@ -275,13 +288,15 @@ function petPhoneMomentoDisponivel(tipo){
   b.hidden = !petPhoneMomentoFonte;
   b.disabled = false; b.textContent = '💗 ' + petPhoneMomentoTexto(0);
 }
-function petPhoneMomentoGuardar(tipo, url){
-  if(['pet','center','duo','look'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
+function petPhoneMomentoGuardar(tipo, url, especie){
+  if(['pet','center','duo','look','studio'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
   if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
   petPhoneMomentosConferir();
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
-  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐')}[tipo];
+  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐'),studio:'Photo⭐Studio!'}[tipo];
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
+  if(tipo === 'pet') entrada.nomePet = petAtivo().nome;
+  if(tipo === 'studio' && ['sakura','tulipa','girassol','lunar'].indexOf(especie) >= 0) entrada.especie = especie;
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
   petPhoneMomentosLimitar();
@@ -311,10 +326,13 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
   return true;
 }
+//→PET_FOTO_QUADRO
+//→PET_QUADRO_ESTADO_TR
 //→petPhoneMomentosHtml
 //→petPhoneMomentosRender
 //→petPhoneMomentoAbrir
 //→petPhoneMomentoVoltar
+//→petPhoneMomentoQuadro
 //→petPhoneFotoHtml
 //→petPhoneJornalLimpar
 //→petPhoneJornalHtml
@@ -429,14 +447,50 @@ function petVidaLembrancaAbrir(acao){
     return true;
   }
   if(acao !== 'foto') return false;
-  var momento = petCartaFotoMomento();
+  petPhoneMomentosConferir();
+  var quadro = petVidaQuadroLer(), dono = petPhoneFotoChave();
+  var momento = quadro === null ? petCartaFotoMomento() :
+    petPhoneMomentos.find(function(f){return f.id === quadro.id && f.dono === dono;});
   if(!petPhoneAbrir('fotos')) return false;
   petPhoneFotosAbaAbrir('momentos');
   if(momento) petPhoneMomentoAbrir(momento.id);
   return true;
 }
 // As lembranças ocupam a prateleira superior e acompanham o móvel.
-var petVidaFotoCache = null, petVidaFotoUrl = '';
+var petVidaFotoCache = null, petVidaFotoUrl = '', petVidaQuadroChave = null, petVidaQuadroEstado = null;
+function petVidaQuadroCampo(){
+  if(!contaJ || !petData || !petData.ativo) return '';
+  var id = contaJ.id || (typeof contaAuthUserId === 'string' && contaAuthUserId);
+  return id ? 'tw_pet_quadro_v1:' + JSON.stringify([id,petData.ativo]) : '';
+}
+function petVidaQuadroLer(){
+  var chave = petVidaQuadroCampo();
+  if(chave === petVidaQuadroChave) return petVidaQuadroEstado;
+  petVidaQuadroChave = chave;
+  petVidaQuadroEstado = null;
+  if(!chave) return null;
+  try{
+    var bruto = localStorage.getItem(chave);
+    if(bruto === '') petVidaQuadroEstado = {id:'',url:''};
+    else if(bruto && bruto.length <= 65536){
+      var foto = JSON.parse(bruto);
+      if(foto && /^[A-Za-z0-9_-]{1,48}$/.test(foto.id) && typeof foto.url === 'string' &&
+        /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(foto.url)) petVidaQuadroEstado = foto;
+    }
+  }catch(e){}
+  return petVidaQuadroEstado;
+}
+function petVidaQuadroSalvar(chave, foto){
+  if(!chave || chave !== petVidaQuadroCampo()) return false;
+  try{
+    var valor = foto.id ? JSON.stringify(foto) : '';
+    if(valor.length > 65536) return false;
+    localStorage.setItem(chave,valor);
+  }catch(e){return false;}
+  petVidaQuadroChave = chave;
+  petVidaQuadroEstado = foto;
+  return true;
+}
 var petVidaRetornoInicio = -1000;
 //→petVidaFotoAtual
 //→petVidaOlharLembranca
@@ -1117,7 +1171,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=9',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=16',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

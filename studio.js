@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   var FUNDOS = ['rosa','cortina','nuvens','neon'], POSES = ['normal','v','coracao','tchau'], LUZES = ['suave','neon','por'],
-      QUADROS = ['rosto','meio','inteiro'], OBJ = ['nenhum','balao','microfone','lightstick'], FLORES = {sakura:'🌸',tulipa:'🌷',girassol:'🌻',lunar:'⭐'};
+      QUADROS = ['rosto','meio','inteiro'], OBJ = ['nenhum','balao','microfone','lightstick'], FLORES = ['sakura','tulipa','girassol','lunar'];
   var EMO = {rosa:'🎀',cortina:'🪟',nuvens:'☁️',neon:'💜',normal:'🙂',v:'✌️',coracao:'🫰',tchau:'👋',suave:'🕯️',neon_l:'🌈',por:'🌇',rosto:'🙂',meio:'👕',inteiro:'🧍',nenhum:'✖',balao:'🎈',microfone:'🎤',lightstick:'🪄'};
   var T = {
     pt:{tit:'Photo⭐Studio!',aba1:'Estúdio',aba2:'Mural',publicar:'Publicar no mural',publicado:'Publicada no mural da semana!',ja:'Você já publicou uma foto hoje.',vazio:'Ninguém publicou ainda esta semana. Seja a primeira foto!',capa:'Capa da semana',parcial:'líder até agora',sua:'sua foto',dicaMural:'Uma foto por dia. Dê ❤️ nas fotos de que mais gostar: a mais curtida vira a Capa do Idol⭐News!',pauta:'Pauta do dia',fundo:'Cenário',pose:'Pose',luz:'Luz',quadro:'Enquadramento',objeto:'Objeto',clique:'📸 Clicar!',outra:'Tirar outra',salvar:'Salvar foto',
@@ -61,7 +61,7 @@
   }
   function L(){ return typeof LANG === 'string' && T[LANG] ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k] || k; }
-  function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return FLORES[k] + ' ' + ((B && (B[L()] || B.pt)[k]) || t('flor')); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
+  function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return (B && (B[L()] || B.pt)[k]) || t('flor'); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
   // Sem emoji nos botões: cenário, luz e flores ganham uma amostra de cor desenhada; o resto é só o nome.
   var AMOSTRA = {fundo:{rosa:'linear-gradient(160deg,#ffe3f1,#ffb3d6)',cortina:'linear-gradient(160deg,#dff1ff,#fff 55%,#bfe0ff)',nuvens:'linear-gradient(180deg,#9fd4ff,#fff)',neon:'linear-gradient(135deg,#7b3ff0,#ff6fb5)'},
     luz:{suave:'radial-gradient(circle at 35% 35%,#fff,#ffe9b8)',neon:'linear-gradient(135deg,#ff5fd2,#4dd8ff)',por:'linear-gradient(180deg,#ffb35c,#ff7fa8)'},
@@ -73,7 +73,77 @@
   }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
+  var sessao = 0, donoSessao = null, muralCarregando = false, muralErro = false, escolheuObjeto = false;
+  var MURAL_REDE = {
+    pt:['Não foi possível atualizar o Mural.','Tentar novamente'],
+    en:['Could not refresh the board.','Try again'],
+    es:['No se pudo actualizar el mural.','Reintentar'],
+    id:['Papan tidak dapat diperbarui.','Coba lagi'],
+    th:['อัปเดตบอร์ดไม่สำเร็จ','ลองอีกครั้ง'],
+    ja:['掲示板を更新できませんでした。','再試行']
+  };
+  function sessaoAtiva(sess, dono){
+    return sess === sessao && ov && !ov.hidden && dono === donoFoto();
+  }
+  var MOMENTOS = {
+    pt:['Guardar em Momentos','Guardada em Momentos!'],en:['Keep in Moments','Saved to Moments!'],
+    es:['Guardar en Momentos','¡Guardada en Momentos!'],id:['Simpan di Momen','Tersimpan di Momen!'],
+    th:['เก็บในโมเมนต์','เก็บในโมเมนต์แล้ว!'],ja:['思い出に保存','思い出に保存しました！']
+  };
+  function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : (logado() && (contaJ.id || contaJ.nick)) || ''; }
+  var HISTORICO = {
+    pt:'Publicada! O figurino histórico ainda não foi confirmado pelo servidor.',
+    en:'Posted! The server has not confirmed the historical look yet.',
+    es:'¡Publicada! El servidor aún no confirmó el look histórico.',
+    id:'Dipublikasikan! Server belum mengonfirmasi riwayat penampilan.',
+    th:'เผยแพร่แล้ว! เซิร์ฟเวอร์ยังไม่ยืนยันชุดในภาพ',
+    ja:'投稿しました！サーバーはまだ衣装の保存を確認していません。'
+  };
+  var PARTILHA = {
+    pt:'No Mural, seu figurino e cenário ficam visíveis para outros Idols. O PNG fica no aparelho.',
+    en:'On the board, other Idols can see your look and scene. The PNG stays on your device.',
+    es:'En el mural, otros Idols pueden ver tu look y escena. El PNG queda en tu dispositivo.',
+    id:'Di papan, Idol lain dapat melihat penampilan dan latarmu. PNG tetap di perangkatmu.',
+    th:'บนบอร์ด ไอดอลคนอื่นจะเห็นชุดและฉากของคุณ ไฟล์ PNG อยู่บนอุปกรณ์ของคุณ',
+    ja:'掲示板では他のアイドルに衣装とシーンが公開されます。PNGは端末に残ります。'
+  };
+  function podeGuardar(){ return foto && !foto.guardada && logado() && foto.dono === donoFoto() &&
+    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoGuardar === 'function'; }
   window.TW_STUDIO_ON = true;
+  // Retrato v1: somente dados de desenho, sem nick, ID, saldo, inventário, save ou PNG.
+  function retratoSeguro(r){
+    if(!r || r.v !== 1 || !r.avatar || typeof r.avatar !== 'object' || Array.isArray(r.avatar) ||
+      !r.avatar.c || typeof r.avatar.c !== 'object' || Array.isArray(r.avatar.c) ||
+      typeof r.tempo !== 'number' || !Number.isFinite(r.tempo) || r.tempo < 0 || r.tempo > 31536000) return null;
+    var src = r.avatar, c = {}, av = {c:c};
+    function cor(v){ return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); }
+    function chave(v){ return typeof v === 'string' && /^[a-z0-9_-]{0,32}$/i.test(v); }
+    ['hair','hair2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
+    ['mecha','back','front','det','gl','out','baixo','hat','olho','boca','bochecha','sobrancelha'].forEach(function(k){ if(chave(src.c[k])) c[k] = src.c[k]; });
+    if(typeof src.c.streak === 'boolean') c.streak = src.c.streak;
+    ['a','visual'].forEach(function(k){ if(chave(src[k])) av[k] = src[k]; });
+    if(cor(src.cor)) av.cor = src.cor;
+    if(Number.isInteger(src.expr) && src.expr >= 0 && src.expr <= 6) av.expr = src.expr;
+    var pet = src.pet;
+    if(pet && ['tsu','lirika','pati','meu'].indexOf(pet.k) >= 0){
+      av.pet = {k:pet.k};
+      if(chave(pet.acc)) av.pet.acc = pet.acc;
+      if(typeof pet.bochecha === 'boolean') av.pet.bochecha = pet.bochecha;
+      if(pet.k === 'meu' && pet.cfg && typeof pet.cfg === 'object' && !Array.isArray(pet.cfg)){
+        var cfg = av.pet.cfg = {};
+        var op = {orelha:['gato','coala','coroa','coelho','nenhuma'],olhos:['redondo','brilho','feliz','sono'],acc:['','laco','estrela','anel','oculos','flor']};
+        Object.keys(op).forEach(function(k){ if(op[k].indexOf(pet.cfg[k]) >= 0) cfg[k] = pet.cfg[k]; });
+        if(cor(pet.cfg.cor)) cfg.cor = pet.cfg.cor;
+        if(typeof pet.cfg.bochecha === 'boolean') cfg.bochecha = pet.cfg.bochecha;
+      }
+    }
+    return {v:1,avatar:av,tempo:r.tempo};
+  }
+  function retratoPost(post, proprio){
+    var r = retratoSeguro(post && post.retrato);
+    return r ? {avatar:r.avatar,tempo:r.tempo} : {avatar:proprio ? null : (post && post.avatar || {}),tempo:1};
+  }
+  window.TW_STUDIO_RETRATO = {limpar:retratoSeguro, ler:retratoPost};
   function hojeBR(){ return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
   function h(s){ var x = 0; for(var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; }
   function pautaLocal(){ var d = hojeBR(), k = h(d + 'k') % 3, tp = ['luz','quadro','objeto'][k], L2 = {luz:LUZES,quadro:QUADROS,objeto:OBJ.slice(1)}[tp];
@@ -87,63 +157,132 @@
     ov.innerHTML = '<div class="panel studiop tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="studioTit">' +
       '<button type="button" class="perfx tw-window-control tw-window-close" id="studioX" aria-label="✕">✕</button>' +
       '<h2 class="tw-modal-title" id="studioTit"></h2><small class="tw-modal-jp" lang="ja">フォトスタジオ</small>' +
-      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><canvas id="studioCv" width="480" height="680"></canvas><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
+      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas></div><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
     document.body.appendChild(ov);
     ov.addEventListener('click', function(e){
       if(e.target === ov || e.target.id === 'studioX'){ fechar(); return; }
+      if(donoSessao !== donoFoto()){ fechar(); return; }
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
+      if(a === 'mural-retry'){ carregarMural(); return; }
       if(a === 'publicar'){ publicar(); return; }
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
-      else if(esc_.hasOwnProperty(a)){ esc_[a] = v; ui(); if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){} }
+      else if(a === 'guardar') guardar();
+      else if(esc_.hasOwnProperty(a)){
+        var tinhaFoco = document.activeElement === b;
+        if(a === 'objeto') escolheuObjeto = true;
+        esc_[a] = v; ui();
+        if(tinhaFoco){
+          var selecionado = ov.querySelector('[data-st="' + a + '"][aria-pressed="true"]');
+          if(selecionado) selecionado.focus({preventScroll:true});
+        }
+        if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){}
+      }
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
-  function abrir(){
-    montarOv(); ov.hidden = false; aba = 'estudio'; publicou = false; fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
+  function abrir(atalho){
+    montarOv();
+    var sess = ++sessao, dono = donoFoto();
+    var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
+    if(dono !== donoSessao){
+      mural = null;
+      esc_.objeto = 'nenhum';
+    }
+    donoSessao = dono;
+    muralCarregando = muralErro = false;
+    flores = {}; escolheuObjeto = false;
+    if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
+    ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
+    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
     if(logado()){
-      contaRpc('studio_pauta').then(function(r){ if(r && r.ok){ pauta = r; servidor = true; ui(); } }).catch(function(){});
-      contaRpc('jardim_estado').then(function(r){ if(r && r.ok){ flores = r.flores || {}; ui(); } }).catch(function(){});
+      contaRpc('studio_pauta').then(function(r){
+        if(sessaoAtiva(sess, dono) && r && r.ok){ pauta = r; servidor = true; ui(); }
+      }).catch(function(){});
+      contaRpc('jardim_estado').then(function(r){
+        if(!sessaoAtiva(sess, dono) || !r || !r.ok) return;
+        flores = r.flores || {};
+        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto) esc_.objeto = 'flor_' + flor;
+        ui();
+      }).catch(function(){});
     }
   }
-  function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
+  function fechar(){ sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
+    var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
+      if(sess !== sessao) return;
+      if(dono !== donoFoto()){ fase = 'monta'; ocupado = false; ui(); return; }
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
-      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), verificada:false, premio:0};
+      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
+      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
+      // PNG local conserva o avatar original; somente o retrato público é filtrado.
+      var capturada = foto;
+      try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
-      contaRpc('studio_clique', {p:esc_}).then(function(r){
+      contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
+        if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
           if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_clique',{id:pauta&&pauta.dia});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
           foto.estrelas = +r.estrelas || n; foto.verificada = true; foto.premio = +r.premio || 0;
           if(foto.premio && typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           msg = foto.premio ? t('premio') : '';
         } else msg = t('erro');
-      }).catch(function(){ msg = t('erro'); }).then(function(){ fase = 'foto'; ocupado = false; ui(); });
+      }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } else fase = 'foto'; ocupado = false; ui(); });
     }, 1900);
   }
+  function capturarCena(f){
+    var cv = document.createElement('canvas'); cv.width = 432; cv.height = 540;
+    cena(cv.getContext('2d'), cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    f.cena = cv;
+  }
+  function polaroidLimpa(f){
+    if(f.polaroid) return f.polaroid;
+    var cv = document.createElement('canvas'); cv.width = 480; cv.height = 680;
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height;
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.drawImage(f.cena, 24, 24);
+    x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif';
+    x.fillText('⭐'.repeat(f.estrelas) + '☆'.repeat(3 - f.estrelas), W / 2, H - 76);
+    x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
+    x.fillText('Photo⭐Studio! · ' + f.legenda + ' · ' + f.dia.split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);
+    f.polaroid = cv; return cv;
+  }
+  function fotoUrl(f){
+    if(!f.url) f.url = polaroidLimpa(f).toDataURL('image/png');
+    return f.url;
+  }
   function salvar(){
-    var cv = ov && ov.querySelector('#studioCv'); if(!cv) return;
-    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + hojeBR() + '.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+    if(!foto || fase !== 'foto' || foto.dono !== donoFoto()) return;
+    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = fotoUrl(foto); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+  }
+  function guardar(){
+    if(!podeGuardar() || fase !== 'foto') return;
+    try{
+      var especie = foto.escolhas.objeto.indexOf('flor_') === 0 ? foto.escolhas.objeto.slice(5) : '';
+      if(!petPhoneMomentoGuardar('studio', fotoUrl(foto), especie)) throw Error('momento');
+      foto.guardada = true; msg = MOMENTOS[L()][1]; ui();
+    }catch(e){ msg = t('erro'); ui(); }
   }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
-      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + esc(nomeOpc(tipo, v)) + '</button>'; }).join('') + '</div></div>';
+      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + '<span>' + esc(nomeOpc(tipo, v)) + '</span><i class="stcheck" aria-hidden="true">✓</i></button>'; }).join('') + '</div></div>';
   }
   function ui(){
     if(!ov) return;
     ov.querySelector('#studioTit').textContent = t('tit');
     var abas = ov.querySelector('#studioAbas'), noMural = aba === 'mural';
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
-    ['#studioPauta','#studioCv','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
+    var visor = ov.querySelector('#studioVisor'), visorAnterior = visor.dataset.fase;
+    visor.dataset.fase = fase;
+    ['#studioPauta','#studioVisor','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
     ov.querySelector('#studioMural').hidden = !noMural;
     if(noMural){ muralUI(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
@@ -155,72 +294,104 @@
     if(fase === 'foto'){
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
+      if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button><button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
-      var objs = OBJ.concat(Object.keys(FLORES).filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
+      var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
       hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
         '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
     c.innerHTML = hh; desenhar();
+    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView) visor.scrollIntoView({block:'nearest'});
   }
   // ---------- Mural da revista (v2) ----------
   function publicar(){
-    if(!foto || !logado()) return; ocupado = true; ui();
-    contaRpc('studio_publicar', {p:foto.escolhas}).then(function(r){
+    if(!foto || !logado() || foto.dono !== donoFoto()) return; ocupado = true; ui();
+    var capturada = foto, sess = sessao, dono = foto.dono;
+    var p = Object.assign({}, capturada.escolhas);
+    if(capturada.retrato) p.retrato = capturada.retrato;
+    contaRpc('studio_publicar', {p:p}).then(function(r){
+      if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
-        publicou = true; mural = null;
+        publicou = true;
         // tema da semana: ★3 uma vez por semana (o servidor confere o tema; studio_publicar)
         if(+r.premio_tema > 0){
           msg = t('publicado') + ' ' + tt('premio').replace('{n}', r.premio_tema);
           if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           try{ if(typeof twJogoSom === 'function') twJogoSom('vitoria'); }catch(e){}
-        } else msg = t('publicado'); }
+        } else msg = t('publicado');
+        if(capturada.retrato && r.retrato_guardado !== true) msg += ' ' + HISTORICO[L()]; }
       else if(r && r.erro === 'ja_publicou'){ publicou = true; msg = t('ja'); }
       else msg = t('erro');
-    }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
+    }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } ocupado = false; ui(); });
   }
   function carregarMural(){
-    if(!logado()) return; mural = mural || null; muralUI();
-    contaRpc('studio_mural').then(function(L){ mural = Array.isArray(L) ? L : []; muralUI(); }).catch(function(){ mural = []; msg = t('erro'); muralUI(); });
+    if(!logado() || muralCarregando) return;
+    var sess = sessao, dono = donoFoto();
+    muralCarregando = true; muralErro = false; muralUI();
+    contaRpc('studio_mural').then(function(lista){
+      if(!sessaoAtiva(sess, dono)) return;
+      if(Array.isArray(lista)) mural = lista;
+      else muralErro = true;
+    }).catch(function(){
+      if(sessaoAtiva(sess, dono)) muralErro = true;
+    }).then(function(){
+      if(!sessaoAtiva(sess, dono)) return;
+      muralCarregando = false; muralUI();
+    });
   }
   function curtir(id, b){
-    if(!id) return; if(b) b.disabled = true;
+    if(!id || muralCarregando) return;
+    var sess = sessao, dono = donoFoto();
+    if(b) b.disabled = true;
     contaRpc('studio_curtir', {p_id:id}).then(function(r){
+      if(!sessaoAtiva(sess, dono)) return;
       if(r && r.ok && mural){ mural.forEach(function(m){ if(+m.id === id){ m.coracoes = +r.coracoes; m.curti = true; } }); if(typeof beep === 'function') try{ beep(1319, .06, 'triangle', .04); }catch(e){} }
       muralUI();
-    }).catch(function(){ muralUI(); });
+    }).catch(function(){ if(sessaoAtiva(sess, dono)) muralUI(); });
   }
   function muralUI(){
     var box = ov && ov.querySelector('#studioMural'); if(!box || box.hidden) return;
-    if(mural === null){ box.innerHTML = '<p class="perfcarr">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>'; return; }
     var h = temaHtml(null) + '<p class="stdica">' + esc(t('dicaMural')) + '</p>';
-    if(!mural.length) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
-    h += '<div class="stmural">' + mural.map(function(m, i){
+    if(muralErro){
+      var rede = MURAL_REDE[L()];
+      h += '<p class="stmsg" role="status">' + esc(rede[0]) + '</p>' +
+        '<button type="button" class="btn alt" data-st="mural-retry">' + esc(rede[1]) + '</button>';
+    } else if(muralCarregando || mural === null){
+      h += '<p class="perfcarr" role="status">' + esc(typeof tr === 'function' ? tr('Carregando...') : '…') + '</p>';
+    }
+    if(mural && !mural.length && !muralCarregando && !muralErro) h += '<p class="stmsg">' + esc(t('vazio')) + '</p>';
+    h += '<div class="stmural">' + (mural || []).map(function(m, i){
       return '<figure class="stpost"><canvas width="240" height="300" data-stpost="' + i + '"></canvas><figcaption>' + (noTema(m.escolhas) ? '<em class="stselo">✨ ' + esc(tt('selo')) + '</em>' : '') + '<b>' + esc(m.minha ? t('sua') : m.nick) + '</b> ' +
-        '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
+        '<button type="button" class="stcoracao' + (m.curti ? ' on' : '') + '" data-st="curtir" data-v="' + (+m.id) + '"' + (m.curti || m.minha || muralCarregando ? ' disabled' : '') + ' aria-label="❤️">' + (m.curti ? '❤️' : '🤍') + ' ' + (+m.coracoes || 0) + '</button></figcaption></figure>';
     }).join('') + '</div>';
     box.innerHTML = h;
     [].forEach.call(box.querySelectorAll('canvas[data-stpost]'), function(cv){ var m = mural[+cv.getAttribute('data-stpost')];
-      try{ polaroid(cv, m.escolhas || {}, m.minha ? null : (m.avatar || {}), +m.estrelas || 1, ''); }catch(e){} });
+      var r = retratoPost(m, m.minha);
+      try{ polaroid(cv, m.escolhas || {}, r.avatar, +m.estrelas || 1, '', r.tempo); }catch(e){} });
   }
   // polaroid estática (mural e capa do Idol⭐News!)
-  function polaroid(cv, e, av, est, legenda){
+  function polaroid(cv, e, av, est, legenda, tempo){
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, m = Math.round(W * .05);
     var fw = Math.min(W - 2*m, (H - 5*m) / 1.25), fh = fw * 1.25, left = (W-fw)/2;
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-    x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, 1, av); x.restore();
+    x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, typeof tempo === 'number' ? tempo : 1, av); x.restore();
     x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = Math.round(W * .07) + 'px "Mochiy Pop One",sans-serif';
     x.fillText('⭐'.repeat(est) + '☆'.repeat(3 - est), W / 2, H - m * 2.2);
     if(legenda){ x.font = Math.round(W * .05) + 'px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e'; x.fillText(legenda, W / 2, H - m * .8); }
   }
   window.studioPolaroid = polaroid;
   // ---------- desenho ----------
-  function meuAv(){ try{ if(typeof lookAtual === 'function') return lookAtual(); }catch(e){} try{ if(typeof hubAv === 'function') return hubAv(); }catch(e){} return {}; }
+  function meuAv(){ try{ if(typeof lookAtual === 'function'){
+    var av = lookAtual();
+    if(typeof perfMeuAv !== 'undefined' && perfMeuAv && perfMeuAv.expr != null) av.expr = perfMeuAv.expr;
+    return av;
+  } }catch(e){} try{ if(typeof hubAv === 'function') return hubAv(); }catch(e){} return {}; }
   function fundo(x, W, H, f, tm){
     var g;
     if(f === 'rosa'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffd6ea'); g.addColorStop(.75, '#ffeef6'); g.addColorStop(1, '#f7c5dd'); x.fillStyle = g; x.fillRect(0, 0, W, H);
@@ -242,61 +413,68 @@
     else { x.globalCompositeOperation = 'screen'; g = x.createRadialGradient(W * .3, H * .2, 10, W * .3, H * .2, W * .9); g.addColorStop(0, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
     x.restore();
   }
-  function objeto(x, W, H, o, tm){
-    if(o === 'nenhum') return;
-    x.save(); x.textAlign = 'center'; x.textBaseline = 'middle';
-    if(o === 'balao'){ [['#ff6fb5', .16, .2], ['#ffd23f', .26, .14], ['#4dd8ff', .12, .1]].forEach(function(b, i){ var bx = W * b[1], by = H * b[2] + Math.sin(tm * 1.5 + i) * H / 120;
+  function baloes(x, W, H, tm){
+    x.save();
+    [['#ff6fb5', .16, .2], ['#ffd23f', .26, .14], ['#4dd8ff', .12, .1]].forEach(function(b, i){ var bx = W * b[1], by = H * b[2] + Math.sin(tm * 1.5 + i) * H / 120;
       x.strokeStyle = 'rgba(80,60,120,.5)'; x.lineWidth = 2; x.beginPath(); x.moveTo(bx, by + H * .057); x.quadraticCurveTo(bx + W * .021, H * .45, W * .3, H * .62); x.stroke();
-      x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, W * .054, H * .053, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx - W / 60, by - H / 60, W / 80, H * .015, -.4, 0, 7); x.fill(); }); }
-    else { var e = o === 'microfone' ? '🎤' : o === 'lightstick' ? '🪄' : FLORES[o.slice(5)] || '';
-      x.font = Math.round(H * .12) + 'px sans-serif'; x.fillText(e, W * .74, H * .64 + Math.sin(tm * 2) * 3);
-      if(o === 'lightstick'){ var gl = x.createRadialGradient(W * .74, H * .6, 4, W * .74, H * .6, 70); gl.addColorStop(0, 'rgba(255,111,181,.45)'); gl.addColorStop(1, 'rgba(255,111,181,0)'); x.fillStyle = gl; x.fillRect(W * .74 - 70, H * .6 - 70, 140, 140); } }
+      x.fillStyle = b[0]; x.beginPath(); x.ellipse(bx, by, W * .054, H * .053, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.ellipse(bx - W / 60, by - H / 60, W / 80, H * .015, -.4, 0, 7); x.fill(); });
+    x.restore();
+  }
+  function objetoNaMao(x, item, pose, corpo, cor, quadro){
+    // Na paz e no aceno, a mão esquerda segura o objeto e a direita continua livre.
+    var mao = pose === 'coracao' ? [20,28.5,.48] :
+      pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
+    var flor = item.indexOf('flor_') === 0, angulo = mao[2];
+    // Em retratos próximos, incline a haste para dentro sem mover a mão da pose.
+    if(flor && quadro !== 'inteiro' && pose !== 'coracao'){
+      angulo = mao[0] < 15 ? .46 : -.46;
+    }
+    x.save();
+    x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
+    x.scale(corpo.scale, corpo.scale);
+    x.rotate(angulo);
+    x.lineCap = 'round';
+    if(flor){
+      var especie = item.slice(5);
+      x.strokeStyle = '#44845a'; x.lineWidth = .68;
+      x.beginPath(); x.moveTo(-.3,2.3); x.quadraticCurveTo(.7,-2.7,0,-6); x.stroke();
+      x.fillStyle = '#64a974'; x.beginPath(); x.moveTo(.28,-2);
+      x.quadraticCurveTo(1,-4.3,2.7,-4.5); x.quadraticCurveTo(2.4,-2.6,.28,-2); x.fill();
+      // Mesmas pétalas do canteiro, na escala da mão do Idol.
+      if(typeof window.bloomDesenharFlor === 'function'){
+        x.save(); x.translate(0,-6.6); x.scale(.14,.14);
+        window.bloomDesenharFlor(x, especie, 0, 0, especie === 'girassol' ? 22 : 19);
+        x.restore();
+      }
+    } else {
+      var mic = item === 'microfone';
+      x.strokeStyle = '#49375f'; x.lineWidth = 1.55;
+      x.beginPath(); x.moveTo(0,1.6); x.lineTo(0,-4.4); x.stroke();
+      if(mic){
+        x.fillStyle = '#746980'; x.beginPath(); x.ellipse(0,-5.3,1.85,2.15,0,0,7); x.fill();
+        x.strokeStyle = '#ded6e4'; x.lineWidth = .46;
+        x.beginPath(); x.moveTo(-1.3,-5.3); x.lineTo(1.3,-5.3); x.stroke();
+      } else {
+        x.strokeStyle = cor || '#ef83bb'; x.lineWidth = 2.4;
+        x.beginPath(); x.moveTo(0,-2.8); x.lineTo(0,-7.6); x.stroke();
+        x.strokeStyle = '#fff4fa'; x.lineWidth = .55;
+        x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
+      }
+    }
+    x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(-.25,0,1.34,.86,-.18,0,7); x.fill();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){
     fundo(x, W, H, e.fundo, tm);
-    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.expr = 2; av.fundo = '';
-    if(e.objeto === 'balao') objeto(x, W, H, e.objeto, tm);
+    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
+    if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
-    // Margem editorial: o retrato não deve preencher a foto até cortar cabelo e acessórios.
-    var quadro = e.quadro || 'inteiro';
-    var escalaFoto = quadro === 'rosto' ? .77 : quadro === 'meio' ? .86 : .92;
-    try{
-      if(typeof perfDesenharIdol === 'function'){
-        x.save(); x.translate(W * (1 - escalaFoto) / 2, H * (1 - escalaFoto) / 2); x.scale(escalaFoto, escalaFoto);
-        try{ corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro); } finally { x.restore(); }
-      }
-    }catch(er){}
-
-    if(e.objeto !== 'balao' && e.objeto !== 'nenhum' && corpo){
-      // Objeto em escala fotográfica, não na escala ampliada do rosto.
-      // Uma âncora própria evita tulipas e microfones gigantes sobre o rosto.
-      var tamanho = Math.min(W / 44, H / 57);
-      var px = W * (quadro === 'rosto' ? .79 : .75);
-      var py = H * (quadro === 'rosto' ? .76 : quadro === 'meio' ? .72 : .69);
-      x.save(); x.translate(px, py);
-      x.scale(tamanho, tamanho); x.rotate(-.18);
-      x.lineCap = 'round'; x.lineWidth = 1.5;
-      x.strokeStyle = e.objeto.indexOf('flor_') === 0 ? '#43956d' : '#49375f';
-      x.beginPath(); x.moveTo(0,2); x.lineTo(0,-9); x.stroke();
-      if(e.objeto === 'microfone'){
-        var metal = x.createLinearGradient(-3,-12,3,-7);
-        metal.addColorStop(0,'#faf6ff'); metal.addColorStop(1,'#827591');
-        x.fillStyle = metal; x.beginPath(); x.ellipse(0,-10,3,3.7,0,0,7); x.fill();
-        x.strokeStyle = '#685970'; x.lineWidth = .45;
-        [-11,-9].forEach(function(y){x.beginPath();x.moveTo(-2,y);x.lineTo(2,y);x.stroke();});
-      }else if(e.objeto === 'lightstick'){
-        x.shadowColor = av.cor || '#ff80c0'; x.shadowBlur = 9;
-        x.strokeStyle = av.cor || '#ff80c0'; x.lineWidth = 3;
-        x.beginPath(); x.moveTo(0,-5); x.lineTo(0,-13); x.stroke(); x.shadowBlur = 0;
-        x.strokeStyle = '#fff4fa'; x.lineWidth = .8;
-        x.beginPath(); x.moveTo(-.5,-6); x.lineTo(-.5,-12); x.stroke();
-      }else{
-        x.font = '9px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-        x.fillText(FLORES[e.objeto.slice(5)] || '',0,-11);
-      }
-
-      x.restore();
+    var quadro = e.quadro || 'inteiro', comFlor = String(e.objeto || '').indexOf('flor_') === 0;
+    if(typeof perfDesenharIdol === 'function'){
+      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comFlor);
+    }
+    if(corpo && e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'){
+      objetoNaMao(x, e.objeto, av.pose, corpo, av.cor, quadro);
     }
     luz(x, W, H, e.luz);
   }
@@ -318,13 +496,9 @@
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, tm = performance.now() / 1000;
     x.save(); x.clearRect(0, 0, W, H);
     if(fase === 'foto' && foto){   // polaroid: moldura branca, foto, estrelas e data
-      x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-      x.save(); x.beginPath(); x.rect(24, 24, W - 48, (W - 48) * 1.25); x.clip(); x.translate(24, 24); cena(x, W - 48, (W - 48) * 1.25, foto.escolhas, foto.t0 / 1000, foto.avatar); x.restore();
+      x.drawImage(polaroidLimpa(foto), 0, 0);
       var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
       if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
-      x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = '30px "Mochiy Pop One",sans-serif'; x.fillText('⭐'.repeat(foto.estrelas) + '☆'.repeat(3 - foto.estrelas), W / 2, H - 76);
-      x.font = '16px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e';
-      x.fillText('Photo⭐Studio! · ' + (pauta ? t('t_' + pauta.detalhe.tipo) : '') + ' · ' + hojeBR().split('-').reverse().slice(0, 2).join('/'), W / 2, H - 40);
     } else {
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);
@@ -342,7 +516,7 @@
     }
     x.restore();
   }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
   // Capa da semana no Idol⭐News! (aba Jogadores e eventos): a foto mais curtida do mural
   function capaNews(){
     var painel = document.getElementById('jnAbaComunidade'); if(!painel || !logado() || document.getElementById('jnCapaStudio')) return;
@@ -352,7 +526,8 @@
       sec.innerHTML = '<h4>📸 ' + esc(t('capa')) + ' · <span translate="no">Photo⭐Studio!</span></h4><canvas width="300" height="375"></canvas>' +
         '<p><b>' + esc(c.nick) + '</b> · ❤️ ' + (+c.coracoes || 0) + (c.fechada ? '' : ' · ' + esc(t('parcial'))) + '</p>';
       painel.insertBefore(sec, painel.firstChild);
-      try{ polaroid(sec.querySelector('canvas'), c.escolhas, c.avatar || {}, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa')); }catch(e){}
+      var r = retratoPost(c, false);
+      try{ polaroid(sec.querySelector('canvas'), c.escolhas, r.avatar, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa'), r.tempo); }catch(e){}
     }).catch(function(){});
   }
   window.studioCapaNews = capaNews;   // o carregador sob demanda chama isto quando o Idol⭐News! abre antes do Studio

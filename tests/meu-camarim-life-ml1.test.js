@@ -36,7 +36,7 @@ function fakeRoom(signedIn = true){
   const shelfBtn = element('shelfBtn');
   const roomBtns = Object.fromEntries(['espelho','celular','estante','trofeus','album'].map(k => [k, element(k)]));
   const ctx = {
-    petOpen:true, petView:'room', petGame:null, contaJ:signedIn ? {nick:'IdolTeste'} : null,
+    petOpen:true, petView:'room', petGame:null, petData:{ativo:'tsu'}, contaJ:signedIn ? {nick:'IdolTeste'} : null,
     LANG:'pt', OSHI:'tsu', hubComecou:true, petVeioHub:false, state:'menu', petAtivo:() => ({nome:'Pipoca'}), $:k => nodes[k], tr:s=>s,
     escHtml:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'),
     petCv:{width:360,height:220}, contaSessaoToken:3, contaAuthUserId:'mock-id',
@@ -728,7 +728,7 @@ test('ML1.2-C.2-D: revisão protege a sessão e permanece legível em 320×640 e
     assert.ok(225+44+44+50<=painel,`${w}×${h}: foto ampliada e ações na área rolável`);
   }
   for(const idioma of ['pt','en','es','id','th','ja']) assert.match(pet,new RegExp('(?:^|\\n)  '+idioma+':\\[.*(?:Ampliar|Enlarge|Perbesar|ขยาย|拡大)'));
-  const trecho=pet.slice(pet.indexOf('function petPhoneMomentoSoltar('),pet.indexOf('function petPhoneFotoHtml('));
+  const trecho=pet.slice(pet.indexOf('function petPhoneMomentoSoltar('),pet.indexOf('async function petPhoneMomentoQuadro('));
   assert.equal(/requestAnimationFrame|setInterval|setTimeout|contaRpc|localStorage|toDataURL/.test(trecho),false);
 });
 
@@ -1006,6 +1006,11 @@ test('ML1: olhar responde somente à lembrança disponível e acompanha a estant
   assert.equal(ctx.petVidaOlharLembranca(220,0,true),0,'reduzir movimento desliga o gesto');
   ctx.window.matchMedia=()=>({matches:false});
   assert.ok(ctx.petVidaOlharLembranca(220,0,true)>0);
+  ctx.petArrumoDx=()=>-30;
+  const perto=ctx.petVidaOlharLembranca(220,0,true,199);
+  ctx.petArrumoDx=()=>50;
+  assert.ok(perto<0);
+  assert.ok(ctx.petVidaOlharLembranca(220,0,true,199)>0,'olha para o outro lado quando a estante cruza o Idol');
   assert.doesNotMatch(pet.slice(pet.indexOf('function petVidaLembrancaReacao('),pet.indexOf('function petVidaLembrancaCenario(')),
     /requestAnimationFrame|setInterval|setTimeout|localStorage|petSave\(|contaRpc/);
 });

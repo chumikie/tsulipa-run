@@ -660,6 +660,16 @@ function jornalAbrir(aba){
 function jornalFechar(){ jornalOv.hidden = true; }
 // ---------- Novidades como blog: só a admin posta (imagem, título e legenda); ficam os 5 últimos ----------
 // RPCs news_posts / admin_news_postar / admin_news_apagar: proposta em supabase/sql/proposta/20261103150000_idol_news_posts.sql
+var jornalPedidos = {};
+function jornalConsultar(nome, mostrar){
+  var pedido = {};
+  jornalPedidos[nome] = pedido;
+  var sessao = typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken;
+  function concluir(valor){
+    if(jornalPedidos[nome] === pedido && (typeof contaSessaoToken === 'undefined' || sessao === contaSessaoToken)) mostrar(valor);
+  }
+  return contaRpc(nome).then(concluir, function(){ concluir(null); });
+}
 var jornalPosts = null, jornalPostImg = '';
 function jornalPostsHtml(){
   var h = '<section class="jnbloco jnblog"><h4>✨ ' + escHtml(tr('Novidades')) + '</h4>';
@@ -673,9 +683,10 @@ function jornalPostsHtml(){
 }
 function jornalPostsUI(){
   var box = $('jornalPosts'); if(!box) return;
+  if(jornalPosts === false){ TW_CARGA.erro(box, jornalPostsCarregar); return; }
   if(jornalPosts === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   if(!jornalPosts.length){   // sem posts (ou o blog ainda não está no servidor): as novidades desta versão
-    box.innerHTML = '<ul>' + JORNAL_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('') + '</ul>'; return;
+    box.innerHTML = '<p>' + TW_CARGA.texto(4) + '</p><ul>' + JORNAL_NOVIDADES.map(function(n){ return '<li>' + n[0] + ' ' + escHtml(tr(n[1])) + '</li>'; }).join('') + '</ul>'; return;
   }
   var adm = typeof perfAdmin !== 'undefined' && perfAdmin;
   box.innerHTML = jornalPosts.map(function(p){
@@ -686,9 +697,12 @@ function jornalPostsUI(){
   }).join('');
 }
 function jornalPostsCarregar(){
-  jornalPosts = null; jornalPostsUI();
-  contaRpc('news_posts').then(function(L){ jornalPosts = Array.isArray(L) ? L.slice(0, 5) : []; jornalPostsUI(); })
-    .catch(function(){ jornalPosts = []; jornalPostsUI(); });
+  jornalPosts = null;
+  jornalPostsUI();
+  return jornalConsultar('news_posts', function(d){
+    jornalPosts = Array.isArray(d) ? d.slice(0, 5) : false;
+    jornalPostsUI();
+  });
 }
 function jornalPostImagem(file){   // reduz para até 900 px e JPEG, antes de enviar
   jornalPostImg = ''; var pv = $('jnPostPrev'); if(!file) { if(pv) pv.hidden = true; return; }
@@ -723,6 +737,7 @@ function jornalTimeInfo(cod){
 }
 function jornalTimesUI(){
   var box = $('jornalTimes'); if(!box) return;
+  if(jornalTimes === false){ TW_CARGA.erro(box, jornalTimesCarregar); return; }
   if(jornalTimes === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   var L = jornalTimes && Array.isArray(jornalTimes.times) ? jornalTimes.times : [];
   if(!L.length){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('A meta dos Teams começa em breve: escolha o seu Team no perfil e jogue Center⭐Run! e Karaoke⭐Time! para encher a barra.')) + '</p>'; return; }
@@ -746,8 +761,12 @@ var JORNAL_TIMES_TX = {
 };
 function jornalTimesT(k){ var d = JORNAL_TIMES_TX[k], l = typeof LANG === 'string' ? LANG : 'pt'; return d ? (d[l] || d.pt) : k; }
 function jornalTimesCarregar(){
-  jornalTimes = null; jornalTimesUI();
-  contaRpc('times_semana').then(function(d){ jornalTimes = d || {}; jornalTimesUI(); }).catch(function(){ jornalTimes = {}; jornalTimesUI(); });
+  jornalTimes = null;
+  jornalTimesUI();
+  return jornalConsultar('times_semana', function(d){
+    jornalTimes = d && Array.isArray(d.times) ? d : false;
+    jornalTimesUI();
+  });
 }
 // ---------- Festival de Unidades (RPC festival_unidades: proposta 20261103190000_festival_e_ensaio_trio.sql) ----------
 var jornalFest = null;
@@ -755,6 +774,7 @@ function jornalFestHtml(){ return '<section class="jnbloco jntimes"><h4>🎤 ' +
 function jornalFestUI(){
   var box = $('jornalFest'); if(!box) return;
   var mus = typeof hubMusicaSemana === 'function' ? hubMusicaSemana() : null, m = $('jornalFestMus'); if(m && mus) m.textContent = mus[1];
+  if(jornalFest === false){ TW_CARGA.erro(box, jornalFestCarregar); return; }
   if(jornalFest === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   var L = jornalFest && Array.isArray(jornalFest.times) ? jornalFest.times : [];
   if(!L.length){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('O Festival de Unidades começa em breve!')) + '</p>'; return; }
@@ -766,7 +786,14 @@ function jornalFestUI(){
       '<small class="jntimed">🎤 ' + (+t.cantaram || 0) + ' ' + escHtml(tr('cantaram')) + (t.destaque ? ' · 🌟 ' + escHtml(tr('Destaque')) + ': ' + escHtml(t.destaque) + ' (' + jornalNum(t.destaque_nota) + ')' : '') + '</small></div>';
   }).join('');
 }
-function jornalFestCarregar(){ jornalFest = null; jornalFestUI(); contaRpc('festival_unidades').then(function(d){ jornalFest = d || {}; jornalFestUI(); }).catch(function(){ jornalFest = {}; jornalFestUI(); }); }
+function jornalFestCarregar(){
+  jornalFest = null;
+  jornalFestUI();
+  return jornalConsultar('festival_unidades', function(d){
+    jornalFest = d && Array.isArray(d.times) ? d : false;
+    jornalFestUI();
+  });
+}
 // ---------- Ensaio de trio (RPC meu_trio_semana) ----------
 var jornalTrio = null;
 function jornalTrioHtml(){ return '<section class="jnbloco"><h4>🎭 ' + escHtml(tr('Ensaio de trio')) + '</h4><div id="jornalTrio"></div></section>'; }
@@ -774,6 +801,7 @@ function jornalTrioUI(){
   var box = $('jornalTrio'); if(!box) return;
   if(!contaJ){ box.innerHTML = '<p class="jnvazio">' + escHtml(tr('Entre na sua conta para ensaiar em trio.')) + '</p>'; return; }
   var d = jornalTrio;
+  if(jornalTrio === false){ TW_CARGA.erro(box, jornalTrioCarregar); return; }
   if(d === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }
   if(!d.ok){ box.innerHTML = '<p class="albumaviso">🛠️ ' + escHtml(tr('O Ensaio de trio começa em breve!')) + '</p>'; return; }
   if(!d.aberto){ box.innerHTML = '<p class="jndica">' + escHtml(tr('Toda sexta você ganha um trio com outros Idols. Cada um faz a sua parte até domingo e o trio libera uma cena especial!')) + '</p><p class="jnvazio">📅 ' + escHtml(tr('Os trios saem na sexta.')) + '</p>'; return; }
@@ -795,6 +823,11 @@ function jornalTrioAmpliar(){
   if(typeof petPhShow === 'function') petPhShow(false); $('shr').hidden = false;
 }
 function jornalTrioCarregar(){
-  jornalTrio = null; jornalTrioUI(); if(!contaJ) return;
-  contaRpc('meu_trio_semana').then(function(d){ jornalTrio = d || { ok:false }; jornalTrioUI(); }).catch(function(){ jornalTrio = { ok:false }; jornalTrioUI(); });
+  jornalTrio = null;
+  jornalTrioUI();
+  if(!contaJ) return;
+  return jornalConsultar('meu_trio_semana', function(d){
+    jornalTrio = d && typeof d.ok === 'boolean' ? d : false;
+    jornalTrioUI();
+  });
 }

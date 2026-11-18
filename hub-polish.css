@@ -435,7 +435,6 @@ html body .bloomp .bloomsub{margin:0;font-size:13px;font-weight:700;line-height:
 .bloomstar{flex:none;background:#fff6d6;color:#9a6a00;border:2px solid #ffe08a;border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;white-space:nowrap}
 html body .bloomp .bloommsg{margin:8px 0;padding:8px 12px;border-radius:14px;background:#fff0f8;border:2px solid #ffd0e6;font-weight:800;font-size:13.5px;color:#a8327f;text-align:center}
 html body .bloomp .bloomdica{margin:10px 4px 0;font-size:12px;font-weight:700;line-height:1.45;color:#7b6aa6;text-align:center}
-.bloomsr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .bloomgrid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .bloomcard{display:grid;grid-template-columns:46px minmax(0,1fr);grid-template-areas:"ic tx" "bt bt";align-items:center;gap:8px 9px;background:#fff;
   border:2px solid #eadcff;border-radius:18px;padding:10px;box-shadow:0 4px 0 rgba(123,63,240,.09)}
@@ -445,13 +444,10 @@ html body .bloomp .bloomdica{margin:10px 4px 0;font-size:12px;font-weight:700;li
 .bloomtxt{grid-area:tx;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
 html body .bloomp .bloomtxt small{font-size:10.5px;font-weight:800;letter-spacing:.02em;color:#9a8cc4}
 html body .bloomp .bloomtxt b{font-size:14px;color:#3c2a8f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-html body .bloomp .bloomtxt em{font-style:normal;font-size:11.5px;font-weight:800;color:#d2447f}
 .bloomdots{display:flex;gap:4px;margin-top:2px}
 .bloomdots u{width:9px;height:9px;border-radius:50%;background:#e8e2f6;text-decoration:none}
 .bloomdots u.on{background:#4db8ff}
 html body .bloomp .bloomcard .btn{grid-area:bt;width:100%;min-height:42px;margin:0;padding:8px 10px;font-size:13.5px;display:flex;align-items:center;justify-content:center}
-html body .bloomp .bloomok{grid-area:bt;min-height:42px;display:flex;align-items:center;justify-content:center;border-radius:999px;background:#eefaf0;
-  color:#2f8a4c;font-size:12.5px;font-weight:800}
 .bloomlote{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
 html body .bloomp .bloomlote .btn{flex:1 1 150px;min-height:44px;margin:0;display:flex;align-items:center;justify-content:center;font-size:13.5px}
 .bloompick{background:#fff;border:2px solid #ffd84a;border-radius:18px;padding:12px;margin:0 0 10px;text-align:center;box-shadow:0 4px 0 rgba(123,63,240,.09)}
@@ -466,7 +462,8 @@ html body .bloomp .bloompick>b{display:block;color:#3c2a8f;font-size:14px;margin
 .bloomseed[disabled]{opacity:.45;cursor:default}
 .bloomnao{margin-top:8px;background:none;border:0;color:#7b62b8;font:inherit;font-weight:800;font-size:12.5px;text-decoration:underline;cursor:pointer;min-height:36px;padding:4px 12px}
 .bloomvasos{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.bloomvasos span{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;background:#fff;border:2px solid #eadcff;border-radius:16px;padding:8px 8px 7px}
+.bloomvasos :is(span,button){display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;background:#fff;border:2px solid #eadcff;border-radius:16px;padding:8px 8px 7px}
+.bloomvasos button{cursor:pointer;font:inherit}
 .bloomvasos .bloomic{width:44px;height:44px}
 html body .bloomp .bloomvasos b{font-size:14px;color:#3c2a8f}
 html body .bloomp .bloomvasos small{font-size:11px;font-weight:800;color:#8b7bb8}
@@ -618,7 +615,6 @@ html body .studiop .stfalta.ok{background:#eaffde;border-color:#5ccf3a;color:#2c
  background:radial-gradient(circle,var(--bloom-accent),transparent 69%);opacity:.11;pointer-events:none}
 .bloomcard>*{position:relative}
 .bloomcard .bloomdots u.on{background:var(--bloom-accent)}
-.bloomcard .bloomtxt em{color:#9e327c}
 .bloomcard.florida .bloomic{filter:drop-shadow(0 3px 5px rgba(155,73,148,.18))}
 .bloomcard .btn:focus-visible,.bloomseed:focus-visible{outline:3px solid #7b3ff0;outline-offset:2px}
 @media (max-width:420px){
@@ -648,4 +644,23 @@ html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-r
   .bloomov .bloomp h2{font-size:clamp(19px,6vw,24px)}
   .bloomov .bloomgrid{gap:7px}
   .bloomov .bloomcard{padding:8px}
+}
+
+/* Status dos canteiros e prévia fixa do Studio enquanto você ajusta a foto. */
+.bloomcard:not(.vazio){grid-template-areas:"ic tx" "estado estado" "bt bt"}
+.bloomestado{grid-area:estado;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 8px;padding:5px 7px;border-radius:9px;font-size:.76rem;line-height:1.3;background:#edf7ff;color:#17466b;text-align:left}
+.bloomestado[data-rega-estado="amanha"]{background:#f1eaff;color:#4c3378}
+.bloomestado[data-rega-estado="colher"]{background:#e7f7df;color:#285c32}
+.bloomestado small{font:inherit}
+.bloomcard:has(.bloomestado[data-rega-estado="amanha"]){grid-template-areas:"ic tx" "estado estado"}
+#studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{position:sticky;top:0;z-index:2;background:var(--card,#fff8fc);padding:6px 10px;border:1px solid var(--tw-modal-edge,#eadcff);border-radius:14px}
+#studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{height:min(34dvh,320px);width:auto;max-width:100%;margin:0 auto}
+.stgrupo .stchip{white-space:normal;overflow-wrap:anywhere}
+.stchip .stcheck{flex:none;font-style:normal;font-weight:900;visibility:hidden}
+.stchip.on .stcheck{visibility:visible}
+.stchip.on{outline:2px solid #8351bb;outline-offset:-2px}
+.stchip:focus-visible{outline:3px solid #a351df;outline-offset:2px}
+.stchip .stsw{border:1px solid #754f9b}
+@media (prefers-color-scheme:dark){
+  html:not([data-theme="light"]) .stchip.on{outline-color:#d4a0ff}
 }

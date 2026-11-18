@@ -127,7 +127,9 @@ function cfNovoClienteLocal(){
       memorias.find(function(m){ return m.nome === visita.nome && m.pres === visita.pres; }) : null;
     if(!lembranca){
       var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
-      lembranca = memorias[((dia % memorias.length) + memorias.length) % memorias.length];
+      var hoje = new Date(dia * 864e5).toISOString().slice(0,10);
+      lembranca = memorias.find(function(m){ return m.dia === hoje; }) ||
+        memorias[((dia % memorias.length) + memorias.length) % memorias.length];
     }
     f.nome = lembranca.nome; f.pres = lembranca.pres;
     if(lembranca.c && typeof lembranca.c === 'object') for(var parte in lembranca.c){
@@ -139,7 +141,7 @@ function cfNovoClienteLocal(){
   if(cf.atendidos > 0 && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
   f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
-  cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = '';
+  cf.cli = f; cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cf.fase = 'pedido'; cf.t0 = cfT; cf.fala = ''; cf.detalhePedido = '';
   cfUI();
 }
 function cfNovoCliente(){
@@ -207,6 +209,82 @@ function cfCidadeReencontro(f,conta,comprovante){
    nome:f.nome,pres:f.pres,conta:conta
  });
 }
+function cfDetalhePedido(pedido, montado){
+  var ingredientes = {base:CF_BASES, cob:CF_COBERTURAS, enf:CF_ENFEITES, doce:CF_DOCES};
+  var diferentes = Object.keys(ingredientes).filter(function(tipo){ return pedido[tipo] !== montado[tipo]; });
+  if(diferentes.length !== 1) return '';
+  var tipo = diferentes[0], item = ingredientes[tipo][pedido[tipo]];
+  var textos = {
+    pt:['Era {item}! O resto ficou lindo.','sem cobertura','sem docinho'],
+    en:['I asked for {item}! The rest looks lovely.','no topping','no sweet'],
+    es:['¡Pedí {item}! El resto quedó precioso.','sin cobertura','sin un dulce'],
+    id:['Aku pesan {item}! Selebihnya bagus sekali.','tanpa topping','tanpa kudapan'],
+    th:['ฉันสั่ง {item}! ที่เหลือดูดีมาก','แบบไม่ใส่ท็อปปิง','แบบไม่มีขนม'],
+    ja:['注文は「{item}」だったよ！ほかはばっちり。','トッピングなし','お菓子なし']
+  };
+  var idioma = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
+  var nome = item ? tr(item[1]) : tipo === 'cob' ? idioma[1] : idioma[2];
+  return idioma[0].replace('{item}', nome);
+}
+var CF_CONFIRMACAO = {
+  pt:['Confirmando com o servidor…','Pedido confirmado para a missão do dia.','Este pedido não contou para a missão.','Sem confirmação online. Você pode continuar jogando.','Treino: resultado local.'],
+  en:['Checking with the server…','Order confirmed for the daily mission.','This order did not count toward the mission.','Online confirmation unavailable. You can keep playing.','Practice: local result.'],
+  es:['Confirmando con el servidor…','Pedido confirmado para la misión diaria.','Este pedido no contó para la misión.','Sin confirmación en línea. Puedes seguir jugando.','Práctica: resultado local.'],
+  id:['Memeriksa dengan server…','Pesanan dikonfirmasi untuk misi harian.','Pesanan ini tidak dihitung untuk misi.','Konfirmasi daring tidak tersedia. Kamu bisa terus bermain.','Latihan: hasil lokal.'],
+  th:['กำลังยืนยันกับเซิร์ฟเวอร์…','ยืนยันออเดอร์สำหรับภารกิจวันนี้แล้ว','ออเดอร์นี้ไม่นับในภารกิจ','ยืนยันออนไลน์ไม่ได้ เล่นต่อได้','โหมดซ้อม: ผลบนอุปกรณ์นี้'],
+  ja:['サーバーに確認中…','きょうのミッションの注文として確認しました。','この注文はミッションにカウントされませんでした。','オンライン確認ができません。そのまま遊べます。','練習：この端末での結果。']
+};
+var CF_DESPEDIDA = {
+  pt:['Sua bebida de assinatura ficou uma delícia! Até a próxima!','Adorei o pedido. Até a próxima!','Na próxima, quero tentar de novo. Até mais!','Preciso ir. Volto outro dia para provar!'],
+  en:['Your signature drink was delicious! See you next time!','I loved my order. See you next time!','Let’s try again next time. See you!','I have to go. I’ll come back for a taste!'],
+  es:['¡Tu bebida de autor estaba deliciosa! ¡Hasta la próxima!','Me encantó el pedido. ¡Hasta la próxima!','Lo intentamos otra vez la próxima. ¡Hasta luego!','Tengo que irme. ¡Otro día vuelvo a probar!'],
+  id:['Minuman andalanmu enak sekali! Sampai jumpa!','Pesananku enak! Sampai jumpa!','Kita coba lagi lain kali. Sampai jumpa!','Aku harus pergi. Lain kali aku kembali untuk mencobanya!'],
+  th:['เครื่องดื่มสูตรพิเศษของคุณอร่อยมาก! ไว้เจอกันนะ!','ชอบออเดอร์นี้มาก ไว้เจอกันนะ!','คราวหน้าลองใหม่กันนะ แล้วเจอกัน!','ต้องไปแล้ว วันหลังจะกลับมาชิมนะ!'],
+  ja:['あなたの特製ドリンク、おいしかった！またね！','注文したもの、おいしかったよ。またね！','今度またお願いするね。それじゃあ！','もう行かなきゃ。また味わいに来るね！']
+};
+var CF_PLACAR_MISSAO = {
+  pt:['Missão do Café concluída','{n} de {meta} pedidos confirmados'],
+  en:['Café mission completed','{n} of {meta} orders confirmed'],
+  es:['Misión del Café completada','{n} de {meta} pedidos confirmados'],
+  id:['Misi Kafe selesai','{n} dari {meta} pesanan dikonfirmasi'],
+  th:['สำเร็จภารกิจคาเฟ่','ยืนยันแล้ว {n} จาก {meta} ออเดอร์'],
+  ja:['カフェのミッション達成','確認済みの注文 {n} / {meta} 件']
+};
+function cfConsultarMissao(partida){
+  var dono = partida.dono, sessao = partida.sessao;
+  if(!dono || dono !== contaJ || sessao !== (typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken) ||
+    partida.missaoCafe === false || (partida.missaoCafe && partida.missaoCafe.pronta)) return;
+  var consulta = {};
+  partida.missaoLeitura = consulta;
+  contaRpc('missoes').then(function(lista){
+    if(cf !== partida || partida.missaoLeitura !== consulta || dono !== contaJ ||
+      sessao !== (typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken) || !Array.isArray(lista)) return;
+    var m = lista.find(function(m){return m && m.k === 'cafe' && Number(m.meta)>0;});
+    partida.missaoCafe = m ? {dono:dono,sessao:sessao,meta:Number(m.meta),progresso:Math.max(0,Math.min(Number(m.meta),Number(m.prog)||0)),
+      pronta:m.feito === true || Number(m.prog) >= Number(m.meta)} : false;
+    cfUI();
+  }).catch(function(){});
+}
+function cfMissaoHtml(){
+  var m = cf.missaoCafe;
+  if(!m || m.dono !== contaJ || m.sessao !== (typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken)) return '';
+  var textos = CF_PLACAR_MISSAO[LANG] || CF_PLACAR_MISSAO.pt;
+  var texto = m.pronta ? textos[0] : textos[1].replace('{n}',m.progresso).replace('{meta}',m.meta);
+  return '<p class="cf-missao">' + escHtml(texto) + '</p>';
+}
+function cfBarraPedido(sufixo,fracao){
+  var pc = Math.round(Math.max(0,Math.min(1,fracao))*100);
+  return '<div class="hstempo cfpac" role="progressbar" aria-label="' +
+    escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc +
+    '"><b id="cfPacEmo'+sufixo+'" aria-hidden="true">😊</b><i id="cfPac'+sufixo+'" style="width:'+pc+'%"></i></div>';
+}
+function cfRetornoPedido(indice,nome){
+  return '<div class="cf-retorno">' + cfConfirmacaoHtml(indice,nome) + cfMissaoHtml() + '</div>';
+}
+function cfConfirmacaoHtml(indice,nome){
+  var mensagem = (CF_CONFIRMACAO[LANG] || CF_CONFIRMACAO.pt)[indice];
+  return mensagem ? '<p class="hsdica" role="status">' + escHtml(nome ? nome + ' · ' + mensagem : mensagem) + '</p>' : '';
+}
 function cfServir(saiu){
   if(!cf || cf.fase !== 'pedido') return;
   var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
@@ -214,13 +292,17 @@ function cfServir(saiu){
   var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
   var resto = Math.max(0, 1 - (cfT - cf.t0) / cfPaciencia());
   cf.atendidos++;
+  cf.confirmacaoPedido = cf.modoServidor === 'treino' && cf.provaEstado === 'pendente' ? 3 : 4;
+  cf.despedidaAssinatura = !!(cf.assinatura && m.base === cf.assinatura.base && m.enf === cf.assinatura.enf);
+  cf.despedidaSaiu = !!saiu;
   if(cf.servidor && cf.modoServidor==='novo'){
     var atual=cf, args={p_sessao:cf.servidor.sessao,
       p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce},p_saiu:!!saiu};
-    atual.verificacaoPendente=true;
+    atual.verificacaoPendente=true; atual.confirmacaoPedido=0;
     contaRpc('cafe_run_etapa',args).then(function(r){
       if(cf!==atual)return;
-      atual.verificacaoPendente=false;
+      atual.verificacaoPendente=false; atual.t0=Math.max(atual.t0,cfT - 30);
+      atual.confirmacaoPedido = r && r.ok && r.confirmado ? (r.certo === true ? 1 : 2) : 3;
       if(r && r.ok && r.confirmado){
         if(r.certo === true && certo && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
         if(r.certo===true&&certo)cfCidadeReencontro(faAtendido,contaAtendimento,args.p_sessao);
@@ -228,31 +310,39 @@ function cfServir(saiu){
         atual.combo=+r.combo||0;
         if(r.certo){
           atual.provaEstado='confirmado';
+          cfConsultarMissao(atual);
           try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         }else if(atual.provaEstado!=='confirmado') atual.provaEstado='sem_comprovacao';
         if(!!r.certo!==atual.ok){
           atual.ok=!!r.certo;
+          atual.detalhePedido='';
           atual.fala=tr(r.certo?'Pedido confirmado! 💖':'Pedido não confirmado pelo servidor. 🥲');
         }
       }else{atual.modoServidor='treino';atual.provaEstado='sem_comprovacao';}
       cfUI();
     }).catch(function(){
       if(cf!==atual)return;
-      atual.verificacaoPendente=false;atual.modoServidor='treino';atual.provaEstado='pendente';cfUI();
+      atual.verificacaoPendente=false;atual.t0=Math.max(atual.t0,cfT - 30);atual.modoServidor='treino';atual.provaEstado='pendente';atual.confirmacaoPedido=3;cfUI();
     });
   }else if(cf.servidor && cf.modoServidor==='legado'){
     var atualLegado=cf;
+    atualLegado.verificacaoPendente=true; atualLegado.confirmacaoPedido=0;
     contaRpc('cafe_concluir',{p_sessao:cf.servidor.sessao,
       p_monta:{base:m.base,cob:m.cob,enf:m.enf,doce:m.doce}}).then(function(r){
-      if(r && r.ok && r.confirmado){
+      if(cf!==atualLegado)return;
+      atualLegado.verificacaoPendente=false; atualLegado.t0=Math.max(atualLegado.t0,cfT - 30);
+      var confirmado = r && r.ok && r.confirmado && certo && r.certo !== false;
+      atualLegado.confirmacaoPedido = confirmado ? 1 : r && r.ok ? 2 : 3;
+      if(confirmado){
         if(certo && r.certo !== false && typeof hsCafeConfirmar === 'function') hsCafeConfirmar(faAtendido, contaAtendimento);
         if(certo&&r.certo===true)cfCidadeReencontro(faAtendido,contaAtendimento,atualLegado.servidor&&atualLegado.servidor.sessao);
         try{localStorage.setItem('tw_cf_dia',new Date(Date.now()-3*36e5).toISOString().slice(0,10));}catch(e){}
         atualLegado.provaEstado='confirmado';
+        cfConsultarMissao(atualLegado);
         if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
       }else atualLegado.provaEstado='sem_comprovacao';
       if(cf===atualLegado)cfUI();
-    }).catch(function(){atualLegado.provaEstado='pendente';if(cf===atualLegado)cfUI();});
+    }).catch(function(){if(cf===atualLegado){ atualLegado.verificacaoPendente=false; atualLegado.t0=Math.max(atualLegado.t0,cfT - 30); atualLegado.provaEstado='pendente'; atualLegado.confirmacaoPedido=3; cfUI(); }});
   }
   if(certo){
     if(window.TW_HUMOR) window.TW_HUMOR.treino('cafe');
@@ -274,6 +364,7 @@ function cfServir(saiu){
     cfSom('servir','star');
   }else{
     cf.combo=0;cf.vidas--;
+    cf.detalhePedido = saiu ? '' : cfDetalhePedido(p, m);
     cf.fala=saiu?tr('Demorou… volto outro dia. 😢'):tr('Hmm… não foi bem isso que eu pedi. 🥲');
     cfSom('perdeu','hit');
   }
@@ -296,6 +387,7 @@ function cfFim(){
       if(cf!==atual)return;
       if(r&&r.ok&&r.confirmado){
         atual.provaEstado='verificado';
+        cfConsultarMissao(atual);
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('cafe',{id:atual.runId});
         atual.pontosVerificados=+r.pontos_verificados||0;
         atual.pontos=atual.pontosVerificados;
@@ -315,7 +407,7 @@ function cfLoop(ms){
     if(cf.fase === 'pedido' && cf.cli && cf.cli.vaiRoubar && !cf.cli.roubou && cf.monta.doce >= 0 && cfT - cf.doceT > 45 && typeof eventoPet === 'function' && eventoPet()){   // o pet pega o docinho!
       var pt = eventoPet(); cf.cli.roubou = true; cf.monta.doce = -1; cf.rouboT = cfT; cf.aviso = '🐾 ' + tr('{p} pegou o docinho! Coloque outro.').replace('{p}', pt.nome || tr('Seu pet')); cfUI(); }
     if(cf.fase === 'pedido'){ if(dt > cfPaciencia()) cfServir(true); var bar = $('cfPac'); if(bar) cfPacienciaUI(bar, Math.max(0, 100 - dt / cfPaciencia() * 100)); }
-    else if(cf.fase === 'reacao' && dt > 90 && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
+    else if(cf.fase === 'reacao' && dt > (cf.detalhePedido || cf.cli.hsLembranca ? 180 : 90) && !cf.verificacaoPendente){ if(cf.vidas <= 0 || cf.atendidos >= 12) cfFim(); else cfNovoCliente(); }
   }
   if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
   cfAnim = requestAnimationFrame(cfLoop);
@@ -473,6 +565,14 @@ function cfBotoes(tipo, lista, tit){
     return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
   }).join('') + '</div></div>';
 }
+var CF_FALA_REENCONTRO = {
+  pt:'Você lembrou do meu presente! Hoje vim experimentar sua receita.',
+  en:'You remembered my gift! I came to try your recipe today.',
+  es:'¡Te acordaste de mi regalo! Hoy vine a probar tu receta.',
+  id:'Kamu ingat hadiahku! Hari ini aku datang untuk mencoba resepmu.',
+  th:'คุณจำของขวัญของฉันได้! วันนี้ฉันมาลองสูตรของคุณ',
+  ja:'プレゼントを覚えてくれてたね！今日はあなたのレシピを味わいに来たよ。'
+};
 function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   var rec = cfLer(CF_RECEITAS_KEY, {}), nRec = Object.keys(rec).length, totRec = CF_BASES.length * CF_ENFEITES.length;
@@ -485,16 +585,27 @@ function cfUI(){
     '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
-    if(cf.fase === 'pedido' && cf.cli && cf.cli.pedido) h += '<p class="cfpedidotxt" aria-live="polite"><b>' + escHtml(tr('Pedido')) + ':</b> ' + escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>';
+    h += '<section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +
+      escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>' +
+      cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section>';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
       var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
       h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +
-        escHtml(tr('Você lembrou do meu presente naquele dia!')) + ' ' +
+        escHtml(CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + ' ' +
         (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
     }
+    if(cf.fase === 'reacao'){
+      if(cf.cli.hsLembranca){
+        var despedida = CF_DESPEDIDA[LANG] || CF_DESPEDIDA.pt;
+        var tom = cf.despedidaSaiu ? 3 : !cf.ok ? 2 : cf.despedidaAssinatura ? 0 : 1;
+        h += '<p class="hsdica cfreencontro"><b>' + escHtml(cf.cli.nome) + ':</b> ' + escHtml(despedida[tom]) + '</p>';
+      }
+
+    }
+    if(cf.fase === 'reacao' && cf.detalhePedido) h += '<p class="cfpedidotxt" role="status">' + escHtml(cf.detalhePedido) + '</p>';
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
-    h += '<div class="hstempo cfpac" role="progressbar" aria-label="' + escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><b id="cfPacEmo" aria-hidden="true">😊</b><i id="cfPac" style="width:100%"></i></div>';
+
     if(cf.fase === 'pedido' && cf.assinatura && !cf.assinaturaUsada && cf.cli &&
        cf.cli.pedido.base === cf.assinatura.base && cf.cli.pedido.enf === cf.assinatura.enf &&
        (cf.monta.base !== cf.assinatura.base || cf.monta.enf !== cf.assinatura.enf)){
@@ -502,7 +613,8 @@ function cfUI(){
         '📒 ' + escHtml(tr('Usar assinatura: base + enfeite')) + '</button></div>';
     }
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
-      '<div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>';
+      '<div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
+      cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div>';
   }
   else if(cf.fase === 'fim'){
     h += '<p class="hsfim">' + (cf.novoRec ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('O café fechou!')) + ' <b>' + cf.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>' +
@@ -513,6 +625,7 @@ function cfUI(){
     else if(cf.provaEstado==='pendente') h += '<p class="hsdica">⏳ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
     else if(cf.provaEstado==='sem_comprovacao') h += '<p class="hsdica">⚠️ ' + escHtml(tr('Não foi possível confirmar a missão. Tente outra partida com internet.')) + '</p>';
     else if(cf.perfeitos>0 && !cf.runId && !cf.servidor) h += '<p class="hsdica">🔒 ' + escHtml(tr('Modo treino: pedido sem validação do servidor.')) + '</p>';
+    h += cfMissaoHtml();
     if(cf.conq.length) h += '<p class="faok">🏆 ' + escHtml(tr(contaJ && cf.provaEstado!=='verificado' ? 'Conquista visual local (conta ainda não confirmada):' : 'Insígnia nova na Estante de troféus:')) + ' ' + cf.conq.map(escHtml).join(' · ') + '</p>';
     if(cf.novas.length) h += '<p class="faok">📒 ' + escHtml(tr('Receitas novas no Caderno:')) + ' ' + cf.novas.map(escHtml).join(' · ') + '</p>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
@@ -542,6 +655,7 @@ function cfIniciarSeguro(){
   var escolhida = cf && cf.fase === 'inicio' ? cf.assinatura : null;
   var visita = cf && cf.fase === 'inicio' ? cf.faEspecial : null;
   cf={fase:'inicio',pontos:0,vidas:3,atendidos:0,perfeitos:0,combo:0,cli:null,monta:null,t0:cfT,fala:'',novas:[],hearts:[],servidor:null,runId:null,modoServidor:null,verificacaoPendente:false,provaEstado:'',conq:[],assinatura:escolhida,assinaturaUsada:false,faEspecial:visita};
+  cf.dono = contaJ; cf.sessao = typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken;
   hsVisitaPreparar(cf);
   cfNovoCliente();
 }

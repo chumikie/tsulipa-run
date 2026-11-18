@@ -398,11 +398,13 @@
         r = { id:D.proxId++, nick:'Demo', avatar:null, estrelas:est, dia:D.dia, criado:new Date().toISOString(),
           escolhas:{ fundo:p.fundo, pose:p.pose, luz:p.luz, quadro:p.quadro, objeto:p.objeto }, coracoes:0, curti:false, minha:true };
         try{ r.avatar = (contaJ && contaJ.avatar) || null; }catch(e){}
+        var retrato = window.TW_STUDIO_RETRATO && window.TW_STUDIO_RETRATO.limpar(p.retrato);
+        if(retrato){ r.retrato = retrato; r.avatar = retrato.avatar; }
         D.mural.push(r);
         // tema da semana (20261115_studio_tema_semana.sql): ★3 uma vez por semana
         var tema = window.TW_STUDIO_TEMA, semana = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5), pt = 0;
         if(tema && tema.noTema(r.escolhas) && D.fotoTemaSemana !== semana){ D.fotoTemaSemana = semana; mudaSaldo(3); pt = 3; }
-        return { ok:true, id:r.id, estrelas:est, tema:tema ? tema.atual() : '', premio_tema:pt, stars:pt ? saldo() : null };
+        return { ok:true, id:r.id, estrelas:est, tema:tema ? tema.atual() : '', premio_tema:pt, retrato_guardado:!!retrato, stars:pt ? saldo() : null };
       }
       if(n === 'studio_mural') return mural().slice().sort(function(x, y){ return y.coracoes - x.coracoes || (x.criado < y.criado ? 1 : -1); })
         .map(function(x){ return Object.assign({}, x); });
@@ -415,7 +417,7 @@
       }
       if(n === 'studio_capa'){
         c = mural().filter(function(x){ return x.coracoes > 0; }).sort(function(x, y){ return y.coracoes - x.coracoes; })[0];
-        return c ? { id:c.id, nick:c.nick, avatar:c.avatar, escolhas:c.escolhas, estrelas:c.estrelas, dia:c.dia, coracoes:c.coracoes, fechada:false } : null;
+        return c ? { id:c.id, nick:c.nick, avatar:c.avatar, retrato:c.retrato || null, escolhas:c.escolhas, estrelas:c.estrelas, dia:c.dia, coracoes:c.coracoes, fechada:false } : null;
       }
       /* ---- Missões do dia (20261114_missoes_jogos_novos.sql): os jogos que a demonstração simula ---- */
       if(n === 'missoes' || n === 'resgatar_missao'){

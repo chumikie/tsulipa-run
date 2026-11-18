@@ -77,11 +77,65 @@ async function rodar(browser,base,nome,opcoes){
   return falhas;
 }
 
+async function conferirCafe(browser,base){
+  const ctx=await browser.newContext({viewport:{width:320,height:640},isMobile:true,hasTouch:true});
+  try{
+    await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/,r=>r.abort());
+    const page=await ctx.newPage();
+    await page.goto(base+'/index.html');
+    await page.evaluate(async()=>{
+      await twJogosCarregar();
+      LANG='pt'; contaJ={id:'cafe-teste',nick:'Café Teste'};
+      window.pedidosTeste=[{base:0,cob:-1,enf:0,doce:-1},{base:1,cob:0,enf:1,doce:0}];
+      window.entregasTeste=[];
+      window.contaRpc=(nome,args)=>{
+        if(nome==='cafe_run_iniciar')return Promise.resolve({ok:true,run_id:'turno'});
+        if(nome==='cafe_run_pedidos')return Promise.resolve({ok:true,criados:2,pedidos:pedidosTeste.map((pedido,i)=>({sessao:String(i),pedido,limite_segundos:120})).filter(p=>!entregasTeste.some(e=>e.args.p_sessao===p.sessao))});
+        if(nome==='cafe_run_etapa2')return new Promise(resolve=>window.entregasTeste.push({resolve,args}));
+        if(nome==='missoes')return Promise.resolve([{k:'cafe',meta:2,prog:entregasTeste.length}]);
+        return Promise.resolve([]);
+      };
+      cfAbrir();
+    });
+    await page.locator('#cfJogar').click();
+    const comanda=page.locator('#cfOv .cf-comanda');
+    const servir=page.locator('#cfOv [data-cfd-servir]');
+    for(const lado of [0,1]){
+      const cliente=page.locator('#cfOv [data-cfd-cliente="'+lado+'"]');
+      await cliente.click();
+      assert.equal(await cliente.getAttribute('aria-pressed'),'true');
+      assert.equal(await comanda.getByRole('progressbar').count(),2);
+      const pedido=await page.evaluate(i=>pedidosTeste[i],lado);
+      const nome=await cliente.textContent();
+      assert.ok((await comanda.locator('.cfpedidotxt').textContent()).includes(nome));
+      for(const [tipo,indice] of Object.entries(pedido)){
+        if(indice>=0)await page.locator('#cfOv [data-cf="'+tipo+':'+indice+'"]').click();
+      }
+      const visivel=await comanda.boundingBox();
+      assert.ok(visivel && visivel.y>=0 && visivel.y+visivel.height<=640);
+      await servir.click();
+      await page.getByText(/Confirmando com o servidor/).waitFor();
+      const antes=await servir.boundingBox();
+      const rpc=await page.evaluate(i=>entregasTeste[i].args,lado);
+      assert.equal(rpc.p_sessao,String(lado));
+      assert.deepEqual(rpc.p_monta,pedido);
+      await page.evaluate(i=>entregasTeste[i].resolve({ok:true,confirmado:true,certo:true,pontos:100*(i+1),vidas:3,perfeitos:i+1,combo:i+1}),lado);
+      await page.getByText(lado===0?'1 de 2 pedidos confirmados':'Missão do Café concluída').waitFor();
+      const depois=await servir.boundingBox();
+      assert.ok(antes && depois && Math.abs(antes.y-depois.y)<=1,'a resposta online não desloca o botão Servir');
+      assert.ok(depois.x>=0 && depois.x+depois.width<=320,'Servir cabe na tela de 320 px');
+    }
+    await page.screenshot({path:path.join(out,'cafe-320.png')});
+    console.log('✓ Café em 320 px: duas comandas, dois pedidos e progresso da missão sem salto.');
+  }finally{await ctx.close();}
+}
+
 (async()=>{
   await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
   const base='http://127.0.0.1:'+server.address().port,browser=await chromium.launch();
   let falhas=[];
   try{
+    await conferirCafe(browser,base);
     falhas=falhas.concat(await rodar(browser,base,'celular',{viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true}));
     falhas=falhas.concat(await rodar(browser,base,'computador',{viewport:{width:1280,height:800},deviceScaleFactor:1.25}));
     // tablets Android (Galaxy Tab, Xiaomi Pad e parecidos): em pé e deitado, com toque

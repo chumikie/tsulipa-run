@@ -40,9 +40,9 @@ test('jogar de verdade (RPC de fim de partida) conta; o arquivo não chama nenhu
 });
 
 function escolher(c,ev,logado=true){
-  c.H.desejo();const e=JSON.parse(c.mem.brs48cr_humor_v1);
+  c.H.desejo();const chave='brs48cr_humor_v1:'+(logado?'nick:Teste':'visitante');const e=JSON.parse(c.mem[chave]);
   e.desejo.k=ev==='frase'?'oi':ev;e.desejo.ev=ev;e.desejo.feito=false;e.desejo.logado=logado;
-  c.mem.brs48cr_humor_v1=JSON.stringify(e);
+  c.mem[chave]=JSON.stringify(e);
 }
 test('abrir qualquer destino não cumpre desejo nem altera humor, VIP ou recados',()=>{
   for(const logado of [true,false]) for(const ev of ['run','karaoke','sora','cafe','battle','studio','handshake','bloom','mapa','frase']){
@@ -68,7 +68,7 @@ test('RPC vazia, rejeitada ou sem ok explícito não cumpre desejo',async()=>{
   await c.sb.window.contaRpc('studio_clique',{}).catch(()=>{});assert.equal(c.H.desejo().feito,false);
 });
 test('Café exige shake correto confirmado; finalizar turno vazio não conta',async()=>{
-  for(const nome of ['cafe_run_etapa','cafe_concluir','cafe_run_finalizar'])for(const certo of [false,true]){
+  for(const nome of ['cafe_run_etapa','cafe_run_etapa2','cafe_concluir','cafe_run_finalizar'])for(const certo of [false,true]){
     const c=carregar(true,T0,()=>Promise.resolve({ok:true,confirmado:true,certo}));escolher(c,'cafe');
     await c.sb.window.contaRpc(nome,{});assert.equal(c.H.desejo().feito,nome!=='cafe_run_finalizar'&&certo);
   }
@@ -120,4 +120,19 @@ test('clique real do TsuPhone abre Humor, mostra ajuda em seis idiomas e volta',
     assert.equal(c.H.desejo().feito,antes.feito,'ler não cumpre desejo');assert.equal(c.H.vipHoje(),false);
     click('voltar');assert.equal(s.petPhoneTela,'home');
   }
+});
+
+test('atalho Bloom abre o jardim e só a ação confirmada cumpre o desejo',async()=>{
+  const c=carregar(true,T0,()=>Promise.resolve({ok:true}));
+  escolher(c,'bloom'); const a=[];
+  c.sb.window.petPhoneOpen=true;
+  c.sb.window.petClose=()=>a.push('fechou');
+  c.sb.window.bloomAbrir=()=>a.push('jardim');
+  assert.match(c.H.rotuloRota('bloom'),/Ir ao Bloom/);
+  assert.equal(c.H.rotaDesejo(),true);
+  assert.deepEqual(a,['fechou','jardim']);
+  assert.equal(c.H.desejo().feito,false);
+  await c.sb.window.contaRpc('jardim_colher',{});
+  assert.equal(c.H.desejo().feito,true);
+  assert.equal(c.H.rotaDesejo(),false);
 });

@@ -108,7 +108,7 @@ assert(!block.includes('for(var gx=100;gx<860;gx+=54)'),'No per-frame tile grid 
 assert(html.includes('if(krHandBusy(bot))')&&html.includes('krAgendarLoop()'),'Keep the existing room animation and busy-hand flow');
 // Static wall panels and shelf are cached instead of rebuilt on every room frame.
 assert(html.includes('var krDecorWallCache=null;'),'Wall background cache should be persistent');
-assert(html.includes('var wallCanvas=document.createElement(\'canvas\');wallCanvas.width=W;wallCanvas.height=330;'),'Wall cache should match the logical scene size');
+assert(html.includes('var wallCanvas=document.createElement(\'canvas\');wallCanvas.width=W;wallCanvas.height=KR_ROOM_PISO_Y;'),'Wall cache should match the logical scene size');
 assert(html.includes('x.drawImage(krDecorWallCache,0,0);'),'Cached wall should be composited into the scene');
 assert(html.includes('var krEstanteCache=null,krEstanteCacheKey=\'\';'),'Shelf artwork should have a persistent cache');
 assert(html.includes("var key=tr('Acessórios + snacks')+'|'+tr('Escolha abaixo para equipar');"),'Shelf cache should invalidate when language labels change');

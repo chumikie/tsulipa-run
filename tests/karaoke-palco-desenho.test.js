@@ -57,3 +57,12 @@ assert(html.includes("function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)retu
 // Idols totalmente fora da faixa não são pintados, mas o balão continua na fila.
 assert(loop.includes('if(!krCorte||(j.x+90>=krCorte[0]&&j.x-90<=krCorte[0]+krCorte[2])){if(sentado)ktAlmofadaPijama(')&&loop.includes("x.fillText(j.nick,j.x,j.y+19);}var bl=activeBalloon;"),'idols fora da faixa pulados; balões preservados');
 console.log('✓ Karaoke: enfeites em karaoke-palco-desenho.js, camadas lentas, corte do show no celular e foto inteira');
+
+// Wall, carpet and floor reflections share the same baseline in room coordinates.
+const encontroPiso=Number(html.match(/var KR_ROOM_PISO_Y=(\d+);/)[1]);
+assert.equal(encontroPiso,330);
+assert.match(html,/krParedeEstofada\(bg,W,KR_ROOM_PISO_Y\)/);
+assert.match(html,/x\.drawImage\(krCarpeteCache,0,KR_ROOM_PISO_Y\)/);
+assert.match(loop,/x\.fillRect\(150,KR_ROOM_PISO_Y,660,H2-KR_ROOM_PISO_Y\)/);
+assert(loop.indexOf('krDesenharCarpete(x,W2,H2)')<loop.indexOf('krDesenharDecoracaoSala(x,t,W2,H2,paleta)'),
+  'carpet is painted before the planters that stand along the wall');

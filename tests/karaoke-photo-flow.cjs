@@ -53,13 +53,21 @@ exports.verify=async function(p,frame,width,out){
   return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto,full:window.__qaFullPhoto};
  });
  assert.equal(capture.w,1920);assert.equal(capture.h,1080);assert(capture.same,'Preview matches the complete frame handed to the camera');assert(capture.full,'Both sides of the room are opaque in the photo');
- await p.waitForTimeout(450);
  assert(await img.evaluate(i=>{
-  const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);
-  const same=c.toDataURL('image/png')===window.__qaExpectedPhoto;
-  c.getContext('2d').drawImage(document.getElementById('krCv'),0,0,1920,1080);
-  return same&&c.toDataURL('image/png')!==window.__qaExpectedPhoto;
- }),'Photo stays frozen while the room keeps animating behind it');
+  const c=document.createElement('canvas');c.width=1920;c.height=1080;
+  const ctx=c.getContext('2d'),source=document.getElementById('krCv'),room=source.getContext('2d');
+  const old=room.getImageData(0,0,32,32);
+  room.save();
+  room.resetTransform();
+  room.clearRect(0,0,32,32);
+  ctx.drawImage(source,0,0,1920,1080);
+  const mudou=c.toDataURL('image/png')!==window.__qaExpectedPhoto;
+  room.putImageData(old,0,0);
+  room.restore();
+  ctx.clearRect(0,0,1920,1080);
+  ctx.drawImage(i,0,0);
+  return mudou&&c.toDataURL('image/png')===window.__qaExpectedPhoto;
+ }),'Photo stays frozen when the source canvas changes');
  assert.equal(await frame.locator('body').evaluate(()=>KaraokeRoomPhoto.capture(document.getElementById('krCv'))),false,'Repeated capture cannot replace an open photo');
  const r=await dialog.boundingBox(),viewport=p.viewportSize();
  assert(r.y>=0&&r.y+r.height<=viewport.height+1&&r.x>=0&&r.x+r.width<=width+1,'Dialog fits the visible host viewport, not the tall iframe');

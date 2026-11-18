@@ -168,6 +168,14 @@
   var todos = null, est = null, dono = '';
   function lerTodos(){ if(todos) return todos; try{ todos = JSON.parse(localStorage.getItem(CHAVE) || '{}') || {}; }catch(e){ todos = {}; } if(typeof todos !== 'object' || Array.isArray(todos)) todos = {}; return todos; }
   function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(todos)); }catch(e){} }
+  function temProgresso(e){   // algum ponto de bico, bagunça resolvida ou bicho no caderninho
+    if(!e || typeof e !== 'object') return false;
+    var p = e.pts || {}, k;
+    for(k in p) if(+p[k] > 0) return true;
+    for(k in (e.bichos || {})) return true;
+    for(k in (e.bag || {})) if(e.bag[k] && e.bag[k].ok) return true;
+    return false;
+  }
   function veterano(){
     try{ if(typeof best !== 'undefined' && +best > 0) return true; }catch(e){}
     if(window.TW_HUMOR && typeof window.TW_HUMOR.estado === 'function' && window.TW_HUMOR.estado().serie > 0) return true;
@@ -179,6 +187,18 @@
     dono = q; est = todos[q];
     if(!est || typeof est !== 'object'){
       est = todos[q] = {v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, guia:{ini:hoje(), novo:!veterano(), pulou:false}};
+      salvar();
+    }
+    /* Entrou na conta depois de jogar (18/11/2026): a conta chega do servidor alguns segundos depois da página abrir,
+       e o que foi jogado até lá contou como visitante. Quem acabava de entrar via o bairro zerado no dia seguinte.
+       Agora a primeira conta que entra neste aparelho leva o progresso de visitante, uma vez só. */
+    if(q !== 'visitante' && !temProgresso(est) && temProgresso(todos.visitante)){
+      var v = todos.visitante;
+      ['pts', 'dia', 'visto', 'bag', 'lidas', 'bichos'].forEach(function(k){ if(v[k] && typeof v[k] === 'object') est[k] = v[k]; });
+      if(v.ultimo) est.ultimo = v.ultimo;
+      if(v.bichosOk) est.bichosOk = v.bichosOk;
+      if(v.guia && typeof v.guia === 'object') est.guia = v.guia;
+      delete todos.visitante;   // não repassa duas vezes (outra conta no mesmo aparelho começa do zero)
       salvar();
     }
     ['pts', 'dia', 'visto', 'bag', 'lidas', 'bichos'].forEach(function(k){ if(!est[k] || typeof est[k] !== 'object') est[k] = {}; });

@@ -304,3 +304,24 @@ test('"Hoje": nada usa variável antes de existir (a data e o "Também hoje") �
   assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('var todos = extra ?'), 'extra pronto antes de ser usado');
   assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('lista = hojeAberto ? todos.join(\'\') : extra;'), 'extra pronto antes da lista recolhida');
 });
+
+test('entrar na conta depois de jogar não zera o bairro (18/11)', () => {
+  const chave = 'brs48cr_bairro_v1';
+  const visitante = { v:1, pts:{ palco:5, praca:2 }, dia:{}, visto:{}, lidas:{}, bichos:{ arena:'2026-11-10' }, bichosOk:1,
+    bag:{ '2026-11-08':{ ok:true, dia:'2026-11-09' } }, guia:{ ini:'2026-10-01', novo:false, pulou:true } };
+  // jogou sem conta (ou enquanto a conta ainda carregava) e depois entrou: o progresso vem junto
+  const a = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante }) } });
+  assert.equal(a.B.bico('palco').pts, 5, 'pontos do bico vieram');
+  assert.equal(a.B.caderno().feitos, 1, 'caderninho veio');
+  const salvo = JSON.parse(a.store[chave]);
+  assert(!salvo.visitante, 'o balde de visitante some, para não repassar duas vezes');
+  assert.equal(salvo['c:sami'].pts.palco, 5);
+  // conta que já tem progresso não é sobrescrita
+  const b = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante, 'c:sami':{ v:1, pts:{ ceu:9 }, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:{}, bichosOk:1, guia:{ ini:'2026-10-01', novo:false, pulou:true } } }) } });
+  assert.equal(b.B.bico('ceu').pts, 9); assert.equal(b.B.bico('palco').pts, 0, 'não mistura com o visitante');
+  assert(JSON.parse(b.store[chave]).visitante, 'o visitante continua lá para quem jogar deslogado');
+  // visitante vazio não apaga nada nem dispara a troca
+  const c = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante:{ v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:{}, guia:{ ini:'2026-11-01', novo:true, pulou:false } } }) } });
+  assert.equal(c.B.bico('palco').pts, 0);
+  assert(JSON.parse(c.store[chave]).visitante, 'visitante sem progresso fica onde está');
+});

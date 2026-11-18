@@ -51,7 +51,7 @@
 | Sistema | Estado | Próximo passo |
 |---|---|---|
 | Mapa (2 níveis) | Ruas vivas: visitas surpresa do trio, bichinhos, Idols online com frases prontas, salas por dentro | — |
-| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **caderninho dos 6 bichos** (selo por rua, título ao completar); desfecho no Idol⭐News! todo domingo, avisado no "Hoje", no painel e por recado do bicho no Chat; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos |
+| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **caderninho dos 6 bichos** (selo por rua, título ao completar); desfecho no Idol⭐News! todo domingo, avisado no "Hoje", no painel e por recado do bicho no Chat; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos | Cenários das seis ruas com profundidade (horizonte, piso em perspectiva, vinheta), no mesmo padrão das salas (18/11).
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
 | Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |

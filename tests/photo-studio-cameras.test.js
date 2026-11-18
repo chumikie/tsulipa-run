@@ -38,6 +38,44 @@ test('Studio photo and mural reuse the same camera and props renderer', () => {
   const source = fs.readFileSync(path.join(root, 'studio.js'), 'utf8');
   assert.match(source, /perfDesenharIdol\(x, W, H, av, false, false, tm \* 60, (?:e\.)?quadro/);
   assert.match(source, /function polaroid\(/);
-  assert.match(source, /cena\(x, fw, fh, e, 1, av\)/);
-  assert.match(source, /quadro === 'meio'/);
+  assert.match(source, /cena\(x, fw, fh, e, typeof tempo === 'number' \? tempo : 1, av\)/);
+  assert.match(source, /objetoNaMao\(x, e.objeto, av.pose, corpo/);
+});
+
+test('Studio saves and keeps a single clean PNG, independent of the animated visible canvas', () => {
+  const s = fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  assert.match(s,/capturarCena\(capturada\)/);
+  assert.match(s,/a\.href = fotoUrl\(foto\)/);
+  assert.match(s,/petPhoneMomentoGuardar\('studio', fotoUrl\(foto\), especie\)/);
+  assert.doesNotMatch(s.slice(s.indexOf('function polaroidLimpa('),s.indexOf('function chips(')),/brilhos\(/);
+  let conversions = 0;
+  const ctx = {polaroidLimpa:() => ({toDataURL:() => {conversions++;return 'cleanPNG';}})};
+  vm.runInNewContext(s.slice(s.indexOf('function fotoUrl('),s.indexOf('function salvar(')),ctx);
+  const f = {};
+  assert.equal(ctx.fotoUrl(f),'cleanPNG');assert.equal(ctx.fotoUrl(f),'cleanPNG');assert.equal(conversions,1);
+});
+
+test('Memórias Eternas: retrato conserva cabelo, roupa, expressão e fase do clique mesmo após editar o Idol', () => {
+  const s=fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  const ctx={window:{},document:{}};ctx.window=ctx;vm.runInNewContext(s,ctx);
+  const R=ctx.TW_STUDIO_RETRATO;
+  const atual={c:{hair:'#ff7eb6',skin:'#f1c9a5',out:'sweet',legcol:'#1c1c30',streak:true},a:'laco',expr:4,visual:'',cor:'#ff6fb5',id:'privado',email:'private@example.invalid',pet:{k:'meu',nome:'privado',cfg:{cor:'#aabbcc',olhos:'brilho',nome:'privado'}}};
+  const foto=R.limpar({v:1,avatar:atual,tempo:123.45});
+  atual.c.hair='#00ff00';atual.c.out='rock';atual.expr=1;atual.pet.cfg.cor='#000000';
+  for(const proprio of [true,false]){
+    const r=R.ler({retrato:foto,avatar:atual},proprio);
+    assert.equal(r.avatar.c.hair,'#ff7eb6');assert.equal(r.avatar.c.out,'sweet');assert.equal(r.avatar.expr,4);assert.equal(r.tempo,123.45);
+    assert.equal(r.avatar.pet.cfg.cor,'#aabbcc');
+    assert.doesNotMatch(JSON.stringify(r),/privado|private@example/);
+  }
+  assert.equal(R.ler({avatar:atual},true).avatar,null,'legado próprio mantém desenho atual');
+  assert.equal(R.ler({avatar:atual},false).avatar,atual,'legado de outro jogador mantém retorno antigo');
+  assert.equal(R.ler({avatar:atual,retrato:{v:8}},false).avatar,atual);
+  assert.equal(R.limpar({v:1,avatar:atual,tempo:-1}),null);
+  const mal=R.limpar({v:1,tempo:0,avatar:{c:{hair:'<script>',out:{x:1},det:'ok',streak:'false'},a:'https://x.invalid',expr:99,pet:{k:'meu',cfg:{cor:'bad',nome:'secret'}}}});
+  assert.equal(JSON.stringify(mal.avatar),'{"c":{"det":"ok"},"pet":{"k":"meu","cfg":{}}}');
+  assert.match(s,/p\.retrato = capturada\.retrato/);
+  assert.match(s,/r\.retrato_guardado !== true/);
+  assert.doesNotMatch(s,/foto\.avatar = foto\.retrato\.avatar/);
+  assert.match(s,/retratoPost\(c, false\)/);
 });

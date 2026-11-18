@@ -209,11 +209,32 @@ function petDesenharJanela(x, fase){
 //←petArrumoPersistivel
 // Não substituir um arranjo existente quando o armazenamento falhar temporariamente.
 var petArrumoPersistivel = true;
+//←petArrumoDono
+var petArrumoDono = '';
+//←petArrumoAnterior
+var petArrumoAnterior = null;
+//←petArrumoChave
+function petArrumoChave(){
+  if(typeof contaJ === 'undefined' || !contaJ) return PET_ARRUMO_KEY + ':visitante';
+  var id = typeof contaAuthUserId === 'string' && contaAuthUserId || contaJ.id;
+  return PET_ARRUMO_KEY + (id ? ':id:' + id : ':nick:' + contaJ.nick);
+}
 //←petArrumoLer
 function petArrumoLer(){
-  if(petArrumo) return petArrumo;
+  var chave = petArrumoChave();
+  if(petArrumo && chave === petArrumoDono) return petArrumo;
+  if(petArrumoDono && chave !== petArrumoDono){
+    petArrastando = null;
+    petArrumoAnterior = null;
+    petArrumando = false;
+    petBg = null;
+  }
+  petArrumoDono = chave;
+  petArrumo = null;
+  petArrumoPersistivel = true;
   var bruto = null;
-  try{ bruto = localStorage.getItem(PET_ARRUMO_KEY); }
+  try{ bruto = localStorage.getItem(chave);
+    if(bruto === null) bruto = localStorage.getItem(PET_ARRUMO_KEY); }
   catch(e){ petArrumoPersistivel = false; }
   if(bruto){
     try{
@@ -229,8 +250,8 @@ function petArrumoLer(){
 }
 //←petArrumoSalvar
 function petArrumoSalvar(){
-  if(!petArrumoPersistivel) return;
-  try{ localStorage.setItem(PET_ARRUMO_KEY, JSON.stringify(petArrumoLer())); }
+  if(!petArrumoPersistivel || petArrumoDono !== petArrumoChave()) return;
+  try{ localStorage.setItem(petArrumoDono, JSON.stringify(petArrumoLer())); }
   catch(e){ petArrumoPersistivel = false; }
 }
 //←petArrumoX
@@ -271,8 +292,8 @@ function petArrumoPegar(lx, ly){
 }
 //←petArrumoMover
 function petArrumoMover(lx, ly){
-  var a = petArrastando; if(!a) return;
   var A = petArrumoLer();
+  var a = petArrastando; if(!a) return;
   if(a.tipo === 'chao'){
     var m = PET_MOVEIS[a.k], cx = Math.round(Math.max(m.min, Math.min(m.max, lx + a.dx)));
     if(petArrumoLivre(a.k, cx)) A.chao[a.k] = cx;
@@ -283,27 +304,45 @@ function petArrumoMover(lx, ly){
 }
 //←petArrumoAbaixo
 function petArrumoAbaixo(lx, ly){
+  var A = petArrumoLer();
   if(!petArrumando) return false;
   petArrastando = petArrumoPegar(lx, ly);
-  if(petArrastando) beep(880, .04, 'triangle', .03);
+  if(petArrastando){
+    var a = petArrastando, valor = A[a.tipo][a.k];
+    a.antes = valor === undefined ? undefined : JSON.parse(JSON.stringify(valor));
+    a.dono = petArrumoDono;
+    beep(880, .04, 'triangle', .03);
+  }
   return true;   // no modo arrumar, o toque não vira carinho nem abre objetos
 }
 //←petArrumoSoltar
 function petArrumoSoltar(){
-  if(!petArrastando) return false;
-  petArrastando = null; petArrumoSalvar(); beep(660, .05, 'triangle', .03);
+  var A = petArrumoLer(), a = petArrastando;
+  if(!a) return false;
+  petArrastando = null;
+  if(a.dono === petArrumoDono && JSON.stringify(a.antes) !== JSON.stringify(A[a.tipo][a.k])){
+    petArrumoAnterior = {tipo:a.tipo, k:a.k, antes:a.antes, dono:a.dono};
+    petArrumoSalvar();
+    if(typeof document !== 'undefined'){
+      var b = document.querySelector('[data-k="arrumar-desfazer"]'); if(b) b.disabled = false;
+    }
+  }
+  beep(660, .05, 'triangle', .03);
   return true;
 }
 //←petArrumoModo
 function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no toque
-  petArrumando = !!on; petArrastando = null;
+  petArrumoLer();
+  petArrumando = !!on; petArrastando = null; petArrumoAnterior = null;
   if(!on) petArrumoSalvar();
   if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';
 }
 //←petArrumoPadrao
 function petArrumoPadrao(){
+  petArrumoLer();
   // Reposição padrão é uma ação explícita; não sobrescrever dados ilegíveis.
   if(!petArrumoPersistivel) return;
+  petArrumoAnterior = null;
   petArrumo = {v:1, chao:{}, parede:{}}; petArrumoSalvar(); petBg = null;
 }
 //←petArrumoDesenhar
@@ -679,8 +718,20 @@ function petCartaComFoto(lista){
   var nomes = typeof hsNomesLivres === 'function' ? hsNomesLivres() : PET_CARTA_FAS;
   if(!nomes.length) nomes = PET_CARTA_FAS;
   var h = petCartaHash(m.id), pet = petAtivo();
+  var textoStudio = '';
+  if(m.tipo === 'studio'){
+    var flores = {
+      pt:['Amei sua foto no Studio!','O ramo de sakura ficou lindo na sua foto!','A tulipa rosa ficou linda na sua foto!','O girassol ficou lindo na sua foto!','A flor lunar ficou linda na sua foto!'],
+      en:['I loved your Studio photo!','The cherry blossoms look lovely in your photo!','The pink tulip looks lovely in your photo!','The sunflower looks lovely in your photo!','The lunar flower looks lovely in your photo!'],
+      es:['¡Me encantó tu foto del Studio!','¡El ramo de sakura quedó precioso en tu foto!','¡El tulipán rosa quedó precioso en tu foto!','¡El girasol quedó precioso en tu foto!','¡La flor lunar quedó preciosa en tu foto!'],
+      id:['Aku suka foto Studiomu!','Bunga sakura terlihat cantik di fotomu!','Tulip pink terlihat cantik di fotomu!','Bunga matahari terlihat cantik di fotomu!','Bunga bulan terlihat cantik di fotomu!'],
+      th:['ชอบรูปในสตูดิโอของเธอจัง!','ซากุระในรูปของเธอสวยจัง!','ทิวลิปสีชมพูในรูปของเธอสวยจัง!','ทานตะวันในรูปของเธอสวยจัง!','ดอกไม้จันทราในรูปของเธอสวยจัง!'],
+      ja:['スタジオの写真、素敵だったよ！','桜が写真にぴったりだったよ！','ピンクのチューリップが写真にぴったりだったよ！','ひまわりが写真にぴったりだったよ！','月の花が写真にぴったりだったよ！']
+    };
+    textoStudio = (flores[LANG] || flores.pt)[['sakura','tulipa','girassol','lunar'].indexOf(m.especie) + 1];
+  }
   lista.unshift({id:'foto:' + m.id, dia:petCartaDia(0), tema:'foto', momento:m.id, rotulo:m.rotulo,
-    texto:tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet).split('{p}').join(pet ? pet.nome : ''),
+    texto:(textoStudio || (m.tipo === 'karaoke' ? PET_CARTA_PALCO[LANG] || PET_CARTA_PALCO.pt : tr(PET_CARTA_FOTO_TEXTOS[m.tipo] || PET_CARTA_FOTO_TEXTOS.pet))).split('{p}').join(m.nomePet || (pet ? pet.nome : '')),
     fa:nomes[(h >>> 3) % nomes.length], selo:'📸', nova:petCartasLidas().indexOf('foto:' + m.id) < 0});
 }
 //←petCartaFotoRender
@@ -745,6 +796,12 @@ function petPhoneFotoLimpar(){
   petPhoneFotoUrl = ''; petPhoneFotoDono = ''; petPhoneFotoErro = '';
 }
 //←petPhoneMomentosHtml
+//←PET_FOTO_QUADRO
+var PET_FOTO_QUADRO = {
+  pt:['Colocar no Camarim','Retirar do porta-retrato'],en:['Put in the dressing room','Remove from the frame'],
+  es:['Colocar en el camerino','Quitar del portarretrato'],id:['Taruh di ruang ganti','Lepas dari bingkai'],
+  th:['วางในห้องแต่งตัว','นำออกจากกรอบรูป'],ja:['楽屋に飾る','写真立てから外す']
+};
 function petPhoneMomentosHtml(){
   petPhoneMomentosConferir();
   var escolhida = petPhoneMomentos.find(function(f){ return f.id === petPhoneMomentoSelecionado && f.dono === petPhoneFotoChave(); });
@@ -752,6 +809,8 @@ function petPhoneMomentosHtml(){
   if(escolhida) return '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid petphone-momento-' + escolhida.tipo + '">' +
     '<img id="petPhoneMomentoImagem" alt="' + escHtml(escolhida.rotulo) + '"><figcaption>✦ ' + escHtml(escolhida.rotulo) + ' ✦</figcaption></figure>' +
     '<a id="petPhoneMomentoBaixar" download="tsulipa-momento.png">⬇️ ' + escHtml(petPhoneMomentoTexto(5)) + '</a>' +
+    '<button type="button" data-phone="momento-quadro">' +
+    escHtml((PET_FOTO_QUADRO[LANG] || PET_FOTO_QUADRO.pt)[petVidaFotoFixada === escolhida.id ? 1 : 0]) + '</button>' +
     '<button type="button" data-phone="momento-voltar">‹ ' + escHtml(petPhoneMomentoTexto(8)) + '</button>' +
     '<p class="petphone-photo-ajuda">' + escHtml(petPhoneMomentoTexto(6)) + '</p></section>';
   if(!petPhoneMomentos.length) return '<section class="petphone-fotos-espera"><div class="petphone-fotos-ilustra" aria-hidden="true"><span>🏁</span><span>🐾</span><span>🌙</span></div><strong>' + escHtml(petPhoneMomentoTexto(3)) + '</strong><p>' + escHtml(petPhoneMomentoTexto(4)) + '</p></section>';
@@ -787,6 +846,24 @@ function petPhoneMomentoAbrir(id){
   petPhoneMomentoSelecionado=id;petPhoneRender();
   var corpo=$('petPhoneCorpo');if(corpo)corpo.scrollTop=0;
   var voltar=document.querySelector('#petPhoneCorpo [data-phone="momento-voltar"]');if(voltar)voltar.focus();
+  return true;
+}
+//←petPhoneMomentoQuadro
+function petPhoneMomentoQuadro(){
+  if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'momentos') return false;
+  petPhoneMomentosConferir();
+  var dono = petPhoneFotoChave(), id = petPhoneMomentoSelecionado;
+  if(!petPhoneContaChave() || !petPhoneMomentos.some(function(f){return f.id === id && f.dono === dono;})) return false;
+  if(petVidaFotoFixada === id){
+    petVidaFotoFixada = '';
+    petPhoneRender();
+    var botao = document.querySelector('[data-phone="momento-quadro"]');
+    if(botao) botao.focus();
+  }else{
+    petVidaFotoFixada = id;
+    petVidaRetornoInicio = petT;
+    petPhoneFechar();
+  }
   return true;
 }
 //←petPhoneMomentoVoltar
@@ -1418,12 +1495,18 @@ function petDecorReacao(x, k, cfg, t, ativo){
   if(!alvo) return false;
   var u = (fase - 350) / 140, alfa = Math.min(1, u * 8, (1 - u) * 8);
   var it = alvo.item, jeito = alvo.jeito;
-  var origemX = it[3] + it[5] / 2, origemY = it[4] + it[6] / 2;
+  var pos = petArrumoQuadro(it);
+  var origemX = pos[0] + it[5] - 2, origemY = pos[1] + 2;
   var passo = jeito === 'tsu' ? Math.abs(Math.sin(u * 13)) * 5 :
     jeito === 'pati' ? Math.sin(u * 11) * 3 : 0;
   x.save(); x.globalAlpha = alfa; x.textAlign = 'center';
   x.fillStyle = jeito === 'lirika' ? '#b8f2ba' : jeito === 'pati' ? '#b7ddff' : '#ffe47c';
   x.font = jeito === 'tsu' ? '17px sans-serif' : '13px sans-serif';
+  // Reflexo na moldura acompanha o quadro enquanto a faísca viaja até o Pet.
+  x.save(); x.translate(origemX, origemY); x.scale(1 - .5*u, 1 - .5*u);
+  x.beginPath(); x.moveTo(0,-5); x.lineTo(1.3,-1.3); x.lineTo(4.5,0);
+  x.lineTo(1.3,1.3); x.lineTo(0,5); x.lineTo(-1.3,1.3); x.lineTo(-4.5,0); x.lineTo(-1.3,-1.3);
+  x.closePath(); x.fill(); x.restore();
   x.fillText('✦', origemX + (PET_X - 18 - origemX) * u,
     origemY + (PET_FLOOR - 60 - origemY) * u - passo);
   if(jeito === 'pati' && petPreferenciaAtividade(k,cfg,'explorar')){ x.font = '11px sans-serif';
@@ -1542,6 +1625,7 @@ function petVidaLembrancaToque(lx, ly){
   if(ly < y-26 || ly >= y || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function') return '';
   var local = lx - petArrumoDx('estante');
+  if(petVidaFotoFixada && Math.abs(local-PET_VIDA_PRATELEIRA.foto.x) < PET_VIDA_PRATELEIRA.foto.r) return 'foto';
   var item = TWVidaCidade.objetosCamarim().find(function(a){
     var p = PET_VIDA_PRATELEIRA[a.tipo];
     return Math.abs(local-p.x) < p.r;
@@ -1552,6 +1636,12 @@ function petVidaLembrancaToque(lx, ly){
 function petVidaFotoAtual(){
   petPhoneMomentosConferir();
   var momento = petPhoneContaChave() ? petCartaFotoMomento() : null;
+  if(petVidaFotoFixada === '') momento = null;
+  if(petVidaFotoFixada){
+    var dono = petPhoneFotoChave();
+    momento = petPhoneMomentos.find(function(f){return f.id === petVidaFotoFixada && f.dono === dono;});
+    if(!momento) petVidaFotoFixada = '';
+  }
   var url = momento && (momento.miniUrl || momento.url) || '';
   if(!/^(blob:|data:image\/png;base64,)/.test(url)) url = '';
   if(url !== petVidaFotoUrl){
@@ -1564,7 +1654,7 @@ function petVidaFotoAtual(){
 //←petVidaOlharLembranca
 function petVidaOlharLembranca(t, inicio, livre){
   if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
-    !TWVidaCidade.objetosCamarim().length) return 0;
+    !TWVidaCidade.objetosCamarim().length && !petVidaFotoFixada) return 0;
   var fase = (t-inicio) % 720;
   if(fase < 180 || fase >= 290) return 0;
   var u = (fase-180)/110;
@@ -1588,7 +1678,7 @@ function petVidaLembrancaReacao(olhar){
   if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function')return null;
   var itens=TWVidaCidade.objetosCamarim();
-  var foto=itens.some(function(a){return a.tipo==='foto';}) && !!petVidaFotoAtual();
+  var foto=(petVidaFotoFixada || itens.some(function(a){return a.tipo==='foto';})) && !!petVidaFotoAtual();
   var flor=itens.some(function(a){return a.tipo==='flor';});
   var tipo=foto?'foto':flor?'flor':'';
   if(!tipo)return null;
@@ -1609,6 +1699,7 @@ function petVidaLembrancaBrilho(x,olhar){
 function petVidaLembrancaCenario(x){
   if(typeof TWVidaCidade==='undefined'||typeof TWVidaCidade.objetosCamarim!=='function')return false;
   var objetos=TWVidaCidade.objetosCamarim();
+  if(petVidaFotoFixada && !objetos.some(function(a){return a.tipo==='foto';})) objetos = objetos.concat({tipo:'foto'});
   if(!objetos.length)return false;
   var fotoReal=petVidaFotoAtual();
   var dx=typeof petArrumoDx==='function'?petArrumoDx('estante'):0;
@@ -2589,8 +2680,10 @@ function petDecorMenuUI(m){
   var d = petData.decor || {};
   m.hidden = false;
   if(petArrumando){
+    var undo = {pt:'Desfazer último movimento',en:'Undo last move',es:'Deshacer último movimiento',id:'Urungkan gerakan terakhir',th:'เลิกทำการย้ายล่าสุด',ja:'最後の移動を元に戻す'};
     m.innerHTML = '<p class="petarrumo-dica">✋ ' + escHtml(tr('Arraste os móveis pelo chão e os quadros pela parede.')) + '</p>' +
       '<button type="button" data-k="arrumar-pronto">✅ <b>' + escHtml(tr('Pronto, arrumado!')) + '</b></button>' +
+      '<button type="button" data-k="arrumar-desfazer"' + (petArrumoAnterior ? '' : ' disabled') + '>↶ <b>' + escHtml(undo[LANG] || undo.pt) + '</b></button>' +
       '<button type="button" data-k="arrumar-padrao">↺ <b>' + escHtml(tr('Arrumação original')) + '</b></button>';
     return;
   }
@@ -2605,6 +2698,12 @@ function petDecorMenuUI(m){
 //←petDecorClick
 function petDecorClick(k){
   if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
+  if(k === 'arrumar-desfazer'){
+    var A = petArrumoLer(), a = petArrumoAnterior;
+    if(!petArrumando || petArrastando || !a || a.dono !== petArrumoDono) return;
+    if(a.antes === undefined) delete A[a.tipo][a.k]; else A[a.tipo][a.k] = a.antes;
+    petArrumoAnterior = null; petBg = null; petArrumoSalvar(); petUI(); return;
+  }
   if(k === 'arrumar-padrao'){
     if(typeof window.confirm === 'function' && !window.confirm(tr('Restaurar posições padrão dos móveis e quadros?'))) return;
     petArrumoPadrao(); petUI(); return;

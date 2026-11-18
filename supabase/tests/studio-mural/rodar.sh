@@ -49,3 +49,35 @@ ok "$(r $C "select public.studio_curtir($IDA)->>'erro'")" post "não curte post 
 ok "$($P -c "select count(*) from public.star_log")" 0 "mural não mexe em ★"
 ok "$($P -c "select has_function_privilege('anon','public.studio_mural()','execute')")" f "anon não lê o mural"
 echo "OK: Mural do Photo⭐Studio! testado em PostgreSQL isolado"
+
+# Opt-in: proposta Memórias Eternas. Banco descartável criado acima, nunca Supabase.
+if [ "${1:-}" = "--memorias" ]; then
+  $P <<'SQL' >/dev/null
+alter table public.players add column visuais text[] not null default '{}'::text[],
+  add column best integer not null default 0,
+  add column nuvem_pet jsonb not null default '{}'::jsonb;
+create function public.eh_admin() returns boolean language sql stable as $$ select false $$;
+create function public.visual_preco(k text) returns table(preco integer) language sql stable as
+$$ select 320 where k='roupa_rock' union all select 60 where k='expr_4' $$;
+SQL
+  $P -f ../../sql/aplicado/20261115_studio_tema_semana.sql >/dev/null
+  $P -f ../../sql/proposta/20261117_studio_memorias_eternas.sql >/dev/null
+  ok "$($P -c "select count(*) from private.studio_mural where retrato is not null")" 0 "sem backfill nos posts antigos"
+  ok "$(r $B "select public.studio_capa()->>'nick'")" Ana "capa antiga preservada"
+  FOTO='{"fundo":"rosa","pose":"v","luz":"suave","quadro":"meio","objeto":"nenhum","retrato":{"v":1,"tempo":123.45,"avatar":{"c":{"hair":"#ff7eb6","skin":"#f1c9a5","out":"rock","email":"nao-gravar"},"a":"","expr":4,"token":"nao-gravar"}}}'
+  ok "$(r $B "select public.studio_publicar('$FOTO')->>'erro'")" visual_nao_comprado "figurino pago sem posse rejeitado"
+  $P -c "update public.players set visuais=array['roupa_rock','expr_4'] where id='$B'" >/dev/null
+  IDF=$(r $B "select public.studio_publicar('$FOTO')->>'id'")
+  [ -n "$IDF" ] || exit 1
+  ok "$($P -c "select retrato#>>'{avatar,c,hair}' from private.studio_mural where id=$IDF")" '#ff7eb6' "figurino do clique"
+  ok "$($P -c "select (retrato::text like '%nao-gravar%') from private.studio_mural where id=$IDF")" f "sem atributos privados"
+  $P -c "update public.players set avatar='{\"c\":{\"hair\":\"#00ff00\",\"out\":\"outro\"}}' where id='$B'" >/dev/null
+  ok "$(r $B "select public.studio_mural()->0->'retrato'->'avatar'->'c'->>'hair'")" '#ff7eb6' "Mural próprio mantém cabelo anterior"
+  ok "$(r $C "select public.studio_mural()->0->'avatar'->'c'->>'out'")" rock "Mural alheio mantém roupa anterior"
+  ok "$(r $B "select public.studio_publicar('$FOTO')->>'erro'")" ja_publicou "um post por dia"
+  ok "$(r $C "select public.studio_curtir($IDF)->>'coracoes'")" 1 "corações preservados"
+  $P -c "update private.dia_teste set d='2026-11-24'" >/dev/null
+  ok "$(r $C "select public.studio_capa()->'retrato'->'avatar'->'c'->>'out'")" rock "capa mantém figurino histórico"
+  ok "$($P -c "select has_function_privilege('anon','public.studio_publicar(jsonb)','execute')")" f "anon não publica"
+  echo "OK: Memórias Eternas testadas em PostgreSQL isolado"
+fi

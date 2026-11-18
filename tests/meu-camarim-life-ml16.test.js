@@ -42,7 +42,7 @@ test('ML1.6: móveis só deslizam no chão, sem sobrepor, e ficam só no aparelh
   ctx.petArrumoMover(999, 140);                        // limite entre o sofá e a arara
   assert.ok(ctx.petArrumoX('mesa') <= ctx.PET_MOVEIS.mesa.max);
   ctx.petArrumoSalvar();
-  assert.ok(store.tw_camarim_arrumacao, 'chave própria');
+  assert.ok(store['tw_camarim_arrumacao:visitante'], 'chave própria');
   assert.doesNotMatch(fatia(pet, 'var PET_ARRUMO_KEY', 'function petArrumoDesenhar('), /petSave\(|contaRpc\(|brs48cr_pet/, 'fora do save sincronizado do Pet');
   assert.match(pet, /x\.translate\(petArrumoDx\('mesa'\), 0\)/);
   assert.match(pet, /x\.translate\(petArrumoDx\('estante'\), 0\)/);
@@ -79,7 +79,7 @@ test('ML1.6: Look do dia muda por dia, usa a cor da roupa e guarda a polaroid no
   assert.ok(rosa(ctx.shopHsl('#ff8fc8')) && !rosa(ctx.shopHsl('#8fd3ff')));
   assert.ok(noite(ctx.shopHsl('#1d2450')));
   assert.match(shop, /petPhoneMomentoGuardar\('look', url\)/);
-  assert.match(pet, /\['pet','center','duo','look'\]\.indexOf\(tipo\)/);
+  assert.match(pet, /\['pet','center','duo','look','studio'\]\.indexOf\(tipo\)/);
   assert.doesNotMatch(fatia(shop, 'var SHOP_LOOKS', 'function shopProvador('), /contaRpc\(|localStorage|starT/);
 });
 
@@ -99,4 +99,44 @@ test('Perfil aberto pela vitrine/busca volta para a página principal, não para
 test('ML1.7: celular tem som ao abrir, fechar, trocar de app, voltar, tocar e abrir carta', () => {
   for(const k of ['abrir', 'fechar', 'app', 'voltar', 'toque', 'carta']) assert.match(pet, new RegExp("petPhoneSom\\('" + k + "'\\)"), k);
   assert.match(pet, /if\(typeof beep !== 'function' \|\| !PET_PHONE_SONS\[k\]\) return;/, 'usa o beep do jogo (que respeita o mudo)');
+});
+
+test('arrumação antiga continua visível e as próprias mudanças sobrevivem à troca de conta e recarga', () => {
+  const original = JSON.stringify({v:1, chao:{}, parede:{zipper:[80,45]}});
+  const store = {tw_camarim_arrumacao:original};
+  const c = arrumo(store);
+  c.contaJ = {id:'A'};
+  c.petArrumoLer().parede.zipper = [100,60];
+  c.petArrumoSalvar();
+  c.contaJ = {id:'B'};
+  assert.deepEqual(Array.from(c.petArrumoLer().parede.zipper), [80,45]);
+  c.petArrumoLer().parede.zipper = [150,55];
+  c.petArrumoSalvar();
+  c.contaJ = null;
+  assert.deepEqual(Array.from(c.petArrumoLer().parede.zipper), [80,45]);
+  const voltou = arrumo(store);
+  voltou.contaJ = {id:'A'};
+  assert.deepEqual(Array.from(voltou.petArrumoLer().parede.zipper), [100,60]);
+  assert.equal(store.tw_camarim_arrumacao, original);
+});
+
+test('Studio guarda somente a espécie permitida e carta comenta o último Momento', () => {
+  assert.match(pet, /tipo === 'studio' && \['sakura','tulipa','girassol','lunar'\]\.indexOf\(especie\) >= 0/);
+  assert.match(pet, /A tulipa rosa ficou linda na sua foto!/);
+});
+test('Arrumar permite desfazer somente o último movimento da mesma conta', () => {
+  const ctx = {localStorage:{getItem:()=>null,setItem(){}},petData:null,PET_DECOR:[],Math,JSON,beep(){},petUI(){}};
+  vm.runInNewContext(fatia(pet, 'var PET_ARRUMO_KEY', 'function petArrumoDesenhar('),ctx);
+  ctx.contaJ={id:'A'}; ctx.petArrumoModo(true);
+  ctx.petArrumoAbaixo(200,150); ctx.petArrumoMover(240,150); ctx.petArrumoSoltar();
+  assert.equal(ctx.petArrumoX('estante'),240);
+  assert.equal(ctx.petArrumoAnterior.k,'estante');
+  const click = pet.slice(pet.indexOf('function petDecorClick('));
+  vm.runInNewContext(click.slice(0,click.indexOf('\n}'))+'\n}',ctx);
+  ctx.petDecorClick('arrumar-desfazer');
+  assert.equal(ctx.petArrumoX('estante'),200);
+  assert.equal(ctx.petArrumoAnterior,null);
+  ctx.petArrumoAbaixo(200,150); ctx.petArrumoMover(240,150); ctx.petArrumoSoltar();
+  ctx.contaJ={id:'B'}; ctx.petArrumoLer();
+  assert.equal(ctx.petArrumoAnterior,null);
 });

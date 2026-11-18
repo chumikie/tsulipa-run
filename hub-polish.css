@@ -466,7 +466,8 @@ html body .bloomp .bloompick>b{display:block;color:#3c2a8f;font-size:14px;margin
 .bloomseed[disabled]{opacity:.45;cursor:default}
 .bloomnao{margin-top:8px;background:none;border:0;color:#7b62b8;font:inherit;font-weight:800;font-size:12.5px;text-decoration:underline;cursor:pointer;min-height:36px;padding:4px 12px}
 .bloomvasos{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.bloomvasos span{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;background:#fff;border:2px solid #eadcff;border-radius:16px;padding:8px 8px 7px}
+.bloomvasos :is(span,button){display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;background:#fff;border:2px solid #eadcff;border-radius:16px;padding:8px 8px 7px}
+.bloomvasos button{cursor:pointer;font:inherit}
 .bloomvasos .bloomic{width:44px;height:44px}
 html body .bloomp .bloomvasos b{font-size:14px;color:#3c2a8f}
 html body .bloomp .bloomvasos small{font-size:11px;font-weight:800;color:#8b7bb8}

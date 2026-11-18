@@ -216,3 +216,15 @@ momentoFoto={url:'blob:foto-local'};
 assert.ok(fotoCtx.petVidaFotoAtual());
 contaFoto='';
 assert.equal(fotoCtx.petVidaFotoAtual(),null);
+
+// A seleção vence a foto mais recente e é validada pelo dono antes do desenho.
+contaFoto='idol-a';
+fotoCtx.petPhoneFotoChave=()=>contaFoto;
+fotoCtx.petPhoneMomentos=[{id:'ensaio',dono:'idol-a',url:'blob:ensaio'},{id:'nova',dono:'idol-a',url:'blob:nova'}];
+momentoFoto=fotoCtx.petPhoneMomentos[1];
+fotoCtx.petVidaFotoFixada='ensaio';
+assert.equal(fotoCtx.petVidaFotoAtual().src,'blob:ensaio');
+contaFoto='idol-b';
+assert.equal(fotoCtx.petVidaFotoAtual(),null);
+contaFoto='idol-a';
+assert.equal(fotoCtx.petVidaFotoAtual(),null,'retirar a fotografia não reexibe a mais recente');

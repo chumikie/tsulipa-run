@@ -191,3 +191,21 @@ jobs:
           path: /tmp/telas-browser
           if-no-files-found: warn
           retention-days: 5
+
+  webkit-continuidade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preparar WebKit
+        run: |
+          npm install --prefix /tmp/continuidade --no-save playwright
+          /tmp/continuidade/node_modules/.bin/playwright install --with-deps webkit
+      - name: Conferir troca de conta, foto VIP e recuperação de telas
+        env:
+          TW_BROWSER: webkit
+          NODE_PATH: /tmp/continuidade/node_modules
+        run: node tests/continuidade.browser.cjs

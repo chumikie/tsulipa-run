@@ -40,9 +40,9 @@ test('jogar de verdade (RPC de fim de partida) conta; o arquivo não chama nenhu
 });
 
 function escolher(c,ev,logado=true){
-  c.H.desejo();const e=JSON.parse(c.mem.brs48cr_humor_v1);
+  c.H.desejo();const chave='brs48cr_humor_v1:'+(logado?'nick:Teste':'visitante');const e=JSON.parse(c.mem[chave]);
   e.desejo.k=ev==='frase'?'oi':ev;e.desejo.ev=ev;e.desejo.feito=false;e.desejo.logado=logado;
-  c.mem.brs48cr_humor_v1=JSON.stringify(e);
+  c.mem[chave]=JSON.stringify(e);
 }
 test('abrir qualquer destino não cumpre desejo nem altera humor, VIP ou recados',()=>{
   for(const logado of [true,false]) for(const ev of ['run','karaoke','sora','cafe','battle','studio','handshake','bloom','mapa','frase']){

@@ -56,6 +56,13 @@
       var b = e.target.closest && e.target.closest('[data-bloom]'); if(!b || ocupado) return;
       var c = +b.getAttribute('data-c'), a = b.getAttribute('data-bloom');
       if(a === 'semente'){ escolha = -1; acao('jardim_plantar', {p_canteiro:c, p_semente:b.getAttribute('data-s')}); }
+      else if(a === 'studio' && typeof window.studioAbrir === 'function'){
+        var flor = b.getAttribute('data-s');
+        if(!st || !st.flores || ORDEM.indexOf(flor) < 0 || !(+st.flores[flor] > 0)) return;
+        var dono = typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : contaJ && (contaJ.id || contaJ.nick);
+        fechar();
+        window.studioAbrir({flor:flor, dono:dono});
+      }
       else if(a === 'cancelar'){ escolha = -1; ui(); }
       else if(a === 'regar-tudo') emSerie('jardim_regar', pendentes(false));
       else if(a === 'colher-tudo') emSerie('jardim_colher', pendentes(true));
@@ -169,7 +176,15 @@
     }
     h += '</ul><p class="bloomdica">' + esc(t('toque')) + ' ' + esc(t('dica')) + '</p><h3>' + esc(t('flores')) + '</h3>';
     var fl = st.flores || {}, tem = ORDEM.filter(function(k){ return +fl[k] > 0; });
-    h += tem.length ? '<div class="bloomvasos">' + tem.map(function(k){ return '<span>' + icone(k, 1) + '<b>×' + (+fl[k]) + '</b><small>' + esc(t(k)) + '</small></span>'; }).join('') + '</div>' : '<p class="bloomdica">' + esc(t('nenhuma')) + '</p>';
+    var foto = {pt:'Fotografar com esta flor',en:'Take a photo with this flower',es:'Fotografiar con esta flor',
+      id:'Berfoto dengan bunga ini',th:'ถ่ายรูปกับดอกไม้นี้',ja:'この花と写真を撮る'};
+    var acaoFoto = foto[typeof LANG === 'string' ? LANG : 'pt'] || foto.pt;
+    h += tem.length ? '<div class="bloomvasos">' + tem.map(function(k){
+      var conteudo = icone(k, 1) + '<b>×' + (+fl[k]) + '</b><small>' + esc(t(k)) + '</small>';
+      if(typeof window.studioAbrir !== 'function') return '<span>' + conteudo + '</span>';
+      return '<button type="button" data-bloom="studio" data-s="' + k + '" aria-label="' +
+        esc(acaoFoto + ' · ' + t(k)) + '"' + dis + '>' + conteudo + '<small>' + esc(acaoFoto) + '</small></button>';
+    }).join('') + '</div>' : '<p class="bloomdica">' + esc(t('nenhuma')) + '</p>';
     corpo.innerHTML = h; icones(); desenhar();
   }
   // Miniaturas: a mesma flor do canteiro, desenhada à mão em cada cartão, semente e vaso.

@@ -169,7 +169,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=42">
+<link rel="stylesheet" href="./hub-polish.css?v=43">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=6"><'+'/script>');</script>
@@ -474,7 +474,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido) pedido = new Promise(function(ok, falhou){
       var script = document.createElement('script');
-      script.src='./tw-mapa.js?v=65';
+      script.src='./tw-mapa.js?v=66';
       script.onload = ok;
       script.onerror = function(){ script.remove(); pedido = null; falhou(new Error('mapa')); };
       document.body.appendChild(script);
@@ -489,13 +489,13 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     else setTimeout(antecipar, 0);
   });
 })();</script>
-<script src="./bloom.js?v=10"></script>
+<script src="./bloom.js?v=11"></script>
 <script src="./shop.js?v=7"></script>
 <script src="./jornal.js?v=27"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=18';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=19';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;

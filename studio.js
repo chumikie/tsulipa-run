@@ -157,7 +157,7 @@
     ov.innerHTML = '<div class="panel studiop tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="studioTit">' +
       '<button type="button" class="perfx tw-window-control tw-window-close" id="studioX" aria-label="✕">✕</button>' +
       '<h2 class="tw-modal-title" id="studioTit"></h2><small class="tw-modal-jp" lang="ja">フォトスタジオ</small>' +
-      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><canvas id="studioCv" width="480" height="680"></canvas><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
+      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas></div><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
     document.body.appendChild(ov);
     ov.addEventListener('click', function(e){
       if(e.target === ov || e.target.id === 'studioX'){ fechar(); return; }
@@ -171,7 +171,16 @@
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
       else if(a === 'guardar') guardar();
-      else if(esc_.hasOwnProperty(a)){ if(a === 'objeto') escolheuObjeto = true; esc_[a] = v; ui(); if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){} }
+      else if(esc_.hasOwnProperty(a)){
+        var tinhaFoco = document.activeElement === b;
+        if(a === 'objeto') escolheuObjeto = true;
+        esc_[a] = v; ui();
+        if(tinhaFoco){
+          var selecionado = ov.querySelector('[data-st="' + a + '"][aria-pressed="true"]');
+          if(selecionado) selecionado.focus({preventScroll:true});
+        }
+        if(typeof beep === 'function') try{ beep(988, .04, 'triangle', .03); }catch(er){}
+      }
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
@@ -264,14 +273,16 @@
   }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
-      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + esc(nomeOpc(tipo, v)) + '</button>'; }).join('') + '</div></div>';
+      return '<button type="button" class="stchip' + (esc_[tipo] === v ? ' on' : '') + '" data-st="' + tipo + '" data-v="' + v + '" aria-pressed="' + (esc_[tipo] === v) + '"' + (ocupado ? ' disabled' : '') + '>' + marca(tipo, v) + '<span>' + esc(nomeOpc(tipo, v)) + '</span><i class="stcheck" aria-hidden="true">✓</i></button>'; }).join('') + '</div></div>';
   }
   function ui(){
     if(!ov) return;
     ov.querySelector('#studioTit').textContent = t('tit');
     var abas = ov.querySelector('#studioAbas'), noMural = aba === 'mural';
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
-    ['#studioPauta','#studioCv','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
+    var visor = ov.querySelector('#studioVisor'), visorAnterior = visor.dataset.fase;
+    visor.dataset.fase = fase;
+    ['#studioPauta','#studioVisor','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
     ov.querySelector('#studioMural').hidden = !noMural;
     if(noMural){ muralUI(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
@@ -295,6 +306,7 @@
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
     c.innerHTML = hh; desenhar();
+    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView) visor.scrollIntoView({block:'nearest'});
   }
   // ---------- Mural da revista (v2) ----------
   function publicar(){

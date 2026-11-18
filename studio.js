@@ -80,9 +80,50 @@
     th:['เก็บในโมเมนต์','เก็บในโมเมนต์แล้ว!'],ja:['思い出に保存','思い出に保存しました！']
   };
   function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : ''; }
+  var PARTILHA = {
+    pt:'No Mural, seu figurino e cenário ficam visíveis para outros Idols. O PNG fica no aparelho.',
+    en:'On the board, other Idols can see your look and scene. The PNG stays on your device.',
+    es:'En el mural, otros Idols pueden ver tu look y escena. El PNG queda en tu dispositivo.',
+    id:'Di papan, Idol lain dapat melihat penampilan dan latarmu. PNG tetap di perangkatmu.',
+    th:'บนบอร์ด ไอดอลคนอื่นจะเห็นชุดและฉากของคุณ ไฟล์ PNG อยู่บนอุปกรณ์ของคุณ',
+    ja:'掲示板では他のアイドルに衣装とシーンが公開されます。PNGは端末に残ります。'
+  };
   function podeGuardar(){ return foto && !foto.guardada && logado() && foto.dono === donoFoto() &&
     typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoGuardar === 'function'; }
   window.TW_STUDIO_ON = true;
+  // Retrato v1: somente dados de desenho, sem nick, ID, saldo, inventário, save ou PNG.
+  function retratoSeguro(r){
+    if(!r || r.v !== 1 || !r.avatar || typeof r.avatar !== 'object' || Array.isArray(r.avatar) ||
+      !r.avatar.c || typeof r.avatar.c !== 'object' || Array.isArray(r.avatar.c) ||
+      typeof r.tempo !== 'number' || !Number.isFinite(r.tempo) || r.tempo < 0 || r.tempo > 31536000) return null;
+    var src = r.avatar, c = {}, av = {c:c};
+    function cor(v){ return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); }
+    function chave(v){ return typeof v === 'string' && /^[a-z0-9_-]{0,32}$/i.test(v); }
+    ['hair','hair2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
+    ['mecha','back','front','det','gl','out','baixo','hat','olho','boca','bochecha','sobrancelha'].forEach(function(k){ if(chave(src.c[k])) c[k] = src.c[k]; });
+    if(typeof src.c.streak === 'boolean') c.streak = src.c.streak;
+    ['a','visual'].forEach(function(k){ if(chave(src[k])) av[k] = src[k]; });
+    if(cor(src.cor)) av.cor = src.cor;
+    if(Number.isInteger(src.expr) && src.expr >= 0 && src.expr <= 6) av.expr = src.expr;
+    var pet = src.pet;
+    if(pet && ['tsu','lirika','pati','meu'].indexOf(pet.k) >= 0){
+      av.pet = {k:pet.k};
+      if(chave(pet.acc)) av.pet.acc = pet.acc;
+      if(typeof pet.bochecha === 'boolean') av.pet.bochecha = pet.bochecha;
+      if(pet.k === 'meu' && pet.cfg && typeof pet.cfg === 'object' && !Array.isArray(pet.cfg)){
+        var cfg = av.pet.cfg = {};
+        ['orelha','olhos','acc'].forEach(function(k){ if(chave(pet.cfg[k])) cfg[k] = pet.cfg[k]; });
+        if(cor(pet.cfg.cor)) cfg.cor = pet.cfg.cor;
+        if(typeof pet.cfg.bochecha === 'boolean') cfg.bochecha = pet.cfg.bochecha;
+      }
+    }
+    return {v:1,avatar:av,tempo:r.tempo};
+  }
+  function retratoPost(post, proprio){
+    var r = retratoSeguro(post && post.retrato);
+    return r ? {avatar:r.avatar,tempo:r.tempo} : {avatar:proprio ? null : (post && post.avatar || {}),tempo:1};
+  }
+  window.TW_STUDIO_RETRATO = {limpar:retratoSeguro, ler:retratoPost};
   function hojeBR(){ return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
   function h(s){ var x = 0; for(var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; }
   function pautaLocal(){ var d = hojeBR(), k = h(d + 'k') % 3, tp = ['luz','quadro','objeto'][k], L2 = {luz:LUZES,quadro:QUADROS,objeto:OBJ.slice(1)}[tp];
@@ -131,6 +172,8 @@
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
+      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
+      if(foto.retrato) foto.avatar = foto.retrato.avatar;
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
@@ -199,6 +242,7 @@
     if(fase === 'foto'){
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
+      if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
         '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
@@ -214,7 +258,11 @@
   // ---------- Mural da revista (v2) ----------
   function publicar(){
     if(!foto || !logado() || foto.dono !== donoFoto()) return; ocupado = true; ui();
-    contaRpc('studio_publicar', {p:foto.escolhas}).then(function(r){
+    var capturada = foto, sess = sessao, dono = foto.dono;
+    var p = Object.assign({}, capturada.escolhas);
+    if(capturada.retrato) p.retrato = capturada.retrato;
+    contaRpc('studio_publicar', {p:p}).then(function(r){
+      if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('studio_publicar',{id:pauta&&pauta.dia});
         publicou = true; mural = null;
@@ -226,7 +274,7 @@
         } else msg = t('publicado'); }
       else if(r && r.erro === 'ja_publicou'){ publicou = true; msg = t('ja'); }
       else msg = t('erro');
-    }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
+    }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } ocupado = false; ui(); });
   }
   function carregarMural(){
     if(!logado()) return; mural = mural || null; muralUI();
@@ -250,14 +298,15 @@
     }).join('') + '</div>';
     box.innerHTML = h;
     [].forEach.call(box.querySelectorAll('canvas[data-stpost]'), function(cv){ var m = mural[+cv.getAttribute('data-stpost')];
-      try{ polaroid(cv, m.escolhas || {}, m.minha ? null : (m.avatar || {}), +m.estrelas || 1, ''); }catch(e){} });
+      var r = retratoPost(m, m.minha);
+      try{ polaroid(cv, m.escolhas || {}, r.avatar, +m.estrelas || 1, '', r.tempo); }catch(e){} });
   }
   // polaroid estática (mural e capa do Idol⭐News!)
-  function polaroid(cv, e, av, est, legenda){
+  function polaroid(cv, e, av, est, legenda, tempo){
     var x = cv.getContext('2d'), W = cv.width, H = cv.height, m = Math.round(W * .05);
     var fw = Math.min(W - 2*m, (H - 5*m) / 1.25), fh = fw * 1.25, left = (W-fw)/2;
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-    x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, 1, av); x.restore();
+    x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, typeof tempo === 'number' ? tempo : 1, av); x.restore();
     x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = Math.round(W * .07) + 'px "Mochiy Pop One",sans-serif';
     x.fillText('⭐'.repeat(est) + '☆'.repeat(3 - est), W / 2, H - m * 2.2);
     if(legenda){ x.font = Math.round(W * .05) + 'px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e'; x.fillText(legenda, W / 2, H - m * .8); }
@@ -398,7 +447,8 @@
       sec.innerHTML = '<h4>📸 ' + esc(t('capa')) + ' · <span translate="no">Photo⭐Studio!</span></h4><canvas width="300" height="375"></canvas>' +
         '<p><b>' + esc(c.nick) + '</b> · ❤️ ' + (+c.coracoes || 0) + (c.fechada ? '' : ' · ' + esc(t('parcial'))) + '</p>';
       painel.insertBefore(sec, painel.firstChild);
-      try{ polaroid(sec.querySelector('canvas'), c.escolhas, c.avatar || {}, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa')); }catch(e){}
+      var r = retratoPost(c, false);
+      try{ polaroid(sec.querySelector('canvas'), c.escolhas, r.avatar, +c.estrelas || 1, 'Idol⭐News! · ' + t('capa'), r.tempo); }catch(e){}
     }).catch(function(){});
   }
   window.studioCapaNews = capaNews;   // o carregador sob demanda chama isto quando o Idol⭐News! abre antes do Studio

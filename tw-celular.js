@@ -427,7 +427,7 @@
     // 1. desejo do dia → Camarim VIP
     if(H){ var d = H.desejo(), vip = H.vipHoje();
       linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
-        d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>',
+        d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>',
         '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
@@ -656,13 +656,14 @@
       '<p class="twc-humor-dica">' + esc(H.t('intro')) + '</p><div class="twc-hbs">' + barras + '</div><details class="twc-humor-dica"><summary>' + esc(H.t('como')) + '</summary>' + H.barras.map(function(b){return '<p><b>' + esc(H.t(b)) + '</b> · ' + esc(H.t(b+'Ajuda')) + '</p>';}).join('') + '<p>' + esc(H.t('efeitos')) + '</p><p>' + esc(H.t('corGuia')) + '</p><p>' + esc(H.t('regra')) + '</p></details>' +
       (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') + (semDesejo ? '</section>' :
       '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(d.ev)] || 'rosa') + '" aria-hidden="true">' + ico(d.feito ? 'check' : desejoIco(d.ev), 22) + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
-        (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.t('ir')) + '</button>') + '</div>' +
+        (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>') + '</div>' +
       '<button type="button" class="twc-vip' + (vip ? ' twc-vip-on' : '') + '" data-a="vip"><span class="twc-vip-coroa" aria-hidden="true">' + ico('coroa', 24) + '</span><span><b>' + esc(t2('vip')) + '</b><small>' + esc(vip ? t2('vipAberto') : t2('vipFechado')) + '</small></span>' +
         (vip ? ico('seta', 18) : '<em class="twc-cad twc-cad-vip" aria-hidden="true">' + ico('cadeado', 13) + '</em>') + '</button></section>');
   }
   function desejoIco(ev){ return ev === 'frase' ? 'fala' : ev; }
   function desejoIr(ev){
     if(ev === 'mapa' || ev === 'frase'){ ir('emb:mapa'); return; }
+    if(ev === 'bloom' && !card('bloom') && typeof window.bloomAbrir === 'function'){ window.bloomAbrir(); return; }
     if(ev === 'battle' && typeof window.battleAbrir === 'function' && !card('battle')){ window.battleAbrir(); return; }
     if(ev === 'studio' && typeof window.studioAbrir === 'function' && !card('studio')){ window.studioAbrir(); return; }
     abrirCard(ev);
@@ -1568,7 +1569,7 @@
       if(window.TW_HUMOR && window.TW_HUMOR.vipHoje()){ ir('dentro:vip'); return; }
       var dz = window.TW_HUMOR ? window.TW_HUMOR.desejo() : null;
       folha.innerHTML = '<div class="twc-folha-caixa" role="dialog" aria-modal="true" aria-labelledby="twcVipT"><p class="twc-folha-ico twc-vip-selo" aria-hidden="true">' + ico('coroa', 34) + '</p><h2 id="twcVipT">' + esc(t2('vip')) + '</h2><p>' + esc(t2('vipComo')) + '</p>' +
-        (dz ? '<p class="twc-folha-desejo"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(dz.ev)] || 'rosa') + '" aria-hidden="true">' + ico(desejoIco(dz.ev), 20) + '</span><b>' + esc(dz.texto) + '</b></p><button type="button" class="twc-btn" data-f="desejoIr" data-ev="' + esc(dz.ev) + '">' + esc(window.TW_HUMOR.t('ir')) + '</button>' : '') +
+        (dz ? '<p class="twc-folha-desejo"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(dz.ev)] || 'rosa') + '" aria-hidden="true">' + ico(desejoIco(dz.ev), 20) + '</span><b>' + esc(dz.texto) + '</b></p><button type="button" class="twc-btn" data-f="desejoIr" data-ev="' + esc(dz.ev) + '">' + esc(window.TW_HUMOR.rotuloRota(dz.ev)) + '</button>' : '') +
         '<button type="button" class="twc-btn twc-btn-claro" data-f="fechar">' + esc(t('agoraNao')) + '</button></div>';
       folha.hidden = false; return;
     }

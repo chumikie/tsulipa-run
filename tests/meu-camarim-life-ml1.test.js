@@ -1006,6 +1006,11 @@ test('ML1: olhar responde somente à lembrança disponível e acompanha a estant
   assert.equal(ctx.petVidaOlharLembranca(220,0,true),0,'reduzir movimento desliga o gesto');
   ctx.window.matchMedia=()=>({matches:false});
   assert.ok(ctx.petVidaOlharLembranca(220,0,true)>0);
+  ctx.petArrumoDx=()=>-30;
+  const perto=ctx.petVidaOlharLembranca(220,0,true,199);
+  ctx.petArrumoDx=()=>50;
+  assert.ok(perto<0);
+  assert.ok(ctx.petVidaOlharLembranca(220,0,true,199)>0,'olha para o outro lado quando a estante cruza o Idol');
   assert.doesNotMatch(pet.slice(pet.indexOf('function petVidaLembrancaReacao('),pet.indexOf('function petVidaLembrancaCenario(')),
     /requestAnimationFrame|setInterval|setTimeout|localStorage|petSave\(|contaRpc/);
 });

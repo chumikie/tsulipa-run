@@ -363,6 +363,7 @@
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
+    marcosDaRua(reduzMov ? 0 : tm);
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);guiaVeus();}
     else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);desenharBichoSemana(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
@@ -1228,6 +1229,51 @@
       ctx.globalAlpha=a*.9;ctx.fillStyle=i%3?'#ffffff':'#fff3a8';ctx.beginPath();
       ctx.moveTo(b[0],b[1]-r);ctx.quadraticCurveTo(b[0]+r*.18,b[1]-r*.18,b[0]+r,b[1]);ctx.quadraticCurveTo(b[0]+r*.18,b[1]+r*.18,b[0],b[1]+r);
       ctx.quadraticCurveTo(b[0]-r*.18,b[1]+r*.18,b[0]-r,b[1]);ctx.quadraticCurveTo(b[0]-r*.18,b[1]-r*.18,b[0],b[1]-r);ctx.fill();});
+    ctx.restore();
+  }
+  // Sinais das três entradas, ancorados na arte e desenhados também em movimento reduzido.
+  function marcosDaRua(tm){
+    if(cena!=='fofo'&&cena!=='harajuku'&&cena!=='arena')return;
+    ctx.save();
+    if(cena==='fofo'){
+      [1208,1300,1392].forEach(function(x,i){
+        ctx.save();ctx.translate(x,491);
+        ctx.rotate(Math.sin(tm*1.8+i)*.08);
+        ctx.fillStyle='#3e805d';ctx.fillRect(-2,-19,4,20);
+        ctx.fillStyle=['#f176a8','#c48cf1','#f2bc53'][i];
+        ctx.beginPath();ctx.moveTo(-13,-35);ctx.quadraticCurveTo(-4,-35,0,-27);
+        ctx.quadraticCurveTo(4,-35,13,-35);ctx.quadraticCurveTo(12,-15,0,-16);
+        ctx.quadraticCurveTo(-12,-15,-13,-35);ctx.fill();
+        ctx.restore();
+      });
+    }else if(cena==='harajuku'){
+      var vitrine=ctx.createLinearGradient(0,362,0,448);
+      vitrine.addColorStop(0,'#86526f');vitrine.addColorStop(1,'#f5bc86');
+      ctx.fillStyle=vitrine;rr(287,362,147,85,9);ctx.fill();
+      ctx.fillStyle='#ffdca2';ctx.fillRect(292,371,137,6);
+      ctx.fillStyle='#91566f';ctx.fillRect(291,426,139,6);
+      [309,352,395].forEach(function(x,i){
+        ctx.fillStyle=['#ffd3e1','#f4faf4','#dfcaff'][i];
+        rr(x,401,21,24,5);ctx.fill();
+        ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=3;ctx.strokeRect(x+18,406,9,10);
+        ctx.fillStyle='#fff3d6';ctx.fillRect(x-3,424,27,3);
+      });
+      ctx.globalAlpha=.23+.08*Math.sin(tm*1.4);
+      ctx.fillStyle='#fffaf0';ctx.beginPath();ctx.moveTo(296,376);ctx.lineTo(319,376);ctx.lineTo(293,422);ctx.closePath();ctx.fill();
+    }else{
+      ctx.fillStyle='#662f9c';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,338,919,410);
+      ctx.lineTo(949,536);ctx.quadraticCurveTo(800,509,651,536);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#fff1b9';ctx.lineWidth=5;ctx.stroke();
+      ctx.fillStyle='#a067d5';
+      for(var i=0;i<3;i++){
+        var degrau=122+i*37;
+        rr(800-degrau/2,489+i*17,degrau,11,3);ctx.fill();
+      }
+      [705,752,800,848,895].forEach(function(x,j){
+        ctx.globalAlpha=.65+.25*Math.sin(tm*2+j*.66);
+        ctx.fillStyle='#ffefa4';ctx.beginPath();ctx.arc(x,385+Math.abs(x-800)*.23,7,0,7);ctx.fill();
+      });
+    }
     ctx.restore();
   }
   // Detalhes vivos de cada rua, discretos (desligados com "reduzir movimento" do sistema)

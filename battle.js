@@ -402,6 +402,21 @@ function desenharMiniaturas(){
  }
  cenaDesenhar();
 }
+var VIRADA_TR = {
+ pt:['{idol} entrou em {rodada} e virou o duelo de {antes} para {agora}.','Em {rodada}, {idol} entrou e o duelo passou de vitória a derrota ({antes} → {agora}).'],
+ en:['{idol} took the {rodada} round and turned {antes} into a {agora} win.','In {rodada}, {idol} stepped in and the round went from a win to a loss ({antes} → {agora}).'],
+ es:['{idol} entró en {rodada} y remontó el duelo de {antes} a {agora}.','En {rodada}, entró {idol} y el duelo pasó de victoria a derrota ({antes} → {agora}).'],
+ id:['{idol} masuk di {rodada} dan membalikkan duel dari {antes} menjadi {agora}.','Di {rodada}, {idol} masuk dan kemenangan berubah menjadi kekalahan ({antes} → {agora}).'],
+ th:['{idol} ลงในรอบ {rodada} และพลิกจาก {antes} เป็น {agora}','รอบ {rodada} เปลี่ยนเป็น {idol} และจากชนะเป็นแพ้ ({antes} → {agora})'],
+ ja:['{rodada}に{idol}が入り、{antes}から{agora}に逆転！','{rodada}は{idol}に交代して勝ちから負けに（{antes} → {agora}）。']
+};
+function viradaRevanche(r,i){
+ var anterior = revanche && revanche[i];
+ if(!anterior || anterior.meu === r.meu || (anterior.eu > anterior.eles) === r.ganhou) return '';
+ var textos = VIRADA_TR[lang()] || VIRADA_TR.pt;
+ var dados = {idol:r.meu,rodada:nomeRound(i),antes:anterior.eu+' × '+anterior.eles,agora:r.eu+' × '+r.eles};
+ return '<strong class="battle-virada">'+esc(textos[r.ganhou?0:1].replace(/\{(\w+)\}/g,function(_,k){return dados[k];}))+'</strong>';
+}
 function render(){
  if(!ov||ov.hidden||!estado)return;
  ov.querySelector('#battleSub').textContent=trB('subtitle');
@@ -438,7 +453,7 @@ function render(){
    texto+='<section class="battle-resultado"><h3>'+esc(cab)+' <span class="battle-placar">'+wins+' × '+losses+'</span></h3>';
    texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
       '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span>'+
-      (revanche ? '<small>'+esc(textoRevanche[2])+' · '+esc(revanche[i].meu)+' '+Number(revanche[i].eu||0)+' : '+Number(revanche[i].eles||0)+'</small>' : '')+'</div>';}).join('')+'</div>';
+      (revanche ? '<small>'+esc(textoRevanche[2])+' · '+esc(revanche[i].meu)+' '+Number(revanche[i].eu||0)+' : '+Number(revanche[i].eles||0)+'</small>' + viradaRevanche(r,i) : '')+'</div>';}).join('')+'</div>';
    texto+=ritmoResultado();
    texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(!revanche&&servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
    '<button type="button" class="btn alt" data-battle="salvar">'+esc(trB('save'))+'</button> '+

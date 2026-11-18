@@ -959,3 +959,5 @@ body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;back
   .twc-pag.twc-cal{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start;gap:14px 18px}
   .twc-pag.twc-emb-mapa{max-width:min(var(--twc-col),calc((100vh - 360px)*1.6))}
 }
+
+.twc .twc-desejo-ir,.twc .twc-hj-bt[data-desejo]{min-height:44px;max-width:136px;white-space:normal;overflow-wrap:anywhere}

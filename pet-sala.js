@@ -1690,13 +1690,16 @@ function petVidaFotoAtual(){
     ? petVidaFotoCache : null;
 }
 //←petVidaOlharLembranca
-function petVidaOlharLembranca(t, inicio, livre){
+function petVidaOlharLembranca(t, inicio, livre, idolX){
   if(!livre || petLifeMovimentoReduzido() || typeof TWVidaCidade === 'undefined' ||
     (!TWVidaCidade.objetosCamarim().length && !(petVidaQuadroLer() || {}).url)) return 0;
   var fase = (t-inicio) % 720;
   if(fase < 180 || fase >= 290) return 0;
   var u = (fase-180)/110;
-  return Math.sin(u*Math.PI)*.022;
+  var alvo = petVidaLembrancaReacao(.022);
+  if(!alvo) return Math.sin(u*Math.PI)*.022;
+  var distancia = alvo.x - (Number.isFinite(idolX) ? idolX : 100);
+  return Math.sin(u*Math.PI)*Math.max(-.055,Math.min(.055,distancia*.00032));
 }
 //←petVidaPetAtencao
 // O Pet acompanha o olhar do Idol para as lembranças: Pucchi se inclina mais e quase para,
@@ -1713,7 +1716,7 @@ function petVidaPetAtencao(k, cfg, olhar, podeReagir){
 // Reage somente à lembrança real da sessão e ao olhar já permitido do Idol.
  // A fotografia não ganha brilho sem uma imagem voluntária da própria conta.
 function petVidaLembrancaReacao(olhar){
-  if(olhar <= 0 || typeof TWVidaCidade === 'undefined' ||
+  if(!olhar || typeof TWVidaCidade === 'undefined' ||
     typeof TWVidaCidade.objetosCamarim !== 'function')return null;
   var itens=TWVidaCidade.objetosCamarim();
   var foto=((petVidaQuadroLer() || {}).url || itens.some(function(a){return a.tipo==='foto';})) && !!petVidaFotoAtual();
@@ -1723,7 +1726,7 @@ function petVidaLembrancaReacao(olhar){
   return {tipo:tipo,
     x:PET_VIDA_PRATELEIRA[tipo].x+petArrumoDx('estante'),
     y:PET_VIDA_PRATELEIRA.y-(tipo==='foto'?27:25),
-    alfa:Math.min(.58,olhar*25)};
+    alfa:Math.min(.58,Math.abs(olhar)*25)};
 }
 //←petVidaLembrancaBrilho
 function petVidaLembrancaBrilho(x,olhar){
@@ -1750,14 +1753,16 @@ function petVidaLembrancaCenario(x){
       if(typeof window.bloomDesenharFlor === 'function') window.bloomDesenharFlor(x,a.flor,0,-19,6);
       else{x.fillStyle='#ffb5d6';x.beginPath();x.arc(0,-19,5,0,Math.PI*2);x.fill();}
     }else if(a.tipo==='foto'){
-      x.rotate(-.04);x.fillStyle='#fff';x.fillRect(-9,-22,18,21);
-      x.fillStyle='#e2caff';x.fillRect(-6,-19,12,13);
+      x.rotate(-.04);
+      x.fillStyle='rgba(67,40,84,.22)';x.fillRect(-11,-2,23,3);
+      x.fillStyle='#633c72';x.fillRect(-10.5,-25,21,24);
+      x.fillStyle='#ffe9bf';x.fillRect(-9,-24,18,21);
+      x.fillStyle='#eee1fa';x.fillRect(-7.5,-22,15,16);
       if(fotoReal){
-        var escala=Math.min(12/fotoReal.naturalWidth,13/fotoReal.naturalHeight);
+        var escala=Math.min(15/fotoReal.naturalWidth,16/fotoReal.naturalHeight);
         var fw=fotoReal.naturalWidth*escala,fh=fotoReal.naturalHeight*escala;
-        x.drawImage(fotoReal,-fw/2,-19+(13-fh)/2,fw,fh);
-      }else{x.fillStyle='#9e76d9';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-9);}
-      x.strokeStyle='#be98d8';x.lineWidth=1;x.strokeRect(-9,-22,18,21);
+        x.drawImage(fotoReal,-fw/2,-22+(16-fh)/2,fw,fh);
+      }else{x.fillStyle='#784a8b';x.font='10px sans-serif';x.textAlign='center';x.fillText('★',0,-10);}
     }
     x.restore();
   });
@@ -1811,7 +1816,8 @@ function petDrawRoom(){
     retornoLembranca ? petVidaRetornoInicio : petLifePoseInicio,
     (petLifePose === 'conviver' || retornoLembranca) && !sleepy && !petAnim && !petLifePhoneOlhar &&
     !petArrumando && !petEmote && !amizade && !idolBrincando && petHop <= 0 && petCharT <= 0 &&
-    petRecepcaoFrames <= 0 && petLove <= 0 && p.fome >= 25 && p.humor >= 25);
+    petRecepcaoFrames <= 0 && petLove <= 0 && p.fome >= 25 && p.humor >= 25,
+    poseDesenho.x + 36);
 
   // Personagem ativo (Tsu, Lirika, Pati ou "Você" com o visual salvo); pula quando é tocado
   // expr 2 reutiliza os olhos fechados/sorriso do avatar, sem trocar olhos ou rosto salvos.

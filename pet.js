@@ -285,14 +285,15 @@ function petPhoneMomentoDisponivel(tipo){
   b.hidden = !petPhoneMomentoFonte;
   b.disabled = false; b.textContent = '💗 ' + petPhoneMomentoTexto(0);
 }
-function petPhoneMomentoGuardar(tipo, url){
-  if(['pet','center','duo','look'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
+function petPhoneMomentoGuardar(tipo, url, especie){
+  if(['pet','center','duo','look','studio'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
   if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
   petPhoneMomentosConferir();
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
-  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐')}[tipo];
+  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐'),studio:'Photo⭐Studio!'}[tipo];
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
   if(tipo === 'pet') entrada.nomePet = petAtivo().nome;
+  if(tipo === 'studio' && ['sakura','tulipa','girassol','lunar'].indexOf(especie) >= 0) entrada.especie = especie;
   petPhoneMomentosDono = dono;
   petPhoneMomentos.push(entrada);
   petPhoneMomentosLimitar();
@@ -1128,7 +1129,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=11',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=12',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

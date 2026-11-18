@@ -79,7 +79,7 @@ test('ML1.6: Look do dia muda por dia, usa a cor da roupa e guarda a polaroid no
   assert.ok(rosa(ctx.shopHsl('#ff8fc8')) && !rosa(ctx.shopHsl('#8fd3ff')));
   assert.ok(noite(ctx.shopHsl('#1d2450')));
   assert.match(shop, /petPhoneMomentoGuardar\('look', url\)/);
-  assert.match(pet, /\['pet','center','duo','look'\]\.indexOf\(tipo\)/);
+  assert.match(pet, /\['pet','center','duo','look','studio'\]\.indexOf\(tipo\)/);
   assert.doesNotMatch(fatia(shop, 'var SHOP_LOOKS', 'function shopProvador('), /contaRpc\(|localStorage|starT/);
 });
 
@@ -118,4 +118,25 @@ test('arrumação antiga continua visível e as próprias mudanças sobrevivem �
   voltou.contaJ = {id:'A'};
   assert.deepEqual(Array.from(voltou.petArrumoLer().parede.zipper), [100,60]);
   assert.equal(store.tw_camarim_arrumacao, original);
+});
+
+test('Studio guarda somente a espécie permitida e carta comenta o último Momento', () => {
+  assert.match(pet, /tipo === 'studio' && \['sakura','tulipa','girassol','lunar'\]\.indexOf\(especie\) >= 0/);
+  assert.match(pet, /A tulipa rosa ficou linda na sua foto!/);
+});
+test('Arrumar permite desfazer somente o último movimento da mesma conta', () => {
+  const ctx = {localStorage:{getItem:()=>null,setItem(){}},petData:null,PET_DECOR:[],Math,JSON,beep(){},petUI(){}};
+  vm.runInNewContext(fatia(pet, 'var PET_ARRUMO_KEY', 'function petArrumoDesenhar('),ctx);
+  ctx.contaJ={id:'A'}; ctx.petArrumoModo(true);
+  ctx.petArrumoAbaixo(200,150); ctx.petArrumoMover(240,150); ctx.petArrumoSoltar();
+  assert.equal(ctx.petArrumoX('estante'),240);
+  assert.equal(ctx.petArrumoAnterior.k,'estante');
+  const click = pet.slice(pet.indexOf('function petDecorClick('));
+  vm.runInNewContext(click.slice(0,click.indexOf('\n}'))+'\n}',ctx);
+  ctx.petDecorClick('arrumar-desfazer');
+  assert.equal(ctx.petArrumoX('estante'),200);
+  assert.equal(ctx.petArrumoAnterior,null);
+  ctx.petArrumoAbaixo(200,150); ctx.petArrumoMover(240,150); ctx.petArrumoSoltar();
+  ctx.contaJ={id:'B'}; ctx.petArrumoLer();
+  assert.equal(ctx.petArrumoAnterior,null);
 });

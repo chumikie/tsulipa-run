@@ -114,30 +114,33 @@ function cfAbrir(){
   if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
 }
 function cfFechar(){ cfOv.hidden = true; cf = null; }
+function cfLembrancaInicial(){
+  var memorias = cfVisitasMemorias(), visita = cf.faEspecial;
+  if(!memorias.length) return null;
+  var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
+  var hoje = new Date(dia * 864e5).toISOString().slice(0,10);
+  return (visita && visita.conta === hsMemChave() && memorias.find(function(m){ return m.nome === visita.nome && m.pres === visita.pres; })) ||
+    memorias.find(function(m){ return m.dia === hoje; }) || memorias[((dia % memorias.length) + memorias.length) % memorias.length];
+}
+function cfIdentificarFa(f, lembranca){
+  if(!lembranca) return f;
+  f.nome = lembranca.nome; f.pres = lembranca.pres;
+  Object.keys(lembranca.c || {}).forEach(function(parte){
+    if(typeof f.c[parte] === 'string' && typeof lembranca.c[parte] === 'string') f.c[parte] = lembranca.c[parte];
+  });
+  if(HS_JEITOS[lembranca.jeito]) f.jeito = lembranca.jeito;
+  f.hsLembranca = lembranca;
+  return f;
+}
+function cfSaudacaoFa(lembranca){
+  var presente = HS_PRESENTES[lembranca.pres];
+  return '<p class="hsdica cfreencontro">💌 <b>' + escHtml(lembranca.nome) + ':</b> “' +
+    escHtml(CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + ' ' +
+    (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
+}
 function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Momorin';
-  var f = hsFa(r, nome);
-  // O primeiro cliente pode ser um fã conhecido do Handshake; pedido e validação continuam intactos.
-  var memorias = cf.atendidos === 0 && typeof hsMemLer === 'function' ? hsMemLer() : [];
-  var conhecidos = typeof hsNomesLivres === 'function' ? hsNomesLivres() : [];
-  memorias = memorias.filter(function(m){ return conhecidos.indexOf(m.nome) >= 0; });
-  if(memorias.length){
-    var visita = cf.faEspecial;
-    var lembranca = visita && visita.conta === (typeof hsMemChave === 'function' ? hsMemChave() : '') ?
-      memorias.find(function(m){ return m.nome === visita.nome && m.pres === visita.pres; }) : null;
-    if(!lembranca){
-      var dia = Math.floor((Date.now() - 3 * 3600e3) / 864e5);
-      var hoje = new Date(dia * 864e5).toISOString().slice(0,10);
-      lembranca = memorias.find(function(m){ return m.dia === hoje; }) ||
-        memorias[((dia % memorias.length) + memorias.length) % memorias.length];
-    }
-    f.nome = lembranca.nome; f.pres = lembranca.pres;
-    if(lembranca.c && typeof lembranca.c === 'object') for(var parte in lembranca.c){
-      if(Object.prototype.hasOwnProperty.call(lembranca.c, parte) && typeof f.c[parte] === 'string' && typeof lembranca.c[parte] === 'string') f.c[parte] = lembranca.c[parte];
-    }
-    if(HS_JEITOS[lembranca.jeito]) f.jeito = lembranca.jeito;
-    f.hsLembranca = lembranca;
-  }
+  var f = cfIdentificarFa(hsFa(r, nome), cf.atendidos === 0 ? cf.primeiroFa || cfLembrancaInicial() : null);
   if(cf.atendidos > 0 && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono && !cf.visitaAlvo && !f.hsLembranca) cf.visitaAlvo = f;
   f.pedido = cfPedido(r, cf.atendidos); f.vaiRoubar = r() < .3; f.roubou = false;
   if(cf.servidor && cf.servidor.pedido) f.pedido = cf.servidor.pedido;
@@ -272,10 +275,10 @@ function cfMissaoHtml(){
   var texto = m.pronta ? textos[0] : textos[1].replace('{n}',m.progresso).replace('{meta}',m.meta);
   return '<p class="cf-missao">' + escHtml(texto) + '</p>';
 }
-function cfBarraPedido(sufixo,fracao){
+function cfBarraPedido(sufixo,fracao,nome){
   var pc = Math.round(Math.max(0,Math.min(1,fracao))*100);
   return '<div class="hstempo cfpac" role="progressbar" aria-label="' +
-    escHtml(tr('Paciência do cliente')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc +
+    escHtml(tr('Paciência do cliente') + (nome ? ' · ' + nome : '')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc +
     '"><b id="cfPacEmo'+sufixo+'" aria-hidden="true">😊</b><i id="cfPac'+sufixo+'" style="width:'+pc+'%"></i></div>';
 }
 function cfRetornoPedido(indice,nome){
@@ -589,12 +592,7 @@ function cfUI(){
       escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>' +
       cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section>';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
-    if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido'){
-      var lembranca = cf.cli.hsLembranca, presente = HS_PRESENTES[lembranca.pres];
-      h += '<p class="hsdica cfreencontro">💌 <b>' + escHtml(cf.cli.nome) + ':</b> “' +
-        escHtml(CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + ' ' +
-        (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
-    }
+    if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido') h += cfSaudacaoFa(cf.cli.hsLembranca);
     if(cf.fase === 'reacao'){
       if(cf.cli.hsLembranca){
         var despedida = CF_DESPEDIDA[LANG] || CF_DESPEDIDA.pt;

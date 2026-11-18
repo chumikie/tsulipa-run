@@ -57,6 +57,9 @@
 .cfduplo-p{min-width:0;padding:3px 5px;border:2px solid transparent;border-radius:10px}
 .cfduplo-p.cf-atendendo{border-color:#8351bb;background:#f4e7ff}
 .cfduplo-p button{inline-size:100%;min-block-size:44px;padding:4px;border:1px solid #c6a5dc;border-radius:8px;background:#fff;color:#432b63;font:inherit;font-size:.83rem;font-weight:800;overflow-wrap:anywhere;cursor:pointer}
+.cfduplo-urgente{display:block;color:#a44919;font-weight:800}
+.cfduplo-urgente[hidden]{display:block;visibility:hidden}
+html:not([data-theme="light"]) .cfduplo-urgente{color:#ffd1a8}
 .cfduplo-p button:disabled{opacity:.58;cursor:default}
 .cfduplo-p button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .cf-rodape{margin-top:6px;box-shadow:0 -4px 15px rgba(72,40,104,.09)}

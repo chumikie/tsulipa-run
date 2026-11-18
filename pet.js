@@ -289,6 +289,9 @@ function petPhoneMomentoDisponivel(tipo){
   b.disabled = false; b.textContent = '💗 ' + petPhoneMomentoTexto(0);
 }
 function petPhoneMomentoGuardar(tipo, url, especie){
+  return !!petPhoneMomentoAdicionar(tipo, url, especie);
+}
+function petPhoneMomentoAdicionar(tipo, url, especie){
   if(['pet','center','duo','look','studio'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
   if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
   petPhoneMomentosConferir();
@@ -302,7 +305,7 @@ function petPhoneMomentoGuardar(tipo, url, especie){
   petPhoneMomentosLimitar();
   if(typeof TWVidaCidade!=='undefined')TWVidaCidade.registrar('foto',{id:entrada.id});
   if(petPhoneOpen && petPhoneTela === 'fotos' && petPhoneFotosAba === 'momentos') petPhoneRender();
-  return true;
+  return entrada.id;
 }
 function petPhoneMomentoGuardarBlob(tipo, blob, mini){
   if(tipo !== 'karaoke' || !contaJ || !petAtivo() || !(blob instanceof Blob) || blob.type !== 'image/png' || !blob.size || blob.size > 10*1024*1024) return false;

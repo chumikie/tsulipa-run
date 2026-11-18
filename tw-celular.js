@@ -429,6 +429,13 @@
       linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
         d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>',
         '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
+    var festival = '';
+    if(typeof jornalFestivalPrazo === 'function' && typeof hubMusicaSemana === 'function'){
+      festival = '<div class="twc-hj-it"><span class="twc-hj-ico twc-g-roxo" aria-hidden="true">' + ico('karaoke', 18) + '</span>' +
+        '<span class="twc-hj-txt"><b>' + esc(tt('Festival de Unidades')) + '</b><small>' +
+        esc(hubMusicaSemana()[1] + ' · ' + jornalFestivalPrazo()) + '</small></span>' +
+        '<button type="button" class="twc-hj-bt" data-a="festival">' + esc(jornalFestivalTexto(0)) + '</button></div>';
+    }
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
@@ -472,7 +479,7 @@
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      lista + '</section>';
+      festival + lista + '</section>';
   }
 
   var ESTREIA_TR = {
@@ -1581,6 +1588,7 @@
   function acao(a, el){
     if(a === 'comecar'){ if(typeof hubComecar === 'function') hubComecar(); return; }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
+    if(a === 'festival'){ if(typeof window.jornalAbrir === 'function') window.jornalAbrir('festival'); return; }
     if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
     if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas

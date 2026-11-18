@@ -64,6 +64,7 @@ function jornalMontar(d){
   return h + jornalAbasHtml(vida, comunidade);
 }
 // Duas abas, sem remover nós do DOM: fotos, ranking, editor e RPCs continuam funcionando.
+var jornalFestivalFoco = false;
 var jornalAba = 'vida', jornalAtividadeCarregada = false;
 function jornalAbasHtml(vida, comunidade){
   return '<div class="jnabas" role="tablist" aria-label="' + escHtml(tr('Seções do Idol⭐News!')) + '">' +
@@ -98,6 +99,11 @@ function jornalAbasIniciar(){
     });
   });
   jornalTrocarAba(jornalAba);
+  if(jornalFestivalFoco){
+    jornalFestivalFoco = false;
+    var festival = $('jornalFestTitulo');
+    if(festival){ festival.focus({preventScroll:true}); festival.scrollIntoView({block:'start'}); }
+  }
   if(typeof jornalCapsUI === 'function') try{ jornalCapsUI(); }catch(e){}
 }
 // Atividade individual: somente o dono da sessão vê o resultado de missoes().
@@ -650,7 +656,8 @@ function jornalCapsCarregar(cb){
 window.jornalCapsCarregar = jornalCapsCarregar;
 function jornalAbrir(aba){
   if(typeof jornalCapsUI !== 'function'){ jornalCapsCarregar(function(){ jornalAbrir(aba); }); }
-  jornalAba = aba === 'comunidade' ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
+  jornalFestivalFoco = aba === 'festival';
+  jornalAba = aba === 'comunidade' || jornalFestivalFoco ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
@@ -770,9 +777,27 @@ function jornalTimesCarregar(){
 }
 // ---------- Festival de Unidades (RPC festival_unidades: proposta 20261103190000_festival_e_ensaio_trio.sql) ----------
 var jornalFest = null;
-function jornalFestHtml(){ return '<section class="jnbloco jntimes"><h4>🎤 ' + escHtml(tr('Festival de Unidades')) + ' <small id="jornalFestMus"></small></h4><div id="jornalFest"></div></section>'; }
+function jornalFestivalTexto(i){
+  var textos = {
+    pt:['Ver placar','Cantar a música da semana','Até sábado, 23h59 (Brasília)'],
+    en:['View standings','Sing the song of the week','Until Saturday, 11:59 pm (Brasília)'],
+    es:['Ver clasificación','Cantar la canción de la semana','Hasta el sábado, 23:59 (Brasilia)'],
+    id:['Lihat peringkat','Nyanyikan lagu minggu ini','Hingga Sabtu, 23.59 (Brasília)'],
+    th:['ดูอันดับ','ร้องเพลงประจำสัปดาห์','ถึงวันเสาร์ 23:59 น. (บราซิเลีย)'],
+    ja:['順位を見る','今週の曲を歌う','土曜23:59まで（ブラジリア時間）']
+  };
+  return (textos[LANG] || textos.pt)[i];
+}
+function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
+function jornalFestivalCantar(){
+  if(!contaJ){ contaEntrar(); return; }
+  jornalFechar();
+  twPreviewAbrirJogo('karaoke', true);
+}
+function jornalFestHtml(){ return '<section class="jnbloco jntimes"><h4 id="jornalFestTitulo" tabindex="-1">🎤 ' + escHtml(tr('Festival de Unidades')) + ' <small id="jornalFestMus"></small></h4><p class="jndica">' + escHtml(jornalFestivalPrazo()) + '</p><button type="button" class="btn alt" id="jornalFestCantar">' + escHtml(jornalFestivalTexto(1)) + '</button><div id="jornalFest"></div></section>'; }
 function jornalFestUI(){
   var box = $('jornalFest'); if(!box) return;
+  var cantar = $('jornalFestCantar'); if(cantar) cantar.onclick = jornalFestivalCantar;
   var mus = typeof hubMusicaSemana === 'function' ? hubMusicaSemana() : null, m = $('jornalFestMus'); if(m && mus) m.textContent = mus[1];
   if(jornalFest === false){ TW_CARGA.erro(box, jornalFestCarregar); return; }
   if(jornalFest === null){ box.innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>'; return; }

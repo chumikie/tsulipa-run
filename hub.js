@@ -1000,7 +1000,7 @@ function twPreviewMontarFundo(){
   if(fundo&&origem)fundo.innerHTML=origem.innerHTML;
 }
 // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
-function twPreviewAbrirJogo(tipo){
+function twPreviewAbrirJogo(tipo, festival){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   var kTime=tipo==='karaoke';   // Karaoke⭐Time! abre todo dia: é jogo solo, sem sala online nem horário
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
@@ -1036,6 +1036,7 @@ function twPreviewAbrirJogo(tipo){
       ((typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
+  if(kTime && festival === true) context += '&festival=1';
   frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-time.html'+context;
   if(kTime){window.scrollTo(0,0);if(location.hash!=='#karaoke'){try{history.pushState({tw:'karaoke'},'','#karaoke');}catch(e){}}}   // voltar do navegador/celular fecha o Karaoke
   var fechar=tipo==='sora'?$('twKaraokePopupFechar'):$('twPreviewVoltar');

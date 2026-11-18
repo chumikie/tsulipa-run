@@ -108,7 +108,7 @@
     ja:'掲示板では他のアイドルに衣装とシーンが公開されます。PNGは端末に残ります。'
   };
   function podeGuardar(){ return foto && !foto.guardada && logado() && foto.dono === donoFoto() &&
-    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoGuardar === 'function'; }
+    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoAdicionar === 'function'; }
   window.TW_STUDIO_ON = true;
   // Retrato v1: somente dados de desenho, sem nick, ID, saldo, inventário, save ou PNG.
   function retratoSeguro(r){
@@ -271,19 +271,21 @@
     if(!podeGuardar() || fase !== 'foto') return;
     try{
       var especie = foto.escolhas.objeto.indexOf('flor_') === 0 ? foto.escolhas.objeto.slice(5) : '';
-      if(!petPhoneMomentoGuardar('studio', fotoUrl(foto), especie)) throw Error('momento');
-      foto.guardada = true; msg = MOMENTOS[L()][1]; ui();
+      var id = petPhoneMomentoAdicionar('studio', fotoUrl(foto), especie);
+      if(!id) throw Error('momento');
+      foto.guardada = id; msg = MOMENTOS[L()][1]; ui();
     }catch(e){ msg = t('erro'); ui(); }
   }
   function studioMomentos(){
     if(!logado() || typeof petAtivo !== 'function' || !petAtivo()) return;
-    var dono = donoFoto(), sess = sessao;
+    var dono = donoFoto(), sess = sessao, id = foto.guardada;
     TW_CARGA.abrir('Backstage⭐Pet!', petSalaCarregar, function(){
       if(!sessaoAtiva(sess, dono)) return;
       petVeioHub = true;
       petOpenUI();
       if(petOpen && petPhoneAbrir('fotos')){
         petPhoneFotosAbaAbrir('momentos');
+        petPhoneMomentoAbrir(id);
         fechar();
       }
     });

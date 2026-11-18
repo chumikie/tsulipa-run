@@ -46,7 +46,8 @@ test('Studio saves and keeps a single clean PNG, independent of the animated vis
   const s = fs.readFileSync(path.join(root,'studio.js'),'utf8');
   assert.match(s,/capturarCena\(capturada\)/);
   assert.match(s,/a\.href = fotoUrl\(foto\)/);
-  assert.match(s,/petPhoneMomentoGuardar\('studio', fotoUrl\(foto\), especie\)/);
+  assert.match(s,/petPhoneMomentoAbrir\(id\)/);
+  assert.match(s,/petPhoneMomentoAdicionar\('studio', fotoUrl\(foto\), especie\)/);
   assert.doesNotMatch(s.slice(s.indexOf('function polaroidLimpa('),s.indexOf('function chips(')),/brilhos\(/);
   let conversions = 0;
   const ctx = {polaroidLimpa:() => ({toDataURL:() => {conversions++;return 'cleanPNG';}})};

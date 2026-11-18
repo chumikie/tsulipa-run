@@ -79,3 +79,14 @@ test('Memórias Eternas: retrato conserva cabelo, roupa, expressão e fase do cl
   assert.doesNotMatch(s,/foto\.avatar = foto\.retrato\.avatar/);
   assert.match(s,/retratoPost\(c, false\)/);
 });
+
+test('Studio controls keep the color sample, name and selected indicator together', () => {
+  const s=fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  const ctx={esc:String,t:String,esc_:{luz:'neon'},ocupado:false,nomeOpc:(_,v)=>v,marca:()=>'<i class="stsw"></i>'};
+  vm.runInNewContext(s.slice(s.indexOf('  function chips('),s.indexOf('  function ui(')),ctx);
+  const html=ctx.chips('luz',['suave','neon']);
+  assert.match(html,/aria-pressed="true"><i class="stsw"><\/i><span>neon<\/span><i class="stcheck" aria-hidden="true">✓/);
+  assert.match(html,/aria-pressed="false"><i class="stsw"><\/i><span>suave/);
+  const css=fs.readFileSync(path.join(root,'hub-polish.css'),'utf8');
+  assert.match(css,/#studioVisor\[data-fase="monta"\][^\{]*\{position:sticky/);
+});

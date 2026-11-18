@@ -10,7 +10,7 @@ assert.match(bloom, /function crescer\(i\)\{ if\(window\.matchMedia && matchMedi
 assert.match(bloom, /planta\(x, cx, by - 16, regasNaTela\(i, c\), tm, 1\.22\)/);
 // Café: a mesma barra de paciência (mesmo tempo), agora com cor, rostinho e rótulo acessível — nos dois modos.
 assert.match(cafe, /function cfPacienciaUI\(bar, pc, emo\)/);
-assert.match(cafe, /role="progressbar" aria-label="' \+ escHtml\(tr\('Paciência do cliente'\)\)/);
+assert.match(cafe, /role="progressbar" aria-label="' \+\s*escHtml\(tr\('Paciência do cliente'\)\)/);
 assert.match(duplo, /cfPacienciaUI\(bar, pc, \$\('cfPacEmo' \+ e\.lado\)\)/);
 // Battle: lightsticks no ritmo só no show e só como contador local.
 const ini = battle.indexOf('function agitar(){'), fim = battle.indexOf('function ritmoDesenhar(');
@@ -23,3 +23,45 @@ assert.match(studio, /function temaSemana\(\)\{ var sem = Math\.floor\(\(Date\.n
 assert.match(studio, /noTema\(m\.escolhas\) \? '<em class="stselo">/);
 for (const f of [bloom, battle, studio]) assert.doesNotMatch(f, /contaRpc\('(jardim_crescer|battle_ritmo|studio_tema)/);
 console.log('jogos novos: jogabilidade ok');
+
+// Usa os cliques delegados e as respostas da partida, sem conexão real.
+(async()=>{
+  const vm=require('node:vm');
+  const pedidos=[{base:0,cob:-1,enf:0,doce:-1},{base:1,cob:0,enf:1,doce:0}];
+  const entregas=[];
+  const corpo={innerHTML:'',querySelector:()=>null};
+  let clique;
+  const ctx={
+    LANG:'pt',contaJ:{id:'cafe-teste'},contaSessaoToken:4,
+    document:{addEventListener:(nome,handler)=>{clique=handler;}},
+    localStorage:{getItem:()=>null,setItem(){}},$:()=>corpo,tr:x=>x,escHtml:String,sfx:null,
+    CF_BASES:[['🍓','Morango'],['🍫','Chocolate']],
+    hsSorteio:()=>()=>0,hsNomesLivres:()=>['Ana','Bia'],hsFa:(_,nome)=>({nome}),hsVisitaPreparar(){},
+    contaRpc(nome,args){
+      if(nome==='cafe_run_iniciar')return Promise.resolve({ok:true,run_id:'turno'});
+      if(nome==='cafe_run_pedidos')return Promise.resolve({ok:true,criados:2,pedidos:pedidos.map((pedido,i)=>({pedido,sessao:String(i),limite_segundos:120}))});
+      if(nome==='cafe_run_etapa2')return new Promise(resolve=>entregas.push({args,resolve}));
+      if(nome==='missoes')return Promise.resolve([{k:'cafe',meta:2,prog:entregas.length}]);
+      assert.fail(nome);
+    }
+  };
+  ctx.window=ctx;
+  vm.runInNewContext(cafe+'\n'+duplo,ctx);
+  const disparar=(chave,i)=>clique({target:{closest:()=>({dataset:{[chave]:String(i)}})},stopPropagation(){}});
+  const tick=()=>new Promise(setImmediate);
+  ctx.cfIniciarSeguro();
+  await tick();
+  assert.match(corpo.innerHTML,/Escolha um fã/);
+  for(const [i,pedido] of pedidos.entries()){
+    disparar('cfdCliente',i);
+    assert.match(corpo.innerHTML,new RegExp('data-cfd-cliente="'+i+'" aria-pressed="true"'));
+    for(const [tipo,valor] of Object.entries(pedido))if(valor>=0)ctx.cfEscolher(tipo,valor);
+    disparar('cfdServir',i);
+    assert.match(corpo.innerHTML,/Confirmando com o servidor/);
+    assert.equal(entregas[i].args.p_sessao,String(i));
+    assert.deepEqual({...entregas[i].args.p_monta},pedido);
+    entregas[i].resolve({ok:true,confirmado:true,certo:true,pontos:100*(i+1),vidas:3,perfeitos:i+1,combo:i+1});
+    await tick();
+    assert.match(corpo.innerHTML,i===0?/1 de 2 pedidos confirmados/:/Missão do Café concluída/);
+  }
+})().catch(e=>{console.error(e);process.exitCode=1;});

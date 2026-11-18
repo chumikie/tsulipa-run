@@ -363,7 +363,7 @@
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,MW,MH);
     ctx.setTransform(1,0,0,1,-OX,-OY);ctx.drawImage(arte,0,0,W,H);
     ceu(reduzMov?0:tm); atmosfera(reduzMov?0:tm); // mesmo horário de Brasília no mundo e nas ruas
-    marcosDaRua(reduzMov ? 0 : tm);
+    if(cena==='mundo')marcosDoMundo();else marcosDaRua(reduzMov ? 0 : tm,cena);
     textosCena(); // depois do céu: à noite as placas ficam acesas, como letreiros
     if(cena==='mundo'){mundoVivo(tm);mundoGente(tm);idols(tm);alertasMundo(tm);guiaVeus();}
     else{detalhes(tm);if(BICHOS[cena]==='gato')desenharBichos(tm);desenharChao(tm);desenharBichoSemana(tm);andar(tm);nomesDasPortas();desenharEtiquetasVisita(tm);desenharDiamantes(tm);desenharFalas();if(BICHOS[cena]!=='gato')desenharBichos(tm);desenharToques(tm);alertasRua(tm);}
@@ -371,7 +371,7 @@
       var bm=BAIRROS[mergulho.id].box,cx=(bm[0]+bm[2])/2,cy=(bm[1]+bm[3])/2,
           u=Math.min(1,(performance.now()-mergulho.t0)/420),e=u*u*(3-2*u),z=1+e*1.6;
       var fx=cx+(MW/2-cx)*e,fy=cy+(MH/2-cy)*e;   // o bairro desliza para o centro enquanto aproxima
-      ctx.setTransform(z,0,0,z,fx-cx*z-OX,fy-cy*z-OY);ctx.drawImage(arte,0,0,W,H);textosCena();
+      ctx.setTransform(z,0,0,z,fx-cx*z-OX,fy-cy*z-OY);ctx.drawImage(arte,0,0,W,H);marcosDoMundo();textosCena();
       ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='rgba(255,255,255,'+(e*.55).toFixed(2)+')';ctx.fillRect(0,0,MW,MH);
       ctx.setTransform(1,0,0,1,-OX,-OY);
       if(!anim)requestAnimationFrame(desenhar);return;
@@ -1231,11 +1231,22 @@
       ctx.quadraticCurveTo(b[0]-r*.18,b[1]+r*.18,b[0]-r,b[1]);ctx.quadraticCurveTo(b[0]-r*.18,b[1]-r*.18,b[0],b[1]-r);ctx.fill();});
     ctx.restore();
   }
+  // As mesmas referências das ruas, em miniatura e sem movimento na visão da cidade.
+  function marcosDoMundo(){
+    [
+      ['fofo',560,821,1300,493,.48],
+      ['harajuku',1119,650,360,404,.35],
+      ['arena',1039,809,800,500,.39]
+    ].forEach(function(m){
+      ctx.save();ctx.translate(m[1],m[2]);ctx.scale(m[5],m[5]);ctx.translate(-m[3],-m[4]);
+      marcosDaRua(0,m[0]);ctx.restore();
+    });
+  }
   // Sinais das três entradas, ancorados na arte e desenhados também em movimento reduzido.
-  function marcosDaRua(tm){
-    if(cena!=='fofo'&&cena!=='harajuku'&&cena!=='arena')return;
+  function marcosDaRua(tm,bairro){
+    if(bairro!=='fofo'&&bairro!=='harajuku'&&bairro!=='arena')return;
     ctx.save();
-    if(cena==='fofo'){
+    if(bairro==='fofo'){
       [1208,1300,1392].forEach(function(x,i){
         ctx.save();ctx.translate(x,491);
         ctx.rotate(Math.sin(tm*1.8+i)*.08);
@@ -1246,7 +1257,7 @@
         ctx.quadraticCurveTo(-12,-15,-13,-35);ctx.fill();
         ctx.restore();
       });
-    }else if(cena==='harajuku'){
+    }else if(bairro==='harajuku'){
       var vitrine=ctx.createLinearGradient(0,362,0,448);
       vitrine.addColorStop(0,'#86526f');vitrine.addColorStop(1,'#f5bc86');
       ctx.fillStyle=vitrine;rr(287,362,147,85,9);ctx.fill();

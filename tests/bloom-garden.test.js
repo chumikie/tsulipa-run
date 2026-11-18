@@ -9,6 +9,12 @@ const ctx={console,Math,window:null,LANG:'pt',performance:{now:()=>0},
   hubCardsUI(){},contaUI(){}};
 ctx.window=ctx;vm.createContext(ctx);vm.runInContext(src,ctx,{filename:'bloom.js'});
 const T=ctx.BLOOM_TR;
+ctx.esc=String;
+const estado=vm.runInContext(src.slice(src.indexOf('var ESTADO_CANTEIRO ='),src.indexOf('  function pendentes('))+'\nestadoCanteiro',ctx);
+assert.match(estado({regas:0,precisa:3}),/Pode regar.*Faltam 3 regas/);
+assert.match(estado({regas:2,precisa:3,regado_hoje:true}),/Volte amanhã.*Falta 1 rega/);
+assert.match(estado({regas:3,precisa:3,regado_hoje:true}),/Pronta para colher/);
+assert.equal(estado(null),'');
 assert.deepEqual(Object.keys(T).sort(),['en','es','id','ja','pt','th']);
 for(const l in T)for(const k in T.pt){assert.ok(T[l][k]&&T[l][k].trim(),l+'.'+k);for(const ph of ['{n}','{m}','{f}'])if(T.pt[k].includes(ph))assert.ok(T[l][k].includes(ph),l+'.'+k+' '+ph);}
 (async()=>{

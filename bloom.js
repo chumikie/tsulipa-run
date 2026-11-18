@@ -99,6 +99,23 @@
       return rpc('jardim_estado').then(function(e){ if(e && e.ok) st = e; });
     }).catch(function(){ msg = t('erro'); }).then(function(){ ocupado = false; ui(); });
   }
+  var ESTADO_CANTEIRO = {
+    pt:['Pode regar','Volte amanhã','Pronta para colher','Falta 1 rega','Faltam {n} regas'],
+    en:['Ready to water','Come back tomorrow','Ready to pick','1 watering left','{n} waterings left'],
+    es:['Puedes regar','Vuelve mañana','Lista para cosechar','Falta 1 riego','Faltan {n} riegos'],
+    id:['Bisa disiram','Kembali besok','Siap dipetik','1 kali siram lagi','{n} kali siram lagi'],
+    th:['รดน้ำได้','กลับมาพรุ่งนี้','พร้อมเก็บ','เหลือรดน้ำ 1 ครั้ง','เหลือรดน้ำ {n} ครั้ง'],
+    ja:['水やりできる','また明日','摘み取りできます','水やりあと1回','水やりあと{n}回']
+  };
+  function estadoCanteiro(c){
+    if(!c) return '';
+    var textos = ESTADO_CANTEIRO[typeof LANG === 'string' ? LANG : 'pt'] || ESTADO_CANTEIRO.pt;
+    var estado = pronta(c) ? 2 : c.regado_hoje ? 1 : 0;
+    var faltam = Math.max(0,Number(c.precisa)-Number(c.regas));
+    return '<div class="bloomestado" data-rega-estado="' + ['pode','amanha','colher'][estado] + '">' +
+      '<strong>' + esc(textos[estado]) + '</strong>' +
+      (faltam ? '<small>' + esc(textos[faltam === 1 ? 3 : 4].replace('{n}',faltam)) + '</small>' : '') + '</div>';
+  }
   function pronta(c){ return !!c && +c.regas >= +c.precisa; }
   // canteiros que podem ser colhidos (true) ou que ainda pedem a rega de hoje (false)
   function pendentes(colher){
@@ -167,11 +184,10 @@
       h += '<li class="bloomcard' + (!c ? ' vazio' : florida ? ' florida' : '') + (escolha === i ? ' sel' : '') + '" data-flor="' + esc(c ? c.semente : '') + '">' +
         icone(c ? c.semente : '', c ? Math.min(1, (+c.regas || 0) / Math.max(1, +c.precisa || 1)) : -1) +
         '<div class="bloomtxt"><small>' + esc(t('cant')) + ' ' + (i + 1) + '</small><b>' + esc(c ? t(c.semente) : t('vazio')) + '</b>' +
-        (c ? (florida ? '<em>' + esc(t('pronta')) + '</em>' : pontos(c) + '<span class="bloomsr">' + esc(t('dia', c.regas, c.precisa)) + '</span>') : '') + '</div>';
+        (c ? pontos(c) : '') + '</div>' + estadoCanteiro(c);
       if(!c) h += '<button type="button" class="btn alt" data-bloom="abrir" data-c="' + i + '"' + dis + '>' + IC.broto + esc(t('plantar')) + '</button>';
       else if(florida) h += '<button type="button" class="btn" data-bloom="colher" data-c="' + i + '"' + dis + '>' + IC.flor + esc(t('colher')) + '</button>';
-      else if(c.regado_hoje) h += '<span class="bloomok">' + esc(t('regado')) + '</span>';
-      else h += '<button type="button" class="btn alt" data-bloom="regar" data-c="' + i + '"' + dis + '>' + IC.gota + esc(t('regar')) + '</button>';
+      else if(!c.regado_hoje) h += '<button type="button" class="btn alt" data-bloom="regar" data-c="' + i + '"' + dis + '>' + IC.gota + esc(t('regar')) + '</button>';
       h += '</li>';
     }
     h += '</ul><p class="bloomdica">' + esc(t('toque')) + ' ' + esc(t('dica')) + '</p><h3>' + esc(t('flores')) + '</h3>';

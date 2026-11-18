@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 18/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 18/11/2026 (tarde).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,9 +19,9 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `32cfd97` (18/11, manhã), publicada na Vercel. Últimos merges: #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke).
-- **PRs abertas:** #112 (Encontro do dia sob demanda + esta reorganização dos documentos), em draft.
-- **CI (7 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `browser-karaoke-room` ×3.
+- **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **PRs abertas:** `feat/news-capitulo-bagunca` (capítulo de domingo da bagunça no Idol⭐News!), em draft.
+- **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
 **Ideia:** um mundo de Idols do TsuLiPa (BRS48). Você monta o seu Idol, joga, ganha estrelas, cuida do pet, decora o camarim, passeia pela cidade e convive com outros jogadores por recados, corações, frases prontas e fotos, sem chat livre.
@@ -51,11 +51,11 @@
 | Sistema | Estado | Próximo passo |
 |---|---|---|
 | Mapa (2 níveis) | Ruas vivas: visitas surpresa do trio, bichinhos, Idols online com frases prontas, salas por dentro | — |
-| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **bicos escondidos** desde a #109 | Capítulo de domingo no Idol⭐News! fechando a bagunça; decidir quando liberar os bicos |
+| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; desfecho no Idol⭐News! todo domingo; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos |
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
-| Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado | Cena sob demanda na #112 |
-| Idol⭐News! | Pódios, capítulos (um por terça); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
+| Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
+| Idol⭐News! | Pódios; capítulos do trio (um por domingo); **"Bagunça da semana · como terminou"** no topo dos capítulos a partir de 22/11 (3 quadros: o bicho apronta, quem resolveu faz o gesto — você ou o trio com os vizinhos —, a rua arrumada; prévia `?bagunca_previa=1`); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
 | Calendário, Fichinhas, Álbum | Só leitura | Dia do aniversário da Lirika (ficha diz só "maio") |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
 | Admin | Moderação, telemetria, Montar Idol; ferramentas baixam só para admin (#110) | — |
@@ -97,8 +97,7 @@
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Merge da #112.
-- Capítulo de domingo da bagunça.
+- Merge da PR do capítulo de domingo; conferir o primeiro desfecho de verdade no domingo 22/11.
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
 - Atualizar `MAPA_DO_CODIGO.md`, que é de 02/11 e não conhece as divisões.
 

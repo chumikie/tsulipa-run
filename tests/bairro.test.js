@@ -174,3 +174,32 @@ test('tela do bairro em tw-bairro-tela.js: baixa só quando precisa; núcleo con
   assert(TELA.includes('B._tela({abrir:abrir, fechar:fechar, toast:toast, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar});') && !SRC.includes('function desenharCena(') && TELA.includes('function desenharCena('), 'tela num lugar só');
   for(const k of ['resolver','pularGuia','ler','bico','bagunca','guia','ruaAberta','t','esc']) assert.equal(typeof B._k[k], 'function', '_k.' + k);
 });
+
+test('desfecho da bagunça para o Idol⭐News! (capítulo de domingo, 18/11)', () => {
+  // antes de 22/11 não há semana encerrada (a bagunça estreou na semana de 15/11)
+  assert.equal(carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 18, 15) }).B.desfecho(), null);
+  // domingo 22/11: conta a semana de 15/11 (Praça, Passarinho), com o gesto do Jardim das Nuvens; é "novo" no domingo
+  const { B } = carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 22, 15) });
+  const d = B.desfecho();
+  assert.equal(d.semana, '2026-11-15'); assert.equal(d.rua, 'praca'); assert.equal(d.bicho, 'passaro'); assert.equal(d.gesto, 'ceu');
+  assert.equal(d.ok, false, 'ninguém resolveu: os vizinhos'); assert.equal(d.novo, true); assert.equal(d.membro, 0);
+  assert(d.quem && d.fez && d.fim && d.ruaNome && d.gestoNome && d.gestoEmoji, 'textos prontos');
+  // na terça seguinte continua sendo o mesmo desfecho, sem o selo de novo; a prévia mostra a semana corrente
+  const ter = carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 24, 15) }).B;
+  assert.equal(ter.desfecho().semana, '2026-11-15'); assert.equal(ter.desfecho().novo, false);
+  assert.equal(ter.desfecho('atual').semana, '2026-11-22'); assert.equal(ter.desfecho('atual').membro, 1, 'o trio reveza a cada semana');
+  // bagunca() continua igual (com sabe/domingo) e baguncaDe() é a mesma rotação
+  assert.deepEqual(Object.keys(ter.bagunca()).sort(), ['bicho','dia','domingo','fez','fim','gesto','ok','quem','rua','sabe','semana']);
+  assert.equal(ter.baguncaDe('2026-11-15').rua, 'praca');
+});
+
+test('Idol⭐News! mostra o desfecho no topo dos capítulos, nos 6 idiomas', () => {
+  const J = fs.readFileSync('jornal-capitulos.js', 'utf8');
+  assert(J.includes('  try{ jnBagUI(box); }catch(e){}   // desfecho da bagunça: entra no topo da caixa\n  jnT1LeitorUI(box);\n}') && J.includes('box.insertBefore(sec, box.firstChild);'), 'jornalCapsUI chama o desfecho, no topo');
+  assert(J.includes("if(cv.closest('.jnbag')){") && J.includes("jnBagDesenhar(hi,+cv.getAttribute('data-jnbag'));"), 'toque amplia o quadro redesenhado');
+  const ini = J.indexOf('var JN_BAG_TX = {'), fim = J.indexOf('\n};', ini), bloco = J.slice(ini, fim);
+  const chaves = bloco.match(/^\s{2}\w+:\{/gm).length;
+  for(const l of ['pt','en','es','id','th','ja']) assert.equal((bloco.match(new RegExp('[{,]' + l + ':', 'g')) || []).length, chaves, 'JN_BAG_TX completo em ' + l);
+  assert(/bagunca_previa=1/.test(J) && J.includes("B.desfecho(previa ? 'atual' : undefined)"), 'prévia pela URL');
+  assert(fs.readFileSync('jornal.js', 'utf8').match(/jornal-capitulos\.js\?v=(\d+)/)[1] >= 13, 'versão do arquivo sob demanda subiu');
+});

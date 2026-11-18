@@ -206,11 +206,28 @@
   function gestosAprendidos(){ return ORDEM.filter(sabeGesto); }
 
   /* ---------- bagunça da semana ---------- */
-  function bagunca(){
-    ler(); var sem = domingo(hoje()), i = ((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6;
+  function baguncaDe(sem){   // a bagunça da semana que começa no domingo "sem" (AAAA-MM-DD): a rotação é fixa pela data
+    ler(); var i = ((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6;
     var r = ORDEM[i], g = ORDEM[(i + 2) % 6], b = BAG[r], st = est.bag[sem] || {};
-    return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok,
-      sabe:sabeGesto(g), domingo:hoje() === sem};
+    return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok, dia:st.dia || ''};
+  }
+  function bagunca(){
+    var sem = domingo(hoje()), d = baguncaDe(sem);
+    d.sabe = sabeGesto(d.gesto); d.domingo = hoje() === sem; return d;
+  }
+  /* Desfecho para o Idol⭐News! (capítulo de domingo, 18/11/2026): a bagunça da semana que acabou, quem resolveu
+     (você, se fez o gesto; senão um membro do trio com os vizinhos) e como a rua ficou. Só leitura: não grava nada.
+     A bagunça estreou na semana de 15/11, então o primeiro desfecho sai no domingo 22/11. qual = 'atual' mostra a semana
+     de agora como se tivesse acabado (prévia do News com ?bagunca_previa=1 e testes). */
+  function desfecho(qual){
+    var sem = domingo(hoje()), ant = new Date(Date.parse(sem + 'T12:00:00Z') - 7 * 864e5).toISOString().slice(0, 10);
+    var alvo = qual === 'atual' ? sem : ant;
+    if(qual !== 'atual' && alvo < '2026-11-15') return null;
+    var d = baguncaDe(alvo), gs = RUAS[d.gesto].gesto;
+    d.ruaNome = ruaNome(d.rua); d.gestoNome = gestoNome(d.gesto); d.gestoEmoji = gs.emoji; d.pose = gs.pose; d.expr = gs.expr;
+    d.novo = qual !== 'atual' && hoje() === sem;
+    d.membro = ((Math.floor(diasEntre('2026-10-25', alvo) / 7) % 3) + 3) % 3;   // 0 Tsu, 1 Lirika, 2 Pati: reveza semana a semana
+    return d;
   }
   function resolver(){
     var b = bagunca(); if(b.ok || !b.sabe) return false;
@@ -308,6 +325,7 @@
   });
 
   window.TW_BAIRRO = {t:t, abrir:abrir, fechar:fechar, bico:bico, contar:contar, bagunca:bagunca, resolver:resolver,
+    desfecho:desfecho, baguncaDe:baguncaDe,
     guia:guia, ruaAberta:ruaAberta, pularGuia:pularGuia, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar, preparar:carregarTela,
     falas:falas, novas:novas, lida:lida, novaDe:novaDe, resumo:resumo, gestos:gestosAprendidos,
     ouvir:function(fn){ ouvintes.push(fn); }, ORDEM:ORDEM, RUAS:RUAS, NIVEIS:NIVEIS, POR_DIA:POR_DIA,

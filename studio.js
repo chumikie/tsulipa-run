@@ -80,6 +80,14 @@
     th:['เก็บในโมเมนต์','เก็บในโมเมนต์แล้ว!'],ja:['思い出に保存','思い出に保存しました！']
   };
   function donoFoto(){ return typeof petPhoneFotoChave === 'function' ? petPhoneFotoChave() : ''; }
+  var HISTORICO = {
+    pt:'Publicada! O figurino histórico ainda não foi confirmado pelo servidor.',
+    en:'Posted! The server has not confirmed the historical look yet.',
+    es:'¡Publicada! El servidor aún no confirmó el look histórico.',
+    id:'Dipublikasikan! Server belum mengonfirmasi riwayat penampilan.',
+    th:'เผยแพร่แล้ว! เซิร์ฟเวอร์ยังไม่ยืนยันชุดในภาพ',
+    ja:'投稿しました！サーバーはまだ衣装の保存を確認していません。'
+  };
   var PARTILHA = {
     pt:'No Mural, seu figurino e cenário ficam visíveis para outros Idols. O PNG fica no aparelho.',
     en:'On the board, other Idols can see your look and scene. The PNG stays on your device.',
@@ -112,7 +120,8 @@
       if(typeof pet.bochecha === 'boolean') av.pet.bochecha = pet.bochecha;
       if(pet.k === 'meu' && pet.cfg && typeof pet.cfg === 'object' && !Array.isArray(pet.cfg)){
         var cfg = av.pet.cfg = {};
-        ['orelha','olhos','acc'].forEach(function(k){ if(chave(pet.cfg[k])) cfg[k] = pet.cfg[k]; });
+        var op = {orelha:['gato','coala','coroa','coelho','nenhuma'],olhos:['redondo','brilho','feliz','sono'],acc:['','laco','estrela','anel','oculos','flor']};
+        Object.keys(op).forEach(function(k){ if(op[k].indexOf(pet.cfg[k]) >= 0) cfg[k] = pet.cfg[k]; });
         if(cor(pet.cfg.cor)) cfg.cor = pet.cfg.cor;
         if(typeof pet.cfg.bochecha === 'boolean') cfg.bochecha = pet.cfg.bochecha;
       }
@@ -173,7 +182,7 @@
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
       foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
-      if(foto.retrato) foto.avatar = foto.retrato.avatar;
+      // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
@@ -271,7 +280,8 @@
           msg = t('publicado') + ' ' + tt('premio').replace('{n}', r.premio_tema);
           if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
           try{ if(typeof twJogoSom === 'function') twJogoSom('vitoria'); }catch(e){}
-        } else msg = t('publicado'); }
+        } else msg = t('publicado');
+        if(capturada.retrato && r.retrato_guardado !== true) msg += ' ' + HISTORICO[L()]; }
       else if(r && r.erro === 'ja_publicou'){ publicou = true; msg = t('ja'); }
       else msg = t('erro');
     }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } ocupado = false; ui(); });

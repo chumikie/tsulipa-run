@@ -11,8 +11,8 @@ O visual de celular continua em prévia: `?celular=1` ativa; `?celular=0` retorn
 
 ## Comece aqui
 
-- [docs/RETOMADA.md](docs/RETOMADA.md): retomada atual, pendências e regras.
-- [docs/PR58_STATUS.md](docs/PR58_STATUS.md): tudo o que a PR #58 traz e o checklist antes de publicar.
+- [docs/RETOMADA.md](docs/RETOMADA.md): **o estado de hoje** — regras, onde está, jogos, pendências e como atualizar. Comece aqui.
+- [docs/historico/diario/](docs/historico/diario/): o relato de cada rodada.
 - [supabase/sql/README.md](supabase/sql/README.md): o que está aplicado no banco.
 - Documentos antigos ficam em [docs/historico/](docs/historico/) só para consulta.
 

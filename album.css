@@ -43,3 +43,12 @@ html[data-theme="dark"] .gpochip,html[data-theme="dark"] .gpoconf,html[data-them
 .gporep{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .gpochip{min-height:44px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:420px){.gpochip i{display:none}.gpochip{overflow:visible;text-overflow:clip}}
+
+.album-fotos{border:1px solid currentColor;border-radius:14px;padding:.8rem 1rem;margin:.7rem 0}
+.album-fotos summary{cursor:pointer;font-weight:800;min-height:2rem}
+.album-fotos p{margin:.35em 0 .75em}
+.album-fotos-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(145px,100%),1fr));gap:.9rem}
+.album-fotos-grade figure{margin:0;display:grid;align-content:start;gap:.35rem}
+.album-fotos-grade img{width:100%;height:130px;object-fit:contain;background:#eee4fb;border-radius:10px}
+.album-fotos-grade figcaption{font-size:.85rem;font-weight:750}
+.album-fotos-grade a,.album-fotos-grade button{color:inherit;justify-self:start}

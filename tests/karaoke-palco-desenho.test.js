@@ -53,7 +53,7 @@ const semCtx={canvas:{width:1,height:1}};sb.document.createElement=()=>({getCont
 assert(html.includes('function krCorteSala(cv){if(krFotoEspera)return null;')&&html.includes("b.classList.contains('kt-mobile-overview'))return null;")&&html.includes("if(cs.objectFit!=='cover')return null;"),'corte só no show em tela cheia com cover');
 assert(loop.includes('var krCorte=krCorteSala(cv);if(krCorte){x.save();x.beginPath();x.rect(krCorte[0],krCorte[1],krCorte[2],krCorte[3]);x.clip();}'),'corte aplicado no começo do quadro');
 assert(loop.includes('if(krCorte)x.restore();if(krFotoEspera&&!krCorte){'),'corte desfeito no fim do quadro e foto liberada depois de um quadro inteiro');
-assert(html.includes("function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)return;if(ja!==true&&krFotoEspera)return;if(ja!==true&&!krFotoEspera&&krCorteSala(cv)){")&&html.includes('setTimeout(krFotoVai,400)'),'foto no meio do show espera a sala inteira (com reserva de 400 ms)');
+assert(html.includes('if(ja!==true&&krCorteSala(cv)){')&&html.includes('krFotoEspera=krFotoVai;')&&html.includes('if(krFotoEspera!==krFotoVai)return;\n    krFotoEspera=null;\n    krAviso('),'foto no meio do show espera um quadro inteiro e avisa se o prazo expirar');
 // Idols totalmente fora da faixa não são pintados, mas o balão continua na fila.
 assert(loop.includes('if(!krCorte||(j.x+90>=krCorte[0]&&j.x-90<=krCorte[0]+krCorte[2])){if(sentado)ktAlmofadaPijama(')&&loop.includes("x.fillText(j.nick,j.x,j.y+19);}var bl=activeBalloon;"),'idols fora da faixa pulados; balões preservados');
 console.log('✓ Karaoke: enfeites em karaoke-palco-desenho.js, camadas lentas, corte do show no celular e foto inteira');

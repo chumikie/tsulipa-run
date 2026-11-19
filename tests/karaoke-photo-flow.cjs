@@ -22,12 +22,20 @@ exports.install=async function(context){
 exports.verify=async function(p,frame,width,out){
  const state=()=>frame.locator('body').evaluate(()=>window.qaRoomState());
  const camera=frame.locator('#ktFoto'),dialog=frame.locator('#ktPhotoDialog'),img=frame.locator('#ktPhotoImage');
- await camera.evaluate(button=>{
-  button.addEventListener('click',()=>{
+ const sala=await (await camera.elementHandle()).ownerFrame();
+ const esperarRetomada=()=>sala.waitForFunction(()=>!window.qaRoomState().paused,null,{timeout:8000});
+ await camera.evaluate(()=>{
+  const photo=window.KaraokeRoomPhoto, capture=photo.capture;
+  photo.capture=function(source,options){
    const c=document.createElement('canvas');c.width=1920;c.height=1080;
-   c.getContext('2d').drawImage(document.getElementById('krCv'),0,0,1920,1080);
-   window.__qaExpectedPhoto=c.toDataURL('image/png');
-  },true);
+   const ctx=c.getContext('2d');ctx.drawImage(source,0,0,1920,1080);
+   const result=capture.call(this,source,options);
+   if(result){
+    window.__qaExpectedPhoto=c.toDataURL('image/png');
+    window.__qaFullPhoto=[8,1911].every(x=>ctx.getImageData(x,540,1,1).data[3]===255);
+   }
+   return result;
+  };
  });
  async function open(){await camera.click();await img.waitFor({state:'visible'});await img.evaluate(i=>i.decode());}
  async function close(){await frame.locator('#ktPhotoBack').click();await dialog.waitFor({state:'hidden'});await p.waitForTimeout(60);}
@@ -44,16 +52,24 @@ exports.verify=async function(p,frame,width,out){
  assert(framedFile.suggestedFilename().includes('_polaroid.png'),'Framed image has a distinct filename');
  const capture=await img.evaluate(i=>{
   const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);
-  return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto};
+  return {w:i.naturalWidth,h:i.naturalHeight,url:i.src,same:c.toDataURL('image/png')===window.__qaExpectedPhoto,full:window.__qaFullPhoto};
  });
- assert.equal(capture.w,1920);assert.equal(capture.h,1080);assert(capture.same,'Preview matches the exact pixels at the camera click');
- await p.waitForTimeout(450);
+ assert.equal(capture.w,1920);assert.equal(capture.h,1080);assert(capture.same,'Preview matches the complete frame handed to the camera');assert(capture.full,'Both sides of the room are opaque in the photo');
  assert(await img.evaluate(i=>{
-  const c=document.createElement('canvas');c.width=1920;c.height=1080;c.getContext('2d').drawImage(i,0,0);
-  const same=c.toDataURL('image/png')===window.__qaExpectedPhoto;
-  c.getContext('2d').drawImage(document.getElementById('krCv'),0,0,1920,1080);
-  return same&&c.toDataURL('image/png')!==window.__qaExpectedPhoto;
- }),'Photo stays frozen while the room keeps animating behind it');
+  const c=document.createElement('canvas');c.width=1920;c.height=1080;
+  const ctx=c.getContext('2d'),source=document.getElementById('krCv'),room=source.getContext('2d');
+  const old=room.getImageData(0,0,32,32);
+  room.save();
+  room.resetTransform();
+  room.clearRect(0,0,32,32);
+  ctx.drawImage(source,0,0,1920,1080);
+  const mudou=c.toDataURL('image/png')!==window.__qaExpectedPhoto;
+  room.putImageData(old,0,0);
+  room.restore();
+  ctx.clearRect(0,0,1920,1080);
+  ctx.drawImage(i,0,0);
+  return mudou&&c.toDataURL('image/png')===window.__qaExpectedPhoto;
+ }),'Photo stays frozen when the source canvas changes');
  assert.equal(await frame.locator('body').evaluate(()=>KaraokeRoomPhoto.capture(document.getElementById('krCv'))),false,'Repeated capture cannot replace an open photo');
  const r=await dialog.boundingBox(),viewport=p.viewportSize();
  assert(r.y>=0&&r.y+r.height<=viewport.height+1&&r.x>=0&&r.x+r.width<=width+1,'Dialog fits the visible host viewport, not the tall iframe');
@@ -84,7 +100,7 @@ exports.verify=async function(p,frame,width,out){
  const event=p.waitForEvent('download');await frame.locator('#ktPhotoDownload').click();const file=await event;
  const bytes=fs.readFileSync(await file.path());assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),shared.hash,'Download and native sharing use the same frozen PNG');
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('solicitado'),'Download status does not falsely claim a saved photo');
- await close();assert.equal((await state()).paused,false,'Returning resumes a show that was playing');
+ await close();await esperarRetomada();
  assert.equal((await state()).session,session);
  assert(await camera.evaluate(b=>document.activeElement===b),'Closing restores focus to the camera');
  assert(await frame.locator('body').evaluate((body,u)=>window.__qaPhotoRevoked.includes(u),capture.url),'Closing releases the photo object URL');
@@ -94,11 +110,11 @@ exports.verify=async function(p,frame,width,out){
  assert(await frame.locator('#ktPhotoHint').isVisible());
  await p.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});await p.waitForTimeout(60);
  assert.equal(await p.locator('#twPreviewJogo').evaluate(el=>el.hidden),false,'Escape closes only the photo, not Karaoke');
- assert.equal((await state()).paused,false);
+ await esperarRetomada();
  // A player who had manually paused remains paused after returning from a photo.
  await frame.locator('#ktPause').click();assert((await state()).paused);
- await open();await close();assert((await state()).paused,'A pre-paused show is not resumed');
- await frame.locator('#ktPause').click();
+ await open();await close();await p.waitForTimeout(3300);assert((await state()).paused,'A pre-paused show is not resumed');
+ await frame.locator('#ktPause').click();await esperarRetomada();
  // A late encoder callback must not reopen the image or leak a URL after Back.
  await frame.locator('body').evaluate(()=>{
   window.__qaPhotoToBlob=HTMLCanvasElement.prototype.toBlob;
@@ -106,7 +122,7 @@ exports.verify=async function(p,frame,width,out){
  });
  const created=await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length);
  await camera.click();await dialog.waitFor({state:'visible'});await close();await p.waitForTimeout(1000);
- assert.equal(await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length),created,'Late encoding is discarded after close');
+ assert.equal(await frame.locator('body').evaluate(()=>window.__qaPhotoCreated.length),created,'Late encoding is discarded after close');await esperarRetomada();
  await frame.locator('body').evaluate(()=>{
   HTMLCanvasElement.prototype.toBlob=function(cb){cb(null);};
  });
@@ -114,7 +130,7 @@ exports.verify=async function(p,frame,width,out){
  assert((await frame.locator('#ktPhotoStatus').innerText()).includes('Não consegui preparar'),'Encoding failure is visible');
  assert.equal(await frame.locator('#ktPhotoDownload').isVisible(),false);
  await close();await frame.locator('body').evaluate(()=>{HTMLCanvasElement.prototype.toBlob=window.__qaPhotoToBlob;});
- assert.equal((await state()).paused,false);assert.equal((await state()).session,session);
+ await esperarRetomada();assert.equal((await state()).session,session);
  return {exactPixels:true,frozen:true,width:1920,height:1080,downloadMatchesShare:true,cancelAndErrorFallback:true,focusAndEscape:true,pauseRestored:true,lateEncodingDiscarded:true};
 };
 exports.standalone=async function(browser,origin,fonts,out){

@@ -16,6 +16,7 @@ function contaRpc(nome, args){
 }
 function contaSiteOk(){ return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/i.test(location.hostname); }
 function contaUI(){
+  if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();
   if(typeof hubLoginCtaUI==='function') hubLoginCtaUI();
   var box = $('contaBox'); if(!box) return;
@@ -82,6 +83,7 @@ function contaAplicar(j, token, semRecuperar){
   if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
+  if(typeof twLinkRetomar === 'function' && twLinkRetomar()) twAbrirPeloEndereco();
   if(typeof duoAvisoAgendar==='function')duoAvisoAgendar();
   if(!semRecuperar)contaRecuperarCorridas();
 }

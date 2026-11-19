@@ -23,7 +23,7 @@
 
   function bus(a){
     if(saida && saida.context === a) return saida;
-    saida = a.createGain(); saida.gain.value = 1; saida.connect(a.destination); return saida;
+    saida = a.createGain(); saida.gain.value = 1; saida.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); return saida;
   }
   function nota(a, f, ini, dur, tipo, vol, ataque){
     var o = a.createOscillator(), g = a.createGain(); o.type = tipo || 'sine'; o.frequency.setValueAtTime(f, ini);

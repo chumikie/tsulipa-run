@@ -334,12 +334,53 @@ function celeb(t){
   }
   celebRaf = requestAnimationFrame(celeb);
 }
-function end(){
+var CR_COLISAO = {
+  pt:['Colisão com {obstaculo}','Ainda no ar','No chão','Obstáculo suspenso','Tentar de novo'],
+  en:['Hit {obstaculo}','Still in the air','On the ground','Overhead obstacle','Try again'],
+  es:['Choque con {obstaculo}','Aún en el aire','En el suelo','Obstáculo suspendido','Volver a intentar'],
+  id:['Menabrak {obstaculo}','Masih di udara','Di tanah','Rintangan di atas','Coba lagi'],
+  th:['ชน{obstaculo}','ยังอยู่กลางอากาศ','อยู่บนพื้น','สิ่งกีดขวางเหนือศีรษะ','ลองอีกครั้ง'],
+  ja:['{obstaculo}にぶつかった','ジャンプ中','地上','頭上の障害物','もう一度挑戦']
+};
+var CR_OBSTACULOS = {
+  cable:['o cabo','the cable','el cable','kabel','สายเคเบิล','ケーブル'],
+  speaker:['a caixa de som','the speaker','el altavoz','pengeras suara','ลำโพง','スピーカー'],
+  stick:['o lightstick','the lightstick','el lightstick','lightstick','แท่งไฟ','ペンライト'],
+  colchonete:['o colchonete','the mat','la colchoneta','matras','เสื่อ','マット'],
+  cone:['o cone','the cone','el cono','kerucut','กรวย','コーン'],
+  garrafinha:['a garrafa','the bottle','la botella','botol','ขวดน้ำ','ボトル'],
+  arara:['a arara de roupas','the clothes rack','el perchero','rak pakaian','ราวเสื้อผ้า','衣装ラック'],
+  case:['a caixa de transporte','the equipment case','la caja de transporte','kotak peralatan','กล่องอุปกรณ์','機材ケース'],
+  carrinho:['o carrinho','the cart','el carrito','troli','รถเข็น','カート'],
+  camtrilho:['a câmera em trilho','the camera rig','la cámara sobre rieles','kamera rel','กล้องบนราง','レールカメラ'],
+  refletor:['o refletor','the spotlight','el reflector','lampu sorot','ไฟสปอตไลต์','スポットライト'],
+  lanterna:['a lanterna','the lantern','la linterna','lentera','โคมไฟ','ランタン'],
+  balde:['o balde','the bucket','el cubo','ember','ถัง','バケツ'],
+  taiko:['o taiko','the taiko drum','el tambor taiko','drum taiko','กลองไทโกะ','太鼓'],
+  mala:['a mala','the suitcase','la maleta','koper','กระเป๋าเดินทาง','スーツケース'],
+  esteira:['a esteira','the conveyor belt','la cinta transportadora','ban berjalan','สายพาน','ベルトコンベア'],
+  faplaca:['a placa de fã','the fan sign','el cartel de fan','papan penggemar','ป้ายแฟนคลับ','応援ボード'],
+  escada:['a escada','the ladder','la escalera','tangga','บันได','はしご'],
+  caixaluz:['a caixa de luz','the light box','la caja de luces','kotak lampu','กล่องไฟ','照明ボックス'],
+  fita:['a fita','the ribbon','la cinta','pita','ริบบิ้น','リボン']
+};
+function crIdiomaResultado(){
+  return typeof LANG === 'string' && Object.prototype.hasOwnProperty.call(CR_COLISAO, LANG) ? LANG : 'pt';
+}
+function crColisaoTexto(impacto){
+  if(!impacto || !Object.prototype.hasOwnProperty.call(CR_OBSTACULOS, impacto.tipo)) return '';
+  var idioma = crIdiomaResultado();
+  var texto = CR_COLISAO[idioma], nome = CR_OBSTACULOS[impacto.tipo][Object.keys(CR_COLISAO).indexOf(idioma)];
+  return texto[0].replace('{obstaculo}', nome) + ' · ' + texto[impacto.ar ? 1 : 2] + (impacto.suspenso ? ' · ' + texto[3] : '');
+}
+
+function end(impacto){
   var crT = typeof crTr === 'function' ? crTr : tr;
   var cm = typeof crMeta !== 'undefined' ? crMeta : null;
   if(cm) cm.acabou = true;
   if(state==='over')return;
   state='over';sfx.over();sync();shake=14;
+  if(!isTestGame && window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('run', true);
   document.body.classList.remove('jogando');
   $('jb').style.display='none';
   $('pause').style.display='none';
@@ -365,6 +406,9 @@ function end(){
     +(crMetaTxt?'<div class="crfim-meta'+(cm.feita?' ok':'')+'"><small>🎯 '+crT('Meta')+'</small><b>'+crMetaTxt+'</b></div>':'')+'</div>'
     +(crProx?'<p class="crfim-prox">'+crT('Faltam {n} pontos para {r}').replace('{n}',crFalta).replace('{r}',tr(crProx[1]))+'</p>':'')+'</div>'+novosItens
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
+
+  var colisao = !isTestGame ? crColisaoTexto(impacto) : '';
+  if(colisao) $('res').innerHTML += '<p class="crfim-colisao" id="crFimColisao">' + colisao + '</p>';
 
   // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos
   // opcionais abaixo não podem impedir a confirmação online da corrida.
@@ -399,7 +443,13 @@ function end(){
   
 clearTimeout(overTimer);
   overTimer = setTimeout(function(){
-    $('over').hidden = false;
+    var resultado = $('over'), tentar = $('again');
+    resultado.hidden = false;
+    resultado.scrollTop = 0;
+    tentar.textContent = CR_COLISAO[crIdiomaResultado()][4];
+    if(colisao) tentar.setAttribute('aria-describedby', 'crFimColisao');
+    else tentar.removeAttribute('aria-describedby');
+    tentar.focus({preventScroll:true});
     celeb();
   }, 300); // 300ms para abrir rápido e responsivo
 }
@@ -586,7 +636,10 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
     for(var i=0;i<obs.length;i++){
       if(hit(pb,obs[i])){
         if(shield){shield--;inv=90;sfx.hit();shake=8;toast=tr('Escudo usado!');toastT=80;break}
-        crTelemetriaAnotar(obs[i]);end();return;
+        var obstaculo = obs[i];
+        crTelemetriaAnotar(obstaculo);
+        end({tipo:obstaculo.k, ar:P.air, suspenso:obstaculo.high});
+        return;
       }
     }
   }

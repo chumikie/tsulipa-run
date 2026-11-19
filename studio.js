@@ -74,6 +74,46 @@
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
   var sessao = 0, donoSessao = null, muralCarregando = false, muralErro = false, escolheuObjeto = false;
+  var FAVORITA_TR = {
+    pt:['Guardar composição','Usar composição favorita','Composição guardada neste aparelho.','Composição aplicada.','Substituir composição favorita'],
+    en:['Save composition','Use favorite composition','Composition saved on this device.','Composition applied.','Replace favorite composition'],
+    es:['Guardar composición','Usar composición favorita','Composición guardada en este dispositivo.','Composición aplicada.','Reemplazar composición favorita'],
+    id:['Simpan komposisi','Gunakan komposisi favorit','Komposisi tersimpan di perangkat ini.','Komposisi diterapkan.','Ganti komposisi favorit'],
+    th:['บันทึกองค์ประกอบภาพ','ใช้ภาพจัดองค์ประกอบโปรด','บันทึกองค์ประกอบภาพในอุปกรณ์แล้ว','ใช้องค์ประกอบภาพแล้ว','แทนที่องค์ประกอบภาพโปรด'],
+    ja:['構図を保存','お気に入りの構図を使う','端末に構図を保存しました。','構図を適用しました。','お気に入りの構図を上書き']
+  };
+  var CAMPOS_COMPOSICAO = {fundo:FUNDOS,pose:POSES,luz:LUZES,quadro:QUADROS};
+  var favorita = null, chaveFavorita = null;
+  function composicaoChave(){
+    var id = logado() && (contaJ.id || contaJ.nick);
+    if(logado() && typeof contaAuthUserId === 'string' && contaAuthUserId) id = contaAuthUserId;
+    return 'tw_studio_composicao_v1:' + (id ? 'conta:' + encodeURIComponent(id) : 'visitante');
+  }
+  function composicaoValida(dados){
+    if(!dados) return null;
+    var campos = Object.keys(CAMPOS_COMPOSICAO);
+    if(!campos.every(function(k){ return CAMPOS_COMPOSICAO[k].indexOf(dados[k]) >= 0; })) return null;
+    return {fundo:dados.fundo,pose:dados.pose,luz:dados.luz,quadro:dados.quadro};
+  }
+  function composicaoAcao(acao){
+    if(fase !== 'monta' || aba !== 'estudio' || chaveFavorita !== composicaoChave()) return;
+    var texto = FAVORITA_TR[L()];
+    if(acao === 'usar-composicao' && favorita){
+      Object.assign(esc_, favorita);
+      msg = texto[3];
+    }else if(acao === 'guardar-composicao'){
+      var campos = composicaoValida(esc_);
+      try{
+        if(!campos) throw Error('composicao');
+        localStorage.setItem(chaveFavorita, JSON.stringify(campos));
+        favorita = campos;
+        msg = texto[2];
+      }catch(e){ msg = t('erro'); }
+    }
+    ui();
+    var alvo = ov.querySelector('[data-st="' + acao + '"]');
+    if(alvo) alvo.focus({preventScroll:true});
+  }
   var MURAL_REDE = {
     pt:['Não foi possível atualizar o Mural.','Tentar novamente'],
     en:['Could not refresh the board.','Try again'],
@@ -108,7 +148,7 @@
     ja:'掲示板では他のアイドルに衣装とシーンが公開されます。PNGは端末に残ります。'
   };
   function podeGuardar(){ return foto && !foto.guardada && logado() && foto.dono === donoFoto() &&
-    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoGuardar === 'function'; }
+    typeof petAtivo === 'function' && petAtivo() && typeof petPhoneMomentoAdicionar === 'function'; }
   window.TW_STUDIO_ON = true;
   // Retrato v1: somente dados de desenho, sem nick, ID, saldo, inventário, save ou PNG.
   function retratoSeguro(r){
@@ -157,6 +197,7 @@
     ov.innerHTML = '<div class="panel studiop tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="studioTit">' +
       '<button type="button" class="perfx tw-window-control tw-window-close" id="studioX" aria-label="✕">✕</button>' +
       '<h2 class="tw-modal-title" id="studioTit"></h2><small class="tw-modal-jp" lang="ja">フォトスタジオ</small>' +
+      (typeof twLinkBotao === 'function' ? twLinkBotao('studio') : '') +
       '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas></div><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
     document.body.appendChild(ov);
     ov.addEventListener('click', function(e){
@@ -165,11 +206,23 @@
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
+      if(a === 'guardar-composicao' || a === 'usar-composicao'){ composicaoAcao(a); return; }
       if(a === 'mural-retry'){ carregarMural(); return; }
+      if(a === 'duo' && logado() && typeof duoAbrir === 'function'){ fechar(); duoAbrir(); return; }
+      if(a === 'momentos' && foto && foto.guardada){ studioMomentos(); return; }
       if(a === 'publicar'){ publicar(); return; }
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
+      else if(a === 'serie' && foto && !foto.serie && !foto.seriePendente && foto.dono === donoFoto() && window.TW_ALBUM_FOTOS){
+        var selecionada = foto;
+        selecionada.seriePendente = true;
+        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b).then(function(ok){
+          selecionada.seriePendente = false;
+          if(ok) selecionada.serie = true;
+          else if(foto === selecionada && !b.isConnected) ui();
+        });
+      }
       else if(a === 'guardar') guardar();
       else if(esc_.hasOwnProperty(a)){
         var tinhaFoco = document.activeElement === b;
@@ -184,8 +237,10 @@
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
+  var pilotoStudio = null;
   function abrir(atalho){
     montarOv();
+    pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
     var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
     if(dono !== donoSessao){
@@ -193,12 +248,20 @@
       esc_.objeto = 'nenhum';
     }
     donoSessao = dono;
+    var chave = composicaoChave();
+    if(chaveFavorita !== null && chaveFavorita !== chave){
+      Object.assign(esc_, {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro'});
+    }
+    chaveFavorita = chave;
+    favorita = null;
+    try{ favorita = composicaoValida(JSON.parse(localStorage.getItem(chave))); }catch(e){}
     muralCarregando = muralErro = false;
     flores = {}; escolheuObjeto = false;
     if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
-    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
-    if(logado()){
+    if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
+    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal(); ui(); laco();
+    if(logado() && !pilotoStudio){
       contaRpc('studio_pauta').then(function(r){
         if(sessaoAtiva(sess, dono) && r && r.ok){ pauta = r; servidor = true; ui(); }
       }).catch(function(){});
@@ -214,6 +277,8 @@
   function clicar(){
     var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
+    if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
+    if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
     if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       if(sess !== sessao) return;
@@ -226,6 +291,11 @@
       // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
+      if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', true);
+      if(pilotoStudio){
+        if(esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena);
+        fase = 'foto'; ocupado = false; ui(); return;
+      }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
@@ -267,9 +337,24 @@
     if(!podeGuardar() || fase !== 'foto') return;
     try{
       var especie = foto.escolhas.objeto.indexOf('flor_') === 0 ? foto.escolhas.objeto.slice(5) : '';
-      if(!petPhoneMomentoGuardar('studio', fotoUrl(foto), especie)) throw Error('momento');
-      foto.guardada = true; msg = MOMENTOS[L()][1]; ui();
+      var id = petPhoneMomentoAdicionar('studio', fotoUrl(foto), especie);
+      if(!id) throw Error('momento');
+      foto.guardada = id; msg = MOMENTOS[L()][1]; ui();
     }catch(e){ msg = t('erro'); ui(); }
+  }
+  function studioMomentos(){
+    if(!logado() || typeof petAtivo !== 'function' || !petAtivo()) return;
+    var dono = donoFoto(), sess = sessao, id = foto.guardada;
+    TW_CARGA.abrir('Backstage⭐Pet!', petSalaCarregar, function(){
+      if(!sessaoAtiva(sess, dono)) return;
+      petVeioHub = true;
+      petOpenUI();
+      if(petOpen && petPhoneAbrir('fotos')){
+        petPhoneFotosAbaAbrir('momentos');
+        petPhoneMomentoAbrir(id);
+        fechar();
+      }
+    });
   }
   function chips(tipo, lista){
     return '<div class="stgrupo"><b>' + esc(t(tipo)) + '</b><div>' + lista.map(function(v){
@@ -297,12 +382,18 @@
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (window.TW_ALBUM_FOTOS && !foto.serie && !foto.seriePendente ? TW_ALBUM_FOTOS.botao('data-st="serie"') : '') +
+        (pilotoStudio ? '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
       hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
         '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
+      if(fase === 'monta'){
+        var ft = FAVORITA_TR[L()];
+        hh += '<div class="btns"><button type="button" class="btn alt" data-st="guardar-composicao">' + esc(ft[favorita ? 4 : 0]) + '</button>' +
+          (favorita ? '<button type="button" class="btn alt" data-st="usar-composicao">' + esc(ft[1]) + '</button>' : '') + '</div>';
+      }
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
     c.innerHTML = hh; desenhar();
@@ -536,6 +627,7 @@
     window.jornalAbasIniciar = function(){ var r = abasOrig.apply(this, arguments); try{ capaNews(); }catch(e){} return r; };
   }
   window.studioAbrir = abrir;
+  window.studioFechar = fechar;
   window.TW_STUDIO_TEMA = { atual:function(){ return temaSemana()[0]; }, noTema:noTema };
   window.STUDIO_TR = T;
 })();

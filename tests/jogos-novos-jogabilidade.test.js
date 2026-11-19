@@ -10,7 +10,7 @@ assert.match(bloom, /function crescer\(i\)\{ if\(window\.matchMedia && matchMedi
 assert.match(bloom, /planta\(x, cx, by - 16, regasNaTela\(i, c\), tm, 1\.22\)/);
 // Café: a mesma barra de paciência (mesmo tempo), agora com cor, rostinho e rótulo acessível — nos dois modos.
 assert.match(cafe, /function cfPacienciaUI\(bar, pc, emo\)/);
-assert.match(cafe, /role="progressbar" aria-label="' \+\s*escHtml\(tr\('Paciência do cliente'\)\)/);
+assert.match(cafe, /role="progressbar" aria-label="' \+\s*escHtml\(tr\('Paciência do cliente'\) \+ \(nome \?/);
 assert.match(duplo, /cfPacienciaUI\(bar, pc, \$\('cfPacEmo' \+ e\.lado\)\)/);
 // Battle: lightsticks no ritmo só no show e só como contador local.
 const ini = battle.indexOf('function agitar(){'), fim = battle.indexOf('function ritmoDesenhar(');
@@ -36,7 +36,9 @@ console.log('jogos novos: jogabilidade ok');
     document:{addEventListener:(nome,handler)=>{clique=handler;}},
     localStorage:{getItem:()=>null,setItem(){}},$:()=>corpo,tr:x=>x,escHtml:String,sfx:null,
     CF_BASES:[['🍓','Morango'],['🍫','Chocolate']],
-    hsSorteio:()=>()=>0,hsNomesLivres:()=>['Ana','Bia'],hsFa:(_,nome)=>({nome}),hsVisitaPreparar(){},
+    hsSorteio:()=>()=>0,hsNomesLivres:()=>['Ana','Bia'],hsFa:(_,nome)=>({nome,c:{}}),hsVisitaPreparar(){},
+    hsMemChave:()=> 'cafe-teste',cfVisitasMemorias:()=>[{nome:'Ana',pres:0,jeito:'fofo',c:{}}],
+    HS_JEITOS:{fofo:{}},HS_PRESENTES:[['🎁','presente']],hsCafeConfirmar(){},
     contaRpc(nome,args){
       if(nome==='cafe_run_iniciar')return Promise.resolve({ok:true,run_id:'turno'});
       if(nome==='cafe_run_pedidos')return Promise.resolve({ok:true,criados:2,pedidos:pedidos.map((pedido,i)=>({pedido,sessao:String(i),limite_segundos:120}))});
@@ -47,21 +49,36 @@ console.log('jogos novos: jogabilidade ok');
   };
   ctx.window=ctx;
   vm.runInNewContext(cafe+'\n'+duplo,ctx);
-  const disparar=(chave,i)=>clique({target:{closest:()=>({dataset:{[chave]:String(i)}})},stopPropagation(){}});
+  const disparar=(chave,i)=>clique({target:{closest:sel=>sel.includes('data-cfd-aceitar') === (chave==='aceitar') ? {dataset:{[chave]:String(i)}} : null},stopPropagation(){}});
   const tick=()=>new Promise(setImmediate);
   ctx.cfIniciarSeguro();
+  assert.equal(ctx.cf.fase,'saudacao');
+  assert.equal(ctx.cf.runId,null);
+  assert.match(corpo.innerHTML,/Você lembrou do meu presente/);
+  disparar('aceitar');
   await tick();
   assert.match(corpo.innerHTML,/Escolha um fã/);
   for(const [i,pedido] of pedidos.entries()){
+    if(i===1)ctx.cf.fila[1].t0 = ctx.cfT - ctx.cf.fila[1].limite * .85;
     disparar('cfdCliente',i);
     assert.match(corpo.innerHTML,new RegExp('data-cfd-cliente="'+i+'" aria-pressed="true"'));
     for(const [tipo,valor] of Object.entries(pedido))if(valor>=0)ctx.cfEscolher(tipo,valor);
     disparar('cfdServir',i);
     assert.match(corpo.innerHTML,/Confirmando com o servidor/);
+    assert.match(corpo.innerHTML,i===0?/Pedido certo!/:/Pedido certo, por pouco!/);
     assert.equal(entregas[i].args.p_sessao,String(i));
     assert.deepEqual({...entregas[i].args.p_monta},pedido);
     entregas[i].resolve({ok:true,confirmado:true,certo:true,pontos:100*(i+1),vidas:3,perfeitos:i+1,combo:i+1});
     await tick();
     assert.match(corpo.innerHTML,i===0?/1 de 2 pedidos confirmados/:/Missão do Café concluída/);
   }
+  ctx.cfIniciarSeguro();
+  disparar('aceitar');
+  await tick();
+  disparar('cfdCliente',1);
+  ctx.cfEscolher('base',pedidos[1].base);
+  ctx.cfEscolher('enf',pedidos[1].enf);
+  ctx.cfEscolher('doce',pedidos[1].doce);
+  disparar('cfdServir',1);
+  assert.match(corpo.innerHTML,/Era Chantilly!/i);
 })().catch(e=>{console.error(e);process.exitCode=1;});

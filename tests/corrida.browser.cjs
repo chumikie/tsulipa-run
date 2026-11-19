@@ -51,6 +51,23 @@ const server=http.createServer((req,res)=>{
       return {antes,depois:TW_NITIDEZ.escala(cv),salvo:localStorage.getItem('tw_cr_nitidez'),largura:Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,'width').get.call(cv),w:cv.width};});
     if(!(f.antes>1.5&&f.depois===1.5&&f.salvo==='1.5'))falhas.push('freio de desempenho não baixou a nitidez: '+JSON.stringify(f));
     if(f.largura!==Math.round(f.w*1.5))falhas.push('canvas com tamanho errado depois do freio: '+JSON.stringify(f));
+    // Colisão real no loop, recibo do resultado e tentativa seguinte no mesmo botão.
+    await p.evaluate(()=>{
+      start();
+      LANG='pt';
+      shield=0;inv=0;pw=null;
+      obs=[{k:'speaker',x:P.x+5,y:GY-48,w:36,h:48}];
+      update(1);
+    });
+    const motivo=p.locator('#crFimColisao'), tentar=p.locator('#again');
+    await motivo.waitFor();
+    assert.equal(await motivo.textContent(),'Colisão com a caixa de som · No chão');
+    assert.equal(await tentar.getAttribute('aria-describedby'),'crFimColisao');
+    assert.equal(await tentar.textContent(),'Tentar de novo');
+    assert.equal(await tentar.evaluate(el=>document.activeElement===el),true);
+    await tentar.click();
+    assert.equal(await p.evaluate(()=>state),'play');
+    await p.locator('#over').waitFor({state:'hidden'});
     if(erros.length)falhas.push('erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
     await ctx.close();
   }finally{await browser.close();server.close();}

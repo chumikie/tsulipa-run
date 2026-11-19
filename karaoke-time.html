@@ -1,7 +1,8 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
-<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=2"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=2"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -140,7 +141,25 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=9"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=9">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3"><link rel="stylesheet" href="./tw-tema-cards.css?v=3">
-<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=2"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=2"></script>
+<script>
+window.ktEnsaio = new URLSearchParams(location.search).get('ensaio') === '1';
+if(window.ktEnsaio){
+  document.documentElement.classList.add('kt-ensaio');
+  (function(){
+    var chave = 'tw_ensaio_karaoke_medidas', m = {iniciados:0,concluidos:0,repeticoes:0,ultimaMusica:''};
+    try{ Object.assign(m, JSON.parse(sessionStorage.getItem(chave))); }catch(e){}
+    window.ktEnsaioRegistrar = function(etapa, musica){
+      if(etapa === 'iniciados' && musica && musica === m.ultimaMusica) m.repeticoes++;
+      if(etapa === 'concluidos') m.ultimaMusica = musica;
+      m[etapa]++;
+      try{ sessionStorage.setItem(chave, JSON.stringify(m)); }catch(e){}
+    };
+    window.ktEnsaioMedidas = function(){ return {iniciados:m.iniciados,concluidos:m.concluidos,repeticoes:m.repeticoes}; };
+  })();
+}
+</script>
+<style>.kt-ensaio :is(#ktLimitCount,#ktLimitPips,#ktWeeklyRanks,#ktViewRanks,#ktSongRecord){display:none!important}</style>
+<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=5"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -241,7 +260,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <div class="kr-rhythm-feedback" id="krRhythmFeedback" role="status" aria-live="polite"></div>
 </section><p class="kraviso" id="krAviso" hidden></p><details class="kt-customize" id="ktCustomize"><summary>🎀 Dança, expressão e acessórios</summary><div class="krbar" id="krBar"></div></details><section class="kt-weekly" id="ktWeeklyRanks" aria-labelledby="ktWeeklyTitle"><div class="kt-weekly-heading"><div><h2 id="ktWeeklyTitle">🏆 As estrelas da semana</h2><small class="kt-ja-subtitle" lang="ja">週間ランキング</small><p id="ktWeekLabel"></p></div><span class="kt-local-badge" id="ktRankBadge">Ranking deste aparelho</span></div><div class="kt-rank-tabs" role="group" aria-label="Escolher ranking"><button class="krb" data-kt-rank="score" aria-pressed="true">⭐ Pontuação</button><button class="krb" data-kt-rank="shows" aria-pressed="false">🎤 Mais shows</button><button class="krb" data-kt-rank="evolucao" aria-pressed="false">📈 Evoluiu</button></div><div class="kt-rank-grid"><section class="kt-rank-card" data-metric="score" data-mobile-active="true" aria-label="Cinco maiores pontuações"><h3>⭐ Maiores pontuações</h3><p>Top 5 · uma posição por Idol</p><ol id="ktBoard-score"></ol></section><section class="kt-rank-card" data-metric="shows" data-mobile-active="false" aria-label="Quem fez mais shows na semana"><h3>🎤 Mais shows na semana</h3><p>Top 5 · shows completos da semana</p><ol id="ktBoard-shows"></ol></section><section class="kt-rank-card" data-metric="evolucao" data-mobile-active="false" aria-label="Quem mais melhorou em relação à semana passada"><h3>📈 Quem mais evoluiu</h3><p>Top 5 · melhora sobre o recorde da semana passada</p><ol id="ktBoard-evolucao"></ol></section></div><section class="kt-rank-card kt-song-week" id="ktSongWeek" aria-labelledby="ktSongWeekTitle"><h3 id="ktSongWeekTitle">🎵 Música da semana</h3><p id="ktSongWeekInfo">Top 5 · só os shows com a música da semana</p><ol id="ktBoard-song"></ol></section><p class="kt-weekly-note">Uma nova semana começa domingo, à meia-noite de Brasília. Apenas os melhores resultados da semana atual são mantidos nesta cópia.</p></section>
 <p class="kt-foot" id="ktFootNote">Jogo solo · os outros membros e retratos são elementos decorativos animados. Cinco shows por dia · rankings semanais locais · horário de Brasília.</p><details class="kt-daily-test" id="ktDailyTest"><summary>🧪 Testar perfil e troca de dia (offline)</summary><p class="kt-foot" id="ktDailySource"></p><div class="kt-daily-fields"><label>Perfil do jogador neste teste <select id="ktDailyProfile" aria-label="Perfil do jogador no teste"></select></label><label>Data de Brasília <input type="date" id="ktDailyDate" aria-label="Data de Brasília no teste"></label><button class="krb" id="ktDailyNext">Próximo dia →</button><button class="krb" id="ktDailyToday">Usar o dia atual</button></div><p class="kt-foot">A seleção de perfil substitui o login apenas nesta cópia offline. Ninguém está conectado à plateia: os visuais são elementos decorativos do jogo.</p></details></main>
-</dialog><dialog class="krbox" id="ktResult" aria-labelledby="ktResultTitle"><div style="font-size:36px">🎤✨</div><h2 id="ktResultTitle">Seu momento de brilhar!</h2><p id="ktResultText"></p><div class="kt-stats"><div><strong id="ktResultScore">0</strong><small>PONTOS</small></div><div><strong id="ktResultAccuracy">0%</strong><small>ACERTOS</small></div><div><strong id="ktResultCombo">0</strong><small>MAIOR COMBO</small></div></div><p id="ktResultNote"></p><p id="ktResultDelivery" role="status" aria-live="polite" hidden></p><button class="btn alt" type="button" id="ktResultRetry" hidden></button><div class="kt-actions"><button class="btn alt" id="ktResultClose">Voltar à sala</button><button class="btn" id="ktResultAgain">Mais um show!</button></div></dialog><script type="application/json" id="ktPublicCatalog">{"snapshotDate": "2026-10-30", "source": "public-avatar-snapshot", "identityMode": "sha256-account-id", "profiles": [{"id": "public-6c1d0cca17b7556f4d493e5c5b7b9f2415919e5c60018b283c74a2f8119d9cdf", "nick": "HiruDeki", "avatar": {"a": "", "c": {"gl": "", "det": "", "eye": "#5a3b2e", "hat": "", "out": "", "back": "chanel", "hair": "#ff7eb6", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-7a0bc5d9ddfff12bae602a1a49a8b4bc16d2a70f0e94aa8afca3ae4561ec54db", "nick": "Tsu", "avatar": {"a": "tiaraO", "c": {"gl": "", "det": "gato", "eye": "#be38f3", "hat": "", "out": "estrelado", "back": "pixie", "hair": "#864ffe", "skin": "#b97a50", "front": "arcoiris", "hair2": "#ffffff", "outcol": "#b18cfe", "streak": false}, "expr": 3, "pose": "tchau", "visual": ""}}, {"id": "public-0711378a042ee1e3bdcd1ed79437c2042d539451a1ad41e66b9855d28a7cb489", "nick": "Maimai", "avatar": {"a": "sakura", "c": {"gl": "quadrada", "det": "", "eye": "#ff0000", "hat": "", "out": "zipper", "back": "longo", "hair": "#0d1670", "skin": "#fbe5d8", "front": "reta", "hair2": "#4dd8ff", "outcol": "#1d21a8", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-d7adf08dc5033dec771d883f9e05401ee6deffe579f625633f7cadeadf7f80c0", "nick": "Sami", "avatar": {"a": "", "c": {"gl": "", "det": "gato", "eye": "#fefb41", "hat": "", "out": "", "back": "pixie", "hair": "#fefb41", "skin": "#fbe5d8", "front": "bagunca", "hair2": "#4dd8ff", "outcol": "#fefb41", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-b0b86fead7f1a15cfae89b5dcb57e98a20b7ff91487db1ce599373d1e42a1f5b", "nick": "Decchan", "avatar": {"a": "mic", "c": {"gl": "redonda", "det": "gato", "eye": "#9d0b37", "hat": "presilhas", "out": "", "back": "", "hair": "#db76a2", "skin": "#f1c9a5", "front": "lateral", "hair2": "#ce4bab", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-f67edc361201cbce87bd7eda0171cf2c64a2cfa0bcde7c021f36c7714b625f2c", "nick": "Patiliri", "avatar": {"a": "tiaraO", "c": {"gl": "", "det": "", "eye": "#5045a5", "hat": "", "out": "vampiro", "back": "", "hair": "#5963f3", "skin": "#f1c9a5", "front": "reta", "hair2": "#c87837", "outcol": "#8c451a", "streak": false}, "expr": 3, "pose": "coracao", "visual": ""}}, {"id": "public-ae0ac1f7befb5dc44d54b3df12e656bbef3dabc142fa1a2b033274b0199fb318", "nick": "Sora", "avatar": {"a": "", "c": {"gl": "", "det": "olheiras", "eye": "#5a3b2e", "hat": "", "out": "", "back": "pixie", "hair": "#000000", "skin": "#f1c9a5", "front": "bagunca", "hair2": "#52d9ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-6dfdef56fdfc49bfa9f07c2f5fdc02b4f02b68d6b95228d16e2da193f2be0a70", "nick": "Lirika", "avatar": {"a": "mic", "c": {"gl": "", "det": "", "eye": "#5a3b2e", "hat": "", "out": "", "back": "chanel", "hair": "#ff7eb6", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-8489d3fcb4abe54d4a2f49431b1dca7789860b8e106b863bfd11baf53dde8f69", "nick": "Fuji", "avatar": {"a": "mic", "c": {"gl": "", "det": "", "eye": "#e099ff", "hat": "presilhas", "out": "seifuku", "back": "", "hair": "#ffe896", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#7d02a6", "streak": false}, "expr": 3, "pose": "coracao", "visual": ""}}]}</script><script>
+</dialog><dialog class="krbox" id="ktResult" aria-labelledby="ktResultTitle"><div style="font-size:36px">🎤✨</div><h2 id="ktResultTitle">Seu momento de brilhar!</h2><p id="ktResultText"></p><p id="ktResultTiming" hidden></p><p id="ktResultTimingTip" hidden></p><p id="ktResultFestival" aria-live="polite" hidden></p><button type="button" id="ktResultFestivalLink" class="kr-btn" hidden></button><div class="kt-stats"><div><strong id="ktResultScore">0</strong><small>PONTOS</small></div><div><strong id="ktResultAccuracy">0%</strong><small>ACERTOS</small></div><div><strong id="ktResultCombo">0</strong><small>MAIOR COMBO</small></div></div><p id="ktResultNote"></p><p id="ktResultDelivery" role="status" aria-live="polite" hidden></p><button class="btn alt" type="button" id="ktResultRetry" hidden></button><div class="kt-actions"><button class="btn alt" id="ktResultClose">Voltar à sala</button><button class="btn" id="ktResultAgain">Mais um show!</button></div></dialog><script type="application/json" id="ktPublicCatalog">{"snapshotDate": "2026-10-30", "source": "public-avatar-snapshot", "identityMode": "sha256-account-id", "profiles": [{"id": "public-6c1d0cca17b7556f4d493e5c5b7b9f2415919e5c60018b283c74a2f8119d9cdf", "nick": "HiruDeki", "avatar": {"a": "", "c": {"gl": "", "det": "", "eye": "#5a3b2e", "hat": "", "out": "", "back": "chanel", "hair": "#ff7eb6", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-7a0bc5d9ddfff12bae602a1a49a8b4bc16d2a70f0e94aa8afca3ae4561ec54db", "nick": "Tsu", "avatar": {"a": "tiaraO", "c": {"gl": "", "det": "gato", "eye": "#be38f3", "hat": "", "out": "estrelado", "back": "pixie", "hair": "#864ffe", "skin": "#b97a50", "front": "arcoiris", "hair2": "#ffffff", "outcol": "#b18cfe", "streak": false}, "expr": 3, "pose": "tchau", "visual": ""}}, {"id": "public-0711378a042ee1e3bdcd1ed79437c2042d539451a1ad41e66b9855d28a7cb489", "nick": "Maimai", "avatar": {"a": "sakura", "c": {"gl": "quadrada", "det": "", "eye": "#ff0000", "hat": "", "out": "zipper", "back": "longo", "hair": "#0d1670", "skin": "#fbe5d8", "front": "reta", "hair2": "#4dd8ff", "outcol": "#1d21a8", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-d7adf08dc5033dec771d883f9e05401ee6deffe579f625633f7cadeadf7f80c0", "nick": "Sami", "avatar": {"a": "", "c": {"gl": "", "det": "gato", "eye": "#fefb41", "hat": "", "out": "", "back": "pixie", "hair": "#fefb41", "skin": "#fbe5d8", "front": "bagunca", "hair2": "#4dd8ff", "outcol": "#fefb41", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-b0b86fead7f1a15cfae89b5dcb57e98a20b7ff91487db1ce599373d1e42a1f5b", "nick": "Decchan", "avatar": {"a": "mic", "c": {"gl": "redonda", "det": "gato", "eye": "#9d0b37", "hat": "presilhas", "out": "", "back": "", "hair": "#db76a2", "skin": "#f1c9a5", "front": "lateral", "hair2": "#ce4bab", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-f67edc361201cbce87bd7eda0171cf2c64a2cfa0bcde7c021f36c7714b625f2c", "nick": "Patiliri", "avatar": {"a": "tiaraO", "c": {"gl": "", "det": "", "eye": "#5045a5", "hat": "", "out": "vampiro", "back": "", "hair": "#5963f3", "skin": "#f1c9a5", "front": "reta", "hair2": "#c87837", "outcol": "#8c451a", "streak": false}, "expr": 3, "pose": "coracao", "visual": ""}}, {"id": "public-ae0ac1f7befb5dc44d54b3df12e656bbef3dabc142fa1a2b033274b0199fb318", "nick": "Sora", "avatar": {"a": "", "c": {"gl": "", "det": "olheiras", "eye": "#5a3b2e", "hat": "", "out": "", "back": "pixie", "hair": "#000000", "skin": "#f1c9a5", "front": "bagunca", "hair2": "#52d9ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-6dfdef56fdfc49bfa9f07c2f5fdc02b4f02b68d6b95228d16e2da193f2be0a70", "nick": "Lirika", "avatar": {"a": "mic", "c": {"gl": "", "det": "", "eye": "#5a3b2e", "hat": "", "out": "", "back": "chanel", "hair": "#ff7eb6", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#ffffff", "streak": false}, "expr": 2, "pose": "v", "visual": ""}}, {"id": "public-8489d3fcb4abe54d4a2f49431b1dca7789860b8e106b863bfd11baf53dde8f69", "nick": "Fuji", "avatar": {"a": "mic", "c": {"gl": "", "det": "", "eye": "#e099ff", "hat": "presilhas", "out": "seifuku", "back": "", "hair": "#ffe896", "skin": "#f1c9a5", "front": "lateral", "hair2": "#4dd8ff", "outcol": "#7d02a6", "streak": false}, "expr": 3, "pose": "coracao", "visual": ""}}]}</script><script>
 /* Referência visual: chumikie/tsulipa-run · produção be9abbf121911284f341d458ef249dd171aab7e5. */
 
 (function(){
@@ -1158,7 +1177,7 @@ var AC=null,muted=false,acResumePromise=null;function ac(){
   }catch(e){acResumePromise=null;}
  }
  return AC;
-}function beep(f,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.035,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);} function krAlternarSom(){muted=!muted;var muteButton=$('krMute');if(muteButton){muteButton.textContent=muted?'🔇':'🔊';muteButton.setAttribute('aria-pressed',muted?'true':'false');muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som');}if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}else krMusicaLigar();}
+}function beep(f,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.035,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);} function krAlternarSom(){muted=!muted;var muteButton=$('krMute');if(muteButton){muteButton.textContent=muted?'🔇':'🔊';muteButton.setAttribute('aria-pressed',muted?'true':'false');muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som');}if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}else krMusicaLigar();}
 $('krMute').onclick=krAlternarSom;
 var CH=[{n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'zipper',outcol:'#9b30d9',hat:'',baixo:'bermuda'},{n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'sweet',outcol:'#4ade80',hat:'',baixo:'saia'},{n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'citypop',outcol:'#4169e1',hat:'',baixo:'bermuda'},{n:'Idol',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'seifuku',outcol:'#ffffff',hat:''}];function meuChar(){var c=JSON.parse(JSON.stringify(CH[sel]||CH[0]));try{c._avatarA=localStorage.getItem('brs48cr_acc')||'';}catch(e){c._avatarA='';}return c;}
 var krMeuCharSalaSource=null,krMeuCharSalaClone=null;
@@ -1259,6 +1278,12 @@ var ktFlow=(function(){
  var guide=SHORTCUT_COPY[LANG]||SHORTCUT_COPY.pt;
  shortcuts.innerHTML='<span><kbd>D</kbd> <kbd>F</kbd> <kbd>J</kbd> <kbd>K</kbd> '+guide[0]+'</span><span><kbd>P</kbd> '+guide[1]+'</span><span><kbd>M</kbd> '+guide[2]+'</span><span><kbd>C</kbd> '+guide[3]+'</span><span><kbd>S</kbd> '+guide[4]+'</span>';
  $('ktHint').after(shortcuts);
+ if(window.ktEnsaio){
+   var botaoEnsaio = document.createElement('button'); botaoEnsaio.type='button';
+   botaoEnsaio.id='ktEnsaioComecar';botaoEnsaio.className='btn';
+   botaoEnsaio.textContent=t(7)+' · 20 s';botaoEnsaio.onclick=request;
+   $('krPalco').before(botaoEnsaio);
+ }
  $('ktFoto').title=guide[3];$('ktFoto').setAttribute('aria-keyshortcuts','C');
  $('ktPause').setAttribute('aria-keyshortcuts','P');
  var sleep=document.createElement('p');sleep.className='kt-dream-goodnight';sleep.textContent=CLOSED_COPY[LANG]||CLOSED_COPY.pt;
@@ -1279,7 +1304,7 @@ var ktFlow=(function(){
  $('ktConfirmCancel').onclick=function(){window.ktShowAdmissionPending=false;dialog.close();};
  var requestId=0,busy=false,ticketChoice=false;
  function showCount(a){var used=Math.max(0,Math.min(5,+a.used||0)),left=Math.max(0,5-used),tickets=Math.max(0,+a.tickets||0);ticketChoice=!a.pending&&left===0&&tickets>0;$('ktConfirmTitle').textContent=ticketChoice?t(15):t(0);$('ktConfirmCount').textContent=t(1)+': '+used+'/5 · '+left+' '+t(2);$('ktConfirmStars').textContent='★'.repeat(left)+'☆'.repeat(used);$('ktConfirmTicket').textContent=t(3)+': '+tickets;$('ktConfirmAccept').textContent=a.pending?t(6):ticketChoice?t(16):t(5);$('ktConfirmAccept').disabled=(!a.pending&&left===0&&!ticketChoice)||a.available===false||busy;}
- function request(){if(kt.active()||dialog.open||!krSt.aberta)return;if(!krEuNoMicrofone()){krAviso('Volte ao microfone para começar a apresentação.');krPlanearRetornoMicrofone();return;}window.ktShowAdmissionPending=true;var a=ktMeta.controls();busy=true;var id=++requestId;
+ function request(){if(kt.active()||dialog.open)return;if(window.ktEnsaio){kt.start('ensaio');return;}if(!krSt.aberta)return;if(!krEuNoMicrofone()){krAviso('Volte ao microfone para começar a apresentação.');krPlanearRetornoMicrofone();return;}window.ktShowAdmissionPending=true;var a=ktMeta.controls();busy=true;var id=++requestId;
   $('ktConfirmTitle').textContent=t(0);$('ktConfirmTicket').textContent=t(3);$('ktConfirmCancel').textContent=t(4);$('ktConfirmAccept').textContent=t(14);$('ktConfirmAccept').disabled=true;showCount(a);dialog.showModal();
   window.ktOnline.quota().catch(function(){return null;}).then(function(){if(id!==requestId||!dialog.open)return;busy=false;showCount(ktMeta.controls());});
  }
@@ -1462,7 +1487,7 @@ function ktPetDesenho(ctx, type, x, y, sc, tFrame, ex, running){ ex=ex||'';
 }
 /* Chu, Koali e Pucchi pulam e respondem ao toque. */
 var ktPets=[{k:'tsu',nome:'Chu',x:392,y:306,cor:'💜'},{k:'lirika',nome:'Koali',x:550,y:307,cor:'💚'},{k:'pati',nome:'Pucchi',x:597,y:302,cor:'💙'}];
-function ktPetGlide(f1,f2,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'sine';o.frequency.setValueAtTime(f1,s);o.frequency.exponentialRampToValueAtTime(f2,s+d);gn.gain.setValueAtTime(v||.04,s);gn.gain.exponentialRampToValueAtTime(.001,s+d+.05);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d+.08);}
+function ktPetGlide(f1,f2,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'sine';o.frequency.setValueAtTime(f1,s);o.frequency.exponentialRampToValueAtTime(f2,s+d);gn.gain.setValueAtTime(v||.04,s);gn.gain.exponentialRampToValueAtTime(.001,s+d+.05);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d+.08);}
 function ktPetVoz(k){if(k==='tsu'){ktPetGlide(620,1180,.11,'triangle',.06);ktPetGlide(1180,880,.14,'triangle',.05,.11);}else if(k==='lirika'){ktPetGlide(480,720,.2,'sine',.07);ktPetGlide(720,560,.24,'sine',.055,.2);}else{ktPetGlide(520,380,.08,'square',.03);ktPetGlide(330,250,.14,'square',.028,.1);}}
 /* A temporary visit is room decoration only: no save, stats or account writes. */
 function ktPetOrbita(i,t){var vel=[.0042,-.0034,.0029][i%3],a=t*vel+i*2.1;
@@ -2228,8 +2253,8 @@ for(i=krBolhas.length-1;i>=0;i--){var b=krBolhas[i],agoraB=performance.now();
 var krMus=null;/* Sala: chiptune 150 BPM (IV–V–iii–vi) */
 var krRuidoBuf=null;
 function krRuido(dur,vol,corte,when){var a=ac();if(!a||muted)return;if(!krRuidoBuf){krRuidoBuf=a.createBuffer(1,a.sampleRate*.3,a.sampleRate);var d=krRuidoBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
- var s=a.currentTime+(when||0),src=a.createBufferSource(),f=a.createBiquadFilter(),gn=a.createGain();src.buffer=krRuidoBuf;f.type='highpass';f.frequency.value=corte||5000;gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+dur);src.connect(f);f.connect(gn);gn.connect(a.destination);src.start(s);src.stop(s+dur+.02);}
-function krBumbo(vol){var a=ac();if(!a||muted)return;var s=a.currentTime,o=a.createOscillator(),gn=a.createGain();o.type='sine';o.frequency.setValueAtTime(150,s);o.frequency.exponentialRampToValueAtTime(42,s+.13);gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+.16);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+.18);}
+ var s=a.currentTime+(when||0),src=a.createBufferSource(),f=a.createBiquadFilter(),gn=a.createGain();src.buffer=krRuidoBuf;f.type='highpass';f.frequency.value=corte||5000;gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+dur);src.connect(f);f.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);src.start(s);src.stop(s+dur+.02);}
+function krBumbo(vol){var a=ac();if(!a||muted)return;var s=a.currentTime,o=a.createOscillator(),gn=a.createGain();o.type='sine';o.frequency.setValueAtTime(150,s);o.frequency.exponentialRampToValueAtTime(42,s+.13);gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+.16);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+.18);}
 function krMusicaLigar(){if(krRhythmRun||krMus||muted||!krRoomPodeAnimar())return;
  var roots=[41,43,40,45],acordes=[[65,69,72,76],[67,71,74,77],[64,67,71,74],[69,72,76,79]],
   mel=[77,-1,79,81,84,-1,81,79, 79,-1,81,83,86,-1,83,81, 79,-1,76,79,83,-1,81,79, 81,-1,84,-1,88,86,84,81,
@@ -2255,7 +2280,16 @@ function krMusicaLigar(){if(krRhythmRun||krMus||muted||!krRoomPodeAnimar())retur
   if(bar===3&&p>=12){krRuido(.04,.03*k,3000);if(p===15)beep(hz(ac4[3]+24),.15,'sine',.012*k,.03);}
   step++;},100);}
 function krMusicaParar(){if(krMus){clearInterval(krMus);krMus=null;}}document.addEventListener('pointerdown',function(){ac();krMusicaLigar();},{once:true});
-function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)return;if(ja!==true&&krFotoEspera)return;if(ja!==true&&!krFotoEspera&&krCorteSala(cv)){var krFotoFeita=false,krFotoVai=function(){if(krFotoFeita)return;krFotoFeita=true;krFotoEspera=null;krSalvarFotoSala(true);};krFotoEspera=krFotoVai;setTimeout(krFotoVai,400);return;}
+function krSalvarFotoSala(ja){var cv=$('krCv');if(!cv)return;if(ja!==true&&krFotoEspera)return;if(ja!==true&&krCorteSala(cv)){
+  var krFotoVai=function(){krSalvarFotoSala(true);};
+  krFotoEspera=krFotoVai;
+  setTimeout(function(){
+    if(krFotoEspera!==krFotoVai)return;
+    krFotoEspera=null;
+    krAviso('Não consegui preparar a foto neste navegador.');
+  },400);
+  return;
+ }
  var photo=window.KaraokeRoomPhoto,resume=false;
  if(!photo){krAviso('Não consegui preparar a foto neste navegador.');return;}
  photo.capture(cv,{opener:$('ktFoto'),
@@ -2312,7 +2346,7 @@ function krRoomObserversDesconectar(){
 window.ktShowAdmissionPending=false;
 if(window.KaraokeRoomAutoMic&&typeof window.KaraokeRoomAutoMic.create==='function'){
  window.krLoungeAutoMicController=window.KaraokeRoomAutoMic.create({
-  getState:function(){return {soloAllowed:krLoungeSoloPermitido(),roomOpen:krSt.aberta,nextAt:krAutoMicNextAt,time:krT,singer:krDemoCantor,rhythmRun:krRhythmRun,playerNoMic:krEu.no_mic,admissionPending:window.ktShowAdmissionPending===true,returnAt:krMeuRetornoAt,returning:krMeuVoltandoAoMic,moveQueueLength:krMoveQueue.length,playerAtMic:krEuNoMicrofone(),walkerCount:krLoungeActors.length,queueLength:krDemoFila.length,gameActive:!!(kt&&kt.active())};},
+  getState:function(){return {soloAllowed:!window.ktEnsaio&&krLoungeSoloPermitido(),roomOpen:krSt.aberta,nextAt:krAutoMicNextAt,time:krT,singer:krDemoCantor,rhythmRun:krRhythmRun,playerNoMic:krEu.no_mic,admissionPending:window.ktShowAdmissionPending===true,returnAt:krMeuRetornoAt,returning:krMeuVoltandoAoMic,moveQueueLength:krMoveQueue.length,playerAtMic:krEuNoMicrofone(),walkerCount:krLoungeActors.length,queueLength:krDemoFila.length,gameActive:!!(kt&&kt.active())};},
   getBots:function(){return krBots;},canWalk:function(bot){return krLoungePodePassear(bot);},
   getSeat:function(index){return KR_SOFA_SLOTS[index]||null;},removeWalker:function(bot){var i=krLoungeActors.indexOf(bot);if(i>=0)krLoungeActors.splice(i,1);},
   preparePlayerForSinger:function(x,y){
@@ -2412,7 +2446,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)chec
 return {context:function(){var p=owner();return {id:selfId,nick:p.nick,avatar:p.avatar,day:day(),simulated:!!overrideDay};},init:apply,live:live,currentId:function(){return selfId;},posters:posters,check:check,lock:lock,beforeStart:function(){check();lock(true);},afterEnd:function(){lock(false);},snapshot:function(){return active?{day:active.day,viewerId:selfId,ids:active.members.map(function(p){return p.id;}),names:active.members.map(function(p){return p.nick;})}:null;}};
 })();
 ktDaily.init();
-(function(){try{if(!document.documentElement.classList.contains('kt-no-site'))return;var a=window.parent&&window.parent.twKaraokeOnline;if(!a||!a.plateia)return;a.plateia().then(function(l){ktDaily.live(l);}).catch(function(){});}catch(e){}})();
+(function(){try{if(window.ktEnsaio||!document.documentElement.classList.contains('kt-no-site'))return;var a=window.parent&&window.parent.twKaraokeOnline;if(!a||!a.plateia)return;a.plateia().then(function(l){ktDaily.live(l);}).catch(function(){});}catch(e){}})();
 
 /* Ranking uses server-confirmed shows and weekly boards. */
 window.ktOnline=window.KaraokeOnlineFactory($,krAviso,CH,KaraokeAvatar,ktDaily,LANG);
@@ -2423,7 +2457,19 @@ function resetAt(day){return Date.parse(KaraokeDaily.nextDay(day,1)+'T03:00:00Z'
 function timeLeft(ms){var s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s/60)%60).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 var ranking=window.KaraokeRanking.criar({$:$,tr:tr,rules:rules,context:context,avatar:KaraokeAvatar});
 function renderBoards(){ranking.render();}
-function controls(){var c=context(),a=window.ktOnline.ajusta(rules.snapshot(c.day,c.id)),playing=kt.active(),pending=!!a.pending,locked=a.remaining===0&&!(a.tickets>0)&&!playing&&!pending;$('ktLimitTitle').textContent=playing?'🎤 Seu show está acontecendo':pending?'🎤 Seu show pausado está guardado':locked?'🌙 As cortinas voltam a abrir amanhã':a.remaining===0?'🎟️ Brilhe com seu ticket extra':'✦ Seus cinco shows de hoje';$('ktLimitCount').textContent=a.used+'/5 usados · '+a.remaining+' disponíveis · 🎟️ '+(a.tickets||0);$('ktLimitPips').textContent='★'.repeat(a.remaining)+'☆'.repeat(a.used);$('ktLimitHelp').textContent=pending&&!playing?'Retome a mesma partida sem gastar outra tentativa.':a.remaining===0?'Um show extra custa 1 ticket. Você confirma antes de gastar.':'Iniciar usa uma tentativa. Pausar e retomar não usa outra; encerrar finaliza a tentativa.';
+function controls(){
+ if(window.ktEnsaio){
+   var tocando=kt.active(), nome=ktFlow.t(7)+' · 20 s';
+   $('ktLimitTitle').textContent=nome; $('ktLimitHelp').textContent=ktFlow.t(9);
+   $('ktClosed').hidden=true; krCortina=0;
+   $('ktEnsaioComecar').disabled=tocando;
+   $('ktStart').disabled=tocando; if(!tocando)$('ktStart').textContent=nome;
+   $('ktSong').disabled=tocando;
+   if(!tocando&&!$('ktResult').open)$('ktClock').textContent='00:20';
+   document.body.classList.toggle('kt-playing',tocando);ktArenaSync();
+   return {remaining:0,tickets:0};
+ }
+ var c=context(),a=window.ktOnline.ajusta(rules.snapshot(c.day,c.id)),playing=kt.active(),pending=!!a.pending,locked=a.remaining===0&&!(a.tickets>0)&&!playing&&!pending;$('ktLimitTitle').textContent=playing?'🎤 Seu show está acontecendo':pending?'🎤 Seu show pausado está guardado':locked?'🌙 As cortinas voltam a abrir amanhã':a.remaining===0?'🎟️ Brilhe com seu ticket extra':'✦ Seus cinco shows de hoje';$('ktLimitCount').textContent=a.used+'/5 usados · '+a.remaining+' disponíveis · 🎟️ '+(a.tickets||0);$('ktLimitPips').textContent='★'.repeat(a.remaining)+'☆'.repeat(a.used);$('ktLimitHelp').textContent=pending&&!playing?'Retome a mesma partida sem gastar outra tentativa.':a.remaining===0?'Um show extra custa 1 ticket. Você confirma antes de gastar.':'Iniciar usa uma tentativa. Pausar e retomar não usa outra; encerrar finaliza a tentativa.';
  if(!a.available){$('ktLimitHelp').textContent='Permita o armazenamento local para guardar suas cinco tentativas neste navegador.';}
  $('ktClosed').hidden=!locked;krCortina=locked?(krCortina||.02):0;
  if(locked){$('ktReopens').textContent=c.simulated?'Reabre em '+KaraokeDaily.nextDay(c.day,1).split('-').reverse().join('/')+' às 00h de Brasília (data de teste).':'Reabre à meia-noite de Brasília · faltam '+timeLeft(resetAt(c.day)-Date.now());}
@@ -2431,9 +2477,9 @@ function controls(){var c=context(),a=window.ktOnline.ajusta(rules.snapshot(c.da
  document.body.classList.toggle('kt-playing',playing);ktArenaSync();document.body.classList.toggle('kt-room-closed',locked);$('ktViewMobile').textContent=document.body.classList.contains('kt-mobile-overview')?'⛶ Ampliar telão':'↙ Ver sala inteira';
  return a;}
 function begin(song){var c=context(),a=rules.begin(c,c.day,song,window.ktOnline.ticketAdmission());if(!a.ok){controls();if(a.reason==='storage')$('ktLimitHelp').textContent='Não foi possível guardar a tentativa. Permita o armazenamento local antes de iniciar.';return a;}controls();return a;}
-function checkpoint(run){if(!run||!run.session)return;var c=context(),elapsed=(run.paused?run.pauseAt:performance.now())-run.start;rules.checkpoint(run.session.player.id,run.session.token,c.day,{elapsed:elapsed,song:run.session.song,score:run.score,hits:run.hits,attempts:run.attempts,combo:run.combo,maxCombo:run.maxCombo,noteMap:2,done:run.notes.map(function(n){return n.done;}),canto:krEu.canto});}
+function checkpoint(run){if(!run||!run.session)return;var c=context(),elapsed=(run.paused?run.pauseAt:performance.now())-run.start;rules.checkpoint(run.session.player.id,run.session.token,c.day,{elapsed:elapsed,song:run.session.song,score:run.score,hits:run.hits,attempts:run.attempts,combo:run.combo,maxCombo:run.maxCombo,timing:run.timing,noteMap:2,done:run.notes.map(function(n){return n.done;}),canto:krEu.canto});}
 function complete(run,completed){if(!run||!run.session)return {ok:false};var c=context(),result=completed?{score:run.score,hits:run.hits,attempts:run.attempts,combo:run.maxCombo,totalNotes:run.notes.length,completedAt:Date.now(),song:run.session.song}:null;var r=rules.finish(run.session.player.id,run.session.token,c.day,result);window.ktOnline.finish(result);lastSignature='';renderBoards();if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine&&typeof ktAudioVitrine.refresh==='function')ktAudioVitrine.refresh();return r;}
-function refresh(){controls();window.ktOnline.load();renderBoards();}window.ktMetaRefresh=function(){ranking.reset();renderBoards();controls();};
+function refresh(){controls();if(!window.ktEnsaio){window.ktOnline.load();renderBoards();}}window.ktMetaRefresh=function(){ranking.reset();renderBoards();controls();};
 $('ktViewMobile').onclick=function(){document.body.classList.toggle('kt-mobile-overview');controls();};$('ktViewRanks').onclick=function(){$('ktWeeklyRanks').scrollIntoView({behavior:'smooth',block:'start'});};
 
 var ktMetaTimer=0,ktMetaGate=null;
@@ -2446,7 +2492,12 @@ return {begin:begin,checkpoint:checkpoint,complete:complete,refresh:refresh,cont
 ktMeta.refresh();
 /* Recorde pessoal da música escolhida (Trilha). */
 function ktSongRecordUI(){var el=$('ktSongRecord');if(!el)return;var p={};try{p=ktMeta.personalSongs()||{};}catch(e){}var row=p[$('ktSong').value];el.textContent='🏅 '+(row&&Number.isFinite(row.score)?tr('Seu recorde pessoal')+': '+Math.round(row.score).toLocaleString('pt-BR')+' pts':tr('Sem recorde ainda'))+(window.KaraokeRoomViews&&$('ktSong').value===KaraokeRoomViews.songFor(Date.now())?' · ⭐ '+tr('Música da semana'):'');}
-(function(){var r=ktMeta.refresh;ktMeta.refresh=function(){var x=r.apply(this,arguments);ktSongRecordUI();return x;};$('ktSong').addEventListener('change',ktSongRecordUI);ktSongRecordUI();})();
+(function(){var r=ktMeta.refresh;ktMeta.refresh=function(){var x=r.apply(this,arguments);ktSongRecordUI();return x;};$('ktSong').addEventListener('change',ktSongRecordUI);
+if(new URLSearchParams(location.search).get('festival') === '1' && !$('ktSong').disabled){
+  var semanal = window.KaraokeRoomViews.songFor(Date.now());
+  if(semanal) $('ktSong').value = semanal;
+}
+ktSongRecordUI();})();
 /* Interações cenográficas são locais, sem presença online. */
 /* Audience strip mirrors the main-page Idol strip. */
 var ktDecor=(function(){
@@ -2601,7 +2652,7 @@ if(ktNoSite()){
  window.addEventListener('pageshow',start);
  place();
 })();
-</script><script src="./tw-windows.js?v=1"></script>
+</script><script src="./tw-windows.js?v=2"></script>
 <script src="./karaoke-mobile.js?v=4"></script>
 <script src="./karaoke-photo.js?v=2"></script>
 <script src="./karaoke-lista.js?v=6"></script>

@@ -20,6 +20,7 @@
 <style id="twSemEsperaDecorativa">.twc-carrega{display:none!important;pointer-events:none}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-nitidez.js?v=9"></script>
+<script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script>
@@ -46,7 +47,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=14">
+<link rel="stylesheet" href="./centerrun.css?v=15">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -65,7 +66,7 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=10">
+<link rel="stylesheet" href="./hub.css?v=11">
 <link rel="stylesheet" href="./shop.css?v=5">
 <link rel="stylesheet" href="./jornal.css?v=15">
 <style>
@@ -80,10 +81,10 @@
 .buscares em{font-size:12px;color:var(--sub)}
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
-<link rel="stylesheet" href="./album.css?v=3">
+<link rel="stylesheet" href="./album.css?v=4">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=4">
-<link rel="stylesheet" href="./cafe.css?v=3">
+<link rel="stylesheet" href="./cafe.css?v=4">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -406,12 +407,13 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=31"></script>
+<script src="./centerrun.js?v=34"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=43"></script>
+<script src="./pet.js?v=45"></script>
 <script src="./perfil.js?v=29"></script>
 <script src="./gacha.js?v=4"></script>
-<script src="./album.js?v=6"></script>
+<script src="./album-fotos.js?v=1"></script>
+<script src="./album.js?v=8"></script>
 <script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
 <script src="./fa.js?v=2"></script>
@@ -441,7 +443,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=15','./cafe.js?v=23','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=5','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -462,9 +464,9 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=1"></script>
-<script src="./encontro-base.js?v=1"></script>
-<script src="./hub.js?v=29"></script>
+<script src="./duo-base.js?v=2"></script>
+<script src="./encontro-base.js?v=2"></script>
+<script src="./hub.js?v=33"></script>
 <script src="./hub-layout.js?v=5"></script>
 <script src="./mapa-textos.js?v=3"></script>
 <script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
@@ -490,12 +492,13 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   });
 })();</script>
 <script src="./bloom.js?v=11"></script>
-<script src="./shop.js?v=7"></script>
-<script src="./jornal.js?v=27"></script>
+<script src="./shop.js?v=8"></script>
+<script src="./tw-piloto-bairro.js?v=1"></script>
+<script src="./jornal.js?v=31"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=19';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=24';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
@@ -511,11 +514,11 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
-<script src="./jogos-trilha.js?v=1"></script>
+<script src="./jogos-trilha.js?v=2"></script>
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=15"></script>
 <script src="./banner.js?v=6"></script>
-<script src="./conta.js?v=5"></script>
+<script src="./conta.js?v=7"></script>
 <script src="./admin-base.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
@@ -526,14 +529,14 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=38"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=6"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=51"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=42"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=7"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=56"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=38';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=42';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
-  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=6';vb.async=false;document.body.appendChild(vb);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=7';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=50';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=56';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
@@ -775,7 +778,38 @@ var sfx={
 var TR={s0:mel,s1:[659,784,880,784,659,587,523,587,659,784,988,880,784,659,587,659],s2:[880,988,1047,988,880,784,880,1047,1175,1047,988,880,784,880,988,1175],s3:[1047,1319,1568,1319,1047,880,1047,1319,1568,1760,1568,1319,1175,1319,1568,2093],tense:[440,0,440,523,0,440,0,415,440,0,440,523,0,659,622,0],hard:[440,466,440,415,440,523,494,440,659,622,587,554,587,698,659,622],menu:men,alien:[1046,1174,1318,1567,1318,1174,1046,932,1046,1174,1318,1567,1864,1567,1318,1174],unit:[523, 659, 784, 1046, 659, 784, 1046, 1319, 784, 1046, 1319, 1568, 1046, 1319, 1568, 2093]},curT='';
 TR.kawaii = [1046, 1318, 1568, 2093, 1568, 1318, 1046, 1318, 1568, 2093, 1568, 1318, 2093, 2637, 3136, 2637];
 
-var muteB=document.getElementById('mute');muteB.onclick=function(e){e.stopPropagation();muted=!muted;muteB.textContent=muted?'🔇':'🔊';sync();};
+var muteB=document.getElementById('mute');
+function twSomGeralAplicar(){
+  if(window.TW_AUDIO){
+    var a=window.TW_AUDIO.estado();muted=a.mudo;
+    document.querySelectorAll('[data-tw-audio]').forEach(function(el){
+      var papel=el.dataset.twAudio;
+      if(papel==='som')el.checked=!a.mudo;
+      else if(papel==='volume')el.value=a.volume;
+      else el.textContent=a.volume+'%';
+    });
+  }
+  muteB.textContent=muted?'🔇':'🔊';
+  muteB.setAttribute('aria-pressed',String(muted));
+  sync();
+  if(typeof ovSomUI==='function')ovSomUI();
+  if(muted){if(typeof hubMusicaParar==='function')hubMusicaParar();}
+  else if(typeof hubTelaAberta==='function' && hubTelaAberta() && typeof hubMusicaTocar==='function')hubMusicaTocar();
+}
+if(window.TW_AUDIO)muted=window.TW_AUDIO.estado().mudo;
+muteB.textContent=muted?'🔇':'🔊';muteB.setAttribute('aria-pressed',String(muted));
+window.addEventListener('tw-audio',twSomGeralAplicar);
+document.addEventListener('input',function(e){
+  var papel=e.target.dataset && e.target.dataset.twAudio;
+  if(!window.TW_AUDIO)return;
+  if(papel==='som')window.TW_AUDIO.definir({mudo:!e.target.checked});
+  else if(papel==='volume')window.TW_AUDIO.definir({volume:+e.target.value});
+});
+muteB.onclick=function(e){
+  e.stopPropagation();
+  if(window.TW_AUDIO)window.TW_AUDIO.definir({mudo:!muted});
+  else{muted=!muted;twSomGeralAplicar();}
+};
 
 var P,obs,items,sp,score,fans,dist,frame=0,toast,toastT,rankI,shake,last,pw,shield,inv,held,sash,lastCard,lastS=0,dpw,pops=[],stars=0,lastUfo=0,finalExpr=0,nextX=0;
 var cc = document.getElementById('cel').getContext('2d');
@@ -1827,7 +1861,7 @@ shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.h
 document.body.appendChild(shopOv);
 $('shopX').onclick = shopFechar;
 $('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); });
+shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); });
 // Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
 function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
 function montChange(e){
@@ -2343,6 +2377,10 @@ var twPreviewHeaderPrincipal=document.querySelector('body > header');
     if(!frame||e.source!==frame.contentWindow)return;
     if(location.protocol!=='file:' && e.origin!==location.origin)return;
     if(typeof twPreviewKaraokeFotoReceber==='function' && twPreviewKaraokeFotoReceber(e))return;
+    if(e.data && e.data.type === 'TW_KARAOKE_FESTIVAL'){
+      if(twPreviewJogoAnterior === 'karaoke'){ twPreviewFecharJogo(); if(jornalOv.hidden)jornalAbrir('festival'); }
+      return;
+    }
     if(e.data&&e.data.type==='tw-kt-arena'){   // Karaoke⭐Time!: durante o show, o iframe ocupa a tela inteira
       var naArena=!!e.data.on&&twPreviewJogoAnterior==='karaoke',w=$('twPreviewJogo');
       if(w)w.toggleAttribute('data-karaoke-arena',naArena);document.documentElement.classList.toggle('tw-kt-arena',naArena);
@@ -2519,7 +2557,7 @@ trocaOv.innerHTML = '<div class="panel albump tw-modal tw-window tw-window-surfa
 document.body.appendChild(trocaOv);
 $('trocaX').onclick = trocaFechar;
 trocaOv.addEventListener('click', trocaClique);
-albumOv.addEventListener('click', function(e){ if(e.target.id === 'albumTrocar'){ $('trocaTit').textContent = '🔁 ' + tr('Troca de cards'); trocaAbrir(); } });
+albumOv.addEventListener('click', function(e){ if(e.target.id === 'albumTrocar'){ $('trocaTit').textContent = '🔁 ' + tr('Troca de cards'); trocaAbrir(); } else if(e.target.id === 'albumBattle' && typeof battleAbrir === 'function'){ albumFechar(); battleAbrir(); } });
 $('gachaAlbum').onclick = function(){ $('albumTit').textContent = '📖 ' + tr('Álbum de cards'); albumAbrir(); };
 
 $('gachaX').onclick = gachaFechar;
@@ -2582,7 +2620,7 @@ duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-win
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
     '<canvas id="duoCv" width="960" height="600"></canvas><p class="duodica" id="duoDica"></p>' +
-    '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button class="btn alt" type="button" id="duoPhone"></button></div>' +
+    '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button class="btn alt" type="button" id="duoPhone"></button><button class="btn alt" type="button" id="duoSerie"></button></div>' +
     '<p class="perfmsg" id="duoMsg" hidden></p>' +
     '<div class="duotabs" role="tablist" id="duoTabs"></div><div class="duopres duotrava" id="duoPresBox" hidden></div><div class="duotabc" id="duoTabC"></div>' +
   '</div></div>';
@@ -2830,11 +2868,12 @@ if(typeof temaAdminHtml === 'function'){ var temaAdmOrig = temaAdminHtml; temaAd
 window.TW_I18N.rows.miscStatusLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].forEach(function(l, i){ if(DICT[l]) DICT[l][t[0]] = t[i + 1]; }); });
 
 // ---------- Login com Google direto no site (mostra "TsuLiPa⭐World" em vez do endereço do Supabase) ----------
-var gisOv = document.createElement('div'); gisOv.className = 'ov gisov'; gisOv.hidden = true;
-gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="gisX">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
+var gisOv = document.createElement('div'); gisOv.className = 'ov gisov tw-window-overlay'; gisOv.hidden = true;
+gisOv.innerHTML = '<div class="panel gisp" role="dialog" aria-modal="true" aria-labelledby="gisTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gisX" aria-label="Fechar">✕</button><h2 id="gisTit"></h2><div id="gisBtn"></div><p class="perfmsg" id="gisMsg" hidden></p><p class="gisalt"><button type="button" class="lbn" id="gisAntigo"></button></p></div>';
 document.body.appendChild(gisOv);
 gisOv.addEventListener('click', function(e){ if(e.target.id === 'gisX' || e.target === gisOv) gisOv.hidden = true; if(e.target.id === 'gisAntigo'){ gisOv.hidden = true; _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); } });
 if(typeof contaEntrar === 'function'){ var contaEntrarOrig = contaEntrar; contaEntrar = function(){
+  if(typeof twLinkGuardarLogin === 'function')twLinkGuardarLogin();
   if(GOOGLE_CLIENT_ID && typeof _supabase !== 'undefined' && _supabase && _supabase.auth && _supabase.auth.signInWithIdToken && window.crypto && crypto.subtle && contaSiteOk()) return gisEntrar();
   return contaEntrarOrig.apply(this, arguments);
 }; }
@@ -3166,7 +3205,7 @@ $('again').onclick = start;
 var _origEnd;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
 twCorridaAoCarregar(function(){
 _origEnd = end;
-end = function(){
+end = function(impacto){
   if($('sb')) $('sb').style.display = 'none';
   // Se estava na Corrida do Dia, salva no ranking da Corrida do Dia
   if(s2DailyMode && !isTestGame){
@@ -3182,7 +3221,7 @@ end = function(){
       }catch(e){}
     }
   }
-  _origEnd();
+  _origEnd(impacto);
   // O chorinho da colisão fica só no jogo (s2HitEmotion); o cartão e o pôster do Fim do show
   // mantêm a expressão de exprFinal (feliz, piscadinha ou tristinha conforme a pontuação).
 };
@@ -3562,7 +3601,8 @@ applyLang();
   });
 })();
 </script>
-<script src="./tw-windows.js?v=1"></script>
+<script>twLinkInicializar();</script>
+<script src="./tw-windows.js?v=2"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

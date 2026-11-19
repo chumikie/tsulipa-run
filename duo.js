@@ -148,6 +148,10 @@ function duoTexto(){
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
   $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
+  var serie = $('duoSerie');
+  if(serie && window.TW_ALBUM_FOTOS){
+    serie.textContent = TW_ALBUM_FOTOS.textoSalvar(); serie.hidden = !serie.textContent; serie.disabled = false;
+  }
 }
 function duoTrava(attr, o){   // chave da lojinha que falta para usar este chip ('' = liberado)
   if(attr === 'data-dfundo' && duoTemaK(o[0])) return duoTemaGratis(o[0]) || lojaTem('tema_' + o[0]) ? '' : 'tema_' + o[0];   // tema: grátis na temporada ou se guardou

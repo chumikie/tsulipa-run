@@ -223,7 +223,7 @@ function beep(f,d,t,v,when){
   var a=ac();if(!a||muted)return;
   var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);
   o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.05,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);
-  o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);
+  o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);
 }
 var mel=[523,659,784,659,587,698,880,698,523,659,784,1046,988,784,659,784],bass=[131,131,175,175,196,196,131,131],men=[523,659,784,659,880,784,659,587,523,659,784,1046,880,784,659,587],bi=0,mt=null;
 var BS={tense:[110,110,110,104,110,110,98,104],hard:[110,104,110,98,110,104,123,104]};
@@ -344,6 +344,7 @@ nextX = W + 600;
   abducted=false;wasAbducted=false;
   window.wasGiant=false;
   state='play';
+  if(!isTestGame && window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('run', false);
   document.body.classList.add('jogando');   // esconde a dica e o rodapé durante a corrida
   $('menu').hidden=true;
   $('over').hidden=true;
@@ -1745,7 +1746,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=10',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=12',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

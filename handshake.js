@@ -419,7 +419,7 @@ function hsDesenhar(){
       x.fillText(reencontro.sinal, W2 * .33, H2 * .45 - reencontro.alfa * 9);
       x.restore(); }
     if(hs.fase === 'fila'){   // balão: nome + presente favorito
-      var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = visita ? '✨ Visita⭐Surpresa! · ' + visita.nick : tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = visita ? '🎁 ' + pr[0] + ' ' + tr(pr[1]) : tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
+      var J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo, pr = HS_PRESENTES[f.pres], txt = visita ? '✨ Visita⭐Surpresa! · ' + visita.nick : (f.hsCafeVoltou ? '💌 ' : '') + tr(f.oi || 'Oi! Eu sou {n}!').replace('{n}', f.nome), t2l = visita ? '🎁 ' + pr[0] + ' ' + tr(pr[1]) : tr(J.fav).replace('{p}', pr[0] + ' ' + tr(pr[1]));
       x.save(); x.font = '900 22px "M PLUS Rounded 1c",sans-serif'; var w = Math.min(W2 * .56, Math.max(x.measureText(txt).width, x.measureText(t2l).width) + 32);
       x.fillStyle = '#fff'; x.strokeStyle = '#ff6fb5'; x.lineWidth = 4; x.beginPath(); if(x.roundRect) x.roundRect(12, H2 * .16, w, 86, 18); else x.rect(12, H2 * .16, w, 86); x.fill(); x.stroke();
       x.fillStyle = '#3c2a8f'; x.textAlign = 'left'; x.fillText(txt, 28, H2 * .16 + 34, w - 24);

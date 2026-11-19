@@ -85,3 +85,7 @@ html:not([data-theme="light"]) .cfduplo-urgente{color:#ffd1a8}
 .hstempo.cfpac.cfpac-fim b{animation:cfpacpulso .6s ease-in-out infinite alternate}
 @keyframes cfpacpulso{to{transform:translateY(-50%) scale(1.22)}}
 @media (prefers-reduced-motion:reduce){.hstempo.cfpac i{transition:none}.hstempo.cfpac.cfpac-fim b{animation:none}}
+
+.cfduplo-primeiro,.cfduplo-copo{display:block;font-weight:750;font-size:.75rem;line-height:1.2}
+.cfduplo-primeiro{color:#91352c}
+:root:not([data-theme="light"]) .cfduplo-primeiro{color:#ffc7a3}

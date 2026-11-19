@@ -41,6 +41,31 @@ var SW=560,SH=520,DUR=2;               // palco lógico (px) e duração de cada
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
 var revanche=null;
 var fase='escalar',showT0=0,showRaf=0,rodadaCalma=0;
+var trocaTreino=false,trocaFeita=false,trocaResumo='';
+var TROCA_TR={
+ pt:['Cada posição usa o atributo da sua rodada.','Trocar as duas próximas posições','Só no treino e na revanche','Troca feita'],
+ en:['Each position uses its round’s stat.','Swap the next two positions','In practice and rematches','Positions swapped'],
+ es:['Cada posición usa el atributo de su ronda.','Intercambiar las dos próximas posiciones','En práctica y revancha','Posiciones intercambiadas'],
+ id:['Tiap posisi memakai atribut rondenya.','Tukar dua posisi berikutnya','Dalam latihan dan tanding ulang','Posisi ditukar'],
+ th:['แต่ละตำแหน่งใช้ค่าสถานะของรอบนั้น','สลับสองตำแหน่งถัดไป','ใช้ได้ในการฝึกและแข่งใหม่','สลับตำแหน่งแล้ว'],
+ ja:['各ポジションではそのラウンドの能力値を使います。','次の2ポジションを入れ替える','練習と再戦で利用可能','入れ替え完了']
+};
+function trocaTxt(i){return (TROCA_TR[lang()]||TROCA_TR.pt)[i];}
+function efeitoPosicao(i,antes,depois){
+ return nomeRound(i)+' '+antes+' → '+depois;
+}
+function trocarRestantes(){
+ if(!trocaTreino||trocaFeita||rodadaCalma!==0||!rodadas||
+    (fase!=='show-troca'&&fase!=='show-calmo'))return;
+ var antes1=rodadas[1].eu,antes2=rodadas[2].eu;
+ var anterior=unit[1];unit[1]=unit[2];unit[2]=anterior;
+ var novas=treinoShow();
+ rodadas[1]=novas[1];rodadas[2]=novas[2];trocaFeita=true;
+ trocaResumo=trocaTxt(3)+' · '+efeitoPosicao(1,antes1,rodadas[1].eu)+' · '+efeitoPosicao(2,antes2,rodadas[2].eu);
+ render();
+ var proxima=ov.querySelector('[data-battle="proxima-rodada"]');if(proxima)proxima.focus();
+}
+
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
@@ -175,6 +200,12 @@ function montar(){
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;
    var a=b.getAttribute('data-battle');
    if(a==='fechar'){fechar();return;}
+   if(a==='trocar-restantes'){ trocarRestantes(); return; }
+   if(a==='proxima-rodada' && fase==='show-troca'){
+     fase='show';rodadaCalma=1;showT0=agora()-DUR;render();quadroShow();
+     var agita=ov.querySelector('[data-battle="agitar"]');if(agita)agita.focus();
+     return;
+   }
    if(a==='proxima-rodada' && fase==='show-calmo'){
      if(rodadaCalma + 1 === rodadas.length){
        fimDoShow();
@@ -422,13 +453,16 @@ function render(){
  ov.querySelector('#battleSub').textContent=trB('subtitle');
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
- if(fase==='show-calmo'){
+ if(fase==='show-calmo'||fase==='show-troca'){
    var i = rodadaCalma, r = rodadas[i], textoCalmo = SHOW_CALMO[lang()] || SHOW_CALMO.pt;
    var meu = r.meu || unit[i], rival = r.rival || '?';
    area.innerHTML = '<div class="battle-showhud" role="status"><b>' + esc(nomeRound(i)) + ' · ' +
      (i + 1) + '/' + rodadas.length + '</b><span>' + esc(textoCalmo[2].replace('{n}', r.ganhou ? meu : rival)) + '</span></div>' +
      '<p class="battle-ritmo">' + esc(meu) + ' ' + Number(r.eu || 0) + ' × ' + Number(r.eles || 0) + ' ' + esc(rival) + '</p>' +
-     '<div class="btns"><button type="button" class="btn" data-battle="proxima-rodada">' +
+     (trocaTreino&&i===0 ? '<p class="battle-hint" role="status" data-battle-troca>' +
+       esc(trocaResumo || (nomeRound(1)+' '+rodadas[1].eu+' · '+nomeRound(2)+' '+rodadas[2].eu)) + '</p>' : '') +
+     '<div class="btns">' + (trocaTreino&&i===0&&!trocaFeita ? '<button type="button" class="btn alt" data-battle="trocar-restantes">' +
+       esc(trocaTxt(1)) + '</button>' : '') + '<button type="button" class="btn" data-battle="proxima-rodada">' +
      esc(textoCalmo[i + 1 === rodadas.length ? 1 : 0]) + '</button></div>';
    desenharPalco(i * DUR + DUR - .08);
    return;
@@ -469,7 +503,8 @@ function render(){
  texto+='<section class="battle-escalar"><h3>'+esc(trB('stage'))+'</h3><div class="battle-trio">'+
    unit.map(function(n,i){var c=cardDe(n)||{nick:n},card=idolHtml(c,true,ico(i)+esc(nomeRound(i)),i).replace(/^<div /,'<span ').replace(/<\/div>$/,'</span>');
      return '<button type="button" class="battle-slotbtn'+(slotAberto===i?' on':'')+'" data-battle="abrir-slot" data-slot="'+i+'" aria-expanded="'+(slotAberto===i)+'">'+card+'</button>';}).join('')+
-   '</div><p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
+   '</div><p class="battle-hint">'+esc(trocaTxt(0))+' · '+esc(trocaTxt(2))+'</p>'+
+   '<p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
    (estado.starter?'<div class="btns battle-semcards"><button type="button" class="btn alt" data-battle="ir-gacha">'+esc(trB('toGacha'))+'</button></div>':'');
  texto+=slotsHtml()+'</section>'+torcidaHtml();
  if(revanche)texto+='<p class="battle-hint">'+esc(textoRevanche[1])+'</p>';
@@ -498,7 +533,7 @@ function jogar(){
  if(unit.length!==3||new Set(unit).size!==3||unit.some(function(x){return !cardDe(x);})){
    msg=trB('choose');render();return;
  }
- ocupado=true;msg='';render();
+ ocupado=true;msg='';trocaTreino=!servidor||!!revanche;trocaFeita=false;trocaResumo='';render();
  if(!servidor||revanche){
    rodadas=treinoShow();ocupado=false;comecarShow();return;
  }
@@ -625,10 +660,17 @@ function comecarShow(){
    ov.querySelector('[data-battle="proxima-rodada"]').focus();
    return;
  }
- fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
- (function quadro(){
+ fase='show';rodadaCalma=0;showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
+ quadroShow();
+}
+function quadroShow(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;
    var t=agora()-showT0;
+   if(t>=DUR&&trocaTreino&&rodadaCalma===0){
+     rodadaCalma=0;fase='show-troca';render();
+     ov.querySelector('[data-battle="proxima-rodada"]').focus();
+     return;
+   }
    if(t>=DUR*3+.15){fimDoShow();return;}
    var ri=Math.min(2,Math.floor(t/DUR));
    var live=ov.querySelector('#battleLiveRodada'),progresso=ov.querySelector('#battleShowFill');
@@ -641,8 +683,7 @@ function comecarShow(){
      var nr=ov.querySelector('#battleNarra'),rr=rodadas[ri];
      if(nr)nr.textContent=nomeRound(ri)+': '+(rr.meu||unit[ri])+' '+Number(rr.eu||0)+' × '+Number(rr.eles||0)+' '+(rr.rival||'');
    }
-   desenharPalco(t);showRaf=requestAnimationFrame(quadro);
- })();
+   desenharPalco(t);showRaf=requestAnimationFrame(quadroShow);
 }
 function fimDoShow(){
  if(!rodadas || fase==='fim')return;

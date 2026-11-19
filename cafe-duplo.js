@@ -1,5 +1,5 @@
 /* Happy⭐Cafe! — modo "Dois no balcão".
-   Dois fãs esperam ao mesmo tempo, cada um com a sua paciência; há um copo só e você escolhe para quem servir.
+   Dois fãs esperam ao mesmo tempo, cada um com a sua paciência; cada um tem o próprio copo em preparo.
    Liga quando dá para validar do jeito certo:
      • sem conta (treino): sempre;
      • com conta: só se o servidor tiver cafe_run_pedidos/cafe_run_etapa2
@@ -22,12 +22,31 @@
     th:['ใกล้หมดความอดทน','ออเดอร์ถูกต้อง!','ออเดอร์ถูกต้อง ทันเวลาพอดี!','หมดเวลาของออเดอร์แล้ว','ตรวจส่วนผสมในใบสั่ง'],
     ja:['もうすぐ待ち時間終了','注文どおり！','注文どおり、ぎりぎりセーフ！','注文は時間切れです。','伝票の材料を確認しよう。']
   };
+  var COPOS = {
+    pt:['Atenda primeiro','Copo em preparo','Copo pronto'],
+    en:['Serve first','Cup in progress','Cup ready'],
+    es:['Atender primero','Vaso en preparación','Vaso listo'],
+    id:['Layani dulu','Gelas sedang disiapkan','Gelas siap'],
+    th:['เสิร์ฟก่อน','กำลังเตรียมแก้ว','แก้วพร้อมแล้ว'],
+    ja:['先に提供','準備中','準備完了']
+  };
+  function copos(i){ return (COPOS[LANG] || COPOS.pt)[i]; }
   function retorno(i){ return (RETORNO[LANG] || RETORNO.pt)[i]; }
   function paciencia(e){ return Math.max(0, 1 - (cfT - e.t0) / e.limite); }
   var LADOS = [.2, .44];   // centro de cada cliente (fração da largura do canvas)
 
   function vazio(){ return { base:-1, cob:-1, enf:-1, doce:-1 }; }
   function esperando(){ return cf.fila.filter(function(e){ return e.estado === 'espera'; }); }
+  function prazo(e){ return e.t0 + e.limite; }
+  function maisUrgente(fila){
+    if(fila.length < 2 || prazo(fila[0]) === prazo(fila[1])) return null;
+    return prazo(fila[0]) < prazo(fila[1]) ? fila[0] : fila[1];
+  }
+  function selecionar(e){
+    if(cf.alvoBalcao) cf.alvoBalcao.monta = cf.monta;
+    cf.alvoBalcao = e || null;
+    cf.monta = e ? e.monta : vazio();
+  }
   function ladoLivre(){ var usados = cf.fila.map(function(e){ return e.lado; }); return usados.indexOf(0) < 0 ? 0 : usados.indexOf(1) < 0 ? 1 : -1; }
   function nomesUsados(){ var u = {}; cf.fila.forEach(function(e){ u[e.cli.nome] = 1; }); return u; }
 
@@ -42,7 +61,7 @@
   function entrar(f, sv, passados){
     var lado = ladoLivre(); if(lado < 0) return;
     var limite = sv ? sv.limite_segundos * 60 : Math.max(420, 900 - cf.criados * 45) + 240;
-    cf.fila.push({ cli:f, sv:sv || null, lado:lado, t0:cfT - (passados || 0) * 60, limite:limite, estado:'espera', ok:false, fala:'', tR:0 });
+    cf.fila.push({ cli:f, sv:sv || null, lado:lado, t0:cfT - (passados || 0) * 60, limite:limite, monta:vazio(), estado:'espera', ok:false, fala:'', tR:0 });
   }
   // completa o balcão até 2 fãs (sem passar de 12 pedidos na partida)
   function preencher(){
@@ -69,8 +88,9 @@
   function servir(lado, saiu){
     if(!cf || !cf.duplo || cf.fase !== 'pedido') return;
     var e = cf.fila.filter(function(q){ return q.lado === lado && q.estado === 'espera'; })[0]; if(!e) return;
-    var p = e.cli.pedido, m = cf.monta;
-    if(cf.alvoBalcao === e) cf.alvoBalcao = null;
+    var selecionado = cf.alvoBalcao === e;
+    var p = e.cli.pedido, m = selecionado ? cf.monta : e.monta;
+    if(selecionado) selecionar(null);
     var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
     var resto = paciencia(e);
     e.resultado = saiu ? retorno(3) : certo ? retorno(resto < .25 ? 2 : 1) : cfDetalhePedido(p, m) || retorno(4);
@@ -118,7 +138,6 @@
       if(sfx && sfx.hit) try{ sfx.hit(); }catch(er){}
     }
     e.estado = 'reacao'; e.ok = certo; e.tR = cfT; e.saiu = !!saiu;
-    if(!saiu) cf.monta = vazio();   // o copo foi entregue; se o fã foi embora, o copo continua para o outro
     if(typeof eventoPetReagir === 'function') eventoPetReagir('cafe', cfT, false, certo ? (cf.combo >= 3 ? 'combo' : 'acerto') : 'erro');
     cfUI();
   }
@@ -159,14 +178,17 @@
       return;
     }
     if(cf.fase === 'preparando'){ corpo.innerHTML = h + '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>'; return; }
-    var alvo = cf.alvoBalcao;
+    var alvo = cf.alvoBalcao, primeiro = maisUrgente(esperando());
     h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.find(function(q){ return q.lado === l; });
-      var espera = e && e.estado === 'espera';
+      var espera = e && e.estado === 'espera', copo = e === alvo ? cf.monta : e && e.monta;
+      var preparo = espera && copo && copo.base >= 0 ? copos(copo.enf >= 0 ? 2 : 1) : '';
       return '<div class="cfduplo-p' + (e && e === alvo ? ' cf-atendendo' : '') + '">' +
         '<button type="button" data-cfd-cliente="' + l + '" aria-pressed="' + Boolean(e && e === alvo) + '"' +
         (espera ? '' : ' disabled') + '>' + (e ? (e.cli.hsLembranca ? '💌 ' : '') + escHtml(e.cli.nome) : '—') + '</button>' +
         cfBarraPedido(l, espera ? paciencia(e) : 0, e && e.cli.nome) +
+        (e && e === primeiro ? '<small class="cfduplo-primeiro">↳ ' + escHtml(copos(0)) + '</small>' : '') +
+        (preparo ? '<small class="cfduplo-copo">' + escHtml(preparo) + '</small>' : '') +
         '<small class="cfduplo-urgente" id="cfUrgente' + l + '"' + (!espera || paciencia(e) >= .25 ? ' hidden' : '') + '>⏳ ' + escHtml(retorno(0)) + '</small>' + '</div>';
     }).join('') + '</div><p class="cfpedidotxt" aria-live="polite">' + (alvo ?
       '<b>'+escHtml(alvo.cli.nome)+'</b> · '+escHtml(cfPedidoIlustrativo(alvo.cli.pedido).replace(/^☕ /,'')) :
@@ -174,7 +196,7 @@
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)');
     var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0, ultimo = cf.ultimoAtendimento;
-    h += '<div class="cf-rodape"><div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' +
+    h += '<div class="cf-rodape"><div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (!alvo ? ' disabled' : '') + '>🗑️ ' +
       escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" data-cfd-servir="' + (alvo ? alvo.lado : '') + '"' +
       (!alvo || !pronto ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
       (ultimo && ultimo.resultado ? '<p class="cfpedidotxt" role="status"><b>' + escHtml(ultimo.cli.nome) + '</b> · ' + escHtml(ultimo.resultado) + '</p>' : '') +
@@ -249,13 +271,18 @@
   window.cfLoop = function(ms){ if(cf && cf.duplo) return loopDuplo(ms); return orig.loop(ms); };
   // servir para o fã da esquerda/direita (o resto dos cliques continua no cfClique do café)
   document.addEventListener('click', function(ev){
+    var ingrediente = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cf]');
+    if(ingrediente && !ingrediente.disabled && cf && cf.duplo && cf.fase === 'pedido' && !cf.alvoBalcao){
+      var fila = esperando();
+      if(fila.length) selecionar(maisUrgente(fila) || fila[0]);
+    }
     var aceitar = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cfd-aceitar]');
     if(aceitar && cf && cf.duplo && cf.fase === 'saudacao'){ iniciarPedidos(); return; }
     var b = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cfd-cliente], #cfOv [data-cfd-servir]');
     if(!b || b.disabled || !cf || !cf.duplo || cf.fase !== 'pedido') return;
     ev.stopPropagation();
     if(b.dataset.cfdCliente != null){
-      cf.alvoBalcao = esperando().find(function(e){return e.lado === +b.dataset.cfdCliente;}) || null;
+      selecionar(esperando().find(function(e){return e.lado === +b.dataset.cfdCliente;}));
       cfUI();
       var foco = $('cfCorpo').querySelector('[data-cfd-cliente="'+b.dataset.cfdCliente+'"]');
       if(foco) foco.focus({preventScroll:true});

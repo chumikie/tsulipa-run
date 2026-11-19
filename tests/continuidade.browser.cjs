@@ -136,9 +136,16 @@ const path = require('node:path');
     await page.locator('[data-battle="jogar"]').click();
     const batalha = page.locator('#battleCorpo');
     for(const rodada of [1,2,3]){
-      const placar = batalha.getByRole('status');
+      const placar = batalha.locator('.battle-showhud[role="status"]');
       await placar.waitFor();
       assert.match(await placar.textContent(),new RegExp(rodada + '/3'));
+      if(rodada === 1){
+        const placarAntes = await placar.textContent();
+        await batalha.locator('[data-battle="trocar-restantes"]').click();
+        await batalha.getByText(/Troca feita.*→.*→/).waitFor();
+        assert.equal(await placar.textContent(),placarAntes);
+        assert.equal(await batalha.locator('[data-battle="trocar-restantes"]').count(),0);
+      }
       await batalha.getByRole('button',{name:rodada < 3 ? 'Próxima rodada' : 'Ver resultado'}).click();
     }
     assert.equal(await batalha.locator('.battle-result-grid .battle-round').count(),3);

@@ -55,7 +55,7 @@ const server=http.createServer((req,res)=>{
     await p.evaluate(()=>{
       start();
       LANG='pt';
-      shield=0;inv=0;pw=null;
+      shield=0;inv=0;pw=null;P.air=false;P.y=GY-P.h;P.vy=0;
       obs=[{k:'speaker',x:P.x+5,y:GY-48,w:36,h:48}];
       update(1);
     });
@@ -65,9 +65,32 @@ const server=http.createServer((req,res)=>{
     assert.equal(await tentar.getAttribute('aria-describedby'),'crFimColisao');
     assert.equal(await tentar.textContent(),'Tentar de novo');
     assert.equal(await tentar.evaluate(el=>document.activeElement===el),true);
+    const salvo = await p.evaluate(()=>[score,best,starT,localStorage.getItem('brs48cr_lb')]);
+    await p.locator('#crPraticaBt').click();
+    await p.locator('#crPraticaPainel').waitFor();
+    assert.equal(await p.evaluate(()=>obs.length===3&&obs.every(o=>o.k==='speaker')),true);
+    await p.evaluate(()=>{
+      for(let i=0;crPratica&&i<560;i++){
+        const alvo=obs.find(o=>!o.testado&&o.x-P.x<88);
+        if(alvo&&!P.air)jump();
+        update(1);
+      }
+    });
+    assert.match(await p.locator('#crPraticaStatus').textContent(),/Passou por [1-3] de 3/);
+    assert.deepEqual(await p.evaluate(()=>[score,best,starT,localStorage.getItem('brs48cr_lb')]),salvo);
+    await p.locator('#crPraticaBt').click();
+    await p.locator('#crPraticaSair').click();
     await tentar.click();
     assert.equal(await p.evaluate(()=>state),'play');
     await p.locator('#over').waitFor({state:'hidden'});
+    await p.evaluate(()=>{
+      shield=0;inv=0;pw=null;P.air=false;P.y=GY-P.h;P.vy=0;
+      obs=[{k:'cable',x:P.x+10,y:GY-12,w:56,h:12}];
+      update(1);
+    });
+    await p.locator('#crPraticaBt').click();
+    assert.equal(await p.evaluate(()=>obs.length===3&&obs.every(o=>o.k==='cable')),true);
+    await p.locator('#crPraticaSair').click();
     if(erros.length)falhas.push('erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
     await ctx.close();
   }finally{await browser.close();server.close();}

@@ -19,8 +19,8 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `b40cb7c` (19/11), publicada na Vercel. Últimos merges: #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **Outra PR aberta:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke).
+- **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início do TsuPhone compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **Outras PRs abertas:** #117 (desfecho da bagunça e ajustes no Karaoke) e #120 (Rua Fofa, páginas de fotos e lembrança do Café).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -35,6 +35,9 @@
 - **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador e é separada por conta.
 
 ### Jogos
+
+A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos independentes no Café, repetição de trecho no Karaoke e uma bifurcação no Sora. O Battle explica o atributo de cada posição e aceita uma troca entre a primeira e a segunda rodada no treino e na revanche.
+
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). A #118 identifica a colisão no resultado | — |

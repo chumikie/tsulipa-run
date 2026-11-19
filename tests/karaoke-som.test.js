@@ -35,6 +35,6 @@ test('a partitura não mudou: as notas da pista e o relógio continuam os mesmos
   const b = trecho('function beat(i,target)', '/* Relógio de áudio único');
   assert.match(b, /var m=c\.mel\[i%len\];if\(m>=0\)/, 'melodia lida igual');
   assert.ok(!/makeNoteMap|run\.notes|\.at=/.test(b), 'o som não mexe nas notas do jogo');
-  assert.match(b, /i===playback\.total-1&&!ktPreviewRouting/, 'acorde final só no fim do show');
+  assert.match(b, /indiceLocal===playback\.total-1&&!ktPreviewRouting/, 'acorde final só no fim do show');
   assert.ok(!/Math\.random/.test(trecho('var ktMixer=null', 'function beat(')), 'ruído fixo, nada sorteado');
 });

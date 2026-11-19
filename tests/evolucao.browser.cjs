@@ -14,7 +14,11 @@ async function preparar(browser){
     if(url.origin !== origin) return r.abort();
     const arq = path.resolve(root,'.'+url.pathname);
     if(!arq.startsWith(root+path.sep)) return r.abort();
-    try{ return await r.fulfill({body:await readFile(arq),contentType:tipos[path.extname(arq)]}); }
+    try{
+      let body = await readFile(arq);
+      if(url.pathname === '/sora-jump.html') body = body.toString().replace('function soraStartGame(){', 'window.qaRotaSora='+testarRotaSora.toString()+';\n$&');
+      return await r.fulfill({body,contentType:tipos[path.extname(arq)]});
+    }
     catch{ return await r.fulfill({status:404}); }
   });
   const page = await context.newPage(), erros = [];
@@ -129,6 +133,34 @@ async function album(browser){
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
+function testarRotaSora(){
+  soraCamY=-900;soraHighestY=-995;soraP.y=-993;soraHazards=[];
+  soraUpdate(1);
+  const plats=soraPlats.filter(p=>p.rota);
+  soraDraw();
+  function testar(pl){
+    soraP.x=pl.x+pl.w/2-soraP.w/2;soraP.y=pl.y-soraP.h-2;soraP.vx=0;soraP.vy=3;
+    soraUpdate(1);
+    return soraP.vy;
+  }
+  const entrada=testar(plats.find(p=>p.rota==='entrada'));
+  const aviso=soraToast;
+  const subida=testar(plats.find(p=>p.k==='trampolim'));
+  return {suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
+}
+async function sora(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await page.goto(origin+'/sora-jump.html?lang=pt&embed=index2');
+    await page.locator('#soraPlayBtn').click();
+    const rota = await page.evaluate(() => window.qaRotaSora());
+    assert.equal(rota.suaves,7);
+    assert.equal(rota.altas,4);
+    assert.match(rota.aviso,/Bifurcação/);
+    assert(rota.entrada<0 && rota.subida<rota.entrada);
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
 async function karaoke(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -137,16 +169,20 @@ async function karaoke(browser){
     const iframe = page.frameLocator('#twPreviewIframe');
     await iframe.locator('#ktEnsaioComecar').waitFor();
     const frame = await page.locator('#twPreviewIframe').elementHandle().then(h => h.contentFrame());
-    const anterior = await frame.evaluate(() => Object.keys(localStorage).filter(k=>/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
+    const anterior = await frame.evaluate(() => Object.keys(localStorage).filter(k=>k==='kt_showcase_week_v1'||/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
     await iframe.locator('#ktEnsaioComecar').click();
     await frame.waitForFunction(() => document.body.classList.contains('kt-playing') && ktEnsaioMedidas().iniciados === 1);
     assert.equal(await iframe.locator('#ktStartConfirm').evaluate(el=>el.open),false);
     await iframe.locator('#ktResult[open]').waitFor({timeout:33000});
     await iframe.locator('#ktResultTiming').waitFor();
     assert.equal(await frame.evaluate(() => ktEnsaioMedidas().concluidos),1);
-    await iframe.locator('#ktResultAgain').click();
-    assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:2,concluidos:1,repeticoes:1});
-    const depois = await frame.evaluate(() => Object.keys(localStorage).filter(k=>/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
+    await iframe.locator('#ktTrechoBt').click();
+    await iframe.locator('#ktResult[open]').waitFor({timeout:19000});
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Antes: \d+\/\d+ · Agora: \d+\/\d+/);
+    assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:1,concluidos:1,repeticoes:0});
+    await iframe.locator('#ktTrechoBt').click();
+    await frame.waitForFunction(() => document.body.classList.contains('kt-playing'));
+    const depois = await frame.evaluate(() => Object.keys(localStorage).filter(k=>k==='kt_showcase_week_v1'||/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
     assert.deepEqual(depois,anterior);
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
@@ -156,6 +192,7 @@ async function karaoke(browser){
   try{
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
-    await karaoke(browser); console.log('✓ Ensaio termina e repete sem gastar tentativa.');
+    await sora(browser); console.log('✓ Sora gera as duas rotas entre 100 e 250 m.');
+    await karaoke(browser); console.log('✓ Karaoke repete o trecho e compara acertos sem gastar tentativa.');
   }finally{ await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;});

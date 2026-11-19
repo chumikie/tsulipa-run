@@ -122,7 +122,7 @@ async function conferirCafe(browser,base){
       window.entregasTeste=[];
       window.contaRpc=(nome,args)=>{
         if(nome==='cafe_run_iniciar')return Promise.resolve({ok:true,run_id:'turno'});
-        if(nome==='cafe_run_pedidos')return Promise.resolve({ok:true,criados:2,pedidos:pedidosTeste.map((pedido,i)=>({sessao:String(i),pedido,limite_segundos:120})).filter(p=>!entregasTeste.some(e=>e.args.p_sessao===p.sessao))});
+        if(nome==='cafe_run_pedidos')return Promise.resolve({ok:true,criados:2,pedidos:pedidosTeste.map((pedido,i)=>({sessao:String(i),pedido,limite_segundos:i?105:120})).filter(p=>!entregasTeste.some(e=>e.args.p_sessao===p.sessao))});
         if(nome==='cafe_run_etapa2')return new Promise(resolve=>window.entregasTeste.push({resolve,args}));
         if(nome==='missoes')return Promise.resolve([{k:'cafe',meta:2,prog:entregasTeste.length}]);
         return Promise.resolve([]);
@@ -132,6 +132,17 @@ async function conferirCafe(browser,base){
     await page.locator('#cfJogar').click();
     const comanda=page.locator('#cfOv .cf-comanda');
     const servir=page.locator('#cfOv [data-cfd-servir]');
+    const cliente = lado => page.locator('#cfOv [data-cfd-cliente="'+lado+'"]');
+    await cliente(1).waitFor();
+    assert.match(await cliente(1).locator('..').innerText(),/Atenda primeiro/);
+    await cliente(0).click();
+    await page.locator('#cfOv [data-cf="base:0"]').click();
+    await cliente(1).click();
+    await page.locator('#cfOv [data-cf="base:1"]').click();
+    await cliente(0).click();
+    assert.equal(await page.evaluate(()=>cf.monta.base),0);
+    await cliente(1).click();
+    assert.equal(await page.evaluate(()=>cf.monta.base),1);
     for(const lado of [0,1]){
       const cliente=page.locator('#cfOv [data-cfd-cliente="'+lado+'"]');
       await cliente.click();
@@ -158,7 +169,7 @@ async function conferirCafe(browser,base){
       assert.ok(depois.x>=0 && depois.x+depois.width<=320,'Servir cabe na tela de 320 px');
     }
     await page.screenshot({path:path.join(out,'cafe-320.png')});
-    console.log('✓ Café em 320 px: duas comandas, dois pedidos e progresso da missão sem salto.');
+    console.log('✓ Café em 320 px: dois copos independentes, prioridade e progresso da missão sem salto.');
   }finally{await ctx.close();}
 }
 

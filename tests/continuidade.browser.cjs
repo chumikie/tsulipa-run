@@ -141,8 +141,11 @@ const path = require('node:path');
       assert.match(await placar.textContent(),new RegExp(rodada + '/3'));
       if(rodada === 1){
         const placarAntes = await placar.textContent();
-        await batalha.locator('[data-battle="trocar-restantes"]').click();
-        await batalha.getByText(/Troca feita.*→.*→/).waitFor();
+        const previa = batalha.locator('#battlePreviaTroca');
+        const valores = (await previa.textContent()).replace('Se trocar · ','');
+        assert.match(valores,/→.*→/);
+        await batalha.getByRole('button',{name:'Confirmar troca'}).click();
+        assert.equal(await previa.textContent(),'Troca feita · '+valores);
         assert.equal(await placar.textContent(),placarAntes);
         assert.equal(await batalha.locator('[data-battle="trocar-restantes"]').count(),0);
       }

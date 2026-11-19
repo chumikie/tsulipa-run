@@ -140,6 +140,10 @@ async function conferirCafe(browser,base){
     await cliente(1).click();
     await page.locator('#cfOv [data-cf="base:1"]').click();
     await cliente(0).click();
+    assert.match(await cliente(0).locator('..').innerText(),/Copo ativo/);
+    assert.equal(await cliente(0).locator('..').getByRole('listitem').count(),1);
+    assert.equal(await cliente(1).locator('..').getByRole('listitem').count(),1);
+    assert.notEqual(await cliente(0).locator('..').getByRole('listitem').textContent(),await cliente(1).locator('..').getByRole('listitem').textContent());
     assert.equal(await page.evaluate(()=>cf.monta.base),0);
     await cliente(1).click();
     assert.equal(await page.evaluate(()=>cf.monta.base),1);

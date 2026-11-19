@@ -69,7 +69,6 @@ function ktVincularEstadoAudio(ctx){
  audioStateContext=ctx;
  ctx.addEventListener('statechange',function(){
   if(ctx!==D.AC()||!run||!run.audioReady||!run.audioClock||run.paused||ctx.state==='running')return;
-  run.audioClock=false;
   pause(true);
  });
 }
@@ -81,10 +80,14 @@ function ktPrepararRelogioAudio(target,prepareMs,elapsed,onReady){
   target.start=now+prepareMs-elapsed;
   target.audioOrigin=audioReady?ctx.currentTime+prepareMs/1000-elapsed/1000:0;
   target.audioClock=audioReady;target.audioReady=true;
+  target.outputLatencyMs=audioReady?ktOutputLatencyMs():0;
+  target.audioFloor=elapsed-prepareMs;
+  target.paused=Boolean(document.hidden||target.pausaPendente);target.pausaPendente=false;
+  if(target.paused){target.pauseAt=now;target.pauseWall=now;}
   target.audioStep=Math.max(0,Math.ceil(elapsed/target.step));
   target.notes.forEach(function(n){n.at=target.start+n.idx*target.step;});
   target.feedbackUntil=target.start;
-  if(audioReady){if(!audioTimer)audioTimer=setInterval(schedule,25);schedule();}
+  if(audioReady&&!target.paused){if(!audioTimer)audioTimer=setInterval(schedule,25);schedule();}
   if(onReady)onReady(audioReady,waitMs);
  }
  ktVincularEstadoAudio(ctx);
@@ -151,7 +154,13 @@ else if(st==='pop'&&p%2===1)voice(hz(chord[(p>>1)%chord.length]+12),step*.6,t,.0
 var m=c.mel[i%len];if(m>=0){m+=up;var d=step*(c.mel[(i+1)%len]<0?1.7:.95),cues=playback.cuesByStep&&playback.cuesByStep[indiceLocal];voice(hz(m),d,t,c.lead==='square'?.04:.048,c.lead,0,true);voice(hz(m+12),d*.6,t,st==='box'?.012:.006,'sine');if(volta===1&&p%2===0)voice(hz(m+19),d*.5,t,.005,'sine');if(volta>=2)voice(hz(m+7),d*.8,t,.007,'triangle');if(cues&&cues.length){voice(hz(m+12),Math.min(.20,d*.45),t,.025,'triangle');if(cues.length>1)voice(hz(chord[1]+12),step*.72,t,.022,'triangle');}}
 if(playback.total&&indiceLocal===playback.total-1&&!ktPreviewRouting){chord.concat([root+12]).forEach(function(n,k){voice(hz(n+12),1.6,t+step,.022,'triangle',(k-1.5)*.3,true);});ktBumbo(t+step,.1);ruido(t+step,.7,.025,5000,.2);}   /* acorde final, em vez de cortar seco */}
 /* Relógio de áudio único, já descontando a latência de saída. */
-function kNow(){if(run&&run.audioClock&&D.AC()&&D.AC().state==='running'&&run.audioOrigin)return run.start+(D.AC().currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();return performance.now();}
+function kNow(){
+ if(run&&run.audioClock&&D.AC()){
+   var elapsed=(D.AC().currentTime-run.audioOrigin)*1000-run.outputLatencyMs;
+   return run.start+Math.max(run.audioFloor,elapsed);
+ }
+ return performance.now();
+}
 function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!D.AC()||D.AC().state!=='running')return;/* Antecedencia no relogio nativo do audio, sem aplicar a latencia outra vez. */var elapsed=(D.AC().currentTime-run.audioOrigin)*1000;while(run.audioStep<run.total&&run.audioStep*run.step<elapsed+220)beat(run.audioStep++);}
 var KT_TRECHO_TR = {
  pt:['Repetir trecho','Nesse trecho você acertou {a} de {n} notas.','Antes: {a}/{n} · Agora: {b}/{n}'],
@@ -201,7 +210,11 @@ var previewPlayer=window.KaraokeMusicPreview.create({
  stopVoicePreview:function(){if(D.ktAudioVitrine())D.ktAudioVitrine().stop();},
  getSelectedSong:function(){return D.$()('ktSong').value;},getElement:D.$(),translate:D.tr()
 });
-function checkpoint(){if(run&&!run.practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta())D.ktMeta().checkpoint(run);}
+function checkpoint(){
+ if(run&&!run.practice&&run.audioReady&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()){
+   D.ktMeta().checkpoint(run,(run.paused?run.pauseAt:kNow())-run.start);
+ }
+}
 function adjustOffset(ms){if(run)run.offsetMs=ms;}
 function react(type,message){
  var now=performance.now();if(now-lastReaction<420)return;lastReaction=now;
@@ -259,8 +272,33 @@ function hit(lane,event){if(!run||run.paused||run.auto)return;var now=ktInputTim
  else judge(p.own,p.delta,lane);
  updateUI();checkpoint();}
 function updateUI(){if(!run)return;var seconds=Math.ceil(Math.max(0,run.start+run.durationMs-(run.paused?run.pauseAt:kNow()))/1000);seconds=Math.min(60,seconds);D.$()('ktClock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');D.$()('ktScore').textContent='★ '+run.score+' · Combo '+run.combo+' · '+(run.attempts?Math.round(run.hits/run.attempts*100):0)+'%';var p=D.KR_RHYTHM_PAUSE_COPY()[D.LANG()]||D.KR_RHYTHM_PAUSE_COPY().pt;D.$()('ktPause').textContent=p[run.resumeUntil?2:run.paused?1:0];D.$()('ktHint').textContent=D.KR_RHYTHM_HIT_HELP()[D.LANG()]||D.KR_RHYTHM_HIT_HELP().pt;}
-function finishResume(){if(!run||!run.paused||!run.resumeUntil||document.hidden)return;var target=run,delta=kNow()-target.pauseAt;target.start+=delta;target.notes.forEach(function(n){n.at+=delta;});if(D.krDemoCantor())D.krDemoCantor().endsAt+=delta;target.resumeUntil=0;target.skipBeforeUnload=false;target.audioReady=false;target.audioClock=false;target.paused=true;clearInterval(audioTimer);audioTimer=0;silence();D.$()('ktPause').disabled=true;var elapsed=Math.max(0,performance.now()-target.start),resumeBotEnd=D.krDemoCantor()?D.krDemoCantor().endsAt:null;ktPrepararRelogioAudio(target,0,elapsed,function(audioReady,waitMs){if(run!==target)return;if(D.krDemoCantor()&&resumeBotEnd!==null)D.krDemoCantor().endsAt=resumeBotEnd+waitMs;target.paused=false;D.$()('ktPause').disabled=false;updateUI();checkpoint();});}
-function pause(value){if(!run||!run.audioReady)return;if(value){if(run.resumeUntil){run.resumeUntil=0;clearInterval(audioTimer);audioTimer=0;updateUI();checkpoint();return;}if(run.paused)return;run.paused=true;run.pauseAt=kNow();clearInterval(audioTimer);audioTimer=0;silence();}else{if(!run.paused||run.resumeUntil||document.hidden)return;D.ac()();run.resumeUntil=performance.now()+3000;var panel=D.$()('ktCalibration');if(panel)panel.open=false;}updateUI();checkpoint();}
+function finishResume(){
+ if(!run||!run.paused||!run.resumeUntil||document.hidden)return;
+ var target=run,elapsed=target.pauseAt-target.start,pauseMs=performance.now()-target.pauseWall;
+ var bot=D.krDemoCantor();
+ target.resumeUntil=0;target.skipBeforeUnload=false;target.audioReady=false;target.audioClock=false;
+ clearInterval(audioTimer);audioTimer=0;silence();D.$()('ktPause').disabled=true;
+ ktPrepararRelogioAudio(target,0,elapsed,function(audioReady,waitMs){
+   if(run!==target)return;
+   if(bot&&bot===D.krDemoCantor())bot.endsAt+=pauseMs+waitMs;
+   D.$()('ktPause').disabled=false;updateUI();checkpoint();
+ });
+}
+function pause(value){
+ if(!run)return;
+ if(!run.audioReady){ if(value)run.pausaPendente=true; return; }
+ if(value){
+   if(run.resumeUntil){run.resumeUntil=0;updateUI();checkpoint();return;}
+   if(run.paused)return;
+   run.pauseAt=kNow();run.pauseWall=performance.now();run.paused=true;
+   clearInterval(audioTimer);audioTimer=0;silence();
+ }else{
+   if(!run.paused||run.resumeUntil||document.hidden)return;
+   D.ac()();run.resumeUntil=performance.now()+3000;
+   var panel=D.$()('ktCalibration');if(panel)panel.open=false;
+ }
+ updateUI();checkpoint();
+}
 function warnPausedExit(event){if(!run||!run.paused||run.skipBeforeUnload)return;event.preventDefault();event.returnValue='';}
 window.addEventListener('beforeunload',warnPausedExit);
 function end(completed){if(!run)return;var r=run;if(completed&&r.rehearsal&&window.ktEnsaioRegistrar)window.ktEnsaioRegistrar('concluidos',r.songKey);var priorBest=lastResult?lastResult.score:null,fullCombo=r.attempts>0&&r.hits===r.attempts&&r.notes.every(function(n){return n.done;}),isSessionRecord=completed&&!r.auto&&!r.practice&&(fullCombo||(priorBest!==null&&r.score>priorBest));if(typeof D.krLoungeReactToShow()==='function')D.krLoungeReactToShow()(isSessionRecord?'record':'finish',{song:r.song,player:D.krDemoCantor()&&D.krDemoCantor().bot?D.krDemoCantor().bot:D.krEu(),score:r.score,combo:r.maxCombo,accuracy:r.attempts?Math.round(r.hits/r.attempts*100):0,completed:completed,fullCombo:fullCombo,language:D.LANG()});if(!r.practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta())D.ktMeta().complete(r,completed);run=null;D.krRhythmRun(null);clearInterval(audioTimer);audioTimer=0;silence();D.krEu().no_mic=false;D.krEu().micT=0;if(D.krDemoCantor())D.krDemoBotEnd()();D.$()('ktKeys').hidden=true;D.$()('ktPause').disabled=true;D.$()('ktEnd').disabled=true;D.$()('ktStart').disabled=false;D.$()('ktStart').textContent='🎤 Jogar ritmo';D.$()('ktSong').disabled=false;if(r.practiceOpenedRoom)D.krSt().aberta=false;if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().afterEnd();D.$()('ktClock').textContent=completed?'00:00':r.rehearsal?'00:20':'01:00';D.krUI()();D.krMusicaMudarModo()();

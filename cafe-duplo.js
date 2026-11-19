@@ -23,12 +23,12 @@
     ja:['もうすぐ待ち時間終了','注文どおり！','注文どおり、ぎりぎりセーフ！','注文は時間切れです。','伝票の材料を確認しよう。']
   };
   var COPOS = {
-    pt:['Atenda primeiro','Copo em preparo','Copo pronto'],
-    en:['Serve first','Cup in progress','Cup ready'],
-    es:['Atender primero','Vaso en preparación','Vaso listo'],
-    id:['Layani dulu','Gelas sedang disiapkan','Gelas siap'],
-    th:['เสิร์ฟก่อน','กำลังเตรียมแก้ว','แก้วพร้อมแล้ว'],
-    ja:['先に提供','準備中','準備完了']
+    pt:['Atenda primeiro','Copo ativo','Copo vazio','Ingredientes no copo'],
+    en:['Serve first','Active cup','Empty cup','Ingredients in the cup'],
+    es:['Atender primero','Vaso activo','Vaso vacío','Ingredientes en el vaso'],
+    id:['Layani dulu','Gelas aktif','Gelas kosong','Bahan dalam gelas'],
+    th:['เสิร์ฟก่อน','แก้วที่เลือก','แก้วเปล่า','ส่วนผสมในแก้ว'],
+    ja:['先に提供','選択中のカップ','空のカップ','カップの材料']
   };
   function copos(i){ return (COPOS[LANG] || COPOS.pt)[i]; }
   function retorno(i){ return (RETORNO[LANG] || RETORNO.pt)[i]; }
@@ -169,6 +169,17 @@
   function iconesPedido(p){
     return CF_BASES[p.base][0] + (p.cob >= 0 ? CF_COBERTURAS[p.cob][0] : '') + CF_ENFEITES[p.enf][0] + (p.doce >= 0 ? ' + ' + CF_DOCES[p.doce][0] : '');
   }
+  function copoHtml(m, ativo){
+    var listas = [['base',CF_BASES],['cob',CF_COBERTURAS],['enf',CF_ENFEITES],['doce',CF_DOCES]];
+    var items = listas.map(function(item){ return item[1][m[item[0]]]; }).filter(Boolean);
+    return '<div class="cfduplo-copo">' +
+      (ativo ? '<strong class="cfduplo-copo-ativo">' + escHtml(copos(1)) + '</strong>' : '') +
+      (items.length ? '<ul aria-label="' + escHtml(copos(3)) + '">' + items.map(function(item){
+        var nome = tr(item[1]);
+        return '<li title="' + escHtml(nome) + '"><span aria-hidden="true">' + escHtml(item[0]) +
+          '</span><span class="twc-sr">' + escHtml(nome) + '</span></li>';
+      }).join('') + '</ul>' : '<small>' + escHtml(copos(2)) + '</small>') + '</div>';
+  }
   function uiDuplo(){
     var corpo = $('cfCorpo'); if(!corpo || !cf) return;
     if(cf.fase !== 'pedido' && cf.fase !== 'preparando' && cf.fase !== 'saudacao') return orig.ui();
@@ -182,13 +193,12 @@
     h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.find(function(q){ return q.lado === l; });
       var espera = e && e.estado === 'espera', copo = e === alvo ? cf.monta : e && e.monta;
-      var preparo = espera && copo && copo.base >= 0 ? copos(copo.enf >= 0 ? 2 : 1) : '';
       return '<div class="cfduplo-p' + (e && e === alvo ? ' cf-atendendo' : '') + '">' +
         '<button type="button" data-cfd-cliente="' + l + '" aria-pressed="' + Boolean(e && e === alvo) + '"' +
         (espera ? '' : ' disabled') + '>' + (e ? (e.cli.hsLembranca ? '💌 ' : '') + escHtml(e.cli.nome) : '—') + '</button>' +
         cfBarraPedido(l, espera ? paciencia(e) : 0, e && e.cli.nome) +
         (e && e === primeiro ? '<small class="cfduplo-primeiro">↳ ' + escHtml(copos(0)) + '</small>' : '') +
-        (preparo ? '<small class="cfduplo-copo">' + escHtml(preparo) + '</small>' : '') +
+        (espera ? copoHtml(copo,e === alvo) : '') +
         '<small class="cfduplo-urgente" id="cfUrgente' + l + '"' + (!espera || paciencia(e) >= .25 ? ' hidden' : '') + '>⏳ ' + escHtml(retorno(0)) + '</small>' + '</div>';
     }).join('') + '</div><p class="cfpedidotxt" aria-live="polite">' + (alvo ?
       '<b>'+escHtml(alvo.cli.nome)+'</b> · '+escHtml(cfPedidoIlustrativo(alvo.cli.pedido).replace(/^☕ /,'')) :

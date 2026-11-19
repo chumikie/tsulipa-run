@@ -36,12 +36,12 @@
 
 ### Jogos
 
-A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos independentes no Café, repetição de trecho no Karaoke e uma bifurcação no Sora. O Battle explica o atributo de cada posição e aceita uma troca entre a primeira e a segunda rodada no treino e na revanche.
+A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos com ingredientes visíveis no Café, repetição de trecho no Karaoke e uma bifurcação sinalizada a partir dos 75 m no Sora. O Battle explica o atributo de cada posição e mostra o efeito da troca antes de confirmar no treino e na revanche.
 
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). A #118 identifica a colisão no resultado | — |
-| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Medir em celular real |
+| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Validar a retomada e o timing no alto-falante e no Bluetooth de iPhone e Android |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
 | Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
 | Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo | — |

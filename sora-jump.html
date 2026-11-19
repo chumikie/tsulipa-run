@@ -1901,6 +1901,19 @@ function soraDesenharRota(ctx,pl){
   }
   ctx.restore();
 }
+function soraPreviaRotaAtiva(){
+  return soraState === 'play' && !soraTestSceneId && soraHeight >= 75 && soraHeight < 104;
+}
+function soraDesenharPreviaRota(ctx){
+  if(!soraPreviaRotaAtiva())return;
+  ctx.save();ctx.font='800 12px system-ui,sans-serif';ctx.textAlign='center';
+  ['suave','alta'].forEach(function(rota,i){
+    var x=18+i*170;
+    ctx.fillStyle=soraCorDaRota(rota);ctx.fillRect(x,77,154,23);
+    ctx.fillStyle='#fff';ctx.fillText((i===0?'← ':'→ ')+soraRotaTexto(i),x+77,92,144);
+  });
+  ctx.restore();
+}
 function soraMakePlat(y, forceNormal){
   var m = Math.max(0, Math.floor(-y / 10));
   var r = Math.random();
@@ -4016,6 +4029,8 @@ function soraDraw(){
   x.fillStyle = '#9a6c06';
   x.fillText('★ +' + soraStarsRun + '  ·  total ' + starT, 16, 59);
   x.restore();
+
+  soraDesenharPreviaRota(x);
 
   if(soraToastT > 0){
     x.save();

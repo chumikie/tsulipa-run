@@ -43,25 +43,32 @@ var revanche=null;
 var fase='escalar',showT0=0,showRaf=0,rodadaCalma=0;
 var trocaTreino=false,trocaFeita=false,trocaResumo='';
 var TROCA_TR={
- pt:['Cada posição usa o atributo da sua rodada.','Trocar as duas próximas posições','Só no treino e na revanche','Troca feita'],
- en:['Each position uses its round’s stat.','Swap the next two positions','In practice and rematches','Positions swapped'],
- es:['Cada posición usa el atributo de su ronda.','Intercambiar las dos próximas posiciones','En práctica y revancha','Posiciones intercambiadas'],
- id:['Tiap posisi memakai atribut rondenya.','Tukar dua posisi berikutnya','Dalam latihan dan tanding ulang','Posisi ditukar'],
- th:['แต่ละตำแหน่งใช้ค่าสถานะของรอบนั้น','สลับสองตำแหน่งถัดไป','ใช้ได้ในการฝึกและแข่งใหม่','สลับตำแหน่งแล้ว'],
- ja:['各ポジションではそのラウンドの能力値を使います。','次の2ポジションを入れ替える','練習と再戦で利用可能','入れ替え完了']
+ pt:['Cada posição usa o atributo da sua rodada.','Só no treino e na revanche','Troca feita'],
+ en:['Each position uses its round’s stat.','In practice and rematches','Positions swapped'],
+ es:['Cada posición usa el atributo de su ronda.','En práctica y revancha','Posiciones intercambiadas'],
+ id:['Tiap posisi memakai atribut rondenya.','Dalam latihan dan tanding ulang','Posisi ditukar'],
+ th:['แต่ละตำแหน่งใช้ค่าสถานะของรอบนั้น','ใช้ได้ในการฝึกและแข่งใหม่','สลับตำแหน่งแล้ว'],
+ ja:['各ポジションではそのラウンドの能力値を使います。','練習と再戦で利用可能','入れ替え完了']
 };
 function trocaTxt(i){return (TROCA_TR[lang()]||TROCA_TR.pt)[i];}
 function efeitoPosicao(i,antes,depois){
  return nomeRound(i)+' '+antes+' → '+depois;
 }
+var PREVIA_TROCA_TR = {
+ pt:['Se trocar','Confirmar troca'],en:['If you swap','Confirm swap'],es:['Al intercambiar','Confirmar cambio'],
+ id:['Jika ditukar','Konfirmasi pertukaran'],th:['หากสลับ','ยืนยันการสลับ'],ja:['入れ替えると','入れ替えを確定']
+};
+function preverTroca(){
+ var ordem=unit.slice();ordem[1]=unit[2];ordem[2]=unit[1];
+ var novas=treinoShow(ordem);
+ return {ordem:ordem,rodadas:novas,efeito:efeitoPosicao(1,rodadas[1].eu,novas[1].eu)+' · '+efeitoPosicao(2,rodadas[2].eu,novas[2].eu)};
+}
 function trocarRestantes(){
  if(!trocaTreino||trocaFeita||rodadaCalma!==0||!rodadas||
     (fase!=='show-troca'&&fase!=='show-calmo'))return;
- var antes1=rodadas[1].eu,antes2=rodadas[2].eu;
- var anterior=unit[1];unit[1]=unit[2];unit[2]=anterior;
- var novas=treinoShow();
- rodadas[1]=novas[1];rodadas[2]=novas[2];trocaFeita=true;
- trocaResumo=trocaTxt(3)+' · '+efeitoPosicao(1,antes1,rodadas[1].eu)+' · '+efeitoPosicao(2,antes2,rodadas[2].eu);
+ var previa=preverTroca();
+ unit=previa.ordem;rodadas[1]=previa.rodadas[1];rodadas[2]=previa.rodadas[2];trocaFeita=true;
+ trocaResumo=trocaTxt(2)+' · '+previa.efeito;
  render();
  var proxima=ov.querySelector('[data-battle="proxima-rodada"]');if(proxima)proxima.focus();
 }
@@ -456,13 +463,15 @@ function render(){
  if(fase==='show-calmo'||fase==='show-troca'){
    var i = rodadaCalma, r = rodadas[i], textoCalmo = SHOW_CALMO[lang()] || SHOW_CALMO.pt;
    var meu = r.meu || unit[i], rival = r.rival || '?';
+   var previa = trocaTreino&&i===0&&!trocaFeita ? preverTroca() : null;
+   var previaTxt = PREVIA_TROCA_TR[lang()] || PREVIA_TROCA_TR.pt;
    area.innerHTML = '<div class="battle-showhud" role="status"><b>' + esc(nomeRound(i)) + ' · ' +
      (i + 1) + '/' + rodadas.length + '</b><span>' + esc(textoCalmo[2].replace('{n}', r.ganhou ? meu : rival)) + '</span></div>' +
      '<p class="battle-ritmo">' + esc(meu) + ' ' + Number(r.eu || 0) + ' × ' + Number(r.eles || 0) + ' ' + esc(rival) + '</p>' +
-     (trocaTreino&&i===0 ? '<p class="battle-hint" role="status" data-battle-troca>' +
-       esc(trocaResumo || (nomeRound(1)+' '+rodadas[1].eu+' · '+nomeRound(2)+' '+rodadas[2].eu)) + '</p>' : '') +
-     '<div class="btns">' + (trocaTreino&&i===0&&!trocaFeita ? '<button type="button" class="btn alt" data-battle="trocar-restantes">' +
-       esc(trocaTxt(1)) + '</button>' : '') + '<button type="button" class="btn" data-battle="proxima-rodada">' +
+     (trocaTreino&&i===0 ? '<p class="battle-hint" role="status" id="battlePreviaTroca" data-battle-troca>' +
+       esc(trocaResumo || (previaTxt[0]+' · '+previa.efeito)) + '</p>' : '') +
+     '<div class="btns">' + (previa ? '<button type="button" class="btn alt" data-battle="trocar-restantes" aria-describedby="battlePreviaTroca">' +
+       esc(previaTxt[1]) + '</button>' : '') + '<button type="button" class="btn" data-battle="proxima-rodada">' +
      esc(textoCalmo[i + 1 === rodadas.length ? 1 : 0]) + '</button></div>';
    desenharPalco(i * DUR + DUR - .08);
    return;
@@ -503,7 +512,7 @@ function render(){
  texto+='<section class="battle-escalar"><h3>'+esc(trB('stage'))+'</h3><div class="battle-trio">'+
    unit.map(function(n,i){var c=cardDe(n)||{nick:n},card=idolHtml(c,true,ico(i)+esc(nomeRound(i)),i).replace(/^<div /,'<span ').replace(/<\/div>$/,'</span>');
      return '<button type="button" class="battle-slotbtn'+(slotAberto===i?' on':'')+'" data-battle="abrir-slot" data-slot="'+i+'" aria-expanded="'+(slotAberto===i)+'">'+card+'</button>';}).join('')+
-   '</div><p class="battle-hint">'+esc(trocaTxt(0))+' · '+esc(trocaTxt(2))+'</p>'+
+   '</div><p class="battle-hint">'+esc(trocaTxt(0))+' · '+esc(trocaTxt(1))+'</p>'+
    '<p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
    (estado.starter?'<div class="btns battle-semcards"><button type="button" class="btn alt" data-battle="ir-gacha">'+esc(trB('toGacha'))+'</button></div>':'');
  texto+=slotsHtml()+'</section>'+torcidaHtml();
@@ -516,9 +525,9 @@ function render(){
  area.innerHTML=texto+(emArena?'':rankingHtml());
  desenharMiniaturas();
 }
-function treinoShow(){
+function treinoShow(ordem){
  var other=estado.rival;
- return unit.map(function(n,i){
+ return (ordem||unit).map(function(n,i){
    var eu=cardDe(n)||DEFAULT[i];
    var rival=other[(i+1)%3],a=valor(eu,i),b=valor(rival,i);
    if(revanche){

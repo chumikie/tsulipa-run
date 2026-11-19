@@ -134,6 +134,9 @@ async function album(browser){
   }finally{ await context.close(); }
 }
 function testarRotaSora(){
+  soraHeight=74;const semAviso=soraPreviaRotaAtiva();
+  soraHeight=75;const antesDaBifurcacao=soraPreviaRotaAtiva();
+  soraHeight=104;const naEntrada=soraPreviaRotaAtiva();
   soraCamY=-900;soraHighestY=-995;soraP.y=-993;soraHazards=[];
   soraUpdate(1);
   const plats=soraPlats.filter(p=>p.rota);
@@ -146,7 +149,7 @@ function testarRotaSora(){
   const entrada=testar(plats.find(p=>p.rota==='entrada'));
   const aviso=soraToast;
   const subida=testar(plats.find(p=>p.k==='trampolim'));
-  return {suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
+  return {semAviso,antesDaBifurcacao,naEntrada,suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
 }
 async function sora(browser){
   const {page,erros,context} = await preparar(browser);
@@ -154,6 +157,7 @@ async function sora(browser){
     await page.goto(origin+'/sora-jump.html?lang=pt&embed=index2');
     await page.locator('#soraPlayBtn').click();
     const rota = await page.evaluate(() => window.qaRotaSora());
+    assert.deepEqual([rota.semAviso,rota.antesDaBifurcacao,rota.naEntrada],[false,true,false]);
     assert.equal(rota.suaves,7);
     assert.equal(rota.altas,4);
     assert.match(rota.aviso,/Bifurcação/);
@@ -177,7 +181,20 @@ async function karaoke(browser){
     await iframe.locator('#ktResultTiming').waitFor();
     assert.equal(await frame.evaluate(() => ktEnsaioMedidas().concluidos),1);
     await iframe.locator('#ktTrechoBt').click();
-    await iframe.locator('#ktResult[open]').waitFor({timeout:19000});
+    await iframe.locator('#ktPause:not([disabled])').waitFor({state:'attached'});
+    const simularAba = ocultar => frame.evaluate(hidden => {
+      Object.defineProperty(document,'hidden',{configurable:true,get:()=>hidden});
+      document.dispatchEvent(new Event('visibilitychange'));
+    },ocultar);
+    await frame.waitForFunction(() => { const etapa = kt.arena(); return etapa && etapa.now - etapa.start >= 1000; });
+    await simularAba(true);
+    await frame.waitForFunction(() => /retomar/i.test(document.getElementById('ktPause').textContent));
+    const pausado = await iframe.locator('#ktClock').textContent();
+    await page.waitForTimeout(1200);
+    assert.equal(await iframe.locator('#ktClock').textContent(),pausado);
+    await simularAba(false);
+    await iframe.locator('#ktPause').click();
+    await iframe.locator('#ktResult[open]').waitFor({timeout:22000});
     assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Antes: \d+\/\d+ · Agora: \d+\/\d+/);
     assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:1,concluidos:1,repeticoes:0});
     await iframe.locator('#ktTrechoBt').click();

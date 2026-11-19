@@ -11,7 +11,7 @@
   function el(id){return options.getElement?options.getElement(id):document.getElementById(id);}
   function tr(value){return options.translate?options.translate(value):value;}
   function output(ctx){
-   if(!outputNode||outputContext!==ctx){outputNode=ctx.createGain();outputNode.gain.value=volume;outputNode.connect(ctx.destination);outputContext=ctx;}
+   if(!outputNode||outputContext!==ctx){outputNode=ctx.createGain();outputNode.gain.value=volume;outputNode.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(ctx) : ctx.destination);outputContext=ctx;}
    return outputNode;
   }
   function setVolume(value){

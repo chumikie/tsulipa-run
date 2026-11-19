@@ -117,7 +117,7 @@ function hubVozTocar(nome){   // voz curta: substitui e libera completamente a a
   if(typeof muted !== 'undefined' && muted || document.hidden || hubOv.hidden) return;
   hubVozParar();
   try{
-    var a=new Audio('./audio/'+nome+'.mp3?v=1');a.volume=HUB_VOZ_VOL;hubVozAtual=a;
+    var a=new Audio('./audio/'+nome+'.mp3?v=1');a.volume=HUB_VOZ_VOL;if(window.TW_AUDIO)window.TW_AUDIO.midia(a,HUB_VOZ_VOL);hubVozAtual=a;
     a.addEventListener('loadedmetadata',function(){if(hubVozAtual===a&&isFinite(a.duration))HUB_REAGE.dur=Math.max(150,Math.round(a.duration*60)+50);},{once:true});
     var release=function(){if(hubVozAtual===a)hubVozParar();else{try{a.pause();a.removeAttribute('src');a.load();}catch(e){}}};
     a.addEventListener('ended',release,{once:true});a.addEventListener('error',release,{once:true});
@@ -785,10 +785,11 @@ if(typeof document !== 'undefined' && document.addEventListener) document.addEve
 });
 function hubCfgUI(){   // idioma e tema do Oshi também na tela de início (os mesmos botões do menu do Center Run)
   var L = [['pt', 'PT'], ['es', 'ES'], ['en', 'EN'], ['id', 'ID'], ['th', 'TH'], ['ja', '日本語']], O = [['', '☀️', 'Padrão'], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
-  var cfgBtn = $('hubCfgBtn'); if(cfgBtn) cfgBtn.setAttribute('aria-label', tr('Idioma') + ' · ' + tr('Tema'));
+  var cfgBtn = $('hubCfgBtn'); if(cfgBtn) cfgBtn.setAttribute('aria-label', tr('Idioma') + ' · ' + tr('Tema') + ' · ' + twLinkTexto(3));
   $('hubCfg').innerHTML = '<span role="group" aria-label="' + escHtml(tr('Idioma')) + '">' + L.map(function(l){ return '<button type="button" data-hl="' + l[0] + '" aria-pressed="' + (LANG === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</span>' +
     '<span role="group" aria-label="' + escHtml(tr('Tema do Oshi')) + '">' + O.map(function(o){ return '<button type="button" data-ho="' + o[0] + '" title="' + escHtml(tr(o[2])) + '" aria-pressed="' + (OSHI === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>' +
     '<span class="hubloginbox" id="hubLoginCta" hidden><button type="button" class="hublogin" id="hubLoginBtn">' + '<svg viewBox="0 0 48 48" width="16" height="16" aria-hidden="true"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.6v5.5h7.1c4.2-3.9 6.5-9.6 6.5-16.1z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.5 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.2c-.4-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.7H4.5C3 17.1 2 20.4 2 24s1 6.9 2.5 9.9l7.3-5.7z"/><path fill="#EA4335" d="M24 10.8c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.2 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14.1l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>' + '<span id="hubLoginTxt"></span></button></span>';   // visitante: login discreto na mesma linha, sem ocupar espaço
+  $('hubCfg').insertAdjacentHTML('beforeend',twAudioControles('hub'));
   hubLoginCtaUI();
 }
 function hubAvisoCarregar(){   // aviso da moderação no topo das Novidades
@@ -866,9 +867,86 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
   [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });
   beep(523, .9, 'sine', .03, .8);
 }
+var TW_LINK_ROTAS = {cafe:'cafe',studio:'studio',festival:'festival'};
+var TW_LINK_TR = {
+  pt:['Copiar link','Link copiado.','Link para copiar','Som geral','Volume geral','Procurar Idols ou atividades','Atividades','Nenhuma atividade encontrada.'],
+  en:['Copy link','Link copied.','Link to copy','Master sound','Master volume','Find Idols or activities','Activities','No activities found.'],
+  es:['Copiar enlace','Enlace copiado.','Enlace para copiar','Sonido general','Volumen general','Buscar Idols o actividades','Actividades','No se encontraron actividades.'],
+  id:['Salin tautan','Tautan disalin.','Tautan untuk disalin','Suara utama','Volume utama','Cari Idol atau aktivitas','Aktivitas','Tidak ada aktivitas.'],
+  th:['คัดลอกลิงก์','คัดลอกลิงก์แล้ว','ลิงก์สำหรับคัดลอก','เสียงทั้งหมด','ระดับเสียงทั้งหมด','ค้นหาไอดอลหรือกิจกรรม','กิจกรรม','ไม่พบกิจกรรม'],
+  ja:['リンクをコピー','リンクをコピーしました。','コピー用リンク','全体のサウンド','全体の音量','アイドルやアクティビティを探す','アクティビティ','該当するアクティビティがありません。']
+};
+function twLinkTexto(i){ return (TW_LINK_TR[LANG] || TW_LINK_TR.pt)[i]; }
+function twAudioControles(prefixo){
+  if(!window.TW_AUDIO)return '';
+  var a=window.TW_AUDIO.estado();
+  return '<div class="tw-audio-controles"><label><input type="checkbox" id="'+prefixo+'AudioSom" data-tw-audio="som"'+(!a.mudo?' checked':'')+'> '+escHtml(twLinkTexto(3))+'</label>'+
+    '<label for="'+prefixo+'AudioVolume">'+escHtml(twLinkTexto(4))+' <output data-tw-audio="valor" for="'+prefixo+'AudioVolume">'+a.volume+'%</output></label>'+
+    '<input type="range" id="'+prefixo+'AudioVolume" data-tw-audio="volume" min="0" max="100" value="'+a.volume+'"></div>';
+}
+function twLinkRota(id){ return Object.prototype.hasOwnProperty.call(TW_LINK_ROTAS,id) ? id : ''; }
+function twLinkBotao(id){
+  return '<button type="button" class="btn alt" data-tw-link="' + twLinkRota(id) + '">' + escHtml(twLinkTexto(0)) + '</button>';
+}
+function twLinkCopiar(botao){
+  var id=twLinkRota(botao.dataset.twLink); if(!id)return;
+  var url=location.origin+location.pathname+'#'+id;
+  var status=botao.nextElementSibling;
+  if(!status || !status.classList.contains('tw-link-status')){
+    status=document.createElement('span');status.className='tw-link-status';status.setAttribute('role','status');
+    botao.after(status);
+  }
+  function manual(){
+    if(!status.isConnected)return;
+    var campo=document.createElement('input');campo.readOnly=true;campo.value=url;
+    campo.setAttribute('aria-label',twLinkTexto(2));
+    status.replaceChildren(campo);campo.select();campo.focus();
+  }
+  if(navigator.clipboard && typeof navigator.clipboard.writeText==='function'){
+    navigator.clipboard.writeText(url).then(function(){status.textContent=twLinkTexto(1);},manual);
+  }else manual();
+}
+var TW_LINK_LOGIN='tw_link_login_v1', twUltimaRota='';
+function twLinkGuardarLogin(id){
+  id=twLinkRota(id||location.hash.slice(1)); if(!id)return;
+  try{sessionStorage.setItem(TW_LINK_LOGIN,JSON.stringify({id:id,ate:Date.now()+15*60e3}));}catch(e){}
+}
+function twLinkRetomar(){
+  if(!contaJ)return '';
+  try{
+    var salvo=JSON.parse(sessionStorage.getItem(TW_LINK_LOGIN));
+    if(salvo && salvo.ate>Date.now())return twLinkRota(salvo.id);
+    sessionStorage.removeItem(TW_LINK_LOGIN);
+  }catch(e){}
+  return '';
+}
 function twAbrirPeloEndereco(){   // link direto: abre a tela pedida depois do "Toque para começar"
+  var retomar=twLinkRetomar(), id=retomar||twLinkRota(location.hash.slice(1));
+  if(id){
+    if(!hubComecou || hubOv.hidden || (window.TW_CELULAR && !window.TW_CELULAR.rotaPronta()))return;
+    if(id===twUltimaRota && !retomar)return;
+    twUltimaRota=id;
+    if(retomar)try{sessionStorage.removeItem(TW_LINK_LOGIN);}catch(e){}
+    if(id==='festival'){
+      if(jornalOv.hidden || jornalAba!=='comunidade' || !$('jornalFestTitulo'))jornalAbrir('festival');
+      return;
+    }
+    if(id==='studio'){studioAbrir();return;}
+    twAbrirJogoDoHub('cfAbrir');return;
+  }
+  twUltimaRota='';
   var alvo=location.hash==='#karaoke'?'karaoke':location.hash==='#center-run'?'run':'';
   if(!alvo)return;var c=hubOv.querySelector('[data-ir="'+alvo+'"]');if(c)twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&c.isConnected;},function(){c.click();},350);
+}
+function twLinkInicializar(){
+  document.addEventListener('click',function(e){
+    var botao=e.target.closest&&e.target.closest('[data-tw-link]');
+    if(botao)twLinkCopiar(botao);
+  });
+  window.addEventListener('hashchange',function(){
+    twUltimaRota='';
+    if(twLinkRota(location.hash.slice(1)))twAbrirPeloEndereco();
+  });
 }
 function hubComecar(){
   ac();hubJingle();twTimeoutVisivel(hubOv,function(){return !hubOv.hidden&&hubComecou;},hubMusicaTocar,1100);
@@ -881,7 +959,7 @@ function hubComecar(){
   var visto=null;try{visto=localStorage.getItem(TW_INDEX2_TUT_KEY);}catch(e){}
   var rever=false;try{rever=new URLSearchParams(location.search).get('tutorial')==='1';}catch(e){}
   if(!visto||rever){hubTutI=0;hubTutUI();}
-  else twAbrirPeloEndereco();
+  if(visto&&!rever || window.TW_CELULAR_LIGADO && (twLinkRota(location.hash.slice(1))||twLinkRetomar()))twAbrirPeloEndereco();
 }
 function hubTutUI(){   // Quatro slides de boas-vindas.
   var el=$('hubTut'),it=HUB_TUT[hubTutI],texto=TW_INDEX2_TUT_I18N[LANG]||TW_INDEX2_TUT_I18N.pt;
@@ -892,9 +970,10 @@ function hubTutUI(){   // Quatro slides de boas-vindas.
     '<div class="btns"><button type="button" class="btn alt" id="hubTutPular">'+escHtml(tr('Pular'))+'</button><button type="button" class="btn" id="hubTutOk">'+escHtml(tr(hubTutI<HUB_TUT.length-1?'Próximo':'Vamos lá!'))+'</button></div></div>';
   el.hidden=false;
 }
-function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} }
+function hubTutFim(){ $('hubTut').hidden=true;try{localStorage.setItem(TW_INDEX2_TUT_KEY,'1');}catch(e){} twAbrirPeloEndereco(); }
 // Jogos especiais: o iframe só carrega após clicar no card.
 var twPreviewJogoAnterior = null;
+var twPreviewFestivalOrigem = null;
 // A fotografia do Karaoke só pode atravessar o iframe por escolha do jogador.
 // O bilhete é efêmero e vinculado à captura e à conta/Pet desta sessão.
 var twPreviewKaraokeFoto = null;
@@ -1000,13 +1079,14 @@ function twPreviewMontarFundo(){
   if(fundo&&origem)fundo.innerHTML=origem.innerHTML;
 }
 // Visual mode now belongs to sora-jump.html?embed=index2; no iframe DOM injection.
-function twPreviewAbrirJogo(tipo, festival){
+function twPreviewAbrirJogo(tipo, festival, rolagemFestival){
   if(tipo !== 'sora' && tipo !== 'karaoke')return;
   var kTime=tipo==='karaoke';   // Karaoke⭐Time! abre todo dia: é jogo solo, sem sala online nem horário
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe'),text=$('twPreviewTitulo');
   if(!wrap||!frame||!wrap.hidden)return;
   twPreviewKaraokeFoto=null;
   twPreviewJogoAnterior=tipo;
+  twPreviewFestivalOrigem=kTime&&festival===true&&Number.isFinite(rolagemFestival)?rolagemFestival:null;
   if(typeof hubMusicaParar==='function')hubMusicaParar();
   if(typeof ovMusicaParar==='function')ovMusicaParar();
   if(typeof music==='function'){music(false);curT='';}   // para a faixa do Center Run; o jogo de dentro toca a dele
@@ -1045,7 +1125,8 @@ function twPreviewAbrirJogo(tipo, festival){
 function twPreviewFecharJogo(){
   var wrap=$('twPreviewJogo'),frame=$('twPreviewIframe');
   if(!wrap||wrap.hidden)return;
-  var ultimo=twPreviewJogoAnterior;
+  var ultimo=twPreviewJogoAnterior, festival=twPreviewFestivalOrigem;
+  twPreviewFestivalOrigem=null;
   var eraPopup=wrap.hasAttribute('data-karaoke-popup');
   twPreviewKaraokeFoto=null;
   twPreviewEnviarVisibilidadeIframe(false);
@@ -1061,6 +1142,11 @@ function twPreviewFecharJogo(){
   twPreviewCabecalhoOficial(false);
   if(eraPopup)twKaraokeAtualizarCard();else hubMostrar();
   if(typeof muted!=='undefined'&&!muted&&typeof hubComecou!=='undefined'&&hubComecou&&typeof hubMusicaTocar==='function')hubMusicaTocar();
+  if(festival!==null && typeof jornalOv!=='undefined'){
+    jornalOv.hidden=false;jornalOv.scrollTop=festival;
+    var cantar=$('jornalFestCantar');if(cantar)cantar.focus({preventScroll:true});
+    return;
+  }
   // hubMostrar re-creates cards; return focus to the fresh game launcher.
   var card=ultimo&&hubOv.querySelector('[data-ir="'+ultimo+'"]');
   if(card)card.focus({preventScroll:true});
@@ -1123,11 +1209,11 @@ function buscaCancelarTodas(){buscaInputs.forEach(buscaCancelar);}
 function buscaLigar(inp,res){
   if(!inp||inp._ok)return;
   inp._ok=true;inp._twBuscaRes=res;buscaInputs.push(inp);
-  inp.addEventListener('keydown',function(e){e.stopPropagation();});
+  inp.addEventListener('keydown',function(e){if(e.key!=='Escape')e.stopPropagation();});
   inp.addEventListener('input',function(){
     buscaCancelar(inp);
     var q=inp.value.trim(),seq=inp._twBuscaSeq;
-    if(q.length<2){res.innerHTML='';return;}
+    if(q.length<2 || q.length>12){res.innerHTML='';return;}
     inp._twBuscaTimer=setTimeout(function(){
       inp._twBuscaTimer=0;
       if(seq!==inp._twBuscaSeq||!inp.isConnected||!res.isConnected||hubOv.hidden||inp.value.trim()!==q)return;
@@ -1135,7 +1221,11 @@ function buscaLigar(inp,res){
         if(seq!==inp._twBuscaSeq||!inp.isConnected||!res.isConnected||hubOv.hidden||inp.value.trim()!==q)return;
         L=Array.isArray(L)?L:[];
         res.innerHTML=L.length?L.map(function(p){return '<button type="button" class="lbn" data-nick="'+escHtml(p.nick)+'">'+escHtml(p.nick)+' <small>🏆 '+(+p.best||0)+'</small></button>';}).join(''):'<em>'+escHtml(tr('Nenhuma.'))+'</em>';
-      }).catch(function(){if(seq===inp._twBuscaSeq&&res.isConnected&&!hubOv.hidden)res.innerHTML='';});
+      }).catch(function(){
+        if(seq!==inp._twBuscaSeq||!res.isConnected||hubOv.hidden)return;
+        if(typeof TW_CARGA!=='undefined')TW_CARGA.erro(res,function(){inp.dispatchEvent(new Event('input',{bubbles:true}));});
+        else res.innerHTML='';
+      });
     },350);
   });
 }
@@ -1150,10 +1240,10 @@ function hubMusicaTocar(){
   var mel = [4, 5, 6, 5, 4, 3, 4, -1, 3, 4, 5, 4, 3, 2, 3, -1, 2, 3, 4, 3, 2, 1, 2, -1, 1, 2, 3, 4, 5, 4, 5, -1];
   var f0 = 523.25 * Math.pow(2, tom / 12), passo = 60 / 116 / 2, n = 0, prox = a.currentTime + .05;
   function hz(st){ return f0 * Math.pow(2, st / 12); }
-  function nota(f, ini, dur, tipo, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, ini); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + dur); o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + dur + .02); }
+  function nota(f, ini, dur, tipo, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, ini); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + dur); o.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); o.start(ini); o.stop(ini + dur + .02); }
   var ruido = a.createBuffer(1, a.sampleRate * .05, a.sampleRate), dd = ruido.getChannelData(0);
   for(var i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * (1 - i / dd.length);
-  function chimbal(ini, vol){ var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = 'highpass'; fl.frequency.value = 6000; s.buffer = ruido; gn.gain.value = vol; s.connect(fl); fl.connect(gn); gn.connect(a.destination); s.start(ini); }
+  function chimbal(ini, vol){ var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = 'highpass'; fl.frequency.value = 6000; s.buffer = ruido; gn.gain.value = vol; s.connect(fl); fl.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); s.start(ini); }
   hubMus = setInterval(function(){
     if(document.hidden || muted || !hubTelaAberta()){ hubMusicaParar(); return; }
     while(prox < a.currentTime + .3){
@@ -1184,15 +1274,15 @@ function ovMusicaTocar(k){
   function nota(f, ini, dur, tipo, vol, ataque){
     var o = a.createOscillator(), gn = a.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, ini);
     gn.gain.setValueAtTime(.0001, ini); gn.gain.linearRampToValueAtTime(vol, ini + (ataque || .01)); gn.gain.exponentialRampToValueAtTime(.0004, ini + dur);
-    o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + dur + .05);
+    o.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); o.start(ini); o.stop(ini + dur + .05);
   }
   var rb = a.createBuffer(1, a.sampleRate * .25, a.sampleRate), rd = rb.getChannelData(0);
   for(var i = 0; i < rd.length; i++) rd[i] = Math.random() * 2 - 1;
   function ruido(ini, dur, vol, corte, tipoF){
     var s = a.createBufferSource(), gn = a.createGain(), fl = a.createBiquadFilter(); fl.type = tipoF || 'highpass'; fl.frequency.value = corte;
-    s.buffer = rb; gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0003, ini + dur); s.connect(fl); fl.connect(gn); gn.connect(a.destination); s.start(ini); s.stop(ini + dur + .02);
+    s.buffer = rb; gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0003, ini + dur); s.connect(fl); fl.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); s.start(ini); s.stop(ini + dur + .02);
   }
-  function bumbo(ini, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(140, ini); o.frequency.exponentialRampToValueAtTime(45, ini + .18); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + .22); o.connect(gn); gn.connect(a.destination); o.start(ini); o.stop(ini + .25); }
+  function bumbo(ini, vol){ var o = a.createOscillator(), gn = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(140, ini); o.frequency.exponentialRampToValueAtTime(45, ini + .18); gn.gain.setValueAtTime(vol, ini); gn.gain.exponentialRampToValueAtTime(.0005, ini + .22); o.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); o.start(ini); o.stop(ini + .25); }
 
   var G_SUS = [[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], G_TRI = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]];
   var G_MEL_SUS = [76, -1, 72, -1, 69, -1, 72, 76, 77, -1, 76, -1, 72, -1, 69, -1, 74, -1, 72, -1, 69, -1, 65, 69, 68, 69, 71, 72, 74, 75, 76, 80];

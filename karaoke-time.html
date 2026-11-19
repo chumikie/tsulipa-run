@@ -1,7 +1,8 @@
 <!doctype html><html lang="pt-BR" class="tw-karaoke-embed"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="./tw-audio.js?v=1"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
-<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=1"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=2"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -140,7 +141,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./karaoke-mobile.css?v=9"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=9">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3"><link rel="stylesheet" href="./tw-tema-cards.css?v=3">
-<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=2"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=3"></script>
+<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=4"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -1158,7 +1159,7 @@ var AC=null,muted=false,acResumePromise=null;function ac(){
   }catch(e){acResumePromise=null;}
  }
  return AC;
-}function beep(f,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.035,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);} function krAlternarSom(){muted=!muted;var muteButton=$('krMute');if(muteButton){muteButton.textContent=muted?'🔇':'🔊';muteButton.setAttribute('aria-pressed',muted?'true':'false');muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som');}if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}else krMusicaLigar();}
+}function beep(f,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.035,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);} function krAlternarSom(){muted=!muted;var muteButton=$('krMute');if(muteButton){muteButton.textContent=muted?'🔇':'🔊';muteButton.setAttribute('aria-pressed',muted?'true':'false');muteButton.setAttribute('aria-label',muted?'Ativar som':'Silenciar som');}if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}else krMusicaLigar();}
 $('krMute').onclick=krAlternarSom;
 var CH=[{n:'Tsu',img:'#9b30d9',hair:'#b04fe6',hair2:'#fff',streak:false,skin:'#b97a50',eye:'#a64bd9',back:'pixie',front:'bagunca',det:'gato',gl:'',out:'zipper',outcol:'#9b30d9',hat:'',baixo:'bermuda'},{n:'Lirika',img:'#b6ff3b',hair:'#1a1a22',hair2:'#fff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',det:'coques',gl:'',out:'sweet',outcol:'#4ade80',hat:'',baixo:'saia'},{n:'Pati',img:'#4169e1',hair:'#4a6fd8',hair2:'#fff',streak:false,skin:'#fbe5d8',eye:'#3a55b8',back:'',front:'reta',det:'',gl:'',out:'citypop',outcol:'#4169e1',hat:'',baixo:'bermuda'},{n:'Idol',img:'#ff7eb6',hair:'#ff7eb6',hair2:'#4dd8ff',streak:false,skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'lateral',det:'',gl:'',out:'seifuku',outcol:'#ffffff',hat:''}];function meuChar(){var c=JSON.parse(JSON.stringify(CH[sel]||CH[0]));try{c._avatarA=localStorage.getItem('brs48cr_acc')||'';}catch(e){c._avatarA='';}return c;}
 var krMeuCharSalaSource=null,krMeuCharSalaClone=null;
@@ -1462,7 +1463,7 @@ function ktPetDesenho(ctx, type, x, y, sc, tFrame, ex, running){ ex=ex||'';
 }
 /* Chu, Koali e Pucchi pulam e respondem ao toque. */
 var ktPets=[{k:'tsu',nome:'Chu',x:392,y:306,cor:'💜'},{k:'lirika',nome:'Koali',x:550,y:307,cor:'💚'},{k:'pati',nome:'Pucchi',x:597,y:302,cor:'💙'}];
-function ktPetGlide(f1,f2,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'sine';o.frequency.setValueAtTime(f1,s);o.frequency.exponentialRampToValueAtTime(f2,s+d);gn.gain.setValueAtTime(v||.04,s);gn.gain.exponentialRampToValueAtTime(.001,s+d+.05);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d+.08);}
+function ktPetGlide(f1,f2,d,t,v,when){var a=ac();if(!a||muted)return;var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);o.type=t||'sine';o.frequency.setValueAtTime(f1,s);o.frequency.exponentialRampToValueAtTime(f2,s+d);gn.gain.setValueAtTime(v||.04,s);gn.gain.exponentialRampToValueAtTime(.001,s+d+.05);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d+.08);}
 function ktPetVoz(k){if(k==='tsu'){ktPetGlide(620,1180,.11,'triangle',.06);ktPetGlide(1180,880,.14,'triangle',.05,.11);}else if(k==='lirika'){ktPetGlide(480,720,.2,'sine',.07);ktPetGlide(720,560,.24,'sine',.055,.2);}else{ktPetGlide(520,380,.08,'square',.03);ktPetGlide(330,250,.14,'square',.028,.1);}}
 /* A temporary visit is room decoration only: no save, stats or account writes. */
 function ktPetOrbita(i,t){var vel=[.0042,-.0034,.0029][i%3],a=t*vel+i*2.1;
@@ -2228,8 +2229,8 @@ for(i=krBolhas.length-1;i>=0;i--){var b=krBolhas[i],agoraB=performance.now();
 var krMus=null;/* Sala: chiptune 150 BPM (IV–V–iii–vi) */
 var krRuidoBuf=null;
 function krRuido(dur,vol,corte,when){var a=ac();if(!a||muted)return;if(!krRuidoBuf){krRuidoBuf=a.createBuffer(1,a.sampleRate*.3,a.sampleRate);var d=krRuidoBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
- var s=a.currentTime+(when||0),src=a.createBufferSource(),f=a.createBiquadFilter(),gn=a.createGain();src.buffer=krRuidoBuf;f.type='highpass';f.frequency.value=corte||5000;gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+dur);src.connect(f);f.connect(gn);gn.connect(a.destination);src.start(s);src.stop(s+dur+.02);}
-function krBumbo(vol){var a=ac();if(!a||muted)return;var s=a.currentTime,o=a.createOscillator(),gn=a.createGain();o.type='sine';o.frequency.setValueAtTime(150,s);o.frequency.exponentialRampToValueAtTime(42,s+.13);gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+.16);o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+.18);}
+ var s=a.currentTime+(when||0),src=a.createBufferSource(),f=a.createBiquadFilter(),gn=a.createGain();src.buffer=krRuidoBuf;f.type='highpass';f.frequency.value=corte||5000;gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+dur);src.connect(f);f.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);src.start(s);src.stop(s+dur+.02);}
+function krBumbo(vol){var a=ac();if(!a||muted)return;var s=a.currentTime,o=a.createOscillator(),gn=a.createGain();o.type='sine';o.frequency.setValueAtTime(150,s);o.frequency.exponentialRampToValueAtTime(42,s+.13);gn.gain.setValueAtTime(vol,s);gn.gain.exponentialRampToValueAtTime(.001,s+.16);o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+.18);}
 function krMusicaLigar(){if(krRhythmRun||krMus||muted||!krRoomPodeAnimar())return;
  var roots=[41,43,40,45],acordes=[[65,69,72,76],[67,71,74,77],[64,67,71,74],[69,72,76,79]],
   mel=[77,-1,79,81,84,-1,81,79, 79,-1,81,83,86,-1,83,81, 79,-1,76,79,83,-1,81,79, 81,-1,84,-1,88,86,84,81,
@@ -2615,7 +2616,7 @@ if(ktNoSite()){
  window.addEventListener('pageshow',start);
  place();
 })();
-</script><script src="./tw-windows.js?v=1"></script>
+</script><script src="./tw-windows.js?v=2"></script>
 <script src="./karaoke-mobile.js?v=4"></script>
 <script src="./karaoke-photo.js?v=2"></script>
 <script src="./karaoke-lista.js?v=6"></script>

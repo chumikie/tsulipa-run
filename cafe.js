@@ -634,7 +634,8 @@ function cfUI(){
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[eventoAtual().base][0] + ' ' + tr(CF_BASES[eventoAtual().base][1]))) + '</p>' : '') +
     cfVisitaOpcoes() + cfAssinaturaOpcoes(rec) +
-    '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button></div>';
+    '<div class="btns"><button type="button" class="btn" id="cfJogar">☕ ' + escHtml(tr('Abrir o café')) + '</button>' +
+    (typeof twLinkBotao === 'function' ? twLinkBotao('cafe') : '') + '</div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
     h += '<section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +

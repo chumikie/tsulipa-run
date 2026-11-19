@@ -17,6 +17,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-nitidez.js?v=9"></script>
+<script src="./tw-audio.js?v=1"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
@@ -657,7 +658,7 @@ function beep(f,d,t,v,when){
   var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);
   o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.05,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);
   o.onended=function(){try{o.disconnect();gn.disconnect();}catch(e){}};
-  o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);
+  o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);
 }
 var sfx={
   jump:function(){beep(380,.12);beep(560,.1,'square',.04,.06)},
@@ -4672,6 +4673,6 @@ function soraCloseUI(){
 })();
 </script>
 
-<script src="./tw-windows.js?v=1"></script>
+<script src="./tw-windows.js?v=2"></script>
 </body>
 </html>

@@ -821,7 +821,7 @@ function petGlide(f1, f2, d, t, v, when){
   o.type = t || 'sine';
   o.frequency.setValueAtTime(f1, s); o.frequency.exponentialRampToValueAtTime(f2, s + d);
   gn.gain.setValueAtTime(.0001, s); gn.gain.exponentialRampToValueAtTime(v || .05, s + .015); gn.gain.exponentialRampToValueAtTime(.001, s + d);
-  o.connect(gn); gn.connect(a.destination); o.start(s); o.stop(s + d + .02);
+  o.connect(gn); gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination); o.start(s); o.stop(s + d + .02);
 }
 function petMusicK(){
   if(!petOpen) return 'menu';

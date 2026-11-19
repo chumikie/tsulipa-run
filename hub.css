@@ -158,3 +158,9 @@ body.hubon #mute{visibility:hidden}
 
 #hubIdolsCv[hidden],#hubIdolsStatus[hidden]{display:none!important}
 #hubIdolsStatus{min-height:120px;display:grid;place-items:center;color:var(--ink);text-align:center}
+
+.tw-audio-controles{display:grid;gap:8px;text-align:start}
+.tw-audio-controles input[type="range"]{width:100%;accent-color:var(--b1)}
+.tw-audio-controles input[type="checkbox"]{accent-color:var(--b1)}
+.tw-link-status{max-width:100%}
+.tw-link-status input{width:min(240px,100%);font:inherit}

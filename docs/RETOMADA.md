@@ -29,7 +29,7 @@
 **Como se entra:** o **visual novo** (o celular do Idol, "*Nick*Phone"; sem conta, "TsuPhone") abre sozinho no celular, tablet e computador desde 17/11. O clássico continua em Ajustes ou `?celular=0`.
 - Abertura com o trio Tsu·Li·Pa.
 - **Início:** palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário).
-- **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px.
+- **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos.
 
 ### Jogos
 | Jogo | O que é | Prêmio | Estado | Próximo passo |

@@ -4,7 +4,7 @@ Referência técnica atualizada em 18/11/2026. O estado do projeto e as pendênc
 
 ## Ordem de carregamento
 
-1. O `<head>` de `index.html` carrega os utilitários de nitidez, movimento e avatar, além dos estilos. Preserve a ordem das folhas e dos blocos de CSS inline ao alterar a cascata.
+1. O `<head>` de `index.html` carrega os utilitários de nitidez, áudio, movimento e avatar, além dos estilos. Preserve a ordem das folhas e dos blocos de CSS inline ao alterar a cascata.
 2. Antes do script principal entram o cliente Supabase, `pet-sync.js`, `tw-i18n-base.js` e o arquivo do idioma ativo quando ele tem traduções separadas. Em seguida vêm os módulos de cada área e as funções que solicitam os arquivos adicionais.
 3. O visual novo é o padrão. Quando ativo, o HTML carrega `tw-celular.css`, `tw-humor.js`, `tw-bichos.js`, `tw-bairro.js`, `tw-calendario.js`, `tw-celular.js` e `tw-presenca.js`. Em Ajustes, o visual clássico também pode carregar esse conjunto ao voltar para o visual novo.
 4. O script principal inicializa o estado e liga os eventos das janelas. No fim do HTML entram `tw-windows.js` e `karaoke-tickets.js`. O Mapa começa a baixar após o evento `load`, usando um intervalo ocioso quando o navegador oferece essa opção.

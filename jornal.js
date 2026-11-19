@@ -790,11 +790,12 @@ function jornalFestivalTexto(i){
 }
 function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
 function jornalFestivalCantar(){
-  if(!contaJ){ contaEntrar(); return; }
+  if(!contaJ){ if(typeof twLinkGuardarLogin === 'function')twLinkGuardarLogin('festival'); contaEntrar(); return; }
+  var rolagem = jornalOv.scrollTop;
   jornalFechar();
-  twPreviewAbrirJogo('karaoke', true);
+  twPreviewAbrirJogo('karaoke', true, rolagem);
 }
-function jornalFestHtml(){ return '<section class="jnbloco jntimes"><h4 id="jornalFestTitulo" tabindex="-1">🎤 ' + escHtml(tr('Festival de Unidades')) + ' <small id="jornalFestMus"></small></h4><p class="jndica">' + escHtml(jornalFestivalPrazo()) + '</p><button type="button" class="btn alt" id="jornalFestCantar">' + escHtml(jornalFestivalTexto(1)) + '</button><div id="jornalFest"></div></section>'; }
+function jornalFestHtml(){ return '<section class="jnbloco jntimes"><h4 id="jornalFestTitulo" tabindex="-1">🎤 ' + escHtml(tr('Festival de Unidades')) + ' <small id="jornalFestMus"></small></h4><p class="jndica">' + escHtml(jornalFestivalPrazo()) + '</p><button type="button" class="btn alt" id="jornalFestCantar">' + escHtml(jornalFestivalTexto(1)) + '</button>' + (typeof twLinkBotao === 'function' ? twLinkBotao('festival') : '') + '<div id="jornalFest"></div></section>'; }
 function jornalFestUI(){
   var box = $('jornalFest'); if(!box) return;
   var cantar = $('jornalFestCantar'); if(cantar) cantar.onclick = jornalFestivalCantar;

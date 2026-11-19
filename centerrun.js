@@ -223,7 +223,7 @@ function beep(f,d,t,v,when){
   var a=ac();if(!a||muted)return;
   var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);
   o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.05,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);
-  o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);
+  o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);
 }
 var mel=[523,659,784,659,587,698,880,698,523,659,784,1046,988,784,659,784],bass=[131,131,175,175,196,196,131,131],men=[523,659,784,659,880,784,659,587,523,659,784,1046,880,784,659,587],bi=0,mt=null;
 var BS={tense:[110,110,110,104,110,110,98,104],hard:[110,104,110,98,110,104,123,104]};

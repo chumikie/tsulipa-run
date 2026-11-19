@@ -630,7 +630,7 @@
     var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Bahasa Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
     var OS = [['', '☀️', tt('Padrão')], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
     var oshi = typeof OSHI === 'string' ? OSHI : '';
-    return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' +
+    return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' + '<section class="twc-card">'+twAudioControles('twc')+'</section>' +
       '<section class="twc-card"><h2>' + esc(tt('Idioma')) + '</h2><div class="twc-chips" role="group" aria-label="' + esc(tt('Idioma')) + '">' +
         LG.map(function(l){ return '<button type="button" data-l="' + l[0] + '" aria-pressed="' + (L() === l[0]) + '" lang="' + l[0] + '">' + l[1] + '</button>'; }).join('') + '</div></section>' +
       '<section class="twc-card"><h2>' + esc(tt('Tema do Oshi')) + '</h2><div class="twc-chips" role="group" aria-label="' + esc(tt('Tema do Oshi')) + '">' +
@@ -684,9 +684,34 @@
      São as mesmas partes do início clássico (com os mesmos cliques e regras), trazidas para uma tela do celular
      enquanto ela está aberta e devolvidas ao sair. Tudo continua dentro do #hub, então nada deixa de funcionar. */
   var EMB = {mapa:['#twMapa', 'mapa'], missoes:['#hubMisPainel', 'mis'], busca:['.hubbusca', 'busca'], nov:['.hubnov', 'nov']}, embAtual = null;
+  function buscaAtalhos(q){
+    var box = $id('twcBuscaAtalhos'); if(!box)return;
+    var termos=semAcento(q).replace(/[^\p{L}\p{M}\p{N}]+/gu,' ').trim().split(' ').filter(Boolean);
+    if(!termos.length){box.replaceChildren();return;}
+    var rotas=jogosNaTela().map(function(k){
+      var c=card(k), apelidos={run:'corrida correr palco runner',karaoke:'música ritmo show cantar',sora:'nuvens pulo altura',studio:'foto fotografia retrato camera',cafe:'café comida bebida receita balcão',handshake:'fã presente memória',duo:'dupla foto dança',pet:'camarim quarto bichinho',bloom:'jardim flor plantar',battle:'arena batalha cards'};
+      return [titulo(c),descricao(c)+(precisaEntrar(k)?' · '+t2('legCad'):''),apelidos[k]||'', 'data-ir="'+k+'"'];
+    }).concat([
+      [t('mapa'),tp('mapaSub'),'cidade rua praça lugar','data-a="mapa"'],
+      [tt('Festival de Unidades'),jornalFestivalTexto(0),'placar música da semana team','data-a="festival"'],
+      ['Idol⭐News!',tp('newsSub'),'jornal quadrinho notícias','data-a="news"'],
+      [t('album'),t('albumSub'),'cartas coleção gacha','data-a="album"'],
+      ['Momentos⭐',tp('camarimSub'),'foto fotos galeria porta retrato','data-a="momentos"'],
+      [t('ajustes'),t('ajustesSub'),'config configuração volume áudio som','data-v="ajustes"'],
+      [t('mis'),tp('misSub'),'missão objetivos progresso','data-a="missoes"']
+    ]);
+    var encontrados=rotas.filter(function(r){
+      var texto=semAcento(r.slice(0,3).join(' '));
+      return termos.every(function(p){return texto.includes(p);});
+    });
+    box.innerHTML='<h2>'+esc(twLinkTexto(6))+'</h2>'+(encontrados.length?encontrados.map(function(r){
+      return '<button type="button" class="twc-atalho" '+r[3]+'><span><b>'+esc(r[0])+'</b><small>'+esc(r[1])+'</small></span></button>';
+    }).join(''):'<p role="status">'+esc(twLinkTexto(7))+'</p>');
+  }
   function telaEmb(k){
-    return faixa(esc(t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
-      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' + (k === 'mapa' ? frasesHtml() : '') + '</div>';
+    return faixa(esc(k === 'busca' ? twLinkTexto(5) : t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
+      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' +
+      (k === 'busca' ? '<section id="twcBuscaAtalhos" class="twc-busca-atalhos" aria-label="'+esc(twLinkTexto(6))+'"></section>' : '') + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
   /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
   function humorHtml(semDesejo){   // semDesejo: o desejo do dia e o VIP já aparecem no "Hoje" do Início
@@ -1431,7 +1456,10 @@
     if(k === 'mapa') setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, 60);
     if(k === 'missoes' && typeof hubMisCarregar === 'function' && logado() && !(typeof hubMisDados !== 'undefined' && hubMisDados)) hubMisCarregar();
     if(k === 'nov') el.open = true;
-    if(k === 'busca'){ var i = $id('hubBusca'); if(i) setTimeout(function(){ try{ i.focus({preventScroll:true}); }catch(e){} }, 80); }
+    if(k === 'busca'){
+      var i=$id('hubBusca');
+      if(i){i.maxLength=48;i.setAttribute('aria-label',twLinkTexto(5));i.placeholder=twLinkTexto(5);buscaAtalhos(i.value);}
+    }
   }
   /* ---------- Novidades (17/11): os posts do Idol⭐News! com data e selo "novo", e embaixo a lista fixa do que tem no site ---------- */
   var NOV_VISTO = 'tw_nov_visto', novPosts = null, novFalhou = false;
@@ -1518,6 +1546,8 @@
   function devolver(){
     if(!embAtual) return;
     var e = embAtual; embAtual = null;
+    var busca=e.el.querySelector('#hubBusca');
+    if(busca){busca.maxLength=12;busca.removeAttribute('placeholder');busca.setAttribute('aria-label',tt('Procurar Idol pelo nome'));}
     if(e.pai && e.pai.isConnected) e.pai.insertBefore(e.el, e.prox && e.prox.parentNode === e.pai ? e.prox : null);
     else { var c = $id('hubCards'); if(c) c.appendChild(e.el); }
   }
@@ -1539,7 +1569,9 @@
       });
       return;
     }
-    var rolagem = chave === ultimaTela ? tela.scrollTop : 0; ultimaTela = chave;
+    var rolagem=chave===ultimaTela?tela.scrollTop:0;
+    var focoAnterior=chave===ultimaTela&&tela.contains(document.activeElement)?pontoAtual():null;
+    ultimaTela = chave;
     tela.setAttribute('data-tela', v);
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
     vitrineDevolver();
@@ -1559,11 +1591,49 @@
     if(v.indexOf('tour:') === 0) tourDesenhar();
     if(window.TW_PRESENCA) try{ window.TW_PRESENCA.contadorUI(); }catch(e){}
     if(v === 'inicio') setTimeout(tutTalvez, 400);
+    if(focoAnterior&&focoAnterior.foco)restaurarPonto(focoAnterior);
   }
-  function ir(v){ if(classico) sairClassico(); if(topo() !== v) pilha.push(v); som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
-  function inicio(){ if(classico) sairClassico(); pilha = ['inicio']; som(); desenhar(); tela.scrollTop = 0; }
-  function voltar(){ if(classico){ sairClassico(); som(); desenhar(); return; } if(pilha.length > 1){ pilha.pop(); som(); desenhar(); focarTitulo(); } }
-  function focarTitulo(){ var h = tela.querySelector('.twc-faixa h1'); if(h){ h.setAttribute('tabindex', '-1'); try{ h.focus({preventScroll:true}); }catch(e){} } }
+  var pontosPilha=[];
+  function pontoAtual(){
+    if(!cel||!tela)return null;
+    var el=document.activeElement, seletor='';
+    if(el && cel.contains(el)){
+      if(el.id)seletor='#'+CSS.escape(el.id);
+      else ['data-a','data-ir','data-v','data-n','data-estreia'].some(function(a){
+        if(!el.hasAttribute(a))return false;
+        seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
+      });
+    }
+    var selecao=el&&el.id==='hubBusca'?[el.selectionStart,el.selectionEnd]:null;
+    return {rota:topo(),top:tela.scrollTop,foco:seletor,selecao:selecao};
+  }
+  function restaurarPonto(p, original){
+    if(!p||!cel||p.rota!==topo()||$id('hub').hidden)return false;
+    tela.scrollTop=p.top;
+    var el=original&&cel.contains(original)?original:p.foco&&cel.querySelector(p.foco);
+    if(el&&el.getClientRects().length){
+      el.focus({preventScroll:true});
+      if(p.selecao&&el.id==='hubBusca')el.setSelectionRange(p.selecao[0],p.selecao[1]);
+    }else focarTitulo();
+    return true;
+  }
+  function ir(v){
+    if(classico)sairClassico();
+    if(topo()===v)return;
+    pontosPilha[pilha.length-1]=pontoAtual();pilha.push(v);
+    som();desenhar();tela.scrollTop=0;
+    var busca=v==='emb:busca'&&$id('hubBusca');
+    if(busca)busca.focus({preventScroll:true});else focarTitulo();
+  }
+  function inicio(){ if(classico) sairClassico(); pilha = ['inicio']; pontosPilha=[]; som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
+  function voltar(){
+    if(classico){ sairClassico(); som(); desenhar(); return; }
+    if(pilha.length>1){
+      pilha.pop();var ponto=pontosPilha.pop();som();desenhar();
+      if(ponto)restaurarPonto(ponto);else focarTitulo();
+    }
+  }
+  function focarTitulo(){ var h = tela.querySelector('.twc-faixa h1, .twc-abre h1, #twcHjT'); if(h){ h.setAttribute('tabindex', '-1'); try{ h.focus({preventScroll:true}); }catch(e){} } }
 
   // Partes que ainda moram no hub antigo (missões, busca, novidades, mapa): mostra o hub por baixo,
   // rolado até ela, e a barra de baixo continua lá para voltar ao celular.
@@ -1586,8 +1656,22 @@
   function fecharFolha(){ folha.hidden = true; folha.innerHTML = ''; }
 
   function acao(a, el){
-    if(a === 'comecar'){ if(typeof hubComecar === 'function') hubComecar(); return; }
+    if(a === 'comecar'){
+      if(typeof hubComecar === 'function')hubComecar();
+      requestAnimationFrame(function(){if(cel&&!$id('hub').hidden&&folha.hidden&&!janelas().length)focarTitulo();});
+      return;
+    }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
+    if(a === 'momentos'){
+      if(!logado()){pedirLogin('Momentos⭐');return;}
+      TW_CARGA.abrir('Momentos⭐', petSalaCarregar, function(){
+        if(!logado())return;
+        petVeioHub=true;
+        petOpenUI();
+        if(petPhoneAbrir('fotos'))petPhoneFotosAbaAbrir('momentos');
+      });
+      return;
+    }
     if(a === 'festival'){ if(typeof window.jornalAbrir === 'function') window.jornalAbrir('festival'); return; }
     if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
@@ -1769,7 +1853,7 @@
   /* ---------- boas-vindas do celular (3 telas, uma vez por aparelho; o tutorial clássico fica para o visual antigo) ---------- */
   var TUT_CHAVE = 'tw_cel_tut_v1', tutI = -1;
   function tutVisto(){ try{ return localStorage.getItem(TUT_CHAVE) === '1'; }catch(e){ return true; } }
-  function tutFim(){ tutI = -1; try{ localStorage.setItem(TUT_CHAVE, '1'); }catch(e){} fecharFolha(); }
+  function tutFim(){ tutI = -1; try{ localStorage.setItem(TUT_CHAVE, '1'); }catch(e){} fecharFolha(); if(twLinkRota(location.hash.slice(1))||twLinkRetomar())twAbrirPeloEndereco(); }
   function tutMostrar(){
     var P2 = [['tut1', 'tut1b', 'casa'], ['tut2', 'tut2b', 'todos'], ['tut3', 'tut3b', 'menu']], p = P2[tutI]; if(!p){ tutFim(); return; }
     folha.innerHTML = '<div class="twc-folha-caixa twc-tut" role="dialog" aria-modal="true" aria-labelledby="twcTutT"><span class="twc-folha-ico twc-g-roxo">' + ico(p[2], 28) + '</span>' +
@@ -1817,11 +1901,14 @@
     h.appendChild(cel);
     tela = $id('twcTela'); nav = $id('twcNav'); folha = $id('twcFolha');
     cel.addEventListener('click', clique);
+    cel.addEventListener('input', function(e){
+      if(e.target.id==='hubBusca')buscaAtalhos(e.target.value);
+    });
     folha.addEventListener('click', function(e){ if(e.target === folha){ if(tutI >= 0) tutFim(); else fecharFolha(); } });
     if(!montar.tecla) document.addEventListener('keydown', function(e){
       if(e.key !== 'Escape' || !cel || h.hidden) return;
       if(!folha.hidden){ e.preventDefault(); if(tutI >= 0) tutFim(); else fecharFolha(); return; }
-      if(document.querySelector('[aria-modal="true"]:not([hidden])')) return;
+      if(Array.from(document.querySelectorAll('[aria-modal="true"],dialog[open]')).some(function(el){return el.getClientRects().length;}))return;
       if(classico || pilha.length > 1){ e.preventDefault(); voltar(); }
     });
     montar.tecla = true;
@@ -1852,5 +1939,5 @@
     var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
-  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
+  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

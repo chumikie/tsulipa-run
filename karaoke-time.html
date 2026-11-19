@@ -2,7 +2,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
-<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=2"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=4"></script><script src="./karaoke-musicas-modos.js?v=2"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=6"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -29,6 +29,11 @@
 .kt-audio-clip{display:flex;align-items:center;gap:7px;min-width:0;min-height:52px;padding:7px;border:1px solid rgba(123,63,240,.22);border-radius:12px;background:var(--card);color:var(--ink);text-align:left;font:inherit;cursor:pointer;transition:transform .12s,border-color .12s}
 .kt-audio-clip:hover{transform:translateY(-1px);border-color:var(--pink)}
 .kt-audio-clip:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+/* Medir sozinho: botão largo (dá para tocar no ritmo sem errar o alvo) */
+.kt-cal-auto{margin-top:8px;display:grid;gap:4px}
+.kt-cal-medir{width:100%;min-height:52px;font-weight:800;touch-action:manipulation;user-select:none}
+.kt-cal-medir.kt-cal-medindo{background:linear-gradient(135deg,#ff6fb5,#9b30d9);color:#fff;letter-spacing:.2em;font-size:1.1rem}
+#ktCalMedirMsg{margin:0;font-size:.82rem;opacity:.85;min-height:1.1em}
 .kt-audio-clip[aria-pressed="true"]{border-color:var(--pink);box-shadow:0 0 0 2px rgba(255,111,181,.2)}
 .kt-audio-icon{flex:0 0 27px;display:grid;place-items:center;font-size:19px}
 .kt-audio-label{display:flex;flex:1;flex-direction:column;min-width:0;gap:2px}
@@ -139,7 +144,7 @@ html.kt-no-site .krwrap{padding-top:0!important}
 .kt-ja-subtitle{display:block;margin:2px 0 4px;color:var(--tw-kr-sub,#b9a8d8);font:700 10px "Kosugi Maru","M PLUS Rounded 1c",sans-serif;letter-spacing:.08em}
 </style>
 <link rel="stylesheet" href="./tw-windows.css?v=3">
-<link rel="stylesheet" href="./karaoke-mobile.css?v=9"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=9">
+<link rel="stylesheet" href="./karaoke-mobile.css?v=9"><link rel="stylesheet" href="./karaoke-arena.css?v=2"><link rel="stylesheet" href="./karaoke-lista.css?v=10">
 <link rel="stylesheet" href="./karaoke-photo.css?v=3"><link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>
 window.ktEnsaio = new URLSearchParams(location.search).get('ensaio') === '1';
@@ -159,7 +164,7 @@ if(window.ktEnsaio){
 }
 </script>
 <style>.kt-ensaio :is(#ktLimitCount,#ktLimitPips,#ktWeeklyRanks,#ktViewRanks,#ktSongRecord){display:none!important}</style>
-<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=5"></script>
+<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=8"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -1243,11 +1248,12 @@ var KR_RHYTHM_PAUSE_COPY={
  ja:['⏸ 一時停止','▶ 再開 (3秒)','⏳ カウント中止','✦ ステージへ戻ります... ✦']
 };
 var KR_RHYTHM_TOUCH_DIAGNOSTIC={
- pt:{early:'CEDO',late:'TARDE',onTime:'NO TEMPO',wrong:'RAIA ERRADA',empty:'SEM NOTA NESSA RAIA',ready:'🎯 CENTRO do botão = PERFECT! Halo colorido = BOM. Fora do halo = MISS.',calibrate:'O ajuste muda só o julgamento do toque, não a música nem a animação. Se aparecer TARDE, use +10 ms; se aparecer CEDO, use −10 ms.',center:'✨ CENTRO = PERFECT · HALO = BOM · D F J K'},
- en:{early:'EARLY',late:'LATE',onTime:'ON BEAT',wrong:'WRONG LANE',empty:'NO NOTE IN THIS LANE',ready:'🎯 Button CENTER = PERFECT! Colored glow = GOOD. Outside the glow = MISS.',calibrate:'Adjustment affects input judgment only, not music or animation. LATE? Try +10 ms. EARLY? Try −10 ms.',center:'✨ CENTER = PERFECT · GLOW = GOOD · D F J K'},
- es:{early:'ANTES',late:'TARDE',onTime:'A TIEMPO',wrong:'CARRIL EQUIVOCADO',empty:'SIN NOTA EN ESTE CARRIL',ready:'🎯 CENTRO del botón = PERFECT. Halo de color = BIEN. Fuera del halo = MISS.',calibrate:'El ajuste solo cambia el juicio del toque, no la música ni la animación. TARDE: +10 ms. ANTES: −10 ms.',center:'✨ CENTRO = PERFECT · HALO = BIEN · D F J K'},
- th:{early:'เร็วไป',late:'ช้าไป',onTime:'ตรงจังหวะ',wrong:'ผิดช่อง',empty:'ไม่มีโน้ตในช่องนี้',ready:'🎯 กลางปุ่ม = PERFECT! ขอบแสง = GOOD นอกแสง = MISS',calibrate:'การปรับมีผลเฉพาะการตัดสินการกด ไม่เปลี่ยนเพลงหรือภาพ ช้าไป: +10 ms เร็วไป: −10 ms',center:'✨ กลางปุ่ม PERFECT · ขอบแสง GOOD · D F J K'},
- ja:{early:'早い',late:'遅い',onTime:'ぴったり',wrong:'違うレーン',empty:'このレーンにノーツなし',ready:'🎯 ボタンの中央＝PERFECT！ 周囲の光＝GOOD、光の外＝MISS。',calibrate:'調整するのは入力判定だけで、音楽・映像は動きません。遅い→+10 ms、早い→−10 ms。',center:'✨ 中央 PERFECT · 光の縁 GOOD · D F J K'}
+ pt:{early:'CEDO',late:'TARDE',onTime:'NO TEMPO',wrong:'RAIA ERRADA',empty:'SEM NOTA NESSA RAIA',ready:'🎯 CENTRO do botão = PERFECT! Halo colorido = BOM. Fora do halo = MISS.',calibrate:'O ajuste muda só o julgamento do toque, não a música nem a animação. Se aparecer TARDE, use +10 ms; se aparecer CEDO, use −10 ms.',center:'✨ CENTRO = PERFECT · HALO = BOM · D F J K',medir:'🎧 Medir sozinho',medirDica:'Toque no botão junto com cada batida.',medirConta:'Toque junto · {n}',medirOk:'Pronto! Seu aparelho está {d} ms {q}. Ajuste em {o} ms.',medirCedo:'adiantado',medirTarde:'atrasado',medirPoucos:'Poucos toques. Tente de novo tocando em todas as batidas.',medirSom:'Ligue o som para medir.'},
+ en:{early:'EARLY',late:'LATE',onTime:'ON BEAT',wrong:'WRONG LANE',empty:'NO NOTE IN THIS LANE',ready:'🎯 Button CENTER = PERFECT! Colored glow = GOOD. Outside the glow = MISS.',calibrate:'Adjustment affects input judgment only, not music or animation. LATE? Try +10 ms. EARLY? Try −10 ms.',center:'✨ CENTER = PERFECT · GLOW = GOOD · D F J K',medir:'🎧 Measure for me',medirDica:'Tap the button along with every beat.',medirConta:'Tap along · {n}',medirOk:'Done! Your device is {d} ms {q}. Adjustment set to {o} ms.',medirCedo:'early',medirTarde:'late',medirPoucos:'Too few taps. Try again, tapping on every beat.',medirSom:'Turn the sound on to measure.'},
+ es:{early:'ANTES',late:'TARDE',onTime:'A TIEMPO',wrong:'CARRIL EQUIVOCADO',empty:'SIN NOTA EN ESTE CARRIL',ready:'🎯 CENTRO del botón = PERFECT. Halo de color = BIEN. Fuera del halo = MISS.',calibrate:'El ajuste solo cambia el juicio del toque, no la música ni la animación. TARDE: +10 ms. ANTES: −10 ms.',center:'✨ CENTRO = PERFECT · HALO = BIEN · D F J K',medir:'🎧 Medir solo',medirDica:'Toca el botón junto con cada pulso.',medirConta:'Toca al ritmo · {n}',medirOk:'¡Listo! Tu aparato va {d} ms {q}. Ajuste en {o} ms.',medirCedo:'adelantado',medirTarde:'atrasado',medirPoucos:'Pocos toques. Inténtalo otra vez tocando en cada pulso.',medirSom:'Enciende el sonido para medir.'},
+ th:{early:'เร็วไป',late:'ช้าไป',onTime:'ตรงจังหวะ',wrong:'ผิดช่อง',empty:'ไม่มีโน้ตในช่องนี้',ready:'🎯 กลางปุ่ม = PERFECT! ขอบแสง = GOOD นอกแสง = MISS',calibrate:'การปรับมีผลเฉพาะการตัดสินการกด ไม่เปลี่ยนเพลงหรือภาพ ช้าไป: +10 ms เร็วไป: −10 ms',center:'✨ กลางปุ่ม PERFECT · ขอบแสง GOOD · D F J K',medir:'🎧 วัดให้อัตโนมัติ',medirDica:'แตะปุ่มพร้อมทุกจังหวะ',medirConta:'แตะตามจังหวะ · {n}',medirOk:'เสร็จแล้ว! เครื่องของคุณ{q} {d} ms ตั้งค่าเป็น {o} ms',medirCedo:'เร็วไป',medirTarde:'ช้าไป',medirPoucos:'แตะน้อยเกินไป ลองใหม่โดยแตะทุกจังหวะ',medirSom:'เปิดเสียงเพื่อวัด'},
+ id:{early:'TERLALU CEPAT',late:'TERLAMBAT',onTime:'PAS',wrong:'JALUR SALAH',empty:'TIDAK ADA NOT DI JALUR INI',ready:'🎯 TENGAH tombol = PERFECT! Cahaya warna = BAIK. Di luar cahaya = MISS.',calibrate:'Penyesuaian hanya mengubah penilaian ketukan, bukan musik atau animasi. TERLAMBAT? Coba +10 ms. TERLALU CEPAT? Coba −10 ms.',center:'✨ TENGAH = PERFECT · CAHAYA = BAIK · D F J K',medir:'🎧 Ukur otomatis',medirDica:'Ketuk tombol bersama setiap ketukan.',medirConta:'Ketuk seirama · {n}',medirOk:'Selesai! Perangkatmu {d} ms {q}. Penyesuaian jadi {o} ms.',medirCedo:'lebih cepat',medirTarde:'lebih lambat',medirPoucos:'Ketukan terlalu sedikit. Coba lagi, ketuk di setiap ketukan.',medirSom:'Nyalakan suara untuk mengukur.'},
+ ja:{early:'早い',late:'遅い',onTime:'ぴったり',wrong:'違うレーン',empty:'このレーンにノーツなし',ready:'🎯 ボタンの中央＝PERFECT！ 周囲の光＝GOOD、光の外＝MISS。',calibrate:'調整するのは入力判定だけで、音楽・映像は動きません。遅い→+10 ms、早い→−10 ms。',center:'✨ 中央 PERFECT · 光の縁 GOOD · D F J K',medir:'🎧 自動で測る',medirDica:'ビートに合わせてボタンをタップしてね。',medirConta:'タップ中 · {n}',medirOk:'完了！この端末は{d} ms{q}。調整を{o} msにしたよ。',medirCedo:'早め',medirTarde:'遅め',medirPoucos:'タップが少ないよ。全部のビートでタップしてもう一度。',medirSom:'測るには音をオンにしてね。'}
 };
 /* Confirmação antes de gastar; o ajuste de timing fica somente no aparelho. */
 var ktFlow=(function(){
@@ -1291,7 +1297,7 @@ var ktFlow=(function(){
  var dream=document.createElement('div');dream.className='kt-dream-sparkles';dream.ariaHidden='true';dream.innerHTML='<span>✦</span><span>♡</span><span>✧</span><span>💗</span><span>✦</span><span>☁️</span><span>💜</span><span>✧</span><span>🌷</span><span>♡</span><span>⭐</span><span>💫</span><span>✧</span><span>♡</span><span>🎀</span><span>✦</span>';
  $('ktClosed').appendChild(dream);
  var adjust=document.createElement('details');adjust.id='ktCalibration';adjust.className='kt-calibration';
- adjust.innerHTML='<summary></summary><div class="kt-calibration-panel"><strong id="ktCalibrationTitle"></strong><div class="kt-calibration-body"><button type="button" class="krb" id="ktOffsetMinus">−10 ms</button><output id="ktOffsetValue">0 ms</output><button type="button" class="krb" id="ktOffsetPlus">+10 ms</button><button type="button" class="krb" id="ktOffsetReset"></button></div><p id="ktCalibrationHelp"></p></div>';
+ adjust.innerHTML='<summary></summary><div class="kt-calibration-panel"><strong id="ktCalibrationTitle"></strong><div class="kt-calibration-body"><button type="button" class="krb" id="ktOffsetMinus">−10 ms</button><output id="ktOffsetValue">0 ms</output><button type="button" class="krb" id="ktOffsetPlus">+10 ms</button><button type="button" class="krb" id="ktOffsetReset"></button></div><div class="kt-cal-auto"><button type="button" class="krb kt-cal-medir" id="ktCalMedir"></button><p id="ktCalMedirMsg" aria-live="polite"></p></div><p id="ktCalibrationHelp"></p></div>';
  ($('krPalco')||shortcuts.parentNode).appendChild(adjust);adjust.querySelector('summary').innerHTML='⚙️<span class="kt-cal-label"> '+t(8)+'</span>';   // no palco, ao lado do som e da câmera; no celular vai para a fileira de cima
  adjust.querySelector('summary').title=t(8);adjust.querySelector('summary').ariaLabel=t(8);adjust.querySelector('summary').setAttribute('aria-keyshortcuts','S');$('ktCalibrationTitle').textContent=t(8);$('ktOffsetReset').textContent=t(12);
  adjust.addEventListener('toggle',function(){if(adjust.open&&typeof kt!=='undefined'&&kt.active())kt.pause(true);});
@@ -1300,6 +1306,42 @@ var ktFlow=(function(){
  function renderOffset(){$('ktOffsetValue').textContent=(offset>0?'+':'')+offset+' ms';}
  function setOffset(ms){var next=clamp(ms);if(offset===next)return;offset=next;try{localStorage.setItem(KEY,String(offset));}catch(e){}if(typeof kt!=='undefined'&&kt&&kt.adjustOffset)kt.adjustOffset(offset);renderOffset();}
  $('ktOffsetMinus').onclick=function(){setOffset(offset-10);};$('ktOffsetPlus').onclick=function(){setOffset(offset+10);};$('ktOffsetReset').onclick=function(){setOffset(0);};renderOffset();
+ /* Medir sozinho (18/11/2026): 8 batidas; a pessoa toca junto no botão e o jogo calcula o atraso do aparelho.
+    Fica tudo neste aparelho, como o ajuste manual; não mexe na música, na animação nem nos rankings. */
+ var cal=KR_RHYTHM_TOUCH_DIAGNOSTIC[LANG]||KR_RHYTHM_TOUCH_DIAGNOSTIC.pt,medirBt=$('ktCalMedir'),medirMsg=$('ktCalMedirMsg'),medindo=0;
+ function msg(txt){medirMsg.textContent=txt;}
+ medirBt.textContent=cal.medir;msg('');
+ function pararMedida(){if(medindo){clearTimeout(medindo);medindo=0;}medirBt.textContent=cal.medir;medirBt.classList.remove('kt-cal-medindo');}
+ medirBt.addEventListener('pointerdown',function(e){
+   if(typeof kt==='undefined'||!kt||!kt.calibrarComecar)return;
+   if(kt.calibrarAtiva()){var r=kt.calibrarToque(e);if(r&&!r.fora)medirBt.textContent=cal.medirConta.split('{n}').join('•'.repeat(Math.min(8,r.n)));return;}
+   var inicio=kt.calibrarComecar();
+   if(!inicio){msg(cal.medirSom);return;}
+   msg(cal.medirDica);medirBt.classList.add('kt-cal-medindo');medirBt.textContent=cal.medirConta.split('{n}').join('');
+   medindo=setTimeout(function(){
+     medindo=0;pararMedida();
+     var r=kt.calibrarFim();if(!r){msg('');return;}
+     if(r.poucos){msg(cal.medirPoucos);return;}
+     setOffset(r.offset);
+     msg(cal.medirOk.split('{d}').join(String(Math.abs(r.media))).split('{q}').join(r.media<0?cal.medirCedo:cal.medirTarde).split('{o}').join((offset>0?'+':'')+offset));
+   },Math.max(1000,inicio.dura+400));
+ });
+ adjust.addEventListener('toggle',function(){if(!adjust.open){if(kt&&kt.calibrarAtiva())kt.calibrarFim();pararMedida();msg('');}});
+ /* 19/11/2026: quando o resultado do show diz que os acertos ficaram quase sempre do mesmo lado (#118),
+    um botão logo abaixo fecha o resultado, abre o Ajustar timing e deixa o "Medir sozinho" pronto para o primeiro toque.
+    A medida só começa quando a pessoa toca: ninguém é pego de surpresa por um metrônomo. */
+ (function(){
+   var dica=$('ktResultTimingTip');if(!dica)return;
+   var bt=document.createElement('button');bt.type='button';bt.id='ktResultMedir';bt.className='btn alt kt-result-medir';bt.hidden=true;bt.textContent=cal.medir;
+   dica.after(bt);
+   bt.onclick=function(){
+     var res=$('ktResult');if(res&&res.open)res.close();
+     adjust.open=true;msg(cal.medirDica);
+     try{adjust.scrollIntoView({block:'nearest'});}catch(e){}
+     try{medirBt.focus({preventScroll:true});}catch(e){medirBt.focus();}
+     medirBt.classList.add('kt-cal-chamar');setTimeout(function(){medirBt.classList.remove('kt-cal-chamar');},2400);
+   };
+ })();
  dialog.addEventListener('cancel',function(){window.ktShowAdmissionPending=false;});
  $('ktConfirmCancel').onclick=function(){window.ktShowAdmissionPending=false;dialog.close();};
  var requestId=0,busy=false,ticketChoice=false;
@@ -1308,7 +1350,22 @@ var ktFlow=(function(){
   $('ktConfirmTitle').textContent=t(0);$('ktConfirmTicket').textContent=t(3);$('ktConfirmCancel').textContent=t(4);$('ktConfirmAccept').textContent=t(14);$('ktConfirmAccept').disabled=true;showCount(a);dialog.showModal();
   window.ktOnline.quota().catch(function(){return null;}).then(function(){if(id!==requestId||!dialog.open)return;busy=false;showCount(ktMeta.controls());});
  }
- $('ktConfirmAccept').onclick=function(){if(busy||this.disabled)return;var useTicket=ticketChoice;dialog.close();window.ktOnline.gate(function(info){window.ktShowAdmissionPending=false;kt.start('confirmed',info);},useTicket);};
+ $('ktConfirmAccept').onclick=function(){
+   if(busy||this.disabled)return;
+   var id=requestId, useTicket=ticketChoice, key=$('ktSong').value;
+   busy=true;this.disabled=true;this.textContent=t(14);
+   kt.prepareSong(key).then(function(prepared){
+     if(id!==requestId||!dialog.open)return;
+     if(document.hidden||key!==$('ktSong').value){busy=false;showCount(ktMeta.controls());return;}
+     dialog.close();
+     window.ktOnline.gate(function(){window.ktShowAdmissionPending=false;kt.startConfirmed(prepared);},useTicket);
+   }).catch(function(){
+     if(id!==requestId||!dialog.open)return;
+     busy=false;showCount(ktMeta.controls());
+     var erro={pt:'A música não carregou. Toque para tentar de novo.',en:'The song could not load. Tap to retry.',es:'No se pudo cargar la canción. Toca para reintentar.',id:'Lagu gagal dimuat. Ketuk untuk mencoba lagi.',th:'โหลดเพลงไม่สำเร็จ แตะเพื่อลองอีกครั้ง',ja:'曲を読み込めませんでした。タップして再試行してください。'};
+     $('ktConfirmCount').textContent=erro[LANG]||erro.pt;
+   });
+ };
  return {request:request,t:t,offset:function(){return offset;}};
 })();
 function ktOriginalFrame(x,tx,ty,tw,th){x.save();var neon=typeof ktGloboNivel==='function'?ktGloboNivel():0;x.shadowColor=neon>0?'#ff6fb5':'rgba(174,146,255,.5)';x.shadowBlur=13+neon*18;x.strokeStyle='#c4b5fd';x.lineWidth=5;x.beginPath();if(x.roundRect)x.roundRect(tx-2,ty-2,tw+4,th+4,16);else x.rect(tx-2,ty-2,tw+4,th+4);x.stroke();x.shadowBlur=0;x.strokeStyle='#f9a8d4';x.lineWidth=1.8;x.beginPath();if(x.roundRect)x.roundRect(tx,ty,tw,th,14);else x.rect(tx,ty,tw,th);x.stroke();var corre=Math.floor(performance.now()/160);for(var led=0;led<15;led++){var lx2=tx+10+led*(tw-20)/14,acesa=(led+corre)%4===0,cl=['#ffd6f0','#c9fff0','#d6e4ff','#fff2b8'][led%4];[ty-1,ty+th+1].forEach(function(ly){x.save();x.shadowColor=cl;x.shadowBlur=acesa?9:3;x.fillStyle=acesa?'#fff':cl;x.beginPath();x.arc(lx2,ly,acesa?2.8:2.1,0,Math.PI*2);x.fill();x.restore();});}x.restore();}
@@ -2625,6 +2682,11 @@ if(ktNoSite()){
  background:rgba(90,65,145,.22);order:3;
 }
 .kt-room-closed #ktAvailability{visibility:hidden}
+.kt-result-medir{display:block;margin:4px auto 10px}
+.kt-result-medir[hidden]{display:none}
+@keyframes ktCalChamar{0%,100%{box-shadow:0 0 0 0 rgba(255,111,181,.0)}50%{box-shadow:0 0 0 6px rgba(255,111,181,.45)}}
+.kt-cal-chamar{animation:ktCalChamar .8s ease-in-out 3}
+@media (prefers-reduced-motion:reduce){.kt-cal-chamar{animation:none;outline:3px solid #ff6fb5;outline-offset:2px}}
 #ktTimingFeedback:empty{visibility:hidden}   /* o "Perfeito/Bom" do ritmo: sem caixinha tracejada vazia fora do show */
 @media(prefers-reduced-motion:reduce){#krPalco #ktAvailability{transition:none}}
 </style><script id="ktStarsBanner">
@@ -2655,5 +2717,5 @@ if(ktNoSite()){
 </script><script src="./tw-windows.js?v=2"></script>
 <script src="./karaoke-mobile.js?v=4"></script>
 <script src="./karaoke-photo.js?v=2"></script>
-<script src="./karaoke-lista.js?v=6"></script>
+<script src="./karaoke-lista.js?v=9"></script>
 </body></html>

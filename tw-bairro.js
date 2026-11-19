@@ -30,6 +30,7 @@
     bloom:'Bloom⭐Garden!', battle:'Idol⭐Battle!', sora:'Sora⭐Jump!', duo:'Moon⭐Duo!', studio:'Photo⭐Studio!'};
 
   var TX = {
+    trazer:{pt:'Trazer meu passeio para esta conta',en:'Bring my visit to this account',es:'Traer mi paseo a esta cuenta',id:'Pindahkan kunjunganku ke akun ini',th:'นำการเดินเล่นมาไว้ในบัญชีนี้',ja:'このアカウントに散歩の記録を引き継ぐ'},
     tit:{pt:'Vida no bairro', en:'Neighborhood life', es:'Vida en el barrio', id:'Kehidupan di lingkungan', th:'ชีวิตในย่าน', ja:'まちのくらし'},
     sub:{pt:'Bicos, gestos e a bagunça da semana', en:'Side jobs, gestures and the week’s mischief', es:'Trabajitos, gestos y el lío de la semana', id:'Kerja sambilan, gestur, dan kekacauan minggu ini', th:'งานพิเศษ ท่าทาง และความวุ่นวายประจำสัปดาห์', ja:'おしごと・ジェスチャー・今週のさわぎ'},
     regra:{pt:'Tudo aqui é enfeite: nada muda suas estrelas nem o ranking. Fica salvo neste aparelho.', en:'Everything here is just for fun: nothing changes your stars or the ranking. Saved on this device.', es:'Todo aquí es adorno: nada cambia tus estrellas ni el ranking. Se guarda en este dispositivo.', id:'Semua di sini hanya hiasan: tidak mengubah bintang atau peringkat. Tersimpan di perangkat ini.', th:'ทุกอย่างที่นี่เป็นของตกแต่ง ไม่เปลี่ยนดาวหรืออันดับ บันทึกไว้ในเครื่องนี้', ja:'ここは飾りだけ。スターやランキングは変わらないよ。この端末に保存されます。'},
@@ -57,6 +58,13 @@
     guiaTit:{pt:'Primeiros dias · dia {d} de 5', en:'First days · day {d} of 5', es:'Primeros días · día {d} de 5', id:'Hari-hari pertama · hari {d} dari 5', th:'วันแรก ๆ · วันที่ {d} จาก 5', ja:'はじめての日々・{d}/5日目'},
     guiaTxt:{pt:'Cada dia uma rua nova acende no Mapa. Amanhã: {r}.', en:'Each day a new street lights up on the Map. Tomorrow: {r}.', es:'Cada día se enciende una calle nueva en el Mapa. Mañana: {r}.', id:'Setiap hari satu jalan baru menyala di Peta. Besok: {r}.', th:'ทุกวันจะมีถนนใหม่สว่างบนแผนที่ พรุ่งนี้: {r}', ja:'毎日マップに新しい通りが灯るよ。あしたは{r}。'},
     pular:{pt:'Ver tudo agora', en:'See everything now', es:'Ver todo ahora', id:'Lihat semua sekarang', th:'ดูทั้งหมดเลย', ja:'今すぐぜんぶ見る'},
+    cadTit:{pt:'Caderninho do bairro', en:'Neighborhood notebook', es:'Cuaderno del barrio', id:'Buku catatan lingkungan', th:'สมุดบันทึกของย่าน', ja:'まちのノート'},
+    cadSub:{pt:'{n} de {t} bichinhos já viraram amigos', en:'{n} of {t} critters are friends now', es:'{n} de {t} bichitos ya son amigos', id:'{n} dari {t} hewan kecil sudah jadi teman', th:'เพื่อนตัวน้อยแล้ว {n} จาก {t} ตัว', ja:'{t}ひき中{n}ひきとなかよし'},
+    cadFalta:{pt:'Ainda não ajudou', en:'Not helped yet', es:'Aún no ayudaste', id:'Belum dibantu', th:'ยังไม่ได้ช่วย', ja:'まだ助けてない'},
+    cadTitulo:{pt:'Coração do bairro', en:'Heart of the neighborhood', es:'Corazón del barrio', id:'Hati lingkungan', th:'หัวใจของย่าน', ja:'まちのハート'},
+    cadGanhou:{pt:'Título novo: {t}!', en:'New title: {t}!', es:'¡Título nuevo: {t}!', id:'Gelar baru: {t}!', th:'ฉายาใหม่: {t}!', ja:'称号ゲット：{t}！'},
+    novoSelo:{pt:'Novo!', en:'New!', es:'¡Nuevo!', id:'Baru!', th:'ใหม่!', ja:'NEW!'},
+    verFim:{pt:'Ver como terminou', en:'See how it ended', es:'Ver cómo terminó', id:'Lihat akhir ceritanya', th:'ดูตอนจบ', ja:'結末を見る'},
     guiaRua:{pt:'{r} acende no seu guia em breve. Quer entrar mesmo assim?', en:'{r} lights up in your guide soon. Go in anyway?', es:'{r} se enciende pronto en tu guía. ¿Entrar de todos modos?', id:'{r} segera menyala di panduanmu. Tetap masuk?', th:'{r} จะสว่างในคู่มือเร็ว ๆ นี้ เข้าไปเลยไหม?', ja:'{r}はもうすぐガイドで灯るよ。それでも入る？'},
     entrar:{pt:'Entrar', en:'Go in', es:'Entrar', id:'Masuk', th:'เข้าไป', ja:'入る'},
     depois:{pt:'Depois', en:'Later', es:'Después', id:'Nanti', th:'ทีหลัง', ja:'あとで'},
@@ -132,6 +140,8 @@
     subiu:{pt:'Vi que você chegou ao nível {n} no bico {b}! Você ganhou: {p}.', en:'I saw you reached level {n} in {b}! You got: {p}.', es:'¡Vi que llegaste al nivel {n} en {b}! Ganaste: {p}.', id:'Aku lihat kamu sampai level {n} di {b}! Kamu dapat: {p}.', th:'เห็นว่าถึงระดับ {n} ใน {b} แล้ว! ได้รับ: {p}', ja:'{b}でレベル{n}になったね！ゲット：{p}'},
     dica:{pt:'Cada rua tem um bico. {Re}, conta {j}.', en:'Every street has a side job. At {r}, {j} count.', es:'Cada calle tiene un trabajito. {Re} cuenta {j}.', id:'Setiap jalan punya kerja sambilan. Di {r}, yang dihitung: {j}.', th:'ทุกถนนมีงานพิเศษ ที่ {r} นับจาก {j}', ja:'通りごとにおしごとがあるよ。{r}では{j}がカウントされるよ。'},
     guia:{pt:'Dia {d} do seu guia: hoje acendeu {r} no Mapa! Amanhã tem mais.', en:'Day {d} of your guide: {r} lit up on the Map today! More tomorrow.', es:'Día {d} de tu guía: ¡hoy se encendió {r} en el Mapa! Mañana hay más.', id:'Hari {d} panduanmu: hari ini {r} menyala di Peta! Besok ada lagi.', th:'วันที่ {d} ของคู่มือ: วันนี้ {r} สว่างบนแผนที่แล้ว! พรุ่งนี้มีอีก', ja:'ガイド{d}日目：きょうはマップに{r}が灯ったよ！またあした。'},
+    bichoOk:{pt:'{q} mandou um obrigado: {fim}', en:'{q} sends a thank-you: {fim}', es:'{q} manda las gracias: {fim}', id:'{q} menitip terima kasih: {fim}', th:'{q} ฝากขอบคุณมา: {fim}', ja:'{q}からありがとうだって：{fim}'},
+    bichoViz:{pt:'{q} pediu desculpas pela bagunça {rd}. No fim deu tudo certo: {fim}', en:'{q} apologized for the mischief at {r}. It all worked out: {fim}', es:'{q} pidió disculpas por el lío {rd}. Al final todo salió bien: {fim}', id:'{q} minta maaf atas kekacauan di {r}. Akhirnya beres: {fim}', th:'{q} ขอโทษเรื่องความวุ่นวายที่ {r} สุดท้ายก็เรียบร้อย: {fim}', ja:'{q}が{r}のさわぎをあやまってたよ。最後はぜんぶうまくいった：{fim}'},
     estrela:{pt:'Já viu os selos das ruas? Quero ver você virar Estrela {rd}!', en:'Seen the street badges? I want to see you become the Star of {r}!', es:'¿Viste los sellos de las calles? ¡Quiero verte como Estrella {rd}!', id:'Sudah lihat lencana jalan? Aku mau lihat kamu jadi Bintang {r}!', th:'เห็นตราของถนนหรือยัง? อยากเห็นคุณเป็นดาวแห่ง {r}!', ja:'通りのバッジ見た？{r}のスターになるところ見たいな！'}
   };
 
@@ -144,7 +154,7 @@
   function diasEntre(a, b){ return Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 864e5); }
   function domingo(d){ var dt = new Date(d + 'T12:00:00Z'); dt.setUTCDate(dt.getUTCDate() - dt.getUTCDay()); return dt.toISOString().slice(0, 10); }
   function logado(){ return typeof contaJ !== 'undefined' && !!contaJ; }
-  function quem(){ try{ return logado() ? 'c:' + String(contaJ.nick || contaJ.id || '').toLowerCase() : 'visitante'; }catch(e){ return 'visitante'; } }
+  function quem(){ try{ return logado() ? 'c:' + String(contaJ.nick || contaJ.id || '').toLowerCase() : (typeof contaAuthUserId === 'string' && contaAuthUserId ? 'pendente:' + contaAuthUserId : 'visitante'); }catch(e){ return 'visitante'; } }
   function ruaNome(r){ return tx(RUA_NOME[r]); }
   function vr(r, extra){   // {r} nome, {rd} "do/da …", {re}/{Re} "no/na …"
     var de = (RUA_DE[L()] || {})[r] || ruaNome(r), em = (RUA_EM[L()] || {})[r] || ruaNome(r), o = {r:ruaNome(r), rd:de, re:em, Re:em.charAt(0).toUpperCase() + em.slice(1)};
@@ -159,6 +169,23 @@
   var todos = null, est = null, dono = '';
   function lerTodos(){ if(todos) return todos; try{ todos = JSON.parse(localStorage.getItem(CHAVE) || '{}') || {}; }catch(e){ todos = {}; } if(typeof todos !== 'object' || Array.isArray(todos)) todos = {}; return todos; }
   function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(todos)); }catch(e){} }
+  function temProgresso(e){   // algum ponto de bico, bagunça resolvida ou bicho no caderninho
+    if(!e || typeof e !== 'object') return false;
+    var p = e.pts || {}, k;
+    for(k in p) if(+p[k] > 0) return true;
+    for(k in (e.bichos || {})) return true;
+    for(k in (e.bag || {})) if(e.bag[k] && e.bag[k].ok) return true;
+    return false;
+  }
+  function podeTrazer(){return logado() && !temProgresso(ler()) && temProgresso(todos.visitante);}
+  function trazer(){
+    if(!podeTrazer()) return false;
+    todos[dono] = todos.visitante;
+    delete todos.visitante;
+    est = null;
+    salvar(); ler();
+    return true;
+  }
   function veterano(){
     try{ if(typeof best !== 'undefined' && +best > 0) return true; }catch(e){}
     if(window.TW_HUMOR && typeof window.TW_HUMOR.estado === 'function' && window.TW_HUMOR.estado().serie > 0) return true;
@@ -172,7 +199,16 @@
       est = todos[q] = {v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, guia:{ini:hoje(), novo:!veterano(), pulou:false}};
       salvar();
     }
-    ['pts', 'dia', 'visto', 'bag', 'lidas'].forEach(function(k){ if(!est[k] || typeof est[k] !== 'object') est[k] = {}; });
+    var pendente = typeof contaAuthUserId === 'string' && 'pendente:' + contaAuthUserId;
+    if(logado() && pendente && temProgresso(todos[pendente]) && !temProgresso(est)){
+      est = todos[q] = todos[pendente];
+      delete todos[pendente];
+      salvar();
+    }
+    ['pts', 'dia', 'visto', 'bag', 'lidas', 'bichos'].forEach(function(k){ if(!est[k] || typeof est[k] !== 'object') est[k] = {}; });
+    // caderninho (18/11/2026): est.bag só guarda 8 semanas, então o bicho de cada rua fica guardado à parte.
+    // Quem já resolveu antes não perde o selo: as semanas ainda guardadas em est.bag entram aqui uma vez.
+    if(!est.bichosOk){ est.bichosOk = 1; Object.keys(est.bag).forEach(function(sem){ if(est.bag[sem] && est.bag[sem].ok){ var r = ruaDaSemana(sem); if(!est.bichos[r]) est.bichos[r] = est.bag[sem].dia || sem; } }); salvar(); }
     if(!est.guia || typeof est.guia !== 'object') est.guia = {ini:hoje(), novo:false, pulou:false};
     // quem já joga nunca fica no guia (o recorde chega do servidor depois da abertura)
     if(est.guia.novo && !est.guia.pulou && veterano()){ est.guia.novo = false; salvar(); }
@@ -206,15 +242,51 @@
   function gestosAprendidos(){ return ORDEM.filter(sabeGesto); }
 
   /* ---------- bagunça da semana ---------- */
-  function bagunca(){
-    ler(); var sem = domingo(hoje()), i = ((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6;
+  function ruaDaSemana(sem){ return ORDEM[((Math.floor(diasEntre('2026-10-25', sem) / 7) % 6) + 6) % 6]; }
+  function baguncaDe(sem){   // a bagunça da semana que começa no domingo "sem" (AAAA-MM-DD): a rotação é fixa pela data
+    ler(); var i = ORDEM.indexOf(ruaDaSemana(sem));
     var r = ORDEM[i], g = ORDEM[(i + 2) % 6], b = BAG[r], st = est.bag[sem] || {};
-    return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok,
-      sabe:sabeGesto(g), domingo:hoje() === sem};
+    return {semana:sem, rua:r, gesto:g, bicho:BICHO[r], quem:tx(b.quem), fez:tx(b.fez), fim:tx(b.fim), ok:!!st.ok, dia:st.dia || ''};
+  }
+  function bagunca(){
+    var sem = domingo(hoje()), d = baguncaDe(sem);
+    d.sabe = sabeGesto(d.gesto); d.domingo = hoje() === sem; return d;
+  }
+  /* Desfecho para o Idol⭐News! (capítulo de domingo, 18/11/2026): a bagunça da semana que acabou, quem resolveu
+     (você, se fez o gesto; senão um membro do trio com os vizinhos) e como a rua ficou. Só leitura: não grava nada.
+     A bagunça estreou na semana de 15/11, então o primeiro desfecho sai no domingo 22/11. qual = 'atual' mostra a semana
+     de agora como se tivesse acabado (prévia do News com ?bagunca_previa=1 e testes). */
+  function previaDesfecho(){ try{ return /[?&]bagunca_previa=1(&|$)/.test(location.search); }catch(e){ return false; } }
+  function desfecho(qual){
+    var sem = domingo(hoje()), ant = new Date(Date.parse(sem + 'T12:00:00Z') - 7 * 864e5).toISOString().slice(0, 10);
+    if(qual !== 'atual' && previaDesfecho()) qual = 'atual';   // ?bagunca_previa=1: a semana de agora como se tivesse acabado
+    var alvo = qual === 'atual' ? sem : ant;
+    if(qual !== 'atual' && alvo < '2026-11-15') return null;
+    var d = baguncaDe(alvo), gs = RUAS[d.gesto].gesto;
+    d.ruaNome = ruaNome(d.rua); d.gestoNome = gestoNome(d.gesto); d.gestoEmoji = gs.emoji; d.pose = gs.pose; d.expr = gs.expr;
+    d.novo = qual !== 'atual' && hoje() === sem; d.previa = alvo === sem;
+    d.visto = est.visto.desf === alvo;
+    d.membro = ((Math.floor(diasEntre('2026-10-25', alvo) / 7) % 3) + 3) % 3;   // 0 Tsu, 1 Lirika, 2 Pati: reveza semana a semana
+    return d;
+  }
+  function desfechoVisto(){   // chamado quando a pessoa vê o desfecho no Idol⭐News!: tira o aviso do "Hoje"
+    var d = desfecho(); if(!d || est.visto.desf === d.semana) return false;
+    est.visto.desf = d.semana; salvar(); return true;
+  }
+  /* Caderninho do bairro (18/11/2026): os 6 bichos, um por rua, com selo em quem você já ajudou.
+     Fica neste aparelho, por conta, e não expira com as semanas. Completar os 6 dá um título (só enfeite). */
+  function caderno(){
+    ler();
+    var itens = ORDEM.map(function(r){
+      return {rua:r, ruaNome:ruaNome(r), bicho:BICHO[r], quem:tx(BAG[r].quem), fez:tx(BAG[r].fez), ok:!!est.bichos[r], dia:est.bichos[r] || ''};
+    });
+    var n = itens.filter(function(i){ return i.ok; }).length;
+    return {itens:itens, feitos:n, total:ORDEM.length, completo:n >= ORDEM.length, titulo:t('cadTitulo')};
   }
   function resolver(){
     var b = bagunca(); if(b.ok || !b.sabe) return false;
     est.bag[b.semana] = {ok:true, dia:hoje()};
+    if(!est.bichos[b.rua]) est.bichos[b.rua] = hoje();   // caderninho: o bicho desta rua virou amigo
     // guarda só as 8 últimas semanas
     Object.keys(est.bag).sort().slice(0, -8).forEach(function(k){ delete est.bag[k]; });
     salvar(); avisar({tipo:'bagunca'});
@@ -241,7 +313,9 @@
 
   /* ---------- mensagens do trio (Chat do celular do jogo) ---------- */
   function falas(id){
-    ler(); var out = [];
+    ler(); var out = [], d = desfecho();
+    // domingo (até a próxima bagunça): o bicho da semana que acabou manda recado pelo membro daquela semana
+    if(d && TRIO[d.membro] === id) out.push(d.ok ? f(FALA.bichoOk, {q:d.quem, fim:d.fim}) : f(FALA.bichoViz, vr(d.rua, {q:d.quem, fim:d.fim})));
     if(id === 'idol:tsu'){
       var b = bagunca();
       out.push(b.ok ? f(FALA.bagOk, {fim:b.fim}) : f(FALA.bag, {q:b.quem, f:b.fez, g:gestoNome(b.gesto)}) + (b.sabe ? '' : ' ' + t('aprenda', vr(b.gesto, {j:jogosTxt(b.gesto)}))));
@@ -274,7 +348,7 @@
   var tela = null, telaFila = [], telaPedida = false;
   function carregarTela(){
     if(tela || telaPedida) return; telaPedida = true;
-    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=2'; s.async = true;
+    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=4'; s.async = true;
     s.onerror = function(){ telaPedida = false; };
     (document.head || document.documentElement).appendChild(s);
   }
@@ -308,6 +382,7 @@
   });
 
   window.TW_BAIRRO = {t:t, abrir:abrir, fechar:fechar, bico:bico, contar:contar, bagunca:bagunca, resolver:resolver,
+    podeTrazer:podeTrazer, trazer:trazer, desfecho:desfecho, baguncaDe:baguncaDe, desfechoVisto:desfechoVisto, caderno:caderno,
     guia:guia, ruaAberta:ruaAberta, pularGuia:pularGuia, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar, preparar:carregarTela,
     falas:falas, novas:novas, lida:lida, novaDe:novaDe, resumo:resumo, gestos:gestosAprendidos,
     ouvir:function(fn){ ouvintes.push(fn); }, ORDEM:ORDEM, RUAS:RUAS, NIVEIS:NIVEIS, POR_DIA:POR_DIA,

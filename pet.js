@@ -292,11 +292,12 @@ function petPhoneMomentoGuardar(tipo, url, especie){
   return !!petPhoneMomentoAdicionar(tipo, url, especie);
 }
 function petPhoneMomentoAdicionar(tipo, url, especie){
-  if(['pet','center','duo','look','studio'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
+  if(['pet','center','duo','look','studio','bairro'].indexOf(tipo) < 0 || !contaJ || !petAtivo()) return false;
   if(typeof url !== 'string' || url.length > 10*1024*1024 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)) return false;
   petPhoneMomentosConferir();
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
-  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐'),studio:'Photo⭐Studio!'}[tipo];
+  var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐'),studio:'Photo⭐Studio!',
+    bairro:(window.TW_BAIRRO && window.TW_BAIRRO.t ? window.TW_BAIRRO.t('tit') : 'Idol⭐News!')}[tipo];
   var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
   if(tipo === 'pet') entrada.nomePet = petAtivo().nome;
   if(tipo === 'studio' && ['sakura','tulipa','girassol','lunar'].indexOf(especie) >= 0) entrada.especie = especie;

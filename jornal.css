@@ -111,6 +111,15 @@
 @media (min-width:760px){.jn-t1{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}.jn-t1 h4{grid-column:1/-1}}
 /* quadro ampliado (toque no quadrinho) */
 .jncapq canvas,.jn-t1 canvas{cursor:zoom-in}
+/* Bagunça da semana · como terminou (18/11/2026) */
+.jnbag{margin:0 0 16px;padding:10px 10px 4px;border-radius:22px;background:linear-gradient(180deg,#fff7fc,#f6efff)}
+.jnbag .jnbagnovo{font-style:normal;font-size:.72em;font-weight:900;color:#fff;background:#ff4fa3;border-radius:999px;padding:2px 8px;vertical-align:middle}
+.jnbagdica{margin:8px 4px 6px;font-size:.86rem;color:#6a4a9a}
+.jnbagfoto{margin:10px 4px 0;border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:800;background:linear-gradient(135deg,#9b30d9,#ff4fa3);color:#fff;cursor:pointer}
+.jnbagfoto[disabled]{opacity:.6;cursor:default}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .jnbag{background:rgba(255,255,255,.06)}:root:not([data-theme="light"]) .jnbagdica{color:#d9c8ff}}
+:root[data-theme="dark"] .jnbag{background:rgba(255,255,255,.06)}:root[data-theme="dark"] .jnbagdica{color:#d9c8ff}
+
 .jnzoom{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;background:rgba(24,10,48,.92);cursor:zoom-out;overflow:auto}
 .jnzoom img{display:block;width:100%;max-width:min(960px,100%);max-height:78vh;object-fit:contain;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .jnzoomleg{max-width:min(720px,100%);color:#f3e9ff;font:700 14px/1.45 "M PLUS Rounded 1c",sans-serif}

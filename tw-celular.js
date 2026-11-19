@@ -392,6 +392,8 @@
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    desf:{pt:'Como terminou a bagunça da semana?',en:"How did the week's mischief end?",es:'¿Cómo terminó el lío de la semana?',id:'Bagaimana akhir kekacauan minggu ini?',th:'ความวุ่นวายประจำสัปดาห์จบยังไง?',ja:'今週のさわぎはどうなった？'},
+    desfSub:{pt:'{q} · {r} · no Idol⭐News!',en:'{q} · {r} · in Idol⭐News!',es:'{q} · {r} · en Idol⭐News!',id:'{q} · {r} · di Idol⭐News!',th:'{q} · {r} · ใน Idol⭐News!',ja:'{q}・{r}・Idol⭐News!で'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
     erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
   };
@@ -417,6 +419,9 @@
     }).catch(function(){ b.disabled = false; toast(thj('erro')); });
   }
   var hojeAberto = false, hojeAnivTodos = false;
+  /* Ordem do "Hoje" (revista em 18/11/2026): primeiro o que acaba hoje e você consegue fazer agora — desejo do dia,
+     missões e aniversários (o coração só vale no dia) — e depois o que fica a semana inteira: capítulo, desfecho da
+     bagunça e a bagunça em si. A tela curta mostra as 2 primeiras pendências; o resto abre no "Ver tudo". */
   function hojeHtml(){
     var itens = [], feitos = 0, H = window.TW_HUMOR, C = window.TW_CAL;
     function linha(ok, cor, icone, tit, sub, botao, extra){
@@ -425,10 +430,12 @@
       if(ok) feitos++;
     }
     // 1. desejo do dia → Camarim VIP
+    var vipLinha = '';   // 19/11: com o desejo cumprido, a linha dele carrega o Passe VIP; ela fica à vista no Início curto
     if(H){ var d = H.desejo(), vip = H.vipHoje();
       linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
         d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>',
-        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
+        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>');
+      if(d.feito && vip) vipLinha = itens[itens.length - 1]; }
     var festival = '';
     if(typeof jornalFestivalPrazo === 'function' && typeof hubMusicaSemana === 'function'){
       festival = '<div class="twc-hj-it"><span class="twc-hj-ico twc-g-roxo" aria-hidden="true">' + ico('karaoke', 18) + '</span>' +
@@ -440,11 +447,8 @@
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
       linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
-    // 3. capítulo do domingo (aparece na semana em que saiu)
-    var cp = capHoje(), hj = C ? C.hoje() : '';
-    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
-      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
-    // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
+    // 3. aniversários do dia (passam à meia-noite): jogadores (coração + perfil) e o trio (fichinha)
+    var hj = C ? C.hoje() : '';   // a data de hoje serve aos aniversários e ao capítulo
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){
         if(m.k === 'anivJog') (m.quem || []).filter(function(nk, i){ return hojeAnivTodos || i === 0 || nk.toLowerCase() === eu; }).forEach(function(nk){
@@ -459,23 +463,38 @@
         if(m.k === 'anivTsu' || m.k === 'anivPati' || m.k === 'anivLirika') linha(false, 'sol', 'bolo', esc(m.nome), '', '<button type="button" class="twc-hj-bt" data-v="trio">' + esc(thj('trio')) + '</button>');
       });
     }
-    // 5. Vida no bairro (tw-bairro.js): a bagunça da semana e o bico que está mais perto de subir
+    // 4. leitura da semana: capítulo de domingo
+    var cp = capHoje();
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    // 5. desfecho da bagunça da semana (Vida no bairro → Idol⭐News!), a partir do domingo
+    var B4 = window.TW_BAIRRO;
+    if(B4 && typeof B4.desfecho === 'function'){ try{ var df = B4.desfecho();
+      if(df) linha(df.visto, 'uva', 'news', esc(thj('desf')), esc(thj('desfSub', {q:df.quem, r:df.ruaNome})),
+        df.visto ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }catch(e){} }
+    // 6. Vida no bairro (tw-bairro.js): a bagunça da semana e o bico que está mais perto de subir
     var B = window.TW_BAIRRO;
     if(B){ try{ var rb = B.resumo();
       linha(rb.ok, 'uva', 'pin', esc(rb.tit), esc(rb.sub), '<button type="button" class="twc-hj-bt" data-bairro="abrir">' + esc(rb.bt) + '</button>',
         rb.bico ? '<small class="twc-hj-bico">' + esc(rb.bico) + '</small>' : ''); }catch(e){} }
     var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
     var pc = Math.round(feitos / tot * 100), lista;
-    // o "Também hoje" (outros eventos) entra na lista do "Ver tudo": um lugar só para tudo do dia
+    /* O "Também hoje" (outros eventos) entra na lista do "Ver tudo": um lugar só para tudo do dia.
+       18/11/2026: este bloco era calculado DEPOIS de ser usado logo abaixo (o var subia vazio), então o
+       "Também hoje" nunca entrava na lista e, com tudo cumprido e a lista recolhida, a tela mostrava
+       a palavra "undefined". Agora vem antes de quem o usa. */
+    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
+      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
-    if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
+    /* 19/11/2026: a lista curta escondia o desejo já cumprido, e com ele o botão do Passe VIP — o prêmio sumia
+       justamente quando era ganho ("Desejo cumprido! Passe VIP liberado!" e nenhum botão à vista). Agora a linha
+       do desejo cumprido fica sempre à vista, acima das pendências, enquanto o Passe VIP vale (o dia todo). */
+    if(feitos === tot) lista = hojeAberto ? todos.join('') : vipLinha + extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
     else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
-      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2), sobra = todos.length - pend.length;
+      var pend = (vipLinha ? [vipLinha] : []).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2)), sobra = todos.length - pend.length;
       if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
       else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
     }
-    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
-      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
@@ -497,7 +516,9 @@
       '<div class="twc-estreia"><button type="button" class="twc-btn twc-btn-claro" data-a="karaokeEnsaio">' + esc(ENSAIO_NOME[L()] || ENSAIO_NOME.pt) + '</button></div>' : '';
   }
   function estreiaHtml(){
-    if(logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
+    var voltou = false;
+    try{ voltou = localStorage.getItem('tw_estreia_concluida') === '1'; }catch(e){}
+    if(voltou || logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
     if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
     var textos = ESTREIA_TR[L()];
     return '<div class="twc-estreia">' +
@@ -508,7 +529,10 @@
     if(!estreia || !estreia.tentativa || estreia.tentativa.jogo !== jogo || logado() || estreia.concluiu !== null) return;
     var tentativa = estreia.tentativa, agora = performance.now();
     if(!concluiu && tentativa.comecou === null) tentativa.comecou = agora;
-    if(concluiu && tentativa.comecou !== null) estreia.concluiu = agora;
+    if(concluiu && tentativa.comecou !== null) {
+      estreia.concluiu = agora;
+      try{localStorage.setItem('tw_estreia_concluida','1');}catch(e){}
+    }
   }
   function estreiaMedidas(){
     if(!estreia) return null;
@@ -593,8 +617,8 @@
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     var piloto = window.TW_PILOTO_BAIRRO;
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + pinHtml() + palco() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + (pinLista().length ? pinHtml() : '') + palco() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + (pinLista().length ? '' : pinHtml()) + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -1317,7 +1341,7 @@
       T6('1º single da TsuLiPa: “Zipper”, em 25/01/2026 (com a Zipper regravada)','TsuLiPa’s 1st single: “Zipper”, 25/01/2026 (with Zipper re-recorded)','1.er single de TsuLiPa: “Zipper”, 25/01/2026 (con Zipper regrabada)','Single pertama TsuLiPa: “Zipper”, 25/01/2026 (Zipper direkam ulang)','ซิงเกิลแรกของ TsuLiPa: “Zipper” 25/01/2026 (อัดเพลง Zipper ใหม่)','TsuLiPaの1stシングル「Zipper」（2026/01/25・Zipperを再録）'),
       T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
       linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024', 'Secret Base'], ['2025', 'Splash Dream / Binetsu kara Mystery'], ['2026', "I can't stop the loneliness"]],
-      musicas:[['Zipper', '1st Draft Audition Concert (2021) · 1st Single TsuLiPa (2026)'], ['Hitonatsu no Dekigoto', 'TsuLiPa · 1st Single Zipper (2026)'], ['STAY WITH ME ~Mayonaka no Door~', 'TsuLiPa · 1st Single Zipper (2026)'],
+      musicas:[['Amor Grilado', 'NeByur✰ · Tsu, Pati & Lirika'], ['Zipper', '1st Draft Audition Concert (2021) · 1st Single TsuLiPa (2026)'], ['Hitonatsu no Dekigoto', 'TsuLiPa · 1st Single Zipper (2026)'], ['STAY WITH ME ~Mayonaka no Door~', 'TsuLiPa · 1st Single Zipper (2026)'],
         ['Cheeky Cheeky', 'TsuLiPa · pré-estreia'], ['Polyrhythm', 'Unit Festival 2021'], ['Plastic Love', 'Unit Festival 2023'], ['Secret Base', 'Unit Festival 2024'], ['Splash Dream / Binetsu kara Mystery', 'Unit Festival 2025'], ["I can't stop the loneliness", 'Unit Festival 2026'],
         ['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Phoenix Dance', 'Summer Love Sounds Good · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
         ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Kyun', 'A-side'], ['Yume wa Nigenai', 'Shekarashika! · B-side'], ['Yume wa Nigenai (PT)', '10nen Zakura · B-side'],
@@ -1349,6 +1373,7 @@
               var trio = LACOS[3].musicas, duo = lc.par.length === 2, tot = lc.musicas.length + (duo ? trio.length : 0), vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
               var terceiro = duo ? MEMBROS[[0, 1, 2].filter(function(k){ return lc.par.indexOf(k) < 0; })[0]][1] : '';
               return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', tot)) + (duo ? ' · ' + esc(tf('soDois').replace('{n}', lc.musicas.length)) : '') + '</p>' +
+                '<a class="twc-btn twc-btn-claro" href="https://www.youtube.com/playlist?list=PLNWt7c7jhJIioP7LttHhxfi19dM-iHn7v" target="_blank" rel="noopener noreferrer">▶ TsuLiPa · YouTube</a>' +
                 '<ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
                 (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : '') +
                 (duo ? '<details class="twc-laco-mais"><summary>' + esc(tf('comTrio').replace('{q}', terceiro).replace('{n}', trio.length)) + '</summary><ul class="twc-laco-mus">' + trio.map(mus).join('') + '</ul></details>' : '');

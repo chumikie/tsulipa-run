@@ -23,7 +23,7 @@ class Element {
 }
 function get(id){if(!elements.has(id))elements.set(id,new Element(id));return elements.get(id);}
 const values = new Map();
-const calls=[];
+const calls=[],audio={duration:60};
 let quotaState={used:2,remaining:3,pending:null,tickets:0};
 let atMicrophone=true,returnRequests=0,notices=[];
 const context = vm.createContext({
@@ -35,7 +35,7 @@ const context = vm.createContext({
   $:get,
   document:{createElement:() => new Element(),addEventListener:()=>{},body:{appendChild:child => elements.set(child.id,child)}},
   localStorage:{getItem:key => values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
-  kt:{active:()=>false,start:mode=>calls.push(['start',mode]),adjustOffset:ms=>calls.push(['offset',ms])},
+  kt:{active:()=>false,prepareSong:async key=>({key,buffer:audio}),startConfirmed:prepared=>{assert.equal(prepared.buffer,audio);calls.push(['start','confirmed']);},start:mode=>calls.push(['start',mode]),adjustOffset:ms=>calls.push(['offset',ms])},
   ktMeta:{controls:()=>quotaState},
   window:{ktOnline:{quota:()=>Promise.resolve(quotaState),gate:(fn,ticket)=>{calls.push(['gate',!!ticket]);fn({ticket:!!ticket});}}}
 });
@@ -60,10 +60,22 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
 
   ui.request();await waitForQuota();
   assert.equal(get('ktConfirmCount').textContent.includes('2/5'),true,'contagem visível');
-  get('ktConfirmAccept').onclick();
+  get('ktConfirmAccept').onclick();await waitForQuota();
   assert.deepEqual(calls.slice(0,2),[['gate',false],['start','confirmed']],'confirmação antecede admissão');
 
   const charged=calls.length;
+  const preparar=context.kt.prepareSong;
+  let liberar;
+  context.kt.prepareSong=()=>new Promise(resolve=>{liberar=resolve;});
+  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();
+  assert.equal(calls.length,charged,'carregar não consome tentativa');
+  get('ktConfirmCancel').onclick();liberar({buffer:audio});await waitForQuota();
+  assert.equal(calls.length,charged,'cancelar durante a carga não inicia o show');
+  context.kt.prepareSong=()=>Promise.reject(Error('offline'));
+  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();await waitForQuota();
+  assert.equal(calls.length,charged);assert.equal(get('ktConfirmAccept').disabled,false);
+  assert.match(get('ktConfirmCount').textContent,/tentar de novo/);
+  get('ktConfirmCancel').onclick();context.kt.prepareSong=preparar;
   context.krSt.aberta=false;
   ui.request();
   assert.equal(get('ktStartConfirm').open,false,'sala fechada não abre confirmação oficial');
@@ -77,7 +89,7 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(get('ktConfirmAccept').disabled,false,'saldo extra permite apresentação');
   get('ktConfirmCancel').onclick();
   assert.equal(calls.length,charged,'cancelar ticket não debita nem inicia');
-  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();
+  ui.request();await waitForQuota();get('ktConfirmAccept').onclick();await waitForQuota();
   assert.deepEqual(calls.slice(-2),[['gate',true],['start','confirmed']],'gasto extra somente depois da confirmação');
   quotaState={used:5,remaining:0,pending:null,tickets:0};
   ui.request();await waitForQuota();

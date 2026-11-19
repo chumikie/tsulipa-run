@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 19/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 19/11/2026 (manhã).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,8 +19,8 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke) e #118 (estreia no TsuPhone, continuidade de atividades, Café, Festival e mapa do código).
+- **`main`:** `b40cb7c` (19/11), publicada na Vercel. Últimos merges: #118 (estreia no TsuPhone, continuidade das atividades, Café, Festival, piloto da Rua Fofa e mapa do código), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News!, Karaoke mais fácil de acertar, bairro e cenários), em draft. A #118 entrou na `main` em 19/11 (`b40cb7c`).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -37,11 +37,11 @@
 ### Jogos
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
-| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). A #118 identifica a colisão no resultado | — |
-| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Medir em celular real |
+| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). desde a #118, o resultado mostra a colisão | — |
+| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); **zona de acerto maior** (BOM ±150, PERFECT ±55) e **"Medir sozinho"** no Ajustar timing (8 batidas, toque junto, calcula o atraso do aparelho); quando o resultado diz que os acertos ficaram do mesmo lado (#118), um botão leva direto ao "Medir sozinho" | Medir em celular real |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
-| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
-| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo | — |
+| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). Desde a #118: aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Levar flor do Bloom (como no Handshake): **precisa do banco**, proposta em `supabase/sql/proposta/20261118_flor_no_cafe.sql` |
+| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes, "jeito" valendo e flor do Bloom na mesa (desde 13/11) | — |
 | Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; cards usados no Battle | — |
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
 | Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio (#113–#114) | — |
@@ -54,11 +54,11 @@
 | Sistema | Estado | Próximo passo |
 |---|---|---|
 | Mapa (2 níveis) | Ruas vivas: visitas surpresa do trio, bichinhos, Idols online com frases prontas, salas por dentro | — |
-| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **bicos escondidos** desde a #109 | Capítulo de domingo no Idol⭐News! fechando a bagunça; decidir quando liberar os bicos |
+| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **caderninho dos 6 bichos** (selo por rua, título ao completar); desfecho no Idol⭐News! todo domingo, avisado no "Hoje", no painel e por recado do bicho no Chat; **bicos escondidos** desde a #109 | Decidir quando liberar os bicos | Cenários das seis ruas com profundidade (horizonte, piso em perspectiva, vinheta), no mesmo padrão das salas (18/11).
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
 | Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
-| Idol⭐News! | Pódios, capítulos (um por terça); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
+| Idol⭐News! | Pódios; capítulos do trio (um por domingo); **"Bagunça da semana · como terminou"** no topo dos capítulos a partir de 22/11 (3 quadros com movimento leve: o bicho apronta, quem resolveu faz o gesto — você ou o trio com os vizinhos —, a rua arrumada; "Guardar foto" manda o último quadro para Momentos⭐; prévia `?bagunca_previa=1`); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
 | Calendário, Fichinhas, Álbum | Só leitura | Dia do aniversário da Lirika (ficha diz só "maio") |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
 | Admin | Moderação, telemetria, Montar Idol; ferramentas baixam só para admin (#110) | — |
@@ -99,11 +99,13 @@
 - Atualizar as instruções do Projeto no claude.ai: ainda falam da PR #58.
 
 **Banco (ChatGPT, com autorização)**
+- Flor do Bloom no Café: `supabase/sql/proposta/20261118_flor_no_cafe.sql` (uma linha: aceitar `p_uso='cafe'`). Sem isso, a parte do site não faz sentido.
 - Prêmio dos lightsticks do Battle (`supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`).
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Validar a #117, incluindo a versão de cache do Jornal. O piloto do bairro e a matriz física do Karaoke estão em [docs/qa](qa/pilotos-estreia-bairro-karaoke.md).
+- Merge da #117; conferir o primeiro desfecho de verdade no domingo 22/11.
+- O piloto do bairro e a matriz física do Karaoke estão em [docs/qa](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
 
 **Nunca testado de verdade:** login real em todos os fluxos novos, iPhone/Android físicos, sons ouvidos.

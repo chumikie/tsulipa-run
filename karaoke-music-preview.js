@@ -39,10 +39,18 @@
    var rootElement=el("ktAudioLibrary");
    if(rootElement&&rootElement.querySelectorAll)[].forEach.call(rootElement.querySelectorAll("[data-kt-song-preview]"),function(button){
     var active=button.dataset.ktSongPreview===key;
-    button.textContent=active&&playing?"⏸ "+tr("Pausar"):active&&current?"▶ "+tr("Retomar"):"▶ "+tr("Ouvir");
+    var label=active&&playing?"⏸ "+tr("Pausar"):active&&current?"▶ "+tr("Retomar"):"▶ "+tr("Ouvir");
+    if(button.textContent!==label)button.textContent=label;
     button.setAttribute("aria-pressed",active&&playing?"true":"false");
     button.disabled=!!(options.isBusy&&options.isBusy());
    });
+   var list=el("ktLista"), listen=list&&list.querySelector&&list.querySelector("[data-ktl-ouvir]");
+   if(listen){
+    var selected=listen.dataset.ktlOuvir===key;
+    var text=selected&&playing?"⏸ "+tr("Pausar"):selected&&current?"▶ "+tr("Retomar"):"▶ "+tr("Ouvir");
+    if(listen.textContent!==text)listen.textContent=text;
+    listen.setAttribute("aria-pressed",String(selected&&playing));
+   }
   }
   function stop(restoreAmbient,message){
    if(timer){clearInterval(timer);timer=0;}
@@ -64,8 +72,14 @@
    if(current!==target)return;
    var ctx=options.getContext?options.getContext():null;
    function begin(){
-    if(current!==target)return;
+    if(current!==target||target.paused)return;
     if(!ctx||ctx.state!=="running"){stop(true,tr("Não foi possível iniciar a prévia musical."));return;}
+    if(target.song.recording && !target.recordingBuffer){
+      options.loadRecording(target.song,ctx).then(function(buffer){
+        target.recordingBuffer=buffer;begin();
+      }).catch(function(){if(current===target)stop(true,tr("Não foi possível iniciar a prévia musical."));});
+      return;
+    }
     target.context=ctx;target.elapsed=Math.max(0,fromMs||0);
     target.audioOrigin=ctx.currentTime+.06-target.elapsed/1000;
     target.audioClock=true;target.paused=false;
@@ -99,7 +113,7 @@
    if(options.silence)options.silence();
    render();return true;
   }
-  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;arm(current,current.elapsed);return true;}
+  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;current.paused=false;arm(current,current.elapsed);return true;}
   function toggle(key){
    if(current&&(!key||current.songKey===key)){if(current.paused)return resume();return pause();}
    return play(key||(options.currentSong?options.currentSong():"normal"));

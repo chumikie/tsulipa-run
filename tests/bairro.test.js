@@ -174,3 +174,164 @@ test('tela do bairro em tw-bairro-tela.js: baixa só quando precisa; núcleo con
   assert(TELA.includes('B._tela({abrir:abrir, fechar:fechar, toast:toast, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar});') && !SRC.includes('function desenharCena(') && TELA.includes('function desenharCena('), 'tela num lugar só');
   for(const k of ['resolver','pularGuia','ler','bico','bagunca','guia','ruaAberta','t','esc']) assert.equal(typeof B._k[k], 'function', '_k.' + k);
 });
+
+test('desfecho da bagunça para o Idol⭐News! (capítulo de domingo, 18/11)', () => {
+  // antes de 22/11 não há semana encerrada (a bagunça estreou na semana de 15/11)
+  assert.equal(carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 18, 15) }).B.desfecho(), null);
+  // domingo 22/11: conta a semana de 15/11 (Praça, Passarinho), com o gesto do Jardim das Nuvens; é "novo" no domingo
+  const { B } = carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 22, 15) });
+  const d = B.desfecho();
+  assert.equal(d.semana, '2026-11-15'); assert.equal(d.rua, 'praca'); assert.equal(d.bicho, 'passaro'); assert.equal(d.gesto, 'ceu');
+  assert.equal(d.ok, false, 'ninguém resolveu: os vizinhos'); assert.equal(d.novo, true); assert.equal(d.membro, 0);
+  assert(d.quem && d.fez && d.fim && d.ruaNome && d.gestoNome && d.gestoEmoji, 'textos prontos');
+  // na terça seguinte continua sendo o mesmo desfecho, sem o selo de novo; a prévia mostra a semana corrente
+  const ter = carregar({ conta:'Sami', best:500, agora:Date.UTC(2026, 10, 24, 15) }).B;
+  assert.equal(ter.desfecho().semana, '2026-11-15'); assert.equal(ter.desfecho().novo, false);
+  assert.equal(ter.desfecho('atual').semana, '2026-11-22'); assert.equal(ter.desfecho('atual').membro, 1, 'o trio reveza a cada semana');
+  // bagunca() continua igual (com sabe/domingo) e baguncaDe() é a mesma rotação
+  assert.deepEqual(Object.keys(ter.bagunca()).sort(), ['bicho','dia','domingo','fez','fim','gesto','ok','quem','rua','sabe','semana']);
+  assert.equal(ter.baguncaDe('2026-11-15').rua, 'praca');
+});
+
+test('Idol⭐News! mostra o desfecho no topo dos capítulos, nos 6 idiomas', () => {
+  const J = fs.readFileSync('jornal-capitulos.js', 'utf8');
+  assert(J.includes('  try{ jnBagUI(box); }catch(e){}   // desfecho da bagunça: entra no topo da caixa\n  jnT1LeitorUI(box);\n}') && J.includes('box.insertBefore(sec, box.firstChild);'), 'jornalCapsUI chama o desfecho, no topo');
+  assert(J.includes("if(cv.closest('.jnbag')){") && J.includes("jnBagDesenhar(hi,+cv.getAttribute('data-jnbag'));"), 'toque amplia o quadro redesenhado');
+  const ini = J.indexOf('var JN_BAG_TX = {'), fim = J.indexOf('\n};', ini), bloco = J.slice(ini, fim);
+  const chaves = bloco.match(/^\s{2}\w+:\{/gm).length;
+  for(const l of ['pt','en','es','id','th','ja']) assert.equal((bloco.match(new RegExp('[{,]' + l + ':', 'g')) || []).length, chaves, 'JN_BAG_TX completo em ' + l);
+  assert(/bagunca_previa=1\(&\|\$\)/.test(SRC) && SRC.includes("if(qual !== 'atual' && previaDesfecho()) qual = 'atual';"), 'prévia pela URL, decidida no núcleo');
+  assert(fs.readFileSync('jornal.js', 'utf8').match(/jornal-capitulos\.js\?v=(\d+)/)[1] >= 13, 'versão do arquivo sob demanda subiu');
+});
+
+test('caderninho do bairro: selo por bicho, não expira e dá título ao completar (18/11)', () => {
+  const dom = Date.UTC(2026, 10, 22, 15);   // domingo 22/11
+  // sem nada resolvido: 6 bichos, nenhum selo
+  const { B } = carregar({ conta:'Sami', best:500, agora:dom });
+  const c0 = B.caderno();
+  assert.equal(c0.itens.length, 6); assert.equal(c0.feitos, 0); assert.equal(c0.completo, false);
+  assert.equal(c0.itens.map(i => i.rua).join(','), 'palco,harajuku,fofo,praca,arena,ceu');
+  assert(c0.itens.every(i => i.bicho && i.quem && i.ruaNome && !i.ok), 'cada rua tem bicho e nome, nenhum marcado');
+  // resolver a bagunça da semana marca o bicho daquela rua
+  const chave = 'brs48cr_bairro_v1';
+  const comGesto = carregar({ conta:'Sami', best:500, agora:dom,
+    store:{ [chave]:JSON.stringify({ 'c:sami':{ v:1, pts:{ palco:20 }, dia:{}, visto:{}, bag:{}, lidas:{}, guia:{ ini:'2026-10-01', novo:false, pulou:true } } }) } });
+  assert.equal(comGesto.B.bagunca().rua, 'arena');
+  assert.equal(comGesto.B.bagunca().sabe, true, 'gesto do Star Stage aprendido');
+  assert.equal(comGesto.B.resolver(), true);
+  const c1 = comGesto.B.caderno();
+  assert.equal(c1.feitos, 1); assert.equal(c1.itens.find(i => i.rua === 'arena').ok, true, 'o Gatinho da Arena virou amigo');
+  assert.equal(c1.itens.find(i => i.rua === 'arena').dia, '2026-11-22');
+  // o selo não some quando a semana sai de est.bag (só as 8 últimas ficam guardadas)
+  const salvo = JSON.parse(comGesto.store[chave])['c:sami'];
+  assert.equal(salvo.bichos.arena, '2026-11-22', 'guardado fora de est.bag');
+  const depois = carregar({ conta:'Sami', best:500, agora:Date.UTC(2027, 1, 7, 15),
+    store:{ [chave]:JSON.stringify({ 'c:sami':Object.assign({}, salvo, { bag:{} }) }) } });
+  assert.equal(depois.B.caderno().feitos, 1, 'o caderninho não expira com as semanas');
+  // quem resolveu antes do caderninho existir não perde o selo (migração a partir de est.bag)
+  const antigo = carregar({ conta:'Sami', best:500, agora:dom,
+    store:{ [chave]:JSON.stringify({ 'c:sami':{ v:1, pts:{}, dia:{}, visto:{}, lidas:{}, guia:{ ini:'2026-10-01', novo:false, pulou:true },
+      bag:{ '2026-11-15':{ ok:true, dia:'2026-11-18' }, '2026-11-08':{ ok:true, dia:'2026-11-09' } } } }) } });
+  const ca = antigo.B.caderno();
+  assert.equal(ca.feitos, 2); assert.equal(ca.itens.find(i => i.rua === 'praca').dia, '2026-11-18');
+  // completando os 6, vem o título
+  const tudo = {}; ['palco','harajuku','fofo','praca','arena','ceu'].forEach(r => { tudo[r] = '2026-11-01'; });
+  const full = carregar({ conta:'Sami', best:500, agora:dom,
+    store:{ [chave]:JSON.stringify({ 'c:sami':{ v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:tudo, bichosOk:1, guia:{ ini:'2026-10-01', novo:false, pulou:true } } }) } });
+  const cf = full.B.caderno();
+  assert.equal(cf.feitos, 6); assert.equal(cf.completo, true); assert(cf.titulo && cf.titulo.length > 2, 'título do bairro');
+});
+
+test('o bicho da semana manda recado no Chat e o desfecho marca visto (18/11)', () => {
+  const dom = Date.UTC(2026, 10, 22, 15);
+  const { B, store } = carregar({ conta:'Sami', best:500, agora:dom });
+  const d = B.desfecho();
+  const falasMembro = B.falas(['idol:tsu','idol:lirika','idol:pati'][d.membro]);
+  assert(falasMembro[0].indexOf(d.quem) === 0, 'o recado do bicho abre a conversa do membro da semana');
+  assert(falasMembro[0].indexOf(d.fim) > 0, 'conta como terminou');
+  const outro = B.falas(['idol:tsu','idol:lirika','idol:pati'][(d.membro + 1) % 3]);
+  assert(outro.every(f => f.indexOf(d.quem) !== 0), 'os outros membros não repetem o recado');
+  assert.equal(B.novaDe(['idol:tsu','idol:lirika','idol:pati'][d.membro]), true, 'badge de recado novo no Chat');
+  // quem resolveu recebe um obrigado, não um pedido de desculpas
+  const chave = 'brs48cr_bairro_v1';
+  const meu = carregar({ conta:'Sami', best:500, agora:dom,
+    store:{ [chave]:JSON.stringify({ 'c:sami':{ v:1, pts:{}, dia:{}, visto:{}, lidas:{}, bag:{ '2026-11-15':{ ok:true, dia:'2026-11-17' } }, guia:{ ini:'2026-10-01', novo:false, pulou:true } } }) } });
+  const dm = meu.B.desfecho();
+  assert.equal(dm.ok, true);
+  assert.notEqual(meu.B.falas(['idol:tsu','idol:lirika','idol:pati'][dm.membro])[0], falasMembro[0], 'recado diferente de quem não resolveu');
+  // visto: some do "Hoje" depois de ver no Idol⭐News!
+  assert.equal(B.desfecho().visto, false);
+  assert.equal(B.desfechoVisto(), true); assert.equal(B.desfecho().visto, true);
+  assert.equal(B.desfechoVisto(), false, 'não grava de novo');
+  assert.equal(JSON.parse(store[chave])['c:sami'].visto.desf, '2026-11-15');
+});
+
+test('o desfecho aparece no Hoje, no painel do bairro e dá foto em Momentos⭐ (18/11)', () => {
+  const cel = fs.readFileSync('tw-celular.js', 'utf8'), tela = fs.readFileSync('tw-bairro-tela.js', 'utf8');
+  const jn = fs.readFileSync('jornal-capitulos.js', 'utf8'), pet = fs.readFileSync('pet.js', 'utf8');
+  // 1. linha no "Hoje" do Início, logo depois do capítulo de domingo
+  assert(cel.includes("if(B4 && typeof B4.desfecho === 'function')") && cel.includes("data-a=\"news\""), 'linha do desfecho no Hoje');
+  // ordem revista em 18/11: o que acaba hoje (desejo, missões, aniversários) antes do que fica a semana (capítulo, desfecho, bagunça)
+  const ordem = ['// 1. desejo do dia', '// 2. missões do dia', '// 3. aniversários do dia', '// 4. leitura da semana', '// 5. desfecho da bagunça', '// 6. Vida no bairro'].map(m => cel.indexOf(m));
+  assert(ordem.every(i => i > 0) && ordem.every((v, i) => !i || v > ordem[i - 1]), 'ordem do Hoje: acaba hoje primeiro, leitura da semana depois');
+  for(const k of ['desf', 'desfSub']){
+    const i = cel.indexOf('\n    ' + k + ':{'), bloco = cel.slice(i, cel.indexOf('},', i));
+    assert(i > 0, k + ' existe');
+    for(const l of ['pt','en','es','id','th','ja']) assert(new RegExp('[{,]' + l + ':').test(bloco), k + ' em ' + l);
+  }
+  // 2. botão no painel, que fecha o painel antes de abrir o Idol⭐News!
+  assert(tela.includes("else if(a === 'news'){ fechar(); if(typeof window.jornalAbrir === 'function') window.jornalAbrir('vida'); }"), 'botão abre o News');
+  assert(tela.includes("data-twb=\"news\"") && tela.includes("t('verFim')"), 'botão "Ver como terminou"');
+  assert(tela.includes("B.caderno()") && tela.includes('twb-cads'), 'caderninho no painel');
+  // 3. foto do último quadro em Momentos⭐ (só com conta e pet, como o Camarim e o Moon⭐Duo!)
+  assert(jn.includes("petPhoneMomentoGuardar('bairro', png)") && jn.includes('hi.width = 960'), 'guarda o quadro em 960×640');
+  assert(jn.includes('function jnBagPodeGuardar()') && jn.includes('jnBagPodeGuardar() ?'), 'botão só quando dá para guardar');
+  assert(pet.includes("['pet','center','duo','look','studio','bairro'].indexOf(tipo)"), 'Momentos⭐ aceita a foto do bairro');
+  // 4. movimento leve, parado com "reduzir movimento" e fora da tela
+  assert(jn.includes("matchMedia('(prefers-reduced-motion: reduce)').matches") && jn.includes('jnBagRelogio') && jn.includes('M.isVisible(sec)'), 'animação leve e respeitosa');
+  assert(!/var jnBagT\s*=/.test(jn), 'o relógio não pode se chamar jnBagT (é a função de texto)');
+  // 5. ver o desfecho no News marca como visto (mas não na prévia)
+  assert(jn.includes("if(!d.previa && window.TW_BAIRRO && typeof TW_BAIRRO.desfechoVisto === 'function')"), 'marca visto fora da prévia');
+});
+
+test('"Hoje": nada usa variável antes de existir (a data e o "Também hoje") — 18/11', () => {
+  const cel = fs.readFileSync('tw-celular.js', 'utf8');
+  const ini = cel.indexOf('function hojeHtml(){'), corpo = cel.slice(ini, cel.indexOf('\n  function ', ini + 10));
+  // a data de hoje é calculada antes dos aniversários, que a usam (quebrou ao reordenar o Hoje)
+  assert(corpo.indexOf("var hj = C ? C.hoje() : '';") < corpo.indexOf('C.marcas(hj)'), 'hj existe antes dos aniversários');
+  assert(corpo.indexOf("var hj =") === corpo.lastIndexOf("var hj ="), 'uma declaração só de hj');
+  // o "Também hoje" é montado antes de entrar na lista (antes vinha depois: a lista saía "undefined" com tudo cumprido)
+  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('var todos = extra ?'), 'extra pronto antes de ser usado');
+  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('lista = hojeAberto ? todos.join(\'\') : vipLinha + extra;'), 'extra pronto antes da lista recolhida');
+});
+
+test('entrar na conta depois de jogar não zera o bairro (18/11)', () => {
+  const chave = 'brs48cr_bairro_v1';
+  const visitante = { v:1, pts:{ palco:5, praca:2 }, dia:{}, visto:{}, lidas:{}, bichos:{ arena:'2026-11-10' }, bichosOk:1,
+    bag:{ '2026-11-08':{ ok:true, dia:'2026-11-09' } }, guia:{ ini:'2026-10-01', novo:false, pulou:true } };
+  // jogou sem conta (ou enquanto a conta ainda carregava) e depois entrou: o progresso vem junto
+  const a = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante }) } });
+  assert.equal(a.B.bico('palco').pts, 0);
+  assert(a.B.trazer());
+  assert(!a.B.trazer());
+  assert.equal(a.B.bico('palco').pts, 5, 'pontos do bico vieram');
+  assert.equal(a.B.caderno().feitos, 1, 'caderninho veio');
+  const salvo = JSON.parse(a.store[chave]);
+  assert(!salvo.visitante, 'o balde de visitante some, para não repassar duas vezes');
+  assert.equal(salvo['c:sami'].pts.palco, 5);
+  // conta que já tem progresso não é sobrescrita
+  const b = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante, 'c:sami':{ v:1, pts:{ ceu:9 }, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:{}, bichosOk:1, guia:{ ini:'2026-10-01', novo:false, pulou:true } } }) } });
+  assert.equal(b.B.bico('ceu').pts, 9); assert.equal(b.B.bico('palco').pts, 0, 'não mistura com o visitante');
+  assert(JSON.parse(b.store[chave]).visitante, 'o visitante continua lá para quem jogar deslogado');
+  // visitante vazio não apaga nada nem dispara a troca
+  const c = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante:{ v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:{}, guia:{ ini:'2026-11-01', novo:true, pulou:false } } }) } });
+  assert.equal(c.B.bico('palco').pts, 0);
+  assert(JSON.parse(c.store[chave]).visitante, 'visitante sem progresso fica onde está');
+});
+
+test('"Hoje": o desejo cumprido (com o Passe VIP) fica à vista no Início curto (19/11)', () => {
+  const cel = require('fs').readFileSync('tw-celular.js', 'utf8');
+  assert(cel.includes("if(d.feito && vip) vipLinha = itens[itens.length - 1];"), 'guarda a linha do desejo cumprido');
+  assert(cel.includes("var pend = (vipLinha ? [vipLinha] : []).concat("), 'lista curta começa pelo desejo cumprido');
+  assert(cel.includes("lista = hojeAberto ? todos.join('') : vipLinha + extra;"), 'com tudo feito, o Passe VIP continua à vista');
+});

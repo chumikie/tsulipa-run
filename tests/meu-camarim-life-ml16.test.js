@@ -79,7 +79,8 @@ test('ML1.6: Look do dia muda por dia, usa a cor da roupa e guarda a polaroid no
   assert.ok(rosa(ctx.shopHsl('#ff8fc8')) && !rosa(ctx.shopHsl('#8fd3ff')));
   assert.ok(noite(ctx.shopHsl('#1d2450')));
   assert.match(shop, /petPhoneMomentoGuardar\('look', url\)/);
-  assert.match(pet, /\['pet','center','duo','look','studio'\]\.indexOf\(tipo\)/);
+  // 18/11/2026: 'bairro' (foto do desfecho da bagunça no Idol⭐News!) entrou na lista de Momentos⭐
+  assert.match(pet, /\['pet','center','duo','look','studio','bairro'\]\.indexOf\(tipo\)/);
   assert.doesNotMatch(fatia(shop, 'var SHOP_LOOKS', 'function shopProvador('), /contaRpc\(|localStorage|starT/);
 });
 

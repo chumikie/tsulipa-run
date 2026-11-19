@@ -85,3 +85,8 @@ html:not([data-theme="light"]) .cfduplo-urgente{color:#ffd1a8}
 .hstempo.cfpac.cfpac-fim b{animation:cfpacpulso .6s ease-in-out infinite alternate}
 @keyframes cfpacpulso{to{transform:translateY(-50%) scale(1.22)}}
 @media (prefers-reduced-motion:reduce){.hstempo.cfpac i{transition:none}.hstempo.cfpac.cfpac-fim b{animation:none}}
+
+@media(max-width:420px){
+  .cf-rodape .btns.cfacoes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .cf-rodape .btns.cfacoes .btn{width:100%;min-width:0;max-width:none;padding:6px;white-space:normal;overflow-wrap:anywhere;text-overflow:clip;line-height:1.15}
+}

@@ -74,6 +74,46 @@
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
   var aba = 'estudio', mural = null, publicou = false, ov = null, anim = 0, pauta = null, servidor = false, esc_ = {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro',objeto:'nenhum'}, flores = {}, fase = 'monta', foto = null, msg = '', ocupado = false, cont = 0;
   var sessao = 0, donoSessao = null, muralCarregando = false, muralErro = false, escolheuObjeto = false;
+  var FAVORITA_TR = {
+    pt:['Guardar composição','Usar composição favorita','Composição guardada neste aparelho.','Composição aplicada.','Substituir composição favorita'],
+    en:['Save composition','Use favorite composition','Composition saved on this device.','Composition applied.','Replace favorite composition'],
+    es:['Guardar composición','Usar composición favorita','Composición guardada en este dispositivo.','Composición aplicada.','Reemplazar composición favorita'],
+    id:['Simpan komposisi','Gunakan komposisi favorit','Komposisi tersimpan di perangkat ini.','Komposisi diterapkan.','Ganti komposisi favorit'],
+    th:['บันทึกองค์ประกอบภาพ','ใช้ภาพจัดองค์ประกอบโปรด','บันทึกองค์ประกอบภาพในอุปกรณ์แล้ว','ใช้องค์ประกอบภาพแล้ว','แทนที่องค์ประกอบภาพโปรด'],
+    ja:['構図を保存','お気に入りの構図を使う','端末に構図を保存しました。','構図を適用しました。','お気に入りの構図を上書き']
+  };
+  var CAMPOS_COMPOSICAO = {fundo:FUNDOS,pose:POSES,luz:LUZES,quadro:QUADROS};
+  var favorita = null, chaveFavorita = null;
+  function composicaoChave(){
+    var id = logado() && (contaJ.id || contaJ.nick);
+    if(logado() && typeof contaAuthUserId === 'string' && contaAuthUserId) id = contaAuthUserId;
+    return 'tw_studio_composicao_v1:' + (id ? 'conta:' + encodeURIComponent(id) : 'visitante');
+  }
+  function composicaoValida(dados){
+    if(!dados) return null;
+    var campos = Object.keys(CAMPOS_COMPOSICAO);
+    if(!campos.every(function(k){ return CAMPOS_COMPOSICAO[k].indexOf(dados[k]) >= 0; })) return null;
+    return {fundo:dados.fundo,pose:dados.pose,luz:dados.luz,quadro:dados.quadro};
+  }
+  function composicaoAcao(acao){
+    if(fase !== 'monta' || aba !== 'estudio' || chaveFavorita !== composicaoChave()) return;
+    var texto = FAVORITA_TR[L()];
+    if(acao === 'usar-composicao' && favorita){
+      Object.assign(esc_, favorita);
+      msg = texto[3];
+    }else if(acao === 'guardar-composicao'){
+      var campos = composicaoValida(esc_);
+      try{
+        if(!campos) throw Error('composicao');
+        localStorage.setItem(chaveFavorita, JSON.stringify(campos));
+        favorita = campos;
+        msg = texto[2];
+      }catch(e){ msg = t('erro'); }
+    }
+    ui();
+    var alvo = ov.querySelector('[data-st="' + acao + '"]');
+    if(alvo) alvo.focus({preventScroll:true});
+  }
   var MURAL_REDE = {
     pt:['Não foi possível atualizar o Mural.','Tentar novamente'],
     en:['Could not refresh the board.','Try again'],
@@ -165,6 +205,7 @@
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
+      if(a === 'guardar-composicao' || a === 'usar-composicao'){ composicaoAcao(a); return; }
       if(a === 'mural-retry'){ carregarMural(); return; }
       if(a === 'duo' && logado() && typeof duoAbrir === 'function'){ fechar(); duoAbrir(); return; }
       if(a === 'momentos' && foto && foto.guardada){ studioMomentos(); return; }
@@ -195,6 +236,13 @@
       esc_.objeto = 'nenhum';
     }
     donoSessao = dono;
+    var chave = composicaoChave();
+    if(chaveFavorita !== null && chaveFavorita !== chave){
+      Object.assign(esc_, {fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro'});
+    }
+    chaveFavorita = chave;
+    favorita = null;
+    try{ favorita = composicaoValida(JSON.parse(localStorage.getItem(chave))); }catch(e){}
     muralCarregando = muralErro = false;
     flores = {}; escolheuObjeto = false;
     if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
@@ -322,6 +370,11 @@
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
       hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
         '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
+      if(fase === 'monta'){
+        var ft = FAVORITA_TR[L()];
+        hh += '<div class="btns"><button type="button" class="btn alt" data-st="guardar-composicao">' + esc(ft[favorita ? 4 : 0]) + '</button>' +
+          (favorita ? '<button type="button" class="btn alt" data-st="usar-composicao">' + esc(ft[1]) + '</button>' : '') + '</div>';
+      }
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
     c.innerHTML = hh; desenhar();

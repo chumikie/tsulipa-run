@@ -74,7 +74,8 @@
     var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
     var resto = paciencia(e);
     e.resultado = saiu ? retorno(3) : certo ? retorno(resto < .25 ? 2 : 1) : cfDetalhePedido(p, m) || retorno(4);
-    cf.atendidos++;
+    var numero = ++cf.atendidos;
+    if(!certo) cfLembrarErro(cf, numero, p);
     cf.ultimoAtendimento = e;
     e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
     if(e.sv && cf.modoServidor === 'novo'){
@@ -84,6 +85,7 @@
         if(cf !== atual) return; atual.verificando--; e.tR = Math.max(e.tR,cfT - 30);
         e.confirmacao = r && r.ok && r.confirmado ? (r.certo === true ? 1 : 2) : 3;
         if(r && r.ok && r.confirmado){
+          if(r.certo === false) cfLembrarErro(atual, numero, p);
           atual.pontos = +r.pontos || 0; atual.vidas = +r.vidas; atual.perfeitos = +r.perfeitos || atual.perfeitos; atual.combo = +r.combo || 0;
           if(r.certo){ atual.provaEstado = 'confirmado'; cfConsultarMissao(atual); try{ localStorage.setItem('tw_cf_dia', new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10)); }catch(er){} }
           else if(atual.provaEstado !== 'confirmado') atual.provaEstado = 'sem_comprovacao';

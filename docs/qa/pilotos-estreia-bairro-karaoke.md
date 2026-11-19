@@ -19,7 +19,7 @@ Em cada ciclo, conte quem abriu o painel pelo Hoje, quem tentou aprender o gesto
 
 ## Karaoke em dispositivos físicos
 
-Conferir Safari em iPhone e Chrome em Android. Para cada aparelho, fazer um show no alto-falante e outro com fone Bluetooth, anotando a saída de áudio, o ajuste em milissegundos, o resultado e se a pessoa escolheu repetir a música. Na versão da #117, testar também as oito batidas de “Medir sozinho”. Repetir a calibração ao trocar de saída.
+Conferir Safari em iPhone e Chrome em Android. Para cada aparelho, fazer um show no alto-falante e outro com fone Bluetooth, anotando a saída de áudio, o ajuste em milissegundos, o resultado e se a pessoa escolheu repetir a música. Na versão da #117, testar também as oito batidas de “Medir sozinho”. Repetir a calibração ao trocar de saída. No resultado, anotar toques adiantados, atrasados e notas perdidas. Comparar a mesma música antes e depois de ajustar o timing.
 
 Durante um show, trocar de aba e voltar. Conferir a retomada da música e das notas, a pontuação e a foto completa no meio do show. Testar a volta ao TsuPhone. Registrar o primeiro show concluído por pessoa e se houve uma segunda execução voluntária. Usar essas observações para decidir o formato do ensaio de visitante.
 

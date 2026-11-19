@@ -979,9 +979,3 @@ body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;back
 .twc-pins :focus-visible,.twc-rapidos :focus-visible,.twc-cal-acoes :focus-visible{outline:2px solid currentColor;outline-offset:2px}
 #twcPinOpcoes p,.twc-cal-hora{margin:10px 0 0;color:var(--twc-sub);font-size:.85rem}
 #twcPinOpcoes .twc-chips{margin-top:8px}
-
-.twc-piloto-bairro{padding:.65rem .8rem;margin-bottom:.65rem}
-.twc-piloto-bairro p{margin:.32rem 0}
-.tw-piloto-vitrine{display:flex;gap:.5em;padding:.5em;border:2px solid #b075bd;border-radius:12px;background:#fff1f7;font-size:1.5rem}
-.tw-piloto-vitrine img{width:80px;border:4px solid #fff;border-radius:4px;transform:rotate(-3deg)}
-.tw-piloto-vitrine span{color:#693366;align-self:center;font-size:1rem}

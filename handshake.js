@@ -80,17 +80,26 @@ function hsMemGuardar(f){
   campos.forEach(function(k){ if(f.c && typeof f.c[k] === 'string') detalhes[k] = f.c[k]; });
   var memoria = { nome:f.nome, pres:f.pres, c:detalhes, jeito:f.jeito, dia:new Date(Date.now() - 3 * 3600e3).toISOString().slice(0,10) };
   try{
-    var lista = hsMemLer().filter(function(m){ return m.nome !== f.nome; });
+    var lista = hsMemLer(), anterior = lista.find(function(m){ return m.nome === f.nome; });
+    if(anterior && anterior.ultimoPedido) memoria.ultimoPedido = anterior.ultimoPedido;
+    lista = lista.filter(function(m){ return m.nome !== f.nome; });
     lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
   }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
 }
 function hsCafeConfirmar(f, contaOrigem){
   var chave = hsMemChave();
   if(!chave || chave !== contaOrigem || !f || !f.hsLembranca) return;
-  var m = hsMemLer().find(function(item){
+  var lista = hsMemLer();
+  var m = lista.find(function(item){
     return item.nome === f.nome && item.pres === f.hsLembranca.pres;
   });
-  if(m) hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  if(!m) return;
+  hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  var pedido = typeof cfPedidoMemoria === 'function' && cfPedidoMemoria(f.pedido);
+  if(pedido){
+    m.ultimoPedido = pedido;
+    try{ localStorage.setItem(chave,JSON.stringify(lista)); }catch(e){}
+  }
 }
 function hsCafeAplicarReencontro(fila, presentesServidor){
   var pendente = hsCafePendente;

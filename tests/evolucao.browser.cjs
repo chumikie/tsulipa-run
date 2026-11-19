@@ -40,15 +40,20 @@ async function bairro(browser){
     const query = '&piloto_bairro=1&piloto_bico=1';
     const botao = acao => page.locator('[data-piloto-bairro="'+acao+'"]:visible').first();
     await abrir(page,query,'2026-11-22T02:59:55Z');
-    assert.equal(await botao('rua').count(),0);
+    assert.equal(await botao('continuar').count(),0);
     await abrir(page,query,'2026-11-22T03:00:00Z');
-    await botao('rua').click();
+    assert.equal(await page.locator('.twc-hj [data-piloto-bairro="continuar"]').count(),1);
+    await botao('continuar').click();
+    await botao('mapa').click();
+    const vitrine = page.locator('#twMapa[data-cena="fofo"] .tw-mapa-vitrine');
+    await vitrine.getByText('Vitrine em preparação',{exact:false}).waitFor();
+    await vitrine.locator('[data-piloto-bairro="rua"]').click();
     await botao('studio').click();
     await page.locator('#studioOv [data-st="fundo"][data-v="rosa"][aria-pressed="true"]').waitFor();
     await page.locator('#studioOv [data-st="clique"]').click();
     await page.locator('#studioOv [data-st="outra"]').waitFor();
     await page.locator('#studioOv [data-piloto-bairro="rua"]').click();
-    await page.locator('.tw-piloto-vitrine').waitFor();
+    await page.locator('#twBairroOv .tw-piloto-vitrine').waitFor();
     await botao('cafe').click();
     await page.locator('#cfPraticaTitulo').waitFor();
     await page.locator('[data-cf="base:1"]').click();
@@ -60,17 +65,21 @@ async function bairro(browser){
     assert(await page.evaluate(() => TW_PILOTO_BAIRRO.medidas()[0].etapas.bicoConcluiu));
     assert.equal(await page.evaluate(() => cf.pontos),0);
     await page.locator('[data-cf-pratica="voltar"]').click();
-    await page.locator('.tw-piloto-vitrine').getByText('☕',{exact:false}).waitFor();
+    await page.locator('#twBairroOv .tw-piloto-vitrine').getByText('☕',{exact:false}).waitFor();
+    await botao('mapa').click();
+    await vitrine.getByAltText('Sua foto em exposição na Rua Fofa').waitFor();
+    await vitrine.getByText('Guardei um lugar para a sua foto',{exact:false}).waitFor();
 
     await abrir(page,'&piloto_bairro=1','2026-11-29T03:00:00Z');
-    await botao('jornal').click();
-    await page.locator('#jornalRuaFofa summary').click();
+    assert.equal(await botao('continuar').count(),1);
+    await botao('continuar').click();
     await page.locator('#jornalRuaFofa').getByText('A vitrine abriu e a sua foto faz parte da exposição.').waitFor();
     await page.waitForFunction(() => TW_PILOTO_BAIRRO.medidas()[0].etapas.leu);
     await page.keyboard.press('Escape');
-    await botao('rua').click();
+    await botao('continuar').click();
     assert.equal(await botao('cafe').count(),0);
-    await botao('studio').click();
+    await page.locator('#twBairroOv [data-twb="fechar"]').click();
+    await botao('continuar').click();
     await page.locator('#studioOv [data-st="fundo"][data-v="nuvens"][aria-pressed="true"]').waitFor();
     await page.locator('#studioOv [data-st="fundo"][data-v="rosa"]').click();
     await page.locator('#studioOv [data-st="clique"]').click();
@@ -80,8 +89,8 @@ async function bairro(browser){
     await page.locator('#studioOv [data-st="clique"]').click();
     await page.locator('#studioOv [data-st="outra"]').waitFor();
     await abrir(page,'&piloto_bairro=1','2026-12-06T03:00:00Z');
-    await botao('jornal').click();
-    await page.locator('#jornalRuaFofa [data-piloto-desfecho="1"] summary').click();
+    await botao('continuar').click();
+    await page.locator('#jornalRuaFofa [data-piloto-desfecho="1"][open]').waitFor();
     await page.locator('#jornalRuaFofa').getByText('O mural de nuvens foi inaugurado com a sua contribuição.').waitFor();
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
@@ -121,11 +130,64 @@ async function album(browser){
     assert.match(await fotos.nth(0).innerText(),/Camarim VIP/);
     assert.match(await fotos.nth(1).innerText(),/Moon⭐Duo!/);
     assert.match(await fotos.nth(2).innerText(),/Photo⭐Studio!/);
+    const exportar = page.getByRole('button',{name:'Baixar página em PNG'});
+    assert.equal(await exportar.isDisabled(),true);
+    for(const i of [2,0,1]) await fotos.nth(i).getByRole('button',{name:/Selecionar foto/}).click();
+    await page.getByLabel('Título da página').fill('Looks da semana');
+    await page.getByLabel('Data',{exact:true}).fill('2026-11-22');
+    const [download] = await Promise.all([page.waitForEvent('download'),exportar.click()]);
+    assert.equal(download.suggestedFilename(),'tsulipa-pagina-de-fotos.png');
+    const png = await readFile(await download.path());
+    assert.equal(png.subarray(1,4).toString(),'PNG');
+    assert.equal(png.readUInt32BE(16),1440);
+    assert.equal(png.readUInt32BE(20),980);
     await fotos.nth(1).getByRole('button',{name:'Remover foto'}).click();
     await page.waitForFunction(() => document.querySelectorAll('.album-fotos-grade figure').length === 2);
     await abrir(page,'',null,'B');
     await verAlbum();
     await page.getByText('Sua série ainda está vazia.').waitFor();
+    assert.equal(await exportar.count(),0);
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
+async function cafe(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await abrir(page,'',null,'A');
+    await page.evaluate(async () => {
+      await twJogosCarregar();
+      hsMemGuardar({nome:hsNomesLivres()[0],pres:0,jeito:'fofo',c:{}});
+      window.qaPedido = {base:1,cob:-1,enf:2,doce:-1};
+      window.qaConfirmado = true;
+      contaRpc = nome => Promise.resolve({
+        cafe_run_iniciar:{ok:true,run_id:'qa-run'},
+        cafe_run_pedidos:{ok:true,criados:1,pedidos:[{sessao:'qa-pedido',pedido:window.qaPedido}]},
+        cafe_run_etapa2:{ok:true,confirmado:true,certo:window.qaConfirmado,pontos:200,vidas:3,perfeitos:1,combo:1}
+      }[nome] || []);
+      cfAbrir();
+    });
+    await page.locator('#cfJogar').click();
+    await page.locator('.cfreencontro').waitFor();
+    assert.doesNotMatch(await page.locator('.cfreencontro').innerText(),/lembro do meu pedido/);
+    await page.locator('[data-cfd-aceitar]').click();
+    await page.locator('[data-cfd-cliente="0"]').click();
+    await page.evaluate(() => { cf.monta = {...qaPedido}; cfUI(); });
+    await page.locator('[data-cfd-servir="0"]').click();
+    await page.waitForFunction(() => hsMemLer()[0]?.ultimoPedido?.base === 1);
+    await page.evaluate(() => {
+      var m = hsMemLer()[0]; hsMemGuardar({nome:m.nome,pres:m.pres,jeito:'fofo',c:{}});
+      cfFechar(); window.qaPedido = {base:2,cob:-1,enf:0,doce:-1}; window.qaConfirmado = false; cfAbrir();
+    });
+    await page.locator('#cfJogar').click();
+    await page.getByText(/lembro do meu pedido.*Matcha latte.*Cereja/).waitFor();
+    await page.locator('[data-cfd-aceitar]').click();
+    await page.locator('[data-cfd-cliente="0"]').click();
+    await page.evaluate(() => { cf.monta = {...qaPedido}; cfUI(); });
+    await page.locator('[data-cfd-servir="0"]').click();
+    await page.waitForFunction(() => cf.verificando === 0 && cf.ultimoAtendimento?.confirmacao === 2);
+    assert.equal(await page.evaluate(() => hsMemLer()[0].ultimoPedido.base),1);
+    await page.evaluate(() => { contaAuthUserId = 'B'; contaJ = {id:'B',nick:'Outro Idol'}; });
+    assert.deepEqual(await page.evaluate(() => hsMemLer()),[]);
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
@@ -156,6 +218,7 @@ async function karaoke(browser){
   try{
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
+    await cafe(browser); console.log('✓ Café guarda apenas o pedido confirmado e o cita no retorno.');
     await karaoke(browser); console.log('✓ Ensaio termina e repete sem gastar tentativa.');
   }finally{ await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;});

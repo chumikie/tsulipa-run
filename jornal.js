@@ -702,7 +702,12 @@ function jornalAbrir(aba, capitulo){
     jornalAbasIniciar(); focarCapitulo(foco);
     if(aba === 'ruaFofa'){
       var ruaFofa = $('jornalRuaFofa');
-      if(ruaFofa){ var manchete = ruaFofa.querySelector('h4'); manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'}); }
+      if(ruaFofa){
+        var edicao = Number.isInteger(capitulo) && ruaFofa.querySelector('[data-piloto-desfecho="' + capitulo + '"]');
+        if(edicao) edicao.open = true;
+        var manchete = edicao ? edicao.querySelector('summary') : ruaFofa.querySelector('h4');
+        manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'});
+      }
     }
     jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar();
   });

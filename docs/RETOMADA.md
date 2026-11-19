@@ -19,7 +19,7 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `b40cb7c` (19/11), publicada na Vercel. Últimos merges: #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início do TsuPhone mais compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
 - **Outra PR aberta:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
@@ -31,8 +31,8 @@
 - **Início.** Palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário). A #118 permite fixar até dois atalhos neste navegador. Nesta revisão, o palco vem primeiro, a estreia cabe em uma linha compacta, e os atalhos fixados ficam junto das portas. A edição fica em Ajustes.
 - **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
 - **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
-- **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
-- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador e é separada por conta.
+- **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. Os pilotos abrem por links de teste. Nesta revisão, o Hoje indica apenas a próxima etapa e a Rua Fofa mostra a vitrine e a reação da moradora no Mapa. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
+- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador e é separada por conta. Nesta revisão, três fotos podem virar uma página com título, data e download em PNG.
 
 ### Jogos
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
@@ -40,7 +40,7 @@
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). A #118 identifica a colisão no resultado | — |
 | Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Medir em celular real |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
-| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
+| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos. Nesta revisão, um fã conhecido também lembra o último pedido confirmado | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
 | Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo | — |
 | Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; cards usados no Battle | — |
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |

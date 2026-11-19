@@ -52,3 +52,12 @@ html[data-theme="dark"] .gpochip,html[data-theme="dark"] .gpoconf,html[data-them
 .album-fotos-grade img{width:100%;height:130px;object-fit:contain;background:#eee4fb;border-radius:10px}
 .album-fotos-grade figcaption{font-size:.85rem;font-weight:750}
 .album-fotos-grade a,.album-fotos-grade button{color:inherit;justify-self:start}
+
+.album-fotos-pagina fieldset{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:8px;margin:0 0 12px;padding:10px;border:1px solid currentColor;border-radius:12px}
+.album-fotos-pagina label{display:grid;gap:3px;font-size:.85rem}
+.album-fotos-pagina input{font:inherit;min-width:0;width:100%;box-sizing:border-box}
+.album-fotos-pagina p{grid-column:1 / -1;margin:0}
+.album-fotos-pagina button{grid-column:1 / -1;justify-self:start;min-height:44px}
+.album-fotos-grade .album-fotos-escolher{min-height:44px;width:100%;border:1px solid currentColor;border-radius:8px;background:transparent;font:inherit;font-size:.85rem}
+.album-fotos-escolher[aria-pressed="true"]{outline:2px solid #9b30d9;outline-offset:-3px}
+.album-fotos-escolher[aria-disabled="true"]{opacity:.65}

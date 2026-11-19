@@ -90,7 +90,7 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     mostrarCena('mundo');
@@ -187,7 +187,7 @@
     aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
-    textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
+    textos();atualizarVitrine();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
     if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):(ui('rua')+rotulo(cena)));
@@ -254,6 +254,26 @@
       if(h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Voltar do mapa indisponível',e);}
   }
+  function atualizarVitrine(){
+    var sec=document.getElementById('twMapa'), box=sec&&sec.querySelector('.tw-mapa-vitrine');
+    if(!box)return;
+    var html=aberto&&cena==='fofo'&&window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.vitrineMapa() : '';
+    if(box._vitrine!==html){box._vitrine=html;box.innerHTML=html;}
+    box.hidden=!html;
+  }
+  window.twMapaVitrineAtualizar=atualizarVitrine;
+  window.twMapaRuaFofa=function(){
+    if(!mapaAtivo())return false;
+    if(!mergulho&&cena==='mundo'){entrarRua('fofo',true);return true;}
+    if(!mergulho&&cena==='fofo')return true;
+    try{
+      var estado=Object.assign({},window.history.state);
+      estado[CHAVE_RUA_HIST]='fofo';
+      window.history.replaceState(estado,'',window.location.href);
+    }catch(e){}
+    mostrarCena('fofo');return true;
+  };
+  if(typeof window.addEventListener==='function')window.addEventListener('tw-piloto-bairro',atualizarVitrine);
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
     mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
@@ -274,6 +294,7 @@
       var rolo=sec.querySelector('.tw-mapa-rolo');
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }
+    atualizarVitrine();
     var arquivo=destino==='mundo'?'mapa-mundo.svg':CENAS_RUA[destino];
     if(!imagens[destino]){
       var img=new Image();imagens[destino]=img;

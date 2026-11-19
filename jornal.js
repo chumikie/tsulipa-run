@@ -43,7 +43,9 @@ function jornalMontar(d){
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
   vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   vida += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
+  vida += '<div id="jornalCapsArea">';
   if(typeof jornalCapsHtml === 'function') vida += jornalCapsHtml();
+  vida += '</div>';
   vida += jornalTrioHtml();
   comunidade += jornalFeitosHtml(d);
   comunidade += jornalAtividadeHtml();
@@ -64,7 +66,7 @@ function jornalMontar(d){
   return h + jornalAbasHtml(vida, comunidade);
 }
 // Duas abas, sem remover nós do DOM: fotos, ranking, editor e RPCs continuam funcionando.
-var jornalFestivalFoco = false;
+var jornalFestivalFoco = false, jornalAbertura = 0;
 var jornalAba = 'vida', jornalAtividadeCarregada = false;
 function jornalAbasHtml(vida, comunidade){
   return '<div class="jnabas" role="tablist" aria-label="' + escHtml(tr('Seções do Idol⭐News!')) + '">' +
@@ -646,25 +648,61 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
    ou o Calendário — antes eles pesavam na abertura de todo mundo. */
 var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=12', jornalCapsFila = null;
 function jornalCapsCarregar(cb){
-  if(typeof jornalCapsUI === 'function'){ if(cb) cb(); return; }
+  if(typeof jornalCapsUI === 'function'){ if(cb) cb(true); return; }
   if(jornalCapsFila){ if(cb) jornalCapsFila.push(cb); return; }
   jornalCapsFila = cb ? [cb] : [];
   var sc = document.createElement('script'); sc.src = JORNAL_CAPS_ARQ; sc.async = true;
-  sc.onload = sc.onerror = function(){ var f = jornalCapsFila || []; jornalCapsFila = null; f.forEach(function(fn){ try{ fn(); }catch(e){} }); };
+  function terminar(ok){
+    var fila = jornalCapsFila || []; jornalCapsFila = null;
+    if(!ok) sc.remove();
+    fila.forEach(function(fn){ try{ fn(ok); }catch(e){} });
+  }
+  sc.onload = function(){ terminar(typeof jornalCapsUI === 'function'); };
+  sc.onerror = function(){ terminar(false); };
   document.head.appendChild(sc);
 }
 window.jornalCapsCarregar = jornalCapsCarregar;
-function jornalAbrir(aba){
-  if(typeof jornalCapsUI !== 'function'){ jornalCapsCarregar(function(){ jornalAbrir(aba); }); }
+function jornalCapituloSelecionar(cap){
+  if(!cap || typeof jornalCapsUI !== 'function') return '';
+  if(cap.tipo === 'capT1'){
+    var t1 = JN_T1.episodios.findIndex(function(e){ return e.data === cap.data; });
+    if(t1 >= 0 && jnT1Disponivel(t1)){ jnT1Sel = t1; return '[data-jnt1="' + t1 + '"]'; }
+  }else if(cap.tipo === 'cap'){
+    for(var i = 0, n = jnCapsLiberados(); i < n; i++){
+      if(jnCapData(i) === cap.data){ jnCapSel = i; return '[data-jncap="' + i + '"]'; }
+    }
+  }
+  return '';
+}
+function jornalAbrir(aba, capitulo){
+  var abertura = ++jornalAbertura;
   jornalFestivalFoco = aba === 'festival';
   jornalAba = aba === 'comunidade' || jornalFestivalFoco ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
-  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).then(function(d){ if(jornalOv.hidden) return; $('jornalCorpo').innerHTML = jornalMontar(d); jornalAbasIniciar(); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); })
-    .catch(function(){ if(!jornalOv.hidden){ $('jornalCorpo').innerHTML = jornalMontar({}); jornalAbasIniciar(); jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar(); } });
+  function vigente(){ return !jornalOv.hidden && abertura === jornalAbertura; }
+  function focarCapitulo(foco){
+    var alvo = foco && $('jornalCorpo').querySelector(foco);
+    if(alvo){ alvo.focus({preventScroll:true}); alvo.scrollIntoView({block:'nearest'}); }
+  }
+  jornalCapsCarregar(function(ok){
+    if(!ok || !vigente()) return;
+    var area = $('jornalCapsArea');
+    if(!area || area.hasChildNodes()) return;
+    area.innerHTML = jornalCapsHtml();
+    var foco = jornalCapituloSelecionar(capitulo);
+    jornalCapsUI(); focarCapitulo(foco);
+  });
+  contaRpc('tw_podio_semana').then(function(d){ return jornalTop5(d); }).catch(function(){ return {}; }).then(function(dados){
+    if(!vigente()) return;
+    var foco = jornalCapituloSelecionar(capitulo);
+    $('jornalCorpo').innerHTML = jornalMontar(dados);
+    jornalAbasIniciar(); focarCapitulo(foco);
+    jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar();
+  });
 }
-function jornalFechar(){ jornalOv.hidden = true; }
+function jornalFechar(){ jornalAbertura++; jornalOv.hidden = true; }
 // ---------- Novidades como blog: só a admin posta (imagem, título e legenda); ficam os 5 últimos ----------
 // RPCs news_posts / admin_news_postar / admin_news_apagar: proposta em supabase/sql/proposta/20261103150000_idol_news_posts.sql
 var jornalPedidos = {};

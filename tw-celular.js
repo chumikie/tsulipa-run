@@ -517,6 +517,61 @@
     };
   }
 
+  var PIN_CHAVE = 'tw_cel_atalhos_v1', pinAberto = false, pinItens;
+  var PIN_ROTAS = JOGOS.concat(['mapa', 'news', 'festival', 'cal']);
+  var PIN_TX = {
+    pt:['Atalhos fixados','Editar atalhos','Escolha até dois atalhos.','Remova um atalho para fixar outro.'],
+    en:['Pinned shortcuts','Edit shortcuts','Choose up to two shortcuts.','Remove a shortcut to pin another.'],
+    es:['Accesos fijados','Editar accesos','Elige hasta dos accesos.','Quita un acceso para fijar otro.'],
+    id:['Pintasan tersemat','Edit pintasan','Pilih hingga dua pintasan.','Lepas satu pintasan untuk menyematkan yang lain.'],
+    th:['ทางลัดที่ปักหมุด','แก้ไขทางลัด','เลือกทางลัดได้ไม่เกินสองรายการ','เลิกปักหมุดหนึ่งรายการเพื่อเพิ่มรายการอื่น'],
+    ja:['固定したショートカット','ショートカットを編集','ショートカットを2つまで選べます。','別の項目を固定するには1つ外してください。']
+  };
+  function pinLista(){
+    if(pinItens) return pinItens;
+    try{
+      var dados = JSON.parse(localStorage.getItem(PIN_CHAVE));
+      if(Array.isArray(dados)) return pinItens = dados.filter(function(k, i){
+        return PIN_ROTAS.indexOf(k) >= 0 && dados.indexOf(k) === i;
+      }).slice(0, 2);
+    }catch(e){}
+    return pinItens = [];
+  }
+  function pinNome(k){
+    if(k === 'mapa') return t('mapa');
+    if(k === 'news') return 'Idol⭐News!';
+    if(k === 'festival') return tt('Festival de Unidades');
+    if(k === 'cal') return tc('cal');
+    return titulo(card(k));
+  }
+  function pinHtml(){
+    var lista = pinLista(), tx = PIN_TX[L()] || PIN_TX.pt;
+    var atalhos = lista.filter(pinNome).map(function(k){
+      return '<button type="button" class="twc-btn twc-btn-claro" data-pin-ir="' + k + '">' +
+        ico(k === 'festival' ? 'karaoke' : k, 17) + esc(pinNome(k)) + '</button>';
+    }).join('');
+    var opcoes = pinAberto ? PIN_ROTAS.filter(pinNome).map(function(k){
+      var marcado = lista.indexOf(k) >= 0;
+      return '<button type="button" class="twc-btn twc-btn-claro" data-pin="' + k + '" aria-pressed="' + marcado + '"' +
+        (!marcado && lista.length === 2 ? ' aria-disabled="true"' : '') + '>' + esc(pinNome(k)) + '</button>';
+    }).join('') : '';
+    return '<section class="twc-card twc-pins" aria-labelledby="twcPinsTitulo"><div class="twc-pin-cab">' +
+      '<h2 id="twcPinsTitulo">' + esc(tx[0]) + '</h2><button type="button" id="twcPinEditar" class="twc-btn twc-btn-claro" aria-expanded="' +
+      pinAberto + '" aria-controls="twcPinOpcoes">' + esc(tx[1]) + '</button></div>' +
+      (atalhos ? '<div class="twc-pin-lista">' + atalhos + '</div>' : '') +
+      '<div id="twcPinOpcoes"' + (pinAberto ? '' : ' hidden') + '><p role="status">' +
+      esc(tx[lista.length === 2 ? 3 : 2]) + '</p><div class="twc-pin-lista">' + opcoes + '</div></div></section>';
+  }
+  function pinAlternar(k){
+    if(PIN_ROTAS.indexOf(k) < 0 || !pinNome(k)) return;
+    var lista = pinLista(), i = lista.indexOf(k);
+    if(i >= 0) lista.splice(i, 1);
+    else if(lista.length < 2) lista.push(k);
+    else return;
+    try{ localStorage.setItem(PIN_CHAVE, JSON.stringify(lista)); }catch(e){}
+    som(); desenhar();
+  }
+
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -532,7 +587,7 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + palco() + '</div>' +
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + pinHtml() + palco() + '</div>' +
       '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
   }
 
@@ -983,7 +1038,7 @@
     legTema:{pt:'Tema de data',en:'Seasonal theme',es:'Tema de fecha',id:'Tema musiman',th:'ธีมตามเทศกาล',ja:'季節のテーマ'}
   };
   function tc(k, n){ var d = TC[k]; var r = d ? (d[L()] || d.pt) : k; return n != null ? r.replace('{n}', n) : r; }
-  var calSel = '', calMes = '';
+  var calSel = '', calMes = '', calCapsPedido = false;
   function calLimites(){ var C = window.TW_CAL, h = C.hoje(), y = +h.slice(0, 4), m = +h.slice(5, 7) + 12; y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1; return ['2026-10', y + '-' + C.p2(m)]; }
   function calMesMover(n){ var C = window.TW_CAL; if(!C) return; var a = (calMes || C.hoje().slice(0, 7)), y = +a.slice(0, 4), m = +a.slice(5, 7) + n;
     while(m < 1){ m += 12; y--; } while(m > 12){ m -= 12; y++; } var r = y + '-' + C.p2(m), lim = calLimites(); calMes = r < lim[0] ? lim[0] : r > lim[1] ? lim[1] : r; calSel = ''; }
@@ -1007,9 +1062,42 @@
     if(typeof contaRpc !== 'function' || !window.TW_CAL || !window.TW_CAL.jogadores) return;
     contaRpc('calendario_aniversarios').then(function(r){ window.TW_CAL.jogadores(r); if(topo() === 'cal' || topo() === 'menu') desenhar(); }).catch(function(){ calAnivPedido = 0; });
   }
+  var CAL_ACOES = {
+    pt:['Abrir atividade','Adicionar ao meu calendário','Festival desta semana','Prazo no seu horário','Ler capítulo'],
+    en:['Open activity','Add to my calendar','This week’s Festival','Deadline in your time zone','Read chapter'],
+    es:['Abrir actividad','Añadir a mi calendario','Festival de esta semana','Plazo en tu horario','Leer capítulo'],
+    id:['Buka aktivitas','Tambah ke kalender saya','Festival minggu ini','Batas waktu di zona waktumu','Baca bab'],
+    th:['เปิดกิจกรรม','เพิ่มลงในปฏิทินของฉัน','เทศกาลสัปดาห์นี้','กำหนดส่งตามเวลาท้องถิ่น','อ่านตอน'],
+    ja:['アクティビティを開く','マイカレンダーに追加','今週のフェスティバル','現地時間での締め切り','エピソードを読む']
+  };
+  function calFestival(sabado){
+    var meioDia = Date.parse(sabado + 'T12:00:00Z');
+    if(!Number.isFinite(meioDia) || new Date(meioDia).getUTCDay() !== 6) return null;
+    var virada = hubFestivalVirada(meioDia);
+    if(virada <= Date.now()) return null;
+    return {nome:tt('Festival de Unidades'), musica:hubMusicaSemana(meioDia)[1], prazo:virada - 60000, virada:virada,
+      atual:virada === hubFestivalVirada(), cor:'#7b3ff0', ic:'karaoke'};
+  }
+  function calIcs(sabado){
+    var f = calFestival(sabado); if(!f) return;
+    function iso(ms){ return new Date(ms).toISOString().slice(0, 19).replace(/[-:]/g, '') + 'Z'; }
+    function campo(t){ return t.replace(/[\\;,]/g, '\\$&').replace(/\r?\n/g, '\\n'); }
+    var arquivo = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TsuLiPa World//Festival//PT','BEGIN:VEVENT',
+      'UID:festival-' + sabado + '@tsulipa-world.vercel.app','DTSTAMP:' + iso(Date.now()),'DTSTART:' + iso(f.prazo),
+      'DTEND:' + iso(f.virada),'SUMMARY:' + campo(f.nome),'DESCRIPTION:' + campo(f.musica),
+      'URL:https://tsulipa-world.vercel.app/festival.html','END:VEVENT','END:VCALENDAR',''].join('\r\n');
+    var a = document.createElement('a'), url = URL.createObjectURL(new Blob([arquivo], {type:'text/calendar;charset=utf-8'}));
+    a.href = url; a.download = 'tsulipa-festival-' + sabado + '.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+  }
   function telaCal(){
     calAniversarios();
-    if(typeof jnT1Disponivel !== 'function' && typeof window.jornalCapsCarregar === 'function') window.jornalCapsCarregar(function(){ if(topo() === 'cal') desenhar(); });   // marcas da temporada vêm com os quadrinhos
+    // As marcas da temporada vêm com os quadrinhos. Uma falha não dispara novos pedidos a cada atualização.
+    if(!calCapsPedido && typeof jnT1Disponivel !== 'function' && typeof window.jornalCapsCarregar === 'function'){
+      calCapsPedido = true;
+      window.jornalCapsCarregar(function(ok){ if(ok && topo() === 'cal') desenhar(); });
+    }
     var C = window.TW_CAL; if(!C) return faixa(esc(tc('cal')), tc('calSub')) + '<div class="twc-pag"></div>';
     var h = C.hoje(); if(!calMes) calMes = h.slice(0, 7); if(!calSel) calSel = calMes === h.slice(0, 7) ? h : calMes + '-01';
     var y = +calMes.slice(0, 4), m = +calMes.slice(5, 7), lim = calLimites(), dias = new Date(Date.UTC(y, m, 0)).getUTCDate(), w0 = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
@@ -1017,13 +1105,33 @@
     var cel2 = []; for(var b = 0; b < w0; b++) cel2.push('<span class="twc-cald twc-cald-v" aria-hidden="true"></span>');
     for(var d = 1; d <= dias; d++){
       var ds = calMes + '-' + C.p2(d), mk = C.marcas(ds), te = C.tema(ds), antes = ds < C.inicio;
+      var fest = calFestival(ds); if(fest) mk = mk.concat(fest);
       var cls = 'twc-cald' + (ds === h ? ' twc-cald-hoje' : '') + (ds === calSel ? ' twc-cald-sel' : '') + (antes ? ' twc-cald-antes' : '') + (te && !antes ? ' twc-cald-tema' : '');
       var rot = dataCurta(ds) + (mk.length ? ': ' + mk.map(function(x){ return x.nome; }).join(', ') : '') + (te && !antes ? ' · ' + te.nome : '');
-      cel2.push('<button type="button" class="' + cls + '" data-cald="' + ds + '"' + (te && !antes ? ' style="--t:' + te.cor + '"' : '') + ' aria-label="' + esc(rot) + '"' + (ds === calSel ? ' aria-pressed="true"' : '') + '><b>' + d + '</b>' +
+      cel2.push('<button type="button" class="' + cls + '" data-cald="' + ds + '"' + (te && !antes ? ' style="--t:' + te.cor + '"' : '') + ' aria-label="' + esc(rot) + '" aria-pressed="' + (ds === calSel) + '"><b>' + d + '</b>' +
         (mk.length ? '<i style="--c:' + mk[0].cor + '">' + ico(mk[0].ic, 13) + '</i>' : '') + '</button>');
     }
     var mes = C.doMes(m), sd = calSel, smk = C.marcas(sd), ste = C.tema(sd), sse = C.semana(sd), sn = C.diaN(sd);
-    var itens = smk.map(function(x){ return '<li style="--c:' + x.cor + '"><span>' + ico(x.ic, 16) + '</span>' + esc(x.nome) + '</li>'; });
+    var tx = CAL_ACOES[L()] || CAL_ACOES.pt, festival = calFestival(sd), acoes = '';
+    var itens = smk.map(function(x){
+      if(sd <= h && (x.k === 'cap' || x.k === 'capT1')){
+        acoes += '<button type="button" class="twc-btn twc-btn-claro" data-cal-cap="' + x.k + '">' +
+          esc(tx[4] + ' · ' + x.nome) + '</button>';
+      }
+      return '<li style="--c:' + x.cor + '"><span>' + ico(x.ic, 16) + '</span>' + esc(x.nome) + '</li>';
+    });
+    var prazo = '';
+    if(festival){
+      itens.push('<li style="--c:' + festival.cor + '"><span>' + ico(festival.ic, 16) + '</span>' +
+        esc(festival.nome + ' · ' + festival.musica) + '</li>');
+      var hora = new Intl.DateTimeFormat(L() === 'pt' ? 'pt-BR' : L(), {dateStyle:'medium', timeStyle:'short'}).format(festival.prazo);
+      prazo = '<p class="twc-cal-hora">' + esc(tx[3]) + ' · <time datetime="' + new Date(festival.prazo).toISOString() + '">' + esc(hora) + '</time></p>';
+      if(festival.atual) acoes += '<button type="button" class="twc-btn twc-btn-claro" id="twcCalFestival" data-a="festival">' + esc(tx[0]) + '</button>';
+      acoes += '<button type="button" class="twc-btn twc-btn-claro" data-cal-ics="' + sd + '">' + esc(tx[1]) + '</button>';
+    }else if(sd === h){
+      var sabado = new Date(hubFestivalVirada() - 4 * 36e5).toISOString().slice(0, 10);
+      acoes += '<button type="button" class="twc-btn twc-btn-claro" id="twcCalSemana" data-cal-dia="' + sabado + '">' + esc(tx[2]) + '</button>';
+    }
     if(ste) itens.push('<li style="--c:' + ste.cor + '"><span>' + ico('estrela', 16) + '</span>' + esc(tc('tema')) + ': ' + esc(ste.nome) + ' <small>' + esc(tc('ate', ste.ate.slice(3) + '/' + ste.ate.slice(0, 2))) + '</small></li>');
     if(sse && sd >= C.inicio) itens.push('<li style="--c:' + sse.cor + '"><span>' + ico('cal', 16) + '</span>' + esc(tc('semana')) + ': ' + esc(sse.nome) + '</li>');
     if(mes) itens.push('<li style="--c:' + mes.cor + '"><span>' + ico(mes.k === 'mesLirika' ? 'bolo' : 'trio', 16) + '</span>' + esc(mes.nome) + '</li>');
@@ -1039,6 +1147,7 @@
       '<section class="twc-card twc-caldia" id="twcCalDia" aria-live="polite"><h2>' + esc(dataCurta(sd)) + (sd === h ? ' · ' + esc(tc('hoje')) : '') + '</h2>' +
         '<small class="twc-caldn">' + esc(sn >= 1 ? tc('diaN', sn) : tc('antes')) + '</small>' +
         (itens.length ? '<ul class="twc-calitens">' + itens.join('') + '</ul>' : '') +
+        prazo + (acoes ? '<div class="twc-cal-acoes">' + acoes + '</div>' : '') +
         (sd >= C.inicio ? falaHtml(C.fala(sd)) : '') + '</section></div>';
   }
 
@@ -1599,7 +1708,7 @@
     var el=document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-cald','data-calmes','data-cal-ics','data-cal-cap'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1620,6 +1729,7 @@
   function ir(v){
     if(classico)sairClassico();
     if(topo()===v)return;
+    if(v==='cal')calCapsPedido=false;
     pontosPilha[pilha.length-1]=pontoAtual();pilha.push(v);
     som();desenhar();tela.scrollTop=0;
     var busca=v==='emb:busca'&&$id('hubBusca');
@@ -1726,6 +1836,15 @@
       fecharFolha(); if(f === 'entrar' && typeof contaEntrar === 'function') contaEntrar(); return; }
     if(b.dataset.n){ var n = b.dataset.n; if(n === 'voltar') voltar(); else if(n === 'inicio') inicio(); else if(topo() === 'menu' && !classico) voltar(); else ir('menu'); return; }
     if(b.dataset.v){ ir(b.dataset.v); return; }
+    if(b.id === 'twcPinEditar'){ pinAberto = !pinAberto; desenhar(); return; }
+    if(b.dataset.pin){ pinAlternar(b.dataset.pin); return; }
+    if(b.dataset.pinIr){
+      var atalho = b.dataset.pinIr;
+      if(atalho === 'cal') ir('cal');
+      else if(JOGOS.indexOf(atalho) >= 0) abrirCard(atalho);
+      else acao(atalho, b);
+      return;
+    }
     if(b.dataset.desejo){ som(); desejoIr(b.dataset.desejo); return; }
     if(b.dataset.amigo != null){ amigosTocar('m', +b.dataset.amigo); return; }
     if(b.dataset.laco != null){ amigosSel = +b.dataset.laco; som(); desenhar(); return; }
@@ -1736,7 +1855,19 @@
     if(b.dataset.hjver){ hojeAberto = !hojeAberto; som(); desenhar(); return; }
     if(b.dataset.tourcor){ tourCoracao(b.dataset.tourcor, b); return; }
     if(b.dataset.calmes){ calMesMover(+b.dataset.calmes); som(); desenhar(); return; }
-    if(b.dataset.cald){ calSel = b.dataset.cald; som(); desenhar(); var dt = $id('twcCalDia'); if(dt) try{ dt.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} return; }
+    if(b.dataset.calIcs){ calIcs(b.dataset.calIcs); return; }
+    if(b.dataset.calCap){
+      if(typeof window.jornalAbrir === 'function') window.jornalAbrir('capitulo', {tipo:b.dataset.calCap, data:calSel});
+      return;
+    }
+    if(b.dataset.cald || b.dataset.calDia){
+      calSel = b.dataset.cald || b.dataset.calDia; calMes = calSel.slice(0, 7);
+      som(); desenhar();
+      var dt = $id('twcCalDia');
+      if(b.dataset.calDia){ var abrir = $id('twcCalFestival'); if(abrir) abrir.focus({preventScroll:true}); }
+      if(dt) dt.scrollIntoView({block:'nearest'});
+      return;
+    }
     if(b.dataset.frase){
       if(window.TW_PRESENCA){ window.TW_PRESENCA.falar(b.dataset.frase); b.classList.add('twc-falou'); setTimeout(function(){ b.classList.remove('twc-falou'); }, 600); } som(); return; }
     if(b.dataset.filtro !== undefined){ album.filtro = b.dataset.filtro; som(); desenhar(); return; }

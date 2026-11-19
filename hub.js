@@ -264,9 +264,17 @@ function twSoraMissaoPendente(){
   }catch(e){return true;}
 }
 var HUB_MUSICAS = [['duo','Moon⭐Duo!'],['normal','Brilha Comigo'],['fast','Love × Debut'],['gacha','Star⭐Gacha!'],['chill','Doce Melodia']];
-function hubMusicaSemana(){   // mesmo rodízio do karaoke-room-views.js: troca todo domingo 0h de Brasília; semana de 01/11/2026 = Moon⭐Duo!
-  var sem = Math.floor((Date.now() - Date.UTC(2026, 10, 1, 3)) / 6048e5);
+// Domingo, 01/11/2026, 00:00 em Brasília.
+var HUB_FEST_INICIO = 1793502000000, HUB_FEST_SEMANA = 6048e5;
+function hubFestivalSemana(instante){
+  return Math.floor(((instante == null ? Date.now() : instante) - HUB_FEST_INICIO) / HUB_FEST_SEMANA);
+}
+function hubMusicaSemana(instante){   // mesmo rodízio do karaoke-room-views.js: domingo 0h de Brasília
+  var sem = hubFestivalSemana(instante);
   return HUB_MUSICAS[((sem % 5) + 5) % 5];
+}
+function hubFestivalVirada(instante){
+  return HUB_FEST_INICIO + (hubFestivalSemana(instante) + 1) * HUB_FEST_SEMANA;
 }
 // Agenda visual: reaproveita exclusivamente as missões já carregadas pelo Hub.
 var HUB_AGENDA_ROTAS = {cafe:'cafe',handshake:'handshake',duo:'duo',pet:'pet',mini:'pet',karaoke:'karaoke',sora:'sora'};
@@ -867,7 +875,7 @@ function hubJingle(){   // musiquinha de abertura (Web Audio, igual aos outros s
   [[784, 0], [988, .12], [1175, .24], [1568, .36], [1319, .52], [1568, .64], [2093, .8]].forEach(function(n){ beep(n[0], .22, 'square', .028, n[1]); beep(n[0] / 2, .26, 'triangle', .035, n[1]); });
   beep(523, .9, 'sine', .03, .8);
 }
-var TW_LINK_ROTAS = {cafe:'cafe',studio:'studio',festival:'festival'};
+var TW_LINK_ROTAS = {cafe:'cafe.html',studio:'studio.html',festival:'festival.html'};
 var TW_LINK_TR = {
   pt:['Copiar link','Link copiado.','Link para copiar','Som geral','Volume geral','Procurar Idols ou atividades','Atividades','Nenhuma atividade encontrada.'],
   en:['Copy link','Link copied.','Link to copy','Master sound','Master volume','Find Idols or activities','Activities','No activities found.'],
@@ -890,7 +898,7 @@ function twLinkBotao(id){
 }
 function twLinkCopiar(botao){
   var id=twLinkRota(botao.dataset.twLink); if(!id)return;
-  var url=location.origin+location.pathname+'#'+id;
+  var url=new URL(TW_LINK_ROTAS[id],location.href).href;
   var status=botao.nextElementSibling;
   if(!status || !status.classList.contains('tw-link-status')){
     status=document.createElement('span');status.className='tw-link-status';status.setAttribute('role','status');

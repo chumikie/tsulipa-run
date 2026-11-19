@@ -11,9 +11,15 @@
   }
   var estado=ler();
   function nivel(){return estado.mudo?0:estado.volume/100;}
+  function aplicarMidia(m){
+    var n=nivel();
+    m.el.volume=m.base*n;
+    // Safari móvel pode ignorar o volume numérico do elemento, mas respeita muted.
+    m.el.muted=m.mudoInicial||n===0;
+  }
   function atualizar(){
     canais.forEach(function(c){c.gain.gain.value=nivel();});
-    midias.forEach(function(m){m.el.volume=m.base*nivel();});
+    midias.forEach(aplicarMidia);
     window.dispatchEvent(new Event('tw-audio'));
   }
   function definir(changes){
@@ -29,10 +35,11 @@
     canais.push({ctx:ctx,gain:gain});return gain;
   }
   function midia(el,base){
-    var m={el:el,base:base};
-    function ativa(){el.volume=base*nivel();midias.add(m);}
+    var m={el:el,base:base,mudoInicial:el.muted};
+    function ativa(){aplicarMidia(m);midias.add(m);}
     function encerra(){midias.delete(m);}
-    ativa();
+    aplicarMidia(m);
+    if(!el.paused)midias.add(m);
     el.addEventListener('play',ativa);
     ['pause','ended','error'].forEach(function(e){el.addEventListener(e,encerra);});
     return el;

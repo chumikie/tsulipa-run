@@ -1327,6 +1327,21 @@ var ktFlow=(function(){
    },Math.max(1000,inicio.dura+400));
  });
  adjust.addEventListener('toggle',function(){if(!adjust.open){if(kt&&kt.calibrarAtiva())kt.calibrarFim();pararMedida();msg('');}});
+ /* 19/11/2026: quando o resultado do show diz que os acertos ficaram quase sempre do mesmo lado (#118),
+    um botão logo abaixo fecha o resultado, abre o Ajustar timing e deixa o "Medir sozinho" pronto para o primeiro toque.
+    A medida só começa quando a pessoa toca: ninguém é pego de surpresa por um metrônomo. */
+ (function(){
+   var dica=$('ktResultTimingTip');if(!dica)return;
+   var bt=document.createElement('button');bt.type='button';bt.id='ktResultMedir';bt.className='btn alt kt-result-medir';bt.hidden=true;bt.textContent=cal.medir;
+   dica.after(bt);
+   bt.onclick=function(){
+     var res=$('ktResult');if(res&&res.open)res.close();
+     adjust.open=true;msg(cal.medirDica);
+     try{adjust.scrollIntoView({block:'nearest'});}catch(e){}
+     try{medirBt.focus({preventScroll:true});}catch(e){medirBt.focus();}
+     medirBt.classList.add('kt-cal-chamar');setTimeout(function(){medirBt.classList.remove('kt-cal-chamar');},2400);
+   };
+ })();
  dialog.addEventListener('cancel',function(){window.ktShowAdmissionPending=false;});
  $('ktConfirmCancel').onclick=function(){window.ktShowAdmissionPending=false;dialog.close();};
  var requestId=0,busy=false,ticketChoice=false;
@@ -2652,6 +2667,11 @@ if(ktNoSite()){
  background:rgba(90,65,145,.22);order:3;
 }
 .kt-room-closed #ktAvailability{visibility:hidden}
+.kt-result-medir{display:block;margin:4px auto 10px}
+.kt-result-medir[hidden]{display:none}
+@keyframes ktCalChamar{0%,100%{box-shadow:0 0 0 0 rgba(255,111,181,.0)}50%{box-shadow:0 0 0 6px rgba(255,111,181,.45)}}
+.kt-cal-chamar{animation:ktCalChamar .8s ease-in-out 3}
+@media (prefers-reduced-motion:reduce){.kt-cal-chamar{animation:none;outline:3px solid #ff6fb5;outline-offset:2px}}
 #ktTimingFeedback:empty{visibility:hidden}   /* o "Perfeito/Bom" do ritmo: sem caixinha tracejada vazia fora do show */
 @media(prefers-reduced-motion:reduce){#krPalco #ktAvailability{transition:none}}
 </style><script id="ktStarsBanner">

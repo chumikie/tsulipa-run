@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 19/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 19/11/2026 (manhã).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -38,7 +38,7 @@
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). desde a #118, o resultado mostra a colisão | — |
-| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); **zona de acerto maior** (BOM ±150, PERFECT ±55) e **"Medir sozinho"** no Ajustar timing (8 batidas, toque junto, calcula o atraso do aparelho) | Medir em celular real |
+| Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); **zona de acerto maior** (BOM ±150, PERFECT ±55) e **"Medir sozinho"** no Ajustar timing (8 batidas, toque junto, calcula o atraso do aparelho); quando o resultado diz que os acertos ficaram do mesmo lado (#118), um botão leva direto ao "Medir sozinho" | Medir em celular real |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
 | Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). Desde a #118: aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Levar flor do Bloom (como no Handshake): **precisa do banco**, proposta em `supabase/sql/proposta/20261118_flor_no_cafe.sql` |
 | Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes, "jeito" valendo e flor do Bloom na mesa (desde 13/11) | — |

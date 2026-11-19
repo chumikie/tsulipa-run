@@ -247,6 +247,7 @@ function timingResultado(r){
  box.hidden=false;
  dica.hidden=!resumo.sugerir;
  dica.textContent=resumo.sugerir?texto[3]:'';
+ var medir=D.$()('ktResultMedir'); if(medir)medir.hidden=!resumo.sugerir;   // 19/11: a dica leva ao "Medir sozinho" (karaoke-time.html)
 }
 function judge(note,delta,lane){note.done=true;
  if(delta<=-35)run.timing.early++;else if(delta>=35)run.timing.late++;

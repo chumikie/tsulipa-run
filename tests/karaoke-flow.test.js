@@ -102,9 +102,10 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');
   assert.deepEqual(calls.at(-1),['offset',10]);
 
-  assert(html.includes('var practice=mode===true'),'apenas o cantor automático interno fica sem quota');
+  assert(html.includes('practice=mode===true||rehearsal'),'cantor automático e ensaio ficam fora da quota');
+  assert(html.includes('if(!r.practice&&typeof ktMeta'),'a conclusão do ensaio nunca envia resultado oficial');
   assert(!html.includes("kt.start('practice')"),'jogadores não iniciam treino gratuito');
   assert(html.includes("if(q.used>=LIMIT&&!serverTicket)return"),'limite de cinco tentativas preservado sem admissão de ticket');
   assert(!flow[0].includes('contaRpc('),'nenhuma escrita de banco pelo fluxo da UI');
-  console.log('Karaoke: cancelamento sem débito, confirmação, atalhos visíveis, sem ensaio gratuito e calibração OK');
+  console.log('Karaoke: cancelamento sem débito, confirmação, atalhos visíveis, ensaio optativo, quota oficial e calibração OK');
 })().catch(error=>{console.error(error);process.exitCode=1;});

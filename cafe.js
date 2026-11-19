@@ -113,6 +113,14 @@ function cfAbrir(){
   var cena = $('cfCv'); if(cena && !cena.dataset.idolReage){ cena.addEventListener('click', cfCenaClique); cena.dataset.idolReage = '1'; }
   if(!cfAnim) cfAnim = requestAnimationFrame(cfLoop);
 }
+function cfPilotoAbrir(token){
+  cfAbrir();
+  cf.piloto = token; cf.fase = 'fim';
+  cf.erroPratica = {numero:1,pedido:{base:0,cob:-1,enf:0,doce:-1}};
+  cf.pratica = {monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
+  TW_PILOTO_BAIRRO.iniciar('cafe',token); cfUI();
+  var titulo = $('cfPraticaTitulo'); if(titulo) titulo.focus();
+}
 function cfFechar(){ cfOv.hidden = true; cf = null; }
 function cfLembrancaInicial(){
   var memorias = cfVisitasMemorias(), visita = cf.faEspecial;
@@ -241,7 +249,7 @@ function cfLembrarErro(turno, numero, pedido){
 function cfPraticaHtml(){
   var p = cf.erroPratica.pedido, treino = cf.pratica, m = treino.monta;
   var completo = m.base >= 0 && m.enf >= 0;
-  var h = '<p class="hsdica" id="cfPraticaTitulo" tabindex="-1">' + escHtml(cfPraticaTexto(1)) + '</p>' +
+  var h = '<p class="hsdica" id="cfPraticaTitulo" tabindex="-1">' + escHtml(cf.piloto ? 'Pedido da Rua Fofa · um atendimento sem cronômetro' : cfPraticaTexto(1)) + '</p>' +
     '<p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + '</b> · ' + escHtml(cfPedidoIlustrativo(p)) + '</p>' +
     cfBotoes('base', CF_BASES, '1. Base', m) + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)', m) +
     cfBotoes('enf', CF_ENFEITES, '3. Enfeite', m) + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)', m);
@@ -253,10 +261,12 @@ function cfPraticaHtml(){
         var esperado = item[1][p[item[0]]];
         var nome = esperado ? tr(esperado[1]) : cfPraticaTexto(item[2]);
         return '<li>' + (m[item[0]] === p[item[0]] ? '✅ ' : '❌ ') + escHtml(nome) + '</li>';
-      }).join('') + '</ul></div>';
+      }).join('') + '</ul>' +
+      (cf.piloto && certo ? '<p>' + (cf.pilotoEntregue ? '☕ Pedido entregue! A plaquinha da casa vai para a vitrine da Rua Fofa.' : 'O turno da Rua Fofa já terminou.') + '</p>' : '') + '</div>';
   }
   return h + '<div class="btns"><button type="button" class="btn" data-cf-pratica="conferir"' + (completo ? '' : ' disabled') + '>' +
-    escHtml(cfPraticaTexto(2)) + '</button><button type="button" class="btn alt" data-cf-pratica="voltar">' + escHtml(cfPraticaTexto(3)) + '</button></div>';
+    escHtml(cfPraticaTexto(2)) + '</button><button type="button" class="btn alt" data-cf-pratica="voltar">' +
+    escHtml(cf.piloto ? 'Voltar à Rua Fofa' : cfPraticaTexto(3)) + '</button></div>';
 }
 function cfDetalhePedido(pedido, montado){
   var ingredientes = {base:CF_BASES, cob:CF_COBERTURAS, enf:CF_ENFEITES, doce:CF_DOCES};
@@ -713,8 +723,14 @@ function cfClique(e){
   if(pratica && cf && cf.fase === 'fim' && cf.erroPratica){
     var acao = pratica.dataset.cfPratica;
     if(acao === 'abrir') cf.pratica = {monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
+    if(acao === 'voltar' && cf.piloto){ cfFechar(); TW_BAIRRO.abrir(); return; }
     if(acao === 'voltar') cf.pratica = null;
-    if(acao === 'conferir' && cf.pratica) cf.pratica.conferiu = true;
+    if(acao === 'conferir' && cf.pratica){
+      cf.pratica.conferiu = true;
+      if(cf.piloto && ['base','cob','enf','doce'].every(function(k){ return cf.pratica.monta[k] === cf.erroPratica.pedido[k]; })){
+        cf.pilotoEntregue = TW_PILOTO_BAIRRO.concluir('cafe',cf.piloto);
+      }
+    }
     cfUI();
     var selector = acao === 'abrir' ? '#cfPraticaTitulo' : '[data-cf-pratica="' + acao.replace('voltar','abrir') + '"]';
     var foco = $('cfCorpo').querySelector(selector);

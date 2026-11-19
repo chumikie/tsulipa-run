@@ -214,6 +214,15 @@
       if(a === 'curtir'){ curtir(+v, b); return; }
       if(a === 'clique') clicar(); else if(a === 'outra'){ fase = 'monta'; foto = null; msg = ''; ui(); }
       else if(a === 'salvar') salvar();
+      else if(a === 'serie' && foto && !foto.serie && !foto.seriePendente && foto.dono === donoFoto() && window.TW_ALBUM_FOTOS){
+        var selecionada = foto;
+        selecionada.seriePendente = true;
+        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b).then(function(ok){
+          selecionada.seriePendente = false;
+          if(ok) selecionada.serie = true;
+          else if(foto === selecionada && !b.isConnected) ui();
+        });
+      }
       else if(a === 'guardar') guardar();
       else if(esc_.hasOwnProperty(a)){
         var tinhaFoco = document.activeElement === b;
@@ -228,8 +237,10 @@
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
+  var pilotoStudio = null;
   function abrir(atalho){
     montarOv();
+    pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
     var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
     if(dono !== donoSessao){
@@ -248,8 +259,9 @@
     flores = {}; escolheuObjeto = false;
     if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
-    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pautaLocal(); ui(); laco();
-    if(logado()){
+    if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
+    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal(); ui(); laco();
+    if(logado() && !pilotoStudio){
       contaRpc('studio_pauta').then(function(r){
         if(sessaoAtiva(sess, dono) && r && r.ok){ pauta = r; servidor = true; ui(); }
       }).catch(function(){});
@@ -265,6 +277,7 @@
   function clicar(){
     var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
+    if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
     if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
     if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
@@ -279,6 +292,10 @@
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', true);
+      if(pilotoStudio){
+        if(esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena);
+        fase = 'foto'; ocupado = false; ui(); return;
+      }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
       if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
@@ -365,7 +382,8 @@
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (window.TW_ALBUM_FOTOS && !foto.serie && !foto.seriePendente ? TW_ALBUM_FOTOS.botao('data-st="serie"') : '') +
+        (pilotoStudio ? '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
@@ -609,6 +627,7 @@
     window.jornalAbasIniciar = function(){ var r = abasOrig.apply(this, arguments); try{ capaNews(); }catch(e){} return r; };
   }
   window.studioAbrir = abrir;
+  window.studioFechar = fechar;
   window.TW_STUDIO_TEMA = { atual:function(){ return temaSemana()[0]; }, noTema:noTema };
   window.STUDIO_TR = T;
 })();

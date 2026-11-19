@@ -97,6 +97,10 @@ duoOv.addEventListener('click', function(e){
     t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
     if(sfx.card) sfx.card();
   }
+  if(t.id === 'duoSerie' && duoGu && contaJ && window.TW_ALBUM_FOTOS){
+    var serie = document.createElement('canvas'); serie.width = 960; serie.height = 600;
+    try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t); }catch(e){}
+  }
   if(t.id === 'duoPhone'){
     // Guarda apenas após toque explícito, usando a cena e os bloqueios já validados pelo Moon⭐Duo!.
     if(!duoGu || !contaJ || !petAtivo()){ duoMsg(petPhoneMomentoTexto(2));return; }

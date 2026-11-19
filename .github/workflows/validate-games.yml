@@ -184,6 +184,10 @@ jobs:
         env:
           NODE_PATH: /tmp/telas-playwright/node_modules
         run: node tests/atalhos-calendario.browser.cjs
+      - name: Verificar duas semanas da Rua Fofa, série de fotos e ensaio
+        env:
+          NODE_PATH: /tmp/telas-playwright/node_modules
+        run: node tests/evolucao.browser.cjs
       - name: Jogar 10 s de Center Run com o Você de chapéu
         env:
           NODE_PATH: /tmp/telas-playwright/node_modules

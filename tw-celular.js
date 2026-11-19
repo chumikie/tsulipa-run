@@ -491,6 +491,11 @@
     ja:['ランに挑戦', 'デビュー写真を撮る']
   };
   var estreia = null;
+  var ENSAIO_NOME = {pt:'Ensaiar no Karaoke · 20 s',en:'Karaoke rehearsal · 20 s',es:'Ensayar en Karaoke · 20 s',id:'Latihan Karaoke · 20 dtk',th:'ซ้อมคาราโอเกะ · 20 วิ',ja:'カラオケ練習 · 20秒'};
+  function ensaioHtml(){
+    return !logado() && new URLSearchParams(location.search).get('piloto_karaoke') === '1' ?
+      '<div class="twc-estreia"><button type="button" class="twc-btn twc-btn-claro" data-a="karaokeEnsaio">' + esc(ENSAIO_NOME[L()] || ENSAIO_NOME.pt) + '</button></div>' : '';
+  }
   function estreiaHtml(){
     if(logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
     if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
@@ -587,8 +592,9 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + pinHtml() + palco() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
+    var piloto = window.TW_PILOTO_BAIRRO;
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + pinHtml() + palco() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -656,7 +662,7 @@
         return '<button type="button" class="twc-carta" data-cardz="twcAlbum|' + i + '" aria-label="' + esc(tt('Ver card') + ': ' + c.card.nick) + '"><canvas data-carta="' + i + '" width="360" height="504" aria-hidden="true"></canvas>' + (+c.vezes > 1 ? '<em class="twc-vezes">×' + (+c.vezes) + '</em>' : '') + '<small translate="no">' + esc(c.card.nick) + '</small></button>';
       }).join('') + faltam.map(function(n){ return '<span class="twc-carta twc-carta-falta"><span class="twc-carta-q" aria-hidden="true">?</span><small translate="no">' + esc(n) + '</small></span>'; }).join('') + '</div>';
     return faixa(esc(t('album')), t('albumSub'), lista.length + ' / ' + total) + '<div class="twc-pag twc-album">' +
-      '<div class="twc-album-corpo"><nav class="twc-filtros" aria-label="' + esc(t('filtro')) + '">' + filtros.map(function(x){
+      '<div class="twc-album-corpo">' + (window.TW_ALBUM_FOTOS ? TW_ALBUM_FOTOS.html() : '') + '<nav class="twc-filtros" aria-label="' + esc(t('filtro')) + '">' + filtros.map(function(x){
         return '<button type="button" class="twc-filtro" data-filtro="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '<span>' + esc(x[2]) + '</span></button>';
       }).join('') + '</nav><section class="twc-card twc-album-grade" aria-live="polite">' + corpo + '</section></div>' +
       (card('battle') ? '<button type="button" class="twc-btn" data-ir="battle">Idol⭐Battle! · ' + esc(albumBattleTexto()) + '</button>' : '') +
@@ -809,7 +815,8 @@
   });
   var desenhoPend = 0;
   function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
-  function vipFoto(){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
+  if(window.TW_PILOTO_BAIRRO) window.addEventListener('tw-piloto-bairro',agendaDesenho);
+  function vipFoto(serie){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
     var cv = $id('twcDentroCv'); if(!cv || topo() !== 'dentro:vip') return;
     // A pose escolhida precisa estar no Canvas antes da captura, mesmo em toques rápidos.
     try{ dentroDesenhar(cv, 'vip', performance.now() / 1000); }catch(e){}
@@ -817,6 +824,7 @@
     var x = o.getContext('2d'); x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, Hh); x.drawImage(cv, 20, 20);
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
     x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
+    if(serie){ TW_ALBUM_FOTOS.salvar('vip',o,serie); return; }
     try{ var a = document.createElement('a'); a.href = o.toDataURL('image/png'); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
     // guarda uma cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
     try{ var mini = document.createElement('canvas'), k = 360 / W; mini.width = 360; mini.height = Math.round(Hh * k);
@@ -849,7 +857,7 @@
       : '<button type="button" class="twc-btn twc-dentro-ir" data-ir="' + esc(id) + '">' + esc(t2('entrarEm', nome)) + '</button>';
     return faixa(esc(nome), id === 'vip' ? t2('vipSub') : t2('dentroSub')) + '<div class="twc-pag twc-dentro twc-dentro-' + id + '"><div class="twc-dentro-cena"><canvas id="twcDentroCv" width="640" height="400" role="img" aria-label="' + esc(nome) + '"></canvas></div>' +
       (id === 'vip' ? '<fieldset class="twc-vip-poses"><legend>' + esc(t2('vipPoseTitulo')) + '</legend>' + [['v','vipPoseV'],['coracao','vipPoseCoracao'],['tchau','vipPoseTchau']].map(function(p){ return '<button type="button" class="twc-vip-pose" data-a="vipPose" data-pose="' + p[0] + '" aria-pressed="' + (vipPose === p[0]) + '">' + esc(t2(p[1])) + '</button>'; }).join('') + '</fieldset>' : '') +
-      (id === 'vip' ? '<section class="twc-vip-boas" aria-label="' + esc(t2('vip')) + '"><p>' + esc(t2('vipRecepcao')) + '</p><button type="button" class="twc-btn twc-btn-claro twc-vip-ola" data-a="vipOla">' + esc(t2('vipCumprimentar')) + '</button><small>' + esc(t2('vipDica')) + '</small></section>' : '') + botao + frasesHtml() + '</div>';
+      (id === 'vip' ? '<section class="twc-vip-boas" aria-label="' + esc(t2('vip')) + '"><p>' + esc(t2('vipRecepcao')) + '</p><button type="button" class="twc-btn twc-btn-claro twc-vip-ola" data-a="vipOla">' + esc(t2('vipCumprimentar')) + '</button><small>' + esc(t2('vipDica')) + '</small></section>' : '') + botao + (id === 'vip' && window.TW_ALBUM_FOTOS ? TW_ALBUM_FOTOS.botao('data-a="vipSerie"') : '') + frasesHtml() + '</div>';
   }
   var dentroRaf = 0;
   function dentroLigar(){ if(!dentroRaf) dentroRaf = requestAnimationFrame(dentroQuadro); }
@@ -1685,8 +1693,12 @@
     if(embAtual && embAtual.el.parentNode && tela.contains(embAtual.el)) embAtual.pai.insertBefore(embAtual.el, embAtual.prox && embAtual.prox.parentNode === embAtual.pai ? embAtual.prox : null);
     vitrineDevolver();
     // Não clonar a árvore animada do hub a cada navegação: custo alto de DOM no iPhone.
+    var serie = v === 'album' && tela.querySelector('details.album-fotos[open]');
     tela.innerHTML =
       (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
+    var novaSerie = serie && tela.querySelector('details.album-fotos');
+    if(novaSerie) novaSerie.replaceWith(serie);
+    if(window.TW_ALBUM_FOTOS) TW_ALBUM_FOTOS.conferir();
     nav.hidden = v === 'abre';
     nav.innerHTML = barraBaixo();
     document.body.classList.toggle('tw-cel-classico', classico);
@@ -1782,6 +1794,7 @@
       });
       return;
     }
+    if(a === 'karaokeEnsaio' && !logado()){ twPreviewAbrirJogo('karaoke','ensaio'); return; }
     if(a === 'festival'){ if(typeof window.jornalAbrir === 'function') window.jornalAbrir('festival'); return; }
     if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
@@ -1802,6 +1815,7 @@
       return;
     }
     if(a === 'vipFoto'){ vipFoto(); return; }
+    if(a === 'vipSerie' && window.TW_ALBUM_FOTOS){ vipFoto(el); return; }
     if(a === 'portaMis'){ som(); folhaMissoes(); return; }
     if(a === 'vip'){
       if(window.TW_HUMOR && window.TW_HUMOR.vipHoje()){ ir('dentro:vip'); return; }

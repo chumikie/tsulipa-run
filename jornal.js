@@ -41,6 +41,7 @@ function jornalMontar(d){
       '<li>🧋 Happy⭐Cafe!: ' + escHtml(tr('pedidos de {b} valem +50!').replace('{b}', CF_BASES[ev.base][0] + ' ' + tr(CF_BASES[ev.base][1]))) + '</li>' +
       '<li>🤝 Handshake⭐Event!: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', ev.pres)) + '</li>' +
       '<li>🗓️ ' + escHtml(tr('Um tema novo toda segunda-feira.')) + '</li></ul></section>'; }
+  if(window.TW_PILOTO_BAIRRO) vida += TW_PILOTO_BAIRRO.jornal();
   vida += '<section class="jnbloco"><h4>📸 ' + escHtml(tr('Fotos do dia')) + '</h4><div class="jnfotos" id="jornalFotosDia"></div></section>';
   vida += '<section class="jnbloco jndiario"><h4>📖 ' + escHtml(tr('Diário de uma Idol')) + '</h4><p class="jndiariodica">' + escHtml(tr('Uma micro-história fictícia, inspirada em uma das fotos de hoje.')) + '</p><div id="jornalDiarioDia"></div></section>';
   vida += '<div id="jornalCapsArea">';
@@ -699,6 +700,10 @@ function jornalAbrir(aba, capitulo){
     var foco = jornalCapituloSelecionar(capitulo);
     $('jornalCorpo').innerHTML = jornalMontar(dados);
     jornalAbasIniciar(); focarCapitulo(foco);
+    if(aba === 'ruaFofa'){
+      var ruaFofa = $('jornalRuaFofa');
+      if(ruaFofa){ var manchete = ruaFofa.querySelector('h4'); manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'}); }
+    }
     jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar();
   });
 }

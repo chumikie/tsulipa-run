@@ -1125,6 +1125,7 @@ function twPreviewAbrirJogo(tipo, festival, rolagemFestival){
   }catch(e){}
   var context='?embed=index2&oshi='+encodeURIComponent(tema)+'&lang='+encodeURIComponent(LANG)+'&theme='+encodeURIComponent(temaCor);
   if(kTime && festival === true) context += '&festival=1';
+  if(kTime && festival === 'ensaio') context += '&ensaio=1';
   frame.src=tipo==='sora'?'./sora-jump.html'+context:'./karaoke-time.html'+context;
   if(kTime){window.scrollTo(0,0);if(location.hash!=='#karaoke'){try{history.pushState({tw:'karaoke'},'','#karaoke');}catch(e){}}}   // voltar do navegador/celular fecha o Karaoke
   var fechar=tipo==='sora'?$('twKaraokePopupFechar'):$('twPreviewVoltar');

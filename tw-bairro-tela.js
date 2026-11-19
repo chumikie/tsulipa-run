@@ -80,7 +80,7 @@
     if(!ov) return; ler();
     ov.querySelector('#twBairroTit').textContent = t('tit');
     ov.querySelector('#twBairroSub').textContent = t('sub');
-    var g = guia(), b = bagunca(), h = '';
+    var g = guia(), b = bagunca(), h = window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.rua() : '';
     var guiaH = '';   // 17/11: a bagunça (a cena) vem primeiro; o guia dos primeiros dias depois
     if(g.ativo) guiaH = '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
       esc(t('guiaTxt', {r:(g.amanha.length ? g.amanha.map(ruaNome).join(' + ') : '—')})) + '</p><button type="button" class="twb-bt twb-bt-claro" data-twb="pular">' + esc(t('pular')) + '</button></section>';

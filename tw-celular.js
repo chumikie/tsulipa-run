@@ -430,10 +430,12 @@
       if(ok) feitos++;
     }
     // 1. desejo do dia → Camarim VIP
+    var vipLinha = '';   // 19/11: com o desejo cumprido, a linha dele carrega o Passe VIP; ela fica à vista no Início curto
     if(H){ var d = H.desejo(), vip = H.vipHoje();
       linha(d.feito, COR[desejoIco(d.ev)] || 'rosa', desejoIco(d.ev), esc(H.t('desejo')), esc(d.texto),
         d.feito ? '' : '<button type="button" class="twc-hj-bt" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>',
-        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>'); }
+        '<button type="button" class="twc-hj-vip' + (vip ? ' twc-hj-vip-on' : '') + '" data-a="vip">' + ico(vip ? 'coroa' : 'cadeado', 13) + '<span>' + esc(vip ? thj('vipOk') : thj('vip')) + '</span>' + (vip ? '<em>' + esc(thj('entrar')) + '</em>' : '') + '</button>');
+      if(d.feito && vip) vipLinha = itens[itens.length - 1]; }
     var festival = '';
     if(typeof jornalFestivalPrazo === 'function' && typeof hubMusicaSemana === 'function'){
       festival = '<div class="twc-hj-it"><span class="twc-hj-ico twc-g-roxo" aria-hidden="true">' + ico('karaoke', 18) + '</span>' +
@@ -484,9 +486,12 @@
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
-    if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
+    /* 19/11/2026: a lista curta escondia o desejo já cumprido, e com ele o botão do Passe VIP — o prêmio sumia
+       justamente quando era ganho ("Desejo cumprido! Passe VIP liberado!" e nenhum botão à vista). Agora a linha
+       do desejo cumprido fica sempre à vista, acima das pendências, enquanto o Passe VIP vale (o dia todo). */
+    if(feitos === tot) lista = hojeAberto ? todos.join('') : vipLinha + extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
     else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
-      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2), sobra = todos.length - pend.length;
+      var pend = (vipLinha ? [vipLinha] : []).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2)), sobra = todos.length - pend.length;
       if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
       else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
     }

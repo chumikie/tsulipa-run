@@ -202,7 +202,9 @@ jobs:
 
   webkit-continuidade:
     runs-on: ubuntu-24.04
-    timeout-minutes: 6
+    # 19/11/2026: 6 min estourava só na instalação: alguns espelhos de pacotes do Ubuntu levam 5–6 min para
+    # entregar as dependências do WebKit (normalmente é 1 min). O teste em si leva menos de 1 min.
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

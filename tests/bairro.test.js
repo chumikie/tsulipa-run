@@ -302,7 +302,7 @@ test('"Hoje": nada usa variável antes de existir (a data e o "Também hoje") �
   assert(corpo.indexOf("var hj =") === corpo.lastIndexOf("var hj ="), 'uma declaração só de hj');
   // o "Também hoje" é montado antes de entrar na lista (antes vinha depois: a lista saía "undefined" com tudo cumprido)
   assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('var todos = extra ?'), 'extra pronto antes de ser usado');
-  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('lista = hojeAberto ? todos.join(\'\') : extra;'), 'extra pronto antes da lista recolhida');
+  assert(corpo.indexOf('var al = pendencias(), extra =') < corpo.indexOf('lista = hojeAberto ? todos.join(\'\') : vipLinha + extra;'), 'extra pronto antes da lista recolhida');
 });
 
 test('entrar na conta depois de jogar não zera o bairro (18/11)', () => {
@@ -324,4 +324,11 @@ test('entrar na conta depois de jogar não zera o bairro (18/11)', () => {
   const c = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante:{ v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, bichos:{}, guia:{ ini:'2026-11-01', novo:true, pulou:false } } }) } });
   assert.equal(c.B.bico('palco').pts, 0);
   assert(JSON.parse(c.store[chave]).visitante, 'visitante sem progresso fica onde está');
+});
+
+test('"Hoje": o desejo cumprido (com o Passe VIP) fica à vista no Início curto (19/11)', () => {
+  const cel = require('fs').readFileSync('tw-celular.js', 'utf8');
+  assert(cel.includes("if(d.feito && vip) vipLinha = itens[itens.length - 1];"), 'guarda a linha do desejo cumprido');
+  assert(cel.includes("var pend = (vipLinha ? [vipLinha] : []).concat("), 'lista curta começa pelo desejo cumprido');
+  assert(cel.includes("lista = hojeAberto ? todos.join('') : vipLinha + extra;"), 'com tudo feito, o Passe VIP continua à vista');
 });

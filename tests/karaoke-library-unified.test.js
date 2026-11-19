@@ -25,11 +25,12 @@ console.log('✓ Karaoke: lista visual restaurada, biblioteca antiga oculta no c
 const vm=require('node:vm');
 const keysDoJogo=keys.concat(require('../karaoke-musicas-modos.js').lista.map(m=>m.key),['zipper','hitonatsu','staywithme']);
 const seletor={value:'normal',options:keysDoJogo.map(value=>({value,textContent:value})),addEventListener(){}};
+const iniciar={disabled:false,textContent:'Jogar ritmo'};
 const attrs={},box={querySelector(){return {focus(){}};},setAttribute(k,v){attrs[k]=v;},getAttribute(k){return attrs[k];},
   contains(){return true;},addEventListener(k,fn){this[k]=fn;}};
 const palco={parentNode:{insertBefore(){}}};
 const document={documentElement:{classList:{contains:()=>true,add(){}}},createElement:()=>box,
-  getElementById:id=>({krPalco:palco,ktSong:seletor})[id],querySelector:()=>null};
+  getElementById:id=>({krPalco:palco,ktSong:seletor,ktStart:iniciar})[id],querySelector:()=>null};
 const window={parent:{TW_CELULAR_LIGADO:true},KaraokeRoomViews:{songFor:()=> 'fast'}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'karaoke-lista.js'),'utf8'),{
   window,document,setTimeout:fn=>fn(),MutationObserver:class{observe(){}},URLSearchParams,
@@ -41,3 +42,11 @@ assert(box.innerHTML.includes('Todas (17)') && box.innerHTML.includes('data-ktl=
 function filtrar(filtro){box.click({target:{closest:()=>({dataset:{ktlFiltro:filtro}})}});}
 filtrar('todas');assert.deepEqual(capas(),keysDoJogo);
 filtrar('destaques');assert.equal(seletor.value,'normal');
+
+seletor.disabled=true;
+iniciar.textContent='Retomar meu show';
+filtrar('todas');
+assert(box.innerHTML.includes('data-ktl-cantar="1">Retomar meu show'));
+iniciar.disabled=true;
+filtrar('destaques');
+assert(box.innerHTML.includes('data-ktl-cantar="1" disabled'));

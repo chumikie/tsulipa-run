@@ -179,20 +179,29 @@ if(playback.total&&i===playback.total-1&&!ktPreviewRouting){chord.concat([root+1
 /* Relógio de áudio único, já descontando a latência de saída. */
 function kNow(){if(run&&run.audioClock&&D.AC()&&D.AC().state==='running'&&run.audioOrigin)return run.start+(D.AC().currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();return performance.now();}
 function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!D.AC()||D.AC().state!=='running')return;/* Antecedencia no relogio nativo do audio, sem aplicar a latencia outra vez. */var elapsed=(D.AC().currentTime-run.audioOrigin)*1000;while(run.audioStep<run.total&&run.audioStep*run.step<elapsed+220)beat(run.audioStep++);}
-function start(mode,buffer){if(run)return;
- if(mode!==true && D.$()('ktSong').value)songKey=D.$()('ktSong').value;
- var selected=songs[songKey], key=songKey, request=++startRequest;
- if(selected && selected.recording && !buffer){
-   var ctx=D.ac()();
-   if(!ctx)return;
-   loadRecording(selected,ctx).then(function(decoded){
-     if(request===startRequest && songKey===key && !document.hidden)start(mode,decoded);
-   }).catch(function(){if(request===startRequest)timingMessage(D.tr()('Não foi possível iniciar a prévia musical.'));});
-   return;
- }
+function prepareSong(key){
+ var song=songs[key];
+ if(!song)return Promise.reject(Error('song'));
+ if(!song.recording)return Promise.resolve({key:key,buffer:null});
+ var ctx=D.ac()();
+ if(!ctx)return Promise.reject(Error('audio'));
+ return loadRecording(song,ctx).then(function(buffer){return {key:key,buffer:buffer};});
+}
+function start(mode){
+ if(run)return;
+ if(mode!==true && mode!=='ensaio'){D.ktFlow().request();return;}
+ var key=mode===true?songKey:D.$()('ktSong').value, request=++startRequest;
+ if(!songs[key] || !songs[key].recording){startPrepared(mode,{key:key,buffer:null});return;}
+ prepareSong(key).then(function(prepared){
+   if(request===startRequest && !document.hidden)startPrepared(mode,prepared);
+ }).catch(function(){if(request===startRequest)timingMessage(D.tr()('Não foi possível iniciar a prévia musical.'));});
+}
+function startPrepared(mode,prepared){
+ if(run)return;
+ songKey=prepared.key;
  previewPlayer.stop(false);if(typeof D.ktAudioVitrine()!=='undefined'&&D.ktAudioVitrine())D.ktAudioVitrine().stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var rehearsal=window.ktEnsaio&&(mode==='ensaio'||mode==='confirmed'),practice=mode===true||rehearsal;if(!practice&&mode!=='confirmed'){D.ktFlow().request();return;}if(!practice&&!D.krSt().aberta)return;var wasClosed=practice&&!D.krSt().aberta;if(wasClosed)D.krSt().aberta=true;var admission=!practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()?D.ktMeta().begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)D.krSt().aberta=false;return;}if(admission){songKey=admission.round.song;D.$()('ktSong').value=songKey;}if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().beforeStart();var auto=mode===true;D.krMusicaParar()();D.ac()();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000,rehearsal:rehearsal,songKey:songKey,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:D.ktFlow().offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,timing:{early:0,late:0},notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
 if(rehearsal && window.ktEnsaioRegistrar)window.ktEnsaioRegistrar('iniciados',songKey);
-run.recordingBuffer=buffer;
+run.recordingBuffer=prepared.buffer;
 run.total=Math.floor((run.durationMs-1000)/step);run.notes=makeNoteMap(song,run.total,step,run.start);if(admission){run.session=admission.round;var saved=admission.round.checkpoint;if(saved){resumeElapsed=Math.max(0,Number(saved.elapsed)||0);run.start=now-resumeElapsed;['score','combo','maxCombo','hits','attempts'].forEach(function(k){run[k]=saved[k]||0;});run.timing=timingRestaurar(saved,run.hits);var oldDone={};if(saved.noteMap!==2){var oldPos=0;for(var j=0;j<run.total;j++)if(song.mel[j%song.mel.length]>=0)oldDone[j]=!!saved.done[oldPos++];}run.notes.forEach(function(n,i){n.at=run.start+n.idx*step;n.done=saved.noteMap===2?!!saved.done[i]:!!oldDone[n.idx];});D.krEu().canto=saved.canto||D.krEu().canto;run.audioStep=Math.max(0,Math.ceil(resumeElapsed/step));}}/* Sons de destaque seguem o mesmo idx musical, inclusive após retomada. */run.cuesByStep={};run.notes.forEach(function(n){(run.cuesByStep[n.idx]||(run.cuesByStep[n.idx]=[])).push(n);});/* A calibracao e apenas do INPUT: nunca deslocar nota visual ou som. */D.krRhythmRun(run);
 if(!auto){D.krClearHandheld()('stage');D.krEu().no_mic=true;D.krEu().micT=60*60;D.krEu().x=D.krEu().tx=480;D.krEu().y=D.krEu().ty=286;}else if(D.krDemoCantor())D.krDemoCantor().endsAt=now+KaraokeRoomAutoMic.SHOW_DURATION_MS;
 setTimeout(function(){if(!auto)D.krIrAoPalco()();D.krRoomAtualizar()();},160);
@@ -333,7 +342,7 @@ document.addEventListener('keydown',function(e){
 });
 window.addEventListener('pagehide',function(){previewPlayer.stop(false);if(run){pause(true);checkpoint();}});
 document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);if(run)pause(true);}});
-return {start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,calibrarComecar:calibrarComecar,calibrarToque:calibrarToque,calibrarFim:calibrarFim,calibrarAtiva:calibrarAtiva,previewSong:previewPlayer.play,pausePreview:previewPlayer.pause,resumePreview:previewPlayer.resume,stopPreview:previewPlayer.stop,togglePreview:previewPlayer.toggle,previewState:previewPlayer.state,paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt,own:own,arena:arena};
+return {prepareSong:prepareSong,startConfirmed:function(prepared){startPrepared('confirmed',prepared);},start:start,end:end,tick:tick,active:active,hit:hit,pause:pause,adjustOffset:adjustOffset,calibrarComecar:calibrarComecar,calibrarToque:calibrarToque,calibrarFim:calibrarFim,calibrarAtiva:calibrarAtiva,previewSong:previewPlayer.play,pausePreview:previewPlayer.pause,resumePreview:previewPlayer.resume,stopPreview:previewPlayer.stop,togglePreview:previewPlayer.toggle,previewState:previewPlayer.state,paused:function(){return !!run&&run.paused;},allowExit:function(){if(run)run.skipBeforeUnload=true;},silence:silence,draw:draw,laneAt:laneAt,own:own,arena:arena};
 }
 window.KaraokeShow={criar:criar};
 })();

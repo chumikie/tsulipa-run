@@ -2,7 +2,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
-<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=3"></script><script src="./karaoke-musicas-modos.js?v=2"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=6"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=4"></script><script src="./karaoke-musicas-modos.js?v=2"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=1"><link rel="stylesheet" href="./karaoke-time-base.css?v=6"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -164,7 +164,7 @@ if(window.ktEnsaio){
 }
 </script>
 <style>.kt-ensaio :is(#ktLimitCount,#ktLimitPips,#ktWeeklyRanks,#ktViewRanks,#ktSongRecord){display:none!important}</style>
-<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=7"></script>
+<script src="./karaoke-arena.js?v=5"></script><script src="./karaoke-room-auto-mic.js?v=3"></script><script src="./karaoke-room-personality.js?v=3"></script><script src="./karaoke-room-polaroid.js?v=3"></script><script src="./karaoke-room-views.js?v=1"></script><script src="./karaoke-clip-uniforms.js?v=1"></script><script src="./karaoke-ranking.js?v=2"></script><script src="./karaoke-biblioteca.js?v=3"></script><script src="./karaoke-palco-desenho.js?v=2"></script><script src="./karaoke-show.js?v=8"></script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js"><'+'/script>');</script>
 </head><body class="tw-game-karaoke"><main class="kt-home"><span class="offline">JOGO SOLO OFFLINE · MENU LOCAL</span><h1>TsuLiPa⭐World</h1><button class="hubcard aberta" id="ktOpen"><i>🎤</i><b>Karaoke⭐Time!</b><small>カラオケ・タイム · Entrar na sala</small></button><p>Seu palco, seu ritmo e uma plateia que torce por você.<br>Um minijogo solo com a decoração da sala original.</p></main><dialog id="ktPopup" aria-label="Karaoke Time offline"><div class="kt-hosttop"><span><button class="volta" id="ktClose">← Menu local</button></span></div>
 <header>
@@ -1350,7 +1350,22 @@ var ktFlow=(function(){
   $('ktConfirmTitle').textContent=t(0);$('ktConfirmTicket').textContent=t(3);$('ktConfirmCancel').textContent=t(4);$('ktConfirmAccept').textContent=t(14);$('ktConfirmAccept').disabled=true;showCount(a);dialog.showModal();
   window.ktOnline.quota().catch(function(){return null;}).then(function(){if(id!==requestId||!dialog.open)return;busy=false;showCount(ktMeta.controls());});
  }
- $('ktConfirmAccept').onclick=function(){if(busy||this.disabled)return;var useTicket=ticketChoice;dialog.close();window.ktOnline.gate(function(info){window.ktShowAdmissionPending=false;kt.start('confirmed',info);},useTicket);};
+ $('ktConfirmAccept').onclick=function(){
+   if(busy||this.disabled)return;
+   var id=requestId, useTicket=ticketChoice, key=$('ktSong').value;
+   busy=true;this.disabled=true;this.textContent=t(14);
+   kt.prepareSong(key).then(function(prepared){
+     if(id!==requestId||!dialog.open)return;
+     if(document.hidden||key!==$('ktSong').value){busy=false;showCount(ktMeta.controls());return;}
+     dialog.close();
+     window.ktOnline.gate(function(){window.ktShowAdmissionPending=false;kt.startConfirmed(prepared);},useTicket);
+   }).catch(function(){
+     if(id!==requestId||!dialog.open)return;
+     busy=false;showCount(ktMeta.controls());
+     var erro={pt:'A música não carregou. Toque para tentar de novo.',en:'The song could not load. Tap to retry.',es:'No se pudo cargar la canción. Toca para reintentar.',id:'Lagu gagal dimuat. Ketuk untuk mencoba lagi.',th:'โหลดเพลงไม่สำเร็จ แตะเพื่อลองอีกครั้ง',ja:'曲を読み込めませんでした。タップして再試行してください。'};
+     $('ktConfirmCount').textContent=erro[LANG]||erro.pt;
+   });
+ };
  return {request:request,t:t,offset:function(){return offset;}};
 })();
 function ktOriginalFrame(x,tx,ty,tw,th){x.save();var neon=typeof ktGloboNivel==='function'?ktGloboNivel():0;x.shadowColor=neon>0?'#ff6fb5':'rgba(174,146,255,.5)';x.shadowBlur=13+neon*18;x.strokeStyle='#c4b5fd';x.lineWidth=5;x.beginPath();if(x.roundRect)x.roundRect(tx-2,ty-2,tw+4,th+4,16);else x.rect(tx-2,ty-2,tw+4,th+4);x.stroke();x.shadowBlur=0;x.strokeStyle='#f9a8d4';x.lineWidth=1.8;x.beginPath();if(x.roundRect)x.roundRect(tx,ty,tw,th,14);else x.rect(tx,ty,tw,th);x.stroke();var corre=Math.floor(performance.now()/160);for(var led=0;led<15;led++){var lx2=tx+10+led*(tw-20)/14,acesa=(led+corre)%4===0,cl=['#ffd6f0','#c9fff0','#d6e4ff','#fff2b8'][led%4];[ty-1,ty+th+1].forEach(function(ly){x.save();x.shadowColor=cl;x.shadowBlur=acesa?9:3;x.fillStyle=acesa?'#fff':cl;x.beginPath();x.arc(lx2,ly,acesa?2.8:2.1,0,Math.PI*2);x.fill();x.restore();});}x.restore();}
@@ -2702,5 +2717,5 @@ if(ktNoSite()){
 </script><script src="./tw-windows.js?v=2"></script>
 <script src="./karaoke-mobile.js?v=4"></script>
 <script src="./karaoke-photo.js?v=2"></script>
-<script src="./karaoke-lista.js?v=8"></script>
+<script src="./karaoke-lista.js?v=9"></script>
 </body></html>

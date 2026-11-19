@@ -46,7 +46,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=14">
+<link rel="stylesheet" href="./centerrun.css?v=15">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -406,7 +406,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=32"></script>
+<script src="./centerrun.js?v=33"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=44"></script>
 <script src="./perfil.js?v=29"></script>
@@ -3170,7 +3170,7 @@ $('again').onclick = start;
 var _origEnd;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
 twCorridaAoCarregar(function(){
 _origEnd = end;
-end = function(){
+end = function(impacto){
   if($('sb')) $('sb').style.display = 'none';
   // Se estava na Corrida do Dia, salva no ranking da Corrida do Dia
   if(s2DailyMode && !isTestGame){
@@ -3186,7 +3186,7 @@ end = function(){
       }catch(e){}
     }
   }
-  _origEnd();
+  _origEnd(impacto);
   // O chorinho da colisão fica só no jogo (s2HitEmotion); o cartão e o pôster do Fim do show
   // mantêm a expressão de exprFinal (feliz, piscadinha ou tristinha conforme a pontuação).
 };

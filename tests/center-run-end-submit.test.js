@@ -13,7 +13,7 @@ function extract(file,first,last){
 }
 const source=[
   extract('conta.js','function contaInicioCorrida(){','function contaGasto('),
-  extract('centerrun-corrida.js','function end(){','function hit('),
+  extract('centerrun-corrida.js','var CR_COLISAO =','function hit('),
   // o invólucro da Temporada 2 entra quando a corrida carrega (twCorridaAoCarregar); aqui ela já está carregada
   'function twCorridaAoCarregar(f){f();}',
   extract('index.html','var _origEnd;','var _origUpdate;')
@@ -52,10 +52,15 @@ function scenario(failAt){
 
 (async()=>{
   const ok=scenario();ok.ctx.contaInicioCorrida();await flush();
-  ok.ctx.end();await flush();
+  ok.ctx.end({tipo:'speaker',ar:true});await flush();
   assert.equal(ok.calls.filter(x=>x.name==='iniciar_corrida').length,1);
   assert.equal(ok.calls.filter(x=>x.name==='terminar_corrida').length,1);
   assert(ok.elements.get('res').innerHTML.includes('<strong>2300</strong> <span>pontos</span>'));
+  assert.match(ok.elements.get('res').innerHTML, /Colisão com a caixa de som · Ainda no ar/);
+  assert.equal(ok.ctx.crColisaoTexto({tipo:'fita',ar:false,suspenso:true}), 'Colisão com a fita · No chão · Obstáculo suspenso');
+  assert.equal(ok.ctx.crColisaoTexto({tipo:'inexistente'}), '');
+  ok.ctx.LANG = 'en';
+  assert.equal(ok.ctx.crColisaoTexto({tipo:'cable',ar:false}), 'Hit the cable · On the ground');
   ok.ctx.end();await flush();
   assert.equal(ok.calls.filter(x=>x.name==='terminar_corrida').length,1,'duplicate end never sends twice');
 

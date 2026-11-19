@@ -494,7 +494,8 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     var faixa = camera === 'rosto' ? [-7, comFlor ? 31 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
     var largura = camera === 'rosto' ? (comFlor ? 34 : 30) : camera === 'meio' ? 36 : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
-    sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
+    sc = H2 * .92 / (faixa[1] - faixa[0]);
+    if(camera === 'inteiro' || comFlor) sc = Math.min(sc, W2 * .96 / largura);
     var aceno = av.pose === 'tchau' || av.pose === 'v';
     tx = W2 / 2 - (pet ? 25 : aceno && camera !== 'rosto' ? 18.5 : 15) * sc;
     ty = (H2 - (faixa[1] - faixa[0]) * sc) / 2 - faixa[0] * sc;   // faixa centralizada na foto

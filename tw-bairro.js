@@ -30,6 +30,7 @@
     bloom:'Bloom⭐Garden!', battle:'Idol⭐Battle!', sora:'Sora⭐Jump!', duo:'Moon⭐Duo!', studio:'Photo⭐Studio!'};
 
   var TX = {
+    trazer:{pt:'Trazer meu passeio para esta conta',en:'Bring my visit to this account',es:'Traer mi paseo a esta cuenta',id:'Pindahkan kunjunganku ke akun ini',th:'นำการเดินเล่นมาไว้ในบัญชีนี้',ja:'このアカウントに散歩の記録を引き継ぐ'},
     tit:{pt:'Vida no bairro', en:'Neighborhood life', es:'Vida en el barrio', id:'Kehidupan di lingkungan', th:'ชีวิตในย่าน', ja:'まちのくらし'},
     sub:{pt:'Bicos, gestos e a bagunça da semana', en:'Side jobs, gestures and the week’s mischief', es:'Trabajitos, gestos y el lío de la semana', id:'Kerja sambilan, gestur, dan kekacauan minggu ini', th:'งานพิเศษ ท่าทาง และความวุ่นวายประจำสัปดาห์', ja:'おしごと・ジェスチャー・今週のさわぎ'},
     regra:{pt:'Tudo aqui é enfeite: nada muda suas estrelas nem o ranking. Fica salvo neste aparelho.', en:'Everything here is just for fun: nothing changes your stars or the ranking. Saved on this device.', es:'Todo aquí es adorno: nada cambia tus estrellas ni el ranking. Se guarda en este dispositivo.', id:'Semua di sini hanya hiasan: tidak mengubah bintang atau peringkat. Tersimpan di perangkat ini.', th:'ทุกอย่างที่นี่เป็นของตกแต่ง ไม่เปลี่ยนดาวหรืออันดับ บันทึกไว้ในเครื่องนี้', ja:'ここは飾りだけ。スターやランキングは変わらないよ。この端末に保存されます。'},
@@ -153,7 +154,7 @@
   function diasEntre(a, b){ return Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 864e5); }
   function domingo(d){ var dt = new Date(d + 'T12:00:00Z'); dt.setUTCDate(dt.getUTCDate() - dt.getUTCDay()); return dt.toISOString().slice(0, 10); }
   function logado(){ return typeof contaJ !== 'undefined' && !!contaJ; }
-  function quem(){ try{ return logado() ? 'c:' + String(contaJ.nick || contaJ.id || '').toLowerCase() : 'visitante'; }catch(e){ return 'visitante'; } }
+  function quem(){ try{ return logado() ? 'c:' + String(contaJ.nick || contaJ.id || '').toLowerCase() : (typeof contaAuthUserId === 'string' && contaAuthUserId ? 'pendente:' + contaAuthUserId : 'visitante'); }catch(e){ return 'visitante'; } }
   function ruaNome(r){ return tx(RUA_NOME[r]); }
   function vr(r, extra){   // {r} nome, {rd} "do/da …", {re}/{Re} "no/na …"
     var de = (RUA_DE[L()] || {})[r] || ruaNome(r), em = (RUA_EM[L()] || {})[r] || ruaNome(r), o = {r:ruaNome(r), rd:de, re:em, Re:em.charAt(0).toUpperCase() + em.slice(1)};
@@ -176,6 +177,15 @@
     for(k in (e.bag || {})) if(e.bag[k] && e.bag[k].ok) return true;
     return false;
   }
+  function podeTrazer(){return logado() && !temProgresso(ler()) && temProgresso(todos.visitante);}
+  function trazer(){
+    if(!podeTrazer()) return false;
+    todos[dono] = todos.visitante;
+    delete todos.visitante;
+    est = null;
+    salvar(); ler();
+    return true;
+  }
   function veterano(){
     try{ if(typeof best !== 'undefined' && +best > 0) return true; }catch(e){}
     if(window.TW_HUMOR && typeof window.TW_HUMOR.estado === 'function' && window.TW_HUMOR.estado().serie > 0) return true;
@@ -189,16 +199,10 @@
       est = todos[q] = {v:1, pts:{}, dia:{}, visto:{}, bag:{}, lidas:{}, guia:{ini:hoje(), novo:!veterano(), pulou:false}};
       salvar();
     }
-    /* Entrou na conta depois de jogar (18/11/2026): a conta chega do servidor alguns segundos depois da página abrir,
-       e o que foi jogado até lá contou como visitante. Quem acabava de entrar via o bairro zerado no dia seguinte.
-       Agora a primeira conta que entra neste aparelho leva o progresso de visitante, uma vez só. */
-    if(q !== 'visitante' && !temProgresso(est) && temProgresso(todos.visitante)){
-      var v = todos.visitante;
-      ['pts', 'dia', 'visto', 'bag', 'lidas', 'bichos'].forEach(function(k){ if(v[k] && typeof v[k] === 'object') est[k] = v[k]; });
-      if(v.ultimo) est.ultimo = v.ultimo;
-      if(v.bichosOk) est.bichosOk = v.bichosOk;
-      if(v.guia && typeof v.guia === 'object') est.guia = v.guia;
-      delete todos.visitante;   // não repassa duas vezes (outra conta no mesmo aparelho começa do zero)
+    var pendente = typeof contaAuthUserId === 'string' && 'pendente:' + contaAuthUserId;
+    if(logado() && pendente && temProgresso(todos[pendente]) && !temProgresso(est)){
+      est = todos[q] = todos[pendente];
+      delete todos[pendente];
       salvar();
     }
     ['pts', 'dia', 'visto', 'bag', 'lidas', 'bichos'].forEach(function(k){ if(!est[k] || typeof est[k] !== 'object') est[k] = {}; });
@@ -344,7 +348,7 @@
   var tela = null, telaFila = [], telaPedida = false;
   function carregarTela(){
     if(tela || telaPedida) return; telaPedida = true;
-    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=3'; s.async = true;
+    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=4'; s.async = true;
     s.onerror = function(){ telaPedida = false; };
     (document.head || document.documentElement).appendChild(s);
   }
@@ -378,7 +382,7 @@
   });
 
   window.TW_BAIRRO = {t:t, abrir:abrir, fechar:fechar, bico:bico, contar:contar, bagunca:bagunca, resolver:resolver,
-    desfecho:desfecho, baguncaDe:baguncaDe, desfechoVisto:desfechoVisto, caderno:caderno,
+    podeTrazer:podeTrazer, trazer:trazer, desfecho:desfecho, baguncaDe:baguncaDe, desfechoVisto:desfechoVisto, caderno:caderno,
     guia:guia, ruaAberta:ruaAberta, pularGuia:pularGuia, guiaPergunta:guiaPergunta, guiaMarcar:guiaMarcar, preparar:carregarTela,
     falas:falas, novas:novas, lida:lida, novaDe:novaDe, resumo:resumo, gestos:gestosAprendidos,
     ouvir:function(fn){ ouvintes.push(fn); }, ORDEM:ORDEM, RUAS:RUAS, NIVEIS:NIVEIS, POR_DIA:POR_DIA,

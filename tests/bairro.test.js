@@ -311,6 +311,9 @@ test('entrar na conta depois de jogar não zera o bairro (18/11)', () => {
     bag:{ '2026-11-08':{ ok:true, dia:'2026-11-09' } }, guia:{ ini:'2026-10-01', novo:false, pulou:true } };
   // jogou sem conta (ou enquanto a conta ainda carregava) e depois entrou: o progresso vem junto
   const a = carregar({ conta:'Sami', best:500, store:{ [chave]:JSON.stringify({ visitante }) } });
+  assert.equal(a.B.bico('palco').pts, 0);
+  assert(a.B.trazer());
+  assert(!a.B.trazer());
   assert.equal(a.B.bico('palco').pts, 5, 'pontos do bico vieram');
   assert.equal(a.B.caderno().feitos, 1, 'caderninho veio');
   const salvo = JSON.parse(a.store[chave]);

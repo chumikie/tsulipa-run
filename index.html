@@ -84,7 +84,7 @@
 <link rel="stylesheet" href="./album.css?v=4">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=4">
-<link rel="stylesheet" href="./cafe.css?v=4">
+<link rel="stylesheet" href="./cafe.css?v=5">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -410,7 +410,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=34"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=46"></script>
-<script src="./perfil.js?v=29"></script>
+<script src="./perfil.js?v=30"></script>
 <script src="./gacha.js?v=4"></script>
 <script src="./album-fotos.js?v=1"></script>
 <script src="./album.js?v=8"></script>
@@ -443,7 +443,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=8','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -476,7 +476,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido) pedido = new Promise(function(ok, falhou){
       var script = document.createElement('script');
-      script.src='./tw-mapa.js?v=66';
+      script.src='./tw-mapa.js?v=68';
       script.onload = ok;
       script.onerror = function(){ script.remove(); pedido = null; falhou(new Error('mapa')); };
       document.body.appendChild(script);
@@ -529,14 +529,14 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=42"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=3"><'+'/script><script src="./tw-bairro.js?v=10"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=58"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=42"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=3"><'+'/script><script src="./tw-bairro.js?v=11"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=59"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
   var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=42';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=3';vbi.async=false;document.body.appendChild(vbi);
-  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=10';vb.async=false;document.body.appendChild(vb);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=11';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=58';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=59';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;

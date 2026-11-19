@@ -63,6 +63,9 @@ async function rodar(browser,base,nome,opcoes){
   };
   await conferir('inicio');await p.screenshot({path:path.join(out,nome+'-inicio.png')});
   for(const [t,v] of TELAS){
+    for(const close of ['#jornalX','#albumX']){
+      const btn=p.locator(close); if(await btn.isVisible()) await btn.click();
+    }
     await abrirInicio();await p.waitForTimeout(400);
     const abriu=await p.evaluate(([t,v])=>{const sel='[data-'+t+'="'+v+'"]';let e=document.querySelector(sel);
       if(!e){const m=document.querySelector('[data-n="menu"]');if(m)m.click();e=document.querySelector(sel);}
@@ -70,6 +73,18 @@ async function rodar(browser,base,nome,opcoes){
       if(e){e.click();return true;}return false;},[t,v]);
     if(!abriu){falhas.push(nome+' · '+v+': botão não encontrado');continue;}
     await p.waitForTimeout(1600);
+    if(v==='mapa'){
+      const mapa=p.locator('#twMapa');
+      await mapa.waitFor();
+      if(!await mapa.locator('canvas').isVisible()) await mapa.locator('.tw-mapa-botao').click();
+      await mapa.locator('canvas').scrollIntoViewIfNeeded();
+      const cv=mapa.locator('canvas');
+      const size=await cv.boundingBox();
+      await cv.click({position:{x:size.width*.5,y:size.height*.65}});
+      await p.locator('#twMapa[data-cena="praca"]').waitFor();
+      await mapa.locator('.tw-mapa-voltar').click();
+      await p.locator('#twMapa[data-cena="mundo"]').waitFor();
+    }
     await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
   }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
@@ -155,6 +170,7 @@ async function conferirCafe(browser,base){
       await page.getByText(lado===0?'1 de 2 pedidos confirmados':'Missão do Café concluída').waitFor();
       const depois=await servir.boundingBox();
       assert.ok(antes && depois && Math.abs(antes.y-depois.y)<=1,'a resposta online não desloca o botão Servir');
+      assert.ok(await servir.evaluate(el=>el.scrollWidth<=el.clientWidth+1),'texto de Servir inteiro');
       assert.ok(depois.x>=0 && depois.x+depois.width<=320,'Servir cabe na tela de 320 px');
     }
     await page.screenshot({path:path.join(out,'cafe-320.png')});

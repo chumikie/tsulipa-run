@@ -197,11 +197,20 @@
     });
   };
   window.cfDuploBaloes = function(x, W2, H2, t){
+    var ativo=cf.alvoBalcao;
+    if(ativo && ativo.estado==='espera'){
+      x.save();
+      x.font='bold 16px sans-serif'; x.textAlign='center';
+      var largura=Math.min(W2*.36,x.measureText(ativo.cli.nome).width+20);
+      x.fillStyle='#42245f'; x.fillRect(W2*.8-largura/2,H2-24,largura,21);
+      x.fillStyle='#fff'; x.fillText(ativo.cli.nome,W2*.8,H2-9,largura-8);
+      x.restore();
+    }
     cf.fila.forEach(function(e){
       var cx = W2 * LADOS[e.lado], bw = W2 * .29, bh = 74, bx = e.lado ? W2 * .3 + 4 : 4, by = 6;
       var cor = e.estado === 'reacao' ? (e.ok ? '#3fae62' : '#e0303a') : '#ff6fb5', resto = e.estado === 'espera' ? Math.max(0, 1 - (t - e.t0) / e.limite) : 0;
       if(e.estado === 'espera' && resto < .3) cor = '#ff8a3d';
-      x.save(); x.fillStyle = '#fff'; x.strokeStyle = cor; x.lineWidth = 3.5;
+      x.save(); x.fillStyle = '#fff'; x.strokeStyle = cor; x.lineWidth = e === cf.alvoBalcao ? 6 : 2.5;
       x.beginPath(); if(x.roundRect) x.roundRect(bx, by, bw, bh, 14); else x.rect(bx, by, bw, bh); x.fill(); x.stroke();
       x.beginPath(); x.moveTo(cx - 7, by + bh - 1); x.lineTo(cx, by + bh + 10); x.lineTo(cx + 7, by + bh - 1); x.closePath(); x.fill();
       x.fillStyle = '#d63384'; x.font = '900 16px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'left';

@@ -57,6 +57,7 @@
       var b = e.target.closest && e.target.closest('[data-twb]'); if(!b) return;
       var a = b.getAttribute('data-twb');
       if(a === 'fechar') fechar();
+      else if(a === 'trazer'){ if(B.trazer()) ui(); }
       else if(a === 'resolver'){ if(resolver()) ui(); }
       else if(a === 'pular'){ pularGuia(); ui(); }
       else if(a === 'jogar') jogar(b.getAttribute('data-j'));
@@ -89,6 +90,7 @@
     ov.querySelector('#twBairroTit').textContent = t('tit');
     ov.querySelector('#twBairroSub').textContent = t('sub');
     var g = guia(), b = bagunca(), h = window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.rua() : '', df = typeof B.desfecho === 'function' ? B.desfecho() : null;
+    if(B.podeTrazer()) h += '<button type="button" class="twb-bt" data-twb="trazer">' + esc(t('trazer')) + '</button>';
     var guiaH = '';   // 17/11: a bagunça (a cena) vem primeiro; o guia dos primeiros dias depois
     if(g.ativo) guiaH = '<section class="twb-box twb-guia"><p><b>' + esc(t('guiaTit', {d:g.dia})) + '</b><br>' +
       esc(t('guiaTxt', {r:(g.amanha.length ? g.amanha.map(ruaNome).join(' + ') : '—')})) + '</p><button type="button" class="twb-bt twb-bt-claro" data-twb="pular">' + esc(t('pular')) + '</button></section>';
@@ -167,7 +169,7 @@
     }catch(e){}
     // o bicho: no mesmo traço dos personagens (tw-bichos.js); a borboleta voa perto da tulipa, a nuvem fica no céu
     var ES = 2.75, bx = W * .63, chao = H - 16, bicho = b.bicho;
-    if(bicho === 'passaro') bx = W * .55;   // ao lado da fonte, não na frente
+    if(bicho === 'passaro') bx = W * (ok ? .72 : .55);   // ao lado da fonte, não na frente
     if(bicho === 'borboleta'){ bx = ok ? W * .66 : W * .76; chao = H - 40; }
     if(bicho === 'nuvem'){ bx = ok ? W * .88 : W * .74; chao = ok ? H * .62 : H * .78; }
     var feito = Bi && Bi.desenhar(x, bicho, bx, chao, ES, ok ? 'feliz' : 'travesso', t);

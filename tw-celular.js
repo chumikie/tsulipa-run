@@ -516,7 +516,9 @@
       '<div class="twc-estreia"><button type="button" class="twc-btn twc-btn-claro" data-a="karaokeEnsaio">' + esc(ENSAIO_NOME[L()] || ENSAIO_NOME.pt) + '</button></div>' : '';
   }
   function estreiaHtml(){
-    if(logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
+    var voltou = false;
+    try{ voltou = localStorage.getItem('tw_estreia_concluida') === '1'; }catch(e){}
+    if(voltou || logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
     if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
     var textos = ESTREIA_TR[L()];
     return '<div class="twc-estreia">' +
@@ -527,7 +529,10 @@
     if(!estreia || !estreia.tentativa || estreia.tentativa.jogo !== jogo || logado() || estreia.concluiu !== null) return;
     var tentativa = estreia.tentativa, agora = performance.now();
     if(!concluiu && tentativa.comecou === null) tentativa.comecou = agora;
-    if(concluiu && tentativa.comecou !== null) estreia.concluiu = agora;
+    if(concluiu && tentativa.comecou !== null) {
+      estreia.concluiu = agora;
+      try{localStorage.setItem('tw_estreia_concluida','1');}catch(e){}
+    }
   }
   function estreiaMedidas(){
     if(!estreia) return null;
@@ -612,8 +617,8 @@
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     var piloto = window.TW_PILOTO_BAIRRO;
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + pinHtml() + palco() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + (pinLista().length ? pinHtml() : '') + palco() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + (pinLista().length ? '' : pinHtml()) + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -1336,7 +1341,7 @@
       T6('1º single da TsuLiPa: “Zipper”, em 25/01/2026 (com a Zipper regravada)','TsuLiPa’s 1st single: “Zipper”, 25/01/2026 (with Zipper re-recorded)','1.er single de TsuLiPa: “Zipper”, 25/01/2026 (con Zipper regrabada)','Single pertama TsuLiPa: “Zipper”, 25/01/2026 (Zipper direkam ulang)','ซิงเกิลแรกของ TsuLiPa: “Zipper” 25/01/2026 (อัดเพลง Zipper ใหม่)','TsuLiPaの1stシングル「Zipper」（2026/01/25・Zipperを再録）'),
       T6('Hoje os três estão no Team S (o Pati chegou no Summer Shuffle 2026)','All three are in Team S now (Pati joined in the 2026 Summer Shuffle)','Hoy los tres están en el Team S (Pati llegó en el Summer Shuffle 2026)','Sekarang bertiga di Team S (Pati pindah di Summer Shuffle 2026)','ตอนนี้ทั้งสามอยู่ Team S (Pati ย้ายมาใน Summer Shuffle 2026)','いまは3人ともTeam S（Patiは2026年夏のシャッフルで移籍）')],
       linha:[['2021', 'Polyrhythm'], ['2023', 'Plastic Love'], ['2024', 'Secret Base'], ['2025', 'Splash Dream / Binetsu kara Mystery'], ['2026', "I can't stop the loneliness"]],
-      musicas:[['Zipper', '1st Draft Audition Concert (2021) · 1st Single TsuLiPa (2026)'], ['Hitonatsu no Dekigoto', 'TsuLiPa · 1st Single Zipper (2026)'], ['STAY WITH ME ~Mayonaka no Door~', 'TsuLiPa · 1st Single Zipper (2026)'],
+      musicas:[['Amor Grilado', 'NeByur✰ · Tsu, Pati & Lirika'], ['Zipper', '1st Draft Audition Concert (2021) · 1st Single TsuLiPa (2026)'], ['Hitonatsu no Dekigoto', 'TsuLiPa · 1st Single Zipper (2026)'], ['STAY WITH ME ~Mayonaka no Door~', 'TsuLiPa · 1st Single Zipper (2026)'],
         ['Cheeky Cheeky', 'TsuLiPa · pré-estreia'], ['Polyrhythm', 'Unit Festival 2021'], ['Plastic Love', 'Unit Festival 2023'], ['Secret Base', 'Unit Festival 2024'], ['Splash Dream / Binetsu kara Mystery', 'Unit Festival 2025'], ["I can't stop the loneliness", 'Unit Festival 2026'],
         ['Love Pulsar', 'Halloween Night · TsuLiPa'], ['Valentine Kiss', 'Want You! Want You! · TsuLiPa'], ['Phoenix Dance', 'Summer Love Sounds Good · TsuLiPa'], ['Aitakatta', 'BRS48 · 7 anos · TsuLiPa'], ['Monster (Arashi)', 'TsuLiPa & Eiko'],
         ['Mogyutto "love" de Sekkin Chuu!', '1st Draft Generation · 2026'], ['Kyun', 'A-side'], ['Yume wa Nigenai', 'Shekarashika! · B-side'], ['Yume wa Nigenai (PT)', '10nen Zakura · B-side'],
@@ -1368,6 +1373,7 @@
               var trio = LACOS[3].musicas, duo = lc.par.length === 2, tot = lc.musicas.length + (duo ? trio.length : 0), vis = lc.musicas.slice(0, 8), resto = lc.musicas.slice(8);
               var terceiro = duo ? MEMBROS[[0, 1, 2].filter(function(k){ return lc.par.indexOf(k) < 0; })[0]][1] : '';
               return '<p class="twc-laco-sub">' + ico('nota', 14) + esc(tf('cantaram').replace('{n}', tot)) + (duo ? ' · ' + esc(tf('soDois').replace('{n}', lc.musicas.length)) : '') + '</p>' +
+                '<a class="twc-btn twc-btn-claro" href="https://www.youtube.com/playlist?list=PLNWt7c7jhJIioP7LttHhxfi19dM-iHn7v" target="_blank" rel="noopener noreferrer">▶ TsuLiPa · YouTube</a>' +
                 '<ul class="twc-laco-mus">' + vis.map(mus).join('') + '</ul>' +
                 (resto.length ? '<details class="twc-laco-mais"><summary>' + esc(tf('verTodas').replace('{n}', resto.length)) + '</summary><ul class="twc-laco-mus">' + resto.map(mus).join('') + '</ul></details>' : '') +
                 (duo ? '<details class="twc-laco-mais"><summary>' + esc(tf('comTrio').replace('{q}', terceiro).replace('{n}', trio.length)) + '</summary><ul class="twc-laco-mus">' + trio.map(mus).join('') + '</ul></details>' : '');

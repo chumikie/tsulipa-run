@@ -44,3 +44,11 @@ html.kt-lista .kt-timing-readout:empty{border-color:transparent;background:none}
 
 /* O catálogo visual aprovado é a única lista no celular; o catálogo antigo permanece no DOM como motor de prévias. */
 html.kt-lista.kt-no-site #ktAudioLibrary{display:none!important}
+
+.ktl-filtros{display:flex;gap:6px;margin-block:8px}
+.ktl-filtros button,.ktl-album summary{min-height:44px;cursor:pointer;color:inherit}
+.ktl-filtros button{padding:4px 14px;background:transparent;border:1px solid currentColor;border-radius:20px}
+.ktl-filtros button[aria-pressed=true]{background:#6332a8;color:#fff}
+.ktl-album{margin-top:12px;border-top:1px solid currentColor}
+.ktl-album summary{padding-block:12px;box-sizing:border-box;font-weight:700}
+.ktl-album p,.ktl-album ul{margin-block:6px}

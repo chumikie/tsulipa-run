@@ -44,6 +44,20 @@ async function main(){
     });
     await page.locator('[data-a="comecar"]').click();
     await page.locator('[data-f="tutPular"]').click();
+    for(const width of [320,390]){
+      await page.setViewportSize({width,height:844});
+      const inicio = await page.evaluate(() => {
+        const rect = sel => document.querySelector(sel).getBoundingClientRect();
+        return {palco:rect('.twc-palco').bottom, corrida:rect('[data-estreia="run"]').top,
+          foto:rect('[data-estreia="studio"]').top, altura:rect('.twc-estreia').height};
+      });
+      assert.equal(await page.locator('#twcPinEditar, .twc-ini-portas .twc-rapidos').count(),0);
+      assert.ok(inicio.palco <= inicio.corrida, 'o palco aparece antes dos atalhos');
+      assert.equal(inicio.corrida,inicio.foto,'os dois botões de estreia ficam na mesma linha');
+      assert.ok(inicio.altura >= 44 && inicio.altura <= 50);
+    }
+    await page.locator('#twcNav [data-n="menu"]').click();
+    await page.locator('#twcTela [data-v="ajustes"]').click();
     const edit = page.locator('#twcPinEditar');
     await edit.focus();
     await page.keyboard.press('Enter');
@@ -58,7 +72,7 @@ async function main(){
     assert.equal(await third.getAttribute('aria-disabled'),'true');
     await third.focus();
     await page.keyboard.press('Enter');
-    assert.equal(await page.locator('[data-pin-ir]').count(),2);
+    assert.equal(await page.locator('[data-pin][aria-pressed="true"]').count(),2);
 
     await page.reload();
     await page.evaluate(() => {
@@ -66,7 +80,9 @@ async function main(){
       Object.defineProperty(navigator, 'clipboard', {value:null, configurable:true});
     });
     await page.locator('[data-a="comecar"]').click();
-    assert.deepEqual(await page.locator('[data-pin-ir]').evaluateAll(items => items.map(b=>b.dataset.pinIr)),['cafe','cal']);
+    assert.deepEqual(await page.locator('.twc-ini-portas [data-pin-ir]').evaluateAll(items => items.map(b=>b.dataset.pinIr)),['cafe','cal']);
+    const linhaFixada = await page.locator('.twc-ini-portas .twc-rapidos').boundingBox();
+    assert.ok(linhaFixada && linhaFixada.height >= 44 && linhaFixada.height <= 50);
     await page.locator('[data-pin-ir="cafe"]').click();
     await page.locator('#cfJogar').waitFor();
     await page.keyboard.press('Escape');

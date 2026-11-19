@@ -483,26 +483,29 @@
   }
 
   var ESTREIA_TR = {
-    pt:['Jogar uma corrida', 'Montar uma foto de estreia'],
-    en:['Play a run', 'Make your debut photo'],
-    es:['Jugar una carrera', 'Crear tu foto de debut'],
-    id:['Main lari', 'Buat foto debutmu'],
-    th:['ลงแข่งวิ่ง', 'สร้างภาพเดบิวต์ของคุณ'],
-    ja:['ランに挑戦', 'デビュー写真を撮る']
+    pt:['Jogar corrida', 'Tirar foto'],
+    en:['Play a run', 'Take a photo'],
+    es:['Jugar carrera', 'Tomar foto'],
+    id:['Main lari', 'Ambil foto'],
+    th:['ลงแข่งวิ่ง', 'ถ่ายรูป'],
+    ja:['ランに挑戦', '写真を撮る']
   };
   var estreia = null;
   var ENSAIO_NOME = {pt:'Ensaiar no Karaoke · 20 s',en:'Karaoke rehearsal · 20 s',es:'Ensayar en Karaoke · 20 s',id:'Latihan Karaoke · 20 dtk',th:'ซ้อมคาราโอเกะ · 20 วิ',ja:'カラオケ練習 · 20秒'};
-  function ensaioHtml(){
-    return !logado() && new URLSearchParams(location.search).get('piloto_karaoke') === '1' ?
-      '<div class="twc-estreia"><button type="button" class="twc-btn twc-btn-claro" data-a="karaokeEnsaio">' + esc(ENSAIO_NOME[L()] || ENSAIO_NOME.pt) + '</button></div>' : '';
-  }
   function estreiaHtml(){
-    if(logado() || (estreia && estreia.concluiu !== null) || !card('run') || !card('studio')) return '';
-    if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
-    var textos = ESTREIA_TR[L()];
-    return '<div class="twc-estreia">' +
-      '<button type="button" class="twc-btn" data-estreia="run">' + esc(textos[0]) + '</button>' +
-      '<button type="button" class="twc-btn twc-btn-claro" data-estreia="studio">' + esc(textos[1]) + '</button></div>';
+    if(logado()) return '';
+    var botoes = '';
+    if((!estreia || estreia.concluiu === null) && card('run') && card('studio')){
+      if(!estreia) estreia = {inicio:performance.now(), tentativa:null, concluiu:null};
+      var textos = ESTREIA_TR[L()];
+      botoes = '<button type="button" class="twc-btn twc-rapido" data-estreia="run">' + ico('run', 16) + esc(textos[0]) + '</button>' +
+        '<button type="button" class="twc-btn twc-btn-claro twc-rapido" data-estreia="studio">' + ico('studio', 16) + esc(textos[1]) + '</button>';
+    }
+    if(new URLSearchParams(location.search).get('piloto_karaoke') === '1'){
+      botoes += '<button type="button" class="twc-btn twc-btn-claro twc-rapido" data-a="karaokeEnsaio">' +
+        ico('karaoke', 16) + esc(ENSAIO_NOME[L()] || ENSAIO_NOME.pt) + '</button>';
+    }
+    return botoes ? '<div class="twc-rapidos twc-estreia">' + botoes + '</div>' : '';
   }
   function estreiaEtapa(jogo, concluiu){
     if(!estreia || !estreia.tentativa || estreia.tentativa.jogo !== jogo || logado() || estreia.concluiu !== null) return;
@@ -550,22 +553,24 @@
     return titulo(card(k));
   }
   function pinHtml(){
-    var lista = pinLista(), tx = PIN_TX[L()] || PIN_TX.pt;
-    var atalhos = lista.filter(pinNome).map(function(k){
-      return '<button type="button" class="twc-btn twc-btn-claro" data-pin-ir="' + k + '">' +
-        ico(k === 'festival' ? 'karaoke' : k, 17) + esc(pinNome(k)) + '</button>';
+    var atalhos = pinLista().filter(pinNome).map(function(k){
+      return '<button type="button" class="twc-btn twc-btn-claro twc-rapido" data-pin-ir="' + k + '">' +
+        ico(k === 'festival' ? 'karaoke' : k, 16) + esc(pinNome(k)) + '</button>';
     }).join('');
+    return atalhos ? '<div class="twc-rapidos" role="group" aria-label="' + esc((PIN_TX[L()] || PIN_TX.pt)[0]) + '">' + atalhos + '</div>' : '';
+  }
+  function pinEditorHtml(){
+    var lista = pinLista(), tx = PIN_TX[L()] || PIN_TX.pt;
     var opcoes = pinAberto ? PIN_ROTAS.filter(pinNome).map(function(k){
       var marcado = lista.indexOf(k) >= 0;
-      return '<button type="button" class="twc-btn twc-btn-claro" data-pin="' + k + '" aria-pressed="' + marcado + '"' +
+      return '<button type="button" data-pin="' + k + '" aria-pressed="' + marcado + '"' +
         (!marcado && lista.length === 2 ? ' aria-disabled="true"' : '') + '>' + esc(pinNome(k)) + '</button>';
     }).join('') : '';
-    return '<section class="twc-card twc-pins" aria-labelledby="twcPinsTitulo"><div class="twc-pin-cab">' +
+    return '<section class="twc-card twc-pins" aria-labelledby="twcPinsTitulo">' +
       '<h2 id="twcPinsTitulo">' + esc(tx[0]) + '</h2><button type="button" id="twcPinEditar" class="twc-btn twc-btn-claro" aria-expanded="' +
-      pinAberto + '" aria-controls="twcPinOpcoes">' + esc(tx[1]) + '</button></div>' +
-      (atalhos ? '<div class="twc-pin-lista">' + atalhos + '</div>' : '') +
+      pinAberto + '" aria-controls="twcPinOpcoes">' + esc(tx[1]) + '</button>' +
       '<div id="twcPinOpcoes"' + (pinAberto ? '' : ' hidden') + '><p role="status">' +
-      esc(tx[lista.length === 2 ? 3 : 2]) + '</p><div class="twc-pin-lista">' + opcoes + '</div></div></section>';
+      esc(tx[lista.length === 2 ? 3 : 2]) + '</p><div class="twc-chips">' + opcoes + '</div></div></section>';
   }
   function pinAlternar(k){
     if(PIN_ROTAS.indexOf(k) < 0 || !pinNome(k)) return;
@@ -593,8 +598,8 @@
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     var piloto = window.TW_PILOTO_BAIRRO;
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + estreiaHtml() + ensaioHtml() + pinHtml() + palco() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + portas() + '</div></div>';
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
+      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -691,7 +696,7 @@
     var LG = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['id', 'Bahasa Indonesia'], ['th', 'ไทย'], ['ja', '日本語']];
     var OS = [['', '☀️', tt('Padrão')], ['tsu', '🎤', 'Tsu'], ['lirika', '🐨', 'Lirika'], ['pati', '👑', 'Pati']];
     var oshi = typeof OSHI === 'string' ? OSHI : '';
-    return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' + '<section class="twc-card">'+twAudioControles('twc')+'</section>' +
+    return faixa(esc(t('ajustes')), t('ajustesSub')) + '<div class="twc-pag twc-ajustes">' + '<section class="twc-card">'+twAudioControles('twc')+'</section>' + pinEditorHtml() +
       '<section class="twc-card"><h2>' + esc(tt('Idioma')) + '</h2><div class="twc-chips" role="group" aria-label="' + esc(tt('Idioma')) + '">' +
         LG.map(function(l){ return '<button type="button" data-l="' + l[0] + '" aria-pressed="' + (L() === l[0]) + '" lang="' + l[0] + '">' + l[1] + '</button>'; }).join('') + '</div></section>' +
       '<section class="twc-card"><h2>' + esc(tt('Tema do Oshi')) + '</h2><div class="twc-chips" role="group" aria-label="' + esc(tt('Tema do Oshi')) + '">' +

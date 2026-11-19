@@ -48,18 +48,19 @@ Se faltar uma medida, anote a última etapa observada. Ao comparar as sessões, 
 
 ### Histórias da Rua Fofa
 
-Abra a versão da #118 com `?piloto_bairro=1`. O piloto começa no domingo de 22/11/2026 à meia-noite de Brasília. Para rodar com um novo grupo, escolha outro domingo com `&piloto_bairro_inicio=AAAA-MM-DD` e use o mesmo link nas duas semanas. O progresso fica neste navegador, associado à conta ou ao visitante. Use o mesmo perfil de navegador nas duas visitas.
+Abra a versão da #118 com `?piloto_bairro=1`. O piloto começa no domingo de 22/11/2026 à meia-noite de Brasília. Para rodar com um novo grupo, escolha outro domingo com `&piloto_bairro_inicio=AAAA-MM-DD` e use o mesmo link nas duas semanas. O progresso fica neste navegador, associado à conta ou ao visitante. Use o mesmo perfil de navegador em cada visita. A terceira semana começa em 06/12/2026 no calendário padrão.
 
 | Semana | Chamada no Hoje | Ação no bairro | Desfecho |
 |---|---|---|---|
 | 1 | A vitrine da Rua Fofa | Tirar uma foto no cenário rosa do Studio | A edição de domingo comenta a abertura da vitrine |
 | 2 | Um céu na Rua Fofa | Tirar uma foto entre as nuvens | A edição de domingo comenta a inauguração do mural |
+| 3 | Uma vitrine de boas-vindas | Tirar uma foto no Studio ou preparar o pedido no Café | A edição de domingo registra a contribuição concluída |
 
 O cenário vem selecionado. Se a pessoa usar outro cenário, pode tirar a foto e tentar a história novamente. O Studio piloto guarda uma miniatura na vitrine local. O desfecho tem versões para quem concluiu e para quem não concluiu a atividade, sem publicação da imagem para outros jogadores.
 
 Use `TW_PILOTO_BAIRRO.medidas()` para contar quem abriu a história, acionou o obturador no cenário pedido, concluiu a foto e leu o desfecho. Faça uma contagem por semana. Compare quantas pessoas voltaram a abrir a matéria com quantas terminaram a atividade. Registre também quem voltou mesmo sem ter concluído.
 
-Se o retorno ao jornal justificar testar o bico, acrescente `&piloto_bico=1` ao mesmo link. O balcão da Rua Fofa tem um pedido sem relógio. A entrega correta acrescenta a plaquinha à vitrine e uma lembrança ao desfecho. O bico reaproveita a conferência de ingredientes do Café e opera fora de missões, ranking, Caderno e recompensas.
+Na terceira semana, o Café é uma das escolhas disponíveis no piloto. Para testar o bico nas duas primeiras semanas, acrescente `&piloto_bico=1` ao mesmo link. O balcão da Rua Fofa tem um pedido sem relógio. A entrega correta acrescenta a plaquinha à vitrine e uma lembrança ao desfecho. O bico reaproveita a conferência de ingredientes do Café e opera fora de missões, ranking, Caderno e recompensas.
 
 ### Ensaio de visitante
 

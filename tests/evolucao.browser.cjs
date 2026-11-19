@@ -143,6 +143,40 @@ async function navegarRua(browser){
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
+async function escolherRua(browser){
+  for(const escolha of ['studio','cafe']){
+    const {page,erros,context} = await preparar(browser);
+    try{
+      await abrir(page,'&piloto_bairro=1','2026-12-06T12:00:00Z');
+      await page.evaluate(()=>TW_BAIRRO.abrir());
+      const painel=page.locator('#twBairroOv');
+      await painel.locator('[data-piloto-bairro="studio"]').waitFor();
+      await painel.locator('[data-piloto-bairro="cafe"]').waitFor();
+      await painel.locator('[data-piloto-bairro="'+escolha+'"]').click();
+      if(escolha==='studio'){
+        await page.locator('#studioOv [data-st="clique"]').click();
+        await page.locator('#studioOv [data-piloto-bairro="rua"]').click();
+        await painel.getByAltText('Sua foto em exposição na Rua Fofa').waitFor();
+      }else{
+        await page.locator('#cfPraticaTitulo').waitFor();
+        await page.locator('#cfOv [data-cf="base:0"]').click();
+        await page.locator('#cfOv [data-cf="enf:0"]').click();
+        await page.locator('#cfOv [data-cf-pratica="conferir"]').click();
+        await page.locator('#cfOv [data-cf-pratica="voltar"]').click();
+        await painel.getByText('☕ Plaquinha da casa').waitFor();
+      }
+      assert.equal(await painel.locator('[data-piloto-bairro="studio"],[data-piloto-bairro="cafe"]').count(),0);
+      const medidas=await page.evaluate(()=>TW_PILOTO_BAIRRO.medidas()[2].etapas);
+      assert.equal(Boolean(medidas.concluiu),escolha==='studio');
+      assert.equal(Boolean(medidas.bicoConcluiu),escolha==='cafe');
+      await abrir(page,'&piloto_bairro=1','2026-12-13T12:00:00Z');
+      await page.evaluate(()=>jornalAbrir('ruaFofa',2));
+      const artigo=page.locator('#jornalRuaFofa [data-piloto-desfecho="2"][open]');
+      await artigo.getByText(escolha==='studio' ? /com a sua foto/ : /pelo pedido que você preparou/).waitFor();
+      assert.deepEqual(erros,[]);
+    }finally{ await context.close(); }
+  }
+}
 async function album(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -265,6 +299,7 @@ async function karaoke(browser){
   const browser = await chromium.launch();
   try{
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
+    await escolherRua(browser); console.log('✓ Studio e Café geram vitrines e desfechos distintos.');
     await navegarRua(browser); console.log('✓ Esc, Voltar e Fechar restauram a origem no piloto.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
     await cafe(browser); console.log('✓ Café guarda apenas o pedido confirmado e o cita no retorno.');

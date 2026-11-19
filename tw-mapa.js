@@ -155,7 +155,7 @@
       var jogo=document.getElementById('twPreviewJogo');
       if(jogo&&!jogo.hidden)return;
       // Não roubar Esc de diálogos de outros jogos/telas.
-      if(document.querySelector('[aria-modal="true"]:not([hidden]),dialog[open]'))return;
+      if([].some.call(document.querySelectorAll('[aria-modal="true"],dialog[open]'),function(el){return el.getClientRects().length;}))return;
       e.preventDefault();voltarAoMundo();
     });
     window.addEventListener('popstate',function(e){
@@ -165,7 +165,7 @@
       if(hash==='#center-run'||hash==='#karaoke')return;
       var rua=e&&e.state&&e.state[CHAVE_RUA_HIST];
       if(rua&&CENAS_RUA[rua]){if(cena!==rua)mostrarCena(rua);}
-      else if(cena!=='mundo'||mergulho)mostrarCena('mundo');
+      else if(cena!=='mundo'||mergulho)voltarAoMundo(true);
     });
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
@@ -239,19 +239,21 @@
     mergulho=transicao;desenhar();
     setTimeout(function(){if(mergulho===transicao){mostrarCena(destino);}},420);
   }
-  function voltarAoMundo(){
+  window.twMapaVoltarRua=function(){
+    if(!mapaAtivo()||(cena==='mundo'&&!mergulho))return false;
+    voltarAoMundo();return true;
+  };
+  function voltarAoMundo(porHistorico){
     if(cena==='mundo'&&!mergulho)return;
     var rua=mergulho?mergulho.id:cena,sec=document.getElementById('twMapa');
-    var voltar=sec&&sec.querySelector('.tw-mapa-voltar');
     mostrarCena('mundo');
-    if(voltar&&document.activeElement===voltar){
-      var abrirBtn=sec.querySelector('.tw-mapa-botao');
-      if(abrirBtn&&abrirBtn.focus)abrirBtn.focus({preventScroll:true});
-    }
+    var bairro=sec&&sec.querySelector('[data-tw-bairro="'+rua+'"]');
+    var abrirBtn=bairro||sec&&sec.querySelector('.tw-mapa-botao');
+    if(abrirBtn&&abrirBtn.focus)abrirBtn.focus({preventScroll:true});
     // Consome somente a entrada criada pelo próprio mapa.
     try{
       var h=window.history;
-      if(h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
+      if(porHistorico!==true&&h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Voltar do mapa indisponível',e);}
   }
   function atualizarVitrine(){

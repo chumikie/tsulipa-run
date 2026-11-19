@@ -95,6 +95,54 @@ async function bairro(browser){
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
+async function navegarRua(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await abrir(page,'&piloto_bairro=1','2026-11-22T12:00:00Z');
+    const continuar = page.locator('.twc-hj [data-piloto-bairro="continuar"]');
+    const voltaFocus = el => el.evaluate(n => n === document.activeElement);
+    const bairro = page.locator('#twBairroOv'), studio = page.locator('#studioOv');
+    await continuar.click();
+    await bairro.waitFor();
+    await page.keyboard.press('Escape');
+    await bairro.waitFor({state:'hidden'});
+    await page.waitForFunction(() => document.activeElement?.dataset.pilotoBairro === 'continuar');
+
+    await continuar.click();
+    await studio.waitFor();
+    await page.locator('#twcMoldura [data-m="voltar"]').click();
+    await studio.waitFor({state:'hidden'});
+    await page.waitForFunction(() => document.activeElement?.dataset.pilotoBairro === 'continuar');
+
+    await continuar.click();
+    await studio.locator('.tw-window-close').click();
+    await page.waitForFunction(() => document.activeElement?.dataset.pilotoBairro === 'continuar');
+    await page.evaluate(()=>TW_BAIRRO.pularGuia());
+    const mapa = page.locator('.twc-palco [data-a="mapa"]');
+    await mapa.click();
+    const rua = page.locator('#twMapa [data-tw-bairro="fofo"]');
+    await rua.click();
+    await page.locator('#twMapa[data-cena="fofo"]').waitFor();
+    await page.keyboard.press('Escape');
+    await rua.waitFor();
+    assert.equal(await voltaFocus(rua),true);
+    await rua.click();
+    await page.locator('#twMapa[data-cena="fofo"]').waitFor();
+    await page.locator('#twMapa .tw-mapa-voltar').click();
+    await rua.waitFor();
+    assert.equal(await voltaFocus(rua),true);
+    await page.locator('#twcNav [data-n="voltar"]').click();
+    await mapa.waitFor();
+    assert.equal(await voltaFocus(mapa),true);
+
+    await abrir(page,'&piloto_bairro=1','2026-11-29T12:00:00Z');
+    await continuar.click();
+    await page.locator('#jornalRuaFofa details[open]').waitFor();
+    await page.locator('#jornalOv .tw-window-close').click();
+    await page.waitForFunction(() => document.activeElement?.dataset.pilotoBairro === 'continuar');
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
 async function album(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -217,6 +265,7 @@ async function karaoke(browser){
   const browser = await chromium.launch();
   try{
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
+    await navegarRua(browser); console.log('✓ Esc, Voltar e Fechar restauram a origem no piloto.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
     await cafe(browser); console.log('✓ Café guarda apenas o pedido confirmado e o cita no retorno.');
     await karaoke(browser); console.log('✓ Ensaio termina e repete sem gastar tentativa.');

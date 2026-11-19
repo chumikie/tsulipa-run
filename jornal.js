@@ -675,10 +675,11 @@ function jornalCapituloSelecionar(cap){
   }
   return '';
 }
-function jornalAbrir(aba, capitulo){
+function jornalAbrir(aba, capitulo, origem){
   var abertura = ++jornalAbertura;
   jornalFestivalFoco = aba === 'festival';
   jornalAba = aba === 'comunidade' || jornalFestivalFoco ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
+  if(window.TW_JANELAS) TW_JANELAS.preparar(jornalOv,origem);
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();

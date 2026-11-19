@@ -128,27 +128,28 @@
   document.addEventListener('click', function(e){
     var b = e.target.closest && e.target.closest('[data-piloto-bairro]');
     if(!b) return;
+    var origem = window.TW_JANELAS && TW_JANELAS.origem(b);
     var i = semana(), p = atual(), acao = b.dataset.pilotoBairro;
     var edicao = null;
     if(acao === 'continuar'){
       var destino = continuacao(); if(!destino) return;
       acao = destino.acao; edicao = destino.i;
     }
-    if(acao === 'jornal'){ TW_BAIRRO.fechar(); jornalAbrir('ruaFofa',edicao); return; }
+    if(acao === 'jornal'){ TW_BAIRRO.fechar(); jornalAbrir('ruaFofa',edicao,origem); return; }
     if(acao === 'mapa'){
       TW_BAIRRO.fechar();
-      if(window.twcAbrirRuaFofa) window.twcAbrirRuaFofa();
+      if(window.twcAbrirRuaFofa) window.twcAbrirRuaFofa(origem);
       return;
     }
     if(acao === 'rua'){
       if(b.closest('#studioOv')) studioFechar();
       if(p) marcar(i, 'abriu');
-      TW_BAIRRO.abrir(); return;
+      TW_BAIRRO.abrir(origem); return;
     }
     if(!p) return;
     if(acao === 'studio'){
       marcar(i, 'abriu'); TW_BAIRRO.fechar();
-      studioAbrir({piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
+      studioAbrir({origem:origem,piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
     }
     if(acao === 'cafe' && bicoAtivo()){
       pendente = {i:i,dono:dono(),tipo:'cafe'};

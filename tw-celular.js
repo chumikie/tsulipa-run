@@ -1559,11 +1559,11 @@
   }
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
   var ruaFofaPendente = false;
-  window.twcAbrirRuaFofa = function(){
+  window.twcAbrirRuaFofa = function(origem){
     if(!cel || classico) return;
     ruaFofaPendente = true;
     if(topo() === 'emb:mapa') embutir('mapa');
-    else ir('emb:mapa');
+    else ir('emb:mapa',origem);
   };
   function embutir(k){
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
@@ -1733,12 +1733,12 @@
     if(focoAnterior&&focoAnterior.foco)restaurarPonto(focoAnterior);
   }
   var pontosPilha=[];
-  function pontoAtual(){
+  function pontoAtual(alvo){
     if(!cel||!tela)return null;
-    var el=document.activeElement, seletor='';
+    var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1756,12 +1756,12 @@
     }else focarTitulo();
     return true;
   }
-  function ir(v){
+  function ir(v,origem){
     if(classico)sairClassico();
     if(topo()===v)return;
     if(v==='cal')calCapsPedido=false;
     if(v!=='emb:mapa')ruaFofaPendente=false;
-    pontosPilha[pilha.length-1]=pontoAtual();pilha.push(v);
+    pontosPilha[pilha.length-1]=origem&&origem.ponto||pontoAtual();pilha.push(v);
     som();desenhar();tela.scrollTop=0;
     var busca=v==='emb:busca'&&$id('hubBusca');
     if(busca)busca.focus({preventScroll:true});else focarTitulo();
@@ -1770,6 +1770,9 @@
   function voltar(){
     ruaFofaPendente = false;
     if(classico){ sairClassico(); som(); desenhar(); return; }
+    if(topo()==='emb:mapa' && typeof window.twMapaVoltarRua==='function' && window.twMapaVoltarRua()){
+      som();return;
+    }
     if(pilha.length>1){
       pilha.pop();var ponto=pontosPilha.pop();som();desenhar();
       if(ponto)restaurarPonto(ponto);else focarTitulo();
@@ -2071,7 +2074,7 @@
     });
     folha.addEventListener('click', function(e){ if(e.target === folha){ if(tutI >= 0) tutFim(); else fecharFolha(); } });
     if(!montar.tecla) document.addEventListener('keydown', function(e){
-      if(e.key !== 'Escape' || !cel || h.hidden) return;
+      if(e.key !== 'Escape' || e.defaultPrevented || !cel || h.hidden) return;
       if(!folha.hidden){ e.preventDefault(); if(tutI >= 0) tutFim(); else fecharFolha(); return; }
       if(Array.from(document.querySelectorAll('[aria-modal="true"],dialog[open]')).some(function(el){return el.getClientRects().length;}))return;
       if(classico || pilha.length > 1){ e.preventDefault(); voltar(); }

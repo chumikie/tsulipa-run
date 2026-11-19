@@ -16,6 +16,11 @@ function albumResumoTexto(i){
   var l=typeof LANG==='string'&&ALBUM_RESUMO_TR[LANG]?LANG:'pt';
   return ALBUM_RESUMO_TR[l][i];
 }
+function albumBattleTexto(){
+  var textos = {pt:'Monte seu trio de cards',en:'Build your card trio',es:'Arma tu trío de cartas',
+    id:'Susun trio kartumu',th:'จัดทีมการ์ดสามใบ',ja:'カードで3人のユニットを組む'};
+  return textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
+}
 var ALBUM_POR_PAGINA = 9;
 var albumPag = 0, albumDados = null, albumPronto = false;
 function albumIdols(){
@@ -31,7 +36,7 @@ function albumAbrir(){
   contaRpc('album_cards').then(function(L){ albumDados = Array.isArray(L) ? L : []; albumPronto = true; albumUI(); })
     .catch(function(){ albumDados = []; albumPronto = false; albumUI(); });
 }
-function albumFechar(){ albumOv.hidden = true; petLifeRetornar('album'); }
+function albumFechar(){ albumOv.hidden = true; if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir(); petLifeRetornar('album'); }
 function albumUI(){
   var corpo = $('albumCorpo'); if(!corpo) return;
   var nomes = albumIdols(), tenho = {};
@@ -51,6 +56,7 @@ function albumUI(){
   var h = '<p class="albumprog"><b>' + achados + '</b> / ' + total + ' ' + escHtml(tr('Idols no seu álbum')) + '</p>' +
     '<div class="albumbarra" aria-hidden="true"><i style="width:' + (total ? Math.round(achados / total * 100) : 0) + '%"></i></div>';
   h += albumMetasHtml(achados);
+  if(typeof TW_ALBUM_FOTOS !== 'undefined') h += TW_ALBUM_FOTOS.html();
   if(albumPronto){
     h += '<p class="albumresumo" aria-live="polite">🃏 ' + achados + ' / ' + total +
       ' · ' + escHtml(albumResumoTexto(0)) + ': <b>' + repetidos + '</b>' +
@@ -68,7 +74,11 @@ function albumUI(){
   }).join('') + '</div>';
   if(pags > 1) h += '<div class="albumpags"><button type="button" class="btn alt" data-album="-1"' + (albumPag ? '' : ' disabled') + '>◀</button><span>' + (albumPag + 1) + ' / ' + pags + '</span><button type="button" class="btn alt" data-album="1"' + (albumPag < pags - 1 ? '' : ' disabled') + '>▶</button></div>';
   if(albumPronto) h += '<div class="btns"><button type="button" class="btn" id="albumTrocar">🔁 ' + escHtml(tr('Trocar cards')) + '</button></div>';
+  if(typeof battleAbrir === 'function') h += '<div class="btns"><button type="button" class="btn alt" id="albumBattle">Idol⭐Battle! · ' + escHtml(albumBattleTexto()) + '</button></div>';
+  var fotos = typeof TW_ALBUM_FOTOS !== 'undefined' && corpo.querySelector('details.album-fotos');
   corpo.innerHTML = h;
+  if(fotos && fotos.open && corpo.querySelector('details.album-fotos')) corpo.querySelector('details.album-fotos').replaceWith(fotos);
+  if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   cardsMem.album = lista;
   lista.forEach(function(c, i){ var cv = $('albumCv' + i); if(cv && c.card) try{ gachaCardDesenhar(cv, cardsDados(c)); }catch(e){} });
 }

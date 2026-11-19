@@ -22,7 +22,7 @@ assert.equal(AutoMic.SHOW_DURATION_MS,15000,'the NPC microphone reservation last
 assert.equal(AutoMic.SHOW_PLAY_MS,11000,'the four-second count-in is included in the fifteen-second reservation');
 assert(autoSource.includes('function simulatePerformance(run,now,actor,onEvent)'),'the existing autonomous mic module simulates note outcomes');
 assert(html.includes('KaraokeRoomAutoMic.simulatePerformance(run,now,krDemoCantor&&krDemoCantor.bot'),'the simulated show drives the real stage screen without a parallel game engine');
-assert(html.includes('durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:60000'),'only NPC runs use the short rhythm duration');
+assert(html.includes('durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000'),'official shows remain 60 seconds and rehearsals use their own duration');
 const pedestal=html.slice(html.indexOf('function ktPedestal('),html.indexOf('var ktMicArea',html.indexOf('function ktPedestal(')));
 assert(!pedestal.includes('krPontoMaoSala')&&!pedestal.includes('hand.x'),'the floor pedestal never follows the moving singer hand');
 assert(pedestal.includes('x.fillRect(-1.8,-45,3.6,45)')&&pedestal.includes('x.translate(0,-45)'),'the microphone head is raised a small fixed amount while the stand base stays planted');

@@ -48,11 +48,11 @@ test('Café reencontra fã conhecido sem alterar o pedido validado no servidor',
     cfT:100, HS_JEITOS:{fofo:{},timido:{}},
     hsSorteio:()=>()=>0.5, hsNomesLivres:()=>['Momo','Nana'],
     hsFa:(r,nome)=>({nome,c:{hair:'#000',out:'#abc'},jeito:'fofo'}),
-    hsMemLer:()=>[{nome:'Momo',pres:1,c:{hair:'#ff88aa'},jeito:'timido'}],
+    cfVisitasMemorias:()=>[{nome:'Momo',pres:1,c:{hair:'#ff88aa'},jeito:'timido'}],
     cfPedido:()=>({base:0,cob:-1,enf:0,doce:-1}), cfUI:()=>{}
   };
   vm.createContext(ctx);
-  vm.runInContext(trecho(cafe,'function cfNovoClienteLocal(){','function cfNovoCliente(){'),ctx);
+  vm.runInContext(trecho(cafe,'function cfLembrancaInicial(){','function cfNovoCliente(){'),ctx);
   ctx.cfNovoClienteLocal();
   assert.equal(ctx.cf.cli.nome,'Momo');
   assert.equal(ctx.cf.cli.c.hair,'#ff88aa','visual do Handshake reaproveitado');

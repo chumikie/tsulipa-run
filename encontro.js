@@ -48,7 +48,7 @@ function encMostrar(d){
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');
   encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
-  if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
+  if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; if(window.TW_AUDIO)window.TW_AUDIO.midia(ea,.5); var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
 function encLoop(ms){
   encAnim = 0; if(!encDados||!twAnimacaoVisivel($('encCv'))) return; var mobile30=!!(window.TWMotionLifecycle&&TWMotionLifecycle.isMobileRender30()),delta=window.TWMotionLifecycle?TWMotionLifecycle.frameDelta($('encCv'),ms):1,encPrevT=encT;encT+=delta;

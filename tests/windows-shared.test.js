@@ -4,7 +4,7 @@ const root=path.join(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'
 for(const file of ['index.html','sora-jump.html','karaoke-time.html']){
  const s=read(file);
  assert(s.includes('./tw-windows.css?v=3'),file+' must load shared chrome');
- assert(s.includes('./tw-windows.js?v=1'),file+' must load shared focus/viewport adapter');
+ assert(s.includes('./tw-windows.js?v=2'),file+' must load shared focus/viewport adapter');
 }
 assert(!read('karaoke-time.html').includes('ktLaunchLayout'),'Obsolete Karaoke header patch must stay removed');
 assert(!read('sora-embed.css').includes('html.tw-sora-embed #soraOv .bp-title{'),'Embedded Sora must use shared type');

@@ -52,7 +52,7 @@ function criar(o){
     var next;
     try{
       next=new Audio('./audio/'+id+'.mp3?v=1');
-      next.preload='none';next.volume=.6;player=next;playingId=id;
+      next.preload='none';next.volume=.6;if(window.TW_AUDIO)window.TW_AUDIO.midia(next,.6);player=next;playingId=id;
     }catch(e){if(status)status.textContent=tr('Não foi possível preparar este áudio.');return;}
     updateButtons();
     if(status){var voiceStatus={pt:'♪ Voz de personagem reproduzindo',en:'♪ Character voice playing',es:'♪ Voz de personaje en reproducción',th:'♪ กำลังเล่นเสียงตัวละคร',ja:'♪ キャラクター音声を再生中'};status.textContent=voiceStatus[LANG]||voiceStatus.pt;}

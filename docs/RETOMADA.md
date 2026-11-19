@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 18/11/2026 (tarde).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 19/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,8 +19,8 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `62ccb0c` (18/11), publicada na Vercel. Últimos merges: #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **PRs abertas:** #117 (capítulo de domingo da bagunça no Idol⭐News!), em draft.
+- **`main`:** `b40cb7c` (19/11), publicada na Vercel. Últimos merges: #118 (estreia no TsuPhone, continuidade das atividades, Café, Festival, piloto da Rua Fofa e mapa do código), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **PRs abertas:** #117 (desfecho da bagunça no Idol⭐News!, Karaoke mais fácil de acertar, bairro e cenários), em draft. A #118 entrou na `main` em 19/11 (`b40cb7c`).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -28,21 +28,24 @@
 
 **Como se entra:** o **visual novo** (o celular do Idol, "*Nick*Phone"; sem conta, "TsuPhone") abre sozinho no celular, tablet e computador desde 17/11. O clássico continua em Ajustes ou `?celular=0`.
 - Abertura com o trio Tsu·Li·Pa.
-- **Início:** palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário).
-- **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px.
+- **Início.** Palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário). A #118 permite fixar até dois atalhos neste navegador.
+- **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
+- **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
+- **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
+- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador e é separada por conta.
 
 ### Jogos
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
-| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106) | — |
+| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). desde a #118, o resultado mostra a colisão | — |
 | Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); **zona de acerto maior** (BOM ±150, PERFECT ±55) e **"Medir sozinho"** no Ajustar timing (8 batidas, toque junto, calcula o atraso do aparelho) | Medir em celular real |
 | Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
-| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115) | Levar flor do Bloom (como no Handshake): **precisa do banco**, proposta em `supabase/sql/proposta/20261118_flor_no_cafe.sql` |
+| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). Desde a #118: aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Levar flor do Bloom (como no Handshake): **precisa do banco**, proposta em `supabase/sql/proposta/20261118_flor_no_cafe.sql` |
 | Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes, "jeito" valendo e flor do Bloom na mesa (desde 13/11) | — |
 | Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; cards usados no Battle | — |
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
 | Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio (#113–#114) | — |
-| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Flores do Bloom e retratos refinados | — |
+| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Flores do Bloom e retratos refinados. Composição favorita local na #118 | — |
 | Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | Jogo baixa só ao abrir (#110) | — |
 | Backstage⭐Pet! | Pet, quarto, minijogos, Camarim | ★50/dia nos minijogos | Camarim por conta e porta-retrato guardado (#113–#114) | — |
 | Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Estável | — |
@@ -67,7 +70,10 @@
 | `pet.js` | `pet-sala.js` | Ao abrir o pet ou o 📸 da corrida |
 | `perfil.js` | `perfil-tela.js` | Ao abrir um Perfil |
 | `jogos-base.js` | Handshake e Café | Ao abrir o jogo |
-| — | `battle.js`, Photo⭐Studio!, `jornal-capitulos.js`, `tw-mapa.js` | Ao abrir (o Mapa logo depois da abertura) |
+| — | `battle.js` e `battle.css` | Ao abrir o Battle |
+| — | `studio.js` | Ao abrir o Studio ou montar a capa do jornal |
+| `jornal.js` | `jornal-capitulos.js` | Ao abrir o jornal ou o Calendário |
+| `mapa-textos.js` | `tw-mapa.js` | Logo depois da abertura |
 | `tw-bairro.js` | `tw-bairro-tela.js` | Ao abrir o painel, ou no Mapa nos dias guiados |
 | `duo-base.js` | `duo.js`, `duo-tela.js`, `duo-pedido.js` | Ao abrir o Duo |
 | `admin-base.js` | `admin.js` | Quando o Perfil confirma conta admin |
@@ -98,9 +104,9 @@
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Merge da PR do capítulo de domingo; conferir o primeiro desfecho de verdade no domingo 22/11.
+- Merge da #117; conferir o primeiro desfecho de verdade no domingo 22/11.
+- O piloto do bairro e a matriz física do Karaoke estão em [docs/qa](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
-- Atualizar `MAPA_DO_CODIGO.md`, que é de 02/11 e não conhece as divisões.
 
 **Nunca testado de verdade:** login real em todos os fluxos novos, iPhone/Android físicos, sons ouvidos.
 
@@ -115,6 +121,7 @@
 ## Documentos
 - **Vivos:**
   - este arquivo;
+  - [`MAPA_DO_CODIGO.md`](MAPA_DO_CODIGO.md): pontos de entrada, módulos e carregamento;
   - [`../supabase/sql/README.md`](../supabase/sql/README.md): o que está aplicado no banco;
   - [`ECONOMIA_ESTRELAS.md`](ECONOMIA_ESTRELAS.md): retrato de 13/11.
 - **Propostas e planos:**
@@ -124,7 +131,6 @@
   - `PROPOSTA_MUSICA_DA_SEMANA.md`;
   - `PLANO_SALA_KARAOKE.md`.
 - **Referência com data** (pode estar defasada):
-  - `MAPA_DO_CODIGO.md` (02/11);
   - `REFATORACAO_INDEX.md` (02/11);
   - `RAIOX_JOGOS.md` (13/11; as notas são anteriores às melhorias de 13–18/11);
   - `qa/`.

@@ -22,7 +22,7 @@ window.KaraokeOnlineFactory=function($,krAviso,CH,KaraokeAvatar,ktDaily,LANG){re
  function linhasExtra(list){return linhas(list).map(function(r,i){r.valor=+((list||[])[i]||{}).valor||0;return r;});}
  function linhas(list){return (Array.isArray(list)?list:[]).slice(0,5).map(function(r,i){return {id:'online-'+i+'-'+String(r.nick||''),nick:String(r.nick||'Idol').slice(0,24),avatar:avatar(r.avatar,r.cor),score:+r.score||0,combo:+r.combo||0,accuracy:+r.accuracy||0,hits:+r.hits||0};});}
  function load(force){recoverFinishes();var a=api(),owner=sessionKey(a);if(!a||!owner||(!force&&Date.now()-readAt<60000))return;readAt=Date.now();
-  a.ranking().then(function(d){if(!sameSession(a,owner)||!d||!d.semana)return;boards={week:d.semana,ends:d.fim,score:linhas(d.score),accuracy:linhas(d.acertos),combo:linhas(d.combo),online:true};if(a.quadros)a.quadros().then(function(q){if(!sameSession(a,owner)||!q||!boards)return;boards.extra={shows:{top:linhasExtra(q.shows&&q.shows.top),me:q.shows&&q.shows.eu||null},evolucao:{top:linhasExtra(q.evolucao&&q.evolucao.top),me:q.evolucao&&q.evolucao.eu||null}};if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(a.musicaSemana)a.musicaSemana().then(function(m){if(!sameSession(a,owner)||!m||!boards||!m.musica)return;boards.song={song:m.musica,top:linhas(m.top),me:m.eu||null};if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(a.posicao)a.posicao().then(function(p){if(!sameSession(a,owner)||!p||!boards)return;boards.me={score:p.score,accuracy:p.acertos,combo:p.combo};lastPos=Date.now();if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(Number.isFinite(+d.usados))usados=+d.usados;if(Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});}
+  a.ranking().then(function(d){if(!sameSession(a,owner)||!d||!d.semana)return;boards={week:d.semana,ends:d.fim,score:linhas(d.score),accuracy:linhas(d.acertos),combo:linhas(d.combo),online:true};if(a.quadros)a.quadros().then(function(q){if(!sameSession(a,owner)||!q||!boards)return;boards.extra={shows:{top:linhasExtra(q.shows&&q.shows.top),me:q.shows&&q.shows.eu||null},evolucao:{top:linhasExtra(q.evolucao&&q.evolucao.top),me:q.evolucao&&q.evolucao.eu||null}};if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(a.musicaSemana)a.musicaSemana().then(function(m){if(!sameSession(a,owner)||!m||!boards||!m.musica||(m.semana&&m.semana!==boards.week))return;boards.song={song:m.musica,top:linhas(m.top),me:m.eu||null};renderFestival();if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(a.posicao)a.posicao().then(function(p){if(!sameSession(a,owner)||!p||!boards)return;boards.me={score:p.score,accuracy:p.acertos,combo:p.combo};lastPos=Date.now();if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});if(Number.isFinite(+d.usados))usados=+d.usados;if(Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();}).catch(function(){});}
  function quota(){var a=api(),owner=sessionKey(a);if(!a||!owner)return Promise.resolve(null);return a.ranking().then(function(d){if(!sameSession(a,owner))return null;if(d&&Number.isFinite(+d.usados))usados=+d.usados;if(d&&Number.isFinite(+d.tickets))tickets=+d.tickets;if(window.ktMetaRefresh)window.ktMetaRefresh();return usados;});}
  function launch(fn,ticket){window.ktShowAdmissionPending=false;admissionTicket=!!ticket;try{fn({ticket:!!ticket});}finally{admissionTicket=false;}}
  function ticketConcluir(id){if(!id)return;try{var parent=window.parent;if(parent&&parent.ktTickets&&parent.ktTickets.completeRun)parent.ktTickets.completeRun(id);}catch(e){}}
@@ -65,6 +65,31 @@ window.KaraokeOnlineFactory=function($,krAviso,CH,KaraokeAvatar,ktDaily,LANG){re
    id:{pending:'⏳ Menunggu konfirmasi peringkat online. Hasil tersimpan di perangkat ini.',success:'✅ Skor dikonfirmasi oleh server dan tercatat online!',invalid:'❌ Server menolak skor ini.',uncertain:'⚠️ Server sudah menutup pertunjukan, tetapi skor belum dapat dipastikan. Tidak akan dikirim ulang otomatis.',storage:'⚠️ Menunggu konfirmasi. Salinan pemulihan gagal disimpan.',retry:'↻ Coba konfirmasi lagi',recover:'hasil belum terkonfirmasi'}
   };return copy[LANG]&&copy[LANG][state]||copy.pt[state]||'';
  }
+ var festivalResultado=null;
+ var FESTIVAL_TR={
+  pt:['Melhor nota confirmada na música da semana','A melhor nota da semana conta para quem integra um Team.','Ver placar do Festival'],
+  en:['Best confirmed score for the weekly song','The weekly best counts for players on a Team.','View Festival standings'],
+  es:['Mejor puntuación confirmada en la canción semanal','La mejor nota semanal cuenta para quienes integran un Team.','Ver clasificación del Festival'],
+  id:['Skor terbaik terkonfirmasi untuk lagu mingguan','Skor terbaik mingguan dihitung bagi anggota Team.','Lihat peringkat Festival'],
+  th:['คะแนนยืนยันสูงสุดของเพลงประจำสัปดาห์','คะแนนสูงสุดประจำสัปดาห์จะนับสำหรับสมาชิก Team','ดูอันดับเทศกาล'],
+  ja:['今週の曲の確認済みベストスコア','Team所属者は週間ベストが加算されます。','フェスティバルの順位を見る']
+ };
+ function renderFestival(){
+  var box=$('ktResultFestival'),link=$('ktResultFestivalLink');
+  if(!box||!link)return;
+  var r=festivalResultado,a=api(),owner=sessionKey(a),copy=FESTIVAL_TR[LANG]||FESTIVAL_TR.pt;
+  var pode=!!r && r.owner===owner && document.documentElement.classList.contains('kt-no-site');
+  link.hidden=!pode;
+  link.textContent=copy[2];
+  var agora=Date.now(), views=window.KaraokeRoomViews;
+  var atual=views&&boards&&boards.song&&boards.song.song===views.songFor(agora) &&
+    String(boards.week)===new Date(views.nextChange(agora)-7*864e5-3*36e5).toISOString().slice(0,10);
+  box.hidden=!pode||!a||!atual;
+  box.textContent=box.hidden?'':copy[0]+' · '+(boards.song.me ? Number(boards.song.me.valor).toLocaleString(LANG) : '—')+'. '+copy[1];
+ }
+ if($('ktResultFestivalLink'))$('ktResultFestivalLink').onclick=function(){
+  window.parent.postMessage({type:'TW_KARAOKE_FESTIVAL'},location.origin);
+ };
  function renderFinish(){
   var box=$('ktResultDelivery'),retry=$('ktResultRetry'),owner=sessionKey(api()),r=lastFinish&&lastFinish.owner===owner?lastFinish:null;
   if(box){box.hidden=!r;box.textContent=r?finishText(r.state):'';}
@@ -72,6 +97,7 @@ window.KaraokeOnlineFactory=function($,krAviso,CH,KaraokeAvatar,ktDaily,LANG){re
   var notice=$('ktDeliveryRecovery'),again=$('ktDeliveryRetry'),items=finishEntries(owner),pending=items.filter(function(e){return e.state==='pending';});
   if(notice){notice.hidden=!items.length;notice.textContent=items.length?'🎤 '+items.length+' '+finishText('recover')+'. '+(pending.length?finishText('pending'):finishText('uncertain')):'';}
   if(again){again.hidden=!pending.length;again.textContent=finishText('retry');}
+  renderFestival();
  }
  function setFinish(owner,id,state){
   if(lastFinish&&lastFinish.owner===owner&&lastFinish.id===id){lastFinish.state=state;renderFinish();}
@@ -109,11 +135,16 @@ window.KaraokeOnlineFactory=function($,krAviso,CH,KaraokeAvatar,ktDaily,LANG){re
   finishEntries(owner).forEach(function(e){var key=owner+'|'+e.id;if(e.state==='pending'&&!finishAuto[key]){finishAuto[key]=true;sendFinish(owner,e.id,a);}});
   renderFinish();
  }
- function showFinishResult(enabled){if(!enabled)lastFinish=null;renderFinish();}
+ function showFinishResult(enabled){
+  if(!enabled){lastFinish=null;festivalResultado=null;}
+  else if(!festivalResultado)festivalResultado={owner:sessionKey(api())};
+  renderFinish();
+ }
  if($('ktResultRetry'))$('ktResultRetry').onclick=retryFinishes;
  if($('ktDeliveryRetry'))$('ktDeliveryRetry').onclick=retryFinishes;
 
  function finish(result){var a=api(),id=run,owner=runOwner;run=null;runOwner='';
+  festivalResultado=result?{owner:sessionKey(a)}:null;
   if(!id||!owner){lastFinish=null;renderFinish();return;}
   if(!sameSession(a,owner)){guardar(id,owner);lastFinish=null;renderFinish();return;}
   if(!result){guardar(null,owner);a.terminar(id,null).then(function(x){if(sameSession(a,owner)&&x&&x.reason==='invalid')aviso('O servidor não aceitou este encerramento.');}).catch(function(){});return;}

@@ -48,3 +48,13 @@ for(const lang of ['pt','en','es','th','ja']){
   assert(html.includes(`${lang}:{early:`), `diagnóstico completo em ${lang}`);
 }
 console.log('Karaoke: timestamps de entrada, diagnóstico cedo/tarde/raia, botão central e janelas ±45/100 OK');
+
+const resumo = html.slice(html.indexOf('function timingRestaurar('), html.indexOf('function timingResultado('));
+vm.runInContext(resumo, ctx);
+const r = ctx.timingResumo({timing:{early:8,late:1},hits:11,notes:Array(15)});
+assert.deepEqual(Array.from(r.contagens), [8,1,4]);
+assert.equal(r.sugerir, true, 'recomenda calibrar somente com desvio consistente');
+assert.equal(ctx.timingResumo({timing:{early:8,late:8},hits:16,notes:Array(16)}).sugerir, false);
+assert.equal(ctx.timingResumo({timing:{early:0,late:3},hits:3,notes:Array(6)}).sugerir, false);
+assert.equal(ctx.timingRestaurar({timing:{early:4,late:2}},7).early, 4);
+assert.equal(ctx.timingRestaurar({timing:{early:4,late:2}},5).early, 0);

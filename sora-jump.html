@@ -17,6 +17,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="./tw-nitidez.js?v=9"></script>
+<script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
@@ -657,7 +658,7 @@ function beep(f,d,t,v,when){
   var o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+(when||0);
   o.type=t||'square';o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(v||.05,s);gn.gain.exponentialRampToValueAtTime(.001,s+d);
   o.onended=function(){try{o.disconnect();gn.disconnect();}catch(e){}};
-  o.connect(gn);gn.connect(a.destination);o.start(s);o.stop(s+d);
+  o.connect(gn);gn.connect(globalThis.TW_AUDIO ? globalThis.TW_AUDIO.saida(a) : a.destination);o.start(s);o.stop(s+d);
 }
 var sfx={
   jump:function(){beep(380,.12);beep(560,.1,'square',.04,.06)},
@@ -1628,7 +1629,7 @@ function soraOnlineApplyProfile(profile){
   soraOnlineProfile = data ? {nick:active.n, character:active} : null;
   // Recorde da conta (sora_my_profile.best): o mesmo em qualquer aparelho, não só o deste navegador.
   var srvBest = data && Number.isFinite(+data.best) ? Math.max(0, Math.floor(+data.best)) : 0;
-  if(srvBest > soraBest){ soraBest = srvBest; if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m'; }
+  if(srvBest > soraBest){ soraBest = srvBest; soraMenuAtualizarRecorde(); }
   if(data && data.nick){
     nick = String(data.nick).replace(/[<>]/g,'').trim().slice(0,12);
     var inputNick = $('nick');
@@ -4029,6 +4030,26 @@ function soraStartGame(){
   if($('soraOverBox')) $('soraOverBox').hidden = true;
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;   // sem botão "Início" sobre a tela durante a partida
 }
+function soraMenuAtualizarRecorde(){
+  var recorde = $('soraMenuBest'), meta = $('soraMenuMeta');
+  if(recorde) recorde.textContent = soraBest + ' m';
+  if(meta){
+    meta.hidden = soraBest >= 500;
+    meta.textContent = meta.hidden ? '' : soraMetaIntermediaria(soraBest);
+  }
+}
+function soraMetaIntermediaria(h){
+  var textos = {
+    pt:['Próxima meta', 'Meta alcançada'],
+    en:['Next milestone', 'Milestone reached'],
+    es:['Próxima meta', 'Meta alcanzada'],
+    id:['Target berikutnya', 'Target tercapai'],
+    th:['เป้าหมายถัดไป', 'ถึงเป้าหมายแล้ว'],
+    ja:['次の目標', '目標達成']
+  };
+  var tMeta = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
+  return h < 100 ? tMeta[0] + ' · 100 m' : h < 250 ? tMeta[0] + ' · 250 m' : tMeta[1] + ' · 250 m';
+}
 function soraEndGame(){
   soraMusicStop();
   soraState = 'over';
@@ -4098,6 +4119,7 @@ function soraEndGame(){
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
+      (!isTestScene && h < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(h)) + '</p>' : '') +
       (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';
@@ -4254,7 +4276,7 @@ function soraSetupUI(){
             '<div class="sora-eyebrow">✦ Kawaii sky adventure ✦</div>' +
             '<div style="font-size:27px;line-height:1.1;filter:drop-shadow(0 0 12px rgba(255,160,220,.38))">☁️ 🌸 ⭐</div>' +
             '<p class="sora-menu-copy">' + escHtml(tr('Pule de nuvem em nuvem, reúna estrelas e deixe o céu surpreender você!')) + '</p>' +
-            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
+            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + '<div id="soraMenuMeta"' + (soraBest >= 500 ? ' hidden' : '') + '>' + (soraBest < 500 ? escHtml(soraMetaIntermediaria(soraBest)) : '') + '</div>' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
             '<div class="sora-test-profile" id="soraTestProfileCard">' +
               '<div class="sora-test-profile-side"><canvas id="soraTestCharPreview" width=48 height=60></canvas><div><b id="soraTestCharName">Personagem</b><small>' + escHtml(tr('Sua idol')) + '</small></div></div>' +
               '<div class="sora-test-profile-side pet-side"><canvas id="soraTestPetPreview" width=60 height=58></canvas><div><b id="soraTestPetName">Pet</b><small>' + escHtml(tr('Companheiro')) + '</small></div></div>' +
@@ -4524,7 +4546,7 @@ function soraReturnToMenu(){
   if(soraState === 'play') soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
-  if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m';
+  soraMenuAtualizarRecorde();
   if($('soraMenuStars')) $('soraMenuStars').textContent = String(starT);
   if($('soraMenuBox')) $('soraMenuBox').hidden = false;
   if($('soraOverBox')) $('soraOverBox').hidden = true;
@@ -4565,7 +4587,7 @@ function soraOpenUIReady(){
   soraMusicStop();
   soraOpen = true; soraState = 'menu'; soraReset(); soraState = 'menu';
   if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();   // o vigia foi criado com o Sora fechado; reavalia ao abrir
-  if($('soraMenuBest')) $('soraMenuBest').textContent = soraBest + ' m';
+  soraMenuAtualizarRecorde();
   if($('soraMenuStars')) $('soraMenuStars').textContent = String(starT);
   soraRefreshTestProfile(); soraBindTestProfileTools();
   var sb = $('soraSoundBtn'); if(sb){ sb.textContent=soraSoundOn?'🔊 Som':'🔇 Som'; sb.setAttribute('aria-pressed',soraSoundOn?'true':'false'); sb.setAttribute('aria-label',soraSoundOn?'Desativar som':'Ativar som'); sb.title=soraSoundOn?'Desativar som':'Ativar som'; }
@@ -4651,6 +4673,6 @@ function soraCloseUI(){
 })();
 </script>
 
-<script src="./tw-windows.js?v=1"></script>
+<script src="./tw-windows.js?v=2"></script>
 </body>
 </html>

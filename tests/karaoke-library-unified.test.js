@@ -21,9 +21,9 @@ assert(html.includes('document.documentElement.classList.add(\'kt-library-ready\
 assert((html.match(/data-kt-voice-group="/g)||[]).length===3,'vozes continuam disponíveis fora do site integrado');
 console.log('✓ Karaoke: lista visual restaurada, biblioteca antiga oculta no celular e motor preservado');
 
-// Monta a mesma lista que a sala usa, com um seletor de 14 músicas.
+// Monta a mesma lista que a sala usa, com um seletor de 17 músicas.
 const vm=require('node:vm');
-const keysDoJogo=keys.concat(require('../karaoke-musicas-modos.js').lista.map(m=>m.key));
+const keysDoJogo=keys.concat(require('../karaoke-musicas-modos.js').lista.map(m=>m.key),['zipper','hitonatsu','staywithme']);
 const seletor={value:'normal',options:keysDoJogo.map(value=>({value,textContent:value})),addEventListener(){}};
 const attrs={},box={querySelector(){return {focus(){}};},setAttribute(k,v){attrs[k]=v;},getAttribute(k){return attrs[k];},
   contains(){return true;},addEventListener(k,fn){this[k]=fn;}};
@@ -36,8 +36,8 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'karaoke-lista.js'),'utf8'),{
   location:{search:'?lang=pt'}
 });
 const capas=()=>[...box.innerHTML.matchAll(/data-ktl="([^"]+)"/g)].map(m=>m[1]);
-assert.deepEqual(capas(),['fast','normal','chill']);
-assert(box.innerHTML.includes('Todas (14)') && box.innerHTML.includes('Hitonatsu no Dekigoto'));
+assert.deepEqual(capas(),['fast','zipper','hitonatsu','staywithme']);
+assert(box.innerHTML.includes('Todas (17)') && box.innerHTML.includes('data-ktl="hitonatsu"'));
 function filtrar(filtro){box.click({target:{closest:()=>({dataset:{ktlFiltro:filtro}})}});}
 filtrar('todas');assert.deepEqual(capas(),keysDoJogo);
 filtrar('destaques');assert.equal(seletor.value,'normal');

@@ -76,7 +76,9 @@
       }).join('') + '</div>' +
       (a ? '<div class="ktl-detalhe"><span class="ktl-arte ktl-arte-g" style="' + capaEstilo(a.k) + '" aria-hidden="true"><i>' + esc(a.emo) + '</i></span>' +
         '<div class="ktl-info">' + (a.k === sem ? '<em class="ktl-sem">★ ' + esc(t('semana')) + '</em>' : '') +
-          '<h3 translate="no">' + esc(a.nome) + '</h3><p>' + esc([a.bpm, a.estrelas].filter(Boolean).join(' · ')) + '</p>' +
+          '<h3 translate="no">' + esc(a.nome) + '</h3>' +
+          (trio.some(function(m){return m.k===a.k;}) ? '<p>'+esc(t('album'))+' · Tsu, Lirika &amp; Pati</p>' : '') +
+          (a.k==='zipper' ? '<p>'+esc(t('zipper'))+'</p>' : '') + '<p>' + esc([a.bpm, a.estrelas].filter(Boolean).join(' · ')) + '</p>' +
           '<p class="ktl-rec">' + esc(rec ? rec.textContent.replace(/\s*·\s*⭐.*$/, '') : recorde(a.k)) + '</p></div>' +
         '<div class="ktl-acoes"><button type="button" class="ktl-ouvir" data-ktl-ouvir="' + esc(a.k) + '">▶ ' + esc(t('ouvir')) + '</button>' +
           '<button type="button" class="ktl-cantar" data-ktl-cantar="1"' + (bloqueado ? ' disabled' : '') + '>🎤 ' + esc(t('cantar')) + '</button></div></div>' : '') + colecao(lista, album && album.open);

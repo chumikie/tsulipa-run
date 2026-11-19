@@ -64,8 +64,14 @@
    if(current!==target)return;
    var ctx=options.getContext?options.getContext():null;
    function begin(){
-    if(current!==target)return;
+    if(current!==target||target.paused)return;
     if(!ctx||ctx.state!=="running"){stop(true,tr("Não foi possível iniciar a prévia musical."));return;}
+    if(target.song.recording && !target.recordingBuffer){
+      options.loadRecording(target.song,ctx).then(function(buffer){
+        target.recordingBuffer=buffer;begin();
+      }).catch(function(){if(current===target)stop(true,tr("Não foi possível iniciar a prévia musical."));});
+      return;
+    }
     target.context=ctx;target.elapsed=Math.max(0,fromMs||0);
     target.audioOrigin=ctx.currentTime+.06-target.elapsed/1000;
     target.audioClock=true;target.paused=false;
@@ -99,7 +105,7 @@
    if(options.silence)options.silence();
    render();return true;
   }
-  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;arm(current,current.elapsed);return true;}
+  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;current.paused=false;arm(current,current.elapsed);return true;}
   function toggle(key){
    if(current&&(!key||current.songKey===key)){if(current.paused)return resume();return pause();}
    return play(key||(options.currentSong?options.currentSong():"normal"));

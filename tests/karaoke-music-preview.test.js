@@ -81,7 +81,7 @@ for(const key of keys){
  assert(library.includes('data-kt-song-best="'+key+'"'),key+' keeps personal best');
 }
 for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"')||(id==='ktPreviewVolume'&&library.includes('id=ktPreviewVolume')),'player includes '+id);
-assert(html.includes('<script src="./karaoke-music-preview.js?v=2"></script>'),'external controller loads');
+assert(html.includes('<script src="./karaoke-music-preview.js?v=3"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(moduleCode.includes('audioReady:true'),'independent preview marks its target ready for the shared beat renderer');
 assert(!moduleCode.includes('Prévia finalizada.')&&!moduleCode.includes('Prévia interrompida.'),'music previews finish and stop without completion/interruption announcements');
@@ -100,3 +100,18 @@ assert((html.includes('id="ktPreviewVolume"')||html.includes('id=ktPreviewVolume
 assert(html.includes("window.addEventListener('pagehide',function(){previewPlayer.stop(false);"),'pagehide stops preview');
 assert(html.includes("document.addEventListener('visibilitychange',function(){if(document.hidden){previewPlayer.stop(false);"),'hidden page stops preview');
 console.log('✓ Music preview: seven tracks, separate listen/select, independent player, no game/ticket/ranking admission');
+
+// A gravação começa no relógio das notas, só uma vez, e retoma no segundo correto.
+const sources=[];
+const acGravado={currentTime:10,createBufferSource(){
+ const source={connect(){},disconnect(){},start(...args){sources.push(args);}};return source;
+}};
+const vozes=new Set();
+const gravado=vm.runInNewContext('('+html.slice(html.indexOf('function recordedBeat('),beatStart).trim()+')',{
+ AC:acGravado,muted:false,voices:vozes,ktPreviewRouting:false,ktMix:()=>({in:{}})
+});
+const alvo={audioOrigin:11,recordingBuffer:{duration:60}};
+gravado(alvo);gravado(alvo);
+assert.deepEqual(sources,[[11,0]]);
+vozes.clear();acGravado.currentTime=28;gravado(alvo);
+assert.deepEqual(sources[1],[28,17]);

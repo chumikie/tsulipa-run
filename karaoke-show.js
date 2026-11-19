@@ -120,7 +120,31 @@ function ruido(time,dur,vol,hp,pan){if(D.muted()||!D.AC())return;
  no.connect(ktPreviewRouting?previewPlayer.output(D.AC()):ktMix().in);voices.add(src);src.onended=function(){voices.delete(src);src.disconnect();f.disconnect();g.disconnect();if(pn)pn.disconnect();};src.start(t,(time*7.3)%.3);src.stop(t+dur+.02);}
 function ktBumbo(time,vol){if(D.muted()||!D.AC())return;var t=Math.max(D.AC().currentTime,time),o=D.AC().createOscillator(),g=D.AC().createGain();o.type='sine';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(46,t+.12);
  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+.24);o.connect(g);g.connect(ktPreviewRouting?previewPlayer.output(D.AC()):ktMix().in);voices.add(o);o.onended=function(){voices.delete(o);o.disconnect();g.disconnect();};o.start(t);o.stop(t+.26);}
-function beat(i,target){var playback=target||run;if(!playback||!D.AC()||!playback.audioReady||!playback.audioClock||D.AC().state!=='running')return;var c=playback.song,t=playback.audioOrigin+i*playback.step/1000;if(t<D.AC().currentTime-.05)return;
+// O áudio usa o mesmo relógio das notas. Uma retomada inicia na posição já jogada.
+var decodedRecording=null, loadingRecordings=new Map(), startRequest=0;
+function loadRecording(song,ctx){
+ if(decodedRecording && decodedRecording.song===song)return Promise.resolve(decodedRecording.buffer);
+ if(loadingRecordings.has(song))return loadingRecordings.get(song);
+ var pending=fetch(song.recording).then(function(response){
+   if(!response.ok)throw Error('recording');
+   return response.arrayBuffer();
+ }).then(function(bytes){return ctx.decodeAudioData(bytes);}).then(function(buffer){
+   decodedRecording={song:song,buffer:buffer};return buffer;
+ }).finally(function(){loadingRecordings.delete(song);});
+ loadingRecordings.set(song,pending);return pending;
+}
+function recordedBeat(playback){
+ if(D.muted() || !playback.recordingBuffer || (playback.recordingSource && voices.has(playback.recordingSource)))return;
+ var ctx=D.AC(), offset=Math.max(0,ctx.currentTime-playback.audioOrigin);
+ if(offset>=playback.recordingBuffer.duration)return;
+ var source=ctx.createBufferSource();
+ source.buffer=playback.recordingBuffer;
+ source.connect(ktPreviewRouting?previewPlayer.output(ctx):ktMix().in);
+ playback.recordingSource=source;voices.add(source);
+ source.onended=function(){voices.delete(source);source.disconnect();};
+ source.start(Math.max(ctx.currentTime,playback.audioOrigin),offset);
+}
+function beat(i,target){var playback=target||run;if(!playback||!D.AC()||!playback.audioReady||!playback.audioClock||D.AC().state!=='running')return;var c=playback.song,t=playback.audioOrigin+i*playback.step/1000;if(c.recording){recordedBeat(playback);return;}if(t<D.AC().currentTime-.05)return;
 var p=i%8,len=c.mel.length,step=playback.step/1000,volta=Math.floor(i/len),up=volta>=2?2:0,chord=c.ch[Math.floor(i/(8/c.cpb))%c.ch.length].map(function(n){return n+up;}),root=chord[0];while(root>52)root-=12;
 /* A partir da 3ª volta, o refrão sobe um tom; pistas ficam fixas. */
 if(playback===run&&i%len===0&&volta===2&&!playback.auto){playback.feedback='Refrão! ✨';playback.feedbackUntil=performance.now()+(t-D.AC().currentTime)*1000+1200;}
@@ -155,13 +179,26 @@ if(playback.total&&i===playback.total-1&&!ktPreviewRouting){chord.concat([root+1
 /* Relógio de áudio único, já descontando a latência de saída. */
 function kNow(){if(run&&run.audioClock&&D.AC()&&D.AC().state==='running'&&run.audioOrigin)return run.start+(D.AC().currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();return performance.now();}
 function schedule(){if(!run||run.paused||!run.audioReady||!run.audioClock||!D.AC()||D.AC().state!=='running')return;/* Antecedencia no relogio nativo do audio, sem aplicar a latencia outra vez. */var elapsed=(D.AC().currentTime-run.audioOrigin)*1000;while(run.audioStep<run.total&&run.audioStep*run.step<elapsed+220)beat(run.audioStep++);}
-function start(mode){if(run)return;previewPlayer.stop(false);if(typeof D.ktAudioVitrine()!=='undefined'&&D.ktAudioVitrine())D.ktAudioVitrine().stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var rehearsal=window.ktEnsaio&&(mode==='ensaio'||mode==='confirmed'),practice=mode===true||rehearsal;if(!practice&&mode!=='confirmed'){D.ktFlow().request();return;}if(!practice&&!D.krSt().aberta)return;var wasClosed=practice&&!D.krSt().aberta;if(wasClosed)D.krSt().aberta=true;var admission=!practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()?D.ktMeta().begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)D.krSt().aberta=false;return;}if(admission){songKey=admission.round.song;D.$()('ktSong').value=songKey;}if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().beforeStart();var auto=mode===true;D.krMusicaParar()();D.ac()();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000,rehearsal:rehearsal,songKey:songKey,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:D.ktFlow().offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,timing:{early:0,late:0},notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
+function start(mode,buffer){if(run)return;
+ if(mode!==true && D.$()('ktSong').value)songKey=D.$()('ktSong').value;
+ var selected=songs[songKey], key=songKey, request=++startRequest;
+ if(selected && selected.recording && !buffer){
+   var ctx=D.ac()();
+   if(!ctx)return;
+   loadRecording(selected,ctx).then(function(decoded){
+     if(request===startRequest && songKey===key && !document.hidden)start(mode,decoded);
+   }).catch(function(){if(request===startRequest)timingMessage(D.tr()('Não foi possível iniciar a prévia musical.'));});
+   return;
+ }
+ previewPlayer.stop(false);if(typeof D.ktAudioVitrine()!=='undefined'&&D.ktAudioVitrine())D.ktAudioVitrine().stop();/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var rehearsal=window.ktEnsaio&&(mode==='ensaio'||mode==='confirmed'),practice=mode===true||rehearsal;if(!practice&&mode!=='confirmed'){D.ktFlow().request();return;}if(!practice&&!D.krSt().aberta)return;var wasClosed=practice&&!D.krSt().aberta;if(wasClosed)D.krSt().aberta=true;var admission=!practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()?D.ktMeta().begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)D.krSt().aberta=false;return;}if(admission){songKey=admission.round.song;D.$()('ktSong').value=songKey;}if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().beforeStart();var auto=mode===true;D.krMusicaParar()();D.ac()();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000,rehearsal:rehearsal,songKey:songKey,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:D.ktFlow().offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,timing:{early:0,late:0},notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
 if(rehearsal && window.ktEnsaioRegistrar)window.ktEnsaioRegistrar('iniciados',songKey);
+run.recordingBuffer=buffer;
 run.total=Math.floor((run.durationMs-1000)/step);run.notes=makeNoteMap(song,run.total,step,run.start);if(admission){run.session=admission.round;var saved=admission.round.checkpoint;if(saved){resumeElapsed=Math.max(0,Number(saved.elapsed)||0);run.start=now-resumeElapsed;['score','combo','maxCombo','hits','attempts'].forEach(function(k){run[k]=saved[k]||0;});run.timing=timingRestaurar(saved,run.hits);var oldDone={};if(saved.noteMap!==2){var oldPos=0;for(var j=0;j<run.total;j++)if(song.mel[j%song.mel.length]>=0)oldDone[j]=!!saved.done[oldPos++];}run.notes.forEach(function(n,i){n.at=run.start+n.idx*step;n.done=saved.noteMap===2?!!saved.done[i]:!!oldDone[n.idx];});D.krEu().canto=saved.canto||D.krEu().canto;run.audioStep=Math.max(0,Math.ceil(resumeElapsed/step));}}/* Sons de destaque seguem o mesmo idx musical, inclusive após retomada. */run.cuesByStep={};run.notes.forEach(function(n){(run.cuesByStep[n.idx]||(run.cuesByStep[n.idx]=[])).push(n);});/* A calibracao e apenas do INPUT: nunca deslocar nota visual ou som. */D.krRhythmRun(run);
 if(!auto){D.krClearHandheld()('stage');D.krEu().no_mic=true;D.krEu().micT=60*60;D.krEu().x=D.krEu().tx=480;D.krEu().y=D.krEu().ty=286;}else if(D.krDemoCantor())D.krDemoCantor().endsAt=now+KaraokeRoomAutoMic.SHOW_DURATION_MS;
 setTimeout(function(){if(!auto)D.krIrAoPalco()();D.krRoomAtualizar()();},160);
 D.$()('ktStart').disabled=true;D.$()('ktStart').textContent='🎤 Show em andamento';D.$()('ktSong').disabled=true;D.$()('ktPause').disabled=true;D.$()('ktEnd').disabled=false;D.$()('ktKeys').hidden=!!auto;D.$()('ktSession').hidden=false;timingMessage((D.KR_RHYTHM_TOUCH_DIAGNOSTIC()[D.LANG()]||D.KR_RHYTHM_TOUCH_DIAGNOSTIC().pt).ready);lastUI=0;D.krUI()();updateUI();var activeRun=run;ktPrepararRelogioAudio(activeRun,resumeElapsed?0:prepareMs,resumeElapsed,function(audioReady,waitMs){if(run!==activeRun)return;if(D.krDemoCantor()&&waitMs>0)D.krDemoCantor().endsAt+=waitMs;if(!resumeElapsed&&typeof D.krLoungeReactToShow()==='function')D.krLoungeReactToShow()('start',{song:song,player:D.krDemoCantor()&&D.krDemoCantor().bot?D.krDemoCantor().bot:D.krEu(),language:D.LANG()});D.$()('ktPause').disabled=false;updateUI();checkpoint();});}
 var previewPlayer=window.KaraokeMusicPreview.create({
+ loadRecording:loadRecording,
  getSong:function(key){return songs[key];},getContext:D.ac(),
  getResumePromise:function(){return D.acResumePromise();},isMuted:function(){return D.muted();},
  isBusy:function(){return !!run;},beat:function(i,target){var was=ktPreviewRouting;ktPreviewRouting=!!target&&target!==run;try{beat(i,target);}finally{ktPreviewRouting=was;}},silence:silence,
@@ -280,7 +317,7 @@ x.restore();D.ktOriginalFrame()(x,tx,ty,tw,th);}
 function own(){return !!run&&!run.auto;}
 function arena(){if(!own())return null;var r=run;return {now:r.paused?r.pauseAt:kNow(),notes:r.notes,fall:r.song.fall||1700,title:r.song.title,flash:r.flash,feedback:r.feedback,feedbackUntil:r.feedbackUntil,combo:r.combo,score:r.score,acc:r.attempts?Math.round(r.hits/r.attempts*100):0,start:r.start,durationMs:r.durationMs,paused:r.paused,resumeUntil:r.resumeUntil,perfect:KT_HIT_WINDOWS.perfect,good:KT_HIT_WINDOWS.good,prep:(D.krRhythmLabels()()||[''])[0]};}
 function laneAt(px,py,event){if(!run||py<38||py>212||px<286||px>674)return false;hit(Math.max(0,Math.min(3,Math.floor((px-286-12)/((388-24)/4)))),event);return true;}
-D.$()('ktSong').onchange=function(){if(!run)songKey=this.value;};D.$()('ktPause').onclick=function(){if(run)pause(run.resumeUntil?true:!run.paused);};D.$()('ktEnd').onclick=function(){end(false);};D.$()('ktResultClose').onclick=function(){D.$()('ktResult').close();};D.$()('ktResultAgain').onclick=function(){D.$()('ktResult').close();D.ktFlow().request();};D.$()('ktStart').onclick=function(){D.ktFlow().request();};
+D.$()('ktSong').onchange=function(){if(!run){startRequest++;songKey=this.value;}};D.$()('ktPause').onclick=function(){if(run)pause(run.resumeUntil?true:!run.paused);};D.$()('ktEnd').onclick=function(){end(false);};D.$()('ktResultClose').onclick=function(){D.$()('ktResult').close();};D.$()('ktResultAgain').onclick=function(){D.$()('ktResult').close();D.ktFlow().request();};D.$()('ktStart').onclick=function(){D.ktFlow().request();};
 [].forEach.call(document.querySelectorAll('[data-kt-hit]'),function(b){b.onpointerdown=function(e){e.preventDefault();hit(+b.dataset.ktHit,e);};b.onclick=function(e){if(e.detail===0)hit(+b.dataset.ktHit,e);};});
 document.addEventListener('keydown',function(e){
  if(e.repeat||e.altKey||e.ctrlKey||e.metaKey||D.$()('ktResult').open)return;

@@ -35,12 +35,14 @@ const doc={
 M.montar(songs,doc);M.montar(songs,doc);
 assert(chaves.every(k=>songs[k]&&songs[k].mel.length===64)&&songs.normal.mel.length===0,'trilhas entram no catálogo sem trocar as existentes');
 assert.equal(inserts.length,1,'cartões criados uma vez');
-assert.equal(opcoes.length,7,'sete opções novas no seletor, uma vez');
+assert.deepEqual(M.gravacoes.map(m=>m.key),['zipper','hitonatsu','staywithme']);
+for(const m of M.gravacoes){assert(fs.existsSync(path.resolve(__dirname,"..",m.song.recording)));assert(songs[m.key].mel.length>150);}
+assert.equal(opcoes.length,10,'sete opções novas no seletor, uma vez');
 assert(chaves.every(k=>inserts[0].includes('data-kt-song-select="'+k+'"')&&inserts[0].includes('data-kt-song-best="'+k+'"')),'cada cartão tem Ouvir, Selecionar e recorde');
 assert.equal(M.nome('sora'),'Sora⭐Jump!');
 
 // Ligação com a página: script carregado antes do catálogo e chamado antes do mapa de pistas.
-assert(html.includes('<script src="./karaoke-musicas-modos.js?v=1"></script>'),'karaoke-time.html carrega o arquivo das trilhas');
+assert(html.includes('<script src="./karaoke-musicas-modos.js?v=2"></script>'),'karaoke-time.html carrega o arquivo das trilhas');
 const i=html.indexOf('ktMusicasModosMontar(songs,document)'),lanes=html.indexOf('Object.keys(songs).forEach(function(k){var c=songs[k],cnt={}');
 assert(i>0&&lanes>i,'as trilhas entram antes das pistas serem calculadas');
 assert(html.includes("ktMusicaModoNome(k)"),'o placar semanal mostra o nome das trilhas novas');

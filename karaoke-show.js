@@ -170,6 +170,14 @@ var KT_TRECHO_TR = {
  th:['เล่นช่วงนี้ซ้ำ','ช่วงนี้กดถูก {a} จาก {n} โน้ต','ก่อน: {a}/{n} · ตอนนี้: {b}/{n}'],
  ja:['区間を繰り返す','この区間は{n}ノーツ中{a}ノーツ成功。','前回：{a}/{n} ・ 今回：{b}/{n}']
 };
+var KT_TRECHO_VELOCIDADE = {
+ pt:['Praticar a 75%','Treino a 75%: {b}/{n}','Repetir trecho a 100%'],
+ en:['Practice at 75%','Practice at 75%: {b}/{n}','Repeat section at 100%'],
+ es:['Practicar al 75%','Práctica al 75%: {b}/{n}','Repetir tramo al 100%'],
+ id:['Latihan pada 75%','Latihan pada 75%: {b}/{n}','Ulangi bagian pada 100%'],
+ th:['ฝึกที่ 75%','ฝึกที่ 75%: {b}/{n}','เล่นช่วงนี้ซ้ำที่ 100%'],
+ ja:['75%で練習','75%の練習：{b}/{n}','100%で区間を繰り返す']
+};
 function ktEscolherTrecho(r){
  var melhor=null, desde=r.trechoDepois||0;
  for(var i=Math.ceil(desde/8)*8;i+8<=r.total;i+=8){
@@ -182,19 +190,26 @@ function ktEscolherTrecho(r){
  return melhor;
 }
 function ktMostrarTrecho(r){
- var btn=D.$()('ktTrechoBt'), resumo=D.$()('ktTrechoResultado');
+ var btn=D.$()('ktTrechoBt'), lento=D.$()('ktTrechoLentoBt'), resumo=D.$()('ktTrechoResultado');
  if(!btn||!resumo)return;
  if(!r.trecho)trechoTreino=ktEscolherTrecho(r);
  btn.hidden=!trechoTreino;resumo.hidden=!trechoTreino;
+ if(lento)lento.hidden=!trechoTreino;
  if(!trechoTreino)return;
  var txt=KT_TRECHO_TR[D.LANG()]||KT_TRECHO_TR.pt;
- btn.textContent=txt[0];
- resumo.textContent=txt[r.trecho?2:1].replace('{a}',trechoTreino.acertos)
+ var v=KT_TRECHO_VELOCIDADE[D.LANG()]||KT_TRECHO_VELOCIDADE.pt;
+ if(r.trechoLento)trechoTreino.acertosLento=r.hits;
+ btn.textContent=trechoTreino.acertosLento==null?txt[0]:v[2];
+ if(lento)lento.textContent=v[0];
+ resumo.textContent=txt[r.trecho&&!r.trechoLento?2:1].replace('{a}',trechoTreino.acertos)
    .replace(/\{n\}/g,trechoTreino.notas.length).replace('{b}',r.hits);
+ if(trechoTreino.acertosLento!=null)resumo.textContent+=' · '+v[1].replace('{b}',trechoTreino.acertosLento).replace('{n}',trechoTreino.notas.length);
 }
-function start(mode){if(run)return;previewPlayer.stop(false);if(typeof D.ktAudioVitrine()!=='undefined'&&D.ktAudioVitrine())D.ktAudioVitrine().stop();var trecho=mode==='trecho'&&trechoTreino;if(mode==='trecho'&&!trecho)return;if(trecho){songKey=trecho.musica;D.$()('ktSong').value=songKey;}/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var rehearsal=window.ktEnsaio&&(mode==='ensaio'||mode==='confirmed'),practice=mode===true||rehearsal||!!trecho;if(!practice&&mode!=='confirmed'){D.ktFlow().request();return;}if(!practice&&!D.krSt().aberta)return;var wasClosed=practice&&!D.krSt().aberta;if(wasClosed)D.krSt().aberta=true;var admission=!practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()?D.ktMeta().begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)D.krSt().aberta=false;return;}if(admission){songKey=admission.round.song;D.$()('ktSong').value=songKey;}if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().beforeStart();var auto=mode===true;D.krMusicaParar()();D.ac()();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000,rehearsal:rehearsal,trecho:trecho,songKey:songKey,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:D.ktFlow().offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,timing:{early:0,late:0},notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
+function start(mode,lento){if(run)return;previewPlayer.stop(false);if(typeof D.ktAudioVitrine()!=='undefined'&&D.ktAudioVitrine())D.ktAudioVitrine().stop();var trecho=mode==='trecho'&&trechoTreino;if(mode==='trecho'&&!trecho)return;if(trecho){songKey=trecho.musica;D.$()('ktSong').value=songKey;}/* A simulação automática interna não gasta tentativas; jogadores só entram após confirmação. */var rehearsal=window.ktEnsaio&&(mode==='ensaio'||mode==='confirmed'),practice=mode===true||rehearsal||!!trecho;if(!practice&&mode!=='confirmed'){D.ktFlow().request();return;}if(!practice&&!D.krSt().aberta)return;var wasClosed=practice&&!D.krSt().aberta;if(wasClosed)D.krSt().aberta=true;var admission=!practice&&typeof D.ktMeta()!=='undefined'&&D.ktMeta()?D.ktMeta().begin(songKey):null;if(admission&&!admission.ok){if(wasClosed)D.krSt().aberta=false;return;}if(admission){songKey=admission.round.song;D.$()('ktSong').value=songKey;}if(typeof D.ktDaily()!=='undefined'&&D.ktDaily())D.ktDaily().beforeStart();var auto=mode===true;D.krMusicaParar()();D.ac()();silence();if(!songs[songKey])songKey='normal';var song=songs[songKey],step=60000/song.bpm/2,now=performance.now(),prepareMs=4000,resumeElapsed=0;run={song:song,step:step,durationMs:auto?KaraokeRoomAutoMic.SHOW_PLAY_MS:rehearsal?20000:60000,rehearsal:rehearsal,trecho:trecho,songKey:songKey,start:now+prepareMs,paused:false,pauseAt:0,resumeUntil:0,skipBeforeUnload:false,auto:auto,practice:practice,practiceOpenedRoom:wasClosed,offsetMs:D.ktFlow().offset(),score:0,combo:0,maxCombo:0,hits:0,attempts:0,timing:{early:0,late:0},notes:[],audioOrigin:0,audioClock:false,audioReady:false,audioStep:0,feedback:'Prepare-se!',feedbackUntil:now+prepareMs,flash:[0,0,0,0]};
 if(rehearsal && window.ktEnsaioRegistrar)window.ktEnsaioRegistrar('iniciados',songKey);
 if(trecho){
+ run.trechoLento=lento===true;
+ if(run.trechoLento)step=run.step=step/.75;
  run.total=trecho.passos;run.durationMs=trecho.passos*step+500;
  run.notes=trecho.notas.map(function(n){return {lane:n.lane,idx:n.idx,at:run.start+n.idx*step,done:false};});
 }else{run.total=Math.floor((run.durationMs-1000)/step);run.notes=makeNoteMap(song,run.total,step,run.start);}if(admission){run.session=admission.round;var saved=admission.round.checkpoint;if(saved){resumeElapsed=Math.max(0,Number(saved.elapsed)||0);run.start=now-resumeElapsed;['score','combo','maxCombo','hits','attempts'].forEach(function(k){run[k]=saved[k]||0;});run.timing=timingRestaurar(saved,run.hits);var oldDone={};if(saved.noteMap!==2){var oldPos=0;for(var j=0;j<run.total;j++)if(song.mel[j%song.mel.length]>=0)oldDone[j]=!!saved.done[oldPos++];}var acertos=Array.isArray(saved.noteHits)&&saved.noteHits.length===run.notes.length?saved.noteHits:null;
@@ -319,6 +334,11 @@ var ktTrechoBt=D.$()('ktTrechoBt');
 if(ktTrechoBt)ktTrechoBt.onclick=function(){
  if(!trechoTreino||run)return;
  D.$()('ktResult').close();start('trecho');
+};
+var ktTrechoLentoBt=D.$()('ktTrechoLentoBt');
+if(ktTrechoLentoBt)ktTrechoLentoBt.onclick=function(){
+ if(!trechoTreino||run)return;
+ D.$()('ktResult').close();start('trecho',true);
 };
 D.$()('ktSong').onchange=function(){if(!run)songKey=this.value;};D.$()('ktPause').onclick=function(){if(run)pause(run.resumeUntil?true:!run.paused);};D.$()('ktEnd').onclick=function(){end(false);};D.$()('ktResultClose').onclick=function(){D.$()('ktResult').close();};D.$()('ktResultAgain').onclick=function(){D.$()('ktResult').close();D.ktFlow().request();};D.$()('ktStart').onclick=function(){D.ktFlow().request();};
 [].forEach.call(document.querySelectorAll('[data-kt-hit]'),function(b){b.onpointerdown=function(e){e.preventDefault();hit(+b.dataset.ktHit,e);};b.onclick=function(e){if(e.detail===0)hit(+b.dataset.ktHit,e);};});

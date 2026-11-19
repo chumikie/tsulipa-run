@@ -1870,6 +1870,7 @@ function soraBurst(px, py, color, count, power){
   if(soraParticles.length>120)soraParticles.splice(0,soraParticles.length-120);
 }
 // A bifurcação ocupa uma faixa curta e volta a se juntar à geração normal.
+var soraRotaDaSubida = '', soraDonoDaSubida = null;
 var SORA_ROTA_ENTRADA = -1040, SORA_ROTA_SAIDA = -1508;
 var SORA_ROTA_TR = {
   pt:['Nuvens próximas','Atalho alto','Bifurcação: nuvens próximas à esquerda ou salto alto à direita'],
@@ -1880,6 +1881,32 @@ var SORA_ROTA_TR = {
   ja:['近い雲','高い近道','分岐：左は近い雲、右は高く跳ぶ近道']
 };
 function soraRotaTexto(i){return (SORA_ROTA_TR[LANG]||SORA_ROTA_TR.pt)[i];}
+function soraResumoRotas(altura){
+  var chave = 'brs48cr_sora_rotas_v1:' + (soraDonoDaSubida || 'visitante'), marcas = {};
+  try{
+    var salvas = JSON.parse(window.__TW_TEST_STORAGE.getItem(chave));
+    if(salvas && typeof salvas === 'object' && !Array.isArray(salvas)) marcas = salvas;
+  }catch(e){}
+  if(soraRotaDaSubida && altura > (Number(marcas[soraRotaDaSubida]) || 0)){
+    marcas[soraRotaDaSubida] = altura;
+    try{ window.__TW_TEST_STORAGE.setItem(chave,JSON.stringify(marcas)); }catch(e){}
+  }
+  var textos = {
+    pt:['Caminho nesta subida','Melhores alturas por caminho','Ainda sem marca'],
+    en:['Path this climb','Best height by path','No record yet'],
+    es:['Ruta de esta subida','Mejores alturas por ruta','Sin marca todavía'],
+    id:['Jalur pendakian ini','Ketinggian terbaik per jalur','Belum ada rekor'],
+    th:['เส้นทางรอบนี้','ความสูงสูงสุดแต่ละเส้นทาง','ยังไม่มีสถิติ'],
+    ja:['今回のルート','ルート別の最高高度','記録なし']
+  };
+  var t = textos[LANG] || textos.pt;
+  return (soraRotaDaSubida ? '<p class="sora-mission-copy">' + escHtml(t[0] + ' · ' + soraRotaTexto(soraRotaDaSubida === 'alta' ? 1 : 0)) + '</p>' : '') +
+    '<div class="sora-result-grid" aria-label="' + escHtml(t[1]) + '">' + ['suave','alta'].map(function(rota,i){
+      var m = Math.max(0,Math.floor(Number(marcas[rota]) || 0));
+      return '<div class="sora-result-stat"><span class="stat-label">' + escHtml(soraRotaTexto(i)) +
+        '</span><strong class="stat-value">' + (m ? m + ' m' : escHtml(t[2])) + '</strong></div>';
+    }).join('') + '</div>';
+}
 function soraCriarBifurcacao(){
   function por(x,y,w,rota,k){soraPlats.push({k:k||'nuvem',x:x,y:y,w:w,h:14,vx:0,broken:false,used:false,rota:rota});}
   por(141,SORA_ROTA_ENTRADA,78,'entrada');
@@ -2181,6 +2208,7 @@ function soraMusicStart(){
 function soraReset(){
   soraCamY = 0;
   soraHeight = 0;
+  soraRotaDaSubida = ''; soraDonoDaSubida = soraOnlineUserId;
   soraStarsRun = 0;
   soraFlashAlpha = 0;
   soraToast = ''; soraToastT = 0;
@@ -2484,6 +2512,7 @@ function soraUpdate(dt){
       var feetPrev = (soraP.y - soraP.vy * dt) + soraP.h;
       var feetNow  = soraP.y + soraP.h;
       if(soraP.x + soraP.w - 6 > pl.x && soraP.x + 6 < pl.x + pl.w && feetPrev <= pl.y + 10 && feetNow >= pl.y){
+        if(!soraRotaDaSubida && (pl.rota === 'suave' || pl.rota === 'alta')) soraRotaDaSubida = pl.rota;
         if(pl.rota === 'entrada' && !pl.sinalizada){ pl.sinalizada=true; soraMsg(soraRotaTexto(2),210); }
         if(pl.k === 'caixa'){
           // Caixa de som quebra quando pisa!
@@ -4105,7 +4134,8 @@ function soraMetaIntermediaria(h){
     ja:['次の目標', '目標達成']
   };
   var tMeta = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
-  return h < 100 ? tMeta[0] + ' · 100 m' : h < 250 ? tMeta[0] + ' · 250 m' : tMeta[1] + ' · 250 m';
+  var proxima = [100,250,375,500].find(function(meta){ return h < meta; });
+  return (proxima ? tMeta[0] : tMeta[1]) + ' · ' + (proxima || 500) + ' m';
 }
 function soraEndGame(){
   soraMusicStop();
@@ -4164,6 +4194,7 @@ function soraEndGame(){
 
   var tier = soraBadgeTier();
   var tierTxt = tr(tier === 3 ? '🌙 Show na Lua (Nv.3)' : tier === 2 ? '🌌 Voo Estrelado (Nv.2)' : tier === 1 ? '☁️ Pulo nas Nuvens (Nv.1)' : 'Rumo aos 500m!');
+  var rotasHtml = isTestScene ? '' : soraResumoRotas(h);
   if($('soraResTxt')){
     $('soraResTxt').innerHTML =
       '<div class="sora-score-hero' + (isNew ? ' is-record' : '') + '">' +
@@ -4176,7 +4207,8 @@ function soraEndGame(){
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
-      (!isTestScene && h < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(h)) + '</p>' : '') +
+      rotasHtml +
+      (!isTestScene && soraBest < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(soraBest)) + '</p>' : '') +
       (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';

@@ -436,6 +436,7 @@ function cfFim(){
   if(!cf||cf.fase==='fim')return;
   var atual=cf;
   cf.fase='fim';
+  if(cf.alternado){ cfUI(); return; }
   if(cf.perfeitos>=12&&typeof conqGanhar==='function'&&conqGanhar('jogo_barista'))
     cf.conq.push('🧋 '+tr('Barista perfeito'));
   var rec=typeof recMaiorLocal==='function'?recMaiorLocal('cafe'):cfLer(CF_RECORDE_KEY,0);

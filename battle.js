@@ -345,8 +345,14 @@ function slotsHtml(){
    var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
    // 17/11: escolher tocando no card do Idol (em vez do select do navegador); quem já está em outra rodada troca de lugar
    h+='<div class="battle-slot" role="group" aria-label="'+esc(nomeRound(i))+'"><span class="battle-slot-tit">'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection">'+
-    '<span class="battle-picks">'+estado.cards.map(function(c){var on=unit[i]===c.nick;return '<button type="button" class="battle-pick'+(on?' on':'')+'" data-battle="slot" data-slot="'+i+'" data-nick="'+esc(c.nick)+'" aria-pressed="'+on+'">'+
-     '<canvas class="battle-av battle-av-p" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="1" aria-hidden="true"></canvas><b>'+esc(c.nick)+'</b><small>'+valor(c,i)+'/10</small></button>';}).join('')+'</span>'+
+    '<span class="battle-card-legend" aria-hidden="true">'+[0,1,2].map(function(j){
+      return '<span>'+ico(j)+esc(nomeRound(j))+'</span>';
+    }).join('')+'</span><span class="battle-picks">'+estado.cards.map(function(c){var on=unit[i]===c.nick;return '<button type="button" class="battle-pick'+(on?' on':'')+'" data-battle="slot" data-slot="'+i+'" data-nick="'+esc(c.nick)+'" aria-pressed="'+on+'">'+
+     '<canvas class="battle-av battle-av-p" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="1" aria-hidden="true"></canvas><b>'+esc(c.nick)+'</b><span class="battle-card-attrs">'+[0,1,2].map(function(j){
+       var rotulo=nomeRound(j)+' '+valor(c,j)+'/10';
+       return '<small'+(i===j?' class="atual"':'')+' title="'+esc(rotulo)+'"><span aria-hidden="true">'+ico(j)+'</span>'+
+         '<span class="twc-sr">'+esc(nomeRound(j))+' </span>'+valor(c,j)+'</small>';
+     }).join('')+'</span></button>';}).join('')+'</span>'+
      '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></div>';
  }
  return h;

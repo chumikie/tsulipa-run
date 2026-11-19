@@ -30,6 +30,35 @@
     th:['เสิร์ฟก่อน','แก้วที่เลือก','แก้วเปล่า','ส่วนผสมในแก้ว'],
     ja:['先に提供','選択中のカップ','空のカップ','カップの材料']
   };
+  var TURNO = {
+    pt:['Treinar chegadas alternadas','Turno de treino · os fãs chegam com 3 s de intervalo.','Pedidos certos no prazo','Ingrediente com mais erros','Nenhum ingrediente errado','Extra na categoria'],
+    en:['Practice staggered arrivals','Practice shift · fans arrive 3 s apart.','Correct orders on time','Most missed ingredient','No ingredient mistakes','Extra in category'],
+    es:['Practicar llegadas escalonadas','Turno de práctica · los fans llegan con 3 s de diferencia.','Pedidos correctos a tiempo','Ingrediente con más errores','Sin errores de ingredientes','Extra en la categoría'],
+    id:['Latihan kedatangan bergantian','Giliran latihan · penggemar datang berselang 3 dtk.','Pesanan benar tepat waktu','Bahan yang paling sering keliru','Tidak ada kesalahan bahan','Tambahan pada kategori'],
+    th:['ฝึกรับลูกค้าสลับกัน','รอบฝึก · แฟนมาห่างกัน 3 วินาที','ออเดอร์ถูกต้องและทันเวลา','ส่วนผสมที่ผิดบ่อยที่สุด','ไม่มีส่วนผสมผิด','ส่วนผสมเกินในหมวด'],
+    ja:['時間差で来店する練習','練習シフト · ファンは3秒間隔で来店します。','時間内に正しく出した注文','最も間違えた材料','材料の間違いなし','余分な材料の種類']
+  };
+  function turno(i){ return (TURNO[LANG] || TURNO.pt)[i]; }
+  var INGREDIENTES = [['base',CF_BASES,'Base'],['cob',CF_COBERTURAS,'Cobertura'],['enf',CF_ENFEITES,'Enfeite'],['doce',CF_DOCES,'Docinho']];
+  function registrarErro(pedido,monta){
+    INGREDIENTES.forEach(function(tipo){
+      var esperado = pedido[tipo[0]], servido = monta[tipo[0]];
+      if(esperado === servido) return;
+      var id = tipo[0] + ':' + esperado;
+      var erro = cf.errosIngredientes.get(id) || {nome:esperado < 0 ? turno(5) + ' · ' + tr(tipo[2]) : tr(tipo[1][esperado][1]), total:0};
+      erro.total++;
+      cf.errosIngredientes.set(id,erro);
+    });
+  }
+  function resumoTurno(){
+    var erros = Array.from(cf.errosIngredientes.values()), max = erros.reduce(function(n,e){ return Math.max(n,e.total); },0);
+    var nomes = erros.filter(function(e){ return e.total === max; }).map(function(e){ return e.nome; }).join(', ');
+    return '<p class="hsdica" id="cfTurnoResumo"><b>' + escHtml(turno(2)) + ' · ' + cf.perfeitos + '/' + cf.atendidos +
+      '</b><br>' + escHtml(max ? turno(3) + ' · ' + nomes + ' (' + max + ')' : turno(4)) + '</p>';
+  }
+  function botaoTurno(){
+    return '<button type="button" class="btn alt" data-cfd-turno>' + escHtml(turno(0)) + '</button>';
+  }
   function copos(i){ return (COPOS[LANG] || COPOS.pt)[i]; }
   function retorno(i){ return (RETORNO[LANG] || RETORNO.pt)[i]; }
   function paciencia(e){ return Math.max(0, 1 - (cfT - e.t0) / e.limite); }
@@ -79,15 +108,27 @@
       }).catch(function(){ if(cf === atual){ atual.buscando = false; virarTreino(); preencher(); } });
       return;
     }
-    while(esperando().length < 2 && cf.criados < 12 && ladoLivre() >= 0){ entrar(novoFa(), null, 0); cf.criados++; }
+    if(cf.alternado){
+      if(cf.criados >= 12 || ladoLivre() < 0 || cfT < cf.proximaChegada) return;
+      entrar(novoFa(),null,0); cf.criados++;
+      cf.proximaChegada = cfT + 180;
+      var foco = document.activeElement;
+      var acao = foco && foco.closest('#cfCorpo [data-cf],#cfCorpo [data-cfd-servir],#cfCorpo [data-cfd-cliente]');
+    }else while(esperando().length < 2 && cf.criados < 12 && ladoLivre() >= 0){ entrar(novoFa(), null, 0); cf.criados++; }
     if(cf.fase === 'preparando') cf.fase = 'pedido';
     cfUI();
+    if(acao){
+      var atributo = ['data-cf','data-cfd-servir','data-cfd-cliente'].find(function(a){ return acao.hasAttribute(a); });
+      var botao = $('cfCorpo').querySelector('[' + atributo + '="' + CSS.escape(acao.getAttribute(atributo)) + '"]');
+      if(botao) botao.focus({preventScroll:true});
+    }
   }
   function virarTreino(){ if(!cf) return; cf.modoServidor = 'treino'; if(cf.provaEstado !== 'confirmado') cf.provaEstado = 'sem_comprovacao'; }
 
   function servir(lado, saiu){
     if(!cf || !cf.duplo || cf.fase !== 'pedido') return;
     var e = cf.fila.filter(function(q){ return q.lado === lado && q.estado === 'espera'; })[0]; if(!e) return;
+    if(cf.alternado && cfT >= prazo(e)) saiu = true;
     var selecionado = cf.alvoBalcao === e;
     var p = e.cli.pedido, m = selecionado ? cf.monta : e.monta;
     if(selecionado) selecionar(null);
@@ -96,6 +137,7 @@
     e.resultado = saiu ? retorno(3) : certo ? retorno(resto < .25 ? 2 : 1) : cfDetalhePedido(p, m) || retorno(4);
     var numero = ++cf.atendidos;
     if(!certo) cfLembrarErro(cf, numero, p);
+    if(cf.alternado && !saiu && !certo) registrarErro(p,m);
     cf.ultimoAtendimento = e;
     e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
     if(e.sv && cf.modoServidor === 'novo'){
@@ -127,7 +169,7 @@
       var semana = typeof eventoAtual === 'function' && p.base === eventoAtual().base;
       if(!(e.sv && cf.modoServidor === 'novo')) cf.pontos += (semana ? 50 : 0) + Math.round((100 + resto * 100 + (p.cob >= 0 ? 30 : 0) + (p.doce >= 0 ? 40 : 0)) * (1 + Math.min(cf.combo - 1, 5) * .1));
       var rec = cfLer(CF_RECEITAS_KEY, {}), chave = p.base + '-' + p.enf;
-      if(!rec[chave]){
+      if(!cf.alternado && !rec[chave]){
         rec[chave] = 1; cfGravar(CF_RECEITAS_KEY, rec); cf.novas.push(cfNomeReceita(p));
         if(Object.keys(rec).length >= CF_BASES.length * CF_ENFEITES.length && typeof conqGanhar === 'function' && conqGanhar('jogo_caderno')) cf.conq.push('📒 ' + tr('Caderno completo'));
       }
@@ -159,7 +201,8 @@
         if(cf.vidas <= 0){ if(!cf.verificando) cfFim(); }
         else if(cf.criados >= 12 && !esperando().length && !cf.fila.length){ if(!cf.verificando) cfFim(); }
         else { preencher(); cfUI(); }
-      } else if(cf.vidas <= 0 && !cf.fila.some(function(e){ return e.estado === 'reacao'; }) && !cf.verificando) cfFim();
+      } else if(cf.alternado && cf.vidas > 0 && cf.criados < 12 && ladoLivre() >= 0 && cfT >= cf.proximaChegada) preencher();
+      else if(cf.vidas <= 0 && !cf.fila.some(function(e){ return e.estado === 'reacao'; }) && !cf.verificando) cfFim();
       else if(cf.criados >= 12 && !cf.fila.length && !cf.verificando) cfFim();
     }
     if(Math.floor(cfT / 2) !== Math.floor((cfT - d) / 2)) cfDesenhar();
@@ -170,8 +213,7 @@
     return CF_BASES[p.base][0] + (p.cob >= 0 ? CF_COBERTURAS[p.cob][0] : '') + CF_ENFEITES[p.enf][0] + (p.doce >= 0 ? ' + ' + CF_DOCES[p.doce][0] : '');
   }
   function copoHtml(m, ativo){
-    var listas = [['base',CF_BASES],['cob',CF_COBERTURAS],['enf',CF_ENFEITES],['doce',CF_DOCES]];
-    var items = listas.map(function(item){ return item[1][m[item[0]]]; }).filter(Boolean);
+    var items = INGREDIENTES.map(function(item){ return item[1][m[item[0]]]; }).filter(Boolean);
     return '<div class="cfduplo-copo">' +
       (ativo ? '<strong class="cfduplo-copo-ativo">' + escHtml(copos(1)) + '</strong>' : '') +
       (items.length ? '<ul aria-label="' + escHtml(copos(3)) + '">' + items.map(function(item){
@@ -182,7 +224,14 @@
   }
   function uiDuplo(){
     var corpo = $('cfCorpo'); if(!corpo || !cf) return;
-    if(cf.fase !== 'pedido' && cf.fase !== 'preparando' && cf.fase !== 'saudacao') return orig.ui();
+    if(cf.fase !== 'pedido' && cf.fase !== 'preparando' && cf.fase !== 'saudacao'){
+      orig.ui();
+      if(cf.alternado && !cf.pratica && cf.fase === 'fim'){
+        corpo.querySelector('.hsresumo').insertAdjacentHTML('afterend',resumoTurno());
+        corpo.querySelector('#cfJogar').insertAdjacentHTML('afterend',botaoTurno());
+      }
+      return;
+    }
     var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>👥 2</span></div>';
     if(cf.fase === 'saudacao'){
       corpo.innerHTML = h + cfSaudacaoFa(cf.primeiroFa) + '<div class="btns"><button class="btn" type="button" data-cfd-aceitar>' + escHtml(tr('Continuar')) + '</button></div>';
@@ -190,6 +239,7 @@
     }
     if(cf.fase === 'preparando'){ corpo.innerHTML = h + '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>'; return; }
     var alvo = cf.alvoBalcao, primeiro = maisUrgente(esperando());
+    if(cf.alternado) h += '<p class="hsdica">' + escHtml(turno(1)) + '</p>';
     h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.find(function(q){ return q.lado === l; });
       var espera = e && e.estado === 'espera', copo = e === alvo ? cf.monta : e && e.monta;
@@ -246,11 +296,14 @@
   };
 
   // ---- ganchos (o resto do Café segue intacto) ----
-  window.cfIniciarSeguro = function(){
+  window.cfIniciarSeguro = function(alternado){
     var escolhida = cf && cf.fase === 'inicio' ? cf.assinatura : null, visita = cf && cf.fase === 'inicio' ? cf.faEspecial : null;
     cf = { fase:'preparando', pontos:0, vidas:3, atendidos:0, perfeitos:0, combo:0, cli:null, monta:vazio(), t0:cfT, fala:'', novas:[], hearts:[],
       servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:escolhida, assinaturaUsada:false, faEspecial:visita,
       duplo:true, fila:[], criados:0, buscando:false, verificando:0, doceT:0, rouboT:-999 };
+    if(alternado){
+      cf.alternado = true; cf.proximaChegada = cfT; cf.errosIngredientes = new Map();
+    }
     cf.dono = contaJ; cf.sessao = typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken;
     hsVisitaPreparar(cf);
     cf.contaFa = hsMemChave();
@@ -261,7 +314,7 @@
   function iniciarPedidos(){
     if(cf.dono !== contaJ || cf.contaFa !== hsMemChave()){ cfAbrir(); return; }
     cf.fase = 'preparando';
-    if(!contaJ){ cf.modoServidor = 'treino'; preencher(); return; }
+    if(cf.alternado || !contaJ){ cf.modoServidor = 'treino'; preencher(); return; }
     var atual = cf; cfUI();
     contaRpc('cafe_run_iniciar').then(function(r){
       if(cf !== atual) return;
@@ -277,10 +330,16 @@
       }).catch(function(){ if(cf === atual){ atual.duplo = false; cfNovoCliente(); } });
     }).catch(function(){ if(cf === atual){ atual.duplo = false; cfNovoCliente(); } });
   }
-  window.cfUI = function(){ if(cf && cf.duplo) return uiDuplo(); return orig.ui(); };
+  window.cfUI = function(){
+    if(cf && cf.duplo) return uiDuplo();
+    orig.ui();
+    if(cf && cf.fase === 'inicio') $('cfJogar').insertAdjacentHTML('afterend',botaoTurno());
+  };
   window.cfLoop = function(ms){ if(cf && cf.duplo) return loopDuplo(ms); return orig.loop(ms); };
   // servir para o fã da esquerda/direita (o resto dos cliques continua no cfClique do café)
   document.addEventListener('click', function(ev){
+    var treino = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cfd-turno]');
+    if(treino && cf && (cf.fase === 'inicio' || cf.fase === 'fim')){ cfIniciarSeguro(true); return; }
     var ingrediente = ev.target && ev.target.closest && ev.target.closest('#cfOv [data-cf]');
     if(ingrediente && !ingrediente.disabled && cf && cf.duplo && cf.fase === 'pedido' && !cf.alvoBalcao){
       var fila = esperando();

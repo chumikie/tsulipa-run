@@ -36,7 +36,7 @@
 
 ### Jogos
 
-A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos com ingredientes visíveis no Café, repetição de trecho no Karaoke e uma bifurcação sinalizada a partir dos 75 m no Sora. O Battle explica o atributo de cada posição e mostra o efeito da troca antes de confirmar no treino e na revanche.
+A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos com ingredientes visíveis e um turno de treino com chegadas alternadas no Café, repetição de trecho a 75% ou 100% no Karaoke e uma bifurcação sinalizada a partir dos 75 m no Sora. O Sora guarda a melhor altura por caminho neste navegador e sugere a próxima meta. O Battle mostra os três atributos de cada card antes do show e o efeito da troca antes de confirmar no treino e na revanche.
 
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|

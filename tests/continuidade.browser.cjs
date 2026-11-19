@@ -133,8 +133,14 @@ const path = require('node:path');
     await conta('');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.evaluate(() => battleAbrir());
-    await page.locator('[data-battle="jogar"]').click();
     const batalha = page.locator('#battleCorpo');
+    await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').click();
+    const card = batalha.locator('.battle-pick').first();
+    const atributos = await card.locator('.battle-card-attrs small').evaluateAll(nodes=>nodes.map(n=>n.title));
+    assert.deepEqual(atributos.map(a=>a.replace(/ \d+\/10$/,'')),['Canto','Dança','Carisma']);
+    assert.equal(await card.locator('small.atual').getAttribute('title'),atributos[1]);
+    await batalha.locator('[data-battle="slot"]').first().click();
+    await page.locator('[data-battle="jogar"]').click();
     for(const rodada of [1,2,3]){
       const placar = batalha.locator('.battle-showhud[role="status"]');
       await placar.waitFor();

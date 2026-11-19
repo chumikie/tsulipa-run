@@ -149,7 +149,11 @@ function testarRotaSora(){
   const entrada=testar(plats.find(p=>p.rota==='entrada'));
   const aviso=soraToast;
   const subida=testar(plats.find(p=>p.k==='trampolim'));
-  return {semAviso,antesDaBifurcacao,naEntrada,suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
+  soraHeight=270;soraEndGame();
+  const rapido=document.getElementById('soraResTxt').textContent;
+  soraReset();soraRotaDaSubida='suave';soraHeight=180;soraEndGame();
+  const ambos=document.getElementById('soraResTxt').textContent;
+  return {rapido,ambos,semAviso,antesDaBifurcacao,naEntrada,suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
 }
 async function sora(browser){
   const {page,erros,context} = await preparar(browser);
@@ -162,6 +166,39 @@ async function sora(browser){
     assert.equal(rota.altas,4);
     assert.match(rota.aviso,/Bifurcação/);
     assert(rota.entrada<0 && rota.subida<rota.entrada);
+    assert.match(rota.rapido,/Caminho nesta subida · Atalho alto.*Ainda sem marca.*Atalho alto270 m.*375 m/);
+    assert.match(rota.ambos,/Caminho nesta subida · Nuvens próximas.*Nuvens próximas180 m.*Atalho alto270 m.*375 m/);
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
+async function cafeAlternado(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await abrir(page,'',null,'cafe-teste');
+    await page.evaluate(async()=>{ await twJogosCarregar(); cfAbrir(); });
+    const cafe=page.locator('#cfOv');
+    await cafe.locator('[data-cfd-turno]').click();
+    if(await cafe.locator('[data-cfd-aceitar]').isVisible()) await cafe.locator('[data-cfd-aceitar]').click();
+    const clientes=cafe.locator('[data-cfd-cliente]:enabled');
+    assert.equal(await clientes.count(),1);
+    const inicial=await page.evaluate(()=>({tempo:cf.fila[0].t0,modo:cf.modoServidor,caderno:cfLer(CF_RECEITAS_KEY,{})}));
+    assert.equal(inicial.modo,'treino');
+    await clientes.nth(1).waitFor();
+    assert(await page.evaluate(t=>cf.fila[1].t0-t>=180,inicial.tempo));
+    for(const lado of [0,1]){
+      await cafe.locator('[data-cfd-cliente="'+lado+'"]').click();
+      const p=await page.evaluate(()=>cf.alvoBalcao.cli.pedido);
+      if(lado===1) p.base=(p.base+1) % await page.evaluate(()=>CF_BASES.length);
+      for(const [tipo,valor] of Object.entries(p)){
+        if(valor>=0) await cafe.locator('[data-cf="'+tipo+':'+valor+'"]').click();
+      }
+      await cafe.locator('[data-cfd-servir]').click();
+    }
+    await page.evaluate(()=>cfFim());
+    const resumo=cafe.locator('#cfTurnoResumo');
+    await resumo.getByText('Pedidos certos no prazo · 1/2').waitFor();
+    assert.match(await resumo.textContent(),/Ingrediente com mais erros · .+ \(1\)/);
+    assert.deepEqual(await page.evaluate(()=>cfLer(CF_RECEITAS_KEY,{})),inicial.caderno);
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
@@ -180,6 +217,10 @@ async function karaoke(browser){
     await iframe.locator('#ktResult[open]').waitFor({timeout:33000});
     await iframe.locator('#ktResultTiming').waitFor();
     assert.equal(await frame.evaluate(() => ktEnsaioMedidas().concluidos),1);
+    await iframe.locator('#ktTrechoLentoBt').click();
+    await iframe.locator('#ktResult[open]').waitFor({timeout:22000});
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Treino a 75%: \d+\/\d+/);
+    assert.equal(await iframe.locator('#ktTrechoBt').textContent(),'Repetir trecho a 100%');
     await iframe.locator('#ktTrechoBt').click();
     await iframe.locator('#ktPause:not([disabled])').waitFor({state:'attached'});
     const simularAba = ocultar => frame.evaluate(hidden => {
@@ -196,6 +237,7 @@ async function karaoke(browser){
     await simularAba(false);
     await iframe.locator('#ktPause').click();
     await iframe.locator('#ktResult[open]').waitFor({timeout:22000});
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Treino a 75%/);
     assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Antes: \d+\/\d+ · Agora: \d+\/\d+/);
     assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:1,concluidos:1,repeticoes:0});
     await iframe.locator('#ktTrechoBt').click();
@@ -211,6 +253,7 @@ async function karaoke(browser){
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
     await sora(browser); console.log('✓ Sora gera as duas rotas entre 100 e 250 m.');
+    await cafeAlternado(browser); console.log('✓ Turno escalonado valida prazo e resume os ingredientes.');
     await karaoke(browser); console.log('✓ Karaoke repete o trecho e compara acertos sem gastar tentativa.');
   }finally{ await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -186,7 +186,8 @@ async function karaoke(browser){
       Object.defineProperty(document,'hidden',{configurable:true,get:()=>hidden});
       document.dispatchEvent(new Event('visibilitychange'));
     },ocultar);
-    await frame.waitForFunction(() => { const etapa = kt.arena(); return etapa && etapa.now - etapa.start >= 1000; });
+    const segundosIniciais = Number((await iframe.locator('#ktClock').textContent()).split(':')[1]);
+    await frame.waitForFunction(limite => Number(document.getElementById('ktClock').textContent.split(':')[1]) <= limite, segundosIniciais - 5);
     await simularAba(true);
     await frame.waitForFunction(() => /retomar/i.test(document.getElementById('ktPause').textContent));
     const pausado = await iframe.locator('#ktClock').textContent();

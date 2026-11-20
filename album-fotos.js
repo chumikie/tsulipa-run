@@ -302,7 +302,7 @@
     var escala=Math.min(1,184/img.width,224/img.height), cv=document.createElement('canvas');
     cv.width=Math.max(1,Math.round(img.width*escala));cv.height=Math.max(1,Math.round(img.height*escala));
     cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
-    return petVidaQuadroSalvar(chave,{id:'album_'+foto.id,url:cv.toDataURL('image/jpeg',.8)});
+    return petVidaQuadroSalvar(chave,{id:'album_'+foto.id,url:cv.toDataURL('image/jpeg',.8),tipo:foto.tipo,quando:foto.quando});
   }
   function liberar(box){
     var lista = urls.get(box);
@@ -606,3 +606,4 @@
   });
   window.TW_ALBUM_FOTOS = {html:html, referencia:referencia, botao:botao, textoSalvar:function(){ return dono() ? t(1) : ''; }, salvar:salvar, conferir:conferir};
 })();
+

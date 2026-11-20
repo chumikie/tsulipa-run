@@ -23,7 +23,22 @@
     praca:'Praça Central',arena:'Star Arena',ceu:'Jardim das Nuvens'
   };
   var BAIRROS_EMOJI={palco:'🎤',harajuku:'🛍️',fofo:'🌷',praca:'⛲',arena:'🏟️',ceu:'☁️'};
-  var cena='mundo',imagens={};
+  var cena='mundo',imagens={},pausaEscolhida=null;
+  function donoPausa(){return typeof contaJ!=='undefined'&&contaJ?String(window.contaAuthUserId||contaJ.id||contaJ.nick||''):'visitante';}
+  function pausasUI(sec){
+    var barra=sec.querySelector('.tw-mapa-pausas');
+    if(cena!=='praca'){if(barra)barra.remove();pausaEscolhida=null;return;}
+    if(barra&&barra.dataset.idioma===lang())return;
+    if(!barra){barra=document.createElement('div');barra.className='tw-mapa-pausas';sec.appendChild(barra);}
+    barra.dataset.idioma=lang();
+    var textos={pt:['Posar na praça','Observar a fonte','Rever a vida no bairro'],en:['Pose in the square','Watch the fountain','Revisit neighborhood life'],es:['Posar en la plaza','Observar la fuente','Volver a la vida del barrio'],id:['Berpose di alun-alun','Lihat air mancur','Lihat kehidupan lingkungan'],th:['โพสท่าที่จัตุรัส','ชมน้ำพุ','ดูชีวิตในย่าน'],ja:['広場でポーズ','噴水を眺める','街の暮らしを見る']}[lang()];
+    barra.innerHTML='';textos.forEach(function(txt,i){var b=document.createElement('button');b.type='button';b.textContent=txt;b.onclick=function(){
+      if(i===2){if(window.TW_BAIRRO)TW_BAIRRO.abrir();return;}
+      if(i===1){tocarRua(800,570);return;}
+      var meu=ultimos.find(function(q){return q.dono;});if(!meu)return;
+      pausaEscolhida={dono:donoPausa(),ate:performance.now()/1000+8,x:meu.x};meuPasseio=null;desenhar();
+    };barra.appendChild(b);});
+  }
   // Marca exclusiva do mapa: preserva history.state usado pelo Karaoke e Center.
   var CHAVE_RUA_HIST='twWorldRuaV1';
   var TW_LUGARES=window.TW_LUGARES=[
@@ -193,7 +208,7 @@
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
     if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):(ui('rua')+rotulo(cena)));
-    var sec=document.getElementById('twMapa');if(!sec)return;
+    var sec=document.getElementById('twMapa');if(!sec)return;pausasUI(sec);
     var v=sec.querySelector('.tw-mapa-voltar');if(v)v.textContent=ui('voltar');
     var z=sec.querySelector('.tw-mapa-zoom');if(z)z.textContent=sec.classList.contains('tw-mapa-zoomed')?ui('geral'):ui('zoom');
     var nv=sec.querySelector('.tw-mapa-bairros');if(nv)nv.setAttribute('aria-label',ui('bairros'));
@@ -288,13 +303,13 @@
   if(typeof window.addEventListener==='function')window.addEventListener('tw-piloto-bairro',atualizarVitrine);
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
-    mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
+    mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;pausaEscolhida=null;
     W=1600;H=destino==='mundo'?1000:760;OX=0;OY=0;MW=W;MH=H;
     if(cv){cv.width=MW;cv.height=MH;cv.style.cursor='';try{if(window.TW_NITIDEZ&&TW_NITIDEZ.adotar)TW_NITIDEZ.adotar(cv);}catch(e){}}   // 17/11: nítido em tablet (nasce escondido; entra na nitidez quando aparece)
     var sec=document.getElementById('twMapa');
     if(sec){var voltar=sec.querySelector('.tw-mapa-voltar');
       if(voltar)voltar.hidden=destino==='mundo';
-      sec.setAttribute('data-cena',destino);
+      sec.setAttribute('data-cena',destino);pausasUI(sec);
       // Toda volta ao mundo oferece novamente a visão geral, não um zoom antigo.
       sec.classList.toggle('tw-mapa-zoomed',false);
       var visao=sec.querySelector('.tw-mapa-visao');
@@ -1120,6 +1135,7 @@
         if(p.dono&&registro&&cena==='praca')fixo=1;
         var q=reduzMov?{x:PORTAS[fixo]+(i>2?60:0),dir:1,mov:0,porta:fixo,volta:0}:posRua(i,tm);
         if(p.dono&&meuPasseio)q=passeioDoToque(q,tm);
+        if(p.dono&&pausaEscolhida&&pausaEscolhida.dono===donoPausa()&&tm<pausaEscolhida.ate)q={x:pausaEscolhida.x,dir:1,mov:0,porta:-1,volta:0,posando:true};
         var noPalco=false;
         if(p.oshi){var pd=visitaPorta(p.oshiK);noPalco=cena==='palco'&&pd===1;   // no Star Stage, quem visita a porta do meio canta em cima do palco, no microfone
           q={x:noPalco?800:PORTAS[pd]+(pd===2?-95:95),dir:pd===2?-1:1,mov:0,porta:pd,volta:0,pausa:1,ativo:visitaAtividade(p.oshiK)};}
@@ -1144,6 +1160,7 @@
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
           ((p.dono&&registro)||(q.i===1&&!p.dono));
         var pose=q.mov||segurando?'':(p.oshi?p.oshiPose:(p.av.pose||''));
+        if(q.posando)pose='v';
         if(q.ativo){var lp=POSES_ATIVAS[q.ativo];pose=lp[reduzMov?0:Math.floor(tm/2.6+(p.oshiK||0))%lp.length];}
         if(reencontro&&q===meuIdol)pose=reconhecendo?'':'tchau';
         if(p.nomeFa){
@@ -1508,3 +1525,4 @@
   ['hubMontar','hubCardsUI'].forEach(function(n){var o=window[n];if(typeof o==='function')window[n]=function(){var r=o.apply(this,arguments);try{tudo();}catch(e){}return r;};});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tudo);else tudo();
 })();
+

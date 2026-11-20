@@ -9,6 +9,15 @@
     th:['ชุดภาพถ่าย','บันทึกลงในชุดภาพ','บันทึกภาพแล้ว','บันทึกภาพไม่ได้','เก็บภาพจาก Studio, Duo และห้องแต่งตัวในเบราว์เซอร์นี้ สูงสุด 24 ภาพต่อบัญชี','ยังไม่มีภาพ','ดาวน์โหลดภาพ','ลบภาพ','เปิดภาพไม่ได้','กำลังโหลด…','ห้องแต่งตัว VIP'],
     ja:['写真シリーズ','シリーズに保存','シリーズに保存しました。','写真を保存できませんでした。','Studio、Duo、楽屋の写真をこのブラウザーに保存します。1アカウント24枚まで。','まだ写真がありません。','写真をダウンロード','写真を削除','写真を開けませんでした。','読み込み中…','VIP楽屋']
   };
+  var LEMBRANCA = {
+    pt:['Usar como referência','Antes e depois','Selecionar para comparação','Antes','Depois','Baixar antes e depois','Escolha duas fotos na ordem.'],
+    en:['Use as reference','Before and after','Select for comparison','Before','After','Download before and after','Choose two photos in order.'],
+    es:['Usar como referencia','Antes y después','Seleccionar para comparar','Antes','Después','Descargar antes y después','Elige dos fotos en orden.'],
+    id:['Gunakan sebagai referensi','Sebelum dan sesudah','Pilih untuk perbandingan','Sebelum','Sesudah','Unduh sebelum dan sesudah','Pilih dua foto berurutan.'],
+    th:['ใช้เป็นภาพอ้างอิง','ก่อนและหลัง','เลือกเพื่อเปรียบเทียบ','ก่อน','หลัง','ดาวน์โหลดก่อนและหลัง','เลือกภาพสองภาพตามลำดับ'],
+    ja:['参考写真にする','ビフォー・アフター','比較に選ぶ','ビフォー','アフター','比較画像をダウンロード','順番に写真を2枚選択。']
+  };
+  function lembrancaT(){ return LEMBRANCA[typeof LANG === 'string' && LANG] || LEMBRANCA.pt; }
   var dbPendente, LIMITE = 24, urls = new Map();
   function t(i){ return (TX[typeof LANG === 'undefined' ? 'pt' : LANG] || TX.pt)[i]; }
   function dono(){
@@ -43,9 +52,9 @@
     x.drawImage(cv,0,0,copia.width,copia.height);
     return new Promise(function(ok, falha){ copia.toBlob(function(blob){ if(blob)ok(blob);else falha(Error('foto')); },'image/jpeg',.87); });
   }
-  async function salvar(tipo, canvas, botao){
+  async function salvar(tipo, canvas, botao, composicao){
     var conta = dono();
-    if(!conta || !canvas || ['studio','duo','vip'].indexOf(tipo) < 0) return false;
+    if(!conta || !canvas || ['studio','duo','vip','pet'].indexOf(tipo) < 0) return false;
     botao.disabled = true;
     try{
       var blob = await imagem(canvas);
@@ -54,7 +63,7 @@
         var q = s.index('dono').getAllKeys(conta);
         q.onsuccess = function(){
           q.result.slice(0, Math.max(0,q.result.length-LIMITE+1)).forEach(function(id){ s.delete(id); });
-          s.add({dono:conta,tipo:tipo,quando:Date.now(),blob:blob});
+          s.add({dono:conta,tipo:tipo,quando:Date.now(),blob:blob,composicao:tipo==='studio' ? composicao : undefined});
         };
       });
       if(dono() !== conta) return false;
@@ -100,6 +109,35 @@
       pedido.onsuccess = function(){ if(pedido.result && pedido.result.dono === conta) s.delete(id); };
     });
   }
+  async function referencia(id, conta){
+    if(!conta || conta !== dono() || !Number.isSafeInteger(id)) return null;
+    var foto = await transacao('readonly',function(s,set){
+      var pedido = s.get(id);
+      pedido.onsuccess = function(){ set(pedido.result); };
+    });
+    return foto && foto.dono===conta && dono()===conta && foto.tipo==='studio' ? foto : null;
+  }
+  async function baixarComparacao(escolhidas, ativo){
+    var tx = lembrancaT(), locais = escolhidas.map(function(f){return URL.createObjectURL(f.blob);});
+    try{
+      var imagens = await Promise.all(locais.map(function(url){
+        return new Promise(function(ok,erro){var img=new Image();img.onload=function(){ok(img);};img.onerror=erro;img.src=url;});
+      }));
+      if(!ativo())return;
+      var cv=document.createElement('canvas');cv.width=1240;cv.height=900;
+      var x=cv.getContext('2d');x.fillStyle='#f8edfa';x.fillRect(0,0,1240,900);
+      x.textAlign='center';x.fillStyle='#44245e';x.font='bold 40px system-ui';x.fillText(tx[1],620,59);
+      imagens.forEach(function(img,i){
+        var cx=320+i*600, escala=Math.min(550/img.naturalWidth,680/img.naturalHeight);
+        var w=img.naturalWidth*escala,h=img.naturalHeight*escala;
+        x.drawImage(img,cx-w/2,115+(680-h)/2,w,h);
+        x.font='bold 27px system-ui';x.fillText(tx[3+i],cx,104);
+        x.font='23px system-ui';x.fillText(new Date(escolhidas[i].quando).toLocaleDateString(),cx,841);
+      });
+      var a=document.createElement('a');a.download='tsulipa-antes-e-depois.png';a.href=cv.toDataURL('image/png');
+      document.body.appendChild(a);a.click();a.remove();
+    }finally{ locais.forEach(function(url){ URL.revokeObjectURL(url); }); }
+  }
   async function mostrar(box){
     var conta = dono(), detalhe = box.closest('details');
     if(!conta || !detalhe.open) return;
@@ -114,10 +152,21 @@
       if(!fotos.length){ box.textContent = t(5); return; }
       var grade = document.createElement('div'); grade.className = 'album-fotos-grade';
       var objetos = []; urls.set(box,objetos);
+      var tx=lembrancaT(), escolhas=[], seletores=[], acoes=document.createElement('div');
+      var dica=document.createElement('p');dica.textContent=tx[6];
+      var baixar=document.createElement('button');baixar.type='button';baixar.textContent=tx[5];baixar.disabled=true;
+      baixar.addEventListener('click',async function(){
+        if(!ativo() || escolhas.length!==2)return;
+        baixar.disabled=true;
+        try{ await baixarComparacao(escolhas.slice(),ativo); }
+        catch(e){ dica.textContent=t(8); }
+        finally{ if(ativo()) baixar.disabled=escolhas.length!==2; }
+      });
+      acoes.append(dica, baixar);
       fotos.forEach(function(f){
         var url = URL.createObjectURL(f.blob), cartao = document.createElement('figure'), img = new Image(), cap = document.createElement('figcaption');
         objetos.push(url);
-        var nome = {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10)}[f.tipo];
+        var nome = {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10),pet:'Backstage⭐Pet!'}[f.tipo];
         img.src = url; img.alt = nome; img.loading = 'lazy';
         cap.textContent = nome + ' · ' + new Date(f.quando).toLocaleDateString();
         var dl = document.createElement('a'); dl.href = url; dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.jpg'; dl.textContent = t(6);
@@ -128,9 +177,32 @@
           try{ await remover(f.id,conta); if(ativo()){ mostrar(box); detalhe.querySelector('summary').focus(); } }
           catch(e){ if(ativo()){ apagar.disabled = false; apagar.textContent = t(8); } }
         });
-        cartao.append(img,cap,dl,apagar); grade.appendChild(cartao);
+        cartao.append(img,cap,dl,apagar);
+        if(f.tipo==='studio'){
+          var abrir=document.createElement('button');abrir.type='button';abrir.textContent=tx[0];
+          abrir.addEventListener('click',function(){
+            if(ativo() && typeof window.studioAbrir==='function') window.studioAbrir({referencia:f.id,donoAlbum:conta});
+          });
+          cartao.appendChild(abrir);
+        }
+        var escolher=document.createElement('button');escolher.type='button';escolher.textContent=tx[2];
+        escolher.setAttribute('aria-pressed','false');seletores.push({f:f,b:escolher});
+        escolher.addEventListener('click',function(){
+          if(!ativo())return;
+          var i=escolhas.indexOf(f);
+          if(i>=0)escolhas.splice(i,1);
+          else if(escolhas.length<2) escolhas.push(f);
+          seletores.forEach(function(s){
+            var p=escolhas.indexOf(s.f);
+            s.b.textContent=p<0?tx[2]:tx[3+p];
+            s.b.setAttribute('aria-pressed',String(p>=0));
+            s.b.disabled=p<0 && escolhas.length===2;
+          });
+          baixar.disabled=escolhas.length!==2;
+        });
+        cartao.appendChild(escolher);grade.appendChild(cartao);
       });
-      box.appendChild(grade);
+      box.append(acoes,grade);
     }catch(e){ if(ativo()) box.textContent = t(8); }
   }
   document.addEventListener('toggle',function(e){
@@ -146,5 +218,5 @@
       var detalhe = box.closest('details'); if(detalhe) detalhe.open = false;
     });
   });
-  window.TW_ALBUM_FOTOS = {html:html, botao:botao, textoSalvar:function(){ return dono() ? t(1) : ''; }, salvar:salvar, conferir:conferir};
+  window.TW_ALBUM_FOTOS = {html:html, referencia:referencia, botao:botao, textoSalvar:function(){ return dono() ? t(1) : ''; }, salvar:salvar, conferir:conferir};
 })();

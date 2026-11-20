@@ -257,6 +257,7 @@ var paused=false,abducted=false,wasAbducted=false;
 var isTestGame = false;
 var CFG={STAR:15,STAR_FEVER:30,CARD:100,UFO_EVERY:2500,UFO_BONUS:100,UFO_FRAMES:480,UFO_STAR_MULT:.5,DIST_RATE:.015};
 function reset(){
+  if(typeof crPuloGuardado !== 'undefined'){ crPuloGuardado=0;crPuloSegura=0; }
   P={x:80,y:GY-44,vy:0,w:30,h:44,air:false};
   obs=[]; items=[]; fans=[]; sp=5.5; if(typeof cenaReset==='function') cenaReset();
   var tstVal = (!$('tstw').hidden && $('tst')) ? (+$('tst').value||0) : 0;
@@ -1628,6 +1629,7 @@ function s2ResetHook(){
 }
 // Cinco oportunidades de ganhar ★; sem penalidade por errar ou não apertar.
 function s2BonusAction(action){
+  if(typeof crPratica !== 'undefined' && crPratica)return;
   if(!s2Challenge || !s2Challenge.active || state !== 'play' || paused || s2Challenge.pressed) return;
   var expected = s2Challenge.beat % 2 === 0 ? 'jump' : 'slide';
   if(action !== expected) return;
@@ -1642,6 +1644,7 @@ function s2BonusAction(action){
 }
 // Controles de Abaixar e Deslizar (PC + Celular)
 function s2StartSlide(fromTap){
+  if(typeof crPratica !== 'undefined' && crPratica)return;
   if(state !== 'play' || paused) return;
   // A ação correta rende ★, mas a animação de deslizar continua normalmente.
   if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
@@ -1746,7 +1749,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=12',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=14',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

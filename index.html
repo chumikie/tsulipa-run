@@ -47,7 +47,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=15">
+<link rel="stylesheet" href="./centerrun.css?v=17">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -170,7 +170,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=43">
+<link rel="stylesheet" href="./hub-polish.css?v=44">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=6"><'+'/script>');</script>
@@ -313,13 +313,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       </div>
     </div>
   </div>
+  <section id="crPraticaPainel" class="cr-pratica" hidden><b id="crPraticaTitulo"></b><span id="crPraticaTempo"></span><button type="button" class="btn alt" id="crPraticaSair"></button></section>
   <div class="ov" id="over" hidden>
 
     <div class="panel">
       <h1>Fim do show<small>おつかれさま</small></h1>
       <canvas id="cel" width="200" height="150" style="width:200px;height:150px;display:block;margin:0 auto 12px;border-radius:14px" aria-hidden="true"></canvas>
       <div class="res" id="res"></div>
-      <div class="btns"><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
+      <p id="crPraticaStatus" role="status"></p><div class="btns"><button class="btn alt" type="button" id="crPraticaBt" hidden></button><button class="btn alt" type="button" id="crPraticaPista" hidden></button><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
       <div class="tabs"><button data-t="day">Hoje</button><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbo"></ol>
     </div>
   </div>
@@ -407,12 +408,12 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=34"></script>
+<script src="./centerrun.js?v=36"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=45"></script>
+<script src="./pet.js?v=46"></script>
 <script src="./perfil.js?v=29"></script>
 <script src="./gacha.js?v=4"></script>
-<script src="./album-fotos.js?v=1"></script>
+<script src="./album-fotos.js?v=2"></script>
 <script src="./album.js?v=8"></script>
 <script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
@@ -443,7 +444,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=17','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -491,14 +492,14 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     else setTimeout(antecipar, 0);
   });
 })();</script>
-<script src="./bloom.js?v=11"></script>
+<script src="./bloom.js?v=12"></script>
 <script src="./shop.js?v=8"></script>
 <script src="./tw-piloto-bairro.js?v=1"></script>
 <script src="./jornal.js?v=31"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=24';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=26';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
@@ -3230,7 +3231,11 @@ end = function(impacto){
 var _origUpdate;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
 twCorridaAoCarregar(function(){
 _origUpdate = update;
+$('crPraticaBt').onclick=function(){crPraticaComecar(false);};
+$('crPraticaPista').onclick=function(){crPraticaComecar(true);};
+$('crPraticaSair').onclick=function(){crPraticaTerminar(false);};
 update = function(dt){
+  if(crPratica){crPraticaQuadro(dt);return;}
   s2StageFrames += dt;
   if(s2SlideTimer > 0){
     s2SlideTimer -= dt;

@@ -173,11 +173,14 @@
     }).catch(function(){erro(pedido);});
   }
   // item no cartão "Esta semana": nos 7 primeiros dias do mês destaca o mês que acabou
-  function retroItemHtml(){
-    if(!logado()) return '';
+  function retroMes(){
     var hoje = new Date(Date.now() - 3 * 36e5), dia = hoje.getUTCDate();
     var ant = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth() - 1, 1)).toISOString().slice(0, 10);
-    var mes = dia <= 7 ? ant : hoje.toISOString().slice(0, 8) + '01';
+    return dia <= 7 ? ant : hoje.toISOString().slice(0, 8) + '01';
+  }
+  function retroItemHtml(){
+    if(!logado()) return '';
+    var mes = retroMes();
     return '<div class="twc-hj-it tws-it"><span class="twc-hj-ico twc-g-roxo tws-emo" aria-hidden="true">🗓️</span><span class="twc-hj-txt"><b>' + esc(t('retroItem', {m:nomeMes(mes)})) + '</b><small>' + esc(t('retroSub')) + '</small></span>' +
       '<button type="button" class="twc-hj-bt" data-twp="retro" data-mes="' + mes + '">' + esc(t('ver')) + '</button></div>';
   }
@@ -277,5 +280,5 @@
     else if(a === 'recado') recadoAbrir();
   }, true);
 
-  window.TW_PESSOAL = {contaMudou:contaMudou,retroItemHtml:retroItemHtml, abrirRetro:abrirRetro, vitrineMontar:vitrineMontar, recadoAbrir:recadoAbrir, t:t, desenharRetro:desenharRetro};
+  window.TW_PESSOAL = {retroMes:retroMes, contaMudou:contaMudou,retroItemHtml:retroItemHtml, abrirRetro:abrirRetro, vitrineMontar:vitrineMontar, recadoAbrir:recadoAbrir, t:t, desenharRetro:desenharRetro};
 })();

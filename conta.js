@@ -235,11 +235,13 @@ function contaMiniInicio(jogo){
 }
 function contaGanhoMini(qtd, run){
   if(!contaJ || qtd <= 0 || !run) return;
+  var dono = String(contaJ.nick || '').toLowerCase();   // a resposta só vale se a mesma conta ainda estiver aberta
+  function mesma(){ return !!contaJ && String(contaJ.nick || '').toLowerCase() === dono; }
   Promise.resolve(run).then(function(id){
-    if(!id) return null;
+    if(!id || !mesma()) return null;
     return contaRpc('mini_run_finish', { p_run:id, p_qtd:Math.floor(qtd) });
   }).then(function(r){
-    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
+    if(r && typeof r.stars === 'number' && mesma()){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
   }).catch(function(){});
 }
 function contaTesteParceiras(){

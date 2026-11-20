@@ -6,7 +6,7 @@ const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17
 const songsSource = html.match(/var songs=\{[\s\S]*?\n\};/);
 const lanesSource = html.match(/Object\.keys\(songs\)\.forEach\(function\(k\)\{[^\n]+/);
 const mapSource = html.match(/function makeNoteMap\(song,total,step,start\)\{[\s\S]*?\n \}return notes;\}/);
-const clockSource = html.match(/function kNow\(\)\{[^\n]+/);
+const clockSource = html.match(/function kNow\(\)\{[\s\S]*?\n\}/);
 const latencySource = html.match(/function ktOutputLatencyMs\(\)\{[\s\S]*?\n\}/);
 const scheduleSource = html.match(/function schedule\(\)\{[^\n]+/);
 const laneSource = html.match(/function laneAt\(px,py,event\)\{[^\n]+/);
@@ -54,12 +54,18 @@ for (const [key, song] of Object.entries(context.songs)) {
 // A antiga soma extra de latência no mapa fazia este teste falhar.
 const song = context.songs.normal, step = 60000 / song.bpm / 2;
 const note = context.makeNoteMap(song, 100, step, 4000)[4];
-context.run = {start:4000, audioOrigin:20, audioReady:true, audioClock:true, paused:false, step, audioStep:0, total:100};
+context.run = {start:4000, audioOrigin:20, audioReady:true, audioClock:true, paused:false, step, audioStep:0, total:100, audioFloor:-4000};
 context.performance = {now: () => 4000};
 for (const latency of [0, 0.03, 0.08, 0.12]) {
   context.AC = {state:'running', currentTime:20 + note.idx * step / 1000 + latency, outputLatency:latency, baseLatency:latency};
+  context.run.outputLatencyMs = context.ktOutputLatencyMs();
   assert(Math.abs(context.kNow() - note.at) < .001, `nota sincronizada com áudio a ${latency * 1000} ms de latência`);
 }
+context.AC.outputLatency = 0;
+assert(Math.abs(context.kNow() - note.at) < .001, 'uma leitura nova do dispositivo não muda o relógio em andamento');
+context.run.audioFloor = note.idx * step;
+context.AC.currentTime = 20 + note.idx * step / 1000;
+assert(Math.abs(context.kNow() - note.at) < .001, 'primeiro frame da retomada conserva o instante congelado');
 const scheduled = [];
 context.beat = i => scheduled.push(i);
 context.run.audioStep = 0;

@@ -35,6 +35,9 @@
 - **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador por conta. Uma cópia JSON permite restaurar fotos e composições em outro aparelho.
 
 ### Jogos
+
+A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos com ingredientes visíveis e um turno de treino com chegadas alternadas no Café, repetição de trecho a 75% ou 100% no Karaoke e uma bifurcação sinalizada a partir dos 75 m no Sora. O Sora guarda a melhor altura por caminho neste navegador e sugere a próxima meta. O Battle mostra os três atributos de cada card antes do show e o efeito da troca antes de confirmar no treino e na revanche.
+
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
 | Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). O resultado identifica a colisão. O treino de cabo e caixa inclui uma repetição na velocidade da corrida | — |

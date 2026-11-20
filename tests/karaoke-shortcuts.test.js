@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
-const resume = html.match(/function finishResume\(\)\{[^\n]+\}\nfunction pause\(value\)\{[^\n]+\}/);
+const resume = html.match(/function finishResume\(\)\{[\s\S]*?\n\}\nfunction pause\(value\)\{[\s\S]*?\n\}/);
 const tick = html.match(/function tick\(\)\{[\s\S]*?\}\nfunction hit\(/);
 const keyhandler = [...html.matchAll(/document\.addEventListener\('keydown',function\(e\)\{[\s\S]*?\n\}\);/g)]
   .map(m => m[0]).find(src => src.includes("key==='c'"));
@@ -16,7 +16,10 @@ const run = {start:0,paused:false,resumeUntil:0,pauseAt:0,audioStep:0,step:250,t
 let audio=0,scheduled=0,prepared=0;
 const stage = {ktCalibration:{open:false},ktPause:{disabled:false}};
 const ctx=vm.createContext({run,performance:{now:()=>clock.ms},kNow:()=>clock.ms,AC:null,
-  krDemoCantor:null,audioTimer:0,clearInterval:()=>{},document:{hidden:false},ktPrepararRelogioAudio:(target,delay,elapsed,done)=>{prepared++;target.audioReady=true;target.audioClock=true;done(true,0);},$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
+  krDemoCantor:null,audioTimer:0,clearInterval:()=>{},document:{hidden:false},ktPrepararRelogioAudio:(target,delay,elapsed,done)=>{
+    prepared++;target.audioReady=true;target.audioClock=true;target.paused=false;
+    target.start=clock.ms-elapsed;target.notes.forEach(n=>{n.at=target.start+3000;});done(true,0);
+  },$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
   updateUI:()=>{},checkpoint:()=>{},lastCheckpoint:clock.ms,lastUI:clock.ms,KT_HIT_WINDOWS:{good:100},react:()=>{},
   end:()=>{throw Error('Não deve encerrar');}});
 vm.runInContext(resume[0]+'\n'+tick[0].replace(/\nfunction hit\($/,''),ctx);

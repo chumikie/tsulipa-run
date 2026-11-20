@@ -17,6 +17,7 @@ async function preparar(browser){
     try{
       let body=await readFile(arq);
       if(url.pathname==='/sora-jump.html')body=body.toString().replace('function soraStartGame(){','window.qaQuedaSora='+simularQueda.toString()+';\n$&');
+      if(url.pathname === '/sora-jump.html') body = body.toString().replace('function soraStartGame(){', 'window.qaRotaSora='+testarRotaSora.toString()+';\n$&');
       return await r.fulfill({body,contentType:tipos[path.extname(arq)]});
     }
     catch{ return await r.fulfill({status:404}); }
@@ -412,6 +413,75 @@ async function quedasSora(browser){
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
+function testarRotaSora(){
+  soraHeight=74;const semAviso=soraPreviaRotaAtiva();
+  soraHeight=75;const antesDaBifurcacao=soraPreviaRotaAtiva();
+  soraHeight=104;const naEntrada=soraPreviaRotaAtiva();
+  soraCamY=-900;soraHighestY=-995;soraP.y=-993;soraHazards=[];
+  soraUpdate(1);
+  const plats=soraPlats.filter(p=>p.rota);
+  soraDraw();
+  function testar(pl){
+    soraP.x=pl.x+pl.w/2-soraP.w/2;soraP.y=pl.y-soraP.h-2;soraP.vx=0;soraP.vy=3;
+    soraUpdate(1);
+    return soraP.vy;
+  }
+  const entrada=testar(plats.find(p=>p.rota==='entrada'));
+  const aviso=soraToast;
+  const subida=testar(plats.find(p=>p.k==='trampolim'));
+  soraHeight=270;soraEndGame();
+  const rapido=document.getElementById('soraResTxt').textContent;
+  soraReset();soraRotaDaSubida='suave';soraHeight=180;soraEndGame();
+  const ambos=document.getElementById('soraResTxt').textContent;
+  return {rapido,ambos,semAviso,antesDaBifurcacao,naEntrada,suaves:plats.filter(p=>p.rota==='suave').length,altas:plats.filter(p=>p.rota==='alta').length,entrada,aviso,subida};
+}
+async function sora(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await page.goto(origin+'/sora-jump.html?lang=pt&embed=index2');
+    await page.locator('#soraPlayBtn').click();
+    const rota = await page.evaluate(() => window.qaRotaSora());
+    assert.deepEqual([rota.semAviso,rota.antesDaBifurcacao,rota.naEntrada],[false,true,false]);
+    assert.equal(rota.suaves,7);
+    assert.equal(rota.altas,4);
+    assert.match(rota.aviso,/Bifurcação/);
+    assert(rota.entrada<0 && rota.subida<rota.entrada);
+    assert.match(rota.rapido,/Caminho nesta subida · Atalho alto.*Ainda sem marca.*Atalho alto270 m.*375 m/);
+    assert.match(rota.ambos,/Caminho nesta subida · Nuvens próximas.*Nuvens próximas180 m.*Atalho alto270 m.*375 m/);
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
+async function cafeAlternado(browser){
+  const {page,erros,context} = await preparar(browser);
+  try{
+    await abrir(page,'',null,'cafe-teste');
+    await page.evaluate(async()=>{ await twJogosCarregar(); cfAbrir(); });
+    const cafe=page.locator('#cfOv');
+    await cafe.locator('[data-cfd-turno]').click();
+    if(await cafe.locator('[data-cfd-aceitar]').isVisible()) await cafe.locator('[data-cfd-aceitar]').click();
+    const clientes=cafe.locator('[data-cfd-cliente]:enabled');
+    assert.equal(await clientes.count(),1);
+    const inicial=await page.evaluate(()=>({tempo:cf.fila[0].t0,modo:cf.modoServidor,caderno:cfLer(CF_RECEITAS_KEY,{})}));
+    assert.equal(inicial.modo,'treino');
+    await clientes.nth(1).waitFor();
+    assert(await page.evaluate(t=>cf.fila[1].t0-t>=180,inicial.tempo));
+    for(const lado of [0,1]){
+      await cafe.locator('[data-cfd-cliente="'+lado+'"]').click();
+      const p=await page.evaluate(()=>cf.alvoBalcao.cli.pedido);
+      if(lado===1) p.base=(p.base+1) % await page.evaluate(()=>CF_BASES.length);
+      for(const [tipo,valor] of Object.entries(p)){
+        if(valor>=0) await cafe.locator('[data-cf="'+tipo+':'+valor+'"]').click();
+      }
+      await cafe.locator('[data-cfd-servir]').click();
+    }
+    await page.evaluate(()=>cfFim());
+    const resumo=cafe.locator('#cfTurnoResumo');
+    await resumo.getByText('Pedidos certos no prazo · 1/2').waitFor();
+    assert.match(await resumo.textContent(),/Ingrediente com mais erros · .+ \(1\)/);
+    assert.deepEqual(await page.evaluate(()=>cfLer(CF_RECEITAS_KEY,{})),inicial.caderno);
+    assert.deepEqual(erros,[]);
+  }finally{ await context.close(); }
+}
 async function karaoke(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -420,16 +490,39 @@ async function karaoke(browser){
     const iframe = page.frameLocator('#twPreviewIframe');
     await iframe.locator('#ktEnsaioComecar').waitFor();
     const frame = await page.locator('#twPreviewIframe').elementHandle().then(h => h.contentFrame());
-    const anterior = await frame.evaluate(() => Object.keys(localStorage).filter(k=>/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
+    const anterior = await frame.evaluate(() => Object.keys(localStorage).filter(k=>k==='kt_showcase_week_v1'||/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
     await iframe.locator('#ktEnsaioComecar').click();
     await frame.waitForFunction(() => document.body.classList.contains('kt-playing') && ktEnsaioMedidas().iniciados === 1);
     assert.equal(await iframe.locator('#ktStartConfirm').evaluate(el=>el.open),false);
     await iframe.locator('#ktResult[open]').waitFor({timeout:33000});
     await iframe.locator('#ktResultTiming').waitFor();
     assert.equal(await frame.evaluate(() => ktEnsaioMedidas().concluidos),1);
-    await iframe.locator('#ktResultAgain').click();
-    assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:2,concluidos:1,repeticoes:1});
-    const depois = await frame.evaluate(() => Object.keys(localStorage).filter(k=>/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
+    await iframe.locator('#ktTrechoLentoBt').click();
+    await iframe.locator('#ktResult[open]').waitFor({timeout:22000});
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Treino a 75%: \d+\/\d+/);
+    assert.equal(await iframe.locator('#ktTrechoBt').textContent(),'Repetir trecho a 100%');
+    await iframe.locator('#ktTrechoBt').click();
+    await iframe.locator('#ktPause:not([disabled])').waitFor({state:'attached'});
+    const simularAba = ocultar => frame.evaluate(hidden => {
+      Object.defineProperty(document,'hidden',{configurable:true,get:()=>hidden});
+      document.dispatchEvent(new Event('visibilitychange'));
+    },ocultar);
+    const segundosIniciais = Number((await iframe.locator('#ktClock').textContent()).split(':')[1]);
+    await frame.waitForFunction(limite => Number(document.getElementById('ktClock').textContent.split(':')[1]) <= limite, segundosIniciais - 5);
+    await simularAba(true);
+    await frame.waitForFunction(() => /retomar/i.test(document.getElementById('ktPause').textContent));
+    const pausado = await iframe.locator('#ktClock').textContent();
+    await page.waitForTimeout(1200);
+    assert.equal(await iframe.locator('#ktClock').textContent(),pausado);
+    await simularAba(false);
+    await iframe.locator('#ktPause').click();
+    await iframe.locator('#ktResult[open]').waitFor({timeout:22000});
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Treino a 75%/);
+    assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Antes: \d+\/\d+ · Agora: \d+\/\d+/);
+    assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:1,concluidos:1,repeticoes:0});
+    await iframe.locator('#ktTrechoBt').click();
+    await frame.waitForFunction(() => document.body.classList.contains('kt-playing'));
+    const depois = await frame.evaluate(() => Object.keys(localStorage).filter(k=>k==='kt_showcase_week_v1'||/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
     assert.deepEqual(depois,anterior);
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
@@ -445,6 +538,8 @@ async function karaoke(browser){
     await memoria(browser); console.log('✓ Handshake revê a pista antiga e mantém as respostas da rodada.');
     await decoracao(browser); console.log('✓ Arranjo no Studio e cenas do pet guardadas no Álbum.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
-    await karaoke(browser); console.log('✓ Ensaio termina e repete sem gastar tentativa.');
+    await sora(browser); console.log('✓ Sora gera as duas rotas entre 100 e 250 m.');
+    await cafeAlternado(browser); console.log('✓ Turno escalonado valida prazo e resume os ingredientes.');
+    await karaoke(browser); console.log('✓ Karaoke repete o trecho e compara acertos sem gastar tentativa.');
   }finally{ await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;});

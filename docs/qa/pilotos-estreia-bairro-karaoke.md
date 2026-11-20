@@ -72,7 +72,7 @@ Com um visitante, abra `?piloto_karaoke=1` e selecione **Ensaiar no Karaoke · 2
 | Android / Chrome | Alto-falante | | | | | |
 | Android / Chrome | Bluetooth | | | | | |
 
-A simulação não mede latência de hardware. Rodar o ensaio com visitantes após a matriz física permite observar quantos concluem em 20 s e quantos pedem outra rodada.
+Em cada combinação, use a mesma música e anote o ajuste de timing. Durante um trecho, troque de aba, volte e toque em **Retomar**. Confira se o tempo ficou parado, se as notas voltam no ponto em que a música parou e se o resultado compara os mesmos trechos. Complete também o trecho a 75%, repita a 100% e confira se os dois resultados usam a mesma quantidade de notas. Troque a saída de áudio entre partidas. A simulação não mede latência de hardware. Rodar o ensaio com visitantes após a matriz física permite observar quantos concluem em 20 s e quantos pedem outra rodada.
 
 ### Série de fotos
 

@@ -96,6 +96,14 @@ async function isolarContaPessoal(browser){
       qaResposta('recado_tsulipa_enviar',{ok:true});
       qaResposta('retro_mes',{ok:true,nick:'Conta D',mes:'2026-11-01'},1);
     });
+    await page.locator('#twpBaixar').waitFor();
+    assert.equal(await page.locator('#twpEmail').count(),0);
+    assert.equal(await page.evaluate(()=>qaRPC.filter(p=>p.nome==='email_mensal').length),0);
+    await page.evaluate(()=>{
+      window.TW_EMAIL_MENSAL_DISPONIVEL=true;
+      TW_PESSOAL.abrirRetro('2026-11-01');
+      qaResposta('retro_mes',{ok:true,nick:'Conta D',mes:'2026-11-01'},2);
+    });
     const email=page.locator('#twpEmail');
     await email.waitFor();
     assert.equal(await email.isDisabled(),true);

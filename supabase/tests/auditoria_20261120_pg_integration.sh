@@ -15,11 +15,16 @@ else
   db(){ docker exec -i "$alvo" psql -U postgres -d "$banco" -v ON_ERROR_STOP=1 -qAt "$@"; }
 fi
 
-{ cat "$repo_dir/supabase/tests/auditoria_20261120_pg_setup.sql"; cat "$repo_dir/supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql"; } | db
-
 falha(){ echo "FALHOU: $*" >&2; exit 1; }
 a='00000000-0000-4000-8000-0000000000a1'
 b='00000000-0000-4000-8000-0000000000b2'
+
+como(){ local uid="$1"; shift; db -c "set role authenticated; set request.jwt.claim.sub='$uid'; $*"; }
+
+db < "$repo_dir/supabase/tests/auditoria_20261120_pg_setup.sql"
+[[ "$(db -c "select to_regprocedure('public.mini_run_start(text)') is null")" == t ]] || falha 'backend antigo esperado'
+[[ "$(como "$a" "select public.ganhar_minijogo(1)->>'fixture'")" == true ]] || falha 'contrato antigo antes da troca'
+for arq in "$repo_dir"/supabase/migrations/202611201{5,6,7}0000_*.sql; do db < "$arq"; done
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -30,11 +35,10 @@ b='00000000-0000-4000-8000-0000000000b2'
 # 3) RPCs só com login
 [[ "$(db -c "select has_function_privilege('anon','public.encontro_hoje(integer)','execute')")" == f ]] || falha 'anon executa encontro_hoje'
 [[ "$(db -c "select has_function_privilege('anon','public.camarim_coracao(text)','execute')")" == f ]] || falha 'anon executa camarim_coracao'
-# 5) crédito antigo fechado; novo só com login
-[[ "$(db -c "select has_function_privilege('authenticated','public.ganhar_minijogo(integer)','execute')")" == f ]] || falha 'ganhar_minijogo ainda aberto'
+# 4) O site antigo funciona no banco expandido, inclusive em rollback antes do corte.
+[[ "$(como "$a" "select public.ganhar_minijogo(1)->>'fixture'")" == true ]] || falha 'frontend antigo incompatível'
 [[ "$(db -c "select has_function_privilege('anon','public.mini_run_start(text)','execute')")" == f ]] || falha 'anon inicia minijogo'
-
-como(){ local uid="$1"; shift; db -c "set role authenticated; set request.jwt.claim.sub='$uid'; $*"; }
+# 5) Crédito validado pela partida.
 
 # partida curta demais não dá estrela
 run="$(como "$a" "select (public.mini_run_start('ritmo')->>'run')")"
@@ -46,8 +50,8 @@ run="$(como "$a" "select (public.mini_run_start('ritmo')->>'run')")"
 db -c "update private.mini_runs set started_at = now() - interval '46 seconds' where id = '$run'"
 r="$(como "$a" "select public.mini_run_finish('$run'::uuid, 999)")"
 [[ "$r" == *'"dadas" : 40'* ]] || falha "esperava ★40: $r"
-r="$(como "$a" "select public.mini_run_finish('$run'::uuid, 40)")"
-[[ "$r" == *'"partida"'* ]] || falha "a mesma partida pagou duas vezes: $r"
+[[ "$(como "$a" "select public.mini_run_finish('$run'::uuid,1)->>'dadas'")" == 40 ]] || falha 'recibo da confirmação'
+[[ "$(db -c "select count(*) from public.star_log where user_id='$a' and reason='minijogo'")" == 1 ]] || falha 'a mesma partida pagou duas vezes'
 
 # tempo limita: 20 s → no máximo ★20
 run="$(como "$a" "select (public.mini_run_start('corda')->>'run')")"
@@ -79,4 +83,29 @@ r="$(como "$a" "select public.meus_recordes_jogos()")"
 [[ "$(db -c "select stars from public.players where id='$a'")" == 150 ]] || falha 'saldo de A'
 [[ "$(db -c "select stars from public.players where id='$b'")" == 105 ]] || falha 'saldo de B'
 
-echo 'auditoria 20/11/2026: tudo certo'
+# Resgates, isolamento de conta, moderação e cancelamento.
+[[ "$(como "$b" "select public.show_sabado_marcar()->>'erro'")" == cantar ]] || falha 'show sem partida válida'
+[[ "$(como "$a" "select public.show_sabado_marcar()->>'premio'")" == 20 ]] || falha 'show sem prêmio'
+[[ "$(como "$a" "select public.show_sabado_marcar()->>'erro'")" == feito ]] || falha 'show duplicado'
+[[ "$(como "$a" "select public.festa_resgatar()->>'item'")" == tema_natal ]] || falha 'item da festa'
+[[ "$(como "$a" "select public.festa_resgatar()->>'erro'")" == feito ]] || falha 'festa duplicada'
+[[ "$(db -c "select stars from public.players where id='$a'")" == 170 ]] || falha 'saldo após resgates'
+[[ "$(como "$a" "select public.retro_mes('2026-11-01')->>'melhor'")" == 321 ]] || falha 'retrospectiva de A'
+[[ "$(como "$b" "select public.retro_mes('2026-11-01')->>'melhor'")" == 123 ]] || falha 'retrospectiva de B'
+[[ "$(db -c "select has_function_privilege('anon','public.retro_mes(date)','execute')")" == f ]] || falha 'visitante lê retrospectiva'
+[[ "$(como "$a" "select public.recado_tsulipa_enviar('Mensagem de teste')->>'ok'")" == true ]] || falha 'recado não salvo'
+[[ "$(como "$a" "select public.admin_recados_tsulipa()->>'erro'")" == admin ]] || falha 'jogador acessa moderação'
+recado="$(como "$b" "select public.admin_recados_tsulipa()->'recados'->0->>'id'")"
+[[ "$(como "$b" "select public.admin_recados_tsulipa($recado)->>'novos'")" == 0 ]] || falha 'moderador não marcou como lido'
+[[ "$(como "$a" "select public.email_mensal(true)->>'ligado'")" == true ]] || falha 'preferência de email'
+[[ "$(db -c "set role service_role; select json_array_length(public.email_mensal_pacote('2026-11-01'))")" == 1 ]] || falha 'lista de inscrição'
+[[ "$(como "$a" "select public.email_mensal(false)->>'ligado'")" == false ]] || falha 'cancelamento da inscrição'
+[[ "$(db -c "set role service_role; select json_array_length(public.email_mensal_pacote('2026-11-01'))")" == 0 ]] || falha 'lista após cancelamento'
+
+db < "$repo_dir/supabase/sql/proposta/encerrar_credito_legado_camarim.sql"
+[[ "$(db -c "select has_function_privilege('authenticated','public.ganhar_minijogo(integer)','execute')")" == f ]] || falha 'contrato antigo disponível após corte'
+run="$(como "$a" "select public.mini_run_start('ritmo')->>'run'")"
+[[ -n "$run" ]] || falha 'início indisponível após corte'
+db -c "update private.mini_runs set started_at = now() - interval '46 seconds' where id = '$run'"
+[[ "$(como "$a" "select public.mini_run_finish('$run'::uuid, 40)->>'dadas'")" == 0 ]] || falha 'confirmação com teto atingido indisponível após corte'
+echo 'auditoria 20/11/2026: três migrações e transição verificadas'

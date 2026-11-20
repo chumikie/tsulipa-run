@@ -35,8 +35,6 @@ insert into private.sora_scores(player_id, period_type, score) values ('00000000
 -- Assinaturas que já existem em produção (corpo simplificado; a migração substitui ou revoga).
 create function public.encontro_hoje(p_falas integer default 1) returns json language sql security definer as $$ select null::json $$;
 create function public.camarim_coracao(p_nick text) returns json language sql security definer as $$ select null::json $$;
-create function public.ganhar_minijogo(p_qtd integer) returns json language sql security definer as $$ select null::json $$;
-create function public.eh_admin() returns boolean language sql stable as $$ select false $$;
 create function public.meus_recordes_jogo(p_jogo text) returns json language sql stable security definer as $$
   select json_build_object('ok', auth.uid() is not null, 'jogo', p_jogo) $$;
 grant execute on all functions in schema public to anon, authenticated;
@@ -47,5 +45,57 @@ insert into public.players(id, nick, stars) values
 -- B já ganhou ★45 em minijogos hoje: sobra ★5.
 insert into public.star_log(user_id, delta, reason) values ('00000000-0000-4000-8000-0000000000b2', 45, 'minijogo');
 
--- perfil_publico usa tabelas que este teste não monta; o corpo é conferido em produção.
-set check_function_bodies = off;
+
+-- Contratos anteriores às migrações da PR, com sábado e festa de teste.
+do $$ begin
+  if not exists (select 1 from pg_roles where rolname = 'service_role') then create role service_role nologin; end if;
+end $$;
+create table auth.users(id uuid primary key,email text);
+alter table public.players add column avatar jsonb, add column created_at timestamptz, add column oshi text,
+  add column frase text, add column recados_on boolean, add column emoji text, add column cor text,
+  add column grupo text, add column time text, add column duo_on boolean, add column aniver text,
+  add column nuvem_pet jsonb, add column corridas_total integer, add column visuais text[];
+alter table public.leaderboard add column created_at timestamptz;
+create table private.kt_runs(player_id uuid,dia date,finished_at timestamptz);
+create table private.sora_history(player_id uuid,finished_at timestamptz,score integer);
+create table private.cafe_resultados(user_id uuid,dia date);
+create table private.handshake_resultados(user_id uuid,dia date);
+create table private.jardim_canteiros(user_id uuid,ultima_rega date,plantado timestamptz);
+create table private.battle_partidas(player_id uuid,dia date,unit jsonb);
+create table private.studio_mural(user_id uuid,dia date);
+create table public.duo_log(de uuid,dia date);
+create table public.gacha(user_id uuid,dia date,tipo text);
+create table public.coracoes(de uuid,para uuid,dia date);
+create table public.recados(de uuid,para uuid,dia date);
+create table public.missoes_feitas(user_id uuid,k text,dia date);
+create function public.hoje_br() returns date language sql stable as $$
+  select coalesce(nullif(current_setting('test.dia',true),'')::date,date '2026-11-21')
+$$;
+create function public.tema_do_dia(d date) returns text language sql stable as $$
+  select case when d between date '2026-11-19' and date '2026-11-28' then 'natal' end
+$$;
+create function public.visual_preco(text) returns table(preco integer) language sql stable as $$ select 60 $$;
+create function public.missoes_lista() returns table(k text,nivel integer,meta integer,premio integer,fam text)
+ language sql stable as $$ select 'karaoke',1,1,10,'karaoke' $$;
+create function public.missoes_progresso(uuid,text,date) returns integer language sql stable as $$ select 0 $$;
+create function public.aniver_hoje(text) returns boolean language sql stable as $$ select false $$;
+create function public.ultimos_cards(uuid) returns json language sql stable as $$ select '[]'::json $$;
+create function public.recados_de(uuid) returns json language sql stable as $$ select '[]'::json $$;
+create function public.insignias(uuid) returns text[] language sql stable as $$ select array[]::text[] $$;
+create function public.mini_resumo(uuid) returns json language sql stable as $$ select '{}'::json $$;
+create function public.album_cards() returns json language sql stable as $$ select '[]'::json $$;
+create function public.gacha_card(text) returns json language sql stable as $$ select null::json $$;
+create function public.eh_admin() returns boolean language sql stable as $$
+  select coalesce(auth.uid()='00000000-0000-4000-8000-0000000000b2',false)
+$$;
+-- O corpo deste contrato anterior é simulado. O teste verifica a presença e as permissões.
+create function public.ganhar_minijogo(p_qtd integer) returns json language sql security definer as $$
+  select json_build_object('stars',stars,'fixture',true) from public.players where id=auth.uid()
+$$;
+revoke execute on function public.ganhar_minijogo(integer) from public,anon;
+grant execute on function public.ganhar_minijogo(integer) to authenticated;
+insert into auth.users values ('00000000-0000-4000-8000-0000000000a1','a@example.test');
+insert into private.kt_runs values ('00000000-0000-4000-8000-0000000000a1','2026-11-21','2026-11-21T13:00:00Z');
+insert into public.leaderboard(user_id,score,created_at) values
+ ('00000000-0000-4000-8000-0000000000a1',321,'2026-11-21T12:00:00Z'),
+ ('00000000-0000-4000-8000-0000000000b2',123,'2026-11-21T12:00:00Z');

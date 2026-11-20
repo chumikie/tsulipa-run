@@ -77,7 +77,22 @@ Em cada combinação, use a mesma música e anote o ajuste de timing. Durante um
 
 ### Série de fotos
 
-Com conta, use **Guardar na série** no resultado do Studio, na cena do Duo e no Camarim VIP. A seção **Série de fotos** fica no Álbum das duas interfaces. Repita a mesma composição do Studio com dois looks e confira ordem, download e remoção. O navegador guarda até 24 imagens JPEG por conta e substitui as mais antigas ao atingir o limite. Recarregue e abra o Álbum com outra conta para verificar o isolamento.
+Com conta, use **Guardar na série** no resultado do Studio, na cena do Duo e no Camarim VIP. A seção **Série de fotos** fica no Álbum das duas interfaces. Repita a mesma composição do Studio com dois looks e confira ordem, download e remoção. O navegador guarda até 24 imagens JPEG por conta e pede que você escolha a foto a substituir ao atingir o limite. Cancele uma vez para conferir que as 24 fotos ficaram intactas. Depois escolha uma foto, confirme e confira que só ela foi substituída. Recarregue e abra o Álbum com outra conta para verificar o isolamento.
 
 
 Durante a retomada, observe se o relógio e as notas ficam no mesmo ponto quando o áudio ainda está interrompido. Se aparecer “Áudio interrompido”, recupere a saída de áudio e toque em **Retomar** novamente. A contagem deve voltar e o mesmo show deve prosseguir dali. Compare a contagem de tentativas antes e depois dessa recuperação.
+
+
+### Aceite curto da publicação
+
+Em iPhone com Safari e Android com Chrome, entrar com uma conta de teste. Concluir e retomar o mesmo show com alto-falante e Bluetooth, anotando latência, tempo congelado durante a pausa e posição das notas ao voltar. No Camarim, concluir uma partida de Ritmo ou Corda com crédito, conferir o saldo após a resposta do servidor e simular uma queda de conexão no fim. Usar **Tentar confirmar estrelas** e conferir que a partida só dá crédito uma vez. No Álbum, baixar a cópia JSON, restaurar a série, conferir a ordem das fotos fixadas e escolher qual substituir ao chegar ao limite.
+
+### Ordem da publicação do Camarim
+
+1. Aplicar as três migrações da #124 em sequência. Durante a transição, o banco conserva a permissão que o site antigo já usa. O site novo, quando abre antes do banco novo, mantém o jogo e avisa no resultado que o crédito está indisponível até atualizar e jogar de novo.
+2. Publicar e validar o site com `mini_run_start` e `mini_run_finish`. Em caso de rollback antes do corte, a versão anterior ainda tem o contrato antigo. Neste ponto guardar como referência para rollback uma versão que já use as duas chamadas novas.
+3. Encerrar prontamente a transição após o aceite, executando [a proposta de corte](../../supabase/sql/proposta/encerrar_credito_legado_camarim.sql) com a autorização de publicação do banco. A partir daí o rollback do frontend mantém as duas chamadas novas. Uma aba anterior ao corte precisa ser recarregada antes de outra partida.
+
+### Ativação do e-mail mensal
+
+A retrospectiva e o download funcionam com a preferência de e-mail oculta. Depois de configurar a função, o provedor e o agendamento, testar um envio para endereço de teste e o cancelamento da inscrição. Só então habilitar `TW_EMAIL_MENSAL_DISPONIVEL` no site. Testar manualmente a preferência com essa opção visível e confirmar que o endereço deixa de entrar no pacote depois do cancelamento.

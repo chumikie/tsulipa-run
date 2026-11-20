@@ -7,6 +7,74 @@ const vm = require('vm');
 const raiz = path.join(__dirname, '..');
 const ler = f => fs.readFileSync(path.join(raiz, f), 'utf8');
 
+test('Camarim: versão antiga do banco, confirmação repetida e troca de conta', async () => {
+  const conta = ler('conta.js');
+  const sala = ler('pet-sala.js');
+  const carteira = new Map();
+  const chamadas = [];
+  const contexto = vm.createContext({
+    contaJ: {id:'a'}, contaSessaoToken:0, contaAuthUserId:'a', petOpen:false, starT:100,
+    petData:{}, petAtivo:()=>null, petMini:()=>({ganho:0, rec:{corda:20}}),
+    petSave(){}, petUI(){}, setBest(){}, sfx:{}, PET_MINI_CAP:50,
+    localStorage:{setItem:(chave, valor)=>carteira.set(chave, valor)}
+  });
+  vm.runInContext(conta.slice(conta.indexOf('function contaSessaoAtual'), conta.indexOf('function contaUI')) +
+    conta.slice(conta.indexOf('function contaMiniInicio'), conta.indexOf('function contaTesteParceiras')) +
+    sala.slice(sala.indexOf('var PET_CREDITO_MINI'), sala.indexOf('//←petGameClose')), contexto);
+  const liquidar = () => new Promise(resolve => setImmediate(resolve));
+  function concluir() {
+    const jogo = {k:'corda', pulos:12, run:contexto.contaMiniInicio('corda')};
+    contexto.petGame = jogo;
+    contexto.petGameEnd();
+    return jogo;
+  }
+
+  contexto.contaRpc = async nome => {
+    chamadas.push(nome);
+    throw {code:'PGRST202'};
+  };
+  const antiga = concluir();
+  await liquidar();
+  assert.equal(antiga.fim.credito, 'indisponivel');
+  assert.equal(antiga.fim.dar, 0);
+  assert.equal(contexto.starT, 100);
+  assert.equal(carteira.size, 0);
+  assert.deepEqual(chamadas, ['mini_run_start']);
+
+  const confirmacoes = [];
+  let responder;
+  contexto.contaRpc = async (nome, args) => {
+    if(nome === 'mini_run_start') return {ok:true, run:'partida-1'};
+    confirmacoes.push(args.p_run);
+    if(confirmacoes.length === 1) throw new Error('sem conexão');
+    return new Promise(resolve => { responder = resolve; });
+  };
+  const atual = concluir();
+  await liquidar();
+  assert.equal(atual.fim.credito, 'repetir');
+  contexto.petMiniConfirmar(atual);
+  contexto.petMiniConfirmar(atual);
+  await liquidar();
+  assert.equal(atual.fim.credito, 'aguardando');
+  assert.equal(contexto.starT, 100);
+  assert.deepEqual(confirmacoes, ['partida-1', 'partida-1']);
+  responder({ok:true, stars:106, dadas:6});
+  await liquidar();
+  assert.equal(atual.fim.credito, 'confirmado');
+  assert.equal(atual.fim.dar, 6);
+  assert.equal(carteira.get('brs48cr_st'), 106);
+
+  const anterior = concluir();
+  await liquidar();
+  contexto.contaJ = {id:'b'};
+  contexto.starT = 20;
+  responder({ok:true, stars:112, dadas:6});
+  await liquidar();
+  assert.equal(anterior.fim.credito, 'conta');
+  assert.equal(contexto.starT, 20);
+  assert.equal(carteira.get('brs48cr_st'), 106);
+});
+
 test('tw-semana: todos os textos nos 6 idiomas e nada de estrela calculada no navegador', () => {
   const src = ler('tw-semana.js');
   const ctx = {window:{}, contaSessaoAtual:()=>()=>true, document:{readyState:'complete', addEventListener(){}, getElementById(){ return null; }, body:{setAttribute(){}, removeAttribute(){}}}, setTimeout(){}, Promise, Event:function(){}, LANG:'pt'};

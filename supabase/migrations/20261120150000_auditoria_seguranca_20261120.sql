@@ -83,7 +83,8 @@ create table if not exists private.mini_runs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.players(id) on delete cascade,
   jogo text not null check (jogo in ('ritmo', 'corda')),
-  started_at timestamptz not null default now()
+  started_at timestamptz not null default now(),
+  credited integer
 );
 create index if not exists mini_runs_user_idx on private.mini_runs (user_id, started_at desc);
 alter table private.mini_runs enable row level security;
@@ -99,11 +100,11 @@ declare v_uid uuid := auth.uid(); v_id uuid;
 begin
   if v_uid is null then return json_build_object('ok', false, 'erro', 'login'); end if;
   if coalesce(p_jogo, '') not in ('ritmo', 'corda') then return json_build_object('ok', false, 'erro', 'jogo'); end if;
-  if not exists (select 1 from public.players p where p.id = v_uid and not coalesce(p.bloqueado, false)) then
-    return json_build_object('ok', false, 'erro', 'sem_conta');
-  end if;
-  -- partidas esquecidas (aba fechada) somem; no máximo uma aberta por conta
-  delete from private.mini_runs where user_id = v_uid;
+  perform 1 from public.players p where p.id = v_uid and not coalesce(p.bloqueado,false) for update;
+  if not found then return json_build_object('ok', false, 'erro', 'sem_conta'); end if;
+  -- Uma partida aberta por conta, com recibos recentes para reenviar depois de falhas de rede.
+  delete from private.mini_runs where user_id = v_uid
+    and (credited is null or started_at < now() - interval '2 days');
   insert into private.mini_runs (user_id, jogo) values (v_uid, p_jogo) returning id into v_id;
   return json_build_object('ok', true, 'run', v_id);
 end $function$;
@@ -124,12 +125,16 @@ declare
   v_stars integer;
 begin
   if v_uid is null or p_run is null then return json_build_object('ok', false, 'erro', 'login'); end if;
-  perform 1 from public.players where id = v_uid for update;
+  select stars into v_stars from public.players where id = v_uid and not coalesce(bloqueado,false) for update;
   if not found then return json_build_object('ok', false, 'erro', 'sem_conta'); end if;
-  delete from private.mini_runs where id = p_run and user_id = v_uid returning started_at into v_inicio;
+  select started_at, credited into v_inicio, v_dar from private.mini_runs where id = p_run and user_id = v_uid;
   if v_inicio is null then return json_build_object('ok', false, 'erro', 'partida'); end if;
+  if v_dar is not null then return json_build_object('ok', true, 'stars', v_stars, 'dadas', v_dar); end if;
   v_seg := extract(epoch from now() - v_inicio);
-  if v_seg < 8 or v_seg > 900 then return json_build_object('ok', false, 'erro', 'partida'); end if;
+  if v_seg < 8 or v_seg > 900 then
+    delete from private.mini_runs where id=p_run and user_id=v_uid;
+    return json_build_object('ok', false, 'erro', 'partida');
+  end if;
   select coalesce(sum(delta), 0) into v_ja from public.star_log
    where user_id = v_uid and reason = 'minijogo' and (created_at at time zone 'America/Sao_Paulo')::date = v_hoje;
   -- ★ por partida limitadas pelo tempo jogado (a música do Ritmo dura ~46 s e dá até ★40)
@@ -137,9 +142,8 @@ begin
   if v_dar > 0 then
     update public.players set stars = stars + v_dar, updated_at = now() where id = v_uid returning stars into v_stars;
     insert into public.star_log (user_id, delta, reason) values (v_uid, v_dar, 'minijogo');
-  else
-    select stars into v_stars from public.players where id = v_uid;
   end if;
+  update private.mini_runs set credited = v_dar where id = p_run;
   return json_build_object('ok', true, 'stars', v_stars, 'dadas', v_dar);
 end $function$;
 
@@ -148,8 +152,8 @@ revoke all on function public.mini_run_finish(uuid, integer) from public, anon;
 grant execute on function public.mini_run_start(text) to authenticated;
 grant execute on function public.mini_run_finish(uuid, integer) to authenticated;
 
--- O crédito antigo (quantidade enviada pelo navegador) sai de uso.
-revoke execute on function public.ganhar_minijogo(integer) from public, anon, authenticated;
+-- O contrato antigo mantém as permissões existentes durante a troca do site.
+-- Revogar depois do aceite com sql/proposta/encerrar_credito_legado_camarim.sql.
 
 -- 6) Recordes de Handshake e Café numa chamada só (antes eram duas na abertura).
 create or replace function public.meus_recordes_jogos()

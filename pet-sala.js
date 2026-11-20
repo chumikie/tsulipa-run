@@ -2153,6 +2153,12 @@ function petActUI(){
     return '<button type="button" data-a="' + a[0] + '"' + (off ? ' disabled' : '') + ' aria-pressed="' + (petMenuK === a[0]) + '">' + a[1] + ' ' + escHtml(tr(a[2])) + cd + '</button>';
   }).join('');
   petMenuUI();
+  if(petGame&&petGame.fim&&petGame.fim.credito==='repetir'){
+    var jogo=petGame, menu=$('petMenu'), retry=document.createElement('button');
+    retry.type='button';retry.textContent=petMiniCreditoTexto(2);
+    retry.onclick=function(){petMiniConfirmar(jogo);};
+    menu.hidden=false;menu.appendChild(retry);
+  }
 }
 //←petMenuUI
 function petMenuUI(){
@@ -3116,7 +3122,7 @@ function petJump(){
 //←petGameUpdate
 function petGameUpdate(){
   var G = petGame, now = petNowS(), dt = Math.min(.05, now - G.last); G.last = now;
-  if(G.fim){ G.fim.t+=petDrawDelta; if(G.fim.t > 420) petGameClose(); return; }
+  if(G.fim){ G.fim.t+=petDrawDelta; if(G.fim.t>420&&!['aguardando','repetir'].includes(G.fim.credito))petGameClose(); return; }
   if(G.k === 'ritmo'){
     while(G.step < 128 && G.t0 + G.step * PET_BEAT < now + .12){   // acompanhamento lofi agendado no tempo certo
       var i = G.step, w = Math.max(0, G.t0 + i * PET_BEAT - now), st = i % 8, ch = PET_CHORDS[(i >> 3) % 4];
@@ -3143,18 +3149,44 @@ function petGameUpdate(){
     }
   }
 }
+//←PET_CREDITO_MINI
+var PET_CREDITO_MINI={
+  pt:['Confirmando estrelas…','Conexão interrompida.','Tentar confirmar estrelas','Crédito indisponível. Atualize e jogue de novo.','Partida encerrada sem crédito.','A conta mudou.'],
+  en:['Confirming stars…','Connection interrupted.','Retry star confirmation','Credit unavailable. Reload and play again.','The game ended without credit.','The account changed.'],
+  es:['Confirmando estrellas…','Conexión interrumpida.','Reintentar confirmación','Crédito no disponible. Recarga y vuelve a jugar.','La partida terminó sin crédito.','Cambió la cuenta.'],
+  id:['Memastikan bintang…','Koneksi terputus.','Coba konfirmasi bintang lagi','Kredit tidak tersedia. Muat ulang dan main lagi.','Permainan berakhir tanpa kredit.','Akun berubah.'],
+  th:['กำลังยืนยันดาว…','การเชื่อมต่อขาดหาย','ลองยืนยันดาวอีกครั้ง','รับดาวไม่ได้ รีโหลดแล้วเล่นอีกครั้ง','จบเกมโดยไม่ได้รับดาว','เปลี่ยนบัญชีแล้ว'],
+  ja:['スターを確認中…','接続が切れました。','スターの確認を再試行','受け取れません。再読み込みして遊んでください。','スターを獲得できませんでした。','アカウントが変わりました。']
+};
+//←petMiniCreditoTexto
+function petMiniCreditoTexto(i){return (PET_CREDITO_MINI[LANG]||PET_CREDITO_MINI.pt)[i];}
+//←petMiniConfirmar
+function petMiniConfirmar(G){
+  if(petGame!==G||!G.run||!G.fim||!['novo','repetir'].includes(G.fim.credito))return;
+  G.fim.credito='aguardando';
+  petUI();
+  contaGanhoMini(G.fim.est,G.run).then(function(r){
+    if(petGame!==G)return;
+    G.fim.credito=r.estado;
+    if(r.estado==='confirmado')G.fim.dar=r.dadas;
+    petUI();
+  });
+}
 //←petGameEnd
 function petGameEnd(){
   var G = petGame; if(!G || G.fim) return;
   var p = petAtivo(), mi = petMini(), k = G.k;
   var pts = k === 'ritmo' ? G.score : G.pulos;
   var est = k === 'ritmo' ? Math.min(40, Math.round(G.perf * .5 + G.bom * .25)) : Math.min(25, Math.floor(G.pulos / 2));
-  var dar = Math.max(0, Math.min(est, PET_MINI_CAP - mi.ganho));
-  if(dar > 0){ starT += dar; mi.ganho += dar; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); contaGanhoMini(dar, G.run); }
+  var dar=G.run||contaJ?0:Math.max(0,Math.min(est,PET_MINI_CAP-mi.ganho));
+  if(dar>0){starT+=dar;mi.ganho+=dar;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
   var rec = pts > 0 && pts > (mi.rec[k] || 0);
   if(rec){ mi.rec[k] = pts; petData.inv = petData.inv || {}; petData.inv.sorvete = (petData.inv.sorvete || 0) + 1; }
   if(p){ petTick(); p.humor = petClamp(p.humor + 10); p.energia = petClamp(p.energia - 6); p.fome = petClamp(p.fome - 4); }
-  G.fim = { t:0, pts:pts, est:est, dar:dar, rec:rec };
+  var credito='';
+  if(est>0)credito=G.run?'novo':contaJ?'conta':'';
+  G.fim = { t:0, pts:pts, est:est, dar:dar, rec:rec, credito:credito };
+  if(G.fim.credito==='novo')petMiniConfirmar(G);
   if(rec){ if(sfx.rank) sfx.rank(); } else if(sfx.card) sfx.card();
   petSave(true);
   if(p) petXP(p, 5 + Math.min(10, Math.floor(k === 'ritmo' ? G.perf / 8 : G.pulos / 3)));
@@ -3246,7 +3278,10 @@ function petGameDraw(x, p){
     x.fillStyle = '#12365e'; x.font = '900 22px "M PLUS Rounded 1c",sans-serif';
     x.fillText(G.k === 'ritmo' ? F.pts + ' ' + tr('pontos') : tr('Pulos') + ': ' + F.pts, 180, 100);
     x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#7b3ff0';
-    x.fillText('★ +' + F.dar + (F.dar < F.est ? '  (' + tr('Limite de estrelas de hoje atingido') + ')' : ''), 180, 122);
+    var iCredito={novo:0,aguardando:0,repetir:1,indisponivel:3,encerrado:4,conta:5}[F.credito];
+    var credito=iCredito===undefined?'★ +'+F.dar:petMiniCreditoTexto(iCredito);
+    if(!G.run&&!F.credito&&F.dar<F.est)credito+=' ('+tr('Limite de estrelas de hoje atingido')+')';
+    x.fillText(credito,180,122,204);
     if(F.rec){ x.fillStyle = '#ff6fb5'; x.fillText('🍓 ' + tr('Sorvete de morango') + ' +1', 180, 142); }
     x.fillStyle = '#94a3b8'; x.font = '700 11px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr('Toque para voltar'), 180, 168);
     x.globalAlpha = 1;

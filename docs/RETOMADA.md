@@ -30,7 +30,7 @@
 **Como se entra:** o **visual novo** (o celular do Idol, "*Nick*Phone"; sem conta, "TsuPhone") abre sozinho no celular, tablet e computador desde 17/11. O clássico continua em Ajustes ou `?celular=0`.
 - Abertura com o trio Tsu·Li·Pa.
 - **Início.** Palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário). A #118 permite fixar até dois atalhos neste navegador. Nesta revisão, o palco vem primeiro, a estreia cabe em uma linha compacta, e os atalhos fixados ficam junto das portas. A edição fica em Ajustes.
-- **Na #124, Esta semana** reúne o show de sábado, a festa do mapa, o jogo da semana e a retrospectiva. O Perfil ganha vitrine de favoritos e o Menu oferece recados ao trio. O e-mail mensal depende da configuração de envio e do agendamento. As propostas de banco da rodada devem ser conferidas na publicação. [Economia e publicação](ECONOMIA_ESTRELAS.md)
+- **Na #124, Esta semana** reúne o show de sábado, a festa do mapa, o jogo da semana e a retrospectiva. O Perfil ganha vitrine de favoritos e o Menu oferece recados ao trio. A opção de e-mail fica oculta até validar o envio e o cancelamento. As propostas de banco da rodada devem ser conferidas na publicação. [Economia e publicação](ECONOMIA_ESTRELAS.md)
 - **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
 - **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
 - **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. A Rosa reconhece a contribuição da semana anterior no Mapa e no painel da Rua Fofa. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
@@ -94,6 +94,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 - `tests/site-source.js` lista os arquivos na ordem original, para os testes que recortam código por posição.
 
 ## Pendências
+- Publicação do Camarim em duas etapas, com aceite das funções novas, referência de rollback e corte final do crédito legado. [Roteiro de publicação](qa/pilotos-estreia-bairro-karaoke.md#ordem-da-publicação-do-camarim)
 **Do dono**
 - Conferir no celular, depois da #110: Início, show no Karaoke com foto no meio, abrir o Moon⭐Duo!, "Vida no bairro" e aba de moderação na conta admin.
 - Ok do Pati para o visual novo.

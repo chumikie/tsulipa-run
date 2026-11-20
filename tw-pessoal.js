@@ -123,10 +123,12 @@
       if(!vigente(pedido))return;
       if(!d || !d.ok){ aviso(t('erro')); return; }
       var cv = desenharRetro(d), url = window.twMarcaPng ? window.twMarcaPng(cv) : cv.toDataURL('image/png');
+      var email=window.TW_EMAIL_MENSAL_DISPONIVEL===true;
       var o = janela('<h2 class="twp-tit twp-sr">' + esc(t('retro')) + '</h2><img class="twp-img" alt="' + esc(t('retroItem', {m:nomeMes(d.mes)})) + '" src="' + url + '">' +
-        '<label class="twp-check"><input type="checkbox" id="twpEmail" disabled> ' + esc(t('email')) + '</label><small class="twp-nota">' + esc(t('emailNota')) + '</small>' +
+        (email ? '<label class="twp-check"><input type="checkbox" id="twpEmail" disabled> ' + esc(t('email')) + '</label><small class="twp-nota">' + esc(t('emailNota')) + '</small>' : '') +
         '<div class="btns"><a class="btn" id="twpBaixar" download="tsulipa-retrospectiva-' + esc(String(d.mes).slice(0, 7)) + '.png" href="' + url + '">⬇️ ' + esc(t('salvar')) + '</a>' +
         '<button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
+      if(!email)return;
       var ck = o.querySelector('#twpEmail');
       rpc('email_mensal').then(function(r){
         if(!vigente(pedido,ck))return;

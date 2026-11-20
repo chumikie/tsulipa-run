@@ -237,19 +237,31 @@ function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e con
 }
 // Minijogos do camarim (20/11/2026): o servidor marca o início e confere o tempo no fim (mini_run_start/finish).
 function contaMiniInicio(jogo){
-  if(!contaJ) return null;
-  return contaRpc('mini_run_start', { p_jogo:String(jogo || '') }).then(function(r){ return r && r.ok && r.run ? r.run : null; }).catch(function(){ return null; });
+  if(!contaJ)return null;
+  return {
+    conta:contaSessaoAtual(),
+    inicio:contaRpc('mini_run_start',{p_jogo:jogo})
+      .then(function(r){return r&&r.ok&&r.run||null;},function(){return null;})
+  };
 }
-function contaGanhoMini(qtd, run){
-  if(!contaJ || qtd <= 0 || !run) return;
-  var dono = String(contaJ.nick || '').toLowerCase();   // a resposta só vale se a mesma conta ainda estiver aberta
-  function mesma(){ return !!contaJ && String(contaJ.nick || '').toLowerCase() === dono; }
-  Promise.resolve(run).then(function(id){
-    if(!id || !mesma()) return null;
-    return contaRpc('mini_run_finish', { p_run:id, p_qtd:Math.floor(qtd) });
-  }).then(function(r){
-    if(r && typeof r.stars === 'number' && mesma()){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
-  }).catch(function(){});
+async function contaGanhoMini(qtd, partida){
+  if(!partida.conta())return {estado:'conta'};
+  var id=await partida.inicio;
+  if(!partida.conta())return {estado:'conta'};
+  if(!id)return {estado:'indisponivel'};
+  try{
+    var r=await contaRpc('mini_run_finish',{p_run:id,p_qtd:qtd});
+    if(!partida.conta())return {estado:'conta'};
+    if(!r||!r.ok||!Number.isSafeInteger(r.stars)||!Number.isSafeInteger(r.dadas))return {estado:'encerrado'};
+    starT=r.stars;
+    try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
+    setBest();
+    if(petOpen)petUI();
+    return {estado:'confirmado',dadas:r.dadas};
+  }catch(e){
+    if(!partida.conta())return {estado:'conta'};
+    return {estado:e&&(e.code==='PGRST202'||e.code==='42501')?'indisponivel':'repetir'};
+  }
 }
 function contaTesteParceiras(){
   var s = $('tstP'); if(!s || $('tstw').hidden) return;

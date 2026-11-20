@@ -49,7 +49,7 @@ Migração `supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql`
 - `leaderboard` sem leitura direta: o ranking e o perfil continuam por `top_scores` e `perfil_publico`; `user_id` e `device_id` deixam de ficar expostos.
 - Sem escrita direta (INSERT/UPDATE/DELETE) de `anon`/`authenticated` nas 16 tabelas que ainda tinham os grants padrão.
 - `encontro_hoje` e `camarim_coracao` só para quem entrou com Google; perfil de conta bloqueada não aparece para os outros.
-- Minijogos do camarim: `ganhar_minijogo` sai de uso, entra `mini_run_start`/`mini_run_finish` (mesmos tetos ★40 por partida e ★50 por dia).
+- Minijogos do camarim: `mini_run_start`/`mini_run_finish` entram com recibo para reconfirmar a mesma partida. O corte de `ganhar_minijogo` acontece após o aceite da versão nova (mesmos tetos ★40 por partida e ★50 por dia).
 - Recordes de Handshake e Café numa chamada (`meus_recordes_jogos`), no máximo 1 leitura por minuto ao abrir o Início; presença online pausa com a pessoa parada e só atualiza fora do mapa se o contador estiver na tela.
 - `private.sora_scores` ganhou chave primária.
 - Mantidos de propósito: teto de importação ★1.000 (migração `v212_teto_importacao_1000` de 27/10), os 11 índices sem uso e a proteção de senhas vazadas desligada (login só com Google). As RPCs públicas do modo visitante seguem abertas e só devolvem o que a página de privacidade já diz que é público.

@@ -448,7 +448,7 @@
     pautaBox.querySelector('div').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
       [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]]
         .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' + temaHtml(esc_) : temaHtml(esc_);
-    var acao=ov.querySelector('#studioAcao'), obturador=acao.querySelector('button');
+    var acao=ov.querySelector('#studioAcao'), obturador=acao.querySelector('[data-st="clique"]');
     var resultados=acao.querySelector('.stresultado-acoes');
     if(!resultados){resultados=document.createElement('div');resultados.className='btns stresultado-acoes';acao.appendChild(resultados);}
     resultados.hidden=fase!=='foto';

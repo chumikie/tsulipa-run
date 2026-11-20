@@ -71,19 +71,26 @@ function recHistoricoHtml(k){
     '<h4 class="perfsub">🏆 ' + escHtml(tr('5 melhores pontuações')) + '</h4><ol class="lb perfult">' + (melhores.length ? melhores.map(linha).join('') : vazio) + '</ol>' +
     '<h4 class="perfsub">🕒 ' + escHtml(tr('5 pontuações recentes')) + '</h4><ol class="lb perfult">' + (recentes.length ? recentes.map(linha).join('') : vazio) + '</ol>';
 }
-function recCarregar(){
+var recUltimo=0;   // hora da última leitura online, para não repetir a cada abertura do Início
+function recCarregar(leve){
   var dono=contaJ?recLocalDono():'';
+  if(leve&&contaJ&&dono===recDonoOnline&&recUltimo&&Date.now()-recUltimo<60000){recUI();return;}
   if(dono!==recDonoOnline){
     recDonoOnline=dono;recPerfil=null;recSora=null;recOnline={hand:null,cafe:null};recCarregando=false;
   }
   recUI();
   if(!contaJ || recCarregando)return;
-  recCarregando=true;
+  recCarregando=true;recUltimo=Date.now();
   Promise.all([
     contaRpc('meu_perfil').then(function(d){if(recDonoOnline===dono)recPerfil=d||null;}).catch(function(){}),
     contaRpc('sora_my_profile').then(function(d){if(recDonoOnline===dono)recSora=d||null;}).catch(function(){}),
-    contaRpc('meus_recordes_jogo',{p_jogo:'hand'}).then(function(d){if(recDonoOnline===dono)recOnline.hand=d&&d.ok?d:null;}).catch(function(){if(recDonoOnline===dono)recOnline.hand=null;}),
-    contaRpc('meus_recordes_jogo',{p_jogo:'cafe'}).then(function(d){if(recDonoOnline===dono)recOnline.cafe=d&&d.ok?d:null;}).catch(function(){if(recDonoOnline===dono)recOnline.cafe=null;})
+    // Handshake e Café numa chamada só (meus_recordes_jogos, 20/11/2026)
+    contaRpc('meus_recordes_jogos').then(function(d){
+      if(recDonoOnline!==dono)return;
+      d=d||{};
+      recOnline.hand=d.hand&&d.hand.ok?d.hand:null;
+      recOnline.cafe=d.cafe&&d.cafe.ok?d.cafe:null;
+    }).catch(function(){if(recDonoOnline===dono){recOnline.hand=null;recOnline.cafe=null;}})
   ]).then(function(){if(recDonoOnline===dono){recCarregando=false;recUI();}});
 }
 function recResumo(k){   // linha curta mostrada na aba fechada

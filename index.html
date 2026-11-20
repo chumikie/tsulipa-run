@@ -409,7 +409,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=38"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=47"></script>
+<script src="./pet.js?v=48"></script>
 <script src="./perfil.js?v=31"></script>
 <script src="./gacha.js?v=6"></script>
 <script src="./album-fotos.js?v=7"></script>
@@ -419,7 +419,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
 <script src="./evento.js?v=4"></script>
-<script src="./recordes.js?v=5"></script>
+<script src="./recordes.js?v=6"></script>
 <script>
 // Cursor de coração em TUDO que é clicável: quem tem cursor:pointer vindo de outro CSS (divs, canvas, itens de lista)
 // ganha o coração na primeira vez que o mouse passa por cima. Só com mouse.
@@ -466,7 +466,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./duo-base.js?v=5"></script>
 <script src="./encontro-base.js?v=2"></script>
-<script src="./hub.js?v=33"></script>
+<script src="./hub.js?v=34"></script>
 <script src="./hub-layout.js?v=5"></script>
 <script>/* O mapa baixa na primeira abertura, pelo TsuPhone ou pela entrada clássica. */
 (function(){
@@ -565,7 +565,7 @@ var jornalCarregar=(function(){
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=18"></script>
 <script src="./banner.js?v=6"></script>
-<script src="./conta.js?v=8"></script>
+<script src="./conta.js?v=9"></script>
 <script src="./admin-base.js?v=1"></script>
 <script src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
@@ -576,7 +576,7 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=45"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=61"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=45"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=61"><'+'/script><script src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
   var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=45';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
@@ -584,7 +584,7 @@ function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CEL
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=8';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
   var s=document.createElement('script');s.src='./tw-celular.js?v=61';s.async=false;document.body.appendChild(s);
-  var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
+  var p=document.createElement('script');p.src='./tw-presenca.js?v=3';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
   var b=c.querySelector('[data-twcel]');if(window.TW_CELULAR_LIGADO){if(b)b.parentNode.remove();return r;}
@@ -1622,7 +1622,7 @@ window.addEventListener('pagehide',petPhoneMomentosLimpar);
 // Sem login: o jogo continua igual (save no aparelho e ranking deste aparelho).
 // Com login: nome de Idol único, estrelas e recorde guardados no Supabase e
 // conferidos por funções no servidor (jogador, escolher_nome, importar_save,
-// iniciar_corrida, terminar_corrida, gastar_estrelas, ganhar_minijogo).
+// iniciar_corrida, terminar_corrida, gastar_estrelas, mini_run_start, mini_run_finish).
 // As chaves brs48cr_* continuam as mesmas.
 // ================================================================
  try{ perfMinhaCor = /^#[0-9a-f]{6}$/i.test(localStorage.getItem('brs48cr_cor') || '') ? localStorage.getItem('brs48cr_cor') : ''; }catch(e){}

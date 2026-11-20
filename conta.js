@@ -227,9 +227,17 @@ function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e con
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
   }).catch(function(){});
 }
-function contaGanhoMini(qtd){
-  if(!contaJ || qtd <= 0) return;
-  contaRpc('ganhar_minijogo', { p_qtd:qtd }).then(function(r){
+// Minijogos do camarim (20/11/2026): o servidor marca o início e confere o tempo no fim (mini_run_start/finish).
+function contaMiniInicio(jogo){
+  if(!contaJ) return null;
+  return contaRpc('mini_run_start', { p_jogo:String(jogo || '') }).then(function(r){ return r && r.ok && r.run ? r.run : null; }).catch(function(){ return null; });
+}
+function contaGanhoMini(qtd, run){
+  if(!contaJ || qtd <= 0 || !run) return;
+  Promise.resolve(run).then(function(id){
+    if(!id) return null;
+    return contaRpc('mini_run_finish', { p_run:id, p_qtd:Math.floor(qtd) });
+  }).then(function(r){
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
   }).catch(function(){});
 }

@@ -3067,7 +3067,7 @@ function petGameStart(k){
   petMenuK = ''; petSinging = true; petTalkB = null;
   petGameBtns(false);   // 📷 e 🐾 somem durante o minijogo
   var now = petNowS(), t0 = now + 2;
-  petGame = { k:k, t0:t0, last:now, fim:null, fx:[] };
+  petGame = { k:k, t0:t0, last:now, fim:null, fx:[], run:(typeof contaMiniInicio === 'function' ? contaMiniInicio(k) : null) };
   [0, .5, 1].forEach(function(w){ beep(660, .1, 'square', .03, .5 + w); });
   beep(1320, .18, 'square', .035, 2);
   if(k === 'ritmo'){
@@ -3150,7 +3150,7 @@ function petGameEnd(){
   var pts = k === 'ritmo' ? G.score : G.pulos;
   var est = k === 'ritmo' ? Math.min(40, Math.round(G.perf * .5 + G.bom * .25)) : Math.min(25, Math.floor(G.pulos / 2));
   var dar = Math.max(0, Math.min(est, PET_MINI_CAP - mi.ganho));
-  if(dar > 0){ starT += dar; mi.ganho += dar; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); contaGanhoMini(dar); }
+  if(dar > 0){ starT += dar; mi.ganho += dar; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); contaGanhoMini(dar, G.run); }
   var rec = pts > 0 && pts > (mi.rec[k] || 0);
   if(rec){ mi.rec[k] = pts; petData.inv = petData.inv || {}; petData.inv.sorvete = (petData.inv.sorvete || 0) + 1; }
   if(p){ petTick(); p.humor = petClamp(p.humor + 10); p.energia = petClamp(p.energia - 6); p.fome = petClamp(p.fome - 4); }

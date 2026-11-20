@@ -14,7 +14,7 @@ Dados lidos de `public.star_log` e `public.players` em produção (só leitura).
 |---|---|---|
 | Center⭐Run! (`corrida`) | ★6.420 (78%) | Quase tudo em 31/10–01/11 (antes do teto). **Desde 02/11 o teto de ★100/dia está ativo** e funcionando (maior dia por jogador: ★100). |
 | Missões (`missao`) | ★990 (12%) | ★5–20 cada |
-| Pet (`minijogo`) | ★404 | teto próprio de ★50/dia |
+| Pet (`minijogo`) | ★404 | teto próprio de ★50/dia; desde 20/11/2026 cada partida (Ritmo/Corda) começa no servidor (`mini_run_start`) e só paga até ★40 e no máximo ★1 por segundo jogado (`mini_run_finish`) |
 | Gacha | ★299 | média ★15 por giro |
 | Encontro do dia | ★69 | ★3 |
 | Sora 500 m | novo (13/11) | ★25/dia com anti-cheat |
@@ -41,3 +41,15 @@ Visual (roupas ★150–350, poses ★100–150, extras do Duo ★80–150, deta
 
 - O Bloom⭐Garden! deve ser **um lugar de gastar** (sementes, vasos), não mais uma fonte grande.
 - Reavaliar com estes mesmos números um mês depois do lançamento dos merges #88/#89.
+
+## Auditoria de 20/11/2026 (PR #124)
+
+Migração `supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql`, aplicada no merge pela integração GitHub–Supabase. Testada em PostgreSQL isolado (`supabase/tests/auditoria_20261120_pg_integration.sh`, também no CI) e numa transação desfeita no banco de produção.
+
+- `leaderboard` sem leitura direta: o ranking e o perfil continuam por `top_scores` e `perfil_publico`; `user_id` e `device_id` deixam de ficar expostos.
+- Sem escrita direta (INSERT/UPDATE/DELETE) de `anon`/`authenticated` nas 16 tabelas que ainda tinham os grants padrão.
+- `encontro_hoje` e `camarim_coracao` só para quem entrou com Google; perfil de conta bloqueada não aparece para os outros.
+- Minijogos do camarim: `ganhar_minijogo` sai de uso, entra `mini_run_start`/`mini_run_finish` (mesmos tetos ★40 por partida e ★50 por dia).
+- Recordes de Handshake e Café numa chamada (`meus_recordes_jogos`), no máximo 1 leitura por minuto ao abrir o Início; presença online pausa com a pessoa parada e só atualiza fora do mapa se o contador estiver na tela.
+- `private.sora_scores` ganhou chave primária.
+- Mantidos de propósito: teto de importação ★1.000 (migração `v212_teto_importacao_1000` de 27/10), os 11 índices sem uso e a proteção de senhas vazadas desligada (login só com Google). As RPCs públicas do modo visitante seguem abertas e só devolvem o que a página de privacidade já diz que é público.

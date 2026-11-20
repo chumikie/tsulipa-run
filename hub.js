@@ -536,7 +536,7 @@ function twMissoesAtualizar(){
   if(contaJ) setTimeout(hubMisCarregar, 400);
 }
 function hubMisCarregar(){
-  if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
+  if(typeof recCarregar === 'function') recCarregar(true);   // 🏅 Meus recordes (depois dos Jogos); no máximo 1 leitura por minuto
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   hubMisDados = null; hubMisUI();
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});

@@ -63,12 +63,29 @@
   // ritmo: conta e lista a cada 30 s (8 s dentro de uma rua do mapa); "estou aqui" a cada 60 s ou ao trocar de rua
   var ruaPing = '';
   setInterval(function(){
-    if(document.hidden) return;
+    if(document.hidden || Date.now() - mexeu > 300e3) return;
     var r = ruaAgora();
     if(logado() && (Date.now() - ultimoPing > 60e3 || r !== ruaPing)){ ruaPing = r; ping(null); }
   }, 5000);
-  var passo = 0;
-  setInterval(function(){ passo++; if(ruaAgora() ? true : passo % 4 === 0) atualizar(); }, 8000);
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) atualizar(); });
+  // 20/11/2026: menos chamadas. Dentro de uma rua: a cada 8 s (12 s se ninguém mexe há 2 min).
+  // Fora do mapa: só quando o contador "Idols online" está na tela, a cada 64 s.
+  // Parado há 5 min: espera a pessoa voltar a mexer.
+  var passo = 0, mexeu = Date.now();
+  ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function(ev){
+    document.addEventListener(ev, function(){ var parado = Date.now() - mexeu > 300e3; mexeu = Date.now(); if(parado) atualizar(); }, {passive:true, capture:true});
+  });
+  function contadorNaTela(){
+    var L = document.querySelectorAll('[data-twc-online]');
+    for(var i = 0; i < L.length; i++){ if(!L[i].hidden && L[i].offsetParent !== null) return true; }
+    return false;
+  }
+  setInterval(function(){
+    passo++;
+    var ocioso = Date.now() - mexeu;
+    if(ocioso > 300e3) return;
+    if(ruaAgora()){ if(ocioso < 120e3 ? passo % 2 === 0 : passo % 3 === 0) atualizar(); return; }
+    if(passo % 8 === 0 && contadorNaTela()) atualizar();
+  }, 4000);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ mexeu = Date.now(); atualizar(); } });
   setTimeout(atualizar, 1500);
 })();

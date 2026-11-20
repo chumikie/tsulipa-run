@@ -58,6 +58,8 @@ jobs:
         run: bash supabase/tests/center_run_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke ticket lifecycle against isolated PostgreSQL
         run: bash supabase/tests/karaoke_ticket_pg_integration.sh "${{ job.services.postgres.id }}"
+      - name: Verify security audit migration (20/11/2026) against isolated PostgreSQL
+        run: bash supabase/tests/auditoria_20261120_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify admin Idol editor proposal against isolated PostgreSQL
         run: bash supabase/tests/admin_idol_pg_integration.sh "${{ job.services.postgres.id }}"
       - name: Verify Karaoke 'my position' proposal against isolated PostgreSQL

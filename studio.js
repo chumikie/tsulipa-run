@@ -320,6 +320,7 @@
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
     if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
     fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal();
+    if(atalho && atalho.temaCriativo==='luzes')Object.assign(esc_,{fundo:'cortina',luz:'por',pose:'normal',quadro:'inteiro',objeto:'nenhum'});
     var querReferencia=atalho && atalho.referencia && logado() && !pilotoStudio;
     referenciaCarregando=!!querReferencia;
     ui(); laco();
@@ -731,3 +732,4 @@
   window.TW_STUDIO_TEMA = { atual:function(){ return temaSemana()[0]; }, noTema:noTema };
   window.STUDIO_TR = T;
 })();
+

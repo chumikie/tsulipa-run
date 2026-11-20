@@ -146,6 +146,9 @@
   function bracos(g, x, y){   // braços parados
     g.save(); g.beginPath(); g.rect(x + 1, y + 24, 4, 9); g.rect(x + 25, y + 24, 4, 9); g.clip();
     luzPele(g, x + 1, x + 29, y + 24, y + 33, true, y + 28); g.restore();
+    // Two small palm folds, readable close up, without changing the 30x44 anchors.
+    g.save();g.strokeStyle='rgba(65,28,45,.22)';g.lineWidth=.45;g.lineCap='round';
+    [[x+2.1,x+3.5],[x+26.5,x+27.9]].forEach(function(p){g.beginPath();g.moveTo(p[0],y+30.4);g.quadraticCurveTo((p[0]+p[1])/2,y+29.9,p[1],y+30.5);g.stroke();});g.restore();
   }
   function rosto(g, x, y){
     g.save(); g.beginPath(); g.ellipse(x + 15, y + 17, 11, 11, 0, 0, 7); g.clip();
@@ -193,3 +196,4 @@
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : this);
+

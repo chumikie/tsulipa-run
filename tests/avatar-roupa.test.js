@@ -14,7 +14,7 @@ assert.equal(R.qual({baixo:'bermuda'},'seifuku'),'bermuda');assert.equal(R.qual(
 
 // Canvas falso: registra o que é desenhado.
 function fake(){const log=[],shapes=[];const grad=()=>({addColorStop(){}});return {log,shapes,fillStyle:'',
-  save(){log.push('save')},restore(){log.push('restore')},beginPath(){},closePath(){},moveTo(){},lineTo(){},rect(x,y,w,h){shapes.push([x,y,w,h])},roundRect(){},
+  save(){log.push('save')},restore(){log.push('restore')},beginPath(){},closePath(){},moveTo(){},lineTo(){},quadraticCurveTo(){},stroke(){},rect(x,y,w,h){shapes.push([x,y,w,h])},roundRect(){},
   clip(){log.push('clip')},fill(){log.push('fill:'+this.fillStyle)},fillRect(){log.push('rect:'+(typeof this.fillStyle==='string'?this.fillStyle:'grad'))},
   createLinearGradient:grad,createRadialGradient:grad};}
 let g=fake();assert.equal(R.baixo(g,{},0,0,'zipper'),false,'roupa sem parte de baixo nova devolve false');
@@ -37,7 +37,7 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=10"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=11"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
@@ -90,3 +90,4 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   const s=ler(f);
   for(const k of ['TWR.bracos(g,x,y)','TWR.rosto(g,x,y)','TWAvatarRoupa.cabelo(g,H,HD,y,b,0)','TWAvatarRoupa.costas(g,x,y,b)','TWR.sombraFranja(','TWR.bagunca(g,x,y)','TWR.gravata(g,x,y)'])assert(s.includes(k),f+' usa '+k);
 }
+

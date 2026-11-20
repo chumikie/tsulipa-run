@@ -8,7 +8,9 @@
   var OLHOS = ['#5a3b2e', '#4169e1', '#7b3ff0', '#2fa57a', '#c2185b', '#3a2a4a', '#8a5a00'];
   var MEIAS = ['#1c1c30', '#ffffff', '#ff9ccd', '#4a5170', '#c9b8ff'];
   var ROUPA = ['#ffffff', '#ff8fc8', '#b8a3ff', '#7fd3ff', '#b6ff3b', '#ffe08a', '#ff8f6b'];
-  var anterior = null;
+  var anterior = null, anteriorDono = null, grupoMudanca = false;
+  function lembrar(){var c=cu();if(!c||grupoMudanca)return;anterior = {c:JSON.parse(JSON.stringify(c)),a:accSel};anteriorDono=favChave();depois();}
+  function conferirAnterior(){if(anteriorDono!==favChave()){anterior=null;anteriorDono=null;}}
 
   function $(id){ return document.getElementById(id); }
   function cu(){ return typeof CU !== 'undefined' ? CU : null; }
@@ -44,7 +46,7 @@
     sobrancelha:'csobr', boca:'cboca', bochecha:'cbochecha', out:'cout', baixo:'cbaixo', gl:'cgl', mecha:'cstk', det:'cdet', hat:'chat'};
   function sortear(direto){
     var c = cu(); if(!c) return;
-    anterior = {c:JSON.parse(JSON.stringify(c)),a:accSel};
+    lembrar(); grupoMudanca = true;
     var m = {hair:sorteia(PALETA), hair2:sorteia(PALETA), eye:sorteia(OLHOS), outcol:sorteia(ROUPA), legcol:sorteia(MEIAS)};
     ['back', 'front', 'olho', 'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl'].forEach(function(k){ var l = livres(CAMPO_ID[k]); if(l.length) m[k] = sorteia(l); });
     var mecha = livres('cstk'); if(mecha.length) m.mecha = Math.random() < .6 ? '' : sorteia(mecha);
@@ -60,11 +62,11 @@
     } else {
       Object.keys(m).forEach(function(k){ var cor = /^(hair|hair2|eye|outcol|legcol)$/.test(k); trocar(CAMPO_ID[k], m[k], cor ? 'input' : 'change'); });
     }
-    depois(); atualizar();
+    grupoMudanca = false; depois(); atualizar();
     try{ if(typeof sfx !== 'undefined' && sfx && sfx.card) sfx.card(); }catch(_){}
   }
   function desfazer(){
-    var c = cu(); if(!c || !anterior) return;
+    conferirAnterior(); var c = cu(); if(!c || !anterior) return;
     Object.keys(c).forEach(function(k){ if(!(k in anterior.c)) delete c[k]; });
     Object.assign(c,anterior.c);
     itemVestir(anterior.a);
@@ -76,6 +78,7 @@
     depois(); atualizar();
   }
   function depois(){
+    conferirAnterior();
     var c = cu(), d = $('custDesfazer');
     if(d) d.disabled = !anterior;
     [].forEach.call(document.querySelectorAll('[data-cm="desfazer"]'), function(b){ b.disabled = !anterior; });
@@ -195,7 +198,7 @@
   function favVestir(i, aoMudar){
     var c=cu(), visual=favVisual(i);
     if(!c||!visual)return;
-    anterior={c:JSON.parse(JSON.stringify(c)),a:accSel};Object.assign(c,visual.c);
+    lembrar();Object.assign(c,visual.c);
     itemVestir(visual.a);
     if(typeof saveCu === 'function') saveCu();
     if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);
@@ -223,8 +226,18 @@
      aoMudar(campo): avisa a tela dona (ex.: o Perfil refaz a foto). */
   function Estudio(el, chave, visivel, aoMudar, mudar){
     var st = ESTADOS[chave] || (ESTADOS[chave] = {aba:0, expr:0, virado:false, passo:0, prova:null});
-    var pedido = 0, pedidoMini = 0, eu = {}, provandoFavorito=null;
+    var pedido = 0, pedidoMini = 0, eu = {}, provandoFavorito=null, estadoDono=favChave();
+    function pintarPrev(cv,c,S,tx,ty,ex,espelho,item){
+      if(st.zoom){S=st.aba<=7||st.aba>=10?9:7;tx=cv.width/2-15*S;ty=cv.height/2-(st.aba<=7||st.aba>=10?16:31)*S;}
+      return pintar(cv,c,S,tx,ty,ex,espelho,item);
+    }
+    var zoomBox=document.createElement('div');zoomBox.className='cmzoom';
+    var zoomBotao=document.createElement('button');zoomBotao.type='button';zoomBotao.className='btn alt';
+    zoomBotao.textContent=({pt:'Aproximar detalhes',en:'Zoom into details',es:'Acercar detalles',id:'Perbesar detail',th:'ขยายรายละเอียด',ja:'細部を拡大'}[LANG]||'Zoom');
+    zoomBotao.setAttribute('aria-pressed',String(!!st.zoom));zoomBotao.onclick=function(){st.zoom=!st.zoom;zoomBotao.setAttribute('aria-pressed',String(!!st.zoom));prev();};
+    zoomBox.append(zoomBotao);if(el.cv&&el.cv.parentNode)el.cv.parentNode.insertBefore(zoomBox,el.cv.nextSibling);
     function prev(){
+      if(estadoDono!==favChave()){estadoDono=favChave();provandoFavorito=null;st.prova=null;st.zoom=false;zoomBotao.setAttribute('aria-pressed','false');}
       var cv=el.cv, visual=provandoFavorito===null?null:favVisual(provandoFavorito), c=visual?visual.c:cu(), item=visual?visual.a:undefined; if(!cv || !c || !visivel()) return;
       if(typeof twNitido === 'function') twNitido(cv);   // prévia nítida no computador (17/11/2026)
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, S = 6.3, chao = H - 28;
@@ -234,7 +247,7 @@
       bg.addColorStop(0, '#ffffff'); bg.addColorStop(1, 'rgba(232,220,255,.9)');
       x.fillStyle = bg; x.fillRect(0, 0, W, H);
       x.fillStyle = 'rgba(155,48,217,.12)'; x.beginPath(); x.ellipse(W / 2, chao, 100, 16, 0, 0, Math.PI * 2); x.fill();
-      pintar(cv, c, S, W / 2 - 15 * S, chao - 44 * S, st.expr, st.virado, item);
+      pintarPrev(cv, c, S, W / 2 - 15 * S, chao - 44 * S, st.expr, st.virado, item);
     }
     // A redoma: pedestal com degrau, o Idol em pé e o vidro por cima (com reflexos e brilhinhos)
     function redoma(cv, c, item){
@@ -247,7 +260,7 @@
       x.fillStyle = '#ffd0e8'; x.beginPath(); x.ellipse(cx, H - 46, 118, 13, 0, 0, Math.PI * 2); x.fill();
       x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath(); x.ellipse(cx - 40, H - 49, 34, 4, 0, 0, Math.PI * 2); x.fill();
       var mod = c; if(st.prova){ mod = JSON.parse(JSON.stringify(c)); aplicar(mod, st.prova.campo, st.prova.valor); }
-      pintar(cv, mod, S, cx - 15 * S, topo - 44 * S + 18, st.expr, st.virado, item);
+      pintarPrev(cv, mod, S, cx - 15 * S, topo - 44 * S + 18, st.expr, st.virado, item);
       // vidro
       var R = 118, base = H - 48;
       x.save(); x.beginPath(); x.moveTo(cx - R, base); x.lineTo(cx - R, 140); x.arc(cx, 140, R, Math.PI, 0); x.lineTo(cx + R, base);
@@ -291,7 +304,7 @@
           if(b.disabled) return;
           provandoFavorito=null;
           if(podeProvar){ st.prova = st.prova && st.prova.campo === p.campo && st.prova.valor === o.value ? null : {campo:p.campo, valor:o.value}; eu.atualizar(); return; }
-          st.prova = null;
+          st.prova = null; lembrar();
           if(mudar) mudar(p.campo, o.value); else trocar(p.id, o.value); atualizarTudo(); });
         box.appendChild(b);
       });
@@ -313,7 +326,7 @@
       PARTES.forEach(function(p, i){
         var b = document.createElement('button'); b.type = 'button'; b.id = chave + 'Aba' + i; b.setAttribute('role', 'tab');
         b.textContent = T(p.nome); b.setAttribute('aria-selected', String(i === st.aba));
-        b.addEventListener('click', function(){ st.aba = i; [].forEach.call(box.children, function(x, k){ x.setAttribute('aria-selected', String(k === i)); }); miniaturas(); });
+        b.addEventListener('click', function(){ st.aba = i; prev(); [].forEach.call(box.children, function(x, k){ x.setAttribute('aria-selected', String(k === i)); }); miniaturas(); });
         box.appendChild(b);
       });
       passosUI();
@@ -425,6 +438,12 @@
     return i;
   }
   function iniciar(){
+      ['input','change'].forEach(function(ev){document.addEventListener(ev,function(e){
+        var campo=Object.keys(CAMPO_ID).find(function(k){return CAMPO_ID[k]===e.target.id;}), c=cu();
+        if(!campo||!c)return;
+        var atual=campo==='hat'&&c.det==='tulipa'?'tulipa':c[campo];
+        if(String(atual==null?'':atual)!==String(e.target.value))lembrar();
+      },true);});
     paleta(); estudio();
     var s = $('custSortear'), d = $('custDesfazer');
     if(s && !s.dataset.ligado){ s.dataset.ligado = '1'; s.addEventListener('click', function(){ sortear(false); }); }
@@ -433,3 +452,4 @@
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
   window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:function(){return favLer();}, favoritoVisual:favVisual, importarFavoritos:favImportar };
 })();
+

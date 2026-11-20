@@ -298,7 +298,7 @@ function petPhoneMomentoAdicionar(tipo, url, especie){
   petPhoneMomentosConferir();
   var dono = petPhoneFotoChave(); if(!dono || !petPhoneContaChave()) return false;
   var label = {pet:'Backstage⭐Pet!',center:'Center⭐Run!',duo:'Moon⭐Duo!',look:tr('Look do dia⭐'),studio:'Photo⭐Studio!'}[tipo];
-  var entrada = {tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
+  var entrada = {quando:Date.now(),tipo:tipo,rotulo:label,url:url,dono:dono,id:String(Date.now()) + '-' + String(Math.random()).slice(2,8)};
   if(tipo === 'pet') entrada.nomePet = petAtivo().nome;
   if(tipo === 'studio' && ['sakura','tulipa','girassol','lunar'].indexOf(especie) >= 0) entrada.especie = especie;
   petPhoneMomentosDono = dono;
@@ -323,7 +323,7 @@ function petPhoneMomentoGuardarBlob(tipo, blob, mini){
     return false;
   }
   petPhoneMomentosDono = dono;
-  petPhoneMomentos.push({tipo:tipo,rotulo:'Karaoke⭐Time!',url:url,miniUrl:miniUrl,blobUrl:true,
+  petPhoneMomentos.push({quando:Date.now(),tipo:tipo,rotulo:'Karaoke⭐Time!',url:url,miniUrl:miniUrl,blobUrl:true,
     bytes:blob.size+(mini ? mini.size : 0),dono:dono,id:String(Date.now())+'-'+String(Math.random()).slice(2,8)});
   petPhoneMomentosLimitar();
   if(typeof TWVidaCidade!=='undefined')TWVidaCidade.registrar('foto',{id:petPhoneMomentos[petPhoneMomentos.length-1].id});
@@ -493,6 +493,7 @@ function petVidaQuadroSalvar(chave, foto){
   }catch(e){return false;}
   petVidaQuadroChave = chave;
   petVidaQuadroEstado = foto;
+  if(foto.url && typeof petT==='number')petVidaRetornoInicio=petT-180;
   return true;
 }
 var petVidaRetornoInicio = -1000;
@@ -1176,7 +1177,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=20',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=21',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();
@@ -1185,3 +1186,4 @@ function petSalaCarregar(){
     .then(function(){PET_SALA_PRONTA=true;var f;while((f=petSalaFila.shift()))try{f();}catch(e){if(window.console)console.error(e);}});
   return petSalaP;
 }
+

@@ -184,6 +184,32 @@ async function gachaBattle(browser){
     await batalha.getByText(/Junte três Idols diferentes/).waitFor();
     assert.equal(await batalha.getByRole('button',{name:'Confirmar no trio'}).count(),0);
     assert.deepEqual(await page.evaluate(()=>battleAcoes.filter(n=>n==='battle_jogar'||n==='battle_unit_salvar')),[]);
+    await batalha.locator('.tw-window-close').click();
+    await page.evaluate(()=>{
+      window.qaEnviosGacha=0;
+      contaRpc=n=>{
+        if(n==='gacha_girar'){
+          qaEnviosGacha++;
+          return new Promise(resolve=>{window.qaRespostaGacha=resolve;});
+        }
+        return Promise.resolve(null);
+      };
+      gachaFeito=false;gachaRes=null;gachaAbrir();
+    });
+    await page.locator('#gachaGirar').click();
+    await page.locator('#gachaX').click();
+    await page.evaluate(()=>gachaAbrir());
+    assert.equal(await page.locator('#gachaGirar').isDisabled(),true);
+    assert.equal(await page.evaluate(()=>qaEnviosGacha),1);
+    await page.evaluate(()=>{
+      contaAuthUserId='battle-qa-outra';
+      contaJ={id:contaAuthUserId,nick:'Outra conta'};
+      gachaAbrir();
+      qaRespostaGacha({ok:true,tipo:'card',card:{nick:'Card da sessão anterior'}});
+    });
+    await page.waitForTimeout(1700);
+    assert.equal(await page.locator('#gachaBattle').isVisible(),false);
+    assert.equal(await page.evaluate(()=>gachaRes),null);
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }

@@ -133,12 +133,28 @@ const path = require('node:path');
     await conta('');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.evaluate(() => battleAbrir());
-    await page.locator('[data-battle="jogar"]').click();
     const batalha = page.locator('#battleCorpo');
+    await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').click();
+    const card = batalha.locator('.battle-pick').first();
+    const atributos = await card.locator('.battle-card-attrs small').evaluateAll(nodes=>nodes.map(n=>n.title));
+    assert.deepEqual(atributos.map(a=>a.replace(/ \d+\/10$/,'')),['Canto','Dança','Carisma']);
+    assert.equal(await card.locator('small.atual').getAttribute('title'),atributos[1]);
+    await batalha.locator('[data-battle="slot"]').first().click();
+    await page.locator('[data-battle="jogar"]').click();
     for(const rodada of [1,2,3]){
-      const placar = batalha.getByRole('status');
+      const placar = batalha.locator('.battle-showhud[role="status"]');
       await placar.waitFor();
       assert.match(await placar.textContent(),new RegExp(rodada + '/3'));
+      if(rodada === 1){
+        const placarAntes = await placar.textContent();
+        const previa = batalha.locator('#battlePreviaTroca');
+        const valores = (await previa.textContent()).replace('Se trocar · ','');
+        assert.match(valores,/→.*→/);
+        await batalha.getByRole('button',{name:'Confirmar troca'}).click();
+        assert.equal(await previa.textContent(),'Troca feita · '+valores);
+        assert.equal(await placar.textContent(),placarAntes);
+        assert.equal(await batalha.locator('[data-battle="trocar-restantes"]').count(),0);
+      }
       await batalha.getByRole('button',{name:rodada < 3 ? 'Próxima rodada' : 'Ver resultado'}).click();
     }
     assert.equal(await batalha.locator('.battle-result-grid .battle-round').count(),3);

@@ -675,10 +675,11 @@ function jornalCapituloSelecionar(cap){
   }
   return '';
 }
-function jornalAbrir(aba, capitulo){
+function jornalAbrir(aba, capitulo, origem){
   var abertura = ++jornalAbertura;
   jornalFestivalFoco = aba === 'festival';
   jornalAba = aba === 'comunidade' || jornalFestivalFoco ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
+  if(window.TW_JANELAS) TW_JANELAS.preparar(jornalOv,origem);
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
@@ -702,7 +703,12 @@ function jornalAbrir(aba, capitulo){
     jornalAbasIniciar(); focarCapitulo(foco);
     if(aba === 'ruaFofa'){
       var ruaFofa = $('jornalRuaFofa');
-      if(ruaFofa){ var manchete = ruaFofa.querySelector('h4'); manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'}); }
+      if(ruaFofa){
+        var edicao = Number.isInteger(capitulo) && ruaFofa.querySelector('[data-piloto-desfecho="' + capitulo + '"]');
+        if(edicao) edicao.open = true;
+        var manchete = edicao ? edicao.querySelector('summary') : ruaFofa.querySelector('h4');
+        manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'});
+      }
     }
     jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar();
   });

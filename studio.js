@@ -307,6 +307,7 @@
     muralCarregando = muralErro = false;
     flores = {}; escolheuObjeto = false;
     if(esc_.objeto.indexOf('flor_') === 0 || arranjoFlores(esc_.objeto).length) esc_.objeto = 'nenhum';
+    if(atalho && window.TW_JANELAS) TW_JANELAS.preparar(ov,atalho.origem);
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
     if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
     fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal();

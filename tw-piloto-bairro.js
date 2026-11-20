@@ -12,9 +12,18 @@
   var inicio = Date.parse(dataInicio + 'T03:00:00Z');
   var pauta = [
     {titulo:'A vitrine da Rua Fofa', fundo:'rosa', tarefa:'Fotografe seu Idol no cenário rosa para a vitrine da rua.',
+      morador:'Guardei um lugar para a sua foto. Olha como a vitrine ficou linda!',
       feito:'A vitrine abriu e a sua foto faz parte da exposição.', faltou:'Os vizinhos abriram a vitrine com fotos do próprio bairro.'},
     {titulo:'Um céu na Rua Fofa', fundo:'nuvens', tarefa:'Fotografe seu Idol entre as nuvens para o mural da Rua Fofa.',
-      feito:'O mural de nuvens foi inaugurado com a sua contribuição.', faltou:'Os vizinhos terminaram o mural com as fotos que tinham.'}
+      morador:'Sua foto ficou entre as nuvens. Dá uma olhada no nosso mural!',
+      feito:'O mural de nuvens foi inaugurado com a sua contribuição.', faltou:'Os vizinhos terminaram o mural com as fotos que tinham.'},
+    {titulo:'Uma vitrine de boas-vindas', fundo:'rosa', escolha:true,
+      tarefa:'Escolha como ajudar a Rosa. Tire uma foto no Studio ou prepare o pedido de boas-vindas no Café.',
+      morador:'A sua foto ficou na entrada. Agora quem passa por aqui sabe como a Rua Fofa recebe as visitas!',
+      moradorCafe:'O pedido ficou uma delícia! Pus a plaquinha do Café na vitrine para receber as visitas.',
+      feito:'A Rosa abriu a vitrine de boas-vindas com a sua foto.',
+      feitoCafe:'A Rosa inaugurou a vitrine com a plaquinha do Café, em agradecimento pelo pedido que você preparou.',
+      faltou:'A Rosa abriu a vitrine de boas-vindas com as flores dos vizinhos.'}
   ];
   var banco = 'tw_piloto_rua_fofa_v1:' + dataInicio, pendente = null, dadosVolateis = {}, somenteMemoria = false;
   function dono(){
@@ -46,14 +55,43 @@
   function botao(rotulo, acao, classe){
     return '<button type="button" class="' + classe + '" data-piloto-bairro="' + acao + '">' + escHtml(rotulo) + '</button>';
   }
-  function hoje(){
-    var i = semana(), p = atual(), d = desfechos()[0];
-    var h = p ? '<p><b>' + escHtml(p.titulo) + '</b> · ' +
-      botao('Ver história na Rua Fofa','rua','twc-hj-bt') + '</p>' : '';
-    if(d && !ler(d.i).leu) h += '<p>' + botao('Ler o desfecho da Rua Fofa','jornal','twc-hj-bt') + '</p>';
-    return h ? '<div class="twc-card twc-piloto-bairro">' + h + '</div>' : '';
+  function bicoAtivo(){ var p = atual(); return !!p && (p.escolha || parametros.get('piloto_bico') === '1'); }
+  function contribuicao(ficha){ return ficha.concluiu ? 'studio' : ficha.bicoConcluiu ? 'cafe' : ''; }
+  function continuacao(){
+    var d = desfechos().find(function(e){ return !ler(e.i).leu; });
+    if(d) return {titulo:d.p.titulo,sub:'Desfecho no Idol⭐News!',acao:'jornal',i:d.i};
+    var i = semana(), p = atual(), ficha = ler(i);
+    if(!p) return null;
+    if(p.escolha) return contribuicao(ficha) ? null : {titulo:p.titulo,sub:'Escolha como ajudar a Rosa',acao:'rua'};
+    if(!ficha.concluiu) return {titulo:p.titulo,sub:ficha.abriu ? 'Foto no Studio' : 'História da Rua Fofa',acao:ficha.abriu ? 'studio' : 'rua'};
+    return bicoAtivo() && !ficha.bicoConcluiu ? {titulo:p.titulo,sub:'Um pedido no Café',acao:'cafe'} : null;
   }
-  function bicoAtivo(){ return parametros.get('piloto_bico') === '1' && !!atual(); }
+  function exposicao(){
+    for(var i = Math.min(semana(),pauta.length - 1); i >= 0; i--){
+      var registro = ler(i);
+      if(registro.concluiu || (pauta[i].escolha && registro.bicoConcluiu)) return {registro:registro,pauta:pauta[i]};
+    }
+    return null;
+  }
+  function vitrine(){
+    var item = exposicao(), disponivel = !!atual() || desfechos().length > 0;
+    if(!disponivel) return '';
+    var escolha = item && item.pauta.escolha && contribuicao(item.registro);
+    var foto = item && item.registro.foto, placa = escolha ? escolha === 'cafe' : pauta.some(function(_,i){ return i <= semana() && ler(i).bicoConcluiu; });
+    var exposicaoHtml = typeof foto === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(foto) ?
+      '<img src="' + escHtml(foto) + '" alt="Sua foto em exposição na Rua Fofa">' :
+      (item && item.registro.concluiu ? '<span>🖼️ Sua foto</span>' : '');
+    return '<div class="tw-piloto-vitrine" aria-label="Vitrine da Rua Fofa">' +
+      (exposicaoHtml || (placa ? '' : '<span>🌷 Vitrine em preparação</span>')) +
+      (placa ? '<span>☕ Plaquinha da casa</span>' : '') +
+      '</div><p class="tw-piloto-morador"><b>Rosa</b> · “' + escHtml(item ? (escolha === 'cafe' ? item.pauta.moradorCafe : item.pauta.morador) : placa ?
+        'Obrigada pelo pedido! Coloquei sua plaquinha na vitrine.' :
+        'Estou preparando a exposição da Rua Fofa.') + '”</p>';
+  }
+  function vitrineMapa(){
+    var html = vitrine();
+    return html ? '<h3>Vitrine da Rua Fofa</h3>' + html + botao('Ver história','rua','twc-hj-bt') : '';
+  }
   function falaRosa(){
     var i=semana();
     if(i<1 || !pauta[i])return '';
@@ -67,20 +105,18 @@
     var i = semana(), p = atual(), d = desfechos()[0], ficha = ler(i);
     if(!p && !d) return '';
     var h = '<section class="twb-box"><h3>' + escHtml(p ? p.titulo : 'Histórias da Rua Fofa') + '</h3>';
-    var exposicao = ficha.concluiu ? ficha : d ? ler(d.i) : ficha;
-    var placa = ficha.bicoConcluiu || exposicao.bicoConcluiu || desfechos().some(function(e){ return ler(e.i).bicoConcluiu; });
-    if(exposicao.concluiu || placa){
-      var foto = exposicao.foto;
-      h += '<div class="tw-piloto-vitrine" aria-label="Vitrine da Rua Fofa">' +
-        (typeof foto === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(foto)
-          ? '<img src="' + escHtml(foto) + '" alt="Sua foto em exposição na Rua Fofa">' : exposicao.concluiu ? '<span>🖼️ Sua foto</span>' : '') +
-        (placa ? '<span>☕ Plaquinha da casa</span>' : '') + '</div>';
-    }
+    h += vitrine() + botao('Visitar a Rua Fofa no Mapa','mapa','twb-bt twb-bt-claro');
     var fala=falaRosa();
     if(fala)h+='<p class="tw-piloto-rosa"><b>Rosa</b> · '+escHtml(fala)+'</p>';
-    if(p) h += '<p>' + escHtml(ficha.concluiu ? '📷 Sua foto está na vitrine da Rua Fofa.' : p.tarefa) + '</p>' +
+    if(p && p.escolha){
+      var feita = contribuicao(ficha);
+      h += '<p>' + escHtml(feita === 'studio' ? 'Sua foto está na vitrine de boas-vindas.' :
+        feita === 'cafe' ? 'A plaquinha do seu pedido está na vitrine de boas-vindas.' : p.tarefa) + '</p>';
+      if(!feita) h += '<div class="btns">' + botao('Tirar a foto no Studio','studio','twb-bt') +
+        botao('Preparar o pedido no Café','cafe','twb-bt twb-bt-claro') + '</div>';
+    }else if(p) h += '<p>' + escHtml(ficha.concluiu ? '📷 Sua foto está na vitrine da Rua Fofa.' : p.tarefa) + '</p>' +
       (ficha.concluiu ? '' : botao('Abrir o Studio com este cenário','studio','twb-bt'));
-    if(bicoAtivo()) h += '<p>' + (ficha.bicoConcluiu ? '☕ A plaquinha da casa está na vitrine. Você recebeu a lembrança da Rua Fofa.' :
+    if(bicoAtivo() && !p.escolha) h += '<p>' + (ficha.bicoConcluiu ? '☕ A plaquinha da casa está na vitrine. Você recebeu a lembrança da Rua Fofa.' :
       botao('Atender um pedido da Rua Fofa','cafe','twb-bt twb-bt-claro')) + '</p>';
     if(d) h += '<p>' + botao('Ver desfechos no Idol⭐News!','jornal','twb-bt twb-bt-claro') + '</p>';
     return h + '</section>';
@@ -91,13 +127,14 @@
     return '<section class="jnbloco" id="jornalRuaFofa"><h4 tabindex="-1">Histórias da Rua Fofa</h4>' + d.map(function(e){
       var ficha = ler(e.i);
       return '<details data-piloto-desfecho="' + e.i + '"><summary>' + escHtml(e.p.titulo) + '</summary><p>' +
-        escHtml(ficha.concluiu ? e.p.feito : e.p.faltou) + '</p>' +
-        (ficha.bicoConcluiu ? '<p>☕ Sua plaquinha virou uma lembrança da Rua Fofa.</p>' : '') + '</details>';
+        escHtml(ficha.concluiu ? e.p.feito : e.p.escolha && ficha.bicoConcluiu ? e.p.feitoCafe : e.p.faltou) + '</p>' +
+        (ficha.bicoConcluiu && !e.p.escolha ? '<p>☕ Sua plaquinha virou uma lembrança da Rua Fofa.</p>' : '') + '</details>';
     }).join('') + '</section>';
   }
   function concluir(tipo, token, cena){
     if(!token || token.tipo !== tipo || token.dono !== dono() || token.i !== semana()) return false;
     var estado = ler(token.i), foto;
+    if(pauta[token.i].escolha && contribuicao(estado)) return contribuicao(estado) === tipo;
     if(!(tipo === 'studio' ? estado.iniciou : estado.bicoIniciou)) return false;
     if(cena && !estado.concluiu){
       try{
@@ -119,23 +156,34 @@
   document.addEventListener('click', function(e){
     var b = e.target.closest && e.target.closest('[data-piloto-bairro]');
     if(!b) return;
+    var origem = window.TW_JANELAS && TW_JANELAS.origem(b);
     var i = semana(), p = atual(), acao = b.dataset.pilotoBairro;
-    if(acao === 'jornal'){ TW_BAIRRO.fechar(); jornalAbrir('ruaFofa'); return; }
+    var edicao = null;
+    if(acao === 'continuar'){
+      var destino = continuacao(); if(!destino) return;
+      acao = destino.acao; edicao = destino.i;
+    }
+    if(acao === 'jornal'){ TW_BAIRRO.fechar(); jornalAbrir('ruaFofa',edicao,origem); return; }
+    if(acao === 'mapa'){
+      TW_BAIRRO.fechar();
+      if(window.twcAbrirRuaFofa) window.twcAbrirRuaFofa(origem);
+      return;
+    }
     if(acao === 'rua'){
       if(b.closest('#studioOv')) studioFechar();
       if(p) marcar(i, 'abriu');
-      TW_BAIRRO.abrir(); return;
+      TW_BAIRRO.abrir(origem); return;
     }
-    if(!p) return;
+    if(!p || (p.escolha && contribuicao(ler(i)))) return;
     if(acao === 'studio'){
       marcar(i, 'abriu'); TW_BAIRRO.fechar();
-      studioAbrir({piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
+      studioAbrir({origem:origem,piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
     }
     if(acao === 'cafe' && bicoAtivo()){
       pendente = {i:i,dono:dono(),tipo:'cafe'};
       var token = pendente;
       TW_CARGA.abrir('Happy⭐Cafe!', twJogosCarregar, function(){
-        if(token !== pendente || token.i !== semana() || token.dono !== dono()) return;
+        if(token !== pendente || token.i !== semana() || token.dono !== dono() || (p.escolha && contribuicao(ler(i)))) return;
         pendente = null; TW_BAIRRO.fechar(); cfPilotoAbrir(token);
       });
     }
@@ -154,7 +202,7 @@
       window.dispatchEvent(new Event('tw-piloto-bairro'));
     }
   });
-  window.TW_PILOTO_BAIRRO = {hoje:hoje, rua:rua, falaRosa:falaRosa, jornal:jornal, iniciar:iniciar, concluir:concluir,
+  window.TW_PILOTO_BAIRRO = {continuacao:continuacao, rua:rua, falaRosa:falaRosa, vitrineMapa:vitrineMapa, jornal:jornal, iniciar:iniciar, concluir:concluir,
     medidas:function(){
       return pauta.map(function(p, i){
         var etapas = ler(i); delete etapas.foto;

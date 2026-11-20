@@ -18,6 +18,14 @@
     ja:['参考写真にする','ビフォー・アフター','比較に選ぶ','ビフォー','アフター','比較画像をダウンロード','順番に写真を2枚選択。']
   };
   function lembrancaT(){ return LEMBRANCA[typeof LANG === 'string' && LANG] || LEMBRANCA.pt; }
+  var PAGINA = {
+    pt:['Montar página','Título da página','Data','Baixar página em PNG','{n} de 3 fotos selecionadas','Selecionar foto','Não foi possível montar a página.','Minha série de fotos'],
+    en:['Make a page','Page title','Date','Download PNG page','{n} of 3 photos selected','Select photo','Could not create the page.','My photo series'],
+    es:['Crear página','Título de la página','Fecha','Descargar página en PNG','{n} de 3 fotos seleccionadas','Seleccionar foto','No se pudo crear la página.','Mi serie de fotos'],
+    id:['Buat halaman','Judul halaman','Tanggal','Unduh halaman PNG','{n} dari 3 foto dipilih','Pilih foto','Halaman tidak dapat dibuat.','Seri fotoku'],
+    th:['จัดหน้าภาพ','ชื่อหน้า','วันที่','ดาวน์โหลดหน้า PNG','เลือกแล้ว {n} จาก 3 รูป','เลือกรูป','สร้างหน้าไม่ได้','ชุดภาพของฉัน'],
+    ja:['ページを作成','ページのタイトル','日付','PNGで保存','3枚中{n}枚を選択','写真を選ぶ','ページを作成できませんでした。','私の写真シリーズ']
+  };
   var dbPendente, LIMITE = 24, urls = new Map();
   var COPIA_TR={
     pt:['Baixar cópia da série','Restaurar cópia','Fotos adicionadas: {n}.','A série tem espaço para apenas {n} fotos novas.','Cópia inválida ou indisponível.','Lendo cópia…','Sua composição favorita atual foi mantida.','A composição favorita não pôde ser salva.'],
@@ -274,6 +282,88 @@
       document.body.appendChild(a);a.click();a.remove();
     }finally{ locais.forEach(function(url){ URL.revokeObjectURL(url); }); }
   }
+  function imagemDaPagina(url){
+    var img = new Image();
+    img.src = url;
+    return img.decode().then(function(){ return img; });
+  }
+  async function paginaPng(fotos, titulo, data, ativo){
+    var imgs = await Promise.all(fotos.map(function(f){ return imagemDaPagina(f.url); }));
+    if(!ativo()) return;
+    var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 980;
+    var x = cv.getContext('2d');
+    x.fillStyle = '#f5ecff'; x.fillRect(0,0,1440,980);
+    x.fillStyle = '#fffaf9'; x.fillRect(34,34,1372,912);
+    x.textAlign = 'center';
+    x.font = 'bold 57px system-ui,sans-serif'; x.fillStyle = '#392364';
+    x.fillText(titulo,720,142,1200);
+    x.font = '26px system-ui,sans-serif'; x.fillStyle = '#635174'; x.fillText(data,720,200);
+    imgs.forEach(function(img,i){
+      var centro = 276 + i*444, y = 270, w = 402, h = 525;
+      x.fillStyle = '#e9d9f9'; x.fillRect(centro-w/2+6,y+8,w,h+66);
+      x.fillStyle = '#fff'; x.fillRect(centro-w/2,y,w,h+66);
+      var escala = Math.min((w-24)/img.naturalWidth,(h-24)/img.naturalHeight);
+      var iw = img.naturalWidth*escala, ih = img.naturalHeight*escala;
+      x.drawImage(img,centro-iw/2,y+(h-ih)/2,iw,ih);
+      x.font = 'bold 26px system-ui,sans-serif'; x.fillStyle = '#392364';
+      x.fillText(fotos[i].nome,centro,y+h+35,w-20);
+    });
+    var png = await new Promise(function(ok, erro){ cv.toBlob(function(blob){ if(blob)ok(blob); else erro(Error('PNG')); },'image/png'); });
+    if(!ativo()) return;
+    var url = URL.createObjectURL(png), link = document.createElement('a');
+    link.href = url; link.download = 'tsulipa-pagina-de-fotos.png';
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); },30000);
+  }
+  function montarPagina(box, ativo){
+    var pt = PAGINA[typeof LANG === 'undefined' ? 'pt' : LANG] || PAGINA.pt;
+    var editor = document.createElement('div'); editor.className = 'album-fotos-pagina';
+    editor.innerHTML = '<fieldset><legend>' + escHtml(pt[0]) + '</legend><label>' + escHtml(pt[1]) +
+      '<input data-album-pagina="titulo" maxlength="48"></label><label>' + escHtml(pt[2]) +
+      '<input data-album-pagina="data" type="date"></label><p role="status"></p><button class="btn alt" type="button">' +
+      escHtml(pt[3]) + '</button></fieldset>';
+    var titulo = editor.querySelector('[data-album-pagina="titulo"]'), dia = editor.querySelector('[data-album-pagina="data"]');
+    var status = editor.querySelector('[role="status"]'), baixar = editor.querySelector('button');
+    titulo.value = pt[7]; dia.value = new Date(Date.now()-3*36e5).toISOString().slice(0,10);
+    var escolhidas = [], escolhas = [], exportando = false;
+    function atualizar(){
+      status.textContent = pt[4].replace('{n}',escolhidas.length);
+      baixar.disabled = escolhidas.length !== 3 || !dia.value || exportando;
+      escolhas.forEach(function(f){
+        var marcado = escolhidas.indexOf(f);
+        f.botao.textContent = (marcado >= 0 ? (marcado+1)+' · ' : '') + pt[5];
+        f.botao.setAttribute('aria-label',f.botao.textContent+' · '+f.rotulo);
+        f.botao.setAttribute('aria-pressed',String(marcado >= 0));
+        f.botao.setAttribute('aria-disabled',String(exportando || (escolhidas.length === 3 && marcado < 0)));
+      });
+    }
+    dia.addEventListener('input',atualizar);
+    baixar.addEventListener('click',async function(){
+      if(!ativo() || baixar.disabled) return;
+      var data = new Date(dia.value+'T12:00:00Z');
+      exportando = true; atualizar();
+      try{
+        var rotulo = new Intl.DateTimeFormat(typeof LANG === 'string' && LANG === 'pt' ? 'pt-BR' : typeof LANG === 'string' ? LANG : 'pt-BR',
+          {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(data);
+        await paginaPng(escolhidas.slice(),titulo.value.trim() || pt[7],rotulo,ativo);
+        if(ativo()){ exportando = false; atualizar(); baixar.focus(); }
+      }catch(e){ if(ativo()){ exportando = false; atualizar(); status.textContent = pt[6]; } }
+    });
+    box.appendChild(editor);
+    atualizar();
+    return function(foto){
+      var botao = document.createElement('button'); botao.type = 'button'; botao.className = 'album-fotos-escolher';
+      foto.botao = botao; escolhas.push(foto);
+      botao.addEventListener('click',function(){
+        if(!ativo() || botao.getAttribute('aria-disabled') === 'true') return;
+        var idx = escolhidas.indexOf(foto);
+        if(idx >= 0) escolhidas.splice(idx,1); else escolhidas.push(foto);
+        atualizar();
+      });
+      atualizar();
+      return botao;
+    };
+  }
   async function mostrar(box,mensagem){
     var conta = dono(), detalhe = box.closest('details');
     if(!conta || !detalhe.open) return;
@@ -288,6 +378,7 @@
       acoesCopia(box,conta,ativo,mensagem);
       if(!fotos.length){ box.append(t(5)); return; }
       var grade = document.createElement('div'); grade.className = 'album-fotos-grade';
+      var selecionar = fotos.length >= 3 ? montarPagina(box,ativo) : null;
       var objetos = []; urls.set(box,objetos);
       var tx=lembrancaT(), escolhas=[], seletores=[], acoes=document.createElement('div');
       var dica=document.createElement('p');dica.textContent=tx[6];
@@ -337,7 +428,9 @@
           });
           baixar.disabled=escolhas.length!==2;
         });
-        cartao.appendChild(escolher);grade.appendChild(cartao);
+        cartao.appendChild(escolher);
+        if(selecionar)cartao.appendChild(selecionar({url:url,nome:nome,rotulo:cap.textContent}));
+grade.appendChild(cartao);
       });
       box.append(acoes,grade);
     }catch(e){ if(ativo()) box.textContent = t(8); }

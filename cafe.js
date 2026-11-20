@@ -140,11 +140,30 @@ function cfIdentificarFa(f, lembranca){
   f.hsLembranca = lembranca;
   return f;
 }
+var CF_FALA_ULTIMO_PEDIDO = {
+  pt:'Que bom voltar! Ainda lembro do meu pedido: {pedido}.',
+  en:'Glad to be back! I still remember my order: {pedido}.',
+  es:'¡Qué bueno volver! Todavía recuerdo mi pedido: {pedido}.',
+  id:'Senang bisa kembali! Aku masih ingat pesananku: {pedido}.',
+  th:'ดีใจที่ได้กลับมา! ยังจำที่สั่งครั้งก่อนได้เลย: {pedido}',
+  ja:'また来られてうれしい！ 前に頼んだの、まだ覚えてるよ。{pedido}'
+};
+function cfPedidoMemoria(p){
+  if(!p) return null;
+  var listas = {base:CF_BASES,cob:CF_COBERTURAS,enf:CF_ENFEITES,doce:CF_DOCES}, copia = {};
+  for(var k in listas){
+    var v = p[k], minimo = k === 'base' || k === 'enf' ? 0 : -1;
+    if(!Number.isInteger(v) || v < minimo || v >= listas[k].length) return null;
+    copia[k] = v;
+  }
+  return copia;
+}
 function cfSaudacaoFa(lembranca){
-  var presente = HS_PRESENTES[lembranca.pres];
-  return '<p class="hsdica cfreencontro">💌 <b>' + escHtml(lembranca.nome) + ':</b> “' +
-    escHtml(CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + ' ' +
-    (presente ? presente[0] + ' ' + escHtml(tr(presente[1])) : '') + ' 💕”</p>';
+  var presente = HS_PRESENTES[lembranca.pres], pedido = cfPedidoMemoria(lembranca.ultimoPedido);
+  var fala = pedido ? (CF_FALA_ULTIMO_PEDIDO[LANG] || CF_FALA_ULTIMO_PEDIDO.pt)
+    .replace('{pedido}',cfPedidoIlustrativo(pedido).replace(/^☕ /,'')) :
+    (CF_FALA_REENCONTRO[LANG] || CF_FALA_REENCONTRO.pt) + (presente ? ' ' + presente[0] + ' ' + tr(presente[1]) : '') + ' 💕';
+  return '<p class="hsdica cfreencontro">💌 <b>' + escHtml(lembranca.nome) + ':</b> “' + escHtml(fala) + '”</p>';
 }
 function cfNovoClienteLocal(){
   var r = hsSorteio(Date.now() + cf.atendidos * 131), livres = hsNomesLivres(), nome = livres[Math.floor(r() * livres.length)] || 'Momorin';

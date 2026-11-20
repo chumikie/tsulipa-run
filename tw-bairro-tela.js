@@ -56,7 +56,11 @@
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
-  function abrir(){ montar(); ler(); ui(); ov.hidden = false; }
+  function abrir(origem){
+    montar(); ler(); ui();
+    if(window.TW_JANELAS) TW_JANELAS.preparar(ov,origem);
+    ov.hidden = false;
+  }
   function fechar(){ if(ov) ov.hidden = true; }
   function acaoCelular(a){   // pede uma ação ao visual novo (mesmo caminho dos botões dele)
     var cel = document.getElementById('twCel'); if(!cel) return false;

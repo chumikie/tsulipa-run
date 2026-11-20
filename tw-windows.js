@@ -37,6 +37,15 @@
   var local=Array.from(el.querySelectorAll('.tw-window-close,.tw-window-back')).find(visible);
   return local|| (el.matches('.tw-preview-game') && document.querySelector('#twcMoldura:not([hidden]) [data-m="voltar"]'));
  }
+ function origem(launcher){
+  var target=launcher||document.activeElement;
+  var card=target&&target.closest('[data-ir]');
+  var anterior=target&&target.closest('.tw-window-overlay');
+  if(anterior&&records.has(anterior))return records.get(anterior);
+  return {launcher:target,card:card&&card.getAttribute('data-ir'),
+   ponto:window.TW_CELULAR&&window.TW_CELULAR.pontoAtual(target)};
+ }
+ window.TW_JANELAS={origem:origem,preparar:function(el,record){if(record) el.twOrigemJanela=record;}};
  function restore(record){
   if(!record)return;
   var target=record.launcher;
@@ -52,9 +61,9 @@
    var el=change.target;
    if(!el.matches('.tw-window-overlay'))return;
    if(!el.hidden && !records.has(el)){
-    var active=document.activeElement,card=active&&active.closest('[data-ir]');
-    var ponto=window.TW_CELULAR&&window.TW_CELULAR.pontoAtual();
-    records.set(el,{launcher:active,card:card&&card.getAttribute('data-ir'),ponto:ponto});
+    var active=document.activeElement;
+    records.set(el,el.twOrigemJanela||origem(active));
+    delete el.twOrigemJanela;
     var close=closeButton(el);
     if(close && (!close.getAttribute('aria-label') || /^[✕×]$/.test(close.getAttribute('aria-label')))){
      close.setAttribute('aria-label',typeof tr==='function'?tr('Fechar'):'Fechar');
@@ -65,7 +74,8 @@
     requestAnimationFrame(function(){
      if(!el.hidden)return;
      var atual=document.activeElement;
-     if(atual && atual!==document.body && !el.contains(atual) && visible(atual))return;
+     var voltouPelaMoldura=atual&&atual.closest('#twcMoldura [data-m="voltar"]');
+     if(atual && atual!==document.body && !el.contains(atual) && !voltouPelaMoldura && visible(atual))return;
      restore(record);
     });
    }

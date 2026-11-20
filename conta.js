@@ -16,6 +16,7 @@ function contaRpc(nome, args){
 }
 function contaSiteOk(){ return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/i.test(location.hostname); }
 function contaUI(){
+  if(typeof twMapaVitrineAtualizar === 'function') twMapaVitrineAtualizar();
   if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();
   if(typeof hubLoginCtaUI==='function') hubLoginCtaUI();

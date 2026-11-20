@@ -134,10 +134,17 @@ function hsMemGuardar(f){
 function hsCafeConfirmar(f, contaOrigem){
   var chave = hsMemChave();
   if(!chave || chave !== contaOrigem || !f || !f.hsLembranca) return;
-  var m = hsMemLer().find(function(item){
+  var lista = hsMemLer();
+  var m = lista.find(function(item){
     return item.nome === f.nome && item.pres === f.hsLembranca.pres;
   });
-  if(m) hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  if(!m) return;
+  hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  var pedido = typeof cfPedidoMemoria === 'function' && cfPedidoMemoria(f.pedido);
+  if(pedido){
+    m.ultimoPedido = pedido;
+    try{ localStorage.setItem(chave,JSON.stringify(lista)); }catch(e){}
+  }
 }
 function hsCafeAplicarReencontro(fila, presentesServidor){
   var pendente = hsCafePendente;

@@ -90,7 +90,7 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     mostrarCena('mundo');
@@ -155,7 +155,7 @@
       var jogo=document.getElementById('twPreviewJogo');
       if(jogo&&!jogo.hidden)return;
       // Não roubar Esc de diálogos de outros jogos/telas.
-      if(document.querySelector('[aria-modal="true"]:not([hidden]),dialog[open]'))return;
+      if([].some.call(document.querySelectorAll('[aria-modal="true"],dialog[open]'),function(el){return el.getClientRects().length;}))return;
       e.preventDefault();voltarAoMundo();
     });
     window.addEventListener('tw-piloto-bairro',recadoRosa);
@@ -166,7 +166,7 @@
       if(hash==='#center-run'||hash==='#karaoke')return;
       var rua=e&&e.state&&e.state[CHAVE_RUA_HIST];
       if(rua&&CENAS_RUA[rua]){if(cena!==rua)mostrarCena(rua);}
-      else if(cena!=='mundo'||mergulho)mostrarCena('mundo');
+      else if(cena!=='mundo'||mergulho)voltarAoMundo(true);
     });
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){visivel=es[0].isIntersecting;if(visivel){centralizar();laco();}}).observe(cv);
     else visivel=true;
@@ -188,7 +188,7 @@
     aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
-    textos();recadoRosa();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
+    textos();atualizarVitrine();recadoRosa();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
 
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
@@ -241,19 +241,21 @@
     mergulho=transicao;desenhar();
     setTimeout(function(){if(mergulho===transicao){mostrarCena(destino);}},420);
   }
-  function voltarAoMundo(){
+  window.twMapaVoltarRua=function(){
+    if(!mapaAtivo()||(cena==='mundo'&&!mergulho))return false;
+    voltarAoMundo();return true;
+  };
+  function voltarAoMundo(porHistorico){
     if(cena==='mundo'&&!mergulho)return;
     var rua=mergulho?mergulho.id:cena,sec=document.getElementById('twMapa');
-    var voltar=sec&&sec.querySelector('.tw-mapa-voltar');
     mostrarCena('mundo');
-    if(voltar&&document.activeElement===voltar){
-      var abrirBtn=sec.querySelector('.tw-mapa-botao');
-      if(abrirBtn&&abrirBtn.focus)abrirBtn.focus({preventScroll:true});
-    }
+    var bairro=sec&&sec.querySelector('[data-tw-bairro="'+rua+'"]');
+    var abrirBtn=bairro||sec&&sec.querySelector('.tw-mapa-botao');
+    if(abrirBtn&&abrirBtn.focus)abrirBtn.focus({preventScroll:true});
     // Consome somente a entrada criada pelo próprio mapa.
     try{
       var h=window.history;
-      if(h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
+      if(porHistorico!==true&&h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Voltar do mapa indisponível',e);}
   }
   function recadoRosa(){
@@ -264,6 +266,26 @@
     p.hidden=!fala;
     p.textContent=fala?'Rosa · '+fala:'';
   }
+  function atualizarVitrine(){
+    var sec=document.getElementById('twMapa'), box=sec&&sec.querySelector('.tw-mapa-vitrine');
+    if(!box)return;
+    var html=aberto&&cena==='fofo'&&window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.vitrineMapa() : '';
+    if(box._vitrine!==html){box._vitrine=html;box.innerHTML=html;}
+    box.hidden=!html;
+  }
+  window.twMapaVitrineAtualizar=atualizarVitrine;
+  window.twMapaRuaFofa=function(){
+    if(!mapaAtivo())return false;
+    if(!mergulho&&cena==='mundo'){entrarRua('fofo',true);return true;}
+    if(!mergulho&&cena==='fofo')return true;
+    try{
+      var estado=Object.assign({},window.history.state);
+      estado[CHAVE_RUA_HIST]='fofo';
+      window.history.replaceState(estado,'',window.location.href);
+    }catch(e){}
+    mostrarCena('fofo');return true;
+  };
+  if(typeof window.addEventListener==='function')window.addEventListener('tw-piloto-bairro',atualizarVitrine);
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
     mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
@@ -284,6 +306,7 @@
       var rolo=sec.querySelector('.tw-mapa-rolo');
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }
+    atualizarVitrine();
     var arquivo=destino==='mundo'?'mapa-mundo.svg':CENAS_RUA[destino];
     if(!imagens[destino]){
       var img=new Image();imagens[destino]=img;
@@ -292,7 +315,7 @@
       img.src='./'+arquivo+'?v=5';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
-    textos();recadoRosa();
+    textos();atualizarVitrine();recadoRosa();
   }
   function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
     if(cena==='mundo'){
@@ -1481,7 +1504,7 @@
     desenhar();
     if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))anim=setTimeout(function(){requestAnimationFrame(f);},50);})();}
   document.addEventListener('visibilitychange',function(){if(!document.hidden)laco();});
-  function tudo(){montar();textos();desenhar();setTimeout(centralizar,60);}
+  function tudo(){montar();textos();atualizarVitrine();recadoRosa();desenhar();setTimeout(centralizar,60);}
   ['hubMontar','hubCardsUI'].forEach(function(n){var o=window[n];if(typeof o==='function')window[n]=function(){var r=o.apply(this,arguments);try{tudo();}catch(e){}return r;};});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tudo);else tudo();
 })();

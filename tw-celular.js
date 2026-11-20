@@ -436,6 +436,10 @@
         esc(hubMusicaSemana()[1] + ' · ' + jornalFestivalPrazo()) + '</small></span>' +
         '<button type="button" class="twc-hj-bt" data-a="festival">' + esc(jornalFestivalTexto(0)) + '</button></div>';
     }
+    var proxima = window.TW_PILOTO_BAIRRO && TW_PILOTO_BAIRRO.continuacao();
+    var continuar = proxima ? '<div class="twc-hj-it"><span class="twc-hj-ico twc-g-uva" aria-hidden="true">' + ico('pin',18) +
+      '</span><span class="twc-hj-txt"><b>' + esc(proxima.titulo) + '</b><small>' + esc(proxima.sub) +
+      '</small></span><button type="button" class="twc-hj-bt" data-piloto-bairro="continuar">' + esc(tt('Continuar')) + '</button></div>' : '';
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
@@ -479,7 +483,7 @@
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      festival + lista + '</section>';
+      continuar + festival + lista + '</section>';
   }
 
   var ESTREIA_TR = {
@@ -597,9 +601,8 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    var piloto = window.TW_PILOTO_BAIRRO;
     return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -1555,6 +1558,13 @@
     window.contaRpc.twcManut = true;
   }
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
+  var ruaFofaPendente = false;
+  window.twcAbrirRuaFofa = function(origem){
+    if(!cel || classico) return;
+    ruaFofaPendente = true;
+    if(topo() === 'emb:mapa') embutir('mapa');
+    else ir('emb:mapa',origem);
+  };
   function embutir(k){
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
     if(slot && !el && k === 'mapa'){
@@ -1575,6 +1585,9 @@
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
     slot.appendChild(el);
     if(k === 'mapa' && !el.classList.contains('aberto')){ var b = el.querySelector('.tw-mapa-botao'); if(b) b.click(); }
+    if(k === 'mapa' && ruaFofaPendente && typeof window.twMapaRuaFofa === 'function'){
+      if(window.twMapaRuaFofa()) ruaFofaPendente = false;
+    }
     if(k === 'mapa') setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, 60);
     if(k === 'missoes' && typeof hubMisCarregar === 'function' && logado() && !(typeof hubMisDados !== 'undefined' && hubMisDados)) hubMisCarregar();
     if(k === 'nov') el.open = true;
@@ -1720,12 +1733,12 @@
     if(focoAnterior&&focoAnterior.foco)restaurarPonto(focoAnterior);
   }
   var pontosPilha=[];
-  function pontoAtual(){
+  function pontoAtual(alvo){
     if(!cel||!tela)return null;
-    var el=document.activeElement, seletor='';
+    var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-cald','data-calmes','data-cal-ics','data-cal-cap'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1743,18 +1756,23 @@
     }else focarTitulo();
     return true;
   }
-  function ir(v){
+  function ir(v,origem){
     if(classico)sairClassico();
     if(topo()===v)return;
     if(v==='cal')calCapsPedido=false;
-    pontosPilha[pilha.length-1]=pontoAtual();pilha.push(v);
+    if(v!=='emb:mapa')ruaFofaPendente=false;
+    pontosPilha[pilha.length-1]=origem&&origem.ponto||pontoAtual();pilha.push(v);
     som();desenhar();tela.scrollTop=0;
     var busca=v==='emb:busca'&&$id('hubBusca');
     if(busca)busca.focus({preventScroll:true});else focarTitulo();
   }
-  function inicio(){ if(classico) sairClassico(); pilha = ['inicio']; pontosPilha=[]; som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
+  function inicio(){ ruaFofaPendente = false; if(classico) sairClassico(); pilha = ['inicio']; pontosPilha=[]; som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
   function voltar(){
+    ruaFofaPendente = false;
     if(classico){ sairClassico(); som(); desenhar(); return; }
+    if(topo()==='emb:mapa' && typeof window.twMapaVoltarRua==='function' && window.twMapaVoltarRua()){
+      som();return;
+    }
     if(pilha.length>1){
       pilha.pop();var ponto=pontosPilha.pop();som();desenhar();
       if(ponto)restaurarPonto(ponto);else focarTitulo();
@@ -2056,7 +2074,7 @@
     });
     folha.addEventListener('click', function(e){ if(e.target === folha){ if(tutI >= 0) tutFim(); else fecharFolha(); } });
     if(!montar.tecla) document.addEventListener('keydown', function(e){
-      if(e.key !== 'Escape' || !cel || h.hidden) return;
+      if(e.key !== 'Escape' || e.defaultPrevented || !cel || h.hidden) return;
       if(!folha.hidden){ e.preventDefault(); if(tutI >= 0) tutFim(); else fecharFolha(); return; }
       if(Array.from(document.querySelectorAll('[aria-modal="true"],dialog[open]')).some(function(el){return el.getClientRects().length;}))return;
       if(classico || pilha.length > 1){ e.preventDefault(); voltar(); }

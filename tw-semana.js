@@ -50,21 +50,57 @@
   function aviso(txt){ try{ if(typeof toast === 'function') return toast(txt); }catch(e){} try{ if(window.TW_CELULAR && TW_CELULAR.toast) return TW_CELULAR.toast(txt); }catch(e){}
     var d = document.createElement('div'); d.className = 'tws-aviso'; d.setAttribute('role', 'status'); d.textContent = txt; document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 3200); }
 
-  var S = {show:null, festa:null, jogo:null, em:0, dono:'', pedindo:false};
+  var S=null;
   function redesenhar(){ try{ window.dispatchEvent(new Event('tw-semana')); }catch(e){} }
+  function estado(){
+    if(!S||!S.conta())S={conta:contaSessaoAtual(),show:null,festa:null,jogo:null,em:0,validade:0,pedindo:false,recarregar:false};
+    return S;
+  }
+  function contaMudou(){
+    if(!S||S.conta())return;
+    estado();
+    document.body.removeAttribute('data-tw-festa');
+    redesenhar();
+    carregar(false);
+  }
   function carregar(forcar){
-    var dono = logado() ? String(contaJ.nick || '').toLowerCase() : '';
-    if(S.pedindo || (!forcar && dono === S.dono && Date.now() - S.em < 5 * 60e3)) return;
-    S.pedindo = true; S.dono = dono;
+    var atual=estado();
+    if(atual.pedindo){
+      if(forcar)atual.recarregar=true;
+      return;
+    }
+    if(!forcar && Date.now()-atual.em<atual.validade)return;
+    atual.pedindo=true;
+    var chaves=['show','festa','jogo'];
     Promise.all([
-      rpc('show_sabado_estado').catch(function(){ return null; }),
-      rpc('festa_estado').catch(function(){ return null; }),
-      rpc('jogo_da_semana').catch(function(){ return null; })
+      rpc('show_sabado_estado').catch(function(){return null;}),
+      rpc('festa_estado').catch(function(){return null;}),
+      rpc('jogo_da_semana').catch(function(){return null;})
     ]).then(function(r){
-      S.show = r[0]; S.festa = r[1]; S.jogo = r[2]; S.em = Date.now(); S.pedindo = false;
-      try{ if(S.festa && S.festa.ativa) document.body.setAttribute('data-tw-festa', S.festa.tema); else document.body.removeAttribute('data-tw-festa'); }catch(e){}
+      if(S!==atual||!atual.conta())return;
+      r.forEach(function(v,i){if(v)atual[chaves[i]]=v;});
+      atual.em=Date.now();atual.validade=r.every(Boolean)?5*60e3:30e3;atual.pedindo=false;
+      if(atual.festa && atual.festa.ativa) document.body.setAttribute('data-tw-festa',atual.festa.tema);
+      else document.body.removeAttribute('data-tw-festa');
       redesenhar();
+      if(atual.recarregar){atual.recarregar=false;carregar(true);}
     });
+  }
+  function marcarShow(conta, botao){
+    return rpc('show_sabado_marcar').then(function(r){
+      if(!conta())return;
+      if(r && r.ok){
+        aviso(t('ganhou',{p:r.premio}));
+        if(typeof r.stars==='number' && typeof starT!=='undefined'){
+          starT=r.stars;
+          try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
+          if(typeof setBest==='function')setBest();
+        }
+      }else if(botao && r && r.erro==='cantar')aviso(t('cantarAntes'));
+      else if(botao && !(r&&r.erro==='feito'))aviso(t('erro'));
+      carregar(true);
+    }).catch(function(){if(conta()&&botao)aviso(t('erro'));})
+      .finally(function(){if(botao)botao.disabled=false;});
   }
 
   function item(cor, emo, tit, txt, botoes, extra, cls){
@@ -118,18 +154,21 @@
     var a = b.getAttribute('data-semana'); e.preventDefault(); e.stopPropagation();
     if(a === 'entrar'){ entrar(); return; }
     if(!logado()){ aviso(t('login')); entrar(); return; }
-    b.disabled = true;
-    if(a === 'show') rpc('show_sabado_marcar').then(function(r){
-      if(r && r.ok){ aviso(t('ganhou', {p:r.premio})); if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(x){} if(typeof setBest === 'function') setBest(); } }
-      else if(r && r.erro === 'cantar') aviso(t('cantarAntes'));
-      else if(!(r && r.erro === 'feito')) aviso(t('erro'));
+    if((a!=='show'&&a!=='festa')||b.disabled)return;
+    var conta=contaSessaoAtual();
+    b.disabled=true;
+    if(a==='show'){marcarShow(conta,b);return;}
+    rpc('festa_resgatar').then(function(r){
+      if(!conta())return;
+      if(r && r.ok){
+        aviso(t('festaOk'));
+        if(Array.isArray(r.visuais) && typeof perfDono!=='undefined')perfDono=r.visuais;
+        if(typeof perfLojaSincronizar==='function')perfLojaSincronizar();
+        if(typeof sfx!=='undefined'&&sfx.rank)sfx.rank();
+      }else if(!(r&&r.erro==='feito'))aviso(t('erro'));
       carregar(true);
-    }).catch(function(){ aviso(t('erro')); b.disabled = false; });
-    if(a === 'festa') rpc('festa_resgatar').then(function(r){
-      if(r && r.ok){ aviso(t('festaOk')); try{ if(Array.isArray(r.visuais) && typeof perfDono !== 'undefined') perfDono = r.visuais; if(typeof perfLojaSincronizar === 'function') perfLojaSincronizar(); if(typeof sfx !== 'undefined' && sfx.rank) sfx.rank(); }catch(x){} }
-      else if(!(r && r.erro === 'feito')) aviso(t('erro'));
-      carregar(true);
-    }).catch(function(){ aviso(t('erro')); b.disabled = false; });
+    }).catch(function(){if(conta())aviso(t('erro'));})
+      .finally(function(){b.disabled=false;});
   }, true);
 
   // Fim do Center⭐Run! sem conta: convite para guardar as estrelas
@@ -149,11 +188,11 @@
   }
 
   window.TW_SEMANA = {
-    html:html, mapaHtml:mapaHtml, carregar:carregar,
+    html:html, mapaHtml:mapaHtml, carregar:carregar, contaMudou:contaMudou,
     depoisDoKaraoke:function(){   // Karaoke⭐Time! confirmado pelo servidor: no sábado, entra na plateia sozinho
       carregar(true);
       var d = new Date(Date.now() - 3 * 36e5); if(d.getUTCDay() !== 6 || !logado()) return;
-      rpc('show_sabado_marcar').then(function(r){ if(r && r.ok){ aviso(t('ganhou', {p:r.premio})); if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(x){} if(typeof setBest === 'function') setBest(); } carregar(true); } }).catch(function(){});
+      marcarShow(contaSessaoAtual());
     }
   };
   function iniciar(){ observarFim(); setTimeout(function(){ carregar(false); }, 1200); }

@@ -57,10 +57,29 @@
     var d = document.createElement('div'); d.className = 'tws-aviso'; d.setAttribute('role', 'status'); d.textContent = txt; document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 3200); }
 
   /* ---------- janela simples (mesmo visual das janelas do jogo) ---------- */
-  var ov = null;
+  var ov=null, janelaPedido=0, janelaConta=null;
+  function fechar(){
+    janelaPedido++;
+    if(ov){ov.hidden=true;ov.replaceChildren();}
+  }
+  function novoPedido(){
+    janelaConta=contaSessaoAtual();
+    return {id:++janelaPedido,conta:janelaConta};
+  }
+  function vigente(pedido, controle){
+    return pedido.id===janelaPedido && pedido.conta() &&
+      (!controle || (ov && !ov.hidden && ov.contains(controle)));
+  }
+  function contaMudou(){
+    if(janelaConta && !janelaConta()){fechar();janelaConta=null;}
+    if(vitMinha && !vitMinha.conta())vitMinha=null;
+  }
+  function erro(pedido, controle){
+    if(vigente(pedido,controle))aviso(t('erro'));
+  }
   function janela(html){
     if(!ov){ ov = document.createElement('div'); ov.className = 'ov twp-ov'; ov.hidden = true; document.body.appendChild(ov);
-      ov.addEventListener('click', function(e){ if(e.target === ov || (e.target.closest && e.target.closest('[data-twp="fechar"]'))) ov.hidden = true; }); }
+      ov.addEventListener('click', function(e){ if(e.target === ov || (e.target.closest && e.target.closest('[data-twp="fechar"]'))) fechar(); }); }
     ov.innerHTML = '<div class="panel twp-panel" role="dialog" aria-modal="true">' + html + '</div>'; ov.hidden = false;
     var f = ov.querySelector('button,textarea'); if(f) try{ f.focus(); }catch(e){}
     return ov;
@@ -99,17 +118,33 @@
   }
   function abrirRetro(mes){
     if(!logado()){ aviso(t('login')); return; }
+    var pedido=novoPedido();
     rpc('retro_mes', {p_mes:mes || null}).then(function(d){
+      if(!vigente(pedido))return;
       if(!d || !d.ok){ aviso(t('erro')); return; }
       var cv = desenharRetro(d), url = window.twMarcaPng ? window.twMarcaPng(cv) : cv.toDataURL('image/png');
       var o = janela('<h2 class="twp-tit">' + esc(t('retro')) + '</h2><img class="twp-img" alt="' + esc(t('retroItem', {m:nomeMes(d.mes)})) + '" src="' + url + '">' +
-        '<label class="twp-check"><input type="checkbox" id="twpEmail"> ' + esc(t('email')) + '</label><small class="twp-nota">' + esc(t('emailNota')) + '</small>' +
+        '<label class="twp-check"><input type="checkbox" id="twpEmail" disabled> ' + esc(t('email')) + '</label><small class="twp-nota">' + esc(t('emailNota')) + '</small>' +
         '<div class="btns"><a class="btn" id="twpBaixar" download="tsulipa-retrospectiva-' + esc(String(d.mes).slice(0, 7)) + '.png" href="' + url + '">⬇️ ' + esc(t('salvar')) + '</a>' +
         '<button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
       var ck = o.querySelector('#twpEmail');
-      rpc('email_mensal').then(function(r){ if(r && r.ok) ck.checked = !!r.ligado; }).catch(function(){});
-      ck.onchange = function(){ ck.disabled = true; rpc('email_mensal', {p_ligar:ck.checked}).then(function(r){ ck.disabled = false; if(!r || !r.ok){ ck.checked = !ck.checked; aviso(t('erro')); } }).catch(function(){ ck.disabled = false; ck.checked = !ck.checked; aviso(t('erro')); }); };
-    }).catch(function(){ aviso(t('erro')); });
+      rpc('email_mensal').then(function(r){
+        if(!vigente(pedido,ck))return;
+        if(!r||!r.ok){erro(pedido,ck);return;}
+        ck.checked=r.ligado===true;ck.disabled=false;
+      }).catch(function(){erro(pedido,ck);});
+      ck.onchange=function(){
+        if(ck.disabled || !vigente(pedido,ck))return;
+        var ligado=ck.checked;
+        ck.disabled=true;
+        rpc('email_mensal',{p_ligar:ligado}).then(function(r){
+          if(!r||!r.ok)throw Error('preferencia');
+          if(vigente(pedido,ck)){ck.checked=r.ligado===true;ck.disabled=false;}
+        }).catch(function(){
+          if(vigente(pedido,ck)){ck.checked=!ligado;ck.disabled=false;erro(pedido,ck);}
+        });
+      };
+    }).catch(function(){erro(pedido);});
   }
   // item no cartão "Esta semana": nos 7 primeiros dias do mês destaca o mês que acabou
   function retroItemHtml(){
@@ -141,20 +176,32 @@
   var vitMinha = null;
   function vitrineMontar(d, meu){   // chamado pelo Perfil depois de montar o topo
     var corpo = document.getElementById('perfCorpo'); if(!corpo) return;
+    var hero=corpo.querySelector('.perfhero'), conta=contaSessaoAtual();
+    if(!hero)return;
     var antigo = corpo.querySelector('.twp-vitrine'); if(antigo) antigo.remove();
     function por(v, card){
-      var hero = corpo.querySelector('.perfhero'); if(!hero) return;
+      if(!conta()||!hero.isConnected||corpo.querySelector('.perfhero')!==hero)return;
+      var anterior=corpo.querySelector('.twp-vitrine');if(anterior)anterior.remove();
       var w = document.createElement('div'); w.innerHTML = vitrineHtml(v, meu); var sec = w.firstElementChild; if(!sec) return;
       hero.parentNode.insertBefore(sec, hero.nextSibling);
       var cv = sec.querySelector('#twpVitCard');
       if(cv && card && typeof gachaCardDesenhar === 'function' && typeof cardsDados === 'function') try{ gachaCardDesenhar(cv, cardsDados({card:card})); }catch(e){}
     }
     if(!meu){ por(d && d.vitrine, d && d.vitrine_card); return; }
-    rpc('minha_vitrine').then(function(r){ vitMinha = r || {}; if(document.getElementById('perfCorpo') === corpo) por(vitMinha.vitrine, vitMinha.vitrine_card); }).catch(function(){});
+    if(!logado())return;
+    por({},null);
+    rpc('minha_vitrine').then(function(r){
+      if(!conta()||!hero.isConnected||corpo.querySelector('.perfhero')!==hero||!r||r.ok===false)return;
+      vitMinha={conta:conta,dados:r};
+      por(r.vitrine,r.vitrine_card);
+    }).catch(function(){});
   }
   function vitrineEditar(){
     if(!logado()){ aviso(t('login')); return; }
-    Promise.all([rpc('album_cards').catch(function(){ return []; }), vitMinha ? Promise.resolve(vitMinha) : rpc('minha_vitrine').catch(function(){ return {}; })]).then(function(r){
+    var pedido=novoPedido(), hero=document.querySelector('#perfCorpo .perfhero');
+    Promise.all([rpc('album_cards'), vitMinha && vitMinha.conta() ? Promise.resolve(vitMinha.dados) : rpc('minha_vitrine')]).then(function(r){
+      if(!vigente(pedido) || (hero && (!hero.isConnected || document.getElementById('perfOv').hidden)))return;
+      if(!r[1] || r[1].ok===false || !Array.isArray(r[0])){erro(pedido);return;}
       var cards = (Array.isArray(r[0]) ? r[0] : []).map(function(c){ return c && c.card && c.card.nick; }).filter(Boolean);
       var mv = r[1] || {}, v = mv.vitrine || {}, ins = Array.isArray(mv.insignias) ? mv.insignias : [];
       function opts(L, atual, rot){ return '<option value="">' + esc(t('nenhum')) + '</option>' + L.map(function(k){ return '<option value="' + esc(k) + '"' + (k === atual ? ' selected' : '') + '>' + esc(rot ? rot(k) : k) + '</option>'; }).join(''); }
@@ -164,29 +211,34 @@
         '<label class="twp-campo">' + esc(t('musica')) + '<input id="twpVMus" maxlength="60" value="' + esc(v.musica || '') + '" placeholder="Zipper"></label>' +
         '<div class="btns"><button type="button" class="btn" id="twpVOk">' + esc(t('guardar')) + '</button><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
       o.querySelector('#twpVOk').onclick = function(){
-        var b = this; b.disabled = true;
+        var b=this;if(!vigente(pedido,b)||b.disabled)return;
+        b.disabled=true;
         rpc('salvar_vitrine', {p_card:o.querySelector('#twpVCard').value, p_insignia:o.querySelector('#twpVIns').value, p_musica:o.querySelector('#twpVMus').value.trim()}).then(function(res){
-          if(res && res.ok){ aviso(t('salvo')); ov.hidden = true; vitMinha = null; if(typeof perfAbrir === 'function' && typeof perfMeu !== 'undefined' && perfMeu) try{ perfAbrir('', true); }catch(e){} }
+          if(pedido.conta()&&res&&res.ok)vitMinha=null;
+          if(!vigente(pedido,b))return;
+          if(res && res.ok){ aviso(t('salvo')); fechar(); if(typeof perfAbrir === 'function' && typeof perfMeu !== 'undefined' && perfMeu) try{ perfAbrir('', true); }catch(e){} }
           else { b.disabled = false; aviso(t('erro')); }
-        }).catch(function(){ b.disabled = false; aviso(t('erro')); });
+        }).catch(function(){ if(vigente(pedido,b)){b.disabled=false;erro(pedido,b);} });
       };
-    });
+    }).catch(function(){erro(pedido);});
   }
 
   /* ---------- Caixa de recados para o TsuLiPa ---------- */
   function recadoAbrir(){
     if(!logado()){ aviso(t('login')); return; }
+    var pedido=novoPedido();
     var o = janela('<h2 class="twp-tit">💌 ' + esc(t('recado')) + '</h2><p class="twp-nota">' + esc(t('recadoTxt')) + '</p>' +
       '<textarea id="twpRecado" maxlength="500" rows="5"></textarea><small class="twp-cont" id="twpCont">0/500</small>' +
       '<div class="btns"><button type="button" class="btn" id="twpEnviar">' + esc(t('enviar')) + '</button><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
     var ta = o.querySelector('#twpRecado'), ct = o.querySelector('#twpCont');
     ta.oninput = function(){ ct.textContent = ta.value.length + '/500'; };
     o.querySelector('#twpEnviar').onclick = function(){
-      var b = this, txt = ta.value.trim(); if(txt.length < 2) return; b.disabled = true;
+      var b = this, txt = ta.value.trim(); if(txt.length < 2 || b.disabled || !vigente(pedido,b)) return; b.disabled = true;
       rpc('recado_tsulipa_enviar', {p_texto:txt}).then(function(r){
-        if(r && r.ok){ ov.hidden = true; aviso(t('enviado')); }
+        if(!vigente(pedido,b))return;
+        if(r && r.ok){ fechar(); aviso(t('enviado')); }
         else { b.disabled = false; aviso(t(r && r.erro === 'limite' ? 'limite' : 'erro')); }
-      }).catch(function(){ b.disabled = false; aviso(t('erro')); });
+      }).catch(function(){ if(vigente(pedido,b)){b.disabled=false;erro(pedido,b);} });
     };
   }
 
@@ -199,5 +251,5 @@
     else if(a === 'recado') recadoAbrir();
   }, true);
 
-  window.TW_PESSOAL = {retroItemHtml:retroItemHtml, abrirRetro:abrirRetro, vitrineMontar:vitrineMontar, recadoAbrir:recadoAbrir, t:t, desenharRetro:desenharRetro};
+  window.TW_PESSOAL = {contaMudou:contaMudou,retroItemHtml:retroItemHtml, abrirRetro:abrirRetro, vitrineMontar:vitrineMontar, recadoAbrir:recadoAbrir, t:t, desenharRetro:desenharRetro};
 })();

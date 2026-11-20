@@ -9,7 +9,7 @@ const ler = f => fs.readFileSync(path.join(raiz, f), 'utf8');
 
 test('tw-semana: todos os textos nos 6 idiomas e nada de estrela calculada no navegador', () => {
   const src = ler('tw-semana.js');
-  const ctx = {window:{}, document:{readyState:'complete', addEventListener(){}, getElementById(){ return null; }, body:{setAttribute(){}, removeAttribute(){}}}, setTimeout(){}, Promise, Event:function(){}, LANG:'pt'};
+  const ctx = {window:{}, contaSessaoAtual:()=>()=>true, document:{readyState:'complete', addEventListener(){}, getElementById(){ return null; }, body:{setAttribute(){}, removeAttribute(){}}}, setTimeout(){}, Promise, Event:function(){}, LANG:'pt'};
   ctx.window.dispatchEvent = () => {};
   vm.runInNewContext(src.replace("document.addEventListener('click'", "(function(){})('click'"), ctx);
   const m = src.match(/var TX = (\{[\s\S]*?\n  \});/);

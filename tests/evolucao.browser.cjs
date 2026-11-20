@@ -41,6 +41,75 @@ async function abrir(page, query, data, conta){
   await tutorial.waitFor({timeout:1600}).catch(error => { if(error.name !== 'TimeoutError') throw error; });
   if(await tutorial.isVisible()) await tutorial.click();
 }
+async function isolarContaPessoal(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'A');
+    await page.evaluate(()=>{
+      window.qaRPC=[];
+      contaRpc=(nome,args)=>new Promise(resolve=>qaRPC.push({nome,args,resolve}));
+      window.qaTrocar=(id)=>{
+        contaJ={id,nick:'Mesmo apelido'};contaAuthUserId=id;contaSessaoToken++;
+        TW_PESSOAL.contaMudou();TW_SEMANA.contaMudou();
+      };
+      window.qaResposta=(nome,valor,indice=0)=>qaRPC.filter(p=>p.nome===nome)[indice].resolve(valor);
+      window.qaPerfil=()=>{
+        perfOv.hidden=false;
+        $('perfCorpo').innerHTML='<div class="perfhero">Perfil em teste</div>';
+        TW_PESSOAL.vitrineMontar({},true);
+      };
+      qaTrocar('A');qaPerfil();TW_PESSOAL.abrirRetro('2026-10-01');TW_SEMANA.carregar(true);
+      window.qaShowEncerrado=twKaraokeOnline.terminar('show-A',{score:2,song:'normal'});
+      const show=document.createElement('button');show.dataset.semana='show';document.body.append(show);show.click();
+      const festa=document.createElement('button');festa.dataset.semana='festa';document.body.append(festa);festa.click();
+      qaTrocar('B');qaPerfil();starT=41;perfDono=[];
+      qaResposta('minha_vitrine',{vitrine:{musica:'Música da conta B'},insignias:[]},1);
+      qaResposta('minha_vitrine',{vitrine:{musica:'Música da conta A'},insignias:[]});
+      qaResposta('retro_mes',{ok:true,nick:'Conta A',mes:'2026-10-01'});
+      qaResposta('show_sabado_marcar',{ok:true,stars:999,premio:20});
+      qaResposta('kt_run_finish',{ok:true,ranked:true});
+      qaResposta('festa_resgatar',{ok:true,visuais:['fundo_cafe']});
+      qaResposta('show_sabado_estado',{eu:true,premio:20});
+      qaResposta('festa_estado',{ativa:true,tema:'cafe',guardou:true});
+      qaResposta('jogo_da_semana',null);
+    });
+    await page.locator('.twp-vit-mus').getByText('Música da conta B').waitFor();
+    assert.equal(await page.getByText('Música da conta A').count(),0);
+    assert.equal(await page.locator('.twp-ov:visible').count(),0);
+    assert.deepEqual(await page.evaluate(()=>[starT,perfDono,document.body.hasAttribute('data-tw-festa')]),[41,[],false]);
+    assert.deepEqual(await page.evaluate(()=>qaShowEncerrado),{ok:true,ranked:true});
+
+    await page.getByRole('button',{name:'Editar vitrine'}).click();
+    await page.evaluate(()=>qaResposta('album_cards',[]));
+    assert.equal(await page.locator('#twpVMus').inputValue(),'Música da conta B');
+    await page.locator('#twpVOk').click();
+    await page.evaluate(()=>{
+      qaTrocar('C');
+      TW_PESSOAL.recadoAbrir();
+      qaResposta('salvar_vitrine',{ok:true});
+    });
+    const recado=page.locator('#twpRecado');
+    await recado.fill('Recado em teste');
+    await page.locator('#twpEnviar').click();
+    await page.evaluate(()=>{
+      qaTrocar('D');TW_PESSOAL.abrirRetro('2026-11-01');
+      qaResposta('recado_tsulipa_enviar',{ok:true});
+      qaResposta('retro_mes',{ok:true,nick:'Conta D',mes:'2026-11-01'},1);
+    });
+    const email=page.locator('#twpEmail');
+    await email.waitFor();
+    assert.equal(await email.isDisabled(),true);
+    await page.evaluate(()=>qaResposta('email_mensal',{ok:true,ligado:true}));
+    await email.uncheck();
+    await page.evaluate(()=>{
+      qaTrocar('E');TW_PESSOAL.recadoAbrir();
+      qaResposta('email_mensal',{ok:true,ligado:false},1);
+    });
+    await recado.waitFor();
+    assert.equal(await email.count(),0);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
 async function bairro(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -1170,6 +1239,7 @@ async function karaoke(browser){
 (async()=>{
   const browser = await chromium.launch();
   try{
+    await isolarContaPessoal(browser);console.log('✓ Vitrine, retrospectiva, recados e prêmios semanais isolados após troca de conta.');
     await mapaSobDemanda(browser);console.log('✓ Mapa só carrega ao ser aberto.');
     await referenciasDoIdol(browser);console.log('✓ Três visuais de referência passaram pelo Perfil, Sora e Karaoke.');
     await auditarStudio320(browser);console.log('✓ Studio em 320 px: obturador visível, categoria e foto na série. Favoritos isolados por conta.');

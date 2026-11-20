@@ -15,7 +15,14 @@ function contaRpc(nome, args){
   return _supabase.rpc(nome, args || {}).then(function(r){ if(r.error) throw r.error; return r.data; });
 }
 function contaSiteOk(){ return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/i.test(location.hostname); }
+function contaSessaoAtual(){
+  function perfil(){return contaJ ? String(contaJ.id || contaJ.nick || '') : null;}
+  var token=contaSessaoToken, usuario=contaAuthUserId, dono=perfil();
+  return function(){return token===contaSessaoToken && usuario===contaAuthUserId && dono===perfil();};
+}
 function contaUI(){
+  if(window.TW_PESSOAL)window.TW_PESSOAL.contaMudou();
+  if(window.TW_SEMANA)window.TW_SEMANA.contaMudou();
   if(typeof twMapaVitrineAtualizar === 'function') twMapaVitrineAtualizar();
   if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();

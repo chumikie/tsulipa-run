@@ -569,8 +569,8 @@ var jornalCarregar=(function(){
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=18"></script>
 <script src="./banner.js?v=7"></script>
-<script src="./conta.js?v=11"></script>
-<script src="./admin-base.js?v=3"></script>
+<script src="./conta.js?v=12"></script>
+<script src="./admin-base.js?v=4"></script>
 <script defer src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
@@ -2363,13 +2363,13 @@ var TW_RANK_WORDS = window.TW_I18N.locale.TW_RANK_WORDS;;
 window.twKaraokeOnline={
  ativo:function(){return !!contaJ&&!!_supabase;},
  sessionKey:function(){return contaJ?String(contaJ.nick||'').toLowerCase():'';},
- iniciar:function(resume,useTicket){var owner=contaJ&&String(contaJ.nick||'').toLowerCase(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
+ iniciar:function(resume,useTicket){var conta=contaSessaoAtual(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(conta()&&contaJ&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
-  var owner=contaJ&&String(contaJ.nick||'').toLowerCase();
+  var conta=contaSessaoAtual();
   var base={p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null};
   // Música da semana: envia a música; se o banco ainda não tiver o parâmetro p_song (PGRST202), repete sem ele.
-  return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);throw e;}):contaRpc('kt_run_finish',base))
-   .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()){twRankRefreshAfterSora();if(window.TW_SEMANA)window.TW_SEMANA.depoisDoKaraoke();}return x;});
+  return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202'){if(!conta())return null;return contaRpc('kt_run_finish',base);}throw e;}):contaRpc('kt_run_finish',base))
+   .then(function(x){if(conta()&&contaJ&&x&&x.ok){twRankRefreshAfterSora();if(window.TW_SEMANA)window.TW_SEMANA.depoisDoKaraoke();}return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  posicao:function(){return contaRpc('kt_minha_posicao');},
@@ -3666,7 +3666,7 @@ applyLang();
 })();
 </script>
 <script>twLinkInicializar();</script>
-<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=2"></script><script defer src="./tw-pessoal.js?v=1"></script>
+<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=3"></script><script defer src="./tw-pessoal.js?v=2"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

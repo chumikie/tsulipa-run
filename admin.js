@@ -127,23 +127,31 @@ function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐
   }).catch(function(){});
 }
 // 💌 Recados para o TsuLiPa (20/11/2026): só a moderação lê; "lido" tira da contagem de novos
-function admRecados(marcar){
+function admRecados(marcar, botao){
+  var box=$('admRecados'), conta=contaSessaoAtual();
+  if(!box)return;
+  var pedido={};box.admPedido=pedido;
+  function atual(){return conta()&&box.isConnected&&box.admPedido===pedido;}
   contaRpc('admin_recados_tsulipa', {p_marcar_lido:marcar || null}).then(function(d){
-    var box = $('admRecados'); if(!box || !d || !d.ok) return;
+    if(!atual())return;
+    if(!d || !d.ok)throw Error('recados indisponíveis');
     var L = d.recados || [];
     box.innerHTML = '<h3>💌 ' + escHtml(tr('Recados para o TsuLiPa')) + (d.novos ? ' <span class="admnovo">' + d.novos + '</span>' : '') + '</h3>' +
       (L.length ? '<ul class="admrecados">' + L.map(function(r){
         return '<li class="' + (r.lido ? 'lido' : '') + '"><p>' + escHtml(r.texto) + '</p><small><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> · ' +
           escHtml(new Date(r.criado).toLocaleString()) + '</small>' + (r.lido ? '' : ' <button type="button" class="btn alt admlido" data-recado="' + r.id + '">✓ ' + escHtml(tr('Lido')) + '</button>') + '</li>'; }).join('') + '</ul>'
         : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>');
-    box.onclick = function(e){ var b = e.target.closest && e.target.closest('[data-recado]'); if(b){ b.disabled = true; admRecados(+b.getAttribute('data-recado')); } };
-  }).catch(function(){});
+    box.onclick = function(e){ var b = e.target.closest && e.target.closest('[data-recado]'); if(b&&!b.disabled&&conta()&&box.isConnected){ b.disabled = true; admRecados(+b.getAttribute('data-recado'),b); } };
+  }).catch(function(){if(atual())perfTopoMsg(tr('Não deu para falar com o servidor. Tente de novo.'));})
+    .finally(function(){if(botao)botao.disabled=false;});
 }
 // 🎮 Uso dos jogos (20/11/2026): quantas pessoas jogaram cada jogo nos últimos 7 dias e qual é o Jogo da semana
 var ADM_JOGOS = {run:'Center⭐Run!', karaoke:'Karaoke⭐Time!', sora:'Sora⭐Jump!', cafe:'Happy⭐Cafe!', handshake:'Handshake⭐Event!', jardim:'Bloom⭐Garden!', battle:'Idol⭐Battle!', foto:'Photo⭐Studio!', duo:'Moon⭐Duo!', gacha:'Star⭐Gacha!', pet:'Backstage⭐Pet! (minijogos)'};
 function admUso(){
+  var box=$('admUso'), conta=contaSessaoAtual();
+  if(!box)return;
   contaRpc('admin_uso_jogos', {p_dias:7}).then(function(d){
-    var box = $('admUso'); if(!box || !d || !d.ok) return;
+    if(!conta()||!box.isConnected||!d||!d.ok)return;
     var L = d.jogos || [], max = Math.max(1, d.contas_ativas || 0);
     var h = '<h3>🎮 ' + escHtml(tr('Quem jogou o quê (7 dias)')) + '</h3><p class="perfdica">👥 ' + escHtml(tr('Contas ativas')) + ': <b>' + (+d.contas_ativas || 0) + '</b>' +
       (d.jogo_da_semana && d.jogo_da_semana.k ? ' · 🌟 ' + escHtml(tr('Jogo da semana')) + ': <b translate="no">' + escHtml(ADM_JOGOS[d.jogo_da_semana.k] || d.jogo_da_semana.k) + '</b>' : '') + '</p>';

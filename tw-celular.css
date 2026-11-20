@@ -1029,3 +1029,17 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 .twp-vit-ed{margin-top:10px}
 .twp-vazia{text-align:center}.twp-vazia p{margin:0 0 8px;font-weight:700;color:#5a2bc4}
 a.btn#twpBaixar{text-decoration:none}
+/* ajustes da varredura visual (20/11/2026) */
+.twp-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}   /* o título já está na imagem */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twp-tit{color:#e6d6ff}:root:not([data-theme="light"]) .twp-nota,:root:not([data-theme="light"]) .twp-cont{color:#c9bde8}:root:not([data-theme="light"]) .twp-check{color:#f3eeff}}
+[data-theme="dark"] .twp-tit{color:#e6d6ff}[data-theme="dark"] .twp-nota,[data-theme="dark"] .twp-cont{color:#c9bde8}
+/* "Esta semana" no celular: os botões descem para baixo do texto, que fica com a largura toda */
+@media (max-width:599px){
+  .tws .tws-it{flex-wrap:wrap}
+  .tws .tws-it>.twc-hj-txt{flex:1 1 calc(100% - 52px);min-width:0}
+  .tws .tws-it>.twc-hj-bts{flex:1 1 100%;display:flex;flex-direction:row;gap:8px;justify-content:flex-end}
+  .tws .tws-it>.twc-hj-bt{flex:0 0 auto;margin-left:auto}
+  .tws .tws-it .twc-hj-bt{width:auto!important;min-width:0;padding-left:16px;padding-right:16px}
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twp-vit-lado b{color:#f3eeff}:root:not([data-theme="light"]) .twp-vit-lado small,:root:not([data-theme="light"]) .twp-vit-card figcaption{color:#c9bde8}:root:not([data-theme="light"]) .twp-vitrine h3{color:#e6d6ff}}
+[data-theme="dark"] .twp-vit-lado b{color:#f3eeff}[data-theme="dark"] .twp-vit-lado small,[data-theme="dark"] .twp-vit-card figcaption{color:#c9bde8}

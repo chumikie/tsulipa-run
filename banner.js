@@ -172,7 +172,8 @@ function bannerConvidado(){
 }
 function bannerConvidadoDesenhar(x, W2, H2, t, roupa, sc, chao){
   var p = bannerConvidado(); if(!p) return;
-  var av = p.avatar, c = perfChar(av), s2 = sc * .82, cx = W2 * .935, bob = Math.sin(t * .06 + 4.2) * 1.1 * s2;
+  var av = p.avatar, c = perfChar(av), largo = W2 / sc > 250, s2 = sc * (largo ? .74 : .56), cx = largo ? W2 * .075 : 12.5 * sc,   // à esquerda do Tsu: do outro lado ficam o Pati e o Pucchi
+      _ = 0, bob = Math.sin(t * .06 + 4.2) * 1.1 * s2;
   if(roupa){ c.out = roupa; c.outcol = c.img || c.outcol; }
   var ex = [0, 1, 2, 3, 4, 5, 6].indexOf(+av.expr) >= 0 ? +av.expr : 2;
   var pose = typeof perfPoseInfo === 'function' && perfPoseInfo(av.pose) ? av.pose : 'v';

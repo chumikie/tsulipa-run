@@ -701,6 +701,9 @@ function jornalAbrir(aba, capitulo, origem){
     var foco = jornalCapituloSelecionar(capitulo);
     $('jornalCorpo').innerHTML = jornalMontar(dados);
     jornalAbasIniciar(); focarCapitulo(foco);
+    if(window.studioCarregar)window.studioCarregar().then(function(){
+      if(vigente() && window.studioCapaNews)window.studioCapaNews();
+    }).catch(function(){});
     if(aba === 'ruaFofa'){
       var ruaFofa = $('jornalRuaFofa');
       if(ruaFofa){
@@ -826,18 +829,6 @@ function jornalTimesCarregar(){
 }
 // ---------- Festival de Unidades (RPC festival_unidades: proposta 20261103190000_festival_e_ensaio_trio.sql) ----------
 var jornalFest = null;
-function jornalFestivalTexto(i){
-  var textos = {
-    pt:['Ver placar','Cantar a música da semana','Até sábado, 23h59 (Brasília)'],
-    en:['View standings','Sing the song of the week','Until Saturday, 11:59 pm (Brasília)'],
-    es:['Ver clasificación','Cantar la canción de la semana','Hasta el sábado, 23:59 (Brasilia)'],
-    id:['Lihat peringkat','Nyanyikan lagu minggu ini','Hingga Sabtu, 23.59 (Brasília)'],
-    th:['ดูอันดับ','ร้องเพลงประจำสัปดาห์','ถึงวันเสาร์ 23:59 น. (บราซิเลีย)'],
-    ja:['順位を見る','今週の曲を歌う','土曜23:59まで（ブラジリア時間）']
-  };
-  return (textos[LANG] || textos.pt)[i];
-}
-function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
 function jornalFestivalCantar(){
   if(!contaJ){ if(typeof twLinkGuardarLogin === 'function')twLinkGuardarLogin('festival'); contaEntrar(); return; }
   var rolagem = jornalOv.scrollTop;

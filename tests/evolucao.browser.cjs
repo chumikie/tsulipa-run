@@ -239,6 +239,10 @@ async function escolherRua(browser){
       await painel.locator('[data-piloto-bairro="studio"]').waitFor();
       await painel.locator('[data-piloto-bairro="cafe"]').waitFor();
       await painel.locator('[data-piloto-bairro="'+escolha+'"]').click();
+      await page.locator(escolha==='studio'?'#studioOv [data-st="clique"]':'#cfPraticaTitulo').waitFor();
+      await abrir(page,'&piloto_bairro=1','2026-12-06T12:00:00Z');
+      assert.equal(await page.evaluate(()=>TW_PILOTO_BAIRRO.continuacao().acao),escolha);
+      await page.locator('[data-piloto-bairro="continuar"]:visible').click();
       if(escolha==='studio'){
         await page.locator('#studioOv [data-st="clique"]').click();
         await page.locator('#studioOv [data-piloto-bairro="rua"]').click();
@@ -780,16 +784,44 @@ async function favoritoNoStudio(browser){
     const antes=await page.evaluate(()=>{
       localStorage.setItem('brs48cr_favs',JSON.stringify([{hair:'#ff6fb5',outcol:'#445522'}]));
       if(TW_CHARMAKER.favoritos().length || !TW_CHARMAKER.importarFavoritos())throw Error('herança de favoritos');
-      window.qaStudio=[];
+      bestcGravar({0:0,1:0,2:0,3:ACC.find(a=>a[0]==='mic')[2]});
+      pick(3);
+      accSel='mic';refreshAcc();
+      window.qaStudio=[];window.qaItens=[];
+      const desenho=perfDesenharIdol;
+      perfDesenharIdol=function(x,w,h,av){qaItens.push(av.a);return desenho.apply(this,arguments);};
       contaRpc=n=>{qaStudio.push(n);return Promise.resolve([]);};
       shopAbrir();return CU.outcol;
     });
     await page.locator('#shopOv [data-shop-aba="vestindo"]').click();
-    await page.getByRole('button',{name:/Fotografar favorito.*1/}).click();
+    assert.equal(await page.evaluate(()=>TW_CHARMAKER.favoritoVisual(0).a),'mic');
+    await page.getByRole('button',{name:'Guardar visual atual no espaço 2'}).click();
+    await page.evaluate(()=>{accSel='laco';refreshAcc();});
+    const provar=page.getByRole('button',{name:/Provar.*2/,exact:false}).filter({visible:true});
+    await provar.click();
+    assert.equal(await page.evaluate(()=>accSel),'laco');
+    await page.getByRole('button',{name:/Vestir.*2/}).click();
+    assert.equal(await page.evaluate(()=>accSel),'mic');
+    await page.locator('#shopOv [data-cm="desfazer"]:visible').click();
+    assert.equal(await page.evaluate(()=>accSel),'laco');
+    await page.getByRole('button',{name:/Fotografar favorito.*2/}).click();
     await page.locator('#studioOv [data-st="clique"]').click();
     await page.locator('#studioOv [data-st="outra"]').waitFor();
+    assert.ok(await page.evaluate(()=>qaItens.includes('mic')));
+    assert.equal(await page.evaluate(()=>accSel),'laco');
     assert.equal(await page.evaluate(()=>CU.outcol),antes);
     assert.equal(await page.evaluate(()=>qaStudio.includes('studio_clique')),false);
+    await page.evaluate(()=>{
+      studioFechar();
+      bestcGravar({0:0,1:0,2:0,3:ACC.find(a=>a[0]==='laco')[2]});
+      refreshAcc();shopAbrir();
+    });
+    if(!await page.getByRole('button',{name:/Fotografar favorito.*2/}).isVisible()){
+      await page.locator('#shopOv [data-shop-aba="vestindo"]').click();
+    }
+    await page.getByRole('button',{name:/Fotografar favorito.*2/}).click();
+    await page.locator('#studioOv [role="status"]').getByText(/item de mão/).waitFor();
+    assert.equal(await page.evaluate(()=>TW_CHARMAKER.favoritoVisual(1).a),'laco');
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
@@ -904,12 +936,29 @@ async function duoNaRuaFofa(browser){
     await abrir(page,'&piloto_bairro=1','2026-11-30T03:00:00Z','duo-na-rua');
     await page.evaluate(()=>{
       TW_BAIRRO.abrir();
+      perfDono=['fundo_ceu'];
       contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Tsu'}:[]);
     });
     await page.getByRole('button',{name:'Montar o look'}).click();
     await page.locator('#shopVestindo [data-piloto-bairro="rua"]').click();
     await page.getByRole('button',{name:'Fotografar no Moon⭐Duo!'}).click();
     await page.locator('#duoOv [data-dnick]').first().click();
+    await page.locator('#duoTabs [data-dtab="fundo"]').click();
+    await page.locator('#duoTabC [data-dfundo="ceu"]').click();
+    await page.locator('#duoTabs [data-dtab="expr"]').click();
+    await page.locator('#duoTabC [data-dexeu="2"]').click();
+    await page.locator('#duoTabC [data-dexgu="0"]').click();
+    await page.locator('#duoPedido [data-duo-direcao="interpretar"]').click();
+    const cena=await page.evaluate(()=>duoCenaAtual());
+    assert.equal(cena.invertido,true);
+    assert.equal(cena.fundo,'ceu');
+    assert.equal(cena.exprEu,'2');assert.equal(cena.exprGu,'0');
+    await abrir(page,'&piloto_bairro=1','2026-11-30T03:00:00Z','duo-na-rua');
+    await page.evaluate(()=>{perfDono=['fundo_ceu'];contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Tsu'}:[]);});
+    assert.equal(await page.evaluate(()=>TW_PILOTO_BAIRRO.continuacao().acao),'duo');
+    await page.locator('[data-piloto-bairro="continuar"]:visible').click();
+    await page.locator('#duoRuaFofa').waitFor();
+    assert.deepEqual(await page.evaluate(()=>duoCenaAtual()),cena);
     await page.locator('#duoRuaFofa').click();
     await page.locator('#duoRuaStatus').getByText(/Sua foto em dupla/).waitFor();
     assert.ok(await page.evaluate(()=>TW_PILOTO_BAIRRO.medidas()[1].etapas.concluiu));
@@ -917,6 +966,27 @@ async function duoNaRuaFofa(browser){
     await page.locator('#duoRuaGuardar').getByText('Guardada na série.').waitFor();
     await page.locator('#duoVoltarRua').click();
     await page.locator('#twBairroOv').getByAltText('Sua foto em exposição na Rua Fofa').waitFor();
+    await page.evaluate(()=>TW_BAIRRO.fechar());
+    assert.equal(await page.evaluate(()=>TW_PILOTO_BAIRRO.continuacao().acao),'jornal');
+    await page.locator('#twcNav [data-n="menu"]').click();
+    await page.locator('[data-a="album"]:visible').first().click();
+    await page.locator('details.album-fotos:visible summary').click();
+    const foto=page.locator('details.album-fotos:visible figure').filter({hasText:'Um céu na Rua Fofa'});
+    const download=page.waitForEvent('download');
+    await page.getByRole('button',{name:'Baixar cópia da série'}).click();
+    const arquivo=await readFile(await (await download).path());
+    const copia=JSON.parse(arquivo);
+    assert.deepEqual(copia.fotos[0].cena,cena);
+    assert.equal(copia.fotos[0].edicao,'Um céu na Rua Fofa');
+    await abrir(page,'',null,'duo-restaurado');
+    await page.evaluate(()=>{perfDono=['fundo_ceu'];contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Tsu'}:[]);});
+    await page.locator('#twcNav [data-n="menu"]').click();
+    await page.locator('[data-a="album"]:visible').first().click();
+    await page.locator('details.album-fotos:visible summary').click();
+    await page.locator('details.album-fotos:visible input[type=file]').setInputFiles({name:'duo.json',mimeType:'application/json',buffer:arquivo});
+    await foto.getByRole('button',{name:'Recriar esta cena'}).click();
+    await page.locator('#duoPalco').waitFor();
+    assert.deepEqual(await page.evaluate(()=>duoCenaAtual()),cena);
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }

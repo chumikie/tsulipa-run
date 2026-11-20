@@ -61,6 +61,7 @@ const path = require('node:path');
       box.id = 'jornalPosts';
       document.body.prepend(box);
       window.contaRpc = () => Promise.reject(new Error('offline'));
+      await jornalCarregar();
       await jornalPostsCarregar();
     });
     assert.equal(await page.locator('#jornalPosts button').first().textContent(),'Tentar novamente');

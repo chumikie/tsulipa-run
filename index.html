@@ -407,14 +407,12 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=2"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=5"><'+'/script>');</script>
 <script src="./karaoke-room-views.js?v=1"></script>
-<script src="./karaoke-clip-uniforms.js?v=1"></script>
-<script src="./karaoke-news-photo.js?v=1"></script>
 <script src="./centerrun.js?v=38"></script>
 <script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=46"></script>
+<script src="./pet.js?v=47"></script>
 <script src="./perfil.js?v=31"></script>
 <script src="./gacha.js?v=6"></script>
-<script src="./album-fotos.js?v=5"></script>
+<script src="./album-fotos.js?v=6"></script>
 <script src="./album.js?v=8"></script>
 <script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
@@ -466,7 +464,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=4"></script>
+<script src="./duo-base.js?v=5"></script>
 <script src="./encontro-base.js?v=2"></script>
 <script src="./hub.js?v=33"></script>
 <script src="./hub-layout.js?v=5"></script>
@@ -504,18 +502,55 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   });
 })();</script>
 <script src="./bloom.js?v=12"></script>
-<script src="./shop.js?v=11"></script>
-<script src="./tw-piloto-bairro.js?v=8"></script>
-<script src="./jornal.js?v=33"></script>
+<script src="./shop.js?v=12"></script>
+<script src="./tw-piloto-bairro.js?v=9"></script>
+<script>
+/* O jornal completo e as cenas do telão carregam ao abrir o Jornal, Calendário ou galeria do Pet. */
+function jornalFestivalTexto(i){
+  var textos = {
+    pt:['Ver placar','Cantar a música da semana','Até sábado, 23h59 (Brasília)'],
+    en:['View standings','Sing the song of the week','Until Saturday, 11:59 pm (Brasília)'],
+    es:['Ver clasificación','Cantar la canción de la semana','Hasta el sábado, 23:59 (Brasilia)'],
+    id:['Lihat peringkat','Nyanyikan lagu minggu ini','Hingga Sabtu, 23.59 (Brasília)'],
+    th:['ดูอันดับ','ร้องเพลงประจำสัปดาห์','ถึงวันเสาร์ 23:59 น. (บราซิเลีย)'],
+    ja:['順位を見る','今週の曲を歌う','土曜23:59まで（ブラジリア時間）']
+  };
+  return (textos[LANG] || textos.pt)[i];
+}
+function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
+function jornalAbrir(){
+  var args=arguments;
+  TW_CARGA.abrir('Idol⭐News!',jornalCarregar,function(){ window.jornalAbrir.apply(window,args); });
+}
+function jornalCapsCarregar(cb){
+  jornalCarregar().then(function(){window.jornalCapsCarregar(cb);},function(){if(cb)cb(false);});
+}
+function jornalFechar(){ jornalOv.hidden=true; }
+var jornalCarregar=(function(){
+  var pedido;
+  function carregar(src){
+    return new Promise(function(ok,falha){
+      var script=document.createElement('script');script.src=src;script.onload=ok;
+      script.onerror=function(){script.remove();falha();};document.head.appendChild(script);
+    });
+  }
+  return function(){
+    if(!pedido)pedido=Promise.all([
+      window.KaraokeClipUniforms || carregar('./karaoke-clip-uniforms.js?v=1'),
+      window.KaraokeNewsPhoto || carregar('./karaoke-news-photo.js?v=1')
+    ]).then(function(){return carregar('./jornal.js?v=34');})
+      .catch(function(e){pedido=null;throw e;});
+    return pedido;
+  };
+})();
+</script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=31';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=32';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
-  function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
-    window.jornalAbasIniciar=function(){var r=orig.apply(this,arguments);carregar().then(function(){if(window.studioCapaNews)window.studioCapaNews();}).catch(function(){});return r;};window.jornalAbasIniciar.twStudio=1;}
-  ligarJornal();window.addEventListener('DOMContentLoaded',ligarJornal);})();
+  window.studioCarregar=carregar;})();
 </script>
 <script>
 /* Idol⭐Battle! sob demanda: o CSS e o JS (≈60 KB) só baixam no primeiro toque.
@@ -528,7 +563,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./jogos-trilha.js?v=2"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=17"></script>
+<script src="./charmaker.js?v=18"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=8"></script>
 <script src="./admin-base.js?v=1"></script>
@@ -1895,7 +1930,7 @@ var jornalOv = document.createElement('div');
 jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; jornalOv.hidden = true;
 jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
-$('jornalX').onclick = jornalFechar;
+$('jornalX').onclick = function(){jornalFechar();};
 jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } if(e.target.id === 'jnMusicaIr'){ jornalFechar(); var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
 jornalOv.addEventListener('change', function(e){ if(e.target.id === 'jnPostImg') jornalPostImagem(e.target.files && e.target.files[0]); });
 // ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
@@ -2289,7 +2324,7 @@ setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME
 }, 0);
 
 var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});
-try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){ }
+try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"').catch(function(){}); }catch(_){ }
 (function(){
   var cv = $('hubCv'); if(!cv) return;
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');

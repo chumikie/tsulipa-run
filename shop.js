@@ -164,9 +164,9 @@ function shopLookStudio(favorito){
   if(perfProva || typeof studioAbrir!=='function')return;
   var atalho;
   if(Number.isInteger(favorito) && window.TW_CHARMAKER){
-    var c=TW_CHARMAKER.favoritoVisual(favorito);
-    if(!c)return;
-    atalho={look:Object.assign(shopAvAtual(false),{c:c}),dono:petPhoneFotoChave()};
+    var visual=TW_CHARMAKER.favoritoVisual(favorito);
+    if(!visual)return;
+    atalho={look:Object.assign(shopAvAtual(false),{c:visual.c,a:visual.a}),aviso:visual.aviso,dono:petPhoneFotoChave()};
   }
   petLifeCancelar('espelho');
   shopFechar();

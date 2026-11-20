@@ -42,13 +42,24 @@
     var dados = tudo();
     return Object.assign({}, (dados[dono()] || {})[i]);
   }
-  function marcar(i, etapa, foto){
+  function atualizar(i, campos, avisar){
     if(!pauta[i]) return;
-    var dados = tudo(), k = dono(), ficha = Object.assign({}, dados[k]), atual = Object.assign({}, ficha[i]);
-    if(atual[etapa]) return;
-    atual[etapa] = Date.now(); if(foto) atual.foto = foto; ficha[i] = atual; dados[k] = ficha; dadosVolateis = dados;
+    var dados=tudo(), k=dono(), ficha=Object.assign({},dados[k]);
+    ficha[i]=Object.assign({},ficha[i],campos); dados[k]=ficha; dadosVolateis=dados;
     try{ localStorage.setItem(banco, JSON.stringify(dados)); }catch(e){ somenteMemoria = true; }
-    window.dispatchEvent(new Event('tw-piloto-bairro'));
+    if(avisar)window.dispatchEvent(new Event('tw-piloto-bairro'));
+  }
+  function marcar(i, etapa, foto){
+    if(ler(i)[etapa]) return;
+    var campos={}; campos[etapa]=Date.now(); if(foto)campos.foto=foto;
+    atualizar(i,campos,true);
+  }
+  function tokenAtual(token){
+    return token && token.dono===dono() && token.i===semana() && !!atual();
+  }
+  function edicao(token){return tokenAtual(token)?pauta[token.i].titulo:undefined;}
+  function guardarDupla(token,cena){
+    if(tokenAtual(token) && token.tipo==='duo' && !ler(token.i).concluiu)atualizar(token.i,{cenaDuo:cena},false);
   }
   function atual(){ return pauta[semana()] || null; }
   function desfechos(){ return pauta.map(function(p, i){ return {p:p,i:i}; }).filter(function(d){ return d.i < semana(); }).reverse(); }
@@ -58,9 +69,16 @@
   function bicoAtivo(){ var p = atual(); return !!p && (p.escolha || parametros.get('piloto_bico') === '1'); }
   function contribuicao(ficha){ return ficha.concluiu ? 'studio' : ficha.bicoConcluiu ? 'cafe' : ''; }
   function continuacao(){
+    var i = semana(), p = atual(), ficha = ler(i);
+    var atividade = ficha.atividade;
+    var sub = {studio:'Foto no Studio',duo:'Foto no Moon⭐Duo!',cafe:'Pedido no Café'};
+    if(p && sub[atividade] && (!p.escolha || !contribuicao(ficha)) &&
+        (atividade==='cafe'?bicoAtivo()&&!ficha.bicoConcluiu:!ficha.concluiu) &&
+        (atividade!=='duo'||(p.duo&&contaJ))){
+      return {titulo:p.titulo,sub:sub[atividade],acao:atividade};
+    }
     var d = desfechos().find(function(e){ return !ler(e.i).leu; });
     if(d) return {titulo:d.p.titulo,sub:'Desfecho no Idol⭐News!',acao:'jornal',i:d.i};
-    var i = semana(), p = atual(), ficha = ler(i);
     if(!p) return null;
     if(p.escolha) return contribuicao(ficha) ? null : {titulo:p.titulo,sub:'Escolha como ajudar a Rosa',acao:'rua'};
     if(!ficha.concluiu) return {titulo:p.titulo,sub:ficha.abriu ? 'Foto no Studio' : 'História da Rua Fofa',acao:ficha.abriu ? 'studio' : 'rua'};
@@ -199,12 +217,13 @@
       voltar.focus();return;
     }
     if(acao==='duo' && p.duo && contaJ && !ler(i).concluiu){
-      marcar(i,'abriu');TW_BAIRRO.fechar();
-      duoAbrir(null,{piloto:{i:i,dono:dono(),tipo:'duo'},origem:origem});
+      var cena=ler(i).cenaDuo;
+      marcar(i,'abriu');atualizar(i,{atividade:'duo'},true);TW_BAIRRO.fechar();
+      duoAbrir(cena&&cena.nick,{piloto:{i:i,dono:dono(),tipo:'duo'},recriar:cena,origem:origem});
       return;
     }
     if(acao === 'studio'){
-      marcar(i, 'abriu'); TW_BAIRRO.fechar();
+      marcar(i, 'abriu'); atualizar(i,{atividade:'studio'},true); TW_BAIRRO.fechar();
       studioAbrir({origem:origem,piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
     }
     if(acao === 'cafe' && bicoAtivo()){
@@ -212,7 +231,7 @@
       var token = pendente;
       TW_CARGA.abrir('Happy⭐Cafe!', twJogosCarregar, function(){
         if(token !== pendente || token.i !== semana() || token.dono !== dono() || (p.escolha && contribuicao(ler(i)))) return;
-        pendente = null; TW_BAIRRO.fechar(); cfPilotoAbrir(token);
+        pendente = null; atualizar(i,{atividade:'cafe'},true); TW_BAIRRO.fechar(); cfPilotoAbrir(token);
       });
     }
   });
@@ -230,7 +249,7 @@
       window.dispatchEvent(new Event('tw-piloto-bairro'));
     }
   });
-  window.TW_PILOTO_BAIRRO = {aposContribuicao:aposContribuicao,continuacao:continuacao, rua:rua, falaRosa:falaRosa, vitrineMapa:vitrineMapa, jornal:jornal, iniciar:iniciar, concluir:concluir,
+  window.TW_PILOTO_BAIRRO = {aposContribuicao:aposContribuicao,continuacao:continuacao, edicao:edicao, guardarDupla:guardarDupla, rua:rua, falaRosa:falaRosa, vitrineMapa:vitrineMapa, jornal:jornal, iniciar:iniciar, concluir:concluir,
     medidas:function(){
       return pauta.map(function(p, i){
         var etapas = ler(i); delete etapas.foto;

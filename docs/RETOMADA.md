@@ -20,7 +20,7 @@
 
 ## Onde está
 - **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio e os novos atalhos de treino e retorno. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md).
+- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio e os novos atalhos de treino e retorno. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md) · [Auditoria das atualizações de 19 e 20/11](qa/auditoria-atualizacoes-19-20-11-2026.md).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -32,7 +32,7 @@
 - **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
 - **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
 - **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. A Rosa reconhece a contribuição da semana anterior no Mapa e no painel da Rua Fofa. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
-- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador por conta, com 24 lugares e escolha explícita ao substituir uma foto. A série exporta uma página com três fotos ou uma comparação de duas em PNG. Uma cópia JSON permite restaurar fotos e composições em outro aparelho.
+- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador por conta, com 24 lugares e escolha explícita ao substituir uma foto. A série exporta uma página com três fotos ou uma comparação de duas em PNG. Uma cópia JSON permite restaurar fotos, composições e cenas do Duo em outro aparelho. As novas fotos registram a edição do piloto quando contribuem para a vitrine.
 
 ### Jogos
 
@@ -49,9 +49,9 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
 | Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio, inclusive arranjos de 2 ou 3 espécies | — |
 | Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Obturador junto da prévia, composição favorita e foto do Álbum como referência. Comparação antes/depois baixável como PNG | — |
-| Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | O Pedido de cena mostra o que já combina e permite variar enquadramento e posições com a mesma dupla | — |
+| Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | O Pedido de cena mostra o que já combina e permite variar enquadramento e posições com a mesma dupla. Fotos novas da série permitem recriar a cena | — |
 | Backstage⭐Pet! | Pet, quarto, minijogos, Camarim | ★50/dia nos minijogos | Camarim por conta, porta-retrato e cenas do pet no sofá e junto à mesa, salváveis no Álbum | — |
-| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Provador compacto junto do catálogo, peças compradas e montagem com favoritos nomeados por conta | — |
+| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Provador compacto junto do catálogo, peças compradas e montagem com favoritos nomeados por conta, incluindo o item de mão e aviso de substituição antes da foto | — |
 
 ### Sistemas do mundo
 | Sistema | Estado | Próximo passo |
@@ -78,6 +78,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 | `jornal.js` | `jornal-capitulos.js` | Ao abrir o jornal ou o Calendário |
 | `mapa-textos.js` | `tw-mapa.js` | Ao abrir o Mapa |
 | `tw-bairro.js` | `tw-bairro-tela.js` | Ao abrir o painel, ou no Mapa nos dias guiados |
+| Início | `jornal.js`, cenas do telão | Ao abrir Jornal, Calendário ou a galeria do Jornal no Pet |
 | `duo-base.js` | `duo.js`, `duo-tela.js`, `duo-pedido.js` | Ao abrir o Duo |
 | `admin-base.js` | `admin.js` | Quando o Perfil confirma conta admin |
 | `encontro-base.js` | `encontro.js` (#112) | Ao abrir o Encontro |

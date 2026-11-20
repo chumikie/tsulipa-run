@@ -273,7 +273,7 @@
       else if(a === 'serie' && foto && !foto.serie && !foto.seriePendente && foto.dono === donoFoto() && window.TW_ALBUM_FOTOS){
         var selecionada = foto;
         selecionada.seriePendente = true;
-        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b,selecionada.escolhas).then(function(ok){
+        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b,selecionada.escolhas,{edicao:selecionada.edicao}).then(function(ok){
           selecionada.seriePendente = false;
           if(ok) selecionada.serie = true;
           else if(foto === selecionada && !b.isConnected) ui();
@@ -299,7 +299,7 @@
     limparReferencia(); arranjoStudio='';categoriaStudio='fundo';pautaAberta=false;
     pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
-    lookTemporario=atalho&&atalho.dono===dono&&atalho.look?{dono:dono,av:atalho.look}:null;
+    lookTemporario=atalho&&atalho.dono===dono&&atalho.look?{dono:dono,av:atalho.look,aviso:atalho.aviso}:null;
     var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
     if(dono !== donoSessao){
       mural = null;
@@ -360,7 +360,7 @@
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', true);
       if(pilotoStudio){
-        if(esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena);
+        if(esc_.fundo === pilotoStudio.fundo && TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena))capturada.edicao=TW_PILOTO_BAIRRO.edicao(pilotoStudio);
         fase = 'foto'; ocupado = false; ui(); return;
       }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
@@ -462,6 +462,7 @@
     var c = ov.querySelector('#studioCorpo'), hh = '';
     if(referenciaUrl && donoSessao===donoFoto()) hh+='<figure class="st-referencia"><img src="'+esc(referenciaUrl)+
       '" alt="'+esc(referenciaT()[0])+'"><figcaption>'+esc(referenciaT()[0])+'</figcaption></figure>';
+    if(fase==='monta' && lookTemporario && lookTemporario.aviso) hh += '<p class="stmsg" role="status">' + esc(lookTemporario.aviso) + '</p>';
     if(msg) hh += '<p class="stmsg" aria-live="polite">' + esc(msg) + '</p>';
     if(fase === 'foto'){
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).

@@ -999,6 +999,13 @@ function petPhoneJornalVoltar(){
 //←petPhoneJornalAtualizar
 function petPhoneJornalAtualizar(){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'jornal') return false;
+  if(typeof jornalFotosMontarDoDia!=='function' && typeof jornalCarregar==='function'){
+    var dono=petPhoneFotoChave();
+    jornalCarregar().then(function(){
+      if(dono===petPhoneFotoChave())petPhoneJornalAtualizar();
+    }).catch(function(){});
+    return true;
+  }
   petPhoneRender();
   // Reaproveita a vitrine de leitura do Hub: nunca cria uma RPC nem faz polling.
   if(!petPhoneJornalFotos.length && typeof hubIdolsCarregar === 'function' &&

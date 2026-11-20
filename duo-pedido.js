@@ -103,6 +103,7 @@
       var acao=b.dataset.duoDirecao;
       if(acao!=='lado')duoQuadro=duoQuadro==='perto'?'aberto':'perto';
       if(acao!=='quadro')duoInvertido=!duoInvertido;
+      duoGuardarRascunho();
       ui();
       var foco=document.querySelector('[data-duo-direcao="'+acao+'"]');
       if(foco)foco.focus({preventScroll:true});

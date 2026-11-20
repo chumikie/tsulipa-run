@@ -105,7 +105,7 @@ duoOv.addEventListener('click', function(e){
       duoRender(ruaFoto.getContext('2d'),960,600,true,false);
       piloto.iniciar('duo',duoPiloto);
       if(piloto.concluir('duo',duoPiloto,ruaFoto)){
-        duoPilotoFoto={cena:ruaFoto,dono:petPhoneContaChave()};t.disabled=true;
+        duoPilotoFoto={cena:ruaFoto,dono:petPhoneContaChave(),contexto:{cena:duoCenaAtual(),edicao:piloto.edicao(duoPiloto)}};t.disabled=true;
         var guardar=$('duoRuaGuardar');guardar.hidden=!window.TW_ALBUM_FOTOS;guardar.disabled=false;
         guardar.textContent='Guardar foto da Rua na série';
         $('duoRuaStatus').textContent='Sua foto em dupla está na vitrine da Rua Fofa.';
@@ -114,12 +114,12 @@ duoOv.addEventListener('click', function(e){
     return;
   }
   if(t.id==='duoRuaGuardar' && duoPilotoFoto && contaJ && duoPilotoFoto.dono===petPhoneContaChave() && window.TW_ALBUM_FOTOS){
-    TW_ALBUM_FOTOS.salvar('duo',duoPilotoFoto.cena,t);
+    TW_ALBUM_FOTOS.salvar('duo',duoPilotoFoto.cena,t,null,duoPilotoFoto.contexto);
     return;
   }
   if(t.id === 'duoSerie' && duoGu && contaJ && window.TW_ALBUM_FOTOS){
     var serie = document.createElement('canvas'); serie.width = 960; serie.height = 600;
-    try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t); }catch(e){}
+    try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t,null,{cena:duoCenaAtual()}); }catch(e){}
   }
   if(t.id === 'duoPhone'){
     // Guarda apenas após toque explícito, usando a cena e os bloqueios já validados pelo Moon⭐Duo!.

@@ -110,6 +110,32 @@ function compararRodadas(){
  }).join('');
  return listas?'<details class="battle-hint"><summary>'+esc(t[0])+'</summary><p>'+esc(t[1])+'</p>'+listas+'</details>':'';
 }
+var ORDEM_TR={
+ pt:['Testar outra ordem','Ordem do trio','Atributos dos cards contra o mesmo rival','Rodadas vencidas','Ordem original'],
+ en:['Try another lineup','Trio lineup','Card attributes against the same rival','Rounds won','Original lineup'],
+ es:['Probar otro orden','Orden del trío','Atributos contra el mismo rival','Rondas ganadas','Orden original'],
+ id:['Coba urutan lain','Susunan trio','Atribut kartu melawan rival yang sama','Ronde menang','Susunan awal'],
+ th:['ลองสลับลำดับ','ลำดับทรีโอ','คุณสมบัติการ์ดเทียบคู่แข่งเดิม','รอบที่ชนะ','ลำดับเดิม'],
+ ja:['別の編成を試す','トリオ編成','同じ相手とのカード能力比較','勝利ラウンド','元の編成']
+};
+var ordensTrio=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+function ordemResultado(ordem){
+ var t=ORDEM_TR[lang()]||ORDEM_TR.pt, ganhos=0;
+ var linhas=ordem.map(function(pos,i){
+   var nome=rodadas[pos].meu||unit[pos], rival=rodadas[i], pontos=valor(cardDe(nome),i);
+   if(pontos>Number(rival.eles))ganhos++;
+   return '<li>'+esc(nomeRound(i))+' · '+esc(nome)+' '+pontos+' × '+Number(rival.eles)+' '+esc(rival.rival||'')+'</li>';
+ });
+ return '<p>'+esc(t[3])+': '+ganhos+'/3</p><ul>'+linhas.join('')+'</ul>';
+}
+function testarOrdemHtml(){
+ var t=ORDEM_TR[lang()]||ORDEM_TR.pt;
+ if(!rodadas.every(function(r,i){return cardDe(r.meu||unit[i]);}))return '';
+ return '<details class="battle-hint"><summary>'+esc(t[0])+'</summary><p>'+esc(t[2])+'</p><label>'+esc(t[1])+
+   ' <select data-battle-ordem>'+ordensTrio.map(function(ordem,i){
+     return '<option value="'+i+'">'+(i?'':esc(t[4])+' · ')+ordem.map(function(pos){return esc(rodadas[pos].meu||unit[pos]);}).join(' / ')+'</option>';
+   }).join('')+'</select></label><div role="status">'+ordemResultado(ordensTrio[0])+'</div></details>';
+}
 function compararPlacar(r,pontos,t){
  return t[3]+' '+r.eu+' × '+r.eles+' · '+t[4]+' '+pontos+' × '+r.eles+' · '+t[pontos>r.eles?5:6];
 }
@@ -170,12 +196,12 @@ var SHOW_CALMO = {
  ja:['次のラウンド','結果を見る','勝者：{n}']
 };
 var REVANCHE_TR = {
- pt:['Testar outra ordem','Troque os Idols de posição e enfrente o mesmo trio em treino.','Antes'],
- en:['Try another order','Swap your Idols and face the same trio in practice.','Before'],
- es:['Probar otro orden','Cambia el orden de tus Idols y practica contra el mismo trío.','Antes'],
- id:['Coba urutan lain','Tukar posisi Idol dan lawan trio yang sama dalam latihan.','Sebelumnya'],
- th:['ลองสลับลำดับ','สลับตำแหน่งไอดอลแล้วซ้อมกับคู่แข่งทีมเดิม','ก่อนหน้า'],
- ja:['別の順番を試す','アイドルの順番を入れ替え、同じ３人を相手に練習しよう。','前回']
+ pt:['Fazer revanche','Troque os Idols de posição e enfrente o mesmo trio em treino.','Antes'],
+ en:['Play a rematch','Swap your Idols and face the same trio in practice.','Before'],
+ es:['Jugar la revancha','Cambia el orden de tus Idols y practica contra el mismo trío.','Antes'],
+ id:['Mainkan laga ulang','Tukar posisi Idol dan lawan trio yang sama dalam latihan.','Sebelumnya'],
+ th:['เล่นรอบแก้มือ','สลับตำแหน่งไอดอลแล้วซ้อมกับคู่แข่งทีมเดิม','ก่อนหน้า'],
+ ja:['再戦する','アイドルの順番を入れ替え、同じ３人を相手に練習しよう。','前回']
 };
 function trB(k){return T[lang()][k]||T.pt[k]||k;}
 function habilidade(c){   // 0 Nota Alta (canto) · 1 Passo Duplo (dança) · 2 Piscadinha (carisma); empate fica com o primeiro
@@ -319,6 +345,11 @@ function montar(){
    if(a==='salvar'){salvar();return;}
  });
  ov.addEventListener('change',function(e){
+   if(e.target.matches('[data-battle-ordem]')&&rodadas&&fase==='fim'){
+     var ordem=ordensTrio[Number(e.target.value)];
+     if(ordem)e.target.closest('details').querySelector('[role="status"]').innerHTML=ordemResultado(ordem);
+     return;
+   }
    if(e.target.matches('[data-battle-comparar]')&&rodadas&&fase==='fim'){
      var seletor=e.target, pos=Number(seletor.dataset.battleComparar), opcao=seletor.selectedOptions[0];
      if(rodadas[pos]&&opcao)seletor.closest('div').querySelector('[role="status"]').textContent=
@@ -605,6 +636,7 @@ function render(){
    texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
       '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span>'+
       (revanche ? '<small>'+esc(textoRevanche[2])+' · '+esc(revanche[i].meu)+' '+Number(revanche[i].eu||0)+' : '+Number(revanche[i].eles||0)+'</small>' + viradaRevanche(r,i) : '')+'</div>';}).join('')+'</div>';
+   if(wins<2)texto+=testarOrdemHtml();
    if(wins<2 && (!servidor||revanche))texto+=compararRodadas();
    texto+=ritmoResultado();
    texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(!revanche&&servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+

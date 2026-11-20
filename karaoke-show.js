@@ -72,11 +72,17 @@ function ktVincularEstadoAudio(ctx){
   pause(true);
  });
 }
-function ktPrepararRelogioAudio(target,prepareMs,elapsed,onReady){
- var ctx=D.ac()(),waitStarted=performance.now(),pending=D.acResumePromise();
+function ktPrepararRelogioAudio(target,prepareMs,elapsed,onReady,exigirAudio){
+ var ctx=D.ac()(),waitStarted=performance.now(),pending=D.acResumePromise(),armado=false;
  function arm(){
-  if(run!==target)return;
+  if(run!==target||armado)return;
+  armado=true;
   var now=performance.now(),audioReady=!!(ctx&&ctx.state==='running'),waitMs=Math.max(0,now-waitStarted);
+  if(exigirAudio&&!audioReady){
+   target.audioReady=true;target.pausaPendente=false;
+   if(onReady)onReady(false,waitMs);
+   return;
+  }
   target.start=now+prepareMs-elapsed;
   target.audioOrigin=audioReady?ctx.currentTime+prepareMs/1000-elapsed/1000:0;
   target.audioClock=audioReady;target.audioReady=true;
@@ -92,7 +98,7 @@ function ktPrepararRelogioAudio(target,prepareMs,elapsed,onReady){
  }
  ktVincularEstadoAudio(ctx);
  if(ctx&&ctx.state==='running')arm();
- else if(pending&&typeof pending.then==='function')pending.then(arm,arm);
+ else if(pending&&typeof pending.then==='function'){pending.then(arm,arm);if(exigirAudio)setTimeout(arm,2000);}
  else arm();
 }
 function silence(){voices.forEach(function(o){try{o.stop();}catch(e){}});voices.clear();}
@@ -296,17 +302,23 @@ function hit(lane,event){if(!run||run.paused||run.auto)return;var now=ktInputTim
  else judge(p.own,p.delta,lane);
  updateUI();checkpoint();}
 function updateUI(){if(!run)return;var seconds=Math.ceil(Math.max(0,run.start+run.durationMs-(run.paused?run.pauseAt:kNow()))/1000);seconds=Math.min(60,seconds);D.$()('ktClock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');D.$()('ktScore').textContent='★ '+run.score+' · Combo '+run.combo+' · '+(run.attempts?Math.round(run.hits/run.attempts*100):0)+'%';var p=D.KR_RHYTHM_PAUSE_COPY()[D.LANG()]||D.KR_RHYTHM_PAUSE_COPY().pt;D.$()('ktPause').textContent=p[run.resumeUntil?2:run.paused?1:0];D.$()('ktHint').textContent=D.KR_RHYTHM_HIT_HELP()[D.LANG()]||D.KR_RHYTHM_HIT_HELP().pt;}
+var KT_RETRY_AUDIO={pt:'Áudio interrompido. Toque em Retomar para tentar de novo.',
+ en:'Audio interrupted. Tap Resume to try again.',es:'Audio interrumpido. Toca Reanudar para reintentar.',
+ id:'Audio terputus. Ketuk Lanjutkan untuk mencoba lagi.',th:'เสียงขาดหาย แตะเล่นต่อเพื่อลองอีกครั้ง',ja:'音声が中断されました。再開を押してやり直してください。'};
 function finishResume(){
  if(!run||!run.paused||!run.resumeUntil||document.hidden)return;
  var target=run,elapsed=target.pauseAt-target.start,pauseMs=performance.now()-target.pauseWall;
- var bot=D.krDemoCantor();
+ var bot=D.krDemoCantor(), exigirAudio=target.audioClock||target.retomarComAudio;
+ target.retomarComAudio=exigirAudio;
  target.resumeUntil=0;target.skipBeforeUnload=false;target.audioReady=false;target.audioClock=false;
  clearInterval(audioTimer);audioTimer=0;silence();D.$()('ktPause').disabled=true;
  ktPrepararRelogioAudio(target,0,elapsed,function(audioReady,waitMs){
    if(run!==target)return;
-   if(bot&&bot===D.krDemoCantor())bot.endsAt+=pauseMs+waitMs;
+   if((audioReady||!exigirAudio)&&bot&&bot===D.krDemoCantor())bot.endsAt+=pauseMs+waitMs;
    D.$()('ktPause').disabled=false;updateUI();checkpoint();
- });
+   if(exigirAudio&&!audioReady)timingMessage(KT_RETRY_AUDIO[D.LANG()]||KT_RETRY_AUDIO.pt);
+   else timingMessage('');
+ },exigirAudio);
 }
 function pause(value){
  if(!run)return;

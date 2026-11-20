@@ -261,9 +261,9 @@ var CF_PRATICA_TR = {
   ja:['この注文を練習','自分のペースで練習','注文を確認','結果に戻る','注文どおり！','直す材料を確認しましょう。','トッピングなし','お菓子なし']
 };
 function cfPraticaTexto(i){ return (CF_PRATICA_TR[LANG] || CF_PRATICA_TR.pt)[i]; }
-function cfLembrarErro(turno, numero, pedido){
+function cfLembrarErro(turno, numero, pedido, montado){
   if(!turno.erroPratica || numero >= turno.erroPratica.numero){
-    turno.erroPratica = {numero:numero,pedido:{base:pedido.base,cob:pedido.cob,enf:pedido.enf,doce:pedido.doce}};
+    turno.erroPratica = {numero:numero,categoria:montado&&['base','cob','enf','doce'].find(function(k){return pedido[k]>=0&&pedido[k]!==montado[k];}),pedido:{base:pedido.base,cob:pedido.cob,enf:pedido.enf,doce:pedido.doce}};
   }
 }
 var CF_FOCO_TR = {
@@ -275,6 +275,30 @@ var CF_FOCO_TR = {
   ja:['{x}を練習','注文{i}/3 · {x}','次の注文','3つの注文を練習しました。']
 };
 var CF_FOCO_TIPOS = {base:[CF_BASES,'Base'],cob:[CF_COBERTURAS,'Cobertura'],enf:[CF_ENFEITES,'Enfeite'],doce:[CF_DOCES,'Docinho']};
+var CF_META_TREINO={
+ pt:['No próximo turno, sirva um pedido com {x} dentro do prazo.','{x}: pedido correto e dentro do prazo!','{x}: pedido correto, mas fora do prazo.','{x}: confira os ingredientes na próxima tentativa.'],
+ en:['Next shift, serve an order with {x} on time.','{x}: correct and on time!','{x}: correct, but late.','{x}: check the ingredients next time.'],
+ es:['En el próximo turno, sirve un pedido con {x} a tiempo.','{x}: ¡pedido correcto a tiempo!','{x}: pedido correcto, pero tarde.','{x}: revisa los ingredientes la próxima vez.'],
+ id:['Pada giliran berikutnya, sajikan pesanan dengan {x} tepat waktu.','{x}: benar dan tepat waktu!','{x}: benar, tetapi terlambat.','{x}: cek bahan pada percobaan berikutnya.'],
+ th:['กะหน้าเสิร์ฟออเดอร์ที่มี{x}ให้ทันเวลา','{x}: ออเดอร์ถูกต้องและทันเวลา!','{x}: ออเดอร์ถูกต้องแต่ไม่ทันเวลา','{x}: ตรวจส่วนผสมครั้งต่อไป'],
+ ja:['次の勤務で{x}の注文を時間内に出そう。','{x}：注文どおり、時間内！','{x}：注文どおり、時間切れ。','{x}：次回は材料を確認しよう。']
+};
+function cfMetaChave(){return 'brs48cr_cafe_meta_treino_v1:'+hsMemChave();}
+function cfMetaHtml(){
+  if(cf.piloto||(cf.fase!=='inicio'&&cf.dono!==contaJ))return '';
+  var tipo=cf.metaTreino||cfLer(cfMetaChave(),'');
+  if(!Object.hasOwn(CF_FOCO_TIPOS,tipo))return '';
+  var t=CF_META_TREINO[LANG]||CF_META_TREINO.pt;
+  return '<p class="hsdica" role="status">'+escHtml(t[cf.metaRetorno||0].replace('{x}',tr(CF_FOCO_TIPOS[tipo][1])))+'</p>';
+}
+function cfMetaAtender(p,m,saiu,certo){
+  if(cf.piloto||cf.metaRetorno||cf.dono!==contaJ)return;
+  var tipo=cfLer(cfMetaChave(),'');
+  if(!Object.hasOwn(CF_FOCO_TIPOS,tipo)||p[tipo]<0)return;
+  cf.metaTreino=tipo;
+  cf.metaRetorno=certo?1:saiu&&Object.keys(CF_FOCO_TIPOS).every(function(k){return p[k]===m[k];})?2:3;
+  if(certo)cfGravar(cfMetaChave(),'');
+}
 function cfFocoTexto(i,tipo,passo){
   var t=CF_FOCO_TIPOS[tipo];
   return (CF_FOCO_TR[LANG]||CF_FOCO_TR.pt)[i].replace('{x}',t?tr(t[1]):'').replace('{i}',passo);
@@ -399,9 +423,10 @@ function cfServir(saiu){
   var p = cf.cli.pedido, m = cf.monta, faAtendido = cf.cli;
   var contaAtendimento = typeof hsMemChave === 'function' ? hsMemChave() : '';
   var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
+  cfMetaAtender(p,m,saiu,certo);
   var resto = Math.max(0, 1 - (cfT - cf.t0) / cfPaciencia());
   var numero = ++cf.atendidos;
-  if(!certo) cfLembrarErro(cf, numero, p);
+  if(!certo) cfLembrarErro(cf, numero, p,m);
   cf.confirmacaoPedido = cf.modoServidor === 'treino' && cf.provaEstado === 'pendente' ? 3 : 4;
   cf.despedidaAssinatura = !!(cf.assinatura && m.base === cf.assinatura.base && m.enf === cf.assinatura.enf);
   cf.despedidaSaiu = !!saiu;
@@ -690,6 +715,7 @@ function cfUI(){
   if(cf.fase === 'fim' && cf.pratica){ c.innerHTML = cfPraticaHtml(); return; }
   var rec = cfLer(CF_RECEITAS_KEY, {}), nRec = Object.keys(rec).length, totRec = CF_BASES.length * CF_ENFEITES.length;
   var h = '<div class="hsstatus"><span>⭐ ' + cf.pontos.toLocaleString('pt-BR') + '</span><span>' + '❤️'.repeat(Math.max(0, cf.vidas)) + '🤍'.repeat(Math.max(0, 3 - cf.vidas)) + '</span><span>☕ ' + cf.atendidos + '/12</span><span>🏆 ' + cfLer(CF_RECORDE_KEY, 0).toLocaleString('pt-BR') + '</span></div>';
+  h += cfMetaHtml();
   if(cf.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>';
   if(cf.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs chegam ao balcão do café do grupo. Monte a bebida na ordem (base, cobertura e enfeite), junte o docinho se pedirem e sirva antes da paciência acabar!')) + '</p>' +
     '<p class="hsdica">📒 ' + escHtml(tr('Cada pedido perfeito guarda uma receita no Caderno do café:')) + ' <b>' + nRec + '/' + totRec + '</b></p>' +
@@ -778,7 +804,9 @@ function cfClique(e){
     if(acao==='proximo' && cf.pratica && cf.pratica.pedidos && cf.pratica.conferiu){
       var exercicio=cf.pratica, p=exercicio.pedidos[exercicio.indice];
       if(p && ['base','cob','enf','doce'].every(function(k){return exercicio.monta[k]===p[k];})){
-        exercicio.indice++;exercicio.monta={base:-1,cob:-1,enf:-1,doce:-1};exercicio.conferiu=false;
+        exercicio.indice++;
+        if(exercicio.indice===exercicio.pedidos.length)cfGravar(cfMetaChave(),exercicio.categoria);
+        exercicio.monta={base:-1,cob:-1,enf:-1,doce:-1};exercicio.conferiu=false;
       }
     }
     if(acao === 'abrir' && cf.erroPratica) cf.pratica = {monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
@@ -786,6 +814,14 @@ function cfClique(e){
     if(acao === 'voltar') cf.pratica = null;
     if(acao === 'conferir' && cf.pratica){
       cf.pratica.conferiu = true;
+      if(!cf.piloto && !cf.pratica.pedidos){
+        var pErro=cf.erroPratica.pedido, mTreino=cf.pratica.monta;
+        if(Object.keys(CF_FOCO_TIPOS).every(function(k){return pErro[k]===mTreino[k];})){
+          var tipo=cf.erroPratica.categoria||Object.keys(cf.errosCategorias||{}).find(function(k){return Object.hasOwn(CF_FOCO_TIPOS,k)&&pErro[k]>=0;})||
+            (pErro.cob>=0?'cob':'base');
+          cfGravar(cfMetaChave(),tipo);
+        }
+      }
       if(cf.piloto && ['base','cob','enf','doce'].every(function(k){ return cf.pratica.monta[k] === cf.erroPratica.pedido[k]; })){
         cf.pilotoEntregue = TW_PILOTO_BAIRRO.concluir('cafe',cf.piloto);
       }

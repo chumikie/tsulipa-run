@@ -647,7 +647,7 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
 }
 /* Os quadrinhos (capítulos antigos + Temporada 1, ~100 KB nos 6 idiomas) só baixam quando alguém abre o Idol⭐News!
    ou o Calendário — antes eles pesavam na abertura de todo mundo. */
-var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=12', jornalCapsFila = null;
+var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=13', jornalCapsFila = null;
 function jornalCapsCarregar(cb){
   if(typeof jornalCapsUI === 'function'){ if(cb) cb(true); return; }
   if(jornalCapsFila){ if(cb) jornalCapsFila.push(cb); return; }
@@ -675,6 +675,11 @@ function jornalCapituloSelecionar(cap){
   }
   return '';
 }
+function janelaCapituloVisivel(){
+  var quadro=document.querySelector('#jornalCaps .jncapquadros canvas');
+  return typeof window.twCapRegistrar==='function' && !document.hidden && !jornalOv.hidden &&
+    jornalAba==='vida' && quadro && quadro.getClientRects().length>0;
+}
 function jornalAbrir(aba, capitulo, origem){
   var abertura = ++jornalAbertura;
   jornalFestivalFoco = aba === 'festival';
@@ -686,7 +691,10 @@ function jornalAbrir(aba, capitulo, origem){
   function vigente(){ return !jornalOv.hidden && abertura === jornalAbertura; }
   function focarCapitulo(foco){
     var alvo = foco && $('jornalCorpo').querySelector(foco);
-    if(alvo){ alvo.focus({preventScroll:true}); alvo.scrollIntoView({block:'nearest'}); }
+    if(alvo && !alvo.disabled){
+      alvo.focus({preventScroll:true}); alvo.scrollIntoView({block:'nearest'});
+      if(alvo.hasAttribute('data-jncap') && janelaCapituloVisivel())window.twCapRegistrar(Number(alvo.dataset.jncap)+1);
+    }
   }
   jornalCapsCarregar(function(ok){
     if(!ok || !vigente()) return;

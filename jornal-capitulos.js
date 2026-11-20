@@ -493,7 +493,10 @@ function jornalCapsUI(){
       var alt = (p[2] ? jnCapT(p[2]) + ' ' : '') + p[3].map(function(f){ return ['Tsu', 'Lirika', 'Pati'][f[0]] + ': ' + jnCapT(f[1]); }).join(' ');
       return '<figure class="jncapq"><canvas width="480" height="320" role="img" aria-label="' + escHtml(jnCapT(JN_CAPS_TX.quadro, k + 1) + ': ' + alt) + '"></canvas></figure>';
     }).join('') + '</div>' : '');
-  [].forEach.call(box.querySelectorAll('[data-jncap]'), function(b){ b.addEventListener('click', function(){ jnCapSel = +b.getAttribute('data-jncap'); if(typeof beep === 'function') try{ beep(988, .05, 'triangle', .04); }catch(e){} jornalCapsUI(); }); });
+  [].forEach.call(box.querySelectorAll('[data-jncap]'), function(b){ b.addEventListener('click', function(){ jnCapSel = +b.getAttribute('data-jncap'); if(typeof beep === 'function') try{ beep(988, .05, 'triangle', .04); }catch(e){} jornalCapsUI();
+    if(typeof janelaCapituloVisivel==='function' && janelaCapituloVisivel())window.twCapRegistrar(jnCapSel+1);
+    var atual=box.querySelector('[data-jncap="'+jnCapSel+'"]');if(atual)atual.focus({preventScroll:true});
+  }); });
   [].forEach.call(box.querySelectorAll('.jncapq canvas'), function(cv, k){ try{ jnCapDesenhar(cv, q[k]); }catch(e){} });
   jnT1LeitorUI(box);
 }

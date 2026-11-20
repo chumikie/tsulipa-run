@@ -402,8 +402,20 @@
     for(var i = 0; i < 6; i++){ var d = new Date(CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); if(d <= h) r = {n:i + 1, data:d}; }
     return r;
   }
-  function capLido(){ try{ return +localStorage.getItem('tw_cap_lido') || 0; }catch(e){ return 0; } }
-  function capMarcarLido(){ var c = capHoje(); if(c && c.n > capLido()) try{ localStorage.setItem('tw_cap_lido', String(c.n)); }catch(e){} }
+  function capLidos(){
+    try{
+      var lidos=JSON.parse(localStorage.getItem('tw_cap_lidos_v2'));
+      if(Array.isArray(lidos))return lidos;
+      var legado=Math.min(6,Number(localStorage.getItem('tw_cap_lido'))||0);
+      return [1,2,3,4,5,6].filter(function(n){return n<=legado;});
+    }catch(e){ return []; }
+  }
+  window.twCapRegistrar=function(n){
+    var c=capHoje(), lidos=capLidos();
+    if(!c || !Number.isInteger(n) || n<1 || n>c.n || lidos.includes(n))return;
+    try{localStorage.setItem('tw_cap_lidos_v2',JSON.stringify(lidos.concat(n)));}catch(e){}
+    if(topo()==='inicio')desenhar();
+  };
   function anivDados(){ try{ var o = JSON.parse(localStorage.getItem('tw_aniv_cor') || 'null'), h = window.TW_CAL ? window.TW_CAL.hoje() : ''; return o && o.dia === h ? o : {dia:h, nicks:[]}; }catch(e){ return {dia:'', nicks:[]}; } }
   function anivDei(nick){ return anivDados().nicks.indexOf(String(nick).toLowerCase()) >= 0; }
   function anivGuardar(nick){ var o = anivDados(); if(o.nicks.indexOf(nick.toLowerCase()) < 0) o.nicks.push(nick.toLowerCase()); try{ localStorage.setItem('tw_aniv_cor', JSON.stringify(o)); }catch(e){} }
@@ -446,8 +458,8 @@
       linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
     // 3. capítulo do domingo (aparece na semana em que saiu)
     var cp = capHoje(), hj = C ? C.hoje() : '';
-    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
-      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLidos().includes(cp.n);
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="ler-capitulo">' + esc(thj('ler')) + '</button>'); }
     // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){
@@ -1819,7 +1831,8 @@
     }
     if(a === 'karaokeEnsaio' && !logado()){ twPreviewAbrirJogo('karaoke','ensaio'); return; }
     if(a === 'festival'){ if(typeof window.jornalAbrir === 'function') window.jornalAbrir('festival'); return; }
-    if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
+    if(a === 'ler-capitulo'){ var cap=capHoje(); if(cap)jornalAbrir('capitulo',{tipo:'cap',data:cap.data},window.TW_JANELAS && TW_JANELAS.origem(el)); return; }
+    if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
     if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas
       if(topo() === 'dentro:vip' && dentroUltimos.length){

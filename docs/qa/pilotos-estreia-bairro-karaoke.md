@@ -78,3 +78,6 @@ Em cada combinação, use a mesma música e anote o ajuste de timing. Durante um
 ### Série de fotos
 
 Com conta, use **Guardar na série** no resultado do Studio, na cena do Duo e no Camarim VIP. A seção **Série de fotos** fica no Álbum das duas interfaces. Repita a mesma composição do Studio com dois looks e confira ordem, download e remoção. O navegador guarda até 24 imagens JPEG por conta e substitui as mais antigas ao atingir o limite. Recarregue e abra o Álbum com outra conta para verificar o isolamento.
+
+
+Durante a retomada, observe se o relógio e as notas ficam no mesmo ponto quando o áudio ainda está interrompido. Se aparecer “Áudio interrompido”, recupere a saída de áudio e toque em **Retomar** novamente. A contagem deve voltar e o mesmo show deve prosseguir dali. Compare a contagem de tentativas antes e depois dessa recuperação.

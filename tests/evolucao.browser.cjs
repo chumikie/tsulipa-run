@@ -497,6 +497,14 @@ async function cafeFoco(browser){
     assert.equal(await cafe.getByRole('button',{name:'Praticar Cobertura'}).evaluate(b=>b===document.activeElement),true);
     assert.deepEqual(await page.evaluate(()=>({pontos:cf.pontos,atendidos:cf.atendidos,vidas:cf.vidas,caderno:cfLer(CF_RECEITAS_KEY,{})})),antes);
     assert.deepEqual(await page.evaluate(()=>cafeRPC.filter(n=>n.startsWith('cafe_run'))),[]);
+    await page.evaluate(()=>cfAbrir());
+    await cafe.getByText(/No próximo turno, sirva um pedido com Cobertura/).waitFor();
+    await cafe.locator('#cfJogar').click();
+    await page.waitForFunction(()=>cf.fase==='pedido');
+    await page.evaluate(()=>{
+      cf.cli.pedido={base:0,cob:0,enf:0,doce:-1};cf.monta={...cf.cli.pedido};cfServir(false);
+    });
+    await cafe.getByText(/Cobertura: pedido correto e dentro do prazo/).waitFor();
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
@@ -552,7 +560,14 @@ async function copiaAlbum(browser){
   }finally{await context.close();}
 }
 function simularQueda(tipo){
-  window.qaEstadoSora=()=>({soraBest,starT,storage:JSON.stringify(localStorage)});
+  window.qaMetaSora=()=>({rota:soraLerMetaTreino(null),objetivo:soraMetaTreino,feita:soraMetaTreinoFeita});
+  window.qaEstadoSora=()=>({soraBest,starT,storage:Object.fromEntries(Object.entries(localStorage).filter(([k])=>!k.includes('brs48cr_sora_meta_treino_v1:')))});
+  window.qaCompletarMetaSora=()=>{
+    const alvo={k:'nuvem',rota:'saida',x:100,y:-1508,w:72,h:14,vx:0};
+    soraRotaDaSubida='alta';soraPlats=[alvo];soraHazards=[];
+    soraP.x=alvo.x+8;soraP.y=alvo.y-soraP.h-2;soraP.vy=3;
+    soraUpdate(1);
+  };
   window.qaAcertarSora=()=>{
     const alvo=soraPlats[1];soraP.x=alvo.x+8;soraP.y=alvo.y-soraP.h-2;soraP.vy=3;
     soraUpdate(1);
@@ -579,6 +594,12 @@ async function quedasSora(browser){
     await page.evaluate(()=>window.qaAcertarSora());
     await page.locator('#soraTreinoResultado').getByText('Pouso certo!').waitFor();
     assert.deepEqual(await page.evaluate(()=>window.qaEstadoSora()),antes);
+    assert.equal(await page.evaluate(()=>qaMetaSora().rota),'alta');
+    await page.locator('#soraAgainBtn').click();
+    assert.equal(await page.evaluate(()=>qaMetaSora().objetivo),'alta');
+    await page.evaluate(()=>qaCompletarMetaSora());
+    assert.equal(await page.evaluate(()=>qaMetaSora().feita),true);
+    assert.equal(await page.evaluate(()=>qaMetaSora().rota),null);
     await page.evaluate(()=>window.qaQuedaSora('trampolim'));
     await page.locator('#soraDicaQueda').getByText(/Depois do trampolim.*156 m.*esquerda/).waitFor();
     assert.deepEqual(erros,[]);
@@ -837,6 +858,35 @@ async function compararBattleNoTreino(browser){
     const previa=batalha.locator('[data-battle-comparar]').first();
     assert.equal(await previa.locator('option').first().textContent(),'Momorin');
     await batalha.getByText(/Antes .*Com a troca/).first().waitFor();
+    await batalha.getByText('Testar outra ordem').click();
+    const ordens=batalha.locator('[data-battle-ordem]');
+    assert.equal(await ordens.locator('option').count(),6);
+    const antes=await ordens.locator('..').locator('..').getByRole('status').textContent();
+    await ordens.selectOption('5');
+    assert.notEqual(await ordens.locator('..').locator('..').getByRole('status').textContent(),antes);
+    await abrir(page,'',null,'battle-oficial');
+    await page.evaluate(()=>{
+      const cards=[
+        {nick:'Tsu',canto:7,danca:3,carisma:2},
+        {nick:'Lirika',canto:4,danca:8,carisma:4},
+        {nick:'Pati',canto:2,danca:2,carisma:7}
+      ];
+      window.battleAcoes=[];
+      contaRpc=(n,args)=>{
+        battleAcoes.push(n);
+        if(n==='battle_status')return Promise.resolve({ok:true,cards,rival:cards,tentativas:0});
+        if(n==='battle_jogar')return Promise.resolve({ok:true,tentativas:1,rodadas:args.p_unit.map((meu,i)=>({meu,rival:'Rival '+i,eu:6,eles:8,ganhou:false}))});
+        return Promise.resolve([]);
+      };
+      battleAbrir();
+    });
+    await batalha.locator('.battle-status.real').waitFor();
+    await batalha.locator('[data-battle="jogar"]').click();
+    await batalha.locator('[data-battle="pular"]').click();
+    await batalha.getByText('Testar outra ordem').click();
+    await ordens.selectOption('1');
+    assert.match(await ordens.locator('..').locator('..').getByRole('status').textContent(),/Rival 0.*Rival 1.*Rival 2/);
+    assert.equal(await page.evaluate(()=>battleAcoes.filter(n=>n==='battle_jogar').length),1);
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
@@ -968,22 +1018,39 @@ async function duoNaRuaFofa(browser){
     await page.locator('#twBairroOv').getByAltText('Sua foto em exposição na Rua Fofa').waitFor();
     await page.evaluate(()=>TW_BAIRRO.fechar());
     assert.equal(await page.evaluate(()=>TW_PILOTO_BAIRRO.continuacao().acao),'jornal');
+    await page.evaluate(()=>{
+      const cv=document.createElement('canvas');cv.width=cv.height=20;
+      return TW_ALBUM_FOTOS.salvar('studio',cv,document.createElement('button'));
+    });
     await page.locator('#twcNav [data-n="menu"]').click();
     await page.locator('[data-a="album"]:visible').first().click();
     await page.locator('details.album-fotos:visible summary').click();
     const foto=page.locator('details.album-fotos:visible figure').filter({hasText:'Um céu na Rua Fofa'});
+    const caixa=page.locator('details.album-fotos:visible');
+    await caixa.getByLabel('Origem',{exact:true}).selectOption('studio');
+    await foto.waitFor({state:'hidden'});
+    await caixa.getByLabel('Edição',{exact:true}).selectOption({label:'Um céu na Rua Fofa'});
+    await caixa.getByText('Nenhuma foto com estes filtros.').waitFor();
+    await caixa.getByLabel('Origem',{exact:true}).selectOption('duo');
+    await foto.waitFor();
+    await foto.getByRole('button',{name:'Fixar foto',exact:true}).click();
+    await foto.getByRole('button',{name:'Desafixar foto'}).waitFor();
     const download=page.waitForEvent('download');
     await page.getByRole('button',{name:'Baixar cópia da série'}).click();
     const arquivo=await readFile(await (await download).path());
     const copia=JSON.parse(arquivo);
-    assert.deepEqual(copia.fotos[0].cena,cena);
-    assert.equal(copia.fotos[0].edicao,'Um céu na Rua Fofa');
+    const salva=copia.fotos.find(f=>f.tipo==='duo');
+    assert.deepEqual(salva.cena,cena);
+    assert.equal(salva.edicao,'Um céu na Rua Fofa');
+    assert.equal(salva.fixada,true);
     await abrir(page,'',null,'duo-restaurado');
     await page.evaluate(()=>{perfDono=['fundo_ceu'];contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Tsu'}:[]);});
     await page.locator('#twcNav [data-n="menu"]').click();
     await page.locator('[data-a="album"]:visible').first().click();
     await page.locator('details.album-fotos:visible summary').click();
     await page.locator('details.album-fotos:visible input[type=file]').setInputFiles({name:'duo.json',mimeType:'application/json',buffer:arquivo});
+    await foto.getByRole('button',{name:'Desafixar foto'}).waitFor();
+    assert.match(await caixa.locator('figure:visible').first().locator('figcaption').textContent(),/Um céu na Rua Fofa/);
     await foto.getByRole('button',{name:'Recriar esta cena'}).click();
     await page.locator('#duoPalco').waitFor();
     assert.deepEqual(await page.evaluate(()=>duoCenaAtual()),cena);

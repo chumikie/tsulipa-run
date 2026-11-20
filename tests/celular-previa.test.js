@@ -214,7 +214,8 @@ test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times
   assert.match(js, /\(hjHtml \|\| destaque\)/, 'Hoje no Início no lugar do destaque');
   ['data-desejo=', 'data-a="vip"', 'data-a="missoes"', 'data-a="news"', 'data-anivcor=', 'data-v="trio"'].forEach(a => assert.ok(js.includes(a), 'Hoje tem ' + a));
   assert.match(js, /contaRpc\('dar_coracao', \{p_nick:nick\}\)/, 'coração de aniversário usa a RPC de sempre');
-  assert.match(js, /capMarcarLido\(\); if\(typeof window\.jornalAbrir/, 'abrir o News marca o capítulo como lido');
+  assert.match(js, /jornalAbrir\('capitulo',\{tipo:'cap',data:cap.data\}/, 'Ler abre o capítulo exato');
+  assert.doesNotMatch(js, /if\(a === 'news'\)\{[^}]*twCapRegistrar/);
   assert.ok(!/\['tv', 'TsuLiPa TV', 'data-a="tv"'\]/.test(js), 'TV não se repete no Menu');
   assert.ok(!/bs\.push\(banner\('news'/.test(js), 'News fica só na porta do Início');
   assert.match(js, /function badge\(c\)\{ return \(c === true \|\| alerta\(c\)\)/, 'selo aceita true (missão pendente) sem quebrar o visual');

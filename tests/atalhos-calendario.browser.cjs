@@ -128,6 +128,19 @@ async function main(){
     await page.keyboard.press('Escape');
     await page.locator('[data-cald="2026-11-22"]').click();
     assert.equal(await page.locator('[data-cal-cap="cap"]').count(),0);
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('tw_cap_lidos_v2'))),[1]);
+    await page.evaluate(()=>localStorage.removeItem('tw_cap_lidos_v2'));
+    await page.locator('#twcNav [data-n="inicio"]').click();
+    await page.locator('#twcTela [data-a="news"]').first().click();
+    await page.locator('#jornalCaps .jncapquadros canvas').first().waitFor();
+    assert.equal(await page.evaluate(()=>localStorage.getItem('tw_cap_lidos_v2')),null);
+    await page.locator('#jornalX').click();
+    const ler=page.locator('[data-a="ler-capitulo"]');
+    if(!await ler.isVisible())await page.locator('[data-hjver]').first().click();
+    await ler.click();
+    await page.locator('#jornalCaps [data-jncap="0"][aria-pressed="true"]').waitFor();
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('tw_cap_lidos_v2'))),[1]);
+    await page.locator('#jornalX').click();
 
     for(const rota of ['cafe','studio','festival']){
       const html = await readFile(path.join(root, rota + '.html'),'utf8');

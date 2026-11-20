@@ -149,11 +149,12 @@
     if(selecionado) selecionar(null);
     var receitaCerta = m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
     var certo = !saiu && receitaCerta;
+    if(!cf.alternado && typeof cfMetaAtender==='function')cfMetaAtender(p,m,saiu,certo);
     if(cf.alternado && !certo) cf.causas[saiu ? (receitaCerta ? 1 : 2) : 0]++;
     var resto = paciencia(e);
     e.resultado = saiu ? retorno(3) : certo ? retorno(resto < .25 ? 2 : 1) : cfDetalhePedido(p, m) || retorno(4);
     var numero = ++cf.atendidos;
-    if(!certo && (!cf.alternado || !receitaCerta)) cfLembrarErro(cf, numero, p);
+    if(!certo && (!cf.alternado || !receitaCerta)) cfLembrarErro(cf, numero, p,m);
     if(cf.alternado && !saiu && !certo) registrarErro(p,m);
     cf.ultimoAtendimento = e;
     e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
@@ -257,6 +258,7 @@
     if(cf.fase === 'preparando'){ corpo.innerHTML = h + '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o pedido validado…')) + '</p>'; return; }
     var alvo = cf.alvoBalcao, primeiro = maisUrgente(esperando());
     if(cf.alternado) h += '<p class="hsdica">' + escHtml(turno(1)) + '</p>';
+    else if(typeof cfMetaHtml==='function')h+=cfMetaHtml();
     h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.find(function(q){ return q.lado === l; });
       var espera = e && e.estado === 'espera', copo = e === alvo ? cf.monta : e && e.monta;

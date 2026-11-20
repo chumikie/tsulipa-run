@@ -158,7 +158,8 @@ console.log('✓ Sora stability: save, mobile audio, compaction, camera, iframe 
   const input={value:'Tsu'};
   const env=evaluate(script,{
     soraOnlineUserId:'previous-session',
-     soraOnlineRunGeneration:0,soraOnlineRunOwnerId:null,
+     soraOnlineRunGeneration:0,soraOnlineRunOwnerId:null,soraOnlineSessionGeneration:0,soraPremioAtual:null,
+    soraPremioMenu:()=>{},soraMetaTreinoUI:()=>{},
     soraOnlineProfile:{nick:'Old'},
     soraOnlineProfileLoaded:true,
     soraOnlineProfilePromise:Promise.resolve(null),

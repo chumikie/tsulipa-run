@@ -62,6 +62,16 @@
       typeof c.nick!=='string' || !c.nick.trim() || c.nick.length>24)return undefined;
     return {fundo:c.fundo,pose:c.pose,quadro:c.quadro,invertido:c.invertido,exprEu:c.exprEu,exprGu:c.exprGu,nick:c.nick};
   }
+  var GALERIA={
+    pt:['Origem','Edição','Todas','Fixar foto','Desafixar foto','Nenhuma foto com estes filtros.','Fixada'],
+    en:['Source','Edition','All','Pin photo','Unpin photo','No photos match these filters.','Pinned'],
+    es:['Origen','Edición','Todas','Fijar foto','Desfijar foto','No hay fotos con estos filtros.','Fijada'],
+    id:['Asal','Edisi','Semua','Sematkan foto','Lepas sematan','Tidak ada foto yang cocok.','Disematkan'],
+    th:['ที่มา','ฉบับ','ทั้งหมด','ปักหมุดรูป','เลิกปักหมุดรูป','ไม่มีรูปตรงกับตัวกรอง','ปักหมุดแล้ว'],
+    ja:['撮影場所','エディション','すべて','写真を固定','固定を解除','条件に一致する写真がありません。','固定済み']
+  };
+  function galeriaTexto(){return GALERIA[LANG]||GALERIA.pt;}
+  function origemFoto(tipo){return {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10),pet:'Backstage⭐Pet!'}[tipo];}
   function edicaoFoto(valor){return typeof valor==='string' && valor.trim() && valor.length<=80?valor.trim():undefined;}
   var RECRIAR={pt:'Recriar esta cena',en:'Recreate this scene',es:'Recrear esta escena',id:'Buat ulang adegan ini',th:'สร้างฉากนี้อีกครั้ง',ja:'このシーンを再現'};
   function favoritaChave(){
@@ -78,7 +88,7 @@
   }
   function fotoCopia(f,dados){
     return {tipo:f.tipo,quando:f.quando,imagem:dados,composicao:f.tipo==='studio'?composicao(f.composicao):undefined,
-      cena:f.tipo==='duo'?cenaDuo(f.cena):undefined,edicao:edicaoFoto(f.edicao)};
+      cena:f.tipo==='duo'?cenaDuo(f.cena):undefined,edicao:edicaoFoto(f.edicao),fixada:f.fixada===true||undefined};
   }
   async function baixarCopia(conta,chave,ativo){
     var fotos=await lista(conta);
@@ -121,7 +131,7 @@
         var bmp=await createImageBitmap(f.blob);bmp.close();
       }
       f.composicao=f.tipo==='studio'?composicao(f.composicao):undefined;
-      f.cena=f.tipo==='duo'?cenaDuo(f.cena):undefined;f.edicao=edicaoFoto(f.edicao);
+      f.cena=f.tipo==='duo'?cenaDuo(f.cena):undefined;f.edicao=edicaoFoto(f.edicao);f.fixada=f.fixada===true;
     }
     return d;
   }
@@ -142,7 +152,7 @@
         if(!ativo() || q.result.length!==atuais.length || atuais.some(function(f,i){return f.id!==q.result[atuais.length-1-i];})){
           tx.abort();return;
         }
-        novas.slice().sort(function(a,b){return a.quando-b.quando;}).forEach(function(f){s.add({dono:conta,tipo:f.tipo,quando:f.quando,blob:f.blob,composicao:f.composicao,cena:f.cena,edicao:f.edicao});});
+        novas.slice().sort(function(a,b){return a.quando-b.quando;}).forEach(function(f){s.add({dono:conta,tipo:f.tipo,quando:f.quando,blob:f.blob,composicao:f.composicao,cena:f.cena,edicao:f.edicao,fixada:f.fixada});});
       };
     });
     var texto=copiaT(2,novas.length), fav=composicao(copia.favorita);
@@ -244,7 +254,7 @@
         radio.type='radio';radio.name='album-substituicao';img.alt='';img.loading='lazy';img.src=url;
         var data=new Date(f.quando).toLocaleDateString() + (f.edicao?' · '+f.edicao:'');
         radio.addEventListener('change',function(){escolhido=f.id;confirmar.disabled=false;});
-        label.append(radio,img,(i+1)+' · '+data);lista.append(label);
+        label.append(radio,img,(i+1)+' · '+data+(f.fixada?' · '+galeriaTexto()[6]:''));lista.append(label);
       });
       cancelar.textContent=espaco(3);copia.textContent=copiaT(0);confirmar.textContent=espaco(4);confirmar.disabled=true;
       cancelar.addEventListener('click',function(){dialog.close();});
@@ -326,6 +336,16 @@
     return transacao('readwrite', function(s){
       var pedido = s.get(id);
       pedido.onsuccess = function(){ if(pedido.result && pedido.result.dono === conta) s.delete(id); };
+    });
+  }
+  function fixar(id, conta, ativo){
+    return transacao('readwrite',function(s,resultado){
+      var pedido=s.get(id);
+      pedido.onsuccess=function(){
+        var foto=pedido.result;
+        if(!ativo()||!foto||foto.dono!==conta)return;
+        foto.fixada=!foto.fixada;s.put(foto);resultado(foto.fixada);
+      };
     });
   }
   async function referencia(id, conta){
@@ -454,6 +474,30 @@
       acoesCopia(box,conta,ativo,mensagem);
       if(!fotos.length){ box.append(t(5)); return; }
       var grade = document.createElement('div'); grade.className = 'album-fotos-grade';
+      var filtros=document.createElement('div'), vazio=document.createElement('p'), cartoes=[];
+      var tf=galeriaTexto();
+      vazio.textContent=tf[5];vazio.setAttribute('role','status');vazio.hidden=true;
+      function filtro(rotulo, opcoes){
+        var label=document.createElement('label'), select=document.createElement('select');
+        label.textContent=rotulo+' ';select.setAttribute('aria-label',rotulo);label.append(select);filtros.append(label);
+        select.append(new Option(tf[2],''));
+        opcoes.forEach(function(o){select.append(new Option(o[1],o[0]));});
+        select.addEventListener('change',ordenar);
+        return select;
+      }
+      var origem=filtro(tf[0],TIPOS.filter(function(tipo){return fotos.some(function(f){return f.tipo===tipo;});}).map(function(tipo){return [tipo,origemFoto(tipo)];}));
+      var edicao=filtro(tf[1],Array.from(new Set(fotos.map(function(f){return f.edicao;}).filter(Boolean))).map(function(e){return [e,e];}));
+      edicao.parentElement.hidden=edicao.options.length===1;
+      function ordenar(){
+        var visiveis=0;
+        cartoes.sort(function(a,b){return Number(!!b.f.fixada)-Number(!!a.f.fixada)||b.f.quando-a.f.quando||b.f.id-a.f.id;}).forEach(function(c){
+          c.el.hidden=!!((origem.value&&c.f.tipo!==origem.value)||(edicao.value&&c.f.edicao!==edicao.value));
+          if(!c.el.hidden)visiveis++;
+          grade.append(c.el);
+        });
+        vazio.hidden=visiveis>0;
+      }
+      filtros.className='btns';box.append(filtros,vazio);
       var selecionar = fotos.length >= 3 ? montarPagina(box,ativo) : null;
       var objetos = []; urls.set(box,objetos);
       var tx=lembrancaT(), escolhas=[], seletores=[], acoes=document.createElement('div');
@@ -470,7 +514,7 @@
       fotos.sort(function(a,b){return b.quando-a.quando||b.id-a.id;}).forEach(function(f){
         var url = URL.createObjectURL(f.blob), cartao = document.createElement('figure'), img = new Image(), cap = document.createElement('figcaption');
         objetos.push(url);
-        var nome = {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10),pet:'Backstage⭐Pet!'}[f.tipo];
+        var nome = origemFoto(f.tipo);
         img.src = url; img.alt = nome; img.loading = 'lazy';
         cap.textContent = nome + ' · ' + new Date(f.quando).toLocaleDateString() + (f.edicao?' · '+f.edicao:'');
         var dl = document.createElement('a'); dl.href = url; dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.jpg'; dl.textContent = t(6);
@@ -481,7 +525,22 @@
           try{ await remover(f.id,conta); if(ativo()){ mostrar(box); detalhe.querySelector('summary').focus(); } }
           catch(e){ if(ativo()){ apagar.disabled = false; apagar.textContent = t(8); } }
         });
-        cartao.append(img,cap,dl,apagar);
+        var pin=document.createElement('button');pin.type='button';
+        function rotular(){
+          pin.textContent=f.fixada?tf[4]:tf[3];pin.setAttribute('aria-pressed',String(!!f.fixada));
+        }
+        rotular();
+        pin.addEventListener('click',async function(){
+          if(!ativo())return;
+          pin.disabled=true;
+          try{
+            var fixada=await fixar(f.id,conta,ativo);
+            if(!ativo()||typeof fixada!=='boolean')return;
+            f.fixada=fixada;rotular();ordenar();
+          }catch(e){if(ativo())dica.textContent=t(8);}
+          finally{if(ativo()){pin.disabled=false;pin.focus({preventScroll:true});}}
+        });
+        cartao.append(img,cap,dl,apagar,pin);
         if(typeof petVidaQuadroCampo==='function' && petVidaQuadroCampo()){
           var moldura=document.createElement('button');moldura.type='button';moldura.textContent=espaco(5);
           moldura.addEventListener('click',async function(){
@@ -527,9 +586,9 @@
         });
         cartao.appendChild(escolher);
         if(selecionar)cartao.appendChild(selecionar({url:url,nome:nome,rotulo:cap.textContent}));
-        grade.appendChild(cartao);
+        cartoes.push({f:f,el:cartao});
       });
-      box.append(acoes,grade);
+      ordenar();box.append(acoes,grade);
     }catch(e){ if(ativo()) box.textContent = t(8); }
   }
   document.addEventListener('toggle',function(e){

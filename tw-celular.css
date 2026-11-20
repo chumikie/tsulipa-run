@@ -1006,7 +1006,7 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 @media (prefers-reduced-motion:reduce){.tws-band i{animation:none}}
 .tws-festa p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:16px;background:#fff;font-weight:800;color:var(--twc-f1,#5a2bc4);box-shadow:0 3px 10px rgba(80,40,160,.10)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tws-festa p{background:#2a1d4a;color:#e6d6ff}:root:not([data-theme="light"]) .tws-chip{background:#3a2a66;color:#e6d6ff}}
-@media (max-width:899px){.tws-visit{display:none!important}}   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */
+@media (max-width:899px){.twc-ini-hoje .tws{display:none!important}}   /* "Esta semana" só no computador; no celular o Início fica enxuto (retrospectiva no Menu) */   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */
 /* tw-pessoal.js: retrospectiva, vitrine do perfil e recados (20/11/2026) */
 .twp-ov{z-index:60}
 .twp-panel{max-width:520px;width:calc(100% - 24px)}

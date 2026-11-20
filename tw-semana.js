@@ -97,6 +97,7 @@
       var g = JOGOS[j.k];
       h.push(item('lima', '🌟', esc(t('jogo')), esc(t('jogoTxt', {j:g[1], b:j.bonus || 5})), bt('data-ir="' + g[0] + '"', t('jogar'))));
     }
+    if(window.TW_PESSOAL){ var rt = window.TW_PESSOAL.retroItemHtml(); if(rt) h.push(rt); }
     if(!logado()) h.push(item('uva', '☁️', esc(t('visit')), esc(t('visitTxt')), bt('data-semana="entrar"', t('entrar')), '', 'tws-visit'));
     if(!h.length) return '';
     return '<section class="twc-hj tws" aria-labelledby="twsT"><div class="twc-hj-cab"><h2 id="twsT">' + esc(t('tit')) + '</h2></div>' + h.join('') + '</section>';

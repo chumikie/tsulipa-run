@@ -51,3 +51,18 @@ test('fontes próprias: o Google Fonts só entra em japonês', () => {
   assert.ok(!/<link href="https:\/\/fonts\.googleapis\.com/.test(html), 'sem a folha de 146 KB no carregamento comum');
   assert.match(html, /if\(l==='ja'\)twFontesJa\(\)/);
 });
+
+test('tw-pessoal: textos nos 6 idiomas; migração fecha o que é pessoal e a lista de emails só para a chave de serviço', () => {
+  const src = ler('tw-pessoal.js');
+  const m = src.match(/var TX = (\{[\s\S]*?\n  \});/);
+  const TX = vm.runInNewContext('(' + m[1] + ')');
+  for(const [k, v] of Object.entries(TX)) for(const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.ok(v[l], k + ' sem ' + l);
+  const sql = ler('supabase/migrations/20261120170000_retro_vitrine_recados_email.sql');
+  for(const f of ['retro_mes(date)', 'salvar_vitrine(text, text, text)', 'minha_vitrine()', 'recado_tsulipa_enviar(text)', 'admin_recados_tsulipa(bigint)', 'email_mensal(boolean)'])
+    assert.ok(sql.includes('revoke all on function public.' + f + ' from public, anon;') && sql.includes('grant execute on function public.' + f + ' to authenticated;'), f);
+  assert.ok(sql.includes('revoke all on function public.email_mensal_pacote(date) from public, anon, authenticated;'));
+  assert.ok(sql.includes('grant execute on function public.email_mensal_pacote(date) to service_role;'));
+  assert.match(sql, />= 3 then\s+return json_build_object\('ok', false, 'erro', 'limite'\)/, 'no máximo 3 recados por dia');
+  assert.match(ler('perfil-tela.js'), /TW_PESSOAL\.vitrineMontar\(d, meu\)/);
+  assert.match(ler('index.html'), /<script defer src="\.\/tw-pessoal\.js\?v=\d+"><\/script>/);
+});

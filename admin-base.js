@@ -24,7 +24,7 @@ var hubIdolsDados = null, hubIdolsEm = 0;
 var admCarregado = false, admPedido = false, admFila = [];
 function admCarregar(){
   if(admCarregado || admPedido) return; admPedido = true;
-  var s = document.createElement('script'); s.src = './admin.js?v=5'; s.async = true;
+  var s = document.createElement('script'); s.src = './admin.js?v=6'; s.async = true;
   s.onload = function(){ admCarregado = true; var f = admFila.splice(0); f.forEach(function(fn){ try{ fn(); }catch(e){ if(window.console) console.error(e); } }); };
   s.onerror = function(){ admPedido = false; admFila.length = 0; };
   document.body.appendChild(s);

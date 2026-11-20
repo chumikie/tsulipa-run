@@ -99,7 +99,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
     if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
-    h += '<div id="admResumo"></div><div id="admUso"></div><div id="admCorrida"></div>';
+    h += '<div id="admResumo"></div><div id="admRecados"></div><div id="admUso"></div><div id="admCorrida"></div>';
     h += '<h3>👥 ' + escHtml(tr('Todas as contas')) + ' <span id="admContasN"></span></h3><input class="nick admbusca" id="admBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '"><div class="admcontas" id="admContas"><p class="perfcarr">…</p></div>';
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
@@ -113,7 +113,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
-    admExtra(); admResumo(); admUso(); admCorrida(); admContas();
+    admExtra(); admResumo(); admRecados(); admUso(); admCorrida(); admContas();
   }).catch(function(){});
 }
 function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐Duo!, missões e aniversários)
@@ -124,6 +124,19 @@ function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐
       n('🌙', 'Cenas no Moon⭐Duo!', d.duo) + n('🎁', 'Presentes do Moon⭐Duo!', d.duo_pres) + n('🎯', 'Missões feitas', d.missoes) + n('⭐', 'Estrelas ganhas', d.estrelas) + n('🙈', 'Fora do Moon⭐Duo!', d.fora_duo) + '</div>' +
       '<p class="perfdica">🎂 ' + escHtml(tr('Aniversariantes de hoje')) + ': ' + (d.aniver.length ? d.aniver.map(function(k){ return '<button type="button" class="lbn" data-nick="' + escHtml(k) + '">' + escHtml(k) + '</button>'; }).join(', ') : '—') + '</p>' +
       '<p class="perfdica">🌙 ' + escHtml(tr('Mais escolhidos no Moon⭐Duo! (7 dias)')) + ': ' + (d.duo_top.length ? d.duo_top.map(function(t){ return '<button type="button" class="lbn" data-nick="' + escHtml(t.nick) + '">' + escHtml(t.nick) + '</button> (' + t.n + ')'; }).join(', ') : '—') + '</p>';
+  }).catch(function(){});
+}
+// 💌 Recados para o TsuLiPa (20/11/2026): só a moderação lê; "lido" tira da contagem de novos
+function admRecados(marcar){
+  contaRpc('admin_recados_tsulipa', {p_marcar_lido:marcar || null}).then(function(d){
+    var box = $('admRecados'); if(!box || !d || !d.ok) return;
+    var L = d.recados || [];
+    box.innerHTML = '<h3>💌 ' + escHtml(tr('Recados para o TsuLiPa')) + (d.novos ? ' <span class="admnovo">' + d.novos + '</span>' : '') + '</h3>' +
+      (L.length ? '<ul class="admrecados">' + L.map(function(r){
+        return '<li class="' + (r.lido ? 'lido' : '') + '"><p>' + escHtml(r.texto) + '</p><small><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> · ' +
+          escHtml(new Date(r.criado).toLocaleString()) + '</small>' + (r.lido ? '' : ' <button type="button" class="btn alt admlido" data-recado="' + r.id + '">✓ ' + escHtml(tr('Lido')) + '</button>') + '</li>'; }).join('') + '</ul>'
+        : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>');
+    box.onclick = function(e){ var b = e.target.closest && e.target.closest('[data-recado]'); if(b){ b.disabled = true; admRecados(+b.getAttribute('data-recado')); } };
   }).catch(function(){});
 }
 // 🎮 Uso dos jogos (20/11/2026): quantas pessoas jogaram cada jogo nos últimos 7 dias e qual é o Jogo da semana

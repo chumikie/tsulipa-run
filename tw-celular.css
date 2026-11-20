@@ -1007,3 +1007,25 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 .tws-festa p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:16px;background:#fff;font-weight:800;color:var(--twc-f1,#5a2bc4);box-shadow:0 3px 10px rgba(80,40,160,.10)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tws-festa p{background:#2a1d4a;color:#e6d6ff}:root:not([data-theme="light"]) .tws-chip{background:#3a2a66;color:#e6d6ff}}
 @media (max-width:899px){.tws-visit{display:none!important}}   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */
+/* tw-pessoal.js: retrospectiva, vitrine do perfil e recados (20/11/2026) */
+.twp-ov{z-index:60}
+.twp-panel{max-width:520px;width:calc(100% - 24px)}
+.twp-tit{margin:0 0 10px;font:400 22px 'Mochiy Pop One',sans-serif;color:#5a2bc4;text-align:center}
+.twp-img{display:block;width:100%;max-height:58vh;object-fit:contain;border-radius:16px;box-shadow:0 8px 22px rgba(60,20,120,.25)}
+.twp-check{display:flex;gap:8px;align-items:flex-start;margin:12px 0 2px;font-weight:800;font-size:14px}
+.twp-nota{display:block;color:#6c6488;font-size:12px;margin:2px 0 8px}
+.twp-campo{display:flex;flex-direction:column;gap:4px;margin:8px 0;font-weight:800;font-size:13px}
+.twp-campo select,.twp-campo input,#twpRecado{font:inherit;font-weight:700;padding:10px 12px;border-radius:12px;border:2px solid #e6dcff;background:#fff;color:#2a1f45}
+#twpRecado{width:100%;box-sizing:border-box;resize:vertical}
+.twp-cont{display:block;text-align:right;color:#6c6488;font-size:11px}
+.twp-vitrine{margin:12px 0;padding:12px 14px;border-radius:20px;background:linear-gradient(120deg,rgba(155,48,217,.10),rgba(255,111,181,.10),rgba(65,105,225,.10))}
+.twp-vitrine h3{margin:0 0 8px;font-size:15px;color:#5a2bc4}
+.twp-vit-grade{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.twp-vit-card{margin:0;text-align:center}.twp-vit-card canvas{width:110px;height:auto;border-radius:10px;box-shadow:0 6px 16px rgba(60,20,120,.2)}
+.twp-vit-card figcaption,.twp-vit-lado small{display:block;font-size:11px;color:#6c6488;font-weight:700}
+.twp-vit-lado{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+.twp-vit-lado p{margin:0;display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center}
+.twp-vit-lado span{grid-row:span 2;font-size:26px}
+.twp-vit-ed{margin-top:10px}
+.twp-vazia{text-align:center}.twp-vazia p{margin:0 0 8px;font-weight:700;color:#5a2bc4}
+a.btn#twpBaixar{text-decoration:none}

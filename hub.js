@@ -163,6 +163,7 @@ function hubDesenhar(alvo){   // o TsuLiPa (trio) com os pets, no fundo do tema 
         if(HUB_PET_REAGE.i === i && pg < 70){ x.save(); x.globalAlpha = pg < 50 ? 1 : (70 - pg) / 20; x.textAlign = 'center'; x.font = (5 * sc) + 'px sans-serif'; x.fillStyle = ['#ff6fb5', '#5cc72c', '#4169e1'][i]; x.fillText('♪', px - 5 * sc, py - 9 * sc - pg * sc / 8); x.fillText('♡', px + 5 * sc, py - 12 * sc - pg * sc / 7); x.restore(); }
       }
     });
+    if(!visita && typeof bannerConvidadoDesenhar === 'function') bannerConvidadoDesenhar(x, W2, H2, t, roupa, sc, chao);   // seu Idol de convidado (banner.js)
     var rg2 = hubT - HUB_REAGE.t0;
     var rDur = HUB_REAGE.dur || 220;   // dura o tempo da voz + um pouquinho
     if(HUB_REAGE.i >= 0 && rg2 < rDur){   // balão kawaii (balão + rabinho num só contorno) e emojis subindo dos lados

@@ -178,7 +178,7 @@
     if(over.hidden || logado()){ if(box) box.hidden = true; return; }
     var n = Math.max(0, Math.floor(+(typeof starT !== 'undefined' ? starT : 0) || 0));
     if(!box){ box = document.createElement('div'); box.id = 'twsVisitFim'; box.className = 'tws-visitfim';
-      var res = document.getElementById('res'); if(res && res.parentNode) res.parentNode.insertBefore(box, res.nextSibling); else over.querySelector('.panel').appendChild(box); }
+      var res = document.getElementById('res'); if(res && res.parentNode) res.parentNode.insertBefore(box, res.nextSibling); else { var pn = over.querySelector('.panel'); if(!pn) return; pn.appendChild(box); } }
     box.innerHTML = '<p>☁️ ' + esc(t('visitFim', {n:n.toLocaleString(L() === 'en' ? 'en-US' : 'pt-BR')})) + '</p><button type="button" class="btn alt" data-semana="entrar">' + esc(t('entrar')) + '</button>';
     box.hidden = false;
   }

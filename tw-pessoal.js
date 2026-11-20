@@ -57,11 +57,25 @@
     var d = document.createElement('div'); d.className = 'tws-aviso'; d.setAttribute('role', 'status'); d.textContent = txt; document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 3200); }
 
   /* ---------- janela simples (mesmo visual das janelas do jogo) ---------- */
-  var ov=null, janelaPedido=0, janelaConta=null;
+  var ov=null, janelaPedido=0, janelaConta=null, voltarFoco=null;
   function fechar(){
     janelaPedido++;
     if(ov){ov.hidden=true;ov.replaceChildren();}
+    var f=voltarFoco;voltarFoco=null;
+    if(f&&f.isConnected&&f.getClientRects().length)try{f.focus();}catch(e){}
   }
+  // Esc fecha só esta janela (sem fechar o Perfil ou o celular por baixo) e o Tab fica dentro dela.
+  // Escuta na janela, na fase de captura, para chegar antes dos atalhos do documento.
+  window.addEventListener('keydown',function(e){
+    if(!ov||ov.hidden)return;
+    if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fechar();return;}
+    if(e.key!=='Tab')return;
+    var itens=Array.from(ov.querySelectorAll('button,a[href],input,select,textarea')).filter(function(el){return !el.disabled&&el.getClientRects().length;});
+    if(!itens.length)return;
+    var a=document.activeElement,pri=itens[0],ult=itens[itens.length-1];
+    if(e.shiftKey&&(a===pri||!ov.contains(a))){e.preventDefault();e.stopImmediatePropagation();ult.focus();}
+    else if(!e.shiftKey&&(a===ult||!ov.contains(a))){e.preventDefault();e.stopImmediatePropagation();pri.focus();}
+  },true);
   function novoPedido(){
     janelaConta=contaSessaoAtual();
     return {id:++janelaPedido,conta:janelaConta};
@@ -80,7 +94,8 @@
   function janela(html){
     if(!ov){ ov = document.createElement('div'); ov.className = 'ov twp-ov'; ov.hidden = true; document.body.appendChild(ov);
       ov.addEventListener('click', function(e){ if(e.target === ov || (e.target.closest && e.target.closest('[data-twp="fechar"]'))) fechar(); }); }
-    ov.innerHTML = '<div class="panel twp-panel" role="dialog" aria-modal="true">' + html + '</div>'; ov.hidden = false;
+    if(ov.hidden){ var at=document.activeElement; voltarFoco=at&&at!==document.body&&!ov.contains(at)?at:null; }
+    ov.innerHTML = '<div class="panel twp-panel" role="dialog" aria-modal="true" aria-labelledby="twpTit">' + html + '</div>'; ov.hidden = false;
     var f = ov.querySelector('button,textarea'); if(f) try{ f.focus(); }catch(e){}
     return ov;
   }
@@ -116,15 +131,24 @@
     x.fillStyle = '#fff'; x.font = '700 32px "M PLUS Rounded 1c",sans-serif'; x.fillText(t('obrigado'), W / 2, Math.min(H - 110, yIdol + 50));
     return cv;
   }
+  // O cartão é desenhado no canvas: espera as fontes do site (no máximo 1,5 s) para não sair com a fonte reserva.
+  function fontesRetro(){
+    if(!document.fonts || !document.fonts.load) return Promise.resolve();
+    var amostra = t('retro') + t('obrigado') + '0123456789';
+    var todas = Promise.all(['400 64px "Mochiy Pop One"', '800 40px "M PLUS Rounded 1c"', '700 30px "M PLUS Rounded 1c"'].map(function(f){ return document.fonts.load(f, amostra).catch(function(){}); }));
+    return Promise.race([todas, new Promise(function(r){ setTimeout(r, 1500); })]);
+  }
   function abrirRetro(mes){
     if(!logado()){ aviso(t('login')); return; }
     var pedido=novoPedido();
     rpc('retro_mes', {p_mes:mes || null}).then(function(d){
+      return fontesRetro().then(function(){ return d; });
+    }).then(function(d){
       if(!vigente(pedido))return;
       if(!d || !d.ok){ aviso(t('erro')); return; }
       var cv = desenharRetro(d), url = window.twMarcaPng ? window.twMarcaPng(cv) : cv.toDataURL('image/png');
       var email=window.TW_EMAIL_MENSAL_DISPONIVEL===true;
-      var o = janela('<h2 class="twp-tit twp-sr">' + esc(t('retro')) + '</h2><img class="twp-img" alt="' + esc(t('retroItem', {m:nomeMes(d.mes)})) + '" src="' + url + '">' +
+      var o = janela('<h2 class="twp-tit twp-sr" id="twpTit">' + esc(t('retro')) + '</h2><img class="twp-img" alt="' + esc(t('retroItem', {m:nomeMes(d.mes)})) + '" src="' + url + '">' +
         (email ? '<label class="twp-check"><input type="checkbox" id="twpEmail" disabled> ' + esc(t('email')) + '</label><small class="twp-nota">' + esc(t('emailNota')) + '</small>' : '') +
         '<div class="btns"><a class="btn" id="twpBaixar" download="tsulipa-retrospectiva-' + esc(String(d.mes).slice(0, 7)) + '.png" href="' + url + '">⬇️ ' + esc(t('salvar')) + '</a>' +
         '<button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
@@ -207,7 +231,7 @@
       var cards = (Array.isArray(r[0]) ? r[0] : []).map(function(c){ return c && c.card && c.card.nick; }).filter(Boolean);
       var mv = r[1] || {}, v = mv.vitrine || {}, ins = Array.isArray(mv.insignias) ? mv.insignias : [];
       function opts(L, atual, rot){ return '<option value="">' + esc(t('nenhum')) + '</option>' + L.map(function(k){ return '<option value="' + esc(k) + '"' + (k === atual ? ' selected' : '') + '>' + esc(rot ? rot(k) : k) + '</option>'; }).join(''); }
-      var o = janela('<h2 class="twp-tit">✏️ ' + esc(t('editar')) + '</h2>' +
+      var o = janela('<h2 class="twp-tit" id="twpTit">✏️ ' + esc(t('editar')) + '</h2>' +
         '<label class="twp-campo">' + esc(t('cardFav')) + '<select id="twpVCard">' + opts(cards, v.card) + '</select></label>' +
         '<label class="twp-campo">' + esc(t('insDest')) + '<select id="twpVIns">' + opts(ins, v.insignia, function(k){ var i = insInfo(k); return i[0] + ' ' + i[1]; }) + '</select></label>' +
         '<label class="twp-campo">' + esc(t('musica')) + '<input id="twpVMus" maxlength="60" value="' + esc(v.musica || '') + '" placeholder="Zipper"></label>' +
@@ -229,8 +253,8 @@
   function recadoAbrir(){
     if(!logado()){ aviso(t('login')); return; }
     var pedido=novoPedido();
-    var o = janela('<h2 class="twp-tit">💌 ' + esc(t('recado')) + '</h2><p class="twp-nota">' + esc(t('recadoTxt')) + '</p>' +
-      '<textarea id="twpRecado" maxlength="500" rows="5"></textarea><small class="twp-cont" id="twpCont">0/500</small>' +
+    var o = janela('<h2 class="twp-tit" id="twpTit">💌 ' + esc(t('recado')) + '</h2><p class="twp-nota">' + esc(t('recadoTxt')) + '</p>' +
+      '<textarea id="twpRecado" maxlength="500" rows="5" aria-label="' + esc(t('recado')) + '" aria-describedby="twpCont"></textarea><small class="twp-cont" id="twpCont">0/500</small>' +
       '<div class="btns"><button type="button" class="btn" id="twpEnviar">' + esc(t('enviar')) + '</button><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
     var ta = o.querySelector('#twpRecado'), ct = o.querySelector('#twpCont');
     ta.oninput = function(){ ct.textContent = ta.value.length + '/500'; };

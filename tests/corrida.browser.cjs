@@ -65,6 +65,27 @@ const server=http.createServer((req,res)=>{
     assert.equal(await tentar.getAttribute('aria-describedby'),'crFimColisao');
     assert.equal(await tentar.textContent(),'Tentar de novo');
     assert.equal(await tentar.evaluate(el=>document.activeElement===el),true);
+    const antesTreino=await p.evaluate(()=>({score,stars,dist}));
+    await p.locator('#crPraticaBt').click();
+    await p.locator('#crPraticaPainel').waitFor();
+    await p.evaluate(()=>{ for(let i=0;i<540 && crPratica;i++)update(1); });
+    assert.match(await p.locator('#crPraticaStatus').textContent(),/0 de 3 obstáculos/);
+    await p.locator('#crPraticaPista').click();
+    assert.equal(await p.evaluate(()=>sp===crPraticaAlvo.velocidade&&obs[0].w===36&&obs[0].h===48),true);
+    await p.locator('#pause').click();
+    assert.equal(await p.evaluate(()=>paused),true);
+    await p.locator('#resume').click();
+    await p.evaluate(()=>{ for(let i=0;i<240 && crPratica;i++)update(1); });
+    assert.match(await p.locator('#crPraticaStatus').textContent(),/Você bateu na pista/);
+    await p.locator('#crPraticaPista').click();
+    await p.evaluate(()=>{
+      while(crPratica && obs[0].x-P.x>112)update(1);
+      jump();
+      for(let i=0;i<240 && crPratica;i++)update(1);
+    });
+    assert.match(await p.locator('#crPraticaStatus').textContent(),/Você passou pelo obstáculo na pista/);
+    assert.deepEqual(await p.evaluate(()=>({score,stars,dist})),antesTreino);
+    assert.equal(await p.locator('#crPraticaPista').evaluate(el=>document.activeElement===el),true);
     await tentar.click();
     assert.equal(await p.evaluate(()=>state),'play');
     await p.locator('#over').waitFor({state:'hidden'});

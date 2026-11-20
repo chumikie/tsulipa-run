@@ -1897,8 +1897,18 @@ function petDrawRoom(){
   if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
     jeito.x -= petLifePetAproximar(true,petDrawDelta);
   }else jeito.x -= petLifePetAproximar(false,petDrawDelta); // retorno sem salto de 52 px
-  petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
-  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  var cena = !sleepy && !petAnim && !petArrumando && !petLifePhoneOlhar && petDecorCena &&
+    petDecorCena.pet===p && petDecorCena.dono===petArrumoChave() ? petDecorCena : null;
+  if(cena){
+    var repouso=cena.tipo==='cochilo', movimento=petLifeMovimentoReduzido()?0:petT;
+    var alvo = repouso ? petLifeSofaApoio(pose) : null;
+    var cx = repouso ? (alvo && alvo.x>100 ? 64 : 124) : petArrumoX('mesa')+22;
+    jeito.x=cx-PET_X;
+    jeito.y=repouso ? -24 : 0;
+    hop=repouso ? 0 : Math.abs(Math.sin(movimento/14))*7;
+    if(!repouso)petEstrelaBrinquedo(x,cx+23+Math.sin(movimento/20)*3,PET_FLOOR-25,movimento*.035,.7);
+  }else petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2 + (cena ? jeito.y : 0), 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
   if((companhia && companhia.inclina) || atencaoLembranca || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
     x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
@@ -1913,7 +1923,7 @@ function petDrawRoom(){
   }
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
     sleepy ? petT * .35 : petT,
-    toqueIdol ? toqueIdol.ex : (petEx(p) || (companhia ? companhia.ex :
+    cena ? (cena.tipo==='cochilo'?'sono':'feliz') : toqueIdol ? toqueIdol.ex : (petEx(p) || (companhia ? companhia.ex :
       (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null))))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
@@ -2026,6 +2036,7 @@ function petOpenUI(){
 }
 //←petClose
 function petClose(){
+  petDecorCena=null;
   petLifePose = ''; petLifePoseOrigem = null; petLifePetPerto = 0; petLifePoseUI();
   petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petPhoneOpen) petPhoneFechar(false);
@@ -2719,6 +2730,18 @@ function petDrawDecor(x){
     x.restore();
   });
 }
+//←petDecorCenaTexto
+function petDecorCenaTexto(){
+  var textos={
+    pt:['Cochilar na almofada do sofá','Brincar perto da mesa','Encerrar a cena'],
+    en:['Nap on the sofa cushion','Play by the table','End the scene'],
+    es:['Dormir en el cojín del sofá','Jugar junto a la mesa','Terminar la escena'],
+    id:['Tidur di bantal sofa','Bermain dekat meja','Akhiri adegan'],
+    th:['งีบบนเบาะโซฟา','เล่นข้างโต๊ะ','จบฉาก'],
+    ja:['ソファのクッションでお昼寝','テーブルの横で遊ぶ','シーンを終える']
+  };
+  return textos[LANG]||textos.pt;
+}
 //←petDecorMenuUI
 function petDecorMenuUI(m){
   var d = petData.decor || {};
@@ -2731,7 +2754,16 @@ function petDecorMenuUI(m){
       '<button type="button" data-k="arrumar-padrao">↺ <b>' + escHtml(tr('Arrumação original')) + '</b></button>';
     return;
   }
-  m.innerHTML = '<button type="button" class="petarrumo-abrir" data-k="arrumar">✋ <b>' + escHtml(tr('Arrumar o quarto')) + '</b><em>' + escHtml(tr('Mover móveis e quadros')) + '</em></button>' + PET_DECOR.map(function(it){
+  var t=petDecorCenaTexto(), cena=petDecorCena && petDecorCena.pet===petAtivo() &&
+    petDecorCena.dono===petArrumoChave() ? petDecorCena : null;
+  var off=petGame || petAnim || petAtivo().dorme;
+  var acoes = ['cochilo','estrela'].map(function(k,i){
+    var on=cena && cena.tipo===k;
+    return '<button type="button" data-k="cena-'+k+'" aria-pressed="'+Boolean(on)+'"'+
+      (off?' disabled':'')+'><b>'+escHtml(on?t[2]:t[i])+'</b></button>';
+  }).join('');
+  if(cena && !off && window.TW_ALBUM_FOTOS)acoes+=TW_ALBUM_FOTOS.botao('data-k="cena-foto"');
+  m.innerHTML = acoes + '<button type="button" class="petarrumo-abrir" data-k="arrumar">✋ <b>' + escHtml(tr('Arrumar o quarto')) + '</b><em>' + escHtml(tr('Mover móveis e quadros')) + '</em></button>' + PET_DECOR.map(function(it){
     var k = it[0], own = k in d;
     var tag = own ? (d[k] ? '🖼️ ' + tr('Na parede') : tr('Guardado')) : (it[2] ? '★ ' + it[2] : tr('Grátis'));
     var off = !own && starT < it[2];
@@ -2741,6 +2773,23 @@ function petDecorMenuUI(m){
 }
 //←petDecorClick
 function petDecorClick(k){
+  if(k==='cena-cochilo' || k==='cena-estrela' || k==='cena-foto'){
+    var p=petAtivo(), dono=petArrumoChave();
+    if(!p || p.dorme || petGame || petAnim || petArrumando)return;
+    if(k==='cena-foto'){
+      var botao=$('petMenu').querySelector('[data-k="cena-foto"]');
+      if(!botao || !petDecorCena || petDecorCena.pet!==p || petDecorCena.dono!==dono)return;
+      petDrawRoom();
+      if(window.TW_ALBUM_FOTOS)TW_ALBUM_FOTOS.salvar('pet',petCv,botao);
+      return;
+    }
+    var tipo=k.slice(5);
+    petDecorCena=petDecorCena && petDecorCena.tipo===tipo && petDecorCena.pet===p && petDecorCena.dono===dono ? null : {tipo:tipo,pet:p,dono:dono};
+    petUI();
+    var foco=$('petMenu').querySelector('[data-k="'+k+'"]');
+    if(foco)foco.focus({preventScroll:true});
+    return;
+  }
   if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
   if(k === 'arrumar-desfazer'){
     var A = petArrumoLer(), a = petArrumoAnterior;

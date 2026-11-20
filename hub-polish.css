@@ -669,3 +669,5 @@ html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-r
 .st-referencia img{width:84px;height:auto;max-height:128px;object-fit:contain;border-radius:8px}
 
 .tw-mapa-recado-rosa,.tw-piloto-rosa{margin:0;padding:10px 12px;border:1px solid currentColor;border-radius:10px}
+.bloomarranjo{margin:12px 0 0;border:1px solid var(--ink);border-radius:10px;padding:8px}
+.bloomarranjo button[aria-pressed=true]{outline:2px solid currentColor;outline-offset:-4px}

@@ -96,8 +96,20 @@ function shopLookEstado(){
 function shopLookHtml(){
   return '<div class="shoplook" id="shopLook" role="status" aria-live="polite"></div>' +
     '<div class="btns"><button type="button" class="btn" id="shopLookFoto">📸 ' + escHtml(tr('Foto do Look do dia')) + '</button></div>' +
-    '<button type="button" class="btn alt" id="shopLookStudio" hidden>Photo⭐Studio!</button>' +
+    '<div class="btns"><button type="button" class="btn alt" id="shopLookStudio">'+escHtml(shopStudioTexto()[0])+'</button></div>' +
+    '<div class="btns" id="shopFavoritosStudio"></div>' +
     '<p class="perfmsg" id="shopLookMsg" hidden></p>';
+}
+function shopStudioTexto(){
+  var tx={
+    pt:['Levar este look ao Studio','Fotografar favorito'],
+    en:['Take this look to the Studio','Photograph favorite'],
+    es:['Llevar este look al Studio','Fotografiar favorito'],
+    id:['Bawa penampilan ini ke Studio','Foto favorit'],
+    th:['นำลุคนี้ไป Studio','ถ่ายภาพลุคโปรด'],
+    ja:['このコーデでスタジオへ','お気に入りを撮影']
+  };
+  return tx[LANG]||tx.pt;
 }
 function shopLookUI(){
   var box = $('shopLook'), bt = $('shopLookFoto'); if(!box) return;
@@ -107,13 +119,25 @@ function shopLookUI(){
     escHtml(tr('As meias no mesmo tom completam o look.')) + '</span><em>' +
     escHtml(e.completo ? '✨ ' + tr('Look completo!') : e.combina ? '💖 ' + tr('Combina com o tema!') : '🪞 ' + tr('Escolha a cor da roupa em Montar Idol.')) + '</em>';
   if(bt) bt.disabled = !e.combina;
-  var studio = $('shopLookStudio'); if(studio) studio.hidden = !e.combina || !!perfProva;
+  var studio = $('shopLookStudio'); if(studio) studio.disabled=!!perfProva;
+  var favoritos=$('shopFavoritosStudio');
+  if(favoritos && window.TW_CHARMAKER){
+    favoritos.innerHTML=TW_CHARMAKER.favoritos().map(function(f,i){
+      return f?'<button type="button" class="btn alt" data-shop-favorito="'+i+'"'+(perfProva?' disabled':'')+'>'+escHtml(shopStudioTexto()[1])+' '+(i+1)+'</button>':'';
+    }).join('');
+  }
 }
-function shopLookStudio(){
-  if(perfProva || !shopLookEstado().combina || typeof studioAbrir !== 'function') return;
+function shopLookStudio(favorito){
+  if(perfProva || typeof studioAbrir!=='function')return;
+  var atalho;
+  if(Number.isInteger(favorito) && window.TW_CHARMAKER){
+    var c=TW_CHARMAKER.favoritoVisual(favorito);
+    if(!c)return;
+    atalho={look:Object.assign(shopAvAtual(false),{c:c}),dono:petPhoneFotoChave()};
+  }
   petLifeCancelar('espelho');
   shopFechar();
-  studioAbrir();
+  studioAbrir(atalho);
 }
 function shopLookFoto(){
   var e = shopLookEstado(), msg = $('shopLookMsg'); if(!e.combina) return;

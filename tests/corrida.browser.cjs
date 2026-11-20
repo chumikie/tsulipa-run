@@ -75,9 +75,10 @@ const server=http.createServer((req,res)=>{
       update(1);
     });
     const motivo=p.locator('#crFimColisao'), tentar=p.locator('#again');
+    assert.match(await p.locator('#crFimAjuste').textContent(),/iniciar o pulo/);
     await motivo.waitFor();
     assert.equal(await motivo.textContent(),'Colisão com a caixa de som · No chão');
-    assert.equal(await tentar.getAttribute('aria-describedby'),'crFimColisao');
+    assert.equal(await tentar.getAttribute('aria-describedby'),'crFimColisao crFimAjuste');
     assert.equal(await tentar.textContent(),'Tentar de novo');
     assert.equal(await tentar.evaluate(el=>document.activeElement===el),true);
     const antesTreino=await p.evaluate(()=>({score,stars,dist}));

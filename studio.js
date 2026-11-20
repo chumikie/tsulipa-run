@@ -285,12 +285,13 @@
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
-  var pilotoStudio = null;
+  var pilotoStudio = null, lookTemporario=null;
   function abrir(atalho){
     montarOv();
     limparReferencia(); arranjoStudio='';
     pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
+    lookTemporario=atalho&&atalho.dono===dono&&atalho.look?{dono:dono,av:atalho.look}:null;
     var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
     if(dono !== donoSessao){
       mural = null;
@@ -330,7 +331,7 @@
       }).catch(function(){});
     }
   }
-  function fechar(){ limparReferencia(); sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
+  function fechar(){ limparReferencia(); lookTemporario=null; sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
     if(referenciaCarregando)return;
     var sess = sessao, dono = donoFoto();
@@ -358,7 +359,7 @@
       if(arranjoFlores(capturada.escolhas.objeto).length){
         fase='foto';ocupado=false;msg=referenciaT()[4];ui();return;
       }
-      if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
+      if(lookTemporario || !logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
         if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
@@ -446,7 +447,7 @@
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
         '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (window.TW_ALBUM_FOTOS && !foto.serie && !foto.seriePendente ? TW_ALBUM_FOTOS.botao('data-st="serie"') : '') +
-        (pilotoStudio ? '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        (pilotoStudio ? (window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.aposContribuicao() : '') + '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(arranjoDisponivel(arranjoStudio))objs.push(arranjoStudio);
@@ -542,7 +543,7 @@
   }
   window.studioPolaroid = polaroid;
   // ---------- desenho ----------
-  function meuAv(){ try{ if(typeof lookAtual === 'function'){
+  function meuAv(){ if(lookTemporario&&lookTemporario.dono===donoFoto())return lookTemporario.av; try{ if(typeof lookAtual === 'function'){
     var av = lookAtual();
     if(typeof perfMeuAv !== 'undefined' && perfMeuAv && perfMeuAv.expr != null) av.expr = perfMeuAv.expr;
     return av;

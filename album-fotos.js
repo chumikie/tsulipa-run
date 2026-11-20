@@ -26,6 +26,15 @@
     th:['จัดหน้าภาพ','ชื่อหน้า','วันที่','ดาวน์โหลดหน้า PNG','เลือกแล้ว {n} จาก 3 รูป','เลือกรูป','สร้างหน้าไม่ได้','ชุดภาพของฉัน'],
     ja:['ページを作成','ページのタイトル','日付','PNGで保存','3枚中{n}枚を選択','写真を選ぶ','ページを作成できませんでした。','私の写真シリーズ']
   };
+  var ESPACO = {
+    pt:['{n} de 24 fotos usadas','A série está cheia','Escolher foto para substituir','Cancelar','Substituir a foto selecionada','Usar no porta-retrato','Foto colocada no porta-retrato.'],
+    en:['{n} of 24 photo slots used','Your series is full','Choose a photo to replace','Cancel','Replace selected photo','Use in photo frame','Photo placed in the frame.'],
+    es:['{n} de 24 espacios usados','La serie está llena','Elige una foto para sustituir','Cancelar','Sustituir foto seleccionada','Usar en el portarretratos','Foto colocada en el marco.'],
+    id:['{n} dari 24 tempat terpakai','Seri fotomu penuh','Pilih foto untuk diganti','Batal','Ganti foto terpilih','Gunakan di bingkai','Foto dipasang di bingkai.'],
+    th:['ใช้พื้นที่แล้ว {n} จาก 24 รูป','ชุดภาพเต็มแล้ว','เลือกรูปที่จะเปลี่ยน','ยกเลิก','แทนที่รูปที่เลือก','ใส่กรอบรูป','ใส่รูปในกรอบแล้ว'],
+    ja:['24枚中{n}枚使用中','シリーズの空きがありません','差し替える写真を選ぶ','キャンセル','選んだ写真を差し替える','フォトフレームに入れる','写真をフレームに入れました。']
+  };
+  function espaco(i,n){return (ESPACO[LANG]||ESPACO.pt)[i].replace('{n}',n);}
   var dbPendente, LIMITE = 24, urls = new Map();
   var COPIA_TR={
     pt:['Baixar cópia da série','Restaurar cópia','Fotos adicionadas: {n}.','A série tem espaço para apenas {n} fotos novas.','Cópia inválida ou indisponível.','Lendo cópia…','Sua composição favorita atual foi mantida.','A composição favorita não pôde ser salva.'],
@@ -194,30 +203,84 @@
     x.drawImage(cv,0,0,copia.width,copia.height);
     return new Promise(function(ok, falha){ copia.toBlob(function(blob){ if(blob)ok(blob);else falha(Error('foto')); },'image/jpeg',.87); });
   }
+  function inserir(foto,substituir){
+    return transacao('readwrite',function(s,resultado){
+      var q=s.index('dono').getAll(foto.dono);
+      q.onsuccess=function(){
+        if(dono()!==foto.dono){resultado(false);return;}
+        var atuais=q.result;
+        if(substituir!==undefined && !atuais.some(function(f){return f.id===substituir;})){resultado(false);return;}
+        if(substituir===undefined && atuais.length>=LIMITE){resultado(atuais);return;}
+        if(substituir!==undefined)s.delete(substituir);
+        s.add(foto);
+        resultado(true);
+      };
+    });
+  }
+  function escolherSubstituicao(fotos,conta,origem){
+    return new Promise(function(resolve){
+      var dialog=document.createElement('dialog'), titulo=document.createElement('h2'), lista=document.createElement('div');
+      var acoes=document.createElement('div'), cancelar=document.createElement('button'), copia=document.createElement('button'), confirmar=document.createElement('button');
+      var rotulo=document.createElement('p'), status=document.createElement('p'), objetos=[], escolhido;
+      dialog.className='album-fotos-limite';
+      titulo.id='album-fotos-limite-titulo';titulo.textContent=espaco(1);
+      dialog.setAttribute('aria-labelledby',titulo.id);
+      rotulo.textContent=espaco(2);status.setAttribute('role','status');
+      lista.className='album-fotos-grade';acoes.className='btns';
+      fotos.sort(function(a,b){return a.quando-b.quando||a.id-b.id;}).forEach(function(f,i){
+        var label=document.createElement('label'), radio=document.createElement('input'), img=new Image();
+        var url=URL.createObjectURL(f.blob);objetos.push(url);
+        radio.type='radio';radio.name='album-substituicao';img.alt='';img.loading='lazy';img.src=url;
+        var data=new Date(f.quando).toLocaleDateString();
+        radio.addEventListener('change',function(){escolhido=f.id;confirmar.disabled=false;});
+        label.append(radio,img,(i+1)+' · '+data);lista.append(label);
+      });
+      cancelar.textContent=espaco(3);copia.textContent=copiaT(0);confirmar.textContent=espaco(4);confirmar.disabled=true;
+      cancelar.addEventListener('click',function(){dialog.close();});
+      copia.addEventListener('click',function(){
+        var ativa=function(){return dialog.open&&dono()===conta;};
+        baixarCopia(conta,favoritaChave(),ativa).catch(function(){if(ativa())status.textContent=t(8);});
+      });
+      confirmar.addEventListener('click',function(){if(dono()===conta&&escolhido!==undefined)dialog.close('confirmado');else dialog.close();});
+      dialog.addEventListener('close',function(){
+        objetos.forEach(function(url){URL.revokeObjectURL(url);});dialog.remove();
+        if(origem.isConnected)origem.focus({preventScroll:true});
+        resolve(dialog.returnValue==='confirmado'?escolhido:undefined);
+      },{once:true});
+      acoes.append(cancelar,copia,confirmar);dialog.append(titulo,rotulo,lista,acoes,status);
+      document.body.append(dialog);dialog.showModal();cancelar.focus();
+    });
+  }
   async function salvar(tipo, canvas, botao, composicaoDaFoto){
     var validarComposicao=composicao(composicaoDaFoto);
-    var conta = dono();
-    if(!conta || !canvas || TIPOS.indexOf(tipo) < 0) return false;
-    botao.disabled = true;
+    var conta=dono();
+    if(!conta || !canvas || TIPOS.indexOf(tipo)<0)return false;
+    botao.disabled=true;
     try{
-      var blob = await imagem(canvas);
-      if(dono() !== conta) return false;
-      await transacao('readwrite', function(s){
-        var q = s.index('dono').getAll(conta);
-        q.onsuccess = function(){
-          var antigas=q.result.sort(function(a,b){return a.quando-b.quando||a.id-b.id;});
-          antigas.slice(0,Math.max(0,antigas.length-LIMITE+1)).forEach(function(f){s.delete(f.id);});
-          s.add({dono:conta,tipo:tipo,quando:Date.now(),blob:blob,composicao:tipo==='studio' ? validarComposicao : undefined});
-        };
-      });
-      if(dono() !== conta) return false;
-      botao.textContent = t(2);
+      var blob=await imagem(canvas), foto={dono:conta,tipo:tipo,quando:Date.now(),blob:blob,composicao:tipo==='studio'?validarComposicao:undefined};
+      var salvo=await inserir(foto);
+      if(Array.isArray(salvo) && dono()===conta){
+        var id=await escolherSubstituicao(salvo,conta,botao);
+        if(id===undefined){botao.disabled=false;if(botao.isConnected)botao.focus({preventScroll:true});return false;}
+        salvo=await inserir(foto,id);
+      }
+      if(dono()!==conta){botao.disabled=false;return false;}
+      if(!salvo)throw Error('substituicao');
+      botao.textContent=t(2);
       return true;
     }catch(e){
-      botao.disabled = false;
-      botao.textContent = t(3);
-      return false;
+      botao.disabled=false;botao.textContent=t(3);return false;
     }
+  }
+  async function usarNoQuadro(foto,ativo){
+    var chave=petVidaQuadroCampo();
+    var url=URL.createObjectURL(foto.blob), img=new Image();
+    try{img.src=url;await img.decode();}finally{URL.revokeObjectURL(url);}
+    if(!ativo() || !chave)return false;
+    var escala=Math.min(1,184/img.width,224/img.height), cv=document.createElement('canvas');
+    cv.width=Math.max(1,Math.round(img.width*escala));cv.height=Math.max(1,Math.round(img.height*escala));
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+    return petVidaQuadroSalvar(chave,{id:'album_'+foto.id,url:cv.toDataURL('image/jpeg',.8)});
   }
   function liberar(box){
     var lista = urls.get(box);
@@ -375,6 +438,7 @@
       var fotos = await lista(conta);
       if(!ativo()) return;
       box.replaceChildren();
+      var espacoUsado=document.createElement('p');espacoUsado.textContent=espaco(0,fotos.length);box.append(espacoUsado);
       acoesCopia(box,conta,ativo,mensagem);
       if(!fotos.length){ box.append(t(5)); return; }
       var grade = document.createElement('div'); grade.className = 'album-fotos-grade';
@@ -406,6 +470,17 @@
           catch(e){ if(ativo()){ apagar.disabled = false; apagar.textContent = t(8); } }
         });
         cartao.append(img,cap,dl,apagar);
+        if(typeof petVidaQuadroCampo==='function' && petVidaQuadroCampo()){
+          var moldura=document.createElement('button');moldura.type='button';moldura.textContent=espaco(5);
+          moldura.addEventListener('click',async function(){
+            if(!ativo())return;
+            moldura.disabled=true;
+            try{var ok=await usarNoQuadro(f,ativo);if(ativo())moldura.textContent=ok?espaco(6):t(3);}
+            catch(e){if(ativo())moldura.textContent=t(3);}
+            finally{if(ativo())moldura.disabled=false;}
+          });
+          cartao.append(moldura);
+        }
         if(f.tipo==='studio'){
           var abrir=document.createElement('button');abrir.type='button';abrir.textContent=tx[0];
           abrir.addEventListener('click',function(){
@@ -430,7 +505,7 @@
         });
         cartao.appendChild(escolher);
         if(selecionar)cartao.appendChild(selecionar({url:url,nome:nome,rotulo:cap.textContent}));
-grade.appendChild(cartao);
+        grade.appendChild(cartao);
       });
       box.append(acoes,grade);
     }catch(e){ if(ativo()) box.textContent = t(8); }

@@ -1882,10 +1882,36 @@ var SORA_ROTA_TR = {
 };
 function soraRotaTexto(i){return (SORA_ROTA_TR[LANG]||SORA_ROTA_TR.pt)[i];}
 // Registra o ponto onde o Idol cruzou a altura de uma plataforma sem alcançar a borda.
-var soraUltimoSalto=null,soraPousoPerdido=null;
+var soraUltimoSalto=null,soraPousoPerdido=null,soraTreinoPouso=null;
+var SORA_TREINO_TR={
+  pt:['Praticar este pouso','Treino sem pontuação', 'Pouso certo!', 'A nuvem ficou fora do alcance. Tente outra vez.'],
+  en:['Practice this landing','Unscored practice','Landing cleared!', 'You missed the cloud. Try again.'],
+  es:['Practicar este aterrizaje','Práctica sin puntuación','¡Aterrizaje logrado!', 'No llegaste a la nube. Inténtalo otra vez.'],
+  id:['Latih pendaratan ini','Latihan tanpa skor','Pendaratan berhasil!', 'Awan terlewat. Coba lagi.'],
+  th:['ฝึกลงจอดตรงนี้','ฝึกแบบไม่นับคะแนน','ลงจอดสำเร็จ!', 'พลาดเมฆ ลองอีกครั้ง'],
+  ja:['この着地を練習','スコアなしの練習','着地成功！', '雲に届きませんでした。もう一度。']
+};
+function soraTreinoTexto(i){return (SORA_TREINO_TR[LANG]||SORA_TREINO_TR.pt)[i];}
+function soraPraticarPouso(){
+  var d=soraPousoPerdido;
+  if(soraState!=='over'||!d||!d.salto)return;
+  soraTreinoPouso={p:soraP,pl:soraPlats,cam:soraCamY,items:soraItems,haz:soraHazards,pet:soraPet,part:soraParticles,toast:soraToastT};
+  soraP=Object.assign({},d.salto);soraPlats=[d.origem,d.alvo];
+  soraCamY=Math.min(d.alvo.y-50,soraP.y-SH*.48);
+  soraItems=[];soraHazards=[];soraParticles=[];soraPet=null;soraToastT=0;
+  $('soraOverBox').hidden=true;var status=$('soraTreinoStatus');status.hidden=false;status.textContent=soraTreinoTexto(1);
+  soraState='play';
+}
+function soraTerminarTreinoPouso(ok){
+  var a=soraTreinoPouso;soraTreinoPouso=null;
+  soraP=a.p;soraPlats=a.pl;soraCamY=a.cam;soraItems=a.items;soraHazards=a.haz;soraPet=a.pet;soraParticles=a.part;soraToastT=a.toast;
+  soraState='over';$('soraOverBox').hidden=false;$('soraTreinoStatus').hidden=true;
+  $('soraTreinoResultado').textContent=soraTreinoTexto(ok?2:3);
+  $('soraTreinoPouso').focus({preventScroll:true});
+}
 function soraRegistrarPousoPerdido(pl,antes,agora,x){
   var salto=soraUltimoSalto;
-  if(soraTestSceneId || !salto || antes>=pl.y || agora<pl.y || pl.y>=salto.y-8)return;
+  if(soraTestSceneId || soraTreinoPouso || !salto || antes>=pl.y || agora<pl.y || pl.y>=salto.y-8)return;
   var rota=pl.rota==='alta'||pl.rota==='suave'?pl.rota:'';
   if(!rota && salto.tipo!=='trampolim')return;
   if(rota && salto.rota && salto.rota!=='entrada' && salto.rota!=='saida' && rota!==salto.rota)return;
@@ -1894,7 +1920,8 @@ function soraRegistrarPousoPerdido(pl,antes,agora,x){
   if(dx<-SW/2)dx+=SW;
   var distancia=Math.abs(dx);
   if(distancia>100 || (soraPousoPerdido && distancia>=soraPousoPerdido.distancia))return;
-  soraPousoPerdido={rota:rota,altura:Math.round(-pl.y/10),lado:dx<0?0:1,distancia:distancia,trampolim:salto.tipo==='trampolim'};
+  soraPousoPerdido={rota:rota,altura:Math.round(-pl.y/10),lado:dx<0?0:1,distancia:distancia,trampolim:salto.tipo==='trampolim',
+    salto:!pl.vx && salto.p && Object.assign({},salto.p,{wingsT:0,ufoT:0}),origem:salto.origem,alvo:Object.assign({},pl)};
 }
 function soraDicaDeQueda(){
   var d=soraPousoPerdido;
@@ -2236,6 +2263,8 @@ function soraMusicStart(){
 }
 function soraReset(){
   soraCamY = 0;
+  soraTreinoPouso=null;
+  if($('soraTreinoStatus'))$('soraTreinoStatus').hidden=true;
   soraHeight = 0;
   soraRotaDaSubida = ''; soraDonoDaSubida = soraOnlineUserId;
   soraUltimoSalto=null;soraPousoPerdido=null;
@@ -2472,9 +2501,9 @@ function soraCompactAlive(list,bottom,mode){
 function soraUpdate(dt){
   var soraFrameAnterior=soraFrame;
   soraFrame += dt;
-  soraVisitorElapsed += dt;
-  if(!soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
-  if(soraVisitorUfo){
+  if(!soraTreinoPouso)soraVisitorElapsed += dt;
+  if(!soraTreinoPouso && !soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
+  if(!soraTreinoPouso && soraVisitorUfo){
     soraVisitorUfo.x += soraVisitorUfo.vx * dt;
     soraVisitorUfo.phase += .055 * dt;
     if(soraVisitorUfo.x > SW + 100) soraVisitorUfo = null;
@@ -2531,6 +2560,15 @@ function soraUpdate(dt){
   if(soraP.x + soraP.w < 0) soraP.x = SW;
   else if(soraP.x > SW) soraP.x = -soraP.w;
 
+  if(soraTreinoPouso){
+    var alvo=soraPlats[1], pe=soraP.y+soraP.h;
+    soraCamY=Math.min(alvo.y-36,soraP.y-SH*.4);
+    if(soraP.vy>0 && pe>=alvo.y){
+      var noAlvo=pe-soraP.vy*dt<=alvo.y+10 && soraP.x+soraP.w-6>alvo.x && soraP.x+6<alvo.x+alvo.w;
+      soraTerminarTreinoPouso(noAlvo);
+    }
+    return;
+  }
   // Atualiza plataformas móveis (discos voadores) e checa pouso quando o Idol está descendo
   for(var i = 0; i < soraPlats.length; i++){
     var pl = soraPlats[i];
@@ -2566,6 +2604,10 @@ function soraUpdate(dt){
           // Nuvem normal ou disco voador
           soraP.y = pl.y - soraP.h;
           soraJumpBounce(1.0);
+        }
+        if(!soraTestSceneId && pl.k!=='caixa' && !soraP.wingsT && !soraP.ufoT){
+          soraUltimoSalto.p=Object.assign({},soraP);
+          soraUltimoSalto.origem=Object.assign({},pl,{used:false});
         }
         break;
       }
@@ -4250,6 +4292,9 @@ function soraEndGame(){
   if($('soraOverSubtitle')) $('soraOverSubtitle').textContent = tr(isTestScene ? 'Esta sessão não altera seus recordes, histórico ou estrelas permanentes.' : isNew ? 'Mais alto a cada tentativa! 💖' : 'Cada pulo é mais uma estrelinha na sua história ✨');
   soraRenderLb();
   if($('soraOverBox')) $('soraOverBox').hidden = false;
+  $('soraTreinoPouso').hidden=isTestScene || !soraPousoPerdido || !soraPousoPerdido.salto;
+  $('soraTreinoPouso').textContent=soraTreinoTexto(0);
+  $('soraTreinoResultado').textContent='';
 }
 function soraRenderLbRows(rows, online, serial){
   var el = $('soraLbList'), source = $('soraRankSource');
@@ -4430,12 +4475,14 @@ function soraSetupUI(){
             '<div id="soraHistBox" hidden style="width:100%;max-height:115px;overflow:auto;background:var(--card);color:var(--ink);border-radius:12px;padding:8px;margin-top:2px"><div id="soraHistContent"></div></div>' +
           '</div>' +
         '</div>' +
+        '<p id="soraTreinoStatus" role="status" hidden style="position:absolute;top:8px;left:12px;color:white;pointer-events:none"></p>' +
         '<div id="soraOverBox" hidden style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;overscroll-behavior:contain;padding:10px 12px;color:#fff">' +
           '<div class="sora-over-content">' +
             '<div class="sora-over-icon" id="soraOverIcon">🌸</div>' +
             '<h2 class="sora-over-title" id="soraOverTitle">' + escHtml(tr('Fim da subida!')) + '</h2>' +
             '<p class="sora-over-subtitle" id="soraOverSubtitle">' + escHtml(tr('Cada pulo é mais uma estrelinha na sua história ✨')) + '</p>' +
             '<div id="soraResTxt" class="res" style="width:100%;color:#fff"></div>' +
+            '<p id="soraTreinoResultado" role="status"></p><button type="button" class="sec" id="soraTreinoPouso" hidden></button>' +
             '<div class="sora-over-actions"><button type="button" class="btn" id="soraAgainBtn">' + escHtml(tr('✨ JOGAR NOVAMENTE')) + '</button><button type="button" class="sec" id="soraMenuBtn">' + escHtml(tr('☁️ VOLTAR AO MENU')) + '</button></div>' +
           '</div>' +
         '</div>' +
@@ -4552,6 +4599,7 @@ function soraSetupUI(){
   $('soraHomeBtn').onclick = soraReturnToMenu;
   $('soraPlayBtn').onclick = function(){ soraTestSceneId = ''; soraStartGame(); };
   $('soraAgainBtn').onclick = soraStartGame;
+  $('soraTreinoPouso').onclick = soraPraticarPouso;
   $('soraTestFujiBtn').onclick = function(){ soraTestSceneId = 'fuji'; soraStartGame(); };
   $('soraTestRioBtn').onclick = function(){ soraTestSceneId = 'rio'; soraStartGame(); };
   $('soraTestRuralBtn').onclick = function(){ soraTestSceneId = 'rural'; soraStartGame(); };
@@ -4666,7 +4714,7 @@ function soraBindTestProfileTools(){
 soraSetupUI();
 var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
 function soraReturnToMenu(){
-  if(soraState === 'play') soraOnlineAbortRun();
+  if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMenuAtualizarRecorde();
@@ -4731,7 +4779,7 @@ window.addEventListener('pageshow',function(){
  if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted&&soraMusicTimer===null)soraMusicStart();
 });
 function soraCloseUI(){
-  if(soraState === 'play') soraOnlineAbortRun();
+  if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
   soraPararLoop(); if($('soraOv')) $('soraOv').hidden = true;

@@ -101,6 +101,14 @@
     if(antes.bicoConcluiu)return 'A plaquinha do pedido que você preparou na semana passada ainda está aqui. Obrigada por voltar!';
     return '';
   }
+  function dataDesfecho(i){
+    return new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',timeZone:'America/Sao_Paulo'}).format(new Date(inicio+(i+1)*MS_SEMANA));
+  }
+  function aposContribuicao(){
+    if(!atual() || !contribuicao(ler(semana())))return '';
+    return '<p role="status">Sua contribuição já aparece na vitrine. O desfecho sai no Idol⭐News! em ' +
+      escHtml(dataDesfecho(semana())) + '.</p>';
+  }
   function rua(){
     var i = semana(), p = atual(), d = desfechos()[0], ficha = ler(i);
     if(!p && !d) return '';
@@ -118,6 +126,7 @@
       (ficha.concluiu ? '' : botao('Abrir o Studio com este cenário','studio','twb-bt'));
     if(bicoAtivo() && !p.escolha) h += '<p>' + (ficha.bicoConcluiu ? '☕ A plaquinha da casa está na vitrine. Você recebeu a lembrança da Rua Fofa.' :
       botao('Atender um pedido da Rua Fofa','cafe','twb-bt twb-bt-claro')) + '</p>';
+    if(p && contribuicao(ficha)) h += aposContribuicao();
     if(d) h += '<p>' + botao('Ver desfechos no Idol⭐News!','jornal','twb-bt twb-bt-claro') + '</p>';
     return h + '</section>';
   }
@@ -202,7 +211,7 @@
       window.dispatchEvent(new Event('tw-piloto-bairro'));
     }
   });
-  window.TW_PILOTO_BAIRRO = {continuacao:continuacao, rua:rua, falaRosa:falaRosa, vitrineMapa:vitrineMapa, jornal:jornal, iniciar:iniciar, concluir:concluir,
+  window.TW_PILOTO_BAIRRO = {aposContribuicao:aposContribuicao,continuacao:continuacao, rua:rua, falaRosa:falaRosa, vitrineMapa:vitrineMapa, jornal:jornal, iniciar:iniciar, concluir:concluir,
     medidas:function(){
       return pauta.map(function(p, i){
         var etapas = ler(i); delete etapas.foto;

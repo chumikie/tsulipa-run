@@ -367,6 +367,18 @@ var CR_OBSTACULOS = {
 function crIdiomaResultado(){
   return typeof LANG === 'string' && Object.prototype.hasOwnProperty.call(CR_COLISAO, LANG) ? LANG : 'pt';
 }
+var CR_AJUSTE_TR={
+  pt:['Tente pular um pouco mais tarde para ainda estar no ar ao passar.','Tente iniciar o pulo um pouco antes de alcançar o obstáculo.','Tente deslizar antes de chegar ao refletor.','Mantenha o deslize até passar sob o refletor.'],
+  en:['Jump slightly later so you are still in the air as you pass.','Start your jump slightly before you reach the obstacle.','Start sliding before reaching the spotlight.','Keep sliding until you clear the spotlight.'],
+  es:['Salta un poco más tarde para seguir en el aire al pasar.','Empieza el salto un poco antes del obstáculo.','Deslízate antes de llegar al reflector.','Mantén el deslizamiento hasta pasar el reflector.'],
+  id:['Lompat sedikit lebih lambat agar masih di udara saat melewatinya.','Mulai lompat sedikit sebelum rintangan.','Meluncurlah sebelum mencapai lampu sorot.','Terus meluncur hingga melewati lampu.'],
+  th:['ลองกระโดดช้าลงเล็กน้อยเพื่อให้ยังลอยอยู่ตอนผ่าน','เริ่มกระโดดก่อนถึงสิ่งกีดขวางเล็กน้อย','เริ่มสไลด์ก่อนถึงไฟส่องเวที','สไลด์ต่อจนพ้นไฟส่องเวที'],
+  ja:['少し遅く跳んで、空中で通過しましょう。','障害物に届く少し前に跳びましょう。','照明に届く前にスライドしましょう。','照明を通過するまでスライドを続けましょう。']
+};
+function crAjusteColisao(impacto){
+  var i=impacto.suspenso?(impacto.deslizou?3:2):impacto.ar&&impacto.descendo?0:1;
+  return CR_AJUSTE_TR[crIdiomaResultado()][i];
+}
 function crColisaoTexto(impacto){
   if(!impacto || !Object.prototype.hasOwnProperty.call(CR_OBSTACULOS, impacto.tipo)) return '';
   var idioma = crIdiomaResultado();
@@ -408,7 +420,7 @@ function end(impacto){
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
 
   var colisao = !isTestGame ? crColisaoTexto(impacto) : '';
-  if(colisao) $('res').innerHTML += '<p class="crfim-colisao" id="crFimColisao">' + colisao + '</p>';
+  if(colisao) $('res').innerHTML += '<p class="crfim-colisao" id="crFimColisao">' + colisao + '</p><p class="crfim-colisao" id="crFimAjuste">' + crAjusteColisao(impacto) + '</p>';
   if(typeof crPraticaConfig === 'function') crPraticaConfig(colisao ? impacto : null);
 
   // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos
@@ -421,7 +433,7 @@ function end(impacto){
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
   var isAdmin = (nomeDigitado === 'tsuadmin');
-  var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
+  var row={name:nick||tr('Visitante'),score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
   if(!isTestGame && typeof bestcSalvar==='function'){ bestcSalvar(sel, s); refreshAcc(); }   // V2.1.3: recorde por personagem
 
  if(!isTesting && !isAdmin){
@@ -448,7 +460,7 @@ clearTimeout(overTimer);
     resultado.hidden = false;
     resultado.scrollTop = 0;
     tentar.textContent = CR_COLISAO[crIdiomaResultado()][4];
-    if(colisao) tentar.setAttribute('aria-describedby', 'crFimColisao');
+    if(colisao) tentar.setAttribute('aria-describedby', 'crFimColisao crFimAjuste');
     else tentar.removeAttribute('aria-describedby');
     tentar.focus({preventScroll:true});
     celeb();
@@ -516,11 +528,12 @@ var CR_PRATICA_TR = {
 };
 function crPraticaTexto(i){ return CR_PRATICA_TR[crIdiomaResultado()][i]; }
 function crPraticaConfig(impacto){
-  crPraticaAlvo = impacto && !impacto.suspenso && ['cable','speaker'].indexOf(impacto.tipo)>=0 ? impacto : null;
+  crPraticaAlvo = impacto && impacto.obstaculo ? impacto : null;
   var pista = $('crPraticaPista');
-  if(pista){ pista.hidden = true; pista.textContent = CR_PISTA_TR[crIdiomaResultado()][0]; }
+  var isolado=crPraticaAlvo && !crPraticaAlvo.suspenso && ['cable','speaker'].includes(crPraticaAlvo.tipo);
+  if(pista){ pista.hidden = !crPraticaAlvo; pista.textContent = CR_PISTA_TR[crIdiomaResultado()][0]; }
   var botao = $('crPraticaBt'), info = $('crPraticaStatus');
-  if(botao){ botao.hidden = !crPraticaAlvo; botao.textContent = crPraticaTexto(0); }
+  if(botao){ botao.hidden = !isolado; botao.textContent = crPraticaTexto(0); }
   if(info) info.textContent = '';
 }
 function crPraticaComecar(naPista){
@@ -537,7 +550,7 @@ function crPraticaComecar(naPista){
   obs = (desafio?[96,192,288,384]:naPista?[120]:[100,260,420]).map(function(t,i){
     if(desafio && i%2===1)return {k:'refletor',x:P.x+t*velo,y:GY-72,w:46,h:46,high:true};
     var h = obst ? obst.h : cabo ? 12 : 48;
-    return {k:alvo,x:P.x+t*velo,y:GY-h,w:obst ? obst.w : cabo ? 56 : 36,h:h};
+    return {k:alvo,x:P.x+t*velo,y:GY-(obst&&obst.top||h),w:obst ? obst.w : cabo ? 56 : 36,h:h,high:!!(naPista && crPraticaAlvo.suspenso)};
   });
   if(naPista) dist = Math.max(0,dist-velo*120);
   items=[];pops=[];fans=[];pw=null;inv=0;shield=0;shake=0;held=false;paused=false;
@@ -547,7 +560,7 @@ function crPraticaComecar(naPista){
   $('pause').style.display='block';$('pause').textContent='⏸';$('pz').hidden=true;
   if((window.matchMedia&&matchMedia('(pointer:coarse)').matches)||(desafio&&navigator.maxTouchPoints>0))$('jb').style.display='block';
   document.body.classList.add('jogando');state='play';
-  if(desafio)s2ShowSlideButton();
+  if(desafio || naPista && crPraticaAlvo.suspenso)s2ShowSlideButton();
   $('crPraticaSair').focus({preventScroll:true});last=performance.now();sync();
 }
 function crPraticaTerminar(completo){
@@ -568,11 +581,11 @@ function crPraticaTerminar(completo){
   if(completo && !registro.pista) pista.hidden = false;
   if(completo) $('crPraticaStatus').textContent=registro.pista ?
     CR_PISTA_TR[crIdiomaResultado()][registro.passou?2:3] : crPraticaTexto(3).replace('{n}',registro.passou);
-  (pista.hidden ? $('crPraticaBt') : pista).focus({preventScroll:true});sync();
+  (registro.pista || completo ? pista : $('crPraticaBt')).focus({preventScroll:true});sync();
 }
 function crPraticaQuadro(dt){
   crPratica.tempo+=dt; frame+=dt;dist+=sp*dt;
-  if(crPratica.desafio)s2DeslizeQuadro(dt);
+  if(crPratica.desafio || obs[0].high)s2DeslizeQuadro(dt);
   crPularQuadro(dt);
   if(crPuloGuardado>0)crPuloGuardado=Math.max(0,crPuloGuardado-dt);
   obs.forEach(function(o){
@@ -747,8 +760,8 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
         if(shield){shield--;inv=90;sfx.hit();shake=8;toast=tr('Escudo usado!');toastT=80;break}
         var obstaculo = obs[i];
         crTelemetriaAnotar(obstaculo);
-        end({tipo:obstaculo.k, ar:P.air, suspenso:obstaculo.high, velocidade:sp,
-          obstaculo:{w:obstaculo.w,h:obstaculo.h}});
+        end({tipo:obstaculo.k, ar:P.air, descendo:P.vy>0, deslizou:s2Sliding, suspenso:obstaculo.high, velocidade:sp,
+          obstaculo:{w:obstaculo.w,h:obstaculo.h,top:GY-obstaculo.y}});
         return;
       }
     }

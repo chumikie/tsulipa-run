@@ -57,6 +57,7 @@ async function bairro(browser){
     await page.locator('#studioOv [data-st="fundo"][data-v="rosa"][aria-pressed="true"]').waitFor();
     await page.locator('#studioOv [data-st="clique"]').click();
     await page.locator('#studioOv [data-st="outra"]').waitFor();
+    await page.locator('#studioOv').getByText(/O desfecho sai.*29 de novembro/).waitFor();
     await page.locator('#studioOv [data-piloto-bairro="rua"]').click();
     await page.locator('#twBairroOv .tw-piloto-vitrine').waitFor();
     await botao('cafe').click();
@@ -280,7 +281,11 @@ async function album(browser){
     await page.getByRole('button',{name:'Guardada na série.'}).waitFor();
     await page.keyboard.press('Escape');
     await page.evaluate(() => TW_HUMOR.evento(TW_HUMOR.desejo().ev));
-    await page.locator('[data-a="vip"]:visible').first().click();
+    await page.waitForFunction(()=>TW_HUMOR.vipHoje());
+    await page.waitForTimeout(350);
+    const vip=page.locator('.twc-hj [data-a="vip"]');
+    if(!await vip.isVisible())await page.locator('.twc-hj [data-hjver]').first().click();
+    await vip.click();
     await page.locator('[data-a="vipSerie"]').click();
     await page.getByRole('button',{name:'Guardada na série.'}).waitFor();
 
@@ -541,12 +546,19 @@ async function copiaAlbum(browser){
   }finally{await context.close();}
 }
 function simularQueda(tipo){
+  window.qaEstadoSora=()=>({soraBest,starT,storage:JSON.stringify(localStorage)});
+  window.qaAcertarSora=()=>{
+    const alvo=soraPlats[1];soraP.x=alvo.x+8;soraP.y=alvo.y-soraP.h-2;soraP.vy=3;
+    soraUpdate(1);
+  };
   const altura=tipo==='trampolim'?-1560:-1150;
   soraState='play';soraUltimoSalto={tipo,rota:tipo==='trampolim'?'alta':'entrada',y:altura+110};
   soraPousoPerdido=null;
   soraP.x=tipo==='trampolim'?239:130;soraP.y=altura-soraP.h-2;soraP.vx=0;soraP.vy=3;
   soraCamY=altura+50;soraHighestY=altura-50;
   soraPlats=[{k:'nuvem',rota:tipo==='trampolim'?'':'alta',x:tipo==='trampolim'?170:215,y:altura,w:50,h:14,vx:0}];
+  soraUltimoSalto.p={...soraP,x:tipo==='trampolim'?239:130,y:altura+110-soraP.h,vy:-11.8};
+  soraUltimoSalto.origem={k:'nuvem',x:100,y:altura+110,w:72,h:14};
   soraHazards=[];soraUpdate(1);soraEndGame();
 }
 async function quedasSora(browser){
@@ -556,6 +568,11 @@ async function quedasSora(browser){
     await page.locator('#soraPlayBtn').click();
     await page.evaluate(()=>window.qaQuedaSora('nuvem'));
     await page.locator('#soraDicaQueda').getByText(/Atalho alto \(115 m\).*direita/).waitFor();
+    const antes=await page.evaluate(()=>window.qaEstadoSora());
+    await page.locator('#soraTreinoPouso').click();
+    await page.evaluate(()=>window.qaAcertarSora());
+    await page.locator('#soraTreinoResultado').getByText('Pouso certo!').waitFor();
+    assert.deepEqual(await page.evaluate(()=>window.qaEstadoSora()),antes);
     await page.evaluate(()=>window.qaQuedaSora('trampolim'));
     await page.locator('#soraDicaQueda').getByText(/Depois do trampolim.*156 m.*esquerda/).waitFor();
     assert.deepEqual(erros,[]);
@@ -622,9 +639,19 @@ async function cafeAlternado(browser){
       }
       await cafe.locator('[data-cfd-servir]').click();
     }
+    await page.waitForFunction(()=>cf.fila.some(e=>e.estado==='espera'));
+    await page.evaluate(()=>{
+      const cliente=cf.fila.find(e=>e.estado==='espera');
+      cliente.monta={...cliente.cli.pedido};
+      if(cf.alvoBalcao===cliente)cf.monta=cliente.monta;
+      cfT=cliente.t0+cliente.limite+1;
+    });
+    await page.waitForFunction(()=>cf.causas[1]===1);
     await page.evaluate(()=>cfFim());
     const resumo=cafe.locator('#cfTurnoResumo');
-    await resumo.getByText('Pedidos certos no prazo · 1/2').waitFor();
+    await resumo.getByText('Pedidos certos no prazo · 1/3').waitFor();
+    await resumo.getByText(/Receitas incorretas · 1/).waitFor();
+    await resumo.getByText(/Receitas certas fora do prazo · 1/).waitFor();
     assert.match(await resumo.textContent(),/Ingrediente com mais erros · .+ \(1\)/);
     assert.deepEqual(await page.evaluate(()=>cfLer(CF_RECEITAS_KEY,{})),inicial.caderno);
     assert.deepEqual(erros,[]);
@@ -718,6 +745,126 @@ async function dirigirDuo(browser){
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
+async function reencontroDeUmaPista(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'rever-outra-sessao');
+    await page.evaluate(async()=>{
+      await twJogosCarregar();hsAbrir();const r=hsSorteio(44),fa=hsFa(r,hsNomesLivres()[0]);
+      hsAnotarPista(fa,false,-1);
+    });
+    const pista=await page.evaluate(()=>hsPistaPendente().nome);
+    await page.reload();
+    await page.evaluate(async()=>{
+      contaJ={id:'rever-outra-sessao',nick:'Idol da série'};await twJogosCarregar();hsAbrir();
+    });
+    const painel=page.locator('#hsOv');
+    await painel.getByRole('button',{name:'Treinar no meu ritmo'}).click();
+    assert.equal(await page.evaluate(()=>hs.fila[0].nome),pista);
+    await painel.getByRole('button',{name:'Próximo fã'}).click();
+    await painel.getByRole('button',{name:'Começar a lembrar'}).click();
+    const pos=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[0].pres));
+    await painel.locator('[data-hs="'+pos+'"]').click();
+    await page.evaluate(()=>{hsT+=90;});
+    await painel.getByText(/Agora você lembrou/).waitFor();
+    assert.equal(await page.evaluate(()=>hsPistaPendente()),null);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function favoritoNoStudio(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'qa-look');
+    const antes=await page.evaluate(()=>{
+      localStorage.setItem('brs48cr_favs',JSON.stringify([{hair:'#ff6fb5',outcol:'#445522'}]));
+      window.qaStudio=[];
+      contaRpc=n=>{qaStudio.push(n);return Promise.resolve([]);};
+      shopAbrir();return CU.outcol;
+    });
+    await page.getByRole('button',{name:'Fotografar favorito 1'}).click();
+    await page.locator('#studioOv [data-st="clique"]').click();
+    await page.locator('#studioOv [data-st="outra"]').waitFor();
+    assert.equal(await page.evaluate(()=>CU.outcol),antes);
+    assert.equal(await page.evaluate(()=>qaStudio.includes('studio_clique')),false);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function compararBattleNoTreino(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,null);
+    await page.evaluate(()=>battleAbrir());
+    const batalha=page.locator('#battleOv');
+    await batalha.locator('[data-battle="jogar"]').click();
+    await batalha.locator('[data-battle="pular"]').click();
+    await batalha.getByText('Testar um card na rodada perdida').click();
+    const previa=batalha.locator('[data-battle-comparar]').first();
+    assert.equal(await previa.locator('option').first().textContent(),'Momorin');
+    await batalha.getByText(/Antes .*Com a troca/).first().waitFor();
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function albumCheio(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'cheio-qa');
+    await page.evaluate(async()=>{
+      const canvas=document.createElement('canvas'),btn=document.createElement('button');
+      canvas.width=100;canvas.height=100;document.body.append(btn);
+      const ctx=canvas.getContext('2d');
+      window.qaSalvarCheio=()=>TW_ALBUM_FOTOS.salvar('duo',canvas,btn);
+      for(let i=0;i<24;i++){
+        ctx.fillStyle='rgb('+i*8+',60,180)';ctx.fillRect(0,0,100,100);
+        if(!await TW_ALBUM_FOTOS.salvar('studio',canvas,btn))throw Error('preencher álbum');
+      }
+      window.qaFotosDB=()=>new Promise((ok,falha)=>{
+        const pedido=indexedDB.open('tsulipa-album-fotos');
+        pedido.onerror=falha;
+        pedido.onsuccess=()=>{
+          const db=pedido.result,q=db.transaction('fotos').objectStore('fotos').getAll();
+          q.onsuccess=()=>{db.close();ok(q.result.map(f=>[f.id,f.tipo]));};q.onerror=falha;
+        };
+      });
+    });
+    const anterior=await page.evaluate(()=>qaFotosDB());
+    await page.evaluate(()=>{window.qaPendente=qaSalvarCheio();});
+    const dlg=page.getByRole('dialog',{name:'A série está cheia'});
+    await dlg.getByRole('button',{name:'Cancelar'}).click();
+    assert.equal(await page.evaluate(()=>qaPendente),false);
+    assert.deepEqual(await page.evaluate(()=>qaFotosDB()),anterior);
+    await page.evaluate(()=>{window.qaPendente=qaSalvarCheio();});
+    await dlg.getByRole('radio').nth(1).check();
+    await dlg.getByRole('button',{name:'Substituir a foto selecionada'}).click();
+    assert.equal(await page.evaluate(()=>qaPendente),true);
+    const depois=await page.evaluate(()=>qaFotosDB());
+    assert.deepEqual(depois.slice(0,23),anterior.filter((_,i)=>i!==1));
+    assert.equal(depois[23][1],'duo');
+    await page.evaluate(()=>{petData={v:1,ativo:'tsu',pets:{tsu:{}}};});
+    await page.locator('#twcNav [data-n="menu"]').click();
+    await page.locator('[data-a="album"]:visible').first().click();
+    await page.locator('details.album-fotos:visible summary').click();
+    const foto=page.locator('details.album-fotos:visible figure').first();
+    const quadro=foto.getByRole('button',{name:'Usar no porta-retrato'});
+    await quadro.evaluate(el=>el.scrollIntoView({block:'center'}));
+    await quadro.click();
+    await foto.getByRole('button',{name:'Foto colocada no porta-retrato.'}).waitFor();
+    assert.match(await page.evaluate(()=>petVidaQuadroLer()?.id),/^album_/);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function estreiaCorrida(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,null);
+    await page.locator('[data-estreia="run"]').click();
+    await page.locator('#nick').fill('');
+    await page.locator('#play').click();
+    await page.waitForFunction(()=>TW_CELULAR.estreiaMedidas().inicioMs!==null);
+    await page.waitForFunction(()=>TW_CELULAR.estreiaMedidas().conclusaoMs!==null,null,{timeout:18000});
+    assert.equal(await page.locator('#nick').inputValue(),'');
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
 async function karaoke(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -756,7 +903,11 @@ async function karaoke(browser){
     assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Treino a 75%/);
     assert.match(await iframe.locator('#ktTrechoResultado').textContent(),/Antes: \d+\/\d+ · Agora: \d+\/\d+/);
     assert.deepEqual(await frame.evaluate(() => ktEnsaioMedidas()),{iniciados:1,concluidos:1,repeticoes:0});
-    await iframe.locator('#ktTrechoBt').click();
+    await iframe.locator('#ktResultAdjust').click();
+    await iframe.locator('#ktAudioOutput').selectOption('bluetooth');
+    await iframe.locator('#ktOffsetPlus').click();
+    assert.equal(await iframe.locator('#ktOffsetValue').textContent(),'+10 ms');
+    await iframe.locator('#ktRepeatAfterTiming').click();
     await frame.waitForFunction(() => document.body.classList.contains('kt-playing'));
     const depois = await frame.evaluate(() => Object.keys(localStorage).filter(k=>k==='kt_showcase_week_v1'||/^kt_.*(attempt|ticket|score|round)/.test(k)).map(k=>[k,localStorage.getItem(k)]));
     assert.deepEqual(depois,anterior);
@@ -766,6 +917,11 @@ async function karaoke(browser){
 (async()=>{
   const browser = await chromium.launch();
   try{
+    await estreiaCorrida(browser);console.log('✓ Visitante joga uma corrida com o nome em branco.');
+    await reencontroDeUmaPista(browser);console.log('✓ Handshake recupera uma pista após recarga e registra o acerto.');
+    await favoritoNoStudio(browser);console.log('✓ Studio fotografa o favorito sem aplicar o visual ao Idol.');
+    await compararBattleNoTreino(browser);console.log('✓ Battle compara um card na rodada perdida sem mudar o rival.');
+    await albumCheio(browser);console.log('✓ Álbum cheio preserva as fotos ao cancelar e só substitui a foto escolhida.');
     await leituraHandshake(browser);console.log('✓ Handshake mantém a fila manual e repete com o cronômetro padrão.');
     await provarNaLoja(browser);console.log('✓ Provador compara a peça sem trocar o visual salvo.');
     await dirigirDuo(browser);console.log('✓ Duo varia o enquadramento e as posições mantendo a dupla.');

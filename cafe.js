@@ -310,7 +310,7 @@ function cfPraticaHtml(){
         var nome = esperado ? tr(esperado[1]) : cfPraticaTexto(item[2]);
         return '<li>' + (m[item[0]] === p[item[0]] ? '✅ ' : '❌ ') + escHtml(nome) + '</li>';
       }).join('') + '</ul>' +
-      (cf.piloto && certo ? '<p>' + (cf.pilotoEntregue ? '☕ Pedido entregue! A plaquinha da casa vai para a vitrine da Rua Fofa.' : 'O turno da Rua Fofa já terminou.') + '</p>' : '') + '</div>';
+      (cf.piloto && certo ? '<p>' + (cf.pilotoEntregue ? '☕ Pedido entregue! A plaquinha da casa já está na vitrine da Rua Fofa.' : 'O turno da Rua Fofa já terminou.') + '</p>' + (cf.pilotoEntregue ? TW_PILOTO_BAIRRO.aposContribuicao() : '') : '') + '</div>';
   }
   var proximo=lista && treino.conferiu && ['base','cob','enf','doce'].every(function(k){return m[k]===p[k];});
   return h + '<div class="btns"><button type="button" class="btn" data-cf-pratica="'+(proximo?'proximo':'conferir')+'"' +

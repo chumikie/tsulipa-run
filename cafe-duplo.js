@@ -38,6 +38,14 @@
     th:['ฝึกรับลูกค้าสลับกัน','รอบฝึก · แฟนมาห่างกัน 3 วินาที','ออเดอร์ถูกต้องและทันเวลา','ส่วนผสมที่ผิดบ่อยที่สุด','ไม่มีส่วนผสมผิด','ส่วนผสมเกินในหมวด'],
     ja:['時間差で来店する練習','練習シフト · ファンは3秒間隔で来店します。','時間内に正しく出した注文','最も間違えた材料','材料の間違いなし','余分な材料の種類']
   };
+  var CAUSAS = {
+    pt:['Receitas incorretas','Receitas certas fora do prazo','Pedidos vencidos sem receita pronta'],
+    en:['Incorrect recipes','Correct recipes served late','Expired orders without a complete recipe'],
+    es:['Recetas incorrectas','Recetas correctas fuera de plazo','Pedidos vencidos sin receta lista'],
+    id:['Resep salah','Resep benar yang terlambat','Pesanan habis waktu sebelum resep siap'],
+    th:['สูตรผิด','สูตรถูกแต่ส่งช้า','ออเดอร์หมดเวลาก่อนทำเสร็จ'],
+    ja:['レシピの間違い','レシピは正解だが時間切れ','完成前に時間切れ']
+  };
   function turno(i){ return (TURNO[LANG] || TURNO.pt)[i]; }
   var INGREDIENTES = [['base',CF_BASES,'Base'],['cob',CF_COBERTURAS,'Cobertura'],['enf',CF_ENFEITES,'Enfeite'],['doce',CF_DOCES,'Docinho']];
   function registrarErro(pedido,monta){
@@ -61,7 +69,7 @@
       return '<button type="button" class="btn alt" data-cf-pratica="foco" data-tipo="'+k+'">'+escHtml(cfFocoTexto(0,k))+'</button>';
     }).join('');
     return '<p class="hsdica" id="cfTurnoResumo"><b>' + escHtml(turno(2)) + ' · ' + cf.perfeitos + '/' + cf.atendidos +
-      '</b><br>' + escHtml(max ? turno(3) + ' · ' + nomes + ' (' + max + ')' : turno(4)) + '</p>' + (botoes ? '<div class="btns">'+botoes+'</div>' : '');
+      '</b><br>' + (CAUSAS[LANG]||CAUSAS.pt).map(function(rotulo,i){return escHtml(rotulo)+' · '+cf.causas[i];}).join('<br>') + '<br>' + escHtml(max ? turno(3) + ' · ' + nomes + ' (' + max + ')' : turno(4)) + '</p>' + (botoes ? '<div class="btns">'+botoes+'</div>' : '');
   }
   function botaoTurno(){
     return '<button type="button" class="btn alt" data-cfd-turno>' + escHtml(turno(0)) + '</button>';
@@ -139,11 +147,13 @@
     var selecionado = cf.alvoBalcao === e;
     var p = e.cli.pedido, m = selecionado ? cf.monta : e.monta;
     if(selecionado) selecionar(null);
-    var certo = !saiu && m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
+    var receitaCerta = m.base === p.base && m.cob === p.cob && m.enf === p.enf && m.doce === p.doce;
+    var certo = !saiu && receitaCerta;
+    if(cf.alternado && !certo) cf.causas[saiu ? (receitaCerta ? 1 : 2) : 0]++;
     var resto = paciencia(e);
     e.resultado = saiu ? retorno(3) : certo ? retorno(resto < .25 ? 2 : 1) : cfDetalhePedido(p, m) || retorno(4);
     var numero = ++cf.atendidos;
-    if(!certo) cfLembrarErro(cf, numero, p);
+    if(!certo && (!cf.alternado || !receitaCerta)) cfLembrarErro(cf, numero, p);
     if(cf.alternado && !saiu && !certo) registrarErro(p,m);
     cf.ultimoAtendimento = e;
     e.confirmacao = cf.provaEstado === 'pendente' ? 3 : 4;
@@ -309,7 +319,7 @@
       servidor:null, runId:null, modoServidor:null, verificacaoPendente:false, provaEstado:'', conq:[], assinatura:escolhida, assinaturaUsada:false, faEspecial:visita,
       duplo:true, fila:[], criados:0, buscando:false, verificando:0, doceT:0, rouboT:-999 };
     if(alternado){
-      cf.alternado = true; cf.proximaChegada = cfT; cf.errosIngredientes = new Map(); cf.errosCategorias = {};
+      cf.alternado = true; cf.causas = [0,0,0]; cf.proximaChegada = cfT; cf.errosIngredientes = new Map(); cf.errosCategorias = {};
     }
     cf.dono = contaJ; cf.sessao = typeof contaSessaoToken === 'undefined' ? null : contaSessaoToken;
     hsVisitaPreparar(cf);

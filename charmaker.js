@@ -116,9 +116,9 @@
     FAV_CAMPOS.forEach(function(k){ f[k] = c[k] == null ? (k === 'streak' ? false : '') : c[k]; });   // vazio vira '' para voltar exatamente igual
     while(l.length < i) l.push(null); l[i] = f; favGravar(l);
   }
-  function favVestir(i, aoMudar){
-    var c = cu(), f = favLer()[i]; if(!c || !f) return;
-    anterior = JSON.parse(JSON.stringify(c));
+  function favVisual(i){
+    var atual=cu(),f=favLer()[i];if(!atual||!f)return null;
+    var c=Object.assign({},atual);
     FAV_CAMPOS.forEach(function(k){
       if(f[k] === undefined) return;
       if(f[k] === null) f[k] = '';
@@ -128,6 +128,12 @@
     });
     if(c.det === 'tulipa') c.hat = '';
     c.img = c.hair; c.streak = !!c.mecha;
+    return c;
+  }
+  function favVestir(i, aoMudar){
+    var c=cu(), visual=favVisual(i);
+    if(!c||!visual)return;
+    anterior=JSON.parse(JSON.stringify(c));Object.assign(c,visual);
     if(typeof saveCu === 'function') saveCu();
     if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);
     depois(); atualizarTudo();
@@ -324,5 +330,5 @@
     if(d && !d.dataset.ligado){ d.dataset.ligado = '1'; d.addEventListener('click', desfazer); }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:favLer };
+  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:favLer, favoritoVisual:favVisual };
 })();

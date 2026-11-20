@@ -46,7 +46,36 @@ function hsVoltaMemoria(fila, livres, confirmados){
   f.presAnterior = memoria.pres;
   hs.voltaMemoria = true;
 }
+var HS_RETORNO_TR={
+  pt:['Reencontro · Agora você lembrou da pista de {n}!','Reencontro · A pista de {n} segue disponível para rever.'],
+  en:['Reunion · You remembered {n}’s clue this time!','Reunion · You can review {n}’s clue again.'],
+  es:['Reencuentro · ¡Ahora recordaste la pista de {n}!','Reencuentro · Puedes volver a repasar la pista de {n}.'],
+  id:['Bertemu lagi · Kali ini kamu mengingat petunjuk {n}!','Bertemu lagi · Kamu bisa mengulas petunjuk {n} lagi.'],
+  th:['พบกันอีก · คราวนี้คุณจำเบาะแสของ {n} ได้!','พบกันอีก · คุณยังทบทวนเบาะแสของ {n} ได้'],
+  ja:['再会 · 今回は{n}のヒントを思い出せました！','再会 · {n}のヒントをまた復習できます。']
+ };
+function hsPistaChave(){var chave=hsMemChave();return chave?chave+':revisar':'';}
+function hsPistaPendente(){
+  var chave=hsPistaChave();
+  try{
+    var f=chave&&JSON.parse(localStorage.getItem(chave));
+    return f&&hsNomesLivres().indexOf(f.nome)>=0&&HS_PRESENTES[f.pres]&&f.c&&HS_JEITO_LISTA.includes(f.jeito)?f:null;
+  }catch(e){return null;}
+}
+function hsPistaCorrigida(f,cor,ok){
+  if(!hs.treinoLeitura || !f.hsPistaReencontro || f.hsPistaCor!==cor)return;
+  hs.pistaReencontro={nome:f.nome,ok:ok};
+  if(ok){
+    var chave=hsPistaChave(), pista=hsPistaPendente();
+    if(chave && pista && pista.nome===f.nome && pista.pres===f.pres)try{localStorage.removeItem(chave);}catch(e){}
+  }
+}
 function hsAnotarPista(f, cor, resposta){
+  var chave=hsPistaChave();
+  if(chave && !hs.treinoLeitura && hs.visitaAlvo!==f && !f.superfa){
+    var detalhe={nome:f.nome,c:f.c,pres:f.pres,cor:f.cor,jeito:f.jeito,pose:f.pose,expr:f.expr,hsPistaReencontro:true,hsPistaCor:cor};
+    try{localStorage.setItem(chave,JSON.stringify(detalhe));}catch(e){}
+  }
   var nome = cor ? function(i){ return hsCorT().n[i] || ''; } : hsPresenteNome;
   (hs.pistasErradas || (hs.pistasErradas=[])).push({
     fa:f.nome, tipo:hsRevisaoT()[cor?3:2], certa:nome(cor?f.cor:f.pres), dada:nome(resposta)
@@ -54,9 +83,10 @@ function hsAnotarPista(f, cor, resposta){
 }
 function hsPistasHtml(){
   var erros=hs.pistasErradas;
-  if(!erros || !erros.length)return '';
+  var reencontro=hs.pistaReencontro, resultado=reencontro?'<p class="hsdica">'+escHtml((HS_RETORNO_TR[LANG]||HS_RETORNO_TR.pt)[reencontro.ok?0:1].replace('{n}',reencontro.nome))+'</p>':'';
+  if(!erros || !erros.length)return resultado;
   var t=hsRevisaoT();
-  return '<details class="hsdica"><summary>'+escHtml(t[1])+' · '+erros.length+'</summary><ul>'+
+  return resultado+'<details class="hsdica"><summary>'+escHtml(t[1])+' · '+erros.length+'</summary><ul>'+
     erros.map(function(e){
       return '<li><b>'+escHtml(e.fa)+'</b> · '+escHtml(e.tipo+' · '+e.certa)+'<br>'+
         escHtml(e.dada ? t[4]+' · '+e.dada : t[5])+'</li>';
@@ -213,7 +243,11 @@ function hsFocar(sel){var alvo=$('hsCorpo').querySelector(sel);if(alvo)alvo.focu
 function hsIniciarTreino(manual,fila){
   hsReiniciar();hs.donoMemoria=hsMemChave();hs.treinoLeitura=true;hs.leituraManual=manual;
   if(fila && fila.length)hsUsarFila(fila,fila.slice(),hsSorteio(Date.now()));
-  else hsNovaRodada();
+  else{
+    var pista=hsPistaPendente();
+    if(pista)hsUsarFila([pista],[pista],hsSorteio(Date.now()));
+    else hsNovaRodada();
+  }
   hsFocar(manual?'[data-hs-avancar]':'#hsLeituraStatus');
 }
 function hsAvancarFila(){
@@ -295,6 +329,8 @@ function hsResponder(i){
   var f = hs.quiz[hs.qi], ok = i >= 0 && hs.ops[i] === f.pres, rest = Math.max(0, 1 - (hsT - hs.t0) / hsTempoPergunta()), J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo;
   if(hs.servidor && f.hsOrigem && Number.isInteger(f.hsIndice)) hs.respostas.push({ rodada:hs.rodada, origem:f.hsOrigem, indice:f.hsIndice, resposta:i>=0?hs.ops[i]:-1, restante:Math.round(rest*1000), superfa:!!f.superfa });
   hs.resp = i; hs.ok = ok; hs.total++;
+  hsPistaCorrigida(f,false,ok);
+  if(!ok && f.hsPistaCor)hsPistaCorrigida(f,true,false);
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
     if(hs.visitaAlvo !== f && !f.superfa && !hs.treinoLeitura) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
@@ -329,6 +365,7 @@ function hsResponderCor(j){
   var f = hs.quiz[hs.qi], c = j >= 0 ? hs.corOps[j] : -1;
   if(hs.corEntrada && c >= 0) hs.corEntrada.cor = c;   // o servidor confere a cor e soma os +50 dele
   hs.corResp = j;
+  hsPistaCorrigida(f,true,c===f.cor);
   if(c !== f.cor) hsAnotarPista(f,true,c);
   if(c === f.cor){ hs.pontos += 50; hs.fala = hsCorT().ok; if(typeof beep === 'function') try{ beep(1568, .07, 'triangle', .04); }catch(e){} }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();

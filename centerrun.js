@@ -286,11 +286,11 @@ function rankOf(s){var r=0;for(var i=0;i<RANKS.length;i++)if(s>=RANKS[i][0])r=i;
 function start(e){
   if(e && e.preventDefault) e.preventDefault();
 
-// Validação: Exige o preenchimento do nome
+// O visitante pode jogar antes de escolher um nome.
   var inputNick = $('nick');
   var nomeLimpo = (inputNick ? inputNick.value : '').trim();
 
-  if(!nomeLimpo){
+  if(!nomeLimpo && contaJ){
     if(inputNick){
       inputNick.classList.remove('aviso-erro');
       void inputNick.offsetWidth; // Força o reflow para reiniciar a animação
@@ -1655,7 +1655,7 @@ function s2DeslizeQuadro(dt){
   }
 }
 function s2StartSlide(fromTap){
-  if(typeof crPratica !== 'undefined' && crPratica && !crPratica.desafio)return;
+  if(typeof crPratica !== 'undefined' && crPratica && !crPratica.desafio && !(crPratica.pista && obs[0].high))return;
   if(state !== 'play' || paused) return;
   // A ação correta rende ★, mas a animação de deslizar continua normalmente.
   if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
@@ -1760,7 +1760,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=15',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=16',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

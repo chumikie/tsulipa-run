@@ -86,6 +86,33 @@ var TROCA_TR={
  th:['แต่ละตำแหน่งใช้ค่าสถานะของรอบนั้น','ใช้ได้ในการฝึกและแข่งใหม่','สลับตำแหน่งแล้ว'],
  ja:['各ポジションではそのラウンドの能力値を使います。','練習と再戦で利用可能','入れ替え完了']
 };
+var COMPARAR_TR={
+ pt:['Testar um card na rodada perdida','Mesmo rival, uma posição por vez','Card para testar','Antes','Com a troca','Venceria esta rodada','O rival ainda venceria'],
+ en:['Test a card in the lost round','Same rival, one position at a time','Card to test','Before','With the change','Would win this round','The rival would still win'],
+ es:['Probar un card en la ronda perdida','Mismo rival, una posición a la vez','Card para probar','Antes','Con el cambio','Ganaría esta ronda','El rival seguiría ganando'],
+ id:['Uji kartu di ronde yang kalah','Lawan sama, satu posisi saja','Kartu yang diuji','Sebelum','Sesudah','Akan menang di ronde ini','Lawan masih menang'],
+ th:['ลองการ์ดในรอบที่แพ้','คู่แข่งเดิม เปลี่ยนทีละตำแหน่ง','การ์ดที่จะลอง','ก่อน','หลังเปลี่ยน','จะชนะรอบนี้','คู่แข่งยังชนะ'],
+ ja:['負けたラウンドでカードを試す','相手は同じ、変更は1枠だけ','試すカード','変更前','変更後','このラウンドに勝てる','相手が引き続き勝つ']
+};
+function compararRodadas(){
+ var t=COMPARAR_TR[lang()]||COMPARAR_TR.pt;
+ var usados=rodadas.map(function(r){return r.meu;});
+ var opcoes=estado.cards.filter(function(c){return usados.indexOf(c.nick)<0;});
+ if(!opcoes.length&&!servidor)opcoes=[{nick:'Momorin',canto:6,danca:6,carisma:6}];
+ if(!opcoes.length)return '';
+ var listas=rodadas.map(function(r,i){
+   if(r.ganhou)return '';
+   return '<div><label>'+esc(nomeRound(i))+' · '+esc(t[2])+' <select data-battle-comparar="'+i+'">'+
+     opcoes.map(function(c){
+       var pontos=valor(c,i);
+       return '<option data-pontos="'+pontos+'">'+esc(c.nick)+'</option>';
+     }).join('')+'</select></label><p role="status" class="battle-hint">'+esc(compararPlacar(r,valor(opcoes[0],i),t))+'</p></div>';
+ }).join('');
+ return listas?'<details class="battle-hint"><summary>'+esc(t[0])+'</summary><p>'+esc(t[1])+'</p>'+listas+'</details>':'';
+}
+function compararPlacar(r,pontos,t){
+ return t[3]+' '+r.eu+' × '+r.eles+' · '+t[4]+' '+pontos+' × '+r.eles+' · '+t[pontos>r.eles?5:6];
+}
 function trocaTxt(i){return (TROCA_TR[lang()]||TROCA_TR.pt)[i];}
 function efeitoPosicao(i,antes,depois){
  return nomeRound(i)+' '+antes+' → '+depois;
@@ -292,6 +319,12 @@ function montar(){
    if(a==='salvar'){salvar();return;}
  });
  ov.addEventListener('change',function(e){
+   if(e.target.matches('[data-battle-comparar]')&&rodadas&&fase==='fim'){
+     var seletor=e.target, pos=Number(seletor.dataset.battleComparar), opcao=seletor.selectedOptions[0];
+     if(rodadas[pos]&&opcao)seletor.closest('div').querySelector('[role="status"]').textContent=
+       compararPlacar(rodadas[pos],Number(opcao.dataset.pontos),COMPARAR_TR[lang()]||COMPARAR_TR.pt);
+     return;
+   }
    if(!cartaTeste&&e.target.matches&&e.target.matches('[data-battle-slot]')){
      // Escolher um Idol que já está em outra rodada troca os dois de lugar.
      var i=Number(e.target.getAttribute('data-battle-slot')),v=e.target.value,j=unit.indexOf(v);
@@ -572,6 +605,7 @@ function render(){
    texto+='<div class="battle-result-grid">'+rodadas.map(function(r,i){return '<div class="battle-round'+(r.ganhou?' win':'')+'"><b>'+ico(i)+esc(nomeRound(i))+'</b>'+
       '<span>'+esc(r.meu||unit[i])+(Number(r.bonus)>0&&torcida&&FLOR[torcida.hoje]?' <em class="battle-bonus">'+florDot(torcida.hoje)+'+1</em>':'')+' <strong>'+Number(r.eu||0)+'</strong> : <strong>'+Number(r.eles||0)+'</strong> '+esc(r.rival||'?')+'</span>'+
       (revanche ? '<small>'+esc(textoRevanche[2])+' · '+esc(revanche[i].meu)+' '+Number(revanche[i].eu||0)+' : '+Number(revanche[i].eles||0)+'</small>' + viradaRevanche(r,i) : '')+'</div>';}).join('')+'</div>';
+   if(wins<2 && (!servidor||revanche))texto+=compararRodadas();
    texto+=ritmoResultado();
    texto+=(emArena?(wins<2&&alvo?'<p class="battle-fas">'+esc(trB('defFan').replace('{n}',alvo.nick))+'</p>':''):'<p>'+esc(!revanche&&servidor&&Number(estado.ultimo_premio)===5?trB('reward'):trB('noReward'))+'</p>')+
    '<button type="button" class="btn alt" data-battle="salvar">'+esc(trB('save'))+'</button> '+
